@@ -4165,20 +4165,31 @@ function exportData(){
 function importData(e){
   const file=e.target.files[0];if(!file)return;
   const reader=new FileReader();
-  reader.onload=ev=>{
+  reader.onload=async ev=>{
     try{
       const data=JSON.parse(ev.target.result);
       if(!data.profiles||!Array.isArray(data.profiles))throw new Error('Invalid format');
       if(!confirm('This will replace ALL your current data. Continue?'))return;
       profiles=data.profiles;
-      saveStateNow();
-      toast('Data imported! Reloading…','success');
+      // Réassigner les _dbId existants pour éviter de créer des doublons
+      if(_sbUser){
+        const {data:existing}=await sb.from('dashboard_data').select('id').eq('user_id',_sbUser.id);
+        if(existing&&existing.length){
+          // Supprime les anciens profils cloud
+          await sb.from('dashboard_data').delete().eq('user_id',_sbUser.id);
+          // Réinitialise les _dbId pour forcer un insert
+          profiles.forEach(p=>{delete p._dbId;});
+        }
+      }
+      toast('Import en cours…','info');
+      await saveCloudState();
+      toast('Données importées et sauvegardées ! ✅','success');
       setTimeout(()=>{
         document.getElementById('main-sidebar').style.display='none';
         document.getElementById('main-content').style.display='none';
         goToProfileScreen();
-      },800);
-    }catch(err){toast('Invalid backup file','error');}
+      },1000);
+    }catch(err){toast('Fichier invalide : '+err.message,'error');}
   };
   reader.readAsText(file);
   e.target.value='';

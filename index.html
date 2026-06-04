@@ -1057,6 +1057,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <div class="settings-tabs">
       <button class="settings-tab active" onclick="switchSettingsTab('profile',this)">&#128100; Profile</button>
       <button class="settings-tab" onclick="switchSettingsTab('security',this)">&#128274; Security</button>
+      <button class="settings-tab" onclick="switchSettingsTab('account',this)">&#9881; Mon compte</button>
     </div>
 
     <!-- profile tab -->
@@ -1154,6 +1155,40 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
         </div>
       </div>
     </div>
+    <!-- account tab -->
+    <div id="settings-account" style="max-width:500px;display:none">
+      <div class="panel">
+        <div class="panel-header" style="margin-bottom:20px"><div class="panel-title">Mon compte Supabase</div></div>
+        <div id="account-info" style="font-size:13px;color:var(--muted);margin-bottom:16px">Chargement…</div>
+        <div class="divider"></div>
+        <div class="modal-field" style="margin-top:16px">
+          <div class="modal-label">PSEUDO (pour se connecter)</div>
+          <div style="display:flex;gap:8px">
+            <input type="text" class="modal-input" id="account-username" placeholder="Nouveau pseudo" style="flex:1">
+            <button class="btn btn-primary" onclick="updateUsername()" style="flex-shrink:0">Sauvegarder</button>
+          </div>
+        </div>
+        <div class="modal-field" style="margin-top:12px">
+          <div class="modal-label">EMAIL</div>
+          <div style="display:flex;gap:8px">
+            <input type="email" class="modal-input" id="account-email" placeholder="Nouvel email" style="flex:1">
+            <button class="btn btn-primary" onclick="updateEmail()" style="flex-shrink:0">Sauvegarder</button>
+          </div>
+        </div>
+        <div class="modal-field" style="margin-top:12px">
+          <div class="modal-label">MOT DE PASSE</div>
+          <div style="display:flex;gap:8px">
+            <input type="password" class="modal-input" id="account-password" placeholder="Nouveau mot de passe" style="flex:1">
+            <button class="btn btn-primary" onclick="updatePassword()" style="flex-shrink:0">Sauvegarder</button>
+          </div>
+        </div>
+        <div class="divider" style="margin-top:20px"></div>
+        <div style="margin-top:16px;font-size:12px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px">
+          💡 <strong>Pour te connecter</strong> tu peux utiliser ton pseudo <strong>ou</strong> ton email + ton mot de passe.
+        </div>
+      </div>
+    </div>
+
   </div>
 
 </main>
@@ -2172,6 +2207,53 @@ function switchSettingsTab(tab,el){
   el.classList.add('active');
   document.getElementById('settings-profile').style.display=tab==='profile'?'block':'none';
   document.getElementById('settings-security').style.display=tab==='security'?'block':'none';
+  document.getElementById('settings-account').style.display=tab==='account'?'block':'none';
+  if(tab==='account')loadAccountInfo();
+}
+
+async function loadAccountInfo(){
+  if(!_sbUser){document.getElementById('account-info').textContent='Non connecté';return;}
+  const {data}=await sb.from('profiles').select('username,email').eq('id',_sbUser.id).single();
+  const info=document.getElementById('account-info');
+  if(data){
+    info.innerHTML=`Connecté en tant que <strong>${data.username||'—'}</strong> · <span style="color:var(--muted)">${data.email||_sbUser.email||'—'}</span>`;
+    document.getElementById('account-username').value=data.username||'';
+    document.getElementById('account-email').value=data.email||_sbUser.email||'';
+  }
+}
+
+async function updateUsername(){
+  if(!_sbUser){toast('Non connecté','error');return;}
+  const username=document.getElementById('account-username').value.trim();
+  if(!username){toast('Entre un pseudo','error');return;}
+  // Vérifie unicité
+  const {data:existing}=await sb.from('profiles').select('id').eq('username',username).neq('id',_sbUser.id).single();
+  if(existing){toast('Pseudo déjà pris','error');return;}
+  const {error}=await sb.from('profiles').update({username}).eq('id',_sbUser.id);
+  if(error){toast('Erreur : '+error.message,'error');return;}
+  toast('Pseudo mis à jour !','success');
+  loadAccountInfo();
+}
+
+async function updateEmail(){
+  if(!_sbUser){toast('Non connecté','error');return;}
+  const email=document.getElementById('account-email').value.trim();
+  if(!email||!email.includes('@')){toast('Email invalide','error');return;}
+  const {error}=await sb.auth.updateUser({email});
+  if(error){toast('Erreur : '+error.message,'error');return;}
+  // Mettre à jour aussi dans profiles
+  await sb.from('profiles').update({email}).eq('id',_sbUser.id);
+  toast('Email mis à jour !','success');
+}
+
+async function updatePassword(){
+  if(!_sbUser){toast('Non connecté','error');return;}
+  const pw=document.getElementById('account-password').value;
+  if(!pw||pw.length<6){toast('Mot de passe trop court (6 min)','error');return;}
+  const {error}=await sb.auth.updateUser({password:pw});
+  if(error){toast('Erreur : '+error.message,'error');return;}
+  document.getElementById('account-password').value='';
+  toast('Mot de passe mis à jour !','success');
 }
 
 // ═══════════════════════════════════════════════════

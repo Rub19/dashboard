@@ -6,6 +6,7 @@
 <title>Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -526,13 +527,57 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   <button class="pw-back" onclick="cancelPasswordScreen()">&#8592; Back to profiles</button>
 </div>
 
+<!-- AUTH SCREEN -->
+<div id="auth-screen" style="position:fixed;inset:0;z-index:10002;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;animation:fadeIn .4s ease">
+  <div class="ps-logo"><div class="ps-logo-icon">⚡</div>MySpace</div>
+  <div id="auth-box" style="width:100%;max-width:380px;padding:0 20px">
+    <!-- Tabs -->
+    <div style="display:flex;gap:0;margin-bottom:28px;background:var(--surface2);border-radius:var(--radius-sm);padding:4px">
+      <button id="tab-login" onclick="switchAuthTab('login')" style="flex:1;padding:8px;border:none;border-radius:6px;background:var(--accent);color:#fff;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer">Connexion</button>
+      <button id="tab-register" onclick="switchAuthTab('register')" style="flex:1;padding:8px;border:none;border-radius:6px;background:transparent;color:var(--muted);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer">Inscription</button>
+    </div>
+    <!-- Login form -->
+    <div id="form-login">
+      <div style="margin-bottom:12px">
+        <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">EMAIL OU PSEUDO</div>
+        <input id="auth-login-id" type="text" placeholder="email@example.com ou pseudo" class="modal-input" style="width:100%">
+      </div>
+      <div style="margin-bottom:20px">
+        <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">MOT DE PASSE</div>
+        <input id="auth-login-pw" type="password" placeholder="••••••••" class="modal-input" style="width:100%">
+      </div>
+      <button onclick="doLogin()" style="width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer">Se connecter</button>
+    </div>
+    <!-- Register form -->
+    <div id="form-register" style="display:none">
+      <div style="margin-bottom:12px">
+        <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">PSEUDO</div>
+        <input id="auth-reg-username" type="text" placeholder="Ton pseudo" class="modal-input" style="width:100%">
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">EMAIL (optionnel)</div>
+        <input id="auth-reg-email" type="email" placeholder="email@example.com" class="modal-input" style="width:100%">
+      </div>
+      <div style="margin-bottom:20px">
+        <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">MOT DE PASSE</div>
+        <input id="auth-reg-pw" type="password" placeholder="••••••••" class="modal-input" style="width:100%">
+      </div>
+      <button onclick="doRegister()" style="width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer">Créer mon compte</button>
+    </div>
+    <div id="auth-error" style="margin-top:12px;font-size:12px;color:var(--accent3);text-align:center;min-height:16px"></div>
+    <div id="auth-loading" style="display:none;margin-top:12px;text-align:center;font-size:13px;color:var(--muted)">⏳ Chargement…</div>
+  </div>
+  <div style="position:fixed;bottom:18px;font-size:11px;color:var(--surface3);font-family:var(--mono)">v1.0.0</div>
+</div>
+
 <!-- PROFILE SELECT SCREEN -->
-<div id="profile-screen">
+<div id="profile-screen" style="display:none">
   <div class="ps-logo"><div class="ps-logo-icon">&#9889;</div>MySpace</div>
   <div class="ps-title">Who's using?</div>
   <div class="ps-sub">Select your profile to continue</div>
   <div class="ps-profiles" id="ps-profiles-list"></div>
   <button class="ps-manage-btn" id="ps-manage-btn" onclick="toggleManageMode()">Manage profiles</button>
+  <button onclick="doLogout()" style="margin-top:16px;background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:var(--font)">🚪 Se déconnecter</button>
   <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--surface3);font-family:var(--mono);letter-spacing:1px;user-select:none">v1.0.0</div>
 </div>
 
@@ -557,6 +602,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <a class="nav-item" onclick="switchPage('gaming',this)"><span class="nav-icon">&#127918;</span> Gaming</a>
     <a class="nav-item" onclick="switchPage('connections',this)"><span class="nav-icon">&#128279;</span> Connections</a>
     <a class="nav-item" onclick="switchPage('settings',this)"><span class="nav-icon">&#9881;</span> Settings</a>
+    <a class="nav-item" id="nav-admin" onclick="openAdminPanel()" style="display:none"><span class="nav-icon">👑</span> Admin</a>
   </div>
   <div class="sidebar-footer">
     <!-- Discord sidebar widget -->
@@ -1256,6 +1302,184 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
 <script>
 // ═══════════════════════════════════════════════════
+//  SUPABASE INIT
+// ═══════════════════════════════════════════════════
+const SUPABASE_URL='https://bvgifyzhpzkbrwdjrqsg.supabase.co';
+const SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2Z2lmeXpocHprYnJ3ZGpycXNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1ODgzNjAsImV4cCI6MjA5NjE2NDM2MH0.PCm_g4w7ZrLqNilISt-Xnlw_CZrA8PY1Uvk9H_PUhCc';
+const ADMIN_EMAIL='rub19.mailpro@gmail.com';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+let _sbUser=null;
+let _isAdmin=false;
+
+// ── AUTH UI ──────────────────────────────────────
+function switchAuthTab(tab){
+  document.getElementById('form-login').style.display=tab==='login'?'block':'none';
+  document.getElementById('form-register').style.display=tab==='register'?'block':'none';
+  document.getElementById('tab-login').style.background=tab==='login'?'var(--accent)':'transparent';
+  document.getElementById('tab-login').style.color=tab==='login'?'#fff':'var(--muted)';
+  document.getElementById('tab-register').style.background=tab==='register'?'var(--accent)':'transparent';
+  document.getElementById('tab-register').style.color=tab==='register'?'#fff':'var(--muted)';
+  document.getElementById('auth-error').textContent='';
+}
+
+function setAuthLoading(v){
+  document.getElementById('auth-loading').style.display=v?'block':'none';
+  document.getElementById('auth-error').textContent='';
+}
+
+async function doLogin(){
+  const id=document.getElementById('auth-login-id').value.trim();
+  const pw=document.getElementById('auth-login-pw').value;
+  if(!id||!pw){document.getElementById('auth-error').textContent='Remplis tous les champs';return;}
+  setAuthLoading(true);
+  // Détermine si c'est un email ou un pseudo
+  const isEmail=id.includes('@');
+  let email=id;
+  if(!isEmail){
+    // Cherche l'email via le pseudo
+    const {data}=await sb.from('profiles').select('email').eq('username',id).single();
+    if(!data?.email){setAuthLoading(false);document.getElementById('auth-error').textContent='Pseudo introuvable';return;}
+    email=data.email;
+  }
+  const {error}=await sb.auth.signInWithPassword({email,password:pw});
+  setAuthLoading(false);
+  if(error){document.getElementById('auth-error').textContent=error.message;return;}
+  await onAuthSuccess();
+}
+
+async function doRegister(){
+  const username=document.getElementById('auth-reg-username').value.trim();
+  const email=document.getElementById('auth-reg-email').value.trim();
+  const pw=document.getElementById('auth-reg-pw').value;
+  if(!username||!pw){document.getElementById('auth-error').textContent='Pseudo et mot de passe requis';return;}
+  if(pw.length<6){document.getElementById('auth-error').textContent='Mot de passe trop court (6 caractères min)';return;}
+  setAuthLoading(true);
+  // Vérifie que le pseudo est unique
+  const {data:existing}=await sb.from('profiles').select('id').eq('username',username).single();
+  if(existing){setAuthLoading(false);document.getElementById('auth-error').textContent='Pseudo déjà pris';return;}
+  const regEmail=email||username+'@dashboard.local';
+  const {error}=await sb.auth.signUp({email:regEmail,password:pw,options:{data:{username}}});
+  setAuthLoading(false);
+  if(error){document.getElementById('auth-error').textContent=error.message;return;}
+  toast('Compte créé ! Connexion…','success');
+  setTimeout(async()=>{
+    const {error:e2}=await sb.auth.signInWithPassword({email:regEmail,password:pw});
+    if(!e2)await onAuthSuccess();
+  },1000);
+}
+
+async function doLogout(){
+  await sb.auth.signOut();
+  _sbUser=null;_isAdmin=false;
+  document.getElementById('auth-screen').style.display='flex';
+  document.getElementById('profile-screen').style.display='none';
+  document.getElementById('main-sidebar').style.display='none';
+  document.getElementById('main-content').style.display='none';
+}
+
+async function onAuthSuccess(){
+  const {data:{user}}=await sb.auth.getUser();
+  _sbUser=user;
+  _isAdmin=user?.email===ADMIN_EMAIL;
+  document.getElementById('auth-screen').style.display='none';
+  await loadCloudState();
+  renderProfileScreen();
+  document.getElementById('profile-screen').style.display='flex';
+}
+
+// ── CLOUD SYNC ───────────────────────────────────
+async function loadCloudState(){
+  if(!_sbUser)return;
+  const {data}=await sb.from('dashboard_data').select('*').eq('user_id',_sbUser.id);
+  if(data&&data.length){
+    profiles=data.map(d=>({
+      id:d.id,
+      _dbId:d.id,
+      name:d.profile_name,
+      avatarEmoji:d.state?.avatarEmoji||AVATARS[0].e,
+      avatarBg:d.state?.avatarBg||AVATARS[0].b,
+      avatarImg:d.state?.avatarImg||null,
+      avatarIdx:d.state?.avatarIdx||0,
+      password:d.state?.password||null,
+      themeIdx:d.state?.themeIdx||0,
+      state:d.state||defState(d.profile_name)
+    }));
+  } else {
+    // Nouveau user → crée un profil par défaut
+    profiles=[{id:Date.now(),name:_sbUser.user_metadata?.username||'Mon profil',avatarEmoji:AVATARS[0].e,avatarBg:AVATARS[0].b,avatarImg:null,avatarIdx:0,state:defState(_sbUser.user_metadata?.username||'Mon profil')}];
+    await saveCloudState();
+  }
+}
+
+async function saveCloudState(){
+  if(!_sbUser)return;
+  for(const p of profiles){
+    const payload={
+      user_id:_sbUser.id,
+      profile_name:p.name,
+      state:{...p.state,avatarEmoji:p.avatarEmoji,avatarBg:p.avatarBg,avatarImg:p.avatarImg,avatarIdx:p.avatarIdx,password:p.password,themeIdx:p.themeIdx},
+      updated_at:new Date().toISOString()
+    };
+    if(p._dbId){
+      await sb.from('dashboard_data').update(payload).eq('id',p._dbId);
+    } else {
+      const {data}=await sb.from('dashboard_data').insert(payload).select().single();
+      if(data)p._dbId=data.id;
+    }
+  }
+}
+
+// ── ADMIN PANEL ───────────────────────────────────
+async function openAdminPanel(){
+  if(!_isAdmin){toast('Accès refusé','error');return;}
+  const {data:users}=await sb.from('profiles').select('*').order('created_at',{ascending:false});
+  const {data:allData}=await sb.from('dashboard_data').select('*');
+  let html=`<div style="position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.remove()">
+  <div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:28px;width:100%;max-width:800px;max-height:85vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div style="font-size:18px;font-weight:700">👑 Panel Admin</div>
+      <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">✕</button>
+    </div>
+    <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 20px;flex:1;min-width:120px;text-align:center">
+        <div style="font-size:24px;font-weight:700;color:var(--accent)">${users?.length||0}</div>
+        <div style="font-size:12px;color:var(--muted)">Comptes</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 20px;flex:1;min-width:120px;text-align:center">
+        <div style="font-size:24px;font-weight:700;color:var(--accent2)">${allData?.length||0}</div>
+        <div style="font-size:12px;color:var(--muted)">Profils total</div>
+      </div>
+    </div>
+    <div style="font-size:12px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:10px">Tous les comptes</div>
+    <div style="display:flex;flex-direction:column;gap:8px">`;
+  users?.forEach(u=>{
+    const userProfiles=allData?.filter(d=>d.user_id===u.id)||[];
+    const lastSeen=u.last_seen?new Date(u.last_seen).toLocaleDateString('fr-FR'):'jamais';
+    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px">
+      <div style="display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap">
+        <div>
+          <div style="font-weight:600">${u.username} ${u.email===ADMIN_EMAIL?'👑':''}</div>
+          <div style="font-size:11px;color:var(--muted)">${u.email||'—'} · Inscrit le ${new Date(u.created_at).toLocaleDateString('fr-FR')} · Vu le ${lastSeen}</div>
+          <div style="font-size:11px;color:var(--accent);margin-top:2px">${userProfiles.length} profil(s) : ${userProfiles.map(p=>p.profile_name).join(', ')}</div>
+        </div>
+        ${u.email!==ADMIN_EMAIL?`<button onclick="adminDeleteUser('${u.id}',this)" style="background:rgba(247,106,106,.15);color:var(--accent3);border:1px solid var(--accent3);border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;font-family:var(--font)">Supprimer</button>`:''}
+      </div>
+    </div>`;
+  });
+  html+=`</div></div></div>`;
+  document.body.insertAdjacentHTML('beforeend',html);
+}
+
+async function adminDeleteUser(userId,btn){
+  if(!confirm('Supprimer ce compte et toutes ses données ?'))return;
+  btn.textContent='⏳';btn.disabled=true;
+  await sb.from('dashboard_data').delete().eq('user_id',userId);
+  await sb.from('profiles').delete().eq('id',userId);
+  btn.closest('[style*=background]').remove();
+  toast('Compte supprimé','success');
+}
+
+// ═══════════════════════════════════════════════════
 //  CONSTANTS & STATE
 // ═══════════════════════════════════════════════════
 const AVATARS=[
@@ -1276,8 +1500,12 @@ let pinEntry='';
 // ═══════════════════════════════════════════════════
 //  PERSISTENCE
 // ═══════════════════════════════════════════════════
-function loadState(){try{const d=localStorage.getItem('myspace_profiles');if(d)profiles=JSON.parse(d)}catch(e){}}
-function saveState(){try{localStorage.setItem('myspace_profiles',JSON.stringify(profiles))}catch(e){}}
+function loadState(){try{const d=localStorage.getItem('myspace_profiles_backup');if(d)profiles=JSON.parse(d)}catch(e){}}
+function saveState(){
+  try{localStorage.setItem('myspace_profiles_backup',JSON.stringify(profiles))}catch(e){}
+  // Sync cloud en arrière-plan
+  if(_sbUser)saveCloudState().catch(e=>console.warn('Cloud sync error:',e));
+}
 function getP(id){return profiles.find(p=>p.id===id)}
 function curP(){return getP(currentId)}
 function defState(name){return{items:[],todos:[],note:'',activity:[],username:name||'User',connections:{},gaming:{}}}
@@ -1603,6 +1831,9 @@ function initDashboard(){
   document.querySelector('.nav-item').classList.add('active');
   document.getElementById('quick-note').value=p.state.note||'';
   document.getElementById('main-note').value=p.state.note||'';
+  // Affiche le bouton admin si c'est l'admin
+  const adminBtn=document.getElementById('nav-admin');
+  if(adminBtn)adminBtn.style.display=_isAdmin?'flex':'none';
   updateStats();renderRecentItems();renderActivity();renderTodos();updateClock();
   loadConnectionsUI();
   refreshDiscordSidebar();
@@ -3904,22 +4135,32 @@ function renderGamingOverview(){
 
 // ═══ BOOT ═══
 (function(){
-  loadState();
-  if(!profiles.length){
-    profiles.push({id:Date.now(),name:'User',avatarEmoji:AVATARS[0].e,avatarBg:AVATARS[0].b,avatarImg:null,avatarIdx:0,state:defState('User')});
-    saveState();
-  }
-  profiles.forEach(p=>{
-    if(!p.state) p.state = defState(p.name);
-    if(!p.state.connections) p.state.connections={};
-    if(!p.state.gaming) p.state.gaming={};
-    if(!p.state.pinned) p.state.pinned=[];
-    if(!p.state.habits) p.state.habits=[];
-    if(!p.state.kanban) p.state.kanban=[];
-    if(!p.state.events) p.state.events=[];
+  // Vérifie si déjà connecté à Supabase
+  sb.auth.getSession().then(async({data:{session}})=>{
+    if(session){
+      _sbUser=session.user;
+      _isAdmin=session.user?.email===ADMIN_EMAIL;
+      document.getElementById('auth-screen').style.display='none';
+      await loadCloudState();
+      profiles.forEach(p=>{
+        if(!p.state) p.state = defState(p.name);
+        if(!p.state.connections) p.state.connections={};
+        if(!p.state.gaming) p.state.gaming={};
+        if(!p.state.pinned) p.state.pinned=[];
+        if(!p.state.habits) p.state.habits=[];
+        if(!p.state.kanban) p.state.kanban=[];
+        if(!p.state.events) p.state.events=[];
+      });
+      if(!profiles.length){
+        profiles.push({id:Date.now(),name:'Mon profil',avatarEmoji:AVATARS[0].e,avatarBg:AVATARS[0].b,avatarImg:null,avatarIdx:0,state:defState('Mon profil')});
+        await saveCloudState();
+      }
+      renderProfileScreen();
+      document.getElementById('profile-screen').style.display='flex';
+    }
+    // Sinon l'écran auth reste visible
+    updateClock();
   });
-  renderProfileScreen();
-  updateClock();
 })();
 </script>
 </body>

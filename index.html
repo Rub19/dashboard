@@ -533,14 +533,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   <div id="auth-box" style="width:100%;max-width:380px;padding:0 20px">
     <!-- Tabs -->
     <div style="display:flex;gap:0;margin-bottom:28px;background:var(--surface2);border-radius:var(--radius-sm);padding:4px">
-      <button id="tab-login" onclick="switchAuthTab('login')" style="flex:1;padding:8px;border:none;border-radius:6px;background:var(--accent);color:#fff;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer">Connexion</button>
-      <button id="tab-register" onclick="switchAuthTab('register')" style="flex:1;padding:8px;border:none;border-radius:6px;background:transparent;color:var(--muted);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer">Inscription</button>
+      <button id="tab-login" onclick="switchAuthTab('login')" style="flex:1;padding:8px;border:none;border-radius:6px;background:var(--accent);color:#fff;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer">Login</button>
+      <button id="tab-register" onclick="switchAuthTab('register')" style="flex:1;padding:8px;border:none;border-radius:6px;background:transparent;color:var(--muted);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer">Sign up</button>
     </div>
     <!-- Login form -->
     <div id="form-login">
       <div style="margin-bottom:12px">
-        <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">EMAIL OU PSEUDO</div>
-        <input id="auth-login-id" type="text" placeholder="email@example.com ou pseudo" class="modal-input" style="width:100%">
+        <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">EMAIL OU USERNAME</div>
+        <input id="auth-login-id" type="text" placeholder="email@example.com ou username" class="modal-input" style="width:100%">
       </div>
       <div style="margin-bottom:20px">
         <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">MOT DE PASSE</div>
@@ -551,8 +551,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <!-- Register form -->
     <div id="form-register" style="display:none">
       <div style="margin-bottom:12px">
-        <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">PSEUDO</div>
-        <input id="auth-reg-username" type="text" placeholder="Ton pseudo" class="modal-input" style="width:100%">
+        <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">USERNAME</div>
+        <input id="auth-reg-username" type="text" placeholder="Ton username" class="modal-input" style="width:100%">
       </div>
       <div style="margin-bottom:12px">
         <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">EMAIL (optionnel)</div>
@@ -562,10 +562,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
         <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">MOT DE PASSE</div>
         <input id="auth-reg-pw" type="password" placeholder="••••••••" class="modal-input" style="width:100%">
       </div>
-      <button onclick="doRegister()" style="width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer">Créer mon compte</button>
+      <button onclick="doRegister()" style="width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer">Create account</button>
     </div>
     <div id="auth-error" style="margin-top:12px;font-size:12px;color:var(--accent3);text-align:center;min-height:16px"></div>
-    <div id="auth-loading" style="display:none;margin-top:12px;text-align:center;font-size:13px;color:var(--muted)">⏳ Chargement…</div>
+    <div id="auth-loading" style="display:none;margin-top:12px;text-align:center;font-size:13px;color:var(--muted)">⏳ Loading…</div>
   </div>
   <div style="position:fixed;bottom:18px;font-size:11px;color:var(--surface3);font-family:var(--mono)">v1.0.0</div>
 </div>
@@ -577,7 +577,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   <div class="ps-sub">Select your profile to continue</div>
   <div class="ps-profiles" id="ps-profiles-list"></div>
   <button class="ps-manage-btn" id="ps-manage-btn" onclick="toggleManageMode()">Manage profiles</button>
-  <button onclick="doLogout()" style="margin-top:16px;background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:var(--font)">🚪 Se déconnecter</button>
+  <button onclick="doLogout()" style="margin-top:16px;background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:var(--font)">🚪 Sign out</button>
   <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="Voir le changelog">v1.2.0 · changelog</div>
 </div>
 
@@ -900,7 +900,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
             <button class="btn btn-ghost" onclick="const i=document.getElementById('tracker-apikey');i.type=i.type==='password'?'text':'password'" style="flex-shrink:0;font-size:13px" title="Afficher/masquer">👁</button>
             <a href="https://tracker.gg/developers/apps" target="_blank" class="btn btn-ghost" style="font-size:12px;flex-shrink:0">Get key &#8599;</a>
           </div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px">🔑 Une clé par défaut est intégrée pour Henrik et Tracker — laisse vide si tu n'en as pas.</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">🔑 Une default key is built-in for Henrik and Tracker — leave empty if you don't have one.</div>
         </div>
       </div>
     </div>
@@ -1013,20 +1013,20 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
       <div class="modal-field" style="margin-top:10px">
         <div class="modal-label" style="display:flex;align-items:center;gap:6px">
           STEAM API KEY
-          <span style="font-size:10px;background:rgba(93,224,176,.12);color:var(--accent2);padding:1px 7px;border-radius:20px;font-weight:600">Requis pour le niveau</span>
+          <span style="font-size:10px;background:rgba(93,224,176,.12);color:var(--accent2);padding:1px 7px;border-radius:20px;font-weight:600">Required for level</span>
         </div>
         <div style="display:flex;gap:8px">
           <input type="password" class="modal-input" id="steam-apikey" placeholder="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" style="flex:1;font-size:12px;font-family:var(--mono)">
           <button class="btn btn-ghost" onclick="const i=document.getElementById('steam-apikey');i.type=i.type==='password'?'text':'password'" style="flex-shrink:0;font-size:13px" title="Afficher/masquer">👁</button>
-          <button class="btn btn-primary" onclick="savesteamApiKey()" style="flex-shrink:0;font-size:12px">Sauvegarder</button>
+          <button class="btn btn-primary" onclick="savesteamApiKey()" style="flex-shrink:0;font-size:12px">Save</button>
         </div>
         <div style="font-size:11.5px;color:var(--muted);margin-top:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;line-height:1.6">
-          <div style="font-weight:600;color:var(--text);margin-bottom:4px">Comment obtenir ta clé gratuite :</div>
+          <div style="font-weight:600;color:var(--text);margin-bottom:4px">How to get your free key:</div>
           <div>1. Va sur <a href="https://steamcommunity.com/dev/apikey" target="_blank" style="color:var(--accent)">steamcommunity.com/dev/apikey</a></div>
-          <div>2. Connecte-toi avec ton compte Steam</div>
+          <div>2. Sign in with your Steam account</div>
           <div>3. Dans "Domain Name", écris <span style="font-family:var(--mono);background:var(--surface3);padding:1px 5px;border-radius:4px">localhost</span></div>
           <div>4. Clique <strong>Register</strong> → copie la clé</div>
-          <div style="margin-top:6px;font-size:10.5px;color:var(--muted);font-style:italic">🔒 La clé est stockée localement, jamais envoyée ailleurs que Steam.</div>
+          <div style="margin-top:6px;font-size:10.5px;color:var(--muted);font-style:italic">🔒 La clé est stockée localement, never envoyée ailleurs que Steam.</div>
         </div>
       </div>
     </div>
@@ -1057,7 +1057,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <div class="settings-tabs">
       <button class="settings-tab active" onclick="switchSettingsTab('profile',this)">&#128100; Profile</button>
       <button class="settings-tab" onclick="switchSettingsTab('security',this)">&#128274; Security</button>
-      <button class="settings-tab" onclick="switchSettingsTab('account',this)">&#9881; Mon compte</button>
+      <button class="settings-tab" onclick="switchSettingsTab('account',this)">&#9881; My Account</button>
     </div>
 
     <!-- profile tab -->
@@ -1158,33 +1158,33 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <!-- account tab -->
     <div id="settings-account" style="max-width:500px;display:none">
       <div class="panel">
-        <div class="panel-header" style="margin-bottom:20px"><div class="panel-title">Mon compte Supabase</div></div>
-        <div id="account-info" style="font-size:13px;color:var(--muted);margin-bottom:16px">Chargement…</div>
+        <div class="panel-header" style="margin-bottom:20px"><div class="panel-title">My Account</div></div>
+        <div id="account-info" style="font-size:13px;color:var(--muted);margin-bottom:16px">Loading…</div>
         <div class="divider"></div>
         <div class="modal-field" style="margin-top:16px">
-          <div class="modal-label">PSEUDO (pour se connecter)</div>
+          <div class="modal-label">USERNAME (to sign in)</div>
           <div style="display:flex;gap:8px">
-            <input type="text" class="modal-input" id="account-username" placeholder="Nouveau pseudo" style="flex:1">
-            <button class="btn btn-primary" onclick="updateUsername()" style="flex-shrink:0">Sauvegarder</button>
+            <input type="text" class="modal-input" id="account-username" placeholder="Nouveau username" style="flex:1">
+            <button class="btn btn-primary" onclick="updateUsername()" style="flex-shrink:0">Save</button>
           </div>
         </div>
         <div class="modal-field" style="margin-top:12px">
           <div class="modal-label">EMAIL</div>
           <div style="display:flex;gap:8px">
-            <input type="email" class="modal-input" id="account-email" placeholder="Nouvel email" style="flex:1">
-            <button class="btn btn-primary" onclick="updateEmail()" style="flex-shrink:0">Sauvegarder</button>
+            <input type="email" class="modal-input" id="account-email" placeholder="New email" style="flex:1">
+            <button class="btn btn-primary" onclick="updateEmail()" style="flex-shrink:0">Save</button>
           </div>
         </div>
         <div class="modal-field" style="margin-top:12px">
           <div class="modal-label">MOT DE PASSE</div>
           <div style="display:flex;gap:8px">
-            <input type="password" class="modal-input" id="account-password" placeholder="Nouveau mot de passe" style="flex:1">
-            <button class="btn btn-primary" onclick="updatePassword()" style="flex-shrink:0">Sauvegarder</button>
+            <input type="password" class="modal-input" id="account-password" placeholder="New password" style="flex:1">
+            <button class="btn btn-primary" onclick="updatePassword()" style="flex-shrink:0">Save</button>
           </div>
         </div>
         <div class="divider" style="margin-top:20px"></div>
         <div style="margin-top:16px;font-size:12px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px">
-          💡 <strong>Pour te connecter</strong> tu peux utiliser ton pseudo <strong>ou</strong> ton email + ton mot de passe.
+          💡 <strong>To sign in</strong> tu peux utiliser ton username <strong>ou</strong> ton email + ton mot de passe.
         </div>
       </div>
     </div>
@@ -1336,9 +1336,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 <div class="toast-container" id="toasts"></div>
 
 <script>
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  SUPABASE INIT
-// ═══════════════════════════════════════════════════
+// ===================================================
 const SUPABASE_URL='https://bvgifyzhpzkbrwdjrqsg.supabase.co';
 const SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2Z2lmeXpocHprYnJ3ZGpycXNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1ODgzNjAsImV4cCI6MjA5NjE2NDM2MH0.PCm_g4w7ZrLqNilISt-Xnlw_CZrA8PY1Uvk9H_PUhCc';
 const ADMIN_EMAIL='rub19.mailpro@gmail.com';
@@ -1346,22 +1346,22 @@ const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 let _sbUser=null;
 let _isAdmin=false;
 
-// ── AUTH UI ──────────────────────────────────────
+// -- AUTH UI --------------------------------------
 function showChangelog(){
   const versions=[
-    {v:'v1.2.0',date:'05/06/2026',changes:['Settings Mon compte : modifier pseudo, email, mot de passe','Login par pseudo corrige avec fallback email','Import JSON -> sauvegarde cloud immediate avant rechargement','Fix : donnees plus perdues apres import + refresh']},
-    {v:'v1.1.0',date:'05/06/2026',changes:['Changelog visible en bas de lecran profils','Sidebar compactee pour tout afficher','Bouton Admin dans la sidebar pour le compte owner','Version affichee et cliquable']},
-    {v:'v1.0.4',date:'05/06/2026',changes:['saveStateNow() sur toutes les actions (51 appels)','Compression avatar avant envoi Supabase','Login pseudo avec fallback email genere']},
-    {v:'v1.0.3',date:'05/06/2026',changes:['Integration Supabase - auth email + pseudo','Sauvegarde cloud des donnees par profil','Panel Admin avec gestion des comptes et stats']},
-    {v:'v1.0.2',date:'05/06/2026',changes:['Worker Cloudflare pour Steam + Tracker + Henrik','Cles API securisees cote serveur','Plus de problemes CORS']},
-    {v:'v1.0.1',date:'05/06/2026',changes:['Onglets Valorant (Competitive / Swiftplay / Unrated)','Filtrage des matchs par mode cote client','Stats globales + cartes visuelles de matchs','Top agents + carte preferee + headshot %']},
-    {v:'v1.0.0',date:'05/06/2026',changes:['Version initiale du dashboard','Profils multiples avec avatar et PIN','Discord, Steam, Spotify, Valorant, LoL','Kanban, Habits, Calendar, Tasks, Notes, Stats']},
+    {v:'v1.2.0',date:'05/06/2026',changes:['Settings My Account: edit username, email, password','Username login fixed with email fallback','Import JSON -> immediate cloud save before reload','Fix: data no longer lost after import + refresh']},
+    {v:'v1.1.0',date:'05/06/2026',changes:['Changelog visible on profile screen','Compact sidebar','Admin button in sidebar for owner','Version displayed and clickable']},
+    {v:'v1.0.4',date:'05/06/2026',changes:['saveStateNow() on all actions (51 calls)','Avatar compression before Supabase upload','Username login with generated email fallback']},
+    {v:'v1.0.3',date:'05/06/2026',changes:['Supabase integration - email + username auth','Cloud save per profile','Admin panel with account management']},
+    {v:'v1.0.2',date:'05/06/2026',changes:['Cloudflare Worker for Steam + Tracker + Henrik','API keys secured server-side','No more CORS issues']},
+    {v:'v1.0.1',date:'05/06/2026',changes:['Valorant tabs (Competitive / Swiftplay / Unrated)','Client-side match filtering','Visual match cards + top agents + headshot %']},
+    {v:'v1.0.0',date:'05/06/2026',changes:['Initial dashboard version','Multiple profiles with avatar and PIN','Discord, Steam, Spotify, Valorant, LoL']},
   ];
   let html=`<div style="position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.remove()">
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:28px;width:100%;max-width:500px;max-height:80vh;overflow-y:auto">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-      <div style="font-size:18px;font-weight:700">📋 Changelog</div>
-      <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">✕</button>
+      <div style="font-size:18px;font-weight:700"> Changelog</div>
+      <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">x</button>
     </div>`;
   versions.forEach((v,i)=>{
     html+=`<div style="margin-bottom:16px">
@@ -1371,7 +1371,7 @@ function showChangelog(){
         <span style="font-size:11px;color:var(--muted);margin-left:auto">${v.date}</span>
       </div>
       <div style="display:flex;flex-direction:column;gap:4px">
-        ${v.changes.map(c=>`<div style="font-size:12px;color:var(--muted);padding-left:12px">• ${c}</div>`).join('')}
+        ${v.changes.map(c=>`<div style="font-size:12px;color:var(--muted);padding-left:12px">- ${c}</div>`).join('')}
       </div>
     </div>`;
   });
@@ -1397,24 +1397,24 @@ function setAuthLoading(v){
 async function doLogin(){
   const id=document.getElementById('auth-login-id').value.trim();
   const pw=document.getElementById('auth-login-pw').value;
-  if(!id||!pw){document.getElementById('auth-error').textContent='Remplis tous les champs';return;}
+  if(!id||!pw){document.getElementById('auth-error').textContent='Fill in all fields';return;}
   setAuthLoading(true);
   const isEmail=id.includes('@');
   let email=id;
   if(!isEmail){
-    // Cherche l'email via le pseudo dans profiles
+    // Cherche l'email via le username dans profiles
     const {data}=await sb.from('profiles').select('email').eq('username',id).single();
     if(data?.email){
       email=data.email;
     } else {
-      // Fallback : essaie avec l'email généré à l'inscription (pseudo@dashboard.local)
+      // Fallback : essaie avec l'email generated a l'inscription (username@dashboard.local)
       email=id+'@dashboard.local';
     }
   }
   const {error}=await sb.auth.signInWithPassword({email,password:pw});
   setAuthLoading(false);
   if(error){
-    document.getElementById('auth-error').textContent='Identifiants incorrects — essaie avec ton email';
+    document.getElementById('auth-error').textContent='Wrong credentials - try with your email';
     return;
   }
   await onAuthSuccess();
@@ -1424,17 +1424,17 @@ async function doRegister(){
   const username=document.getElementById('auth-reg-username').value.trim();
   const email=document.getElementById('auth-reg-email').value.trim();
   const pw=document.getElementById('auth-reg-pw').value;
-  if(!username||!pw){document.getElementById('auth-error').textContent='Pseudo et mot de passe requis';return;}
-  if(pw.length<6){document.getElementById('auth-error').textContent='Mot de passe trop court (6 caractères min)';return;}
+  if(!username||!pw){document.getElementById('auth-error').textContent='Username and password required';return;}
+  if(pw.length<6){document.getElementById('auth-error').textContent='Mot de passe trop court (6 chars min)';return;}
   setAuthLoading(true);
-  // Vérifie que le pseudo est unique
+  // Check que le username est unique
   const {data:existing}=await sb.from('profiles').select('id').eq('username',username).single();
-  if(existing){setAuthLoading(false);document.getElementById('auth-error').textContent='Pseudo déjà pris';return;}
+  if(existing){setAuthLoading(false);document.getElementById('auth-error').textContent='Username already taken';return;}
   const regEmail=email||username+'@dashboard.local';
   const {error}=await sb.auth.signUp({email:regEmail,password:pw,options:{data:{username}}});
   setAuthLoading(false);
   if(error){document.getElementById('auth-error').textContent=error.message;return;}
-  toast('Compte créé ! Connexion…','success');
+  toast('Compte created ! Login...','success');
   setTimeout(async()=>{
     const {error:e2}=await sb.auth.signInWithPassword({email:regEmail,password:pw});
     if(!e2)await onAuthSuccess();
@@ -1460,7 +1460,7 @@ async function onAuthSuccess(){
   document.getElementById('profile-screen').style.display='flex';
 }
 
-// ── CLOUD SYNC ───────────────────────────────────
+// -- CLOUD SYNC -----------------------------------
 async function loadCloudState(){
   if(!_sbUser)return;
   const {data,error}=await sb.from('dashboard_data').select('*').eq('user_id',_sbUser.id).order('created_at',{ascending:true});
@@ -1497,7 +1497,7 @@ async function loadCloudState(){
       };
     });
   } else {
-    // Nouveau user → crée un profil par défaut
+    // New user -> create a profile par defaut
     const username=_sbUser.user_metadata?.username||'Mon profil';
     profiles=[{
       id:Date.now(),
@@ -1566,16 +1566,16 @@ function compressImage(base64,maxW,maxH){
   });
 }
 
-// ── ADMIN PANEL ───────────────────────────────────
+// -- ADMIN PANEL -----------------------------------
 async function openAdminPanel(){
-  if(!_isAdmin){toast('Accès refusé','error');return;}
+  if(!_isAdmin){toast('Access denied','error');return;}
   const {data:users}=await sb.from('profiles').select('*').order('created_at',{ascending:false});
   const {data:allData}=await sb.from('dashboard_data').select('*');
   let html=`<div style="position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.remove()">
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:28px;width:100%;max-width:800px;max-height:85vh;overflow-y:auto">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-      <div style="font-size:18px;font-weight:700">👑 Panel Admin</div>
-      <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">✕</button>
+      <div style="font-size:18px;font-weight:700">Admin Admin Panel</div>
+      <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">x</button>
     </div>
     <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 20px;flex:1;min-width:120px;text-align:center">
@@ -1587,19 +1587,19 @@ async function openAdminPanel(){
         <div style="font-size:12px;color:var(--muted)">Profils total</div>
       </div>
     </div>
-    <div style="font-size:12px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:10px">Tous les comptes</div>
+    <div style="font-size:12px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:10px">All accounts</div>
     <div style="display:flex;flex-direction:column;gap:8px">`;
   users?.forEach(u=>{
     const userProfiles=allData?.filter(d=>d.user_id===u.id)||[];
-    const lastSeen=u.last_seen?new Date(u.last_seen).toLocaleDateString('fr-FR'):'jamais';
+    const lastSeen=u.last_seen?new Date(u.last_seen).toLocaleDateString('fr-FR'):'never';
     html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px">
       <div style="display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap">
         <div>
-          <div style="font-weight:600">${u.username} ${u.email===ADMIN_EMAIL?'👑':''}</div>
-          <div style="font-size:11px;color:var(--muted)">${u.email||'—'} · Inscrit le ${new Date(u.created_at).toLocaleDateString('fr-FR')} · Vu le ${lastSeen}</div>
+          <div style="font-weight:600">${u.username} ${u.email===ADMIN_EMAIL?'Admin':''}</div>
+          <div style="font-size:11px;color:var(--muted)">${u.email||'-'} . Joined ${new Date(u.created_at).toLocaleDateString('fr-FR')} . Last seen ${lastSeen}</div>
           <div style="font-size:11px;color:var(--accent);margin-top:2px">${userProfiles.length} profil(s) : ${userProfiles.map(p=>p.profile_name).join(', ')}</div>
         </div>
-        ${u.email!==ADMIN_EMAIL?`<button onclick="adminDeleteUser('${u.id}',this)" style="background:rgba(247,106,106,.15);color:var(--accent3);border:1px solid var(--accent3);border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;font-family:var(--font)">Supprimer</button>`:''}
+        ${u.email!==ADMIN_EMAIL?`<button onclick="adminDeleteUser('${u.id}',this)" style="background:rgba(247,106,106,.15);color:var(--accent3);border:1px solid var(--accent3);border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;font-family:var(--font)">Delete</button>`:''}
       </div>
     </div>`;
   });
@@ -1608,17 +1608,17 @@ async function openAdminPanel(){
 }
 
 async function adminDeleteUser(userId,btn){
-  if(!confirm('Supprimer ce compte et toutes ses données ?'))return;
-  btn.textContent='⏳';btn.disabled=true;
+  if(!confirm('Delete this account and all its data?'))return;
+  btn.textContent='';btn.disabled=true;
   await sb.from('dashboard_data').delete().eq('user_id',userId);
   await sb.from('profiles').delete().eq('id',userId);
   btn.closest('[style*=background]').remove();
-  toast('Compte supprimé','success');
+  toast('Account deleted','success');
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  CONSTANTS & STATE
-// ═══════════════════════════════════════════════════
+// ===================================================
 const AVATARS=[
   {e:'&#128049;',b:'#2a1f3d'},{e:'&#129418;',b:'#2d1a0e'},{e:'&#128060;',b:'#1a2a1a'},
   {e:'&#128056;',b:'#0e2a1a'},{e:'&#129409;',b:'#2d2000'},{e:'&#128058;',b:'#1a1a2a'},
@@ -1634,14 +1634,14 @@ let editingProfileId=null;
 let pendingPasswordId=null; // profile waiting for password check
 let pinEntry='';
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  PERSISTENCE
-// ═══════════════════════════════════════════════════
+// ===================================================
 function loadState(){try{const d=localStorage.getItem('myspace_profiles_backup');if(d)profiles=JSON.parse(d)}catch(e){}}
 let _saveCloudTimeout=null;
 function saveState(){
   try{localStorage.setItem('myspace_profiles_backup',JSON.stringify(profiles))}catch(e){}
-  // Debounce cloud sync 800ms pour éviter trop d'appels
+  // Debounce cloud sync 800ms pour eviter trop d'appels
   if(_sbUser){
     clearTimeout(_saveCloudTimeout);
     _saveCloudTimeout=setTimeout(()=>{
@@ -1649,7 +1649,7 @@ function saveState(){
     },800);
   }
 }
-// Sauvegarde cloud immédiate (sans debounce) pour les actions critiques
+// Sauvegarde cloud immediate (sans debounce) pour les actions critiques
 async function saveStateNow(){
   try{localStorage.setItem('myspace_profiles_backup',JSON.stringify(profiles))}catch(e){}
   if(_sbUser){
@@ -1661,29 +1661,29 @@ function getP(id){return profiles.find(p=>p.id===id)}
 function curP(){return getP(currentId)}
 function defState(name){return{items:[],todos:[],note:'',activity:[],username:name||'User',connections:{},gaming:{}}}
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  AVATAR HELPERS
-// ═══════════════════════════════════════════════════
+// ===================================================
 function avatarHTML(p,size,r){
   if(p.avatarImg)return '<img src="'+p.avatarImg+'" style="width:'+size+'px;height:'+size+'px;object-fit:cover;border-radius:'+r+'px;display:block">';
   if(p.avatarEmoji)return '<span style="font-size:'+Math.round(size*.38)+'px">'+p.avatarEmoji+'</span>';
   return '<span style="font-size:'+Math.round(size*.36)+'px;font-weight:600">'+(p.name||'U')[0].toUpperCase()+'</span>';
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  PROFILE SCREEN
-// ═══════════════════════════════════════════════════
+// ===================================================
 function renderProfileScreen(){
   const list=document.getElementById('ps-profiles-list');
   let html='';
   profiles.forEach(p=>{
     const locked=p.password?'<div class="ps-lock">&#128274; locked</div>':'';
-    html+='<div class="ps-profile'+(managingMode?' managing':'')+'" data-id="'+p.id+'" onclick="handleProfileClick('+p.id+')">'+
+    html+='<div class="ps-profile'+(managingMode?' managing':'')+'" data-id="'+p.id+'" onclick="handleProfileClick(\''+p.id+'\')">'+
       '<div class="ps-avatar-wrap">'+
         '<div class="ps-avatar" style="background:'+(p.avatarBg||'#1e1e24')+'">'+avatarHTML(p,96,14)+'</div>'+
         locked+
-        '<button class="ps-edit-btn" onclick="event.stopPropagation();openEditProfile('+p.id+')" title="Edit">&#9998;</button>'+
-        (managingMode&&profiles.length>1?'<button class="ps-delete-btn" onclick="event.stopPropagation();deleteProfile('+p.id+')" title="Delete">&#10005;</button>':'')+
+        '<button class="ps-edit-btn" onclick="event.stopPropagation();openEditProfile(\''+p.id+'\')" title="Edit">&#9998;</button>'+
+        (managingMode&&profiles.length>1?'<button class="ps-delete-btn" onclick="event.stopPropagation();deleteProfile(\''+p.id+'\')" title="Delete">&#10005;</button>':'')+
       '</div>'+
       '<div class="ps-pname">'+p.name+'</div>'+
     '</div>';
@@ -1712,7 +1712,7 @@ function toggleManageMode(){managingMode=!managingMode;renderProfileScreen()}
 
 function enterDashboard(id){
   currentId=id;
-  // Réinitialise les caches globaux pour ce nouveau profil
+  // Reinitialise les caches globaux pour ce nouveau profil
   _valoMatchCache={};
   _valoAllMatches=[];
   const screen=document.getElementById('profile-screen');
@@ -1726,7 +1726,7 @@ function enterDashboard(id){
 }
 
 function goToProfileScreen(){
-  // Nettoie les connexions temps réel de l'ancien profil
+  // Nettoie les connexions temps reel de l'ancien profil
   if(typeof _lanyardWS!=='undefined'&&_lanyardWS){_lanyardWS.close();clearInterval(_lanyardHB);}
   _valoMatchCache={};
   _valoAllMatches=[];
@@ -1739,9 +1739,9 @@ function goToProfileScreen(){
   managingMode=false;renderProfileScreen();
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  PASSWORD SCREEN
-// ═══════════════════════════════════════════════════
+// ===================================================
 function showPasswordScreen(id){
   pendingPasswordId=id;pinEntry='';
   const p=getP(id);if(!p)return;
@@ -1787,7 +1787,7 @@ function renderPinDots(){
 function renderNumpad(){
   const nb=document.getElementById('pw-numpad');
   nb.innerHTML='';
-  const keys=['1','2','3','4','5','6','7','8','9','','0','⌫'];
+  const keys=['1','2','3','4','5','6','7','8','9','','0',''];
   keys.forEach(k=>{
     const btn=document.createElement('button');
     btn.className='pw-num';
@@ -1799,7 +1799,7 @@ function renderNumpad(){
 }
 
 function pinPress(k){
-  if(k==='⌫'){pinEntry=pinEntry.slice(0,-1);renderPinDots();document.getElementById('pw-error').textContent='';return}
+  if(k===''){pinEntry=pinEntry.slice(0,-1);renderPinDots();document.getElementById('pw-error').textContent='';return}
   if(pinEntry.length>=4)return;
   pinEntry+=k;
   renderPinDots();
@@ -1838,9 +1838,9 @@ function cancelPasswordScreen(){
   goToProfileScreen();
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  CREATE / EDIT PROFILE
-// ═══════════════════════════════════════════════════
+// ===================================================
 function toggleCreatePwSection(){
   const on=document.getElementById('create-pw-toggle').checked;
   document.getElementById('create-pw-section').style.display=on?'block':'none';
@@ -1864,7 +1864,7 @@ function openCreateProfile(){
   editingProfileId=null;selAvatarIdx=0;createUpload=null;
   document.getElementById('new-profile-name').value='';
   document.getElementById('create-upload-preview').style.display='none';
-  document.getElementById('create-profile-title').textContent='✨ Create profile';
+  document.getElementById('create-profile-title').textContent=' Create profile';
   document.getElementById('create-profile-btn').textContent='Create';
   resetCreatePwFields();
   renderAvatarGrid('create-avatar-grid',selAvatarIdx);
@@ -1878,7 +1878,7 @@ function openEditProfile(id){
   selAvatarIdx=p.avatarIdx||0;createUpload=p.avatarImg||null;
   if(createUpload){document.getElementById('create-upload-preview').style.display='flex';document.getElementById('create-upload-img').src=createUpload}
   else{document.getElementById('create-upload-preview').style.display='none'}
-  document.getElementById('create-profile-title').textContent='✏️ Edit profile';
+  document.getElementById('create-profile-title').textContent=' Edit profile';
   document.getElementById('create-profile-btn').textContent='Save';
   renderAvatarGrid('create-avatar-grid',selAvatarIdx);
   openModal('create-profile');
@@ -1914,7 +1914,7 @@ function submitCreateProfile(){
     const p={id:Date.now(),name,avatarEmoji:emoji,avatarBg:bg,avatarImg:createUpload||null,avatarIdx:selAvatarIdx,state:defState(name)};
     if(pwObj)p.password=pwObj;
     profiles.push(p);saveStateNow();
-    toast(name+' created!'+(pwObj?' 🔒':''),'success');
+    toast(name+' created!'+(pwObj?' ':''),'success');
   }
   editingProfileId=null;closeModal('create-profile');createUpload=null;resetCreatePwFields();renderProfileScreen();
 }
@@ -1967,9 +1967,9 @@ function saveEditAvatar(){
   saveStateNow();closeModal('edit-avatar');updateSidebarAvatar();updateSettingsPreview();toast('Avatar updated!','success');
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  DASHBOARD INIT
-// ═══════════════════════════════════════════════════
+// ===================================================
 function initDashboard(){
   const p=curP();if(!p)return;
   if(!p.state)p.state=defState(p.name);
@@ -2002,7 +2002,7 @@ function initDashboard(){
   updateBannerDisplay();
   renderPinnedLinks();
   renderCountdown();
-  addActivity('Welcome back, <strong>'+p.name+'</strong> 👋','var(--accent)');
+  addActivity('Welcome back, <strong>'+p.name+'</strong> ','var(--accent)');
   fetchQuote();
   fetchWeather();
   pomoReset();
@@ -2022,9 +2022,9 @@ function updateSettingsPreview(){
   el.innerHTML=avatarHTML(p,54,11);
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  THEMES
-// ═══════════════════════════════════════════════════
+// ===================================================
 const THEMES=[
   {name:'Purple',accent:'#7c6af7',accent2:'#5de0b0',accent3:'#f76a6a',accent4:'#f7b26a'},
   {name:'Blue',accent:'#4f8ef7',accent2:'#5de0b0',accent3:'#f76a6a',accent4:'#f7b26a'},
@@ -2099,9 +2099,9 @@ function pickTheme(idx){
   toast('Theme applied!','success');
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  PROFILE BANNER
-// ═══════════════════════════════════════════════════
+// ===================================================
 function handleBannerUpload(){
   const inp=document.getElementById('banner-upload');
   const file=inp.files[0];if(!file)return;
@@ -2163,9 +2163,9 @@ function loadBannerSettings(){
   renderThemeSwatches();
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  CLOCK
-// ═══════════════════════════════════════════════════
+// ===================================================
 function updateClock(){
   const n=new Date(),h=String(n.getHours()).padStart(2,'0'),m=String(n.getMinutes()).padStart(2,'0'),s=String(n.getSeconds()).padStart(2,'0');
   const cl=document.getElementById('clock-main');if(cl)cl.textContent=h+':'+m;
@@ -2179,9 +2179,9 @@ function updateClock(){
 }
 setInterval(updateClock,1000);
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  NAVIGATION
-// ═══════════════════════════════════════════════════
+// ===================================================
 function switchPage(page,navEl){
   document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
@@ -2213,53 +2213,53 @@ function switchSettingsTab(tab,el){
 }
 
 async function loadAccountInfo(){
-  if(!_sbUser){document.getElementById('account-info').textContent='Non connecté';return;}
+  if(!_sbUser){document.getElementById('account-info').textContent='Not signed in';return;}
   const {data}=await sb.from('profiles').select('username,email').eq('id',_sbUser.id).single();
   const info=document.getElementById('account-info');
   if(data){
-    info.innerHTML=`Connecté en tant que <strong>${data.username||'—'}</strong> · <span style="color:var(--muted)">${data.email||_sbUser.email||'—'}</span>`;
+    info.innerHTML=`Connecte en tant que <strong>${data.username||'-'}</strong> . <span style="color:var(--muted)">${data.email||_sbUser.email||'-'}</span>`;
     document.getElementById('account-username').value=data.username||'';
     document.getElementById('account-email').value=data.email||_sbUser.email||'';
   }
 }
 
 async function updateUsername(){
-  if(!_sbUser){toast('Non connecté','error');return;}
+  if(!_sbUser){toast('Not signed in','error');return;}
   const username=document.getElementById('account-username').value.trim();
-  if(!username){toast('Entre un pseudo','error');return;}
-  // Vérifie unicité
+  if(!username){toast('Entre un username','error');return;}
+  // Check unicite
   const {data:existing}=await sb.from('profiles').select('id').eq('username',username).neq('id',_sbUser.id).single();
-  if(existing){toast('Pseudo déjà pris','error');return;}
+  if(existing){toast('Username already taken','error');return;}
   const {error}=await sb.from('profiles').update({username}).eq('id',_sbUser.id);
   if(error){toast('Erreur : '+error.message,'error');return;}
-  toast('Pseudo mis à jour !','success');
+  toast('Username updated!','success');
   loadAccountInfo();
 }
 
 async function updateEmail(){
-  if(!_sbUser){toast('Non connecté','error');return;}
+  if(!_sbUser){toast('Not signed in','error');return;}
   const email=document.getElementById('account-email').value.trim();
-  if(!email||!email.includes('@')){toast('Email invalide','error');return;}
+  if(!email||!email.includes('@')){toast('Invalid email','error');return;}
   const {error}=await sb.auth.updateUser({email});
   if(error){toast('Erreur : '+error.message,'error');return;}
-  // Mettre à jour aussi dans profiles
+  // Mettre a jour aussi dans profiles
   await sb.from('profiles').update({email}).eq('id',_sbUser.id);
-  toast('Email mis à jour !','success');
+  toast('Email updated!','success');
 }
 
 async function updatePassword(){
-  if(!_sbUser){toast('Non connecté','error');return;}
+  if(!_sbUser){toast('Not signed in','error');return;}
   const pw=document.getElementById('account-password').value;
-  if(!pw||pw.length<6){toast('Mot de passe trop court (6 min)','error');return;}
+  if(!pw||pw.length<6){toast('Password too short (6 min)','error');return;}
   const {error}=await sb.auth.updateUser({password:pw});
   if(error){toast('Erreur : '+error.message,'error');return;}
   document.getElementById('account-password').value='';
-  toast('Mot de passe mis à jour !','success');
+  toast('Password updated!','success');
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  MODALS
-// ═══════════════════════════════════════════════════
+// ===================================================
 function openModal(id){
   document.getElementById('modal-'+id).classList.add('open');
   const fi=document.querySelector('#modal-'+id+' input:not([type=file])');
@@ -2271,20 +2271,20 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelect
 function toggleItemTypeFields(){document.getElementById('item-url-field').style.display=document.getElementById('item-type').value==='link'?'block':'none'}
 toggleItemTypeFields();
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  TOAST
-// ═══════════════════════════════════════════════════
+// ===================================================
 function toast(msg,type='info'){
-  const icons={success:'✅',error:'❌',info:'💬'};
+  const icons={success:'',error:'',info:''};
   const el=document.createElement('div');el.className='toast '+type;
   el.innerHTML='<span>'+icons[type]+'</span> '+msg;
   document.getElementById('toasts').appendChild(el);
   setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300)},2500);
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  ACTIVITY
-// ═══════════════════════════════════════════════════
+// ===================================================
 function addActivity(text,color='var(--accent)'){
   const p=curP();if(!p)return;
   const n=new Date(),time=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
@@ -2295,15 +2295,15 @@ function addActivity(text,color='var(--accent)'){
 function renderActivity(){
   const list=document.getElementById('activity-list');if(!list)return;
   const p=curP(),acts=p?(p.state.activity||[]):[];
-  if(!acts.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">💤</div>No activity yet</div>';return}
+  if(!acts.length){list.innerHTML='<div class="empty-state"><div class="empty-icon"></div>No activity yet</div>';return}
   list.innerHTML=acts.slice(0,10).map(a=>'<div class="activity-item"><div class="activity-dot" style="background:'+a.color+'"></div><div><div class="activity-text">'+a.text+'</div><div class="activity-time">'+a.time+'</div></div></div>').join('');
 }
 function clearActivity(){const p=curP();if(!p)return;p.state.activity=[];saveStateNow();renderActivity()}
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  ITEMS / FILES
-// ═══════════════════════════════════════════════════
-const tIcons={file:'📄',link:'🔗',image:'🖼',folder:'📁',code:'💻',video:'🎬'};
+// ===================================================
+const tIcons={file:'',link:'',image:'',folder:'',code:'',video:''};
 const tClass={file:'doc',link:'link',image:'img',folder:'folder',code:'code',video:'video'};
 let curCat='all';
 function switchCategory(cat,el){curCat=cat;document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('active'));if(el)el.classList.add('active');renderItems()}
@@ -2343,10 +2343,10 @@ function renderItems(){
   const lItems=all.filter(i=>i.type==='link');
   if(lItems.length&&(curCat==='all'||curCat==='links')){
     ls.style.display='block';
-    lg.innerHTML=lItems.slice(0,4).map(i=>'<a class="link-card" href="'+(i.url||'#')+'" target="_blank"><div class="link-favicon">🔗</div><div><div class="link-name">'+i.name+'</div><div class="link-url">'+(i.url?i.url.replace(/https?:\/\//,'').slice(0,30):'No URL')+'</div></div></a>').join('');
+    lg.innerHTML=lItems.slice(0,4).map(i=>'<a class="link-card" href="'+(i.url||'#')+'" target="_blank"><div class="link-favicon"></div><div><div class="link-name">'+i.name+'</div><div class="link-url">'+(i.url?i.url.replace(/https?:\/\//,'').slice(0,30):'No URL')+'</div></div></a>').join('');
   } else ls.style.display='none';
-  if(!items.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">📍</div>No items'+(q?' matching "'+q+'"':'')+'.<br>Click <strong>+ Add item</strong>.</div>';return}
-  list.innerHTML=items.map(i=>'<div class="item-row" onclick="openItem('+i.id+')"><div class="item-icon '+(tClass[i.type]||'doc')+'">'+(tIcons[i.type]||'📄')+'</div><div class="item-info"><div class="item-name">'+i.name+'</div><div class="item-meta">'+i.date+(i.tag?' · <span style="color:var(--accent)">'+i.tag+'</span>':'')+'</div></div>'+(i.url?'<a href="'+i.url+'" target="_blank" onclick="event.stopPropagation()" style="color:var(--muted);font-size:12px;text-decoration:none">↗</a>':'')+'<div class="item-actions"><button class="item-btn" onclick="event.stopPropagation();deleteItem('+i.id+')">🗑</button></div></div>').join('');
+  if(!items.length){list.innerHTML='<div class="empty-state"><div class="empty-icon"></div>No items'+(q?' matching "'+q+'"':'')+'.<br>Click <strong>+ Add item</strong>.</div>';return}
+  list.innerHTML=items.map(i=>'<div class="item-row" onclick="openItem('+i.id+')"><div class="item-icon '+(tClass[i.type]||'doc')+'">'+(tIcons[i.type]||'')+'</div><div class="item-info"><div class="item-name">'+i.name+'</div><div class="item-meta">'+i.date+(i.tag?' . <span style="color:var(--accent)">'+i.tag+'</span>':'')+'</div></div>'+(i.url?'<a href="'+i.url+'" target="_blank" onclick="event.stopPropagation()" style="color:var(--muted);font-size:12px;text-decoration:none"></a>':'')+'<div class="item-actions"><button class="item-btn" onclick="event.stopPropagation();deleteItem('+i.id+')"></button></div></div>').join('');
 }
 
 function openItem(id){
@@ -2359,13 +2359,13 @@ function openItem(id){
 function renderRecentItems(){
   const list=document.getElementById('recent-items-list');if(!list)return;
   const p=curP(),recent=p?(p.state.items||[]).slice(0,5):[];
-  if(!recent.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">📍</div>No items yet!</div>';return}
-  list.innerHTML=recent.map(i=>'<div class="item-row" onclick="openItem('+i.id+')"><div class="item-icon '+(tClass[i.type]||'doc')+'" style="width:28px;height:28px;font-size:12px;border-radius:7px">'+(tIcons[i.type]||'📄')+'</div><div class="item-info"><div class="item-name">'+i.name+'</div><div class="item-meta">'+i.date+(i.tag?' · '+i.tag:'')+'</div></div></div>').join('');
+  if(!recent.length){list.innerHTML='<div class="empty-state"><div class="empty-icon"></div>No items yet!</div>';return}
+  list.innerHTML=recent.map(i=>'<div class="item-row" onclick="openItem('+i.id+')"><div class="item-icon '+(tClass[i.type]||'doc')+'" style="width:28px;height:28px;font-size:12px;border-radius:7px">'+(tIcons[i.type]||'')+'</div><div class="item-info"><div class="item-name">'+i.name+'</div><div class="item-meta">'+i.date+(i.tag?' . '+i.tag:'')+'</div></div></div>').join('');
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  NOTES
-// ═══════════════════════════════════════════════════
+// ===================================================
 let noteTO;
 function saveNote(){
   const p=curP();if(!p)return;
@@ -2374,7 +2374,7 @@ function saveNote(){
   document.getElementById('quick-note').value=val;document.getElementById('main-note').value=val;
   p.state.note=val;clearTimeout(noteTO);
   const st=document.getElementById('note-saved-status');if(st)st.textContent='Saving...';
-  noteTO=setTimeout(()=>{saveStateNow();if(st)st.textContent='Saved ✓';setTimeout(()=>{if(st)st.textContent='Auto-saved'},1500)},600);
+  noteTO=setTimeout(()=>{saveStateNow();if(st)st.textContent='Saved ';setTimeout(()=>{if(st)st.textContent='Auto-saved'},1500)},600);
 }
 function clearNote(){
   if(!confirm('Clear notes?'))return;
@@ -2384,9 +2384,9 @@ function clearNote(){
   toast('Notes cleared','info');
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  TODOS
-// ═══════════════════════════════════════════════════
+// ===================================================
 function addTodo(){
   const p=curP();if(!p)return;
   const text=document.getElementById('todo-text').value.trim();
@@ -2402,26 +2402,26 @@ function toggleTodo(id){
   const p=curP();if(!p)return;
   const t=p.state.todos.find(t=>t.id===id);if(!t)return;
   t.done=!t.done;saveStateNow();renderTodos();updateStats();
-  if(t.done)addActivity('<strong>'+t.text+'</strong> completed ✓','var(--accent2)');
+  if(t.done)addActivity('<strong>'+t.text+'</strong> completed ','var(--accent2)');
 }
 function deleteTodo(id){const p=curP();if(!p)return;p.state.todos=p.state.todos.filter(t=>t.id!==id);saveStateNow();renderTodos();updateStats()}
 function clearDone(){const p=curP();if(!p)return;p.state.todos=p.state.todos.filter(t=>!t.done);saveStateNow();renderTodos();updateStats();toast('Cleared','info')}
 function renderTodos(){
   const p=curP(),todos=p?(p.state.todos||[]):[];
   const pending=todos.filter(t=>!t.done),done=todos.filter(t=>t.done);
-  const pi={high:'🔥 ',normal:'',low:'🌿 '};
+  const pi={high:' ',normal:'',low:' '};
   const pL=document.getElementById('todo-pending-list'),dL=document.getElementById('todo-done-list'),pc=document.getElementById('todo-pending-count');
   if(pc)pc.textContent=pending.length+' pending';
-  if(pL)pL.innerHTML=!pending.length?'<div class="empty-state" style="padding:20px"><div class="empty-icon">🎉</div>All done!</div>':pending.map(t=>'<div class="todo-item" onclick="toggleTodo('+t.id+')"><div class="todo-check"></div><div class="todo-text">'+(pi[t.priority]||'')+t.text+'</div><button class="item-btn" onclick="event.stopPropagation();deleteTodo('+t.id+')" style="opacity:.5">🗑</button></div>').join('');
-  if(dL)dL.innerHTML=!done.length?'<div class="empty-state" style="padding:20px"><div class="empty-icon">📋</div>Nothing completed yet</div>':done.map(t=>'<div class="todo-item" onclick="toggleTodo('+t.id+')"><div class="todo-check checked">✓</div><div class="todo-text done">'+t.text+'</div><button class="item-btn" onclick="event.stopPropagation();deleteTodo('+t.id+')" style="opacity:.5">🗑</button></div>').join('');
+  if(pL)pL.innerHTML=!pending.length?'<div class="empty-state" style="padding:20px"><div class="empty-icon"></div>All done!</div>':pending.map(t=>'<div class="todo-item" onclick="toggleTodo('+t.id+')"><div class="todo-check"></div><div class="todo-text">'+(pi[t.priority]||'')+t.text+'</div><button class="item-btn" onclick="event.stopPropagation();deleteTodo('+t.id+')" style="opacity:.5"></button></div>').join('');
+  if(dL)dL.innerHTML=!done.length?'<div class="empty-state" style="padding:20px"><div class="empty-icon"></div>Nothing completed yet</div>':done.map(t=>'<div class="todo-item" onclick="toggleTodo('+t.id+')"><div class="todo-check checked"></div><div class="todo-text done">'+t.text+'</div><button class="item-btn" onclick="event.stopPropagation();deleteTodo('+t.id+')" style="opacity:.5"></button></div>').join('');
   const ov=document.getElementById('overview-todos');
-  if(ov)ov.innerHTML=!pending.length?'<div class="empty-state" style="padding:16px"><div style="font-size:20px;margin-bottom:6px">🎉</div>No pending tasks!</div>':pending.slice(0,3).map(t=>'<div class="todo-item" onclick="toggleTodo('+t.id+')"><div class="todo-check"></div><div class="todo-text">'+t.text+'</div></div>').join('');
+  if(ov)ov.innerHTML=!pending.length?'<div class="empty-state" style="padding:16px"><div style="font-size:20px;margin-bottom:6px"></div>No pending tasks!</div>':pending.slice(0,3).map(t=>'<div class="todo-item" onclick="toggleTodo('+t.id+')"><div class="todo-check"></div><div class="todo-text">'+t.text+'</div></div>').join('');
   const badge=document.getElementById('todo-count');if(badge)badge.textContent=pending.length;
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  STATS
-// ═══════════════════════════════════════════════════
+// ===================================================
 function updateStats(){
   const p=curP(),items=p?(p.state.items||[]):[],todos=p?(p.state.todos||[]):[];
   const sf=document.getElementById('stat-files'),sl=document.getElementById('stat-links'),st=document.getElementById('stat-tasks'),ss=document.getElementById('stat-tasks-sub'),fc=document.getElementById('files-count');
@@ -2432,9 +2432,9 @@ function updateStats(){
   if(fc)fc.textContent=items.length;
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  SETTINGS / PROFILE
-// ═══════════════════════════════════════════════════
+// ===================================================
 function updateCurrentProfileName(){
   const p=curP();if(!p)return;
   const v=document.getElementById('settings-name').value.trim();
@@ -2451,9 +2451,9 @@ function resetProfileData(){
   toast('Data cleared','info');
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  SECURITY / PASSWORD SETTINGS
-// ═══════════════════════════════════════════════════
+// ===================================================
 function loadSecuritySettings(){
   const p=curP();if(!p)return;
   const toggle=document.getElementById('pw-enable-toggle');
@@ -2506,7 +2506,7 @@ function savePassword(){
   }
   p.password={type,value};
   saveStateNow();
-  toast('Protection saved! 🔒','success');
+  toast('Protection saved! ','success');
   loadSecuritySettings();
   renderProfileScreen();
 }
@@ -2523,9 +2523,9 @@ function removePassword(){
   renderProfileScreen();
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  GLOBAL SEARCH
-// ═══════════════════════════════════════════════════
+// ===================================================
 document.getElementById('global-search').addEventListener('input',function(){
   const q=this.value.toLowerCase();if(!q)return;
   const p=curP(),match=p?(p.state.items||[]).filter(i=>i.name.toLowerCase().includes(q)):[];
@@ -2540,9 +2540,9 @@ function ripple(e){
 }
 document.querySelectorAll('.btn,.stat-card,.link-card,.nav-item').forEach(el=>el.addEventListener('click',ripple));
 
-// ═══════════════════════════════════════════════════
-//  CONNECTIONS — LOAD UI
-// ═══════════════════════════════════════════════════
+// ===================================================
+//  CONNECTIONS - LOAD UI
+// ===================================================
 function loadConnectionsUI(){
   const p=curP();if(!p)return;
   const conn=p.state.connections||{};
@@ -2571,33 +2571,33 @@ function loadConnectionsUI(){
 }
 
 
-// ═══ DISCORD BADGES ═══
+// === DISCORD BADGES ===
 function renderDiscordBadges(user){
   const flags = user.public_flags || 0;
-  // Note: premium_type from Lanyard can be inaccurate — Nitro managed manually below
+  // Note: premium_type from Lanyard can be inaccurate - Nitro managed manually below
   const manualBadges = (curP()?.state?.manualBadges) || {};
   const BADGES = [
-    {flag:4194304, e:'🛠️', bg:'rgba(107,220,66,.18)', bc:'#6bdc42', title:'Active Developer'},
-    {flag:131072,  e:'🤖', bg:'rgba(88,101,242,.18)', bc:'#5865F2', title:'Verified Bot Developer'},
-    {flag:65536,   e:'🛡️', bg:'rgba(92,187,189,.18)', bc:'#5cbbbd', title:'Certified Moderator'},
-    {flag:16384,   e:'🐛', bg:'rgba(255,169,0,.18)',  bc:'#ffa900', title:'Bug Hunter Lv2'},
-    {flag:8,       e:'🐛', bg:'rgba(244,123,103,.18)',bc:'#f47b67', title:'Bug Hunter Lv1'},
-    {flag:512,     e:'⭐', bg:'rgba(249,104,84,.18)', bc:'#f96854', title:'Early Supporter'},
-    {flag:4,       e:'🏠', bg:'rgba(255,215,0,.18)',  bc:'#ffd700', title:'HypeSquad Events'},
-    {flag:64,      e:'🔥', bg:'rgba(230,126,34,.18)', bc:'#e67e22', title:'HypeSquad Bravery'},
-    {flag:128,     e:'✨', bg:'rgba(233,30,99,.18)',  bc:'#e91e63', title:'HypeSquad Brilliance'},
-    {flag:256,     e:'🌿', bg:'rgba(26,188,156,.18)', bc:'#1abc9c', title:'HypeSquad Balance'},
-    {flag:2,       e:'🤝', bg:'rgba(78,158,212,.18)', bc:'#4e9ed4', title:'Discord Partner'},
-    {flag:1,       e:'⚙️', bg:'rgba(114,137,218,.18)',bc:'#7289da', title:'Discord Staff'},
+    {flag:4194304, e:'', bg:'rgba(107,220,66,.18)', bc:'#6bdc42', title:'Active Developer'},
+    {flag:131072,  e:'', bg:'rgba(88,101,242,.18)', bc:'#5865F2', title:'Verified Bot Developer'},
+    {flag:65536,   e:'', bg:'rgba(92,187,189,.18)', bc:'#5cbbbd', title:'Certified Moderator'},
+    {flag:16384,   e:'', bg:'rgba(255,169,0,.18)',  bc:'#ffa900', title:'Bug Hunter Lv2'},
+    {flag:8,       e:'', bg:'rgba(244,123,103,.18)',bc:'#f47b67', title:'Bug Hunter Lv1'},
+    {flag:512,     e:'', bg:'rgba(249,104,84,.18)', bc:'#f96854', title:'Early Supporter'},
+    {flag:4,       e:'', bg:'rgba(255,215,0,.18)',  bc:'#ffd700', title:'HypeSquad Events'},
+    {flag:64,      e:'', bg:'rgba(230,126,34,.18)', bc:'#e67e22', title:'HypeSquad Bravery'},
+    {flag:128,     e:'', bg:'rgba(233,30,99,.18)',  bc:'#e91e63', title:'HypeSquad Brilliance'},
+    {flag:256,     e:'', bg:'rgba(26,188,156,.18)', bc:'#1abc9c', title:'HypeSquad Balance'},
+    {flag:2,       e:'', bg:'rgba(78,158,212,.18)', bc:'#4e9ed4', title:'Discord Partner'},
+    {flag:1,       e:'', bg:'rgba(114,137,218,.18)',bc:'#7289da', title:'Discord Staff'},
   ];
   const parts = [];
   // Manual badges first
-  if(manualBadges.nitro)        parts.push('<div class="dc-badge-pill" title="Nitro"           style="background:rgba(88,101,242,.18);border-color:#5865F2">💜</div>');
-  if(manualBadges.nitroClassic) parts.push('<div class="dc-badge-pill" title="Nitro Classic"   style="background:rgba(88,101,242,.18);border-color:#5865F2">💎</div>');
-  if(manualBadges.booster)      parts.push('<div class="dc-badge-pill" title="Server Boosting" style="background:rgba(255,115,250,.15);border-color:#ff73fa">🚀</div>');
-  if(manualBadges.activedev)    parts.push('<div class="dc-badge-pill" title="Active Dev"      style="background:rgba(107,220,66,.18);border-color:#6bdc42">🛠️</div>');
-  if(manualBadges.early)        parts.push('<div class="dc-badge-pill" title="Early Supporter" style="background:rgba(249,104,84,.18);border-color:#f96854">⭐</div>');
-  if(manualBadges.partner)      parts.push('<div class="dc-badge-pill" title="Partner"         style="background:rgba(78,158,212,.18);border-color:#4e9ed4">🤝</div>');
+  if(manualBadges.nitro)        parts.push('<div class="dc-badge-pill" title="Nitro"           style="background:rgba(88,101,242,.18);border-color:#5865F2"></div>');
+  if(manualBadges.nitroClassic) parts.push('<div class="dc-badge-pill" title="Nitro Classic"   style="background:rgba(88,101,242,.18);border-color:#5865F2"></div>');
+  if(manualBadges.booster)      parts.push('<div class="dc-badge-pill" title="Server Boosting" style="background:rgba(255,115,250,.15);border-color:#ff73fa"></div>');
+  if(manualBadges.activedev)    parts.push('<div class="dc-badge-pill" title="Active Dev"      style="background:rgba(107,220,66,.18);border-color:#6bdc42"></div>');
+  if(manualBadges.early)        parts.push('<div class="dc-badge-pill" title="Early Supporter" style="background:rgba(249,104,84,.18);border-color:#f96854"></div>');
+  if(manualBadges.partner)      parts.push('<div class="dc-badge-pill" title="Partner"         style="background:rgba(78,158,212,.18);border-color:#4e9ed4"></div>');
   // Auto-detected from public_flags
   for(const b of BADGES){
     if(flags & b.flag) parts.push('<div class="dc-badge-pill" title="'+b.title+'" style="background:'+b.bg+';border-color:'+b.bc+'">'+b.e+'</div>');
@@ -2607,15 +2607,15 @@ function renderDiscordBadges(user){
 
 
 
-// ═══ DISCORD ═══
+// === DISCORD ===
 async function connectDiscord(){
   const userId=document.getElementById('dc-userid').value.trim();
   if(!userId){toast('Enter a Discord User ID','error');return}
-  toast('Fetching Discord profile…','info');
+  toast('Fetching Discord profile...','info');
   try{
     const res=await fetch('https://api.lanyard.rest/v1/users/'+userId);
     const json=await res.json();
-    if(!json.success){toast("User not found — make sure you're in the Lanyard Discord server",'error');return}
+    if(!json.success){toast("User not found - make sure you're in the Lanyard Discord server",'error');return}
     const p=curP();if(!p)return;
     if(!p.state.connections)p.state.connections={};
     p.state.connections.discord={userId,data:json.data};
@@ -2650,13 +2650,13 @@ function renderDiscordCard(d){
   const name=d.discord_user.global_name||d.discord_user.username;
   const nameEl=document.getElementById('dc-preview-name');
   if(nameEl)nameEl.textContent=name;
-  const statusMap={online:'🟢 Online',idle:'🟡 Idle',dnd:'🔴 Do Not Disturb',offline:'⚫ Offline'};
+  const statusMap={online:' Online',idle:' Idle',dnd:' Do Not Disturb',offline:' Offline'};
   const subEl=document.getElementById('dc-preview-sub');
   if(subEl)subEl.textContent=statusMap[d.discord_status]||'Offline';
   const actEl=document.getElementById('dc-preview-activity');
   const act=d.activities?.find(a=>a.type===0||a.type===2);
   if(actEl){
-    if(act){actEl.textContent=(act.type===2?'🎵 ':'🎮 ')+(act.name||'');actEl.style.display='inline-flex';}
+    if(act){actEl.textContent=(act.type===2?' ':' ')+(act.name||'');actEl.style.display='inline-flex';}
     else actEl.style.display='none';
   }
   // Render badges
@@ -2675,7 +2675,7 @@ function refreshDiscordSidebar(){
   if(avEl){
     if(d.discord_user.avatar){
       avEl.innerHTML='<img src="https://cdn.discordapp.com/avatars/'+d.discord_user.id+'/'+d.discord_user.avatar+'.png?size=64" style="width:100%;height:100%;object-fit:cover;border-radius:8px">';
-    } else avEl.innerHTML='👤';
+    } else avEl.innerHTML='';
   }
   const nameEl=document.getElementById('sb-dc-name');
   if(nameEl)nameEl.textContent=d.discord_user.global_name||d.discord_user.username;
@@ -2683,7 +2683,7 @@ function refreshDiscordSidebar(){
   if(stEl)stEl.className='sb-dc-status '+(d.discord_status||'offline');
   const act=d.activities?.find(a=>a.type===0||a.type===2);
   const actEl=document.getElementById('sb-dc-activity');
-  if(actEl)actEl.textContent=act?(act.type===2?'🎵 ':'🎮 ')+(act.name||''):'Not playing anything';
+  if(actEl)actEl.textContent=act?(act.type===2?' ':' ')+(act.name||''):'Not playing anything';
   // Spotify from Lanyard
   updateSpotifyFromLanyard(d);
 }
@@ -2698,7 +2698,7 @@ function updateSpotifyFromLanyard(d){
     const artEl=document.getElementById('np-art');
     if(artEl){
       if(sp.album_art_url)artEl.innerHTML='<img src="'+sp.album_art_url+'" alt="album">';
-      else artEl.textContent='🎵';
+      else artEl.textContent='';
     }
     const songEl=document.getElementById('np-song');if(songEl)songEl.textContent=sp.song;
     const artistEl=document.getElementById('np-artist');if(artistEl)artistEl.textContent=sp.artist;
@@ -2762,7 +2762,7 @@ async function refreshDiscord(){
   const userId=p.state.connections?.discord?.userId;
   if(!userId){toast('No Discord connected','error');return}
   const btn=document.getElementById('dc-refresh-btn');
-  if(btn)btn.textContent='⏳';
+  if(btn)btn.textContent='';
   try{
     const res=await fetch('https://api.lanyard.rest/v1/users/'+userId);
     const json=await res.json();
@@ -2775,7 +2775,7 @@ async function refreshDiscord(){
   finally{if(btn)btn.innerHTML='&#8635; Refresh';}
 }
 
-// ═══ LANYARD WEBSOCKET (real-time) ═══
+// === LANYARD WEBSOCKET (real-time) ===
 let _lanyardWS = null, _lanyardHB = null, _lanyardUserId = null;
 
 function startLanyardWS(userId){
@@ -2829,11 +2829,11 @@ function startLanyardPolling(userId){
   },20000);
 }
 
-// ═══ STEAM ═══
+// === STEAM ===
 const WORKER_URL='https://raspy-fog-bf5b.rub19-mailpro.workers.dev';
 
 async function fetchSteamAPI(endpoint,apiKey,params){
-  // Utilise le Worker Cloudflare — clé Steam stockée côté serveur
+  // Utilise le Worker Cloudflare - cle Steam stockee cote serveur
   const ep=endpoint.replace(/^\/+/,'');
   const workerUrl=`${WORKER_URL}/steam/${ep}?${params}`;
   const res=await fetch(workerUrl,{signal:AbortSignal.timeout(12000)});
@@ -2846,12 +2846,12 @@ async function connectSteam(){
   const apiKey=(document.getElementById('steam-apikey')?.value||'').trim();
   if(!steamId){toast('Entre ton Steam ID64','error');return}
   if(!/^\d{17}$/.test(steamId)){toast('Steam ID64 doit faire 17 chiffres','error');return}
-  toast('Connexion à Steam…','info');
+  toast('Login a Steam...','info');
   try{
     // Fetch profile summary
     const summaryJson=await fetchSteamAPI('/ISteamUser/GetPlayerSummaries/v2/',apiKey,'steamids='+steamId);
     const player=summaryJson?.response?.players?.[0];
-    if(!player){toast('Profil Steam introuvable — vérifie ton SteamID64','error');return}
+    if(!player){toast('Profil Steam introuvable - verifie ton SteamID64','error');return}
 
     const stateMap={0:'offline',1:'online',2:'busy',3:'away',4:'snooze',5:'online',6:'online'};
     const data={
@@ -2881,15 +2881,15 @@ async function connectSteam(){
         hours:g.playtime_forever?Math.round(g.playtime_forever/60)+'':'',
         hoursRecent:g.playtime_2weeks?Math.round(g.playtime_2weeks/60)+'':''
       }));
-    }catch(e){console.warn('Jeux récents non dispo',e);}
+    }catch(e){console.warn('Jeux recents non dispo',e);}
 
     const p=curP();if(!p)return;
     if(!p.state.connections)p.state.connections={};
     p.state.connections.steam={steamId,apiKey,data};saveStateNow();
     renderSteamCard(data);
     document.getElementById('steam-disconnect-btn').style.display='inline-flex';
-    toast('Steam connecté ! 🎮','success');
-    addActivity('Compte Steam connecté','var(--steam2)');
+    toast('Steam connected! ','success');
+    addActivity('Compte Steam connecte','var(--steam2)');
   }catch(e){toast('Erreur : '+e.message,'error');console.error(e)}
 }
 
@@ -2906,8 +2906,8 @@ function renderSteamCard(data){
   if(nameEl)nameEl.textContent=data.displayName||'Unknown';
 
   // Statut en ligne avec couleur
-  const stMap={online:{label:'🟢 En ligne',color:'var(--accent2)'},offline:{label:'⚫ Hors ligne',color:'var(--muted)'},'in-game':{label:'🎮 En jeu',color:'var(--steam2)'}};
-  const stInfo=stMap[data.onlineState]||{label:data.onlineState||'Hors ligne',color:'var(--muted)'};
+  const stMap={online:{label:' Online',color:'var(--accent2)'},offline:{label:' Offline',color:'var(--muted)'},'in-game':{label:' In-Game',color:'var(--steam2)'}};
+  const stInfo=stMap[data.onlineState]||{label:data.onlineState||'Offline',color:'var(--muted)'};
   const subEl=document.getElementById('steam-preview-sub');
   if(subEl){subEl.textContent=stInfo.label;subEl.style.color=stInfo.color;}
 
@@ -2930,19 +2930,19 @@ function renderSteamCard(data){
   const link=document.getElementById('steam-profile-link');
   if(link)link.href=data.profileUrl||'#';
 
-  // Jeux récents avec temps de jeu
+  // Jeux recents avec temps de jeu
   const recentWrap=document.getElementById('steam-recent-games');
   const gamesList=document.getElementById('steam-games-list');
   if(data.recentGames&&data.recentGames.length&&gamesList){
     if(recentWrap)recentWrap.style.display='block';
     gamesList.innerHTML=data.recentGames.slice(0,5).map(g=>`
       <div class="steam-game-row" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
-        ${g.img?`<img class="steam-game-img" src="${g.img}" alt="" style="width:40px;height:40px;border-radius:6px;object-fit:cover">`:`<div style="width:40px;height:40px;border-radius:6px;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:18px">🎮</div>`}
+        ${g.img?`<img class="steam-game-img" src="${g.img}" alt="" style="width:40px;height:40px;border-radius:6px;object-fit:cover">`:`<div style="width:40px;height:40px;border-radius:6px;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:18px"></div>`}
         <div style="flex:1;min-width:0">
           <div style="font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${g.name}</div>
-          ${g.hours?`<div style="font-size:11px;color:var(--muted);margin-top:2px">⏱ ${g.hours}h joué</div>`:''}
+          ${g.hours?`<div style="font-size:11px;color:var(--muted);margin-top:2px"> ${g.hours}h played</div>`:''}
         </div>
-        ${g.hoursRecent?`<div style="font-size:11px;color:var(--steam2);background:rgba(102,192,244,.1);padding:3px 8px;border-radius:20px;flex-shrink:0">${g.hoursRecent}h récemment</div>`:''}
+        ${g.hoursRecent?`<div style="font-size:11px;color:var(--steam2);background:rgba(102,192,244,.1);padding:3px 8px;border-radius:20px;flex-shrink:0">${g.hoursRecent}h recently</div>`:''}
       </div>`
     ).join('');
   } else if(recentWrap)recentWrap.style.display='none';
@@ -2956,13 +2956,13 @@ function renderSteamCard(data){
 async function refreshSteam(){
   const p=curP();if(!p||!p.state.connections?.steam)return;
   const {steamId,apiKey=''}=p.state.connections.steam;
-  if(!apiKey){toast('Clé API Steam manquante','error');return;}
+  if(!apiKey){toast('Steam API key missing','error');return;}
   const btn=document.getElementById('steam-refresh-btn');
-  if(btn){btn.textContent='⏳';btn.disabled=true;}
+  if(btn){btn.textContent='';btn.disabled=true;}
   try{
     const summaryJson=await fetchSteamAPI('/ISteamUser/GetPlayerSummaries/v2/',apiKey,'steamids='+steamId);
     const player=summaryJson?.response?.players?.[0];
-    if(!player){toast('Profil introuvable','error');return;}
+    if(!player){toast('Profile not found','error');return;}
     const stateMap={0:'offline',1:'online',2:'busy',3:'away',4:'snooze',5:'online',6:'online'};
     const data={steamId64:steamId,displayName:player.personaname||'Unknown',avatarFull:player.avatarfull||'',onlineState:stateMap[player.personastate]||'offline',stateMessage:player.gameextrainfo?'Currently In-Game '+player.gameextrainfo:'',profileUrl:player.profileurl||'https://steamcommunity.com/profiles/'+steamId,recentGames:[],steamLevel:null};
     try{const lvlJson=await fetchSteamAPI('/IPlayerService/GetSteamLevel/v1/',apiKey,'steamid='+steamId);data.steamLevel=lvlJson?.response?.player_level??null;}catch(e){}
@@ -2974,19 +2974,19 @@ async function refreshSteam(){
     p.state.connections.steam.data=data;saveStateNow();
     renderSteamCard(data);
     const akInp=document.getElementById('steam-apikey');if(akInp&&apiKey)akInp.value=apiKey;
-    toast('Steam mis à jour !','success');
-  }catch(e){toast('Erreur refresh Steam : '+e.message,'error');console.error(e);}
-  finally{if(btn){btn.textContent='↻ Refresh';btn.disabled=false;}}
+    toast('Steam updated!','success');
+  }catch(e){toast('Steam refresh error : '+e.message,'error');console.error(e);}
+  finally{if(btn){btn.textContent=' Refresh';btn.disabled=false;}}
 }
 
 async function savesteamApiKey(){
   const p=curP();if(!p)return;
   const apiKey=(document.getElementById('steam-apikey')?.value||'').trim();
-  if(!apiKey){toast('Entre ta clé API Steam','error');return;}
+  if(!apiKey){toast('Enter your Steam API key','error');return;}
   if(!p.state.connections)p.state.connections={};
   if(!p.state.connections.steam){toast('Connecte ton compte Steam d\'abord','error');return;}
   p.state.connections.steam.apiKey=apiKey;saveStateNow();
-  toast('Clé API sauvegardée, refresh en cours…','info');
+  toast('Cle API sauvegardee, refresh en cours...','info');
   await refreshSteam();
 }
 
@@ -3005,7 +3005,7 @@ function disconnectSteam(){
   toast('Disconnected','info');
 }
 
-// ═══ SPOTIFY ═══
+// === SPOTIFY ===
 function connectSpotify(){
   const url=document.getElementById('spotify-url').value.trim();
   if(!url){toast('Enter a widget URL','error');return}
@@ -3047,14 +3047,14 @@ function refreshSpotifySidebar(){
 }
 
 
-// ═══ MANUAL DISCORD BADGES ═══
+// === MANUAL DISCORD BADGES ===
 const MANUAL_BADGE_OPTS = [
-  {key:'nitro',        e:'💜', label:'Nitro',          bg:'rgba(88,101,242,.18)', bc:'#5865F2'},
-  {key:'nitroClassic', e:'💎', label:'Nitro Classic',   bg:'rgba(88,101,242,.18)', bc:'#5865F2'},
-  {key:'booster',      e:'🚀', label:'Server Boosting', bg:'rgba(255,115,250,.15)', bc:'#ff73fa'},
-  {key:'activedev',    e:'🛠️', label:'Active Dev',      bg:'rgba(107,220,66,.18)', bc:'#6bdc42'},
-  {key:'early',        e:'⭐', label:'Early Supporter', bg:'rgba(249,104,84,.18)', bc:'#f96854'},
-  {key:'partner',      e:'🤝', label:'Partner',         bg:'rgba(78,158,212,.18)', bc:'#4e9ed4'},
+  {key:'nitro',        e:'', label:'Nitro',          bg:'rgba(88,101,242,.18)', bc:'#5865F2'},
+  {key:'nitroClassic', e:'', label:'Nitro Classic',   bg:'rgba(88,101,242,.18)', bc:'#5865F2'},
+  {key:'booster',      e:'', label:'Server Boosting', bg:'rgba(255,115,250,.15)', bc:'#ff73fa'},
+  {key:'activedev',    e:'', label:'Active Dev',      bg:'rgba(107,220,66,.18)', bc:'#6bdc42'},
+  {key:'early',        e:'', label:'Early Supporter', bg:'rgba(249,104,84,.18)', bc:'#f96854'},
+  {key:'partner',      e:'', label:'Partner',         bg:'rgba(78,158,212,.18)', bc:'#4e9ed4'},
 ];
 
 function renderManualBadgesUI(){
@@ -3079,14 +3079,14 @@ function toggleManualBadge(key){
   if(data){renderDiscordCard(data);refreshDiscordSidebar();}
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  PINNED LINKS
-// ═══════════════════════════════════════════════════
+// ===================================================
 function addPinnedLink(){
   const p=curP();if(!p)return;
   const name=document.getElementById('pinned-name').value.trim();
   const url=document.getElementById('pinned-url').value.trim();
-  const icon=document.getElementById('pinned-icon').value.trim()||'🔗';
+  const icon=document.getElementById('pinned-icon').value.trim()||'';
   if(!name||!url){toast('Enter a name and URL','error');return}
   if(!p.state.pinned)p.state.pinned=[];
   p.state.pinned.push({id:Date.now(),name,url,icon});
@@ -3102,7 +3102,7 @@ function removePinnedLink(id){
 function renderPinnedLinks(){
   const p=curP();const grid=document.getElementById('pinned-grid');if(!grid)return;
   const links=p?.state?.pinned||[];
-  if(!links.length){grid.innerHTML='<div style="font-size:12px;color:var(--muted);padding:4px 2px">No pinned links yet — click + Pin link</div>';return}
+  if(!links.length){grid.innerHTML='<div style="font-size:12px;color:var(--muted);padding:4px 2px">No pinned links yet - click + Pin link</div>';return}
   grid.innerHTML=links.map(l=>
     '<a class="pinned-card" href="'+l.url+'" target="_blank">'+
       '<button class="pinned-remove" onclick="event.preventDefault();event.stopPropagation();removePinnedLink('+l.id+')">×</button>'+
@@ -3112,9 +3112,9 @@ function renderPinnedLinks(){
   ).join('')+'<div class="pinned-card pinned-add" onclick="openModal(\'add-pinned\')" style="cursor:pointer;text-decoration:none"><div style="font-size:22px">+</div><div class="pinned-name">Add</div></div>';
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  COUNTDOWN
-// ═══════════════════════════════════════════════════
+// ===================================================
 let cdInterval=null;
 function saveCountdown(){
   const label=document.getElementById('cd-label-input').value.trim()||'Event';
@@ -3128,12 +3128,12 @@ function saveCountdown(){
 function renderCountdown(){
   const p=curP();const w=document.getElementById('countdown-widget');if(!w)return;
   const cd=p?.state?.countdown;
-  if(!cd){w.innerHTML='<div style="font-size:12px;color:var(--muted)">No countdown set — click Set</div>';return}
+  if(!cd){w.innerHTML='<div style="font-size:12px;color:var(--muted)">No countdown set - click Set</div>';return}
   clearInterval(cdInterval);
   function tick(){
     const now=new Date();const target=new Date(cd.date+'T00:00:00');
     const diff=target-now;
-    if(diff<=0){w.innerHTML='<div class="countdown-wrap"><div class="countdown-label">'+cd.label+'</div><div style="font-size:18px;color:var(--accent2)">🎉 Today!</div></div>';clearInterval(cdInterval);return}
+    if(diff<=0){w.innerHTML='<div class="countdown-wrap"><div class="countdown-label">'+cd.label+'</div><div style="font-size:18px;color:var(--accent2)"> Today!</div></div>';clearInterval(cdInterval);return}
     const days=Math.floor(diff/86400000);
     const hrs=Math.floor((diff%86400000)/3600000);
     const mins=Math.floor((diff%3600000)/60000);
@@ -3154,13 +3154,13 @@ function renderCountdown(){
   tick();cdInterval=setInterval(tick,1000);
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  HABITS
-// ═══════════════════════════════════════════════════
+// ===================================================
 function addHabit(){
   const p=curP();if(!p)return;
   const name=document.getElementById('habit-name-input').value.trim();
-  const icon=document.getElementById('habit-icon-input').value.trim()||'✅';
+  const icon=document.getElementById('habit-icon-input').value.trim()||'';
   if(!name){toast('Enter a habit name','error');return}
   if(!p.state.habits)p.state.habits=[];
   p.state.habits.push({id:Date.now(),name,icon,log:{}});
@@ -3205,8 +3205,8 @@ function renderHabits(){
   const today=new Date();today.setHours(0,0,0,0);
   const dayLabels=['M','T','W','T','F','S','S'];
   const weekLabel=document.getElementById('habits-week-label');
-  if(weekLabel)weekLabel.textContent=weekDays[0].toLocaleDateString('en',{month:'short',day:'numeric'})+' – '+weekDays[6].toLocaleDateString('en',{month:'short',day:'numeric'});
-  if(!habits.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">🌱</div>No habits yet — add one!</div>';if(streakEl)streakEl.innerHTML='<div class="empty-state" style="padding:16px"><div class="empty-icon">🔥</div>Complete habits to build streaks!</div>';return}
+  if(weekLabel)weekLabel.textContent=weekDays[0].toLocaleDateString('en',{month:'short',day:'numeric'})+'  '+weekDays[6].toLocaleDateString('en',{month:'short',day:'numeric'});
+  if(!habits.length){list.innerHTML='<div class="empty-state"><div class="empty-icon"></div>No habits yet - add one!</div>';if(streakEl)streakEl.innerHTML='<div class="empty-state" style="padding:16px"><div class="empty-icon"></div>Complete habits to build streaks!</div>';return}
   list.innerHTML=habits.map(h=>{
     const dayBtns=weekDays.map((d,i)=>{
       const key=d.toISOString().slice(0,10);
@@ -3220,19 +3220,19 @@ function renderHabits(){
       '<span style="font-size:18px">'+h.icon+'</span>'+
       '<span class="habit-name">'+h.name+'</span>'+
       '<div class="habit-days">'+dayBtns+'</div>'+
-      '<span class="habit-streak">'+(streak>0?'🔥'+streak:'')+'</span>'+
+      '<span class="habit-streak">'+(streak>0?''+streak:'')+'</span>'+
       '<button class="habit-del" onclick="deleteHabit('+h.id+')">×</button>'+
     '</div>';
   }).join('');
   if(streakEl){
     const sorted=[...habits].sort((a,b)=>habitStreak(b)-habitStreak(a));
-    streakEl.innerHTML=sorted.map(h=>{const s=habitStreak(h);return '<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-sm);background:var(--surface2);margin-bottom:6px"><span style="font-size:18px">'+h.icon+'</span><span style="flex:1;font-size:13px">'+h.name+'</span><span style="font-family:var(--mono);font-size:13px;color:'+(s>0?'var(--accent3)':'var(--muted)')+'">'+( s>0?'🔥 '+s+' day'+(s>1?'s':''):'No streak')+'</span></div>';}).join('');
+    streakEl.innerHTML=sorted.map(h=>{const s=habitStreak(h);return '<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-sm);background:var(--surface2);margin-bottom:6px"><span style="font-size:18px">'+h.icon+'</span><span style="flex:1;font-size:13px">'+h.name+'</span><span style="font-family:var(--mono);font-size:13px;color:'+(s>0?'var(--accent3)':'var(--muted)')+'">'+( s>0?' '+s+' day'+(s>1?'s':''):'No streak')+'</span></div>';}).join('');
   }
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  KANBAN
-// ═══════════════════════════════════════════════════
+// ===================================================
 let dragKanbanId=null;
 function addKanbanCard(){
   const p=curP();if(!p)return;
@@ -3295,9 +3295,9 @@ function renderKanban(){
   });
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  CALENDAR
-// ═══════════════════════════════════════════════════
+// ===================================================
 let calYear=new Date().getFullYear(),calMonth=new Date().getMonth();
 let selectedEventColor='accent';
 function pickEventColor(el,color){
@@ -3370,14 +3370,14 @@ function showDayEvents(dateStr){
 function renderAllEvents(){
   const p=curP();const events=p?.state?.events||[];
   const el=document.getElementById('all-events-list');if(!el)return;
-  if(!events.length){el.innerHTML='<div class="empty-state" style="padding:16px"><div class="empty-icon">📅</div>No events yet</div>';return}
+  if(!events.length){el.innerHTML='<div class="empty-state" style="padding:16px"><div class="empty-icon"></div>No events yet</div>';return}
   const today=new Date().toISOString().slice(0,10);
   el.innerHTML=events.map(e=>'<div class="cal-event-item" style="margin-bottom:5px"><div class="cal-event-dot" style="background:var(--'+e.color+')"></div><div class="cal-event-text">'+e.title+'</div><div class="cal-event-date">'+e.date+'</div><button onclick="deleteCalEvent('+e.id+')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;margin-left:4px">×</button></div>').join('');
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  STATS PAGE
-// ═══════════════════════════════════════════════════
+// ===================================================
 function renderStatsPage(){
   const p=curP();if(!p)return;
   const items=p.state.items||[];const todos=p.state.todos||[];
@@ -3421,9 +3421,9 @@ function renderStatsPage(){
 
 
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  RESIZABLE SIDEBAR
-// ═══════════════════════════════════════════════════
+// ===================================================
 (function(){
   const handle = document.getElementById('resize-handle');
   const sidebar = document.querySelector('.sidebar');
@@ -3477,9 +3477,9 @@ function renderStatsPage(){
 })();
 
 
-// ═══════════════════════════════════════════════════
-//  UI CLICK SOUND (Web Audio API — no file needed)
-// ═══════════════════════════════════════════════════
+// ===================================================
+//  UI CLICK SOUND (Web Audio API - no file needed)
+// ===================================================
 let _audioCtx = null;
 function getAudioCtx(){
   if(!_audioCtx || _audioCtx.state==='closed'){
@@ -3494,7 +3494,7 @@ function playClick(type='soft'){
     if(ctx.state==='suspended') ctx.resume();
     const now = ctx.currentTime;
     if(type==='soft'){
-      // Soft pop: sine sweep 900→200Hz, 60ms
+      // Soft pop: sine sweep 900->200Hz, 60ms
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.connect(gain); gain.connect(ctx.destination);
@@ -3517,7 +3517,7 @@ function playClick(type='soft'){
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
       osc.start(now); osc.stop(now + 0.05);
     } else if(type==='success'){
-      // Two-tone chime for success actions (add item, create profile…)
+      // Two-tone chime for success actions (add item, create profile...)
       [0, 0.07].forEach((delay, i) => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -3532,7 +3532,7 @@ function playClick(type='soft'){
   }catch(e){}
 }
 
-// Delegated click listener — covers ALL interactive elements
+// Delegated click listener - covers ALL interactive elements
 document.addEventListener('click', e => {
   const t = e.target;
   // Success sound for primary action buttons
@@ -3551,17 +3551,17 @@ document.addEventListener('click', e => {
 
 
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  WEATHER
-// ═══════════════════════════════════════════════════
-const WMO={0:'☀️ Clear',1:'🌤 Mostly clear',2:'⛅ Partly cloudy',3:'☁️ Overcast',
-  45:'🌫 Foggy',48:'🌫 Foggy',51:'🌦 Drizzle',53:'🌦 Drizzle',55:'🌦 Heavy drizzle',
-  61:'🌧 Rain',63:'🌧 Rain',65:'🌧 Heavy rain',71:'❄️ Snow',73:'❄️ Snow',75:'❄️ Heavy snow',
-  80:'🌦 Showers',81:'🌦 Showers',82:'⛈ Heavy showers',95:'⛈ Thunderstorm',99:'⛈ Thunderstorm'};
+// ===================================================
+const WMO={0:' Clear',1:' Mostly clear',2:' Partly cloudy',3:' Overcast',
+  45:' Foggy',48:' Foggy',51:' Drizzle',53:' Drizzle',55:' Heavy drizzle',
+  61:' Rain',63:' Rain',65:' Heavy rain',71:' Snow',73:' Snow',75:' Heavy snow',
+  80:' Showers',81:' Showers',82:' Heavy showers',95:' Thunderstorm',99:' Thunderstorm'};
 
 function fetchWeather(){
   const w=document.getElementById('weather-widget');if(!w)return;
-  w.innerHTML='<div class="empty-state" style="padding:12px;font-size:12px;color:var(--muted)">📍 Getting location…</div>';
+  w.innerHTML='<div class="empty-state" style="padding:12px;font-size:12px;color:var(--muted)"> Getting location...</div>';
   if(!navigator.geolocation){w.innerHTML='<div class="empty-state" style="padding:12px">Geolocation not supported</div>';return}
   navigator.geolocation.getCurrentPosition(async pos=>{
     try{
@@ -3571,7 +3571,7 @@ function fetchWeather(){
       const data=await res.json();
       const temp=Math.round(data.current.temperature_2m);
       const code=data.current.weather_code;
-      const desc=WMO[code]||'🌡 Unknown';
+      const desc=WMO[code]||' Unknown';
       const icon=desc.split(' ')[0];
       const text=desc.split(' ').slice(1).join(' ');
       let city='';
@@ -3580,16 +3580,16 @@ function fetchWeather(){
         const gd=await gr.json();
         city=gd.address?.city||gd.address?.town||gd.address?.village||gd.address?.county||'';
       }catch(e){}
-      w.innerHTML='<div class="weather-widget"><div class="weather-icon">'+icon+'</div><div class="weather-temp">'+temp+'°C</div><div class="weather-desc">'+text+'</div>'+(city?'<div class="weather-loc">📍 '+city+'</div>':'')+'</div>';
-    }catch(e){w.innerHTML='<div class="empty-state" style="padding:12px;font-size:12px">Could not load weather — check location permissions</div>';}
+      w.innerHTML='<div class="weather-widget"><div class="weather-icon">'+icon+'</div><div class="weather-temp">'+temp+'°C</div><div class="weather-desc">'+text+'</div>'+(city?'<div class="weather-loc"> '+city+'</div>':'')+'</div>';
+    }catch(e){w.innerHTML='<div class="empty-state" style="padding:12px;font-size:12px">Could not load weather - check location permissions</div>';}
   },()=>{
-    w.innerHTML='<div class="empty-state" style="padding:12px;font-size:12px;color:var(--muted)">Location denied — click 🔄 to retry</div>';
+    w.innerHTML='<div class="empty-state" style="padding:12px;font-size:12px;color:var(--muted)">Location denied - click  to retry</div>';
   },{timeout:10000});
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  POMODORO
-// ═══════════════════════════════════════════════════
+// ===================================================
 const POMO_SESSIONS=[
   {label:'Focus',duration:25*60,color:'var(--accent3)'},
   {label:'Short Break',duration:5*60,color:'var(--accent2)'},
@@ -3616,12 +3616,12 @@ function pomoToggle(){
       clearInterval(pomoInterval);pomoRunning=false;
       if(POMO_SESSIONS[pomoIdx].label==='Focus'){
         pomoCount++;
-        addActivity('🍅 Focus session done!','var(--accent3)');
-        toast('Focus session complete! Take a break 🎉','success');
-        sendNotif('Pomodoro complete! 🍅','Time for a break — great work!','🍅');
+        addActivity(' Focus session done!','var(--accent3)');
+        toast('Focus session complete! Take a break ','success');
+        sendNotif('Pomodoro complete! ','Time for a break - great work!','');
         pomoIdx=pomoCount%4===0?2:1;
       } else {
-        toast('Break over — time to focus! 💪','info');
+        toast('Break over - time to focus! ','info');
         pomoIdx=0;
       }
       pomoRemaining=POMO_SESSIONS[pomoIdx].duration;
@@ -3636,19 +3636,19 @@ function renderPomo(){
   const sec=String(pomoRemaining%60).padStart(2,'0');
   const el=document.getElementById('pomo-time');if(el)el.textContent=m+':'+sec;
   const lbl=document.getElementById('pomo-label');
-  if(lbl)lbl.textContent=s.label+(pomoCount>0?' · '+'🍅'.repeat(Math.min(pomoCount,4)):'');
+  if(lbl)lbl.textContent=s.label+(pomoCount>0?' . '+''.repeat(Math.min(pomoCount,4)):'');
   const btn=document.getElementById('pomo-play-btn');
   if(btn){
-    btn.textContent=pomoRunning?'⏸ Pause':'▶ Start';
+    btn.textContent=pomoRunning?' Pause':' Start';
     btn.style.background=pomoRunning?'var(--surface3)':'var(--accent)';
     btn.style.borderColor=pomoRunning?'var(--border2)':'var(--accent)';
     btn.style.color=pomoRunning?'var(--muted)':'#fff';
   }
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  QUOTE OF THE DAY
-// ═══════════════════════════════════════════════════
+// ===================================================
 const FALLBACK_QUOTES=[
   {content:"The only way to do great work is to love what you do.",author:"Steve Jobs"},
   {content:"In the middle of difficulty lies opportunity.",author:"Albert Einstein"},
@@ -3696,26 +3696,26 @@ async function fetchQuote(){
 }
 
 
-// ═══════════════════════════════════════════════════
-//  GAMING — VALORANT + LOL
-// ═══════════════════════════════════════════════════
+// ===================================================
+//  GAMING - VALORANT + LOL
+// ===================================================
 
 // Rank icons
 const VALO_RANKS={
-  'Iron 1':'⬛','Iron 2':'⬛','Iron 3':'⬛',
-  'Bronze 1':'🟫','Bronze 2':'🟫','Bronze 3':'🟫',
-  'Silver 1':'⬜','Silver 2':'⬜','Silver 3':'⬜',
-  'Gold 1':'🟨','Gold 2':'🟨','Gold 3':'🟨',
-  'Platinum 1':'🩵','Platinum 2':'🩵','Platinum 3':'🩵',
-  'Diamond 1':'💠','Diamond 2':'💠','Diamond 3':'💠',
-  'Ascendant 1':'🟩','Ascendant 2':'🟩','Ascendant 3':'🟩',
-  'Immortal 1':'🔴','Immortal 2':'🔴','Immortal 3':'🔴',
-  'Radiant':'⭐'
+  'Iron 1':'','Iron 2':'','Iron 3':'',
+  'Bronze 1':'','Bronze 2':'','Bronze 3':'',
+  'Silver 1':'','Silver 2':'','Silver 3':'',
+  'Gold 1':'','Gold 2':'','Gold 3':'',
+  'Platinum 1':'','Platinum 2':'','Platinum 3':'',
+  'Diamond 1':'','Diamond 2':'','Diamond 3':'',
+  'Ascendant 1':'','Ascendant 2':'','Ascendant 3':'',
+  'Immortal 1':'','Immortal 2':'','Immortal 3':'',
+  'Radiant':''
 };
-const LOL_RANKS={IRON:'⬛',BRONZE:'🟫',SILVER:'⬜',GOLD:'🟨',PLATINUM:'🩵',EMERALD:'💚',DIAMOND:'💠',MASTER:'💜',GRANDMASTER:'🔴',CHALLENGER:'🔵'};
+const LOL_RANKS={IRON:'',BRONZE:'',SILVER:'',GOLD:'',PLATINUM:'',EMERALD:'',DIAMOND:'',MASTER:'',GRANDMASTER:'',CHALLENGER:''};
 const LOL_ROUTING={euw1:'europe',eun1:'europe',tr1:'europe',ru:'europe',na1:'americas',br1:'americas',la1:'americas',la2:'americas',kr:'asia',jp1:'asia',oc1:'sea'};
 
-// ── VALORANT ──────────────────────────────────────
+// -- VALORANT --------------------------------------
 async function connectValo(){
   const raw=document.getElementById('valo-name').value.trim();
   const region=document.getElementById('valo-region').value;
@@ -3724,7 +3724,7 @@ async function connectValo(){
   if(!raw||!raw.includes('#')){toast('Format: Name#TAG (ex: Rub19#Boss)','error');return}
   const [name,...tagParts]=raw.split('#');
   const tag=tagParts.join('#');
-  toast('Fetching Valorant stats…','info');
+  toast('Fetching Valorant stats...','info');
   try{
     const acc=await fetchHenrik('/v1/account/'+encodeURIComponent(name)+'/'+encodeURIComponent(tag), apiKey);
     if(!acc||acc.status!==200)throw new Error(acc?.message||'Player not found');
@@ -3739,24 +3739,24 @@ async function connectValo(){
   }catch(e){toast('Error: '+e.message,'error');console.error(e)}
 }
 
-// Cache des matchs par mode
+// Cache des matches par mode
 let _valoMatchCache={};
 let _valoAllMatches=[];
 async function loadValoStats(mode){
   const p=curP();if(!p||!p.state.gaming?.valo)return;
   const {name,tag,region,apiKey=''}=p.state.gaming.valo;
   const area=document.getElementById('valo-stats-area');
-  if(area)area.innerHTML='<div class="game-loading">⏳ Chargement des stats…</div>';
+  if(area)area.innerHTML='<div class="game-loading"> Loading stats...</div>';
   try{
     const mmrRaw=await fetchHenrik('/v2/mmr/'+region+'/'+encodeURIComponent(name)+'/'+encodeURIComponent(tag), apiKey).catch(()=>null);
     const mmrData=mmrRaw?.data||mmrRaw||null;
 
-    // Fetch tous les matchs d'un coup (pas de filtre par mode)
+    // Fetch tous les matches d'un coup (pas de filtre par mode)
     const allRaw=await fetchHenrik('/v3/matches/'+region+'/'+encodeURIComponent(name)+'/'+encodeURIComponent(tag)+'?size=25', apiKey).catch(()=>null);
     const allMatches=Array.isArray(allRaw)?allRaw:Array.isArray(allRaw?.data)?allRaw.data:[];
     _valoAllMatches=allMatches;
 
-    // Filtrer côté client par metadata.mode (insensible à la casse)
+    // Filtrer cote client par metadata.mode (insensible a la casse)
     const modeMap={competitive:['competitive'],swiftplay:['swiftplay','swift play'],unrated:['unrated']};
     _valoMatchCache={};
     ['competitive','swiftplay','unrated'].forEach(m=>{
@@ -3768,7 +3768,7 @@ async function loadValoStats(mode){
     });
 
     if(allMatches.length===0&&!mmrData){
-      if(area)area.innerHTML='<div class="game-loading">Aucune donnée trouvée — vérifie ton Name#TAG, la région, et que ton profil Valorant est public</div>';
+      if(area)area.innerHTML='<div class="game-loading">No data found - verifie ton Name#TAG, la region, et que ton profil Valorant est public</div>';
       return;
     }
 
@@ -3782,13 +3782,13 @@ async function loadValoStats(mode){
       saveStateNow();if(typeof renderGamingOverview==='function')renderGamingOverview();
     }
     const sub=document.getElementById('valo-account-sub');
-    if(sub)sub.textContent=name+'#'+tag+' · '+region.toUpperCase();
+    if(sub)sub.textContent=name+'#'+tag+' . '+region.toUpperCase();
     document.getElementById('valo-name').value=name+'#'+tag;
     document.getElementById('valo-region').value=region;
     if(apiKey&&document.getElementById('valo-apikey'))document.getElementById('valo-apikey').value=apiKey;
     const tKey=curP()?.state?.gaming?.valo?.trackerApiKey||'';
     if(tKey&&document.getElementById('tracker-apikey'))document.getElementById('tracker-apikey').value=tKey;
-  }catch(e){if(area)area.innerHTML='<div class="game-loading">Erreur : '+e.message+' — réessaie</div>';console.error(e);}
+  }catch(e){if(area)area.innerHTML='<div class="game-loading">Erreur : '+e.message+' - reessaie</div>';console.error(e);}
 }
 function switchValoTab(mode){
   const p=curP();if(!p||!p.state.gaming?.valo)return;
@@ -3815,14 +3815,14 @@ function renderValoStats(mmr,matchCache,name,tag,activeMode){
   // Store mmr for tab switching
   html+=`<div id="_valo_mmr_store" data-mmr='${JSON.stringify(mmr||null)}' style="display:none"></div>`;
 
-  // ── RANK BANNER (competitive only) ──
+  // -- RANK BANNER (competitive only) --
   const currentData=mmr?.current_data||mmr;
   if(currentData?.currenttierpatched){
     const rankName=currentData.currenttierpatched||'Unranked';
     const rr=currentData.ranking_in_tier||0;
-    const icon=VALO_RANKS[rankName]||'🎮';
+    const icon=VALO_RANKS[rankName]||'';
 
-    // Calcul winrate depuis les matchs compétitifs (plus fiable que l'API MMR pour Immortal+)
+    // Calcul winrate depuis les matches competitifs (plus fiable que l'API MMR pour Immortal+)
     const compMatches=matchCache?.competitive||[];
     let wr=0,wrLabel='Winrate';
     if(compMatches.length>0){
@@ -3838,7 +3838,7 @@ function renderValoStats(mmr,matchCache,name,tag,activeMode){
       });
       if(played>0){wr=Math.round((wins/played)*100);wrLabel=`WR (${played} comp)`;}
     } else {
-      // Fallback sur données MMR si pas de matchs
+      // Fallback sur donnees MMR si pas de matches
       const wins=currentData.wins||0;
       const total=(currentData.games_needed_for_rating||0)+wins;
       wr=total>0?Math.round((wins/total)*100):0;
@@ -3846,18 +3846,18 @@ function renderValoStats(mmr,matchCache,name,tag,activeMode){
     html+=`<div class="rank-display"><div class="rank-icon">${icon}</div><div><div class="rank-name">${rankName}</div><div class="rank-rr">${rr} RR</div></div><div class="rank-wr"><div class="rank-wr-pct" style="color:${wr>=50?'var(--accent2)':'var(--accent3)'}">${wr}%</div><div class="rank-wr-label">${wrLabel}</div></div></div>`;
   }
 
-  // ── MODE TABS ──
+  // -- MODE TABS --
   const tabLabels={competitive:'Competitive',swiftplay:'Swiftplay',unrated:'Unrated'};
   html+=`<div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap">`;
   ['competitive','swiftplay','unrated'].forEach(m=>{
     const active=m===activeMode;
     const count=(matchCache[m]||[]).length;
-    const countLabel=count>0?count+' matchs':'0 match';
+    const countLabel=count>0?count+' matches':'0 match';
     html+=`<button id="valo-tab-${m}" onclick="switchValoTab('${m}')" style="padding:7px 16px;border-radius:20px;border:1.5px solid ${active?'var(--accent)':'var(--border2)'};background:${active?'var(--accent)':'var(--surface2)'};color:${active?'#fff':'var(--muted)'};font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all var(--transition)">${tabLabels[m]} <span style="font-size:11px;opacity:0.7">${countLabel}</span></button>`;
   });
   html+=`</div>`;
 
-  // ── MODE CONTENT PLACEHOLDER ──
+  // -- MODE CONTENT PLACEHOLDER --
   html+=`<div id="valo-mode-content"></div>`;
 
   area.innerHTML=html;
@@ -3870,20 +3870,20 @@ function renderValoModeContent(mmr,matches,name,tag,mode){
   const container=document.getElementById('valo-mode-content');if(!container)return;
   let html='';
 
-  // Récupère le puuid sauvegardé pour matching plus fiable
+  // Recupere le puuid sauvegarde pour matching plus fiable
   const puuid=curP()?.state?.gaming?.valo?.puuid||'';
   const nameLow=name.toLowerCase();
   const tagLow=tag.toLowerCase();
 
   function findMe(m){
     const players=m.players?.all_players||[];
-    // Match par puuid en priorité (le plus fiable)
+    // Match par puuid en priorite (le plus fiable)
     if(puuid){const p=players.find(pl=>pl.puuid===puuid);if(p)return p;}
     // Fallback: match case-insensitive sur name#tag
     return players.find(pl=>(pl.name||'').toLowerCase()===nameLow&&(pl.tag||'').toLowerCase()===tagLow);
   }
 
-  // ── AGGREGATE STATS from last 10 matches ──
+  // -- AGGREGATE STATS from last 10 matches --
   if(matches&&matches.length){
     const myMatches=matches.slice(0,10).map(m=>({
       match:m,
@@ -3909,7 +3909,7 @@ function renderValoModeContent(mmr,matches,name,tag,mode){
     });
     const hsPercent=totalShots>0?Math.round((totalHS/totalShots)*100):0;
     const overallWR=myMatches.length>0?Math.round((totalWins/myMatches.length)*100):0;
-    const avgKDA=totalD>0?((totalK+totalA)/totalD).toFixed(2):'—';
+    const avgKDA=totalD>0?((totalK+totalA)/totalD).toFixed(2):'-';
     const favAgent=Object.entries(agentMap).sort((a,b)=>b[1].games-a[1].games)[0];
     const favMap=Object.entries(mapCount).sort((a,b)=>b[1].games-a[1].games)[0];
 
@@ -3925,11 +3925,11 @@ function renderValoModeContent(mmr,matches,name,tag,mode){
       </div>
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 16px;flex:1;min-width:90px;text-align:center">
         <div style="font-size:20px;font-weight:700;color:${overallWR>=50?'var(--accent2)':'var(--accent3)'}">${overallWR}%</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px">Winrate (10 matchs)</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">Winrate (10 matches)</div>
       </div>
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 16px;flex:1;min-width:90px;text-align:center">
         <div style="font-size:20px;font-weight:700;color:var(--text)">${avgKDA}</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px">KDA moyen</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">Avg KDA</div>
       </div>
     </div>`;
 
@@ -3941,25 +3941,25 @@ function renderValoModeContent(mmr,matches,name,tag,mode){
       const agImg=s.img?`<img src="${s.img}" alt="${ag}" style="width:100%;height:100%;object-fit:cover;border-radius:8px" onerror="this.style.display='none'">`:ag[0];
       html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;flex:1;min-width:160px;display:flex;align-items:center;gap:12px">
         <div style="width:44px;height:44px;border-radius:10px;overflow:hidden;background:var(--surface3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px">${agImg}</div>
-        <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Agent favori</div>
+        <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Favorite agent</div>
         <div style="font-size:15px;font-weight:700">${ag}</div>
-        <div style="font-size:12px;color:var(--muted)">${s.games} matchs · ${agWR}% WR</div></div>
+        <div style="font-size:12px;color:var(--muted)">${s.games} matches . ${agWR}% WR</div></div>
       </div>`;
     }
     if(favMap){
       const [map,ms]=favMap;
       const mapWR=Math.round((ms.wins/ms.games)*100);
       html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;flex:1;min-width:160px;display:flex;align-items:center;gap:12px">
-        <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#a78bfa);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px">🗺️</div>
-        <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Carte préférée</div>
+        <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#a78bfa);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px"></div>
+        <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Favorite map</div>
         <div style="font-size:15px;font-weight:700">${map}</div>
-        <div style="font-size:12px;color:var(--muted)">${ms.games} matchs · ${mapWR}% WR</div></div>
+        <div style="font-size:12px;color:var(--muted)">${ms.games} matches . ${mapWR}% WR</div></div>
       </div>`;
     }
     html+=`</div>`;
 
-    // ── VISUAL MATCH CARDS ──
-    html+='<div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">10 derniers matchs</div>';
+    // -- VISUAL MATCH CARDS --
+    html+='<div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Last 10 matches</div>';
     html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px">';
     myMatches.forEach(({match:m,me})=>{
       const won=m.teams?.[me.team?.toLowerCase()]?.has_won;
@@ -3985,9 +3985,9 @@ function renderValoModeContent(mmr,matches,name,tag,mode){
           </div>
           <div style="flex:1;min-width:0">
             <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${agentName}</div>
-            <div style="font-size:11px;color:var(--muted)">🗺️ ${map}</div>
+            <div style="font-size:11px;color:var(--muted)"> ${map}</div>
           </div>
-          <span style="background:${won?'rgba(93,224,176,0.12)':'rgba(247,106,106,0.12)'};color:${winColor};font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;flex-shrink:0">${won?'VICTOIRE':'DÉFAITE'}</span>
+          <span style="background:${won?'rgba(93,224,176,0.12)':'rgba(247,106,106,0.12)'};color:${winColor};font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;flex-shrink:0">${won?'WIN':'LOSS'}</span>
         </div>
         <div style="display:flex;gap:6px">
           <div style="flex:1;background:var(--surface3);border-radius:6px;padding:6px 8px;text-align:center">
@@ -4007,7 +4007,7 @@ function renderValoModeContent(mmr,matches,name,tag,mode){
     });
     html+='</div>';
 
-    // ── TOP 3 AGENTS ──
+    // -- TOP 3 AGENTS --
     const top=Object.entries(agentMap).sort((a,b)=>b[1].games-a[1].games).slice(0,3);
     if(top.length){
       html+='<div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:18px 0 10px">Top agents</div>';
@@ -4016,13 +4016,13 @@ function renderValoModeContent(mmr,matches,name,tag,mode){
         const wr=Math.round((s.wins/s.games)*100);
         const kd=(s.kills/s.deaths).toFixed(2);
         const img=s.img?`<img src="${s.img}" alt="${ag}" onerror="this.style.display='none'">`:ag[0];
-        html+=`<div class="agent-card"><div class="agent-card-img">${img}</div><div class="agent-card-name">${ag}</div><div class="agent-card-stats">${wr}% WR · K/D ${kd}</div></div>`;
+        html+=`<div class="agent-card"><div class="agent-card-img">${img}</div><div class="agent-card-name">${ag}</div><div class="agent-card-stats">${wr}% WR . K/D ${kd}</div></div>`;
       });
       html+='</div>';
     }
   }
 
-  if(!html)html=`<div class="game-not-connected" style="padding:20px">Aucun match trouvé en mode ${mode}</div>`;
+  if(!html)html=`<div class="game-not-connected" style="padding:20px">No matches found en mode ${mode}</div>`;
   container.innerHTML=html;
 }
 
@@ -4030,7 +4030,7 @@ function disconnectValo(){
   const p=curP();if(!p)return;
   if(!confirm('Disconnect Valorant?'))return;
   delete p.state.gaming?.valo;saveStateNow();
-  document.getElementById('valo-stats-area').innerHTML='<div class="game-not-connected"><div style="font-size:28px;margin-bottom:8px">🔴</div><div>Enter your Riot Name#Tag to connect</div></div>';
+  document.getElementById('valo-stats-area').innerHTML='<div class="game-not-connected"><div style="font-size:28px;margin-bottom:8px"></div><div>Enter your Riot Name#Tag to connect</div></div>';
   document.getElementById('valo-badge').textContent='Not connected';document.getElementById('valo-badge').className='conn-status-badge disconnected';
   document.getElementById('valo-account-sub').textContent='Not connected';
   document.getElementById('valo-disconnect').style.display='none';
@@ -4038,14 +4038,14 @@ function disconnectValo(){
   toast('Valorant disconnected','info');
 }
 
-// ── LEAGUE OF LEGENDS ─────────────────────────────
+// -- LEAGUE OF LEGENDS -----------------------------
 async function connectLoL(){
   const raw=document.getElementById('lol-name').value.trim();
   const region=document.getElementById('lol-region').value;
   const apiKey=document.getElementById('lol-apikey').value.trim();
   if(!raw)  {toast('Enter a summoner name','error');return}
   if(!apiKey){toast('Enter your Riot API Key','error');return}
-  toast('Fetching LoL stats…','info');
+  toast('Fetching LoL stats...','info');
   try{
     // Use new Riot ID format if # is present
     let puuid,summonerId,summonerName;
@@ -4081,7 +4081,7 @@ async function loadLoLStats(){
   const {name,region,puuid,summonerId,apiKey}=p.state.gaming.lol;
   const routing=LOL_ROUTING[region]||'europe';
   const area=document.getElementById('lol-stats-area');
-  if(area)area.innerHTML='<div class="game-loading">⏳ Loading stats…</div>';
+  if(area)area.innerHTML='<div class="game-loading"> Loading stats...</div>';
   try{
     // Ranked data
     const ranked=await fetchRiot(`https://${region}.api.riotgames.com/lol/league/v4/entries/by-summoner/${summonerId}`,apiKey);
@@ -4092,11 +4092,11 @@ async function loadLoLStats(){
     const badge=document.getElementById('lol-badge');
     if(badge){badge.textContent='Connected';badge.className='conn-status-badge connected';}
     const sub=document.getElementById('lol-account-sub');
-    if(sub)sub.textContent=name+' · '+region.toUpperCase();
+    if(sub)sub.textContent=name+' . '+region.toUpperCase();
     document.getElementById('lol-name').value=name;
     document.getElementById('lol-region').value=region;
     document.getElementById('lol-apikey').value=apiKey;
-  }catch(e){if(area)area.innerHTML='<div class="game-loading">Could not load stats — API key may have expired</div>';}
+  }catch(e){if(area)area.innerHTML='<div class="game-loading">Could not load stats - API key may have expired</div>';}
 }
 
 function renderLoLStats(ranked,matches,puuid,name){
@@ -4104,9 +4104,9 @@ function renderLoLStats(ranked,matches,puuid,name){
   let html='';
   const solo=ranked?.find(r=>r.queueType==='RANKED_SOLO_5x5');
   if(solo){
-    const icon=LOL_RANKS[solo.tier]||'🎮';
+    const icon=LOL_RANKS[solo.tier]||'';
     const wr=Math.round((solo.wins/(solo.wins+solo.losses))*100);
-    html+=`<div class="rank-display"><div class="rank-icon">${icon}</div><div><div class="rank-name">${solo.tier} ${solo.rank}</div><div class="rank-rr">${solo.leaguePoints} LP · ${solo.wins}W ${solo.losses}L</div></div><div class="rank-wr"><div class="rank-wr-pct" style="color:${wr>=50?'var(--accent2)':'var(--accent3)'}">${wr}%</div><div class="rank-wr-label">Winrate</div></div></div>`;
+    html+=`<div class="rank-display"><div class="rank-icon">${icon}</div><div><div class="rank-name">${solo.tier} ${solo.rank}</div><div class="rank-rr">${solo.leaguePoints} LP . ${solo.wins}W ${solo.losses}L</div></div><div class="rank-wr"><div class="rank-wr-pct" style="color:${wr>=50?'var(--accent2)':'var(--accent3)'}">${wr}%</div><div class="rank-wr-label">Winrate</div></div></div>`;
   }
   if(matches&&matches.length){
     html+='<div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Recent matches (Ranked)</div>';
@@ -4120,7 +4120,7 @@ function renderLoLStats(ranked,matches,puuid,name){
       const champImg=`https://ddragon.leagueoflegends.com/cdn/14.24.1/img/champion/${champ}.png`;
       html+=`<div class="match-row ${won?'win':'loss'}">
         <div class="match-agent"><img src="${champImg}" alt="${champ}" onerror="this.textContent='${champ[0]}'"></div>
-        <div class="match-info"><div class="match-name">${champ}</div><div class="match-kda">${k}/${d}/${a} · KDA ${((k+a)/d).toFixed(2)}</div></div>
+        <div class="match-info"><div class="match-name">${champ}</div><div class="match-kda">${k}/${d}/${a} . KDA ${((k+a)/d).toFixed(2)}</div></div>
         <span class="match-result ${won?'win':'loss'}">${won?'WIN':'LOSS'}</span>
       </div>`;
       if(!champMap[champ])champMap[champ]={wins:0,games:0,kills:0,deaths:0};
@@ -4136,7 +4136,7 @@ function renderLoLStats(ranked,matches,puuid,name){
         const wr=Math.round((s.wins/s.games)*100);
         const kd=(s.kills/s.deaths).toFixed(2);
         const img=`https://ddragon.leagueoflegends.com/cdn/14.24.1/img/champion/${champ}.png`;
-        html+=`<div class="agent-card"><div class="agent-card-img"><img src="${img}" alt="${champ}" onerror="this.style.display='none'"></div><div class="agent-card-name">${champ}</div><div class="agent-card-stats">${wr}% WR · K/D ${kd}</div></div>`;
+        html+=`<div class="agent-card"><div class="agent-card-img"><img src="${img}" alt="${champ}" onerror="this.style.display='none'"></div><div class="agent-card-name">${champ}</div><div class="agent-card-stats">${wr}% WR . K/D ${kd}</div></div>`;
       });
       html+='</div>';
     }
@@ -4149,7 +4149,7 @@ function disconnectLoL(){
   const p=curP();if(!p)return;
   if(!confirm('Disconnect LoL?'))return;
   delete p.state.gaming?.lol;saveStateNow();
-  document.getElementById('lol-stats-area').innerHTML='<div class="game-not-connected"><div style="font-size:28px">⚔️</div><div>Enter your Summoner Name to connect</div></div>';
+  document.getElementById('lol-stats-area').innerHTML='<div class="game-not-connected"><div style="font-size:28px"></div><div>Enter your Summoner Name to connect</div></div>';
   document.getElementById('lol-badge').textContent='Not connected';document.getElementById('lol-badge').className='conn-status-badge disconnected';
   document.getElementById('lol-account-sub').textContent='Not connected';
   document.getElementById('lol-disconnect').style.display='none';
@@ -4157,9 +4157,9 @@ function disconnectLoL(){
   toast('LoL disconnected','info');
 }
 
-// ── HELPERS ───────────────────────────────────────
-// Clés API par défaut (fallback si l'utilisateur n'en a pas)
-const _DEFAULT_HENRIK_KEY='';  // optionnel, Henrik fonctionne sans clé (rate limit plus bas)
+// -- HELPERS ---------------------------------------
+// Cles API par defaut (fallback si l'utilisateur n'en a pas)
+const _DEFAULT_HENRIK_KEY='';  // optionnel, Henrik fonctionne sans cle (rate limit plus bas)
 const _DEFAULT_TRACKER_KEY='f157fb9d-03e1-4db4-8b87-e25255d1e74f';
 
 function getHenrikKey(){
@@ -4173,20 +4173,20 @@ function getTrackerKey(){
 
 async function fetchHenrik(path, apiKey=''){
   const key=apiKey||getHenrikKey();
-  // Passe par le Worker Cloudflare pour éviter les problèmes CORS
+  // Passe par le Worker Cloudflare pour eviter les problemes CORS
   const workerUrl=`${WORKER_URL}/henrik${path}`;
   const headers={};
   if(key) headers['X-Henrik-Key']=key;
   const res=await fetch(workerUrl,{headers});
-  if(res.status===401)throw new Error('Henrik API key required — get a free key at docs.henrikdev.xyz');
-  if(res.status===404)throw new Error('Player not found — check Name#TAG and region');
-  if(res.status===429)throw new Error('Rate limited — wait a moment and retry');
+  if(res.status===401)throw new Error('Henrik API key required - get a free key at docs.henrikdev.xyz');
+  if(res.status===404)throw new Error('Player not found - check Name#TAG and region');
+  if(res.status===429)throw new Error('Rate limited - wait a moment and retry');
   if(!res.ok)throw new Error('Henrik API error '+res.status);
   return res.json();
 }
 async function fetchRiot(url,key){
   const res=await fetch(url,{headers:{'X-Riot-Token':key}});
-  if(!res.ok)throw new Error('Riot API '+res.status+(res.status===403?' — API key expired or invalid':''));
+  if(!res.ok)throw new Error('Riot API '+res.status+(res.status===403?' - API key expired or invalid':''));
   return res.json();
 }
 
@@ -4203,9 +4203,9 @@ function loadGamingUI(){
 }
 
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  MOBILE SIDEBAR
-// ═══════════════════════════════════════════════════
+// ===================================================
 function toggleMobileSidebar(){
   const sb=document.getElementById('main-sidebar');
   const ov=document.getElementById('sidebar-overlay');
@@ -4230,9 +4230,9 @@ function checkMobileLayout(){
 }
 window.addEventListener('resize',checkMobileLayout);
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  IMPORT / EXPORT JSON
-// ═══════════════════════════════════════════════════
+// ===================================================
 function exportData(){
   const data={profiles,exportedAt:new Date().toISOString(),version:2};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
@@ -4243,7 +4243,7 @@ function exportData(){
   a.click();
   URL.revokeObjectURL(url);
   toast('Data exported!','success');
-  addActivity('📦 Data exported','var(--accent2)');
+  addActivity(' Data exported','var(--accent2)');
 }
 function importData(e){
   const file=e.target.files[0];if(!file)return;
@@ -4254,33 +4254,33 @@ function importData(e){
       if(!data.profiles||!Array.isArray(data.profiles))throw new Error('Invalid format');
       if(!confirm('This will replace ALL your current data. Continue?'))return;
       profiles=data.profiles;
-      // Réassigner les _dbId existants pour éviter de créer des doublons
+      // Reassigner les _dbId existants pour eviter de creer des doublons
       if(_sbUser){
         const {data:existing}=await sb.from('dashboard_data').select('id').eq('user_id',_sbUser.id);
         if(existing&&existing.length){
           // Supprime les anciens profils cloud
           await sb.from('dashboard_data').delete().eq('user_id',_sbUser.id);
-          // Réinitialise les _dbId pour forcer un insert
+          // Reinitialise les _dbId pour forcer un insert
           profiles.forEach(p=>{delete p._dbId;});
         }
       }
-      toast('Import en cours…','info');
+      toast('Importing...','info');
       await saveCloudState();
-      toast('Données importées et sauvegardées ! ✅','success');
+      toast('Data imported and saved! ','success');
       setTimeout(()=>{
         document.getElementById('main-sidebar').style.display='none';
         document.getElementById('main-content').style.display='none';
         goToProfileScreen();
       },1000);
-    }catch(err){toast('Fichier invalide : '+err.message,'error');}
+    }catch(err){toast('Invalid file : '+err.message,'error');}
   };
   reader.readAsText(file);
   e.target.value='';
 }
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  DESKTOP NOTIFICATIONS
-// ═══════════════════════════════════════════════════
+// ===================================================
 let _notifEnabled=false;
 function requestNotifPermission(){
   if(!('Notification' in window)){toast('Notifications not supported','error');return}
@@ -4288,14 +4288,14 @@ function requestNotifPermission(){
     _notifEnabled=perm==='granted';
     const btn=document.getElementById('notif-btn');
     if(_notifEnabled){
-      toast('Notifications enabled! 🔔','success');
-      if(btn){btn.textContent='🔔 Notifications ON';btn.style.color='var(--accent2)';btn.style.borderColor='var(--accent2)';}
+      toast('Notifications enabled! ','success');
+      if(btn){btn.textContent=' Notifications ON';btn.style.color='var(--accent2)';btn.style.borderColor='var(--accent2)';}
     } else {
-      toast('Notifications denied — check browser settings','error');
+      toast('Notifications denied - check browser settings','error');
     }
   });
 }
-function sendNotif(title,body,icon='🔔'){
+function sendNotif(title,body,icon=''){
   if(!_notifEnabled||Notification.permission!=='granted')return;
   try{new Notification(title,{body,icon:'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>'+icon+'</text></svg>'});}
   catch(e){}
@@ -4305,9 +4305,9 @@ function sendNotif(title,body,icon='🔔'){
   if(Notification.permission==='granted'){_notifEnabled=true;}
 })();
 
-// ═══════════════════════════════════════════════════
+// ===================================================
 //  GAMING OVERVIEW MINI-WIDGET
-// ═══════════════════════════════════════════════════
+// ===================================================
 function renderGamingOverview(){
   const p=curP();
   const wrap=document.getElementById('gaming-overview-wrap');
@@ -4317,34 +4317,34 @@ function renderGamingOverview(){
   let html='';
   if(g.valo?.name){
     const valoData=g.valo._lastRank||{};
-    const rankName=valoData.rankName||'Loading…';
+    const rankName=valoData.rankName||'Loading...';
     const rr=valoData.rr!==undefined?valoData.rr+'RR':'';
-    const icon=VALO_RANKS?.[rankName]||'🎮';
+    const icon=VALO_RANKS?.[rankName]||'';
     html+=`<div onclick="switchPage('gaming',null)" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all var(--transition);flex:1;min-width:200px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
       <div style="font-size:28px">${icon}</div>
       <div><div style="font-size:12px;color:var(--muted);font-weight:500">VALORANT</div><div style="font-size:15px;font-weight:700">${rankName}</div>${rr?'<div style="font-size:12px;color:var(--muted)">'+rr+'</div>':''}</div>
-      <div style="margin-left:auto;background:rgba(255,70,85,.1);color:#ff4655;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600">🔴 Valo</div>
+      <div style="margin-left:auto;background:rgba(255,70,85,.1);color:#ff4655;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600"> Valo</div>
     </div>`;
   }
   if(g.lol?.name){
     const lolData=g.lol._lastRank||{};
-    const tier=lolData.tier||'Loading…';
+    const tier=lolData.tier||'Loading...';
     const rank=lolData.rank||'';
     const lp=lolData.lp!==undefined?lolData.lp+' LP':'';
-    const icon=LOL_RANKS?.[tier]||'⚔️';
+    const icon=LOL_RANKS?.[tier]||'';
     html+=`<div onclick="switchPage('gaming',null)" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all var(--transition);flex:1;min-width:200px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
       <div style="font-size:28px">${icon}</div>
       <div><div style="font-size:12px;color:var(--muted);font-weight:500">LEAGUE OF LEGENDS</div><div style="font-size:15px;font-weight:700">${tier} ${rank}</div>${lp?'<div style="font-size:12px;color:var(--muted)">'+lp+'</div>':''}</div>
-      <div style="margin-left:auto;background:rgba(200,155,60,.1);color:#c89b3c;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600">⚔️ LoL</div>
+      <div style="margin-left:auto;background:rgba(200,155,60,.1);color:#c89b3c;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600"> LoL</div>
     </div>`;
   }
   if(html){wrap.style.display='block';cards.innerHTML=html;}
   else wrap.style.display='none';
 }
 
-// ═══ BOOT ═══
+// === BOOT ===
 (function(){
-  // Vérifie si déjà connecté à Supabase
+  // Check si deja connecte a Supabase
   sb.auth.getSession().then(async({data:{session}})=>{
     if(session){
       _sbUser=session.user;
@@ -4367,7 +4367,7 @@ function renderGamingOverview(){
       renderProfileScreen();
       document.getElementById('profile-screen').style.display='flex';
     }
-    // Sinon l'écran auth reste visible
+    // Sinon l'ecran auth reste visible
     updateClock();
   });
 })();

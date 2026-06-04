@@ -578,7 +578,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   <div class="ps-profiles" id="ps-profiles-list"></div>
   <button class="ps-manage-btn" id="ps-manage-btn" onclick="toggleManageMode()">Manage profiles</button>
   <button onclick="doLogout()" style="margin-top:16px;background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:var(--font)">🚪 Se déconnecter</button>
-  <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--surface3);font-family:var(--mono);letter-spacing:1px;user-select:none">v1.0.0</div>
+  <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="Voir le changelog">v1.1.0 ·  changelog</div>
 </div>
 
 <!-- SIDEBAR -->
@@ -1312,6 +1312,37 @@ let _sbUser=null;
 let _isAdmin=false;
 
 // ── AUTH UI ──────────────────────────────────────
+function showChangelog(){
+  const versions=[
+    {v:'v1.1.0',date:'05/06/2026',changes:['Connexion par pseudo corrigée','Sauvegarde immédiate sur toutes les actions','Photo de profil compressée et sauvegardée dans le cloud','Sidebar compactée']},
+    {v:'v1.0.4',date:'05/06/2026',changes:['saveStateNow() sur toutes les actions','Compression avatar avant envoi Supabase','Login pseudo avec fallback email généré']},
+    {v:'v1.0.3',date:'05/06/2026',changes:['Intégration Supabase — auth email + pseudo','Sauvegarde cloud des données','Panel Admin avec gestion des comptes']},
+    {v:'v1.0.2',date:'05/06/2026',changes:['Worker Cloudflare pour Steam + Tracker + Henrik','Clés API sécurisées côté serveur','Plus de problèmes CORS']},
+    {v:'v1.0.1',date:'05/06/2026',changes:['Onglets Valorant (Competitive / Swiftplay / Unrated)','Filtrage des matchs par mode côté client','Stats globales + cartes visuelles de matchs','Top agents + carte préférée']},
+    {v:'v1.0.0',date:'05/06/2026',changes:['Version initiale du dashboard','Profils multiples','Discord, Steam, Spotify, Valorant, LoL','Kanban, Habits, Calendar, Tasks, Notes']},
+  ];
+  let html=`<div style="position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.remove()">
+  <div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:28px;width:100%;max-width:500px;max-height:80vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div style="font-size:18px;font-weight:700">📋 Changelog</div>
+      <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">✕</button>
+    </div>`;
+  versions.forEach((v,i)=>{
+    html+=`<div style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="font-family:var(--mono);font-size:13px;font-weight:700;color:${i===0?'var(--accent)':'var(--text)'}">${v.v}</span>
+        ${i===0?'<span style="background:rgba(124,106,247,.15);color:var(--accent);font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600">LATEST</span>':''}
+        <span style="font-size:11px;color:var(--muted);margin-left:auto">${v.date}</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        ${v.changes.map(c=>`<div style="font-size:12px;color:var(--muted);padding-left:12px">• ${c}</div>`).join('')}
+      </div>
+    </div>`;
+  });
+  html+=`</div></div>`;
+  document.body.insertAdjacentHTML('beforeend',html);
+}
+
 function switchAuthTab(tab){
   document.getElementById('form-login').style.display=tab==='login'?'block':'none';
   document.getElementById('form-register').style.display=tab==='register'?'block':'none';
@@ -1332,18 +1363,24 @@ async function doLogin(){
   const pw=document.getElementById('auth-login-pw').value;
   if(!id||!pw){document.getElementById('auth-error').textContent='Remplis tous les champs';return;}
   setAuthLoading(true);
-  // Détermine si c'est un email ou un pseudo
   const isEmail=id.includes('@');
   let email=id;
   if(!isEmail){
-    // Cherche l'email via le pseudo
+    // Cherche l'email via le pseudo dans profiles
     const {data}=await sb.from('profiles').select('email').eq('username',id).single();
-    if(!data?.email){setAuthLoading(false);document.getElementById('auth-error').textContent='Pseudo introuvable';return;}
-    email=data.email;
+    if(data?.email){
+      email=data.email;
+    } else {
+      // Fallback : essaie avec l'email généré à l'inscription (pseudo@dashboard.local)
+      email=id+'@dashboard.local';
+    }
   }
   const {error}=await sb.auth.signInWithPassword({email,password:pw});
   setAuthLoading(false);
-  if(error){document.getElementById('auth-error').textContent=error.message;return;}
+  if(error){
+    document.getElementById('auth-error').textContent='Identifiants incorrects — essaie avec ton email';
+    return;
+  }
   await onAuthSuccess();
 }
 
@@ -1390,23 +1427,51 @@ async function onAuthSuccess(){
 // ── CLOUD SYNC ───────────────────────────────────
 async function loadCloudState(){
   if(!_sbUser)return;
-  const {data}=await sb.from('dashboard_data').select('*').eq('user_id',_sbUser.id);
+  const {data,error}=await sb.from('dashboard_data').select('*').eq('user_id',_sbUser.id).order('created_at',{ascending:true});
+  if(error)console.error('loadCloudState error:',error);
   if(data&&data.length){
-    profiles=data.map(d=>({
-      id:d.id,
-      _dbId:d.id,
-      name:d.profile_name,
-      avatarEmoji:d.state?.avatarEmoji||AVATARS[0].e,
-      avatarBg:d.state?.avatarBg||AVATARS[0].b,
-      avatarImg:d.state?.avatarImg||null,
-      avatarIdx:d.state?.avatarIdx||0,
-      password:d.state?.password||null,
-      themeIdx:d.state?.themeIdx||0,
-      state:d.state||defState(d.profile_name)
-    }));
+    profiles=data.map(d=>{
+      const s=d.state||{};
+      return {
+        id:d.id,
+        _dbId:d.id,
+        name:d.profile_name,
+        avatarEmoji:s.avatarEmoji||AVATARS[0].e,
+        avatarBg:s.avatarBg||AVATARS[0].b,
+        avatarImg:s.avatarImg||null,
+        avatarIdx:s.avatarIdx||0,
+        password:s.password||null,
+        themeIdx:s.themeIdx||0,
+        state:{
+          items:s.items||[],
+          todos:s.todos||[],
+          note:s.note||'',
+          activity:s.activity||[],
+          username:s.username||d.profile_name,
+          connections:s.connections||{},
+          gaming:s.gaming||{},
+          pinned:s.pinned||[],
+          habits:s.habits||[],
+          kanban:s.kanban||[],
+          events:s.events||[],
+          manualBadges:s.manualBadges||{},
+          banner:s.banner||null,
+          themeIdx:s.themeIdx||0,
+        }
+      };
+    });
   } else {
     // Nouveau user → crée un profil par défaut
-    profiles=[{id:Date.now(),name:_sbUser.user_metadata?.username||'Mon profil',avatarEmoji:AVATARS[0].e,avatarBg:AVATARS[0].b,avatarImg:null,avatarIdx:0,state:defState(_sbUser.user_metadata?.username||'Mon profil')}];
+    const username=_sbUser.user_metadata?.username||'Mon profil';
+    profiles=[{
+      id:Date.now(),
+      name:username,
+      avatarEmoji:AVATARS[0].e,
+      avatarBg:AVATARS[0].b,
+      avatarImg:null,
+      avatarIdx:0,
+      state:defState(username)
+    }];
     await saveCloudState();
   }
 }
@@ -1414,19 +1479,55 @@ async function loadCloudState(){
 async function saveCloudState(){
   if(!_sbUser)return;
   for(const p of profiles){
+    // Compresse l'image avatar si trop grosse (limite Supabase ~1MB par row)
+    let avatarImg=p.avatarImg||null;
+    if(avatarImg&&avatarImg.length>50000){
+      try{
+        avatarImg=await compressImage(avatarImg,80,80);
+      }catch(e){console.warn('Avatar compress error',e);}
+    }
     const payload={
       user_id:_sbUser.id,
       profile_name:p.name,
-      state:{...p.state,avatarEmoji:p.avatarEmoji,avatarBg:p.avatarBg,avatarImg:p.avatarImg,avatarIdx:p.avatarIdx,password:p.password,themeIdx:p.themeIdx},
+      state:{
+        ...p.state,
+        avatarEmoji:p.avatarEmoji,
+        avatarBg:p.avatarBg,
+        avatarImg:avatarImg,
+        avatarIdx:p.avatarIdx,
+        password:p.password||null,
+        themeIdx:p.themeIdx||0,
+      },
       updated_at:new Date().toISOString()
     };
     if(p._dbId){
-      await sb.from('dashboard_data').update(payload).eq('id',p._dbId);
+      const {error}=await sb.from('dashboard_data').update(payload).eq('id',p._dbId);
+      if(error)console.error('saveCloudState update error:',error);
     } else {
-      const {data}=await sb.from('dashboard_data').insert(payload).select().single();
-      if(data)p._dbId=data.id;
+      const {data,error}=await sb.from('dashboard_data').insert(payload).select().single();
+      if(error)console.error('saveCloudState insert error:',error);
+      if(data){p._dbId=data.id;p.id=data.id;}
     }
   }
+}
+
+function compressImage(base64,maxW,maxH){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.onload=()=>{
+      const canvas=document.createElement('canvas');
+      let w=img.width,h=img.height;
+      if(w>maxW||h>maxH){
+        const ratio=Math.min(maxW/w,maxH/h);
+        w=Math.round(w*ratio);h=Math.round(h*ratio);
+      }
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      resolve(canvas.toDataURL('image/jpeg',0.8));
+    };
+    img.onerror=reject;
+    img.src=base64;
+  });
 }
 
 // ── ADMIN PANEL ───────────────────────────────────
@@ -1501,10 +1602,24 @@ let pinEntry='';
 //  PERSISTENCE
 // ═══════════════════════════════════════════════════
 function loadState(){try{const d=localStorage.getItem('myspace_profiles_backup');if(d)profiles=JSON.parse(d)}catch(e){}}
+let _saveCloudTimeout=null;
 function saveState(){
   try{localStorage.setItem('myspace_profiles_backup',JSON.stringify(profiles))}catch(e){}
-  // Sync cloud en arrière-plan
-  if(_sbUser)saveCloudState().catch(e=>console.warn('Cloud sync error:',e));
+  // Debounce cloud sync 800ms pour éviter trop d'appels
+  if(_sbUser){
+    clearTimeout(_saveCloudTimeout);
+    _saveCloudTimeout=setTimeout(()=>{
+      saveCloudState().catch(e=>console.warn('Cloud sync error:',e));
+    },800);
+  }
+}
+// Sauvegarde cloud immédiate (sans debounce) pour les actions critiques
+async function saveStateNow(){
+  try{localStorage.setItem('myspace_profiles_backup',JSON.stringify(profiles))}catch(e){}
+  if(_sbUser){
+    clearTimeout(_saveCloudTimeout);
+    await saveCloudState().catch(e=>console.warn('Cloud sync error:',e));
+  }
 }
 function getP(id){return profiles.find(p=>p.id===id)}
 function curP(){return getP(currentId)}
@@ -1762,7 +1877,7 @@ function submitCreateProfile(){
   } else {
     const p={id:Date.now(),name,avatarEmoji:emoji,avatarBg:bg,avatarImg:createUpload||null,avatarIdx:selAvatarIdx,state:defState(name)};
     if(pwObj)p.password=pwObj;
-    profiles.push(p);saveState();
+    profiles.push(p);saveStateNow();
     toast(name+' created!'+(pwObj?' 🔒':''),'success');
   }
   editingProfileId=null;closeModal('create-profile');createUpload=null;resetCreatePwFields();renderProfileScreen();
@@ -1771,7 +1886,7 @@ function submitCreateProfile(){
 function deleteProfile(id){
   if(profiles.length<=1){toast("Can't delete last profile",'error');return}
   if(!confirm('Delete this profile and all its data?'))return;
-  profiles=profiles.filter(p=>p.id!==id);saveState();renderProfileScreen();toast('Deleted','info');
+  profiles=profiles.filter(p=>p.id!==id);saveStateNow();renderProfileScreen();toast('Deleted','info');
 }
 
 function renderAvatarGrid(containerId,selIdx){
@@ -1813,7 +1928,7 @@ function saveEditAvatar(){
   const p=curP();if(!p)return;
   if(editUpload){p.avatarImg=editUpload;p.avatarEmoji=null;p.avatarBg='#1e1e24'}
   else{const av=AVATARS[editSelAvatarIdx]||AVATARS[0];p.avatarEmoji=av.e;p.avatarBg=av.b;p.avatarImg=null;p.avatarIdx=editSelAvatarIdx}
-  saveState();closeModal('edit-avatar');updateSidebarAvatar();updateSettingsPreview();toast('Avatar updated!','success');
+  saveStateNow();closeModal('edit-avatar');updateSidebarAvatar();updateSettingsPreview();toast('Avatar updated!','success');
 }
 
 // ═══════════════════════════════════════════════════
@@ -1933,7 +2048,7 @@ function applyCustomColor(hex){
   // apply CSS variable
   document.documentElement.style.setProperty('--accent',hex);
   // save as custom
-  p.themeIdx=99;p.customAccent=hex;saveState();
+  p.themeIdx=99;p.customAccent=hex;saveStateNow();
   updateBannerDisplay();
   toast('Custom color applied!','success');
 }
@@ -1941,7 +2056,7 @@ function applyCustomColor(hex){
 function pickTheme(idx){
   const p=curP();if(!p)return;
   p.themeIdx=idx;
-  saveState();
+  saveStateNow();
   applyTheme(idx);
   renderThemeSwatches();
   updateBannerDisplay();
@@ -1958,7 +2073,7 @@ function handleBannerUpload(){
   r.onload=e=>{
     const p=curP();if(!p)return;
     p.bannerImg=e.target.result;
-    saveState();
+    saveStateNow();
     updateBannerDisplay();
     // update settings preview
     const prev=document.getElementById('banner-preview-wrap');
@@ -1972,7 +2087,7 @@ function handleBannerUpload(){
 function removeBanner(){
   const p=curP();if(!p)return;
   delete p.bannerImg;
-  saveState();
+  saveStateNow();
   updateBannerDisplay();
   const prev=document.getElementById('banner-preview-wrap');
   if(prev)prev.style.display='none';
@@ -2092,7 +2207,7 @@ function addActivity(text,color='var(--accent)'){
   const n=new Date(),time=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
   p.state.activity.unshift({text,color,time});
   if(p.state.activity.length>20)p.state.activity.pop();
-  saveState();renderActivity();
+  saveStateNow();renderActivity();
 }
 function renderActivity(){
   const list=document.getElementById('activity-list');if(!list)return;
@@ -2100,7 +2215,7 @@ function renderActivity(){
   if(!acts.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">💤</div>No activity yet</div>';return}
   list.innerHTML=acts.slice(0,10).map(a=>'<div class="activity-item"><div class="activity-dot" style="background:'+a.color+'"></div><div><div class="activity-text">'+a.text+'</div><div class="activity-time">'+a.time+'</div></div></div>').join('');
 }
-function clearActivity(){const p=curP();if(!p)return;p.state.activity=[];saveState();renderActivity()}
+function clearActivity(){const p=curP();if(!p)return;p.state.activity=[];saveStateNow();renderActivity()}
 
 // ═══════════════════════════════════════════════════
 //  ITEMS / FILES
@@ -2116,7 +2231,7 @@ function addItem(){
   if(!name){toast('Please enter a name','error');return}
   const type=document.getElementById('item-type').value,url=document.getElementById('item-url').value.trim(),tag=document.getElementById('item-tag').value.trim();
   const item={id:Date.now(),name,type,url,tag,date:new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short'})};
-  p.state.items.unshift(item);saveState();closeModal('add-item');
+  p.state.items.unshift(item);saveStateNow();closeModal('add-item');
   ['item-name','item-url','item-tag'].forEach(id=>document.getElementById(id).value='');
   renderItems();updateStats();renderRecentItems();
   addActivity('<strong>'+name+'</strong> was added','var(--accent)');toast(name+' added!','success');
@@ -2125,7 +2240,7 @@ function addItem(){
 function deleteItem(id){
   const p=curP();if(!p)return;
   const item=p.state.items.find(i=>i.id===id);
-  p.state.items=p.state.items.filter(i=>i.id!==id);saveState();
+  p.state.items=p.state.items.filter(i=>i.id!==id);saveStateNow();
   renderItems();updateStats();renderRecentItems();
   if(item)addActivity('<strong>'+item.name+'</strong> removed','var(--accent3)');toast('Removed','info');
 }
@@ -2176,12 +2291,12 @@ function saveNote(){
   document.getElementById('quick-note').value=val;document.getElementById('main-note').value=val;
   p.state.note=val;clearTimeout(noteTO);
   const st=document.getElementById('note-saved-status');if(st)st.textContent='Saving...';
-  noteTO=setTimeout(()=>{saveState();if(st)st.textContent='Saved ✓';setTimeout(()=>{if(st)st.textContent='Auto-saved'},1500)},600);
+  noteTO=setTimeout(()=>{saveStateNow();if(st)st.textContent='Saved ✓';setTimeout(()=>{if(st)st.textContent='Auto-saved'},1500)},600);
 }
 function clearNote(){
   if(!confirm('Clear notes?'))return;
   const p=curP();if(!p)return;
-  p.state.note='';saveState();
+  p.state.note='';saveStateNow();
   document.getElementById('main-note').value='';document.getElementById('quick-note').value='';
   toast('Notes cleared','info');
 }
@@ -2195,7 +2310,7 @@ function addTodo(){
   if(!text){toast('Enter a task','error');return}
   const priority=document.getElementById('todo-priority').value;
   const todo={id:Date.now(),text,priority,done:false,date:new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short'})};
-  p.state.todos.unshift(todo);saveState();closeModal('add-todo');
+  p.state.todos.unshift(todo);saveStateNow();closeModal('add-todo');
   document.getElementById('todo-text').value='';
   renderTodos();updateStats();
   addActivity('New task: <strong>'+text+'</strong>','var(--accent2)');toast('Task added!','success');
@@ -2203,11 +2318,11 @@ function addTodo(){
 function toggleTodo(id){
   const p=curP();if(!p)return;
   const t=p.state.todos.find(t=>t.id===id);if(!t)return;
-  t.done=!t.done;saveState();renderTodos();updateStats();
+  t.done=!t.done;saveStateNow();renderTodos();updateStats();
   if(t.done)addActivity('<strong>'+t.text+'</strong> completed ✓','var(--accent2)');
 }
-function deleteTodo(id){const p=curP();if(!p)return;p.state.todos=p.state.todos.filter(t=>t.id!==id);saveState();renderTodos();updateStats()}
-function clearDone(){const p=curP();if(!p)return;p.state.todos=p.state.todos.filter(t=>!t.done);saveState();renderTodos();updateStats();toast('Cleared','info')}
+function deleteTodo(id){const p=curP();if(!p)return;p.state.todos=p.state.todos.filter(t=>t.id!==id);saveStateNow();renderTodos();updateStats()}
+function clearDone(){const p=curP();if(!p)return;p.state.todos=p.state.todos.filter(t=>!t.done);saveStateNow();renderTodos();updateStats();toast('Cleared','info')}
 function renderTodos(){
   const p=curP(),todos=p?(p.state.todos||[]):[];
   const pending=todos.filter(t=>!t.done),done=todos.filter(t=>t.done);
@@ -2240,14 +2355,14 @@ function updateStats(){
 function updateCurrentProfileName(){
   const p=curP();if(!p)return;
   const v=document.getElementById('settings-name').value.trim();
-  p.name=v||'User';p.state.username=p.name;saveState();
+  p.name=v||'User';p.state.username=p.name;saveStateNow();
   document.getElementById('display-username').textContent=p.name;
   const bn=document.getElementById('profile-banner-name');if(bn)bn.textContent=p.name;
 }
 function resetProfileData(){
   if(!confirm('Reset ALL your data?'))return;
   const p=curP();if(!p)return;
-  p.state=defState(p.name);saveState();
+  p.state=defState(p.name);saveStateNow();
   renderItems();renderTodos();renderActivity();renderRecentItems();updateStats();
   document.getElementById('main-note').value='';document.getElementById('quick-note').value='';
   toast('Data cleared','info');
@@ -2307,7 +2422,7 @@ function savePassword(){
     if(!value){toast('Enter a password','error');return}
   }
   p.password={type,value};
-  saveState();
+  saveStateNow();
   toast('Protection saved! 🔒','success');
   loadSecuritySettings();
   renderProfileScreen();
@@ -2317,7 +2432,7 @@ function removePassword(){
   const p=curP();if(!p)return;
   if(!confirm('Remove password protection?'))return;
   delete p.password;
-  saveState();
+  saveStateNow();
   document.getElementById('pw-enable-toggle').checked=false;
   document.getElementById('pw-setup-section').style.display='none';
   document.getElementById('pw-active-info').style.display='none';
@@ -2421,7 +2536,7 @@ async function connectDiscord(){
     const p=curP();if(!p)return;
     if(!p.state.connections)p.state.connections={};
     p.state.connections.discord={userId,data:json.data};
-    saveState();
+    saveStateNow();
     renderDiscordCard(json.data);
     refreshDiscordSidebar();
     document.getElementById('dc-disconnect-btn').style.display='inline-flex';
@@ -2544,7 +2659,7 @@ function updateNpProgress(start,end){
 function disconnectDiscord(){
   const p=curP();if(!p)return;
   if(!confirm('Disconnect Discord?'))return;
-  delete p.state.connections.discord;saveState();
+  delete p.state.connections.discord;saveStateNow();
   const badge=document.getElementById('dc-badge');
   if(badge){badge.textContent='Not connected';badge.className='conn-status-badge disconnected';}
   const preview=document.getElementById('dc-preview');
@@ -2569,7 +2684,7 @@ async function refreshDiscord(){
     const res=await fetch('https://api.lanyard.rest/v1/users/'+userId);
     const json=await res.json();
     if(json.success){
-      p.state.connections.discord.data=json.data;saveState();
+      p.state.connections.discord.data=json.data;saveStateNow();
       renderDiscordCard(json.data);refreshDiscordSidebar();
       toast('Discord refreshed!','success');
     }
@@ -2601,7 +2716,7 @@ function startLanyardWS(userId){
           const p = curP(); if(!p) return;
           if(!p.state.connections?.discord) return;
           p.state.connections.discord.data = data;
-          saveState();
+          saveStateNow();
           renderDiscordCard(data);
           refreshDiscordSidebar();
         }
@@ -2626,7 +2741,7 @@ function startLanyardPolling(userId){
     const p=curP();if(!p)return;
     if(p.state.connections?.discord?.userId!==userId)return;
     fetch('https://api.lanyard.rest/v1/users/'+userId).then(r=>r.json()).then(j=>{
-      if(j.success){p.state.connections.discord.data=j.data;saveState();renderDiscordCard(j.data);refreshDiscordSidebar();}
+      if(j.success){p.state.connections.discord.data=j.data;saveStateNow();renderDiscordCard(j.data);refreshDiscordSidebar();}
     }).catch(()=>{});
   },20000);
 }
@@ -2687,7 +2802,7 @@ async function connectSteam(){
 
     const p=curP();if(!p)return;
     if(!p.state.connections)p.state.connections={};
-    p.state.connections.steam={steamId,apiKey,data};saveState();
+    p.state.connections.steam={steamId,apiKey,data};saveStateNow();
     renderSteamCard(data);
     document.getElementById('steam-disconnect-btn').style.display='inline-flex';
     toast('Steam connecté ! 🎮','success');
@@ -2773,7 +2888,7 @@ async function refreshSteam(){
       const games=gamesJson?.response?.games||[];
       data.recentGames=games.map(g=>({name:g.name||'',img:g.appid?'https://media.steampowered.com/steamcommunity/public/images/apps/'+g.appid+'/'+g.img_icon_url+'.jpg':'',hours:g.playtime_forever?Math.round(g.playtime_forever/60)+'':'',hoursRecent:g.playtime_2weeks?Math.round(g.playtime_2weeks/60)+'':''}));
     }catch(e){}
-    p.state.connections.steam.data=data;saveState();
+    p.state.connections.steam.data=data;saveStateNow();
     renderSteamCard(data);
     const akInp=document.getElementById('steam-apikey');if(akInp&&apiKey)akInp.value=apiKey;
     toast('Steam mis à jour !','success');
@@ -2787,7 +2902,7 @@ async function savesteamApiKey(){
   if(!apiKey){toast('Entre ta clé API Steam','error');return;}
   if(!p.state.connections)p.state.connections={};
   if(!p.state.connections.steam){toast('Connecte ton compte Steam d\'abord','error');return;}
-  p.state.connections.steam.apiKey=apiKey;saveState();
+  p.state.connections.steam.apiKey=apiKey;saveStateNow();
   toast('Clé API sauvegardée, refresh en cours…','info');
   await refreshSteam();
 }
@@ -2795,7 +2910,7 @@ async function savesteamApiKey(){
 function disconnectSteam(){
   const p=curP();if(!p)return;
   if(!confirm('Disconnect Steam?'))return;
-  delete p.state.connections.steam;saveState();
+  delete p.state.connections.steam;saveStateNow();
   const badge=document.getElementById('steam-badge');
   if(badge){badge.textContent='Not connected';badge.className='conn-status-badge disconnected';}
   const preview=document.getElementById('steam-preview');
@@ -2813,7 +2928,7 @@ function connectSpotify(){
   if(!url){toast('Enter a widget URL','error');return}
   const p=curP();if(!p)return;
   if(!p.state.connections)p.state.connections={};
-  p.state.connections.spotify={widgetUrl:url};saveState();
+  p.state.connections.spotify={widgetUrl:url};saveStateNow();
   refreshSpotifySidebar();
   const badge=document.getElementById('spotify-badge');
   if(badge){badge.textContent='Connected';badge.className='conn-status-badge connected';}
@@ -2825,7 +2940,7 @@ function connectSpotify(){
 function disconnectSpotify(){
   const p=curP();if(!p)return;
   if(!confirm('Remove Spotify widget?'))return;
-  delete p.state.connections.spotify;saveState();
+  delete p.state.connections.spotify;saveStateNow();
   refreshSpotifySidebar();
   const badge=document.getElementById('spotify-badge');
   if(badge){badge.textContent='Not connected';badge.className='conn-status-badge disconnected';}
@@ -2874,7 +2989,7 @@ function toggleManualBadge(key){
   const p=curP();if(!p)return;
   if(!p.state.manualBadges)p.state.manualBadges={};
   p.state.manualBadges[key]=!p.state.manualBadges[key];
-  saveState();
+  saveStateNow();
   renderManualBadgesUI();
   // Re-render discord card if connected
   const data=p.state.connections?.discord?.data;
@@ -2892,14 +3007,14 @@ function addPinnedLink(){
   if(!name||!url){toast('Enter a name and URL','error');return}
   if(!p.state.pinned)p.state.pinned=[];
   p.state.pinned.push({id:Date.now(),name,url,icon});
-  saveState();closeModal('add-pinned');
+  saveStateNow();closeModal('add-pinned');
   ['pinned-name','pinned-url','pinned-icon'].forEach(i=>document.getElementById(i).value='');
   renderPinnedLinks();toast(name+' pinned!','success');
 }
 function removePinnedLink(id){
   const p=curP();if(!p)return;
   p.state.pinned=(p.state.pinned||[]).filter(l=>l.id!==id);
-  saveState();renderPinnedLinks();
+  saveStateNow();renderPinnedLinks();
 }
 function renderPinnedLinks(){
   const p=curP();const grid=document.getElementById('pinned-grid');if(!grid)return;
@@ -2923,7 +3038,7 @@ function saveCountdown(){
   const date=document.getElementById('cd-date-input').value;
   if(!date){toast('Pick a date','error');return}
   const p=curP();if(!p)return;
-  p.state.countdown={label,date};saveState();
+  p.state.countdown={label,date};saveStateNow();
   closeModal('add-countdown');
   renderCountdown();toast('Countdown set!','success');
 }
@@ -2966,7 +3081,7 @@ function addHabit(){
   if(!name){toast('Enter a habit name','error');return}
   if(!p.state.habits)p.state.habits=[];
   p.state.habits.push({id:Date.now(),name,icon,log:{}});
-  saveState();closeModal('add-habit');
+  saveStateNow();closeModal('add-habit');
   document.getElementById('habit-name-input').value='';
   document.getElementById('habit-icon-input').value='';
   renderHabits();toast(name+' added!','success');
@@ -2976,12 +3091,12 @@ function toggleHabitDay(habitId,dateStr){
   const h=p.state.habits.find(h=>h.id===habitId);if(!h)return;
   if(!h.log)h.log={};
   h.log[dateStr]=!h.log[dateStr];
-  saveState();renderHabits();
+  saveStateNow();renderHabits();
 }
 function deleteHabit(id){
   const p=curP();if(!p)return;
   p.state.habits=(p.state.habits||[]).filter(h=>h.id!==id);
-  saveState();renderHabits();
+  saveStateNow();renderHabits();
 }
 function getWeekDays(){
   const days=[];const today=new Date();today.setHours(0,0,0,0);
@@ -3044,7 +3159,7 @@ function addKanbanCard(){
   const col=document.getElementById('kcard-col').value;
   if(!p.state.kanban)p.state.kanban=[];
   p.state.kanban.push({id:Date.now(),title,tag,col});
-  saveState();closeModal('add-kcard');
+  saveStateNow();closeModal('add-kcard');
   document.getElementById('kcard-title').value='';document.getElementById('kcard-tag').value='';
   renderKanban();toast('Card added!','success');
 }
@@ -3054,7 +3169,7 @@ function quickAddKanban(col){
 function deleteKanbanCard(id){
   const p=curP();if(!p)return;
   p.state.kanban=(p.state.kanban||[]).filter(c=>c.id!==id);
-  saveState();renderKanban();
+  saveStateNow();renderKanban();
 }
 function kanbanDragOver(e,col){
   e.preventDefault();
@@ -3072,7 +3187,7 @@ function kanbanDrop(e,col){
   if(dragKanbanId===null)return;
   const p=curP();if(!p)return;
   const card=p.state.kanban.find(c=>c.id===dragKanbanId);
-  if(card){card.col=col;saveState();renderKanban();}
+  if(card){card.col=col;saveStateNow();renderKanban();}
   dragKanbanId=null;
 }
 const TAG_COLORS=['#7c6af7','#5de0b0','#f76a6a','#f7b26a','#5b8df7','#ec4899'];
@@ -3117,20 +3232,20 @@ function addCalEvent(){
   if(!p.state.events)p.state.events=[];
   p.state.events.push({id:Date.now(),title,date,color});
   p.state.events.sort((a,b)=>a.date.localeCompare(b.date));
-  saveState();closeModal('add-event');
+  saveStateNow();closeModal('add-event');
   document.getElementById('event-title').value='';
   renderCalendar();renderAllEvents();toast(title+' added!','success');
 }
 function deleteCalEvent(id){
   const p=curP();if(!p)return;
   p.state.events=(p.state.events||[]).filter(e=>e.id!==id);
-  saveState();renderCalendar();renderAllEvents();
+  saveStateNow();renderCalendar();renderAllEvents();
 }
 function clearPastEvents(){
   const p=curP();if(!p)return;
   const today=new Date().toISOString().slice(0,10);
   p.state.events=(p.state.events||[]).filter(e=>e.date>=today);
-  saveState();renderCalendar();renderAllEvents();toast('Past events cleared','info');
+  saveStateNow();renderCalendar();renderAllEvents();toast('Past events cleared','info');
 }
 function renderCalendar(){
   const p=curP();
@@ -3533,7 +3648,7 @@ async function connectValo(){
     const p=curP();if(!p)return;
     if(!p.state.gaming)p.state.gaming={};
     p.state.gaming.valo={name,tag,region,apiKey,trackerApiKey,puuid:acc.data.puuid,card:acc.data.card?.small||''};
-    saveState();
+    saveStateNow();
     await loadValoStats();
     document.getElementById('valo-disconnect').style.display='inline-flex';
     toast('Valorant connected!','success');
@@ -3581,7 +3696,7 @@ async function loadValoStats(mode){
     const currentData=mmrData?.current_data||mmrData;
     if(currentData?.currenttierpatched&&pGov?.state?.gaming?.valo){
       pGov.state.gaming.valo._lastRank={rankName:currentData.currenttierpatched||'Unranked',rr:currentData.ranking_in_tier||0};
-      saveState();if(typeof renderGamingOverview==='function')renderGamingOverview();
+      saveStateNow();if(typeof renderGamingOverview==='function')renderGamingOverview();
     }
     const sub=document.getElementById('valo-account-sub');
     if(sub)sub.textContent=name+'#'+tag+' · '+region.toUpperCase();
@@ -3831,7 +3946,7 @@ function renderValoModeContent(mmr,matches,name,tag,mode){
 function disconnectValo(){
   const p=curP();if(!p)return;
   if(!confirm('Disconnect Valorant?'))return;
-  delete p.state.gaming?.valo;saveState();
+  delete p.state.gaming?.valo;saveStateNow();
   document.getElementById('valo-stats-area').innerHTML='<div class="game-not-connected"><div style="font-size:28px;margin-bottom:8px">🔴</div><div>Enter your Riot Name#Tag to connect</div></div>';
   document.getElementById('valo-badge').textContent='Not connected';document.getElementById('valo-badge').className='conn-status-badge disconnected';
   document.getElementById('valo-account-sub').textContent='Not connected';
@@ -3870,7 +3985,7 @@ async function connectLoL(){
     const p=curP();if(!p)return;
     if(!p.state.gaming)p.state.gaming={};
     p.state.gaming.lol={name:summonerName,region,puuid,summonerId,apiKey};
-    saveState();
+    saveStateNow();
     await loadLoLStats();
     document.getElementById('lol-disconnect').style.display='inline-flex';
     toast('LoL connected!','success');
@@ -3950,7 +4065,7 @@ function renderLoLStats(ranked,matches,puuid,name){
 function disconnectLoL(){
   const p=curP();if(!p)return;
   if(!confirm('Disconnect LoL?'))return;
-  delete p.state.gaming?.lol;saveState();
+  delete p.state.gaming?.lol;saveStateNow();
   document.getElementById('lol-stats-area').innerHTML='<div class="game-not-connected"><div style="font-size:28px">⚔️</div><div>Enter your Summoner Name to connect</div></div>';
   document.getElementById('lol-badge').textContent='Not connected';document.getElementById('lol-badge').className='conn-status-badge disconnected';
   document.getElementById('lol-account-sub').textContent='Not connected';
@@ -4056,7 +4171,7 @@ function importData(e){
       if(!data.profiles||!Array.isArray(data.profiles))throw new Error('Invalid format');
       if(!confirm('This will replace ALL your current data. Continue?'))return;
       profiles=data.profiles;
-      saveState();
+      saveStateNow();
       toast('Data imported! Reloading…','success');
       setTimeout(()=>{
         document.getElementById('main-sidebar').style.display='none';

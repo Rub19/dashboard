@@ -1349,12 +1349,12 @@ let _isAdmin=false;
 // ── AUTH UI ──────────────────────────────────────
 function showChangelog(){
   const versions=[
-    {v:'v1.2.0',date:'05/06/2026',changes:['Settings → Mon compte : modifier pseudo, email, mot de passe','Login par pseudo corrigé avec fallback email généré','Import JSON → sauvegarde cloud immédiate avant rechargement','Fix : données plus perdues après import + refresh']},
-    {v:'v1.1.0',date:'05/06/2026',changes:['Changelog visible en bas de l\'écran profils','Sidebar compactée pour tout afficher','Bouton Admin dans la sidebar pour le compte owner','Version affichée et cliquable']},
-    {v:'v1.0.4',date:'05/06/2026',changes:['saveStateNow() sur toutes les actions (51 appels)','Compression avatar avant envoi Supabase','Login pseudo avec fallback email généré']},
-    {v:'v1.0.3',date:'05/06/2026',changes:['Intégration Supabase — auth email + pseudo','Sauvegarde cloud des données par profil','Panel Admin avec gestion des comptes et stats']},
-    {v:'v1.0.2',date:'05/06/2026',changes:['Worker Cloudflare pour Steam + Tracker + Henrik','Clés API sécurisées côté serveur','Plus de problèmes CORS']},
-    {v:'v1.0.1',date:'05/06/2026',changes:['Onglets Valorant (Competitive / Swiftplay / Unrated)','Filtrage des matchs par mode côté client','Stats globales + cartes visuelles de matchs','Top agents + carte préférée + headshot %']},
+    {v:'v1.2.0',date:'05/06/2026',changes:['Settings Mon compte : modifier pseudo, email, mot de passe','Login par pseudo corrige avec fallback email','Import JSON -> sauvegarde cloud immediate avant rechargement','Fix : donnees plus perdues apres import + refresh']},
+    {v:'v1.1.0',date:'05/06/2026',changes:['Changelog visible en bas de lecran profils','Sidebar compactee pour tout afficher','Bouton Admin dans la sidebar pour le compte owner','Version affichee et cliquable']},
+    {v:'v1.0.4',date:'05/06/2026',changes:['saveStateNow() sur toutes les actions (51 appels)','Compression avatar avant envoi Supabase','Login pseudo avec fallback email genere']},
+    {v:'v1.0.3',date:'05/06/2026',changes:['Integration Supabase - auth email + pseudo','Sauvegarde cloud des donnees par profil','Panel Admin avec gestion des comptes et stats']},
+    {v:'v1.0.2',date:'05/06/2026',changes:['Worker Cloudflare pour Steam + Tracker + Henrik','Cles API securisees cote serveur','Plus de problemes CORS']},
+    {v:'v1.0.1',date:'05/06/2026',changes:['Onglets Valorant (Competitive / Swiftplay / Unrated)','Filtrage des matchs par mode cote client','Stats globales + cartes visuelles de matchs','Top agents + carte preferee + headshot %']},
     {v:'v1.0.0',date:'05/06/2026',changes:['Version initiale du dashboard','Profils multiples avec avatar et PIN','Discord, Steam, Spotify, Valorant, LoL','Kanban, Habits, Calendar, Tasks, Notes, Stats']},
   ];
   let html=`<div style="position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.remove()">

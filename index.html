@@ -1279,7 +1279,7 @@ function loadState(){try{const d=localStorage.getItem('myspace_profiles');if(d)p
 function saveState(){try{localStorage.setItem('myspace_profiles',JSON.stringify(profiles))}catch(e){}}
 function getP(id){return profiles.find(p=>p.id===id)}
 function curP(){return getP(currentId)}
-function defState(name){return{items:[],todos:[],note:'',activity:[],username:name||'User',connections:{}}}
+function defState(name){return{items:[],todos:[],note:'',activity:[],username:name||'User',connections:{},gaming:{}}}
 
 // ═══════════════════════════════════════════════════
 //  AVATAR HELPERS
@@ -1332,6 +1332,9 @@ function toggleManageMode(){managingMode=!managingMode;renderProfileScreen()}
 
 function enterDashboard(id){
   currentId=id;
+  // Réinitialise les caches globaux pour ce nouveau profil
+  _valoMatchCache={};
+  _valoAllMatches=[];
   const screen=document.getElementById('profile-screen');
   screen.classList.add('hiding');
   setTimeout(()=>{
@@ -1343,6 +1346,10 @@ function enterDashboard(id){
 }
 
 function goToProfileScreen(){
+  // Nettoie les connexions temps réel de l'ancien profil
+  if(typeof _lanyardWS!=='undefined'&&_lanyardWS){_lanyardWS.close();clearInterval(_lanyardHB);}
+  _valoMatchCache={};
+  _valoAllMatches=[];
   document.getElementById('main-sidebar').style.display='none';
   document.getElementById('main-content').style.display='none';
   document.getElementById('password-screen').style.display='none';
@@ -2393,23 +2400,15 @@ function startLanyardPolling(userId){
 }
 
 // ═══ STEAM ═══
+const WORKER_URL='https://raspy-fog-bf5b.rub19-mailpro.workers.dev';
+
 async function fetchSteamAPI(endpoint,apiKey,params){
-  // Try direct API first (works if CORS allows), then fallback proxies
-  const url='https://api.steampowered.com'+endpoint+'?key='+apiKey+'&'+params+'&format=json';
-  const proxies=[
-    'https://corsproxy.io/?'+encodeURIComponent(url),
-    'https://api.allorigins.win/raw?url='+encodeURIComponent(url),
-    'https://thingproxy.freeboard.io/fetch/'+url
-  ];
-  for(const proxy of proxies){
-    try{
-      const res=await fetch(proxy,{signal:AbortSignal.timeout(8000)});
-      if(!res.ok)continue;
-      const json=await res.json();
-      return json;
-    }catch(e){continue;}
-  }
-  throw new Error('Tous les proxies ont échoué');
+  // Utilise le Worker Cloudflare — clé Steam stockée côté serveur
+  const ep=endpoint.replace(/^\/+/,'');
+  const workerUrl=`${WORKER_URL}/steam/${ep}?${params}`;
+  const res=await fetch(workerUrl,{signal:AbortSignal.timeout(12000)});
+  if(!res.ok)throw new Error('Steam API erreur '+res.status);
+  return res.json();
 }
 
 async function connectSteam(){
@@ -2417,7 +2416,6 @@ async function connectSteam(){
   const apiKey=(document.getElementById('steam-apikey')?.value||'').trim();
   if(!steamId){toast('Entre ton Steam ID64','error');return}
   if(!/^\d{17}$/.test(steamId)){toast('Steam ID64 doit faire 17 chiffres','error');return}
-  if(!apiKey){toast('Entre ta clé API Steam pour continuer','error');return}
   toast('Connexion à Steam…','info');
   try{
     // Fetch profile summary
@@ -3745,9 +3743,11 @@ function getTrackerKey(){
 
 async function fetchHenrik(path, apiKey=''){
   const key=apiKey||getHenrikKey();
+  // Passe par le Worker Cloudflare pour éviter les problèmes CORS
+  const workerUrl=`${WORKER_URL}/henrik${path}`;
   const headers={};
-  if(key) headers['Authorization']=key;
-  const res=await fetch('https://api.henrikdev.xyz/valorant'+path,{headers});
+  if(key) headers['X-Henrik-Key']=key;
+  const res=await fetch(workerUrl,{headers});
   if(res.status===401)throw new Error('Henrik API key required — get a free key at docs.henrikdev.xyz');
   if(res.status===404)throw new Error('Player not found — check Name#TAG and region');
   if(res.status===429)throw new Error('Rate limited — wait a moment and retry');
@@ -3911,6 +3911,7 @@ function renderGamingOverview(){
   profiles.forEach(p=>{
     if(!p.state) p.state = defState(p.name);
     if(!p.state.connections) p.state.connections={};
+    if(!p.state.gaming) p.state.gaming={};
     if(!p.state.pinned) p.state.pinned=[];
     if(!p.state.habits) p.state.habits=[];
     if(!p.state.kanban) p.state.kanban=[];

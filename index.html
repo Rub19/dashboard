@@ -578,7 +578,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   <div class="ps-profiles" id="ps-profiles-list"></div>
   <button class="ps-manage-btn" id="ps-manage-btn" onclick="toggleManageMode()">Manage profiles</button>
   <button onclick="doLogout()" style="margin-top:16px;background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:var(--font)">🚪 Sign out</button>
-  <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="Voir le changelog">v1.2.1 · changelog</div>
+  <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="Voir le changelog">v1.3.0 · changelog</div>
 </div>
 
 <!-- SIDEBAR -->
@@ -1455,6 +1455,31 @@ async function onAuthSuccess(){
   _sbUser=user;
   _isAdmin=user?.email===ADMIN_EMAIL;
   document.getElementById('auth-screen').style.display='none';
+
+  // Collect login metadata
+  try{
+    const ua=navigator.userAgent;
+    const browser=ua.includes('Chrome')?'Chrome':ua.includes('Firefox')?'Firefox':ua.includes('Safari')?'Safari':ua.includes('Edge')?'Edge':'Unknown';
+    const os=ua.includes('Windows')?'Windows':ua.includes('Mac')?'MacOS':ua.includes('Linux')?'Linux':ua.includes('Android')?'Android':ua.includes('iPhone')||ua.includes('iPad')?'iOS':'Unknown';
+    // Get IP + city from ipapi
+    let ip='',city='',country='';
+    try{
+      const geo=await fetch('https://ipapi.co/json/').then(r=>r.json());
+      ip=geo.ip||'';city=geo.city||'';country=geo.country_name||'';
+    }catch(e){}
+    await sb.from('profiles').update({
+      last_seen:new Date().toISOString(),
+      last_ip:ip,
+      last_city:city,
+      last_country:country,
+      last_browser:browser,
+      last_os:os,
+      login_count:user?.user_metadata?.login_count||0
+    }).eq('id',user.id);
+    // Increment login count
+    await sb.rpc('increment_login_count',{user_id:user.id}).catch(()=>{});
+  }catch(e){console.warn('Metadata error:',e);}
+
   await loadCloudState();
   renderProfileScreen();
   document.getElementById('profile-screen').style.display='flex';
@@ -1573,40 +1598,82 @@ async function openAdminPanel(){
   if(!_isAdmin){toast('Access denied','error');return;}
   const {data:users}=await sb.from('profiles').select('*').order('created_at',{ascending:false});
   const {data:allData}=await sb.from('dashboard_data').select('*');
+  const totalLogins=users?.reduce((s,u)=>s+(u.login_count||0),0)||0;
   let html=`<div style="position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.remove()">
-  <div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:28px;width:100%;max-width:800px;max-height:85vh;overflow-y:auto">
+  <div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:28px;width:100%;max-width:860px;max-height:85vh;overflow-y:auto">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-      <div style="font-size:18px;font-weight:700">Admin Admin Panel</div>
+      <div style="font-size:18px;font-weight:700">Admin Panel</div>
       <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">x</button>
     </div>
-    <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
-      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 20px;flex:1;min-width:120px;text-align:center">
+    <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 20px;flex:1;min-width:100px;text-align:center">
         <div style="font-size:24px;font-weight:700;color:var(--accent)">${users?.length||0}</div>
-        <div style="font-size:12px;color:var(--muted)">Comptes</div>
+        <div style="font-size:12px;color:var(--muted)">Accounts</div>
       </div>
-      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 20px;flex:1;min-width:120px;text-align:center">
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 20px;flex:1;min-width:100px;text-align:center">
         <div style="font-size:24px;font-weight:700;color:var(--accent2)">${allData?.length||0}</div>
-        <div style="font-size:12px;color:var(--muted)">Profils total</div>
+        <div style="font-size:12px;color:var(--muted)">Total profiles</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 20px;flex:1;min-width:100px;text-align:center">
+        <div style="font-size:24px;font-weight:700;color:var(--accent4)">${totalLogins}</div>
+        <div style="font-size:12px;color:var(--muted)">Total logins</div>
       </div>
     </div>
     <div style="font-size:12px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:10px">All accounts</div>
     <div style="display:flex;flex-direction:column;gap:8px">`;
   users?.forEach(u=>{
     const userProfiles=allData?.filter(d=>d.user_id===u.id)||[];
-    const lastSeen=u.last_seen?new Date(u.last_seen).toLocaleDateString('fr-FR'):'never';
-    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px">
-      <div style="display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap">
-        <div>
-          <div style="font-weight:600">${u.username} ${u.email===ADMIN_EMAIL?'Admin':''}</div>
-          <div style="font-size:11px;color:var(--muted)">${u.email||'-'} . Joined ${new Date(u.created_at).toLocaleDateString('fr-FR')} . Last seen ${lastSeen}</div>
-          <div style="font-size:11px;color:var(--accent);margin-top:2px">${userProfiles.length} profil(s) : ${userProfiles.map(p=>p.profile_name).join(', ')}</div>
+    const joined=new Date(u.created_at).toLocaleDateString('en-GB');
+    const lastSeen=u.last_seen?new Date(u.last_seen).toLocaleDateString('en-GB'):'never';
+    const isMe=u.email===ADMIN_EMAIL;
+    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden">
+      <div style="padding:12px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap" onclick="toggleAdminUserDetails('${u.id}')">
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600">${u.username} ${isMe?'<span style=\"font-size:10px;background:rgba(124,106,247,.2);color:var(--accent);padding:1px 7px;border-radius:20px\">Admin</span>':''}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">${u.email||'-'} · ${userProfiles.length} profile(s) · Joined ${joined}</div>
         </div>
-        ${u.email!==ADMIN_EMAIL?`<button onclick="adminDeleteUser('${u.id}',this)" style="background:rgba(247,106,106,.15);color:var(--accent3);border:1px solid var(--accent3);border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;font-family:var(--font)">Delete</button>`:''}
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+          ${!isMe?`<button onclick="event.stopPropagation();adminDeleteUser('${u.id}',this)" style="background:rgba(247,106,106,.15);color:var(--accent3);border:1px solid var(--accent3);border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;font-family:var(--font)">Delete</button>`:''}
+          <span style="color:var(--muted);font-size:16px">v</span>
+        </div>
+      </div>
+      <div id="admin-user-${u.id}" style="display:none;padding:0 16px 14px;border-top:1px solid var(--border)">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:12px">
+          <div style="background:var(--surface3);border-radius:6px;padding:10px">
+            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Last seen</div>
+            <div style="font-size:13px;font-weight:500">${lastSeen}</div>
+          </div>
+          <div style="background:var(--surface3);border-radius:6px;padding:10px">
+            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Logins</div>
+            <div style="font-size:13px;font-weight:500">${u.login_count||0}</div>
+          </div>
+          <div style="background:var(--surface3);border-radius:6px;padding:10px">
+            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Browser / OS</div>
+            <div style="font-size:13px;font-weight:500">${u.last_browser||'-'} / ${u.last_os||'-'}</div>
+          </div>
+          <div style="background:var(--surface3);border-radius:6px;padding:10px">
+            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">IP Address</div>
+            <div style="font-size:13px;font-weight:500;font-family:var(--mono)">${u.last_ip||'-'}</div>
+          </div>
+          <div style="background:var(--surface3);border-radius:6px;padding:10px">
+            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Location</div>
+            <div style="font-size:13px;font-weight:500">${u.last_city&&u.last_country?u.last_city+', '+u.last_country:'-'}</div>
+          </div>
+          <div style="background:var(--surface3);border-radius:6px;padding:10px">
+            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Profiles</div>
+            <div style="font-size:13px;font-weight:500">${userProfiles.map(p=>p.profile_name).join(', ')||'-'}</div>
+          </div>
+        </div>
       </div>
     </div>`;
   });
   html+=`</div></div></div>`;
   document.body.insertAdjacentHTML('beforeend',html);
+}
+
+function toggleAdminUserDetails(userId){
+  const el=document.getElementById('admin-user-'+userId);
+  if(el)el.style.display=el.style.display==='none'?'block':'none';
 }
 
 async function adminDeleteUser(userId,btn){

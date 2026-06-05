@@ -2344,7 +2344,7 @@ toggleItemTypeFields();
 //  TOAST
 // ===================================================
 function toast(msg,type='info'){
-  const icons={success:'',error:'',info:''};
+  const icons={success:'\u2705',error:'\u274C',info:'\u2139\uFE0F'};
   const el=document.createElement('div');el.className='toast '+type;
   el.innerHTML='<span>'+icons[type]+'</span> '+msg;
   document.getElementById('toasts').appendChild(el);
@@ -2372,7 +2372,7 @@ function clearActivity(){const p=curP();if(!p)return;p.state.activity=[];saveSta
 // ===================================================
 //  ITEMS / FILES
 // ===================================================
-const tIcons={file:'',link:'',image:'',folder:'',code:'',video:''};
+const tIcons={file:'\uD83D\uDCC4',link:'\uD83D\uDD17',image:'\uD83D\uDDBC\uFE0F',folder:'\uD83D\uDCC1',code:'\uD83D\uDCBB',video:'\uD83C\uDFAC'};
 const tClass={file:'doc',link:'link',image:'img',folder:'folder',code:'code',video:'video'};
 let curCat='all';
 function switchCategory(cat,el){curCat=cat;document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('active'));if(el)el.classList.add('active');renderItems()}
@@ -2478,7 +2478,7 @@ function clearDone(){const p=curP();if(!p)return;p.state.todos=p.state.todos.fil
 function renderTodos(){
   const p=curP(),todos=p?(p.state.todos||[]):[];
   const pending=todos.filter(t=>!t.done),done=todos.filter(t=>t.done);
-  const pi={high:' ',normal:'',low:' '};
+  const pi={high:'\uD83D\uDD34 ',normal:'',low:'\uD83D\uDFE2 '};
   const pL=document.getElementById('todo-pending-list'),dL=document.getElementById('todo-done-list'),pc=document.getElementById('todo-pending-count');
   if(pc)pc.textContent=pending.length+' pending';
   if(pL)pL.innerHTML=!pending.length?'<div class="empty-state" style="padding:20px"><div class="empty-icon"></div>All done!</div>':pending.map(t=>'<div class="todo-item" onclick="toggleTodo('+t.id+')"><div class="todo-check"></div><div class="todo-text">'+(pi[t.priority]||'')+t.text+'</div><button class="item-btn" onclick="event.stopPropagation();deleteTodo('+t.id+')" style="opacity:.5"></button></div>').join('');

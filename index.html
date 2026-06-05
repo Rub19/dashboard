@@ -43,20 +43,20 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 
 /* ── PROFILE SCREEN ── */
-#profilee-screen{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;animation:fadeIn .4s ease}
-#profilee-screen.hiding{animation:profileeHide .5s cubic-bezier(.4,0,.2,1) forwards}
+#profile-screen{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;animation:fadeIn .4s ease}
+#profile-screen.hiding{animation:profileeHide .5s cubic-bezier(.4,0,.2,1) forwards}
 @keyframes profileeHide{to{opacity:0;transform:scale(1.04)}}
 .ps-logo{font-size:12px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:52px;display:flex;align-items:center;gap:10px}
 .ps-logo-icon{width:28px;height:28px;background:linear-gradient(135deg,var(--accent),#a78bfa);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
 .ps-title{font-size:30px;font-weight:600;letter-spacing:-.8px;margin-bottom:10px;text-align:center}
 .ps-sub{font-size:14px;color:var(--muted);margin-bottom:52px;text-align:center}
-.ps-profilees{display:flex;gap:28px;align-items:flex-end;flex-wrap:wrap;justify-content:center;margin-bottom:52px}
-.ps-profilee{display:flex;flex-direction:column;align-items:center;gap:14px;cursor:pointer;position:relative;user-select:none}
-.ps-profilee:hover .ps-pname{color:var(--text)}
+.ps-profiles{display:flex;gap:28px;align-items:flex-end;flex-wrap:wrap;justify-content:center;margin-bottom:52px}
+.ps-profile{display:flex;flex-direction:column;align-items:center;gap:14px;cursor:pointer;position:relative;user-select:none}
+.ps-profile:hover .ps-pname{color:var(--text)}
 .ps-avatar-wrap{position:relative;display:inline-block}
 .ps-avatar{width:96px;height:96px;border-radius:16px;border:2.5px solid transparent;transition:all .22s cubic-bezier(.4,0,.2,1);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.ps-profilee:hover .ps-avatar{transform:scale(1.06);border-color:var(--text)!important}
-.ps-profilee:active .ps-avatar{transform:scale(.97)}
+.ps-profile:hover .ps-avatar{transform:scale(1.06);border-color:var(--text)!important}
+.ps-profile:active .ps-avatar{transform:scale(.97)}
 .ps-avatar img{width:100%;height:100%;object-fit:cover;display:block}
 .ps-lock{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);background:var(--surface2);border:1.5px solid var(--border2);border-radius:20px;padding:2px 8px;font-size:10px;color:var(--muted);white-space:nowrap}
 .ps-pname{font-size:14px;color:var(--muted);font-weight:500;transition:color var(--transition);text-align:center;max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -66,9 +66,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .ps-manage-btn{font-size:11.5px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--muted);background:transparent;border:1.5px solid var(--surface3);padding:10px 28px;border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font);transition:all var(--transition)}
 .ps-manage-btn:hover{border-color:var(--text);color:var(--text)}
 .ps-edit-btn{position:absolute;top:-8px;right:-8px;width:26px;height:26px;border-radius:50%;background:var(--surface2);border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted);opacity:0;transition:opacity var(--transition);cursor:pointer;z-index:2}
-.ps-profilee:hover .ps-edit-btn{opacity:1}
+.ps-profile:hover .ps-edit-btn{opacity:1}
 .ps-delete-btn{position:absolute;top:-8px;left:-8px;width:22px;height:22px;border-radius:50%;background:var(--accent3);border:none;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;opacity:0;transition:opacity var(--transition);cursor:pointer;z-index:2}
-.ps-profilee.managing .ps-delete-btn{opacity:1;animation:wobble .5s ease infinite alternate}
+.ps-profile.managing .ps-delete-btn{opacity:1;animation:wobble .5s ease infinite alternate}
 @keyframes wobble{0%{transform:rotate(-4deg)}100%{transform:rotate(4deg)}}
 .avatar-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0}
 .avatar-opt{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;border:2px solid transparent;transition:all var(--transition)}
@@ -249,8 +249,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .conn-status-badge{margin-left:auto;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
 .conn-status-badge.connected{background:rgba(93,224,176,.12);color:var(--accent2)}
 .conn-status-badge.disconnected{background:rgba(138,138,154,.1);color:var(--muted)}
-.conn-profilee-preview{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:14px;display:none}
-.conn-profilee-preview.visible{display:flex;align-items:center;gap:14px}
+.conn-profile-preview{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:14px;display:none}
+.conn-profile-preview.visible{display:flex;align-items:center;gap:14px}
 .conn-preview-avatar{width:52px;height:52px;border-radius:14px;overflow:hidden;flex-shrink:0;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:22px}
 .conn-preview-avatar img{width:100%;height:100%;object-fit:cover}
 .conn-preview-name{font-size:15px;font-weight:600}
@@ -322,17 +322,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .theme-swatch.active::after{opacity:1}
 
 /* ── PROFILE BANNER ── */
-.profilee-banner{position:relative;margin:-32px -36px 28px;height:160px;overflow:hidden;background:linear-gradient(135deg,rgba(124,106,247,.3),rgba(93,224,176,.15));flex-shrink:0}
-.profilee-banner-img{width:100%;height:100%;object-fit:cover;display:block}
-.profilee-banner-gradient{position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(to top,var(--bg),transparent)}
-.profilee-banner-info{position:absolute;bottom:20px;left:36px;display:flex;align-items:flex-end;gap:14px}
-.profilee-banner-avatar{width:64px;height:64px;border-radius:16px;border:3px solid var(--bg);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
-.profilee-banner-avatar img{width:100%;height:100%;object-fit:cover;display:block}
-.profilee-banner-name{font-size:22px;font-weight:700;letter-spacing:-.5px;text-shadow:0 1px 8px rgba(0,0,0,.5)}
-.profilee-banner-role{font-size:12px;color:rgba(255,255,255,.7);margin-top:2px}
-.profilee-banner-empty{background:linear-gradient(135deg,rgba(124,106,247,.25) 0%,rgba(93,224,176,.1) 100%)}
+.profile-banner{position:relative;margin:-32px -36px 28px;height:160px;overflow:hidden;background:linear-gradient(135deg,rgba(124,106,247,.3),rgba(93,224,176,.15));flex-shrink:0}
+.profile-banner-img{width:100%;height:100%;object-fit:cover;display:block}
+.profile-banner-gradient{position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(to top,var(--bg),transparent)}
+.profile-banner-info{position:absolute;bottom:20px;left:36px;display:flex;align-items:flex-end;gap:14px}
+.profile-banner-avatar{width:64px;height:64px;border-radius:16px;border:3px solid var(--bg);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+.profile-banner-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.profile-banner-name{font-size:22px;font-weight:700;letter-spacing:-.5px;text-shadow:0 1px 8px rgba(0,0,0,.5)}
+.profile-banner-role{font-size:12px;color:rgba(255,255,255,.7);margin-top:2px}
+.profile-banner-empty{background:linear-gradient(135deg,rgba(124,106,247,.25) 0%,rgba(93,224,176,.1) 100%)}
 
-@media(max-width:1100px){.stats-row{grid-template-columns:repeat(2,1fr)}.grid-2,.grid-3,.grid-widgets{grid-template-columns:1fr}.links-grid{grid-template-columns:1fr}.profilee-banner{margin:-32px -20px 24px}}
+@media(max-width:1100px){.stats-row{grid-template-columns:repeat(2,1fr)}.grid-2,.grid-3,.grid-widgets{grid-template-columns:1fr}.links-grid{grid-template-columns:1fr}.profile-banner{margin:-32px -20px 24px}}
 
 
 /* ── RESIZABLE SIDEBAR ── */
@@ -496,7 +496,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   .sidebar.mobile-open{transform:translateX(0)}
   .sidebar-overlay.mobile-open{display:block}
   .main{margin-left:0!important;padding:20px 16px;padding-top:56px}
-  .profilee-banner{margin:-20px -16px 20px}
+  .profile-banner{margin:-20px -16px 20px}
   .stats-row{grid-template-columns:repeat(2,1fr)!important}
   .grid-2,.grid-3,.grid-widgets{grid-template-columns:1fr!important}
   .kanban-board{grid-template-columns:1fr!important}
@@ -510,7 +510,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 <!-- PASSWORD SCREEN -->
 <div id="password-screen">
   <div class="pw-avatar" id="pw-avatar"></div>
-  <div class="pw-name" id="pw-name">Profilee</div>
+  <div class="pw-name" id="pw-name">Profile</div>
   <div class="pw-sub" id="pw-sub">Enter your PIN to continue</div>
   <div id="pw-pin-section">
     <div class="pw-pin-row" id="pw-dots"></div>
@@ -524,7 +524,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
       <div class="pw-error" id="pw-text-error"></div>
     </div>
   </div>
-  <button class="pw-back" onclick="cancelPasswordScreen()">&#8592; Back to profilees</button>
+  <button class="pw-back" onclick="cancelPasswordScreen()">&#8592; Back to profiles</button>
 </div>
 
 <!-- AUTH SCREEN -->
@@ -571,14 +571,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 </div>
 
 <!-- PROFILE SELECT SCREEN -->
-<div id="profilee-screen" style="display:none">
+<div id="profile-screen" style="display:none">
   <div class="ps-logo"><div class="ps-logo-icon">&#9889;</div>MySpace</div>
   <div class="ps-title">Who's using?</div>
-  <div class="ps-sub">Select your profilee to continue</div>
-  <div class="ps-profilees" id="ps-profilees-list"></div>
-  <button class="ps-manage-btn" id="ps-manage-btn" onclick="toggleManageMode()">Manage profilees</button>
+  <div class="ps-sub">Select your profile to continue</div>
+  <div class="ps-profiles" id="ps-profiles-list"></div>
+  <button class="ps-manage-btn" id="ps-manage-btn" onclick="toggleManageMode()">Manage profiles</button>
   <button onclick="doLogout()" style="margin-top:16px;background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:var(--font)">🚪 Sign out</button>
-  <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="Voir le changelog">v1.4.0 · changelog</div>
+  <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="Voir le changelog">v1.5.2 · changelog</div>
 </div>
 
 <!-- SIDEBAR -->
@@ -656,7 +656,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
       </div>
       <div id="sb-twitch-viewers" style="font-size:11px;color:#9147ff;margin-top:4px;font-weight:600"></div>
     </div>
-    <div class="user-card" onclick="goToProfileeScreen()">
+    <div class="user-card" onclick="goToProfileScreen()">
       <div class="sidebar-avatar" id="sidebar-avatar"></div>
       <div class="user-info"><div class="user-name" id="display-username">User</div><div class="user-role">Personal dashboard</div></div>
       <span class="switch-hint">Switch &#8599;</span>
@@ -671,14 +671,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   <!-- OVERVIEW -->
   <div id="page-dashboard" class="tab-content active">
     <!-- PROFILE BANNER -->
-    <div class="profilee-banner profilee-banner-empty" id="profilee-banner">
-      <img class="profilee-banner-img" id="profilee-banner-img" src="" alt="" style="display:none">
-      <div class="profilee-banner-gradient"></div>
-      <div class="profilee-banner-info">
-        <div class="profilee-banner-avatar" id="profilee-banner-avatar"></div>
+    <div class="profile-banner profile-banner-empty" id="profile-banner">
+      <img class="profile-banner-img" id="profile-banner-img" src="" alt="" style="display:none">
+      <div class="profile-banner-gradient"></div>
+      <div class="profile-banner-info">
+        <div class="profile-banner-avatar" id="profile-banner-avatar"></div>
         <div>
-          <div class="profilee-banner-name" id="profilee-banner-name">User</div>
-          <div class="profilee-banner-role">Personal dashboard</div>
+          <div class="profile-banner-name" id="profile-banner-name">User</div>
+          <div class="profile-banner-role">Personal dashboard</div>
         </div>
       </div>
     </div>
@@ -951,9 +951,29 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
         </div>
       </div>
     </div>
+    <!-- COMPARE WITH FRIENDS -->
+    <div class="game-card">
+      <div class="game-card-header">
+        <div class="game-card-logo" style="background:rgba(124,106,247,.12);color:var(--accent)">&#128101;</div>
+        <div><div class="game-card-title">Compare with Friends</div><div class="game-card-sub">Compare your Valorant & Steam stats side by side</div></div>
+      </div>
+      <div class="game-card-body">
+        <!-- Add friend -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+          <input type="text" class="modal-input" id="compare-valo-input" placeholder="Friend's Valorant Name#TAG" style="flex:1;min-width:180px">
+          <select class="game-region-select" id="compare-valo-region">
+            <option value="eu">EU</option><option value="na">NA</option><option value="ap">AP</option><option value="kr">KR</option>
+          </select>
+          <input type="text" class="modal-input" id="compare-steam-input" placeholder="Friend's Steam ID64 (optional)" style="flex:1;min-width:180px">
+          <button class="btn btn-primary" onclick="addFriendToCompare()">&#43; Add friend</button>
+        </div>
+        <!-- Or pick from dashboard users -->
+        <div id="compare-dashboard-users" style="margin-bottom:16px"></div>
+        <!-- Results -->
+        <div id="compare-results"></div>
+      </div>
+    </div>
   </div>
-
-  <!-- CONNECTIONS -->
   <div id="page-connections" class="tab-content">
     <div class="topbar"><div><div class="page-title">Connections</div><div class="page-subtitle">Link your accounts to enrich your dashboard</div></div></div>
 
@@ -967,7 +987,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
           <span class="conn-status-badge disconnected" id="dc-badge">Not connected</span>
         </div>
       </div>
-      <div class="conn-profilee-preview" id="dc-preview">
+      <div class="conn-profile-preview" id="dc-preview">
         <div class="conn-preview-avatar"><img id="dc-preview-avatar" src="" alt=""><span id="dc-preview-fallback" style="display:none">&#128100;</span></div>
         <div>
           <div class="conn-preview-name" id="dc-preview-name">—</div>
@@ -1000,7 +1020,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
         <button id="steam-refresh-btn" onclick="refreshSteam()" title="Refresh" style="display:none;background:none;border:1px solid var(--border2);color:var(--muted);border-radius:6px;padding:4px 8px;cursor:pointer;font-size:13px;font-family:var(--font);transition:all .15s;margin-left:auto" onmouseover="this.style.borderColor='var(--steam2)';this.style.color='var(--steam2)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">&#8635; Refresh</button>
         <span class="conn-status-badge disconnected" id="steam-badge">Not connected</span>
       </div>
-      <div class="conn-profilee-preview" id="steam-preview">
+      <div class="conn-profile-preview" id="steam-preview">
         <div class="conn-preview-avatar"><img id="steam-preview-avatar" src="" alt="" style="display:none"><span id="steam-preview-fallback">&#127918;</span></div>
         <div style="flex:1;min-width:0">
           <div class="conn-preview-name" id="steam-preview-name">—</div>
@@ -1094,9 +1114,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     </div>
   </div>
   <div id="page-settings" class="tab-content">
-    <div class="topbar"><div><div class="page-title">Settings</div><div class="page-subtitle">Profilee preferences and security</div></div></div>
+    <div class="topbar"><div><div class="page-title">Settings</div><div class="page-subtitle">Profile preferences and security</div></div></div>
     <div class="settings-tabs">
-      <button class="settings-tab active" onclick="switchSettingsTab('profilee',this)">&#128100; Profilee</button>
+      <button class="settings-tab active" onclick="switchSettingsTab('profilee',this)">&#128100; Profile</button>
       <button class="settings-tab" onclick="switchSettingsTab('security',this)">&#128274; Security</button>
       <button class="settings-tab" onclick="switchSettingsTab('account',this)">&#9881; My Account</button>
     </div>
@@ -1104,10 +1124,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <!-- profilee tab -->
     <div id="settings-profilee" style="max-width:500px">
       <div class="panel">
-        <div class="panel-header" style="margin-bottom:20px"><div class="panel-title">Profilee info</div></div>
+        <div class="panel-header" style="margin-bottom:20px"><div class="panel-title">Profile info</div></div>
         <div class="modal-field">
           <div class="modal-label">DISPLAY NAME</div>
-          <input type="text" class="modal-input" id="settings-name" placeholder="Your name" oninput="updateCurrentProfileeName()">
+          <input type="text" class="modal-input" id="settings-name" placeholder="Your name" oninput="updateCurrentProfileName()">
         </div>
         <div class="divider"></div>
         <div class="modal-field" style="margin-top:14px">
@@ -1151,7 +1171,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
             <button class="btn btn-ghost" id="notif-btn" onclick="requestNotifPermission()">&#128276; Enable notifications</button>
           </div>
           <div class="modal-label" style="margin-bottom:10px">DANGER ZONE</div>
-          <button class="btn btn-danger" onclick="resetProfileeData()">&#128465; Reset my data</button>
+          <button class="btn btn-danger" onclick="resetProfileData()">&#128465; Reset my data</button>
         </div>
       </div>
     </div>
@@ -1159,7 +1179,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <!-- security tab -->
     <div id="settings-security" style="max-width:500px;display:none">
       <div class="panel">
-        <div class="panel-header" style="margin-bottom:20px"><div class="panel-title">Profilee Protection</div></div>
+        <div class="panel-header" style="margin-bottom:20px"><div class="panel-title">Profile Protection</div></div>
         <div class="toggle-row" style="margin-bottom:16px">
           <span class="toggle-label">Enable password protection</span>
           <label class="toggle"><input type="checkbox" id="pw-enable-toggle" onchange="togglePasswordSetup()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
@@ -1190,7 +1210,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
         </div>
         <div id="pw-active-info" style="display:none">
           <div style="background:rgba(93,224,176,.08);border:1px solid rgba(93,224,176,.2);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:14px;font-size:13px">
-            &#128274; Profilee is protected with a <strong id="pw-active-type">PIN</strong>
+            &#128274; Profile is protected with a <strong id="pw-active-type">PIN</strong>
           </div>
           <button class="btn btn-danger" onclick="removePassword()">Remove protection</button>
         </div>
@@ -1258,7 +1278,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 <div class="modal-overlay" id="modal-create-profilee" onclick="closeModalIfOverlay(event,'create-profilee')">
   <div class="modal">
     <div class="modal-title" id="create-profilee-title">&#10024; Create profilee</div>
-    <div class="modal-field"><div class="modal-label">NAME</div><input type="text" class="modal-input" id="new-profilee-name" placeholder="e.g. Alex, Work, Gaming..." onkeydown="if(event.key==='Enter')submitCreateProfilee()"></div>
+    <div class="modal-field"><div class="modal-label">NAME</div><input type="text" class="modal-input" id="new-profilee-name" placeholder="e.g. Alex, Work, Gaming..." onkeydown="if(event.key==='Enter')submitCreateProfile()"></div>
     <div class="modal-field">
       <div class="modal-label">CHOOSE AN AVATAR</div>
       <div class="avatar-grid" id="create-avatar-grid"></div>
@@ -1293,7 +1313,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
         </div>
       </div>
     </div>
-    <div class="modal-actions"><button class="btn btn-ghost" onclick="cancelCreateProfilee()">Cancel</button><button class="btn btn-primary" id="create-profilee-btn" onclick="submitCreateProfilee()">Create</button></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="cancelCreateProfile()">Cancel</button><button class="btn btn-primary" id="create-profilee-btn" onclick="submitCreateProfile()">Create</button></div>
   </div>
 </div>
 
@@ -1399,7 +1419,7 @@ function showChangelog(){
     {v:'v1.0.3',date:'05/06/2026',changes:['Supabase integration - email + username auth','Cloud save per profilee','Admin panel with account management']},
     {v:'v1.0.2',date:'05/06/2026',changes:['Cloudflare Worker for Steam + Tracker + Henrik','API keys secured server-side','No more CORS issues']},
     {v:'v1.0.1',date:'05/06/2026',changes:['Valorant tabs (Competitive / Swiftplay / Unrated)','Client-side match filtering','Visual match cards + top agents + headshot %']},
-    {v:'v1.0.0',date:'05/06/2026',changes:['Initial dashboard version','Multiple profilees with avatar and PIN','Discord, Steam, Spotify, Valorant, LoL']},
+    {v:'v1.0.0',date:'05/06/2026',changes:['Initial dashboard version','Multiple profiles with avatar and PIN','Discord, Steam, Spotify, Valorant, LoL']},
   ];
   let html=`<div style="position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.remove()">
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:28px;width:100%;max-width:500px;max-height:80vh;overflow-y:auto">
@@ -1472,7 +1492,7 @@ async function doRegister(){
   if(pw.length<6){document.getElementById('auth-error').textContent='Password too short (6 chars min)';return;}
   setAuthLoading(true);
   // Check username is unique
-  const {data:existing}=await sb.from('profilees').select('id').eq('username',username).single();
+  const {data:existing}=await sb.from('profiles').select('id').eq('username',username).single();
   if(existing){setAuthLoading(false);document.getElementById('auth-error').textContent='Username already taken';return;}
   const regEmail=email||username+'@dashboard.local';
   const {error}=await sb.auth.signUp({email:regEmail,password:pw,options:{data:{username}}});
@@ -1489,7 +1509,7 @@ async function doLogout(){
   await sb.auth.signOut();
   _sbUser=null;_isAdmin=false;
   document.getElementById('auth-screen').style.display='flex';
-  document.getElementById('profilee-screen').style.display='none';
+  document.getElementById('profile-screen').style.display='none';
   document.getElementById('main-sidebar').style.display='none';
   document.getElementById('main-content').style.display='none';
 }
@@ -1511,7 +1531,7 @@ async function onAuthSuccess(){
       const geo=await fetch('https://ipapi.co/json/').then(r=>r.json());
       ip=geo.ip||'';city=geo.city||'';country=geo.country_name||'';
     }catch(e){}
-    await sb.from('profilees').update({
+    await sb.from('profiles').update({
       last_seen:new Date().toISOString(),
       last_ip:ip,
       last_city:city,
@@ -1525,8 +1545,8 @@ async function onAuthSuccess(){
   }catch(e){console.warn('Metadata error:',e);}
 
   await loadCloudState();
-  renderProfileeScreen();
-  document.getElementById('profilee-screen').style.display='flex';
+  renderProfileScreen();
+  document.getElementById('profile-screen').style.display='flex';
 }
 
 // -- CLOUD SYNC -----------------------------------
@@ -1535,14 +1555,14 @@ async function loadCloudState(){
   const {data,error}=await sb.from('dashboard_data').select('*').eq('user_id',_sbUser.id).order('created_at',{ascending:true});
   if(error)console.error('loadCloudState error:',error);
   if(data&&data.length){
-    profilees=data.map(d=>{
+    profiles=data.map(d=>{
       const s=d.state||{};
       const idx=s.avatarIdx||0;
       const av=AVATARS[idx]||AVATARS[0];
       return {
         id:d.id,
         _dbId:d.id,
-        name:d.profilee_name,
+        name:d.profile_name,
         avatarEmoji:s.avatarImg?null:(s.avatarEmoji||av.e),
         avatarBg:s.avatarImg?'#1e1e24':(s.avatarBg||av.b),
         avatarImg:s.avatarImg||null,
@@ -1554,7 +1574,7 @@ async function loadCloudState(){
           todos:s.todos||[],
           note:s.note||'',
           activity:s.activity||[],
-          username:s.username||d.profilee_name,
+          username:s.username||d.profile_name,
           connections:s.connections||{},
           gaming:s.gaming||{},
           pinned:s.pinned||[],
@@ -1568,9 +1588,10 @@ async function loadCloudState(){
       };
     });
   } else {
-    // New user -> create a profilee par defaut
-    const username=_sbUser.user_metadata?.username||'Mon profile';
-    profilees=[{
+    // New user — create default profile
+    const meta=_sbUser.user_metadata||{};
+    const username=meta.username||_sbUser.email?.split('@')[0]?.replace('@dashboard.local','')||'User';
+    profiles=[{
       id:Date.now(),
       name:username,
       avatarEmoji:AVATARS[0].e,
@@ -1585,7 +1606,7 @@ async function loadCloudState(){
 
 async function saveCloudState(){
   if(!_sbUser)return;
-  for(const p of profilees){
+  for(const p of profiles){
     // Compresse l'image avatar si trop grosse (limite Supabase ~1MB par row)
     let avatarImg=p.avatarImg||null;
     if(avatarImg&&avatarImg.length>200000){
@@ -1595,7 +1616,7 @@ async function saveCloudState(){
     }
     const payload={
       user_id:_sbUser.id,
-      profilee_name:p.name,
+      profile_name:p.name||"User",
       state:{
         ...p.state,
         avatarEmoji:p.avatarEmoji,
@@ -1640,7 +1661,7 @@ function compressImage(base64,maxW,maxH){
 // -- ADMIN PANEL -----------------------------------
 async function openAdminPanel(){
   if(!_isAdmin){toast('Access denied','error');return;}
-  const {data:users}=await sb.from('profilees').select('*').order('created_at',{ascending:false});
+  const {data:users}=await sb.from('profiles').select('*').order('created_at',{ascending:false});
   const {data:allData}=await sb.from('dashboard_data').select('*');
   const totalLogins=users?.reduce((s,u)=>s+(u.login_count||0),0)||0;
   let html=`<div style="position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.remove()">
@@ -1656,7 +1677,7 @@ async function openAdminPanel(){
       </div>
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 20px;flex:1;min-width:100px;text-align:center">
         <div style="font-size:24px;font-weight:700;color:var(--accent2)">${allData?.length||0}</div>
-        <div style="font-size:12px;color:var(--muted)">Total profilees</div>
+        <div style="font-size:12px;color:var(--muted)">Total profiles</div>
       </div>
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 20px;flex:1;min-width:100px;text-align:center">
         <div style="font-size:24px;font-weight:700;color:var(--accent4)">${totalLogins}</div>
@@ -1666,7 +1687,7 @@ async function openAdminPanel(){
     <div style="font-size:12px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:10px">All accounts</div>
     <div style="display:flex;flex-direction:column;gap:8px">`;
   users?.forEach(u=>{
-    const userProfilees=allData?.filter(d=>d.user_id===u.id)||[];
+    const userProfiles=allData?.filter(d=>d.user_id===u.id)||[];
     const joined=new Date(u.created_at).toLocaleDateString('en-GB');
     const lastSeen=u.last_seen?new Date(u.last_seen).toLocaleDateString('en-GB'):'never';
     const isMe=u.email===ADMIN_EMAIL;
@@ -1674,7 +1695,7 @@ async function openAdminPanel(){
       <div style="padding:12px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap" onclick="toggleAdminUserDetails('${u.id}')">
         <div style="flex:1;min-width:0">
           <div style="font-weight:600">${u.username} ${isMe?'<span style=\"font-size:10px;background:rgba(124,106,247,.2);color:var(--accent);padding:1px 7px;border-radius:20px\">Admin</span>':''}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px">${u.email||'-'} · ${userProfilees.length} profilee(s) · Joined ${joined}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">${u.email||'-'} · ${userProfiles.length} profilee(s) · Joined ${joined}</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
           ${!isMe?`<button onclick="event.stopPropagation();adminDeleteUser('${u.id}',this)" style="background:rgba(247,106,106,.15);color:var(--accent3);border:1px solid var(--accent3);border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;font-family:var(--font)">Delete</button>`:''}
@@ -1817,7 +1838,7 @@ async function adminDeleteUser(userId,btn){
   if(!confirm('Delete this account and all its data?'))return;
   btn.textContent='';btn.disabled=true;
   await sb.from('dashboard_data').delete().eq('user_id',userId);
-  await sb.from('profilees').delete().eq('id',userId);
+  await sb.from('profiles').delete().eq('id',userId);
   btn.closest('[style*=background]').remove();
   toast('Account deleted','success');
 }
@@ -1833,20 +1854,20 @@ const AVATARS=[
   {e:'&#127917;',b:'#2d1a00'},{e:'&#127769;',b:'#0a0a2d'},{e:'&#9889;',b:'#2d2500'},
 ];
 
-let profilees=[], currentId=null, managingMode=false;
+let profiles=[], currentId=null, managingMode=false;
 let selAvatarIdx=0, editSelAvatarIdx=0;
 let createUpload=null, editUpload=null;
-let editingProfileeId=null;
+let editingProfileId=null;
 let pendingPasswordId=null; // profilee waiting for password check
 let pinEntry='';
 
 // ===================================================
 //  PERSISTENCE
 // ===================================================
-function loadState(){try{const d=localStorage.getItem('myspace_profilees_backup');if(d)profilees=JSON.parse(d)}catch(e){}}
+function loadState(){try{const d=localStorage.getItem('myspace_profiles_backup');if(d)profilees=JSON.parse(d)}catch(e){}}
 let _saveCloudTimeout=null;
 function saveState(){
-  try{localStorage.setItem('myspace_profilees_backup',JSON.stringify(profilees))}catch(e){}
+  try{localStorage.setItem('myspace_profiles_backup',JSON.stringify(profiles))}catch(e){}
   // Debounce cloud sync 800ms pour eviter trop d'appels
   if(_sbUser){
     clearTimeout(_saveCloudTimeout);
@@ -1857,13 +1878,13 @@ function saveState(){
 }
 // Saving cloud immediate (sans debounce) pour les actions critiques
 async function saveStateNow(){
-  try{localStorage.setItem('myspace_profilees_backup',JSON.stringify(profilees))}catch(e){}
+  try{localStorage.setItem('myspace_profiles_backup',JSON.stringify(profiles))}catch(e){}
   if(_sbUser){
     clearTimeout(_saveCloudTimeout);
     await saveCloudState().catch(e=>console.warn('Cloud sync error:',e));
   }
 }
-function getP(id){return profilees.find(p=>p.id===id)}
+function getP(id){return profiles.find(p=>p.id===id)}
 function curP(){return getP(currentId)}
 function defState(name){return{items:[],todos:[],note:'',activity:[],username:name||'User',connections:{},gaming:{}}}
 
@@ -1879,32 +1900,32 @@ function avatarHTML(p,size,r){
 // ===================================================
 //  PROFILE SCREEN
 // ===================================================
-function renderProfileeScreen(){
-  const list=document.getElementById('ps-profilees-list');
+function renderProfileScreen(){
+  const list=document.getElementById('ps-profiles-list');
   let html='';
-  profilees.forEach(p=>{
+  profiles.forEach(p=>{
     const locked=p.password?'<div class="ps-lock">&#128274; locked</div>':'';
-    html+='<div class="ps-profilee'+(managingMode?' managing':'')+'" data-id="'+p.id+'" onclick="handleProfileeClick(\''+p.id+'\')">'+
+    html+='<div class="ps-profile'+(managingMode?' managing':'')+'" data-id="'+p.id+'" onclick="handleProfileClick(\''+p.id+'\')">'+
       '<div class="ps-avatar-wrap">'+
         '<div class="ps-avatar" style="background:'+(p.avatarBg||'#1e1e24')+'">'+avatarHTML(p,96,14)+'</div>'+
         locked+
-        '<button class="ps-edit-btn" onclick="event.stopPropagation();openEditProfilee(\''+p.id+'\')" title="Edit">&#9998;</button>'+
-        (managingMode&&profilees.length>1?'<button class="ps-delete-btn" onclick="event.stopPropagation();deleteProfilee(\''+p.id+'\')" title="Delete">&#10005;</button>':'')+
+        '<button class="ps-edit-btn" onclick="event.stopPropagation();openEditProfile(\''+p.id+'\')" title="Edit">&#9998;</button>'+
+        (managingMode&&profiles.length>1?'<button class="ps-delete-btn" onclick="event.stopPropagation();deleteProfile(\''+p.id+'\')" title="Delete">&#10005;</button>':'')+
       '</div>'+
       '<div class="ps-pname">'+p.name+'</div>'+
     '</div>';
   });
-  if(profilees.length<6){
+  if(profiles.length<6){
     html+='<div style="display:flex;flex-direction:column;align-items:center;gap:14px">'+
-      '<div class="ps-add" onclick="openCreateProfilee()">+</div>'+
-      '<div class="ps-pname" style="color:var(--muted)">Add profilee</div>'+
+      '<div class="ps-add" onclick="openCreateProfile()">+</div>'+
+      '<div class="ps-pname" style="color:var(--muted)">Add profile</div>'+
     '</div>';
   }
   list.innerHTML=html;
-  document.getElementById('ps-manage-btn').textContent=managingMode?'Done':'Manage profilees';
+  document.getElementById('ps-manage-btn').textContent=managingMode?'Done':'Manage profiles';
 }
 
-function handleProfileeClick(id){
+function handleProfileClick(id){
   if(managingMode)return;
   const p=getP(id);if(!p)return;
   if(p.password){
@@ -1914,14 +1935,14 @@ function handleProfileeClick(id){
   }
 }
 
-function toggleManageMode(){managingMode=!managingMode;renderProfileeScreen()}
+function toggleManageMode(){managingMode=!managingMode;renderProfileScreen()}
 
 function enterDashboard(id){
   currentId=id;
   // Reinitialise les caches globaux pour ce new profilee
   _valoMatchCache={};
   _valoAllMatches=[];
-  const screen=document.getElementById('profilee-screen');
+  const screen=document.getElementById('profile-screen');
   screen.classList.add('hiding');
   setTimeout(()=>{
     screen.style.display='none';
@@ -1931,7 +1952,7 @@ function enterDashboard(id){
   },480);
 }
 
-function goToProfileeScreen(){
+function goToProfileScreen(){
   // Nettoie les logins temps reel de l'ancien profile
   if(typeof _lanyardWS!=='undefined'&&_lanyardWS){_lanyardWS.close();clearInterval(_lanyardHB);}
   _valoMatchCache={};
@@ -1939,10 +1960,10 @@ function goToProfileeScreen(){
   document.getElementById('main-sidebar').style.display='none';
   document.getElementById('main-content').style.display='none';
   document.getElementById('password-screen').style.display='none';
-  const s=document.getElementById('profilee-screen');
+  const s=document.getElementById('profile-screen');
   s.style.display='flex';s.classList.remove('hiding');
   s.style.animation='none';setTimeout(()=>s.style.animation='',10);
-  managingMode=false;renderProfileeScreen();
+  managingMode=false;renderProfileScreen();
 }
 
 // ===================================================
@@ -1951,7 +1972,7 @@ function goToProfileeScreen(){
 function showPasswordScreen(id){
   pendingPasswordId=id;pinEntry='';
   const p=getP(id);if(!p)return;
-  const ps=document.getElementById('profilee-screen');
+  const ps=document.getElementById('profile-screen');
   ps.style.display='none';
   const screen=document.getElementById('password-screen');
   screen.style.display='flex';
@@ -2041,7 +2062,7 @@ function checkTextPassword(){
 function cancelPasswordScreen(){
   document.getElementById('password-screen').style.display='none';
   pendingPasswordId=null;pinEntry='';
-  goToProfileeScreen();
+  goToProfileScreen();
 }
 
 // ===================================================
@@ -2066,8 +2087,8 @@ function resetCreatePwFields(){
   document.getElementById('create-pw-text').value='';
 }
 
-function openCreateProfilee(){
-  editingProfileeId=null;selAvatarIdx=0;createUpload=null;
+function openCreateProfile(){
+  editingProfileId=null;selAvatarIdx=0;createUpload=null;
   document.getElementById('new-profilee-name').value='';
   document.getElementById('create-upload-preview').style.display='none';
   document.getElementById('create-profilee-title').textContent=' Create profilee';
@@ -2077,9 +2098,9 @@ function openCreateProfilee(){
   openModal('create-profilee');
 }
 
-function openEditProfilee(id){
+function openEditProfile(id){
   const p=getP(id);if(!p)return;
-  editingProfileeId=id;
+  editingProfileId=id;
   document.getElementById('new-profilee-name').value=p.name;
   selAvatarIdx=p.avatarIdx||0;createUpload=p.avatarImg||null;
   if(createUpload){document.getElementById('create-upload-preview').style.display='flex';document.getElementById('create-upload-img').src=createUpload}
@@ -2090,9 +2111,9 @@ function openEditProfilee(id){
   openModal('create-profilee');
 }
 
-function cancelCreateProfilee(){editingProfileeId=null;closeModal('create-profilee')}
+function cancelCreateProfile(){editingProfileId=null;closeModal('create-profilee')}
 
-function submitCreateProfilee(){
+function submitCreateProfile(){
   const name=document.getElementById('new-profilee-name').value.trim();
   if(!name){toast('Enter a name','error');return}
   const av=AVATARS[selAvatarIdx]||AVATARS[0];
@@ -2112,23 +2133,23 @@ function submitCreateProfilee(){
       pwObj={type:'text',value:val};
     }
   }
-  if(editingProfileeId){
-    const p=getP(editingProfileeId);
+  if(editingProfileId){
+    const p=getP(editingProfileId);
     if(p){p.name=name;p.avatarEmoji=emoji;p.avatarBg=bg;p.avatarImg=createUpload||null;p.avatarIdx=selAvatarIdx;if(pwObj!==null)p.password=pwObj;saveState()}
-    toast('Profilee updated!','success');
+    toast('Profile updated!','success');
   } else {
     const p={id:Date.now(),name,avatarEmoji:emoji,avatarBg:bg,avatarImg:createUpload||null,avatarIdx:selAvatarIdx,state:defState(name)};
     if(pwObj)p.password=pwObj;
-    profilees.push(p);saveStateNow();
+    profiles.push(p);saveStateNow();
     toast(name+' created!'+(pwObj?' ':''),'success');
   }
-  editingProfileeId=null;closeModal('create-profilee');createUpload=null;resetCreatePwFields();renderProfileeScreen();
+  editingProfileId=null;closeModal('create-profilee');createUpload=null;resetCreatePwFields();renderProfileScreen();
 }
 
-function deleteProfilee(id){
-  if(profilees.length<=1){toast("Can't delete last profilee",'error');return}
+function deleteProfile(id){
+  if(profiles.length<=1){toast("Can't delete last profile",'error');return}
   if(!confirm('Delete this profilee and all its data?'))return;
-  profilees=profilees.filter(p=>p.id!==id);saveStateNow();renderProfileeScreen();toast('Deleted','info');
+  profilees=profiles.filter(p=>p.id!==id);saveStateNow();renderProfileScreen();toast('Deleted','info');
 }
 
 function renderAvatarGrid(containerId,selIdx){
@@ -2338,23 +2359,23 @@ function removeBanner(){
 
 function updateBannerDisplay(){
   const p=curP();if(!p)return;
-  const banner=document.getElementById('profilee-banner');
-  const img=document.getElementById('profilee-banner-img');
+  const banner=document.getElementById('profile-banner');
+  const img=document.getElementById('profile-banner-img');
   if(!banner||!img)return;
   if(p.bannerImg){
     img.src=p.bannerImg;img.style.display='block';
-    banner.classList.remove('profilee-banner-empty');
+    banner.classList.remove('profile-banner-empty');
   } else {
     img.style.display='none';
-    banner.classList.add('profilee-banner-empty');
+    banner.classList.add('profile-banner-empty');
     // apply current theme gradient
     const t=THEMES[p.themeIdx||0];
     banner.style.background=`linear-gradient(135deg,${t.accent}44,${t.accent2}22)`;
   }
   // update banner avatar & name
-  const bav=document.getElementById('profilee-banner-avatar');
+  const bav=document.getElementById('profile-banner-avatar');
   if(bav){bav.style.background=p.avatarBg||'#1e1e24';bav.innerHTML=avatarHTML(p,64,13)}
-  const bn=document.getElementById('profilee-banner-name');
+  const bn=document.getElementById('profile-banner-name');
   if(bn)bn.textContent=p.name;
 }
 
@@ -2420,7 +2441,7 @@ function switchSettingsTab(tab,el){
 
 async function loadAccountInfo(){
   if(!_sbUser){document.getElementById('account-info').textContent='Not signed in';return;}
-  const {data}=await sb.from('profilees').select('username,email').eq('id',_sbUser.id).single();
+  const {data}=await sb.from('profiles').select('username,email').eq('id',_sbUser.id).single();
   const info=document.getElementById('account-info');
   if(data){
     info.innerHTML=`Signed in as <strong>${data.username||'-'}</strong> . <span style="color:var(--muted)">${data.email||_sbUser.email||'-'}</span>`;
@@ -2434,9 +2455,9 @@ async function updateUsername(){
   const username=document.getElementById('account-username').value.trim();
   if(!username){toast('Entre un username','error');return;}
   // Check unicite
-  const {data:existing}=await sb.from('profilees').select('id').eq('username',username).neq('id',_sbUser.id).single();
+  const {data:existing}=await sb.from('profiles').select('id').eq('username',username).neq('id',_sbUser.id).single();
   if(existing){toast('Username already taken','error');return;}
-  const {error}=await sb.from('profilees').update({username}).eq('id',_sbUser.id);
+  const {error}=await sb.from('profiles').update({username}).eq('id',_sbUser.id);
   if(error){toast('Error : '+error.message,'error');return;}
   toast('Username updated!','success');
   loadAccountInfo();
@@ -2449,7 +2470,7 @@ async function updateEmail(){
   const {error}=await sb.auth.updateUser({email});
   if(error){toast('Error : '+error.message,'error');return;}
   // Mettre a jour aussi dans profilees
-  await sb.from('profilees').update({email}).eq('id',_sbUser.id);
+  await sb.from('profiles').update({email}).eq('id',_sbUser.id);
   toast('Email updated!','success');
 }
 
@@ -2642,14 +2663,14 @@ function updateStats(){
 // ===================================================
 //  SETTINGS / PROFILE
 // ===================================================
-function updateCurrentProfileeName(){
+function updateCurrentProfileName(){
   const p=curP();if(!p)return;
   const v=document.getElementById('settings-name').value.trim();
   p.name=v||'User';p.state.username=p.name;saveStateNow();
   document.getElementById('display-username').textContent=p.name;
-  const bn=document.getElementById('profilee-banner-name');if(bn)bn.textContent=p.name;
+  const bn=document.getElementById('profile-banner-name');if(bn)bn.textContent=p.name;
 }
-function resetProfileeData(){
+function resetProfileData(){
   if(!confirm('Reset ALL your data?'))return;
   const p=curP();if(!p)return;
   p.state=defState(p.name);saveStateNow();
@@ -2715,7 +2736,7 @@ function savePassword(){
   saveStateNow();
   toast('Protection saved! ','success');
   loadSecuritySettings();
-  renderProfileeScreen();
+  renderProfileScreen();
 }
 
 function removePassword(){
@@ -2727,7 +2748,7 @@ function removePassword(){
   document.getElementById('pw-setup-section').style.display='none';
   document.getElementById('pw-active-info').style.display='none';
   toast('Protection removed','info');
-  renderProfileeScreen();
+  renderProfileScreen();
 }
 
 // ===================================================
@@ -3175,7 +3196,7 @@ async function refreshSteam(){
   try{
     const summaryJson=await fetchSteamAPI('/ISteamUser/GetPlayerSummaries/v2/',apiKey,'steamids='+steamId);
     const player=summaryJson?.response?.players?.[0];
-    if(!player){toast('Profilee not found','error');return;}
+    if(!player){toast('Profile not found','error');return;}
     const stateMap={0:'offline',1:'online',2:'busy',3:'away',4:'snooze',5:'online',6:'online'};
     const data={steamId64:steamId,displayName:player.personaname||'Unknown',avatarFull:player.avatarfull||'',onlineState:stateMap[player.personastate]||'offline',stateMessage:player.gameextrainfo?'Currently In-Game '+player.gameextrainfo:'',profileeUrl:player.profileeurl||'https://steamcommunity.com/profilees/'+steamId,recentGames:[],steamLevel:null};
     try{const lvlJson=await fetchSteamAPI('/IPlayerService/GetSteamLevel/v1/',apiKey,'steamid='+steamId);data.steamLevel=lvlJson?.response?.player_level??null;}catch(e){}
@@ -3365,7 +3386,168 @@ function disconnectTwitch(){
   toast('Twitch disconnected','info');
 }
 
-// === MANUAL DISCORD BADGES ===
+// === COMPARE WITH FRIENDS ===
+let _compareList=[]; // [{name, tag, region, steamId, displayName, valoData, steamData}]
+
+async function loadCompareDashboardUsers(){
+  const container=document.getElementById('compare-dashboard-users');
+  if(!container)return;
+  // Fetch all profiles from Supabase
+  const {data}=await sb.from('dashboard_data').select('profile_name,state,user_id');
+  if(!data||!data.length){container.style.display='none';return;}
+  const myId=_sbUser?.id;
+  const others=data.filter(d=>d.user_id!==myId&&(d.state?.gaming?.valo||d.state?.connections?.steam));
+  if(!others.length){container.style.display='none';return;}
+  container.innerHTML=`<div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Dashboard users</div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap">
+    ${others.map(d=>{
+      const valo=d.state?.gaming?.valo;
+      const steam=d.state?.connections?.steam;
+      const label=valo?valo.name+'#'+valo.tag:(steam?.data?.displayName||d.profile_name);
+      return `<button onclick="addFriendFromDashboard('${d.profile_name}','${valo?.name||''}','${valo?.tag||''}','${valo?.region||'eu'}','${steam?.steamId||''}')" style="background:var(--surface2);border:1px solid var(--border2);border-radius:20px;padding:5px 14px;font-size:12px;cursor:pointer;font-family:var(--font);color:var(--text)">${d.profile_name} (${label})</button>`;
+    }).join('')}
+  </div>`;
+}
+
+function addFriendFromDashboard(profileName,name,tag,region,steamId){
+  if(name&&tag){
+    document.getElementById('compare-valo-input').value=name+'#'+tag;
+    document.getElementById('compare-valo-region').value=region||'eu';
+  }
+  if(steamId) document.getElementById('compare-steam-input').value=steamId;
+  toast('Loaded '+profileName+' — click Add friend','info');
+}
+
+async function addFriendToCompare(){
+  const raw=document.getElementById('compare-valo-input').value.trim();
+  const region=document.getElementById('compare-valo-region').value;
+  const steamId=document.getElementById('compare-steam-input').value.trim();
+  if(!raw&&!steamId){toast('Enter a Valorant Name#TAG or Steam ID','error');return;}
+  const results=document.getElementById('compare-results');
+  results.innerHTML='<div style="color:var(--muted);font-size:13px;padding:16px">Loading stats...</div>';
+  try{
+    const p=curP();
+    const myValo=p?.state?.gaming?.valo;
+    const mySteam=p?.state?.connections?.steam;
+    let friendValo=null,friendSteam=null;
+    let friendName=raw||steamId;
+
+    // Fetch friend Valorant stats
+    if(raw&&raw.includes('#')){
+      const [name,...tagParts]=raw.split('#');
+      const tag=tagParts.join('#');
+      try{
+        const mmr=await fetchHenrik('/v2/mmr/'+region+'/'+encodeURIComponent(name)+'/'+encodeURIComponent(tag));
+        const matches=await fetchHenrik('/v3/matches/'+region+'/'+encodeURIComponent(name)+'/'+encodeURIComponent(tag)+'?size=10');
+        const acc=await fetchHenrik('/v1/account/'+encodeURIComponent(name)+'/'+encodeURIComponent(tag));
+        friendValo={name,tag,mmr:mmr?.data||mmr,matches:Array.isArray(matches?.data)?matches.data:matches||[],puuid:acc?.data?.puuid};
+        friendName=name+'#'+tag;
+      }catch(e){toast('Could not fetch friend Valorant stats','error');}
+    }
+
+    // Fetch friend Steam stats
+    if(steamId&&/^\d{17}$/.test(steamId)){
+      try{
+        const summary=await fetchSteamAPI('/ISteamUser/GetPlayerSummaries/v2/','','steamids='+steamId);
+        const player=summary?.response?.players?.[0];
+        if(player){
+          const gamesJson=await fetchSteamAPI('/IPlayerService/GetRecentlyPlayedGames/v1/','','steamid='+steamId+'&count=5');
+          friendSteam={displayName:player.personaname,avatar:player.avatarfull,steamId,recentGames:gamesJson?.response?.games||[]};
+          if(!friendName||friendName===steamId)friendName=player.personaname;
+        }
+      }catch(e){toast('Could not fetch friend Steam stats','error');}
+    }
+
+    renderCompareResults(myValo,friendValo,mySteam?.data,friendSteam,friendName);
+  }catch(e){results.innerHTML='<div style="color:var(--accent3);font-size:13px;padding:16px">Error: '+e.message+'</div>';}
+}
+
+function getValoStats(mmr,matches,name,tag,puuid){
+  const cd=mmr?.current_data||mmr;
+  const rank=cd?.currenttierpatched||'Unranked';
+  const rr=cd?.ranking_in_tier||0;
+  let wins=0,played=0,totalK=0,totalD=0,totalHS=0,totalShots=0;
+  const arr=Array.isArray(matches)?matches:[];
+  arr.forEach(m=>{
+    const players=m.players?.all_players||[];
+    const me=puuid?players.find(pl=>pl.puuid===puuid):players.find(pl=>(pl.name||'').toLowerCase()===(name||'').toLowerCase()&&(pl.tag||'').toLowerCase()===(tag||'').toLowerCase());
+    if(!me)return;
+    played++;
+    if(m.teams?.[me.team?.toLowerCase()]?.has_won)wins++;
+    totalK+=me.stats?.kills||0;totalD+=me.stats?.deaths||1;
+    const hs=me.stats?.headshots||0,body=me.stats?.bodyshots||0,leg=me.stats?.legshots||0;
+    totalHS+=hs;totalShots+=hs+body+leg;
+  });
+  const wr=played>0?Math.round((wins/played)*100):0;
+  const kda=totalD>0?((totalK)/totalD).toFixed(2):'—';
+  const hs=totalShots>0?Math.round((totalHS/totalShots)*100):0;
+  return {rank,rr,wr,kda,hs,played};
+}
+
+function renderCompareResults(myValo,friendValo,mySteam,friendSteam,friendName){
+  const results=document.getElementById('compare-results');
+  const p=curP();
+  const myName=p?.name||'You';
+  let html='';
+
+  // Valorant comparison
+  if(myValo||friendValo){
+    const myStats=myValo?getValoStats(myValo._lastRank,_valoAllMatches,myValo.name,myValo.tag,myValo.puuid):{rank:'—',rr:0,wr:0,kda:'—',hs:0,played:0};
+    const fStats=friendValo?getValoStats(friendValo.mmr,friendValo.matches,friendValo.name,friendValo.tag,friendValo.puuid):{rank:'—',rr:0,wr:0,kda:'—',hs:0,played:0};
+    html+=`<div style="margin-bottom:20px">
+      <div style="font-size:12px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:12px">Valorant</div>
+      <div style="display:grid;grid-template-columns:1fr 80px 1fr;gap:8px;align-items:center">
+        <div style="text-align:right;font-weight:600">${myName}</div>
+        <div></div>
+        <div style="font-weight:600;color:var(--accent)">${friendName}</div>
+      </div>`;
+    const rows=[
+      {label:'Rank',my:myStats.rank,fr:fStats.rank,compare:false},
+      {label:'RR',my:myStats.rr,fr:fStats.rr,compare:true,higher:true},
+      {label:'Winrate',my:myStats.wr+'%',fr:fStats.wr+'%',compare:true,higher:true,myNum:myStats.wr,frNum:fStats.wr},
+      {label:'K/D',my:myStats.kda,fr:fStats.kda,compare:true,higher:true,myNum:parseFloat(myStats.kda),frNum:parseFloat(fStats.kda)},
+      {label:'Headshot %',my:myStats.hs+'%',fr:fStats.hs+'%',compare:true,higher:true,myNum:myStats.hs,frNum:fStats.hs},
+      {label:'Matches',my:myStats.played,fr:fStats.played,compare:false},
+    ];
+    rows.forEach(r=>{
+      const myWin=r.compare&&r.myNum>r.frNum;
+      const frWin=r.compare&&r.frNum>r.myNum;
+      html+=`<div style="display:grid;grid-template-columns:1fr 80px 1fr;gap:8px;align-items:center;padding:8px;background:var(--surface2);border-radius:6px;margin-top:4px">
+        <div style="text-align:right;font-size:14px;font-weight:600;color:${myWin?'var(--accent2)':'var(--text)'}">${r.my}${myWin?' ✓':''}</div>
+        <div style="text-align:center;font-size:10px;color:var(--muted);text-transform:uppercase">${r.label}</div>
+        <div style="font-size:14px;font-weight:600;color:${frWin?'var(--accent2)':'var(--text)'}">${r.fr}${frWin?' ✓':''}</div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+
+  // Steam comparison
+  if(mySteam||friendSteam){
+    html+=`<div style="margin-top:20px">
+      <div style="font-size:12px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:12px">Steam</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">`;
+    // Me
+    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        ${mySteam?.avatarFull?`<img src="${mySteam.avatarFull}" style="width:32px;height:32px;border-radius:50%">`:''}
+        <div style="font-weight:600;font-size:13px">${mySteam?.displayName||myName}</div>
+      </div>
+      ${(mySteam?.recentGames||[]).slice(0,3).map(g=>`<div style="font-size:12px;padding:4px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between"><span>${g.name||'?'}</span><span style="color:var(--muted)">${g.hours||'?'}h</span></div>`).join('')}
+    </div>`;
+    // Friend
+    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--accent);border-radius:var(--radius-sm);padding:12px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        ${friendSteam?.avatar?`<img src="${friendSteam.avatar}" style="width:32px;height:32px;border-radius:50%">`:''}
+        <div style="font-weight:600;font-size:13px;color:var(--accent)">${friendSteam?.displayName||friendName}</div>
+      </div>
+      ${(friendSteam?.recentGames||[]).slice(0,3).map(g=>`<div style="font-size:12px;padding:4px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between"><span>${g.name||'?'}</span><span style="color:var(--muted)">${Math.round((g.playtime_forever||0)/60)}h</span></div>`).join('')}
+    </div>`;
+    html+=`</div></div>`;
+  }
+
+  if(!html)html='<div style="color:var(--muted);font-size:13px;padding:16px">No data to compare</div>';
+  results.innerHTML=html;
+}
 const MANUAL_BADGE_OPTS = [
   {key:'nitro',        e:'', label:'Nitro',          bg:'rgba(88,101,242,.18)', bc:'#5865F2'},
   {key:'nitroClassic', e:'', label:'Nitro Classic',   bg:'rgba(88,101,242,.18)', bc:'#5865F2'},
@@ -3870,7 +4052,7 @@ document.addEventListener('click', e => {
     playClick('nav'); return;
   }
   // Everything else interactive
-  if(t.closest('.btn, button, .cat-tab, .settings-tab, .todo-item, .item-row, .kanban-card, .pinned-card, .link-card, .stat-card, .ps-add, .ps-profilee, .ps-manage-btn, .pw-num, .toggle, .theme-swatch, .avatar-opt, .habit-day, .cal-day, .cal-nav')){
+  if(t.closest('.btn, button, .cat-tab, .settings-tab, .todo-item, .item-row, .kanban-card, .pinned-card, .link-card, .stat-card, .ps-add, .ps-profile, .ps-manage-btn, .pw-num, .toggle, .theme-swatch, .avatar-opt, .habit-day, .cal-day, .cal-nav')){
     playClick('soft');
   }
 }, { passive: true });
@@ -4526,6 +4708,7 @@ function loadGamingUI(){
   const p=curP();if(!p)return;
   if(p.state.gaming?.valo)loadValoStats();
   if(p.state.gaming?.lol)loadLoLStats();
+  loadCompareDashboardUsers();
 }
 
 
@@ -4579,7 +4762,7 @@ function importData(e){
       const data=JSON.parse(ev.target.result);
       if(!data.profilees||!Array.isArray(data.profilees))throw new Error('Invalid format');
       if(!confirm('This will replace ALL your current data. Continue?'))return;
-      profilees=data.profilees;
+      profiles=data.profilees;
       // Reassigner les _dbId existants pour eviter de creer des doublons
       if(_sbUser){
         const {data:existing}=await sb.from('dashboard_data').select('id').eq('user_id',_sbUser.id);
@@ -4587,7 +4770,7 @@ function importData(e){
           // Supprime les anciens profiles cloud
           await sb.from('dashboard_data').delete().eq('user_id',_sbUser.id);
           // Reinitialise les _dbId pour forcer un insert
-          profilees.forEach(p=>{delete p._dbId;});
+          profiles.forEach(p=>{delete p._dbId;});
         }
       }
       toast('Importing...','info');
@@ -4596,7 +4779,7 @@ function importData(e){
       setTimeout(()=>{
         document.getElementById('main-sidebar').style.display='none';
         document.getElementById('main-content').style.display='none';
-        goToProfileeScreen();
+        goToProfileScreen();
       },1000);
     }catch(err){toast('Invalid file : '+err.message,'error');}
   };
@@ -4677,7 +4860,7 @@ function renderGamingOverview(){
       _isAdmin=session.user?.email===ADMIN_EMAIL;
       document.getElementById('auth-screen').style.display='none';
       await loadCloudState();
-      profilees.forEach(p=>{
+      profiles.forEach(p=>{
         if(!p.state) p.state = defState(p.name);
         if(!p.state.connections) p.state.connections={};
         if(!p.state.gaming) p.state.gaming={};
@@ -4686,12 +4869,12 @@ function renderGamingOverview(){
         if(!p.state.kanban) p.state.kanban=[];
         if(!p.state.events) p.state.events=[];
       });
-      if(!profilees.length){
-        profilees.push({id:Date.now(),name:'Mon profile',avatarEmoji:AVATARS[0].e,avatarBg:AVATARS[0].b,avatarImg:null,avatarIdx:0,state:defState('Mon profile')});
+      if(!profiles.length){
+        profiles.push({id:Date.now(),name:'Mon profile',avatarEmoji:AVATARS[0].e,avatarBg:AVATARS[0].b,avatarImg:null,avatarIdx:0,state:defState('Mon profile')});
         await saveCloudState();
       }
-      renderProfileeScreen();
-      document.getElementById('profilee-screen').style.display='flex';
+      renderProfileScreen();
+      document.getElementById('profile-screen').style.display='flex';
     }
     // Sinon l'ecran auth reste visible
     updateClock();

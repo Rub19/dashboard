@@ -539,14 +539,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <!-- Login form -->
     <div id="form-login">
       <div style="margin-bottom:12px">
-        <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">EMAIL OU USERNAME</div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">EMAIL OR USERNAME</div>
         <input id="auth-login-id" type="text" placeholder="email@example.com ou username" class="modal-input" style="width:100%">
       </div>
       <div style="margin-bottom:20px">
-        <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">MOT DE PASSE</div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">PASSWORD</div>
         <input id="auth-login-pw" type="password" placeholder="••••••••" class="modal-input" style="width:100%">
       </div>
-      <button onclick="doLogin()" style="width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer">Se connecter</button>
+      <button onclick="doLogin()" style="width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer">Sign in</button>
     </div>
     <!-- Register form -->
     <div id="form-register" style="display:none">
@@ -555,11 +555,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
         <input id="auth-reg-username" type="text" placeholder="Ton username" class="modal-input" style="width:100%">
       </div>
       <div style="margin-bottom:12px">
-        <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">EMAIL (optionnel)</div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">EMAIL (optional)</div>
         <input id="auth-reg-email" type="email" placeholder="email@example.com" class="modal-input" style="width:100%">
       </div>
       <div style="margin-bottom:20px">
-        <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">MOT DE PASSE</div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">PASSWORD</div>
         <input id="auth-reg-pw" type="password" placeholder="••••••••" class="modal-input" style="width:100%">
       </div>
       <button onclick="doRegister()" style="width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer">Create account</button>
@@ -1176,7 +1176,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
           </div>
         </div>
         <div class="modal-field" style="margin-top:12px">
-          <div class="modal-label">MOT DE PASSE</div>
+          <div class="modal-label">PASSWORD</div>
           <div style="display:flex;gap:8px">
             <input type="password" class="modal-input" id="account-password" placeholder="New password" style="flex:1">
             <button class="btn btn-primary" onclick="updatePassword()" style="flex-shrink:0">Save</button>
@@ -1402,19 +1402,19 @@ async function doLogin(){
   const isEmail=id.includes('@');
   let email=id;
   if(!isEmail){
-    // Cherche l'email via le username dans profiles
-    const {data}=await sb.from('profiles').select('email').eq('username',id).single();
-    if(data?.email){
-      email=data.email;
-    } else {
-      // Fallback : essaie avec l'email generated a l'inscription (username@dashboard.local)
-      email=id+'@dashboard.local';
-    }
+    // Try to find email from username — use service role via worker
+    try{
+      const res=await fetch(`${WORKER_URL}/supabase/username?username=${encodeURIComponent(id)}`);
+      if(res.ok){const j=await res.json();if(j.email)email=j.email;}
+    }catch(e){}
+    // Fallback: username@dashboard.local (used when no email provided at signup)
+    if(email===id) email=id+'@dashboard.local';
   }
   const {error}=await sb.auth.signInWithPassword({email,password:pw});
   setAuthLoading(false);
   if(error){
-    document.getElementById('auth-error').textContent='Wrong credentials - try with your email';
+    // If still failing with generated email, show helpful message
+    document.getElementById('auth-error').textContent='Wrong credentials — if you signed up with an email, use it to sign in';
     return;
   }
   await onAuthSuccess();

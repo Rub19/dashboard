@@ -578,7 +578,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   <div class="ps-profiles" id="ps-profiles-list"></div>
   <button class="ps-manage-btn" id="ps-manage-btn" onclick="toggleManageMode()">Manage profiles</button>
   <button onclick="doLogout()" style="margin-top:16px;background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:var(--font)">🚪 Sign out</button>
-  <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="Voir le changelog">v1.3.0 · changelog</div>
+  <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="Voir le changelog">v1.3.1 · changelog</div>
 </div>
 
 <!-- SIDEBAR -->
@@ -1022,11 +1022,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
         </div>
         <div style="font-size:11.5px;color:var(--muted);margin-top:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;line-height:1.6">
           <div style="font-weight:600;color:var(--text);margin-bottom:4px">How to get your free key:</div>
-          <div>1. Va sur <a href="https://steamcommunity.com/dev/apikey" target="_blank" style="color:var(--accent)">steamcommunity.com/dev/apikey</a></div>
+          <div>1. Go to <a href="https://steamcommunity.com/dev/apikey" target="_blank" style="color:var(--accent)">steamcommunity.com/dev/apikey</a></div>
           <div>2. Sign in with your Steam account</div>
-          <div>3. Dans "Domain Name", écris <span style="font-family:var(--mono);background:var(--surface3);padding:1px 5px;border-radius:4px">localhost</span></div>
-          <div>4. Clique <strong>Register</strong> → copie la clé</div>
-          <div style="margin-top:6px;font-size:10.5px;color:var(--muted);font-style:italic">🔒 La clé est stockée localement, never envoyée ailleurs que Steam.</div>
+          <div>3. In "Domain Name", type <span style="font-family:var(--mono);background:var(--surface3);padding:1px 5px;border-radius:4px">localhost</span></div>
+          <div>4. Click <strong>Register</strong> → copy the key</div>
+          <div style="margin-top:6px;font-size:10.5px;color:var(--muted);font-style:italic">🔒 Key stored locally, never sent anywhere except Steam.</div>
         </div>
       </div>
     </div>
@@ -1349,8 +1349,11 @@ let _isAdmin=false;
 // -- AUTH UI --------------------------------------
 function showChangelog(){
   const versions=[
+    {v:'v1.3.1',date:'05/06/2026',changes:['All text fully in English','Discord badges restored with correct emojis','File/link icons restored (doc, link, image, folder, code, video)','Toast and priority icons fixed','Steam API key instructions translated']},
+    {v:'v1.3.0',date:'05/06/2026',changes:['Admin panel: click user to expand details','IP address + city/country on login','Browser and OS detection','Login count per user','Total logins stat']},
+    {v:'v1.2.1',date:'05/06/2026',changes:['Fix: profile click broken with Supabase UUIDs','Avatar compression increased to 300x300','Avatar emoji restored from index on reload']},
     {v:'v1.2.0',date:'05/06/2026',changes:['Settings My Account: edit username, email, password','Username login fixed with email fallback','Import JSON -> immediate cloud save before reload','Fix: data no longer lost after import + refresh']},
-    {v:'v1.1.0',date:'05/06/2026',changes:['Changelog visible on profile screen','Compact sidebar','Admin button in sidebar for owner','Version displayed and clickable']},
+    {v:'v1.1.0',date:'05/06/2026',changes:['Changelog visible on profile screen','Compact sidebar','Admin button in sidebar for owner account','Version displayed and clickable']},
     {v:'v1.0.4',date:'05/06/2026',changes:['saveStateNow() on all actions (51 calls)','Avatar compression before Supabase upload','Username login with generated email fallback']},
     {v:'v1.0.3',date:'05/06/2026',changes:['Supabase integration - email + username auth','Cloud save per profile','Admin panel with account management']},
     {v:'v1.0.2',date:'05/06/2026',changes:['Cloudflare Worker for Steam + Tracker + Henrik','API keys secured server-side','No more CORS issues']},
@@ -1425,9 +1428,9 @@ async function doRegister(){
   const email=document.getElementById('auth-reg-email').value.trim();
   const pw=document.getElementById('auth-reg-pw').value;
   if(!username||!pw){document.getElementById('auth-error').textContent='Username and password required';return;}
-  if(pw.length<6){document.getElementById('auth-error').textContent='Mot de passe trop court (6 chars min)';return;}
+  if(pw.length<6){document.getElementById('auth-error').textContent='Password too short (6 chars min)';return;}
   setAuthLoading(true);
-  // Check que le username est unique
+  // Check username is unique
   const {data:existing}=await sb.from('profiles').select('id').eq('username',username).single();
   if(existing){setAuthLoading(false);document.getElementById('auth-error').textContent='Username already taken';return;}
   const regEmail=email||username+'@dashboard.local';
@@ -2646,27 +2649,27 @@ function renderDiscordBadges(user){
   // Note: premium_type from Lanyard can be inaccurate - Nitro managed manually below
   const manualBadges = (curP()?.state?.manualBadges) || {};
   const BADGES = [
-    {flag:4194304, e:'', bg:'rgba(107,220,66,.18)', bc:'#6bdc42', title:'Active Developer'},
-    {flag:131072,  e:'', bg:'rgba(88,101,242,.18)', bc:'#5865F2', title:'Verified Bot Developer'},
-    {flag:65536,   e:'', bg:'rgba(92,187,189,.18)', bc:'#5cbbbd', title:'Certified Moderator'},
-    {flag:16384,   e:'', bg:'rgba(255,169,0,.18)',  bc:'#ffa900', title:'Bug Hunter Lv2'},
-    {flag:8,       e:'', bg:'rgba(244,123,103,.18)',bc:'#f47b67', title:'Bug Hunter Lv1'},
-    {flag:512,     e:'', bg:'rgba(249,104,84,.18)', bc:'#f96854', title:'Early Supporter'},
-    {flag:4,       e:'', bg:'rgba(255,215,0,.18)',  bc:'#ffd700', title:'HypeSquad Events'},
-    {flag:64,      e:'', bg:'rgba(230,126,34,.18)', bc:'#e67e22', title:'HypeSquad Bravery'},
-    {flag:128,     e:'', bg:'rgba(233,30,99,.18)',  bc:'#e91e63', title:'HypeSquad Brilliance'},
-    {flag:256,     e:'', bg:'rgba(26,188,156,.18)', bc:'#1abc9c', title:'HypeSquad Balance'},
-    {flag:2,       e:'', bg:'rgba(78,158,212,.18)', bc:'#4e9ed4', title:'Discord Partner'},
-    {flag:1,       e:'', bg:'rgba(114,137,218,.18)',bc:'#7289da', title:'Discord Staff'},
+    {flag:4194304, e:'🛠️', bg:'rgba(107,220,66,.18)', bc:'#6bdc42', title:'Active Developer'},
+    {flag:131072,  e:'🤖', bg:'rgba(88,101,242,.18)', bc:'#5865F2', title:'Verified Bot Developer'},
+    {flag:65536,   e:'🛡️', bg:'rgba(92,187,189,.18)', bc:'#5cbbbd', title:'Certified Moderator'},
+    {flag:16384,   e:'🐞', bg:'rgba(255,169,0,.18)',  bc:'#ffa900', title:'Bug Hunter Lv2'},
+    {flag:8,       e:'🐛', bg:'rgba(244,123,103,.18)',bc:'#f47b67', title:'Bug Hunter Lv1'},
+    {flag:512,     e:'🌟', bg:'rgba(249,104,84,.18)', bc:'#f96854', title:'Early Supporter'},
+    {flag:4,       e:'🎪', bg:'rgba(255,215,0,.18)',  bc:'#ffd700', title:'HypeSquad Events'},
+    {flag:64,      e:'🏠', bg:'rgba(230,126,34,.18)', bc:'#e67e22', title:'HypeSquad Bravery'},
+    {flag:128,     e:'💥', bg:'rgba(233,30,99,.18)',  bc:'#e91e63', title:'HypeSquad Brilliance'},
+    {flag:256,     e:'⚖️', bg:'rgba(26,188,156,.18)', bc:'#1abc9c', title:'HypeSquad Balance'},
+    {flag:2,       e:'🤝', bg:'rgba(78,158,212,.18)', bc:'#4e9ed4', title:'Discord Partner'},
+    {flag:1,       e:'🛡️', bg:'rgba(114,137,218,.18)',bc:'#7289da', title:'Discord Staff'},
   ];
   const parts = [];
   // Manual badges first
-  if(manualBadges.nitro)        parts.push('<div class="dc-badge-pill" title="Nitro"           style="background:rgba(88,101,242,.18);border-color:#5865F2"></div>');
-  if(manualBadges.nitroClassic) parts.push('<div class="dc-badge-pill" title="Nitro Classic"   style="background:rgba(88,101,242,.18);border-color:#5865F2"></div>');
-  if(manualBadges.booster)      parts.push('<div class="dc-badge-pill" title="Server Boosting" style="background:rgba(255,115,250,.15);border-color:#ff73fa"></div>');
-  if(manualBadges.activedev)    parts.push('<div class="dc-badge-pill" title="Active Dev"      style="background:rgba(107,220,66,.18);border-color:#6bdc42"></div>');
-  if(manualBadges.early)        parts.push('<div class="dc-badge-pill" title="Early Supporter" style="background:rgba(249,104,84,.18);border-color:#f96854"></div>');
-  if(manualBadges.partner)      parts.push('<div class="dc-badge-pill" title="Partner"         style="background:rgba(78,158,212,.18);border-color:#4e9ed4"></div>');
+  if(manualBadges.nitro)        parts.push('<div class="dc-badge-pill" title="Nitro"           style="background:rgba(88,101,242,.18);border-color:#5865F2">💎</div>');
+  if(manualBadges.nitroClassic) parts.push('<div class="dc-badge-pill" title="Nitro Classic"   style="background:rgba(88,101,242,.18);border-color:#5865F2">💎</div>');
+  if(manualBadges.booster)      parts.push('<div class="dc-badge-pill" title="Server Boosting" style="background:rgba(255,115,250,.15);border-color:#ff73fa">🚀</div>');
+  if(manualBadges.activedev)    parts.push('<div class="dc-badge-pill" title="Active Dev"      style="background:rgba(107,220,66,.18);border-color:#6bdc42">🛠️</div>');
+  if(manualBadges.early)        parts.push('<div class="dc-badge-pill" title="Early Supporter" style="background:rgba(249,104,84,.18);border-color:#f96854">🌟</div>');
+  if(manualBadges.partner)      parts.push('<div class="dc-badge-pill" title="Partner"         style="background:rgba(78,158,212,.18);border-color:#4e9ed4">🤝</div>');
   // Auto-detected from public_flags
   for(const b of BADGES){
     if(flags & b.flag) parts.push('<div class="dc-badge-pill" title="'+b.title+'" style="background:'+b.bg+';border-color:'+b.bc+'">'+b.e+'</div>');

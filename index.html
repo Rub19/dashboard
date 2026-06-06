@@ -10,103 +10,158 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0d0d0f;--surface:#16161a;--surface2:#1e1e24;--surface3:#26262e;
-  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.1);
-  --text:#f0f0f2;--muted:#8a8a9a;
-  --accent:#7c6af7;--accent2:#5de0b0;--accent3:#f76a6a;--accent4:#f7b26a;
-  --discord:#5865F2;--steam:#1b2838;--steam2:#66c0f4;--spotify:#1db954;
-  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
-  --radius:14px;--radius-sm:8px;--transition:0.18s cubic-bezier(.4,0,.2,1);
+  /* Colors */
+  --bg:#080b12;
+  --surface:#0e1117;
+  --surface2:#131720;
+  --surface3:#1a2030;
+  --border:rgba(255,255,255,0.05);
+  --border2:rgba(255,255,255,0.09);
+  --border3:rgba(59,130,246,0.2);
+  --text:#eef2ff;
+  --muted:#6b7a99;
+  --muted2:#4a5568;
+
+  /* Electric Blue palette */
+  --accent:#3b82f6;
+  --accent-light:#60a5fa;
+  --accent-glow:rgba(59,130,246,0.25);
+  --accent-subtle:rgba(59,130,246,0.08);
+  --accent2:#34d399;
+  --accent3:#f87171;
+  --accent4:#fbbf24;
+  --accent5:var(--accent5);
+
+  /* Game colors */
+  --discord:#5865F2;
+  --steam:#1b2838;
+  --steam2:#66c0f4;
+  --spotify:#1db954;
+  --twitch:#9147ff;
+
+  /* Typography */
+  --font:'DM Sans',sans-serif;
+  --mono:'DM Mono',monospace;
+
+  /* Geometry */
+  --radius:16px;
+  --radius-sm:10px;
+  --radius-xs:6px;
+  --transition:0.2s cubic-bezier(.4,0,.2,1);
+  --transition-bounce:0.3s cubic-bezier(.34,1.56,.64,1);
+
+  /* Shadows */
+  --shadow-sm:0 2px 8px rgba(0,0,0,.4);
+  --shadow:0 4px 20px rgba(0,0,0,.5);
+  --shadow-lg:0 8px 40px rgba(0,0,0,.6);
+  --glow-blue:0 0 20px rgba(59,130,246,.3);
 }
-body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;min-height:100vh;display:flex;overflow-x:hidden}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:var(--muted2)}
+
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;min-height:100vh;display:flex;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+@keyframes pulseG{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes wobble{0%{transform:rotate(-4deg)}100%{transform:rotate(4deg)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes profileeHide{to{opacity:0;transform:scale(1.04)}}
+@keyframes glow{0%,100%{box-shadow:0 0 10px var(--accent-glow)}50%{box-shadow:0 0 25px var(--accent-glow),0 0 50px rgba(59,130,246,.1)}}
 
 /* ── PASSWORD SCREEN ── */
 #password-screen{position:fixed;inset:0;z-index:10001;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;animation:fadeIn .4s ease}
-.pw-avatar{width:80px;height:80px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:20px;border:2px solid var(--border2)}
-.pw-avatar img{width:100%;height:100%;object-fit:cover;border-radius:18px}
+.pw-avatar{width:84px;height:84px;border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:34px;margin-bottom:20px;border:2px solid var(--border3);box-shadow:var(--glow-blue)}
+.pw-avatar img{width:100%;height:100%;object-fit:cover;border-radius:20px}
 .pw-name{font-size:18px;font-weight:600;margin-bottom:6px}
 .pw-sub{font-size:13px;color:var(--muted);margin-bottom:32px}
 .pw-pin-row{display:flex;gap:12px;margin-bottom:24px}
 .pw-pin-dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--border2);transition:all var(--transition)}
-.pw-pin-dot.filled{background:var(--accent);border-color:var(--accent)}
+.pw-pin-dot.filled{background:var(--accent);border-color:var(--accent);box-shadow:0 0 8px var(--accent-glow)}
 .pw-pin-dot.error{background:var(--accent3);border-color:var(--accent3);animation:shake .3s ease}
-.pw-numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:220px;margin-bottom:20px}
-.pw-num{height:56px;border-radius:12px;background:var(--surface);border:1px solid var(--border2);color:var(--text);font-size:20px;font-weight:500;cursor:pointer;font-family:var(--font);transition:all var(--transition)}
-.pw-num:hover{background:var(--surface2);border-color:var(--accent)}
+.pw-numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:224px;margin-bottom:20px}
+.pw-num{height:58px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-size:20px;font-weight:500;cursor:pointer;font-family:var(--font);transition:all var(--transition-bounce)}
+.pw-num:hover{background:var(--surface3);border-color:var(--border3);transform:scale(1.04)}
 .pw-num:active{transform:scale(.94)}
 .pw-text-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:24px}
-.pw-text-input{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font);font-size:15px;padding:10px 16px;outline:none;text-align:center;width:240px;letter-spacing:2px;transition:border-color var(--transition)}
-.pw-text-input:focus{border-color:var(--accent)}
+.pw-text-input{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font);font-size:15px;padding:10px 16px;outline:none;text-align:center;width:240px;letter-spacing:2px;transition:all var(--transition)}
+.pw-text-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
 .pw-error{font-size:12px;color:var(--accent3);min-height:16px;text-align:center}
 .pw-back{font-size:12px;color:var(--muted);cursor:pointer;border:none;background:none;font-family:var(--font);transition:color var(--transition);margin-top:8px}
 .pw-back:hover{color:var(--text)}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 
 /* ── PROFILE SCREEN ── */
 #profile-screen{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;animation:fadeIn .4s ease}
 #profile-screen.hiding{animation:profileeHide .5s cubic-bezier(.4,0,.2,1) forwards}
-@keyframes profileeHide{to{opacity:0;transform:scale(1.04)}}
-.ps-logo{font-size:12px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:52px;display:flex;align-items:center;gap:10px}
-.ps-logo-icon{width:28px;height:28px;background:linear-gradient(135deg,var(--accent),#a78bfa);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
-.ps-title{font-size:30px;font-weight:600;letter-spacing:-.8px;margin-bottom:10px;text-align:center}
+.ps-logo{font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:52px;display:flex;align-items:center;gap:10px}
+.ps-logo-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--accent),var(--accent5));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:var(--glow-blue)}
+.ps-title{font-size:32px;font-weight:700;letter-spacing:-1px;margin-bottom:10px;text-align:center;background:linear-gradient(135deg,var(--text),var(--muted));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .ps-sub{font-size:14px;color:var(--muted);margin-bottom:52px;text-align:center}
 .ps-profiles{display:flex;gap:28px;align-items:flex-end;flex-wrap:wrap;justify-content:center;margin-bottom:52px}
 .ps-profile{display:flex;flex-direction:column;align-items:center;gap:14px;cursor:pointer;position:relative;user-select:none}
 .ps-profile:hover .ps-pname{color:var(--text)}
 .ps-avatar-wrap{position:relative;display:inline-block}
-.ps-avatar{width:96px;height:96px;border-radius:16px;border:2.5px solid transparent;transition:all .22s cubic-bezier(.4,0,.2,1);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.ps-profile:hover .ps-avatar{transform:scale(1.06);border-color:var(--text)!important}
+.ps-avatar{width:96px;height:96px;border-radius:20px;border:2px solid transparent;transition:all .25s var(--transition-bounce);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--surface2)}
+.ps-profile:hover .ps-avatar{transform:scale(1.07) translateY(-3px);border-color:var(--accent)!important;box-shadow:0 12px 32px rgba(59,130,246,.25),0 0 0 4px var(--accent-glow)}
 .ps-profile:active .ps-avatar{transform:scale(.97)}
 .ps-avatar img{width:100%;height:100%;object-fit:cover;display:block}
 .ps-lock{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);background:var(--surface2);border:1.5px solid var(--border2);border-radius:20px;padding:2px 8px;font-size:10px;color:var(--muted);white-space:nowrap}
 .ps-pname{font-size:14px;color:var(--muted);font-weight:500;transition:color var(--transition);text-align:center;max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ps-add{width:96px;height:96px;border-radius:16px;border:2px dashed var(--surface3);display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--muted);cursor:pointer;transition:all var(--transition)}
-.ps-add:hover{border-color:var(--accent);color:var(--accent);background:rgba(124,106,247,.06)}
+.ps-add{width:96px;height:96px;border-radius:20px;border:2px dashed var(--surface3);display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--muted);cursor:pointer;transition:all var(--transition-bounce)}
+.ps-add:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-subtle);transform:scale(1.04) translateY(-3px)}
 .ps-add:active{transform:scale(.96)}
 .ps-manage-btn{font-size:11.5px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--muted);background:transparent;border:1.5px solid var(--surface3);padding:10px 28px;border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font);transition:all var(--transition)}
-.ps-manage-btn:hover{border-color:var(--text);color:var(--text)}
-.ps-edit-btn{position:absolute;top:-8px;right:-8px;width:26px;height:26px;border-radius:50%;background:var(--surface2);border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted);opacity:0;transition:opacity var(--transition);cursor:pointer;z-index:2}
+.ps-manage-btn:hover{border-color:var(--border3);color:var(--text);background:var(--accent-subtle)}
+.ps-edit-btn{position:absolute;top:-8px;right:-8px;width:26px;height:26px;border-radius:50%;background:var(--surface3);border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted);opacity:0;transition:opacity var(--transition);cursor:pointer;z-index:2}
 .ps-profile:hover .ps-edit-btn{opacity:1}
 .ps-delete-btn{position:absolute;top:-8px;left:-8px;width:22px;height:22px;border-radius:50%;background:var(--accent3);border:none;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;opacity:0;transition:opacity var(--transition);cursor:pointer;z-index:2}
 .ps-profile.managing .ps-delete-btn{opacity:1;animation:wobble .5s ease infinite alternate}
-@keyframes wobble{0%{transform:rotate(-4deg)}100%{transform:rotate(4deg)}}
 .avatar-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0}
-.avatar-opt{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;border:2px solid transparent;transition:all var(--transition)}
+.avatar-opt{width:52px;height:52px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;border:2px solid transparent;transition:all var(--transition-bounce)}
 .avatar-opt:hover{transform:scale(1.1);border-color:var(--accent)}
-.avatar-opt.selected{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,106,247,.25)}
+.avatar-opt.selected{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
 .upload-zone{border:1.5px dashed var(--border2);border-radius:var(--radius-sm);padding:18px;text-align:center;cursor:pointer;transition:all var(--transition);margin-top:10px;position:relative}
-.upload-zone:hover{border-color:var(--accent);background:rgba(124,106,247,.04)}
+.upload-zone:hover{border-color:var(--accent);background:var(--accent-subtle)}
 .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .upload-zone-text{font-size:13px;color:var(--muted)}
 .upload-zone-text strong{color:var(--accent)}
 
 /* ── SIDEBAR ── */
-.sidebar{width:240px;min-height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:16px 0;position:fixed;left:0;top:0;bottom:0;z-index:100}
-.logo{padding:0 20px 28px;display:flex;align-items:center;gap:10px}
-.logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),#a78bfa);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px}
-.logo-text{font-weight:600;font-size:15px;letter-spacing:-.3px}
-.nav-section{padding:0 12px;margin-bottom:2px}
-.nav-label{font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);padding:0 10px 6px;margin-top:8px}
-.nav-item{display:flex;align-items:center;gap:10px;padding:7px 12px;border-radius:var(--radius-sm);cursor:pointer;color:var(--muted);font-size:13.5px;font-weight:400;transition:all var(--transition);border:1px solid transparent;text-decoration:none;position:relative;overflow:hidden}
-.nav-item:hover{color:var(--text);background:var(--surface2)}
-.nav-item.active{color:var(--text);background:rgba(124,106,247,.12);border-color:rgba(124,106,247,.2)}
+.sidebar{width:240px;min-height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:16px 0;position:fixed;left:0;top:0;bottom:0;z-index:100;backdrop-filter:blur(20px)}
+.logo{padding:0 18px 24px;display:flex;align-items:center;gap:10px}
+.logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--accent5));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:var(--glow-blue)}
+.logo-text{font-weight:700;font-size:15px;letter-spacing:-.4px;background:linear-gradient(135deg,var(--text),var(--accent-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-section{padding:0 10px;margin-bottom:2px}
+.nav-label{font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);padding:0 10px 5px;margin-top:10px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:var(--radius-sm);cursor:pointer;color:var(--muted);font-size:13px;font-weight:400;transition:all var(--transition);border:1px solid transparent;text-decoration:none;position:relative;overflow:hidden}
+.nav-item::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:2.5px;background:var(--accent);border-radius:99px;opacity:0;transition:opacity var(--transition)}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.nav-item.active{color:var(--accent-light);background:var(--accent-subtle);border-color:var(--border3)}
+.nav-item.active::before{opacity:1}
 .nav-item.active .nav-icon{color:var(--accent)}
-.nav-icon{font-size:16px;width:18px;flex-shrink:0}
-.nav-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;font-family:var(--mono)}
-.sidebar-footer{margin-top:auto;padding:0 12px 0;border-top:1px solid var(--border);padding-top:14px}
-.user-card{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-sm);cursor:pointer;transition:background var(--transition);position:relative}
-.user-card:hover{background:var(--surface2)}
+.nav-icon{font-size:15px;width:18px;flex-shrink:0;text-align:center}
+.nav-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;font-family:var(--mono)}
+.sidebar-footer{margin-top:auto;padding:12px 10px 0;border-top:1px solid var(--border)}
+.user-card{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius-sm);cursor:pointer;transition:all var(--transition);position:relative}
+.user-card:hover{background:rgba(255,255,255,.04)}
 .user-card:hover .switch-hint{opacity:1}
-.switch-hint{position:absolute;right:12px;font-size:10px;color:var(--accent);opacity:0;transition:opacity var(--transition);font-weight:500}
-.sidebar-avatar{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0;overflow:hidden;border:1.5px solid var(--border2)}
+.switch-hint{position:absolute;right:10px;font-size:10px;color:var(--accent);opacity:0;transition:opacity var(--transition);font-weight:600}
+.sidebar-avatar{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0;overflow:hidden;border:1.5px solid var(--border3)}
 .sidebar-avatar img{width:100%;height:100%;object-fit:cover;display:block}
 .user-info{flex:1;min-width:0}
-.user-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .user-role{font-size:11px;color:var(--muted)}
 
 /* sidebar widgets */
-.sb-widget{padding:0 12px 12px;overflow:hidden}
-.sb-widget-label{font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);padding:0 2px 7px;display:flex;align-items:center;gap:6px}
+.sb-widget{padding:0 10px 12px;overflow:hidden}
+.sb-widget-label{font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);padding:0 2px 7px;display:flex;align-items:center;gap:6px}
 .sb-discord-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;display:none}
 .sb-discord-card.visible{display:flex;align-items:center;gap:10px}
 .sb-dc-avatar-wrap{position:relative;flex-shrink:0}
@@ -120,12 +175,87 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .sb-dc-info{flex:1;min-width:0}
 .sb-dc-name{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sb-dc-activity{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
-.nowplaying-label{font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);padding:0 2px 7px;display:flex;align-items:center;gap:6px}
+.nowplaying-label{font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);padding:0 2px 7px;display:flex;align-items:center;gap:6px}
 .nowplaying-label::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--spotify);animation:pulseG 1.8s ease-in-out infinite;flex-shrink:0}
-@keyframes pulseG{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
 .nowplaying-iframe-wrap{overflow:hidden;background:transparent;height:48px;position:relative;border:none}
 .nowplaying-iframe-wrap iframe{position:absolute;top:0;left:50%;transform:translateX(-50%) scale(0.695);transform-origin:top center;width:310px;height:68px;border:none;display:block;pointer-events:none}
 .nowplaying-iframe-wrap a{pointer-events:none}
+
+/* ── MAIN ── */
+.main{margin-left:240px;flex:1;min-height:100vh;padding:28px 32px}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
+.page-title{font-size:22px;font-weight:700;letter-spacing:-.6px}
+.page-subtitle{font-size:13px;color:var(--muted);margin-top:3px}
+.topbar-actions{display:flex;align-items:center;gap:10px}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;border:1px solid transparent;transition:all var(--transition);position:relative;overflow:hidden;white-space:nowrap}
+.btn::after{content:'';position:absolute;inset:0;background:#fff;opacity:0;transition:opacity .1s}
+.btn:active::after{opacity:.06}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 12px rgba(59,130,246,.3)}
+.btn-primary:hover{background:#2563eb;box-shadow:0 4px 20px rgba(59,130,246,.4);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--muted);border-color:var(--border2)}
+.btn-ghost:hover{background:var(--surface2);color:var(--text);border-color:var(--border3)}
+.btn-danger{background:transparent;color:var(--accent3);border-color:rgba(248,113,113,.25)}
+.btn-danger:hover{background:rgba(248,113,113,.08)}
+.search-bar{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:0 12px;transition:all var(--transition)}
+.search-bar:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.search-bar input{background:transparent;border:none;outline:none;color:var(--text);font-family:var(--font);font-size:13px;padding:9px 0;width:200px}
+.search-bar input::placeholder{color:var(--muted)}
+
+/* ── STAT CARDS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;cursor:pointer;transition:all var(--transition);position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--card-accent,var(--accent)),transparent);opacity:0;transition:opacity var(--transition)}
+.stat-card:hover{border-color:var(--border3);transform:translateY(-2px);box-shadow:var(--shadow),0 0 0 1px var(--border3)}
+.stat-card:hover::before{opacity:1}
+.stat-label{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.stat-value{font-size:26px;font-weight:700;letter-spacing:-.8px;font-family:var(--mono)}
+.stat-sub{font-size:11.5px;color:var(--muted);margin-top:4px}
+.stat-sub.up{color:var(--accent2)}
+.clock-display{font-size:36px;font-weight:300;font-family:var(--mono);letter-spacing:-1px}
+.clock-date{font-size:12.5px;color:var(--muted);margin-top:4px}
+
+/* ── GRID LAYOUTS ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.grid-3{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
+.grid-widgets{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+
+/* ── PANELS ── */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:border-color var(--transition)}
+.panel:hover{border-color:rgba(255,255,255,.08)}
+.panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.panel-title{font-size:13.5px;font-weight:600;letter-spacing:-.2px;display:flex;align-items:center;gap:8px}
+.panel-title-icon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.panel-action{font-size:12px;color:var(--accent);cursor:pointer;transition:all var(--transition);border:none;background:none;font-family:var(--font);font-weight:600}
+.panel-action:hover{color:var(--accent-light);transform:translateX(2px)}
+
+/* ── ITEMS ── */
+.cat-tabs{display:flex;gap:3px;margin-bottom:16px;background:var(--surface2);padding:4px;border-radius:var(--radius-sm);width:fit-content;border:1px solid var(--border)}
+.cat-tab{padding:5px 14px;border-radius:var(--radius-xs);font-size:12.5px;font-weight:500;cursor:pointer;color:var(--muted);border:none;background:none;font-family:var(--font);transition:all var(--transition)}
+.cat-tab:hover{color:var(--text)}
+.cat-tab.active{background:var(--surface3);color:var(--text);box-shadow:var(--shadow-sm)}
+.item-list{display:flex;flex-direction:column;gap:5px}
+.item-row{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:var(--radius-sm);cursor:pointer;border:1px solid transparent;transition:all var(--transition);position:relative;overflow:hidden}
+.item-row:hover{background:var(--surface2);border-color:var(--border2);transform:translateX(2px)}
+.item-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.item-icon.doc{background:rgba(52,211,153,.1);color:var(--accent2)}
+.item-icon.link{background:rgba(59,130,246,.1);color:var(--accent)}
+.item-icon.img{background:rgba(251,191,36,.1);color:var(--accent4)}
+.item-icon.folder{background:rgba(167,139,250,.1);color:var(--accent5)}
+.item-icon.code{background:rgba(52,211,153,.1);color:var(--accent2)}
+.item-icon.video{background:rgba(248,113,113,.1);color:var(--accent3)}
+.item-info{flex:1;min-width:0}
+.item-name{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-meta{font-size:11.5px;color:var(--muted);margin-top:2px}
+.item-actions{display:flex;gap:4px;opacity:0;transition:opacity var(--transition)}
+.item-row:hover .item-actions{opacity:1}
+.item-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all var(--transition)}
+.item-btn:hover{background:var(--surface3);color:var(--text)}
+.links-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.link-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;cursor:pointer;transition:all var(--transition);display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}
+.link-card:hover{border-color:var(--border3);background:var(--surface3);transform:translateY(-1px);box-shadow:var(--shadow-sm)}
 
 /* ── MAIN ── */
 .main{margin-left:240px;flex:1;min-height:100vh;padding:32px 36px}
@@ -138,13 +268,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .btn:active::after{opacity:.08}
 .btn:active{transform:scale(.97)}
 .btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
-.btn-primary:hover{background:#6b5ae0;filter:brightness(1.08)}
+.btn-primary:hover{background:#2563eb;filter:brightness(1.08)}
 .btn-ghost{background:transparent;color:var(--muted);border-color:var(--border2)}
 .btn-ghost:hover{background:var(--surface2);color:var(--text)}
 .btn-danger{background:transparent;color:var(--accent3);border-color:rgba(247,106,106,.3)}
 .btn-danger:hover{background:rgba(247,106,106,.08)}
 .search-bar{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:0 12px;transition:border-color var(--transition),box-shadow var(--transition)}
-.search-bar:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,106,247,.12)}
+.search-bar:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-subtle)}
 .search-bar input{background:transparent;border:none;outline:none;color:var(--text);font-family:var(--font);font-size:13.5px;padding:9px 0;width:200px}
 .search-bar input::placeholder{color:var(--muted)}
 
@@ -184,9 +314,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .item-row:hover{background:var(--surface2);border-color:var(--border)}
 .item-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
 .item-icon.doc{background:rgba(93,224,176,.1);color:var(--accent2)}
-.item-icon.link{background:rgba(124,106,247,.12);color:var(--accent)}
+.item-icon.link{background:var(--accent-subtle);color:var(--accent)}
 .item-icon.img{background:rgba(247,178,106,.12);color:var(--accent4)}
-.item-icon.folder{background:rgba(124,106,247,.12);color:var(--accent)}
+.item-icon.folder{background:var(--accent-subtle);color:var(--accent)}
 .item-icon.code{background:rgba(93,224,176,.1);color:var(--accent2)}
 .item-icon.video{background:rgba(247,106,106,.12);color:var(--accent3)}
 .item-info{flex:1;min-width:0}
@@ -198,7 +328,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .item-btn:hover{background:var(--surface3);color:var(--text)}
 .links-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .link-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;cursor:pointer;transition:all var(--transition);display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}
-.link-card:hover{border-color:var(--accent);background:rgba(124,106,247,.06);transform:translateY(-1px)}
+.link-card:hover{border-color:var(--accent);background:var(--accent-subtle);transform:translateY(-1px)}
 .link-favicon{width:28px;height:28px;border-radius:7px;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
 .link-name{font-size:13px;font-weight:500}
 .link-url{font-size:11px;color:var(--muted)}
@@ -214,7 +344,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
 /* notes & todos */
 .note-area{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font);font-size:13.5px;padding:12px 14px;resize:none;outline:none;line-height:1.6;transition:border-color var(--transition),box-shadow var(--transition);min-height:90px}
-.note-area:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,106,247,.1)}
+.note-area:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-subtle)}
 .note-area::placeholder{color:var(--muted)}
 .todo-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-sm);transition:background var(--transition);cursor:pointer}
 .todo-item:hover{background:var(--surface2)}
@@ -272,7 +402,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .modal-field{margin-bottom:14px}
 .modal-label{font-size:12px;color:var(--muted);font-weight:500;margin-bottom:6px;letter-spacing:.3px}
 .modal-input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font);font-size:13.5px;padding:9px 12px;outline:none;transition:border-color var(--transition),box-shadow var(--transition)}
-.modal-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,106,247,.12)}
+.modal-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-subtle)}
 .modal-select{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font);font-size:13.5px;padding:9px 12px;outline:none;appearance:none}
 .modal-select option{background:var(--surface2)}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
@@ -330,7 +460,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .profile-banner-avatar img{width:100%;height:100%;object-fit:cover;display:block}
 .profile-banner-name{font-size:22px;font-weight:700;letter-spacing:-.5px;text-shadow:0 1px 8px rgba(0,0,0,.5)}
 .profile-banner-role{font-size:12px;color:rgba(255,255,255,.7);margin-top:2px}
-.profile-banner-empty{background:linear-gradient(135deg,rgba(124,106,247,.25) 0%,rgba(93,224,176,.1) 100%)}
+.profile-banner-empty{background:linear-gradient(135deg,var(--accent-glow) 0%,rgba(93,224,176,.1) 100%)}
 
 @media(max-width:1100px){.stats-row{grid-template-columns:repeat(2,1fr)}.grid-2,.grid-3,.grid-widgets{grid-template-columns:1fr}.links-grid{grid-template-columns:1fr}.profile-banner{margin:-32px -20px 24px}}
 
@@ -491,18 +621,94 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .hamburger:hover{background:var(--surface2)}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;backdrop-filter:blur(2px)}
 @media(max-width:768px){
+  /* ── SIDEBAR ── */
   .hamburger{display:flex;align-items:center;justify-content:center}
-  .sidebar{transform:translateX(-100%);transition:transform .25s cubic-bezier(.4,0,.2,1);z-index:200}
+  .sidebar{transform:translateX(-100%);transition:transform .25s cubic-bezier(.4,0,.2,1);z-index:200;width:260px!important}
   .sidebar.mobile-open{transform:translateX(0)}
   .sidebar-overlay.mobile-open{display:block}
-  .main{margin-left:0!important;padding:20px 16px;padding-top:56px}
-  .profile-banner{margin:-20px -16px 20px}
+  .resize-handle{display:none}
+
+  /* ── MAIN CONTENT ── */
+  .main{margin-left:0!important;padding:16px;padding-top:60px;padding-bottom:80px}
+  .topbar{flex-wrap:wrap;gap:8px;padding:12px 16px}
+  .topbar-actions{flex-wrap:wrap;gap:6px}
+  .page-title{font-size:20px!important}
+
+  /* ── AUTH SCREEN ── */
+  #auth-screen{padding:16px}
+  #auth-box{max-width:100%!important}
+
+  /* ── PROFILE SCREEN ── */
+  #profile-screen .ps-profiles{gap:12px!important}
+  #profile-screen .ps-profile .ps-avatar{width:72px!important;height:72px!important}
+
+  /* ── GRIDS ── */
   .stats-row{grid-template-columns:repeat(2,1fr)!important}
   .grid-2,.grid-3,.grid-widgets{grid-template-columns:1fr!important}
   .kanban-board{grid-template-columns:1fr!important}
   .top-agents{grid-template-columns:repeat(2,1fr)!important}
-  .resize-handle{display:none}
+  .links-grid{grid-template-columns:1fr!important}
+  .profile-banner{margin:-16px -16px 20px}
+
+  /* ── GAMING ── */
+  .rank-display{flex-wrap:wrap;gap:8px}
+  #valo-stats-area .match-cards,
+  #valo-stats-area [style*="grid-template-columns"]{grid-template-columns:1fr!important}
+  #valo-stats-area [style*="minmax(280px"]{grid-template-columns:1fr!important}
+  .game-card-body .modal-field input{font-size:14px}
+
+  /* ── PANELS ── */
+  .panel{padding:14px}
+  .conn-header{flex-wrap:wrap;gap:8px}
+  .conn-card{padding:14px}
+  .modal{max-width:calc(100vw - 32px)!important;max-height:90vh!important;overflow-y:auto}
+  .modal-overlay{padding:16px}
+
+  /* ── SETTINGS ── */
+  .settings-tabs{flex-wrap:wrap}
+  .settings-tab{flex:1;min-width:80px;font-size:12px;padding:7px 10px}
+
+  /* ── VALO TABS ── */
+  #valo-stats-area > div:first-child{flex-wrap:wrap}
+  #valo-stats-area button[id^="valo-tab"]{font-size:12px!important;padding:5px 12px!important}
+
+  /* ── ADMIN PANEL ── */
+  #admin-panel-overlay .modal-field,
+  #admin-panel-overlay [style*="max-width:860px"]{max-width:calc(100vw - 32px)!important}
+
+  /* ── COMPARE ── */
+  #compare-results [style*="grid-template-columns:1fr 80px 1fr"]{grid-template-columns:1fr 60px 1fr!important}
+  #compare-results [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
+
+  /* ── BOTTOM NAV ── */
+  .mobile-bottom-nav{display:flex!important}
 }
+
+@media(max-width:480px){
+  .stats-row{grid-template-columns:1fr 1fr!important}
+  .auth-tabs{flex-direction:column}
+  #auth-box{padding:0 4px}
+  .main{padding:12px;padding-top:56px;padding-bottom:76px}
+  .topbar{padding:10px 12px}
+  .panel{padding:12px}
+}
+
+/* ── MOBILE BOTTOM NAV ── */
+.mobile-bottom-nav{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--surface);border-top:1px solid var(--border);
+  z-index:150;padding:0 8px;padding-bottom:env(safe-area-inset-bottom,0px);
+  height:60px;align-items:center;justify-content:space-around;
+}
+.mob-nav-btn{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  background:none;border:none;color:var(--muted);cursor:pointer;
+  font-size:10px;font-family:var(--font);font-weight:500;
+  padding:6px 12px;border-radius:8px;transition:all .15s;flex:1;
+}
+.mob-nav-btn.active{color:var(--accent)}
+.mob-nav-btn span.icon{font-size:18px;line-height:1}
 </style>
 </head>
 <body>
@@ -578,7 +784,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   <div class="ps-profiles" id="ps-profiles-list"></div>
   <button class="ps-manage-btn" id="ps-manage-btn" onclick="toggleManageMode()">Manage profiles</button>
   <button onclick="doLogout()" style="margin-top:16px;background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:var(--font)">🚪 Sign out</button>
-  <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="Voir le changelog">v1.5.2 · changelog</div>
+  <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="Voir le changelog">v2.0.1 · changelog</div>
 </div>
 
 <!-- SIDEBAR -->
@@ -642,19 +848,21 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
       </div>
     </div>
     <!-- TWITCH LIVE -->
-    <div class="sb-widget" id="sb-twitch-wrap" style="display:none">
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
-        <span style="width:8px;height:8px;border-radius:50%;background:#9147ff;display:inline-block" id="twitch-live-dot"></span>
-        <span style="font-size:10px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase" id="twitch-live-label">TWITCH</span>
+    <div id="sb-twitch-wrap" style="display:none">
+      <div style="font-size:10px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:6px">
+        <span style="width:7px;height:7px;border-radius:50%;background:#ff0000;display:inline-block;animation:pulse 1.5s infinite"></span>
+        LIVE NOW
       </div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <img id="sb-twitch-avatar" style="width:32px;height:32px;border-radius:50%;border:2px solid #9147ff;flex-shrink:0" src="" alt="">
-        <div style="min-width:0;flex:1">
-          <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="sb-twitch-name">—</div>
-          <div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="sb-twitch-game">—</div>
-        </div>
+      <div id="sb-twitch-list" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+
+    <!-- LAST.FM -->
+    <div id="sb-lastfm-wrap" style="display:none;padding:0 10px 12px">
+      <div style="font-size:9.5px;font-weight:700;letter-spacing:1.5px;color:var(--muted2);text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+        <span style="width:6px;height:6px;border-radius:50%;background:#d51007;display:inline-block"></span>
+        NOW SCROBBLING
       </div>
-      <div id="sb-twitch-viewers" style="font-size:11px;color:#9147ff;margin-top:4px;font-weight:600"></div>
+      <div id="sb-lastfm-content"></div>
     </div>
     <div class="user-card" onclick="goToProfileScreen()">
       <div class="sidebar-avatar" id="sidebar-avatar"></div>
@@ -745,6 +953,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
         <div class="panel">
           <div class="panel-header"><div class="panel-title"><div class="panel-title-icon" style="background:rgba(93,224,176,.1);color:var(--accent2)">&#9989;</div>Upcoming Tasks</div><button class="panel-action" onclick="switchPage('todos',null)">Manage &#8594;</button></div>
           <div id="overview-todos"><div class="empty-state" style="padding:16px"><div style="font-size:20px;margin-bottom:6px">&#127881;</div>No pending tasks!</div></div>
+        </div>
+        <div class="panel" style="margin-top:14px">
+          <div class="panel-header"><div class="panel-title"><div class="panel-title-icon" style="background:rgba(106,176,247,.12);color:#6ab0f7">&#128197;</div>Upcoming Events</div><button class="panel-action" onclick="switchPage('calendar',null)">Calendar &#8594;</button></div>
+          <div id="overview-events"></div>
         </div>
       </div>
     </div>
@@ -952,6 +1164,31 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
       </div>
     </div>
     <!-- COMPARE WITH FRIENDS -->
+    <!-- OVERWATCH 2 -->
+    <div class="game-card">
+      <div class="game-card-header">
+        <div class="game-card-logo" style="background:rgba(255,103,0,.12)">&#128293;</div>
+        <div><div class="game-card-title">Overwatch 2</div><div class="game-card-sub" id="ow-account-sub">Not connected</div></div>
+        <span class="conn-status-badge disconnected" id="ow-badge" style="margin-left:auto">Not connected</span>
+      </div>
+      <div class="game-card-body">
+        <div id="ow-stats-area">
+          <div class="game-not-connected">Connect your account to see your stats</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <input type="text" class="modal-input" id="ow-username" placeholder="BattleTag (e.g. Rub19-1234)" style="flex:1">
+          <select class="game-region-select" id="ow-platform" style="width:90px">
+            <option value="pc">PC</option>
+            <option value="psn">PSN</option>
+            <option value="xbl">Xbox</option>
+          </select>
+          <button class="btn btn-primary" onclick="connectOW()">Connect</button>
+          <button class="btn btn-ghost" id="ow-disconnect" onclick="disconnectOW()" style="display:none">Disconnect</button>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px">Format: <span style="font-family:var(--mono)">Name-1234</span> — your BattleTag without the #</div>
+      </div>
+    </div>
+
     <div class="game-card">
       <div class="game-card-header">
         <div class="game-card-logo" style="background:rgba(124,106,247,.12);color:var(--accent)">&#128101;</div>
@@ -1089,26 +1326,37 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <div class="conn-card">
       <div class="conn-header">
         <div class="conn-icon" style="background:#9147ff">&#127916;</div>
-        <div><div class="conn-title">Twitch</div><div class="conn-subtitle">Show live status of any streamer in your sidebar</div></div>
-        <button id="twitch-refresh-btn" onclick="refreshTwitch()" title="Refresh" style="display:none;background:none;border:1px solid var(--border2);color:var(--muted);border-radius:6px;padding:4px 8px;cursor:pointer;font-size:13px;font-family:var(--font);transition:all .15s;margin-left:auto" onmouseover="this.style.borderColor='#9147ff';this.style.color='#9147ff'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">&#8635; Refresh</button>
+        <div><div class="conn-title">Twitch</div><div class="conn-subtitle">Track up to 3 streamers — shows live ones in sidebar</div></div>
+        <button id="twitch-refresh-btn" onclick="refreshTwitch()" title="Refresh" style="display:none;background:none;border:1px solid var(--border2);color:var(--muted);border-radius:6px;padding:4px 8px;cursor:pointer;font-size:13px;font-family:var(--font)" onmouseover="this.style.borderColor='#9147ff';this.style.color='#9147ff'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">&#8635; Refresh</button>
         <span class="conn-status-badge disconnected" id="twitch-badge">Not connected</span>
       </div>
-      <div id="twitch-preview" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;margin-bottom:12px">
-        <div style="display:flex;align-items:center;gap:12px">
-          <img id="twitch-avatar" style="width:42px;height:42px;border-radius:50%;border:2px solid #9147ff" src="" alt="">
-          <div style="flex:1">
-            <div style="font-weight:600" id="twitch-display-name">—</div>
-            <div id="twitch-status" style="font-size:12px;color:var(--muted)">Offline</div>
-          </div>
-          <a id="twitch-link" href="#" target="_blank" style="font-size:12px;color:#9147ff;text-decoration:none">Watch &#8599;</a>
+      <!-- Streamer list -->
+      <div id="twitch-streamers-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px"></div>
+      <!-- Add streamer -->
+      <div id="twitch-add-section" class="modal-field">
+        <div class="modal-label">ADD STREAMER (max 3)</div>
+        <div style="display:flex;gap:8px">
+          <input type="text" class="modal-input" id="twitch-username" placeholder="e.g. squeezie, xqc, ninja..." style="flex:1">
+          <button class="btn btn-primary" onclick="connectTwitch()">&#43; Add</button>
         </div>
       </div>
+    </div>
+
+    <!-- LAST.FM -->
+    <div class="conn-card">
+      <div class="conn-header">
+        <div class="conn-icon" style="background:#d51007">&#127925;</div>
+        <div><div class="conn-title">Last.fm</div><div class="conn-subtitle">Show your music history and top artists in your sidebar</div></div>
+        <button id="lastfm-refresh-btn" onclick="refreshLastfm()" style="display:none;background:none;border:1px solid var(--border2);color:var(--muted);border-radius:6px;padding:4px 8px;cursor:pointer;font-size:13px;font-family:var(--font)" onmouseover="this.style.borderColor='#d51007';this.style.color='#d51007'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">&#8635; Refresh</button>
+        <span class="conn-status-badge disconnected" id="lastfm-badge">Not connected</span>
+      </div>
+      <div id="lastfm-preview" style="display:none;margin-bottom:12px"></div>
       <div class="modal-field">
-        <div class="modal-label">TWITCH USERNAME</div>
+        <div class="modal-label">LAST.FM USERNAME</div>
         <div style="display:flex;gap:8px">
-          <input type="text" class="modal-input" id="twitch-username" placeholder="e.g. ninja, xqc, rub19..." style="flex:1">
-          <button class="btn btn-primary" onclick="connectTwitch()">Connect</button>
-          <button class="btn btn-ghost" id="twitch-disconnect-btn" onclick="disconnectTwitch()" style="display:none">Disconnect</button>
+          <input type="text" class="modal-input" id="lastfm-username" placeholder="Your Last.fm username" style="flex:1">
+          <button class="btn btn-primary" onclick="connectLastfm()">Connect</button>
+          <button class="btn btn-ghost" id="lastfm-disconnect-btn" onclick="disconnectLastfm()" style="display:none">Disconnect</button>
         </div>
       </div>
     </div>
@@ -1396,6 +1644,25 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
 <div class="toast-container" id="toasts"></div>
 
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+  <button class="mob-nav-btn active" id="mob-btn-dashboard" onclick="switchPage('dashboard',null);setMobNav('dashboard')">
+    <span class="icon">&#127968;</span>Home
+  </button>
+  <button class="mob-nav-btn" id="mob-btn-files" onclick="switchPage('files',null);setMobNav('files')">
+    <span class="icon">&#128194;</span>Files
+  </button>
+  <button class="mob-nav-btn" id="mob-btn-gaming" onclick="switchPage('gaming',null);setMobNav('gaming')">
+    <span class="icon">&#127918;</span>Gaming
+  </button>
+  <button class="mob-nav-btn" id="mob-btn-calendar" onclick="switchPage('calendar',null);setMobNav('calendar')">
+    <span class="icon">&#128197;</span>Calendar
+  </button>
+  <button class="mob-nav-btn" id="mob-btn-settings" onclick="switchPage('settings',null);setMobNav('settings')">
+    <span class="icon">&#9881;</span>Settings
+  </button>
+</nav>
+
 <script>
 // ===================================================
 //  SUPABASE INIT
@@ -1410,16 +1677,22 @@ let _isAdmin=false;
 // -- AUTH UI --------------------------------------
 function showChangelog(){
   const versions=[
-    {v:'v1.3.1',date:'05/06/2026',changes:['All text fully in English','Discord badges restored with correct emojis','File/link icons restored (doc, link, image, folder, code, video)','Toast and priority icons fixed','Steam API key instructions translated']},
-    {v:'v1.3.0',date:'05/06/2026',changes:['Admin panel: click user to expand details','IP address + city/country on login','Browser and OS detection','Login count per user','Total logins stat']},
-    {v:'v1.2.1',date:'05/06/2026',changes:['Fix: profilee click broken with Supabase UUIDs','Avatar compression increased to 300x300','Avatar emoji restored from index on reload']},
-    {v:'v1.2.0',date:'05/06/2026',changes:['Settings My Account: edit username, email, password','Username login fixed with email fallback','Import JSON -> immediate cloud save before reload','Fix: data no longer lost after import + refresh']},
-    {v:'v1.1.0',date:'05/06/2026',changes:['Changelog visible on profilee screen','Compact sidebar','Admin button in sidebar for owner account','Version displayed and clickable']},
-    {v:'v1.0.4',date:'05/06/2026',changes:['saveStateNow() on all actions (51 calls)','Avatar compression before Supabase upload','Username login with generated email fallback']},
-    {v:'v1.0.3',date:'05/06/2026',changes:['Supabase integration - email + username auth','Cloud save per profilee','Admin panel with account management']},
-    {v:'v1.0.2',date:'05/06/2026',changes:['Cloudflare Worker for Steam + Tracker + Henrik','API keys secured server-side','No more CORS issues']},
-    {v:'v1.0.1',date:'05/06/2026',changes:['Valorant tabs (Competitive / Swiftplay / Unrated)','Client-side match filtering','Visual match cards + top agents + headshot %']},
-    {v:'v1.0.0',date:'05/06/2026',changes:['Initial dashboard version','Multiple profiles with avatar and PIN','Discord, Steam, Spotify, Valorant, LoL']},
+    {v:'v2.0.0',date:'06/06/2026',changes:['Last.fm integration: now playing, recent tracks, top artists (7d)','Last.fm sidebar widget with auto-refresh every 30s','Fix: Settings page tabs not working','Fix: IPv4 + IPv6 both shown in admin panel','Fix: Last.fm auto-refresh on connection load']},
+    {v:'v1.9.0',date:'06/06/2026',changes:['Full visual upgrade: electric blue theme','Glassmorphism sidebar with backdrop-filter','Depth shadows + hover lift on cards','Gradient profile title + logo glow','Bounce transitions on interactive elements','Custom scrollbar']},
+    {v:'v1.8.0',date:'06/06/2026',changes:['Overwatch 2 stats via Tracker.gg','Ranks Tank/DPS/Support with icons','Win rate, KDA, avg elim, time played','Top 5 heroes with WR + K/D','Competitive / Quick Play tabs']},
+    {v:'v1.7.0',date:'06/06/2026',changes:['Full mobile responsive design','Bottom navigation bar (5 tabs)','Sidebar overlay on mobile','All grids adapt to single column','Auth screen optimized for mobile']},
+    {v:'v1.6.0',date:'06/06/2026',changes:['Calendar widget in Overview','Shows upcoming events with color dots','Countdown: Today / Tomorrow / Xd','Auto-updates when adding events']},
+    {v:'v1.5.3',date:'06/06/2026',changes:['Twitch: up to 3 streamers','Sidebar shows only live streamers','Live card with game + viewers','Remove individual streamers']},
+    {v:'v1.5.0',date:'06/06/2026',changes:['Compare with Friends (Valorant + Steam)','Side-by-side stats with winner highlight','Pick from dashboard users or enter manually','Steam recent games comparison']},
+    {v:'v1.4.0',date:'06/06/2026',changes:['Twitch live status widget','Sidebar shows live streamers','Watch button + viewer count','Auto-refresh on load']},
+    {v:'v1.3.2',date:'05/06/2026',changes:['Admin: view any user dashboard','See notes, tasks, files, connections, stats','Per-profile viewer']},
+    {v:'v1.3.0',date:'05/06/2026',changes:['Admin panel: click user to expand details','IP address + city/country on login','Browser and OS detection','Login count per user']},
+    {v:'v1.2.0',date:'05/06/2026',changes:['Settings My Account: edit username, email, password','Username login with email fallback','Import JSON -> immediate cloud save']},
+    {v:'v1.1.0',date:'05/06/2026',changes:['Changelog popup on profile screen','Compact sidebar','Admin button for owner account']},
+    {v:'v1.0.3',date:'05/06/2026',changes:['Supabase integration: email + username auth','Cloud save per profile','Admin panel with account management']},
+    {v:'v1.0.2',date:'05/06/2026',changes:['Cloudflare Worker for Steam + Tracker + Henrik','API keys secured server-side','CORS issues resolved']},
+    {v:'v1.0.1',date:'05/06/2026',changes:['Valorant tabs (Competitive / Swiftplay / Unrated)','Visual match cards + top agents + headshot %','Client-side match filtering by mode']},
+    {v:'v1.0.0',date:'05/06/2026',changes:['Initial dashboard version','Multiple profiles with avatar and PIN','Discord, Steam, Spotify, Valorant, LoL, Kanban, Habits, Calendar, Tasks, Notes']},
   ];
   let html=`<div style="position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.remove()">
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:28px;width:100%;max-width:500px;max-height:80vh;overflow-y:auto">
@@ -1523,24 +1796,24 @@ async function onAuthSuccess(){
   // Collect login metadata
   try{
     const ua=navigator.userAgent;
-    const browser=ua.includes('Chrome')?'Chrome':ua.includes('Firefox')?'Firefox':ua.includes('Safari')?'Safari':ua.includes('Edge')?'Edge':'Unknown';
+    const browser=ua.includes('Edg')?'Edge':ua.includes('Chrome')?'Chrome':ua.includes('Firefox')?'Firefox':ua.includes('Safari')?'Safari':'Unknown';
     const os=ua.includes('Windows')?'Windows':ua.includes('Mac')?'MacOS':ua.includes('Linux')?'Linux':ua.includes('Android')?'Android':ua.includes('iPhone')||ua.includes('iPad')?'iOS':'Unknown';
-    // Get IP + city from ipapi
-    let ip='',city='',country='';
+    let ip='',city='',country='',ip4='',ip6='';
     try{
-      const geo=await fetch('https://ipapi.co/json/').then(r=>r.json());
-      ip=geo.ip||'';city=geo.city||'';country=geo.country_name||'';
+      const [geo4,geo]=await Promise.all([
+        fetch('https://api.ipify.org?format=json').then(r=>r.json()).catch(()=>null),
+        fetch('https://ipapi.co/json/').then(r=>r.json()).catch(()=>null)
+      ]);
+      if(geo4?.ip)ip4=geo4.ip;
+      if(geo){city=geo.city||'';country=geo.country_name||'';ip=geo.ip||'';if(ip.includes(':'))ip6=ip;}
+      if(!ip4&&ip&&!ip.includes(':'))ip4=ip;
     }catch(e){}
+    const ipDisplay=[ip4,ip6].filter(Boolean).join(' / ')||ip||'—';
     await sb.from('profiles').update({
       last_seen:new Date().toISOString(),
-      last_ip:ip,
-      last_city:city,
-      last_country:country,
-      last_browser:browser,
-      last_os:os,
-      login_count:user?.user_metadata?.login_count||0
+      last_ip:ipDisplay,last_city:city,last_country:country,
+      last_browser:browser,last_os:os,
     }).eq('id',user.id);
-    // Increment login count
     await sb.rpc('increment_login_count',{user_id:user.id}).catch(()=>{});
   }catch(e){console.warn('Metadata error:',e);}
 
@@ -2212,7 +2485,7 @@ function initDashboard(){
   // Affiche le bouton admin si c'est l'admin
   const adminBtn=document.getElementById('nav-admin');
   if(adminBtn)adminBtn.style.display=_isAdmin?'flex':'none';
-  updateStats();renderRecentItems();renderActivity();renderTodos();updateClock();
+  updateStats();renderRecentItems();renderActivity();renderTodos();renderOverviewEvents();updateClock();
   loadConnectionsUI();
   refreshDiscordSidebar();
   // Start Lanyard WebSocket for real-time updates
@@ -2417,6 +2690,9 @@ function switchPage(page,navEl){
   else document.querySelectorAll('.nav-item').forEach(el=>{
     if(el.getAttribute('onclick')&&el.getAttribute('onclick').includes("'"+page+"'"))el.classList.add('active')
   });
+  setMobNav(page);
+  // Close sidebar on mobile after navigation
+  if(window.innerWidth<=768)closeMobileSidebar();
   const p=curP();if(!p)return;
   if(page==='files')renderItems();
   if(page==='todos')renderTodos();
@@ -2512,6 +2788,32 @@ function toast(msg,type='info'){
 // ===================================================
 //  ACTIVITY
 // ===================================================
+function renderOverviewEvents(){
+  const p=curP();if(!p)return;
+  const container=document.getElementById('overview-events');if(!container)return;
+  const today=new Date().toISOString().slice(0,10);
+  const events=(p.state.events||[]).filter(e=>e.date>=today).slice(0,5);
+  if(!events.length){
+    container.innerHTML='<div class="empty-state" style="padding:16px"><div style="font-size:20px;margin-bottom:6px">&#128197;</div>No upcoming events!</div>';
+    return;
+  }
+  container.innerHTML=events.map(e=>{
+    const d=new Date(e.date+'T00:00:00');
+    const isToday=e.date===today;
+    const isTomorrow=e.date===new Date(Date.now()+86400000).toISOString().slice(0,10);
+    const dayLabel=isToday?'Today':isTomorrow?'Tomorrow':d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'});
+    const daysLeft=Math.ceil((d-new Date().setHours(0,0,0,0))/(1000*60*60*24));
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+      <div style="width:8px;height:8px;border-radius:50%;background:${e.color||'var(--accent2)'};flex-shrink:0"></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.title}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:1px">${dayLabel}</div>
+      </div>
+      <div style="font-size:11px;font-weight:600;flex-shrink:0;color:${isToday?'var(--accent3)':daysLeft<=3?'var(--accent4)':'var(--muted)'}">${isToday?'Today':daysLeft===1?'Tomorrow':daysLeft+'d'}</div>
+    </div>`;
+  }).join('');
+}
+
 function addActivity(text,color='var(--accent)'){
   const p=curP();if(!p)return;
   const n=new Date(),time=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
@@ -2797,15 +3099,325 @@ function loadConnectionsUI(){
     const rfBtn=document.getElementById('spotify-refresh-btn');if(rfBtn)rfBtn.style.display='inline-block';
   }
   if(conn.twitch){
-    document.getElementById('twitch-username').value=conn.twitch.username||'';
-    document.getElementById('twitch-disconnect-btn').style.display='inline-flex';
-    document.getElementById('twitch-refresh-btn').style.display='inline-block';
-    renderTwitchCard(conn.twitch);
+    renderTwitchCard();
+  }
+  if(conn.lastfm){
+    document.getElementById('lastfm-username').value=conn.lastfm.username||'';
+    document.getElementById('lastfm-disconnect-btn').style.display='inline-flex';
+    document.getElementById('lastfm-refresh-btn').style.display='inline-block';
+    renderLastfmCard(conn.lastfm);
+    startLastfmAutoRefresh();
   }
 }
 
 
 // === DISCORD BADGES ===
+// === OVERWATCH 2 ===
+async function fetchTracker(game,platform,username){
+  const encoded=encodeURIComponent(username);
+  const url=`${WORKER_URL}/tracker/${game}/standard/profile/${platform}/${encoded}`;
+  const res=await fetch(url,{signal:AbortSignal.timeout(12000)});
+  if(!res.ok)throw new Error('Tracker API error '+res.status);
+  return res.json();
+}
+
+async function connectOW(){
+  const username=document.getElementById('ow-username').value.trim();
+  const platform=document.getElementById('ow-platform').value;
+  if(!username){toast('Enter your BattleTag','error');return;}
+  toast('Fetching OW2 stats...','info');
+  try{
+    const data=await fetchTracker('overwatch-2',platform,username);
+    if(data.errors){toast('Profile not found - check your BattleTag and make sure your profile is public','error');return;}
+    const p=curP();if(!p)return;
+    if(!p.state.gaming)p.state.gaming={};
+    p.state.gaming.ow={username,platform,_data:data};
+    saveStateNow();
+    renderOWStats(data,username,'comp');
+    document.getElementById('ow-disconnect').style.display='inline-flex';
+    document.getElementById('ow-account-sub').textContent=username+' · '+platform.toUpperCase();
+    toast('Overwatch 2 connected!','success');
+  }catch(e){toast('Error: '+e.message,'error');console.error(e);}
+}
+
+function renderOWStats(data,username,mode){
+  mode=mode||'comp';
+  const area=document.getElementById('ow-stats-area');if(!area)return;
+  const badge=document.getElementById('ow-badge');
+  if(badge){badge.textContent='Connected';badge.className='conn-status-badge connected';}
+  const segments=data?.data?.segments||[];
+
+  // Get stats segment based on mode
+  const statType=mode==='comp'?'competitive':'quickplay';
+  const overview=segments.find(s=>s.type==='overview'&&(s.attributes?.mode===statType||!s.attributes?.mode))||segments.find(s=>s.type==='overview');
+  const stat=(seg,key)=>seg?.stats?.[key]?.displayValue||'--';
+
+  // Ranks (comp only)
+  const rankSegs=segments.filter(s=>s.type==='competitive-rank');
+
+  // Top heroes for this mode
+  const heroes=segments.filter(s=>s.type==='hero'&&s.attributes?.mode===statType&&(s.stats?.timePlayed?.value||0)>0)
+    .sort((a,b)=>(b.stats?.timePlayed?.value||0)-(a.stats?.timePlayed?.value||0))
+    .slice(0,5);
+  // fallback: all heroes
+  const heroList=heroes.length?heroes:segments.filter(s=>s.type==='hero'&&(s.stats?.timePlayed?.value||0)>0)
+    .sort((a,b)=>(b.stats?.timePlayed?.value||0)-(a.stats?.timePlayed?.value||0)).slice(0,5);
+
+  let html='';
+
+  // Mode tabs
+  html+=`<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+    <button id="ow-tab-comp" onclick="switchOWTab('comp')" style="padding:7px 16px;border-radius:20px;border:1.5px solid ${mode==='comp'?'var(--accent)':'var(--border2)'};background:${mode==='comp'?'var(--accent)':'var(--surface2)'};color:${mode==='comp'?'#fff':'var(--muted)'};font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font)">Competitive</button>
+    <button id="ow-tab-qp" onclick="switchOWTab('qp')" style="padding:7px 16px;border-radius:20px;border:1.5px solid ${mode==='qp'?'var(--accent)':'var(--border2)'};background:${mode==='qp'?'var(--accent)':'var(--surface2)'};color:${mode==='qp'?'#fff':'var(--muted)'};font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font)">Quick Play</button>
+  </div>`;
+
+  // Rank cards (comp only)
+  if(mode==='comp'&&rankSegs.length){
+    html+=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">`;
+    rankSegs.slice(0,4).forEach(r=>{
+      const roleName=r.metadata?.name||'Rank';
+      const rank=r.stats?.rank?.displayValue||r.stats?.rankScore?.displayValue||'Unranked';
+      const icon=r.stats?.rank?.metadata?.iconUrl||'';
+      html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;flex:1;min-width:90px;display:flex;align-items:center;gap:8px">
+        ${icon?`<img src="${icon}" style="width:32px;height:32px;object-fit:contain" onerror="this.style.display='none'">`:'<span style="font-size:20px">&#127942;</span>'}
+        <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">${roleName}</div>
+        <div style="font-size:13px;font-weight:700">${rank}</div></div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+
+  // Stats pills
+  const pills=[
+    {label:'Win Rate',val:stat(overview,'winPercentage')},
+    {label:'KDA',val:stat(overview,'kdaRatio')},
+    {label:'Avg Elim',val:stat(overview,'eliminationsPerLife')},
+    {label:'Time Played',val:stat(overview,'timePlayed')},
+  ];
+  html+=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">`;
+  pills.forEach(pill=>{
+    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;flex:1;min-width:90px;text-align:center">
+      <div style="font-size:18px;font-weight:700;color:var(--accent)">${pill.val}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">${pill.label}</div>
+    </div>`;
+  });
+  html+=`</div>`;
+
+  // Top heroes
+  if(heroList.length){
+    html+=`<div style="font-size:12px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:10px">Top Heroes</div>
+    <div style="display:flex;flex-direction:column;gap:6px">`;
+    heroList.forEach(h=>{
+      const name=h.metadata?.name||'Unknown';
+      const img=h.metadata?.imageUrl||'';
+      const time=h.stats?.timePlayed?.displayValue||'--';
+      const wr=h.stats?.winPercentage?.displayValue||'--';
+      const elim=h.stats?.eliminationsPerLife?.displayValue||'--';
+      html+=`<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surface2);border-radius:var(--radius-sm)">
+        ${img?`<img src="${img}" style="width:36px;height:36px;border-radius:8px;object-fit:cover" onerror="this.style.display='none'">`:'<div style="width:36px;height:36px;border-radius:8px;background:var(--surface3);display:flex;align-items:center;justify-content:center">&#127918;</div>'}
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600">${name}</div>
+          <div style="font-size:11px;color:var(--muted)">${time} played</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:12px;font-weight:600;color:var(--accent2)">${wr} WR</div>
+          <div style="font-size:11px;color:var(--muted)">${elim} K/D</div>
+        </div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+
+  if(!html)html='<div class="game-not-connected">No stats found - make sure your profile is public on Overwatch</div>';
+  area.innerHTML=html;
+}
+
+function switchOWTab(tab){
+  const p=curP();
+  if(p?.state?.gaming?.ow?._data)renderOWStats(p.state.gaming.ow._data,p.state.gaming.ow.username,tab);
+}
+
+function disconnectOW(){
+  const p=curP();if(!p)return;
+  if(p.state.gaming)delete p.state.gaming.ow;
+  saveStateNow();
+  document.getElementById('ow-stats-area').innerHTML='<div class="game-not-connected">Connect your account to see your stats</div>';
+  document.getElementById('ow-badge').textContent='Not connected';
+  document.getElementById('ow-badge').className='conn-status-badge disconnected';
+  document.getElementById('ow-account-sub').textContent='Not connected';
+  document.getElementById('ow-disconnect').style.display='none';
+  document.getElementById('ow-username').value='';
+  toast('Overwatch 2 disconnected','info');
+}
+
+// === LAST.FM ===
+const LASTFM_KEY = '20a3130a6a13552131356a4dd2bf8071';
+
+async function fetchLastfm(method, params=''){
+  const url=`https://ws.audioscrobbler.com/2.0/?method=${method}&api_key=${LASTFM_KEY}&format=json&${params}`;
+  // Route through worker to avoid CORS
+  const workerUrl=`${WORKER_URL}/lastfm?url=${encodeURIComponent(url)}`;
+  try{
+    const res=await fetch(workerUrl,{signal:AbortSignal.timeout(10000)});
+    if(res.ok)return res.json();
+  }catch(e){}
+  // Direct fallback (works on some browsers)
+  const res2=await fetch(url,{signal:AbortSignal.timeout(10000)});
+  return res2.json();
+}
+
+async function connectLastfm(){
+  const username=document.getElementById('lastfm-username').value.trim();
+  if(!username){toast('Enter your Last.fm username','error');return;}
+  toast('Connecting to Last.fm...','info');
+  try{
+    const data=await fetchLastfm('user.getinfo',`user=${encodeURIComponent(username)}`);
+    if(data.error){toast('User not found — check your username','error');return;}
+    const user=data.user;
+    const p=curP();if(!p)return;
+    if(!p.state.connections)p.state.connections={};
+    p.state.connections.lastfm={username:user.name,realname:user.realname,image:user.image?.[2]?.['#text']||''};
+    saveStateNow();
+    await renderLastfmCard(p.state.connections.lastfm);
+    document.getElementById('lastfm-disconnect-btn').style.display='inline-flex';
+    document.getElementById('lastfm-refresh-btn').style.display='inline-block';
+    startLastfmAutoRefresh();
+    toast('Last.fm connected! 🎵','success');
+  }catch(e){toast('Error: '+e.message,'error');console.error(e);}
+}
+
+let _lastfmInterval=null;
+function startLastfmAutoRefresh(){
+  if(_lastfmInterval)clearInterval(_lastfmInterval);
+  _lastfmInterval=setInterval(async()=>{
+    const p=curP();
+    if(p?.state?.connections?.lastfm)await renderLastfmCard(p.state.connections.lastfm);
+  },30000); // refresh every 30 seconds
+}
+
+async function renderLastfmCard(data){
+  if(!data)return;
+  const badge=document.getElementById('lastfm-badge');
+  if(badge){badge.textContent='Connected';badge.className='conn-status-badge connected';}
+  const preview=document.getElementById('lastfm-preview');
+  if(!preview)return;
+  try{
+    // Fetch recent tracks + top artists
+    const [recentData,topData]=await Promise.all([
+      fetchLastfm('user.getrecenttracks',`user=${encodeURIComponent(data.username)}&limit=5`),
+      fetchLastfm('user.gettopartists',`user=${encodeURIComponent(data.username)}&limit=5&period=7day`)
+    ]);
+    const tracks=recentData?.recenttracks?.track||[];
+    const artists=topData?.topartists?.artist||[];
+    const nowPlaying=tracks[0]?.['@attr']?.nowplaying;
+
+    let html='';
+
+    // Now playing or last track
+    if(tracks[0]){
+      const t=tracks[0];
+      const img=t.image?.[2]?.['#text']||'';
+      html+=`<div style="background:var(--surface2);border:1px solid ${nowPlaying?'rgba(213,16,7,.3)':'var(--border)'};border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:12px;display:flex;align-items:center;gap:10px">
+        ${img?`<img src="${img}" style="width:40px;height:40px;border-radius:6px;object-fit:cover;flex-shrink:0" onerror="this.style.display='none'">`:'<div style="width:40px;height:40px;border-radius:6px;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">&#127925;</div>'}
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.name||'Unknown'}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">${t.artist?.['#text']||''} ${t.album?.['#text']?'· '+t.album['#text']:''}</div>
+        </div>
+        ${nowPlaying?'<span style="background:rgba(213,16,7,.15);color:#ff4444;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;flex-shrink:0">&#9679; NOW</span>':''}
+      </div>`;
+    }
+
+    // Recent tracks
+    html+=`<div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Recent Tracks</div>`;
+    html+=`<div style="display:flex;flex-direction:column;gap:4px;margin-bottom:14px">`;
+    tracks.slice(0,5).forEach(t=>{
+      const img=t.image?.[1]?.['#text']||'';
+      const isNow=t['@attr']?.nowplaying;
+      html+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--surface2);border-radius:6px">
+        ${img?`<img src="${img}" style="width:28px;height:28px;border-radius:4px;flex-shrink:0" onerror="this.style.display='none'">`:'<div style="width:28px;height:28px;border-radius:4px;background:var(--surface3);flex-shrink:0"></div>'}
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.name||'?'}</div>
+          <div style="font-size:10px;color:var(--muted)">${t.artist?.['#text']||''}</div>
+        </div>
+        ${isNow?'<span style="font-size:9px;color:#ff4444;font-weight:700">NOW</span>':''}
+      </div>`;
+    });
+    html+=`</div>`;
+
+    // Top artists this week
+    if(artists.length){
+      html+=`<div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Top Artists (7 days)</div>`;
+      html+=`<div style="display:flex;flex-direction:column;gap:4px">`;
+      artists.slice(0,5).forEach((a,i)=>{
+        const img=a.image?.[1]?.['#text']||'';
+        const plays=parseInt(a.playcount||0);
+        const maxPlays=parseInt(artists[0]?.playcount||1);
+        const pct=Math.round((plays/maxPlays)*100);
+        html+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--surface2);border-radius:6px">
+          <div style="font-size:10px;color:var(--muted);width:14px;text-align:center;flex-shrink:0">${i+1}</div>
+          ${img?`<img src="${img}" style="width:28px;height:28px;border-radius:50%;flex-shrink:0" onerror="this.style.display='none'">`:'<div style="width:28px;height:28px;border-radius:50%;background:var(--surface3);flex-shrink:0"></div>'}
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${a.name}</div>
+            <div style="height:3px;background:var(--surface3);border-radius:99px;margin-top:3px;overflow:hidden">
+              <div style="height:100%;width:${pct}%;background:#d51007;border-radius:99px"></div>
+            </div>
+          </div>
+          <div style="font-size:10px;color:var(--muted);flex-shrink:0">${plays}</div>
+        </div>`;
+      });
+      html+=`</div>`;
+    }
+
+    preview.style.display='block';
+    preview.innerHTML=html;
+
+    // Update sidebar
+    updateLastfmSidebar(data,tracks[0],artists);
+  }catch(e){console.warn('Last.fm render error:',e);}
+}
+
+function updateLastfmSidebar(data,nowTrack,topArtists){
+  const wrap=document.getElementById('sb-lastfm-wrap');
+  const content=document.getElementById('sb-lastfm-content');
+  if(!wrap||!content||!data)return;
+  if(!nowTrack){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  const isNow=nowTrack['@attr']?.nowplaying;
+  const img=nowTrack.image?.[2]?.['#text']||'';
+  content.innerHTML=`<div style="display:flex;align-items:center;gap:8px">
+    ${img?`<img src="${img}" style="width:34px;height:34px;border-radius:6px;object-fit:cover;flex-shrink:0" onerror="this.style.display='none'">`:'<div style="width:34px;height:34px;border-radius:6px;background:var(--surface3);flex-shrink:0"></div>'}
+    <div style="min-width:0;flex:1">
+      <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)">${nowTrack.name||'?'}</div>
+      <div style="font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${nowTrack.artist?.['#text']||''}</div>
+    </div>
+    ${isNow?'<span style="width:8px;height:8px;border-radius:50%;background:#d51007;flex-shrink:0;animation:pulse 1.5s infinite"></span>':''}
+  </div>`;
+}
+
+async function refreshLastfm(){
+  const p=curP();if(!p?.state?.connections?.lastfm)return;
+  const btn=document.getElementById('lastfm-refresh-btn');
+  if(btn){btn.textContent='...';btn.disabled=true;}
+  await renderLastfmCard(p.state.connections.lastfm);
+  if(btn){btn.textContent='&#8635; Refresh';btn.disabled=false;}
+  toast('Last.fm refreshed!','success');
+}
+
+function disconnectLastfm(){
+  const p=curP();if(!p)return;
+  delete p.state.connections.lastfm;
+  saveStateNow();
+  document.getElementById('lastfm-badge').textContent='Not connected';
+  document.getElementById('lastfm-badge').className='conn-status-badge disconnected';
+  document.getElementById('lastfm-preview').style.display='none';
+  document.getElementById('lastfm-preview').innerHTML='';
+  document.getElementById('lastfm-disconnect-btn').style.display='none';
+  document.getElementById('lastfm-refresh-btn').style.display='none';
+  document.getElementById('lastfm-username').value='';
+  document.getElementById('sb-lastfm-wrap').style.display='none';
+  toast('Last.fm disconnected','info');
+}
+
 function renderDiscordBadges(user){
   const flags = user.public_flags || 0;
   // Note: premium_type from Lanyard can be inaccurate - Nitro managed manually below
@@ -3289,85 +3901,121 @@ async function fetchTwitch(endpoint, params=''){
   return res.json();
 }
 
+function getTwitchStreamers(){
+  const p=curP();
+  const conn=p?.state?.connections?.twitch;
+  if(!conn)return[];
+  // Support both old format (single) and new format (array)
+  if(Array.isArray(conn.streamers))return conn.streamers;
+  if(conn.username)return[{username:conn.username,userId:conn.userId,displayName:conn.displayName,avatar:conn.avatar}];
+  return[];
+}
+
+function saveTwitchStreamers(streamers){
+  const p=curP();if(!p)return;
+  if(!p.state.connections)p.state.connections={};
+  p.state.connections.twitch={streamers};
+  saveStateNow();
+}
+
 async function connectTwitch(){
-  const username=document.getElementById('twitch-username').value.trim();
+  const username=document.getElementById('twitch-username').value.trim().toLowerCase();
   if(!username){toast('Enter a Twitch username','error');return;}
-  toast('Looking up Twitch user...','info');
+  const streamers=getTwitchStreamers();
+  if(streamers.length>=3){toast('Max 3 streamers reached','error');return;}
+  if(streamers.find(s=>s.username===username)){toast('Already added','error');return;}
+  toast('Looking up '+username+'...','info');
   try{
     const data=await fetchTwitch('users','login='+encodeURIComponent(username));
     const user=data?.data?.[0];
     if(!user){toast('Twitch user not found','error');return;}
-    const p=curP();if(!p)return;
-    if(!p.state.connections)p.state.connections={};
-    p.state.connections.twitch={username:user.login,userId:user.id,displayName:user.display_name,avatar:user.profile_image_url};
-    saveStateNow();
-    await renderTwitchCard(p.state.connections.twitch);
-    document.getElementById('twitch-disconnect-btn').style.display='inline-flex';
-    document.getElementById('twitch-refresh-btn').style.display='inline-block';
-    toast('Twitch connected! 🟣','success');
+    streamers.push({username:user.login,userId:user.id,displayName:user.display_name,avatar:user.profile_image_url});
+    saveTwitchStreamers(streamers);
+    document.getElementById('twitch-username').value='';
+    await renderTwitchCard();
+    toast(user.display_name+' added!','success');
   }catch(e){toast('Error: '+e.message,'error');}
 }
 
-async function renderTwitchCard(data){
-  if(!data)return;
-  const badge=document.getElementById('twitch-badge');
-  // Check live status
-  try{
-    const stream=await fetchTwitch('streams','user_id='+data.userId);
-    const live=stream?.data?.[0];
-    const preview=document.getElementById('twitch-preview');
-    const avatar=document.getElementById('twitch-avatar');
-    const name=document.getElementById('twitch-display-name');
-    const status=document.getElementById('twitch-status');
-    const link=document.getElementById('twitch-link');
-    if(preview){preview.style.display='block';}
-    if(avatar&&data.avatar)avatar.src=data.avatar;
-    if(name)name.textContent=data.displayName||data.username;
-    if(link)link.href='https://twitch.tv/'+data.username;
-    if(live){
-      if(badge){badge.textContent='LIVE';badge.className='conn-status-badge connected';badge.style.background='#9147ff';badge.style.color='#fff';}
-      if(status)status.innerHTML='<span style="color:#9147ff;font-weight:600">&#9679; LIVE</span> — '+( live.game_name||'');
-      // Update sidebar
-      updateTwitchSidebar(data,live);
-    } else {
-      if(badge){badge.textContent='Offline';badge.className='conn-status-badge disconnected';}
-      if(status)status.textContent='Offline';
-      updateTwitchSidebar(data,null);
-    }
-  }catch(e){console.warn('Twitch stream check error:',e);}
+async function removeTwitchStreamer(username){
+  const streamers=getTwitchStreamers().filter(s=>s.username!==username);
+  saveTwitchStreamers(streamers);
+  await renderTwitchCard();
+  toast('Removed '+username,'info');
 }
 
-function updateTwitchSidebar(data,live){
-  const wrap=document.getElementById('sb-twitch-wrap');
-  if(!wrap)return;
-  if(!data){wrap.style.display='none';return;}
-  wrap.style.display='block';
-  const dot=document.getElementById('twitch-live-dot');
-  const label=document.getElementById('twitch-live-label');
-  const sbAvatar=document.getElementById('sb-twitch-avatar');
-  const sbName=document.getElementById('sb-twitch-name');
-  const sbGame=document.getElementById('sb-twitch-game');
-  const sbViewers=document.getElementById('sb-twitch-viewers');
-  if(sbAvatar&&data.avatar)sbAvatar.src=data.avatar;
-  if(sbName)sbName.textContent=data.displayName||data.username;
-  if(live){
-    if(dot)dot.style.background='#ff0000';
-    if(label)label.textContent='LIVE NOW';
-    if(sbGame)sbGame.textContent=live.game_name||'';
-    if(sbViewers)sbViewers.textContent=(live.viewer_count||0).toLocaleString()+' viewers';
-  } else {
-    if(dot)dot.style.background='#666';
-    if(label)label.textContent='TWITCH';
-    if(sbGame)sbGame.textContent='Offline';
-    if(sbViewers)sbViewers.textContent='';
+async function renderTwitchCard(){
+  const streamers=getTwitchStreamers();
+  const badge=document.getElementById('twitch-badge');
+  const list=document.getElementById('twitch-streamers-list');
+  const addSection=document.getElementById('twitch-add-section');
+  const refreshBtn=document.getElementById('twitch-refresh-btn');
+
+  if(!streamers.length){
+    if(badge){badge.textContent='Not connected';badge.className='conn-status-badge disconnected';}
+    if(list)list.innerHTML='';
+    if(refreshBtn)refreshBtn.style.display='none';
+    updateTwitchSidebar([]);
+    return;
   }
+
+  if(badge){badge.textContent=streamers.length+' streamer'+(streamers.length>1?'s':'');badge.className='conn-status-badge connected';}
+  if(refreshBtn)refreshBtn.style.display='inline-block';
+  if(addSection)addSection.style.display=streamers.length>=3?'none':'block';
+
+  // Fetch live status for all streamers at once
+  let liveMap={};
+  try{
+    const userIds=streamers.map(s=>s.userId).join('&user_id=');
+    const streams=await fetchTwitch('streams','user_id='+userIds);
+    (streams?.data||[]).forEach(s=>{liveMap[s.user_id]=s;});
+  }catch(e){console.warn('Twitch streams error:',e);}
+
+  // Render list in connections panel
+  if(list){
+    list.innerHTML=streamers.map(s=>{
+      const live=liveMap[s.userId];
+      return `<div style="background:var(--surface2);border:1px solid ${live?'rgba(145,71,255,.3)':'var(--border)'};border-radius:var(--radius-sm);padding:10px 12px;display:flex;align-items:center;gap:10px">
+        <img src="${s.avatar||''}" style="width:36px;height:36px;border-radius:50%;border:2px solid ${live?'#ff0000':'#9147ff'};flex-shrink:0" onerror="this.style.display='none'">
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600;font-size:13px">${s.displayName||s.username}</div>
+          <div style="font-size:11px;color:${live?'#ff4545':'var(--muted)'};margin-top:1px">${live?'&#9679; LIVE — '+(live.game_name||''):'Offline'}</div>
+          ${live?`<div style="font-size:11px;color:#9147ff;font-weight:600">${(live.viewer_count||0).toLocaleString()} viewers</div>`:''}
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          ${live?`<a href="https://twitch.tv/${s.username}" target="_blank" style="font-size:11px;background:#9147ff;color:#fff;padding:3px 10px;border-radius:20px;text-decoration:none;font-weight:600">Watch</a>`:''}
+          <button onclick="removeTwitchStreamer('${s.username}')" style="background:none;border:1px solid var(--border2);color:var(--muted);border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;font-family:var(--font)">Remove</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // Update sidebar — show only live streamers
+  const liveStreamers=streamers.filter(s=>liveMap[s.userId]).map(s=>({...s,live:liveMap[s.userId]}));
+  updateTwitchSidebar(liveStreamers);
+}
+
+function updateTwitchSidebar(liveStreamers){
+  const wrap=document.getElementById('sb-twitch-wrap');
+  const listEl=document.getElementById('sb-twitch-list');
+  if(!wrap||!listEl)return;
+  if(!liveStreamers.length){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  listEl.innerHTML=liveStreamers.map(s=>`
+    <a href="https://twitch.tv/${s.username}" target="_blank" style="display:flex;align-items:center;gap:8px;text-decoration:none;padding:6px 8px;background:rgba(145,71,255,.08);border:1px solid rgba(145,71,255,.2);border-radius:var(--radius-sm)">
+      <img src="${s.avatar||''}" style="width:28px;height:28px;border-radius:50%;border:2px solid #ff0000;flex-shrink:0" onerror="this.style.display='none'">
+      <div style="min-width:0;flex:1">
+        <div style="font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.displayName||s.username}</div>
+        <div style="font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.live?.game_name||''}</div>
+      </div>
+      <div style="font-size:10px;color:#9147ff;font-weight:600;flex-shrink:0">${(s.live?.viewer_count||0).toLocaleString()}</div>
+    </a>`).join('');
 }
 
 async function refreshTwitch(){
-  const p=curP();if(!p||!p.state.connections?.twitch)return;
   const btn=document.getElementById('twitch-refresh-btn');
   if(btn){btn.textContent='...';btn.disabled=true;}
-  await renderTwitchCard(p.state.connections.twitch);
+  await renderTwitchCard();
   if(btn){btn.textContent='&#8635; Refresh';btn.disabled=false;}
   toast('Twitch refreshed!','success');
 }
@@ -3376,12 +4024,7 @@ function disconnectTwitch(){
   const p=curP();if(!p)return;
   if(p.state.connections)delete p.state.connections.twitch;
   saveStateNow();
-  document.getElementById('twitch-badge').textContent='Not connected';
-  document.getElementById('twitch-badge').className='conn-status-badge disconnected';
-  document.getElementById('twitch-preview').style.display='none';
-  document.getElementById('twitch-disconnect-btn').style.display='none';
-  document.getElementById('twitch-refresh-btn').style.display='none';
-  document.getElementById('twitch-username').value='';
+  renderTwitchCard();
   document.getElementById('sb-twitch-wrap').style.display='none';
   toast('Twitch disconnected','info');
 }
@@ -3822,13 +4465,13 @@ function addCalEvent(){
 function deleteCalEvent(id){
   const p=curP();if(!p)return;
   p.state.events=(p.state.events||[]).filter(e=>e.id!==id);
-  saveStateNow();renderCalendar();renderAllEvents();
+  saveStateNow();renderCalendar();renderAllEvents();renderOverviewEvents();
 }
 function clearPastEvents(){
   const p=curP();if(!p)return;
   const today=new Date().toISOString().slice(0,10);
   p.state.events=(p.state.events||[]).filter(e=>e.date>=today);
-  saveStateNow();renderCalendar();renderAllEvents();toast('Past events cleared','info');
+  saveStateNow();renderCalendar();renderAllEvents();renderOverviewEvents();toast('Past events cleared','info');
 }
 function renderCalendar(){
   const p=curP();
@@ -4708,6 +5351,13 @@ function loadGamingUI(){
   const p=curP();if(!p)return;
   if(p.state.gaming?.valo)loadValoStats();
   if(p.state.gaming?.lol)loadLoLStats();
+  if(p.state.gaming?.ow){
+    const {username,_data}=p.state.gaming.ow;
+    document.getElementById('ow-username').value=username||'';
+    document.getElementById('ow-disconnect').style.display='inline-flex';
+    document.getElementById('ow-account-sub').textContent=username+' · '+(p.state.gaming.ow.platform||'pc').toUpperCase();
+    if(_data)renderOWStats(_data,username,'comp');
+  }
   loadCompareDashboardUsers();
 }
 
@@ -4715,6 +5365,12 @@ function loadGamingUI(){
 // ===================================================
 //  MOBILE SIDEBAR
 // ===================================================
+function setMobNav(page){
+  document.querySelectorAll('.mob-nav-btn').forEach(b=>b.classList.remove('active'));
+  const btn=document.getElementById('mob-btn-'+page);
+  if(btn)btn.classList.add('active');
+}
+
 function toggleMobileSidebar(){
   const sb=document.getElementById('main-sidebar');
   const ov=document.getElementById('sidebar-overlay');

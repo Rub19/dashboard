@@ -435,7 +435,7 @@ button:active:not(.btn):not(.nav-item):not(.pw-num){transform:scale(.95)!importa
 .toast.success{border-left:3px solid var(--accent2)}
 .toast.error{border-left:3px solid var(--accent3)}
 .toast.info{border-left:3px solid var(--accent)}
-.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.12);transform:scale(0);animation:rippleAnim .5s cubic-bezier(.4,0,.2,1);pointer-events:none;z-index:9}
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.1);transform:scale(0);animation:rippleAnim .5s cubic-bezier(.4,0,.2,1);pointer-events:none;z-index:9}
 @keyframes rippleAnim{to{transform:scale(3);opacity:0}}
 .tab-content{display:none}
 .tab-content.active{display:block}
@@ -3150,23 +3150,30 @@ document.getElementById('global-search').addEventListener('input',function(){
 function ripple(e){
   const el=e.currentTarget;
   const rect=el.getBoundingClientRect();
-  const r=document.createElement('div');
+  // Don't add ripple if element is too large (causes line artifact)
+  if(rect.width>600||rect.height>200)return;
+  const r=document.createElement('span');
   r.className='ripple';
-  const size=Math.max(rect.width,rect.height)*2;
-  r.style.cssText=`width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px`;
-  const pos=getComputedStyle(el).position;
-  if(pos==='static')el.style.position='relative';
+  const size=Math.max(rect.width,rect.height)*1.5;
+  r.style.cssText=`width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px;position:absolute;border-radius:50%;pointer-events:none;z-index:9;background:rgba(255,255,255,.1);transform:scale(0);animation:rippleAnim .45s cubic-bezier(.4,0,.2,1)`;
+  // Save and restore overflow
   const prevOverflow=el.style.overflow;
+  const prevPos=el.style.position;
+  if(getComputedStyle(el).position==='static')el.style.position='relative';
   el.style.overflow='hidden';
   el.appendChild(r);
-  r.addEventListener('animationend',()=>{r.remove();if(!prevOverflow)el.style.overflow='';});
+  r.addEventListener('animationend',()=>{
+    r.remove();
+    el.style.overflow=prevOverflow||'';
+    if(!prevPos)el.style.position='';
+  });
 }
 
-// Apply ripple via event delegation
 document.addEventListener('click',e=>{
-  const el=e.target.closest('.btn,button:not([disabled]),.stat-card,.link-card,.nav-item,.cat-tab,.settings-tab,.ps-profile,.ps-add,.ps-manage-btn,.pw-num,.theme-swatch,.avatar-opt,.mob-nav-btn,.cmd-result,.panel-action');
+  const el=e.target.closest('.btn,button:not([disabled]),.nav-item,.cat-tab,.settings-tab,.ps-add,.ps-manage-btn,.pw-num,.mob-nav-btn,.cmd-result,.panel-action,.avatar-opt,.theme-swatch');
   if(!el)return;
   if(el.tagName==='INPUT'||el.tagName==='SELECT'||el.tagName==='TEXTAREA')return;
+  if(el.disabled)return;
   ripple({currentTarget:el,clientX:e.clientX,clientY:e.clientY});
 });
 

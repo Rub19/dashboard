@@ -30,7 +30,7 @@
   --accent2:#34d399;
   --accent3:#f87171;
   --accent4:#fbbf24;
-  --accent5:var(--accent5);
+  --accent5:#a78bfa;
 
   /* Game colors */
   --discord:#5865F2;
@@ -277,6 +277,8 @@ button:active:not(.btn):not(.nav-item):not(.pw-num){opacity:.7;transition:opacit
 .btn-ghost:hover{background:var(--surface2);color:var(--text)}
 .btn-danger{background:transparent;color:var(--accent3);border-color:rgba(247,106,106,.3)}
 .btn-danger:hover{background:rgba(247,106,106,.08)}
+.press-ripple{position:absolute;border-radius:999px;pointer-events:none;z-index:2;background:radial-gradient(circle,rgba(255,255,255,.42) 0%,rgba(96,165,250,.24) 42%,rgba(255,255,255,0) 72%);transform:translate(-50%,-50%) scale(0);animation:pressRipple .46s cubic-bezier(.2,.8,.2,1) forwards;mix-blend-mode:screen}
+@keyframes pressRipple{0%{opacity:.9;transform:translate(-50%,-50%) scale(0)}70%{opacity:.35}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
 .search-bar{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:0 12px;transition:border-color var(--transition),box-shadow var(--transition)}
 .search-bar:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-subtle)}
 .search-bar input{background:transparent;border:none;outline:none;color:var(--text);font-family:var(--font);font-size:13.5px;padding:9px 0;width:200px}
@@ -1134,12 +1136,12 @@ button:active:not(.btn):not(.nav-item):not(.pw-num){opacity:.7;transition:opacit
           </div>
           <div style="display:flex;gap:8px">
             <input type="text" class="modal-input" id="valo-apikey" placeholder="Henrik Dev API Key (optional — une clé default est intégrée)" style="flex:1;font-size:12px">
-            <a href="https://docs.henrikdev.xyz/" target="_blank" class="btn btn-ghost" style="font-size:12px;flex-shrink:0">Get key &#8599;</a>
+            <a href="https://docs.henrikdev.xyz/" target="_blank" rel="noopener noreferrer" class="btn btn-ghost" style="font-size:12px;flex-shrink:0">Get key &#8599;</a>
           </div>
           <div style="display:flex;gap:8px;margin-top:6px">
             <input type="password" class="modal-input" id="tracker-apikey" placeholder="Tracker.gg API Key (optional — une clé default est intégrée)" style="flex:1;font-size:12px">
             <button class="btn btn-ghost" onclick="const i=document.getElementById('tracker-apikey');i.type=i.type==='password'?'text':'password'" style="flex-shrink:0;font-size:13px" title="Show/masquer">👁</button>
-            <a href="https://tracker.gg/developers/apps" target="_blank" class="btn btn-ghost" style="font-size:12px;flex-shrink:0">Get key &#8599;</a>
+            <a href="https://tracker.gg/developers/apps" target="_blank" rel="noopener noreferrer" class="btn btn-ghost" style="font-size:12px;flex-shrink:0">Get key &#8599;</a>
           </div>
           <div style="font-size:11px;color:var(--muted);margin-top:4px">🔑 Une default key is built-in for Henrik and Tracker — leave empty if you don't have one.</div>
         </div>
@@ -1171,7 +1173,7 @@ button:active:not(.btn):not(.nav-item):not(.pw-num){opacity:.7;transition:opacit
           </div>
           <div style="display:flex;gap:8px">
             <input type="text" class="modal-input" id="lol-apikey" placeholder="Riot API Key (RGAPI-xxxxxxxx) — get free at developer.riotgames.com" style="flex:1;font-size:12px">
-            <a href="https://developer.riotgames.com" target="_blank" class="btn btn-ghost" style="font-size:12px;flex-shrink:0">Get key &#8599;</a>
+            <a href="https://developer.riotgames.com" target="_blank" rel="noopener noreferrer" class="btn btn-ghost" style="font-size:12px;flex-shrink:0">Get key &#8599;</a>
           </div>
           <div style="font-size:11px;color:var(--muted)">La clé dev Riot est freee mais expire toutes les 24h. Copie-colle la tienne ici.</div>
         </div>
@@ -1281,7 +1283,7 @@ button:active:not(.btn):not(.nav-item):not(.pw-num){opacity:.7;transition:opacit
             <div id="steam-current-game" style="display:none"><span style="font-size:11px;background:rgba(102,192,244,.12);color:var(--steam2);padding:2px 8px;border-radius:20px">🎮 <span id="steam-game-name">—</span></span></div>
           </div>
         </div>
-        <a id="steam-profile-link" href="#" target="_blank" class="btn btn-ghost" style="font-size:12px;padding:7px 12px">View profile &#8599;</a>
+        <a id="steam-profile-link" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-ghost" style="font-size:12px;padding:7px 12px">View profile &#8599;</a>
       </div>
       <div id="steam-recent-games" style="display:none;margin-bottom:14px">
         <div class="section-label" style="padding:0 2px">Recent Games</div>
@@ -1294,7 +1296,7 @@ button:active:not(.btn):not(.nav-item):not(.pw-num){opacity:.7;transition:opacit
           <button class="btn btn-primary" onclick="connectSteam()">Connect</button>
           <button class="btn btn-ghost" id="steam-disconnect-btn" onclick="disconnectSteam()" style="display:none">Disconnect</button>
         </div>
-        <div style="font-size:11.5px;color:var(--muted);margin-top:6px">Find your SteamID64 at <a href="https://steamid.io" target="_blank" style="color:var(--accent)">steamid.io</a></div>
+        <div style="font-size:11.5px;color:var(--muted);margin-top:6px">Find your SteamID64 at <a href="https://steamid.io" target="_blank" rel="noopener noreferrer" style="color:var(--accent)">steamid.io</a></div>
       </div>
       <div class="modal-field" style="margin-top:10px">
         <div class="modal-label" style="display:flex;align-items:center;gap:6px">
@@ -1308,7 +1310,7 @@ button:active:not(.btn):not(.nav-item):not(.pw-num){opacity:.7;transition:opacit
         </div>
         <div style="font-size:11.5px;color:var(--muted);margin-top:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;line-height:1.6">
           <div style="font-weight:600;color:var(--text);margin-bottom:4px">How to get your free key:</div>
-          <div>1. Go to <a href="https://steamcommunity.com/dev/apikey" target="_blank" style="color:var(--accent)">steamcommunity.com/dev/apikey</a></div>
+          <div>1. Go to <a href="https://steamcommunity.com/dev/apikey" target="_blank" rel="noopener noreferrer" style="color:var(--accent)">steamcommunity.com/dev/apikey</a></div>
           <div>2. Sign in with your Steam account</div>
           <div>3. In "Domain Name", type <span style="font-family:var(--mono);background:var(--surface3);padding:1px 5px;border-radius:4px">localhost</span></div>
           <div>4. Click <strong>Register</strong> → copy the key</div>
@@ -1332,7 +1334,7 @@ button:active:not(.btn):not(.nav-item):not(.pw-num){opacity:.7;transition:opacit
           <button class="btn btn-primary" onclick="connectSpotify()">Save</button>
           <button class="btn btn-ghost" id="spotify-disconnect-btn" onclick="disconnectSpotify()" style="display:none">Remove</button>
         </div>
-        <div style="font-size:11.5px;color:var(--muted);margin-top:6px">Get your widget URL at <a href="https://nowplaying.site" target="_blank" style="color:var(--accent)">nowplaying.site</a></div>
+        <div style="font-size:11.5px;color:var(--muted);margin-top:6px">Get your widget URL at <a href="https://nowplaying.site" target="_blank" rel="noopener noreferrer" style="color:var(--accent)">nowplaying.site</a></div>
       </div>
     </div>
 
@@ -1713,6 +1715,28 @@ const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 let _sbUser=null;
 let _isAdmin=false;
 
+function escapeHTML(value){
+  return String(value ?? '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  }[c]));
+}
+function safeUrl(value){
+  const url=String(value ?? '').trim();
+  if(!url)return '';
+  try{
+    const u=new URL(url, window.location.href);
+    return ['http:','https:','mailto:','tel:'].includes(u.protocol) ? u.href : '';
+  }catch(e){return ''}
+}
+function safeThemeColor(value){
+  const color=String(value ?? '').trim();
+  return /^(accent|accent2|accent3|accent4|accent5)$/.test(color) ? `var(--${color})` : 'var(--accent)';
+}
+
 // -- AUTH UI --------------------------------------
 function showChangelog(){
   const versions=[
@@ -2046,7 +2070,7 @@ async function openAdminPanel(){
           </div>
           <div style="background:var(--surface3);border-radius:6px;padding:10px">
             <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">IP Address</div>
-            <div style="font-size:13px;font-weight:500;font-family:var(--mono)">${u.last_ip||'-'}</div>
+            <div style="font-size:13px;font-weight:500;font-family:var(--mono);min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere;word-break:break-word;line-height:1.45">${escapeHTML(u.last_ip||'-')}</div>
           </div>
           <div style="background:var(--surface3);border-radius:6px;padding:10px">
             <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Location</div>
@@ -2115,7 +2139,7 @@ async function adminViewProfile(profileId, profileName){
         ${s.items.slice(0,10).map(i=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--surface2);border-radius:6px;font-size:13px">
           <span>${i.type==='link'?'🔗':'📄'}</span>
           <span>${i.name}</span>
-          ${i.url?`<a href="${i.url}" target="_blank" style="margin-left:auto;font-size:11px;color:var(--accent);text-decoration:none">${i.url.slice(0,30)}...</a>`:''}
+          ${i.url?`<a href="${i.url}" target="_blank" rel="noopener noreferrer" style="margin-left:auto;font-size:11px;color:var(--accent);text-decoration:none">${i.url.slice(0,30)}...</a>`:''}
         </div>`).join('')}
       </div>
     </div>`;
@@ -2562,7 +2586,7 @@ function initDashboard(){
   updateBannerDisplay();
   renderPinnedLinks();
   renderCountdown();
-  addActivity('Welcome back, <strong>'+p.name+'</strong> ','var(--accent)');
+  addActivity('Welcome back, '+p.name,'var(--accent)');
   pomoReset();
 }
 
@@ -2858,10 +2882,11 @@ toggleItemTypeFields();
 function toast(msg,type='info'){
   const icons={success:'\u2705',error:'\u274C',info:'\u2139\uFE0F'};
   const el=document.createElement('div');el.className='toast '+type;
-  el.innerHTML='<span>'+icons[type]+'</span> '+msg;
+  el.innerHTML='<span>'+escapeHTML(icons[type]||icons.info)+'</span> '+escapeHTML(msg);
   document.getElementById('toasts').appendChild(el);
   setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300)},2500);
 }
+
 
 // ===================================================
 //  ACTIVITY
@@ -2881,22 +2906,20 @@ function renderOverviewEvents(){
     const isTomorrow=e.date===new Date(Date.now()+86400000).toISOString().slice(0,10);
     const dayLabel=isToday?'Today':isTomorrow?'Tomorrow':d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'});
     const daysLeft=Math.ceil((d-new Date().setHours(0,0,0,0))/(1000*60*60*24));
-    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
-      <div style="width:8px;height:8px;border-radius:50%;background:${e.color||'var(--accent2)'};flex-shrink:0"></div>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.title}</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:1px">${dayLabel}</div>
-      </div>
-      <div style="font-size:11px;font-weight:600;flex-shrink:0;color:${isToday?'var(--accent3)':daysLeft<=3?'var(--accent4)':'var(--muted)'}">${isToday?'Today':daysLeft===1?'Tomorrow':daysLeft+'d'}</div>
-    </div>`;
+    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">'+
+      '<div style="width:8px;height:8px;border-radius:50%;background:'+safeThemeColor(e.color)+';flex-shrink:0"></div>'+
+      '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+escapeHTML(e.title)+'</div>'+
+      '<div style="font-size:11px;color:var(--muted);margin-top:1px">'+escapeHTML(dayLabel)+'</div></div>'+
+      '<div style="font-size:11px;font-weight:600;flex-shrink:0;color:'+(isToday?'var(--accent3)':daysLeft<=3?'var(--accent4)':'var(--muted)')+'">'+(isToday?'Today':daysLeft===1?'Tomorrow':daysLeft+'d')+'</div></div>';
   }).join('');
 }
+
 
 function addActivity(text,color='var(--accent)'){
   const p=curP();if(!p)return;
   const n=new Date(),time=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
-  const ts=n.toISOString(); // Full timestamp for chart
-  p.state.activity.unshift({text,color,time,ts});
+  const ts=n.toISOString();
+  p.state.activity.unshift({text:String(text ?? ''),color,time,ts});
   if(p.state.activity.length>50)p.state.activity.pop();
   saveStateNow();renderActivity();
 }
@@ -2904,8 +2927,9 @@ function renderActivity(){
   const list=document.getElementById('activity-list');if(!list)return;
   const p=curP(),acts=p?(p.state.activity||[]):[];
   if(!acts.length){list.innerHTML='<div class="empty-state"><div class="empty-icon"></div>No activity yet</div>';return}
-  list.innerHTML=acts.slice(0,10).map(a=>'<div class="activity-item"><div class="activity-dot" style="background:'+a.color+'"></div><div><div class="activity-text">'+a.text+'</div><div class="activity-time">'+a.time+'</div></div></div>').join('');
+  list.innerHTML=acts.slice(0,10).map(a=>'<div class="activity-item"><div class="activity-dot" style="background:'+escapeHTML(a.color||'var(--accent)')+'"></div><div><div class="activity-text">'+escapeHTML(a.text)+'</div><div class="activity-time">'+escapeHTML(a.time)+'</div></div></div>').join('');
 }
+
 function clearActivity(){const p=curP();if(!p)return;p.state.activity=[];saveStateNow();renderActivity()}
 
 // ===================================================
@@ -2925,7 +2949,7 @@ function addItem(){
   p.state.items.unshift(item);saveStateNow();closeModal('add-item');
   ['item-name','item-url','item-tag'].forEach(id=>document.getElementById(id).value='');
   renderItems();updateStats();renderRecentItems();
-  addActivity('<strong>'+name+'</strong> was added','var(--accent)');toast(name+' added!','success');
+  addActivity(name+' was added','var(--accent)');toast(name+' added!','success');
 }
 
 function deleteItem(id){
@@ -2933,7 +2957,7 @@ function deleteItem(id){
   const item=p.state.items.find(i=>i.id===id);
   p.state.items=p.state.items.filter(i=>i.id!==id);saveStateNow();
   renderItems();updateStats();renderRecentItems();
-  if(item)addActivity('<strong>'+item.name+'</strong> removed','var(--accent3)');toast('Removed','info');
+  if(item)addActivity(item.name+' removed','var(--accent3)');toast('Removed','info');
 }
 
 function filterItems(){renderItems()}
@@ -2946,41 +2970,46 @@ function renderItems(){
   if(curCat==='files')items=items.filter(i=>['file','folder','code','video'].includes(i.type));
   if(curCat==='links')items=items.filter(i=>i.type==='link');
   if(curCat==='images')items=items.filter(i=>i.type==='image');
-  if(q)items=items.filter(i=>i.name.toLowerCase().includes(q)||(i.tag&&i.tag.toLowerCase().includes(q)));
+  if(q)items=items.filter(i=>(i.name||'').toLowerCase().includes(q)||(i.tag&&(i.tag||'').toLowerCase().includes(q)));
   const ls=document.getElementById('links-showcase'),lg=document.getElementById('links-grid-inner');
   const lItems=all.filter(i=>i.type==='link');
   if(lItems.length&&(curCat==='all'||curCat==='links')){
     ls.style.display='block';
     lg.innerHTML=lItems.slice(0,4).map(i=>{
+      const url=safeUrl(i.url);
       let iconHtml='';
-      if(i.url){
+      if(url){
         try{
-          const domain=new URL(i.url).hostname;
-          iconHtml=`<img src="https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=64" style="width:22px;height:22px;border-radius:4px;image-rendering:auto" onerror="this.outerHTML='🔗'">`;
-        }catch(e){iconHtml='🔗';}
-      } else {
-        iconHtml=tIcons[i.type]||'📄';
-      }
-      return '<a class="link-card" href="'+(i.url||'#')+'" target="_blank"><div class="link-favicon">'+iconHtml+'</div><div><div class="link-name">'+i.name+'</div><div class="link-url">'+(i.url?i.url.replace(/https?:\/\//,'').slice(0,30):'No URL')+'</div></div></a>';
+          const domain=new URL(url).hostname;
+          iconHtml='<img src="https://www.google.com/s2/favicons?domain='+encodeURIComponent(domain)+'&sz=64" style="width:22px;height:22px;border-radius:4px;image-rendering:auto" onerror="this.outerHTML=\'&#128279;\'">';
+        }catch(e){iconHtml='&#128279;';}
+      } else iconHtml=tIcons[i.type]||'&#128196;';
+      return '<a class="link-card" href="'+escapeHTML(url||'#')+'" target="_blank" rel="noopener noreferrer"><div class="link-favicon">'+iconHtml+'</div><div><div class="link-name">'+escapeHTML(i.name)+'</div><div class="link-url">'+(url?escapeHTML(url.replace(/https?:\/\//,'').slice(0,30)):'No URL')+'</div></div></a>';
     }).join('');
   } else ls.style.display='none';
-  if(!items.length){list.innerHTML='<div class="empty-state"><div class="empty-icon"></div>No items'+(q?' matching "'+q+'"':'')+'.<br>Click <strong>+ Add item</strong>.</div>';return}
-  list.innerHTML=items.map(i=>'<div class="item-row" onclick="openItem('+i.id+')"><div class="item-icon '+(tClass[i.type]||'doc')+'">'+(tIcons[i.type]||'\uD83D\uDCC4')+'</div><div class="item-info"><div class="item-name">'+i.name+'</div><div class="item-meta">'+i.date+(i.tag?' . <span style="color:var(--accent)">'+i.tag+'</span>':'')+'</div></div>'+(i.url?'<a href="'+i.url+'" target="_blank" onclick="event.stopPropagation()" style="color:var(--muted);font-size:12px;text-decoration:none">\uD83D\uDD17</a>':'')+'<div class="item-actions"><button class="item-btn" onclick="event.stopPropagation();deleteItem('+i.id+')">\uD83D\uDDD1\uFE0F</button></div></div>').join('');
+  if(!items.length){list.innerHTML='<div class="empty-state"><div class="empty-icon"></div>No items'+(q?' matching "'+escapeHTML(q)+'"':'')+'.<br>Click <strong>+ Add item</strong>.</div>';return}
+  list.innerHTML=items.map(i=>{
+    const url=safeUrl(i.url);
+    return '<div class="item-row" onclick="openItem('+i.id+')"><div class="item-icon '+(tClass[i.type]||'doc')+'">'+(tIcons[i.type]||'\uD83D\uDCC4')+'</div><div class="item-info"><div class="item-name">'+escapeHTML(i.name)+'</div><div class="item-meta">'+escapeHTML(i.date)+(i.tag?' . <span style="color:var(--accent)">'+escapeHTML(i.tag)+'</span>':'')+'</div></div>'+(url?'<a href="'+escapeHTML(url)+'" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" style="color:var(--muted);font-size:12px;text-decoration:none">\uD83D\uDD17</a>':'')+'<div class="item-actions"><button class="item-btn" onclick="event.stopPropagation();deleteItem('+i.id+')">\uD83D\uDDD1\uFE0F</button></div></div>';
+  }).join('');
 }
+
 
 function openItem(id){
   const p=curP();if(!p)return;
   const item=p.state.items.find(i=>i.id===id);if(!item)return;
-  if(item.url)window.open(item.url,'_blank');
-  addActivity('Opened <strong>'+item.name+'</strong>','var(--accent2)');
+  const url=safeUrl(item.url);
+  if(url)window.open(url,'_blank','noopener,noreferrer');
+  addActivity('Opened '+item.name,'var(--accent2)');
 }
 
 function renderRecentItems(){
   const list=document.getElementById('recent-items-list');if(!list)return;
   const p=curP(),recent=p?(p.state.items||[]).slice(0,5):[];
   if(!recent.length){list.innerHTML='<div class="empty-state"><div class="empty-icon"></div>No items yet!</div>';return}
-  list.innerHTML=recent.map(i=>'<div class="item-row" onclick="openItem('+i.id+')"><div class="item-icon '+(tClass[i.type]||'doc')+'" style="width:28px;height:28px;font-size:12px;border-radius:7px">'+(tIcons[i.type]||'\uD83D\uDCC4')+'</div><div class="item-info"><div class="item-name">'+i.name+'</div><div class="item-meta">'+i.date+(i.tag?' . '+i.tag:'')+'</div></div></div>').join('');
+  list.innerHTML=recent.map(i=>'<div class="item-row" onclick="openItem('+i.id+')"><div class="item-icon '+(tClass[i.type]||'doc')+'" style="width:28px;height:28px;font-size:12px;border-radius:7px">'+(tIcons[i.type]||'\uD83D\uDCC4')+'</div><div class="item-info"><div class="item-name">'+escapeHTML(i.name)+'</div><div class="item-meta">'+escapeHTML(i.date)+(i.tag?' . '+escapeHTML(i.tag):'')+'</div></div></div>').join('');
 }
+
 
 // ===================================================
 //  NOTES
@@ -3015,15 +3044,15 @@ function addTodo(){
   p.state.todos.unshift(todo);saveStateNow();closeModal('add-todo');
   document.getElementById('todo-text').value='';
   renderTodos();updateStats();
-  addActivity('New task: <strong>'+text+'</strong>','var(--accent2)');toast('Task added!','success');
+  addActivity('New task: '+text,'var(--accent2)');toast('Task added!','success');
 }
 function toggleTodo(id){
   const p=curP();if(!p)return;
   const t=p.state.todos.find(t=>t.id===id);if(!t)return;
   t.done=!t.done;saveStateNow();renderTodos();updateStats();
-  if(t.done)addActivity('<strong>'+t.text+'</strong> completed ','var(--accent2)');
+  if(t.done)addActivity(t.text+' completed','var(--accent2)');
 }
-function deleteTodo(id){const p=curP();if(!p)return;p.state.todos=p.state.todos.filter(t=>t.id!==id);saveStateNow();renderTodos();updateStats()}
+function deleteTodo(id){const p=curP();if(!p)return;p.state.todos=p.state.todos.filter(t=>!t.id||t.id!==id);saveStateNow();renderTodos();updateStats()}
 function clearDone(){const p=curP();if(!p)return;p.state.todos=p.state.todos.filter(t=>!t.done);saveStateNow();renderTodos();updateStats();toast('Cleared','info')}
 function renderTodos(){
   const p=curP(),todos=p?(p.state.todos||[]):[];
@@ -3031,12 +3060,13 @@ function renderTodos(){
   const pi={high:'\uD83D\uDD34 ',normal:'',low:'\uD83D\uDFE2 '};
   const pL=document.getElementById('todo-pending-list'),dL=document.getElementById('todo-done-list'),pc=document.getElementById('todo-pending-count');
   if(pc)pc.textContent=pending.length+' pending';
-  if(pL)pL.innerHTML=!pending.length?'<div class="empty-state" style="padding:20px"><div class="empty-icon"></div>All done!</div>':pending.map(t=>'<div class="todo-item" onclick="toggleTodo('+t.id+')"><div class="todo-check"></div><div class="todo-text">'+(pi[t.priority]||'')+t.text+'</div><button class="item-btn" onclick="event.stopPropagation();deleteTodo('+t.id+')" style="opacity:.5"></button></div>').join('');
-  if(dL)dL.innerHTML=!done.length?'<div class="empty-state" style="padding:20px"><div class="empty-icon"></div>Nothing completed yet</div>':done.map(t=>'<div class="todo-item" onclick="toggleTodo('+t.id+')"><div class="todo-check checked"></div><div class="todo-text done">'+t.text+'</div><button class="item-btn" onclick="event.stopPropagation();deleteTodo('+t.id+')" style="opacity:.5"></button></div>').join('');
+  if(pL)pL.innerHTML=!pending.length?'<div class="empty-state" style="padding:20px"><div class="empty-icon"></div>All done!</div>':pending.map(t=>'<div class="todo-item" onclick="toggleTodo('+t.id+')"><div class="todo-check"></div><div class="todo-text">'+(pi[t.priority]||'')+escapeHTML(t.text)+'</div><button class="item-btn" onclick="event.stopPropagation();deleteTodo('+t.id+')" style="opacity:.5"></button></div>').join('');
+  if(dL)dL.innerHTML=!done.length?'<div class="empty-state" style="padding:20px"><div class="empty-icon"></div>Nothing completed yet</div>':done.map(t=>'<div class="todo-item" onclick="toggleTodo('+t.id+')"><div class="todo-check checked"></div><div class="todo-text done">'+escapeHTML(t.text)+'</div><button class="item-btn" onclick="event.stopPropagation();deleteTodo('+t.id+')" style="opacity:.5"></button></div>').join('');
   const ov=document.getElementById('overview-todos');
-  if(ov)ov.innerHTML=!pending.length?'<div class="empty-state" style="padding:16px"><div style="font-size:20px;margin-bottom:6px"></div>No pending tasks!</div>':pending.slice(0,3).map(t=>'<div class="todo-item" onclick="toggleTodo('+t.id+')"><div class="todo-check"></div><div class="todo-text">'+t.text+'</div></div>').join('');
+  if(ov)ov.innerHTML=!pending.length?'<div class="empty-state" style="padding:16px"><div style="font-size:20px;margin-bottom:6px"></div>No pending tasks!</div>':pending.slice(0,3).map(t=>'<div class="todo-item" onclick="toggleTodo('+t.id+')"><div class="todo-check"></div><div class="todo-text">'+escapeHTML(t.text)+'</div></div>').join('');
   const badge=document.getElementById('todo-count');if(badge)badge.textContent=pending.length;
 }
+
 
 // ===================================================
 //  STATS
@@ -4130,7 +4160,7 @@ async function connectSteam(){
       avatarFull:player.avatarfull||'',
       onlineState:stateMap[player.personastate]||'offline',
       stateMessage:player.gameextrainfo?'Currently In-Game '+player.gameextrainfo:'',
-      profileUrl:player.profileurl||'https://steamcommunity.com/profilees/'+steamId,
+      profileUrl:player.profileurl||'https://steamcommunity.com/profiles/'+steamId,
       recentGames:[],
       steamLevel:null
     };
@@ -4234,7 +4264,7 @@ async function refreshSteam(){
     const player=summaryJson?.response?.players?.[0];
     if(!player){toast('Profile not found','error');return;}
     const stateMap={0:'offline',1:'online',2:'busy',3:'away',4:'snooze',5:'online',6:'online'};
-    const data={steamId64:steamId,displayName:player.personaname||'Unknown',avatarFull:player.avatarfull||'',onlineState:stateMap[player.personastate]||'offline',stateMessage:player.gameextrainfo?'Currently In-Game '+player.gameextrainfo:'',profileUrl:player.profileurl||'https://steamcommunity.com/profilees/'+steamId,recentGames:[],steamLevel:null};
+    const data={steamId64:steamId,displayName:player.personaname||'Unknown',avatarFull:player.avatarfull||'',onlineState:stateMap[player.personastate]||'offline',stateMessage:player.gameextrainfo?'Currently In-Game '+player.gameextrainfo:'',profileUrl:player.profileurl||'https://steamcommunity.com/profiles/'+steamId,recentGames:[],steamLevel:null};
     try{const lvlJson=await fetchSteamAPI('/IPlayerService/GetSteamLevel/v1/',apiKey,'steamid='+steamId);data.steamLevel=lvlJson?.response?.player_level??null;}catch(e){}
     try{
       const gamesJson=await fetchSteamAPI('/IPlayerService/GetRecentlyPlayedGames/v1/',apiKey,'steamid='+steamId+'&count=5');
@@ -4408,7 +4438,7 @@ async function renderTwitchCard(){
           ${live?`<div style="font-size:11px;color:#9147ff;font-weight:600">${(live.viewer_count||0).toLocaleString()} viewers</div>`:''}
         </div>
         <div style="display:flex;gap:6px;flex-shrink:0">
-          ${live?`<a href="https://twitch.tv/${s.username}" target="_blank" style="font-size:11px;background:#9147ff;color:#fff;padding:3px 10px;border-radius:20px;text-decoration:none;font-weight:600">Watch</a>`:''}
+          ${live?`<a href="https://twitch.tv/${s.username}" target="_blank" rel="noopener noreferrer" style="font-size:11px;background:#9147ff;color:#fff;padding:3px 10px;border-radius:20px;text-decoration:none;font-weight:600">Watch</a>`:''}
           <button onclick="removeTwitchStreamer('${s.username}')" style="background:none;border:1px solid var(--border2);color:var(--muted);border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;font-family:var(--font)">Remove</button>
         </div>
       </div>`;
@@ -4427,7 +4457,7 @@ function updateTwitchSidebar(liveStreamers){
   if(!liveStreamers.length){wrap.style.display='none';return;}
   wrap.style.display='block';
   listEl.innerHTML=liveStreamers.map(s=>`
-    <a href="https://twitch.tv/${s.username}" target="_blank" style="display:flex;align-items:center;gap:8px;text-decoration:none;padding:6px 8px;background:rgba(145,71,255,.08);border:1px solid rgba(145,71,255,.2);border-radius:var(--radius-sm)">
+    <a href="https://twitch.tv/${s.username}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:8px;text-decoration:none;padding:6px 8px;background:rgba(145,71,255,.08);border:1px solid rgba(145,71,255,.2);border-radius:var(--radius-sm)">
       <img src="${s.avatar||''}" style="width:28px;height:28px;border-radius:50%;border:2px solid #ff0000;flex-shrink:0" onerror="this.style.display='none'">
       <div style="min-width:0;flex:1">
         <div style="font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.displayName||s.username}</div>
@@ -4671,14 +4701,16 @@ function renderPinnedLinks(){
   const p=curP();const grid=document.getElementById('pinned-grid');if(!grid)return;
   const links=p?.state?.pinned||[];
   if(!links.length){grid.innerHTML='<div style="font-size:12px;color:var(--muted);padding:4px 2px">No pinned links yet - click + Pin link</div>';return}
-  grid.innerHTML=links.map(l=>
-    '<a class="pinned-card" href="'+l.url+'" target="_blank">'+
-      '<button class="pinned-remove" onclick="event.preventDefault();event.stopPropagation();removePinnedLink('+l.id+')">×</button>'+
-      '<div class="pinned-favicon">'+l.icon+'</div>'+
-      '<div class="pinned-name">'+l.name+'</div>'+
-    '</a>'
-  ).join('')+'<div class="pinned-card pinned-add" onclick="openModal(\'add-pinned\')" style="cursor:pointer;text-decoration:none"><div style="font-size:22px">+</div><div class="pinned-name">Add</div></div>';
+  grid.innerHTML=links.map(l=>{
+    const url=safeUrl(l.url);
+    return '<a class="pinned-card" href="'+escapeHTML(url||'#')+'" target="_blank" rel="noopener noreferrer">'+
+      '<button class="pinned-remove" onclick="event.preventDefault();event.stopPropagation();removePinnedLink('+l.id+')">&times;</button>'+
+      '<div class="pinned-favicon">'+escapeHTML(l.icon)+'</div>'+
+      '<div class="pinned-name">'+escapeHTML(l.name)+'</div>'+
+    '</a>';
+  }).join('')+'<div class="pinned-card pinned-add" onclick="openModal(\'add-pinned\')" style="cursor:pointer;text-decoration:none"><div style="font-size:22px">+</div><div class="pinned-name">Add</div></div>';
 }
+
 
 // ===================================================
 //  COUNTDOWN
@@ -4781,22 +4813,17 @@ function renderHabits(){
       const isToday=d.getTime()===today.getTime();
       const done=h.log&&h.log[key];
       const isFuture=d>today;
-      return '<div class="habit-day'+(done?' done':'')+(isToday&&!done?' today':'')+'" onclick="'+(isFuture?'':('toggleHabitDay('+h.id+',\''+key+'\')'))+('" style="')+(isFuture?'opacity:.3;cursor:default':'')+'" title="'+d.toLocaleDateString('en',{weekday:'short',month:'short',day:'numeric'})+'">'+dayLabels[i]+'</div>';
+      return '<div class="habit-day'+(done?' done':'')+(isToday&&!done?' today':'')+'" onclick="'+(isFuture?'':('toggleHabitDay('+h.id+',\''+key+'\')'))+'" style="'+(isFuture?'opacity:.3;cursor:default':'')+'" title="'+escapeHTML(d.toLocaleDateString('en',{weekday:'short',month:'short',day:'numeric'}))+'">'+dayLabels[i]+'</div>';
     }).join('');
     const streak=habitStreak(h);
-    return '<div class="habit-row">'+
-      '<span style="font-size:18px">'+h.icon+'</span>'+
-      '<span class="habit-name">'+h.name+'</span>'+
-      '<div class="habit-days">'+dayBtns+'</div>'+
-      '<span class="habit-streak">'+(streak>0?''+streak:'')+'</span>'+
-      '<button class="habit-del" onclick="deleteHabit('+h.id+')">×</button>'+
-    '</div>';
+    return '<div class="habit-row"><span style="font-size:18px">'+escapeHTML(h.icon)+'</span><span class="habit-name">'+escapeHTML(h.name)+'</span><div class="habit-days">'+dayBtns+'</div><span class="habit-streak">'+(streak>0?streak:'')+'</span><button class="habit-del" onclick="deleteHabit('+h.id+')">&times;</button></div>';
   }).join('');
   if(streakEl){
     const sorted=[...habits].sort((a,b)=>habitStreak(b)-habitStreak(a));
-    streakEl.innerHTML=sorted.map(h=>{const s=habitStreak(h);return '<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-sm);background:var(--surface2);margin-bottom:6px"><span style="font-size:18px">'+h.icon+'</span><span style="flex:1;font-size:13px">'+h.name+'</span><span style="font-family:var(--mono);font-size:13px;color:'+(s>0?'var(--accent3)':'var(--muted)')+'">'+( s>0?' '+s+' day'+(s>1?'s':''):'No streak')+'</span></div>';}).join('');
+    streakEl.innerHTML=sorted.map(h=>{const s=habitStreak(h);return '<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-sm);background:var(--surface2);margin-bottom:6px"><span style="font-size:18px">'+escapeHTML(h.icon)+'</span><span style="flex:1;font-size:13px">'+escapeHTML(h.name)+'</span><span style="font-family:var(--mono);font-size:13px;color:'+(s>0?'var(--accent3)':'var(--muted)')+'">'+(s>0?' '+s+' day'+(s>1?'s':''):'No streak')+'</span></div>';}).join('');
   }
 }
+
 
 // ===================================================
 //  KANBAN
@@ -4853,15 +4880,16 @@ function renderKanban(){
     if(count)count.textContent=colCards.length;
     if(!colCards.length){list.innerHTML='';return}
     list.innerHTML=colCards.map(c=>{
-      const tagColor=c.tag?TAG_COLORS[Math.abs(c.tag.split('').reduce((a,b)=>a+b.charCodeAt(0),0))%TAG_COLORS.length]:'';
+      const tagColor=c.tag?TAG_COLORS[Math.abs(String(c.tag).split('').reduce((a,b)=>a+b.charCodeAt(0),0))%TAG_COLORS.length]:'';
       return '<div class="kanban-card" draggable="true" data-id="'+c.id+'" ondragstart="dragKanbanId='+c.id+';this.classList.add(\'dragging\')" ondragend="this.classList.remove(\'dragging\')">'+
-        '<button class="kanban-card-del" onclick="deleteKanbanCard('+c.id+')">×</button>'+
-        '<div class="kanban-card-title">'+c.title+'</div>'+
-        (c.tag?'<span class="kanban-card-tag" style="background:'+tagColor+'22;color:'+tagColor+'">'+c.tag+'</span>':'')+
+        '<button class="kanban-card-del" onclick="deleteKanbanCard('+c.id+')">&times;</button>'+
+        '<div class="kanban-card-title">'+escapeHTML(c.title)+'</div>'+
+        (c.tag?'<span class="kanban-card-tag" style="background:'+tagColor+'22;color:'+tagColor+'">'+escapeHTML(c.tag)+'</span>':'')+
       '</div>';
     }).join('');
   });
 }
+
 
 // ===================================================
 //  CALENDAR
@@ -4910,22 +4938,22 @@ function renderCalendar(){
   const lastDay=new Date(calYear,calMonth+1,0);
   const startDow=(firstDay.getDay()+6)%7;
   const today=new Date();const todayStr=today.toISOString().slice(0,10);
-  let html='';
+  let out='';
   for(let i=0;i<startDow;i++){
     const d=new Date(calYear,calMonth,1-startDow+i);
-    html+='<div class="cal-day other-month">'+d.getDate()+'</div>';
+    out+='<div class="cal-day other-month">'+d.getDate()+'</div>';
   }
   for(let d=1;d<=lastDay.getDate();d++){
     const dateStr=calYear+'-'+String(calMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
     const isToday=dateStr===todayStr;
     const hasEv=events.some(e=>e.date===dateStr);
-    html+='<div class="cal-day'+(isToday?' today':'')+(hasEv?' has-event':'')+'" onclick="showDayEvents(\''+dateStr+'\')">'+d+'</div>';
+    out+='<div class="cal-day'+(isToday?' today':'')+(hasEv?' has-event':'')+'" onclick="showDayEvents(\''+dateStr+'\')">'+d+'</div>';
   }
-  grid.innerHTML=html;
+  grid.innerHTML=out;
   const evList=document.getElementById('cal-events-list');
   if(evList){
     const todayEvs=events.filter(e=>e.date===todayStr);
-    evList.innerHTML=todayEvs.length?todayEvs.map(e=>'<div class="cal-event-item"><div class="cal-event-dot" style="background:var(--'+e.color+')"></div><div class="cal-event-text">'+e.title+'</div></div>').join(''):'<div style="font-size:12px;color:var(--muted);padding:4px">No events today</div>';
+    evList.innerHTML=todayEvs.length?todayEvs.map(e=>'<div class="cal-event-item"><div class="cal-event-dot" style="background:'+safeThemeColor(e.color)+'"></div><div class="cal-event-text">'+escapeHTML(e.title)+'</div></div>').join(''):'<div style="font-size:12px;color:var(--muted);padding:4px">No events today</div>';
   }
   renderAllEvents();
 }
@@ -4933,15 +4961,15 @@ function showDayEvents(dateStr){
   const p=curP();const events=(p?.state?.events||[]).filter(e=>e.date===dateStr);
   const evList=document.getElementById('cal-events-list');if(!evList)return;
   if(!events.length){evList.innerHTML='<div style="font-size:12px;color:var(--muted);padding:4px">No events on this day</div>';return}
-  evList.innerHTML=events.map(e=>'<div class="cal-event-item"><div class="cal-event-dot" style="background:var(--'+e.color+')"></div><div class="cal-event-text">'+e.title+'</div><button onclick="deleteCalEvent('+e.id+')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px">×</button></div>').join('');
+  evList.innerHTML=events.map(e=>'<div class="cal-event-item"><div class="cal-event-dot" style="background:'+safeThemeColor(e.color)+'"></div><div class="cal-event-text">'+escapeHTML(e.title)+'</div><button onclick="deleteCalEvent('+e.id+')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px">&times;</button></div>').join('');
 }
 function renderAllEvents(){
   const p=curP();const events=p?.state?.events||[];
   const el=document.getElementById('all-events-list');if(!el)return;
   if(!events.length){el.innerHTML='<div class="empty-state" style="padding:16px"><div class="empty-icon"></div>No events yet</div>';return}
-  const today=new Date().toISOString().slice(0,10);
-  el.innerHTML=events.map(e=>'<div class="cal-event-item" style="margin-bottom:5px"><div class="cal-event-dot" style="background:var(--'+e.color+')"></div><div class="cal-event-text">'+e.title+'</div><div class="cal-event-date">'+e.date+'</div><button onclick="deleteCalEvent('+e.id+')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;margin-left:4px">×</button></div>').join('');
+  el.innerHTML=events.map(e=>'<div class="cal-event-item" style="margin-bottom:5px"><div class="cal-event-dot" style="background:'+safeThemeColor(e.color)+'"></div><div class="cal-event-text">'+escapeHTML(e.title)+'</div><div class="cal-event-date">'+escapeHTML(e.date)+'</div><button onclick="deleteCalEvent('+e.id+')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;margin-left:4px">&times;</button></div>').join('');
 }
+
 
 // ===================================================
 //  STATS PAGE
@@ -5108,9 +5136,29 @@ function playClick(type='soft'){
   }catch(e){}
 }
 
+function createPressRipple(el,e){
+  if(!el||el.disabled)return;
+  const rect=el.getBoundingClientRect();
+  if(!rect.width||!rect.height)return;
+  const size=Math.max(rect.width,rect.height)*1.65;
+  const ripple=document.createElement('span');
+  ripple.className='press-ripple';
+  ripple.style.width=size+'px';
+  ripple.style.height=size+'px';
+  ripple.style.left=(e.clientX-rect.left)+'px';
+  ripple.style.top=(e.clientY-rect.top)+'px';
+  const cs=getComputedStyle(el);
+  if(cs.position==='static')el.style.position='relative';
+  if(cs.overflow==='visible')el.style.overflow='hidden';
+  el.appendChild(ripple);
+  ripple.addEventListener('animationend',()=>ripple.remove(),{once:true});
+}
+
 // Delegated click listener - covers ALL interactive elements
 document.addEventListener('click', e => {
   const t = e.target;
+  const interactive=t.closest('.btn, button, .nav-item, .cat-tab, .settings-tab, .todo-item, .item-row, .kanban-card, .pinned-card, .link-card, .stat-card, .ps-add, .ps-profile, .ps-manage-btn, .pw-num, .toggle, .theme-swatch, .avatar-opt, .habit-day, .cal-day, .cal-nav, .panel-action');
+  if(interactive)createPressRipple(interactive,e);
   // Success sound for primary action buttons
   if(t.classList.contains('btn-primary')){
     playClick('success'); return;
@@ -5120,7 +5168,7 @@ document.addEventListener('click', e => {
     playClick('nav'); return;
   }
   // Everything else interactive
-  if(t.closest('.btn, button, .cat-tab, .settings-tab, .todo-item, .item-row, .kanban-card, .pinned-card, .link-card, .stat-card, .ps-add, .ps-profile, .ps-manage-btn, .pw-num, .toggle, .theme-swatch, .avatar-opt, .habit-day, .cal-day, .cal-nav')){
+  if(interactive){
     playClick('soft');
   }
 }, { passive: true });

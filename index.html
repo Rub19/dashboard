@@ -775,7 +775,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <div id="auth-error" style="margin-top:12px;font-size:12px;color:var(--accent3);text-align:center;min-height:16px"></div>
     <div id="auth-loading" style="display:none;margin-top:12px;text-align:center;font-size:13px;color:var(--muted)">⏳ Loading…</div>
   </div>
-  <div style="position:fixed;bottom:18px;font-size:11px;color:var(--muted);font-family:var(--mono)">v2.1.0</div>
+  <div style="position:fixed;bottom:18px;font-size:11px;color:var(--muted);font-family:var(--mono)">v2.6.0</div>
 </div>
 
 <!-- PROFILE SELECT SCREEN -->
@@ -786,13 +786,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   <div class="ps-profiles" id="ps-profiles-list"></div>
   <button class="ps-manage-btn" id="ps-manage-btn" onclick="toggleManageMode()">Manage profiles</button>
   <button onclick="doLogout()" style="margin-top:16px;background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:var(--font)">🚪 Sign out</button>
-  <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="Voir le changelog">v2.4.0 · changelog</div>
+  <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="View changelog">v2.6.0 · changelog</div>
 </div>
 
 <!-- SIDEBAR -->
 <button class="hamburger" id="hamburger" onclick="toggleMobileSidebar()" style="display:none">&#9776;</button>
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeMobileSidebar()"></div>
-<nav class="sidebar" id="main-sidebar" style="display:none">
+<nav class="sidebar" id="main-sidebar" style="display:none;visibility:hidden">
   <div class="logo" style="position:relative">
     <div class="logo-icon">&#9889;</div>
     <span class="logo-text" id="logo-text-el">MySpace</span>
@@ -909,19 +909,40 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
         <div id="weather-widget"><div class="empty-state" style="padding:12px"><div class="empty-icon">☀️</div><div style="font-size:12px">Loading weather...</div></div></div>
       </div>
       <div class="panel">
-        <div class="panel-header"><div class="panel-title"><div class="panel-title-icon" style="background:rgba(247,106,106,.12);color:var(--accent3)">&#9201;</div>Pomodoro</div></div>
+        <div class="panel-header"><div class="panel-title"><div class="panel-title-icon" style="background:rgba(247,106,106,.12);color:var(--accent3)">🍅</div>Pomodoro</div>
+          <button class="panel-action" onclick="switchPage('stats',null)">History →</button>
+        </div>
         <div class="pomo-display">
-          <div class="pomo-time" id="pomo-time">25:00</div>
-          <div class="pomo-label" id="pomo-label">Focus</div>
-          <div class="pomo-btns">
-            <button class="btn btn-ghost" onclick="pomoPrev()" style="padding:7px 10px;font-size:16px">&#9664;</button>
-            <button class="btn btn-primary" id="pomo-play-btn" onclick="pomoToggle()" style="padding:7px 14px">&#9654; Start</button>
-            <button class="btn btn-ghost" onclick="pomoReset()" style="padding:7px 10px;font-size:16px">&#9632;</button>
+          <!-- Mode tabs -->
+          <div style="display:flex;gap:4px;background:var(--surface2);border-radius:var(--radius-sm);padding:3px;margin-bottom:14px;border:1px solid var(--border)">
+            <button id="pomo-tab-0" onclick="pomoSelectMode(0)" style="flex:1;padding:5px;border-radius:6px;border:none;background:var(--accent3);color:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all var(--transition)">Focus</button>
+            <button id="pomo-tab-1" onclick="pomoSelectMode(1)" style="flex:1;padding:5px;border-radius:6px;border:none;background:none;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all var(--transition)">Short Break</button>
+            <button id="pomo-tab-2" onclick="pomoSelectMode(2)" style="flex:1;padding:5px;border-radius:6px;border:none;background:none;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all var(--transition)">Long Break</button>
           </div>
+          <!-- Ring timer -->
+          <div style="position:relative;width:130px;height:130px;margin:0 auto 12px">
+            <svg width="130" height="130" style="position:absolute;top:0;left:0;transform:rotate(-90deg)">
+              <circle cx="65" cy="65" r="58" fill="none" stroke="var(--surface2)" stroke-width="6"/>
+              <circle id="pomo-ring" cx="65" cy="65" r="58" fill="none" stroke="var(--accent3)" stroke-width="6" stroke-linecap="round"
+                stroke-dasharray="364" stroke-dashoffset="0" style="transition:stroke-dashoffset 1s linear,stroke .3s"/>
+            </svg>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+              <div class="pomo-time" id="pomo-time" style="font-size:32px;margin:0">25:00</div>
+              <div id="pomo-session-dots" style="display:flex;gap:3px;margin-top:4px"></div>
+            </div>
+          </div>
+          <div class="pomo-label" id="pomo-label" style="text-align:center">Focus · Session 1</div>
+          <div class="pomo-btns">
+            <button class="btn btn-ghost" onclick="pomoReset()" style="padding:7px 10px;font-size:16px" title="Reset">⏹</button>
+            <button class="btn btn-primary" id="pomo-play-btn" onclick="pomoToggle()" style="padding:7px 20px;background:var(--accent3);border-color:var(--accent3)">▶ Start</button>
+            <button class="btn btn-ghost" onclick="pomoSkip()" style="padding:7px 10px;font-size:16px" title="Skip">⏭</button>
+          </div>
+          <!-- Today stats -->
+          <div id="pomo-today-stats" style="display:flex;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)"></div>
         </div>
       </div>
       <div class="panel">
-        <div class="panel-header"><div class="panel-title"><div class="panel-title-icon" style="background:rgba(247,178,106,.12);color:var(--accent4)">&#128218;</div>Quote of the day</div><button class="panel-action" onclick="fetchQuote()">&#8635;</button></div>
+        <div class="panel-header"><div class="panel-title"><div class="panel-title-icon" style="background:rgba(247,178,106,.12);color:var(--accent4)">&#128218;</div>Quote of the day</div><button class="panel-action" onclick="fetchQuote()">↻</button></div>
         <div id="quote-widget"><div class="empty-state" style="padding:12px"><div class="empty-icon">&#128218;</div>Loading...</div></div>
       </div>
       <!-- Countdown -->
@@ -1114,7 +1135,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
           </div>
           <div style="display:flex;gap:8px;margin-top:6px">
             <input type="password" class="modal-input" id="tracker-apikey" placeholder="Tracker.gg API Key (optional — une clé default est intégrée)" style="flex:1;font-size:12px">
-            <button class="btn btn-ghost" onclick="const i=document.getElementById('tracker-apikey');i.type=i.type==='password'?'text':'password'" style="flex-shrink:0;font-size:13px" title="Afficher/masquer">👁</button>
+            <button class="btn btn-ghost" onclick="const i=document.getElementById('tracker-apikey');i.type=i.type==='password'?'text':'password'" style="flex-shrink:0;font-size:13px" title="Show/masquer">👁</button>
             <a href="https://tracker.gg/developers/apps" target="_blank" class="btn btn-ghost" style="font-size:12px;flex-shrink:0">Get key &#8599;</a>
           </div>
           <div style="font-size:11px;color:var(--muted);margin-top:4px">🔑 Une default key is built-in for Henrik and Tracker — leave empty if you don't have one.</div>
@@ -1257,7 +1278,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
             <div id="steam-current-game" style="display:none"><span style="font-size:11px;background:rgba(102,192,244,.12);color:var(--steam2);padding:2px 8px;border-radius:20px">🎮 <span id="steam-game-name">—</span></span></div>
           </div>
         </div>
-        <a id="steam-profilee-link" href="#" target="_blank" class="btn btn-ghost" style="font-size:12px;padding:7px 12px">View profilee &#8599;</a>
+        <a id="steam-profile-link" href="#" target="_blank" class="btn btn-ghost" style="font-size:12px;padding:7px 12px">View profile &#8599;</a>
       </div>
       <div id="steam-recent-games" style="display:none;margin-bottom:14px">
         <div class="section-label" style="padding:0 2px">Recent Games</div>
@@ -1279,7 +1300,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
         </div>
         <div style="display:flex;gap:8px">
           <input type="password" class="modal-input" id="steam-apikey" placeholder="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" style="flex:1;font-size:12px;font-family:var(--mono)">
-          <button class="btn btn-ghost" onclick="const i=document.getElementById('steam-apikey');i.type=i.type==='password'?'text':'password'" style="flex-shrink:0;font-size:13px" title="Afficher/masquer">👁</button>
+          <button class="btn btn-ghost" onclick="const i=document.getElementById('steam-apikey');i.type=i.type==='password'?'text':'password'" style="flex-shrink:0;font-size:13px" title="Show/masquer">👁</button>
           <button class="btn btn-primary" onclick="savesteamApiKey()" style="flex-shrink:0;font-size:12px">Save</button>
         </div>
         <div style="font-size:11.5px;color:var(--muted);margin-top:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;line-height:1.6">
@@ -1359,7 +1380,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
       <button class="settings-tab" onclick="switchSettingsTab('account',this)">&#9881; My Account</button>
     </div>
 
-    <!-- profilee tab -->
+    <!-- profile tab -->
     <div id="settings-profilee" style="max-width:500px">
       <div class="panel">
         <div class="panel-header" style="margin-bottom:20px"><div class="panel-title">Profile info</div></div>
@@ -1476,7 +1497,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
         <div class="modal-field" style="margin-top:16px">
           <div class="modal-label">USERNAME (to sign in)</div>
           <div style="display:flex;gap:8px">
-            <input type="text" class="modal-input" id="account-username" placeholder="Nouveau username" style="flex:1">
+            <input type="text" class="modal-input" id="account-username" placeholder="New username" style="flex:1">
             <button class="btn btn-primary" onclick="updateUsername()" style="flex-shrink:0">Save</button>
           </div>
         </div>
@@ -1526,10 +1547,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   </div>
 </div>
 
-<div class="modal-overlay" id="modal-create-profilee" onclick="closeModalIfOverlay(event,'create-profilee')">
+<div class="modal-overlay" id="modal-create-profile" onclick="closeModalIfOverlay(event,'create-profile')">
   <div class="modal">
-    <div class="modal-title" id="create-profilee-title">&#10024; Create profilee</div>
-    <div class="modal-field"><div class="modal-label">NAME</div><input type="text" class="modal-input" id="new-profilee-name" placeholder="e.g. Alex, Work, Gaming..." onkeydown="if(event.key==='Enter')submitCreateProfile()"></div>
+    <div class="modal-title" id="create-profile-title">&#10024; Create profile</div>
+    <div class="modal-field"><div class="modal-label">NAME</div><input type="text" class="modal-input" id="new-profile-name" placeholder="e.g. Alex, Work, Gaming..." onkeydown="if(event.key==='Enter')submitCreateProfile()"></div>
     <div class="modal-field">
       <div class="modal-label">CHOOSE AN AVATAR</div>
       <div class="avatar-grid" id="create-avatar-grid"></div>
@@ -1564,7 +1585,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
         </div>
       </div>
     </div>
-    <div class="modal-actions"><button class="btn btn-ghost" onclick="cancelCreateProfile()">Cancel</button><button class="btn btn-primary" id="create-profilee-btn" onclick="submitCreateProfile()">Create</button></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="cancelCreateProfile()">Cancel</button><button class="btn btn-primary" id="create-profile-btn" onclick="submitCreateProfile()">Create</button></div>
   </div>
 </div>
 
@@ -1692,22 +1713,26 @@ let _isAdmin=false;
 // -- AUTH UI --------------------------------------
 function showChangelog(){
   const versions=[
-    {v:'v2.0.0',date:'06/06/2026',changes:['Last.fm integration: now playing, recent tracks, top artists (7d)','Last.fm sidebar widget with auto-refresh every 30s','Fix: Settings page tabs not working','Fix: IPv4 + IPv6 both shown in admin panel','Fix: Last.fm auto-refresh on connection load']},
-    {v:'v1.9.0',date:'06/06/2026',changes:['Full visual upgrade: electric blue theme','Glassmorphism sidebar with backdrop-filter','Depth shadows + hover lift on cards','Gradient profile title + logo glow','Bounce transitions on interactive elements','Custom scrollbar']},
-    {v:'v1.8.0',date:'06/06/2026',changes:['Overwatch 2 stats via Tracker.gg','Ranks Tank/DPS/Support with icons','Win rate, KDA, avg elim, time played','Top 5 heroes with WR + K/D','Competitive / Quick Play tabs']},
-    {v:'v1.7.0',date:'06/06/2026',changes:['Full mobile responsive design','Bottom navigation bar (5 tabs)','Sidebar overlay on mobile','All grids adapt to single column','Auth screen optimized for mobile']},
-    {v:'v1.6.0',date:'06/06/2026',changes:['Calendar widget in Overview','Shows upcoming events with color dots','Countdown: Today / Tomorrow / Xd','Auto-updates when adding events']},
-    {v:'v1.5.3',date:'06/06/2026',changes:['Twitch: up to 3 streamers','Sidebar shows only live streamers','Live card with game + viewers','Remove individual streamers']},
-    {v:'v1.5.0',date:'06/06/2026',changes:['Compare with Friends (Valorant + Steam)','Side-by-side stats with winner highlight','Pick from dashboard users or enter manually','Steam recent games comparison']},
-    {v:'v1.4.0',date:'06/06/2026',changes:['Twitch live status widget','Sidebar shows live streamers','Watch button + viewer count','Auto-refresh on load']},
-    {v:'v1.3.2',date:'05/06/2026',changes:['Admin: view any user dashboard','See notes, tasks, files, connections, stats','Per-profile viewer']},
-    {v:'v1.3.0',date:'05/06/2026',changes:['Admin panel: click user to expand details','IP address + city/country on login','Browser and OS detection','Login count per user']},
-    {v:'v1.2.0',date:'05/06/2026',changes:['Settings My Account: edit username, email, password','Username login with email fallback','Import JSON -> immediate cloud save']},
-    {v:'v1.1.0',date:'05/06/2026',changes:['Changelog popup on profile screen','Compact sidebar','Admin button for owner account']},
-    {v:'v1.0.3',date:'05/06/2026',changes:['Supabase integration: email + username auth','Cloud save per profile','Admin panel with account management']},
-    {v:'v1.0.2',date:'05/06/2026',changes:['Cloudflare Worker for Steam + Tracker + Henrik','API keys secured server-side','CORS issues resolved']},
-    {v:'v1.0.1',date:'05/06/2026',changes:['Valorant tabs (Competitive / Swiftplay / Unrated)','Visual match cards + top agents + headshot %','Client-side match filtering by mode']},
-    {v:'v1.0.0',date:'05/06/2026',changes:['Initial dashboard version','Multiple profiles with avatar and PIN','Discord, Steam, Spotify, Valorant, LoL, Kanban, Habits, Calendar, Tasks, Notes']},
+    {v:'v2.5.2',date:'07/06/2026',changes:['Fix 30+ profilee typos in HTML+JS','Fix modal IDs create-profile','Fix Steam profileUrl','Fix export/import profiles key','Fix null checks in render functions']},
+    {v:'v2.5.1',date:'07/06/2026',changes:['Fix sidebar flash on load (visibility:hidden until rendered)','Fix weather and QOTD loading order (500ms delay)','Fix refresh buttons showing HTML entity code','Fix saveState() debounce replaced by saveStateNow()','Fix avatar emojis in profile picker']},
+    {v:'v2.5.0',date:'07/06/2026',changes:['Pomodoro improved: animated ring timer','3 mode tabs (Focus 25m / Short Break 5m / Long Break 15m)','Session dots showing cycle progress (4 = long break)','Stats: today sessions, total, focus time, day streak','History saved to cloud']},
+    {v:'v2.4.0',date:'07/06/2026',changes:['Weather upgraded to 5-day forecast','Current temp + feels like + wind + humidity','Daily icons with max/min and rain probability','Auto-loads on dashboard open']},
+    {v:'v2.3.0',date:'07/06/2026',changes:['Sidebar customization in Settings','Drag & drop to reorder nav items','Toggle visibility per item','Compact mode (icons only, 62px wide)']},
+    {v:'v2.2.0',date:'07/06/2026',changes:['8 color themes: Electric Blue, Violet, Emerald, Rose, Amber, Cyan, Pink, Mono','Each theme sets glow, bg, surface colors','4 animated backgrounds: Particles, Aurora, Grid, Waves','Background adapts to current theme color']},
+    {v:'v2.1.0',date:'07/06/2026',changes:['Ctrl+K command palette (search + navigate)','Search files, tasks, events by keyword','Quick actions: Add Task, Add Event, Add File','Arrow keys + Enter to navigate results','Calendar overview updates instantly on add']},
+    {v:'v2.0.2',date:'06/06/2026',changes:['Fix sidebar overflow on mobile (max 85vw)','Fix Refresh buttons showing &#8635; as text','Fix version number on auth screen','Fix map icon empty in Valorant stats','Fix file/link icons in Quick Access']},
+    {v:'v2.0.1',date:'06/06/2026',changes:['Fix Settings page tabs not working (missing wrapper)','Last.fm auto-refresh every 30 seconds','IPv4 + IPv6 shown in admin panel','Changelog updated with full history']},
+    {v:'v2.0.0',date:'06/06/2026',changes:['Last.fm integration: now playing, recent tracks, top artists (7 days)','Last.fm sidebar widget showing current track','Cloudflare Worker CORS proxy for Last.fm']},
+    {v:'v1.9.0',date:'06/06/2026',changes:['Full visual upgrade: electric blue theme','Glassmorphism sidebar + depth shadows','Bounce transitions + gradient text','Custom scrollbar']},
+    {v:'v1.8.0',date:'06/06/2026',changes:['Overwatch 2 stats via Tracker.gg','Ranks Tank/DPS/Support with icons','Win rate, KDA, avg elim, time played','Top 5 heroes + Competitive/Quick Play tabs']},
+    {v:'v1.7.0',date:'06/06/2026',changes:['Full mobile responsive design','Bottom navigation bar (5 tabs)','Sidebar overlay on mobile','All grids adapt to single column']},
+    {v:'v1.6.0',date:'06/06/2026',changes:['Calendar events shown in Overview widget','Color dots + countdown (Today/Tomorrow/Xd)','Updates instantly when adding events']},
+    {v:'v1.5.0',date:'06/06/2026',changes:['Twitch: up to 3 streamers tracked','Sidebar shows only live streamers','Compare with Friends: Valorant + Steam stats side by side']},
+    {v:'v1.4.0',date:'06/06/2026',changes:['Twitch live status widget','Sidebar live badge with game + viewer count']},
+    {v:'v1.3.0',date:'05/06/2026',changes:['Admin panel: expandable user details','IP address (IPv4+IPv6) + city/country','Browser, OS, login count per user','View any user dashboard from admin']},
+    {v:'v1.2.0',date:'05/06/2026',changes:['Settings My Account: edit username, email, password','Username login with email fallback','Cloud save on import']},
+    {v:'v1.1.0',date:'05/06/2026',changes:['Changelog popup','Compact sidebar','Admin button for owner']},
+    {v:'v1.0.0',date:'05/06/2026',changes:['Initial release','Multiple profiles with avatar + PIN','Discord, Steam, Spotify, Valorant, LoL','Kanban, Habits, Calendar, Tasks, Notes, Stats, Pomodoro']},
   ];
   let html=`<div style="position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.remove()">
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:28px;width:100%;max-width:500px;max-height:80vh;overflow-y:auto">
@@ -1983,7 +2008,7 @@ async function openAdminPanel(){
       <div style="padding:12px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap" onclick="toggleAdminUserDetails('${u.id}')">
         <div style="flex:1;min-width:0">
           <div style="font-weight:600">${u.username} ${isMe?'<span style=\"font-size:10px;background:rgba(124,106,247,.2);color:var(--accent);padding:1px 7px;border-radius:20px\">Admin</span>':''}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px">${u.email||'-'} · ${userProfiles.length} profilee(s) · Joined ${joined}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">${u.email||'-'} · ${userProfiles.length} profile(s) · Joined ${joined}</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
           ${!isMe?`<button onclick="event.stopPropagation();adminDeleteUser('${u.id}',this)" style="background:rgba(247,106,106,.15);color:var(--accent3);border:1px solid var(--accent3);border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;font-family:var(--font)">Delete</button>`:''}
@@ -2135,26 +2160,26 @@ async function adminDeleteUser(userId,btn){
 //  CONSTANTS & STATE
 // ===================================================
 const AVATARS=[
-  {e:'&#128049;',b:'#2a1f3d'},{e:'&#129418;',b:'#2d1a0e'},{e:'&#128060;',b:'#1a2a1a'},
-  {e:'&#128056;',b:'#0e2a1a'},{e:'&#129409;',b:'#2d2000'},{e:'&#128058;',b:'#1a1a2a'},
-  {e:'&#128039;',b:'#0a1a2d'},{e:'&#129419;',b:'#2d0a2d'},{e:'&#128009;',b:'#2a0a0a'},
-  {e:'&#129412;',b:'#2a0a2a'},{e:'&#129302;',b:'#0a2a2a'},{e:'&#128126;',b:'#1a0a2d'},
-  {e:'&#127917;',b:'#2d1a00'},{e:'&#127769;',b:'#0a0a2d'},{e:'&#9889;',b:'#2d2500'},
+  {e:'🐱',b:'#2a1f3d'},{e:'🦊',b:'#2d1a0e'},{e:'🐼',b:'#1a2a1a'},
+  {e:'🐸',b:'#0e2a1a'},{e:'🦁',b:'#2d2000'},{e:'🐺',b:'#1a1a2a'},
+  {e:'🐧',b:'#0a1a2d'},{e:'🦋',b:'#2d0a2d'},{e:'🐉',b:'#2a0a0a'},
+  {e:'🦄',b:'#2a0a2a'},{e:'🤖',b:'#0a2a2a'},{e:'👾',b:'#1a0a2d'},
+  {e:'🎭',b:'#2d1a00'},{e:'🌙',b:'#0a0a2d'},{e:'⚡',b:'#2d2500'},
 ];
 
 let profiles=[], currentId=null, managingMode=false;
 let selAvatarIdx=0, editSelAvatarIdx=0;
 let createUpload=null, editUpload=null;
 let editingProfileId=null;
-let pendingPasswordId=null; // profilee waiting for password check
+let pendingPasswordId=null; // profile waiting for password check
 let pinEntry='';
 
 // ===================================================
 //  PERSISTENCE
 // ===================================================
-function loadState(){try{const d=localStorage.getItem('myspace_profiles_backup');if(d)profilees=JSON.parse(d)}catch(e){}}
+function loadState(){try{const d=localStorage.getItem('myspace_profiles_backup');if(d)profiles=JSON.parse(d)}catch(e){}}
 let _saveCloudTimeout=null;
-function saveState(){
+function saveStateNow(){
   try{localStorage.setItem('myspace_profiles_backup',JSON.stringify(profiles))}catch(e){}
   // Debounce cloud sync 800ms pour eviter trop d'appels
   if(_sbUser){
@@ -2227,7 +2252,7 @@ function toggleManageMode(){managingMode=!managingMode;renderProfileScreen()}
 
 function enterDashboard(id){
   currentId=id;
-  // Reinitialise les caches globaux pour ce new profilee
+  // Reinit global caches for new profile
   _valoMatchCache={};
   _valoAllMatches=[];
   const screen=document.getElementById('profile-screen');
@@ -2236,6 +2261,7 @@ function enterDashboard(id){
     screen.style.display='none';
     document.getElementById('main-sidebar').style.display='flex';
     document.getElementById('main-content').style.display='block';
+    renderSidebarNav();
     initDashboard();
   },480);
 }
@@ -2377,32 +2403,32 @@ function resetCreatePwFields(){
 
 function openCreateProfile(){
   editingProfileId=null;selAvatarIdx=0;createUpload=null;
-  document.getElementById('new-profilee-name').value='';
+  document.getElementById('new-profile-name').value='';
   document.getElementById('create-upload-preview').style.display='none';
-  document.getElementById('create-profilee-title').textContent=' Create profilee';
-  document.getElementById('create-profilee-btn').textContent='Create';
+  document.getElementById('create-profile-title').textContent=' Create profile';
+  document.getElementById('create-profile-btn').textContent='Create';
   resetCreatePwFields();
   renderAvatarGrid('create-avatar-grid',selAvatarIdx);
-  openModal('create-profilee');
+  openModal('create-profile');
 }
 
 function openEditProfile(id){
   const p=getP(id);if(!p)return;
   editingProfileId=id;
-  document.getElementById('new-profilee-name').value=p.name;
+  document.getElementById('new-profile-name').value=p.name;
   selAvatarIdx=p.avatarIdx||0;createUpload=p.avatarImg||null;
   if(createUpload){document.getElementById('create-upload-preview').style.display='flex';document.getElementById('create-upload-img').src=createUpload}
   else{document.getElementById('create-upload-preview').style.display='none'}
-  document.getElementById('create-profilee-title').textContent=' Edit profilee';
-  document.getElementById('create-profilee-btn').textContent='Save';
+  document.getElementById('create-profile-title').textContent=' Edit profile';
+  document.getElementById('create-profile-btn').textContent='Save';
   renderAvatarGrid('create-avatar-grid',selAvatarIdx);
-  openModal('create-profilee');
+  openModal('create-profile');
 }
 
-function cancelCreateProfile(){editingProfileId=null;closeModal('create-profilee')}
+function cancelCreateProfile(){editingProfileId=null;closeModal('create-profile')}
 
 function submitCreateProfile(){
-  const name=document.getElementById('new-profilee-name').value.trim();
+  const name=document.getElementById('new-profile-name').value.trim();
   if(!name){toast('Enter a name','error');return}
   const av=AVATARS[selAvatarIdx]||AVATARS[0];
   const emoji=createUpload?null:av.e;
@@ -2431,13 +2457,13 @@ function submitCreateProfile(){
     profiles.push(p);saveStateNow();
     toast(name+' created!'+(pwObj?' ':''),'success');
   }
-  editingProfileId=null;closeModal('create-profilee');createUpload=null;resetCreatePwFields();renderProfileScreen();
+  editingProfileId=null;closeModal('create-profile');createUpload=null;resetCreatePwFields();renderProfileScreen();
 }
 
 function deleteProfile(id){
   if(profiles.length<=1){toast("Can't delete last profile",'error');return}
-  if(!confirm('Delete this profilee and all its data?'))return;
-  profilees=profiles.filter(p=>p.id!==id);saveStateNow();renderProfileScreen();toast('Deleted','info');
+  if(!confirm('Delete this profile and all its data?'))return;
+  profiles=profiles.filter(p=>p.id!==id);saveStateNow();renderProfileScreen();toast('Deleted','info');
 }
 
 function renderAvatarGrid(containerId,selIdx){
@@ -2500,7 +2526,8 @@ function initDashboard(){
   // Affiche le bouton admin si c'est l'admin
   const adminBtn=document.getElementById('nav-admin');
   if(adminBtn)adminBtn.style.display=_isAdmin?'flex':'none';
-  updateStats();renderRecentItems();renderActivity();renderTodos();renderOverviewEvents();renderSidebarNav();updateClock();
+  updateStats();renderRecentItems();renderActivity();renderTodos();renderOverviewEvents();updateClock();
+  pomoRemaining=POMO_MODES[0].duration;renderPomo();
   loadConnectionsUI();
   refreshDiscordSidebar();
   // Start Lanyard WebSocket for real-time updates
@@ -2515,12 +2542,12 @@ function initDashboard(){
   refreshSpotifySidebar();
   applyTheme(p.themeIdx||0);
   if(p.bgTheme&&p.bgTheme!=='none')applyBgTheme(p.bgTheme);
+  // Delay weather/quote to let DOM settle
+  setTimeout(()=>{fetchWeather();fetchQuote();},500);
   updateBannerDisplay();
   renderPinnedLinks();
   renderCountdown();
   addActivity('Welcome back, <strong>'+p.name+'</strong> ','var(--accent)');
-  fetchQuote();
-  fetchWeather();
   pomoReset();
 }
 
@@ -3429,18 +3456,20 @@ function renderSidebarNav(){
   const compact=p?.sidebarCompact||false;
   const config=getSidebarConfig();
   const sidebar=document.getElementById('main-sidebar');
+  const mainContent=document.getElementById('main-content');
   const logoText=document.getElementById('logo-text-el');
+  const compactBtn=document.getElementById('sidebar-compact-btn');
 
   if(compact){
-    sidebar.style.width='62px';
-    document.getElementById('main-content').style.marginLeft='62px';
+    if(sidebar)sidebar.style.width='62px';
+    if(mainContent)mainContent.style.marginLeft='62px';
     if(logoText)logoText.style.display='none';
-    document.getElementById('sidebar-compact-btn').textContent='⇥';
+    if(compactBtn)compactBtn.textContent='\u21e5';
   } else {
-    sidebar.style.width='';
-    document.getElementById('main-content').style.marginLeft='';
+    if(sidebar)sidebar.style.width='';
+    if(mainContent)mainContent.style.marginLeft='';
     if(logoText)logoText.style.display='';
-    document.getElementById('sidebar-compact-btn').textContent='⇤';
+    if(compactBtn)compactBtn.textContent='\u21a4';
   }
 
   const mainEl=document.getElementById('sidebar-nav-main');
@@ -3452,33 +3481,36 @@ function renderSidebarNav(){
     if(!visible.length)return'';
     const labelHtml=compact?'':`<div class="nav-label">${label}</div>`;
     return labelHtml+visible.map(item=>{
-      const badge=item.badge?`<span class="nav-badge" id="${item.badge}" style="${compact?'position:absolute;top:-4px;right:-4px;min-width:16px;padding:0 4px;':''}">0</span>`:'';
-      const title=compact?`title="${item.label}"`:'';
-      return `<a class="nav-item" ${title} onclick="switchPage('${item.id}',this)" style="${compact?'justify-content:center;padding:10px;position:relative;':''}">
+      const badge=item.badge?`<span class="nav-badge" id="${item.badge}" style="${compact?'position:absolute;top:-4px;right:-4px;min-width:16px;padding:0 4px;font-size:9px;':''}">0</span>`:'';
+      return `<a class="nav-item" ${compact?`title="${item.label}"`:''}
+        onclick="switchPage('${item.id}',this)"
+        style="${compact?'justify-content:center;padding:10px;position:relative;':''}">
         <span class="nav-icon" style="font-size:${compact?'18':'15'}px">${item.icon}</span>
         ${compact?badge:`<span>${item.label}</span>${badge}`}
       </a>`;
     }).join('');
   };
 
-  const mainItems=config.filter(i=>i.section==='main');
-  const accItems=config.filter(i=>i.section==='account');
-
-  mainEl.innerHTML=renderSection(mainItems,'Main');
-  accEl.innerHTML=renderSection(accItems,'Account')+
-    `<a class="nav-item" id="nav-admin" onclick="openAdminPanel()" style="display:none;${compact?'justify-content:center;padding:10px;':''}" ${compact?'title="Admin"':''}>
+  mainEl.innerHTML=renderSection(config.filter(i=>i.section==='main'),'Main');
+  accEl.innerHTML=renderSection(config.filter(i=>i.section==='account'),'Account')+
+    `<a class="nav-item" id="nav-admin" onclick="openAdminPanel()" style="display:none${compact?';justify-content:center;padding:10px':''}" ${compact?'title="Admin"':''}>
       <span class="nav-icon" style="font-size:${compact?'18':'15'}px">👑</span>
       ${compact?'':'Admin'}
     </a>`;
 
-  // Restore active state
+  // Restore active state to current page
   document.querySelectorAll('.nav-item').forEach(el=>{
-    if(el.getAttribute('onclick')?.includes("'dashboard'"))el.classList.add('active');
+    const oc=el.getAttribute('onclick')||'';
+    if(oc.includes("'dashboard'"))el.classList.add('active');
   });
-  if(_isAdmin){const ab=document.getElementById('nav-admin');if(ab)ab.style.display=compact?'flex':'flex';}
 
-  // Re-apply badge counts
-  if(typeof updateStats==='function')updateStats();
+  // Show admin if admin
+  if(_isAdmin){const ab=document.getElementById('nav-admin');if(ab)ab.style.display='flex';}
+
+  // Show sidebar now that it's rendered
+  if(sidebar){sidebar.style.visibility='visible';}
+
+  updateStats();
 }
 
 function toggleSidebarCompact(){
@@ -3822,7 +3854,7 @@ function renderDiscordBadges(user){
 async function connectDiscord(){
   const userId=document.getElementById('dc-userid').value.trim();
   if(!userId){toast('Enter a Discord User ID','error');return}
-  toast('Fetching Discord profilee...','info');
+  toast('Fetching Discord profile...','info');
   try{
     const res=await fetch('https://api.lanyard.rest/v1/users/'+userId);
     const json=await res.json();
@@ -4062,7 +4094,7 @@ async function connectSteam(){
     // Fetch profilee summary
     const summaryJson=await fetchSteamAPI('/ISteamUser/GetPlayerSummaries/v2/',apiKey,'steamids='+steamId);
     const player=summaryJson?.response?.players?.[0];
-    if(!player){toast('Steam profilee not found - check your SteamID64','error');return}
+    if(!player){toast('Steam profile not found - check your SteamID64','error');return}
 
     const stateMap={0:'offline',1:'online',2:'busy',3:'away',4:'snooze',5:'online',6:'online'};
     const data={
@@ -4071,7 +4103,7 @@ async function connectSteam(){
       avatarFull:player.avatarfull||'',
       onlineState:stateMap[player.personastate]||'offline',
       stateMessage:player.gameextrainfo?'Currently In-Game '+player.gameextrainfo:'',
-      profileeUrl:player.profileeurl||'https://steamcommunity.com/profilees/'+steamId,
+      profileUrl:player.profileurl||'https://steamcommunity.com/profilees/'+steamId,
       recentGames:[],
       steamLevel:null
     };
@@ -4138,8 +4170,8 @@ function renderSteamCard(data){
       cgWrap.style.display='block';
     } else cgWrap.style.display='none';
   }
-  const link=document.getElementById('steam-profilee-link');
-  if(link)link.href=data.profileeUrl||'#';
+  const link=document.getElementById('steam-profile-link');
+  if(link)link.href=data.profileUrl||'#';
 
   // Jeux recents avec temps de jeu
   const recentWrap=document.getElementById('steam-recent-games');
@@ -4175,7 +4207,7 @@ async function refreshSteam(){
     const player=summaryJson?.response?.players?.[0];
     if(!player){toast('Profile not found','error');return;}
     const stateMap={0:'offline',1:'online',2:'busy',3:'away',4:'snooze',5:'online',6:'online'};
-    const data={steamId64:steamId,displayName:player.personaname||'Unknown',avatarFull:player.avatarfull||'',onlineState:stateMap[player.personastate]||'offline',stateMessage:player.gameextrainfo?'Currently In-Game '+player.gameextrainfo:'',profileeUrl:player.profileeurl||'https://steamcommunity.com/profilees/'+steamId,recentGames:[],steamLevel:null};
+    const data={steamId64:steamId,displayName:player.personaname||'Unknown',avatarFull:player.avatarfull||'',onlineState:stateMap[player.personastate]||'offline',stateMessage:player.gameextrainfo?'Currently In-Game '+player.gameextrainfo:'',profileUrl:player.profileurl||'https://steamcommunity.com/profilees/'+steamId,recentGames:[],steamLevel:null};
     try{const lvlJson=await fetchSteamAPI('/IPlayerService/GetSteamLevel/v1/',apiKey,'steamid='+steamId);data.steamLevel=lvlJson?.response?.player_level??null;}catch(e){}
     try{
       const gamesJson=await fetchSteamAPI('/IPlayerService/GetRecentlyPlayedGames/v1/',apiKey,'steamid='+steamId+'&count=5');
@@ -4706,7 +4738,7 @@ function habitStreak(h){
   return streak;
 }
 function renderHabits(){
-  const p=curP();const list=document.getElementById('habits-list');const streakEl=document.getElementById('habits-streaks');
+  const p=curP();if(!p)return;const list=document.getElementById('habits-list');const streakEl=document.getElementById('habits-streaks');
   if(!list)return;
   const habits=p?.state?.habits||[];
   const weekDays=getWeekDays();
@@ -5151,62 +5183,157 @@ async function fetchWeather(){
 }
 
 // ===================================================
-//  POMODORO
+//  POMODORO IMPROVED
 // ===================================================
-const POMO_SESSIONS=[
-  {label:'Focus',duration:25*60,color:'var(--accent3)'},
-  {label:'Short Break',duration:5*60,color:'var(--accent2)'},
-  {label:'Long Break',duration:15*60,color:'var(--accent)'}
+const POMO_MODES=[
+  {label:'Focus',      duration:25*60, color:'var(--accent3)', ring:'#f87171'},
+  {label:'Short Break',duration:5*60,  color:'var(--accent2)', ring:'#34d399'},
+  {label:'Long Break', duration:15*60, color:'var(--accent)',  ring:'#3b82f6'},
 ];
-let pomoIdx=0,pomoRemaining=0,pomoRunning=false,pomoInterval=null,pomoCount=0;
+let pomoIdx=0, pomoRemaining=0, pomoRunning=false, pomoInterval=null, pomoCount=0;
+
+function pomoSelectMode(idx){
+  if(pomoRunning)return;
+  pomoIdx=idx;
+  pomoRemaining=POMO_MODES[idx].duration;
+  renderPomo();
+}
 
 function pomoReset(){
   clearInterval(pomoInterval);pomoRunning=false;
-  pomoRemaining=POMO_SESSIONS[pomoIdx].duration;
+  pomoRemaining=POMO_MODES[pomoIdx].duration;
   renderPomo();
 }
-function pomoPrev(){
+
+function pomoSkip(){
   clearInterval(pomoInterval);pomoRunning=false;
-  pomoIdx=(pomoIdx-1+POMO_SESSIONS.length)%POMO_SESSIONS.length;
-  pomoRemaining=POMO_SESSIONS[pomoIdx].duration;renderPomo();
+  if(POMO_MODES[pomoIdx].label==='Focus'){
+    pomoCount++;
+    savePomoSession();
+    pomoIdx=pomoCount%4===0?2:1;
+  } else {
+    pomoIdx=0;
+  }
+  pomoRemaining=POMO_MODES[pomoIdx].duration;
+  renderPomo();
 }
+
 function pomoToggle(){
-  if(pomoRunning){clearInterval(pomoInterval);pomoRunning=false;renderPomo();return}
+  if(pomoRunning){clearInterval(pomoInterval);pomoRunning=false;renderPomo();return;}
   pomoRunning=true;
   pomoInterval=setInterval(()=>{
     pomoRemaining--;
     if(pomoRemaining<=0){
       clearInterval(pomoInterval);pomoRunning=false;
-      if(POMO_SESSIONS[pomoIdx].label==='Focus'){
+      if(POMO_MODES[pomoIdx].label==='Focus'){
         pomoCount++;
-        addActivity(' Focus session done!','var(--accent3)');
-        toast('Focus session complete! Take a break ','success');
-        sendNotif('Pomodoro complete! ','Time for a break - great work!','');
+        savePomoSession();
+        addActivity('🍅 Focus session complete!','var(--accent3)');
+        toast('Focus done! Take a break 🎉','success');
+        sendNotif('Pomodoro complete! 🍅','Time for a break — great work!','');
         pomoIdx=pomoCount%4===0?2:1;
       } else {
-        toast('Break over - time to focus! ','info');
+        toast('Break over — focus time! 💪','info');
         pomoIdx=0;
       }
-      pomoRemaining=POMO_SESSIONS[pomoIdx].duration;
+      pomoRemaining=POMO_MODES[pomoIdx].duration;
     }
     renderPomo();
   },1000);
   renderPomo();
 }
+
+function savePomoSession(){
+  const p=curP();if(!p)return;
+  if(!p.state.pomoHistory)p.state.pomoHistory=[];
+  p.state.pomoHistory.push({ts:new Date().toISOString(),duration:POMO_MODES[0].duration});
+  if(p.state.pomoHistory.length>200)p.state.pomoHistory=p.state.pomoHistory.slice(-200);
+  saveStateNow();
+  renderPomoStats();
+}
+
 function renderPomo(){
-  const s=POMO_SESSIONS[pomoIdx];
+  const mode=POMO_MODES[pomoIdx];
+  const total=mode.duration;
+  const pct=pomoRemaining/total;
+  const circumference=364;
+
+  // Time display
   const m=String(Math.floor(pomoRemaining/60)).padStart(2,'0');
   const sec=String(pomoRemaining%60).padStart(2,'0');
   const el=document.getElementById('pomo-time');if(el)el.textContent=m+':'+sec;
+
+  // Ring progress
+  const ring=document.getElementById('pomo-ring');
+  if(ring){
+    ring.style.strokeDashoffset=circumference*(1-pct);
+    ring.style.stroke=mode.ring;
+  }
+
+  // Mode tabs
+  POMO_MODES.forEach((_,i)=>{
+    const tab=document.getElementById('pomo-tab-'+i);
+    if(!tab)return;
+    const active=i===pomoIdx;
+    tab.style.background=active?mode.ring:'none';
+    tab.style.color=active?'#fff':'var(--muted)';
+  });
+
+  // Label + session dots
   const lbl=document.getElementById('pomo-label');
-  if(lbl)lbl.textContent=s.label+(pomoCount>0?' . '+''.repeat(Math.min(pomoCount,4)):'');
+  if(lbl)lbl.textContent=mode.label+(mode.label==='Focus'?' · Session '+(pomoCount+1):'');
+
+  const dots=document.getElementById('pomo-session-dots');
+  if(dots){
+    dots.innerHTML=Array.from({length:4},(_,i)=>
+      `<div style="width:6px;height:6px;border-radius:50%;background:${i<(pomoCount%4)?mode.ring:'var(--surface3)'}"></div>`
+    ).join('');
+  }
+
+  // Play button
   const btn=document.getElementById('pomo-play-btn');
   if(btn){
-    btn.textContent=pomoRunning?' Pause':' Start';
-    btn.style.background=pomoRunning?'var(--surface3)':'var(--accent)';
-    btn.style.borderColor=pomoRunning?'var(--border2)':'var(--accent)';
+    btn.textContent=pomoRunning?'⏸ Pause':'▶ Start';
+    btn.style.background=pomoRunning?'var(--surface3)':mode.ring;
+    btn.style.borderColor=pomoRunning?'var(--border2)':mode.ring;
     btn.style.color=pomoRunning?'var(--muted)':'#fff';
   }
+
+  renderPomoStats();
+}
+
+function renderPomoStats(){
+  const p=curP();
+  const container=document.getElementById('pomo-today-stats');
+  if(!container)return;
+  const history=p?.state?.pomoHistory||[];
+  const today=new Date().toISOString().slice(0,10);
+  const todaySessions=history.filter(s=>s.ts.startsWith(today)).length;
+  const totalSessions=history.length;
+  const totalMins=Math.round(history.reduce((s,h)=>s+(h.duration||1500),0)/60);
+  const streak=getPomoDayStreak(history);
+
+  container.innerHTML=[
+    {label:'Today',val:todaySessions+'🍅',color:'var(--accent3)'},
+    {label:'Total',val:totalSessions,color:'var(--text)'},
+    {label:'Focus time',val:totalMins>=60?Math.round(totalMins/60)+'h':totalMins+'m',color:'var(--accent2)'},
+    {label:'Day streak',val:streak+'🔥',color:'var(--accent4)'},
+  ].map(s=>`<div style="flex:1;text-align:center;background:var(--surface2);border-radius:var(--radius-sm);padding:7px 4px">
+    <div style="font-size:15px;font-weight:700;color:${s.color}">${s.val}</div>
+    <div style="font-size:10px;color:var(--muted);margin-top:2px">${s.label}</div>
+  </div>`).join('');
+}
+
+function getPomoDayStreak(history){
+  if(!history.length)return 0;
+  const days=new Set(history.map(s=>s.ts.slice(0,10)));
+  let streak=0,d=new Date();
+  while(true){
+    const ds=d.toISOString().slice(0,10);
+    if(!days.has(ds))break;
+    streak++;d.setDate(d.getDate()-1);
+  }
+  return streak;
 }
 
 // ===================================================
@@ -5432,160 +5559,236 @@ function renderValoStats(mmr,matchCache,name,tag,activeMode){
 function renderValoModeContent(mmr,matches,name,tag,mode){
   const container=document.getElementById('valo-mode-content');if(!container)return;
   let html='';
-
-  // Recupere le puuid sauvegarde pour matching plus fiable
   const puuid=curP()?.state?.gaming?.valo?.puuid||'';
-  const nameLow=name.toLowerCase();
-  const tagLow=tag.toLowerCase();
+  const nameLow=name.toLowerCase(),tagLow=tag.toLowerCase();
 
   function findMe(m){
     const players=m.players?.all_players||[];
-    // Match par puuid en priorite (le plus fiable)
     if(puuid){const p=players.find(pl=>pl.puuid===puuid);if(p)return p;}
-    // Fallback: match case-insensitive sur name#tag
     return players.find(pl=>(pl.name||'').toLowerCase()===nameLow&&(pl.tag||'').toLowerCase()===tagLow);
   }
 
-  // -- AGGREGATE STATS from last 10 matches --
-  if(matches&&matches.length){
-    const myMatches=matches.slice(0,10).map(m=>({
-      match:m,
-      me:findMe(m)
-    })).filter(x=>x.me);
-
-    // Global stats
-    let totalK=0,totalD=0,totalA=0,totalHS=0,totalShots=0,totalWins=0;
-    const agentMap={},mapCount={};
-    myMatches.forEach(({match:m,me})=>{
-      const won=m.teams?.[me.team?.toLowerCase()]?.has_won;
-      const k=me.stats?.kills||0,d=me.stats?.deaths||1,a=me.stats?.assists||0;
-      const hs=me.stats?.headshots||0,body=me.stats?.bodyshots||0,leg=me.stats?.legshots||0;
-      totalK+=k;totalD+=d;totalA+=a;totalHS+=hs;totalShots+=hs+body+leg;
-      if(won)totalWins++;
-      const ag=me.character||'?';
-      if(!agentMap[ag])agentMap[ag]={wins:0,games:0,kills:0,deaths:1,assists:0,img:me.assets?.agent?.small||''};
-      agentMap[ag].games++;if(won)agentMap[ag].wins++;
-      agentMap[ag].kills+=k;agentMap[ag].deaths+=d;agentMap[ag].assists+=a;
-      const map=m.metadata?.map||'?';
-      if(!mapCount[map])mapCount[map]={wins:0,games:0};
-      mapCount[map].games++;if(won)mapCount[map].wins++;
-    });
-    const hsPercent=totalShots>0?Math.round((totalHS/totalShots)*100):0;
-    const overallWR=myMatches.length>0?Math.round((totalWins/myMatches.length)*100):0;
-    const avgKDA=totalD>0?((totalK+totalA)/totalD).toFixed(2):'-';
-    const favAgent=Object.entries(agentMap).sort((a,b)=>b[1].games-a[1].games)[0];
-    const favMap=Object.entries(mapCount).sort((a,b)=>b[1].games-a[1].games)[0];
-
-    // Summary pills
-    html+=`<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px">
-      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 16px;flex:1;min-width:90px;text-align:center">
-        <div style="font-size:20px;font-weight:700;color:var(--accent)">${totalK}/${totalD}/${totalA}</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px">K / D / A (total)</div>
-      </div>
-      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 16px;flex:1;min-width:90px;text-align:center">
-        <div style="font-size:20px;font-weight:700;color:${hsPercent>=20?'var(--accent2)':'var(--accent4)'}">${hsPercent}%</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px">Headshot %</div>
-      </div>
-      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 16px;flex:1;min-width:90px;text-align:center">
-        <div style="font-size:20px;font-weight:700;color:${overallWR>=50?'var(--accent2)':'var(--accent3)'}">${overallWR}%</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px">Winrate (10 matches)</div>
-      </div>
-      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 16px;flex:1;min-width:90px;text-align:center">
-        <div style="font-size:20px;font-weight:700;color:var(--text)">${avgKDA}</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px">Avg KDA</div>
-      </div>
-    </div>`;
-
-    // Favourite agent + map
-    html+=`<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px">`;
-    if(favAgent){
-      const [ag,s]=favAgent;
-      const agWR=Math.round((s.wins/s.games)*100);
-      const agImg=s.img?`<img src="${s.img}" alt="${ag}" style="width:100%;height:100%;object-fit:cover;border-radius:8px" onerror="this.style.display='none'">`:ag[0];
-      html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;flex:1;min-width:160px;display:flex;align-items:center;gap:12px">
-        <div style="width:44px;height:44px;border-radius:10px;overflow:hidden;background:var(--surface3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px">${agImg}</div>
-        <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Favorite agent</div>
-        <div style="font-size:15px;font-weight:700">${ag}</div>
-        <div style="font-size:12px;color:var(--muted)">${s.games} matches . ${agWR}% WR</div></div>
-      </div>`;
-    }
-    if(favMap){
-      const [map,ms]=favMap;
-      const mapWR=Math.round((ms.wins/ms.games)*100);
-      html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;flex:1;min-width:160px;display:flex;align-items:center;gap:12px">
-        <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#a78bfa);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px">\uD83D\uDDFA\uFE0F</div>
-        <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Favorite map</div>
-        <div style="font-size:15px;font-weight:700">${map}</div>
-        <div style="font-size:12px;color:var(--muted)">${ms.games} matches . ${mapWR}% WR</div></div>
-      </div>`;
-    }
-    html+=`</div>`;
-
-    // -- VISUAL MATCH CARDS --
-    html+='<div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Last 10 matches</div>';
-    html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px">';
-    myMatches.forEach(({match:m,me})=>{
-      const won=m.teams?.[me.team?.toLowerCase()]?.has_won;
-      const k=me.stats?.kills||0,d=me.stats?.deaths||1,a=me.stats?.assists||0;
-      const hs=me.stats?.headshots||0,body=me.stats?.bodyshots||0,leg=me.stats?.legshots||0;
-      const shots=hs+body+leg;
-      const hsP=shots>0?Math.round((hs/shots)*100):0;
-      const kda=((k+a)/d).toFixed(2);
-      const agentName=me.character||'Unknown';
-      const agentImg=me.assets?.agent?.small;
-      const map=m.metadata?.map||'?';
-      // Score
-      const myTeam=me.team?.toLowerCase();
-      const theirTeam=myTeam==='red'?'blue':'red';
-      const myScore=m.teams?.[myTeam]?.rounds_won??'?';
-      const theirScore=m.teams?.[theirTeam]?.rounds_won??'?';
-      const winColor=won?'var(--accent2)':'var(--accent3)';
-      const winBorder=won?'rgba(93,224,176,0.15)':'rgba(247,106,106,0.15)';
-      html+=`<div style="background:var(--surface2);border:1px solid ${winBorder};border-left:3px solid ${winColor};border-radius:var(--radius-sm);padding:12px 14px;display:flex;flex-direction:column;gap:8px">
-        <div style="display:flex;align-items:center;gap:10px">
-          <div style="width:38px;height:38px;border-radius:8px;overflow:hidden;background:var(--surface3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px">
-            ${agentImg?`<img src="${agentImg}" alt="${agentName}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`:`${agentName[0]}`}
-          </div>
-          <div style="flex:1;min-width:0">
-            <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${agentName}</div>
-            <div style="font-size:11px;color:var(--muted)"> ${map}</div>
-          </div>
-          <span style="background:${won?'rgba(93,224,176,0.12)':'rgba(247,106,106,0.12)'};color:${winColor};font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;flex-shrink:0">${won?'WIN':'LOSS'}</span>
-        </div>
-        <div style="display:flex;gap:6px">
-          <div style="flex:1;background:var(--surface3);border-radius:6px;padding:6px 8px;text-align:center">
-            <div style="font-size:14px;font-weight:700">${k}/${d}/${a}</div>
-            <div style="font-size:10px;color:var(--muted)">KDA ${kda}</div>
-          </div>
-          <div style="flex:1;background:var(--surface3);border-radius:6px;padding:6px 8px;text-align:center">
-            <div style="font-size:14px;font-weight:700;color:${hsP>=20?'var(--accent2)':'var(--accent4)'}">${hsP}%</div>
-            <div style="font-size:10px;color:var(--muted)">Headshot</div>
-          </div>
-          <div style="flex:1;background:var(--surface3);border-radius:6px;padding:6px 8px;text-align:center">
-            <div style="font-size:14px;font-weight:700">${myScore} - ${theirScore}</div>
-            <div style="font-size:10px;color:var(--muted)">Score</div>
-          </div>
-        </div>
-      </div>`;
-    });
-    html+='</div>';
-
-    // -- TOP 3 AGENTS --
-    const top=Object.entries(agentMap).sort((a,b)=>b[1].games-a[1].games).slice(0,3);
-    if(top.length){
-      html+='<div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:18px 0 10px">Top agents</div>';
-      html+='<div class="top-agents">';
-      top.forEach(([ag,s])=>{
-        const wr=Math.round((s.wins/s.games)*100);
-        const kd=(s.kills/s.deaths).toFixed(2);
-        const img=s.img?`<img src="${s.img}" alt="${ag}" onerror="this.style.display='none'">`:ag[0];
-        html+=`<div class="agent-card"><div class="agent-card-img">${img}</div><div class="agent-card-name">${ag}</div><div class="agent-card-stats">${wr}% WR . K/D ${kd}</div></div>`;
-      });
-      html+='</div>';
-    }
+  if(!matches||!matches.length){
+    container.innerHTML=`<div class="game-not-connected" style="padding:20px">No matches found in ${mode} mode</div>`;
+    return;
   }
 
-  if(!html)html=`<div class="game-not-connected" style="padding:20px">No matches found en mode ${mode}</div>`;
+  // Build match data
+  const myMatches=matches.slice(0,20).map(m=>({match:m,me:findMe(m)})).filter(x=>x.me);
+  if(!myMatches.length){container.innerHTML=`<div class="game-not-connected">Could not find your stats in matches</div>`;return;}
+
+  // Aggregate stats
+  let totalK=0,totalD=0,totalA=0,totalHS=0,totalShots=0,totalWins=0,totalACS=0,totalFB=0,totalDmg=0;
+  const agentMap={},mapCount={};
+  let bestMatchKDA=0,bestMatch=null;
+
+  myMatches.forEach(({match:m,me})=>{
+    const won=m.teams?.[me.team?.toLowerCase()]?.has_won;
+    const k=me.stats?.kills||0,d=me.stats?.deaths||1,a=me.stats?.assists||0;
+    const hs=me.stats?.headshots||0,body=me.stats?.bodyshots||0,leg=me.stats?.legshots||0;
+    const acs=me.stats?.score?(me.stats.score/Math.max(1,(m.teams?.red?.rounds_won||0)+(m.teams?.blue?.rounds_won||0))):0;
+    const fb=me.stats?.firstbloods||0;
+    const dmg=me.damage_made||0;
+    totalK+=k;totalD+=d;totalA+=a;totalHS+=hs;totalShots+=hs+body+leg;
+    totalACS+=acs;totalFB+=fb;totalDmg+=dmg;
+    if(won)totalWins++;
+    const kda=(k+a)/d;
+    if(kda>bestMatchKDA){bestMatchKDA=kda;bestMatch={match:m,me,won,k,d,a,kda:kda.toFixed(2),acs:Math.round(acs)};}
+    const ag=me.character||'?';
+    if(!agentMap[ag])agentMap[ag]={wins:0,games:0,kills:0,deaths:1,assists:0,acs:0,img:me.assets?.agent?.small||''};
+    agentMap[ag].games++;if(won)agentMap[ag].wins++;
+    agentMap[ag].kills+=k;agentMap[ag].deaths+=d;agentMap[ag].assists+=a;agentMap[ag].acs+=acs;
+    const map=m.metadata?.map||'?';
+    if(!mapCount[map])mapCount[map]={wins:0,games:0};
+    mapCount[map].games++;if(won)mapCount[map].wins++;
+  });
+
+  const n=myMatches.length;
+  const hsP=totalShots>0?Math.round((totalHS/totalShots)*100):0;
+  const wr=n>0?Math.round((totalWins/n)*100):0;
+  const avgKDA=totalD>0?((totalK+totalA)/totalD).toFixed(2):'-';
+  const avgACS=n>0?Math.round(totalACS/n):0;
+  const avgFB=n>0?(totalFB/n).toFixed(1):0;
+  const favAgent=Object.entries(agentMap).sort((a,b)=>b[1].games-a[1].games)[0];
+  const favMap=Object.entries(mapCount).sort((a,b)=>b[1].games-a[1].games)[0];
+
+  // -- SUMMARY PILLS --
+  html+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-bottom:18px">`;
+  [
+    {label:'K/D/A',val:`${totalK}/${totalD}/${totalA}`,color:'var(--accent)'},
+    {label:'Avg KDA',val:avgKDA,color:'var(--text)'},
+    {label:'Avg ACS',val:avgACS,color:'var(--accent5)'},
+    {label:'Headshot %',val:hsP+'%',color:hsP>=20?'var(--accent2)':'var(--accent4)'},
+    {label:'Winrate',val:wr+'%',color:wr>=50?'var(--accent2)':'var(--accent3)'},
+    {label:'First Bloods',val:avgFB+'/g',color:'var(--accent4)'},
+  ].forEach(s=>html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 8px;text-align:center">
+    <div style="font-size:17px;font-weight:700;color:${s.color}">${s.val}</div>
+    <div style="font-size:10px;color:var(--muted);margin-top:2px">${s.label}</div>
+  </div>`);
+  html+=`</div>`;
+
+  // -- WINRATE GRAPH (last 10) --
+  const last10=myMatches.slice(0,10);
+  html+=`<div style="margin-bottom:18px">
+    <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Winrate (last 10 matches)</div>
+    <div style="display:flex;gap:3px;align-items:flex-end;height:36px">`;
+  last10.forEach(({match:m,me},i)=>{
+    const won=m.teams?.[me.team?.toLowerCase()]?.has_won;
+    const wins=last10.slice(0,i+1).filter(({match:mm,me:mme})=>mm.teams?.[mme.team?.toLowerCase()]?.has_won).length;
+    const pct=Math.round((wins/(i+1))*100);
+    html+=`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px" title="${won?'WIN':'LOSS'} · WR ${pct}%">
+      <div style="width:100%;height:28px;background:${won?'rgba(52,211,153,0.7)':'rgba(248,113,113,0.7)'};border-radius:3px 3px 0 0;min-height:4px"></div>
+      <div style="font-size:8px;color:var(--muted)">${pct}%</div>
+    </div>`;
+  });
+  html+=`</div></div>`;
+
+  // -- BEST MATCH --
+  if(bestMatch){
+    const bm=bestMatch;
+    const agImg=bm.me.assets?.agent?.small;
+    const map=bm.match.metadata?.map||'?';
+    html+=`<div style="margin-bottom:18px">
+      <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Best Match</div>
+      <div style="background:var(--surface2);border:1px solid rgba(251,191,36,.2);border-left:3px solid var(--accent4);border-radius:var(--radius-sm);padding:12px 16px;display:flex;align-items:center;gap:12px">
+        <div style="width:40px;height:40px;border-radius:9px;overflow:hidden;background:var(--surface3);flex-shrink:0;display:flex;align-items:center;justify-content:center">
+          ${agImg?`<img src="${agImg}" style="width:100%;height:100%;object-fit:cover">`:'🎮'}
+        </div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600">${bm.me.character} · ${map}</div>
+          <div style="font-size:12px;color:var(--muted)">${bm.k}/${bm.d}/${bm.a} · KDA ${bm.kda} · ACS ${bm.acs}</div>
+        </div>
+        <span style="background:rgba(251,191,36,.12);color:var(--accent4);font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px">⭐ BEST</span>
+      </div>
+    </div>`;
+  }
+
+  // -- FAVOURITE AGENT + MAP --
+  html+=`<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px">`;
+  if(favAgent){
+    const [ag,s]=favAgent;
+    const agWR=Math.round((s.wins/s.games)*100);
+    const agImg=s.img?`<img src="${s.img}" alt="${ag}" style="width:100%;height:100%;object-fit:cover;border-radius:8px" onerror="this.style.display='none'">`:ag[0];
+    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;flex:1;min-width:150px;display:flex;align-items:center;gap:12px">
+      <div style="width:44px;height:44px;border-radius:10px;overflow:hidden;background:var(--surface3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px">${agImg}</div>
+      <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Favorite Agent</div>
+      <div style="font-size:15px;font-weight:700">${ag}</div>
+      <div style="font-size:12px;color:var(--muted)">${s.games} matches · ${agWR}% WR</div></div>
+    </div>`;
+  }
+  if(favMap){
+    const [map,ms]=favMap;
+    const mapWR=Math.round((ms.wins/ms.games)*100);
+    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;flex:1;min-width:150px;display:flex;align-items:center;gap:12px">
+      <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#a78bfa);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px">\uD83D\uDDFA\uFE0F</div>
+      <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Favorite Map</div>
+      <div style="font-size:15px;font-weight:700">${map}</div>
+      <div style="font-size:12px;color:var(--muted)">${ms.games} matches · ${mapWR}% WR</div></div>
+    </div>`;
+  }
+  html+=`</div>`;
+
+  // -- MATCH CARDS (last 10, with MVP badge) --
+  html+=`<div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Last ${Math.min(n,10)} matches</div>`;
+  html+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-bottom:18px">`;
+  myMatches.slice(0,10).forEach(({match:m,me})=>{
+    const won=m.teams?.[me.team?.toLowerCase()]?.has_won;
+    const k=me.stats?.kills||0,d=me.stats?.deaths||1,a=me.stats?.assists||0;
+    const hs=me.stats?.headshots||0,body=me.stats?.bodyshots||0,leg=me.stats?.legshots||0;
+    const shots=hs+body+leg;
+    const hsP=shots>0?Math.round((hs/shots)*100):0;
+    const kda=((k+a)/d).toFixed(2);
+    const rounds=(m.teams?.red?.rounds_won||0)+(m.teams?.blue?.rounds_won||0);
+    const acs=rounds>0?Math.round((me.stats?.score||0)/rounds):0;
+    const fb=me.stats?.firstbloods||0;
+    const dmgMade=me.damage_made||0;
+    const dmgRec=me.damage_received||0;
+    const dmgDelta=dmgMade-dmgRec;
+    const agentName=me.character||'Unknown';
+    const agentImg=me.assets?.agent?.small;
+    const map=m.metadata?.map||'?';
+    const myTeam=me.team?.toLowerCase();
+    const theirTeam=myTeam==='red'?'blue':'red';
+    const myScore=m.teams?.[myTeam]?.rounds_won??'?';
+    const theirScore=m.teams?.[theirTeam]?.rounds_won??'?';
+    const winColor=won?'var(--accent2)':'var(--accent3)';
+    const winBorder=won?'rgba(52,211,153,0.15)':'rgba(248,113,113,0.15)';
+
+    // MVP detection
+    const allPlayers=m.players?.all_players||[];
+    const myTeamPlayers=allPlayers.filter(p=>p.team?.toLowerCase()===myTeam);
+    const allPlayersSorted=[...allPlayers].sort((a,b)=>(b.stats?.score||0)-(a.stats?.score||0));
+    const myTeamSorted=[...myTeamPlayers].sort((a,b)=>(b.stats?.score||0)-(a.stats?.score||0));
+    const isMVP=allPlayersSorted[0]?.puuid===me.puuid||(allPlayersSorted[0]?.name===me.name&&allPlayersSorted[0]?.tag===me.tag);
+    const isTeamMVP=!isMVP&&(myTeamSorted[0]?.puuid===me.puuid||(myTeamSorted[0]?.name===me.name&&myTeamSorted[0]?.tag===me.tag));
+
+    html+=`<div style="background:var(--surface2);border:1px solid ${winBorder};border-left:3px solid ${winColor};border-radius:var(--radius-sm);padding:12px 14px;display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:38px;height:38px;border-radius:8px;overflow:hidden;background:var(--surface3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px">
+          ${agentImg?`<img src="${agentImg}" alt="${agentName}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`:`${agentName[0]}`}
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${agentName}</div>
+          <div style="font-size:11px;color:var(--muted)">\uD83D\uDDFA\uFE0F ${map}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0">
+          <span style="background:${won?'rgba(52,211,153,0.12)':'rgba(248,113,113,0.12)'};color:${winColor};font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px">${won?'WIN':'LOSS'} ${myScore}-${theirScore}</span>
+          ${isMVP?`<span style="background:rgba(251,191,36,.15);color:var(--accent4);font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px">\uD83D\uDC51 MVP</span>`:''}
+          ${isTeamMVP?`<span style="background:rgba(167,139,250,.15);color:var(--accent5);font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px">\u2B50 TEAM MVP</span>`:''}
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px">
+        <div style="background:var(--surface3);border-radius:6px;padding:5px;text-align:center">
+          <div style="font-size:13px;font-weight:700">${k}/${d}/${a}</div>
+          <div style="font-size:9px;color:var(--muted)">K/D/A ${kda}</div>
+        </div>
+        <div style="background:var(--surface3);border-radius:6px;padding:5px;text-align:center">
+          <div style="font-size:13px;font-weight:700;color:var(--accent5)">${acs}</div>
+          <div style="font-size:9px;color:var(--muted)">ACS</div>
+        </div>
+        <div style="background:var(--surface3);border-radius:6px;padding:5px;text-align:center">
+          <div style="font-size:13px;font-weight:700;color:${hsP>=20?'var(--accent2)':'var(--accent4)'}">${hsP}%</div>
+          <div style="font-size:9px;color:var(--muted)">HS%</div>
+        </div>
+        <div style="background:var(--surface3);border-radius:6px;padding:5px;text-align:center">
+          <div style="font-size:13px;font-weight:700;color:${dmgDelta>=0?'var(--accent2)':'var(--accent3)'}">${dmgDelta>=0?'+':''}${dmgDelta||'—'}</div>
+          <div style="font-size:9px;color:var(--muted)">Dmg Δ</div>
+        </div>
+      </div>
+      ${fb>0?`<div style="font-size:11px;color:var(--accent4)">🩸 ${fb} first blood${fb>1?'s':''}</div>`:''}
+    </div>`;
+  });
+  html+=`</div>`;
+
+  // -- ALL AGENTS STATS --
+  const agentsSorted=Object.entries(agentMap).sort((a,b)=>b[1].games-a[1].games);
+  if(agentsSorted.length>1){
+    html+=`<div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Stats by Agent</div>`;
+    html+=`<div style="display:flex;flex-direction:column;gap:5px;margin-bottom:18px">`;
+    agentsSorted.forEach(([ag,s])=>{
+      const aWR=Math.round((s.wins/s.games)*100);
+      const aKD=(s.kills/s.deaths).toFixed(2);
+      const aACS=Math.round(s.acs/s.games);
+      const barW=Math.round((s.games/agentsSorted[0][1].games)*100);
+      html+=`<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surface2);border-radius:var(--radius-sm)">
+        <div style="width:32px;height:32px;border-radius:8px;overflow:hidden;background:var(--surface3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px">
+          ${s.img?`<img src="${s.img}" alt="${ag}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`:ag[0]}
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:12px;font-weight:600">${ag}</span>
+            <span style="font-size:11px;color:var(--muted)">${s.games}g · KD ${aKD} · ACS ${aACS}</span>
+          </div>
+          <div style="height:4px;background:var(--surface3);border-radius:99px;overflow:hidden">
+            <div style="height:100%;width:${barW}%;background:${aWR>=50?'var(--accent2)':'var(--accent3)'};border-radius:99px"></div>
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:${aWR>=50?'var(--accent2)':'var(--accent3)'};flex-shrink:0">${aWR}%</div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+
   container.innerHTML=html;
 }
 
@@ -5811,7 +6014,7 @@ window.addEventListener('resize',checkMobileLayout);
 //  IMPORT / EXPORT JSON
 // ===================================================
 function exportData(){
-  const data={profilees,exportedAt:new Date().toISOString(),version:2};
+  const data={profiles,exportedAt:new Date().toISOString(),version:2};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
@@ -5828,9 +6031,9 @@ function importData(e){
   reader.onload=async ev=>{
     try{
       const data=JSON.parse(ev.target.result);
-      if(!data.profilees||!Array.isArray(data.profilees))throw new Error('Invalid format');
+      if(!data.profiles||!Array.isArray(data.profiles))throw new Error('Invalid format');
       if(!confirm('This will replace ALL your current data. Continue?'))return;
-      profiles=data.profilees;
+      profiles=data.profiles;
       // Reassigner les _dbId existants pour eviter de creer des doublons
       if(_sbUser){
         const {data:existing}=await sb.from('dashboard_data').select('id').eq('user_id',_sbUser.id);

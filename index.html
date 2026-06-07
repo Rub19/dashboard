@@ -193,13 +193,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .btn::after{content:'';position:absolute;inset:0;background:#fff;opacity:0;transition:opacity .1s}
 .btn:active::after{opacity:.06}
 .btn:active{transform:scale(.96)!important}
-button:active:not(.btn):not(.nav-item):not(.pw-num){transform:scale(.95)!important;transition:transform .1s!important}
+button:active:not(.btn):not(.nav-item):not(.pw-num){opacity:.7;transition:opacity .1s!important}
 .pw-num:active{transform:scale(.9)!important}
-.nav-item:active{transform:translateX(3px)!important}
-.ps-profile:active .ps-avatar{transform:scale(.95)!important}
-.stat-card:active{transform:translateY(0)!important;box-shadow:none!important}
-.link-card:active{transform:translateY(0)!important}
-.item-row:active{transform:translateX(4px)!important}
+.nav-item:active{background:var(--accent-subtle)!important}
 .mob-nav-btn:active{transform:scale(.9)!important}
 .btn-primary{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 12px rgba(59,130,246,.3)}
 .btn-primary:hover{background:#2563eb;box-shadow:0 4px 20px rgba(59,130,246,.4);transform:translateY(-1px)}
@@ -435,8 +431,7 @@ button:active:not(.btn):not(.nav-item):not(.pw-num){transform:scale(.95)!importa
 .toast.success{border-left:3px solid var(--accent2)}
 .toast.error{border-left:3px solid var(--accent3)}
 .toast.info{border-left:3px solid var(--accent)}
-.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.1);transform:scale(0);animation:rippleAnim .5s cubic-bezier(.4,0,.2,1);pointer-events:none;z-index:9}
-@keyframes rippleAnim{to{transform:scale(3);opacity:0}}
+
 .tab-content{display:none}
 .tab-content.active{display:block}
 .empty-state{text-align:center;padding:32px 20px;color:var(--muted);font-size:13px}
@@ -783,7 +778,7 @@ button:active:not(.btn):not(.nav-item):not(.pw-num){transform:scale(.95)!importa
     <div id="auth-error" style="margin-top:12px;font-size:12px;color:var(--accent3);text-align:center;min-height:16px"></div>
     <div id="auth-loading" style="display:none;margin-top:12px;text-align:center;font-size:13px;color:var(--muted)">⏳ Loading…</div>
   </div>
-  <div style="position:fixed;bottom:18px;font-size:11px;color:var(--muted);font-family:var(--mono)">v2.6.0</div>
+  <div style="position:fixed;bottom:18px;font-size:11px;color:var(--muted);font-family:var(--mono)">v2.6.1</div>
 </div>
 
 <!-- PROFILE SELECT SCREEN -->
@@ -794,7 +789,7 @@ button:active:not(.btn):not(.nav-item):not(.pw-num){transform:scale(.95)!importa
   <div class="ps-profiles" id="ps-profiles-list"></div>
   <button class="ps-manage-btn" id="ps-manage-btn" onclick="toggleManageMode()">Manage profiles</button>
   <button onclick="doLogout()" style="margin-top:16px;background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:var(--font)">🚪 Sign out</button>
-  <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="View changelog">v2.6.0 · changelog</div>
+  <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="View changelog">v2.6.1 · changelog</div>
 </div>
 
 <!-- SIDEBAR -->
@@ -1721,7 +1716,8 @@ let _isAdmin=false;
 // -- AUTH UI --------------------------------------
 function showChangelog(){
   const versions=[
-    {v:'v2.6.0',date:'07/06/2026',changes:['Valorant: MVP & Team MVP badges on match cards','ACS (Average Combat Score) per match','First blood stats','Damage delta (dealt vs received)','Winrate graph on last 10 matches','Best match highlight (highest KDA)','Stats by agent (all played agents, WR%, KD, ACS)','Match history extended to 20 matches','Match date displayed on each card']},
+    {v:'v2.6.1',date:'07/06/2026',changes:['Fix animated background not saved after refresh','Fix sidebar config (order + hidden items) not persisted','Fix compact mode not restored on reload','Fix custom accent color not saved','All profile display preferences now saved to cloud']},
+    {v:'v2.6.0',date:'07/06/2026',changes:['Valorant: MVP & Team MVP badges on match cards','ACS (Average Combat Score) per match','First blood stats + damage delta','Winrate graph on last 10 matches','Best match highlight','Stats by agent (WR%, KD, ACS)','Match date on each card','History extended to 20 matches']},
     {v:'v2.5.2',date:'07/06/2026',changes:['Fix 30+ profilee typos in HTML+JS','Fix modal IDs (create-profile)','Fix Steam profileUrl broken link','Fix export/import profiles key','Null checks added in render functions']},
     {v:'v2.5.1',date:'07/06/2026',changes:['Fix sidebar flash on load','Fix weather + QOTD loading timing','Fix refresh buttons showing raw HTML entity code','Fix saveState() replaced by saveStateNow() everywhere','Fix avatar emojis in profile picker']},
     {v:'v2.5.0',date:'07/06/2026',changes:['Pomodoro: animated ring timer','3 mode tabs: Focus 25m / Short Break 5m / Long Break 15m','Session dots showing cycle (4 focus = long break)','Stats: today, total, focus time, day streak','Session history saved to cloud']},
@@ -1893,6 +1889,10 @@ async function loadCloudState(){
         avatarIdx:idx,
         password:s.password||null,
         themeIdx:s.themeIdx||0,
+        bgTheme:s.bgTheme||'none',
+        sidebarConfig:s.sidebarConfig||null,
+        sidebarCompact:s.sidebarCompact||false,
+        customAccent:s.customAccent||null,
         state:{
           items:s.items||[],
           todos:s.todos||[],
@@ -1940,7 +1940,7 @@ async function saveCloudState(){
     }
     const payload={
       user_id:_sbUser.id,
-      profile_name:p.name||"User",
+      profile_name:p.name||'User',
       state:{
         ...p.state,
         avatarEmoji:p.avatarEmoji,
@@ -1949,6 +1949,10 @@ async function saveCloudState(){
         avatarIdx:p.avatarIdx,
         password:p.password||null,
         themeIdx:p.themeIdx||0,
+        bgTheme:p.bgTheme||'none',
+        sidebarConfig:p.sidebarConfig||null,
+        sidebarCompact:p.sidebarCompact||false,
+        customAccent:p.customAccent||null,
       },
       updated_at:new Date().toISOString()
     };
@@ -3147,35 +3151,6 @@ document.getElementById('global-search').addEventListener('input',function(){
   if(match.length){toast('Found '+match.length+' item(s)','info');setTimeout(()=>{switchPage('files',null);document.getElementById('files-search').value=q;filterItems()},400)}
 });
 
-function ripple(e){
-  const el=e.currentTarget;
-  const rect=el.getBoundingClientRect();
-  // Don't add ripple if element is too large (causes line artifact)
-  if(rect.width>600||rect.height>200)return;
-  const r=document.createElement('span');
-  r.className='ripple';
-  const size=Math.max(rect.width,rect.height)*1.5;
-  r.style.cssText=`width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px;position:absolute;border-radius:50%;pointer-events:none;z-index:9;background:rgba(255,255,255,.1);transform:scale(0);animation:rippleAnim .45s cubic-bezier(.4,0,.2,1)`;
-  // Save and restore overflow
-  const prevOverflow=el.style.overflow;
-  const prevPos=el.style.position;
-  if(getComputedStyle(el).position==='static')el.style.position='relative';
-  el.style.overflow='hidden';
-  el.appendChild(r);
-  r.addEventListener('animationend',()=>{
-    r.remove();
-    el.style.overflow=prevOverflow||'';
-    if(!prevPos)el.style.position='';
-  });
-}
-
-document.addEventListener('click',e=>{
-  const el=e.target.closest('.btn,button:not([disabled]),.nav-item,.cat-tab,.settings-tab,.ps-add,.ps-manage-btn,.pw-num,.mob-nav-btn,.cmd-result,.panel-action,.avatar-opt,.theme-swatch');
-  if(!el)return;
-  if(el.tagName==='INPUT'||el.tagName==='SELECT'||el.tagName==='TEXTAREA')return;
-  if(el.disabled)return;
-  ripple({currentTarget:el,clientX:e.clientX,clientY:e.clientY});
-});
 
 // ===================================================
 //  CONNECTIONS - LOAD UI

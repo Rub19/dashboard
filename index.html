@@ -191,12 +191,23 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 /* ── BUTTONS ── */
 .btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;border:1px solid transparent;transition:all var(--transition);position:relative;overflow:hidden;white-space:nowrap}
 .btn::after{content:'';position:absolute;inset:0;background:#fff;opacity:0;transition:opacity .1s}
-.btn:active::after{opacity:.06}
-.btn:active{transform:scale(.96)!important}
-button:active:not(.btn):not(.nav-item):not(.pw-num){opacity:.7;transition:opacity .1s!important}
-.pw-num:active{transform:scale(.9)!important}
-.nav-item:active{background:var(--accent-subtle)!important}
-.mob-nav-btn:active{transform:scale(.9)!important}
+/* ── BUTTON ANIMATIONS ── */
+@keyframes btnPress{0%{transform:scale(1)}40%{transform:scale(.93)}100%{transform:scale(1)}}
+@keyframes btnPressLight{0%{transform:scale(1)}40%{transform:scale(.96)}100%{transform:scale(1)}}
+@keyframes navPress{0%{transform:translateX(0)}50%{transform:translateX(4px)}100%{transform:translateX(0)}}
+@keyframes pwPress{0%{transform:scale(1)}40%{transform:scale(.82)}100%{transform:scale(1)}}
+@keyframes cardPress{0%{transform:translateY(0)scale(1)}50%{transform:translateY(2px)scale(.99)}100%{transform:translateY(0)scale(1)}}
+
+.btn:active{animation:btnPressLight .18s ease!important}
+.btn-primary:active{animation:btnPress .18s ease!important;box-shadow:0 1px 4px rgba(59,130,246,.2)!important}
+.btn:active::after{opacity:.08}
+.pw-num:active{animation:pwPress .2s cubic-bezier(.34,1.56,.64,1)!important}
+.nav-item:active{animation:navPress .18s ease!important}
+.stat-card:active{animation:cardPress .18s ease!important}
+.link-card:active{animation:cardPress .15s ease!important}
+.avatar-opt:active{animation:btnPress .15s ease!important}
+.mob-nav-btn:active{animation:btnPress .15s ease!important}
+.cat-tab:active,.settings-tab:active{animation:btnPressLight .15s ease!important}
 .btn-primary{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 12px rgba(59,130,246,.3)}
 .btn-primary:hover{background:#2563eb;box-shadow:0 4px 20px rgba(59,130,246,.4);transform:translateY(-1px)}
 .btn-ghost{background:transparent;color:var(--muted);border-color:var(--border2)}
@@ -780,7 +791,7 @@ button:active:not(.btn):not(.nav-item):not(.pw-num){opacity:.7;transition:opacit
     <div id="auth-error" style="margin-top:12px;font-size:12px;color:var(--accent3);text-align:center;min-height:16px"></div>
     <div id="auth-loading" style="display:none;margin-top:12px;text-align:center;font-size:13px;color:var(--muted)">⏳ Loading…</div>
   </div>
-  <div style="position:fixed;bottom:18px;font-size:11px;color:var(--muted);font-family:var(--mono)">v2.6.1</div>
+  <div style="position:fixed;bottom:18px;font-size:11px;color:var(--muted);font-family:var(--mono)">v2.6.3</div>
 </div>
 
 <!-- PROFILE SELECT SCREEN -->
@@ -791,7 +802,7 @@ button:active:not(.btn):not(.nav-item):not(.pw-num){opacity:.7;transition:opacit
   <div class="ps-profiles" id="ps-profiles-list"></div>
   <button class="ps-manage-btn" id="ps-manage-btn" onclick="toggleManageMode()">Manage profiles</button>
   <button onclick="doLogout()" style="margin-top:16px;background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:var(--font)">🚪 Sign out</button>
-  <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="View changelog">v2.6.1 · changelog</div>
+  <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="View changelog">v2.6.3 · changelog</div>
 </div>
 
 <!-- SIDEBAR -->
@@ -1109,7 +1120,7 @@ button:active:not(.btn):not(.nav-item):not(.pw-num){opacity:.7;transition:opacit
 
   <!-- GAMING -->
   <div id="page-gaming" class="tab-content">
-    <div class="topbar"><div><div class="page-title">Gaming</div><div class="page-subtitle">Tes stats Valorant &amp; League of Legends en temps réel</div></div><div class="topbar-actions"><button class="btn btn-primary" onclick="refreshGamingStats()">↻ Refresh</button></div></div>
+    <div class="topbar"><div><div class="page-title">Gaming</div><div class="page-subtitle">Your Valorant &amp; League of Legends stats in real time</div></div><div class="topbar-actions"><button class="btn btn-primary" onclick="refreshGamingStats()">↻ Refresh</button></div></div>
 
     <!-- VALORANT -->
     <div class="game-card">
@@ -1740,6 +1751,8 @@ function safeThemeColor(value){
 // -- AUTH UI --------------------------------------
 function showChangelog(){
   const versions=[
+    {v:'v2.6.3',date:'07/06/2026',changes:['Fix bannerImg not saved to cloud','Fix pomoHistory not in defState (lost on new profile)','Fix defState now includes all fields (habits, kanban, events, pinned, manualBadges, countdown)','Greeting improved: Good night after 22h and before 5h','Gaming subtitle translated to English','All save/load fields verified and complete']},
+    {v:'v2.6.2',date:'07/06/2026',changes:['Pomodoro runs in background (tab switching safe)','Timer uses absolute end time via localStorage','Auto-resumes if page reloaded mid-session','Clean CSS keyframe animations on all buttons','Bounce effect on PIN numpad, slide on nav items']},
     {v:'v2.6.1',date:'07/06/2026',changes:['Fix animated background not saved after refresh','Fix sidebar config (order + hidden items) not persisted','Fix compact mode not restored on reload','Fix custom accent color not saved','All profile display preferences now saved to cloud']},
     {v:'v2.6.0',date:'07/06/2026',changes:['Valorant: MVP & Team MVP badges on match cards','ACS (Average Combat Score) per match','First blood stats + damage delta','Winrate graph on last 10 matches','Best match highlight','Stats by agent (WR%, KD, ACS)','Match date on each card','History extended to 20 matches']},
     {v:'v2.5.2',date:'07/06/2026',changes:['Fix 30+ profilee typos in HTML+JS','Fix modal IDs (create-profile)','Fix Steam profileUrl broken link','Fix export/import profiles key','Null checks added in render functions']},
@@ -1917,6 +1930,7 @@ async function loadCloudState(){
         sidebarConfig:s.sidebarConfig||null,
         sidebarCompact:s.sidebarCompact||false,
         customAccent:s.customAccent||null,
+        bannerImg:s.bannerImg||null,
         state:{
           items:s.items||[],
           todos:s.todos||[],
@@ -1930,6 +1944,7 @@ async function loadCloudState(){
           kanban:s.kanban||[],
           events:s.events||[],
           manualBadges:s.manualBadges||{},
+          pomoHistory:s.pomoHistory||[],
           banner:s.banner||null,
           themeIdx:s.themeIdx||0,
         }
@@ -1977,6 +1992,7 @@ async function saveCloudState(){
         sidebarConfig:p.sidebarConfig||null,
         sidebarCompact:p.sidebarCompact||false,
         customAccent:p.customAccent||null,
+        bannerImg:p.bannerImg||null,
       },
       updated_at:new Date().toISOString()
     };
@@ -2238,7 +2254,7 @@ async function saveStateNow(){
 }
 function getP(id){return profiles.find(p=>p.id===id)}
 function curP(){return getP(currentId)}
-function defState(name){return{items:[],todos:[],note:'',activity:[],username:name||'User',connections:{},gaming:{}}}
+function defState(name){return{items:[],todos:[],note:'',activity:[],username:name||'User',connections:{},gaming:{},habits:[],kanban:[],events:[],pinned:[],manualBadges:{},banner:null,countdown:null,pomoHistory:[]}}
 
 // ===================================================
 //  AVATAR HELPERS
@@ -2567,6 +2583,7 @@ function initDashboard(){
   if(adminBtn)adminBtn.style.display=_isAdmin?'flex':'none';
   updateStats();renderRecentItems();renderActivity();renderTodos();renderOverviewEvents();updateClock();
   pomoRemaining=POMO_MODES[0].duration;renderPomo();
+  setTimeout(restorePomoIfRunning,800);
   loadConnectionsUI();
   refreshDiscordSidebar();
   // Start Lanyard WebSocket for real-time updates
@@ -2775,7 +2792,8 @@ function updateClock(){
   const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const ds=days[n.getDay()]+', '+months[n.getMonth()]+' '+n.getDate();
   const dSub=document.getElementById('clock-date-sub');if(dSub)dSub.textContent=ds;
-  const greet=n.getHours()<12?'morning':n.getHours()<18?'afternoon':'evening';
+  const h24=n.getHours();
+  const greet=h24<5?'night':h24<12?'morning':h24<18?'afternoon':h24<22?'evening':'night';
   const gt=document.getElementById('greeting-time');if(gt)gt.textContent=greet;
   const gd=document.getElementById('greeting-date');if(gd)gd.textContent=ds+', '+h+':'+m+':'+s;
 }
@@ -5276,7 +5294,8 @@ function pomoSelectMode(idx){
 }
 
 function pomoReset(){
-  clearInterval(pomoInterval);pomoRunning=false;
+  clearInterval(pomoInterval);pomoRunning=false;pomoInterval=null;
+  localStorage.removeItem('pomo_end');
   pomoRemaining=POMO_MODES[pomoIdx].duration;
   renderPomo();
 }
@@ -5295,12 +5314,24 @@ function pomoSkip(){
 }
 
 function pomoToggle(){
-  if(pomoRunning){clearInterval(pomoInterval);pomoRunning=false;renderPomo();return;}
+  if(pomoRunning){
+    // Pause — save remaining time
+    clearInterval(pomoInterval);pomoRunning=false;
+    pomoInterval=null;
+    renderPomo();return;
+  }
   pomoRunning=true;
+  // Use absolute end time so tab switching doesn't break it
+  const endTime=Date.now()+(pomoRemaining*1000);
+  localStorage.setItem('pomo_end',endTime);
+  localStorage.setItem('pomo_idx',pomoIdx);
+  localStorage.setItem('pomo_count',pomoCount);
   pomoInterval=setInterval(()=>{
-    pomoRemaining--;
+    const remaining=Math.round((parseInt(localStorage.getItem('pomo_end')||endTime)-Date.now())/1000);
+    pomoRemaining=Math.max(0,remaining);
     if(pomoRemaining<=0){
-      clearInterval(pomoInterval);pomoRunning=false;
+      clearInterval(pomoInterval);pomoRunning=false;pomoInterval=null;
+      localStorage.removeItem('pomo_end');
       if(POMO_MODES[pomoIdx].label==='Focus'){
         pomoCount++;
         savePomoSession();
@@ -5315,8 +5346,26 @@ function pomoToggle(){
       pomoRemaining=POMO_MODES[pomoIdx].duration;
     }
     renderPomo();
-  },1000);
+  },500); // check every 500ms for accuracy
   renderPomo();
+}
+
+// Restore timer if page was reloaded while running
+function restorePomoIfRunning(){
+  const endTime=parseInt(localStorage.getItem('pomo_end')||0);
+  if(!endTime)return;
+  const remaining=Math.round((endTime-Date.now())/1000);
+  if(remaining>0){
+    pomoIdx=parseInt(localStorage.getItem('pomo_idx')||0);
+    pomoCount=parseInt(localStorage.getItem('pomo_count')||0);
+    pomoRemaining=remaining;
+    pomoRunning=false;
+    // Auto-resume
+    pomoToggle();
+    toast('⏱ Pomodoro resumed!','info');
+  } else {
+    localStorage.removeItem('pomo_end');
+  }
 }
 
 function savePomoSession(){

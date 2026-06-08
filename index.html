@@ -478,7 +478,19 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .profile-banner-role{font-size:12px;color:rgba(255,255,255,.7);margin-top:2px}
 .profile-banner-empty{background:linear-gradient(135deg,var(--accent-glow) 0%,rgba(93,224,176,.1) 100%)}
 
-@media(max-width:1100px){.stats-row{grid-template-columns:repeat(2,1fr)}.grid-2,.grid-3,.grid-widgets{grid-template-columns:1fr}.links-grid{grid-template-columns:1fr}.profile-banner{margin:-32px -20px 24px}}
+@media(max-width:1200px){
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .grid-widgets{grid-template-columns:repeat(2,1fr)}
+  .main{padding:24px 24px}
+}
+@media(max-width:1100px){
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .grid-2,.grid-3,.grid-widgets{grid-template-columns:1fr}
+  .links-grid{grid-template-columns:1fr}
+  .profile-banner{margin:-32px -20px 24px}
+  .main{padding:20px 20px}
+  .topbar{margin-bottom:20px}
+}
 
 
 /* ── RESIZABLE SIDEBAR ── */
@@ -637,67 +649,42 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .hamburger:hover{background:var(--surface2)}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;backdrop-filter:blur(2px)}
 @media(max-width:768px){
-  /* ── SIDEBAR ── */
   .hamburger{display:flex;align-items:center;justify-content:center}
   .sidebar{transform:translateX(-100%);transition:transform .25s cubic-bezier(.4,0,.2,1);z-index:200;width:min(260px,85vw)!important;overflow-y:auto;overflow-x:hidden}
   .sidebar.mobile-open{transform:translateX(0)}
   .sidebar-overlay.mobile-open{display:block}
   .resize-handle{display:none}
-
-  /* ── MAIN CONTENT ── */
   .main{margin-left:0!important;padding:16px;padding-top:60px;padding-bottom:80px}
   .topbar{flex-wrap:wrap;gap:8px;padding:12px 16px}
   .topbar-actions{flex-wrap:wrap;gap:6px}
   .page-title{font-size:20px!important}
-
-  /* ── AUTH SCREEN ── */
   #auth-screen{padding:16px}
   #auth-box{max-width:100%!important}
-
-  /* ── PROFILE SCREEN ── */
-  #profile-screen .ps-profiles{gap:12px!important}
-  #profile-screen .ps-profile .ps-avatar{width:72px!important;height:72px!important}
-
-  /* ── GRIDS ── */
-  .stats-row{grid-template-columns:repeat(2,1fr)!important}
+  .ps-profiles{gap:12px!important}
+  .ps-profile .ps-avatar{width:72px!important;height:72px!important}
+  .stats-row{grid-template-columns:1fr 1fr!important}
   .grid-2,.grid-3,.grid-widgets{grid-template-columns:1fr!important}
   .kanban-board{grid-template-columns:1fr!important}
   .top-agents{grid-template-columns:repeat(2,1fr)!important}
   .links-grid{grid-template-columns:1fr!important}
   .profile-banner{margin:-16px -16px 20px}
-
-  /* ── GAMING ── */
   .rank-display{flex-wrap:wrap;gap:8px}
-  #valo-stats-area .match-cards,
-  #valo-stats-area [style*="grid-template-columns"]{grid-template-columns:1fr!important}
-  #valo-stats-area [style*="minmax(280px"]{grid-template-columns:1fr!important}
   .game-card-body .modal-field input{font-size:14px}
-
-  /* ── PANELS ── */
   .panel{padding:14px}
   .conn-header{flex-wrap:wrap;gap:8px}
   .conn-card{padding:14px}
   .modal{max-width:calc(100vw - 32px)!important;max-height:90vh!important;overflow-y:auto}
   .modal-overlay{padding:16px}
-
-  /* ── SETTINGS ── */
   .settings-tabs{flex-wrap:wrap}
   .settings-tab{flex:1;min-width:80px;font-size:12px;padding:7px 10px}
-
-  /* ── VALO TABS ── */
-  #valo-stats-area > div:first-child{flex-wrap:wrap}
-  #valo-stats-area button[id^="valo-tab"]{font-size:12px!important;padding:5px 12px!important}
-
-  /* ── ADMIN PANEL ── */
-  #admin-panel-overlay .modal-field,
-  #admin-panel-overlay [style*="max-width:860px"]{max-width:calc(100vw - 32px)!important}
-
-  /* ── COMPARE ── */
-  #compare-results [style*="grid-template-columns:1fr 80px 1fr"]{grid-template-columns:1fr 60px 1fr!important}
-  #compare-results [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
-
-  /* ── BOTTOM NAV ── */
+  .pomo-display{padding:0 8px}
   .mobile-bottom-nav{display:flex!important}
+  /* Pomodoro responsive */
+  .pomo-btns{gap:8px}
+  /* Weather responsive */
+  #weather-widget [style*="display:flex"]{flex-wrap:wrap}
+  /* Compare responsive */
+  #compare-results [style*="grid-template-columns:1fr 80px 1fr"]{grid-template-columns:1fr 50px 1fr!important}
 }
 
 @media(max-width:480px){
@@ -791,7 +778,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <div id="auth-error" style="margin-top:12px;font-size:12px;color:var(--accent3);text-align:center;min-height:16px"></div>
     <div id="auth-loading" style="display:none;margin-top:12px;text-align:center;font-size:13px;color:var(--muted)">⏳ Loading…</div>
   </div>
-  <div style="position:fixed;bottom:18px;font-size:11px;color:var(--muted);font-family:var(--mono)">v2.6.3</div>
+  <div style="position:fixed;bottom:18px;font-size:11px;color:var(--muted);font-family:var(--mono)">v2.6.4</div>
 </div>
 
 <!-- PROFILE SELECT SCREEN -->
@@ -802,7 +789,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   <div class="ps-profiles" id="ps-profiles-list"></div>
   <button class="ps-manage-btn" id="ps-manage-btn" onclick="toggleManageMode()">Manage profiles</button>
   <button onclick="doLogout()" style="margin-top:16px;background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:var(--font)">🚪 Sign out</button>
-  <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="View changelog">v2.6.3 · changelog</div>
+  <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="View changelog">v2.6.4 · changelog</div>
 </div>
 
 <!-- SIDEBAR -->
@@ -1751,6 +1738,7 @@ function safeThemeColor(value){
 // -- AUTH UI --------------------------------------
 function showChangelog(){
   const versions=[
+    {v:'v2.6.4',date:'07/06/2026',changes:['Fix Pomodoro stats using UTC instead of local timezone','Fix Today count and streak now accurate in any timezone','Fix Focus time shows decimals (1.5h instead of 1h)','Responsive: new 1200px breakpoint for large tablets','Responsive: improved 768px layout for mobile']},
     {v:'v2.6.3',date:'07/06/2026',changes:['Fix bannerImg not saved to cloud','Fix pomoHistory not in defState (lost on new profile)','Fix defState now includes all fields (habits, kanban, events, pinned, manualBadges, countdown)','Greeting improved: Good night after 22h and before 5h','Gaming subtitle translated to English','All save/load fields verified and complete']},
     {v:'v2.6.2',date:'07/06/2026',changes:['Pomodoro runs in background (tab switching safe)','Timer uses absolute end time via localStorage','Auto-resumes if page reloaded mid-session','Clean CSS keyframe animations on all buttons','Bounce effect on PIN numpad, slide on nav items']},
     {v:'v2.6.1',date:'07/06/2026',changes:['Fix animated background not saved after refresh','Fix sidebar config (order + hidden items) not persisted','Fix compact mode not restored on reload','Fix custom accent color not saved','All profile display preferences now saved to cloud']},
@@ -5431,9 +5419,15 @@ function renderPomoStats(){
   const p=curP();
   const container=document.getElementById('pomo-today-stats');
   if(!container)return;
+  // Ensure pomoHistory exists
+  if(!p?.state?.pomoHistory)if(p?.state)p.state.pomoHistory=[];
   const history=p?.state?.pomoHistory||[];
-  const today=new Date().toISOString().slice(0,10);
-  const todaySessions=history.filter(s=>s.ts.startsWith(today)).length;
+  const todayLocal=new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD in local time
+  const todaySessions=history.filter(s=>{
+    if(!s.ts)return false;
+    const d=new Date(s.ts);
+    return d.toLocaleDateString('en-CA')===todayLocal;
+  }).length;
   const totalSessions=history.length;
   const totalMins=Math.round(history.reduce((s,h)=>s+(h.duration||1500),0)/60);
   const streak=getPomoDayStreak(history);
@@ -5441,7 +5435,7 @@ function renderPomoStats(){
   container.innerHTML=[
     {label:'Today',val:todaySessions+'🍅',color:'var(--accent3)'},
     {label:'Total',val:totalSessions,color:'var(--text)'},
-    {label:'Focus time',val:totalMins>=60?Math.round(totalMins/60)+'h':totalMins+'m',color:'var(--accent2)'},
+    {label:'Focus time',val:totalMins>=60?(totalMins/60).toFixed(1)+'h':totalMins+'m',color:'var(--accent2)'},
     {label:'Day streak',val:streak+'🔥',color:'var(--accent4)'},
   ].map(s=>`<div style="flex:1;text-align:center;background:var(--surface2);border-radius:var(--radius-sm);padding:7px 4px">
     <div style="font-size:15px;font-weight:700;color:${s.color}">${s.val}</div>
@@ -5451,12 +5445,18 @@ function renderPomoStats(){
 
 function getPomoDayStreak(history){
   if(!history.length)return 0;
-  const days=new Set(history.map(s=>s.ts.slice(0,10)));
-  let streak=0,d=new Date();
+  // Use local date to avoid UTC timezone issues
+  const days=new Set(history.map(s=>{
+    if(!s.ts)return null;
+    return new Date(s.ts).toLocaleDateString('en-CA');
+  }).filter(Boolean));
+  let streak=0;
+  const d=new Date();
   while(true){
-    const ds=d.toISOString().slice(0,10);
+    const ds=d.toLocaleDateString('en-CA');
     if(!days.has(ds))break;
-    streak++;d.setDate(d.getDate()-1);
+    streak++;
+    d.setDate(d.getDate()-1);
   }
   return streak;
 }

@@ -739,57 +739,110 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 <!-- AUTH SCREEN -->
 <canvas id="bg-canvas" style="position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 1s ease"></canvas>
 
-<div id="auth-screen" style="position:fixed;inset:0;z-index:10002;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;animation:fadeIn .4s ease">
-  <div class="ps-logo"><div class="ps-logo-icon">⚡</div>MySpace</div>
-  <div id="auth-box" style="width:100%;max-width:380px;padding:0 20px">
-    <!-- Tabs -->
-    <div style="display:flex;gap:0;margin-bottom:28px;background:var(--surface2);border-radius:var(--radius-sm);padding:4px">
-      <button id="tab-login" onclick="switchAuthTab('login')" style="flex:1;padding:8px;border:none;border-radius:6px;background:var(--accent);color:#fff;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer">Login</button>
-      <button id="tab-register" onclick="switchAuthTab('register')" style="flex:1;padding:8px;border:none;border-radius:6px;background:transparent;color:var(--muted);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer">Sign up</button>
+<div id="auth-screen" style="position:fixed;inset:0;z-index:10002;background:var(--bg);display:flex;align-items:center;justify-content:center;animation:fadeIn .5s ease;overflow:hidden">
+
+  <!-- Background glow blobs -->
+  <div style="position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.08),transparent 70%);top:-100px;right:-100px;pointer-events:none"></div>
+  <div style="position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.06),transparent 70%);bottom:-80px;left:-80px;pointer-events:none"></div>
+
+  <div style="width:100%;max-width:400px;padding:24px;position:relative;z-index:1">
+
+    <!-- Logo -->
+    <div style="text-align:center;margin-bottom:40px">
+      <div style="width:56px;height:56px;background:linear-gradient(135deg,var(--accent),var(--accent5));border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 16px;box-shadow:0 8px 32px rgba(59,130,246,.3)">⚡</div>
+      <div style="font-size:24px;font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,var(--text),var(--accent-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">MySpace</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:6px">Your personal dashboard</div>
     </div>
-    <!-- Login form -->
-    <div id="form-login">
-      <div style="margin-bottom:12px">
-        <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">EMAIL OR USERNAME</div>
-        <input id="auth-login-id" type="text" placeholder="email@example.com ou username" class="modal-input" style="width:100%">
+
+    <!-- Card -->
+    <div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.4)">
+
+      <!-- Tabs -->
+      <div style="display:flex;gap:0;margin-bottom:24px;background:var(--surface2);border-radius:var(--radius-sm);padding:3px;border:1px solid var(--border)">
+        <button id="tab-login" onclick="switchAuthTab('login')" style="flex:1;padding:8px;border:none;border-radius:6px;background:var(--accent);color:#fff;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(59,130,246,.3)">Sign in</button>
+        <button id="tab-register" onclick="switchAuthTab('register')" style="flex:1;padding:8px;border:none;border-radius:6px;background:transparent;color:var(--muted);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s">Create account</button>
       </div>
-      <div style="margin-bottom:20px">
-        <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">PASSWORD</div>
-        <input id="auth-login-pw" type="password" placeholder="••••••••" class="modal-input" style="width:100%">
+
+      <!-- Login form -->
+      <div id="form-login">
+        <div style="margin-bottom:14px">
+          <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:7px;text-transform:uppercase">Email or Username</div>
+          <input id="auth-login-id" type="text" placeholder="you@example.com" class="modal-input" style="width:100%" onkeydown="if(event.key==='Enter')document.getElementById('auth-login-pw').focus()">
+        </div>
+        <div style="margin-bottom:20px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
+            <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase">Password</div>
+          </div>
+          <div style="position:relative">
+            <input id="auth-login-pw" type="password" placeholder="••••••••" class="modal-input" style="width:100%;padding-right:44px" onkeydown="if(event.key==='Enter')doLogin()">
+            <button onclick="togglePwVis('auth-login-pw',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0">👁</button>
+          </div>
+        </div>
+        <button onclick="doLogin()" style="width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(59,130,246,.3);letter-spacing:.3px">Sign in →</button>
       </div>
-      <button onclick="doLogin()" style="width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer">Sign in</button>
+
+      <!-- Register form -->
+      <div id="form-register" style="display:none">
+        <div style="margin-bottom:14px">
+          <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:7px;text-transform:uppercase">Username</div>
+          <input id="auth-reg-username" type="text" placeholder="Choose a username" class="modal-input" style="width:100%" onkeydown="if(event.key==='Enter')document.getElementById('auth-reg-email').focus()">
+        </div>
+        <div style="margin-bottom:14px">
+          <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:7px;text-transform:uppercase">Email <span style="color:var(--muted2);font-weight:400">(optional)</span></div>
+          <input id="auth-reg-email" type="email" placeholder="email@example.com" class="modal-input" style="width:100%" onkeydown="if(event.key==='Enter')document.getElementById('auth-reg-pw').focus()">
+        </div>
+        <div style="margin-bottom:20px">
+          <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:7px;text-transform:uppercase">Password</div>
+          <div style="position:relative">
+            <input id="auth-reg-pw" type="password" placeholder="Min. 6 characters" class="modal-input" style="width:100%;padding-right:44px" onkeydown="if(event.key==='Enter')doRegister()">
+            <button onclick="togglePwVis('auth-reg-pw',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0">👁</button>
+          </div>
+        </div>
+        <button onclick="doRegister()" style="width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(59,130,246,.3);letter-spacing:.3px">Create account →</button>
+      </div>
+
+      <!-- Error / Loading -->
+      <div id="auth-error" style="margin-top:12px;font-size:12px;color:var(--accent3);text-align:center;min-height:18px"></div>
+      <div id="auth-loading" style="display:none;margin-top:12px;text-align:center;font-size:13px;color:var(--muted)">
+        <span style="animation:pulse 1.5s infinite;display:inline-block">⏳</span> Loading…
+      </div>
     </div>
-    <!-- Register form -->
-    <div id="form-register" style="display:none">
-      <div style="margin-bottom:12px">
-        <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">USERNAME</div>
-        <input id="auth-reg-username" type="text" placeholder="Ton username" class="modal-input" style="width:100%">
-      </div>
-      <div style="margin-bottom:12px">
-        <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">EMAIL (optional)</div>
-        <input id="auth-reg-email" type="email" placeholder="email@example.com" class="modal-input" style="width:100%">
-      </div>
-      <div style="margin-bottom:20px">
-        <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:6px">PASSWORD</div>
-        <input id="auth-reg-pw" type="password" placeholder="••••••••" class="modal-input" style="width:100%">
-      </div>
-      <button onclick="doRegister()" style="width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer">Create account</button>
-    </div>
-    <div id="auth-error" style="margin-top:12px;font-size:12px;color:var(--accent3);text-align:center;min-height:16px"></div>
-    <div id="auth-loading" style="display:none;margin-top:12px;text-align:center;font-size:13px;color:var(--muted)">⏳ Loading…</div>
+
+    <!-- Version -->
+    <div style="text-align:center;margin-top:20px;font-size:11px;color:var(--muted2);font-family:var(--mono)">v2.9.0</div>
   </div>
-  <div style="position:fixed;bottom:18px;font-size:11px;color:var(--muted);font-family:var(--mono)">v2.6.4</div>
 </div>
 
 <!-- PROFILE SELECT SCREEN -->
 <div id="profile-screen" style="display:none">
-  <div class="ps-logo"><div class="ps-logo-icon">&#9889;</div>MySpace</div>
-  <div class="ps-title">Who's using?</div>
-  <div class="ps-sub">Select your profile to continue</div>
-  <div class="ps-profiles" id="ps-profiles-list"></div>
-  <button class="ps-manage-btn" id="ps-manage-btn" onclick="toggleManageMode()">Manage profiles</button>
-  <button onclick="doLogout()" style="margin-top:16px;background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:var(--font)">🚪 Sign out</button>
-  <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="View changelog">v2.6.4 · changelog</div>
+  <!-- Background blobs -->
+  <div style="position:fixed;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.06),transparent 70%);top:-150px;right:-150px;pointer-events:none;z-index:0"></div>
+  <div style="position:fixed;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.05),transparent 70%);bottom:-100px;left:-100px;pointer-events:none;z-index:0"></div>
+
+  <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px">
+
+    <!-- Logo -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:48px">
+      <div class="ps-logo-icon" style="width:34px;height:34px;font-size:18px">⚡</div>
+      <span style="font-size:16px;font-weight:700;letter-spacing:-.4px;background:linear-gradient(135deg,var(--text),var(--accent-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">MySpace</span>
+    </div>
+
+    <!-- Title -->
+    <div style="font-size:30px;font-weight:800;letter-spacing:-1px;text-align:center;margin-bottom:8px">Who's using?</div>
+    <div style="font-size:14px;color:var(--muted);margin-bottom:48px;text-align:center">Select your profile to continue</div>
+
+    <!-- Profiles -->
+    <div class="ps-profiles" id="ps-profiles-list"></div>
+
+    <!-- Actions -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:40px">
+      <button class="ps-manage-btn" id="ps-manage-btn" onclick="toggleManageMode()">⚙ Manage profiles</button>
+      <button onclick="doLogout()" style="background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:var(--font);padding:6px 16px;border-radius:6px;transition:color .2s" onmouseover="this.style.color='var(--accent3)'" onmouseout="this.style.color='var(--muted)'">🚪 Sign out</button>
+    </div>
+
+    <!-- Version -->
+    <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="View changelog">v2.9.0 · changelog</div>
+  </div>
 </div>
 
 <!-- SIDEBAR -->
@@ -877,9 +930,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
       <div class="profile-banner-gradient"></div>
       <div class="profile-banner-info">
         <div class="profile-banner-avatar" id="profile-banner-avatar"></div>
-        <div>
+        <div style="flex:1;min-width:0">
           <div class="profile-banner-name" id="profile-banner-name">User</div>
-          <div class="profile-banner-role">Personal dashboard</div>
+          <div class="profile-banner-role" id="profile-banner-bio-el">Personal dashboard</div>
+          <div id="profile-banner-socials" style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap"></div>
+        </div>
+        <div id="profile-banner-level" style="flex-shrink:0;display:none;background:rgba(0,0,0,.35);backdrop-filter:blur(8px);border-radius:10px;padding:6px 12px;text-align:center;border:1px solid rgba(255,255,255,.1)">
+          <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:1px">LEVEL</div>
+          <div id="profile-banner-level-num" style="font-size:22px;font-weight:800;color:#fff;line-height:1.1"></div>
         </div>
       </div>
     </div>
@@ -1001,10 +1059,67 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
   <!-- NOTES -->
   <div id="page-notes" class="tab-content">
-    <div class="topbar"><div><div class="page-title">Notes</div><div class="page-subtitle">Your personal notes &#8212; auto-saved</div></div></div>
-    <div class="panel">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><span style="font-size:12px;color:var(--muted)" id="note-saved-status">Auto-saved</span><button class="btn btn-ghost" onclick="clearNote()" style="font-size:12px;padding:6px 12px">Clear</button></div>
-      <textarea class="note-area" id="main-note" placeholder="Start typing your notes here..." style="min-height:400px" oninput="saveNote()"></textarea>
+    <div class="topbar">
+      <div><div class="page-title">Notes</div><div class="page-subtitle">Multiple notes — markdown support — auto-saved</div></div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost" id="note-preview-btn" onclick="toggleNotePreview()" style="font-size:12px">👁 Preview</button>
+        <button class="btn btn-primary" onclick="newNote()"><span>+</span> New note</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:16px;align-items:flex-start">
+      <!-- Notes list sidebar -->
+      <div id="notes-sidebar" style="width:220px;flex-shrink:0;display:flex;flex-direction:column;gap:6px">
+        <div id="notes-list-panel" style="display:flex;flex-direction:column;gap:4px"></div>
+      </div>
+      <!-- Editor -->
+      <div style="flex:1;min-width:0">
+        <div class="panel" id="note-editor-panel">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+            <input id="note-title-input" type="text" class="modal-input" placeholder="Note title..." style="flex:1;font-size:15px;font-weight:600;background:transparent;border:none;border-bottom:1.5px solid var(--border2);border-radius:0;padding:4px 0" oninput="updateNoteTitle(this.value)">
+            <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
+              <select id="note-color-pick" onchange="updateNoteColor(this.value)" style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-size:12px;padding:4px 8px;cursor:pointer;font-family:var(--font)">
+                <option value="">🎨 Color</option>
+                <option value="#3b82f6">🔵 Blue</option>
+                <option value="#34d399">🟢 Green</option>
+                <option value="#f87171">🔴 Red</option>
+                <option value="#fbbf24">🟡 Yellow</option>
+                <option value="#a78bfa">🟣 Purple</option>
+                <option value="#f97316">🟠 Orange</option>
+              </select>
+              <span style="font-size:11px;color:var(--muted)" id="note-saved-status">Auto-saved</span>
+              <button class="btn btn-ghost" onclick="pinNote()" id="note-pin-btn" style="padding:4px 8px;font-size:13px" title="Pin">📌</button>
+              <button class="btn btn-danger" onclick="deleteCurrentNote()" style="padding:4px 8px;font-size:12px">🗑 Delete</button>
+            </div>
+          </div>
+          <!-- Markdown toolbar -->
+          <div id="note-toolbar" style="display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap">
+            <button onclick="noteFormat('**','**')" title="Bold" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:3px 8px;cursor:pointer;font-weight:700;font-size:13px">B</button>
+            <button onclick="noteFormat('*','*')" title="Italic" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:3px 8px;cursor:pointer;font-style:italic;font-size:13px">I</button>
+            <button onclick="noteFormat('`','`')" title="Code" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--accent2);padding:3px 8px;cursor:pointer;font-family:var(--mono);font-size:12px">&lt;/&gt;</button>
+            <button onclick="noteInsert('## ')" title="Heading" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:3px 8px;cursor:pointer;font-size:13px">H</button>
+            <button onclick="noteInsert('- ')" title="List" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:3px 8px;cursor:pointer;font-size:13px">• List</button>
+            <button onclick="noteInsert('- [ ] ')" title="Todo" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:3px 8px;cursor:pointer;font-size:12px">☑ Todo</button>
+            <button onclick="noteInsert('---\n')" title="Divider" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--muted);padding:3px 8px;cursor:pointer;font-size:12px">—</button>
+            <button onclick="copyNote()" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--muted);padding:3px 8px;cursor:pointer;font-size:12px;margin-left:auto">📋 Copy</button>
+          </div>
+          <div id="note-editor-wrap" style="position:relative">
+            <textarea class="note-area" id="main-note" placeholder="Start typing your note here...&#10;&#10;Supports markdown: **bold**, *italic*, `code`, ## heading, - list" style="min-height:420px;font-size:14px;line-height:1.7" oninput="saveNote()"></textarea>
+            <div id="note-preview-area" style="display:none;min-height:420px;padding:12px;font-size:14px;line-height:1.7;color:var(--text);overflow-y:auto"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+            <span id="note-char-count" style="font-size:11px;color:var(--muted)">0 chars</span>
+            <span id="note-word-count" style="font-size:11px;color:var(--muted)">0 words</span>
+          </div>
+        </div>
+        <div id="note-empty-state" style="display:none" class="panel">
+          <div class="empty-state" style="padding:40px">
+            <div style="font-size:40px;margin-bottom:12px">📝</div>
+            <div style="font-size:16px;font-weight:600;margin-bottom:8px">No note selected</div>
+            <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Select a note from the list or create a new one</div>
+            <button class="btn btn-primary" onclick="newNote()">+ New note</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1384,13 +1499,65 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     </div>
 
     <!-- profile tab -->
-    <div id="settings-profilee" style="max-width:500px">
+    <div id="settings-profilee" style="max-width:520px">
       <div class="panel">
-        <div class="panel-header" style="margin-bottom:20px"><div class="panel-title">Profile info</div></div>
+        <div class="panel-header" style="margin-bottom:20px"><div class="panel-title">✨ Profile</div></div>
+
+        <!-- XP / Level widget -->
+        <div id="profile-xp-widget" style="background:var(--surface2);border:1px solid var(--border3);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:20px;display:flex;align-items:center;gap:14px">
+          <div id="profile-level-badge" style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent5));display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;box-shadow:var(--glow-blue)">
+            <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,.7);letter-spacing:1px">LVL</div>
+            <div id="profile-level-num" style="font-size:18px;font-weight:800;color:#fff;line-height:1">1</div>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+              <div style="font-size:13px;font-weight:600" id="profile-xp-label">0 XP</div>
+              <div style="font-size:11px;color:var(--muted)" id="profile-xp-next">Next: 100 XP</div>
+            </div>
+            <div style="height:5px;background:var(--surface3);border-radius:99px;overflow:hidden">
+              <div id="profile-xp-bar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent5));border-radius:99px;transition:width .5s ease"></div>
+            </div>
+            <div style="font-size:11px;color:var(--muted);margin-top:5px" id="profile-xp-breakdown"></div>
+          </div>
+        </div>
+
+        <!-- Quick stats -->
+        <div id="profile-quick-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px"></div>
+
         <div class="modal-field">
           <div class="modal-label">DISPLAY NAME</div>
           <input type="text" class="modal-input" id="settings-name" placeholder="Your name" oninput="updateCurrentProfileName()">
         </div>
+
+        <!-- Bio -->
+        <div class="modal-field" style="margin-top:14px">
+          <div class="modal-label">BIO</div>
+          <textarea class="modal-input" id="settings-bio" placeholder="A short description about you..." style="height:70px;resize:vertical;font-family:var(--font)" oninput="updateProfileBio(this.value)"></textarea>
+        </div>
+
+        <!-- Social links -->
+        <div class="modal-field" style="margin-top:14px">
+          <div class="modal-label">SOCIAL LINKS</div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:16px;width:24px;text-align:center">🐦</span>
+              <input type="text" class="modal-input" id="social-twitter" placeholder="@username" style="flex:1" oninput="updateSocialLink('twitter',this.value)">
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:16px;width:24px;text-align:center">💻</span>
+              <input type="text" class="modal-input" id="social-github" placeholder="github.com/username" style="flex:1" oninput="updateSocialLink('github',this.value)">
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:16px;width:24px;text-align:center">🌐</span>
+              <input type="text" class="modal-input" id="social-website" placeholder="yoursite.com" style="flex:1" oninput="updateSocialLink('website',this.value)">
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:16px;width:24px;text-align:center">📸</span>
+              <input type="text" class="modal-input" id="social-instagram" placeholder="@username" style="flex:1" oninput="updateSocialLink('instagram',this.value)">
+            </div>
+          </div>
+        </div>
+
         <div class="divider"></div>
         <div class="modal-field" style="margin-top:14px">
           <div class="modal-label">AVATAR</div>
@@ -1415,7 +1582,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
         <div class="modal-field" style="margin-top:14px">
           <div class="modal-label">ANIMATED BACKGROUND</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px" id="bg-theme-btns">
-            <!-- filled by JS -->
           </div>
         </div>
         <div class="divider"></div>
@@ -1531,13 +1697,59 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
 <!-- MODALS -->
 <div class="modal-overlay" id="modal-add-item" onclick="closeModalIfOverlay(event,'add-item')">
-  <div class="modal">
-    <div class="modal-title">&#10024; Add new item</div>
-    <div class="modal-field"><div class="modal-label">TYPE</div><select class="modal-select" id="item-type" onchange="toggleItemTypeFields()"><option value="file">&#128196; File / Document</option><option value="link">&#128279; Link / Bookmark</option><option value="image">&#128444; Image</option><option value="folder">&#128193; Folder</option><option value="code">&#128187; Code / Script</option><option value="video">&#127916; Video</option></select></div>
-    <div class="modal-field"><div class="modal-label">NAME</div><input type="text" class="modal-input" id="item-name" placeholder="e.g. Project Brief"></div>
-    <div class="modal-field" id="item-url-field"><div class="modal-label">URL</div><input type="text" class="modal-input" id="item-url" placeholder="https://..."></div>
-    <div class="modal-field"><div class="modal-label">TAG</div><input type="text" class="modal-input" id="item-tag" placeholder="e.g. Work, Personal..."></div>
-    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('add-item')">Cancel</button><button class="btn btn-primary" onclick="addItem()">Add item</button></div>
+  <div class="modal" style="max-width:480px">
+    <div class="modal-title">✨ Add item</div>
+    <!-- Type tabs -->
+    <div style="display:flex;gap:4px;background:var(--surface2);border-radius:var(--radius-sm);padding:4px;margin-bottom:16px;border:1px solid var(--border)">
+      <button id="itab-link"    onclick="switchItemTab('link')"   style="flex:1;padding:7px;border-radius:6px;border:none;background:var(--accent);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s">🔗 Link</button>
+      <button id="itab-file"    onclick="switchItemTab('file')"   style="flex:1;padding:7px;border-radius:6px;border:none;background:none;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s">📄 File</button>
+      <button id="itab-folder"  onclick="switchItemTab('folder')" style="flex:1;padding:7px;border-radius:6px;border:none;background:none;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s">📁 Folder</button>
+      <button id="itab-image"   onclick="switchItemTab('image')"  style="flex:1;padding:7px;border-radius:6px;border:none;background:none;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s">🖼️ Image</button>
+    </div>
+    <!-- Name -->
+    <div class="modal-field">
+      <div class="modal-label">NAME</div>
+      <input type="text" class="modal-input" id="item-name" placeholder="e.g. Project Brief">
+    </div>
+    <!-- URL (link only) -->
+    <div class="modal-field" id="item-url-field">
+      <div class="modal-label">URL</div>
+      <input type="text" class="modal-input" id="item-url" placeholder="https://...">
+    </div>
+    <!-- File upload -->
+    <div class="modal-field" id="item-file-field" style="display:none">
+      <div class="modal-label">UPLOAD FILE</div>
+      <label class="upload-zone" style="cursor:pointer">
+        <input type="file" id="item-file-input" style="position:absolute;opacity:0;width:100%;height:100%;cursor:pointer" onchange="handleItemFileUpload(this)">
+        <div id="item-file-label" class="upload-zone-text">📄 Click to choose a file, or drag & drop<br><span style="font-size:11px;color:var(--muted)">Any file type · stored as link</span></div>
+      </label>
+    </div>
+    <!-- Folder path (folder type) -->
+    <div class="modal-field" id="item-folder-field" style="display:none">
+      <div class="modal-label">FOLDER CONTENTS</div>
+      <label class="upload-zone" style="cursor:pointer">
+        <input type="file" id="item-folder-input" webkitdirectory multiple style="position:absolute;opacity:0;width:100%;height:100%;cursor:pointer" onchange="handleItemFolderUpload(this)">
+        <div id="item-folder-label" class="upload-zone-text">📁 Click to choose a folder<br><span style="font-size:11px;color:var(--muted)">Lists all files inside</span></div>
+      </label>
+    </div>
+    <!-- Image upload -->
+    <div class="modal-field" id="item-image-field" style="display:none">
+      <div class="modal-label">IMAGE</div>
+      <label class="upload-zone" style="cursor:pointer">
+        <input type="file" id="item-image-input" accept="image/*" style="position:absolute;opacity:0;width:100%;height:100%;cursor:pointer" onchange="handleItemImageUpload(this)">
+        <div id="item-image-preview" style="display:none;margin-bottom:8px"><img id="item-image-thumb" style="max-height:120px;border-radius:8px;object-fit:contain"></div>
+        <div id="item-image-label" class="upload-zone-text">🖼️ Click to choose an image</div>
+      </label>
+    </div>
+    <!-- Notes -->
+    <div class="modal-field">
+      <div class="modal-label">NOTES (optional)</div>
+      <input type="text" class="modal-input" id="item-tag" placeholder="e.g. Work, Personal, Important...">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('add-item')">Cancel</button>
+      <button class="btn btn-primary" onclick="addItem()">Add</button>
+    </div>
   </div>
 </div>
 
@@ -1738,6 +1950,9 @@ function safeThemeColor(value){
 // -- AUTH UI --------------------------------------
 function showChangelog(){
   const versions=[
+    {v:'v2.9.0',date:'07/06/2026',changes:['Auth screen: redesign complet avec glassmorphism et glow blobs','Auth: bouton show/hide password (👁)','Auth: Enter pour passer au champ suivant','Profile select: redesign clean avec fond animé','Settings Profil: XP + système de niveaux basé sur activité','Settings Profil: stats rapides (tasks, pomodoro, streak, notes)','Settings Profil: champ Bio','Settings Profil: liens sociaux (Twitter, GitHub, site, Instagram)','Profile banner: affiche bio + liens sociaux + badge niveau','Tout sauvegardé dans le cloud']},
+    {v:'v2.8.0',date:'07/06/2026',changes:['Notes: multi-note system (créer autant de notes que voulu)','Notes: titres personnalisables','Notes: couleur par note (6 couleurs)','Notes: épingler des notes en haut de liste','Notes: mode prévisualisation Markdown (bold, italic, code, listes, headings)','Notes: toolbar de formatage (Bold, Italic, Code, H, Liste, Todo, Séparateur)','Notes: compteur chars/mots','Notes: bouton Copier','Notes: migration automatique ancienne note unique','Notes: toutes sauvegardées dans le cloud']},
+    {v:'v2.7.0',date:'07/06/2026',changes:['Files & Links: new tabbed modal (Link / File / Folder / Image)','File upload with name + size display','Folder upload showing file count','Image upload with thumbnail preview','Pomodoro stats: fixed timezone for Today/Streak (use local time)','Notifications: saved to profile, restored on reload','Notification button shows ON state after refresh']},
     {v:'v2.6.4',date:'07/06/2026',changes:['Fix Pomodoro stats using UTC instead of local timezone','Fix Today count and streak now accurate in any timezone','Fix Focus time shows decimals (1.5h instead of 1h)','Responsive: new 1200px breakpoint for large tablets','Responsive: improved 768px layout for mobile']},
     {v:'v2.6.3',date:'07/06/2026',changes:['Fix bannerImg not saved to cloud','Fix pomoHistory not in defState (lost on new profile)','Fix defState now includes all fields (habits, kanban, events, pinned, manualBadges, countdown)','Greeting improved: Good night after 22h and before 5h','Gaming subtitle translated to English','All save/load fields verified and complete']},
     {v:'v2.6.2',date:'07/06/2026',changes:['Pomodoro runs in background (tab switching safe)','Timer uses absolute end time via localStorage','Auto-resumes if page reloaded mid-session','Clean CSS keyframe animations on all buttons','Bounce effect on PIN numpad, slide on nav items']},
@@ -1786,6 +2001,13 @@ function showChangelog(){
   });
   html+=`</div></div>`;
   document.body.insertAdjacentHTML('beforeend',html);
+}
+
+function togglePwVis(inputId,btn){
+  const input=document.getElementById(inputId);if(!input)return;
+  const isText=input.type==='text';
+  input.type=isText?'password':'text';
+  btn.textContent=isText?'👁':'🙈';
 }
 
 function switchAuthTab(tab){
@@ -1923,6 +2145,7 @@ async function loadCloudState(){
           items:s.items||[],
           todos:s.todos||[],
           note:s.note||'',
+          notes:s.notes||[],
           activity:s.activity||[],
           username:s.username||d.profile_name,
           connections:s.connections||{},
@@ -1933,6 +2156,9 @@ async function loadCloudState(){
           events:s.events||[],
           manualBadges:s.manualBadges||{},
           pomoHistory:s.pomoHistory||[],
+          notifEnabled:s.notifEnabled||false,
+          bio:s.bio||'',
+          socials:s.socials||{},
           banner:s.banner||null,
           themeIdx:s.themeIdx||0,
         }
@@ -1981,6 +2207,7 @@ async function saveCloudState(){
         sidebarCompact:p.sidebarCompact||false,
         customAccent:p.customAccent||null,
         bannerImg:p.bannerImg||null,
+        notifEnabled:p.state?.notifEnabled||false,
       },
       updated_at:new Date().toISOString()
     };
@@ -2242,7 +2469,7 @@ async function saveStateNow(){
 }
 function getP(id){return profiles.find(p=>p.id===id)}
 function curP(){return getP(currentId)}
-function defState(name){return{items:[],todos:[],note:'',activity:[],username:name||'User',connections:{},gaming:{},habits:[],kanban:[],events:[],pinned:[],manualBadges:{},banner:null,countdown:null,pomoHistory:[]}}
+function defState(name){return{items:[],todos:[],note:'',notes:[],activity:[],username:name||'User',connections:{},gaming:{},habits:[],kanban:[],events:[],pinned:[],manualBadges:{},banner:null,countdown:null,pomoHistory:[],notifEnabled:false,bio:'',socials:{}}}
 
 // ===================================================
 //  AVATAR HELPERS
@@ -2572,6 +2799,7 @@ function initDashboard(){
   updateStats();renderRecentItems();renderActivity();renderTodos();renderOverviewEvents();updateClock();
   pomoRemaining=POMO_MODES[0].duration;renderPomo();
   setTimeout(restorePomoIfRunning,800);
+  initNotifState(p);
   loadConnectionsUI();
   refreshDiscordSidebar();
   // Start Lanyard WebSocket for real-time updates
@@ -2605,8 +2833,102 @@ function updateSidebarAvatar(){
 function updateSettingsPreview(){
   const p=curP();if(!p)return;
   const el=document.getElementById('settings-avatar-preview');
-  el.style.background=p.avatarBg||'#1e1e24';
-  el.innerHTML=avatarHTML(p,54,11);
+  if(el){el.style.background=p.avatarBg||'#1e1e24';el.innerHTML=avatarHTML(p,54,11);}
+  renderThemeSwatches();renderBgThemeBtns();renderSidebarCustomize();
+
+  // Bio
+  const bioEl=document.getElementById('settings-bio');
+  if(bioEl)bioEl.value=p.state.bio||'';
+
+  // Social links
+  const socials=['twitter','github','website','instagram'];
+  socials.forEach(s=>{
+    const el=document.getElementById('social-'+s);
+    if(el)el.value=p.state.socials?.[s]||'';
+  });
+
+  // XP + Level
+  renderProfileXP(p);
+
+  // Quick stats
+  renderProfileQuickStats(p);
+}
+
+function renderProfileXP(p){
+  const xpWidget=document.getElementById('profile-xp-widget');
+  if(!xpWidget)return;
+  // Calculate XP from activity
+  const xp=calcProfileXP(p);
+  const level=Math.floor(Math.sqrt(xp/50))+1;
+  const xpForLevel=Math.pow(level-1,2)*50;
+  const xpForNext=Math.pow(level,2)*50;
+  const progress=xpForNext>xpForLevel?Math.round(((xp-xpForLevel)/(xpForNext-xpForLevel))*100):100;
+  const lvlEl=document.getElementById('profile-level-num');
+  const xpLabel=document.getElementById('profile-xp-label');
+  const xpNext=document.getElementById('profile-xp-next');
+  const xpBar=document.getElementById('profile-xp-bar');
+  const xpBreak=document.getElementById('profile-xp-breakdown');
+  if(lvlEl)lvlEl.textContent=level;
+  if(xpLabel)xpLabel.textContent=xp.toLocaleString()+' XP';
+  if(xpNext)xpNext.textContent='Next level: '+xpForNext.toLocaleString()+' XP';
+  if(xpBar)setTimeout(()=>xpBar.style.width=progress+'%',100);
+  if(xpBreak){
+    const breakdown=[];
+    if((p.state.todos||[]).filter(t=>t.done).length)breakdown.push((p.state.todos.filter(t=>t.done).length)+' tasks done');
+    if((p.state.pomoHistory||[]).length)breakdown.push((p.state.pomoHistory.length)+' pomodoros');
+    if((p.state.activity||[]).length)breakdown.push((p.state.activity.length)+' actions');
+    xpBreak.textContent=breakdown.join(' · ')||'Complete tasks to earn XP';
+  }
+}
+
+function calcProfileXP(p){
+  let xp=0;
+  xp+=(p.state.todos||[]).filter(t=>t.done).length*10;
+  xp+=(p.state.pomoHistory||[]).length*25;
+  xp+=(p.state.habits||[]).reduce((s,h)=>{
+    const streak=h.streak||0;return s+streak*5;
+  },0);
+  xp+=(p.state.items||[]).length*3;
+  xp+=(p.state.events||[]).length*2;
+  xp+=(p.state.notes||[]).length*5;
+  xp+=(p.state.kanban||[]).reduce((s,col)=>s+(col.cards||[]).filter(c=>c.done).length*8,0);
+  return xp;
+}
+
+function renderProfileQuickStats(p){
+  const container=document.getElementById('profile-quick-stats');
+  if(!container)return;
+  const doneTasks=(p.state.todos||[]).filter(t=>t.done).length;
+  const totalTasks=(p.state.todos||[]).length;
+  const pomoDone=(p.state.pomoHistory||[]).length;
+  const habitStreak=Math.max(...(p.state.habits||[]).map(h=>h.streak||0),0);
+  const notesCount=(p.state.notes||[]).length;
+  const stats=[
+    {label:'Tasks done',val:doneTasks+'/'+totalTasks,icon:'✅',color:'var(--accent2)'},
+    {label:'Pomodoros',val:pomoDone+'🍅',icon:'',color:'var(--accent3)'},
+    {label:'Best streak',val:habitStreak+'🔥',icon:'',color:'var(--accent4)'},
+    {label:'Notes',val:notesCount,icon:'📝',color:'var(--accent5)'},
+  ];
+  container.innerHTML=stats.map(s=>`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;text-align:center">
+    <div style="font-size:16px;font-weight:700;color:${s.color}">${s.val}</div>
+    <div style="font-size:10px;color:var(--muted);margin-top:2px">${s.label}</div>
+  </div>`).join('');
+}
+
+function updateProfileBio(val){
+  const p=curP();if(!p)return;
+  if(!p.state.bio!==undefined)p.state.bio=val;
+  p.state.bio=val;
+  clearTimeout(window._bioSaveTO);
+  window._bioSaveTO=setTimeout(()=>saveStateNow(),800);
+}
+
+function updateSocialLink(key,val){
+  const p=curP();if(!p)return;
+  if(!p.state.socials)p.state.socials={};
+  p.state.socials[key]=val;
+  clearTimeout(window._socialSaveTO);
+  window._socialSaveTO=setTimeout(()=>saveStateNow(),800);
 }
 
 // ===================================================
@@ -2738,7 +3060,31 @@ function removeBanner(){
 function updateBannerDisplay(){
   const p=curP();if(!p)return;
   const banner=document.getElementById('profile-banner');
-  const img=document.getElementById('profile-banner-img');
+  // Bio
+  const bioEl=document.getElementById('profile-banner-bio-el');
+  if(bioEl)bioEl.textContent=p.state.bio||'Personal dashboard';
+
+  // Social links
+  const socialsEl=document.getElementById('profile-banner-socials');
+  if(socialsEl){
+    const s=p.state.socials||{};
+    const links=[];
+    if(s.twitter)links.push(`<a href="https://twitter.com/${s.twitter.replace('@','')}" target="_blank" style="color:rgba(255,255,255,.7);font-size:11px;text-decoration:none;background:rgba(0,0,0,.25);padding:2px 8px;border-radius:20px">🐦 ${s.twitter}</a>`);
+    if(s.github)links.push(`<a href="https://${s.github.startsWith('github')?s.github:'github.com/'+s.github}" target="_blank" style="color:rgba(255,255,255,.7);font-size:11px;text-decoration:none;background:rgba(0,0,0,.25);padding:2px 8px;border-radius:20px">💻 ${s.github.replace('github.com/','')}</a>`);
+    if(s.website)links.push(`<a href="https://${s.website.replace(/https?:\/\//,'')}" target="_blank" style="color:rgba(255,255,255,.7);font-size:11px;text-decoration:none;background:rgba(0,0,0,.25);padding:2px 8px;border-radius:20px">🌐 ${s.website.replace(/https?:\/\//,'')}</a>`);
+    if(s.instagram)links.push(`<a href="https://instagram.com/${s.instagram.replace('@','')}" target="_blank" style="color:rgba(255,255,255,.7);font-size:11px;text-decoration:none;background:rgba(0,0,0,.25);padding:2px 8px;border-radius:20px">📸 ${s.instagram}</a>`);
+    socialsEl.innerHTML=links.join('');
+  }
+
+  // Level badge
+  const lvlBadge=document.getElementById('profile-banner-level');
+  const lvlNum=document.getElementById('profile-banner-level-num');
+  if(lvlBadge&&lvlNum){
+    const xp=calcProfileXP(p);
+    const level=Math.floor(Math.sqrt(xp/50))+1;
+    if(level>1||xp>0){lvlBadge.style.display='block';lvlNum.textContent=level;}
+    else lvlBadge.style.display='none';
+  }
   if(!banner||!img)return;
   if(p.bannerImg){
     img.src=p.bannerImg;img.style.display='block';
@@ -2804,7 +3150,7 @@ function switchPage(page,navEl){
   const p=curP();if(!p)return;
   if(page==='files')renderItems();
   if(page==='todos')renderTodos();
-  if(page==='notes'){document.getElementById('main-note').value=p.state.note||'';document.getElementById('quick-note').value=p.state.note||''}
+  if(page==='notes'){initNotes();}
   if(page==='settings'){document.getElementById('settings-name').value=p.name;updateSettingsPreview();loadSecuritySettings();loadBannerSettings()}
   if(page==='connections')loadConnectionsUI();
   if(page==='gaming')loadGamingUI();
@@ -2875,11 +3221,73 @@ function openModal(id){
   document.getElementById('modal-'+id).classList.add('open');
   const fi=document.querySelector('#modal-'+id+' input:not([type=file])');
   if(fi)setTimeout(()=>fi.focus(),100);
+  if(id==='add-item')setTimeout(()=>switchItemTab('link'),50);
 }
 function closeModal(id){document.getElementById('modal-'+id).classList.remove('open')}
 function closeModalIfOverlay(e,id){if(e.target===document.getElementById('modal-'+id))closeModal(id)}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'))});
-function toggleItemTypeFields(){document.getElementById('item-url-field').style.display=document.getElementById('item-type').value==='link'?'block':'none'}
+let _itemCurrentTab='link', _itemFileData=null, _itemImageData=null, _itemFolderFiles=[];
+
+function switchItemTab(tab){
+  _itemCurrentTab=tab;
+  _itemFileData=null;_itemImageData=null;_itemFolderFiles=[];
+  ['link','file','folder','image'].forEach(t=>{
+    const btn=document.getElementById('itab-'+t);
+    if(btn){btn.style.background=t===tab?'var(--accent)':'none';btn.style.color=t===tab?'#fff':'var(--muted)';}
+  });
+  document.getElementById('item-url-field').style.display=tab==='link'?'block':'none';
+  document.getElementById('item-file-field').style.display=tab==='file'?'block':'none';
+  document.getElementById('item-folder-field').style.display=tab==='folder'?'block':'none';
+  document.getElementById('item-image-field').style.display=tab==='image'?'block':'none';
+  // Update placeholder
+  const nameInput=document.getElementById('item-name');
+  if(nameInput){
+    const placeholders={link:'e.g. Google Drive, Notion...',file:'e.g. Project Brief',folder:'e.g. Assets',image:'e.g. Screenshot'};
+    nameInput.placeholder=placeholders[tab]||'Name';
+  }
+}
+
+function handleItemFileUpload(input){
+  const file=input.files[0];if(!file)return;
+  _itemFileData={name:file.name,size:file.size,type:file.type};
+  const label=document.getElementById('item-file-label');
+  if(label)label.innerHTML=`📄 <strong>${file.name}</strong><br><span style="font-size:11px;color:var(--muted)">${(file.size/1024).toFixed(1)} KB · ${file.type||'unknown'}</span>`;
+  // Auto-fill name if empty
+  const nameInput=document.getElementById('item-name');
+  if(nameInput&&!nameInput.value)nameInput.value=file.name.replace(/\.[^/.]+$/,'');
+}
+
+function handleItemFolderUpload(input){
+  const files=Array.from(input.files);if(!files.length)return;
+  _itemFolderFiles=files.map(f=>({name:f.name,path:f.webkitRelativePath||f.name,size:f.size}));
+  const folderName=files[0]?.webkitRelativePath?.split('/')?.[0]||'Folder';
+  const label=document.getElementById('item-folder-label');
+  if(label)label.innerHTML=`📁 <strong>${folderName}</strong><br><span style="font-size:11px;color:var(--muted)">${files.length} file${files.length>1?'s':''} selected</span>`;
+  const nameInput=document.getElementById('item-name');
+  if(nameInput&&!nameInput.value)nameInput.value=folderName;
+}
+
+function handleItemImageUpload(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    _itemImageData=e.target.result;
+    const thumb=document.getElementById('item-image-thumb');
+    const preview=document.getElementById('item-image-preview');
+    const label=document.getElementById('item-image-label');
+    if(thumb)thumb.src=_itemImageData;
+    if(preview)preview.style.display='block';
+    if(label)label.innerHTML=`<span style="font-size:11px;color:var(--muted)">${file.name} · ${(file.size/1024).toFixed(1)} KB</span>`;
+    const nameInput=document.getElementById('item-name');
+    if(nameInput&&!nameInput.value)nameInput.value=file.name.replace(/\.[^/.]+$/,'');
+  };
+  reader.readAsDataURL(file);
+}
+
+function toggleItemTypeFields(){
+  // Legacy — now handled by switchItemTab
+  switchItemTab(document.getElementById('item-type')?.value||'link');
+}
 toggleItemTypeFields();
 
 // ===================================================
@@ -2949,13 +3357,42 @@ function switchCategory(cat,el){curCat=cat;document.querySelectorAll('.cat-tab')
 function addItem(){
   const p=curP();if(!p)return;
   const name=document.getElementById('item-name').value.trim();
-  if(!name){toast('Please enter a name','error');return}
-  const type=document.getElementById('item-type').value,url=document.getElementById('item-url').value.trim(),tag=document.getElementById('item-tag').value.trim();
-  const item={id:Date.now(),name,type,url,tag,date:new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short'})};
-  p.state.items.unshift(item);saveStateNow();closeModal('add-item');
-  ['item-name','item-url','item-tag'].forEach(id=>document.getElementById(id).value='');
+  const tag=document.getElementById('item-tag').value.trim();
+  const tab=_itemCurrentTab||'link';
+  const date=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
+
+  if(!name){toast('Please enter a name','error');return;}
+
+  if(tab==='link'){
+    const url=document.getElementById('item-url').value.trim();
+    if(!url){toast('Please enter a URL','error');return;}
+    p.state.items.unshift({id:Date.now(),name,type:'link',url,tag,date});
+  } else if(tab==='file'){
+    const url=document.getElementById('item-url').value.trim();
+    const meta=_itemFileData?`${_itemFileData.name} · ${(_itemFileData.size/1024).toFixed(1)} KB`:'';
+    p.state.items.unshift({id:Date.now(),name,type:'file',url:url||'',tag,date,meta});
+  } else if(tab==='folder'){
+    const fileCount=_itemFolderFiles.length;
+    const fileList=_itemFolderFiles.slice(0,20).map(f=>f.name).join(', ')+(fileCount>20?`... +${fileCount-20} more`:'');
+    p.state.items.unshift({id:Date.now(),name,type:'folder',url:'',tag,date,
+      meta:fileCount?`${fileCount} file${fileCount>1?'s':''}`:'' ,
+      files:_itemFolderFiles.slice(0,50)
+    });
+  } else if(tab==='image'){
+    if(!_itemImageData){toast('Please select an image','error');return;}
+    p.state.items.unshift({id:Date.now(),name,type:'image',url:'',tag,date,imageData:_itemImageData});
+  }
+
+  _itemFileData=null;_itemImageData=null;_itemFolderFiles=[];
+  saveStateNow();closeModal('add-item');
+  ['item-name','item-url','item-tag'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  // Reset upload labels
+  const fl=document.getElementById('item-file-label');if(fl)fl.innerHTML='📄 Click to choose a file, or drag & drop<br><span style="font-size:11px;color:var(--muted)">Any file type</span>';
+  const il=document.getElementById('item-image-label');if(il)il.innerHTML='🖼️ Click to choose an image';
+  const ip=document.getElementById('item-image-preview');if(ip)ip.style.display='none';
+  const fol=document.getElementById('item-folder-label');if(fol)fol.innerHTML='📁 Click to choose a folder<br><span style="font-size:11px;color:var(--muted)">Lists all files inside</span>';
   renderItems();updateStats();renderRecentItems();
-  addActivity(name+' was added','var(--accent)');toast(name+' added!','success');
+  addActivity(name+' added','var(--accent)');toast(name+' added!','success');
 }
 
 function deleteItem(id){
@@ -2996,7 +3433,27 @@ function renderItems(){
   if(!items.length){list.innerHTML='<div class="empty-state"><div class="empty-icon"></div>No items'+(q?' matching "'+escapeHTML(q)+'"':'')+'.<br>Click <strong>+ Add item</strong>.</div>';return}
   list.innerHTML=items.map(i=>{
     const url=safeUrl(i.url);
-    return '<div class="item-row" onclick="openItem('+i.id+')"><div class="item-icon '+(tClass[i.type]||'doc')+'">'+(tIcons[i.type]||'\uD83D\uDCC4')+'</div><div class="item-info"><div class="item-name">'+escapeHTML(i.name)+'</div><div class="item-meta">'+escapeHTML(i.date)+(i.tag?' . <span style="color:var(--accent)">'+escapeHTML(i.tag)+'</span>':'')+'</div></div>'+(url?'<a href="'+escapeHTML(url)+'" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" style="color:var(--muted);font-size:12px;text-decoration:none">\uD83D\uDD17</a>':'')+'<div class="item-actions"><button class="item-btn" onclick="event.stopPropagation();deleteItem('+i.id+')">\uD83D\uDDD1\uFE0F</button></div></div>';
+    // Icon/thumbnail
+    let iconHtml='';
+    if(i.type==='image'&&i.imageData){
+      iconHtml=`<img src="${i.imageData}" style="width:100%;height:100%;object-fit:cover;border-radius:7px" onerror="this.outerHTML='🖼️'">`;
+    } else {
+      iconHtml=tIcons[i.type]||'\uD83D\uDCC4';
+    }
+    // Meta line
+    let meta=escapeHTML(i.date||'');
+    if(i.meta)meta+=` · <span style="color:var(--muted)">${escapeHTML(i.meta)}</span>`;
+    if(i.tag)meta+=` · <span style="color:var(--accent)">${escapeHTML(i.tag)}</span>`;
+    if(url)meta+=` · <span style="color:var(--muted);font-size:10px">${escapeHTML(url.replace(/https?:\/\//,'').slice(0,30))}</span>`;
+    return `<div class="item-row" onclick="openItem(${i.id})">
+      <div class="item-icon ${tClass[i.type]||'doc'}">${iconHtml}</div>
+      <div class="item-info">
+        <div class="item-name">${escapeHTML(i.name)}</div>
+        <div class="item-meta">${meta}</div>
+      </div>
+      ${url?`<a href="${escapeHTML(url)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" style="color:var(--muted);font-size:13px;text-decoration:none;flex-shrink:0">\uD83D\uDD17</a>`:''}
+      <div class="item-actions"><button class="item-btn" onclick="event.stopPropagation();deleteItem(${i.id})">\uD83D\uDDD1\uFE0F</button></div>
+    </div>`;
   }).join('');
 }
 
@@ -3020,22 +3477,200 @@ function renderRecentItems(){
 // ===================================================
 //  NOTES
 // ===================================================
-let noteTO;
+let noteTO, _currentNoteId=null, _notePreviewMode=false, _noteSaveTO=null;
+
+function getNotesArray(){
+  const p=curP();if(!p)return[];
+  if(!p.state.notes){
+    p.state.notes=[];
+    if(p.state.note){
+      p.state.notes.push({id:Date.now(),title:'My Note',content:p.state.note,color:'',pinned:false,created:new Date().toISOString(),updated:new Date().toISOString()});
+      p.state.note='';
+    }
+  }
+  return p.state.notes;
+}
+
+function renderNotesList(){
+  const notes=getNotesArray();
+  const container=document.getElementById('notes-list-panel');
+  if(!container)return;
+  const sorted=[...notes.filter(n=>n.pinned),...notes.filter(n=>!n.pinned)].sort((a,b)=>{
+    if(a.pinned&&!b.pinned)return-1;if(!a.pinned&&b.pinned)return 1;
+    return new Date(b.updated)-new Date(a.updated);
+  });
+  if(!sorted.length){container.innerHTML='<div style="font-size:12px;color:var(--muted);text-align:center;padding:20px">No notes yet</div>';showNoteEditor(false);return;}
+  container.innerHTML=sorted.map(n=>{
+    const isActive=n.id===_currentNoteId;
+    const preview=n.content?.slice(0,60).replace(/[#*`\n]/g,' ')||'Empty note';
+    const dot=n.color?`<span style="width:7px;height:7px;border-radius:50%;background:${n.color};flex-shrink:0;display:inline-block"></span>`:'';
+    return `<div onclick="selectNote(${n.id})" style="padding:10px 12px;border-radius:var(--radius-sm);cursor:pointer;border:1.5px solid ${isActive?'var(--accent)':'var(--border)'};background:${isActive?'var(--accent-subtle)':'var(--surface2)'};transition:all .15s">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+        ${dot}
+        <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;color:${isActive?'var(--accent-light)':'var(--text)'}">${escapeHTML(n.title||'Untitled')}</div>
+        ${n.pinned?'<span style="font-size:10px">📌</span>':''}
+      </div>
+      <div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHTML(preview)}</div>
+      <div style="font-size:10px;color:var(--muted2);margin-top:3px">${new Date(n.updated).toLocaleDateString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
+    </div>`;
+  }).join('');
+}
+
+function showNoteEditor(show){
+  const editor=document.getElementById('note-editor-panel');
+  const empty=document.getElementById('note-empty-state');
+  if(editor)editor.style.display=show?'block':'none';
+  if(empty)empty.style.display=show?'none':'block';
+}
+
+function selectNote(id){
+  _currentNoteId=id;
+  const note=getNotesArray().find(n=>n.id===id);
+  if(!note)return;
+  showNoteEditor(true);
+  const ta=document.getElementById('main-note');
+  const title=document.getElementById('note-title-input');
+  const colorPick=document.getElementById('note-color-pick');
+  const pinBtn=document.getElementById('note-pin-btn');
+  if(ta)ta.value=note.content||'';
+  if(title)title.value=note.title||'';
+  if(colorPick)colorPick.value=note.color||'';
+  if(pinBtn)pinBtn.style.opacity=note.pinned?'1':'0.5';
+  updateNoteStats();renderNotesList();
+  if(_notePreviewMode)renderNotePreview();
+}
+
+function newNote(){
+  const p=curP();if(!p)return;
+  if(!p.state.notes)p.state.notes=[];
+  const note={id:Date.now(),title:'New note',content:'',color:'',pinned:false,created:new Date().toISOString(),updated:new Date().toISOString()};
+  p.state.notes.unshift(note);saveStateNow();
+  _currentNoteId=note.id;renderNotesList();selectNote(note.id);
+  setTimeout(()=>{const t=document.getElementById('note-title-input');if(t){t.focus();t.select();}},100);
+}
+
 function saveNote(){
   const p=curP();if(!p)return;
-  const isDash=document.getElementById('page-dashboard').classList.contains('active');
-  const val=isDash?document.getElementById('quick-note').value:document.getElementById('main-note').value;
-  document.getElementById('quick-note').value=val;document.getElementById('main-note').value=val;
-  p.state.note=val;clearTimeout(noteTO);
+  const isDash=document.getElementById('page-dashboard')?.classList.contains('active');
+  const quickNote=document.getElementById('quick-note');
+  const mainNote=document.getElementById('main-note');
+  if(isDash&&quickNote){
+    p.state.note=quickNote.value;
+    if(mainNote)mainNote.value=quickNote.value;
+    clearTimeout(noteTO);noteTO=setTimeout(()=>saveStateNow(),600);
+    return;
+  }
+  // Multi-note save
+  const note=getNotesArray().find(n=>n.id===_currentNoteId);
+  if(!note)return;
+  note.content=mainNote?.value||'';note.updated=new Date().toISOString();
   const st=document.getElementById('note-saved-status');if(st)st.textContent='Saving...';
-  noteTO=setTimeout(()=>{saveStateNow();if(st)st.textContent='Saved ';setTimeout(()=>{if(st)st.textContent='Auto-saved'},1500)},600);
+  clearTimeout(_noteSaveTO);
+  _noteSaveTO=setTimeout(()=>{
+    saveStateNow();
+    if(st){st.textContent='✓ Saved';setTimeout(()=>{if(st)st.textContent='Auto-saved';},1500);}
+    renderNotesList();
+  },600);
+  updateNoteStats();
+  if(_notePreviewMode)renderNotePreview();
 }
-function clearNote(){
-  if(!confirm('Clear notes?'))return;
+
+function updateNoteTitle(val){
+  const note=getNotesArray().find(n=>n.id===_currentNoteId);if(!note)return;
+  note.title=val;note.updated=new Date().toISOString();
+  clearTimeout(_noteSaveTO);_noteSaveTO=setTimeout(()=>{saveStateNow();renderNotesList();},600);
+}
+
+function updateNoteColor(color){
+  const note=getNotesArray().find(n=>n.id===_currentNoteId);if(!note)return;
+  note.color=color;note.updated=new Date().toISOString();saveStateNow();renderNotesList();
+}
+
+function pinNote(){
+  const note=getNotesArray().find(n=>n.id===_currentNoteId);if(!note)return;
+  note.pinned=!note.pinned;note.updated=new Date().toISOString();saveStateNow();renderNotesList();
+  const btn=document.getElementById('note-pin-btn');if(btn)btn.style.opacity=note.pinned?'1':'0.5';
+  toast(note.pinned?'Note pinned 📌':'Note unpinned','info');
+}
+
+function deleteCurrentNote(){
+  if(!_currentNoteId||!confirm('Delete this note?'))return;
   const p=curP();if(!p)return;
-  p.state.note='';saveStateNow();
-  document.getElementById('main-note').value='';document.getElementById('quick-note').value='';
-  toast('Notes cleared','info');
+  p.state.notes=(p.state.notes||[]).filter(n=>n.id!==_currentNoteId);saveStateNow();
+  const notes=getNotesArray();
+  _currentNoteId=notes[0]?.id||null;
+  if(_currentNoteId)selectNote(_currentNoteId);else showNoteEditor(false);
+  renderNotesList();toast('Note deleted','info');
+}
+
+function copyNote(){
+  const ta=document.getElementById('main-note');if(!ta)return;
+  navigator.clipboard.writeText(ta.value).then(()=>toast('Note copied! 📋','success'));
+}
+
+function updateNoteStats(){
+  const ta=document.getElementById('main-note');if(!ta)return;
+  const chars=ta.value.length,words=ta.value.trim()?ta.value.trim().split(/\s+/).length:0;
+  const cc=document.getElementById('note-char-count'),wc=document.getElementById('note-word-count');
+  if(cc)cc.textContent=chars.toLocaleString()+' chars';
+  if(wc)wc.textContent=words.toLocaleString()+' words';
+}
+
+function toggleNotePreview(){
+  _notePreviewMode=!_notePreviewMode;
+  const ta=document.getElementById('main-note'),preview=document.getElementById('note-preview-area'),btn=document.getElementById('note-preview-btn');
+  if(ta)ta.style.display=_notePreviewMode?'none':'block';
+  if(preview)preview.style.display=_notePreviewMode?'block':'none';
+  if(btn){btn.textContent=_notePreviewMode?'✏️ Edit':'👁 Preview';btn.style.background=_notePreviewMode?'var(--accent-subtle)':'';}
+  if(_notePreviewMode)renderNotePreview();
+}
+
+function renderNotePreview(){
+  const ta=document.getElementById('main-note'),preview=document.getElementById('note-preview-area');
+  if(!ta||!preview)return;
+  let html=escapeHTML(ta.value)
+    .replace(/^### (.+)$/gm,'<h3 style="font-size:15px;font-weight:700;margin:12px 0 6px;color:var(--accent-light)">$1</h3>')
+    .replace(/^## (.+)$/gm,'<h2 style="font-size:17px;font-weight:700;margin:14px 0 7px">$1</h2>')
+    .replace(/^# (.+)$/gm,'<h1 style="font-size:20px;font-weight:800;margin:16px 0 8px">$1</h1>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em style="color:var(--muted)">$1</em>')
+    .replace(/`(.+?)`/g,'<code style="background:var(--surface3);padding:1px 5px;border-radius:4px;font-family:var(--mono);font-size:12px;color:var(--accent2)">$1</code>')
+    .replace(/^- \[x\] (.+)$/gm,'<div style="display:flex;align-items:center;gap:8px;margin:3px 0"><span style="color:var(--accent2)">✅</span><s style="color:var(--muted)">$1</s></div>')
+    .replace(/^- \[ \] (.+)$/gm,'<div style="display:flex;align-items:center;gap:8px;margin:3px 0"><span>⬜</span>$1</div>')
+    .replace(/^- (.+)$/gm,'<div style="display:flex;gap:8px;margin:2px 0"><span style="color:var(--accent)">•</span>$1</div>')
+    .replace(/^---$/gm,'<hr style="border:none;border-top:1px solid var(--border2);margin:14px 0">')
+    .replace(/\n/g,'<br>');
+  preview.innerHTML=html;
+}
+
+function noteFormat(before,after){
+  const ta=document.getElementById('main-note');if(!ta)return;
+  const s=ta.selectionStart,e=ta.selectionEnd,sel=ta.value.slice(s,e)||'text';
+  ta.value=ta.value.slice(0,s)+before+sel+after+ta.value.slice(e);
+  ta.selectionStart=s+before.length;ta.selectionEnd=s+before.length+sel.length;
+  ta.focus();saveNote();
+}
+
+function noteInsert(text){
+  const ta=document.getElementById('main-note');if(!ta)return;
+  const pos=ta.selectionStart,lineStart=ta.value.lastIndexOf('\n',pos-1)+1;
+  ta.value=ta.value.slice(0,lineStart)+text+ta.value.slice(lineStart);
+  ta.selectionStart=ta.selectionEnd=lineStart+text.length;
+  ta.focus();saveNote();
+}
+
+function initNotes(){
+  const notes=getNotesArray();
+  renderNotesList();
+  if(notes.length){
+    const sorted=[...notes].sort((a,b)=>new Date(b.updated)-new Date(a.updated));
+    _currentNoteId=sorted[0].id;selectNote(_currentNoteId);
+  } else {showNoteEditor(false);}
+}
+
+function clearNote(){
+  if(!confirm('Clear this note\'s content?'))return;
+  const ta=document.getElementById('main-note');if(ta){ta.value='';saveNote();}
 }
 
 // ===================================================
@@ -4022,8 +4657,16 @@ function updateSpotifyFromLanyard(d){
   } else {
     if(wrap)wrap.style.display='none';
     clearInterval(window._npProgressInterval);
-    // Don't auto-show iframe — only show it if user explicitly connected Spotify widget
-    if(iframeWrap)iframeWrap.style.display='none';
+    // Restore iframe widget if user has one connected
+    const p=curP();
+    const url=p?.state?.connections?.spotify?.widgetUrl;
+    if(url&&iframeWrap){
+      iframeWrap.style.display='block';
+      const iframe=document.getElementById('nowplaying-iframe');
+      if(iframe&&!iframe.src)iframe.src=url;
+    } else if(iframeWrap){
+      iframeWrap.style.display='none';
+    }
   }
 }
 
@@ -4345,12 +4988,11 @@ function refreshSpotifySidebar(){
   const iframeWrap=document.getElementById('sb-spotify-iframe-wrap');
   if(!url){if(iframeWrap)iframeWrap.style.display='none';return;}
   const iframe=document.getElementById('nowplaying-iframe');
-  if(iframe&&url&&!iframe.src)iframe.src=url;
-  // Only show iframe if Lanyard Spotify is NOT active (nothing playing via Discord)
+  if(iframe&&url&&iframe.src!==url)iframe.src=url;
+  else if(iframe&&!iframe.src)iframe.src=url;
+  // Show iframe only if Lanyard Spotify is NOT active
   const lanyardActive=document.getElementById('sb-spotify-wrap')?.style.display==='block';
-  // Don't auto-show iframe — it always shows even when nothing plays
-  // We'll show it only if explicitly connected and Lanyard not active
-  if(!lanyardActive&&iframeWrap)iframeWrap.style.display='none'; // hide by default, iframe handles its own visibility
+  if(!lanyardActive&&iframeWrap)iframeWrap.style.display='block';
 }
 
 
@@ -6190,15 +6832,17 @@ function importData(e){
 // ===================================================
 let _notifEnabled=false;
 function requestNotifPermission(){
-  if(!('Notification' in window)){toast('Notifications not supported','error');return}
+  if(!('Notification' in window)){toast('Notifications not supported','error');return;}
   Notification.requestPermission().then(perm=>{
     _notifEnabled=perm==='granted';
+    const p=curP();
+    if(p){p.state.notifEnabled=_notifEnabled;saveStateNow();}
     const btn=document.getElementById('notif-btn');
     if(_notifEnabled){
-      toast('Notifications enabled! ','success');
-      if(btn){btn.textContent=' Notifications ON';btn.style.color='var(--accent2)';btn.style.borderColor='var(--accent2)';}
+      toast('Notifications enabled! 🔔','success');
+      if(btn){btn.textContent='🔔 Notifications ON';btn.style.color='var(--accent2)';btn.style.borderColor='var(--accent2)';}
     } else {
-      toast('Notifications denied - check browser settings','error');
+      toast('Notifications denied — check browser settings','error');
     }
   });
 }
@@ -6207,10 +6851,17 @@ function sendNotif(title,body,icon=''){
   try{new Notification(title,{body,icon:'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>'+icon+'</text></svg>'});}
   catch(e){}
 }
-// Check notification permission on load
-(function(){
-  if(Notification.permission==='granted'){_notifEnabled=true;}
-})();
+// Restore notification state on load
+function initNotifState(p){
+  if(p?.state?.notifEnabled&&Notification.permission==='granted'){
+    _notifEnabled=true;
+    const btn=document.getElementById('notif-btn');
+    if(btn){btn.textContent='🔔 Notifications ON';btn.style.color='var(--accent2)';btn.style.borderColor='var(--accent2)';}
+  } else if(Notification.permission==='granted'){
+    _notifEnabled=true;
+  }
+}
+(function(){if(Notification.permission==='granted'){_notifEnabled=true;}})();
 
 // ===================================================
 //  GAMING OVERVIEW MINI-WIDGET

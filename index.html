@@ -101,29 +101,29 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 #profile-screen{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;animation:fadeIn .4s ease}
 #profile-screen.hiding{animation:profileeHide .5s cubic-bezier(.4,0,.2,1) forwards}
 .ps-logo{font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:52px;display:flex;align-items:center;gap:10px}
-.ps-logo-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--accent),var(--accent5));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:var(--glow-blue)}
-.ps-title{font-size:32px;font-weight:700;letter-spacing:-1px;margin-bottom:10px;text-align:center;background:linear-gradient(135deg,var(--text),var(--muted));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ps-logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--accent5));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 4px 16px rgba(59,130,246,.35)}
+.ps-title{font-size:32px;font-weight:800;letter-spacing:-1.5px;margin-bottom:10px;text-align:center;color:var(--text)}
 .ps-sub{font-size:14px;color:var(--muted);margin-bottom:52px;text-align:center}
-.ps-profiles{display:flex;gap:28px;align-items:flex-end;flex-wrap:wrap;justify-content:center;margin-bottom:52px}
-.ps-profile{display:flex;flex-direction:column;align-items:center;gap:14px;cursor:pointer;position:relative;user-select:none}
+.ps-profiles{display:flex;gap:20px;align-items:flex-end;flex-wrap:wrap;justify-content:center;margin-bottom:52px}
+.ps-profile{display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;position:relative;user-select:none}
 .ps-profile:hover .ps-pname{color:var(--text)}
 .ps-avatar-wrap{position:relative;display:inline-block}
-.ps-avatar{width:96px;height:96px;border-radius:20px;border:2px solid transparent;transition:all .25s var(--transition-bounce);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--surface2)}
-.ps-profile:hover .ps-avatar{transform:scale(1.07) translateY(-3px);border-color:var(--accent)!important;box-shadow:0 12px 32px rgba(59,130,246,.25),0 0 0 4px var(--accent-glow)}
-.ps-profile:active .ps-avatar{transform:scale(.97)}
+.ps-avatar{width:88px;height:88px;border-radius:22px;border:2px solid var(--border2);transition:all .3s var(--transition-bounce);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--surface2);box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.ps-profile:hover .ps-avatar{transform:translateY(-6px);border-color:var(--accent);box-shadow:0 16px 40px rgba(59,130,246,.25),0 0 0 3px var(--accent-glow)}
+.ps-profile:active .ps-avatar{transform:scale(.96) translateY(0)}
 .ps-avatar img{width:100%;height:100%;object-fit:cover;display:block}
-.ps-lock{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);background:var(--surface2);border:1.5px solid var(--border2);border-radius:20px;padding:2px 8px;font-size:10px;color:var(--muted);white-space:nowrap}
-.ps-pname{font-size:14px;color:var(--muted);font-weight:500;transition:color var(--transition);text-align:center;max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ps-add{width:96px;height:96px;border-radius:20px;border:2px dashed var(--surface3);display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--muted);cursor:pointer;transition:all var(--transition-bounce)}
-.ps-add:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-subtle);transform:scale(1.04) translateY(-3px)}
+.ps-lock{position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);background:var(--surface);border:1.5px solid var(--border3);border-radius:20px;padding:2px 8px;font-size:10px;color:var(--muted);white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.ps-pname{font-size:13px;color:var(--muted);font-weight:500;transition:color var(--transition);text-align:center;max-width:100px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ps-add{width:88px;height:88px;border-radius:22px;border:2px dashed var(--border2);display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--muted);cursor:pointer;transition:all .3s var(--transition-bounce);background:var(--surface2)}
+.ps-add:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-subtle);transform:translateY(-6px);box-shadow:0 12px 32px rgba(59,130,246,.15)}
 .ps-add:active{transform:scale(.96)}
-.ps-manage-btn{font-size:11.5px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--muted);background:transparent;border:1.5px solid var(--surface3);padding:10px 28px;border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font);transition:all var(--transition)}
-.ps-manage-btn:hover{border-color:var(--border3);color:var(--text);background:var(--accent-subtle)}
-.ps-edit-btn{position:absolute;top:-8px;right:-8px;width:26px;height:26px;border-radius:50%;background:var(--surface3);border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted);opacity:0;transition:opacity var(--transition);cursor:pointer;z-index:2}
+.ps-manage-btn{font-size:12px;font-weight:500;letter-spacing:.5px;color:var(--muted);background:transparent;border:1px solid var(--border2);padding:9px 22px;border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font);transition:all var(--transition)}
+.ps-manage-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-subtle)}
+.ps-edit-btn{position:absolute;top:-8px;right:-8px;width:24px;height:24px;border-radius:50%;background:var(--surface2);border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted);opacity:0;transition:opacity var(--transition);cursor:pointer;z-index:2;box-shadow:var(--shadow-sm)}
 .ps-profile:hover .ps-edit-btn{opacity:1}
 .ps-delete-btn{position:absolute;top:-8px;left:-8px;width:22px;height:22px;border-radius:50%;background:var(--accent3);border:none;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;opacity:0;transition:opacity var(--transition);cursor:pointer;z-index:2}
 .ps-profile.managing .ps-delete-btn{opacity:1;animation:wobble .5s ease infinite alternate}
-.avatar-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0}
+.avatar-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:14px 0}
 .avatar-opt{width:52px;height:52px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;border:2px solid transparent;transition:all var(--transition-bounce)}
 .avatar-opt:hover{transform:scale(1.1);border-color:var(--accent)}
 .avatar-opt.selected{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
@@ -134,30 +134,29 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .upload-zone-text strong{color:var(--accent)}
 
 /* ── SIDEBAR ── */
-.sidebar{width:240px;min-height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:16px 0;position:fixed;left:0;top:0;bottom:0;z-index:100;backdrop-filter:blur(20px)}
-.logo{padding:0 18px 24px;display:flex;align-items:center;gap:10px}
-.logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--accent5));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:var(--glow-blue)}
-.logo-text{font-weight:700;font-size:15px;letter-spacing:-.4px;background:linear-gradient(135deg,var(--text),var(--accent-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.nav-section{padding:0 10px;margin-bottom:2px}
-.nav-label{font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);padding:0 10px 5px;margin-top:10px}
-.nav-item{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:var(--radius-sm);cursor:pointer;color:var(--muted);font-size:13px;font-weight:400;transition:all var(--transition);border:1px solid transparent;text-decoration:none;position:relative;overflow:hidden}
-.nav-item::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:2.5px;background:var(--accent);border-radius:99px;opacity:0;transition:opacity var(--transition)}
+.sidebar{width:244px;min-height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:0;position:fixed;left:0;top:0;bottom:0;z-index:100}
+.logo{padding:20px 16px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.logo-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--accent),var(--accent5));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 2px 12px rgba(59,130,246,.3);flex-shrink:0}
+.logo-text{font-weight:700;font-size:14px;letter-spacing:-.3px;color:var(--text)}
+.nav-section{padding:8px 8px 0}
+.nav-label{font-size:9px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted2);padding:12px 10px 5px;display:block}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;color:var(--muted);font-size:13px;font-weight:400;transition:all var(--transition);border:1px solid transparent;text-decoration:none;position:relative;margin-bottom:1px}
 .nav-item:hover{color:var(--text);background:rgba(255,255,255,.04)}
-.nav-item.active{color:var(--accent-light);background:var(--accent-subtle);border-color:var(--border3)}
-.nav-item.active::before{opacity:1}
+.nav-item.active{color:var(--text);background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.07)}
 .nav-item.active .nav-icon{color:var(--accent)}
-.nav-icon{font-size:15px;width:18px;flex-shrink:0;text-align:center}
-.nav-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;font-family:var(--mono)}
-.sidebar-footer{margin-top:auto;padding:12px 10px 0;border-top:1px solid var(--border)}
-.user-card{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius-sm);cursor:pointer;transition:all var(--transition);position:relative}
-.user-card:hover{background:rgba(255,255,255,.04)}
+.nav-item.active::after{content:'';position:absolute;right:0;top:20%;bottom:20%;width:2px;background:var(--accent);border-radius:99px}
+.nav-icon{font-size:14px;width:18px;flex-shrink:0;text-align:center;opacity:.8}
+.nav-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:20px;font-family:var(--mono);min-width:18px;text-align:center}
+.sidebar-footer{margin-top:auto;padding:10px 8px;border-top:1px solid var(--border)}
+.user-card{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:all var(--transition);position:relative}
+.user-card:hover{background:rgba(255,255,255,.05)}
 .user-card:hover .switch-hint{opacity:1}
-.switch-hint{position:absolute;right:10px;font-size:10px;color:var(--accent);opacity:0;transition:opacity var(--transition);font-weight:600}
-.sidebar-avatar{width:36px;height:36px;border-radius:9px;image-rendering:auto;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0;overflow:hidden;border:1.5px solid var(--border3)}
+.switch-hint{position:absolute;right:10px;font-size:9px;color:var(--accent);opacity:0;transition:opacity var(--transition);font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.sidebar-avatar{width:34px;height:34px;border-radius:9px;image-rendering:auto;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0;overflow:hidden;border:1px solid var(--border2)}
 .sidebar-avatar img{width:100%;height:100%;object-fit:cover;display:block}
 .user-info{flex:1;min-width:0}
-.user-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.user-role{font-size:11px;color:var(--muted)}
+.user-name{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-role{font-size:11px;color:var(--muted2)}
 
 /* sidebar widgets */
 .sb-widget{padding:0 10px 12px;overflow:hidden}
@@ -273,63 +272,63 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .link-card:hover{border-color:var(--border3);background:var(--surface3);transform:translateY(-1px);box-shadow:var(--shadow-sm)}
 
 /* ── MAIN ── */
-.main{margin-left:240px;flex:1;min-height:100vh;padding:32px 36px}
-.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px}
-.page-title{font-size:22px;font-weight:600;letter-spacing:-.5px}
-.page-subtitle{font-size:13px;color:var(--muted);margin-top:3px}
-.topbar-actions{display:flex;align-items:center;gap:10px}
-.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:var(--radius-sm);font-family:var(--font);font-size:13.5px;font-weight:500;cursor:pointer;border:1px solid transparent;transition:all var(--transition);position:relative;overflow:hidden;white-space:nowrap}
+.main{margin-left:244px;flex:1;min-height:100vh;padding:28px 32px}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
+.page-title{font-size:20px;font-weight:700;letter-spacing:-.5px}
+.page-subtitle{font-size:12.5px;color:var(--muted);margin-top:3px}
+.topbar-actions{display:flex;align-items:center;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 15px;border-radius:8px;font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;border:1px solid transparent;transition:all var(--transition);position:relative;overflow:hidden;white-space:nowrap}
 .btn::after{content:'';position:absolute;inset:0;background:#fff;opacity:0;transition:opacity .12s}
-.btn:active::after{opacity:.08}
+.btn:active::after{opacity:.06}
 .btn:active{transform:scale(.97)}
-.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
-.btn-primary:hover{background:#2563eb;filter:brightness(1.08)}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 1px 6px rgba(59,130,246,.25)}
+.btn-primary:hover{background:#2563eb;box-shadow:0 3px 12px rgba(59,130,246,.35)}
 .btn-ghost{background:transparent;color:var(--muted);border-color:var(--border2)}
-.btn-ghost:hover{background:var(--surface2);color:var(--text)}
-.btn-danger{background:transparent;color:var(--accent3);border-color:rgba(247,106,106,.3)}
-.btn-danger:hover{background:rgba(247,106,106,.08)}
+.btn-ghost:hover{background:var(--surface2);color:var(--text);border-color:var(--border2)}
+.btn-danger{background:transparent;color:var(--accent3);border-color:rgba(247,106,106,.25)}
+.btn-danger:hover{background:rgba(247,106,106,.07)}
 .press-ripple{position:absolute;border-radius:999px;pointer-events:none;z-index:2;background:radial-gradient(circle,rgba(255,255,255,.42) 0%,rgba(96,165,250,.24) 42%,rgba(255,255,255,0) 72%);transform:translate(-50%,-50%) scale(0);animation:pressRipple .46s cubic-bezier(.2,.8,.2,1) forwards;mix-blend-mode:screen}
 @keyframes pressRipple{0%{opacity:.9;transform:translate(-50%,-50%) scale(0)}70%{opacity:.35}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
-.search-bar{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:0 12px;transition:border-color var(--transition),box-shadow var(--transition)}
+.search-bar{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:0 12px;transition:border-color var(--transition),box-shadow var(--transition)}
 .search-bar:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-subtle)}
-.search-bar input{background:transparent;border:none;outline:none;color:var(--text);font-family:var(--font);font-size:13.5px;padding:9px 0;width:200px}
+.search-bar input{background:transparent;border:none;outline:none;color:var(--text);font-family:var(--font);font-size:13px;padding:8px 0;width:200px}
 .search-bar input::placeholder{color:var(--muted)}
 
 /* stats */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;cursor:pointer;transition:all var(--transition);position:relative;overflow:hidden}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--card-accent,var(--accent));opacity:0;transition:opacity var(--transition)}
-.stat-card:hover{border-color:var(--border2);transform:translateY(-1px)}
-.stat-card:hover::before{opacity:1}
-.stat-label{font-size:11.5px;color:var(--muted);font-weight:500;margin-bottom:8px}
-.stat-value{font-size:26px;font-weight:600;letter-spacing:-.8px;font-family:var(--mono)}
-.stat-sub{font-size:11.5px;color:var(--muted);margin-top:4px}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;cursor:pointer;transition:all var(--transition);position:relative;overflow:hidden}
+.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--card-accent,var(--accent));opacity:0;transition:opacity var(--transition);border-radius:12px 12px 0 0}
+.stat-card:hover{border-color:rgba(255,255,255,.1);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.stat-card:hover::after{opacity:1}
+.stat-label{font-size:11px;color:var(--muted);font-weight:500;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.stat-value{font-size:28px;font-weight:700;letter-spacing:-1px;font-family:var(--mono)}
+.stat-sub{font-size:11px;color:var(--muted2);margin-top:4px}
 .stat-sub.up{color:var(--accent2)}
-.clock-display{font-size:36px;font-weight:300;font-family:var(--mono);letter-spacing:-1px}
-.clock-date{font-size:12.5px;color:var(--muted);margin-top:4px}
+.clock-display{font-size:32px;font-weight:300;font-family:var(--mono);letter-spacing:-1px}
+.clock-date{font-size:11px;color:var(--muted);margin-top:4px}
 
 /* grid layouts */
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
-.grid-3{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px}
-.grid-widgets{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.grid-3{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px}
+.grid-widgets{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
 
 /* panels */
-.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
-.panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.panel-title{font-size:14px;font-weight:600;letter-spacing:-.2px;display:flex;align-items:center;gap:8px}
-.panel-title-icon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px}
-.panel-action{font-size:12.5px;color:var(--accent);cursor:pointer;transition:opacity var(--transition);border:none;background:none;font-family:var(--font);font-weight:500}
-.panel-action:hover{opacity:.7}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px}
+.panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.panel-title{font-size:13px;font-weight:600;letter-spacing:-.1px;display:flex;align-items:center;gap:7px;color:var(--text)}
+.panel-title-icon{width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.panel-action{font-size:12px;color:var(--muted);cursor:pointer;transition:color var(--transition);border:none;background:none;font-family:var(--font);font-weight:500}
+.panel-action:hover{color:var(--accent)}
 
 /* items */
-.cat-tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--surface2);padding:4px;border-radius:var(--radius-sm);width:fit-content}
-.cat-tab{padding:6px 14px;border-radius:6px;font-size:12.5px;font-weight:500;cursor:pointer;color:var(--muted);border:none;background:none;font-family:var(--font);transition:all var(--transition)}
+.cat-tabs{display:flex;gap:2px;margin-bottom:14px;background:var(--surface2);padding:3px;border-radius:8px;width:fit-content;border:1px solid var(--border)}
+.cat-tab{padding:5px 13px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;color:var(--muted);border:none;background:none;font-family:var(--font);transition:all var(--transition)}
 .cat-tab:hover{color:var(--text)}
-.cat-tab.active{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.3)}
-.item-list{display:flex;flex-direction:column;gap:6px}
-.item-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--radius-sm);cursor:pointer;border:1px solid transparent;transition:all var(--transition);position:relative;overflow:hidden}
+.cat-tab.active{background:var(--surface3);color:var(--text)}
+.item-list{display:flex;flex-direction:column;gap:4px}
+.item-row{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:8px;cursor:pointer;border:1px solid transparent;transition:all var(--transition);position:relative;overflow:hidden}
 .item-row:hover{background:var(--surface2);border-color:var(--border)}
-.item-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.item-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
 .item-icon.doc{background:rgba(93,224,176,.1);color:var(--accent2)}
 .item-icon.link{background:var(--accent-subtle);color:var(--accent)}
 .item-icon.img{background:rgba(247,178,106,.12);color:var(--accent4)}
@@ -337,18 +336,18 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .item-icon.code{background:rgba(93,224,176,.1);color:var(--accent2)}
 .item-icon.video{background:rgba(247,106,106,.12);color:var(--accent3)}
 .item-info{flex:1;min-width:0}
-.item-name{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.item-meta{font-size:11.5px;color:var(--muted);margin-top:2px}
+.item-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-meta{font-size:11px;color:var(--muted);margin-top:2px}
 .item-actions{display:flex;gap:4px;opacity:0;transition:opacity var(--transition)}
 .item-row:hover .item-actions{opacity:1}
-.item-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all var(--transition)}
+.item-btn{width:26px;height:26px;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;transition:all var(--transition)}
 .item-btn:hover{background:var(--surface3);color:var(--text)}
 .links-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.link-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;cursor:pointer;transition:all var(--transition);display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}
-.link-card:hover{border-color:var(--accent);background:var(--accent-subtle);transform:translateY(-1px)}
-.link-favicon{width:28px;height:28px;border-radius:7px;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.link-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 13px;cursor:pointer;transition:all var(--transition);display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}
+.link-card:hover{border-color:rgba(255,255,255,.1);background:var(--surface3);transform:translateY(-1px)}
+.link-favicon{width:26px;height:26px;border-radius:7px;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
 .link-name{font-size:13px;font-weight:500}
-.link-url{font-size:11px;color:var(--muted)}
+.link-url{font-size:10.5px;color:var(--muted)}
 
 /* activity */
 .activity-list{display:flex;flex-direction:column;gap:4px}
@@ -412,17 +411,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .steam-game-hours{font-size:11px;color:var(--muted);font-family:var(--mono)}
 
 /* ── MODALS ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:10000;backdrop-filter:blur(4px)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:10000;backdrop-filter:blur(6px);padding:16px}
 .modal-overlay.open{display:flex;animation:fadeIn .15s ease}
-.modal{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:24px;width:440px;max-width:calc(100vw - 48px);animation:slideUp .2s cubic-bezier(.4,0,.2,1);max-height:90vh;overflow-y:auto}
-.modal-title{font-size:16px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.modal-field{margin-bottom:14px}
-.modal-label{font-size:12px;color:var(--muted);font-weight:500;margin-bottom:6px;letter-spacing:.3px}
-.modal-input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font);font-size:13.5px;padding:9px 12px;outline:none;transition:border-color var(--transition),box-shadow var(--transition)}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:24px;width:440px;max-width:calc(100vw - 32px);animation:slideUp .2s cubic-bezier(.4,0,.2,1);max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.6)}
+.modal-title{font-size:15px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px;letter-spacing:-.2px}
+.modal-field{margin-bottom:13px}
+.modal-label{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:6px;letter-spacing:.5px;text-transform:uppercase}
+.modal-input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:var(--font);font-size:13.5px;padding:9px 12px;outline:none;transition:border-color var(--transition),box-shadow var(--transition)}
 .modal-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-subtle)}
-.modal-select{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font);font-size:13.5px;padding:9px 12px;outline:none;appearance:none}
+.modal-select{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:var(--font);font-size:13.5px;padding:9px 12px;outline:none;appearance:none;cursor:pointer}
 .modal-select option{background:var(--surface2)}
-.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)}
 .divider{height:1px;background:var(--border);margin:14px 0}
 .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:2px 0}
 .toggle-label{font-size:13.5px;color:var(--text)}
@@ -739,77 +738,75 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 <!-- AUTH SCREEN -->
 <canvas id="bg-canvas" style="position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 1s ease"></canvas>
 
-<div id="auth-screen" style="position:fixed;inset:0;z-index:10002;background:var(--bg);display:flex;align-items:center;justify-content:center;animation:fadeIn .5s ease;overflow:hidden">
+<div id="auth-screen" style="position:fixed;inset:0;z-index:10002;background:var(--bg);display:flex;align-items:center;justify-content:center;animation:fadeIn .4s ease;overflow:hidden">
 
-  <!-- Background glow blobs -->
-  <div style="position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.08),transparent 70%);top:-100px;right:-100px;pointer-events:none"></div>
-  <div style="position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.06),transparent 70%);bottom:-80px;left:-80px;pointer-events:none"></div>
+  <!-- Ambient blobs -->
+  <div style="position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.07),transparent 65%);top:-150px;right:-150px;pointer-events:none"></div>
+  <div style="position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.05),transparent 65%);bottom:-100px;left:-100px;pointer-events:none"></div>
 
-  <div style="width:100%;max-width:400px;padding:24px;position:relative;z-index:1">
+  <div style="width:100%;max-width:380px;padding:20px;position:relative;z-index:1">
 
     <!-- Logo -->
-    <div style="text-align:center;margin-bottom:40px">
-      <div style="width:56px;height:56px;background:linear-gradient(135deg,var(--accent),var(--accent5));border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 16px;box-shadow:0 8px 32px rgba(59,130,246,.3)">⚡</div>
-      <div style="font-size:24px;font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,var(--text),var(--accent-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">MySpace</div>
-      <div style="font-size:13px;color:var(--muted);margin-top:6px">Your personal dashboard</div>
+    <div style="text-align:center;margin-bottom:34px">
+      <div style="width:52px;height:52px;background:linear-gradient(135deg,var(--accent),var(--accent5));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 14px;box-shadow:0 6px 24px rgba(59,130,246,.35)">&#9889;</div>
+      <div style="font-size:22px;font-weight:800;letter-spacing:-.8px;color:var(--text)">MySpace</div>
+      <div style="font-size:12.5px;color:var(--muted);margin-top:5px">Your personal dashboard</div>
     </div>
 
     <!-- Card -->
-    <div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.4)">
+    <div style="background:var(--surface);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.5)">
 
       <!-- Tabs -->
-      <div style="display:flex;gap:0;margin-bottom:24px;background:var(--surface2);border-radius:var(--radius-sm);padding:3px;border:1px solid var(--border)">
-        <button id="tab-login" onclick="switchAuthTab('login')" style="flex:1;padding:8px;border:none;border-radius:6px;background:var(--accent);color:#fff;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(59,130,246,.3)">Sign in</button>
-        <button id="tab-register" onclick="switchAuthTab('register')" style="flex:1;padding:8px;border:none;border-radius:6px;background:transparent;color:var(--muted);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s">Create account</button>
+      <div style="display:flex;gap:0;margin-bottom:22px;background:var(--surface2);border-radius:9px;padding:3px;border:1px solid var(--border)">
+        <button id="tab-login" onclick="switchAuthTab('login')" style="flex:1;padding:8px;border:none;border-radius:7px;background:var(--accent);color:#fff;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(59,130,246,.3)">Sign in</button>
+        <button id="tab-register" onclick="switchAuthTab('register')" style="flex:1;padding:8px;border:none;border-radius:7px;background:transparent;color:var(--muted);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s">Create account</button>
       </div>
 
       <!-- Login form -->
       <div id="form-login">
-        <div style="margin-bottom:14px">
-          <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:7px;text-transform:uppercase">Email or Username</div>
+        <div style="margin-bottom:12px">
+          <div style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:var(--muted);margin-bottom:6px;text-transform:uppercase">Email or Username</div>
           <input id="auth-login-id" type="text" placeholder="you@example.com" class="modal-input" style="width:100%" onkeydown="if(event.key==='Enter')document.getElementById('auth-login-pw').focus()">
         </div>
-        <div style="margin-bottom:20px">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
-            <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase">Password</div>
-          </div>
+        <div style="margin-bottom:18px">
+          <div style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:var(--muted);margin-bottom:6px;text-transform:uppercase">Password</div>
           <div style="position:relative">
-            <input id="auth-login-pw" type="password" placeholder="••••••••" class="modal-input" style="width:100%;padding-right:44px" onkeydown="if(event.key==='Enter')doLogin()">
-            <button onclick="togglePwVis('auth-login-pw',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0">👁</button>
+            <input id="auth-login-pw" type="password" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;" class="modal-input" style="width:100%;padding-right:42px" onkeydown="if(event.key==='Enter')doLogin()">
+            <button onclick="togglePwVis('auth-login-pw',this)" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;padding:0;line-height:1">&#128065;</button>
           </div>
         </div>
-        <button onclick="doLogin()" style="width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(59,130,246,.3);letter-spacing:.3px">Sign in →</button>
+        <button onclick="doLogin()" style="width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:9px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(59,130,246,.3)">Sign in &#8594;</button>
       </div>
 
       <!-- Register form -->
       <div id="form-register" style="display:none">
-        <div style="margin-bottom:14px">
-          <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:7px;text-transform:uppercase">Username</div>
+        <div style="margin-bottom:12px">
+          <div style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:var(--muted);margin-bottom:6px;text-transform:uppercase">Username</div>
           <input id="auth-reg-username" type="text" placeholder="Choose a username" class="modal-input" style="width:100%" onkeydown="if(event.key==='Enter')document.getElementById('auth-reg-email').focus()">
         </div>
-        <div style="margin-bottom:14px">
-          <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:7px;text-transform:uppercase">Email <span style="color:var(--muted2);font-weight:400">(optional)</span></div>
+        <div style="margin-bottom:12px">
+          <div style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:var(--muted);margin-bottom:6px;text-transform:uppercase">Email <span style="font-weight:400;text-transform:none">(optional)</span></div>
           <input id="auth-reg-email" type="email" placeholder="email@example.com" class="modal-input" style="width:100%" onkeydown="if(event.key==='Enter')document.getElementById('auth-reg-pw').focus()">
         </div>
-        <div style="margin-bottom:20px">
-          <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:7px;text-transform:uppercase">Password</div>
+        <div style="margin-bottom:18px">
+          <div style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:var(--muted);margin-bottom:6px;text-transform:uppercase">Password</div>
           <div style="position:relative">
-            <input id="auth-reg-pw" type="password" placeholder="Min. 6 characters" class="modal-input" style="width:100%;padding-right:44px" onkeydown="if(event.key==='Enter')doRegister()">
-            <button onclick="togglePwVis('auth-reg-pw',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0">👁</button>
+            <input id="auth-reg-pw" type="password" placeholder="Min. 6 characters" class="modal-input" style="width:100%;padding-right:42px" onkeydown="if(event.key==='Enter')doRegister()">
+            <button onclick="togglePwVis('auth-reg-pw',this)" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;padding:0;line-height:1">&#128065;</button>
           </div>
         </div>
-        <button onclick="doRegister()" style="width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(59,130,246,.3);letter-spacing:.3px">Create account →</button>
+        <button onclick="doRegister()" style="width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:9px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(59,130,246,.3)">Create account &#8594;</button>
       </div>
 
       <!-- Error / Loading -->
-      <div id="auth-error" style="margin-top:12px;font-size:12px;color:var(--accent3);text-align:center;min-height:18px"></div>
-      <div id="auth-loading" style="display:none;margin-top:12px;text-align:center;font-size:13px;color:var(--muted)">
-        <span style="animation:pulse 1.5s infinite;display:inline-block">⏳</span> Loading…
+      <div id="auth-error" style="margin-top:10px;font-size:12px;color:var(--accent3);text-align:center;min-height:16px"></div>
+      <div id="auth-loading" style="display:none;margin-top:10px;text-align:center;font-size:12.5px;color:var(--muted)">
+        <span style="animation:pulse 1.5s infinite;display:inline-block">&#8987;</span> Loading&#8230;
       </div>
     </div>
 
     <!-- Version -->
-    <div style="text-align:center;margin-top:20px;font-size:11px;color:var(--muted2);font-family:var(--mono)">v2.9.2</div>
+    <div style="text-align:center;margin-top:16px;font-size:10.5px;color:var(--muted2);font-family:var(--mono);letter-spacing:.5px">v3.0.0</div>
   </div>
 </div>
 
@@ -841,7 +838,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     </div>
 
     <!-- Version -->
-    <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="View changelog">v2.9.2 · changelog</div>
+    <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="View changelog">v3.0.1 · changelog</div>
   </div>
 </div>
 
@@ -942,9 +939,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
       </div>
     </div>
     <div class="topbar">
-      <div><div class="page-title">Good <span id="greeting-time"></span> &#128075;</div><div class="page-subtitle" id="greeting-date"></div></div>
+      <div><div class="page-title">Good <span id="greeting-time"></span> 👋</div><div class="page-subtitle" id="greeting-date"></div></div>
       <div class="topbar-actions">
-        <div class="search-bar"><span style="color:var(--muted)">&#128269;</span><input type="text" placeholder="Search everything..." id="global-search"></div>
+        <div class="search-bar"><span style="color:var(--muted)">🔍</span><input type="text" placeholder="Search everything..." id="global-search"></div>
+        <!-- Dark/Light toggle -->
+        <button id="theme-mode-btn" onclick="toggleDarkLight()" title="Toggle dark/light mode" style="background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:7px 10px;cursor:pointer;font-size:16px;transition:all var(--transition)">🌙</button>
+        <!-- Profile shortcut -->
+        <button onclick="goToProfileScreen()" title="Switch profile" style="background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:4px 10px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all var(--transition)" id="topbar-profile-btn">
+          <div id="topbar-avatar" style="width:26px;height:26px;border-radius:7px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:12px;background:var(--surface3)"></div>
+          <span id="topbar-username" style="font-size:12px;font-weight:600;color:var(--text);max-width:80px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span>
+        </button>
         <button class="btn btn-primary" onclick="openModal('add-item')"><span>+</span> Add item</button>
       </div>
     </div>
@@ -1125,10 +1129,28 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
   <!-- TODOS -->
   <div id="page-todos" class="tab-content">
-    <div class="topbar"><div><div class="page-title">Tasks</div><div class="page-subtitle">Stay on track &#8212; check off what's done</div></div><div class="topbar-actions"><button class="btn btn-primary" onclick="openModal('add-todo')"><span>+</span> New task</button></div></div>
+    <div class="topbar">
+      <div><div class="page-title">Tasks</div><div class="page-subtitle">Stay on track — check off what's done</div></div>
+      <div class="topbar-actions">
+        <div style="display:flex;gap:4px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:3px">
+          <button id="tf-all"     onclick="setTodoFilter('all')"     style="padding:5px 12px;border-radius:6px;border:none;background:var(--accent);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font)">All</button>
+          <button id="tf-pending" onclick="setTodoFilter('pending')" style="padding:5px 12px;border-radius:6px;border:none;background:none;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font)">Pending</button>
+          <button id="tf-done"    onclick="setTodoFilter('done')"    style="padding:5px 12px;border-radius:6px;border:none;background:none;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font)">Done</button>
+          <button id="tf-high"    onclick="setTodoFilter('high')"    style="padding:5px 12px;border-radius:6px;border:none;background:none;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font)">🔥 High</button>
+        </div>
+        <input type="text" class="modal-input" id="todo-search" placeholder="Search tasks..." style="width:180px;padding:7px 12px;font-size:13px" oninput="renderTodos()">
+        <button class="btn btn-primary" onclick="openModal('add-todo')"><span>+</span> New task</button>
+      </div>
+    </div>
     <div class="grid-2">
-      <div class="panel"><div class="panel-header"><div class="panel-title">&#128293; To Do</div><span style="font-size:12px;color:var(--muted)" id="todo-pending-count">0 pending</span></div><div id="todo-pending-list"><div class="empty-state" style="padding:20px"><div class="empty-icon">&#127881;</div>All done!</div></div></div>
-      <div class="panel"><div class="panel-header"><div class="panel-title" style="color:var(--muted)">&#9989; Completed</div><button class="panel-action" onclick="clearDone()">Clear all</button></div><div id="todo-done-list"><div class="empty-state" style="padding:20px"><div class="empty-icon">&#128203;</div>Nothing completed yet</div></div></div>
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">🔥 To Do</div><span style="font-size:12px;color:var(--muted)" id="todo-pending-count">0 pending</span></div>
+        <div id="todo-pending-list"><div class="empty-state" style="padding:20px"><div class="empty-icon">🎉</div>All done!</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title" style="color:var(--muted)">✅ Completed</div><button class="panel-action" onclick="clearDone()">Clear all</button></div>
+        <div id="todo-done-list"><div class="empty-state" style="padding:20px"><div class="empty-icon">📋</div>Nothing completed yet</div></div>
+      </div>
     </div>
   </div>
 
@@ -1200,20 +1222,126 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
       <div class="stat-card" style="--card-accent:var(--accent)"><div class="stat-label">📁 Total items</div><div class="stat-value" id="st-total-items">0</div><div class="stat-sub">files & links</div></div>
       <div class="stat-card" style="--card-accent:var(--accent2)"><div class="stat-label">✅ Tasks completed</div><div class="stat-value" id="st-total-done">0</div><div class="stat-sub">all time</div></div>
       <div class="stat-card" style="--card-accent:var(--accent3)"><div class="stat-label">🔥 Habit streak</div><div class="stat-value" id="st-best-streak">0</div><div class="stat-sub">best streak</div></div>
-      <div class="stat-card" style="--card-accent:var(--accent4)"><div class="stat-label">📝 Notes length</div><div class="stat-value" id="st-notes-len">0</div><div class="stat-sub">characters</div></div>
+      <div class="stat-card" style="--card-accent:var(--accent4)"><div class="stat-label">🍅 Pomodoros</div><div class="stat-value" id="st-pomo-total">0</div><div class="stat-sub" id="st-pomo-time">0h focus</div></div>
     </div>
     <div class="grid-2">
+      <!-- Activity bar chart -->
       <div class="panel">
-        <div class="panel-header"><div class="panel-title">📊 Activity (last 7 days)</div></div>
-        <div class="stats-graph" id="activity-graph"></div>
-        <div style="display:flex;gap:4px" id="activity-graph-labels"></div>
+        <div class="panel-header"><div class="panel-title">📊 Activity — last 7 days</div></div>
+        <div style="display:flex;align-items:flex-end;gap:6px;height:100px;margin-bottom:6px" id="stats-activity-bars"></div>
+        <div style="display:flex;gap:6px" id="stats-activity-labels" style="font-size:10px"></div>
+      </div>
+      <!-- Tasks donut -->
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">✅ Tasks breakdown</div></div>
+        <div style="display:flex;align-items:center;gap:20px;padding:8px 0">
+          <canvas id="stats-tasks-donut" width="90" height="90" style="flex-shrink:0"></canvas>
+          <div id="stats-tasks-legend" style="display:flex;flex-direction:column;gap:8px;font-size:13px"></div>
+        </div>
+      </div>
+      <!-- Pomodoro weekly chart -->
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">🍅 Pomodoro — last 7 days</div></div>
+        <div style="display:flex;align-items:flex-end;gap:6px;height:80px;margin-bottom:6px" id="stats-pomo-bars"></div>
+        <div style="display:flex;gap:6px" id="stats-pomo-labels"></div>
+      </div>
+      <!-- Habits completion -->
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">💪 Habits completion</div></div>
+        <div id="stats-habits-list" style="display:flex;flex-direction:column;gap:8px;padding:4px 0"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEEKLY GOALS -->
+  <div id="page-goals" class="tab-content">
+    <div class="topbar">
+      <div><div class="page-title">Weekly Goals</div><div class="page-subtitle" id="goals-week-label">This week</div></div>
+      <div class="topbar-actions"><button class="btn btn-primary" onclick="openModal('add-goal')">+ New goal</button></div>
+    </div>
+    <div class="grid-2" style="align-items:start">
+      <div>
+        <!-- Progress overview -->
+        <div class="panel" style="margin-bottom:16px">
+          <div class="panel-header"><div class="panel-title">📈 This week</div><span id="goals-overall-pct" style="font-size:20px;font-weight:700;color:var(--accent2)">0%</span></div>
+          <div style="height:8px;background:var(--surface3);border-radius:99px;overflow:hidden;margin-bottom:14px">
+            <div id="goals-overall-bar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transition:width .5s ease"></div>
+          </div>
+          <div id="goals-list" style="display:flex;flex-direction:column;gap:10px"></div>
+        </div>
       </div>
       <div class="panel">
-        <div class="panel-header"><div class="panel-title">🍅 Pomodoro sessions</div></div>
-        <div style="text-align:center;padding:10px 0">
-          <div style="font-size:48px;font-weight:300;font-family:var(--mono)" id="st-pomo-total">0</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:4px">sessions completed</div>
-          <div style="font-size:13px;color:var(--accent2);margin-top:8px" id="st-pomo-time">0 hours of focus</div>
+        <div class="panel-header"><div class="panel-title">🏆 History</div></div>
+        <div id="goals-history" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JOURNAL -->
+  <div id="page-journal" class="tab-content">
+    <div class="topbar">
+      <div><div class="page-title">Journal</div><div class="page-subtitle">Daily entries with mood tracking</div></div>
+      <div class="topbar-actions">
+        <button class="btn btn-primary" onclick="openModal('add-journal')">+ Today's entry</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:16px;align-items:flex-start">
+      <!-- Calendar sidebar -->
+      <div style="width:200px;flex-shrink:0">
+        <div class="panel" style="padding:12px">
+          <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Entries</div>
+          <div id="journal-entries-list" style="display:flex;flex-direction:column;gap:4px"></div>
+        </div>
+      </div>
+      <!-- Entry viewer/editor -->
+      <div style="flex:1;min-width:0">
+        <div class="panel" id="journal-entry-panel">
+          <div id="journal-entry-content">
+            <div class="empty-state" style="padding:40px">
+              <div style="font-size:36px;margin-bottom:12px">📖</div>
+              <div style="font-size:15px;font-weight:600;margin-bottom:8px">No entry selected</div>
+              <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Write today's entry to start your journal</div>
+              <button class="btn btn-primary" onclick="openModal('add-journal')">+ Today's entry</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COUNTDOWN -->
+  <div id="page-countdown" class="tab-content">
+    <div class="topbar">
+      <div><div class="page-title">Countdowns</div><div class="page-subtitle">Count down to your important events</div></div>
+      <div class="topbar-actions"><button class="btn btn-primary" onclick="openModal('add-countdown')">+ New countdown</button></div>
+    </div>
+    <div class="grid-3" id="countdown-grid">
+      <div class="empty-state" style="grid-column:1/-1;padding:40px">
+        <div style="font-size:36px;margin-bottom:12px">⏳</div>
+        <div style="font-size:15px;font-weight:600;margin-bottom:8px">No countdowns yet</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Add an event to start counting down</div>
+        <button class="btn btn-primary" onclick="openModal('add-countdown')">+ Add event</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GITHUB -->
+  <div id="page-github" class="tab-content">
+    <div class="topbar">
+      <div><div class="page-title">GitHub</div><div class="page-subtitle" id="github-sub">Recent activity</div></div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost" onclick="refreshGithub()">↻ Refresh</button>
+      </div>
+    </div>
+    <div id="github-content">
+      <div class="panel" style="max-width:480px;margin:0 auto">
+        <div class="panel-header"><div class="panel-title">🔗 Connect GitHub</div></div>
+        <div class="modal-field">
+          <div class="modal-label">GITHUB USERNAME</div>
+          <div style="display:flex;gap:8px">
+            <input type="text" class="modal-input" id="github-username-input" placeholder="e.g. rub19" style="flex:1">
+            <button class="btn btn-primary" onclick="connectGithub()">Connect</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1696,6 +1824,67 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 </main>
 
 <!-- MODALS -->
+<!-- GOAL MODAL -->
+<div class="modal-overlay" id="modal-add-goal" onclick="closeModalIfOverlay(event,'add-goal')">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-title">🎯 New weekly goal</div>
+    <div class="modal-field"><div class="modal-label">GOAL</div><input type="text" class="modal-input" id="goal-text" placeholder="e.g. Exercise 3 times" onkeydown="if(event.key==='Enter')addGoal()"></div>
+    <div class="modal-field"><div class="modal-label">TARGET (optional)</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="number" class="modal-input" id="goal-target" placeholder="e.g. 3" style="width:80px;flex-shrink:0" min="1" max="100">
+        <input type="text" class="modal-input" id="goal-unit" placeholder="times, km, pages..." style="flex:1">
+      </div>
+    </div>
+    <div class="modal-field"><div class="modal-label">EMOJI</div><input type="text" class="modal-input" id="goal-emoji" placeholder="🎯" maxlength="4" style="width:60px"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('add-goal')">Cancel</button><button class="btn btn-primary" onclick="addGoal()">Add goal</button></div>
+  </div>
+</div>
+
+<!-- JOURNAL MODAL -->
+<div class="modal-overlay" id="modal-add-journal" onclick="closeModalIfOverlay(event,'add-journal')">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-title">📖 Journal entry</div>
+    <div class="modal-field">
+      <div class="modal-label">MOOD</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap" id="journal-mood-picks">
+        <button onclick="selectMood('😄','Great')"   data-mood="😄" style="padding:8px 14px;border-radius:20px;border:1.5px solid var(--border2);background:none;cursor:pointer;font-size:16px;transition:all .15s">😄</button>
+        <button onclick="selectMood('🙂','Good')"    data-mood="🙂" style="padding:8px 14px;border-radius:20px;border:1.5px solid var(--border2);background:none;cursor:pointer;font-size:16px;transition:all .15s">🙂</button>
+        <button onclick="selectMood('😐','Neutral')" data-mood="😐" style="padding:8px 14px;border-radius:20px;border:1.5px solid var(--border2);background:none;cursor:pointer;font-size:16px;transition:all .15s">😐</button>
+        <button onclick="selectMood('😔','Low')"     data-mood="😔" style="padding:8px 14px;border-radius:20px;border:1.5px solid var(--border2);background:none;cursor:pointer;font-size:16px;transition:all .15s">😔</button>
+        <button onclick="selectMood('😢','Sad')"     data-mood="😢" style="padding:8px 14px;border-radius:20px;border:1.5px solid var(--border2);background:none;cursor:pointer;font-size:16px;transition:all .15s">😢</button>
+        <button onclick="selectMood('😤','Stressed')" data-mood="😤" style="padding:8px 14px;border-radius:20px;border:1.5px solid var(--border2);background:none;cursor:pointer;font-size:16px;transition:all .15s">😤</button>
+        <button onclick="selectMood('🤩','Amazing')" data-mood="🤩" style="padding:8px 14px;border-radius:20px;border:1.5px solid var(--border2);background:none;cursor:pointer;font-size:16px;transition:all .15s">🤩</button>
+      </div>
+    </div>
+    <div class="modal-field"><div class="modal-label">TITLE (optional)</div><input type="text" class="modal-input" id="journal-title" placeholder="e.g. Productive day..."></div>
+    <div class="modal-field"><div class="modal-label">WRITE</div><textarea class="modal-input" id="journal-text" placeholder="How was your day? What are you grateful for?" style="height:120px;resize:vertical;font-family:var(--font)"></textarea></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('add-journal')">Cancel</button><button class="btn btn-primary" onclick="addJournalEntry()">Save entry</button></div>
+  </div>
+</div>
+
+<!-- COUNTDOWN MODAL -->
+<div class="modal-overlay" id="modal-add-countdown" onclick="closeModalIfOverlay(event,'add-countdown')">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-title">⏳ New countdown</div>
+    <div class="modal-field"><div class="modal-label">EVENT NAME</div><input type="text" class="modal-input" id="cd-name" placeholder="e.g. Summer vacation" onkeydown="if(event.key==='Enter')addCountdown()"></div>
+    <div class="modal-field"><div class="modal-label">DATE</div><input type="date" class="modal-input" id="cd-date"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="modal-field"><div class="modal-label">EMOJI</div><input type="text" class="modal-input" id="cd-emoji" placeholder="🎉" maxlength="4"></div>
+      <div class="modal-field">
+        <div class="modal-label">COLOR</div>
+        <select class="modal-select" id="cd-color">
+          <option value="var(--accent)">🔵 Blue</option>
+          <option value="var(--accent2)">🟢 Green</option>
+          <option value="var(--accent3)">🔴 Red</option>
+          <option value="var(--accent4)">🟡 Yellow</option>
+          <option value="var(--accent5)">🟣 Purple</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('add-countdown')">Cancel</button><button class="btn btn-primary" onclick="addCountdown()">Add</button></div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modal-add-item" onclick="closeModalIfOverlay(event,'add-item')">
   <div class="modal" style="max-width:480px">
     <div class="modal-title">✨ Add item</div>
@@ -1754,11 +1943,47 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 </div>
 
 <div class="modal-overlay" id="modal-add-todo" onclick="closeModalIfOverlay(event,'add-todo')">
-  <div class="modal">
-    <div class="modal-title">&#9989; New task</div>
-    <div class="modal-field"><div class="modal-label">TASK</div><input type="text" class="modal-input" id="todo-text" placeholder="What needs to be done?" onkeydown="if(event.key==='Enter')addTodo()"></div>
-    <div class="modal-field"><div class="modal-label">PRIORITY</div><select class="modal-select" id="todo-priority"><option value="normal">Normal</option><option value="high">&#128293; High</option><option value="low">&#127807; Low</option></select></div>
-    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('add-todo')">Cancel</button><button class="btn btn-primary" onclick="addTodo()">Add task</button></div>
+  <div class="modal" style="max-width:440px">
+    <div class="modal-title">✅ New task</div>
+    <div class="modal-field">
+      <div class="modal-label">TASK</div>
+      <input type="text" class="modal-input" id="todo-text" placeholder="What needs to be done?" onkeydown="if(event.key==='Enter')addTodo()">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="modal-field">
+        <div class="modal-label">PRIORITY</div>
+        <select class="modal-select" id="todo-priority">
+          <option value="normal">Normal</option>
+          <option value="high">🔥 High</option>
+          <option value="low">🟢 Low</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <div class="modal-label">DUE DATE</div>
+        <input type="date" class="modal-input" id="todo-due">
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="modal-field">
+        <div class="modal-label">TAG</div>
+        <input type="text" class="modal-input" id="todo-tag" placeholder="e.g. Work, Personal...">
+      </div>
+      <div class="modal-field">
+        <div class="modal-label">COLOR</div>
+        <div style="display:flex;gap:6px;margin-top:6px" id="todo-color-picks">
+          <div onclick="selectTodoColor('')"    data-color="" style="width:24px;height:24px;border-radius:50%;background:var(--surface3);border:2px solid var(--border2);cursor:pointer" title="None"></div>
+          <div onclick="selectTodoColor('#3b82f6')" data-color="#3b82f6" style="width:24px;height:24px;border-radius:50%;background:#3b82f6;border:2px solid transparent;cursor:pointer"></div>
+          <div onclick="selectTodoColor('#34d399')" data-color="#34d399" style="width:24px;height:24px;border-radius:50%;background:#34d399;border:2px solid transparent;cursor:pointer"></div>
+          <div onclick="selectTodoColor('#f87171')" data-color="#f87171" style="width:24px;height:24px;border-radius:50%;background:#f87171;border:2px solid transparent;cursor:pointer"></div>
+          <div onclick="selectTodoColor('#fbbf24')" data-color="#fbbf24" style="width:24px;height:24px;border-radius:50%;background:#fbbf24;border:2px solid transparent;cursor:pointer"></div>
+          <div onclick="selectTodoColor('#a78bfa')" data-color="#a78bfa" style="width:24px;height:24px;border-radius:50%;background:#a78bfa;border:2px solid transparent;cursor:pointer"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('add-todo')">Cancel</button>
+      <button class="btn btn-primary" onclick="addTodo()">Add task</button>
+    </div>
   </div>
 </div>
 
@@ -1950,6 +2175,9 @@ function safeThemeColor(value){
 // -- AUTH UI --------------------------------------
 function showChangelog(){
   const versions=[
+    {v:'v3.0.1',date:'11/06/2026',changes:['UI Redesign: auth screen plus clean et pro (card, shadows, blobs)','UI Redesign: profile select screen (avatars flotants, animations)','UI Redesign: sidebar renovee (spacing, active state, compact)','UI Redesign: panels et stat cards (radius 12px, hover subtil)','UI Redesign: modals (border-radius 16px, ombre profonde, actions avec border)','UI Redesign: boutons et inputs plus propres','UI Redesign: main content padding equilitre']},
+    {v:'v3.0.0',date:'11/06/2026',changes:['Weekly Goals: objectifs hebdo avec barre de progression + historique','Journal: entrees quotidiennes avec 7 humeurs + visualisation','Countdown: compteurs visuels vers events avec emoji et couleur','GitHub: profil, commits recents, top repos via API publique','Tasks: filtres All/Pending/Done/High + barre de recherche','Tasks: couleur par tache, due date, tag','Stats: graphiques barres activite + donut tasks + pomo chart + habits completion','Dark/Light mode: toggle instant dans la topbar','Topbar: avatar + nom du profil actif pour switcher rapidement']},
+    {v:'v2.9.3',date:'11/06/2026',changes:['Fix avatar icon missing in sidebar and banner','Fix black box when avatarImg is corrupted','Avatar fallback chain: photo > emoji > first letter','Fix avatarBg forced to black when photo uploaded','Fix updateSidebarAvatar null check']},
     {v:'v2.9.2',date:'11/06/2026',changes:['Fix animated background not shown as active on refresh','Fix custom accent color not restored on refresh','Fix bg theme buttons update instantly when entering Settings']},
     {v:'v2.9.1',date:'11/06/2026',changes:['Fix weather: IP fallback when geolocation denied + retry button','Fix QOTD: new ZenQuotes API + 2 fallbacks','Fix uploaded images: open in lightbox','Fix folders: show file list on click','Fix upload zone visual bug','Fix orphan JS syntax in fetchQuote']},
     {v:'v2.9.0',date:'07/06/2026',changes:['Auth screen: redesign complet avec glassmorphism et glow blobs','Auth: bouton show/hide password (👁)','Auth: Enter pour passer au champ suivant','Profile select: redesign clean avec fond animé','Settings Profil: XP + système de niveaux basé sur activité','Settings Profil: stats rapides (tasks, pomodoro, streak, notes)','Settings Profil: champ Bio','Settings Profil: liens sociaux (Twitter, GitHub, site, Instagram)','Profile banner: affiche bio + liens sociaux + badge niveau','Tout sauvegardé dans le cloud']},
@@ -2132,8 +2360,8 @@ async function loadCloudState(){
         id:d.id,
         _dbId:d.id,
         name:d.profile_name,
-        avatarEmoji:s.avatarImg?null:(s.avatarEmoji||av.e),
-        avatarBg:s.avatarImg?'#1e1e24':(s.avatarBg||av.b),
+        avatarEmoji:s.avatarEmoji||av.e,
+        avatarBg:s.avatarBg||av.b,
         avatarImg:s.avatarImg||null,
         avatarIdx:idx,
         password:s.password||null,
@@ -2161,6 +2389,9 @@ async function loadCloudState(){
           notifEnabled:s.notifEnabled||false,
           bio:s.bio||'',
           socials:s.socials||{},
+          goals:s.goals||[],
+          journal:s.journal||[],
+          countdowns:s.countdowns||[],
           banner:s.banner||null,
           themeIdx:s.themeIdx||0,
         }
@@ -2471,15 +2702,18 @@ async function saveStateNow(){
 }
 function getP(id){return profiles.find(p=>p.id===id)}
 function curP(){return getP(currentId)}
-function defState(name){return{items:[],todos:[],note:'',notes:[],activity:[],username:name||'User',connections:{},gaming:{},habits:[],kanban:[],events:[],pinned:[],manualBadges:{},banner:null,countdown:null,pomoHistory:[],notifEnabled:false,bio:'',socials:{}}}
+function defState(name){return{items:[],todos:[],note:'',notes:[],activity:[],username:name||'User',connections:{},gaming:{},habits:[],kanban:[],events:[],pinned:[],manualBadges:{},banner:null,countdown:null,pomoHistory:[],notifEnabled:false,bio:'',socials:{},goals:[],journal:[],countdowns:[]}}
 
 // ===================================================
 //  AVATAR HELPERS
 // ===================================================
 function avatarHTML(p,size,r){
-  if(p.avatarImg)return '<img src="'+p.avatarImg+'" style="width:'+size+'px;height:'+size+'px;object-fit:cover;border-radius:'+r+'px;display:block">';
-  if(p.avatarEmoji)return '<span style="font-size:'+Math.round(size*.38)+'px">'+p.avatarEmoji+'</span>';
-  return '<span style="font-size:'+Math.round(size*.36)+'px;font-weight:600">'+(p.name||'U')[0].toUpperCase()+'</span>';
+  if(p.avatarImg){
+    return `<img src="${p.avatarImg}" style="width:${size}px;height:${size}px;object-fit:cover;border-radius:${r}px;display:block" onerror="this.outerHTML='<span style=\\"font-size:${Math.round(size*.36)}px;font-weight:600\\">${(p.name||'U')[0].toUpperCase()}</span>'">`; 
+  }
+  if(p.avatarEmoji)return `<span style="font-size:${Math.round(size*.38)}px">${p.avatarEmoji}</span>`;
+  // Fallback: first letter of name with accent color
+  return `<span style="font-size:${Math.round(size*.4)}px;font-weight:700;color:var(--accent)">${(p.name||'U')[0].toUpperCase()}</span>`;
 }
 
 // ===================================================
@@ -2802,6 +3036,8 @@ function initDashboard(){
   pomoRemaining=POMO_MODES[0].duration;renderPomo();
   setTimeout(restorePomoIfRunning,800);
   initNotifState(p);
+  updateTopbarProfile();
+  initDarkMode();
   loadConnectionsUI();
   refreshDiscordSidebar();
   // Start Lanyard WebSocket for real-time updates
@@ -2830,7 +3066,8 @@ function initDashboard(){
 function updateSidebarAvatar(){
   const p=curP();if(!p)return;
   const el=document.getElementById('sidebar-avatar');
-  el.style.background=p.avatarBg||'#1e1e24';
+  if(!el)return;
+  el.style.background=p.avatarImg?'transparent':(p.avatarBg||'var(--surface3)');
   el.innerHTML=avatarHTML(p,34,8);
 }
 
@@ -3163,6 +3400,11 @@ function switchPage(page,navEl){
   if(page==='files')renderItems();
   if(page==='todos')renderTodos();
   if(page==='notes'){initNotes();}
+  if(page==='stats'){renderStatsPage();}
+  if(page==='goals'){renderGoals();}
+  if(page==='journal'){renderJournal();}
+  if(page==='countdown'){renderCountdowns();}
+  if(page==='github'){refreshGithub();}
   if(page==='settings'){document.getElementById('settings-name').value=p.name;updateSettingsPreview();loadSecuritySettings();loadBannerSettings();renderBgThemeBtns();}
   if(page==='connections')loadConnectionsUI();
   if(page==='gaming')loadGamingUI();
@@ -3725,42 +3967,595 @@ function clearNote(){
 // ===================================================
 //  TODOS
 // ===================================================
+let _todoColor='', _todoFilter='all';
+
+function selectTodoColor(c){
+  _todoColor=c;
+  document.querySelectorAll('#todo-color-picks div').forEach(d=>{
+    d.style.border=d.dataset.color===c?'2.5px solid var(--text)':'2px solid transparent';
+    if(d.dataset.color===''&&c==='')d.style.border='2.5px solid var(--text)';
+  });
+}
+
+function setTodoFilter(f){
+  _todoFilter=f;
+  ['all','pending','done','high'].forEach(t=>{
+    const btn=document.getElementById('tf-'+t);
+    if(btn){btn.style.background=t===f?'var(--accent)':'none';btn.style.color=t===f?'#fff':'var(--muted)';}
+  });
+  renderTodos();
+}
+
 function addTodo(){
   const p=curP();if(!p)return;
   const text=document.getElementById('todo-text').value.trim();
-  if(!text){toast('Enter a task','error');return}
+  if(!text){toast('Enter a task','error');return;}
   const priority=document.getElementById('todo-priority').value;
-  const todo={id:Date.now(),text,priority,done:false,date:new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short'})};
+  const due=document.getElementById('todo-due').value;
+  const tag=document.getElementById('todo-tag').value.trim();
+  const todo={id:Date.now(),text,priority,done:false,color:_todoColor,due,tag,
+    date:new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short'})};
   p.state.todos.unshift(todo);saveStateNow();closeModal('add-todo');
-  document.getElementById('todo-text').value='';
+  ['todo-text','todo-due','todo-tag'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  _todoColor='';selectTodoColor('');
   renderTodos();updateStats();
   addActivity('New task: '+text,'var(--accent2)');toast('Task added!','success');
 }
+
 function toggleTodo(id){
   const p=curP();if(!p)return;
   const t=p.state.todos.find(t=>t.id===id);if(!t)return;
-  t.done=!t.done;saveStateNow();renderTodos();updateStats();
-  if(t.done)addActivity(t.text+' completed','var(--accent2)');
+  t.done=!t.done;if(t.done)t.doneAt=new Date().toISOString();
+  saveStateNow();renderTodos();updateStats();
+  if(t.done){addActivity(t.text+' completed ✅','var(--accent2)');toast('Task done! 🎉','success');}
 }
-function deleteTodo(id){const p=curP();if(!p)return;p.state.todos=p.state.todos.filter(t=>!t.id||t.id!==id);saveStateNow();renderTodos();updateStats()}
-function clearDone(){const p=curP();if(!p)return;p.state.todos=p.state.todos.filter(t=>!t.done);saveStateNow();renderTodos();updateStats();toast('Cleared','info')}
+
+function deleteTodo(id){
+  const p=curP();if(!p)return;
+  p.state.todos=p.state.todos.filter(t=>t.id!==id);
+  saveStateNow();renderTodos();updateStats();
+}
+
+function clearDone(){
+  const p=curP();if(!p)return;
+  p.state.todos=p.state.todos.filter(t=>!t.done);
+  saveStateNow();renderTodos();updateStats();toast('Cleared','info');
+}
+
 function renderTodos(){
   const p=curP(),todos=p?(p.state.todos||[]):[];
-  const pending=todos.filter(t=>!t.done),done=todos.filter(t=>t.done);
-  const pi={high:'\uD83D\uDD34 ',normal:'',low:'\uD83D\uDFE2 '};
-  const pL=document.getElementById('todo-pending-list'),dL=document.getElementById('todo-done-list'),pc=document.getElementById('todo-pending-count');
+  const search=(document.getElementById('todo-search')?.value||'').toLowerCase();
+  const filter=_todoFilter||'all';
+
+  let filtered=todos;
+  if(search)filtered=filtered.filter(t=>t.text.toLowerCase().includes(search)||(t.tag||'').toLowerCase().includes(search));
+  if(filter==='pending')filtered=filtered.filter(t=>!t.done);
+  else if(filter==='done')filtered=filtered.filter(t=>t.done);
+  else if(filter==='high')filtered=filtered.filter(t=>t.priority==='high');
+
+  const pending=filtered.filter(t=>!t.done),done=filtered.filter(t=>t.done);
+  const pL=document.getElementById('todo-pending-list'),dL=document.getElementById('todo-done-list');
+  const pc=document.getElementById('todo-pending-count');
   if(pc)pc.textContent=pending.length+' pending';
-  if(pL)pL.innerHTML=!pending.length?'<div class="empty-state" style="padding:20px"><div class="empty-icon"></div>All done!</div>':pending.map(t=>'<div class="todo-item" onclick="toggleTodo('+t.id+')"><div class="todo-check"></div><div class="todo-text">'+(pi[t.priority]||'')+escapeHTML(t.text)+'</div><button class="item-btn" onclick="event.stopPropagation();deleteTodo('+t.id+')" style="opacity:.5"></button></div>').join('');
-  if(dL)dL.innerHTML=!done.length?'<div class="empty-state" style="padding:20px"><div class="empty-icon"></div>Nothing completed yet</div>':done.map(t=>'<div class="todo-item" onclick="toggleTodo('+t.id+')"><div class="todo-check checked"></div><div class="todo-text done">'+escapeHTML(t.text)+'</div><button class="item-btn" onclick="event.stopPropagation();deleteTodo('+t.id+')" style="opacity:.5"></button></div>').join('');
+
+  const renderItem=(t,isDone)=>{
+    const pIcon={high:'🔥',low:'🟢',normal:''}[t.priority]||'';
+    const today=new Date().toLocaleDateString('en-CA');
+    const overdue=t.due&&!t.done&&t.due<today;
+    const dueStr=t.due?`<span style="font-size:10px;color:${overdue?'var(--accent3)':'var(--muted)'}">📅 ${new Date(t.due+'T12:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}${overdue?' ⚠️':''}</span>`:'';
+    const tagStr=t.tag?`<span style="font-size:10px;background:var(--surface3);padding:1px 7px;border-radius:10px;color:var(--muted)">${escapeHTML(t.tag)}</span>`:'';
+    const colorBar=t.color?`style="border-left:3px solid ${t.color}"`:'' ;
+    return `<div class="todo-item" ${colorBar} onclick="toggleTodo(${t.id})">
+      <div class="todo-check${isDone?' checked':''}"></div>
+      <div style="flex:1;min-width:0">
+        <div class="todo-text${isDone?' done':''}">${pIcon} ${escapeHTML(t.text)}</div>
+        <div style="display:flex;gap:6px;margin-top:3px;flex-wrap:wrap">${dueStr}${tagStr}</div>
+      </div>
+      <button class="item-btn" onclick="event.stopPropagation();deleteTodo(${t.id})" style="opacity:.5;flex-shrink:0">🗑️</button>
+    </div>`;
+  };
+
+  if(pL)pL.innerHTML=!pending.length?'<div class="empty-state" style="padding:20px"><div class="empty-icon">🎉</div>All done!</div>':pending.map(t=>renderItem(t,false)).join('');
+  if(dL)dL.innerHTML=!done.length?'<div class="empty-state" style="padding:20px"><div class="empty-icon">📋</div>Nothing completed yet</div>':done.map(t=>renderItem(t,true)).join('');
+
+  // Overview mini-list
   const ov=document.getElementById('overview-todos');
-  if(ov)ov.innerHTML=!pending.length?'<div class="empty-state" style="padding:16px"><div style="font-size:20px;margin-bottom:6px"></div>No pending tasks!</div>':pending.slice(0,3).map(t=>'<div class="todo-item" onclick="toggleTodo('+t.id+')"><div class="todo-check"></div><div class="todo-text">'+escapeHTML(t.text)+'</div></div>').join('');
-  const badge=document.getElementById('todo-count');if(badge)badge.textContent=pending.length;
+  const allPending=todos.filter(t=>!t.done);
+  if(ov)ov.innerHTML=!allPending.length?'<div class="empty-state" style="padding:16px"><div style="font-size:20px;margin-bottom:6px">🎉</div>No pending tasks!</div>':allPending.slice(0,3).map(t=>`<div class="todo-item" onclick="toggleTodo(${t.id})"><div class="todo-check"></div><div class="todo-text">${escapeHTML(t.text)}</div></div>`).join('');
+  const badge=document.getElementById('todo-count');if(badge)badge.textContent=allPending.length||'';
 }
 
+// ===================================================
+//  DARK / LIGHT MODE
+// ===================================================
+let _darkMode=true;
+function toggleDarkLight(){
+  _darkMode=!_darkMode;
+  const btn=document.getElementById('theme-mode-btn');
+  if(_darkMode){
+    document.documentElement.style.removeProperty('--bg');
+    document.documentElement.style.removeProperty('--surface');
+    document.documentElement.style.removeProperty('--surface2');
+    document.documentElement.style.removeProperty('--surface3');
+    document.documentElement.style.removeProperty('--text');
+    document.documentElement.style.removeProperty('--muted');
+    document.documentElement.style.removeProperty('--border');
+    document.documentElement.style.removeProperty('--border2');
+    if(btn)btn.textContent='🌙';
+  } else {
+    document.documentElement.style.setProperty('--bg','#f0f2f7');
+    document.documentElement.style.setProperty('--surface','#ffffff');
+    document.documentElement.style.setProperty('--surface2','#f5f7fb');
+    document.documentElement.style.setProperty('--surface3','#e8ecf4');
+    document.documentElement.style.setProperty('--text','#0f1724');
+    document.documentElement.style.setProperty('--muted','#6b7a99');
+    document.documentElement.style.setProperty('--border','rgba(0,0,0,.08)');
+    document.documentElement.style.setProperty('--border2','rgba(0,0,0,.12)');
+    if(btn)btn.textContent='☀️';
+  }
+  // Save preference
+  localStorage.setItem('darkMode',_darkMode?'1':'0');
+  const p=curP();if(p){p.darkMode=_darkMode;saveStateNow();}
+}
+function initDarkMode(){
+  const saved=localStorage.getItem('darkMode');
+  if(saved==='0'){_darkMode=true;toggleDarkLight();}
+}
 
 // ===================================================
-//  STATS
+//  TOPBAR PROFILE SHORTCUT
 // ===================================================
+function updateTopbarProfile(){
+  const p=curP();if(!p)return;
+  const av=document.getElementById('topbar-avatar');
+  const un=document.getElementById('topbar-username');
+  if(av){av.style.background=p.avatarImg?'transparent':(p.avatarBg||'var(--surface3)');av.innerHTML=avatarHTML(p,26,6);}
+  if(un)un.textContent=p.name||'User';
+}
+
+// ===================================================
+//  WEEKLY GOALS
+// ===================================================
+function addGoal(){
+  const p=curP();if(!p)return;
+  const text=document.getElementById('goal-text').value.trim();
+  if(!text){toast('Enter a goal','error');return;}
+  const target=parseInt(document.getElementById('goal-target').value)||0;
+  const unit=document.getElementById('goal-unit').value.trim();
+  const emoji=document.getElementById('goal-emoji').value||'🎯';
+  const weekStart=getWeekStart();
+  if(!p.state.goals)p.state.goals=[];
+  p.state.goals.push({id:Date.now(),text,target,unit,emoji,progress:0,done:false,week:weekStart,created:new Date().toISOString()});
+  saveStateNow();closeModal('add-goal');
+  ['goal-text','goal-target','goal-unit','goal-emoji'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  renderGoals();toast('Goal added! 🎯','success');
+}
+
+function getWeekStart(){
+  const d=new Date();d.setHours(0,0,0,0);
+  d.setDate(d.getDate()-d.getDay()+1);
+  return d.toLocaleDateString('en-CA');
+}
+
+function incrementGoal(id,delta){
+  const p=curP();if(!p)return;
+  const g=(p.state.goals||[]).find(g=>g.id===id);if(!g)return;
+  g.progress=Math.max(0,(g.progress||0)+delta);
+  if(g.target>0&&g.progress>=g.target){g.done=true;if(delta>0)toast(g.emoji+' Goal complete!','success');}
+  else g.done=false;
+  saveStateNow();renderGoals();
+}
+
+function deleteGoal(id){
+  const p=curP();if(!p)return;
+  p.state.goals=(p.state.goals||[]).filter(g=>g.id!==id);
+  saveStateNow();renderGoals();
+}
+
+function renderGoals(){
+  const p=curP();if(!p)return;
+  const week=getWeekStart();
+  const all=p.state.goals||[];
+  const thisWeek=all.filter(g=>g.week===week);
+  const past=all.filter(g=>g.week!==week).sort((a,b)=>b.week.localeCompare(a.week));
+
+  const listEl=document.getElementById('goals-list');
+  const overallPct=document.getElementById('goals-overall-pct');
+  const overallBar=document.getElementById('goals-overall-bar');
+  const weekLabel=document.getElementById('goals-week-label');
+  const histEl=document.getElementById('goals-history');
+
+  if(weekLabel){const d=new Date(week);weekLabel.textContent='Week of '+d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});}
+
+  if(!listEl)return;
+  if(!thisWeek.length){
+    listEl.innerHTML='<div class="empty-state" style="padding:20px"><div class="empty-icon">🎯</div>No goals this week</div>';
+    if(overallPct)overallPct.textContent='0%';
+    if(overallBar)overallBar.style.width='0%';
+  } else {
+    const doneCount=thisWeek.filter(g=>g.done).length;
+    const pct=Math.round((doneCount/thisWeek.length)*100);
+    if(overallPct){overallPct.textContent=pct+'%';overallPct.style.color=pct>=100?'var(--accent2)':'var(--accent)';}
+    if(overallBar)overallBar.style.width=pct+'%';
+    listEl.innerHTML=thisWeek.map(g=>{
+      const hasTarget=g.target>0;
+      const prog=g.progress||0;
+      const barPct=hasTarget?Math.min(100,Math.round((prog/g.target)*100)):g.done?100:0;
+      return `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;${g.done?'opacity:.75':''}">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <span style="font-size:20px">${g.emoji}</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:600;${g.done?'text-decoration:line-through;color:var(--muted)':''}">${escapeHTML(g.text)}</div>
+            ${hasTarget?`<div style="font-size:11px;color:var(--muted)">${prog} / ${g.target} ${escapeHTML(g.unit)}</div>`:''}
+          </div>
+          <div style="display:flex;gap:4px;flex-shrink:0">
+            ${hasTarget?`<button onclick="incrementGoal(${g.id},-1)" style="background:var(--surface3);border:1px solid var(--border2);border-radius:6px;color:var(--text);width:26px;height:26px;cursor:pointer;font-size:14px">−</button>
+            <button onclick="incrementGoal(${g.id},1)" style="background:var(--accent);border:none;border-radius:6px;color:#fff;width:26px;height:26px;cursor:pointer;font-size:14px">+</button>`
+            :`<button onclick="incrementGoal(${g.id},${g.done?-1:1})" style="background:${g.done?'var(--surface3)':'var(--accent2)'};border:none;border-radius:6px;color:#fff;padding:3px 10px;cursor:pointer;font-size:12px">${g.done?'Undo':'Done'}</button>`}
+            <button onclick="deleteGoal(${g.id})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:0 4px">🗑</button>
+          </div>
+        </div>
+        ${hasTarget?`<div style="height:4px;background:var(--surface3);border-radius:99px;overflow:hidden"><div style="height:100%;width:${barPct}%;background:${barPct>=100?'var(--accent2)':'var(--accent)'};border-radius:99px;transition:width .3s ease"></div></div>`:''}
+      </div>`;
+    }).join('');
+  }
+
+  // Past weeks history
+  if(histEl){
+    const pastWeeks=[...new Set(past.map(g=>g.week))].slice(0,4);
+    histEl.innerHTML=!pastWeeks.length?'<div style="font-size:12px;color:var(--muted);text-align:center;padding:16px">No past weeks</div>':
+    pastWeeks.map(w=>{
+      const wGoals=past.filter(g=>g.week===w);
+      const done=wGoals.filter(g=>g.done).length;
+      const pct=Math.round((done/wGoals.length)*100);
+      const d=new Date(w);
+      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+        <div style="flex:1;font-size:12px;color:var(--muted)">${d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}</div>
+        <div style="font-size:12px;font-weight:600;color:${pct>=100?'var(--accent2)':'var(--text)'}">${done}/${wGoals.length} (${pct}%)</div>
+      </div>`;
+    }).join('');
+  }
+}
+
+// ===================================================
+//  JOURNAL
+// ===================================================
+let _selectedMood='';
+
+function selectMood(emoji,label){
+  _selectedMood=emoji;
+  document.querySelectorAll('#journal-mood-picks button').forEach(b=>{
+    const active=b.dataset.mood===emoji;
+    b.style.background=active?'var(--accent)':'none';
+    b.style.color=active?'#fff':'var(--text)';
+    b.style.borderColor=active?'var(--accent)':'var(--border2)';
+  });
+}
+
+function addJournalEntry(){
+  const p=curP();if(!p)return;
+  const text=document.getElementById('journal-text').value.trim();
+  if(!text&&!_selectedMood){toast('Write something or select a mood','error');return;}
+  const title=document.getElementById('journal-title').value.trim();
+  if(!p.state.journal)p.state.journal=[];
+  const today=new Date().toLocaleDateString('en-CA');
+  // Replace today's entry if exists
+  const existing=p.state.journal.find(e=>e.date===today);
+  if(existing){existing.text=text;existing.mood=_selectedMood;existing.title=title;existing.updated=new Date().toISOString();}
+  else{p.state.journal.push({id:Date.now(),date:today,text,mood:_selectedMood,title,created:new Date().toISOString()});}
+  p.state.journal=p.state.journal.slice(-365); // keep 1 year
+  saveStateNow();closeModal('add-journal');
+  document.getElementById('journal-text').value='';
+  document.getElementById('journal-title').value='';
+  _selectedMood='';
+  document.querySelectorAll('#journal-mood-picks button').forEach(b=>{b.style.background='none';b.style.color='var(--text)';b.style.borderColor='var(--border2)';});
+  renderJournal();toast('Entry saved 📖','success');
+}
+
+function renderJournal(){
+  const p=curP();if(!p)return;
+  const entries=(p.state.journal||[]).sort((a,b)=>b.date.localeCompare(a.date));
+  const listEl=document.getElementById('journal-entries-list');
+  const contentEl=document.getElementById('journal-entry-content');
+  if(!listEl)return;
+  if(!entries.length){
+    listEl.innerHTML='<div style="font-size:11px;color:var(--muted);text-align:center;padding:12px">No entries yet</div>';
+    return;
+  }
+  listEl.innerHTML=entries.map((e,i)=>{
+    const d=new Date(e.date);
+    const isToday=e.date===new Date().toLocaleDateString('en-CA');
+    return `<div onclick="showJournalEntry(${e.id||i})" style="padding:8px 10px;border-radius:6px;cursor:pointer;background:var(--surface2);border:1px solid var(--border);transition:all .15s">
+      <div style="display:flex;align-items:center;gap:6px">
+        ${e.mood?`<span style="font-size:14px">${e.mood}</span>`:''}
+        <div style="flex:1;min-width:0">
+          <div style="font-size:11px;font-weight:600;color:var(--muted)">${isToday?'Today':d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}</div>
+          ${e.title?`<div style="font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHTML(e.title)}</div>`:''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  // Show most recent entry
+  if(entries[0])showJournalEntryData(entries[0]);
+}
+
+function showJournalEntry(id){
+  const p=curP();if(!p)return;
+  const e=(p.state.journal||[]).find(e=>e.id===id||(e.id&&e.id===id));
+  if(e)showJournalEntryData(e);
+}
+
+function showJournalEntryData(e){
+  const contentEl=document.getElementById('journal-entry-content');
+  if(!contentEl)return;
+  const d=new Date(e.date);
+  contentEl.innerHTML=`<div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border)">
+      ${e.mood?`<div style="font-size:36px">${e.mood}</div>`:''}
+      <div>
+        <div style="font-size:16px;font-weight:700">${e.title?escapeHTML(e.title):'Journal entry'}</div>
+        <div style="font-size:12px;color:var(--muted)">${d.toLocaleDateString('en-GB',{weekday:'long',day:'2-digit',month:'long',year:'numeric'})}</div>
+      </div>
+      <button onclick="openModal('add-journal')" style="margin-left:auto;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--muted);padding:5px 10px;cursor:pointer;font-size:12px;font-family:var(--font)">✏️ Edit today</button>
+    </div>
+    <div style="font-size:14px;line-height:1.8;white-space:pre-wrap;color:var(--text)">${escapeHTML(e.text||'')}</div>
+  </div>`;
+}
+
+// ===================================================
+//  COUNTDOWN TIMERS
+// ===================================================
+let _countdownTick=null;
+
+function addCountdown(){
+  const p=curP();if(!p)return;
+  const name=document.getElementById('cd-name').value.trim();
+  const date=document.getElementById('cd-date').value;
+  if(!name||!date){toast('Enter a name and date','error');return;}
+  const emoji=document.getElementById('cd-emoji').value||'🎉';
+  const color=document.getElementById('cd-color').value||'var(--accent)';
+  if(!p.state.countdowns)p.state.countdowns=[];
+  p.state.countdowns.push({id:Date.now(),name,date,emoji,color});
+  saveStateNow();closeModal('add-countdown');
+  ['cd-name','cd-date','cd-emoji'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  renderCountdowns();toast('Countdown added! ⏳','success');
+}
+
+function deleteCountdown(id){
+  const p=curP();if(!p)return;
+  p.state.countdowns=(p.state.countdowns||[]).filter(c=>c.id!==id);
+  saveStateNow();renderCountdowns();
+}
+
+function renderCountdowns(){
+  const p=curP();if(!p)return;
+  const grid=document.getElementById('countdown-grid');if(!grid)return;
+  const cds=(p.state.countdowns||[]).sort((a,b)=>a.date.localeCompare(b.date));
+  if(!cds.length){
+    grid.innerHTML='<div class="empty-state" style="grid-column:1/-1;padding:40px"><div style="font-size:36px;margin-bottom:12px">⏳</div><div style="font-size:15px;font-weight:600;margin-bottom:8px">No countdowns yet</div><button class="btn btn-primary" onclick="openModal(\'add-countdown\')">+ Add event</button></div>';
+    return;
+  }
+  grid.innerHTML=cds.map(c=>{
+    const target=new Date(c.date+'T00:00:00');
+    const now=new Date();
+    const diff=target-now;
+    const days=Math.ceil(diff/86400000);
+    const past=diff<0;
+    const dStr=past?`${Math.abs(days)} days ago`:(days===0?'Today!':`${days} day${days>1?'s':''} left`);
+    const h=Math.abs(Math.floor((diff%86400000)/3600000));
+    const m=Math.abs(Math.floor((diff%3600000)/60000));
+    return `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;position:relative">
+      <button onclick="deleteCountdown(${c.id})" style="position:absolute;top:8px;right:8px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px">✕</button>
+      <div style="font-size:36px;margin-bottom:8px">${c.emoji}</div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:4px">${escapeHTML(c.name)}</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:16px">${target.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}</div>
+      <div style="font-size:36px;font-weight:800;font-family:var(--mono);color:${past?'var(--muted)':'var(--accent)'};letter-spacing:-2px;line-height:1">${past?'✅':Math.abs(days)}</div>
+      <div style="font-size:12px;color:${past?'var(--muted)':'var(--text)'};margin-top:4px">${dStr}</div>
+      ${!past&&days<=1?`<div style="font-size:11px;color:var(--muted);margin-top:2px">${h}h ${m}m</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ===================================================
+//  GITHUB WIDGET
+// ===================================================
+async function connectGithub(){
+  const input=document.getElementById('github-username-input');
+  if(!input)return;
+  const username=input.value.trim();
+  if(!username){toast('Enter a username','error');return;}
+  const p=curP();if(!p)return;
+  if(!p.state.connections)p.state.connections={};
+  p.state.connections.github={username};
+  saveStateNow();refreshGithub();
+}
+
+async function refreshGithub(){
+  const p=curP();if(!p)return;
+  const username=p.state.connections?.github?.username;
+  const content=document.getElementById('github-content');
+  const sub=document.getElementById('github-sub');
+  if(!username){
+    if(content)content.innerHTML=`<div class="panel" style="max-width:480px;margin:0 auto"><div class="panel-header"><div class="panel-title">🔗 Connect GitHub</div></div><div class="modal-field"><div class="modal-label">GITHUB USERNAME</div><div style="display:flex;gap:8px"><input type="text" class="modal-input" id="github-username-input" placeholder="e.g. rub19" style="flex:1"><button class="btn btn-primary" onclick="connectGithub()">Connect</button></div></div></div>`;
+    return;
+  }
+  if(sub)sub.textContent=`@${username}`;
+  if(content)content.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">⏳ Loading...</div>';
+  try{
+    const [userRes,eventsRes,reposRes]=await Promise.all([
+      fetch(`https://api.github.com/users/${username}`,{signal:AbortSignal.timeout(6000)}),
+      fetch(`https://api.github.com/users/${username}/events/public?per_page=10`,{signal:AbortSignal.timeout(6000)}),
+      fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=5`,{signal:AbortSignal.timeout(6000)})
+    ]);
+    const user=await userRes.json();
+    const events=eventsRes.ok?await eventsRes.json():[];
+    const repos=reposRes.ok?await reposRes.json():[];
+
+    const pushEvents=events.filter(e=>e.type==='PushEvent').slice(0,5);
+    const commits=pushEvents.flatMap(e=>(e.payload?.commits||[]).slice(0,2).map(c=>({
+      sha:c.sha?.slice(0,7)||'',
+      msg:c.message?.split('\n')[0]||'',
+      repo:e.repo?.name?.split('/')[1]||e.repo?.name||'',
+      date:new Date(e.created_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short'})
+    }))).slice(0,8);
+
+    content.innerHTML=`
+      <!-- Profile card -->
+      <div class="grid-2" style="margin-bottom:16px">
+        <div class="panel" style="display:flex;align-items:center;gap:14px">
+          <img src="${user.avatar_url}" style="width:54px;height:54px;border-radius:12px;object-fit:cover" onerror="this.style.display='none'">
+          <div>
+            <div style="font-size:16px;font-weight:700">${escapeHTML(user.name||username)}</div>
+            <div style="font-size:12px;color:var(--muted)">@${escapeHTML(username)}</div>
+            ${user.bio?`<div style="font-size:12px;color:var(--muted);margin-top:4px">${escapeHTML(user.bio)}</div>`:''}
+          </div>
+        </div>
+        <div class="panel">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            ${[['Repos',user.public_repos],['Followers',user.followers],['Following',user.following],['Gists',user.public_gists]].map(([l,v])=>`<div style="text-align:center"><div style="font-size:20px;font-weight:700;color:var(--accent)">${v||0}</div><div style="font-size:11px;color:var(--muted)">${l}</div></div>`).join('')}
+          </div>
+        </div>
+      </div>
+      <!-- Recent commits -->
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">📝 Recent commits</div><a href="https://github.com/${username}" target="_blank" style="font-size:12px;color:var(--accent);text-decoration:none">View profile ↗</a></div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            ${!commits.length?'<div class="empty-state" style="padding:12px;font-size:12px">No recent commits</div>':commits.map(c=>`
+              <div style="padding:8px 10px;background:var(--surface2);border-radius:6px;border:1px solid var(--border)">
+                <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHTML(c.msg)}</div>
+                <div style="display:flex;gap:8px;margin-top:3px">
+                  <span style="font-size:10px;color:var(--accent);font-family:var(--mono)">${c.sha}</span>
+                  <span style="font-size:10px;color:var(--muted)">📁 ${escapeHTML(c.repo)}</span>
+                  <span style="font-size:10px;color:var(--muted);margin-left:auto">${c.date}</span>
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>
+        <!-- Top repos -->
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">📦 Top repositories</div></div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            ${repos.map(r=>`<a href="${r.html_url}" target="_blank" style="text-decoration:none;display:block;padding:8px 10px;background:var(--surface2);border-radius:6px;border:1px solid var(--border)">
+              <div style="font-size:12px;font-weight:600;color:var(--text)">${escapeHTML(r.name)}</div>
+              <div style="display:flex;gap:10px;margin-top:3px">
+                ${r.language?`<span style="font-size:10px;color:var(--accent)">● ${escapeHTML(r.language)}</span>`:''}
+                <span style="font-size:10px;color:var(--muted)">⭐ ${r.stargazers_count}</span>
+                <span style="font-size:10px;color:var(--muted)">🍴 ${r.forks_count}</span>
+              </div>
+            </a>`).join('')}
+          </div>
+        </div>
+      </div>`;
+  }catch(e){
+    if(content)content.innerHTML='<div class="panel" style="max-width:480px;margin:0 auto"><div class="empty-state" style="padding:20px;font-size:13px">Could not load GitHub data — rate limit or network error</div></div>';
+  }
+}
+
+// ===================================================
+//  STATS PAGE CHARTS
+// ===================================================
+function renderStatsPage(){
+  const p=curP();if(!p)return;
+  const todos=p.state.todos||[];
+  const items=p.state.items||[];
+  const habits=p.state.habits||[];
+  const pomo=p.state.pomoHistory||[];
+
+  // Summary stats
+  const setEl=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  setEl('st-total-items',items.length);
+  setEl('st-total-done',todos.filter(t=>t.done).length);
+  setEl('st-best-streak',Math.max(0,...habits.map(h=>h.streak||0)));
+  setEl('st-pomo-total',pomo.length);
+  const totalMins=Math.round(pomo.reduce((s,h)=>s+(h.duration||1500),0)/60);
+  setEl('st-pomo-time',totalMins>=60?(totalMins/60).toFixed(1)+'h focus':totalMins+'m focus');
+
+  // Activity bars (last 7 days)
+  const barsEl=document.getElementById('stats-activity-bars');
+  const labelsEl=document.getElementById('stats-activity-labels');
+  if(barsEl&&labelsEl){
+    const days=['Su','Mo','Tu','We','Th','Fr','Sa'];
+    const data=Array.from({length:7},(_,i)=>{
+      const d=new Date();d.setDate(d.getDate()-6+i);
+      const ds=d.toLocaleDateString('en-CA');
+      const acts=(p.state.activity||[]).filter(a=>a.ts&&new Date(a.ts).toLocaleDateString('en-CA')===ds).length;
+      return{day:days[d.getDay()],count:acts};
+    });
+    const maxV=Math.max(...data.map(d=>d.count),1);
+    barsEl.innerHTML=data.map(d=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px">
+      <div style="width:100%;background:var(--accent);border-radius:4px 4px 0 0;height:${Math.max(4,Math.round((d.count/maxV)*90))}px;opacity:${d.count?1:.2};transition:height .4s ease"></div>
+    </div>`).join('');
+    labelsEl.innerHTML=data.map(d=>`<div style="flex:1;text-align:center;font-size:10px;color:var(--muted)">${d.day}</div>`).join('');
+  }
+
+  // Tasks donut
+  const canvas=document.getElementById('stats-tasks-donut');
+  const legendEl=document.getElementById('stats-tasks-legend');
+  if(canvas){
+    const done=todos.filter(t=>t.done).length;
+    const pending=todos.filter(t=>!t.done&&t.priority!=='high').length;
+    const high=todos.filter(t=>!t.done&&t.priority==='high').length;
+    const total=Math.max(todos.length,1);
+    const ctx=canvas.getContext('2d');
+    ctx.clearRect(0,0,90,90);
+    const segments=[
+      {val:done,color:'#34d399'},
+      {val:pending,color:'#3b82f6'},
+      {val:high,color:'#f87171'},
+    ];
+    let start=-Math.PI/2;
+    segments.forEach(s=>{
+      if(!s.val)return;
+      const angle=(s.val/total)*Math.PI*2;
+      ctx.beginPath();ctx.moveTo(45,45);
+      ctx.arc(45,45,38,start,start+angle);
+      ctx.closePath();ctx.fillStyle=s.color;ctx.fill();
+      start+=angle;
+    });
+    // Center hole
+    ctx.beginPath();ctx.arc(45,45,24,0,Math.PI*2);ctx.fillStyle='var(--surface)';ctx.fill();
+    if(legendEl)legendEl.innerHTML=[
+      {label:'Done',val:done,color:'#34d399'},
+      {label:'Pending',val:pending,color:'#3b82f6'},
+      {label:'High priority',val:high,color:'#f87171'},
+    ].map(s=>`<div style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:${s.color};flex-shrink:0"></span><span style="color:var(--muted)">${s.label}</span><span style="font-weight:700;margin-left:auto">${s.val}</span></div>`).join('');
+  }
+
+  // Pomodoro bars
+  const pomoBars=document.getElementById('stats-pomo-bars');
+  const pomoLabels=document.getElementById('stats-pomo-labels');
+  if(pomoBars&&pomoLabels){
+    const days=['Su','Mo','Tu','We','Th','Fr','Sa'];
+    const data=Array.from({length:7},(_,i)=>{
+      const d=new Date();d.setDate(d.getDate()-6+i);
+      const ds=d.toLocaleDateString('en-CA');
+      return{day:days[d.getDay()],count:pomo.filter(h=>h.ts&&new Date(h.ts).toLocaleDateString('en-CA')===ds).length};
+    });
+    const maxV=Math.max(...data.map(d=>d.count),1);
+    pomoBars.innerHTML=data.map(d=>`<div style="flex:1;background:${d.count?'var(--accent3)':'var(--surface3)'};border-radius:4px 4px 0 0;height:${Math.max(4,Math.round((d.count/maxV)*70))}px;transition:height .4s ease"></div>`).join('');
+    pomoLabels.innerHTML=data.map(d=>`<div style="flex:1;text-align:center;font-size:10px;color:var(--muted)">${d.day}</div>`).join('');
+  }
+
+  // Habits completion
+  const habitsListEl=document.getElementById('stats-habits-list');
+  if(habitsListEl){
+    habitsListEl.innerHTML=!habits.length?'<div class="empty-state" style="padding:12px;font-size:12px">No habits tracked</div>':
+    habits.map(h=>{
+      const total=7,done=Math.min(h.streak||0,7);
+      const pct=Math.round((done/total)*100);
+      return `<div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span style="font-size:12px">${h.emoji||'💪'} ${escapeHTML(h.name)}</span>
+          <span style="font-size:12px;color:var(--muted)">🔥 ${h.streak||0} streak</span>
+        </div>
+        <div style="height:5px;background:var(--surface3);border-radius:99px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:var(--accent2);border-radius:99px;transition:width .4s ease"></div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
 function updateStats(){
   const p=curP(),items=p?(p.state.items||[]):[],todos=p?(p.state.todos||[]):[];
   const sf=document.getElementById('stat-files'),sl=document.getElementById('stat-links'),st=document.getElementById('stat-tasks'),ss=document.getElementById('stat-tasks-sub'),fc=document.getElementById('files-count');
@@ -4178,7 +4973,11 @@ const DEFAULT_NAV=[
   {id:'habits',    icon:'🌿', label:'Habits',       section:'main',    badge:''},
   {id:'kanban',    icon:'📋', label:'Kanban',       section:'main',    badge:''},
   {id:'calendar',  icon:'📅', label:'Calendar',     section:'main',    badge:''},
+  {id:'goals',     icon:'🎯', label:'Goals',        section:'main',    badge:''},
+  {id:'journal',   icon:'📖', label:'Journal',      section:'main',    badge:''},
+  {id:'countdown', icon:'⏳', label:'Countdown',    section:'main',    badge:''},
   {id:'stats',     icon:'📊', label:'Stats',        section:'main',    badge:''},
+  {id:'github',    icon:'🐙', label:'GitHub',       section:'account', badge:''},
   {id:'gaming',    icon:'🎮', label:'Gaming',       section:'account', badge:''},
   {id:'connections',icon:'🔗',label:'Connections',  section:'account', badge:''},
   {id:'settings',  icon:'⚙️', label:'Settings',     section:'account', badge:''},

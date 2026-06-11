@@ -127,7 +127,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .avatar-opt{width:52px;height:52px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;border:2px solid transparent;transition:all var(--transition-bounce)}
 .avatar-opt:hover{transform:scale(1.1);border-color:var(--accent)}
 .avatar-opt.selected{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
-.upload-zone{border:1.5px dashed var(--border2);border-radius:var(--radius-sm);padding:18px;text-align:center;cursor:pointer;transition:all var(--transition);margin-top:10px;position:relative}
+.upload-zone{border:1.5px dashed var(--border2);border-radius:var(--radius-sm);padding:18px;text-align:center;cursor:pointer;transition:all var(--transition);margin-top:10px;position:relative;overflow:hidden;min-height:60px}
 .upload-zone:hover{border-color:var(--accent);background:var(--accent-subtle)}
 .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .upload-zone-text{font-size:13px;color:var(--muted)}
@@ -809,7 +809,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     </div>
 
     <!-- Version -->
-    <div style="text-align:center;margin-top:20px;font-size:11px;color:var(--muted2);font-family:var(--mono)">v2.9.0</div>
+    <div style="text-align:center;margin-top:20px;font-size:11px;color:var(--muted2);font-family:var(--mono)">v2.9.2</div>
   </div>
 </div>
 
@@ -841,7 +841,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     </div>
 
     <!-- Version -->
-    <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="View changelog">v2.9.0 · changelog</div>
+    <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="View changelog">v2.9.2 · changelog</div>
   </div>
 </div>
 
@@ -1950,6 +1950,8 @@ function safeThemeColor(value){
 // -- AUTH UI --------------------------------------
 function showChangelog(){
   const versions=[
+    {v:'v2.9.2',date:'11/06/2026',changes:['Fix animated background not shown as active on refresh','Fix custom accent color not restored on refresh','Fix bg theme buttons update instantly when entering Settings']},
+    {v:'v2.9.1',date:'11/06/2026',changes:['Fix weather: IP fallback when geolocation denied + retry button','Fix QOTD: new ZenQuotes API + 2 fallbacks','Fix uploaded images: open in lightbox','Fix folders: show file list on click','Fix upload zone visual bug','Fix orphan JS syntax in fetchQuote']},
     {v:'v2.9.0',date:'07/06/2026',changes:['Auth screen: redesign complet avec glassmorphism et glow blobs','Auth: bouton show/hide password (👁)','Auth: Enter pour passer au champ suivant','Profile select: redesign clean avec fond animé','Settings Profil: XP + système de niveaux basé sur activité','Settings Profil: stats rapides (tasks, pomodoro, streak, notes)','Settings Profil: champ Bio','Settings Profil: liens sociaux (Twitter, GitHub, site, Instagram)','Profile banner: affiche bio + liens sociaux + badge niveau','Tout sauvegardé dans le cloud']},
     {v:'v2.8.0',date:'07/06/2026',changes:['Notes: multi-note system (créer autant de notes que voulu)','Notes: titres personnalisables','Notes: couleur par note (6 couleurs)','Notes: épingler des notes en haut de liste','Notes: mode prévisualisation Markdown (bold, italic, code, listes, headings)','Notes: toolbar de formatage (Bold, Italic, Code, H, Liste, Todo, Séparateur)','Notes: compteur chars/mots','Notes: bouton Copier','Notes: migration automatique ancienne note unique','Notes: toutes sauvegardées dans le cloud']},
     {v:'v2.7.0',date:'07/06/2026',changes:['Files & Links: new tabbed modal (Link / File / Folder / Image)','File upload with name + size display','Folder upload showing file count','Image upload with thumbnail preview','Pomodoro stats: fixed timezone for Today/Streak (use local time)','Notifications: saved to profile, restored on reload','Notification button shows ON state after refresh']},
@@ -2814,6 +2816,8 @@ function initDashboard(){
   refreshSpotifySidebar();
   applyTheme(p.themeIdx||0);
   if(p.bgTheme&&p.bgTheme!=='none')applyBgTheme(p.bgTheme);
+  // Apply custom accent if any
+  if(p.customAccent)applyCustomColor(p.customAccent);
   // Delay weather/quote to let DOM settle
   setTimeout(()=>{fetchWeather();fetchQuote();},500);
   updateBannerDisplay();
@@ -2835,6 +2839,14 @@ function updateSettingsPreview(){
   const el=document.getElementById('settings-avatar-preview');
   if(el){el.style.background=p.avatarBg||'#1e1e24';el.innerHTML=avatarHTML(p,54,11);}
   renderThemeSwatches();renderBgThemeBtns();renderSidebarCustomize();
+
+  // Restore custom color preview
+  if(p.customAccent){
+    const prev=document.getElementById('custom-color-preview');
+    const input=document.getElementById('custom-color-input');
+    if(prev)prev.style.background=p.customAccent;
+    if(input)input.value=p.customAccent;
+  }
 
   // Bio
   const bioEl=document.getElementById('settings-bio');
@@ -3151,7 +3163,7 @@ function switchPage(page,navEl){
   if(page==='files')renderItems();
   if(page==='todos')renderTodos();
   if(page==='notes'){initNotes();}
-  if(page==='settings'){document.getElementById('settings-name').value=p.name;updateSettingsPreview();loadSecuritySettings();loadBannerSettings()}
+  if(page==='settings'){document.getElementById('settings-name').value=p.name;updateSettingsPreview();loadSecuritySettings();loadBannerSettings();renderBgThemeBtns();}
   if(page==='connections')loadConnectionsUI();
   if(page==='gaming')loadGamingUI();
   if(page==='habits'){if(typeof renderHabits==='function')renderHabits();}
@@ -3461,8 +3473,45 @@ function renderItems(){
 function openItem(id){
   const p=curP();if(!p)return;
   const item=p.state.items.find(i=>i.id===id);if(!item)return;
+
+  if(item.type==='image'&&item.imageData){
+    // Show image in a lightbox
+    const overlay=document.createElement('div');
+    overlay.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out';
+    overlay.onclick=()=>overlay.remove();
+    overlay.innerHTML=`<div style="position:relative;max-width:90vw;max-height:90vh">
+      <img src="${item.imageData}" style="max-width:100%;max-height:90vh;border-radius:var(--radius);object-fit:contain;box-shadow:0 20px 60px rgba(0,0,0,.8)">
+      <button onclick="event.stopPropagation();this.closest('[style*=fixed]').remove()" style="position:absolute;top:-12px;right:-12px;background:var(--surface3);border:1px solid var(--border2);color:var(--text);border-radius:50%;width:28px;height:28px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
+      <div style="text-align:center;margin-top:10px;font-size:13px;color:rgba(255,255,255,.7)">${escapeHTML(item.name)}</div>
+    </div>`;
+    document.body.appendChild(overlay);
+    return;
+  }
+
+  if(item.type==='folder'&&item.files?.length){
+    // Show folder contents
+    const overlay=document.createElement('div');
+    overlay.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;padding:20px';
+    overlay.onclick=e=>{if(e.target===overlay)overlay.remove();};
+    const fileList=item.files.map(f=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--surface2);border-radius:6px;font-size:12px">
+      <span>📄</span><span style="flex:1">${escapeHTML(f.name)}</span>
+      <span style="color:var(--muted)">${f.size?(f.size/1024).toFixed(1)+' KB':''}</span>
+    </div>`).join('');
+    overlay.innerHTML=`<div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:24px;width:100%;max-width:480px;max-height:80vh;overflow-y:auto">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="font-size:16px;font-weight:700">📁 ${escapeHTML(item.name)}</div>
+        <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer">✕</button>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">${item.files.length} file${item.files.length>1?'s':''}</div>
+      <div style="display:flex;flex-direction:column;gap:4px">${fileList}</div>
+    </div>`;
+    document.body.appendChild(overlay);
+    return;
+  }
+
   const url=safeUrl(item.url);
   if(url)window.open(url,'_blank','noopener,noreferrer');
+  else if(!item.imageData&&!item.files)toast('No URL for this item','info');
   addActivity('Opened '+item.name,'var(--accent2)');
 }
 
@@ -5834,76 +5883,68 @@ const WMO={0:' Clear',1:' Mostly clear',2:' Partly cloudy',3:' Overcast',
 async function fetchWeather(){
   const w=document.getElementById('weather-widget');if(!w)return;
   w.innerHTML='<div class="empty-state" style="padding:12px;font-size:12px;color:var(--muted)">📍 Getting location...</div>';
-  if(!navigator.geolocation){w.innerHTML='<div class="empty-state" style="padding:12px">Geolocation not supported</div>';return;}
-  navigator.geolocation.getCurrentPosition(async pos=>{
+
+  async function doFetch(lat,lon){
+    const res=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,windspeed_10m,relative_humidity_2m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=6`,{signal:AbortSignal.timeout(8000)});
+    if(!res.ok)throw new Error('API error');
+    const data=await res.json();
+    let city='';
     try{
-      const {latitude:lat,longitude:lon}=pos.coords;
-      // Fetch current + 5 day forecast in one call
-      const res=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,windspeed_10m,relative_humidity_2m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=6`);
-      if(!res.ok)throw new Error('API error');
-      const data=await res.json();
-
-      // City name
-      let city='';
-      try{
-        const gr=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,{headers:{'Accept-Language':'en'}});
-        const gd=await gr.json();
-        city=gd.address?.city||gd.address?.town||gd.address?.village||gd.address?.county||'';
-      }catch(e){}
-
-      const cur=data.current;
-      const temp=Math.round(cur.temperature_2m);
-      const feels=Math.round(cur.apparent_temperature);
-      const code=cur.weather_code;
-      const desc=WMO[code]||'☁️ Unknown';
-      const icon=desc.split(' ')[0];
-      const text=desc.split(' ').slice(1).join(' ');
-      const wind=Math.round(cur.windspeed_10m);
-      const hum=cur.relative_humidity_2m;
-
-      // 5-day forecast (skip today index 0)
-      const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-      const daily=data.daily;
-      const forecastHtml=daily.time.slice(1,6).map((date,i)=>{
-        const d=new Date(date);
-        const dayLabel=days[d.getDay()];
-        const dc=daily.weather_code[i+1];
-        const dIcon=(WMO[dc]||'☁️ ?').split(' ')[0];
-        const hi=Math.round(daily.temperature_2m_max[i+1]);
-        const lo=Math.round(daily.temperature_2m_min[i+1]);
-        const rain=daily.precipitation_probability_max[i+1]||0;
-        return `<div style="flex:1;text-align:center;background:var(--surface2);border-radius:var(--radius-sm);padding:8px 4px;border:1px solid var(--border)">
-          <div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">${dayLabel}</div>
-          <div style="font-size:20px;margin:4px 0">${dIcon}</div>
-          <div style="font-size:12px;font-weight:700">${hi}°</div>
-          <div style="font-size:11px;color:var(--muted)">${lo}°</div>
-          ${rain>20?`<div style="font-size:10px;color:#60a5fa;margin-top:2px">💧${rain}%</div>`:''}
-        </div>`;
-      }).join('');
-
-      w.innerHTML=`
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-          <div style="font-size:48px;line-height:1">${icon}</div>
-          <div style="flex:1">
-            <div style="display:flex;align-items:baseline;gap:6px">
-              <div style="font-size:36px;font-weight:300;font-family:var(--mono);letter-spacing:-2px">${temp}°C</div>
-              <div style="font-size:13px;color:var(--muted)">Feels ${feels}°</div>
-            </div>
-            <div style="font-size:13px;color:var(--text);margin-top:2px">${text}</div>
-            ${city?`<div style="font-size:11px;color:var(--muted);margin-top:3px">📍 ${city}</div>`:''}
-          </div>
-          <div style="text-align:right;font-size:12px;color:var(--muted)">
-            <div>💨 ${wind} km/h</div>
-            <div style="margin-top:4px">💧 ${hum}%</div>
-          </div>
+      const gr=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,{headers:{'Accept-Language':'en'},signal:AbortSignal.timeout(4000)});
+      const gd=await gr.json();
+      city=gd.address?.city||gd.address?.town||gd.address?.village||gd.address?.county||'';
+    }catch(e){}
+    const cur=data.current;
+    const temp=Math.round(cur.temperature_2m),feels=Math.round(cur.apparent_temperature);
+    const code=cur.weather_code,desc=WMO[code]||'☁️ Unknown';
+    const icon=desc.split(' ')[0],text=desc.split(' ').slice(1).join(' ');
+    const wind=Math.round(cur.windspeed_10m),hum=cur.relative_humidity_2m;
+    const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const daily=data.daily;
+    const forecastHtml=daily.time.slice(1,6).map((date,i)=>{
+      const d=new Date(date),dc=daily.weather_code[i+1];
+      const dIcon=(WMO[dc]||'☁️ ?').split(' ')[0];
+      const hi=Math.round(daily.temperature_2m_max[i+1]),lo=Math.round(daily.temperature_2m_min[i+1]);
+      const rain=daily.precipitation_probability_max[i+1]||0;
+      return `<div style="flex:1;text-align:center;background:var(--surface2);border-radius:var(--radius-sm);padding:8px 4px;border:1px solid var(--border)">
+        <div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">${days[d.getDay()]}</div>
+        <div style="font-size:20px;margin:4px 0">${dIcon}</div>
+        <div style="font-size:12px;font-weight:700">${hi}°</div>
+        <div style="font-size:11px;color:var(--muted)">${lo}°</div>
+        ${rain>20?`<div style="font-size:10px;color:#60a5fa;margin-top:2px">💧${rain}%</div>`:''}
+      </div>`;
+    }).join('');
+    w.innerHTML=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <div style="font-size:48px;line-height:1">${icon}</div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:baseline;gap:6px">
+          <div style="font-size:36px;font-weight:300;font-family:var(--mono);letter-spacing:-2px">${temp}°C</div>
+          <div style="font-size:13px;color:var(--muted)">Feels ${feels}°</div>
         </div>
-        <div style="display:flex;gap:6px">${forecastHtml}</div>`;
-    }catch(e){
-      w.innerHTML='<div class="empty-state" style="padding:12px;font-size:12px">Could not load weather — check location permissions</div>';
-    }
-  },()=>{
-    w.innerHTML='<div class="empty-state" style="padding:12px;font-size:12px;color:var(--muted)">Location denied — click ↻ to retry</div>';
-  },{timeout:10000});
+        <div style="font-size:13px;margin-top:2px">${text}</div>
+        ${city?`<div style="font-size:11px;color:var(--muted);margin-top:3px">📍 ${escapeHTML(city)}</div>`:''}
+      </div>
+      <div style="text-align:right;font-size:12px;color:var(--muted)"><div>💨 ${wind} km/h</div><div style="margin-top:4px">💧 ${hum}%</div></div>
+    </div><div style="display:flex;gap:6px">${forecastHtml}</div>`;
+  }
+
+  // Try GPS first, fallback to IP location
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(
+      async pos=>{try{await doFetch(pos.coords.latitude,pos.coords.longitude);}catch(e){w.innerHTML='<div class="empty-state" style="padding:12px;font-size:12px">Could not load weather — <button onclick="fetchWeather()" style="background:none;border:none;color:var(--accent);cursor:pointer;font-family:var(--font);font-size:12px">retry</button></div>';}},
+      async ()=>{
+        try{
+          const geo=await fetch('https://ipapi.co/json/',{signal:AbortSignal.timeout(5000)}).then(r=>r.json());
+          if(geo?.latitude)await doFetch(geo.latitude,geo.longitude);
+          else throw new Error();
+        }catch(e){w.innerHTML='<div class="empty-state" style="padding:12px;font-size:12px;color:var(--muted)">📍 Allow location or <button onclick="fetchWeather()" style="background:none;border:none;color:var(--accent);cursor:pointer;font-family:var(--font);font-size:12px">retry</button></div>';}
+      },
+      {timeout:8000}
+    );
+  } else {
+    try{const geo=await fetch('https://ipapi.co/json/',{signal:AbortSignal.timeout(5000)}).then(r=>r.json());await doFetch(geo.latitude,geo.longitude);}
+    catch(e){w.innerHTML='<div class="empty-state" style="padding:12px;font-size:12px">Geolocation not supported</div>';}
+  }
 }
 
 // ===================================================
@@ -6125,31 +6166,35 @@ async function fetchQuote(){
   const w=document.getElementById('quote-widget');if(!w)return;
   const dayIdx=new Date().getDate()%FALLBACK_QUOTES.length;
   const showQuote=(text,author)=>{
-    w.innerHTML='<div class="quote-text">\u201c'+text+'\u201d</div><div class="quote-author">\u2014 '+author+'</div>';
+    w.innerHTML='<div class="quote-text">\u201c'+escapeHTML(text)+'\u201d</div><div class="quote-author">\u2014 '+escapeHTML(author)+'</div>';
   };
-  try{
-    const controller=new AbortController();
-    const tid=setTimeout(()=>controller.abort(),3500);
-    const res=await fetch('https://api.quotable.io/quotes/random?maxLength=140',{signal:controller.signal});
-    clearTimeout(tid);
-    if(res.ok){
-      const data=await res.json();
-      const q=Array.isArray(data)?data[0]:data;
-      if(q&&q.content){showQuote(q.content,q.author);return;}
+  // Try ZenQuotes proxy (CORS-friendly)
+  const apis=[
+    async()=>{
+      const r=await fetch('https://zenquotes.io/api/today',{signal:AbortSignal.timeout(4000)});
+      if(!r.ok)throw new Error();
+      const d=await r.json();
+      if(d?.[0]?.q)return{text:d[0].q,author:d[0].a};
+    },
+    async()=>{
+      const r=await fetch('https://api.adviceslip.com/advice',{signal:AbortSignal.timeout(4000)});
+      if(!r.ok)throw new Error();
+      const d=await r.json();
+      if(d.slip?.advice)return{text:d.slip.advice,author:'Advice Slip'};
+    },
+    async()=>{
+      const r=await fetch('https://uselessfacts.jsph.pl/api/v2/facts/random?language=en',{signal:AbortSignal.timeout(4000)});
+      if(!r.ok)throw new Error();
+      const d=await r.json();
+      if(d.text)return{text:d.text,author:'Fun Fact'};
     }
-  }catch(e){}
-  try{
-    const controller2=new AbortController();
-    const tid2=setTimeout(()=>controller2.abort(),3000);
-    const res2=await fetch('https://api.adviceslip.com/advice',{signal:controller2.signal});
-    clearTimeout(tid2);
-    if(res2.ok){
-      const d=await res2.json();
-      if(d.slip?.advice){showQuote(d.slip.advice,'Advice Slip');return;}
-    }
-  }catch(e){}
-  const q=FALLBACK_QUOTES[dayIdx];
-  showQuote(q.content,q.author);
+  ];
+  for(const api of apis){
+    try{const q=await api();if(q){showQuote(q.text,q.author);return;}}catch(e){}
+  }
+  // Fallback to local quotes
+  const fb=FALLBACK_QUOTES[dayIdx];
+  showQuote(fb.q,fb.a);
 }
 
 

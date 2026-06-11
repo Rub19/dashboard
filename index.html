@@ -838,7 +838,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     </div>
 
     <!-- Version -->
-    <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="View changelog">v3.0.1 · changelog</div>
+    <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer" onclick="showChangelog()" title="View changelog">v3.0.3 · changelog</div>
   </div>
 </div>
 
@@ -945,9 +945,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
         <!-- Dark/Light toggle -->
         <button id="theme-mode-btn" onclick="toggleDarkLight()" title="Toggle dark/light mode" style="background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:7px 10px;cursor:pointer;font-size:16px;transition:all var(--transition)">🌙</button>
         <!-- Profile shortcut -->
-        <button onclick="goToProfileScreen()" title="Switch profile" style="background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:4px 10px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all var(--transition)" id="topbar-profile-btn">
-          <div id="topbar-avatar" style="width:26px;height:26px;border-radius:7px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:12px;background:var(--surface3)"></div>
-          <span id="topbar-username" style="font-size:12px;font-weight:600;color:var(--text);max-width:80px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span>
+        <button onclick="goToProfileScreen()" title="Switch profile" style="background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:5px 8px 5px 6px;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all var(--transition);max-width:160px;overflow:hidden" id="topbar-profile-btn">
+          <div id="topbar-avatar" style="width:26px;height:26px;border-radius:7px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0"></div>
+          <span id="topbar-username" style="font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1"></span>
         </button>
         <button class="btn btn-primary" onclick="openModal('add-item')"><span>+</span> Add item</button>
       </div>
@@ -2175,6 +2175,8 @@ function safeThemeColor(value){
 // -- AUTH UI --------------------------------------
 function showChangelog(){
   const versions=[
+    {v:'v3.0.3',date:'11/06/2026',changes:['Fix stats page blank (duplicate renderStatsPage supprime)','Fix weather auto-load: cache rendu HTML, fallback IP, retry','Fix QOTD auto-load: fallback local affiche immediatement puis API','Fix XP: null check + sources completes']},
+    {v:'v3.0.2',date:'11/06/2026',changes:['Fix avatar banner noir (background manquant)','Fix topbar profil overflow (R visible)','Fix XP: null check + toutes les sources (tasks, pomo, habits, notes, journal, goals, kanban)','Fix niveau XP affiché en temps réel sur banner','Fix renderProfileXP appele depuis updateBannerDisplay']},
     {v:'v3.0.1',date:'11/06/2026',changes:['UI Redesign: auth screen plus clean et pro (card, shadows, blobs)','UI Redesign: profile select screen (avatars flotants, animations)','UI Redesign: sidebar renovee (spacing, active state, compact)','UI Redesign: panels et stat cards (radius 12px, hover subtil)','UI Redesign: modals (border-radius 16px, ombre profonde, actions avec border)','UI Redesign: boutons et inputs plus propres','UI Redesign: main content padding equilitre']},
     {v:'v3.0.0',date:'11/06/2026',changes:['Weekly Goals: objectifs hebdo avec barre de progression + historique','Journal: entrees quotidiennes avec 7 humeurs + visualisation','Countdown: compteurs visuels vers events avec emoji et couleur','GitHub: profil, commits recents, top repos via API publique','Tasks: filtres All/Pending/Done/High + barre de recherche','Tasks: couleur par tache, due date, tag','Stats: graphiques barres activite + donut tasks + pomo chart + habits completion','Dark/Light mode: toggle instant dans la topbar','Topbar: avatar + nom du profil actif pour switcher rapidement']},
     {v:'v2.9.3',date:'11/06/2026',changes:['Fix avatar icon missing in sidebar and banner','Fix black box when avatarImg is corrupted','Avatar fallback chain: photo > emoji > first letter','Fix avatarBg forced to black when photo uploaded','Fix updateSidebarAvatar null check']},
@@ -3054,8 +3056,8 @@ function initDashboard(){
   if(p.bgTheme&&p.bgTheme!=='none')applyBgTheme(p.bgTheme);
   // Apply custom accent if any
   if(p.customAccent)applyCustomColor(p.customAccent);
-  // Delay weather/quote to let DOM settle
-  setTimeout(()=>{fetchWeather();fetchQuote();},500);
+  // Delay weather/quote to let DOM and geolocation settle
+  setTimeout(()=>{fetchWeather();fetchQuote();},800);
   updateBannerDisplay();
   renderPinnedLinks();
   renderCountdown();
@@ -3104,44 +3106,61 @@ function updateSettingsPreview(){
 }
 
 function renderProfileXP(p){
+  if(!p)return;
   const xpWidget=document.getElementById('profile-xp-widget');
   if(!xpWidget)return;
-  // Calculate XP from activity
   const xp=calcProfileXP(p);
-  const level=Math.floor(Math.sqrt(xp/50))+1;
+  // Level: 1 + floor(sqrt(xp/50)), so level 1=0xp, 2=50xp, 3=200xp, 4=450xp...
+  const level=Math.max(1,Math.floor(Math.sqrt(xp/50))+1);
   const xpForLevel=Math.pow(level-1,2)*50;
   const xpForNext=Math.pow(level,2)*50;
-  const progress=xpForNext>xpForLevel?Math.round(((xp-xpForLevel)/(xpForNext-xpForLevel))*100):100;
+  const progress=xpForNext>xpForLevel?Math.min(100,Math.round(((xp-xpForLevel)/(xpForNext-xpForLevel))*100)):100;
   const lvlEl=document.getElementById('profile-level-num');
   const xpLabel=document.getElementById('profile-xp-label');
   const xpNext=document.getElementById('profile-xp-next');
   const xpBar=document.getElementById('profile-xp-bar');
   const xpBreak=document.getElementById('profile-xp-breakdown');
   if(lvlEl)lvlEl.textContent=level;
-  if(xpLabel)xpLabel.textContent=xp.toLocaleString()+' XP';
-  if(xpNext)xpNext.textContent='Next level: '+xpForNext.toLocaleString()+' XP';
-  if(xpBar)setTimeout(()=>xpBar.style.width=progress+'%',100);
+  if(xpLabel)xpLabel.textContent=xp.toLocaleString()+' XP total';
+  if(xpNext)xpNext.textContent='Level '+(level+1)+' at '+xpForNext.toLocaleString()+' XP';
+  if(xpBar)setTimeout(()=>xpBar.style.width=progress+'%',150);
+  // Also update banner level
+  const lvlBadge=document.getElementById('profile-banner-level');
+  const lvlNum=document.getElementById('profile-banner-level-num');
+  if(lvlBadge&&lvlNum){
+    lvlBadge.style.display='block';
+    lvlNum.textContent=level;
+  }
+  // Breakdown
   if(xpBreak){
-    const breakdown=[];
-    if((p.state.todos||[]).filter(t=>t.done).length)breakdown.push((p.state.todos.filter(t=>t.done).length)+' tasks done');
-    if((p.state.pomoHistory||[]).length)breakdown.push((p.state.pomoHistory.length)+' pomodoros');
-    if((p.state.activity||[]).length)breakdown.push((p.state.activity.length)+' actions');
-    xpBreak.textContent=breakdown.join(' · ')||'Complete tasks to earn XP';
+    const s=p.state||{};
+    const parts=[];
+    const done=(s.todos||[]).filter(t=>t.done).length;
+    if(done)parts.push(done+'✅ tasks ('+(done*10)+' XP)');
+    const pomo=(s.pomoHistory||[]).length;
+    if(pomo)parts.push(pomo+'🍅 pomodoros ('+(pomo*25)+' XP)');
+    const notes=(s.notes||[]).length;
+    if(notes)parts.push(notes+'📝 notes ('+(notes*5)+' XP)');
+    const j=(s.journal||[]).length;
+    if(j)parts.push(j+'📖 journal ('+(j*8)+' XP)');
+    xpBreak.textContent=parts.length?parts.join(' · '):'Complete tasks, pomodoros, notes to earn XP';
   }
 }
 
 function calcProfileXP(p){
+  if(!p?.state)return 0;
+  const s=p.state;
   let xp=0;
-  xp+=(p.state.todos||[]).filter(t=>t.done).length*10;
-  xp+=(p.state.pomoHistory||[]).length*25;
-  xp+=(p.state.habits||[]).reduce((s,h)=>{
-    const streak=h.streak||0;return s+streak*5;
-  },0);
-  xp+=(p.state.items||[]).length*3;
-  xp+=(p.state.events||[]).length*2;
-  xp+=(p.state.notes||[]).length*5;
-  xp+=(p.state.kanban||[]).reduce((s,col)=>s+(col.cards||[]).filter(c=>c.done).length*8,0);
-  return xp;
+  xp+=(s.todos||[]).filter(t=>t.done).length*10;
+  xp+=(s.pomoHistory||[]).length*25;
+  (s.habits||[]).forEach(h=>{xp+=(h.streak||0)*5;});
+  xp+=(s.items||[]).length*3;
+  xp+=(s.events||[]).length*2;
+  xp+=(s.notes||[]).length*5;
+  xp+=(s.goals||[]).filter(g=>g.done).length*20;
+  xp+=(s.journal||[]).length*8;
+  (s.kanban||[]).forEach(col=>(col.cards||[]).forEach(c=>{if(col.id==='done'||c.done)xp+=8;}));
+  return Math.max(0,xp);
 }
 
 function renderProfileQuickStats(p){
@@ -3312,6 +3331,8 @@ function updateBannerDisplay(){
   // Bio
   const bioEl=document.getElementById('profile-banner-bio-el');
   if(bioEl)bioEl.textContent=p.state.bio||'Personal dashboard';
+  // XP level badge on banner
+  renderProfileXP(p);
 
   // Social links
   const socialsEl=document.getElementById('profile-banner-socials');
@@ -3325,15 +3346,6 @@ function updateBannerDisplay(){
     socialsEl.innerHTML=links.join('');
   }
 
-  // Level badge
-  const lvlBadge=document.getElementById('profile-banner-level');
-  const lvlNum=document.getElementById('profile-banner-level-num');
-  if(lvlBadge&&lvlNum){
-    const xp=calcProfileXP(p);
-    const level=Math.floor(Math.sqrt(xp/50))+1;
-    if(level>1||xp>0){lvlBadge.style.display='block';lvlNum.textContent=level;}
-    else lvlBadge.style.display='none';
-  }
   if(!banner||!img)return;
   if(p.bannerImg){
     img.src=p.bannerImg;img.style.display='block';
@@ -3347,7 +3359,7 @@ function updateBannerDisplay(){
   }
   // update banner avatar & name
   const bav=document.getElementById('profile-banner-avatar');
-  if(bav){bav.style.background=p.avatarBg||'#1e1e24';bav.innerHTML=avatarHTML(p,64,13)}
+  if(bav){bav.style.background=p.avatarImg?'transparent':(p.avatarBg||'var(--surface3)');bav.innerHTML=avatarHTML(p,64,13);}
   const bn=document.getElementById('profile-banner-name');
   if(bn)bn.textContent=p.name;
 }
@@ -3405,13 +3417,21 @@ function switchPage(page,navEl){
   if(page==='journal'){renderJournal();}
   if(page==='countdown'){renderCountdowns();}
   if(page==='github'){refreshGithub();}
+  // Refresh widgets when back on dashboard
+  if(page==='dashboard'){
+    const wEl=document.getElementById('weather-widget');
+    const qEl=document.getElementById('quote-widget');
+    const weatherEmpty=!wEl||wEl.querySelector('.empty-icon');
+    const quoteEmpty=!qEl||qEl.querySelector('.empty-icon');
+    if(weatherEmpty)fetchWeather();
+    if(quoteEmpty)fetchQuote();
+  }
   if(page==='settings'){document.getElementById('settings-name').value=p.name;updateSettingsPreview();loadSecuritySettings();loadBannerSettings();renderBgThemeBtns();}
   if(page==='connections')loadConnectionsUI();
   if(page==='gaming')loadGamingUI();
   if(page==='habits'){if(typeof renderHabits==='function')renderHabits();}
   if(page==='kanban'){if(typeof renderKanban==='function')renderKanban();}
   if(page==='calendar'){calYear=new Date().getFullYear();calMonth=new Date().getMonth();if(typeof renderCalendar==='function')renderCalendar();}
-  if(page==='stats'){if(typeof renderStatsPage==='function')renderStatsPage();}
 }
 
 function switchSettingsTab(tab,el){
@@ -6470,57 +6490,6 @@ function renderAllEvents(){
 // ===================================================
 //  STATS PAGE
 // ===================================================
-function renderStatsPage(){
-  const p=curP();if(!p)return;
-  const items=p.state.items||[];const todos=p.state.todos||[];
-  const habits=p.state.habits||[];
-  document.getElementById('st-total-items').textContent=items.length;
-  document.getElementById('st-total-done').textContent=todos.filter(t=>t.done).length;
-  const bestStreak=habits.reduce((mx,h)=>{let s=habitStreak(h);return s>mx?s:mx},0);
-  document.getElementById('st-best-streak').textContent=bestStreak;
-  document.getElementById('st-notes-len').textContent=(p.state.note||'').length;
-  document.getElementById('st-pomo-total').textContent=pomoCount;
-  const hrs=Math.round(pomoCount*25/60*10)/10;
-  document.getElementById('st-pomo-time').textContent=hrs+' hours of focus';
-  // activity graph (activity entries per day for last 7 days)
-  const graph=document.getElementById('activity-graph');
-  const labels=document.getElementById('activity-graph-labels');
-  if(!graph)return;
-  const act=p.state.activity||[];
-  const days=[];const today=new Date();
-  for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(today.getDate()-i);days.push(d);}
-  const counts=days.map(d=>{
-    const ds=d.toLocaleDateString('en-GB',{day:'2-digit',month:'2-digit'});
-    const ds2=d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
-    const ds3=d.toISOString().slice(0,10); // YYYY-MM-DD
-    return act.filter(a=>{
-      if(!a.time)return false;
-      return (a.date&&(a.date===ds||a.date===ds2))||(a.ts&&a.ts.startsWith(ds3));
-    }).length||0;
-  });
-  // If all zero but has activity, distribute recent ones
-  const totalAct=counts.reduce((s,c)=>s+c,0);
-  if(totalAct===0&&act.length>0){
-    // Show activity based on recency — last items go to recent days
-    act.slice(0,7).forEach((_,i)=>{if(i<7)counts[6-i]++;});
-  }
-  const maxC=Math.max(...counts,1);
-  const dayLabels=['Mo','Tu','We','Th','Fr','Sa','Su'];
-  graph.innerHTML=days.map((d,i)=>{
-    const h=Math.max(6,Math.round((counts[i]/maxC)*55));
-    const isToday=i===days.length-1;
-    return '<div class="stats-bar-wrap">'+
-      '<div class="stats-bar'+(isToday?' active-bar':'')+'" style="height:'+h+'px;opacity:'+(counts[i]>0?1:0.3)+'">'+
-        '<div class="stats-bar-tooltip">'+counts[i]+' actions</div>'+
-      '</div>'+
-    '</div>';
-  }).join('');
-  if(labels)labels.innerHTML=days.map((d,i)=>'<div class="stats-day-label" style="flex:1;text-align:center">'+dayLabels[(d.getDay()+6)%7]+'</div>').join('');
-}
-
-
-
-
 // ===================================================
 //  RESIZABLE SIDEBAR
 // ===================================================
@@ -6681,7 +6650,10 @@ const WMO={0:' Clear',1:' Mostly clear',2:' Partly cloudy',3:' Overcast',
 
 async function fetchWeather(){
   const w=document.getElementById('weather-widget');if(!w)return;
-  w.innerHTML='<div class="empty-state" style="padding:12px;font-size:12px;color:var(--muted)">📍 Getting location...</div>';
+  // Show cached instantly if available
+  const _wp=curP();const _wc=_wp?.state?.weatherCache;
+  if(_wc?.rendered){w.innerHTML=_wc.rendered;}
+  else{w.innerHTML='<div style="padding:12px;font-size:12px;color:var(--muted)">📍 Getting location...</div>';}
 
   async function doFetch(lat,lon){
     const res=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,windspeed_10m,relative_humidity_2m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=6`,{signal:AbortSignal.timeout(8000)});
@@ -6713,7 +6685,7 @@ async function fetchWeather(){
         ${rain>20?`<div style="font-size:10px;color:#60a5fa;margin-top:2px">💧${rain}%</div>`:''}
       </div>`;
     }).join('');
-    w.innerHTML=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+    const _html=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
       <div style="font-size:48px;line-height:1">${icon}</div>
       <div style="flex:1">
         <div style="display:flex;align-items:baseline;gap:6px">
@@ -6725,6 +6697,9 @@ async function fetchWeather(){
       </div>
       <div style="text-align:right;font-size:12px;color:var(--muted)"><div>💨 ${wind} km/h</div><div style="margin-top:4px">💧 ${hum}%</div></div>
     </div><div style="display:flex;gap:6px">${forecastHtml}</div>`;
+    w.innerHTML=_html;
+    // Cache rendered HTML for 1h
+    if(_p?.state){_p.state.weatherCache={lat,lon,ts:Date.now(),rendered:_html};}
   }
 
   // Try GPS first, fallback to IP location
@@ -6967,10 +6942,12 @@ async function fetchQuote(){
   const showQuote=(text,author)=>{
     w.innerHTML='<div class="quote-text">\u201c'+escapeHTML(text)+'\u201d</div><div class="quote-author">\u2014 '+escapeHTML(author)+'</div>';
   };
-  // Try ZenQuotes proxy (CORS-friendly)
+  // Show fallback immediately so widget is never empty
+  showQuote(FALLBACK_QUOTES[dayIdx].q,FALLBACK_QUOTES[dayIdx].a);
+  // Then try to fetch a better one in background
   const apis=[
     async()=>{
-      const r=await fetch('https://zenquotes.io/api/today',{signal:AbortSignal.timeout(4000)});
+      const r=await fetch('https://zenquotes.io/api/today',{signal:AbortSignal.timeout(5000)});
       if(!r.ok)throw new Error();
       const d=await r.json();
       if(d?.[0]?.q)return{text:d[0].q,author:d[0].a};
@@ -6980,20 +6957,11 @@ async function fetchQuote(){
       if(!r.ok)throw new Error();
       const d=await r.json();
       if(d.slip?.advice)return{text:d.slip.advice,author:'Advice Slip'};
-    },
-    async()=>{
-      const r=await fetch('https://uselessfacts.jsph.pl/api/v2/facts/random?language=en',{signal:AbortSignal.timeout(4000)});
-      if(!r.ok)throw new Error();
-      const d=await r.json();
-      if(d.text)return{text:d.text,author:'Fun Fact'};
     }
   ];
   for(const api of apis){
     try{const q=await api();if(q){showQuote(q.text,q.author);return;}}catch(e){}
   }
-  // Fallback to local quotes
-  const fb=FALLBACK_QUOTES[dayIdx];
-  showQuote(fb.q,fb.a);
 }
 
 

@@ -519,7 +519,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
 /* ── HAMBURGER ── */
 .hamburger{
-  display:none;position:fixed;top:12px;left:12px;z-index:500;
+  display:none!important;
   width:38px;height:38px;
   background:rgba(5,5,7,.9);border:1px solid rgba(255,255,255,.1);
   border-radius:10px;cursor:pointer;color:var(--text);
@@ -585,7 +585,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   .main{
     margin-left:0!important;
     padding:14px 14px 74px;
-    padding-top:58px;
+    padding-top:66px;
   }
 
   /* Topbar */
@@ -2461,6 +2461,36 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   border-color:rgba(249,115,22,.3)!important;
   caret-color:var(--text)!important;
 }
+
+/* ── MOBILE STICKY TOPBAR ── */
+@media(max-width:768px){
+  /* Hide desktop topbar actions on mobile, show mobile topbar instead */
+  .mobile-topbar{
+    display:flex;position:fixed;top:0;left:0;right:0;z-index:400;
+    height:54px;align-items:center;justify-content:space-between;
+    padding:0 14px;
+    background:rgba(5,5,7,.92);backdrop-filter:blur(16px);
+    border-bottom:1px solid rgba(255,255,255,.06);
+  }
+  .mobile-topbar-left{display:flex;align-items:center;gap:10px}
+  .mobile-topbar-avatar{
+    width:32px;height:32px;border-radius:9px;overflow:hidden;
+    flex-shrink:0;background:rgba(255,255,255,.07);
+    display:flex;align-items:center;justify-content:center;
+    position:relative;border:1.5px solid rgba(249,115,22,.25);
+    cursor:pointer;
+  }
+  .mobile-topbar-name{
+    font-size:14px;font-weight:700;color:var(--text);
+    letter-spacing:-.02em;font-family:'Syne',sans-serif;
+    cursor:pointer;
+  }
+  .mobile-topbar-right{display:flex;align-items:center;gap:8px}
+}
+@media(min-width:769px){
+  .mobile-topbar{display:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -3905,6 +3935,18 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
     </div>
   </div>
 
+
+<!-- VALO MATCH DETAIL MODAL -->
+<div class="modal-overlay" id="modal-valo-match" onclick="closeModalIfOverlay(event,'valo-match')" style="display:none;z-index:10100">
+  <div class="modal" style="max-width:720px;width:100%;max-height:88vh;overflow-y:auto">
+    <div class="modal-header">
+      <div class="modal-title" id="valo-match-title">Match Details</div>
+      <button class="modal-close" onclick="closeModal('valo-match')">✕</button>
+    </div>
+    <div class="modal-body" id="valo-match-body" style="padding:16px 20px"></div>
+  </div>
+</div>
+
 <!-- MODALS -->
 <!-- GOAL MODAL -->
 <div class="modal-overlay" id="modal-add-goal" onclick="closeModalIfOverlay(event,'add-goal')">
@@ -5182,6 +5224,9 @@ function initDashboard(){
   if(!_ambientFrame)startAmbientBg();
   // Init animations
   initAnimations();
+  // Show mobile topbar
+  checkMobileLayout();
+  updateTopbarProfile();
   const p=curP();if(!p)return;
   if(!p.state)p.state=defState(p.name);
   if(!p.state.connections)p.state.connections={};
@@ -6462,10 +6507,19 @@ function initDarkMode(){
 // ===================================================
 function updateTopbarProfile(){
   const p=curP();if(!p)return;
+  // Desktop topbar
   const av=document.getElementById('topbar-avatar');
   const un=document.getElementById('topbar-username');
   if(av){av.style.background=p.avatarImg?'transparent':(p.avatarBg||'var(--surface3)');av.innerHTML=avatarHTML(p,26,6);}
   if(un)un.textContent=p.name||'User';
+  // Mobile topbar
+  const mobAv=document.getElementById('mob-topbar-avatar');
+  const mobNm=document.getElementById('mob-topbar-name');
+  if(mobAv){
+    mobAv.style.background=p.avatarImg?'transparent':(p.avatarBg||'rgba(255,255,255,.08)');
+    mobAv.innerHTML=avatarHTML(p,32,7);
+  }
+  if(mobNm)mobNm.textContent=p.name||'User';
 }
 
 // ===================================================
@@ -7479,6 +7533,109 @@ let _bgFrame=null,_bgParticles=[];
 
 // ── AMBIENT BACKGROUND (always on for NEXUS v3.0.8) ──
 let _ambientFrame=null;
+
+// ── VALORANT MATCH DETAIL ──────────────────────────────────────
+function openValoMatchDetail(idx, name, tag){
+  const matchData=window._valoMatchList?.[idx];
+  if(!matchData)return;
+  const {match:m, me}=matchData;
+  const map=m.metadata?.map||'?';
+  const mode=m.metadata?.mode||'';
+  const won=m.teams?.[me.team?.toLowerCase()]?.has_won;
+  const myTeam=me.team?.toLowerCase()||'blue';
+  const theirTeam=myTeam==='red'?'blue':'red';
+  const myScore=m.teams?.[myTeam]?.rounds_won??'?';
+  const theirScore=m.teams?.[theirTeam]?.rounds_won??'?';
+  const allPlayers=m.players?.all_players||[];
+  const teamA=allPlayers.filter(p=>p.team?.toLowerCase()===myTeam).sort((a,b)=>(b.stats?.score||0)-(a.stats?.score||0));
+  const teamB=allPlayers.filter(p=>p.team?.toLowerCase()===theirTeam).sort((a,b)=>(b.stats?.score||0)-(a.stats?.score||0));
+  const mapStyle=getMapStyle(map);
+
+  function playerRow(p, highlight){
+    const k=p.stats?.kills||0,d=p.stats?.deaths||1,a=p.stats?.assists||0;
+    const hs=p.stats?.headshots||0, shots=(hs+(p.stats?.bodyshots||0)+(p.stats?.legshots||0));
+    const hsP=shots>0?Math.round((hs/shots)*100):0;
+    const rounds=(m.teams?.red?.rounds_won||0)+(m.teams?.blue?.rounds_won||0);
+    const acs=rounds>0?Math.round((p.stats?.score||0)/rounds):0;
+    const img=p.assets?.agent?.small||'';
+    const isMe=highlight;
+    return `<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;background:${isMe?'rgba(249,115,22,.08)':'rgba(255,255,255,.02)'};border:1px solid ${isMe?'rgba(249,115,22,.2)':'rgba(255,255,255,.05)'};margin-bottom:4px">
+      <div style="width:30px;height:30px;border-radius:7px;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:13px">
+        ${img?`<img src="${img}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`:''}
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12.5px;font-weight:${isMe?'700':'500'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:${isMe?'#f97316':'var(--text)'}">${escapeHTML(p.name||'?')}${p.tag?`<span style="color:var(--muted2);font-weight:400">#${escapeHTML(p.tag)}</span>`:''}</div>
+        <div style="font-size:11px;color:var(--muted2);font-family:var(--mono)">${p.character||'?'}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:13px;font-weight:700;font-family:var(--mono)">${k}/${d}/${a}</div>
+        <div style="font-size:10px;color:var(--muted2);font-family:var(--mono)">ACS ${acs} · HS ${hsP}%</div>
+      </div>
+    </div>`;
+  }
+
+  const meId=me.puuid||(me.name+'#'+me.tag);
+  const titleEl=document.getElementById('valo-match-title');
+  const bodyEl=document.getElementById('valo-match-body');
+  if(titleEl)titleEl.innerHTML=`<span style="color:${mapStyle.color};font-weight:800">${map}</span> · ${mode} · <span style="color:${won?'#34d399':'#f87171'};font-weight:800">${won?'WIN':'LOSS'} ${myScore}-${theirScore}</span>`;
+
+  let html='';
+
+  // My stats highlight
+  const k=me.stats?.kills||0,d=me.stats?.deaths||1,a=me.stats?.assists||0;
+  const hs=me.stats?.headshots||0, shots=(hs+(me.stats?.bodyshots||0)+(me.stats?.legshots||0));
+  const hsP=shots>0?Math.round((hs/shots)*100):0;
+  const rounds=(m.teams?.red?.rounds_won||0)+(m.teams?.blue?.rounds_won||0);
+  const acs=rounds>0?Math.round((me.stats?.score||0)/rounds):0;
+
+  html+=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px">
+    ${[
+      {label:'KDA',val:`${k}/${d}/${a}`},
+      {label:'ACS',val:acs},
+      {label:'HS %',val:hsP+'%'},
+      {label:'Score',val:(me.stats?.score||0).toLocaleString()},
+    ].map(s=>`<div style="background:rgba(249,115,22,.07);border:1px solid rgba(249,115,22,.15);border-radius:10px;padding:10px;text-align:center">
+      <div style="font-size:18px;font-weight:800;font-family:var(--mono);color:#f97316">${s.val}</div>
+      <div style="font-size:9px;color:var(--muted2);margin-top:2px;text-transform:uppercase;letter-spacing:.1em;font-family:var(--mono)">${s.label}</div>
+    </div>`).join('')}
+  </div>`;
+
+  // Team columns
+  html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">`;
+
+  // My team
+  html+=`<div>
+    <div style="font-size:9.5px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:${won?'#34d399':'#f87171'};font-family:var(--mono);margin-bottom:8px">Your team · ${myScore} rounds</div>`;
+  teamA.forEach(p=>{
+    const isMe=(p.puuid&&p.puuid===me.puuid)||(p.name===me.name&&p.tag===me.tag);
+    html+=playerRow(p,isMe);
+  });
+  html+=`</div>`;
+
+  // Enemy team
+  html+=`<div>
+    <div style="font-size:9.5px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:${won?'#f87171':'#34d399'};font-family:var(--mono);margin-bottom:8px">Enemy team · ${theirScore} rounds</div>`;
+  teamB.forEach(p=>{ html+=playerRow(p,false); });
+  html+=`</div>`;
+
+  html+=`</div>`;
+
+  // Economy / round info if available
+  if(m.metadata?.game_length){
+    const mins=Math.floor(m.metadata.game_length/60);
+    const secs=m.metadata.game_length%60;
+    html+=`<div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:16px;font-size:11.5px;color:var(--muted2)">
+      <span>⏱ ${mins}m${secs}s</span>
+      <span>📍 ${map}</span>
+      <span>🎮 ${mode}</span>
+      ${m.metadata?.game_start?`<span>📅 ${new Date(m.metadata.game_start*1000).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</span>`:''}
+    </div>`;
+  }
+
+  if(bodyEl)bodyEl.innerHTML=html;
+  openModal('valo-match');
+}
+
 // ══════════════════════════════════════════════
 //  NEXUS — Animation System JS
 // ══════════════════════════════════════════════
@@ -10005,7 +10162,7 @@ function renderValoModeContent(mmr,matches,name,tag,mode){
           ${agImg?`<img src="${agImg}" style="width:100%;height:100%;object-fit:cover">`:'🎮'}
         </div>
         <div style="flex:1">
-          <div style="font-size:13px;font-weight:600">${bm.me.character} · ${VALO_MAP_IMAGES[map]?`<img src="${VALO_MAP_IMAGES[map]}" style="width:28px;height:18px;object-fit:cover;border-radius:4px;vertical-align:middle;margin:0 2px" onerror="this.outerHTML=map"> `:''}<span style="color:${getMapStyle(map).color}">${map}</span></div>
+          <div style="font-size:13px;font-weight:600">${bm.me.character} · <span style="color:${getMapStyle(map).color};font-weight:700">${map}</span></div>
           <div style="font-size:12px;color:var(--muted)">${bm.k}/${bm.d}/${bm.a} · KDA ${bm.kda} · ACS ${bm.acs}</div>
         </div>
         <span style="background:rgba(251,191,36,.12);color:var(--accent4);font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px">⭐ BEST</span>
@@ -10030,9 +10187,11 @@ function renderValoModeContent(mmr,matches,name,tag,mode){
     const [map,ms]=favMap;
     const mapWR=Math.round((ms.wins/ms.games)*100);
     html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 16px;flex:1;min-width:150px;display:flex;align-items:center;gap:12px">
-      <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#a78bfa);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px">\uD83D\uDDFA\uFE0F</div>
+      <div style="width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.06);flex-shrink:0;display:flex;align-items:center;justify-content:center">
+        <svg viewBox="0 0 24 24" fill="none" stroke="${getMapStyle(map).color}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+      </div>
       <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Favorite Map</div>
-      <div style="font-size:15px;font-weight:700">${map}</div>
+      <div style="font-size:15px;font-weight:700;color:${getMapStyle(map).color}">${map}</div>
       <div style="font-size:12px;color:var(--muted)">${ms.games} matches · ${mapWR}% WR</div></div>
     </div>`;
   }
@@ -10041,7 +10200,8 @@ function renderValoModeContent(mmr,matches,name,tag,mode){
   // -- MATCH LIST (last 10) --
   html+=`<div class="lfm-section-label" style="margin-bottom:10px">Last ${Math.min(n,10)} matches</div>`;
   html+=`<div style="display:flex;flex-direction:column;gap:5px;margin-bottom:18px">`;
-  myMatches.slice(0,10).forEach(({match:m,me})=>{
+  window._valoMatchList=myMatches;
+  myMatches.slice(0,10).forEach(({match:m,me},_mIdx)=>{
     const won=m.teams?.[me.team?.toLowerCase()]?.has_won;
     const k=me.stats?.kills||0,d=me.stats?.deaths||1,a=me.stats?.assists||0;
     const hs=me.stats?.headshots||0,body=me.stats?.bodyshots||0,leg=me.stats?.legshots||0;
@@ -10066,18 +10226,14 @@ function renderValoModeContent(mmr,matches,name,tag,mode){
     const isMVP=allSorted[0]?.puuid===me.puuid||(allSorted[0]?.name===me.name&&allSorted[0]?.tag===me.tag);
     const isTeamMVP=!isMVP&&(teamSorted[0]?.puuid===me.puuid||(teamSorted[0]?.name===me.name&&teamSorted[0]?.tag===me.tag));
 
-    html+=`<div class="valo-match-row">
+    html+=`<div class="valo-match-row" onclick="openValoMatchDetail(_mIdx,'${name}','${tag}')" style="cursor:pointer">
       <div class="valo-match-bar ${won?'win':'loss'}"></div>
       <div class="valo-match-agent">
         ${agentImg?`<img src="${agentImg}" alt="${agentName}" onerror="this.style.display='none'">`:`<span style="font-size:13px">${agentName[0]}</span>`}
       </div>
       <div style="flex:1;min-width:0">
-        <div class="valo-match-map" style="display:flex;align-items:center;gap:6px">
-          ${agentName}
-          ${VALO_MAP_IMAGES[map]
-            ? `<span style="display:inline-flex;align-items:center;gap:4px;background:${getMapStyle(map).bg};border-radius:6px;padding:1px 7px 1px 3px;border:1px solid rgba(255,255,255,.07)"><img src="${VALO_MAP_IMAGES[map]}" style="width:22px;height:14px;object-fit:cover;border-radius:3px;flex-shrink:0" onerror="this.parentNode.innerHTML='${map}'"><span style="font-size:10px;font-weight:700;color:${getMapStyle(map).color};font-family:var(--mono)">${map}</span></span>`
-            : `<span style="font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;background:${getMapStyle(map).bg};color:${getMapStyle(map).color};font-family:var(--mono)">${map}</span>`
-          }
+        <div class="valo-match-map">
+          ${agentName} · <span style="color:${won?'#34d399':'#f87171'};font-weight:700">${map}</span>
         </div>
         <div class="valo-match-kda">${k}/${d}/${a} · KDA ${kda} · ACS ${acs} · HS ${hsP}%${isMVP?' · 👑 MVP':isTeamMVP?' · ⭐ Team MVP':''}</div>
       </div>
@@ -10325,6 +10481,10 @@ function checkMobileLayout(){
   const hb=document.getElementById('hamburger');
   const sbVisible=document.getElementById('main-sidebar')?.style.display!=='none';
   if(hb)hb.style.display=(window.innerWidth<=768&&sbVisible)?'flex':'none';
+  // Show/hide mobile topbar
+  const mobTopbar=document.getElementById('mobile-topbar');
+  const mainVisible=document.getElementById('main-content')?.style.display!=='none';
+  if(mobTopbar)mobTopbar.style.display=(window.innerWidth<=768&&mainVisible)?'flex':'none';
 }
 window.addEventListener('resize',checkMobileLayout);
 

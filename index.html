@@ -579,7 +579,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   }
   .sidebar.mobile-open{transform:translateX(0)}
   .sidebar-overlay.mobile-open{display:block}
-  .resize-handle{display:none}
 
   /* Main content */
   .main{
@@ -2491,6 +2490,568 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   .mobile-topbar{display:none!important}
 }
 
+
+/* ══ LANGUAGE SELECTOR ══ */
+/* ══ LANGUAGE DROPDOWN ══ */
+.lang-dropdown{position:relative;display:inline-block}
+.lang-trigger{
+  display:flex;align-items:center;gap:7px;
+  padding:6px 12px 6px 9px;
+  border-radius:10px;
+  border:1.5px solid rgba(255,255,255,.09);
+  background:rgba(255,255,255,.04);
+  color:var(--text);cursor:pointer;
+  font-size:13px;font-weight:600;
+  transition:all .18s;
+  user-select:none;
+}
+.lang-trigger:hover{
+  border-color:rgba(249,115,22,.4);
+  background:rgba(249,115,22,.06);
+}
+.lang-trigger-flag{font-size:17px;line-height:1}
+.lang-trigger-name{font-size:12.5px;font-weight:600;letter-spacing:.01em}
+.lang-trigger-chevron{
+  width:14px;height:14px;color:rgba(245,245,247,.4);
+  transition:transform .2s;flex-shrink:0;margin-left:2px;
+}
+.lang-dropdown.open .lang-trigger{
+  border-color:rgba(249,115,22,.5);
+  background:rgba(249,115,22,.08);
+}
+.lang-dropdown.open .lang-trigger-chevron{transform:rotate(180deg)}
+
+.lang-menu{
+  position:absolute;top:calc(100% + 6px);right:0;
+  background:rgba(10,8,14,.97);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:12px;
+  box-shadow:0 16px 48px rgba(0,0,0,.6),0 0 0 1px rgba(249,115,22,.06);
+  overflow:hidden;
+  min-width:170px;
+  z-index:5000;
+  opacity:0;pointer-events:none;
+  transform:translateY(-6px) scale(.97);
+  transition:opacity .18s ease,transform .18s ease;
+  transform-origin:top right;
+}
+.lang-dropdown.open .lang-menu{
+  opacity:1;pointer-events:all;
+  transform:translateY(0) scale(1);
+}
+.lang-option{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;cursor:pointer;
+  transition:background .12s;
+  position:relative;
+}
+.lang-option:hover{background:rgba(249,115,22,.08)}
+.lang-option.active{background:rgba(249,115,22,.1)}
+.lang-option.active::before{
+  content:'';position:absolute;left:0;top:20%;bottom:20%;
+  width:2px;background:#f97316;border-radius:99px;
+}
+.lang-option-flag{font-size:20px;line-height:1;flex-shrink:0}
+.lang-option-info{flex:1;min-width:0}
+.lang-option-name{font-size:13px;font-weight:600;color:var(--text)}
+.lang-option-native{font-size:11px;color:rgba(245,245,247,.35);margin-top:1px}
+.lang-option-check{
+  width:16px;height:16px;color:#f97316;flex-shrink:0;
+  opacity:0;transition:opacity .15s;
+}
+.lang-option.active .lang-option-check{opacity:1}
+
+/* Auth lang position */
+.auth-lang{position:absolute;top:16px;right:16px;z-index:10}
+/* Dashboard topbar */
+.topbar-lang{display:flex;align-items:center}
+@media(max-width:768px){.topbar-lang{display:none}}
+
+
+/* ── SIDEBAR WIDGETS v2 ── */
+.sb-section{padding:0 8px 10px}
+.sb-section-label{
+  font-size:7.5px;font-weight:800;letter-spacing:.25em;text-transform:uppercase;
+  color:rgba(245,245,247,.18);font-family:'JetBrains Mono',monospace;
+  padding:10px 4px 5px;display:flex;align-items:center;gap:6px;
+}
+.sb-section-label::before{
+  content:'';width:14px;height:1px;background:rgba(245,245,247,.12);flex-shrink:0;
+}
+/* Discord pill v2 */
+.sb-dc-pill{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 9px;border-radius:var(--r-sm);
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+  transition:border-color .15s;
+}
+.sb-dc-pill:hover{border-color:rgba(88,101,242,.25)}
+.sb-dc-av{
+  width:30px;height:30px;border-radius:8px;flex-shrink:0;position:relative;
+  background:rgba(255,255,255,.07);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;font-size:13px;
+}
+.sb-dc-av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.sb-dc-dot{
+  position:absolute;bottom:-1px;right:-1px;
+  width:9px;height:9px;border-radius:50%;border:2px solid rgba(5,5,7,.95);
+}
+.sb-dc-dot.online{background:#3ba55c}
+.sb-dc-dot.idle{background:#faa81a}
+.sb-dc-dot.dnd{background:#ed4245}
+.sb-dc-dot.offline{background:#747f8d}
+.sb-dc-name{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-dc-act{font-size:10.5px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+
+/* Now playing v2 */
+.sb-np-pill{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 9px;border-radius:var(--r-sm);
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+  position:relative;overflow:hidden;
+  transition:border-color .15s;
+}
+.sb-np-pill:hover{border-color:rgba(29,185,84,.25)}
+.sb-np-pill::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,rgba(29,185,84,.06),transparent 60%);
+  pointer-events:none;
+}
+.sb-np-art{
+  width:34px;height:34px;border-radius:7px;flex-shrink:0;
+  background:rgba(255,255,255,.06);overflow:hidden;
+  position:relative;min-width:34px;min-height:34px;
+}
+.sb-np-art img{
+  position:absolute;top:0;left:0;width:34px;height:34px;
+  object-fit:cover;border-radius:7px;display:block;
+}
+.sb-np-info{flex:1;min-width:0}
+.sb-np-track{font-size:11.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.sb-np-artist{font-size:10px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.sb-np-bar{height:2px;background:rgba(255,255,255,.08);border-radius:99px;margin-top:5px;overflow:hidden}
+.sb-np-fill{height:100%;background:#1db954;border-radius:99px;transition:width .5s linear}
+.sb-eq{
+  display:flex;align-items:flex-end;gap:1.5px;height:12px;flex-shrink:0;
+}
+.sb-eq span{
+  width:3px;background:#1db954;border-radius:1px;
+  animation:eqBounce 1s ease-in-out infinite;
+}
+.sb-eq span:nth-child(1){animation-delay:0s;height:40%}
+.sb-eq span:nth-child(2){animation-delay:.2s;height:80%}
+.sb-eq span:nth-child(3){animation-delay:.1s;height:55%}
+.sb-eq span:nth-child(4){animation-delay:.3s;height:70%}
+@keyframes eqBounce{
+  0%,100%{transform:scaleY(1)}
+  50%{transform:scaleY(.3)}
+}
+/* Scrobbling label */
+.sb-scrobble-label{
+  display:flex;align-items:center;gap:5px;
+  font-size:7.5px;font-weight:800;letter-spacing:.2em;
+  color:#d51007;font-family:'JetBrains Mono',monospace;
+  text-transform:uppercase;margin-bottom:5px;padding:0 2px;
+}
+.sb-scrobble-dot{
+  width:5px;height:5px;border-radius:50%;background:#d51007;
+  animation:pulse 1.4s ease-in-out infinite;flex-shrink:0;
+}
+
+
+/* ══ COMMAND PALETTE ══ */
+#cmd-palette-overlay{
+  position:fixed;inset:0;z-index:20000;
+  background:rgba(0,0,0,.65);backdrop-filter:blur(12px);
+  display:none;align-items:flex-start;justify-content:center;
+  padding-top:80px;
+}
+#cmd-palette-overlay.open{display:flex;animation:fadeIn .12s ease}
+#cmd-palette{
+  width:100%;max-width:560px;
+  background:rgba(10,8,14,.96);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:16px;
+  box-shadow:0 32px 80px rgba(0,0,0,.8),0 0 0 1px rgba(249,115,22,.08);
+  overflow:hidden;
+}
+#cmd-input-wrap{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.07);
+}
+#cmd-input-icon{color:rgba(245,245,247,.35);flex-shrink:0}
+#cmd-input-icon svg{width:16px;height:16px}
+#cmd-input{
+  flex:1;background:none;border:none;outline:none;
+  color:var(--text);font-family:var(--font);font-size:15px;
+  letter-spacing:-.01em;
+}
+#cmd-input::placeholder{color:rgba(245,245,247,.25)}
+#cmd-kbd{
+  font-size:10px;color:rgba(245,245,247,.25);
+  background:rgba(255,255,255,.06);border-radius:5px;
+  padding:2px 6px;font-family:'JetBrains Mono',monospace;flex-shrink:0;
+}
+#cmd-results{max-height:360px;overflow-y:auto;padding:6px}
+#cmd-results::-webkit-scrollbar{width:3px}
+#cmd-results::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:99px}
+.cmd-section-label{
+  font-size:9px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(245,245,247,.25);font-family:'JetBrains Mono',monospace;
+  padding:8px 10px 4px;
+}
+.cmd-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 10px;border-radius:8px;cursor:pointer;
+  transition:background .1s;
+  border:1px solid transparent;
+}
+.cmd-item:hover,.cmd-item.selected{
+  background:rgba(249,115,22,.1);border-color:rgba(249,115,22,.15);
+}
+.cmd-item-icon{
+  width:30px;height:30px;border-radius:8px;flex-shrink:0;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.07);
+  display:flex;align-items:center;justify-content:center;font-size:13px;
+  color:var(--muted);
+}
+.cmd-item-icon svg{width:14px;height:14px}
+.cmd-item-label{font-size:13.5px;font-weight:500;color:var(--text);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmd-item-sub{font-size:11px;color:var(--muted2);margin-top:1px}
+.cmd-item-kbd{
+  font-size:10px;color:rgba(245,245,247,.3);
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  border-radius:4px;padding:1px 5px;font-family:'JetBrains Mono',monospace;
+  flex-shrink:0;
+}
+.cmd-item-tag{
+  font-size:10px;color:rgba(249,115,22,.8);
+  background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.2);
+  border-radius:20px;padding:1px 7px;flex-shrink:0;font-weight:600;
+}
+#cmd-footer{
+  display:flex;align-items:center;gap:12px;
+  padding:8px 16px;border-top:1px solid rgba(255,255,255,.06);
+  font-size:10.5px;color:rgba(245,245,247,.3);font-family:'JetBrains Mono',monospace;
+}
+#cmd-footer span{display:flex;align-items:center;gap:4px}
+.cmd-k{
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  border-radius:4px;padding:1px 5px;
+}
+
+/* ══ LINK HOVER PREVIEW ══ */
+#link-preview{
+  position:fixed;z-index:15000;
+  background:rgba(10,8,14,.97);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:12px;
+  padding:0;overflow:hidden;
+  box-shadow:0 16px 48px rgba(0,0,0,.7);
+  pointer-events:none;opacity:0;
+  transition:opacity .15s ease,transform .15s ease;
+  transform:translateY(6px);
+  width:280px;
+}
+#link-preview.visible{opacity:1;transform:translateY(0)}
+#link-preview-favicon{
+  width:100%;height:100px;object-fit:cover;display:block;
+  background:linear-gradient(135deg,rgba(249,115,22,.12),rgba(220,38,38,.06));
+}
+#link-preview-body{padding:10px 12px}
+#link-preview-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#link-preview-url{font-size:11px;color:rgba(249,115,22,.7);font-family:'JetBrains Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ══ DRAG & DROP OVERVIEW ══ */
+.overview-widget{transition:opacity .15s,transform .15s}
+.overview-widget.dragging{opacity:.4;transform:scale(.97)}
+.overview-widget.drag-over{outline:2px dashed rgba(249,115,22,.5);outline-offset:4px;border-radius:16px}
+
+
+/* ══ PAGE TRANSITIONS ══ */
+@keyframes pageIn{
+  from{opacity:0;transform:translateY(14px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes pageInLeft{
+  from{opacity:0;transform:translateX(-20px)}
+  to{opacity:1;transform:translateX(0)}
+}
+@keyframes pageInRight{
+  from{opacity:0;transform:translateX(20px)}
+  to{opacity:1;transform:translateX(0)}
+}
+@keyframes pageOut{
+  from{opacity:1;transform:translateY(0)}
+  to{opacity:0;transform:translateY(-8px)}
+}
+.tab-content{opacity:0}
+.tab-content.active{opacity:1}
+.tab-content.page-entering{
+  animation:pageIn .28s cubic-bezier(.4,0,.2,1) forwards;
+}
+.tab-content.page-entering-left{
+  animation:pageInLeft .28s cubic-bezier(.4,0,.2,1) forwards;
+}
+.tab-content.page-entering-right{
+  animation:pageInRight .28s cubic-bezier(.4,0,.2,1) forwards;
+}
+
+/* ══ NOTIFICATIONS PANEL ══ */
+#notif-bell-btn{
+  position:relative;width:36px;height:36px;
+  border-radius:var(--r-sm);
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .18s;flex-shrink:0;
+  color:rgba(245,245,247,.5);
+}
+#notif-bell-btn:hover{background:rgba(255,255,255,.07);color:var(--text);border-color:rgba(255,255,255,.14)}
+#notif-bell-btn svg{width:16px;height:16px}
+#notif-badge{
+  position:absolute;top:-4px;right:-4px;
+  min-width:17px;height:17px;border-radius:99px;
+  background:linear-gradient(135deg,#f97316,#dc2626);
+  color:#fff;font-size:9px;font-weight:800;
+  display:none;align-items:center;justify-content:center;
+  padding:0 4px;font-family:'JetBrains Mono',monospace;
+  border:2px solid var(--bg);
+  animation:bounceIn .3s cubic-bezier(.4,0,.2,1);
+}
+#notif-badge.show{display:flex}
+
+#notif-panel{
+  position:fixed;top:0;right:0;bottom:0;
+  width:340px;max-width:90vw;
+  background:rgba(10,8,14,.97);
+  border-left:1px solid rgba(255,255,255,.08);
+  z-index:9000;
+  transform:translateX(100%);
+  transition:transform .28s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;
+  box-shadow:-16px 0 48px rgba(0,0,0,.5);
+  backdrop-filter:blur(24px);
+}
+#notif-panel.open{transform:translateX(0)}
+#notif-overlay{
+  position:fixed;inset:0;z-index:8999;
+  background:rgba(0,0,0,.4);backdrop-filter:blur(3px);
+  opacity:0;pointer-events:none;
+  transition:opacity .28s ease;
+}
+#notif-overlay.open{opacity:1;pointer-events:all}
+
+.notif-panel-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 18px 14px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.notif-panel-title{
+  font-size:15px;font-weight:800;letter-spacing:-.03em;
+  font-family:'Syne',sans-serif;
+}
+.notif-panel-close{
+  width:28px;height:28px;border-radius:8px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  color:rgba(245,245,247,.4);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;transition:all .15s;
+}
+.notif-panel-close:hover{background:rgba(248,113,113,.1);color:#f87171}
+.notif-panel-body{flex:1;overflow-y:auto;padding:12px}
+.notif-panel-body::-webkit-scrollbar{width:3px}
+.notif-panel-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:99px}
+.notif-panel-clear{
+  padding:10px 18px;border-top:1px solid rgba(255,255,255,.06);
+}
+
+.notif-section-label{
+  font-size:8.5px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(245,245,247,.25);font-family:'JetBrains Mono',monospace;
+  padding:8px 4px 5px;display:flex;align-items:center;gap:6px;
+}
+.notif-section-label::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.05)}
+
+.notif-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:10px 10px;border-radius:var(--r-sm);
+  transition:background .15s;cursor:pointer;
+  border:1px solid transparent;
+  margin-bottom:3px;
+}
+.notif-item:hover{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.06)}
+.notif-item.unread{background:rgba(249,115,22,.05);border-color:rgba(249,115,22,.1)}
+.notif-icon{
+  width:34px;height:34px;border-radius:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+  background:rgba(255,255,255,.06);
+}
+.notif-content{flex:1;min-width:0}
+.notif-title{font-size:13px;font-weight:600;color:var(--text);line-height:1.3}
+.notif-sub{font-size:11.5px;color:rgba(245,245,247,.4);margin-top:2px;line-height:1.4}
+.notif-time{font-size:10px;color:rgba(245,245,247,.28);font-family:'JetBrains Mono',monospace;margin-top:3px}
+.notif-dot{width:6px;height:6px;border-radius:50%;background:#f97316;flex-shrink:0;margin-top:5px}
+
+.notif-empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 20px;text-align:center;
+}
+.notif-empty-icon{font-size:32px;margin-bottom:10px;opacity:.4}
+.notif-empty-text{font-size:13px;color:rgba(245,245,247,.3);font-weight:500}
+
+
+/* ══ GITHUB-STYLE HEATMAP ══ */
+.heatmap-grid{display:flex;gap:2px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
+.heatmap-grid::-webkit-scrollbar{height:3px}
+.heatmap-grid::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:99px}
+.heatmap-week{display:flex;flex-direction:column;gap:2px}
+.heatmap-cell{
+  width:11px;height:11px;border-radius:2px;
+  background:rgba(255,255,255,.06);
+  transition:transform .15s;cursor:default;position:relative;
+}
+.heatmap-cell:hover{transform:scale(1.4);z-index:1}
+.heatmap-cell[data-count="0"]{background:rgba(255,255,255,.06)}
+.heatmap-cell[data-level="1"]{background:rgba(249,115,22,.25)}
+.heatmap-cell[data-level="2"]{background:rgba(249,115,22,.45)}
+.heatmap-cell[data-level="3"]{background:rgba(249,115,22,.7)}
+.heatmap-cell[data-level="4"]{background:#f97316}
+.heatmap-months{display:flex;gap:2px;margin-bottom:3px}
+.heatmap-month-label{font-size:9px;color:rgba(245,245,247,.3);font-family:'JetBrains Mono',monospace}
+.heatmap-days{display:flex;flex-direction:column;gap:2px;margin-right:4px}
+.heatmap-day-label{font-size:9px;color:rgba(245,245,247,.3);font-family:'JetBrains Mono',monospace;height:11px;line-height:11px}
+.heatmap-legend{display:flex;align-items:center;gap:4px;font-size:10px;color:rgba(245,245,247,.3);margin-top:6px}
+.heatmap-legend-cell{width:10px;height:10px;border-radius:2px}
+
+/* ══ VALO RR PROGRESSION CHART ══ */
+.valo-rr-chart{position:relative;height:80px;margin-bottom:12px}
+.valo-rr-svg{width:100%;height:100%;overflow:visible}
+.valo-rr-line{fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.valo-rr-area{opacity:.12}
+.valo-rr-dot{transition:r .15s;cursor:pointer}
+.valo-rr-dot:hover{r:5}
+.valo-rr-tooltip{
+  position:absolute;background:rgba(10,8,14,.95);
+  border:1px solid rgba(255,255,255,.1);border-radius:7px;
+  padding:5px 9px;font-size:11px;pointer-events:none;
+  white-space:nowrap;z-index:10;opacity:0;transition:opacity .15s;
+  font-family:'JetBrains Mono',monospace;
+}
+.valo-rr-zero-line{stroke:rgba(255,255,255,.1);stroke-width:1;stroke-dasharray:4,4}
+
+/* ══ PRESENTATION MODE ══ */
+#presentation-overlay{
+  position:fixed;inset:0;z-index:99999;
+  background:#050507;
+  display:none;flex-direction:column;
+  overflow:hidden;
+}
+#presentation-overlay.active{display:flex}
+.pres-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 36px 0;flex-shrink:0;
+}
+.pres-logo{display:flex;align-items:center;gap:10px}
+.pres-logo-icon{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#f97316,#dc2626);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 14px rgba(249,115,22,.35)}
+.pres-logo-text{font-size:13px;font-weight:900;letter-spacing:2px;font-family:'Syne',sans-serif;text-transform:uppercase}
+.pres-name{font-size:14px;font-weight:700;color:rgba(245,245,247,.6)}
+.pres-time{font-size:13px;color:rgba(245,245,247,.35);font-family:'JetBrains Mono',monospace}
+.pres-close{
+  width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);color:rgba(245,245,247,.4);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:14px;transition:all .15s;
+}
+.pres-close:hover{background:rgba(248,113,113,.1);color:#f87171}
+.pres-body{flex:1;display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:16px;padding:20px 36px 28px;min-height:0}
+.pres-card{
+  background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);
+  border-radius:18px;padding:22px 24px;display:flex;flex-direction:column;
+  overflow:hidden;transition:border-color .2s;
+}
+.pres-card:hover{border-color:rgba(255,255,255,.1)}
+.pres-card-label{font-size:9px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:rgba(245,245,247,.3);font-family:'JetBrains Mono',monospace;margin-bottom:10px}
+.pres-card-value{font-size:48px;font-weight:800;font-family:'Syne',sans-serif;letter-spacing:-.04em;line-height:1;color:var(--text)}
+.pres-card-sub{font-size:13px;color:rgba(245,245,247,.4);margin-top:6px}
+.pres-card.accent{background:linear-gradient(135deg,rgba(249,115,22,.1),rgba(220,38,38,.06));border-color:rgba(249,115,22,.2)}
+.pres-card.accent .pres-card-value{background:linear-gradient(90deg,#f97316,#dc2626);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.pres-tasks-list{flex:1;overflow:hidden;display:flex;flex-direction:column;gap:5px;margin-top:4px}
+.pres-task{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 8px;border-radius:8px;background:rgba(255,255,255,.03);
+  font-size:13px;font-weight:500;
+}
+.pres-task-dot{width:6px;height:6px;border-radius:50%;background:#f97316;flex-shrink:0}
+.pres-pomo-ring{position:relative;width:80px;height:80px;margin-bottom:8px}
+.pres-habits{display:grid;grid-template-columns:1fr 1fr;gap:6px;flex:1}
+.pres-habit{background:rgba(255,255,255,.04);border-radius:9px;padding:8px 10px}
+.pres-habit-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pres-habit-streak{font-size:11px;color:#f97316;font-family:'JetBrains Mono',monospace;margin-top:2px}
+#pres-exit-hint{position:fixed;bottom:16px;right:20px;font-size:11px;color:rgba(245,245,247,.2);font-family:'JetBrains Mono',monospace}
+
+
+/* ══ RECENT ACTIVITY v2 ══ */
+.activity-list{display:flex;flex-direction:column;gap:1px}
+.activity-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:8px 6px;border-radius:8px;
+  transition:background .15s;position:relative;
+}
+.activity-item:hover{background:rgba(255,255,255,.035)}
+.activity-icon-wrap{
+  width:28px;height:28px;border-radius:7px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.07);
+  position:relative;
+}
+.activity-timeline-line{
+  position:absolute;left:13px;top:36px;bottom:-1px;
+  width:1px;background:rgba(255,255,255,.06);
+  pointer-events:none;
+}
+.activity-item:last-child .activity-timeline-line{display:none}
+.activity-content{flex:1;min-width:0;padding-top:3px}
+.activity-text{
+  font-size:12.5px;color:rgba(245,245,247,.75);
+  line-height:1.4;letter-spacing:.005em;
+}
+.activity-text strong{color:var(--text);font-weight:600}
+.activity-meta{
+  display:flex;align-items:center;gap:8px;margin-top:3px;
+}
+.activity-time{
+  font-size:10.5px;color:rgba(245,245,247,.28);
+  font-family:'JetBrains Mono',monospace;
+}
+.activity-tag{
+  font-size:9.5px;font-weight:700;padding:1px 6px;
+  border-radius:20px;font-family:'JetBrains Mono',monospace;
+  letter-spacing:.04em;
+}
+.activity-empty{
+  display:flex;flex-direction:column;align-items:center;
+  padding:20px;text-align:center;gap:6px;
+}
+.activity-empty-icon{font-size:22px;opacity:.3}
+.activity-empty-text{font-size:12px;color:rgba(245,245,247,.3)}
+
+
+/* ══ SIDEBAR RESIZE HANDLE ══ */
+.resize-handle{
+  position:fixed;top:0;bottom:0;
+  width:6px;cursor:col-resize;z-index:400;
+  background:transparent;transition:background .2s;
+  left:220px;/* default sidebar width */
+}
+.resize-handle:hover,.resize-handle.dragging{
+  background:rgba(249,115,22,.3);
+}
+@media(max-width:768px){
+  .resize-handle{display:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -2573,25 +3134,56 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       <div style="position:relative;z-index:1;display:flex;flex-direction:column;gap:9px">
         <div class="auth-feature-item">
           <div class="auth-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
-          <span>Real-time stats &amp; analytics</span>
+          <span data-i18n="feat_stats">Real-time stats &amp; analytics</span>
         </div>
         <div class="auth-feature-item">
           <div class="auth-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/></svg></div>
-          <span>Habit tracking &amp; streaks</span>
+          <span data-i18n="feat_habits">Habit tracking &amp; streaks</span>
         </div>
         <div class="auth-feature-item">
           <div class="auth-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><circle cx="15.5" cy="11.5" r="1"/><circle cx="17.5" cy="13.5" r="1"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59l-.9 7.27A4 4 0 0 0 5.77 20.5c.387.1.79-.025 1.05-.327l1.89-2.173h6.58l1.89 2.173c.26.302.663.427 1.05.327a4 4 0 0 0 2.97-4.64l-.9-7.27A4 4 0 0 0 17.32 5z"/></svg></div>
-          <span>Spotify, Discord &amp; gaming</span>
+          <span data-i18n="feat_gaming">Spotify, Discord &amp; gaming</span>
         </div>
         <div class="auth-feature-item">
           <div class="auth-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><circle cx="9" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1" fill="currentColor" stroke="none"/></svg></div>
-          <span>NEXUS AI assistant</span>
+          <span data-i18n="feat_ai">NEXUS AI assistant</span>
         </div>
       </div>
     </div>
 
     <!-- Right panel — form -->
     <div class="auth-split-right" style="width:360px;flex-shrink:0;background:rgba(12,10,14,.98);padding:40px 32px;display:flex;flex-direction:column;justify-content:center;border-left:1px solid rgba(255,255,255,.06)">
+
+      <!-- Lang selector -->
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px"><div class="lang-dropdown" id="lang-dd-auth" onclick="toggleLangDropdown('lang-dd-auth')">
+  <div class="lang-trigger" id="lang-dd-auth-trigger">
+    <span class="lang-trigger-flag" id="lang-dd-auth-flag">🇫🇷</span>
+    <span class="lang-trigger-name" id="lang-dd-auth-name">French</span>
+    <svg class="lang-trigger-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="lang-menu">
+    <div class="lang-option active" data-lang="fr" onclick="event.stopPropagation();setLangAndClose('fr','lang-dd-auth')">
+      <span class="lang-option-flag">🇫🇷</span>
+      <div class="lang-option-info"><div class="lang-option-name">French</div><div class="lang-option-native">Français</div></div>
+      <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="lang-option" data-lang="en" onclick="event.stopPropagation();setLangAndClose('en','lang-dd-auth')">
+      <span class="lang-option-flag">🇺🇸</span>
+      <div class="lang-option-info"><div class="lang-option-name">English</div><div class="lang-option-native">English</div></div>
+      <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="lang-option" data-lang="es" onclick="event.stopPropagation();setLangAndClose('es','lang-dd-auth')">
+      <span class="lang-option-flag">🇪🇸</span>
+      <div class="lang-option-info"><div class="lang-option-name">Spanish</div><div class="lang-option-native">Español</div></div>
+      <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="lang-option" data-lang="de" onclick="event.stopPropagation();setLangAndClose('de','lang-dd-auth')">
+      <span class="lang-option-flag">🇩🇪</span>
+      <div class="lang-option-info"><div class="lang-option-name">German</div><div class="lang-option-native">Deutsch</div></div>
+      <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+  </div>
+</div></div>
 
       <!-- Tabs -->
       <div style="display:flex;gap:0;margin-bottom:28px;background:rgba(255,255,255,.04);border-radius:10px;padding:3px;border:1px solid rgba(255,255,255,.08)">
@@ -2642,7 +3234,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       </div>
 
       <!-- Version -->
-      <div style="text-align:center;margin-top:28px;font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:.5px">v3.6.0</div>
+      <div style="text-align:center;margin-top:28px;font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:.5px">v3.9.1</div>
     </div>
   </div>
 </div>
@@ -2664,9 +3256,9 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
     </div>
 
     <!-- Title -->
-    <div class="ps-eyebrow">Select user</div>
-    <div class="ps-title">Who's <span>using?</span></div>
-    <div class="ps-sub">Choose your profile to continue</div>
+    <div class="ps-eyebrow" id="ps-eyebrow-el" data-i18n="select_user">Select user</div>
+    <div class="ps-title" id="ps-title-el">Who's <span>using?</span></div>
+    <div class="ps-sub" id="ps-sub-el" data-i18n="choose_profile">Choose your profile to continue</div>
 
     <!-- Profiles -->
     <div class="ps-profiles" id="ps-profiles-list"></div>
@@ -2679,7 +3271,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
     </div>
 
     <!-- Version -->
-    <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer;white-space:nowrap" onclick="showChangelog()" title="View changelog">v3.6.0 · changelog</div>
+    <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer;white-space:nowrap" onclick="showChangelog()" title="View changelog">v3.9.1 · changelog</div>
   </div>
 </div>
 
@@ -2700,63 +3292,70 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   <!-- Compact toggle — always visible at bottom -->
   <button id="sidebar-compact-btn" onclick="toggleSidebarCompact()" title="Toggle compact mode" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;margin:6px auto 0;background:none;border:1px solid var(--border2);border-radius:8px;cursor:pointer;font-size:14px;color:var(--muted);font-family:var(--font);transition:all .2s ease" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">&#8644;</button>
   <div class="sidebar-footer">
-    <!-- Discord sidebar widget -->
-    <div class="sb-widget" id="sb-discord-wrap" style="display:none">
-      <div class="sb-widget-label" id="sb-discord-label" style="display:none">Discord</div>
-      <div class="sb-discord-card" id="sb-discord-card" style="display:none">
-        <div class="sb-dc-avatar-wrap">
-          <div class="sb-dc-avatar" id="sb-dc-avatar">&#128236;</div>
-          <div class="sb-dc-status offline" id="sb-dc-status"></div>
+    <!-- DISCORD v2 -->
+    <div class="sb-section" id="sb-discord-wrap" style="display:none">
+      <div class="sb-section-label">Discord</div>
+      <div class="sb-dc-pill" id="sb-discord-card">
+        <div class="sb-dc-av" id="sb-dc-avatar">
+          <span id="sb-dc-av-fallback">💬</span>
+          <div class="sb-dc-dot offline" id="sb-dc-status"></div>
         </div>
-        <div class="sb-dc-info">
+        <div style="flex:1;min-width:0">
           <div class="sb-dc-name" id="sb-dc-name">—</div>
-          <div class="sb-dc-activity" id="sb-dc-activity" style="display:none"></div>
+          <div class="sb-dc-act" id="sb-dc-activity" style="display:none"></div>
         </div>
       </div>
-    </div>
-    <!-- Now Playing (Lanyard Spotify) -->
-    <div class="sb-widget" id="sb-spotify-wrap" style="display:none">
-      <div id="sb-spotify-label" class="nowplaying-label">NOW PLAYING</div>
-      <div class="np-pill" id="np-pill">
-        <div class="np-art" id="np-art"></div>
-        <div class="np-info">
-          <div class="np-song" id="np-song">—</div>
-          <div class="np-artist" id="np-artist">—</div>
-          <div class="np-progress-wrap" id="np-progress-wrap" style="display:none">
-            <div class="np-bar"><div class="np-bar-fill" id="np-bar-fill"></div></div>
-            <div class="np-times"><span id="np-elapsed">0:00</span><span id="np-duration">0:00</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Fallback iframe widget (manual URL) -->
-    <div class="sb-widget" id="sb-spotify-iframe-wrap" style="display:none">
-      <div class="nowplaying-label">Now Playing</div>
-      <div class="nowplaying-iframe-wrap" id="nowplaying-iframe-wrap">
-        <iframe id="nowplaying-iframe" src="" scrolling="no" allowtransparency="true" title="Now Playing"></iframe>
-      </div>
-    </div>
-    <!-- TWITCH LIVE -->
-    <div id="sb-twitch-wrap" style="display:none">
-      <div style="font-size:10px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:6px">
-        <span style="width:7px;height:7px;border-radius:50%;background:#ff0000;display:inline-block;animation:pulse 1.5s infinite"></span>
-        LIVE NOW
-      </div>
-      <div id="sb-twitch-list" style="display:flex;flex-direction:column;gap:8px"></div>
     </div>
 
-    <!-- LAST.FM -->
-    <div id="sb-lastfm-wrap" style="display:none;padding:0 10px 12px">
-      <div style="font-size:9.5px;font-weight:700;letter-spacing:1.5px;color:var(--muted2);text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px">
-        <span style="width:6px;height:6px;border-radius:50%;background:#d51007;display:inline-block"></span>
-        NOW SCROBBLING
+    <!-- NOW PLAYING (Lanyard Spotify) v2 -->
+    <div class="sb-section" id="sb-spotify-wrap" style="display:none">
+      <div class="sb-section-label">Now Playing</div>
+      <div class="sb-np-pill" id="np-pill">
+        <div class="sb-np-art" id="np-art"></div>
+        <div class="sb-np-info">
+          <div class="sb-np-track" id="np-song">—</div>
+          <div class="sb-np-artist" id="np-artist">—</div>
+          <div class="sb-np-bar" id="np-progress-wrap" style="display:none">
+            <div class="sb-np-fill" id="np-bar-fill"></div>
+          </div>
+        </div>
+        <div class="sb-eq" id="sb-eq-anim" style="display:none">
+          <span></span><span></span><span></span><span></span>
+        </div>
       </div>
+    </div>
+
+    <!-- FALLBACK IFRAME -->
+    <div class="sb-section" id="sb-spotify-iframe-wrap" style="display:none">
+      <div class="sb-section-label">Now Playing</div>
+      <div id="nowplaying-iframe-wrap">
+        <iframe id="nowplaying-iframe" src="" scrolling="no" allowtransparency="true" title="Now Playing" style="width:100%;border-radius:8px;border:none;height:80px"></iframe>
+      </div>
+    </div>
+
+    <!-- TWITCH -->
+    <div class="sb-section" id="sb-twitch-wrap" style="display:none">
+      <div class="sb-section-label" style="color:#a970ff">
+        <span style="width:5px;height:5px;border-radius:50%;background:#ff0000;display:inline-block;animation:pulse 1.5s infinite;flex-shrink:0"></span>
+        Live
+      </div>
+      <div id="sb-twitch-list" style="display:flex;flex-direction:column;gap:5px"></div>
+    </div>
+
+    <!-- LAST.FM v2 -->
+    <div class="sb-section" id="sb-lastfm-wrap" style="display:none">
+      <div class="sb-scrobble-label"><span class="sb-scrobble-dot"></span>Scrobbling</div>
       <div id="sb-lastfm-content"></div>
     </div>
+
+    <!-- User card -->
     <div class="user-card" onclick="goToProfileScreen()">
       <div class="sidebar-avatar" id="sidebar-avatar"></div>
-      <div class="user-info"><div class="user-name" id="display-username">User</div><div class="user-role">Personal dashboard</div></div>
-      <span class="switch-hint">Switch &#8599;</span>
+      <div class="user-info">
+        <div class="user-name" id="display-username">User</div>
+        <div class="user-role">Personal dashboard</div>
+      </div>
+      <span class="switch-hint">Switch ↗</span>
     </div>
   </div>
 </nav>
@@ -2790,7 +3389,40 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
         <div class="page-subtitle" id="greeting-date"></div>
       </div>
       <div class="topbar-actions">
-        <div class="search-bar"><span style="color:rgba(255,255,255,.3);font-size:13px">🔍</span><input type="text" placeholder="Search everything..." id="global-search"></div>
+        <div class="topbar-lang"><div class="lang-dropdown" id="lang-dd-topbar" onclick="toggleLangDropdown('lang-dd-topbar')">
+  <div class="lang-trigger" id="lang-dd-topbar-trigger">
+    <span class="lang-trigger-flag" id="lang-dd-topbar-flag">🇫🇷</span>
+    <span class="lang-trigger-name" id="lang-dd-topbar-name">French</span>
+    <svg class="lang-trigger-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="lang-menu">
+    <div class="lang-option active" data-lang="fr" onclick="event.stopPropagation();setLangAndClose('fr','lang-dd-topbar')">
+      <span class="lang-option-flag">🇫🇷</span>
+      <div class="lang-option-info"><div class="lang-option-name">French</div><div class="lang-option-native">Français</div></div>
+      <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="lang-option" data-lang="en" onclick="event.stopPropagation();setLangAndClose('en','lang-dd-topbar')">
+      <span class="lang-option-flag">🇺🇸</span>
+      <div class="lang-option-info"><div class="lang-option-name">English</div><div class="lang-option-native">English</div></div>
+      <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="lang-option" data-lang="es" onclick="event.stopPropagation();setLangAndClose('es','lang-dd-topbar')">
+      <span class="lang-option-flag">🇪🇸</span>
+      <div class="lang-option-info"><div class="lang-option-name">Spanish</div><div class="lang-option-native">Español</div></div>
+      <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="lang-option" data-lang="de" onclick="event.stopPropagation();setLangAndClose('de','lang-dd-topbar')">
+      <span class="lang-option-flag">🇩🇪</span>
+      <div class="lang-option-info"><div class="lang-option-name">German</div><div class="lang-option-native">Deutsch</div></div>
+      <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+  </div>
+</div></div>
+        <button id="notif-bell-btn" onclick="toggleNotifPanel()" title="Notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span id="notif-badge"></span>
+        </button>
+        <div class="search-bar" onclick="openCmdPalette()" style="cursor:pointer" title="Cmd+K"><span style="color:rgba(255,255,255,.3);font-size:13px">🔍</span><input type="text" placeholder="Search (⌘K)…" id="global-search" readonly style="cursor:pointer"></div>
         <button id="theme-mode-btn" onclick="toggleDarkLight()" title="Toggle dark/light mode" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;cursor:pointer;font-size:15px;transition:all .2s">🌙</button>
         <button onclick="goToProfileScreen()" title="Switch profile" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:5px 10px 5px 6px;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s;overflow:hidden;max-width:150px" id="topbar-profile-btn" onmouseover="this.style.borderColor='rgba(249,115,22,.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,.08)'">
           <div id="topbar-avatar" style="width:24px;height:24px;border-radius:6px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;background:rgba(255,255,255,.08);position:relative"></div>
@@ -2800,10 +3432,10 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       </div>
     </div>
     <div class="stats-row">
-      <div class="stat-card" style="--card-accent:#f97316" onclick="switchPage('files',null)"><div class="stat-label">📁 Total Files</div><div class="stat-value" id="stat-files">0</div><div class="stat-sub">stored items</div></div>
-      <div class="stat-card" style="--card-accent:#34d399" onclick="switchPage('todos',null)"><div class="stat-label">✅ Tasks Done</div><div class="stat-value" id="stat-tasks">0</div><div class="stat-sub up" id="stat-tasks-sub">of 0 total</div></div>
-      <div class="stat-card" style="--card-accent:#f87171"><div class="stat-label">🔗 Links saved</div><div class="stat-value" id="stat-links">0</div><div class="stat-sub">bookmarked</div></div>
-      <div class="stat-card" style="--card-accent:#fbbf24"><div class="stat-label">🕐 Time</div><div class="clock-display" id="clock-main">00:00</div><div class="clock-date" id="clock-date-sub"></div></div>
+      <div class="stat-card" style="--card-accent:#f97316" onclick="switchPage('files',null)"><div class="stat-label" data-i18n="total_files">Total Files</div><div class="stat-value" id="stat-files">0</div><div class="stat-sub">stored items</div></div>
+      <div class="stat-card" style="--card-accent:#34d399" onclick="switchPage('todos',null)"><div class="stat-label" data-i18n="tasks_done">Tasks Done</div><div class="stat-value" id="stat-tasks">0</div><div class="stat-sub up" id="stat-tasks-sub">of 0 total</div></div>
+      <div class="stat-card" style="--card-accent:#f87171"><div class="stat-label" data-i18n="links_saved">Links Saved</div><div class="stat-value" id="stat-links">0</div><div class="stat-sub">bookmarked</div></div>
+      <div class="stat-card" style="--card-accent:#fbbf24"><div class="stat-label" data-i18n="time">Time</div><div class="clock-display" id="clock-main">00:00</div><div class="clock-date" id="clock-date-sub"></div></div>
     </div>
     <!-- Gaming mini-widget -->
     <div id="gaming-overview-wrap" style="display:none;margin-bottom:18px">
@@ -2882,7 +3514,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
             </div>
             <button class="panel-action" onclick="switchPage('notes',null)">Open →</button>
           </div>
-          <textarea class="note-area" id="quick-note" placeholder="Type a quick note..." rows="3" oninput="saveNote()"></textarea>
+          <textarea class="note-area" id="quick-note" placeholder="Type a quick note…" data-i18n="quick_note_placeholder" data-i18n-attr="placeholder" rows="3" oninput="saveNote()"></textarea>
         </div>
 
         <!-- Activity -->
@@ -2916,9 +3548,9 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
           </div>
           <div class="pomo-display">
             <div class="pomo-mode-tabs">
-              <button id="pomo-tab-0" onclick="pomoSelectMode(0)" class="pomo-mode-tab active">Focus</button>
-              <button id="pomo-tab-1" onclick="pomoSelectMode(1)" class="pomo-mode-tab">Short</button>
-              <button id="pomo-tab-2" onclick="pomoSelectMode(2)" class="pomo-mode-tab">Long</button>
+              <button id="pomo-tab-0" onclick="pomoSelectMode(0)" class="pomo-mode-tab active" data-i18n="focus">Focus</button>
+              <button id="pomo-tab-1" onclick="pomoSelectMode(1)" class="pomo-mode-tab" data-i18n="short_break">Short</button>
+              <button id="pomo-tab-2" onclick="pomoSelectMode(2)" class="pomo-mode-tab" data-i18n="long_break">Long</button>
             </div>
 
             <!-- Ring -->
@@ -3183,7 +3815,14 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 
   <!-- STATS -->
   <div id="page-stats" class="tab-content">
-    <div class="topbar"><div><div class="section-eyebrow">Analytics</div><div class="section-title">Statistics</div></div></div>
+    <div class="topbar"><div><div class="section-eyebrow">Analytics</div><div class="section-title">Statistics</div></div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost" onclick="openPresentationMode()" style="display:flex;align-items:center;gap:7px;font-size:12px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          Present
+        </button>
+      </div>
+    </div>
 
     <!-- Top KPIs -->
     <div class="stats-row" style="margin-bottom:20px">
@@ -3206,6 +3845,28 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
         <div class="stat-label">Pomodoros</div>
         <div class="stat-value" id="st-pomo-total">0</div>
         <div class="stat-sub" id="st-pomo-time">0h focus</div>
+      </div>
+    </div>
+
+    <!-- Activity heatmap -->
+    <div class="panel" style="margin-bottom:12px">
+      <div class="panel-header">
+        <div class="panel-title">
+          <div class="panel-title-icon" style="background:rgba(249,115,22,.1);color:#f97316">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          Activity heatmap
+        </div>
+        <span id="stats-heatmap-total" style="font-size:10px;color:var(--muted2);font-family:var(--mono)">LAST 6 MONTHS</span>
+      </div>
+      <div id="stats-heatmap" style="overflow-x:auto"></div>
+      <div class="heatmap-legend" style="justify-content:flex-end;margin-top:6px">
+        <span>Less</span>
+        <div class="heatmap-legend-cell" style="background:rgba(255,255,255,.06)"></div>
+        <div class="heatmap-legend-cell" style="background:rgba(249,115,22,.25)"></div>
+        <div class="heatmap-legend-cell" style="background:rgba(249,115,22,.5)"></div>
+        <div class="heatmap-legend-cell" style="background:#f97316"></div>
+        <span>More</span>
       </div>
     </div>
 
@@ -3677,9 +4338,9 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
     <div class="settings-layout">
       <!-- Left nav -->
       <div class="settings-nav">
-        <button class="settings-nav-item active" onclick="switchSettingsTab('profilee',this)"><span class="settings-nav-icon">👤</span>Profile</button>
-        <button class="settings-nav-item" onclick="switchSettingsTab('security',this)"><span class="settings-nav-icon">🔒</span>Security</button>
-        <button class="settings-nav-item" onclick="switchSettingsTab('account',this)"><span class="settings-nav-icon">⚙️</span>Account</button>
+        <button class="settings-nav-item active" onclick="switchSettingsTab('profilee',this)"><span class="settings-nav-icon">👤</span><span data-i18n="profile">Profile</span></button>
+        <button class="settings-nav-item" onclick="switchSettingsTab('security',this)"><span class="settings-nav-icon">🔒</span><span data-i18n="security">Security</span></button>
+        <button class="settings-nav-item" onclick="switchSettingsTab('account',this)"><span class="settings-nav-icon">⚙️</span><span data-i18n="account">Account</span></button>
       </div>
 
       <!-- Content -->
@@ -3925,7 +4586,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 
       <!-- Input -->
       <div class="ai-input-row">
-        <textarea class="ai-input" id="ai-input" placeholder="Ask anything about your dashboard…" rows="1"
+        <textarea class="ai-input" id="ai-input" placeholder="Ask anything about your dashboard…" data-i18n="nexus_ai_desc" data-i18n-attr="placeholder" rows="1"
           onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAIMessage()}"
           oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
         <button class="ai-send-btn" id="ai-send-btn" onclick="sendAIMessage()" title="Send">
@@ -3937,13 +4598,83 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 
 
 <!-- VALO MATCH DETAIL MODAL -->
-<div class="modal-overlay" id="modal-valo-match" onclick="closeModalIfOverlay(event,'valo-match')" style="display:none;z-index:10100">
+<div class="modal-overlay" id="modal-valo-match" onclick="closeModalIfOverlay(event,'valo-match')" style="z-index:10100">
   <div class="modal" style="max-width:720px;width:100%;max-height:88vh;overflow-y:auto">
     <div class="modal-header">
       <div class="modal-title" id="valo-match-title">Match Details</div>
       <button class="modal-close" onclick="closeModal('valo-match')">✕</button>
     </div>
     <div class="modal-body" id="valo-match-body" style="padding:16px 20px"></div>
+  </div>
+</div>
+
+<!-- PRESENTATION MODE -->
+<div id="presentation-overlay">
+  <div class="pres-header">
+    <div class="pres-logo">
+      <div class="pres-logo-icon">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><polygon points="10,1 19,10 10,19 1,10" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round"/><polygon points="10,5 15,10 10,15 5,10" fill="white"/></svg>
+      </div>
+      <span class="pres-logo-text">NEXUS</span>
+    </div>
+    <div id="pres-username" class="pres-name"></div>
+    <div id="pres-clock" class="pres-time"></div>
+    <button class="pres-close" onclick="closePresentationMode()" title="Exit (Esc)">✕</button>
+  </div>
+  <div class="pres-body" id="pres-body"></div>
+  <div id="pres-exit-hint">Press ESC to exit</div>
+</div>
+
+<!-- NOTIFICATION OVERLAY -->
+<div id="notif-overlay" onclick="closeNotifPanel()"></div>
+
+<!-- NOTIFICATION PANEL -->
+<div id="notif-panel">
+  <div class="notif-panel-header">
+    <div>
+      <div class="notif-panel-title">Notifications</div>
+      <div id="notif-count-label" style="font-size:11px;color:rgba(245,245,247,.35);margin-top:2px"></div>
+    </div>
+    <button class="notif-panel-close" onclick="closeNotifPanel()">✕</button>
+  </div>
+  <div class="notif-panel-body" id="notif-panel-body">
+    <div class="notif-empty">
+      <div class="notif-empty-icon">🔔</div>
+      <div class="notif-empty-text">No notifications</div>
+    </div>
+  </div>
+  <div class="notif-panel-clear">
+    <button class="btn btn-ghost" onclick="clearAllNotifs()" style="width:100%;font-size:12px">Clear all</button>
+  </div>
+</div>
+
+<!-- COMMAND PALETTE -->
+<div id="cmd-palette-overlay" onclick="if(event.target===this)closeCmdPalette()">
+  <div id="cmd-palette">
+    <div id="cmd-input-wrap">
+      <div id="cmd-input-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+      <input id="cmd-input" placeholder="Search pages, items, actions…" autocomplete="off"
+        oninput="renderCmdResults()"
+        onkeydown="handleCmdKey(event)">
+      <span id="cmd-kbd">ESC</span>
+    </div>
+    <div id="cmd-results"></div>
+    <div id="cmd-footer">
+      <span><span class="cmd-k">↑↓</span> navigate</span>
+      <span><span class="cmd-k">↵</span> select</span>
+      <span><span class="cmd-k">ESC</span> close</span>
+    </div>
+  </div>
+</div>
+
+<!-- LINK HOVER PREVIEW -->
+<div id="link-preview">
+  <div style="width:100%;height:80px;background:linear-gradient(135deg,rgba(249,115,22,.1),rgba(220,38,38,.06));display:flex;align-items:center;justify-content:center;font-size:28px" id="link-preview-banner">🔗</div>
+  <div id="link-preview-body">
+    <div id="link-preview-title">Loading…</div>
+    <div id="link-preview-url"></div>
   </div>
 </div>
 
@@ -4253,6 +4984,635 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 // ===================================================
 //  SUPABASE INIT
 // ===================================================
+
+// ══════════════════════════════════════════════
+//  NEXUS i18n — Language System
+// ══════════════════════════════════════════════
+let _lang = localStorage.getItem('nexus_lang') || 'fr';
+
+const I18N = {
+  en: {
+    // Auth
+    'sign_in': 'Sign in',
+    'create_account': 'Create account',
+    'email_or_username': 'Email or Username',
+    'password': 'Password',
+    'sign_in_btn': 'Sign in →',
+    'create_account_btn': 'Create account →',
+    'username': 'Username',
+    'email_optional': 'Email (optional)',
+    'min_6_chars': 'Min. 6 characters',
+    'personal_cmd': 'Your personal',
+    'cmd_center': 'command center',
+    'auth_desc': 'Everything you care about — tasks, stats, habits, music — all in one place.',
+    'feat_stats': 'Real-time stats & analytics',
+    'feat_habits': 'Habit tracking & streaks',
+    'feat_gaming': 'Spotify, Discord & gaming',
+    'feat_ai': 'NEXUS AI assistant',
+    // Profile select
+    'whos_using': "Who's using?",
+    'choose_profile': 'Choose your profile to continue',
+    'select_user': 'Select user',
+    'add_profile': 'Add profile',
+    'manage_profiles': 'Manage profiles',
+    'sign_out': 'Sign out',
+    'done': 'Done',
+    // Nav
+    'nav_overview': 'Overview',
+    'nav_files': 'Files & Links',
+    'nav_notes': 'Notes',
+    'nav_tasks': 'Tasks',
+    'nav_habits': 'Habits',
+    'nav_kanban': 'Kanban',
+    'nav_calendar': 'Calendar',
+    'nav_goals': 'Goals',
+    'nav_journal': 'Journal',
+    'nav_countdown': 'Countdown',
+    'nav_stats': 'Stats',
+    'nav_github': 'GitHub',
+    'nav_gaming': 'Gaming',
+    'nav_connections': 'Connections',
+    'nav_settings': 'Settings',
+    'nav_ai': 'NEXUS AI',
+    // Dashboard
+    'good_morning': t('good_morning'),
+    'good_afternoon': t('good_afternoon'),
+    'good_evening': t('good_evening'),
+    'add_item': '+ Add item',
+    'search_placeholder': 'Search everything…',
+    'total_files': 'Total Files',
+    'tasks_done': 'Tasks Done',
+    'links_saved': 'Links Saved',
+    'time': 'Time',
+    // Overview sections
+    'quick_access': 'Quick Access',
+    'pin_link': '+ Pin link',
+    'recent_items': 'Recent items',
+    'see_all': 'See all →',
+    'upcoming_tasks': 'Upcoming tasks',
+    'upcoming_events': 'Upcoming events',
+    'quick_note': 'Quick note',
+    'quick_note_placeholder': 'Type a quick note…',
+    'recent_activity': 'Recent activity',
+    'clear': 'Clear',
+    // Pomodoro
+    'focus': 'Focus',
+    'short_break': 'Short',
+    'long_break': 'Long',
+    'history': 'History →',
+    'today': 'Today',
+    'total': 'Total',
+    'streak': 'Streak',
+    // Weather
+    'weather': 'Weather',
+    'feels_like': 'Feels like',
+    'wind': 'km/h wind',
+    'humidity': 'Humidity',
+    // Settings
+    'settings': 'Settings',
+    'configuration': 'Configuration',
+    'profile': 'Profile',
+    'security': 'Security',
+    'account': 'Account',
+    'identity': 'Identity',
+    'display_name': 'Display name',
+    'bio': 'Bio',
+    'appearance': 'Appearance',
+    'avatar': 'Avatar',
+    'change_avatar': 'Change avatar',
+    'accent_color': 'Accent color',
+    'custom_color': 'Custom color',
+    'animated_bg': 'Animated background',
+    'profile_banner': 'Profile banner',
+    'sidebar_layout': 'Sidebar layout',
+    'data': 'Data',
+    'export_json': '⬇ Export JSON',
+    'import_json': '⬆ Import JSON',
+    'enable_notifs': '🔔 Enable notifications',
+    'danger_zone': 'Danger zone',
+    'reset_data': '🗑 Reset my data',
+    'save_protection': 'Save protection',
+    'remove_protection': 'Remove protection',
+    'account_info': 'Account info',
+    'session': 'Session',
+    // Connections
+    'connections': 'Connections',
+    'integrations': 'Integrations',
+    'connect': 'Connect',
+    'disconnect': 'Disconnect',
+    'refresh': '↻ Refresh',
+    'connected': 'Connected',
+    'not_connected': 'Not connected',
+    'region': 'Region',
+    // Tasks
+    'all': 'All',
+    'pending': 'Pending',
+    'high': '🔥 High',
+    'add_task': '+ Add task',
+    // Notes
+    'new_note': '+ New note',
+    'writing': 'Writing',
+    // AI
+    'nexus_ai_desc': 'Ask anything about your dashboard…',
+    'new_chat': 'New chat',
+    'summarize_tasks': 'Summarize my tasks',
+    'focus_today': 'What should I focus on today?',
+    'review_habits': 'Review my habits this week',
+    'write_note': 'Help me write a note',
+    'pomo_schedule': 'Suggest a Pomodoro schedule',
+    // Toasts
+    'toast_profile_updated': 'Profile updated!',
+    'toast_deleted': 'Profile deleted',
+    'toast_saved': 'Saved!',
+    'toast_copied': 'Copied!',
+    'toast_error': 'Error',
+    'toast_connected': 'Connected!',
+    'toast_disconnected': 'Disconnected',
+  },
+  fr: {
+    // Auth
+    'sign_in': 'Connexion',
+    'create_account': 'Créer un compte',
+    'email_or_username': "Email ou nom d'utilisateur",
+    'password': 'Mot de passe',
+    'sign_in_btn': 'Se connecter →',
+    'create_account_btn': 'Créer un compte →',
+    'username': "Nom d'utilisateur",
+    'email_optional': 'Email (optionnel)',
+    'min_6_chars': '6 caractères minimum',
+    'personal_cmd': 'Votre',
+    'cmd_center': 'centre de commande',
+    'auth_desc': 'Tout ce qui compte — tâches, stats, habitudes, musique — au même endroit.',
+    'feat_stats': 'Stats et analytiques en temps réel',
+    'feat_habits': 'Suivi des habitudes & séries',
+    'feat_gaming': 'Spotify, Discord & gaming',
+    'feat_ai': 'Assistant IA NEXUS',
+    // Profile select
+    'whos_using': 'Qui utilise ?',
+    'choose_profile': 'Choisissez votre profil pour continuer',
+    'select_user': 'Sélectionner',
+    'add_profile': 'Ajouter profil',
+    'manage_profiles': 'Gérer les profils',
+    'sign_out': 'Déconnexion',
+    'done': 'Terminé',
+    // Nav
+    'nav_overview': 'Aperçu',
+    'nav_files': 'Fichiers & Liens',
+    'nav_notes': 'Notes',
+    'nav_tasks': 'Tâches',
+    'nav_habits': 'Habitudes',
+    'nav_kanban': 'Kanban',
+    'nav_calendar': 'Calendrier',
+    'nav_goals': 'Objectifs',
+    'nav_journal': 'Journal',
+    'nav_countdown': 'Compte à rebours',
+    'nav_stats': 'Statistiques',
+    'nav_github': 'GitHub',
+    'nav_gaming': 'Gaming',
+    'nav_connections': 'Connexions',
+    'nav_settings': 'Paramètres',
+    'nav_ai': 'NEXUS IA',
+    // Dashboard
+    'good_morning': 'Bonjour',
+    'good_afternoon': 'Bon après-midi',
+    'good_evening': 'Bonsoir',
+    'add_item': '+ Ajouter',
+    'search_placeholder': 'Rechercher…',
+    'total_files': 'Fichiers',
+    'tasks_done': 'Tâches faites',
+    'links_saved': 'Liens sauvés',
+    'time': 'Heure',
+    // Overview sections
+    'quick_access': 'Accès rapide',
+    'pin_link': '+ Épingler',
+    'recent_items': 'Éléments récents',
+    'see_all': 'Voir tout →',
+    'upcoming_tasks': 'Tâches à venir',
+    'upcoming_events': 'Événements à venir',
+    'quick_note': 'Note rapide',
+    'quick_note_placeholder': 'Écrivez une note rapide…',
+    'recent_activity': 'Activité récente',
+    'clear': 'Effacer',
+    // Pomodoro
+    'focus': 'Focus',
+    'short_break': 'Courte',
+    'long_break': 'Longue',
+    'history': 'Historique →',
+    'today': "Aujourd'hui",
+    'total': 'Total',
+    'streak': 'Série',
+    // Weather
+    'weather': 'Météo',
+    'feels_like': 'Ressenti',
+    'wind': 'km/h vent',
+    'humidity': 'Humidité',
+    // Settings
+    'settings': 'Paramètres',
+    'configuration': 'Configuration',
+    'profile': 'Profil',
+    'security': 'Sécurité',
+    'account': 'Compte',
+    'identity': 'Identité',
+    'display_name': 'Nom affiché',
+    'bio': 'Bio',
+    'appearance': 'Apparence',
+    'avatar': 'Avatar',
+    'change_avatar': "Changer l'avatar",
+    'accent_color': "Couleur d'accentuation",
+    'custom_color': 'Couleur personnalisée',
+    'animated_bg': 'Fond animé',
+    'profile_banner': 'Bannière de profil',
+    'sidebar_layout': 'Disposition sidebar',
+    'data': 'Données',
+    'export_json': '⬇ Exporter JSON',
+    'import_json': '⬆ Importer JSON',
+    'enable_notifs': '🔔 Activer notifications',
+    'danger_zone': 'Zone dangereuse',
+    'reset_data': '🗑 Réinitialiser mes données',
+    'save_protection': 'Sauvegarder la protection',
+    'remove_protection': 'Supprimer la protection',
+    'account_info': 'Infos du compte',
+    'session': 'Session',
+    // Connections
+    'connections': 'Connexions',
+    'integrations': 'Intégrations',
+    'connect': 'Connecter',
+    'disconnect': 'Déconnecter',
+    'refresh': '↻ Actualiser',
+    'connected': 'Connecté',
+    'not_connected': 'Non connecté',
+    'region': 'Région',
+    // Tasks
+    'all': 'Tout',
+    'pending': 'En cours',
+    'high': '🔥 Urgent',
+    'add_task': '+ Ajouter tâche',
+    // Notes
+    'new_note': '+ Nouvelle note',
+    'writing': 'Écriture',
+    // AI
+    'nexus_ai_desc': 'Posez une question sur votre dashboard…',
+    'new_chat': 'Nouveau chat',
+    'summarize_tasks': 'Résumer mes tâches',
+    'focus_today': "Sur quoi me concentrer aujourd'hui ?",
+    'review_habits': 'Analyser mes habitudes cette semaine',
+    'write_note': 'Aide-moi à écrire une note',
+    'pomo_schedule': 'Suggère un planning Pomodoro',
+    // Toasts
+    'toast_profile_updated': 'Profil mis à jour !',
+    'toast_deleted': 'Profil supprimé',
+    'toast_saved': 'Sauvegardé !',
+    'toast_copied': 'Copié !',
+    'toast_error': 'Erreur',
+    'toast_connected': 'Connecté !',
+    'toast_disconnected': 'Déconnecté',
+  },
+  es: {
+    'sign_in': 'Iniciar sesión',
+    'create_account': 'Crear cuenta',
+    'email_or_username': "Correo o usuario",
+    'password': 'Contraseña',
+    'sign_in_btn': 'Iniciar sesión →',
+    'create_account_btn': 'Crear cuenta →',
+    'username': 'Usuario',
+    'email_optional': 'Correo (opcional)',
+    'min_6_chars': 'Mín. 6 caracteres',
+    'personal_cmd': 'Tu',
+    'cmd_center': 'centro de mando',
+    'auth_desc': 'Todo lo que importa — tareas, stats, hábitos, música — en un solo lugar.',
+    'feat_stats': 'Estadísticas en tiempo real',
+    'feat_habits': 'Seguimiento de hábitos y rachas',
+    'feat_gaming': 'Spotify, Discord y gaming',
+    'feat_ai': 'Asistente IA NEXUS',
+    'whos_using': '¿Quién usa?',
+    'choose_profile': 'Elige tu perfil para continuar',
+    'select_user': 'Seleccionar',
+    'add_profile': 'Añadir perfil',
+    'manage_profiles': 'Gestionar perfiles',
+    'sign_out': 'Cerrar sesión',
+    'done': 'Listo',
+    'nav_overview': 'Resumen',
+    'nav_files': 'Archivos y enlaces',
+    'nav_notes': 'Notas',
+    'nav_tasks': 'Tareas',
+    'nav_habits': 'Hábitos',
+    'nav_kanban': 'Kanban',
+    'nav_calendar': 'Calendario',
+    'nav_goals': 'Objetivos',
+    'nav_journal': 'Diario',
+    'nav_countdown': 'Cuenta regresiva',
+    'nav_stats': 'Estadísticas',
+    'nav_github': 'GitHub',
+    'nav_gaming': 'Gaming',
+    'nav_connections': 'Conexiones',
+    'nav_settings': 'Ajustes',
+    'nav_ai': 'NEXUS IA',
+    'good_morning': 'Buenos días',
+    'good_afternoon': 'Buenas tardes',
+    'good_evening': 'Buenas noches',
+    'add_item': '+ Añadir',
+    'search_placeholder': 'Buscar…',
+    'total_files': 'Archivos',
+    'tasks_done': 'Tareas hechas',
+    'links_saved': 'Enlaces guardados',
+    'time': 'Hora',
+    'quick_access': 'Acceso rápido',
+    'pin_link': '+ Fijar enlace',
+    'recent_items': 'Elementos recientes',
+    'see_all': 'Ver todo →',
+    'upcoming_tasks': 'Próximas tareas',
+    'upcoming_events': 'Próximos eventos',
+    'quick_note': 'Nota rápida',
+    'quick_note_placeholder': 'Escribe una nota rápida…',
+    'recent_activity': 'Actividad reciente',
+    'clear': 'Limpiar',
+    'focus': 'Enfoque',
+    'short_break': 'Corto',
+    'long_break': 'Largo',
+    'history': 'Historial →',
+    'today': 'Hoy',
+    'total': 'Total',
+    'streak': 'Racha',
+    'weather': 'Clima',
+    'feels_like': 'Sensación',
+    'wind': 'km/h viento',
+    'humidity': 'Humedad',
+    'settings': 'Ajustes',
+    'configuration': 'Configuración',
+    'profile': 'Perfil',
+    'security': 'Seguridad',
+    'account': 'Cuenta',
+    'identity': 'Identidad',
+    'display_name': 'Nombre de pantalla',
+    'bio': 'Bio',
+    'appearance': 'Apariencia',
+    'avatar': 'Avatar',
+    'change_avatar': 'Cambiar avatar',
+    'accent_color': 'Color de acento',
+    'custom_color': 'Color personalizado',
+    'animated_bg': 'Fondo animado',
+    'profile_banner': 'Banner de perfil',
+    'sidebar_layout': 'Diseño sidebar',
+    'data': 'Datos',
+    'export_json': '⬇ Exportar JSON',
+    'import_json': '⬆ Importar JSON',
+    'enable_notifs': '🔔 Activar notificaciones',
+    'danger_zone': 'Zona peligrosa',
+    'reset_data': '🗑 Resetear mis datos',
+    'save_protection': 'Guardar protección',
+    'remove_protection': 'Quitar protección',
+    'account_info': 'Info de cuenta',
+    'session': 'Sesión',
+    'connections': 'Conexiones',
+    'integrations': 'Integraciones',
+    'connect': 'Conectar',
+    'disconnect': 'Desconectar',
+    'refresh': '↻ Actualizar',
+    'connected': 'Conectado',
+    'not_connected': 'No conectado',
+    'region': 'Región',
+    'all': 'Todo',
+    'pending': 'Pendiente',
+    'high': '🔥 Urgente',
+    'add_task': '+ Añadir tarea',
+    'new_note': '+ Nueva nota',
+    'writing': 'Escritura',
+    'nexus_ai_desc': 'Pregunta algo sobre tu dashboard…',
+    'new_chat': 'Nuevo chat',
+    'summarize_tasks': 'Resumir mis tareas',
+    'focus_today': '¿En qué concentrarme hoy?',
+    'review_habits': 'Revisar mis hábitos esta semana',
+    'write_note': 'Ayúdame a escribir una nota',
+    'pomo_schedule': 'Sugerir un horario Pomodoro',
+    'toast_profile_updated': '¡Perfil actualizado!',
+    'toast_deleted': 'Perfil eliminado',
+    'toast_saved': '¡Guardado!',
+    'toast_copied': '¡Copiado!',
+    'toast_error': 'Error',
+    'toast_connected': '¡Conectado!',
+    'toast_disconnected': 'Desconectado',
+  },
+  de: {
+    'sign_in': 'Anmelden',
+    'create_account': 'Konto erstellen',
+    'email_or_username': 'E-Mail oder Benutzername',
+    'password': 'Passwort',
+    'sign_in_btn': 'Anmelden →',
+    'create_account_btn': 'Konto erstellen →',
+    'username': 'Benutzername',
+    'email_optional': 'E-Mail (optional)',
+    'min_6_chars': 'Min. 6 Zeichen',
+    'personal_cmd': 'Deine',
+    'cmd_center': 'Kommandozentrale',
+    'auth_desc': 'Alles was dir wichtig ist — Aufgaben, Stats, Gewohnheiten, Musik — an einem Ort.',
+    'feat_stats': 'Echtzeit-Statistiken & Analysen',
+    'feat_habits': 'Gewohnheitsverfolgung & Serien',
+    'feat_gaming': 'Spotify, Discord & Gaming',
+    'feat_ai': 'NEXUS KI-Assistent',
+    'whos_using': 'Wer nutzt es?',
+    'choose_profile': 'Wähle dein Profil zum Fortfahren',
+    'select_user': 'Auswählen',
+    'add_profile': 'Profil hinzufügen',
+    'manage_profiles': 'Profile verwalten',
+    'sign_out': 'Abmelden',
+    'done': 'Fertig',
+    'nav_overview': 'Übersicht',
+    'nav_files': 'Dateien & Links',
+    'nav_notes': 'Notizen',
+    'nav_tasks': 'Aufgaben',
+    'nav_habits': 'Gewohnheiten',
+    'nav_kanban': 'Kanban',
+    'nav_calendar': 'Kalender',
+    'nav_goals': 'Ziele',
+    'nav_journal': 'Tagebuch',
+    'nav_countdown': 'Countdown',
+    'nav_stats': 'Statistiken',
+    'nav_github': 'GitHub',
+    'nav_gaming': 'Gaming',
+    'nav_connections': 'Verbindungen',
+    'nav_settings': 'Einstellungen',
+    'nav_ai': 'NEXUS KI',
+    'good_morning': 'Guten Morgen',
+    'good_afternoon': 'Guten Tag',
+    'good_evening': 'Guten Abend',
+    'add_item': '+ Hinzufügen',
+    'search_placeholder': 'Suchen…',
+    'total_files': 'Dateien',
+    'tasks_done': 'Aufgaben erledigt',
+    'links_saved': 'Links gespeichert',
+    'time': 'Uhrzeit',
+    'quick_access': 'Schnellzugriff',
+    'pin_link': '+ Link anheften',
+    'recent_items': 'Letzte Elemente',
+    'see_all': 'Alle anzeigen →',
+    'upcoming_tasks': 'Bevorstehende Aufgaben',
+    'upcoming_events': 'Bevorstehende Ereignisse',
+    'quick_note': 'Schnellnotiz',
+    'quick_note_placeholder': 'Schnellnotiz eingeben…',
+    'recent_activity': 'Letzte Aktivität',
+    'clear': 'Löschen',
+    'focus': 'Fokus',
+    'short_break': 'Kurze',
+    'long_break': 'Lange',
+    'history': 'Verlauf →',
+    'today': 'Heute',
+    'total': 'Gesamt',
+    'streak': 'Serie',
+    'weather': 'Wetter',
+    'feels_like': 'Gefühlt',
+    'wind': 'km/h Wind',
+    'humidity': 'Luftfeuchte',
+    'settings': 'Einstellungen',
+    'configuration': 'Konfiguration',
+    'profile': 'Profil',
+    'security': 'Sicherheit',
+    'account': 'Konto',
+    'identity': 'Identität',
+    'display_name': 'Anzeigename',
+    'bio': 'Bio',
+    'appearance': 'Darstellung',
+    'avatar': 'Avatar',
+    'change_avatar': 'Avatar ändern',
+    'accent_color': 'Akzentfarbe',
+    'custom_color': 'Benutzerdefinierte Farbe',
+    'animated_bg': 'Animierter Hintergrund',
+    'profile_banner': 'Profilbanner',
+    'sidebar_layout': 'Sidebar-Layout',
+    'data': 'Daten',
+    'export_json': '⬇ JSON exportieren',
+    'import_json': '⬆ JSON importieren',
+    'enable_notifs': '🔔 Benachrichtigungen aktivieren',
+    'danger_zone': 'Gefahrenzone',
+    'reset_data': '🗑 Daten zurücksetzen',
+    'save_protection': 'Schutz speichern',
+    'remove_protection': 'Schutz entfernen',
+    'account_info': 'Kontoinformationen',
+    'session': 'Sitzung',
+    'connections': 'Verbindungen',
+    'integrations': 'Integrationen',
+    'connect': 'Verbinden',
+    'disconnect': 'Trennen',
+    'refresh': '↻ Aktualisieren',
+    'connected': 'Verbunden',
+    'not_connected': 'Nicht verbunden',
+    'region': 'Region',
+    'all': 'Alle',
+    'pending': 'Ausstehend',
+    'high': '🔥 Dringend',
+    'add_task': '+ Aufgabe hinzufügen',
+    'new_note': '+ Neue Notiz',
+    'writing': 'Schreiben',
+    'nexus_ai_desc': 'Frag etwas über dein Dashboard…',
+    'new_chat': 'Neuer Chat',
+    'summarize_tasks': 'Meine Aufgaben zusammenfassen',
+    'focus_today': 'Worauf soll ich mich heute konzentrieren?',
+    'review_habits': 'Meine Gewohnheiten diese Woche prüfen',
+    'write_note': 'Hilf mir eine Notiz zu schreiben',
+    'pomo_schedule': 'Pomodoro-Plan vorschlagen',
+    'toast_profile_updated': 'Profil aktualisiert!',
+    'toast_deleted': 'Profil gelöscht',
+    'toast_saved': 'Gespeichert!',
+    'toast_copied': 'Kopiert!',
+    'toast_error': 'Fehler',
+    'toast_connected': 'Verbunden!',
+    'toast_disconnected': 'Getrennt',
+  },
+};
+
+function t(key){ return I18N[_lang]?.[key] ?? I18N['en']?.[key] ?? key; }
+
+
+// ── LANGUAGE DROPDOWN ─────────────────────────────────────────
+const LANG_META={"fr": {"flag": "🇫🇷", "name": "French", "native": "Français"}, "en": {"flag": "🇺🇸", "name": "English", "native": "English"}, "es": {"flag": "🇪🇸", "name": "Spanish", "native": "Español"}, "de": {"flag": "🇩🇪", "name": "German", "native": "Deutsch"}};
+
+function toggleLangDropdown(id){
+  // Close all other dropdowns first
+  document.querySelectorAll('.lang-dropdown.open').forEach(d=>{
+    if(d.id!==id) d.classList.remove('open');
+  });
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+// Close on outside click
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.lang-dropdown')){
+    document.querySelectorAll('.lang-dropdown.open').forEach(d=>d.classList.remove('open'));
+  }
+});
+
+function setLangAndClose(lang, dropdownId){
+  setLang(lang);
+  document.getElementById(dropdownId)?.classList.remove('open');
+  updateAllLangDropdowns();
+}
+
+function updateAllLangDropdowns(){
+  const meta=LANG_META[_lang]||LANG_META['en'];
+  document.querySelectorAll('.lang-dropdown').forEach(dd=>{
+    const id=dd.id;
+    // Update trigger
+    const flag=document.getElementById(id+'-flag');
+    const name=document.getElementById(id+'-name');
+    if(flag) flag.textContent=meta.flag;
+    if(name) name.textContent=meta.name;
+    // Update active state on options
+    dd.querySelectorAll('.lang-option').forEach(opt=>{
+      opt.classList.toggle('active', opt.dataset.lang===_lang);
+    });
+  });
+}
+
+function setLang(lang){
+  _lang = lang;
+  localStorage.setItem('nexus_lang', lang);
+  applyI18n();
+  updateAllLangDropdowns();
+  if(typeof renderSidebarNav==='function') renderSidebarNav();
+  const labels=[t('focus'),t('short_break'),t('long_break')];
+  [0,1,2].forEach(i=>{
+    const tab=document.getElementById('pomo-tab-'+i);
+    if(tab) tab.textContent=labels[i];
+  });
+}
+
+function applyI18n(){
+  // Apply to all elements with data-i18n attribute
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    const attr = el.getAttribute('data-i18n-attr');
+    if(attr) el.setAttribute(attr, t(key));
+    else el.textContent = t(key);
+  });
+  // Update lang selector buttons
+  document.querySelectorAll('.lang-btn').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.lang === _lang);
+  });
+  // Re-render dynamic parts that depend on language
+  if(document.getElementById('greeting-time')) updateClock();
+  const psTitle=document.getElementById('ps-title-el');
+  if(psTitle){
+    const w=t('whos_using');
+    // Keep gradient span on last word
+    const parts=w.split(' ');
+    const last=parts.pop();
+    psTitle.innerHTML=(parts.length?parts.join(' ')+' ':'')+`<span>${last}</span>`;
+  }
+  const psSub=document.getElementById('ps-sub-el');
+  if(psSub) psSub.textContent=t('choose_profile');
+  const psMgr=document.getElementById('ps-manage-btn');
+  if(psMgr) psMgr.textContent=managingMode?t('done'):t('manage_profiles');
+  const psSignout=document.querySelector('.ps-signout-btn');
+  if(psSignout) psSignout.textContent=t('sign_out');
+  // Auth form
+  const tabLogin=document.getElementById('tab-login');
+  if(tabLogin) tabLogin.textContent=t('sign_in');
+  const tabReg=document.getElementById('tab-register');
+  if(tabReg) tabReg.textContent=t('create_account');
+  // Update all dropdown triggers
+  updateAllLangDropdowns();
+}
+
+
 const SUPABASE_URL='https://bvgifyzhpzkbrwdjrqsg.supabase.co';
 const SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2Z2lmeXpocHprYnJ3ZGpycXNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1ODgzNjAsImV4cCI6MjA5NjE2NDM2MH0.PCm_g4w7ZrLqNilISt-Xnlw_CZrA8PY1Uvk9H_PUhCc';
 const ADMIN_EMAIL='rub19.mailpro@gmail.com';
@@ -4285,6 +5645,11 @@ function safeThemeColor(value){
 // -- AUTH UI --------------------------------------
 function showChangelog(){
   const versions=[
+    {v:'v3.9.1',date:'12/06/2026',changes:['Stats: heatmap GitHub-style sur 6 mois (26 semaines, 4 niveaux orange)','Valorant: graphe RR progression sur les derniers matchs compétitifs','Stats: renderStatsHeatmap() hookée dans renderStatsPage()','Présentation: mode plein écran 2x3 grid (tasks/pomo/habits/streaks/files)','Présentation: horloge live, bouton dans stats topbar + Cmd+K','Présentation: fullscreen API + ESC pour quitter']},
+    {v:'v3.9.0',date:'12/06/2026',changes:['Notifications in-app: cloche + badge + panneau slide-in','Notifs auto: tâches en retard, tâches du jour, streaks en danger, événements à venir, milestone pomo','Transitions directionnelles: gauche/droite selon ordre des pages dans la nav','Page order: slide depuis droite si on avance dans la nav, gauche si on recule','Pomo: notification in-app à chaque session terminée','Topbar: bouton cloche avec badge animé']},
+    {v:'v3.8.0',date:'12/06/2026',changes:['Command Palette: Cmd+K ouvre une recherche globale avec actions rapides','Command Palette: navigation clavier ↑↓ + Enter, raccourcis N/T','Link preview: hover sur les liens File & Links affiche favicon + domaine','Drag & drop: widgets de l\'overview réorganisables par glisser-déposer','Sidebar: Discord + Spotify/Last.fm refonte — compact, propre, EQ animé','EQ animation: barres musicales animées quand Spotify joue','doLogin/doRegister: try/catch global, plus de loading infini']},
+    {v:'v3.7.1',date:'12/06/2026',changes:['i18n: Espagnol (ES) et Allemand (DE) ajoutés — 4 langues au total','Sélecteur mis à jour avec 🇪🇸 ES et 🇩🇪 DE','ps-title: dégradé sur dernier mot préservé dans toutes les langues','Persistance langue vérifiée: applyI18n() au boot lit localStorage']},
+    {v:'v3.7.0',date:'12/06/2026',changes:['i18n: système de langue FR/EN complet','Sélecteur de langue avec drapeaux dans auth et dashboard','Français par défaut, mémorisé en localStorage','Traductions: nav, dashboard, settings, auth, AI, pomodoro, météo, connexions','data-i18n attributes sur tous les éléments statiques clés','Greeting dynamique selon langue (Bonjour/Bon après-midi/Bonsoir)']},
     {v:'v3.6.0',date:'12/06/2026',changes:['UI: full modern polish pass — typography, spacing, radius system','New CSS var system: --r-xs/sm/md/lg/xl/2xl for consistent border-radius','Typography: JetBrains Mono for labels/stats, Syne for titles, tighter letter-spacing','Buttons: refined hover states, shadows, active scale','Panels/cards: shadow system, hover lift, consistent borders','Modals: darker backdrop, blur 10px, larger border-radius','Cat tabs: orange active state, cleaner pills','Autofill: dark background override for Chrome autofill','Responsive: better padding/radius on mobile for all components','Bugfix: deleteProfile now deletes from Supabase DB (no more reappearing after refresh)','Discord card: banner, accent color, status dot, activity block','Region selector: pill-style for Valo & LoL (no more ugly select dropdown)','XP: fixed render on settings page open, new bar class']},
     {v:'v3.5.1',date:'12/06/2026',changes:['Color system: full palette unification — orange #f97316 + red #dc2626 everywhere','Auth screen: left panel near-black coherent, buttons orange/red gradient','Auth: card border orange-tinted, right panel explicit dark bg','Root vars: surfaces neutral rgba (no more red-tinted backgrounds)','Root vars: muted colors warm neutral (no more blue-purple muted)','Accent: #f97316 replaces #e11d48 crimson as primary accent throughout']},
     {v:'v3.5.0',date:'12/06/2026',changes:['Pomodoro v2: larger 160px animated ring with pulse while running','Pomodoro: Web Audio API sounds (tick/start/done/break chimes)','Pomodoro: sound toggle button, SVG controls (reset/play/skip)','Pomodoro: 4-cell stats grid (today/total/focus time/streak)','Last.fm v2: blurred album art hero card for now playing','Last.fm: section labels, track rows, artist bars with new CSS classes','Valorant v2: rank hero with floating emblem + winrate donut ring','Valorant: valo-stats-row with color-coded good/bad KDA/ACS/HS/WR','Valorant: new valo-match-row with left color bar + hover slide','Valorant: valo-agents-grid 3-col with agent images']},
@@ -4376,25 +5741,28 @@ async function doLogin(){
   const pw=document.getElementById('auth-login-pw').value;
   if(!id||!pw){document.getElementById('auth-error').textContent='Fill in all fields';return;}
   setAuthLoading(true);
-  const isEmail=id.includes('@');
-  let email=id;
-  if(!isEmail){
-    // Try to find email from username — use service role via worker
-    try{
-      const res=await fetch(`${WORKER_URL}/supabase/username?username=${encodeURIComponent(id)}`);
-      if(res.ok){const j=await res.json();if(j.email)email=j.email;}
-    }catch(e){}
-    // Fallback: username@dashboard.local (used when no email provided at signup)
-    if(email===id) email=id+'@dashboard.local';
+  try{
+    const isEmail=id.includes('@');
+    let email=id;
+    if(!isEmail){
+      try{
+        const res=await fetch(`${WORKER_URL}/supabase/username?username=${encodeURIComponent(id)}`);
+        if(res.ok){const j=await res.json();if(j.email)email=j.email;}
+      }catch(e){}
+      if(email===id) email=id+'@dashboard.local';
+    }
+    const {error}=await sb.auth.signInWithPassword({email,password:pw});
+    setAuthLoading(false);
+    if(error){
+      document.getElementById('auth-error').textContent='Wrong credentials — if you signed up with an email, use it to sign in';
+      return;
+    }
+    await onAuthSuccess();
+  }catch(e){
+    setAuthLoading(false);
+    document.getElementById('auth-error').textContent='Connection error — please try again';
+    console.error('Login error:',e);
   }
-  const {error}=await sb.auth.signInWithPassword({email,password:pw});
-  setAuthLoading(false);
-  if(error){
-    // If still failing with generated email, show helpful message
-    document.getElementById('auth-error').textContent='Wrong credentials — if you signed up with an email, use it to sign in';
-    return;
-  }
-  await onAuthSuccess();
 }
 
 async function doRegister(){
@@ -4404,18 +5772,25 @@ async function doRegister(){
   if(!username||!pw){document.getElementById('auth-error').textContent='Username and password required';return;}
   if(pw.length<6){document.getElementById('auth-error').textContent='Password too short (6 chars min)';return;}
   setAuthLoading(true);
-  // Check username is unique
-  const {data:existing}=await sb.from('profiles').select('id').eq('username',username).single();
-  if(existing){setAuthLoading(false);document.getElementById('auth-error').textContent='Username already taken';return;}
-  const regEmail=email||username+'@dashboard.local';
-  const {error}=await sb.auth.signUp({email:regEmail,password:pw,options:{data:{username}}});
-  setAuthLoading(false);
-  if(error){document.getElementById('auth-error').textContent=error.message;return;}
-  toast('Account created ! Login...','success');
-  setTimeout(async()=>{
-    const {error:e2}=await sb.auth.signInWithPassword({email:regEmail,password:pw});
-    if(!e2)await onAuthSuccess();
-  },1000);
+  try{
+    const {data:existing}=await sb.from('profiles').select('id').eq('username',username).single();
+    if(existing){setAuthLoading(false);document.getElementById('auth-error').textContent='Username already taken';return;}
+    const regEmail=email||username+'@dashboard.local';
+    const {error}=await sb.auth.signUp({email:regEmail,password:pw,options:{data:{username}}});
+    setAuthLoading(false);
+    if(error){document.getElementById('auth-error').textContent=error.message;return;}
+    toast('Account created! Logging in…','success');
+    setTimeout(async()=>{
+      try{
+        const {error:e2}=await sb.auth.signInWithPassword({email:regEmail,password:pw});
+        if(!e2)await onAuthSuccess();
+      }catch(e){document.getElementById('auth-error').textContent='Login failed after registration';}
+    },1000);
+  }catch(e){
+    setAuthLoading(false);
+    document.getElementById('auth-error').textContent='Connection error — please try again';
+    console.error('Register error:',e);
+  }
 }
 
 async function doLogout(){
@@ -4925,7 +6300,7 @@ function renderProfileScreen(){
     '</div>';
   }
   list.innerHTML=html;
-  document.getElementById('ps-manage-btn').textContent=managingMode?'Done':'Manage profiles';
+  document.getElementById('ps-manage-btn').textContent=managingMode?t('done'):t('manage_profiles');
   // Start ember canvas if not running
   psStartEmbers();
 }
@@ -4956,6 +6331,7 @@ function enterDashboard(id){
     renderSidebarNav();
     initDashboard();
     startAmbientBg();
+    applyI18n();
   },480);
 }
 
@@ -5224,6 +6600,8 @@ function initDashboard(){
   if(!_ambientFrame)startAmbientBg();
   // Init animations
   initAnimations();
+  // Start notification scan
+  setTimeout(startNotifScan, 800);
   // Show mobile topbar
   checkMobileLayout();
   updateTopbarProfile();
@@ -5778,7 +7156,7 @@ function switchPage(page,navEl){
   document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
   const activePage=document.getElementById('page-'+page);
   activePage.classList.add('active');
-  animatePageIn(activePage);
+  animatePageIn(activePage,page);
   document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
   if(navEl)navEl.classList.add('active');
   else document.querySelectorAll('.nav-item').forEach(el=>{
@@ -6880,6 +8258,9 @@ function renderStatsPage(){
   const totalMins=Math.round(pomo.reduce((s,h)=>s+(h.duration||1500),0)/60);
   setEl('st-pomo-time',totalMins>=60?(totalMins/60).toFixed(1)+'h focus':totalMins+'m focus');
 
+  // Heatmap
+  renderStatsHeatmap();
+
   // Activity bars (last 7 days)
   const barsEl=document.getElementById('stats-activity-bars');
   const labelsEl=document.getElementById('stats-activity-labels');
@@ -7267,374 +8648,149 @@ const CMD_PAGES=[
   {icon:'⚙️',label:'Settings',page:'settings',keywords:'settings profile security'},
 ];
 
+// ══════════════════════════════════════════════════════════════
 let _cmdSelectedIdx=0;
-
-function openCmdPalette(){
-  const overlay=document.getElementById('cmd-palette');
-  overlay.style.display='flex';
-  setTimeout(()=>document.getElementById('cmd-input').focus(),50);
-  updateCmdResults('');
-  _cmdSelectedIdx=0;
+function openCmdPalette(){const o=document.getElementById('cmd-palette-overlay');if(o)o.classList.add('open');const i=document.getElementById('cmd-input');if(i){i.value='';i.focus();}_cmdSelectedIdx=0;renderCmdResults();}
+function closeCmdPalette(){document.getElementById('cmd-palette-overlay')?.classList.remove('open');}
+function getCmdItems(q=''){
+  const p=curP();q=q.toLowerCase().trim();
+  const pages=[
+    {icon:'🏠',label:t('nav_overview'),sub:'Overview',action:()=>switchPage('dashboard',null)},
+    {icon:'📁',label:t('nav_files'),sub:'Files & links',action:()=>switchPage('files',null)},
+    {icon:'📝',label:t('nav_notes'),sub:'Notes',action:()=>switchPage('notes',null)},
+    {icon:'✅',label:t('nav_tasks'),sub:'Tasks',action:()=>switchPage('todos',null)},
+    {icon:'📋',label:t('nav_kanban'),sub:'Kanban board',action:()=>switchPage('kanban',null)},
+    {icon:'📅',label:t('nav_calendar'),sub:'Calendar',action:()=>switchPage('calendar',null)},
+    {icon:'🔥',label:t('nav_habits'),sub:'Habits',action:()=>switchPage('habits',null)},
+    {icon:'🎮',label:t('nav_gaming'),sub:'Gaming',action:()=>switchPage('gaming',null)},
+    {icon:'📊',label:t('nav_stats'),sub:'Stats',action:()=>switchPage('stats',null)},
+    {icon:'🔗',label:t('nav_connections'),sub:'Connections',action:()=>switchPage('connections',null)},
+    {icon:'⚙️',label:t('nav_settings'),sub:'Settings',action:()=>switchPage('settings',null)},
+    {icon:'🤖',label:t('nav_ai'),sub:'NEXUS AI',action:()=>switchPage('ai',null)},
+  ];
+  const actions=[
+    {icon:'➕',label:'Add item',sub:'File, link or folder',kbd:'Ctrl+A',action:()=>{closeCmdPalette();openModal('add-item');}},
+    {icon:'📝',label:'New note',sub:'Create a note',kbd:'N',action:()=>{closeCmdPalette();switchPage('notes',null);}},
+    {icon:'✅',label:'Add task',sub:'Quick task',kbd:'T',action:()=>{closeCmdPalette();switchPage('todos',null);}},
+    {icon:'🔄',label:'Switch profile',sub:'Profile select',action:()=>{closeCmdPalette();goToProfileScreen();}},
+    {icon:'🖥️',label:'Presentation mode',sub:'Full-screen dashboard on TV',kbd:'P',action:()=>{closeCmdPalette();openPresentationMode();}},
+    {icon:'🌐',label:'Toggle language',sub:'FR/EN/ES/DE',action:()=>{closeCmdPalette();const langs=['fr','en','es','de'];const idx=langs.indexOf(_lang);setLangAndClose(langs[(idx+1)%langs.length],'lang-dd-topbar');}},
+  ];
+  const recentItems=(p?.state?.items||[]).slice(0,4).map(item=>({
+    icon:item.type==='link'?'🔗':item.type==='folder'?'📁':'📄',
+    label:item.name||'Untitled',sub:item.url||item.type,tag:'Item',
+    action:()=>{closeCmdPalette();if(item.url)window.open(item.url,'_blank');else switchPage('files',null);}
+  }));
+  const f=arr=>!q?arr:arr.filter(i=>(i.label+' '+(i.sub||'')).toLowerCase().includes(q));
+  return{pages:f(pages),actions:f(actions),items:f(recentItems),all:[...f(pages),...f(actions),...f(recentItems)]};
 }
-
-function closeCmdPalette(){
-  document.getElementById('cmd-palette').style.display='none';
-  document.getElementById('cmd-input').value='';
+function renderCmdResults(){
+  const q=document.getElementById('cmd-input')?.value||'';
+  const{pages,actions,items,all}=getCmdItems(q);
+  _cmdSelectedIdx=Math.max(0,Math.min(_cmdSelectedIdx,all.length-1));
+  const c=document.getElementById('cmd-results');if(!c)return;
+  let html='',gi=0;
+  function sec(label,arr){
+    if(!arr.length)return;
+    html+=`<div class="cmd-section-label">${label}</div>`;
+    arr.forEach(item=>{
+      const sel=gi===_cmdSelectedIdx;
+      const idx=gi;
+      html+=`<div class="cmd-item${sel?' selected':''}" data-idx="${idx}" onmousedown="executeCmdItem(${idx})" onmouseover="_cmdSelectedIdx=${idx};renderCmdResults()">
+        <div class="cmd-item-icon">${item.icon||'◆'}</div>
+        <div style="flex:1;min-width:0"><div class="cmd-item-label">${escapeHTML(item.label)}</div>${item.sub?`<div class="cmd-item-sub">${escapeHTML(item.sub)}</div>`:''}</div>
+        ${item.kbd?`<span class="cmd-item-kbd">${item.kbd}</span>`:''}
+        ${item.tag?`<span class="cmd-item-tag">${item.tag}</span>`:''}
+      </div>`;gi++;
+    });
+  }
+  if(!all.length){html='<div style="text-align:center;padding:28px;color:var(--muted2);font-size:13px">No results</div>';}
+  else if(!q){sec('Actions',actions);sec('Pages',pages);if(items.length)sec('Recent',items);}
+  else{if(pages.length)sec('Pages',pages);if(actions.length)sec('Actions',actions);if(items.length)sec('Items',items);}
+  c.innerHTML=html;
 }
+function executeCmdItem(idx){const{all}=getCmdItems(document.getElementById('cmd-input')?.value||'');const item=all[idx];if(item){closeCmdPalette();setTimeout(()=>item.action(),80);}}
+function handleCmdKey(e){
+  const{all}=getCmdItems(document.getElementById('cmd-input')?.value||'');
+  if(e.key==='ArrowDown'){e.preventDefault();_cmdSelectedIdx=Math.min(_cmdSelectedIdx+1,all.length-1);renderCmdResults();}
+  else if(e.key==='ArrowUp'){e.preventDefault();_cmdSelectedIdx=Math.max(_cmdSelectedIdx-1,0);renderCmdResults();}
+  else if(e.key==='Enter'){e.preventDefault();executeCmdItem(_cmdSelectedIdx);}
+  else if(e.key==='Escape'){closeCmdPalette();}
+}
+document.addEventListener('keydown',e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();const o=document.getElementById('cmd-palette-overlay');if(o?.classList.contains('open'))closeCmdPalette();else openCmdPalette();}
+  if(!document.getElementById('cmd-palette-overlay')?.classList.contains('open')){
+    const tag=document.activeElement?.tagName;if(tag==='INPUT'||tag==='TEXTAREA')return;
+    if(e.key==='n'&&!e.ctrlKey&&!e.metaKey)switchPage('notes',null);
+    if(e.key==='t'&&!e.ctrlKey&&!e.metaKey)switchPage('todos',null);
+  }
+});
 
-function updateCmdResults(query){
-  const p=curP();
-  const q=query.toLowerCase().trim();
-  const results=[];
-
-  // Navigation commands
-  CMD_PAGES.forEach(c=>{
-    if(!q||c.label.toLowerCase().includes(q)||c.keywords.includes(q)){
-      results.push({type:'nav',icon:c.icon,label:'Go to '+c.label,sub:'Navigation',action:()=>{switchPage(c.page,null);closeCmdPalette();}});
+// ══════════════════════════════════════════════════════════════
+//  LINK HOVER PREVIEW
+// ══════════════════════════════════════════════════════════════
+let _lpTO=null,_lpHideTO=null;
+function initLinkPreviews(){
+  const preview=document.getElementById('link-preview');if(!preview)return;
+  document.addEventListener('mouseover',e=>{
+    const link=e.target.closest('[data-preview-url],.link-card,.pinned-card,.item-row[data-url]');
+    if(!link)return;
+    const url=link.dataset.previewUrl||link.href||link.dataset.url;
+    if(!url||!url.startsWith('http'))return;
+    clearTimeout(_lpHideTO);clearTimeout(_lpTO);
+    _lpTO=setTimeout(()=>showLinkPreview(url,e),500);
+  });
+  document.addEventListener('mouseout',e=>{
+    const link=e.target.closest('[data-preview-url],.link-card,.pinned-card,.item-row[data-url]');
+    if(!link)return;
+    clearTimeout(_lpTO);
+    _lpHideTO=setTimeout(()=>preview.classList.remove('visible'),150);
+  });
+  document.addEventListener('mousemove',e=>{
+    if(preview.classList.contains('visible')){
+      const W=window.innerWidth,H=window.innerHeight,pw=290,ph=150;
+      let l=e.clientX+16,t=e.clientY+16;
+      if(l+pw>W)l=e.clientX-pw-8;if(t+ph>H)t=e.clientY-ph-8;
+      preview.style.left=l+'px';preview.style.top=t+'px';
     }
   });
-
-  // Search files & links
-  if(p&&q){
-    (p.state.items||[]).filter(i=>i.name.toLowerCase().includes(q)).slice(0,4).forEach(i=>{
-      results.push({type:'file',icon:tIcons[i.type]||'📄',label:i.name,sub:i.url||i.date,action:()=>{if(i.url)window.open(i.url,'_blank');else{switchPage('files',null);}closeCmdPalette();}});
-    });
-
-    // Search tasks
-    (p.state.todos||[]).filter(t=>t.text.toLowerCase().includes(q)).slice(0,3).forEach(t=>{
-      results.push({type:'task',icon:t.done?'✅':'⬜',label:t.text,sub:'Task · '+t.priority,action:()=>{switchPage('todos',null);closeCmdPalette();}});
-    });
-
-    // Search events
-    (p.state.events||[]).filter(e=>e.title.toLowerCase().includes(q)).slice(0,3).forEach(e=>{
-      results.push({type:'event',icon:'📅',label:e.title,sub:'Event · '+e.date,action:()=>{switchPage('calendar',null);closeCmdPalette();}});
-    });
-  }
-
-  // Quick actions
-  if(!q||'add task'.includes(q))results.push({type:'action',icon:'➕',label:'Add Task',sub:'Quick action',action:()=>{openModal('add-todo');closeCmdPalette();}});
-  if(!q||'add event'.includes(q))results.push({type:'action',icon:'📅',label:'Add Event',sub:'Quick action',action:()=>{openModal('add-event');closeCmdPalette();}});
-  if(!q||'add file'.includes(q))results.push({type:'action',icon:'📁',label:'Add File / Link',sub:'Quick action',action:()=>{openModal('add-item');closeCmdPalette();}});
-
-  _cmdSelectedIdx=0;
-  const container=document.getElementById('cmd-results');
-  if(!results.length){container.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">No results for "'+query+'"</div>';return;}
-
-  container.innerHTML=results.map((r,i)=>`
-    <div class="cmd-result ${i===0?'selected':''}" data-idx="${i}" onclick="cmdResultClick(${i})" onmouseover="cmdHover(${i})"
-      style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-radius:var(--r-sm);cursor:pointer;transition:background .2s ease;margin:2px 4px;${i===0?'background:var(--accent-subtle);border:1px solid var(--border3)':'border:1px solid transparent'}">
-      <span style="font-size:18px;width:24px;text-align:center;flex-shrink:0">${r.icon}</span>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.label}</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:1px">${r.sub}</div>
-      </div>
-      <span style="font-size:10px;color:var(--muted);flex-shrink:0;${r.type==='nav'?'':'display:none'}">${r.type==='nav'?'⏎':''}</span>
-    </div>`).join('');
-
-  // Store results for keyboard nav
-  container._results=results;
+}
+function showLinkPreview(url,e){
+  const preview=document.getElementById('link-preview');if(!preview)return;
+  try{
+    const domain=new URL(url).hostname.replace('www.','');
+    document.getElementById('link-preview-title').textContent=domain;
+    document.getElementById('link-preview-url').textContent=url.replace(/^https?:\/\/(www\.)?/,'').slice(0,50);
+    document.getElementById('link-preview-banner').innerHTML=`<div style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:100%"><img src="https://www.google.com/s2/favicons?domain=${domain}&sz=64" style="width:32px;height:32px;border-radius:8px" onerror="this.style.display='none'"><span style="font-size:13px;color:rgba(249,115,22,.8);font-family:var(--mono)">${escapeHTML(domain)}</span></div>`;
+    const W=window.innerWidth,H=window.innerHeight,pw=290,ph=150;
+    let l=e.clientX+16,t=e.clientY+16;
+    if(l+pw>W)l=e.clientX-pw-8;if(t+ph>H)t=e.clientY-ph-8;
+    preview.style.left=l+'px';preview.style.top=t+'px';
+    preview.classList.add('visible');
+  }catch(err){}
 }
 
-function cmdHover(idx){
-  _cmdSelectedIdx=idx;
-  document.querySelectorAll('.cmd-result').forEach((el,i)=>{
-    el.style.background=i===idx?'var(--accent-subtle)':'';
-    el.style.borderColor=i===idx?'var(--border3)':'transparent';
+// ══════════════════════════════════════════════════════════════
+//  DRAG & DROP OVERVIEW WIDGETS
+// ══════════════════════════════════════════════════════════════
+let _dragSrc=null;
+function initOverviewDragDrop(){
+  document.querySelectorAll('#page-dashboard > div:not(.stats-row) .panel, #page-dashboard > .panel').forEach(panel=>{
+    panel.classList.add('overview-widget');panel.setAttribute('draggable','true');
+    panel.addEventListener('dragstart',function(e){_dragSrc=this;this.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
+    panel.addEventListener('dragend',function(){this.classList.remove('dragging');document.querySelectorAll('.drag-over').forEach(el=>el.classList.remove('drag-over'));});
+    panel.addEventListener('dragover',function(e){e.preventDefault();e.dataTransfer.dropEffect='move';this.classList.add('drag-over');});
+    panel.addEventListener('dragleave',function(){this.classList.remove('drag-over');});
+    panel.addEventListener('drop',function(e){
+      e.preventDefault();e.stopPropagation();this.classList.remove('drag-over');
+      if(_dragSrc&&_dragSrc!==this){
+        const par=this.parentNode;const si=[...par.children].indexOf(_dragSrc);const ti=[...par.children].indexOf(this);
+        if(si<ti)par.insertBefore(_dragSrc,this.nextSibling);else par.insertBefore(_dragSrc,this);
+      }
+    });
   });
 }
 
-function cmdResultClick(idx){
-  const container=document.getElementById('cmd-results');
-  const results=container._results||[];
-  if(results[idx])results[idx].action();
-}
-
-function handleCmdKey(e){
-  const container=document.getElementById('cmd-results');
-  const results=container._results||[];
-  if(e.key==='Escape'){closeCmdPalette();return;}
-  if(e.key==='ArrowDown'){e.preventDefault();_cmdSelectedIdx=Math.min(_cmdSelectedIdx+1,results.length-1);cmdHover(_cmdSelectedIdx);const el=document.querySelectorAll('.cmd-result')[_cmdSelectedIdx];if(el)el.scrollIntoView({block:'nearest'});}
-  if(e.key==='ArrowUp'){e.preventDefault();_cmdSelectedIdx=Math.max(_cmdSelectedIdx-1,0);cmdHover(_cmdSelectedIdx);const el=document.querySelectorAll('.cmd-result')[_cmdSelectedIdx];if(el)el.scrollIntoView({block:'nearest'});}
-  if(e.key==='Enter'){if(results[_cmdSelectedIdx])results[_cmdSelectedIdx].action();}
-}
-
-// Wire up existing search bar to command palette
-document.addEventListener('DOMContentLoaded',()=>{
-  const sb=document.getElementById('global-search');
-  if(sb)sb.addEventListener('focus',()=>{openCmdPalette();sb.blur();});
-});
-
-// Ctrl+K shortcut
-document.addEventListener('keydown',e=>{
-  if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();openCmdPalette();}
-  if(e.key==='Escape'){const overlay=document.getElementById('cmd-palette');if(overlay&&overlay.style.display!=='none')closeCmdPalette();}
-});
-// === SIDEBAR CUSTOMIZATION ===
-const SVG_ICONS={
-  dashboard:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>',
-  files:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>',
-  notes:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
-  todos:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
-  habits:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M12 2a10 10 0 0 1 7 3"/></svg>',
-  kanban:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="5" height="17" rx="1"/><rect x="10" y="3" width="5" height="11" rx="1"/><rect x="17" y="3" width="5" height="14" rx="1"/></svg>',
-  calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
-  goals:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
-  journal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
-  countdown:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
-  stats:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
-  github:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>',
-  gaming:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><circle cx="15.5" cy="11.5" r="1"/><circle cx="17.5" cy="13.5" r="1"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59l-.9 7.27A4 4 0 0 0 5.77 20.5c.387.1.79-.025 1.05-.327l1.89-2.173h6.58l1.89 2.173c.26.302.663.427 1.05.327a4 4 0 0 0 2.97-4.64l-.9-7.27A4 4 0 0 0 17.32 5z"/></svg>',
-  connections:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>',
-  settings:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
-  admin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
-  ai:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><circle cx="9" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1" fill="currentColor" stroke="none"/></svg>',
-};
-const DEFAULT_NAV=[
-  {id:'dashboard', icon:'__SVG_dashboard__',label:'Overview',    section:'main',    badge:''},
-  {id:'files', icon:'__SVG_files__',label:'Files & Links',section:'main',    badge:'files-count'},
-  {id:'notes', icon:'__SVG_notes__',label:'Notes',       section:'main',    badge:''},
-  {id:'todos', icon:'__SVG_todos__',label:'Tasks',        section:'main',    badge:'todo-count'},
-  {id:'habits', icon:'__SVG_habits__',label:'Habits',       section:'main',    badge:''},
-  {id:'kanban', icon:'__SVG_kanban__',label:'Kanban',       section:'main',    badge:''},
-  {id:'calendar', icon:'__SVG_calendar__',label:'Calendar',     section:'main',    badge:''},
-  {id:'goals', icon:'__SVG_goals__',label:'Goals',        section:'main',    badge:''},
-  {id:'journal', icon:'__SVG_journal__',label:'Journal',      section:'main',    badge:''},
-  {id:'countdown', icon:'__SVG_countdown__',label:'Countdown',    section:'main',    badge:''},
-  {id:'stats', icon:'__SVG_stats__',label:'Stats',        section:'main',    badge:''},
-  {id:'github', icon:'__SVG_github__',label:'GitHub',       section:'account', badge:''},
-  {id:'gaming', icon:'__SVG_gaming__',label:'Gaming',       section:'account', badge:''},
-  {id:'connections',icon:'__SVG_connections__',label:'Connections',  section:'account', badge:''},
-  {id:'settings', icon:'__SVG_settings__',label:'Settings',     section:'account', badge:''},
-  {id:'ai',       icon:'__SVG_ai__',      label:'NEXUS AI',     section:'account', badge:''},
-];
-
-function getSidebarConfig(){
-  const p=curP();
-  if(p?.sidebarConfig&&Array.isArray(p.sidebarConfig)&&p.sidebarConfig.length)return p.sidebarConfig;
-  return DEFAULT_NAV.map(n=>({...n,visible:true}));
-}
-
-function renderSidebarNav(){
-  const p=curP();
-  const compact=p?.sidebarCompact||false;
-  const config=getSidebarConfig();
-  const sidebar=document.getElementById('main-sidebar');
-  const mainContent=document.getElementById('main-content');
-  const logoText=document.getElementById('logo-text-el');
-  const compactBtn=document.getElementById('sidebar-compact-btn');
-
-  if(compact){
-    if(sidebar){sidebar.style.width='62px';sidebar.classList.add('compact');}
-    if(mainContent)mainContent.style.marginLeft='62px';
-    if(logoText)logoText.style.display='none';
-    if(compactBtn)compactBtn.textContent='\u21e5';
-    const footer=document.querySelector('.sidebar-footer');
-    if(footer)footer.style.padding='8px 4px';
-  } else {
-    if(sidebar){sidebar.style.width='';sidebar.classList.remove('compact');}
-    if(mainContent)mainContent.style.marginLeft='';
-    if(logoText)logoText.style.display='';
-    if(compactBtn)compactBtn.textContent='\u21a4';
-    const footer=document.querySelector('.sidebar-footer');
-    if(footer)footer.style.padding='';
-  }
-
-  const mainEl=document.getElementById('sidebar-nav-main');
-  const accEl=document.getElementById('sidebar-nav-account');
-  if(!mainEl||!accEl)return;
-
-  const renderSection=(items,label)=>{
-    const visible=items.filter(i=>i.visible!==false);
-    if(!visible.length)return'';
-    const labelHtml=compact?'':`<div class="nav-label">${label}</div>`;
-    return labelHtml+visible.map(item=>{
-      const badge=item.badge?`<span class="nav-badge" id="${item.badge}" style="${compact?'position:absolute;top:-4px;right:-4px;min-width:16px;padding:0 4px;font-size:9px;':''}">0</span>`:'';
-      return `<a class="nav-item" ${compact?`title="${item.label}"`:''}
-        onclick="switchPage('${item.id}',this)"
-        style="${compact?'justify-content:center;padding:10px;position:relative;':''}">
-        <span class="nav-icon">${SVG_ICONS[item.id]||item.icon}</span>
-        ${compact?badge:`<span>${item.label}</span>${badge}`}
-      </a>`;
-    }).join('');
-  };
-
-  mainEl.innerHTML=renderSection(config.filter(i=>i.section==='main'),'Main');
-  accEl.innerHTML=renderSection(config.filter(i=>i.section==='account'),'Account')+
-    `<a class="nav-item" id="nav-admin" onclick="openAdminPanel()" style="display:none${compact?';justify-content:center;padding:10px':''}" ${compact?'title="Admin"':''}>
-      <span class="nav-icon">${SVG_ICONS.admin}</span>
-      ${compact?'':'Admin'}
-    </a>`;
-
-  // Restore active state to current page
-  document.querySelectorAll('.nav-item').forEach(el=>{
-    const oc=el.getAttribute('onclick')||'';
-    if(oc.includes("'dashboard'"))el.classList.add('active');
-  });
-
-  // Show admin if admin
-  if(_isAdmin){const ab=document.getElementById('nav-admin');if(ab)ab.style.display='flex';}
-
-  // Show sidebar now that it's rendered
-  if(sidebar){sidebar.style.visibility='visible';}
-
-  updateStats();
-}
-
-function toggleSidebarCompact(){
-  const p=curP();if(!p)return;
-  p.sidebarCompact=!p.sidebarCompact;
-  saveStateNow();
-  renderSidebarNav();
-}
-
-function renderSidebarCustomize(){
-  const config=getSidebarConfig();
-  const container=document.getElementById('sidebar-customize-list');
-  if(!container)return;
-  container.innerHTML=config.map((item,i)=>`
-    <div class="sidebar-customize-row" data-idx="${i}" draggable="true"
-      style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);cursor:grab;transition:all .2s ease"
-      ondragstart="sbDragStart(event,${i})" ondragover="sbDragOver(event)" ondrop="sbDrop(event,${i})" ondragleave="sbDragLeave(event)">
-      <span style="color:var(--muted);font-size:16px;cursor:grab">⣿</span>
-      <span style="font-size:16px">${item.icon}</span>
-      <span style="flex:1;font-size:13px;font-weight:500">${item.label}</span>
-      <span style="font-size:11px;color:var(--muted);font-style:italic">${item.section}</span>
-      <button onclick="toggleNavItem(${i})" style="background:${item.visible!==false?'var(--accent-subtle)':'var(--surface3)'};border:1.5px solid ${item.visible!==false?'var(--accent)':'var(--border2)'};color:${item.visible!==false?'var(--accent)':'var(--muted)'};border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s ease">${item.visible!==false?'Visible':'Hidden'}</button>
-    </div>`).join('');
-}
-
-let _sbDragIdx=null;
-function sbDragStart(e,idx){_sbDragIdx=idx;e.currentTarget.style.opacity='0.5';}
-function sbDragOver(e){e.preventDefault();e.currentTarget.style.background='var(--accent-subtle)';e.currentTarget.style.borderColor='var(--accent)';}
-function sbDragLeave(e){e.currentTarget.style.background='var(--surface2)';e.currentTarget.style.borderColor='var(--border)';}
-function sbDrop(e,toIdx){
-  e.preventDefault();
-  e.currentTarget.style.background='var(--surface2)';e.currentTarget.style.borderColor='var(--border)';
-  if(_sbDragIdx===null||_sbDragIdx===toIdx)return;
-  const p=curP();if(!p)return;
-  const config=getSidebarConfig();
-  const [item]=config.splice(_sbDragIdx,1);
-  config.splice(toIdx,0,item);
-  p.sidebarConfig=config;
-  saveStateNow();renderSidebarNav();renderSidebarCustomize();
-  _sbDragIdx=null;
-}
-
-function toggleNavItem(idx){
-  const p=curP();if(!p)return;
-  const config=getSidebarConfig();
-  config[idx].visible=config[idx].visible===false?true:false;
-  p.sidebarConfig=config;
-  saveStateNow();renderSidebarNav();renderSidebarCustomize();
-}
-
-// === ANIMATED BACKGROUNDS ===
-let _bgFrame=null,_bgParticles=[];
-
-// ── AMBIENT BACKGROUND (always on for NEXUS v3.0.8) ──
-let _ambientFrame=null;
-
-// ── VALORANT MATCH DETAIL ──────────────────────────────────────
-function openValoMatchDetail(idx, name, tag){
-  const matchData=window._valoMatchList?.[idx];
-  if(!matchData)return;
-  const {match:m, me}=matchData;
-  const map=m.metadata?.map||'?';
-  const mode=m.metadata?.mode||'';
-  const won=m.teams?.[me.team?.toLowerCase()]?.has_won;
-  const myTeam=me.team?.toLowerCase()||'blue';
-  const theirTeam=myTeam==='red'?'blue':'red';
-  const myScore=m.teams?.[myTeam]?.rounds_won??'?';
-  const theirScore=m.teams?.[theirTeam]?.rounds_won??'?';
-  const allPlayers=m.players?.all_players||[];
-  const teamA=allPlayers.filter(p=>p.team?.toLowerCase()===myTeam).sort((a,b)=>(b.stats?.score||0)-(a.stats?.score||0));
-  const teamB=allPlayers.filter(p=>p.team?.toLowerCase()===theirTeam).sort((a,b)=>(b.stats?.score||0)-(a.stats?.score||0));
-  const mapStyle=getMapStyle(map);
-
-  function playerRow(p, highlight){
-    const k=p.stats?.kills||0,d=p.stats?.deaths||1,a=p.stats?.assists||0;
-    const hs=p.stats?.headshots||0, shots=(hs+(p.stats?.bodyshots||0)+(p.stats?.legshots||0));
-    const hsP=shots>0?Math.round((hs/shots)*100):0;
-    const rounds=(m.teams?.red?.rounds_won||0)+(m.teams?.blue?.rounds_won||0);
-    const acs=rounds>0?Math.round((p.stats?.score||0)/rounds):0;
-    const img=p.assets?.agent?.small||'';
-    const isMe=highlight;
-    return `<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;background:${isMe?'rgba(249,115,22,.08)':'rgba(255,255,255,.02)'};border:1px solid ${isMe?'rgba(249,115,22,.2)':'rgba(255,255,255,.05)'};margin-bottom:4px">
-      <div style="width:30px;height:30px;border-radius:7px;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:13px">
-        ${img?`<img src="${img}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`:''}
-      </div>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:12.5px;font-weight:${isMe?'700':'500'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:${isMe?'#f97316':'var(--text)'}">${escapeHTML(p.name||'?')}${p.tag?`<span style="color:var(--muted2);font-weight:400">#${escapeHTML(p.tag)}</span>`:''}</div>
-        <div style="font-size:11px;color:var(--muted2);font-family:var(--mono)">${p.character||'?'}</div>
-      </div>
-      <div style="text-align:right;flex-shrink:0">
-        <div style="font-size:13px;font-weight:700;font-family:var(--mono)">${k}/${d}/${a}</div>
-        <div style="font-size:10px;color:var(--muted2);font-family:var(--mono)">ACS ${acs} · HS ${hsP}%</div>
-      </div>
-    </div>`;
-  }
-
-  const meId=me.puuid||(me.name+'#'+me.tag);
-  const titleEl=document.getElementById('valo-match-title');
-  const bodyEl=document.getElementById('valo-match-body');
-  if(titleEl)titleEl.innerHTML=`<span style="color:${mapStyle.color};font-weight:800">${map}</span> · ${mode} · <span style="color:${won?'#34d399':'#f87171'};font-weight:800">${won?'WIN':'LOSS'} ${myScore}-${theirScore}</span>`;
-
-  let html='';
-
-  // My stats highlight
-  const k=me.stats?.kills||0,d=me.stats?.deaths||1,a=me.stats?.assists||0;
-  const hs=me.stats?.headshots||0, shots=(hs+(me.stats?.bodyshots||0)+(me.stats?.legshots||0));
-  const hsP=shots>0?Math.round((hs/shots)*100):0;
-  const rounds=(m.teams?.red?.rounds_won||0)+(m.teams?.blue?.rounds_won||0);
-  const acs=rounds>0?Math.round((me.stats?.score||0)/rounds):0;
-
-  html+=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px">
-    ${[
-      {label:'KDA',val:`${k}/${d}/${a}`},
-      {label:'ACS',val:acs},
-      {label:'HS %',val:hsP+'%'},
-      {label:'Score',val:(me.stats?.score||0).toLocaleString()},
-    ].map(s=>`<div style="background:rgba(249,115,22,.07);border:1px solid rgba(249,115,22,.15);border-radius:10px;padding:10px;text-align:center">
-      <div style="font-size:18px;font-weight:800;font-family:var(--mono);color:#f97316">${s.val}</div>
-      <div style="font-size:9px;color:var(--muted2);margin-top:2px;text-transform:uppercase;letter-spacing:.1em;font-family:var(--mono)">${s.label}</div>
-    </div>`).join('')}
-  </div>`;
-
-  // Team columns
-  html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">`;
-
-  // My team
-  html+=`<div>
-    <div style="font-size:9.5px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:${won?'#34d399':'#f87171'};font-family:var(--mono);margin-bottom:8px">Your team · ${myScore} rounds</div>`;
-  teamA.forEach(p=>{
-    const isMe=(p.puuid&&p.puuid===me.puuid)||(p.name===me.name&&p.tag===me.tag);
-    html+=playerRow(p,isMe);
-  });
-  html+=`</div>`;
-
-  // Enemy team
-  html+=`<div>
-    <div style="font-size:9.5px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:${won?'#f87171':'#34d399'};font-family:var(--mono);margin-bottom:8px">Enemy team · ${theirScore} rounds</div>`;
-  teamB.forEach(p=>{ html+=playerRow(p,false); });
-  html+=`</div>`;
-
-  html+=`</div>`;
-
-  // Economy / round info if available
-  if(m.metadata?.game_length){
-    const mins=Math.floor(m.metadata.game_length/60);
-    const secs=m.metadata.game_length%60;
-    html+=`<div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:16px;font-size:11.5px;color:var(--muted2)">
-      <span>⏱ ${mins}m${secs}s</span>
-      <span>📍 ${map}</span>
-      <span>🎮 ${mode}</span>
-      ${m.metadata?.game_start?`<span>📅 ${new Date(m.metadata.game_start*1000).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</span>`:''}
-    </div>`;
-  }
-
-  if(bodyEl)bodyEl.innerHTML=html;
-  openModal('valo-match');
-}
 
 // ══════════════════════════════════════════════
 //  NEXUS — Animation System JS
@@ -7745,23 +8901,31 @@ function initRipples(){
 }
 
 // ── PAGE TRANSITION ────────────────────────────
-function animatePageIn(pageEl){
+// ── PAGE ORDER for directional transitions ──────────────
+const PAGE_ORDER=['dashboard','files','notes','todos','habits','kanban','calendar','goals','journal','countdown','stats','github','gaming','connections','settings','ai'];
+let _lastPageIdx=0;
+
+function animatePageIn(pageEl,page){
   if(!pageEl)return;
-  pageEl.style.animation='none';
-  pageEl.style.opacity='0';
-  pageEl.style.transform='translateY(10px)';
-  requestAnimationFrame(()=>{
-    pageEl.style.transition='opacity .3s ease,transform .3s ease';
-    pageEl.style.opacity='1';
-    pageEl.style.transform='translateY(0)';
-    setTimeout(()=>{
-      pageEl.style.transition='';
-      initScrollReveal();
-      animateStatCards();
-      initRipples();
-    },320);
-  });
+  const curIdx=PAGE_ORDER.indexOf(page||'');
+  const prevIdx=_lastPageIdx;
+  let cls='page-entering';
+  if(page&&curIdx>=0){
+    if(curIdx>prevIdx)cls='page-entering-right';
+    else if(curIdx<prevIdx)cls='page-entering-left';
+    _lastPageIdx=curIdx;
+  }
+  pageEl.classList.remove('page-entering','page-entering-left','page-entering-right');
+  void pageEl.offsetWidth;
+  pageEl.classList.add(cls);
+  setTimeout(()=>{
+    pageEl.classList.remove('page-entering','page-entering-left','page-entering-right');
+    initScrollReveal();
+    animateStatCards();
+    initRipples();
+  },300);
 }
+
 
 // ── INIT ON DASHBOARD READY ────────────────────
 function initAnimations(){
@@ -7771,7 +8935,342 @@ function initAnimations(){
     initNavAnimations();
     initRipples();
     initPsCursorGlow();
+    initLinkPreviews();
+    initOverviewDragDrop();
   },100);
+}
+
+
+// ══════════════════════════════════════════════════════════════
+//  IN-APP NOTIFICATION SYSTEM
+// ══════════════════════════════════════════════════════════════
+let _notifs=[];
+let _notifOpen=false;
+
+function addNotif(icon,title,sub,action=null){
+  const notif={id:Date.now()+'_'+Math.random(),icon,title,sub,time:new Date(),unread:true,action};
+  _notifs.unshift(notif);
+  if(_notifs.length>50)_notifs=_notifs.slice(0,50);
+  updateNotifBadge();
+  if(_notifOpen)renderNotifPanel();
+}
+
+function updateNotifBadge(){
+  const badge=document.getElementById('notif-badge');
+  if(!badge)return;
+  const unread=_notifs.filter(n=>n.unread).length;
+  if(unread>0){badge.textContent=unread>9?'9+':String(unread);badge.classList.add('show');}
+  else badge.classList.remove('show');
+}
+
+function toggleNotifPanel(){if(_notifOpen)closeNotifPanel();else openNotifPanel();}
+
+function openNotifPanel(){
+  _notifOpen=true;
+  scanForNotifs();
+  renderNotifPanel();
+  document.getElementById('notif-panel')?.classList.add('open');
+  document.getElementById('notif-overlay')?.classList.add('open');
+  setTimeout(()=>{_notifs.forEach(n=>n.unread=false);updateNotifBadge();},600);
+}
+
+function closeNotifPanel(){
+  _notifOpen=false;
+  document.getElementById('notif-panel')?.classList.remove('open');
+  document.getElementById('notif-overlay')?.classList.remove('open');
+}
+
+function clearAllNotifs(){
+  _notifs=[];
+  updateNotifBadge();
+  renderNotifPanel();
+}
+
+function scanForNotifs(){
+  const p=curP();if(!p)return;
+  const now=new Date();
+  const todayStr=now.toLocaleDateString('en-CA');
+
+  // Overdue tasks
+  const overdue=(p.state?.todos||[]).filter(t=>!t.done&&t.dueDate&&new Date(t.dueDate)<now);
+  if(overdue.length&&!_notifs.find(n=>n.id==='overdue')){
+    _notifs.push({id:'overdue',icon:'⚠️',title:`${overdue.length} overdue task${overdue.length>1?'s':''}`,
+      sub:overdue.slice(0,2).map(t=>t.text).join(', '),time:now,unread:true,
+      action:()=>{closeNotifPanel();switchPage('todos',null);}});
+  }
+
+  // Due today
+  const dueToday=(p.state?.todos||[]).filter(t=>!t.done&&t.dueDate&&new Date(t.dueDate).toLocaleDateString('en-CA')===todayStr);
+  if(dueToday.length&&!_notifs.find(n=>n.id==='due-today')){
+    _notifs.push({id:'due-today',icon:'📅',title:`${dueToday.length} task${dueToday.length>1?'s':''} due today`,
+      sub:dueToday.slice(0,2).map(t=>t.text).join(', '),time:now,unread:true,
+      action:()=>{closeNotifPanel();switchPage('todos',null);}});
+  }
+
+  // Upcoming events
+  const upcoming=(p.state?.events||[]).filter(e=>{const d=new Date(e.date);return d>=now&&d<new Date(now.getTime()+86400000);});
+  if(upcoming.length&&!_notifs.find(n=>n.id==='upcoming-events')){
+    _notifs.push({id:'upcoming-events',icon:'🗓',title:`${upcoming.length} event${upcoming.length>1?'s':''} in next 24h`,
+      sub:upcoming.slice(0,2).map(e=>e.title).join(', '),time:now,unread:false,
+      action:()=>{closeNotifPanel();switchPage('calendar',null);}});
+  }
+
+  // Habits at risk (streak >= 3 but not done today)
+  const atRisk=(p.state?.habits||[]).filter(h=>h.streak>=3&&h.lastDone!==todayStr);
+  if(atRisk.length&&!_notifs.find(n=>n.id==='habit-risk')){
+    _notifs.push({id:'habit-risk',icon:'🔥',title:`${atRisk.length} streak${atRisk.length>1?'s':''} at risk!`,
+      sub:atRisk.slice(0,2).map(h=>h.name+' ('+h.streak+'d)').join(', '),time:now,unread:true,
+      action:()=>{closeNotifPanel();switchPage('habits',null);}});
+  }
+
+  // Pomo milestone
+  const todayPomos=(p.state?.pomoHistory||[]).filter(h=>h.ts&&new Date(h.ts).toLocaleDateString('en-CA')===todayStr).length;
+  if(todayPomos>=4&&!_notifs.find(n=>n.id==='pomo-milestone')){
+    _notifs.push({id:'pomo-milestone',icon:'🍅',title:`${todayPomos} pomodoros today!`,
+      sub:'Great focus session — keep it up',time:now,unread:false,
+      action:()=>{closeNotifPanel();switchPage('stats',null);}});
+  }
+}
+
+function timeAgo(date){
+  const diff=Math.floor((Date.now()-new Date(date).getTime())/1000);
+  if(diff<60)return 'Just now';
+  if(diff<3600)return Math.floor(diff/60)+'m ago';
+  if(diff<86400)return Math.floor(diff/3600)+'h ago';
+  return Math.floor(diff/86400)+'d ago';
+}
+
+function renderNotifPanel(){
+  const body=document.getElementById('notif-panel-body');
+  const countEl=document.getElementById('notif-count-label');
+  if(!body)return;
+  const unread=_notifs.filter(n=>n.unread).length;
+  if(countEl)countEl.textContent=_notifs.length?`${_notifs.length} notification${_notifs.length>1?'s':''}${unread?' · '+unread+' new':''}`:' ';
+  if(!_notifs.length){
+    body.innerHTML='<div class="notif-empty"><div class="notif-empty-icon">🔔</div><div class="notif-empty-text">You\'re all caught up!</div></div>';
+    return;
+  }
+  const unreadN=_notifs.filter(n=>n.unread);
+  const readN=_notifs.filter(n=>!n.unread);
+  let html='';
+  if(unreadN.length){html+='<div class="notif-section-label">New</div>';html+=unreadN.map(notifItemHTML).join('');}
+  if(readN.length){if(unreadN.length)html+='<div class="notif-section-label" style="margin-top:8px">Earlier</div>';html+=readN.map(notifItemHTML).join('');}
+  body.innerHTML=html;
+}
+
+function notifItemHTML(n){
+  const hasAction=typeof n.action==='function';
+  const nId=String(n.id).replace(/[^a-z0-9_]/gi,'_');
+  window['_nAction_'+nId]=n.action;
+  return `<div class="notif-item${n.unread?' unread':''}" ${hasAction?`onclick="if(window['_nAction_${nId}'])window['_nAction_${nId}']()"`:''}  style="${hasAction?'cursor:pointer':''}">
+    ${n.unread?'<div class="notif-dot"></div>':'<div style="width:6px"></div>'}
+    <div class="notif-icon">${n.icon}</div>
+    <div class="notif-content">
+      <div class="notif-title">${escapeHTML(n.title)}</div>
+      ${n.sub?`<div class="notif-sub">${escapeHTML(n.sub)}</div>`:''}
+      <div class="notif-time">${timeAgo(n.time)}</div>
+    </div>
+    ${hasAction?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;color:var(--muted2);flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>':''}
+  </div>`;
+}
+
+function notifyPomoComplete(count){
+  addNotif('🍅',`Session ${count} complete!`,'Take a break — you earned it',()=>closeNotifPanel());
+  if(count>0&&count%4===0)addNotif('🏆','4 pomodoros done!','Time for a long break',()=>closeNotifPanel());
+}
+
+let _notifScanInterval=null;
+function startNotifScan(){
+  clearInterval(_notifScanInterval);
+  scanForNotifs();updateNotifBadge();
+  _notifScanInterval=setInterval(()=>{scanForNotifs();updateNotifBadge();},60000);
+}
+
+
+// ══════════════════════════════════════════════════════════════
+//  ACTIVITY HEATMAP (GitHub-style)
+// ══════════════════════════════════════════════════════════════
+function renderStatsHeatmap(){
+  const p=curP();if(!p)return;
+  const el=document.getElementById('stats-heatmap');if(!el)return;
+  const activity=p.state.activity||[];
+  const todos=p.state.todos||[];
+  const items=p.state.items||[];
+  const pomo=p.state.pomoHistory||[];
+  const habits=p.state.habits||[];
+
+  // Build activity map: date→count
+  const actMap={};
+  const addDate=(ts,weight=1)=>{
+    if(!ts)return;
+    const d=new Date(ts).toLocaleDateString('en-CA');
+    actMap[d]=(actMap[d]||0)+weight;
+  };
+  activity.forEach(a=>addDate(a.ts,1));
+  todos.filter(t=>t.done&&t.doneDate).forEach(t=>addDate(t.doneDate,2));
+  pomo.forEach(h=>addDate(h.ts,1));
+  items.forEach(i=>addDate(i.date?new Date(i.date).toLocaleDateString('en-CA'):null,1));
+
+  // Last 26 weeks (6 months)
+  const today=new Date();
+  const weeks=26;
+  const totalDays=weeks*7;
+  const startDate=new Date(today);
+  startDate.setDate(today.getDate()-totalDays+1);
+  // Align to Sunday
+  while(startDate.getDay()!==0)startDate.setDate(startDate.getDate()-1);
+
+  const maxCount=Math.max(...Object.values(actMap),1);
+  const getLevel=(count)=>!count?0:count<maxCount*.25?1:count<maxCount*.5?2:count<maxCount*.75?3:4;
+
+  // Month labels
+  const monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  let monthHtml='<div style="display:flex;margin-left:22px;margin-bottom:3px">';
+  let lastMonth=-1;let weekIdx=0;
+  // Build weeks
+  let weeksData=[];let d=new Date(startDate);
+  for(let w=0;w<weeks;w++){
+    let week=[];
+    for(let day=0;day<7;day++){
+      const ds=d.toLocaleDateString('en-CA');
+      const count=actMap[ds]||0;
+      const level=getLevel(count);
+      const isFuture=d>today;
+      week.push({ds,count,level,isFuture,month:d.getMonth(),date:new Date(d)});
+      d.setDate(d.getDate()+1);
+    }
+    weeksData.push(week);
+  }
+
+  // Month labels row
+  let monthLabelHtml='<div style="display:flex;margin-left:24px;margin-bottom:3px;gap:2px">';
+  let prevMonth=-1;
+  weeksData.forEach(week=>{
+    const m=week[0].month;
+    if(m!==prevMonth){monthLabelHtml+=`<div class="heatmap-month-label" style="flex:1;min-width:11px">${monthNames[m]}</div>`;prevMonth=m;}
+    else monthLabelHtml+=`<div style="flex:1;min-width:11px"></div>`;
+  });
+  monthLabelHtml+='</div>';
+
+  // Day labels
+  const dayLabels=['','Mo','','We','','Fr',''];
+  const dayLabelHtml=`<div class="heatmap-days">${dayLabels.map(l=>`<div class="heatmap-day-label">${l}</div>`).join('')}</div>`;
+
+  // Cells
+  let cellsHtml='';
+  weeksData.forEach(week=>{
+    cellsHtml+=`<div class="heatmap-week">`;
+    week.forEach(({ds,count,level,isFuture})=>{
+      if(isFuture){cellsHtml+=`<div class="heatmap-cell" style="opacity:.3"></div>`;return;}
+      cellsHtml+=`<div class="heatmap-cell" data-count="${count}" data-level="${level}" title="${ds}: ${count} action${count!==1?'s':''}"></div>`;
+    });
+    cellsHtml+=`</div>`;
+  });
+
+  // Total count
+  const totalActs=Object.values(actMap).reduce((a,b)=>a+b,0);
+  const totalEl=document.getElementById('stats-heatmap-total');
+  if(totalEl)totalEl.textContent=`${totalActs} activities · last 6 months`;
+
+  el.innerHTML=monthLabelHtml+`<div style="display:flex;gap:2px">${dayLabelHtml}<div class="heatmap-grid">${cellsHtml}</div></div>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  PRESENTATION MODE
+// ══════════════════════════════════════════════════════════════
+let _presClockInterval=null;
+
+function openPresentationMode(){
+  const overlay=document.getElementById('presentation-overlay');
+  if(!overlay)return;
+  overlay.classList.add('active');
+  renderPresentation();
+  // Clock
+  clearInterval(_presClockInterval);
+  const updateClock=()=>{
+    const el=document.getElementById('pres-clock');
+    if(el)el.textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  };
+  updateClock();
+  _presClockInterval=setInterval(updateClock,1000);
+  // Fullscreen
+  try{document.documentElement.requestFullscreen?.();}catch(e){}
+  toast('Presentation mode — press ESC to exit','info');
+}
+
+function closePresentationMode(){
+  document.getElementById('presentation-overlay')?.classList.remove('active');
+  clearInterval(_presClockInterval);
+  try{document.exitFullscreen?.();}catch(e){}
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&document.getElementById('presentation-overlay')?.classList.contains('active')){
+    closePresentationMode();
+  }
+});
+
+function renderPresentation(){
+  const p=curP();if(!p)return;
+  const nameEl=document.getElementById('pres-username');
+  if(nameEl)nameEl.textContent=p.name||'User';
+  const body=document.getElementById('pres-body');if(!body)return;
+  const s=p.state||{};
+  const todos=s.todos||[];const habits=s.habits||[];
+  const pomo=s.pomoHistory||[];
+  const todayStr=new Date().toLocaleDateString('en-CA');
+  const todayPomos=pomo.filter(h=>h.ts&&new Date(h.ts).toLocaleDateString('en-CA')===todayStr).length;
+  const pending=todos.filter(t=>!t.done);
+  const doneTasks=todos.filter(t=>t.done).length;
+  const bestStreak=Math.max(0,...habits.map(h=>h.streak||0));
+
+  // RR from gaming
+  const valo=s.gaming?.valo;
+  const rank=valo?.lastRank||null;
+
+  body.innerHTML=`
+    <!-- Stats grid -->
+    <div class="pres-card accent" style="grid-column:1;grid-row:1">
+      <div class="pres-card-label">Tasks completed</div>
+      <div class="pres-card-value">${doneTasks}</div>
+      <div class="pres-card-sub">${pending.length} pending</div>
+    </div>
+
+    <div class="pres-card" style="grid-column:2;grid-row:1">
+      <div class="pres-card-label">Upcoming tasks</div>
+      <div class="pres-tasks-list">
+        ${pending.slice(0,5).map(t=>`<div class="pres-task"><div class="pres-task-dot" style="background:${t.priority==='high'?'#f87171':'#f97316'}"></div><span>${escapeHTML(t.text||'')}</span></div>`).join('')||'<div style="color:var(--muted2);font-size:13px;padding:8px">All done! 🎉</div>'}
+      </div>
+    </div>
+
+    <div class="pres-card" style="grid-column:3;grid-row:1">
+      <div class="pres-card-label">Focus today</div>
+      <div class="pres-card-value">${todayPomos}</div>
+      <div class="pres-card-sub">pomodoro session${todayPomos!==1?'s':''}</div>
+    </div>
+
+    <div class="pres-card" style="grid-column:1;grid-row:2">
+      <div class="pres-card-label">Best streak</div>
+      <div class="pres-card-value" style="color:#f97316">${bestStreak}<span style="font-size:28px">🔥</span></div>
+      <div class="pres-card-sub">days in a row</div>
+    </div>
+
+    <div class="pres-card" style="grid-column:2;grid-row:2">
+      <div class="pres-card-label">Habits</div>
+      <div class="pres-habits">
+        ${habits.slice(0,6).map(h=>`<div class="pres-habit">
+          <div class="pres-habit-name">${h.emoji||'🔥'} ${escapeHTML(h.name)}</div>
+          <div class="pres-habit-streak">${h.streak||0}d streak</div>
+        </div>`).join('')||'<div style="color:var(--muted2);font-size:13px">No habits yet</div>'}
+      </div>
+    </div>
+
+    <div class="pres-card" style="grid-column:3;grid-row:2">
+      <div class="pres-card-label">Files & links</div>
+      <div class="pres-card-value">${(s.items||[]).length}</div>
+      <div class="pres-card-sub">${(s.items||[]).filter(i=>i.type==='link').length} links · ${(s.items||[]).filter(i=>i.type!=='link').length} files</div>
+    </div>
+  `;
 }
 
 function startAmbientBg(){
@@ -8223,22 +9722,28 @@ function refreshDiscordSidebar(){
   if(!conn?.data){if(wrap)wrap.style.display='none';return}
   if(wrap)wrap.style.display='block';
   const d=conn.data;
+  // Avatar
   const avEl=document.getElementById('sb-dc-avatar');
   if(avEl){
+    const fallback=document.getElementById('sb-dc-av-fallback');
     if(d.discord_user.avatar){
-      avEl.innerHTML='<img src="https://cdn.discordapp.com/avatars/'+d.discord_user.id+'/'+d.discord_user.avatar+'.png?size=128" style="width:100%;height:100%;object-fit:cover;border-radius:8px">';
-    } else avEl.innerHTML='';
+      const url='https://cdn.discordapp.com/avatars/'+d.discord_user.id+'/'+d.discord_user.avatar+'.png?size=64';
+      // Remove fallback, add img
+      if(fallback)fallback.style.display='none';
+      let img=avEl.querySelector('img');
+      if(!img){img=document.createElement('img');avEl.appendChild(img);}
+      img.src=url;img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover';
+    } else {
+      if(fallback)fallback.style.display='';
+    }
   }
+  // Name
   const nameEl=document.getElementById('sb-dc-name');
   if(nameEl)nameEl.textContent=d.discord_user.global_name||d.discord_user.username;
+  // Status dot
   const stEl=document.getElementById('sb-dc-status');
-  if(stEl)stEl.className='sb-dc-status '+(d.discord_status||'offline');
-  // Show Discord card only if connected
-  const card=document.getElementById('sb-discord-card');
-  const label=document.getElementById('sb-discord-label');
-  if(card){card.classList.add('visible');card.style.display='';}
-  if(label){label.style.display='block';}
-  // Activity — only show if actually doing something
+  if(stEl)stEl.className='sb-dc-dot '+(d.discord_status||'offline');
+  // Activity
   const act=d.activities?.find(a=>a.type===0||a.type===2);
   const actEl=document.getElementById('sb-dc-activity');
   if(actEl){
@@ -8262,11 +9767,13 @@ function updateSpotifyFromLanyard(d){
     if(iframeWrap)iframeWrap.style.display='none';
     const artEl=document.getElementById('np-art');
     if(artEl){
-      if(sp.album_art_url)artEl.innerHTML='<img src="'+sp.album_art_url+'" alt="album">';
-      else artEl.textContent='';
+      if(sp.album_art_url)artEl.innerHTML='<img src="'+sp.album_art_url+'" alt="album" style="width:34px;height:34px;object-fit:cover;border-radius:7px;display:block">';
+      else artEl.innerHTML='';
     }
     const songEl=document.getElementById('np-song');if(songEl)songEl.textContent=sp.song;
     const artistEl=document.getElementById('np-artist');if(artistEl)artistEl.textContent=sp.artist;
+    // EQ animation
+    const eq=document.getElementById('sb-eq-anim');if(eq)eq.style.display='flex';
     const pw=document.getElementById('np-progress-wrap');
     if(pw&&sp.timestamps?.start&&sp.timestamps?.end){
       pw.style.display='block';
@@ -8274,8 +9781,8 @@ function updateSpotifyFromLanyard(d){
     } else if(pw) pw.style.display='none';
   } else {
     if(wrap)wrap.style.display='none';
+    const eq=document.getElementById('sb-eq-anim');if(eq)eq.style.display='none';
     clearInterval(window._npProgressInterval);
-    // Restore iframe widget if user has one connected
     const p=curP();
     const url=p?.state?.connections?.spotify?.widgetUrl;
     if(url&&iframeWrap){
@@ -9511,9 +11018,9 @@ async function fetchWeather(){
 //  POMODORO IMPROVED
 // ===================================================
 const POMO_MODES=[
-  {label:'Focus',      duration:25*60, ring:'#f87171', bg:'rgba(248,113,113,.12)'},
-  {label:'Short Break',duration:5*60,  ring:'#34d399', bg:'rgba(52,211,153,.12)'},
-  {label:'Long Break', duration:15*60, ring:'#3b82f6', bg:'rgba(59,130,246,.12)'},
+  {label:t('focus'),   duration:25*60, ring:'#f87171', bg:'rgba(248,113,113,.12)'},
+  {label:t('short_break')+' Break',duration:5*60,  ring:'#34d399', bg:'rgba(52,211,153,.12)'},
+  {label:t('long_break')+' Break', duration:15*60, ring:'#3b82f6', bg:'rgba(59,130,246,.12)'},
 ];
 let pomoIdx=0, pomoRemaining=0, pomoRunning=false, pomoInterval=null, pomoCount=0;
 let _pomoSoundEnabled=true;
@@ -9636,6 +11143,7 @@ function pomoToggle(){
         pomoCount++;savePomoSession();
         playPomoSound('done');
         addActivity('🍅 Focus session complete!','var(--accent3)');
+        notifyPomoComplete(pomoCount);
         toast('Focus done! Take a break 🎉','success');
         sendNotif('Pomodoro complete! 🍅','Time for a break — great work!','');
         pomoIdx=pomoCount%4===0?2:1;
@@ -10187,8 +11695,11 @@ function renderValoModeContent(mmr,matches,name,tag,mode){
     const [map,ms]=favMap;
     const mapWR=Math.round((ms.wins/ms.games)*100);
     html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 16px;flex:1;min-width:150px;display:flex;align-items:center;gap:12px">
-      <div style="width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.06);flex-shrink:0;display:flex;align-items:center;justify-content:center">
-        <svg viewBox="0 0 24 24" fill="none" stroke="${getMapStyle(map).color}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+      <div style="width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.06);flex-shrink:0;overflow:hidden">
+        ${VALO_MAP_IMAGES[map]
+          ? `<img src="${VALO_MAP_IMAGES[map]}" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.parentNode.innerHTML='🗺️'">`
+          : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="${getMapStyle(map).color}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg></div>`
+        }
       </div>
       <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Favorite Map</div>
       <div style="font-size:15px;font-weight:700;color:${getMapStyle(map).color}">${map}</div>
@@ -10196,6 +11707,37 @@ function renderValoModeContent(mmr,matches,name,tag,mode){
     </div>`;
   }
   html+=`</div>`;
+
+  // -- RR PROGRESSION CHART (competitive only) --
+  if(mode==='competitive'&&myMatches.length>1){
+    const rrPoints=[];let runningRR=currentData?.ranking_in_tier||0;
+    [...myMatches].reverse().forEach(({match:m,me},i)=>{
+      const won=m.teams?.[me.team?.toLowerCase()]?.has_won;
+      const rrChange=won?20:-15; // approximate
+      if(i===0)rrPoints.push({rr:runningRR,won:true,label:'Start'});
+      runningRR=Math.max(0,Math.min(100,runningRR+rrChange));
+      rrPoints.push({rr:runningRR,won,label:`Match ${i+1}`});
+    });
+    const minRR=Math.max(0,Math.min(...rrPoints.map(p=>p.rr))-5);
+    const maxRR=Math.min(100,Math.max(...rrPoints.map(p=>p.rr))+5);
+    const W=400,H=70;
+    const xStep=W/(rrPoints.length-1);
+    const yScale=(rr)=>H-((rr-minRR)/(maxRR-minRR||1))*(H-8)-4;
+    const pts=rrPoints.map((p,i)=>`${i*xStep},${yScale(p.rr)}`).join(' ');
+    const polylineOpen=`<polyline class="valo-rr-line" points="${pts}" stroke="${currentData?.ranking_in_tier>=(rrPoints[0]?.rr||0)?'#34d399':'#f87171'}"/>`;
+    const areaPath=`M0,${H} ${rrPoints.map((p,i)=>`${i*xStep},${yScale(p.rr)}`).join(' ')} ${(rrPoints.length-1)*xStep},${H} Z`;
+    const dots=rrPoints.slice(1).map((p,i)=>`<circle class="valo-rr-dot" cx="${(i+1)*xStep}" cy="${yScale(p.rr)}" r="3" fill="${p.won?'#34d399':'#f87171'}" stroke="rgba(5,5,7,.8)" stroke-width="1.5"/>`).join('');
+    html+=`<div class="lfm-section-label" style="margin-bottom:8px">RR progression</div>
+    <div class="valo-rr-chart" style="margin-bottom:14px">
+      <svg class="valo-rr-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+        <line class="valo-rr-zero-line" x1="0" y1="${yScale(50)}" x2="${W}" y2="${yScale(50)}"/>
+        <path class="valo-rr-area" d="${areaPath}" fill="${currentData?.ranking_in_tier>=(rrPoints[0]?.rr||0)?'#34d399':'#f87171'}"/>
+        ${polylineOpen}
+        ${dots}
+      </svg>
+      <div class="valo-rr-tooltip" id="valo-rr-tip"></div>
+    </div>`;
+  }
 
   // -- MATCH LIST (last 10) --
   html+=`<div class="lfm-section-label" style="margin-bottom:10px">Last ${Math.min(n,10)} matches</div>`;
@@ -10226,7 +11768,7 @@ function renderValoModeContent(mmr,matches,name,tag,mode){
     const isMVP=allSorted[0]?.puuid===me.puuid||(allSorted[0]?.name===me.name&&allSorted[0]?.tag===me.tag);
     const isTeamMVP=!isMVP&&(teamSorted[0]?.puuid===me.puuid||(teamSorted[0]?.name===me.name&&teamSorted[0]?.tag===me.tag));
 
-    html+=`<div class="valo-match-row" onclick="openValoMatchDetail(_mIdx,'${name}','${tag}')" style="cursor:pointer">
+    html+=`<div class="valo-match-row" onclick="openValoMatchDetail(${_mIdx},'${name}','${tag}')" style="cursor:pointer">
       <div class="valo-match-bar ${won?'win':'loss'}"></div>
       <div class="valo-match-agent">
         ${agentImg?`<img src="${agentImg}" alt="${agentName}" onerror="this.style.display='none'">`:`<span style="font-size:13px">${agentName[0]}</span>`}
@@ -10612,7 +12154,8 @@ function renderGamingOverview(){
 // === BOOT ===
 (function(){
   // Check si deja connecte a Supabase
-  sb.auth.getSession().then(async({data:{session}})=>{
+  applyI18n();
+sb.auth.getSession().then(async({data:{session}})=>{
     if(session){
       _sbUser=session.user;
       _isAdmin=session.user?.email===ADMIN_EMAIL;

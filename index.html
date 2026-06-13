@@ -86,18 +86,18 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .pw-name{font-size:18px;font-weight:600;margin-bottom:6px}
 .pw-sub{font-size:13px;color:var(--muted);margin-bottom:32px}
 .pw-pin-row{display:flex;gap:12px;margin-bottom:24px}
-.pw-pin-dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--border2);transition:all var(--transition)}
+.pw-pin-dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--border2);transition:all .2s ease}
 .pw-pin-dot.filled{background:var(--accent);border-color:var(--accent);box-shadow:0 0 8px var(--accent-glow)}
 .pw-pin-dot.error{background:var(--accent3);border-color:var(--accent3);animation:shake .3s ease}
 .pw-numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:224px;margin-bottom:20px}
-.pw-num{height:58px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-size:20px;font-weight:500;cursor:pointer;font-family:var(--font);transition:all var(--transition-bounce)}
+.pw-num{height:58px;border-radius:var(--r-sm);background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-size:20px;font-weight:500;cursor:pointer;font-family:var(--font);transition:all var(--transition-bounce)}
 .pw-num:hover{background:var(--surface3);border-color:var(--border3);transform:scale(1.04)}
 .pw-num:active{transform:scale(.94)}
 .pw-text-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:24px}
-.pw-text-input{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font);font-size:15px;padding:10px 16px;outline:none;text-align:center;width:240px;letter-spacing:2px;transition:all var(--transition)}
+.pw-text-input{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r-sm);color:var(--text);font-family:var(--font);font-size:15px;padding:10px 16px;outline:none;text-align:center;width:240px;letter-spacing:2px;transition:all .2s ease}
 .pw-text-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
 .pw-error{font-size:12px;color:var(--accent3);min-height:16px;text-align:center}
-.pw-back{font-size:12px;color:var(--muted);cursor:pointer;border:none;background:none;font-family:var(--font);transition:color var(--transition);margin-top:8px}
+.pw-back{font-size:12px;color:var(--muted);cursor:pointer;border:none;background:none;font-family:var(--font);transition:color .2s ease;margin-top:8px}
 .pw-back:hover{color:var(--text)}
 
 /* ── PROFILE SCREEN ── */
@@ -248,7 +248,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .avatar-opt{width:52px;height:52px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;border:2px solid transparent;transition:all var(--transition-bounce)}
 .avatar-opt:hover{transform:scale(1.1);border-color:var(--accent)}
 .avatar-opt.selected{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
-.upload-zone{border:1.5px dashed var(--border2);border-radius:var(--radius-sm);padding:18px;text-align:center;cursor:pointer;transition:all var(--transition);margin-top:10px;position:relative;overflow:hidden;min-height:60px}
+.upload-zone{border:1.5px dashed var(--border2);border-radius:var(--r-sm);padding:18px;text-align:center;cursor:pointer;transition:all .2s ease;margin-top:10px;position:relative;overflow:hidden;min-height:60px}
 .upload-zone:hover{border-color:var(--accent);background:var(--accent-subtle)}
 .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .upload-zone-text{font-size:13px;color:var(--muted)}
@@ -285,7 +285,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 /* sidebar widgets */
 .sb-widget{padding:0 10px 12px;overflow:hidden}
 .sb-widget-label{font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);padding:0 2px 7px;display:flex;align-items:center;gap:6px}
-.sb-discord-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;display:none;align-items:center;gap:10px}
+.sb-discord-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;display:none;align-items:center;gap:10px}
 .sb-discord-card.visible{display:flex}
 .sb-dc-avatar-wrap{position:relative;flex-shrink:0}
 .sb-dc-avatar{width:36px;height:36px;border-radius:10px;overflow:hidden;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:16px}
@@ -422,7 +422,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
 /* ── CONNECTIONS PAGE ── */
 .conn-section{margin-bottom:20px}
-.conn-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:14px}
+.conn-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:20px;margin-bottom:14px}
 .conn-header{display:flex;align-items:center;gap:14px;margin-bottom:16px}
 .conn-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
 .conn-title{font-size:15px;font-weight:600}
@@ -430,7 +430,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .conn-status-badge{margin-left:auto;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
 .conn-status-badge.connected{background:rgba(93,224,176,.12);color:var(--accent2)}
 .conn-status-badge.disconnected{background:rgba(138,138,154,.1);color:var(--muted)}
-.conn-profile-preview{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:14px;display:none}
+.conn-profile-preview{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px;margin-bottom:14px;display:none}
 .conn-profile-preview.visible{display:flex;align-items:center;gap:14px}
 .conn-preview-avatar{width:52px;height:52px;border-radius:14px;overflow:hidden;flex-shrink:0;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:22px}
 .conn-preview-avatar img{width:100%;height:100%;object-fit:cover}
@@ -440,7 +440,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
 /* steam games */
 .steam-games{display:flex;flex-direction:column;gap:8px;margin-top:10px}
-.steam-game-row{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border)}
+.steam-game-row{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--surface2);border-radius:var(--r-sm);border:1px solid var(--border)}
 .steam-game-img{width:40px;height:30px;border-radius:6px;object-fit:cover;background:var(--surface3);flex-shrink:0}
 .steam-game-name{font-size:13px;font-weight:500;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .steam-game-hours{font-size:11px;color:var(--muted);font-family:var(--mono)}
@@ -452,7 +452,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .modal-title{font-size:15px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px;letter-spacing:-.2px}
 .modal-field{margin-bottom:13px}
 .modal-label{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:6px;letter-spacing:.5px;text-transform:uppercase}
-.modal-input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:var(--font);font-size:13.5px;padding:9px 12px;outline:none;transition:border-color var(--transition),box-shadow var(--transition)}
+.modal-input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:var(--font);font-size:13.5px;padding:9px 12px;outline:none;transition:border-color .2s ease,box-shadow .2s ease}
 .modal-input:focus{border-color:rgba(249,115,22,.5);box-shadow:0 0 0 3px rgba(249,115,22,.08)}
 .modal-select{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:var(--font);font-size:13.5px;padding:9px 12px;outline:none;appearance:none;cursor:pointer}
 .modal-select option{background:var(--surface2)}
@@ -462,19 +462,19 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .toggle-label{font-size:13.5px;color:var(--text)}
 .toggle{position:relative;width:38px;height:22px;cursor:pointer;flex-shrink:0}
 .toggle input{opacity:0;width:0;height:0;position:absolute}
-.toggle-track{position:absolute;inset:0;background:var(--surface3);border-radius:11px;transition:background var(--transition)}
+.toggle-track{position:absolute;inset:0;background:var(--surface3);border-radius:11px;transition:background .2s ease}
 .toggle input:checked+.toggle-track{background:var(--accent)}
-.toggle-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform var(--transition)}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform .2s ease}
 .toggle input:checked~.toggle-thumb{transform:translateX(16px)}
 
 /* settings tabs */
-.settings-tabs{display:flex;gap:4px;margin-bottom:20px;background:var(--surface2);padding:4px;border-radius:var(--radius-sm);width:fit-content}
-.settings-tab{padding:7px 18px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;color:var(--muted);border:none;background:none;font-family:var(--font);transition:all var(--transition)}
+.settings-tabs{display:flex;gap:4px;margin-bottom:20px;background:var(--surface2);padding:4px;border-radius:var(--r-sm);width:fit-content}
+.settings-tab{padding:7px 18px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;color:var(--muted);border:none;background:none;font-family:var(--font);transition:all .2s ease}
 .settings-tab.active{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.3)}
 
 /* misc */
 .toast-container{position:fixed;bottom:24px;right:24px;display:flex;flex-direction:column;gap:8px;z-index:20000}
-.toast{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:12px 16px;font-size:13.5px;display:flex;align-items:center;gap:10px;animation:slideInRight .2s cubic-bezier(.4,0,.2,1);min-width:240px;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+.toast{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r-sm);padding:12px 16px;font-size:13.5px;display:flex;align-items:center;gap:10px;animation:slideInRight .2s cubic-bezier(.4,0,.2,1);min-width:240px;box-shadow:0 4px 20px rgba(0,0,0,.4)}
 .toast.success{border-left:3px solid var(--accent2)}
 .toast.error{border-left:3px solid var(--accent3)}
 .toast.info{border-left:3px solid var(--accent)}
@@ -2004,6 +2004,463 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .valo-wr-ring svg{transform:rotate(-90deg)}
 .valo-wr-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;font-family:var(--mono)}
 
+
+/* ══ REGION SELECTOR (pill-style) ══ */
+.region-pills{display:flex;gap:5px;flex-wrap:wrap}
+.region-pill{
+  padding:5px 12px;border-radius:20px;font-size:11.5px;font-weight:700;
+  letter-spacing:.3px;cursor:pointer;border:1.5px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.03);color:rgba(245,245,247,.4);
+  transition:all .15s;font-family:var(--mono);
+}
+.region-pill:hover{border-color:rgba(249,115,22,.35);color:rgba(245,245,247,.8)}
+.region-pill.active{
+  background:rgba(249,115,22,.12);border-color:rgba(249,115,22,.45);
+  color:#f97316;box-shadow:0 0 0 3px rgba(249,115,22,.08);
+}
+
+/* ══ DISCORD CARD v2 ══ */
+.dc-card-preview{
+  position:relative;border-radius:14px;overflow:hidden;margin-bottom:16px;
+  background:linear-gradient(135deg,rgba(88,101,242,.12),rgba(88,101,242,.04));
+  border:1px solid rgba(88,101,242,.2);
+}
+.dc-card-banner{height:64px;background:linear-gradient(135deg,#3d4a95,#1e2157);position:relative}
+.dc-card-banner-img{width:100%;height:100%;object-fit:cover;display:block}
+.dc-card-body{padding:0 16px 16px;position:relative}
+.dc-card-avatar-wrap{
+  width:70px;height:70px;position:absolute;top:-35px;left:16px;
+  border-radius:18px;border:4px solid #080608;overflow:hidden;
+  background:var(--surface3);
+}
+.dc-card-avatar-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+.dc-card-avatar-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px}
+.dc-status-dot{
+  position:absolute;bottom:4px;right:4px;width:14px;height:14px;
+  border-radius:50%;border:3px solid #080608;
+}
+.dc-status-dot.online{background:#3ba55c}
+.dc-status-dot.idle{background:#faa81a}
+.dc-status-dot.dnd{background:#ed4245}
+.dc-status-dot.offline{background:#747f8d}
+.dc-card-info{padding-top:44px}
+.dc-card-name{font-size:17px;font-weight:800;letter-spacing:-.3px;font-family:'Syne',sans-serif}
+.dc-card-sub{font-size:12px;color:var(--muted2);margin-top:2px}
+.dc-card-activity{
+  margin-top:10px;padding:10px 12px;background:rgba(255,255,255,.04);
+  border-radius:9px;border:1px solid rgba(255,255,255,.06);
+}
+.dc-card-activity-label{font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);font-family:var(--mono);margin-bottom:4px}
+.dc-card-activity-name{font-size:13px;font-weight:600}
+.dc-card-activity-detail{font-size:11.5px;color:var(--muted2);margin-top:2px}
+.dc-badges-v2{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.dc-badge-v2{
+  width:28px;height:28px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);
+  transition:transform .15s;cursor:default;
+  position:relative;
+}
+.dc-badge-v2:hover{transform:scale(1.2)}
+.dc-badge-v2 .dc-badge-tip{
+  position:absolute;bottom:calc(100% + 5px);left:50%;transform:translateX(-50%);
+  background:rgba(15,10,14,.95);border:1px solid rgba(255,255,255,.1);
+  color:var(--text);font-size:10px;padding:3px 8px;border-radius:6px;
+  white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;
+  font-family:var(--font);font-weight:500;
+}
+.dc-badge-v2:hover .dc-badge-tip{opacity:1}
+
+/* ══ XP v2 ══ */
+.xp-card-v2{
+  background:linear-gradient(135deg,rgba(249,115,22,.09),rgba(220,38,38,.05));
+  border:1px solid rgba(249,115,22,.18);border-radius:14px;
+  padding:18px 20px;margin-bottom:14px;
+}
+.xp-level-badge{
+  width:56px;height:56px;border-radius:14px;flex-shrink:0;
+  background:linear-gradient(135deg,#f97316,#dc2626);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  box-shadow:0 4px 16px rgba(249,115,22,.35);
+}
+.xp-level-lbl{font-size:8px;font-weight:800;color:rgba(255,255,255,.65);letter-spacing:1.5px}
+.xp-level-num{font-size:22px;font-weight:900;color:#fff;line-height:1.1;font-family:'Syne',sans-serif}
+.xp-bar-v2{height:5px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;margin:8px 0 5px}
+.xp-bar-fill-v2{height:100%;background:linear-gradient(90deg,#f97316,#dc2626);border-radius:99px;transition:width .6s cubic-bezier(.4,0,.2,1);width:0%}
+.xp-source-row{display:flex;align-items:center;justify-content:space-between;font-size:11.5px;color:var(--muted2);margin-top:2px}
+.xp-source-val{font-family:var(--mono);font-size:11px;color:rgba(249,115,22,.8);font-weight:700}
+
+
+/* ══ GLOBAL RADIUS + SPACING SYSTEM ══ */
+:root{
+  --r-xs:6px;--r-sm:9px;--r-md:12px;--r-lg:16px;--r-xl:20px;--r-2xl:24px;
+  --shadow-card:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.25);
+  --shadow-hover:0 4px 16px rgba(0,0,0,.5),0 0 0 1px rgba(249,115,22,.1);
+  --shadow-orange:0 4px 20px rgba(249,115,22,.3);
+}
+
+/* ══ TYPOGRAPHY REFRESH ══ */
+body{letter-spacing:-.01em}
+h1,h2,.section-title,.page-title{font-family:'Syne',sans-serif;letter-spacing:-.04em}
+.section-eyebrow{font-size:9px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:rgba(249,115,22,.55);font-family:'JetBrains Mono',monospace;margin-bottom:5px;display:block}
+
+/* ══ TOPBAR ══ */
+.topbar{padding:26px 0 20px;margin-bottom:26px}
+.page-title{font-size:23px;font-weight:800;letter-spacing:-.05em;color:var(--text)}
+.page-subtitle{font-size:12px;color:rgba(245,245,247,.3);margin-top:3px;letter-spacing:.01em}
+
+/* ══ SIDEBAR ══ */
+.sidebar{width:220px}
+.logo-text{font-size:12px;letter-spacing:.2em;font-weight:900}
+.nav-label{font-size:7.5px;letter-spacing:.28em;color:rgba(245,245,247,.18);padding:14px 10px 4px;font-weight:800}
+.nav-item{
+  padding:7px 10px;font-size:13px;font-weight:500;
+  border-radius:var(--r-sm);margin-bottom:1px;letter-spacing:.005em;
+}
+.user-name{font-size:12.5px;font-weight:600;letter-spacing:.005em}
+.user-role{font-size:10px;color:rgba(245,245,247,.25);letter-spacing:.02em}
+
+/* ══ PANELS ══ */
+.panel{
+  background:rgba(255,255,255,.022);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:var(--r-lg);
+  padding:18px 20px;
+  box-shadow:var(--shadow-card);
+  transition:border-color .2s,box-shadow .2s,transform .2s;
+}
+.panel:hover{
+  border-color:rgba(255,255,255,.09);
+  box-shadow:var(--shadow-card),0 0 0 0px rgba(249,115,22,.08);
+  transform:translateY(-1px);
+}
+.panel-header{margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.panel-title{
+  font-size:12px;font-weight:700;letter-spacing:.04em;
+  color:rgba(245,245,247,.75);display:flex;align-items:center;gap:8px;
+  text-transform:none;
+}
+.panel-title-icon{
+  width:26px;height:26px;border-radius:var(--r-xs);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.panel-title-icon svg{width:13px;height:13px}
+.panel-action{
+  font-size:10px;color:rgba(245,245,247,.28);
+  font-family:'JetBrains Mono',monospace;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;
+  background:none;border:none;cursor:pointer;
+  transition:color .15s;
+}
+.panel-action:hover{color:#f97316}
+
+/* ══ STAT CARDS ══ */
+.stat-card{
+  background:rgba(255,255,255,.022);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:var(--r-lg);padding:20px 18px;
+  box-shadow:var(--shadow-card);
+  transition:all .22s cubic-bezier(.4,0,.2,1);
+}
+.stat-card:hover{
+  border-color:rgba(249,115,22,.18);
+  transform:translateY(-3px);
+  box-shadow:0 8px 32px rgba(0,0,0,.4),0 0 0 1px rgba(249,115,22,.08);
+}
+.stat-label{
+  font-size:9px;font-weight:800;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(245,245,247,.3);
+  margin-bottom:12px;font-family:'JetBrains Mono',monospace;
+}
+.stat-value{font-size:34px;font-weight:700;letter-spacing:-.06em;font-family:'JetBrains Mono',monospace}
+.stat-sub{font-size:11px;color:rgba(245,245,247,.28);margin-top:5px;letter-spacing:.01em}
+
+/* ══ BUTTONS ══ */
+.btn{
+  border-radius:var(--r-sm);font-size:12.5px;font-weight:600;
+  letter-spacing:.02em;padding:8px 14px;
+  transition:all .18s cubic-bezier(.4,0,.2,1);
+}
+.btn-primary{
+  background:linear-gradient(135deg,#f97316,#dc2626);
+  box-shadow:var(--shadow-orange);
+  border:none;
+}
+.btn-primary:hover{filter:brightness(1.08);box-shadow:0 6px 26px rgba(249,115,22,.42);transform:translateY(-1px)}
+.btn-primary:active{transform:scale(.96);box-shadow:none}
+.btn-ghost{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.09);
+  color:rgba(245,245,247,.5);
+}
+.btn-ghost:hover{background:rgba(255,255,255,.07);color:var(--text);border-color:rgba(255,255,255,.14)}
+
+/* ══ SEARCH BAR ══ */
+.search-bar{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--r-sm);
+  gap:8px;padding:0 13px;
+}
+.search-bar:focus-within{border-color:rgba(249,115,22,.4);background:rgba(255,255,255,.055)}
+.search-bar input{font-size:13px;padding:9px 0;width:190px}
+
+/* ══ INPUTS / FORM FIELDS ══ */
+.modal-input{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:var(--r-sm);
+  font-size:13.5px;padding:10px 13px;
+  transition:border-color .18s,box-shadow .18s,background .18s;
+  color:var(--text);
+}
+.modal-input:focus{
+  border-color:rgba(249,115,22,.45);
+  box-shadow:0 0 0 3px rgba(249,115,22,.08);
+  background:rgba(255,255,255,.05);
+  outline:none;
+}
+.modal-input::placeholder{color:rgba(245,245,247,.2)}
+.modal-label{
+  font-size:9px;font-weight:800;letter-spacing:.2em;
+  text-transform:uppercase;color:rgba(245,245,247,.3);
+  margin-bottom:7px;display:block;
+  font-family:'JetBrains Mono',monospace;
+}
+
+/* ══ MODALS ══ */
+.modal-overlay{background:rgba(0,0,0,.72);backdrop-filter:blur(10px)}
+.modal{
+  background:rgba(10,8,12,.96);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--r-2xl);
+  box-shadow:0 32px 80px rgba(0,0,0,.7);
+  backdrop-filter:blur(24px);
+}
+.modal-header{
+  padding:20px 22px 16px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.modal-title{font-size:15px;font-weight:800;letter-spacing:-.02em;font-family:'Syne',sans-serif}
+.modal-close{
+  width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);color:rgba(245,245,247,.4);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:14px;transition:all .15s;
+}
+.modal-close:hover{background:rgba(248,113,113,.1);color:#f87171;border-color:rgba(248,113,113,.2)}
+.modal-body{padding:20px 22px}
+.modal-footer{padding:16px 22px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px;justify-content:flex-end}
+
+/* ══ CAT TABS ══ */
+.cat-tabs{
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:var(--r-sm);padding:3px;
+  display:flex;gap:2px;
+}
+.cat-tab{
+  padding:5px 12px;border-radius:var(--r-xs);
+  font-size:12px;font-weight:600;
+  color:rgba(245,245,247,.35);
+  transition:all .15s;letter-spacing:.01em;
+}
+.cat-tab:hover{color:rgba(245,245,247,.7)}
+.cat-tab.active{
+  background:rgba(249,115,22,.12);
+  color:#f97316;
+}
+.cat-tab.active::after{display:none}
+
+/* ══ ITEM ROWS ══ */
+.item-row{
+  border-radius:var(--r-sm);padding:8px 10px;
+  transition:background .15s,border-color .15s;
+}
+.item-row:hover{background:rgba(255,255,255,.045);border-color:rgba(255,255,255,.07)}
+.item-icon{width:32px;height:32px;border-radius:8px;font-size:13px}
+.item-name{font-size:13px;font-weight:500;letter-spacing:.005em}
+.item-meta{font-size:11px;color:rgba(245,245,247,.3);margin-top:2px}
+.item-btn{
+  width:26px;height:26px;border-radius:6px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  font-size:12px;transition:all .15s;
+}
+.item-btn:hover{background:rgba(249,115,22,.1);color:#f97316;border-color:rgba(249,115,22,.2)}
+
+/* ══ KANBAN ══ */
+.kanban-col{
+  background:rgba(255,255,255,.02);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:var(--r-lg);padding:14px;
+}
+.kanban-card{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:var(--r-sm);padding:10px 12px;
+  transition:all .18s;
+}
+.kanban-card:hover{border-color:rgba(255,255,255,.13);box-shadow:0 4px 14px rgba(0,0,0,.3)}
+.kanban-add-btn{
+  border-radius:var(--r-sm);border:1px dashed rgba(255,255,255,.1);
+  font-size:12px;color:rgba(245,245,247,.3);
+  transition:all .15s;margin-top:8px;
+}
+.kanban-add-btn:hover{border-color:rgba(249,115,22,.35);color:#f97316}
+
+/* ══ TODOS ══ */
+.todo-item{border-radius:var(--r-sm);padding:8px 10px;transition:background .15s}
+.todo-item:hover{background:rgba(255,255,255,.035)}
+.todo-check{
+  width:17px;height:17px;border-radius:5px;
+  border:1.5px solid rgba(255,255,255,.16);
+  transition:all .18s;
+}
+.todo-check.checked{background:linear-gradient(135deg,#f97316,#dc2626);border-color:transparent}
+.todo-text{font-size:13px;letter-spacing:.005em}
+.todo-text.done{color:rgba(245,245,247,.3);text-decoration:line-through}
+
+/* ══ NOTES ══ */
+.note-area{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--r-md);
+  font-size:13.5px;line-height:1.65;
+  padding:12px 14px;
+  transition:border-color .18s,box-shadow .18s;
+}
+.note-area:focus{
+  border-color:rgba(249,115,22,.38);
+  box-shadow:0 0 0 3px rgba(249,115,22,.07);
+  outline:none;
+}
+
+/* ══ ACTIVITY ══ */
+.activity-item{border-radius:var(--r-sm);padding:8px 10px;transition:background .15s}
+.activity-item:hover{background:rgba(255,255,255,.03)}
+.activity-text{font-size:12.5px;color:rgba(245,245,247,.45);letter-spacing:.005em}
+.activity-text strong{color:rgba(245,245,247,.85);font-weight:500}
+.activity-dot{width:5px;height:5px;margin-top:6px}
+
+/* ══ CONN CARDS ══ */
+.conn-card{
+  background:rgba(255,255,255,.022);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:var(--r-lg);padding:18px 20px;
+  box-shadow:var(--shadow-card);
+  margin-bottom:12px;transition:border-color .2s;
+}
+.conn-card:hover{border-color:rgba(255,255,255,.09)}
+.conn-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+
+/* ══ SETTINGS ══ */
+.settings-card{
+  background:rgba(255,255,255,.022);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:var(--r-lg);padding:20px 22px;
+  box-shadow:var(--shadow-card);margin-bottom:12px;
+}
+.settings-card-title{
+  font-size:9px;font-weight:800;letter-spacing:.2em;
+  text-transform:uppercase;color:rgba(245,245,247,.28);
+  margin-bottom:16px;font-family:'JetBrains Mono',monospace;
+}
+.settings-nav-item{
+  font-size:12.5px;font-weight:500;border-radius:var(--r-sm);
+  padding:8px 12px;letter-spacing:.01em;
+}
+.settings-nav-item.active{background:rgba(249,115,22,.1);color:#f97316}
+.toggle-row{padding:13px 0;border-bottom:1px solid rgba(255,255,255,.055)}
+.toggle-label{font-size:13px;font-weight:500;letter-spacing:.01em}
+.toggle-sub{font-size:11px;color:rgba(245,245,247,.3);margin-top:2px}
+
+/* ══ PROFILE SELECT ══ */
+.ps-title{font-size:36px;font-weight:900;letter-spacing:-.06em}
+.ps-sub{font-size:13px;color:rgba(245,245,247,.4);letter-spacing:.01em}
+.ps-pname{font-size:12.5px;font-weight:600;letter-spacing:.01em}
+.ps-eyebrow{font-family:'JetBrains Mono',monospace;letter-spacing:.2em}
+
+/* ══ BOTTOM NAV ══ */
+.mob-nav-btn{
+  font-size:9px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;font-family:'JetBrains Mono',monospace;
+}
+
+/* ══ CALENDAR ══ */
+.cal-day{border-radius:var(--r-xs);font-size:12px}
+.cal-day.today{background:linear-gradient(135deg,#f97316,#dc2626);font-weight:700;box-shadow:var(--shadow-orange)}
+.cal-nav{border-radius:var(--r-xs);width:28px;height:28px}
+.cal-month{font-size:13px;font-weight:700;letter-spacing:-.01em}
+.cal-day-label{font-size:9px;font-weight:700;letter-spacing:.05em;color:rgba(245,245,247,.25)}
+
+/* ══ HABITS ══ */
+.habit-row{border-radius:var(--r-md);padding:10px 14px}
+.habit-day{width:22px;height:22px;border-radius:6px;font-size:9px;font-weight:800}
+.habit-day.done{background:linear-gradient(135deg,#f97316,#dc2626)}
+.habit-name{font-size:13px;font-weight:500;letter-spacing:.005em}
+
+/* ══ WEATHER ══ */
+.wx-temp{font-size:48px;font-weight:200;letter-spacing:-.06em}
+.wx-desc{font-size:14px;font-weight:600;letter-spacing:-.01em}
+.wx-meta-cell{border-radius:var(--r-sm)}
+.wx-meta-val{font-size:16px;font-weight:700;letter-spacing:-.02em}
+.wx-meta-lbl{font-size:9px;letter-spacing:.1em;font-weight:700}
+.wx-day{border-radius:var(--r-sm)}
+
+/* ══ POMO ══ */
+.pomo-mode-tab{
+  font-size:11.5px;font-weight:700;letter-spacing:.03em;
+  border-radius:var(--r-xs);transition:all .15s;
+}
+.pomo-stat-cell{border-radius:var(--r-sm)}
+.pomo-stat-val{font-size:17px;font-weight:800;letter-spacing:-.02em}
+.pomo-stat-lbl{font-size:8.5px;letter-spacing:.1em;font-weight:700}
+.pomo-ctrl-btn{border-radius:var(--r-sm)}
+.pomo-play-v2{border-radius:var(--r-md)}
+
+/* ══ XP CARD ══ */
+.xp-card-v2{border-radius:var(--r-lg)}
+.xp-level-badge{border-radius:var(--r-md)}
+
+/* ══ SCROLLBAR ══ */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.18)}
+
+/* ══ SELECTION ══ */
+::selection{background:rgba(249,115,22,.3);color:#fff}
+
+/* ══ RESPONSIVE FIXES ══ */
+@media(max-width:768px){
+  .panel{padding:14px 15px!important;border-radius:var(--r-md)!important}
+  .stat-card{padding:14px 14px!important;border-radius:var(--r-md)!important}
+  .conn-card{padding:14px 15px!important;border-radius:var(--r-md)!important}
+  .settings-card{padding:14px 15px!important;border-radius:var(--r-md)!important}
+  .modal{border-radius:var(--r-xl) var(--r-xl) var(--r-md) var(--r-md)!important}
+  .topbar{padding:12px 0 10px!important;margin-bottom:16px!important}
+  .page-title{font-size:19px!important}
+  .stat-value{font-size:28px!important}
+  .cat-tabs{overflow-x:auto;scrollbar-width:none}
+  .kanban-board{grid-template-columns:1fr!important}
+  .pomo-ring-wrap{width:140px!important;height:140px!important}
+}
+@media(max-width:480px){
+  .page-title{font-size:17px!important}
+  .stat-value{font-size:24px!important}
+  .section-title{font-size:17px!important}
+  .panel{padding:12px!important}
+  .panel-title{font-size:11.5px!important}
+}
+
+
+/* Autofill override */
+input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus{
+  -webkit-box-shadow:0 0 0 1000px rgba(15,12,18,1) inset!important;
+  -webkit-text-fill-color:var(--text)!important;
+  border-color:rgba(249,115,22,.3)!important;
+  caret-color:var(--text)!important;
+}
 </style>
 </head>
 <body>
@@ -2047,21 +2504,26 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
       <div class="auth-orb auth-orb-2"></div>
       <div class="auth-orb auth-orb-3"></div>
 
-      <!-- Floating icons — confined to right 35% of panel, never overlapping text area -->
-      <div class="auth-float-icon" style="width:46px;height:46px;top:8%;right:8%">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      <!-- Floating icons — truly scattered across the full panel -->
+      <!-- Stats — top-right corner -->
+      <div class="auth-float-icon" style="width:48px;height:48px;top:6%;right:5%">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
       </div>
-      <div class="auth-float-icon" style="width:44px;height:44px;top:26%;right:4%">
+      <!-- Timer — mid-right, far right edge -->
+      <div class="auth-float-icon" style="width:52px;height:52px;top:44%;right:2%">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <!-- Gaming — bottom-right -->
+      <div class="auth-float-icon" style="width:46px;height:46px;bottom:8%;right:8%">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:21px;height:21px"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><circle cx="15.5" cy="11.5" r="1"/><circle cx="17.5" cy="13.5" r="1"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59l-.9 7.27A4 4 0 0 0 5.77 20.5c.387.1.79-.025 1.05-.327l1.89-2.173h6.58l1.89 2.173c.26.302.663.427 1.05.327a4 4 0 0 0 2.97-4.64l-.9-7.27A4 4 0 0 0 17.32 5z"/></svg>
+      </div>
+      <!-- Check — bottom-left corner -->
+      <div class="auth-float-icon" style="width:44px;height:44px;bottom:12%;right:26%">
         <svg viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
       </div>
-      <div class="auth-float-icon" style="width:48px;height:48px;top:45%;right:10%">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      </div>
-      <div class="auth-float-icon" style="width:44px;height:44px;top:63%;right:5%">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/></svg>
-      </div>
-      <div class="auth-float-icon" style="width:46px;height:46px;top:79%;right:14%">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:21px;height:21px"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><circle cx="15.5" cy="11.5" r="1"/><circle cx="17.5" cy="13.5" r="1"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59l-.9 7.27A4 4 0 0 0 5.77 20.5c.387.1.79-.025 1.05-.327l1.89-2.173h6.58l1.89 2.173c.26.302.663.427 1.05.327a4 4 0 0 0 2.97-4.64l-.9-7.27A4 4 0 0 0 17.32 5z"/></svg>
+      <!-- Habits — top-left area (clear of logo) -->
+      <div class="auth-float-icon" style="width:42px;height:42px;top:8%;left:52%">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:19px;height:19px"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/></svg>
       </div>
 
       <!-- Content -->
@@ -2150,7 +2612,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
       </div>
 
       <!-- Version -->
-      <div style="text-align:center;margin-top:28px;font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:.5px">v3.5.1</div>
+      <div style="text-align:center;margin-top:28px;font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:.5px">v3.6.0</div>
     </div>
   </div>
 </div>
@@ -2187,7 +2649,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     </div>
 
     <!-- Version -->
-    <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer;white-space:nowrap" onclick="showChangelog()" title="View changelog">v3.5.1 · changelog</div>
+    <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer;white-space:nowrap" onclick="showChangelog()" title="View changelog">v3.6.0 · changelog</div>
   </div>
 </div>
 
@@ -2206,7 +2668,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   <div id="sidebar-nav-main" class="nav-section"></div>
   <div id="sidebar-nav-account" class="nav-section"></div>
   <!-- Compact toggle — always visible at bottom -->
-  <button id="sidebar-compact-btn" onclick="toggleSidebarCompact()" title="Toggle compact mode" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;margin:6px auto 0;background:none;border:1px solid var(--border2);border-radius:8px;cursor:pointer;font-size:14px;color:var(--muted);font-family:var(--font);transition:all var(--transition)" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">&#8644;</button>
+  <button id="sidebar-compact-btn" onclick="toggleSidebarCompact()" title="Toggle compact mode" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;margin:6px auto 0;background:none;border:1px solid var(--border2);border-radius:8px;cursor:pointer;font-size:14px;color:var(--muted);font-family:var(--font);transition:all .2s ease" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">&#8644;</button>
   <div class="sidebar-footer">
     <!-- Discord sidebar widget -->
     <div class="sb-widget" id="sb-discord-wrap" style="display:none">
@@ -2887,11 +3349,21 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
         <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
           <div class="game-input-row">
             <input type="text" class="modal-input" id="valo-name" placeholder="Name#TAG  (ex: Rub19#Boss)" style="flex:1">
-            <select class="game-region-select" id="valo-region">
-              <option value="eu">EU</option><option value="na">NA</option><option value="ap">AP</option><option value="kr">KR</option><option value="br">BR</option><option value="latam">LATAM</option>
-            </select>
             <button class="btn btn-primary" onclick="connectValo()" style="flex-shrink:0">Connect</button>
             <button class="btn btn-ghost" id="valo-disconnect" onclick="disconnectValo()" style="display:none;flex-shrink:0">Disconnect</button>
+          </div>
+          <!-- Region pills -->
+          <div>
+            <div style="font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);font-family:var(--mono);margin-bottom:7px">Region</div>
+            <div class="region-pills" id="valo-region-pills">
+              <div class="region-pill active" data-val="eu" onclick="setRegionPill('valo',this)">EU</div>
+              <div class="region-pill" data-val="na" onclick="setRegionPill('valo',this)">NA</div>
+              <div class="region-pill" data-val="ap" onclick="setRegionPill('valo',this)">AP</div>
+              <div class="region-pill" data-val="kr" onclick="setRegionPill('valo',this)">KR</div>
+              <div class="region-pill" data-val="br" onclick="setRegionPill('valo',this)">BR</div>
+              <div class="region-pill" data-val="latam" onclick="setRegionPill('valo',this)">LATAM</div>
+            </div>
+            <input type="hidden" id="valo-region" value="eu">
           </div>
           <div style="display:flex;gap:8px">
             <input type="text" class="modal-input" id="valo-apikey" placeholder="Henrik Dev API Key (optional — une clé default est intégrée)" style="flex:1;font-size:12px">
@@ -2917,24 +3389,37 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
       <div class="game-card-body">
         <div id="lol-stats-area">
           <div class="game-not-connected">
-            <div style="font-size:28px;margin-bottom:8px">&#9876;&#65039;</div>
-            <div style="font-size:13px;margin-bottom:16px">Entre ton Summoner Name + ta clé API Riot freee</div>
+            <div style="font-size:28px;margin-bottom:8px">⚔️</div>
+            <div style="font-size:13px;margin-bottom:16px">Enter your Summoner Name + your free Riot API key</div>
           </div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px">
           <div class="game-input-row">
             <input type="text" class="modal-input" id="lol-name" placeholder="Summoner Name#TAG" style="flex:1">
-            <select class="game-region-select" id="lol-region" style="width:80px">
-              <option value="euw1">EUW</option><option value="eun1">EUNE</option><option value="na1">NA</option><option value="kr">KR</option><option value="br1">BR</option><option value="la1">LAN</option><option value="tr1">TR</option><option value="ru">RU</option><option value="oc1">OCE</option>
-            </select>
             <button class="btn btn-primary" onclick="connectLoL()" style="flex-shrink:0">Connect</button>
             <button class="btn btn-ghost" id="lol-disconnect" onclick="disconnectLoL()" style="display:none;flex-shrink:0">Disconnect</button>
           </div>
-          <div style="display:flex;gap:8px">
-            <input type="text" class="modal-input" id="lol-apikey" placeholder="Riot API Key (RGAPI-xxxxxxxx) — get free at developer.riotgames.com" style="flex:1;font-size:12px">
-            <a href="https://developer.riotgames.com" target="_blank" rel="noopener noreferrer" class="btn btn-ghost" style="font-size:12px;flex-shrink:0">Get key &#8599;</a>
+          <!-- Region pills -->
+          <div>
+            <div style="font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);font-family:var(--mono);margin-bottom:7px">Region</div>
+            <div class="region-pills" id="lol-region-pills">
+              <div class="region-pill active" data-val="euw1" onclick="setRegionPill('lol',this)">EUW</div>
+              <div class="region-pill" data-val="eun1" onclick="setRegionPill('lol',this)">EUNE</div>
+              <div class="region-pill" data-val="na1" onclick="setRegionPill('lol',this)">NA</div>
+              <div class="region-pill" data-val="kr" onclick="setRegionPill('lol',this)">KR</div>
+              <div class="region-pill" data-val="br1" onclick="setRegionPill('lol',this)">BR</div>
+              <div class="region-pill" data-val="la1" onclick="setRegionPill('lol',this)">LAN</div>
+              <div class="region-pill" data-val="tr1" onclick="setRegionPill('lol',this)">TR</div>
+              <div class="region-pill" data-val="ru" onclick="setRegionPill('lol',this)">RU</div>
+              <div class="region-pill" data-val="oc1" onclick="setRegionPill('lol',this)">OCE</div>
+            </div>
+            <input type="hidden" id="lol-region" value="euw1">
           </div>
-          <div style="font-size:11px;color:var(--muted)">La clé dev Riot est freee mais expire toutes les 24h. Copie-colle la tienne ici.</div>
+          <div style="display:flex;gap:8px">
+            <input type="text" class="modal-input" id="lol-apikey" placeholder="Riot API Key (RGAPI-xxxxxxxx) — free at developer.riotgames.com" style="flex:1;font-size:12px">
+            <a href="https://developer.riotgames.com" target="_blank" rel="noopener noreferrer" class="btn btn-ghost" style="font-size:12px;flex-shrink:0">Get key ↗</a>
+          </div>
+          <div style="font-size:11px;color:var(--muted)">The Riot dev key is free but expires every 24h. Paste yours here.</div>
         </div>
       </div>
     </div>
@@ -2999,13 +3484,28 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
           <span class="conn-status-badge disconnected" id="dc-badge">Not connected</span>
         </div>
       </div>
-      <div class="conn-profile-preview" id="dc-preview">
-        <div class="conn-preview-avatar"><img id="dc-preview-avatar" src="" alt=""><span id="dc-preview-fallback" style="display:none">&#128100;</span></div>
-        <div>
-          <div class="conn-preview-name" id="dc-preview-name">—</div>
-          <div class="conn-preview-sub" id="dc-preview-sub">Offline</div>
-          <div class="conn-preview-tag" id="dc-preview-activity" style="background:rgba(88,101,242,.12);color:#5865F2;display:none"></div>
-          <div class="dc-badges" id="dc-preview-badges" style="margin-top:6px"></div>
+      <div id="dc-preview" style="display:none;margin-bottom:16px">
+        <div class="dc-card-preview">
+          <div class="dc-card-banner" id="dc-card-banner">
+            <img id="dc-banner-img" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover">
+          </div>
+          <div class="dc-card-body">
+            <div class="dc-card-avatar-wrap">
+              <img id="dc-preview-avatar" src="" alt="" style="display:none">
+              <div class="dc-card-avatar-fallback" id="dc-preview-fallback">👤</div>
+              <div class="dc-status-dot offline" id="dc-status-dot"></div>
+            </div>
+            <div class="dc-card-info">
+              <div class="dc-card-name" id="dc-preview-name">—</div>
+              <div class="dc-card-sub" id="dc-preview-sub">Offline</div>
+              <div class="dc-badges-v2" id="dc-preview-badges"></div>
+              <div id="dc-preview-activity" style="display:none" class="dc-card-activity">
+                <div class="dc-card-activity-label" id="dc-activity-type">Playing</div>
+                <div class="dc-card-activity-name" id="dc-activity-name"></div>
+                <div class="dc-card-activity-detail" id="dc-activity-detail"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="modal-field" id="dc-manual-badges-section" style="display:none">
@@ -3067,7 +3567,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
           <button class="btn btn-ghost" onclick="const i=document.getElementById('steam-apikey');i.type=i.type==='password'?'text':'password'" style="flex-shrink:0;font-size:13px" title="Show/masquer">👁</button>
           <button class="btn btn-primary" onclick="savesteamApiKey()" style="flex-shrink:0;font-size:12px">Save</button>
         </div>
-        <div style="font-size:11.5px;color:var(--muted);margin-top:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;line-height:1.6">
+        <div style="font-size:11.5px;color:var(--muted);margin-top:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;line-height:1.6">
           <div style="font-weight:600;color:var(--text);margin-bottom:4px">How to get your free key:</div>
           <div>1. Go to <a href="https://steamcommunity.com/dev/apikey" target="_blank" rel="noopener noreferrer" style="color:var(--accent)">steamcommunity.com/dev/apikey</a></div>
           <div>2. Sign in with your Steam account</div>
@@ -3159,18 +3659,20 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
         <div id="settings-profilee" class="settings-section active">
 
           <!-- XP / Level -->
-          <div class="xp-card">
-            <div class="xp-badge">
-              <div class="xp-badge-lbl">LVL</div>
-              <div class="xp-badge-num" id="profile-level-num">1</div>
-            </div>
-            <div style="flex:1;min-width:0">
-              <div style="display:flex;justify-content:space-between;align-items:center">
-                <span style="font-size:13px;font-weight:600" id="profile-xp-label">0 XP</span>
-                <span style="font-size:11px;color:var(--muted2)" id="profile-xp-next">Next: 100 XP</span>
+          <div class="xp-card-v2" id="profile-xp-widget">
+            <div style="display:flex;align-items:center;gap:14px">
+              <div class="xp-level-badge">
+                <div class="xp-level-lbl">LVL</div>
+                <div class="xp-level-num" id="profile-level-num">1</div>
               </div>
-              <div class="xp-bar-track"><div class="xp-bar-fill" id="profile-xp-bar" style="width:0%"></div></div>
-              <div style="font-size:11px;color:var(--muted2)" id="profile-xp-breakdown"></div>
+              <div style="flex:1;min-width:0">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <span style="font-size:13px;font-weight:700;color:var(--text)" id="profile-xp-label">0 XP</span>
+                  <span style="font-size:11px;color:var(--muted2)" id="profile-xp-next">Next level: 100 XP</span>
+                </div>
+                <div class="xp-bar-v2"><div class="xp-bar-fill-v2" id="profile-xp-bar"></div></div>
+                <div style="font-size:11px;color:var(--muted2)" id="profile-xp-breakdown">Complete tasks, pomodoros and notes to earn XP</div>
+              </div>
             </div>
           </div>
 
@@ -3469,7 +3971,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   <div class="modal" style="max-width:480px">
     <div class="modal-title">✨ Add item</div>
     <!-- Type tabs -->
-    <div style="display:flex;gap:4px;background:var(--surface2);border-radius:var(--radius-sm);padding:4px;margin-bottom:16px;border:1px solid var(--border)">
+    <div style="display:flex;gap:4px;background:var(--surface2);border-radius:var(--r-sm);padding:4px;margin-bottom:16px;border:1px solid var(--border)">
       <button id="itab-link"    onclick="switchItemTab('link')"   style="flex:1;padding:7px;border-radius:6px;border:none;background:var(--accent);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s">🔗 Link</button>
       <button id="itab-file"    onclick="switchItemTab('file')"   style="flex:1;padding:7px;border-radius:6px;border:none;background:none;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s">📄 File</button>
       <button id="itab-folder"  onclick="switchItemTab('folder')" style="flex:1;padding:7px;border-radius:6px;border:none;background:none;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s">📁 Folder</button>
@@ -3671,7 +4173,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
 <!-- GLOBAL SEARCH / COMMAND PALETTE -->
 <div id="cmd-palette" style="display:none;position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);align-items:flex-start;justify-content:center;padding-top:80px" onclick="if(event.target===this)closeCmdPalette()">
-  <div style="background:var(--surface);border:1px solid var(--border3);border-radius:var(--radius);width:100%;max-width:580px;overflow:hidden;box-shadow:var(--shadow-lg),0 0 40px rgba(59,130,246,.15)">
+  <div style="background:var(--surface);border:1px solid var(--border3);border-radius:var(--r-md);width:100%;max-width:580px;overflow:hidden;box-shadow:var(--shadow-lg),0 0 40px rgba(59,130,246,.15)">
     <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border)">
       <span style="font-size:18px;color:var(--muted)">&#128269;</span>
       <input id="cmd-input" type="text" placeholder="Search or type a command..." style="flex:1;background:none;border:none;outline:none;font-size:15px;color:var(--text);font-family:var(--font)" oninput="updateCmdResults(this.value)" onkeydown="handleCmdKey(event)">
@@ -3741,6 +4243,7 @@ function safeThemeColor(value){
 // -- AUTH UI --------------------------------------
 function showChangelog(){
   const versions=[
+    {v:'v3.6.0',date:'12/06/2026',changes:['UI: full modern polish pass — typography, spacing, radius system','New CSS var system: --r-xs/sm/md/lg/xl/2xl for consistent border-radius','Typography: JetBrains Mono for labels/stats, Syne for titles, tighter letter-spacing','Buttons: refined hover states, shadows, active scale','Panels/cards: shadow system, hover lift, consistent borders','Modals: darker backdrop, blur 10px, larger border-radius','Cat tabs: orange active state, cleaner pills','Autofill: dark background override for Chrome autofill','Responsive: better padding/radius on mobile for all components','Bugfix: deleteProfile now deletes from Supabase DB (no more reappearing after refresh)','Discord card: banner, accent color, status dot, activity block','Region selector: pill-style for Valo & LoL (no more ugly select dropdown)','XP: fixed render on settings page open, new bar class']},
     {v:'v3.5.1',date:'12/06/2026',changes:['Color system: full palette unification — orange #f97316 + red #dc2626 everywhere','Auth screen: left panel near-black coherent, buttons orange/red gradient','Auth: card border orange-tinted, right panel explicit dark bg','Root vars: surfaces neutral rgba (no more red-tinted backgrounds)','Root vars: muted colors warm neutral (no more blue-purple muted)','Accent: #f97316 replaces #e11d48 crimson as primary accent throughout']},
     {v:'v3.5.0',date:'12/06/2026',changes:['Pomodoro v2: larger 160px animated ring with pulse while running','Pomodoro: Web Audio API sounds (tick/start/done/break chimes)','Pomodoro: sound toggle button, SVG controls (reset/play/skip)','Pomodoro: 4-cell stats grid (today/total/focus time/streak)','Last.fm v2: blurred album art hero card for now playing','Last.fm: section labels, track rows, artist bars with new CSS classes','Valorant v2: rank hero with floating emblem + winrate donut ring','Valorant: valo-stats-row with color-coded good/bad KDA/ACS/HS/WR','Valorant: new valo-match-row with left color bar + hover slide','Valorant: valo-agents-grid 3-col with agent images']},
     {v:'v3.4.0',date:'12/06/2026',changes:['Animations: full system — scroll reveal, page transitions, stat counters','Auth: 6 floating animated icons (tasks, stats, gaming, notes, habits, AI)','Auth: animated title gradient shift, staggered feature items with SVG icons','Auth: pulsing orbs, glow logo animation','Profile select: cursor glow follows mouse, staggered card entrance','Dashboard: IntersectionObserver scroll reveal on all panels/cards','Dashboard: animated number counters on stat cards','Dashboard: nav icon bounce on hover, shimmer on active item','Dashboard: page transition with fade+slide on every tab switch','Buttons: ripple effect on all primary/ghost buttons']},
@@ -3783,7 +4286,7 @@ function showChangelog(){
     {v:'v1.0.0',date:'05/06/2026',changes:['Initial release','Multi-profile with avatar + PIN','Discord, Steam, Spotify, Valorant, LoL','Kanban, Habits, Calendar, Tasks, Notes, Stats, Pomodoro']},
   ];
   let html=`<div style="position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.remove()">
-  <div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:28px;width:100%;max-width:500px;max-height:80vh;overflow-y:auto">
+  <div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r-md);padding:28px;width:100%;max-width:500px;max-height:80vh;overflow-y:auto">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
       <div style="font-size:18px;font-weight:700"> Changelog</div>
       <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">x</button>
@@ -4059,21 +4562,21 @@ async function openAdminPanel(){
   const {data:allData}=await sb.from('dashboard_data').select('*');
   const totalLogins=users?.reduce((s,u)=>s+(u.login_count||0),0)||0;
   let html=`<div style="position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.remove()">
-  <div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:28px;width:100%;max-width:860px;max-height:85vh;overflow-y:auto">
+  <div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r-md);padding:28px;width:100%;max-width:860px;max-height:85vh;overflow-y:auto">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
       <div style="font-size:18px;font-weight:700">Admin Panel</div>
       <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">x</button>
     </div>
     <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
-      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 20px;flex:1;min-width:100px;text-align:center">
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 20px;flex:1;min-width:100px;text-align:center">
         <div style="font-size:24px;font-weight:700;color:var(--accent)">${users?.length||0}</div>
         <div style="font-size:12px;color:var(--muted)">Accounts</div>
       </div>
-      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 20px;flex:1;min-width:100px;text-align:center">
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 20px;flex:1;min-width:100px;text-align:center">
         <div style="font-size:24px;font-weight:700;color:var(--accent2)">${allData?.length||0}</div>
         <div style="font-size:12px;color:var(--muted)">Total profiles</div>
       </div>
-      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 20px;flex:1;min-width:100px;text-align:center">
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 20px;flex:1;min-width:100px;text-align:center">
         <div style="font-size:24px;font-weight:700;color:var(--accent4)">${totalLogins}</div>
         <div style="font-size:12px;color:var(--muted)">Total logins</div>
       </div>
@@ -4085,7 +4588,7 @@ async function openAdminPanel(){
     const joined=new Date(u.created_at).toLocaleDateString('en-GB');
     const lastSeen=u.last_seen?new Date(u.last_seen).toLocaleDateString('en-GB'):'never';
     const isMe=u.email===ADMIN_EMAIL;
-    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden">
+    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);overflow:hidden">
       <div style="padding:12px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap" onclick="toggleAdminUserDetails('${u.id}')">
         <div style="flex:1;min-width:0">
           <div style="font-weight:600">${u.username} ${isMe?'<span style=\"font-size:10px;background:rgba(124,106,247,.2);color:var(--accent);padding:1px 7px;border-radius:20px\">Admin</span>':''}</div>
@@ -4145,7 +4648,7 @@ async function adminViewProfile(profileId, profileName){
   const s=data.state||{};
 
   let html=`<div style="position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto" onclick="if(event.target===this)this.remove()">
-  <div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:28px;width:100%;max-width:700px;max-height:85vh;overflow-y:auto">
+  <div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r-md);padding:28px;width:100%;max-width:700px;max-height:85vh;overflow-y:auto">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
       <div style="font-size:16px;font-weight:700">👤 ${profileName}'s dashboard</div>
       <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">x</button>
@@ -4155,7 +4658,7 @@ async function adminViewProfile(profileId, profileName){
   if(s.note){
     html+=`<div style="margin-bottom:16px">
       <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Notes</div>
-      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;font-size:13px;white-space:pre-wrap;max-height:150px;overflow-y:auto">${s.note}</div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;font-size:13px;white-space:pre-wrap;max-height:150px;overflow-y:auto">${s.note}</div>
     </div>`;
   }
 
@@ -4206,19 +4709,19 @@ async function adminViewProfile(profileId, profileName){
 
   // Stats
   html+=`<div style="display:flex;gap:10px;flex-wrap:wrap">
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 16px;flex:1;text-align:center">
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 16px;flex:1;text-align:center">
       <div style="font-size:18px;font-weight:700;color:var(--accent)">${(s.todos||[]).length}</div>
       <div style="font-size:11px;color:var(--muted)">Tasks</div>
     </div>
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 16px;flex:1;text-align:center">
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 16px;flex:1;text-align:center">
       <div style="font-size:18px;font-weight:700;color:var(--accent2)">${(s.items||[]).length}</div>
       <div style="font-size:11px;color:var(--muted)">Files</div>
     </div>
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 16px;flex:1;text-align:center">
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 16px;flex:1;text-align:center">
       <div style="font-size:18px;font-weight:700;color:var(--accent4)">${(s.habits||[]).length}</div>
       <div style="font-size:11px;color:var(--muted)">Habits</div>
     </div>
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 16px;flex:1;text-align:center">
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 16px;flex:1;text-align:center">
       <div style="font-size:18px;font-weight:700;color:var(--accent3)">${(s.activity||[]).length}</div>
       <div style="font-size:11px;color:var(--muted)">Activities</div>
     </div>
@@ -4610,10 +5113,23 @@ function submitCreateProfile(){
   editingProfileId=null;closeModal('create-profile');createUpload=null;resetCreatePwFields();renderProfileScreen();
 }
 
-function deleteProfile(id){
-  if(profiles.length<=1){toast("Can't delete last profile",'error');return}
-  if(!confirm('Delete this profile and all its data?'))return;
-  profiles=profiles.filter(p=>p.id!==id);saveStateNow();renderProfileScreen();toast('Deleted','info');
+async function deleteProfile(id){
+  if(profiles.length<=1){toast("Can't delete last profile",'error');return;}
+  if(!confirm('Delete this profile and all its data? This cannot be undone.'))return;
+  const toDelete=profiles.find(p=>p.id===id);
+  profiles=profiles.filter(p=>p.id!==id);
+  // Save locally first
+  try{localStorage.setItem('myspace_profiles_backup',JSON.stringify(profiles));}catch(e){}
+  // Delete from Supabase DB if it has a db record
+  if(toDelete?._dbId&&_sbUser){
+    try{
+      await sb.from('dashboard_data').delete().eq('id',toDelete._dbId);
+    }catch(e){console.warn('Cloud delete error:',e);}
+  }
+  // Also re-save remaining profiles to ensure cloud is in sync
+  await saveCloudState();
+  renderProfileScreen();
+  toast('Profile deleted','info');
 }
 
 function renderAvatarGrid(containerId,selIdx){
@@ -4755,6 +5271,26 @@ function updateSettingsPreview(){
   renderProfileQuickStats(p);
 }
 
+// ── REGION PILL SELECTOR ───────────────────────
+function setRegionPill(game, el){
+  const pillsId = game + '-region-pills';
+  document.querySelectorAll(`#${pillsId} .region-pill`).forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  const hiddenInput = document.getElementById(game + '-region');
+  if(hiddenInput) hiddenInput.value = el.dataset.val;
+}
+
+// Restore region pill selection from saved value
+function restoreRegionPill(game, val){
+  if(!val) return;
+  const pills = document.querySelectorAll(`#${game}-region-pills .region-pill`);
+  pills.forEach(p=>{
+    p.classList.toggle('active', p.dataset.val === val);
+  });
+  const hiddenInput = document.getElementById(game + '-region');
+  if(hiddenInput) hiddenInput.value = val;
+}
+
 function renderProfileXP(p){
   if(!p)return;
   const xpWidget=document.getElementById('profile-xp-widget');
@@ -4773,7 +5309,7 @@ function renderProfileXP(p){
   if(lvlEl)lvlEl.textContent=level;
   if(xpLabel)xpLabel.textContent=xp.toLocaleString()+' XP total';
   if(xpNext)xpNext.textContent='Level '+(level+1)+' at '+xpForNext.toLocaleString()+' XP';
-  if(xpBar)setTimeout(()=>xpBar.style.width=progress+'%',150);
+  if(xpBar)setTimeout(()=>{xpBar.style.width=progress+'%';},150);
   // Also update banner level
   const lvlBadge=document.getElementById('profile-banner-level');
   const lvlNum=document.getElementById('profile-banner-level-num');
@@ -4827,7 +5363,7 @@ function renderProfileQuickStats(p){
     {label:'Best streak',val:habitStreak+'🔥',icon:'',color:'var(--accent4)'},
     {label:'Notes',val:notesCount,icon:'📝',color:'var(--accent5)'},
   ];
-  container.innerHTML=stats.map(s=>`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;text-align:center">
+  container.innerHTML=stats.map(s=>`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px;text-align:center">
     <div style="font-size:16px;font-weight:700;color:${s.color}">${s.val}</div>
     <div style="font-size:10px;color:var(--muted);margin-top:2px">${s.label}</div>
   </div>`).join('');
@@ -5225,7 +5761,7 @@ function switchPage(page,navEl){
     if(weatherEmpty)fetchWeather();
     if(quoteEmpty)fetchQuote();
   }
-  if(page==='settings'){document.getElementById('settings-name').value=p.name;updateSettingsPreview();loadSecuritySettings();loadBannerSettings();renderBgThemeBtns();}
+  if(page==='settings'){document.getElementById('settings-name').value=p.name;updateSettingsPreview();loadSecuritySettings();loadBannerSettings();renderBgThemeBtns();renderProfileXP(p);renderProfileQuickStats(p);}
   if(page==='connections')loadConnectionsUI();
   if(page==='gaming')loadGamingUI();
   if(page==='habits'){if(typeof renderHabits==='function')renderHabits();}
@@ -5541,7 +6077,7 @@ function openItem(id){
     overlay.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out';
     overlay.onclick=()=>overlay.remove();
     overlay.innerHTML=`<div style="position:relative;max-width:90vw;max-height:90vh">
-      <img src="${item.imageData}" style="max-width:100%;max-height:90vh;border-radius:var(--radius);object-fit:contain;box-shadow:0 20px 60px rgba(0,0,0,.8)">
+      <img src="${item.imageData}" style="max-width:100%;max-height:90vh;border-radius:var(--r-md);object-fit:contain;box-shadow:0 20px 60px rgba(0,0,0,.8)">
       <button onclick="event.stopPropagation();this.closest('[style*=fixed]').remove()" style="position:absolute;top:-12px;right:-12px;background:var(--surface3);border:1px solid var(--border2);color:var(--text);border-radius:50%;width:28px;height:28px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
       <div style="text-align:center;margin-top:10px;font-size:13px;color:rgba(255,255,255,.7)">${escapeHTML(item.name)}</div>
     </div>`;
@@ -5558,7 +6094,7 @@ function openItem(id){
       <span>📄</span><span style="flex:1">${escapeHTML(f.name)}</span>
       <span style="color:var(--muted)">${f.size?(f.size/1024).toFixed(1)+' KB':''}</span>
     </div>`).join('');
-    overlay.innerHTML=`<div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:24px;width:100%;max-width:480px;max-height:80vh;overflow-y:auto">
+    overlay.innerHTML=`<div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r-md);padding:24px;width:100%;max-width:480px;max-height:80vh;overflow-y:auto">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
         <div style="font-size:16px;font-weight:700">📁 ${escapeHTML(item.name)}</div>
         <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer">✕</button>
@@ -5614,7 +6150,7 @@ function renderNotesList(){
     const isActive=n.id===_currentNoteId;
     const preview=n.content?.slice(0,60).replace(/[#*`\n]/g,' ')||'Empty note';
     const dot=n.color?`<span style="width:7px;height:7px;border-radius:50%;background:${n.color};flex-shrink:0;display:inline-block"></span>`:'';
-    return `<div onclick="selectNote(${n.id})" style="padding:10px 12px;border-radius:var(--radius-sm);cursor:pointer;border:1.5px solid ${isActive?'var(--accent)':'var(--border)'};background:${isActive?'var(--accent-subtle)':'var(--surface2)'};transition:all .15s">
+    return `<div onclick="selectNote(${n.id})" style="padding:10px 12px;border-radius:var(--r-sm);cursor:pointer;border:1.5px solid ${isActive?'var(--accent)':'var(--border)'};background:${isActive?'var(--accent-subtle)':'var(--surface2)'};transition:all .15s">
       <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
         ${dot}
         <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;color:${isActive?'var(--accent-light)':'var(--text)'}">${escapeHTML(n.title||'Untitled')}</div>
@@ -6000,7 +6536,7 @@ function renderGoals(){
       const hasTarget=g.target>0;
       const prog=g.progress||0;
       const barPct=hasTarget?Math.min(100,Math.round((prog/g.target)*100)):g.done?100:0;
-      return `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;${g.done?'opacity:.75':''}">
+      return `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;${g.done?'opacity:.75':''}">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
           <span style="font-size:20px">${g.emoji}</span>
           <div style="flex:1;min-width:0">
@@ -6163,7 +6699,7 @@ function renderCountdowns(){
     const dStr=past?`${Math.abs(days)} days ago`:(days===0?'Today!':`${days} day${days>1?'s':''} left`);
     const h=Math.abs(Math.floor((diff%86400000)/3600000));
     const m=Math.abs(Math.floor((diff%3600000)/60000));
-    return `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;position:relative">
+    return `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-md);padding:20px;text-align:center;position:relative">
       <button onclick="deleteCountdown(${c.id})" style="position:absolute;top:8px;right:8px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px">✕</button>
       <div style="font-size:36px;margin-bottom:8px">${c.emoji}</div>
       <div style="font-size:14px;font-weight:600;margin-bottom:4px">${escapeHTML(c.name)}</div>
@@ -6590,7 +7126,7 @@ function renderOWStats(data,username,mode){
       const roleName=r.metadata?.name||'Rank';
       const rank=r.stats?.rank?.displayValue||r.stats?.rankScore?.displayValue||'Unranked';
       const icon=r.stats?.rank?.metadata?.iconUrl||'';
-      html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;flex:1;min-width:90px;display:flex;align-items:center;gap:8px">
+      html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 14px;flex:1;min-width:90px;display:flex;align-items:center;gap:8px">
         ${icon?`<img src="${icon}" style="width:32px;height:32px;object-fit:contain" onerror="this.style.display='none'">`:'<span style="font-size:20px">&#127942;</span>'}
         <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">${roleName}</div>
         <div style="font-size:13px;font-weight:700">${rank}</div></div>
@@ -6608,7 +7144,7 @@ function renderOWStats(data,username,mode){
   ];
   html+=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">`;
   pills.forEach(pill=>{
-    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;flex:1;min-width:90px;text-align:center">
+    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 14px;flex:1;min-width:90px;text-align:center">
       <div style="font-size:18px;font-weight:700;color:var(--accent)">${pill.val}</div>
       <div style="font-size:11px;color:var(--muted);margin-top:2px">${pill.label}</div>
     </div>`;
@@ -6625,7 +7161,7 @@ function renderOWStats(data,username,mode){
       const time=h.stats?.timePlayed?.displayValue||'--';
       const wr=h.stats?.winPercentage?.displayValue||'--';
       const elim=h.stats?.eliminationsPerLife?.displayValue||'--';
-      html+=`<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surface2);border-radius:var(--radius-sm)">
+      html+=`<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surface2);border-radius:var(--r-sm)">
         ${img?`<img src="${img}" style="width:36px;height:36px;border-radius:8px;object-fit:cover" onerror="this.style.display='none'">`:'<div style="width:36px;height:36px;border-radius:8px;background:var(--surface3);display:flex;align-items:center;justify-content:center">&#127918;</div>'}
         <div style="flex:1;min-width:0">
           <div style="font-size:13px;font-weight:600">${name}</div>
@@ -6732,7 +7268,7 @@ function updateCmdResults(query){
 
   container.innerHTML=results.map((r,i)=>`
     <div class="cmd-result ${i===0?'selected':''}" data-idx="${i}" onclick="cmdResultClick(${i})" onmouseover="cmdHover(${i})"
-      style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-radius:var(--radius-sm);cursor:pointer;transition:background var(--transition);margin:2px 4px;${i===0?'background:var(--accent-subtle);border:1px solid var(--border3)':'border:1px solid transparent'}">
+      style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-radius:var(--r-sm);cursor:pointer;transition:background .2s ease;margin:2px 4px;${i===0?'background:var(--accent-subtle);border:1px solid var(--border3)':'border:1px solid transparent'}">
       <span style="font-size:18px;width:24px;text-align:center;flex-shrink:0">${r.icon}</span>
       <div style="flex:1;min-width:0">
         <div style="font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.label}</div>
@@ -6903,13 +7439,13 @@ function renderSidebarCustomize(){
   if(!container)return;
   container.innerHTML=config.map((item,i)=>`
     <div class="sidebar-customize-row" data-idx="${i}" draggable="true"
-      style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:grab;transition:all var(--transition)"
+      style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);cursor:grab;transition:all .2s ease"
       ondragstart="sbDragStart(event,${i})" ondragover="sbDragOver(event)" ondrop="sbDrop(event,${i})" ondragleave="sbDragLeave(event)">
       <span style="color:var(--muted);font-size:16px;cursor:grab">⣿</span>
       <span style="font-size:16px">${item.icon}</span>
       <span style="flex:1;font-size:13px;font-weight:500">${item.label}</span>
       <span style="font-size:11px;color:var(--muted);font-style:italic">${item.section}</span>
-      <button onclick="toggleNavItem(${i})" style="background:${item.visible!==false?'var(--accent-subtle)':'var(--surface3)'};border:1.5px solid ${item.visible!==false?'var(--accent)':'var(--border2)'};color:${item.visible!==false?'var(--accent)':'var(--muted)'};border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all var(--transition)">${item.visible!==false?'Visible':'Hidden'}</button>
+      <button onclick="toggleNavItem(${i})" style="background:${item.visible!==false?'var(--accent-subtle)':'var(--surface3)'};border:1.5px solid ${item.visible!==false?'var(--accent)':'var(--border2)'};color:${item.visible!==false?'var(--accent)':'var(--muted)'};border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s ease">${item.visible!==false?'Visible':'Hidden'}</button>
     </div>`).join('');
 }
 
@@ -7146,7 +7682,7 @@ function renderBgThemeBtns(){
   const cur=p?.bgTheme||'none';
   const container=document.getElementById('bg-theme-btns');
   if(!container)return;
-  container.innerHTML=BG_THEMES.map(b=>`<button onclick="pickBgTheme('${b.id}')" style="padding:7px 16px;border-radius:var(--radius-sm);border:1.5px solid ${b.id===cur?'var(--accent)':'var(--border2)'};background:${b.id===cur?'var(--accent-subtle)':'var(--surface2)'};color:${b.id===cur?'var(--accent)':'var(--muted)'};font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all var(--transition)">${b.name}</button>`).join('');
+  container.innerHTML=BG_THEMES.map(b=>`<button onclick="pickBgTheme('${b.id}')" style="padding:7px 16px;border-radius:var(--r-sm);border:1.5px solid ${b.id===cur?'var(--accent)':'var(--border2)'};background:${b.id===cur?'var(--accent-subtle)':'var(--surface2)'};color:${b.id===cur?'var(--accent)':'var(--muted)'};font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s ease">${b.name}</button>`).join('');
 }
 
 function pickBgTheme(id){
@@ -7427,15 +7963,15 @@ function renderDiscordBadges(user){
   ];
   const parts = [];
   // Manual badges first
-  if(manualBadges.nitro)        parts.push('<div class="dc-badge-pill" title="Nitro"           style="background:rgba(88,101,242,.18);border-color:#5865F2">💎</div>');
-  if(manualBadges.nitroClassic) parts.push('<div class="dc-badge-pill" title="Nitro Classic"   style="background:rgba(88,101,242,.18);border-color:#5865F2">💎</div>');
-  if(manualBadges.booster)      parts.push('<div class="dc-badge-pill" title="Server Boosting" style="background:rgba(255,115,250,.15);border-color:#ff73fa">🚀</div>');
-  if(manualBadges.activedev)    parts.push('<div class="dc-badge-pill" title="Active Dev"      style="background:rgba(107,220,66,.18);border-color:#6bdc42">🛠️</div>');
-  if(manualBadges.early)        parts.push('<div class="dc-badge-pill" title="Early Supporter" style="background:rgba(249,104,84,.18);border-color:#f96854">🌟</div>');
-  if(manualBadges.partner)      parts.push('<div class="dc-badge-pill" title="Partner"         style="background:rgba(78,158,212,.18);border-color:#4e9ed4">🤝</div>');
+  if(manualBadges.nitro)        parts.push('<div class="dc-badge-v2" title="Nitro"           style="background:rgba(88,101,242,.18);border-color:#5865F2">💎</div>');
+  if(manualBadges.nitroClassic) parts.push('<div class="dc-badge-v2" title="Nitro Classic"   style="background:rgba(88,101,242,.18);border-color:#5865F2">💎</div>');
+  if(manualBadges.booster)      parts.push('<div class="dc-badge-v2" title="Server Boosting" style="background:rgba(255,115,250,.15);border-color:#ff73fa">🚀</div>');
+  if(manualBadges.activedev)    parts.push('<div class="dc-badge-v2" title="Active Dev"      style="background:rgba(107,220,66,.18);border-color:#6bdc42">🛠️</div>');
+  if(manualBadges.early)        parts.push('<div class="dc-badge-v2" title="Early Supporter" style="background:rgba(249,104,84,.18);border-color:#f96854">🌟</div>');
+  if(manualBadges.partner)      parts.push('<div class="dc-badge-v2" title="Partner"         style="background:rgba(78,158,212,.18);border-color:#4e9ed4">🤝</div>');
   // Auto-detected from public_flags
   for(const b of BADGES){
-    if(flags & b.flag) parts.push('<div class="dc-badge-pill" title="'+b.title+'" style="background:'+b.bg+';border-color:'+b.bc+'">'+b.e+'</div>');
+    if(flags & b.flag) parts.push('<div class="dc-badge-v2" title="'+b.title+'" style="background:'+b.bg+';border-color:'+b.bc+'">'+b.e+'</div>');
   }
   return parts.join('');
 }
@@ -7471,30 +8007,54 @@ function renderDiscordCard(d){
   const badge=document.getElementById('dc-badge');
   if(badge){badge.textContent='Connected';badge.className='conn-status-badge connected';}
   const preview=document.getElementById('dc-preview');
-  if(preview)preview.classList.add('visible');
+  if(preview)preview.style.display='block';
+  // Avatar
   const avImg=document.getElementById('dc-preview-avatar');
   const avFallback=document.getElementById('dc-preview-fallback');
   if(d.discord_user.avatar){
-    const url='https://cdn.discordapp.com/avatars/'+d.discord_user.id+'/'+d.discord_user.avatar+'.png?size=128';
+    const url='https://cdn.discordapp.com/avatars/'+d.discord_user.id+'/'+d.discord_user.avatar+'.png?size=256';
     if(avImg){avImg.src=url;avImg.style.display='block';}
     if(avFallback)avFallback.style.display='none';
   } else {
     if(avImg)avImg.style.display='none';
-    if(avFallback)avFallback.style.display='block';
+    if(avFallback)avFallback.style.display='flex';
   }
+  // Banner
+  if(d.discord_user.banner){
+    const bannerUrl='https://cdn.discordapp.com/banners/'+d.discord_user.id+'/'+d.discord_user.banner+'.png?size=480';
+    const bannerImg=document.getElementById('dc-banner-img');
+    if(bannerImg){bannerImg.src=bannerUrl;bannerImg.style.display='block';}
+  } else {
+    const banner=document.getElementById('dc-card-banner');
+    if(banner&&d.discord_user.accent_color){
+      banner.style.background='#'+d.discord_user.accent_color.toString(16).padStart(6,'0');
+    }
+  }
+  // Status dot
+  const dot=document.getElementById('dc-status-dot');
+  if(dot){dot.className='dc-status-dot '+(d.discord_status||'offline');}
+  // Name + status
   const name=d.discord_user.global_name||d.discord_user.username;
   const nameEl=document.getElementById('dc-preview-name');
   if(nameEl)nameEl.textContent=name;
-  const statusMap={online:' Online',idle:' Idle',dnd:' Do Not Disturb',offline:' Offline'};
+  const statusMap={online:'🟢 Online',idle:'🟡 Idle',dnd:'🔴 Do Not Disturb',offline:'⚫ Offline'};
   const subEl=document.getElementById('dc-preview-sub');
-  if(subEl)subEl.textContent=statusMap[d.discord_status]||'Offline';
+  if(subEl)subEl.textContent=statusMap[d.discord_status]||'⚫ Offline';
+  // Activity
   const actEl=document.getElementById('dc-preview-activity');
-  const act=d.activities?.find(a=>a.type===0||a.type===2);
+  const act=d.activities?.find(a=>a.type===0||a.type===2||a.type===4);
   if(actEl){
-    if(act){actEl.textContent=(act.type===2?' ':' ')+(act.name||'');actEl.style.display='inline-flex';}
-    else actEl.style.display='none';
+    if(act&&act.type!==4){
+      const typeLabel=act.type===2?'Listening to':'Playing';
+      document.getElementById('dc-activity-type').textContent=typeLabel;
+      document.getElementById('dc-activity-name').textContent=act.name||'';
+      document.getElementById('dc-activity-detail').textContent=[act.details,act.state].filter(Boolean).join(' · ');
+      actEl.style.display='block';
+    } else {
+      actEl.style.display='none';
+    }
   }
-  // Render badges
+  // Badges
   const badgesEl=document.getElementById('dc-preview-badges');
   if(badgesEl)badgesEl.innerHTML=renderDiscordBadges(d.discord_user);
 }
@@ -7979,7 +8539,7 @@ async function renderTwitchCard(){
   if(list){
     list.innerHTML=streamers.map(s=>{
       const live=liveMap[s.userId];
-      return `<div style="background:var(--surface2);border:1px solid ${live?'rgba(145,71,255,.3)':'var(--border)'};border-radius:var(--radius-sm);padding:10px 12px;display:flex;align-items:center;gap:10px">
+      return `<div style="background:var(--surface2);border:1px solid ${live?'rgba(145,71,255,.3)':'var(--border)'};border-radius:var(--r-sm);padding:10px 12px;display:flex;align-items:center;gap:10px">
         <img src="${s.avatar||''}" style="width:36px;height:36px;border-radius:50%;border:2px solid ${live?'#ff0000':'#9147ff'};flex-shrink:0" onerror="this.style.display='none'">
         <div style="flex:1;min-width:0">
           <div style="font-weight:600;font-size:13px">${s.displayName||s.username}</div>
@@ -8006,7 +8566,7 @@ function updateTwitchSidebar(liveStreamers){
   if(!liveStreamers.length){wrap.style.display='none';return;}
   wrap.style.display='block';
   listEl.innerHTML=liveStreamers.map(s=>`
-    <a href="https://twitch.tv/${s.username}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:8px;text-decoration:none;padding:6px 8px;background:rgba(145,71,255,.08);border:1px solid rgba(145,71,255,.2);border-radius:var(--radius-sm)">
+    <a href="https://twitch.tv/${s.username}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:8px;text-decoration:none;padding:6px 8px;background:rgba(145,71,255,.08);border:1px solid rgba(145,71,255,.2);border-radius:var(--r-sm)">
       <img src="${s.avatar||''}" style="width:28px;height:28px;border-radius:50%;border:2px solid #ff0000;flex-shrink:0" onerror="this.style.display='none'">
       <div style="min-width:0;flex:1">
         <div style="font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.displayName||s.username}</div>
@@ -8174,7 +8734,7 @@ function renderCompareResults(myValo,friendValo,mySteam,friendSteam,friendName){
       <div style="font-size:12px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:12px">Steam</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">`;
     // Me
-    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px">
+    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
         ${mySteam?.avatarFull?`<img src="${mySteam.avatarFull}" style="width:32px;height:32px;border-radius:50%">`:''}
         <div style="font-weight:600;font-size:13px">${mySteam?.displayName||myName}</div>
@@ -8182,7 +8742,7 @@ function renderCompareResults(myValo,friendValo,mySteam,friendSteam,friendName){
       ${(mySteam?.recentGames||[]).slice(0,3).map(g=>`<div style="font-size:12px;padding:4px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between"><span>${g.name||'?'}</span><span style="color:var(--muted)">${g.hours||'?'}h</span></div>`).join('')}
     </div>`;
     // Friend
-    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--accent);border-radius:var(--radius-sm);padding:12px">
+    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--accent);border-radius:var(--r-sm);padding:12px">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
         ${friendSteam?.avatar?`<img src="${friendSteam.avatar}" style="width:32px;height:32px;border-radius:50%">`:''}
         <div style="font-weight:600;font-size:13px;color:var(--accent)">${friendSteam?.displayName||friendName}</div>
@@ -8369,7 +8929,7 @@ function renderHabits(){
   }).join('');
   if(streakEl){
     const sorted=[...habits].sort((a,b)=>habitStreak(b)-habitStreak(a));
-    streakEl.innerHTML=sorted.map(h=>{const s=habitStreak(h);return '<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-sm);background:var(--surface2);margin-bottom:6px"><span style="font-size:18px">'+escapeHTML(h.icon)+'</span><span style="flex:1;font-size:13px">'+escapeHTML(h.name)+'</span><span style="font-family:var(--mono);font-size:13px;color:'+(s>0?'var(--accent3)':'var(--muted)')+'">'+(s>0?' '+s+' day'+(s>1?'s':''):'No streak')+'</span></div>';}).join('');
+    streakEl.innerHTML=sorted.map(h=>{const s=habitStreak(h);return '<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r-sm);background:var(--surface2);margin-bottom:6px"><span style="font-size:18px">'+escapeHTML(h.icon)+'</span><span style="flex:1;font-size:13px">'+escapeHTML(h.name)+'</span><span style="font-family:var(--mono);font-size:13px;color:'+(s>0?'var(--accent3)':'var(--muted)')+'">'+(s>0?' '+s+' day'+(s>1?'s':''):'No streak')+'</span></div>';}).join('');
   }
 }
 
@@ -9204,6 +9764,7 @@ async function loadValoStats(mode){
     if(sub)sub.textContent=name+'#'+tag+' . '+region.toUpperCase();
     document.getElementById('valo-name').value=name+'#'+tag;
     document.getElementById('valo-region').value=region;
+    restoreRegionPill('valo', region);
     if(apiKey&&document.getElementById('valo-apikey'))document.getElementById('valo-apikey').value=apiKey;
     const tKey=curP()?.state?.gaming?.valo?.trackerApiKey||'';
     if(tKey&&document.getElementById('tracker-apikey'))document.getElementById('tracker-apikey').value=tKey;
@@ -9305,6 +9866,46 @@ function renderValoStats(mmr,matchCache,name,tag,activeMode){
   renderValoModeContent(mmr,matchCache[activeMode]||[],name,tag,activeMode);
 }
 
+
+const VALO_MAP_IMAGES={
+  'Ascent':'https://media.valorant-api.com/maps/7eaecc1b-4337-bbf6-6ab9-04b8f06b3319/splash.png',
+  'Bind':'https://media.valorant-api.com/maps/2c9d57ec-4431-9c5e-2939-8f9ef6dd5cba/splash.png',
+  'Breeze':'https://media.valorant-api.com/maps/2fb9a4fd-47b8-4e7d-a969-74b4046ebd53/splash.png',
+  'Fracture':'https://media.valorant-api.com/maps/b529448b-4d60-346e-e89e-00a4c527a405/splash.png',
+  'Haven':'https://media.valorant-api.com/maps/2bee0dc9-4ffe-519b-1cbd-7825ad2a2723/splash.png',
+  'Icebox':'https://media.valorant-api.com/maps/e2ad5c54-4114-a870-9641-8ea21279579a/splash.png',
+  'Lotus':'https://media.valorant-api.com/maps/2fe4ed3a-450a-948b-6d6b-e89a78e680a9/splash.png',
+  'Pearl':'https://media.valorant-api.com/maps/fd267378-4d1d-484f-ff52-77821f8ade96/splash.png',
+  'Split':'https://media.valorant-api.com/maps/d960549e-485c-e861-8d71-aa9d1aed12a2/splash.png',
+  'Sunset':'https://media.valorant-api.com/maps/92584fbe-486a-b1b2-9faa-39a33f7ede75/splash.png',
+  'Abyss':'https://media.valorant-api.com/maps/224b0a95-48b9-f703-1bd8-67aca101a61f/splash.png',
+  'District':'https://media.valorant-api.com/maps/690b3ed2-4dff-945b-8223-6da834e30d24/splash.png',
+  'Kasbah':'https://media.valorant-api.com/maps/12452a9d-48c3-0b02-e7eb-0381c3520404/splash.png',
+  'Piazza':'https://media.valorant-api.com/maps/de28aa9b-4cbe-1003-320e-6cb3ec309557/splash.png',
+  'Drift':'https://media.valorant-api.com/maps/1a5b9b76-a765-e6d8-db01-56965cb12e54/splash.png',
+  'Glitch':'https://media.valorant-api.com/maps/19b15d6e-4e5a-e3d9-c7b0-3a8cee0707e5/splash.png',
+};
+
+const VALO_MAP_COLORS={
+  'Ascent':  {color:'#4ade80', bg:'rgba(74,222,128,.12)'},
+  'Bind':    {color:'#fb923c', bg:'rgba(251,146,60,.12)'},
+  'Breeze':  {color:'#38bdf8', bg:'rgba(56,189,248,.12)'},
+  'Cosmos':  {color:'#a78bfa', bg:'rgba(167,139,250,.12)'},
+  'District':{color:'#f472b6', bg:'rgba(244,114,182,.12)'},
+  'Drift':   {color:'#67e8f9', bg:'rgba(103,232,249,.12)'},
+  'Fracture':{color:'#f87171', bg:'rgba(248,113,113,.12)'},
+  'Haven':   {color:'#fbbf24', bg:'rgba(251,191,36,.12)'},
+  'Icebox':  {color:'#93c5fd', bg:'rgba(147,197,253,.12)'},
+  'Kasbah':  {color:'#fdba74', bg:'rgba(253,186,116,.12)'},
+  'Lotus':   {color:'#f9a8d4', bg:'rgba(249,168,212,.12)'},
+  'Pearl':   {color:'#6ee7b7', bg:'rgba(110,231,183,.12)'},
+  'Piazza':  {color:'#fde68a', bg:'rgba(253,230,138,.12)'},
+  'Split':   {color:'#f97316', bg:'rgba(249,115,22,.12)'},
+  'Sunset':  {color:'#fb923c', bg:'rgba(251,146,60,.12)'},
+  'Abyss':   {color:'#818cf8', bg:'rgba(129,140,248,.12)'},
+};
+function getMapStyle(map){return VALO_MAP_COLORS[map]||{color:'rgba(245,245,247,.5)',bg:'rgba(255,255,255,.06)'};}
+
 function renderValoModeContent(mmr,matches,name,tag,mode){
   const container=document.getElementById('valo-mode-content');if(!container)return;
   let html='';
@@ -9399,12 +10000,12 @@ function renderValoModeContent(mmr,matches,name,tag,mode){
     const map=bm.match.metadata?.map||'?';
     html+=`<div style="margin-bottom:18px">
       <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Best Match</div>
-      <div style="background:var(--surface2);border:1px solid rgba(251,191,36,.2);border-left:3px solid var(--accent4);border-radius:var(--radius-sm);padding:12px 16px;display:flex;align-items:center;gap:12px">
+      <div style="background:var(--surface2);border:1px solid rgba(251,191,36,.2);border-left:3px solid var(--accent4);border-radius:var(--r-sm);padding:12px 16px;display:flex;align-items:center;gap:12px">
         <div style="width:40px;height:40px;border-radius:9px;overflow:hidden;background:var(--surface3);flex-shrink:0;display:flex;align-items:center;justify-content:center">
           ${agImg?`<img src="${agImg}" style="width:100%;height:100%;object-fit:cover">`:'🎮'}
         </div>
         <div style="flex:1">
-          <div style="font-size:13px;font-weight:600">${bm.me.character} · ${map}</div>
+          <div style="font-size:13px;font-weight:600">${bm.me.character} · ${VALO_MAP_IMAGES[map]?`<img src="${VALO_MAP_IMAGES[map]}" style="width:28px;height:18px;object-fit:cover;border-radius:4px;vertical-align:middle;margin:0 2px" onerror="this.outerHTML=map"> `:''}<span style="color:${getMapStyle(map).color}">${map}</span></div>
           <div style="font-size:12px;color:var(--muted)">${bm.k}/${bm.d}/${bm.a} · KDA ${bm.kda} · ACS ${bm.acs}</div>
         </div>
         <span style="background:rgba(251,191,36,.12);color:var(--accent4);font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px">⭐ BEST</span>
@@ -9418,7 +10019,7 @@ function renderValoModeContent(mmr,matches,name,tag,mode){
     const [ag,s]=favAgent;
     const agWR=Math.round((s.wins/s.games)*100);
     const agImg=s.img?`<img src="${s.img}" alt="${ag}" style="width:100%;height:100%;object-fit:cover;border-radius:8px" onerror="this.style.display='none'">`:ag[0];
-    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;flex:1;min-width:150px;display:flex;align-items:center;gap:12px">
+    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 16px;flex:1;min-width:150px;display:flex;align-items:center;gap:12px">
       <div style="width:44px;height:44px;border-radius:10px;overflow:hidden;background:var(--surface3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px">${agImg}</div>
       <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Favorite Agent</div>
       <div style="font-size:15px;font-weight:700">${ag}</div>
@@ -9428,7 +10029,7 @@ function renderValoModeContent(mmr,matches,name,tag,mode){
   if(favMap){
     const [map,ms]=favMap;
     const mapWR=Math.round((ms.wins/ms.games)*100);
-    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;flex:1;min-width:150px;display:flex;align-items:center;gap:12px">
+    html+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 16px;flex:1;min-width:150px;display:flex;align-items:center;gap:12px">
       <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#a78bfa);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px">\uD83D\uDDFA\uFE0F</div>
       <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Favorite Map</div>
       <div style="font-size:15px;font-weight:700">${map}</div>
@@ -9471,7 +10072,13 @@ function renderValoModeContent(mmr,matches,name,tag,mode){
         ${agentImg?`<img src="${agentImg}" alt="${agentName}" onerror="this.style.display='none'">`:`<span style="font-size:13px">${agentName[0]}</span>`}
       </div>
       <div style="flex:1;min-width:0">
-        <div class="valo-match-map">${agentName} · ${map}</div>
+        <div class="valo-match-map" style="display:flex;align-items:center;gap:6px">
+          ${agentName}
+          ${VALO_MAP_IMAGES[map]
+            ? `<span style="display:inline-flex;align-items:center;gap:4px;background:${getMapStyle(map).bg};border-radius:6px;padding:1px 7px 1px 3px;border:1px solid rgba(255,255,255,.07)"><img src="${VALO_MAP_IMAGES[map]}" style="width:22px;height:14px;object-fit:cover;border-radius:3px;flex-shrink:0" onerror="this.parentNode.innerHTML='${map}'"><span style="font-size:10px;font-weight:700;color:${getMapStyle(map).color};font-family:var(--mono)">${map}</span></span>`
+            : `<span style="font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;background:${getMapStyle(map).bg};color:${getMapStyle(map).color};font-family:var(--mono)">${map}</span>`
+          }
+        </div>
         <div class="valo-match-kda">${k}/${d}/${a} · KDA ${kda} · ACS ${acs} · HS ${hsP}%${isMVP?' · 👑 MVP':isTeamMVP?' · ⭐ Team MVP':''}</div>
       </div>
       <span class="valo-match-result ${won?'win':'loss'}">${won?'WIN':'LOSS'} ${myScore}-${theirScore}</span>
@@ -9571,6 +10178,7 @@ async function loadLoLStats(){
     if(sub)sub.textContent=name+' . '+region.toUpperCase();
     document.getElementById('lol-name').value=name;
     document.getElementById('lol-region').value=region;
+    restoreRegionPill('lol', region);
     document.getElementById('lol-apikey').value=apiKey;
   }catch(e){if(area)area.innerHTML='<div class="game-loading">Could not load stats - API key may have expired</div>';}
 }
@@ -9819,7 +10427,7 @@ function renderGamingOverview(){
     const rankName=valoData.rankName||'Loading...';
     const rr=valoData.rr!==undefined?valoData.rr+'RR':'';
     const icon=VALO_RANKS?.[rankName]||'';
-    html+=`<div onclick="switchPage('gaming',null)" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all var(--transition);flex:1;min-width:200px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+    html+=`<div onclick="switchPage('gaming',null)" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .2s ease;flex:1;min-width:200px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
       <div style="font-size:28px">${icon}</div>
       <div><div style="font-size:12px;color:var(--muted);font-weight:500">VALORANT</div><div style="font-size:15px;font-weight:700">${rankName}</div>${rr?'<div style="font-size:12px;color:var(--muted)">'+rr+'</div>':''}</div>
       <div style="margin-left:auto;background:rgba(255,70,85,.1);color:#ff4655;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600"> Valo</div>
@@ -9831,7 +10439,7 @@ function renderGamingOverview(){
     const rank=lolData.rank||'';
     const lp=lolData.lp!==undefined?lolData.lp+' LP':'';
     const icon=LOL_RANKS?.[tier]||'';
-    html+=`<div onclick="switchPage('gaming',null)" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all var(--transition);flex:1;min-width:200px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+    html+=`<div onclick="switchPage('gaming',null)" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .2s ease;flex:1;min-width:200px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
       <div style="font-size:28px">${icon}</div>
       <div><div style="font-size:12px;color:var(--muted);font-weight:500">LEAGUE OF LEGENDS</div><div style="font-size:15px;font-weight:700">${tier} ${rank}</div>${lp?'<div style="font-size:12px;color:var(--muted)">'+lp+'</div>':''}</div>
       <div style="margin-left:auto;background:rgba(200,155,60,.1);color:#c89b3c;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600"> LoL</div>

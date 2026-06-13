@@ -2495,8 +2495,8 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 /* ══ LANGUAGE DROPDOWN ══ */
 .lang-dropdown{position:relative;display:inline-block}
 .lang-trigger{
-  display:flex;align-items:center;gap:7px;
-  padding:6px 12px 6px 9px;
+  display:flex;align-items:center;gap:5px;
+  padding:5px 9px 5px 7px;
   border-radius:10px;
   border:1.5px solid rgba(255,255,255,.09);
   background:rgba(255,255,255,.04);
@@ -3158,7 +3158,6 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       <div style="display:flex;justify-content:flex-end;margin-bottom:16px"><div class="lang-dropdown" id="lang-dd-auth" onclick="toggleLangDropdown('lang-dd-auth')">
   <div class="lang-trigger" id="lang-dd-auth-trigger">
     <span class="lang-trigger-flag" id="lang-dd-auth-flag">🇫🇷</span>
-    <span class="lang-trigger-name" id="lang-dd-auth-name">French</span>
     <svg class="lang-trigger-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
   </div>
   <div class="lang-menu">
@@ -3234,7 +3233,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       </div>
 
       <!-- Version -->
-      <div style="text-align:center;margin-top:28px;font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:.5px">v3.9.1</div>
+      <div style="text-align:center;margin-top:28px;font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:.5px">v3.9.2</div>
     </div>
   </div>
 </div>
@@ -3271,7 +3270,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
     </div>
 
     <!-- Version -->
-    <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer;white-space:nowrap" onclick="showChangelog()" title="View changelog">v3.9.1 · changelog</div>
+    <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer;white-space:nowrap" onclick="showChangelog()" title="View changelog">v3.9.2 · changelog</div>
   </div>
 </div>
 
@@ -3392,7 +3391,6 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
         <div class="topbar-lang"><div class="lang-dropdown" id="lang-dd-topbar" onclick="toggleLangDropdown('lang-dd-topbar')">
   <div class="lang-trigger" id="lang-dd-topbar-trigger">
     <span class="lang-trigger-flag" id="lang-dd-topbar-flag">🇫🇷</span>
-    <span class="lang-trigger-name" id="lang-dd-topbar-name">French</span>
     <svg class="lang-trigger-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
   </div>
   <div class="lang-menu">
@@ -4990,7 +4988,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 // ══════════════════════════════════════════════
 let _lang = localStorage.getItem('nexus_lang') || 'fr';
 
-const I18N = {
+var I18N = {
   en: {
     // Auth
     'sign_in': 'Sign in',
@@ -5523,7 +5521,7 @@ function t(key){ return I18N[_lang]?.[key] ?? I18N['en']?.[key] ?? key; }
 
 
 // ── LANGUAGE DROPDOWN ─────────────────────────────────────────
-const LANG_META={"fr": {"flag": "🇫🇷", "name": "French", "native": "Français"}, "en": {"flag": "🇺🇸", "name": "English", "native": "English"}, "es": {"flag": "🇪🇸", "name": "Spanish", "native": "Español"}, "de": {"flag": "🇩🇪", "name": "German", "native": "Deutsch"}};
+var LANG_META={"fr": {"flag": "🇫🇷", "name": "French", "native": "Français"}, "en": {"flag": "🇺🇸", "name": "English", "native": "English"}, "es": {"flag": "🇪🇸", "name": "Spanish", "native": "Español"}, "de": {"flag": "🇩🇪", "name": "German", "native": "Deutsch"}};
 
 function toggleLangDropdown(id){
   // Close all other dropdowns first
@@ -5550,11 +5548,8 @@ function updateAllLangDropdowns(){
   const meta=LANG_META[_lang]||LANG_META['en'];
   document.querySelectorAll('.lang-dropdown').forEach(dd=>{
     const id=dd.id;
-    // Update trigger
     const flag=document.getElementById(id+'-flag');
-    const name=document.getElementById(id+'-name');
     if(flag) flag.textContent=meta.flag;
-    if(name) name.textContent=meta.name;
     // Update active state on options
     dd.querySelectorAll('.lang-option').forEach(opt=>{
       opt.classList.toggle('active', opt.dataset.lang===_lang);
@@ -5613,10 +5608,10 @@ function applyI18n(){
 }
 
 
-const SUPABASE_URL='https://bvgifyzhpzkbrwdjrqsg.supabase.co';
-const SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2Z2lmeXpocHprYnJ3ZGpycXNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1ODgzNjAsImV4cCI6MjA5NjE2NDM2MH0.PCm_g4w7ZrLqNilISt-Xnlw_CZrA8PY1Uvk9H_PUhCc';
-const ADMIN_EMAIL='rub19.mailpro@gmail.com';
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+var SUPABASE_URL='https://bvgifyzhpzkbrwdjrqsg.supabase.co';
+var SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2Z2lmeXpocHprYnJ3ZGpycXNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1ODgzNjAsImV4cCI6MjA5NjE2NDM2MH0.PCm_g4w7ZrLqNilISt-Xnlw_CZrA8PY1Uvk9H_PUhCc';
+var ADMIN_EMAIL='rub19.mailpro@gmail.com';
+var sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 let _sbUser=null;
 let _isAdmin=false;
 
@@ -9904,7 +9899,7 @@ function startLanyardPolling(userId){
 }
 
 // === STEAM ===
-const WORKER_URL='https://raspy-fog-bf5b.rub19-mailpro.workers.dev';
+var WORKER_URL='https://raspy-fog-bf5b.rub19-mailpro.workers.dev';
 
 async function fetchSteamAPI(endpoint,apiKey,params){
   // Utilise le Worker Cloudflare - cle Steam stockee cote server
@@ -12003,9 +11998,9 @@ function setMobNav(page){
 }
 
 function toggleMobileSidebar(){
-  const sb=document.getElementById('main-sidebar');
+  const sidebarEl=document.getElementById('main-sidebar');
   const ov=document.getElementById('sidebar-overlay');
-  sb.classList.toggle('mobile-open');
+  sidebarEl.classList.toggle('mobile-open');
   ov.classList.toggle('mobile-open');
 }
 function closeMobileSidebar(){

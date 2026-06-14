@@ -268,7 +268,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .nav-item.active::after{content:'';position:absolute;right:0;top:20%;bottom:20%;width:2px;background:linear-gradient(to bottom,#f97316,#dc2626);border-radius:99px}
 .nav-icon{width:17px;height:17px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:inherit}.nav-icon svg{width:100%;height:100%}
 .nav-badge{margin-left:auto;background:linear-gradient(135deg,#f97316,#dc2626);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px;font-family:var(--mono);min-width:17px;text-align:center}
-.sidebar-footer{margin-top:auto;padding:10px 8px;border-top:1px solid rgba(255,255,255,.05)}
+.sidebar-footer{flex-shrink:0;padding:8px;border-top:1px solid rgba(255,255,255,.06)}
 .sidebar.compact .sb-widget,.sidebar.compact #sb-lastfm-wrap,.sidebar.compact .sb-widget-label{display:none!important}
 .sidebar.compact .user-info,.sidebar.compact .switch-hint{display:none!important}
 .sidebar.compact .user-card{justify-content:center;padding:8px}
@@ -305,7 +305,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .nowplaying-iframe-wrap a{pointer-events:none}
 
 /* ── MAIN ── */
-.main{margin-left:220px;min-height:100vh;padding:0 28px 28px;}
+.main{margin-left:220px;flex:1;min-height:100vh;min-width:0;padding:0 28px 28px;box-sizing:border-box;}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:22px 0 20px;flex-wrap:wrap;gap:12px;border-bottom:1px solid rgba(255,255,255,.04);margin-bottom:24px}
 .page-title{font-size:20px;font-weight:800;letter-spacing:-.3px;font-family:'Syne',sans-serif}
 .page-subtitle{font-size:12px;color:rgba(255,255,255,.3);margin-top:3px}
@@ -581,11 +581,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   .sidebar-overlay.mobile-open{display:block}
 
   /* Main content */
-  .main{
-    margin-left:0!important;
-    padding:14px 14px 74px;
-    padding-top:66px;
-  }
+  /* removed duplicate .main rule */
 
   /* Topbar */
   .topbar{
@@ -727,7 +723,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
 /* 480px — small phones */
 @media(max-width:480px){
-  .main{padding:10px 10px 72px;padding-top:56px}
+  /* removed duplicate .main rule */
   .stats-row{gap:6px!important}
   .stat-value{font-size:22px!important}
   .stat-card{padding:12px!important}
@@ -836,7 +832,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   font-size:8.5px;padding:1px 5px;
 }
 
-.sidebar-footer{border-top:1px solid rgba(255,255,255,.045)}
+
 .user-card:hover{background:rgba(255,255,255,.04)}
 .switch-hint{color:#f97316;font-family:var(--mono)}
 .sidebar-avatar{border-color:rgba(255,255,255,.07)}
@@ -1113,7 +1109,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
 /* ── RESPONSIVE OVERRIDES ── */
 @media(max-width:768px){
-  .main{margin-left:0!important;padding:16px;padding-top:62px;padding-bottom:80px}
+  /* removed duplicate .main rule */
   .profile-banner{margin:-0px -16px 0!important}
   .topbar{padding:14px 0 12px}
   .stats-row{gap:8px!important}
@@ -1530,7 +1526,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   .logo{padding:16px 14px 14px}
   .nav-section{padding:6px 8px 0}
   .nav-item{padding:8px 10px;font-size:13px}
-  .sidebar-footer{padding:8px 8px 10px}
+  
 }
 
 
@@ -3080,19 +3076,41 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 .sidebar{
   display:flex;flex-direction:column;height:100vh;overflow:hidden;flex-shrink:0;
   width:220px;min-width:160px;max-width:400px;
-  background:rgba(5,5,7,.92);
-  border-right:1px solid rgba(255,255,255,.06);
+  background:rgba(5,5,7,.95);
+  border-right:1px solid rgba(255,255,255,.07);
   backdrop-filter:blur(20px);
   box-shadow:2px 0 20px rgba(0,0,0,.4);
   position:fixed;top:0;left:0;z-index:300;
 }
-#sidebar-nav-main{overflow-y:auto;flex:1 1 auto;padding:0 6px;min-height:0}
-#sidebar-nav-account{flex:0 0 auto;padding:0 6px 4px}
+#sidebar-nav-main{overflow-y:auto;flex:1 1 auto;padding:0 6px;min-height:0;scrollbar-width:none}
+#sidebar-nav-account{flex:0 0 auto;padding:0 6px 4px;min-height:0}
 .sidebar .nav-section::-webkit-scrollbar{width:2px}
 .sidebar .nav-section::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:99px}
-.sidebar-footer{flex-shrink:0;margin-top:0}
+
 /* Remove gap between sidebar and main */
 .resize-handle{pointer-events:auto}
+
+
+@media(max-width:768px){
+  .main{margin-left:0!important;padding:14px 14px 74px!important;padding-top:66px!important}
+}
+@media(max-width:480px){
+  .main{padding:10px 10px 72px!important;padding-top:56px!important}
+}
+
+
+/* ── SIDEBAR WIDGET TOGGLE ── */
+.sb-widget-toggle{
+  display:flex;align-items:center;gap:5px;cursor:pointer;
+  font-size:10px;font-weight:700;letter-spacing:.04em;
+  color:rgba(245,245,247,.3);font-family:var(--mono);
+  text-transform:uppercase;padding:3px 7px;border-radius:5px;
+  border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);
+  transition:all .15s;
+}
+.sb-widget-toggle:hover{color:rgba(245,245,247,.7);border-color:rgba(255,255,255,.15)}
+.sb-widget-toggle.active{color:#f97316;border-color:rgba(249,115,22,.3);background:rgba(249,115,22,.08)}
+.sb-widget-toggle svg{width:10px;height:10px}
 
 </style>
 </head>
@@ -3120,6 +3138,17 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 
 <!-- AUTH SCREEN -->
 <canvas id="bg-canvas" style="position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 1s ease"></canvas>
+
+<div id="nexus-boot-screen" style="position:fixed;inset:0;z-index:99999;background:#050507;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px">
+  <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#f97316,#dc2626);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(249,115,22,.4)">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><polygon points="10,1 19,10 10,19 1,10" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round"/><polygon points="10,5 15,10 10,15 5,10" fill="white"/></svg>
+  </div>
+  <div style="display:flex;gap:6px;align-items:center">
+    <div style="width:6px;height:6px;border-radius:50%;background:#f97316;animation:pulse 1.2s ease-in-out infinite"></div>
+    <div style="width:6px;height:6px;border-radius:50%;background:#f97316;animation:pulse 1.2s ease-in-out infinite .2s"></div>
+    <div style="width:6px;height:6px;border-radius:50%;background:#f97316;animation:pulse 1.2s ease-in-out infinite .4s"></div>
+  </div>
+</div>
 
 <div id="auth-screen" style="position:fixed;inset:0;z-index:10002;display:flex;align-items:center;justify-content:center;animation:fadeIn .5s ease;overflow:hidden;background:var(--bg)">
 
@@ -3328,12 +3357,12 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:16px;height:16px"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
     <div id="mob-topbar-avatar" onclick="goToProfileScreen()" style="width:32px;height:32px;border-radius:9px;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;position:relative;border:1.5px solid rgba(249,115,22,.25);cursor:pointer;font-size:14px">👤</div>
-    <div id="mob-topbar-name" onclick="goToProfileScreen()" style="font-size:14px;font-weight:700;color:var(--text);letter-spacing:-.02em;font-family:'Syne',sans-serif;cursor:pointer">User</div>
+    <div id="mob-topbar-name" onclick="goToProfileScreen()" style="font-size:14px;font-weight:700;color:var(--text);letter-spacing:-.02em;font-family:'Syne',sans-serif;cursor:pointer" id="mob-topbar-name">User</div>
   </div>
   <button class="btn btn-primary" onclick="openModal('add-item')" style="padding:6px 12px;font-size:12px;border-radius:8px">+ Add</button>
 </div>
 
-<nav class="sidebar" id="main-sidebar" style="display:flex;flex-direction:column">
+<nav class="sidebar" id="main-sidebar" style="display:none">
   <div class="logo" style="position:relative">
     <div class="logo-icon" style="background:linear-gradient(135deg,#f97316,#dc2626);box-shadow:0 2px 12px rgba(249,115,22,.3)">
       <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><polygon points="10,1 19,10 10,19 1,10" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round"/><polygon points="10,5 15,10 10,15 5,10" fill="white"/></svg>
@@ -3378,11 +3407,20 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       </div>
     </div>
 
-    <!-- FALLBACK IFRAME -->
+    <!-- FALLBACK: Custom compact now playing when Lanyard not active -->
     <div class="sb-section" id="sb-spotify-iframe-wrap" style="display:none">
       <div class="sb-section-label">Now Playing</div>
-      <div id="nowplaying-iframe-wrap">
-        <iframe id="nowplaying-iframe" src="" scrolling="no" allowtransparency="true" title="Now Playing" style="width:100%;border-radius:8px;border:none;height:80px"></iframe>
+      <div class="sb-np-pill" id="np-pill-fallback">
+        <div id="np-art-fallback" style="width:34px;height:34px;border-radius:7px;flex-shrink:0;background:rgba(255,255,255,.06);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:16px">🎵</div>
+        <div style="flex:1;min-width:0">
+          <div id="np-fallback-track" style="font-size:11.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)">—</div>
+          <div id="np-fallback-artist" style="font-size:10px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px">—</div>
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:1.5px;height:12px;flex-shrink:0" id="np-fallback-eq" style="display:none">
+          <span style="width:3px;background:#1db954;border-radius:1px;animation:eqBounce 1s ease-in-out infinite;height:40%"></span>
+          <span style="width:3px;background:#1db954;border-radius:1px;animation:eqBounce 1s ease-in-out infinite .2s;height:80%"></span>
+          <span style="width:3px;background:#1db954;border-radius:1px;animation:eqBounce 1s ease-in-out infinite .1s;height:55%"></span>
+        </div>
       </div>
     </div>
 
@@ -3406,7 +3444,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       <div class="sidebar-avatar" id="sidebar-avatar"></div>
       <div class="user-info">
         <div class="user-name" id="display-username">User</div>
-        <div class="user-role">Personal dashboard</div>
+        <div class="user-role" id="sidebar-user-role">NEXUS</div>
       </div>
       <span class="switch-hint">Switch ↗</span>
     </div>
@@ -3415,7 +3453,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 <div class="resize-handle" id="resize-handle"></div>
 
 <!-- MAIN -->
-<main class="main" id="main-content">
+<main class="main" id="main-content" style="display:none">
 
   <!-- OVERVIEW -->
   <div id="page-dashboard" class="tab-content active">
@@ -3438,7 +3476,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
     </div>
     <div class="topbar">
       <div>
-        <div class="page-title">Good <span id="greeting-time"></span> 👋</div>
+        <div class="page-title"><span id="greeting-full"></span> 👋</div>
         <div class="page-subtitle" id="greeting-date"></div>
       </div>
       <div class="topbar-actions">
@@ -4224,6 +4262,10 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
         <div><div class="conn-title">Discord</div><div class="conn-subtitle">Show your status, avatar and activity via Lanyard</div></div>
         <div style="display:flex;align-items:center;gap:8px">
           <button id="dc-refresh-btn" onclick="refreshDiscord()" title="Refresh" style="display:none;background:none;border:1px solid var(--border2);color:var(--muted);border-radius:6px;padding:4px 8px;cursor:pointer;font-size:13px;font-family:var(--font);transition:all .15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">↻ Refresh</button>
+          <button class="sb-widget-toggle" id="dc-sidebar-toggle" onclick="toggleSidebarWidget('discord')" title="Show/hide in sidebar" style="display:none">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+            Sidebar
+          </button>
           <span class="conn-status-badge disconnected" id="dc-badge">Not connected</span>
         </div>
       </div>
@@ -4366,7 +4408,11 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
         <div class="conn-icon" style="background:#d51007">&#127925;</div>
         <div><div class="conn-title">Last.fm</div><div class="conn-subtitle">Show your music history and top artists in your sidebar</div></div>
         <button id="lastfm-refresh-btn" onclick="refreshLastfm()" style="display:none;background:none;border:1px solid var(--border2);color:var(--muted);border-radius:6px;padding:4px 8px;cursor:pointer;font-size:13px;font-family:var(--font)" onmouseover="this.style.borderColor='#d51007';this.style.color='#d51007'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">↻ Refresh</button>
-        <span class="conn-status-badge disconnected" id="lastfm-badge">Not connected</span>
+        <button class="sb-widget-toggle" id="lastfm-sidebar-toggle" onclick="toggleSidebarWidget('lastfm')" title="Show/hide in sidebar" style="display:none">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+            Sidebar
+          </button>
+          <span class="conn-status-badge disconnected" id="lastfm-badge">Not connected</span>
       </div>
       <div id="lastfm-preview" style="display:none;margin-bottom:12px"></div>
       <div class="modal-field">
@@ -5022,6 +5068,10 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 </nav>
 
 <script>
+// === GLOBAL CONSTANTS (must be first) ===
+var WORKER_URL='https://raspy-fog-bf5b.rub19-mailpro.workers.dev';
+const LASTFM_KEY = '20a3130a6a13552131356a4dd2bf8071';
+
 // ===================================================
 //  SUPABASE INIT
 // ===================================================
@@ -5113,6 +5163,9 @@ function applyI18n(){
   if(tabLogin) tabLogin.textContent=t('sign_in');
   const tabReg=document.getElementById('tab-register');
   if(tabReg) tabReg.textContent=t('create_account');
+  // Update sidebar user role text
+  const srole=document.getElementById('sidebar-user-role');
+  if(srole){const p=curP();srole.textContent=p?.state?.bio||'NEXUS';}
   // Update all dropdown triggers
   updateAllLangDropdowns();
 }
@@ -5417,6 +5470,8 @@ async function loadCloudState(){
 }
 
 async function saveCloudState(){
+  // Update sessionStorage cache
+  if(_sbUser){try{sessionStorage.setItem('nexus_profiles_'+_sbUser.id,JSON.stringify(profiles));}catch(e){}}
   if(!_sbUser)return;
   for(const p of profiles){
     // Compress avatar image if too large (Supabase ~1MB per row limit)
@@ -5835,15 +5890,18 @@ function enterDashboard(id){
   _valoAllMatches=[];
   const screen=document.getElementById('profile-screen');
   screen.classList.add('hiding');
+  // Show dashboard immediately (80ms just for exit animation)
   setTimeout(()=>{
     screen.style.display='none';
     document.getElementById('main-sidebar').style.display='flex';
     document.getElementById('main-content').style.display='block';
+    // Render immediately
     renderSidebarNav();
-    initDashboard();
-    startAmbientBg();
+    updateSidebarAvatar();
     applyI18n();
-  },480);
+    initDashboard();
+    setTimeout(startAmbientBg, 300);
+  },80);
 }
 
 function goToProfileScreen(){
@@ -6270,49 +6328,130 @@ function reorderSidebarItem(fromId,toId){
 }
 
 
+
+// ══════════════════════════════════════════════════════════════
+//  SIDEBAR WIDGETS INIT — called on every dashboard load
+// ══════════════════════════════════════════════════════════════
+function initSidebarWidgets(p){
+  if(!p)return;
+  const conn=p.state?.connections||{};
+
+  // Discord — check user preference first
+  const swPrefs=p.state.sidebarWidgets||{};
+  const dcWrap=document.getElementById('sb-discord-wrap');
+  if(conn.discord?.userId&&swPrefs.discord!==false){
+    if(dcWrap)dcWrap.style.display='block';
+    refreshDiscordSidebar();
+    startLanyardWS(conn.discord.userId);
+  } else {
+    if(dcWrap)dcWrap.style.display='none';
+  }
+
+  // Last.fm — check user preference
+  if(conn.lastfm?.username&&swPrefs.lastfm!==false){
+    renderLastfmCard(conn.lastfm).catch(()=>{});
+    startLastfmAutoRefresh();
+  }
+
+  // Spotify fallback pill (follows Last.fm preference)
+  if(conn.lastfm?.username&&swPrefs.lastfm!==false){
+    fetchLastfm('user.getrecenttracks',`user=${encodeURIComponent(conn.lastfm.username)}&limit=1`)
+      .then(data=>{
+        const track=data?.recenttracks?.track?.[0];
+        if(!track)return;
+        // Only show if Lanyard Spotify not active
+        if(document.getElementById('sb-spotify-wrap')?.style.display==='block')return;
+        const wrap=document.getElementById('sb-spotify-iframe-wrap');
+        if(!wrap)return;
+        wrap.style.display='block';
+        const img=track.image?.[2]?.['#text']||'';
+        const artEl=document.getElementById('np-art-fallback');
+        const trackEl=document.getElementById('np-fallback-track');
+        const artistEl=document.getElementById('np-fallback-artist');
+        const eqEl=document.getElementById('np-fallback-eq');
+        if(artEl){if(img)artEl.innerHTML=`<img src="${img}" style="width:34px;height:34px;object-fit:cover;border-radius:7px;display:block">`;else artEl.textContent='🎵';}
+        if(trackEl)trackEl.textContent=track.name||'—';
+        if(artistEl)artistEl.textContent=track.artist?.['#text']||'—';
+        if(eqEl)eqEl.style.display=track?.['@attr']?.nowplaying?'flex':'none';
+      }).catch(()=>{});
+  }
+}
+
+
+
+// ── SIDEBAR WIDGET TOGGLE ─────────────────────────────────────
+function toggleSidebarWidget(service){
+  const p=curP();if(!p)return;
+  if(!p.state.sidebarWidgets)p.state.sidebarWidgets={};
+  const current=p.state.sidebarWidgets[service]!==false;// default visible
+  p.state.sidebarWidgets[service]=!current;
+  saveStateNow();
+  updateSidebarWidgetToggleBtn(service);
+  initSidebarWidgets(p);
+}
+
+function updateSidebarWidgetToggleBtn(service){
+  const p=curP();if(!p)return;
+  const visible=p.state.sidebarWidgets?.[service]!==false;
+  const btnId={discord:'dc-sidebar-toggle',lastfm:'lastfm-sidebar-toggle'}[service];
+  const btn=document.getElementById(btnId);
+  if(btn){btn.classList.toggle('active',visible);btn.title=visible?'Hide from sidebar':'Show in sidebar';}
+}
+
+function initSidebarWidgetToggles(){
+  const p=curP();if(!p)return;
+  const conn=p.state.connections||{};
+  if(conn.discord?.userId){
+    const btn=document.getElementById('dc-sidebar-toggle');
+    if(btn)btn.style.display='flex';
+    updateSidebarWidgetToggleBtn('discord');
+  }
+  if(conn.lastfm?.username){
+    const btn=document.getElementById('lastfm-sidebar-toggle');
+    if(btn)btn.style.display='flex';
+    updateSidebarWidgetToggleBtn('lastfm');
+  }
+}
+
 function initDashboard(){
-  // Render sidebar navigation
-  renderSidebarNav();
-  updateSidebarAvatar();
-  document.getElementById('display-username').textContent=curP()?.name||'User';
-  // Ensure ambient bg is running
-  if(!_ambientFrame)startAmbientBg();
-  // Init animations
-  initAnimations();
-  // Start notification scan
-  setTimeout(startNotifScan, 800);
-  // Show mobile topbar
-  checkMobileLayout();
-  updateTopbarProfile();
   const p=curP();if(!p)return;
   if(!p.state)p.state=defState(p.name);
   if(!p.state.connections)p.state.connections={};
+
+  // ── CRITICAL PATH (synchronous, visible immediately) ──────────────────
+  renderSidebarNav();
   updateSidebarAvatar();
+  updateTopbarProfile();
+  checkMobileLayout();
   document.getElementById('display-username').textContent=p.name;
   document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
   document.getElementById('page-dashboard').classList.add('active');
   document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
-  document.querySelector('.nav-item').classList.add('active');
+  const firstNav=document.querySelector('.nav-item');if(firstNav)firstNav.classList.add('active');
   document.getElementById('quick-note').value=p.state.note||'';
   document.getElementById('main-note').value=p.state.note||'';
-  // Show admin button if user is admin
-  const adminBtn=document.getElementById('nav-admin');
-  if(adminBtn)adminBtn.style.display=_isAdmin?'flex':'none';
-  updateStats();renderRecentItems();renderActivity();renderTodos();renderOverviewEvents();updateClock();
-  pomoRemaining=POMO_MODES()[0].duration;renderPomo();
-  setTimeout(restorePomoIfRunning,800);
-  initNotifState(p);
-  updateTopbarProfile();
-  initDarkMode();
-  loadConnectionsUI();
-  refreshDiscordSidebar();
-  // Start Lanyard WebSocket for real-time updates
-  const _dcUserId=p.state.connections?.discord?.userId;
-  if(_dcUserId&&typeof startLanyardWS==='function')startLanyardWS(_dcUserId);
+  updateClock();
+  updateStats();
+  renderPomo();
   if(typeof applyTheme==='function')applyTheme(p.themeIdx||0);
   if(typeof updateBannerDisplay==='function')updateBannerDisplay();
+  initDarkMode();
+  initNotifState(p);
+
+  // ── VISIBLE CONTENT ─────────────────────────────────────────────────
+  renderRecentItems();renderActivity();renderTodos();renderOverviewEvents();
   if(typeof renderPinnedLinks==='function')renderPinnedLinks();
-  if(typeof renderGamingOverview==='function')renderGamingOverview();
+  loadConnectionsUI();
+  initSidebarWidgets(p);
+  const adminBtn=document.getElementById('nav-admin');
+  if(adminBtn)adminBtn.style.display=_isAdmin?'flex':'none';
+  // ── DEFERRED (non-critical) ───────────────────────────────────────────
+  setTimeout(()=>{
+    if(typeof renderGamingOverview==='function')renderGamingOverview();
+    initAnimations();
+    startNotifScan();
+    restorePomoIfRunning();
+  },500);
   checkMobileLayout();
   if(typeof renderCountdown==='function')renderCountdown();;
   refreshSpotifySidebar();
@@ -6672,7 +6811,7 @@ function updateBannerDisplay(){
 
   // Bio
   const bioEl=document.getElementById('profile-banner-bio-el');
-  if(bioEl)bioEl.textContent=p.state.bio||'Personal dashboard';
+  if(bioEl)bioEl.textContent=p.state.bio||'NEXUS';
 
   // XP level badge
   renderProfileXP(p);
@@ -6712,13 +6851,36 @@ function loadBannerSettings(){
 function updateClock(){
   const n=new Date(),h=String(n.getHours()).padStart(2,'0'),m=String(n.getMinutes()).padStart(2,'0'),s=String(n.getSeconds()).padStart(2,'0');
   const cl=document.getElementById('clock-main');if(cl)cl.textContent=h+':'+m;
-  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const ds=days[n.getDay()]+', '+months[n.getMonth()]+' '+n.getDate();
+  // Localized day/month names
+  const days={
+    fr:['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'],
+    en:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+    es:['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'],
+    de:['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag']
+  };
+  const months={
+    fr:['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Aoû','Sep','Oct','Nov','Déc'],
+    en:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    es:['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
+    de:['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez']
+  };
+  const lang=typeof _lang!=='undefined'?_lang:'fr';
+  const dayNames=days[lang]||days.en;
+  const monthNames=months[lang]||months.en;
+  const ds=dayNames[n.getDay()]+', '+monthNames[n.getMonth()]+' '+n.getDate();
   const dSub=document.getElementById('clock-date-sub');if(dSub)dSub.textContent=ds;
   const h24=n.getHours();
-  const greet=h24<5?'night':h24<12?'morning':h24<18?'afternoon':h24<22?'evening':'night';
-  const gt=document.getElementById('greeting-time');if(gt)gt.textContent=greet;
+  // Full localized greetings — no dependency on t() to avoid key fallback bug
+  const GREETS={
+    fr:{morning:'Bonjour',afternoon:'Bon après-midi',evening:'Bonsoir'},
+    en:{morning:'Good morning',afternoon:'Good afternoon',evening:'Good evening'},
+    es:{morning:'Buenos días',afternoon:'Buenas tardes',evening:'Buenas noches'},
+    de:{morning:'Guten Morgen',afternoon:'Guten Tag',evening:'Guten Abend'},
+  };
+  const slot=h24<12?'morning':h24<18?'afternoon':'evening';
+  const fullGreet=(GREETS[lang]||GREETS.en)[slot];
+  const gt=document.getElementById('greeting-time');if(gt)gt.textContent='';
+  const gf=document.getElementById('greeting-full');if(gf)gf.textContent=fullGreet;
   const gd=document.getElementById('greeting-date');if(gd)gd.textContent=ds+', '+h+':'+m+':'+s;
 }
 setInterval(updateClock,1000);
@@ -8204,6 +8366,8 @@ function loadConnectionsUI(){
     renderLastfmCard(conn.lastfm);
     startLastfmAutoRefresh();
   }
+  // Always sync sidebar widgets after loading connections
+  const p2=curP();if(p2){initSidebarWidgets(p2);initSidebarWidgetToggles();}
 }
 
 
@@ -9181,7 +9345,6 @@ window.addEventListener('resize',()=>{
 });
 
 // === LAST.FM ===
-const LASTFM_KEY = '20a3130a6a13552131356a4dd2bf8071';
 
 async function fetchLastfm(method, params=''){
   const url=`https://ws.audioscrobbler.com/2.0/?method=${method}&api_key=${LASTFM_KEY}&format=json&${params}`;
@@ -9471,6 +9634,8 @@ function renderDiscordCard(d){
   // Badges
   const badgesEl=document.getElementById('dc-preview-badges');
   if(badgesEl)badgesEl.innerHTML=renderDiscordBadges(d.discord_user);
+  // Always update sidebar widget too
+  refreshDiscordSidebar();
 }
 
 function refreshDiscordSidebar(){
@@ -9481,8 +9646,18 @@ function refreshDiscordSidebar(){
   if(conn?.userId&&!conn?.data&&typeof startLanyardWS==='function'){
     startLanyardWS(conn.userId);
   }
-  if(!conn?.data){if(wrap)wrap.style.display='none';return}
+  // Show widget if userId exists (even if offline/no data yet)
+  const hasConnection=conn?.userId||conn?.data;
+  if(!hasConnection){if(wrap)wrap.style.display='none';return}
   if(wrap)wrap.style.display='block';
+  if(!conn?.data){
+    // Show placeholder while loading
+    const nameEl=document.getElementById('sb-dc-name');
+    if(nameEl)nameEl.textContent=conn.username||'Discord';
+    const stEl=document.getElementById('sb-dc-status');
+    if(stEl)stEl.className='sb-dc-dot offline';
+    return;
+  }
   const d=conn.data;
   // Avatar
   const avEl=document.getElementById('sb-dc-avatar');
@@ -9527,6 +9702,9 @@ function updateSpotifyFromLanyard(d){
   if(sp&&sp.song){
     if(wrap)wrap.style.display='block';
     if(iframeWrap)iframeWrap.style.display='none';
+    // Also hide the Last.fm fallback pill
+    const lfmFallback=document.getElementById('sb-spotify-iframe-wrap');
+    if(lfmFallback)lfmFallback.style.display='none';
     const artEl=document.getElementById('np-art');
     if(artEl){
       if(sp.album_art_url)artEl.innerHTML='<img src="'+sp.album_art_url+'" alt="album" style="width:34px;height:34px;object-fit:cover;border-radius:7px;display:block">';
@@ -9666,7 +9844,6 @@ function startLanyardPolling(userId){
 }
 
 // === STEAM ===
-var WORKER_URL='https://raspy-fog-bf5b.rub19-mailpro.workers.dev';
 
 async function fetchSteamAPI(endpoint,apiKey,params){
   // Utilise le Worker Cloudflare - cle Steam stockee cote server
@@ -12450,32 +12627,90 @@ function t(key){ if(!I18N)return key; return (I18N[_lang]?.[key]) ?? (I18N['en']
 
 // === BOOT ===
 (function(){
-  // Check si deja connecte a Supabase
   if(typeof I18N!=='undefined')applyI18n();
-sb.auth.getSession().then(async({data:{session}})=>{
-    if(session){
-      _sbUser=session.user;
-      _isAdmin=session.user?.email===ADMIN_EMAIL;
-      document.getElementById('auth-screen').style.display='none';
-      await loadCloudState();
-      profiles.forEach(p=>{
-        if(!p.state) p.state = defState(p.name);
-        if(!p.state.connections) p.state.connections={};
-        if(!p.state.gaming) p.state.gaming={};
-        if(!p.state.pinned) p.state.pinned=[];
-        if(!p.state.habits) p.state.habits=[];
-        if(!p.state.kanban) p.state.kanban=[];
-        if(!p.state.events) p.state.events=[];
-      });
-      if(!profiles.length){
-        profiles.push({id:Date.now(),name:'Mon profile',avatarEmoji:AVATARS[0].e,avatarBg:AVATARS[0].b,avatarImg:null,avatarIdx:0,state:defState('Mon profile')});
-        await saveCloudState();
-      }
-      renderProfileScreen();
-      document.getElementById('profile-screen').style.display='flex';
+  // Hide boot screen helper
+  function hideBoot(){
+    const b=document.getElementById('nexus-boot-screen');
+    if(b){b.style.transition='opacity .3s ease';b.style.opacity='0';setTimeout(()=>b.remove(),300);}
+  }
+  sb.auth.getSession().then(async({data:{session}})=>{
+    if(!session){
+      document.getElementById('auth-screen').style.display='flex';
+      updateClock();hideBoot();return;
     }
-    // Sinon l'ecran auth reste visible
-    updateClock();
+    _sbUser=session.user;
+    _isAdmin=session.user?.email===ADMIN_EMAIL;
+    document.getElementById('auth-screen').style.display='none';
+
+    const cacheKey='nexus_profiles_'+_sbUser.id;
+    const cached=sessionStorage.getItem(cacheKey);
+
+    function normalizeProfiles(){
+      profiles.forEach(p=>{
+        if(!p.state)p.state=defState(p.name);
+        if(!p.state.connections)p.state.connections={};
+        if(!p.state.gaming)p.state.gaming={};
+        if(!p.state.pinned)p.state.pinned=[];
+        if(!p.state.habits)p.state.habits=[];
+        if(!p.state.kanban)p.state.kanban=[];
+        if(!p.state.events)p.state.events=[];
+      });
+    }
+
+    function showDashboardOrProfiles(){
+      // Auto-enter dashboard if single profile without password
+      if(profiles.length===1&&!profiles[0].password){
+        renderProfileScreen();
+        document.getElementById('profile-screen').style.display='flex';
+        hideBoot();
+        updateClock();
+        // Enter dashboard immediately with no animation delay
+        const p=profiles[0];
+        currentId=p.id;
+        document.getElementById('profile-screen').style.display='none';
+        document.getElementById('main-sidebar').style.display='flex';
+        document.getElementById('main-content').style.display='block';
+        renderSidebarNav();
+        updateSidebarAvatar();
+        applyI18n();
+        initDashboard();
+        setTimeout(startAmbientBg,300);
+      } else {
+        renderProfileScreen();
+        document.getElementById('profile-screen').style.display='flex';
+        hideBoot();
+        updateClock();
+      }
+    }
+
+    if(cached){
+      try{
+        profiles=JSON.parse(cached);
+        normalizeProfiles();
+        showDashboardOrProfiles();
+        // Refresh from DB silently in background
+        loadCloudState().then(()=>{
+          normalizeProfiles();
+          sessionStorage.setItem(cacheKey,JSON.stringify(profiles));
+          // Re-render sidebar widgets with fresh data
+          const p=curP();if(p)initSidebarWidgets(p);
+        }).catch(()=>{});
+        return;
+      }catch(e){sessionStorage.removeItem(cacheKey);}
+    }
+
+    // No cache — load from DB
+    await loadCloudState();
+    if(!profiles.length){
+      profiles.push({id:Date.now(),name:'Mon profil',avatarEmoji:AVATARS[0].e,avatarBg:AVATARS[0].b,avatarImg:null,avatarIdx:0,state:defState('Mon profil')});
+      await saveCloudState();
+    }
+    normalizeProfiles();
+    sessionStorage.setItem(cacheKey,JSON.stringify(profiles));
+    showDashboardOrProfiles();
+  }).catch(()=>{
+    document.getElementById('auth-screen').style.display='flex';
+    hideBoot();
   });
 })();
 </script>

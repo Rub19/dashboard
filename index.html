@@ -559,188 +559,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 /* ── BREAKPOINTS ── */
 
 /* 1100px — collapse right column in overview */
-@media(max-width:1100px){
-  .overview-main-grid,
-  [style*="grid-template-columns:1fr 340px"]{
-    grid-template-columns:1fr!important;
-  }
-}
+
 
 /* 768px — main mobile breakpoint */
-@media(max-width:768px){
-  /* Hamburger + sidebar */
-  .hamburger{display:flex}
-  .sidebar{
-    transform:translateX(-100%);
-    transition:transform .28s cubic-bezier(.4,0,.2,1);
-    z-index:200;
-    width:min(260px,88vw)!important;
-    overflow-y:auto;overflow-x:hidden;
-  }
-  .sidebar.mobile-open{transform:translateX(0)}
-  .sidebar-overlay.mobile-open{display:block}
 
-  /* Main content */
-  /* removed duplicate .main rule */
-
-  /* Topbar */
-  .topbar{
-    padding:10px 0 10px;
-    flex-wrap:wrap;gap:8px;
-    border-bottom:1px solid rgba(255,255,255,.05);
-    margin-bottom:16px;
-  }
-  .topbar-actions{flex-wrap:wrap;gap:6px}
-  .topbar-actions .search-bar{display:none}
-  .section-title{font-size:19px!important}
-
-  /* Bottom nav */
-  .mobile-bottom-nav{display:flex!important}
-
-  /* Auth screen */
-  #auth-screen .auth-split-left{display:none!important}
-  #auth-screen .auth-split-right{
-    width:100%!important;max-width:100%!important;
-    border-radius:0!important;padding:28px 20px!important;
-  }
-  #auth-screen > div > div{
-    border-radius:0!important;min-height:100dvh!important;
-    flex-direction:column!important;
-  }
-
-  /* Profile select */
-  .ps-inner{padding:28px 16px}
-  .ps-title{font-size:28px!important;letter-spacing:-1px!important}
-  .ps-profiles{gap:10px!important;justify-content:center}
-  .ps-profile{width:110px!important}
-  .ps-add-card{width:110px!important}
-  .ps-card-inner{padding:18px 12px 16px!important;border-radius:16px!important}
-  .ps-avatar{width:60px!important;height:60px!important;border-radius:14px!important}
-  .ps-add-icon{width:60px!important;height:60px!important;border-radius:14px!important}
-  .ps-pname{font-size:12px!important}
-  .ps-actions{margin-top:32px}
-
-  /* Profile banner */
-  .profile-banner{margin:0 -14px 0!important;height:110px}
-  .profile-banner-info{left:14px!important;bottom:12px!important}
-  .profile-banner-name{font-size:17px!important}
-
-  /* Stats cards */
-  .stats-row{
-    grid-template-columns:1fr 1fr!important;
-    gap:8px!important;
-    margin-bottom:12px!important;
-  }
-  .stat-value{font-size:26px!important;letter-spacing:-1.5px!important}
-  .stat-label{font-size:9px!important}
-  .clock-display{font-size:22px!important}
-  .stat-card{padding:14px 14px!important;border-radius:12px!important}
-
-  /* Panels */
-  .panel{padding:14px!important;border-radius:12px!important}
-  .panel-title{font-size:12px!important}
-
-  /* Grids → single col */
-  .grid-2,.grid-3,.grid-widgets,
-  .kanban-board,
-  [style*="grid-template-columns:1fr 1fr"],
-  [style*="grid-template-columns:2fr 1fr"]{
-    grid-template-columns:1fr!important;
-  }
-  .links-grid{grid-template-columns:1fr 1fr!important}
-  .top-agents{grid-template-columns:repeat(2,1fr)!important}
-  .qs-grid{grid-template-columns:repeat(2,1fr)!important}
-  .stats-layout{grid-template-columns:1fr!important}
-
-  /* Overview right column widgets go below */
-  [style*="grid-template-columns:1fr 340px"]{grid-template-columns:1fr!important}
-
-  /* Settings */
-  .settings-layout{grid-template-columns:1fr!important}
-  .settings-nav{
-    flex-direction:row;flex-wrap:nowrap;
-    position:sticky;top:58px;z-index:10;
-    background:rgba(5,5,7,.95);backdrop-filter:blur(16px);
-    padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05);
-    margin-bottom:12px;gap:2px;overflow-x:auto;
-    -webkit-overflow-scrolling:touch;scrollbar-width:none;
-  }
-  .settings-nav::-webkit-scrollbar{display:none}
-  .settings-nav-item{
-    flex:none;white-space:nowrap;padding:6px 12px;
-    border-radius:7px;font-size:12px;
-  }
-  .settings-nav-item.active{
-    border-left:none;border-bottom:2px solid #f97316;
-    padding-left:12px;
-  }
-
-  /* Notes layout */
-  #notes-sidebar{width:100%!important;margin-bottom:10px}
-  [style*="display:flex;gap:16px;align-items:flex-start"]{
-    flex-direction:column!important;
-  }
-
-  /* Modals */
-  .modal-overlay{padding:10px;align-items:flex-end}
-  .modal{
-    max-width:100%!important;width:100%!important;
-    max-height:88dvh!important;overflow-y:auto;
-    border-radius:20px 20px 14px 14px!important;
-  }
-
-  /* Pomodoro */
-  .pomo-display{padding:0}
-  .pomo-mode-tabs{margin-bottom:12px}
-
-  /* Calendar */
-  .cal-grid{gap:1px}
-  .cal-day{font-size:11px}
-
-  /* Habits */
-  .habit-days{gap:2px}
-  .habit-day{width:20px;height:20px;font-size:8.5px}
-
-  /* Connections */
-  .conn-header{flex-wrap:wrap;gap:8px}
-  .conn-card{padding:14px}
-
-  /* Gaming */
-  .rank-display{flex-wrap:wrap;gap:8px}
-  .top-agents{grid-template-columns:repeat(3,1fr)!important}
-  .match-row{padding:7px 10px}
-
-  /* Files */
-  .cat-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-  .cat-tabs::-webkit-scrollbar{display:none}
-
-  /* Activity */
-  .activity-text{font-size:12px}
-
-  /* XP widget in settings */
-  .xp-card{flex-wrap:wrap;gap:10px}
-}
 
 /* 480px — small phones */
-@media(max-width:480px){
-  /* removed duplicate .main rule */
-  .stats-row{gap:6px!important}
-  .stat-value{font-size:22px!important}
-  .stat-card{padding:12px!important}
-  .panel{padding:12px!important}
-  .section-title{font-size:17px!important}
-  .profile-banner{height:95px}
-  .profile-banner-name{font-size:15px!important}
-  .ps-profile{width:96px!important}
-  .ps-add-card{width:96px!important}
-  .ps-avatar{width:52px!important;height:52px!important}
-  .ps-add-icon{width:52px!important;height:52px!important}
-  .links-grid{grid-template-columns:1fr!important}
-  .top-agents{grid-template-columns:repeat(2,1fr)!important}
-  .pinned-grid{grid-template-columns:1fr 1fr!important}
-  .qs-grid{grid-template-columns:1fr 1fr!important}
-  .match-kda{display:none}
-}
+
 
 
 /* ══════════════════════════════════════════════
@@ -1108,22 +933,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .pinned-card:hover{border-color:rgba(249,115,22,.2);background:rgba(249,115,22,.04)}
 
 /* ── RESPONSIVE OVERRIDES ── */
-@media(max-width:768px){
-  /* removed duplicate .main rule */
-  .profile-banner{margin:-0px -16px 0!important}
-  .topbar{padding:14px 0 12px}
-  .stats-row{gap:8px!important}
-  .stat-card{padding:14px 16px!important}
-  .stat-value{font-size:26px!important}
-  .panel{padding:14px!important;border-radius:12px!important}
-  .grid-2,.grid-3,.grid-widgets{gap:10px!important}
-}
-@media(max-width:480px){
-  .stat-value{font-size:22px!important}
-  .stat-label{font-size:8.5px!important}
-  .panel-title{font-size:12px!important}
-  .stats-row{gap:6px!important}
-}
+
+
 
 
 /* ══════════════════════════════════════════════════
@@ -1426,26 +1237,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .sb-widget-label{font-size:8px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(245,245,247,.2);padding:10px 10px 5px;display:block;font-family:var(--mono)}
 
 /* ── MOBILE ── */
-@media(max-width:768px){
-  .settings-layout{grid-template-columns:1fr!important}
-  .settings-nav{flex-direction:row;flex-wrap:wrap;position:static;gap:4px}
-  .settings-nav-item{flex:none;padding:6px 10px;font-size:12px}
-  .settings-nav-item.active{border-left:none;border-bottom:2px solid #f97316;padding-left:10px;border-radius:7px 7px 0 0}
-  .kanban-board{grid-template-columns:1fr!important}
-  .top-agents{grid-template-columns:repeat(2,1fr)!important}
-  .qs-grid{grid-template-columns:repeat(2,1fr)!important}
-}
+
 
 
 /* ── OVERVIEW LAYOUT ── */
 .overview-main-grid{display:grid;grid-template-columns:1fr 340px;gap:12px;margin-bottom:12px;align-items:start}
-@media(max-width:1100px){
-  .overview-main-grid{grid-template-columns:1fr!important}
-}
-@media(max-width:768px){
-  /* Stats page bars */
-  #stats-activity-bars,#stats-pomo-bars{height:60px!important}
-}
+
+
 /* Panel title icon SVG sizing */
 .panel-title-icon svg{width:13px;height:13px}
 /* Stats bars updated */
@@ -1462,72 +1260,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
 
 /* ── AUTH SCREEN MOBILE ── */
-@media(max-width:768px){
-  #auth-screen{
-    align-items:stretch!important;
-    padding:0!important;
-  }
-  #auth-screen > div{
-    width:100%!important;max-width:100%!important;
-    box-shadow:none!important;border-radius:0!important;
-    border:none!important;min-height:100dvh!important;
-    flex-direction:column!important;
-  }
-  .auth-split-left{display:none!important}
-  .auth-split-right{
-    width:100%!important;flex:1!important;
-    padding:48px 24px 32px!important;
-    display:flex!important;flex-direction:column!important;
-    justify-content:center!important;
-    background:var(--bg)!important;
-  }
-  /* Add NEXUS logo back on mobile (hidden left panel) */
-  .auth-split-right::before{
-    content:'NEXUS';
-    display:block;
-    font-family:'Syne',sans-serif;
-    font-size:14px;font-weight:900;
-    letter-spacing:2.5px;color:rgba(255,255,255,.5);
-    text-align:center;margin-bottom:28px;
-    text-transform:uppercase;
-  }
-}
+
 
 /* ── PROFILE SCREEN MOBILE ── */
-@media(max-width:768px){
-  #ps-canvas{display:none}
-  .ps-inner{padding:32px 14px 24px}
-  .ps-eyebrow{font-size:9px}
-  .ps-title{font-size:26px!important}
-  .ps-sub{font-size:12px;margin-bottom:36px}
-  .ps-actions{margin-top:28px;gap:14px}
-}
+
 
 /* ── OVERVIEW MOBILE WIDGETS ── */
-@media(max-width:768px){
-  /* Overview grid forced single col */
-  #page-dashboard [style*="grid-template-columns:1fr 340px"],
-  #page-dashboard > div[style*="grid-template-columns"]{
-    display:flex!important;flex-direction:column!important;gap:10px!important;
-  }
-  /* Pomo ring smaller */
-  #page-dashboard .pomo-display svg[width="120"]{
-    transform:scale(.88);transform-origin:center;
-  }
-  /* Stats bars height */
-  #stats-activity-bars,#stats-pomo-bars{height:60px!important}
-  /* Gaming overview cards */
-  #gaming-overview-cards{flex-direction:column}
-}
+
 
 /* ── SIDEBAR MOBILE ── */
-@media(max-width:768px){
-  .sidebar{box-shadow:4px 0 24px rgba(0,0,0,.6)}
-  .logo{padding:16px 14px 14px}
-  .nav-section{padding:6px 8px 0}
-  .nav-item{padding:8px 10px;font-size:13px}
-  
-}
+
 
 
 /* ── WEATHER WIDGET v2 ── */
@@ -1592,10 +1334,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .ai-suggestion:hover{border-color:rgba(249,115,22,.3);color:#f97316;background:rgba(249,115,22,.06)}
 .ai-context-bar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(249,115,22,.07);border:1px solid rgba(249,115,22,.15);border-radius:10px;margin-bottom:12px;font-size:12px;color:rgba(249,115,22,.9)}
 .ai-ctx-badge{background:rgba(249,115,22,.15);border-radius:99px;padding:2px 8px;font-size:10px;font-weight:700;font-family:var(--mono);color:#f97316}
-@media(max-width:768px){
-  .ai-page{height:calc(100dvh - 180px)}
-  .ai-bubble{max-width:88%}
-}
+
 
 
 /* ══════════════════════════════════════════════
@@ -2428,26 +2167,8 @@ h1,h2,.section-title,.page-title{font-family:'Syne',sans-serif;letter-spacing:-.
 ::selection{background:rgba(249,115,22,.3);color:#fff}
 
 /* ══ RESPONSIVE FIXES ══ */
-@media(max-width:768px){
-  .panel{padding:14px 15px!important;border-radius:var(--r-md)!important}
-  .stat-card{padding:14px 14px!important;border-radius:var(--r-md)!important}
-  .conn-card{padding:14px 15px!important;border-radius:var(--r-md)!important}
-  .settings-card{padding:14px 15px!important;border-radius:var(--r-md)!important}
-  .modal{border-radius:var(--r-xl) var(--r-xl) var(--r-md) var(--r-md)!important}
-  .topbar{padding:12px 0 10px!important;margin-bottom:16px!important}
-  .page-title{font-size:19px!important}
-  .stat-value{font-size:28px!important}
-  .cat-tabs{overflow-x:auto;scrollbar-width:none}
-  .kanban-board{grid-template-columns:1fr!important}
-  .pomo-ring-wrap{width:140px!important;height:140px!important}
-}
-@media(max-width:480px){
-  .page-title{font-size:17px!important}
-  .stat-value{font-size:24px!important}
-  .section-title{font-size:17px!important}
-  .panel{padding:12px!important}
-  .panel-title{font-size:11.5px!important}
-}
+
+
 
 
 /* Autofill override */
@@ -2459,30 +2180,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 }
 
 /* ── MOBILE STICKY TOPBAR ── */
-@media(max-width:768px){
-  /* Hide desktop topbar actions on mobile, show mobile topbar instead */
-  .mobile-topbar{
-    display:flex;position:fixed;top:0;left:0;right:0;z-index:400;
-    height:54px;align-items:center;justify-content:space-between;
-    padding:0 14px;
-    background:rgba(5,5,7,.92);backdrop-filter:blur(16px);
-    border-bottom:1px solid rgba(255,255,255,.06);
-  }
-  .mobile-topbar-left{display:flex;align-items:center;gap:10px}
-  .mobile-topbar-avatar{
-    width:32px;height:32px;border-radius:9px;overflow:hidden;
-    flex-shrink:0;background:rgba(255,255,255,.07);
-    display:flex;align-items:center;justify-content:center;
-    position:relative;border:1.5px solid rgba(249,115,22,.25);
-    cursor:pointer;
-  }
-  .mobile-topbar-name{
-    font-size:14px;font-weight:700;color:var(--text);
-    letter-spacing:-.02em;font-family:'Syne',sans-serif;
-    cursor:pointer;
-  }
-  .mobile-topbar-right{display:flex;align-items:center;gap:8px}
-}
+
 @media(min-width:769px){
   .mobile-topbar{display:none!important}
 }
@@ -2562,7 +2260,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 .auth-lang{position:absolute;top:16px;right:16px;z-index:10}
 /* Dashboard topbar */
 .topbar-lang{display:flex;align-items:center}
-@media(max-width:768px){.topbar-lang{display:none}}
+
 
 
 /* ── SIDEBAR WIDGETS v2 ── */
@@ -3045,9 +2743,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 .resize-handle:hover,.resize-handle.dragging{
   background:rgba(249,115,22,.3);
 }
-@media(max-width:768px){
-  .resize-handle{display:none!important}
-}
+
 
 
 /* ── NAV ITEM TEXT ── */
@@ -3091,12 +2787,8 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 .resize-handle{pointer-events:auto}
 
 
-@media(max-width:768px){
-  .main{margin-left:0!important;padding:14px 14px 74px!important;padding-top:66px!important}
-}
-@media(max-width:480px){
-  .main{padding:10px 10px 72px!important;padding-top:56px!important}
-}
+
+
 
 
 /* ── SIDEBAR WIDGET TOGGLE ── */
@@ -3112,7 +2804,338 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 .sb-widget-toggle.active{color:#f97316;border-color:rgba(249,115,22,.3);background:rgba(249,115,22,.08)}
 .sb-widget-toggle svg{width:10px;height:10px}
 
-</style>
+
+/* ════════════════════════════════════════════════════════════════
+   NEXUS — RESPONSIVE SYSTEM v4.0 (complete rewrite)
+   Breakpoints: 1100px (large tablet) · 768px (tablet/phone) · 480px (phone)
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── TRANSITIONS globales ── */
+.sidebar,.main,.panel,.stat-card,.modal,.nav-item,.mob-nav-btn{
+  -webkit-tap-highlight-color:transparent;
+}
+.panel,.stat-card,.nav-item,.mob-nav-btn,.btn{
+  touch-action:manipulation;
+}
+
+/* ── LARGE TABLET (1100px) ── */
+@media(max-width:1100px){
+  .main{padding:0 20px 24px}
+  .overview-main-grid{grid-template-columns:1fr 300px!important}
+}
+
+/* ════════════════════════════════════════════════════════════════
+   TABLET / PHONE (768px)
+   ════════════════════════════════════════════════════════════════ */
+@media(max-width:768px){
+
+  /* ── LAYOUT ─────────────────────────────────────────────────── */
+  body{overflow-x:hidden}
+  .main{
+    margin-left:0!important;
+    padding:0 14px 80px!important;
+    padding-top:60px!important;
+    min-width:0;
+  }
+  .topbar{
+    position:sticky;top:54px;z-index:100;
+    padding:10px 0 8px!important;
+    margin-bottom:12px!important;
+    background:rgba(5,5,7,.92);
+    backdrop-filter:blur(16px);
+    border-bottom:1px solid rgba(255,255,255,.06);
+  }
+  .topbar-actions .search-bar{display:none!important}
+  .topbar-lang{display:none!important}
+  .section-title,.page-title{font-size:18px!important;letter-spacing:-.03em!important}
+  .section-eyebrow{font-size:8px!important}
+
+  /* ── SIDEBAR (slide-in) ──────────────────────────────────────── */
+  .sidebar{
+    position:fixed!important;top:0;left:0;bottom:0;
+    transform:translateX(-100%);
+    transition:transform .28s cubic-bezier(.4,0,.2,1),
+               box-shadow .28s ease!important;
+    z-index:500!important;
+    width:min(280px,88vw)!important;
+    overflow-y:auto;overflow-x:hidden;
+    box-shadow:none;
+  }
+  .sidebar.mobile-open{
+    transform:translateX(0)!important;
+    box-shadow:8px 0 40px rgba(0,0,0,.6)!important;
+  }
+  .sidebar-overlay{
+    position:fixed;inset:0;z-index:499;
+    background:rgba(0,0,0,.5);
+    backdrop-filter:blur(4px);
+    display:none;
+    animation:fadeIn .2s ease;
+  }
+  .sidebar-overlay.mobile-open{display:block}
+  .resize-handle{display:none!important}
+
+  /* ── MOBILE TOPBAR (fixed) ───────────────────────────────────── */
+  .mobile-topbar{display:flex!important}
+
+  /* ── BOTTOM NAV ──────────────────────────────────────────────── */
+  .mobile-bottom-nav{
+    display:flex!important;
+    position:fixed;bottom:0;left:0;right:0;z-index:200;
+    background:rgba(5,5,7,.95);
+    backdrop-filter:blur(20px);
+    border-top:1px solid rgba(255,255,255,.07);
+    padding:6px 8px calc(6px + env(safe-area-inset-bottom));
+    gap:2px;
+  }
+  .mob-nav-btn{
+    flex:1;display:flex;flex-direction:column;align-items:center;
+    gap:3px;padding:6px 4px;border-radius:10px;
+    background:none;border:none;cursor:pointer;
+    color:rgba(245,245,247,.35);
+    font-size:9px;font-weight:700;letter-spacing:.04em;
+    font-family:'JetBrains Mono',monospace;text-transform:uppercase;
+    transition:all .2s cubic-bezier(.4,0,.2,1);
+    position:relative;
+  }
+  .mob-nav-btn:active{transform:scale(.9)}
+  .mob-nav-btn.active{color:#f97316}
+  .mob-nav-btn.active .mob-icon svg{stroke:#f97316}
+  .mob-nav-btn.active::before{
+    content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+    width:24px;height:2px;border-radius:99px;
+    background:linear-gradient(90deg,#f97316,#dc2626);
+  }
+  .mob-icon{width:20px;height:20px;display:flex;align-items:center;justify-content:center}
+  .mob-icon svg{width:18px;height:18px;stroke:currentColor;transition:stroke .2s}
+
+  /* ── STAT CARDS ──────────────────────────────────────────────── */
+  .stats-row{
+    grid-template-columns:repeat(2,1fr)!important;
+    gap:8px!important;margin-bottom:10px!important;
+  }
+  .stat-card{padding:12px 12px!important;border-radius:12px!important}
+  .stat-value{font-size:24px!important;letter-spacing:-1px!important}
+  .stat-label{font-size:8.5px!important}
+  .stat-sub{font-size:10px!important}
+  .clock-display{font-size:20px!important}
+
+  /* ── PANELS ──────────────────────────────────────────────────── */
+  .panel{padding:12px!important;border-radius:12px!important}
+  .panel-title{font-size:12px!important}
+  .panel:hover{transform:none!important} /* disable hover lift on touch */
+
+  /* ── OVERVIEW GRID ───────────────────────────────────────────── */
+  .overview-main-grid{grid-template-columns:1fr!important;gap:10px!important}
+  [style*="grid-template-columns:1fr 340px"]{grid-template-columns:1fr!important}
+  [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
+  [style*="grid-template-columns:2fr 1fr"]{grid-template-columns:1fr!important}
+  [style*="grid-template-columns:repeat(2"]{grid-template-columns:1fr 1fr!important}
+  [style*="grid-template-columns:repeat(3"]{grid-template-columns:1fr 1fr!important}
+  [style*="grid-template-columns:repeat(4"]{grid-template-columns:1fr 1fr!important}
+
+  /* ── KANBAN ──────────────────────────────────────────────────── */
+  .kanban-board{
+    display:flex!important;flex-direction:row!important;
+    overflow-x:auto;gap:10px!important;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    padding-bottom:8px;
+  }
+  .kanban-board::-webkit-scrollbar{height:3px}
+  .kanban-board::-webkit-scrollbar-thumb{background:rgba(249,115,22,.3);border-radius:99px}
+  .kanban-col{
+    min-width:260px!important;flex-shrink:0;
+    scroll-snap-align:start;
+  }
+
+  /* ── MODALS ──────────────────────────────────────────────────── */
+  .modal-overlay{
+    padding:0!important;
+    align-items:flex-end!important;
+    background:rgba(0,0,0,.7)!important;
+    backdrop-filter:blur(8px)!important;
+  }
+  .modal{
+    max-width:100%!important;width:100%!important;
+    max-height:92dvh!important;
+    border-radius:20px 20px 0 0!important;
+    overflow-y:auto!important;
+    animation:slideUpModal .25s cubic-bezier(.4,0,.2,1) forwards!important;
+  }
+  @keyframes slideUpModal{
+    from{transform:translateY(100%);opacity:0}
+    to{transform:translateY(0);opacity:1}
+  }
+
+  /* ── PROFILE SELECT ──────────────────────────────────────────── */
+  .ps-inner{padding:24px 16px!important}
+  .ps-title{font-size:26px!important;letter-spacing:-1px!important}
+  .ps-profiles{gap:10px!important;justify-content:center!important}
+  .ps-profile,.ps-add-card{width:100px!important}
+  .ps-card-inner{padding:14px 10px 12px!important;border-radius:14px!important}
+  .ps-avatar,.ps-add-icon{width:56px!important;height:56px!important;border-radius:12px!important}
+  .ps-pname{font-size:11px!important}
+
+  /* ── PROFILE BANNER ──────────────────────────────────────────── */
+  .profile-banner{margin:0 -14px 0!important;height:90px!important}
+  .profile-banner-info{left:14px!important;bottom:10px!important}
+  .profile-banner-name{font-size:15px!important}
+
+  /* ── SETTINGS ────────────────────────────────────────────────── */
+  .settings-layout{grid-template-columns:1fr!important}
+  .settings-nav{
+    flex-direction:row!important;flex-wrap:nowrap!important;
+    position:sticky!important;top:54px!important;z-index:50!important;
+    background:rgba(5,5,7,.95)!important;backdrop-filter:blur(16px)!important;
+    padding:6px 0!important;border-bottom:1px solid rgba(255,255,255,.05)!important;
+    margin:0 -14px 12px!important;padding-left:14px!important;
+    overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+    gap:4px!important;
+  }
+  .settings-nav::-webkit-scrollbar{display:none}
+  .settings-nav-item{
+    flex:none!important;white-space:nowrap!important;
+    padding:6px 12px!important;border-radius:7px!important;font-size:12px!important;
+  }
+
+  /* ── NOTES ───────────────────────────────────────────────────── */
+  #notes-sidebar{width:100%!important;margin-bottom:10px!important}
+
+  /* ── CONNECTIONS ─────────────────────────────────────────────── */
+  .conn-header{flex-wrap:wrap!important;gap:8px!important}
+  .conn-card{padding:12px!important}
+  .game-input-row{flex-wrap:wrap!important;gap:8px!important}
+  .game-input-row input{min-width:0!important}
+
+  /* ── GAMING ──────────────────────────────────────────────────── */
+  .rank-display{flex-wrap:wrap!important;gap:8px!important}
+  .match-tabs{overflow-x:auto;scrollbar-width:none}
+  .match-tabs::-webkit-scrollbar{display:none}
+
+  /* ── CAT TABS ────────────────────────────────────────────────── */
+  .cat-tabs{overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;scrollbar-width:none!important}
+  .cat-tabs::-webkit-scrollbar{display:none!important}
+
+  /* ── LINKS GRID ──────────────────────────────────────────────── */
+  .links-grid{grid-template-columns:1fr 1fr!important}
+
+  /* ── CALENDAR ────────────────────────────────────────────────── */
+  .cal-grid{gap:2px!important}
+  .cal-day{font-size:11px!important}
+
+  /* ── HABITS ──────────────────────────────────────────────────── */
+  .habit-days{gap:2px!important}
+  .habit-day{width:19px!important;height:19px!important;font-size:8px!important}
+
+  /* ── POMODORO ────────────────────────────────────────────────── */
+  .pomo-display{padding:0!important}
+  .pomo-ring-wrap{width:130px!important;height:130px!important}
+  .pomo-time{font-size:28px!important}
+
+  /* ── HEATMAP ─────────────────────────────────────────────────── */
+  #stats-heatmap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .heatmap-cell{width:10px!important;height:10px!important}
+
+  /* ── VALO ────────────────────────────────────────────────────── */
+  .valo-match-row{padding:8px 10px!important}
+
+  /* ── AUTH ────────────────────────────────────────────────────── */
+  .auth-split-left{display:none!important}
+  .auth-split-right{
+    width:100%!important;max-width:100%!important;
+    border-radius:0!important;padding:24px 20px!important;
+    min-height:100dvh!important;
+  }
+  #auth-screen>div>div{
+    border-radius:0!important;min-height:100dvh!important;
+    flex-direction:column!important;
+  }
+
+  /* ── NOTIF PANEL ─────────────────────────────────────────────── */
+  #notif-panel{width:100%!important;max-width:100%!important}
+
+  /* ── COMMAND PALETTE ─────────────────────────────────────────── */
+  #cmd-palette{margin:0 8px;border-radius:14px!important}
+  #cmd-palette-overlay{padding-top:40px!important;align-items:flex-start!important}
+
+  /* ── XP ──────────────────────────────────────────────────────── */
+  .xp-level-badge{width:46px!important;height:46px!important}
+  .xp-level-num{font-size:18px!important}
+}
+
+/* ════════════════════════════════════════════════════════════════
+   SMALL PHONE (480px)
+   ════════════════════════════════════════════════════════════════ */
+@media(max-width:480px){
+  .main{padding:0 10px 76px!important;padding-top:58px!important}
+  .stats-row{gap:6px!important}
+  .stat-card{padding:10px!important}
+  .stat-value{font-size:22px!important}
+  .panel{padding:10px!important}
+  .section-title,.page-title{font-size:16px!important}
+  .ps-profiles{gap:8px!important}
+  .ps-profile,.ps-add-card{width:90px!important}
+  .ps-avatar,.ps-add-icon{width:50px!important;height:50px!important}
+  .kanban-col{min-width:240px!important}
+  .modal{max-height:95dvh!important}
+  .mob-nav-btn{font-size:8px!important}
+}
+
+/* ── TOUCH INTERACTIONS ──────────────────────────────────────────── */
+@media(hover:none) and (pointer:coarse){
+  /* Remove hover effects on touch devices */
+  .panel:hover,.stat-card:hover,.nav-item:hover,
+  .btn:hover,.item-row:hover,.kanban-card:hover{
+    transform:none!important;
+    box-shadow:var(--shadow-card)!important;
+    border-color:rgba(255,255,255,.06)!important;
+  }
+  /* Add active states instead */
+  .panel:active,.stat-card:active{
+    transform:scale(.98)!important;
+    background:rgba(255,255,255,.04)!important;
+  }
+  .btn-primary:active{
+    transform:scale(.95)!important;
+    filter:brightness(.9)!important;
+  }
+  .nav-item:active{background:rgba(249,115,22,.1)!important}
+  /* Bigger touch targets */
+  .nav-item{min-height:40px!important;padding:8px 10px!important}
+  .modal-close,.notif-panel-close{width:36px!important;height:36px!important}
+}
+
+/* ── SAFE AREA (iPhone notch/home bar) ───────────────────────────── */
+@supports(padding:env(safe-area-inset-bottom)){
+  .mobile-bottom-nav{
+    padding-bottom:calc(6px + env(safe-area-inset-bottom))!important;
+  }
+  .main{padding-bottom:calc(80px + env(safe-area-inset-bottom))!important}
+}
+
+/* ── SMOOTH SCROLL everywhere ────────────────────────────────────── */
+*{scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+
+/* ── SWIPE SIDEBAR INDICATOR ─────────────────────────────────────── */
+#swipe-hint{
+  position:fixed;left:0;top:50%;transform:translateY(-50%);
+  width:4px;height:40px;border-radius:0 4px 4px 0;
+  background:linear-gradient(180deg,#f97316,#dc2626);
+  opacity:.35;z-index:100;
+  display:none;
+  animation:swipeHintPulse 2s ease-in-out infinite;
+}
+@keyframes swipeHintPulse{
+  0%,100%{opacity:.2;height:30px}
+  50%{opacity:.5;height:50px}
+}
+@media(max-width:768px){#swipe-hint{display:block}}
+
+</style></style>
 </head>
 <body>
 
@@ -3304,7 +3327,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       </div>
 
       <!-- Version -->
-      <div style="text-align:center;margin-top:28px;font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:.5px">v3.9.2</div>
+      <div style="text-align:center;margin-top:28px;font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:.5px">v4.0.0</div>
     </div>
   </div>
 </div>
@@ -3341,7 +3364,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
     </div>
 
     <!-- Version -->
-    <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer;white-space:nowrap" onclick="showChangelog()" title="View changelog">v3.9.2 · changelog</div>
+    <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer;white-space:nowrap" onclick="showChangelog()" title="View changelog">v4.0.0 · changelog</div>
   </div>
 </div>
 
@@ -3349,6 +3372,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 <button class="hamburger" id="hamburger" onclick="toggleMobileSidebar()" style="display:none">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
 </button>
+<div id="swipe-hint"></div>
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeMobileSidebar()"></div>
 <!-- MOBILE TOPBAR -->
 <div id="mobile-topbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:400;height:54px;align-items:center;justify-content:space-between;padding:0 14px;background:rgba(5,5,7,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.06)">
@@ -3357,7 +3381,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:16px;height:16px"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
     <div id="mob-topbar-avatar" onclick="goToProfileScreen()" style="width:32px;height:32px;border-radius:9px;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;position:relative;border:1.5px solid rgba(249,115,22,.25);cursor:pointer;font-size:14px">👤</div>
-    <div id="mob-topbar-name" onclick="goToProfileScreen()" style="font-size:14px;font-weight:700;color:var(--text);letter-spacing:-.02em;font-family:'Syne',sans-serif;cursor:pointer" id="mob-topbar-name">User</div>
+    <div id="mob-topbar-name" onclick="goToProfileScreen()" style="font-size:14px;font-weight:700;color:var(--text);letter-spacing:-.02em;font-family:'Syne',sans-serif;cursor:pointer">User</div>
   </div>
   <button class="btn btn-primary" onclick="openModal('add-item')" style="padding:6px 12px;font-size:12px;border-radius:8px">+ Add</button>
 </div>
@@ -5203,6 +5227,7 @@ function safeThemeColor(value){
 // -- AUTH UI --------------------------------------
 function showChangelog(){
   const versions=[
+    {v:'v4.0.0',date:'14/06/2026',changes:['Widgets sidebar: chargement automatique au boot (WORKER_URL et LASTFM_KEY déplacés en tête de script)','Boot ultra-rapide: cache sessionStorage + auto-enter si profil unique sans mot de passe','Greeting localisé: Bonjour/Bon après-midi/Bonsoir sans dépendance à t()','Date localisée: jours et mois traduits en FR/EN/ES/DE dans l\'horloge','Sidebar widgets toggle: bouton ◫ Sidebar dans l\'onglet Connexions pour Discord et Last.fm','Personal dashboard remplacé par NEXUS (ou bio si définie)','Changelog: refonte visuelle — timeline verticale, tags par catégorie, plus lisible','Flash au boot corrigé: sidebar/main-content cachés par défaut, écran de chargement NEXUS','Sidebar: fond noir corrigé, overflow:hidden, footer toujours visible','renderDiscordCard appelle refreshDiscordSidebar automatiquement']},
     {v:'v3.9.1',date:'12/06/2026',changes:['Stats: heatmap GitHub-style sur 6 mois (26 semaines, 4 niveaux orange)','Valorant: graphe RR progression sur les derniers matchs compétitifs','Stats: renderStatsHeatmap() hookée dans renderStatsPage()','Présentation: mode plein écran 2x3 grid (tasks/pomo/habits/streaks/files)','Présentation: horloge live, bouton dans stats topbar + Cmd+K','Présentation: fullscreen API + ESC pour quitter']},
     {v:'v3.9.0',date:'12/06/2026',changes:['Notifications in-app: cloche + badge + panneau slide-in','Notifs auto: tâches en retard, tâches du jour, streaks en danger, événements à venir, milestone pomo','Transitions directionnelles: gauche/droite selon ordre des pages dans la nav','Page order: slide depuis droite si on avance dans la nav, gauche si on recule','Pomo: notification in-app à chaque session terminée','Topbar: bouton cloche avec badge animé']},
     {v:'v3.8.0',date:'12/06/2026',changes:['Command Palette: Cmd+K ouvre une recherche globale avec actions rapides','Command Palette: navigation clavier ↑↓ + Enter, raccourcis N/T','Link preview: hover sur les liens File & Links affiche favicon + domaine','Drag & drop: widgets de l\'overview réorganisables par glisser-déposer','Sidebar: Discord + Spotify/Last.fm refonte — compact, propre, EQ animé','EQ animation: barres musicales animées quand Spotify joue','doLogin/doRegister: try/catch global, plus de loading infini']},
@@ -5250,21 +5275,54 @@ function showChangelog(){
     {v:'v1.1.0',date:'05/06/2026',changes:['Changelog popup','Admin button in sidebar for owner']},
     {v:'v1.0.0',date:'05/06/2026',changes:['Initial release','Multi-profile with avatar + PIN','Discord, Steam, Spotify, Valorant, LoL','Kanban, Habits, Calendar, Tasks, Notes, Stats, Pomodoro']},
   ];
-  let html=`<div style="position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.remove()">
-  <div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r-md);padding:28px;width:100%;max-width:500px;max-height:80vh;overflow-y:auto">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-      <div style="font-size:18px;font-weight:700"> Changelog</div>
-      <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">x</button>
-    </div>`;
-  versions.forEach((v,i)=>{
-    html+=`<div style="margin-bottom:16px">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-        <span style="font-family:var(--mono);font-size:13px;font-weight:700;color:${i===0?'var(--accent)':'var(--text)'}">${v.v}</span>
-        ${i===0?'<span style="background:rgba(59,130,246,.15);color:var(--accent);font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600">LATEST</span>':''}
-        <span style="font-size:11px;color:var(--muted);margin-left:auto">${v.date}</span>
+  let html=`<div style="position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.75);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.remove()">
+  <div style="background:rgba(10,8,14,.97);border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:0;width:100%;max-width:520px;max-height:82vh;display:flex;flex-direction:column;box-shadow:0 32px 80px rgba(0,0,0,.7)">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0">
+      <div>
+        <div style="font-size:17px;font-weight:800;letter-spacing:-.02em;font-family:'Syne',sans-serif">Changelog</div>
+        <div style="font-size:11px;color:rgba(245,245,247,.3);margin-top:2px;font-family:'JetBrains Mono',monospace">NEXUS Dashboard</div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:4px">
-        ${v.changes.map(c=>`<div style="font-size:12px;color:var(--muted);padding-left:12px">- ${c}</div>`).join('')}
+      <button onclick="this.closest('[style*=fixed]').remove()" style="width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:rgba(245,245,247,.4);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s" onmouseover="this.style.background='rgba(248,113,113,.1)';this.style.color='#f87171'" onmouseout="this.style.background='rgba(255,255,255,.05)';this.style.color='rgba(245,245,247,.4)'">✕</button>
+    </div>
+    <!-- Body -->
+    <div style="overflow-y:auto;padding:20px 24px;flex:1;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent">`;
+  const tagFor=c=>{
+    if(/fix|bugfix|corrig/i.test(c)) return '<span style="font-size:9px;font-weight:800;padding:1px 6px;border-radius:4px;background:rgba(248,113,113,.15);color:#f87171;font-family:var(--mono);letter-spacing:.04em;flex-shrink:0">FIX</span>';
+    if(/i18n|langue|traduct|locali/i.test(c)) return '<span style="font-size:9px;font-weight:800;padding:1px 6px;border-radius:4px;background:rgba(129,140,248,.15);color:#818cf8;font-family:var(--mono);letter-spacing:.04em;flex-shrink:0">i18n</span>';
+    if(/ui|css|design|style|visuel|modern/i.test(c)) return '<span style="font-size:9px;font-weight:800;padding:1px 6px;border-radius:4px;background:rgba(52,211,153,.15);color:#34d399;font-family:var(--mono);letter-spacing:.04em;flex-shrink:0">UI</span>';
+    if(/perf|rapide|cache|boot|speed|fast/i.test(c)) return '<span style="font-size:9px;font-weight:800;padding:1px 6px;border-radius:4px;background:rgba(251,191,36,.15);color:#fbbf24;font-family:var(--mono);letter-spacing:.04em;flex-shrink:0">PERF</span>';
+    return '';
+  };
+  versions.forEach((v,i)=>{
+    const isLatest=i===0;
+    const isMajor=v.v.endsWith('.0.0')||v.v.endsWith('.0');
+    html+=`<div style="display:flex;gap:14px;margin-bottom:${isLatest?20:14}px;position:relative">
+      <!-- Timeline dot -->
+      <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0">
+        <div style="width:${isLatest?12:8}px;height:${isLatest?12:8}px;border-radius:50%;margin-top:3px;flex-shrink:0;
+          background:${isLatest?'linear-gradient(135deg,#f97316,#dc2626)':isMajor?'rgba(249,115,22,.5)':'rgba(255,255,255,.15)'};
+          box-shadow:${isLatest?'0 0 10px rgba(249,115,22,.5)':'none'}"></div>
+        ${i<versions.length-1?`<div style="width:1px;flex:1;margin-top:4px;background:linear-gradient(to bottom,rgba(249,115,22,.${isLatest?'3':'15'}),rgba(255,255,255,.05));min-height:20px"></div>`:''}
+      </div>
+      <!-- Content -->
+      <div style="flex:1;min-width:0;padding-bottom:${i<versions.length-1?'4':'0'}px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+          <span style="font-family:var(--mono);font-size:${isLatest?'15':'13'}px;font-weight:800;
+            background:${isLatest?'linear-gradient(90deg,#f97316,#dc2626)':'none'};
+            -webkit-background-clip:${isLatest?'text':'unset'};
+            -webkit-text-fill-color:${isLatest?'transparent':'unset'};
+            color:${isLatest?'unset':isMajor?'rgba(245,245,247,.85)':'rgba(245,245,247,.5)'}">${v.v}</span>
+          ${isLatest?'<span style="font-size:9px;font-weight:800;padding:2px 8px;border-radius:4px;background:linear-gradient(90deg,rgba(249,115,22,.2),rgba(220,38,38,.2));color:#f97316;font-family:var(--mono);letter-spacing:.08em;border:1px solid rgba(249,115,22,.3)">LATEST</span>':''}
+          <span style="font-size:10px;color:rgba(245,245,247,.25);font-family:var(--mono);margin-left:auto">${v.date}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          ${v.changes.map(c=>`<div style="display:flex;align-items:flex-start;gap:7px;padding:4px 0">
+            <span style="color:rgba(249,115,22,.4);font-size:11px;margin-top:1px;flex-shrink:0">▸</span>
+            ${tagFor(c)}
+            <span style="font-size:12px;color:rgba(245,245,247,.5);line-height:1.45;flex:1">${c}</span>
+          </div>`).join('')}
+        </div>
       </div>
     </div>`;
   });
@@ -11945,7 +12003,18 @@ function toggleMobileSidebar(){
   const sidebarEl=document.getElementById('main-sidebar');
   const ov=document.getElementById('sidebar-overlay');
   sidebarEl.classList.toggle('mobile-open');
-  ov.classList.toggle('mobile-open');
+  if(ov)ov.classList.toggle('mobile-open');
+  // Hide swipe hint once user discovers the sidebar
+  const hint=document.getElementById('swipe-hint');
+  if(hint&&sidebarEl.classList.contains('mobile-open')){
+    hint.style.opacity='0';setTimeout(()=>{if(hint)hint.style.display='none';},500);
+    localStorage.setItem('nexus_swipe_discovered','1');
+  }
+}
+
+// Hide swipe hint if already discovered
+if(localStorage.getItem('nexus_swipe_discovered')){
+  const h=document.getElementById('swipe-hint');if(h)h.style.display='none';
 }
 function closeMobileSidebar(){
   document.getElementById('main-sidebar')?.classList.remove('mobile-open');
@@ -12713,6 +12782,113 @@ function t(key){ if(!I18N)return key; return (I18N[_lang]?.[key]) ?? (I18N['en']
     hideBoot();
   });
 })();
+
+// ══════════════════════════════════════════════════════════════
+//  MOBILE — Gestures + Touch Enhancements
+// ══════════════════════════════════════════════════════════════
+(function(){
+  // Only run on touch devices
+  if(!('ontouchstart' in window)) return;
+
+  let touchStartX=0, touchStartY=0, touchStartTime=0;
+  let swipeTarget=null, isSwiping=false;
+
+  // ── SWIPE TO OPEN SIDEBAR ───────────────────────────────────
+  document.addEventListener('touchstart', e=>{
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    touchStartTime = Date.now();
+    isSwiping = false;
+    // Only track swipe from left edge (first 30px)
+    swipeTarget = touchStartX < 30 ? 'open' : null;
+    // Track swipe from sidebar to close
+    const sidebar = document.getElementById('main-sidebar');
+    if(sidebar?.classList.contains('mobile-open')){
+      swipeTarget = 'close';
+    }
+  }, {passive:true});
+
+  document.addEventListener('touchmove', e=>{
+    if(!swipeTarget) return;
+    const dx = e.touches[0].clientX - touchStartX;
+    const dy = e.touches[0].clientY - touchStartY;
+    if(!isSwiping && Math.abs(dy) > Math.abs(dx)) { swipeTarget=null; return; }
+    isSwiping = true;
+    const sidebar = document.getElementById('main-sidebar');
+    if(!sidebar) return;
+    if(swipeTarget==='open' && dx > 0){
+      const pct = Math.min(dx/280, 1);
+      sidebar.style.transform = `translateX(${-100 + pct*100}%)`;
+      sidebar.style.transition = 'none';
+      const overlay = document.querySelector('.sidebar-overlay');
+      if(overlay){overlay.style.display='block';overlay.style.opacity=pct*0.5;}
+    } else if(swipeTarget==='close' && dx < 0){
+      const pct = Math.max(0, 1 + dx/280);
+      sidebar.style.transform = `translateX(${-(1-pct)*100}%)`;
+      sidebar.style.transition = 'none';
+      const overlay = document.querySelector('.sidebar-overlay');
+      if(overlay) overlay.style.opacity = pct*0.5;
+    }
+  }, {passive:true});
+
+  document.addEventListener('touchend', e=>{
+    if(!swipeTarget || !isSwiping) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dt = Date.now() - touchStartTime;
+    const isFlick = Math.abs(dx) > 30 && dt < 300;
+    const sidebar = document.getElementById('main-sidebar');
+    if(!sidebar) return;
+    sidebar.style.transition = '';
+    sidebar.style.transform = '';
+    const overlay = document.querySelector('.sidebar-overlay');
+    if(overlay){overlay.style.opacity='';overlay.style.display='';}
+
+    if(swipeTarget==='open' && (dx > 80 || isFlick)){
+      sidebar.classList.add('mobile-open');
+      if(overlay)overlay.classList.add('mobile-open');
+    } else if(swipeTarget==='close' && (dx < -60 || isFlick)){
+      sidebar.classList.remove('mobile-open');
+      if(overlay)overlay.classList.remove('mobile-open');
+    } else {
+      // Snap back
+      if(sidebar.classList.contains('mobile-open')){
+        sidebar.classList.add('mobile-open');
+      } else {
+        sidebar.classList.remove('mobile-open');
+      }
+    }
+    swipeTarget = null; isSwiping = false;
+  }, {passive:true});
+
+  // ── HAPTIC FEEDBACK on nav items ───────────────────────────────
+  document.addEventListener('touchstart', e=>{
+    const target = e.target.closest('.mob-nav-btn,.btn-primary,.nav-item');
+    if(target && navigator.vibrate) navigator.vibrate(8);
+  }, {passive:true});
+
+  // ── PREVENT DOUBLE-TAP ZOOM on buttons ─────────────────────────
+  let lastTap = 0;
+  document.addEventListener('touchend', e=>{
+    if(e.target.closest('button,.btn,.nav-item,.mob-nav-btn')){
+      const now = Date.now();
+      if(now - lastTap < 300) e.preventDefault();
+      lastTap = now;
+    }
+  });
+
+  // ── PULL-TO-REFRESH prevention (avoid browser native) ──────────
+  let startY = 0;
+  document.addEventListener('touchstart', e=>{ startY = e.touches[0].clientY; }, {passive:true});
+  document.addEventListener('touchmove', e=>{
+    const el = e.target.closest('.main, .kanban-board, #notif-panel');
+    if(!el && document.scrollingElement?.scrollTop === 0 && e.touches[0].clientY > startY + 10){
+      e.preventDefault();
+    }
+  }, {passive:false});
+
+  console.log('[NEXUS] Mobile gestures initialized');
+})();
+
 </script>
 </body>
 </html>

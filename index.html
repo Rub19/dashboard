@@ -66,7 +66,7 @@
 ::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
 ::-webkit-scrollbar-thumb:hover{background:var(--muted2)}
 
-body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;min-height:100vh;display:flex;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;min-height:100vh;display:flex;overflow-x:hidden;-webkit-font-smoothing:antialiased;gap:0}
 
 /* ── ANIMATIONS ── */
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -82,7 +82,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 /* ── PASSWORD SCREEN ── */
 #password-screen{position:fixed;inset:0;z-index:10001;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;animation:fadeIn .4s ease}
 .pw-avatar{width:84px;height:84px;border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:34px;margin-bottom:20px;border:2px solid var(--border3);box-shadow:var(--glow-blue)}
-.pw-avatar img{width:100%;height:100%;object-fit:cover;border-radius:20px}
+.pw-avatar img{max-width:100%;}
 .pw-name{font-size:18px;font-weight:600;margin-bottom:6px}
 .pw-sub{font-size:13px;color:var(--muted);margin-bottom:32px}
 .pw-pin-row{display:flex;gap:12px;margin-bottom:24px}
@@ -276,7 +276,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .user-card:hover{background:rgba(255,255,255,.04)}
 .user-card:hover .switch-hint{opacity:1}
 .switch-hint{position:absolute;right:10px;font-size:9px;color:#f97316;opacity:0;transition:opacity .2s;font-weight:700;letter-spacing:.5px;text-transform:uppercase;font-family:var(--mono)}
-.sidebar-avatar{width:34px;height:34px;border-radius:9px;image-rendering:auto;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0;overflow:hidden;border:1px solid rgba(255,255,255,.08);position:relative;background:var(--surface3)}
+.sidebar-avatar{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0;overflow:hidden;border:1.5px solid rgba(249,115,22,.25);position:relative;background:rgba(255,255,255,.08)}
 .sidebar-avatar img{width:100%;height:100%;object-fit:cover;display:block}
 .user-info{flex:1;min-width:0}
 .user-name{font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.1px}
@@ -305,7 +305,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .nowplaying-iframe-wrap a{pointer-events:none}
 
 /* ── MAIN ── */
-.main{margin-left:220px;flex:1;min-height:100vh;padding:0 28px 28px}
+.main{margin-left:220px;min-height:100vh;padding:0 28px 28px;}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:22px 0 20px;flex-wrap:wrap;gap:12px;border-bottom:1px solid rgba(255,255,255,.04);margin-bottom:24px}
 .page-title{font-size:20px;font-weight:800;letter-spacing:-.3px;font-family:'Syne',sans-serif}
 .page-subtitle{font-size:12px;color:rgba(255,255,255,.3);margin-top:3px}
@@ -502,13 +502,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .theme-swatch.active::after{opacity:1}
 
 /* ── PROFILE BANNER ── */
-.profile-banner{position:relative;margin:-0px -36px 0;height:140px;overflow:hidden;background:linear-gradient(135deg,rgba(249,115,22,.12),rgba(220,38,38,.08));flex-shrink:0}
+.profile-banner{position:relative;margin:0 -28px 0;height:90px;overflow:hidden;background:linear-gradient(135deg,rgba(249,115,22,.08),rgba(220,38,38,.05));flex-shrink:0}
 .profile-banner-img{width:100%;height:100%;object-fit:cover;display:block;opacity:.7}
 .profile-banner-gradient{position:absolute;bottom:0;left:0;right:0;height:100%;background:linear-gradient(to top,var(--bg) 0%,rgba(8,6,9,.6) 60%,transparent 100%)}
-.profile-banner-info{position:absolute;bottom:18px;left:36px;display:flex;align-items:flex-end;gap:14px}
-.profile-banner-avatar{width:56px;height:56px;border-radius:14px;border:2px solid rgba(249,115,22,.3);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;position:relative;background:var(--surface3)}
-.profile-banner-avatar img{width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;border-radius:12px}
-.profile-banner-name{font-size:20px;font-weight:800;letter-spacing:-.3px;text-shadow:0 1px 12px rgba(0,0,0,.8);font-family:'Syne',sans-serif}
+.profile-banner-info{position:absolute;bottom:12px;left:28px;display:flex;align-items:flex-end;gap:12px}
+.profile-banner-avatar{width:44px;height:44px;border-radius:11px;position:relative;overflow:hidden;border:2px solid rgba(249,115,22,.3);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;position:relative;background:var(--surface3)}
+.profile-banner-avatar img{width:44px;height:44px;object-fit:cover;display:block;border-radius:9px}
+.profile-banner-name{font-size:16px;font-weight:800;letter-spacing:-.3px;text-shadow:0 1px 12px rgba(0,0,0,.8);font-family:'Syne',sans-serif}
 .profile-banner-role{font-size:11.5px;color:rgba(255,255,255,.5);margin-top:2px}
 .profile-banner-empty{background:linear-gradient(135deg,rgba(249,115,22,.08) 0%,rgba(220,38,38,.05) 100%)}
 
@@ -2105,7 +2105,7 @@ h1,h2,.section-title,.page-title{font-family:'Syne',sans-serif;letter-spacing:-.
 .section-eyebrow{font-size:9px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:rgba(249,115,22,.55);font-family:'JetBrains Mono',monospace;margin-bottom:5px;display:block}
 
 /* ══ TOPBAR ══ */
-.topbar{padding:16px 0 0;margin-bottom:16px}
+.topbar{padding:10px 0 0;margin-bottom:14px}
 .page-title{font-size:23px;font-weight:800;letter-spacing:-.05em;color:var(--text)}
 .page-subtitle{font-size:12px;color:rgba(245,245,247,.3);margin-top:3px;letter-spacing:.01em}
 
@@ -3075,6 +3075,25 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 }
 .sidebar-compact-btn:hover{color:var(--text);background:rgba(255,255,255,.07)}
 
+
+/* ── SIDEBAR SCROLL FIX ── */
+.sidebar{
+  display:flex;flex-direction:column;height:100vh;overflow:hidden;flex-shrink:0;
+  width:220px;min-width:160px;max-width:400px;
+  background:rgba(5,5,7,.92);
+  border-right:1px solid rgba(255,255,255,.06);
+  backdrop-filter:blur(20px);
+  box-shadow:2px 0 20px rgba(0,0,0,.4);
+  position:fixed;top:0;left:0;z-index:300;
+}
+#sidebar-nav-main{overflow-y:auto;flex:1 1 auto;padding:0 6px;min-height:0}
+#sidebar-nav-account{flex:0 0 auto;padding:0 6px 4px}
+.sidebar .nav-section::-webkit-scrollbar{width:2px}
+.sidebar .nav-section::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:99px}
+.sidebar-footer{flex-shrink:0;margin-top:0}
+/* Remove gap between sidebar and main */
+.resize-handle{pointer-events:auto}
+
 </style>
 </head>
 <body>
@@ -3324,7 +3343,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   <div id="sidebar-nav-main" class="nav-section"></div>
   <div id="sidebar-nav-account" class="nav-section"></div>
   <!-- Compact toggle — always visible at bottom -->
-  <button id="sidebar-compact-btn" onclick="toggleSidebarCompact()" title="Toggle compact mode" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;margin:6px auto 0;background:none;border:1px solid var(--border2);border-radius:8px;cursor:pointer;font-size:14px;color:var(--muted);font-family:var(--font);transition:all .2s ease" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">&#8644;</button>
+  <button id="sidebar-compact-btn" onclick="toggleSidebarCompact()" title="Toggle compact mode" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;margin:4px auto 4px;background:none;border:1px solid var(--border2);border-radius:8px;cursor:pointer;font-size:14px;color:var(--muted);font-family:var(--font);transition:all .2s ease" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">&#8644;</button>
   <div class="sidebar-footer">
     <!-- DISCORD v2 -->
     <div class="sb-section" id="sb-discord-wrap" style="display:none">
@@ -5684,10 +5703,16 @@ function defState(name){return{items:[],todos:[],note:'',notes:[],activity:[],us
 // ===================================================
 function avatarHTML(p,size,r){
   if(p.avatarImg){
-    return `<img src="${p.avatarImg}" style="width:100%;height:100%;object-fit:cover;border-radius:${r}px;display:block;position:absolute;inset:0" onerror="this.remove()">`;
+    // Use simple block img — container must be overflow:hidden + fixed size
+    return `<img src="${p.avatarImg}" style="width:${size}px;height:${size}px;object-fit:cover;border-radius:${r}px;display:block;flex-shrink:0" onerror="this.remove()">`;
   }
-  if(p.avatarEmoji)return `<span style="font-size:${Math.round(size*.38)}px;line-height:1">${p.avatarEmoji}</span>`;
-  return `<span style="font-size:${Math.round(size*.42)}px;font-weight:700;color:var(--accent);line-height:1">${(p.name||'U')[0].toUpperCase()}</span>`;
+  const emoji=p.avatarEmoji||null;
+  const initial=(p.name||'U')[0].toUpperCase();
+  const fs=emoji?Math.round(size*.48):Math.round(size*.44);
+  const content=emoji||initial;
+  const color=emoji?'inherit':'var(--accent)';
+  const fw=emoji?'400':'700';
+  return `<span style="font-size:${fs}px;line-height:1;font-weight:${fw};color:${color}">${content}</span>`;
 }
 
 // ===================================================
@@ -5768,7 +5793,7 @@ function renderProfileScreen(){
       '<div class="ps-card-inner">'+
         '<div class="ps-avatar-wrap">'+
           '<div class="ps-avatar" style="background:'+(p.avatarImg?'var(--surface3)':(p.avatarBg||'var(--surface2)'))+'">'+
-            (p.avatarImg?`<img src="${p.avatarImg}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.remove()">`:'')+
+            (p.avatarImg?`<img src="${p.avatarImg}" style="width:80px;height:80px;object-fit:cover;border-radius:18px;display:block" onerror="this.remove()">`:'')+
             (p.avatarImg?'':avatarHTML(p,80,18))+
           '</div>'+
           locked+
@@ -6124,7 +6149,21 @@ function getDefaultNav(){return [
 ];}
 
 function renderSidebarNav(){
-  const nav=getDefaultNav();
+  const p=curP();
+  const baseNav=getDefaultNav();
+  // Apply saved order/visibility from sidebarConfig
+  let nav=baseNav;
+  if(p?.sidebarConfig?.length){
+    nav=baseNav.map(item=>{
+      const saved=p.sidebarConfig.find(s=>s.id===item.id);
+      return{...item,visible:saved?saved.visible!==false:true};
+    }).filter(i=>i.visible!==false);
+    nav.sort((a,b)=>{
+      const ai=p.sidebarConfig.findIndex(s=>s.id===a.id);
+      const bi=p.sidebarConfig.findIndex(s=>s.id===b.id);
+      if(ai===-1)return 1;if(bi===-1)return-1;return ai-bi;
+    });
+  }
   const mainEl=document.getElementById('sidebar-nav-main');
   const acctEl=document.getElementById('sidebar-nav-account');
   if(!mainEl||!acctEl)return;
@@ -6145,6 +6184,89 @@ function renderSidebarNav(){
   nav.filter(i=>i.section==='main').forEach(item=>mainEl.appendChild(makeItem(item)));
   acctEl.innerHTML='<div class="nav-label">Account</div>';
   nav.filter(i=>i.section==='account').forEach(item=>acctEl.appendChild(makeItem(item)));
+}
+
+
+
+// ══════════════════════════════════════════════════════════════
+//  SIDEBAR LAYOUT CUSTOMIZER
+// ══════════════════════════════════════════════════════════════
+function renderSidebarCustomize(){
+  const container=document.getElementById('sidebar-customize-list');
+  if(!container)return;
+  const p=curP();if(!p)return;
+
+  const allItems=getDefaultNav();
+  const saved=p.sidebarConfig;
+  // Merge saved order/visibility with defaults
+  let items=allItems.map(item=>{
+    const savedItem=saved?.find?.(s=>s.id===item.id);
+    return{...item,visible:savedItem?savedItem.visible!==false:true};
+  });
+  // Sort by saved order if available
+  if(saved?.length){
+    items.sort((a,b)=>{
+      const ai=saved.findIndex(s=>s.id===a.id);
+      const bi=saved.findIndex(s=>s.id===b.id);
+      if(ai===-1)return 1;if(bi===-1)return-1;return ai-bi;
+    });
+  }
+
+  container.innerHTML='';
+  items.forEach(item=>{
+    const row=document.createElement('div');
+    row.setAttribute('draggable','true');
+    row.dataset.id=item.id;
+    row.style.cssText='display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);cursor:grab;transition:all .15s;margin-bottom:3px';
+    row.innerHTML=`
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:14px;height:14px;color:rgba(245,245,247,.25);flex-shrink:0"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
+      <span style="flex:1;font-size:13px;font-weight:500;color:${item.visible?'var(--text)':'rgba(245,245,247,.3)'}">${escapeHTML(item.label)}</span>
+      <label style="display:flex;align-items:center;cursor:pointer">
+        <input type="checkbox" ${item.visible?'checked':''} onchange="toggleSidebarItem('${item.id}',this.checked)" style="display:none">
+        <div onclick="toggleSidebarItem('${item.id}',!${item.visible})" style="width:34px;height:18px;border-radius:99px;background:${item.visible?'linear-gradient(90deg,#f97316,#dc2626)':'rgba(255,255,255,.1)'};position:relative;transition:background .2s;cursor:pointer">
+          <div style="position:absolute;top:2px;${item.visible?'right:2px':'left:2px'};width:14px;height:14px;border-radius:50%;background:#fff;transition:all .2s"></div>
+        </div>
+      </label>
+    `;
+    // Drag events
+    row.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',item.id);row.style.opacity='.4';});
+    row.addEventListener('dragend',()=>row.style.opacity='1');
+    row.addEventListener('dragover',e=>{e.preventDefault();row.style.borderColor='rgba(249,115,22,.4)';});
+    row.addEventListener('dragleave',()=>row.style.borderColor='rgba(255,255,255,.06)');
+    row.addEventListener('drop',e=>{
+      e.preventDefault();
+      row.style.borderColor='rgba(255,255,255,.06)';
+      const draggedId=e.dataTransfer.getData('text/plain');
+      if(draggedId===item.id)return;
+      reorderSidebarItem(draggedId,item.id);
+    });
+    container.appendChild(row);
+  });
+}
+
+function toggleSidebarItem(id,visible){
+  const p=curP();if(!p)return;
+  if(!p.sidebarConfig)p.sidebarConfig=getDefaultNav().map(i=>({id:i.id,visible:true}));
+  const item=p.sidebarConfig.find(i=>i.id===id);
+  if(item)item.visible=visible;
+  else p.sidebarConfig.push({id,visible});
+  saveStateNow();
+  renderSidebarCustomize();
+  renderSidebarNav();
+}
+
+function reorderSidebarItem(fromId,toId){
+  const p=curP();if(!p)return;
+  const allItems=getDefaultNav();
+  if(!p.sidebarConfig)p.sidebarConfig=allItems.map(i=>({id:i.id,visible:true}));
+  const fromIdx=p.sidebarConfig.findIndex(i=>i.id===fromId);
+  const toIdx=p.sidebarConfig.findIndex(i=>i.id===toId);
+  if(fromIdx===-1||toIdx===-1)return;
+  const [moved]=p.sidebarConfig.splice(fromIdx,1);
+  p.sidebarConfig.splice(toIdx,0,moved);
+  saveStateNow();
+  renderSidebarCustomize();
+  renderSidebarNav();
 }
 
 
@@ -6209,10 +6331,31 @@ function initDashboard(){
 
 function updateSidebarAvatar(){
   const p=curP();if(!p)return;
+  // Sidebar avatar
   const el=document.getElementById('sidebar-avatar');
-  if(!el)return;
-  el.style.background=p.avatarImg?'transparent':(p.avatarBg||'var(--surface3)');
-  el.innerHTML=avatarHTML(p,34,8);
+  if(el){
+    el.innerHTML='';
+    if(p.avatarImg){
+      const img=document.createElement('img');
+      img.src=p.avatarImg;
+      img.style.cssText='width:34px;height:34px;object-fit:cover;border-radius:7px;display:block';
+      img.onerror=()=>{ el.innerHTML=`<span style="font-size:15px;font-weight:700;color:var(--accent)">${(p.name||'U')[0].toUpperCase()}</span>`; };
+      el.style.background='transparent';
+      el.appendChild(img);
+    } else {
+      el.style.background=p.avatarBg||'rgba(249,115,22,.15)';
+      const span=document.createElement('span');
+      span.style.cssText=`font-size:${p.avatarEmoji?'18px':'15px'};line-height:1;font-weight:${p.avatarEmoji?'400':'700'};color:${p.avatarEmoji?'inherit':'var(--accent)'}`;
+      span.textContent=p.avatarEmoji||(p.name||'U')[0].toUpperCase();
+      el.appendChild(span);
+    }
+  }
+  // Display name
+  const un=document.getElementById('display-username');
+  if(un)un.textContent=p.name||'User';
+  // Topbar + banner
+  updateTopbarProfile();
+  if(typeof updateBannerDisplay==='function')updateBannerDisplay();
 }
 
 function updateSettingsPreview(){
@@ -7442,18 +7585,31 @@ function initDarkMode(){
 // ===================================================
 function updateTopbarProfile(){
   const p=curP();if(!p)return;
-  // Desktop topbar
-  const av=document.getElementById('topbar-avatar');
-  const un=document.getElementById('topbar-username');
-  if(av){av.style.background=p.avatarImg?'transparent':(p.avatarBg||'var(--surface3)');av.innerHTML=avatarHTML(p,26,6);}
-  if(un)un.textContent=p.name||'User';
-  // Mobile topbar
-  const mobAv=document.getElementById('mob-topbar-avatar');
-  const mobNm=document.getElementById('mob-topbar-name');
-  if(mobAv){
-    mobAv.style.background=p.avatarImg?'transparent':(p.avatarBg||'rgba(255,255,255,.08)');
-    mobAv.innerHTML=avatarHTML(p,32,7);
+  // Helper to fill an avatar container
+  function fillAv(el,size,r){
+    if(!el)return;
+    el.innerHTML='';
+    if(p.avatarImg){
+      const img=document.createElement('img');
+      img.src=p.avatarImg;
+      img.style.cssText=`width:${size}px;height:${size}px;object-fit:cover;border-radius:${r}px;display:block`;
+      img.onerror=()=>{el.style.background=p.avatarBg||'rgba(249,115,22,.15)';el.innerHTML=`<span style="font-size:${Math.round(size*.44)}px;font-weight:700;color:var(--accent)">${(p.name||'U')[0].toUpperCase()}</span>`;};
+      el.style.background='transparent';
+      el.appendChild(img);
+    } else {
+      el.style.background=p.avatarBg||'rgba(249,115,22,.15)';
+      const span=document.createElement('span');
+      const emoji=p.avatarEmoji;
+      span.style.cssText=`font-size:${emoji?Math.round(size*.48):Math.round(size*.44)}px;line-height:1;font-weight:${emoji?'400':'700'};color:${emoji?'inherit':'var(--accent)'}`;
+      span.textContent=emoji||(p.name||'U')[0].toUpperCase();
+      el.appendChild(span);
+    }
   }
+  fillAv(document.getElementById('topbar-avatar'),24,5);
+  const un=document.getElementById('topbar-username');
+  if(un)un.textContent=p.name||'User';
+  fillAv(document.getElementById('mob-topbar-avatar'),32,7);
+  const mobNm=document.getElementById('mob-topbar-name');
   if(mobNm)mobNm.textContent=p.name||'User';
 }
 
@@ -9321,6 +9477,10 @@ function refreshDiscordSidebar(){
   const p=curP();if(!p)return;
   const conn=p.state.connections?.discord;
   const wrap=document.getElementById('sb-discord-wrap');
+  // If we have a userId but no data yet, start the Lanyard WS to fetch it
+  if(conn?.userId&&!conn?.data&&typeof startLanyardWS==='function'){
+    startLanyardWS(conn.userId);
+  }
   if(!conn?.data){if(wrap)wrap.style.display='none';return}
   if(wrap)wrap.style.display='block';
   const d=conn.data;

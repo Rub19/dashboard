@@ -5216,18 +5216,9 @@ let _ambientFrame=null;
 let _bgFrame=null;
 let _bgParticles=[];
 let _lang=localStorage.getItem('nexus_lang')||'fr';
-let _currentNoteId=null;
-let _notePreviewMode=false;
-let _noteSaveTO=null;
 let _bioSaveTO=null;
 let _socialSaveTO=null;
-let _todoFilter='all';
-let _lpHideTO=null;
 let _npProgressInterval=null;
-let _lanyardHB=null;
-let _lanyardUserId=null;
-let _lastRank=null;
-let _valoMatchList=[];
 
 function escapeHTML(value){
   return String(value ?? '').replace(/[&<>"']/g, c => ({

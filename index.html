@@ -2215,7 +2215,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   border-color:rgba(249,115,22,.4);
   background:rgba(249,115,22,.06);
 }
-.lang-trigger-flag{font-size:17px;line-height:1}
+.lang-trigger-flag{font-size:17px;line-height:1;display:flex;align-items:center}
 .lang-trigger-name{font-size:12.5px;font-weight:600;letter-spacing:.01em}
 .lang-trigger-chevron{
   width:14px;height:14px;color:rgba(245,245,247,.4);
@@ -2257,7 +2257,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   content:'';position:absolute;left:0;top:20%;bottom:20%;
   width:2px;background:#f97316;border-radius:99px;
 }
-.lang-option-flag{font-size:20px;line-height:1;flex-shrink:0}
+.lang-option-flag{font-size:20px;line-height:1;flex-shrink:0;display:flex;align-items:center}
 .lang-option-info{flex:1;min-width:0}
 .lang-option-name{font-size:13px;font-weight:600;color:var(--text)}
 .lang-option-native{font-size:11px;color:rgba(245,245,247,.35);margin-top:1px}
@@ -2289,38 +2289,57 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   display:flex;align-items:center;gap:8px;
   padding:7px 9px;border-radius:var(--r-sm);
   background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
-  transition:border-color .15s;
+  transition:all .2s;position:relative;overflow:hidden;
 }
-.sb-dc-pill:hover{border-color:rgba(88,101,242,.25)}
+.sb-dc-pill::before{
+  content:'';position:absolute;inset:0;
+  background:var(--sb-dc-glow,linear-gradient(90deg,rgba(88,101,242,.05),transparent 60%));
+  pointer-events:none;transition:opacity .3s;
+}
+.sb-dc-pill.status-online{border-color:rgba(59,165,92,.2);}
+.sb-dc-pill.status-online::before{background:linear-gradient(90deg,rgba(59,165,92,.08),transparent 60%)}
+.sb-dc-pill.status-idle{border-color:rgba(250,168,26,.2);}
+.sb-dc-pill.status-idle::before{background:linear-gradient(90deg,rgba(250,168,26,.07),transparent 60%)}
+.sb-dc-pill.status-dnd{border-color:rgba(237,66,69,.25);}
+.sb-dc-pill.status-dnd::before{background:linear-gradient(90deg,rgba(237,66,69,.1),transparent 60%)}
 .sb-dc-av{
-  width:30px;height:30px;border-radius:8px;flex-shrink:0;position:relative;
+  width:32px;height:32px;border-radius:9px;flex-shrink:0;position:relative;
   background:rgba(255,255,255,.07);overflow:hidden;
-  display:flex;align-items:center;justify-content:center;font-size:13px;
+  display:flex;align-items:center;justify-content:center;font-size:14px;
 }
 .sb-dc-av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .sb-dc-dot{
-  position:absolute;bottom:-1px;right:-1px;
-  width:9px;height:9px;border-radius:50%;border:2px solid rgba(5,5,7,.95);
+  position:absolute;bottom:-2px;right:-2px;
+  width:10px;height:10px;border-radius:50%;border:2px solid #050507;
+  transition:background .3s;
 }
-.sb-dc-dot.online{background:#3ba55c}
-.sb-dc-dot.idle{background:#faa81a}
-.sb-dc-dot.dnd{background:#ed4245}
+.sb-dc-dot.online{background:#3ba55c;box-shadow:0 0 5px rgba(59,165,92,.5)}
+.sb-dc-dot.idle{background:#faa81a;box-shadow:0 0 5px rgba(250,168,26,.4)}
+.sb-dc-dot.dnd{background:#ed4245;box-shadow:0 0 5px rgba(237,66,69,.5)}
 .sb-dc-dot.offline{background:#747f8d}
 .sb-dc-name{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sb-dc-act{font-size:10.5px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.sb-dc-badge{
+  font-size:8px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  padding:1px 5px;border-radius:4px;font-family:'JetBrains Mono',monospace;flex-shrink:0;
+}
+.sb-dc-badge.online{background:rgba(59,165,92,.15);color:#3ba55c;border:1px solid rgba(59,165,92,.25)}
+.sb-dc-badge.idle{background:rgba(250,168,26,.15);color:#faa81a;border:1px solid rgba(250,168,26,.25)}
+.sb-dc-badge.dnd{background:rgba(237,66,69,.15);color:#ed4245;border:1px solid rgba(237,66,69,.3)}
+.sb-dc-badge.offline{background:rgba(116,127,141,.1);color:#747f8d;border:1px solid rgba(116,127,141,.2)}
 
 /* Now playing v2 */
 .sb-np-pill{
   display:flex;align-items:center;gap:8px;
   padding:7px 9px;border-radius:var(--r-sm);
-  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+  background:rgba(255,255,255,.03);border:1px solid rgba(29,185,84,.15);
   position:relative;overflow:hidden;
   transition:border-color .15s;
 }
-.sb-np-pill:hover{border-color:rgba(29,185,84,.25)}
+.sb-np-pill:hover{border-color:rgba(29,185,84,.3)}
 .sb-np-pill::before{
   content:'';position:absolute;inset:0;
-  background:linear-gradient(90deg,rgba(29,185,84,.06),transparent 60%);
+  background:linear-gradient(90deg,rgba(29,185,84,.08),transparent 65%);
   pointer-events:none;
 }
 .sb-np-art{
@@ -2334,7 +2353,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 }
 .sb-np-info{flex:1;min-width:0}
 .sb-np-track{font-size:11.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
-.sb-np-artist{font-size:10px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.sb-np-artist{font-size:10px;color:#1db954;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;opacity:.85}
 .sb-np-bar{height:2px;background:rgba(255,255,255,.08);border-radius:99px;margin-top:5px;overflow:hidden}
 .sb-np-fill{height:100%;background:#1db954;border-radius:99px;transition:width .5s linear}
 .sb-eq{
@@ -2352,6 +2371,29 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   0%,100%{transform:scaleY(1)}
   50%{transform:scaleY(.3)}
 }
+/* Scrobbling — same pill design as Spotify */
+.sb-scrobble-pill{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 9px;border-radius:var(--r-sm);
+  background:rgba(255,255,255,.03);border:1px solid rgba(213,16,7,.18);
+  position:relative;overflow:hidden;transition:border-color .15s;
+}
+.sb-scrobble-pill::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,rgba(213,16,7,.07),transparent 65%);
+  pointer-events:none;
+}
+.sb-scrobble-pill:hover{border-color:rgba(213,16,7,.32)}
+.sb-scrobble-art{
+  width:34px;height:34px;border-radius:7px;flex-shrink:0;
+  background:rgba(255,255,255,.06);overflow:hidden;display:flex;
+  align-items:center;justify-content:center;font-size:15px;
+}
+.sb-scrobble-art img{width:34px;height:34px;object-fit:cover;border-radius:7px;display:block}
+.sb-scrobble-info{flex:1;min-width:0}
+.sb-scrobble-track{font-size:11.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.sb-scrobble-artist{font-size:10px;color:#d51007;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;opacity:.85}
+.sb-eq-lfm span{background:#d51007!important}
 /* Scrobbling label */
 .sb-scrobble-label{
   display:flex;align-items:center;gap:5px;
@@ -3262,27 +3304,27 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       <!-- Lang selector -->
       <div style="display:flex;justify-content:flex-end;margin-bottom:16px"><div class="lang-dropdown" id="lang-dd-auth" onclick="toggleLangDropdown('lang-dd-auth')">
   <div class="lang-trigger" id="lang-dd-auth-trigger">
-    <span class="lang-trigger-flag" id="lang-dd-auth-flag">🇫🇷</span>
+    <span class="lang-trigger-flag" id="lang-dd-auth-flag"><img src="https://flagcdn.com/20x15/fr.png" width="20" height="15" alt="FR" style="border-radius:2px;display:inline-block;vertical-align:middle"></span>
     <svg class="lang-trigger-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
   </div>
   <div class="lang-menu">
     <div class="lang-option active" data-lang="fr" onclick="event.stopPropagation();setLangAndClose('fr','lang-dd-auth')">
-      <span class="lang-option-flag">🇫🇷</span>
+      <span class="lang-option-flag"><img src="https://flagcdn.com/24x18/fr.png" width="24" height="18" alt="FR" style="border-radius:3px;display:inline-block;vertical-align:middle"></span>
       <div class="lang-option-info"><div class="lang-option-name">French</div><div class="lang-option-native">Français</div></div>
       <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
     <div class="lang-option" data-lang="en" onclick="event.stopPropagation();setLangAndClose('en','lang-dd-auth')">
-      <span class="lang-option-flag">🇺🇸</span>
+      <span class="lang-option-flag"><img src="https://flagcdn.com/24x18/gb.png" width="24" height="18" alt="EN" style="border-radius:3px;display:inline-block;vertical-align:middle"></span>
       <div class="lang-option-info"><div class="lang-option-name">English</div><div class="lang-option-native">English</div></div>
       <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
     <div class="lang-option" data-lang="es" onclick="event.stopPropagation();setLangAndClose('es','lang-dd-auth')">
-      <span class="lang-option-flag">🇪🇸</span>
+      <span class="lang-option-flag"><img src="https://flagcdn.com/24x18/es.png" width="24" height="18" alt="ES" style="border-radius:3px;display:inline-block;vertical-align:middle"></span>
       <div class="lang-option-info"><div class="lang-option-name">Spanish</div><div class="lang-option-native">Español</div></div>
       <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
     <div class="lang-option" data-lang="de" onclick="event.stopPropagation();setLangAndClose('de','lang-dd-auth')">
-      <span class="lang-option-flag">🇩🇪</span>
+      <span class="lang-option-flag"><img src="https://flagcdn.com/24x18/de.png" width="24" height="18" alt="DE" style="border-radius:3px;display:inline-block;vertical-align:middle"></span>
       <div class="lang-option-info"><div class="lang-option-name">German</div><div class="lang-option-native">Deutsch</div></div>
       <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
@@ -3421,6 +3463,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
           <div class="sb-dc-name" id="sb-dc-name">—</div>
           <div class="sb-dc-act" id="sb-dc-activity" style="display:none"></div>
         </div>
+        <span class="sb-dc-badge offline" id="sb-dc-badge">—</span>
       </div>
     </div>
 
@@ -3471,7 +3514,16 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
     <!-- LAST.FM v2 -->
     <div class="sb-section" id="sb-lastfm-wrap" style="display:none">
       <div class="sb-scrobble-label"><span class="sb-scrobble-dot"></span>Scrobbling</div>
-      <div id="sb-lastfm-content"></div>
+      <div class="sb-scrobble-pill" id="sb-lastfm-content">
+        <div class="sb-scrobble-art" id="sb-lfm-art">🎵</div>
+        <div class="sb-scrobble-info">
+          <div class="sb-scrobble-track" id="sb-lfm-track">—</div>
+          <div class="sb-scrobble-artist" id="sb-lfm-artist">—</div>
+        </div>
+        <div class="sb-eq sb-eq-lfm" id="sb-lfm-eq" style="display:none">
+          <span></span><span></span><span></span><span></span>
+        </div>
+      </div>
     </div>
 
     <!-- User card -->
@@ -3517,27 +3569,27 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       <div class="topbar-actions">
         <div class="topbar-lang"><div class="lang-dropdown" id="lang-dd-topbar" onclick="toggleLangDropdown('lang-dd-topbar')">
   <div class="lang-trigger" id="lang-dd-topbar-trigger">
-    <span class="lang-trigger-flag" id="lang-dd-topbar-flag">🇫🇷</span>
+    <span class="lang-trigger-flag" id="lang-dd-topbar-flag"><img src="https://flagcdn.com/20x15/fr.png" width="20" height="15" alt="FR" style="border-radius:2px;display:inline-block;vertical-align:middle"></span>
     <svg class="lang-trigger-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
   </div>
   <div class="lang-menu">
     <div class="lang-option active" data-lang="fr" onclick="event.stopPropagation();setLangAndClose('fr','lang-dd-topbar')">
-      <span class="lang-option-flag">🇫🇷</span>
+      <span class="lang-option-flag"><img src="https://flagcdn.com/24x18/fr.png" width="24" height="18" alt="FR" style="border-radius:3px;display:inline-block;vertical-align:middle"></span>
       <div class="lang-option-info"><div class="lang-option-name">French</div><div class="lang-option-native">Français</div></div>
       <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
     <div class="lang-option" data-lang="en" onclick="event.stopPropagation();setLangAndClose('en','lang-dd-topbar')">
-      <span class="lang-option-flag">🇺🇸</span>
+      <span class="lang-option-flag"><img src="https://flagcdn.com/24x18/gb.png" width="24" height="18" alt="EN" style="border-radius:3px;display:inline-block;vertical-align:middle"></span>
       <div class="lang-option-info"><div class="lang-option-name">English</div><div class="lang-option-native">English</div></div>
       <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
     <div class="lang-option" data-lang="es" onclick="event.stopPropagation();setLangAndClose('es','lang-dd-topbar')">
-      <span class="lang-option-flag">🇪🇸</span>
+      <span class="lang-option-flag"><img src="https://flagcdn.com/24x18/es.png" width="24" height="18" alt="ES" style="border-radius:3px;display:inline-block;vertical-align:middle"></span>
       <div class="lang-option-info"><div class="lang-option-name">Spanish</div><div class="lang-option-native">Español</div></div>
       <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
     <div class="lang-option" data-lang="de" onclick="event.stopPropagation();setLangAndClose('de','lang-dd-topbar')">
-      <span class="lang-option-flag">🇩🇪</span>
+      <span class="lang-option-flag"><img src="https://flagcdn.com/24x18/de.png" width="24" height="18" alt="DE" style="border-radius:3px;display:inline-block;vertical-align:middle"></span>
       <div class="lang-option-info"><div class="lang-option-name">German</div><div class="lang-option-native">Deutsch</div></div>
       <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
@@ -4274,9 +4326,13 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
         <!-- Add friend -->
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
           <input type="text" class="modal-input" id="compare-valo-input" placeholder="Friend's Valorant Name#TAG" style="flex:1;min-width:180px">
-          <select class="game-region-select" id="compare-valo-region">
-            <option value="eu">EU</option><option value="na">NA</option><option value="ap">AP</option><option value="kr">KR</option>
-          </select>
+          <input type="hidden" id="compare-valo-region" value="eu">
+          <div class="region-pills" style="flex-shrink:0">
+            <div class="region-pill active" data-val="eu" onclick="setCompareRegion(this)">EU</div>
+            <div class="region-pill" data-val="na" onclick="setCompareRegion(this)">NA</div>
+            <div class="region-pill" data-val="ap" onclick="setCompareRegion(this)">AP</div>
+            <div class="region-pill" data-val="kr" onclick="setCompareRegion(this)">KR</div>
+          </div>
           <input type="text" class="modal-input" id="compare-steam-input" placeholder="Friend's Steam ID64 (optional)" style="flex:1;min-width:180px">
           <button class="btn btn-primary" onclick="addFriendToCompare()">&#43; Add friend</button>
         </div>
@@ -5114,7 +5170,12 @@ const LASTFM_KEY = '20a3130a6a13552131356a4dd2bf8071';
 
 
 // ── LANGUAGE DROPDOWN ─────────────────────────────────────────
-var LANG_META={"fr": {"flag": "🇫🇷", "name": "French", "native": "Français"}, "en": {"flag": "🇺🇸", "name": "English", "native": "English"}, "es": {"flag": "🇪🇸", "name": "Spanish", "native": "Español"}, "de": {"flag": "🇩🇪", "name": "German", "native": "Deutsch"}};
+var LANG_META={
+  "fr": {"flag": '<img src="https://flagcdn.com/20x15/fr.png" width="20" height="15" alt="FR" style="border-radius:2px;display:inline-block;vertical-align:middle">', "name": "French", "native": "Français"},
+  "en": {"flag": '<img src="https://flagcdn.com/20x15/gb.png" width="20" height="15" alt="EN" style="border-radius:2px;display:inline-block;vertical-align:middle">', "name": "English", "native": "English"},
+  "es": {"flag": '<img src="https://flagcdn.com/20x15/es.png" width="20" height="15" alt="ES" style="border-radius:2px;display:inline-block;vertical-align:middle">', "name": "Spanish", "native": "Español"},
+  "de": {"flag": '<img src="https://flagcdn.com/20x15/de.png" width="20" height="15" alt="DE" style="border-radius:2px;display:inline-block;vertical-align:middle">', "name": "German", "native": "Deutsch"}
+};
 
 function toggleLangDropdown(id){
   // Close all other dropdowns first
@@ -5143,7 +5204,7 @@ function updateAllLangDropdowns(){
   document.querySelectorAll('.lang-dropdown').forEach(dd=>{
     const id=dd.id;
     const flag=document.getElementById(id+'-flag');
-    if(flag) flag.textContent=meta.flag;
+    if(flag) flag.innerHTML=meta.flag;
     // Update active state on options
     dd.querySelectorAll('.lang-option').forEach(opt=>{
       opt.classList.toggle('active', opt.dataset.lang===_lang);
@@ -6626,6 +6687,12 @@ function updateSettingsPreview(){
 }
 
 // ── REGION PILL SELECTOR ───────────────────────
+function setCompareRegion(pill){
+  document.querySelectorAll('.region-pills [onclick*="setCompareRegion"]').forEach(p=>p.classList.remove('active'));
+  pill.classList.add('active');
+  document.getElementById('compare-valo-region').value=pill.dataset.val;
+}
+
 function setRegionPill(game, el){
   const pillsId = game + '-region-pills';
   document.querySelectorAll(`#${pillsId} .region-pill`).forEach(p=>p.classList.remove('active'));
@@ -9578,14 +9645,15 @@ function updateLastfmSidebar(data,nowTrack,topArtists){
   if(!nowTrack||!isNow){wrap.style.display='none';return;}
   wrap.style.display='block';
   const img=nowTrack.image?.[2]?.['#text']||'';
-  content.innerHTML=`<div style="display:flex;align-items:center;gap:8px">
-    ${img?`<img src="${img}" style="width:34px;height:34px;border-radius:6px;object-fit:cover;flex-shrink:0" onerror="this.style.display='none'">`:'<div style="width:34px;height:34px;border-radius:6px;background:var(--surface3);flex-shrink:0"></div>'}
-    <div style="min-width:0;flex:1">
-      <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)">${nowTrack.name||'?'}</div>
-      <div style="font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${nowTrack.artist?.['#text']||''}</div>
-    </div>
-    <span style="width:8px;height:8px;border-radius:50%;background:#d51007;flex-shrink:0;animation:pulse 1.5s infinite"></span>
-  </div>`;
+  // Update pill elements directly
+  const artEl=document.getElementById('sb-lfm-art');
+  if(artEl)artEl.innerHTML=img?`<img src="${img}" onerror="this.innerHTML='🎵'" style="width:34px;height:34px;object-fit:cover;border-radius:7px;display:block">`:'🎵';
+  const trackEl=document.getElementById('sb-lfm-track');
+  if(trackEl)trackEl.textContent=nowTrack.name||'?';
+  const artistEl=document.getElementById('sb-lfm-artist');
+  if(artistEl)artistEl.textContent=nowTrack.artist?.['#text']||'';
+  const eqEl=document.getElementById('sb-lfm-eq');
+  if(eqEl)eqEl.style.display='flex';
 }
 
 async function refreshLastfm(){
@@ -9769,9 +9837,18 @@ function refreshDiscordSidebar(){
   // Name
   const nameEl=document.getElementById('sb-dc-name');
   if(nameEl)nameEl.textContent=d.discord_user.global_name||d.discord_user.username;
-  // Status dot
+  // Status dot + pill glow + badge
+  const status=d.discord_status||'offline';
   const stEl=document.getElementById('sb-dc-status');
-  if(stEl)stEl.className='sb-dc-dot '+(d.discord_status||'offline');
+  if(stEl)stEl.className='sb-dc-dot '+status;
+  const pill=document.getElementById('sb-discord-card');
+  if(pill){pill.className='sb-dc-pill status-'+status;}
+  const badge=document.getElementById('sb-dc-badge');
+  if(badge){
+    const labels={online:'Online',idle:'Idle',dnd:'DND',offline:'Off'};
+    badge.textContent=labels[status]||status;
+    badge.className='sb-dc-badge '+status;
+  }
   // Activity
   const act=d.activities?.find(a=>a.type===0||a.type===2);
   const actEl=document.getElementById('sb-dc-activity');
@@ -10314,7 +10391,11 @@ async function loadCompareDashboardUsers(){
 function addFriendFromDashboard(profileName,name,tag,region,steamId){
   if(name&&tag){
     document.getElementById('compare-valo-input').value=name+'#'+tag;
-    document.getElementById('compare-valo-region').value=region||'eu';
+    // Update region pills
+    document.querySelectorAll('#compare-valo-region').forEach(el=>el.value=region||'eu');
+    document.querySelectorAll('.region-pills .region-pill[onclick*="setCompareRegion"]').forEach(p=>{
+      p.classList.toggle('active',p.dataset.val===(region||'eu'));
+    });
   }
   if(steamId) document.getElementById('compare-steam-input').value=steamId;
   toast('Loaded '+profileName+' — click Add friend','info');

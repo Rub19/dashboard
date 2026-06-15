@@ -2849,8 +2849,15 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   position:fixed;top:0;left:0;z-index:300;
   transition:width .22s ease, box-shadow .4s ease, background .4s ease;
 }
-#page-ai.active{display:flex!important;flex-direction:column;align-items:center}
-#page-ai .topbar{width:100%;max-width:700px}
+#page-ai.active{
+  display:flex!important;flex-direction:column;align-items:center;
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  padding:0;margin:0;z-index:200;
+  background:var(--bg);
+  overflow:hidden;
+}
+#page-ai .topbar{width:100%;max-width:720px;padding:20px 20px 12px}
+#page-ai .ai-page{max-width:720px;width:100%;padding:0 20px}
 #sidebar-nav-main{overflow-y:auto;flex:1 1 auto;padding:0 6px;min-height:0;scrollbar-width:none}
 #sidebar-nav-account{flex:0 0 auto;padding:0 6px 4px;min-height:0}
 .sidebar .nav-section::-webkit-scrollbar{width:2px}
@@ -7421,7 +7428,7 @@ async function sendAIMessage(){
     if(filtered[0]?.role==='user'){
       filtered[0].parts[0].text=system+'\n\nUser: '+filtered[0].parts[0].text;
     }
-    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${geminiKey}`,{
+    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({contents:filtered,generationConfig:{maxOutputTokens:800,temperature:0.7}}),

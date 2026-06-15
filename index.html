@@ -2285,23 +2285,21 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   content:'';width:14px;height:1px;background:rgba(245,245,247,.12);flex-shrink:0;
 }
 /* Discord pill v2 */
+/* ── sidebar widgets — palette unifiée ── */
 .sb-dc-pill{
   display:flex;align-items:center;gap:8px;
   padding:7px 9px;border-radius:var(--r-sm);
-  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
-  transition:all .2s;position:relative;overflow:hidden;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  transition:border-color .2s;position:relative;overflow:hidden;
 }
 .sb-dc-pill::before{
-  content:'';position:absolute;inset:0;
-  background:var(--sb-dc-glow,linear-gradient(90deg,rgba(88,101,242,.05),transparent 60%));
-  pointer-events:none;transition:opacity .3s;
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(90deg,rgba(255,255,255,.02),transparent 70%);
 }
-.sb-dc-pill.status-online{border-color:rgba(59,165,92,.2);}
-.sb-dc-pill.status-online::before{background:linear-gradient(90deg,rgba(59,165,92,.08),transparent 60%)}
-.sb-dc-pill.status-idle{border-color:rgba(250,168,26,.2);}
-.sb-dc-pill.status-idle::before{background:linear-gradient(90deg,rgba(250,168,26,.07),transparent 60%)}
-.sb-dc-pill.status-dnd{border-color:rgba(237,66,69,.25);}
-.sb-dc-pill.status-dnd::before{background:linear-gradient(90deg,rgba(237,66,69,.1),transparent 60%)}
+/* statut : juste le dot change de couleur, la pill reste neutre */
+.sb-dc-pill.status-online{border-color:rgba(255,255,255,.1)}
+.sb-dc-pill.status-idle{border-color:rgba(255,255,255,.1)}
+.sb-dc-pill.status-dnd{border-color:rgba(255,255,255,.1)}
 .sb-dc-av{
   width:32px;height:32px;border-radius:9px;flex-shrink:0;position:relative;
   background:rgba(255,255,255,.07);overflow:hidden;
@@ -2310,102 +2308,115 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 .sb-dc-av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .sb-dc-dot{
   position:absolute;bottom:-2px;right:-2px;
-  width:10px;height:10px;border-radius:50%;border:2px solid #050507;
-  transition:background .3s;
+  width:9px;height:9px;border-radius:50%;border:2px solid #050507;
 }
-.sb-dc-dot.online{background:#3ba55c;box-shadow:0 0 5px rgba(59,165,92,.5)}
-.sb-dc-dot.idle{background:#faa81a;box-shadow:0 0 5px rgba(250,168,26,.4)}
-.sb-dc-dot.dnd{background:#ed4245;box-shadow:0 0 5px rgba(237,66,69,.5)}
-.sb-dc-dot.offline{background:#747f8d}
+.sb-dc-dot.online{background:#3ba55c}
+.sb-dc-dot.idle{background:#faa81a}
+.sb-dc-dot.dnd{background:#ed4245}
+.sb-dc-dot.offline{background:#4e5058}
 .sb-dc-name{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sb-dc-act{font-size:10.5px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.sb-dc-act{font-size:10.5px;color:rgba(245,245,247,.35);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+/* badge statut — discret, monochrome sauf la couleur du dot */
 .sb-dc-badge{
-  font-size:8px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
-  padding:1px 5px;border-radius:4px;font-family:'JetBrains Mono',monospace;flex-shrink:0;
+  font-size:7.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:2px 5px;border-radius:4px;font-family:'JetBrains Mono',monospace;flex-shrink:0;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  color:rgba(245,245,247,.45);
 }
-.sb-dc-badge.online{background:rgba(59,165,92,.15);color:#3ba55c;border:1px solid rgba(59,165,92,.25)}
-.sb-dc-badge.idle{background:rgba(250,168,26,.15);color:#faa81a;border:1px solid rgba(250,168,26,.25)}
-.sb-dc-badge.dnd{background:rgba(237,66,69,.15);color:#ed4245;border:1px solid rgba(237,66,69,.3)}
-.sb-dc-badge.offline{background:rgba(116,127,141,.1);color:#747f8d;border:1px solid rgba(116,127,141,.2)}
+.sb-dc-badge.online{color:#3ba55c;border-color:rgba(59,165,92,.2);background:rgba(59,165,92,.07)}
+.sb-dc-badge.idle{color:#faa81a;border-color:rgba(250,168,26,.2);background:rgba(250,168,26,.06)}
+.sb-dc-badge.dnd{color:#ed4245;border-color:rgba(237,66,69,.2);background:rgba(237,66,69,.06)}
+.sb-dc-badge.offline{color:rgba(245,245,247,.3);border-color:rgba(255,255,255,.07);background:transparent}
 
-/* Now playing v2 */
+/* Now playing — neutre, accent subtil via la barre de progression seulement */
 .sb-np-pill{
   display:flex;align-items:center;gap:8px;
   padding:7px 9px;border-radius:var(--r-sm);
-  background:rgba(255,255,255,.03);border:1px solid rgba(29,185,84,.15);
-  position:relative;overflow:hidden;
-  transition:border-color .15s;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  position:relative;overflow:hidden;transition:border-color .15s;
 }
-.sb-np-pill:hover{border-color:rgba(29,185,84,.3)}
-.sb-np-pill::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(90deg,rgba(29,185,84,.08),transparent 65%);
-  pointer-events:none;
-}
+.sb-np-pill:hover{border-color:rgba(255,255,255,.12)}
 .sb-np-art{
   width:34px;height:34px;border-radius:7px;flex-shrink:0;
   background:rgba(255,255,255,.06);overflow:hidden;
   position:relative;min-width:34px;min-height:34px;
 }
-.sb-np-art img{
-  position:absolute;top:0;left:0;width:34px;height:34px;
-  object-fit:cover;border-radius:7px;display:block;
-}
+.sb-np-art img{position:absolute;top:0;left:0;width:34px;height:34px;object-fit:cover;border-radius:7px;display:block}
 .sb-np-info{flex:1;min-width:0}
 .sb-np-track{font-size:11.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
-.sb-np-artist{font-size:10px;color:#1db954;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;opacity:.85}
-.sb-np-bar{height:2px;background:rgba(255,255,255,.08);border-radius:99px;margin-top:5px;overflow:hidden}
-.sb-np-fill{height:100%;background:#1db954;border-radius:99px;transition:width .5s linear}
-.sb-eq{
-  display:flex;align-items:flex-end;gap:1.5px;height:12px;flex-shrink:0;
-}
+.sb-np-artist{font-size:10px;color:rgba(245,245,247,.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.sb-np-bar{height:2px;background:rgba(255,255,255,.07);border-radius:99px;margin-top:5px;overflow:hidden}
+.sb-np-fill{height:100%;background:rgba(255,255,255,.35);border-radius:99px;transition:width .5s linear}
+.sb-eq{display:flex;align-items:flex-end;gap:1.5px;height:12px;flex-shrink:0}
 .sb-eq span{
-  width:3px;background:#1db954;border-radius:1px;
+  width:3px;background:rgba(245,245,247,.3);border-radius:1px;
   animation:eqBounce 1s ease-in-out infinite;
 }
 .sb-eq span:nth-child(1){animation-delay:0s;height:40%}
 .sb-eq span:nth-child(2){animation-delay:.2s;height:80%}
 .sb-eq span:nth-child(3){animation-delay:.1s;height:55%}
 .sb-eq span:nth-child(4){animation-delay:.3s;height:70%}
-@keyframes eqBounce{
-  0%,100%{transform:scaleY(1)}
-  50%{transform:scaleY(.3)}
-}
-/* Scrobbling — same pill design as Spotify */
+@keyframes eqBounce{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.3)}}
+
+/* Scrobbling — même base neutre que Now Playing */
 .sb-scrobble-pill{
   display:flex;align-items:center;gap:8px;
   padding:7px 9px;border-radius:var(--r-sm);
-  background:rgba(255,255,255,.03);border:1px solid rgba(213,16,7,.18);
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
   position:relative;overflow:hidden;transition:border-color .15s;
 }
-.sb-scrobble-pill::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(90deg,rgba(213,16,7,.07),transparent 65%);
-  pointer-events:none;
-}
-.sb-scrobble-pill:hover{border-color:rgba(213,16,7,.32)}
+.sb-scrobble-pill:hover{border-color:rgba(255,255,255,.12)}
 .sb-scrobble-art{
   width:34px;height:34px;border-radius:7px;flex-shrink:0;
-  background:rgba(255,255,255,.06);overflow:hidden;display:flex;
-  align-items:center;justify-content:center;font-size:15px;
+  background:rgba(255,255,255,.06);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;font-size:15px;
 }
 .sb-scrobble-art img{width:34px;height:34px;object-fit:cover;border-radius:7px;display:block}
 .sb-scrobble-info{flex:1;min-width:0}
 .sb-scrobble-track{font-size:11.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
-.sb-scrobble-artist{font-size:10px;color:#d51007;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;opacity:.85}
-.sb-eq-lfm span{background:#d51007!important}
-/* Scrobbling label */
+.sb-scrobble-artist{font-size:10px;color:rgba(245,245,247,.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.sb-eq-lfm span{background:rgba(245,245,247,.3)!important}
+/* label scrobbling — juste un petit dot animé, couleur neutre */
 .sb-scrobble-label{
   display:flex;align-items:center;gap:5px;
   font-size:7.5px;font-weight:800;letter-spacing:.2em;
-  color:#d51007;font-family:'JetBrains Mono',monospace;
+  color:rgba(245,245,247,.3);font-family:'JetBrains Mono',monospace;
   text-transform:uppercase;margin-bottom:5px;padding:0 2px;
 }
 .sb-scrobble-dot{
-  width:5px;height:5px;border-radius:50%;background:#d51007;
+  width:5px;height:5px;border-radius:50%;background:rgba(245,245,247,.35);
   animation:pulse 1.4s ease-in-out infinite;flex-shrink:0;
 }
 
+
+
+/* ── SIDEBAR WIDGET MANAGER ── */
+.widget-row{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 11px;border-radius:var(--r-sm);
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  cursor:grab;transition:background .15s,border-color .15s,opacity .15s;
+  user-select:none;
+}
+.widget-row:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12)}
+.widget-row.dragging{opacity:.4;cursor:grabbing}
+.widget-row.drag-over{border-color:rgba(249,115,22,.4);background:rgba(249,115,22,.05)}
+.widget-drag-handle{color:rgba(245,245,247,.2);font-size:14px;cursor:grab;flex-shrink:0;line-height:1}
+.widget-row-icon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.widget-row-label{flex:1;font-size:12.5px;font-weight:600;color:var(--text)}
+.widget-row-sub{font-size:10.5px;color:rgba(245,245,247,.35);margin-top:1px}
+.widget-toggle-switch{
+  width:32px;height:18px;border-radius:9px;flex-shrink:0;cursor:pointer;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.1);
+  position:relative;transition:background .2s,border-color .2s;
+}
+.widget-toggle-switch.on{background:rgba(249,115,22,.7);border-color:rgba(249,115,22,.5)}
+.widget-toggle-switch::after{
+  content:'';position:absolute;top:2px;left:2px;
+  width:12px;height:12px;border-radius:50%;background:#fff;
+  transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.4);
+}
+.widget-toggle-switch.on::after{transform:translateX(14px)}
 
 /* ══ COMMAND PALETTE ══ */
 #cmd-palette-overlay{
@@ -3495,9 +3506,9 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
           <div id="np-fallback-artist" style="font-size:10px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px">—</div>
         </div>
         <div style="display:flex;align-items:flex-end;gap:1.5px;height:12px;flex-shrink:0" id="np-fallback-eq" style="display:none">
-          <span style="width:3px;background:#1db954;border-radius:1px;animation:eqBounce 1s ease-in-out infinite;height:40%"></span>
-          <span style="width:3px;background:#1db954;border-radius:1px;animation:eqBounce 1s ease-in-out infinite .2s;height:80%"></span>
-          <span style="width:3px;background:#1db954;border-radius:1px;animation:eqBounce 1s ease-in-out infinite .1s;height:55%"></span>
+          <span style="width:3px;background:rgba(245,245,247,.3);border-radius:1px;animation:eqBounce 1s ease-in-out infinite;height:40%"></span>
+          <span style="width:3px;background:rgba(245,245,247,.3);border-radius:1px;animation:eqBounce 1s ease-in-out infinite .2s;height:80%"></span>
+          <span style="width:3px;background:rgba(245,245,247,.3);border-radius:1px;animation:eqBounce 1s ease-in-out infinite .1s;height:55%"></span>
         </div>
       </div>
     </div>
@@ -4345,6 +4356,15 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   </div>
   <div id="page-connections" class="tab-content">
     <div class="topbar"><div><div class="section-eyebrow">Integrations</div><div class="section-title">Connections</div><div class="page-subtitle">Link your accounts to enrich your dashboard</div></div></div>
+
+    <!-- SIDEBAR WIDGET MANAGER -->
+    <div class="conn-card" id="sidebar-widget-manager">
+      <div class="conn-header" style="margin-bottom:12px">
+        <div class="conn-icon" style="background:rgba(255,255,255,.08)">◫</div>
+        <div><div class="conn-title">Sidebar Widgets</div><div class="conn-subtitle">Toggle and reorder widgets shown in the sidebar</div></div>
+      </div>
+      <div id="widget-order-list" style="display:flex;flex-direction:column;gap:6px"></div>
+    </div>
 
     <!-- DISCORD -->
     <div class="conn-card">
@@ -6532,6 +6552,127 @@ function initSidebarWidgets(p){
 
 
 
+
+// ── SIDEBAR WIDGET MANAGER ─────────────────────────────────────────────────
+const WIDGET_DEFS=[
+  {id:'discord', label:'Discord', sub:'Status & activité', icon:'💬', bg:'#5865F2', requires:'discord.userId'},
+  {id:'nowplaying', label:'Now Playing', sub:'Spotify via Lanyard', icon:'♪', bg:'rgba(29,185,84,.25)', requires:'discord.userId'},
+  {id:'lastfm', label:'Scrobbling', sub:'Last.fm', icon:'♫', bg:'rgba(213,16,7,.2)', requires:'lastfm.username'},
+];
+
+function getWidgetPrefs(){
+  const p=curP();if(!p)return{order:['discord','nowplaying','lastfm'],visible:{}};
+  if(!p.state.sidebarWidgets)p.state.sidebarWidgets={};
+  const sw=p.state.sidebarWidgets;
+  return {
+    order: sw.order||['discord','nowplaying','lastfm'],
+    visible: sw.visible||{}
+  };
+}
+
+function saveWidgetPrefs(order,visible){
+  const p=curP();if(!p)return;
+  if(!p.state.sidebarWidgets)p.state.sidebarWidgets={};
+  p.state.sidebarWidgets.order=order;
+  p.state.sidebarWidgets.visible=visible;
+  saveStateNow();
+  applySidebarWidgetOrder();
+}
+
+function renderWidgetManager(){
+  const list=document.getElementById('widget-order-list');
+  if(!list)return;
+  const p=curP();if(!p)return;
+  const conn=p.state.connections||{};
+  const {order,visible}=getWidgetPrefs();
+
+  // Sort defs by saved order
+  const sorted=[...order]
+    .map(id=>WIDGET_DEFS.find(d=>d.id===id))
+    .filter(Boolean)
+    .concat(WIDGET_DEFS.filter(d=>!order.includes(d.id)));
+
+  list.innerHTML='';
+  sorted.forEach((def,i)=>{
+    // Check if connection exists
+    const parts=def.requires.split('.');
+    const hasConn=parts.reduce((obj,k)=>obj?.[k], conn);
+    const isOn=visible[def.id]!==false&&!!hasConn;
+
+    const row=document.createElement('div');
+    row.className='widget-row';
+    row.dataset.wid=def.id;
+    row.draggable=true;
+    row.innerHTML=`
+      <span class="widget-drag-handle">⠿</span>
+      <div class="widget-row-icon" style="background:${def.bg}">${def.icon}</div>
+      <div style="flex:1;min-width:0">
+        <div class="widget-row-label">${def.label}</div>
+        <div class="widget-row-sub">${hasConn?def.sub:'Not connected'}</div>
+      </div>
+      <div class="widget-toggle-switch${isOn?' on':''}" onclick="toggleWidgetVisible('${def.id}',this)" title="${isOn?'Hide':'Show'} in sidebar"></div>
+    `;
+
+    // Drag events
+    row.addEventListener('dragstart',e=>{
+      e.dataTransfer.setData('text/plain',def.id);
+      setTimeout(()=>row.classList.add('dragging'),0);
+    });
+    row.addEventListener('dragend',()=>row.classList.remove('dragging'));
+    row.addEventListener('dragover',e=>{e.preventDefault();row.classList.add('drag-over');});
+    row.addEventListener('dragleave',()=>row.classList.remove('drag-over'));
+    row.addEventListener('drop',e=>{
+      e.preventDefault();row.classList.remove('drag-over');
+      const fromId=e.dataTransfer.getData('text/plain');
+      const toId=def.id;
+      if(fromId===toId)return;
+      const {order:ord,visible:vis}=getWidgetPrefs();
+      const newOrd=[...ord];
+      const fi=newOrd.indexOf(fromId), ti=newOrd.indexOf(toId);
+      if(fi>-1)newOrd.splice(fi,1);
+      const ti2=newOrd.indexOf(toId);
+      newOrd.splice(ti2>=0?ti2:newOrd.length,0,fromId);
+      saveWidgetPrefs(newOrd,vis);
+      renderWidgetManager();
+    });
+
+    list.appendChild(row);
+  });
+}
+
+function toggleWidgetVisible(wid, switchEl){
+  const {order,visible}=getWidgetPrefs();
+  visible[wid]=!(visible[wid]!==false);
+  switchEl.classList.toggle('on',visible[wid]);
+  saveWidgetPrefs(order,visible);
+  initSidebarWidgets(curP());
+}
+
+function applySidebarWidgetOrder(){
+  const {order}=getWidgetPrefs();
+  const sidebar=document.querySelector('.sidebar-widgets-area')||document.querySelector('nav .sidebar-scroll')||document.querySelector('nav');
+  if(!sidebar)return;
+
+  // Map widget id to wrap element
+  const idToEl={
+    discord: document.getElementById('sb-discord-wrap'),
+    nowplaying: document.getElementById('sb-spotify-wrap')||document.getElementById('sb-spotify-iframe-wrap'),
+    lastfm: document.getElementById('sb-lastfm-wrap'),
+  };
+
+  // Find common parent
+  const wraps=Object.values(idToEl).filter(Boolean);
+  if(!wraps.length)return;
+  const parent=wraps[0].parentNode;
+  if(!parent)return;
+
+  // Reorder in DOM
+  order.forEach(id=>{
+    const el=idToEl[id];
+    if(el&&el.parentNode===parent)parent.appendChild(el);
+  });
+}
+
 // ── SIDEBAR WIDGET TOGGLE ─────────────────────────────────────
 function toggleSidebarWidget(service){
   const p=curP();if(!p)return;
@@ -6564,6 +6705,8 @@ function initSidebarWidgetToggles(){
     if(btn)btn.style.display='flex';
     updateSidebarWidgetToggleBtn('lastfm');
   }
+  renderWidgetManager();
+  applySidebarWidgetOrder();
 }
 
 function initDashboard(){
@@ -7206,7 +7349,7 @@ function switchPage(page,navEl){
     if(quoteEmpty)fetchQuote();
   }
   if(page==='settings'){document.getElementById('settings-name').value=p.name;updateSettingsPreview();loadSecuritySettings();loadBannerSettings();renderBgThemeBtns();renderProfileXP(p);renderProfileQuickStats(p);}
-  if(page==='connections')loadConnectionsUI();
+  if(page==='connections'){loadConnectionsUI();renderWidgetManager();}
   if(page==='gaming')loadGamingUI();
   if(page==='habits'){if(typeof renderHabits==='function')renderHabits();}
   if(page==='kanban'){if(typeof renderKanban==='function')renderKanban();}
@@ -9854,7 +9997,8 @@ function refreshDiscordSidebar(){
   const actEl=document.getElementById('sb-dc-activity');
   if(actEl){
     if(act){
-      actEl.textContent=(act.type===2?'🎵 ':'🎮 ')+(act.name||'');
+      const isSpotify=act.type===2;
+      actEl.innerHTML=`<span style="color:rgba(245,245,247,.45)">${isSpotify?'♪':'▶'} <span style="color:rgba(245,245,247,.45)">${act.name||''}</span></span>`;
       actEl.style.display='block';
     } else {
       actEl.style.display='none';

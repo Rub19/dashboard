@@ -274,27 +274,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .nav-label{font-size:8.5px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.2);padding:14px 10px 5px;display:block;font-family:var(--mono)}
 .nav-item{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:8px;cursor:pointer;color:rgba(255,255,255,.38);font-size:12.5px;font-weight:500;transition:all .2s;border:1px solid transparent;text-decoration:none;position:relative;margin-bottom:1px}
 .nav-item:hover{color:rgba(255,255,255,.75);background:rgba(255,255,255,.04)}
-.nav-item.active{color:var(--accent);background:var(--accent-subtle);border-color:var(--border3)}
-.nav-item.active .nav-icon{color:var(--accent)}
-.nav-item.active::after{content:'';position:absolute;right:0;top:20%;bottom:20%;width:2px;background:var(--accent);border-radius:99px}
+.nav-item.active{color:#fff;background:rgba(249,115,22,.1);border-color:rgba(249,115,22,.15)}
+.nav-item.active .nav-icon{color:#f97316}
+.nav-item.active::after{content:'';position:absolute;right:0;top:20%;bottom:20%;width:2px;background:linear-gradient(to bottom,#f97316,#dc2626);border-radius:99px}
 .nav-icon{width:17px;height:17px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:inherit}.nav-icon svg{width:100%;height:100%}
 .nav-badge{margin-left:auto;background:linear-gradient(135deg,#f97316,#dc2626);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px;font-family:var(--mono);min-width:17px;text-align:center}
-.sidebar-footer{flex-shrink:0;padding:10px 8px 8px;border-top:1px solid rgba(255,255,255,.06);max-height:55vh;overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
-.sidebar.compact{width:58px!important;min-width:58px!important;overflow:hidden}
-.sidebar.compact .sb-widget,.sidebar.compact #sb-lastfm-wrap,.sidebar.compact .sb-widget-label,
-.sidebar.compact .sb-section,.sidebar.compact .sb-section-label{display:none!important}
+.sidebar-footer{flex-shrink:0;padding:8px;border-top:1px solid rgba(255,255,255,.06)}
+.sidebar.compact .sb-widget,.sidebar.compact #sb-lastfm-wrap,.sidebar.compact .sb-widget-label{display:none!important}
 .sidebar.compact .user-info,.sidebar.compact .switch-hint{display:none!important}
 .sidebar.compact .user-card{justify-content:center;padding:8px}
-.sidebar.compact .nav-label-text,.sidebar.compact .nav-badge,.sidebar.compact .nav-label{display:none!important}
-.sidebar.compact .nav-item{justify-content:center;padding:8px 0;min-width:0}
-.sidebar.compact .nav-icon{margin:0 auto}
-.sidebar.compact .logo-text{display:none!important}
-.sidebar.compact .logo{justify-content:center;padding:12px 0}
-.sidebar.compact .logo-icon{margin:0}
-.sidebar.compact #sidebar-compact-btn{margin:4px auto;width:34px}
-.sidebar.compact .sidebar-footer > div[style*="height:1px"]{display:none!important}
-.sidebar.compact #sidebar-nav-main,.sidebar.compact #sidebar-nav-account{padding:0 4px}
-.user-card{display:flex;align-items:center;gap:10px;padding:10px 10px 8px;border-radius:8px;cursor:pointer;transition:all .2s;position:relative;margin-bottom:2px}
+.user-card{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:all .2s;position:relative}
 .user-card:hover{background:rgba(255,255,255,.04)}
 .user-card:hover .switch-hint{opacity:1}
 .switch-hint{position:absolute;right:10px;font-size:9px;color:#f97316;opacity:0;transition:opacity .2s;font-weight:700;letter-spacing:.5px;text-transform:uppercase;font-family:var(--mono)}
@@ -628,7 +617,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 }
 
 /* ── BACKGROUND CANVAS ── */
-#bg-canvas{opacity:1!important}
+#bg-canvas{opacity:.9!important}
 
 /* ── SCROLLBAR ── */
 ::-webkit-scrollbar{width:4px}
@@ -667,12 +656,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 }
 .nav-item:hover{color:rgba(245,245,247,.8);background:rgba(255,255,255,.04)}
 .nav-item.active{
-  color:var(--accent);
-  background:var(--accent-subtle);
-  border-color:var(--border3);
+  color:#fff;
+  background:rgba(249,115,22,.09);
+  border-color:rgba(249,115,22,.14);
 }
-.nav-item.active .nav-icon{color:var(--accent)}
-.nav-item.active::after{background:var(--accent)}
+.nav-item.active .nav-icon{color:#f97316}
+.nav-item.active::after{background:linear-gradient(to bottom,#f97316,#dc2626)}
 .nav-icon{width:16px;height:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:inherit}
 .nav-badge{
   background:linear-gradient(135deg,#f97316,#dc2626);
@@ -1031,7 +1020,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   transition:all .15s;width:100%;
 }
 .settings-nav-item:hover{color:rgba(245,245,247,.75);background:rgba(255,255,255,.04)}
-.settings-nav-item.active{color:var(--accent);background:var(--accent-subtle);border-left:2px solid var(--accent);padding-left:10px}
+.settings-nav-item.active{color:#fff;background:rgba(249,115,22,.1);border-left:2px solid #f97316;padding-left:10px}
 .settings-nav-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0}
 .settings-content{min-width:0}
 .settings-section{display:none}
@@ -1317,12 +1306,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .wx-day-rain{font-size:9.5px;color:#60a5fa;margin-top:2px}
 
 /* ── AI CHAT PAGE ── */
-.ai-page{display:flex;flex-direction:column;height:calc(100vh - 130px);min-height:400px;max-width:700px;width:100%;margin:0 auto;padding:0}
-#ai-sessions-drawer.open{transform:translateX(0)}
-.ai-session-item{padding:8px 10px;border-radius:8px;cursor:pointer;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);transition:all .15s}
-.ai-session-item:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}
-.ai-session-preview{font-size:12px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ai-session-date{font-size:10px;color:var(--muted);margin-top:3px}
+.ai-page{display:flex;flex-direction:column;height:calc(100vh - 130px);min-height:400px}
 .ai-messages{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:4px 2px 16px;scrollbar-width:thin}
 .ai-messages::-webkit-scrollbar{width:3px}
 .ai-messages::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:99px}
@@ -1460,15 +1444,15 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 /* ── SIDEBAR ANIMATIONS ── */
 .nav-item{transition:all .18s cubic-bezier(.4,0,.2,1)}
 .nav-item:hover .nav-icon svg{animation:navIconBounce .4s ease}
-.nav-item.active .nav-icon svg{color:var(--accent)}
+.nav-item.active .nav-icon svg{color:#f97316}
 .nav-item.active{
-  background:var(--accent-subtle);
+  background:linear-gradient(90deg,rgba(249,115,22,.12),rgba(220,38,38,.06));
   position:relative;
 }
 /* Shimmer on active nav item */
 .nav-item.active::before{
   content:'';position:absolute;inset:0;border-radius:7px;
-  background:linear-gradient(90deg,transparent,var(--accent-subtle),transparent);
+  background:linear-gradient(90deg,transparent,rgba(249,115,22,.08),transparent);
   background-size:200% auto;
   animation:shimmerSlide 3s linear infinite;
   pointer-events:none;
@@ -2132,7 +2116,7 @@ h1,h2,.section-title,.page-title{font-family:'Syne',sans-serif;letter-spacing:-.
   font-size:12.5px;font-weight:500;border-radius:var(--r-sm);
   padding:8px 12px;letter-spacing:.01em;
 }
-.settings-nav-item.active{background:var(--accent-subtle);color:var(--accent)}
+.settings-nav-item.active{background:rgba(249,115,22,.1);color:#f97316}
 .toggle-row{padding:13px 0;border-bottom:1px solid rgba(255,255,255,.055)}
 .toggle-label{font-size:13px;font-weight:500;letter-spacing:.01em}
 .toggle-sub{font-size:11px;color:rgba(245,245,247,.3);margin-top:2px}
@@ -2231,7 +2215,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   border-color:rgba(249,115,22,.4);
   background:rgba(249,115,22,.06);
 }
-.lang-trigger-flag{font-size:17px;line-height:1;display:flex;align-items:center}
+.lang-trigger-flag{font-size:17px;line-height:1}
 .lang-trigger-name{font-size:12.5px;font-weight:600;letter-spacing:.01em}
 .lang-trigger-chevron{
   width:14px;height:14px;color:rgba(245,245,247,.4);
@@ -2273,7 +2257,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   content:'';position:absolute;left:0;top:20%;bottom:20%;
   width:2px;background:#f97316;border-radius:99px;
 }
-.lang-option-flag{font-size:20px;line-height:1;flex-shrink:0;display:flex;align-items:center}
+.lang-option-flag{font-size:20px;line-height:1;flex-shrink:0}
 .lang-option-info{flex:1;min-width:0}
 .lang-option-name{font-size:13px;font-weight:600;color:var(--text)}
 .lang-option-native{font-size:11px;color:rgba(245,245,247,.35);margin-top:1px}
@@ -2301,132 +2285,85 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   content:'';width:14px;height:1px;background:rgba(245,245,247,.12);flex-shrink:0;
 }
 /* Discord pill v2 */
-
-/* ── SIDEBAR WIDGET CARDS v3 — design unifié ── */
-.sb-section+.sb-section{
-  padding-top:8px;
-  border-top:1px solid rgba(255,255,255,.06);
-  margin-top:4px;
+.sb-dc-pill{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 9px;border-radius:var(--r-sm);
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+  transition:border-color .15s;
 }
-.sb-widget-card{
-  display:flex;align-items:center;gap:9px;
-  padding:8px 10px;border-radius:10px;
-  background:rgba(255,255,255,.035);
-  border:1px solid rgba(255,255,255,.07);
-  position:relative;overflow:hidden;
-  transition:border-color .2s;
+.sb-dc-pill:hover{border-color:rgba(88,101,242,.25)}
+.sb-dc-av{
+  width:30px;height:30px;border-radius:8px;flex-shrink:0;position:relative;
+  background:rgba(255,255,255,.07);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;font-size:13px;
 }
-.sb-widget-card:hover{border-color:rgba(255,255,255,.13)}
-/* Subtle left-edge accent via ::before */
-.sb-widget-card::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;
-  width:2px;border-radius:2px 0 0 2px;
-  background:rgba(255,255,255,.1);
-}
-.sb-wc-green::before{background:rgba(29,185,84,.6)}
-.sb-wc-red::before{background:rgba(213,16,7,.55)}
-/* Art/avatar */
-.sb-wc-avatar{
-  width:32px;height:32px;border-radius:9px;flex-shrink:0;
-  background:rgba(255,255,255,.07);overflow:hidden;position:relative;
-  display:flex;align-items:center;justify-content:center;font-size:14px;
-}
-.sb-wc-avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.sb-wc-art{
-  width:34px;height:34px;border-radius:8px;flex-shrink:0;
-  background:rgba(255,255,255,.06);overflow:hidden;
-  display:flex;align-items:center;justify-content:center;font-size:16px;
-  position:relative;
-}
-.sb-wc-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:8px}
-/* Body */
-.sb-wc-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-.sb-wc-top{display:flex;align-items:center;justify-content:space-between;gap:4px}
-.sb-wc-name{
-  font-size:11.5px;font-weight:600;color:var(--text);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;
-}
-.sb-wc-sub{
-  font-size:10px;color:rgba(245,245,247,.38);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.sb-wc-sub-green{color:rgba(29,185,84,.7)}
-.sb-wc-sub-red{color:rgba(213,16,7,.65)}
-/* Progress bar — same for all 3, color varies */
-.sb-wc-bar{
-  height:2px;background:rgba(255,255,255,.07);
-  border-radius:99px;overflow:hidden;margin-top:3px;
-}
-.sb-wc-bar-fill{
-  height:100%;border-radius:99px;
-  background:rgba(255,255,255,.2);
-  transition:width .5s linear;
-}
-.sb-wc-bar-green{background:rgba(29,185,84,.6)}
-.sb-wc-bar-red{background:rgba(213,16,7,.5)}
-/* Discord status dot */
+.sb-dc-av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .sb-dc-dot{
-  position:absolute;bottom:-2px;right:-2px;
-  width:9px;height:9px;border-radius:50%;border:2px solid #050507;
+  position:absolute;bottom:-1px;right:-1px;
+  width:9px;height:9px;border-radius:50%;border:2px solid rgba(5,5,7,.95);
 }
 .sb-dc-dot.online{background:#3ba55c}
 .sb-dc-dot.idle{background:#faa81a}
 .sb-dc-dot.dnd{background:#ed4245}
-.sb-dc-dot.offline{background:#4e5058}
-/* Discord badge */
-.sb-dc-badge{
-  font-size:7.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-  padding:2px 5px;border-radius:4px;font-family:'JetBrains Mono',monospace;flex-shrink:0;
-  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
-  color:rgba(245,245,247,.4);
-}
-.sb-dc-badge.online{color:#3ba55c;border-color:rgba(59,165,92,.25);background:rgba(59,165,92,.08)}
-.sb-dc-badge.idle{color:#faa81a;border-color:rgba(250,168,26,.25);background:rgba(250,168,26,.07)}
-.sb-dc-badge.dnd{color:#ed4245;border-color:rgba(237,66,69,.25);background:rgba(237,66,69,.07)}
-.sb-dc-badge.offline{color:rgba(245,245,247,.3)}
-/* Discord activity bar fill — color depends on status */
-#sb-dc-bar-fill{background:rgba(255,255,255,.15);width:0%}
-/* EQ bars */
-.sb-eq{display:flex;align-items:flex-end;gap:1.5px;height:12px;flex-shrink:0}
-.sb-eq span{width:3px;border-radius:1px;animation:eqBounce 1s ease-in-out infinite}
-.sb-wc-green .sb-eq span{background:rgba(29,185,84,.7)}
-.sb-wc-red .sb-eq span{background:rgba(213,16,7,.6)}
-.sb-widget-card:not(.sb-wc-green):not(.sb-wc-red) .sb-eq span{background:rgba(245,245,247,.3)}
-.sb-eq span:nth-child(1){animation-delay:0s;height:35%}
-.sb-eq span:nth-child(2){animation-delay:.18s;height:80%}
-.sb-eq span:nth-child(3){animation-delay:.09s;height:50%}
-.sb-eq span:nth-child(4){animation-delay:.27s;height:65%}
-@keyframes eqBounce{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.25)}}
-/* Scrobble label */
-.sb-scrobble-label{display:none}
+.sb-dc-dot.offline{background:#747f8d}
+.sb-dc-name{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-dc-act{font-size:10.5px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
 
-/* ── SIDEBAR WIDGET MANAGER ── */
-.widget-row{
-  display:flex;align-items:center;gap:10px;
-  padding:9px 11px;border-radius:var(--r-sm);
-  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
-  cursor:grab;transition:background .15s,border-color .15s,opacity .15s;
-  user-select:none;
+/* Now playing v2 */
+.sb-np-pill{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 9px;border-radius:var(--r-sm);
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+  position:relative;overflow:hidden;
+  transition:border-color .15s;
 }
-.widget-row:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12)}
-.widget-row.dragging{opacity:.4;cursor:grabbing}
-.widget-row.drag-over{border-color:rgba(249,115,22,.4);background:rgba(249,115,22,.05)}
-.widget-drag-handle{color:rgba(245,245,247,.2);font-size:14px;cursor:grab;flex-shrink:0;line-height:1}
-.widget-row-icon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
-.widget-row-label{flex:1;font-size:12.5px;font-weight:600;color:var(--text)}
-.widget-row-sub{font-size:10.5px;color:rgba(245,245,247,.35);margin-top:1px}
-.widget-toggle-switch{
-  width:32px;height:18px;border-radius:9px;flex-shrink:0;cursor:pointer;
-  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.1);
-  position:relative;transition:background .2s,border-color .2s;
+.sb-np-pill:hover{border-color:rgba(29,185,84,.25)}
+.sb-np-pill::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,rgba(29,185,84,.06),transparent 60%);
+  pointer-events:none;
 }
-.widget-toggle-switch.on{background:rgba(249,115,22,.7);border-color:rgba(249,115,22,.5)}
-.widget-toggle-switch::after{
-  content:'';position:absolute;top:2px;left:2px;
-  width:12px;height:12px;border-radius:50%;background:#fff;
-  transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.4);
+.sb-np-art{
+  width:34px;height:34px;border-radius:7px;flex-shrink:0;
+  background:rgba(255,255,255,.06);overflow:hidden;
+  position:relative;min-width:34px;min-height:34px;
 }
-.widget-toggle-switch.on::after{transform:translateX(14px)}
+.sb-np-art img{
+  position:absolute;top:0;left:0;width:34px;height:34px;
+  object-fit:cover;border-radius:7px;display:block;
+}
+.sb-np-info{flex:1;min-width:0}
+.sb-np-track{font-size:11.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.sb-np-artist{font-size:10px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.sb-np-bar{height:2px;background:rgba(255,255,255,.08);border-radius:99px;margin-top:5px;overflow:hidden}
+.sb-np-fill{height:100%;background:#1db954;border-radius:99px;transition:width .5s linear}
+.sb-eq{
+  display:flex;align-items:flex-end;gap:1.5px;height:12px;flex-shrink:0;
+}
+.sb-eq span{
+  width:3px;background:#1db954;border-radius:1px;
+  animation:eqBounce 1s ease-in-out infinite;
+}
+.sb-eq span:nth-child(1){animation-delay:0s;height:40%}
+.sb-eq span:nth-child(2){animation-delay:.2s;height:80%}
+.sb-eq span:nth-child(3){animation-delay:.1s;height:55%}
+.sb-eq span:nth-child(4){animation-delay:.3s;height:70%}
+@keyframes eqBounce{
+  0%,100%{transform:scaleY(1)}
+  50%{transform:scaleY(.3)}
+}
+/* Scrobbling label */
+.sb-scrobble-label{
+  display:flex;align-items:center;gap:5px;
+  font-size:7.5px;font-weight:800;letter-spacing:.2em;
+  color:#d51007;font-family:'JetBrains Mono',monospace;
+  text-transform:uppercase;margin-bottom:5px;padding:0 2px;
+}
+.sb-scrobble-dot{
+  width:5px;height:5px;border-radius:50%;background:#d51007;
+  animation:pulse 1.4s ease-in-out infinite;flex-shrink:0;
+}
+
 
 /* ══ COMMAND PALETTE ══ */
 #cmd-palette-overlay{
@@ -2823,11 +2760,11 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 /* ── NAV ITEM TEXT ── */
 .nav-item{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:var(--r-sm);cursor:pointer;transition:all .18s;margin-bottom:1px;color:rgba(245,245,247,.5);font-size:13px;font-weight:500}
 .nav-item:hover{background:rgba(255,255,255,.05);color:rgba(245,245,247,.85)}
-.nav-item.active{background:rgba(255,255,255,.06);color:var(--accent)}
+.nav-item.active{background:linear-gradient(90deg,rgba(249,115,22,.12),rgba(220,38,38,.06));color:#f97316}
 .nav-icon{width:18px;height:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .nav-icon svg{width:16px;height:16px;stroke:currentColor}
 .nav-label-text{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.005em}
-.nav-badge{background:var(--accent-subtle);color:var(--accent);font-size:9px;font-weight:800;padding:1px 6px;border-radius:99px;font-family:var(--mono)}
+.nav-badge{background:rgba(249,115,22,.2);color:#f97316;font-size:9px;font-weight:800;padding:1px 6px;border-radius:99px;font-family:var(--mono)}
 .nav-section{display:flex;flex-direction:column}
 
 
@@ -2846,23 +2783,12 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 .sidebar{
   display:flex;flex-direction:column;height:100vh;overflow:hidden;flex-shrink:0;
   width:220px;min-width:160px;max-width:400px;
-  background:rgba(5,5,7,.55);
+  background:rgba(5,5,7,.95);
   border-right:1px solid rgba(255,255,255,.07);
-  backdrop-filter:blur(28px) saturate(1.4);
-  -webkit-backdrop-filter:blur(28px) saturate(1.4);
-  box-shadow:2px 0 24px rgba(0,0,0,.35), 1px 0 0 0 var(--border3);
+  backdrop-filter:blur(20px);
+  box-shadow:2px 0 20px rgba(0,0,0,.4);
   position:fixed;top:0;left:0;z-index:300;
-  transition:width .22s ease, box-shadow .4s ease, background .4s ease;
 }
-#page-ai.active{
-  display:flex!important;flex-direction:column;align-items:center;
-  position:fixed;top:0;left:0;right:0;bottom:0;
-  padding:0;margin:0;z-index:200;
-  background:var(--bg);
-  overflow:hidden;
-}
-#page-ai .topbar{width:100%;max-width:720px;padding:20px 20px 12px}
-#page-ai .ai-page{max-width:720px;width:100%;padding:0 20px}
 #sidebar-nav-main{overflow-y:auto;flex:1 1 auto;padding:0 6px;min-height:0;scrollbar-width:none}
 #sidebar-nav-account{flex:0 0 auto;padding:0 6px 4px;min-height:0}
 .sidebar .nav-section::-webkit-scrollbar{width:2px}
@@ -3185,7 +3111,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
     transform:scale(.95)!important;
     filter:brightness(.9)!important;
   }
-  .nav-item:active{background:var(--accent-subtle)!important}
+  .nav-item:active{background:rgba(249,115,22,.1)!important}
   /* Bigger touch targets */
   .nav-item{min-height:40px!important;padding:8px 10px!important}
   .modal-close,.notif-panel-close{width:36px!important;height:36px!important}
@@ -3245,7 +3171,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 </div>
 
 <!-- AUTH SCREEN -->
-<canvas id="bg-canvas" style="position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:0;transition:opacity 1s ease"></canvas>
+<canvas id="bg-canvas" style="position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 1s ease"></canvas>
 
 <div id="nexus-boot-screen" style="position:fixed;inset:0;z-index:2147483647;background:#050507;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px">
   <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#f97316,#dc2626);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(249,115,22,.4)">
@@ -3336,27 +3262,27 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       <!-- Lang selector -->
       <div style="display:flex;justify-content:flex-end;margin-bottom:16px"><div class="lang-dropdown" id="lang-dd-auth" onclick="toggleLangDropdown('lang-dd-auth')">
   <div class="lang-trigger" id="lang-dd-auth-trigger">
-    <span class="lang-trigger-flag" id="lang-dd-auth-flag"><img src="https://flagcdn.com/20x15/fr.png" width="20" height="15" alt="FR" style="border-radius:2px;display:inline-block;vertical-align:middle"></span>
+    <span class="lang-trigger-flag" id="lang-dd-auth-flag">🇫🇷</span>
     <svg class="lang-trigger-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
   </div>
   <div class="lang-menu">
     <div class="lang-option active" data-lang="fr" onclick="event.stopPropagation();setLangAndClose('fr','lang-dd-auth')">
-      <span class="lang-option-flag"><img src="https://flagcdn.com/24x18/fr.png" width="24" height="18" alt="FR" style="border-radius:3px;display:inline-block;vertical-align:middle"></span>
+      <span class="lang-option-flag">🇫🇷</span>
       <div class="lang-option-info"><div class="lang-option-name">French</div><div class="lang-option-native">Français</div></div>
       <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
     <div class="lang-option" data-lang="en" onclick="event.stopPropagation();setLangAndClose('en','lang-dd-auth')">
-      <span class="lang-option-flag"><img src="https://flagcdn.com/24x18/gb.png" width="24" height="18" alt="EN" style="border-radius:3px;display:inline-block;vertical-align:middle"></span>
+      <span class="lang-option-flag">🇺🇸</span>
       <div class="lang-option-info"><div class="lang-option-name">English</div><div class="lang-option-native">English</div></div>
       <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
     <div class="lang-option" data-lang="es" onclick="event.stopPropagation();setLangAndClose('es','lang-dd-auth')">
-      <span class="lang-option-flag"><img src="https://flagcdn.com/24x18/es.png" width="24" height="18" alt="ES" style="border-radius:3px;display:inline-block;vertical-align:middle"></span>
+      <span class="lang-option-flag">🇪🇸</span>
       <div class="lang-option-info"><div class="lang-option-name">Spanish</div><div class="lang-option-native">Español</div></div>
       <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
     <div class="lang-option" data-lang="de" onclick="event.stopPropagation();setLangAndClose('de','lang-dd-auth')">
-      <span class="lang-option-flag"><img src="https://flagcdn.com/24x18/de.png" width="24" height="18" alt="DE" style="border-radius:3px;display:inline-block;vertical-align:middle"></span>
+      <span class="lang-option-flag">🇩🇪</span>
       <div class="lang-option-info"><div class="lang-option-name">German</div><div class="lang-option-native">Deutsch</div></div>
       <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
@@ -3481,70 +3407,54 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   <div id="sidebar-nav-main" class="nav-section"></div>
   <div id="sidebar-nav-account" class="nav-section"></div>
   <!-- Compact toggle — always visible at bottom -->
-  <button id="sidebar-compact-btn" onclick="event.preventDefault();toggleSidebarCompact()" title="Toggle compact mode" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;margin:4px auto 4px;background:none;border:1px solid var(--border2);border-radius:8px;cursor:pointer;font-size:14px;color:var(--muted);font-family:var(--font);transition:all .2s ease" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">&#8644;</button>
+  <button id="sidebar-compact-btn" onclick="toggleSidebarCompact()" title="Toggle compact mode" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;margin:4px auto 4px;background:none;border:1px solid var(--border2);border-radius:8px;cursor:pointer;font-size:14px;color:var(--muted);font-family:var(--font);transition:all .2s ease" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">&#8644;</button>
   <div class="sidebar-footer">
-    <!-- User card at top of footer -->
-    <div class="user-card" onclick="goToProfileScreen()">
-      <div class="sidebar-avatar" id="sidebar-avatar"></div>
-      <div class="user-info">
-        <div class="user-name" id="display-username">User</div>
-        <div class="user-role" id="sidebar-user-role">NEXUS</div>
-      </div>
-      <span class="switch-hint">Switch ↗</span>
-    </div>
-    <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.09),transparent);margin:6px 4px 10px"></div>
-    <!-- DISCORD v3 -->
+    <!-- DISCORD v2 -->
     <div class="sb-section" id="sb-discord-wrap" style="display:none">
-      <div class="sb-widget-card" id="sb-discord-card">
-        <div class="sb-wc-avatar" id="sb-dc-avatar">
+      <div class="sb-section-label">Discord</div>
+      <div class="sb-dc-pill" id="sb-discord-card">
+        <div class="sb-dc-av" id="sb-dc-avatar">
           <span id="sb-dc-av-fallback">💬</span>
           <div class="sb-dc-dot offline" id="sb-dc-status"></div>
         </div>
-        <div class="sb-wc-body">
-          <div class="sb-wc-top">
-            <span class="sb-wc-name" id="sb-dc-name">—</span>
-            <span class="sb-dc-badge offline" id="sb-dc-badge">—</span>
-          </div>
-          <div class="sb-wc-sub" id="sb-dc-activity" style="display:none"></div>
-          <div class="sb-wc-bar"><div class="sb-wc-bar-fill" id="sb-dc-bar-fill" style="width:0%"></div></div>
+        <div style="flex:1;min-width:0">
+          <div class="sb-dc-name" id="sb-dc-name">—</div>
+          <div class="sb-dc-act" id="sb-dc-activity" style="display:none"></div>
         </div>
       </div>
     </div>
 
-    <!-- NOW PLAYING v3 (Lanyard Spotify) -->
+    <!-- NOW PLAYING (Lanyard Spotify) v2 -->
     <div class="sb-section" id="sb-spotify-wrap" style="display:none">
-      <div class="sb-widget-card sb-wc-green" id="np-pill">
-        <div class="sb-wc-art" id="np-art"><span>♪</span></div>
-        <div class="sb-wc-body">
-          <div class="sb-wc-top">
-            <span class="sb-wc-name" id="np-song">—</span>
-            <div class="sb-eq" id="sb-eq-anim" style="display:none"><span></span><span></span><span></span><span></span></div>
+      <div class="sb-section-label">Now Playing</div>
+      <div class="sb-np-pill" id="np-pill">
+        <div class="sb-np-art" id="np-art"></div>
+        <div class="sb-np-info">
+          <div class="sb-np-track" id="np-song">—</div>
+          <div class="sb-np-artist" id="np-artist">—</div>
+          <div class="sb-np-bar" id="np-progress-wrap" style="display:none">
+            <div class="sb-np-fill" id="np-bar-fill"></div>
           </div>
-          <div class="sb-wc-sub sb-wc-sub-green" id="np-artist">—</div>
-          <div class="sb-wc-bar"><div class="sb-wc-bar-fill sb-wc-bar-green" id="np-bar-fill" style="width:0%"></div></div>
-          <div id="np-time-row" style="display:none;justify-content:space-between;margin-top:3px">
-            <span id="np-elapsed" style="font-size:9px;color:rgba(29,185,84,.6);font-family:var(--mono)">0:00</span>
-            <span id="np-duration" style="font-size:9px;color:rgba(245,245,247,.25);font-family:var(--mono)">0:00</span>
-          </div>
+        </div>
+        <div class="sb-eq" id="sb-eq-anim" style="display:none">
+          <span></span><span></span><span></span><span></span>
         </div>
       </div>
     </div>
 
-    <!-- FALLBACK Now Playing (Last.fm) -->
+    <!-- FALLBACK: Custom compact now playing when Lanyard not active -->
     <div class="sb-section" id="sb-spotify-iframe-wrap" style="display:none">
-      <div class="sb-widget-card sb-wc-green" id="np-pill-fallback">
-        <div class="sb-wc-art" id="np-art-fallback"><span>♪</span></div>
-        <div class="sb-wc-body">
-          <div class="sb-wc-top">
-            <span class="sb-wc-name" id="np-fallback-track">—</span>
-            <div class="sb-eq" id="np-fallback-eq" style="display:none"><span></span><span></span><span></span></div>
-          </div>
-          <div class="sb-wc-sub sb-wc-sub-green" id="np-fallback-artist">—</div>
-          <div class="sb-wc-bar"><div class="sb-wc-bar-fill sb-wc-bar-green" style="width:0%"></div></div>
-          <div id="np-fallback-time-row" style="display:none;justify-content:space-between;margin-top:3px">
-            <span id="np-fallback-elapsed" style="font-size:9px;color:rgba(29,185,84,.7);font-family:var(--mono)">0:00</span>
-            <span id="np-fallback-duration" style="font-size:9px;color:rgba(245,245,247,.25);font-family:var(--mono)">0:00</span>
-          </div>
+      <div class="sb-section-label">Now Playing</div>
+      <div class="sb-np-pill" id="np-pill-fallback">
+        <div id="np-art-fallback" style="width:34px;height:34px;border-radius:7px;flex-shrink:0;background:rgba(255,255,255,.06);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:16px">🎵</div>
+        <div style="flex:1;min-width:0">
+          <div id="np-fallback-track" style="font-size:11.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)">—</div>
+          <div id="np-fallback-artist" style="font-size:10px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px">—</div>
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:1.5px;height:12px;flex-shrink:0" id="np-fallback-eq" style="display:none">
+          <span style="width:3px;background:#1db954;border-radius:1px;animation:eqBounce 1s ease-in-out infinite;height:40%"></span>
+          <span style="width:3px;background:#1db954;border-radius:1px;animation:eqBounce 1s ease-in-out infinite .2s;height:80%"></span>
+          <span style="width:3px;background:#1db954;border-radius:1px;animation:eqBounce 1s ease-in-out infinite .1s;height:55%"></span>
         </div>
       </div>
     </div>
@@ -3558,21 +3468,21 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       <div id="sb-twitch-list" style="display:flex;flex-direction:column;gap:5px"></div>
     </div>
 
-    <!-- LAST.FM v3 -->
+    <!-- LAST.FM v2 -->
     <div class="sb-section" id="sb-lastfm-wrap" style="display:none">
-      <div class="sb-widget-card sb-wc-red" id="sb-lastfm-content">
-        <div class="sb-wc-art" id="sb-lfm-art"><span>♫</span></div>
-        <div class="sb-wc-body">
-          <div class="sb-wc-top">
-            <span class="sb-wc-name" id="sb-lfm-track">—</span>
-            <div class="sb-eq sb-eq-lfm" id="sb-lfm-eq" style="display:none"><span></span><span></span><span></span><span></span></div>
-          </div>
-          <div class="sb-wc-sub sb-wc-sub-red" id="sb-lfm-artist">—</div>
-          <div class="sb-wc-bar"><div class="sb-wc-bar-fill sb-wc-bar-red" style="width:100%"></div></div>
-        </div>
-      </div>
+      <div class="sb-scrobble-label"><span class="sb-scrobble-dot"></span>Scrobbling</div>
+      <div id="sb-lastfm-content"></div>
     </div>
 
+    <!-- User card -->
+    <div class="user-card" onclick="goToProfileScreen()">
+      <div class="sidebar-avatar" id="sidebar-avatar"></div>
+      <div class="user-info">
+        <div class="user-name" id="display-username">User</div>
+        <div class="user-role" id="sidebar-user-role">NEXUS</div>
+      </div>
+      <span class="switch-hint">Switch ↗</span>
+    </div>
   </div>
 </nav>
 <div class="resize-handle" id="resize-handle"></div>
@@ -3607,27 +3517,27 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       <div class="topbar-actions">
         <div class="topbar-lang"><div class="lang-dropdown" id="lang-dd-topbar" onclick="toggleLangDropdown('lang-dd-topbar')">
   <div class="lang-trigger" id="lang-dd-topbar-trigger">
-    <span class="lang-trigger-flag" id="lang-dd-topbar-flag"><img src="https://flagcdn.com/20x15/fr.png" width="20" height="15" alt="FR" style="border-radius:2px;display:inline-block;vertical-align:middle"></span>
+    <span class="lang-trigger-flag" id="lang-dd-topbar-flag">🇫🇷</span>
     <svg class="lang-trigger-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
   </div>
   <div class="lang-menu">
     <div class="lang-option active" data-lang="fr" onclick="event.stopPropagation();setLangAndClose('fr','lang-dd-topbar')">
-      <span class="lang-option-flag"><img src="https://flagcdn.com/24x18/fr.png" width="24" height="18" alt="FR" style="border-radius:3px;display:inline-block;vertical-align:middle"></span>
+      <span class="lang-option-flag">🇫🇷</span>
       <div class="lang-option-info"><div class="lang-option-name">French</div><div class="lang-option-native">Français</div></div>
       <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
     <div class="lang-option" data-lang="en" onclick="event.stopPropagation();setLangAndClose('en','lang-dd-topbar')">
-      <span class="lang-option-flag"><img src="https://flagcdn.com/24x18/gb.png" width="24" height="18" alt="EN" style="border-radius:3px;display:inline-block;vertical-align:middle"></span>
+      <span class="lang-option-flag">🇺🇸</span>
       <div class="lang-option-info"><div class="lang-option-name">English</div><div class="lang-option-native">English</div></div>
       <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
     <div class="lang-option" data-lang="es" onclick="event.stopPropagation();setLangAndClose('es','lang-dd-topbar')">
-      <span class="lang-option-flag"><img src="https://flagcdn.com/24x18/es.png" width="24" height="18" alt="ES" style="border-radius:3px;display:inline-block;vertical-align:middle"></span>
+      <span class="lang-option-flag">🇪🇸</span>
       <div class="lang-option-info"><div class="lang-option-name">Spanish</div><div class="lang-option-native">Español</div></div>
       <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
     <div class="lang-option" data-lang="de" onclick="event.stopPropagation();setLangAndClose('de','lang-dd-topbar')">
-      <span class="lang-option-flag"><img src="https://flagcdn.com/24x18/de.png" width="24" height="18" alt="DE" style="border-radius:3px;display:inline-block;vertical-align:middle"></span>
+      <span class="lang-option-flag">🇩🇪</span>
       <div class="lang-option-info"><div class="lang-option-name">German</div><div class="lang-option-native">Deutsch</div></div>
       <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
@@ -3653,7 +3563,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       <div class="stat-card" style="--card-accent:#fbbf24"><div class="stat-label" data-i18n="time">Time</div><div class="clock-display" id="clock-main">00:00</div><div class="clock-date" id="clock-date-sub"></div></div>
     </div>
     <!-- Gaming mini-widget -->
-    <div id="gaming-overview-wrap" class="overview-widget" draggable="true" style="display:none;margin-bottom:12px">
+    <div id="gaming-overview-wrap" style="display:none;margin-bottom:18px">
       <div style="display:flex;gap:14px;flex-wrap:wrap" id="gaming-overview-cards"></div>
     </div>
     <!-- Quick Access -->
@@ -4364,13 +4274,9 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
         <!-- Add friend -->
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
           <input type="text" class="modal-input" id="compare-valo-input" placeholder="Friend's Valorant Name#TAG" style="flex:1;min-width:180px">
-          <input type="hidden" id="compare-valo-region" value="eu">
-          <div class="region-pills" style="flex-shrink:0">
-            <div class="region-pill active" data-val="eu" onclick="setCompareRegion(this)">EU</div>
-            <div class="region-pill" data-val="na" onclick="setCompareRegion(this)">NA</div>
-            <div class="region-pill" data-val="ap" onclick="setCompareRegion(this)">AP</div>
-            <div class="region-pill" data-val="kr" onclick="setCompareRegion(this)">KR</div>
-          </div>
+          <select class="game-region-select" id="compare-valo-region">
+            <option value="eu">EU</option><option value="na">NA</option><option value="ap">AP</option><option value="kr">KR</option>
+          </select>
           <input type="text" class="modal-input" id="compare-steam-input" placeholder="Friend's Steam ID64 (optional)" style="flex:1;min-width:180px">
           <button class="btn btn-primary" onclick="addFriendToCompare()">&#43; Add friend</button>
         </div>
@@ -4383,34 +4289,6 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   </div>
   <div id="page-connections" class="tab-content">
     <div class="topbar"><div><div class="section-eyebrow">Integrations</div><div class="section-title">Connections</div><div class="page-subtitle">Link your accounts to enrich your dashboard</div></div></div>
-
-    <!-- NEXUS AI KEY -->
-    <div class="conn-card">
-      <div class="conn-header">
-        <div class="conn-icon" style="background:linear-gradient(135deg,#f97316,#dc2626)">
-          <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><polygon points="10,1 19,10 10,19 1,10" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round"/><polygon points="10,5 15,10 10,15 5,10" fill="white"/></svg>
-        </div>
-        <div>
-          <div class="conn-title">NEXUS AI — Groq API Key</div>
-          <div class="conn-subtitle">Clé gratuite sur <a href="https://console.groq.com/keys" target="_blank" style="color:var(--accent)">console.groq.com</a> · 6000 req/jour · ultra rapide</div>
-        </div>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <input type="password" id="groq-key-input" class="modal-input" placeholder="gsk_..." style="flex:1;font-family:var(--mono);font-size:12px"
-          oninput="document.getElementById('groq-key-save').style.opacity=this.value?'1':'.4'">
-        <button id="groq-key-save" class="btn btn-primary" style="opacity:.4;padding:8px 16px" onclick="saveGroqKey()">Save</button>
-      </div>
-      <div id="groq-key-status" style="font-size:11px;color:var(--muted);margin-top:6px"></div>
-    </div>
-
-    <!-- SIDEBAR WIDGET MANAGER -->
-    <div class="conn-card" id="sidebar-widget-manager">
-      <div class="conn-header" style="margin-bottom:12px">
-        <div class="conn-icon" style="background:rgba(255,255,255,.08)">◫</div>
-        <div><div class="conn-title">Sidebar Widgets</div><div class="conn-subtitle">Toggle and reorder widgets shown in the sidebar</div></div>
-      </div>
-      <div id="widget-order-list" style="display:flex;flex-direction:column;gap:6px"></div>
-    </div>
 
     <!-- DISCORD -->
     <div class="conn-card">
@@ -4803,33 +4681,16 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 </main>
 
   <!-- AI CHAT -->
-  <!-- AI Sessions drawer — outside page-ai so z-index works -->
-  <div id="ai-sessions-drawer" style="position:fixed;top:0;right:0;width:280px;height:100vh;background:rgba(8,8,12,.98);backdrop-filter:blur(24px);border-left:1px solid rgba(255,255,255,.09);z-index:9999;transform:translateX(100%);transition:transform .22s ease;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:8px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-      <div style="font-size:13px;font-weight:700;color:var(--text)">Historique</div>
-      <button onclick="toggleAISessions()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 6px">✕</button>
-    </div>
-    <div id="ai-sessions-panel"></div>
-  </div>
-
   <div id="page-ai" class="tab-content">
     <div class="topbar">
       <div>
-        <div class="section-eyebrow" data-i18n="ai_powered_by">Powered by Groq</div>
+        <div class="section-eyebrow">Powered by Claude</div>
         <div class="section-title">NEXUS <span style="background:linear-gradient(90deg,#f97316,#dc2626);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">AI</span></div>
       </div>
-      <div class="topbar-actions" style="gap:6px">
-        <button class="btn btn-ghost" onclick="toggleAISessions()" style="font-size:12px" title="Historique des chats">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-          Historique
-        </button>
-        <button class="btn btn-ghost" onclick="showAICapabilities()" style="font-size:12px" title="Que sais-je faire ?">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          Capacités
-        </button>
+      <div class="topbar-actions">
         <button class="btn btn-ghost" onclick="clearAIChat()" style="font-size:12px">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
-          <span data-i18n="new_chat">Nouveau chat</span>
+          New chat
         </button>
       </div>
     </div>
@@ -4838,7 +4699,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       <!-- Context bar -->
       <div class="ai-context-bar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span data-i18n="ai_context_bar">NEXUS AI has access to your dashboard context</span>
+        <span>NEXUS AI has access to your dashboard context</span>
         <span class="ai-ctx-badge" id="ai-ctx-label">Loading…</span>
       </div>
 
@@ -4849,11 +4710,11 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 
       <!-- Suggestions (shown when empty) -->
       <div class="ai-suggestions" id="ai-suggestions">
-        <button class="ai-suggestion" onclick="sendAISuggestion(this)" data-i18n="summarize_tasks">Summarize my tasks</button>
-        <button class="ai-suggestion" onclick="sendAISuggestion(this)" data-i18n="focus_today">What should I focus on today?</button>
-        <button class="ai-suggestion" onclick="sendAISuggestion(this)" data-i18n="review_habits">Review my habits this week</button>
-        <button class="ai-suggestion" onclick="sendAISuggestion(this)" data-i18n="write_note">Help me write a note</button>
-        <button class="ai-suggestion" onclick="sendAISuggestion(this)" data-i18n="pomo_schedule">Suggest a Pomodoro schedule</button>
+        <button class="ai-suggestion" onclick="sendAISuggestion(this)">Summarize my tasks</button>
+        <button class="ai-suggestion" onclick="sendAISuggestion(this)">What should I focus on today?</button>
+        <button class="ai-suggestion" onclick="sendAISuggestion(this)">Review my habits this week</button>
+        <button class="ai-suggestion" onclick="sendAISuggestion(this)">Help me write a note</button>
+        <button class="ai-suggestion" onclick="sendAISuggestion(this)">Suggest a Pomodoro schedule</button>
       </div>
 
       <!-- Input -->
@@ -5253,12 +5114,7 @@ const LASTFM_KEY = '20a3130a6a13552131356a4dd2bf8071';
 
 
 // ── LANGUAGE DROPDOWN ─────────────────────────────────────────
-var LANG_META={
-  "fr": {"flag": '<img src="https://flagcdn.com/20x15/fr.png" width="20" height="15" alt="FR" style="border-radius:2px;display:inline-block;vertical-align:middle">', "name": "French", "native": "Français"},
-  "en": {"flag": '<img src="https://flagcdn.com/20x15/gb.png" width="20" height="15" alt="EN" style="border-radius:2px;display:inline-block;vertical-align:middle">', "name": "English", "native": "English"},
-  "es": {"flag": '<img src="https://flagcdn.com/20x15/es.png" width="20" height="15" alt="ES" style="border-radius:2px;display:inline-block;vertical-align:middle">', "name": "Spanish", "native": "Español"},
-  "de": {"flag": '<img src="https://flagcdn.com/20x15/de.png" width="20" height="15" alt="DE" style="border-radius:2px;display:inline-block;vertical-align:middle">', "name": "German", "native": "Deutsch"}
-};
+var LANG_META={"fr": {"flag": "🇫🇷", "name": "French", "native": "Français"}, "en": {"flag": "🇺🇸", "name": "English", "native": "English"}, "es": {"flag": "🇪🇸", "name": "Spanish", "native": "Español"}, "de": {"flag": "🇩🇪", "name": "German", "native": "Deutsch"}};
 
 function toggleLangDropdown(id){
   // Close all other dropdowns first
@@ -5287,7 +5143,7 @@ function updateAllLangDropdowns(){
   document.querySelectorAll('.lang-dropdown').forEach(dd=>{
     const id=dd.id;
     const flag=document.getElementById(id+'-flag');
-    if(flag) flag.innerHTML=meta.flag;
+    if(flag) flag.textContent=meta.flag;
     // Update active state on options
     dd.querySelectorAll('.lang-option').forEach(opt=>{
       opt.classList.toggle('active', opt.dataset.lang===_lang);
@@ -5356,13 +5212,6 @@ var ADMIN_EMAIL='rub19.mailpro@gmail.com';
 var sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 let _sbUser=null;
 let _isAdmin=false;
-let _ambientFrame=null;
-let _bgFrame=null;
-let _bgParticles=[];
-let _lang=localStorage.getItem('nexus_lang')||'fr';
-let _bioSaveTO=null;
-let _socialSaveTO=null;
-let _npProgressInterval=null;
 
 function escapeHTML(value){
   return String(value ?? '').replace(/[&<>"']/g, c => ({
@@ -5529,13 +5378,13 @@ async function doLogin(){
       }catch(e){}
       if(email===id) email=id+'@dashboard.local';
     }
-    const {data:loginData, error}=await sb.auth.signInWithPassword({email,password:pw});
+    const {error}=await sb.auth.signInWithPassword({email,password:pw});
     setAuthLoading(false);
     if(error){
       document.getElementById('auth-error').textContent='Wrong credentials — if you signed up with an email, use it to sign in';
       return;
     }
-    await onAuthSuccess(loginData?.user);
+    await onAuthSuccess();
   }catch(e){
     setAuthLoading(false);
     document.getElementById('auth-error').textContent='Connection error — please try again';
@@ -5560,8 +5409,8 @@ async function doRegister(){
     toast('Account created! Logging in…','success');
     setTimeout(async()=>{
       try{
-        const {data:loginData2, error:e2}=await sb.auth.signInWithPassword({email:regEmail,password:pw});
-        if(!e2)await onAuthSuccess(loginData2?.user);
+        const {error:e2}=await sb.auth.signInWithPassword({email:regEmail,password:pw});
+        if(!e2)await onAuthSuccess();
       }catch(e){document.getElementById('auth-error').textContent='Login failed after registration';}
     },1000);
   }catch(e){
@@ -5580,9 +5429,8 @@ async function doLogout(){
   document.getElementById('main-content').style.display='none';
 }
 
-async function onAuthSuccess(userArg){
-  // 1. Supprime l'anti-flash AVANT tout, sinon le !important bloque les display
-  removeAntiFlash();
+async function onAuthSuccess(){
+  // 1. Cache l'auth immédiatement et définitivement
   const authEl=document.getElementById('auth-screen');
   if(authEl){ authEl.style.display='none'; }
 
@@ -5600,16 +5448,13 @@ async function onAuthSuccess(userArg){
   }
 
   try{
-    // 3. Utilise le user passé en param (depuis signInWithPassword) ou fallback getUser
-    let user=userArg;
-    if(!user){
-      const {data,error:ue}=await sb.auth.getUser();
-      if(!data?.user||ue){
-        if(authEl) authEl.style.display='flex';
-        hideBoot();
-        return;
-      }
-      user=data.user;
+    // 3. Vérifie la session
+    const {data:{user}, error}=await sb.auth.getUser();
+    if(!user||error){
+      // Échec → reaffiche auth
+      if(authEl) authEl.style.display='flex';
+      hideBoot();
+      return;
     }
     _sbUser=user;
     _isAdmin=user?.email===ADMIN_EMAIL;
@@ -5682,9 +5527,6 @@ async function loadCloudState(){
           banner:s.banner||null,
           themeIdx:s.themeIdx||0,
           xp:s.xp||0,
-          weatherCity:s.weatherCity||null,
-          weatherCache:s.weatherCity&&s.weatherCache?.city===s.weatherCity?s.weatherCache:null,
-          aiSessions:s.aiSessions||[],
         }
       };
     });
@@ -5740,9 +5582,6 @@ async function saveCloudState(){
         bannerImg:p.bannerImg||null,
         notifEnabled:p.state?.notifEnabled||false,
         xp:p.state?.xp||0,
-        weatherCity:p.state?.weatherCity||null,
-        weatherCache:p.state?.weatherCache||null,
-        aiSessions:p.state?.aiSessions||[],
       },
       updated_at:new Date().toISOString()
     };
@@ -6142,8 +5981,7 @@ function enterDashboard(id){
     document.getElementById('main-content').style.display='block';
     renderSidebarNav(); updateSidebarAvatar(); applyI18n();
     initDashboard();
-    // Only start ambient bg if no custom bg theme is set
-    if(!curP()?.bgTheme||curP()?.bgTheme==='none') setTimeout(startAmbientBg,300);
+    setTimeout(startAmbientBg,300);
   },180);
 }
 
@@ -6457,9 +6295,7 @@ function renderSidebarNav(){
   if(p?.sidebarConfig?.length){
     nav=baseNav.map(item=>{
       const saved=p.sidebarConfig.find(s=>s.id===item.id);
-      // 'settings' and 'ai' are always visible regardless of saved config
-      const alwaysVisible=['settings','ai'].includes(item.id);
-      return{...item,visible:alwaysVisible||(saved?saved.visible!==false:true)};
+      return{...item,visible:saved?saved.visible!==false:true};
     }).filter(i=>i.visible!==false);
     nav.sort((a,b)=>{
       const ai=p.sidebarConfig.findIndex(s=>s.id===a.id);
@@ -6581,15 +6417,10 @@ function initSidebarWidgets(p){
   if(!p)return;
   const conn=p.state?.connections||{};
 
-  // Use unified visible.* system from new widget manager
+  // Discord — check user preference first
   const swPrefs=p.state.sidebarWidgets||{};
-  const vis=swPrefs.visible||{};
-  // Backwards compat: if old-style key exists and new visible key absent, migrate
-  if(swPrefs.discord===false&&vis.discord===undefined)vis.discord=false;
-  if(swPrefs.lastfm===false&&vis.lastfm===undefined)vis.lastfm=false;
-
   const dcWrap=document.getElementById('sb-discord-wrap');
-  if(conn.discord?.userId&&vis.discord!==false){
+  if(conn.discord?.userId&&swPrefs.discord!==false){
     if(dcWrap)dcWrap.style.display='block';
     refreshDiscordSidebar();
     startLanyardWS(conn.discord.userId);
@@ -6597,27 +6428,25 @@ function initSidebarWidgets(p){
     if(dcWrap)dcWrap.style.display='none';
   }
 
-  // Now Playing via Lanyard (Spotify)
-  const npWrap=document.getElementById('sb-spotify-wrap');
-  if(conn.discord?.userId&&vis.nowplaying!==false){
-    if(npWrap)npWrap.style.display='block';
-  } else {
-    if(npWrap)npWrap.style.display='none';
-  }
-
-  // Last.fm
-  if(conn.lastfm?.username&&vis.lastfm!==false){
+  // Last.fm — check user preference
+  if(conn.lastfm?.username&&swPrefs.lastfm!==false){
     renderLastfmCard(conn.lastfm).catch(()=>{});
     startLastfmAutoRefresh();
   }
 
-  // Now Playing via Last.fm
-  if(conn.lastfm?.username&&vis.nowplaying!==false){
-    refreshSpotifySidebar();
-    startSpotifyAutoRefresh();
+  // nowplaying.site widget — show when Discord is offline/invis
+  if(conn.spotify?.widgetUrl){
+    const dcStatus=conn.discord?.data?.discord_status||'offline';
+    const isOnline=['online','idle','dnd'].includes(dcStatus);
+    if(!isOnline){
+      const iw=document.getElementById('sb-spotify-iframe-wrap');
+      if(iw&&swPrefs.nowplaying!==false)iw.style.display='block';
+      if(typeof startSpotifyAutoRefresh==='function')startSpotifyAutoRefresh();
+    }
   }
-  // Spotify fallback pill (follows lastfm visibility)
-  if(conn.lastfm?.username&&vis.lastfm!==false){
+
+  // Spotify fallback pill (follows Last.fm preference)
+  if(conn.lastfm?.username&&swPrefs.lastfm!==false){
     fetchLastfm('user.getrecenttracks',`user=${encodeURIComponent(conn.lastfm.username)}&limit=1`)
       .then(data=>{
         const track=data?.recenttracks?.track?.[0];
@@ -6642,154 +6471,7 @@ function initSidebarWidgets(p){
 
 
 
-
-// ── SIDEBAR WIDGET MANAGER ─────────────────────────────────────────────────
-const WIDGET_DEFS=[
-  {id:'discord', label:'Discord', sub:'Status & activité', icon:'💬', bg:'#5865F2', requires:'discord.userId'},
-  {id:'nowplaying', label:'Now Playing', sub:'Last.fm live', icon:'♪', bg:'rgba(29,185,84,.25)', requires:'lastfm.username'},
-  {id:'lastfm', label:'Scrobbling', sub:'Last.fm', icon:'♫', bg:'rgba(213,16,7,.2)', requires:'lastfm.username'},
-];
-
-function getWidgetPrefs(){
-  const p=curP();if(!p)return{order:['discord','nowplaying','lastfm'],visible:{}};
-  if(!p.state.sidebarWidgets)p.state.sidebarWidgets={};
-  const sw=p.state.sidebarWidgets;
-  return {
-    order: sw.order||['discord','nowplaying','lastfm'],
-    visible: sw.visible||{}
-  };
-}
-
-function saveWidgetPrefs(order,visible){
-  const p=curP();if(!p)return;
-  if(!p.state.sidebarWidgets)p.state.sidebarWidgets={};
-  p.state.sidebarWidgets.order=order;
-  p.state.sidebarWidgets.visible=visible;
-  saveStateNow();
-  applySidebarWidgetOrder();
-}
-
-function renderWidgetManager(){
-  const list=document.getElementById('widget-order-list');
-  if(!list)return;
-  const p=curP();if(!p)return;
-  const conn=p.state.connections||{};
-  const {order,visible}=getWidgetPrefs();
-
-  // Sort defs by saved order
-  const sorted=[...order]
-    .map(id=>WIDGET_DEFS.find(d=>d.id===id))
-    .filter(Boolean)
-    .concat(WIDGET_DEFS.filter(d=>!order.includes(d.id)));
-
-  list.innerHTML='';
-  sorted.forEach((def,i)=>{
-    // Check if connection exists
-    const parts=def.requires.split('.');
-    const hasConn=parts.reduce((obj,k)=>obj?.[k], conn);
-    const isOn=visible[def.id]!==false&&!!hasConn;
-
-    const row=document.createElement('div');
-    row.className='widget-row';
-    row.dataset.wid=def.id;
-    row.draggable=true;
-    row.innerHTML=`
-      <span class="widget-drag-handle">⠿</span>
-      <div class="widget-row-icon" style="background:${def.bg}">${def.icon}</div>
-      <div style="flex:1;min-width:0">
-        <div class="widget-row-label">${def.label}</div>
-        <div class="widget-row-sub">${hasConn?def.sub:'Not connected'}</div>
-      </div>
-      <div class="widget-toggle-switch${isOn?' on':''}" onclick="toggleWidgetVisible('${def.id}',this)" title="${isOn?'Hide':'Show'} in sidebar"></div>
-    `;
-
-    // Drag events
-    row.addEventListener('dragstart',e=>{
-      e.dataTransfer.setData('text/plain',def.id);
-      setTimeout(()=>row.classList.add('dragging'),0);
-    });
-    row.addEventListener('dragend',()=>row.classList.remove('dragging'));
-    row.addEventListener('dragover',e=>{e.preventDefault();row.classList.add('drag-over');});
-    row.addEventListener('dragleave',()=>row.classList.remove('drag-over'));
-    row.addEventListener('drop',e=>{
-      e.preventDefault();row.classList.remove('drag-over');
-      const fromId=e.dataTransfer.getData('text/plain');
-      const toId=def.id;
-      if(fromId===toId)return;
-      const {order:ord,visible:vis}=getWidgetPrefs();
-      const newOrd=[...ord];
-      const fi=newOrd.indexOf(fromId), ti=newOrd.indexOf(toId);
-      if(fi>-1)newOrd.splice(fi,1);
-      const ti2=newOrd.indexOf(toId);
-      newOrd.splice(ti2>=0?ti2:newOrd.length,0,fromId);
-      saveWidgetPrefs(newOrd,vis);
-      renderWidgetManager();
-    });
-
-    list.appendChild(row);
-  });
-}
-
-function toggleWidgetVisible(wid, switchEl){
-  const {order,visible}=getWidgetPrefs();
-  const wasOn=visible[wid]!==false;
-  visible[wid]=!wasOn;
-  switchEl.classList.toggle('on',!wasOn);
-  saveWidgetPrefs(order,visible);
-  initSidebarWidgets(curP());
-}
-
-function applySidebarWidgetOrder(){
-  const {order}=getWidgetPrefs();
-  const sidebar=document.querySelector('.sidebar-widgets-area')||document.querySelector('nav .sidebar-scroll')||document.querySelector('nav');
-  if(!sidebar)return;
-
-  // Map widget id to wrap element
-  const idToEl={
-    discord: document.getElementById('sb-discord-wrap'),
-    nowplaying: document.getElementById('sb-spotify-wrap')||document.getElementById('sb-spotify-iframe-wrap'),
-    lastfm: document.getElementById('sb-lastfm-wrap'),
-  };
-
-  // Find common parent
-  const wraps=Object.values(idToEl).filter(Boolean);
-  if(!wraps.length)return;
-  const parent=wraps[0].parentNode;
-  if(!parent)return;
-
-  // Reorder in DOM
-  order.forEach(id=>{
-    const el=idToEl[id];
-    if(el&&el.parentNode===parent)parent.appendChild(el);
-  });
-}
-
 // ── SIDEBAR WIDGET TOGGLE ─────────────────────────────────────
-
-function saveGroqKey(){
-  const p=curP();if(!p)return;
-  const key=document.getElementById('groq-key-input')?.value?.trim();
-  if(!key){toast('Enter a valid API key','error');return;}
-  if(!p.state.connections)p.state.connections={};
-  p.state.connections.groqKey=key;
-  saveStateNow();
-  const status=document.getElementById('groq-key-status');
-  if(status)status.textContent='✓ Key saved';
-  setTimeout(()=>{if(status)status.textContent=''},2000);
-  toast('Gemini key saved!','success');
-}
-
-function loadGroqKeyUI(){
-  const p=curP();if(!p)return;
-  const key=p.state?.connections?.groqKey||'';
-  const inp=document.getElementById('groq-key-input');
-  const status=document.getElementById('groq-key-status');
-  if(inp&&key){
-    inp.value=key;
-    if(status)status.textContent='✓ Key configured';
-  }
-}
-
 function toggleSidebarWidget(service){
   const p=curP();if(!p)return;
   if(!p.state.sidebarWidgets)p.state.sidebarWidgets={};
@@ -6821,28 +6503,6 @@ function initSidebarWidgetToggles(){
     if(btn)btn.style.display='flex';
     updateSidebarWidgetToggleBtn('lastfm');
   }
-  renderWidgetManager();
-  applySidebarWidgetOrder();
-}
-
-
-function toggleSidebarCompact(){
-  const p=curP();if(!p)return;
-  p.sidebarCompact=!p.sidebarCompact;
-  const sb=document.getElementById('main-sidebar');
-  if(sb)sb.classList.toggle('compact',p.sidebarCompact);
-  // Adjust main content margin to match sidebar width
-  const main=document.getElementById('main-content');
-  if(main)main.style.marginLeft=p.sidebarCompact?'58px':'';
-  saveStateNow();
-}
-
-function applySidebarCompact(){
-  const p=curP();if(!p)return;
-  const sb=document.getElementById('main-sidebar');
-  if(sb)sb.classList.toggle('compact',!!p.sidebarCompact);
-  const main=document.getElementById('main-content');
-  if(main&&p.sidebarCompact)main.style.marginLeft='58px';
 }
 
 function initDashboard(){
@@ -6855,7 +6515,6 @@ function initDashboard(){
   updateSidebarAvatar();
   updateTopbarProfile();
   checkMobileLayout();
-  applySidebarCompact();
   document.getElementById('display-username').textContent=p.name;
   document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
   document.getElementById('page-dashboard').classList.add('active');
@@ -6889,21 +6548,7 @@ function initDashboard(){
   if(typeof renderCountdown==='function')renderCountdown();;
   refreshSpotifySidebar();
   applyTheme(p.themeIdx||0);
-  // Apply bgTheme — wait for paint then size canvas properly
-  if(p.bgTheme&&p.bgTheme!=='none'){
-    const _applyBg=()=>{
-      const c=document.getElementById('bg-canvas');
-      if(!c)return;
-      c.width=window.innerWidth||document.documentElement.clientWidth;
-      c.height=window.innerHeight||document.documentElement.clientHeight;
-      applyBgTheme(p.bgTheme);
-      // Make sidebar transparent
-      const sb=document.getElementById('main-sidebar');
-      if(sb)sb.style.background='rgba(5,5,7,.5)';
-    };
-    // Double RAF ensures layout is complete
-    requestAnimationFrame(()=>requestAnimationFrame(_applyBg));
-  }
+  if(p.bgTheme&&p.bgTheme!=='none')applyBgTheme(p.bgTheme);
   // Apply custom accent if any
   if(p.customAccent)applyCustomColor(p.customAccent);
   // Delay weather/quote to let DOM and geolocation settle
@@ -6941,7 +6586,7 @@ function updateSidebarAvatar(){
   if(un)un.textContent=p.name||'User';
   // Topbar + banner
   updateTopbarProfile();
-  // NE PAS appeler updateBannerDisplay ici — elle appelle updateSidebarAvatar → boucle infinie
+  if(typeof updateBannerDisplay==='function')updateBannerDisplay();
 }
 
 function updateSettingsPreview(){
@@ -6981,12 +6626,6 @@ function updateSettingsPreview(){
 }
 
 // ── REGION PILL SELECTOR ───────────────────────
-function setCompareRegion(pill){
-  document.querySelectorAll('.region-pills [onclick*="setCompareRegion"]').forEach(p=>p.classList.remove('active'));
-  pill.classList.add('active');
-  document.getElementById('compare-valo-region').value=pill.dataset.val;
-}
-
 function setRegionPill(game, el){
   const pillsId = game + '-region-pills';
   document.querySelectorAll(`#${pillsId} .region-pill`).forEach(p=>p.classList.remove('active'));
@@ -7115,15 +6754,11 @@ const THEMES=[
 ];
 
 const BG_THEMES=[
-  {name:'None',        id:'none'},
-  {name:'Particles',   id:'particles'},
-  {name:'Aurora',      id:'aurora'},
-  {name:'Grid',        id:'grid'},
-  {name:'Waves',       id:'waves'},
-  {name:'Meteors',     id:'meteors'},
-  {name:'Noise',       id:'noise'},
-  {name:'Hexagons',    id:'hexagons'},
-  {name:'Constellation',id:'constellation'},
+  {name:'None',   id:'none'},
+  {name:'Particles', id:'particles'},
+  {name:'Aurora',    id:'aurora'},
+  {name:'Grid',      id:'grid'},
+  {name:'Waves',     id:'waves'},
 ];
 
 function applyTheme(themeIdx){
@@ -7153,18 +6788,8 @@ function applyTheme(themeIdx){
     r.setProperty('--bg-rgb',`${rr},${gg},${bb}`);
   }
   if(t.surface)r.setProperty('--surface',t.surface);
-  // Restart bg to reflect new accent color
-  const _p=curP();
-  if(_p?.bgTheme&&_p.bgTheme!=='none'){
-    // Re-apply animated bg with new accent
-    requestAnimationFrame(()=>{
-      const c=document.getElementById('bg-canvas');
-      if(c){c.width=window.innerWidth;c.height=window.innerHeight;}
-      applyBgTheme(_p.bgTheme);
-    });
-  } else {
-    if(_ambientFrame){cancelAnimationFrame(_ambientFrame);_ambientFrame=null;setTimeout(startAmbientBg,50);}
-  }
+  // Restart ambient bg to reflect new accent color
+  if(_ambientFrame){cancelAnimationFrame(_ambientFrame);_ambientFrame=null;setTimeout(startAmbientBg,50);}
 }
 
 function hexToRgb(hex){
@@ -7295,7 +6920,7 @@ function updateBannerDisplay(){
     socialsEl.innerHTML=links.join('');
   }
 
-  // NE PAS appeler updateSidebarAvatar ici — elle appelle updateBannerDisplay → boucle infinie
+  updateSidebarAvatar();
   updateTopbarProfile();
 }
 
@@ -7387,71 +7012,11 @@ function getAIContext(){
   return{summary,counts,profile:p.name};
 }
 
-function saveAIChats(){
-  const p=curP();if(!p||!p.state)return;
-  if(!p.state.aiSessions)p.state.aiSessions=[];
-  // Update current session
-  if(_aiHistory.length>0){
-    const sess=p.state.aiSessions;
-    const now=Date.now();
-    if(sess.length===0||sess[sess.length-1].id!==_aiSessionId){
-      _aiSessionId=now;
-      sess.push({id:now,ts:now,preview:_aiHistory[0]?.content?.slice(0,60)||'Chat',messages:[..._aiHistory]});
-    } else {
-      sess[sess.length-1].messages=[..._aiHistory];
-      sess[sess.length-1].preview=_aiHistory.find(m=>m.role==='user')?.content?.slice(0,60)||'Chat';
-    }
-    // Keep last 20 sessions
-    if(sess.length>20)p.state.aiSessions=sess.slice(-20);
-  }
-  saveStateNow();
-}
-
-function renderAISessions(){
-  const p=curP();if(!p)return;
-  const sessions=(p.state?.aiSessions||[]).slice().reverse();
-  const panel=document.getElementById('ai-sessions-panel');if(!panel)return;
-  if(!sessions.length){panel.innerHTML='<div style="color:var(--muted);font-size:11px;padding:8px">Aucun chat sauvegardé</div>';return;}
-  panel.innerHTML=sessions.map(s=>`
-    <div class="ai-session-item" onclick="loadAISession(${s.id})">
-      <div class="ai-session-preview">${escapeHTML(s.preview||'Chat')}</div>
-      <div class="ai-session-date">${new Date(s.ts).toLocaleDateString(_lang==='fr'?'fr-FR':'en-US',{day:'numeric',month:'short'})}</div>
-    </div>
-  `).join('');
-}
-
-function loadAISession(id){
-  const p=curP();if(!p)return;
-  const sess=(p.state?.aiSessions||[]).find(s=>s.id===id);
-  if(!sess)return;
-  _aiSessionId=id;
-  _aiHistory=[...sess.messages];
-  const msgs=document.getElementById('ai-messages');
-  if(msgs){msgs.innerHTML='';}
-  _aiHistory.forEach(m=>addAIMessage(m.role,m.content));
-  document.getElementById('ai-sessions-drawer')?.classList.remove('open');
-}
-
-function toggleAISessions(){
-  const drawer=document.getElementById('ai-sessions-drawer');
-  if(!drawer)return;
-  const open=drawer.classList.toggle('open');
-  if(open)renderAISessions();
-}
-
-let _aiSessionId=null;
-
 function initAIChat(){
   const ctx=getAIContext();
   document.getElementById('ai-ctx-label').textContent=`${ctx.profile} · ${ctx.counts.pending} tasks · ${ctx.counts.habits} habits`;
   if(_aiHistory.length===0){
-    const welcomeMsg={
-      fr:`Salut **${ctx.profile}** ! Je suis NEXUS AI, ton assistant personnel propulsé par Groq.\n\nJe peux voir tes tâches, habitudes, notes et plus encore. Comment puis-je t'aider aujourd'hui ?`,
-      es:`¡Hola **${ctx.profile}**! Soy NEXUS AI, tu asistente personal impulsado por Groq.\n\nPuedo ver tus tareas, hábitos, notas y más. ¿En qué puedo ayudarte hoy?`,
-      de:`Hey **${ctx.profile}**! Ich bin NEXUS AI, dein persönlicher Assistent, angetrieben von Groq.\n\nIch kann deine Aufgaben, Gewohnheiten, Notizen und mehr sehen. Wie kann ich dir heute helfen?`,
-      en:`Hey **${ctx.profile}**! I'm NEXUS AI, your personal dashboard assistant powered by Groq.\n\nI can see your tasks, habits, notes and more. What can I help you with today?`
-    };
-    addAIMessage('assistant',welcomeMsg[_lang||'fr']||welcomeMsg.en);
+    addAIMessage('assistant',`Hey **${ctx.profile}**! I'm NEXUS AI, your personal dashboard assistant powered by Claude.\n\nI can see your tasks, habits, notes and more. What can I help you with today?`);
   }
 }
 
@@ -7462,11 +7027,9 @@ function addAIMessage(role,text){
   const avatarHtml=isUser
     ?`<div class="ai-avatar user-av">${p?.avatarImg?`<img src="${p.avatarImg}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`:(p?.avatarEmoji||'👤')}</div>`
     :`<div class="ai-avatar nexus"><svg viewBox="0 0 20 20" fill="none" style="width:14px;height:14px"><polygon points="10,1 19,10 10,19 1,10" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round"/><polygon points="10,5 15,10 10,15 5,10" fill="white"/></svg></div>`;
-  // Simple markdown: **bold**, `code`, [link](url), newlines
+  // Simple markdown: **bold**, `code`, newlines
   const html=text
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/\[([^\]]+)\]\(#open-note-(\d+)\)/g,(_,label,id)=>`<a href="#" onclick="event.preventDefault();openNoteFromAI(${id})" style="color:var(--accent);text-decoration:underline;cursor:pointer">${label}</a>`)
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" style="color:var(--accent);text-decoration:underline">$1</a>')
     .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
     .replace(/`([^`]+)`/g,'<code>$1</code>')
     .replace(/\n/g,'<br>');
@@ -7475,8 +7038,8 @@ function addAIMessage(role,text){
   div.innerHTML=`${isUser?'':avatarHtml}<div class="ai-bubble">${html}</div>${isUser?avatarHtml:''}`;
   msgs.appendChild(div);
   msgs.scrollTop=msgs.scrollHeight;
-  // Always keep suggestions visible
-  if(isUser){const s=document.getElementById('ai-suggestions');if(s)s.style.display='flex';}
+  // Hide suggestions after first user message
+  if(isUser){const s=document.getElementById('ai-suggestions');if(s)s.style.display='none';}
 }
 
 function showAITyping(){
@@ -7491,138 +7054,6 @@ function removeAITyping(){
   document.getElementById('ai-typing-indicator')?.remove();
 }
 
-
-// ════════════════════════════════════════════════════════════
-//  NEXUS AI — DASHBOARD ACTIONS
-//  Parses AI responses for [ACTION:...] commands
-// ════════════════════════════════════════════════════════════
-
-const AI_ACTIONS={
-  create_task({text,priority,due}){
-    const p=curP();if(!p)return t_ai('action_fail');
-    if(!text)return t_ai('action_fail');
-    const todo={id:Date.now(),text,priority:priority||'medium',done:false,color:'',
-      due:due||'',tag:'',date:new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short'})};
-    p.state.todos.unshift(todo);saveStateNow();renderTodos();updateStats();
-    addActivity('AI: '+text,'var(--accent2)');
-    return t_ai('task_created',{text});
-  },
-  create_note({title,content}){
-    const p=curP();if(!p)return t_ai('action_fail');
-    if(!p.state.notes)p.state.notes=[];
-    const noteId=Date.now();
-    const note={id:noteId,title:title||'Note',content:content||'',color:'',
-      pinned:false,created:new Date().toISOString(),updated:new Date().toISOString()};
-    p.state.notes.unshift(note);saveStateNow();renderNotesList();
-    // Return message with clickable link to open the note
-    const lang=_lang||'fr';
-    const t=title||'Note';
-    const msgs={fr:`📝 Note créée : **[${t}](#open-note-${noteId})**`,en:`📝 Note created: **[${t}](#open-note-${noteId})**`,es:`📝 Nota creada: **[${t}](#open-note-${noteId})**`,de:`📝 Notiz erstellt: **[${t}](#open-note-${noteId})**`};
-    return msgs[lang]||msgs.fr;
-  },
-  create_event({title,date}){
-    const p=curP();if(!p)return t_ai('action_fail');
-    if(!title||!date)return t_ai('action_fail');
-    if(!p.state.events)p.state.events=[];
-    p.state.events.push({id:Date.now(),title,date,color:'#f97316'});
-    p.state.events.sort((a,b)=>a.date.localeCompare(b.date));
-    saveStateNow();
-    if(typeof renderOverviewEvents==='function')renderOverviewEvents();
-    return t_ai('event_created',{title,date});
-  },
-  complete_task({text}){
-    const p=curP();if(!p)return t_ai('action_fail');
-    const todo=(p.state.todos||[]).find(t=>!t.done&&t.text.toLowerCase().includes((text||'').toLowerCase()));
-    if(!todo)return t_ai('task_not_found',{text});
-    todo.done=true;todo.doneAt=new Date().toISOString();
-    saveStateNow();renderTodos();updateStats();
-    return t_ai('task_done',{text:todo.text});
-  },
-  delete_task({text}){
-    const p=curP();if(!p)return t_ai('action_fail');
-    const before=(p.state.todos||[]).length;
-    p.state.todos=(p.state.todos||[]).filter(t=>!t.text.toLowerCase().includes((text||'').toLowerCase()));
-    if(p.state.todos.length===before)return t_ai('task_not_found',{text});
-    saveStateNow();renderTodos();updateStats();
-    return t_ai('task_deleted',{text});
-  },
-  list_tasks(){
-    const p=curP();if(!p)return '';
-    const todos=(p.state.todos||[]).filter(t=>!t.done);
-    if(!todos.length)return t_ai('no_tasks');
-    return todos.map((t,i)=>`${i+1}. **${t.text}**${t.priority==='high'?' 🔴':''}${t.due?' ('+t.due+')':''}`).join('\n');
-  },
-};
-
-// Translation helper for AI action messages
-function t_ai(key,vars={}){
-  const lang=_lang||'fr';
-  const msgs={
-    fr:{
-      action_fail:'❌ Action impossible.',
-      task_created:'✅ Tâche créée : **{text}**',
-      note_created:'📝 Note créée : **{title}**',
-      event_created:'📅 Événement ajouté : **{title}** le {date}',
-      task_done:'✅ Tâche terminée : **{text}**',
-      task_deleted:'🗑️ Tâche supprimée : **{text}**',
-      task_not_found:'❌ Tâche introuvable : **{text}**',
-      no_tasks:'Aucune tâche en attente.',
-    },
-    en:{
-      action_fail:'❌ Action failed.',
-      task_created:'✅ Task created: **{text}**',
-      note_created:'📝 Note created: **{title}**',
-      event_created:'📅 Event added: **{title}** on {date}',
-      task_done:'✅ Task completed: **{text}**',
-      task_deleted:'🗑️ Task deleted: **{text}**',
-      task_not_found:'❌ Task not found: **{text}**',
-      no_tasks:'No pending tasks.',
-    },
-    es:{
-      action_fail:'❌ Acción fallida.',
-      task_created:'✅ Tarea creada: **{text}**',
-      note_created:'📝 Nota creada: **{title}**',
-      event_created:'📅 Evento añadido: **{title}** el {date}',
-      task_done:'✅ Tarea completada: **{text}**',
-      task_deleted:'🗑️ Tarea eliminada: **{text}**',
-      task_not_found:'❌ Tarea no encontrada: **{text}**',
-      no_tasks:'Sin tareas pendientes.',
-    },
-    de:{
-      action_fail:'❌ Aktion fehlgeschlagen.',
-      task_created:'✅ Aufgabe erstellt: **{text}**',
-      note_created:'📝 Notiz erstellt: **{title}**',
-      event_created:'📅 Ereignis hinzugefügt: **{title}** am {date}',
-      task_done:'✅ Aufgabe erledigt: **{text}**',
-      task_deleted:'🗑️ Aufgabe gelöscht: **{text}**',
-      task_not_found:'❌ Aufgabe nicht gefunden: **{text}**',
-      no_tasks:'Keine ausstehenden Aufgaben.',
-    },
-  };
-  let msg=(msgs[lang]||msgs.en)[key]||key;
-  Object.entries(vars).forEach(([k,v])=>msg=msg.replace('{'+k+'}',v));
-  return msg;
-}
-
-// Parse and execute actions from AI reply
-function executeAIActions(reply){
-  const actionRegex=/\[ACTION:(\w+)\s*({[^}]*})?\]/g;
-  let clean=reply;
-  const results=[];
-  let match;
-  while((match=actionRegex.exec(reply))!==null){
-    const name=match[1];
-    let params={};
-    try{if(match[2])params=JSON.parse(match[2]);}catch(e){}
-    if(AI_ACTIONS[name]){
-      const res=AI_ACTIONS[name](params);
-      if(res)results.push(res);
-    }
-    clean=clean.replace(match[0],'');
-  }
-  return{clean:clean.trim(),results};
-}
-
 async function sendAIMessage(){
   if(_aiTyping)return;
   const inp=document.getElementById('ai-input');if(!inp)return;
@@ -7634,53 +7065,27 @@ async function sendAIMessage(){
   document.getElementById('ai-send-btn').disabled=true;
   showAITyping();
   const ctx=getAIContext();
-  const uiLang=_lang||'fr';
-  const langInstr=uiLang==='fr'?'Réponds toujours en français.':uiLang==='es'?'Responde siempre en español.':uiLang==='de'?'Antworte immer auf Deutsch.':'Reply in English.';
-  const today=new Date().toLocaleDateString(uiLang==='fr'?'fr-FR':uiLang==='es'?'es-ES':uiLang==='de'?'de-DE':'en-US',{weekday:'long',month:'long',day:'numeric'});
-  const actionDocs=`
-ACTIONS DISPONIBLES — utilise-les quand l'utilisateur demande de créer/modifier quelque chose:
-[ACTION:create_task {"text":"nom","priority":"high|medium|low","due":"YYYY-MM-DD"}]
-[ACTION:create_note {"title":"titre","content":"contenu"}]
-[ACTION:create_event {"title":"titre","date":"YYYY-MM-DD"}]
-[ACTION:complete_task {"text":"nom ou partie du nom"}]
-[ACTION:delete_task {"text":"nom ou partie du nom"}]
-[ACTION:list_tasks]
-IMPORTANT: Insère l'ACTION dans ta réponse si nécessaire. Tu peux combiner texte et actions.`;
-  const system=`Tu es NEXUS AI, un assistant personnel intégré au dashboard NEXUS. ${langInstr} Sois concis, amical et pratique. Tu PEUX interagir avec le dashboard de l'utilisateur.\n\n${actionDocs}\n\nContexte du dashboard:\n${ctx.summary}\nAujourd'hui: ${today}`;
+  const system=`You are NEXUS AI, a helpful personal assistant built into the NEXUS dashboard. Be concise, friendly and practical. Use markdown sparingly (bold for emphasis, code for code snippets). Keep replies under 200 words unless the user explicitly asks for more detail.\n\nUser's dashboard context:\n${ctx.summary}\nToday: ${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}`;
   try{
-    const groqKey=curP()?.state?.connections?.groqKey||'';
-    if(!groqKey){
-      removeAITyping();
-      addAIMessage('assistant','⚙️ Ajoute ta clé **Groq API** dans Connexions → NEXUS AI. Gratuit sur [console.groq.com/keys](https://console.groq.com/keys).');
-      _aiTyping=false;
-      document.getElementById('ai-send-btn').disabled=false;
-      return;
-    }
-    const groqMessages=[{role:'system',content:system},..._aiHistory.slice(-12)];
-    const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+groqKey},
-      body:JSON.stringify({model:'llama-3.1-8b-instant',messages:groqMessages,max_tokens:800,temperature:0.7}),
-      signal:AbortSignal.timeout(30000)
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:1000,
+        system,
+        messages:_aiHistory.slice(-12),
+      })
     });
-    if(!res.ok){
-      const err=await res.json().catch(()=>({}));
-      throw new Error(err?.error?.message||'HTTP '+res.status);
-    }
     const data=await res.json();
-    const rawReply=data.choices?.[0]?.message?.content||'Pas de réponse générée.';
-    const {clean:reply,results}=executeAIActions(rawReply);
+    const reply=data.content?.[0]?.text||'Sorry, I could not generate a response.';
     removeAITyping();
     addAIMessage('assistant',reply);
-    if(results.length)results.forEach(r=>addAIMessage('assistant',r));
     _aiHistory.push({role:'assistant',content:reply});
     if(_aiHistory.length>24)_aiHistory=_aiHistory.slice(-24);
-    saveAIChats();
   }catch(e){
     removeAITyping();
-    const errMsg=e?.message||'Erreur inconnue';
-    addAIMessage('assistant','❌ Erreur: '+errMsg+'. Vérifie ta clé Gemini dans Connexions.');
-    console.error('[NEXUS AI]',e);
+    addAIMessage('assistant','Connection error. Please try again.');
   }
   _aiTyping=false;
   document.getElementById('ai-send-btn').disabled=false;
@@ -7692,30 +7097,8 @@ function sendAISuggestion(btn){
   if(inp){inp.value=btn.textContent;sendAIMessage();}
 }
 
-
-
-function openNoteFromAI(noteId){
-  switchPage('notes', null);
-  setTimeout(()=>{
-    _currentNoteId=noteId;
-    renderNotesList();
-    selectNote(noteId);
-  }, 150);
-}
-function showAICapabilities(){
-  const lang=_lang||'fr';
-  const caps={
-    fr:`**NEXUS AI peut interagir avec ton dashboard :**\n\n✅ **Créer une tâche** — *Ajoute une tâche: acheter du pain*\n✅ **Terminer une tâche** — *Marque X comme fait*\n🗑️ **Supprimer une tâche** — *Supprime la tâche X*\n📝 **Créer une note** — *Crée une note: idées projet*\n📅 **Ajouter un événement** — *Ajoute réunion le 2025-06-20*\n📋 **Lister mes tâches** — *Quelles sont mes tâches ?*\n💬 **Conseils & planning** — *Sur quoi me concentrer ?*\n\nParle-moi naturellement, je comprends le contexte !`,
-    en:`**NEXUS AI can:**\n\n📋 **Tasks** — Summarize, prioritize, suggest a schedule\n📖 **Notes** — Writing help, summaries\n🔥 **Habits** — Analyze your streaks, suggest improvements\n📅 **Events** — Remind you of upcoming events\n⏱️ **Pomodoro** — Suggest work sessions\n💬 **Chat** — Answer any question\n\nAsk me anything!`,
-    es:`**NEXUS AI puede:**\n\n📋 **Tareas** — Resumir, priorizar, sugerir un horario\n📖 **Notas** — Ayuda a escribir, resúmenes\n🔥 **Hábitos** — Analizar tus rachas, sugerir mejoras\n📅 **Eventos** — Recordar tus próximos eventos\n⏱️ **Pomodoro** — Sugerir sesiones de trabajo\n💬 **Chat** — Responder cualquier pregunta`,
-    de:`**NEXUS AI kann:**\n\n📋 **Aufgaben** — Zusammenfassen, priorisieren, Zeitplan vorschlagen\n📖 **Notizen** — Schreibhilfe, Zusammenfassungen\n🔥 **Gewohnheiten** — Streaks analysieren, Verbesserungen vorschlagen\n📅 **Ereignisse** — Bevorstehende Ereignisse erinnern\n⏱️ **Pomodoro** — Arbeitssitzungen vorschlagen\n💬 **Chat** — Jede Frage beantworten`,
-  };
-  addAIMessage('assistant', caps[lang]||caps.fr);
-}
 function clearAIChat(){
-  saveAIChats();
   _aiHistory=[];
-  _aiSessionId=null;
   const msgs=document.getElementById('ai-messages');
   if(msgs)msgs.innerHTML='';
   const sugg=document.getElementById('ai-suggestions');
@@ -7756,7 +7139,7 @@ function switchPage(page,navEl){
     if(quoteEmpty)fetchQuote();
   }
   if(page==='settings'){document.getElementById('settings-name').value=p.name;updateSettingsPreview();loadSecuritySettings();loadBannerSettings();renderBgThemeBtns();renderProfileXP(p);renderProfileQuickStats(p);}
-  if(page==='connections'){loadConnectionsUI();renderWidgetManager();loadGroqKeyUI();}
+  if(page==='connections')loadConnectionsUI();
   if(page==='gaming')loadGamingUI();
   if(page==='habits'){if(typeof renderHabits==='function')renderHabits();}
   if(page==='kanban'){if(typeof renderKanban==='function')renderKanban();}
@@ -9075,17 +8458,8 @@ function loadConnectionsUI(){
     renderLastfmCard(conn.lastfm);
     startLastfmAutoRefresh();
   }
-  // Sync sidebar widgets — but skip re-rendering nav to avoid flash
-  const p2=curP();
-  if(p2){
-    // Only update widget visibility, don't re-render nav
-    const _origRenderNav=window.renderSidebarNav;
-    window.renderSidebarNav=()=>{}; // temporarily disable
-    initSidebarWidgets(p2);
-    initSidebarWidgetToggles();
-    window.renderSidebarNav=_origRenderNav; // restore
-  }
-  loadGroqKeyUI();
+  // Always sync sidebar widgets after loading connections
+  const p2=curP();if(p2){initSidebarWidgets(p2);initSidebarWidgetToggles();}
 }
 
 
@@ -9370,12 +8744,13 @@ function showLinkPreview(url,e){
 // ══════════════════════════════════════════════════════════════
 let _dragSrc=null;
 function initOverviewDragDrop(){
-  // Include .panel widgets AND special widgets like gaming/weather
-  const selector='#page-dashboard > div:not(.stats-row) .panel, #page-dashboard > .panel, #gaming-overview-wrap, #page-dashboard > div.overview-widget';
-  document.querySelectorAll(selector).forEach(panel=>{
+  const sel='#page-dashboard > div:not(.stats-row) .panel, #page-dashboard > .panel, #gaming-overview-wrap, #page-dashboard > div.overview-widget';
+  document.querySelectorAll(sel).forEach(panel=>{
+    if(panel.dataset.draggable==='ready')return;
+    panel.dataset.draggable='ready';
     panel.classList.add('overview-widget');panel.setAttribute('draggable','true');
     panel.addEventListener('dragstart',function(e){_dragSrc=this;this.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
-    panel.addEventListener('dragend',function(){this.classList.remove('dragging');document.querySelectorAll('.drag-over').forEach(el=>el.classList.remove('drag-over'));});
+    panel.addEventListener('dragend',function(){this.classList.remove('dragging');document.querySelectorAll('.drag-over').forEach(el=>el.classList.remove('drag-over'));saveOverviewOrder();});
     panel.addEventListener('dragover',function(e){e.preventDefault();e.dataTransfer.dropEffect='move';this.classList.add('drag-over');});
     panel.addEventListener('dragleave',function(){this.classList.remove('drag-over');});
     panel.addEventListener('drop',function(e){
@@ -9383,8 +8758,32 @@ function initOverviewDragDrop(){
       if(_dragSrc&&_dragSrc!==this){
         const par=this.parentNode;const si=[...par.children].indexOf(_dragSrc);const ti=[...par.children].indexOf(this);
         if(si<ti)par.insertBefore(_dragSrc,this.nextSibling);else par.insertBefore(_dragSrc,this);
+        saveOverviewOrder();
       }
     });
+  });
+  // Restore saved order
+  restoreOverviewOrder();
+}
+
+function saveOverviewOrder(){
+  const p=curP();if(!p)return;
+  const container=document.querySelector('#page-dashboard .overview-main-grid > div:first-child')||document.querySelector('#page-dashboard');
+  const widgets=[...document.querySelectorAll('.overview-widget')];
+  const ids=widgets.map(w=>w.id||w.className.split(' ')[0]).filter(Boolean);
+  p.state.overviewOrder=ids;
+  saveStateNow();
+}
+
+function restoreOverviewOrder(){
+  const p=curP();if(!p?.state?.overviewOrder?.length)return;
+  const order=p.state.overviewOrder;
+  const widgets=[...document.querySelectorAll('.overview-widget')];
+  if(!widgets.length)return;
+  const parent=widgets[0].parentNode;if(!parent)return;
+  order.forEach(id=>{
+    const el=document.getElementById(id)||document.querySelector('.'+id.split(' ')[0]);
+    if(el&&el.parentNode===parent)parent.appendChild(el);
   });
 }
 
@@ -9916,9 +9315,6 @@ function openValoMatchDetail(idx,name,tag){
 }
 
 function startAmbientBg(){
-  // Don't start ambient if a custom bg theme is active
-  const _activeBg=curP()?.bgTheme;
-  if(_activeBg&&_activeBg!=='none')return;
   const canvas=document.getElementById('bg-canvas');
   if(!canvas||_ambientFrame)return;
   canvas.width=window.innerWidth;canvas.height=window.innerHeight;
@@ -9988,15 +9384,7 @@ function renderBgThemeBtns(){
 
 function pickBgTheme(id){
   const p=curP();if(!p)return;
-  p.bgTheme=id;
-  saveStateNow();
-  const c=document.getElementById('bg-canvas');
-  if(c){c.width=window.innerWidth;c.height=window.innerHeight;}
-  applyBgTheme(id);
-  // Update sidebar transparency based on whether a bg is active
-  const sb=document.getElementById('main-sidebar');
-  if(sb)sb.style.background=(!id||id==='none')?'':'rgba(5,5,7,.5)';
-  renderBgThemeBtns();
+  p.bgTheme=id;saveStateNow();applyBgTheme(id);renderBgThemeBtns();
   toast('Background updated!','success');
 }
 
@@ -10067,107 +9455,6 @@ function applyBgTheme(id){
       }
       t+=0.006;_bgFrame=requestAnimationFrame(draw);
     };draw();
-
-  } else if(id==='meteors'){
-    const meteors=[];
-    const spawnMeteor=()=>{
-      const angle=Math.PI/4;
-      const startX=Math.random()*canvas.width*1.5;
-      meteors.push({x:startX,y:-20,vx:Math.cos(angle)*8,vy:Math.sin(angle)*8,
-        len:Math.random()*120+60,alpha:Math.random()*0.5+0.3,w:Math.random()*1.5+0.5,life:1});
-    };
-    for(let i=0;i<8;i++)setTimeout(spawnMeteor,i*400);
-    let spawnT=0;
-    const draw=()=>{
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      spawnT++;if(spawnT%90===0)spawnMeteor();
-      for(let i=meteors.length-1;i>=0;i--){
-        const m=meteors[i];
-        const grad=ctx.createLinearGradient(m.x,m.y,m.x-m.vx*m.len/8,m.y-m.vy*m.len/8);
-        grad.addColorStop(0,`rgba(${rgb},${m.alpha*m.life})`);
-        grad.addColorStop(1,`rgba(${rgb},0)`);
-        ctx.beginPath();ctx.moveTo(m.x,m.y);
-        ctx.lineTo(m.x-m.vx*m.len/8,m.y-m.vy*m.len/8);
-        ctx.strokeStyle=grad;ctx.lineWidth=m.w;ctx.stroke();
-        m.x+=m.vx;m.y+=m.vy;m.life-=0.012;
-        if(m.life<=0||m.x>canvas.width+100||m.y>canvas.height+100)meteors.splice(i,1);
-      }
-      _bgFrame=requestAnimationFrame(draw);
-    };draw();
-
-  } else if(id==='noise'){
-    let t=0;
-    const sz=5;
-    const cols=Math.ceil(canvas.width/sz)+1,rows=Math.ceil(canvas.height/sz)+1;
-    const draw=()=>{
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      for(let x=0;x<cols;x++){
-        for(let y=0;y<rows;y++){
-          // Smooth noise via sin/cos combination
-          const n=(Math.sin(x*0.12+t)*Math.cos(y*0.09+t*0.6)+Math.sin((x+y)*0.07+t*0.4))*0.5+0.5;
-          if(n>0.45){
-            ctx.fillStyle=`rgba(${rgb},${(n-0.45)*0.12})`;
-            ctx.fillRect(x*sz,y*sz,sz,sz);
-          }
-        }
-      }
-      t+=0.018;_bgFrame=requestAnimationFrame(draw);
-    };draw();
-
-  } else if(id==='hexagons'){
-    const R=32,h=R*Math.sqrt(3);let t=0;
-    const draw=()=>{
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      const cols=Math.ceil(canvas.width/(R*3))+2;
-      const rows=Math.ceil(canvas.height/h)+2;
-      for(let row=0;row<rows;row++){
-        for(let col=0;col<cols;col++){
-          const cx=col*R*3+(row%2)*R*1.5-R;
-          const cy=row*h-h/2;
-          const pulse=Math.sin(t*0.5+(col+row)*0.4)*0.5+0.5;
-          ctx.beginPath();
-          for(let i=0;i<6;i++){
-            const a=Math.PI/3*i-Math.PI/6;
-            const px=cx+R*0.85*Math.cos(a),py=cy+R*0.85*Math.sin(a);
-            i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
-          }
-          ctx.closePath();
-          ctx.strokeStyle=`rgba(${rgb},${0.04+pulse*0.06})`;
-          ctx.lineWidth=0.8;ctx.stroke();
-        }
-      }
-      t+=0.008;_bgFrame=requestAnimationFrame(draw);
-    };draw();
-
-  } else if(id==='constellation'){
-    const stars=[];
-    for(let i=0;i<80;i++)stars.push({
-      x:Math.random()*canvas.width,y:Math.random()*canvas.height,
-      r:Math.random()*1.2+0.3,twinkle:Math.random()*Math.PI*2,speed:Math.random()*0.02+0.005
-    });
-    let t=0;
-    const draw=()=>{
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      // Draw connections
-      for(let i=0;i<stars.length;i++){
-        for(let j=i+1;j<stars.length;j++){
-          const d=Math.hypot(stars[i].x-stars[j].x,stars[i].y-stars[j].y);
-          if(d<110){
-            const a=(1-d/110)*0.08;
-            ctx.beginPath();ctx.moveTo(stars[i].x,stars[i].y);ctx.lineTo(stars[j].x,stars[j].y);
-            ctx.strokeStyle=`rgba(${rgb},${a})`;ctx.lineWidth=0.6;ctx.stroke();
-          }
-        }
-      }
-      // Draw stars
-      stars.forEach(s=>{
-        s.twinkle+=s.speed;
-        const glow=0.3+Math.sin(s.twinkle)*0.25;
-        ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-        ctx.fillStyle=`rgba(${rgb},${glow})`;ctx.fill();
-      });
-      t+=0.01;_bgFrame=requestAnimationFrame(draw);
-    };draw();
   }
 }
 
@@ -10212,11 +9499,30 @@ async function connectLastfm(){
 }
 
 let _lastfmInterval=null;
+let _lastfmLastTrack='';
 function startLastfmAutoRefresh(){
   if(_lastfmInterval)clearInterval(_lastfmInterval);
   _lastfmInterval=setInterval(async()=>{
-    const p=curP();
-    if(p?.state?.connections?.lastfm)await renderLastfmCard(p.state.connections.lastfm);
+    const p=curP();if(!p?.state?.connections?.lastfm)return;
+    // Also refresh sidebar Last.fm widget
+    await renderLastfmCard(p.state.connections.lastfm);
+    // Check if track changed to refresh nowplaying widgets
+    try{
+      const data=await fetchLastfm('user.getrecenttracks',`user=${encodeURIComponent(p.state.connections.lastfm.username)}&limit=1`);
+      const track=data?.recenttracks?.track?.[0];
+      if(!track)return;
+      const key=(track.name||'')+'|'+(track.artist?.['#text']||'');
+      const isNow=track?.['@attr']?.nowplaying==='true';
+      if(key!==_lastfmLastTrack){
+        _lastfmLastTrack=key;
+        // Update Last.fm sidebar pill
+        updateLastfmSidebar(p.state.connections.lastfm,track,[]);
+        // Also refresh nowplaying widget if using Last.fm fallback
+        if(document.getElementById('sb-spotify-iframe-wrap')?.style.display==='block'&&typeof refreshSpotifySidebar==='function'){
+          refreshSpotifySidebar();
+        }
+      }
+    }catch(e){}
   },30000); // refresh every 30 seconds
 }
 
@@ -10318,15 +9624,14 @@ function updateLastfmSidebar(data,nowTrack,topArtists){
   if(!nowTrack||!isNow){wrap.style.display='none';return;}
   wrap.style.display='block';
   const img=nowTrack.image?.[2]?.['#text']||'';
-  // Update pill elements directly
-  const artEl=document.getElementById('sb-lfm-art');
-  if(artEl)artEl.innerHTML=img?`<img src="${img}" onerror="this.innerHTML='♫'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:8px;display:block">`:'<span>♫</span>';
-  const trackEl=document.getElementById('sb-lfm-track');
-  if(trackEl)trackEl.textContent=nowTrack.name||'?';
-  const artistEl=document.getElementById('sb-lfm-artist');
-  if(artistEl)artistEl.textContent=nowTrack.artist?.['#text']||'';
-  const eqEl=document.getElementById('sb-lfm-eq');
-  if(eqEl)eqEl.style.display='flex';
+  content.innerHTML=`<div style="display:flex;align-items:center;gap:8px">
+    ${img?`<img src="${img}" style="width:34px;height:34px;border-radius:6px;object-fit:cover;flex-shrink:0" onerror="this.style.display='none'">`:'<div style="width:34px;height:34px;border-radius:6px;background:var(--surface3);flex-shrink:0"></div>'}
+    <div style="min-width:0;flex:1">
+      <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)">${nowTrack.name||'?'}</div>
+      <div style="font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${nowTrack.artist?.['#text']||''}</div>
+    </div>
+    <span style="width:8px;height:8px;border-radius:50%;background:#d51007;flex-shrink:0;animation:pulse 1.5s infinite"></span>
+  </div>`;
 }
 
 async function refreshLastfm(){
@@ -10510,27 +9815,15 @@ function refreshDiscordSidebar(){
   // Name
   const nameEl=document.getElementById('sb-dc-name');
   if(nameEl)nameEl.textContent=d.discord_user.global_name||d.discord_user.username;
-  // Status dot + pill glow + badge
-  const status=d.discord_status||'offline';
+  // Status dot
   const stEl=document.getElementById('sb-dc-status');
-  if(stEl)stEl.className='sb-dc-dot '+status;
-  const card=document.getElementById('sb-discord-card');
-  // no color class on card itself, only on dot+badge
-  const badge=document.getElementById('sb-dc-badge');
-  if(badge){
-    // Lanyard returns 'offline' for both offline and invisible
-    const labels={online:'Online',idle:'Idle',dnd:'DND',offline:'Invis'};
-    badge.textContent=labels[status]||status;
-    badge.className='sb-dc-badge '+(status==='offline'?'offline':status);
-  }
+  if(stEl)stEl.className='sb-dc-dot '+(d.discord_status||'offline');
   // Activity
   const act=d.activities?.find(a=>a.type===0||a.type===2);
   const actEl=document.getElementById('sb-dc-activity');
   if(actEl){
     if(act){
-      const isSpotify=act.type===2;
-      const actColor=isSpotify?'rgba(29,185,84,.85)':'rgba(88,101,242,.85)';
-      actEl.innerHTML=`<span style="color:${actColor};font-size:10.5px">${isSpotify?'♪ ':'▶ '}<span>${act.name||''}</span></span>`;
+      actEl.textContent=(act.type===2?'🎵 ':'🎮 ')+(act.name||'');
       actEl.style.display='block';
     } else {
       actEl.style.display='none';
@@ -10542,14 +9835,15 @@ function refreshDiscordSidebar(){
 
 function updateSpotifyFromLanyard(d){
   const sp=d.spotify;
+  const dcStatus=d.discord_status||'offline';
+  const isOnline=['online','idle','dnd'].includes(dcStatus);
   const wrap=document.getElementById('sb-spotify-wrap');
   const iframeWrap=document.getElementById('sb-spotify-iframe-wrap');
-  if(sp&&sp.song){
+
+  if(isOnline&&sp&&sp.song){
+    // Discord connected + Spotify playing via Lanyard
     if(wrap)wrap.style.display='block';
     if(iframeWrap)iframeWrap.style.display='none';
-    // Also hide the Last.fm fallback pill
-    const lfmFallback=document.getElementById('sb-spotify-iframe-wrap');
-    if(lfmFallback)lfmFallback.style.display='none';
     const artEl=document.getElementById('np-art');
     if(artEl){
       if(sp.album_art_url)artEl.innerHTML=`<img src="${sp.album_art_url}" alt="album" onerror="this.innerHTML='♪'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:8px;display:block">`;
@@ -10557,9 +9851,8 @@ function updateSpotifyFromLanyard(d){
     }
     const songEl=document.getElementById('np-song');if(songEl)songEl.textContent=sp.song;
     const artistEl=document.getElementById('np-artist');if(artistEl)artistEl.textContent=sp.artist;
-    // EQ animation
     const eq=document.getElementById('sb-eq-anim');if(eq)eq.style.display='flex';
-    // Progress bar + time display
+    // Progress + time
     const timeRow=document.getElementById('np-time-row');
     if(sp.timestamps?.start&&sp.timestamps?.end){
       if(timeRow)timeRow.style.display='flex';
@@ -10568,19 +9861,58 @@ function updateSpotifyFromLanyard(d){
       if(timeRow)timeRow.style.display='none';
     }
   } else {
+    // Offline/invisible OR no Spotify on Lanyard → use nowplaying.site via Worker
     if(wrap)wrap.style.display='none';
     const eq=document.getElementById('sb-eq-anim');if(eq)eq.style.display='none';
     clearInterval(window._npProgressInterval);
     const p=curP();
-    const url=p?.state?.connections?.spotify?.widgetUrl;
-    if(url&&iframeWrap){
+    const widgetUrl=p?.state?.connections?.spotify?.widgetUrl;
+    if(widgetUrl&&iframeWrap){
       iframeWrap.style.display='block';
-      const iframe=document.getElementById('nowplaying-iframe');
-      if(iframe&&!iframe.src)iframe.src=url;
+      // Fetch from nowplaying.site via Worker
+      fetchNowPlayingWidget(widgetUrl);
     } else if(iframeWrap){
       iframeWrap.style.display='none';
     }
   }
+}
+
+// Fetch nowplaying.site data via Cloudflare Worker proxy
+let _npWidgetFetching=false;
+async function fetchNowPlayingWidget(widgetUrl){
+  if(_npWidgetFetching)return;
+  _npWidgetFetching=true;
+  try{
+    const token=widgetUrl.split('/').pop();
+    if(!token)return;
+    const res=await fetch(`${WORKER_URL}/nowplaying?token=${token}`,{signal:AbortSignal.timeout(8000)});
+    if(!res.ok){_npWidgetFetching=false;return;}
+    const raw=await res.text();
+    // Try to parse as JSON (if worker extracted it)
+    let data=null;
+    try{data=JSON.parse(raw);}catch(e){}
+    if(data){
+      // Got structured data from nowplaying.site
+      const title=data.title||data.name||data.track||'—';
+      const artist=data.artist||data.artists||'—';
+      const art=data.artwork||data.image||data.albumArt||'';
+      const isPlaying=data.is_playing??data.playing??true;
+      updateNpFallbackWidget(title,typeof artist==='object'?artist[0]:artist,art,isPlaying);
+    } else if(raw&&raw.includes('preview')){
+      // HTML page — try to extract from meta/og tags
+      const titleMatch=raw.match(/<title>([^<]+)<\/title>/i);
+      if(titleMatch)updateNpFallbackWidget(titleMatch[1],'','' ,true);
+    }
+  }catch(e){console.warn('[NEXUS] NowPlaying widget error:',e.message);}
+  finally{_npWidgetFetching=false;}
+}
+
+function updateNpFallbackWidget(title,artist,art,isPlaying){
+  const artEl=document.getElementById('np-art-fallback');
+  if(artEl)artEl.innerHTML=art?`<img src="${art}" onerror="this.innerHTML='♪'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:8px;display:block">`:'<span>♪</span>';
+  const trackEl=document.getElementById('np-fallback-track');if(trackEl)trackEl.textContent=title;
+  const artistEl=document.getElementById('np-fallback-artist');if(artistEl)artistEl.textContent=artist;
+  const eqEl=document.getElementById('np-fallback-eq');if(eqEl)eqEl.style.display=isPlaying?'flex':'none';
 }
 
 function updateNpProgress(start,end){
@@ -10894,111 +10226,27 @@ function disconnectSpotify(){
   toast('Removed','info');
 }
 
-let _npCurrentTrack=null;
-let _npStartTime=null;
-let _npDurationMs=0;
-let _npProgressTimer=null;
-
 async function refreshSpotifySidebar(){
   const p=curP();if(!p)return;
-  const wrap=document.getElementById('sb-spotify-iframe-wrap');
-  const lfm=p.state.connections?.lastfm;
-
-  if(!lfm?.username){if(wrap)wrap.style.display='none';return;}
-  if(wrap)wrap.style.display='block';
-
-  try{
-    const data=await fetchLastfm('user.getrecenttracks',`user=${encodeURIComponent(lfm.username)}&limit=1`);
-    const track=data?.recenttracks?.track?.[0];
-    if(!track)return;
-
-    const isPlaying=track?.['@attr']?.nowplaying==='true';
-    const title=track.name||'—';
-    const artist=track.artist?.['#text']||'—';
-    const art=track.image?.[2]?.['#text']||'';
-    const trackKey=title+'|'+artist;
-
-    // Update UI
-    const artEl=document.getElementById('np-art-fallback');
-    if(artEl)artEl.innerHTML=art
-      ?`<img src="${art}" onerror="this.innerHTML='♪'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:8px;display:block">`
-      :'<span>♪</span>';
-    const trackEl=document.getElementById('np-fallback-track');
-    if(trackEl)trackEl.textContent=title;
-    const artistEl=document.getElementById('np-fallback-artist');
-    if(artistEl)artistEl.textContent=artist;
-    const eqEl=document.getElementById('np-fallback-eq');
-    if(eqEl)eqEl.style.display=isPlaying?'flex':'none';
-
-    // Show/hide time row
-    const timeRow=document.getElementById('np-fallback-time-row');
-    if(timeRow)timeRow.style.display=isPlaying?'flex':'none';
-
-    if(isPlaying){
-      // Fetch duration + restore position across refresh
-      if(trackKey!==_npCurrentTrack){
-        _npCurrentTrack=trackKey;
-        clearInterval(_npProgressTimer);
-        try{
-          const info=await fetchLastfm('track.getInfo',`artist=${encodeURIComponent(artist)}&track=${encodeURIComponent(title)}&autocorrect=1`);
-          _npDurationMs=parseInt(info?.track?.duration)||240000;
-        }catch(e){_npDurationMs=240000;}
-
-        // Restore start time from sessionStorage if same track
-        const stored=JSON.parse(sessionStorage.getItem('np_track')||'{}');
-        if(stored.key===trackKey&&stored.startedAt){
-          _npStartTime=stored.startedAt;
-        } else {
-          // New track — estimate start as now minus half the duration (can't know exactly)
-          // Better: use the timestamp of the NEXT track in recent tracks to back-calculate
-          try{
-            const recent=await fetchLastfm('user.getrecenttracks',`user=${encodeURIComponent(lfm.username)}&limit=2`);
-            const tracks=recent?.recenttracks?.track||[];
-            // Second track (index 1) is the previously completed track
-            // Its date + duration ≈ when current track started
-            if(tracks[1]?.date?.uts){
-              const prevEndMs=parseInt(tracks[1].date.uts)*1000;
-              _npStartTime=prevEndMs;
-            } else {
-              _npStartTime=Date.now();
-            }
-          }catch(e){_npStartTime=Date.now();}
-          sessionStorage.setItem('np_track',JSON.stringify({key:trackKey,startedAt:_npStartTime,duration:_npDurationMs}));
-        }
-        _npProgressTimer=setInterval(()=>updateNpFallbackProgress(),1000);
-        updateNpFallbackProgress();
-      }
-    } else {
-      clearInterval(_npProgressTimer);
-      _npCurrentTrack=null;
-      const fill=wrap?.querySelector('.sb-wc-bar-fill');
-      if(fill){fill.style.transition='none';fill.style.width='35%';}
-    }
-
-  }catch(e){
-    console.warn('[NEXUS] Now Playing error:',e.message);
-  }
+  const widgetUrl=p.state.connections?.spotify?.widgetUrl;
+  const iframeWrap=document.getElementById('sb-spotify-iframe-wrap');
+  // If Lanyard Spotify is active, don't override
+  if(document.getElementById('sb-spotify-wrap')?.style.display==='block')return;
+  if(!widgetUrl){if(iframeWrap)iframeWrap.style.display='none';return;}
+  if(iframeWrap)iframeWrap.style.display='block';
+  await fetchNowPlayingWidget(widgetUrl);
 }
 
-function updateNpFallbackProgress(){
-  if(!_npStartTime||!_npDurationMs)return;
-  const elapsed=Math.min(Date.now()-_npStartTime,_npDurationMs);
-  const pct=Math.round((elapsed/_npDurationMs)*100);
-  const fmt=ms=>{const s=Math.floor(ms/1000);return Math.floor(s/60)+':'+(s%60).toString().padStart(2,'0');};
-  const fill=document.querySelector('#sb-spotify-iframe-wrap .sb-wc-bar-fill');
-  if(fill){fill.style.transition='none';fill.style.width=pct+'%';}
-  const el=document.getElementById('np-fallback-elapsed');if(el)el.textContent=fmt(elapsed);
-  const dl=document.getElementById('np-fallback-duration');if(dl)dl.textContent=fmt(_npDurationMs);
-}
-
-// Auto-refresh Now Playing every 30s
+// Auto-refresh nowplaying widget every 30s
 let _spotifyAutoRefresh=null;
 function startSpotifyAutoRefresh(){
   clearInterval(_spotifyAutoRefresh);
   refreshSpotifySidebar();
   _spotifyAutoRefresh=setInterval(()=>{
-    // Only refresh if track might have changed (every 30s)
-    refreshSpotifySidebar();
+    // Only refresh if Lanyard is not showing Spotify
+    if(document.getElementById('sb-spotify-wrap')?.style.display!=='block'){
+      refreshSpotifySidebar();
+    }
   },30000);
 }
 
@@ -11165,11 +10413,7 @@ async function loadCompareDashboardUsers(){
 function addFriendFromDashboard(profileName,name,tag,region,steamId){
   if(name&&tag){
     document.getElementById('compare-valo-input').value=name+'#'+tag;
-    // Update region pills
-    document.querySelectorAll('#compare-valo-region').forEach(el=>el.value=region||'eu');
-    document.querySelectorAll('.region-pills .region-pill[onclick*="setCompareRegion"]').forEach(p=>{
-      p.classList.toggle('active',p.dataset.val===(region||'eu'));
-    });
+    document.getElementById('compare-valo-region').value=region||'eu';
   }
   if(steamId) document.getElementById('compare-steam-input').value=steamId;
   toast('Loaded '+profileName+' — click Add friend','info');
@@ -11791,95 +11035,23 @@ const WMO={0:' Clear',1:' Mostly clear',2:' Partly cloudy',3:' Overcast',
   61:' Rain',63:' Rain',65:' Heavy rain',71:' Snow',73:' Snow',75:' Heavy snow',
   80:' Showers',81:' Showers',82:' Heavy showers',95:' Thunderstorm',99:' Thunderstorm'};
 
-
-function promptWeatherCity(){
-  // Show inline city editor instead of browser prompt
-  const p=curP();if(!p)return;
-  const current=p.state?.weatherCity||'';
+async function fetchWeather(){
   const w=document.getElementById('weather-widget');if(!w)return;
-  // Check if editor already open
-  if(w.querySelector('#wx-city-editor'))return;
-  const editor=document.createElement('div');
-  editor.id='wx-city-editor';
-  editor.style.cssText='display:flex;gap:6px;align-items:center;padding:8px 12px;background:rgba(255,255,255,.04);border-top:1px solid rgba(255,255,255,.07);margin-top:8px';
-  editor.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:12px;height:12px;flex-shrink:0;color:var(--muted)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-    <input id="wx-city-input" type="text" placeholder="Ex: Paris, Lyon, Bordeaux..." value="${current}" style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--text);font-family:var(--font);outline:none" onkeydown="if(event.key==='Enter')saveWeatherCity()">
-    <button onclick="saveWeatherCity()" style="background:var(--accent);border:none;color:#fff;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font)">OK</button>
-    <button onclick="document.getElementById('wx-city-editor')?.remove()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px 4px">✕</button>`;
-  w.appendChild(editor);
-  setTimeout(()=>document.getElementById('wx-city-input')?.focus(),50);
-}
-
-function saveWeatherCity(){
-  const p=curP();if(!p)return;
-  const inp=document.getElementById('wx-city-input');
-  const city=inp?.value?.trim()||'';
-  if(!p.state)p.state={};
-  p.state.weatherCity=city||null;
-  p.state.weatherCache=null; // clear cached coords + HTML
-  // Force immediate cloud save so cache is wiped on Supabase too
-  saveStateNow();
-  if(_sbUser){
-    clearTimeout(_saveCloudTimeout);
-    saveCloudState().catch(()=>{});
-  }
-  document.getElementById('wx-city-editor')?.remove();
-  // Short delay to ensure save completed before fetch
-  setTimeout(()=>fetchWeather(city||null), 200);
-}
-
-async function fetchWeather(forceCity){
-  const w=document.getElementById('weather-widget');if(!w)return;
+  // Show cached instantly if available
   const _wp=curP();const _wc=_wp?.state?.weatherCache;
-  const savedCity=forceCity||_wp?.state?.weatherCity;
-  // Only show cache if it matches the current saved city (avoid showing wrong city)
-  // Only show cache if it matches current saved city
-  const cacheMatchesCity=!savedCity||(_wc?.city&&_wc.city.toLowerCase()===savedCity.toLowerCase());
-  if(_wc?.rendered&&cacheMatchesCity){
-    w.innerHTML=_wc.rendered;
-  } else {
-    // Clear stale cache immediately
-    if(_wp?.state&&!cacheMatchesCity)_wp.state.weatherCache=null;
-    w.innerHTML='<div style="padding:12px;font-size:12px;color:var(--muted)">📍 Chargement...</div>';
-  }
-  if(savedCity){
-    try{
-      // Try multiple search strategies for better city matching
-      const queries=[savedCity, savedCity.replace(/-/g,' '), savedCity.split(' ').join('+')];
-      let found=null;
-      for(const q of queries){
-        const gr=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&addressdetails=1`,{headers:{'Accept-Language':'fr'},signal:AbortSignal.timeout(6000)});
-        const gd=await gr.json();
-        if(gd?.[0]){found=gd[0];break;}
-      }
-      if(found){
-        // Use display name from Nominatim for the city label
-        const cityLabel=found.address?.city||found.address?.town||found.address?.village||found.address?.municipality||savedCity;
-        await doFetch(parseFloat(found.lat),parseFloat(found.lon),cityLabel);
-        return;
-      } else {
-        // City not found
-        w.innerHTML=`<div style="padding:12px;font-size:12px;color:var(--muted)">❌ Ville introuvable: <strong>${savedCity}</strong> — <button onclick="promptWeatherCity()" style="background:none;border:none;color:var(--accent);cursor:pointer;font-family:var(--font);font-size:12px">Modifier</button></div>`;
-        return;
-      }
-    }catch(e){
-      // Network error — fall through to geoloc
-    }
-  }
+  if(_wc?.rendered){w.innerHTML=_wc.rendered;}
+  else{w.innerHTML='<div style="padding:12px;font-size:12px;color:var(--muted)">📍 Getting location...</div>';}
 
-  async function doFetch(lat,lon,forcedCityName){
+  async function doFetch(lat,lon){
     const res=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,windspeed_10m,relative_humidity_2m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=6`,{signal:AbortSignal.timeout(8000)});
     if(!res.ok)throw new Error('API error');
     const data=await res.json();
-    // Use forced city name if provided (manual entry), otherwise reverse geocode
-    let city=forcedCityName||'';
-    if(!city){
-      try{
-        const gr=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,{headers:{'Accept-Language':'en'},signal:AbortSignal.timeout(4000)});
-        const gd=await gr.json();
-        city=gd.address?.city||gd.address?.town||gd.address?.village||gd.address?.county||'';
-      }catch(e){}
-    }
+    let city='';
+    try{
+      const gr=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,{headers:{'Accept-Language':'en'},signal:AbortSignal.timeout(4000)});
+      const gd=await gr.json();
+      city=gd.address?.city||gd.address?.town||gd.address?.village||gd.address?.county||'';
+    }catch(e){}
     const cur=data.current;
     const temp=Math.round(cur.temperature_2m),feels=Math.round(cur.apparent_temperature);
     const code=cur.weather_code,desc=WMO[code]||'☁️ Unknown';
@@ -11920,7 +11092,7 @@ async function fetchWeather(forceCity){
         <div style="flex:1;min-width:0">
           <div class="wx-temp">${temp}<sup>°C</sup></div>
           <div class="wx-desc">${text}</div>
-          <div class="wx-loc" style="cursor:pointer" onclick="promptWeatherCity()" title="Change city"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:11px;height:11px;flex-shrink:0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${city||'Set city'} <span style="opacity:.4;font-size:9px">✎</span></div>
+          ${city?`<div class="wx-loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:11px;height:11px;flex-shrink:0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${escapeHTML(city)}</div>`:''}
         </div>
       </div>
       <div class="wx-meta">
@@ -11932,7 +11104,7 @@ async function fetchWeather(forceCity){
     </div>`;
     w.innerHTML=_html;
     // Cache rendered HTML for 1h
-    if(_p?.state){_p.state.weatherCache={lat,lon,ts:Date.now(),rendered:_html,city:savedCity||city||''};}
+    if(_p?.state){_p.state.weatherCache={lat,lon,ts:Date.now(),rendered:_html};}
   }
 
   async function getIPLocation(){
@@ -12175,7 +11347,7 @@ function renderPomo(){
   }
 
   // Mode tabs
-  POMO_MODES().forEach((_,i)=>{
+  POMO_MODES.forEach((_,i)=>{
     const tab=document.getElementById('pomo-tab-'+i);
     if(!tab)return;
     tab.classList.toggle('active',i===pomoIdx);
@@ -13126,6 +12298,7 @@ function renderGamingOverview(){
 // ══════════════════════════════════════════════
 //  NEXUS i18n — Language System
 // ══════════════════════════════════════════════
+let _lang = localStorage.getItem('nexus_lang') || 'fr';
 
 var I18N = {
   en: {
@@ -13251,8 +12424,6 @@ var I18N = {
     'writing': 'Writing',
     // AI
     'nexus_ai_desc': 'Ask anything about your dashboard…',
-    'ai_powered_by': 'Powered by Groq',
-    'ai_context_bar': 'NEXUS AI has access to your dashboard context',
     'new_chat': 'New chat',
     'summarize_tasks': 'Summarize my tasks',
     'focus_today': 'What should I focus on today?',
@@ -13391,8 +12562,6 @@ var I18N = {
     'writing': 'Écriture',
     // AI
     'nexus_ai_desc': 'Posez une question sur votre dashboard…',
-    'ai_powered_by': 'Propulsé par Groq',
-    'ai_context_bar': 'NEXUS AI a accès au contexte de ton dashboard',
     'new_chat': 'Nouveau chat',
     'summarize_tasks': 'Résumer mes tâches',
     'focus_today': "Sur quoi me concentrer aujourd'hui ?",
@@ -13519,8 +12688,6 @@ var I18N = {
     'new_note': '+ Nueva nota',
     'writing': 'Escritura',
     'nexus_ai_desc': 'Pregunta algo sobre tu dashboard…',
-    'ai_powered_by': 'Impulsado por Groq',
-    'ai_context_bar': 'NEXUS AI tiene acceso al contexto de tu dashboard',
     'new_chat': 'Nuevo chat',
     'summarize_tasks': 'Resumir mis tareas',
     'focus_today': '¿En qué concentrarme hoy?',
@@ -13646,8 +12813,6 @@ var I18N = {
     'new_note': '+ Neue Notiz',
     'writing': 'Schreiben',
     'nexus_ai_desc': 'Frag etwas über dein Dashboard…',
-    'ai_powered_by': 'Bereitgestellt von Groq',
-    'ai_context_bar': 'NEXUS AI hat Zugriff auf deinen Dashboard-Kontext',
     'new_chat': 'Neuer Chat',
     'summarize_tasks': 'Meine Aufgaben zusammenfassen',
     'focus_today': 'Worauf soll ich mich heute konzentrieren?',
@@ -13707,7 +12872,7 @@ function showDashboardOrProfiles(){
     document.getElementById('main-content').style.display='block';
     renderSidebarNav(); updateSidebarAvatar(); applyI18n(); updateClock();
     initDashboard(); hideBoot();
-    if(!curP()?.bgTheme||curP()?.bgTheme==='none') setTimeout(startAmbientBg,400);
+    setTimeout(startAmbientBg,400);
   } else {
     renderProfileScreen();
     document.getElementById('profile-screen').style.display='flex';

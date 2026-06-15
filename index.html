@@ -11704,11 +11704,13 @@ function saveWeatherCity(){
 async function fetchWeather(forceCity){
   const w=document.getElementById('weather-widget');if(!w)return;
   const _wp=curP();const _wc=_wp?.state?.weatherCache;
-  if(_wc?.rendered){w.innerHTML=_wc.rendered;}
-  else{w.innerHTML='<div style="padding:12px;font-size:12px;color:var(--muted)">📍 Getting location...</div>';}
-
-  // Manual city override — always takes priority
   const savedCity=forceCity||_wp?.state?.weatherCity;
+  // Only show cache if it matches the current saved city (avoid showing wrong city)
+  if(_wc?.rendered&&(!savedCity||_wc?.city===savedCity)){
+    w.innerHTML=_wc.rendered;
+  } else {
+    w.innerHTML='<div style="padding:12px;font-size:12px;color:var(--muted)">📍 Chargement...</div>';
+  }
   if(savedCity){
     try{
       // Try multiple search strategies for better city matching
@@ -11799,7 +11801,7 @@ async function fetchWeather(forceCity){
     </div>`;
     w.innerHTML=_html;
     // Cache rendered HTML for 1h
-    if(_p?.state){_p.state.weatherCache={lat,lon,ts:Date.now(),rendered:_html};}
+    if(_p?.state){_p.state.weatherCache={lat,lon,ts:Date.now(),rendered:_html,city:savedCity||city||''};}
   }
 
   async function getIPLocation(){

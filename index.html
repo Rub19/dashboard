@@ -1318,6 +1318,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
 /* ── AI CHAT PAGE ── */
 .ai-page{display:flex;flex-direction:column;height:calc(100vh - 130px);min-height:400px;max-width:700px;width:100%;margin:0 auto;padding:0}
+#ai-sessions-drawer.open{transform:translateX(0)}
+.ai-session-item{padding:8px 10px;border-radius:8px;cursor:pointer;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);transition:all .15s}
+.ai-session-item:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}
+.ai-session-preview{font-size:12px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ai-session-date{font-size:10px;color:var(--muted);margin-top:3px}
 .ai-messages{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:4px 2px 16px;scrollbar-width:thin}
 .ai-messages::-webkit-scrollbar{width:3px}
 .ai-messages::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:99px}
@@ -4796,12 +4801,29 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
         <div class="section-eyebrow" data-i18n="ai_powered_by">Powered by Groq</div>
         <div class="section-title">NEXUS <span style="background:linear-gradient(90deg,#f97316,#dc2626);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">AI</span></div>
       </div>
-      <div class="topbar-actions">
+      <div class="topbar-actions" style="gap:6px">
+        <button class="btn btn-ghost" onclick="toggleAISessions()" style="font-size:12px" title="Historique des chats">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Historique
+        </button>
+        <button class="btn btn-ghost" onclick="showAICapabilities()" style="font-size:12px" title="Que sais-je faire ?">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Capacités
+        </button>
         <button class="btn btn-ghost" onclick="clearAIChat()" style="font-size:12px">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
-          <span data-i18n="new_chat">New chat</span>
+          <span data-i18n="new_chat">Nouveau chat</span>
         </button>
       </div>
+    </div>
+
+    <!-- Sessions drawer -->
+    <div id="ai-sessions-drawer" style="position:fixed;top:0;right:0;width:260px;height:100vh;background:rgba(5,5,7,.97);backdrop-filter:blur(20px);border-left:1px solid rgba(255,255,255,.08);z-index:500;transform:translateX(100%);transition:transform .22s ease;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="font-size:13px;font-weight:700;color:var(--text)">Historique</div>
+        <button onclick="toggleAISessions()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px">✕</button>
+      </div>
+      <div id="ai-sessions-panel"></div>
     </div>
 
     <div class="ai-page">
@@ -7346,6 +7368,60 @@ function getAIContext(){
   return{summary,counts,profile:p.name};
 }
 
+function saveAIChats(){
+  const p=curP();if(!p||!p.state)return;
+  if(!p.state.aiSessions)p.state.aiSessions=[];
+  // Update current session
+  if(_aiHistory.length>0){
+    const sess=p.state.aiSessions;
+    const now=Date.now();
+    if(sess.length===0||sess[sess.length-1].id!==_aiSessionId){
+      _aiSessionId=now;
+      sess.push({id:now,ts:now,preview:_aiHistory[0]?.content?.slice(0,60)||'Chat',messages:[..._aiHistory]});
+    } else {
+      sess[sess.length-1].messages=[..._aiHistory];
+      sess[sess.length-1].preview=_aiHistory.find(m=>m.role==='user')?.content?.slice(0,60)||'Chat';
+    }
+    // Keep last 20 sessions
+    if(sess.length>20)p.state.aiSessions=sess.slice(-20);
+  }
+  saveStateNow();
+}
+
+function renderAISessions(){
+  const p=curP();if(!p)return;
+  const sessions=(p.state?.aiSessions||[]).slice().reverse();
+  const panel=document.getElementById('ai-sessions-panel');if(!panel)return;
+  if(!sessions.length){panel.innerHTML='<div style="color:var(--muted);font-size:11px;padding:8px">Aucun chat sauvegardé</div>';return;}
+  panel.innerHTML=sessions.map(s=>`
+    <div class="ai-session-item" onclick="loadAISession(${s.id})">
+      <div class="ai-session-preview">${escapeHTML(s.preview||'Chat')}</div>
+      <div class="ai-session-date">${new Date(s.ts).toLocaleDateString(_lang==='fr'?'fr-FR':'en-US',{day:'numeric',month:'short'})}</div>
+    </div>
+  `).join('');
+}
+
+function loadAISession(id){
+  const p=curP();if(!p)return;
+  const sess=(p.state?.aiSessions||[]).find(s=>s.id===id);
+  if(!sess)return;
+  _aiSessionId=id;
+  _aiHistory=[...sess.messages];
+  const msgs=document.getElementById('ai-messages');
+  if(msgs){msgs.innerHTML='';}
+  _aiHistory.forEach(m=>addAIMessage(m.role,m.content));
+  document.getElementById('ai-sessions-drawer')?.classList.remove('open');
+}
+
+function toggleAISessions(){
+  const drawer=document.getElementById('ai-sessions-drawer');
+  if(!drawer)return;
+  const open=drawer.classList.toggle('open');
+  if(open)renderAISessions();
+}
+
+let _aiSessionId=null;
+
 function initAIChat(){
   const ctx=getAIContext();
   document.getElementById('ai-ctx-label').textContent=`${ctx.profile} · ${ctx.counts.pending} tasks · ${ctx.counts.habits} habits`;
@@ -7378,8 +7454,8 @@ function addAIMessage(role,text){
   div.innerHTML=`${isUser?'':avatarHtml}<div class="ai-bubble">${html}</div>${isUser?avatarHtml:''}`;
   msgs.appendChild(div);
   msgs.scrollTop=msgs.scrollHeight;
-  // Hide suggestions after first user message
-  if(isUser){const s=document.getElementById('ai-suggestions');if(s)s.style.display='none';}
+  // Always keep suggestions visible
+  if(isUser){const s=document.getElementById('ai-suggestions');if(s)s.style.display='flex';}
 }
 
 function showAITyping(){
@@ -7435,6 +7511,7 @@ async function sendAIMessage(){
     addAIMessage('assistant',reply);
     _aiHistory.push({role:'assistant',content:reply});
     if(_aiHistory.length>24)_aiHistory=_aiHistory.slice(-24);
+    saveAIChats();
   }catch(e){
     removeAITyping();
     const errMsg=e?.message||'Erreur inconnue';
@@ -7451,8 +7528,21 @@ function sendAISuggestion(btn){
   if(inp){inp.value=btn.textContent;sendAIMessage();}
 }
 
+
+function showAICapabilities(){
+  const lang=_lang||'fr';
+  const caps={
+    fr:`**NEXUS AI peut :**\n\n📋 **Tâches** — Résumer, prioriser, suggérer un planning\n📖 **Notes** — Aide à la rédaction, résumés\n🔥 **Habitudes** — Analyser tes streaks, suggérer des améliorations\n📅 **Agenda** — Rappeler tes événements à venir\n⏱️ **Pomodoro** — Suggérer des sessions de travail\n💬 **Discussion** — Répondre à toutes tes questions\n\nTu peux me demander n'importe quoi !`,
+    en:`**NEXUS AI can:**\n\n📋 **Tasks** — Summarize, prioritize, suggest a schedule\n📖 **Notes** — Writing help, summaries\n🔥 **Habits** — Analyze your streaks, suggest improvements\n📅 **Events** — Remind you of upcoming events\n⏱️ **Pomodoro** — Suggest work sessions\n💬 **Chat** — Answer any question\n\nAsk me anything!`,
+    es:`**NEXUS AI puede:**\n\n📋 **Tareas** — Resumir, priorizar, sugerir un horario\n📖 **Notas** — Ayuda a escribir, resúmenes\n🔥 **Hábitos** — Analizar tus rachas, sugerir mejoras\n📅 **Eventos** — Recordar tus próximos eventos\n⏱️ **Pomodoro** — Sugerir sesiones de trabajo\n💬 **Chat** — Responder cualquier pregunta`,
+    de:`**NEXUS AI kann:**\n\n📋 **Aufgaben** — Zusammenfassen, priorisieren, Zeitplan vorschlagen\n📖 **Notizen** — Schreibhilfe, Zusammenfassungen\n🔥 **Gewohnheiten** — Streaks analysieren, Verbesserungen vorschlagen\n📅 **Ereignisse** — Bevorstehende Ereignisse erinnern\n⏱️ **Pomodoro** — Arbeitssitzungen vorschlagen\n💬 **Chat** — Jede Frage beantworten`,
+  };
+  addAIMessage('assistant', caps[lang]||caps.fr);
+}
 function clearAIChat(){
+  saveAIChats();
   _aiHistory=[];
+  _aiSessionId=null;
   const msgs=document.getElementById('ai-messages');
   if(msgs)msgs.innerHTML='';
   const sugg=document.getElementById('ai-suggestions');

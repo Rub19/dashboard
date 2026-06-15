@@ -4795,6 +4795,15 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 </main>
 
   <!-- AI CHAT -->
+  <!-- AI Sessions drawer — outside page-ai so z-index works -->
+  <div id="ai-sessions-drawer" style="position:fixed;top:0;right:0;width:280px;height:100vh;background:rgba(8,8,12,.98);backdrop-filter:blur(24px);border-left:1px solid rgba(255,255,255,.09);z-index:9999;transform:translateX(100%);transition:transform .22s ease;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:8px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div style="font-size:13px;font-weight:700;color:var(--text)">Historique</div>
+      <button onclick="toggleAISessions()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 6px">✕</button>
+    </div>
+    <div id="ai-sessions-panel"></div>
+  </div>
+
   <div id="page-ai" class="tab-content">
     <div class="topbar">
       <div>
@@ -4815,15 +4824,6 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
           <span data-i18n="new_chat">Nouveau chat</span>
         </button>
       </div>
-    </div>
-
-    <!-- Sessions drawer -->
-    <div id="ai-sessions-drawer" style="position:fixed;top:0;right:0;width:260px;height:100vh;background:rgba(5,5,7,.97);backdrop-filter:blur(20px);border-left:1px solid rgba(255,255,255,.08);z-index:500;transform:translateX(100%);transition:transform .22s ease;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:8px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <div style="font-size:13px;font-weight:700;color:var(--text)">Historique</div>
-        <button onclick="toggleAISessions()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px">✕</button>
-      </div>
-      <div id="ai-sessions-panel"></div>
     </div>
 
     <div class="ai-page">
@@ -7443,9 +7443,11 @@ function addAIMessage(role,text){
   const avatarHtml=isUser
     ?`<div class="ai-avatar user-av">${p?.avatarImg?`<img src="${p.avatarImg}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`:(p?.avatarEmoji||'👤')}</div>`
     :`<div class="ai-avatar nexus"><svg viewBox="0 0 20 20" fill="none" style="width:14px;height:14px"><polygon points="10,1 19,10 10,19 1,10" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round"/><polygon points="10,5 15,10 10,15 5,10" fill="white"/></svg></div>`;
-  // Simple markdown: **bold**, `code`, newlines
+  // Simple markdown: **bold**, `code`, [link](url), newlines
   const html=text
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\[([^\]]+)\]\(#open-note-(\d+)\)/g,(_,label,id)=>`<a href="#" onclick="event.preventDefault();openNoteFromAI(${id})" style="color:var(--accent);text-decoration:underline;cursor:pointer">${label}</a>`)
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" style="color:var(--accent);text-decoration:underline">$1</a>')
     .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
     .replace(/`([^`]+)`/g,'<code>$1</code>')
     .replace(/\n/g,'<br>');
@@ -7489,10 +7491,15 @@ const AI_ACTIONS={
   create_note({title,content}){
     const p=curP();if(!p)return t_ai('action_fail');
     if(!p.state.notes)p.state.notes=[];
-    const note={id:Date.now(),title:title||'Note',content:content||'',color:'',
+    const noteId=Date.now();
+    const note={id:noteId,title:title||'Note',content:content||'',color:'',
       pinned:false,created:new Date().toISOString(),updated:new Date().toISOString()};
     p.state.notes.unshift(note);saveStateNow();renderNotesList();
-    return t_ai('note_created',{title:title||'Note'});
+    // Return message with clickable link to open the note
+    const lang=_lang||'fr';
+    const t=title||'Note';
+    const msgs={fr:`📝 Note créée : **[${t}](#open-note-${noteId})**`,en:`📝 Note created: **[${t}](#open-note-${noteId})**`,es:`📝 Nota creada: **[${t}](#open-note-${noteId})**`,de:`📝 Notiz erstellt: **[${t}](#open-note-${noteId})**`};
+    return msgs[lang]||msgs.fr;
   },
   create_event({title,date}){
     const p=curP();if(!p)return t_ai('action_fail');
@@ -7667,6 +7674,15 @@ function sendAISuggestion(btn){
 }
 
 
+
+function openNoteFromAI(noteId){
+  switchPage('notes', null);
+  setTimeout(()=>{
+    _currentNoteId=noteId;
+    renderNotesList();
+    selectNote(noteId);
+  }, 150);
+}
 function showAICapabilities(){
   const lang=_lang||'fr';
   const caps={
@@ -11683,17 +11699,31 @@ async function fetchWeather(forceCity){
   if(_wc?.rendered){w.innerHTML=_wc.rendered;}
   else{w.innerHTML='<div style="padding:12px;font-size:12px;color:var(--muted)">📍 Getting location...</div>';}
 
-  // Manual city override
+  // Manual city override — always takes priority
   const savedCity=forceCity||_wp?.state?.weatherCity;
   if(savedCity){
     try{
-      const gr=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(savedCity)}&format=json&limit=1`,{headers:{'Accept-Language':'en'},signal:AbortSignal.timeout(5000)});
-      const gd=await gr.json();
-      if(gd?.[0]){
-        await doFetch(parseFloat(gd[0].lat),parseFloat(gd[0].lon),savedCity);
+      // Try multiple search strategies for better city matching
+      const queries=[savedCity, savedCity.replace(/-/g,' '), savedCity.split(' ').join('+')];
+      let found=null;
+      for(const q of queries){
+        const gr=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&addressdetails=1`,{headers:{'Accept-Language':'fr'},signal:AbortSignal.timeout(6000)});
+        const gd=await gr.json();
+        if(gd?.[0]){found=gd[0];break;}
+      }
+      if(found){
+        // Use display name from Nominatim for the city label
+        const cityLabel=found.address?.city||found.address?.town||found.address?.village||found.address?.municipality||savedCity;
+        await doFetch(parseFloat(found.lat),parseFloat(found.lon),cityLabel);
+        return;
+      } else {
+        // City not found
+        w.innerHTML=`<div style="padding:12px;font-size:12px;color:var(--muted)">❌ Ville introuvable: <strong>${savedCity}</strong> — <button onclick="promptWeatherCity()" style="background:none;border:none;color:var(--accent);cursor:pointer;font-family:var(--font);font-size:12px">Modifier</button></div>`;
         return;
       }
-    }catch(e){}
+    }catch(e){
+      // Network error — fall through to geoloc
+    }
   }
 
   async function doFetch(lat,lon,forcedCityName){

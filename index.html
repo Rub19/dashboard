@@ -280,9 +280,19 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .nav-icon{width:17px;height:17px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:inherit}.nav-icon svg{width:100%;height:100%}
 .nav-badge{margin-left:auto;background:linear-gradient(135deg,#f97316,#dc2626);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px;font-family:var(--mono);min-width:17px;text-align:center}
 .sidebar-footer{flex-shrink:0;padding:8px;border-top:1px solid rgba(255,255,255,.06)}
-.sidebar.compact .sb-widget,.sidebar.compact #sb-lastfm-wrap,.sidebar.compact .sb-widget-label{display:none!important}
+.sidebar.compact{width:58px!important;min-width:58px!important}
+.sidebar.compact .sb-widget,.sidebar.compact #sb-lastfm-wrap,.sidebar.compact .sb-widget-label,
+.sidebar.compact .sb-section,.sidebar.compact .sb-section-label{display:none!important}
 .sidebar.compact .user-info,.sidebar.compact .switch-hint{display:none!important}
 .sidebar.compact .user-card{justify-content:center;padding:8px}
+.sidebar.compact .nav-label-text,.sidebar.compact .nav-badge,.sidebar.compact .nav-label{display:none!important}
+.sidebar.compact .nav-item{justify-content:center;padding:8px}
+.sidebar.compact .logo-text{display:none!important}
+.sidebar.compact .logo{justify-content:center}
+.sidebar.compact .logo-icon{margin:0}
+.sidebar.compact #sidebar-compact-btn{margin:4px auto}
+/* Separators hidden in compact */
+.sidebar.compact .sidebar-footer > div[style*="height:1px"]{display:none}
 .user-card{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:all .2s;position:relative}
 .user-card:hover{background:rgba(255,255,255,.04)}
 .user-card:hover .switch-hint{opacity:1}
@@ -3456,8 +3466,16 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   <!-- Compact toggle — always visible at bottom -->
   <button id="sidebar-compact-btn" onclick="toggleSidebarCompact()" title="Toggle compact mode" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;margin:4px auto 4px;background:none;border:1px solid var(--border2);border-radius:8px;cursor:pointer;font-size:14px;color:var(--muted);font-family:var(--font);transition:all .2s ease" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">&#8644;</button>
   <div class="sidebar-footer">
-    <!-- Widgets separator from compact btn -->
-    <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.09),transparent);margin:0 4px 10px"></div>
+    <!-- User card at top of footer -->
+    <div class="user-card" onclick="goToProfileScreen()">
+      <div class="sidebar-avatar" id="sidebar-avatar"></div>
+      <div class="user-info">
+        <div class="user-name" id="display-username">User</div>
+        <div class="user-role" id="sidebar-user-role">NEXUS</div>
+      </div>
+      <span class="switch-hint">Switch ↗</span>
+    </div>
+    <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.09),transparent);margin:6px 4px 10px"></div>
     <!-- DISCORD v3 -->
     <div class="sb-section" id="sb-discord-wrap" style="display:none">
       <div class="sb-widget-card" id="sb-discord-card">
@@ -3530,16 +3548,6 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       </div>
     </div>
 
-    <!-- User card -->
-    <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.09),transparent);margin:10px 4px 6px"></div>
-    <div class="user-card" onclick="goToProfileScreen()">
-      <div class="sidebar-avatar" id="sidebar-avatar"></div>
-      <div class="user-info">
-        <div class="user-name" id="display-username">User</div>
-        <div class="user-role" id="sidebar-user-role">NEXUS</div>
-      </div>
-      <span class="switch-hint">Switch ↗</span>
-    </div>
   </div>
 </nav>
 <div class="resize-handle" id="resize-handle"></div>
@@ -6778,13 +6786,17 @@ function initDashboard(){
   if(typeof renderCountdown==='function')renderCountdown();;
   refreshSpotifySidebar();
   applyTheme(p.themeIdx||0);
-  // Apply bgTheme after a short delay so canvas is properly sized
+  // Apply bgTheme — wait for paint then size canvas properly
   if(p.bgTheme&&p.bgTheme!=='none'){
-    setTimeout(()=>{
+    const _applyBg=()=>{
       const c=document.getElementById('bg-canvas');
-      if(c){c.width=window.innerWidth;c.height=window.innerHeight;}
+      if(!c)return;
+      c.width=window.innerWidth||document.documentElement.clientWidth;
+      c.height=window.innerHeight||document.documentElement.clientHeight;
       applyBgTheme(p.bgTheme);
-    },150);
+    };
+    // Double RAF ensures layout is complete
+    requestAnimationFrame(()=>requestAnimationFrame(_applyBg));
   }
   // Apply custom accent if any
   if(p.customAccent)applyCustomColor(p.customAccent);

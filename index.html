@@ -4378,16 +4378,16 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
           <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><polygon points="10,1 19,10 10,19 1,10" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round"/><polygon points="10,5 15,10 10,15 5,10" fill="white"/></svg>
         </div>
         <div>
-          <div class="conn-title">NEXUS AI — Gemini Key</div>
-          <div class="conn-subtitle">Free API key from <a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--accent)">aistudio.google.com</a> · 1500 req/day gratuit</div>
+          <div class="conn-title">NEXUS AI — Groq API Key</div>
+          <div class="conn-subtitle">Clé gratuite sur <a href="https://console.groq.com/keys" target="_blank" style="color:var(--accent)">console.groq.com</a> · 6000 req/jour · ultra rapide</div>
         </div>
       </div>
       <div style="display:flex;gap:8px;margin-top:8px">
-        <input type="password" id="gemini-key-input" class="modal-input" placeholder="AIza..." style="flex:1;font-family:var(--mono);font-size:12px"
-          oninput="document.getElementById('gemini-key-save').style.opacity=this.value?'1':'.4'">
-        <button id="gemini-key-save" class="btn btn-primary" style="opacity:.4;padding:8px 16px" onclick="saveGeminiKey()">Save</button>
+        <input type="password" id="groq-key-input" class="modal-input" placeholder="gsk_..." style="flex:1;font-family:var(--mono);font-size:12px"
+          oninput="document.getElementById('groq-key-save').style.opacity=this.value?'1':'.4'">
+        <button id="groq-key-save" class="btn btn-primary" style="opacity:.4;padding:8px 16px" onclick="saveGroqKey()">Save</button>
       </div>
-      <div id="gemini-key-status" style="font-size:11px;color:var(--muted);margin-top:6px"></div>
+      <div id="groq-key-status" style="font-size:11px;color:var(--muted);margin-top:6px"></div>
     </div>
 
     <!-- SIDEBAR WIDGET MANAGER -->
@@ -4793,13 +4793,13 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   <div id="page-ai" class="tab-content">
     <div class="topbar">
       <div>
-        <div class="section-eyebrow">Powered by Gemini Flash</div>
+        <div class="section-eyebrow" data-i18n="ai_powered_by">Powered by Groq</div>
         <div class="section-title">NEXUS <span style="background:linear-gradient(90deg,#f97316,#dc2626);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">AI</span></div>
       </div>
       <div class="topbar-actions">
         <button class="btn btn-ghost" onclick="clearAIChat()" style="font-size:12px">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
-          New chat
+          <span data-i18n="new_chat">New chat</span>
         </button>
       </div>
     </div>
@@ -4808,7 +4808,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       <!-- Context bar -->
       <div class="ai-context-bar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span>NEXUS AI has access to your dashboard context</span>
+        <span data-i18n="ai_context_bar">NEXUS AI has access to your dashboard context</span>
         <span class="ai-ctx-badge" id="ai-ctx-label">Loading…</span>
       </div>
 
@@ -4819,11 +4819,11 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 
       <!-- Suggestions (shown when empty) -->
       <div class="ai-suggestions" id="ai-suggestions">
-        <button class="ai-suggestion" onclick="sendAISuggestion(this)">Summarize my tasks</button>
-        <button class="ai-suggestion" onclick="sendAISuggestion(this)">What should I focus on today?</button>
-        <button class="ai-suggestion" onclick="sendAISuggestion(this)">Review my habits this week</button>
-        <button class="ai-suggestion" onclick="sendAISuggestion(this)">Help me write a note</button>
-        <button class="ai-suggestion" onclick="sendAISuggestion(this)">Suggest a Pomodoro schedule</button>
+        <button class="ai-suggestion" onclick="sendAISuggestion(this)" data-i18n="summarize_tasks">Summarize my tasks</button>
+        <button class="ai-suggestion" onclick="sendAISuggestion(this)" data-i18n="focus_today">What should I focus on today?</button>
+        <button class="ai-suggestion" onclick="sendAISuggestion(this)" data-i18n="review_habits">Review my habits this week</button>
+        <button class="ai-suggestion" onclick="sendAISuggestion(this)" data-i18n="write_note">Help me write a note</button>
+        <button class="ai-suggestion" onclick="sendAISuggestion(this)" data-i18n="pomo_schedule">Suggest a Pomodoro schedule</button>
       </div>
 
       <!-- Input -->
@@ -6725,24 +6725,24 @@ function applySidebarWidgetOrder(){
 
 // ── SIDEBAR WIDGET TOGGLE ─────────────────────────────────────
 
-function saveGeminiKey(){
+function saveGroqKey(){
   const p=curP();if(!p)return;
-  const key=document.getElementById('gemini-key-input')?.value?.trim();
+  const key=document.getElementById('groq-key-input')?.value?.trim();
   if(!key){toast('Enter a valid API key','error');return;}
   if(!p.state.connections)p.state.connections={};
-  p.state.connections.geminiKey=key;
+  p.state.connections.groqKey=key;
   saveStateNow();
-  const status=document.getElementById('gemini-key-status');
+  const status=document.getElementById('groq-key-status');
   if(status)status.textContent='✓ Key saved';
   setTimeout(()=>{if(status)status.textContent=''},2000);
   toast('Gemini key saved!','success');
 }
 
-function loadGeminiKeyUI(){
+function loadGroqKeyUI(){
   const p=curP();if(!p)return;
-  const key=p.state?.connections?.geminiKey||'';
-  const inp=document.getElementById('gemini-key-input');
-  const status=document.getElementById('gemini-key-status');
+  const key=p.state?.connections?.groqKey||'';
+  const inp=document.getElementById('groq-key-input');
+  const status=document.getElementById('groq-key-status');
   if(inp&&key){
     inp.value=key;
     if(status)status.textContent='✓ Key configured';
@@ -7350,7 +7350,13 @@ function initAIChat(){
   const ctx=getAIContext();
   document.getElementById('ai-ctx-label').textContent=`${ctx.profile} · ${ctx.counts.pending} tasks · ${ctx.counts.habits} habits`;
   if(_aiHistory.length===0){
-    addAIMessage('assistant',`Hey **${ctx.profile}**! I'm NEXUS AI, your personal dashboard assistant powered by Claude.\n\nI can see your tasks, habits, notes and more. What can I help you with today?`);
+    const welcomeMsg={
+      fr:`Salut **${ctx.profile}** ! Je suis NEXUS AI, ton assistant personnel propulsé par Groq.\n\nJe peux voir tes tâches, habitudes, notes et plus encore. Comment puis-je t'aider aujourd'hui ?`,
+      es:`¡Hola **${ctx.profile}**! Soy NEXUS AI, tu asistente personal impulsado por Groq.\n\nPuedo ver tus tareas, hábitos, notas y más. ¿En qué puedo ayudarte hoy?`,
+      de:`Hey **${ctx.profile}**! Ich bin NEXUS AI, dein persönlicher Assistent, angetrieben von Groq.\n\nIch kann deine Aufgaben, Gewohnheiten, Notizen und mehr sehen. Wie kann ich dir heute helfen?`,
+      en:`Hey **${ctx.profile}**! I'm NEXUS AI, your personal dashboard assistant powered by Groq.\n\nI can see your tasks, habits, notes and more. What can I help you with today?`
+    };
+    addAIMessage('assistant',welcomeMsg[_lang||'fr']||welcomeMsg.en);
   }
 }
 
@@ -7404,43 +7410,27 @@ async function sendAIMessage(){
   const today=new Date().toLocaleDateString(uiLang==='fr'?'fr-FR':uiLang==='es'?'es-ES':uiLang==='de'?'de-DE':'en-US',{weekday:'long',month:'long',day:'numeric'});
   const system=`Tu es NEXUS AI, un assistant personnel intégré au dashboard NEXUS. ${langInstr} Sois concis, amical et pratique. Utilise le markdown avec parcimonie (gras pour l'emphase). Garde tes réponses sous 200 mots sauf demande explicite.\n\nContexte du dashboard:\n${ctx.summary}\nAujourd'hui: ${today}`;
   try{
-    const geminiKey=curP()?.state?.connections?.geminiKey||'';
-    if(!geminiKey){
+    const groqKey=curP()?.state?.connections?.groqKey||'';
+    if(!groqKey){
       removeAITyping();
-      addAIMessage('assistant','⚙️ Ajoute ta clé **Gemini API** dans Connexions → NEXUS AI. Gratuit sur [aistudio.google.com](https://aistudio.google.com/apikey).');
+      addAIMessage('assistant','⚙️ Ajoute ta clé **Groq API** dans Connexions → NEXUS AI. Gratuit sur [console.groq.com/keys](https://console.groq.com/keys).');
       _aiTyping=false;
       document.getElementById('ai-send-btn').disabled=false;
       return;
     }
-    // Build Gemini contents — must start with user, alternate user/model
-    const hist=_aiHistory.slice(-12);
-    // Ensure first message is user
-    const filtered=[];
-    let lastRole=null;
-    for(const m of hist){
-      const r=m.role==='assistant'?'model':'user';
-      if(r===lastRole)continue; // skip consecutive same role
-      filtered.push({role:r,parts:[{text:m.content}]});
-      lastRole=r;
-    }
-    if(!filtered.length||filtered[0].role!=='user')filtered.unshift({role:'user',parts:[{text:text}]});
-    // Prepend system to first user message
-    if(filtered[0]?.role==='user'){
-      filtered[0].parts[0].text=system+'\n\nUser: '+filtered[0].parts[0].text;
-    }
-    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,{
+    const groqMessages=[{role:'system',content:system},..._aiHistory.slice(-12)];
+    const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({contents:filtered,generationConfig:{maxOutputTokens:800,temperature:0.7}}),
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+groqKey},
+      body:JSON.stringify({model:'llama-3.1-8b-instant',messages:groqMessages,max_tokens:800,temperature:0.7}),
       signal:AbortSignal.timeout(30000)
     });
     if(!res.ok){
       const err=await res.json().catch(()=>({}));
-      const msg=err?.error?.message||`HTTP ${res.status}`;
-      throw new Error(msg);
+      throw new Error(err?.error?.message||'HTTP '+res.status);
     }
     const data=await res.json();
-    const reply=data.candidates?.[0]?.content?.parts?.[0]?.text||'Pas de réponse générée.';
+    const reply=data.choices?.[0]?.message?.content||'Pas de réponse générée.';
     removeAITyping();
     addAIMessage('assistant',reply);
     _aiHistory.push({role:'assistant',content:reply});
@@ -7503,7 +7493,7 @@ function switchPage(page,navEl){
     if(quoteEmpty)fetchQuote();
   }
   if(page==='settings'){document.getElementById('settings-name').value=p.name;updateSettingsPreview();loadSecuritySettings();loadBannerSettings();renderBgThemeBtns();renderProfileXP(p);renderProfileQuickStats(p);}
-  if(page==='connections'){loadConnectionsUI();renderWidgetManager();loadGeminiKeyUI();}
+  if(page==='connections'){loadConnectionsUI();renderWidgetManager();loadGroqKeyUI();}
   if(page==='gaming')loadGamingUI();
   if(page==='habits'){if(typeof renderHabits==='function')renderHabits();}
   if(page==='kanban'){if(typeof renderKanban==='function')renderKanban();}
@@ -8824,7 +8814,7 @@ function loadConnectionsUI(){
   }
   // Always sync sidebar widgets after loading connections
   const p2=curP();if(p2){initSidebarWidgets(p2);initSidebarWidgetToggles();}
-  loadGeminiKeyUI();
+  loadGroqKeyUI();
 }
 
 
@@ -12841,6 +12831,8 @@ var I18N = {
     'writing': 'Writing',
     // AI
     'nexus_ai_desc': 'Ask anything about your dashboard…',
+    'ai_powered_by': 'Powered by Groq',
+    'ai_context_bar': 'NEXUS AI has access to your dashboard context',
     'new_chat': 'New chat',
     'summarize_tasks': 'Summarize my tasks',
     'focus_today': 'What should I focus on today?',
@@ -12979,6 +12971,8 @@ var I18N = {
     'writing': 'Écriture',
     // AI
     'nexus_ai_desc': 'Posez une question sur votre dashboard…',
+    'ai_powered_by': 'Propulsé par Groq',
+    'ai_context_bar': 'NEXUS AI a accès au contexte de ton dashboard',
     'new_chat': 'Nouveau chat',
     'summarize_tasks': 'Résumer mes tâches',
     'focus_today': "Sur quoi me concentrer aujourd'hui ?",
@@ -13105,6 +13099,8 @@ var I18N = {
     'new_note': '+ Nueva nota',
     'writing': 'Escritura',
     'nexus_ai_desc': 'Pregunta algo sobre tu dashboard…',
+    'ai_powered_by': 'Impulsado por Groq',
+    'ai_context_bar': 'NEXUS AI tiene acceso al contexto de tu dashboard',
     'new_chat': 'Nuevo chat',
     'summarize_tasks': 'Resumir mis tareas',
     'focus_today': '¿En qué concentrarme hoy?',
@@ -13230,6 +13226,8 @@ var I18N = {
     'new_note': '+ Neue Notiz',
     'writing': 'Schreiben',
     'nexus_ai_desc': 'Frag etwas über dein Dashboard…',
+    'ai_powered_by': 'Bereitgestellt von Groq',
+    'ai_context_bar': 'NEXUS AI hat Zugriff auf deinen Dashboard-Kontext',
     'new_chat': 'Neuer Chat',
     'summarize_tasks': 'Meine Aufgaben zusammenfassen',
     'focus_today': 'Worauf soll ich mich heute konzentrieren?',

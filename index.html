@@ -3645,7 +3645,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       <div class="stat-card" style="--card-accent:#fbbf24"><div class="stat-label" data-i18n="time">Time</div><div class="clock-display" id="clock-main">00:00</div><div class="clock-date" id="clock-date-sub"></div></div>
     </div>
     <!-- Gaming mini-widget -->
-    <div id="gaming-overview-wrap" style="display:none;margin-bottom:18px">
+    <div id="gaming-overview-wrap" class="overview-widget" draggable="true" style="display:none;margin-bottom:12px">
       <div style="display:flex;gap:14px;flex-wrap:wrap" id="gaming-overview-cards"></div>
     </div>
     <!-- Quick Access -->
@@ -9343,7 +9343,9 @@ function showLinkPreview(url,e){
 // ══════════════════════════════════════════════════════════════
 let _dragSrc=null;
 function initOverviewDragDrop(){
-  document.querySelectorAll('#page-dashboard > div:not(.stats-row) .panel, #page-dashboard > .panel').forEach(panel=>{
+  // Include .panel widgets AND special widgets like gaming/weather
+  const selector='#page-dashboard > div:not(.stats-row) .panel, #page-dashboard > .panel, #gaming-overview-wrap, #page-dashboard > div.overview-widget';
+  document.querySelectorAll(selector).forEach(panel=>{
     panel.classList.add('overview-widget');panel.setAttribute('draggable','true');
     panel.addEventListener('dragstart',function(e){_dragSrc=this;this.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
     panel.addEventListener('dragend',function(){this.classList.remove('dragging');document.querySelectorAll('.drag-over').forEach(el=>el.classList.remove('drag-over'));});
@@ -11687,10 +11689,16 @@ function saveWeatherCity(){
   const city=inp?.value?.trim()||'';
   if(!p.state)p.state={};
   p.state.weatherCity=city||null;
-  p.state.weatherCache=null;
+  p.state.weatherCache=null; // clear cached coords + HTML
+  // Force immediate cloud save so cache is wiped on Supabase too
   saveStateNow();
+  if(_sbUser){
+    clearTimeout(_saveCloudTimeout);
+    saveCloudState().catch(()=>{});
+  }
   document.getElementById('wx-city-editor')?.remove();
-  fetchWeather(city||null);
+  // Short delay to ensure save completed before fetch
+  setTimeout(()=>fetchWeather(city||null), 200);
 }
 
 async function fetchWeather(forceCity){

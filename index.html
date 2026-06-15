@@ -279,7 +279,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .nav-item.active::after{content:'';position:absolute;right:0;top:20%;bottom:20%;width:2px;background:var(--accent);border-radius:99px}
 .nav-icon{width:17px;height:17px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:inherit}.nav-icon svg{width:100%;height:100%}
 .nav-badge{margin-left:auto;background:linear-gradient(135deg,#f97316,#dc2626);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px;font-family:var(--mono);min-width:17px;text-align:center}
-.sidebar-footer{flex-shrink:0;padding:10px 8px 8px;border-top:1px solid rgba(255,255,255,.06)}
+.sidebar-footer{flex-shrink:0;padding:10px 8px 8px;border-top:1px solid rgba(255,255,255,.06);max-height:55vh;overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
 .sidebar.compact{width:58px!important;min-width:58px!important;overflow:hidden}
 .sidebar.compact .sb-widget,.sidebar.compact #sb-lastfm-wrap,.sidebar.compact .sb-widget-label,
 .sidebar.compact .sb-section,.sidebar.compact .sb-section-label{display:none!important}
@@ -10935,16 +10935,36 @@ async function refreshSpotifySidebar(){
     if(timeRow)timeRow.style.display=isPlaying?'flex':'none';
 
     if(isPlaying){
-      // Fetch duration from Last.fm if new track
+      // Fetch duration + restore position across refresh
       if(trackKey!==_npCurrentTrack){
         _npCurrentTrack=trackKey;
-        _npStartTime=Date.now();
         clearInterval(_npProgressTimer);
         try{
           const info=await fetchLastfm('track.getInfo',`artist=${encodeURIComponent(artist)}&track=${encodeURIComponent(title)}&autocorrect=1`);
           _npDurationMs=parseInt(info?.track?.duration)||240000;
         }catch(e){_npDurationMs=240000;}
-        // Start progress timer
+
+        // Restore start time from sessionStorage if same track
+        const stored=JSON.parse(sessionStorage.getItem('np_track')||'{}');
+        if(stored.key===trackKey&&stored.startedAt){
+          _npStartTime=stored.startedAt;
+        } else {
+          // New track — estimate start as now minus half the duration (can't know exactly)
+          // Better: use the timestamp of the NEXT track in recent tracks to back-calculate
+          try{
+            const recent=await fetchLastfm('user.getrecenttracks',`user=${encodeURIComponent(lfm.username)}&limit=2`);
+            const tracks=recent?.recenttracks?.track||[];
+            // Second track (index 1) is the previously completed track
+            // Its date + duration ≈ when current track started
+            if(tracks[1]?.date?.uts){
+              const prevEndMs=parseInt(tracks[1].date.uts)*1000;
+              _npStartTime=prevEndMs;
+            } else {
+              _npStartTime=Date.now();
+            }
+          }catch(e){_npStartTime=Date.now();}
+          sessionStorage.setItem('np_track',JSON.stringify({key:trackKey,startedAt:_npStartTime,duration:_npDurationMs}));
+        }
         _npProgressTimer=setInterval(()=>updateNpFallbackProgress(),1000);
         updateNpFallbackProgress();
       }

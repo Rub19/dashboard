@@ -279,21 +279,22 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .nav-item.active::after{content:'';position:absolute;right:0;top:20%;bottom:20%;width:2px;background:linear-gradient(to bottom,#f97316,#dc2626);border-radius:99px}
 .nav-icon{width:17px;height:17px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:inherit}.nav-icon svg{width:100%;height:100%}
 .nav-badge{margin-left:auto;background:linear-gradient(135deg,#f97316,#dc2626);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px;font-family:var(--mono);min-width:17px;text-align:center}
-.sidebar-footer{flex-shrink:0;padding:8px;border-top:1px solid rgba(255,255,255,.06)}
-.sidebar.compact{width:58px!important;min-width:58px!important}
+.sidebar-footer{flex-shrink:0;padding:10px 8px 8px;border-top:1px solid rgba(255,255,255,.06)}
+.sidebar.compact{width:58px!important;min-width:58px!important;overflow:hidden}
 .sidebar.compact .sb-widget,.sidebar.compact #sb-lastfm-wrap,.sidebar.compact .sb-widget-label,
 .sidebar.compact .sb-section,.sidebar.compact .sb-section-label{display:none!important}
 .sidebar.compact .user-info,.sidebar.compact .switch-hint{display:none!important}
 .sidebar.compact .user-card{justify-content:center;padding:8px}
 .sidebar.compact .nav-label-text,.sidebar.compact .nav-badge,.sidebar.compact .nav-label{display:none!important}
-.sidebar.compact .nav-item{justify-content:center;padding:8px}
+.sidebar.compact .nav-item{justify-content:center;padding:8px 0;min-width:0}
+.sidebar.compact .nav-icon{margin:0 auto}
 .sidebar.compact .logo-text{display:none!important}
-.sidebar.compact .logo{justify-content:center}
+.sidebar.compact .logo{justify-content:center;padding:12px 0}
 .sidebar.compact .logo-icon{margin:0}
-.sidebar.compact #sidebar-compact-btn{margin:4px auto}
-/* Separators hidden in compact */
-.sidebar.compact .sidebar-footer > div[style*="height:1px"]{display:none}
-.user-card{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:all .2s;position:relative}
+.sidebar.compact #sidebar-compact-btn{margin:4px auto;width:34px}
+.sidebar.compact .sidebar-footer > div[style*="height:1px"]{display:none!important}
+.sidebar.compact #sidebar-nav-main,.sidebar.compact #sidebar-nav-account{padding:0 4px}
+.user-card{display:flex;align-items:center;gap:10px;padding:10px 10px 8px;border-radius:8px;cursor:pointer;transition:all .2s;position:relative;margin-bottom:2px}
 .user-card:hover{background:rgba(255,255,255,.04)}
 .user-card:hover .switch-hint{opacity:1}
 .switch-hint{position:absolute;right:10px;font-size:9px;color:#f97316;opacity:0;transition:opacity .2s;font-weight:700;letter-spacing:.5px;text-transform:uppercase;font-family:var(--mono)}
@@ -2845,6 +2846,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   backdrop-filter:blur(20px);
   box-shadow:2px 0 20px rgba(0,0,0,.4);
   position:fixed;top:0;left:0;z-index:300;
+  transition:width .22s ease;
 }
 #sidebar-nav-main{overflow-y:auto;flex:1 1 auto;padding:0 6px;min-height:0;scrollbar-width:none}
 #sidebar-nav-account{flex:0 0 auto;padding:0 6px 4px;min-height:0}
@@ -3464,7 +3466,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   <div id="sidebar-nav-main" class="nav-section"></div>
   <div id="sidebar-nav-account" class="nav-section"></div>
   <!-- Compact toggle — always visible at bottom -->
-  <button id="sidebar-compact-btn" onclick="toggleSidebarCompact()" title="Toggle compact mode" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;margin:4px auto 4px;background:none;border:1px solid var(--border2);border-radius:8px;cursor:pointer;font-size:14px;color:var(--muted);font-family:var(--font);transition:all .2s ease" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">&#8644;</button>
+  <button id="sidebar-compact-btn" onclick="event.preventDefault();toggleSidebarCompact()" title="Toggle compact mode" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;margin:4px auto 4px;background:none;border:1px solid var(--border2);border-radius:8px;cursor:pointer;font-size:14px;color:var(--muted);font-family:var(--font);transition:all .2s ease" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">&#8644;</button>
   <div class="sidebar-footer">
     <!-- User card at top of footer -->
     <div class="user-card" onclick="goToProfileScreen()">
@@ -6075,7 +6077,8 @@ function enterDashboard(id){
     document.getElementById('main-content').style.display='block';
     renderSidebarNav(); updateSidebarAvatar(); applyI18n();
     initDashboard();
-    setTimeout(startAmbientBg,300);
+    // Only start ambient bg if no custom bg theme is set
+    if(!curP()?.bgTheme||curP()?.bgTheme==='none') setTimeout(startAmbientBg,300);
   },180);
 }
 
@@ -6733,6 +6736,9 @@ function toggleSidebarCompact(){
   p.sidebarCompact=!p.sidebarCompact;
   const sb=document.getElementById('main-sidebar');
   if(sb)sb.classList.toggle('compact',p.sidebarCompact);
+  // Adjust main content margin to match sidebar width
+  const main=document.getElementById('main-content');
+  if(main)main.style.marginLeft=p.sidebarCompact?'58px':'';
   saveStateNow();
 }
 
@@ -6740,6 +6746,8 @@ function applySidebarCompact(){
   const p=curP();if(!p)return;
   const sb=document.getElementById('main-sidebar');
   if(sb)sb.classList.toggle('compact',!!p.sidebarCompact);
+  const main=document.getElementById('main-content');
+  if(main&&p.sidebarCompact)main.style.marginLeft='58px';
 }
 
 function initDashboard(){
@@ -9543,6 +9551,9 @@ function openValoMatchDetail(idx,name,tag){
 }
 
 function startAmbientBg(){
+  // Don't start ambient if a custom bg theme is active
+  const _activeBg=curP()?.bgTheme;
+  if(_activeBg&&_activeBg!=='none')return;
   const canvas=document.getElementById('bg-canvas');
   if(!canvas||_ambientFrame)return;
   canvas.width=window.innerWidth;canvas.height=window.innerHeight;
@@ -13073,7 +13084,7 @@ function showDashboardOrProfiles(){
     document.getElementById('main-content').style.display='block';
     renderSidebarNav(); updateSidebarAvatar(); applyI18n(); updateClock();
     initDashboard(); hideBoot();
-    setTimeout(startAmbientBg,400);
+    if(!curP()?.bgTheme||curP()?.bgTheme==='none') setTimeout(startAmbientBg,400);
   } else {
     renderProfileScreen();
     document.getElementById('profile-screen').style.display='flex';

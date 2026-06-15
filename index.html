@@ -6584,9 +6584,8 @@ function updateSidebarAvatar(){
   // Display name
   const un=document.getElementById('display-username');
   if(un)un.textContent=p.name||'User';
-  // Topbar + banner
+  // Topbar only — do NOT call updateBannerDisplay here (would cause infinite loop)
   updateTopbarProfile();
-  if(typeof updateBannerDisplay==='function')updateBannerDisplay();
 }
 
 function updateSettingsPreview(){
@@ -6920,7 +6919,7 @@ function updateBannerDisplay(){
     socialsEl.innerHTML=links.join('');
   }
 
-  updateSidebarAvatar();
+  // Do NOT call updateSidebarAvatar here (would cause infinite loop)
   updateTopbarProfile();
 }
 

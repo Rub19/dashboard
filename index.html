@@ -628,7 +628,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 }
 
 /* ── BACKGROUND CANVAS ── */
-#bg-canvas{opacity:.9!important}
+#bg-canvas{opacity:1!important}
 
 /* ── SCROLLBAR ── */
 ::-webkit-scrollbar{width:4px}
@@ -1317,7 +1317,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .wx-day-rain{font-size:9.5px;color:#60a5fa;margin-top:2px}
 
 /* ── AI CHAT PAGE ── */
-.ai-page{display:flex;flex-direction:column;height:calc(100vh - 130px);min-height:400px}
+.ai-page{display:flex;flex-direction:column;height:calc(100vh - 130px);min-height:400px;max-width:760px;width:100%;margin:0 auto}
 .ai-messages{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:4px 2px 16px;scrollbar-width:thin}
 .ai-messages::-webkit-scrollbar{width:3px}
 .ai-messages::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:99px}
@@ -3231,7 +3231,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 </div>
 
 <!-- AUTH SCREEN -->
-<canvas id="bg-canvas" style="position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 1s ease"></canvas>
+<canvas id="bg-canvas" style="position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:0;transition:opacity 1s ease"></canvas>
 
 <div id="nexus-boot-screen" style="position:fixed;inset:0;z-index:2147483647;background:#050507;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px">
   <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#f97316,#dc2626);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(249,115,22,.4)">
@@ -4362,6 +4362,25 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   <div id="page-connections" class="tab-content">
     <div class="topbar"><div><div class="section-eyebrow">Integrations</div><div class="section-title">Connections</div><div class="page-subtitle">Link your accounts to enrich your dashboard</div></div></div>
 
+    <!-- NEXUS AI KEY -->
+    <div class="conn-card">
+      <div class="conn-header">
+        <div class="conn-icon" style="background:linear-gradient(135deg,#f97316,#dc2626)">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><polygon points="10,1 19,10 10,19 1,10" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round"/><polygon points="10,5 15,10 10,15 5,10" fill="white"/></svg>
+        </div>
+        <div>
+          <div class="conn-title">NEXUS AI — Gemini Key</div>
+          <div class="conn-subtitle">Free API key from <a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--accent)">aistudio.google.com</a> · 1500 req/day gratuit</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <input type="password" id="gemini-key-input" class="modal-input" placeholder="AIza..." style="flex:1;font-family:var(--mono);font-size:12px"
+          oninput="document.getElementById('gemini-key-save').style.opacity=this.value?'1':'.4'">
+        <button id="gemini-key-save" class="btn btn-primary" style="opacity:.4;padding:8px 16px" onclick="saveGeminiKey()">Save</button>
+      </div>
+      <div id="gemini-key-status" style="font-size:11px;color:var(--muted);margin-top:6px"></div>
+    </div>
+
     <!-- SIDEBAR WIDGET MANAGER -->
     <div class="conn-card" id="sidebar-widget-manager">
       <div class="conn-header" style="margin-bottom:12px">
@@ -4765,7 +4784,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   <div id="page-ai" class="tab-content">
     <div class="topbar">
       <div>
-        <div class="section-eyebrow">Powered by Claude</div>
+        <div class="section-eyebrow">Powered by Gemini Flash</div>
         <div class="section-title">NEXUS <span style="background:linear-gradient(90deg,#f97316,#dc2626);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">AI</span></div>
       </div>
       <div class="topbar-actions">
@@ -6696,6 +6715,31 @@ function applySidebarWidgetOrder(){
 }
 
 // ── SIDEBAR WIDGET TOGGLE ─────────────────────────────────────
+
+function saveGeminiKey(){
+  const p=curP();if(!p)return;
+  const key=document.getElementById('gemini-key-input')?.value?.trim();
+  if(!key){toast('Enter a valid API key','error');return;}
+  if(!p.state.connections)p.state.connections={};
+  p.state.connections.geminiKey=key;
+  saveStateNow();
+  const status=document.getElementById('gemini-key-status');
+  if(status)status.textContent='✓ Key saved';
+  setTimeout(()=>{if(status)status.textContent=''},2000);
+  toast('Gemini key saved!','success');
+}
+
+function loadGeminiKeyUI(){
+  const p=curP();if(!p)return;
+  const key=p.state?.connections?.geminiKey||'';
+  const inp=document.getElementById('gemini-key-input');
+  const status=document.getElementById('gemini-key-status');
+  if(inp&&key){
+    inp.value=key;
+    if(status)status.textContent='✓ Key configured';
+  }
+}
+
 function toggleSidebarWidget(service){
   const p=curP();if(!p)return;
   if(!p.state.sidebarWidgets)p.state.sidebarWidgets={};
@@ -7348,18 +7392,28 @@ async function sendAIMessage(){
   const ctx=getAIContext();
   const system=`You are NEXUS AI, a helpful personal assistant built into the NEXUS dashboard. Be concise, friendly and practical. Use markdown sparingly (bold for emphasis, code for code snippets). Keep replies under 200 words unless the user explicitly asks for more detail.\n\nUser's dashboard context:\n${ctx.summary}\nToday: ${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}`;
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
+    const geminiKey=curP()?.state?.connections?.geminiKey||'';
+    if(!geminiKey){
+      removeAITyping();
+      addAIMessage('assistant','⚙️ Ajoute ta clé **Gemini API** dans Connexions → NEXUS AI. Gratuit sur [aistudio.google.com](https://aistudio.google.com/apikey).');
+      _aiTyping=false;
+      document.getElementById('ai-send-btn').disabled=false;
+      return;
+    }
+    // Convert history to Gemini format (no 'system' role — prepend to first user message)
+    const geminiMsgs=_aiHistory.slice(-12).map((m,i)=>({
+      role:m.role==='assistant'?'model':'user',
+      parts:[{text: i===0&&m.role==='user' ? system+'\n\n'+m.content : m.content}]
+    }));
+    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-6',
-        max_tokens:1000,
-        system,
-        messages:_aiHistory.slice(-12),
-      })
+      body:JSON.stringify({contents:geminiMsgs,generationConfig:{maxOutputTokens:1000,temperature:0.7}}),
+      signal:AbortSignal.timeout(30000)
     });
+    if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err?.error?.message||`HTTP ${res.status}`);}
     const data=await res.json();
-    const reply=data.content?.[0]?.text||'Sorry, I could not generate a response.';
+    const reply=data.candidates?.[0]?.content?.parts?.[0]?.text||'Sorry, I could not generate a response.';
     removeAITyping();
     addAIMessage('assistant',reply);
     _aiHistory.push({role:'assistant',content:reply});
@@ -7420,7 +7474,7 @@ function switchPage(page,navEl){
     if(quoteEmpty)fetchQuote();
   }
   if(page==='settings'){document.getElementById('settings-name').value=p.name;updateSettingsPreview();loadSecuritySettings();loadBannerSettings();renderBgThemeBtns();renderProfileXP(p);renderProfileQuickStats(p);}
-  if(page==='connections'){loadConnectionsUI();renderWidgetManager();}
+  if(page==='connections'){loadConnectionsUI();renderWidgetManager();loadGeminiKeyUI();}
   if(page==='gaming')loadGamingUI();
   if(page==='habits'){if(typeof renderHabits==='function')renderHabits();}
   if(page==='kanban'){if(typeof renderKanban==='function')renderKanban();}

@@ -2287,6 +2287,11 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 /* Discord pill v2 */
 
 /* ── SIDEBAR WIDGET CARDS v3 — design unifié ── */
+.sb-section+.sb-section{
+  padding-top:6px;
+  border-top:1px solid rgba(255,255,255,.05);
+  margin-top:2px;
+}
 .sb-widget-card{
   display:flex;align-items:center;gap:9px;
   padding:8px 10px;border-radius:10px;
@@ -3451,6 +3456,8 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   <!-- Compact toggle — always visible at bottom -->
   <button id="sidebar-compact-btn" onclick="toggleSidebarCompact()" title="Toggle compact mode" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;margin:4px auto 4px;background:none;border:1px solid var(--border2);border-radius:8px;cursor:pointer;font-size:14px;color:var(--muted);font-family:var(--font);transition:all .2s ease" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">&#8644;</button>
   <div class="sidebar-footer">
+    <!-- Widgets separator from compact btn -->
+    <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent);margin:0 6px 8px"></div>
     <!-- DISCORD v3 -->
     <div class="sb-section" id="sb-discord-wrap" style="display:none">
       <div class="sb-widget-card" id="sb-discord-card">
@@ -3524,6 +3531,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
     </div>
 
     <!-- User card -->
+    <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent);margin:8px 6px 4px"></div>
     <div class="user-card" onclick="goToProfileScreen()">
       <div class="sidebar-avatar" id="sidebar-avatar"></div>
       <div class="user-info">

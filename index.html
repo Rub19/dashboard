@@ -5678,6 +5678,9 @@ async function loadCloudState(){
           banner:s.banner||null,
           themeIdx:s.themeIdx||0,
           xp:s.xp||0,
+          weatherCity:s.weatherCity||null,
+          weatherCache:s.weatherCity&&s.weatherCache?.city===s.weatherCity?s.weatherCache:null,
+          aiSessions:s.aiSessions||[],
         }
       };
     });
@@ -5733,6 +5736,9 @@ async function saveCloudState(){
         bannerImg:p.bannerImg||null,
         notifEnabled:p.state?.notifEnabled||false,
         xp:p.state?.xp||0,
+        weatherCity:p.state?.weatherCity||null,
+        weatherCache:p.state?.weatherCache||null,
+        aiSessions:p.state?.aiSessions||[],
       },
       updated_at:new Date().toISOString()
     };
@@ -9065,8 +9071,16 @@ function loadConnectionsUI(){
     renderLastfmCard(conn.lastfm);
     startLastfmAutoRefresh();
   }
-  // Always sync sidebar widgets after loading connections
-  const p2=curP();if(p2){initSidebarWidgets(p2);initSidebarWidgetToggles();}
+  // Sync sidebar widgets — but skip re-rendering nav to avoid flash
+  const p2=curP();
+  if(p2){
+    // Only update widget visibility, don't re-render nav
+    const _origRenderNav=window.renderSidebarNav;
+    window.renderSidebarNav=()=>{}; // temporarily disable
+    initSidebarWidgets(p2);
+    initSidebarWidgetToggles();
+    window.renderSidebarNav=_origRenderNav; // restore
+  }
   loadGroqKeyUI();
 }
 
@@ -10908,24 +10922,38 @@ async function refreshSpotifySidebar(){
     const eqEl=document.getElementById('np-fallback-eq');
     if(eqEl)eqEl.style.display=isPlaying?'flex':'none';
 
-    // Green bar animates if playing, frozen if not
+    // Progress bar — animate while playing
     const fill=wrap?.querySelector('.sb-wc-bar-fill');
-    if(fill)fill.style.width=isPlaying?'60%':'40%';
+    if(fill){
+      if(isPlaying){
+        fill.style.transition='none';
+        fill.style.width='0%';
+        // Reset then animate over 4 minutes (average song)
+        requestAnimationFrame(()=>{
+          fill.style.transition='width 240s linear';
+          fill.style.width='100%';
+        });
+      } else {
+        fill.style.transition='none';
+        fill.style.width='35%';
+      }
+    }
 
   }catch(e){
     console.warn('[NEXUS] Now Playing error:',e.message);
   }
 }
 
-// Auto-refresh Spotify every 15s when visible
+// Auto-refresh Now Playing every 30s
 let _spotifyAutoRefresh=null;
 function startSpotifyAutoRefresh(){
   clearInterval(_spotifyAutoRefresh);
+  refreshSpotifySidebar(); // immediate first call
   _spotifyAutoRefresh=setInterval(()=>{
     if(document.getElementById('sb-spotify-iframe-wrap')?.style.display==='block'){
       refreshSpotifySidebar();
     }
-  },15000);
+  },30000);
 }
 
 
@@ -11759,9 +11787,13 @@ async function fetchWeather(forceCity){
   const _wp=curP();const _wc=_wp?.state?.weatherCache;
   const savedCity=forceCity||_wp?.state?.weatherCity;
   // Only show cache if it matches the current saved city (avoid showing wrong city)
-  if(_wc?.rendered&&(!savedCity||_wc?.city===savedCity)){
+  // Only show cache if it matches current saved city
+  const cacheMatchesCity=!savedCity||(_wc?.city&&_wc.city.toLowerCase()===savedCity.toLowerCase());
+  if(_wc?.rendered&&cacheMatchesCity){
     w.innerHTML=_wc.rendered;
   } else {
+    // Clear stale cache immediately
+    if(_wp?.state&&!cacheMatchesCity)_wp.state.weatherCache=null;
     w.innerHTML='<div style="padding:12px;font-size:12px;color:var(--muted)">📍 Chargement...</div>';
   }
   if(savedCity){

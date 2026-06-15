@@ -2849,8 +2849,8 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   position:fixed;top:0;left:0;z-index:300;
   transition:width .22s ease, box-shadow .4s ease, background .4s ease;
 }
-#page-ai.active{display:flex!important;flex-direction:column}
-#page-ai .topbar{width:100%;max-width:700px;margin:0 auto}
+#page-ai.active{display:flex!important;flex-direction:column;align-items:center}
+#page-ai .topbar{width:100%;max-width:700px}
 #sidebar-nav-main{overflow-y:auto;flex:1 1 auto;padding:0 6px;min-height:0;scrollbar-width:none}
 #sidebar-nav-account{flex:0 0 auto;padding:0 6px 4px;min-height:0}
 .sidebar .nav-section::-webkit-scrollbar{width:2px}
@@ -7392,7 +7392,10 @@ async function sendAIMessage(){
   document.getElementById('ai-send-btn').disabled=true;
   showAITyping();
   const ctx=getAIContext();
-  const system=`You are NEXUS AI, a helpful personal assistant built into the NEXUS dashboard. Be concise, friendly and practical. Use markdown sparingly (bold for emphasis, code for code snippets). Keep replies under 200 words unless the user explicitly asks for more detail.\n\nUser's dashboard context:\n${ctx.summary}\nToday: ${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}`;
+  const uiLang=_lang||'fr';
+  const langInstr=uiLang==='fr'?'Réponds toujours en français.':uiLang==='es'?'Responde siempre en español.':uiLang==='de'?'Antworte immer auf Deutsch.':'Reply in English.';
+  const today=new Date().toLocaleDateString(uiLang==='fr'?'fr-FR':uiLang==='es'?'es-ES':uiLang==='de'?'de-DE':'en-US',{weekday:'long',month:'long',day:'numeric'});
+  const system=`Tu es NEXUS AI, un assistant personnel intégré au dashboard NEXUS. ${langInstr} Sois concis, amical et pratique. Utilise le markdown avec parcimonie (gras pour l'emphase). Garde tes réponses sous 200 mots sauf demande explicite.\n\nContexte du dashboard:\n${ctx.summary}\nAujourd'hui: ${today}`;
   try{
     const geminiKey=curP()?.state?.connections?.geminiKey||'';
     if(!geminiKey){
@@ -7402,27 +7405,44 @@ async function sendAIMessage(){
       document.getElementById('ai-send-btn').disabled=false;
       return;
     }
-    // Convert history to Gemini format (no 'system' role — prepend to first user message)
-    const geminiMsgs=_aiHistory.slice(-12).map((m,i)=>({
-      role:m.role==='assistant'?'model':'user',
-      parts:[{text: i===0&&m.role==='user' ? system+'\n\n'+m.content : m.content}]
-    }));
-    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,{
+    // Build Gemini contents — must start with user, alternate user/model
+    const hist=_aiHistory.slice(-12);
+    // Ensure first message is user
+    const filtered=[];
+    let lastRole=null;
+    for(const m of hist){
+      const r=m.role==='assistant'?'model':'user';
+      if(r===lastRole)continue; // skip consecutive same role
+      filtered.push({role:r,parts:[{text:m.content}]});
+      lastRole=r;
+    }
+    if(!filtered.length||filtered[0].role!=='user')filtered.unshift({role:'user',parts:[{text:text}]});
+    // Prepend system to first user message
+    if(filtered[0]?.role==='user'){
+      filtered[0].parts[0].text=system+'\n\nUser: '+filtered[0].parts[0].text;
+    }
+    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${geminiKey}`,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({contents:geminiMsgs,generationConfig:{maxOutputTokens:1000,temperature:0.7}}),
+      body:JSON.stringify({contents:filtered,generationConfig:{maxOutputTokens:800,temperature:0.7}}),
       signal:AbortSignal.timeout(30000)
     });
-    if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err?.error?.message||`HTTP ${res.status}`);}
+    if(!res.ok){
+      const err=await res.json().catch(()=>({}));
+      const msg=err?.error?.message||`HTTP ${res.status}`;
+      throw new Error(msg);
+    }
     const data=await res.json();
-    const reply=data.candidates?.[0]?.content?.parts?.[0]?.text||'Sorry, I could not generate a response.';
+    const reply=data.candidates?.[0]?.content?.parts?.[0]?.text||'Pas de réponse générée.';
     removeAITyping();
     addAIMessage('assistant',reply);
     _aiHistory.push({role:'assistant',content:reply});
     if(_aiHistory.length>24)_aiHistory=_aiHistory.slice(-24);
   }catch(e){
     removeAITyping();
-    addAIMessage('assistant','Connection error. Please try again.');
+    const errMsg=e?.message||'Erreur inconnue';
+    addAIMessage('assistant','❌ Erreur: '+errMsg+'. Vérifie ta clé Gemini dans Connexions.');
+    console.error('[NEXUS AI]',e);
   }
   _aiTyping=false;
   document.getElementById('ai-send-btn').disabled=false;

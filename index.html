@@ -6509,10 +6509,15 @@ function initSidebarWidgets(p){
   if(!p)return;
   const conn=p.state?.connections||{};
 
-  // Discord — check user preference first
+  // Use unified visible.* system from new widget manager
   const swPrefs=p.state.sidebarWidgets||{};
+  const vis=swPrefs.visible||{};
+  // Backwards compat: if old-style key exists and new visible key absent, migrate
+  if(swPrefs.discord===false&&vis.discord===undefined)vis.discord=false;
+  if(swPrefs.lastfm===false&&vis.lastfm===undefined)vis.lastfm=false;
+
   const dcWrap=document.getElementById('sb-discord-wrap');
-  if(conn.discord?.userId&&swPrefs.discord!==false){
+  if(conn.discord?.userId&&vis.discord!==false){
     if(dcWrap)dcWrap.style.display='block';
     refreshDiscordSidebar();
     startLanyardWS(conn.discord.userId);
@@ -6520,14 +6525,22 @@ function initSidebarWidgets(p){
     if(dcWrap)dcWrap.style.display='none';
   }
 
-  // Last.fm — check user preference
-  if(conn.lastfm?.username&&swPrefs.lastfm!==false){
+  // Now Playing via Lanyard (Spotify)
+  const npWrap=document.getElementById('sb-spotify-wrap');
+  if(conn.discord?.userId&&vis.nowplaying!==false){
+    if(npWrap)npWrap.style.display='block';
+  } else {
+    if(npWrap)npWrap.style.display='none';
+  }
+
+  // Last.fm
+  if(conn.lastfm?.username&&vis.lastfm!==false){
     renderLastfmCard(conn.lastfm).catch(()=>{});
     startLastfmAutoRefresh();
   }
 
-  // Spotify fallback pill (follows Last.fm preference)
-  if(conn.lastfm?.username&&swPrefs.lastfm!==false){
+  // Spotify fallback pill (follows lastfm visibility)
+  if(conn.lastfm?.username&&vis.lastfm!==false){
     fetchLastfm('user.getrecenttracks',`user=${encodeURIComponent(conn.lastfm.username)}&limit=1`)
       .then(data=>{
         const track=data?.recenttracks?.track?.[0];
@@ -6642,8 +6655,9 @@ function renderWidgetManager(){
 
 function toggleWidgetVisible(wid, switchEl){
   const {order,visible}=getWidgetPrefs();
-  visible[wid]=!(visible[wid]!==false);
-  switchEl.classList.toggle('on',visible[wid]);
+  const wasOn=visible[wid]!==false;
+  visible[wid]=!wasOn;
+  switchEl.classList.toggle('on',!wasOn);
   saveWidgetPrefs(order,visible);
   initSidebarWidgets(curP());
 }
@@ -6709,6 +6723,21 @@ function initSidebarWidgetToggles(){
   applySidebarWidgetOrder();
 }
 
+
+function toggleSidebarCompact(){
+  const p=curP();if(!p)return;
+  p.sidebarCompact=!p.sidebarCompact;
+  const sb=document.getElementById('main-sidebar');
+  if(sb)sb.classList.toggle('compact',p.sidebarCompact);
+  saveStateNow();
+}
+
+function applySidebarCompact(){
+  const p=curP();if(!p)return;
+  const sb=document.getElementById('main-sidebar');
+  if(sb)sb.classList.toggle('compact',!!p.sidebarCompact);
+}
+
 function initDashboard(){
   const p=curP();if(!p)return;
   if(!p.state)p.state=defState(p.name);
@@ -6719,6 +6748,7 @@ function initDashboard(){
   updateSidebarAvatar();
   updateTopbarProfile();
   checkMobileLayout();
+  applySidebarCompact();
   document.getElementById('display-username').textContent=p.name;
   document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
   document.getElementById('page-dashboard').classList.add('active');
@@ -9998,7 +10028,8 @@ function refreshDiscordSidebar(){
   if(actEl){
     if(act){
       const isSpotify=act.type===2;
-      actEl.innerHTML=`<span style="color:rgba(245,245,247,.45)">${isSpotify?'♪':'▶'} <span style="color:rgba(245,245,247,.45)">${act.name||''}</span></span>`;
+      const actColor=isSpotify?'rgba(29,185,84,.85)':'rgba(88,101,242,.85)';
+      actEl.innerHTML=`<span style="color:${actColor};font-size:10.5px">${isSpotify?'♪ ':'▶ '}<span>${act.name||''}</span></span>`;
       actEl.style.display='block';
     } else {
       actEl.style.display='none';

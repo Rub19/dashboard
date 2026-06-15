@@ -1317,7 +1317,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .wx-day-rain{font-size:9.5px;color:#60a5fa;margin-top:2px}
 
 /* ── AI CHAT PAGE ── */
-.ai-page{display:flex;flex-direction:column;height:calc(100vh - 130px);min-height:400px;max-width:760px;width:100%;margin:0 auto}
+.ai-page{display:flex;flex-direction:column;height:calc(100vh - 130px);min-height:400px;max-width:700px;width:100%;margin:0 auto;padding:0}
 .ai-messages{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:4px 2px 16px;scrollbar-width:thin}
 .ai-messages::-webkit-scrollbar{width:3px}
 .ai-messages::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:99px}
@@ -2849,6 +2849,8 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   position:fixed;top:0;left:0;z-index:300;
   transition:width .22s ease, box-shadow .4s ease, background .4s ease;
 }
+#page-ai.active{display:flex!important;flex-direction:column}
+#page-ai .topbar{width:100%;max-width:700px;margin:0 auto}
 #sidebar-nav-main{overflow-y:auto;flex:1 1 auto;padding:0 6px;min-height:0;scrollbar-width:none}
 #sidebar-nav-account{flex:0 0 auto;padding:0 6px 4px;min-height:0}
 .sidebar .nav-section::-webkit-scrollbar{width:2px}
@@ -8795,6 +8797,7 @@ function loadConnectionsUI(){
   }
   // Always sync sidebar widgets after loading connections
   const p2=curP();if(p2){initSidebarWidgets(p2);initSidebarWidgetToggles();}
+  loadGeminiKeyUI();
 }
 
 

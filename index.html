@@ -2285,27 +2285,65 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   content:'';width:14px;height:1px;background:rgba(245,245,247,.12);flex-shrink:0;
 }
 /* Discord pill v2 */
-/* ── sidebar widgets — palette unifiée ── */
-.sb-dc-pill{
-  display:flex;align-items:center;gap:8px;
-  padding:7px 9px;border-radius:var(--r-sm);
-  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
-  transition:border-color .2s;position:relative;overflow:hidden;
+
+/* ── SIDEBAR WIDGET CARDS v3 — design unifié ── */
+.sb-widget-card{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 10px;border-radius:10px;
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.07);
+  position:relative;overflow:hidden;
+  transition:border-color .2s;
 }
-.sb-dc-pill::before{
-  content:'';position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(90deg,rgba(255,255,255,.02),transparent 70%);
+.sb-widget-card:hover{border-color:rgba(255,255,255,.13)}
+/* Subtle left-edge accent via ::before */
+.sb-widget-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;
+  width:2px;border-radius:2px 0 0 2px;
+  background:rgba(255,255,255,.1);
 }
-/* statut : juste le dot change de couleur, la pill reste neutre */
-.sb-dc-pill.status-online{border-color:rgba(255,255,255,.1)}
-.sb-dc-pill.status-idle{border-color:rgba(255,255,255,.1)}
-.sb-dc-pill.status-dnd{border-color:rgba(255,255,255,.1)}
-.sb-dc-av{
-  width:32px;height:32px;border-radius:9px;flex-shrink:0;position:relative;
-  background:rgba(255,255,255,.07);overflow:hidden;
+.sb-wc-green::before{background:rgba(29,185,84,.6)}
+.sb-wc-red::before{background:rgba(213,16,7,.55)}
+/* Art/avatar */
+.sb-wc-avatar{
+  width:32px;height:32px;border-radius:9px;flex-shrink:0;
+  background:rgba(255,255,255,.07);overflow:hidden;position:relative;
   display:flex;align-items:center;justify-content:center;font-size:14px;
 }
-.sb-dc-av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.sb-wc-avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.sb-wc-art{
+  width:34px;height:34px;border-radius:8px;flex-shrink:0;
+  background:rgba(255,255,255,.06);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+  position:relative;
+}
+.sb-wc-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:8px}
+/* Body */
+.sb-wc-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.sb-wc-top{display:flex;align-items:center;justify-content:space-between;gap:4px}
+.sb-wc-name{
+  font-size:11.5px;font-weight:600;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;
+}
+.sb-wc-sub{
+  font-size:10px;color:rgba(245,245,247,.38);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.sb-wc-sub-green{color:rgba(29,185,84,.7)}
+.sb-wc-sub-red{color:rgba(213,16,7,.65)}
+/* Progress bar — same for all 3, color varies */
+.sb-wc-bar{
+  height:2px;background:rgba(255,255,255,.07);
+  border-radius:99px;overflow:hidden;margin-top:3px;
+}
+.sb-wc-bar-fill{
+  height:100%;border-radius:99px;
+  background:rgba(255,255,255,.2);
+  transition:width .5s linear;
+}
+.sb-wc-bar-green{background:rgba(29,185,84,.6)}
+.sb-wc-bar-red{background:rgba(213,16,7,.5)}
+/* Discord status dot */
 .sb-dc-dot{
   position:absolute;bottom:-2px;right:-2px;
   width:9px;height:9px;border-radius:50%;border:2px solid #050507;
@@ -2314,81 +2352,32 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 .sb-dc-dot.idle{background:#faa81a}
 .sb-dc-dot.dnd{background:#ed4245}
 .sb-dc-dot.offline{background:#4e5058}
-.sb-dc-name{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sb-dc-act{font-size:10.5px;color:rgba(245,245,247,.35);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
-/* badge statut — discret, monochrome sauf la couleur du dot */
+/* Discord badge */
 .sb-dc-badge{
   font-size:7.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
   padding:2px 5px;border-radius:4px;font-family:'JetBrains Mono',monospace;flex-shrink:0;
   background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
-  color:rgba(245,245,247,.45);
+  color:rgba(245,245,247,.4);
 }
-.sb-dc-badge.online{color:#3ba55c;border-color:rgba(59,165,92,.2);background:rgba(59,165,92,.07)}
-.sb-dc-badge.idle{color:#faa81a;border-color:rgba(250,168,26,.2);background:rgba(250,168,26,.06)}
-.sb-dc-badge.dnd{color:#ed4245;border-color:rgba(237,66,69,.2);background:rgba(237,66,69,.06)}
-.sb-dc-badge.offline{color:rgba(245,245,247,.3);border-color:rgba(255,255,255,.07);background:transparent}
-
-/* Now playing — neutre, accent subtil via la barre de progression seulement */
-.sb-np-pill{
-  display:flex;align-items:center;gap:8px;
-  padding:7px 9px;border-radius:var(--r-sm);
-  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
-  position:relative;overflow:hidden;transition:border-color .15s;
-}
-.sb-np-pill:hover{border-color:rgba(255,255,255,.12)}
-.sb-np-art{
-  width:34px;height:34px;border-radius:7px;flex-shrink:0;
-  background:rgba(255,255,255,.06);overflow:hidden;
-  position:relative;min-width:34px;min-height:34px;
-}
-.sb-np-art img{position:absolute;top:0;left:0;width:34px;height:34px;object-fit:cover;border-radius:7px;display:block}
-.sb-np-info{flex:1;min-width:0}
-.sb-np-track{font-size:11.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
-.sb-np-artist{font-size:10px;color:rgba(245,245,247,.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
-.sb-np-bar{height:2px;background:rgba(255,255,255,.07);border-radius:99px;margin-top:5px;overflow:hidden}
-.sb-np-fill{height:100%;background:rgba(255,255,255,.35);border-radius:99px;transition:width .5s linear}
+.sb-dc-badge.online{color:#3ba55c;border-color:rgba(59,165,92,.25);background:rgba(59,165,92,.08)}
+.sb-dc-badge.idle{color:#faa81a;border-color:rgba(250,168,26,.25);background:rgba(250,168,26,.07)}
+.sb-dc-badge.dnd{color:#ed4245;border-color:rgba(237,66,69,.25);background:rgba(237,66,69,.07)}
+.sb-dc-badge.offline{color:rgba(245,245,247,.3)}
+/* Discord activity bar fill — color depends on status */
+#sb-dc-bar-fill{background:rgba(255,255,255,.15);width:0%}
+/* EQ bars */
 .sb-eq{display:flex;align-items:flex-end;gap:1.5px;height:12px;flex-shrink:0}
-.sb-eq span{
-  width:3px;background:rgba(245,245,247,.3);border-radius:1px;
-  animation:eqBounce 1s ease-in-out infinite;
-}
-.sb-eq span:nth-child(1){animation-delay:0s;height:40%}
-.sb-eq span:nth-child(2){animation-delay:.2s;height:80%}
-.sb-eq span:nth-child(3){animation-delay:.1s;height:55%}
-.sb-eq span:nth-child(4){animation-delay:.3s;height:70%}
-@keyframes eqBounce{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.3)}}
-
-/* Scrobbling — même base neutre que Now Playing */
-.sb-scrobble-pill{
-  display:flex;align-items:center;gap:8px;
-  padding:7px 9px;border-radius:var(--r-sm);
-  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
-  position:relative;overflow:hidden;transition:border-color .15s;
-}
-.sb-scrobble-pill:hover{border-color:rgba(255,255,255,.12)}
-.sb-scrobble-art{
-  width:34px;height:34px;border-radius:7px;flex-shrink:0;
-  background:rgba(255,255,255,.06);overflow:hidden;
-  display:flex;align-items:center;justify-content:center;font-size:15px;
-}
-.sb-scrobble-art img{width:34px;height:34px;object-fit:cover;border-radius:7px;display:block}
-.sb-scrobble-info{flex:1;min-width:0}
-.sb-scrobble-track{font-size:11.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
-.sb-scrobble-artist{font-size:10px;color:rgba(245,245,247,.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
-.sb-eq-lfm span{background:rgba(245,245,247,.3)!important}
-/* label scrobbling — juste un petit dot animé, couleur neutre */
-.sb-scrobble-label{
-  display:flex;align-items:center;gap:5px;
-  font-size:7.5px;font-weight:800;letter-spacing:.2em;
-  color:rgba(245,245,247,.3);font-family:'JetBrains Mono',monospace;
-  text-transform:uppercase;margin-bottom:5px;padding:0 2px;
-}
-.sb-scrobble-dot{
-  width:5px;height:5px;border-radius:50%;background:rgba(245,245,247,.35);
-  animation:pulse 1.4s ease-in-out infinite;flex-shrink:0;
-}
-
-
+.sb-eq span{width:3px;border-radius:1px;animation:eqBounce 1s ease-in-out infinite}
+.sb-wc-green .sb-eq span{background:rgba(29,185,84,.7)}
+.sb-wc-red .sb-eq span{background:rgba(213,16,7,.6)}
+.sb-widget-card:not(.sb-wc-green):not(.sb-wc-red) .sb-eq span{background:rgba(245,245,247,.3)}
+.sb-eq span:nth-child(1){animation-delay:0s;height:35%}
+.sb-eq span:nth-child(2){animation-delay:.18s;height:80%}
+.sb-eq span:nth-child(3){animation-delay:.09s;height:50%}
+.sb-eq span:nth-child(4){animation-delay:.27s;height:65%}
+@keyframes eqBounce{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.25)}}
+/* Scrobble label */
+.sb-scrobble-label{display:none}
 
 /* ── SIDEBAR WIDGET MANAGER ── */
 .widget-row{
@@ -3462,53 +3451,50 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   <!-- Compact toggle — always visible at bottom -->
   <button id="sidebar-compact-btn" onclick="toggleSidebarCompact()" title="Toggle compact mode" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;margin:4px auto 4px;background:none;border:1px solid var(--border2);border-radius:8px;cursor:pointer;font-size:14px;color:var(--muted);font-family:var(--font);transition:all .2s ease" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">&#8644;</button>
   <div class="sidebar-footer">
-    <!-- DISCORD v2 -->
+    <!-- DISCORD v3 -->
     <div class="sb-section" id="sb-discord-wrap" style="display:none">
-      <div class="sb-section-label">Discord</div>
-      <div class="sb-dc-pill" id="sb-discord-card">
-        <div class="sb-dc-av" id="sb-dc-avatar">
+      <div class="sb-widget-card" id="sb-discord-card">
+        <div class="sb-wc-avatar" id="sb-dc-avatar">
           <span id="sb-dc-av-fallback">💬</span>
           <div class="sb-dc-dot offline" id="sb-dc-status"></div>
         </div>
-        <div style="flex:1;min-width:0">
-          <div class="sb-dc-name" id="sb-dc-name">—</div>
-          <div class="sb-dc-act" id="sb-dc-activity" style="display:none"></div>
-        </div>
-        <span class="sb-dc-badge offline" id="sb-dc-badge">—</span>
-      </div>
-    </div>
-
-    <!-- NOW PLAYING (Lanyard Spotify) v2 -->
-    <div class="sb-section" id="sb-spotify-wrap" style="display:none">
-      <div class="sb-section-label">Now Playing</div>
-      <div class="sb-np-pill" id="np-pill">
-        <div class="sb-np-art" id="np-art"></div>
-        <div class="sb-np-info">
-          <div class="sb-np-track" id="np-song">—</div>
-          <div class="sb-np-artist" id="np-artist">—</div>
-          <div class="sb-np-bar" id="np-progress-wrap" style="display:none">
-            <div class="sb-np-fill" id="np-bar-fill"></div>
+        <div class="sb-wc-body">
+          <div class="sb-wc-top">
+            <span class="sb-wc-name" id="sb-dc-name">—</span>
+            <span class="sb-dc-badge offline" id="sb-dc-badge">—</span>
           </div>
-        </div>
-        <div class="sb-eq" id="sb-eq-anim" style="display:none">
-          <span></span><span></span><span></span><span></span>
+          <div class="sb-wc-sub" id="sb-dc-activity" style="display:none"></div>
+          <div class="sb-wc-bar"><div class="sb-wc-bar-fill" id="sb-dc-bar-fill" style="width:0%"></div></div>
         </div>
       </div>
     </div>
 
-    <!-- FALLBACK: Custom compact now playing when Lanyard not active -->
-    <div class="sb-section" id="sb-spotify-iframe-wrap" style="display:none">
-      <div class="sb-section-label">Now Playing</div>
-      <div class="sb-np-pill" id="np-pill-fallback">
-        <div id="np-art-fallback" style="width:34px;height:34px;border-radius:7px;flex-shrink:0;background:rgba(255,255,255,.06);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:16px">🎵</div>
-        <div style="flex:1;min-width:0">
-          <div id="np-fallback-track" style="font-size:11.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)">—</div>
-          <div id="np-fallback-artist" style="font-size:10px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px">—</div>
+    <!-- NOW PLAYING v3 (Lanyard Spotify) -->
+    <div class="sb-section" id="sb-spotify-wrap" style="display:none">
+      <div class="sb-widget-card sb-wc-green" id="np-pill">
+        <div class="sb-wc-art" id="np-art"><span>♪</span></div>
+        <div class="sb-wc-body">
+          <div class="sb-wc-top">
+            <span class="sb-wc-name" id="np-song">—</span>
+            <div class="sb-eq" id="sb-eq-anim" style="display:none"><span></span><span></span><span></span><span></span></div>
+          </div>
+          <div class="sb-wc-sub sb-wc-sub-green" id="np-artist">—</div>
+          <div class="sb-wc-bar"><div class="sb-wc-bar-fill sb-wc-bar-green" id="np-bar-fill" style="width:0%"></div></div>
         </div>
-        <div style="display:flex;align-items:flex-end;gap:1.5px;height:12px;flex-shrink:0" id="np-fallback-eq" style="display:none">
-          <span style="width:3px;background:rgba(245,245,247,.3);border-radius:1px;animation:eqBounce 1s ease-in-out infinite;height:40%"></span>
-          <span style="width:3px;background:rgba(245,245,247,.3);border-radius:1px;animation:eqBounce 1s ease-in-out infinite .2s;height:80%"></span>
-          <span style="width:3px;background:rgba(245,245,247,.3);border-radius:1px;animation:eqBounce 1s ease-in-out infinite .1s;height:55%"></span>
+      </div>
+    </div>
+
+    <!-- FALLBACK Now Playing (Last.fm) -->
+    <div class="sb-section" id="sb-spotify-iframe-wrap" style="display:none">
+      <div class="sb-widget-card sb-wc-green" id="np-pill-fallback">
+        <div class="sb-wc-art" id="np-art-fallback"><span>♪</span></div>
+        <div class="sb-wc-body">
+          <div class="sb-wc-top">
+            <span class="sb-wc-name" id="np-fallback-track">—</span>
+            <div class="sb-eq" id="np-fallback-eq" style="display:none"><span></span><span></span><span></span></div>
+          </div>
+          <div class="sb-wc-sub sb-wc-sub-green" id="np-fallback-artist">—</div>
+          <div class="sb-wc-bar"><div class="sb-wc-bar-fill sb-wc-bar-green" style="width:60%"></div></div>
         </div>
       </div>
     </div>
@@ -3522,17 +3508,17 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       <div id="sb-twitch-list" style="display:flex;flex-direction:column;gap:5px"></div>
     </div>
 
-    <!-- LAST.FM v2 -->
+    <!-- LAST.FM v3 -->
     <div class="sb-section" id="sb-lastfm-wrap" style="display:none">
-      <div class="sb-scrobble-label"><span class="sb-scrobble-dot"></span>Scrobbling</div>
-      <div class="sb-scrobble-pill" id="sb-lastfm-content">
-        <div class="sb-scrobble-art" id="sb-lfm-art">🎵</div>
-        <div class="sb-scrobble-info">
-          <div class="sb-scrobble-track" id="sb-lfm-track">—</div>
-          <div class="sb-scrobble-artist" id="sb-lfm-artist">—</div>
-        </div>
-        <div class="sb-eq sb-eq-lfm" id="sb-lfm-eq" style="display:none">
-          <span></span><span></span><span></span><span></span>
+      <div class="sb-widget-card sb-wc-red" id="sb-lastfm-content">
+        <div class="sb-wc-art" id="sb-lfm-art"><span>♫</span></div>
+        <div class="sb-wc-body">
+          <div class="sb-wc-top">
+            <span class="sb-wc-name" id="sb-lfm-track">—</span>
+            <div class="sb-eq sb-eq-lfm" id="sb-lfm-eq" style="display:none"><span></span><span></span><span></span><span></span></div>
+          </div>
+          <div class="sb-wc-sub sb-wc-sub-red" id="sb-lfm-artist">—</div>
+          <div class="sb-wc-bar"><div class="sb-wc-bar-fill sb-wc-bar-red" style="width:100%"></div></div>
         </div>
       </div>
     </div>
@@ -6387,7 +6373,9 @@ function renderSidebarNav(){
   if(p?.sidebarConfig?.length){
     nav=baseNav.map(item=>{
       const saved=p.sidebarConfig.find(s=>s.id===item.id);
-      return{...item,visible:saved?saved.visible!==false:true};
+      // 'settings' and 'ai' are always visible regardless of saved config
+      const alwaysVisible=['settings','ai'].includes(item.id);
+      return{...item,visible:alwaysVisible||(saved?saved.visible!==false:true)};
     }).filter(i=>i.visible!==false);
     nav.sort((a,b)=>{
       const ai=p.sidebarConfig.findIndex(s=>s.id===a.id);
@@ -9820,7 +9808,7 @@ function updateLastfmSidebar(data,nowTrack,topArtists){
   const img=nowTrack.image?.[2]?.['#text']||'';
   // Update pill elements directly
   const artEl=document.getElementById('sb-lfm-art');
-  if(artEl)artEl.innerHTML=img?`<img src="${img}" onerror="this.innerHTML='🎵'" style="width:34px;height:34px;object-fit:cover;border-radius:7px;display:block">`:'🎵';
+  if(artEl)artEl.innerHTML=img?`<img src="${img}" onerror="this.innerHTML='♫'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:8px;display:block">`:'<span>♫</span>';
   const trackEl=document.getElementById('sb-lfm-track');
   if(trackEl)trackEl.textContent=nowTrack.name||'?';
   const artistEl=document.getElementById('sb-lfm-artist');
@@ -10014,8 +10002,8 @@ function refreshDiscordSidebar(){
   const status=d.discord_status||'offline';
   const stEl=document.getElementById('sb-dc-status');
   if(stEl)stEl.className='sb-dc-dot '+status;
-  const pill=document.getElementById('sb-discord-card');
-  if(pill){pill.className='sb-dc-pill status-'+status;}
+  const card=document.getElementById('sb-discord-card');
+  // no color class on card itself, only on dot+badge
   const badge=document.getElementById('sb-dc-badge');
   if(badge){
     const labels={online:'Online',idle:'Idle',dnd:'DND',offline:'Off'};
@@ -10051,18 +10039,17 @@ function updateSpotifyFromLanyard(d){
     if(lfmFallback)lfmFallback.style.display='none';
     const artEl=document.getElementById('np-art');
     if(artEl){
-      if(sp.album_art_url)artEl.innerHTML='<img src="'+sp.album_art_url+'" alt="album" style="width:34px;height:34px;object-fit:cover;border-radius:7px;display:block">';
-      else artEl.innerHTML='';
+      if(sp.album_art_url)artEl.innerHTML=`<img src="${sp.album_art_url}" alt="album" onerror="this.innerHTML='♪'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:8px;display:block">`;
+      else artEl.innerHTML='<span>♪</span>';
     }
     const songEl=document.getElementById('np-song');if(songEl)songEl.textContent=sp.song;
     const artistEl=document.getElementById('np-artist');if(artistEl)artistEl.textContent=sp.artist;
     // EQ animation
     const eq=document.getElementById('sb-eq-anim');if(eq)eq.style.display='flex';
-    const pw=document.getElementById('np-progress-wrap');
-    if(pw&&sp.timestamps?.start&&sp.timestamps?.end){
-      pw.style.display='block';
+    // Progress bar
+    if(sp.timestamps?.start&&sp.timestamps?.end){
       updateNpProgress(sp.timestamps.start,sp.timestamps.end);
-    } else if(pw) pw.style.display='none';
+    }
   } else {
     if(wrap)wrap.style.display='none';
     const eq=document.getElementById('sb-eq-anim');if(eq)eq.style.display='none';
@@ -11192,12 +11179,37 @@ const WMO={0:' Clear',1:' Mostly clear',2:' Partly cloudy',3:' Overcast',
   61:' Rain',63:' Rain',65:' Heavy rain',71:' Snow',73:' Snow',75:' Heavy snow',
   80:' Showers',81:' Showers',82:' Heavy showers',95:' Thunderstorm',99:' Thunderstorm'};
 
-async function fetchWeather(){
+
+function promptWeatherCity(){
+  const p=curP();if(!p)return;
+  const current=p.state?.weatherCity||'';
+  const city=prompt('Enter your city name:',current);
+  if(city===null)return;
+  if(!p.state)p.state={};
+  p.state.weatherCity=city.trim()||null;
+  p.state.weatherCache=null;// clear cache
+  saveStateNow();
+  fetchWeather(city.trim()||null);
+}
+
+async function fetchWeather(forceCity){
   const w=document.getElementById('weather-widget');if(!w)return;
-  // Show cached instantly if available
   const _wp=curP();const _wc=_wp?.state?.weatherCache;
   if(_wc?.rendered){w.innerHTML=_wc.rendered;}
   else{w.innerHTML='<div style="padding:12px;font-size:12px;color:var(--muted)">📍 Getting location...</div>';}
+
+  // Manual city override
+  const savedCity=forceCity||_wp?.state?.weatherCity;
+  if(savedCity){
+    try{
+      const gr=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(savedCity)}&format=json&limit=1`,{headers:{'Accept-Language':'en'},signal:AbortSignal.timeout(5000)});
+      const gd=await gr.json();
+      if(gd?.[0]){
+        await doFetch(parseFloat(gd[0].lat),parseFloat(gd[0].lon));
+        return;
+      }
+    }catch(e){}
+  }
 
   async function doFetch(lat,lon){
     const res=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,windspeed_10m,relative_humidity_2m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=6`,{signal:AbortSignal.timeout(8000)});
@@ -11249,7 +11261,7 @@ async function fetchWeather(){
         <div style="flex:1;min-width:0">
           <div class="wx-temp">${temp}<sup>°C</sup></div>
           <div class="wx-desc">${text}</div>
-          ${city?`<div class="wx-loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:11px;height:11px;flex-shrink:0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${escapeHTML(city)}</div>`:''}
+          <div class="wx-loc" style="cursor:pointer" onclick="promptWeatherCity()" title="Change city"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:11px;height:11px;flex-shrink:0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${city||'Set city'} <span style="opacity:.4;font-size:9px">✎</span></div>
         </div>
       </div>
       <div class="wx-meta">

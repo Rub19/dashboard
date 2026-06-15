@@ -274,9 +274,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .nav-label{font-size:8.5px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.2);padding:14px 10px 5px;display:block;font-family:var(--mono)}
 .nav-item{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:8px;cursor:pointer;color:rgba(255,255,255,.38);font-size:12.5px;font-weight:500;transition:all .2s;border:1px solid transparent;text-decoration:none;position:relative;margin-bottom:1px}
 .nav-item:hover{color:rgba(255,255,255,.75);background:rgba(255,255,255,.04)}
-.nav-item.active{color:#fff;background:rgba(249,115,22,.1);border-color:rgba(249,115,22,.15)}
-.nav-item.active .nav-icon{color:#f97316}
-.nav-item.active::after{content:'';position:absolute;right:0;top:20%;bottom:20%;width:2px;background:linear-gradient(to bottom,#f97316,#dc2626);border-radius:99px}
+.nav-item.active{color:var(--accent);background:var(--accent-subtle);border-color:var(--border3)}
+.nav-item.active .nav-icon{color:var(--accent)}
+.nav-item.active::after{content:'';position:absolute;right:0;top:20%;bottom:20%;width:2px;background:var(--accent);border-radius:99px}
 .nav-icon{width:17px;height:17px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:inherit}.nav-icon svg{width:100%;height:100%}
 .nav-badge{margin-left:auto;background:linear-gradient(135deg,#f97316,#dc2626);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px;font-family:var(--mono);min-width:17px;text-align:center}
 .sidebar-footer{flex-shrink:0;padding:10px 8px 8px;border-top:1px solid rgba(255,255,255,.06)}
@@ -667,12 +667,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 }
 .nav-item:hover{color:rgba(245,245,247,.8);background:rgba(255,255,255,.04)}
 .nav-item.active{
-  color:#fff;
-  background:rgba(249,115,22,.09);
-  border-color:rgba(249,115,22,.14);
+  color:var(--accent);
+  background:var(--accent-subtle);
+  border-color:var(--border3);
 }
-.nav-item.active .nav-icon{color:#f97316}
-.nav-item.active::after{background:linear-gradient(to bottom,#f97316,#dc2626)}
+.nav-item.active .nav-icon{color:var(--accent)}
+.nav-item.active::after{background:var(--accent)}
 .nav-icon{width:16px;height:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:inherit}
 .nav-badge{
   background:linear-gradient(135deg,#f97316,#dc2626);
@@ -1031,7 +1031,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   transition:all .15s;width:100%;
 }
 .settings-nav-item:hover{color:rgba(245,245,247,.75);background:rgba(255,255,255,.04)}
-.settings-nav-item.active{color:#fff;background:rgba(249,115,22,.1);border-left:2px solid #f97316;padding-left:10px}
+.settings-nav-item.active{color:var(--accent);background:var(--accent-subtle);border-left:2px solid var(--accent);padding-left:10px}
 .settings-nav-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0}
 .settings-content{min-width:0}
 .settings-section{display:none}
@@ -1455,15 +1455,15 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 /* ── SIDEBAR ANIMATIONS ── */
 .nav-item{transition:all .18s cubic-bezier(.4,0,.2,1)}
 .nav-item:hover .nav-icon svg{animation:navIconBounce .4s ease}
-.nav-item.active .nav-icon svg{color:#f97316}
+.nav-item.active .nav-icon svg{color:var(--accent)}
 .nav-item.active{
-  background:linear-gradient(90deg,rgba(249,115,22,.12),rgba(220,38,38,.06));
+  background:var(--accent-subtle);
   position:relative;
 }
 /* Shimmer on active nav item */
 .nav-item.active::before{
   content:'';position:absolute;inset:0;border-radius:7px;
-  background:linear-gradient(90deg,transparent,rgba(249,115,22,.08),transparent);
+  background:linear-gradient(90deg,transparent,var(--accent-subtle),transparent);
   background-size:200% auto;
   animation:shimmerSlide 3s linear infinite;
   pointer-events:none;
@@ -2127,7 +2127,7 @@ h1,h2,.section-title,.page-title{font-family:'Syne',sans-serif;letter-spacing:-.
   font-size:12.5px;font-weight:500;border-radius:var(--r-sm);
   padding:8px 12px;letter-spacing:.01em;
 }
-.settings-nav-item.active{background:rgba(249,115,22,.1);color:#f97316}
+.settings-nav-item.active{background:var(--accent-subtle);color:var(--accent)}
 .toggle-row{padding:13px 0;border-bottom:1px solid rgba(255,255,255,.055)}
 .toggle-label{font-size:13px;font-weight:500;letter-spacing:.01em}
 .toggle-sub{font-size:11px;color:rgba(245,245,247,.3);margin-top:2px}
@@ -2818,11 +2818,11 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 /* ── NAV ITEM TEXT ── */
 .nav-item{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:var(--r-sm);cursor:pointer;transition:all .18s;margin-bottom:1px;color:rgba(245,245,247,.5);font-size:13px;font-weight:500}
 .nav-item:hover{background:rgba(255,255,255,.05);color:rgba(245,245,247,.85)}
-.nav-item.active{background:linear-gradient(90deg,rgba(249,115,22,.12),rgba(220,38,38,.06));color:#f97316}
+.nav-item.active{background:var(--accent-subtle);color:var(--accent)}
 .nav-icon{width:18px;height:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .nav-icon svg{width:16px;height:16px;stroke:currentColor}
 .nav-label-text{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.005em}
-.nav-badge{background:rgba(249,115,22,.2);color:#f97316;font-size:9px;font-weight:800;padding:1px 6px;border-radius:99px;font-family:var(--mono)}
+.nav-badge{background:var(--accent-subtle);color:var(--accent);font-size:9px;font-weight:800;padding:1px 6px;border-radius:99px;font-family:var(--mono)}
 .nav-section{display:flex;flex-direction:column}
 
 
@@ -3170,7 +3170,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
     transform:scale(.95)!important;
     filter:brightness(.9)!important;
   }
-  .nav-item:active{background:rgba(249,115,22,.1)!important}
+  .nav-item:active{background:var(--accent-subtle)!important}
   /* Bigger touch targets */
   .nav-item{min-height:40px!important;padding:8px 10px!important}
   .modal-close,.notif-panel-close{width:36px!important;height:36px!important}
@@ -9744,17 +9744,21 @@ function applyBgTheme(id){
 
   } else if(id==='noise'){
     let t=0;
-    const cols=Math.ceil(canvas.width/4),rows=Math.ceil(canvas.height/4);
+    const sz=5;
+    const cols=Math.ceil(canvas.width/sz)+1,rows=Math.ceil(canvas.height/sz)+1;
     const draw=()=>{
+      ctx.clearRect(0,0,canvas.width,canvas.height);
       for(let x=0;x<cols;x++){
         for(let y=0;y<rows;y++){
-          const n=Math.sin(x*0.15+t)*Math.sin(y*0.15+t*0.7)*0.5+0.5;
-          const a=n*0.045;
-          ctx.fillStyle=`rgba(${rgb},${a})`;
-          ctx.fillRect(x*4,y*4,4,4);
+          // Smooth noise via sin/cos combination
+          const n=(Math.sin(x*0.12+t)*Math.cos(y*0.09+t*0.6)+Math.sin((x+y)*0.07+t*0.4))*0.5+0.5;
+          if(n>0.45){
+            ctx.fillStyle=`rgba(${rgb},${(n-0.45)*0.12})`;
+            ctx.fillRect(x*sz,y*sz,sz,sz);
+          }
         }
       }
-      t+=0.015;_bgFrame=requestAnimationFrame(draw);
+      t+=0.018;_bgFrame=requestAnimationFrame(draw);
     };draw();
 
   } else if(id==='hexagons'){

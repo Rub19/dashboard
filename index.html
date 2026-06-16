@@ -12059,24 +12059,39 @@ async function fetchWeather(forceCity){
 
   // GPS browser uniquement — les APIs IP géoloc sont bloquées par CORS depuis GitHub Pages
   const _showWeatherError=()=>{
-    w.innerHTML=`<div style="padding:12px;font-size:12px;color:var(--muted)">
-      📍 Autorise la localisation dans ton navigateur<br>
-      <span style="opacity:.6;font-size:10px">ou entre la ville manuellement</span>
-      <button onclick="promptWeatherCity()" style="display:block;margin-top:6px;background:none;border:1px solid var(--border2);color:var(--accent);border-radius:6px;padding:3px 10px;cursor:pointer;font-size:11px;font-family:var(--font)">✎ Entrer ma ville</button>
+    w.innerHTML=`<div style="padding:10px 12px;font-size:12px;color:var(--muted)">
+      <div style="margin-bottom:8px">📍 Localisation indisponible</div>
+      <button onclick="promptWeatherCity()" style="background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.3);color:#f97316;border-radius:7px;padding:5px 12px;cursor:pointer;font-size:12px;font-family:var(--font);width:100%">✎ Entrer ma ville</button>
     </div>`;
   };
 
-  if(navigator.geolocation){
-    navigator.geolocation.getCurrentPosition(
-      async pos=>{
-        try{await doFetch(pos.coords.latitude,pos.coords.longitude);}
-        catch(e){_showWeatherError();}
-      },
-      ()=>{ _showWeatherError(); }, // GPS refusé
-      {timeout:8000,maximumAge:300000,enableHighAccuracy:false}
-    );
+  // Vérifier d'abord si la permission géoloc est déjà accordée
+  const _tryGPS=()=>new Promise((resolve,reject)=>{
+    if(!navigator.geolocation){reject();return;}
+    navigator.geolocation.getCurrentPosition(resolve,reject,{timeout:8000,maximumAge:300000,enableHighAccuracy:false});
+  });
+
+  // Tenter GPS, si bloqué → afficher formulaire ville directement
+  if(navigator.permissions){
+    navigator.permissions.query({name:'geolocation'}).then(async perm=>{
+      if(perm.state==='denied'){
+        // Bloqué → formulaire direct
+        _showWeatherError();
+      } else {
+        // granted ou prompt → tenter GPS
+        try{
+          const pos=await _tryGPS();
+          await doFetch(pos.coords.latitude,pos.coords.longitude);
+        }catch(e){_showWeatherError();}
+      }
+    }).catch(async()=>{
+      // navigator.permissions pas dispo → tenter GPS directement
+      try{const pos=await _tryGPS();await doFetch(pos.coords.latitude,pos.coords.longitude);}
+      catch(e){_showWeatherError();}
+    });
   } else {
-    _showWeatherError();
+    try{const pos=await _tryGPS();await doFetch(pos.coords.latitude,pos.coords.longitude);}
+    catch(e){_showWeatherError();}
   }
 }
 
@@ -12383,26 +12398,11 @@ async function fetchQuote(){
   const showQuote=(text,author)=>{
     w.innerHTML='<div class="quote-text">\u201c'+escapeHTML(text)+'\u201d</div><div class="quote-author">\u2014 '+escapeHTML(author)+'</div>';
   };
-  // Show fallback immediately so widget is never empty
-  showQuote(FALLBACK_QUOTES[dayIdx].q,FALLBACK_QUOTES[dayIdx].a);
-  // Then try to fetch a better one in background
-  const apis=[
-    async()=>{
-      const r=await fetch('https://zenquotes.io/api/today',{signal:AbortSignal.timeout(5000)});
-      if(!r.ok)throw new Error();
-      const d=await r.json();
-      if(d?.[0]?.q)return{text:d[0].q,author:d[0].a};
-    },
-    async()=>{
-      const r=await fetch('https://api.adviceslip.com/advice',{signal:AbortSignal.timeout(4000)});
-      if(!r.ok)throw new Error();
-      const d=await r.json();
-      if(d.slip?.advice)return{text:d.slip.advice,author:'Advice Slip'};
-    }
-  ];
-  for(const api of apis){
-    try{const q=await api();if(q){showQuote(q.text,q.author);return;}}catch(e){}
-  }
+  // Quotes locales uniquement — APIs externes bloquées par CORS depuis GitHub Pages
+  // Rotation basée sur le jour + l'heure pour varier dans la journée
+  const hourIdx=Math.floor(new Date().getHours()/6); // change 4x/jour
+  const idx=(new Date().getDate()*4+hourIdx)%FALLBACK_QUOTES.length;
+  showQuote(FALLBACK_QUOTES[idx].q,FALLBACK_QUOTES[idx].a);
 }
 
 

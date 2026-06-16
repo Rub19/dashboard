@@ -12152,7 +12152,10 @@ function pomoSelectMode(idx){
 
 function pomoReset(){
   clearInterval(pomoInterval);pomoRunning=false;pomoInterval=null;
+  // Supprimer TOUTES les clés pomo du localStorage
   localStorage.removeItem('pomo_end');
+  localStorage.removeItem('pomo_idx');
+  localStorage.removeItem('pomo_count');
   pomoRemaining=POMO_MODES()[pomoIdx].duration;
   renderPomo();
 }
@@ -12173,6 +12176,8 @@ function pomoSkip(){
 function pomoToggle(){
   if(pomoRunning){
     clearInterval(pomoInterval);pomoRunning=false;pomoInterval=null;
+    // Supprimer pomo_end — le timer est en pause, pas en cours
+    localStorage.removeItem('pomo_end');
     renderPomo();return;
   }
   playPomoSound('start');
@@ -12220,27 +12225,21 @@ function pomoToggle(){
 // Restore timer if page was reloaded while running
 function restorePomoIfRunning(){
   const endTime=parseInt(localStorage.getItem('pomo_end')||0);
-  if(!endTime)return;
+  if(!endTime)return; // pas de timer en cours → rien à faire
   const remaining=Math.round((endTime-Date.now())/1000);
   pomoIdx=parseInt(localStorage.getItem('pomo_idx')||0);
   pomoCount=parseInt(localStorage.getItem('pomo_count')||0);
   if(remaining>0){
-    // Timer encore actif — reprendre là où on en était
+    // Timer encore actif → reprendre silencieusement (pas de toast)
     pomoRemaining=remaining;
-    pomoRunning=false; // reset pour que pomoToggle démarre
-    pomoToggle();
-    toast('⏱ Pomodoro repris !','info');
+    pomoRunning=false;
+    pomoToggle(); // redémarre l'interval
   } else {
-    // Timer expiré pendant qu'on était absent — auto-compléter
+    // Timer expiré pendant l'absence → nettoyer sans toast ni session auto
     localStorage.removeItem('pomo_end');
-    if(pomoIdx===0){ // 0=Focus
-      pomoCount++;
-      savePomoSession();
-      pomoIdx=pomoCount%4===0?2:1;
-      toast('🍅 Session Focus terminée !','success');
-    } else {
-      pomoIdx=0;
-    }
+    localStorage.removeItem('pomo_idx');
+    localStorage.removeItem('pomo_count');
+    // Juste remettre à zéro proprement
     pomoRemaining=POMO_MODES()[pomoIdx].duration;
     pomoRunning=false;
     renderPomo();

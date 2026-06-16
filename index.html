@@ -3434,7 +3434,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       </div>
 
       <!-- Version -->
-      <div style="text-align:center;margin-top:28px;font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:.5px">v4.9.0</div>
+      <div style="text-align:center;margin-top:28px;font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:.5px">v5.0.0</div>
     </div>
   </div>
 </div>
@@ -3665,7 +3665,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
           <div id="topbar-avatar" style="width:24px;height:24px;border-radius:6px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;background:rgba(255,255,255,.08);position:relative"></div>
           <span id="topbar-username" style="font-size:12px;font-weight:600;color:rgba(255,255,255,.75);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:80px"></span>
         </button>
-        <button class="btn btn-primary" onclick="openModal('add-item')"><span>+</span> Add item</button>
+        <button class="btn btn-primary" onclick="openModal('add-item')"><span>+</span> <span data-i18n="add_item">Add item</span></button>
       </div>
     </div>
     <div class="stats-row">
@@ -3755,15 +3755,31 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
         </div>
 
         <!-- Activity -->
+        <!-- Focus du jour -->
+        <div class="panel" id="daily-focus-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <div class="panel-title-icon" style="background:rgba(249,115,22,.1);color:#f97316">🎯</div>
+              <span>Focus du jour</span>
+            </div>
+            <button class="panel-action" onclick="editDailyFocus()">✎</button>
+          </div>
+          <div id="daily-focus-display" style="padding:6px 2px;display:flex;align-items:center;gap:10px;min-height:36px">
+            <span id="daily-focus-text" style="flex:1;font-size:13px;color:var(--muted);font-style:italic">Pas d'objectif pour aujourd'hui...</span>
+            <button id="daily-focus-done-btn" onclick="toggleDailyFocusDone()" style="display:none;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);border-radius:6px;padding:3px 10px;color:#4ade80;cursor:pointer;font-size:11px;font-family:var(--font);white-space:nowrap">✓ Fait</button>
+          </div>
+        </div>
+
+        <!-- Activité récente -->
         <div class="panel">
           <div class="panel-header">
             <div class="panel-title">
               <div class="panel-title-icon" style="background:rgba(249,115,22,.1);color:#f97316">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
               </div>
-              Recent activity
+              Activité récente
             </div>
-            <button class="panel-action" onclick="clearActivity()">Clear</button>
+            <button class="panel-action" onclick="clearActivity()">Vider</button>
           </div>
           <div class="activity-list" id="activity-list"></div>
         </div>
@@ -3885,7 +3901,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       <div><div class="section-eyebrow">Library</div><div class="section-title">Files &amp; Links</div></div>
       <div class="topbar-actions">
         <div class="search-bar"><span style="color:var(--muted)">&#128269;</span><input type="text" placeholder="Search items..." id="files-search" oninput="filterItems()"></div>
-        <button class="btn btn-primary" onclick="openModal('add-item')"><span>+</span> Add item</button>
+        <button class="btn btn-primary" onclick="openModal('add-item')"><span>+</span> <span data-i18n="add_item">Add item</span></button>
       </div>
     </div>
     <div class="cat-tabs">
@@ -4826,16 +4842,6 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 
 </main>
 
-  <!-- AI CHAT -->
-  <!-- AI Sessions drawer — outside page-ai so z-index works -->
-  <div id="ai-sessions-drawer" style="position:fixed;top:0;right:0;width:280px;height:100vh;background:rgba(8,8,12,.98);backdrop-filter:blur(24px);border-left:1px solid rgba(255,255,255,.09);z-index:9999;transform:translateX(100%);transition:transform .22s ease;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:8px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-      <div style="font-size:13px;font-weight:700;color:var(--text)">Historique</div>
-      <button onclick="toggleAISessions()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 6px">✕</button>
-    </div>
-    <div id="ai-sessions-panel"></div>
-  </div>
-
   <div id="page-ai" class="tab-content">
     <div class="topbar">
       <div>
@@ -4891,6 +4897,18 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       </div>
     </div>
   </div>
+
+  <!-- AI Sessions drawer — AFTER page-ai for z-index stacking -->
+  <!-- AI CHAT -->
+  <!-- AI Sessions drawer — outside page-ai so z-index works -->
+  <div id="ai-sessions-drawer" style="position:fixed;top:0;right:0;width:280px;height:100vh;background:rgba(8,8,12,.98);backdrop-filter:blur(24px);border-left:1px solid rgba(255,255,255,.09);z-index:9999;transform:translateX(100%);transition:transform .22s ease;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:8px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div style="font-size:13px;font-weight:700;color:var(--text)">Historique</div>
+      <button onclick="toggleAISessions()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 6px">✕</button>
+    </div>
+    <div id="ai-sessions-panel"></div>
+  </div>
+
 
 
 <!-- VALO MATCH DETAIL MODAL -->
@@ -5413,6 +5431,16 @@ function safeThemeColor(value){
 // -- AUTH UI --------------------------------------
 function showChangelog(){
   const versions=[
+    {v:'v5.0.0',date:'16/06/2026',changes:[
+      'Fix: Pomodoro reprend exactement au bon endroit après refresh (endTime exact conservé)',
+      'Fix: interval _npProgressInterval nettoyé au changement de profil',
+      'Fix: renderLastfmCard avec .catch pour éviter les erreurs silencieuses',
+      'Traductions: 11 toasts/messages UI traduits en FR/ES/DE selon la langue active',
+      'Traductions: bouton \'Add item\' → \'Ajouter\' en FR',
+      'Perf: console.log supprimés en production',
+      'UX: toast \'Pause terminée\' avec notif browser',
+      'UX: raccourci Espace pour play/pause Pomodoro',
+    ]},
     {v:'v4.9.0',date:'16/06/2026',changes:['Perf: debounce Supabase 800ms→2s (moins d\'appels API)','Perf: tous les intervals (Lanyard, Last.fm, Spotify) nettoyés au changement de profil','UX: notif browser quand la pause Pomodoro se termine','UX: touche Espace pour play/pause Pomodoro (depuis le dashboard)','Fix: Pomodoro ne montre plus le toast \'repris\' au refresh sans raison','Fix: QOTD utilise les bonnes clés des fallback quotes','Fix: bouton son Pomodoro sorti du ring, dans le header']},
     {v:'v4.8.0',date:'16/06/2026',changes:['Last.fm: smart refresh — détecte changement de piste en 10s (au lieu de 30s fixe)','Météo: recherche Nominatim améliorée (normalize, capitalize, countrycodes=fr, multi-variantes)','Tokens Groq optimisés: system prompt ultra-compact (~120 tokens vs ~500 avant)','Tokens Groq: historique 4 messages, max_tokens 500, contexte dashboard compressé','Tokens Groq: ~700-900 tokens/message vs ~4K avant']},
     {v:'v4.7.0',date:'16/06/2026',changes:['Now Playing: ne s\'affiche plus au refresh quand Discord est DND sans Spotify','Discord connecté: fallback Last.fm bloqué jusqu\'à réponse Lanyard','updateSpotifyFromLanyard: Discord online sans Spotify → cache le fallback aussi','Last.fm scrobble card: refresh toutes les 10s avec détection changement de piste']},
@@ -5588,7 +5616,7 @@ async function doRegister(){
     const {error}=await sb.auth.signUp({email:regEmail,password:pw,options:{data:{username}}});
     setAuthLoading(false);
     if(error){document.getElementById('auth-error').textContent=error.message;return;}
-    toast('Account created! Logging in…','success');
+    toast(uiLang==='fr'?'Compte créé ! Connexion…':'Account created! Logging in…','success');
     setTimeout(async()=>{
       try{
         const {data:loginData2, error:e2}=await sb.auth.signInWithPassword({email:regEmail,password:pw});
@@ -5717,6 +5745,7 @@ async function loadCloudState(){
           weatherCache:s.weatherCity&&s.weatherCache?.city===s.weatherCity?s.weatherCache:null,
           aiSessions:s.aiSessions||[],
           overviewOrder:s.overviewOrder||[],
+          dailyFocus:s.dailyFocus||null,
         }
       };
     });
@@ -5776,6 +5805,7 @@ async function saveCloudState(){
         weatherCache:p.state?.weatherCache||null,
         aiSessions:p.state?.aiSessions||[],
         overviewOrder:p.state?.overviewOrder||[],
+        dailyFocus:p.state?.dailyFocus||null,
       },
       updated_at:new Date().toISOString()
     };
@@ -6028,7 +6058,7 @@ function saveStateNow(){
 }
 function getP(id){return profiles.find(p=>p.id===id)}
 function curP(){return getP(currentId)}
-function defState(name){return{items:[],todos:[],note:'',notes:[],activity:[],username:name||'User',connections:{},gaming:{},habits:[],kanban:[],events:[],pinned:[],manualBadges:{},banner:null,countdown:null,pomoHistory:[],notifEnabled:false,bio:'',socials:{},goals:[],journal:[],countdowns:[],xp:0}}
+function defState(name){return{items:[],todos:[],note:'',notes:[],activity:[],username:name||'User',connections:{},gaming:{},habits:[],kanban:[],events:[],pinned:[],manualBadges:{},banner:null,countdown:null,pomoHistory:[],notifEnabled:false,bio:'',socials:{},goals:[],journal:[],countdowns:[],xp:0,dailyFocus:null}}
 
 // ===================================================
 //  AVATAR HELPERS
@@ -6185,6 +6215,7 @@ function goToProfileScreen(){
   if(typeof _lanyardWS!=='undefined'&&_lanyardWS){_lanyardWS.close();clearInterval(_lanyardHB);_lanyardWS=null;}
   if(typeof _lastfmInterval!=='undefined')clearInterval(_lastfmInterval);_lastfmInterval=null;
   if(typeof _spotifyAutoRefresh!=='undefined')clearInterval(_spotifyAutoRefresh);_spotifyAutoRefresh=null;
+  if(typeof _npProgressInterval!=='undefined')clearInterval(window._npProgressInterval);window._npProgressInterval=null;
   _valoMatchCache={};
   _valoAllMatches=[];
   stopAmbientBg();
@@ -6368,7 +6399,7 @@ function submitCreateProfile(){
   if(editingProfileId){
     const p=getP(editingProfileId);
     if(p){p.name=name;p.avatarEmoji=emoji;p.avatarBg=bg;p.avatarImg=createUpload||null;p.avatarIdx=selAvatarIdx;if(pwObj!==null)p.password=pwObj;saveStateNow()}
-    toast('Profile updated!','success');
+    toast(uiLang==='fr'?'Profil mis à jour !':'Profile updated!','success');
   } else {
     const p={id:Date.now(),name,avatarEmoji:emoji,avatarBg:bg,avatarImg:createUpload||null,avatarIdx:selAvatarIdx,state:defState(name)};
     if(pwObj)p.password=pwObj;
@@ -6394,7 +6425,7 @@ async function deleteProfile(id){
   // Also re-save remaining profiles to ensure cloud is in sync
   await saveCloudState();
   renderProfileScreen();
-  toast('Profile deleted','info');
+  toast(uiLang==='fr'?'Profil supprimé':'Profile deleted','info');
 }
 
 function renderAvatarGrid(containerId,selIdx){
@@ -6436,7 +6467,7 @@ function saveEditAvatar(){
   const p=curP();if(!p)return;
   if(editUpload){p.avatarImg=editUpload;p.avatarEmoji=null;p.avatarBg='#1e1e24'}
   else{const av=AVATARS[editSelAvatarIdx]||AVATARS[0];p.avatarEmoji=av.e;p.avatarBg=av.b;p.avatarImg=null;p.avatarIdx=editSelAvatarIdx}
-  saveStateNow();closeModal('edit-avatar');updateSidebarAvatar();updateSettingsPreview();toast('Avatar updated!','success');
+  saveStateNow();closeModal('edit-avatar');updateSidebarAvatar();updateSettingsPreview();toast(uiLang==='fr'?'Avatar mis à jour !':'Avatar updated!','success');
 }
 
 // ===================================================
@@ -6791,7 +6822,7 @@ function saveGroqKey(){
   const status=document.getElementById('groq-key-status');
   if(status)status.textContent='✓ Key saved';
   setTimeout(()=>{if(status)status.textContent=''},2000);
-  toast('Gemini key saved!','success');
+  toast(uiLang==='fr'?'Clé Groq sauvegardée !':'Groq key saved!','success');
 }
 
 function loadGroqKeyUI(){
@@ -6893,6 +6924,7 @@ function initDashboard(){
     }
   })();
   renderPomo();
+  if(typeof renderDailyFocus==='function')renderDailyFocus();
   if(typeof applyTheme==='function')applyTheme(p.themeIdx||0);
   if(typeof updateBannerDisplay==='function')updateBannerDisplay();
   initDarkMode();
@@ -7231,7 +7263,7 @@ function applyCustomColor(hex){
   // save as custom
   p.themeIdx=99;p.customAccent=hex;saveStateNow();
   updateBannerDisplay();
-  toast('Custom color applied!','success');
+  toast(uiLang==='fr'?'Couleur appliquée !':'Custom color applied!','success');
 }
 
 function pickTheme(idx){
@@ -7241,7 +7273,7 @@ function pickTheme(idx){
   applyTheme(idx);
   renderThemeSwatches();
   updateBannerDisplay();
-  toast('Theme applied!','success');
+  toast(uiLang==='fr'?'Thème appliqué !':'Theme applied!','success');
 }
 
 // ===================================================
@@ -7260,7 +7292,7 @@ function handleBannerUpload(){
     const prev=document.getElementById('banner-preview-wrap');
     const img=document.getElementById('banner-preview-img');
     if(prev&&img){img.src=e.target.result;prev.style.display='block'}
-    toast('Banner updated!','success');
+    toast(uiLang==='fr'?'Bannière mise à jour !':'Banner updated!','success');
   };
   r.readAsDataURL(file);
 }
@@ -7272,7 +7304,7 @@ function removeBanner(){
   updateBannerDisplay();
   const prev=document.getElementById('banner-preview-wrap');
   if(prev)prev.style.display='none';
-  toast('Banner removed','info');
+  toast(uiLang==='fr'?'Bannière supprimée':'Banner removed','info');
 }
 
 function updateBannerDisplay(){
@@ -9117,7 +9149,7 @@ function loadConnectionsUI(){
     document.getElementById('lastfm-username').value=conn.lastfm.username||'';
     document.getElementById('lastfm-disconnect-btn').style.display='inline-flex';
     document.getElementById('lastfm-refresh-btn').style.display='inline-block';
-    renderLastfmCard(conn.lastfm);
+    renderLastfmCard(conn.lastfm).catch(()=>{});
     startLastfmAutoRefresh();
   }
   // Sync sidebar widgets visibility sans re-render nav (évite le flash)
@@ -9780,7 +9812,7 @@ function notifItemHTML(n){
 }
 
 function notifyPomoComplete(count){
-  addNotif('🍅',`Session ${count} complete!`,'Take a break — you earned it',()=>closeNotifPanel());
+  addNotif('🍅',`Session ${count} complete!`,uiLang==='fr'?'Pause méritée !':'Take a break — you earned it',()=>closeNotifPanel());
   if(count>0&&count%4===0)addNotif('🏆','4 pomodoros done!','Time for a long break',()=>closeNotifPanel());
 }
 
@@ -10785,7 +10817,7 @@ function startLanyardWS(userId){
   _lanyardUserId = userId;
   try{
     _lanyardWS = new WebSocket('wss://api.lanyard.rest/socket');
-    _lanyardWS.onopen = ()=> console.log('[Lanyard WS] connected');
+    _lanyardWS.onopen = ()=>
     _lanyardWS.onmessage = e => {
       const msg = JSON.parse(e.data);
       if(msg.op === 1){ // HELLO
@@ -12216,7 +12248,7 @@ function pomoToggle(){
         playPomoSound('done');
         addActivity('🍅 Focus session complete!','var(--accent3)');
         notifyPomoComplete(pomoCount);
-        toast('Focus done! Take a break 🎉','success');
+        toast(uiLang==='fr'?'Focus terminé ! Prends une pause 🎉':uiLang==='es'?'¡Enfoque completo! Tómate un descanso 🎉':'Focus done! Take a break 🎉','success');
         sendNotif('Pomodoro complete! 🍅','Time for a break — great work!','');
         pomoIdx=pomoCount%4===0?2:1;
         // Flash animation
@@ -12262,7 +12294,7 @@ function restorePomoIfRunning(){
           playPomoSound('done');
           addActivity('🍅 Focus session complete!','var(--accent3)');
           notifyPomoComplete(pomoCount);
-          toast('Focus done! Take a break 🎉','success');
+          toast(uiLang==='fr'?'Focus terminé ! Prends une pause 🎉':uiLang==='es'?'¡Enfoque completo! Tómate un descanso 🎉':'Focus done! Take a break 🎉','success');
           sendNotif('Pomodoro complete! 🍅','Time for a break — great work!','');
           pomoIdx=pomoCount%4===0?2:1;
         } else {
@@ -12285,6 +12317,68 @@ function restorePomoIfRunning(){
     pomoRunning=false;
     renderPomo();
   }
+}
+
+// ══ FOCUS DU JOUR ══
+function renderDailyFocus(){
+  const p=curP();if(!p)return;
+  const today=new Date().toLocaleDateString('en-CA');
+  const df=p.state.dailyFocus;
+  const textEl=document.getElementById('daily-focus-text');
+  const doneBtn=document.getElementById('daily-focus-done-btn');
+  if(!textEl)return;
+  if(df&&df.date===today&&df.text){
+    textEl.textContent=df.text;
+    textEl.style.fontStyle='normal';
+    textEl.style.color=df.done?'var(--muted)':'var(--text)';
+    textEl.style.textDecoration=df.done?'line-through':'none';
+    if(doneBtn){doneBtn.style.display='block';doneBtn.textContent=df.done?'↩ Défait':'✓ Fait';doneBtn.style.color=df.done?'var(--muted)':'#4ade80';}
+  } else {
+    textEl.textContent="Pas d'objectif pour aujourd'hui...";
+    textEl.style.fontStyle='italic';
+    textEl.style.color='var(--muted)';
+    textEl.style.textDecoration='none';
+    if(doneBtn)doneBtn.style.display='none';
+  }
+}
+
+function editDailyFocus(){
+  const p=curP();if(!p)return;
+  const today=new Date().toLocaleDateString('en-CA');
+  const current=p.state.dailyFocus?.date===today?p.state.dailyFocus?.text||'':'';
+  const panel=document.getElementById('daily-focus-panel');if(!panel)return;
+  const display=document.getElementById('daily-focus-display');if(!display)return;
+  display.innerHTML=`<input id="daily-focus-input" value="${escapeHTML(current)}" placeholder="Mon objectif pour aujourd'hui..."
+    style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:6px 10px;color:var(--text);font-family:var(--font);font-size:13px;outline:none">
+    <button onclick="saveDailyFocus()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:6px 14px;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap">OK</button>
+    <button onclick="renderDailyFocus();document.getElementById('daily-focus-display').innerHTML='<span id=\'daily-focus-text\'></span><button id=\'daily-focus-done-btn\' onclick=\'toggleDailyFocusDone()\'></button>';renderDailyFocus();" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0 4px">✕</button>`;
+  const inp=document.getElementById('daily-focus-input');
+  if(inp){inp.focus();inp.select();inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();saveDailyFocus();}});}
+}
+
+function saveDailyFocus(){
+  const inp=document.getElementById('daily-focus-input');if(!inp)return;
+  const text=inp.value.trim();
+  const p=curP();if(!p)return;
+  const today=new Date().toLocaleDateString('en-CA');
+  if(!p.state)p.state={};
+  p.state.dailyFocus={text,date:today,done:false};
+  // Restaurer le display
+  const display=document.getElementById('daily-focus-display');
+  if(display)display.innerHTML=`<span id="daily-focus-text"></span><button id="daily-focus-done-btn" onclick="toggleDailyFocusDone()"></button>`;
+  renderDailyFocus();
+  saveStateNow();
+  if(_sbUser){clearTimeout(_saveCloudTimeout);saveCloudState().catch(()=>{});}
+}
+
+function toggleDailyFocusDone(){
+  const p=curP();if(!p)return;
+  const today=new Date().toLocaleDateString('en-CA');
+  if(!p.state.dailyFocus||p.state.dailyFocus.date!==today)return;
+  p.state.dailyFocus.done=!p.state.dailyFocus.done;
+  if(p.state.dailyFocus.done)addActivity('🎯 Objectif du jour accompli !','#4ade80');
+  renderDailyFocus();
+  saveStateNow();
 }
 
 function savePomoSession(){
@@ -13472,6 +13566,7 @@ var I18N = {
     'short_break': 'Courte pause',
     'long_break': 'Longue pause',
     'history': 'Historique →',
+    'add_item': 'Ajouter',
     'today': "Aujourd'hui",
     'total': 'Total',
     'streak': 'Série',
@@ -13606,6 +13701,7 @@ var I18N = {
     'short_break': 'Pausa corta',
     'long_break': 'Pausa larga',
     'history': 'Historial →',
+    'add_item': 'Añadir',
     'today': 'Hoy',
     'total': 'Total',
     'streak': 'Racha',
@@ -13733,6 +13829,7 @@ var I18N = {
     'short_break': 'Kurze Pause',
     'long_break': 'Lange Pause',
     'history': 'Verlauf →',
+    'add_item': 'Hinzufügen',
     'today': 'Heute',
     'total': 'Gesamt',
     'streak': 'Serie',
@@ -14004,8 +14101,6 @@ function showDashboardOrProfiles(){
       e.preventDefault();
     }
   }, {passive:false});
-
-  console.log('[NEXUS] Mobile gestures initialized');
 })();
 
 </script>

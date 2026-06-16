@@ -5877,6 +5877,7 @@ function psUntilt(el){
 }
 
 let _psEmbersRunning=false;
+let _ambientFrame=null;
 function psStartEmbers(){
   if(_psEmbersRunning)return;
   const canvas=document.getElementById('ps-canvas');

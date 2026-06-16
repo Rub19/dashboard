@@ -6903,11 +6903,12 @@ function initDashboard(){
   const adminBtn=document.getElementById('nav-admin');
   if(adminBtn)adminBtn.style.display=_isAdmin?'flex':'none';
   // ── DEFERRED (non-critical) ───────────────────────────────────────────
+  // Restaurer pomo immédiatement (avant le setTimeout) pour éviter flash 25:00
+  restorePomoIfRunning();
   setTimeout(()=>{
     if(typeof renderGamingOverview==='function')renderGamingOverview();
     initAnimations();
     startNotifScan();
-    restorePomoIfRunning();
   },500);
   checkMobileLayout();
   if(typeof renderCountdown==='function')renderCountdown();;
@@ -12159,7 +12160,7 @@ function pomoReset(){
 function pomoSkip(){
   clearInterval(pomoInterval);pomoRunning=false;pomoInterval=null;
   localStorage.removeItem('pomo_end');
-  if(POMO_MODES()[pomoIdx].label==='Focus'){
+  if(pomoIdx===0){ // 0=Focus toujours
     pomoCount++;savePomoSession();
     pomoIdx=pomoCount%4===0?2:1;
   } else {
@@ -12193,7 +12194,7 @@ function pomoToggle(){
     if(pomoRemaining<=0){
       clearInterval(pomoInterval);pomoRunning=false;pomoInterval=null;
       localStorage.removeItem('pomo_end');
-      if(POMO_MODES()[pomoIdx].label==='Focus'){
+      if(pomoIdx===0){ // 0=Focus
         pomoCount++;savePomoSession();
         playPomoSound('done');
         addActivity('🍅 Focus session complete!','var(--accent3)');
@@ -12232,7 +12233,7 @@ function restorePomoIfRunning(){
   } else {
     // Timer expiré pendant qu'on était absent — auto-compléter
     localStorage.removeItem('pomo_end');
-    if(POMO_MODES()[pomoIdx]?.label===t('focus')){
+    if(pomoIdx===0){ // 0=Focus
       pomoCount++;
       savePomoSession();
       pomoIdx=pomoCount%4===0?2:1;
@@ -12269,7 +12270,7 @@ function renderPomo(){
 
   // Mode badge
   const badge=document.getElementById('pomo-mode-badge');
-  if(badge)badge.textContent=mode.label.toUpperCase()+(mode.label==='Focus'?' · SESSION '+(pomoCount+1):'');
+  if(badge)badge.textContent=mode.label.toUpperCase()+(pomoIdx===0?' · SESSION '+(pomoCount+1):'');
 
   // Ring progress + color + pulse
   const ring=document.getElementById('pomo-ring');

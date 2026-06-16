@@ -1593,11 +1593,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .pomo-stat-val{font-size:16px;font-weight:700;font-family:var(--mono);color:var(--text)}
 .pomo-stat-lbl{font-size:9px;color:var(--muted2);margin-top:2px;text-transform:uppercase;letter-spacing:.5px;font-family:var(--mono)}
 .pomo-sound-btn{
-  position:absolute;top:8px;right:14px;
   width:28px;height:28px;border-radius:7px;
   border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);
   color:var(--muted2);cursor:pointer;display:flex;align-items:center;justify-content:center;
-  transition:all .2s;
+  transition:all .2s;flex-shrink:0;
 }
 .pomo-sound-btn:hover{color:var(--text);border-color:rgba(255,255,255,.14)}
 .pomo-sound-btn svg{width:12px;height:12px}
@@ -3783,7 +3782,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
               Pomodoro
             </div>
             <div style="display:flex;align-items:center;gap:6px">
-              <button class="pomo-sound-btn" id="pomo-sound-btn" onclick="togglePomoSound()" title="Toggle sound" style="position:static;width:28px;height:28px">
+              <button class="pomo-sound-btn" id="pomo-sound-btn" onclick="togglePomoSound()" title="Toggle sound" >
                 <svg id="pomo-sound-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
               </button>
               <button class="panel-action" onclick="switchPage('stats',null)" data-i18n="history">Historique →</button>

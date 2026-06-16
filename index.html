@@ -3694,10 +3694,10 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
     </div>
 
     <!-- Main grid: 2/3 content + 1/3 sidebar widgets -->
-    <div style="display:grid;grid-template-columns:1fr 340px;gap:12px;margin-bottom:12px;align-items:start">
+    <div id="overview-grid-main" style="display:grid;grid-template-columns:1fr 340px;gap:12px;margin-bottom:12px;align-items:start">
 
       <!-- LEFT: content column -->
-      <div style="display:flex;flex-direction:column;gap:12px">
+      <div id="overview-col-left" style="display:flex;flex-direction:column;gap:12px">
 
         <!-- Recent items -->
         <div class="panel">
@@ -9395,25 +9395,35 @@ function showLinkPreview(url,e){
 // ══════════════════════════════════════════════════════════════
 let _dragSrc=null;
 function _getOverviewBlocks(){
-  // Retourne les blocs draggable directs de page-dashboard (gaming wrap + les grid wrappers directs)
+  // Panels dans la colonne gauche du grid principal
+  const left=document.getElementById('overview-col-left');
   const dash=document.getElementById('page-dashboard');
-  if(!dash)return[];
-  // Les blocs droppables sont les enfants directs qui ne sont pas topbar/stats/banner
-  return [...dash.children].filter(el=>{
-    const id=el.id||'';
-    const cls=el.className||'';
-    // Exclure: profile-banner, topbar, stats-row, et elements sans contenu draggable
-    if(id==='profile-banner')return false;
-    if(cls.includes('topbar'))return false;
-    if(cls.includes('stats-row'))return false;
-    if(el.tagName!=='DIV')return false;
-    return true;
-  });
+  const blocks=[];
+  // Pinned panel (enfant direct du dash)
+  const pinned=document.getElementById('pinned-panel');
+  if(pinned)blocks.push(pinned);
+  // Gaming (enfant direct du dash)
+  const gaming=document.getElementById('gaming-overview-wrap');
+  if(gaming)blocks.push(gaming);
+  // Panels dans la colonne gauche
+  if(left){
+    [...left.children].forEach(el=>{
+      if(el.tagName==='DIV')blocks.push(el);
+    });
+  }
+  return blocks;
 }
 
 function initOverviewDragDrop(){
+  const left=document.getElementById('overview-col-left');
+  if(!left)return; // pas encore rendu
+  // Assigner des IDs stables aux panels sans ID
+  const panelNames=['recent-items-panel','tasks-events-panel','quick-note-panel','activity-pomo-panel'];
+  [...left.children].forEach((el,i)=>{
+    if(!el.id)el.id=panelNames[i]||('overview-panel-'+i);
+  });
   _getOverviewBlocks().forEach((block,i)=>{
-    if(!block.id)block.id='overview-block-'+i; // auto-assign ID si manquant
+    if(!block.id)block.id='overview-block-'+i;
     if(block.dataset.draggable==='ready')return;
     block.dataset.draggable='ready';
     block.classList.add('overview-widget');
@@ -9424,7 +9434,7 @@ function initOverviewDragDrop(){
     block.addEventListener('dragleave',function(){this.classList.remove('drag-over');});
     block.addEventListener('drop',function(e){
       e.preventDefault();e.stopPropagation();this.classList.remove('drag-over');
-      if(_dragSrc&&_dragSrc!==this){
+      if(_dragSrc&&_dragSrc!==this&&_dragSrc.parentNode===this.parentNode){
         const par=this.parentNode;
         const si=[...par.children].indexOf(_dragSrc);
         const ti=[...par.children].indexOf(this);
@@ -9439,7 +9449,9 @@ function initOverviewDragDrop(){
 
 function saveOverviewOrder(){
   const p=curP();if(!p)return;
-  const ids=_getOverviewBlocks().map(el=>el.id).filter(Boolean);
+  const left=document.getElementById('overview-col-left');
+  if(!left)return;
+  const ids=[...left.children].map(el=>el.id).filter(Boolean);
   if(!p.state)p.state={};
   p.state.overviewOrder=ids;
   saveStateNow();
@@ -9450,12 +9462,11 @@ function restoreOverviewOrder(){
   const p=curP();if(!p)return;
   const order=p.state?.overviewOrder;
   if(!order||!order.length)return;
-  const dash=document.getElementById('page-dashboard');
-  if(!dash)return;
-  // Ré-insérer dans l'ordre sauvegardé
+  const left=document.getElementById('overview-col-left');
+  if(!left)return;
   order.forEach(id=>{
     const el=document.getElementById(id);
-    if(el&&el.parentNode===dash)dash.appendChild(el);
+    if(el&&el.parentNode===left)left.appendChild(el);
   });
 }
 
@@ -11936,16 +11947,13 @@ function saveWeatherCity(){
 async function fetchWeather(forceCity){
   const w=document.getElementById('weather-widget');if(!w)return;
   const _wp=curP();const _wc=_wp?.state?.weatherCache;
-  // Ville manuelle = priorité absolue. forceCity > weatherCity > géoloc
-  const savedCity=forceCity||_wp?.state?.weatherCity||null;
-  const cacheMatchesCity=!savedCity||(_wc?.city&&_wc.city.toLowerCase()===savedCity.toLowerCase());
-  if(_wc?.rendered&&cacheMatchesCity&&(Date.now()-(_wc.ts||0)<1800000)){
-    w.innerHTML=_wc.rendered; // cache valide < 30min
-    return; // pas besoin de re-fetcher
-  } else {
-    if(_wp?.state&&!cacheMatchesCity)_wp.state.weatherCache=null;
-    w.innerHTML='<div style="padding:12px;font-size:12px;color:var(--muted)">📍 Chargement...</div>';
-  }
+  const savedCity=forceCity!=null?forceCity:(_wp?.state?.weatherCity||null);
+  // Cache valide 30min et ville correspond
+  const cacheCity=_wc?.city||'';
+  const cacheOk=_wc?.rendered&&(Date.now()-(_wc.ts||0)<1800000)&&(!savedCity||cacheCity.toLowerCase()===savedCity.toLowerCase());
+  if(cacheOk){w.innerHTML=_wc.rendered;return;}
+  if(_wp?.state)_wp.state.weatherCache=null; // vider le cache périmé
+  w.innerHTML='<div style="padding:12px;font-size:12px;color:var(--muted)">📍 Chargement...</div>';
   if(savedCity){
     try{
       // Geocoding via Open-Meteo (gratuit, pas de clé, CORS ok)

@@ -1320,6 +1320,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 /* ── AI CHAT PAGE ── */
 .ai-page{display:flex;flex-direction:column;height:calc(100vh - 130px);min-height:400px;max-width:700px;width:100%;margin:0 auto;padding:0}
 #ai-sessions-drawer.open{transform:translateX(0)}
+.ai-sessions-empty{color:var(--muted);font-size:12px;text-align:center;padding:24px 8px;opacity:.7}
 .ai-session-item{padding:8px 10px;border-radius:8px;cursor:pointer;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);transition:all .15s}
 .ai-session-item:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}
 .ai-session-preview{font-size:12px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -3434,7 +3435,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       </div>
 
       <!-- Version -->
-      <div style="text-align:center;margin-top:28px;font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:.5px">v5.0.0</div>
+      <div style="text-align:center;margin-top:28px;font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:.5px">v5.1.0</div>
     </div>
   </div>
 </div>
@@ -3471,7 +3472,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
     </div>
 
     <!-- Version -->
-    <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer;white-space:nowrap" onclick="showChangelog()" title="View changelog">v5.0.0 · changelog</div>
+    <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer;white-space:nowrap" onclick="showChangelog()" title="View changelog">v5.1.0 · changelog</div>
   </div>
 </div>
 
@@ -4851,9 +4852,13 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
         <div class="section-title">NEXUS <span style="background:linear-gradient(90deg,#f97316,#dc2626);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">AI</span></div>
       </div>
       <div class="topbar-actions" style="gap:6px">
-        <button class="btn btn-ghost" onclick="toggleAISessions()" style="font-size:12px" title="Historique des chats">
+        <button class="btn btn-ghost" onclick="toggleAISessions()" style="font-size:12px" title="Chats sauvegardés" id="ai-history-btn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
           Historique
+        </button>
+        <button class="btn btn-ghost" onclick="saveCurrentAIChat()" style="font-size:12px" title="Sauvegarder ce chat" id="ai-save-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Sauvegarder
         </button>
         <button class="btn btn-ghost" onclick="showAICapabilities()" style="font-size:12px" title="Que sais-je faire ?">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
@@ -4861,7 +4866,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
         </button>
         <button class="btn btn-ghost" onclick="clearAIChat()" style="font-size:12px">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
-          <span data-i18n="new_chat">Nouveau chat</span>
+          Nouveau chat
         </button>
       </div>
     </div>
@@ -4903,12 +4908,15 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   <!-- AI Sessions drawer — AFTER page-ai for z-index stacking -->
   <!-- AI CHAT -->
   <!-- AI Sessions drawer — outside page-ai so z-index works -->
-  <div id="ai-sessions-drawer" style="position:fixed;top:0;right:0;width:280px;height:100vh;background:rgba(8,8,12,.98);backdrop-filter:blur(24px);border-left:1px solid rgba(255,255,255,.09);z-index:9999;transform:translateX(100%);transition:transform .22s ease;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:8px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-      <div style="font-size:13px;font-weight:700;color:var(--text)">Historique</div>
-      <button onclick="toggleAISessions()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 6px">✕</button>
+  <div id="ai-sessions-drawer" style="position:fixed;top:0;right:0;width:300px;height:100vh;background:rgba(8,8,12,.98);backdrop-filter:blur(24px);border-left:1px solid rgba(255,255,255,.09);z-index:9999;transform:translateX(100%);transition:transform .22s ease;padding:0;overflow:hidden;display:flex;flex-direction:column">
+    <div style="padding:16px 16px 12px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--text)">Chats sauvegardés</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px" id="ai-sessions-count"></div>
+      </div>
+      <button onclick="toggleAISessions()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:6px;color:var(--muted);cursor:pointer;font-size:13px;padding:4px 8px">✕</button>
     </div>
-    <div id="ai-sessions-panel"></div>
+    <div id="ai-sessions-panel" style="flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:6px"></div>
   </div>
 
 
@@ -5433,6 +5441,18 @@ function safeThemeColor(value){
 // -- AUTH UI --------------------------------------
 function showChangelog(){
   const versions=[
+    {v:'v5.1.0',date:'16/06/2026',changes:[
+      'Fix: clearAIChat reset _aiSessionId (save auto supprimé, save manuel uniquement)',
+      'Fix: Countdown — date passée affiche "Date passée" avec nb de jours écoulés',
+      'Fix: Quick note sauvegardée automatiquement au changement de page',
+      'Fix: Lanyard WS reconnexion exponentielle (5s→10s→20s→30s max)',
+      'Fix: Confirmation avant suppression d\'un chat AI',
+      'Fix: Confirmation avant suppression d\'un profil',
+      'Fix: Cache météo invalidé si ville différente',
+      'Fix: Gaming overview affiche — si données manquantes (au lieu de Loading...)',
+      'UX: NEXUS AI — bouton Sauvegarder explicite, historique = chats sauvegardés manuellement',
+      'UX: Drawer historique AI redesigné avec compteur, date/heure, bouton supprimer',
+    ]},
     {v:'v5.0.0',date:'16/06/2026',changes:[
       'Fix: Pomodoro reprend exactement au bon endroit après refresh (endTime exact conservé)',
       'Fix: interval _npProgressInterval nettoyé au changement de profil',
@@ -6412,7 +6432,9 @@ function submitCreateProfile(){
 }
 
 async function deleteProfile(id){
-  if(profiles.length<=1){toast("Can't delete last profile",'error');return;}
+  if(profiles.length<=1){toast("Impossible de supprimer le dernier profil",'error');return;}
+  const _pname=profiles.find(p=>p.id===id)?.name||'ce profil';
+  if(!confirm(`Supprimer le profil "${_pname}" ? Cette action est irréversible.`))return;
   if(!confirm('Delete this profile and all its data? This cannot be undone.'))return;
   const toDelete=profiles.find(p=>p.id===id);
   profiles=profiles.filter(p=>p.id!==id);
@@ -7464,38 +7486,69 @@ function getAIContext(){
   return{summary,counts,profile:p.name};
 }
 
-function saveAIChats(){
+// Sauvegarde MANUELLE du chat courant
+function saveCurrentAIChat(){
   const p=curP();if(!p||!p.state)return;
+  if(!_aiHistory.length){toast('Aucun message à sauvegarder','error');return;}
   if(!p.state.aiSessions)p.state.aiSessions=[];
-  if(_aiHistory.length>0){
-    const sess=p.state.aiSessions;
-    const now=Date.now();
-    if(!_aiSessionId||sess.length===0||sess[sess.length-1].id!==_aiSessionId){
-      _aiSessionId=now;
-      sess.push({id:now,ts:now,preview:_aiHistory.find(m=>m.role==='user')?.content?.slice(0,60)||'Chat',messages:[..._aiHistory]});
-    } else {
-      sess[sess.length-1].messages=[..._aiHistory];
-      sess[sess.length-1].ts=Date.now();
-      sess[sess.length-1].preview=_aiHistory.find(m=>m.role==='user')?.content?.slice(0,60)||'Chat';
-    }
-    if(sess.length>20)p.state.aiSessions=sess.slice(-20);
+  const firstUser=_aiHistory.find(m=>m.role==='user')?.content||'';
+  const preview=firstUser.slice(0,60)+(firstUser.length>60?'…':'');
+  const now=Date.now();
+  // Si ce chat a déjà un ID de session → mettre à jour
+  const sess=p.state.aiSessions;
+  const existing=_aiSessionId?sess.find(s=>s.id===_aiSessionId):null;
+  if(existing){
+    existing.messages=[..._aiHistory];
+    existing.ts=now;
+    existing.preview=preview;
+    toast('Chat mis à jour ✓','success');
+  } else {
+    _aiSessionId=now;
+    sess.push({id:now,ts:now,preview,title:'',messages:[..._aiHistory]});
+    if(sess.length>30)p.state.aiSessions=sess.slice(-30);
+    toast('Chat sauvegardé ✓','success');
   }
-  // Sauvegarder en local ET cloud
   saveStateNow();
   if(_sbUser){clearTimeout(_saveCloudTimeout);saveCloudState().catch(()=>{});}
 }
+
+// Ancienne saveAIChats gardée pour compatibilité mais ne fait plus rien d'auto
+function saveAIChats(){/* sauvegarde manuelle uniquement via saveCurrentAIChat */}
 
 function renderAISessions(){
   const p=curP();if(!p)return;
   const sessions=(p.state?.aiSessions||[]).slice().reverse();
   const panel=document.getElementById('ai-sessions-panel');if(!panel)return;
-  if(!sessions.length){panel.innerHTML='<div style="color:var(--muted);font-size:11px;padding:8px">Aucun chat sauvegardé</div>';return;}
+  const countEl=document.getElementById('ai-sessions-count');
+  if(countEl)countEl.textContent=sessions.length?`${sessions.length} chat${sessions.length>1?'s':''} sauvegardé${sessions.length>1?'s':''}` :'Aucun chat sauvegardé';
+  if(!sessions.length){
+    panel.innerHTML=`<div class="ai-sessions-empty">
+      <div style="font-size:24px;margin-bottom:8px">💬</div>
+      <div>Aucun chat sauvegardé</div>
+      <div style="font-size:11px;margin-top:4px;opacity:.6">Clique sur "Sauvegarder" pour conserver un chat</div>
+    </div>`;
+    return;
+  }
   panel.innerHTML=sessions.map(s=>`
-    <div class="ai-session-item" onclick="loadAISession(${s.id})">
+    <div class="ai-session-item" style="position:relative" onclick="loadAISession(${s.id})">
       <div class="ai-session-preview">${escapeHTML(s.preview||'Chat')}</div>
-      <div class="ai-session-date">${new Date(s.ts).toLocaleDateString(_lang==='fr'?'fr-FR':'en-US',{day:'numeric',month:'short'})}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">
+        <div class="ai-session-date">${new Date(s.ts).toLocaleDateString(_lang==='fr'?'fr-FR':'en-US',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
+        <button onclick="event.stopPropagation();deleteAISession(${s.id})" title="Supprimer" style="background:none;border:none;color:rgba(255,255,255,.2);cursor:pointer;font-size:14px;padding:0 4px;line-height:1;border-radius:4px" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='rgba(255,255,255,.2)'">✕</button>
+      </div>
     </div>
   `).join('');
+}
+
+function deleteAISession(id){
+  if(!confirm('Supprimer ce chat ?'))return;
+  const p=curP();if(!p)return;
+  p.state.aiSessions=(p.state.aiSessions||[]).filter(s=>s.id!==id);
+  if(_aiSessionId===id)_aiSessionId=null;
+  renderAISessions();
+  saveStateNow();
+  if(_sbUser){clearTimeout(_saveCloudTimeout);saveCloudState().catch(()=>{});}
+  toast('Chat supprimé','info');
 }
 
 function loadAISession(id){
@@ -7505,9 +7558,10 @@ function loadAISession(id){
   _aiSessionId=id;
   _aiHistory=[...sess.messages];
   const msgs=document.getElementById('ai-messages');
-  if(msgs){msgs.innerHTML='';}
+  if(msgs)msgs.innerHTML='';
   _aiHistory.forEach(m=>addAIMessage(m.role,m.content));
   document.getElementById('ai-sessions-drawer')?.classList.remove('open');
+  toast('Chat chargé','info');
 }
 
 function toggleAISessions(){
@@ -7792,7 +7846,6 @@ function showAICapabilities(){
   addAIMessage('assistant', caps[lang]||caps.fr);
 }
 function clearAIChat(){
-  saveAIChats();
   _aiHistory=[];
   _aiSessionId=null;
   const msgs=document.getElementById('ai-messages');
@@ -7803,6 +7856,10 @@ function clearAIChat(){
 }
 
 function switchPage(page,navEl){
+  // Sauvegarder la quick note avant de changer de page
+  const qn=document.getElementById('quick-note');
+  const p0=curP();
+  if(qn&&p0&&qn.value!==p0.state?.note){p0.state.note=qn.value;saveStateNow();}
   document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
   const activePage=document.getElementById('page-'+page);
   activePage.classList.add('active');
@@ -10853,6 +10910,7 @@ let _lanyardWS = null, _lanyardHB = null, _lanyardUserId = null;
 function startLanyardWS(userId){
   if(_lanyardWS){_lanyardWS.close();clearInterval(_lanyardHB);}
   _lanyardUserId = userId;
+  let _lanyardRetry=5000; // reset délai de reconnexion
   try{
     _lanyardWS = new WebSocket('wss://api.lanyard.rest/socket');
     _lanyardWS.onopen = ()=>
@@ -10877,10 +10935,17 @@ function startLanyardWS(userId){
         }
       }
     };
+    let _lanyardRetry=5000;
     _lanyardWS.onclose = ()=>{
       clearInterval(_lanyardHB);
-      // Reconnect after 5s
-      setTimeout(()=>{ const p=curP(); if(p?.state?.connections?.discord?.userId===userId) startLanyardWS(userId); }, 5000);
+      // Reconnexion exponentielle: 5s → 10s → 20s → 30s max
+      setTimeout(()=>{
+        const p=curP();
+        if(p?.state?.connections?.discord?.userId===userId){
+          _lanyardRetry=Math.min(_lanyardRetry*2,30000);
+          startLanyardWS(userId);
+        }
+      }, _lanyardRetry);
     };
     _lanyardWS.onerror = ()=> _lanyardWS.close();
   } catch(err){ console.warn('[Lanyard WS] WebSocket not available, falling back to polling'); startLanyardPolling(userId); }
@@ -11602,7 +11667,15 @@ function renderCountdown(){
   function tick(){
     const now=new Date();const target=new Date(cd.date+'T00:00:00');
     const diff=target-now;
-    if(diff<=0){w.innerHTML='<div class="countdown-wrap"><div class="countdown-label">'+cd.label+'</div><div style="font-size:18px;color:var(--accent2)"> Today!</div></div>';clearInterval(cdInterval);return}
+    if(diff<=0){
+      const isPast=diff<-86400000;
+      const daysAgo=Math.floor(-diff/86400000);
+      const pastSuffix=isPast?('<div style="font-size:11px;color:var(--muted);margin-top:4px">Il y a '+daysAgo+' jour'+(daysAgo>1?'s':'')+'</div>'):'';
+      w.innerHTML='<div class="countdown-wrap"><div class="countdown-label">'+escapeHTML(cd.label)+'</div>'
+        +'<div style="font-size:15px;color:'+(isPast?'var(--muted)':'var(--accent2)')+'">'+( isPast?'🗓 Date passée':'🎉 Aujourd\'hui !')+'</div>'
+        +pastSuffix+'</div>';
+      clearInterval(cdInterval);return;
+    }
     const days=Math.floor(diff/86400000);
     const hrs=Math.floor((diff%86400000)/3600000);
     const mins=Math.floor((diff%3600000)/60000);
@@ -12039,12 +12112,9 @@ async function fetchWeather(forceCity){
 
   // Cache: valide 30min, même ville
   const cache=_wp?.state?.weatherCache;
-  if(cache?.rendered&&city&&cache.city===city&&(Date.now()-cache.ts)<1800000){
-    w.innerHTML=cache.rendered;return;
-  }
-  if(cache?.rendered&&!city&&(Date.now()-cache.ts)<1800000){
-    w.innerHTML=cache.rendered;return;
-  }
+  const _cacheAge=(Date.now()-(cache?.ts||0))<1800000;
+  const _cityMatch=!city||!cache?.city||(cache.city.toLowerCase()===city.toLowerCase());
+  if(cache?.rendered&&_cacheAge&&_cityMatch){w.innerHTML=cache.rendered;return;}
 
   // Vider le cache
   if(_wp?.state)_wp.state.weatherCache=null;
@@ -13375,7 +13445,7 @@ function renderGamingOverview(){
   let html='';
   if(g.valo?.name){
     const valoData=g.valo._lastRank||{};
-    const rankName=valoData.rankName||'Loading...';
+    const rankName=valoData.rankName||'—';
     const rr=valoData.rr!==undefined?valoData.rr+'RR':'';
     const icon=VALO_RANKS?.[rankName]||'';
     html+=`<div onclick="switchPage('gaming',null)" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .2s ease;flex:1;min-width:200px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
@@ -13386,7 +13456,7 @@ function renderGamingOverview(){
   }
   if(g.lol?.name){
     const lolData=g.lol._lastRank||{};
-    const tier=lolData.tier||'Loading...';
+    const tier=lolData.tier||'—';
     const rank=lolData.rank||'';
     const lp=lolData.lp!==undefined?lolData.lp+' LP':'';
     const icon=LOL_RANKS?.[tier]||'';

@@ -3503,10 +3503,6 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
     <div id="mob-topbar-name" onclick="goToProfileScreen()" style="font-size:14px;font-weight:700;color:var(--text);letter-spacing:-.02em;font-family:'Syne',sans-serif;cursor:pointer">User</div>
   </div>
   <div style="display:flex;align-items:center;gap:6px">
-    <div id="sb-sync-indicator" title="Statut sync cloud" style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted2);font-family:var(--mono);padding:4px 7px;border-radius:6px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)">
-      <span id="sb-sync-dot" style="width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.15);transition:background .4s;flex-shrink:0"></span>
-      <span id="sb-sync-label" style="white-space:nowrap">—</span>
-    </div>
     <button class="btn btn-primary" onclick="openModal('add-item')" style="padding:6px 12px;font-size:12px;border-radius:8px">+ Add</button>
   </div>
 </div>
@@ -3517,6 +3513,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><polygon points="10,1 19,10 10,19 1,10" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round"/><polygon points="10,5 15,10 10,15 5,10" fill="white"/></svg>
     </div>
     <span class="logo-text" id="logo-text-el" style="background:linear-gradient(135deg,#fff,#fda4af);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:900;letter-spacing:1.5px;font-family:'Syne',sans-serif;text-transform:uppercase">NEXUS</span>
+    <div id="sb-sync-indicator" title="Statut sync cloud" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.15);transition:background .4s" id="sb-sync-dot"></div>
   </div>
   <div id="sidebar-nav-main" class="nav-section"></div>
   <div id="sidebar-nav-account" class="nav-section"></div>
@@ -5276,6 +5273,24 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   </div>
 </div>
 
+<!-- MODAL RACCOURCIS CLAVIER -->
+<div class="modal-overlay" id="modal-shortcuts" onclick="closeModalIfOverlay(event,'shortcuts')">
+  <div class="modal" style="max-width:460px;width:100%">
+    <div class="modal-header">
+      <div class="modal-title">⌨️ Raccourcis clavier</div>
+      <button class="modal-close" onclick="closeModal('shortcuts')">✕</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:4px 0">
+      <div class="shortcut-row"><kbd class="kbd">Ctrl+K</kbd><span>Palette de commandes</span></div>
+      <div class="shortcut-row"><kbd class="kbd">Espace</kbd><span>Play/Pause Pomo</span></div>
+      <div class="shortcut-row"><kbd class="kbd">N</kbd><span>Page Notes</span></div>
+      <div class="shortcut-row"><kbd class="kbd">T</kbd><span>Page Tâches</span></div>
+      <div class="shortcut-row"><kbd class="kbd">Échap</kbd><span>Fermer modal</span></div>
+      <div class="shortcut-row"><kbd class="kbd">Ctrl+A</kbd><span>Ajouter un item</span></div>
+    </div>
+  </div>
+</div>
+
 <div class="toast-container" id="toasts"></div>
 
 
@@ -5813,18 +5828,10 @@ async function loadCloudState(){
 
 function updateSyncIndicator(state){
   const dot=document.getElementById('sb-sync-dot');
-  const label=document.getElementById('sb-sync-label');
-  if(!dot||!label)return;
-  const states={
-    saving:{color:'#fbbf24',text:'Sync...'},
-    saved:{color:'#34d399',text:'Synced'},
-    error:{color:'#f87171',text:'Offline'},
-    offline:{color:'rgba(255,255,255,.2)',text:'Local'},
-  };
-  const s=states[state]||states.offline;
-  dot.style.background=s.color;
-  label.textContent=s.text;
-  if(state==='saved')setTimeout(()=>updateSyncIndicator(_sbUser?'saved':'offline'),3000);
+  if(!dot)return;
+  const colors={saving:'#fbbf24',saved:'#34d399',error:'#f87171',offline:'rgba(255,255,255,.15)'};
+  dot.style.background=colors[state]||colors.offline;
+  dot.title=state==='saving'?'Sync en cours...':state==='saved'?'Synchronisé':state==='error'?'Erreur sync':'Local uniquement';
 }
 
 async function saveCloudState(){

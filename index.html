@@ -10674,12 +10674,14 @@ function updateSpotifyFromLanyard(d){
     // Si Discord connecté et online/idle/dnd mais pas de Spotify → cacher le fallback aussi
     // (pas de musique du tout plutôt que montrer Last.fm à la place)
     if(!isDiscordOnline&&lfm?.username&&iframeWrap){
-      // Discord offline/invis → montrer Last.fm
+      // Discord offline/invis → montrer Last.fm + démarrer auto-refresh
       iframeWrap.style.display='block';
       refreshSpotifySidebar();
+      if(!_spotifyAutoRefresh)startSpotifyAutoRefresh();
     } else if(iframeWrap){
-      // Discord online mais pas de Spotify → cacher fallback
+      // Discord online mais pas de Spotify → cacher fallback + stopper refresh
       iframeWrap.style.display='none';
+      clearInterval(_spotifyAutoRefresh);_spotifyAutoRefresh=null;
     }
   }
 }
@@ -11946,38 +11948,32 @@ async function fetchWeather(forceCity){
   }
   if(savedCity){
     try{
-      // Stratégies de recherche: exact, capitalisé, tirets, premier mot seul
-      const _norm=s=>s.trim().replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
-      const _withHyphen=s=>s.trim().split(' ').join('-');
-      const _firstWord=s=>s.trim().split(' ')[0];
-      const _variants=[
-        [_norm(savedCity),'fr'],           // "Brive La Gaillarde", France
-        [savedCity.trim(),'fr'],            // "brive la gaillarde", France
-        [_withHyphen(_norm(savedCity)),'fr'], // "Brive-La-Gaillarde", France
-        [_firstWord(savedCity)+' '+savedCity.trim().split(' ').slice(1).join('-'),'fr'], // "brive-la-gaillarde", France  
-        [_norm(savedCity),''],              // sans restriction pays
-        [_firstWord(savedCity),'fr'],       // juste premier mot: "brive", France
-        [savedCity.trim(),''],              // sans restriction pays
-      ];
+      // Geocoding via Open-Meteo (gratuit, pas de clé, CORS ok)
+      // Essayer plusieurs variantes du nom de ville
+      const _cityVariants=[
+        savedCity.trim(),
+        savedCity.trim().replace(/-/g,' '),
+        savedCity.trim().split(' ')[0], // premier mot seul en fallback
+      ].filter((v,i,a)=>v&&a.indexOf(v)===i);
       let found=null;
-      for(const [q,cc] of _variants){
-        if(!q.trim())continue;
-        const ccP=cc?`&countrycodes=${cc}`:'';
-        const gr=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=3&addressdetails=1${ccP}`,{headers:{'Accept-Language':'fr,en'},signal:AbortSignal.timeout(6000)});
-        const gd=await gr.json();
-        // Préférer un résultat de type city/town/village
-        const best=gd?.find(r=>['city','town','village','municipality'].includes(r.type||r.addresstype))||gd?.[0];
-        if(best){found=best;break;}
+      for(const q of _cityVariants){
+        try{
+          const gr=await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=5&language=fr&format=json`,{signal:AbortSignal.timeout(6000)});
+          const gd=await gr.json();
+          const results=gd?.results||[];
+          // Prioriser France, sinon premier résultat
+          const best=results.find(r=>r.country_code==='FR')||results[0];
+          if(best){found=best;break;}
+        }catch(e){}
       }
       if(found){
-        // Use display name from Nominatim for the city label
-        const cityLabel=found.address?.city||found.address?.town||found.address?.village||found.address?.municipality||savedCity;
-        await doFetch(parseFloat(found.lat),parseFloat(found.lon),cityLabel);
+        const cityLabel=found.name||savedCity;
+        await doFetch(parseFloat(found.latitude),parseFloat(found.longitude),cityLabel);
         return;
       } else {
-        // City not found
+        // Ville pas trouvée → afficher erreur mais continuer avec géoloc en fallback
         w.innerHTML=`<div style="padding:12px;font-size:12px;color:var(--muted)">❌ Ville introuvable: <strong>${savedCity}</strong> — <button onclick="promptWeatherCity()" style="background:none;border:none;color:var(--accent);cursor:pointer;font-family:var(--font);font-size:12px">Modifier</button></div>`;
-        return;
+        // Ne pas return — laisser tomber sur la géoloc en dessous
       }
     }catch(e){
       // Network error — fall through to geoloc
@@ -11992,9 +11988,13 @@ async function fetchWeather(forceCity){
     let city=forcedCityName||'';
     if(!city){
       try{
-        const gr=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,{headers:{'Accept-Language':'en'},signal:AbortSignal.timeout(4000)});
+        // Reverse geocoding via Open-Meteo geocoding API
+        const gr=await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=&latitude=${lat}&longitude=${lon}&count=1&language=fr&format=json`,{signal:AbortSignal.timeout(4000)});
         const gd=await gr.json();
-        city=gd.address?.city||gd.address?.town||gd.address?.village||gd.address?.county||'';
+        // Fallback: utiliser les coordonnées pour un reverse lookup via bigdatacloud (gratuit, CORS ok)
+        const gr2=await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=fr`,{signal:AbortSignal.timeout(4000)});
+        const gd2=await gr2.json();
+        city=gd2?.city||gd2?.locality||gd2?.principalSubdivision||'';
       }catch(e){}
     }
     const cur=data.current;
@@ -12064,12 +12064,7 @@ async function fetchWeather(forceCity){
     return null;
   }
 
-  // Si ville manuelle définie et on arrive ici = ville introuvable
-  if(_wp?.state?.weatherCity){
-    w.innerHTML=`<div style="padding:12px;font-size:12px;color:var(--muted)">❌ Ville introuvable: <strong>${_wp.state.weatherCity}</strong> — <button onclick="promptWeatherCity()" style="background:none;border:none;color:var(--accent);cursor:pointer;font-family:var(--font);font-size:12px">Modifier</button></div>`;
-    return;
-  }
-  // GPS first, IP fallback (seulement si pas de ville manuelle)
+  // GPS first, IP fallback
   if(navigator.geolocation){
     navigator.geolocation.getCurrentPosition(
       async pos=>{try{await doFetch(pos.coords.latitude,pos.coords.longitude);}catch(e){

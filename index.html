@@ -277,6 +277,15 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .nav-item.active{color:var(--accent);background:var(--accent-subtle);border-color:var(--border3)}
 .nav-item.active .nav-icon{color:var(--accent)}
 .nav-item.active::after{content:'';position:absolute;right:0;top:20%;bottom:20%;width:2px;background:var(--accent);border-radius:99px}
+/* Light mode nav items */
+body[data-light="1"] .nav-item{color:rgba(15,23,36,.45)}
+body[data-light="1"] .nav-item:hover{color:rgba(15,23,36,.8);background:rgba(0,0,0,.04)}
+body[data-light="1"] .nav-item.active{color:var(--accent)}
+body[data-light="1"] .sidebar{background:rgba(255,255,255,.92);border-right-color:rgba(0,0,0,.08)}
+body[data-light="1"] .sidebar-footer{border-top-color:rgba(0,0,0,.06)}
+body[data-light="1"] .nav-label{color:rgba(15,23,36,.3)}
+body[data-light="1"] #sb-sync-indicator{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.08)}
+body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .nav-icon{width:17px;height:17px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:inherit}.nav-icon svg{width:100%;height:100%}
 .nav-badge{margin-left:auto;background:linear-gradient(135deg,#f97316,#dc2626);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px;font-family:var(--mono);min-width:17px;text-align:center}
 .sidebar-footer{flex-shrink:0;padding:10px 8px 8px;border-top:1px solid rgba(255,255,255,.06);max-height:55vh;overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
@@ -1782,6 +1791,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   color:#f97316;box-shadow:0 0 8px rgba(249,115,22,.15);
 }
 
+.shortcut-row{display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid rgba(255,255,255,.06);font-size:12px;color:var(--muted)}
+.kbd{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:5px;padding:2px 7px;font-family:var(--mono);font-size:11px;color:var(--text);white-space:nowrap;flex-shrink:0}
 /* ══ DISCORD CARD v2 ══ */
 .dc-card-preview{
   position:relative;border-radius:14px;overflow:hidden;margin-bottom:16px;
@@ -3667,6 +3678,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
           <span id="notif-badge"></span>
         </button>
         <div class="search-bar" onclick="openCmdPalette()" style="cursor:pointer" title="Cmd+K"><span style="color:rgba(255,255,255,.3);font-size:13px">🔍</span><input type="text" placeholder="Search (⌘K)…" id="global-search" readonly style="cursor:pointer"></div>
+        <button onclick="openModal('shortcuts')" title="Raccourcis clavier" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .2s">⌨️</button>
         <button id="theme-mode-btn" onclick="toggleDarkLight()" title="Toggle dark/light mode" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;cursor:pointer;font-size:15px;transition:all .2s">🌙</button>
         <button onclick="goToProfileScreen()" title="Switch profile" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:5px 10px 5px 6px;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s;overflow:hidden;max-width:150px" id="topbar-profile-btn" onmouseover="this.style.borderColor='rgba(249,115,22,.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,.08)'">
           <div id="topbar-avatar" style="width:24px;height:24px;border-radius:6px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;background:rgba(255,255,255,.08);position:relative"></div>
@@ -3795,7 +3807,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       </div>
 
       <!-- RIGHT: sidebar widgets -->
-      <div style="display:flex;flex-direction:column;gap:12px">
+      <div id="overview-col-right" style="display:flex;flex-direction:column;gap:12px">
 
         <!-- Pomodoro -->
         <div class="panel">
@@ -4916,19 +4928,6 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
     </div>
   </div>
 
-  <!-- AI Sessions drawer — AFTER page-ai for z-index stacking -->
-  <!-- AI CHAT -->
-  <!-- AI Sessions drawer — outside page-ai so z-index works -->
-  <div id="ai-sessions-drawer" style="position:fixed;top:0;right:0;width:300px;height:100vh;background:rgba(8,8,12,.98);backdrop-filter:blur(24px);border-left:1px solid rgba(255,255,255,.09);z-index:9999;transform:translateX(100%);transition:transform .22s ease;padding:0;overflow:hidden;display:flex;flex-direction:column">
-    <div style="padding:16px 16px 12px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
-      <div>
-        <div style="font-size:13px;font-weight:700;color:var(--text)">Chats sauvegardés</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px" id="ai-sessions-count"></div>
-      </div>
-      <button onclick="toggleAISessions()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:6px;color:var(--muted);cursor:pointer;font-size:13px;padding:4px 8px">✕</button>
-    </div>
-    <div id="ai-sessions-panel" style="flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:6px"></div>
-  </div>
 
 
 
@@ -8614,24 +8613,26 @@ function toggleDarkLight(){
   _darkMode=!_darkMode;
   const btn=document.getElementById('theme-mode-btn');
   if(_darkMode){
-    document.documentElement.style.removeProperty('--bg');
-    document.documentElement.style.removeProperty('--surface');
-    document.documentElement.style.removeProperty('--surface2');
-    document.documentElement.style.removeProperty('--surface3');
-    document.documentElement.style.removeProperty('--text');
-    document.documentElement.style.removeProperty('--muted');
-    document.documentElement.style.removeProperty('--border');
-    document.documentElement.style.removeProperty('--border2');
+    ['--bg','--bg-rgb','--surface','--surface2','--surface3','--text','--text2',
+     '--muted','--muted2','--border','--border2','--border3','--accent-subtle']
+     .forEach(v=>document.documentElement.style.removeProperty(v));
+    document.body.removeAttribute('data-light');
     if(btn)btn.textContent='🌙';
   } else {
     document.documentElement.style.setProperty('--bg','#f0f2f7');
+    document.documentElement.style.setProperty('--bg-rgb','240,242,247');
     document.documentElement.style.setProperty('--surface','#ffffff');
     document.documentElement.style.setProperty('--surface2','#f5f7fb');
     document.documentElement.style.setProperty('--surface3','#e8ecf4');
     document.documentElement.style.setProperty('--text','#0f1724');
+    document.documentElement.style.setProperty('--text2','#1e2d4a');
     document.documentElement.style.setProperty('--muted','#6b7a99');
+    document.documentElement.style.setProperty('--muted2','#8a96b0');
     document.documentElement.style.setProperty('--border','rgba(0,0,0,.08)');
     document.documentElement.style.setProperty('--border2','rgba(0,0,0,.12)');
+    document.documentElement.style.setProperty('--border3','rgba(0,0,0,.06)');
+    document.documentElement.style.setProperty('--accent-subtle','rgba(249,115,22,.08)');
+    document.body.setAttribute('data-light','1');
     if(btn)btn.textContent='☀️';
   }
   // Save preference
@@ -9623,46 +9624,52 @@ function _getOverviewBlocks(){
   return blocks;
 }
 
+function _makeDraggable(block){
+  if(block.dataset.draggable==='ready')return;
+  block.dataset.draggable='ready';
+  block.classList.add('overview-widget');
+  block.setAttribute('draggable','true');
+  block.style.cursor='grab';
+  block.addEventListener('dragstart',function(e){_dragSrc=this;this.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
+  block.addEventListener('dragend',function(){this.classList.remove('dragging');document.querySelectorAll('.drag-over').forEach(el=>el.classList.remove('drag-over'));});
+  block.addEventListener('dragover',function(e){e.preventDefault();e.dataTransfer.dropEffect='move';this.classList.add('drag-over');});
+  block.addEventListener('dragleave',function(){this.classList.remove('drag-over');});
+  block.addEventListener('drop',function(e){
+    e.preventDefault();e.stopPropagation();this.classList.remove('drag-over');
+    if(_dragSrc&&_dragSrc!==this&&_dragSrc.parentNode===this.parentNode){
+      const par=this.parentNode;
+      const si=[...par.children].indexOf(_dragSrc);
+      const ti=[...par.children].indexOf(this);
+      if(si<ti)par.insertBefore(_dragSrc,this.nextSibling);
+      else par.insertBefore(_dragSrc,this);
+      saveOverviewOrder();
+    }
+  });
+}
+
 function initOverviewDragDrop(){
   const left=document.getElementById('overview-col-left');
-  if(!left)return; // pas encore rendu
-  // Assigner des IDs stables aux panels sans ID
-  const panelNames=['recent-items-panel','tasks-events-panel','quick-note-panel','activity-pomo-panel'];
-  [...left.children].forEach((el,i)=>{
-    if(!el.id)el.id=panelNames[i]||('overview-panel-'+i);
-  });
-  _getOverviewBlocks().forEach((block,i)=>{
-    if(!block.id)block.id='overview-block-'+i;
-    if(block.dataset.draggable==='ready')return;
-    block.dataset.draggable='ready';
-    block.classList.add('overview-widget');
-    block.setAttribute('draggable','true');
-    block.addEventListener('dragstart',function(e){_dragSrc=this;this.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
-    block.addEventListener('dragend',function(){this.classList.remove('dragging');document.querySelectorAll('.drag-over').forEach(el=>el.classList.remove('drag-over'));});
-    block.addEventListener('dragover',function(e){e.preventDefault();e.dataTransfer.dropEffect='move';this.classList.add('drag-over');});
-    block.addEventListener('dragleave',function(){this.classList.remove('drag-over');});
-    block.addEventListener('drop',function(e){
-      e.preventDefault();e.stopPropagation();this.classList.remove('drag-over');
-      if(_dragSrc&&_dragSrc!==this&&_dragSrc.parentNode===this.parentNode){
-        const par=this.parentNode;
-        const si=[...par.children].indexOf(_dragSrc);
-        const ti=[...par.children].indexOf(this);
-        if(si<ti)par.insertBefore(_dragSrc,this.nextSibling);
-        else par.insertBefore(_dragSrc,this);
-        saveOverviewOrder();
-      }
-    });
-  });
+  const right=document.getElementById('overview-col-right');
+  // Assigner des IDs stables aux panels gauche
+  const leftNames=['recent-items-panel','tasks-events-panel','quick-note-panel','daily-focus-panel','activity-panel'];
+  if(left)[...left.children].forEach((el,i)=>{if(!el.id)el.id=leftNames[i]||('overview-left-'+i);});
+  // Assigner des IDs stables aux panels droite
+  const rightNames=['pomo-widget-panel','weather-widget-panel','quote-widget-panel','countdown-widget-panel'];
+  if(right)[...right.children].forEach((el,i)=>{if(!el.id)el.id=rightNames[i]||('overview-right-'+i);});
+  // Rendre tout draggable
+  const allBlocks=[...( left?[...left.children]:[]), ...(right?[...right.children]:[])];
+  allBlocks.forEach((block,i)=>{if(!block.id)block.id='overview-block-'+i; _makeDraggable(block);});
   restoreOverviewOrder();
 }
 
 function saveOverviewOrder(){
   const p=curP();if(!p)return;
   const left=document.getElementById('overview-col-left');
-  if(!left)return;
-  const ids=[...left.children].map(el=>el.id).filter(Boolean);
+  const right=document.getElementById('overview-col-right');
+  const leftIds=left?[...left.children].map(el=>el.id).filter(Boolean):[];
+  const rightIds=right?[...right.children].map(el=>el.id).filter(Boolean):[];
   if(!p.state)p.state={};
-  p.state.overviewOrder=ids;
+  p.state.overviewOrder={left:leftIds,right:rightIds};
   saveStateNow();
   if(_sbUser){clearTimeout(_saveCloudTimeout);saveCloudState().catch(()=>{});}
 }
@@ -9670,13 +9677,14 @@ function saveOverviewOrder(){
 function restoreOverviewOrder(){
   const p=curP();if(!p)return;
   const order=p.state?.overviewOrder;
-  if(!order||!order.length)return;
+  if(!order)return;
+  // Support ancien format (array) et nouveau (object)
+  const leftIds=Array.isArray(order)?order:(order.left||[]);
+  const rightIds=Array.isArray(order)?[]:(order.right||[]);
   const left=document.getElementById('overview-col-left');
-  if(!left)return;
-  order.forEach(id=>{
-    const el=document.getElementById(id);
-    if(el&&el.parentNode===left)left.appendChild(el);
-  });
+  const right=document.getElementById('overview-col-right');
+  if(left)leftIds.forEach(id=>{const el=document.getElementById(id);if(el&&el.parentNode===left)left.appendChild(el);});
+  if(right)rightIds.forEach(id=>{const el=document.getElementById(id);if(el&&el.parentNode===right)right.appendChild(el);});
 }
 
 
@@ -14281,5 +14289,21 @@ function showDashboardOrProfiles(){
 })();
 
 </script>
+
+
+<!-- AI Sessions drawer — AFTER page-ai for z-index stacking -->
+  <!-- AI CHAT -->
+  <!-- AI Sessions drawer — outside page-ai so z-index works -->
+  <div id="ai-sessions-drawer" style="position:fixed;top:0;right:0;width:300px;height:100vh;background:rgba(8,8,12,.98);backdrop-filter:blur(24px);border-left:1px solid rgba(255,255,255,.09);z-index:9999;transform:translateX(100%);transition:transform .22s ease;padding:0;overflow:hidden;display:flex;flex-direction:column">
+    <div style="padding:16px 16px 12px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--text)">Chats sauvegardés</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px" id="ai-sessions-count"></div>
+      </div>
+      <button onclick="toggleAISessions()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:6px;color:var(--muted);cursor:pointer;font-size:13px;padding:4px 8px">✕</button>
+    </div>
+    <div id="ai-sessions-panel" style="flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:6px"></div>
+  </div>
+
 </body>
 </html>

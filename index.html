@@ -276,7 +276,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .nav-item:hover{color:rgba(255,255,255,.75);background:rgba(255,255,255,.04)}
 .nav-item.active{color:var(--accent);background:var(--accent-subtle);border-color:var(--border3)}
 .nav-item.active .nav-icon{color:var(--accent)}
-.nav-item.active::after{content:'';position:absolute;right:0;top:20%;bottom:20%;width:2px;background:var(--accent);border-radius:99px}
+.nav-item.active::after{content:'';position:absolute;right:-1px;top:25%;bottom:25%;width:3px;background:var(--accent);border-radius:99px;box-shadow:0 0 6px var(--accent)}
 /* Light mode nav items */
 body[data-light="1"] .nav-item{color:rgba(15,23,36,.45)}
 body[data-light="1"] .nav-item:hover{color:rgba(15,23,36,.8);background:rgba(0,0,0,.04)}
@@ -301,6 +301,8 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .sidebar.compact .logo{justify-content:center;padding:12px 0}
 .sidebar.compact .logo-icon{margin:0}
 .sidebar.compact #sidebar-compact-btn{margin:auto auto 4px;width:34px;flex-shrink:0}
+.sidebar.compact #sb-sync-label{display:none}
+.sidebar.compact #sb-sync-indicator{justify-content:center}
 .sidebar.compact .sidebar-footer > div[style*="height:1px"]{display:none!important}
 .sidebar.compact #sidebar-nav-main,.sidebar.compact #sidebar-nav-account{padding:0 4px}
 .user-card{display:flex;align-items:center;gap:10px;padding:10px 10px 8px;border-radius:8px;cursor:pointer;transition:all .2s;position:relative;margin-bottom:2px}
@@ -2877,8 +2879,9 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   position:fixed;top:0;left:0;right:0;bottom:0;
   padding:0;margin:0;z-index:200;
   background:var(--bg);
-  overflow:hidden;
+  overflow:visible;
 }
+#page-ai.active .ai-page{overflow-y:auto;max-height:calc(100vh - 80px)}
 #page-ai .topbar{width:100%;max-width:720px;padding:20px 20px 12px}
 #page-ai .ai-page{max-width:720px;width:100%;padding:0 20px}
 #sidebar-nav-main{overflow-y:auto;flex:1 1 auto;padding:0 6px;min-height:0;scrollbar-width:none}
@@ -3513,7 +3516,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><polygon points="10,1 19,10 10,19 1,10" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round"/><polygon points="10,5 15,10 10,15 5,10" fill="white"/></svg>
     </div>
     <span class="logo-text" id="logo-text-el" style="background:linear-gradient(135deg,#fff,#fda4af);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:900;letter-spacing:1.5px;font-family:'Syne',sans-serif;text-transform:uppercase">NEXUS</span>
-    <div id="sb-sync-indicator" title="Statut sync cloud" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.15);transition:background .4s" id="sb-sync-dot"></div>
+
   </div>
   <div id="sidebar-nav-main" class="nav-section"></div>
   <div id="sidebar-nav-account" class="nav-section"></div>
@@ -3521,6 +3524,11 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   <button id="sidebar-compact-btn" onclick="event.preventDefault();toggleSidebarCompact()" title="Toggle compact mode" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;margin:4px auto 4px;background:none;border:1px solid var(--border2);border-radius:8px;cursor:pointer;font-size:14px;color:var(--muted);font-family:var(--font);transition:all .2s ease" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">&#8644;</button>
   <div class="sidebar-footer">
     <!-- User card at top of footer -->
+    <!-- Sync indicator -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:5px;padding:4px 8px;margin-bottom:4px;border-radius:6px;font-size:10px;font-family:var(--mono);color:var(--muted2)" id="sb-sync-indicator">
+      <span id="sb-sync-dot" style="width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.15);flex-shrink:0;transition:background .4s"></span>
+      <span id="sb-sync-label" style="transition:opacity .3s">—</span>
+    </div>
     <div class="user-card" onclick="goToProfileScreen()">
       <div class="sidebar-avatar" id="sidebar-avatar"></div>
       <div class="user-info">
@@ -5828,10 +5836,11 @@ async function loadCloudState(){
 
 function updateSyncIndicator(state){
   const dot=document.getElementById('sb-sync-dot');
-  if(!dot)return;
-  const colors={saving:'#fbbf24',saved:'#34d399',error:'#f87171',offline:'rgba(255,255,255,.15)'};
-  dot.style.background=colors[state]||colors.offline;
-  dot.title=state==='saving'?'Sync en cours...':state==='saved'?'Synchronisé':state==='error'?'Erreur sync':'Local uniquement';
+  const label=document.getElementById('sb-sync-label');
+  const colors={saving:'#fbbf24',saved:'#34d399',error:'#f87171',offline:'rgba(255,255,255,.2)'};
+  const labels={saving:'Sync…',saved:'Synced ✓',error:'Offline',offline:'Local'};
+  if(dot)dot.style.background=colors[state]||colors.offline;
+  if(label)label.textContent=labels[state]||'—';
 }
 
 async function saveCloudState(){

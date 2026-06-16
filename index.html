@@ -3567,7 +3567,26 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
     </div>
 
     <!-- NOW PLAYING v3 (Lanyard Spotify) -->
-    <!-- Now Playing (Last.fm) -->
+    <!-- NOW PLAYING Lanyard (Discord) -->
+    <div class="sb-section" id="sb-spotify-wrap" style="display:none">
+      <div class="sb-widget-card sb-wc-green" id="np-pill">
+        <div class="sb-wc-art" id="np-art"><span>♪</span></div>
+        <div class="sb-wc-body">
+          <div class="sb-wc-top">
+            <span class="sb-wc-name" id="np-song">—</span>
+            <div class="sb-eq" id="sb-eq-anim" style="display:none"><span></span><span></span><span></span><span></span></div>
+          </div>
+          <div class="sb-wc-sub sb-wc-sub-green" id="np-artist">—</div>
+          <div class="sb-wc-bar"><div class="sb-wc-bar-fill sb-wc-bar-green" id="np-bar-fill" style="width:0%"></div></div>
+          <div id="np-time-row" style="display:none;justify-content:space-between;margin-top:3px">
+            <span id="np-elapsed" style="font-size:9px;color:rgba(29,185,84,.6);font-family:var(--mono)">0:00</span>
+            <span id="np-duration" style="font-size:9px;color:rgba(245,245,247,.25);font-family:var(--mono)">0:00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOW PLAYING Last.fm (Discord déco/invis) -->
     <div class="sb-section" id="sb-spotify-iframe-wrap" style="display:none">
       <div class="sb-widget-card sb-wc-green" id="np-pill-fallback">
         <div class="sb-wc-art" id="np-art-fallback"><span>♪</span></div>
@@ -6734,22 +6753,27 @@ function initSidebarWidgets(p){
   // ── Discord status card ──
   const dcWrap=document.getElementById('sb-discord-wrap');
   const hasDiscord=!!(conn.discord?.userId&&vis.discord!==false);
-  // sb-spotify-wrap (Lanyard) toujours caché — on utilise uniquement Last.fm
-  const npWrap=document.getElementById('sb-spotify-wrap');
-  if(npWrap)npWrap.style.display='none';
   if(hasDiscord){
     if(dcWrap)dcWrap.style.display='block';
+    // Les deux widgets cachés au boot — Lanyard WS décidera lequel afficher
+    const npWrap=document.getElementById('sb-spotify-wrap');
+    const ifrWrap=document.getElementById('sb-spotify-iframe-wrap');
+    if(npWrap)npWrap.style.display='none';
+    if(ifrWrap)ifrWrap.style.display='none';
+    clearInterval(_spotifyAutoRefresh);_spotifyAutoRefresh=null;
     refreshDiscordSidebar();
     startLanyardWS(conn.discord.userId);
   } else {
     if(dcWrap)dcWrap.style.display='none';
-  }
-  // Last.fm Now Playing — toujours actif si connecté
-  if(conn.lastfm?.username&&vis.nowplaying!==false){
-    const ifrWrap=document.getElementById('sb-spotify-iframe-wrap');
-    if(ifrWrap)ifrWrap.style.display='block';
-    refreshSpotifySidebar();
-    startSpotifyAutoRefresh();
+    // Pas de Discord → Last.fm directement
+    const npWrap=document.getElementById('sb-spotify-wrap');
+    if(npWrap)npWrap.style.display='none';
+    if(conn.lastfm?.username&&vis.nowplaying!==false){
+      const ifrWrap=document.getElementById('sb-spotify-iframe-wrap');
+      if(ifrWrap)ifrWrap.style.display='block';
+      refreshSpotifySidebar();
+      startSpotifyAutoRefresh();
+    }
   }
 
   // ── Last.fm scrobble card ──
@@ -10892,18 +10916,47 @@ function refreshDiscordSidebar(){
 }
 
 function updateSpotifyFromLanyard(d){
-  // sb-spotify-wrap (Lanyard) est désactivé — on utilise uniquement Last.fm
+  const sp=d.spotify;
   const wrap=document.getElementById('sb-spotify-wrap');
-  if(wrap)wrap.style.display='none';
-  const eq=document.getElementById('sb-eq-anim');if(eq)eq.style.display='none';
-  clearInterval(window._npProgressInterval);
-
   const iframeWrap=document.getElementById('sb-spotify-iframe-wrap');
-  const p=curP();
-  const lfm=p?.state?.connections?.lastfm;
-  if(lfm?.username&&iframeWrap){
-    iframeWrap.style.display='block';
-    if(!_spotifyAutoRefresh)startSpotifyAutoRefresh();
+  const dcStatus=d.discord_status||'offline';
+  // online/idle/dnd = visible → Lanyard. offline/invisible = Last.fm
+  const isDiscordVisible=['online','idle','dnd'].includes(dcStatus);
+
+  if(isDiscordVisible&&sp&&sp.song){
+    // Discord visible + Spotify joue → widget Lanyard
+    if(wrap)wrap.style.display='block';
+    if(iframeWrap)iframeWrap.style.display='none';
+    clearInterval(_spotifyAutoRefresh);_spotifyAutoRefresh=null;
+    const artEl=document.getElementById('np-art');
+    if(artEl){
+      if(sp.album_art_url)artEl.innerHTML=`<img src="${sp.album_art_url}" alt="album" onerror="this.innerHTML='♪'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:8px;display:block">`;
+      else artEl.innerHTML='<span>♪</span>';
+    }
+    const songEl=document.getElementById('np-song');if(songEl)songEl.textContent=sp.song;
+    const artistEl=document.getElementById('np-artist');if(artistEl)artistEl.textContent=sp.artist;
+    const eq=document.getElementById('sb-eq-anim');if(eq)eq.style.display='flex';
+    const timeRow=document.getElementById('np-time-row');
+    if(sp.timestamps?.start&&sp.timestamps?.end){
+      if(timeRow)timeRow.style.display='flex';
+      updateNpProgress(sp.timestamps.start,sp.timestamps.end);
+    } else {
+      if(timeRow)timeRow.style.display='none';
+    }
+  } else {
+    // Discord déco/invis OU pas de Spotify → cacher Lanyard, montrer Last.fm
+    if(wrap)wrap.style.display='none';
+    const eq=document.getElementById('sb-eq-anim');if(eq)eq.style.display='none';
+    clearInterval(window._npProgressInterval);
+    const p=curP();
+    const lfm=p?.state?.connections?.lastfm;
+    if(lfm?.username&&iframeWrap){
+      iframeWrap.style.display='block';
+      refreshSpotifySidebar();
+      if(!_spotifyAutoRefresh)startSpotifyAutoRefresh();
+    } else if(iframeWrap){
+      iframeWrap.style.display='none';
+    }
   }
 }
 

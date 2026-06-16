@@ -3434,7 +3434,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       </div>
 
       <!-- Version -->
-      <div style="text-align:center;margin-top:28px;font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:.5px">v4.8.0</div>
+      <div style="text-align:center;margin-top:28px;font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:.5px">v4.9.0</div>
     </div>
   </div>
 </div>
@@ -5413,6 +5413,7 @@ function safeThemeColor(value){
 // -- AUTH UI --------------------------------------
 function showChangelog(){
   const versions=[
+    {v:'v4.9.0',date:'16/06/2026',changes:['Perf: debounce Supabase 800ms→2s (moins d\'appels API)','Perf: tous les intervals (Lanyard, Last.fm, Spotify) nettoyés au changement de profil','UX: notif browser quand la pause Pomodoro se termine','UX: touche Espace pour play/pause Pomodoro (depuis le dashboard)','Fix: Pomodoro ne montre plus le toast \'repris\' au refresh sans raison','Fix: QOTD utilise les bonnes clés des fallback quotes','Fix: bouton son Pomodoro sorti du ring, dans le header']},
     {v:'v4.8.0',date:'16/06/2026',changes:['Last.fm: smart refresh — détecte changement de piste en 10s (au lieu de 30s fixe)','Météo: recherche Nominatim améliorée (normalize, capitalize, countrycodes=fr, multi-variantes)','Tokens Groq optimisés: system prompt ultra-compact (~120 tokens vs ~500 avant)','Tokens Groq: historique 4 messages, max_tokens 500, contexte dashboard compressé','Tokens Groq: ~700-900 tokens/message vs ~4K avant']},
     {v:'v4.7.0',date:'16/06/2026',changes:['Now Playing: ne s\'affiche plus au refresh quand Discord est DND sans Spotify','Discord connecté: fallback Last.fm bloqué jusqu\'à réponse Lanyard','updateSpotifyFromLanyard: Discord online sans Spotify → cache le fallback aussi','Last.fm scrobble card: refresh toutes les 10s avec détection changement de piste']},
     {v:'v4.6.0',date:'16/06/2026',changes:['Widget Discord: contour coloré selon statut (rouge DND, vert online, orange idle, transparent invis)','Widget Now Playing: contour vert Spotify (#1db954)','Widget Last.fm: contour rouge (#d51007)','Sidebar compact: items Account (Connexions/Paramètres/IA) maintenant groupés après Main, plus en bas','Flash Connexions corrigé: loadConnectionsUI ne relance plus initSidebarWidgets']},
@@ -6022,7 +6023,7 @@ function saveStateNow(){
     clearTimeout(_saveCloudTimeout);
     _saveCloudTimeout=setTimeout(()=>{
       saveCloudState().catch(e=>console.warn('Cloud sync error:',e));
-    },800);
+    },2000);
   }
 }
 function getP(id){return profiles.find(p=>p.id===id)}
@@ -6180,8 +6181,10 @@ function enterDashboard(id){
 }
 
 function goToProfileScreen(){
-  // Nettoie les logins temps reel de l'ancien profile
-  if(typeof _lanyardWS!=='undefined'&&_lanyardWS){_lanyardWS.close();clearInterval(_lanyardHB);}
+  // Nettoyer TOUS les intervals actifs
+  if(typeof _lanyardWS!=='undefined'&&_lanyardWS){_lanyardWS.close();clearInterval(_lanyardHB);_lanyardWS=null;}
+  if(typeof _lastfmInterval!=='undefined')clearInterval(_lastfmInterval);_lastfmInterval=null;
+  if(typeof _spotifyAutoRefresh!=='undefined')clearInterval(_spotifyAutoRefresh);_spotifyAutoRefresh=null;
   _valoMatchCache={};
   _valoAllMatches=[];
   stopAmbientBg();
@@ -9353,10 +9356,19 @@ function handleCmdKey(e){
 }
 document.addEventListener('keydown',e=>{
   if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();const o=document.getElementById('cmd-palette-overlay');if(o?.classList.contains('open'))closeCmdPalette();else openCmdPalette();}
+  const _tag=document.activeElement?.tagName;
+  const _inInput=_tag==='INPUT'||_tag==='TEXTAREA'||document.activeElement?.isContentEditable;
   if(!document.getElementById('cmd-palette-overlay')?.classList.contains('open')){
-    const tag=document.activeElement?.tagName;if(tag==='INPUT'||tag==='TEXTAREA')return;
+    if(_inInput)return;
     if(e.key==='n'&&!e.ctrlKey&&!e.metaKey)switchPage('notes',null);
     if(e.key==='t'&&!e.ctrlKey&&!e.metaKey)switchPage('todos',null);
+    // Espace → play/pause Pomodoro si on est sur le dashboard
+    if(e.code==='Space'){
+      const dash=document.getElementById('page-dashboard');
+      if(dash&&dash.classList.contains('active')&&document.getElementById('pomo-ring-wrap')){
+        e.preventDefault();pomoToggle();
+      }
+    }
   }
 });
 
@@ -12212,7 +12224,8 @@ function pomoToggle(){
         if(wrap){wrap.classList.add('pomo-flash');setTimeout(()=>wrap.classList.remove('pomo-flash'),2000);}
       } else {
         playPomoSound('break');
-        toast('Break over — focus time! 💪','info');
+        toast('Break terminée — au boulot ! 💪','info');
+        sendNotif('Pause terminée 💪',"C'est reparti — session Focus !",'🍅');
         pomoIdx=0;
       }
       pomoRemaining=POMO_MODES()[pomoIdx].duration;
@@ -12224,22 +12237,50 @@ function pomoToggle(){
 
 // Restore timer if page was reloaded while running
 function restorePomoIfRunning(){
-  const endTime=parseInt(localStorage.getItem('pomo_end')||0);
-  if(!endTime)return; // pas de timer en cours → rien à faire
-  const remaining=Math.round((endTime-Date.now())/1000);
+  const savedEnd=parseInt(localStorage.getItem('pomo_end')||0);
+  if(!savedEnd)return; // pas de timer sauvegardé → rien à faire
+  const remaining=Math.round((savedEnd-Date.now())/1000);
   pomoIdx=parseInt(localStorage.getItem('pomo_idx')||0);
   pomoCount=parseInt(localStorage.getItem('pomo_count')||0);
   if(remaining>0){
-    // Timer encore actif → reprendre silencieusement (pas de toast)
+    // Timer encore actif → reprendre avec l'endTime EXACT sauvegardé
     pomoRemaining=remaining;
-    pomoRunning=false;
-    pomoToggle(); // redémarre l'interval
+    pomoRunning=true; // marquer comme running avant de démarrer l'interval
+    let lastMin=Math.ceil(pomoRemaining/60);
+    pomoInterval=setInterval(()=>{
+      const rem=Math.round((savedEnd-Date.now())/1000);
+      pomoRemaining=Math.max(0,rem);
+      localStorage.setItem('pomo_idx',pomoIdx);
+      localStorage.setItem('pomo_count',pomoCount);
+      const curMin=Math.ceil(pomoRemaining/60);
+      if(curMin<lastMin&&curMin>0){lastMin=curMin;playPomoSound('tick');}
+      if(pomoRemaining<=0){
+        clearInterval(pomoInterval);pomoRunning=false;pomoInterval=null;
+        localStorage.removeItem('pomo_end');
+        if(pomoIdx===0){
+          pomoCount++;savePomoSession();
+          playPomoSound('done');
+          addActivity('🍅 Focus session complete!','var(--accent3)');
+          notifyPomoComplete(pomoCount);
+          toast('Focus done! Take a break 🎉','success');
+          sendNotif('Pomodoro complete! 🍅','Time for a break — great work!','');
+          pomoIdx=pomoCount%4===0?2:1;
+        } else {
+          playPomoSound('break');
+          toast('Break terminée — au boulot ! 💪','info');
+          sendNotif('Pause terminée 💪',"C'est reparti — session Focus !",'🍅');
+          pomoIdx=0;
+        }
+        pomoRemaining=POMO_MODES()[pomoIdx].duration;
+      }
+      renderPomo();
+    },500);
+    renderPomo(); // afficher immédiatement le bon temps
   } else {
-    // Timer expiré pendant l'absence → nettoyer sans toast ni session auto
+    // Timer expiré pendant l'absence → nettoyer silencieusement
     localStorage.removeItem('pomo_end');
     localStorage.removeItem('pomo_idx');
     localStorage.removeItem('pomo_count');
-    // Juste remettre à zéro proprement
     pomoRemaining=POMO_MODES()[pomoIdx].duration;
     pomoRunning=false;
     renderPomo();

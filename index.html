@@ -3459,7 +3459,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       </div>
 
       <!-- Version -->
-      <div style="text-align:center;margin-top:28px;font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:.5px">v5.2.0</div>
+      <div style="text-align:center;margin-top:28px;font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:.5px">v5.2.1</div>
     </div>
   </div>
 </div>
@@ -3496,7 +3496,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
     </div>
 
     <!-- Version -->
-    <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer;white-space:nowrap" onclick="showChangelog()" title="View changelog">v5.2.0 · changelog</div>
+    <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer;white-space:nowrap" onclick="showChangelog()" title="View changelog">v5.2.1 · changelog</div>
   </div>
 </div>
 
@@ -4084,6 +4084,39 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
         <div class="kanban-cards" id="kcards-done"></div>
         <div class="kanban-drop-zone" id="kdrop-done">Drop here</div>
         <button class="kanban-add-btn" onclick="quickAddKanban('done')">+ Add card</button>
+      </div>
+    </div>
+
+    <!-- ── KANBAN MINI STATS PANEL ── -->
+    <div id="kanban-stats-panel" style="margin-top:20px;display:grid;grid-template-columns:1fr 2fr 1fr;gap:10px">
+      <!-- Total -->
+      <div class="panel" style="padding:16px 18px;display:flex;align-items:center;gap:13px">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">📋</div>
+        <div>
+          <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);font-family:var(--mono);margin-bottom:3px">Total</div>
+          <div id="kb-stat-total" style="font-size:28px;font-weight:700;font-family:var(--mono);letter-spacing:-1px;color:var(--text)">0</div>
+        </div>
+      </div>
+      <!-- Progress bar -->
+      <div class="panel" style="padding:16px 18px">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);font-family:var(--mono);margin-bottom:10px">Completion</div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+          <div style="flex:1;height:6px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden">
+            <div id="kb-stat-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#f97316,#5de0b0);border-radius:99px;transition:width .4s ease"></div>
+          </div>
+          <span id="kb-stat-pct" style="font-size:13px;font-weight:700;font-family:var(--mono);color:var(--muted);min-width:36px;text-align:right">0%</span>
+        </div>
+        <div style="display:flex;gap:18px">
+          <span style="font-size:11px;color:var(--muted2);display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:#f76a6a;display:inline-block"></span><span id="kb-stat-todo-n">0</span> to do</span>
+          <span style="font-size:11px;color:var(--muted2);display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:#f7b26a;display:inline-block"></span><span id="kb-stat-doing-n">0</span> in progress</span>
+          <span style="font-size:11px;color:var(--muted2);display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:#5de0b0;display:inline-block"></span><span id="kb-stat-done-n">0</span> done</span>
+        </div>
+      </div>
+      <!-- Last added -->
+      <div class="panel" style="padding:16px 18px">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);font-family:var(--mono);margin-bottom:6px">Last added</div>
+        <div id="kb-stat-last" style="font-size:13px;font-weight:500;color:var(--text);line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div>
+        <div id="kb-stat-last-col" style="font-size:10px;color:var(--muted2);margin-top:3px;font-family:var(--mono)"></div>
       </div>
     </div>
   </div>
@@ -5497,6 +5530,11 @@ function safeThemeColor(value){
 // -- AUTH UI --------------------------------------
 function showChangelog(){
   const versions=[
+    {v:'v5.2.1',date:'16/06/2026',changes:[
+      'Fix: Ctrl+K — palette de commandes entièrement réécrite (click + Enter + hover fiables)',
+      'Fix: cmd-items utilisent data-cmd-idx + listener global (plus de désync d\'index)',
+      'Kanban: mini-panel stats sous le board (total, barre de completion, last added)',
+    ]},
     {v:'v5.2.0',date:'16/06/2026',changes:[
       'Recherche dans les notes: filtre par titre et contenu',
       'Indicateur sync Supabase: vert=synced, orange=saving, rouge=offline',
@@ -9545,9 +9583,12 @@ function getCmdItems(q=''){
   const f=arr=>!q?arr:arr.filter(i=>(i.label+' '+(i.sub||'')).toLowerCase().includes(q));
   return{pages:f(pages),actions:f(actions),items:f(recentItems),all:[...f(pages),...f(actions),...f(recentItems)]};
 }
+// ── CMD PALETTE — _cmdAllItems: snapshot of all items at last render ──
+let _cmdAllItems=[];
 function renderCmdResults(){
   const q=document.getElementById('cmd-input')?.value||'';
   const{pages,actions,items,all}=getCmdItems(q);
+  _cmdAllItems=all; // keep a live snapshot for click/enter handlers
   _cmdSelectedIdx=Math.max(0,Math.min(_cmdSelectedIdx,all.length-1));
   const c=document.getElementById('cmd-results');if(!c)return;
   let html='',gi=0;
@@ -9556,8 +9597,7 @@ function renderCmdResults(){
     html+=`<div class="cmd-section-label">${label}</div>`;
     arr.forEach(item=>{
       const sel=gi===_cmdSelectedIdx;
-      const idx=gi;
-      html+=`<div class="cmd-item${sel?' selected':''}" data-idx="${idx}" onmousedown="event.preventDefault();executeCmdItem(${idx})" onmouseover="_cmdSelectedIdx=${idx};renderCmdResults()">
+      html+=`<div class="cmd-item${sel?' selected':''}" data-cmd-idx="${gi}">
         <div class="cmd-item-icon">${item.icon||'◆'}</div>
         <div style="flex:1;min-width:0"><div class="cmd-item-label">${escapeHTML(item.label)}</div>${item.sub?`<div class="cmd-item-sub">${escapeHTML(item.sub)}</div>`:''}</div>
         ${item.kbd?`<span class="cmd-item-kbd">${item.kbd}</span>`:''}
@@ -9569,23 +9609,43 @@ function renderCmdResults(){
   else if(!q){sec('Actions',actions);sec('Pages',pages);if(items.length)sec('Recent',items);}
   else{if(pages.length)sec('Pages',pages);if(actions.length)sec('Actions',actions);if(items.length)sec('Items',items);}
   c.innerHTML=html;
+  // Attach hover listeners after render (no inline handlers)
+  c.querySelectorAll('.cmd-item').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{
+      _cmdSelectedIdx=parseInt(el.dataset.cmdIdx,10);
+      c.querySelectorAll('.cmd-item').forEach(x=>x.classList.remove('selected'));
+      el.classList.add('selected');
+    });
+  });
 }
 function executeCmdItem(idx){
-  const{all}=getCmdItems(document.getElementById('cmd-input')?.value||'');
-  const item=all[idx];
-  if(!item)return;
-  // Exécuter l'action AVANT de fermer pour éviter les race conditions
+  const item=_cmdAllItems[idx];
+  if(!item||typeof item.action!=='function')return;
   const action=item.action;
   closeCmdPalette();
   requestAnimationFrame(()=>action());
 }
 function handleCmdKey(e){
-  const{all}=getCmdItems(document.getElementById('cmd-input')?.value||'');
-  if(e.key==='ArrowDown'){e.preventDefault();_cmdSelectedIdx=Math.min(_cmdSelectedIdx+1,all.length-1);renderCmdResults();}
+  if(e.key==='ArrowDown'){e.preventDefault();_cmdSelectedIdx=Math.min(_cmdSelectedIdx+1,_cmdAllItems.length-1);renderCmdResults();}
   else if(e.key==='ArrowUp'){e.preventDefault();_cmdSelectedIdx=Math.max(_cmdSelectedIdx-1,0);renderCmdResults();}
   else if(e.key==='Enter'){e.preventDefault();executeCmdItem(_cmdSelectedIdx);}
   else if(e.key==='Escape'){closeCmdPalette();}
 }
+// Global click handler on #cmd-results — avoids any inline handler issues
+(function initCmdClickHandler(){
+  function setup(){
+    const c=document.getElementById('cmd-results');
+    if(!c){setTimeout(setup,200);return;}
+    c.addEventListener('mousedown',e=>{
+      e.preventDefault(); // prevent input blur
+      const item=e.target.closest('[data-cmd-idx]');
+      if(!item)return;
+      executeCmdItem(parseInt(item.dataset.cmdIdx,10));
+    });
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',setup);}
+  else{setup();}
+})();
 document.addEventListener('keydown',e=>{
   if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();const o=document.getElementById('cmd-palette-overlay');if(o?.classList.contains('open'))closeCmdPalette();else openCmdPalette();}
   const _tag=document.activeElement?.tagName;
@@ -11948,6 +12008,29 @@ function renderKanban(){
       '</div>';
     }).join('');
   });
+  // ── Update mini stats panel ──
+  const nTodo=cards.filter(c=>c.col==='todo').length;
+  const nDoing=cards.filter(c=>c.col==='doing').length;
+  const nDone=cards.filter(c=>c.col==='done').length;
+  const total=nTodo+nDoing+nDone;
+  const pct=total>0?Math.round(nDone/total*100):0;
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  set('kb-stat-total',total);
+  set('kb-stat-todo-n',nTodo);
+  set('kb-stat-doing-n',nDoing);
+  set('kb-stat-done-n',nDone);
+  set('kb-stat-pct',pct+'%');
+  const bar=document.getElementById('kb-stat-bar');
+  if(bar){bar.style.width=pct+'%';bar.style.background=pct===100?'#5de0b0':'linear-gradient(90deg,#f97316,#5de0b0)';}
+  // Last added card (highest id = most recent)
+  if(cards.length){
+    const last=[...cards].sort((a,b)=>b.id-a.id)[0];
+    set('kb-stat-last',last.title||'—');
+    const colLabels={todo:'To Do',doing:'In Progress',done:'Done'};
+    set('kb-stat-last-col','in '+( colLabels[last.col]||last.col));
+  } else {
+    set('kb-stat-last','—');set('kb-stat-last-col','');
+  }
 }
 
 

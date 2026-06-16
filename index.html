@@ -3435,7 +3435,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       </div>
 
       <!-- Version -->
-      <div style="text-align:center;margin-top:28px;font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:.5px">v4.0.0</div>
+      <div style="text-align:center;margin-top:28px;font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:.5px">v4.8.0</div>
     </div>
   </div>
 </div>
@@ -3472,7 +3472,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
     </div>
 
     <!-- Version -->
-    <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer;white-space:nowrap" onclick="showChangelog()" title="View changelog">v4.0.0 · changelog</div>
+    <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer;white-space:nowrap" onclick="showChangelog()" title="View changelog">v4.8.0 · changelog</div>
   </div>
 </div>
 
@@ -5412,6 +5412,12 @@ function safeThemeColor(value){
 // -- AUTH UI --------------------------------------
 function showChangelog(){
   const versions=[
+    {v:'v4.8.0',date:'16/06/2026',changes:['Last.fm: smart refresh — détecte changement de piste en 10s (au lieu de 30s fixe)','Météo: recherche Nominatim améliorée (normalize, capitalize, countrycodes=fr, multi-variantes)','Tokens Groq optimisés: system prompt ultra-compact (~120 tokens vs ~500 avant)','Tokens Groq: historique 4 messages, max_tokens 500, contexte dashboard compressé','Tokens Groq: ~700-900 tokens/message vs ~4K avant']},
+    {v:'v4.7.0',date:'16/06/2026',changes:['Now Playing: ne s\'affiche plus au refresh quand Discord est DND sans Spotify','Discord connecté: fallback Last.fm bloqué jusqu\'à réponse Lanyard','updateSpotifyFromLanyard: Discord online sans Spotify → cache le fallback aussi','Last.fm scrobble card: refresh toutes les 10s avec détection changement de piste']},
+    {v:'v4.6.0',date:'16/06/2026',changes:['Widget Discord: contour coloré selon statut (rouge DND, vert online, orange idle, transparent invis)','Widget Now Playing: contour vert Spotify (#1db954)','Widget Last.fm: contour rouge (#d51007)','Sidebar compact: items Account (Connexions/Paramètres/IA) maintenant groupés après Main, plus en bas','Flash Connexions corrigé: loadConnectionsUI ne relance plus initSidebarWidgets']},
+    {v:'v4.5.0',date:'16/06/2026',changes:['NEXUS AI: contexte dashboard avec vrais noms (notes, fichiers, tâches, habitudes, objectifs)','NEXUS AI: historique corrigé — saveAIChats sauvegarde en cloud (Supabase)','NEXUS AI: message de bienvenue ne se répète plus au retour sur l\'onglet','NEXUS AI: erreur indiquait Gemini au lieu de Groq — corrigé','Overview widgets: ordre drag-drop sauvegardé et restauré après refresh (Supabase)','Météo: ville manuelle prioritaire — jamais écrasée par géoloc','Page navigation: display:none/block au lieu d\'opacity (élimine le bug page-petite)']},
+    {v:'v4.4.0',date:'16/06/2026',changes:['Now Playing (sidebar): logique Discord online→Lanyard / offline→Last.fm fallback','Double widget Spotify corrigé: jamais deux widgets en même temps','Discord offline/invis: widget Last.fm iframe affiché automatiquement','Discord online sans Spotify: widget Now Playing caché']},
+    {v:'v4.3.0',date:'16/06/2026',changes:['Boot corrigé: boucle infinie updateBannerDisplay↔updateSidebarAvatar supprimée','POMO_MODES.forEach corrigé (POMO_MODES est une fonction, nécessite ())','Variables globales manquantes déclarées: _ambientFrame, _bgFrame, _bgParticles, _bioSaveTO, _socialSaveTO, _lastRank, _npProgressInterval, _valoMatchList']},
     {v:'v4.0.0',date:'14/06/2026',changes:['Widgets sidebar: chargement automatique au boot (WORKER_URL et LASTFM_KEY déplacés en tête de script)','Boot ultra-rapide: cache sessionStorage + auto-enter si profil unique sans mot de passe','Greeting localisé: Bonjour/Bon après-midi/Bonsoir sans dépendance à t()','Date localisée: jours et mois traduits en FR/EN/ES/DE dans l\'horloge','Sidebar widgets toggle: bouton ◫ Sidebar dans l\'onglet Connexions pour Discord et Last.fm','Personal dashboard remplacé par NEXUS (ou bio si définie)','Changelog: refonte visuelle — timeline verticale, tags par catégorie, plus lisible','Flash au boot corrigé: sidebar/main-content cachés par défaut, écran de chargement NEXUS','Sidebar: fond noir corrigé, overflow:hidden, footer toujours visible','renderDiscordCard appelle refreshDiscordSidebar automatiquement']},
     {v:'v3.9.1',date:'12/06/2026',changes:['Stats: heatmap GitHub-style sur 6 mois (26 semaines, 4 niveaux orange)','Valorant: graphe RR progression sur les derniers matchs compétitifs','Stats: renderStatsHeatmap() hookée dans renderStatsPage()','Présentation: mode plein écran 2x3 grid (tasks/pomo/habits/streaks/files)','Présentation: horloge live, bouton dans stats topbar + Cmd+K','Présentation: fullscreen API + ESC pour quitter']},
     {v:'v3.9.0',date:'12/06/2026',changes:['Notifications in-app: cloche + badge + panneau slide-in','Notifs auto: tâches en retard, tâches du jour, streaks en danger, événements à venir, milestone pomo','Transitions directionnelles: gauche/droite selon ordre des pages dans la nav','Page order: slide depuis droite si on avance dans la nav, gauche si on recule','Pomo: notification in-app à chaque session terminée','Topbar: bouton cloche avec badge animé']},
@@ -11941,10 +11947,13 @@ async function fetchWeather(forceCity){
   if(savedCity){
     try{
       // Try multiple search strategies for better city matching
-      const queries=[savedCity, savedCity.replace(/-/g,' '), savedCity.split(' ').join('+')];
+      // Normaliser: capitalize chaque mot, gérer tirets
+      const _norm=s=>s.trim().replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+      const _variants=[[_norm(savedCity),'fr'],[savedCity.trim(),'fr'],[savedCity.trim().toLowerCase(),'fr'],[_norm(savedCity),'']];
       let found=null;
-      for(const q of queries){
-        const gr=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&addressdetails=1`,{headers:{'Accept-Language':'fr'},signal:AbortSignal.timeout(6000)});
+      for(const [q,cc] of _variants){
+        const ccP=cc?`&countrycodes=${cc}`:'';
+        const gr=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&addressdetails=1${ccP}`,{headers:{'Accept-Language':'fr,en'},signal:AbortSignal.timeout(6000)});
         const gd=await gr.json();
         if(gd?.[0]){found=gd[0];break;}
       }

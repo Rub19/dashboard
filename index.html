@@ -3782,7 +3782,12 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
               </div>
               Pomodoro
             </div>
-            <button class="panel-action" onclick="switchPage('stats',null)" data-i18n="history">Historique →</button>
+            <div style="display:flex;align-items:center;gap:6px">
+              <button class="pomo-sound-btn" id="pomo-sound-btn" onclick="togglePomoSound()" title="Toggle sound" style="position:static;width:28px;height:28px">
+                <svg id="pomo-sound-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+              </button>
+              <button class="panel-action" onclick="switchPage('stats',null)" data-i18n="history">Historique →</button>
+            </div>
           </div>
           <div class="pomo-display">
             <div class="pomo-mode-tabs">
@@ -3807,10 +3812,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
                 <div class="pomo-mode-badge" id="pomo-mode-badge">FOCUS</div>
                 <div class="pomo-dots" id="pomo-session-dots"></div>
               </div>
-              <!-- Sound toggle -->
-              <button class="pomo-sound-btn" id="pomo-sound-btn" onclick="togglePomoSound()" title="Toggle sound">
-                <svg id="pomo-sound-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
-              </button>
+
             </div>
 
             <!-- Controls -->
@@ -6876,6 +6878,18 @@ function initDashboard(){
   document.getElementById('main-note').value=p.state.note||'';
   updateClock();
   updateStats();
+  // Pré-charger état pomo depuis localStorage avant renderPomo
+  (()=>{
+    const _end=parseInt(localStorage.getItem('pomo_end')||0);
+    if(_end){
+      const _rem=Math.round((_end-Date.now())/1000);
+      if(_rem>0){
+        pomoIdx=parseInt(localStorage.getItem('pomo_idx')||0);
+        pomoCount=parseInt(localStorage.getItem('pomo_count')||0);
+        pomoRemaining=_rem;
+      }
+    }
+  })();
   renderPomo();
   if(typeof applyTheme==='function')applyTheme(p.themeIdx||0);
   if(typeof updateBannerDisplay==='function')updateBannerDisplay();
@@ -12171,6 +12185,9 @@ function pomoToggle(){
   pomoInterval=setInterval(()=>{
     const remaining=Math.round((parseInt(localStorage.getItem('pomo_end')||endTime)-Date.now())/1000);
     pomoRemaining=Math.max(0,remaining);
+    // Mettre à jour localStorage à chaque tick pour fiabilité après reload
+    localStorage.setItem('pomo_idx',pomoIdx);
+    localStorage.setItem('pomo_count',pomoCount);
     // Tick sound on each new minute
     const curMin=Math.ceil(pomoRemaining/60);
     if(curMin<lastMin&&curMin>0){lastMin=curMin;playPomoSound('tick');}
@@ -12205,15 +12222,28 @@ function restorePomoIfRunning(){
   const endTime=parseInt(localStorage.getItem('pomo_end')||0);
   if(!endTime)return;
   const remaining=Math.round((endTime-Date.now())/1000);
+  pomoIdx=parseInt(localStorage.getItem('pomo_idx')||0);
+  pomoCount=parseInt(localStorage.getItem('pomo_count')||0);
   if(remaining>0){
-    pomoIdx=parseInt(localStorage.getItem('pomo_idx')||0);
-    pomoCount=parseInt(localStorage.getItem('pomo_count')||0);
+    // Timer encore actif — reprendre là où on en était
     pomoRemaining=remaining;
-    pomoRunning=false;
+    pomoRunning=false; // reset pour que pomoToggle démarre
     pomoToggle();
-    toast('⏱ Pomodoro resumed!','info');
+    toast('⏱ Pomodoro repris !','info');
   } else {
+    // Timer expiré pendant qu'on était absent — auto-compléter
     localStorage.removeItem('pomo_end');
+    if(POMO_MODES()[pomoIdx]?.label===t('focus')){
+      pomoCount++;
+      savePomoSession();
+      pomoIdx=pomoCount%4===0?2:1;
+      toast('🍅 Session Focus terminée !','success');
+    } else {
+      pomoIdx=0;
+    }
+    pomoRemaining=POMO_MODES()[pomoIdx].duration;
+    pomoRunning=false;
+    renderPomo();
   }
 }
 
@@ -12359,7 +12389,7 @@ async function fetchQuote(){
   // Rotation basée sur le jour + l'heure pour varier dans la journée
   const hourIdx=Math.floor(new Date().getHours()/6); // change 4x/jour
   const idx=(new Date().getDate()*4+hourIdx)%FALLBACK_QUOTES.length;
-  showQuote(FALLBACK_QUOTES[idx].q,FALLBACK_QUOTES[idx].a);
+  showQuote(FALLBACK_QUOTES[idx].content||FALLBACK_QUOTES[idx].q,FALLBACK_QUOTES[idx].author||FALLBACK_QUOTES[idx].a);
 }
 
 

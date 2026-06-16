@@ -291,7 +291,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .sidebar.compact .logo-text{display:none!important}
 .sidebar.compact .logo{justify-content:center;padding:12px 0}
 .sidebar.compact .logo-icon{margin:0}
-.sidebar.compact #sidebar-compact-btn{margin:4px auto;width:34px}
+.sidebar.compact #sidebar-compact-btn{margin:auto auto 4px;width:34px;flex-shrink:0}
 .sidebar.compact .sidebar-footer > div[style*="height:1px"]{display:none!important}
 .sidebar.compact #sidebar-nav-main,.sidebar.compact #sidebar-nav-account{padding:0 4px}
 .user-card{display:flex;align-items:center;gap:10px;padding:10px 10px 8px;border-radius:8px;cursor:pointer;transition:all .2s;position:relative;margin-bottom:2px}
@@ -2865,6 +2865,22 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 #page-ai .ai-page{max-width:720px;width:100%;padding:0 20px}
 #sidebar-nav-main{overflow-y:auto;flex:1 1 auto;padding:0 6px;min-height:0;scrollbar-width:none}
 #sidebar-nav-account{flex:0 0 auto;padding:0 6px 4px;min-height:0}
+/* En compact: nav-main ne prend plus tout l'espace, account reste juste après */
+.sidebar.compact #sidebar-nav-main{
+  flex:0 0 auto;
+  overflow-y:visible;
+  display:flex;flex-direction:column;align-items:center;
+}
+.sidebar.compact #sidebar-nav-account{
+  flex:0 0 auto;
+  padding:0 4px 4px;
+  display:flex;flex-direction:column;align-items:center;
+}
+/* Séparateur entre les deux sections en compact */
+.sidebar.compact #sidebar-nav-account::before{
+  content:'';display:block;width:24px;height:1px;
+  background:rgba(255,255,255,.1);margin:4px auto 4px;
+}
 .sidebar .nav-section::-webkit-scrollbar{width:2px}
 .sidebar .nav-section::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:99px}
 
@@ -7347,9 +7363,10 @@ function getAIContext(){
   const p=curP();if(!p)return{summary:'No profile loaded',counts:{}};
   const s=p.state||{};
   const todos=(s.todos||[]);
-  const pending=todos.filter(t=>!t.done).length;
+  const pending=todos.filter(t=>!t.done);
   const done=todos.filter(t=>t.done).length;
-  const highPriority=todos.filter(t=>!t.done&&t.priority==='high').map(t=>t.text).slice(0,3);
+  const highPriority=pending.filter(t=>t.priority==='high').map(t=>t.text).slice(0,5);
+  const allPending=pending.map(t=>t.text).slice(0,8);
   const habits=(s.habits||[]);
   const notes=(s.notes||[]);
   const items=(s.items||[]);
@@ -7358,35 +7375,52 @@ function getAIContext(){
     const d=new Date(h.ts||h);
     return d.toLocaleDateString('en-CA')===new Date().toLocaleDateString('en-CA');
   }).length;
-  const upcoming=(s.events||[]).filter(e=>new Date(e.date)>=new Date()).slice(0,3).map(e=>e.title);
-  const counts={pending,done,habits:habits.length,notes:notes.length,items:items.length,todayPomos};
-  const summary=`User: ${p.name}. Tasks: ${pending} pending, ${done} done${highPriority.length?`, high priority: ${highPriority.join(', ')}`:''}.`+
-    ` Habits tracked: ${habits.length}${habits.length?` (${habits.map(h=>h.name).slice(0,4).join(', ')})`:''}.`+
-    ` Notes: ${notes.length}. Files & links: ${items.length}.`+
-    ` Today's pomodoros: ${todayPomos}.`+
-    (upcoming.length?` Upcoming events: ${upcoming.join(', ')}.`:'')+
-    (s.bio?` Bio: ${s.bio}.`:'');
+  const upcoming=(s.events||[]).filter(e=>new Date(e.date)>=new Date()).slice(0,5).map(e=>`${e.title} (${e.date})`);
+  const counts={pending:pending.length,done,habits:habits.length,notes:notes.length,items:items.length,todayPomos};
+
+  // Vrais noms des éléments (pas de compteurs vides)
+  const noteNames=notes.slice(0,8).map(n=>`"${n.title||'Sans titre'}" (id:${n.id})`);
+  const itemNames=items.slice(0,8).map(i=>`"${i.name||i.title||'Sans nom'}" [${i.type||'file'}]`);
+  const habitNames=habits.map(h=>`${h.name} (streak:${h.streak||0})`).slice(0,6);
+  const goalNames=(s.goals||[]).filter(g=>!g.done).map(g=>g.text).slice(0,4);
+  const kanbanCards=(s.kanban||[]).flatMap(col=>(col.cards||[]).filter(c=>!c.done).map(c=>c.text)).slice(0,5);
+
+  const summary=[
+    `Utilisateur: ${p.name}.`,
+    `Tâches: ${pending.length} en cours${allPending.length?` [${allPending.join(' | ')}]`:''}, ${done} terminées.`,
+    highPriority.length?`Haute priorité: ${highPriority.join(', ')}.`:'',
+    habitNames.length?`Habitudes (${habits.length}): ${habitNames.join(', ')}.`:'',
+    noteNames.length?`Notes (${notes.length}): ${noteNames.join(', ')}.`:'Aucune note.',
+    itemNames.length?`Fichiers & liens (${items.length}): ${itemNames.join(', ')}.`:'Aucun fichier.',
+    goalNames.length?`Objectifs en cours: ${goalNames.join(', ')}.`:'',
+    kanbanCards.length?`Kanban en cours: ${kanbanCards.join(', ')}.`:'',
+    upcoming.length?`Événements à venir: ${upcoming.join(', ')}.`:'',
+    s.bio?`Bio: ${s.bio}.`:'',
+    `Pomodoros aujourd'hui: ${todayPomos}.`,
+  ].filter(Boolean).join(' ');
+
   return{summary,counts,profile:p.name};
 }
 
 function saveAIChats(){
   const p=curP();if(!p||!p.state)return;
   if(!p.state.aiSessions)p.state.aiSessions=[];
-  // Update current session
   if(_aiHistory.length>0){
     const sess=p.state.aiSessions;
     const now=Date.now();
-    if(sess.length===0||sess[sess.length-1].id!==_aiSessionId){
+    if(!_aiSessionId||sess.length===0||sess[sess.length-1].id!==_aiSessionId){
       _aiSessionId=now;
-      sess.push({id:now,ts:now,preview:_aiHistory[0]?.content?.slice(0,60)||'Chat',messages:[..._aiHistory]});
+      sess.push({id:now,ts:now,preview:_aiHistory.find(m=>m.role==='user')?.content?.slice(0,60)||'Chat',messages:[..._aiHistory]});
     } else {
       sess[sess.length-1].messages=[..._aiHistory];
+      sess[sess.length-1].ts=Date.now();
       sess[sess.length-1].preview=_aiHistory.find(m=>m.role==='user')?.content?.slice(0,60)||'Chat';
     }
-    // Keep last 20 sessions
     if(sess.length>20)p.state.aiSessions=sess.slice(-20);
   }
+  // Sauvegarder en local ET cloud
   saveStateNow();
+  if(_sbUser){clearTimeout(_saveCloudTimeout);saveCloudState().catch(()=>{});}
 }
 
 function renderAISessions(){
@@ -7669,7 +7703,7 @@ IMPORTANT: Insère l'ACTION dans ta réponse si nécessaire. Tu peux combiner te
   }catch(e){
     removeAITyping();
     const errMsg=e?.message||'Erreur inconnue';
-    addAIMessage('assistant','❌ Erreur: '+errMsg+'. Vérifie ta clé Gemini dans Connexions.');
+    addAIMessage('assistant','❌ Erreur: '+errMsg+'. Vérifie ta clé Groq dans Connexions → NEXUS AI.');
     console.error('[NEXUS AI]',e);
   }
   _aiTyping=false;
@@ -9065,15 +9099,12 @@ function loadConnectionsUI(){
     renderLastfmCard(conn.lastfm);
     startLastfmAutoRefresh();
   }
-  // Sync sidebar widgets — but skip re-rendering nav to avoid flash
+  // Sync sidebar widgets visibility sans re-render nav (évite le flash)
   const p2=curP();
   if(p2){
-    // Only update widget visibility, don't re-render nav
-    const _origRenderNav=window.renderSidebarNav;
-    window.renderSidebarNav=()=>{}; // temporarily disable
-    initSidebarWidgets(p2);
     initSidebarWidgetToggles();
-    window.renderSidebarNav=_origRenderNav; // restore
+    // Ne PAS appeler initSidebarWidgets ici — déjà fait au boot
+    // juste mettre à jour les toggles visuels dans la page connexions
   }
   loadGroqKeyUI();
 }
@@ -9359,21 +9390,42 @@ function showLinkPreview(url,e){
 //  DRAG & DROP OVERVIEW WIDGETS
 // ══════════════════════════════════════════════════════════════
 let _dragSrc=null;
+function _getOverviewBlocks(){
+  // Retourne les blocs draggable directs de page-dashboard (gaming wrap + les grid wrappers directs)
+  const dash=document.getElementById('page-dashboard');
+  if(!dash)return[];
+  // Les blocs droppables sont les enfants directs qui ne sont pas topbar/stats/banner
+  return [...dash.children].filter(el=>{
+    const id=el.id||'';
+    const cls=el.className||'';
+    // Exclure: profile-banner, topbar, stats-row, et elements sans contenu draggable
+    if(id==='profile-banner')return false;
+    if(cls.includes('topbar'))return false;
+    if(cls.includes('stats-row'))return false;
+    if(el.tagName!=='DIV')return false;
+    return true;
+  });
+}
+
 function initOverviewDragDrop(){
-  const selector='#page-dashboard > div:not(.stats-row) .panel, #page-dashboard > .panel, #gaming-overview-wrap, #page-dashboard > div.overview-widget';
-  document.querySelectorAll(selector).forEach(panel=>{
-    if(panel.dataset.draggable==='ready')return; // éviter doublons
-    panel.dataset.draggable='ready';
-    panel.classList.add('overview-widget');panel.setAttribute('draggable','true');
-    panel.addEventListener('dragstart',function(e){_dragSrc=this;this.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
-    panel.addEventListener('dragend',function(){this.classList.remove('dragging');document.querySelectorAll('.drag-over').forEach(el=>el.classList.remove('drag-over'));});
-    panel.addEventListener('dragover',function(e){e.preventDefault();e.dataTransfer.dropEffect='move';this.classList.add('drag-over');});
-    panel.addEventListener('dragleave',function(){this.classList.remove('drag-over');});
-    panel.addEventListener('drop',function(e){
+  _getOverviewBlocks().forEach((block,i)=>{
+    if(!block.id)block.id='overview-block-'+i; // auto-assign ID si manquant
+    if(block.dataset.draggable==='ready')return;
+    block.dataset.draggable='ready';
+    block.classList.add('overview-widget');
+    block.setAttribute('draggable','true');
+    block.addEventListener('dragstart',function(e){_dragSrc=this;this.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
+    block.addEventListener('dragend',function(){this.classList.remove('dragging');document.querySelectorAll('.drag-over').forEach(el=>el.classList.remove('drag-over'));});
+    block.addEventListener('dragover',function(e){e.preventDefault();e.dataTransfer.dropEffect='move';this.classList.add('drag-over');});
+    block.addEventListener('dragleave',function(){this.classList.remove('drag-over');});
+    block.addEventListener('drop',function(e){
       e.preventDefault();e.stopPropagation();this.classList.remove('drag-over');
       if(_dragSrc&&_dragSrc!==this){
-        const par=this.parentNode;const si=[...par.children].indexOf(_dragSrc);const ti=[...par.children].indexOf(this);
-        if(si<ti)par.insertBefore(_dragSrc,this.nextSibling);else par.insertBefore(_dragSrc,this);
+        const par=this.parentNode;
+        const si=[...par.children].indexOf(_dragSrc);
+        const ti=[...par.children].indexOf(this);
+        if(si<ti)par.insertBefore(_dragSrc,this.nextSibling);
+        else par.insertBefore(_dragSrc,this);
         saveOverviewOrder();
       }
     });
@@ -9383,22 +9435,23 @@ function initOverviewDragDrop(){
 
 function saveOverviewOrder(){
   const p=curP();if(!p)return;
-  const selector='#page-dashboard > div:not(.stats-row) .panel, #page-dashboard > .panel, #gaming-overview-wrap, #page-dashboard > div.overview-widget';
-  const ids=[...document.querySelectorAll(selector)].map(el=>el.id).filter(Boolean);
+  const ids=_getOverviewBlocks().map(el=>el.id).filter(Boolean);
   if(!p.state)p.state={};
   p.state.overviewOrder=ids;
   saveStateNow();
+  if(_sbUser){clearTimeout(_saveCloudTimeout);saveCloudState().catch(()=>{});}
 }
 
 function restoreOverviewOrder(){
   const p=curP();if(!p)return;
   const order=p.state?.overviewOrder;
   if(!order||!order.length)return;
-  const container=document.getElementById('page-dashboard');
-  if(!container)return;
+  const dash=document.getElementById('page-dashboard');
+  if(!dash)return;
+  // Ré-insérer dans l'ordre sauvegardé
   order.forEach(id=>{
     const el=document.getElementById(id);
-    if(el&&el.parentNode===container)container.appendChild(el);
+    if(el&&el.parentNode===dash)dash.appendChild(el);
   });
 }
 
@@ -10529,10 +10582,14 @@ function refreshDiscordSidebar(){
   const stEl=document.getElementById('sb-dc-status');
   if(stEl)stEl.className='sb-dc-dot '+status;
   const card=document.getElementById('sb-discord-card');
-  // no color class on card itself, only on dot+badge
+  // Appliquer la couleur de bordure selon le statut
+  if(card){
+    const borderColors={online:'#3ba55c',idle:'#faa81a',dnd:'#ed4245',offline:'rgba(255,255,255,.07)'};
+    card.style.borderColor=borderColors[status]||'rgba(255,255,255,.07)';
+    card.style.boxShadow=status!=='offline'?`0 0 0 1px ${borderColors[status]}22`:'none';
+  }
   const badge=document.getElementById('sb-dc-badge');
   if(badge){
-    // Lanyard returns 'offline' for both offline and invisible
     const labels={online:'ONLINE',idle:'IDLE',dnd:'DND',offline:'INVI'};
     badge.textContent=labels[status]||status;
     badge.className='sb-dc-badge '+(status==='offline'?'offline':status);
@@ -11849,14 +11906,13 @@ function saveWeatherCity(){
 async function fetchWeather(forceCity){
   const w=document.getElementById('weather-widget');if(!w)return;
   const _wp=curP();const _wc=_wp?.state?.weatherCache;
-  const savedCity=forceCity||_wp?.state?.weatherCity;
-  // Only show cache if it matches the current saved city (avoid showing wrong city)
-  // Only show cache if it matches current saved city
+  // Ville manuelle = priorité absolue. forceCity > weatherCity > géoloc
+  const savedCity=forceCity||_wp?.state?.weatherCity||null;
   const cacheMatchesCity=!savedCity||(_wc?.city&&_wc.city.toLowerCase()===savedCity.toLowerCase());
-  if(_wc?.rendered&&cacheMatchesCity){
-    w.innerHTML=_wc.rendered;
+  if(_wc?.rendered&&cacheMatchesCity&&(Date.now()-(_wc.ts||0)<1800000)){
+    w.innerHTML=_wc.rendered; // cache valide < 30min
+    return; // pas besoin de re-fetcher
   } else {
-    // Clear stale cache immediately
     if(_wp?.state&&!cacheMatchesCity)_wp.state.weatherCache=null;
     w.innerHTML='<div style="padding:12px;font-size:12px;color:var(--muted)">📍 Chargement...</div>';
   }
@@ -11965,7 +12021,12 @@ async function fetchWeather(forceCity){
     return null;
   }
 
-  // GPS first, IP fallback
+  // Si ville manuelle définie et on arrive ici = ville introuvable
+  if(_wp?.state?.weatherCity){
+    w.innerHTML=`<div style="padding:12px;font-size:12px;color:var(--muted)">❌ Ville introuvable: <strong>${_wp.state.weatherCity}</strong> — <button onclick="promptWeatherCity()" style="background:none;border:none;color:var(--accent);cursor:pointer;font-family:var(--font);font-size:12px">Modifier</button></div>`;
+    return;
+  }
+  // GPS first, IP fallback (seulement si pas de ville manuelle)
   if(navigator.geolocation){
     navigator.geolocation.getCurrentPosition(
       async pos=>{try{await doFetch(pos.coords.latitude,pos.coords.longitude);}catch(e){

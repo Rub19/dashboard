@@ -11276,25 +11276,13 @@ async function refreshSpotifySidebar(){
           _npDurationMs=parseInt(info?.track?.duration)||240000;
         }catch(e){_npDurationMs=240000;}
 
-        // Restore start time from sessionStorage if same track
+        // Restore start time from sessionStorage si même piste et elapsed < duration
         const stored=JSON.parse(sessionStorage.getItem('np_track')||'{}');
-        if(stored.key===trackKey&&stored.startedAt){
+        if(stored.key===trackKey&&stored.startedAt&&(Date.now()-stored.startedAt)<_npDurationMs){
           _npStartTime=stored.startedAt;
         } else {
-          // New track — estimate start as now minus half the duration (can't know exactly)
-          // Better: use the timestamp of the NEXT track in recent tracks to back-calculate
-          try{
-            const recent=await fetchLastfm('user.getrecenttracks',`user=${encodeURIComponent(lfm.username)}&limit=2`);
-            const tracks=recent?.recenttracks?.track||[];
-            // Second track (index 1) is the previously completed track
-            // Its date + duration ≈ when current track started
-            if(tracks[1]?.date?.uts){
-              const prevEndMs=parseInt(tracks[1].date.uts)*1000;
-              _npStartTime=prevEndMs;
-            } else {
-              _npStartTime=Date.now();
-            }
-          }catch(e){_npStartTime=Date.now();}
+          // Nouvelle piste ou elapsed dépassé → on repart de 0
+          _npStartTime=Date.now();
           sessionStorage.setItem('np_track',JSON.stringify({key:trackKey,startedAt:_npStartTime,duration:_npDurationMs}));
         }
         _npProgressTimer=setInterval(()=>updateNpFallbackProgress(),1000);

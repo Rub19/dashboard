@@ -11346,7 +11346,7 @@ function renderPomo(){
   }
 
   // Mode tabs
-  POMO_MODES.forEach((_,i)=>{
+  POMO_MODES().forEach((_,i)=>{
     const tab=document.getElementById('pomo-tab-'+i);
     if(!tab)return;
     tab.classList.toggle('active',i===pomoIdx);

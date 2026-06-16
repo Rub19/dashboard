@@ -2377,13 +2377,13 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 .sb-dc-badge{
   font-size:7.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
   padding:2px 5px;border-radius:4px;font-family:'JetBrains Mono',monospace;flex-shrink:0;
-  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  background:transparent;border:1px solid transparent;
   color:rgba(245,245,247,.4);
 }
-.sb-dc-badge.online{color:#3ba55c;border-color:rgba(59,165,92,.25);background:rgba(59,165,92,.08)}
-.sb-dc-badge.idle{color:#faa81a;border-color:rgba(250,168,26,.25);background:rgba(250,168,26,.07)}
-.sb-dc-badge.dnd{color:#ed4245;border-color:rgba(237,66,69,.25);background:rgba(237,66,69,.07)}
-.sb-dc-badge.offline{color:rgba(245,245,247,.3)}
+.sb-dc-badge.online{color:#fff;border-color:#3ba55c;background:#3ba55c}
+.sb-dc-badge.idle{color:#fff;border-color:#faa81a;background:#faa81a}
+.sb-dc-badge.dnd{color:#fff;border-color:#ed4245;background:#ed4245}
+.sb-dc-badge.offline{color:rgba(245,245,247,.35);border-color:rgba(255,255,255,.1);background:transparent}
 /* Discord activity bar fill — color depends on status */
 #sb-dc-bar-fill{background:rgba(255,255,255,.15);width:0%}
 /* EQ bars */
@@ -2554,16 +2554,16 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   from{opacity:1;transform:translateY(0)}
   to{opacity:0;transform:translateY(-8px)}
 }
-.tab-content{opacity:0}
-.tab-content.active{opacity:1}
+.tab-content{display:none!important}
+.tab-content.active{display:block!important;opacity:1}
 .tab-content.page-entering{
-  animation:pageIn .28s cubic-bezier(.4,0,.2,1) forwards;
+  animation:pageIn .22s cubic-bezier(.4,0,.2,1) forwards;
 }
 .tab-content.page-entering-left{
-  animation:pageInLeft .28s cubic-bezier(.4,0,.2,1) forwards;
+  animation:pageInLeft .22s cubic-bezier(.4,0,.2,1) forwards;
 }
 .tab-content.page-entering-right{
-  animation:pageInRight .28s cubic-bezier(.4,0,.2,1) forwards;
+  animation:pageInRight .22s cubic-bezier(.4,0,.2,1) forwards;
 }
 
 /* ══ NOTIFICATIONS PANEL ══ */
@@ -3506,7 +3506,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
             <span class="sb-dc-badge offline" id="sb-dc-badge">—</span>
           </div>
           <div class="sb-wc-sub" id="sb-dc-activity" style="display:none"></div>
-          <div class="sb-wc-bar"><div class="sb-wc-bar-fill" id="sb-dc-bar-fill" style="width:0%"></div></div>
+
         </div>
       </div>
     </div>
@@ -5685,6 +5685,7 @@ async function loadCloudState(){
           weatherCity:s.weatherCity||null,
           weatherCache:s.weatherCity&&s.weatherCache?.city===s.weatherCity?s.weatherCache:null,
           aiSessions:s.aiSessions||[],
+          overviewOrder:s.overviewOrder||[],
         }
       };
     });
@@ -5743,6 +5744,7 @@ async function saveCloudState(){
         weatherCity:p.state?.weatherCity||null,
         weatherCache:p.state?.weatherCache||null,
         aiSessions:p.state?.aiSessions||[],
+        overviewOrder:p.state?.overviewOrder||[],
       },
       updated_at:new Date().toISOString()
     };
@@ -6581,62 +6583,42 @@ function initSidebarWidgets(p){
   if(!p)return;
   const conn=p.state?.connections||{};
 
-  // Use unified visible.* system from new widget manager
   const swPrefs=p.state.sidebarWidgets||{};
   const vis=swPrefs.visible||{};
-  // Backwards compat: if old-style key exists and new visible key absent, migrate
   if(swPrefs.discord===false&&vis.discord===undefined)vis.discord=false;
   if(swPrefs.lastfm===false&&vis.lastfm===undefined)vis.lastfm=false;
 
+  // ── Discord status card ──
   const dcWrap=document.getElementById('sb-discord-wrap');
-  if(conn.discord?.userId&&vis.discord!==false){
+  const hasDiscord=!!(conn.discord?.userId&&vis.discord!==false);
+  if(hasDiscord){
     if(dcWrap)dcWrap.style.display='block';
     refreshDiscordSidebar();
     startLanyardWS(conn.discord.userId);
+    // Lanyard WS will call updateSpotifyFromLanyard(d) which handles
+    // showing sb-spotify-wrap vs sb-spotify-iframe-wrap automatically.
+    // Hide both Now Playing widgets until Lanyard responds.
+    const npWrap=document.getElementById('sb-spotify-wrap');
+    const ifrWrap=document.getElementById('sb-spotify-iframe-wrap');
+    if(npWrap)npWrap.style.display='none';
+    if(ifrWrap)ifrWrap.style.display='none';
   } else {
     if(dcWrap)dcWrap.style.display='none';
-  }
-
-  // Now Playing via Lanyard (Spotify)
-  const npWrap=document.getElementById('sb-spotify-wrap');
-  if(conn.discord?.userId&&vis.nowplaying!==false){
-    if(npWrap)npWrap.style.display='block';
-  } else {
+    // No Discord — always use Last.fm fallback for Now Playing
+    const npWrap=document.getElementById('sb-spotify-wrap');
     if(npWrap)npWrap.style.display='none';
+    if(conn.lastfm?.username&&vis.nowplaying!==false){
+      const ifrWrap=document.getElementById('sb-spotify-iframe-wrap');
+      if(ifrWrap)ifrWrap.style.display='block';
+      refreshSpotifySidebar();
+      startSpotifyAutoRefresh();
+    }
   }
 
-  // Last.fm
+  // ── Last.fm scrobble card ──
   if(conn.lastfm?.username&&vis.lastfm!==false){
     renderLastfmCard(conn.lastfm).catch(()=>{});
     startLastfmAutoRefresh();
-  }
-
-  // Now Playing via Last.fm
-  if(conn.lastfm?.username&&vis.nowplaying!==false){
-    refreshSpotifySidebar();
-    startSpotifyAutoRefresh();
-  }
-  // Spotify fallback pill (follows lastfm visibility)
-  if(conn.lastfm?.username&&vis.lastfm!==false){
-    fetchLastfm('user.getrecenttracks',`user=${encodeURIComponent(conn.lastfm.username)}&limit=1`)
-      .then(data=>{
-        const track=data?.recenttracks?.track?.[0];
-        if(!track)return;
-        // Only show if Lanyard Spotify not active
-        if(document.getElementById('sb-spotify-wrap')?.style.display==='block')return;
-        const wrap=document.getElementById('sb-spotify-iframe-wrap');
-        if(!wrap)return;
-        wrap.style.display='block';
-        const img=track.image?.[2]?.['#text']||'';
-        const artEl=document.getElementById('np-art-fallback');
-        const trackEl=document.getElementById('np-fallback-track');
-        const artistEl=document.getElementById('np-fallback-artist');
-        const eqEl=document.getElementById('np-fallback-eq');
-        if(artEl){if(img)artEl.innerHTML=`<img src="${img}" style="width:34px;height:34px;object-fit:cover;border-radius:7px;display:block">`;else artEl.textContent='🎵';}
-        if(trackEl)trackEl.textContent=track.name||'—';
-        if(artistEl)artistEl.textContent=track.artist?.['#text']||'—';
-        if(eqEl)eqEl.style.display=track?.['@attr']?.nowplaying?'flex':'none';
-      }).catch(()=>{});
   }
 }
 
@@ -7442,6 +7424,14 @@ function toggleAISessions(){
 let _aiSessionId=null;
 
 function initAIChat(){
+  // Ne réinitialise pas si des messages sont déjà affichés dans le DOM (retour sur onglet)
+  const msgContainer=document.getElementById('ai-messages');
+  if(msgContainer&&msgContainer.children.length>0){
+    // Juste update le context label
+    const ctx=getAIContext();
+    document.getElementById('ai-ctx-label').textContent=`${ctx.profile} · ${ctx.counts.pending} tasks · ${ctx.counts.habits} habits`;
+    return;
+  }
   const ctx=getAIContext();
   document.getElementById('ai-ctx-label').textContent=`${ctx.profile} · ${ctx.counts.pending} tasks · ${ctx.counts.habits} habits`;
   if(_aiHistory.length===0){
@@ -9370,9 +9360,10 @@ function showLinkPreview(url,e){
 // ══════════════════════════════════════════════════════════════
 let _dragSrc=null;
 function initOverviewDragDrop(){
-  // Include .panel widgets AND special widgets like gaming/weather
   const selector='#page-dashboard > div:not(.stats-row) .panel, #page-dashboard > .panel, #gaming-overview-wrap, #page-dashboard > div.overview-widget';
   document.querySelectorAll(selector).forEach(panel=>{
+    if(panel.dataset.draggable==='ready')return; // éviter doublons
+    panel.dataset.draggable='ready';
     panel.classList.add('overview-widget');panel.setAttribute('draggable','true');
     panel.addEventListener('dragstart',function(e){_dragSrc=this;this.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
     panel.addEventListener('dragend',function(){this.classList.remove('dragging');document.querySelectorAll('.drag-over').forEach(el=>el.classList.remove('drag-over'));});
@@ -9383,8 +9374,31 @@ function initOverviewDragDrop(){
       if(_dragSrc&&_dragSrc!==this){
         const par=this.parentNode;const si=[...par.children].indexOf(_dragSrc);const ti=[...par.children].indexOf(this);
         if(si<ti)par.insertBefore(_dragSrc,this.nextSibling);else par.insertBefore(_dragSrc,this);
+        saveOverviewOrder();
       }
     });
+  });
+  restoreOverviewOrder();
+}
+
+function saveOverviewOrder(){
+  const p=curP();if(!p)return;
+  const selector='#page-dashboard > div:not(.stats-row) .panel, #page-dashboard > .panel, #gaming-overview-wrap, #page-dashboard > div.overview-widget';
+  const ids=[...document.querySelectorAll(selector)].map(el=>el.id).filter(Boolean);
+  if(!p.state)p.state={};
+  p.state.overviewOrder=ids;
+  saveStateNow();
+}
+
+function restoreOverviewOrder(){
+  const p=curP();if(!p)return;
+  const order=p.state?.overviewOrder;
+  if(!order||!order.length)return;
+  const container=document.getElementById('page-dashboard');
+  if(!container)return;
+  order.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el&&el.parentNode===container)container.appendChild(el);
   });
 }
 
@@ -10519,7 +10533,7 @@ function refreshDiscordSidebar(){
   const badge=document.getElementById('sb-dc-badge');
   if(badge){
     // Lanyard returns 'offline' for both offline and invisible
-    const labels={online:'Online',idle:'Idle',dnd:'DND',offline:'Invis'};
+    const labels={online:'ONLINE',idle:'IDLE',dnd:'DND',offline:'INVI'};
     badge.textContent=labels[status]||status;
     badge.className='sb-dc-badge '+(status==='offline'?'offline':status);
   }
@@ -10544,12 +10558,13 @@ function updateSpotifyFromLanyard(d){
   const sp=d.spotify;
   const wrap=document.getElementById('sb-spotify-wrap');
   const iframeWrap=document.getElementById('sb-spotify-iframe-wrap');
-  if(sp&&sp.song){
+  const dcStatus=d.discord_status||'offline';
+  const isDiscordOnline=['online','idle','dnd'].includes(dcStatus);
+
+  if(isDiscordOnline&&sp&&sp.song){
+    // Discord online + Spotify playing → Lanyard widget
     if(wrap)wrap.style.display='block';
     if(iframeWrap)iframeWrap.style.display='none';
-    // Also hide the Last.fm fallback pill
-    const lfmFallback=document.getElementById('sb-spotify-iframe-wrap');
-    if(lfmFallback)lfmFallback.style.display='none';
     const artEl=document.getElementById('np-art');
     if(artEl){
       if(sp.album_art_url)artEl.innerHTML=`<img src="${sp.album_art_url}" alt="album" onerror="this.innerHTML='♪'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:8px;display:block">`;
@@ -10568,15 +10583,16 @@ function updateSpotifyFromLanyard(d){
       if(timeRow)timeRow.style.display='none';
     }
   } else {
+    // Discord offline/invis OR no Spotify playing → hide Lanyard widget
     if(wrap)wrap.style.display='none';
     const eq=document.getElementById('sb-eq-anim');if(eq)eq.style.display='none';
     clearInterval(window._npProgressInterval);
+    // Show Last.fm fallback if user has Last.fm connected
     const p=curP();
-    const url=p?.state?.connections?.spotify?.widgetUrl;
-    if(url&&iframeWrap){
+    const lfm=p?.state?.connections?.lastfm;
+    if(lfm?.username&&iframeWrap){
       iframeWrap.style.display='block';
-      const iframe=document.getElementById('nowplaying-iframe');
-      if(iframe&&!iframe.src)iframe.src=url;
+      refreshSpotifySidebar();
     } else if(iframeWrap){
       iframeWrap.style.display='none';
     }
@@ -11815,17 +11831,19 @@ function saveWeatherCity(){
   const inp=document.getElementById('wx-city-input');
   const city=inp?.value?.trim()||'';
   if(!p.state)p.state={};
+  // 1. Mettre à jour la ville ET vider le cache IMMÉDIATEMENT
   p.state.weatherCity=city||null;
-  p.state.weatherCache=null; // clear cached coords + HTML
-  // Force immediate cloud save so cache is wiped on Supabase too
+  p.state.weatherCache=null;
+  // 2. Fermer l'éditeur
+  document.getElementById('wx-city-editor')?.remove();
+  // 3. Lancer le fetch TOUT DE SUITE avec la nouvelle ville (pas de setTimeout)
+  fetchWeather(city||null);
+  // 4. Sauvegarder en cloud en arrière-plan
   saveStateNow();
   if(_sbUser){
     clearTimeout(_saveCloudTimeout);
     saveCloudState().catch(()=>{});
   }
-  document.getElementById('wx-city-editor')?.remove();
-  // Short delay to ensure save completed before fetch
-  setTimeout(()=>fetchWeather(city||null), 200);
 }
 
 async function fetchWeather(forceCity){

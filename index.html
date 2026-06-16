@@ -11276,13 +11276,25 @@ async function refreshSpotifySidebar(){
           _npDurationMs=parseInt(info?.track?.duration)||240000;
         }catch(e){_npDurationMs=240000;}
 
-        // Restore start time from sessionStorage si même piste et elapsed < duration
+        // Restore depuis sessionStorage si même piste et position valide
         const stored=JSON.parse(sessionStorage.getItem('np_track')||'{}');
         if(stored.key===trackKey&&stored.startedAt&&(Date.now()-stored.startedAt)<_npDurationMs){
           _npStartTime=stored.startedAt;
         } else {
-          // Nouvelle piste ou elapsed dépassé → on repart de 0
-          _npStartTime=Date.now();
+          // Nouvelle piste : estimer la position via le timestamp UTS de la piste actuelle
+          // Last.fm ne donne pas le UTS pour la nowplaying, mais on peut estimer avec la piste précédente
+          try{
+            const recent2=await fetchLastfm('user.getrecenttracks',`user=${encodeURIComponent(lfm.username)}&limit=2`);
+            const tracks2=recent2?.recenttracks?.track||[];
+            // tracks2[1] = piste précédente avec son timestamp de fin
+            const prevUts=tracks2[1]?.date?.uts?parseInt(tracks2[1].date.uts)*1000:null;
+            if(prevUts&&(Date.now()-prevUts)<_npDurationMs&&prevUts<Date.now()){
+              // La piste actuelle a commencé juste après la fin de la précédente
+              _npStartTime=prevUts;
+            } else {
+              _npStartTime=Date.now();
+            }
+          }catch(e){_npStartTime=Date.now();}
           sessionStorage.setItem('np_track',JSON.stringify({key:trackKey,startedAt:_npStartTime,duration:_npDurationMs}));
         }
         _npProgressTimer=setInterval(()=>updateNpFallbackProgress(),1000);

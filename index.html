@@ -6803,7 +6803,7 @@ function renderWidgetManager(){
       <div class="widget-row-icon" style="background:${def.bg}">${def.icon}</div>
       <div style="flex:1;min-width:0">
         <div class="widget-row-label">${def.label}</div>
-        <div class="widget-row-sub">${hasConn?def.sub:uiLang==='fr'?'Non connecté':'Not connected'}</div>
+        <div class="widget-row-sub">${hasConn?def.sub:'Not connected'}</div>
       </div>
       <div class="widget-toggle-switch${isOn?' on':''}" onclick="toggleWidgetVisible('${def.id}',this)" title="${isOn?'Hide':'Show'} in sidebar"></div>
     `;
@@ -9118,9 +9118,9 @@ function renderStatsPage(){
     // Center hole
     ctx.beginPath();ctx.arc(45,45,24,0,Math.PI*2);ctx.fillStyle='var(--surface)';ctx.fill();
     if(legendEl)legendEl.innerHTML=[
-      {label:uiLang==='fr'?'Terminées':'Done',val:done,color:'#34d399'},
-      {label:uiLang==='fr'?'En cours':'Pending',val:pending,color:'#3b82f6'},
-      {label:uiLang==='fr'?'Haute priorité':'High priority',val:high,color:'#f87171'},
+      {label:'Done',val:done,color:'#34d399'},
+      {label:'Pending',val:pending,color:'#3b82f6'},
+      {label:'High priority',val:high,color:'#f87171'},
     ].map(s=>`<div style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:${s.color};flex-shrink:0"></span><span style="color:var(--muted)">${s.label}</span><span style="font-weight:700;margin-left:auto">${s.val}</span></div>`).join('');
   }
 
@@ -9445,9 +9445,9 @@ function disconnectOW(){
   if(p.state.gaming)delete p.state.gaming.ow;
   saveStateNow();
   document.getElementById('ow-stats-area').innerHTML='<div class="game-not-connected">Connect your account to see your stats</div>';
-  document.getElementById('ow-badge').textContent=uiLang==='fr'?'Non connecté':'Not connected';
+  document.getElementById('ow-badge').textContent='Not connected';
   document.getElementById('ow-badge').className='conn-status-badge disconnected';
-  document.getElementById('ow-account-sub').textContent=uiLang==='fr'?'Non connecté':'Not connected';
+  document.getElementById('ow-account-sub').textContent='Not connected';
   document.getElementById('ow-disconnect').style.display='none';
   document.getElementById('ow-username').value='';
   toast('Overwatch 2 disconnected','info');
@@ -10654,7 +10654,7 @@ function disconnectLastfm(){
   const p=curP();if(!p)return;
   delete p.state.connections.lastfm;
   saveStateNow();
-  document.getElementById('lastfm-badge').textContent=uiLang==='fr'?'Non connecté':'Not connected';
+  document.getElementById('lastfm-badge').textContent='Not connected';
   document.getElementById('lastfm-badge').className='conn-status-badge disconnected';
   document.getElementById('lastfm-preview').style.display='none';
   document.getElementById('lastfm-preview').innerHTML='';
@@ -10929,7 +10929,7 @@ function disconnectDiscord(){
   if(!confirm('Disconnect Discord?'))return;
   delete p.state.connections.discord;saveStateNow();
   const badge=document.getElementById('dc-badge');
-  if(badge){badge.textContent=uiLang==='fr'?'Non connecté':'Not connected';badge.className='conn-status-badge disconnected';}
+  if(badge){badge.textContent='Not connected';badge.className='conn-status-badge disconnected';}
   const preview=document.getElementById('dc-preview');
   if(preview)preview.classList.remove('visible');
   const inp=document.getElementById('dc-userid');
@@ -11187,7 +11187,7 @@ function disconnectSteam(){
   if(!confirm('Disconnect Steam?'))return;
   delete p.state.connections.steam;saveStateNow();
   const badge=document.getElementById('steam-badge');
-  if(badge){badge.textContent=uiLang==='fr'?'Non connecté':'Not connected';badge.className='conn-status-badge disconnected';}
+  if(badge){badge.textContent='Not connected';badge.className='conn-status-badge disconnected';}
   const preview=document.getElementById('steam-preview');
   if(preview)preview.classList.remove('visible');
   const inp=document.getElementById('steam-id');if(inp)inp.value='';
@@ -11218,7 +11218,7 @@ function disconnectSpotify(){
   delete p.state.connections.spotify;saveStateNow();
   refreshSpotifySidebar();
   const badge=document.getElementById('spotify-badge');
-  if(badge){badge.textContent=uiLang==='fr'?'Non connecté':'Not connected';badge.className='conn-status-badge disconnected';}
+  if(badge){badge.textContent='Not connected';badge.className='conn-status-badge disconnected';}
   const inp=document.getElementById('spotify-url');if(inp)inp.value='';
   const btn=document.getElementById('spotify-disconnect-btn');if(btn)btn.style.display='none';
   const rbtn=document.getElementById('spotify-refresh-btn');if(rbtn)rbtn.style.display='none';
@@ -11393,7 +11393,7 @@ async function renderTwitchCard(){
   const refreshBtn=document.getElementById('twitch-refresh-btn');
 
   if(!streamers.length){
-    if(badge){badge.textContent=uiLang==='fr'?'Non connecté':'Not connected';badge.className='conn-status-badge disconnected';}
+    if(badge){badge.textContent='Not connected';badge.className='conn-status-badge disconnected';}
     if(list)list.innerHTML='';
     if(refreshBtn)refreshBtn.style.display='none';
     updateTwitchSidebar([]);
@@ -11840,7 +11840,7 @@ function addKanbanCard(){
   p.state.kanban.push({id:Date.now(),title,tag,col});
   saveStateNow();closeModal('add-kcard');
   document.getElementById('kcard-title').value='';document.getElementById('kcard-tag').value='';
-  renderKanban();toast(uiLang==='fr'?'Carte ajoutée !':'Card added!','success');
+  renderKanban();toast('Card added!','success');
 }
 function quickAddKanban(col){
   document.getElementById('kcard-col').value=col;openModal('add-kcard');
@@ -13181,8 +13181,8 @@ function disconnectValo(){
   if(!confirm('Disconnect Valorant?'))return;
   delete p.state.gaming?.valo;saveStateNow();
   document.getElementById('valo-stats-area').innerHTML='<div class="game-not-connected"><div style="font-size:28px;margin-bottom:8px"></div><div>Enter your Riot Name#Tag to connect</div></div>';
-  document.getElementById('valo-badge').textContent=uiLang==='fr'?'Non connecté':'Not connected';document.getElementById('valo-badge').className='conn-status-badge disconnected';
-  document.getElementById('valo-account-sub').textContent=uiLang==='fr'?'Non connecté':'Not connected';
+  document.getElementById('valo-badge').textContent='Not connected';document.getElementById('valo-badge').className='conn-status-badge disconnected';
+  document.getElementById('valo-account-sub').textContent='Not connected';
   document.getElementById('valo-disconnect').style.display='none';
   document.getElementById('valo-name').value='';
   toast('Valorant disconnected','info');
@@ -13301,8 +13301,8 @@ function disconnectLoL(){
   if(!confirm('Disconnect LoL?'))return;
   delete p.state.gaming?.lol;saveStateNow();
   document.getElementById('lol-stats-area').innerHTML='<div class="game-not-connected"><div style="font-size:28px"></div><div>Enter your Summoner Name to connect</div></div>';
-  document.getElementById('lol-badge').textContent=uiLang==='fr'?'Non connecté':'Not connected';document.getElementById('lol-badge').className='conn-status-badge disconnected';
-  document.getElementById('lol-account-sub').textContent=uiLang==='fr'?'Non connecté':'Not connected';
+  document.getElementById('lol-badge').textContent='Not connected';document.getElementById('lol-badge').className='conn-status-badge disconnected';
+  document.getElementById('lol-account-sub').textContent='Not connected';
   document.getElementById('lol-disconnect').style.display='none';
   document.getElementById('lol-name').value='';document.getElementById('lol-apikey').value='';
   toast('LoL disconnected','info');
@@ -13645,7 +13645,7 @@ var I18N = {
     'disconnect': 'Disconnect',
     'refresh': '↻ Refresh',
     'connected': 'Connected',
-    'not_connected': uiLang==='fr'?'Non connecté':'Not connected',
+    'not_connected': 'Not connected',
     'region': 'Region',
     // Tasks
     'all': 'All',

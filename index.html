@@ -302,6 +302,7 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .sidebar.compact .logo{justify-content:center;padding:12px 0}
 .sidebar.compact .logo-icon{margin:0}
 .sidebar.compact #sidebar-compact-btn{margin:auto auto 4px;width:34px;flex-shrink:0}
+.sidebar.compact #sb-compact-info{display:flex!important}
 .sidebar.compact #sb-sync-label{display:none}
 .sidebar.compact #sb-sync-indicator{justify-content:center}
 .sidebar.compact .sidebar-footer > div[style*="height:1px"]{display:none!important}
@@ -3532,6 +3533,16 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   <div id="sidebar-nav-account" class="nav-section"></div>
   <!-- Compact toggle — always visible at bottom -->
   <button id="sidebar-compact-btn" onclick="event.preventDefault();toggleSidebarCompact()" title="Toggle compact mode" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;margin:4px auto 4px;background:none;border:1px solid var(--border2);border-radius:8px;cursor:pointer;font-size:14px;color:var(--muted);font-family:var(--font);transition:all .2s ease" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">&#8644;</button>
+
+  <!-- COMPACT INFO : heure + météo -->
+  <div id="sb-compact-info" style="display:none;flex-direction:column;align-items:center;gap:6px;padding:8px 0 4px;border-top:1px solid rgba(255,255,255,.06)">
+    <div id="sb-compact-clock" style="font-size:11px;font-weight:700;font-family:var(--mono);color:var(--text);letter-spacing:.5px">00:00</div>
+    <div id="sb-compact-weather" style="font-size:10px;color:var(--muted);font-family:var(--mono);display:flex;flex-direction:column;align-items:center;gap:1px">
+      <span id="sb-compact-temp">—</span>
+      <span id="sb-compact-icon" style="font-size:14px">🌡️</span>
+    </div>
+  </div>
+
   <div class="sidebar-footer">
     <!-- User card at top of footer -->
     <!-- Sync indicator -->
@@ -7476,6 +7487,8 @@ function loadBannerSettings(){
 function updateClock(){
   const n=new Date(),h=String(n.getHours()).padStart(2,'0'),m=String(n.getMinutes()).padStart(2,'0'),s=String(n.getSeconds()).padStart(2,'0');
   const cl=document.getElementById('clock-main');if(cl)cl.textContent=h+':'+m;
+  // Compact sidebar clock
+  const cc=document.getElementById('sb-compact-clock');if(cc)cc.textContent=h+':'+m;
   // Localized day/month names
   const days={
     fr:['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'],
@@ -9545,9 +9558,11 @@ function getCmdItems(q=''){
   const f=arr=>!q?arr:arr.filter(i=>(i.label+' '+(i.sub||'')).toLowerCase().includes(q));
   return{pages:f(pages),actions:f(actions),items:f(recentItems),all:[...f(pages),...f(actions),...f(recentItems)]};
 }
+let _cmdAllItems=[];
 function renderCmdResults(){
   const q=document.getElementById('cmd-input')?.value||'';
   const{pages,actions,items,all}=getCmdItems(q);
+  _cmdAllItems=all; // snapshot stable pour les clicks
   _cmdSelectedIdx=Math.max(0,Math.min(_cmdSelectedIdx,all.length-1));
   const c=document.getElementById('cmd-results');if(!c)return;
   let html='',gi=0;
@@ -9556,8 +9571,7 @@ function renderCmdResults(){
     html+=`<div class="cmd-section-label">${label}</div>`;
     arr.forEach(item=>{
       const sel=gi===_cmdSelectedIdx;
-      const idx=gi;
-      html+=`<div class="cmd-item${sel?' selected':''}" data-idx="${idx}" onmousedown="event.preventDefault();executeCmdItem(${idx})" onmouseover="_cmdSelectedIdx=${idx};renderCmdResults()">
+      html+=`<div class="cmd-item${sel?' selected':''}" data-cmd-idx="${gi}">
         <div class="cmd-item-icon">${item.icon||'◆'}</div>
         <div style="flex:1;min-width:0"><div class="cmd-item-label">${escapeHTML(item.label)}</div>${item.sub?`<div class="cmd-item-sub">${escapeHTML(item.sub)}</div>`:''}</div>
         ${item.kbd?`<span class="cmd-item-kbd">${item.kbd}</span>`:''}
@@ -9569,12 +9583,32 @@ function renderCmdResults(){
   else if(!q){sec('Actions',actions);sec('Pages',pages);if(items.length)sec('Recent',items);}
   else{if(pages.length)sec('Pages',pages);if(actions.length)sec('Actions',actions);if(items.length)sec('Items',items);}
   c.innerHTML=html;
+  // Listener global mousedown sur les items — pas de re-render au hover
+  c.onmousedown=function(e){
+    const el=e.target.closest('[data-cmd-idx]');
+    if(!el)return;
+    e.preventDefault();
+    const idx=parseInt(el.dataset.cmdIdx);
+    const item=_cmdAllItems[idx];
+    if(!item)return;
+    const action=item.action;
+    closeCmdPalette();
+    requestAnimationFrame(()=>action());
+  };
+  c.onmousemove=function(e){
+    const el=e.target.closest('[data-cmd-idx]');
+    if(!el)return;
+    const idx=parseInt(el.dataset.cmdIdx);
+    if(idx===_cmdSelectedIdx)return;
+    _cmdSelectedIdx=idx;
+    // Juste swap la classe selected, pas de re-render complet
+    c.querySelectorAll('.cmd-item').forEach(d=>d.classList.remove('selected'));
+    el.classList.add('selected');
+  };
 }
 function executeCmdItem(idx){
-  const{all}=getCmdItems(document.getElementById('cmd-input')?.value||'');
-  const item=all[idx];
+  const item=_cmdAllItems[idx];
   if(!item)return;
-  // Exécuter l'action AVANT de fermer pour éviter les race conditions
   const action=item.action;
   closeCmdPalette();
   requestAnimationFrame(()=>action());
@@ -12304,6 +12338,9 @@ async function fetchWeather(forceCity){
     }
     const cur=data.current;
     const temp=Math.round(cur.temperature_2m),feels=Math.round(cur.apparent_temperature);
+    // Compact sidebar météo
+    const ct=document.getElementById('sb-compact-temp');if(ct)ct.textContent=temp+'°';
+    const ci=document.getElementById('sb-compact-icon');if(ci)ci.textContent=desc.split(' ')[0];
     const code=cur.weather_code,desc=WMO[code]||'☁️ Unknown';
     const icon=desc.split(' ')[0],text=desc.split(' ').slice(1).join(' ');
     const wind=Math.round(cur.windspeed_10m),hum=cur.relative_humidity_2m;

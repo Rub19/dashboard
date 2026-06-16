@@ -1768,17 +1768,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
 
 /* ══ REGION SELECTOR (pill-style) ══ */
-.region-pills{display:flex;gap:5px;flex-wrap:wrap}
+.region-pills{display:flex;gap:4px;flex-wrap:wrap}
 .region-pill{
-  padding:5px 12px;border-radius:20px;font-size:11.5px;font-weight:700;
-  letter-spacing:.3px;cursor:pointer;border:1.5px solid rgba(255,255,255,.08);
-  background:rgba(255,255,255,.03);color:rgba(245,245,247,.4);
-  transition:all .15s;font-family:var(--mono);
+  padding:4px 10px;border-radius:8px;font-size:10.5px;font-weight:700;
+  letter-spacing:.5px;cursor:pointer;border:1px solid rgba(255,255,255,.07);
+  background:rgba(255,255,255,.04);color:rgba(245,245,247,.35);
+  transition:all .12s;font-family:var(--mono);user-select:none;
 }
-.region-pill:hover{border-color:rgba(249,115,22,.35);color:rgba(245,245,247,.8)}
+.region-pill:hover{border-color:rgba(249,115,22,.3);color:rgba(245,245,247,.75);background:rgba(249,115,22,.06)}
 .region-pill.active{
-  background:rgba(249,115,22,.12);border-color:rgba(249,115,22,.45);
-  color:#f97316;box-shadow:0 0 0 3px rgba(249,115,22,.08);
+  background:rgba(249,115,22,.15);border-color:#f97316;
+  color:#f97316;box-shadow:0 0 8px rgba(249,115,22,.15);
 }
 
 /* ══ DISCORD CARD v2 ══ */
@@ -3471,7 +3471,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
     </div>
 
     <!-- Version -->
-    <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer;white-space:nowrap" onclick="showChangelog()" title="View changelog">v4.8.0 · changelog</div>
+    <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer;white-space:nowrap" onclick="showChangelog()" title="View changelog">v5.0.0 · changelog</div>
   </div>
 </div>
 
@@ -3764,9 +3764,11 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
             </div>
             <button class="panel-action" onclick="editDailyFocus()">✎</button>
           </div>
-          <div id="daily-focus-display" style="padding:6px 2px;display:flex;align-items:center;gap:10px;min-height:36px">
+          <div id="daily-focus-display" style="padding:6px 2px;display:flex;align-items:center;gap:12px;min-height:38px">
+            <div id="daily-focus-check" onclick="toggleDailyFocusDone()" style="display:none;width:22px;height:22px;border-radius:6px;border:2px solid rgba(255,255,255,.15);background:transparent;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s">
+              <svg id="daily-focus-check-icon" viewBox="0 0 16 16" fill="none" style="width:12px;height:12px;opacity:0;transition:opacity .15s"><polyline points="2,8 6,12 14,4" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
             <span id="daily-focus-text" style="flex:1;font-size:13px;color:var(--muted);font-style:italic">Pas d'objectif pour aujourd'hui...</span>
-            <button id="daily-focus-done-btn" onclick="toggleDailyFocusDone()" style="display:none;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);border-radius:6px;padding:3px 10px;color:#4ade80;cursor:pointer;font-size:11px;font-family:var(--font);white-space:nowrap">✓ Fait</button>
           </div>
         </div>
 
@@ -8807,6 +8809,19 @@ function renderCountdowns(){
 // ===================================================
 //  GITHUB WIDGET
 // ===================================================
+function saveGhToken(){
+  const p=curP();if(!p)return;
+  const token=document.getElementById('gh-token-input')?.value?.trim();
+  if(!token){toast('Entre un token valide','error');return;}
+  if(!p.state.connections)p.state.connections={};
+  if(!p.state.connections.github)p.state.connections.github={};
+  p.state.connections.github.token=token;
+  saveStateNow();
+  if(_sbUser){clearTimeout(_saveCloudTimeout);saveCloudState().catch(()=>{});}
+  toast('Token GitHub sauvegardé !','success');
+  refreshGithub();
+}
+
 async function connectGithub(){
   const input=document.getElementById('github-username-input');
   if(!input)return;
@@ -8829,23 +8844,46 @@ async function refreshGithub(){
   }
   if(sub)sub.textContent=`@${username}`;
   if(content)content.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">⏳ Loading...</div>';
+  const ghToken=p.state.connections?.github?.token||'';
+  const ghHeaders={'Accept':'application/vnd.github+json',...(ghToken?{Authorization:`Bearer ${ghToken}`}:{})};
   try{
     const [userRes,eventsRes,reposRes]=await Promise.all([
-      fetch(`https://api.github.com/users/${username}`,{signal:AbortSignal.timeout(6000)}),
-      fetch(`https://api.github.com/users/${username}/events/public?per_page=10`,{signal:AbortSignal.timeout(6000)}),
-      fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=5`,{signal:AbortSignal.timeout(6000)})
+      fetch(`https://api.github.com/users/${username}`,{headers:ghHeaders,signal:AbortSignal.timeout(8000)}),
+      fetch(`https://api.github.com/users/${username}/events/public?per_page=30`,{headers:ghHeaders,signal:AbortSignal.timeout(8000)}),
+      fetch(`https://api.github.com/users/${username}/repos?sort=pushed&per_page=5`,{headers:ghHeaders,signal:AbortSignal.timeout(8000)})
     ]);
+    if(userRes.status===403||userRes.status===429){
+      const reset=userRes.headers.get('x-ratelimit-reset');
+      const resetTime=reset?new Date(parseInt(reset)*1000).toLocaleTimeString():'bientôt';
+      if(content)content.innerHTML=`<div class="panel" style="max-width:520px;margin:0 auto;padding:20px">
+        <div style="font-size:14px;font-weight:600;margin-bottom:8px">⚠️ GitHub API — Rate limit atteint</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Limite sans token: 60 req/h. Reset à ${resetTime}.</div>
+        <div style="font-size:12px;color:var(--muted2);margin-bottom:8px">Ajoute un token pour 5000 req/h :</div>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <input id="gh-token-input" type="password" placeholder="ghp_xxxxx..." class="modal-input" style="flex:1;font-size:12px">
+          <button onclick="saveGhToken()" class="btn btn-primary" style="font-size:12px">Sauver</button>
+        </div>
+        <a href="https://github.com/settings/tokens/new?scopes=public_repo,read:user&description=NEXUS+Dashboard" target="_blank" style="font-size:11px;color:var(--accent)">Créer un token GitHub ↗</a>
+      </div>`;
+      return;
+    }
     const user=await userRes.json();
     const events=eventsRes.ok?await eventsRes.json():[];
     const repos=reposRes.ok?await reposRes.json():[];
 
-    const pushEvents=events.filter(e=>e.type==='PushEvent').slice(0,5);
-    const commits=pushEvents.flatMap(e=>(e.payload?.commits||[]).slice(0,2).map(c=>({
-      sha:c.sha?.slice(0,7)||'',
-      msg:c.message?.split('\n')[0]||'',
-      repo:e.repo?.name?.split('/')[1]||e.repo?.name||'',
-      date:new Date(e.created_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short'})
-    }))).slice(0,8);
+    const pushEvents=events.filter(e=>e.type==='PushEvent');
+    const commits=pushEvents.flatMap(e=>{
+      const cls=e.payload?.commits||[];
+      if(cls.length){
+        return cls.slice(0,3).map(c=>({
+          sha:c.sha?.slice(0,7)||'',
+          msg:c.message?.split('\n')[0]||'commit',
+          repo:e.repo?.name?.split('/')[1]||e.repo?.name||'',
+          date:new Date(e.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})
+        }));
+      }
+      return [{sha:'',msg:`Push → ${e.repo?.name?.split('/')[1]||''}`,repo:e.repo?.name?.split('/')[1]||'',date:new Date(e.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})}];
+    }).slice(0,8);
 
     content.innerHTML=`
       <!-- Profile card -->
@@ -12325,20 +12363,26 @@ function renderDailyFocus(){
   const today=new Date().toLocaleDateString('en-CA');
   const df=p.state.dailyFocus;
   const textEl=document.getElementById('daily-focus-text');
-  const doneBtn=document.getElementById('daily-focus-done-btn');
+  const checkBox=document.getElementById('daily-focus-check');
+  const checkIcon=document.getElementById('daily-focus-check-icon');
   if(!textEl)return;
   if(df&&df.date===today&&df.text){
     textEl.textContent=df.text;
     textEl.style.fontStyle='normal';
     textEl.style.color=df.done?'var(--muted)':'var(--text)';
     textEl.style.textDecoration=df.done?'line-through':'none';
-    if(doneBtn){doneBtn.style.display='block';doneBtn.textContent=df.done?'↩ Défait':'✓ Fait';doneBtn.style.color=df.done?'var(--muted)':'#4ade80';}
+    if(checkBox){
+      checkBox.style.display='flex';
+      checkBox.style.border=df.done?'2px solid #4ade80':'2px solid rgba(255,255,255,.15)';
+      checkBox.style.background=df.done?'rgba(74,222,128,.12)':'transparent';
+    }
+    if(checkIcon)checkIcon.style.opacity=df.done?'1':'0';
   } else {
     textEl.textContent="Pas d'objectif pour aujourd'hui...";
     textEl.style.fontStyle='italic';
     textEl.style.color='var(--muted)';
     textEl.style.textDecoration='none';
-    if(doneBtn)doneBtn.style.display='none';
+    if(checkBox)checkBox.style.display='none';
   }
 }
 
@@ -12376,9 +12420,13 @@ function toggleDailyFocusDone(){
   const today=new Date().toLocaleDateString('en-CA');
   if(!p.state.dailyFocus||p.state.dailyFocus.date!==today)return;
   p.state.dailyFocus.done=!p.state.dailyFocus.done;
-  if(p.state.dailyFocus.done)addActivity('🎯 Objectif du jour accompli !','#4ade80');
+  if(p.state.dailyFocus.done){
+    addActivity('🎯 Objectif du jour accompli !','#4ade80');
+    toast('🎯 Objectif accompli !','success');
+  }
   renderDailyFocus();
   saveStateNow();
+  if(_sbUser){clearTimeout(_saveCloudTimeout);saveCloudState().catch(()=>{});}
 }
 
 function savePomoSession(){

@@ -5878,6 +5878,13 @@ function psUntilt(el){
 
 let _psEmbersRunning=false;
 let _ambientFrame=null;
+let _bgFrame=null;
+let _bgParticles=[];
+let _bioSaveTO=null;
+let _socialSaveTO=null;
+let _lastRank=null;
+let _npProgressInterval=null;
+let _valoMatchList=[];
 function psStartEmbers(){
   if(_psEmbersRunning)return;
   const canvas=document.getElementById('ps-canvas');

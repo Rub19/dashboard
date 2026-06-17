@@ -12338,11 +12338,11 @@ async function fetchWeather(forceCity){
     }
     const cur=data.current;
     const temp=Math.round(cur.temperature_2m),feels=Math.round(cur.apparent_temperature);
-    // Compact sidebar météo
-    const ct=document.getElementById('sb-compact-temp');if(ct)ct.textContent=temp+'°';
-    const ci=document.getElementById('sb-compact-icon');if(ci)ci.textContent=desc.split(' ')[0];
     const code=cur.weather_code,desc=WMO[code]||'☁️ Unknown';
     const icon=desc.split(' ')[0],text=desc.split(' ').slice(1).join(' ');
+    // Compact sidebar météo
+    const ct=document.getElementById('sb-compact-temp');if(ct)ct.textContent=temp+'°';
+    const ci=document.getElementById('sb-compact-icon');if(ci)ci.textContent=icon;
     const wind=Math.round(cur.windspeed_10m),hum=cur.relative_humidity_2m;
     const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     const daily=data.daily;

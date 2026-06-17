@@ -3541,6 +3541,10 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       <span id="sb-compact-temp">—</span>
       <span id="sb-compact-icon" style="font-size:14px">🌡️</span>
     </div>
+    <div id="sb-compact-discord" style="display:none;flex-direction:column;align-items:center;gap:2px">
+      <div id="sb-compact-dc-dot" style="width:8px;height:8px;border-radius:50%;background:#4e5058"></div>
+      <div id="sb-compact-dc-avatar" style="width:24px;height:24px;border-radius:6px;overflow:hidden;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:11px">💬</div>
+    </div>
   </div>
 
   <div class="sidebar-footer">
@@ -3706,6 +3710,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
         </button>
         <div class="search-bar" onclick="openCmdPalette()" style="cursor:pointer" title="Cmd+K"><span style="color:rgba(255,255,255,.3);font-size:13px">🔍</span><input type="text" placeholder="Search (⌘K)…" id="global-search" readonly style="cursor:pointer"></div>
         <button onclick="openModal('shortcuts')" title="Raccourcis clavier" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .2s">⌨️</button>
+        <button onclick="toggleFocusMode()" title="Mode Focus" style="background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);border-radius:8px;padding:7px 10px;cursor:pointer;font-size:15px;transition:all .2s" title="Mode Focus">🎯</button>
         <button id="theme-mode-btn" onclick="toggleDarkLight()" title="Toggle dark/light mode" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;cursor:pointer;font-size:15px;transition:all .2s">🌙</button>
         <button onclick="goToProfileScreen()" title="Switch profile" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:5px 10px 5px 6px;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s;overflow:hidden;max-width:150px" id="topbar-profile-btn" onmouseover="this.style.borderColor='rgba(249,115,22,.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,.08)'">
           <div id="topbar-avatar" style="width:24px;height:24px;border-radius:6px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;background:rgba(255,255,255,.08);position:relative"></div>
@@ -4011,6 +4016,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
             <button onclick="noteInsert('- [ ] ')" title="Todo" class="btn btn-ghost" style="padding:4px 10px;font-size:12px">☑ Todo</button>
             <button onclick="noteInsert('---\n')" title="Divider" class="btn btn-ghost" style="padding:4px 10px;font-size:12px">—</button>
             <button onclick="copyNote()" class="btn btn-ghost" style="padding:4px 10px;font-size:12px;margin-left:auto">📋 Copy</button>
+            <button onclick="exportNoteAsMd()" class="btn btn-ghost" style="padding:4px 10px;font-size:12px">⬇ .md</button>
           </div>
           <div id="note-editor-wrap" style="position:relative">
             <textarea class="note-area" id="main-note" placeholder="Start typing your note here...&#10;&#10;Supports markdown: **bold**, *italic*, `code`, ## heading, - list" style="min-height:420px;font-size:14px;line-height:1.7" oninput="saveNote()"></textarea>
@@ -4060,7 +4066,6 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
     </div>
   </div>
 
-  <!-- HABITS -->
   <div id="page-habits" class="tab-content">
     <div class="topbar"><div><div class="section-eyebrow">Daily routine</div><div class="section-title">Habits</div></div><div class="topbar-actions"><button class="btn btn-primary" onclick="openModal('add-habit')"><span>+</span> New habit</button></div></div>
     <div class="grid-2" style="align-items:start">
@@ -4068,9 +4073,17 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
         <div class="panel-header"><div class="panel-title">📅 This week</div><span style="font-size:12px;color:var(--muted)" id="habits-week-label"></span></div>
         <div class="habits-list" id="habits-list"><div class="empty-state"><div class="empty-icon">🌱</div>No habits yet — add one!</div></div>
       </div>
-      <div class="panel">
-        <div class="panel-header"><div class="panel-title">🏆 Streaks</div></div>
-        <div id="habits-streaks"><div class="empty-state" style="padding:16px"><div class="empty-icon">🔥</div>Complete habits to build streaks!</div></div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">🏆 Streaks</div></div>
+          <div id="habits-streaks"><div class="empty-state" style="padding:16px"><div class="empty-icon">🔥</div>Complete habits to build streaks!</div></div>
+        </div>
+        <!-- Graphe 30 jours -->
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title"><div class="panel-title-icon" style="background:rgba(249,115,22,.1);color:#f97316">📊</div>Completion 30 jours</div></div>
+          <div id="habits-30d-chart" style="display:flex;align-items:flex-end;gap:3px;height:60px;margin-bottom:6px"></div>
+          <div id="habits-30d-labels" style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted2);font-family:var(--mono)"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -4326,6 +4339,77 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
     <div id="github-content"></div>
   </div>
 
+
+  <!-- BUDGET -->
+  <div id="page-budget" class="tab-content">
+    <div class="topbar">
+      <div><div class="section-eyebrow">Finance</div><div class="section-title">Budget</div></div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost" onclick="openModal('add-budget-tx')" style="gap:6px">+ Dépense</button>
+        <button class="btn btn-primary" onclick="openModal('add-budget-tx-in')">+ Revenu</button>
+      </div>
+    </div>
+    <!-- KPI row -->
+    <div class="stats-row" style="margin-bottom:16px">
+      <div class="stat-card" style="--card-accent:#34d399">
+        <div class="stat-label">Revenus du mois</div>
+        <div class="stat-value" id="budget-income" style="color:#34d399">0 €</div>
+        <div class="stat-sub" id="budget-income-count">0 entrée(s)</div>
+      </div>
+      <div class="stat-card" style="--card-accent:#f87171">
+        <div class="stat-label">Dépenses du mois</div>
+        <div class="stat-value" id="budget-expenses" style="color:#f87171">0 €</div>
+        <div class="stat-sub" id="budget-expenses-count">0 sortie(s)</div>
+      </div>
+      <div class="stat-card" style="--card-accent:#f97316">
+        <div class="stat-label">Solde</div>
+        <div class="stat-value" id="budget-balance">0 €</div>
+        <div class="stat-sub" id="budget-balance-sub">Ce mois</div>
+      </div>
+      <div class="stat-card" style="--card-accent:#fbbf24">
+        <div class="stat-label">Économies</div>
+        <div class="stat-value" id="budget-savings" style="color:#fbbf24">0 €</div>
+        <div class="stat-sub">Total cumulé</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 320px;gap:12px;align-items:start">
+      <!-- Transactions -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <div class="panel-title-icon" style="background:rgba(249,115,22,.1);color:#f97316">💸</div>
+            Transactions
+          </div>
+          <div style="display:flex;gap:6px">
+            <select id="budget-filter-month" class="modal-input" style="padding:4px 8px;font-size:12px;width:auto" onchange="renderBudget()">
+            </select>
+            <select id="budget-filter-cat" class="modal-input" style="padding:4px 8px;font-size:12px;width:auto" onchange="renderBudget()">
+              <option value="">Toutes catégories</option>
+              <option>🍔 Alimentation</option><option>🚗 Transport</option><option>🏠 Logement</option>
+              <option>🎮 Loisirs</option><option>👕 Vêtements</option><option>💊 Santé</option>
+              <option>📚 Éducation</option><option>💰 Salaire</option><option>🎁 Autre</option>
+            </select>
+          </div>
+        </div>
+        <div id="budget-tx-list" style="display:flex;flex-direction:column;gap:4px"></div>
+      </div>
+      <!-- Graphe par catégorie -->
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title"><div class="panel-title-icon" style="background:rgba(251,191,36,.1);color:#fbbf24">📊</div>Par catégorie</div>
+          </div>
+          <div id="budget-by-cat" style="display:flex;flex-direction:column;gap:8px"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title"><div class="panel-title-icon" style="background:rgba(52,211,153,.1);color:#34d399">📈</div>Évolution 6 mois</div>
+          </div>
+          <canvas id="budget-chart" height="120" style="width:100%"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- GAMING -->
   <div id="page-gaming" class="tab-content">
@@ -5269,6 +5353,43 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
       <div id="edit-upload-preview" style="display:none;margin-top:10px;align-items:center;gap:10px"><img id="edit-upload-img" style="width:56px;height:56px;border-radius:12px;object-fit:cover;border:2px solid var(--accent)"><button onclick="clearUpload('edit')" style="background:none;border:none;color:var(--accent3);cursor:pointer;font-size:12px">Remove</button></div>
     </div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('edit-avatar')">Cancel</button><button class="btn btn-primary" onclick="saveEditAvatar()">Save</button></div>
+  </div>
+</div>
+
+<!-- MODAL: Budget Dépense -->
+<div class="modal-overlay" id="modal-add-budget-tx" onclick="closeModalIfOverlay(event,'add-budget-tx')">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-title">💸 Ajouter une dépense</div>
+    <div class="modal-field"><div class="modal-label">DESCRIPTION</div><input type="text" class="modal-input" id="btx-label" placeholder="ex: Courses, Netflix..." onkeydown="if(event.key==='Enter')addBudgetTx('out')"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="modal-field"><div class="modal-label">MONTANT (€)</div><input type="number" class="modal-input" id="btx-amount" placeholder="0.00" min="0" step="0.01"></div>
+      <div class="modal-field"><div class="modal-label">DATE</div><input type="date" class="modal-input" id="btx-date"></div>
+    </div>
+    <div class="modal-field"><div class="modal-label">CATÉGORIE</div>
+      <select class="modal-input modal-select" id="btx-cat">
+        <option>🍔 Alimentation</option><option>🚗 Transport</option><option>🏠 Logement</option>
+        <option>🎮 Loisirs</option><option>👕 Vêtements</option><option>💊 Santé</option>
+        <option>📚 Éducation</option><option>🎁 Autre</option>
+      </select>
+    </div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('add-budget-tx')">Annuler</button><button class="btn btn-danger" onclick="addBudgetTx('out')">Ajouter dépense</button></div>
+  </div>
+</div>
+<!-- MODAL: Budget Revenu -->
+<div class="modal-overlay" id="modal-add-budget-tx-in" onclick="closeModalIfOverlay(event,'add-budget-tx-in')">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-title">💰 Ajouter un revenu</div>
+    <div class="modal-field"><div class="modal-label">DESCRIPTION</div><input type="text" class="modal-input" id="btx-in-label" placeholder="ex: Salaire, Freelance..." onkeydown="if(event.key==='Enter')addBudgetTx('in')"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="modal-field"><div class="modal-label">MONTANT (€)</div><input type="number" class="modal-input" id="btx-in-amount" placeholder="0.00" min="0" step="0.01"></div>
+      <div class="modal-field"><div class="modal-label">DATE</div><input type="date" class="modal-input" id="btx-in-date"></div>
+    </div>
+    <div class="modal-field"><div class="modal-label">CATÉGORIE</div>
+      <select class="modal-input modal-select" id="btx-in-cat">
+        <option>💰 Salaire</option><option>💻 Freelance</option><option>🎁 Cadeau</option><option>📈 Investissement</option><option>🎁 Autre</option>
+      </select>
+    </div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('add-budget-tx-in')">Annuler</button><button class="btn btn-primary" onclick="addBudgetTx('in')">Ajouter revenu</button></div>
   </div>
 </div>
 
@@ -6599,6 +6720,7 @@ var SVG_ICONS={
   countdown:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
   stats:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
   github:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>',
+  budget:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
   gaming:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><circle cx="15.5" cy="11.5" r="1"/><circle cx="17.5" cy="13.5" r="1"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59l-.9 7.27A4 4 0 0 0 5.77 20.5c.387.1.79-.025 1.05-.327l1.89-2.173h6.58l1.89 2.173c.26.302.663.427 1.05.327a4 4 0 0 0 2.97-4.64l-.9-7.27A4 4 0 0 0 17.32 5z"/></svg>',
   connections:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>',
   settings:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
@@ -6617,6 +6739,7 @@ function getDefaultNav(){return [
   {id:'journal',  icon:'journal',  label:t('nav_journal'), section:'main',badge:''},
   {id:'countdown',icon:'countdown',label:t('nav_countdown'),section:'main',badge:''},
   {id:'stats',    icon:'stats',    label:t('nav_stats'),   section:'main',badge:''},
+  {id:'budget',   icon:'budget',   label:'Budget',         section:'main',badge:''},
   {id:'github',   icon:'github',   label:t('nav_github'),  section:'main',badge:''},
   {id:'gaming',   icon:'gaming',   label:t('nav_gaming'),  section:'main',badge:''},
   {id:'connections',icon:'connections',label:t('nav_connections'),section:'account',badge:''},
@@ -7969,6 +8092,7 @@ function switchPage(page,navEl){
   if(page==='goals'){renderGoals();}
   if(page==='journal'){renderJournal();}
   if(page==='countdown'){renderCountdowns();}
+  if(page==='budget'){renderBudget();}
   if(page==='github'){refreshGithub();}
   // Refresh widgets when back on dashboard
   if(page==='dashboard'){
@@ -8046,9 +8170,10 @@ async function updatePassword(){
 // ===================================================
 function openModal(id){
   document.getElementById('modal-'+id).classList.add('open');
-  const fi=document.querySelector('#modal-'+id+' input:not([type=file])');
+  const fi=document.querySelector('#modal-'+id+' input:not([type=file]):not([type=date])');
   if(fi)setTimeout(()=>fi.focus(),100);
   if(id==='add-item')setTimeout(()=>switchItemTab('link'),50);
+  if(typeof prefillBudgetDates==='function')prefillBudgetDates(id);
 }
 function closeModal(id){document.getElementById('modal-'+id).classList.remove('open')}
 function closeModalIfOverlay(e,id){if(e.target===document.getElementById('modal-'+id))closeModal(id)}
@@ -9555,8 +9680,24 @@ function getCmdItems(q=''){
     label:item.name||'Untitled',sub:item.url||item.type,tag:'Item',
     action:()=>{closeCmdPalette();if(item.url)window.open(item.url,'_blank');else switchPage('files',null);}
   }));
+  // Notes dans Ctrl+K
+  const recentNotes=(p?.state?.notes||[]).slice(0,4).map(n=>({
+    icon:'📝',label:n.title||'Sans titre',sub:(n.content||'').slice(0,40),tag:'Note',
+    action:()=>{closeCmdPalette();switchPage('notes',null);setTimeout(()=>selectNote(n.id),200);}
+  }));
+  // Tâches dans Ctrl+K
+  const pendingTodos=(p?.state?.todos||[]).filter(t=>!t.done).slice(0,4).map(t=>({
+    icon:'✅',label:t.text,sub:t.priority==='high'?'🔥 Urgent':t.due||'Task',tag:'Tâche',
+    action:()=>{closeCmdPalette();toggleTodo(t.id);}
+  }));
+  // URL directe
+  const urlItem=q&&(q.startsWith('http')||q.startsWith('www.')||q.includes('.com')||q.includes('.fr')||q.includes('.io'))?[{
+    icon:'🌐',label:'Ouvrir : '+q,sub:'Ouvrir dans un nouvel onglet',tag:'URL',
+    action:()=>{closeCmdPalette();window.open(q.startsWith('http')?q:'https://'+q,'_blank');}
+  }]:[];
   const f=arr=>!q?arr:arr.filter(i=>(i.label+' '+(i.sub||'')).toLowerCase().includes(q));
-  return{pages:f(pages),actions:f(actions),items:f(recentItems),all:[...f(pages),...f(actions),...f(recentItems)]};
+  const allItems=[...f(recentItems),...f(recentNotes),...f(pendingTodos),...urlItem];
+  return{pages:f(pages),actions:f(actions),items:allItems,all:[...f(pages),...f(actions),...allItems]};
 }
 let _cmdAllItems=[];
 function renderCmdResults(){
@@ -9883,7 +10024,7 @@ function initRipples(){
 
 // ── PAGE TRANSITION ────────────────────────────
 // ── PAGE ORDER for directional transitions ──────────────
-const PAGE_ORDER=['dashboard','files','notes','todos','habits','kanban','calendar','goals','journal','countdown','stats','github','gaming','connections','settings','ai'];
+const PAGE_ORDER=['dashboard','files','notes','todos','habits','kanban','calendar','goals','journal','countdown','stats','budget','github','gaming','connections','settings','ai'];
 let _lastPageIdx=0;
 
 function animatePageIn(pageEl,page){
@@ -10947,6 +11088,19 @@ function refreshDiscordSidebar(){
   }
   // Spotify from Lanyard
   updateSpotifyFromLanyard(d);
+  // Compact sidebar discord
+  const compDc=document.getElementById('sb-compact-discord');
+  const compDot=document.getElementById('sb-compact-dc-dot');
+  const compAv=document.getElementById('sb-compact-dc-avatar');
+  if(compDc){
+    compDc.style.display='flex';
+    const stColors={online:'#3ba55c',idle:'#faa81a',dnd:'#ed4245',offline:'#4e5058'};
+    if(compDot)compDot.style.background=stColors[d.discord_status||'offline']||'#4e5058';
+    if(compAv&&d.discord_user?.avatar){
+      const url='https://cdn.discordapp.com/avatars/'+d.discord_user.id+'/'+d.discord_user.avatar+'.png?size=32';
+      compAv.innerHTML=`<img src="${url}" style="width:100%;height:100%;object-fit:cover">`;
+    }
+  }
 }
 
 function updateSpotifyFromLanyard(d){
@@ -11911,6 +12065,36 @@ function renderHabits(){
     const sorted=[...habits].sort((a,b)=>habitStreak(b)-habitStreak(a));
     streakEl.innerHTML=sorted.map(h=>{const s=habitStreak(h);return '<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r-sm);background:var(--surface2);margin-bottom:6px"><span style="font-size:18px">'+escapeHTML(h.icon)+'</span><span style="flex:1;font-size:13px">'+escapeHTML(h.name)+'</span><span style="font-family:var(--mono);font-size:13px;color:'+(s>0?'var(--accent3)':'var(--muted)')+'">'+(s>0?' '+s+' day'+(s>1?'s':''):'No streak')+'</span></div>';}).join('');
   }
+  // Graphe 30 jours
+  renderHabits30dChart(habits);
+}
+
+function renderHabits30dChart(habits){
+  const chart=document.getElementById('habits-30d-chart');
+  const labels=document.getElementById('habits-30d-labels');
+  if(!chart)return;
+  const days=30;
+  const data=[];
+  for(let i=days-1;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const key=d.toISOString().slice(0,10);
+    const done=habits.filter(h=>h.log&&h.log[key]).length;
+    const total=habits.length||1;
+    data.push({key,pct:Math.round((done/total)*100),done,total,d});
+  }
+  const maxPct=100;
+  chart.innerHTML=data.map((d,i)=>{
+    const h=Math.max(3,Math.round((d.pct/maxPct)*56));
+    const color=d.pct===0?'rgba(255,255,255,.07)':d.pct>=75?'#34d399':d.pct>=50?'#fbbf24':'#f97316';
+    return`<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end" title="${d.key}: ${d.done}/${d.total} habitudes (${d.pct}%)">
+      <div style="width:100%;height:${h}px;background:${color};border-radius:2px 2px 0 0;transition:height .3s ease"></div>
+    </div>`;
+  }).join('');
+  if(labels){
+    const show=[0,6,13,20,27,29];
+    const items=data.map((d,i)=>show.includes(i)?d.d.toLocaleDateString('fr-FR',{day:'numeric',month:'short'}):'');
+    labels.innerHTML=data.map((d,i)=>`<div style="flex:1;text-align:center">${items[i]}</div>`).join('');
+  }
 }
 
 
@@ -12367,6 +12551,239 @@ async function fetchWeather(forceCity){
   }
 }
 
+
+// ===================================================
+//  BUDGET
+// ===================================================
+function getBudgetTx(){const p=curP();if(!p.state.budget)p.state.budget=[];return p.state.budget;}
+
+function addBudgetTx(type){
+  const isIn=type==='in';
+  const label=(document.getElementById(isIn?'btx-in-label':'btx-label')?.value||'').trim();
+  const amount=parseFloat(document.getElementById(isIn?'btx-in-amount':'btx-amount')?.value||0);
+  const date=document.getElementById(isIn?'btx-in-date':'btx-date')?.value||new Date().toISOString().slice(0,10);
+  const cat=document.getElementById(isIn?'btx-in-cat':'btx-cat')?.value||'🎁 Autre';
+  if(!label||!amount){toast('Remplis tous les champs','error');return;}
+  const p=curP();if(!p)return;
+  if(!p.state.budget)p.state.budget=[];
+  p.state.budget.unshift({id:Date.now(),label,amount,date,cat,type});
+  saveStateNow();
+  closeModal(isIn?'add-budget-tx-in':'add-budget-tx');
+  document.getElementById(isIn?'btx-in-label':'btx-label').value='';
+  document.getElementById(isIn?'btx-in-amount':'btx-amount').value='';
+  renderBudget();
+  addActivity((isIn?'💰 Revenu: ':'💸 Dépense: ')+label+' ('+amount.toFixed(2)+'€)','var(--accent)');
+  toast((isIn?'Revenu':'Dépense')+' ajouté !','success');
+}
+
+function deleteBudgetTx(id){
+  const p=curP();if(!p)return;
+  p.state.budget=(p.state.budget||[]).filter(t=>t.id!==id);
+  saveStateNow();renderBudget();
+}
+
+function renderBudget(){
+  const p=curP();if(!p)return;
+  const all=p.state.budget||[];
+  const now=new Date();
+  const curMonth=now.toISOString().slice(0,7);
+
+  // Populate month filter
+  const monthSel=document.getElementById('budget-filter-month');
+  if(monthSel&&!monthSel.children.length){
+    const months=[...new Set(all.map(t=>t.date.slice(0,7)))].sort().reverse();
+    if(!months.includes(curMonth))months.unshift(curMonth);
+    monthSel.innerHTML=months.map(m=>`<option value="${m}"${m===curMonth?' selected':''}>${m}</option>`).join('');
+  }
+  const selMonth=monthSel?.value||curMonth;
+  const selCat=document.getElementById('budget-filter-cat')?.value||'';
+
+  const monthTx=all.filter(t=>t.date.slice(0,7)===selMonth);
+  const filtered=selCat?monthTx.filter(t=>t.cat===selCat):monthTx;
+
+  const income=monthTx.filter(t=>t.type==='in').reduce((s,t)=>s+t.amount,0);
+  const expenses=monthTx.filter(t=>t.type==='out').reduce((s,t)=>s+t.amount,0);
+  const balance=income-expenses;
+  const totalSavings=all.filter(t=>t.type==='in').reduce((s,t)=>s+t.amount,0)-all.filter(t=>t.type==='out').reduce((s,t)=>s+t.amount,0);
+
+  const fmt=n=>(n<0?'-':'')+Math.abs(n).toFixed(2)+'€';
+  const setEl=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  setEl('budget-income',fmt(income));
+  setEl('budget-expenses',fmt(expenses));
+  setEl('budget-balance',fmt(balance));
+  setEl('budget-savings',fmt(totalSavings));
+  setEl('budget-income-count',monthTx.filter(t=>t.type==='in').length+' entrée(s)');
+  setEl('budget-expenses-count',monthTx.filter(t=>t.type==='out').length+' sortie(s)');
+  const balEl=document.getElementById('budget-balance');
+  if(balEl)balEl.style.color=balance>=0?'#34d399':'#f87171';
+  const savEl=document.getElementById('budget-savings');
+  if(savEl)savEl.style.color=totalSavings>=0?'#fbbf24':'#f87171';
+
+  // Transactions list
+  const list=document.getElementById('budget-tx-list');
+  if(list){
+    if(!filtered.length){list.innerHTML='<div class="empty-state" style="padding:20px"><div class="empty-icon">💸</div><div class="empty-label">Aucune transaction</div></div>';
+    }else{
+      list.innerHTML=filtered.map(t=>{
+        const isIn=t.type==='in';
+        return`<div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface2);border-radius:var(--r-sm);border:1px solid var(--border);border-left:3px solid ${isIn?'#34d399':'#f87171'}">
+          <div style="font-size:18px;flex-shrink:0">${t.cat.split(' ')[0]}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHTML(t.label)}</div>
+            <div style="font-size:11px;color:var(--muted)">${t.cat.slice(2)} · ${t.date}</div>
+          </div>
+          <div style="font-size:14px;font-weight:700;color:${isIn?'#34d399':'#f87171'};flex-shrink:0">${isIn?'+':'-'}${t.amount.toFixed(2)}€</div>
+          <button onclick="deleteBudgetTx(${t.id})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:0 4px" title="Supprimer">🗑</button>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // Par catégorie
+  const catEl=document.getElementById('budget-by-cat');
+  if(catEl){
+    const catMap={};
+    monthTx.filter(t=>t.type==='out').forEach(t=>{
+      if(!catMap[t.cat])catMap[t.cat]=0;
+      catMap[t.cat]+=t.amount;
+    });
+    const sorted=Object.entries(catMap).sort((a,b)=>b[1]-a[1]);
+    const maxVal=sorted[0]?.[1]||1;
+    catEl.innerHTML=sorted.length?sorted.map(([cat,val])=>`
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="font-size:14px;flex-shrink:0">${cat.split(' ')[0]}</div>
+        <div style="flex:1">
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
+            <span style="color:var(--muted)">${cat.slice(2)}</span>
+            <span style="font-weight:600;color:#f87171">${val.toFixed(2)}€</span>
+          </div>
+          <div style="height:4px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden">
+            <div style="height:100%;width:${Math.round((val/maxVal)*100)}%;background:linear-gradient(90deg,#f97316,#dc2626);border-radius:99px;transition:width .4s"></div>
+          </div>
+        </div>
+      </div>`).join('')
+    :'<div style="font-size:12px;color:var(--muted);text-align:center;padding:12px">Aucune dépense ce mois</div>';
+  }
+
+  // Graphe 6 mois
+  renderBudgetChart(all);
+}
+
+function renderBudgetChart(all){
+  const canvas=document.getElementById('budget-chart');if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const months=[];
+  for(let i=5;i>=0;i--){
+    const d=new Date();d.setMonth(d.getMonth()-i);
+    months.push(d.toISOString().slice(0,7));
+  }
+  const incomeData=months.map(m=>all.filter(t=>t.type==='in'&&t.date.slice(0,7)===m).reduce((s,t)=>s+t.amount,0));
+  const expData=months.map(m=>all.filter(t=>t.type==='out'&&t.date.slice(0,7)===m).reduce((s,t)=>s+t.amount,0));
+  const maxVal=Math.max(...incomeData,...expData,1);
+  const W=canvas.offsetWidth||280,H=120;
+  canvas.width=W;canvas.height=H;
+  ctx.clearRect(0,0,W,H);
+  const barW=(W/months.length)*0.35;
+  const gap=(W/months.length);
+  months.forEach((m,i)=>{
+    const x=i*gap+gap/2;
+    // Income bar
+    const ih=(incomeData[i]/maxVal)*(H-20);
+    ctx.fillStyle='rgba(52,211,153,0.6)';
+    ctx.beginPath();ctx.roundRect(x-barW-2,H-ih-4,barW,ih,3);ctx.fill();
+    // Expense bar
+    const eh=(expData[i]/maxVal)*(H-20);
+    ctx.fillStyle='rgba(248,113,113,0.6)';
+    ctx.beginPath();ctx.roundRect(x+2,H-eh-4,barW,eh,3);ctx.fill();
+    // Month label
+    ctx.fillStyle='rgba(245,245,247,0.3)';
+    ctx.font='9px JetBrains Mono,monospace';
+    ctx.textAlign='center';
+    ctx.fillText(m.slice(5),x,H);
+  });
+}
+
+// ── Pré-remplir les dates des modals budget ──
+function prefillBudgetDates(id){
+  if(id==='add-budget-tx'){
+    const d=document.getElementById('btx-date');if(d&&!d.value)d.value=new Date().toISOString().slice(0,10);
+  }
+  if(id==='add-budget-tx-in'){
+    const d=document.getElementById('btx-in-date');if(d&&!d.value)d.value=new Date().toISOString().slice(0,10);
+  }
+}
+
+// ===================================================
+//  EXPORT NOTE EN MARKDOWN
+// ===================================================
+function exportNoteAsMd(){
+  const note=getNotesArray().find(n=>n.id===_currentNoteId);
+  if(!note){toast('Aucune note sélectionnée','error');return;}
+  const content='# '+( note.title||'Note')+'\n\n'+( note.content||'');
+  const blob=new Blob([content],{type:'text/markdown'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=(note.title||'note').replace(/[^a-z0-9]/gi,'-')+'.md';
+  a.click();URL.revokeObjectURL(url);
+  toast('Note exportée en .md !','success');
+}
+
+// ===================================================
+//  MODE FOCUS
+// ===================================================
+let _focusMode=false;
+function toggleFocusMode(){
+  _focusMode=!_focusMode;
+  let overlay=document.getElementById('focus-mode-overlay');
+  if(_focusMode){
+    if(!overlay){
+      overlay=document.createElement('div');
+      overlay.id='focus-mode-overlay';
+      overlay.style.cssText='position:fixed;inset:0;z-index:50000;background:#050507;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;animation:fadeIn .3s ease';
+      const p=curP();
+      const pending=(p?.state?.todos||[]).filter(t=>!t.done);
+      const topTask=pending[0];
+      overlay.innerHTML=`
+        <div style="font-size:11px;font-weight:800;letter-spacing:3px;color:rgba(249,115,22,.5);font-family:var(--mono);text-transform:uppercase">MODE FOCUS</div>
+        ${topTask?`<div id="focus-task-display" style="background:rgba(255,255,255,.04);border:1px solid rgba(249,115,22,.2);border-radius:16px;padding:16px 28px;font-size:16px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:12px;cursor:pointer;max-width:500px;text-align:center" onclick="toggleTodo(${topTask.id});document.getElementById('focus-task-display').style.textDecoration='line-through';document.getElementById('focus-task-display').style.color='var(--muted)'">
+          <span style="font-size:22px">🎯</span>${escapeHTML(topTask.text)}
+        </div>`:'<div style="font-size:15px;color:var(--muted)">Aucune tâche en attente 🎉</div>'}
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:32px 48px;display:flex;flex-direction:column;align-items:center;gap:16px" id="focus-pomo-wrap">
+          <div id="focus-pomo-time" style="font-size:72px;font-weight:200;font-family:var(--mono);letter-spacing:-4px;color:var(--text)">--:--</div>
+          <div id="focus-pomo-label" style="font-size:12px;font-weight:700;letter-spacing:2px;color:rgba(248,113,113,.7);font-family:var(--mono);text-transform:uppercase">FOCUS</div>
+          <div style="display:flex;gap:12px">
+            <button onclick="pomoReset()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:var(--muted);width:44px;height:44px;cursor:pointer;font-size:16px">↺</button>
+            <button onclick="pomoToggle()" id="focus-play-btn" style="background:#f87171;border:none;border-radius:12px;color:#fff;width:64px;height:64px;cursor:pointer;font-size:24px;box-shadow:0 4px 20px rgba(248,113,113,.4)">▶</button>
+            <button onclick="pomoSkip()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:var(--muted);width:44px;height:44px;cursor:pointer;font-size:16px">⏭</button>
+          </div>
+        </div>
+        <button onclick="toggleFocusMode()" style="background:none;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:8px 20px;color:var(--muted);cursor:pointer;font-size:13px;font-family:var(--font)">Quitter le mode focus (Échap)</button>
+      `;
+      document.body.appendChild(overlay);
+      // Sync pomo time
+      _focusSyncInterval=setInterval(syncFocusTime,500);
+      syncFocusTime();
+    }
+  } else {
+    if(overlay)overlay.remove();
+    if(_focusSyncInterval)clearInterval(_focusSyncInterval);
+  }
+}
+let _focusSyncInterval=null;
+function syncFocusTime(){
+  const el=document.getElementById('focus-pomo-time');
+  const lbl=document.getElementById('focus-pomo-label');
+  const btn=document.getElementById('focus-play-btn');
+  if(!el)return;
+  const m=String(Math.floor(pomoRemaining/60)).padStart(2,'0');
+  const s=String(pomoRemaining%60).padStart(2,'0');
+  el.textContent=m+':'+s;
+  if(lbl){const mode=POMO_MODES()[pomoIdx];lbl.textContent=mode.label.toUpperCase();lbl.style.color=mode.ring+'CC';}
+  if(btn)btn.textContent=pomoRunning?'⏸':'▶';
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&_focusMode)toggleFocusMode();
+});
 
 // ===================================================
 //  POMODORO IMPROVED
@@ -13663,6 +14080,7 @@ var I18N = {
     'nav_journal': 'Journal',
     'nav_countdown': 'Countdown',
     'nav_stats': 'Stats',
+    'nav_budget': 'Budget',
     'nav_github': 'GitHub',
     'nav_gaming': 'Gaming',
     'nav_connections': 'Connections',
@@ -13803,6 +14221,7 @@ var I18N = {
     'nav_journal': 'Journal',
     'nav_countdown': 'Compte à rebours',
     'nav_stats': 'Statistiques',
+    'nav_budget': 'Budget',
     'nav_github': 'GitHub',
     'nav_gaming': 'Gaming',
     'nav_connections': 'Connexions',
@@ -13941,6 +14360,7 @@ var I18N = {
     'nav_journal': 'Diario',
     'nav_countdown': 'Cuenta regresiva',
     'nav_stats': 'Estadísticas',
+    'nav_budget': 'Presupuesto',
     'nav_github': 'GitHub',
     'nav_gaming': 'Gaming',
     'nav_connections': 'Conexiones',
@@ -14069,6 +14489,7 @@ var I18N = {
     'nav_journal': 'Tagebuch',
     'nav_countdown': 'Countdown',
     'nav_stats': 'Statistiken',
+    'nav_budget': 'Budget',
     'nav_github': 'GitHub',
     'nav_gaming': 'Gaming',
     'nav_connections': 'Verbindungen',

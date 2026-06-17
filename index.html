@@ -5610,6 +5610,10 @@ function setLang(lang){
     const tab=document.getElementById('pomo-tab-'+i);
     if(tab) tab.textContent=labels[i];
   });
+  // Recharge quote et météo dans la bonne langue
+  if(typeof fetchQuote==='function')fetchQuote();
+  const wEl=document.getElementById('weather-widget');
+  if(wEl&&!wEl.querySelector('.wx-root')){fetchWeather();}else if(wEl){fetchWeather();}
 }
 
 function applyI18n(){
@@ -12466,10 +12470,14 @@ document.addEventListener('click', e => {
 // ===================================================
 //  WEATHER
 // ===================================================
-const WMO={0:' Clear',1:' Mostly clear',2:' Partly cloudy',3:' Overcast',
-  45:' Foggy',48:' Foggy',51:' Drizzle',53:' Drizzle',55:' Heavy drizzle',
-  61:' Rain',63:' Rain',65:' Heavy rain',71:' Snow',73:' Snow',75:' Heavy snow',
-  80:' Showers',81:' Showers',82:' Heavy showers',95:' Thunderstorm',99:' Thunderstorm'};
+const WMO_DATA={
+  en:{0:' Clear',1:' Mostly clear',2:' Partly cloudy',3:' Overcast',45:' Foggy',48:' Foggy',51:' Drizzle',53:' Drizzle',55:' Heavy drizzle',61:' Rain',63:' Rain',65:' Heavy rain',71:' Snow',73:' Snow',75:' Heavy snow',80:' Showers',81:' Showers',82:' Heavy showers',95:' Thunderstorm',99:' Thunderstorm'},
+  fr:{0:' Ciel dégagé',1:' Quasi dégagé',2:' Partiellement nuageux',3:' Couvert',45:' Brouillard',48:' Brouillard',51:' Bruine',53:' Bruine',55:' Forte bruine',61:' Pluie',63:' Pluie',65:' Forte pluie',71:' Neige',73:' Neige',75:' Forte neige',80:' Averses',81:' Averses',82:' Fortes averses',95:' Orage',99:' Orage'},
+  es:{0:' Despejado',1:' Casi despejado',2:' Parcialmente nublado',3:' Nublado',45:' Niebla',48:' Niebla',51:' Llovizna',53:' Llovizna',55:' Llovizna fuerte',61:' Lluvia',63:' Lluvia',65:' Lluvia fuerte',71:' Nieve',73:' Nieve',75:' Nevada fuerte',80:' Chubascos',81:' Chubascos',82:' Chubascos fuertes',95:' Tormenta',99:' Tormenta'},
+  de:{0:' Klar',1:' Meist klar',2:' Teils bewölkt',3:' Bedeckt',45:' Neblig',48:' Neblig',51:' Nieselregen',53:' Nieselregen',55:' Starker Niesel',61:' Regen',63:' Regen',65:' Starker Regen',71:' Schnee',73:' Schnee',75:' Starker Schnee',80:' Schauer',81:' Schauer',82:' Starke Schauer',95:' Gewitter',99:' Gewitter'},
+};
+// WMO comme objet compatible avec WMO[code] (utilise la langue active)
+const WMO=new Proxy({},{get(_,code){const lang=typeof _lang!=='undefined'?_lang:'fr';return(WMO_DATA[lang]||WMO_DATA['fr'])[parseInt(code)]||'☁️ Unknown';}});
 
 
 function promptWeatherCity(){
@@ -12594,7 +12602,13 @@ async function fetchWeather(forceCity){
     const ct=document.getElementById('sb-compact-temp');if(ct)ct.textContent=temp+'°';
     const ci=document.getElementById('sb-compact-icon');if(ci)ci.textContent=icon;
     const wind=Math.round(cur.windspeed_10m),hum=cur.relative_humidity_2m;
-    const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const _wxDays={
+      fr:['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],
+      en:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+      es:['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'],
+      de:['So','Mo','Di','Mi','Do','Fr','Sa'],
+    };
+    const days=_wxDays[typeof _lang!=='undefined'?_lang:'fr']||_wxDays['en'];
     const daily=data.daily;
     function wxIcon(code,size=64){
       const s=size;
@@ -13288,32 +13302,75 @@ function getPomoDayStreak(history){
 // ===================================================
 //  QUOTE OF THE DAY
 // ===================================================
-const FALLBACK_QUOTES=[
-  {content:"The only way to do great work is to love what you do.",author:"Steve Jobs"},
-  {content:"In the middle of difficulty lies opportunity.",author:"Albert Einstein"},
-  {content:"It does not matter how slowly you go as long as you do not stop.",author:"Confucius"},
-  {content:"Life is what happens when you're busy making other plans.",author:"John Lennon"},
-  {content:"The future belongs to those who believe in the beauty of their dreams.",author:"Eleanor Roosevelt"},
-  {content:"Success is not final, failure is not fatal: it is the courage to continue that counts.",author:"Winston Churchill"},
-  {content:"The only impossible journey is the one you never begin.",author:"Tony Robbins"},
-  {content:"In the middle of every difficulty lies opportunity.",author:"Albert Einstein"},
-  {content:"Believe you can and you're halfway there.",author:"Theodore Roosevelt"},
-  {content:"Act as if what you do makes a difference. It does.",author:"William James"},
-  {content:"You are never too old to set another goal or to dream a new dream.",author:"C.S. Lewis"},
-  {content:"The secret of getting ahead is getting started.",author:"Mark Twain"},
-];
+const FALLBACK_QUOTES={
+  en:[
+    {content:"The only way to do great work is to love what you do.",author:"Steve Jobs"},
+    {content:"In the middle of difficulty lies opportunity.",author:"Albert Einstein"},
+    {content:"It does not matter how slowly you go as long as you do not stop.",author:"Confucius"},
+    {content:"Life is what happens when you're busy making other plans.",author:"John Lennon"},
+    {content:"The future belongs to those who believe in the beauty of their dreams.",author:"Eleanor Roosevelt"},
+    {content:"Success is not final, failure is not fatal: it is the courage to continue that counts.",author:"Winston Churchill"},
+    {content:"The only impossible journey is the one you never begin.",author:"Tony Robbins"},
+    {content:"Believe you can and you're halfway there.",author:"Theodore Roosevelt"},
+    {content:"Act as if what you do makes a difference. It does.",author:"William James"},
+    {content:"You are never too old to set another goal or to dream a new dream.",author:"C.S. Lewis"},
+    {content:"The secret of getting ahead is getting started.",author:"Mark Twain"},
+    {content:"It always seems impossible until it's done.",author:"Nelson Mandela"},
+  ],
+  fr:[
+    {content:"La seule façon de faire du bon travail est d'aimer ce que vous faites.",author:"Steve Jobs"},
+    {content:"Au milieu de la difficulté réside l'opportunité.",author:"Albert Einstein"},
+    {content:"Peu importe la lenteur avec laquelle vous avancez, pourvu que vous n'arrêtiez pas.",author:"Confucius"},
+    {content:"La vie, c'est ce qui arrive pendant qu'on fait d'autres projets.",author:"John Lennon"},
+    {content:"L'avenir appartient à ceux qui croient à la beauté de leurs rêves.",author:"Eleanor Roosevelt"},
+    {content:"Le succès n'est pas final, l'échec n'est pas fatal : c'est le courage de continuer qui compte.",author:"Winston Churchill"},
+    {content:"Le seul voyage impossible est celui qu'on ne commence jamais.",author:"Tony Robbins"},
+    {content:"Croyez en vous et vous serez à mi-chemin.",author:"Theodore Roosevelt"},
+    {content:"Agissez comme si ce que vous faites faisait une différence. C'est le cas.",author:"William James"},
+    {content:"Vous n'êtes jamais trop vieux pour vous fixer un nouvel objectif ou rêver un nouveau rêve.",author:"C.S. Lewis"},
+    {content:"Le secret pour aller de l'avant, c'est de commencer.",author:"Mark Twain"},
+    {content:"Ça semble toujours impossible jusqu'à ce que ce soit fait.",author:"Nelson Mandela"},
+  ],
+  es:[
+    {content:"La única forma de hacer un gran trabajo es amar lo que haces.",author:"Steve Jobs"},
+    {content:"En medio de la dificultad reside la oportunidad.",author:"Albert Einstein"},
+    {content:"No importa lo lento que vayas, siempre que no te detengas.",author:"Confucio"},
+    {content:"La vida es lo que pasa mientras estás ocupado haciendo otros planes.",author:"John Lennon"},
+    {content:"El futuro pertenece a quienes creen en la belleza de sus sueños.",author:"Eleanor Roosevelt"},
+    {content:"El éxito no es definitivo, el fracaso no es fatal: es el coraje de continuar lo que cuenta.",author:"Winston Churchill"},
+    {content:"El único viaje imposible es el que nunca comienzas.",author:"Tony Robbins"},
+    {content:"Cree que puedes y ya estás a mitad de camino.",author:"Theodore Roosevelt"},
+    {content:"Actúa como si lo que haces marcara la diferencia. Lo hace.",author:"William James"},
+    {content:"Nunca eres demasiado mayor para fijarte un nuevo objetivo o soñar un nuevo sueño.",author:"C.S. Lewis"},
+    {content:"El secreto para avanzar es comenzar.",author:"Mark Twain"},
+    {content:"Siempre parece imposible hasta que se hace.",author:"Nelson Mandela"},
+  ],
+  de:[
+    {content:"Der einzige Weg, großartige Arbeit zu leisten, ist zu lieben, was man tut.",author:"Steve Jobs"},
+    {content:"In der Mitte der Schwierigkeit liegt die Möglichkeit.",author:"Albert Einstein"},
+    {content:"Es spielt keine Rolle, wie langsam du gehst, solange du nicht aufhörst.",author:"Konfuzius"},
+    {content:"Das Leben ist das, was passiert, während du beschäftigt bist, andere Pläne zu machen.",author:"John Lennon"},
+    {content:"Die Zukunft gehört denen, die an die Schönheit ihrer Träume glauben.",author:"Eleanor Roosevelt"},
+    {content:"Erfolg ist nicht endgültig, Misserfolg ist nicht fatal: Es ist der Mut weiterzumachen, der zählt.",author:"Winston Churchill"},
+    {content:"Die einzige unmögliche Reise ist die, die du nie beginnst.",author:"Tony Robbins"},
+    {content:"Glaube, dass du es kannst, und du bist schon halb dort.",author:"Theodore Roosevelt"},
+    {content:"Handle so, als ob das, was du tust, einen Unterschied macht. Das tut es.",author:"William James"},
+    {content:"Du bist nie zu alt, um dir ein neues Ziel zu setzen oder einen neuen Traum zu träumen.",author:"C.S. Lewis"},
+    {content:"Das Geheimnis des Fortkommens ist der Anfang.",author:"Mark Twain"},
+    {content:"Es scheint immer unmöglich, bis es getan ist.",author:"Nelson Mandela"},
+  ],
+};
 
 async function fetchQuote(){
   const w=document.getElementById('quote-widget');if(!w)return;
-  const dayIdx=new Date().getDate()%FALLBACK_QUOTES.length;
   const showQuote=(text,author)=>{
-    w.innerHTML='<div class="quote-text">\u201c'+escapeHTML(text)+'\u201d</div><div class="quote-author">\u2014 '+escapeHTML(author)+'</div>';
+    w.innerHTML='<div class="quote-text">“'+escapeHTML(text)+'”</div><div class="quote-author">— '+escapeHTML(author)+'</div>';
   };
-  // Quotes locales uniquement — APIs externes bloquées par CORS depuis GitHub Pages
-  // Rotation basée sur le jour + l'heure pour varier dans la journée
-  const hourIdx=Math.floor(new Date().getHours()/6); // change 4x/jour
-  const idx=(new Date().getDate()*4+hourIdx)%FALLBACK_QUOTES.length;
-  showQuote(FALLBACK_QUOTES[idx].content||FALLBACK_QUOTES[idx].q,FALLBACK_QUOTES[idx].author||FALLBACK_QUOTES[idx].a);
+  const lang=typeof _lang!=='undefined'?_lang:'fr';
+  const quotes=FALLBACK_QUOTES[lang]||FALLBACK_QUOTES['en'];
+  const hourIdx=Math.floor(new Date().getHours()/6);
+  const idx=(new Date().getDate()*4+hourIdx)%quotes.length;
+  showQuote(quotes[idx].content,quotes[idx].author);
 }
 
 

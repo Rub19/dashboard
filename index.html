@@ -296,8 +296,9 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .sidebar.compact .user-info,.sidebar.compact .switch-hint{display:none!important}
 .sidebar.compact .user-card{justify-content:center;padding:8px}
 .sidebar.compact .nav-label-text,.sidebar.compact .nav-badge,.sidebar.compact .nav-label{display:none!important}
-.sidebar.compact .nav-item{justify-content:center;padding:11px 8px;min-width:0}
-.sidebar.compact .nav-icon{margin:0 auto}
+.sidebar.compact .nav-item{justify-content:center;padding:14px 0;min-width:0}
+.sidebar.compact .nav-icon{margin:0 auto;width:20px;height:20px}
+.sidebar.compact .nav-icon svg{width:20px;height:20px}
 .sidebar.compact .logo-text{display:none!important}
 .sidebar.compact .logo{justify-content:center;padding:12px 0}
 .sidebar.compact .logo-icon{margin:0}
@@ -4381,15 +4382,77 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
             Transactions
           </div>
           <div style="display:flex;gap:6px">
-            <select id="budget-filter-month" class="modal-input" style="padding:4px 8px;font-size:12px;width:auto" onchange="renderBudget()">
-            </select>
-            <select id="budget-filter-cat" class="modal-input" style="padding:4px 8px;font-size:12px;width:auto" onchange="renderBudget()">
-              <option value="">Toutes catégories</option>
-              <option>🍔 Alimentation</option><option>🚗 Transport</option><option>🏠 Logement</option>
-              <option>🎮 Loisirs</option><option>👕 Vêtements</option><option>💊 Santé</option>
-              <option>📚 Éducation</option><option>💰 Salaire</option><option>🎁 Autre</option>
-            </select>
+            <!-- Month dropdown -->
+            <div class="lang-dropdown" id="budget-dd-month" onclick="toggleLangDropdown('budget-dd-month')">
+              <div class="lang-trigger" id="budget-dd-month-trigger" style="padding:5px 10px">
+                <span id="budget-dd-month-label" style="font-size:12px;font-weight:600">Ce mois</span>
+                <svg class="lang-trigger-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <div class="lang-menu" id="budget-dd-month-menu" style="min-width:160px"></div>
+            </div>
+            <!-- Cat dropdown -->
+            <div class="lang-dropdown" id="budget-dd-cat" onclick="toggleLangDropdown('budget-dd-cat')">
+              <div class="lang-trigger" id="budget-dd-cat-trigger" style="padding:5px 10px">
+                <span id="budget-dd-cat-label" style="font-size:12px;font-weight:600">Toutes catégories</span>
+                <svg class="lang-trigger-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <div class="lang-menu" id="budget-dd-cat-menu" style="min-width:200px;right:0">
+                <div class="lang-option active" data-cat="" onclick="event.stopPropagation();setBudgetCat('','Toutes catégories','budget-dd-cat')">
+                  <span class="lang-option-flag" style="font-size:18px">🔍</span>
+                  <div class="lang-option-info"><div class="lang-option-name">Toutes catégories</div></div>
+                  <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="lang-option" data-cat="🍔 Alimentation" onclick="event.stopPropagation();setBudgetCat('🍔 Alimentation','🍔 Alimentation','budget-dd-cat')">
+                  <span class="lang-option-flag" style="font-size:18px">🍔</span>
+                  <div class="lang-option-info"><div class="lang-option-name">Alimentation</div></div>
+                  <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="lang-option" data-cat="🚗 Transport" onclick="event.stopPropagation();setBudgetCat('🚗 Transport','🚗 Transport','budget-dd-cat')">
+                  <span class="lang-option-flag" style="font-size:18px">🚗</span>
+                  <div class="lang-option-info"><div class="lang-option-name">Transport</div></div>
+                  <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="lang-option" data-cat="🏠 Logement" onclick="event.stopPropagation();setBudgetCat('🏠 Logement','🏠 Logement','budget-dd-cat')">
+                  <span class="lang-option-flag" style="font-size:18px">🏠</span>
+                  <div class="lang-option-info"><div class="lang-option-name">Logement</div></div>
+                  <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="lang-option" data-cat="🎮 Loisirs" onclick="event.stopPropagation();setBudgetCat('🎮 Loisirs','🎮 Loisirs','budget-dd-cat')">
+                  <span class="lang-option-flag" style="font-size:18px">🎮</span>
+                  <div class="lang-option-info"><div class="lang-option-name">Loisirs</div></div>
+                  <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="lang-option" data-cat="👕 Vêtements" onclick="event.stopPropagation();setBudgetCat('👕 Vêtements','👕 Vêtements','budget-dd-cat')">
+                  <span class="lang-option-flag" style="font-size:18px">👕</span>
+                  <div class="lang-option-info"><div class="lang-option-name">Vêtements</div></div>
+                  <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="lang-option" data-cat="💊 Santé" onclick="event.stopPropagation();setBudgetCat('💊 Santé','💊 Santé','budget-dd-cat')">
+                  <span class="lang-option-flag" style="font-size:18px">💊</span>
+                  <div class="lang-option-info"><div class="lang-option-name">Santé</div></div>
+                  <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="lang-option" data-cat="📚 Éducation" onclick="event.stopPropagation();setBudgetCat('📚 Éducation','📚 Éducation','budget-dd-cat')">
+                  <span class="lang-option-flag" style="font-size:18px">📚</span>
+                  <div class="lang-option-info"><div class="lang-option-name">Éducation</div></div>
+                  <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="lang-option" data-cat="💰 Salaire" onclick="event.stopPropagation();setBudgetCat('💰 Salaire','💰 Salaire','budget-dd-cat')">
+                  <span class="lang-option-flag" style="font-size:18px">💰</span>
+                  <div class="lang-option-info"><div class="lang-option-name">Salaire</div></div>
+                  <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="lang-option" data-cat="🎁 Autre" onclick="event.stopPropagation();setBudgetCat('🎁 Autre','🎁 Autre','budget-dd-cat')">
+                  <span class="lang-option-flag" style="font-size:18px">🎁</span>
+                  <div class="lang-option-info"><div class="lang-option-name">Autre</div></div>
+                  <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+              </div>
+            </div>
           </div>
+          <!-- Hidden inputs to store values -->
+          <input type="hidden" id="budget-filter-month" value="">
+          <input type="hidden" id="budget-filter-cat" value="">
         </div>
         <div id="budget-tx-list" style="display:flex;flex-direction:column;gap:4px"></div>
       </div>
@@ -9697,7 +9760,10 @@ function getCmdItems(q=''){
   }]:[];
   const f=arr=>!q?arr:arr.filter(i=>(i.label+' '+(i.sub||'')).toLowerCase().includes(q));
   const allItems=[...f(recentItems),...f(recentNotes),...f(pendingTodos),...urlItem];
-  return{pages:f(pages),actions:f(actions),items:allItems,all:[...f(pages),...f(actions),...allItems]};
+  const fAll=!q
+    ? [...f(actions),...f(pages),...allItems]          // sans recherche: Actions → Pages → Items
+    : [...f(pages),...f(actions),...allItems];           // avec recherche: Pages → Actions → Items
+  return{pages:f(pages),actions:f(actions),items:allItems,all:fAll};
 }
 let _cmdAllItems=[];
 function renderCmdResults(){
@@ -12557,6 +12623,28 @@ async function fetchWeather(forceCity){
 // ===================================================
 function getBudgetTx(){const p=curP();if(!p.state.budget)p.state.budget=[];return p.state.budget;}
 
+function setBudgetCat(val,label,ddId){
+  const inp=document.getElementById('budget-filter-cat');if(inp)inp.value=val;
+  const lbl=document.getElementById('budget-dd-cat-label');if(lbl)lbl.textContent=label||'Toutes catégories';
+  document.querySelectorAll('#budget-dd-cat-menu .lang-option').forEach(o=>{
+    o.classList.toggle('active',o.dataset.cat===val);
+  });
+  document.getElementById(ddId)?.classList.remove('open');
+  renderBudget();
+}
+
+function setBudgetMonth(val,ddId){
+  const inp=document.getElementById('budget-filter-month');if(inp)inp.value=val;
+  const d=new Date(val+'-01');
+  const lbl=document.getElementById('budget-dd-month-label');
+  if(lbl)lbl.textContent=d.toLocaleDateString('fr-FR',{month:'short',year:'numeric'});
+  document.querySelectorAll('#budget-dd-month-menu .lang-option').forEach(o=>{
+    o.classList.toggle('active',o.dataset.month===val);
+  });
+  document.getElementById(ddId)?.classList.remove('open');
+  renderBudget();
+}
+
 function addBudgetTx(type){
   const isIn=type==='in';
   const label=(document.getElementById(isIn?'btx-in-label':'btx-label')?.value||'').trim();
@@ -12588,14 +12676,31 @@ function renderBudget(){
   const now=new Date();
   const curMonth=now.toISOString().slice(0,7);
 
-  // Populate month filter
-  const monthSel=document.getElementById('budget-filter-month');
-  if(monthSel&&!monthSel.children.length){
-    const months=[...new Set(all.map(t=>t.date.slice(0,7)))].sort().reverse();
-    if(!months.includes(curMonth))months.unshift(curMonth);
-    monthSel.innerHTML=months.map(m=>`<option value="${m}"${m===curMonth?' selected':''}>${m}</option>`).join('');
+  // Populate month dropdown
+  const months=[...new Set(all.map(t=>t.date.slice(0,7)))].sort().reverse();
+  if(!months.includes(curMonth))months.unshift(curMonth);
+  const monthMenu=document.getElementById('budget-dd-month-menu');
+  if(monthMenu&&months.length){
+    const curVal=document.getElementById('budget-filter-month')?.value||curMonth;
+    if(!monthMenu.children.length||monthMenu.dataset.built!==months.join()){
+      monthMenu.dataset.built=months.join();
+      const fmtMonth=m=>{const d=new Date(m+'-01');return d.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});};
+      monthMenu.innerHTML=months.map(m=>`
+        <div class="lang-option${m===curVal?' active':''}" data-month="${m}" onclick="event.stopPropagation();setBudgetMonth('${m}','budget-dd-month')">
+          <span class="lang-option-flag" style="font-size:16px">📅</span>
+          <div class="lang-option-info"><div class="lang-option-name">${fmtMonth(m)}</div><div class="lang-option-native">${m}</div></div>
+          <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>`).join('');
+    }
+    // Set label
+    const lbl=document.getElementById('budget-dd-month-label');
+    const curValNow=document.getElementById('budget-filter-month')?.value||curMonth;
+    if(lbl){const d=new Date(curValNow+'-01');lbl.textContent=d.toLocaleDateString('fr-FR',{month:'short',year:'numeric'});}
+    if(!document.getElementById('budget-filter-month')?.value){
+      const inp=document.getElementById('budget-filter-month');if(inp)inp.value=curMonth;
+    }
   }
-  const selMonth=monthSel?.value||curMonth;
+  const selMonth=document.getElementById('budget-filter-month')?.value||curMonth;
   const selCat=document.getElementById('budget-filter-cat')?.value||'';
 
   const monthTx=all.filter(t=>t.date.slice(0,7)===selMonth);

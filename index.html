@@ -277,7 +277,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .nav-item.active{color:var(--accent);background:var(--accent-subtle);border-color:var(--border3)}
 .nav-item.active .nav-icon{color:var(--accent)}
 .nav-item.active::after{content:'';position:absolute;right:0;top:20%;bottom:20%;width:2.5px;background:var(--accent);border-radius:99px;box-shadow:0 0 5px rgba(249,115,22,.4)}
-.sidebar.compact .nav-item.active::after{top:auto;bottom:-3px;right:50%;transform:translateX(50%);width:16px;height:2.5px;left:auto}
+.sidebar.compact .nav-item.active::after{content:'';position:absolute;left:2px;top:50%;transform:translateY(-50%);width:2.5px;height:16px;background:var(--accent);border-radius:99px;box-shadow:0 0 5px rgba(249,115,22,.4);right:auto;bottom:auto}
 /* Light mode nav items */
 body[data-light="1"] .nav-item{color:rgba(15,23,36,.45)}
 body[data-light="1"] .nav-item:hover{color:rgba(15,23,36,.8);background:rgba(0,0,0,.04)}
@@ -3538,9 +3538,9 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   <!-- COMPACT INFO : heure + météo -->
   <div id="sb-compact-info" style="display:none;flex-direction:column;align-items:center;gap:6px;padding:8px 0 4px;border-top:1px solid rgba(255,255,255,.06)">
     <div id="sb-compact-clock" style="font-size:11px;font-weight:700;font-family:var(--mono);color:var(--text);letter-spacing:.5px">00:00</div>
-    <div id="sb-compact-weather" style="font-size:10px;color:var(--muted);font-family:var(--mono);display:flex;flex-direction:column;align-items:center;gap:1px">
-      <span id="sb-compact-temp">—</span>
-      <span id="sb-compact-icon" style="font-size:14px">🌡️</span>
+    <div id="sb-compact-weather" style="display:flex;align-items:center;gap:3px;font-family:var(--mono)">
+      <span id="sb-compact-icon" style="font-size:13px">🌡️</span>
+      <span id="sb-compact-temp" style="font-size:11px;font-weight:700;color:var(--text)">—</span>
     </div>
     <div id="sb-compact-discord" style="display:none;flex-direction:column;align-items:center;gap:2px">
       <div id="sb-compact-dc-dot" style="width:8px;height:8px;border-radius:50%;background:#4e5058"></div>
@@ -5612,8 +5612,10 @@ function setLang(lang){
   });
   // Recharge quote et météo dans la bonne langue
   if(typeof fetchQuote==='function')fetchQuote();
-  const wEl=document.getElementById('weather-widget');
-  if(wEl&&!wEl.querySelector('.wx-root')){fetchWeather();}else if(wEl){fetchWeather();}
+  // Invalider le cache météo (langue a changé) et re-render
+  const _wp2=curP();
+  if(_wp2?.state)_wp2.state.weatherCache=null;
+  if(typeof fetchWeather==='function')fetchWeather();
 }
 
 function applyI18n(){
@@ -12519,7 +12521,8 @@ async function fetchWeather(forceCity){
   const cache=_wp?.state?.weatherCache;
   const _cacheAge=(Date.now()-(cache?.ts||0))<1800000;
   const _cityMatch=!city||!cache?.city||(cache.city.toLowerCase()===city.toLowerCase());
-  if(cache?.rendered&&_cacheAge&&_cityMatch){w.innerHTML=cache.rendered;return;}
+  const _langMatch=!cache?.lang||cache.lang===(typeof _lang!=='undefined'?_lang:'fr');
+  if(cache?.rendered&&_cacheAge&&_cityMatch&&_langMatch){w.innerHTML=cache.rendered;return;}
 
   // Vider le cache
   if(_wp?.state)_wp.state.weatherCache=null;
@@ -12627,7 +12630,7 @@ async function fetchWeather(forceCity){
     }).join('');
     const html=`<div class="wx-root"><div class="wx-hero"><div class="wx-icon-wrap">${wxIcon(code,64)}</div><div style="flex:1;min-width:0"><div class="wx-temp">${temp}<sup>°C</sup></div><div class="wx-desc">${text}</div><div class="wx-loc" style="cursor:pointer" onclick="promptWeatherCity()" title="Changer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:11px;height:11px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${cityName||'?'} <span style="opacity:.4;font-size:9px">✎</span></div></div></div><div class="wx-meta"><div class="wx-meta-cell"><div class="wx-meta-val">${feels}°</div><div class="wx-meta-lbl">Feels like</div></div><div class="wx-meta-cell"><div class="wx-meta-val">${wind}</div><div class="wx-meta-lbl">km/h wind</div></div><div class="wx-meta-cell"><div class="wx-meta-val">${hum}%</div><div class="wx-meta-lbl">Humidity</div></div></div><div class="wx-forecast">${forecastHtml}</div></div>`;
     w.innerHTML=html;
-    if(_wp?.state)_wp.state.weatherCache={city:city||cityName||'',ts:Date.now(),rendered:html};
+    if(_wp?.state)_wp.state.weatherCache={city:city||cityName||'',ts:Date.now(),rendered:html,lang:typeof _lang!=='undefined'?_lang:'fr'};
   }
 }
 

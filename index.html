@@ -5290,73 +5290,75 @@ body.no-anim #bg-canvas{display:none!important}
           </div>
         </div>
 
+
+      <!-- DESIGN OPTIONS -->
+      <div class="panel" style="margin-top:12px">
+        <div class="panel-header">
+          <div class="panel-title">
+            <div class="panel-title-icon" style="background:rgba(139,92,246,.15);color:#8b5cf6">🎨</div>
+            Options de design
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:20px;padding:4px 0">
+
+          <!-- Densité -->
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+            <div>
+              <div style="font-size:13px;font-weight:600">Densité de l'interface</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">Espacement entre les éléments</div>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button class="btn btn-ghost" id="density-compact" onclick="setDensity('compact')" style="font-size:11px;padding:5px 12px">Compact</button>
+              <button class="btn btn-primary" id="density-normal" onclick="setDensity('normal')" style="font-size:11px;padding:5px 12px">Normal</button>
+              <button class="btn btn-ghost" id="density-spacious" onclick="setDensity('spacious')" style="font-size:11px;padding:5px 12px">Spacieux</button>
+            </div>
+          </div>
+
+          <!-- Border radius -->
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+              <div>
+                <div style="font-size:13px;font-weight:600">Arrondi des coins</div>
+                <div style="font-size:11px;color:var(--muted);margin-top:2px">Rayon des bordures des panneaux</div>
+              </div>
+              <span id="radius-val" style="font-size:13px;font-weight:700;font-family:var(--mono);color:var(--accent)">8px</span>
+            </div>
+            <input type="range" id="radius-slider" min="0" max="24" value="8" step="2"
+              oninput="setRadius(this.value)"
+              style="width:100%;accent-color:var(--accent);cursor:pointer">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:6px;font-family:var(--mono)">
+              <span>0 — Sharp</span><span>12 — Rounded</span><span>24 — Pill</span>
+            </div>
+          </div>
+
+          <!-- Glassmorphism -->
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div>
+              <div style="font-size:13px;font-weight:600">Glassmorphism</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">Effet verre sur les panneaux</div>
+            </div>
+            <div class="widget-toggle-switch" id="glass-toggle" onclick="toggleGlass(this)"></div>
+          </div>
+
+          <!-- Fond d'écran -->
+          <div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:10px">Fond d'écran</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+              <button class="bg-preset-btn active" onclick="setBgPreset('none')" data-bg="none">Aucun</button>
+              <button class="bg-preset-btn" onclick="setBgPreset('mesh1')" data-bg="mesh1" style="background:radial-gradient(ellipse at 20% 50%,rgba(249,115,22,.3),transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(139,92,246,.25),transparent 50%)">Mesh 1</button>
+              <button class="bg-preset-btn" onclick="setBgPreset('mesh2')" data-bg="mesh2" style="background:radial-gradient(ellipse at 50% 0%,rgba(59,130,246,.3),transparent 70%),radial-gradient(ellipse at 100% 100%,rgba(16,185,129,.2),transparent 50%)">Mesh 2</button>
+              <button class="bg-preset-btn" onclick="setBgPreset('mesh3')" data-bg="mesh3" style="background:radial-gradient(ellipse at 0% 100%,rgba(244,63,94,.25),transparent 50%),radial-gradient(ellipse at 100% 0%,rgba(251,191,36,.2),transparent 50%)">Mesh 3</button>
+              <button class="bg-preset-btn" onclick="setBgPreset('grid')" data-bg="grid" style="background:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0,rgba(255,255,255,.05) 1px,transparent 1px,transparent 32px),repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0,rgba(255,255,255,.05) 1px,transparent 1px,transparent 32px)">Grille</button>
+              <button class="bg-preset-btn" onclick="setBgPreset('dots')" data-bg="dots" style="background:radial-gradient(circle,rgba(255,255,255,.12) 1px,transparent 1px) 0 0/20px 20px">Dots</button>
+            </div>
+            <input type="text" class="modal-input" id="bg-url-input" placeholder="URL d'image personnalisée (https://...)" style="font-size:12px" oninput="setBgUrl(this.value)">
+          </div>
+
+        </div>
+      </div>
+
       </div><!-- /settings-content -->
 
-    <!-- DESIGN OPTIONS -->
-    <div class="panel" style="margin-top:12px">
-      <div class="panel-header">
-        <div class="panel-title">
-          <div class="panel-title-icon" style="background:rgba(139,92,246,.15);color:#8b5cf6">🎨</div>
-          Options de design
-        </div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:20px;padding:4px 0">
-
-        <!-- Densité -->
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-          <div>
-            <div style="font-size:13px;font-weight:600">Densité de l'interface</div>
-            <div style="font-size:11px;color:var(--muted);margin-top:2px">Espacement entre les éléments</div>
-          </div>
-          <div style="display:flex;gap:6px">
-            <button class="btn btn-ghost" id="density-compact" onclick="setDensity('compact')" style="font-size:11px;padding:5px 12px">Compact</button>
-            <button class="btn btn-primary" id="density-normal" onclick="setDensity('normal')" style="font-size:11px;padding:5px 12px">Normal</button>
-            <button class="btn btn-ghost" id="density-spacious" onclick="setDensity('spacious')" style="font-size:11px;padding:5px 12px">Spacieux</button>
-          </div>
-        </div>
-
-        <!-- Border radius -->
-        <div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:10px">
-            <div>
-              <div style="font-size:13px;font-weight:600">Arrondi des coins</div>
-              <div style="font-size:11px;color:var(--muted);margin-top:2px">Rayon des bordures des panneaux</div>
-            </div>
-            <span id="radius-val" style="font-size:13px;font-weight:700;font-family:var(--mono);color:var(--accent)">8px</span>
-          </div>
-          <input type="range" id="radius-slider" min="0" max="24" value="8" step="2"
-            oninput="setRadius(this.value)"
-            style="width:100%;accent-color:var(--accent);cursor:pointer">
-          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:6px;font-family:var(--mono)">
-            <span>0 — Sharp</span><span>12 — Rounded</span><span>24 — Pill</span>
-          </div>
-        </div>
-
-        <!-- Glassmorphism -->
-        <div style="display:flex;align-items:center;justify-content:space-between">
-          <div>
-            <div style="font-size:13px;font-weight:600">Glassmorphism</div>
-            <div style="font-size:11px;color:var(--muted);margin-top:2px">Effet verre sur les panneaux (backdrop-filter)</div>
-          </div>
-          <div class="widget-toggle-switch" id="glass-toggle" onclick="toggleGlass(this)"></div>
-        </div>
-
-        <!-- Fond personnalisé -->
-        <div>
-          <div style="font-size:13px;font-weight:600;margin-bottom:10px">Fond d'écran</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
-            <button class="bg-preset-btn active" onclick="setBgPreset('none')" data-bg="none">Aucun</button>
-            <button class="bg-preset-btn" onclick="setBgPreset('mesh1')" data-bg="mesh1" style="background:radial-gradient(ellipse at 20% 50%,rgba(249,115,22,.3),transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(139,92,246,.25),transparent 50%)">Mesh 1</button>
-            <button class="bg-preset-btn" onclick="setBgPreset('mesh2')" data-bg="mesh2" style="background:radial-gradient(ellipse at 50% 0%,rgba(59,130,246,.3),transparent 70%),radial-gradient(ellipse at 100% 100%,rgba(16,185,129,.2),transparent 50%)">Mesh 2</button>
-            <button class="bg-preset-btn" onclick="setBgPreset('mesh3')" data-bg="mesh3" style="background:radial-gradient(ellipse at 0% 100%,rgba(244,63,94,.25),transparent 50%),radial-gradient(ellipse at 100% 0%,rgba(251,191,36,.2),transparent 50%)">Mesh 3</button>
-            <button class="bg-preset-btn" onclick="setBgPreset('grid')" data-bg="grid" style="background:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0,rgba(255,255,255,.05) 1px,transparent 1px,transparent 32px),repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0,rgba(255,255,255,.05) 1px,transparent 1px,transparent 32px)">Grille</button>
-            <button class="bg-preset-btn" onclick="setBgPreset('dots')" data-bg="dots" style="background:radial-gradient(circle,rgba(255,255,255,.12) 1px,transparent 1px) 0 0/20px 20px">Dots</button>
-          </div>
-          <input type="text" class="modal-input" id="bg-url-input" placeholder="URL d'image personnalisée (https://...)" style="font-size:12px" oninput="setBgUrl(this.value)">
-        </div>
-
-      </div>
-    </div>
     </div><!-- /settings-layout -->
   </div>
 
@@ -7456,6 +7458,35 @@ function toggleWidgetVisible(wid, switchEl){
   visible[wid]=!wasOn;
   switchEl.classList.toggle('on',!wasOn);
   saveWidgetPrefs(order,visible);
+
+  // Forcer masquage immédiat sans attendre initSidebarWidgets
+  if(!wasOn===false){
+    // ON → réactiver
+  } else {
+    // OFF → cacher immédiatement
+    if(wid==='nowplaying'){
+      const w1=document.getElementById('sb-spotify-wrap');
+      const w2=document.getElementById('sb-spotify-iframe-wrap');
+      if(w1)w1.style.display='none';
+      if(w2)w2.style.display='none';
+      clearInterval(_spotifyAutoRefresh);_spotifyAutoRefresh=null;
+      clearInterval(window._npProgressInterval);
+    }
+    if(wid==='lastfm'){
+      const w=document.getElementById('sb-lastfm-wrap');
+      if(w)w.style.display='none';
+      clearInterval(_lastfmAutoRefresh);
+    }
+    if(wid==='discord'){
+      const w=document.getElementById('sb-discord-wrap');
+      if(w)w.style.display='none';
+    }
+    if(wid==='steam'){
+      const w=document.getElementById('sb-steam-wrap');
+      if(w)w.style.display='none';
+    }
+  }
+
   initSidebarWidgets(curP());
 }
 
@@ -11660,11 +11691,22 @@ function updateSpotifyFromLanyard(d){
   const wrap=document.getElementById('sb-spotify-wrap');
   const iframeWrap=document.getElementById('sb-spotify-iframe-wrap');
   const dcStatus=d.discord_status||'offline';
-  // online/idle/dnd = visible → Lanyard. offline/invisible = Last.fm
   const isDiscordVisible=['online','idle','dnd'].includes(dcStatus);
 
+  // Vérifier le toggle widget nowplaying
+  const vis=getWidgetPrefs().visible;
+  const npEnabled=vis.nowplaying!==false;
+
+  if(!npEnabled){
+    // Toggle OFF → tout cacher
+    if(wrap)wrap.style.display='none';
+    if(iframeWrap)iframeWrap.style.display='none';
+    clearInterval(_spotifyAutoRefresh);_spotifyAutoRefresh=null;
+    clearInterval(window._npProgressInterval);
+    return;
+  }
+
   if(isDiscordVisible&&sp&&sp.song){
-    // Discord visible + Spotify joue → widget Lanyard
     if(wrap)wrap.style.display='block';
     if(iframeWrap)iframeWrap.style.display='none';
     clearInterval(_spotifyAutoRefresh);_spotifyAutoRefresh=null;
@@ -11684,7 +11726,6 @@ function updateSpotifyFromLanyard(d){
       if(timeRow)timeRow.style.display='none';
     }
   } else {
-    // Discord déco/invis OU pas de Spotify → cacher Lanyard, montrer Last.fm
     if(wrap)wrap.style.display='none';
     const eq=document.getElementById('sb-eq-anim');if(eq)eq.style.display='none';
     clearInterval(window._npProgressInterval);
@@ -12030,6 +12071,9 @@ async function refreshSpotifySidebar(){
   const lfm=p.state.connections?.lastfm;
 
   if(!lfm?.username){if(wrap)wrap.style.display='none';return;}
+  // Vérifier le toggle
+  const vis=getWidgetPrefs().visible;
+  if(vis.nowplaying===false){if(wrap)wrap.style.display='none';return;}
   if(wrap)wrap.style.display='block';
 
   try{

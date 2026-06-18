@@ -6589,15 +6589,14 @@ function switchAuthTab(tab){
       gsap.to(current,{opacity:0,y:-8,duration:.15,ease:'power2.in',onComplete:()=>{
         current.style.display='none';
         next.style.display='block';
-        gsap.fromTo(next,{opacity:0,y:12},{opacity:1,y:0,duration:.25,ease:'power2.out'});
-        gsap.fromTo(next.querySelectorAll('.auth-input-wrap,.auth-submit-btn'),
-          {y:8,opacity:0},{y:0,opacity:1,duration:.2,stagger:.05,ease:'power2.out',delay:.05}
-        );
+        next.style.opacity='1';
+        gsap.from(next,{y:10,duration:.22,ease:'power2.out',clearProps:'transform'});
       }});
     } else {
       current.style.display='none';
       next.style.display='block';
-      gsap.fromTo(next,{opacity:0,y:12},{opacity:1,y:0,duration:.25,ease:'power2.out'});
+      next.style.opacity='1';
+      gsap.from(next,{y:10,duration:.22,ease:'power2.out',clearProps:'transform'});
     }
   } else {
     if(loginForm)loginForm.style.display=tab==='login'?'block':'none';
@@ -6713,20 +6712,9 @@ async function onAuthSuccess(userArg){
     boot.id='nexus-boot-screen';
     boot.style.cssText='position:fixed;inset:0;z-index:2147483647;background:#050507;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px';
     boot.innerHTML='<div id="boot-logo" style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#f97316,#dc2626);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 30px rgba(249,115,22,.5)"><svg width="24" height="24" viewBox="0 0 20 20" fill="none"><polygon points="10,1 19,10 10,19 1,10" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round"/><polygon points="10,5 15,10 10,15 5,10" fill="white"/></svg></div><div id="boot-status" style="font-size:11px;color:rgba(249,115,22,.5);font-family:JetBrains Mono,monospace;letter-spacing:1px;margin-top:8px">NEXUS</div>';
-    if(typeof gsap!=='undefined'){
-      const tl=gsap.timeline();
-      tl.fromTo('#boot-logo',
-        {scale:0,opacity:0,rotation:-10},
-        {scale:1,opacity:1,rotation:0,duration:.6,ease:'back.out(1.7)'}
-      )
-      .fromTo('#boot-status',
-        {opacity:0,y:8},
-        {opacity:1,y:0,duration:.3,ease:'power2.out'},
-        '-=.2'
-      );
-    } else if(typeof anime!=='undefined'){
-      anime({targets:'#boot-logo',scale:[0,1],opacity:[0,1],duration:700,easing:'easeOutElastic(1,.6)'});
-      anime({targets:'#boot-status',opacity:[0,1],translateY:[8,0],duration:400,delay:300,easing:'easeOutCubic'});
+    // Animation boot sûre - CSS only, pas de GSAP fromTo
+    if(typeof anime!=='undefined'){
+      anime({targets:'#boot-logo',scale:[.5,1],duration:500,easing:'easeOutElastic(1,.6)'});
     }
     document.body.appendChild(boot);
   } else {
@@ -7298,8 +7286,13 @@ function enterDashboard(id){
     screen.style.opacity=''; screen.style.transition='';
     const sb=document.getElementById('main-sidebar');
     const mc=document.getElementById('main-content');
-    if(sb){sb.style.opacity='0';sb.style.display='flex';requestAnimationFrame(()=>{sb.style.transition='opacity .25s ease';sb.style.opacity='1';setTimeout(()=>{sb.style.transition='';},280);});}
-    if(mc){mc.style.opacity='0';mc.style.display='block';requestAnimationFrame(()=>{mc.style.transition='opacity .3s ease';mc.style.opacity='1';setTimeout(()=>{mc.style.transition='';},320);});}
+    if(sb){sb.style.display='flex';sb.style.opacity='1';}
+    if(mc){mc.style.display='block';mc.style.opacity='1';}
+    // Animation d'entrée douce sans toucher l'opacity
+    if(typeof gsap!=='undefined'){
+      if(sb)gsap.from(sb,{x:-20,duration:.3,ease:'power2.out',clearProps:'transform'});
+      if(mc)gsap.from(mc,{opacity:0,duration:.4,ease:'power2.out',clearProps:'opacity'});
+    }
     renderSidebarNav(); updateSidebarAvatar(); applyI18n();
     initDashboard();
     setTimeout(()=>{if(typeof animateSidebarEntrance==='function')animateSidebarEntrance();},200);
@@ -9138,18 +9131,11 @@ function openModal(id){
   const inner=modal.querySelector('.modal');
   if(inner&&typeof gsap!=='undefined'){
     const isMobile=window.innerWidth<=768;
+    inner.style.opacity='1';
     if(isMobile){
-      // Sur mobile : slide depuis le bas
-      gsap.fromTo(inner,
-        {y:'100%',opacity:1},
-        {y:'0%',opacity:1,duration:.32,ease:'power3.out'}
-      );
+      gsap.from(inner,{y:'60%',duration:.3,ease:'power3.out',clearProps:'transform'});
     } else {
-      // Desktop : scale + fade
-      gsap.fromTo(inner,
-        {y:30,opacity:0,scale:.96},
-        {y:0,opacity:1,scale:1,duration:.28,ease:'back.out(1.2)'}
-      );
+      gsap.from(inner,{y:20,scale:.97,duration:.25,ease:'back.out(1.2)',clearProps:'all'});
     }
   }
   const fi=document.querySelector('#modal-'+id+' input:not([type=file]):not([type=date])');
@@ -9233,8 +9219,8 @@ function toast(msg,type='info'){
   el.innerHTML='<span>'+escapeHTML(icons[type]||icons.info)+'</span> '+escapeHTML(msg);
   document.getElementById('toasts').appendChild(el);
   if(typeof gsap!=='undefined'){
-    gsap.fromTo(el,{x:60,opacity:0,scale:.9},{x:0,opacity:1,scale:1,duration:.3,ease:'back.out(1.4)'});
-    setTimeout(()=>{gsap.to(el,{x:60,opacity:0,duration:.25,ease:'power2.in',onComplete:()=>el.remove()});},2500);
+    gsap.from(el,{x:40,duration:.25,ease:'back.out(1.4)',clearProps:'transform'});
+    setTimeout(()=>{gsap.to(el,{x:40,opacity:0,duration:.2,ease:'power2.in',onComplete:()=>el.remove()});},2500);
   } else {
     setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300);},2500);
   }
@@ -11072,11 +11058,11 @@ function animatePageIn(pageEl,page){
   _lastPageIdx=curIdx>=0?curIdx:prevIdx;
 
   if(typeof gsap!=='undefined'){
-    // GSAP slide + fade transition
+    // Utiliser gsap.from (pas fromTo) — l'élément reste visible si l'anim plante
     const dir=curIdx>prevIdx?1:-1;
-    gsap.fromTo(pageEl,
-      {opacity:0, x:dir*24, scale:.99},
-      {opacity:1, x:0, scale:1, duration:.28, ease:'power2.out',
+    pageEl.style.opacity='1'; // S'assurer que c'est visible d'abord
+    gsap.from(pageEl,
+      {opacity:0, x:dir*20, duration:.25, ease:'power2.out', clearProps:'all',
         onComplete:()=>{
           initScrollReveal();animateStatCards();initRipples();hidePageLoader();
           animatePageEnterGSAP(page);initPanelSpotlights();init3DTilt();initNavRipples();
@@ -13829,21 +13815,18 @@ function animatePageEnterGSAP(page){
   // Topbar
   const topbar=el.querySelector('.topbar');
   if(topbar){
-    gsap.fromTo(topbar,
-      {opacity:0,y:isMobile?-8:-12},
-      {opacity:1,y:0,duration:isMobile?.2:.3,ease:'power2.out'}
-    );
+    gsap.from(topbar,{y:isMobile?-6:-10,duration:isMobile?.18:.25,ease:'power2.out',clearProps:'transform'});
   }
 
-  // Panels avec stagger — plus rapide sur mobile
+  // Panels avec stagger — utiliser from (sûr)
   const panels=el.querySelectorAll('.panel,.stat-card');
   if(panels.length){
-    gsap.fromTo(panels,
-      {opacity:0,y:isMobile?12:20,scale:isMobile?.99:.98},
-      {opacity:1,y:0,scale:1,
-       duration:isMobile?.25:.4,
-       stagger:isMobile?.03:.05,
-       ease:'power2.out',delay:.03}
+    gsap.from(panels,
+      {opacity:0,y:isMobile?8:14,
+       duration:isMobile?.22:.35,
+       stagger:isMobile?.025:.04,
+       ease:'power2.out',delay:.02,
+       clearProps:'all'}
     );
   }
 
@@ -13860,10 +13843,10 @@ function animatePageEnterGSAP(page){
   if(isMobile){
     const items=el.querySelectorAll('.todo-item,.habit-row,.note-item,.kanban-card');
     if(items.length){
-      gsap.fromTo(items,
-        {opacity:0,x:-10},
-        {opacity:1,x:0,duration:.2,stagger:.02,ease:'power2.out',delay:.1}
-      );
+      gsap.from(items,{x:-8,duration:.18,stagger:.015,ease:'power2.out',delay:.08,clearProps:'transform'});
+
+
+
     }
   }
 }
@@ -13950,10 +13933,7 @@ function animateStatsNumbers(){
 // ── Toast animation ──
 function animateToast(el){
   if(typeof gsap==='undefined')return;
-  gsap.fromTo(el,
-    {x:40,opacity:0,scale:.9},
-    {x:0,opacity:1,scale:1,duration:.25,ease:'back.out(1.4)'}
-  );
+  gsap.from(el,{x:40,duration:.25,ease:'back.out(1.4)',clearProps:'transform'});
 }
 
 // ── Pomodoro ring animation ──
@@ -14021,50 +14001,15 @@ function updateAuthLangBar(){
 }
 
 function animateAuthEntrance(){
+  // Animations CSS only — pas de fromTo qui mettent opacity:0 au départ
+  // Les éléments sont déjà visibles, on ajoute juste un effet subtil
   if(typeof gsap==='undefined')return;
-  const tl=gsap.timeline({defaults:{ease:'power2.out'}});
-
-  // Card slide up
-  if(document.getElementById('auth-card')){
-    tl.fromTo('#auth-card',
-      {y:40,opacity:0,scale:.97},
-      {y:0,opacity:1,scale:1,duration:.5,ease:'power3.out'}
-    );
-  }
-
-  // Logo bounce
-  if(document.getElementById('auth-logo-icon')){
-    tl.fromTo('#auth-logo-icon',
-      {scale:0,rotation:-20},
-      {scale:1,rotation:0,duration:.5,ease:'back.out(1.7)'},
-      0.1
-    );
-  }
-
-  // Left content
-  const leftContent=document.querySelectorAll('#auth-left-content > div');
-  if(leftContent.length){
-    tl.fromTo(leftContent,{y:20,opacity:0},{y:0,opacity:1,duration:.4,stagger:.07},'-=.3');
-  }
-
-  // Features
-  const features=document.querySelectorAll('.auth-feature-item');
-  if(features.length){
-    tl.fromTo(features,{x:-14,opacity:0},{x:0,opacity:1,duration:.35,stagger:.05},'-=.2');
-  }
-
-  // Right panel
-  if(document.getElementById('auth-form-header')){
-    tl.fromTo('#auth-form-header',{y:14,opacity:0},{y:0,opacity:1,duration:.35},'-=.25');
-  }
-  const tabPill=document.querySelector('.auth-tab-pill');
-  if(tabPill){
-    tl.fromTo(tabPill,{y:10,opacity:0},{y:0,opacity:1,duration:.3},'-=.2');
-  }
-  const formEls=document.querySelectorAll('#form-login .auth-input-wrap, #form-login .auth-submit-btn');
-  if(formEls.length){
-    tl.fromTo(formEls,{y:8,opacity:0},{y:0,opacity:1,duration:.25,stagger:.06},'-=.15');
-  }
+  const card=document.getElementById('auth-card');
+  if(!card)return;
+  // Animation sûre : partir de l'état VISIBLE et juste ajouter un léger mouvement
+  gsap.from(card,{y:20,duration:.5,ease:'power2.out',clearProps:'transform'});
+  const logo=document.getElementById('auth-logo-icon');
+  if(logo)gsap.from(logo,{scale:.8,duration:.4,ease:'back.out(1.5)',clearProps:'transform'});
 }
 
 // Particules canvas pour l'auth
@@ -15880,17 +15825,12 @@ function toggleMobMore(){
     drawer.style.display='block';
     if(overlay){overlay.style.display='block';overlay.style.opacity='0';}
     if(typeof gsap!=='undefined'){
-      gsap.fromTo(drawer,
-        {y:'100%',opacity:0},
-        {y:'0%',opacity:1,duration:.3,ease:'power3.out'}
-      );
+      drawer.style.opacity='1';
+    gsap.from(drawer,{y:'80%',duration:.3,ease:'power3.out',clearProps:'transform'});
       if(overlay)gsap.to(overlay,{opacity:1,duration:.25});
       // Stagger les boutons
       const btns=drawer.querySelectorAll('.mob-more-btn');
-      gsap.fromTo(btns,
-        {y:20,opacity:0,scale:.9},
-        {y:0,opacity:1,scale:1,duration:.25,stagger:.03,ease:'back.out(1.5)',delay:.1}
-      );
+      gsap.from(btns,{y:12,duration:.22,stagger:.025,ease:'back.out(1.5)',delay:.08,clearProps:'transform'});
     }
     // Bounce sur le btn More
     const moreBtn=document.getElementById('mob-btn-more');

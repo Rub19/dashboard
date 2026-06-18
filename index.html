@@ -293,26 +293,76 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .nav-item.active{color:var(--accent);background:var(--accent-subtle);border-color:var(--border3)}
 .nav-item.active .nav-icon{color:var(--accent)}
 .nav-item.active::after{content:'';position:absolute;right:0;top:20%;bottom:20%;width:2.5px;background:var(--accent);border-radius:99px;box-shadow:0 0 5px rgba(249,115,22,.4)}
-.sidebar.compact .nav-item.active{background:none;border-left:none;border-radius:0}
-.sidebar.compact .nav-item.active .nav-icon{
+/* ══ SIDEBAR COMPACT — REDESIGN COMPLET ══ */
+.sidebar.compact{width:64px!important;min-width:64px!important;overflow:hidden;transition:width .22s cubic-bezier(.4,0,.2,1)}
+.sidebar.compact .sb-widget,.sidebar.compact #sb-lastfm-wrap,.sidebar.compact .sb-widget-label,
+.sidebar.compact .sb-section,.sidebar.compact .sb-section-label{display:none!important}
+.sidebar.compact .user-info,.sidebar.compact .switch-hint{display:none!important}
+.sidebar.compact .user-card{justify-content:center;padding:8px}
+.sidebar.compact .nav-label-text,.sidebar.compact .nav-badge,.sidebar.compact .nav-label{display:none!important}
+.sidebar.compact .logo-text{display:none!important}
+.sidebar.compact .logo{justify-content:center;padding:10px 0}
+.sidebar.compact .logo-icon{margin:0}
+.sidebar.compact #sidebar-compact-btn{margin:auto auto 4px;width:34px;flex-shrink:0}
+.sidebar.compact #sb-compact-info{display:flex!important}
+.sidebar.compact #sb-sync-label{display:none}
+.sidebar.compact #sb-sync-indicator{justify-content:center}
+.sidebar.compact .sidebar-footer > div[style*="height:1px"]{display:none!important}
+.sidebar.compact #sidebar-nav-main,.sidebar.compact #sidebar-nav-account{padding:4px 8px;display:flex;flex-direction:column;gap:2px}
+
+/* Nav items en compact */
+.sidebar.compact .nav-item{
+  justify-content:center;
+  padding:0;
+  min-width:0;
+  width:100%;
+  height:40px;
+  border-radius:12px;
+  position:relative;
+  transition:background .15s ease,color .15s ease;
+}
+.sidebar.compact .nav-icon{
+  margin:0 auto;
+  width:18px;height:18px;
+  pointer-events:none;
+}
+.sidebar.compact .nav-icon svg{width:18px;height:18px}
+
+/* Hover */
+.sidebar.compact .nav-item:hover{
+  background:rgba(255,255,255,.05);
+  color:var(--text);
+}
+
+/* Actif */
+.sidebar.compact .nav-item.active{
+  background:rgba(249,115,22,.1);
   color:var(--accent);
-  filter:drop-shadow(0 0 5px rgba(249,115,22,.6));
+  border-radius:12px;
 }
+.sidebar.compact .nav-item.active .nav-icon{color:var(--accent)}
 .sidebar.compact .nav-item.active::after{display:none}
-/* Tooltip hover en mode compact */
-.sidebar.compact .nav-item{position:relative}
-.sidebar.compact .nav-item::before{
+.sidebar.compact .nav-item.active::before{display:none}
+
+/* Tooltip au hover */
+.sidebar.compact .nav-item[data-nav-label]{position:relative}
+.sidebar.compact .nav-item[data-nav-label]::after{
   content:attr(data-nav-label);
-  position:absolute;left:calc(100% + 10px);top:50%;transform:translateY(-50%);
-  background:rgba(10,8,14,.97);border:1px solid rgba(255,255,255,.1);
-  color:var(--text);font-size:12px;font-weight:600;
-  padding:5px 10px;border-radius:8px;white-space:nowrap;
-  pointer-events:none;opacity:0;transition:opacity .15s ease;
-  box-shadow:0 4px 16px rgba(0,0,0,.4);z-index:9999;
-  font-family:var(--font);
+  position:absolute;left:calc(100% + 12px);top:50%;transform:translateY(-50%) translateX(-4px);
+  background:rgba(12,10,18,.97);
+  border:1px solid rgba(255,255,255,.08);
+  color:var(--text);font-size:12px;font-weight:500;
+  padding:5px 11px;border-radius:8px;white-space:nowrap;
+  pointer-events:none;opacity:0;
+  transition:opacity .12s ease, transform .12s ease;
+  box-shadow:0 4px 20px rgba(0,0,0,.5);
+  z-index:9999;font-family:var(--font);
+  letter-spacing:.01em;
 }
-.sidebar.compact .nav-item:hover::before{opacity:1}
-/* Light mode nav items */
+.sidebar.compact .nav-item[data-nav-label]:hover::after{
+  opacity:1;transform:translateY(-50%) translateX(0);
+}
+/* Light mode */
 body[data-light="1"] .nav-item{color:rgba(15,23,36,.45)}
 body[data-light="1"] .nav-item:hover{color:rgba(15,23,36,.8);background:rgba(0,0,0,.04)}
 body[data-light="1"] .nav-item.active{color:var(--accent)}
@@ -324,24 +374,6 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .nav-icon{width:17px;height:17px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:inherit}.nav-icon svg{width:100%;height:100%}
 .nav-badge{margin-left:auto;background:linear-gradient(135deg,#f97316,#dc2626);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px;font-family:var(--mono);min-width:17px;text-align:center}
 .sidebar-footer{flex-shrink:0;padding:10px 8px 8px;border-top:1px solid rgba(255,255,255,.06);max-height:55vh;overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
-.sidebar.compact{width:68px!important;min-width:68px!important;overflow:hidden;transition:width .2s cubic-bezier(.4,0,.2,1)}
-.sidebar.compact .sb-widget,.sidebar.compact #sb-lastfm-wrap,.sidebar.compact .sb-widget-label,
-.sidebar.compact .sb-section,.sidebar.compact .sb-section-label{display:none!important}
-.sidebar.compact .user-info,.sidebar.compact .switch-hint{display:none!important}
-.sidebar.compact .user-card{justify-content:center;padding:8px}
-.sidebar.compact .nav-label-text,.sidebar.compact .nav-badge,.sidebar.compact .nav-label{display:none!important}
-.sidebar.compact .nav-item{justify-content:center;padding:14px 0;min-width:0}
-.sidebar.compact .nav-icon{margin:0 auto;width:20px;height:20px}
-.sidebar.compact .nav-icon svg{width:20px;height:20px}
-.sidebar.compact .logo-text{display:none!important}
-.sidebar.compact .logo{justify-content:center;padding:12px 0}
-.sidebar.compact .logo-icon{margin:0}
-.sidebar.compact #sidebar-compact-btn{margin:auto auto 4px;width:34px;flex-shrink:0}
-.sidebar.compact #sb-compact-info{display:flex!important}
-.sidebar.compact #sb-sync-label{display:none}
-.sidebar.compact #sb-sync-indicator{justify-content:center}
-.sidebar.compact .sidebar-footer > div[style*="height:1px"]{display:none!important}
-.sidebar.compact #sidebar-nav-main,.sidebar.compact #sidebar-nav-account{padding:0 6px}
 .user-card{display:flex;align-items:center;gap:10px;padding:10px 10px 8px;border-radius:8px;cursor:pointer;transition:all .2s;position:relative;margin-bottom:2px}
 .user-card:hover{background:rgba(255,255,255,.04)}
 .user-card:hover .switch-hint{opacity:1}

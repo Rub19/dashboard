@@ -293,8 +293,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .nav-item.active{color:var(--accent);background:var(--accent-subtle);border-color:var(--border3)}
 .nav-item.active .nav-icon{color:var(--accent)}
 .nav-item.active::after{content:'';position:absolute;right:0;top:20%;bottom:20%;width:2.5px;background:var(--accent);border-radius:99px;box-shadow:0 0 5px rgba(249,115,22,.4)}
+.sidebar.compact .nav-item.active{background:none;border-left:none;border-radius:0}
+.sidebar.compact .nav-item.active .nav-icon{
+  color:var(--accent);
+  background:rgba(249,115,22,.12);
+  border-radius:10px;
+  padding:7px;
+  filter:drop-shadow(0 0 6px rgba(249,115,22,.5));
+  transition:all .2s ease;
+}
 .sidebar.compact .nav-item.active::after{display:none}
-.sidebar.compact .nav-item.active{background:var(--accent-subtle);border-left:2px solid var(--accent);border-radius:8px}
 /* Tooltip hover en mode compact */
 .sidebar.compact .nav-item{position:relative}
 .sidebar.compact .nav-item::before{

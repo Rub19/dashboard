@@ -6701,6 +6701,8 @@ async function doLogout(){
 async function onAuthSuccess(userArg){
   // 1. Supprime l'anti-flash AVANT tout, sinon le !important bloque les display
   removeAntiFlash();
+  // Tuer les animations GSAP de l'auth pour éviter opacity:0 sur le dashboard
+  if(typeof gsap!=='undefined')gsap.killTweensOf('#auth-card, #auth-left-content, .auth-feature-item, .auth-tab-pill, #auth-form-header, #auth-logo-icon');
   const authEl=document.getElementById('auth-screen');
   if(authEl){ authEl.style.display='none'; }
 
@@ -7281,6 +7283,14 @@ function enterDashboard(id){
   currentId=id;
   _valoMatchCache={};
   _valoAllMatches=[];
+  // Tuer toutes les animations GSAP en cours + forcer opacity:1
+  if(typeof gsap!=='undefined'){
+    gsap.killTweensOf('*');
+    // Remettre tout à visible
+    document.querySelectorAll('[style*="opacity"]').forEach(el=>{
+      if(el.id!=='auth-screen'&&el.id!=='profile-screen')el.style.opacity='';
+    });
+  }
   showPageLoader();
   const screen=document.getElementById('profile-screen');
   screen.style.transition='opacity .2s ease';

@@ -18,7 +18,23 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23f97316'/%3E%3Cstop offset='1' stop-color='%23dc2626'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='url(%23g)'/%3E%3Cpolygon points='16,4 28,16 16,28 4,16' fill='none' stroke='white' stroke-width='2.5' stroke-linejoin='round'/%3E%3Cpolygon points='16,10 22,16 16,22 10,16' fill='white'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&family=Syne:wght@700;800;900&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// Global error handler - catch toutes les erreurs au boot
+window.onerror = function(msg, src, line, col, err) {
+  var boot = document.getElementById('nexus-boot-screen');
+  if(boot) {
+    boot.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;gap:16px;padding:32px;text-align:center">'
+      + '<div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#f97316,#dc2626);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><polygon points="10,1 19,10 10,19 1,10" fill="none" stroke="white" stroke-width="2"/><polygon points="10,5 15,10 10,15 5,10" fill="white"/></svg></div>'
+      + '<div style="color:#f87171;font-size:13px;font-family:monospace">Erreur: ' + (msg||'Script error') + '</div>'
+      + '<div style="color:rgba(255,255,255,.4);font-size:11px;font-family:monospace">' + (src||'') + ':' + (line||'') + '</div>'
+      + '<button onclick="location.reload()" style="background:#f97316;border:none;border-radius:8px;color:#fff;padding:8px 20px;cursor:pointer;font-size:13px">Recharger</button>'
+      + '</div>';
+  }
+  console.error('NEXUS boot error:', msg, src, line, col, err);
+  return false;
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous" onerror="window._supabaseLoadError=true"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -277,7 +293,21 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .nav-item.active{color:var(--accent);background:var(--accent-subtle);border-color:var(--border3)}
 .nav-item.active .nav-icon{color:var(--accent)}
 .nav-item.active::after{content:'';position:absolute;right:0;top:20%;bottom:20%;width:2.5px;background:var(--accent);border-radius:99px;box-shadow:0 0 5px rgba(249,115,22,.4)}
-.sidebar.compact .nav-item.active::after{content:'';position:absolute;left:2px;top:50%;transform:translateY(-50%);width:2.5px;height:16px;background:var(--accent);border-radius:99px;box-shadow:0 0 5px rgba(249,115,22,.4);right:auto;bottom:auto}
+.sidebar.compact .nav-item.active::after{display:none}
+.sidebar.compact .nav-item.active{background:var(--accent-subtle);border-left:2px solid var(--accent);border-radius:8px}
+/* Tooltip hover en mode compact */
+.sidebar.compact .nav-item{position:relative}
+.sidebar.compact .nav-item::before{
+  content:attr(data-nav-label);
+  position:absolute;left:calc(100% + 10px);top:50%;transform:translateY(-50%);
+  background:rgba(10,8,14,.97);border:1px solid rgba(255,255,255,.1);
+  color:var(--text);font-size:12px;font-weight:600;
+  padding:5px 10px;border-radius:8px;white-space:nowrap;
+  pointer-events:none;opacity:0;transition:opacity .15s ease;
+  box-shadow:0 4px 16px rgba(0,0,0,.4);z-index:9999;
+  font-family:var(--font);
+}
+.sidebar.compact .nav-item:hover::before{opacity:1}
 /* Light mode nav items */
 body[data-light="1"] .nav-item{color:rgba(15,23,36,.45)}
 body[data-light="1"] .nav-item:hover{color:rgba(15,23,36,.8);background:rgba(0,0,0,.04)}
@@ -290,7 +320,7 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .nav-icon{width:17px;height:17px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:inherit}.nav-icon svg{width:100%;height:100%}
 .nav-badge{margin-left:auto;background:linear-gradient(135deg,#f97316,#dc2626);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px;font-family:var(--mono);min-width:17px;text-align:center}
 .sidebar-footer{flex-shrink:0;padding:10px 8px 8px;border-top:1px solid rgba(255,255,255,.06);max-height:55vh;overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
-.sidebar.compact{width:68px!important;min-width:68px!important;overflow:hidden}
+.sidebar.compact{width:68px!important;min-width:68px!important;overflow:hidden;transition:width .2s cubic-bezier(.4,0,.2,1)}
 .sidebar.compact .sb-widget,.sidebar.compact #sb-lastfm-wrap,.sidebar.compact .sb-widget-label,
 .sidebar.compact .sb-section,.sidebar.compact .sb-section-label{display:none!important}
 .sidebar.compact .user-info,.sidebar.compact .switch-hint{display:none!important}
@@ -655,6 +685,7 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
   border-right:1px solid rgba(255,255,255,.045);
   backdrop-filter:blur(24px);
   -webkit-backdrop-filter:blur(24px);
+  transition:width .2s cubic-bezier(.4,0,.2,1);
 }
 .logo{
   padding:20px 18px 17px;
@@ -1192,7 +1223,10 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
   user-select:none;position:relative;
 }
 .kanban-card:hover{border-color:rgba(255,255,255,.12);box-shadow:0 4px 16px rgba(0,0,0,.3)}
-.kanban-card.dragging{opacity:.4;cursor:grabbing}
+.kanban-card.dragging{opacity:.4;cursor:grabbing;transform:scale(.97) rotate(1deg)}
+.kanban-col.drag-target{border-color:rgba(249,115,22,.4);background:rgba(249,115,22,.04);transition:all .2s}
+@keyframes kanbanDrop{from{transform:translateY(-8px);opacity:.6}to{transform:translateY(0);opacity:1}}
+.kanban-card.just-dropped{animation:kanbanDrop .25s cubic-bezier(.4,0,.2,1)}
 .kanban-card-title{font-size:13px;font-weight:500;line-height:1.45}
 .kanban-card-tag{display:inline-block;font-size:9.5px;padding:2px 7px;border-radius:99px;margin-top:6px;font-weight:700}
 .kanban-card-del{position:absolute;top:6px;right:6px;width:18px;height:18px;border-radius:50%;background:none;border:none;color:var(--muted2);cursor:pointer;font-size:11px;display:none;align-items:center;justify-content:center}
@@ -1544,6 +1578,10 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 @media(prefers-reduced-motion:reduce){
   *{animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
+/* Thème minimal — zéro animation */
+body.no-anim *{animation:none!important;transition:none!important}
+body.no-anim .nav-item::before{display:none!important}
+body.no-anim #bg-canvas{display:none!important}
 
 
 /* ══════════════════════════════════════
@@ -2215,6 +2253,28 @@ h1,h2,.section-title,.page-title{font-family:'Syne',sans-serif;letter-spacing:-.
 
 
 
+/* ══ TRANSITIONS GLOBALES FLUIDES ══ */
+.panel,.stat-card,.item-row,.link-card,.pinned-card,.kanban-card,.habit-row,.cal-day{
+  transition:all .18s cubic-bezier(.4,0,.2,1);
+}
+.btn{transition:all .15s cubic-bezier(.4,0,.2,1);}
+.nav-item{transition:all .15s cubic-bezier(.4,0,.2,1);}
+.modal-overlay{transition:opacity .15s ease;}
+/* Smooth scroll global */
+html{scroll-behavior:smooth;}
+/* Main content margin transition */
+.main{transition:margin-left .22s cubic-bezier(.4,0,.2,1);}
+
+/* ══ SKELETON LOADERS POUR WIDGETS ══ */
+.widget-loading{
+  display:flex;flex-direction:column;gap:8px;padding:8px;
+}
+.skel-line{height:12px;border-radius:6px;}
+.skel-line.w-full{width:100%;}
+.skel-line.w-3\/4{width:75%;}
+.skel-line.w-1\/2{width:50%;}
+.skel-block{height:48px;border-radius:10px;width:100%;}
+
 /* Autofill override */
 input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus{
   -webkit-box-shadow:0 0 0 1000px rgba(15,12,18,1) inset!important;
@@ -2562,32 +2622,51 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 
 /* ══ PAGE TRANSITIONS ══ */
 @keyframes pageIn{
-  from{opacity:0;transform:translateY(14px)}
+  from{opacity:0;transform:translateY(10px)}
   to{opacity:1;transform:translateY(0)}
 }
 @keyframes pageInLeft{
-  from{opacity:0;transform:translateX(-20px)}
+  from{opacity:0;transform:translateX(-14px)}
   to{opacity:1;transform:translateX(0)}
 }
 @keyframes pageInRight{
-  from{opacity:0;transform:translateX(20px)}
+  from{opacity:0;transform:translateX(14px)}
   to{opacity:1;transform:translateX(0)}
-}
-@keyframes pageOut{
-  from{opacity:1;transform:translateY(0)}
-  to{opacity:0;transform:translateY(-8px)}
 }
 .tab-content{display:none!important}
 .tab-content.active{display:block!important;opacity:1}
 .tab-content.page-entering{
-  animation:pageIn .22s cubic-bezier(.4,0,.2,1) forwards;
+  animation:pageIn .18s cubic-bezier(.25,0,.2,1) forwards;
 }
 .tab-content.page-entering-left{
-  animation:pageInLeft .22s cubic-bezier(.4,0,.2,1) forwards;
+  animation:pageInLeft .18s cubic-bezier(.25,0,.2,1) forwards;
 }
 .tab-content.page-entering-right{
-  animation:pageInRight .22s cubic-bezier(.4,0,.2,1) forwards;
+  animation:pageInRight .18s cubic-bezier(.25,0,.2,1) forwards;
 }
+
+/* ══ SKELETON LOADER ══ */
+@keyframes skeletonShimmer{
+  0%{background-position:-400px 0}
+  100%{background-position:400px 0}
+}
+.skeleton{
+  border-radius:8px;
+  background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.04) 75%);
+  background-size:400px 100%;
+  animation:skeletonShimmer 1.4s ease infinite;
+}
+
+/* ══ PAGE LOADER ══ */
+#nexus-page-loader{
+  position:fixed;top:0;left:0;right:0;height:2px;z-index:99999;
+  background:linear-gradient(90deg,#f97316,#dc2626);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .3s ease,opacity .3s ease;
+  pointer-events:none;
+}
+#nexus-page-loader.loading{transform:scaleX(.7);}
+#nexus-page-loader.done{transform:scaleX(1);opacity:0;}
 
 /* ══ NOTIFICATIONS PANEL ══ */
 #notif-bell-btn{
@@ -3253,6 +3332,10 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 @media(prefers-reduced-motion:reduce){
   *{animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
+/* Thème minimal — zéro animation */
+body.no-anim *{animation:none!important;transition:none!important}
+body.no-anim .nav-item::before{display:none!important}
+body.no-anim #bg-canvas{display:none!important}
 
 /* ── SWIPE SIDEBAR INDICATOR ─────────────────────────────────────── */
 #swipe-hint{
@@ -3296,6 +3379,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 <!-- AUTH SCREEN -->
 <canvas id="bg-canvas" style="position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:0;transition:opacity 1s ease"></canvas>
 
+<div id="nexus-page-loader"></div>
 <div id="nexus-boot-screen" style="position:fixed;inset:0;z-index:2147483647;background:#050507;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px">
   <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#f97316,#dc2626);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(249,115,22,.4)">
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><polygon points="10,1 19,10 10,19 1,10" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round"/><polygon points="10,5 15,10 10,15 5,10" fill="white"/></svg>
@@ -3897,6 +3981,8 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
               </button>
             </div>
 
+            <!-- Historique sessions du jour -->
+            <div id="pomo-day-history" style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-bottom:10px;min-height:14px"></div>
             <!-- Stats -->
             <div class="pomo-stats-grid" id="pomo-today-stats"></div>
           </div>
@@ -4346,6 +4432,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
     <div class="topbar">
       <div><div class="section-eyebrow">Finance</div><div class="section-title">Budget</div></div>
       <div class="topbar-actions">
+        <button class="btn btn-ghost" onclick="exportBudgetPDF()" style="font-size:12px">🖨️ Export PDF</button>
         <button class="btn btn-ghost" onclick="openModal('add-budget-tx')" style="gap:6px">+ Dépense</button>
         <button class="btn btn-primary" onclick="openModal('add-budget-tx-in')">+ Revenu</button>
       </div>
@@ -4471,6 +4558,33 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
           <canvas id="budget-chart" height="120" style="width:100%"></canvas>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- GALLERY -->
+  <div id="page-gallery" class="tab-content">
+    <div class="topbar">
+      <div><div class="section-eyebrow">Médias</div><div class="section-title">Galerie</div></div>
+      <div class="topbar-actions">
+        <div class="search-bar"><span style="color:var(--muted)">🔍</span><input type="text" id="gallery-search" placeholder="Rechercher..." oninput="renderGallery()"></div>
+      </div>
+    </div>
+    <div id="gallery-empty" style="display:none" class="panel">
+      <div class="empty-state" style="padding:40px">
+        <div style="font-size:40px;margin-bottom:12px">🖼️</div>
+        <div style="font-size:16px;font-weight:600;margin-bottom:8px">Aucune image</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Ajoute des images dans Fichiers & Liens</div>
+        <button class="btn btn-primary" onclick="switchPage('files',null)">Aller dans Fichiers</button>
+      </div>
+    </div>
+    <div id="gallery-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px"></div>
+    <!-- Lightbox -->
+    <div id="gallery-lightbox" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.92);align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)closeGalleryLightbox()">
+      <button onclick="galleryNav(-1)" style="position:absolute;left:20px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.1);border:none;color:#fff;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:20px">‹</button>
+      <img id="gallery-lb-img" src="" style="max-width:90vw;max-height:88vh;object-fit:contain;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.8)">
+      <button onclick="galleryNav(1)" style="position:absolute;right:20px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.1);border:none;color:#fff;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:20px">›</button>
+      <div id="gallery-lb-caption" style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);font-size:13px;color:rgba(255,255,255,.6);font-family:var(--mono)"></div>
+      <button onclick="closeGalleryLightbox()" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,.1);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:16px">✕</button>
     </div>
   </div>
 
@@ -5674,6 +5788,13 @@ let _bioSaveTO=null;
 let _socialSaveTO=null;
 let _npProgressInterval=null;
 
+// ── Polyfill AbortSignal.timeout pour iOS < 16.4 ──
+function abortAfter(ms){
+  const ctrl=new AbortController();
+  setTimeout(()=>ctrl.abort(),ms);
+  return ctrl.signal;
+}
+
 function escapeHTML(value){
   return String(value ?? '').replace(/[&<>"']/g, c => ({
     '&':'&amp;',
@@ -5946,6 +6067,8 @@ async function onAuthSuccess(userArg){
     boot.style.display='flex';
   }
 
+  // Animation de transition auth → dashboard
+  if(authEl){authEl.style.transition='opacity .25s ease';authEl.style.opacity='0';}
   try{
     // 3. Utilise le user passé en param (depuis signInWithPassword) ou fallback getUser
     let user=userArg;
@@ -5962,7 +6085,9 @@ async function onAuthSuccess(userArg){
     _isAdmin=user?.email===ADMIN_EMAIL;
 
     // 4. Charge les données
+    if(typeof setBootStatus==='function')setBootStatus('Chargement...');
     await loadCloudState();
+    if(typeof setBootStatus==='function')setBootStatus('Prêt ✓');
     if(!profiles.length){
       profiles.push({id:Date.now(),name:'Mon profil',
         avatarEmoji:AVATARS[0].e,avatarBg:AVATARS[0].b,
@@ -6489,22 +6614,23 @@ function toggleManageMode(){managingMode=!managingMode;renderProfileScreen()}
 
 function enterDashboard(id){
   currentId=id;
-  // Reinit global caches for new profile
   _valoMatchCache={};
   _valoAllMatches=[];
+  showPageLoader();
   const screen=document.getElementById('profile-screen');
-  screen.style.transition='opacity .18s ease';
+  screen.style.transition='opacity .2s ease';
   screen.style.opacity='0';
   setTimeout(()=>{
     screen.style.display='none';
     screen.style.opacity=''; screen.style.transition='';
-    document.getElementById('main-sidebar').style.display='flex';
-    document.getElementById('main-content').style.display='block';
+    const sb=document.getElementById('main-sidebar');
+    const mc=document.getElementById('main-content');
+    if(sb){sb.style.opacity='0';sb.style.display='flex';requestAnimationFrame(()=>{sb.style.transition='opacity .25s ease';sb.style.opacity='1';setTimeout(()=>{sb.style.transition='';},280);});}
+    if(mc){mc.style.opacity='0';mc.style.display='block';requestAnimationFrame(()=>{mc.style.transition='opacity .3s ease';mc.style.opacity='1';setTimeout(()=>{mc.style.transition='';},320);});}
     renderSidebarNav(); updateSidebarAvatar(); applyI18n();
     initDashboard();
-    // Only start ambient bg if no custom bg theme is set
-    if(!curP()?.bgTheme||curP()?.bgTheme==='none') setTimeout(startAmbientBg,300);
-  },180);
+    if(!curP()?.bgTheme||curP()?.bgTheme==='none') setTimeout(startAmbientBg,400);
+  },200);
 }
 
 function goToProfileScreen(){
@@ -6789,6 +6915,7 @@ var SVG_ICONS={
   countdown:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
   stats:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
   github:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>',
+  gallery:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
   budget:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
   gaming:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><circle cx="15.5" cy="11.5" r="1"/><circle cx="17.5" cy="13.5" r="1"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59l-.9 7.27A4 4 0 0 0 5.77 20.5c.387.1.79-.025 1.05-.327l1.89-2.173h6.58l1.89 2.173c.26.302.663.427 1.05.327a4 4 0 0 0 2.97-4.64l-.9-7.27A4 4 0 0 0 17.32 5z"/></svg>',
   connections:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>',
@@ -6809,6 +6936,7 @@ function getDefaultNav(){return [
   {id:'countdown',icon:'countdown',label:t('nav_countdown'),section:'main',badge:''},
   {id:'stats',    icon:'stats',    label:t('nav_stats'),   section:'main',badge:''},
   {id:'budget',   icon:'budget',   label:'Budget',         section:'main',badge:''},
+  {id:'gallery',  icon:'gallery',  label:'Galerie',        section:'main',badge:''},
   {id:'github',   icon:'github',   label:t('nav_github'),  section:'main',badge:''},
   {id:'gaming',   icon:'gaming',   label:t('nav_gaming'),  section:'main',badge:''},
   {id:'connections',icon:'connections',label:t('nav_connections'),section:'account',badge:''},
@@ -6845,6 +6973,7 @@ function renderSidebarNav(){
     const div=document.createElement('div');
     div.className='nav-item'+(isActive?' active':'');
     div.onclick=()=>switchPage(item.id,div);
+    div.setAttribute('data-nav-label',item.label);
     div.innerHTML=`<div class="nav-icon">${icon}</div><span class="nav-label-text">${escapeHTML(item.label)}</span>${item.badge?`<span class="nav-badge">${item.badge}</span>`:''}`;
     return div;
   };
@@ -7177,9 +7306,16 @@ function toggleSidebarCompact(){
   p.sidebarCompact=!p.sidebarCompact;
   const sb=document.getElementById('main-sidebar');
   if(sb)sb.classList.toggle('compact',p.sidebarCompact);
-  // Adjust main content margin to match sidebar width
+  // Animate main content margin smoothly
   const main=document.getElementById('main-content');
-  if(main)main.style.marginLeft=p.sidebarCompact?'58px':'';
+  if(main){
+    main.style.transition='margin-left .22s cubic-bezier(.4,0,.2,1)';
+    main.style.marginLeft=p.sidebarCompact?'68px':'220px';
+    setTimeout(()=>{main.style.transition='';},250);
+  }
+  // Animate resize handle
+  const rh=document.getElementById('resize-handle');
+  if(rh)rh.style.left=p.sidebarCompact?'68px':'220px';
   saveStateNow();
 }
 
@@ -7473,6 +7609,7 @@ const THEMES=[
   {name:'Cyan',          accent:'#06b6d4', accent2:'#34d399', accent3:'#f87171', accent4:'#fbbf24', accent5:'#a78bfa', glow:'rgba(6,182,212,0.25)',   bg:'#07100f', surface:'#0c1718'},
   {name:'Pink',          accent:'#ec4899', accent2:'#34d399', accent3:'#f87171', accent4:'#fbbf24', accent5:'#a78bfa', glow:'rgba(236,72,153,0.25)',  bg:'#100810', surface:'#190d16'},
   {name:'Mono',          accent:'#94a3b8', accent2:'#64748b', accent3:'#f87171', accent4:'#fbbf24', accent5:'#a78bfa', glow:'rgba(148,163,184,0.15)', bg:'#080808', surface:'#111111'},
+  {name:'Minimal',       accent:'#f97316', accent2:'#34d399', accent3:'#f87171', accent4:'#fbbf24', accent5:'#94a3b8', glow:'rgba(249,115,22,0.1)',   bg:'#050507', surface:'#0a0a0c', noAnim:true},
 ];
 
 const BG_THEMES=[
@@ -7498,6 +7635,12 @@ function applyTheme(themeIdx){
   }
   const t=THEMES[themeIdx]||THEMES[0];
   const r=document.documentElement.style;
+  // Thème Minimal : désactiver toutes les animations
+  if(t?.noAnim){
+    document.body.classList.add('no-anim');
+  } else {
+    document.body.classList.remove('no-anim');
+  }
   r.setProperty('--accent',t.accent);
   r.setProperty('--accent2',t.accent2);
   r.setProperty('--accent3',t.accent3);
@@ -8074,7 +8217,7 @@ async function sendAIMessage(){
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+groqKey},
       body:JSON.stringify({model:'llama-3.1-8b-instant',messages:groqMessages,max_tokens:500,temperature:0.7}),
-      signal:AbortSignal.timeout(30000)
+      signal:abortAfter(30000)
     });
     if(!res.ok){
       const err=await res.json().catch(()=>({}));
@@ -8136,6 +8279,7 @@ function clearAIChat(){
 }
 
 function switchPage(page,navEl){
+  showPageLoader();
   // Sauvegarder la quick note avant de changer de page
   const qn=document.getElementById('quick-note');
   const p0=curP();
@@ -8162,6 +8306,7 @@ function switchPage(page,navEl){
   if(page==='journal'){renderJournal();}
   if(page==='countdown'){renderCountdowns();}
   if(page==='budget'){renderBudget();}
+  if(page==='gallery'){renderGallery();}
   if(page==='github'){refreshGithub();}
   // Refresh widgets when back on dashboard
   if(page==='dashboard'){
@@ -8809,6 +8954,33 @@ function clearDone(){
   saveStateNow();renderTodos();updateStats();toast('Cleared','info');
 }
 
+// ── TODO DRAG & DROP ──
+let _dragTodoId=null;
+function onTodoDragStart(e,id){
+  _dragTodoId=id;
+  e.dataTransfer.effectAllowed='move';
+  setTimeout(()=>e.target.style.opacity='.4',0);
+}
+function onTodoDragEnd(e){e.target.style.opacity='';}
+function onTodoDragOver(e,id){
+  e.preventDefault();
+  if(_dragTodoId===id)return;
+  const p=curP();if(!p)return;
+  const todos=p.state.todos;
+  const fromIdx=todos.findIndex(t=>t.id===_dragTodoId);
+  const toIdx=todos.findIndex(t=>t.id===id);
+  if(fromIdx<0||toIdx<0)return;
+  const [moved]=todos.splice(fromIdx,1);
+  todos.splice(toIdx,0,moved);
+  renderTodos();
+}
+function onTodoDrop(e){
+  e.preventDefault();
+  const p=curP();if(!p)return;
+  saveStateNow();
+  _dragTodoId=null;
+}
+
 function renderTodos(){
   const p=curP(),todos=p?(p.state.todos||[]):[];
   const search=(document.getElementById('todo-search')?.value||'').toLowerCase();
@@ -8832,7 +9004,7 @@ function renderTodos(){
     const dueStr=t.due?`<span style="font-size:10px;color:${overdue?'var(--accent3)':'var(--muted)'}">📅 ${new Date(t.due+'T12:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}${overdue?' ⚠️':''}</span>`:'';
     const tagStr=t.tag?`<span style="font-size:10px;background:var(--surface3);padding:1px 7px;border-radius:10px;color:var(--muted)">${escapeHTML(t.tag)}</span>`:'';
     const colorBar=t.color?`style="border-left:3px solid ${t.color}"`:'' ;
-    return `<div class="todo-item" ${colorBar} onclick="toggleTodo(${t.id})">
+    return `<div class="todo-item" ${colorBar} draggable="true" ondragstart="onTodoDragStart(event,${t.id})" ondragend="onTodoDragEnd(event)" ondragover="onTodoDragOver(event,${t.id})" ondrop="onTodoDrop(event)" onclick="toggleTodo(${t.id})">
       <div class="todo-check${isDone?' checked':''}"></div>
       <div style="flex:1;min-width:0">
         <div class="todo-text${isDone?' done':''}">${pIcon} ${escapeHTML(t.text)}</div>
@@ -9209,9 +9381,9 @@ async function refreshGithub(){
   const ghHeaders={'Accept':'application/vnd.github+json',...(ghToken?{Authorization:`Bearer ${ghToken}`}:{})};
   try{
     const [userRes,eventsRes,reposRes]=await Promise.all([
-      fetch(`https://api.github.com/users/${username}`,{headers:ghHeaders,signal:AbortSignal.timeout(8000)}),
-      fetch(`https://api.github.com/users/${username}/events/public?per_page=30`,{headers:ghHeaders,signal:AbortSignal.timeout(8000)}),
-      fetch(`https://api.github.com/users/${username}/repos?sort=pushed&per_page=5`,{headers:ghHeaders,signal:AbortSignal.timeout(8000)})
+      fetch(`https://api.github.com/users/${username}`,{headers:ghHeaders,signal:abortAfter(8000)}),
+      fetch(`https://api.github.com/users/${username}/events/public?per_page=30`,{headers:ghHeaders,signal:abortAfter(8000)}),
+      fetch(`https://api.github.com/users/${username}/repos?sort=pushed&per_page=5`,{headers:ghHeaders,signal:abortAfter(8000)})
     ]);
     if(userRes.status===403||userRes.status===429){
       const reset=userRes.headers.get('x-ratelimit-reset');
@@ -9567,7 +9739,7 @@ function loadConnectionsUI(){
 async function fetchTracker(game,platform,username){
   const encoded=encodeURIComponent(username);
   const url=`${WORKER_URL}/tracker/${game}/standard/profile/${platform}/${encoded}`;
-  const res=await fetch(url,{signal:AbortSignal.timeout(12000)});
+  const res=await fetch(url,{signal:abortAfter(12000)});
   if(!res.ok)throw new Error('Tracker API error '+res.status);
   return res.json();
 }
@@ -9759,13 +9931,18 @@ function getCmdItems(q=''){
     icon:'✅',label:t.text,sub:t.priority==='high'?'🔥 Urgent':t.due||'Task',tag:'Tâche',
     action:()=>{closeCmdPalette();toggleTodo(t.id);}
   }));
+  // Événements calendrier dans Ctrl+K
+  const calEvents=(p?.state?.events||[]).filter(e=>new Date(e.date)>=new Date()).slice(0,4).map(e=>({
+    icon:'📅',label:e.title,sub:e.date,tag:'Événement',
+    action:()=>{closeCmdPalette();switchPage('calendar',null);}
+  }));
   // URL directe
   const urlItem=q&&(q.startsWith('http')||q.startsWith('www.')||q.includes('.com')||q.includes('.fr')||q.includes('.io'))?[{
     icon:'🌐',label:'Ouvrir : '+q,sub:'Ouvrir dans un nouvel onglet',tag:'URL',
     action:()=>{closeCmdPalette();window.open(q.startsWith('http')?q:'https://'+q,'_blank');}
   }]:[];
   const f=arr=>!q?arr:arr.filter(i=>(i.label+' '+(i.sub||'')).toLowerCase().includes(q));
-  const allItems=[...f(recentItems),...f(recentNotes),...f(pendingTodos),...urlItem];
+  const allItems=[...f(recentItems),...f(recentNotes),...f(pendingTodos),...f(calEvents),...urlItem];
   const fAll=!q
     ? [...f(actions),...f(pages),...allItems]          // sans recherche: Actions → Pages → Items
     : [...f(pages),...f(actions),...allItems];           // avec recherche: Pages → Actions → Items
@@ -10096,8 +10273,24 @@ function initRipples(){
 
 // ── PAGE TRANSITION ────────────────────────────
 // ── PAGE ORDER for directional transitions ──────────────
-const PAGE_ORDER=['dashboard','files','notes','todos','habits','kanban','calendar','goals','journal','countdown','stats','budget','github','gaming','connections','settings','ai'];
+const PAGE_ORDER=['dashboard','files','notes','todos','habits','kanban','calendar','goals','journal','countdown','stats','budget','gallery','github','gaming','connections','settings','ai'];
 let _lastPageIdx=0;
+
+// ── BARRE DE PROGRESSION GLOBALE ──
+function showPageLoader(){
+  const el=document.getElementById('nexus-page-loader');
+  if(!el)return;
+  el.style.opacity='1';
+  el.classList.remove('done');
+  el.classList.add('loading');
+}
+function hidePageLoader(){
+  const el=document.getElementById('nexus-page-loader');
+  if(!el)return;
+  el.classList.remove('loading');
+  el.classList.add('done');
+  setTimeout(()=>{el.classList.remove('done');el.style.opacity='0';},350);
+}
 
 function animatePageIn(pageEl,page){
   if(!pageEl)return;
@@ -10117,7 +10310,8 @@ function animatePageIn(pageEl,page){
     initScrollReveal();
     animateStatCards();
     initRipples();
-  },300);
+    hidePageLoader();
+  },200);
 }
 
 
@@ -10274,10 +10468,34 @@ function notifyPomoComplete(count){
 }
 
 let _notifScanInterval=null;
+// ── RÉSUMÉ HEBDOMADAIRE ──
+function checkWeeklyDigest(){
+  const now=new Date();
+  const isSunday=now.getDay()===0;
+  const isEvening=now.getHours()>=20;
+  if(!isSunday||!isEvening)return;
+  const lastDigest=localStorage.getItem('nexus_last_digest');
+  const thisWeek=now.toISOString().slice(0,10);
+  if(lastDigest===thisWeek)return;
+  localStorage.setItem('nexus_last_digest',thisWeek);
+  const p=curP();if(!p)return;
+  const s=p.state||{};
+  const today=new Date().toLocaleDateString('en-CA');
+  const weekStart=new Date(now);weekStart.setDate(now.getDate()-6);
+  const weekStartStr=weekStart.toLocaleDateString('en-CA');
+  const doneTasks=(s.todos||[]).filter(t=>t.done&&t.doneAt&&t.doneAt.slice(0,10)>=weekStartStr).length;
+  const pomoWeek=(s.pomoHistory||[]).filter(h=>h.ts&&h.ts.slice(0,10)>=weekStartStr).length;
+  const bestStreak=Math.max(0,...(s.habits||[]).map(h=>h.streak||0));
+  addNotif('📊','Résumé de la semaine',`${doneTasks} tâches · ${pomoWeek} pomodoros · streak ${bestStreak}j`,()=>{switchPage('stats',null);closeNotifPanel();});
+  if(_notifEnabled&&Notification.permission==='granted'){
+    new Notification('NEXUS — Résumé semaine 📊',{body:`${doneTasks} tâches faites · ${pomoWeek} pomodoros · meilleur streak ${bestStreak}j`});
+  }
+}
+
 function startNotifScan(){
   clearInterval(_notifScanInterval);
-  scanForNotifs();updateNotifBadge();
-  _notifScanInterval=setInterval(()=>{scanForNotifs();updateNotifBadge();},60000);
+  scanForNotifs();updateNotifBadge();checkWeeklyDigest();
+  _notifScanInterval=setInterval(()=>{scanForNotifs();updateNotifBadge();checkWeeklyDigest();},60000);
 }
 
 
@@ -10780,11 +10998,11 @@ async function fetchLastfm(method, params=''){
   // Route through worker to avoid CORS
   const workerUrl=`${WORKER_URL}/lastfm?url=${encodeURIComponent(url)}`;
   try{
-    const res=await fetch(workerUrl,{signal:AbortSignal.timeout(10000)});
+    const res=await fetch(workerUrl,{signal:abortAfter(10000)});
     if(res.ok)return res.json();
   }catch(e){}
   // Direct fallback (works on some browsers)
-  const res2=await fetch(url,{signal:AbortSignal.timeout(10000)});
+  const res2=await fetch(url,{signal:abortAfter(10000)});
   return res2.json();
 }
 
@@ -11342,7 +11560,7 @@ async function fetchSteamAPI(endpoint,apiKey,params){
   // Utilise le Worker Cloudflare - cle Steam stockee cote server
   const ep=endpoint.replace(/^\/+/,'');
   const workerUrl=`${WORKER_URL}/steam/${ep}?${params}`;
-  const res=await fetch(workerUrl,{signal:AbortSignal.timeout(12000)});
+  const res=await fetch(workerUrl,{signal:abortAfter(12000)});
   if(!res.ok)throw new Error('Steam API error '+res.status);
   return res.json();
 }
@@ -11651,7 +11869,7 @@ function startSpotifyAutoRefresh(){
 // === TWITCH ===
 async function fetchTwitch(endpoint, params=''){
   const url=`${WORKER_URL}/twitch/${endpoint}${params?'?'+params:''}`;
-  const res=await fetch(url,{signal:AbortSignal.timeout(10000)});
+  const res=await fetch(url,{signal:abortAfter(10000)});
   if(!res.ok)throw new Error('Twitch API error '+res.status);
   return res.json();
 }
@@ -12197,7 +12415,9 @@ function deleteKanbanCard(id){
 function kanbanDragOver(e,col){
   e.preventDefault();
   document.querySelectorAll('.kanban-drop-zone').forEach(z=>z.classList.remove('drag-over'));
+  document.querySelectorAll('.kanban-col').forEach(c=>c.classList.remove('drag-target'));
   document.getElementById('kdrop-'+col)?.classList.add('drag-over');
+  document.getElementById('kanban-'+col)?.classList.add('drag-target');
 }
 function kanbanDragLeave(e){
   if(!e.currentTarget.contains(e.relatedTarget)){
@@ -12207,10 +12427,17 @@ function kanbanDragLeave(e){
 function kanbanDrop(e,col){
   e.preventDefault();
   document.querySelectorAll('.kanban-drop-zone').forEach(z=>z.classList.remove('drag-over'));
+  document.querySelectorAll('.kanban-col').forEach(c=>c.classList.remove('drag-target'));
   if(dragKanbanId===null)return;
   const p=curP();if(!p)return;
   const card=p.state.kanban.find(c=>c.id===dragKanbanId);
-  if(card){card.col=col;saveStateNow();renderKanban();}
+  if(card){card.col=col;saveStateNow();renderKanban();
+    // Animation just-dropped
+    setTimeout(()=>{
+      const el=document.querySelector(`.kanban-card[data-id="${dragKanbanId}"]`);
+      if(el){el.classList.add('just-dropped');setTimeout(()=>el.classList.remove('just-dropped'),300);}
+    },50);
+  }
   dragKanbanId=null;
 }
 const TAG_COLORS=['#7c6af7','#5de0b0','#f76a6a','#f7b26a','#5b8df7','#ec4899'];
@@ -12478,8 +12705,10 @@ const WMO_DATA={
   es:{0:' Despejado',1:' Casi despejado',2:' Parcialmente nublado',3:' Nublado',45:' Niebla',48:' Niebla',51:' Llovizna',53:' Llovizna',55:' Llovizna fuerte',61:' Lluvia',63:' Lluvia',65:' Lluvia fuerte',71:' Nieve',73:' Nieve',75:' Nevada fuerte',80:' Chubascos',81:' Chubascos',82:' Chubascos fuertes',95:' Tormenta',99:' Tormenta'},
   de:{0:' Klar',1:' Meist klar',2:' Teils bewölkt',3:' Bedeckt',45:' Neblig',48:' Neblig',51:' Nieselregen',53:' Nieselregen',55:' Starker Niesel',61:' Regen',63:' Regen',65:' Starker Regen',71:' Schnee',73:' Schnee',75:' Starker Schnee',80:' Schauer',81:' Schauer',82:' Starke Schauer',95:' Gewitter',99:' Gewitter'},
 };
-// WMO comme objet compatible avec WMO[code] (utilise la langue active)
-const WMO=new Proxy({},{get(_,code){const lang=typeof _lang!=='undefined'?_lang:'fr';return(WMO_DATA[lang]||WMO_DATA['fr'])[parseInt(code)]||'☁️ Unknown';}});
+// WMO comme fonction (compatible tous navigateurs)
+function getWMO(code){const lang=typeof _lang!=='undefined'?_lang:'fr';return(WMO_DATA[lang]||WMO_DATA['fr'])[parseInt(code)]||'☁️ Unknown';}
+// Alias objet pour compatibilité (pas de Proxy)
+const WMO={};
 
 
 function promptWeatherCity(){
@@ -12506,6 +12735,9 @@ function saveWeatherCity(){
   if(!p.state)p.state={};
   p.state.weatherCity=city;
   p.state.weatherCache=null;
+  // Reset compact weather affichage
+  const ct=document.getElementById('sb-compact-temp');if(ct)ct.textContent='…';
+  const ci=document.getElementById('sb-compact-icon');if(ci)ci.textContent='🌡️';
   saveStateNow();
   if(_sbUser){clearTimeout(_saveCloudTimeout);saveCloudState().catch(()=>{});}
   fetchWeather(city);
@@ -12526,7 +12758,7 @@ async function fetchWeather(forceCity){
 
   // Vider le cache
   if(_wp?.state)_wp.state.weatherCache=null;
-  w.innerHTML='<div style="padding:14px;font-size:12px;color:var(--muted)">⏳ Chargement...</div>';
+  w.innerHTML='<div class="widget-loading" style="padding:8px"><div class="skeleton skel-block" style="height:36px;margin-bottom:8px;border-radius:10px"></div><div class="skeleton skel-line" style="width:60%;height:11px;margin-bottom:6px;border-radius:6px"></div><div class="skeleton skel-line" style="width:40%;height:9px;border-radius:6px"></div></div>';
 
   // ── Geocoding (ville manuelle) ──
   if(city){
@@ -12534,7 +12766,7 @@ async function fetchWeather(forceCity){
     const variants=[city,city.replace(/-/g,' '),city.split(' ')[0]].filter((v,i,a)=>v&&a.indexOf(v)===i);
     for(const q of variants){
       try{
-        const r=await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=5&language=fr&format=json`,{signal:AbortSignal.timeout(8000)});
+        const r=await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=5&language=fr&format=json`,{signal:abortAfter(8000)});
         const d=await r.json();
         const results=d?.results||[];
         const best=results.find(r=>r.country_code==='FR')||results[0];
@@ -12586,21 +12818,23 @@ async function fetchWeather(forceCity){
 
   // ── Rendu météo ──
   async function _doRender(lat,lon,forcedLabel){
-    const res=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,windspeed_10m,relative_humidity_2m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=6`,{signal:AbortSignal.timeout(8000)});
+    const res=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,windspeed_10m,relative_humidity_2m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=6`,{signal:abortAfter(8000)});
     if(!res.ok)throw new Error();
     const data=await res.json();
     let cityName=forcedLabel||city||'';
     if(!cityName){
       try{
-        const rg=await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=fr`,{signal:AbortSignal.timeout(5000)});
+        const rg=await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=fr`,{signal:abortAfter(5000)});
         const dg=await rg.json();
         cityName=dg?.city||dg?.locality||'';
       }catch(e){}
     }
     const cur=data.current;
     const temp=Math.round(cur.temperature_2m),feels=Math.round(cur.apparent_temperature);
-    const code=cur.weather_code,desc=WMO[code]||'☁️ Unknown';
-    const icon=desc.split(' ')[0],text=desc.split(' ').slice(1).join(' ');
+    const code=cur.weather_code,desc=getWMO(code).trim();
+    // Icon map séparée basée sur le code météo
+    const _wxIconMap={0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️',95:'⛈️',99:'⛈️'};
+    const icon=_wxIconMap[code]||'🌡️',text=desc;
     // Compact sidebar météo
     const ct=document.getElementById('sb-compact-temp');if(ct)ct.textContent=temp+'°';
     const ci=document.getElementById('sb-compact-icon');if(ci)ci.textContent=icon;
@@ -12679,6 +12913,43 @@ function addBudgetTx(type){
   renderBudget();
   addActivity((isIn?'💰 Revenu: ':'💸 Dépense: ')+label+' ('+amount.toFixed(2)+'€)','var(--accent)');
   toast((isIn?'Revenu':'Dépense')+' ajouté !','success');
+}
+
+function exportBudgetPDF(){
+  const p=curP();if(!p)return;
+  const all=p.state.budget||[];
+  const now=new Date();
+  const curMonth=now.toISOString().slice(0,7);
+  const monthTx=all.filter(t=>t.date.slice(0,7)===curMonth);
+  const income=monthTx.filter(t=>t.type==='in').reduce((s,t)=>s+t.amount,0);
+  const expenses=monthTx.filter(t=>t.type==='out').reduce((s,t)=>s+t.amount,0);
+  const balance=income-expenses;
+  const fmt=n=>n.toFixed(2)+'€';
+  const rows=monthTx.map(t=>`
+    <tr style="border-bottom:1px solid #eee">
+      <td style="padding:8px">${t.date}</td>
+      <td style="padding:8px">${t.cat}</td>
+      <td style="padding:8px">${t.label}</td>
+      <td style="padding:8px;color:${t.type==='in'?'#16a34a':'#dc2626'};font-weight:600">${t.type==='in'?'+':'-'}${fmt(t.amount)}</td>
+    </tr>`).join('');
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Budget ${curMonth}</title>
+  <style>body{font-family:Arial,sans-serif;padding:32px;color:#111}h1{color:#f97316}table{width:100%;border-collapse:collapse}th{background:#f97316;color:#fff;padding:10px;text-align:left}.kpi{display:flex;gap:20px;margin-bottom:24px}.kpi-box{background:#f8f8f8;border-radius:8px;padding:16px;flex:1;text-align:center}.kpi-val{font-size:24px;font-weight:700}.kpi-lbl{font-size:12px;color:#666;margin-top:4px}</style>
+  </head><body>
+  <h1>Budget — ${curMonth}</h1>
+  <div class="kpi">
+    <div class="kpi-box"><div class="kpi-val" style="color:#16a34a">+${fmt(income)}</div><div class="kpi-lbl">Revenus</div></div>
+    <div class="kpi-box"><div class="kpi-val" style="color:#dc2626">-${fmt(expenses)}</div><div class="kpi-lbl">Dépenses</div></div>
+    <div class="kpi-box"><div class="kpi-val" style="color:${balance>=0?'#2563eb':'#dc2626'}">${fmt(balance)}</div><div class="kpi-lbl">Solde</div></div>
+  </div>
+  <table><thead><tr><th>Date</th><th>Catégorie</th><th>Description</th><th>Montant</th></tr></thead>
+  <tbody>${rows}</tbody></table>
+  <p style="margin-top:24px;font-size:12px;color:#999">Généré par NEXUS Dashboard — ${now.toLocaleDateString('fr-FR')}</p>
+  </body></html>`;
+  const win=window.open('','_blank');
+  win.document.write(html);
+  win.document.close();
+  setTimeout(()=>win.print(),500);
+  toast('PDF prêt à imprimer !','success');
 }
 
 function deleteBudgetTx(id){
@@ -12812,11 +13083,11 @@ function renderBudgetChart(all){
     // Income bar
     const ih=(incomeData[i]/maxVal)*(H-20);
     ctx.fillStyle='rgba(52,211,153,0.6)';
-    ctx.beginPath();ctx.roundRect(x-barW-2,H-ih-4,barW,ih,3);ctx.fill();
+    ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x-barW-2,H-ih-4,barW,ih,3);else ctx.rect(x-barW-2,H-ih-4,barW,ih);ctx.fill();
     // Expense bar
     const eh=(expData[i]/maxVal)*(H-20);
     ctx.fillStyle='rgba(248,113,113,0.6)';
-    ctx.beginPath();ctx.roundRect(x+2,H-eh-4,barW,eh,3);ctx.fill();
+    ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x+2,H-eh-4,barW,eh,3);else ctx.rect(x+2,H-eh-4,barW,eh);ctx.fill();
     // Month label
     ctx.fillStyle='rgba(245,245,247,0.3)';
     ctx.font='9px JetBrains Mono,monospace';
@@ -12834,6 +13105,69 @@ function prefillBudgetDates(id){
     const d=document.getElementById('btx-in-date');if(d&&!d.value)d.value=new Date().toISOString().slice(0,10);
   }
 }
+
+// ===================================================
+//  GALERIE
+// ===================================================
+let _galleryIdx=0, _galleryImages=[];
+
+function renderGallery(){
+  const p=curP();if(!p)return;
+  const q=(document.getElementById('gallery-search')?.value||'').toLowerCase();
+  _galleryImages=(p.state.items||[]).filter(i=>i.type==='image'&&i.imageData&&(!q||i.name.toLowerCase().includes(q)));
+  const grid=document.getElementById('gallery-grid');
+  const empty=document.getElementById('gallery-empty');
+  if(!grid)return;
+  if(!_galleryImages.length){
+    grid.style.display='none';
+    if(empty)empty.style.display='block';
+    return;
+  }
+  grid.style.display='grid';
+  if(empty)empty.style.display='none';
+  grid.innerHTML=_galleryImages.map((img,i)=>`
+    <div onclick="openGalleryLightbox(${i})" style="aspect-ratio:1;border-radius:12px;overflow:hidden;cursor:pointer;position:relative;background:var(--surface2);border:1px solid var(--border);transition:all .2s" onmouseover="this.querySelector('.gallery-overlay').style.opacity='1'" onmouseout="this.querySelector('.gallery-overlay').style.opacity='0'">
+      <img src="${img.imageData}" style="width:100%;height:100%;object-fit:cover;display:block" loading="lazy">
+      <div class="gallery-overlay" style="position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;gap:6px">
+        <div style="font-size:12px;font-weight:600;color:#fff;text-align:center;padding:0 8px">${escapeHTML(img.name)}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6)">${img.date||''}</div>
+      </div>
+    </div>`).join('');
+}
+
+function openGalleryLightbox(idx){
+  _galleryIdx=idx;
+  const lb=document.getElementById('gallery-lightbox');
+  if(!lb)return;
+  lb.style.display='flex';
+  updateGalleryLightbox();
+}
+
+function updateGalleryLightbox(){
+  const img=_galleryImages[_galleryIdx];if(!img)return;
+  const el=document.getElementById('gallery-lb-img');
+  const cap=document.getElementById('gallery-lb-caption');
+  if(el)el.src=img.imageData;
+  if(cap)cap.textContent=img.name+' ('+(  _galleryIdx+1)+'/'+_galleryImages.length+')';
+}
+
+function galleryNav(dir){
+  _galleryIdx=(_galleryIdx+dir+_galleryImages.length)%_galleryImages.length;
+  updateGalleryLightbox();
+}
+
+function closeGalleryLightbox(){
+  const lb=document.getElementById('gallery-lightbox');
+  if(lb)lb.style.display='none';
+}
+
+document.addEventListener('keydown',e=>{
+  const lb=document.getElementById('gallery-lightbox');
+  if(!lb||lb.style.display==='none')return;
+  if(e.key==='ArrowLeft')galleryNav(-1);
+  if(e.key==='ArrowRight')galleryNav(1);
+  if(e.key==='Escape')closeGalleryLightbox();
+});
 
 // ===================================================
 //  EXPORT NOTE EN MARKDOWN
@@ -13195,6 +13529,7 @@ function savePomoSession(){
   if(p.state.pomoHistory.length>200)p.state.pomoHistory=p.state.pomoHistory.slice(-200);
   saveStateNow();
   renderPomoStats();
+  renderPomoDayHistory();
 }
 
 function renderPomo(){
@@ -13258,6 +13593,17 @@ function renderPomo(){
   }
 
   renderPomoStats();
+}
+
+function renderPomoDayHistory(){
+  const el=document.getElementById('pomo-day-history');if(!el)return;
+  const p=curP();if(!p)return;
+  const today=new Date().toLocaleDateString('en-CA');
+  const todaySessions=(p.state?.pomoHistory||[]).filter(s=>s.ts&&new Date(s.ts).toLocaleDateString('en-CA')===today);
+  const mode=POMO_MODES()[pomoIdx];
+  el.innerHTML=todaySessions.map((_,i)=>`
+    <div title="Session ${i+1}" style="width:12px;height:12px;border-radius:3px;background:${mode.ring};opacity:.8;box-shadow:0 0 4px ${mode.ring}60"></div>
+  `).join('')+(todaySessions.length===0?'<div style="font-size:10px;color:var(--muted2);font-family:var(--mono)">Aucune session aujourd\'hui</div>':'');
 }
 
 function renderPomoStats(){
@@ -14763,8 +15109,17 @@ function hideBoot(){
   removeAntiFlash();
   ['nexus-boot-screen'].forEach(id=>{
     const el=document.getElementById(id);
-    if(el){el.style.transition='opacity .22s ease';el.style.opacity='0';setTimeout(()=>{if(el.parentNode)el.remove();},230);}
+    if(el){
+      el.style.transition='opacity .28s ease';
+      el.style.opacity='0';
+      setTimeout(()=>{if(el.parentNode)el.remove();},300);
+    }
   });
+}
+
+function setBootStatus(msg){
+  const el=document.getElementById('boot-status');
+  if(el)el.textContent=msg;
 }
 
 function showAuth(){
@@ -14837,7 +15192,9 @@ function showDashboardOrProfiles(){
       }catch(e){ sessionStorage.removeItem(cacheKey); }
     }
 
+    if(typeof setBootStatus==='function')setBootStatus('Chargement...');
     await loadCloudState();
+    if(typeof setBootStatus==='function')setBootStatus('Prêt ✓');
     if(!profiles.length){
       profiles.push({id:Date.now(),name:'Mon profil',
         avatarEmoji:AVATARS[0].e,avatarBg:AVATARS[0].b,

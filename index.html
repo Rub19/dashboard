@@ -316,17 +316,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   padding:0;
   min-width:0;
   width:100%;
-  height:40px;
+  height:44px;
   border-radius:12px;
   position:relative;
   transition:background .15s ease,color .15s ease;
 }
 .sidebar.compact .nav-icon{
   margin:0 auto;
-  width:18px;height:18px;
+  width:22px;height:22px;
   pointer-events:none;
 }
-.sidebar.compact .nav-icon svg{width:18px;height:18px}
+.sidebar.compact .nav-icon svg{width:22px;height:22px}
 
 /* Hover */
 .sidebar.compact .nav-item:hover{
@@ -334,9 +334,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   color:var(--text);
 }
 
-/* Actif */
+/* Actif — utilise la couleur du thème */
 .sidebar.compact .nav-item.active{
-  background:rgba(249,115,22,.1);
+  background:var(--accent-subtle,rgba(255,255,255,.06));
   color:var(--accent);
   border-radius:12px;
 }
@@ -399,7 +399,7 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .sb-dc-status.offline{background:#80848e}
 .sb-dc-info{flex:1;min-width:0}
 .sb-dc-name{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sb-dc-activity{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.sb-dc-activity{font-size:11px;color:rgba(245,245,247,.65);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
 .nowplaying-label{font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);padding:0 2px 7px;display:flex;align-items:center;gap:6px}
 .nowplaying-label::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--spotify);animation:pulseG 1.8s ease-in-out infinite;flex-shrink:0}
 .nowplaying-iframe-wrap{overflow:hidden;background:transparent;height:48px;position:relative;border:none}
@@ -2466,7 +2466,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;
 }
 .sb-wc-sub{
-  font-size:10px;color:rgba(245,245,247,.38);
+  font-size:10px;color:rgba(245,245,247,.6);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 .sb-wc-sub-green{color:rgba(29,185,84,.7)}
@@ -2502,7 +2502,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 .sb-dc-badge.online{color:#fff;border-color:#3ba55c;background:#3ba55c}
 .sb-dc-badge.idle{color:#fff;border-color:#faa81a;background:#faa81a}
 .sb-dc-badge.dnd{color:#fff;border-color:#ed4245;background:#ed4245}
-.sb-dc-badge.offline{color:rgba(245,245,247,.35);border-color:rgba(255,255,255,.1);background:transparent}
+.sb-dc-badge.offline{color:rgba(245,245,247,.55);border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.05)}
 /* Discord activity bar fill — color depends on status */
 #sb-dc-bar-fill{background:rgba(255,255,255,.15);width:0%}
 /* EQ bars */
@@ -2948,12 +2948,30 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 /* ══ SIDEBAR RESIZE HANDLE ══ */
 .resize-handle{
   position:fixed;top:0;bottom:0;
-  width:6px;cursor:col-resize;z-index:400;
-  background:transparent;transition:background .2s;
-  left:220px;/* default sidebar width */
+  width:4px;cursor:col-resize;z-index:400;
+  background:transparent;
+  transition:background .2s, width .15s;
+  left:220px;
+}
+.resize-handle::after{
+  content:'';
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:4px;height:40px;
+  background:rgba(255,255,255,.08);
+  border-radius:99px;
+  transition:all .2s ease;
+}
+.resize-handle:hover::after,.resize-handle.dragging::after{
+  background:var(--accent);
+  height:56px;
+  width:4px;
+  box-shadow:0 0 10px rgba(249,115,22,.5);
 }
 .resize-handle:hover,.resize-handle.dragging{
-  background:rgba(249,115,22,.3);
+  background:rgba(249,115,22,.08);
+  width:6px;
 }
 
 
@@ -3137,26 +3155,63 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
     padding:6px 8px calc(6px + env(safe-area-inset-bottom));
     gap:2px;
   }
+  /* ── BOTTOM NAV REDESIGN ── */
   .mob-nav-btn{
     flex:1;display:flex;flex-direction:column;align-items:center;
-    gap:3px;padding:6px 4px;border-radius:10px;
+    gap:4px;padding:8px 4px 6px;border-radius:14px;
     background:none;border:none;cursor:pointer;
-    color:rgba(245,245,247,.35);
-    font-size:9px;font-weight:700;letter-spacing:.04em;
-    font-family:'JetBrains Mono',monospace;text-transform:uppercase;
-    transition:all .2s cubic-bezier(.4,0,.2,1);
-    position:relative;
+    color:rgba(245,245,247,.3);
+    position:relative;transition:all .18s cubic-bezier(.4,0,.2,1);
+    -webkit-tap-highlight-color:transparent;
   }
-  .mob-nav-btn:active{transform:scale(.9)}
-  .mob-nav-btn.active{color:#f97316}
-  .mob-nav-btn.active .mob-icon svg{stroke:#f97316}
-  .mob-nav-btn.active::before{
+  .mob-nav-btn:active{transform:scale(.88);opacity:.8}
+  .mob-label{
+    font-size:9px;font-weight:600;letter-spacing:.02em;
+    font-family:var(--font);text-transform:none;
+    transition:color .18s;
+  }
+  .mob-icon{width:22px;height:22px;display:flex;align-items:center;justify-content:center;transition:all .18s}
+  .mob-icon svg{width:22px;height:22px;stroke:currentColor;transition:all .18s}
+
+  /* Bouton AI central en relief */
+  .mob-btn-center{
+    position:relative;margin-top:-14px;
+  }
+  .mob-icon-center{
+    width:44px;height:44px;border-radius:14px;
+    background:linear-gradient(135deg,#f97316,#dc2626);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 16px rgba(249,115,22,.4);
+    transition:all .18s;
+  }
+  .mob-icon-center svg{width:20px;height:20px;stroke:#fff}
+  .mob-btn-center .mob-label{color:rgba(245,245,247,.5)}
+
+  /* Actif */
+  .mob-nav-btn.active{color:var(--accent,#f97316)}
+  .mob-nav-btn.active .mob-icon svg{stroke:var(--accent,#f97316)}
+  .mob-nav-btn.active .mob-label{color:var(--accent,#f97316)}
+  .mob-nav-btn.active::after{
     content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
-    width:24px;height:2px;border-radius:99px;
-    background:linear-gradient(90deg,#f97316,#dc2626);
+    width:20px;height:2.5px;border-radius:99px;
+    background:var(--accent,#f97316);
+    box-shadow:0 0 8px var(--accent,#f97316);
   }
-  .mob-icon{width:20px;height:20px;display:flex;align-items:center;justify-content:center}
-  .mob-icon svg{width:18px;height:18px;stroke:currentColor;transition:stroke .2s}
+  .mob-btn-center.active .mob-icon-center{
+    box-shadow:0 4px 24px rgba(249,115,22,.7);
+    transform:scale(1.05);
+  }
+
+  /* More drawer */
+  .mob-more-btn{
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+    border-radius:14px;padding:14px 8px 12px;cursor:pointer;color:var(--text);
+    font-size:11px;font-weight:600;font-family:var(--font);
+    transition:all .15s ease;-webkit-tap-highlight-color:transparent;
+  }
+  .mob-more-btn:active{transform:scale(.93);background:rgba(255,255,255,.08)}
+  .mob-more-btn span:first-child{font-size:24px;line-height:1}
 
   /* ── STAT CARDS ──────────────────────────────────────────────── */
   .stats-row{
@@ -4809,10 +4864,6 @@ body.no-anim #bg-canvas{display:none!important}
         <div><div class="conn-title">Discord</div><div class="conn-subtitle">Show your status, avatar and activity via Lanyard</div></div>
         <div style="display:flex;align-items:center;gap:8px">
           <button id="dc-refresh-btn" onclick="refreshDiscord()" title="Refresh" style="display:none;background:none;border:1px solid var(--border2);color:var(--muted);border-radius:6px;padding:4px 8px;cursor:pointer;font-size:13px;font-family:var(--font);transition:all .15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">↻ Refresh</button>
-          <button class="sb-widget-toggle" id="dc-sidebar-toggle" onclick="toggleSidebarWidget('discord')" title="Show/hide in sidebar" style="display:none">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-            Sidebar
-          </button>
           <span class="conn-status-badge disconnected" id="dc-badge">Not connected</span>
         </div>
       </div>
@@ -4955,10 +5006,6 @@ body.no-anim #bg-canvas{display:none!important}
         <div class="conn-icon" style="background:#d51007">&#127925;</div>
         <div><div class="conn-title">Last.fm</div><div class="conn-subtitle">Show your music history and top artists in your sidebar</div></div>
         <button id="lastfm-refresh-btn" onclick="refreshLastfm()" style="display:none;background:none;border:1px solid var(--border2);color:var(--muted);border-radius:6px;padding:4px 8px;cursor:pointer;font-size:13px;font-family:var(--font)" onmouseover="this.style.borderColor='#d51007';this.style.color='#d51007'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">↻ Refresh</button>
-        <button class="sb-widget-toggle" id="lastfm-sidebar-toggle" onclick="toggleSidebarWidget('lastfm')" title="Show/hide in sidebar" style="display:none">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-            Sidebar
-          </button>
           <span class="conn-status-badge disconnected" id="lastfm-badge">Not connected</span>
       </div>
       <div id="lastfm-preview" style="display:none;margin-bottom:12px"></div>
@@ -5674,26 +5721,42 @@ body.no-anim #bg-canvas{display:none!important}
 <!-- MOBILE BOTTOM NAV -->
 <nav class="mobile-bottom-nav" id="mobile-bottom-nav">
   <button class="mob-nav-btn active" id="mob-btn-dashboard" onclick="switchPage('dashboard',null);setMobNav('dashboard')">
-    <span class="mob-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>
-    Home
-  </button>
-  <button class="mob-nav-btn" id="mob-btn-files" onclick="switchPage('files',null);setMobNav('files')">
-    <span class="mob-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>
-    Files
+    <span class="mob-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>
+    <span class="mob-label">Home</span>
   </button>
   <button class="mob-nav-btn" id="mob-btn-todos" onclick="switchPage('todos',null);setMobNav('todos')">
-    <span class="mob-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
-    Tasks
+    <span class="mob-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+    <span class="mob-label">Tasks</span>
+  </button>
+  <button class="mob-nav-btn mob-btn-center" id="mob-btn-ai" onclick="switchPage('ai',null);setMobNav('ai')">
+    <span class="mob-icon-center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+    <span class="mob-label">AI</span>
   </button>
   <button class="mob-nav-btn" id="mob-btn-gaming" onclick="switchPage('gaming',null);setMobNav('gaming')">
-    <span class="mob-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><circle cx="15.5" cy="11.5" r="1"/><circle cx="17.5" cy="13.5" r="1"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59l-.9 7.27A4 4 0 0 0 5.77 20.5c.387.1.79-.025 1.05-.327l1.89-2.173h6.58l1.89 2.173c.26.302.663.427 1.05.327a4 4 0 0 0 2.97-4.64l-.9-7.27A4 4 0 0 0 17.32 5z"/></svg></span>
-    Gaming
+    <span class="mob-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><circle cx="15.5" cy="11.5" r="1"/><circle cx="17.5" cy="13.5" r="1"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59l-.9 7.27A4 4 0 0 0 5.77 20.5c.387.1.79-.025 1.05-.327l1.89-2.173h6.58l1.89 2.173c.26.302.663.427 1.05.327a4 4 0 0 0 2.97-4.64l-.9-7.27A4 4 0 0 0 17.32 5z"/></svg></span>
+    <span class="mob-label">Gaming</span>
   </button>
-  <button class="mob-nav-btn" id="mob-btn-settings" onclick="switchPage('settings',null);setMobNav('settings')">
-    <span class="mob-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
-    Settings
+  <button class="mob-nav-btn" id="mob-btn-more" onclick="toggleMobMore()">
+    <span class="mob-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></span>
+    <span class="mob-label">More</span>
   </button>
 </nav>
+
+<!-- Mobile More drawer -->
+<div id="mob-more-drawer" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:250;background:rgba(8,6,12,.98);border-top:1px solid rgba(255,255,255,.08);border-radius:20px 20px 0 0;padding:16px 16px calc(72px + env(safe-area-inset-bottom));backdrop-filter:blur(24px)">
+  <div style="width:36px;height:3px;background:rgba(255,255,255,.15);border-radius:99px;margin:0 auto 20px"></div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+    <button class="mob-more-btn" onclick="switchPage('notes',null);setMobNav('notes');closeMobMore()"><span>📝</span><span>Notes</span></button>
+    <button class="mob-more-btn" onclick="switchPage('habits',null);setMobNav('habits');closeMobMore()"><span>🌱</span><span>Habits</span></button>
+    <button class="mob-more-btn" onclick="switchPage('kanban',null);setMobNav('kanban');closeMobMore()"><span>📋</span><span>Kanban</span></button>
+    <button class="mob-more-btn" onclick="switchPage('calendar',null);setMobNav('calendar');closeMobMore()"><span>📅</span><span>Calendar</span></button>
+    <button class="mob-more-btn" onclick="switchPage('budget',null);setMobNav('budget');closeMobMore()"><span>💸</span><span>Budget</span></button>
+    <button class="mob-more-btn" onclick="switchPage('stats',null);setMobNav('stats');closeMobMore()"><span>📊</span><span>Stats</span></button>
+    <button class="mob-more-btn" onclick="switchPage('files',null);setMobNav('files');closeMobMore()"><span>📁</span><span>Files</span></button>
+    <button class="mob-more-btn" onclick="switchPage('settings',null);setMobNav('settings');closeMobMore()"><span>⚙️</span><span>Settings</span></button>
+  </div>
+</div>
+<div id="mob-more-overlay" onclick="closeMobMore()" style="display:none;position:fixed;inset:0;z-index:249;background:rgba(0,0,0,.6);backdrop-filter:blur(4px)"></div>
 
 <script>
 // === GLOBAL CONSTANTS (must be first) ===
@@ -7123,17 +7186,23 @@ function initSidebarWidgets(p){
   const hasDiscord=!!(conn.discord?.userId&&vis.discord!==false);
   if(hasDiscord){
     if(dcWrap)dcWrap.style.display='block';
-    // Les deux widgets cachés au boot — Lanyard WS décidera lequel afficher
+    // sb-spotify-wrap : Lanyard décidera
     const npWrap=document.getElementById('sb-spotify-wrap');
-    const ifrWrap=document.getElementById('sb-spotify-iframe-wrap');
     if(npWrap)npWrap.style.display='none';
-    if(ifrWrap)ifrWrap.style.display='none';
-    clearInterval(_spotifyAutoRefresh);_spotifyAutoRefresh=null;
+    // Now Playing (Last.fm fallback) — respecter le toggle vis.nowplaying
+    const ifrWrap=document.getElementById('sb-spotify-iframe-wrap');
+    if(conn.lastfm?.username&&vis.nowplaying!==false){
+      // Lanyard gérera l'affichage via updateSpotifyFromLanyard
+      // mais on démarre le fallback Last.fm aussi
+      if(ifrWrap)ifrWrap.style.display='none'; // caché jusqu'à ce que Lanyard décide
+    } else {
+      if(ifrWrap)ifrWrap.style.display='none';
+      clearInterval(_spotifyAutoRefresh);_spotifyAutoRefresh=null;
+    }
     refreshDiscordSidebar();
     startLanyardWS(conn.discord.userId);
   } else {
     if(dcWrap)dcWrap.style.display='none';
-    // Pas de Discord → Last.fm directement
     const npWrap=document.getElementById('sb-spotify-wrap');
     if(npWrap)npWrap.style.display='none';
     if(conn.lastfm?.username&&vis.nowplaying!==false){
@@ -7146,8 +7215,13 @@ function initSidebarWidgets(p){
 
   // ── Last.fm scrobble card ──
   if(conn.lastfm?.username&&vis.lastfm!==false){
+    const lfWrap=document.getElementById('sb-lastfm-wrap');
+    if(lfWrap)lfWrap.style.display='block';
     renderLastfmCard(conn.lastfm).catch(()=>{});
     startLastfmAutoRefresh();
+  } else {
+    const lfWrap=document.getElementById('sb-lastfm-wrap');
+    if(lfWrap)lfWrap.style.display='none';
   }
 }
 
@@ -7349,9 +7423,13 @@ function toggleSidebarCompact(){
     main.style.marginLeft=p.sidebarCompact?'68px':'220px';
     setTimeout(()=>{main.style.transition='';},250);
   }
-  // Animate resize handle
+  // Resize handle — se déplace avec la sidebar
   const rh=document.getElementById('resize-handle');
-  if(rh)rh.style.left=p.sidebarCompact?'68px':'220px';
+  if(rh){
+    rh.style.transition='left .22s cubic-bezier(.4,0,.2,1)';
+    rh.style.left=p.sidebarCompact?'64px':(localStorage.getItem('sb_width')||'220')+'px';
+    setTimeout(()=>{rh.style.transition='';},250);
+  }
   saveStateNow();
 }
 
@@ -7360,7 +7438,15 @@ function applySidebarCompact(){
   const sb=document.getElementById('main-sidebar');
   if(sb)sb.classList.toggle('compact',!!p.sidebarCompact);
   const main=document.getElementById('main-content');
-  if(main&&p.sidebarCompact)main.style.marginLeft='58px';
+  const rh=document.getElementById('resize-handle');
+  if(p.sidebarCompact){
+    if(main)main.style.marginLeft='64px';
+    if(rh)rh.style.left='64px';
+  } else {
+    const savedW=localStorage.getItem('sb_width')||'220';
+    if(main)main.style.marginLeft=savedW+'px';
+    if(rh)rh.style.left=savedW+'px';
+  }
 }
 
 function initDashboard(){
@@ -7440,7 +7526,7 @@ function initDashboard(){
   // Apply custom accent if any
   if(p.customAccent)applyCustomColor(p.customAccent);
   // Delay weather/quote to let DOM and geolocation settle
-  setTimeout(()=>{fetchWeather();fetchQuote();},800);
+  setTimeout(()=>{fetchWeather();fetchQuote();},400);
   updateBannerDisplay();
   renderPinnedLinks();
   renderCountdown();
@@ -12591,19 +12677,28 @@ function renderAllEvents(){
   const main = document.querySelector('.main');
   if(!handle||!sidebar||!main) return;
 
-  // Restore saved width
-  const savedW = parseInt(localStorage.getItem('sb_width')||'240');
+  // Restore saved width (seulement si pas en compact)
+  const savedW = parseInt(localStorage.getItem('sb_width')||'220');
   const w = Math.min(Math.max(savedW, 160), 400);
-  sidebar.style.width = w+'px';
-  main.style.marginLeft = w+'px';
-  handle.style.left = w+'px';
+  const p0 = typeof curP==='function'?curP():null;
+  if(!p0?.sidebarCompact){
+    sidebar.style.width = w+'px';
+    main.style.marginLeft = w+'px';
+    handle.style.left = w+'px';
+  }
 
   let dragging = false, startX = 0, startW = 0;
 
   handle.addEventListener('mousedown', e=>{
     dragging = true;
     startX = e.clientX;
-    startW = sidebar.offsetWidth;
+    // Si on est en compact, on part de 64px
+    const p = typeof curP==='function'?curP():null;
+    if(p?.sidebarCompact){
+      startW = 64;
+    } else {
+      startW = sidebar.offsetWidth;
+    }
     handle.classList.add('dragging');
     document.body.style.userSelect = 'none';
     document.body.style.cursor = 'col-resize';
@@ -12612,19 +12707,25 @@ function renderAllEvents(){
 
   document.addEventListener('mousemove', e=>{
     if(!dragging) return;
-    const newW = Math.min(Math.max(startW + (e.clientX - startX), 160), 400);
-    sidebar.style.width = newW+'px';
+    const newW = Math.min(Math.max(startW + (e.clientX - startX), 64), 400);
+    // Si on dépasse 80px depuis compact → sortir du mode compact
+    const p = typeof curP==='function'?curP():null;
+    if(p?.sidebarCompact && newW > 90){
+      p.sidebarCompact = false;
+      sidebar.classList.remove('compact');
+      if(typeof saveStateNow==='function') saveStateNow();
+    }
+    // Si on réduit à moins de 80px → passer en compact
+    if(!p?.sidebarCompact && newW < 80){
+      if(p) p.sidebarCompact = true;
+      sidebar.classList.add('compact');
+      if(typeof saveStateNow==='function') saveStateNow();
+    }
+    if(!p?.sidebarCompact){
+      sidebar.style.width = newW+'px';
+    }
     main.style.marginLeft = newW+'px';
     handle.style.left = newW+'px';
-    // also update nowplaying iframe scale dynamically
-    const availW = newW - 24;
-    const scale = Math.min(availW / 310, 0.95);
-    const iframe = document.getElementById('nowplaying-iframe');
-    if(iframe){
-      iframe.style.transform = 'translateX(-50%) scale('+scale.toFixed(3)+')';
-      const wrap = document.getElementById('nowplaying-iframe-wrap');
-      if(wrap) wrap.style.height = Math.round(68*scale)+'px';
-    }
   });
 
   document.addEventListener('mouseup', ()=>{
@@ -12633,7 +12734,10 @@ function renderAllEvents(){
     handle.classList.remove('dragging');
     document.body.style.userSelect = '';
     document.body.style.cursor = '';
-    localStorage.setItem('sb_width', sidebar.offsetWidth);
+    const p = typeof curP==='function'?curP():null;
+    if(!p?.sidebarCompact){
+      localStorage.setItem('sb_width', sidebar.offsetWidth);
+    }
   });
 })();
 
@@ -12790,7 +12894,15 @@ async function fetchWeather(forceCity){
   const _cacheAge=(Date.now()-(cache?.ts||0))<1800000;
   const _cityMatch=!city||!cache?.city||(cache.city.toLowerCase()===city.toLowerCase());
   const _langMatch=!cache?.lang||cache.lang===(typeof _lang!=='undefined'?_lang:'fr');
-  if(cache?.rendered&&_cacheAge&&_cityMatch&&_langMatch){w.innerHTML=cache.rendered;return;}
+  if(cache?.rendered&&_cacheAge&&_cityMatch&&_langMatch){
+    w.innerHTML=cache.rendered;
+    // Mettre à jour le compact même depuis le cache
+    if(cache.temp!==undefined){
+      const ct=document.getElementById('sb-compact-temp');if(ct)ct.textContent=cache.temp+'°';
+      const ci=document.getElementById('sb-compact-icon');if(ci)ci.textContent=cache.icon||'🌡️';
+    }
+    return;
+  }
 
   // Vider le cache
   if(_wp?.state)_wp.state.weatherCache=null;
@@ -12900,7 +13012,7 @@ async function fetchWeather(forceCity){
     }).join('');
     const html=`<div class="wx-root"><div class="wx-hero"><div class="wx-icon-wrap">${wxIcon(code,64)}</div><div style="flex:1;min-width:0"><div class="wx-temp">${temp}<sup>°C</sup></div><div class="wx-desc">${text}</div><div class="wx-loc" style="cursor:pointer" onclick="promptWeatherCity()" title="Changer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:11px;height:11px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${cityName||'?'} <span style="opacity:.4;font-size:9px">✎</span></div></div></div><div class="wx-meta"><div class="wx-meta-cell"><div class="wx-meta-val">${feels}°</div><div class="wx-meta-lbl">Feels like</div></div><div class="wx-meta-cell"><div class="wx-meta-val">${wind}</div><div class="wx-meta-lbl">km/h wind</div></div><div class="wx-meta-cell"><div class="wx-meta-val">${hum}%</div><div class="wx-meta-lbl">Humidity</div></div></div><div class="wx-forecast">${forecastHtml}</div></div>`;
     w.innerHTML=html;
-    if(_wp?.state)_wp.state.weatherCache={city:city||cityName||'',ts:Date.now(),rendered:html,lang:typeof _lang!=='undefined'?_lang:'fr'};
+    if(_wp?.state)_wp.state.weatherCache={city:city||cityName||'',ts:Date.now(),rendered:html,lang:typeof _lang!=='undefined'?_lang:'fr',temp,icon};
   }
 }
 
@@ -14424,6 +14536,27 @@ function setMobNav(page){
   document.querySelectorAll('.mob-nav-btn').forEach(b=>b.classList.remove('active'));
   const btn=document.getElementById('mob-btn-'+page);
   if(btn)btn.classList.add('active');
+  else{
+    // Page dans "More" → activer le bouton More
+    const moreBtn=document.getElementById('mob-btn-more');
+    if(moreBtn)moreBtn.classList.add('active');
+  }
+}
+
+function toggleMobMore(){
+  const drawer=document.getElementById('mob-more-drawer');
+  const overlay=document.getElementById('mob-more-overlay');
+  if(!drawer)return;
+  const isOpen=drawer.style.display!=='none';
+  drawer.style.display=isOpen?'none':'block';
+  if(overlay)overlay.style.display=isOpen?'none':'block';
+}
+
+function closeMobMore(){
+  const drawer=document.getElementById('mob-more-drawer');
+  const overlay=document.getElementById('mob-more-overlay');
+  if(drawer)drawer.style.display='none';
+  if(overlay)overlay.style.display='none';
 }
 
 function toggleMobileSidebar(){

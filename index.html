@@ -5,13 +5,25 @@
 /* Applied before first paint — prevents any flash */
 #main-sidebar, #main-content, #auth-screen, #profile-screen, #password-screen {
   display: none !important;
-  visibility: hidden !important;
 }
 #nexus-boot-screen {
   display: flex !important;
-  visibility: visible !important;
 }
 </style>
+<script>
+// Failsafe: remove anti-flash after 6s max no matter what
+setTimeout(function(){
+  var s=document.getElementById('anti-flash');
+  if(s){s.remove();console.warn('[NEXUS] anti-flash removed by failsafe');}
+  // Also force show auth if still on boot screen
+  var boot=document.getElementById('nexus-boot-screen');
+  var auth=document.getElementById('auth-screen');
+  if(boot&&boot.style.display!=='none'&&auth){
+    boot.style.display='none';
+    auth.style.display='flex';
+  }
+},6000);
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">

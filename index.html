@@ -13577,34 +13577,51 @@ document.addEventListener('keydown',e=>{
 // ===================================================
 async function refreshSteamSidebar(){
   const p=curP();if(!p)return;
-  const steamId=p.state?.connections?.steam?.steamId;
+  const steamConn=p.state?.connections?.steam;
+  const steamId=steamConn?.steamId;
   if(!steamId)return;
   const wrap=document.getElementById('sb-steam-wrap');
   if(!wrap||wrap.style.display==='none')return;
+
+  const gameEl=document.getElementById('sb-steam-game');
+  const statusEl=document.getElementById('sb-steam-status');
+  const imgEl=document.getElementById('sb-steam-img');
+  const artEl=document.getElementById('sb-steam-art');
+  const dotEl=document.getElementById('sb-steam-dot');
+
+  // D'abord afficher les données stockées en cache
+  const cached=steamConn?.data;
+  if(cached){
+    if(gameEl)gameEl.textContent=cached.displayName||'Steam';
+    const state=cached.onlineState||'offline';
+    const stateColors={online:'#4ade80','in-game':'#4ade80',offline:'#4e5058',away:'#faa81a',snooze:'#faa81a'};
+    const stateLabels={online:'En ligne','in-game':'En jeu',offline:'Hors ligne',away:'Absent',snooze:'Absent'};
+    if(dotEl)dotEl.style.background=stateColors[state]||'#4e5058';
+    if(statusEl)statusEl.textContent=stateLabels[state]||state;
+    if(cached.avatarFull&&imgEl){imgEl.src=cached.avatarFull;imgEl.style.display='block';const sp=artEl?.querySelector('span');if(sp)sp.style.display='none';}
+  }
+
+  // Ensuite fetch en live via le Worker
   try{
-    // Via Cloudflare Worker proxy
-    const res=await fetch(`${WORKER_URL}/steam?steamid=${steamId}&type=status`,{signal:abortAfter(8000)});
+    const res=await fetch(`${WORKER_URL}/steam/ISteamUser/GetPlayerSummaries/v2/?steamids=${steamId}`,{signal:abortAfter(8000)});
     if(!res.ok)return;
-    const data=await res.json();
-    const gameEl=document.getElementById('sb-steam-game');
-    const statusEl=document.getElementById('sb-steam-status');
-    const imgEl=document.getElementById('sb-steam-img');
-    const artEl=document.getElementById('sb-steam-art');
-    const dotEl=document.getElementById('sb-steam-dot');
-    if(data.gameName){
-      if(gameEl)gameEl.textContent=data.gameName;
-      if(statusEl)statusEl.textContent='En jeu • '+Math.floor((data.gameTime||0)/60)+'h jouées';
-      if(dotEl)dotEl.style.background='#4ade80';
-      if(data.gameImgUrl&&imgEl){
-        imgEl.src=data.gameImgUrl;imgEl.style.display='block';
-        const span=artEl?.querySelector('span');if(span)span.style.display='none';
-      }
-    } else {
-      if(gameEl)gameEl.textContent=data.personaName||'Steam';
-      if(statusEl)statusEl.textContent=data.online?'En ligne':'Hors ligne';
-      if(dotEl)dotEl.style.background=data.online?'#4ade80':'#4e5058';
+    const json=await res.json();
+    const player=json?.response?.players?.[0];
+    if(!player)return;
+    const stateMap={0:'offline',1:'online',2:'busy',3:'away',4:'snooze',5:'online',6:'online'};
+    const state=player.gameextrainfo?'in-game':(stateMap[player.personastate]||'offline');
+    const stateColors={online:'#4ade80','in-game':'#57cbde',offline:'#4e5058',away:'#faa81a',busy:'#faa81a'};
+    const stateLabels={online:'En ligne','in-game':'En jeu : '+player.gameextrainfo,offline:'Hors ligne',away:'Absent',busy:'Occupé'};
+    if(gameEl)gameEl.textContent=player.personaname||'Steam';
+    if(dotEl)dotEl.style.background=stateColors[state]||'#4e5058';
+    if(statusEl)statusEl.textContent=stateLabels[state]||state;
+    if(player.avatarfull&&imgEl){imgEl.src=player.avatarfull;imgEl.style.display='block';const sp=artEl?.querySelector('span');if(sp)sp.style.display='none';}
+    // Mettre à jour le cache
+    if(p.state.connections.steam.data){
+      p.state.connections.steam.data.onlineState=state;
+      p.state.connections.steam.data.displayName=player.personaname;
     }
-  }catch(e){}
+  }catch(e){console.warn('Steam sidebar refresh failed:',e);}
 }
 
 // ===================================================

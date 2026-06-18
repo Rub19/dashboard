@@ -1532,9 +1532,9 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .auth-feature-icon svg{width:13px;height:13px;color:#f97316}
 
 .auth-orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(80px)}
-.auth-orb-1{width:400px;height:400px;background:radial-gradient(circle,rgba(249,115,22,.18),transparent 70%);top:-120px;left:-120px;animation:orbPulse 6s ease-in-out infinite}
-.auth-orb-2{width:300px;height:300px;background:radial-gradient(circle,rgba(220,38,38,.14),transparent 70%);bottom:-100px;right:-100px;animation:orbPulse2 8s ease-in-out infinite}
-.auth-orb-3{width:250px;height:250px;background:radial-gradient(circle,rgba(139,92,246,.1),transparent 70%);top:50%;left:30%;animation:orbPulse 7s ease-in-out infinite 1s}
+.auth-orb-1{width:600px;height:600px;background:radial-gradient(circle,rgba(249,115,22,.2),transparent 65%);top:-200px;left:-200px;animation:orbPulse 6s ease-in-out infinite}
+.auth-orb-2{width:500px;height:500px;background:radial-gradient(circle,rgba(220,38,38,.16),transparent 65%);bottom:-150px;right:-150px;animation:orbPulse2 8s ease-in-out infinite}
+.auth-orb-3{width:400px;height:400px;background:radial-gradient(circle,rgba(139,92,246,.12),transparent 65%);top:40%;left:20%;animation:orbPulse 7s ease-in-out infinite 1s}
 
 /* Inputs auth custom */
 .auth-input-wrap{position:relative;margin-bottom:14px}
@@ -2689,8 +2689,8 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   border-radius:12px;
   box-shadow:0 16px 48px rgba(0,0,0,.6),0 0 0 1px rgba(249,115,22,.06);
   overflow:hidden;
-  min-width:170px;
-  z-index:5000;
+  min-width:180px;
+  z-index:99999;
   opacity:0;pointer-events:none;
   transform:translateY(-6px) scale(.97);
   transition:opacity .18s ease,transform .18s ease;
@@ -3901,41 +3901,34 @@ body.no-anim #bg-canvas{display:none!important}
   </div>
 </div>
 
-<div id="auth-screen" style="position:fixed;inset:0;z-index:10002;display:none;align-items:center;justify-content:center;overflow:hidden;background:#050507">
+<div id="auth-screen" style="position:fixed;inset:0;z-index:10002;display:none;align-items:center;justify-content:center;overflow:hidden;background:#050507;padding:20px">
 
   <!-- Canvas particules -->
   <canvas id="auth-particles" style="position:absolute;inset:0;z-index:0;pointer-events:none"></canvas>
 
-  <!-- Orbes gradient -->
-  <div class="auth-orb auth-orb-1"></div>
-  <div class="auth-orb auth-orb-2"></div>
-  <div class="auth-orb auth-orb-3"></div>
+  <!-- Lang selector — 4 boutons simples en bas de l'écran -->
+  <div id="auth-lang-bar" style="position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:99999;display:flex;gap:6px;background:rgba(10,8,14,.85);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.08);border-radius:99px;padding:6px 10px">
+    <button onclick="setLang('fr');updateAuthLangBar()" data-l="fr" style="padding:4px 10px;border-radius:99px;border:none;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--font);background:rgba(249,115,22,.8);color:#fff;transition:all .15s">FR</button>
+    <button onclick="setLang('en');updateAuthLangBar()" data-l="en" style="padding:4px 10px;border-radius:99px;border:none;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--font);background:transparent;color:rgba(255,255,255,.45);transition:all .15s">EN</button>
+    <button onclick="setLang('es');updateAuthLangBar()" data-l="es" style="padding:4px 10px;border-radius:99px;border:none;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--font);background:transparent;color:rgba(255,255,255,.45);transition:all .15s">ES</button>
+    <button onclick="setLang('de');updateAuthLangBar()" data-l="de" style="padding:4px 10px;border-radius:99px;border:none;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--font);background:transparent;color:rgba(255,255,255,.45);transition:all .15s">DE</button>
+  </div>
+
+  <!-- Orbes gradient — derrière la card -->
+  <div class="auth-orb auth-orb-1" style="z-index:0"></div>
+  <div class="auth-orb auth-orb-2" style="z-index:0"></div>
+  <div class="auth-orb auth-orb-3" style="z-index:0"></div>
 
   <!-- Grid lines subtle -->
   <div style="position:absolute;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:40px 40px"></div>
 
   <!-- Card centrale -->
-  <div id="auth-card" style="width:100%;max-width:960px;min-height:540px;display:flex;border-radius:28px;overflow:hidden;box-shadow:0 40px 120px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.06);position:relative;z-index:1;margin:16px">
+  <div id="auth-card" style="width:100%;max-width:980px;min-height:560px;display:flex;border-radius:28px;overflow:hidden;box-shadow:0 40px 120px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.07),0 0 80px rgba(249,115,22,.06);position:relative;z-index:1;margin:16px">
 
     <!-- Panel gauche — branding -->
-    <div class="auth-split-left" style="flex:1;background:linear-gradient(145deg,#0d0a0c,#090609,#0b0608);padding:52px 44px;display:flex;flex-direction:column;justify-content:space-between;min-width:0;position:relative;overflow:hidden">
+    <div class="auth-split-left" style="flex:1;background:linear-gradient(145deg,#0d0a0c,#090609,#0b0608);padding:52px 44px;display:flex;flex-direction:column;justify-content:space-between;min-width:0;position:relative;overflow:hidden;border-radius:28px 0 0 28px">
 
-      <!-- Floating icons -->
-      <div class="auth-float-icon" style="width:50px;height:50px;top:7%;right:6%">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      </div>
-      <div class="auth-float-icon" style="width:50px;height:50px;top:42%;right:3%">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      </div>
-      <div class="auth-float-icon" style="width:46px;height:46px;bottom:9%;right:9%">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><circle cx="15.5" cy="11.5" r="1"/><circle cx="17.5" cy="13.5" r="1"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59l-.9 7.27A4 4 0 0 0 5.77 20.5c.387.1.79-.025 1.05-.327l1.89-2.173h6.58l1.89 2.173c.26.302.663.427 1.05.327a4 4 0 0 0 2.97-4.64l-.9-7.27A4 4 0 0 0 17.32 5z"/></svg>
-      </div>
-      <div class="auth-float-icon" style="width:44px;height:44px;bottom:14%;right:28%">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      </div>
-      <div class="auth-float-icon" style="width:44px;height:44px;top:9%;left:54%">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/></svg>
-      </div>
+
 
       <!-- Contenu -->
       <div style="position:relative;z-index:1" id="auth-left-content">
@@ -3976,23 +3969,9 @@ body.no-anim #bg-canvas{display:none!important}
     </div>
 
     <!-- Panel droit — formulaire -->
-    <div class="auth-split-right" style="width:380px;flex-shrink:0;background:rgba(10,8,14,.97);padding:44px 36px;display:flex;flex-direction:column;justify-content:center;border-left:1px solid rgba(255,255,255,.05);position:relative">
+    <div class="auth-split-right" style="width:400px;flex-shrink:0;background:rgba(10,8,14,.97);padding:44px 36px;display:flex;flex-direction:column;justify-content:center;border-left:1px solid rgba(255,255,255,.06);position:relative;border-radius:0 28px 28px 0">
 
-      <!-- Lang selector -->
-      <div style="position:absolute;top:20px;right:20px">
-        <div class="lang-dropdown" id="lang-dd-auth" onclick="toggleLangDropdown('lang-dd-auth')">
-          <div class="lang-trigger" id="lang-dd-auth-trigger">
-            <span class="lang-trigger-flag" id="lang-dd-auth-flag"><img src="https://flagcdn.com/20x15/fr.png" width="20" height="15" alt="FR" style="border-radius:2px;display:inline-block;vertical-align:middle"></span>
-            <svg class="lang-trigger-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-          <div class="lang-menu">
-            <div class="lang-option active" data-lang="fr" onclick="event.stopPropagation();setLangAndClose('fr','lang-dd-auth')"><span class="lang-option-flag"><img src="https://flagcdn.com/24x18/fr.png" width="24" height="18" alt="FR" style="border-radius:3px"></span><div class="lang-option-info"><div class="lang-option-name">French</div><div class="lang-option-native">Français</div></div><svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-            <div class="lang-option" data-lang="en" onclick="event.stopPropagation();setLangAndClose('en','lang-dd-auth')"><span class="lang-option-flag"><img src="https://flagcdn.com/24x18/gb.png" width="24" height="18" alt="EN" style="border-radius:3px"></span><div class="lang-option-info"><div class="lang-option-name">English</div><div class="lang-option-native">English</div></div><svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-            <div class="lang-option" data-lang="es" onclick="event.stopPropagation();setLangAndClose('es','lang-dd-auth')"><span class="lang-option-flag"><img src="https://flagcdn.com/24x18/es.png" width="24" height="18" alt="ES" style="border-radius:3px"></span><div class="lang-option-info"><div class="lang-option-name">Spanish</div><div class="lang-option-native">Español</div></div><svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-            <div class="lang-option" data-lang="de" onclick="event.stopPropagation();setLangAndClose('de','lang-dd-auth')"><span class="lang-option-flag"><img src="https://flagcdn.com/24x18/de.png" width="24" height="18" alt="DE" style="border-radius:3px"></span><div class="lang-option-info"><div class="lang-option-name">German</div><div class="lang-option-native">Deutsch</div></div><svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-          </div>
-        </div>
-      </div>
+      <!-- Lang selector — simplifié, en haut à gauche de l'auth-screen (hors card) -->
 
       <!-- Header -->
       <div id="auth-form-header" style="margin-bottom:32px">
@@ -14024,60 +14003,60 @@ function initAllAnimations(){
 //  AUTH ANIMATIONS
 // ===================================================
 
+function updateAuthLangBar(){
+  const lang=typeof _lang!=='undefined'?_lang:'fr';
+  document.querySelectorAll('#auth-lang-bar button').forEach(btn=>{
+    const isActive=btn.dataset.l===lang;
+    btn.style.background=isActive?'rgba(249,115,22,.85)':'transparent';
+    btn.style.color=isActive?'#fff':'rgba(255,255,255,.4)';
+  });
+}
+
 function animateAuthEntrance(){
   if(typeof gsap==='undefined')return;
-  const tl=gsap.timeline();
+  const tl=gsap.timeline({defaults:{ease:'power2.out'}});
 
   // Card slide up
-  tl.fromTo('#auth-card',
-    {y:40,opacity:0,scale:.97},
-    {y:0,opacity:1,scale:1,duration:.6,ease:'power3.out'}
-  );
+  if(document.getElementById('auth-card')){
+    tl.fromTo('#auth-card',
+      {y:40,opacity:0,scale:.97},
+      {y:0,opacity:1,scale:1,duration:.5,ease:'power3.out'}
+    );
+  }
 
-  // Left panel content stagger
-  tl.fromTo('#auth-left-content > div',
-    {y:24,opacity:0},
-    {y:0,opacity:1,duration:.5,stagger:.08,ease:'power2.out'},
-    '-=.35'
-  );
+  // Logo bounce
+  if(document.getElementById('auth-logo-icon')){
+    tl.fromTo('#auth-logo-icon',
+      {scale:0,rotation:-20},
+      {scale:1,rotation:0,duration:.5,ease:'back.out(1.7)'},
+      0.1
+    );
+  }
 
-  // Features stagger
-  tl.fromTo('.auth-feature-item',
-    {x:-16,opacity:0},
-    {x:0,opacity:1,duration:.4,stagger:.06,ease:'power2.out'},
-    '-=.25'
-  );
+  // Left content
+  const leftContent=document.querySelectorAll('#auth-left-content > div');
+  if(leftContent.length){
+    tl.fromTo(leftContent,{y:20,opacity:0},{y:0,opacity:1,duration:.4,stagger:.07},'-=.3');
+  }
 
-  // Right panel form
-  tl.fromTo('#auth-form-header',
-    {y:16,opacity:0},
-    {y:0,opacity:1,duration:.4,ease:'power2.out'},
-    '-=.3'
-  );
-  tl.fromTo('.auth-tab-pill',
-    {y:12,opacity:0},
-    {y:0,opacity:1,duration:.35,ease:'power2.out'},
-    '-=.25'
-  );
-  tl.fromTo('#form-login .auth-input-wrap, #form-login .auth-submit-btn',
-    {y:10,opacity:0},
-    {y:0,opacity:1,duration:.3,stagger:.07,ease:'power2.out'},
-    '-=.2'
-  );
+  // Features
+  const features=document.querySelectorAll('.auth-feature-item');
+  if(features.length){
+    tl.fromTo(features,{x:-14,opacity:0},{x:0,opacity:1,duration:.35,stagger:.05},'-=.2');
+  }
 
-  // Float icons
-  tl.fromTo('.auth-float-icon',
-    {scale:0,opacity:0},
-    {scale:1,opacity:1,duration:.5,stagger:.08,ease:'back.out(2)'},
-    0.2
-  );
-
-  // Logo
-  tl.fromTo('#auth-logo-icon',
-    {scale:0,rotation:-20},
-    {scale:1,rotation:0,duration:.6,ease:'back.out(1.7)'},
-    0
-  );
+  // Right panel
+  if(document.getElementById('auth-form-header')){
+    tl.fromTo('#auth-form-header',{y:14,opacity:0},{y:0,opacity:1,duration:.35},'-=.25');
+  }
+  const tabPill=document.querySelector('.auth-tab-pill');
+  if(tabPill){
+    tl.fromTo(tabPill,{y:10,opacity:0},{y:0,opacity:1,duration:.3},'-=.2');
+  }
+  const formEls=document.querySelectorAll('#form-login .auth-input-wrap, #form-login .auth-submit-btn');
+  if(formEls.length){
+    tl.fromTo(formEls,{y:8,opacity:0},{y:0,opacity:1,duration:.25,stagger:.06},'-=.15');
+  }
 }
 
 // Particules canvas pour l'auth
@@ -16713,6 +16692,7 @@ function showAuth(){
   if(a)a.style.display='flex';
   hideBoot(); updateClock();
   // Init particules + animation entrance
+  updateAuthLangBar();
   setTimeout(()=>{
     if(typeof initAuthParticles==='function')initAuthParticles();
     if(typeof animateAuthEntrance==='function')animateAuthEntrance();

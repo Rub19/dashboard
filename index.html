@@ -2311,6 +2311,45 @@ html{scroll-behavior:smooth;}
 .skel-line.w-1\/2{width:50%;}
 .skel-block{height:48px;border-radius:10px;width:100%;}
 
+/* ══ DESIGN OPTIONS ══ */
+/* Density */
+body.density-compact .panel{padding:10px 12px}
+body.density-compact .stat-card{padding:10px 12px}
+body.density-compact .nav-item{padding:6px 10px}
+body.density-spacious .panel{padding:20px 24px}
+body.density-spacious .stat-card{padding:20px 24px}
+body.density-spacious .nav-item{padding:12px 14px}
+
+/* Glassmorphism */
+body.glass-mode .panel{
+  background:rgba(255,255,255,.04)!important;
+  backdrop-filter:blur(20px)!important;
+  -webkit-backdrop-filter:blur(20px)!important;
+  border-color:rgba(255,255,255,.1)!important;
+}
+body.glass-mode .sidebar{
+  background:rgba(5,5,7,.6)!important;
+  backdrop-filter:blur(32px)!important;
+  -webkit-backdrop-filter:blur(32px)!important;
+}
+
+/* BG presets */
+#nexus-bg-layer{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  transition:opacity .5s ease;
+}
+.main,.sidebar{position:relative;z-index:1}
+
+/* BG preset buttons */
+.bg-preset-btn{
+  padding:8px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04);color:var(--text);font-size:11px;font-weight:600;
+  cursor:pointer;transition:all .15s ease;font-family:var(--font);
+  min-width:60px;text-align:center;
+}
+.bg-preset-btn:hover{border-color:var(--accent);color:var(--accent)}
+.bg-preset-btn.active{border-color:var(--accent);background:rgba(var(--accent-rgb,.249,115,22),.12);color:var(--accent)}
+
 /* Autofill override */
 input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus{
   -webkit-box-shadow:0 0 0 1000px rgba(15,12,18,1) inset!important;
@@ -3758,6 +3797,24 @@ body.no-anim #bg-canvas{display:none!important}
     </div>
 
     <!-- NOW PLAYING v3 (Lanyard Spotify) -->
+    <!-- STEAM widget -->
+    <div class="sb-section" id="sb-steam-wrap" style="display:none">
+      <div class="sb-widget-card" id="sb-steam-card" style="border-color:rgba(27,40,56,.8)">
+        <div class="sb-wc-art" id="sb-steam-art" style="background:#1b2838;border-radius:6px;overflow:hidden">
+          <img id="sb-steam-img" src="" style="width:100%;height:100%;object-fit:cover;display:none">
+          <span style="font-size:18px">🎮</span>
+        </div>
+        <div class="sb-wc-body">
+          <div class="sb-wc-top">
+            <span class="sb-wc-name" id="sb-steam-game">—</span>
+            <div style="width:6px;height:6px;border-radius:50%;background:#4ade80;flex-shrink:0" id="sb-steam-dot"></div>
+          </div>
+          <div class="sb-wc-sub" id="sb-steam-status">Steam</div>
+          <div class="sb-wc-bar"><div class="sb-wc-bar-fill" id="sb-steam-bar" style="width:0%;background:linear-gradient(90deg,#1b2838,#4a90d9)"></div></div>
+        </div>
+      </div>
+    </div>
+
     <!-- NOW PLAYING Lanyard (Discord) -->
     <div class="sb-section" id="sb-spotify-wrap" style="display:none">
       <div class="sb-widget-card sb-wc-green" id="np-pill">
@@ -5234,6 +5291,72 @@ body.no-anim #bg-canvas{display:none!important}
         </div>
 
       </div><!-- /settings-content -->
+
+    <!-- DESIGN OPTIONS -->
+    <div class="panel" style="margin-top:12px">
+      <div class="panel-header">
+        <div class="panel-title">
+          <div class="panel-title-icon" style="background:rgba(139,92,246,.15);color:#8b5cf6">🎨</div>
+          Options de design
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:20px;padding:4px 0">
+
+        <!-- Densité -->
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+          <div>
+            <div style="font-size:13px;font-weight:600">Densité de l'interface</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">Espacement entre les éléments</div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-ghost" id="density-compact" onclick="setDensity('compact')" style="font-size:11px;padding:5px 12px">Compact</button>
+            <button class="btn btn-primary" id="density-normal" onclick="setDensity('normal')" style="font-size:11px;padding:5px 12px">Normal</button>
+            <button class="btn btn-ghost" id="density-spacious" onclick="setDensity('spacious')" style="font-size:11px;padding:5px 12px">Spacieux</button>
+          </div>
+        </div>
+
+        <!-- Border radius -->
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+            <div>
+              <div style="font-size:13px;font-weight:600">Arrondi des coins</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">Rayon des bordures des panneaux</div>
+            </div>
+            <span id="radius-val" style="font-size:13px;font-weight:700;font-family:var(--mono);color:var(--accent)">8px</span>
+          </div>
+          <input type="range" id="radius-slider" min="0" max="24" value="8" step="2"
+            oninput="setRadius(this.value)"
+            style="width:100%;accent-color:var(--accent);cursor:pointer">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:6px;font-family:var(--mono)">
+            <span>0 — Sharp</span><span>12 — Rounded</span><span>24 — Pill</span>
+          </div>
+        </div>
+
+        <!-- Glassmorphism -->
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="font-size:13px;font-weight:600">Glassmorphism</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">Effet verre sur les panneaux (backdrop-filter)</div>
+          </div>
+          <div class="widget-toggle-switch" id="glass-toggle" onclick="toggleGlass(this)"></div>
+        </div>
+
+        <!-- Fond personnalisé -->
+        <div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:10px">Fond d'écran</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+            <button class="bg-preset-btn active" onclick="setBgPreset('none')" data-bg="none">Aucun</button>
+            <button class="bg-preset-btn" onclick="setBgPreset('mesh1')" data-bg="mesh1" style="background:radial-gradient(ellipse at 20% 50%,rgba(249,115,22,.3),transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(139,92,246,.25),transparent 50%)">Mesh 1</button>
+            <button class="bg-preset-btn" onclick="setBgPreset('mesh2')" data-bg="mesh2" style="background:radial-gradient(ellipse at 50% 0%,rgba(59,130,246,.3),transparent 70%),radial-gradient(ellipse at 100% 100%,rgba(16,185,129,.2),transparent 50%)">Mesh 2</button>
+            <button class="bg-preset-btn" onclick="setBgPreset('mesh3')" data-bg="mesh3" style="background:radial-gradient(ellipse at 0% 100%,rgba(244,63,94,.25),transparent 50%),radial-gradient(ellipse at 100% 0%,rgba(251,191,36,.2),transparent 50%)">Mesh 3</button>
+            <button class="bg-preset-btn" onclick="setBgPreset('grid')" data-bg="grid" style="background:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0,rgba(255,255,255,.05) 1px,transparent 1px,transparent 32px),repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0,rgba(255,255,255,.05) 1px,transparent 1px,transparent 32px)">Grille</button>
+            <button class="bg-preset-btn" onclick="setBgPreset('dots')" data-bg="dots" style="background:radial-gradient(circle,rgba(255,255,255,.12) 1px,transparent 1px) 0 0/20px 20px">Dots</button>
+          </div>
+          <input type="text" class="modal-input" id="bg-url-input" placeholder="URL d'image personnalisée (https://...)" style="font-size:12px" oninput="setBgUrl(this.value)">
+        </div>
+
+      </div>
+    </div>
     </div><!-- /settings-layout -->
   </div>
 
@@ -7213,6 +7336,17 @@ function initSidebarWidgets(p){
     }
   }
 
+  // ── Steam widget ──
+  const steamWrap=document.getElementById('sb-steam-wrap');
+  const vis2=getWidgetPrefs().visible;
+  if(conn.steam?.steamId&&vis2.steam!==false){
+    if(steamWrap)steamWrap.style.display='block';
+    refreshSteamSidebar();
+    setInterval(refreshSteamSidebar,120000); // refresh toutes les 2min
+  } else {
+    if(steamWrap)steamWrap.style.display='none';
+  }
+
   // ── Last.fm scrobble card ──
   if(conn.lastfm?.username&&vis.lastfm!==false){
     const lfWrap=document.getElementById('sb-lastfm-wrap');
@@ -7233,6 +7367,7 @@ const WIDGET_DEFS=[
   {id:'discord', label:'Discord', sub:'Status & activité', icon:'💬', bg:'#5865F2', requires:'discord.userId'},
   {id:'nowplaying', label:'Now Playing', sub:'Last.fm live', icon:'♪', bg:'rgba(29,185,84,.25)', requires:'lastfm.username'},
   {id:'lastfm', label:'Scrobbling', sub:'Last.fm', icon:'♫', bg:'rgba(213,16,7,.2)', requires:'lastfm.username'},
+  {id:'steam', label:'Steam', sub:'Jeu en cours', icon:'🎮', bg:'#1b2838', requires:'steam.steamId'},
 ];
 
 function getWidgetPrefs(){
@@ -7525,6 +7660,8 @@ function initDashboard(){
   }
   // Apply custom accent if any
   if(p.customAccent)applyCustomColor(p.customAccent);
+  // Apply design options
+  if(typeof applyDesignOptions==='function')applyDesignOptions();
   // Delay weather/quote to let DOM and geolocation settle
   setTimeout(()=>{fetchWeather();fetchQuote();},400);
   updateBannerDisplay();
@@ -7732,6 +7869,9 @@ const THEMES=[
   {name:'Pink',          accent:'#ec4899', accent2:'#34d399', accent3:'#f87171', accent4:'#fbbf24', accent5:'#a78bfa', glow:'rgba(236,72,153,0.25)',  bg:'#100810', surface:'#190d16'},
   {name:'Mono',          accent:'#94a3b8', accent2:'#64748b', accent3:'#f87171', accent4:'#fbbf24', accent5:'#a78bfa', glow:'rgba(148,163,184,0.15)', bg:'#080808', surface:'#111111'},
   {name:'Minimal',       accent:'#f97316', accent2:'#34d399', accent3:'#f87171', accent4:'#fbbf24', accent5:'#94a3b8', glow:'rgba(249,115,22,0.1)',   bg:'#050507', surface:'#0a0a0c', noAnim:true},
+  {name:'Sunset',        accent:'#f97316', accent2:'#ec4899', accent3:'#fbbf24', accent4:'#f43f5e', accent5:'#a78bfa', glow:'rgba(249,115,22,0.3)',   bg:'#0d0806', surface:'#150e0a'},
+  {name:'Midnight',      accent:'#6366f1', accent2:'#8b5cf6', accent3:'#f87171', accent4:'#fbbf24', accent5:'#60a5fa', glow:'rgba(99,102,241,0.25)',  bg:'#05050f', surface:'#0a0a18'},
+  {name:'Forest',        accent:'#22c55e', accent2:'#84cc16', accent3:'#f87171', accent4:'#fbbf24', accent5:'#34d399', glow:'rgba(34,197,94,0.25)',   bg:'#05100a', surface:'#081a0e'},
 ];
 
 const BG_THEMES=[
@@ -13018,6 +13158,121 @@ async function fetchWeather(forceCity){
 
 
 // ===================================================
+//  DESIGN OPTIONS
+// ===================================================
+
+function setDensity(d){
+  const p=curP();if(!p)return;
+  if(!p.state.design)p.state.design={};
+  p.state.design.density=d;
+  document.body.classList.remove('density-compact','density-normal','density-spacious');
+  if(d!=='normal')document.body.classList.add('density-'+d);
+  // Update buttons
+  ['compact','normal','spacious'].forEach(v=>{
+    const btn=document.getElementById('density-'+v);
+    if(btn){btn.className=v===d?'btn btn-primary':'btn btn-ghost';btn.style.fontSize='11px';btn.style.padding='5px 12px';}
+  });
+  saveStateNow();
+  toast('Densité : '+d,'success');
+}
+
+function setRadius(v){
+  const p=curP();if(!p)return;
+  if(!p.state.design)p.state.design={};
+  p.state.design.radius=parseInt(v);
+  document.documentElement.style.setProperty('--r-panel',v+'px');
+  document.documentElement.style.setProperty('--r-card',v+'px');
+  document.documentElement.style.setProperty('--r-sm',Math.max(0,parseInt(v)-2)+'px');
+  const el=document.getElementById('radius-val');if(el)el.textContent=v+'px';
+  const sl=document.getElementById('radius-slider');if(sl)sl.value=v;
+  saveStateNow();
+}
+
+function toggleGlass(el){
+  const p=curP();if(!p)return;
+  if(!p.state.design)p.state.design={};
+  p.state.design.glass=!p.state.design.glass;
+  el.classList.toggle('on',p.state.design.glass);
+  document.body.classList.toggle('glass-mode',p.state.design.glass);
+  saveStateNow();
+  toast(p.state.design.glass?'Glassmorphism activé ✨':'Glassmorphism désactivé','success');
+}
+
+function setBgPreset(name){
+  const p=curP();if(!p)return;
+  if(!p.state.design)p.state.design={};
+  p.state.design.bgPreset=name;
+  p.state.design.bgUrl='';
+  applyBgPreset(name);
+  // Update buttons
+  document.querySelectorAll('.bg-preset-btn').forEach(b=>{
+    b.classList.toggle('active',b.dataset.bg===name);
+  });
+  const inp=document.getElementById('bg-url-input');if(inp)inp.value='';
+  saveStateNow();
+}
+
+function setBgUrl(url){
+  if(!url)return;
+  const p=curP();if(!p)return;
+  if(!p.state.design)p.state.design={};
+  p.state.design.bgUrl=url;
+  p.state.design.bgPreset='custom';
+  let layer=document.getElementById('nexus-bg-layer');
+  if(!layer){layer=document.createElement('div');layer.id='nexus-bg-layer';document.body.prepend(layer);}
+  layer.style.backgroundImage=`url('${url}')`;
+  layer.style.backgroundSize='cover';
+  layer.style.backgroundPosition='center';
+  layer.style.opacity='0.15';
+  saveStateNow();
+}
+
+const BG_PRESETS={
+  none:'',
+  mesh1:'radial-gradient(ellipse at 20% 50%, rgba(249,115,22,.18), transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(139,92,246,.14), transparent 50%)',
+  mesh2:'radial-gradient(ellipse at 50% 0%, rgba(59,130,246,.18), transparent 70%), radial-gradient(ellipse at 100% 100%, rgba(16,185,129,.12), transparent 50%)',
+  mesh3:'radial-gradient(ellipse at 0% 100%, rgba(244,63,94,.18), transparent 50%), radial-gradient(ellipse at 100% 0%, rgba(251,191,36,.15), transparent 50%)',
+  grid:'repeating-linear-gradient(0deg,rgba(255,255,255,.04) 0,rgba(255,255,255,.04) 1px,transparent 1px,transparent 32px),repeating-linear-gradient(90deg,rgba(255,255,255,.04) 0,rgba(255,255,255,.04) 1px,transparent 1px,transparent 32px)',
+  dots:'radial-gradient(circle,rgba(255,255,255,.1) 1px,transparent 1px) 0 0/20px 20px',
+};
+
+function applyBgPreset(name){
+  let layer=document.getElementById('nexus-bg-layer');
+  if(!layer){layer=document.createElement('div');layer.id='nexus-bg-layer';document.body.prepend(layer);}
+  const bg=BG_PRESETS[name]||'';
+  if(!bg){layer.style.background='';layer.style.backgroundImage='';layer.style.opacity='0';return;}
+  layer.style.backgroundImage=bg;
+  layer.style.backgroundSize=name==='dots'?'20px 20px':'auto';
+  layer.style.opacity='1';
+}
+
+function applyDesignOptions(){
+  const p=curP();if(!p?.state?.design)return;
+  const d=p.state.design;
+  if(d.density&&d.density!=='normal'){
+    document.body.classList.remove('density-compact','density-normal','density-spacious');
+    document.body.classList.add('density-'+d.density);
+  }
+  if(d.radius!==undefined)setRadius(d.radius);
+  if(d.glass)document.body.classList.add('glass-mode');
+  if(d.bgPreset&&d.bgPreset!=='none'&&d.bgPreset!=='custom')applyBgPreset(d.bgPreset);
+  if(d.bgUrl)setBgUrl(d.bgUrl);
+  // Sync UI
+  ['compact','normal','spacious'].forEach(v=>{
+    const btn=document.getElementById('density-'+v);
+    if(btn){btn.className=v===(d.density||'normal')?'btn btn-primary':'btn btn-ghost';btn.style.fontSize='11px';btn.style.padding='5px 12px';}
+  });
+  const gBtn=document.getElementById('glass-toggle');
+  if(gBtn)gBtn.classList.toggle('on',!!d.glass);
+  document.querySelectorAll('.bg-preset-btn').forEach(b=>{
+    b.classList.toggle('active',b.dataset.bg===(d.bgPreset||'none'));
+  });
+  const sl=document.getElementById('radius-slider');if(sl&&d.radius!==undefined)sl.value=d.radius;
+  const rv=document.getElementById('radius-val');if(rv&&d.radius!==undefined)rv.textContent=d.radius+'px';
+  const ui=document.getElementById('bg-url-input');if(ui&&d.bgUrl)ui.value=d.bgUrl;
+}
+
+// ===================================================
 //  BUDGET
 // ===================================================
 function getBudgetTx(){const p=curP();if(!p.state.budget)p.state.budget=[];return p.state.budget;}
@@ -13316,6 +13571,41 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowRight')galleryNav(1);
   if(e.key==='Escape')closeGalleryLightbox();
 });
+
+// ===================================================
+//  WIDGET STEAM SIDEBAR
+// ===================================================
+async function refreshSteamSidebar(){
+  const p=curP();if(!p)return;
+  const steamId=p.state?.connections?.steam?.steamId;
+  if(!steamId)return;
+  const wrap=document.getElementById('sb-steam-wrap');
+  if(!wrap||wrap.style.display==='none')return;
+  try{
+    // Via Cloudflare Worker proxy
+    const res=await fetch(`${WORKER_URL}/steam?steamid=${steamId}&type=status`,{signal:abortAfter(8000)});
+    if(!res.ok)return;
+    const data=await res.json();
+    const gameEl=document.getElementById('sb-steam-game');
+    const statusEl=document.getElementById('sb-steam-status');
+    const imgEl=document.getElementById('sb-steam-img');
+    const artEl=document.getElementById('sb-steam-art');
+    const dotEl=document.getElementById('sb-steam-dot');
+    if(data.gameName){
+      if(gameEl)gameEl.textContent=data.gameName;
+      if(statusEl)statusEl.textContent='En jeu • '+Math.floor((data.gameTime||0)/60)+'h jouées';
+      if(dotEl)dotEl.style.background='#4ade80';
+      if(data.gameImgUrl&&imgEl){
+        imgEl.src=data.gameImgUrl;imgEl.style.display='block';
+        const span=artEl?.querySelector('span');if(span)span.style.display='none';
+      }
+    } else {
+      if(gameEl)gameEl.textContent=data.personaName||'Steam';
+      if(statusEl)statusEl.textContent=data.online?'En ligne':'Hors ligne';
+      if(dotEl)dotEl.style.background=data.online?'#4ade80':'#4e5058';
+    }
+  }catch(e){}
+}
 
 // ===================================================
 //  EXPORT NOTE EN MARKDOWN

@@ -2612,6 +2612,11 @@ body.glass-mode .sidebar{
 .glow-pulse{animation:glowPulse 2s ease-in-out infinite}
 
 /* Shimmer on load */
+@keyframes authCardIn{
+  from{opacity:.8;transform:translateY(16px) scale(.99)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
 @keyframes shimmerLoad{
   0%{background-position:-400px 0}
   100%{background-position:400px 0}
@@ -6712,18 +6717,15 @@ async function onAuthSuccess(userArg){
     boot.id='nexus-boot-screen';
     boot.style.cssText='position:fixed;inset:0;z-index:2147483647;background:#050507;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px';
     boot.innerHTML='<div id="boot-logo" style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#f97316,#dc2626);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 30px rgba(249,115,22,.5)"><svg width="24" height="24" viewBox="0 0 20 20" fill="none"><polygon points="10,1 19,10 10,19 1,10" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round"/><polygon points="10,5 15,10 10,15 5,10" fill="white"/></svg></div><div id="boot-status" style="font-size:11px;color:rgba(249,115,22,.5);font-family:JetBrains Mono,monospace;letter-spacing:1px;margin-top:8px">NEXUS</div>';
-    // Animation boot sûre - CSS only, pas de GSAP fromTo
-    if(typeof anime!=='undefined'){
-      anime({targets:'#boot-logo',scale:[.5,1],duration:500,easing:'easeOutElastic(1,.6)'});
-    }
+    // Pas d'animation au boot
     document.body.appendChild(boot);
   } else {
     boot.style.opacity='1';
     boot.style.display='flex';
   }
 
-  // Animation de transition auth → dashboard
-  if(authEl){authEl.style.transition='opacity .25s ease';authEl.style.opacity='0';}
+  //   // Cache l'auth-screen immédiatement
+  if(authEl){authEl.style.display='none';}
   try{
     // 3. Utilise le user passé en param (depuis signInWithPassword) ou fallback getUser
     let user=userArg;
@@ -7288,11 +7290,6 @@ function enterDashboard(id){
     const mc=document.getElementById('main-content');
     if(sb){sb.style.display='flex';sb.style.opacity='1';}
     if(mc){mc.style.display='block';mc.style.opacity='1';}
-    // Animation d'entrée douce sans toucher l'opacity
-    if(typeof gsap!=='undefined'){
-      if(sb)gsap.from(sb,{x:-20,duration:.3,ease:'power2.out',clearProps:'transform'});
-      if(mc)gsap.from(mc,{opacity:0,duration:.4,ease:'power2.out',clearProps:'opacity'});
-    }
     renderSidebarNav(); updateSidebarAvatar(); applyI18n();
     initDashboard();
     setTimeout(()=>{if(typeof animateSidebarEntrance==='function')animateSidebarEntrance();},200);
@@ -13807,7 +13804,7 @@ function animateCountUp(el,target,duration=800){
 
 // ── Page enter animation avec GSAP ──
 function animatePageEnterGSAP(page){
-  if(typeof gsap==='undefined')return;
+  if(typeof gsap==='undefined'||document.body.classList.contains('no-anim'))return;
   const el=document.getElementById('page-'+page);
   if(!el)return;
   const isMobile=window.innerWidth<=768;
@@ -14001,15 +13998,9 @@ function updateAuthLangBar(){
 }
 
 function animateAuthEntrance(){
-  // Animations CSS only — pas de fromTo qui mettent opacity:0 au départ
-  // Les éléments sont déjà visibles, on ajoute juste un effet subtil
-  if(typeof gsap==='undefined')return;
+  // CSS class animation uniquement — pas de GSAP qui peut bloquer
   const card=document.getElementById('auth-card');
-  if(!card)return;
-  // Animation sûre : partir de l'état VISIBLE et juste ajouter un léger mouvement
-  gsap.from(card,{y:20,duration:.5,ease:'power2.out',clearProps:'transform'});
-  const logo=document.getElementById('auth-logo-icon');
-  if(logo)gsap.from(logo,{scale:.8,duration:.4,ease:'back.out(1.5)',clearProps:'transform'});
+  if(card){card.style.animation='authCardIn .4s ease both';}
 }
 
 // Particules canvas pour l'auth

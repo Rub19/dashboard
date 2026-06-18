@@ -4093,7 +4093,7 @@ body.no-anim #bg-canvas{display:none!important}
   </div>
 </div>
 
-<nav class="sidebar" id="main-sidebar" style="display:none">
+<nav class="sidebar" id="main-sidebar" style="display:none;opacity:1">
   <div class="logo" style="position:relative">
     <div class="logo-icon" style="background:linear-gradient(135deg,#f97316,#dc2626);box-shadow:0 2px 12px rgba(249,115,22,.3)">
       <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><polygon points="10,1 19,10 10,19 1,10" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round"/><polygon points="10,5 15,10 10,15 5,10" fill="white"/></svg>
@@ -4239,7 +4239,7 @@ body.no-anim #bg-canvas{display:none!important}
 <div class="resize-handle" id="resize-handle"></div>
 
 <!-- MAIN -->
-<main class="main" id="main-content" style="display:none">
+<main class="main" id="main-content" style="display:none;opacity:1">
 
   <!-- OVERVIEW -->
   <div id="page-dashboard" class="tab-content active">
@@ -7283,16 +7283,14 @@ function enterDashboard(id){
   currentId=id;
   _valoMatchCache={};
   _valoAllMatches=[];
-  // Tuer toutes les animations GSAP en cours + forcer opacity:1
+  // Tuer uniquement les animations GSAP de l'auth
   if(typeof gsap!=='undefined'){
-    gsap.killTweensOf('*');
-    // Remettre tout à visible
-    document.querySelectorAll('[style*="opacity"]').forEach(el=>{
-      if(el.id!=='auth-screen'&&el.id!=='profile-screen')el.style.opacity='';
-    });
+    gsap.killTweensOf('#auth-card, #auth-left-content, .auth-feature-item, .auth-tab-pill, #auth-form-header, #auth-logo-icon, #form-login .auth-input-wrap, #form-login .auth-submit-btn');
   }
   showPageLoader();
   const screen=document.getElementById('profile-screen');
+  // S'assurer que profile-screen est visible avant de le fader
+  screen.style.opacity='1';
   screen.style.transition='opacity .2s ease';
   screen.style.opacity='0';
   setTimeout(()=>{
@@ -16731,7 +16729,9 @@ function showDashboardOrProfiles(){
     if(!curP()?.bgTheme||curP()?.bgTheme==='none') setTimeout(startAmbientBg,400);
   } else {
     renderProfileScreen();
-    document.getElementById('profile-screen').style.display='flex';
+    const ps=document.getElementById('profile-screen');
+    ps.style.opacity='1';
+    ps.style.display='flex';
     hideBoot(); updateClock();
   }
 }

@@ -1492,12 +1492,10 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 
 /* ── AUTH SCREEN ANIMATIONS ── */
 .auth-float-icon{
-  position:absolute;pointer-events:none;
+  position:absolute;border-radius:14px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
   display:flex;align-items:center;justify-content:center;
-  border-radius:16px;backdrop-filter:blur(8px);
-  border:1px solid rgba(255,255,255,.08);
-  background:rgba(255,255,255,.05);
-  transition:opacity .3s;
+  backdrop-filter:blur(8px);
 }
 .auth-float-icon:nth-child(1){animation:float 6s ease-in-out infinite}
 .auth-float-icon:nth-child(2){animation:floatAlt 7s ease-in-out infinite}
@@ -1507,8 +1505,19 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .auth-float-icon:nth-child(6){animation:floatAlt 6.5s ease-in-out infinite .8s}
 
 .auth-feature-item{
-  animation:slideInLeft .5s ease both;
-  display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(255,255,255,.6);
+  display:flex;align-items:center;gap:10px;
+  font-size:12.5px;color:rgba(255,255,255,.55);
+  animation:slideUpFade .5s ease both;
+  padding:8px 12px;border-radius:10px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);
+  transition:all .2s ease;
+}
+.auth-feature-item:hover{
+  background:rgba(255,255,255,.06);
+  color:rgba(255,255,255,.8);
+  border-color:rgba(255,255,255,.1);
+  transform:translateX(4px);
 }
 .auth-feature-item:nth-child(1){animation-delay:.1s}
 .auth-feature-item:nth-child(2){animation-delay:.2s}
@@ -1516,21 +1525,88 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .auth-feature-item:nth-child(4){animation-delay:.4s}
 .auth-feature-item:nth-child(5){animation-delay:.5s}
 .auth-feature-icon{
-  width:32px;height:32px;border-radius:9px;
+  width:28px;height:28px;border-radius:8px;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;font-size:15px;
   background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.2);
 }
-.auth-feature-icon svg{width:15px;height:15px;color:#f97316}
+.auth-feature-icon svg{width:13px;height:13px;color:#f97316}
 
-/* Auth animated orbs */
-.auth-orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(60px)}
-.auth-orb-1{width:350px;height:350px;background:radial-gradient(circle,rgba(249,115,22,.15),transparent 70%);top:-100px;left:-100px;animation:orbPulse 6s ease-in-out infinite}
-.auth-orb-2{width:280px;height:280px;background:radial-gradient(circle,rgba(220,38,38,.12),transparent 70%);bottom:-80px;right:-80px;animation:orbPulse2 8s ease-in-out infinite}
-.auth-orb-3{width:200px;height:200px;background:radial-gradient(circle,rgba(249,115,22,.08),transparent 70%);top:40%;left:40%;animation:orbPulse 5s ease-in-out infinite 2s}
+.auth-orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(80px)}
+.auth-orb-1{width:400px;height:400px;background:radial-gradient(circle,rgba(249,115,22,.18),transparent 70%);top:-120px;left:-120px;animation:orbPulse 6s ease-in-out infinite}
+.auth-orb-2{width:300px;height:300px;background:radial-gradient(circle,rgba(220,38,38,.14),transparent 70%);bottom:-100px;right:-100px;animation:orbPulse2 8s ease-in-out infinite}
+.auth-orb-3{width:250px;height:250px;background:radial-gradient(circle,rgba(139,92,246,.1),transparent 70%);top:50%;left:30%;animation:orbPulse 7s ease-in-out infinite 1s}
 
-/* Auth title gradient animation */
-.auth-title-gradient{
+/* Inputs auth custom */
+.auth-input-wrap{position:relative;margin-bottom:14px}
+.auth-input-label{
+  font-size:11px;font-weight:700;letter-spacing:.8px;
+  color:rgba(245,245,247,.4);margin-bottom:7px;
+  text-transform:uppercase;font-family:var(--mono);
+  display:block;
+}
+.auth-input{
+  width:100%;padding:12px 16px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+  color:var(--text);font-family:var(--font);font-size:14px;
+  outline:none;transition:all .2s ease;
+  -webkit-appearance:none;
+}
+.auth-input:focus{
+  border-color:rgba(249,115,22,.4);
+  background:rgba(249,115,22,.05);
+  box-shadow:0 0 0 3px rgba(249,115,22,.1);
+}
+.auth-input::placeholder{color:rgba(245,245,247,.2)}
+/* Force 16px min on mobile to prevent zoom */
+@media(max-width:768px){.auth-input{font-size:16px!important}}
+
+.auth-submit-btn{
+  width:100%;padding:14px;
+  background:linear-gradient(135deg,#f97316,#dc2626);
+  color:#fff;border:none;border-radius:12px;
+  font-family:var(--font);font-size:14px;font-weight:700;
+  cursor:pointer;
+  position:relative;overflow:hidden;
+  transition:transform .15s var(--ease-spring,cubic-bezier(.34,1.56,.64,1)),
+             box-shadow .2s ease;
+  box-shadow:0 4px 24px rgba(249,115,22,.35);
+  letter-spacing:.3px;
+  -webkit-tap-highlight-color:transparent;
+}
+.auth-submit-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 32px rgba(249,115,22,.5);
+}
+.auth-submit-btn:active{transform:scale(.97)!important}
+.auth-submit-btn::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.12),transparent);
+  border-radius:inherit;pointer-events:none;
+}
+
+.auth-tab-pill{
+  display:flex;background:rgba(255,255,255,.04);
+  border-radius:12px;padding:3px;gap:3px;
+  border:1px solid rgba(255,255,255,.07);
+  margin-bottom:28px;
+}
+.auth-tab-btn{
+  flex:1;padding:9px 12px;border:none;
+  border-radius:9px;background:transparent;
+  color:rgba(245,245,247,.4);
+  font-family:var(--font);font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .2s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.auth-tab-btn.active{
+  background:linear-gradient(135deg,#f97316,#dc2626);
+  color:#fff;
+  box-shadow:0 2px 12px rgba(249,115,22,.3);
+}
+
+.auth-title-gradient{.auth-title-gradient{
   background:linear-gradient(90deg,#fb7185,#f97316,#fbbf24,#fb7185);
   background-size:300% auto;
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
@@ -3825,59 +3901,61 @@ body.no-anim #bg-canvas{display:none!important}
   </div>
 </div>
 
-<div id="auth-screen" style="position:fixed;inset:0;z-index:10002;display:none;align-items:center;justify-content:center;overflow:hidden;background:var(--bg)">
+<div id="auth-screen" style="position:fixed;inset:0;z-index:10002;display:none;align-items:center;justify-content:center;overflow:hidden;background:#050507">
 
-  <!-- Gradient mesh background -->
-  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 70% 20%,rgba(249,115,22,.09),transparent),radial-gradient(ellipse 60% 50% at 10% 80%,rgba(220,38,38,.06),transparent),radial-gradient(ellipse 50% 40% at 50% 50%,rgba(249,115,22,.04),transparent);pointer-events:none"></div>
+  <!-- Canvas particules -->
+  <canvas id="auth-particles" style="position:absolute;inset:0;z-index:0;pointer-events:none"></canvas>
 
-  <!-- Split layout -->
-  <div style="width:100%;max-width:900px;min-height:520px;display:flex;border-radius:24px;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.7);border:1px solid rgba(249,115,22,.12);position:relative">
+  <!-- Orbes gradient -->
+  <div class="auth-orb auth-orb-1"></div>
+  <div class="auth-orb auth-orb-2"></div>
+  <div class="auth-orb auth-orb-3"></div>
 
-    <!-- Left panel — branding -->
-    <div class="auth-split-left" style="flex:1;background:linear-gradient(145deg,#0d0a0b,#080608,#0a0608);padding:48px 40px;display:flex;flex-direction:column;justify-content:space-between;min-width:0;position:relative;overflow:hidden">
+  <!-- Grid lines subtle -->
+  <div style="position:absolute;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:40px 40px"></div>
 
-      <!-- Animated orbs -->
-      <div class="auth-orb auth-orb-1"></div>
-      <div class="auth-orb auth-orb-2"></div>
-      <div class="auth-orb auth-orb-3"></div>
+  <!-- Card centrale -->
+  <div id="auth-card" style="width:100%;max-width:960px;min-height:540px;display:flex;border-radius:28px;overflow:hidden;box-shadow:0 40px 120px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.06);position:relative;z-index:1;margin:16px">
 
-      <!-- Floating icons — truly scattered across the full panel -->
-      <!-- Stats — top-right corner -->
-      <div class="auth-float-icon" style="width:48px;height:48px;top:6%;right:5%">
+    <!-- Panel gauche — branding -->
+    <div class="auth-split-left" style="flex:1;background:linear-gradient(145deg,#0d0a0c,#090609,#0b0608);padding:52px 44px;display:flex;flex-direction:column;justify-content:space-between;min-width:0;position:relative;overflow:hidden">
+
+      <!-- Floating icons -->
+      <div class="auth-float-icon" style="width:50px;height:50px;top:7%;right:6%">
         <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
       </div>
-      <!-- Timer — mid-right, far right edge -->
-      <div class="auth-float-icon" style="width:52px;height:52px;top:44%;right:2%">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <div class="auth-float-icon" style="width:50px;height:50px;top:42%;right:3%">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
       </div>
-      <!-- Gaming — bottom-right -->
-      <div class="auth-float-icon" style="width:46px;height:46px;bottom:8%;right:8%">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:21px;height:21px"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><circle cx="15.5" cy="11.5" r="1"/><circle cx="17.5" cy="13.5" r="1"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59l-.9 7.27A4 4 0 0 0 5.77 20.5c.387.1.79-.025 1.05-.327l1.89-2.173h6.58l1.89 2.173c.26.302.663.427 1.05.327a4 4 0 0 0 2.97-4.64l-.9-7.27A4 4 0 0 0 17.32 5z"/></svg>
+      <div class="auth-float-icon" style="width:46px;height:46px;bottom:9%;right:9%">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><circle cx="15.5" cy="11.5" r="1"/><circle cx="17.5" cy="13.5" r="1"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59l-.9 7.27A4 4 0 0 0 5.77 20.5c.387.1.79-.025 1.05-.327l1.89-2.173h6.58l1.89 2.173c.26.302.663.427 1.05.327a4 4 0 0 0 2.97-4.64l-.9-7.27A4 4 0 0 0 17.32 5z"/></svg>
       </div>
-      <!-- Check — bottom-left corner -->
-      <div class="auth-float-icon" style="width:44px;height:44px;bottom:12%;right:26%">
+      <div class="auth-float-icon" style="width:44px;height:44px;bottom:14%;right:28%">
         <svg viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
       </div>
-      <!-- Habits — top-left area (clear of logo) -->
-      <div class="auth-float-icon" style="width:42px;height:42px;top:8%;left:52%">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:19px;height:19px"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/></svg>
+      <div class="auth-float-icon" style="width:44px;height:44px;top:9%;left:54%">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/></svg>
       </div>
 
-      <!-- Content -->
-      <div style="position:relative;z-index:1">
-        <!-- Logo -->
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:52px;animation:slideInLeft .5s ease both">
-          <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#f97316,#dc2626);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(249,115,22,.4);animation:glowPulse 3s ease infinite">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><polygon points="10,1 19,10 10,19 1,10" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round"/><polygon points="10,5 15,10 10,15 5,10" fill="white"/></svg>
+      <!-- Contenu -->
+      <div style="position:relative;z-index:1" id="auth-left-content">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:56px">
+          <div id="auth-logo-icon" style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#f97316,#dc2626);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(249,115,22,.45)">
+            <svg width="22" height="22" viewBox="0 0 20 20" fill="none"><polygon points="10,1 19,10 10,19 1,10" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round"/><polygon points="10,5 15,10 10,15 5,10" fill="white"/></svg>
           </div>
-          <span style="font-size:18px;font-weight:900;letter-spacing:2px;color:#fff;font-family:'Syne',sans-serif;text-transform:uppercase">NEXUS</span>
+          <span style="font-size:20px;font-weight:900;letter-spacing:3px;color:#fff;font-family:'Syne',sans-serif;text-transform:uppercase">NEXUS</span>
         </div>
-        <div style="font-size:30px;font-weight:800;letter-spacing:-.5px;color:#fff;line-height:1.2;margin-bottom:12px;font-family:'Syne',sans-serif;animation:slideUpFade .5s ease both .1s">Your personal<br><span class="auth-title-gradient">command center</span></div>
-        <div style="font-size:13px;color:rgba(255,255,255,.45);line-height:1.7;max-width:260px;animation:slideUpFade .5s ease both .2s">Everything you care about — tasks, stats, habits, music — all in one place.</div>
+
+        <div id="auth-headline" style="font-size:34px;font-weight:800;letter-spacing:-.8px;color:#fff;line-height:1.15;margin-bottom:14px;font-family:'Syne',sans-serif">
+          Your personal<br><span class="auth-title-gradient">command center</span>
+        </div>
+        <div id="auth-sub" style="font-size:13.5px;color:rgba(255,255,255,.4);line-height:1.75;max-width:280px">
+          Everything you care about — tasks, stats, habits, music — all in one place.
+        </div>
       </div>
 
       <!-- Features -->
-      <div style="position:relative;z-index:1;display:flex;flex-direction:column;gap:9px">
+      <div id="auth-features" style="position:relative;z-index:1;display:flex;flex-direction:column;gap:8px">
         <div class="auth-feature-item">
           <div class="auth-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
           <span data-i18n="feat_stats">Real-time stats &amp; analytics</span>
@@ -3891,95 +3969,91 @@ body.no-anim #bg-canvas{display:none!important}
           <span data-i18n="feat_gaming">Spotify, Discord &amp; gaming</span>
         </div>
         <div class="auth-feature-item">
-          <div class="auth-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><circle cx="9" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1" fill="currentColor" stroke="none"/></svg></div>
+          <div class="auth-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
           <span data-i18n="feat_ai">NEXUS AI assistant</span>
         </div>
       </div>
     </div>
 
-    <!-- Right panel — form -->
-    <div class="auth-split-right" style="width:360px;flex-shrink:0;background:rgba(12,10,14,.98);padding:40px 32px;display:flex;flex-direction:column;justify-content:center;border-left:1px solid rgba(255,255,255,.06)">
+    <!-- Panel droit — formulaire -->
+    <div class="auth-split-right" style="width:380px;flex-shrink:0;background:rgba(10,8,14,.97);padding:44px 36px;display:flex;flex-direction:column;justify-content:center;border-left:1px solid rgba(255,255,255,.05);position:relative">
 
       <!-- Lang selector -->
-      <div style="display:flex;justify-content:flex-end;margin-bottom:16px"><div class="lang-dropdown" id="lang-dd-auth" onclick="toggleLangDropdown('lang-dd-auth')">
-  <div class="lang-trigger" id="lang-dd-auth-trigger">
-    <span class="lang-trigger-flag" id="lang-dd-auth-flag"><img src="https://flagcdn.com/20x15/fr.png" width="20" height="15" alt="FR" style="border-radius:2px;display:inline-block;vertical-align:middle"></span>
-    <svg class="lang-trigger-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-  </div>
-  <div class="lang-menu">
-    <div class="lang-option active" data-lang="fr" onclick="event.stopPropagation();setLangAndClose('fr','lang-dd-auth')">
-      <span class="lang-option-flag"><img src="https://flagcdn.com/24x18/fr.png" width="24" height="18" alt="FR" style="border-radius:3px;display:inline-block;vertical-align:middle"></span>
-      <div class="lang-option-info"><div class="lang-option-name">French</div><div class="lang-option-native">Français</div></div>
-      <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-    </div>
-    <div class="lang-option" data-lang="en" onclick="event.stopPropagation();setLangAndClose('en','lang-dd-auth')">
-      <span class="lang-option-flag"><img src="https://flagcdn.com/24x18/gb.png" width="24" height="18" alt="EN" style="border-radius:3px;display:inline-block;vertical-align:middle"></span>
-      <div class="lang-option-info"><div class="lang-option-name">English</div><div class="lang-option-native">English</div></div>
-      <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-    </div>
-    <div class="lang-option" data-lang="es" onclick="event.stopPropagation();setLangAndClose('es','lang-dd-auth')">
-      <span class="lang-option-flag"><img src="https://flagcdn.com/24x18/es.png" width="24" height="18" alt="ES" style="border-radius:3px;display:inline-block;vertical-align:middle"></span>
-      <div class="lang-option-info"><div class="lang-option-name">Spanish</div><div class="lang-option-native">Español</div></div>
-      <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-    </div>
-    <div class="lang-option" data-lang="de" onclick="event.stopPropagation();setLangAndClose('de','lang-dd-auth')">
-      <span class="lang-option-flag"><img src="https://flagcdn.com/24x18/de.png" width="24" height="18" alt="DE" style="border-radius:3px;display:inline-block;vertical-align:middle"></span>
-      <div class="lang-option-info"><div class="lang-option-name">German</div><div class="lang-option-native">Deutsch</div></div>
-      <svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-    </div>
-  </div>
-</div></div>
+      <div style="position:absolute;top:20px;right:20px">
+        <div class="lang-dropdown" id="lang-dd-auth" onclick="toggleLangDropdown('lang-dd-auth')">
+          <div class="lang-trigger" id="lang-dd-auth-trigger">
+            <span class="lang-trigger-flag" id="lang-dd-auth-flag"><img src="https://flagcdn.com/20x15/fr.png" width="20" height="15" alt="FR" style="border-radius:2px;display:inline-block;vertical-align:middle"></span>
+            <svg class="lang-trigger-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="lang-menu">
+            <div class="lang-option active" data-lang="fr" onclick="event.stopPropagation();setLangAndClose('fr','lang-dd-auth')"><span class="lang-option-flag"><img src="https://flagcdn.com/24x18/fr.png" width="24" height="18" alt="FR" style="border-radius:3px"></span><div class="lang-option-info"><div class="lang-option-name">French</div><div class="lang-option-native">Français</div></div><svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="lang-option" data-lang="en" onclick="event.stopPropagation();setLangAndClose('en','lang-dd-auth')"><span class="lang-option-flag"><img src="https://flagcdn.com/24x18/gb.png" width="24" height="18" alt="EN" style="border-radius:3px"></span><div class="lang-option-info"><div class="lang-option-name">English</div><div class="lang-option-native">English</div></div><svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="lang-option" data-lang="es" onclick="event.stopPropagation();setLangAndClose('es','lang-dd-auth')"><span class="lang-option-flag"><img src="https://flagcdn.com/24x18/es.png" width="24" height="18" alt="ES" style="border-radius:3px"></span><div class="lang-option-info"><div class="lang-option-name">Spanish</div><div class="lang-option-native">Español</div></div><svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="lang-option" data-lang="de" onclick="event.stopPropagation();setLangAndClose('de','lang-dd-auth')"><span class="lang-option-flag"><img src="https://flagcdn.com/24x18/de.png" width="24" height="18" alt="DE" style="border-radius:3px"></span><div class="lang-option-info"><div class="lang-option-name">German</div><div class="lang-option-native">Deutsch</div></div><svg class="lang-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Header -->
+      <div id="auth-form-header" style="margin-bottom:32px">
+        <div style="font-size:22px;font-weight:800;color:var(--text);letter-spacing:-.4px;font-family:'Syne',sans-serif" id="auth-form-title">Welcome back</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:5px" id="auth-form-sub">Sign in to your NEXUS dashboard</div>
+      </div>
 
       <!-- Tabs -->
-      <div style="display:flex;gap:0;margin-bottom:28px;background:rgba(255,255,255,.04);border-radius:10px;padding:3px;border:1px solid rgba(255,255,255,.08)">
-        <button id="tab-login" onclick="switchAuthTab('login')" style="flex:1;padding:9px;border:none;border-radius:8px;background:linear-gradient(135deg,#f97316,#dc2626);color:#fff;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;box-shadow:0 2px 12px rgba(249,115,22,.25)">Sign in</button>
-        <button id="tab-register" onclick="switchAuthTab('register')" style="flex:1;padding:9px;border:none;border-radius:8px;background:transparent;color:var(--muted);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s">Create account</button>
+      <div class="auth-tab-pill">
+        <button id="tab-login" class="auth-tab-btn active" onclick="switchAuthTab('login')">Sign in</button>
+        <button id="tab-register" class="auth-tab-btn" onclick="switchAuthTab('register')">Create account</button>
       </div>
 
       <!-- Login form -->
       <div id="form-login">
-        <div style="margin-bottom:14px">
-          <div style="font-size:10.5px;font-weight:700;letter-spacing:.8px;color:var(--muted);margin-bottom:7px;text-transform:uppercase">Email or Username</div>
-          <input id="auth-login-id" type="text" placeholder="you@example.com" class="modal-input" style="width:100%" onkeydown="if(event.key==='Enter')document.getElementById('auth-login-pw').focus()">
+        <div class="auth-input-wrap">
+          <label class="auth-input-label">Email or Username</label>
+          <input id="auth-login-id" type="text" placeholder="you@example.com" class="auth-input" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('auth-login-pw').focus()">
         </div>
-        <div style="margin-bottom:22px">
-          <div style="font-size:10.5px;font-weight:700;letter-spacing:.8px;color:var(--muted);margin-bottom:7px;text-transform:uppercase">Password</div>
+        <div class="auth-input-wrap" style="margin-bottom:24px">
+          <label class="auth-input-label">Password</label>
           <div style="position:relative">
-            <input id="auth-login-pw" type="password" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;" class="modal-input" style="width:100%;padding-right:42px" onkeydown="if(event.key==='Enter')doLogin()">
-            <button onclick="togglePwVis('auth-login-pw',this)" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;padding:0;line-height:1">&#128065;</button>
+            <input id="auth-login-pw" type="password" placeholder="••••••••" class="auth-input" style="padding-right:44px" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+            <button onclick="togglePwVis('auth-login-pw',this)" style="position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0;line-height:1;transition:color .15s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">👁</button>
           </div>
         </div>
-        <button onclick="doLogin()" style="width:100%;padding:13px;background:linear-gradient(135deg,#f97316,#dc2626);color:#fff;border:none;border-radius:10px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(249,115,22,.3);letter-spacing:.2px" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 24px rgba(249,115,22,.35)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(249,115,22,.3)'">Sign in &#8594;</button>
+        <button onclick="doLogin()" class="auth-submit-btn" id="auth-login-btn">
+          Sign in <span style="margin-left:4px">→</span>
+        </button>
       </div>
 
       <!-- Register form -->
       <div id="form-register" style="display:none">
-        <div style="margin-bottom:13px">
-          <div style="font-size:10.5px;font-weight:700;letter-spacing:.8px;color:var(--muted);margin-bottom:7px;text-transform:uppercase">Username</div>
-          <input id="auth-reg-username" type="text" placeholder="Choose a username" class="modal-input" style="width:100%" onkeydown="if(event.key==='Enter')document.getElementById('auth-reg-email').focus()">
+        <div class="auth-input-wrap">
+          <label class="auth-input-label">Username</label>
+          <input id="auth-reg-username" type="text" placeholder="Choose a username" class="auth-input" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('auth-reg-email').focus()">
         </div>
-        <div style="margin-bottom:13px">
-          <div style="font-size:10.5px;font-weight:700;letter-spacing:.8px;color:var(--muted);margin-bottom:7px;text-transform:uppercase">Email <span style="font-weight:400;text-transform:none;font-size:11px">(optional)</span></div>
-          <input id="auth-reg-email" type="email" placeholder="email@example.com" class="modal-input" style="width:100%" onkeydown="if(event.key==='Enter')document.getElementById('auth-reg-pw').focus()">
+        <div class="auth-input-wrap">
+          <label class="auth-input-label">Email <span style="font-weight:400;text-transform:none;opacity:.6">(optional)</span></label>
+          <input id="auth-reg-email" type="email" placeholder="email@example.com" class="auth-input" autocomplete="email" onkeydown="if(event.key==='Enter')document.getElementById('auth-reg-pw').focus()">
         </div>
-        <div style="margin-bottom:22px">
-          <div style="font-size:10.5px;font-weight:700;letter-spacing:.8px;color:var(--muted);margin-bottom:7px;text-transform:uppercase">Password</div>
+        <div class="auth-input-wrap" style="margin-bottom:24px">
+          <label class="auth-input-label">Password</label>
           <div style="position:relative">
-            <input id="auth-reg-pw" type="password" placeholder="Min. 6 characters" class="modal-input" style="width:100%;padding-right:42px" onkeydown="if(event.key==='Enter')doRegister()">
-            <button onclick="togglePwVis('auth-reg-pw',this)" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;padding:0;line-height:1">&#128065;</button>
+            <input id="auth-reg-pw" type="password" placeholder="Min. 6 characters" class="auth-input" style="padding-right:44px" autocomplete="new-password" onkeydown="if(event.key==='Enter')doRegister()">
+            <button onclick="togglePwVis('auth-reg-pw',this)" style="position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0;line-height:1">👁</button>
           </div>
         </div>
-        <button onclick="doRegister()" style="width:100%;padding:13px;background:linear-gradient(135deg,#f97316,#dc2626);color:#fff;border:none;border-radius:10px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(249,115,22,.3)">Create account &#8594;</button>
+        <button onclick="doRegister()" class="auth-submit-btn">
+          Create account <span style="margin-left:4px">→</span>
+        </button>
       </div>
 
       <!-- Error / Loading -->
-      <div id="auth-error" style="margin-top:12px;font-size:12px;color:var(--accent3);text-align:center;min-height:16px"></div>
-      <div id="auth-loading" style="display:none;margin-top:12px;text-align:center;font-size:12.5px;color:var(--muted)">
-        <span style="animation:pulse 1.5s infinite;display:inline-block">&#8987;</span> Loading&#8230;
+      <div id="auth-error" style="margin-top:12px;font-size:12px;color:var(--accent3);text-align:center;min-height:16px;font-weight:500"></div>
+      <div id="auth-loading" style="display:none;margin-top:12px;text-align:center;font-size:12px;color:var(--muted)">
+        <span style="animation:pulse 1.5s infinite;display:inline-block">⏳</span> Loading…
       </div>
 
-      <!-- Version -->
-      <div style="text-align:center;margin-top:28px;font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:.5px">v5.2.0</div>
+      <!-- Footer -->
+      <div style="text-align:center;margin-top:auto;padding-top:28px;font-size:10px;color:rgba(245,245,247,.15);font-family:var(--mono);letter-spacing:.5px">NEXUS v5.2</div>
     </div>
   </div>
 </div>
@@ -6517,6 +6591,52 @@ function togglePwVis(inputId,btn){
 }
 
 function switchAuthTab(tab){
+  const loginForm=document.getElementById('form-login');
+  const regForm=document.getElementById('form-register');
+  const tabLogin=document.getElementById('tab-login');
+  const tabReg=document.getElementById('tab-register');
+  const title=document.getElementById('auth-form-title');
+  const sub=document.getElementById('auth-form-sub');
+
+  // Update tabs
+  tabLogin?.classList.toggle('active',tab==='login');
+  tabReg?.classList.toggle('active',tab==='register');
+
+  if(typeof gsap!=='undefined'){
+    // Fade out current form
+    const current=tab==='login'?regForm:loginForm;
+    const next=tab==='login'?loginForm:regForm;
+    if(current&&current.style.display!=='none'){
+      gsap.to(current,{opacity:0,y:-8,duration:.15,ease:'power2.in',onComplete:()=>{
+        current.style.display='none';
+        next.style.display='block';
+        gsap.fromTo(next,{opacity:0,y:12},{opacity:1,y:0,duration:.25,ease:'power2.out'});
+        gsap.fromTo(next.querySelectorAll('.auth-input-wrap,.auth-submit-btn'),
+          {y:8,opacity:0},{y:0,opacity:1,duration:.2,stagger:.05,ease:'power2.out',delay:.05}
+        );
+      }});
+    } else {
+      current.style.display='none';
+      next.style.display='block';
+      gsap.fromTo(next,{opacity:0,y:12},{opacity:1,y:0,duration:.25,ease:'power2.out'});
+    }
+  } else {
+    if(loginForm)loginForm.style.display=tab==='login'?'block':'none';
+    if(regForm)regForm.style.display=tab==='register'?'block':'none';
+  }
+
+  // Update header
+  if(tab==='login'){
+    if(title)title.textContent='Welcome back';
+    if(sub)sub.textContent='Sign in to your NEXUS dashboard';
+  } else {
+    if(title)title.textContent='Create account';
+    if(sub)sub.textContent='Join NEXUS and start your journey';
+  }
+  document.getElementById('auth-error').textContent='';
+}
+
+function _switchAuthTab_OLD(tab){
   document.getElementById('form-login').style.display=tab==='login'?'block':'none';
   document.getElementById('form-register').style.display=tab==='register'?'block':'none';
   document.getElementById('tab-login').style.background=tab==='login'?'var(--accent)':'transparent';
@@ -6591,7 +6711,9 @@ async function doRegister(){
 async function doLogout(){
   await sb.auth.signOut();
   _sbUser=null;_isAdmin=false;
-  document.getElementById('auth-screen').style.display='flex';
+  const authScr=document.getElementById('auth-screen');
+  authScr.style.display='flex';
+  setTimeout(()=>animateAuthEntrance(),50);
   document.getElementById('profile-screen').style.display='none';
   document.getElementById('main-sidebar').style.display='none';
   document.getElementById('main-content').style.display='none';
@@ -6639,7 +6761,7 @@ async function onAuthSuccess(userArg){
     if(!user){
       const {data,error:ue}=await sb.auth.getUser();
       if(!data?.user||ue){
-        if(authEl) authEl.style.display='flex';
+        if(authEl){authEl.style.display='flex';setTimeout(()=>animateAuthEntrance(),50);}
         hideBoot();
         return;
       }
@@ -13899,6 +14021,113 @@ function initAllAnimations(){
 }
 
 // ===================================================
+//  AUTH ANIMATIONS
+// ===================================================
+
+function animateAuthEntrance(){
+  if(typeof gsap==='undefined')return;
+  const tl=gsap.timeline();
+
+  // Card slide up
+  tl.fromTo('#auth-card',
+    {y:40,opacity:0,scale:.97},
+    {y:0,opacity:1,scale:1,duration:.6,ease:'power3.out'}
+  );
+
+  // Left panel content stagger
+  tl.fromTo('#auth-left-content > div',
+    {y:24,opacity:0},
+    {y:0,opacity:1,duration:.5,stagger:.08,ease:'power2.out'},
+    '-=.35'
+  );
+
+  // Features stagger
+  tl.fromTo('.auth-feature-item',
+    {x:-16,opacity:0},
+    {x:0,opacity:1,duration:.4,stagger:.06,ease:'power2.out'},
+    '-=.25'
+  );
+
+  // Right panel form
+  tl.fromTo('#auth-form-header',
+    {y:16,opacity:0},
+    {y:0,opacity:1,duration:.4,ease:'power2.out'},
+    '-=.3'
+  );
+  tl.fromTo('.auth-tab-pill',
+    {y:12,opacity:0},
+    {y:0,opacity:1,duration:.35,ease:'power2.out'},
+    '-=.25'
+  );
+  tl.fromTo('#form-login .auth-input-wrap, #form-login .auth-submit-btn',
+    {y:10,opacity:0},
+    {y:0,opacity:1,duration:.3,stagger:.07,ease:'power2.out'},
+    '-=.2'
+  );
+
+  // Float icons
+  tl.fromTo('.auth-float-icon',
+    {scale:0,opacity:0},
+    {scale:1,opacity:1,duration:.5,stagger:.08,ease:'back.out(2)'},
+    0.2
+  );
+
+  // Logo
+  tl.fromTo('#auth-logo-icon',
+    {scale:0,rotation:-20},
+    {scale:1,rotation:0,duration:.6,ease:'back.out(1.7)'},
+    0
+  );
+}
+
+// Particules canvas pour l'auth
+function initAuthParticles(){
+  const canvas=document.getElementById('auth-particles');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+
+  const particles=Array.from({length:50},()=>({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    r:Math.random()*1.5+0.3,
+    vx:(Math.random()-.5)*.4,
+    vy:(Math.random()-.5)*.4,
+    alpha:Math.random()*.2+.03,
+    color:Math.random()>.6?'249,115,22':'255,255,255',
+  }));
+
+  let raf;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${p.color},${p.alpha})`;
+      ctx.fill();
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0||p.x>canvas.width)p.vx*=-1;
+      if(p.y<0||p.y>canvas.height)p.vy*=-1;
+    });
+    raf=requestAnimationFrame(draw);
+  }
+  draw();
+
+  // Stop quand auth cachée
+  const obs=new MutationObserver(()=>{
+    const auth=document.getElementById('auth-screen');
+    if(auth&&auth.style.display==='none')cancelAnimationFrame(raf);
+    else if(auth&&auth.style.display!=='none')draw();
+  });
+  const auth=document.getElementById('auth-screen');
+  if(auth)obs.observe(auth,{attributes:true,attributeFilter:['style']});
+}
+
+// Auth tab switch animé
+const _origSwitchAuthTab = typeof switchAuthTab !== 'undefined' ? switchAuthTab : null;
+
+// ===================================================
 //  DESIGN OPTIONS
 // ===================================================
 
@@ -16483,6 +16712,11 @@ function showAuth(){
   const a=document.getElementById('auth-screen');
   if(a)a.style.display='flex';
   hideBoot(); updateClock();
+  // Init particules + animation entrance
+  setTimeout(()=>{
+    if(typeof initAuthParticles==='function')initAuthParticles();
+    if(typeof animateAuthEntrance==='function')animateAuthEntrance();
+  },80);
 }
 
 function normalizeAllProfiles(){

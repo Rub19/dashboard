@@ -11,18 +11,27 @@
 }
 </style>
 <script>
-// Failsafe: remove anti-flash after 6s max no matter what
+// Failsafe: si après 3s le boot-screen est encore visible, forcer l'auth
 setTimeout(function(){
-  var s=document.getElementById('anti-flash');
-  if(s){s.remove();console.warn('[NEXUS] anti-flash removed by failsafe');}
-  // Also force show auth if still on boot screen
-  var boot=document.getElementById('nexus-boot-screen');
-  var auth=document.getElementById('auth-screen');
-  if(boot&&boot.style.display!=='none'&&auth){
-    boot.style.display='none';
-    auth.style.display='flex';
-  }
-},6000);
+  try{
+    var s=document.getElementById('anti-flash');
+    if(s)s.remove();
+    var boot=document.getElementById('nexus-boot-screen');
+    if(boot&&getComputedStyle(boot).display!=='none'){
+      boot.style.display='none';
+      var auth=document.getElementById('auth-screen');
+      var main=document.getElementById('main-sidebar');
+      var mc=document.getElementById('main-content');
+      // Si le dashboard est déjà là, juste cacher le boot
+      if(main&&main.style.display==='flex'){
+        // dashboard déjà affiché, rien à faire
+      } else {
+        // Sinon montrer auth
+        if(auth){auth.style.display='flex';auth.style.opacity='1';}
+      }
+    }
+  }catch(e){}
+},3000);
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
@@ -6708,8 +6717,9 @@ async function doLogout(){
 }
 
 async function onAuthSuccess(userArg){
-  // 1. Supprime l'anti-flash AVANT tout, sinon le !important bloque les display
-  removeAntiFlash();
+  // 1. Supprime l'anti-flash EN TOUT PREMIER — si ça plante après, au moins on voit quelque chose
+  try{removeAntiFlash();}catch(e){}
+  try{const bootEl=document.getElementById('nexus-boot-screen');if(bootEl)bootEl.style.display='none';}catch(e){}
   // Tuer les animations GSAP de l'auth pour éviter opacity:0 sur le dashboard
   
   const authEl=document.getElementById('auth-screen');
@@ -16373,19 +16383,25 @@ function normalizeAllProfiles(){
 }
 
 function showDashboardOrProfiles(){
+  // TOUJOURS supprimer l'anti-flash en premier, même si tout le reste plante
+  removeAntiFlash();
+  const bootEl=document.getElementById('nexus-boot-screen');
+  if(bootEl)bootEl.style.display='none';
+
   if(profiles.length===1&&!profiles[0].password){
     const p=profiles[0]; currentId=p.id;
-    document.getElementById('main-sidebar').style.display='flex';
-    document.getElementById('main-content').style.display='block';
+    const sb=document.getElementById('main-sidebar');
+    const mc=document.getElementById('main-content');
+    if(sb){sb.style.display='flex';sb.style.opacity='1';}
+    if(mc){mc.style.display='block';mc.style.opacity='1';}
     renderSidebarNav(); updateSidebarAvatar(); applyI18n(); updateClock();
-    initDashboard(); hideBoot();
+    try{initDashboard();}catch(e){console.error('[NEXUS] initDashboard error:',e);}
     if(!curP()?.bgTheme||curP()?.bgTheme==='none') setTimeout(startAmbientBg,400);
   } else {
-    renderProfileScreen();
+    try{renderProfileScreen();}catch(e){console.error('[NEXUS] renderProfileScreen error:',e);}
     const ps=document.getElementById('profile-screen');
-    ps.style.opacity='1';
-    ps.style.display='flex';
-    hideBoot(); updateClock();
+    if(ps){ps.style.opacity='1';ps.style.display='flex';}
+    updateClock();
   }
 }
 

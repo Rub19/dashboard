@@ -16357,16 +16357,27 @@ function setBootStatus(msg){
   if(el)el.textContent=msg;
 }
 
+function updateAuthLangBar(){
+  const lang=typeof _lang!=='undefined'?_lang:'fr';
+  document.querySelectorAll('#auth-lang-bar button').forEach(btn=>{
+    const isActive=btn.dataset.l===lang;
+    btn.style.background=isActive?'rgba(249,115,22,.85)':'transparent';
+    btn.style.color=isActive?'#fff':'rgba(255,255,255,.4)';
+  });
+}
+
+function initAuthParticles(){
+  // Particles already handled by global canvas
+}
+
 function showAuth(){
   removeAntiFlash();
   const a=document.getElementById('auth-screen');
-  if(a)a.style.display='flex';
+  if(a){a.style.display='flex';a.style.opacity='1';}
   hideBoot(); updateClock();
-  // Init particules + animation entrance
-  updateAuthLangBar();
+  try{updateAuthLangBar();}catch(e){}
   setTimeout(()=>{
-    if(typeof initAuthParticles==='function')initAuthParticles();
-    if(typeof animateAuthEntrance==='function')animateAuthEntrance();
+    try{if(typeof animateAuthEntrance==='function')animateAuthEntrance();}catch(e){}
   },80);
 }
 

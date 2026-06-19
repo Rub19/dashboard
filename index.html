@@ -11,27 +11,18 @@
 }
 </style>
 <script>
-// Failsafe: si après 3s le boot-screen est encore visible, forcer l'auth
+// Failsafe: remove anti-flash after 6s max no matter what
 setTimeout(function(){
-  try{
-    var s=document.getElementById('anti-flash');
-    if(s)s.remove();
-    var boot=document.getElementById('nexus-boot-screen');
-    if(boot&&getComputedStyle(boot).display!=='none'){
-      boot.style.display='none';
-      var auth=document.getElementById('auth-screen');
-      var main=document.getElementById('main-sidebar');
-      var mc=document.getElementById('main-content');
-      // Si le dashboard est déjà là, juste cacher le boot
-      if(main&&main.style.display==='flex'){
-        // dashboard déjà affiché, rien à faire
-      } else {
-        // Sinon montrer auth
-        if(auth){auth.style.display='flex';auth.style.opacity='1';}
-      }
-    }
-  }catch(e){}
-},3000);
+  var s=document.getElementById('anti-flash');
+  if(s){s.remove();console.warn('[NEXUS] anti-flash removed by failsafe');}
+  // Also force show auth if still on boot screen
+  var boot=document.getElementById('nexus-boot-screen');
+  var auth=document.getElementById('auth-screen');
+  if(boot&&boot.style.display!=='none'&&auth){
+    boot.style.display='none';
+    auth.style.display='flex';
+  }
+},6000);
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
@@ -59,6 +50,9 @@ window.onerror = function(msg, src, line, col, err) {
 };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous" onerror="window._supabaseLoadError=true"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" crossorigin="anonymous"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -6608,15 +6602,19 @@ function switchAuthTab(tab){
     // Fade out current form
     const current=tab==='login'?regForm:loginForm;
     const next=tab==='login'?loginForm:regForm;
-    current.style.transition='opacity .15s';
-    current.style.opacity='0';
-    setTimeout(()=>{
+    if(current&&current.style.display!=='none'){
+      gsap.to(current,{opacity:0,y:-8,duration:.15,ease:'power2.in',onComplete:()=>{
+        current.style.display='none';
+        next.style.display='block';
+        next.style.opacity='1';
+        gsap.from(next,{y:10,duration:.22,ease:'power2.out',clearProps:'transform'});
+      }});
+    } else {
       current.style.display='none';
-      current.style.opacity='';current.style.transition='';
-      next.style.display='block';next.style.opacity='1';
-      next.classList.add('page-entering');
-      setTimeout(()=>next.classList.remove('page-entering'),300);
-    },150);
+      next.style.display='block';
+      next.style.opacity='1';
+      gsap.from(next,{y:10,duration:.22,ease:'power2.out',clearProps:'transform'});
+    }
   } else {
     if(loginForm)loginForm.style.display=tab==='login'?'block':'none';
     if(regForm)regForm.style.display=tab==='register'?'block':'none';
@@ -6717,37 +6715,32 @@ async function doLogout(){
 }
 
 async function onAuthSuccess(userArg){
-  // 1. Supprime l'anti-flash EN TOUT PREMIER — si ça plante après, au moins on voit quelque chose
-  try{removeAntiFlash();}catch(e){}
-  try{const bootEl=document.getElementById('nexus-boot-screen');if(bootEl)bootEl.style.display='none';}catch(e){}
-  // Tuer les animations GSAP de l'auth pour éviter opacity:0 sur le dashboard
-  
+  // 1. Anti-flash EN PREMIER
+  removeAntiFlash();
+  // 2. Cache auth immédiatement
   const authEl=document.getElementById('auth-screen');
   if(authEl){ authEl.style.display='none'; }
 
-  // 2. Montre un écran de chargement simple (réutilise le boot screen)
+  // 3. Boot screen pendant le chargement
   let boot=document.getElementById('nexus-boot-screen');
   if(!boot){
     boot=document.createElement('div');
     boot.id='nexus-boot-screen';
     boot.style.cssText='position:fixed;inset:0;z-index:2147483647;background:#050507;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px';
     boot.innerHTML='<div id="boot-logo" style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#f97316,#dc2626);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 30px rgba(249,115,22,.5)"><svg width="24" height="24" viewBox="0 0 20 20" fill="none"><polygon points="10,1 19,10 10,19 1,10" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round"/><polygon points="10,5 15,10 10,15 5,10" fill="white"/></svg></div><div id="boot-status" style="font-size:11px;color:rgba(249,115,22,.5);font-family:JetBrains Mono,monospace;letter-spacing:1px;margin-top:8px">NEXUS</div>';
-    // Pas d'animation au boot
     document.body.appendChild(boot);
   } else {
-    boot.style.opacity='1';
     boot.style.display='flex';
+    boot.style.opacity='1';
   }
 
-  //   // Cache l'auth-screen immédiatement
-  if(authEl){authEl.style.display='none';}
   try{
-    // 3. Utilise le user passé en param (depuis signInWithPassword) ou fallback getUser
+    // 4. Récupère l'user
     let user=userArg;
     if(!user){
       const {data,error:ue}=await sb.auth.getUser();
       if(!data?.user||ue){
-        if(authEl){authEl.style.display='flex';setTimeout(()=>animateAuthEntrance(),50);}
+        if(authEl){authEl.style.display='flex';}
         hideBoot();
         return;
       }
@@ -6756,7 +6749,7 @@ async function onAuthSuccess(userArg){
     _sbUser=user;
     _isAdmin=user?.email===ADMIN_EMAIL;
 
-    // 4. Charge les données
+    // 5. Charge les données
     if(typeof setBootStatus==='function')setBootStatus('Chargement...');
     await loadCloudState();
     if(typeof setBootStatus==='function')setBootStatus('Prêt ✓');
@@ -6769,7 +6762,7 @@ async function onAuthSuccess(userArg){
     normalizeAllProfiles();
     try{ sessionStorage.setItem('nexus_profiles_'+_sbUser.id,JSON.stringify(profiles)); }catch(e){}
 
-    // 5. Affiche le dashboard — hideBoot() est appelé à l'intérieur
+    // 6. Affiche le dashboard
     showDashboardOrProfiles();
 
   }catch(err){
@@ -7288,7 +7281,10 @@ function enterDashboard(id){
   currentId=id;
   _valoMatchCache={};
   _valoAllMatches=[];
-
+  // Tuer uniquement les animations GSAP de l'auth
+  if(typeof gsap!=='undefined'){
+    gsap.killTweensOf('#auth-card, #auth-left-content, .auth-feature-item, .auth-tab-pill, #auth-form-header, #auth-logo-icon, #form-login .auth-input-wrap, #form-login .auth-submit-btn');
+  }
   showPageLoader();
   const screen=document.getElementById('profile-screen');
   // S'assurer que profile-screen est visible avant de le fader
@@ -9137,7 +9133,16 @@ async function updatePassword(){
 function openModal(id){
   const modal=document.getElementById('modal-'+id);
   modal.classList.add('open');
-  // modal appears via CSS
+  const inner=modal.querySelector('.modal');
+  if(inner&&typeof gsap!=='undefined'){
+    const isMobile=window.innerWidth<=768;
+    inner.style.opacity='1';
+    if(isMobile){
+      gsap.from(inner,{y:'60%',duration:.3,ease:'power3.out',clearProps:'transform'});
+    } else {
+      gsap.from(inner,{y:20,scale:.97,duration:.25,ease:'back.out(1.2)',clearProps:'all'});
+    }
+  }
   const fi=document.querySelector('#modal-'+id+' input:not([type=file]):not([type=date])');
   if(fi)setTimeout(()=>fi.focus(),100);
   if(id==='add-item')setTimeout(()=>switchItemTab('link'),50);
@@ -9218,7 +9223,12 @@ function toast(msg,type='info'){
   const el=document.createElement('div');el.className='toast '+type;
   el.innerHTML='<span>'+escapeHTML(icons[type]||icons.info)+'</span> '+escapeHTML(msg);
   document.getElementById('toasts').appendChild(el);
-  setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300);},2500);
+  if(typeof gsap!=='undefined'){
+    gsap.from(el,{x:40,duration:.25,ease:'back.out(1.4)',clearProps:'transform'});
+    setTimeout(()=>{gsap.to(el,{x:40,opacity:0,duration:.2,ease:'power2.in',onComplete:()=>el.remove()});},2500);
+  } else {
+    setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300);},2500);
+  }
 }
 
 
@@ -11052,21 +11062,33 @@ function animatePageIn(pageEl,page){
   const prevIdx=_lastPageIdx;
   _lastPageIdx=curIdx>=0?curIdx:prevIdx;
 
-  // CSS only — pas de GSAP
-  let cls='page-entering';
-  if(page&&curIdx>=0){
-    if(curIdx>prevIdx)cls='page-entering-right';
-    else if(curIdx<prevIdx)cls='page-entering-left';
-  }
-  pageEl.style.opacity='1';
-  pageEl.classList.remove('page-entering','page-entering-left','page-entering-right');
-  void pageEl.offsetWidth;
-  pageEl.classList.add(cls);
-  setTimeout(()=>{
+  if(typeof gsap!=='undefined'){
+    // Utiliser gsap.from (pas fromTo) — l'élément reste visible si l'anim plante
+    const dir=curIdx>prevIdx?1:-1;
+    pageEl.style.opacity='1'; // S'assurer que c'est visible d'abord
+    gsap.from(pageEl,
+      {opacity:0, x:dir*20, duration:.25, ease:'power2.out', clearProps:'all',
+        onComplete:()=>{
+          initScrollReveal();animateStatCards();initRipples();hidePageLoader();
+          animatePageEnterGSAP(page);initPanelSpotlights();init3DTilt();initNavRipples();
+        }
+      }
+    );
+  } else {
+    // CSS fallback
+    let cls='page-entering';
+    if(page&&curIdx>=0){
+      if(curIdx>prevIdx)cls='page-entering-right';
+      else if(curIdx<prevIdx)cls='page-entering-left';
+    }
     pageEl.classList.remove('page-entering','page-entering-left','page-entering-right');
-    initScrollReveal();animateStatCards();initRipples();hidePageLoader();
-    animatePageEnterGSAP(page);initPanelSpotlights();initNavRipples();
-  },200);
+    void pageEl.offsetWidth;
+    pageEl.classList.add(cls);
+    setTimeout(()=>{
+      pageEl.classList.remove('page-entering','page-entering-left','page-entering-right');
+      initScrollReveal();animateStatCards();initRipples();hidePageLoader();
+    },200);
+  }
 }
 
 
@@ -11104,7 +11126,7 @@ function addNotif(icon,title,sub,action=null){
   // Badge bounce
   const badge=document.getElementById('notif-badge');
   if(badge&&typeof gsap!=='undefined'){
-  // (animation removed)
+    gsap.fromTo(badge,{scale:0},{scale:1,duration:.35,ease:'back.out(2.5)'});
   }
 }
 
@@ -13672,147 +13694,369 @@ async function fetchWeather(forceCity){
   }
 }
 
+
 // ===================================================
-//  ANIMATIONS — CSS ONLY (safe, no blocking)
+//  ANIMATIONS — GSAP + ANIME.JS
 // ===================================================
 
-// Particules canvas
+// ── Particules canvas flottantes ──
 (function initParticles(){
   const canvas=document.getElementById('nexus-particles-bg');
   if(!canvas)return;
   const ctx=canvas.getContext('2d');
-  let W,H,particles=[];
-  function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+  let particles=[];
+  let W,H;
+
+  function resize(){
+    W=canvas.width=window.innerWidth;
+    H=canvas.height=window.innerHeight;
+  }
   resize();
   window.addEventListener('resize',resize);
+
   function getAccentRgb(){
-    const accent=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#f97316';
+    const style=getComputedStyle(document.documentElement);
+    const accent=style.getPropertyValue('--accent').trim()||'#f97316';
+    // Convert hex to rgb
     const hex=accent.replace('#','');
-    if(hex.length===6){const r=parseInt(hex.substr(0,2),16);const g=parseInt(hex.substr(2,2),16);const b=parseInt(hex.substr(4,2),16);return `${r},${g},${b}`;}
+    if(hex.length===6){
+      const r=parseInt(hex.substr(0,2),16);
+      const g=parseInt(hex.substr(2,2),16);
+      const b=parseInt(hex.substr(4,2),16);
+      return `${r},${g},${b}`;
+    }
     return '249,115,22';
   }
-  function mkP(){const c=getAccentRgb();return{x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.5+.3,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,a:Math.random()*.15+.03,c:Math.random()>.6?c:'255,255,255'};}
-  for(let i=0;i<50;i++)particles.push(mkP());
+
+  function createParticle(){
+    const accent=getAccentRgb();
+    const variants=[accent,'139,92,246','255,255,255'];
+    const hue=variants[Math.floor(Math.random()*variants.length)];
+    return{
+      x:Math.random()*W,
+      y:Math.random()*H,
+      r:Math.random()*2+0.3,
+      vx:(Math.random()-.5)*0.25,
+      vy:(Math.random()-.5)*0.25,
+      alpha:Math.random()*0.2+0.03,
+      hue,
+    };
+  }
+
+  for(let i=0;i<60;i++)particles.push(createParticle());
+
   function draw(){
     ctx.clearRect(0,0,W,H);
     particles.forEach(p=>{
-      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-      ctx.fillStyle=`rgba(${p.c},${p.a})`;ctx.fill();
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${p.hue},${p.alpha})`;
+      ctx.fill();
       p.x+=p.vx;p.y+=p.vy;
-      if(p.x<0||p.x>W||p.y<0||p.y>H)Object.assign(p,mkP());
+      if(p.x<0||p.x>W||p.y<0||p.y>H)Object.assign(p,createParticle());
     });
     requestAnimationFrame(draw);
   }
   draw();
 })();
 
-// Stubs CSS-based — pas de GSAP, pas de blocage possible
-function animatePageEnterGSAP(page){
-  const el=document.getElementById('page-'+page);
-  if(!el)return;
-  el.classList.add('page-anim-in');
-  setTimeout(()=>el.classList.remove('page-anim-in'),400);
-  // Count-up sur stat values
-  el.querySelectorAll('.stat-value').forEach(sv=>{
-    const raw=sv.textContent.replace(/[^0-9.]/g,'');
-    const num=parseFloat(raw);
-    if(!isNaN(num)&&num>0)animateCountUp(sv,num,600);
+// ── Spotlight sur les panels ──
+function initPanelSpotlights(){
+  document.querySelectorAll('.panel').forEach(panel=>{
+    if(panel.querySelector('.panel-spotlight'))return;
+    const spot=document.createElement('div');
+    spot.className='panel-spotlight';
+    panel.appendChild(spot);
+    panel.addEventListener('mousemove',e=>{
+      const r=panel.getBoundingClientRect();
+      spot.style.left=(e.clientX-r.left)+'px';
+      spot.style.top=(e.clientY-r.top)+'px';
+    });
   });
 }
 
-function animateCountUp(el,target,duration=600){
-  if(!el)return;
-  const start=0,startTime=performance.now();
-  function update(now){
-    const p=Math.min((now-startTime)/duration,1);
-    const ease=1-Math.pow(1-p,3);
-    el.textContent=Math.round(start+(target-start)*ease).toLocaleString('fr-FR');
-    if(p<1)requestAnimationFrame(update);
-    else el.textContent=Math.round(target).toLocaleString('fr-FR');
-  }
-  requestAnimationFrame(update);
-}
-
-function animateSidebarEntrance(){
-  document.querySelectorAll('.nav-item').forEach((item,i)=>{
-    item.style.opacity='0';item.style.transform='translateX(-12px)';
-    setTimeout(()=>{item.style.transition='opacity .3s ease,transform .3s ease';item.style.opacity='1';item.style.transform='';setTimeout(()=>{item.style.transition='';},350);},i*25+50);
-  });
-}
-
-function animateAuthEntrance(){
-  const card=document.getElementById('auth-card');
-  if(card){card.style.animation='authCardIn .4s ease both';}
-}
-
-function initAllAnimations(){
-  setTimeout(()=>{
-    initNavRipples();
-    initPanelSpotlights();
-  },400);
-}
-
+// ── Nav item ripple ──
 function initNavRipples(){
   document.querySelectorAll('.nav-item').forEach(item=>{
     if(item._hasRipple)return;
     item._hasRipple=true;
     item.addEventListener('click',e=>{
-      const r=document.createElement('div');r.className='nav-ripple';
+      const r=document.createElement('div');
+      r.className='nav-ripple';
       const rect=item.getBoundingClientRect();
       const size=Math.max(rect.width,rect.height);
       r.style.cssText=`width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px`;
-      item.appendChild(r);setTimeout(()=>r.remove(),500);
+      item.appendChild(r);
+      setTimeout(()=>r.remove(),500);
     });
   });
 }
 
-function initPanelSpotlights(){
-  document.querySelectorAll('.panel').forEach(panel=>{
-    if(panel.querySelector('.panel-spotlight'))return;
-    const spot=document.createElement('div');spot.className='panel-spotlight';
-    panel.appendChild(spot);
-    panel.addEventListener('mousemove',e=>{
-      const r=panel.getBoundingClientRect();
-      spot.style.left=(e.clientX-r.left)+'px';spot.style.top=(e.clientY-r.top)+'px';
+// ── Count-up animation sur les stat values ──
+function animateCountUp(el,target,duration=800){
+  if(!el)return;
+  const start=parseFloat(el.textContent)||0;
+  const isFloat=String(target).includes('.');
+  const startTime=performance.now();
+  function update(now){
+    const elapsed=now-startTime;
+    const progress=Math.min(elapsed/duration,1);
+    const ease=1-Math.pow(1-progress,3); // ease-out cubic
+    const current=start+(target-start)*ease;
+    el.textContent=isFloat?current.toFixed(1):Math.round(current).toLocaleString('fr-FR');
+    if(progress<1)requestAnimationFrame(update);
+    else el.textContent=isFloat?target.toFixed(1):Math.round(target).toLocaleString('fr-FR');
+  }
+  requestAnimationFrame(update);
+}
+
+// ── Page enter animation avec GSAP ──
+function animatePageEnterGSAP(page){
+  if(typeof gsap==='undefined'||document.body.classList.contains('no-anim'))return;
+  const el=document.getElementById('page-'+page);
+  if(!el)return;
+  const isMobile=window.innerWidth<=768;
+
+  // Topbar
+  const topbar=el.querySelector('.topbar');
+  if(topbar){
+    gsap.from(topbar,{y:isMobile?-6:-10,duration:isMobile?.18:.25,ease:'power2.out',clearProps:'transform'});
+  }
+
+  // Panels avec stagger — utiliser from (sûr)
+  const panels=el.querySelectorAll('.panel,.stat-card');
+  if(panels.length){
+    gsap.from(panels,
+      {opacity:0,y:isMobile?8:14,
+       duration:isMobile?.22:.35,
+       stagger:isMobile?.025:.04,
+       ease:'power2.out',delay:.02,
+       clearProps:'all'}
+    );
+  }
+
+  // Count-up sur stat values
+  el.querySelectorAll('.stat-value').forEach(sv=>{
+    const raw=sv.textContent.replace(/[^0-9.]/g,'');
+    const num=parseFloat(raw);
+    if(!isNaN(num)&&num>0){
+      setTimeout(()=>animateCountUp(sv,num,isMobile?400:700),150);
+    }
+  });
+
+  // Mobile: animer aussi les items de liste
+  if(isMobile){
+    const items=el.querySelectorAll('.todo-item,.habit-row,.note-item,.kanban-card');
+    if(items.length){
+      gsap.from(items,{x:-8,duration:.18,stagger:.015,ease:'power2.out',delay:.08,clearProps:'transform'});
+
+
+
+    }
+  }
+}
+
+// ── Transition de page fluide ──
+function pageTransitionOut(cb){
+  if(typeof gsap==='undefined'){cb();return;}
+  const el=document.getElementById('nexus-page-transition');
+  if(!el){cb();return;}
+  gsap.timeline()
+    .set(el,{scaleY:0,transformOrigin:'top'})
+    .to(el,{scaleY:1,duration:.18,ease:'power2.in'})
+    .call(cb)
+    .to(el,{scaleY:0,transformOrigin:'bottom',duration:.18,ease:'power2.out',delay:.05});
+}
+
+// ── Sidebar icons entrance ──
+function animateSidebarEntrance(){
+  if(typeof anime==='undefined')return;
+  anime({
+    targets:'.nav-item',
+    translateX:[-20,0],
+    opacity:[0,1],
+    duration:400,
+    delay:anime.stagger(30,{start:100}),
+    easing:'easeOutCubic',
+  });
+  // Logo bounce
+  anime({
+    targets:'.logo-icon',
+    scale:[0.5,1],
+    rotate:['-10deg','0deg'],
+    opacity:[0,1],
+    duration:600,
+    easing:'easeOutElastic(1,.7)',
+  });
+}
+
+// ── Nav icon bounce au clic ──
+function initNavIconBounce(){
+  document.querySelectorAll('.nav-item').forEach(item=>{
+    if(item._hasBounce)return;
+    item._hasBounce=true;
+    item.addEventListener('click',()=>{
+      const icon=item.querySelector('.nav-icon');
+      if(!icon||typeof anime==='undefined')return;
+      anime({
+        targets:icon,
+        scale:[1,1.3,1],
+        duration:350,
+        easing:'easeOutElastic(1,.5)',
+      });
     });
   });
 }
 
-function init3DTilt(){}
-function initNavIconBounce(){}
-function animateHabitCheck(){}
-function animatePomodoroRing(){}
-function animateStatsNumbers(){}
-function animateBootLogo(){}
-function pageTransitionOut(cb){cb();}
-function animateToast(el){}
-
-function initSliderFills(){
-  document.querySelectorAll('input[type=range]').forEach(sl=>{
-    updateSliderFill(sl);
-    sl.addEventListener('input',()=>updateSliderFill(sl));
+// ── Boot logo animation ──
+function animateBootLogo(){
+  if(typeof anime==='undefined')return;
+  const logo=document.querySelector('#nexus-boot-screen .logo, #nexus-boot-screen div:first-child');
+  if(!logo)return;
+  anime({
+    targets:logo,
+    scale:[0.5,1],
+    opacity:[0,1],
+    duration:600,
+    easing:'easeOutElastic(1, .6)',
   });
 }
-function updateSliderFill(slider){
-  const val=(slider.value-slider.min)/(slider.max-slider.min)*100;
-  slider.style.background=`linear-gradient(90deg,var(--accent) ${val}%,rgba(255,255,255,.1) ${val}%)`;
+
+// ── Stats page number animation ──
+function animateStatsNumbers(){
+  if(typeof anime==='undefined')return;
+  anime({
+    targets:'.stat-value',
+    opacity:[0,1],
+    translateY:[10,0],
+    duration:500,
+    delay:anime.stagger(80),
+    easing:'easeOutCubic',
+  });
 }
 
-function animatePageIn(pageEl,page){
-  if(!pageEl)return;
-  const curIdx=PAGE_ORDER.indexOf(page||'');
-  const prevIdx=_lastPageIdx;
-  _lastPageIdx=curIdx>=0?curIdx:prevIdx;
-  pageEl.classList.remove('page-entering','page-entering-left','page-entering-right');
-  void pageEl.offsetWidth;
-  pageEl.classList.add('page-entering');
+// ── Toast animation ──
+function animateToast(el){
+  if(typeof gsap==='undefined')return;
+  gsap.from(el,{x:40,duration:.25,ease:'back.out(1.4)',clearProps:'transform'});
+}
+
+// ── Pomodoro ring animation ──
+function animatePomodoroRing(progress){
+  if(typeof anime==='undefined')return;
+  const ring=document.getElementById('pomo-progress-ring');
+  if(!ring)return;
+  const circumference=2*Math.PI*54;
+  anime({
+    targets:ring,
+    strokeDashoffset:[circumference*(1-progress+0.01)*circumference, circumference*(1-progress)],
+    duration:800,
+    easing:'easeOutCubic',
+  });
+}
+
+// ── Habit check animation ──
+function animateHabitCheck(el){
+  if(typeof gsap==='undefined')return;
+  gsap.fromTo(el,
+    {scale:0.8},
+    {scale:1,duration:.3,ease:'back.out(2)'}
+  );
+}
+
+// ── Card hover 3D tilt ──
+function init3DTilt(){
+  document.querySelectorAll('.stat-card').forEach(card=>{
+    if(card._hasTilt)return;
+    card._hasTilt=true;
+    card.addEventListener('mousemove',e=>{
+      const r=card.getBoundingClientRect();
+      const x=(e.clientX-r.left)/r.width-.5;
+      const y=(e.clientY-r.top)/r.height-.5;
+      card.style.transform=`perspective(600px) rotateY(${x*6}deg) rotateX(${-y*6}deg) scale(1.01)`;
+    });
+    card.addEventListener('mouseleave',()=>{
+      card.style.transform='';
+    });
+  });
+}
+
+// ── Lancer toutes les animations au boot du dashboard ──
+function initAllAnimations(){
   setTimeout(()=>{
-    pageEl.classList.remove('page-entering','page-entering-left','page-entering-right');
-    initScrollReveal();animateStatCards();initRipples();hidePageLoader();
-    animatePageEnterGSAP(page);initPanelSpotlights();initNavRipples();
-  },200);
+    initPanelSpotlights();
+    initNavRipples();
+    init3DTilt();
+    animateSidebarEntrance();
+    initNavIconBounce();
+  },300);
 }
 
+// ===================================================
+//  AUTH ANIMATIONS
+// ===================================================
+
+function updateAuthLangBar(){
+  const lang=typeof _lang!=='undefined'?_lang:'fr';
+  document.querySelectorAll('#auth-lang-bar button').forEach(btn=>{
+    const isActive=btn.dataset.l===lang;
+    btn.style.background=isActive?'rgba(249,115,22,.85)':'transparent';
+    btn.style.color=isActive?'#fff':'rgba(255,255,255,.4)';
+  });
+}
+
+function animateAuthEntrance(){
+  // CSS class animation uniquement — pas de GSAP qui peut bloquer
+  const card=document.getElementById('auth-card');
+  if(card){card.style.animation='authCardIn .4s ease both';}
+}
+
+// Particules canvas pour l'auth
+function initAuthParticles(){
+  const canvas=document.getElementById('auth-particles');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+
+  const particles=Array.from({length:50},()=>({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    r:Math.random()*1.5+0.3,
+    vx:(Math.random()-.5)*.4,
+    vy:(Math.random()-.5)*.4,
+    alpha:Math.random()*.2+.03,
+    color:Math.random()>.6?'249,115,22':'255,255,255',
+  }));
+
+  let raf;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${p.color},${p.alpha})`;
+      ctx.fill();
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0||p.x>canvas.width)p.vx*=-1;
+      if(p.y<0||p.y>canvas.height)p.vy*=-1;
+    });
+    raf=requestAnimationFrame(draw);
+  }
+  draw();
+
+  // Stop quand auth cachée
+  const obs=new MutationObserver(()=>{
+    const auth=document.getElementById('auth-screen');
+    if(auth&&auth.style.display==='none')cancelAnimationFrame(raf);
+    else if(auth&&auth.style.display!=='none')draw();
+  });
+  const auth=document.getElementById('auth-screen');
+  if(auth)obs.observe(auth,{attributes:true,attributeFilter:['style']});
+}
+
+// Auth tab switch animé
+const _origSwitchAuthTab = typeof switchAuthTab !== 'undefined' ? switchAuthTab : null;
 
 // ===================================================
 //  DESIGN OPTIONS
@@ -14494,7 +14738,15 @@ function pomoToggle(){
   }
   playPomoSound('start');
   pomoRunning=true;
-
+  // Animation de démarrage
+  const wrap=document.getElementById('pomo-ring-wrap');
+  if(wrap&&typeof anime!=='undefined'){
+    anime({targets:wrap,scale:[1,1.05,1],duration:400,easing:'easeOutElastic(1,.5)'});
+  }
+  const btn=document.getElementById('pomo-play-btn');
+  if(btn&&typeof gsap!=='undefined'){
+    gsap.fromTo(btn,{scale:.85},{scale:1,duration:.3,ease:'back.out(2)'});
+  }
   const endTime=Date.now()+(pomoRemaining*1000);
   localStorage.setItem('pomo_end',endTime);
   localStorage.setItem('pomo_idx',pomoIdx);
@@ -14689,8 +14941,22 @@ function renderPomo(){
   // Ring progress + color + pulse — animé avec GSAP
   const ring=document.getElementById('pomo-ring');
   if(ring){
-    ring.style.strokeDashoffset=circumference*(1-pct);
-    ring.style.stroke=mode.ring;
+    if(typeof gsap!=='undefined'&&pomoRunning){
+      gsap.to(ring,{
+        strokeDashoffset:circumference*(1-pct),
+        duration:1,ease:'none',overwrite:'auto'
+      });
+    } else {
+      ring.style.strokeDashoffset=circumference*(1-pct);
+    }
+    // Couleur animée au changement de mode
+    if(ring.getAttribute('stroke')!==mode.ring){
+      if(typeof gsap!=='undefined'){
+        gsap.to(ring,{attr:{stroke:mode.ring},duration:.4,ease:'power2.out'});
+      } else {
+        ring.style.stroke=mode.ring;
+      }
+    }
   }
   const wrap=document.getElementById('pomo-ring-wrap');
   if(wrap){
@@ -15538,7 +15804,7 @@ function setMobNav(page){
     // Bounce animation sur l'icône active
     if(typeof gsap!=='undefined'){
       const icon=btn.querySelector('.mob-icon,.mob-icon-center');
-  // (animation removed)
+      if(icon)gsap.fromTo(icon,{scale:.7,opacity:.6},{scale:1,opacity:1,duration:.35,ease:'back.out(2)'});
     }
   } else {
     // Page dans "More" → activer le bouton More
@@ -15559,23 +15825,23 @@ function toggleMobMore(){
     if(overlay){overlay.style.display='block';overlay.style.opacity='0';}
     if(typeof gsap!=='undefined'){
       drawer.style.opacity='1';
-  // (animation removed)
-  // (animation removed)
+    gsap.from(drawer,{y:'80%',duration:.3,ease:'power3.out',clearProps:'transform'});
+      if(overlay)gsap.to(overlay,{opacity:1,duration:.25});
       // Stagger les boutons
       const btns=drawer.querySelectorAll('.mob-more-btn');
-  // (animation removed)
+      gsap.from(btns,{y:12,duration:.22,stagger:.025,ease:'back.out(1.5)',delay:.08,clearProps:'transform'});
     }
     // Bounce sur le btn More
     const moreBtn=document.getElementById('mob-btn-more');
     if(moreBtn&&typeof gsap!=='undefined'){
       const icon=moreBtn.querySelector('.mob-icon');
-  // (animation removed)
+      if(icon)gsap.to(icon,{rotation:90,duration:.25,ease:'power2.out'});
     }
   } else {
     // Fermer
     if(typeof gsap!=='undefined'){
-  // (animation removed)
-  // (animation removed)
+      gsap.to(drawer,{y:'100%',opacity:0,duration:.22,ease:'power2.in',onComplete:()=>{drawer.style.display='none';}});
+      if(overlay)gsap.to(overlay,{opacity:0,duration:.2,onComplete:()=>{overlay.style.display='none';}});
     } else {
       drawer.style.display='none';
       if(overlay)overlay.style.display='none';
@@ -15583,7 +15849,7 @@ function toggleMobMore(){
     const moreBtn=document.getElementById('mob-btn-more');
     if(moreBtn&&typeof gsap!=='undefined'){
       const icon=moreBtn.querySelector('.mob-icon');
-  // (animation removed)
+      if(icon)gsap.to(icon,{rotation:0,duration:.2,ease:'power2.in'});
     }
   }
 }
@@ -15592,8 +15858,18 @@ function closeMobMore(){
   const drawer=document.getElementById('mob-more-drawer');
   const overlay=document.getElementById('mob-more-overlay');
   if(!drawer)return;
-  if(drawer)drawer.style.display='none';
-  if(overlay)overlay.style.display='none';
+  if(typeof gsap!=='undefined'){
+    gsap.to(drawer,{y:'100%',opacity:0,duration:.22,ease:'power2.in',onComplete:()=>{drawer.style.display='none';}});
+    if(overlay)gsap.to(overlay,{opacity:0,duration:.2,onComplete:()=>{overlay.style.display='none';}});
+  } else {
+    if(drawer)drawer.style.display='none';
+    if(overlay)overlay.style.display='none';
+  }
+  const moreBtn=document.getElementById('mob-btn-more');
+  if(moreBtn&&typeof gsap!=='undefined'){
+    const icon=moreBtn.querySelector('.mob-icon');
+    if(icon)gsap.to(icon,{rotation:0,duration:.2});
+  }
 }
 
 function toggleMobileSidebar(){
@@ -16338,18 +16614,21 @@ function t(key){ if(!I18N)return key; return (I18N[_lang]?.[key]) ?? (I18N['en']
 function removeAntiFlash(){
   const s=document.getElementById('anti-flash');
   if(s)s.remove();
+  // Effacer aussi les styles inline que le !important aurait pu figer
+  ['main-sidebar','main-content','auth-screen','profile-screen','password-screen'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){
+      el.style.removeProperty('display');
+      el.style.removeProperty('opacity');
+      el.style.removeProperty('visibility');
+    }
+  });
 }
 
 function hideBoot(){
   removeAntiFlash();
-  ['nexus-boot-screen'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el){
-      el.style.transition='opacity .28s ease';
-      el.style.opacity='0';
-      setTimeout(()=>{if(el.parentNode)el.remove();},300);
-    }
-  });
+  const el=document.getElementById('nexus-boot-screen');
+  if(el) el.style.display='none';
 }
 
 function setBootStatus(msg){
@@ -16357,27 +16636,16 @@ function setBootStatus(msg){
   if(el)el.textContent=msg;
 }
 
-function updateAuthLangBar(){
-  const lang=typeof _lang!=='undefined'?_lang:'fr';
-  document.querySelectorAll('#auth-lang-bar button').forEach(btn=>{
-    const isActive=btn.dataset.l===lang;
-    btn.style.background=isActive?'rgba(249,115,22,.85)':'transparent';
-    btn.style.color=isActive?'#fff':'rgba(255,255,255,.4)';
-  });
-}
-
-function initAuthParticles(){
-  // Particles already handled by global canvas
-}
-
 function showAuth(){
   removeAntiFlash();
   const a=document.getElementById('auth-screen');
-  if(a){a.style.display='flex';a.style.opacity='1';}
+  if(a)a.style.display='flex';
   hideBoot(); updateClock();
-  try{updateAuthLangBar();}catch(e){}
+  // Init particules + animation entrance
+  updateAuthLangBar();
   setTimeout(()=>{
-    try{if(typeof animateAuthEntrance==='function')animateAuthEntrance();}catch(e){}
+    if(typeof initAuthParticles==='function')initAuthParticles();
+    if(typeof animateAuthEntrance==='function')animateAuthEntrance();
   },80);
 }
 
@@ -16394,16 +16662,20 @@ function normalizeAllProfiles(){
 }
 
 function showDashboardOrProfiles(){
-  // TOUJOURS supprimer l'anti-flash en premier, même si tout le reste plante
+  // Supprimer anti-flash et boot EN PREMIER
   removeAntiFlash();
-  const bootEl=document.getElementById('nexus-boot-screen');
-  if(bootEl)bootEl.style.display='none';
+  const boot=document.getElementById('nexus-boot-screen');
+  if(boot) boot.style.display='none';
+  const authEl=document.getElementById('auth-screen');
+  if(authEl) authEl.style.display='none';
 
   if(profiles.length===1&&!profiles[0].password){
     const p=profiles[0]; currentId=p.id;
-    const sb=document.getElementById('main-sidebar');
+    _valoMatchCache={};
+    _valoAllMatches=[];
+    const sb_el=document.getElementById('main-sidebar');
     const mc=document.getElementById('main-content');
-    if(sb){sb.style.display='flex';sb.style.opacity='1';}
+    if(sb_el){sb_el.style.display='flex';sb_el.style.opacity='1';}
     if(mc){mc.style.display='block';mc.style.opacity='1';}
     renderSidebarNav(); updateSidebarAvatar(); applyI18n(); updateClock();
     try{initDashboard();}catch(e){console.error('[NEXUS] initDashboard error:',e);}
@@ -16411,7 +16683,7 @@ function showDashboardOrProfiles(){
   } else {
     try{renderProfileScreen();}catch(e){console.error('[NEXUS] renderProfileScreen error:',e);}
     const ps=document.getElementById('profile-screen');
-    if(ps){ps.style.opacity='1';ps.style.display='flex';}
+    if(ps){ps.style.display='flex';ps.style.opacity='1';}
     updateClock();
   }
 }

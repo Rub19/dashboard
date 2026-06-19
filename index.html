@@ -1628,12 +1628,12 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 /* ── PROFILE SELECT ANIMATIONS ── */
 .ps-profile{transition:transform .08s linear}
 .ps-card-inner{transition:border-color .25s,box-shadow .25s,transform .15s}
-.ps-profiles .ps-profile:nth-child(1){animation:slideUpFade .4s ease both .05s}
-.ps-profiles .ps-profile:nth-child(2){animation:slideUpFade .4s ease both .12s}
-.ps-profiles .ps-profile:nth-child(3){animation:slideUpFade .4s ease both .19s}
-.ps-profiles .ps-profile:nth-child(4){animation:slideUpFade .4s ease both .26s}
-.ps-profiles .ps-profile:nth-child(5){animation:slideUpFade .4s ease both .33s}
-.ps-add-card{animation:slideUpFade .4s ease both .26s}
+.ps-profiles .ps-profile:nth-child(1){transition:opacity .3s ease,transform .3s ease}
+.ps-profiles .ps-profile:nth-child(2){transition:opacity .3s ease,transform .3s ease}
+.ps-profiles .ps-profile:nth-child(3){transition:opacity .3s ease,transform .3s ease}
+.ps-profiles .ps-profile:nth-child(4){transition:opacity .3s ease,transform .3s ease}
+.ps-profiles .ps-profile:nth-child(5){transition:opacity .3s ease,transform .3s ease}
+.ps-add-card{transition:opacity .3s ease,transform .3s ease}
 
 /* Cursor glow on profile screen */
 #ps-cursor-glow{
@@ -7143,7 +7143,7 @@ function saveStateNow(){
     },2000);
   }
 }
-function getP(id){return profiles.find(p=>p.id===id)}
+function getP(id){return profiles.find(p=>String(p.id)===String(id))}
 function curP(){return getP(currentId)}
 function defState(name){return{items:[],todos:[],note:'',notes:[],activity:[],username:name||'User',connections:{},gaming:{},habits:[],kanban:[],events:[],pinned:[],manualBadges:{},banner:null,countdown:null,pomoHistory:[],notifEnabled:false,bio:'',socials:{},goals:[],journal:[],countdowns:[],xp:0,dailyFocus:null}}
 
@@ -7235,40 +7235,64 @@ function psStartEmbers(){
 
 function renderProfileScreen(){
   const list=document.getElementById('ps-profiles-list');
+  if(!list)return;
   let html='';
   profiles.forEach(p=>{
-    const locked=p.password?'<div class="ps-lock">🔒 locked</div>':'';
-    html+='<div class="ps-profile'+(managingMode?' managing':'')+(p.password?' locked':'')+'" data-id="'+p.id+'" onclick="handleProfileClick(\''+p.id+'\')" onmousemove="psTilt(event,this)" onmouseleave="psUntilt(this)">'+
+    const hasPass=p.password&&p.password.value;
+    const locked=hasPass?'<div class="ps-lock">🔒 locked</div>':'';
+    html+='<div class="ps-profile'+(managingMode?' managing':'')+(hasPass?' locked':'')+'" data-id="'+p.id+'" onmousemove="psTilt(event,this)" onmouseleave="psUntilt(this)">'+
       '<div class="ps-card-inner">'+
         '<div class="ps-avatar-wrap">'+
           '<div class="ps-avatar" style="background:'+(p.avatarImg?'var(--surface3)':(p.avatarBg||'var(--surface2)'))+'">'+
-            (p.avatarImg?`<img src="${p.avatarImg}" style="width:80px;height:80px;object-fit:cover;border-radius:18px;display:block" onerror="this.remove()">`:'')+
+            (p.avatarImg?'<img src="'+p.avatarImg+'" style="width:80px;height:80px;object-fit:cover;border-radius:18px;display:block" onerror="this.remove()">':'')+
             (p.avatarImg?'':avatarHTML(p,80,18))+
           '</div>'+
           locked+
         '</div>'+
-        '<div class="ps-pname">'+p.name+'</div>'+
-        '<button class="ps-edit-btn" onclick="event.stopPropagation();openEditProfile(\''+p.id+'\')" title="Edit">✎</button>'+
-        (managingMode&&profiles.length>1?'<button class="ps-delete-btn" onclick="event.stopPropagation();deleteProfile(\''+p.id+'\')" title="Delete">✕</button>':'')+
+        '<div class="ps-pname">'+escapeHTML(p.name)+'</div>'+
+        '<button class="ps-edit-btn" data-edit="'+p.id+'" title="Edit">✎</button>'+
+        (managingMode&&profiles.length>1?'<button class="ps-delete-btn" data-del="'+p.id+'" title="Delete">✕</button>':'')+
       '</div>'+
     '</div>';
   });
   if(profiles.length<6){
-    html+='<div class="ps-add-card" onclick="openCreateProfile()">'+
+    html+='<div class="ps-add-card" id="ps-add-card-btn">'+
       '<div class="ps-add-icon">+</div>'+
       '<div class="ps-add-label">Add profile</div>'+
     '</div>';
   }
   list.innerHTML=html;
-  document.getElementById('ps-manage-btn').textContent=managingMode?t('done'):t('manage_profiles');
-  // Start ember canvas if not running
+
+  // Event delegation propre — évite les problèmes d'échappement et de type d'ID
+  list.onclick=function(e){
+    const editBtn=e.target.closest('[data-edit]');
+    if(editBtn){e.stopPropagation();openEditProfile(editBtn.dataset.edit);return;}
+    const delBtn=e.target.closest('[data-del]');
+    if(delBtn){e.stopPropagation();deleteProfile(delBtn.dataset.del);return;}
+    if(e.target.closest('#ps-add-card-btn')){openCreateProfile();return;}
+    const card=e.target.closest('.ps-profile[data-id]');
+    if(card&&!managingMode){handleProfileClick(card.dataset.id);return;}
+  };
+
+  const manBtn=document.getElementById('ps-manage-btn');
+  if(manBtn)manBtn.textContent=managingMode?t('done'):t('manage_profiles');
+
+  // Animer les cartes en JS (plus fiable que CSS animation avec opacity:0)
+  list.querySelectorAll('.ps-profile,.ps-add-card').forEach((el,i)=>{
+    el.style.cssText+='opacity:0;transform:translateY(16px);transition:opacity .3s ease,transform .3s ease';
+    setTimeout(()=>{el.style.opacity='1';el.style.transform='translateY(0)';},50+i*70);
+  });
+
   psStartEmbers();
 }
 
 function handleProfileClick(id){
   if(managingMode)return;
-  const p=getP(id);if(!p)return;
-  if(p.password){
+  // getP accepte string ou number
+  const p=profiles.find(pr=>String(pr.id)===String(id));
+  if(!p)return;
+  const hasPass=p.password&&p.password.value;
+  if(hasPass){
     showPasswordScreen(id);
   } else {
     enterDashboard(id);
@@ -7287,22 +7311,15 @@ function enterDashboard(id){
   }
   showPageLoader();
   const screen=document.getElementById('profile-screen');
-  // S'assurer que profile-screen est visible avant de le fader
-  screen.style.opacity='1';
-  screen.style.transition='opacity .2s ease';
-  screen.style.opacity='0';
-  setTimeout(()=>{
-    screen.style.display='none';
-    screen.style.opacity=''; screen.style.transition='';
-    const sb=document.getElementById('main-sidebar');
-    const mc=document.getElementById('main-content');
-    if(sb){sb.style.display='flex';sb.style.opacity='1';}
-    if(mc){mc.style.display='block';mc.style.opacity='1';}
-    renderSidebarNav(); updateSidebarAvatar(); applyI18n();
-    initDashboard();
-    setTimeout(()=>{if(typeof animateSidebarEntrance==='function')animateSidebarEntrance();},200);
-    if(!curP()?.bgTheme||curP()?.bgTheme==='none') setTimeout(startAmbientBg,400);
-  },200);
+  screen.style.display='none';
+  const sb=document.getElementById('main-sidebar');
+  const mc=document.getElementById('main-content');
+  if(sb){sb.style.display='flex';sb.style.opacity='1';}
+  if(mc){mc.style.display='block';mc.style.opacity='1';}
+  renderSidebarNav(); updateSidebarAvatar(); applyI18n();
+  initDashboard();
+  setTimeout(()=>{if(typeof animateSidebarEntrance==='function')animateSidebarEntrance();},200);
+  if(!curP()?.bgTheme||curP()?.bgTheme==='none') setTimeout(startAmbientBg,400);
 }
 
 function goToProfileScreen(){
@@ -7317,10 +7334,13 @@ function goToProfileScreen(){
   document.getElementById('main-sidebar').style.display='none';
   document.getElementById('main-content').style.display='none';
   document.getElementById('password-screen').style.display='none';
+  managingMode=false;
+  // Rendre les cartes D'ABORD, puis afficher l'écran
+  renderProfileScreen();
   const s=document.getElementById('profile-screen');
-  s.style.display='flex';s.classList.remove('hiding');
-  s.style.animation='none';setTimeout(()=>s.style.animation='',10);
-  managingMode=false;renderProfileScreen();
+  s.style.display='flex';
+  s.style.opacity='1';
+  s.classList.remove('hiding');
   setTimeout(initPsCursorGlow,100);
 }
 
@@ -16669,7 +16689,9 @@ function showDashboardOrProfiles(){
   const authEl=document.getElementById('auth-screen');
   if(authEl) authEl.style.display='none';
 
-  if(profiles.length===1&&!profiles[0].password){
+  // Auto-redirect si 1 seul profil sans mot de passe
+  const hasPassword=profiles[0]?.password&&profiles[0].password.value;
+  if(profiles.length===1&&!hasPassword){
     const p=profiles[0]; currentId=p.id;
     _valoMatchCache={};
     _valoAllMatches=[];
@@ -16681,7 +16703,9 @@ function showDashboardOrProfiles(){
     try{initDashboard();}catch(e){console.error('[NEXUS] initDashboard error:',e);}
     if(!curP()?.bgTheme||curP()?.bgTheme==='none') setTimeout(startAmbientBg,400);
   } else {
+    // Rendre d'abord (pour que les cartes existent dans le DOM)
     try{renderProfileScreen();}catch(e){console.error('[NEXUS] renderProfileScreen error:',e);}
+    // PUIS rendre visible
     const ps=document.getElementById('profile-screen');
     if(ps){ps.style.display='flex';ps.style.opacity='1';}
     updateClock();

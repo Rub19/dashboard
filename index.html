@@ -147,7 +147,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .pw-back:hover{color:var(--text)}
 
 /* ── PROFILE SCREEN ── */
-#profile-screen{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;animation:fadeIn .4s ease;overflow:hidden}
+#profile-screen{position:fixed;inset:0;z-index:9999;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;animation:fadeIn .4s ease;overflow:hidden}
 #profile-screen.hiding{animation:profileeHide .5s cubic-bezier(.4,0,.2,1) forwards}
 /* Ambient embers canvas */
 #ps-canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
@@ -526,6 +526,8 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .note-area:focus{border-color:rgba(249,115,22,.4);box-shadow:0 0 0 3px rgba(249,115,22,.08)}
 .note-area::placeholder{color:rgba(255,255,255,.2)}
 .todo-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;transition:background .2s;cursor:pointer}
+#ov-quick-todo::placeholder{color:rgba(255,255,255,.2);font-size:12px}
+#ov-quick-todo:focus{outline:none}
 .todo-item:hover{background:rgba(255,255,255,.03)}
 .todo-check{width:16px;height:16px;border:1.5px solid rgba(255,255,255,.15);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;font-size:10px}
 .todo-check.checked{background:linear-gradient(135deg,#f97316,#dc2626);border-color:transparent;color:#fff}
@@ -4383,6 +4385,12 @@ body.no-anim #bg-canvas{display:none!important}
               <button class="panel-action" onclick="switchPage('todos',null)">All →</button>
             </div>
             <div id="overview-todos"><div class="empty-state" style="padding:16px"><div class="empty-icon">🎉</div><div class="empty-label">All done!</div></div></div>
+            <div style="display:flex;gap:6px;padding:8px 0 2px">
+              <input id="ov-quick-todo" type="text" placeholder="+ Ajouter une tâche rapide…"
+                style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;color:var(--text);font-family:var(--font);font-size:12px;outline:none;transition:border-color .2s"
+                onfocus="this.style.borderColor='rgba(249,115,22,.4)'" onblur="this.style.borderColor='rgba(255,255,255,.08)'"
+                onkeydown="if(event.key==='Enter'&&this.value.trim()){ovQuickAddTodo(this.value.trim());this.value='';}">
+            </div>
           </div>
           <div class="panel">
             <div class="panel-header">
@@ -4396,6 +4404,18 @@ body.no-anim #bg-canvas{display:none!important}
             </div>
             <div id="overview-events"><div class="empty-state" style="padding:16px"><div class="empty-icon">📅</div><div class="empty-label">No events</div></div></div>
           </div>
+        </div>
+
+        <!-- Habits overview -->
+        <div class="panel" id="overview-habits-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <div class="panel-title-icon" style="background:rgba(249,115,22,.1);color:#f97316">🔥</div>
+              Habitudes du jour
+            </div>
+            <button class="panel-action" onclick="switchPage('habits',null)">Voir tout →</button>
+          </div>
+          <div id="overview-habits-list" style="display:flex;flex-direction:column;gap:6px;padding:4px 0"></div>
         </div>
 
         <!-- Quick note -->
@@ -4538,6 +4558,18 @@ body.no-anim #bg-canvas{display:none!important}
           <div id="quote-widget"><div class="empty-state" style="padding:12px"><div class="empty-label">Loading...</div></div></div>
         </div>
 
+        <!-- Goals progress widget -->
+        <div class="panel" id="overview-goals-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <div class="panel-title-icon" style="background:rgba(99,102,241,.1);color:#818cf8">🎯</div>
+              Objectifs semaine
+            </div>
+            <button class="panel-action" onclick="switchPage('goals',null)">Voir →</button>
+          </div>
+          <div id="overview-goals-list" style="padding:4px 0"></div>
+        </div>
+
         <!-- Countdown -->
         <div class="panel">
           <div class="panel-header">
@@ -4665,7 +4697,7 @@ body.no-anim #bg-canvas{display:none!important}
     </div>
     <div class="grid-2">
       <div class="panel">
-        <div class="panel-header"><div class="panel-title">🔥 To Do</div><span style="font-size:12px;color:var(--muted)" id="todo-pending-count">0 pending</span></div>
+        <div class="panel-header"><div class="panel-title">🔥 To Do</div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:12px;color:var(--muted)" id="todo-pending-count">0 pending</span><button class="panel-action" onclick="markAllTodosDone()" title="Tout cocher">✅ Tout</button></div></div>
         <div id="todo-pending-list"><div class="empty-state" style="padding:20px"><div class="empty-icon">🎉</div>All done!</div></div>
       </div>
       <div class="panel">
@@ -4894,6 +4926,7 @@ body.no-anim #bg-canvas{display:none!important}
     <div class="topbar">
       <div><div class="page-title">Journal</div><div class="page-subtitle">Daily entries with mood tracking</div></div>
       <div class="topbar-actions">
+        <input type="text" id="journal-search" placeholder="Rechercher..." style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px 12px;color:var(--text);font-family:var(--font);font-size:12px;outline:none;width:160px" oninput="renderJournal()">
         <button class="btn btn-primary" onclick="openModal('add-journal')">+ Today's entry</button>
       </div>
     </div>
@@ -4901,7 +4934,10 @@ body.no-anim #bg-canvas{display:none!important}
       <!-- Calendar sidebar -->
       <div style="width:200px;flex-shrink:0">
         <div class="panel" style="padding:12px">
-          <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Entries</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Entries</div>
+            <span id="journal-count" style="font-size:11px;color:var(--muted2)"></span>
+          </div>
           <div id="journal-entries-list" style="display:flex;flex-direction:column;gap:4px"></div>
         </div>
       </div>
@@ -4954,7 +4990,7 @@ body.no-anim #bg-canvas{display:none!important}
     <div class="topbar">
       <div><div class="section-eyebrow">Finance</div><div class="section-title">Budget</div></div>
       <div class="topbar-actions">
-        <button class="btn btn-ghost" onclick="exportBudgetPDF()" style="font-size:12px">🖨️ Export PDF</button>
+        <button class="btn btn-ghost" onclick="exportBudgetCSV()" style="font-size:12px" title="Export CSV">📥 CSV</button>
         <button class="btn btn-ghost" onclick="openModal('add-budget-tx')" style="gap:6px">+ Dépense</button>
         <button class="btn btn-primary" onclick="openModal('add-budget-tx-in')">+ Revenu</button>
       </div>
@@ -5915,6 +5951,25 @@ body.no-anim #bg-canvas{display:none!important}
 </div>
 
 <!-- MODALS -->
+<!-- HABIT MODAL -->
+<div class="modal-overlay" id="modal-add-habit" onclick="closeModalIfOverlay(event,'add-habit')">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-title">🌱 New habit</div>
+    <div class="modal-field">
+      <div class="modal-label">HABIT NAME</div>
+      <input type="text" class="modal-input" id="habit-name-input" placeholder="e.g. Méditation, Sport, Lecture..." onkeydown="if(event.key==='Enter')addHabit()">
+    </div>
+    <div class="modal-field">
+      <div class="modal-label">EMOJI (optional)</div>
+      <input type="text" class="modal-input" id="habit-icon-input" placeholder="🧘" maxlength="4" style="width:80px">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('add-habit')">Cancel</button>
+      <button class="btn btn-primary" onclick="addHabit()">Add habit</button>
+    </div>
+  </div>
+</div>
+
 <!-- GOAL MODAL -->
 <div class="modal-overlay" id="modal-add-goal" onclick="closeModalIfOverlay(event,'add-goal')">
   <div class="modal" style="max-width:420px">
@@ -6334,6 +6389,7 @@ function updateAllLangDropdowns(){
 
 function setLang(lang){
   _lang = lang;
+  uiLang = lang; // sync alias global
   localStorage.setItem('nexus_lang', lang);
   applyI18n();
   updateAllLangDropdowns();
@@ -6403,6 +6459,7 @@ let _ambientFrame=null;
 let _bgFrame=null;
 let _bgParticles=[];
 let _lang=localStorage.getItem('nexus_lang')||'fr';
+let uiLang=_lang; // alias global pour compatibilité
 let _bioSaveTO=null;
 let _socialSaveTO=null;
 let _npProgressInterval=null;
@@ -6704,22 +6761,34 @@ async function doRegister(){
 }
 
 async function doLogout(){
-  await sb.auth.signOut();
+  try{ await sb.auth.signOut(); }catch(e){}
   _sbUser=null;_isAdmin=false;
+  // Nettoyer les intervals
+  if(typeof _lanyardWS!=='undefined'&&_lanyardWS){try{_lanyardWS.close();}catch(e){}; _lanyardWS=null;}
+  if(typeof _lastfmInterval!=='undefined'){clearInterval(_lastfmInterval);_lastfmInterval=null;}
+  if(typeof _spotifyAutoRefresh!=='undefined'){clearInterval(_spotifyAutoRefresh);_spotifyAutoRefresh=null;}
+  clearInterval(window._npProgressInterval);
+  if(window._steamInterval){clearInterval(window._steamInterval);window._steamInterval=null;}
+  if(typeof stopAmbientBg==='function')stopAmbientBg();
+  // Masquer tout
+  ['profile-screen','main-sidebar','main-content','password-screen'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.style.setProperty('display','none');
+  });
+  // Vider session cache
+  try{ if(_sbUser) sessionStorage.removeItem('nexus_profiles_'+_sbUser?.id); }catch(e){}
+  profiles=[]; currentId=null;
+  // Afficher auth proprement (pas besoin de removeAntiFlash ici, on est déjà dans le dashboard)
   const authScr=document.getElementById('auth-screen');
-  authScr.style.display='flex';
-  setTimeout(()=>animateAuthEntrance(),50);
-  document.getElementById('profile-screen').style.display='none';
-  document.getElementById('main-sidebar').style.display='none';
-  document.getElementById('main-content').style.display='none';
+  if(authScr){ authScr.style.setProperty('display','flex'); authScr.style.opacity='1'; }
+  setTimeout(()=>{ if(typeof animateAuthEntrance==='function') animateAuthEntrance(); },80);
 }
 
 async function onAuthSuccess(userArg){
   // 1. Anti-flash EN PREMIER
   removeAntiFlash();
-  // 2. Cache auth immédiatement
+  // 2. Cache auth immédiatement (setProperty pour overrider le CSS)
   const authEl=document.getElementById('auth-screen');
-  if(authEl){ authEl.style.display='none'; }
+  if(authEl){ authEl.style.setProperty('display','none'); }
 
   // 3. Boot screen pendant le chargement
   let boot=document.getElementById('nexus-boot-screen');
@@ -6795,6 +6864,7 @@ async function loadCloudState(){
         sidebarCompact:s.sidebarCompact||false,
         customAccent:s.customAccent||null,
         bannerImg:s.bannerImg||null,
+        darkMode:s.darkMode!==undefined?s.darkMode:true,
         state:{
           items:s.items||[],
           todos:s.todos||[],
@@ -6824,6 +6894,8 @@ async function loadCloudState(){
           aiSessions:s.aiSessions||[],
           overviewOrder:s.overviewOrder||[],
           dailyFocus:s.dailyFocus||null,
+          budget:s.budget||[],
+          designOptions:s.designOptions||null,
         }
       };
     });
@@ -6887,6 +6959,7 @@ async function saveCloudState(){
         customAccent:p.customAccent||null,
         bannerImg:p.bannerImg||null,
         notifEnabled:p.state?.notifEnabled||false,
+        darkMode:p.darkMode!==undefined?p.darkMode:true,
         xp:p.state?.xp||0,
         weatherCity:p.state?.weatherCity||null,
         weatherCache:p.state?.weatherCache||null,
@@ -7145,7 +7218,7 @@ function saveStateNow(){
 }
 function getP(id){return profiles.find(p=>String(p.id)===String(id))}
 function curP(){return getP(currentId)}
-function defState(name){return{items:[],todos:[],note:'',notes:[],activity:[],username:name||'User',connections:{},gaming:{},habits:[],kanban:[],events:[],pinned:[],manualBadges:{},banner:null,countdown:null,pomoHistory:[],notifEnabled:false,bio:'',socials:{},goals:[],journal:[],countdowns:[],xp:0,dailyFocus:null}}
+function defState(name){return{items:[],todos:[],note:'',notes:[],activity:[],username:name||'User',connections:{},gaming:{},habits:[],kanban:[],events:[],pinned:[],manualBadges:{},banner:null,countdown:null,pomoHistory:[],notifEnabled:false,bio:'',socials:{},goals:[],journal:[],countdowns:[],xp:0,dailyFocus:null,budget:[],aiSessions:[],overviewOrder:[],designOptions:null}}
 
 // ===================================================
 //  AVATAR HELPERS
@@ -7277,10 +7350,12 @@ function renderProfileScreen(){
   const manBtn=document.getElementById('ps-manage-btn');
   if(manBtn)manBtn.textContent=managingMode?t('done'):t('manage_profiles');
 
-  // Animer les cartes en JS (plus fiable que CSS animation avec opacity:0)
+  // Animer les cartes (opacity 0→1 staggered)
   list.querySelectorAll('.ps-profile,.ps-add-card').forEach((el,i)=>{
-    el.style.cssText+='opacity:0;transform:translateY(16px);transition:opacity .3s ease,transform .3s ease';
-    setTimeout(()=>{el.style.opacity='1';el.style.transform='translateY(0)';},50+i*70);
+    el.style.opacity='0';
+    el.style.transform='translateY(14px)';
+    el.style.transition='opacity .28s ease,transform .28s ease';
+    setTimeout(()=>{el.style.opacity='1';el.style.transform='none';},40+i*60);
   });
 
   psStartEmbers();
@@ -7302,7 +7377,9 @@ function handleProfileClick(id){
 function toggleManageMode(){managingMode=!managingMode;renderProfileScreen()}
 
 function enterDashboard(id){
-  currentId=id;
+  // Convertir en number si possible (les IDs Supabase sont des numbers)
+  const numId = Number(id);
+  currentId = isNaN(numId) ? id : numId;
   _valoMatchCache={};
   _valoAllMatches=[];
   // Tuer uniquement les animations GSAP de l'auth
@@ -7310,14 +7387,17 @@ function enterDashboard(id){
     gsap.killTweensOf('#auth-card, #auth-left-content, .auth-feature-item, .auth-tab-pill, #auth-form-header, #auth-logo-icon, #form-login .auth-input-wrap, #form-login .auth-submit-btn');
   }
   showPageLoader();
-  const screen=document.getElementById('profile-screen');
-  screen.style.display='none';
+  // Masquer tout sauf dashboard
+  ['profile-screen','password-screen','auth-screen'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.setProperty('display','none');
+  });
   const sb=document.getElementById('main-sidebar');
   const mc=document.getElementById('main-content');
-  if(sb){sb.style.display='flex';sb.style.opacity='1';}
-  if(mc){mc.style.display='block';mc.style.opacity='1';}
-  renderSidebarNav(); updateSidebarAvatar(); applyI18n();
-  initDashboard();
+  if(sb){sb.style.setProperty('display','flex');sb.style.opacity='1';}
+  if(mc){sb.style.opacity='1';mc.style.setProperty('display','block');mc.style.opacity='1';}
+  renderSidebarNav(); updateSidebarAvatar(); applyI18n(); updateClock();
+  try{initDashboard();}catch(e){console.error('[NEXUS] initDashboard error:',e);}
   setTimeout(()=>{if(typeof animateSidebarEntrance==='function')animateSidebarEntrance();},200);
   if(!curP()?.bgTheme||curP()?.bgTheme==='none') setTimeout(startAmbientBg,400);
 }
@@ -7328,17 +7408,19 @@ function goToProfileScreen(){
   if(typeof _lastfmInterval!=='undefined')clearInterval(_lastfmInterval);_lastfmInterval=null;
   if(typeof _spotifyAutoRefresh!=='undefined')clearInterval(_spotifyAutoRefresh);_spotifyAutoRefresh=null;
   if(typeof _npProgressInterval!=='undefined')clearInterval(window._npProgressInterval);window._npProgressInterval=null;
+  if(window._steamInterval){clearInterval(window._steamInterval);window._steamInterval=null;}
   _valoMatchCache={};
   _valoAllMatches=[];
   stopAmbientBg();
-  document.getElementById('main-sidebar').style.display='none';
-  document.getElementById('main-content').style.display='none';
-  document.getElementById('password-screen').style.display='none';
+  ['main-sidebar','main-content','password-screen','auth-screen'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.setProperty('display','none');
+  });
   managingMode=false;
   // Rendre les cartes D'ABORD, puis afficher l'écran
   renderProfileScreen();
   const s=document.getElementById('profile-screen');
-  s.style.display='flex';
+  s.style.setProperty('display','flex');
   s.style.opacity='1';
   s.classList.remove('hiding');
   setTimeout(initPsCursorGlow,100);
@@ -7351,9 +7433,9 @@ function showPasswordScreen(id){
   pendingPasswordId=id;pinEntry='';
   const p=getP(id);if(!p)return;
   const ps=document.getElementById('profile-screen');
-  ps.style.display='none';
+  ps.style.setProperty('display','none');
   const screen=document.getElementById('password-screen');
-  screen.style.display='flex';
+  screen.style.setProperty('display','flex');
 
   // avatar
   const avEl=document.getElementById('pw-avatar');
@@ -7416,7 +7498,7 @@ function pinPress(k){
 function checkPinPassword(){
   const p=getP(pendingPasswordId);if(!p)return;
   if(pinEntry===p.password.value){
-    document.getElementById('password-screen').style.display='none';
+    document.getElementById('password-screen').style.setProperty('display','none');
     enterDashboard(pendingPasswordId);
   } else {
     document.getElementById('pw-error').textContent='Incorrect PIN. Try again.';
@@ -7429,7 +7511,7 @@ function checkTextPassword(){
   const p=getP(pendingPasswordId);if(!p)return;
   const val=document.getElementById('pw-text-input').value;
   if(val===p.password.value){
-    document.getElementById('password-screen').style.display='none';
+    document.getElementById('password-screen').style.setProperty('display','none');
     enterDashboard(pendingPasswordId);
   } else {
     document.getElementById('pw-text-error').textContent='Incorrect password. Try again.';
@@ -7438,7 +7520,7 @@ function checkTextPassword(){
 }
 
 function cancelPasswordScreen(){
-  document.getElementById('password-screen').style.display='none';
+  document.getElementById('password-screen').style.setProperty('display','none');
   pendingPasswordId=null;pinEntry='';
   goToProfileScreen();
 }
@@ -7812,7 +7894,8 @@ function initSidebarWidgets(p){
   if(conn.steam?.steamId&&vis2.steam!==false){
     if(steamWrap)steamWrap.style.display='block';
     refreshSteamSidebar();
-    setInterval(refreshSteamSidebar,120000); // refresh toutes les 2min
+    if(window._steamInterval)clearInterval(window._steamInterval);
+    window._steamInterval=setInterval(refreshSteamSidebar,120000);
   } else {
     if(steamWrap)steamWrap.style.display='none';
   }
@@ -8119,13 +8202,17 @@ function initDashboard(){
   if(typeof renderDailyFocus==='function')renderDailyFocus();
   if(typeof applyTheme==='function')applyTheme(p.themeIdx||0);
   if(typeof updateBannerDisplay==='function')updateBannerDisplay();
-  initDarkMode();
+  // Restaurer darkMode depuis le profil cloud
+  if(p.darkMode===false&&_darkMode){_darkMode=true;toggleDarkLight();}
+  else initDarkMode();
   initNotifState(p);
   updateSyncIndicator(_sbUser?'saved':'offline');
 
   // ── VISIBLE CONTENT ─────────────────────────────────────────────────
   renderRecentItems();renderActivity();renderTodos();renderOverviewEvents();
   if(typeof renderPinnedLinks==='function')renderPinnedLinks();
+  renderOverviewHabits();
+  renderOverviewGoals();
   loadConnectionsUI();
   initSidebarWidgets(p);
   const adminBtn=document.getElementById('nav-admin');
@@ -8135,11 +8222,10 @@ function initDashboard(){
   restorePomoIfRunning();
   setTimeout(()=>{
     if(typeof renderGamingOverview==='function')renderGamingOverview();
-    initAnimations();
     startNotifScan();
   },500);
   checkMobileLayout();
-  if(typeof renderCountdown==='function')renderCountdown();;
+  if(typeof renderCountdown==='function')renderCountdown();
   refreshSpotifySidebar();
   applyTheme(p.themeIdx||0);
   // Apply bgTheme — wait for paint then size canvas properly
@@ -8169,7 +8255,9 @@ function initDashboard(){
   renderPinnedLinks();
   renderCountdown();
   addActivity('Welcome back, '+p.name,'var(--accent)');
-  pomoReset();
+  // Ne PAS appeler pomoReset() ici — restorePomoIfRunning() a déjà géré l'état
+  // pomoReset() détruirait un timer en cours restauré depuis localStorage
+  if(!pomoRunning) renderPomo(); // juste rafraîchir l'affichage si pas de timer actif
 }
 
 function updateSidebarAvatar(){
@@ -9281,6 +9369,7 @@ function renderOverviewEvents(){
 
 function addActivity(text,color='var(--accent)'){
   const p=curP();if(!p)return;
+  if(!p.state.activity) p.state.activity=[];
   const n=new Date(),time=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
   const ts=n.toISOString();
   p.state.activity.unshift({text:String(text ?? ''),color,time,ts});
@@ -9723,6 +9812,7 @@ function toggleTodo(id){
   const t=p.state.todos.find(t=>t.id===id);if(!t)return;
   t.done=!t.done;if(t.done)t.doneAt=new Date().toISOString();
   saveStateNow();renderTodos();updateStats();
+  if(typeof renderOverviewGoals==='function')renderOverviewGoals();
   if(t.done){addActivity(t.text+' completed ✅','var(--accent2)');toast('Task done! 🎉','success');}
 }
 
@@ -9808,9 +9898,71 @@ function renderTodos(){
   const badge=document.getElementById('todo-count');if(badge)badge.textContent=allPending.length||'';
 }
 
-// ===================================================
-//  DARK / LIGHT MODE
-// ===================================================
+// ═══════════════════════════════════════════════════════════
+//  OVERVIEW QUICK-ADD TODO
+// ═══════════════════════════════════════════════════════════
+function ovQuickAddTodo(text){
+  const p=curP();if(!p)return;
+  if(!p.state.todos)p.state.todos=[];
+  p.state.todos.unshift({id:Date.now(),text,done:false,priority:'normal',tag:'',due:null,color:null});
+  saveStateNow();
+  addActivity('Tâche ajoutée : '+text,'var(--accent2)');
+  renderTodos();
+  toast('✅ '+text,'success');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  OVERVIEW HABITS
+// ═══════════════════════════════════════════════════════════
+function renderOverviewHabits(){
+  const el=document.getElementById('overview-habits-list');if(!el)return;
+  const p=curP();
+  const habits=(p?.state?.habits||[]).slice(0,5);
+  const today=new Date().toISOString().slice(0,10);
+  if(!habits.length){
+    el.innerHTML='<div class="empty-state" style="padding:12px"><div class="empty-icon">🌱</div><div class="empty-label">Aucune habitude — <span style="color:var(--accent);cursor:pointer" onclick="switchPage(\'habits\',null)">ajouter</span></div></div>';
+    return;
+  }
+  el.innerHTML=habits.map(h=>{
+    const done=!!(h.log&&h.log[today]);
+    const streak=h.streak||0;
+    return`<div style="display:flex;align-items:center;gap:10px;padding:6px 2px;border-bottom:1px solid var(--border3);cursor:pointer" onclick="toggleHabitDay(${h.id},'${today}');renderOverviewHabits();renderHabits()">
+      <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${done?'var(--accent2)':'rgba(255,255,255,.15)'};background:${done?'var(--accent2)':'transparent'};display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0">
+        ${done?'<svg viewBox="0 0 16 16" fill="none" style="width:11px;height:11px"><polyline points="2,8 6,12 14,4" stroke="#050507" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}
+      </div>
+      <span style="flex:1;font-size:13px;font-weight:500;color:${done?'var(--muted)':'var(--text)'};${done?'text-decoration:line-through':''}">${h.icon?h.icon+' ':''}${escapeHTML(h.name)}</span>
+      ${streak>1?`<span style="font-size:10px;background:rgba(249,115,22,.12);color:var(--accent);padding:2px 7px;border-radius:10px;font-weight:600">🔥${streak}</span>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  OVERVIEW GOALS
+// ═══════════════════════════════════════════════════════════
+function renderOverviewGoals(){
+  const el=document.getElementById('overview-goals-list');if(!el)return;
+  const p=curP();
+  const goals=(p?.state?.goals||[]).slice(0,4);
+  if(!goals.length){
+    el.innerHTML='<div style="font-size:12px;color:var(--muted);padding:8px 2px;text-align:center">Aucun objectif — <span style="color:var(--accent);cursor:pointer" onclick="switchPage(\'goals\',null)">en ajouter</span></div>';
+    return;
+  }
+  el.innerHTML=goals.map(g=>{
+    const pct=g.target?Math.min(100,Math.round(((g.progress||0)/g.target)*100)):( g.done?100:0);
+    const color=pct>=100?'var(--accent2)':pct>=50?'var(--accent)':'rgba(255,255,255,.25)';
+    return`<div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <span style="font-size:12px;font-weight:500;color:${pct>=100?'var(--muted)':'var(--text)'};${pct>=100?'text-decoration:line-through':''}">${g.emoji?g.emoji+' ':''}${escapeHTML(g.text||'')}</span>
+        <span style="font-size:11px;color:${color};font-weight:600;font-family:var(--mono)">${pct}%</span>
+      </div>
+      <div style="height:4px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:${color};border-radius:99px;transition:width .4s ease"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+
 let _darkMode=true;
 function toggleDarkLight(){
   _darkMode=!_darkMode;
@@ -9895,7 +10047,7 @@ function addGoal(){
   p.state.goals.push({id:Date.now(),text,target,unit,emoji,progress:0,done:false,week:weekStart,created:new Date().toISOString()});
   saveStateNow();closeModal('add-goal');
   ['goal-text','goal-target','goal-unit','goal-emoji'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  renderGoals();toast('Goal added! 🎯','success');
+  renderGoals();if(typeof renderOverviewGoals==='function')renderOverviewGoals();toast('Goal added! 🎯','success');
 }
 
 function getWeekStart(){
@@ -9911,12 +10063,14 @@ function incrementGoal(id,delta){
   if(g.target>0&&g.progress>=g.target){g.done=true;if(delta>0)toast(g.emoji+' Goal complete!','success');}
   else g.done=false;
   saveStateNow();renderGoals();
+  if(typeof renderOverviewGoals==='function')renderOverviewGoals();
 }
 
 function deleteGoal(id){
   const p=curP();if(!p)return;
   p.state.goals=(p.state.goals||[]).filter(g=>g.id!==id);
   saveStateNow();renderGoals();
+  if(typeof renderOverviewGoals==='function')renderOverviewGoals();
 }
 
 function renderGoals(){
@@ -10021,29 +10175,45 @@ function addJournalEntry(){
 
 function renderJournal(){
   const p=curP();if(!p)return;
-  const entries=(p.state.journal||[]).sort((a,b)=>b.date.localeCompare(a.date));
+  const q=(document.getElementById('journal-search')?.value||'').toLowerCase().trim();
+  let entries=(p.state.journal||[]).sort((a,b)=>b.date.localeCompare(a.date));
+  if(q) entries=entries.filter(e=>
+    (e.title||'').toLowerCase().includes(q)||
+    (e.text||'').toLowerCase().includes(q)||
+    (e.mood||'').includes(q)
+  );
   const listEl=document.getElementById('journal-entries-list');
-  const contentEl=document.getElementById('journal-entry-content');
+  const countEl=document.getElementById('journal-count');
+  if(countEl) countEl.textContent=entries.length+' entrée'+(entries.length>1?'s':'');
   if(!listEl)return;
   if(!entries.length){
-    listEl.innerHTML='<div style="font-size:11px;color:var(--muted);text-align:center;padding:12px">No entries yet</div>';
+    listEl.innerHTML=q
+      ?`<div style="font-size:11px;color:var(--muted);text-align:center;padding:12px">Aucun résultat</div>`
+      :'<div style="font-size:11px;color:var(--muted);text-align:center;padding:12px">No entries yet</div>';
     return;
   }
   listEl.innerHTML=entries.map((e,i)=>{
     const d=new Date(e.date);
     const isToday=e.date===new Date().toLocaleDateString('en-CA');
-    return `<div onclick="showJournalEntry(${e.id||i})" style="padding:8px 10px;border-radius:6px;cursor:pointer;background:var(--surface2);border:1px solid var(--border);transition:all .15s">
+    return `<div onclick="showJournalEntry(${e.id||i})" style="padding:8px 10px;border-radius:6px;cursor:pointer;background:var(--surface2);border:1px solid var(--border);transition:all .15s;position:relative" onmouseenter="this.querySelector('.jdel').style.opacity='.6'" onmouseleave="this.querySelector('.jdel').style.opacity='0'">
       <div style="display:flex;align-items:center;gap:6px">
         ${e.mood?`<span style="font-size:14px">${e.mood}</span>`:''}
         <div style="flex:1;min-width:0">
           <div style="font-size:11px;font-weight:600;color:var(--muted)">${isToday?'Today':d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}</div>
           ${e.title?`<div style="font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHTML(e.title)}</div>`:''}
         </div>
+        <button class="jdel" onclick="event.stopPropagation();deleteJournalEntry(${e.id||i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:11px;opacity:0;transition:opacity .15s;flex-shrink:0">✕</button>
       </div>
     </div>`;
   }).join('');
-  // Show most recent entry
   if(entries[0])showJournalEntryData(entries[0]);
+}
+
+function deleteJournalEntry(id){
+  const p=curP();if(!p)return;
+  if(!confirm('Supprimer cette entrée ?'))return;
+  p.state.journal=(p.state.journal||[]).filter(e=>String(e.id)!==String(id));
+  saveStateNow();renderJournal();toast('Entrée supprimée','info');
 }
 
 function showJournalEntry(id){
@@ -10085,7 +10255,7 @@ function addCountdown(){
   p.state.countdowns.push({id:Date.now(),name,date,emoji,color});
   saveStateNow();closeModal('add-countdown');
   ['cd-name','cd-date','cd-emoji'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  renderCountdowns();toast('Countdown added! ⏳','success');
+  renderCountdowns();renderCountdown();toast('Countdown added! ⏳','success');
 }
 
 function deleteCountdown(id){
@@ -10269,7 +10439,7 @@ function renderStatsPage(){
   const setEl=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
   setEl('st-total-items',items.length);
   setEl('st-total-done',todos.filter(t=>t.done).length);
-  setEl('st-best-streak',Math.max(0,...habits.map(h=>habitStreak(h)||0)));
+  setEl('st-best-streak',habits.length?Math.max(0,...habits.map(h=>habitStreak(h)||0)):0);
   setEl('st-pomo-total',pomo.length);
   const totalMins=Math.round(pomo.reduce((s,h)=>s+(h.duration||1500),0)/60);
   setEl('st-pomo-time',totalMins>=60?(totalMins/60).toFixed(1)+'h focus':totalMins+'m focus');
@@ -10465,7 +10635,7 @@ function removePassword(){
 document.getElementById('global-search').addEventListener('input',function(){
   const q=this.value.toLowerCase();if(!q)return;
   const p=curP(),match=p?(p.state.items||[]).filter(i=>i.name.toLowerCase().includes(q)):[];
-  if(match.length){toast('Found '+match.length+' item(s)','info');setTimeout(()=>{switchPage('files',null);document.getElementById('files-search').value=q;filterItems()},400)}
+  if(match.length){toast('Found '+match.length+' item(s)','info');setTimeout(()=>{switchPage('files',null);const fs=document.getElementById('files-search');if(fs){fs.value=q;filterItems();}},400)}
 });
 
 
@@ -10819,7 +10989,10 @@ document.addEventListener('keydown',e=>{
 //  LINK HOVER PREVIEW
 // ══════════════════════════════════════════════════════════════
 let _lpTO=null,_lpHideTO=null;
+let _linkPreviewsInit=false;
 function initLinkPreviews(){
+  if(_linkPreviewsInit)return; // empêcher l'ajout multiple de listeners
+  _linkPreviewsInit=true;
   const preview=document.getElementById('link-preview');if(!preview)return;
   document.addEventListener('mouseover',e=>{
     const link=e.target.closest('[data-preview-url],.link-card,.pinned-card,.item-row[data-url]');
@@ -13059,47 +13232,37 @@ function renderPinnedLinks(){
 // ===================================================
 let cdInterval=null;
 function saveCountdown(){
-  const label=document.getElementById('cd-label-input').value.trim()||'Event';
-  const date=document.getElementById('cd-date-input').value;
-  if(!date){toast('Pick a date','error');return}
-  const p=curP();if(!p)return;
-  p.state.countdown={label,date};saveStateNow();
-  closeModal('add-countdown');
-  renderCountdown();toast('Countdown set!','success');
+  // Redirige vers addCountdown() (nouvelle version)
+  addCountdown();
 }
 function renderCountdown(){
+  // Lit le premier countdown de state.countdowns (nouveau système)
   const p=curP();const w=document.getElementById('countdown-widget');if(!w)return;
-  const cd=p?.state?.countdown;
-  if(!cd){w.innerHTML='<div style="font-size:12px;color:var(--muted)">No countdown set - click Set</div>';return}
+  const cds=p?.state?.countdowns||[];
+  // Compat legacy state.countdown
+  const legacy=p?.state?.countdown;
+  const cd=cds.length>0?{name:cds[0].name,date:cds[0].date}:(legacy?{name:legacy.label,date:legacy.date}:null);
+  if(!cd){
+    w.innerHTML='<div style="font-size:12px;color:var(--muted);text-align:center;padding:8px">Aucun countdown — clique Set</div>';
+    return;
+  }
   clearInterval(cdInterval);
   function tick(){
     const now=new Date();const target=new Date(cd.date+'T00:00:00');
     const diff=target-now;
-    if(diff<=0){
-      const isPast=diff<-86400000;
-      const daysAgo=Math.floor(-diff/86400000);
-      const pastSuffix=isPast?('<div style="font-size:11px;color:var(--muted);margin-top:4px">Il y a '+daysAgo+' jour'+(daysAgo>1?'s':'')+'</div>'):'';
-      w.innerHTML='<div class="countdown-wrap"><div class="countdown-label">'+escapeHTML(cd.label)+'</div>'
-        +'<div style="font-size:15px;color:'+(isPast?'var(--muted)':'var(--accent2)')+'">'+( isPast?'🗓 Date passée':'🎉 Aujourd\'hui !')+'</div>'
-        +pastSuffix+'</div>';
-      clearInterval(cdInterval);return;
-    }
-    const days=Math.floor(diff/86400000);
-    const hrs=Math.floor((diff%86400000)/3600000);
-    const mins=Math.floor((diff%3600000)/60000);
-    const secs=Math.floor((diff%60000)/1000);
-    w.innerHTML='<div class="countdown-wrap">'+
-      '<div class="countdown-label">'+cd.label+'</div>'+
-      '<div class="countdown-digits">'+
-        '<div class="cd-unit"><div class="cd-num">'+String(days).padStart(2,'0')+'</div><div class="cd-label">days</div></div>'+
-        '<div class="cd-sep">:</div>'+
-        '<div class="cd-unit"><div class="cd-num">'+String(hrs).padStart(2,'0')+'</div><div class="cd-label">hrs</div></div>'+
-        '<div class="cd-sep">:</div>'+
-        '<div class="cd-unit"><div class="cd-num">'+String(mins).padStart(2,'0')+'</div><div class="cd-label">min</div></div>'+
-        '<div class="cd-sep">:</div>'+
-        '<div class="cd-unit"><div class="cd-num">'+String(secs).padStart(2,'0')+'</div><div class="cd-label">sec</div></div>'+
-      '</div>'+
-    '</div>';
+    const days=Math.floor(Math.abs(diff)/86400000);
+    const hrs=Math.floor((Math.abs(diff)%86400000)/3600000);
+    const mins=Math.floor((Math.abs(diff)%3600000)/60000);
+    const secs=Math.floor((Math.abs(diff)%60000)/1000);
+    const past=diff<0;
+    if(past&&diff<-86400000*365){w.innerHTML='<div style="font-size:12px;color:var(--muted)">Date trop ancienne</div>';clearInterval(cdInterval);return;}
+    w.innerHTML=`<div style="text-align:center">
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:10px">${escapeHTML(cd.name||'')}</div>
+      <div style="display:flex;gap:8px;justify-content:center;align-items:flex-end">
+        ${[{v:String(days).padStart(2,'0'),l:'j'},{v:String(hrs).padStart(2,'0'),l:'h'},{v:String(mins).padStart(2,'0'),l:'m'},{v:String(secs).padStart(2,'0'),l:'s'}].map(u=>`<div style="background:var(--surface3);border-radius:8px;padding:6px 10px;text-align:center"><div style="font-size:20px;font-weight:800;font-family:var(--mono);color:${past?'var(--muted)':'var(--accent)'};line-height:1">${u.v}</div><div style="font-size:9px;color:var(--muted2);margin-top:2px">${u.l}</div></div>`).join('<div style="font-size:18px;font-weight:700;color:var(--muted2);padding-bottom:8px">:</div>')}
+      </div>
+      <div style="font-size:10px;color:var(--muted2);margin-top:8px">${past?'écoulé':'restant'}</div>
+    </div>`;
   }
   tick();cdInterval=setInterval(tick,1000);
 }
@@ -13117,7 +13280,7 @@ function addHabit(){
   saveStateNow();closeModal('add-habit');
   document.getElementById('habit-name-input').value='';
   document.getElementById('habit-icon-input').value='';
-  renderHabits();toast(name+' added!','success');
+  renderHabits();if(typeof renderOverviewHabits==='function')renderOverviewHabits();toast(name+' added!','success');
 }
 function toggleHabitDay(habitId,dateStr){
   const p=curP();if(!p)return;
@@ -13128,11 +13291,13 @@ function toggleHabitDay(habitId,dateStr){
   h.streak=habitStreak(h);
   h.lastDone=h.log[dateStr]?dateStr:(h.lastDone||null);
   saveStateNow();renderHabits();
+  if(typeof renderOverviewHabits==='function')renderOverviewHabits();
 }
 function deleteHabit(id){
   const p=curP();if(!p)return;
   p.state.habits=(p.state.habits||[]).filter(h=>h.id!==id);
   saveStateNow();renderHabits();
+  if(typeof renderOverviewHabits==='function')renderOverviewHabits();
 }
 function getWeekDays(){
   const days=[];const today=new Date();today.setHours(0,0,0,0);
@@ -14265,7 +14430,40 @@ function addBudgetTx(type){
   toast((isIn?'Revenu':'Dépense')+' ajouté !','success');
 }
 
-function exportBudgetPDF(){
+function markAllTodosDone(){
+  const p=curP();if(!p)return;
+  const pending=(p.state.todos||[]).filter(t=>!t.done);
+  if(!pending.length){toast('Toutes les tâches sont déjà faites !','info');return;}
+  pending.forEach(t=>{t.done=true;t.doneAt=new Date().toISOString();});
+  saveStateNow();renderTodos();updateStats();
+  addActivity(pending.length+' tâches complétées ✅','var(--accent2)');
+  toast('✅ '+pending.length+' tâche'+(pending.length>1?'s':'')+' complétée'+(pending.length>1?'s':'')+'!','success');
+}
+
+function exportBudgetCSV(){
+  const p=curP();if(!p)return;
+  const all=p.state.budget||[];
+  const selMonth=document.getElementById('budget-filter-month')?.value||new Date().toISOString().slice(0,7);
+  const rows=all.filter(t=>t.date.slice(0,7)===selMonth);
+  if(!rows.length){toast('Aucune transaction ce mois','error');return;}
+  const header='Date,Type,Catégorie,Description,Montant\n';
+  const csv=header+rows.map(t=>[
+    t.date,
+    t.type==='in'?'Revenu':'Dépense',
+    '"'+(t.cat||'').replace(/"/g,'""')+'"',
+    '"'+(t.label||'').replace(/"/g,'""')+'"',
+    (t.type==='in'?'+':'-')+t.amount.toFixed(2)
+  ].join(',')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='budget-'+selMonth+'.csv';
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},500);
+  toast('CSV exporté !','success');
+}
+
+
   const p=curP();if(!p)return;
   const all=p.state.budget||[];
   const now=new Date();
@@ -15996,8 +16194,8 @@ function importData(e){
       await saveCloudState();
       toast('Data imported and saved! ','success');
       setTimeout(()=>{
-        document.getElementById('main-sidebar').style.display='none';
-        document.getElementById('main-content').style.display='none';
+        document.getElementById('main-sidebar').style.setProperty('display','none');
+        document.getElementById('main-content').style.setProperty('display','none');
         goToProfileScreen();
       },1000);
     }catch(err){toast('Invalid file : '+err.message,'error');}
@@ -16634,11 +16832,12 @@ function t(key){ if(!I18N)return key; return (I18N[_lang]?.[key]) ?? (I18N['en']
 function removeAntiFlash(){
   const s=document.getElementById('anti-flash');
   if(s)s.remove();
-  // Effacer aussi les styles inline que le !important aurait pu figer
+  // Forcer display:none sur tout — JS décidera quoi montrer ensuite
+  // NE PAS faire removeProperty car le CSS du stylesheet peut reprendre display:flex
   ['main-sidebar','main-content','auth-screen','profile-screen','password-screen'].forEach(id=>{
     const el=document.getElementById(id);
     if(el){
-      el.style.removeProperty('display');
+      el.style.setProperty('display','none');
       el.style.removeProperty('opacity');
       el.style.removeProperty('visibility');
     }
@@ -16657,11 +16856,17 @@ function setBootStatus(msg){
 }
 
 function showAuth(){
-  removeAntiFlash();
+  // Masquer tout d'abord
+  ['main-sidebar','main-content','profile-screen','password-screen'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.setProperty('display','none');
+  });
+  removeAntiFlash(); // Retire le style tag anti-flash
+  const boot=document.getElementById('nexus-boot-screen');
+  if(boot) boot.style.display='none';
   const a=document.getElementById('auth-screen');
-  if(a)a.style.display='flex';
-  hideBoot(); updateClock();
-  // Init particules + animation entrance
+  if(a){ a.style.setProperty('display','flex'); a.style.opacity='1'; }
+  updateClock();
   updateAuthLangBar();
   setTimeout(()=>{
     if(typeof initAuthParticles==='function')initAuthParticles();
@@ -16678,36 +16883,55 @@ function normalizeAllProfiles(){
     if(!p.state.habits)p.state.habits=[];
     if(!p.state.kanban)p.state.kanban=[];
     if(!p.state.events)p.state.events=[];
+    if(!p.state.activity)p.state.activity=[];
+    if(!p.state.notes)p.state.notes=[];
+    if(!p.state.todos)p.state.todos=[];
+    if(!p.state.items)p.state.items=[];
+    if(!p.state.countdowns)p.state.countdowns=[];
+    if(!p.state.goals)p.state.goals=[];
+    if(!p.state.journal)p.state.journal=[];
+    if(!p.state.pomoHistory)p.state.pomoHistory=[];
+    if(p.state.budget===undefined)p.state.budget=[];
+    if(!p.state.aiSessions)p.state.aiSessions=[];
+    if(!p.state.overviewOrder)p.state.overviewOrder=[];
   });
 }
 
 function showDashboardOrProfiles(){
-  // Supprimer anti-flash et boot EN PREMIER
+  // 1. Supprimer anti-flash et boot EN PREMIER (critique)
   removeAntiFlash();
   const boot=document.getElementById('nexus-boot-screen');
   if(boot) boot.style.display='none';
   const authEl=document.getElementById('auth-screen');
   if(authEl) authEl.style.display='none';
 
-  // Auto-redirect si 1 seul profil sans mot de passe
-  const hasPassword=profiles[0]?.password&&profiles[0].password.value;
-  if(profiles.length===1&&!hasPassword){
-    const p=profiles[0]; currentId=p.id;
+  // 2. Tout masquer pour partir d'un état propre (forcer même si CSS a des valeurs par défaut)
+  const sb_el=document.getElementById('main-sidebar');
+  const mc=document.getElementById('main-content');
+  const ps=document.getElementById('profile-screen');
+  const pw=document.getElementById('password-screen');
+  if(sb_el) sb_el.style.setProperty('display','none');
+  if(mc) mc.style.setProperty('display','none');
+  if(ps) ps.style.setProperty('display','none');
+  if(pw) pw.style.setProperty('display','none');
+
+  // 3. Auto-redirect si 1 seul profil SANS mot de passe
+  const hasPassword = profiles.length>0 && profiles[0].password && profiles[0].password.value;
+  if(profiles.length===1 && !hasPassword){
+    // → Dashboard direct
+    currentId = profiles[0].id;
     _valoMatchCache={};
     _valoAllMatches=[];
-    const sb_el=document.getElementById('main-sidebar');
-    const mc=document.getElementById('main-content');
-    if(sb_el){sb_el.style.display='flex';sb_el.style.opacity='1';}
-    if(mc){mc.style.display='block';mc.style.opacity='1';}
+    if(sb_el){sb_el.style.setProperty('display','flex');sb_el.style.opacity='1';}
+    if(mc){mc.style.setProperty('display','block');mc.style.opacity='1';}
     renderSidebarNav(); updateSidebarAvatar(); applyI18n(); updateClock();
     try{initDashboard();}catch(e){console.error('[NEXUS] initDashboard error:',e);}
     if(!curP()?.bgTheme||curP()?.bgTheme==='none') setTimeout(startAmbientBg,400);
   } else {
-    // Rendre d'abord (pour que les cartes existent dans le DOM)
+    // → Écran de sélection de profil
+    // Rendre les cartes AVANT d'afficher l'écran
     try{renderProfileScreen();}catch(e){console.error('[NEXUS] renderProfileScreen error:',e);}
-    // PUIS rendre visible
-    const ps=document.getElementById('profile-screen');
-    if(ps){ps.style.display='flex';ps.style.opacity='1';}
+    if(ps){ps.style.setProperty('display','flex');ps.style.opacity='1';}
     updateClock();
   }
 }

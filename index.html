@@ -11,18 +11,56 @@
 }
 </style>
 <script>
+// Détection GPU compositing pour backdrop-filter
+(function(){
+  // Tester via canvas - si le GPU est off, certaines ops canvas échouent
+  try{
+    const canvas=document.createElement('canvas');
+    canvas.width=1;canvas.height=1;
+    const ctx=canvas.getContext('webgl')||canvas.getContext('experimental-webgl');
+    if(!ctx){
+      // Pas de WebGL = pas de GPU compositing = backdrop-filter va planter
+      document.documentElement.classList.add('no-backdrop');
+    }
+  }catch(e){ document.documentElement.classList.add('no-backdrop'); }
+  // Aussi écouter les erreurs de shader
+  window.addEventListener('error',function(e){
+    if(e.message&&(e.message.includes('GpuShader')||e.message.includes('compositing'))){
+      document.documentElement.classList.add('no-backdrop');
+    }
+  },true);
+})();
 // Failsafe: remove anti-flash after 6s max no matter what
 setTimeout(function(){
   var s=document.getElementById('anti-flash');
   if(s){s.remove();console.warn('[NEXUS] anti-flash removed by failsafe');}
-  // Also force show auth if still on boot screen
   var boot=document.getElementById('nexus-boot-screen');
   var auth=document.getElementById('auth-screen');
-  if(boot&&boot.style.display!=='none'&&auth){
+  var sb=document.getElementById('main-sidebar');
+  var mc=document.getElementById('main-content');
+  // Si le boot est encore visible après 6s -> montrer l'auth
+  if(boot&&boot.style.display!=='none'){
     boot.style.display='none';
-    auth.style.display='flex';
+    if(auth) auth.style.display='flex';
+  }
+  // Si sidebar est hidden mais main-content est block -> qqch a merdé, forcer
+  if(sb&&mc&&sb.style.display==='none'&&mc.style.display!=='none'){
+    sb.style.display='flex';
   }
 },6000);
+
+// Failsafe dashboard: si après 4s sidebar visible mais vide -> re-init
+setTimeout(function(){
+  var sb=document.getElementById('main-sidebar');
+  var nav=document.getElementById('sidebar-nav-main');
+  if(sb&&sb.style.display==='flex'&&nav&&!nav.children.length){
+    console.warn('[NEXUS] Dashboard failsafe: sidebar vide, re-init');
+    try{
+      if(typeof renderSidebarNav==='function') renderSidebarNav();
+      if(typeof initDashboard==='function') initDashboard();
+    }catch(e){}
+  }
+},4000);
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
@@ -116,6 +154,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
 /* ── ANIMATIONS ── */
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+/* GPU compositing fallback: si backdrop-filter non supporté, on désactive */
+.no-backdrop *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+/* Sidebar et panels: backdrop-filter optionnel, fallback opaque */
+.sidebar,.panel,.ps-card-inner{will-change:transform}
 @keyframes slideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:none}}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
 @keyframes pulseG{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
@@ -576,7 +618,8 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .steam-game-hours{font-size:11px;color:var(--muted);font-family:var(--mono)}
 
 /* ── MODALS ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:10000;backdrop-filter:blur(6px);padding:16px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:10000;padding:16px}
+@supports(backdrop-filter:blur(1px)){.modal-overlay{background:rgba(0,0,0,.65);backdrop-filter:blur(6px);}}
 .modal-overlay.open{display:flex;animation:fadeIn .15s ease}
 .modal{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:24px;width:440px;max-width:calc(100vw - 32px);animation:slideUp .2s cubic-bezier(.4,0,.2,1);max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.6)}
 .modal-title{font-size:15px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px;letter-spacing:-.2px}
@@ -658,7 +701,7 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 }
 .hamburger:hover{border-color:rgba(249,115,22,.4);color:#f97316}
 .hamburger svg{width:17px;height:17px}
-.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99;backdrop-filter:blur(3px)}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99}
 
 /* ── MOBILE BOTTOM NAV ── */
 .mobile-bottom-nav{
@@ -745,11 +788,12 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 /* ── SIDEBAR ── */
 .sidebar{
   width:220px;
-  background:rgba(var(--bg-rgb,5,5,7),.88);
+  background:rgba(var(--bg-rgb,5,5,7),.96);
   border-right:1px solid rgba(255,255,255,.045);
-  backdrop-filter:blur(24px);
-  -webkit-backdrop-filter:blur(24px);
   transition:width .2s cubic-bezier(.4,0,.2,1);
+}
+@supports(backdrop-filter:blur(1px)){
+  .sidebar{background:rgba(var(--bg-rgb,5,5,7),.88);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);}
 }
 .logo{
   padding:20px 18px 17px;
@@ -3944,7 +3988,7 @@ body.no-anim #bg-canvas{display:none!important}
   <canvas id="auth-particles" style="position:absolute;inset:0;z-index:0;pointer-events:none"></canvas>
 
   <!-- Lang selector — 4 boutons simples en bas de l'écran -->
-  <div id="auth-lang-bar" style="position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:99999;display:flex;gap:6px;background:rgba(10,8,14,.85);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.08);border-radius:99px;padding:6px 10px">
+  <div id="auth-lang-bar" style="position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:99999;display:flex;gap:6px;background:rgba(10,8,14,.95);border:1px solid rgba(255,255,255,.08);border-radius:99px;padding:6px 10px">
     <button onclick="setLang('fr');updateAuthLangBar()" data-l="fr" style="padding:4px 10px;border-radius:99px;border:none;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--font);background:rgba(249,115,22,.8);color:#fff;transition:all .15s">FR</button>
     <button onclick="setLang('en');updateAuthLangBar()" data-l="en" style="padding:4px 10px;border-radius:99px;border:none;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--font);background:transparent;color:rgba(255,255,255,.45);transition:all .15s">EN</button>
     <button onclick="setLang('es');updateAuthLangBar()" data-l="es" style="padding:4px 10px;border-radius:99px;border:none;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--font);background:transparent;color:rgba(255,255,255,.45);transition:all .15s">ES</button>
@@ -7411,65 +7455,30 @@ function handleProfileClick(id){
 function toggleManageMode(){managingMode=!managingMode;renderProfileScreen()}
 
 function enterDashboard(id){
-  // Convertir en number si possible (les IDs Supabase sont des numbers)
-  const numId = Number(id);
-  currentId = isNaN(numId) ? id : numId;
-  // Vérifier que curP() fonctionne
-  if(!curP()&&profiles.length>0){
-    // Essayer de trouver le profil par string comparison
-    const found=profiles.find(p=>String(p.id)===String(id));
-    if(found) currentId=found.id;
-    else currentId=profiles[0].id;
-  }
-  _valoMatchCache={};
-  _valoAllMatches=[];
-  // Tuer uniquement les animations GSAP de l'auth
-  if(typeof gsap!=='undefined'){
-    gsap.killTweensOf('#auth-card, #auth-left-content, .auth-feature-item, .auth-tab-pill, #auth-form-header, #auth-logo-icon, #form-login .auth-input-wrap, #form-login .auth-submit-btn');
-  }
   showPageLoader();
-  // Masquer tout sauf dashboard
-  ['profile-screen','password-screen','auth-screen'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.style.setProperty('display','none');
-  });
-  const sb=document.getElementById('main-sidebar');
-  const mc=document.getElementById('main-content');
-  if(sb){sb.style.setProperty('display','flex');sb.style.opacity='1';}
-  if(mc){sb.style.opacity='1';mc.style.setProperty('display','block');mc.style.opacity='1';}
-  renderSidebarNav(); updateSidebarAvatar(); applyI18n(); updateClock();
-  try{initDashboard();}catch(e){console.error('[NEXUS] initDashboard error:',e);}
+  _goToDashboard(id);
   setTimeout(()=>{if(typeof animateSidebarEntrance==='function')animateSidebarEntrance();},200);
-  if(!curP()?.bgTheme||curP()?.bgTheme==='none') setTimeout(startAmbientBg,400);
 }
 
 function goToProfileScreen(){
-  // Nettoyer TOUS les intervals actifs
-  if(typeof _lanyardWS!=='undefined'&&_lanyardWS){_lanyardWS.close();clearInterval(_lanyardHB);_lanyardWS=null;}
-  if(typeof _lastfmInterval!=='undefined')clearInterval(_lastfmInterval);_lastfmInterval=null;
-  if(typeof _spotifyAutoRefresh!=='undefined')clearInterval(_spotifyAutoRefresh);_spotifyAutoRefresh=null;
-  if(typeof _npProgressInterval!=='undefined')clearInterval(window._npProgressInterval);window._npProgressInterval=null;
+  if(typeof _lanyardWS!=='undefined'&&_lanyardWS){try{_lanyardWS.close();}catch(e){}; _lanyardWS=null;}
+  if(typeof _lastfmInterval!=='undefined'){clearInterval(_lastfmInterval);_lastfmInterval=null;}
+  if(typeof _spotifyAutoRefresh!=='undefined'){clearInterval(_spotifyAutoRefresh);_spotifyAutoRefresh=null;}
+  clearInterval(window._npProgressInterval);window._npProgressInterval=null;
   if(window._steamInterval){clearInterval(window._steamInterval);window._steamInterval=null;}
-  _valoMatchCache={};
-  _valoAllMatches=[];
+  _valoMatchCache={};_valoAllMatches=[];
   stopAmbientBg();
   ['main-sidebar','main-content','password-screen','auth-screen'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.style.setProperty('display','none');
   });
   managingMode=false;
-  // Rendre les cartes D'ABORD, puis afficher l'écran
-  renderProfileScreen();
+  try{renderProfileScreen();}catch(e){console.error('[NEXUS] renderProfileScreen:',e);}
   const s=document.getElementById('profile-screen');
-  s.style.setProperty('display','flex');
-  s.style.opacity='1';
-  s.classList.remove('hiding');
+  if(s){s.style.setProperty('display','flex');s.style.opacity='1';s.classList.remove('hiding');}
   setTimeout(initPsCursorGlow,100);
 }
 
-// ===================================================
-//  PASSWORD SCREEN
-// ===================================================
 function showPasswordScreen(id){
   pendingPasswordId=id;pinEntry='';
   const p=getP(id);if(!p)return;
@@ -8208,7 +8217,18 @@ function applySidebarCompact(){
 }
 
 function initDashboard(){
-  const p=curP();if(!p)return;
+  // Garantir qu'on a toujours un profil valide
+  let p=curP();
+  if(!p){
+    // currentId ne matche pas -> prendre le premier profil disponible
+    if(!profiles||!profiles.length){
+      console.error('[NEXUS] initDashboard: aucun profil disponible');
+      return;
+    }
+    currentId=profiles[0].id;
+    p=profiles[0];
+    console.warn('[NEXUS] initDashboard: curP() null, forcé sur profiles[0].id=',currentId);
+  }
   if(!p.state)p.state=defState(p.name);
   if(!p.state.connections)p.state.connections={};
 
@@ -16984,56 +17004,85 @@ function normalizeAllProfiles(){
 }
 
 function showDashboardOrProfiles(){
-  // 1. Supprimer anti-flash et boot EN PREMIER (critique)
+  // ── 1. Nettoyer l'écran (anti-flash, boot, auth) ───────────────────
   removeAntiFlash();
   const boot=document.getElementById('nexus-boot-screen');
   if(boot) boot.style.display='none';
-  const authEl=document.getElementById('auth-screen');
-  if(authEl) authEl.style.display='none';
+  ['auth-screen','main-sidebar','main-content','profile-screen','password-screen'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.setProperty('display','none');
+  });
 
-  // 2. Tout masquer pour partir d'un état propre (forcer même si CSS a des valeurs par défaut)
-  const sb_el=document.getElementById('main-sidebar');
-  const mc=document.getElementById('main-content');
-  const ps=document.getElementById('profile-screen');
-  const pw=document.getElementById('password-screen');
-  if(sb_el) sb_el.style.setProperty('display','none');
-  if(mc) mc.style.setProperty('display','none');
-  if(ps) ps.style.setProperty('display','none');
-  if(pw) pw.style.setProperty('display','none');
+  // ── 2. Déterminer le mode ───────────────────────────────────────────
+  if(!profiles||!profiles.length){
+    // Aucun profil = forcer auth
+    const ae=document.getElementById('auth-screen');
+    if(ae) ae.style.setProperty('display','flex');
+    return;
+  }
 
-  // 3. Auto-redirect si 1 seul profil SANS mot de passe
-  const hasPassword = profiles.length>0 && profiles[0].password && profiles[0].password.value;
+  const hasPassword = profiles[0].password && profiles[0].password.value;
+
   if(profiles.length===1 && !hasPassword){
-    // → Dashboard direct
-    currentId = profiles[0].id;
-    _valoMatchCache={};
-    _valoAllMatches=[];
-    if(sb_el){sb_el.style.setProperty('display','flex');sb_el.style.opacity='1';}
-    if(mc){mc.style.setProperty('display','block');mc.style.opacity='1';}
-    renderSidebarNav(); updateSidebarAvatar(); applyI18n(); updateClock();
-    try{
-      // S'assurer que curP() fonctionne avant initDashboard
-      const _cp=curP();
-      if(!_cp){
-        // currentId mal set — essai avec le premier profil
-        if(profiles.length>0){
-          currentId=profiles[0].id;
-          console.warn('[NEXUS] currentId was null, fixed to',currentId);
-        }
-      }
-      initDashboard();
-    }catch(e){
-      console.error('[NEXUS] initDashboard error:',e);
-      // Fallback: afficher quand même le dashboard sans crash complet
-    }
-    if(!curP()?.bgTheme||curP()?.bgTheme==='none') setTimeout(startAmbientBg,400);
+    // ── Mode A: Dashboard direct ───────────────────────────────────────
+    _goToDashboard(profiles[0].id);
   } else {
-    // → Écran de sélection de profil
-    // Rendre les cartes AVANT d'afficher l'écran
-    try{renderProfileScreen();}catch(e){console.error('[NEXUS] renderProfileScreen error:',e);}
+    // ── Mode B: Sélection de profil ────────────────────────────────────
+    try{renderProfileScreen();}catch(e){console.error('[NEXUS] renderProfileScreen:',e);}
+    const ps=document.getElementById('profile-screen');
     if(ps){ps.style.setProperty('display','flex');ps.style.opacity='1';}
     updateClock();
   }
+}
+
+// Fonction centrale pour aller au dashboard (appelée aussi depuis enterDashboard)
+function _goToDashboard(profileId){
+  // Forcer currentId avec le bon ID
+  const found=profiles.find(p=>String(p.id)===String(profileId));
+  if(!found){
+    console.error('[NEXUS] _goToDashboard: profil introuvable pour id='+profileId);
+    // Fallback: prendre le premier profil
+    if(!profiles.length){ showAuth(); return; }
+    currentId=profiles[0].id;
+  } else {
+    currentId=found.id;
+  }
+  _valoMatchCache={};
+  _valoAllMatches=[];
+
+  const sb_el=document.getElementById('main-sidebar');
+  const mc=document.getElementById('main-content');
+  // Masquer les autres écrans
+  ['profile-screen','password-screen','auth-screen'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.setProperty('display','none');
+  });
+  // Afficher sidebar + content
+  if(sb_el){sb_el.style.setProperty('display','flex');sb_el.style.opacity='1';}
+  if(mc){mc.style.setProperty('display','block');mc.style.opacity='1';}
+
+  // Vérifier que curP() fonctionne avant tout
+  const p=curP();
+  if(!p){
+    console.error('[NEXUS] _goToDashboard: curP() null après setId, currentId=',currentId,'profiles=',profiles.map(x=>x.id));
+    // Dernier recours: réassigner par référence directe
+    currentId=profiles[0].id;
+  }
+
+  renderSidebarNav(); updateSidebarAvatar(); applyI18n(); updateClock();
+
+  try{
+    initDashboard();
+  }catch(e){
+    console.error('[NEXUS] initDashboard error:',e);
+    // Ne pas laisser un écran noir - forcer l'affichage de base
+    if(sb_el) sb_el.style.setProperty('display','flex');
+    if(mc) mc.style.setProperty('display','block');
+  }
+
+  // Fond ambiant seulement si pas de bgTheme personnalisé
+  const cp=curP();
+  if(!cp?.bgTheme||cp.bgTheme==='none') setTimeout(startAmbientBg,400);
 }
 
 (function(){

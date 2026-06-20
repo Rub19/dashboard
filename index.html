@@ -147,7 +147,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .pw-back:hover{color:var(--text)}
 
 /* ── PROFILE SCREEN ── */
-#profile-screen{position:fixed;inset:0;z-index:9999;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;animation:fadeIn .4s ease;overflow:hidden}
+#profile-screen{position:fixed;inset:0;z-index:9999;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
 #profile-screen.hiding{animation:profileeHide .5s cubic-bezier(.4,0,.2,1) forwards}
 /* Ambient embers canvas */
 #ps-canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
@@ -6467,6 +6467,12 @@ function applyI18n(){
   // Auth submit buttons
   const loginBtn=document.getElementById('auth-login-btn');
   if(loginBtn) loginBtn.textContent=t('sign_in_btn');
+  // Welcome back title/sub (selon tab actif)
+  const authTitle=document.getElementById('auth-form-title');
+  const authSub=document.getElementById('auth-form-sub');
+  const isLoginTab=document.getElementById('tab-login')?.classList.contains('active');
+  if(authTitle) authTitle.textContent=isLoginTab?t('welcome_back'):t('create_account_title');
+  if(authSub) authSub.textContent=isLoginTab?t('sign_in_sub'):t('create_account_sub');
   const regBtn=document.querySelector('#form-register .auth-submit-btn');
   if(regBtn) regBtn.textContent=t('create_account_btn');
   // Update sidebar user role text
@@ -6705,13 +6711,13 @@ function switchAuthTab(tab){
     if(regForm)regForm.style.display=tab==='register'?'block':'none';
   }
 
-  // Update header
+  // Update header (traduit)
   if(tab==='login'){
-    if(title)title.textContent='Welcome back';
-    if(sub)sub.textContent='Sign in to your NEXUS dashboard';
+    if(title)title.textContent=t('welcome_back');
+    if(sub)sub.textContent=t('sign_in_sub');
   } else {
-    if(title)title.textContent='Create account';
-    if(sub)sub.textContent='Join NEXUS and start your journey';
+    if(title)title.textContent=t('create_account_title');
+    if(sub)sub.textContent=t('create_account_sub');
   }
   document.getElementById('auth-error').textContent='';
 }
@@ -7408,6 +7414,13 @@ function enterDashboard(id){
   // Convertir en number si possible (les IDs Supabase sont des numbers)
   const numId = Number(id);
   currentId = isNaN(numId) ? id : numId;
+  // Vérifier que curP() fonctionne
+  if(!curP()&&profiles.length>0){
+    // Essayer de trouver le profil par string comparison
+    const found=profiles.find(p=>String(p.id)===String(id));
+    if(found) currentId=found.id;
+    else currentId=profiles[0].id;
+  }
   _valoMatchCache={};
   _valoAllMatches=[];
   // Tuer uniquement les animations GSAP de l'auth
@@ -16448,6 +16461,10 @@ var I18N = {
     'toast_error': 'Error',
     'toast_connected': 'Connected!',
     'toast_disconnected': 'Disconnected',
+    'welcome_back': 'Welcome back',
+    'sign_in_sub': 'Sign in to your NEXUS dashboard',
+    'create_account_title': 'Create account',
+    'create_account_sub': 'Join NEXUS and start your journey',
   },
   fr: {
     // Auth
@@ -16590,6 +16607,10 @@ var I18N = {
     'toast_error': 'Erreur',
     'toast_connected': 'Connecté !',
     'toast_disconnected': 'Déconnecté',
+    'welcome_back': 'Bon retour',
+    'sign_in_sub': 'Connectez-vous à votre dashboard NEXUS',
+    'create_account_title': 'Créer un compte',
+    'create_account_sub': 'Rejoignez NEXUS et commencez votre aventure',
   },
   es: {
     'sign_in': 'Iniciar sesión',
@@ -16719,6 +16740,10 @@ var I18N = {
     'toast_error': 'Error',
     'toast_connected': '¡Conectado!',
     'toast_disconnected': 'Desconectado',
+    'welcome_back': 'Bienvenido de vuelta',
+    'sign_in_sub': 'Inicia sesión en tu dashboard NEXUS',
+    'create_account_title': 'Crear cuenta',
+    'create_account_sub': 'Únete a NEXUS y comienza tu aventura',
   },
   de: {
     'sign_in': 'Anmelden',
@@ -16848,6 +16873,10 @@ var I18N = {
     'toast_error': 'Fehler',
     'toast_connected': 'Verbunden!',
     'toast_disconnected': 'Getrennt',
+    'welcome_back': 'Willkommen zurück',
+    'sign_in_sub': 'Melde dich bei deinem NEXUS Dashboard an',
+    'create_account_title': 'Konto erstellen',
+    'create_account_sub': 'Tritt NEXUS bei und starte dein Abenteuer',
   },
 };
 
@@ -16951,7 +16980,21 @@ function showDashboardOrProfiles(){
     if(sb_el){sb_el.style.setProperty('display','flex');sb_el.style.opacity='1';}
     if(mc){mc.style.setProperty('display','block');mc.style.opacity='1';}
     renderSidebarNav(); updateSidebarAvatar(); applyI18n(); updateClock();
-    try{initDashboard();}catch(e){console.error('[NEXUS] initDashboard error:',e);}
+    try{
+      // S'assurer que curP() fonctionne avant initDashboard
+      const _cp=curP();
+      if(!_cp){
+        // currentId mal set — essai avec le premier profil
+        if(profiles.length>0){
+          currentId=profiles[0].id;
+          console.warn('[NEXUS] currentId was null, fixed to',currentId);
+        }
+      }
+      initDashboard();
+    }catch(e){
+      console.error('[NEXUS] initDashboard error:',e);
+      // Fallback: afficher quand même le dashboard sans crash complet
+    }
     if(!curP()?.bgTheme||curP()?.bgTheme==='none') setTimeout(startAmbientBg,400);
   } else {
     // → Écran de sélection de profil

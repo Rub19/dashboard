@@ -9876,7 +9876,12 @@ function onTodoDragStart(e,id){
   e.dataTransfer.effectAllowed='move';
   setTimeout(()=>e.target.style.opacity='.4',0);
 }
-function onTodoDragEnd(e){e.target.style.opacity='';}
+function onTodoDragEnd(e){
+  e.target.style.opacity='';
+  // Sauvegarder le nouvel ordre après drag
+  saveStateNow();
+  renderTodos();
+}
 function onTodoDragOver(e,id){
   e.preventDefault();
   if(_dragTodoId===id)return;
@@ -9907,7 +9912,14 @@ function renderTodos(){
   else if(filter==='done')filtered=filtered.filter(t=>t.done);
   else if(filter==='high')filtered=filtered.filter(t=>t.priority==='high');
 
-  const pending=filtered.filter(t=>!t.done),done=filtered.filter(t=>t.done);
+  const priorityOrder={high:0,normal:1,low:2};
+  const _sortT=arr=>[...arr].sort((a,b)=>{
+    const pa=priorityOrder[a.priority]??1,pb=priorityOrder[b.priority]??1;
+    if(pa!==pb)return pa-pb;
+    return (b.id||0)-(a.id||0);
+  });
+  const pending=_sortT(filtered.filter(t=>!t.done));
+  const done=filtered.filter(t=>t.done).reverse();
   const pL=document.getElementById('todo-pending-list'),dL=document.getElementById('todo-done-list');
   const pc=document.getElementById('todo-pending-count');
   if(pc)pc.textContent=pending.length+' pending';
@@ -10087,6 +10099,10 @@ function addGoal(){
   if(!p.state.goals)p.state.goals=[];
   p.state.goals.push({id:Date.now(),text,target,unit,emoji,progress:0,done:false,week:weekStart,created:new Date().toISOString()});
   saveStateNow();closeModal('add-goal');
+  document.getElementById('goal-text').value='';
+  document.getElementById('goal-target').value='';
+  document.getElementById('goal-unit').value='';
+  document.getElementById('goal-emoji').value='';
   ['goal-text','goal-target','goal-unit','goal-emoji'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   renderGoals();if(typeof renderOverviewGoals==='function')renderOverviewGoals();toast('Goal added! 🎯','success');
 }
@@ -10295,6 +10311,9 @@ function addCountdown(){
   if(!p.state.countdowns)p.state.countdowns=[];
   p.state.countdowns.push({id:Date.now(),name,date,emoji,color});
   saveStateNow();closeModal('add-countdown');
+  document.getElementById('cd-name').value='';
+  document.getElementById('cd-date').value='';
+  document.getElementById('cd-emoji').value='';
   ['cd-name','cd-date','cd-emoji'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   renderCountdowns();renderCountdown();toast('Countdown added! ⏳','success');
 }
@@ -13359,7 +13378,14 @@ function habitStreak(h){
 function renderHabits(){
   const p=curP();if(!p)return;const list=document.getElementById('habits-list');const streakEl=document.getElementById('habits-streaks');
   if(!list)return;
-  const habits=p?.state?.habits||[];
+  const _habRaw=p?.state?.habits||[];
+  const _todayH=new Date().toISOString().slice(0,10);
+  // Non-faites d'abord, puis par streak décroissant
+  const habits=[..._habRaw].sort((a,b)=>{
+    const aD=!!(a.log&&a.log[_todayH]),bD=!!(b.log&&b.log[_todayH]);
+    if(aD!==bD)return aD?1:-1;
+    return (b.streak||0)-(a.streak||0);
+  });
   const weekDays=getWeekDays();
   const today=new Date();today.setHours(0,0,0,0);
   const dayLabels=['M','T','W','T','F','S','S'];
@@ -13527,7 +13553,12 @@ function clearPastEvents(){
 function renderCalendar(){
   const p=curP();
   const events=p?.state?.events||[];
-  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const monthsEN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const monthsFR=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  const monthsES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const monthsDE=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+  const monthsMap={fr:monthsFR,es:monthsES,de:monthsDE};
+  const months=(monthsMap[_lang]||monthsEN);
   const ml=document.getElementById('cal-month-label');if(ml)ml.textContent=months[calMonth]+' '+calYear;
   const dlEl=document.getElementById('cal-day-labels');
   if(dlEl)dlEl.innerHTML=['Mo','Tu','We','Th','Fr','Sa','Su'].map(d=>'<div class="cal-day-label">'+d+'</div>').join('');

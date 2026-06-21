@@ -9543,37 +9543,46 @@ function toast(msg,type='info'){
 //  ACTIVITY
 // ===================================================
 function renderOverviewEvents(){
-  const el=document.getElementById('overview-events');if(!el)return;
-  const p=curP();
-  const today=new Date().toISOString().slice(0,10);
-  const upcoming=(p?.state?.events||[])
-    .filter(e=>e.date>=today)
-    .sort((a,b)=>a.date.localeCompare(b.date))
+  var el=document.getElementById('overview-events');if(!el)return;
+  var p=curP();
+  var today=new Date().toISOString().slice(0,10);
+  var upcoming=(p&&p.state&&p.state.events?p.state.events:[])
+    .filter(function(e){return e.date>=today;})
+    .sort(function(a,b){return a.date.localeCompare(b.date);})
     .slice(0,4);
   if(!upcoming.length){
-    el.innerHTML='<div class="empty-state" style="padding:12px"><div class="empty-label" style="font-size:12px">Aucun événement</div></div>';
+    el.innerHTML='<div class="empty-state" style="padding:12px"><div class="empty-label" style="font-size:12px">Aucun \u00e9v\u00e9nement</div></div>';
     return;
   }
-  const dayNames={fr:['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],en:['Sun','Mon','Tue','Wed','Thu','Fri','Sat']};
-  const days=dayNames[_lang]||dayNames['en'];
-  el.innerHTML=upcoming.map(e=>{
-    const d=new Date(e.date+'T12:00:00');
-    const isToday=e.date===today;
-    const dayName=days[d.getDay()];
-    const dayNum=d.getDate();
-    return `<div style="display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:9px;border:1px solid ${isToday?'rgba(124,58,237,.3)':'rgba(255,255,255,.05)'};background:${isToday?'rgba(124,58,237,.06)':'transparent'};margin-bottom:6px;transition:all .15s" onmouseover="this.style.borderColor='rgba(124,58,237,.25)'" onmouseout="this.style.borderColor=isToday?'rgba(124,58,237,.3)':'rgba(255,255,255,.05)'">
-      <div style="width:34px;text-align:center;flex-shrink:0">
-        <div style="font-size:9px;font-weight:700;color:${isToday?'#a78bfa':'var(--muted)'};letter-spacing:.5px;font-family:var(--mono)">${dayName.toUpperCase()}</div>
-        <div style="font-size:17px;font-weight:800;color:${isToday?'#fff':'var(--text)'};line-height:1.1">${dayNum}</div>
-      </div>
-      <div style="width:1px;height:30px;background:${isToday?'rgba(124,58,237,.4)':'rgba(255,255,255,.08)'}"></div>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHTML(e.title||'Event')}</div>
-        ${isToday?'<div style="font-size:10px;color:#a78bfa;font-weight:600">Aujourd&#x27;hui</div>':''\}
-      </div>
-      ${e.color?`<div style="width:6px;height:6px;border-radius:50%;background:${escapeHTML(e.color)};flex-shrink:0"></div>`:''}
-    </div>`;
-  }).join('');
+  var dayNames={fr:['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],en:['Sun','Mon','Tue','Wed','Thu','Fri','Sat']};
+  var days=dayNames[_lang]||dayNames['en'];
+  var tlabels={fr:'Aujourd\u2019hui',en:'Today',es:'Hoy',de:'Heute'};
+  var tLabel=tlabels[_lang]||'Today';
+  var html='';
+  upcoming.forEach(function(e){
+    var d=new Date(e.date+'T12:00:00');
+    var isToday=(e.date===today);
+    var dn=days[d.getDay()];
+    var num=d.getDate();
+    var bc=isToday?'rgba(124,58,237,.3)':'rgba(255,255,255,.05)';
+    var bg=isToday?'rgba(124,58,237,.06)':'transparent';
+    var sc=isToday?'rgba(124,58,237,.4)':'rgba(255,255,255,.08)';
+    var dc=isToday?'#a78bfa':'var(--muted)';
+    var nc=isToday?'#fff':'var(--text)';
+    var badge=isToday?('<div style="font-size:10px;color:#a78bfa;font-weight:600">'+tLabel+'</div>'):'';
+    var dot=e.color?('<div style="width:6px;height:6px;border-radius:50%;background:'+escapeHTML(e.color)+';flex-shrink:0"></div>'):'';
+    html+='<div style="display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:9px;border:1px solid '+bc+';background:'+bg+';margin-bottom:6px;transition:all .15s">'+
+      '<div style="width:34px;text-align:center;flex-shrink:0">'+
+        '<div style="font-size:9px;font-weight:700;color:'+dc+';letter-spacing:.5px;font-family:var(--mono)">'+dn.toUpperCase()+'</div>'+
+        '<div style="font-size:17px;font-weight:800;color:'+nc+';line-height:1.1">'+num+'</div>'+
+      '</div>'+
+      '<div style="width:1px;height:30px;background:'+sc+'"></div>'+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+escapeHTML(e.title||'Event')+'</div>'+
+        badge+
+      '</div>'+dot+'</div>';
+  });
+  el.innerHTML=html;
 }
 
 function addActivity(text,color='var(--accent)'){
@@ -10137,50 +10146,64 @@ function ovQuickAddTodo(text){
 //  OVERVIEW HABITS
 // ═══════════════════════════════════════════════════════════
 function renderOverviewHabits(){
-  const el=document.getElementById('overview-habits-list');if(!el)return;
-  const p=curP();
-  const habits=(p?.state?.habits||[]).slice(0,5);
-  const today=new Date().toISOString().slice(0,10);
+  var el=document.getElementById('overview-habits-list');if(!el)return;
+  var p=curP();
+  var habits=(p&&p.state&&p.state.habits?p.state.habits:[]).slice(0,5);
+  var today=new Date().toISOString().slice(0,10);
   if(!habits.length){
-    el.innerHTML='<div class="empty-state" style="padding:12px"><div class="empty-label" style="font-size:12px">Aucune habitude — <button onclick="switchPage('habits',null)" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:12px;font-family:var(--font);padding:0">créer</button></div></div>';
+    el.innerHTML='<div class="empty-state" style="padding:12px"><div class="empty-label" style="font-size:12px">Aucune habitude \u2014 <a href="#" onclick="event.preventDefault();switchPage(\'habits\',null)" style="color:var(--accent)">cr\u00e9er</a></div></div>';
     return;
   }
-  el.innerHTML=habits.map(h=>{
-    const done=h.log&&h.log[today];
-    const streak=habitStreak(h);
-    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:${done?'rgba(124,58,237,.08)':'rgba(255,255,255,.02)'};border:1px solid ${done?'rgba(124,58,237,.2)':'rgba(255,255,255,.05)'};cursor:pointer;transition:all .18s" onclick="toggleHabitDay('${today}',${h.id});renderOverviewHabits()" onmouseover="this.style.borderColor='rgba(124,58,237,.25)'" onmouseout="this.style.borderColor=done?'rgba(124,58,237,.2)':'rgba(255,255,255,.05)'">
-      <div style="width:20px;height:20px;border-radius:6px;border:1.5px solid ${done?'rgba(124,58,237,.7)':'rgba(255,255,255,.2)'};background:${done?'rgba(124,58,237,.3)':'transparent'};display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s">
-        ${done?'<svg viewBox="0 0 16 16" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:10px;height:10px"><polyline points="2,8 6,12 14,4"/></svg>':''}
-      </div>
-      <span style="font-size:15px;flex-shrink:0">${h.icon?escapeHTML(h.icon):''}</span>
-      <span style="flex:1;font-size:13px;color:${done?'rgba(255,255,255,.5)':'var(--text)'};text-decoration:${done?'line-through':'none'};transition:all .2s">${escapeHTML(h.name)}</span>
-      ${streak>0?`<span style="font-size:10px;font-weight:700;color:#a78bfa;font-family:var(--mono)">${streak}🔥</span>`:''}
-    </div>`;
-  }).join('');
+  var html='';
+  habits.forEach(function(h){
+    var done=h.log&&h.log[today];
+    var streak=habitStreak(h);
+    var bc=done?'rgba(124,58,237,.2)':'rgba(255,255,255,.05)';
+    var bg=done?'rgba(124,58,237,.08)':'rgba(255,255,255,.02)';
+    var chkB=done?'rgba(124,58,237,.7)':'rgba(255,255,255,.2)';
+    var chkBg=done?'rgba(124,58,237,.3)':'transparent';
+    var chk=done?'<svg viewBox="0 0 16 16" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:10px;height:10px"><polyline points="2,8 6,12 14,4"/></svg>':'';
+    var sb=streak>0?('<span style="font-size:10px;font-weight:700;color:#a78bfa;font-family:var(--mono)">'+streak+' \uD83D\uDD25</span>'):'';
+    var icon=h.icon?escapeHTML(h.icon):'';
+    var tc=done?'rgba(255,255,255,.5)':'var(--text)';
+    html+='<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:'+bg+';border:1px solid '+bc+';cursor:pointer;transition:all .18s" '+
+      'onclick="toggleHabitDay(\''+today+'\','+h.id+');renderOverviewHabits()">'+
+      '<div style="width:20px;height:20px;border-radius:6px;border:1.5px solid '+chkB+';background:'+chkBg+';display:flex;align-items:center;justify-content:center;flex-shrink:0">'+chk+'</div>'+
+      '<span style="font-size:15px;flex-shrink:0">'+icon+'</span>'+
+      '<span style="flex:1;font-size:13px;color:'+tc+'">'+escapeHTML(h.name)+'</span>'+
+      sb+'</div>';
+  });
+  el.innerHTML=html;
 }
 
 function renderOverviewGoals(){
-  const el=document.getElementById('overview-goals-list');if(!el)return;
-  const p=curP();
-  const goals=(p?.state?.goals||[]).slice(0,4);
+  var el=document.getElementById('overview-goals-list');if(!el)return;
+  var p=curP();
+  var goals=(p&&p.state&&p.state.goals?p.state.goals:[]).slice(0,4);
   if(!goals.length){
-    el.innerHTML='<div style="font-size:12px;color:var(--muted);padding:8px 4px;text-align:center">Aucun objectif — <button onclick="switchPage('goals',null)" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:12px;font-family:var(--font);padding:0">ajouter</button></div>';
+    el.innerHTML='<div style="font-size:12px;color:var(--muted);padding:8px 4px;text-align:center">Aucun objectif \u2014 <a href="#" onclick="event.preventDefault();switchPage(\'goals\',null)" style="color:var(--accent)">ajouter</a></div>';
     return;
   }
-  el.innerHTML=goals.map(g=>{
-    const pct=Math.round(((g.current||0)/Math.max(g.target||1,1))*100);
-    const done=pct>=100;
-    return `<div style="margin-bottom:10px">
-      <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">
-        <span style="font-size:14px">${g.emoji||'🎯'}</span>
-        <span style="font-size:12px;font-weight:500;flex:1;color:${done?'var(--muted)':'var(--text)'}">${escapeHTML(g.text||'Goal')}</span>
-        <span style="font-size:10px;font-weight:700;font-family:var(--mono);color:${done?'#34d399':'#a78bfa'}">${pct}%</span>
-      </div>
-      <div style="height:4px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden">
-        <div style="height:100%;width:${Math.min(pct,100)}%;border-radius:99px;background:${done?'#34d399':'linear-gradient(90deg,#7c3aed,#a78bfa)'};transition:width .6s cubic-bezier(.22,1,.36,1);box-shadow:${done?'0 0 8px rgba(52,211,153,.4)':'0 0 8px rgba(124,58,237,.4)'}"></div>
-      </div>
-    </div>`;
-  }).join('');
+  var html='';
+  goals.forEach(function(g){
+    var pct=Math.round(((g.current||0)/Math.max(g.target||1,1))*100);
+    var done=pct>=100;
+    var bc=done?'#34d399':'linear-gradient(90deg,#7c3aed,#a78bfa)';
+    var glow=done?'0 0 8px rgba(52,211,153,.4)':'0 0 8px rgba(124,58,237,.4)';
+    var pc=done?'#34d399':'#a78bfa';
+    var tc=done?'var(--muted)':'var(--text)';
+    html+='<div style="margin-bottom:10px">'+
+      '<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">'+
+        '<span style="font-size:14px">'+(g.emoji||'🎯')+'</span>'+
+        '<span style="font-size:12px;font-weight:500;flex:1;color:'+tc+'">'+escapeHTML(g.text||'Goal')+'</span>'+
+        '<span style="font-size:10px;font-weight:700;font-family:var(--mono);color:'+pc+'">'+pct+'%</span>'+
+      '</div>'+
+      '<div style="height:4px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden">'+
+        '<div style="height:100%;width:'+Math.min(pct,100)+'%;border-radius:99px;background:'+bc+';box-shadow:'+glow+'"></div>'+
+      '</div>'+
+    '</div>';
+  });
+  el.innerHTML=html;
 }
 
 function toggleDarkLight(){
@@ -16476,6 +16499,7 @@ function requestNotifPermission(){
   if(typeof Notification==='undefined'||!('Notification' in window)){toast('Notifications not supported on this browser','info');return;}
   try{
   if(typeof Notification==='undefined')return;
+  if(typeof Notification==='undefined'||!('Notification' in window)){toast('Notifications not supported','info');return;}
   Notification.requestPermission().then(perm=>{
     _notifEnabled=perm==='granted';
     const p=curP();

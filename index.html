@@ -507,8 +507,12 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .search-bar input::placeholder{color:rgba(255,255,255,.25)}
 
 /* stats */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
-.stat-card{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:18px 20px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;gap:10px}
+.stat-card{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:18px 20px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;overflow:hidden;cursor:pointer;transition:transform .2s cubic-bezier(.22,1,.36,1),border-color .2s,box-shadow .2s;display:flex;flex-direction:column;align-items:flex-start}
+.stat-card:hover{transform:translateY(-3px);border-color:rgba(var(--card-accent-rgb,124,58,237),.3);box-shadow:0 8px 32px rgba(124,58,237,.12)}
+.stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--card-accent,#7c3aed),transparent);opacity:.5;transition:opacity .2s}
+.stat-card:hover::after{opacity:1}
+.stat-card-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;flex-shrink:0}
 .stat-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle 60px at 0% 0%,rgba(124,58,237,.07),transparent);opacity:0;transition:opacity .25s}
 .stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--card-accent,#7c3aed),transparent);opacity:0;transition:opacity .25s}
 .stat-card:hover{border-color:rgba(124,58,237,.18);transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,0,0,.4),0 0 0 1px rgba(124,58,237,.08)}
@@ -528,7 +532,10 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 /* panels */
 .panel{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:18px;
   transition:border-color .2s ease, box-shadow .25s ease;
-}
+;overflow:hidden}
+.panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(124,58,237,.4),transparent);opacity:0;transition:opacity .3s}
+.panel:hover::before{opacity:1}
+.panel:hover{border-color:rgba(124,58,237,.15);background:rgba(255,255,255,.032)}
 .panel:hover{
   border-color:rgba(124,58,237,.12);
   box-shadow:0 4px 24px rgba(0,0,0,.15), 0 0 0 1px rgba(124,58,237,.05);
@@ -536,7 +543,7 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .panel:hover{border-color:rgba(255,255,255,.09)}
 .panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .panel-title{font-size:12.5px;font-weight:700;letter-spacing:.2px;display:flex;align-items:center;gap:7px;color:rgba(255,255,255,.8);text-transform:none;font-family:var(--font)}
-.panel-title-icon{width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.panel-title-icon{width:24px;height:24px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px}
 .panel-action{font-size:11.5px;color:rgba(255,255,255,.3);cursor:pointer;transition:color .2s;border:none;background:none;font-family:var(--mono);font-weight:600;letter-spacing:.5px;text-transform:uppercase}
 .panel-action:hover{color:#7c3aed}
 
@@ -3514,15 +3521,17 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   .topbar{
     position:sticky;top:54px;z-index:100;
     padding:10px 0 8px!important;
-    margin-bottom:12px!important;
-    background:rgba(5,5,7,.92);
-
-    border-bottom:1px solid rgba(255,255,255,.06);
+    margin-bottom:14px!important;
+    background:rgba(7,5,16,.95);
+    backdrop-filter:none!important;
+    border-bottom:1px solid rgba(124,58,237,.12);
   }
   .topbar-actions .search-bar{display:none!important}
   .topbar-lang{display:none!important}
   /* Masquer boutons non essentiels sur mobile */
   .topbar-actions .btn-ghost:not(.mob-keep){display:none!important}
+  button[onclick*="shortcuts"]{display:none!important}
+  button[onclick*="toggleDarkLight"]{display:none!important}
   .topbar-actions .btn-primary{font-size:12px!important;padding:7px 12px!important}
   /* Focus mode btn masqué sur mobile */
   button[onclick*="toggleFocusMode"]{display:none!important}
@@ -3635,28 +3644,52 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   }
 
   /* ── STAT CARDS ──────────────────────────────────────────────── */
-  .stats-row{
+    .stats-row{
     grid-template-columns:repeat(2,1fr)!important;
-    gap:8px!important;margin-bottom:10px!important;
+    gap:8px!important;margin-bottom:12px!important;
   }
   .stat-card{
-    padding:12px!important;border-radius:14px!important;
-    /* Tap feedback */
-    transition:transform .12s ease,opacity .12s ease!important;
-    cursor:pointer;
+    padding:14px!important;border-radius:14px!important;
+    display:flex!important;flex-direction:column!important;align-items:flex-start!important;
+    transition:transform .12s ease!important;cursor:pointer;
+    min-height:120px!important;position:relative!important;overflow:hidden!important;
   }
-  .stat-card:active{transform:scale(.96)!important;opacity:.9!important}
-  .stat-value{font-size:24px!important;letter-spacing:-1px!important}
-  .stat-label{font-size:8.5px!important}
-  .stat-sub{font-size:10px!important}
-  .clock-display{font-size:20px!important}
+
+  .profile-banner{border-radius:14px!important;margin-bottom:12px!important;padding:14px!important}
+  .profile-banner-name{font-size:16px!important}
+  .profile-banner-avatar{width:44px!important;height:44px!important;border-radius:10px!important}
+  .stat-card-icon{width:28px!important;height:28px!important;border-radius:8px!important;margin-bottom:8px!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important}
+  .stat-value{font-size:28px!important;font-weight:800!important;margin:0!important;letter-spacing:-1px!important;line-height:1!important}
+  .stat-label{font-size:9px!important;margin-top:4px!important;font-weight:700!important;letter-spacing:.5px!important;text-transform:uppercase!important;color:var(--muted)!important}
+  .stat-sub{font-size:10px!important;color:var(--muted)!important}
+  #overview-grid-main{grid-template-columns:1fr!important;gap:12px!important}
+  #overview-col-right{order:-1}
+  #overview-col-right > .panel:not(:first-child){display:none}
+  .pomo-ring-wrap{width:110px!important;height:110px!important}
+  .pomo-ring-wrap svg{width:110px!important;height:110px!important}
+  .stat-card:active{transform:scale(.97)!important}
+  .clock-display{font-size:22px!important}
+  /* Pomodoro sur mobile: layout horizontal */
+  .pomo-display{display:flex!important;flex-direction:row!important;align-items:center!important;gap:14px!important;flex-wrap:wrap!important;padding:4px 0!important}
+  .pomo-mode-tabs{margin-bottom:0!important;order:0;width:100%!important}
+  .pomo-ring-wrap{order:1;flex-shrink:0}
+  .pomo-controls{order:2;flex-direction:column!important;gap:8px!important}
+  .pomo-play-v2{width:44px!important;height:44px!important}
+  .pomo-ctrl-btn{width:36px!important;height:36px!important}
+  .pomo-stats-grid{display:none!important}
+  .pomo-day-history{order:3;width:100%!important}
 
   /* ── PANELS ──────────────────────────────────────────────────── */
-  .panel{padding:12px!important;border-radius:14px!important}
-  .panel-title{font-size:12px!important}
-  .panel:hover{transform:none!important;box-shadow:none!important}
-  /* Active state sur panel pour mobile */
+
+  .panel{overflow:visible!important}  .panel{padding:14px 12px!important;border-radius:14px!important}
+  .panel::before{display:none!important}
+  .panel-title{font-size:12px!important;font-weight:700!important}
+  .panel:hover{transform:none!important;box-shadow:none!important;border-color:rgba(255,255,255,.06)!important;background:rgba(255,255,255,.025)!important}
   .panel:active{transform:scale(.99)!important}
+  .note-area{min-height:70px!important;font-size:13px!important;resize:none!important}
+  .panel-header{padding-bottom:10px!important;margin-bottom:10px!important}
+  .panel-action{font-size:11px!important;padding:4px 8px!important}
+  .panel-title-icon{width:24px!important;height:24px!important;border-radius:7px!important}
 
   /* ── OVERVIEW GRID ───────────────────────────────────────────── */
   .overview-main-grid{grid-template-columns:1fr!important;gap:10px!important}
@@ -3711,7 +3744,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   .ps-pname{font-size:11px!important}
 
   /* ── PROFILE BANNER ──────────────────────────────────────────── */
-  .profile-banner{margin:0 -14px 0!important;height:90px!important}
+  .profile-banner{margin:0 -14px 12px!important;height:80px!important;border-radius:0!important}
   .profile-banner-info{left:14px!important;bottom:10px!important}
   .profile-banner-name{font-size:15px!important}
 
@@ -3964,7 +3997,7 @@ body.no-anim #bg-canvas{display:none!important}
 <canvas id="nexus-particles-bg"></canvas>
 <div id="nexus-boot-screen" style="position:fixed;inset:0;z-index:2147483647;background:#050507;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px">
   <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(124,58,237,.4)">
-    <svg width="20" height="20" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="9" fill="url(#eg)"/><path d="M9 10h14M9 16h10M9 22h14" stroke="white" stroke-width="2.6" stroke-linecap="round"/><defs><linearGradient id="eg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#4c1d95"/></linearGradient></defs></svg>
+    <svg width="20" height="20" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="url(#eg)"/><path d="M8 8h16v3H11v4.5h12v3H11V23h13v3H8V8z" fill="white"/><defs><linearGradient id="eg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#4c1d95"/></linearGradient></defs></svg>
   </div>
   <div style="display:flex;gap:6px;align-items:center">
     <div style="width:6px;height:6px;border-radius:50%;background:#7c3aed;animation:pulse 1.2s ease-in-out infinite"></div>
@@ -4006,7 +4039,7 @@ body.no-anim #bg-canvas{display:none!important}
       <div style="position:relative;z-index:1" id="auth-left-content">
         <div style="display:flex;align-items:center;gap:14px;margin-bottom:56px">
           <div id="auth-logo-icon" style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(124,58,237,.45)">
-            <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="9" fill="url(#eg)"/><path d="M9 10h14M9 16h10M9 22h14" stroke="white" stroke-width="2.6" stroke-linecap="round"/><defs><linearGradient id="eg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#4c1d95"/></linearGradient></defs></svg>
+            <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="url(#eg)"/><path d="M8 8h16v3H11v4.5h12v3H11V23h13v3H8V8z" fill="white"/><defs><linearGradient id="eg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#4c1d95"/></linearGradient></defs></svg>
           </div>
           <span style="font-size:20px;font-weight:900;letter-spacing:3px;color:#fff;font-family:'Syne',sans-serif;text-transform:uppercase">ETHONE</span>
         </div>
@@ -4132,7 +4165,7 @@ body.no-anim #bg-canvas{display:none!important}
     <!-- Logo -->
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:48px">
       <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(124,58,237,.4)">
-        <svg width="18" height="18" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="9" fill="url(#eg)"/><path d="M9 10h14M9 16h10M9 22h14" stroke="white" stroke-width="2.6" stroke-linecap="round"/><defs><linearGradient id="eg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#4c1d95"/></linearGradient></defs></svg>
+        <svg width="18" height="18" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="url(#eg)"/><path d="M8 8h16v3H11v4.5h12v3H11V23h13v3H8V8z" fill="white"/><defs><linearGradient id="eg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#4c1d95"/></linearGradient></defs></svg>
       </div>
       <span style="font-size:15px;font-weight:900;letter-spacing:2px;color:var(--text);font-family:'Syne',sans-serif;text-transform:uppercase">ETHONE</span>
     </div>
@@ -4180,7 +4213,7 @@ body.no-anim #bg-canvas{display:none!important}
 <nav class="sidebar" id="main-sidebar" style="display:none;opacity:1">
   <div class="logo" style="position:relative">
     <div class="logo-icon" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);box-shadow:0 2px 12px rgba(124,58,237,.3)">
-      <svg width="14" height="14" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="9" fill="url(#eg)"/><path d="M9 10h14M9 16h10M9 22h14" stroke="white" stroke-width="2.6" stroke-linecap="round"/><defs><linearGradient id="eg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#4c1d95"/></linearGradient></defs></svg>
+      <svg width="14" height="14" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="url(#eg)"/><path d="M8 8h16v3H11v4.5h12v3H11V23h13v3H8V8z" fill="white"/><defs><linearGradient id="eg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#4c1d95"/></linearGradient></defs></svg>
     </div>
     <span class="logo-text" id="logo-text-el" style="background:linear-gradient(135deg,#fff,#fda4af);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:900;letter-spacing:1.5px;font-family:'Syne',sans-serif;text-transform:uppercase">ETHONE</span>
 
@@ -4394,10 +4427,30 @@ body.no-anim #bg-canvas{display:none!important}
       </div>
     </div>
     <div class="stats-row">
-      <div class="stat-card" style="--card-accent:#7c3aed" onclick="switchPage('files',null)"><div class="stat-label" data-i18n="total_files">Total Files</div><div class="stat-value" id="stat-files">0</div><div class="stat-sub">stored items</div></div>
-      <div class="stat-card" style="--card-accent:#34d399" onclick="switchPage('todos',null)"><div class="stat-label" data-i18n="tasks_done">Tasks Done</div><div class="stat-value" id="stat-tasks">0</div><div class="stat-sub up" id="stat-tasks-sub">of 0 total</div></div>
-      <div class="stat-card" style="--card-accent:#f87171"><div class="stat-label" data-i18n="links_saved">Links Saved</div><div class="stat-value" id="stat-links">0</div><div class="stat-sub">bookmarked</div></div>
-      <div class="stat-card" style="--card-accent:#fbbf24"><div class="stat-label" data-i18n="time">Time</div><div class="clock-display" id="clock-main">00:00</div><div class="clock-date" id="clock-date-sub"></div></div>
+      <div class="stat-card" style="--card-accent:#7c3aed" onclick="switchPage('files',null)">
+        <div class="stat-card-icon" style="color:#7c3aed;background:rgba(124,58,237,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+        <div class="stat-value" id="stat-files">0</div>
+        <div class="stat-label" data-i18n="total_files">Total Files</div>
+        <div class="stat-sub">stored items</div>
+      </div>
+      <div class="stat-card" style="--card-accent:#34d399" onclick="switchPage('todos',null)">
+        <div class="stat-card-icon" style="color:#34d399;background:rgba(52,211,153,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+        <div class="stat-value" id="stat-tasks">0</div>
+        <div class="stat-label" data-i18n="tasks_done">Tasks Done</div>
+        <div class="stat-sub up" id="stat-tasks-sub">of 0 total</div>
+      </div>
+      <div class="stat-card" style="--card-accent:#f87171" onclick="switchPage('files',null)">
+        <div class="stat-card-icon" style="color:#f87171;background:rgba(248,113,113,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
+        <div class="stat-value" id="stat-links">0</div>
+        <div class="stat-label" data-i18n="links_saved">Links Saved</div>
+        <div class="stat-sub">bookmarked</div>
+      </div>
+      <div class="stat-card" style="--card-accent:#a78bfa">
+        <div class="stat-card-icon" style="color:#a78bfa;background:rgba(167,139,250,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div class="clock-display" id="clock-main">00:00</div>
+        <div class="stat-label" data-i18n="time">Time</div>
+        <div class="clock-date" id="clock-date-sub"></div>
+      </div>
     </div>
     <!-- Gaming mini-widget -->
     <div id="gaming-overview-wrap" class="overview-widget" draggable="true" style="display:none;margin-bottom:12px">
@@ -4452,7 +4505,7 @@ body.no-anim #bg-canvas{display:none!important}
             <div id="overview-todos"><div class="empty-state" style="padding:16px"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px"><path d="M5.8 11.3L2 22l10.7-3.79"/><path d="M4 3h.01M22 8h.01M15 2h.01M22 20h.01M22 2L11 13"/><path d="M16 4l4 4"/></svg></div><div class="empty-label">All done!</div></div></div>
             <div style="display:flex;gap:6px;padding:8px 0 2px">
               <input id="ov-quick-todo" type="text" placeholder="+ Ajouter une tâche rapide…"
-                style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;color:var(--text);font-family:var(--font);font-size:12px;outline:none;transition:border-color .2s"
+                style="flex:1;background:rgba(124,58,237,.06);border:1px solid rgba(124,58,237,.15);border-radius:8px;padding:8px 12px;color:var(--text);font-family:var(--font);font-size:12px;outline:none;transition:all .2s"
                 onfocus="this.style.borderColor='rgba(124,58,237,.4)'" onblur="this.style.borderColor='rgba(255,255,255,.08)'"
                 onkeydown="if(event.key==='Enter'&&this.value.trim()){ovQuickAddTodo(this.value.trim());this.value='';}">
             </div>
@@ -4563,9 +4616,9 @@ body.no-anim #bg-canvas{display:none!important}
                 <circle cx="80" cy="80" r="68" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="6"/>
                 <!-- Progress -->
                 <circle id="pomo-ring" cx="80" cy="80" r="68" fill="none"
-                  stroke="#f87171" stroke-width="6" stroke-linecap="round"
+                  stroke="#7c3aed" stroke-width="6" stroke-linecap="round"
                   stroke-dasharray="427" stroke-dashoffset="0"
-                  style="transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset 1s linear,stroke .3s"/>
+                  style="transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset 1s linear,stroke .3s;filter:drop-shadow(0 0 6px rgba(124,58,237,.5))"/>
               </svg>
               <div class="pomo-ring-center">
                 <div class="pomo-time-v2" id="pomo-time">25:00</div>
@@ -5365,7 +5418,7 @@ body.no-anim #bg-canvas{display:none!important}
     <div class="conn-card">
       <div class="conn-header">
         <div class="conn-icon" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">
-          <svg width="14" height="14" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="9" fill="url(#sl)"/><path d="M9 10h14M9 16h10M9 22h14" stroke="white" stroke-width="2.6" stroke-linecap="round"/><defs><linearGradient id="sl" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#4c1d95"/></linearGradient></defs></svg>
+          <svg width="14" height="14" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="url(#sl)"/><path d="M8 8h16v3H11v4.5h12v3H11V23h13v3H8V8z" fill="white"/><defs><linearGradient id="sl" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#4c1d95"/></linearGradient></defs></svg>
         </div>
         <div>
           <div class="conn-title">ETHONE AI — Groq API Key</div>
@@ -5950,7 +6003,7 @@ body.no-anim #bg-canvas{display:none!important}
   <div class="pres-header">
     <div class="pres-logo">
       <div class="pres-logo-icon">
-        <svg width="16" height="16" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="9" fill="url(#eg)"/><path d="M9 10h14M9 16h10M9 22h14" stroke="white" stroke-width="2.6" stroke-linecap="round"/><defs><linearGradient id="eg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#4c1d95"/></linearGradient></defs></svg>
+        <svg width="16" height="16" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="url(#eg)"/><path d="M8 8h16v3H11v4.5h12v3H11V23h13v3H8V8z" fill="white"/><defs><linearGradient id="eg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#4c1d95"/></linearGradient></defs></svg>
       </div>
       <span class="pres-logo-text">ETHONE</span>
     </div>
@@ -9025,7 +9078,7 @@ function addAIMessage(role,text){
   const isUser=role==='user';
   const avatarHtml=isUser
     ?`<div class="ai-avatar user-av">${p?.avatarImg?`<img src="${p.avatarImg}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`:(p?.avatarEmoji||'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>')}</div>`
-    :`<div class="ai-avatar nexus"><svg viewBox="0 0 32 32" fill="none" style="width:14px;height:14px"><rect width="32" height="32" rx="9" fill="url(#eai)"/><path d="M9 10h14M9 16h10M9 22h14" stroke="white" stroke-width="2.6" stroke-linecap="round"/><defs><linearGradient id="eai" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#4c1d95"/></linearGradient></defs></svg></div>`;
+    :`<div class="ai-avatar nexus"><svg viewBox="0 0 32 32" fill="none" style="width:14px;height:14px"><rect width="32" height="32" rx="8" fill="url(#eai)"/><path d="M8 8h16v3H11v4.5h12v3H11V23h13v3H8V8z" fill="white"/><defs><linearGradient id="eai" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#4c1d95"/></linearGradient></defs></svg></div>`;
   // Simple markdown: **bold**, `code`, [link](url), newlines
   const html=text
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
@@ -9490,28 +9543,38 @@ function toast(msg,type='info'){
 //  ACTIVITY
 // ===================================================
 function renderOverviewEvents(){
-  const p=curP();if(!p)return;
-  const container=document.getElementById('overview-events');if(!container)return;
+  const el=document.getElementById('overview-events');if(!el)return;
+  const p=curP();
   const today=new Date().toISOString().slice(0,10);
-  const events=(p.state.events||[]).filter(e=>e.date>=today).slice(0,5);
-  if(!events.length){
-    container.innerHTML='<div class="empty-state" style="padding:16px"><div style="font-size:20px;margin-bottom:6px">&#128197;</div>No upcoming events!</div>';
+  const upcoming=(p?.state?.events||[])
+    .filter(e=>e.date>=today)
+    .sort((a,b)=>a.date.localeCompare(b.date))
+    .slice(0,4);
+  if(!upcoming.length){
+    el.innerHTML='<div class="empty-state" style="padding:12px"><div class="empty-label" style="font-size:12px">Aucun événement</div></div>';
     return;
   }
-  container.innerHTML=events.map(e=>{
-    const d=new Date(e.date+'T00:00:00');
+  const dayNames={fr:['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],en:['Sun','Mon','Tue','Wed','Thu','Fri','Sat']};
+  const days=dayNames[_lang]||dayNames['en'];
+  el.innerHTML=upcoming.map(e=>{
+    const d=new Date(e.date+'T12:00:00');
     const isToday=e.date===today;
-    const isTomorrow=e.date===new Date(Date.now()+86400000).toISOString().slice(0,10);
-    const dayLabel=isToday?'Today':isTomorrow?'Tomorrow':d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'});
-    const daysLeft=Math.ceil((d-new Date().setHours(0,0,0,0))/(1000*60*60*24));
-    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">'+
-      '<div style="width:8px;height:8px;border-radius:50%;background:'+safeThemeColor(e.color)+';flex-shrink:0"></div>'+
-      '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+escapeHTML(e.title)+'</div>'+
-      '<div style="font-size:11px;color:var(--muted);margin-top:1px">'+escapeHTML(dayLabel)+'</div></div>'+
-      '<div style="font-size:11px;font-weight:600;flex-shrink:0;color:'+(isToday?'var(--accent3)':daysLeft<=3?'var(--accent4)':'var(--muted)')+'">'+(isToday?'Today':daysLeft===1?'Tomorrow':daysLeft+'d')+'</div></div>';
+    const dayName=days[d.getDay()];
+    const dayNum=d.getDate();
+    return `<div style="display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:9px;border:1px solid ${isToday?'rgba(124,58,237,.3)':'rgba(255,255,255,.05)'};background:${isToday?'rgba(124,58,237,.06)':'transparent'};margin-bottom:6px;transition:all .15s" onmouseover="this.style.borderColor='rgba(124,58,237,.25)'" onmouseout="this.style.borderColor='${isToday?'rgba(124,58,237,.3)':'rgba(255,255,255,.05)'}'">
+      <div style="width:34px;text-align:center;flex-shrink:0">
+        <div style="font-size:9px;font-weight:700;color:${isToday?'#a78bfa':'var(--muted)'};letter-spacing:.5px;font-family:var(--mono)">${dayName.toUpperCase()}</div>
+        <div style="font-size:17px;font-weight:800;color:${isToday?'#fff':'var(--text)'};line-height:1.1">${dayNum}</div>
+      </div>
+      <div style="width:1px;height:30px;background:${isToday?'rgba(124,58,237,.4)':'rgba(255,255,255,.08)'}"></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHTML(e.title||'Event')}</div>
+        ${isToday?'<div style="font-size:10px;color:#a78bfa;font-weight:600">Aujourd'hui</div>':''}
+      </div>
+      ${e.color?`<div style="width:6px;height:6px;border-radius:50%;background:${escapeHTML(e.color)};flex-shrink:0"></div>`:''}
+    </div>`;
   }).join('');
 }
-
 
 function addActivity(text,color='var(--accent)'){
   const p=curP();if(!p)return;
@@ -10079,50 +10142,47 @@ function renderOverviewHabits(){
   const habits=(p?.state?.habits||[]).slice(0,5);
   const today=new Date().toISOString().slice(0,10);
   if(!habits.length){
-    el.innerHTML='<div class="empty-state" style="padding:12px"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px"><path d="M12 22V12"/><path d="M12 12C12 7 7 4 4 6c0 4 3.5 7 8 6"/><path d="M12 12c0-5 5-8 8-6c0 4-3.5 7-8 6"/></svg></div><div class="empty-label">Aucune habitude — <span style="color:var(--accent);cursor:pointer" onclick="switchPage(\'habits\',null)">ajouter</span></div></div>';
+    el.innerHTML='<div class="empty-state" style="padding:12px"><div class="empty-label" style="font-size:12px">Aucune habitude — <button onclick="switchPage('habits',null)" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:12px;font-family:var(--font);padding:0">créer</button></div></div>';
     return;
   }
   el.innerHTML=habits.map(h=>{
-    const done=!!(h.log&&h.log[today]);
-    const streak=h.streak||0;
-    return`<div style="display:flex;align-items:center;gap:10px;padding:6px 2px;border-bottom:1px solid var(--border3);cursor:pointer" onclick="toggleHabitDay(${h.id},'${today}');renderOverviewHabits();renderHabits()">
-      <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${done?'var(--accent2)':'rgba(255,255,255,.15)'};background:${done?'var(--accent2)':'transparent'};display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0">
-        ${done?'<svg viewBox="0 0 16 16" fill="none" style="width:11px;height:11px"><polyline points="2,8 6,12 14,4" stroke="#050507" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}
+    const done=h.log&&h.log[today];
+    const streak=habitStreak(h);
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:${done?'rgba(124,58,237,.08)':'rgba(255,255,255,.02)'};border:1px solid ${done?'rgba(124,58,237,.2)':'rgba(255,255,255,.05)'};cursor:pointer;transition:all .18s" onclick="toggleHabitDay('${today}',${h.id});renderOverviewHabits()" onmouseover="this.style.borderColor='rgba(124,58,237,.25)'" onmouseout="this.style.borderColor='${done?'rgba(124,58,237,.2)':'rgba(255,255,255,.05)'}'">
+      <div style="width:20px;height:20px;border-radius:6px;border:1.5px solid ${done?'rgba(124,58,237,.7)':'rgba(255,255,255,.2)'};background:${done?'rgba(124,58,237,.3)':'transparent'};display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s">
+        ${done?'<svg viewBox="0 0 16 16" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:10px;height:10px"><polyline points="2,8 6,12 14,4"/></svg>':''}
       </div>
-      <span style="flex:1;font-size:13px;font-weight:500;color:${done?'var(--muted)':'var(--text)'};${done?'text-decoration:line-through':''}">${h.icon?h.icon+' ':''}${escapeHTML(h.name)}</span>
-      ${streak>1?`<span style="font-size:10px;background:rgba(124,58,237,.12);color:var(--accent);padding:2px 7px;border-radius:10px;font-weight:600"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:9px;height:9px;display:inline-block;vertical-align:middle;margin-right:2px"><path d="M12 2c0 6-6 6-6 12a6 6 0 0 0 12 0c0-6-6-6-6-12z"/></svg>${streak}</span>`:''}
+      <span style="font-size:15px;flex-shrink:0">${h.icon?escapeHTML(h.icon):''}</span>
+      <span style="flex:1;font-size:13px;color:${done?'rgba(255,255,255,.5)':'var(--text)'};text-decoration:${done?'line-through':'none'};transition:all .2s">${escapeHTML(h.name)}</span>
+      ${streak>0?`<span style="font-size:10px;font-weight:700;color:#a78bfa;font-family:var(--mono)">${streak}🔥</span>`:''}
     </div>`;
   }).join('');
 }
 
-// ═══════════════════════════════════════════════════════════
-//  OVERVIEW GOALS
-// ═══════════════════════════════════════════════════════════
 function renderOverviewGoals(){
   const el=document.getElementById('overview-goals-list');if(!el)return;
   const p=curP();
   const goals=(p?.state?.goals||[]).slice(0,4);
   if(!goals.length){
-    el.innerHTML='<div style="font-size:12px;color:var(--muted);padding:8px 2px;text-align:center">Aucun objectif — <span style="color:var(--accent);cursor:pointer" onclick="switchPage(\'goals\',null)">en ajouter</span></div>';
+    el.innerHTML='<div style="font-size:12px;color:var(--muted);padding:8px 4px;text-align:center">Aucun objectif — <button onclick="switchPage('goals',null)" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:12px;font-family:var(--font);padding:0">ajouter</button></div>';
     return;
   }
   el.innerHTML=goals.map(g=>{
-    const pct=g.target?Math.min(100,Math.round(((g.progress||0)/g.target)*100)):( g.done?100:0);
-    const color=pct>=100?'var(--accent2)':pct>=50?'var(--accent)':'rgba(255,255,255,.25)';
-    return`<div style="margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-        <span style="font-size:12px;font-weight:500;color:${pct>=100?'var(--muted)':'var(--text)'};${pct>=100?'text-decoration:line-through':''}">${g.emoji?g.emoji+' ':''}${escapeHTML(g.text||'')}</span>
-        <span style="font-size:11px;color:${color};font-weight:600;font-family:var(--mono)">${pct}%</span>
+    const pct=Math.round(((g.current||0)/Math.max(g.target||1,1))*100);
+    const done=pct>=100;
+    return `<div style="margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">
+        <span style="font-size:14px">${g.emoji||'🎯'}</span>
+        <span style="font-size:12px;font-weight:500;flex:1;color:${done?'var(--muted)':'var(--text)'}">${escapeHTML(g.text||'Goal')}</span>
+        <span style="font-size:10px;font-weight:700;font-family:var(--mono);color:${done?'#34d399':'#a78bfa'}">${pct}%</span>
       </div>
       <div style="height:4px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden">
-        <div style="height:100%;width:${pct}%;background:${color};border-radius:99px;transition:width .4s ease"></div>
+        <div style="height:100%;width:${Math.min(pct,100)}%;border-radius:99px;background:${done?'#34d399':'linear-gradient(90deg,#7c3aed,#a78bfa)'};transition:width .6s cubic-bezier(.22,1,.36,1);box-shadow:${done?'0 0 8px rgba(52,211,153,.4)':'0 0 8px rgba(124,58,237,.4)'}"></div>
       </div>
     </div>`;
   }).join('');
 }
 
-
-let _darkMode=true;
 function toggleDarkLight(){
   _darkMode=!_darkMode;
   const btn=document.getElementById('theme-mode-btn');
@@ -11634,7 +11694,7 @@ function checkWeeklyDigest(){
   const pomoWeek=(s.pomoHistory||[]).filter(h=>h.ts&&h.ts.slice(0,10)>=weekStartStr).length;
   const bestStreak=Math.max(0,...(s.habits||[]).map(h=>h.streak||0));
   addNotif('📊','Résumé de la semaine',`${doneTasks} tâches · ${pomoWeek} pomodoros · streak ${bestStreak}j`,()=>{switchPage('stats',null);closeNotifPanel();});
-  if(_notifEnabled&&Notification.permission==='granted'){
+  if(_notifEnabled&&typeof Notification!=='undefined'&&'Notification' in window&&Notification.permission==='granted'){
     new Notification('ETHONE — Résumé semaine 📊',{body:`${doneTasks} tâches faites · ${pomoWeek} pomodoros · meilleur streak ${bestStreak}j`});
   }
 }
@@ -16412,7 +16472,9 @@ function importData(e){
 // ===================================================
 let _notifEnabled=false;
 function requestNotifPermission(){
-  if(!('Notification' in window)){toast('Notifications not supported','error');return;}
+  if(typeof Notification==='undefined'||!('Notification' in window)){toast('Notifications not supported on this browser','info');return;}
+  try{
+  if(typeof Notification==='undefined')return;
   Notification.requestPermission().then(perm=>{
     _notifEnabled=perm==='granted';
     const p=curP();
@@ -16425,23 +16487,24 @@ function requestNotifPermission(){
       toast('Notifications denied — check browser settings','error');
     }
   });
+  }catch(e){toast('Notifications not available','info');}
 }
 function sendNotif(title,body,icon=''){
-  if(!_notifEnabled||Notification.permission!=='granted')return;
+  if(!_notifEnabled||typeof Notification==='undefined'||!('Notification' in window)||Notification.permission!=='granted')return;
   try{new Notification(title,{body,icon:'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>'+icon+'</text></svg>'});}
   catch(e){}
 }
 // Restore notification state on load
 function initNotifState(p){
-  if(p?.state?.notifEnabled&&Notification.permission==='granted'){
+  if(p?.state?.notifEnabled&&typeof Notification!=='undefined'&&'Notification' in window&&Notification.permission==='granted'){
     _notifEnabled=true;
     const btn=document.getElementById('notif-btn');
     if(btn){btn.textContent='🔔 Notifications ON';btn.style.color='var(--accent2)';btn.style.borderColor='var(--accent2)';}
-  } else if(Notification.permission==='granted'){
+  } else if(typeof Notification!=='undefined'&&'Notification' in window&&Notification.permission==='granted'){
     _notifEnabled=true;
   }
 }
-(function(){if(Notification.permission==='granted'){_notifEnabled=true;}})();
+(function(){try{if(typeof Notification!=='undefined'&&'Notification' in window&&Notification.permission==='granted'){_notifEnabled=true;}}catch(e){}})();
 
 // ===================================================
 //  GAMING OVERVIEW MINI-WIDGET

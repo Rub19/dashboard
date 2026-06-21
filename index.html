@@ -159,7 +159,7 @@ window.onerror = function(msg, src, line, col, err) {
 ::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
 ::-webkit-scrollbar-thumb:hover{background:var(--muted2)}
 
-body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;min-height:100vh;display:flex;overflow-x:hidden;-webkit-font-smoothing:antialiased;gap:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;min-height:100vh;display:flex;overflow-x:hidden;-webkit-font-smoothing:antialiased;gap:0;position:relative}
 
 /* ── ANIMATIONS ── */
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -1217,7 +1217,7 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .settings-card{
   background:rgba(255,255,255,.02);
   border:1px solid rgba(255,255,255,.06);
-  border-radius:14px;padding:22px;
+  border-radius:var(--r-panel,14px);padding:22px;
   margin-bottom:14px;
 }
 .settings-card-title{font-size:12px;font-weight:700;letter-spacing:.3px;color:rgba(245,245,247,.7);margin-bottom:16px;text-transform:uppercase;font-family:var(--mono)}
@@ -1340,7 +1340,7 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .kanban-col{
   background:rgba(255,255,255,.02);
   border:1px solid rgba(255,255,255,.06);
-  border-radius:14px;padding:14px;
+  border-radius:var(--r-panel,14px);padding:14px;
 }
 .kanban-col-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .kanban-col-title{font-size:12.5px;font-weight:700;display:flex;align-items:center;gap:7px;letter-spacing:.1px}
@@ -2608,10 +2608,12 @@ body.glass-mode .sidebar{
 
 /* BG presets */
 #nexus-bg-layer{
-  position:fixed;inset:0;z-index:0;pointer-events:none;
-  transition:opacity .5s ease;
+  position:fixed;inset:0;z-index:2;pointer-events:none;
+  transition:opacity .5s ease,background-image .5s ease;
+  mix-blend-mode:normal;
 }
-.main,.sidebar{position:relative;z-index:1}
+.main,.sidebar{position:relative;z-index:3}
+#main-sidebar{z-index:300}
 
 /* BG preset buttons */
 .bg-preset-btn{
@@ -3701,7 +3703,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 
   /* ── PANELS ──────────────────────────────────────────────────── */
 
-  .panel{overflow:visible!important}  .panel{padding:14px 12px!important;border-radius:14px!important}
+  .panel{overflow:visible!important}  .panel{padding:14px 12px!important;border-radius:var(--r-panel,14px)!important}
   .panel::before{display:none!important}
   .panel-title{font-size:12px!important;font-weight:700!important}
   .panel:hover{transform:none!important;box-shadow:none!important;border-color:rgba(255,255,255,.06)!important;background:rgba(255,255,255,.025)!important}
@@ -4010,7 +4012,7 @@ body.no-anim #bg-canvas{display:none!important}
 </div>
 
 <!-- AUTH SCREEN -->
-<canvas id="bg-canvas" style="position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:0;transition:opacity 1s ease"></canvas>
+<canvas id="bg-canvas" style="position:fixed;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity 1s ease"></canvas>
 
 <div id="nexus-page-loader"></div>
 <div id="nexus-page-transition"></div>
@@ -5894,10 +5896,7 @@ body.no-anim #bg-canvas{display:none!important}
                 <span style="font-size:10px;color:var(--muted);font-family:var(--mono)">24px</span>
               </button>
             </div>
-            <!-- Fine slider -->
-            <input type="range" id="radius-slider" min="0" max="24" value="8" step="1"
-              oninput="setRadius(this.value)"
-              style="width:100%;accent-color:var(--accent);cursor:pointer;height:4px">
+            <!-- Fine slider supprimé - utiliser les boutons visuels -->
           </div>
 
           <!-- Glassmorphism -->
@@ -10190,7 +10189,7 @@ function renderOverviewHabits(){
   var habits=(p&&p.state&&p.state.habits?p.state.habits:[]).slice(0,5);
   var today=new Date().toISOString().slice(0,10);
   if(!habits.length){
-    el.innerHTML='<div class="empty-state" style="padding:12px"><div class="empty-label" style="font-size:12px">Aucune habitude \u2014 <a href="#" onclick="event.preventDefault();switchPage(\'habits\',null)" style="color:var(--accent)">cr\u00e9er</a></div></div>';
+    el.innerHTML='<div class="empty-state" style="padding:12px"><div class="empty-label" style="font-size:12px">Aucune habitude \u2014 <a href="#" onclick="event.preventDefault();switchPage("habits",null)" style="color:var(--accent)">cr\u00e9er</a></div></div>';
     return;
   }
   var html='';
@@ -10220,7 +10219,7 @@ function renderOverviewGoals(){
   var p=curP();
   var goals=(p&&p.state&&p.state.goals?p.state.goals:[]).slice(0,4);
   if(!goals.length){
-    el.innerHTML='<div style="font-size:12px;color:var(--muted);padding:8px 4px;text-align:center">Aucun objectif \u2014 <a href="#" onclick="event.preventDefault();switchPage(\'goals\',null)" style="color:var(--accent)">ajouter</a></div>';
+    el.innerHTML='<div style="font-size:12px;color:var(--muted);padding:8px 4px;text-align:center">Aucun objectif \u2014 <a href="#" onclick="event.preventDefault();switchPage("goals",null)" style="color:var(--accent)">ajouter</a></div>';
     return;
   }
   var html='';
@@ -10557,7 +10556,7 @@ function renderCountdowns(){
   const grid=document.getElementById('countdown-grid');if(!grid)return;
   const cds=(p.state.countdowns||[]).sort((a,b)=>a.date.localeCompare(b.date));
   if(!cds.length){
-    grid.innerHTML='<div class="empty-state" style="grid-column:1/-1;padding:40px"><div class="empty-icon" style="margin-bottom:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:40px;height:40px;opacity:.35"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 3"/><path d="M9 3h6"/></svg></div><div style="font-size:15px;font-weight:600;margin-bottom:8px">No countdowns yet</div><button class="btn btn-primary" onclick="openModal(\'add-countdown\')">+ Add event</button></div>';
+    grid.innerHTML='<div class="empty-state" style="grid-column:1/-1;padding:40px"><div class="empty-icon" style="margin-bottom:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:40px;height:40px;opacity:.35"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 3"/><path d="M9 3h6"/></svg></div><div style="font-size:15px;font-weight:600;margin-bottom:8px">No countdowns yet</div><button class="btn btn-primary" onclick="openModal("add-countdown")">+ Add event</button></div>';
     return;
   }
   grid.innerHTML=cds.map(c=>{

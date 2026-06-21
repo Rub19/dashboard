@@ -33,17 +33,23 @@
 // Failsafe: remove anti-flash after 6s max no matter what
 setTimeout(function(){
   var s=document.getElementById('anti-flash');
-  if(s){s.remove();console.warn('[NEXUS] anti-flash removed by failsafe');}
+  if(s) s.remove();
   var boot=document.getElementById('nexus-boot-screen');
-  var auth=document.getElementById('auth-screen');
   var sb=document.getElementById('main-sidebar');
   var mc=document.getElementById('main-content');
-  // Si le boot est encore visible après 6s -> montrer l'auth
+  // Si le boot est encore visible après 6s -> montrer l'auth proprement
   if(boot&&boot.style.display!=='none'){
     boot.style.display='none';
-    if(auth) auth.style.display='flex';
+    // Appeler showAuth() si disponible (applique i18n + animations)
+    if(typeof showAuth==='function'){
+      showAuth();
+    } else {
+      // Fallback minimal si JS pas encore parsé
+      var auth=document.getElementById('auth-screen');
+      if(auth){auth.style.display='flex';auth.style.opacity='1';}
+    }
   }
-  // Si sidebar est hidden mais main-content est block -> qqch a merdé, forcer
+  // Si sidebar hidden mais mc visible -> forcer sidebar
   if(sb&&mc&&sb.style.display==='none'&&mc.style.display!=='none'){
     sb.style.display='flex';
   }
@@ -89,7 +95,6 @@ window.onerror = function(msg, src, line, col, err) {
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous" onerror="window._supabaseLoadError=true"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" crossorigin="anonymous"></script>
 <style>
@@ -155,7 +160,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 /* ── ANIMATIONS ── */
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 /* GPU compositing fallback: si backdrop-filter non supporté, on désactive */
-.no-backdrop *{
+.no-backdrop *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 /* Sidebar et panels: backdrop-filter optionnel, fallback opaque */
 .sidebar,.panel,.ps-card-inner{will-change:transform}
 @keyframes slideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:none}}
@@ -215,6 +220,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   transform-style:preserve-3d;
   transition:transform .08s linear;
 }
+.ps-profile::after{content:'';position:absolute;inset:-1px;border-radius:21px;border:1px solid transparent;transition:border-color .25s,box-shadow .25s;pointer-events:none}
+.ps-profile:hover::after{border-color:rgba(249,115,22,.35);box-shadow:0 0 30px rgba(249,115,22,.13),0 0 0 1px rgba(249,115,22,.2)}
 .ps-card-inner{
   width:100%;
   background:rgba(255,255,255,0.03);
@@ -262,6 +269,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   border-radius:20px;padding:2px 8px;font-size:9.5px;color:var(--muted);
   white-space:nowrap;
 }
+.ps-stats-row{display:flex;gap:5px;align-items:center;justify-content:center;margin-top:6px;flex-wrap:wrap}
+.ps-stat-chip{display:inline-flex;align-items:center;gap:3px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:99px;padding:2px 7px;font-size:10px;font-weight:600;color:rgba(255,255,255,.5);font-family:var(--mono)}
 .ps-pname{
   font-size:13px;color:var(--muted);font-weight:600;
   transition:color .2s;text-align:center;
@@ -619,7 +628,7 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 
 /* ── MODALS ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:10000;padding:16px}
-@supports(backdrop-filter:blur(1px)){.modal-overlay{background:rgba(0,0,0,.65);backdrop-filter:blur(6px);}}
+/* backdrop-filter removed for GPU compat */
 .modal-overlay.open{display:flex;animation:fadeIn .15s ease}
 .modal{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:24px;width:440px;max-width:calc(100vw - 32px);animation:slideUp .2s cubic-bezier(.4,0,.2,1);max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.6)}
 .modal-title{font-size:15px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px;letter-spacing:-.2px}
@@ -792,9 +801,7 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
   border-right:1px solid rgba(255,255,255,.045);
   transition:width .2s cubic-bezier(.4,0,.2,1);
 }
-@supports(backdrop-filter:blur(1px)){
-  .sidebar{background:rgba(var(--bg-rgb,5,5,7),.88);}
-}
+/* sidebar backdrop removed for GPU compat */
 .logo{
   padding:20px 18px 17px;
   border-bottom:1px solid rgba(255,255,255,.045);
@@ -1060,7 +1067,7 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .profile-banner-empty{background:linear-gradient(135deg,rgba(249,115,22,.07),rgba(220,38,38,.04))}
 
 /* ── MODALS ── */
-.modal-overlay{background:rgba(0,0,0,.7);
+.modal-overlay{background:rgba(0,0,0,.7);}
 .modal{
   background:rgba(12,10,14,.95);
   border:1px solid rgba(255,255,255,.08);
@@ -1588,7 +1595,8 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
   background:rgba(255,255,255,.03);
   border:1px solid rgba(255,255,255,.06);
   transition:all .2s ease;
-}
+;transition:all .22s cubic-bezier(.22,1,.36,1)}
+.auth-feature-item:hover{background:rgba(249,115,22,.07);color:rgba(255,255,255,.85);transform:translateX(4px)}
 .auth-feature-item:hover{
   background:rgba(255,255,255,.06);
   color:rgba(255,255,255,.8);
@@ -1607,7 +1615,7 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 }
 .auth-feature-icon svg{width:13px;height:13px;color:#f97316}
 
-.auth-orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(80px)}
+.auth-orb{position:absolute;border-radius:50%;pointer-events:none;opacity:.15}
 .auth-orb-1{width:600px;height:600px;background:radial-gradient(circle,rgba(249,115,22,.2),transparent 65%);top:-200px;left:-200px;animation:orbPulse 6s ease-in-out infinite}
 .auth-orb-2{width:500px;height:500px;background:radial-gradient(circle,rgba(220,38,38,.16),transparent 65%);bottom:-150px;right:-150px;animation:orbPulse2 8s ease-in-out infinite}
 .auth-orb-3{width:400px;height:400px;background:radial-gradient(circle,rgba(139,92,246,.12),transparent 65%);top:40%;left:20%;animation:orbPulse 7s ease-in-out infinite 1s}
@@ -1632,7 +1640,7 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .auth-input:focus{
   border-color:rgba(249,115,22,.4);
   background:rgba(249,115,22,.05);
-  box-shadow:0 0 0 3px rgba(249,115,22,.1);
+  box-shadow:0 0 0 3px rgba(249,115,22,.12),0 0 20px rgba(249,115,22,.05);
 }
 .auth-input::placeholder{color:rgba(245,245,247,.2)}
 /* Force 16px min on mobile to prevent zoom */
@@ -1641,21 +1649,16 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .auth-submit-btn{
   width:100%;padding:14px;
   background:linear-gradient(135deg,#f97316,#dc2626);
-  color:#fff;border:none;border-radius:12px;
-  font-family:var(--font);font-size:14px;font-weight:700;
-  cursor:pointer;
+  color:#fff;font-size:15px;font-weight:700;
+  font-family:var(--font);letter-spacing:.2px;
+  cursor:pointer;border:none;border-radius:12px;
+  transition:all .22s cubic-bezier(.22,1,.36,1);
   position:relative;overflow:hidden;
-  transition:transform .15s var(--ease-spring,cubic-bezier(.34,1.56,.64,1)),
-             box-shadow .2s ease;
-  box-shadow:0 4px 24px rgba(249,115,22,.35);
-  letter-spacing:.3px;
-  -webkit-tap-highlight-color:transparent;
 }
-.auth-submit-btn:hover{
-  transform:translateY(-2px);
-  box-shadow:0 8px 32px rgba(249,115,22,.5);
-}
-.auth-submit-btn:active{transform:scale(.97)!important}
+.auth-submit-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);opacity:0;transition:opacity .2s}
+.auth-submit-btn:hover{transform:translateY(-2px);box-shadow:0 10px 36px rgba(249,115,22,.4)}
+.auth-submit-btn:hover::before{opacity:1}
+.auth-submit-btn:active{transform:translateY(0) scale(.98);box-shadow:0 4px 14px rgba(249,115,22,.25)}
 .auth-submit-btn::after{
   content:'';position:absolute;inset:0;
   background:linear-gradient(180deg,rgba(255,255,255,.12),transparent);
@@ -1682,7 +1685,7 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
   box-shadow:0 2px 12px rgba(249,115,22,.3);
 }
 
-.auth-title-gradient{.auth-title-gradient{
+.auth-title-gradient{
   background:linear-gradient(90deg,#fb7185,#f97316,#fbbf24,#fb7185);
   background-size:300% auto;
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
@@ -1703,10 +1706,9 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 #ps-cursor-glow{
   position:fixed;pointer-events:none;z-index:0;
   width:300px;height:300px;border-radius:50%;
-  background:radial-gradient(circle,rgba(249,115,22,.08),transparent 70%);
+  background:radial-gradient(circle,rgba(249,115,22,.06),transparent 70%);
   transform:translate(-50%,-50%);
   transition:opacity .3s;
-  filter:blur(20px);
 }
 
 /* ── SIDEBAR ANIMATIONS ── */
@@ -1787,7 +1789,7 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
   .panel:hover{transform:none!important;box-shadow:none!important}
   .stat-card{transition:transform .15s ease!important}
   /* Pas de backdrop-filter sur les panels (trop lent sur mobile) */
-  .panel{
+  .panel{box-shadow:none}
   /* Pas de box-shadow lourdes */
   .stat-card:hover{transform:none!important;box-shadow:none!important}
   /* Pas de particules canvas sur mobile */
@@ -1897,8 +1899,8 @@ body.no-anim #bg-canvas{display:none!important}
 }
 .lfm-now-bg{
   position:absolute;inset:0;background-size:cover;background-position:center;
-  filter:blur(24px) saturate(1.4);transform:scale(1.1);
-  opacity:.25;
+  transform:scale(1.1);
+  opacity:.2;
 }
 .lfm-now-overlay{
   position:absolute;inset:0;
@@ -2273,7 +2275,7 @@ h1,h2,.section-title,.page-title{font-family:'Syne',sans-serif;letter-spacing:-.
 }
 
 /* ══ MODALS ══ */
-.modal-overlay{background:rgba(0,0,0,.72);
+.modal-overlay{background:rgba(0,0,0,.72);}
 .modal{
   background:rgba(10,8,12,.96);
   border:1px solid rgba(255,255,255,.08);
@@ -3903,7 +3905,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   .panel:hover{transform:none!important;box-shadow:none!important}
   .stat-card{transition:transform .15s ease!important}
   /* Pas de backdrop-filter sur les panels (trop lent sur mobile) */
-  .panel{
+  .panel{box-shadow:none}
   /* Pas de box-shadow lourdes */
   .stat-card:hover{transform:none!important;box-shadow:none!important}
   /* Pas de particules canvas sur mobile */
@@ -3941,7 +3943,7 @@ body.no-anim #bg-canvas{display:none!important}
 }
 @media(max-width:768px){#swipe-hint{display:block}}
 
-</style></style>
+</style>
 </head>
 <body>
 
@@ -4032,19 +4034,19 @@ body.no-anim #bg-canvas{display:none!important}
       <div id="auth-features" style="position:relative;z-index:1;display:flex;flex-direction:column;gap:8px">
         <div class="auth-feature-item">
           <div class="auth-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
-          <span data-i18n="feat_stats"><span data-i18n="feat_stats">Real-time stats &amp; analytics</span></span>
+          <span data-i18n="feat_stats">Real-time stats &amp; analytics</span>
         </div>
         <div class="auth-feature-item">
           <div class="auth-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/></svg></div>
-          <span data-i18n="feat_habits"><span data-i18n="feat_habits">Habit tracking &amp; streaks</span></span>
+          <span data-i18n="feat_habits">Habit tracking &amp; streaks</span>
         </div>
         <div class="auth-feature-item">
           <div class="auth-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><circle cx="15.5" cy="11.5" r="1"/><circle cx="17.5" cy="13.5" r="1"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59l-.9 7.27A4 4 0 0 0 5.77 20.5c.387.1.79-.025 1.05-.327l1.89-2.173h6.58l1.89 2.173c.26.302.663.427 1.05.327a4 4 0 0 0 2.97-4.64l-.9-7.27A4 4 0 0 0 17.32 5z"/></svg></div>
-          <span data-i18n="feat_gaming"><span data-i18n="feat_gaming">Spotify, Discord &amp; gaming</span></span>
+          <span data-i18n="feat_gaming">Spotify, Discord &amp; gaming</span>
         </div>
         <div class="auth-feature-item">
           <div class="auth-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-          <span data-i18n="feat_ai"><span data-i18n="feat_ai">NEXUS AI assistant</span></span>
+          <span data-i18n="feat_ai">NEXUS AI assistant</span>
         </div>
       </div>
     </div>
@@ -4076,8 +4078,13 @@ body.no-anim #bg-canvas{display:none!important}
           <label class="auth-input-label" data-i18n="password">Password</label>
           <div style="position:relative">
             <input id="auth-login-pw" type="password" placeholder="••••••••" class="auth-input" style="padding-right:44px" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
-            <button onclick="togglePwVis('auth-login-pw',this)" style="position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0;line-height:1;transition:color .15s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">👁</button>
+            <button onclick="togglePwVis('auth-login-pw',this)" style="position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0;line-height:1;transition:color .15s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;pointer-events:none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
           </div>
+        </div>
+        <div style="text-align:right;margin-bottom:16px;margin-top:-8px">
+          <button onclick="doForgotPassword()" style="background:none;border:none;color:rgba(255,255,255,.35);font-size:11px;cursor:pointer;font-family:var(--font);transition:color .15s;padding:0"
+            onmouseover="this.style.color='rgba(249,115,22,.8)'" onmouseout="this.style.color='rgba(255,255,255,.35)'"
+            data-i18n="forgot_password">Forgot password?</button>
         </div>
         <button onclick="doLogin()" class="auth-submit-btn" id="auth-login-btn" data-i18n="sign_in_btn">Se connecter →</button>
       </div>
@@ -4095,9 +4102,18 @@ body.no-anim #bg-canvas{display:none!important}
         <div class="auth-input-wrap" style="margin-bottom:24px">
           <label class="auth-input-label" data-i18n="password">Password</label>
           <div style="position:relative">
-            <input id="auth-reg-pw" type="password" placeholder="Min. 6 characters" class="auth-input" style="padding-right:44px" autocomplete="new-password" onkeydown="if(event.key==='Enter')doRegister()">
-            <button onclick="togglePwVis('auth-reg-pw',this)" style="position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0;line-height:1">👁</button>
+            <input id="auth-reg-pw" type="password" placeholder="Min. 6 characters" class="auth-input" style="padding-right:44px" autocomplete="new-password"
+              onkeydown="if(event.key==='Enter')doRegister()"
+              oninput="updatePwStrength(this.value)">
+            <button onclick="togglePwVis('auth-reg-pw',this)" style="position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0;line-height:1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;pointer-events:none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
           </div>
+          <div id="pw-strength-bar" style="display:flex;gap:4px;margin-top:6px;height:3px">
+            <div id="pw-s1" style="flex:1;border-radius:2px;background:rgba(255,255,255,.08);transition:background .3s"></div>
+            <div id="pw-s2" style="flex:1;border-radius:2px;background:rgba(255,255,255,.08);transition:background .3s"></div>
+            <div id="pw-s3" style="flex:1;border-radius:2px;background:rgba(255,255,255,.08);transition:background .3s"></div>
+            <div id="pw-s4" style="flex:1;border-radius:2px;background:rgba(255,255,255,.08);transition:background .3s"></div>
+          </div>
+          <div id="pw-strength-label" style="font-size:10px;color:var(--muted);margin-top:4px;height:14px;transition:color .3s"></div>
         </div>
         <button onclick="doRegister()" class="auth-submit-btn" data-i18n="create_account_btn">
           Create account <span style="margin-left:4px">→</span>
@@ -4341,7 +4357,7 @@ body.no-anim #bg-canvas{display:none!important}
     </div>
     <div class="topbar">
       <div>
-        <div class="page-title"><span id="greeting-full"></span> 👋</div>
+        <div class="page-title"><span id="greeting-full"></span></div>
         <div class="page-subtitle" id="greeting-date"></div>
       </div>
       <div class="topbar-actions">
@@ -4377,10 +4393,10 @@ body.no-anim #bg-canvas{display:none!important}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           <span id="notif-badge"></span>
         </button>
-        <div class="search-bar" onclick="openCmdPalette()" style="cursor:pointer" title="Cmd+K"><span style="color:rgba(255,255,255,.3);font-size:13px">🔍</span><input type="text" placeholder="Search (⌘K)…" id="global-search" readonly style="cursor:pointer"></div>
-        <button onclick="openModal('shortcuts')" title="Raccourcis clavier" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .2s">⌨️</button>
+        <div class="search-bar" onclick="openCmdPalette()" style="cursor:pointer" title="Cmd+K"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex-shrink:0"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" placeholder="Search (⌘K)…" id="global-search" readonly style="cursor:pointer"></div>
+        <button onclick="openModal('shortcuts')" title="Raccourcis clavier" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;cursor:pointer;color:var(--muted);transition:all .2s;display:flex;align-items:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8"/></svg></button>
         <button onclick="toggleFocusMode()" title="Mode Focus" style="background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);border-radius:8px;padding:7px 10px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="#f87171" stroke="none"/></svg></button>
-        <button id="theme-mode-btn" onclick="toggleDarkLight()" title="Toggle dark/light mode" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;cursor:pointer;font-size:15px;transition:all .2s">🌙</button>
+        <button id="theme-mode-btn" onclick="toggleDarkLight()" title="Toggle dark/light mode" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;cursor:pointer;transition:all .2s;display:flex;align-items:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
         <button onclick="goToProfileScreen()" title="Switch profile" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:5px 10px 5px 6px;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s;overflow:hidden;max-width:150px" id="topbar-profile-btn" onmouseover="this.style.borderColor='rgba(249,115,22,.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,.08)'">
           <div id="topbar-avatar" style="width:24px;height:24px;border-radius:6px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;background:rgba(255,255,255,.08);position:relative"></div>
           <span id="topbar-username" style="font-size:12px;font-weight:600;color:rgba(255,255,255,.75);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:80px"></span>
@@ -4500,7 +4516,7 @@ body.no-anim #bg-canvas{display:none!important}
               <div class="panel-title-icon" style="background:rgba(249,115,22,.1);color:#f97316"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/></svg></div>
               <span>Focus du jour</span>
             </div>
-            <button class="panel-action" onclick="editDailyFocus()">✎</button>
+            <button class="panel-action" onclick="editDailyFocus()" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
           </div>
           <div id="daily-focus-display" style="padding:6px 2px;display:flex;align-items:center;gap:12px;min-height:38px">
             <div id="daily-focus-check" onclick="toggleDailyFocusDone()" style="display:none;width:22px;height:22px;border-radius:6px;border:2px solid rgba(255,255,255,.15);background:transparent;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s">
@@ -4673,7 +4689,7 @@ body.no-anim #bg-canvas{display:none!important}
     <div class="topbar">
       <div><div class="section-eyebrow">Writing</div><div class="section-title">Notes</div></div>
       <div class="topbar-actions">
-        <button class="btn btn-ghost" id="note-preview-btn" onclick="toggleNotePreview()" style="font-size:12px">👁 Aperçu</button>
+        <button class="btn btn-ghost" id="note-preview-btn" onclick="toggleNotePreview()" style="font-size:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;margin-right:4px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Aperçu</button>
         <button class="btn btn-primary" onclick="newNote()"><span>+</span> New note</button>
       </div>
     </div>
@@ -4704,7 +4720,7 @@ body.no-anim #bg-canvas{display:none!important}
               </select>
               <span style="font-size:10.5px;color:var(--muted2);font-family:var(--mono)" id="note-saved-status">Auto-saved</span>
               <button class="btn btn-ghost" onclick="pinNote()" id="note-pin-btn" style="padding:4px 8px" title="Pin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24z"/></svg></button>
-              <button class="btn btn-danger" onclick="deleteCurrentNote()" style="padding:4px 8px;font-size:12px">🗑 Delete</button>
+              <button class="btn btn-danger" onclick="deleteCurrentNote()" style="padding:4px 8px;font-size:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;margin-right:4px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg> Delete</button>
             </div>
           </div>
           <!-- Markdown toolbar -->
@@ -4714,7 +4730,7 @@ body.no-anim #bg-canvas{display:none!important}
             <button onclick="noteFormat('`','`')" title="Code" class="btn btn-ghost" style="padding:4px 10px;font-family:var(--mono);font-size:11px;color:#34d399">&lt;/&gt;</button>
             <button onclick="noteInsert('## ')" title="Heading" class="btn btn-ghost" style="padding:4px 10px;font-size:12px;font-weight:700">H</button>
             <button onclick="noteInsert('- ')" title="List" class="btn btn-ghost" style="padding:4px 10px;font-size:12px">• List</button>
-            <button onclick="noteInsert('- [ ] ')" title="Todo" class="btn btn-ghost" style="padding:4px 10px;font-size:12px">☑ Todo</button>
+            <button onclick="noteInsert('- [ ] ')" title="Todo" class="btn btn-ghost" style="padding:4px 10px;font-size:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;margin-right:4px"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Todo</button>
             <button onclick="noteInsert('---\n')" title="Divider" class="btn btn-ghost" style="padding:4px 10px;font-size:12px">—</button>
             <button onclick="copyNote()" class="btn btn-ghost" style="padding:4px 10px;margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy</button>
             <button onclick="exportNoteAsMd()" class="btn btn-ghost" style="padding:4px 10px;font-size:12px">⬇ .md</button>
@@ -4730,7 +4746,7 @@ body.no-anim #bg-canvas{display:none!important}
         </div>
         <div id="note-empty-state" style="display:none" class="panel">
           <div class="empty-state" style="padding:40px">
-            <div style="font-size:40px;margin-bottom:12px">📝</div>
+            <div style="margin-bottom:12px;opacity:.35"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:40px;height:40px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
             <div style="font-size:16px;font-weight:600;margin-bottom:8px">No note selected</div>
             <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Select a note from the list or create a new one</div>
             <button class="btn btn-primary" onclick="newNote()"><span>+</span> Nouvelle note</button>
@@ -4757,7 +4773,7 @@ body.no-anim #bg-canvas{display:none!important}
     </div>
     <div class="grid-2">
       <div class="panel">
-        <div class="panel-header"><div class="panel-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;margin-right:5px;flex-shrink:0"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>To Do</div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:12px;color:var(--muted)" id="todo-pending-count">0 pending</span><button class="panel-action" onclick="markAllTodosDone()" title="Tout cocher">✅ Tout</button></div></div>
+        <div class="panel-header"><div class="panel-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;margin-right:5px;flex-shrink:0"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>To Do</div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:12px;color:var(--muted)" id="todo-pending-count">0 pending</span><button class="panel-action" onclick="markAllTodosDone()" title="Tout cocher"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><polyline points="20 6 9 17 4 12"/></svg> Tout</button></div></div>
         <div id="todo-pending-list"><div class="empty-state" style="padding:20px"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px"><polyline points="20 6 9 17 4 12"/></svg></div>All done!</div></div>
       </div>
       <div class="panel">
@@ -5006,7 +5022,7 @@ body.no-anim #bg-canvas{display:none!important}
         <div class="panel" id="journal-entry-panel">
           <div id="journal-entry-content">
             <div class="empty-state" style="padding:40px">
-              <div style="font-size:36px;margin-bottom:12px">📖</div>
+              <div style="margin-bottom:12px;opacity:.35"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:36px;height:36px"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
               <div style="font-size:15px;font-weight:600;margin-bottom:8px">No entry selected</div>
               <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Write today's entry to start your journal</div>
               <button class="btn btn-primary" onclick="openModal('add-journal')">+ Today's entry</button>
@@ -5050,7 +5066,7 @@ body.no-anim #bg-canvas{display:none!important}
     <div class="topbar">
       <div><div class="section-eyebrow">Finance</div><div class="section-title">Budget</div></div>
       <div class="topbar-actions">
-        <button class="btn btn-ghost" onclick="exportBudgetCSV()" style="font-size:12px" title="Export CSV">📥 CSV</button>
+        <button class="btn btn-ghost" onclick="exportBudgetCSV()" style="font-size:12px" title="Export CSV"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;margin-right:4px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> CSV</button>
         <button class="btn btn-ghost" onclick="openModal('add-budget-tx')" style="gap:6px">+ Dépense</button>
         <button class="btn btn-primary" onclick="openModal('add-budget-tx-in')">+ Revenu</button>
       </div>
@@ -5184,12 +5200,12 @@ body.no-anim #bg-canvas{display:none!important}
     <div class="topbar">
       <div><div class="section-eyebrow">Médias</div><div class="section-title">Galerie</div></div>
       <div class="topbar-actions">
-        <div class="search-bar"><span style="color:var(--muted)">🔍</span><input type="text" id="gallery-search" placeholder="Rechercher..." oninput="renderGallery()"></div>
+        <div class="search-bar"><svg viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex-shrink:0"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="gallery-search" placeholder="Rechercher..." oninput="renderGallery()"></div>
       </div>
     </div>
     <div id="gallery-empty" style="display:none" class="panel">
       <div class="empty-state" style="padding:40px">
-        <div style="font-size:40px;margin-bottom:12px">🖼️</div>
+        <div style="margin-bottom:12px;opacity:.35"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:40px;height:40px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
         <div style="font-size:16px;font-weight:600;margin-bottom:8px">Aucune image</div>
         <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Ajoute des images dans Fichiers & Liens</div>
         <button class="btn btn-primary" onclick="switchPage('files',null)">Aller dans Fichiers</button>
@@ -5249,7 +5265,7 @@ body.no-anim #bg-canvas{display:none!important}
           </div>
           <div style="display:flex;gap:8px;margin-top:6px">
             <input type="password" class="modal-input" id="tracker-apikey" placeholder="Tracker.gg API Key (optional — une clé default est intégrée)" style="flex:1;font-size:12px">
-            <button class="btn btn-ghost" onclick="const i=document.getElementById('tracker-apikey');i.type=i.type==='password'?'text':'password'" style="flex-shrink:0;font-size:13px" title="Show/masquer">👁</button>
+            <button class="btn btn-ghost" onclick="const i=document.getElementById('tracker-apikey');i.type=i.type==='password'?'text':'password'" style="flex-shrink:0;font-size:13px" title="Show/masquer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;pointer-events:none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
             <a href="https://tracker.gg/developers/apps" target="_blank" rel="noopener noreferrer" class="btn btn-ghost" style="font-size:12px;flex-shrink:0">Get key &#8599;</a>
           </div>
           <div style="font-size:11px;color:var(--muted);margin-top:4px">🔑 Une default key is built-in for Henrik and Tracker — leave empty if you don't have one.</div>
@@ -5474,7 +5490,7 @@ body.no-anim #bg-canvas{display:none!important}
         </div>
         <div style="display:flex;gap:8px">
           <input type="password" class="modal-input" id="steam-apikey" placeholder="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" style="flex:1;font-size:12px;font-family:var(--mono)">
-          <button class="btn btn-ghost" onclick="const i=document.getElementById('steam-apikey');i.type=i.type==='password'?'text':'password'" style="flex-shrink:0;font-size:13px" title="Show/masquer">👁</button>
+          <button class="btn btn-ghost" onclick="const i=document.getElementById('steam-apikey');i.type=i.type==='password'?'text':'password'" style="flex-shrink:0;font-size:13px" title="Show/masquer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;pointer-events:none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
           <button class="btn btn-primary" onclick="savesteamApiKey()" style="flex-shrink:0;font-size:12px">Save</button>
         </div>
         <div style="font-size:11.5px;color:var(--muted);margin-top:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;line-height:1.6">
@@ -5673,10 +5689,10 @@ body.no-anim #bg-canvas{display:none!important}
               <button class="btn btn-ghost" onclick="exportData()" style="font-size:12px">⬇ Export JSON</button>
               <button class="btn btn-ghost" onclick="document.getElementById('import-file').click()" style="font-size:12px">⬆ Import JSON</button>
               <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
-              <button class="btn btn-ghost" id="notif-btn" onclick="requestNotifPermission()" style="font-size:12px">🔔 Enable notifications</button>
+              <button class="btn btn-ghost" id="notif-btn" onclick="requestNotifPermission()" style="font-size:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;margin-right:4px"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> Enable notifications</button>
             </div>
             <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(248,113,113,.5);font-family:var(--mono);margin-bottom:8px">Danger zone</div>
-            <button class="btn btn-danger" onclick="resetProfileData()" style="font-size:12px">🗑 Reset my data</button>
+            <button class="btn btn-danger" onclick="resetProfileData()" style="font-size:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;margin-right:4px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg> Reset my data</button>
           </div>
         </div>
 
@@ -6003,7 +6019,7 @@ body.no-anim #bg-canvas{display:none!important}
 
 <!-- LINK HOVER PREVIEW -->
 <div id="link-preview">
-  <div style="width:100%;height:80px;background:linear-gradient(135deg,rgba(249,115,22,.1),rgba(220,38,38,.06));display:flex;align-items:center;justify-content:center;font-size:28px" id="link-preview-banner">🔗</div>
+  <div style="width:100%;height:80px;background:linear-gradient(135deg,rgba(249,115,22,.1),rgba(220,38,38,.06));display:flex;align-items:center;justify-content:center" id="link-preview-banner"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(249,115,22,.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></div>
   <div id="link-preview-body">
     <div id="link-preview-title">Loading…</div>
     <div id="link-preview-url"></div>
@@ -6096,10 +6112,10 @@ body.no-anim #bg-canvas{display:none!important}
     <div class="modal-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;margin-right:4px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add item</div>
     <!-- Type tabs -->
     <div style="display:flex;gap:4px;background:var(--surface2);border-radius:var(--r-sm);padding:4px;margin-bottom:16px;border:1px solid var(--border)">
-      <button id="itab-link"    onclick="switchItemTab('link')"   style="flex:1;padding:7px;border-radius:6px;border:none;background:var(--accent);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s">🔗 Link</button>
-      <button id="itab-file"    onclick="switchItemTab('file')"   style="flex:1;padding:7px;border-radius:6px;border:none;background:none;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s">📄 File</button>
-      <button id="itab-folder"  onclick="switchItemTab('folder')" style="flex:1;padding:7px;border-radius:6px;border:none;background:none;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s">📁 Folder</button>
-      <button id="itab-image"   onclick="switchItemTab('image')"  style="flex:1;padding:7px;border-radius:6px;border:none;background:none;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s">🖼️ Image</button>
+      <button id="itab-link"    onclick="switchItemTab('link')"   style="flex:1;padding:7px;border-radius:6px;border:none;background:var(--accent);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;margin-right:4px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Link</button>
+      <button id="itab-file"    onclick="switchItemTab('file')"   style="flex:1;padding:7px;border-radius:6px;border:none;background:none;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;margin-right:4px"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg> File</button>
+      <button id="itab-folder"  onclick="switchItemTab('folder')" style="flex:1;padding:7px;border-radius:6px;border:none;background:none;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;margin-right:4px"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Folder</button>
+      <button id="itab-image"   onclick="switchItemTab('image')"  style="flex:1;padding:7px;border-radius:6px;border:none;background:none;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Image</button>
     </div>
     <!-- Name -->
     <div class="modal-field">
@@ -6116,7 +6132,7 @@ body.no-anim #bg-canvas{display:none!important}
       <div class="modal-label">UPLOAD FILE</div>
       <label class="upload-zone" style="cursor:pointer">
         <input type="file" id="item-file-input" style="position:absolute;opacity:0;width:100%;height:100%;cursor:pointer" onchange="handleItemFileUpload(this)">
-        <div id="item-file-label" class="upload-zone-text">📄 Click to choose a file, or drag & drop<br><span style="font-size:11px;color:var(--muted)">Any file type · stored as link</span></div>
+        <div id="item-file-label" class="upload-zone-text"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:4px"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg> Click to choose a file, or drag & drop<br><span style="font-size:11px;color:var(--muted)">Any file type · stored as link</span></div>
       </label>
     </div>
     <!-- Folder path (folder type) -->
@@ -6124,7 +6140,7 @@ body.no-anim #bg-canvas{display:none!important}
       <div class="modal-label">FOLDER CONTENTS</div>
       <label class="upload-zone" style="cursor:pointer">
         <input type="file" id="item-folder-input" webkitdirectory multiple style="position:absolute;opacity:0;width:100%;height:100%;cursor:pointer" onchange="handleItemFolderUpload(this)">
-        <div id="item-folder-label" class="upload-zone-text">📁 Click to choose a folder<br><span style="font-size:11px;color:var(--muted)">Lists all files inside</span></div>
+        <div id="item-folder-label" class="upload-zone-text"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:4px"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Click to choose a folder<br><span style="font-size:11px;color:var(--muted)">Lists all files inside</span></div>
       </label>
     </div>
     <!-- Image upload -->
@@ -6133,7 +6149,7 @@ body.no-anim #bg-canvas{display:none!important}
       <label class="upload-zone" style="cursor:pointer">
         <input type="file" id="item-image-input" accept="image/*" style="position:absolute;opacity:0;width:100%;height:100%;cursor:pointer" onchange="handleItemImageUpload(this)">
         <div id="item-image-preview" style="display:none;margin-bottom:8px"><img id="item-image-thumb" style="max-height:120px;border-radius:8px;object-fit:contain"></div>
-        <div id="item-image-label" class="upload-zone-text">🖼️ Click to choose an image</div>
+        <div id="item-image-label" class="upload-zone-text"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Click to choose an image</div>
       </label>
     </div>
     <!-- Notes -->
@@ -6209,7 +6225,7 @@ body.no-anim #bg-canvas{display:none!important}
     <div class="divider"></div>
     <div class="modal-field" style="margin-top:14px">
       <div class="toggle-row" style="margin-bottom:12px">
-        <span class="toggle-label" style="font-size:13px">🔒 Protect with password</span>
+        <span class="toggle-label" style="font-size:13px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;margin-right:4px;vertical-align:middle"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Protect with password</span>
         <label class="toggle"><input type="checkbox" id="create-pw-toggle" onchange="toggleCreatePwSection()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
       </div>
       <div id="create-pw-section" style="display:none">
@@ -6381,14 +6397,14 @@ body.no-anim #bg-canvas{display:none!important}
 <div id="mob-more-drawer" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:250;background:rgba(8,6,12,.98);border-top:1px solid rgba(255,255,255,.08);border-radius:20px 20px 0 0;padding:16px 16px calc(72px + env(safe-area-inset-bottom))">
   <div style="width:36px;height:3px;background:rgba(255,255,255,.15);border-radius:99px;margin:0 auto 20px"></div>
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
-    <button class="mob-more-btn" onclick="switchPage('notes',null);setMobNav('notes');closeMobMore()"><span>📝</span><span>Notes</span></button>
-    <button class="mob-more-btn" onclick="switchPage('habits',null);setMobNav('habits');closeMobMore()"><span>🌱</span><span>Habits</span></button>
-    <button class="mob-more-btn" onclick="switchPage('kanban',null);setMobNav('kanban');closeMobMore()"><span>📋</span><span>Kanban</span></button>
-    <button class="mob-more-btn" onclick="switchPage('calendar',null);setMobNav('calendar');closeMobMore()"><span>📅</span><span>Calendar</span></button>
-    <button class="mob-more-btn" onclick="switchPage('budget',null);setMobNav('budget');closeMobMore()"><span>💸</span><span>Budget</span></button>
-    <button class="mob-more-btn" onclick="switchPage('stats',null);setMobNav('stats');closeMobMore()"><span>📊</span><span>Stats</span></button>
-    <button class="mob-more-btn" onclick="switchPage('files',null);setMobNav('files');closeMobMore()"><span>📁</span><span>Files</span></button>
-    <button class="mob-more-btn" onclick="switchPage('settings',null);setMobNav('settings');closeMobMore()"><span>⚙️</span><span>Settings</span></button>
+    <button class="mob-more-btn" onclick="switchPage('notes',null);setMobNav('notes');closeMobMore()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><span>Notes</span></button>
+    <button class="mob-more-btn" onclick="switchPage('habits',null);setMobNav('habits');closeMobMore()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M12 22V12"/><path d="M12 12C12 7 7 4 4 6c0 4 3.5 7 8 6"/><path d="M12 12c0-5 5-8 8-6c0 4-3.5 7-8 6"/></svg><span>Habits</span></button>
+    <button class="mob-more-btn" onclick="switchPage('kanban',null);setMobNav('kanban');closeMobMore()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg><span>Kanban</span></button>
+    <button class="mob-more-btn" onclick="switchPage('calendar',null);setMobNav('calendar');closeMobMore()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Calendar</span></button>
+    <button class="mob-more-btn" onclick="switchPage('budget',null);setMobNav('budget');closeMobMore()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg><span>Budget</span></button>
+    <button class="mob-more-btn" onclick="switchPage('stats',null);setMobNav('stats');closeMobMore()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>Stats</span></button>
+    <button class="mob-more-btn" onclick="switchPage('files',null);setMobNav('files');closeMobMore()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span>Files</span></button>
+    <button class="mob-more-btn" onclick="switchPage('settings',null);setMobNav('settings');closeMobMore()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></button>
   </div>
 </div>
 <div id="mob-more-overlay" onclick="closeMobMore()" style="display:none;position:fixed;inset:0;z-index:249;background:rgba(0,0,0,.75)"></div>
@@ -6530,14 +6546,34 @@ function applyI18n(){
 var SUPABASE_URL='https://bvgifyzhpzkbrwdjrqsg.supabase.co';
 var SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2Z2lmeXpocHprYnJ3ZGpycXNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1ODgzNjAsImV4cCI6MjA5NjE2NDM2MH0.PCm_g4w7ZrLqNilISt-Xnlw_CZrA8PY1Uvk9H_PUhCc';
 var ADMIN_EMAIL='rub19.mailpro@gmail.com';
-var sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+// ── Variables globales EN PREMIER (avant supabase qui peut planter) ──────
 let _sbUser=null;
 let _isAdmin=false;
 let _ambientFrame=null;
 let _bgFrame=null;
 let _bgParticles=[];
-let _lang=localStorage.getItem('nexus_lang')||'fr';
+let _lang=(function(){try{return localStorage.getItem('nexus_lang')||'fr';}catch(e){return 'fr';}})();
 let uiLang=_lang; // alias global pour compatibilité
+// ── Supabase client (wrappé pour éviter crash si CDN non chargé) ─────────
+var sb;
+try{
+  sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+}catch(e){
+  console.error('[NEXUS] Supabase CDN non chargé:',e.message);
+  // sb reste undefined - le boot IIFE gérera l'absence de connexion
+  sb={auth:{getSession:()=>Promise.resolve({data:{session:null},error:new Error('Supabase unavailable')}),
+           getUser:()=>Promise.resolve({data:{user:null},error:new Error('Supabase unavailable')}),
+           signInWithPassword:()=>Promise.resolve({data:{},error:new Error('No connection')}),
+           signUp:()=>Promise.resolve({data:{},error:new Error('No connection')}),
+           signOut:()=>Promise.resolve({}),
+           updateUser:()=>Promise.resolve({data:{},error:new Error('No connection')}),
+           resetPasswordForEmail:()=>Promise.resolve({error:new Error('No connection — check GitHub Pages')}),
+           onAuthStateChange:(cb)=>({data:{subscription:{unsubscribe:()=>{}}}})
+  },
+  from:()=>({select:()=>({eq:()=>({order:()=>Promise.resolve({data:null,error:new Error('Supabase unavailable')})})}),
+             upsert:()=>Promise.resolve({error:new Error('Supabase unavailable')})}),
+  };
+}
 let _bioSaveTO=null;
 let _socialSaveTO=null;
 let _npProgressInterval=null;
@@ -6714,6 +6750,59 @@ function showChangelog(){
   document.body.insertAdjacentHTML('beforeend',html);
 }
 
+// ── Indicateur de force du mot de passe ─────────────────────
+function updatePwStrength(pw){
+  const bars=[1,2,3,4].map(i=>document.getElementById('pw-s'+i));
+  const label=document.getElementById('pw-strength-label');
+  if(!bars[0]||!label)return;
+  if(!pw){
+    bars.forEach(b=>{if(b)b.style.background='rgba(255,255,255,.08)';});
+    label.textContent=''; label.style.color='var(--muted)';
+    return;
+  }
+  let score=0;
+  if(pw.length>=6)score++;
+  if(pw.length>=10)score++;
+  if(/[A-Z]/.test(pw)&&/[0-9]/.test(pw))score++;
+  if(/[^A-Za-z0-9]/.test(pw))score++;
+  const colors=['#ef4444','#f97316','#eab308','#22c55e'];
+  const labels={fr:['Trop court','Faible','Moyen','Fort'],en:['Too short','Weak','Medium','Strong'],es:['Demasiado corto','Débil','Medio','Fuerte'],de:['Zu kurz','Schwach','Mittel','Stark']};
+  const langLabels=labels[_lang]||labels['en'];
+  bars.forEach((b,i)=>{
+    if(b)b.style.background=i<score?colors[score-1]:'rgba(255,255,255,.08)';
+  });
+  label.textContent=langLabels[score-1]||langLabels[0];
+  label.style.color=colors[score-1]||colors[0];
+}
+
+// ── Mot de passe oublié ──────────────────────────────────────
+async function doForgotPassword(){
+  const id=document.getElementById('auth-login-id')?.value.trim();
+  const errEl=document.getElementById('auth-error');
+  if(!id||!id.includes('@')){
+    if(errEl)errEl.textContent='Enter your email address first';
+    return;
+  }
+  if(errEl)errEl.textContent='';
+  setAuthLoading(true);
+  try{
+    const{error}=await sb.auth.resetPasswordForEmail(id,{redirectTo:window.location.origin+window.location.pathname});
+    setAuthLoading(false);
+    if(error){
+      if(errEl)errEl.textContent=error.message;
+    } else {
+      if(errEl){
+        errEl.style.color='#22c55e';
+        errEl.textContent='✓ Reset email sent! Check your inbox.';
+        setTimeout(()=>{if(errEl){errEl.style.color='';errEl.textContent='';}},5000);
+      }
+    }
+  }catch(e){
+    setAuthLoading(false);
+    if(errEl)errEl.textContent='Error sending reset email';
+  }
+}
+
 function togglePwVis(inputId,btn){
   const input=document.getElementById(inputId);if(!input)return;
   const isText=input.type==='text';
@@ -6755,6 +6844,8 @@ function switchAuthTab(tab){
     if(regForm)regForm.style.display=tab==='register'?'block':'none';
   }
 
+  // Reset pw strength quand on revient sur login
+  if(tab==='login'){[1,2,3,4].forEach(i=>{const b=document.getElementById('pw-s'+i);if(b)b.style.background='rgba(255,255,255,.08)';});const sl=document.getElementById('pw-strength-label');if(sl)sl.textContent='';}
   // Update header (traduit)
   if(tab==='login'){
     if(title)title.textContent=t('welcome_back');
@@ -6766,15 +6857,7 @@ function switchAuthTab(tab){
   document.getElementById('auth-error').textContent='';
 }
 
-function _switchAuthTab_OLD(tab){
-  document.getElementById('form-login').style.display=tab==='login'?'block':'none';
-  document.getElementById('form-register').style.display=tab==='register'?'block':'none';
-  document.getElementById('tab-login').style.background=tab==='login'?'var(--accent)':'transparent';
-  document.getElementById('tab-login').style.color=tab==='login'?'#fff':'var(--muted)';
-  document.getElementById('tab-register').style.background=tab==='register'?'var(--accent)':'transparent';
-  document.getElementById('tab-register').style.color=tab==='register'?'#fff':'var(--muted)';
-  document.getElementById('auth-error').textContent='';
-}
+
 
 function setAuthLoading(v){
   document.getElementById('auth-loading').style.display=v?'block':'none';
@@ -6862,7 +6945,6 @@ async function doLogout(){
 }
 
 async function onAuthSuccess(userArg){
-  console.log('[NEXUS] onAuthSuccess START');
   removeAntiFlash();
   const authEl=document.getElementById('auth-screen');
   if(authEl){ authEl.style.setProperty('display','none'); }
@@ -6881,10 +6963,8 @@ async function onAuthSuccess(userArg){
 
   try{
     let user=userArg;
-    console.log('[NEXUS] userArg=', userArg?.id||'null');
-    if(!user){
+      if(!user){
       const {data,error:ue}=await sb.auth.getUser();
-      console.log('[NEXUS] getUser result:', data?.user?.id, ue?.message);
       if(!data?.user||ue){
         console.error('[NEXUS] No user - showing auth');
         if(authEl){ authEl.style.setProperty('display','flex'); }
@@ -6894,12 +6974,10 @@ async function onAuthSuccess(userArg){
     }
     _sbUser=user;
     _isAdmin=user?.email===ADMIN_EMAIL;
-    console.log('[NEXUS] User OK:', user.id, '| isAdmin:', _isAdmin);
 
     setBootStatus && setBootStatus('Chargement...');
     await loadCloudState();
-    console.log('[NEXUS] loadCloudState OK. profiles:', profiles.length, profiles.map(p=>({id:p.id,name:p.name,pw:!!p.password?.value})));
-    setBootStatus && setBootStatus('Prêt ✓');
+      setBootStatus && setBootStatus('Prêt ✓');
 
     if(!profiles.length){
       console.warn('[NEXUS] No profiles - creating default');
@@ -6911,9 +6989,7 @@ async function onAuthSuccess(userArg){
     normalizeAllProfiles();
     try{ sessionStorage.setItem('nexus_profiles_'+_sbUser.id,JSON.stringify(profiles)); }catch(e){}
 
-    console.log('[NEXUS] Calling showDashboardOrProfiles...');
     showDashboardOrProfiles();
-    console.log('[NEXUS] showDashboardOrProfiles returned');
 
   }catch(err){
     console.error('[NEXUS] onAuthSuccess FATAL ERROR:', err, err?.stack);
@@ -7175,7 +7251,7 @@ async function adminViewProfile(profileId, profileName){
   let html=`<div style="position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto" onclick="if(event.target===this)this.remove()">
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r-md);padding:28px;width:100%;max-width:700px;max-height:85vh;overflow-y:auto">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-      <div style="font-size:16px;font-weight:700">👤 ${profileName}'s dashboard</div>
+      <div style="font-size:16px;font-weight:700">${profileName}</div>
       <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">x</button>
     </div>`;
 
@@ -7393,7 +7469,19 @@ function renderProfileScreen(){
   let html='';
   profiles.forEach(p=>{
     const hasPass=p.password&&p.password.value;
-    const locked=hasPass?'<div class="ps-lock">🔒 locked</div>':'';
+    const locked=hasPass?'<div class="ps-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>':'';
+    // Stats rapides
+    const s=p.state||{};
+    const pendingTodos=(s.todos||[]).filter(t=>!t.done).length;
+    const bestStreak=Math.max(0,...(s.habits||[]).map(h=>{let str=0,d=new Date();d.setHours(0,0,0,0);while(true){const k=d.toISOString().slice(0,10);if(!h.log||!h.log[k])break;str++;d.setDate(d.getDate()-1);}return str;}));
+    const xpLevel=Math.floor((p.xp||0)/100)+1;
+    const statsHtml=(!managingMode)?
+      '<div class="ps-stats-row">'+
+        (pendingTodos?'<span class="ps-stat-chip"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:10px;height:10px"><polyline points="3,8 6,11 13,4"/></svg> '+pendingTodos+'</span>':'')+
+        (bestStreak>0?'<span class="ps-stat-chip" style="color:#f97316"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:10px;height:10px"><path d="M12 2c0 6-6 6-6 12a6 6 0 0 0 12 0c0-6-6-6-6-12z"/></svg> '+bestStreak+'</span>':'')+
+        '<span class="ps-stat-chip" style="color:rgba(255,255,255,.3)">Lv '+xpLevel+'</span>'+
+      '</div>':
+      '';
     html+='<div class="ps-profile'+(managingMode?' managing':'')+(hasPass?' locked':'')+'" data-id="'+p.id+'" onmousemove="psTilt(event,this)" onmouseleave="psUntilt(this)">'+
       '<div class="ps-card-inner">'+
         '<div class="ps-avatar-wrap">'+
@@ -7404,6 +7492,7 @@ function renderProfileScreen(){
           locked+
         '</div>'+
         '<div class="ps-pname">'+escapeHTML(p.name)+'</div>'+
+        statsHtml+
         '<button class="ps-edit-btn" data-edit="'+p.id+'" title="Edit">✎</button>'+
         (managingMode&&profiles.length>1?'<button class="ps-delete-btn" data-del="'+p.id+'" title="Delete">✕</button>':'')+
       '</div>'+
@@ -7434,9 +7523,9 @@ function renderProfileScreen(){
   // Animer les cartes (opacity 0→1 staggered)
   list.querySelectorAll('.ps-profile,.ps-add-card').forEach((el,i)=>{
     el.style.opacity='0';
-    el.style.transform='translateY(14px)';
-    el.style.transition='opacity .28s ease,transform .28s ease';
-    setTimeout(()=>{el.style.opacity='1';el.style.transform='none';},40+i*60);
+    el.style.transform='translateY(18px) scale(.97)';
+    el.style.transition='opacity .32s cubic-bezier(.22,1,.36,1),transform .32s cubic-bezier(.22,1,.36,1)';
+    setTimeout(()=>{el.style.opacity='1';el.style.transform='none';},30+i*70);
   });
 
   psStartEmbers();
@@ -8220,7 +8309,6 @@ function applySidebarCompact(){
 }
 
 function initDashboard(){
-  console.log('[NEXUS] initDashboard START. currentId=',currentId,'| profiles.length=',profiles.length);
   // Garantir qu'on a toujours un profil valide
   let p=curP();
   if(!p){
@@ -8233,7 +8321,6 @@ function initDashboard(){
     p=profiles[0];
     console.warn('[NEXUS] initDashboard: curP() null, forcé sur profiles[0].id=',currentId);
   }
-  console.log('[NEXUS] initDashboard: profil=',p.name,'| state?',!!p.state);
   if(!p.state)p.state=defState(p.name);
   if(!p.state.connections)p.state.connections={};
 
@@ -8304,7 +8391,7 @@ function initDashboard(){
       applyBgTheme(p.bgTheme);
       // Make sidebar transparent
       const sb=document.getElementById('main-sidebar');
-      if(sb)sb.style.background='rgba(5,5,7,.5)';
+      if(sb)sb.style.background='rgba(5,5,7,.92)';
     };
     // Double RAF ensures layout is complete
     requestAnimationFrame(()=>requestAnimationFrame(_applyBg));
@@ -8321,7 +8408,6 @@ function initDashboard(){
   renderPinnedLinks();
   renderCountdown();
   addActivity('Welcome back, '+p.name,'var(--accent)');
-  console.log('[NEXUS] initDashboard END OK. sidebar visible=',document.getElementById('main-sidebar')?.style.display,'| mc visible=',document.getElementById('main-content')?.style.display);
   // Ne PAS appeler pomoReset() ici — restorePomoIfRunning() a déjà géré l'état
   // pomoReset() détruirait un timer en cours restauré depuis localStorage
   if(!pomoRunning) renderPomo(); // juste rafraîchir l'affichage si pas de timer actif
@@ -8946,7 +9032,7 @@ function addAIMessage(role,text){
   const msgs=document.getElementById('ai-messages');if(!msgs)return;
   const isUser=role==='user';
   const avatarHtml=isUser
-    ?`<div class="ai-avatar user-av">${p?.avatarImg?`<img src="${p.avatarImg}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`:(p?.avatarEmoji||'👤')}</div>`
+    ?`<div class="ai-avatar user-av">${p?.avatarImg?`<img src="${p.avatarImg}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`:(p?.avatarEmoji||'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>')}</div>`
     :`<div class="ai-avatar nexus"><svg viewBox="0 0 20 20" fill="none" style="width:14px;height:14px"><polygon points="10,1 19,10 10,19 1,10" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round"/><polygon points="10,5 15,10 10,15 5,10" fill="white"/></svg></div>`;
   // Simple markdown: **bold**, `code`, [link](url), newlines
   const html=text
@@ -9209,6 +9295,7 @@ function switchPage(page,navEl){
   if(qn&&p0&&qn.value!==p0.state?.note){p0.state.note=qn.value;saveStateNow();}
   document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
   const activePage=document.getElementById('page-'+page);
+  if(!activePage){console.warn('[NEXUS] switchPage: page-'+page+' not found');return;}
   activePage.classList.add('active');
   animatePageIn(activePage,page);
   document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
@@ -9494,7 +9581,7 @@ function addItem(){
   ['item-name','item-url','item-tag'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   // Reset upload labels
   const fl=document.getElementById('item-file-label');if(fl)fl.innerHTML='📄 Click to choose a file, or drag & drop<br><span style="font-size:11px;color:var(--muted)">Any file type</span>';
-  const il=document.getElementById('item-image-label');if(il)il.innerHTML='🖼️ Click to choose an image';
+  const il=document.getElementById('item-image-label');if(il)il.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Click to choose an image';
   const ip=document.getElementById('item-image-preview');if(ip)ip.style.display='none';
   const fol=document.getElementById('item-folder-label');if(fol)fol.innerHTML='📁 Click to choose a folder<br><span style="font-size:11px;color:var(--muted)">Lists all files inside</span>';
   renderItems();updateStats();renderRecentItems();
@@ -9533,10 +9620,10 @@ function renderItems(){
           iconHtml='<img src="https://www.google.com/s2/favicons?domain='+encodeURIComponent(domain)+'&sz=64" style="width:22px;height:22px;border-radius:4px;image-rendering:auto" onerror="this.outerHTML=\'&#128279;\'">';
         }catch(e){iconHtml='&#128279;';}
       } else iconHtml=tIcons[i.type]||'&#128196;';
-      return '<a class="link-card" href="'+escapeHTML(url||'#')+'" target="_blank" rel="noopener noreferrer"><div class="link-favicon">'+iconHtml+'</div><div><div class="link-name">'+escapeHTML(i.name)+'</div><div class="link-url">'+(url?escapeHTML(url.replace(/https?:\/\//,'').slice(0,30)):'No URL')+'</div></div></a>';
+      return '<a class="link-card" href="'+escapeHTML(url&&!url.startsWith('http')?'https://'+url:url||'#')+'" target="_blank" rel="noopener noreferrer"><div class="link-favicon">'+iconHtml+'</div><div><div class="link-name">'+escapeHTML(i.name)+'</div><div class="link-url">'+(url?escapeHTML(url.replace(/https?:\/\//,'').slice(0,30)):'No URL')+'</div></div></a>';
     }).join('');
   } else ls.style.display='none';
-  if(!items.length){list.innerHTML='<div class="empty-state"><div class="empty-icon"></div>No items'+(q?' matching "'+escapeHTML(q)+'"':'')+'.<br>Click <strong>+ Add item</strong>.</div>';return}
+  if(!items.length){list.innerHTML='<div class="empty-state" style="padding:24px"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px;opacity:.35"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div><div class="empty-label">'+(q?'Aucun résultat pour "'+escapeHTML(q)+'"':'No items yet')+'</div><div class="empty-sub">Click <strong>+ Add item</strong></div></div>';return}
   list.innerHTML=items.map(i=>{
     const url=safeUrl(i.url);
     // Icon/thumbnail
@@ -9612,7 +9699,7 @@ function openItem(id){
 function renderRecentItems(){
   const list=document.getElementById('recent-items-list');if(!list)return;
   const p=curP(),recent=p?(p.state.items||[]).slice(0,5):[];
-  if(!recent.length){list.innerHTML='<div class="empty-state"><div class="empty-icon"></div>No items yet!</div>';return}
+  if(!recent.length){list.innerHTML='<div class="empty-state" style="padding:20px"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;opacity:.35"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div><div class="empty-label">No items yet</div></div>';return}
   list.innerHTML=recent.map(i=>'<div class="item-row" onclick="openItem('+i.id+')"><div class="item-icon '+(tClass[i.type]||'doc')+'" style="width:28px;height:28px;font-size:12px;border-radius:7px">'+(tIcons[i.type]||'\uD83D\uDCC4')+'</div><div class="item-info"><div class="item-name">'+escapeHTML(i.name)+'</div><div class="item-meta">'+escapeHTML(i.date)+(i.tag?' . '+escapeHTML(i.tag):'')+'</div></div></div>').join('');
 }
 
@@ -9647,6 +9734,7 @@ function filterNotes(query){
   container.innerHTML=filtered.map(n=>{
     const isActive=n.id===_currentNoteId;
     const preview=(n.content||'').slice(0,50).split('\n').join(' ')||'Note vide';
+    const color=n.color||'';
     return `<div class="note-list-item${isActive?' active':''}" onclick="selectNote(${n.id})" style="${color?'border-left:3px solid '+color+';padding-left:9px':''}">
       <div class="note-list-title">${escapeHTML(n.title||'Sans titre')}</div>
       <div class="note-list-preview">${escapeHTML(preview)}</div>
@@ -9753,7 +9841,7 @@ function pinNote(){
   const note=getNotesArray().find(n=>n.id===_currentNoteId);if(!note)return;
   note.pinned=!note.pinned;note.updated=new Date().toISOString();saveStateNow();renderNotesList();
   const btn=document.getElementById('note-pin-btn');if(btn)btn.style.opacity=note.pinned?'1':'0.5';
-  toast(note.pinned?'Note pinned 📌':'Note unpinned','info');
+  toast(note.pinned?t('note_pinned')||'Note pinned ✓':'Note unpinned','info');
 }
 
 function deleteCurrentNote(){
@@ -9963,7 +10051,7 @@ function renderTodos(){
         <div class="todo-text${isDone?' done':''}">${pIcon} ${escapeHTML(t.text)}</div>
         <div style="display:flex;gap:6px;margin-top:3px;flex-wrap:wrap">${dueStr}${tagStr}</div>
       </div>
-      <button class="item-btn" onclick="event.stopPropagation();deleteTodo(${t.id})" style="opacity:.5;flex-shrink:0">🗑️</button>
+      <button class="item-btn" onclick="event.stopPropagation();deleteTodo(${t.id})" style="opacity:.5;flex-shrink:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
     </div>`;
   };
 
@@ -9973,7 +10061,7 @@ function renderTodos(){
   // Overview mini-list
   const ov=document.getElementById('overview-todos');
   const allPending=todos.filter(t=>!t.done);
-  if(ov)ov.innerHTML=!allPending.length?'<div class="empty-state" style="padding:16px"><div style="font-size:20px;margin-bottom:6px">🎉</div>No pending tasks!</div>':allPending.slice(0,3).map(t=>`<div class="todo-item" onclick="toggleTodo(${t.id})"><div class="todo-check"></div><div class="todo-text">${escapeHTML(t.text)}</div></div>`).join('');
+  if(ov)ov.innerHTML=!allPending.length?'<div class="empty-state" style="padding:16px"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;opacity:.35"><polyline points="20 6 9 17 4 12"/></svg></div><div class="empty-label">All done!</div></div>':allPending.slice(0,3).map(t=>`<div class="todo-item" onclick="toggleTodo(${t.id})"><div class="todo-check"></div><div class="todo-text">${escapeHTML(t.text)}</div></div>`).join('');
   const badge=document.getElementById('todo-count');if(badge)badge.textContent=allPending.length||'';
 }
 
@@ -10010,7 +10098,7 @@ function renderOverviewHabits(){
         ${done?'<svg viewBox="0 0 16 16" fill="none" style="width:11px;height:11px"><polyline points="2,8 6,12 14,4" stroke="#050507" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}
       </div>
       <span style="flex:1;font-size:13px;font-weight:500;color:${done?'var(--muted)':'var(--text)'};${done?'text-decoration:line-through':''}">${h.icon?h.icon+' ':''}${escapeHTML(h.name)}</span>
-      ${streak>1?`<span style="font-size:10px;background:rgba(249,115,22,.12);color:var(--accent);padding:2px 7px;border-radius:10px;font-weight:600">🔥${streak}</span>`:''}
+      ${streak>1?`<span style="font-size:10px;background:rgba(249,115,22,.12);color:var(--accent);padding:2px 7px;border-radius:10px;font-weight:600"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:9px;height:9px;display:inline-block;vertical-align:middle;margin-right:2px"><path d="M12 2c0 6-6 6-6 12a6 6 0 0 0 12 0c0-6-6-6-6-12z"/></svg>${streak}</span>`:''}
     </div>`;
   }).join('');
 }
@@ -10187,7 +10275,7 @@ function renderGoals(){
       const barPct=hasTarget?Math.min(100,Math.round((prog/g.target)*100)):g.done?100:0;
       return `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;${g.done?'opacity:.75':''}">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-          <span style="font-size:20px">${g.emoji}</span>
+          <span style="font-size:20px">${g.emoji||'🎯'}</span>
           <div style="flex:1;min-width:0">
             <div style="font-size:13px;font-weight:600;${g.done?'text-decoration:line-through;color:var(--muted)':''}">${escapeHTML(g.text)}</div>
             ${hasTarget?`<div style="font-size:11px;color:var(--muted)">${prog} / ${g.target} ${escapeHTML(g.unit)}</div>`:''}
@@ -10196,7 +10284,7 @@ function renderGoals(){
             ${hasTarget?`<button onclick="incrementGoal(${g.id},-1)" style="background:var(--surface3);border:1px solid var(--border2);border-radius:6px;color:var(--text);width:26px;height:26px;cursor:pointer;font-size:14px">−</button>
             <button onclick="incrementGoal(${g.id},1)" style="background:var(--accent);border:none;border-radius:6px;color:#fff;width:26px;height:26px;cursor:pointer;font-size:14px">+</button>`
             :`<button onclick="incrementGoal(${g.id},${g.done?-1:1})" style="background:${g.done?'var(--surface3)':'var(--accent2)'};border:none;border-radius:6px;color:#fff;padding:3px 10px;cursor:pointer;font-size:12px">${g.done?'Undo':'Done'}</button>`}
-            <button onclick="deleteGoal(${g.id})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:0 4px">🗑</button>
+            <button onclick="deleteGoal(${g.id})" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:0 4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg></button>
           </div>
         </div>
         ${hasTarget?`<div style="height:4px;background:var(--surface3);border-radius:99px;overflow:hidden"><div style="height:100%;width:${barPct}%;background:${barPct>=100?'var(--accent2)':'var(--accent)'};border-radius:99px;transition:width .3s ease"></div></div>`:''}
@@ -10253,7 +10341,7 @@ function addJournalEntry(){
   document.getElementById('journal-title').value='';
   _selectedMood='';
   document.querySelectorAll('#journal-mood-picks button').forEach(b=>{b.style.background='none';b.style.color='var(--text)';b.style.borderColor='var(--border2)';});
-  renderJournal();toast('Entry saved 📖','success');
+  renderJournal();toast('Entry saved','success');
 }
 
 function renderJournal(){
@@ -10355,7 +10443,7 @@ function renderCountdowns(){
   const grid=document.getElementById('countdown-grid');if(!grid)return;
   const cds=(p.state.countdowns||[]).sort((a,b)=>a.date.localeCompare(b.date));
   if(!cds.length){
-    grid.innerHTML='<div class="empty-state" style="grid-column:1/-1;padding:40px"><div style="font-size:36px;margin-bottom:12px">⏳</div><div style="font-size:15px;font-weight:600;margin-bottom:8px">No countdowns yet</div><button class="btn btn-primary" onclick="openModal(\'add-countdown\')">+ Add event</button></div>';
+    grid.innerHTML='<div class="empty-state" style="grid-column:1/-1;padding:40px"><div class="empty-icon" style="margin-bottom:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:40px;height:40px;opacity:.35"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 3"/><path d="M9 3h6"/></svg></div><div style="font-size:15px;font-weight:600;margin-bottom:8px">No countdowns yet</div><button class="btn btn-primary" onclick="openModal(\'add-countdown\')">+ Add event</button></div>';
     return;
   }
   grid.innerHTML=cds.map(c=>{
@@ -10416,7 +10504,7 @@ async function refreshGithub(){
     return;
   }
   if(sub)sub.textContent=`@${username}`;
-  if(content)content.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">⏳ Loading...</div>';
+  if(content)content.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:20px;height:20px;animation:spin 1s linear infinite;display:inline-block;vertical-align:middle;margin-right:6px"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Loading...</div>';
   const ghToken=p.state.connections?.github?.token||'';
   const ghHeaders={'Accept':'application/vnd.github+json',...(ghToken?{Authorization:`Bearer ${ghToken}`}:{})};
   try{
@@ -10515,6 +10603,7 @@ async function refreshGithub(){
 //  STATS PAGE CHARTS
 // ===================================================
 function renderStatsPage(){
+  if(typeof Chart==='undefined'){setTimeout(renderStatsPage,300);return;}
   const p=curP();if(!p)return;
   const todos=p.state.todos||[];
   const items=p.state.items||[];
@@ -10576,7 +10665,7 @@ function renderStatsPage(){
       start+=angle;
     });
     // Center hole
-    ctx.beginPath();ctx.arc(45,45,24,0,Math.PI*2);ctx.fillStyle='var(--surface)';ctx.fill();
+    ctx.beginPath();ctx.arc(45,45,24,0,Math.PI*2);ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--surface').trim()||'#0e0e14';ctx.fill();
     if(legendEl)legendEl.innerHTML=[
       {label:'Done',val:done,color:'#34d399'},
       {label:'Pending',val:pending,color:'#3b82f6'},
@@ -11876,7 +11965,7 @@ function pickBgTheme(id){
   applyBgTheme(id);
   // Update sidebar transparency based on whether a bg is active
   const sb=document.getElementById('main-sidebar');
-  if(sb)sb.style.background=(!id||id==='none')?'':'rgba(5,5,7,.5)';
+  if(sb)sb.style.background=(!id||id==='none')?'':'rgba(5,5,7,.92)';
   renderBgThemeBtns();
   toast('Background updated!','success');
 }
@@ -11884,8 +11973,10 @@ function pickBgTheme(id){
 function applyBgTheme(id){
   const canvas=document.getElementById('bg-canvas');if(!canvas)return;
   cancelAnimationFrame(_bgFrame);_bgParticles=[];
-  // Stop ambient before applying custom theme
   if(_ambientFrame){cancelAnimationFrame(_ambientFrame);_ambientFrame=null;}
+  // S'assurer que le contenu principal reste visible quel que soit le thème
+  const mc=document.getElementById('main-content');
+  if(mc&&(!mc.style.background||mc.style.background===''))mc.style.background='var(--bg)';
   if(!id||id==='none'){
     // Restart ambient on "none"
     startAmbientBg();
@@ -12021,6 +12112,8 @@ function applyBgTheme(id){
     };draw();
 
   } else if(id==='constellation'){
+    // Vérifier que le canvas 2D est disponible
+    try{ ctx.clearRect(0,0,1,1); }catch(e){ console.warn('[NEXUS] Canvas 2D indispo, bgTheme désactivé'); return; }
     const stars=[];
     for(let i=0;i<80;i++)stars.push({
       x:Math.random()*canvas.width,y:Math.random()*canvas.height,
@@ -13417,7 +13510,7 @@ function renderHabits(){
   const dayLabels=['M','T','W','T','F','S','S'];
   const weekLabel=document.getElementById('habits-week-label');
   if(weekLabel)weekLabel.textContent=weekDays[0].toLocaleDateString('en',{month:'short',day:'numeric'})+'  '+weekDays[6].toLocaleDateString('en',{month:'short',day:'numeric'});
-  if(!habits.length){list.innerHTML='<div class="empty-state"><div class="empty-icon"></div>No habits yet - add one!</div>';if(streakEl)streakEl.innerHTML='<div class="empty-state" style="padding:16px"><div class="empty-icon"></div>Complete habits to build streaks!</div>';return}
+  if(!habits.length){list.innerHTML='<div class="empty-state" style="padding:20px"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px;opacity:.35"><path d="M12 22V12"/><path d="M12 12C12 7 7 4 4 6c0 4 3.5 7 8 6"/><path d="M12 12c0-5 5-8 8-6c0 4-3.5 7-8 6"/></svg></div><div class="empty-label">No habits yet</div><div class="empty-sub">Add one to start tracking</div></div>';if(streakEl)streakEl.innerHTML='<div class="empty-state" style="padding:16px"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;opacity:.35"><path d="M12 2c0 6-6 6-6 12a6 6 0 0 0 12 0c0-6-6-6-6-12z"/></svg></div><div class="empty-label">Complete habits to build streaks</div></div>';return}
   list.innerHTML=habits.map(h=>{
     const dayBtns=weekDays.map((d,i)=>{
       const key=d.toISOString().slice(0,10);
@@ -13427,11 +13520,11 @@ function renderHabits(){
       return '<div class="habit-day'+(done?' done':'')+(isToday&&!done?' today':'')+'" onclick="'+(isFuture?'':('toggleHabitDay('+h.id+',\''+key+'\')'))+'" style="'+(isFuture?'opacity:.3;cursor:default':'')+'" title="'+escapeHTML(d.toLocaleDateString('en',{weekday:'short',month:'short',day:'numeric'}))+'">'+dayLabels[i]+'</div>';
     }).join('');
     const streak=habitStreak(h);
-    return '<div class="habit-row"><span style="font-size:18px">'+escapeHTML(h.icon)+'</span><span class="habit-name">'+escapeHTML(h.name)+'</span><div class="habit-days">'+dayBtns+'</div><span class="habit-streak">'+(streak>0?streak:'')+'</span><button class="habit-del" onclick="deleteHabit('+h.id+')">&times;</button></div>';
+    return '<div class="habit-row"><span style="font-size:18px">'+(h.icon?escapeHTML(h.icon):'')+'</span><span class="habit-name">'+escapeHTML(h.name)+'</span><div class="habit-days">'+dayBtns+'</div><span class="habit-streak">'+(streak>0?streak:'')+'</span><button class="habit-del" onclick="deleteHabit('+h.id+')">&times;</button></div>';
   }).join('');
   if(streakEl){
     const sorted=[...habits].sort((a,b)=>habitStreak(b)-habitStreak(a));
-    streakEl.innerHTML=sorted.map(h=>{const s=habitStreak(h);return '<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r-sm);background:var(--surface2);margin-bottom:6px"><span style="font-size:18px">'+escapeHTML(h.icon)+'</span><span style="flex:1;font-size:13px">'+escapeHTML(h.name)+'</span><span style="font-family:var(--mono);font-size:13px;color:'+(s>0?'var(--accent3)':'var(--muted)')+'">'+(s>0?' '+s+' day'+(s>1?'s':''):'No streak')+'</span></div>';}).join('');
+    streakEl.innerHTML=sorted.map(h=>{const s=habitStreak(h);return '<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r-sm);background:var(--surface2);margin-bottom:6px"><span style="font-size:18px">'+(h.icon?escapeHTML(h.icon):'')+'</span><span style="flex:1;font-size:13px">'+escapeHTML(h.name)+'</span><span style="font-family:var(--mono);font-size:13px;color:'+(s>0?'var(--accent3)':'var(--muted)')+'">'+(s>0?' '+s+' day'+(s>1?'s':''):'No streak')+'</span></div>';}).join('');
   }
   // Graphe 30 jours
   renderHabits30dChart(habits);
@@ -13563,6 +13656,7 @@ function addCalEvent(){
   p.state.events.sort((a,b)=>a.date.localeCompare(b.date));
   saveStateNow();closeModal('add-event');
   document.getElementById('event-title').value='';
+  document.getElementById('event-date').value='';
   renderCalendar();renderAllEvents();renderOverviewEvents();toast(title+' added!','success');
 }
 function deleteCalEvent(id){
@@ -13621,7 +13715,7 @@ function showDayEvents(dateStr){
 function renderAllEvents(){
   const p=curP();const events=p?.state?.events||[];
   const el=document.getElementById('all-events-list');if(!el)return;
-  if(!events.length){el.innerHTML='<div class="empty-state" style="padding:16px"><div class="empty-icon"></div>No events yet</div>';return}
+  if(!events.length){el.innerHTML='<div class="empty-state" style="padding:16px"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;opacity:.35"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="empty-label">No events yet</div></div>';return}
   el.innerHTML=events.map(e=>'<div class="cal-event-item" style="margin-bottom:5px"><div class="cal-event-dot" style="background:'+safeThemeColor(e.color)+'"></div><div class="cal-event-text">'+escapeHTML(e.title)+'</div><div class="cal-event-date">'+escapeHTML(e.date)+'</div><button onclick="deleteCalEvent('+e.id+')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;margin-left:4px">&times;</button></div>').join('');
 }
 
@@ -13835,6 +13929,7 @@ function saveWeatherCity(){
   const p=curP();if(!p)return;
   if(!p.state)p.state={};
   p.state.weatherCity=city;
+  saveStateNow();
   p.state.weatherCache=null;
   // Reset compact weather affichage
   const ct=document.getElementById('sb-compact-temp');if(ct)ct.textContent='…';
@@ -14550,7 +14645,7 @@ function exportBudgetCSV(){
     t.type==='in'?'Revenu':'Dépense',
     '"'+(t.cat||'').replace(/"/g,'""')+'"',
     '"'+(t.label||'').replace(/"/g,'""')+'"',
-    (t.type==='in'?'+':'-')+t.amount.toFixed(2)
+    (t.type==='in'?'+':'-')+(t.amount||0).toFixed(2)
   ].join(',')).join('\n');
   const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
   const url=URL.createObjectURL(blob);
@@ -14664,13 +14759,13 @@ function renderBudget(){
       list.innerHTML=filtered.map(t=>{
         const isIn=t.type==='in';
         return`<div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface2);border-radius:var(--r-sm);border:1px solid var(--border);border-left:3px solid ${isIn?'#34d399':'#f87171'}">
-          <div style="font-size:18px;flex-shrink:0">${t.cat.split(' ')[0]}</div>
+          <div style="font-size:18px;flex-shrink:0">${(t.cat||'').split(' ')[0]||'💰'}</div>
           <div style="flex:1;min-width:0">
             <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHTML(t.label)}</div>
-            <div style="font-size:11px;color:var(--muted)">${t.cat.slice(2)} · ${t.date}</div>
+            <div style="font-size:11px;color:var(--muted)">${(t.cat||'').slice(2)} · ${t.date}</div>
           </div>
-          <div style="font-size:14px;font-weight:700;color:${isIn?'#34d399':'#f87171'};flex-shrink:0">${isIn?'+':'-'}${t.amount.toFixed(2)}€</div>
-          <button onclick="deleteBudgetTx(${t.id})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:0 4px" title="Supprimer">🗑</button>
+          <div style="font-size:14px;font-weight:700;color:${isIn?'#34d399':'#f87171'};flex-shrink:0">${isIn?'+':'-'}${(t.amount||0).toFixed(2)}€</div>
+          <button onclick="deleteBudgetTx(${t.id})" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:0 4px" title="Supprimer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg></button>
         </div>`;
       }).join('');
     }
@@ -14688,7 +14783,7 @@ function renderBudget(){
     const maxVal=sorted[0]?.[1]||1;
     catEl.innerHTML=sorted.length?sorted.map(([cat,val])=>`
       <div style="display:flex;align-items:center;gap:8px">
-        <div style="font-size:14px;flex-shrink:0">${cat.split(' ')[0]}</div>
+        <div style="font-size:14px;flex-shrink:0">${(cat||'').split(' ')[0]||'💰'}</div>
         <div style="flex:1">
           <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
             <span style="color:var(--muted)">${cat.slice(2)}</span>
@@ -14707,6 +14802,7 @@ function renderBudget(){
 }
 
 function renderBudgetChart(all){
+  if(typeof Chart==='undefined'){console.warn('[NEXUS] Chart.js not loaded');return;}
   const canvas=document.getElementById('budget-chart');if(!canvas)return;
   const ctx=canvas.getContext('2d');
   const months=[];
@@ -16519,6 +16615,7 @@ var I18N = {
     'toast_connected': 'Connected!',
     'toast_disconnected': 'Disconnected',
     'welcome_back': 'Welcome back',
+    'forgot_password': 'Forgot password?',
     'sign_in_sub': 'Sign in to your NEXUS dashboard',
     'create_account_title': 'Create account',
     'create_account_sub': 'Join NEXUS and start your journey',
@@ -16665,6 +16762,7 @@ var I18N = {
     'toast_connected': 'Connecté !',
     'toast_disconnected': 'Déconnecté',
     'welcome_back': 'Bon retour',
+    'forgot_password': 'Mot de passe oublié ?',
     'sign_in_sub': 'Connectez-vous à votre dashboard NEXUS',
     'create_account_title': 'Créer un compte',
     'create_account_sub': 'Rejoignez NEXUS et commencez votre aventure',
@@ -16798,6 +16896,7 @@ var I18N = {
     'toast_connected': '¡Conectado!',
     'toast_disconnected': 'Desconectado',
     'welcome_back': 'Bienvenido de vuelta',
+    'forgot_password': '¿Olvidaste tu contraseña?',
     'sign_in_sub': 'Inicia sesión en tu dashboard NEXUS',
     'create_account_title': 'Crear cuenta',
     'create_account_sub': 'Únete a NEXUS y comienza tu aventura',
@@ -16931,6 +17030,7 @@ var I18N = {
     'toast_connected': 'Verbunden!',
     'toast_disconnected': 'Getrennt',
     'welcome_back': 'Willkommen zurück',
+    'forgot_password': 'Passwort vergessen?',
     'sign_in_sub': 'Melde dich bei deinem NEXUS Dashboard an',
     'create_account_title': 'Konto erstellen',
     'create_account_sub': 'Tritt NEXUS bei und starte dein Abenteuer',
@@ -16979,11 +17079,15 @@ function showAuth(){
   const a=document.getElementById('auth-screen');
   if(a){ a.style.setProperty('display','flex'); a.style.opacity='1'; }
   updateClock();
+  applyI18n();
   updateAuthLangBar();
   setTimeout(()=>{
     if(typeof initAuthParticles==='function')initAuthParticles();
     if(typeof animateAuthEntrance==='function')animateAuthEntrance();
-  },80);
+    // Auto-focus email field
+    const loginField=document.getElementById('auth-login-id');
+    if(loginField)loginField.focus();
+  },120);
 }
 
 function normalizeAllProfiles(){
@@ -17010,9 +17114,7 @@ function normalizeAllProfiles(){
 }
 
 function showDashboardOrProfiles(){
-  console.log('[NEXUS] showDashboardOrProfiles. profiles:', profiles.length,
-    '| profiles[0]:', profiles[0]?.id, profiles[0]?.name,
-    '| password:', profiles[0]?.password?.value ? 'YES' : 'no');
+  // showDashboardOrProfiles
 
   removeAntiFlash();
   const boot=document.getElementById('nexus-boot-screen');
@@ -17030,13 +17132,10 @@ function showDashboardOrProfiles(){
   }
 
   const hasPassword = profiles[0].password && profiles[0].password.value;
-  console.log('[NEXUS] profiles.length=',profiles.length,'hasPassword=',!!hasPassword);
 
   if(profiles.length===1 && !hasPassword){
-    console.log('[NEXUS] → Mode DASHBOARD DIRECT, id=', profiles[0].id);
     _goToDashboard(profiles[0].id);
   } else {
-    console.log('[NEXUS] → Mode PROFILE SCREEN (length='+profiles.length+', pw='+!!hasPassword+')');
     try{renderProfileScreen();}catch(e){console.error('[NEXUS] renderProfileScreen ERROR:',e);}
     const ps=document.getElementById('profile-screen');
     if(ps){ps.style.setProperty('display','flex');ps.style.opacity='1';}
@@ -17046,7 +17145,6 @@ function showDashboardOrProfiles(){
 
 // Fonction centrale pour aller au dashboard (appelée aussi depuis enterDashboard)
 function _goToDashboard(profileId){
-  console.log('[NEXUS] _goToDashboard. profileId=', profileId, '| profiles:', profiles.map(p=>p.id));
   const found=profiles.find(p=>String(p.id)===String(profileId));
   if(!found){
     console.error('[NEXUS] Profile NOT FOUND for id='+profileId+'. Taking profiles[0].');
@@ -17055,7 +17153,6 @@ function _goToDashboard(profileId){
   } else {
     currentId=found.id;
   }
-  console.log('[NEXUS] currentId set to:', currentId, '| curP():', curP()?.name||'NULL');
   _valoMatchCache={};
   _valoAllMatches=[];
 
@@ -17067,7 +17164,6 @@ function _goToDashboard(profileId){
   });
   if(sb_el){sb_el.style.setProperty('display','flex');sb_el.style.opacity='1';}
   if(mc){mc.style.setProperty('display','block');mc.style.opacity='1';}
-  console.log('[NEXUS] sidebar display=', sb_el?.style.display, '| mc display=', mc?.style.display);
 
   const p=curP();
   if(!p){
@@ -17076,19 +17172,16 @@ function _goToDashboard(profileId){
   }
 
   renderSidebarNav(); updateSidebarAvatar(); applyI18n(); updateClock();
-  console.log('[NEXUS] Calling initDashboard...');
 
   try{
     initDashboard();
-    console.log('[NEXUS] initDashboard OK');
-  }catch(e){
+    }catch(e){
     console.error('[NEXUS] initDashboard THREW:', e, e?.stack);
     if(sb_el) sb_el.style.setProperty('display','flex');
     if(mc) mc.style.setProperty('display','block');
   }
 
   const cp=curP();
-  console.log('[NEXUS] After initDashboard: curP=', cp?.name, '| bgTheme=', cp?.bgTheme);
   if(!cp?.bgTheme||cp.bgTheme==='none') setTimeout(startAmbientBg,400);
 }
 

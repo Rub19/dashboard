@@ -913,6 +913,30 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .search-bar:focus-within{border-color:rgba(124,58,237,.45);box-shadow:0 0 0 3px rgba(124,58,237,.08)}
 .search-bar input::placeholder{color:rgba(245,245,247,.22)}
 
+/* ── RADIUS SLIDER ── */
+#radius-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:18px;height:18px;border-radius:50%;
+  background:linear-gradient(135deg,#7c3aed,#6d28d9);
+  border:2px solid rgba(255,255,255,.2);
+  box-shadow:0 2px 8px rgba(124,58,237,.4);
+  cursor:grab;transition:transform .15s,box-shadow .15s;
+}
+#radius-slider::-webkit-slider-thumb:hover{
+  transform:scale(1.15);
+  box-shadow:0 0 0 4px rgba(124,58,237,.2),0 2px 8px rgba(124,58,237,.4);
+}
+#radius-slider::-webkit-slider-thumb:active{cursor:grabbing;transform:scale(1.1)}
+#radius-slider::-moz-range-thumb{
+  width:18px;height:18px;border-radius:50%;
+  background:linear-gradient(135deg,#7c3aed,#6d28d9);
+  border:2px solid rgba(255,255,255,.2);
+  box-shadow:0 2px 8px rgba(124,58,237,.4);
+  cursor:grab;
+}
+#radius-slider::-webkit-slider-runnable-track{height:0;background:transparent}
+#radius-slider::-moz-range-track{height:0;background:transparent}
+
 /* ── STAT CARDS ── */
 .stats-row{gap:10px;margin-bottom:14px}
 .stat-card{
@@ -5896,7 +5920,17 @@ body.no-anim #bg-canvas{display:none!important}
                 <span style="font-size:10px;color:var(--muted);font-family:var(--mono)">24px</span>
               </button>
             </div>
-            <!-- Fine slider supprimé - utiliser les boutons visuels -->
+            <!-- Slider custom stylé -->
+            <div style="position:relative;padding:10px 4px 4px">
+              <!-- Track background -->
+              <div id="radius-track-bg" style="position:absolute;left:4px;right:4px;top:50%;transform:translateY(-50%);height:4px;background:rgba(255,255,255,.08);border-radius:99px;margin-top:5px"></div>
+              <!-- Track fill (violet) -->
+              <div id="radius-track-fill" style="position:absolute;left:4px;top:50%;transform:translateY(-50%);height:4px;background:linear-gradient(90deg,#7c3aed,#a78bfa);border-radius:99px;width:33%;margin-top:5px;transition:width .15s;pointer-events:none"></div>
+              <!-- Input range invisible par dessus -->
+              <input type="range" id="radius-slider" min="0" max="24" value="8" step="4"
+                oninput="setRadius(this.value);updateRadiusTrack(this.value)"
+                style="width:100%;height:20px;opacity:0;cursor:pointer;position:relative;z-index:2;margin:0;padding:0;appearance:none;-webkit-appearance:none">
+            </div>
           </div>
 
           <!-- Glassmorphism -->
@@ -14617,6 +14651,13 @@ function initSliderFills(){
   });
 }
 
+function updateRadiusTrack(v){
+  const fill=document.getElementById('radius-track-fill');
+  if(!fill)return;
+  const pct=(parseInt(v)/24)*100;
+  fill.style.width=pct+'%';
+}
+
 function setRadius(v){
   const p=curP();if(!p)return;
   if(!p.state.design)p.state.design={};
@@ -14712,7 +14753,7 @@ function applyDesignOptions(){
     document.body.classList.remove('density-compact','density-normal','density-spacious');
     document.body.classList.add('density-'+d.density);
   }
-  if(d.radius!==undefined)setRadius(d.radius);
+  if(d.radius!==undefined){setRadius(d.radius);updateRadiusTrack(d.radius);}
   if(d.glass)document.body.classList.add('glass-mode');
   if(d.bgPreset&&d.bgPreset!=='none'&&d.bgPreset!=='custom')applyBgPreset(d.bgPreset);
   if(d.bgUrl)setBgUrl(d.bgUrl);

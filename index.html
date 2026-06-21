@@ -196,7 +196,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .pw-back:hover{color:var(--text)}
 
 /* ── PROFILE SCREEN ── */
-#profile-screen{position:fixed;inset:0;z-index:9999;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+#profile-screen{position:fixed;inset:0;z-index:9999;background:radial-gradient(ellipse at 50% 0%,rgba(124,58,237,.08) 0%,var(--bg) 60%);display:none;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
 #profile-screen.hiding{animation:profileeHide .5s cubic-bezier(.4,0,.2,1) forwards}
 /* Ambient embers canvas */
 #ps-canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
@@ -4006,17 +4006,17 @@ body.no-anim #bg-canvas{display:none!important}
   </div>
 </div>
 
-<div id="auth-screen" style="position:fixed;inset:0;z-index:10002;display:none;align-items:center;justify-content:center;overflow:hidden;background:#050507;padding:20px">
+<div id="auth-screen" style="position:fixed;inset:0;z-index:10002;display:none;align-items:center;justify-content:center;overflow:auto;background:radial-gradient(ellipse at 30% 20%,rgba(124,58,237,.06) 0%,#070510 60%),radial-gradient(ellipse at 70% 80%,rgba(109,40,217,.04) 0%,transparent 50%);padding:20px">
 
   <!-- Canvas particules -->
   <canvas id="auth-particles" style="position:absolute;inset:0;z-index:0;pointer-events:none"></canvas>
 
   <!-- Lang selector — 4 boutons simples en bas de l'écran -->
-  <div id="auth-lang-bar" style="position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:99999;display:flex;gap:6px;background:rgba(10,8,14,.95);border:1px solid rgba(255,255,255,.08);border-radius:99px;padding:6px 10px">
-    <button onclick="setLang('fr');updateAuthLangBar()" data-l="fr" style="padding:4px 10px;border-radius:99px;border:none;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--font);background:rgba(124,58,237,.8);color:#fff;transition:all .15s">FR</button>
-    <button onclick="setLang('en');updateAuthLangBar()" data-l="en" style="padding:4px 10px;border-radius:99px;border:none;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--font);background:transparent;color:rgba(255,255,255,.45);transition:all .15s">EN</button>
-    <button onclick="setLang('es');updateAuthLangBar()" data-l="es" style="padding:4px 10px;border-radius:99px;border:none;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--font);background:transparent;color:rgba(255,255,255,.45);transition:all .15s">ES</button>
-    <button onclick="setLang('de');updateAuthLangBar()" data-l="de" style="padding:4px 10px;border-radius:99px;border:none;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--font);background:transparent;color:rgba(255,255,255,.45);transition:all .15s">DE</button>
+  <div id="auth-lang-bar" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:100010;display:flex;gap:4px;background:rgba(7,5,16,.95);border:1px solid rgba(124,58,237,.2);border-radius:99px;padding:5px 8px;box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 0 1px rgba(124,58,237,.08)">
+    <button onclick="setLang('fr');updateAuthLangBar()" data-l="fr" style="padding:5px 12px;border-radius:99px;border:none;cursor:pointer;font-size:11px;font-weight:700;font-family:var(--font);background:rgba(124,58,237,.85);color:#fff;transition:all .2s;letter-spacing:.3px">FR</button>
+    <button onclick="setLang('en');updateAuthLangBar()" data-l="en" style="padding:5px 12px;border-radius:99px;border:none;cursor:pointer;font-size:11px;font-weight:700;font-family:var(--font);background:transparent;color:rgba(255,255,255,.4);transition:all .2s;letter-spacing:.3px">EN</button>
+    <button onclick="setLang('es');updateAuthLangBar()" data-l="es" style="padding:5px 12px;border-radius:99px;border:none;cursor:pointer;font-size:11px;font-weight:700;font-family:var(--font);background:transparent;color:rgba(255,255,255,.4);transition:all .2s;letter-spacing:.3px">ES</button>
+    <button onclick="setLang('de');updateAuthLangBar()" data-l="de" style="padding:5px 12px;border-radius:99px;border:none;cursor:pointer;font-size:11px;font-weight:700;font-family:var(--font);background:transparent;color:rgba(255,255,255,.4);transition:all .2s;letter-spacing:.3px">DE</button>
   </div>
 
   <!-- Orbes gradient — derrière la card -->
@@ -4108,7 +4108,7 @@ body.no-anim #bg-canvas{display:none!important}
             onmouseover="this.style.color='rgba(124,58,237,.8)'" onmouseout="this.style.color='rgba(255,255,255,.35)'"
             data-i18n="forgot_password">Forgot password?</button>
         </div>
-        <button onclick="doLogin()" class="auth-submit-btn" id="auth-login-btn" data-i18n="sign_in_btn">Se connecter →</button>
+        <button onclick="doLogin()" class="auth-submit-btn" id="auth-login-btn" data-i18n="sign_in_btn" style="position:relative;z-index:10">Se connecter →</button>
       </div>
 
       <!-- Register form -->
@@ -4137,7 +4137,7 @@ body.no-anim #bg-canvas{display:none!important}
           </div>
           <div id="pw-strength-label" style="font-size:10px;color:var(--muted);margin-top:4px;height:14px;transition:color .3s"></div>
         </div>
-        <button onclick="doRegister()" class="auth-submit-btn" data-i18n="create_account_btn">
+        <button onclick="doRegister()" class="auth-submit-btn" data-i18n="create_account_btn" style="position:relative;z-index:10">
           Create account <span style="margin-left:4px">→</span>
         </button>
       </div>
@@ -9561,7 +9561,7 @@ function renderOverviewEvents(){
     const isToday=e.date===today;
     const dayName=days[d.getDay()];
     const dayNum=d.getDate();
-    return `<div style="display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:9px;border:1px solid ${isToday?'rgba(124,58,237,.3)':'rgba(255,255,255,.05)'};background:${isToday?'rgba(124,58,237,.06)':'transparent'};margin-bottom:6px;transition:all .15s" onmouseover="this.style.borderColor='rgba(124,58,237,.25)'" onmouseout="this.style.borderColor='${isToday?'rgba(124,58,237,.3)':'rgba(255,255,255,.05)'}'">
+    return `<div style="display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:9px;border:1px solid ${isToday?'rgba(124,58,237,.3)':'rgba(255,255,255,.05)'};background:${isToday?'rgba(124,58,237,.06)':'transparent'};margin-bottom:6px;transition:all .15s" onmouseover="this.style.borderColor='rgba(124,58,237,.25)'" onmouseout="this.style.borderColor=isToday?'rgba(124,58,237,.3)':'rgba(255,255,255,.05)'">
       <div style="width:34px;text-align:center;flex-shrink:0">
         <div style="font-size:9px;font-weight:700;color:${isToday?'#a78bfa':'var(--muted)'};letter-spacing:.5px;font-family:var(--mono)">${dayName.toUpperCase()}</div>
         <div style="font-size:17px;font-weight:800;color:${isToday?'#fff':'var(--text)'};line-height:1.1">${dayNum}</div>
@@ -9569,7 +9569,7 @@ function renderOverviewEvents(){
       <div style="width:1px;height:30px;background:${isToday?'rgba(124,58,237,.4)':'rgba(255,255,255,.08)'}"></div>
       <div style="flex:1;min-width:0">
         <div style="font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHTML(e.title||'Event')}</div>
-        ${isToday?'<div style="font-size:10px;color:#a78bfa;font-weight:600">Aujourd'hui</div>':''}
+        ${isToday?'<div style="font-size:10px;color:#a78bfa;font-weight:600">Aujourd&#x27;hui</div>':''\}
       </div>
       ${e.color?`<div style="width:6px;height:6px;border-radius:50%;background:${escapeHTML(e.color)};flex-shrink:0"></div>`:''}
     </div>`;
@@ -10148,7 +10148,7 @@ function renderOverviewHabits(){
   el.innerHTML=habits.map(h=>{
     const done=h.log&&h.log[today];
     const streak=habitStreak(h);
-    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:${done?'rgba(124,58,237,.08)':'rgba(255,255,255,.02)'};border:1px solid ${done?'rgba(124,58,237,.2)':'rgba(255,255,255,.05)'};cursor:pointer;transition:all .18s" onclick="toggleHabitDay('${today}',${h.id});renderOverviewHabits()" onmouseover="this.style.borderColor='rgba(124,58,237,.25)'" onmouseout="this.style.borderColor='${done?'rgba(124,58,237,.2)':'rgba(255,255,255,.05)'}'">
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:${done?'rgba(124,58,237,.08)':'rgba(255,255,255,.02)'};border:1px solid ${done?'rgba(124,58,237,.2)':'rgba(255,255,255,.05)'};cursor:pointer;transition:all .18s" onclick="toggleHabitDay('${today}',${h.id});renderOverviewHabits()" onmouseover="this.style.borderColor='rgba(124,58,237,.25)'" onmouseout="this.style.borderColor=done?'rgba(124,58,237,.2)':'rgba(255,255,255,.05)'">
       <div style="width:20px;height:20px;border-radius:6px;border:1.5px solid ${done?'rgba(124,58,237,.7)':'rgba(255,255,255,.2)'};background:${done?'rgba(124,58,237,.3)':'transparent'};display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s">
         ${done?'<svg viewBox="0 0 16 16" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:10px;height:10px"><polyline points="2,8 6,12 14,4"/></svg>':''}
       </div>
@@ -14430,8 +14430,9 @@ function updateAuthLangBar(){
   const lang=typeof _lang!=='undefined'?_lang:'fr';
   document.querySelectorAll('#auth-lang-bar button').forEach(btn=>{
     const isActive=btn.dataset.l===lang;
-    btn.style.background=isActive?'rgba(124,58,237,.85)':'transparent';
-    btn.style.color=isActive?'#fff':'rgba(255,255,255,.4)';
+    btn.style.background=isActive?'rgba(124,58,237,.9)':'transparent';
+    btn.style.color=isActive?'#fff':'rgba(255,255,255,.35)';
+    btn.style.boxShadow=isActive?'0 2px 8px rgba(124,58,237,.4)':'none';
   });
 }
 

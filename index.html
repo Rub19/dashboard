@@ -100,72 +100,53 @@ window.onerror = function(msg, src, line, col, err) {
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  /* ── ETHONE 2026 Design System ──────────────────────────── */
-  --bg:#05030e;
-  --bg2:#080614;
-  --bg3:#0a0818;
-
-  --surface:rgba(255,255,255,.025);
-  --surface2:rgba(255,255,255,.04);
-  --surface3:rgba(255,255,255,.07);
-
-  --border:rgba(255,255,255,.06);
-  --border2:rgba(255,255,255,.10);
-  --border3:rgba(124,58,237,.25);
-
-  --text:#f0edff;
-  --text2:rgba(240,237,255,.7);
-  --muted:rgba(240,237,255,.4);
-  --muted2:rgba(240,237,255,.22);
-
-  /* Accent — Violet */
-  --accent:#7c3aed;
-  --accent-h:#8b47f5;
+  /* ── ETHONE 2026 — Neutral Premium Dark ────────── */
+  --bg:#09090b;
+  --bg2:#0f0f11;
+  --bg3:#141416;
+  --surface:rgba(255,255,255,.04);
+  --surface2:rgba(255,255,255,.07);
+  --surface3:rgba(255,255,255,.11);
+  --border:rgba(255,255,255,.07);
+  --border2:rgba(255,255,255,.12);
+  --border3:rgba(139,92,246,.3);
+  --text:#fafaf9;
+  --text2:rgba(250,250,249,.7);
+  --muted:rgba(250,250,249,.42);
+  --muted2:rgba(250,250,249,.24);
+  /* Accent — subdued violet */
+  --accent:#8b5cf6;
+  --accent-h:#7c3aed;
   --accent-light:#a78bfa;
   --accent-dim:#c4b5fd;
-  --accent-glow:rgba(124,58,237,.2);
-  --accent-subtle:rgba(124,58,237,.08);
-  --accent-surface:rgba(124,58,237,.06);
-
-  /* Semantic colors */
-  --green:#34d399;  --green-s:rgba(52,211,153,.08);
-  --red:#f87171;    --red-s:rgba(248,113,113,.08);
-  --yellow:#fbbf24; --yellow-s:rgba(251,191,36,.08);
-  --blue:#60a5fa;   --blue-s:rgba(96,165,250,.08);
-
+  --accent-glow:rgba(139,92,246,.15);
+  --accent-surface:rgba(139,92,246,.06);
+  /* Semantic */
+  --green:#10b981; --green-s:rgba(16,185,129,.08);
+  --red:#ef4444;   --red-s:rgba(239,68,68,.08);
+  --yellow:#f59e0b;--yellow-s:rgba(245,158,11,.08);
+  --blue:#3b82f6;  --blue-s:rgba(59,130,246,.08);
   /* Gradients */
-  --grad-primary:linear-gradient(135deg,#7c3aed,#6d28d9);
-  --grad-accent:linear-gradient(135deg,#8b5cf6,#7c3aed,#6d28d9);
-
+  --grad-primary:linear-gradient(135deg,#8b5cf6,#7c3aed);
   /* Gaming */
   --discord:#5865F2;--spotify:#1db954;--twitch:#9147ff;
-  --steam:#1b2838;--steam2:#66c0f4;
-
   /* Fonts */
   --font:'Inter',system-ui,sans-serif;
   --font-display:'Syne',sans-serif;
-  --font-heading:'Cabinet Grotesk','Inter',sans-serif;
   --mono:'JetBrains Mono',monospace;
-
   /* Radius */
-  --radius:18px; --radius-sm:12px; --radius-xs:8px;
-  --r-panel:16px; --r-card:14px; --r-sm:12px; --r-xs:8px; --r-modal:20px;
-
-  /* Transitions */
+  --r:16px;--r-sm:12px;--r-xs:8px;
+  --r-panel:14px;--r-card:12px;--r-modal:18px;
+  /* Transition */
   --ease:cubic-bezier(.22,1,.36,1);
-  --transition:.18s var(--ease);
-  --transition-bounce:.3s cubic-bezier(.34,1.56,.64,1);
-
+  --t:.18s var(--ease);
   /* Shadows */
-  --shadow-xs:0 1px 3px rgba(0,0,0,.3);
-  --shadow-sm:0 2px 8px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,.03);
-  --shadow:0 4px 20px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.03);
-  --shadow-lg:0 12px 40px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.03);
-  --shadow-violet:0 4px 20px rgba(124,58,237,.25);
-
+  --sh-xs:0 1px 2px rgba(0,0,0,.3);
+  --sh-sm:0 2px 8px rgba(0,0,0,.35);
+  --sh:0 4px 16px rgba(0,0,0,.4);
+  --sh-lg:0 12px 40px rgba(0,0,0,.5);
   /* Sidebar */
-  --sidebar-w:220px;
-  --sidebar-bg:#07051a;
+  --sb-w:232px; --sb-bg:#0c0c0e;
 }
 
 /* ── SCROLLBAR ── */
@@ -5243,647 +5224,9 @@ hr{border:none;border-top:1px solid rgba(255,255,255,.05);margin:16px 0}
    ════════════════════════════════════════════════════════════════ */
 
 
-/* ════════════════════════════════════════════════════════════════
-   PAGE-SPECIFIC 2026 REFINEMENTS
-   ════════════════════════════════════════════════════════════════ */
 
-/* ── SETTINGS ────────────────────────────────────────────────── */
-.settings-card{
-  background:rgba(255,255,255,.022)!important;
-  border:1px solid rgba(255,255,255,.06)!important;
-  border-radius:var(--r-panel)!important;
-  margin-bottom:12px!important;overflow:hidden!important;
-}
-.settings-section-header{
-  padding:14px 18px!important;
-  border-bottom:1px solid rgba(255,255,255,.05)!important;
-  background:rgba(255,255,255,.02)!important;
-}
-.settings-section-title{
-  font-size:13px!important;font-weight:700!important;
-  color:var(--text)!important;letter-spacing:-.1px!important;
-  display:flex!important;align-items:center!important;gap:8px!important;
-}
-.settings-row{
-  padding:13px 18px!important;
-  border-bottom:1px solid rgba(255,255,255,.035)!important;
-  display:flex!important;align-items:center!important;
-  justify-content:space-between!important;
-  gap:14px!important;
-  transition:background .14s!important;
-}
-.settings-row:last-child{border-bottom:none!important}
-.settings-row:hover{background:rgba(255,255,255,.02)!important}
-.settings-label{
-  font-size:13px!important;font-weight:500!important;color:var(--text)!important;
-}
-.settings-desc{
-  font-size:11.5px!important;color:var(--muted)!important;
-  margin-top:2px!important;line-height:1.4!important;
-}
 
-/* Color swatches */
-.color-swatch{
-  width:24px;height:24px;border-radius:50%;
-  cursor:pointer;transition:transform .15s,box-shadow .15s;
-  border:2px solid transparent;flex-shrink:0;
-}
-.color-swatch:hover{transform:scale(1.15)}
-.color-swatch.active{
-  box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--accent)!important;
-}
 
-/* Density selector */
-.density-option{
-  display:flex;flex-direction:column;align-items:center;gap:6px;
-  padding:10px 14px;border-radius:10px;
-  border:1px solid rgba(255,255,255,.07);
-  cursor:pointer;transition:all .15s;font-size:11px;
-  color:var(--muted);background:rgba(255,255,255,.03);
-}
-.density-option:hover,.density-option.active{
-  border-color:rgba(124,58,237,.3);
-  background:rgba(124,58,237,.08);
-  color:#c4b5fd;
-}
-
-/* ── BUDGET ──────────────────────────────────────────────────── */
-.budget-header-card{
-  background:var(--grad-primary)!important;
-  border-radius:var(--r-panel)!important;
-  padding:24px!important;
-  position:relative;overflow:hidden;
-  margin-bottom:14px!important;
-}
-.budget-header-card::before{
-  content:'';position:absolute;
-  top:-40px;right:-40px;width:200px;height:200px;
-  border-radius:50%;
-  background:rgba(255,255,255,.07);
-  pointer-events:none;
-}
-.budget-amount{
-  font-size:36px!important;font-weight:800!important;
-  letter-spacing:-2px!important;font-family:var(--mono)!important;
-  color:#fff!important;line-height:1!important;
-}
-.budget-cat-bar{
-  height:4px;border-radius:99px;
-  background:rgba(255,255,255,.08);
-  overflow:hidden;margin-top:6px;
-}
-.budget-cat-fill{
-  height:100%;border-radius:99px;
-  transition:width .6s var(--ease);
-}
-
-/* ── STATS ───────────────────────────────────────────────────── */
-.stat-overview-number{
-  font-size:42px!important;font-weight:800!important;
-  letter-spacing:-2px!important;font-family:var(--mono)!important;
-  color:var(--text)!important;line-height:1!important;
-}
-.chart-container{
-  border-radius:12px!important;overflow:hidden!important;
-}
-
-/* ── CALENDAR ────────────────────────────────────────────────── */
-.cal-day{
-  border-radius:8px!important;
-  padding:6px!important;
-  transition:all .14s!important;
-  cursor:pointer!important;
-  font-size:12px!important;
-}
-.cal-day:hover{background:rgba(255,255,255,.05)!important}
-.cal-day.today{
-  background:rgba(124,58,237,.15)!important;
-  color:#c4b5fd!important;font-weight:700!important;
-}
-.cal-day.has-event::after{
-  content:'';display:block;width:4px;height:4px;
-  border-radius:50%;background:var(--accent);
-  margin:2px auto 0;
-}
-.cal-event-chip{
-  font-size:10px;padding:3px 7px;
-  border-radius:5px;
-  font-weight:600;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-
-/* ── GOALS ───────────────────────────────────────────────────── */
-.goal-card{
-  background:rgba(255,255,255,.022)!important;
-  border:1px solid rgba(255,255,255,.06)!important;
-  border-radius:var(--r-panel)!important;
-  padding:16px 18px!important;
-  transition:all .18s!important;
-  margin-bottom:10px!important;
-}
-.goal-card:hover{border-color:rgba(255,255,255,.1)!important}
-
-/* ── JOURNAL ─────────────────────────────────────────────────── */
-.journal-entry{
-  padding:16px;border-radius:12px;
-  border:1px solid rgba(255,255,255,.06);
-  background:rgba(255,255,255,.022);
-  margin-bottom:10px;transition:all .16s;
-  cursor:pointer;
-}
-.journal-entry:hover{
-  border-color:rgba(255,255,255,.1);
-  transform:translateY(-1px);
-}
-.journal-date{
-  font-size:10px;font-weight:700;
-  letter-spacing:.8px;text-transform:uppercase;
-  color:rgba(124,58,237,.6);font-family:var(--mono);
-  margin-bottom:6px;
-}
-
-/* ── GAMING ──────────────────────────────────────────────────── */
-.valo-rank-badge{
-  border-radius:10px!important;
-  padding:8px 14px!important;
-  display:inline-flex!important;align-items:center!important;gap:10px!important;
-  background:rgba(255,255,255,.04)!important;
-  border:1px solid rgba(255,255,255,.07)!important;
-  font-weight:700!important;font-size:14px!important;
-}
-.match-result{
-  display:flex;align-items:center;gap:10px;
-  padding:10px 12px;border-radius:9px;
-  border:1px solid transparent;
-  transition:all .14s;margin-bottom:6px;
-}
-.match-result:hover{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.06)}
-.match-win{border-left:3px solid var(--green)!important}
-.match-loss{border-left:3px solid var(--red)!important}
-.match-draw{border-left:3px solid var(--yellow)!important}
-
-/* ── AI CHAT ─────────────────────────────────────────────────── */
-#page-ai .panel{padding:0!important}
-.ai-message{
-  padding:12px 16px!important;
-  border-radius:12px!important;
-  font-size:13.5px!important;line-height:1.65!important;
-  max-width:80%!important;
-}
-.ai-message.user{
-  background:rgba(124,58,237,.14)!important;
-  border:1px solid rgba(124,58,237,.2)!important;
-  margin-left:auto!important;color:var(--text)!important;
-}
-.ai-message.assistant{
-  background:rgba(255,255,255,.04)!important;
-  border:1px solid rgba(255,255,255,.07)!important;
-  margin-right:auto!important;
-}
-.ai-input-bar{
-  border-top:1px solid rgba(255,255,255,.06)!important;
-  padding:14px 16px!important;
-  display:flex!important;gap:10px!important;align-items:flex-end!important;
-}
-.ai-input-bar textarea{
-  flex:1!important;resize:none!important;
-  min-height:40px!important;max-height:120px!important;
-  background:rgba(255,255,255,.05)!important;
-  border:1px solid rgba(255,255,255,.08)!important;
-  border-radius:10px!important;
-  padding:10px 14px!important;
-  font-size:13px!important;
-}
-
-/* ── GITHUB ──────────────────────────────────────────────────── */
-.github-repo-card{
-  background:rgba(255,255,255,.022)!important;
-  border:1px solid rgba(255,255,255,.06)!important;
-  border-radius:12px!important;
-  padding:14px 16px!important;
-  transition:all .16s!important;margin-bottom:8px!important;
-}
-.github-repo-card:hover{
-  border-color:rgba(255,255,255,.1)!important;
-  transform:translateY(-1px)!important;
-}
-.github-lang-dot{
-  width:10px;height:10px;border-radius:50%;flex-shrink:0;
-}
-
-/* ── CONNECTIONS STATUS BADGE ────────────────────────────────── */
-.status-badge{
-  display:inline-flex;align-items:center;gap:5px;
-  font-size:10px;font-weight:700;
-  padding:3px 8px;border-radius:99px;
-}
-.status-connected{
-  background:rgba(52,211,153,.1);color:#6ee7b7;
-  border:1px solid rgba(52,211,153,.2);
-}
-.status-disconnected{
-  background:rgba(255,255,255,.05);color:var(--muted);
-  border:1px solid rgba(255,255,255,.08);
-}
-.status-dot{
-  width:5px;height:5px;border-radius:50%;flex-shrink:0;
-}
-
-/* ── RADIUS SLIDER CUSTOM ────────────────────────────────────── */
-#radius-slider{
-  -webkit-appearance:none;appearance:none;
-  width:100%;height:4px;border-radius:99px;
-  background:transparent;cursor:pointer;position:relative;z-index:2;
-}
-#radius-slider::-webkit-slider-thumb{
-  -webkit-appearance:none;
-  width:16px;height:16px;border-radius:50%;
-  background:#fff;
-  box-shadow:0 0 0 3px rgba(124,58,237,.4),0 2px 8px rgba(0,0,0,.3);
-  transition:box-shadow .15s,transform .15s;
-  cursor:grab;
-}
-#radius-slider::-webkit-slider-thumb:active{
-  transform:scale(1.2);cursor:grabbing;
-}
-.rtick{
-  font-size:9px;font-family:var(--mono);
-  color:rgba(255,255,255,.25);cursor:pointer;
-  transition:color .15s,font-weight .15s;
-  padding:2px 0;user-select:none;
-}
-.rtick.active{color:var(--accent-light)!important;font-weight:700!important}
-
-/* ════════════════════════════════════════════════════════════════
-   FIN PAGE-SPECIFIC
-   ════════════════════════════════════════════════════════════════ */
-
-/* ════════════════════════════════════════════════════════════
-   SIGN IN — 2026 Premium Minimal
-   Inspired by Linear · Vercel · Apple · Stripe
-   ════════════════════════════════════════════════════════════ */
-
-/* ── Auth screen ─────────────────────────────────────────── */
-#auth-screen {
-  background: #09090b !important;
-}
-
-/* Entrance animation */
-@keyframes signInCardIn {
-  from { opacity: 0; transform: translateY(12px) scale(.99); }
-  to   { opacity: 1; transform: none; }
-}
-
-/* ── Sign-in card ────────────────────────────────────────── */
-.signin-card {
-  background: #111113;
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 22px;
-  padding: 36px 36px 28px;
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,.5),
-    0 2px 4px rgba(0,0,0,.3),
-    0 12px 40px rgba(0,0,0,.4),
-    0 40px 80px rgba(0,0,0,.3);
-  position: relative;
-}
-
-/* ── Brand ───────────────────────────────────────────────── */
-.signin-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 28px;
-}
-.signin-logo {
-  width: 34px; height: 34px;
-  background: #7c3aed;
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 1px 0 rgba(255,255,255,.12) inset;
-}
-.signin-brand-name {
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: rgba(255,255,255,.85);
-  font-family: var(--font-display, 'Syne', sans-serif);
-}
-
-/* ── Header ──────────────────────────────────────────────── */
-.signin-header {
-  margin-bottom: 22px;
-}
-.signin-title {
-  font-size: 20px !important;
-  font-weight: 700 !important;
-  letter-spacing: -.4px !important;
-  color: rgba(255,255,255,.92) !important;
-  font-family: var(--font, 'Inter', sans-serif) !important;
-  margin: 0 0 5px !important;
-  line-height: 1.2 !important;
-}
-.signin-subtitle {
-  font-size: 13px !important;
-  color: rgba(255,255,255,.38) !important;
-  font-weight: 400 !important;
-  margin: 0 !important;
-  line-height: 1.4 !important;
-}
-
-/* ── Tabs ────────────────────────────────────────────────── */
-.signin-tabs {
-  display: flex;
-  gap: 2px;
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.07);
-  border-radius: 11px;
-  padding: 3px;
-  margin-bottom: 22px;
-}
-.signin-tab {
-  flex: 1;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 9px;
-  font-size: 13px;
-  font-weight: 500;
-  font-family: var(--font, 'Inter', sans-serif);
-  cursor: pointer;
-  transition: all .15s ease;
-  color: rgba(255,255,255,.35);
-  background: transparent;
-  letter-spacing: .1px;
-}
-.signin-tab:hover:not(.active) {
-  color: rgba(255,255,255,.6);
-  background: rgba(255,255,255,.04);
-}
-.signin-tab.active {
-  background: rgba(255,255,255,.08);
-  color: rgba(255,255,255,.88);
-  font-weight: 600;
-  box-shadow: 0 1px 3px rgba(0,0,0,.3);
-}
-
-/* ── Fields ──────────────────────────────────────────────── */
-.signin-field {
-  margin-bottom: 14px;
-}
-.signin-label-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 6px;
-}
-.signin-label {
-  display: block !important;
-  font-size: 12px !important;
-  font-weight: 500 !important;
-  color: rgba(255,255,255,.5) !important;
-  margin-bottom: 6px !important;
-  letter-spacing: .1px !important;
-  text-transform: none !important;
-}
-.signin-label-row .signin-label {
-  margin-bottom: 0 !important;
-}
-
-/* ── Inputs ──────────────────────────────────────────────── */
-.signin-input {
-  width: 100% !important;
-  height: 40px !important;
-  background: rgba(255,255,255,.05) !important;
-  border: 1px solid rgba(255,255,255,.09) !important;
-  border-radius: 10px !important;
-  padding: 0 40px 0 13px !important;
-  font-size: 13.5px !important;
-  font-family: var(--font, 'Inter', sans-serif) !important;
-  color: rgba(255,255,255,.88) !important;
-  transition: border-color .15s, box-shadow .15s, background .15s !important;
-  outline: none !important;
-}
-.signin-input::placeholder {
-  color: rgba(255,255,255,.2) !important;
-  font-size: 13px !important;
-}
-.signin-input:hover {
-  background: rgba(255,255,255,.07) !important;
-  border-color: rgba(255,255,255,.14) !important;
-}
-.signin-input:focus {
-  background: rgba(255,255,255,.06) !important;
-  border-color: rgba(124,58,237,.6) !important;
-  box-shadow: 0 0 0 3px rgba(124,58,237,.12) !important;
-}
-
-/* Input wrapper for eye button */
-.signin-input-wrap {
-  position: relative;
-}
-.signin-input-wrap .signin-input {
-  padding-right: 40px !important;
-}
-
-/* Eye button */
-.signin-eye {
-  position: absolute;
-  right: 12px; top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: rgba(255,255,255,.25);
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 6px;
-  display: flex; align-items: center; justify-content: center;
-  transition: color .15s, background .15s;
-  width: 22px; height: 22px;
-}
-.signin-eye svg { width: 14px; height: 14px; pointer-events: none; }
-.signin-eye:hover {
-  color: rgba(255,255,255,.6);
-  background: rgba(255,255,255,.07);
-}
-
-/* Forgot password */
-.signin-link-btn {
-  background: none;
-  border: none;
-  font-size: 12px;
-  font-family: var(--font, 'Inter', sans-serif);
-  color: rgba(255,255,255,.35);
-  cursor: pointer;
-  padding: 0;
-  transition: color .15s;
-}
-.signin-link-btn:hover {
-  color: rgba(255,255,255,.7);
-}
-
-/* Remember me */
-.signin-remember {
-  display: flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  margin-bottom: 16px !important;
-  cursor: pointer !important;
-  width: fit-content !important;
-  user-select: none !important;
-}
-
-/* ── Primary button ──────────────────────────────────────── */
-.signin-btn-primary {
-  width: 100%;
-  height: 40px;
-  background: #7c3aed;
-  border: none;
-  border-radius: 10px;
-  color: #fff;
-  font-size: 13.5px;
-  font-weight: 600;
-  font-family: var(--font, 'Inter', sans-serif);
-  cursor: pointer;
-  transition: all .18s cubic-bezier(.22,1,.36,1);
-  letter-spacing: .1px;
-  position: relative;
-  overflow: hidden;
-  box-shadow:
-    0 1px 0 rgba(255,255,255,.12) inset,
-    0 2px 8px rgba(124,58,237,.25);
-  margin-bottom: 20px;
-}
-.signin-btn-primary::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0;
-  height: 1px;
-  background: rgba(255,255,255,.15);
-}
-.signin-btn-primary:hover {
-  background: #8b4cf6;
-  box-shadow:
-    0 1px 0 rgba(255,255,255,.14) inset,
-    0 4px 16px rgba(124,58,237,.35);
-  transform: translateY(-1px);
-}
-.signin-btn-primary:active {
-  transform: scale(.99) translateY(0);
-  box-shadow: 0 1px 0 rgba(255,255,255,.1) inset, 0 1px 4px rgba(124,58,237,.2);
-}
-
-/* ── Divider ─────────────────────────────────────────────── */
-.signin-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-.signin-divider-line {
-  flex: 1;
-  height: 1px;
-  background: rgba(255,255,255,.07);
-  display: block;
-}
-.signin-divider-text {
-  font-size: 11.5px;
-  color: rgba(255,255,255,.25);
-  white-space: nowrap;
-  font-weight: 400;
-}
-
-/* ── Social buttons ──────────────────────────────────────── */
-.signin-social-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 0;
-}
-.signin-social-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 38px;
-  background: rgba(255,255,255,.05);
-  border: 1px solid rgba(255,255,255,.09);
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 500;
-  font-family: var(--font, 'Inter', sans-serif);
-  color: rgba(255,255,255,.65);
-  cursor: pointer;
-  transition: all .15s ease;
-}
-.signin-social-btn:hover {
-  background: rgba(255,255,255,.09);
-  border-color: rgba(255,255,255,.15);
-  color: rgba(255,255,255,.88);
-}
-.signin-social-btn:active {
-  transform: scale(.98);
-}
-
-/* ── Password strength ────────────────────────────────────── */
-.pw-strength-seg {
-  flex: 1;
-  height: 2px;
-  border-radius: 99px;
-  background: rgba(255,255,255,.08);
-  transition: background .3s ease;
-}
-
-/* ── Footer ──────────────────────────────────────────────── */
-.signin-footer {
-  text-align: center;
-  font-size: 11px;
-  color: rgba(255,255,255,.18);
-  margin-top: 22px;
-  margin-bottom: 0;
-  font-family: var(--font, 'Inter', sans-serif);
-  letter-spacing: .2px;
-}
-
-/* ── Language bar ────────────────────────────────────────── */
-#auth-lang-bar button {
-  padding: 5px 10px !important;
-  border-radius: 99px !important;
-  font-size: 11px !important;
-  font-weight: 500 !important;
-  font-family: var(--font, 'Inter', sans-serif) !important;
-  border: none !important;
-  cursor: pointer !important;
-  transition: all .15s !important;
-  color: rgba(255,255,255,.35) !important;
-  background: transparent !important;
-  letter-spacing: .2px !important;
-}
-#auth-lang-bar button:hover {
-  color: rgba(255,255,255,.7) !important;
-  background: rgba(255,255,255,.06) !important;
-}
-#auth-lang-bar button[style*="rgba(124,58,237,.9)"],
-#auth-lang-bar button.active-lang {
-  background: rgba(255,255,255,.1) !important;
-  color: rgba(255,255,255,.88) !important;
-  box-shadow: none !important;
-}
-
-/* ── Auth particles — hide ───────────────────────────────── */
-#auth-particles { display: none !important; }
-
-/* ── Mobile ──────────────────────────────────────────────── */
-@media (max-width: 480px) {
-  .signin-card {
-    padding: 28px 22px 22px;
-    border-radius: 18px;
-  }
-  .signin-title { font-size: 18px !important; }
-}
-
-/* ════════════════════════════════════════════════════════════
-   FIN SIGN IN 2026
-   ════════════════════════════════════════════════════════════ */
 
 
 /* ── CRITICAL LAYOUT FIXES ────────────────────────────────── */
@@ -5913,6 +5256,1183 @@ hr{border:none;border-top:1px solid rgba(255,255,255,.05);margin:16px 0}
   position:relative!important;
   z-index:1!important;
 }
+
+
+/* ════════════════════════════════════════════════════════════
+   ETHONE 2026 — Complete Design System
+   Linear × Vercel × Apple × Stripe
+   ════════════════════════════════════════════════════════════ */
+
+/* ── RESET & BASE ─────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;tab-size:4}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:var(--font);font-size:13.5px;line-height:1.55;
+  display:flex;min-height:100vh;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+}
+::selection{background:rgba(139,92,246,.25);color:#fafaf9}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;font-family:inherit;border:none;background:none}
+img,svg{display:block;max-width:100%}
+hr{border:none;border-top:1px solid var(--border);margin:16px 0}
+
+/* ── SCROLLBAR ─────────────────────────────────────────────── */
+*{scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.2)}
+
+/* ════════════════════════════════════════════════════════════
+   LAYOUT
+   ════════════════════════════════════════════════════════════ */
+.sidebar{
+  width:var(--sb-w);flex-shrink:0;background:var(--sb-bg);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;height:100vh;
+  position:sticky;top:0;overflow:hidden;
+  transition:width .2s var(--ease);z-index:3;
+}
+.main{
+  flex:1;min-width:0;padding:0 32px 48px;
+  min-height:100vh;position:relative;z-index:3;
+  overflow-x:hidden;
+}
+
+/* ════════════════════════════════════════════════════════════
+   SIDEBAR COMPONENTS
+   ════════════════════════════════════════════════════════════ */
+.logo{
+  display:flex;align-items:center;gap:10px;
+  padding:16px 14px 12px;
+  border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.logo-icon{
+  width:28px;height:28px;border-radius:8px;
+  background:var(--grad-primary);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;box-shadow:0 2px 8px rgba(139,92,246,.3);
+}
+.logo-text{
+  font-size:13px!important;font-weight:800!important;
+  letter-spacing:2px!important;color:var(--text)!important;
+  font-family:var(--font-display)!important;
+  background:none!important;-webkit-text-fill-color:initial!important;
+}
+.nav-section{
+  display:flex;flex-direction:column;
+  padding:4px 8px;gap:1px;
+}
+.nav-section-label{
+  font-size:9px!important;font-weight:700!important;
+  letter-spacing:1.5px!important;text-transform:uppercase!important;
+  color:var(--muted2)!important;padding:8px 8px 3px!important;
+  font-family:var(--mono)!important;
+}
+.nav-item{
+  display:flex;align-items:center;gap:9px;
+  padding:6px 8px;border-radius:8px;
+  font-size:12.5px;font-weight:500;color:var(--muted);
+  transition:all .13s;border:1px solid transparent;
+  cursor:pointer;user-select:none;white-space:nowrap;overflow:hidden;
+}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,.045)}
+.nav-item.active{
+  color:var(--accent-dim)!important;
+  background:rgba(139,92,246,.09)!important;
+  border-color:rgba(139,92,246,.12)!important;
+  font-weight:600!important;
+  box-shadow:inset 3px 0 0 var(--accent)!important;
+}
+.nav-icon,.nav-icon-svg{width:14px;height:14px;flex-shrink:0;opacity:.6}
+.nav-item.active .nav-icon,.nav-item.active .nav-icon-svg{opacity:1}
+.sidebar-footer{
+  margin-top:auto;padding:8px 10px 10px;
+  border-top:1px solid var(--border);
+  display:flex;flex-direction:column;gap:5px;
+  overflow:hidden;flex-shrink:0;
+}
+.user-card{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 10px;border-radius:9px;
+  cursor:pointer;transition:background .13s;
+  border:1px solid transparent;margin-bottom:0;
+}
+.user-card:hover{background:rgba(255,255,255,.05);border-color:var(--border)}
+.sidebar-avatar{
+  width:28px;height:28px;border-radius:8px;
+  background:var(--grad-primary);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;overflow:hidden;flex-shrink:0;
+}
+.user-name{font-size:12.5px;font-weight:600;color:var(--text)}
+.user-role{font-size:10.5px;color:var(--muted);margin-top:0px}
+
+/* ════════════════════════════════════════════════════════════
+   TOPBAR
+   ════════════════════════════════════════════════════════════ */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 0 16px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:22px;gap:16px;
+}
+.topbar-actions{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.page-title{
+  font-size:17px!important;font-weight:700!important;
+  letter-spacing:-.35px!important;color:var(--text)!important;
+  font-family:var(--font-display)!important;
+  margin:0!important;line-height:1.2!important;
+}
+.page-subtitle{
+  font-size:12px!important;color:var(--muted)!important;
+  margin-top:2px!important;font-weight:400!important;
+}
+.section-title{
+  font-size:17px!important;font-weight:700!important;
+  letter-spacing:-.35px!important;color:var(--text)!important;
+  font-family:var(--font-display)!important;
+}
+.section-eyebrow{
+  font-size:9.5px!important;font-weight:700!important;
+  letter-spacing:1.8px!important;text-transform:uppercase!important;
+  color:rgba(139,92,246,.55)!important;font-family:var(--mono)!important;
+  margin-bottom:2px!important;
+}
+
+/* ════════════════════════════════════════════════════════════
+   DASHBOARD STAT CARDS
+   ════════════════════════════════════════════════════════════ */
+.stats-row{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:8px;margin-bottom:14px;
+}
+.stat-card{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--r-card);
+  padding:14px 16px;cursor:pointer;
+  transition:all .18s var(--ease);
+  position:relative;overflow:hidden;
+}
+.stat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--card-accent,rgba(139,92,246,.4)),transparent);
+}
+.stat-card:hover{
+  background:var(--bg3);border-color:var(--border2);
+  transform:translateY(-1px);box-shadow:var(--sh);
+}
+.stat-card-icon{
+  width:24px;height:24px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:10px;opacity:.85;
+}
+.stat-value{
+  font-size:26px!important;font-weight:800!important;
+  letter-spacing:-1.5px!important;font-family:var(--mono)!important;
+  color:var(--text)!important;line-height:1!important;margin-bottom:4px!important;
+}
+.clock-display{
+  font-size:22px!important;font-weight:700!important;
+  letter-spacing:-1px!important;font-family:var(--mono)!important;
+  color:var(--text)!important;line-height:1!important;margin-bottom:4px!important;
+}
+.stat-label{
+  font-size:9.5px!important;font-weight:600!important;
+  letter-spacing:.7px!important;text-transform:uppercase!important;
+  color:var(--muted)!important;
+}
+.stat-sub{font-size:10px!important;color:var(--muted2)!important;margin-top:2px!important}
+.stat-sub.up{color:rgba(16,185,129,.8)!important}
+.stat-sub.down{color:rgba(239,68,68,.7)!important}
+
+/* ════════════════════════════════════════════════════════════
+   PANELS
+   ════════════════════════════════════════════════════════════ */
+.panel{
+  background:var(--bg2)!important;
+  border:1px solid var(--border)!important;
+  border-radius:var(--r-panel)!important;
+  padding:16px 18px!important;
+  transition:border-color .15s,box-shadow .15s!important;
+}
+.panel:hover{
+  border-color:var(--border2)!important;
+  box-shadow:0 2px 12px rgba(0,0,0,.2)!important;
+}
+.panel-header{
+  display:flex!important;align-items:center!important;
+  justify-content:space-between!important;
+  margin-bottom:12px!important;padding-bottom:10px!important;
+  border-bottom:1px solid var(--border)!important;
+}
+.panel-title{
+  display:flex!important;align-items:center!important;gap:7px!important;
+  font-size:10.5px!important;font-weight:700!important;
+  letter-spacing:.7px!important;text-transform:uppercase!important;
+  color:var(--muted)!important;
+}
+.panel-title-icon{
+  width:20px!important;height:20px!important;
+  border-radius:5px!important;display:flex!important;
+  align-items:center!important;justify-content:center!important;flex-shrink:0!important;
+}
+
+/* ════════════════════════════════════════════════════════════
+   BUTTONS
+   ════════════════════════════════════════════════════════════ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:7px 13px;border-radius:9px;
+  font-size:12.5px;font-weight:600;font-family:var(--font);
+  transition:all .15s var(--ease);border:1px solid transparent;
+  line-height:1;white-space:nowrap;cursor:pointer;
+}
+.btn-primary{
+  background:var(--accent)!important;color:#fff!important;
+  border-color:transparent!important;
+  box-shadow:0 1px 3px rgba(139,92,246,.3)!important;
+}
+.btn-primary:hover{
+  background:var(--accent-h)!important;
+  transform:translateY(-1px)!important;
+  box-shadow:0 4px 14px rgba(139,92,246,.35)!important;
+}
+.btn-primary:active{transform:scale(.98)!important}
+.btn-ghost{
+  background:rgba(255,255,255,.05)!important;
+  border:1px solid var(--border)!important;color:var(--muted)!important;
+}
+.btn-ghost:hover{
+  background:rgba(255,255,255,.08)!important;
+  color:var(--text)!important;border-color:var(--border2)!important;
+}
+.btn-danger{
+  background:var(--red-s)!important;border:1px solid rgba(239,68,68,.2)!important;
+  color:var(--red)!important;
+}
+.btn-danger:hover{background:rgba(239,68,68,.14)!important}
+
+/* ════════════════════════════════════════════════════════════
+   INPUTS
+   ════════════════════════════════════════════════════════════ */
+input[type="text"],input[type="password"],input[type="email"],
+input[type="number"],input[type="search"],input[type="url"],
+textarea,select,.modal-input,.input{
+  background:rgba(255,255,255,.05)!important;
+  border:1px solid var(--border)!important;
+  border-radius:9px!important;color:var(--text)!important;
+  font-size:13px!important;font-family:var(--font)!important;
+  transition:border-color .15s,box-shadow .15s,background .15s!important;
+  outline:none!important;
+}
+input:focus,textarea:focus,select:focus,
+.modal-input:focus,.input:focus{
+  border-color:rgba(139,92,246,.5)!important;
+  box-shadow:0 0 0 3px rgba(139,92,246,.1)!important;
+  background:rgba(139,92,246,.04)!important;
+}
+input::placeholder,textarea::placeholder{color:var(--muted2)!important}
+label{
+  font-size:11.5px!important;font-weight:600!important;
+  color:var(--muted)!important;display:block!important;
+  margin-bottom:6px!important;
+}
+
+/* ════════════════════════════════════════════════════════════
+   MODALS
+   ════════════════════════════════════════════════════════════ */
+.modal-overlay{
+  background:rgba(0,0,0,.6)!important;
+  backdrop-filter:blur(4px)!important;
+}
+.modal{
+  background:#111113!important;
+  border:1px solid var(--border)!important;
+  border-radius:var(--r-modal)!important;
+  box-shadow:0 24px 80px rgba(0,0,0,.7)!important;
+  animation:modalIn .2s var(--ease) both!important;
+}
+@keyframes modalIn{
+  from{opacity:0;transform:scale(.97) translateY(6px)}
+  to{opacity:1;transform:none}
+}
+.modal-header{
+  padding:18px 22px 14px!important;
+  border-bottom:1px solid var(--border)!important;
+}
+.modal-title{
+  font-size:15px!important;font-weight:700!important;
+  letter-spacing:-.2px!important;
+}
+.modal-body{padding:16px 22px!important}
+.modal-footer{
+  padding:14px 22px 18px!important;
+  border-top:1px solid var(--border)!important;
+  display:flex!important;gap:8px!important;justify-content:flex-end!important;
+}
+
+/* ════════════════════════════════════════════════════════════
+   TOASTS
+   ════════════════════════════════════════════════════════════ */
+#toast-container{
+  position:fixed;bottom:24px;right:24px;
+  z-index:99999;display:flex;flex-direction:column;gap:7px;
+}
+.toast{
+  background:#1a1a1d!important;
+  border:1px solid rgba(255,255,255,.1)!important;
+  border-radius:11px!important;padding:10px 14px!important;
+  font-size:12.5px!important;font-weight:500!important;
+  box-shadow:0 8px 28px rgba(0,0,0,.4)!important;
+  display:flex!important;align-items:center!important;gap:9px!important;
+  min-width:220px!important;max-width:340px!important;
+}
+.toast.success{border-color:rgba(16,185,129,.25)!important;color:#6ee7b7!important}
+.toast.error{border-color:rgba(239,68,68,.25)!important;color:#fca5a5!important}
+.toast.info{border-color:rgba(59,130,246,.25)!important;color:#93c5fd!important}
+
+/* ════════════════════════════════════════════════════════════
+   TABLES
+   ════════════════════════════════════════════════════════════ */
+table{width:100%;border-collapse:collapse}
+thead th{
+  font-size:10px!important;font-weight:700!important;
+  letter-spacing:.7px!important;text-transform:uppercase!important;
+  color:var(--muted)!important;padding:10px 14px!important;
+  border-bottom:1px solid var(--border)!important;
+  text-align:left!important;background:var(--bg)!important;
+  position:sticky;top:0;z-index:1;
+}
+tbody td{
+  font-size:13px!important;padding:9px 14px!important;
+  border-bottom:1px solid rgba(255,255,255,.035)!important;
+}
+tbody tr:hover td{background:rgba(255,255,255,.02)!important}
+tbody tr:last-child td{border-bottom:none!important}
+
+/* ════════════════════════════════════════════════════════════
+   TODOS
+   ════════════════════════════════════════════════════════════ */
+.todo-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:9px 11px;border-radius:8px;
+  transition:background .13s;border:1px solid transparent;
+}
+.todo-item:hover{background:rgba(255,255,255,.03);border-color:var(--border)}
+.todo-check{
+  width:16px;height:16px;border:1.5px solid rgba(255,255,255,.2);
+  border-radius:4px;cursor:pointer;flex-shrink:0;
+  transition:all .15s;margin-top:1px;
+  display:flex;align-items:center;justify-content:center;
+}
+.todo-check.checked{background:var(--accent);border-color:var(--accent)}
+.todo-text{font-size:13px;color:var(--text);line-height:1.4}
+.todo-meta{font-size:10.5px;color:var(--muted2);margin-top:2px}
+.done-item .todo-text{text-decoration:line-through;color:var(--muted2)!important}
+
+/* ════════════════════════════════════════════════════════════
+   KANBAN
+   ════════════════════════════════════════════════════════════ */
+.kanban-board{display:flex;gap:10px;overflow-x:auto;padding-bottom:12px}
+.kanban-col{
+  flex-shrink:0;width:270px;
+  background:var(--bg2)!important;
+  border:1px solid var(--border)!important;
+  border-radius:var(--r-panel)!important;overflow:hidden!important;
+}
+.kanban-col-header{
+  padding:11px 14px!important;
+  border-bottom:1px solid var(--border)!important;
+  display:flex!important;align-items:center!important;
+  justify-content:space-between!important;
+  background:rgba(255,255,255,.015)!important;
+}
+.kanban-col-title{
+  font-size:10.5px!important;font-weight:700!important;
+  letter-spacing:.6px!important;text-transform:uppercase!important;color:var(--muted)!important;
+}
+.kanban-col-count{
+  font-size:10.5px;font-family:var(--mono);color:var(--muted2);
+  background:rgba(255,255,255,.06);border-radius:5px;padding:1px 6px;
+}
+.kanban-card{
+  background:rgba(255,255,255,.035)!important;
+  border:1px solid var(--border)!important;
+  border-radius:9px!important;padding:10px 12px!important;
+  margin:7px!important;cursor:grab!important;
+  transition:all .15s var(--ease)!important;
+}
+.kanban-card:hover{
+  background:rgba(255,255,255,.06)!important;
+  transform:translateY(-1px)!important;box-shadow:var(--sh-sm)!important;
+}
+.kanban-card.dragging{opacity:.6!important;transform:scale(.97)!important}
+
+/* ════════════════════════════════════════════════════════════
+   HABITS
+   ════════════════════════════════════════════════════════════ */
+.habit-row{padding:10px 11px;border-radius:9px;transition:background .13s}
+.habit-row:hover{background:rgba(255,255,255,.03)}
+.habit-day{
+  width:13px;height:13px;border-radius:3px;
+  background:rgba(255,255,255,.06);
+  transition:all .13s;cursor:pointer;flex-shrink:0;
+}
+.habit-day:hover{background:rgba(139,92,246,.35)!important}
+.habit-day.done{background:rgba(139,92,246,.5)!important;box-shadow:0 0 4px rgba(139,92,246,.2)!important}
+.habit-day.today{box-shadow:0 0 0 1.5px rgba(139,92,246,.5)!important}
+
+/* ════════════════════════════════════════════════════════════
+   NOTES
+   ════════════════════════════════════════════════════════════ */
+.note-item{
+  background:var(--bg2)!important;border:1px solid var(--border)!important;
+  border-radius:11px!important;padding:13px 15px!important;
+  cursor:pointer!important;transition:all .15s var(--ease)!important;
+}
+.note-item:hover{
+  background:var(--bg3)!important;border-color:var(--border2)!important;
+  transform:translateY(-1px)!important;
+}
+.note-title{font-size:13px!important;font-weight:600!important;margin-bottom:4px!important}
+.note-preview{font-size:11.5px!important;color:var(--muted)!important;line-height:1.5!important}
+
+/* ════════════════════════════════════════════════════════════
+   GOALS + JOURNAL + COUNTDOWN
+   ════════════════════════════════════════════════════════════ */
+.goal-card,.journal-entry,.countdown-card{
+  background:var(--bg2)!important;border:1px solid var(--border)!important;
+  border-radius:var(--r-panel)!important;padding:14px 16px!important;
+  transition:all .15s!important;margin-bottom:8px!important;
+}
+.goal-card:hover,.journal-entry:hover,.countdown-card:hover{
+  border-color:var(--border2)!important;transform:translateY(-1px)!important;
+}
+.goal-progress-fill{
+  background:linear-gradient(90deg,var(--accent),var(--accent-light));
+  border-radius:99px;height:100%;transition:width .5s var(--ease);
+}
+.countdown-number{
+  font-size:32px!important;font-weight:800!important;
+  letter-spacing:-2px!important;font-family:var(--mono)!important;
+}
+.journal-date{
+  font-size:9.5px;font-weight:700;letter-spacing:.8px;
+  text-transform:uppercase;color:rgba(139,92,246,.55);
+  font-family:var(--mono);margin-bottom:6px;
+}
+
+/* ════════════════════════════════════════════════════════════
+   SETTINGS
+   ════════════════════════════════════════════════════════════ */
+.settings-card{
+  background:var(--bg2)!important;border:1px solid var(--border)!important;
+  border-radius:var(--r-panel)!important;overflow:hidden!important;
+  margin-bottom:10px!important;
+}
+.settings-section-header{
+  padding:13px 17px!important;
+  border-bottom:1px solid var(--border)!important;
+  background:rgba(255,255,255,.015)!important;
+}
+.settings-section-title{
+  font-size:12.5px!important;font-weight:700!important;color:var(--text)!important;
+}
+.settings-row{
+  padding:12px 17px!important;
+  border-bottom:1px solid rgba(255,255,255,.04)!important;
+  display:flex!important;align-items:center!important;
+  justify-content:space-between!important;gap:14px!important;
+  transition:background .13s!important;
+}
+.settings-row:last-child{border-bottom:none!important}
+.settings-row:hover{background:rgba(255,255,255,.02)!important}
+.settings-label{font-size:12.5px!important;font-weight:500!important;color:var(--text)!important}
+.settings-desc{font-size:11.5px!important;color:var(--muted)!important;margin-top:2px!important}
+
+/* ════════════════════════════════════════════════════════════
+   EMPTY STATES
+   ════════════════════════════════════════════════════════════ */
+.empty-state{
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:48px 24px;text-align:center;
+}
+.empty-icon{
+  width:44px;height:44px;background:rgba(255,255,255,.05);
+  border:1px solid var(--border);border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:12px;opacity:.7;
+}
+.empty-label{font-size:13.5px;font-weight:600;color:var(--text);margin-bottom:4px}
+.empty-sub{font-size:12px;color:var(--muted);line-height:1.5;max-width:280px}
+
+/* ════════════════════════════════════════════════════════════
+   SKELETON LOADERS
+   ════════════════════════════════════════════════════════════ */
+.skeleton{
+  background:linear-gradient(90deg,
+    rgba(255,255,255,.04) 25%,
+    rgba(255,255,255,.08) 50%,
+    rgba(255,255,255,.04) 75%);
+  background-size:200% 100%;
+  animation:skeleton .9s linear infinite;border-radius:7px;
+}
+@keyframes skeleton{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ════════════════════════════════════════════════════════════
+   CONNECTIONS + GAMING CARDS
+   ════════════════════════════════════════════════════════════ */
+.conn-card,.game-card{
+  background:var(--bg2)!important;border:1px solid var(--border)!important;
+  border-radius:var(--r-panel)!important;padding:16px 18px!important;
+  transition:all .15s var(--ease)!important;
+}
+.conn-card:hover,.game-card:hover{
+  border-color:var(--border2)!important;transform:translateY(-1px)!important;
+  box-shadow:var(--sh-sm)!important;
+}
+.conn-card-connected{
+  border-color:rgba(16,185,129,.2)!important;
+  background:rgba(16,185,129,.04)!important;
+}
+.status-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.status-dot.online{background:#22c55e;box-shadow:0 0 5px rgba(34,197,94,.4)}
+.status-dot.offline{background:rgba(255,255,255,.2)}
+
+/* ════════════════════════════════════════════════════════════
+   BUDGET
+   ════════════════════════════════════════════════════════════ */
+.budget-cat-bar{height:3px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:5px}
+.budget-cat-fill{height:100%;border-radius:99px;transition:width .5s var(--ease)}
+
+/* ════════════════════════════════════════════════════════════
+   CALENDAR
+   ════════════════════════════════════════════════════════════ */
+.cal-day{
+  border-radius:6px!important;padding:5px!important;
+  transition:all .13s!important;cursor:pointer!important;font-size:12px!important;
+  text-align:center!important;
+}
+.cal-day:hover{background:rgba(255,255,255,.06)!important}
+.cal-day.today{background:rgba(139,92,246,.15)!important;color:var(--accent-dim)!important;font-weight:700!important}
+.cal-day.has-event::after{
+  content:'';display:block;width:3px;height:3px;
+  border-radius:50%;background:var(--accent);margin:2px auto 0;
+}
+
+/* ════════════════════════════════════════════════════════════
+   ACTIVITY HEATMAP
+   ════════════════════════════════════════════════════════════ */
+.activity-block{background:rgba(139,92,246,.1)!important;border-radius:2px!important;transition:all .1s!important;cursor:pointer}
+.activity-block:hover{background:rgba(139,92,246,.45)!important;transform:scale(1.15)!important}
+.activity-block.lvl1{background:rgba(139,92,246,.15)!important}
+.activity-block.lvl2{background:rgba(139,92,246,.3)!important}
+.activity-block.lvl3{background:rgba(139,92,246,.5)!important}
+.activity-block.lvl4{background:rgba(139,92,246,.7)!important}
+
+/* ════════════════════════════════════════════════════════════
+   BADGES + TAGS
+   ════════════════════════════════════════════════════════════ */
+.badge{
+  display:inline-flex;align-items:center;
+  font-size:10px;font-weight:700;letter-spacing:.3px;
+  padding:2px 7px;border-radius:99px;
+}
+.badge-accent{background:rgba(139,92,246,.12);color:var(--accent-dim);border:1px solid rgba(139,92,246,.2)}
+.badge-green{background:rgba(16,185,129,.1);color:#6ee7b7;border:1px solid rgba(16,185,129,.2)}
+.badge-red{background:rgba(239,68,68,.1);color:#fca5a5;border:1px solid rgba(239,68,68,.2)}
+.badge-yellow{background:rgba(245,158,11,.1);color:#fde68a;border:1px solid rgba(245,158,11,.2)}
+
+/* ════════════════════════════════════════════════════════════
+   POMODORO
+   ════════════════════════════════════════════════════════════ */
+#pomo-ring{filter:drop-shadow(0 0 6px rgba(139,92,246,.2))!important}
+
+/* ════════════════════════════════════════════════════════════
+   AI CHAT
+   ════════════════════════════════════════════════════════════ */
+.ai-message{
+  padding:11px 15px!important;border-radius:11px!important;
+  font-size:13.5px!important;line-height:1.65!important;max-width:78%!important;
+}
+.ai-message.user{
+  background:rgba(139,92,246,.12)!important;
+  border:1px solid rgba(139,92,246,.18)!important;margin-left:auto!important;
+}
+.ai-message.assistant{
+  background:rgba(255,255,255,.04)!important;
+  border:1px solid var(--border)!important;margin-right:auto!important;
+}
+
+/* ════════════════════════════════════════════════════════════
+   GALLERY
+   ════════════════════════════════════════════════════════════ */
+.gallery-item{
+  border-radius:11px!important;overflow:hidden!important;
+  border:1px solid var(--border)!important;
+  transition:all .15s var(--ease)!important;cursor:pointer;
+}
+.gallery-item:hover{transform:scale(1.02)!important;box-shadow:var(--sh)!important}
+
+/* ════════════════════════════════════════════════════════════
+   MOBILE BOTTOM NAV
+   ════════════════════════════════════════════════════════════ */
+.mob-nav-bar{
+  background:rgba(9,9,11,.96)!important;
+  border-top:1px solid var(--border)!important;
+  backdrop-filter:blur(12px)!important;
+}
+.mob-nav-btn.active{color:var(--accent-light)!important}
+
+/* ════════════════════════════════════════════════════════════
+   REVEAL ANIMATIONS
+   ════════════════════════════════════════════════════════════ */
+.reveal-hidden{opacity:0;transform:translateY(10px)}
+.reveal-visible{
+  opacity:1!important;transform:none!important;
+  transition:opacity .4s var(--ease),transform .4s var(--ease)!important;
+}
+
+/* ════════════════════════════════════════════════════════════
+   PROFILE BANNER
+   ════════════════════════════════════════════════════════════ */
+.profile-banner{
+  border-radius:var(--r-panel)!important;overflow:hidden!important;
+  min-height:80px!important;max-height:96px!important;
+  border:1px solid var(--border)!important;margin-bottom:0!important;
+}
+.profile-banner-empty{
+  background:linear-gradient(135deg,rgba(139,92,246,.06),rgba(109,40,217,.03))!important;
+}
+.profile-banner-name{font-size:14px!important;font-weight:700!important;font-family:var(--font-display)!important}
+.profile-banner-role{font-size:11px!important;color:var(--muted)!important}
+.profile-banner-avatar{width:38px!important;height:38px!important;border-radius:9px!important}
+
+/* ════════════════════════════════════════════════════════════
+   QUICK ACTIONS
+   ════════════════════════════════════════════════════════════ */
+#quick-actions-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+#quick-actions-bar button{
+  padding:5px 11px!important;font-size:11.5px!important;
+  font-weight:600!important;border-radius:99px!important;
+  transition:all .15s var(--ease)!important;
+  display:inline-flex!important;align-items:center!important;gap:5px!important;
+}
+#quick-actions-bar button:hover{transform:translateY(-1px)!important;box-shadow:var(--sh-sm)!important}
+
+/* ════════════════════════════════════════════════════════════
+   SEARCH BAR
+   ════════════════════════════════════════════════════════════ */
+.search-bar{
+  display:flex;align-items:center;gap:7px;
+  background:rgba(255,255,255,.05)!important;
+  border:1px solid var(--border)!important;
+  border-radius:9px!important;padding:6px 11px!important;cursor:pointer;
+  transition:all .15s!important;
+}
+.search-bar:hover{border-color:var(--border2)!important;background:rgba(255,255,255,.07)!important}
+.search-bar input{
+  background:transparent!important;border:none!important;
+  font-size:12.5px!important;color:var(--muted)!important;
+  width:130px!important;cursor:pointer!important;outline:none!important;
+}
+
+/* ════════════════════════════════════════════════════════════
+   CRITICAL: Z-INDEX + LAYOUT FIX
+   ════════════════════════════════════════════════════════════ */
+.sidebar{position:relative!important;z-index:3!important;overflow:hidden!important}
+.main{position:relative!important;z-index:3!important}
+#nexus-bg-layer{z-index:1!important}
+#bg-canvas{z-index:1!important}
+.tab-content.active{display:block!important;position:relative!important}
+
+/* ════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ════════════════════════════════════════════════════════════ */
+@media(min-width:1100px){#overview-grid-main{grid-template-columns:1fr 300px!important}}
+@media(max-width:1100px){
+  .stats-row{grid-template-columns:repeat(2,1fr)!important}
+  #overview-grid-main{grid-template-columns:1fr!important}
+}
+@media(max-width:768px){
+  .sidebar{position:fixed!important;transform:translateX(-100%);transition:transform .25s var(--ease)!important}
+  .sidebar.mobile-open{transform:translateX(0)!important}
+  .main{padding:0 16px 80px!important}
+  .stats-row{grid-template-columns:repeat(2,1fr)!important;gap:6px!important}
+  .topbar{padding:14px 0!important}
+}
+
+/* ════════════════════════════════════════════════════════════
+   TOGGLE SWITCH
+   ════════════════════════════════════════════════════════════ */
+.toggle-switch{
+  width:34px;height:18px;background:rgba(255,255,255,.1);
+  border-radius:99px;position:relative;cursor:pointer;
+  transition:background .18s;border:none;flex-shrink:0;
+}
+.toggle-switch.on{background:var(--accent)}
+.toggle-switch::after{
+  content:'';width:12px;height:12px;border-radius:50%;background:#fff;
+  position:absolute;top:3px;left:3px;
+  transition:transform .18s var(--ease);box-shadow:0 1px 3px rgba(0,0,0,.3);
+}
+.toggle-switch.on::after{transform:translateX(16px)}
+
+/* ════════════════════════════════════════════════════════════
+   ITEM ROWS
+   ════════════════════════════════════════════════════════════ */
+.item-row{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 10px;border-radius:8px;
+  transition:background .13s;cursor:pointer;
+}
+.item-row:hover{background:rgba(255,255,255,.04)!important}
+
+/* ════════════════════════════════════════════════════════════
+   SPINNERS + LOADERS
+   ════════════════════════════════════════════════════════════ */
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{
+  width:18px;height:18px;border:2px solid rgba(255,255,255,.1);
+  border-top-color:var(--accent);border-radius:50%;
+  animation:spin .7s linear infinite;display:inline-block;
+}
+
+/* ════════════════════════════════════════════════════════════
+   PAGE TRANSITION
+   ════════════════════════════════════════════════════════════ */
+.tab-content.page-entering{animation:pageIn .18s var(--ease) both}
+@keyframes pageIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+
+/* ════════════════════════════════════════════════════════════
+   FIN — ETHONE 2026 DESIGN SYSTEM
+   ════════════════════════════════════════════════════════════ */
+
+
+/* ════ ETHONE 2026 — Final Fixes ════════════════════════════ */
+
+/* Background correct */
+body{background:var(--bg)!important}
+#auth-screen{background:#09090b!important}
+
+/* Sidebar footer overflow fix */
+.sidebar-footer{
+  overflow:hidden!important;flex-shrink:0!important;
+  max-height:52vh!important;
+}
+
+/* Logo text fix */
+.logo-text{
+  font-size:13px!important;font-weight:800!important;
+  letter-spacing:2px!important;
+  color:var(--text)!important;
+  font-family:var(--font-display)!important;
+  background:none!important;
+  -webkit-text-fill-color:var(--text)!important;
+  background-clip:unset!important;
+  -webkit-background-clip:unset!important;
+}
+
+/* Profile banner constraint */
+#profile-banner-level{
+  display:flex!important;flex-direction:column!important;gap:4px!important;
+  min-width:85px!important;
+  background:rgba(0,0,0,.25)!important;
+  border:1px solid rgba(255,255,255,.07)!important;
+  border-radius:9px!important;padding:7px 11px!important;
+}
+
+/* XP bar */
+#profile-banner-xp-bar{
+  transition:width .7s var(--ease)!important;
+}
+
+/* Overview grid */
+@media(min-width:1100px){
+  #overview-grid-main{
+    display:grid!important;
+    grid-template-columns:1fr 300px!important;
+    gap:10px!important;align-items:start!important;
+  }
+}
+
+/* Panel action buttons */
+.panel-action{
+  font-size:11px!important;font-weight:600!important;
+  color:var(--accent-light)!important;
+  background:rgba(139,92,246,.08)!important;
+  border:1px solid rgba(139,92,246,.15)!important;
+  border-radius:7px!important;padding:4px 10px!important;
+  transition:all .13s!important;cursor:pointer!important;
+}
+.panel-action:hover{background:rgba(139,92,246,.14)!important}
+
+/* Better input padding */
+input[type="text"]:not(.signin-input),
+input[type="password"]:not(.signin-input),
+input[type="email"]:not(.signin-input),
+input[type="search"]:not(.signin-input),
+textarea:not(.signin-input){
+  padding:8px 12px!important;
+}
+
+/* Stats row */
+@media(max-width:900px){.stats-row{grid-template-columns:repeat(2,1fr)!important}}
+
+/* Sidebar compact mode fix */
+.sidebar.compact{width:52px!important}
+.sidebar.compact .logo-text,
+.sidebar.compact .nav-label-text,
+.sidebar.compact .user-info,
+.sidebar.compact .nav-section-label{display:none!important}
+.sidebar.compact .nav-item{padding:8px!important;justify-content:center!important}
+.sidebar.compact .nav-icon{opacity:.7}
+.sidebar.compact .logo{justify-content:center!important}
+
+/* Kanban board padding */
+.kanban-board{padding:4px 0 12px!important}
+
+/* Grid helpers */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:900px){.grid-2,.grid-3{grid-template-columns:1fr!important}}
+
+/* Section spacing */
+.overview-col-left,.overview-col-right{display:flex;flex-direction:column;gap:10px}
+
+/* Items wrapper */
+.items-wrapper{display:flex;flex-direction:column;gap:2px}
+
+/* Pinned panel */
+#pinned-panel{
+  background:rgba(139,92,246,.04)!important;
+  border-color:rgba(139,92,246,.1)!important;
+}
+
+/* Quick note textarea */
+#quick-note-input{
+  width:100%!important;background:transparent!important;
+  border:none!important;resize:none!important;
+  font-size:13px!important;color:var(--text)!important;
+  line-height:1.6!important;min-height:80px!important;
+  font-family:var(--font)!important;
+  box-shadow:none!important;padding:0!important;
+}
+#quick-note-input:focus{border:none!important;box-shadow:none!important;background:transparent!important}
+
+/* Budget amounts */
+.budget-amount{
+  font-size:34px!important;font-weight:800!important;
+  letter-spacing:-2px!important;font-family:var(--mono)!important;
+}
+
+/* Stat cards on mobile */
+@media(max-width:600px){
+  .stat-value{font-size:22px!important;letter-spacing:-1px!important}
+  .stats-row{gap:6px!important}
+}
+
+/* Sidebar active indicator position */
+.nav-item{position:relative!important}
+
+/* Hide bg animations on auth */
+body:has(#auth-screen[style*="flex"]) #nexus-bg-layer,
+body:has(#auth-screen[style*="flex"]) #bg-canvas{
+  opacity:0!important;pointer-events:none!important;
+}
+
+/* AI page full height */
+#page-ai{
+  display:none;height:calc(100vh - 60px)!important;
+  flex-direction:row!important;overflow:hidden!important;
+}
+#page-ai.active{display:flex!important}
+#page-ai .tab-content.active{display:flex!important}
+
+/* ════ FIN ETHONE 2026 Final Fixes ════════════════════════════ */
+
+
+/* ════════════════════════════════════════════════════════════
+   SIGN IN 2026 — Premium Centered Card
+   Linear · Vercel · Apple · Stripe
+   ════════════════════════════════════════════════════════════ */
+
+/* Background */
+#auth-screen{
+  background:
+    radial-gradient(ellipse at 50% 0%,rgba(139,92,246,.07) 0%,transparent 55%),
+    #09090b !important;
+}
+
+/* Particles: hide */
+#auth-particles{display:none!important}
+
+/* Entrance */
+@keyframes authIn{
+  from{opacity:0;transform:translateY(14px) scale(.99)}
+  to{opacity:1;transform:none}
+}
+
+/* ── CARD ─────────────────────────────────────────────────── */
+.sc{
+  width:100%;
+  background:#111113;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:28px;
+  padding:40px;
+  display:flex;flex-direction:column;gap:24px;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.4),
+    0 4px 8px rgba(0,0,0,.25),
+    0 20px 60px rgba(0,0,0,.45);
+}
+
+/* ── LOGO ─────────────────────────────────────────────────── */
+.sc-logo{
+  display:flex;align-items:center;gap:10px;
+}
+.sc-logo-icon{
+  width:34px;height:34px;border-radius:10px;
+  background:#8b5cf6;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  box-shadow:0 1px 0 rgba(255,255,255,.12) inset;
+}
+.sc-logo-name{
+  font-size:14px;font-weight:700;
+  letter-spacing:1.5px;color:rgba(255,255,255,.85);
+  font-family:'Syne',sans-serif;
+}
+
+/* ── HEADER ───────────────────────────────────────────────── */
+.sc-header{display:flex;flex-direction:column;gap:6px}
+.sc-title{
+  font-size:22px!important;font-weight:700!important;
+  letter-spacing:-.4px!important;
+  color:#fafaf9!important;
+  font-family:'Syne',sans-serif!important;
+  line-height:1.2!important;
+  margin:0!important;
+}
+.sc-desc{
+  font-size:13.5px!important;
+  color:rgba(250,250,249,.4)!important;
+  margin:0!important;line-height:1.4!important;
+}
+
+/* ── TABS ─────────────────────────────────────────────────── */
+.sc-tabs{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:4px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:14px;padding:4px;
+}
+.sc-tab{
+  height:40px;border:none;border-radius:11px;
+  font-size:13px;font-weight:500;
+  font-family:'Inter',sans-serif;
+  cursor:pointer;transition:all .16s ease;
+  color:rgba(255,255,255,.35);
+  background:transparent;
+}
+.sc-tab:hover:not(.sc-tab--active){
+  color:rgba(255,255,255,.65);
+  background:rgba(255,255,255,.05);
+}
+.sc-tab--active{
+  background:#1c1c1f;
+  color:rgba(255,255,255,.88)!important;
+  font-weight:600!important;
+  box-shadow:0 1px 4px rgba(0,0,0,.35);
+}
+
+/* ── FIELDS ───────────────────────────────────────────────── */
+.sc-field{display:flex;flex-direction:column;gap:7px}
+
+.sc-label-row{
+  display:flex;align-items:center;
+  justify-content:space-between;
+}
+.sc-label{
+  font-size:12.5px!important;
+  font-weight:500!important;
+  color:rgba(250,250,249,.5)!important;
+  margin:0!important;
+  display:block!important;
+}
+
+/* ── INPUTS ───────────────────────────────────────────────── */
+.sc-input{
+  width:100%!important;
+  height:56px!important;
+  background:rgba(255,255,255,.05)!important;
+  border:1px solid rgba(255,255,255,.09)!important;
+  border-radius:14px!important;
+  padding:0 16px!important;
+  font-size:14px!important;
+  font-family:'Inter',sans-serif!important;
+  color:#fafaf9!important;
+  transition:border-color .15s,box-shadow .15s,background .15s!important;
+  outline:none!important;
+  box-shadow:none!important;
+}
+.sc-input::placeholder{
+  color:rgba(255,255,255,.22)!important;
+  font-size:13.5px!important;
+}
+.sc-input:hover{
+  background:rgba(255,255,255,.07)!important;
+  border-color:rgba(255,255,255,.14)!important;
+}
+.sc-input:focus{
+  background:rgba(255,255,255,.06)!important;
+  border-color:rgba(139,92,246,.55)!important;
+  box-shadow:0 0 0 3px rgba(139,92,246,.12)!important;
+}
+
+/* input wrap for eye btn */
+.sc-input-wrap{position:relative}
+.sc-input-wrap .sc-input{padding-right:50px!important}
+
+/* Eye button */
+.sc-eye{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  background:none;border:none;
+  color:rgba(255,255,255,.25);
+  cursor:pointer;padding:4px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  transition:color .15s,background .15s;
+  width:28px;height:28px;
+}
+.sc-eye:hover{color:rgba(255,255,255,.6);background:rgba(255,255,255,.07)}
+
+/* ── LINKS ────────────────────────────────────────────────── */
+.sc-link{
+  background:none;border:none;
+  font-size:12px;font-family:'Inter',sans-serif;
+  color:rgba(255,255,255,.32);
+  cursor:pointer;padding:0;
+  transition:color .15s;
+}
+.sc-link:hover{color:rgba(255,255,255,.7)}
+
+/* ── REMEMBER ME ──────────────────────────────────────────── */
+.sc-remember{
+  display:flex;align-items:center;gap:9px;
+  cursor:pointer;user-select:none;
+  font-size:13px;color:rgba(255,255,255,.42);
+}
+
+/* ── ERROR ────────────────────────────────────────────────── */
+.sc-error{
+  font-size:12.5px;color:#fca5a5;
+  background:rgba(239,68,68,.08);
+  border:1px solid rgba(239,68,68,.18);
+  border-radius:10px;
+  padding:10px 14px;
+  line-height:1.4;
+  display:block;
+}
+.sc-error:empty{display:none}
+
+/* ── PRIMARY BUTTON ───────────────────────────────────────── */
+.sc-btn-primary{
+  width:100%;
+  height:56px;
+  background:#8b5cf6;
+  border:none;border-radius:14px;
+  color:#fff;font-size:14.5px;font-weight:600;
+  font-family:'Inter',sans-serif;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all .2s cubic-bezier(.22,1,.36,1);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.1) inset,
+    0 2px 10px rgba(139,92,246,.25);
+  letter-spacing:.1px;
+}
+.sc-btn-primary:hover{
+  background:#7c3aed;
+  transform:translateY(-2px);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.12) inset,
+    0 6px 20px rgba(139,92,246,.4);
+}
+.sc-btn-primary:active{transform:scale(.99);box-shadow:0 1px 0 rgba(255,255,255,.08) inset}
+
+/* ── DIVIDER ──────────────────────────────────────────────── */
+.sc-divider{
+  display:flex;align-items:center;gap:12px;
+}
+.sc-divider-line{flex:1;height:1px;background:rgba(255,255,255,.07)}
+.sc-divider-label{font-size:12px;color:rgba(255,255,255,.25);white-space:nowrap}
+
+/* ── SOCIAL BUTTONS ───────────────────────────────────────── */
+.sc-social{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sc-social-btn{
+  height:48px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  font-size:13.5px;font-weight:500;
+  font-family:'Inter',sans-serif;
+  color:rgba(255,255,255,.65);
+  cursor:pointer;
+  transition:all .16s ease;
+}
+.sc-social-btn:hover{
+  background:rgba(255,255,255,.09);
+  border-color:rgba(255,255,255,.16);
+  color:rgba(255,255,255,.9);
+}
+.sc-social-btn:active{transform:scale(.98)}
+
+/* ── PASSWORD STRENGTH ────────────────────────────────────── */
+.pw-seg{
+  flex:1;height:2px;border-radius:99px;
+  background:rgba(255,255,255,.08);
+  transition:background .25s;
+}
+
+/* ── FOOTER ───────────────────────────────────────────────── */
+.sc-footer{
+  text-align:center;
+  font-size:11.5px;color:rgba(255,255,255,.18);
+  font-family:'Inter',sans-serif;
+  letter-spacing:.2px;
+}
+
+/* ── LANG BAR ─────────────────────────────────────────────── */
+#auth-lang-bar button{
+  padding:5px 10px!important;border-radius:99px!important;
+  font-size:11px!important;font-weight:500!important;
+  font-family:'Inter',sans-serif!important;
+  border:none!important;cursor:pointer!important;
+  transition:all .15s!important;
+  color:rgba(255,255,255,.35)!important;
+  background:transparent!important;
+}
+#auth-lang-bar button:hover{
+  color:rgba(255,255,255,.7)!important;
+  background:rgba(255,255,255,.07)!important;
+}
+
+/* ── MOBILE ───────────────────────────────────────────────── */
+@media(max-width:500px){
+  .sc{padding:28px 22px;border-radius:22px;gap:20px}
+  .sc-title{font-size:20px!important}
+  .sc-input,.sc-btn-primary{height:52px!important}
+  .sc-social{grid-template-columns:1fr}
+}
+
+/* ════════════════════════════════════════════════════════════
+   FIN SIGN IN 2026
+   ════════════════════════════════════════════════════════════ */
 
 </style>
 </head>
@@ -5955,13 +6475,13 @@ hr{border:none;border-top:1px solid rgba(255,255,255,.05);margin:16px 0}
   </div>
 </div>
 
-<div id="auth-screen" style="position:fixed;inset:0;z-index:10002;display:none;align-items:center;justify-content:center;overflow:auto;background:#09090b;padding:20px">
+<div id="auth-screen" style="position:fixed;inset:0;z-index:10002;display:none;align-items:center;justify-content:center;overflow:auto;background:#09090b;padding:24px">
 
   <!-- Canvas particules -->
   <canvas id="auth-particles" style="position:absolute;inset:0;z-index:0;pointer-events:none"></canvas>
 
   <!-- Lang selector — 4 boutons simples en bas de l'écran -->
-  <div id="auth-lang-bar" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:100010;display:flex;gap:2px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:99px;padding:4px 6px;backdrop-filter:blur(8px)">
+  <div id="auth-lang-bar" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:100010;display:flex;gap:2px;padding:3px 5px;border-radius:99px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07)">
     <button onclick="setLang('fr');updateAuthLangBar()" data-l="fr" style="padding:5px 12px;border-radius:99px;border:none;cursor:pointer;font-size:11px;font-weight:700;font-family:var(--font);background:rgba(124,58,237,.85);color:#fff;transition:all .2s;letter-spacing:.3px">FR</button>
     <button onclick="setLang('en');updateAuthLangBar()" data-l="en" style="padding:5px 12px;border-radius:99px;border:none;cursor:pointer;font-size:11px;font-weight:700;font-family:var(--font);background:transparent;color:rgba(255,255,255,.4);transition:all .2s;letter-spacing:.3px">EN</button>
     <button onclick="setLang('es');updateAuthLangBar()" data-l="es" style="padding:5px 12px;border-radius:99px;border:none;cursor:pointer;font-size:11px;font-weight:700;font-family:var(--font);background:transparent;color:rgba(255,255,255,.4);transition:all .2s;letter-spacing:.3px">ES</button>
@@ -5977,154 +6497,149 @@ hr{border:none;border-top:1px solid rgba(255,255,255,.05);margin:16px 0}
   <div style="position:absolute;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:40px 40px"></div>
 
   <!-- Card centrale -->
-  <div id="auth-card" style="width:100%;max-width:400px;position:relative;z-index:1;animation:signInCardIn .3s cubic-bezier(.22,1,.36,1) both">
+  <div id="auth-card" style="width:100%;max-width:460px;position:relative;z-index:1;animation:authIn .3s cubic-bezier(.22,1,.36,1) both">
 
-    <!-- CARD PRINCIPAL -->
-    <div class="signin-card">
+  <!-- THE CARD -->
+  <div class="sc">
 
-      <!-- Logo + Brand -->
-      <div class="signin-brand">
-        <div class="signin-logo">
-          <svg width="18" height="18" viewBox="0 0 32 32" fill="none">
-            <path d="M8 8h16v3H11v4.5h12v3H11V23h13v3H8V8z" fill="white"/>
-          </svg>
-        </div>
-        <span class="signin-brand-name">ETHONE</span>
+    <!-- LOGO -->
+    <div class="sc-logo">
+      <div class="sc-logo-icon">
+        <svg width="16" height="16" viewBox="0 0 32 32" fill="none">
+          <path d="M8 8h16v3H11v4.5h12v3H11V23h13v3H8V8z" fill="white"/>
+        </svg>
       </div>
-
-      <!-- Header dynamique -->
-      <div class="signin-header" id="auth-form-header">
-        <h1 class="signin-title" id="auth-form-title" data-i18n="welcome_back">Welcome back</h1>
-        <p class="signin-subtitle" id="auth-form-sub" data-i18n="sign_in_sub">Sign in to your ETHONE dashboard</p>
-      </div>
-
-      <!-- Tabs -->
-      <div class="signin-tabs">
-        <button id="tab-login" class="signin-tab active" onclick="switchAuthTab('login')" data-i18n="sign_in">Sign in</button>
-        <button id="tab-register" class="signin-tab" onclick="switchAuthTab('register')" data-i18n="create_account">Create account</button>
-      </div>
-
-      <!-- ── LOGIN FORM ── -->
-      <div id="form-login">
-        <!-- Email -->
-        <div class="signin-field">
-          <label class="signin-label" for="auth-login-id" data-i18n="email_or_username">Email or username</label>
-          <input
-            id="auth-login-id"
-            type="text"
-            class="signin-input"
-            placeholder="you@example.com"
-            autocomplete="username"
-            onkeydown="if(event.key==='Enter')document.getElementById('auth-login-pw').focus()"
-          >
-        </div>
-
-        <!-- Password -->
-        <div class="signin-field">
-          <div class="signin-label-row">
-            <label class="signin-label" for="auth-login-pw" data-i18n="password">Password</label>
-            <button type="button" class="signin-link-btn" onclick="doForgotPassword()" data-i18n="forgot_password">Forgot password?</button>
-          </div>
-          <div class="signin-input-wrap">
-            <input
-              id="auth-login-pw"
-              type="password"
-              class="signin-input"
-              placeholder="••••••••"
-              autocomplete="current-password"
-              onkeydown="if(event.key==='Enter')doLogin()"
-            >
-            <button type="button" class="signin-eye" onclick="togglePwVis('auth-login-pw',this)" tabindex="-1" aria-label="Show password">
-              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 10s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/>
-                <circle cx="10" cy="10" r="2.5"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <!-- Remember me -->
-        <label class="signin-remember">
-          <input type="checkbox" id="auth-remember" style="width:14px;height:14px;accent-color:#7c3aed;cursor:pointer">
-          <span style="font-size:12.5px;color:rgba(255,255,255,.45);user-select:none">Remember me</span>
-        </label>
-
-        <!-- Primary button -->
-        <button type="button" id="auth-login-btn" class="signin-btn-primary" onclick="doLogin()" data-i18n="sign_in_btn">
-          Sign in
-        </button>
-
-        <!-- Divider -->
-        <div class="signin-divider">
-          <span class="signin-divider-line"></span>
-          <span class="signin-divider-text">or continue with</span>
-          <span class="signin-divider-line"></span>
-        </div>
-
-        <!-- Social buttons -->
-        <div class="signin-social-row">
-          <button type="button" class="signin-social-btn" onclick="toast('Google sign-in coming soon','info')" title="Google">
-            <svg viewBox="0 0 20 20" width="16" height="16">
-              <path d="M19.6 10.23c0-.68-.06-1.36-.17-2H10v3.79h5.4a4.6 4.6 0 0 1-2 3.02v2.5h3.23c1.9-1.75 3-4.33 3-7.31z" fill="#4285F4"/>
-              <path d="M10 20c2.7 0 4.97-.9 6.63-2.43l-3.23-2.5c-.9.6-2.04.96-3.4.96-2.6 0-4.82-1.76-5.6-4.12H1.07v2.58A10 10 0 0 0 10 20z" fill="#34A853"/>
-              <path d="M4.4 11.91A5.97 5.97 0 0 1 4.08 10c0-.66.12-1.3.32-1.91V5.51H1.07A10 10 0 0 0 0 10c0 1.61.39 3.14 1.07 4.49l3.33-2.58z" fill="#FBBC04"/>
-              <path d="M10 3.97c1.47 0 2.79.5 3.83 1.5l2.86-2.86C14.97 1 12.7 0 10 0A10 10 0 0 0 1.07 5.51l3.33 2.58C5.18 5.73 7.4 3.97 10 3.97z" fill="#EA4335"/>
-            </svg>
-            Google
-          </button>
-          <button type="button" class="signin-social-btn" onclick="toast('GitHub sign-in coming soon','info')" title="GitHub">
-            <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor">
-              <path fill-rule="evenodd" d="M10 0C4.48 0 0 4.48 0 10c0 4.42 2.87 8.17 6.84 9.49.5.09.68-.22.68-.48v-1.7C4.73 17.91 4.14 16 4.14 16c-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.56 9.56 0 0 1 10 4.84c.85 0 1.7.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10.01 10.01 0 0 0 20 10C20 4.48 15.52 0 10 0z"/>
-            </svg>
-            GitHub
-          </button>
-        </div>
-      </div>
-
-      <!-- ── REGISTER FORM ── -->
-      <div id="form-register" style="display:none">
-        <div class="signin-field">
-          <label class="signin-label" for="auth-reg-username" data-i18n="username">Username</label>
-          <input id="auth-reg-username" type="text" class="signin-input" placeholder="Choose a username" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('auth-reg-email').focus()">
-        </div>
-        <div class="signin-field">
-          <label class="signin-label" for="auth-reg-email" data-i18n="email_optional">Email (optional)</label>
-          <input id="auth-reg-email" type="email" class="signin-input" placeholder="you@example.com" autocomplete="email" onkeydown="if(event.key==='Enter')document.getElementById('auth-reg-pw').focus()">
-        </div>
-        <div class="signin-field">
-          <label class="signin-label" for="auth-reg-pw" data-i18n="password">Password</label>
-          <div class="signin-input-wrap">
-            <input id="auth-reg-pw" type="password" class="signin-input" placeholder="Min. 6 characters" autocomplete="new-password" onkeydown="if(event.key==='Enter')doRegister()" oninput="updatePwStrength(this.value)">
-            <button type="button" class="signin-eye" onclick="togglePwVis('auth-reg-pw',this)" tabindex="-1" aria-label="Show password">
-              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 10s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/>
-                <circle cx="10" cy="10" r="2.5"/>
-              </svg>
-            </button>
-          </div>
-          <!-- Password strength -->
-          <div id="pw-strength-bar" style="display:flex;gap:3px;margin-top:8px;height:2px">
-            <div id="pw-s1" class="pw-strength-seg"></div>
-            <div id="pw-s2" class="pw-strength-seg"></div>
-            <div id="pw-s3" class="pw-strength-seg"></div>
-            <div id="pw-s4" class="pw-strength-seg"></div>
-          </div>
-        </div>
-        <button type="button" class="signin-btn-primary" onclick="doRegister()" data-i18n="create_account_btn">
-          Create account
-        </button>
-      </div>
-
-      <!-- Footer -->
-      <!-- Error + Loading (requis par doLogin/doRegister/setAuthLoading) -->
-      <div id="auth-error" style="font-size:12px;color:#f87171;text-align:center;min-height:16px;margin-top:6px;line-height:1.4;display:block"></div>
-      <div id="auth-loading" style="display:none;text-align:center;margin-top:8px">
-        <div style="display:inline-block;width:16px;height:16px;border:2px solid rgba(124,58,237,.25);border-top-color:#7c3aed;border-radius:50%;animation:spin .7s linear infinite"></div>
-      </div>
-
-      <p class="signin-footer">ETHONE <span style="opacity:.4">·</span> v5.3</p>
+      <span class="sc-logo-name">ETHONE</span>
     </div>
+
+    <!-- HEADER -->
+    <div class="sc-header" id="auth-form-header">
+      <h1 class="sc-title" id="auth-form-title" data-i18n="welcome_back">Bon retour</h1>
+      <p class="sc-desc" id="auth-form-sub" data-i18n="sign_in_sub">Connectez-vous à votre dashboard ETHONE</p>
+    </div>
+
+    <!-- TABS -->
+    <div class="sc-tabs">
+      <button id="tab-login" class="sc-tab sc-tab--active" onclick="switchAuthTab('login')" data-i18n="sign_in">Connexion</button>
+      <button id="tab-register" class="sc-tab" onclick="switchAuthTab('register')" data-i18n="create_account">Créer un compte</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="form-login">
+
+      <div class="sc-field">
+        <label class="sc-label" for="auth-login-id" data-i18n="email_or_username">Email ou identifiant</label>
+        <input
+          id="auth-login-id"
+          class="sc-input"
+          type="text"
+          placeholder="vous@exemple.com"
+          autocomplete="username"
+          onkeydown="if(event.key==='Enter')document.getElementById('auth-login-pw').focus()"
+        />
+      </div>
+
+      <div class="sc-field">
+        <div class="sc-label-row">
+          <label class="sc-label" for="auth-login-pw" data-i18n="password">Mot de passe</label>
+          <button type="button" class="sc-link" onclick="doForgotPassword()" data-i18n="forgot_password">Mot de passe oublié ?</button>
+        </div>
+        <div class="sc-input-wrap">
+          <input
+            id="auth-login-pw"
+            class="sc-input"
+            type="password"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            onkeydown="if(event.key==='Enter')doLogin()"
+          />
+          <button type="button" class="sc-eye" onclick="togglePwVis('auth-login-pw',this)" tabindex="-1">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M1 10s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><circle cx="10" cy="10" r="2.5"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <label class="sc-remember">
+        <input type="checkbox" id="auth-remember" style="width:15px;height:15px;accent-color:#8b5cf6;cursor:pointer;flex-shrink:0"/>
+        <span>Se souvenir de moi</span>
+      </label>
+
+      <!-- Error + Loading -->
+      <div id="auth-error" class="sc-error"></div>
+      <div id="auth-loading" style="display:none;text-align:center;padding:4px 0">
+        <div class="spinner"></div>
+      </div>
+
+      <button type="button" class="sc-btn-primary" id="auth-login-btn" onclick="doLogin()" data-i18n="sign_in_btn">
+        Se connecter
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </button>
+
+      <!-- Divider -->
+      <div class="sc-divider">
+        <span class="sc-divider-line"></span>
+        <span class="sc-divider-label">ou continuer avec</span>
+        <span class="sc-divider-line"></span>
+      </div>
+
+      <!-- Social -->
+      <div class="sc-social">
+        <button type="button" class="sc-social-btn" onclick="toast('Google — bientôt disponible','info')">
+          <svg width="18" height="18" viewBox="0 0 20 20"><path d="M19.6 10.23c0-.68-.06-1.36-.17-2H10v3.79h5.4a4.6 4.6 0 0 1-2 3.02v2.5h3.23c1.9-1.75 3-4.33 3-7.31z" fill="#4285F4"/><path d="M10 20c2.7 0 4.97-.9 6.63-2.43l-3.23-2.5c-.9.6-2.04.96-3.4.96-2.6 0-4.82-1.76-5.6-4.12H1.07v2.58A10 10 0 0 0 10 20z" fill="#34A853"/><path d="M4.4 11.91A5.97 5.97 0 0 1 4.08 10c0-.66.12-1.3.32-1.91V5.51H1.07A10 10 0 0 0 0 10c0 1.61.39 3.14 1.07 4.49l3.33-2.58z" fill="#FBBC04"/><path d="M10 3.97c1.47 0 2.79.5 3.83 1.5l2.86-2.86C14.97 1 12.7 0 10 0A10 10 0 0 0 1.07 5.51l3.33 2.58C5.18 5.73 7.4 3.97 10 3.97z" fill="#EA4335"/></svg>
+          Google
+        </button>
+        <button type="button" class="sc-social-btn" onclick="toast('GitHub — bientôt disponible','info')">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 0C4.48 0 0 4.48 0 10c0 4.42 2.87 8.17 6.84 9.49.5.09.68-.22.68-.48v-1.7C4.73 17.91 4.14 16 4.14 16c-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.56 9.56 0 0 1 10 4.84c.85 0 1.7.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10.01 10.01 0 0 0 20 10C20 4.48 15.52 0 10 0z"/></svg>
+          GitHub
+        </button>
+      </div>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="form-register" style="display:none">
+
+      <div class="sc-field">
+        <label class="sc-label" for="auth-reg-username" data-i18n="username">Identifiant</label>
+        <input id="auth-reg-username" class="sc-input" type="text" placeholder="Choisissez un identifiant" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('auth-reg-email').focus()"/>
+      </div>
+
+      <div class="sc-field">
+        <label class="sc-label" for="auth-reg-email" data-i18n="email_optional">Email (optionnel)</label>
+        <input id="auth-reg-email" class="sc-input" type="email" placeholder="vous@exemple.com" autocomplete="email" onkeydown="if(event.key==='Enter')document.getElementById('auth-reg-pw').focus()"/>
+      </div>
+
+      <div class="sc-field">
+        <label class="sc-label" for="auth-reg-pw" data-i18n="password">Mot de passe</label>
+        <div class="sc-input-wrap">
+          <input id="auth-reg-pw" class="sc-input" type="password" placeholder="Min. 6 caractères" autocomplete="new-password" onkeydown="if(event.key==='Enter')doRegister()" oninput="updatePwStrength(this.value)"/>
+          <button type="button" class="sc-eye" onclick="togglePwVis('auth-reg-pw',this)" tabindex="-1">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M1 10s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><circle cx="10" cy="10" r="2.5"/></svg>
+          </button>
+        </div>
+        <div id="pw-strength-bar" style="display:flex;gap:3px;margin-top:8px;height:2px">
+          <div id="pw-s1" class="pw-seg"></div>
+          <div id="pw-s2" class="pw-seg"></div>
+          <div id="pw-s3" class="pw-seg"></div>
+          <div id="pw-s4" class="pw-seg"></div>
+        </div>
+      </div>
+
+      <!-- Error + Loading -->
+      <div id="auth-error" class="sc-error" style="display:none"></div>
+      <div id="auth-loading" style="display:none;text-align:center;padding:4px 0">
+        <div class="spinner"></div>
+      </div>
+
+      <button type="button" class="sc-btn-primary" onclick="doRegister()" data-i18n="create_account_btn">
+        Créer un compte
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </button>
+    </div>
+
+    <!-- FOOTER -->
+    <p class="sc-footer">ETHONE <span style="opacity:.3">·</span> v5.3</p>
   </div>
+</div>
 </div>
 
 <!-- PROFILE SELECT SCREEN -->
@@ -6188,7 +6703,7 @@ hr{border:none;border-top:1px solid rgba(255,255,255,.05);margin:16px 0}
     <div class="logo-icon" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);box-shadow:0 2px 12px rgba(124,58,237,.3)">
       <svg width="14" height="14" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="url(#eg)"/><path d="M8 8h16v3H11v4.5h12v3H11V23h13v3H8V8z" fill="white"/><defs><linearGradient id="eg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#4c1d95"/></linearGradient></defs></svg>
     </div>
-    <span class="logo-text" id="logo-text-el" style="background:linear-gradient(135deg,#fff,#fda4af);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:900;letter-spacing:1.5px;font-family:'Syne',sans-serif;text-transform:uppercase">ETHONE</span>
+    <span class="logo-text" id="logo-text-el" style="color:#fafaf9;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:900;letter-spacing:1.5px;font-family:'Syne',sans-serif;text-transform:uppercase">ETHONE</span>
 
   </div>
   <div id="sidebar-nav-main" class="nav-section"></div>
@@ -6356,15 +6871,15 @@ hr{border:none;border-top:1px solid rgba(255,255,255,.05);margin:16px 0}
       </div>
     </div>
     <div class="topbar">
-      <div style="display:flex;flex-direction:column;gap:2px">
-        <div style="display:flex;align-items:center;gap:8px">
-          <h1 style="font-size:20px;font-weight:800;color:#f0edff;letter-spacing:-.4px;font-family:'Syne',sans-serif;margin:0" id="greeting-full"></h1>
-          <span id="greeting-mood-emoji" style="font-size:16px;line-height:1"></span>
+      <div style="display:flex;flex-direction:column;gap:3px">
+        <div style="display:flex;align-items:center;gap:7px">
+          <h1 class="page-title" style="margin:0" id="greeting-full"></h1>
+          <span id="greeting-mood-emoji" style="font-size:15px;line-height:1"></span>
         </div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <span style="font-size:12px;color:rgba(255,255,255,.3)" id="greeting-date"></span>
-          <span style="width:3px;height:3px;border-radius:50%;background:rgba(124,58,237,.4);flex-shrink:0"></span>
-          <span style="font-size:11px;font-family:var(--mono);color:rgba(124,58,237,.6);font-weight:600;letter-spacing:.5px" id="greeting-time"></span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:11.5px;color:var(--muted)" id="greeting-date"></span>
+          <span style="width:2px;height:2px;border-radius:50%;background:var(--muted2);flex-shrink:0"></span>
+          <span style="font-size:11px;font-family:var(--mono);color:var(--accent-light);font-weight:600" id="greeting-time"></span>
         </div>
       </div>
       <div class="topbar-actions">
@@ -7025,7 +7540,7 @@ hr{border:none;border-top:1px solid rgba(255,255,255,.05);margin:16px 0}
   <!-- WEEKLY GOALS -->
   <div id="page-goals" class="tab-content">
     <div class="topbar">
-      <div><div class="page-title">Weekly Goals</div><div class="page-subtitle" id="goals-week-label">This week</div></div>
+      <div><div class="section-eyebrow">Progress</div><div class="section-title">Goals</div><div class="page-subtitle" id="goals-week-label">This week</div></div>
       <div class="topbar-actions"><button class="btn btn-primary" onclick="openModal('add-goal')">+ New goal</button></div>
     </div>
     <div class="grid-2" style="align-items:start">
@@ -7049,7 +7564,7 @@ hr{border:none;border-top:1px solid rgba(255,255,255,.05);margin:16px 0}
   <!-- JOURNAL -->
   <div id="page-journal" class="tab-content">
     <div class="topbar">
-      <div><div class="page-title">Journal</div><div class="page-subtitle">Daily entries with mood tracking</div></div>
+      <div><div class="section-eyebrow">Reflection</div><div class="section-title">Journal</div></div>
       <div class="topbar-actions">
         <input type="text" id="journal-search" placeholder="Rechercher..." style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px 12px;color:var(--text);font-family:var(--font);font-size:12px;outline:none;width:160px" oninput="renderJournal()">
         <button class="btn btn-primary" onclick="openModal('add-journal')">+ Today's entry</button>
@@ -7085,7 +7600,7 @@ hr{border:none;border-top:1px solid rgba(255,255,255,.05);margin:16px 0}
   <!-- COUNTDOWN -->
   <div id="page-countdown" class="tab-content">
     <div class="topbar">
-      <div><div class="page-title">Countdowns</div><div class="page-subtitle">Count down to your important events</div></div>
+      <div><div class="section-eyebrow">Time</div><div class="section-title">Countdowns</div></div>
       <div class="topbar-actions"><button class="btn btn-primary" onclick="openModal('add-countdown')">+ New countdown</button></div>
     </div>
     <div class="grid-3" id="countdown-grid">
@@ -9983,7 +10498,7 @@ function renderSidebarNav(){
   mainEl.innerHTML='';
   acctEl.innerHTML='';
   nav.filter(i=>i.section==='main').forEach(item=>mainEl.appendChild(makeItem(item)));
-  acctEl.innerHTML='<div class="nav-label">Account</div>';
+  acctEl.innerHTML='<div class="nav-section-label">Account</div>';
   nav.filter(i=>i.section==='account').forEach(item=>acctEl.appendChild(makeItem(item)));
 }
 
@@ -12917,7 +13432,7 @@ function updateStats(){
   const sf=document.getElementById('stat-files'),sl=document.getElementById('stat-links'),st=document.getElementById('stat-tasks'),ss=document.getElementById('stat-tasks-sub'),fc=document.getElementById('files-count');
   const filesCount=items.filter(i=>i.type!=='link').length;
   const linksCount=items.filter(i=>i.type==='link').length;
-  if(sf)sf.textContent=filesCount;
+  if(sf)sf.textContent=filesCount||0;
   if(sl)sl.textContent=linksCount;
   if(st)st.textContent=todos.filter(t=>t.done).length;
   if(ss)ss.textContent='of '+todos.length+' total';

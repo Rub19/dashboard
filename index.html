@@ -159,7 +159,7 @@ window.onerror = function(msg, src, line, col, err) {
 ::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
 ::-webkit-scrollbar-thumb:hover{background:var(--muted2)}
 
-body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;min-height:100vh;display:flex;overflow-x:hidden;-webkit-font-smoothing:antialiased;gap:0;position:relative}
+body{background:#070510;color:var(--text);font-family:var(--font);font-size:14px;min-height:100vh;display:flex;overflow-x:hidden;-webkit-font-smoothing:antialiased;gap:0;position:relative}
 
 /* ── ANIMATIONS ── */
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -497,7 +497,9 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .btn::after{content:'';position:absolute;inset:0;background:#fff;opacity:0;transition:opacity .12s}
 .btn:active::after{opacity:.06}
 .btn:active{transform:scale(.97)}
-.btn-primary{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border-color:transparent;box-shadow:0 2px 14px rgba(124,58,237,.28)}
+.btn-primary{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border-color:transparent;box-shadow:0 2px 14px rgba(124,58,237,.28);position:relative;overflow:hidden}
+.btn-primary::after{content:'';position:absolute;top:0;left:-120%;width:80%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);transition:left .5s ease}
+.btn-primary:hover::after{left:120%}
 .btn-primary:hover{filter:brightness(1.1);box-shadow:0 4px 22px rgba(124,58,237,.4);transform:translateY(-1px)}
 .btn-ghost{background:rgba(255,255,255,.04);color:rgba(255,255,255,.45);border-color:rgba(255,255,255,.08)}
 .btn-ghost:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.12)}
@@ -535,8 +537,12 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 
 /* panels */
 .panel{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:var(--r-panel,14px);padding:18px;
-  transition:border-color .2s ease, box-shadow .25s ease;
+  transition:border-color .2s ease, box-shadow .25s ease, transform .2s ease;
 ;overflow:hidden}
+/* ── SCROLL REVEAL ── */
+[data-reveal]{opacity:0;transform:translateY(16px);transition:opacity .5s cubic-bezier(.22,1,.36,1),transform .5s cubic-bezier(.22,1,.36,1)}
+[data-reveal].revealed{opacity:1;transform:none}
+
 /* ── QUICK ACTIONS BAR ── */
 #quick-actions-bar button{
   transition:all .18s cubic-bezier(.22,1,.36,1)!important;
@@ -1640,14 +1646,14 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .auth-float-icon:nth-child(6){animation:floatAlt 6.5s ease-in-out infinite .8s}
 
 .auth-feature-item{
-  display:flex;align-items:center;gap:10px;
-  font-size:12.5px;color:rgba(255,255,255,.55);
-  animation:slideUpFade .5s ease both;
-  padding:8px 12px;border-radius:10px;
-  background:rgba(255,255,255,.03);
-  border:1px solid rgba(255,255,255,.06);
-  transition:all .2s ease;
-;transition:all .22s cubic-bezier(.22,1,.36,1)}
+  display:flex;align-items:center;gap:9px;
+  font-size:11.5px;font-weight:500;color:rgba(255,255,255,.4);
+  padding:10px 12px;
+  background:rgba(255,255,255,.025);
+  border:1px solid rgba(255,255,255,.05);
+  border-radius:10px;
+  transition:all .18s;
+}
 .auth-feature-item:hover{background:rgba(124,58,237,.07);color:rgba(255,255,255,.85);transform:translateX(4px)}
 .auth-feature-item:hover{
   background:rgba(255,255,255,.06);
@@ -1699,14 +1705,20 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 @media(max-width:768px){.auth-input{font-size:16px!important}}
 
 .auth-submit-btn{
-  width:100%;padding:14px;
+  width:100%;padding:13px 20px;
   background:linear-gradient(135deg,#7c3aed,#6d28d9);
-  color:#fff;font-size:15px;font-weight:700;
-  font-family:var(--font);letter-spacing:.2px;
-  cursor:pointer;border:none;border-radius:12px;
+  border:none;border-radius:11px;
+  color:#fff;font-size:14px;font-weight:700;
+  font-family:var(--font);cursor:pointer;
   transition:all .22s cubic-bezier(.22,1,.36,1);
-  position:relative;overflow:hidden;
+  box-shadow:0 1px 0 rgba(255,255,255,.08) inset,0 4px 16px rgba(124,58,237,.3);
+  letter-spacing:-.1px;
 }
+.auth-submit-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 1px 0 rgba(255,255,255,.12) inset,0 8px 24px rgba(124,58,237,.45);
+}
+.auth-submit-btn:active{transform:scale(.98)}
 .auth-submit-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);opacity:0;transition:opacity .2s}
 .auth-submit-btn:hover{transform:translateY(-2px);box-shadow:0 10px 36px rgba(124,58,237,.4)}
 .auth-submit-btn:hover::before{opacity:1}
@@ -3145,7 +3157,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 .tab-content{display:none!important}
 .tab-content.active{display:block!important;opacity:1}
 .tab-content.page-entering{
-  animation:pageIn .18s cubic-bezier(.25,0,.2,1) forwards;
+  animation:pageIn .22s cubic-bezier(.22,1,.36,1) forwards;
 }
 .tab-content.page-entering-left{
   animation:pageInLeft .18s cubic-bezier(.25,0,.2,1) forwards;
@@ -4022,6 +4034,959 @@ body.no-anim #bg-canvas{display:none!important}
 }
 @media(max-width:768px){#swipe-hint{display:block}}
 
+/* ── AMÉLIORATIONS UI v5.3 ─────────────────────────────────── */
+
+/* Stat card — accent glow au hover */
+.stat-card::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 0%,var(--card-accent,rgba(124,58,237,.1)),transparent 60%);
+  opacity:0;transition:opacity .3s;border-radius:inherit;pointer-events:none;
+}
+.stat-card:hover::after{opacity:1}
+
+/* Panel entrance animation */
+.panel.reveal-visible{animation:panelReveal .4s cubic-bezier(.22,1,.36,1) both}
+
+/* Nav item — icone active animation */
+.nav-item.active .nav-icon-svg{color:#a78bfa}
+
+/* Quick actions hover lift */
+#quick-actions-bar button:hover{transform:translateY(-2px)!important;box-shadow:0 6px 20px rgba(0,0,0,.2)!important}
+#quick-actions-bar button:active{transform:scale(.97)!important}
+
+/* Greeting time pulse */
+#greeting-time{animation:none}
+
+/* Topbar border bottom gradient */
+.topbar::after{content:'';display:block;height:1px;background:linear-gradient(90deg,transparent,rgba(124,58,237,.15),transparent);margin-top:20px;margin-left:-28px;margin-right:-28px}
+
+/* Améliorer les inputs focus */
+.modal-input:focus,.auth-input:focus{
+  border-color:rgba(124,58,237,.5)!important;
+  box-shadow:0 0 0 3px rgba(124,58,237,.1)!important;
+  background:rgba(124,58,237,.04)!important;
+}
+
+/* Habit card checkmark animation */
+.habit-day.done{animation:iconPop .2s cubic-bezier(.22,1,.36,1)}
+
+/* Kanban drop animation */
+.kanban-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.kanban-card{transition:transform .15s,box-shadow .15s}
+
+/* Goal progress bar shine */
+.goal-progress-fill{position:relative;overflow:hidden}
+.goal-progress-fill::after{
+  content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);
+  animation:shimmerSlide 2s infinite;
+}
+
+/* Better scrollbar */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(124,58,237,.25);border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:rgba(124,58,237,.45)}
+
+/* Profile banner level badge pulse */
+#profile-banner-level{animation:none}
+#profile-banner-xp-bar{transition:width .8s cubic-bezier(.22,1,.36,1)!important}
+
+/* Section eyebrow */
+.section-eyebrow{
+  font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(124,58,237,.6);font-family:var(--mono);margin-bottom:2px;
+}
+
+/* Better empty states */
+.empty-state{
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:40px 20px;text-align:center;
+}
+.empty-icon{opacity:.25;margin-bottom:12px}
+.empty-label{font-size:13px;color:var(--muted);font-weight:500}
+.empty-sub{font-size:11px;color:rgba(255,255,255,.2);margin-top:4px}
+
+/* Tooltip simple */
+[title]:hover::after{
+  content:attr(title);position:absolute;bottom:calc(100% + 6px);left:50%;
+  transform:translateX(-50%);background:rgba(10,8,20,.95);color:#fff;
+  font-size:11px;padding:4px 8px;border-radius:6px;white-space:nowrap;
+  border:1px solid rgba(255,255,255,.08);pointer-events:none;z-index:9999;
+  font-family:var(--font);font-weight:500;
+}
+[title]{position:relative}
+
+/* ── AUTH REDESIGN 2026 ──────────────────────────────────────── */
+
+/* Fond auth — gradient subtil */
+#auth-screen{
+  background:
+    radial-gradient(ellipse at 25% 35%,rgba(124,58,237,.07) 0%,transparent 45%),
+    radial-gradient(ellipse at 75% 65%,rgba(109,40,217,.05) 0%,transparent 45%),
+    #070510 !important;
+}
+
+/* Suppression de l'ancienne structure split */
+.auth-split-left{display:flex!important;flex-direction:column!important;justify-content:space-between!important;padding:52px 56px 52px 48px!important;background:transparent!important;border:none!important}
+.auth-split-left::before{display:none!important}
+
+/* Auth title gradient amélioré */
+.auth-title-gradient{
+  background:linear-gradient(135deg,#c084fc 0%,#a855f7 40%,#7c3aed 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  display:inline!important;
+}
+
+/* Auth tabs pills */
+.auth-tab-pill{
+  position:relative;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:10px;
+  padding:3px;
+  display:flex;
+  margin-bottom:24px;
+  gap:3px;
+}
+.auth-tab-btn{
+  flex:1;padding:9px 14px;border:none;border-radius:8px;
+  font-size:13px;font-weight:600;font-family:var(--font);
+  cursor:pointer;transition:all .2s;
+  background:transparent;color:rgba(255,255,255,.4);
+}
+.auth-tab-btn.active{
+  background:rgba(124,58,237,.2);
+  color:#c4b5fd;
+  box-shadow:0 0 0 1px rgba(124,58,237,.3);
+}
+.auth-tab-btn:not(.active):hover{
+  background:rgba(255,255,255,.06);color:rgba(255,255,255,.7);
+}
+
+/* Auth inputs améliorés */
+.auth-input{
+  transition:border-color .2s,box-shadow .2s,background .2s!important;
+}
+.auth-input:focus{
+  border-color:rgba(124,58,237,.5)!important;
+  box-shadow:0 0 0 3px rgba(124,58,237,.1)!important;
+  background:rgba(124,58,237,.04)!important;
+}
+
+/* Auth submit button */
+.auth-submit-btn{
+  position:relative;overflow:hidden;
+}
+.auth-submit-btn::after{
+  content:'';position:absolute;top:0;left:-120%;width:80%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);
+  transition:left .5s;
+}
+.auth-submit-btn:hover::after{left:120%}
+
+/* ── FIN AMÉLIORATIONS v5.3 ─────────────────────────────────── */
+/* ════════════════════════════════════════════════════════════
+   ETHONE 2026 DESIGN SYSTEM — Clarity over decoration
+   Inspiré: Linear, Vercel, Raycast — dark precision UI
+   ════════════════════════════════════════════════════════════ */
+
+/* ── TYPOGRAPHIE AMÉLIORÉE ─────────────────────────────────── */
+.page-title,.section-title{
+  font-size:20px!important;
+  font-weight:800!important;
+  letter-spacing:-0.4px!important;
+  font-family:'Syne',sans-serif!important;
+  line-height:1.2!important;
+  color:#f0edff!important;
+}
+.page-subtitle{
+  font-size:12px!important;
+  color:rgba(255,255,255,.3)!important;
+  font-weight:400!important;
+  letter-spacing:0!important;
+}
+.section-eyebrow{
+  font-size:9px!important;
+  font-weight:700!important;
+  letter-spacing:2.5px!important;
+  text-transform:uppercase!important;
+  color:rgba(124,58,237,.55)!important;
+  font-family:'JetBrains Mono',monospace!important;
+  margin-bottom:3px!important;
+}
+
+/* ── STAT CARDS — 2026 data-forward style ─────────────────── */
+.stat-card{
+  background:rgba(255,255,255,.02)!important;
+  border:1px solid rgba(255,255,255,.06)!important;
+  border-radius:var(--r-card,12px)!important;
+  padding:18px 20px!important;
+  position:relative!important;
+  overflow:hidden!important;
+  cursor:pointer!important;
+  transition:all .2s cubic-bezier(.22,1,.36,1)!important;
+}
+.stat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--card-accent,rgba(124,58,237,.3)),transparent);
+  opacity:.6;
+}
+.stat-card:hover{
+  background:rgba(255,255,255,.035)!important;
+  border-color:rgba(255,255,255,.1)!important;
+  transform:translateY(-2px)!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.2),0 0 0 1px rgba(255,255,255,.06)!important;
+}
+.stat-value{
+  font-size:32px!important;
+  font-weight:800!important;
+  letter-spacing:-2px!important;
+  font-family:'JetBrains Mono',monospace!important;
+  color:#f5f3ff!important;
+  line-height:1!important;
+  margin:6px 0 4px!important;
+}
+.stat-label{
+  font-size:11px!important;
+  color:rgba(255,255,255,.3)!important;
+  font-weight:500!important;
+  letter-spacing:.2px!important;
+  text-transform:uppercase!important;
+  font-size:9.5px!important;
+  letter-spacing:.8px!important;
+}
+.stat-card-icon{
+  width:28px!important;height:28px!important;
+  border-radius:8px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  flex-shrink:0!important;margin-bottom:4px!important;
+  opacity:.8!important;
+}
+
+/* ── PANELS — structure honnête ───────────────────────────── */
+.panel{
+  background:rgba(255,255,255,.022)!important;
+  border:1px solid rgba(255,255,255,.06)!important;
+  border-radius:var(--r-panel,14px)!important;
+  padding:16px 18px!important;
+  transition:border-color .2s,box-shadow .25s,transform .2s!important;
+}
+.panel:hover{
+  border-color:rgba(255,255,255,.09)!important;
+  box-shadow:0 4px 20px rgba(0,0,0,.15)!important;
+}
+.panel-header{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  margin-bottom:14px!important;
+  padding-bottom:12px!important;
+  border-bottom:1px solid rgba(255,255,255,.04)!important;
+}
+.panel-title{
+  display:flex!important;align-items:center!important;gap:8px!important;
+  font-size:12px!important;font-weight:700!important;
+  color:rgba(255,255,255,.75)!important;
+  letter-spacing:.1px!important;text-transform:uppercase!important;
+  font-size:10px!important;letter-spacing:.8px!important;
+}
+.panel-title-icon{
+  width:22px!important;height:22px!important;
+  border-radius:6px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  flex-shrink:0!important;
+}
+
+/* ── SIDEBAR — épuré ───────────────────────────────────────── */
+.nav-item{
+  font-size:12.5px!important;font-weight:500!important;
+  padding:6px 10px!important;
+  border-radius:8px!important;
+  color:rgba(255,255,255,.35)!important;
+  transition:all .15s!important;
+  border:1px solid transparent!important;
+  margin-bottom:1px!important;
+  letter-spacing:.1px!important;
+}
+.nav-item:hover{
+  color:rgba(255,255,255,.75)!important;
+  background:rgba(255,255,255,.04)!important;
+}
+.nav-item.active{
+  color:#c4b5fd!important;
+  background:rgba(124,58,237,.1)!important;
+  border-color:rgba(124,58,237,.15)!important;
+  font-weight:600!important;
+  box-shadow:inset 3px 0 0 #7c3aed!important;
+}
+.nav-section-label{
+  font-size:9px!important;font-weight:700!important;
+  letter-spacing:1.5px!important;text-transform:uppercase!important;
+  color:rgba(124,58,237,.4)!important;
+  padding:10px 10px 4px!important;
+  font-family:'JetBrains Mono',monospace!important;
+}
+
+/* ── TOPBAR ────────────────────────────────────────────────── */
+.topbar{
+  padding:20px 0 18px!important;
+  margin-bottom:20px!important;
+  border-bottom:1px solid rgba(255,255,255,.04)!important;
+}
+
+/* ── MAIN CONTENT PADDING ──────────────────────────────────── */
+.main{
+  padding:0 24px 32px!important;
+}
+
+/* ── BOUTONS ───────────────────────────────────────────────── */
+.btn{
+  font-size:12.5px!important;font-weight:600!important;
+  letter-spacing:.1px!important;
+  transition:all .18s cubic-bezier(.22,1,.36,1)!important;
+}
+.btn-primary{
+  background:linear-gradient(135deg,#7c3aed 0%,#6d28d9 100%)!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.08) inset,0 2px 12px rgba(124,58,237,.25)!important;
+}
+.btn-primary:hover{
+  box-shadow:0 1px 0 rgba(255,255,255,.12) inset,0 4px 20px rgba(124,58,237,.4)!important;
+  transform:translateY(-1px)!important;
+}
+.btn-ghost{
+  background:rgba(255,255,255,.04)!important;
+  border:1px solid rgba(255,255,255,.07)!important;
+  color:rgba(255,255,255,.55)!important;
+}
+.btn-ghost:hover{
+  background:rgba(255,255,255,.07)!important;
+  color:rgba(255,255,255,.85)!important;
+  border-color:rgba(255,255,255,.1)!important;
+}
+
+/* ── INPUTS ────────────────────────────────────────────────── */
+input[type="text"],input[type="password"],input[type="email"],
+.modal-input,.auth-input,textarea,.input{
+  background:rgba(255,255,255,.04)!important;
+  border:1px solid rgba(255,255,255,.07)!important;
+  border-radius:9px!important;
+  color:#f5f3ff!important;
+  font-size:13px!important;
+  transition:border-color .15s,box-shadow .15s,background .15s!important;
+}
+input:focus,textarea:focus,.auth-input:focus,.modal-input:focus{
+  border-color:rgba(124,58,237,.45)!important;
+  box-shadow:0 0 0 3px rgba(124,58,237,.1)!important;
+  background:rgba(124,58,237,.03)!important;
+  outline:none!important;
+}
+
+/* ── MODALS ────────────────────────────────────────────────── */
+.modal{
+  background:#0d0b16!important;
+  border:1px solid rgba(255,255,255,.07)!important;
+  box-shadow:0 24px 80px rgba(0,0,0,.6),0 0 0 1px rgba(124,58,237,.05)!important;
+  border-radius:var(--r-panel,14px)!important;
+}
+.modal-title{
+  font-size:15px!important;font-weight:700!important;
+  letter-spacing:-.2px!important;
+  font-family:'Syne',sans-serif!important;
+}
+
+/* ── TOAST ─────────────────────────────────────────────────── */
+.toast{
+  background:rgba(13,11,22,.98)!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+  box-shadow:0 8px 32px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.04)!important;
+  font-size:12.5px!important;font-weight:500!important;
+  backdrop-filter:blur(8px)!important;
+  padding:10px 14px!important;
+  border-radius:10px!important;
+}
+.toast.success{
+  border-color:rgba(52,211,153,.2)!important;
+  color:#6ee7b7!important;
+}
+.toast.error{
+  border-color:rgba(248,113,113,.2)!important;
+  color:#fca5a5!important;
+}
+
+/* ── SCROLLBAR ─────────────────────────────────────────────── */
+*{scrollbar-width:thin;scrollbar-color:rgba(124,58,237,.2) transparent}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:rgba(124,58,237,.2);border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:rgba(124,58,237,.4)}
+
+/* ════════════════════════════════════════════════════════════
+   FIN ETHONE 2026
+   ════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════
+   DASHBOARD 2026 — Structure & Hierarchy
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Profile banner — version compacte/épurée ─────────────── */
+.profile-banner{
+  border-radius:var(--r-panel,14px)!important;
+  overflow:hidden!important;
+  margin-bottom:0!important;
+  min-height:80px!important;
+  max-height:100px!important;
+  border:1px solid rgba(255,255,255,.05)!important;
+}
+.profile-banner-empty{
+  background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(109,40,217,.04))!important;
+}
+.profile-banner-info{
+  padding:14px 18px!important;
+}
+.profile-banner-name{
+  font-size:15px!important;font-weight:700!important;
+  font-family:'Syne',sans-serif!important;
+}
+.profile-banner-role{
+  font-size:11px!important;color:rgba(255,255,255,.35)!important;margin-top:1px!important;
+}
+.profile-banner-avatar{
+  width:40px!important;height:40px!important;
+  border-radius:10px!important;
+}
+#profile-banner-level{
+  min-width:80px!important;
+  background:rgba(0,0,0,.3)!important;
+  border:1px solid rgba(124,58,237,.15)!important;
+  border-radius:10px!important;
+  padding:7px 11px!important;
+}
+
+/* ── Topbar ─────────────────────────────────────────────────── */
+.topbar{
+  display:flex!important;align-items:center!important;
+  justify-content:space-between!important;
+  padding:16px 0 14px!important;
+  border-bottom:1px solid rgba(255,255,255,.04)!important;
+  margin-bottom:16px!important;
+}
+.topbar-actions{
+  display:flex!important;align-items:center!important;
+  gap:6px!important;
+}
+
+/* ── Stats row — horizontal data tiles ──────────────────────── */
+.stats-row{
+  display:grid!important;
+  grid-template-columns:repeat(4,1fr)!important;
+  gap:8px!important;
+  margin-bottom:10px!important;
+}
+.stat-card{
+  padding:14px 16px!important;
+  border-radius:var(--r-card,12px)!important;
+  background:rgba(255,255,255,.022)!important;
+  border:1px solid rgba(255,255,255,.06)!important;
+  cursor:pointer!important;
+  transition:all .18s cubic-bezier(.22,1,.36,1)!important;
+  position:relative!important;overflow:hidden!important;
+  display:flex!important;flex-direction:column!important;
+}
+.stat-card::before{
+  content:''!important;position:absolute!important;
+  top:0!important;left:0!important;right:0!important;height:1.5px!important;
+  background:linear-gradient(90deg,transparent,var(--card-accent,rgba(124,58,237,.4)),transparent)!important;
+}
+.stat-card:hover{
+  background:rgba(255,255,255,.04)!important;
+  transform:translateY(-2px)!important;
+  border-color:rgba(255,255,255,.1)!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.2)!important;
+}
+.stat-card-icon{
+  width:26px!important;height:26px!important;
+  border-radius:7px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  margin-bottom:8px!important;
+  flex-shrink:0!important;
+}
+.stat-value{
+  font-size:28px!important;font-weight:800!important;
+  letter-spacing:-1.5px!important;
+  font-family:'JetBrains Mono',monospace!important;
+  color:#f0edff!important;line-height:1!important;
+  margin-bottom:4px!important;
+}
+.clock-display{
+  font-size:24px!important;font-weight:800!important;
+  letter-spacing:-1px!important;
+  font-family:'JetBrains Mono',monospace!important;
+  color:#f0edff!important;line-height:1!important;
+  margin-bottom:4px!important;
+}
+.stat-label{
+  font-size:9.5px!important;font-weight:700!important;
+  letter-spacing:.8px!important;text-transform:uppercase!important;
+  color:rgba(255,255,255,.3)!important;
+}
+.stat-sub{
+  font-size:10px!important;color:rgba(255,255,255,.2)!important;
+  margin-top:2px!important;
+}
+.stat-sub.up{color:rgba(52,211,153,.7)!important}
+
+/* ── Quick actions bar ───────────────────────────────────────── */
+#quick-actions-bar{
+  margin-bottom:14px!important;
+}
+#quick-actions-bar button{
+  padding:6px 12px!important;
+  font-size:11.5px!important;
+  transition:all .18s cubic-bezier(.22,1,.36,1)!important;
+}
+#quick-actions-bar button:hover{
+  transform:translateY(-1px)!important;
+  box-shadow:0 4px 16px rgba(0,0,0,.2)!important;
+}
+
+/* ── Pinned panel ────────────────────────────────────────────── */
+#pinned-panel{
+  margin-bottom:12px!important;
+  background:rgba(124,58,237,.04)!important;
+  border-color:rgba(124,58,237,.1)!important;
+}
+.pinned-grid{
+  display:flex!important;flex-wrap:wrap!important;gap:8px!important;
+}
+
+/* ── Overview grid — bento style ───────────────────────────── */
+#overview-grid-main{
+  grid-template-columns:1fr 320px!important;
+  gap:10px!important;
+}
+#overview-col-left,#overview-col-right{
+  gap:10px!important;
+}
+
+/* ── Panels dans l'overview ─────────────────────────────────── */
+#overview-col-left .panel,
+#overview-col-right .panel{
+  border-radius:var(--r-panel,14px)!important;
+  padding:14px 16px!important;
+}
+
+/* Panel headers épurés */
+.panel-header{
+  padding-bottom:10px!important;margin-bottom:12px!important;
+  border-bottom:1px solid rgba(255,255,255,.04)!important;
+}
+.panel-title{
+  font-size:10px!important;font-weight:700!important;
+  letter-spacing:.8px!important;text-transform:uppercase!important;
+  color:rgba(255,255,255,.5)!important;
+  gap:7px!important;
+}
+.panel-title-icon{
+  width:20px!important;height:20px!important;border-radius:5px!important;
+  opacity:.8!important;
+}
+
+/* ── Pomodoro widget — hero du right col ────────────────────── */
+#pomo-ring{
+  filter:drop-shadow(0 0 8px rgba(124,58,237,.3))!important;
+}
+
+/* ── Habit day cells ────────────────────────────────────────── */
+.habit-day{
+  border-radius:3px!important;
+  transition:all .15s!important;
+}
+.habit-day.done{
+  background:rgba(124,58,237,.6)!important;
+  box-shadow:0 0 6px rgba(124,58,237,.3)!important;
+}
+
+/* ── Daily focus ────────────────────────────────────────────── */
+#daily-focus-display{
+  padding:8px 4px!important;
+}
+
+/* ── Activity section ────────────────────────────────────────── */
+.activity-block{
+  background:rgba(124,58,237,.35)!important;
+  border-radius:2px!important;
+  transition:all .15s!important;
+}
+.activity-block:hover{
+  background:rgba(124,58,237,.7)!important;
+  transform:scale(1.2)!important;
+}
+
+/* ── Item rows ───────────────────────────────────────────────── */
+.item-row{
+  border-radius:8px!important;
+  padding:7px 10px!important;
+  transition:background .15s!important;
+}
+.item-row:hover{background:rgba(255,255,255,.04)!important}
+
+/* ═══════════════════════════════════════════════════════════════
+   FIN DASHBOARD 2026
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════
+   AUTH 2026 — New design system
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Background auth-screen : fond sombre avec halo violet */
+#auth-screen{
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(124,58,237,.12) 0%, transparent 40%),
+    radial-gradient(ellipse at 80% 20%, rgba(109,40,217,.08) 0%, transparent 40%),
+    #050412 !important;
+}
+
+/* Auth title gradient — violet vers rose */
+.auth-title-gradient{
+  background:linear-gradient(135deg,#c084fc 0%,#a855f7 50%,#7c3aed 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+/* Feature items */
+.auth-feature-item{
+  display:flex;align-items:center;gap:10px;
+  font-size:12px;font-weight:500;color:rgba(255,255,255,.45);
+  padding:9px 12px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:10px;
+  transition:all .18s;
+}
+.auth-feature-item:hover{
+  background:rgba(124,58,237,.08);
+  border-color:rgba(124,58,237,.18);
+  color:rgba(255,255,255,.75);
+}
+.auth-feature-icon{
+  width:28px;height:28px;
+  background:rgba(124,58,237,.12);
+  border:1px solid rgba(124,58,237,.2);
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;color:#a78bfa;
+}
+.auth-feature-icon svg{width:13px;height:13px}
+
+/* Tabs pill */
+.auth-tab-pill{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:10px;
+  padding:3px;
+  display:flex;
+  margin-bottom:24px;
+  gap:3px;
+}
+.auth-tab-btn{
+  flex:1;padding:9px;border:none;border-radius:8px;
+  font-size:13px;font-weight:600;font-family:var(--font);
+  cursor:pointer;transition:all .2s;
+  background:transparent;color:rgba(255,255,255,.35);
+}
+.auth-tab-btn.active{
+  background:rgba(124,58,237,.15);
+  color:#c4b5fd;
+  box-shadow:0 0 0 1px rgba(124,58,237,.25);
+}
+.auth-tab-btn:not(.active):hover{
+  background:rgba(255,255,255,.05);color:rgba(255,255,255,.7);
+}
+
+/* Input labels */
+.auth-input-label{
+  display:block;
+  font-size:10px;font-weight:700;
+  letter-spacing:.8px;text-transform:uppercase;
+  color:rgba(255,255,255,.35);
+  margin-bottom:7px;
+}
+.auth-input-wrap{margin-bottom:14px}
+
+/* Inputs */
+.auth-input{
+  width:100%;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;
+  padding:11px 14px;
+  color:#f5f3ff;
+  font-size:13.5px;
+  font-family:var(--font);
+  outline:none;
+  transition:border-color .15s,box-shadow .15s,background .15s;
+}
+.auth-input:focus{
+  border-color:rgba(124,58,237,.5);
+  box-shadow:0 0 0 3px rgba(124,58,237,.12);
+  background:rgba(124,58,237,.04);
+}
+.auth-input::placeholder{color:rgba(255,255,255,.2)}
+
+/* Submit button */
+.auth-submit-btn{
+  width:100%;padding:13px;
+  background:linear-gradient(135deg,#7c3aed,#6d28d9);
+  border:none;border-radius:11px;
+  color:#fff;font-size:14px;font-weight:700;
+  font-family:var(--font);cursor:pointer;
+  transition:all .22s cubic-bezier(.22,1,.36,1);
+  box-shadow:0 2px 0 rgba(255,255,255,.08) inset,0 4px 16px rgba(124,58,237,.3);
+  letter-spacing:.1px;
+  position:relative;overflow:hidden;
+}
+.auth-submit-btn::after{
+  content:'';position:absolute;top:0;left:-120%;width:80%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);
+  transition:left .5s;
+}
+.auth-submit-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 2px 0 rgba(255,255,255,.1) inset,0 8px 24px rgba(124,58,237,.45);
+}
+.auth-submit-btn:hover::after{left:120%}
+.auth-submit-btn:active{transform:scale(.98)}
+
+/* ═══════════════════════════════════════════════════════════════
+   FIN AUTH 2026
+   ═══════════════════════════════════════════════════════════════ */
+
+
+/* ═══════════════════════════════════════════════════════════════
+   AUTH 2026 — Premium SaaS — Linear / Vercel / Stripe / Apple
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Background: deep space violet */
+#auth-screen{
+  background:
+    radial-gradient(ellipse at 15% 60%,rgba(124,58,237,.13) 0%,transparent 45%),
+    radial-gradient(ellipse at 85% 25%,rgba(109,40,217,.09) 0%,transparent 40%),
+    radial-gradient(ellipse at 50% 100%,rgba(76,29,149,.07) 0%,transparent 50%),
+    #030008 !important;
+}
+
+/* Animated orbs */
+.auth-orb{
+  position:absolute;border-radius:50%;
+  pointer-events:none;will-change:transform;
+}
+.auth-orb-1{
+  width:400px;height:400px;
+  top:-120px;right:-80px;
+  background:radial-gradient(circle,rgba(124,58,237,.14),transparent 65%);
+  animation:orbFloat1 12s ease-in-out infinite;
+}
+.auth-orb-2{
+  width:300px;height:300px;
+  bottom:-80px;left:-60px;
+  background:radial-gradient(circle,rgba(167,139,250,.1),transparent 65%);
+  animation:orbFloat2 15s ease-in-out infinite;
+}
+.auth-orb-3{
+  width:200px;height:200px;
+  top:50%;left:40%;
+  background:radial-gradient(circle,rgba(109,40,217,.07),transparent 65%);
+  animation:orbFloat3 18s ease-in-out infinite;
+}
+@keyframes orbFloat1{0%,100%{transform:translate(0,0)}50%{transform:translate(-20px,25px)}}
+@keyframes orbFloat2{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-20px)}}
+@keyframes orbFloat3{0%,100%{transform:translate(0,0)}33%{transform:translate(15px,10px)}66%{transform:translate(-10px,-15px)}}
+
+/* Title gradient */
+.auth-title-gradient{
+  background:linear-gradient(135deg,#c084fc 0%,#a855f7 40%,#7c3aed 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+/* Preview cards */
+.auth-preview-card{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:11px;
+  padding:11px 13px;
+  position:relative;overflow:hidden;
+  transition:all .2s;
+}
+.auth-preview-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1.5px;
+  background:linear-gradient(90deg,transparent,var(--c,rgba(124,58,237,.6)),transparent);
+}
+
+/* Features grid */
+.auth-feature-item{
+  display:flex;align-items:center;gap:9px;
+  font-size:11.5px;font-weight:500;
+  color:rgba(255,255,255,.4);
+  padding:9px 11px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:10px;
+  transition:all .18s cubic-bezier(.22,1,.36,1);
+  cursor:default;
+}
+.auth-feature-item:hover{
+  background:rgba(124,58,237,.08);
+  border-color:rgba(124,58,237,.18);
+  color:rgba(255,255,255,.75);
+  transform:translateY(-1px);
+}
+.auth-feature-icon{
+  width:26px;height:26px;
+  background:rgba(124,58,237,.12);
+  border:1px solid rgba(124,58,237,.18);
+  border-radius:7px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  color:#a78bfa;
+}
+.auth-feature-icon svg{width:13px;height:13px}
+
+/* Tabs */
+.auth-tab-pill{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;padding:4px;
+  display:flex;gap:3px;
+  margin-bottom:28px;
+}
+.auth-tab-btn{
+  flex:1;padding:10px;border:none;border-radius:9px;
+  font-size:13px;font-weight:600;font-family:var(--font);
+  cursor:pointer;transition:all .2s cubic-bezier(.22,1,.36,1);
+  background:transparent;color:rgba(255,255,255,.3);
+  letter-spacing:.1px;
+}
+.auth-tab-btn.active{
+  background:rgba(124,58,237,.18);
+  color:#c4b5fd;
+  box-shadow:0 0 0 1px rgba(124,58,237,.3),0 2px 8px rgba(124,58,237,.15);
+}
+.auth-tab-btn:not(.active):hover{
+  background:rgba(255,255,255,.06);color:rgba(255,255,255,.7);
+}
+
+/* Input labels */
+.auth-input-label{
+  display:block;
+  font-size:10px;font-weight:700;
+  letter-spacing:.8px;text-transform:uppercase;
+  color:rgba(255,255,255,.35);
+  margin-bottom:7px;
+  font-family:var(--font);
+}
+.auth-input-wrap{margin-bottom:16px}
+
+/* Inputs */
+.auth-input{
+  width:100%;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+  padding:12px 16px;
+  color:#f5f3ff;
+  font-size:14px;font-family:var(--font);
+  outline:none;
+  transition:border-color .2s,box-shadow .2s,background .2s;
+}
+.auth-input:focus{
+  border-color:rgba(124,58,237,.55);
+  box-shadow:0 0 0 4px rgba(124,58,237,.1);
+  background:rgba(124,58,237,.04);
+}
+.auth-input::placeholder{color:rgba(255,255,255,.2);font-size:13.5px}
+
+/* Eye button */
+.auth-pw-eye{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:rgba(255,255,255,.25);
+  cursor:pointer;padding:4px;border-radius:6px;
+  transition:all .15s;display:flex;align-items:center;
+}
+.auth-pw-eye:hover{
+  color:rgba(255,255,255,.7);
+  background:rgba(255,255,255,.06);
+}
+
+/* Forgot password */
+.auth-forgot-btn{
+  background:none;border:none;
+  color:rgba(255,255,255,.25);
+  font-size:11px;cursor:pointer;font-family:var(--font);
+  transition:color .15s;padding:0;
+  text-decoration:none;
+}
+.auth-forgot-btn:hover{color:rgba(167,139,250,.9)}
+
+/* Submit button */
+.auth-submit-btn{
+  width:100%;padding:14px;
+  background:linear-gradient(135deg,#7c3aed 0%,#6d28d9 100%);
+  border:none;border-radius:13px;
+  color:#fff;font-size:14.5px;font-weight:700;
+  font-family:var(--font);cursor:pointer;
+  transition:all .22s cubic-bezier(.22,1,.36,1);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.1) inset,
+    0 4px 20px rgba(124,58,237,.3),
+    0 1px 3px rgba(0,0,0,.3);
+  letter-spacing:.2px;
+  position:relative;overflow:hidden;
+  margin-top:8px;
+}
+.auth-submit-btn::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.1),transparent);
+  opacity:0;transition:opacity .2s;
+}
+.auth-submit-btn::after{
+  content:'';
+  position:absolute;top:0;left:-120%;width:80%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);
+  transition:left .6s ease;
+}
+.auth-submit-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.12) inset,
+    0 8px 28px rgba(124,58,237,.45),
+    0 2px 8px rgba(0,0,0,.3);
+}
+.auth-submit-btn:hover::before{opacity:1}
+.auth-submit-btn:hover::after{left:120%}
+.auth-submit-btn:active{transform:scale(.98)}
+
+/* Auth card entrance animation */
+#auth-card{animation:authCardIn .5s cubic-bezier(.22,1,.36,1) both}
+@keyframes authCardIn{
+  from{opacity:0;transform:translateY(20px) scale(.99)}
+  to{opacity:1;transform:none}
+}
+
+/* Mobile */
+@media(max-width:768px){
+  #auth-card{grid-template-columns:1fr!important;min-height:auto!important}
+  .auth-split-left{display:none!important}
+  .auth-split-right{border-left:none!important;border-radius:24px!important;padding:40px 28px!important}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FIN AUTH 2026
+   ═══════════════════════════════════════════════════════════════ */
+
 </style>
 </head>
 <body>
@@ -4063,7 +5028,7 @@ body.no-anim #bg-canvas{display:none!important}
   </div>
 </div>
 
-<div id="auth-screen" style="position:fixed;inset:0;z-index:10002;display:none;align-items:center;justify-content:center;overflow:auto;background:radial-gradient(ellipse at 30% 20%,rgba(20,10,40,.95) 0%,#070510 60%),radial-gradient(ellipse at 70% 80%,rgba(15,8,30,.9) 0%,#070510 100%);padding:20px">
+<div id="auth-screen" style="position:fixed;inset:0;z-index:10002;display:none;align-items:center;justify-content:center;overflow:auto;padding:20px;background:#030008">
 
   <!-- Canvas particules -->
   <canvas id="auth-particles" style="position:absolute;inset:0;z-index:0;pointer-events:none"></canvas>
@@ -4085,60 +5050,130 @@ body.no-anim #bg-canvas{display:none!important}
   <div style="position:absolute;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:40px 40px"></div>
 
   <!-- Card centrale -->
-  <div id="auth-card" style="width:100%;max-width:980px;min-height:560px;display:flex;border-radius:28px;overflow:hidden;box-shadow:0 40px 120px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.07),0 0 80px rgba(124,58,237,.06);position:relative;z-index:1;margin:16px">
+  <div id="auth-card" style="width:100%;max-width:1060px;display:grid;grid-template-columns:1fr 440px;min-height:660px;border-radius:28px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 40px 120px rgba(0,0,0,.9),0 0 80px rgba(124,58,237,.06);position:relative;z-index:1;margin:auto">
 
-    <!-- Panel gauche — branding -->
-    <div class="auth-split-left" style="flex:1;background:linear-gradient(145deg,#0d0a0c,#090609,#0b0608);padding:52px 44px;display:flex;flex-direction:column;justify-content:space-between;min-width:0;position:relative;overflow:hidden;border-radius:28px 0 0 28px" id="auth-left-panel">
+    <!-- ═══════════════════════════════════════════════════════
+         LEFT — Immersive brand panel
+    ═══════════════════════════════════════════════════════════ -->
+    <div id="auth-left-panel" class="auth-split-left" style="background:linear-gradient(135deg,#0d0920 0%,#0a0618 50%,#08051a 100%);padding:56px 60px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden">
 
+      <!-- Animated background orbs (CSS only) -->
+      <div class="auth-orb auth-orb-1"></div>
+      <div class="auth-orb auth-orb-2"></div>
+      <div class="auth-orb auth-orb-3"></div>
 
+      <!-- Mesh grid -->
+      <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.04" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="mesh" width="48" height="48" patternUnits="userSpaceOnUse">
+            <path d="M 48 0 L 0 0 0 48" fill="none" stroke="#c4b5fd" stroke-width=".6"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#mesh)"/>
+      </svg>
 
-      <!-- Contenu -->
-      <div style="position:relative;z-index:1" id="auth-left-content">
-        <div style="display:flex;align-items:center;gap:14px;margin-bottom:56px">
-          <div id="auth-logo-icon" style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(124,58,237,.45)">
-            <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="url(#eg)"/><path d="M8 8h16v3H11v4.5h12v3H11V23h13v3H8V8z" fill="white"/><defs><linearGradient id="eg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#4c1d95"/></linearGradient></defs></svg>
-          </div>
-          <span style="font-size:20px;font-weight:900;letter-spacing:3px;color:#fff;font-family:'Syne',sans-serif;text-transform:uppercase">ETHONE</span>
+      <!-- Logo -->
+      <div style="display:flex;align-items:center;gap:13px;position:relative;z-index:2">
+        <div style="width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#7c3aed,#5b21b6);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(124,58,237,.45),0 0 0 1px rgba(255,255,255,.1) inset">
+          <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><path d="M8 8h16v3H11v4.5h12v3H11V23h13v3H8V8z" fill="white"/></svg>
         </div>
+        <span style="font-size:17px;font-weight:900;letter-spacing:3px;color:#fff;font-family:'Syne',sans-serif;text-transform:uppercase">ETHONE</span>
+      </div>
 
-        <div id="auth-headline" style="font-size:34px;font-weight:800;letter-spacing:-.8px;color:#fff;line-height:1.15;margin-bottom:14px;font-family:'Syne',sans-serif">
-          <span data-i18n="personal_cmd">Your personal</span><br><span class="auth-title-gradient" data-i18n="cmd_center">command center</span>
+      <!-- Hero text -->
+      <div style="position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:center;padding:40px 0 32px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(167,139,250,.5);font-family:'JetBrains Mono',monospace;margin-bottom:20px;display:flex;align-items:center;gap:8px">
+          <span style="display:inline-block;width:20px;height:1px;background:rgba(167,139,250,.4)"></span>
+          Dashboard personnel
         </div>
-        <div id="auth-sub" style="font-size:13.5px;color:rgba(255,255,255,.4);line-height:1.75;max-width:280px" data-i18n="auth_desc">
+        <div id="auth-headline" style="font-size:52px;font-weight:900;letter-spacing:-3px;color:#fff;line-height:.9;margin-bottom:26px;font-family:'Syne',sans-serif">
+          <span style="display:block;color:rgba(255,255,255,.9)">Votre</span>
+          <span class="auth-title-gradient" style="display:block">centre de</span>
+          <span class="auth-title-gradient" style="display:block">commande.</span>
+        </div>
+        <p id="auth-sub" style="font-size:14px;color:rgba(255,255,255,.3);line-height:1.8;max-width:320px;margin:0" data-i18n="auth_desc">
           Everything you care about — tasks, stats, habits, music — all in one place.
+        </p>
+      </div>
+
+      <!-- Mini dashboard preview -->
+      <div style="position:relative;z-index:2;margin-bottom:28px">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px">
+          <div class="auth-preview-card" style="--c:rgba(124,58,237,.8)">
+            <div style="font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;color:#fff;letter-spacing:-1px">24</div>
+            <div style="font-size:9px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:2px">Tâches</div>
+          </div>
+          <div class="auth-preview-card" style="--c:rgba(52,211,153,.8)">
+            <div style="font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;color:#fff;letter-spacing:-1px">7🔥</div>
+            <div style="font-size:9px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:2px">Streak</div>
+          </div>
+          <div class="auth-preview-card" style="--c:rgba(251,191,36,.8)">
+            <div style="font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;color:#fff;letter-spacing:-1px">⭐ 4</div>
+            <div style="font-size:9px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:2px">Level</div>
+          </div>
+        </div>
+        <!-- Mini barchart decoratif -->
+        <div style="display:flex;align-items:flex-end;gap:4px;height:32px;padding:0 2px">
+          <div style="flex:1;background:rgba(124,58,237,.2);border-radius:3px 3px 0 0;height:40%"></div>
+          <div style="flex:1;background:rgba(124,58,237,.35);border-radius:3px 3px 0 0;height:65%"></div>
+          <div style="flex:1;background:rgba(124,58,237,.25);border-radius:3px 3px 0 0;height:50%"></div>
+          <div style="flex:1;background:rgba(124,58,237,.4);border-radius:3px 3px 0 0;height:80%"></div>
+          <div style="flex:1;background:rgba(124,58,237,.3);border-radius:3px 3px 0 0;height:55%"></div>
+          <div style="flex:1;background:rgba(124,58,237,.5);border-radius:3px 3px 0 0;height:100%"></div>
+          <div style="flex:1;background:rgba(124,58,237,.35);border-radius:3px 3px 0 0;height:70%"></div>
+          <div style="flex:1;background:rgba(124,58,237,.6);border-radius:3px 3px 0 0;height:90%"></div>
+          <div style="flex:1;background:rgba(124,58,237,.45);border-radius:3px 3px 0 0;height:75%"></div>
+          <div style="flex:1;background:rgba(124,58,237,.55);border-radius:3px 3px 0 0;height:85%"></div>
+          <div style="flex:1;background:rgba(124,58,237,.3);border-radius:3px 3px 0 0;height:60%"></div>
+          <div style="flex:1;background:rgba(167,139,250,.7);border-radius:3px 3px 0 0;height:95%;box-shadow:0 0 8px rgba(124,58,237,.4)"></div>
         </div>
       </div>
 
       <!-- Features -->
-      <div id="auth-features" style="position:relative;z-index:1;display:flex;flex-direction:column;gap:8px">
+      <div id="auth-features" style="display:grid;grid-template-columns:1fr 1fr;gap:7px;position:relative;z-index:2">
         <div class="auth-feature-item">
-          <div class="auth-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
-          <span data-i18n="feat_stats">Real-time stats &amp; analytics</span>
+          <div class="auth-feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <span data-i18n="feat_stats">Stats en temps réel</span>
         </div>
         <div class="auth-feature-item">
-          <div class="auth-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/></svg></div>
-          <span data-i18n="feat_habits">Habit tracking &amp; streaks</span>
+          <div class="auth-feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <span data-i18n="feat_habits">Habitudes</span>
         </div>
         <div class="auth-feature-item">
-          <div class="auth-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><circle cx="15.5" cy="11.5" r="1"/><circle cx="17.5" cy="13.5" r="1"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59l-.9 7.27A4 4 0 0 0 5.77 20.5c.387.1.79-.025 1.05-.327l1.89-2.173h6.58l1.89 2.173c.26.302.663.427 1.05.327a4 4 0 0 0 2.97-4.64l-.9-7.27A4 4 0 0 0 17.32 5z"/></svg></div>
-          <span data-i18n="feat_gaming">Spotify, Discord &amp; gaming</span>
+          <div class="auth-feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+          </div>
+          <span data-i18n="feat_gaming">Spotify &amp; Gaming</span>
         </div>
         <div class="auth-feature-item">
-          <div class="auth-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-          <span data-i18n="feat_ai">ETHONE AI assistant</span>
+          <div class="auth-feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12h8M12 8v8"/></svg>
+          </div>
+          <span data-i18n="feat_ai">IA ETHONE</span>
         </div>
       </div>
     </div>
 
-    <!-- Panel droit — formulaire -->
-    <div class="auth-split-right" style="width:400px;flex-shrink:0;background:rgba(8,6,11,.98);padding:44px 36px;display:flex;flex-direction:column;justify-content:center;border-left:1px solid rgba(255,255,255,.07);position:relative;border-radius:0 28px 28px 0">
+    <!-- ═══════════════════════════════════════════════════════
+         RIGHT — Glass form panel
+    ═══════════════════════════════════════════════════════════ -->
+    <div class="auth-split-right" style="background:rgba(12,10,24,.98);border-left:1px solid rgba(255,255,255,.05);padding:56px 48px;display:flex;flex-direction:column;justify-content:center;position:relative;backdrop-filter:blur(20px)">
 
-      <!-- Lang selector — simplifié, en haut à gauche de l'auth-screen (hors card) -->
+      <!-- Subtle top accent line -->
+      <div style="position:absolute;top:0;left:48px;right:48px;height:1px;background:linear-gradient(90deg,transparent,rgba(124,58,237,.4),transparent)"></div>
 
-      <!-- Header -->
-      <div id="auth-form-header" style="margin-bottom:32px">
-        <div style="font-size:22px;font-weight:800;color:var(--text);letter-spacing:-.4px;font-family:'Syne',sans-serif" id="auth-form-title">Welcome back</div>
-        <div style="font-size:13px;color:var(--muted);margin-top:5px" id="auth-form-sub">Sign in to your ETHONE dashboard</div>
+      <!-- Form header -->
+      <div id="auth-form-header" style="margin-bottom:34px">
+        <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);border-radius:99px;padding:4px 12px;margin-bottom:18px">
+          <div style="width:6px;height:6px;border-radius:50%;background:#7c3aed;box-shadow:0 0 8px rgba(124,58,237,.6)"></div>
+          <span style="font-size:10px;font-weight:600;color:rgba(167,139,250,.8);font-family:'JetBrains Mono',monospace;letter-spacing:.5px">ETHONE</span>
+        </div>
+        <div id="auth-form-title" style="font-size:26px;font-weight:800;letter-spacing:-.6px;color:#f0edff;font-family:'Syne',sans-serif;line-height:1.1;margin-bottom:6px" data-i18n="welcome_back">Welcome back</div>
+        <div id="auth-form-sub" style="font-size:13px;color:rgba(255,255,255,.3);line-height:1.5" data-i18n="sign_in_sub">Sign in to your ETHONE dashboard</div>
       </div>
 
       <!-- Tabs -->
@@ -4147,28 +5182,28 @@ body.no-anim #bg-canvas{display:none!important}
         <button id="tab-register" class="auth-tab-btn" onclick="switchAuthTab('register')" data-i18n="create_account">Create account</button>
       </div>
 
-      <!-- Login form -->
+      <!-- ── LOGIN FORM ── -->
       <div id="form-login">
         <div class="auth-input-wrap">
           <label class="auth-input-label" data-i18n="email_or_username">Email or Username</label>
           <input id="auth-login-id" type="text" placeholder="you@example.com" class="auth-input" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('auth-login-pw').focus()">
         </div>
-        <div class="auth-input-wrap" style="margin-bottom:24px">
-          <label class="auth-input-label" data-i18n="password">Password</label>
+        <div class="auth-input-wrap">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
+            <label class="auth-input-label" style="margin:0" data-i18n="password">Password</label>
+            <button onclick="doForgotPassword()" class="auth-forgot-btn" data-i18n="forgot_password">Forgot?</button>
+          </div>
           <div style="position:relative">
-            <input id="auth-login-pw" type="password" placeholder="••••••••" class="auth-input" style="padding-right:44px" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
-            <button onclick="togglePwVis('auth-login-pw',this)" style="position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0;line-height:1;transition:color .15s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;pointer-events:none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+            <input id="auth-login-pw" type="password" placeholder="••••••••" class="auth-input" style="padding-right:48px" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+            <button onclick="togglePwVis('auth-login-pw',this)" class="auth-pw-eye">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;pointer-events:none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
           </div>
         </div>
-        <div style="text-align:right;margin-bottom:16px;margin-top:-8px">
-          <button onclick="doForgotPassword()" style="background:none;border:none;color:rgba(255,255,255,.35);font-size:11px;cursor:pointer;font-family:var(--font);transition:color .15s;padding:0"
-            onmouseover="this.style.color='rgba(124,58,237,.8)'" onmouseout="this.style.color='rgba(255,255,255,.35)'"
-            data-i18n="forgot_password">Forgot password?</button>
-        </div>
-        <button onclick="doLogin()" class="auth-submit-btn" id="auth-login-btn" data-i18n="sign_in_btn" style="position:relative;z-index:10">Se connecter →</button>
+        <button onclick="doLogin()" class="auth-submit-btn" id="auth-login-btn" style="position:relative;z-index:10" data-i18n="sign_in_btn">Sign in →</button>
       </div>
 
-      <!-- Register form -->
+      <!-- ── REGISTER FORM ── -->
       <div id="form-register" style="display:none">
         <div class="auth-input-wrap">
           <label class="auth-input-label" data-i18n="username">Username</label>
@@ -4178,35 +5213,30 @@ body.no-anim #bg-canvas{display:none!important}
           <label class="auth-input-label" data-i18n="email_optional">Email (optional)</label>
           <input id="auth-reg-email" type="email" placeholder="email@example.com" class="auth-input" autocomplete="email" onkeydown="if(event.key==='Enter')document.getElementById('auth-reg-pw').focus()">
         </div>
-        <div class="auth-input-wrap" style="margin-bottom:24px">
+        <div class="auth-input-wrap">
           <label class="auth-input-label" data-i18n="password">Password</label>
           <div style="position:relative">
-            <input id="auth-reg-pw" type="password" placeholder="Min. 6 characters" class="auth-input" style="padding-right:44px" autocomplete="new-password"
-              onkeydown="if(event.key==='Enter')doRegister()"
-              oninput="updatePwStrength(this.value)">
-            <button onclick="togglePwVis('auth-reg-pw',this)" style="position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0;line-height:1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;pointer-events:none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+            <input id="auth-reg-pw" type="password" placeholder="Min. 6 characters" class="auth-input" style="padding-right:48px" autocomplete="new-password" onkeydown="if(event.key==='Enter')doRegister()" oninput="updatePwStrength(this.value)">
+            <button onclick="togglePwVis('auth-reg-pw',this)" class="auth-pw-eye">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;pointer-events:none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
           </div>
-          <div id="pw-strength-bar" style="display:flex;gap:4px;margin-top:6px;height:3px">
+          <div id="pw-strength-bar" style="display:flex;gap:4px;margin-top:8px;height:3px">
             <div id="pw-s1" style="flex:1;border-radius:2px;background:rgba(255,255,255,.08);transition:background .3s"></div>
             <div id="pw-s2" style="flex:1;border-radius:2px;background:rgba(255,255,255,.08);transition:background .3s"></div>
             <div id="pw-s3" style="flex:1;border-radius:2px;background:rgba(255,255,255,.08);transition:background .3s"></div>
             <div id="pw-s4" style="flex:1;border-radius:2px;background:rgba(255,255,255,.08);transition:background .3s"></div>
           </div>
-          <div id="pw-strength-label" style="font-size:10px;color:var(--muted);margin-top:4px;height:14px;transition:color .3s"></div>
         </div>
-        <button onclick="doRegister()" class="auth-submit-btn" data-i18n="create_account_btn" style="position:relative;z-index:10">
-          Create account <span style="margin-left:4px">→</span>
-        </button>
-      </div>
-
-      <!-- Error / Loading -->
-      <div id="auth-error" style="margin-top:12px;font-size:12px;color:var(--accent3);text-align:center;min-height:16px;font-weight:500"></div>
-      <div id="auth-loading" style="display:none;margin-top:12px;text-align:center;font-size:12px;color:var(--muted)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="rgba(124,58,237,.6)" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px;animation:spin 1s linear infinite;display:inline-block;vertical-align:middle;margin-right:6px"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Loading…
+        <button onclick="doRegister()" class="auth-submit-btn" style="position:relative;z-index:10;margin-top:4px" data-i18n="create_account_btn">Create account →</button>
       </div>
 
       <!-- Footer -->
-      <div style="text-align:center;margin-top:auto;padding-top:28px;font-size:10px;color:rgba(245,245,247,.15);font-family:var(--mono);letter-spacing:.5px">ETHONE v5.2</div>
+      <div style="margin-top:32px;display:flex;align-items:center;justify-content:center;gap:6px">
+        <span style="display:inline-block;width:16px;height:1px;background:rgba(255,255,255,.1)"></span>
+        <span style="font-size:10px;color:rgba(255,255,255,.15);font-family:'JetBrains Mono',monospace;letter-spacing:1px">ETHONE v5.3</span>
+        <span style="display:inline-block;width:16px;height:1px;background:rgba(255,255,255,.1)"></span>
+      </div>
     </div>
   </div>
 </div>
@@ -4440,16 +5470,15 @@ body.no-anim #bg-canvas{display:none!important}
       </div>
     </div>
     <div class="topbar">
-      <div style="display:flex;align-items:center;gap:14px">
-        <div>
-          <div class="page-title" style="display:flex;align-items:center;gap:8px">
-            <span id="greeting-full"></span>
-            <span id="greeting-mood-emoji" style="font-size:18px"></span>
-          </div>
-          <div class="page-subtitle" style="display:flex;align-items:center;gap:8px">
-            <span id="greeting-date"></span>
-            <span id="greeting-time" style="font-family:var(--mono);color:var(--accent);font-weight:600;font-size:11px"></span>
-          </div>
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <h1 style="font-size:20px;font-weight:800;color:#f0edff;letter-spacing:-.4px;font-family:'Syne',sans-serif;margin:0" id="greeting-full"></h1>
+          <span id="greeting-mood-emoji" style="font-size:16px;line-height:1"></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;color:rgba(255,255,255,.3)" id="greeting-date"></span>
+          <span style="width:3px;height:3px;border-radius:50%;background:rgba(124,58,237,.4);flex-shrink:0"></span>
+          <span style="font-size:11px;font-family:var(--mono);color:rgba(124,58,237,.6);font-weight:600;letter-spacing:.5px" id="greeting-time"></span>
         </div>
       </div>
       <div class="topbar-actions">
@@ -4538,6 +5567,15 @@ body.no-anim #bg-canvas{display:none!important}
         <button class="panel-action" onclick="openModal('add-pinned')">+ Pin link</button>
       </div>
       <div class="pinned-grid" id="pinned-grid"><div style="font-size:12px;color:var(--muted2);padding:4px">No pinned links yet — click + Pin link</div></div>
+    </div>
+
+    <!-- QUICK ACTIONS BAR -->
+    <div id="quick-actions-bar" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+      <button onclick="openModal('add-todo')" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);border-radius:99px;color:#a78bfa;font-size:12px;font-weight:600;font-family:var(--font);cursor:pointer;transition:all .18s" onmouseover="this.style.background='rgba(124,58,237,.2)'" onmouseout="this.style.background='rgba(124,58,237,.1)'"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/></svg>Tâche</button>
+      <button onclick="switchPage('notes',null);setTimeout(newNote,350)" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);border-radius:99px;color:#818cf8;font-size:12px;font-weight:600;font-family:var(--font);cursor:pointer;transition:all .18s" onmouseover="this.style.background='rgba(99,102,241,.2)'" onmouseout="this.style.background='rgba(99,102,241,.1)'"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><path d="M2 4h12M2 8h8M2 12h6"/></svg>Note</button>
+      <button onclick="openModal('add-item')" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.15);border-radius:99px;color:#34d399;font-size:12px;font-weight:600;font-family:var(--font);cursor:pointer;transition:all .18s" onmouseover="this.style.background='rgba(52,211,153,.18)'" onmouseout="this.style.background='rgba(52,211,153,.08)'"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><path d="M10 3H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"/></svg>Lien</button>
+      <button onclick="openModal('add-event')" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.15);border-radius:99px;color:#fbbf24;font-size:12px;font-weight:600;font-family:var(--font);cursor:pointer;transition:all .18s" onmouseover="this.style.background='rgba(251,191,36,.18)'" onmouseout="this.style.background='rgba(251,191,36,.08)'"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><rect x="2" y="3" width="12" height="12" rx="2"/><line x1="5" y1="1" x2="5" y2="5"/><line x1="11" y1="1" x2="11" y2="5"/></svg>Événement</button>
+      <button onclick="switchPage('ai',null)" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:99px;color:rgba(255,255,255,.5);font-size:12px;font-weight:600;font-family:var(--font);cursor:pointer;transition:all .18s" onmouseover="this.style.background='rgba(255,255,255,.08)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,.04)';this.style.color='rgba(255,255,255,.5)'"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>ETHONE IA</button>
     </div>
 
     <!-- Main grid: 2/3 content + 1/3 sidebar widgets -->
@@ -4770,6 +5808,19 @@ body.no-anim #bg-canvas{display:none!important}
             <button class="panel-action" id="cd-edit-btn" onclick="openModal('add-countdown')">Set</button>
           </div>
           <div id="countdown-widget"><div class="empty-state" style="padding:12px"><div class="empty-label">No countdown set</div></div></div>
+        </div>
+
+      <!-- Streak & Mood Widget -->
+        <div class="panel" id="streak-mood-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <div class="panel-title-icon" style="background:rgba(251,191,36,.1);color:#fbbf24">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M8 2c0 0-1 3-3 4.5C3.5 8 2 9.5 2 11.5A6 6 0 0 0 14 11.5c0-2-1.5-3.5-3-5C9 5 8 2 8 2z"/></svg>
+              </div>
+              <span>Streak</span>
+            </div>
+          </div>
+          <div id="streak-overview-content" style="display:flex;flex-direction:column;gap:8px"></div>
         </div>
 
       </div><!-- /right sidebar -->
@@ -5164,12 +6215,25 @@ body.no-anim #bg-canvas{display:none!important}
   <!-- GITHUB -->
   <div id="page-github" class="tab-content">
     <div class="topbar">
-      <div><div class="page-title">GitHub</div><div class="page-subtitle" id="github-sub">Recent activity</div></div>
+      <div>
+        <div class="section-eyebrow">Developer</div>
+        <div class="section-title">GitHub</div>
+        <div class="page-subtitle" id="github-sub" style="margin-top:2px">Recent activity</div>
+      </div>
       <div class="topbar-actions">
-        <button class="btn btn-ghost" onclick="refreshGithub()">↻ Refresh</button>
+        <button class="btn btn-ghost" onclick="refreshGithub()" style="display:flex;align-items:center;gap:6px">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><polyline points="1,4 1,10 7,10"/><path d="M1.5,10A6.5 6.5 0 1 1 3,14.5"/></svg>
+          Refresh
+        </button>
       </div>
     </div>
-    <div id="github-content"></div>
+    <div id="github-content">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="panel" style="background:rgba(255,255,255,.02);animation:shimmerLoad 1.5s infinite;height:80px"></div>
+        <div class="panel" style="background:rgba(255,255,255,.02);animation:shimmerLoad 1.5s infinite;height:60px;animation-delay:.1s"></div>
+        <div class="panel" style="background:rgba(255,255,255,.02);animation:shimmerLoad 1.5s infinite;height:60px;animation-delay:.2s"></div>
+      </div>
+    </div>
   </div>
 
 
@@ -8497,7 +9561,7 @@ function initDashboard(){
   updateSyncIndicator(_sbUser?'saved':'offline');
 
   // ── VISIBLE CONTENT ─────────────────────────────────────────────────
-  renderRecentItems();renderActivity();renderTodos();renderOverviewEvents();
+  renderRecentItems();renderActivity();renderTodos();renderOverviewEvents();renderStreakOverview();
   if(typeof renderPinnedLinks==='function')renderPinnedLinks();
   renderOverviewHabits();
   renderOverviewGoals();
@@ -8658,13 +9722,15 @@ function renderProfileXP(p){
   if(xpLabel)xpLabel.textContent=xp.toLocaleString()+' XP total';
   if(xpNext)xpNext.textContent='Level '+(level+1)+' at '+xpForNext.toLocaleString()+' XP';
   if(xpBar)setTimeout(()=>{xpBar.style.width=progress+'%';},150);
-  // Also update banner level
+  // Update banner level + XP bar
   const lvlBadge=document.getElementById('profile-banner-level');
   const lvlNum=document.getElementById('profile-banner-level-num');
-  if(lvlBadge&&lvlNum){
-    lvlBadge.style.display='block';
-    lvlNum.textContent=level;
-  }
+  const bannerXpBar=document.getElementById('profile-banner-xp-bar');
+  const bannerXpTxt=document.getElementById('profile-banner-xp-text');
+  if(lvlBadge){lvlBadge.style.display='flex';}
+  if(lvlNum) lvlNum.textContent=level;
+  if(bannerXpBar) setTimeout(()=>{bannerXpBar.style.width=progress+'%';},200);
+  if(bannerXpTxt) bannerXpTxt.textContent=(xp-xpForLevel)+'/'+(xpForNext-xpForLevel)+' XP';
   // Breakdown
   if(xpBreak){
     const s=p.state||{};
@@ -8679,6 +9745,34 @@ function renderProfileXP(p){
     if(j)parts.push(j+'📖 journal ('+(j*8)+' XP)');
     xpBreak.textContent=parts.length?parts.join(' · '):'Complete tasks, pomodoros, notes to earn XP';
   }
+}
+
+function gainXP(p, amount, reason){
+  if(!p||!amount)return;
+  const prev=calcProfileXP(p);
+  const prevLevel=Math.max(1,Math.floor(Math.sqrt(prev/50))+1);
+  // Recalculate after (XP is derived from actions, not stored)
+  const newXp=calcProfileXP(p);
+  const newLevel=Math.max(1,Math.floor(Math.sqrt(newXp/50))+1);
+  if(newLevel>prevLevel){
+    toast('🎉 Level up ! Niveau '+newLevel,'success');
+    renderProfileXP(p);
+  }
+}
+
+function checkXPGain(p){
+  if(!p)return;
+  const xp=calcProfileXP(p);
+  const level=Math.max(1,Math.floor(Math.sqrt(xp/50))+1);
+  const lvlNum=document.getElementById('profile-banner-level-num');
+  const bar=document.getElementById('profile-banner-xp-bar');
+  const txt=document.getElementById('profile-banner-xp-text');
+  const xpForLevel=Math.pow(level-1,2)*50;
+  const xpForNext=Math.pow(level,2)*50;
+  const progress=xpForNext>xpForLevel?Math.min(100,Math.round(((xp-xpForLevel)/(xpForNext-xpForLevel))*100)):100;
+  if(lvlNum) lvlNum.textContent=level;
+  if(bar) bar.style.width=progress+'%';
+  if(txt) txt.textContent=(xp-xpForLevel)+'/'+(xpForNext-xpForLevel)+' XP';
 }
 
 function calcProfileXP(p){
@@ -9660,6 +10754,41 @@ function toast(msg,type='info'){
 // ===================================================
 //  ACTIVITY
 // ===================================================
+function renderStreakOverview(){
+  const el=document.getElementById('streak-overview-content');
+  if(!el)return;
+  const p=curP();
+  const habits=(p&&p.state&&p.state.habits?p.state.habits:[]);
+  const today=new Date().toISOString().slice(0,10);
+
+  if(!habits.length){
+    el.innerHTML='<div style="font-size:12px;color:var(--muted);text-align:center;padding:8px">Aucune habitude suivie</div>';
+    return;
+  }
+
+  // Top 4 habits par streak
+  const sorted=[...habits].sort((a,b)=>(habitStreak(b)||0)-(habitStreak(a)||0)).slice(0,4);
+  var html='';
+  sorted.forEach(function(h){
+    var streak=habitStreak(h)||0;
+    var done=h.log&&h.log[today];
+    var pct=Math.min(100,streak*10);
+    var color=done?'#34d399':'rgba(255,255,255,.2)';
+    var bgColor=done?'rgba(52,211,153,.08)':'rgba(255,255,255,.02)';
+    html+='<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:'+bgColor+';border-radius:8px">'+
+      '<span style="font-size:14px">'+escapeHTML(h.icon||'🔥')+'</span>'+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="font-size:11px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+escapeHTML(h.name)+'</div>'+
+        '<div style="height:3px;background:rgba(255,255,255,.06);border-radius:99px;margin-top:4px;overflow:hidden">'+
+          '<div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#7c3aed,'+color+');border-radius:99px;transition:width .6s"></div>'+
+        '</div>'+
+      '</div>'+
+      '<div style="font-size:11px;font-weight:700;color:'+color+';font-family:var(--mono);flex-shrink:0">'+streak+'🔥</div>'+
+    '</div>';
+  });
+  el.innerHTML=html;
+}
+
 function renderOverviewEvents(){
   var el=document.getElementById('overview-events');if(!el)return;
   var p=curP();
@@ -10899,8 +12028,10 @@ function renderStatsPage(){
 function updateStats(){
   const p=curP(),items=p?(p.state.items||[]):[],todos=p?(p.state.todos||[]):[];
   const sf=document.getElementById('stat-files'),sl=document.getElementById('stat-links'),st=document.getElementById('stat-tasks'),ss=document.getElementById('stat-tasks-sub'),fc=document.getElementById('files-count');
-  if(sf)sf.textContent=items.filter(i=>i.type!=='link').length;
-  if(sl)sl.textContent=items.filter(i=>i.type==='link').length;
+  const filesCount=items.filter(i=>i.type!=='link').length;
+  const linksCount=items.filter(i=>i.type==='link').length;
+  if(sf)sf.textContent=filesCount;
+  if(sl)sl.textContent=linksCount;
   if(st)st.textContent=todos.filter(t=>t.done).length;
   if(ss)ss.textContent='of '+todos.length+' total';
   if(fc)fc.textContent=items.length;
@@ -13564,7 +14695,7 @@ function renderManualBadgesUI(){
   if(!grid)return;
   grid.innerHTML=MANUAL_BADGE_OPTS.map(b=>{
     const on=!!manual[b.key];
-    return '<div onclick="toggleManualBadge(\''+b.key+'\')" style="display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:8px;cursor:pointer;border:1.5px solid '+(on?b.bc:'var(--border2)')+';background:'+(on?b.bg:'transparent')+';transition:all .15s;font-size:12px;font-weight:500" id="mb-'+b.key+'">'+b.e+' '+b.label+'</div>';
+    return '<div onclick="toggleManualBadge(this.dataset.bk)" data-bk='+b.key+' style="display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:8px;cursor:pointer;border:1.5px solid '+(on?b.bc:'var(--border2)')+';background:'+(on?b.bg:'transparent')+';transition:all .15s;font-size:12px;font-weight:500" id="mb-'+b.key+'">'+b.e+' '+b.label+'</div>';
   }).join('');
 }
 

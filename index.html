@@ -537,9 +537,20 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .panel{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:var(--r-panel,14px);padding:18px;
   transition:border-color .2s ease, box-shadow .25s ease;
 ;overflow:hidden}
+/* ── QUICK ACTIONS BAR ── */
+#quick-actions-bar button{
+  transition:all .18s cubic-bezier(.22,1,.36,1)!important;
+}
+#quick-actions-bar button:hover{
+  transform:translateY(-1px);
+  box-shadow:0 4px 16px rgba(0,0,0,.2);
+}
+#quick-actions-bar button:active{
+  transform:translateY(0) scale(.97);
+}
 .panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(124,58,237,.4),transparent);opacity:0;transition:opacity .3s}
 .panel:hover::before{opacity:1}
-.panel:hover{border-color:rgba(124,58,237,.15);background:rgba(255,255,255,.032)}
+.panel:hover{border-color:rgba(124,58,237,.18);background:rgba(255,255,255,.034);box-shadow:0 4px 24px rgba(124,58,237,.06)}
 .panel:hover{
   border-color:rgba(124,58,237,.12);
   box-shadow:0 4px 24px rgba(0,0,0,.15), 0 0 0 1px rgba(124,58,237,.05);
@@ -2599,7 +2610,7 @@ body.density-compact .panel{padding:8px 10px!important}
 body.density-compact .stat-card{padding:8px 10px!important;min-height:90px!important}
 body.density-compact .nav-item{padding:4px 8px!important;margin-bottom:0!important;font-size:11.5px!important}
 body.density-compact .nav-section{padding:4px 8px 0!important}
-body.density-compact .nav-section-label{font-size:9px!important;margin-bottom:2px!important;padding:4px 4px 2px!important;margin-top:4px}
+body.density-compact .nav-section-label{font-size:9px!important;margin-bottom:2px!important;padding:4px 4px 2px!important;margin-top:4px;color:rgba(124,58,237,.55)}
 body.density-compact .stat-value{font-size:22px!important}
 body.density-compact .panel-header{padding-bottom:6px!important;margin-bottom:8px!important}
 body.density-compact .overview-main-grid{gap:8px!important}
@@ -3464,7 +3475,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 .sidebar{
   display:flex;flex-direction:column;height:100vh;overflow:hidden;flex-shrink:0;
   width:220px;min-width:160px;max-width:400px;
-  background:rgba(7,5,16,.96);
+  background:linear-gradient(180deg,rgba(10,6,20,.98) 0%,rgba(7,5,16,.97) 100%);
   border-right:1px solid rgba(124,58,237,.1);
   box-shadow:2px 0 24px rgba(0,0,0,.35), 1px 0 0 0 rgba(124,58,237,.08);
   position:fixed;top:0;left:0;z-index:300;
@@ -4052,7 +4063,7 @@ body.no-anim #bg-canvas{display:none!important}
   </div>
 </div>
 
-<div id="auth-screen" style="position:fixed;inset:0;z-index:10002;display:none;align-items:center;justify-content:center;overflow:auto;background:radial-gradient(ellipse at 30% 20%,rgba(124,58,237,.06) 0%,#070510 60%),radial-gradient(ellipse at 70% 80%,rgba(109,40,217,.04) 0%,transparent 50%);padding:20px">
+<div id="auth-screen" style="position:fixed;inset:0;z-index:10002;display:none;align-items:center;justify-content:center;overflow:auto;background:radial-gradient(ellipse at 30% 20%,rgba(20,10,40,.95) 0%,#070510 60%),radial-gradient(ellipse at 70% 80%,rgba(15,8,30,.9) 0%,#070510 100%);padding:20px">
 
   <!-- Canvas particules -->
   <canvas id="auth-particles" style="position:absolute;inset:0;z-index:0;pointer-events:none"></canvas>
@@ -4417,16 +4428,29 @@ body.no-anim #bg-canvas{display:none!important}
           <div class="profile-banner-role" id="profile-banner-bio-el">Personal dashboard</div>
           <div id="profile-banner-socials" style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap"></div>
         </div>
-        <div id="profile-banner-level" style="flex-shrink:0;display:none;background:rgba(0,0,0,.6);border-radius:10px;padding:6px 14px;text-align:center;border:1px solid rgba(124,58,237,.2)">
-          <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:1px;font-family:var(--mono)">LEVEL</div>
-          <div id="profile-banner-level-num" style="font-size:22px;font-weight:800;color:#fff;line-height:1.1"></div>
-        </div>
+        <div id="profile-banner-level" style="flex-shrink:0;display:flex;flex-direction:column;gap:5px;min-width:90px;background:rgba(0,0,0,.4);border-radius:10px;padding:8px 12px;border:1px solid rgba(124,58,237,.2)">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+            <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:1px;font-family:var(--mono)">LEVEL</div>
+            <div id="profile-banner-level-num" style="font-size:16px;font-weight:800;color:#c4b5fd;font-family:var(--mono);line-height:1"></div>
+          </div>
+          <div style="height:3px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden">
+            <div id="profile-banner-xp-bar" style="height:100%;background:linear-gradient(90deg,#7c3aed,#a78bfa);border-radius:99px;width:0%;transition:width .6s cubic-bezier(.22,1,.36,1)"></div>
+          </div>
+          <div id="profile-banner-xp-text" style="font-size:9px;color:rgba(255,255,255,.3);font-family:var(--mono)">0/100 XP</div</div>
       </div>
     </div>
     <div class="topbar">
-      <div>
-        <div class="page-title"><span id="greeting-full"></span></div>
-        <div class="page-subtitle" id="greeting-date"></div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div>
+          <div class="page-title" style="display:flex;align-items:center;gap:8px">
+            <span id="greeting-full"></span>
+            <span id="greeting-mood-emoji" style="font-size:18px"></span>
+          </div>
+          <div class="page-subtitle" style="display:flex;align-items:center;gap:8px">
+            <span id="greeting-date"></span>
+            <span id="greeting-time" style="font-family:var(--mono);color:var(--accent);font-weight:600;font-size:11px"></span>
+          </div>
+        </div>
       </div>
       <div class="topbar-actions">
         <div class="topbar-lang"><div class="lang-dropdown" id="lang-dd-topbar" onclick="toggleLangDropdown('lang-dd-topbar')">
@@ -5921,15 +5945,25 @@ body.no-anim #bg-canvas{display:none!important}
               </button>
             </div>
             <!-- Slider custom stylé -->
-            <div style="position:relative;padding:10px 4px 4px">
+            <div style="position:relative;padding:10px 4px 0">
               <!-- Track background -->
-              <div id="radius-track-bg" style="position:absolute;left:4px;right:4px;top:50%;transform:translateY(-50%);height:4px;background:rgba(255,255,255,.08);border-radius:99px;margin-top:5px"></div>
+              <div style="position:absolute;left:4px;right:4px;top:14px;height:4px;background:rgba(255,255,255,.08);border-radius:99px"></div>
               <!-- Track fill (violet) -->
-              <div id="radius-track-fill" style="position:absolute;left:4px;top:50%;transform:translateY(-50%);height:4px;background:linear-gradient(90deg,#7c3aed,#a78bfa);border-radius:99px;width:33%;margin-top:5px;transition:width .15s;pointer-events:none"></div>
-              <!-- Input range invisible par dessus -->
+              <div id="radius-track-fill" style="position:absolute;left:4px;top:14px;height:4px;background:linear-gradient(90deg,#7c3aed,#a78bfa);border-radius:99px;width:33%;transition:width .2s;pointer-events:none;box-shadow:0 0 8px rgba(124,58,237,.4)"></div>
+              <!-- Input range -->
               <input type="range" id="radius-slider" min="0" max="24" value="8" step="4"
                 oninput="setRadius(this.value);updateRadiusTrack(this.value)"
-                style="width:100%;height:20px;opacity:0;cursor:pointer;position:relative;z-index:2;margin:0;padding:0;appearance:none;-webkit-appearance:none">
+                style="width:100%;height:28px;opacity:0;cursor:pointer;position:relative;z-index:2;margin:0;padding:0;appearance:none;-webkit-appearance:none;background:transparent">
+            </div>
+            <!-- Tick marks -->
+            <div style="display:flex;justify-content:space-between;padding:2px 2px 0;margin-top:2px">
+              <span id="rtick-0" onclick="setRadius(0);updateRadiusTrack(0);document.getElementById('radius-slider').value=0" style="font-size:9px;font-family:var(--mono);color:rgba(255,255,255,.3);cursor:pointer;transition:color .15s;user-select:none;padding:2px 0">0</span>
+              <span id="rtick-4" onclick="setRadius(4);updateRadiusTrack(4);document.getElementById('radius-slider').value=4" style="font-size:9px;font-family:var(--mono);color:rgba(255,255,255,.3);cursor:pointer;transition:color .15s;user-select:none;padding:2px 0">4</span>
+              <span id="rtick-8" onclick="setRadius(8);updateRadiusTrack(8);document.getElementById('radius-slider').value=8" style="font-size:9px;font-family:var(--mono);color:var(--accent);cursor:pointer;transition:color .15s;user-select:none;padding:2px 0;font-weight:700">8</span>
+              <span id="rtick-12" onclick="setRadius(12);updateRadiusTrack(12);document.getElementById('radius-slider').value=12" style="font-size:9px;font-family:var(--mono);color:rgba(255,255,255,.3);cursor:pointer;transition:color .15s;user-select:none;padding:2px 0">12</span>
+              <span id="rtick-16" onclick="setRadius(16);updateRadiusTrack(16);document.getElementById('radius-slider').value=16" style="font-size:9px;font-family:var(--mono);color:rgba(255,255,255,.3);cursor:pointer;transition:color .15s;user-select:none;padding:2px 0">16</span>
+              <span id="rtick-20" onclick="setRadius(20);updateRadiusTrack(20);document.getElementById('radius-slider').value=20" style="font-size:9px;font-family:var(--mono);color:rgba(255,255,255,.3);cursor:pointer;transition:color .15s;user-select:none;padding:2px 0">20</span>
+              <span id="rtick-24" onclick="setRadius(24);updateRadiusTrack(24);document.getElementById('radius-slider').value=24" style="font-size:9px;font-family:var(--mono);color:rgba(255,255,255,.3);cursor:pointer;transition:color .15s;user-select:none;padding:2px 0">24</span>
             </div>
           </div>
 
@@ -7046,6 +7080,9 @@ async function onAuthSuccess(userArg){
   removeAntiFlash();
   const authEl=document.getElementById('auth-screen');
   if(authEl){ authEl.style.setProperty('display','none'); }
+  // Remettre les backgrounds visibles
+  const _blr=document.getElementById('nexus-bg-layer');
+  if(_blr){_blr.style.opacity='';_blr.style.pointerEvents='none';}
 
   let boot=document.getElementById('nexus-boot-screen');
   if(!boot){
@@ -8959,9 +8996,18 @@ function updateClock(){
   };
   const slot=h24<12?'morning':h24<18?'afternoon':'evening';
   const fullGreet=(GREETS[lang]||GREETS.en)[slot];
-  const gt=document.getElementById('greeting-time');if(gt)gt.textContent='';
+  const gt=document.getElementById('greeting-time');if(gt)gt.textContent=h+':'+m;
   const gf=document.getElementById('greeting-full');if(gf)gf.textContent=fullGreet;
-  const gd=document.getElementById('greeting-date');if(gd)gd.textContent=ds+', '+h+':'+m+':'+s;
+  const gd=document.getElementById('greeting-date');if(gd)gd.textContent=ds;
+  // Mood emoji selon heure
+  const hr=parseInt(h,10);
+  const moodEl=document.getElementById('greeting-mood-emoji');
+  if(moodEl){
+    if(hr>=5&&hr<12) moodEl.textContent='\u2600\uFE0F';
+    else if(hr>=12&&hr<17) moodEl.textContent='\u26A1';
+    else if(hr>=17&&hr<21) moodEl.textContent='\uD83C\uDF06';
+    else moodEl.textContent='\uD83C\uDF19';
+  }
 }
 setInterval(updateClock,1000);
   // Fix scroll sidebar
@@ -14654,8 +14700,17 @@ function initSliderFills(){
 function updateRadiusTrack(v){
   const fill=document.getElementById('radius-track-fill');
   if(!fill)return;
-  const pct=(parseInt(v)/24)*100;
+  const val=parseInt(v);
+  const pct=(val/24)*100;
   fill.style.width=pct+'%';
+  // Update ticks
+  [0,4,8,12,16,20,24].forEach(t=>{
+    const el=document.getElementById('rtick-'+t);
+    if(!el)return;
+    const active=t===val;
+    el.style.color=active?'var(--accent)':'rgba(255,255,255,.3)';
+    el.style.fontWeight=active?'700':'400';
+  });
 }
 
 function setRadius(v){
@@ -17278,6 +17333,11 @@ function showAuth(){
   if(boot) boot.style.display='none';
   const a=document.getElementById('auth-screen');
   if(a){ a.style.setProperty('display','flex'); a.style.opacity='1'; }
+  // Masquer les backgrounds animés sur l'auth screen
+  ['nexus-bg-layer','bg-canvas'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.opacity='0';
+  });
   updateClock();
   applyI18n();
   updateAuthLangBar();

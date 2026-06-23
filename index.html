@@ -9,6 +9,9 @@ html.booting #auth-screen,
 html.booting #profile-screen,
 html.booting #password-screen { display: none !important; }
 html.booting #nexus-boot-screen { display: flex !important; }
+/* Hors booting: auth/profile/password cachés par défaut, sidebar/main visibles via JS */
+#auth-screen, #profile-screen, #password-screen { display: none; }
+#main-sidebar, #main-content { display: none; }
 </style>
 <script>document.documentElement.classList.add('booting');</script>
 <script>
@@ -925,7 +928,7 @@ tbody tr:last-child td { border-bottom: none; }
   </div>
 </div>
 
-<nav class="sidebar" id="main-sidebar" style="display:none;opacity:1">
+<nav class="sidebar" id="main-sidebar">
   <div class="logo" style="position:relative">
     <div class="logo-icon" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);box-shadow:0 2px 12px rgba(124,58,237,.3)">
       <svg width="14" height="14" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="url(#eg)"/><path d="M8 8h16v3H11v4.5h12v3H11V23h13v3H8V8z" fill="white"/><defs><linearGradient id="eg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#4c1d95"/></linearGradient></defs></svg>
@@ -1071,7 +1074,7 @@ tbody tr:last-child td { border-bottom: none; }
 <div class="resize-handle" id="resize-handle"></div>
 
 <!-- MAIN -->
-<main class="main" id="main-content" style="display:none;opacity:1">
+<main class="main" id="main-content">
 
   <!-- OVERVIEW -->
   <div id="page-dashboard" class="tab-content active" style="padding-top:2px">
@@ -14236,8 +14239,8 @@ function _show(what){
   } else if(what==='dashboard'){
     var sb2=document.getElementById('main-sidebar');
     var mc2=document.getElementById('main-content');
-    if(sb2) sb2.style.display='flex';
-    if(mc2) mc2.style.display='block';
+    if(sb2) sb2.style.setProperty('display','flex','important');
+    if(mc2) mc2.style.setProperty('display','block','important');
   } else if(what==='profiles'){
     var ps=document.getElementById('profile-screen');
     if(ps) ps.style.display='flex';

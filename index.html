@@ -131,6 +131,11 @@ window.onerror = function(msg, src, line, col, err) {
   --twitch: #9147ff;
   --sh: 0 4px 16px rgba(0,0,0,.4);
   --sh-lg: 0 12px 40px rgba(0,0,0,.5);
+  /* Compat */
+  --surface: rgba(255,255,255,.04); --surface2: rgba(255,255,255,.07); --surface3: rgba(255,255,255,.11);
+  --accent2: #34d399; --accent3: #f87171; --accent4: #fbbf24; --accent5: #94a3b8;
+  --accent-subtle: rgba(139,92,246,.08); --r-sm: 10px; --r-md: 14px; --r-xs: 7px;
+  --steam2: #66c0f4; --sb-bg: #0c0c0f;
 }
 
 /* ── RESET ─────────────────────────────────────────────────── */
@@ -385,7 +390,7 @@ label:not(.lb-label):not(.lb-check-row) {
 
 /* ── PAGE TRANSITIONS ────────────────────────────────────────── */
 .tab-content { display: none; }
-.tab-content.active { display: block; animation: fadeUp .18s ease both; }
+.tab-content.active { display: block !important; animation: fadeUp .18s ease both; }
 @keyframes fadeUp { from { opacity:0; transform: translateY(7px); } to { opacity:1; transform:none; } }
 .tab-content.page-entering { animation: fadeUp .18s ease both; }
 
@@ -592,6 +597,35 @@ tbody tr:last-child td { border-bottom: none; }
   .stats-row { grid-template-columns: repeat(2,1fr); }
   .grid-3, .grid-2 { grid-template-columns: 1fr; }
 }
+
+/* ── EXTRA COMPATIBILITY VARS ─────────────────────────────── */
+:root {
+  --valo-red: #ff4655;
+  --lol-gold: #c89b3c;
+  --grad-accent: linear-gradient(135deg,#8b5cf6,#7c3aed);
+}
+/* Fix: --surface vars dans les composants dynamiques */
+.stat-card, .panel, .conn-card, .game-card,
+.settings-card, .countdown-card, .goal-card, .journal-entry {
+  --surface: rgba(255,255,255,.04);
+  --surface2: rgba(255,255,255,.07);
+  --surface3: rgba(255,255,255,.11);
+  --r-sm: 10px; --r-md: 14px;
+}
+/* Fix: panels qui utilisent var(--text) */
+.panel, .settings-row, .conn-card {
+  color: #fafaf9;
+}
+/* Fix: topbar dans les pages doit avoir une hauteur cohérente */
+.topbar {
+  min-height: 60px !important;
+}
+/* Fix: stat-card grid responsive sur petits écrans */
+@media(max-width:600px) {
+  .stats-row { grid-template-columns: repeat(2,1fr) !important; gap:6px !important; }
+}
+/* ── END COMPAT ─────────────────────────────────────────────── */
+
 </style>
 </head>
 <body>
@@ -671,7 +705,7 @@ tbody tr:last-child td { border-bottom: none; }
     .lb-social:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.18);color:#fafaf9}
     .lb-tab{flex:1;height:38px;border:none;border-radius:9px;font-size:13px;font-weight:500;font-family:Inter,system-ui,sans-serif;cursor:pointer;transition:all .15s;color:rgba(250,250,249,.35);background:transparent}
     .lb-tab:hover:not(.lb-on){color:rgba(250,250,249,.65);background:rgba(255,255,255,.04)}
-    .lb-on{background:#1c1c1f!important;color:rgba(250,250,249,.92)!important;font-weight:600!important;box-shadow:0 1px 4px rgba(0,0,0,.4)!important}
+    /* lb-on managed via JS inline styles */
     .lb-ghost{background:none;border:none;font-size:12px;font-family:Inter,system-ui,sans-serif;color:rgba(250,250,249,.3);cursor:pointer;padding:0;transition:color .15s}
     .lb-ghost:hover{color:rgba(250,250,249,.7)}
     .lb-eye{position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(250,250,249,.28);cursor:pointer;padding:4px;border-radius:5px;display:flex;align-items:center;transition:color .14s}
@@ -701,10 +735,19 @@ tbody tr:last-child td { border-bottom: none; }
 
     <!-- TABS -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:3px;margin-bottom:28px">
-      <button id="tab-login" class="lb-tab lb-on" onclick="switchAuthTab('login')" data-i18n="sign_in">Connexion</button>
+      <button id="tab-login" class="lb-tab" onclick="switchAuthTab('login')" data-i18n="sign_in">Connexion</button>
       <button id="tab-register" class="lb-tab" onclick="switchAuthTab('register')" data-i18n="create_account">Créer un compte</button>
     </div>
 
+    <script>
+      (function(){
+        var tl=document.getElementById('tab-login');
+        var tr=document.getElementById('tab-register');
+        var base='flex:1;height:38px;border:none;border-radius:9px;font-size:13px;font-family:Inter,system-ui,sans-serif;cursor:pointer;transition:all .15s';
+        if(tl) tl.style.cssText=base+';font-weight:600;background:#1c1c1f;color:rgba(250,250,249,.92);box-shadow:0 1px 4px rgba(0,0,0,.4)';
+        if(tr) tr.style.cssText=base+';font-weight:500;background:transparent;color:rgba(250,250,249,.35)';
+      })();
+    </script>
     <!-- Error + Loading (shared between login and register) -->
     <div id="auth-error" class="lb-err" style="font-size:12.5px;color:#fca5a5;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.16);border-radius:10px;padding:10px 14px;margin-bottom:14px;line-height:1.45;display:none"></div>
     <div id="auth-loading" style="display:none;text-align:center;padding:6px 0;margin-bottom:10px">
@@ -737,7 +780,7 @@ tbody tr:last-child td { border-bottom: none; }
       <!-- Remember -->
       <label style="display:flex;align-items:center;gap:9px;margin-bottom:20px;cursor:pointer;user-select:none;font-size:13px;color:rgba(245,245,243,.42);font-family:Inter,system-ui,sans-serif">
         <input type="checkbox" id="auth-remember" style="width:15px;height:15px;accent-color:#8b5cf6;cursor:pointer;flex-shrink:0">
-        Se souvenir de moi
+        <span data-i18n="remember_me">Se souvenir de moi</span>
       </label>
 
       <!-- Submit -->
@@ -749,7 +792,7 @@ tbody tr:last-child td { border-bottom: none; }
       <!-- Divider -->
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
         <span style="flex:1;height:1px;background:rgba(255,255,255,.08);display:block"></span>
-        <span style="font-size:12px;color:rgba(255,255,255,.25);white-space:nowrap;font-family:Inter,system-ui,sans-serif">ou continuer avec</span>
+        <span id="auth-or-text" style="font-size:12px;color:rgba(255,255,255,.25);white-space:nowrap;font-family:Inter,system-ui,sans-serif" data-i18n="or_continue_with">ou continuer avec</span>
         <span style="flex:1;height:1px;background:rgba(255,255,255,.08);display:block"></span>
       </div>
 
@@ -2521,6 +2564,32 @@ tbody tr:last-child td { border-bottom: none; }
             </div>
           </div>
           <div class="settings-card">
+            <div class="settings-section-header">
+              <div class="settings-section-title" style="display:flex;align-items:center;gap:8px">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M10 2H3a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M14 2l4 4-8 8H6v-4l8-8z"/></svg>
+                Fichiers &amp; Liens
+              </div>
+            </div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">Gérer les liens épinglés</div>
+                <div class="settings-desc">Ajouter, modifier ou supprimer vos liens</div>
+              </div>
+              <button class="btn btn-ghost" onclick="switchPage('files')" style="font-size:11.5px">Ouvrir →</button>
+            </div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-label" id="settings-links-count">— liens enregistrés</div>
+                <div class="settings-desc">Fichiers, URLs et ressources</div>
+              </div>
+              <button class="btn btn-ghost" onclick="openModal('add-item')" style="font-size:11.5px">+ Ajouter</button>
+            </div>
+            <div class="settings-row" id="settings-links-preview" style="flex-direction:column;align-items:flex-start;gap:6px">
+              <!-- Preview injectée dynamiquement -->
+            </div>
+          </div>
+
+          <div class="settings-card">
             <div class="settings-card-title">Session</div>
             <button class="btn btn-danger" onclick="doLogout()" style="font-size:12px">Sign out</button>
           </div>
@@ -3354,10 +3423,10 @@ function abortAfter(ms){
 
 function escapeHTML(value){
   return String(value ?? '').replace(/[&<>"']/g, c => ({
-    '&':'&amp;',
-    '<':'&lt;',
-    '>':'&gt;',
-    '"':'&quot;',
+    '&':'\u0026amp;',
+    '<':'\u0026lt;',
+    '>':'\u0026gt;',
+    '"':'\u0026quot;',
     "'":'&#39;'
   }[c]));
 }
@@ -3585,54 +3654,104 @@ function switchAuthTab(tab){
   const title=document.getElementById('auth-form-title');
   const sub=document.getElementById('auth-form-sub');
 
-  // Update tabs — lb-on = active style
-  if(tabLogin){ tabLogin.classList.toggle('lb-on', tab==='login'); }
-  if(tabReg){ tabReg.classList.toggle('lb-on', tab==='register'); }
-
-  if(typeof gsap!=='undefined'){
-    // Fade out current form
-    const current=tab==='login'?regForm:loginForm;
-    const next=tab==='login'?loginForm:regForm;
-    if(current&&current.style.display!=='none'){
-      gsap.to(current,{opacity:0,y:-8,duration:.15,ease:'power2.in',onComplete:()=>{
-        current.style.display='none';
-        next.style.display='block';
-        next.style.opacity='1';
-        gsap.from(next,{y:10,duration:.22,ease:'power2.out',clearProps:'transform'});
-      }});
+  // ── Visual tab indicator ──────────────────────────────────
+  if(tabLogin && tabReg){
+    if(tab==='login'){
+      tabLogin.style.cssText='flex:1;height:38px;border:none;border-radius:9px;font-size:13px;font-weight:600;font-family:Inter,system-ui,sans-serif;cursor:pointer;background:#1c1c1f;color:rgba(250,250,249,.92);box-shadow:0 1px 4px rgba(0,0,0,.4);transition:all .15s';
+      tabReg.style.cssText='flex:1;height:38px;border:none;border-radius:9px;font-size:13px;font-weight:500;font-family:Inter,system-ui,sans-serif;cursor:pointer;background:transparent;color:rgba(250,250,249,.35);transition:all .15s';
     } else {
-      current.style.display='none';
-      next.style.display='block';
-      next.style.opacity='1';
-      gsap.from(next,{y:10,duration:.22,ease:'power2.out',clearProps:'transform'});
+      tabReg.style.cssText='flex:1;height:38px;border:none;border-radius:9px;font-size:13px;font-weight:600;font-family:Inter,system-ui,sans-serif;cursor:pointer;background:#1c1c1f;color:rgba(250,250,249,.92);box-shadow:0 1px 4px rgba(0,0,0,.4);transition:all .15s';
+      tabLogin.style.cssText='flex:1;height:38px;border:none;border-radius:9px;font-size:13px;font-weight:500;font-family:Inter,system-ui,sans-serif;cursor:pointer;background:transparent;color:rgba(250,250,249,.35);transition:all .15s';
     }
-  } else {
-    if(loginForm)loginForm.style.display=tab==='login'?'block':'none';
-    if(regForm)regForm.style.display=tab==='register'?'block':'none';
   }
 
-  // Reset pw strength quand on revient sur login
-  if(tab==='login'){[1,2,3,4].forEach(i=>{const b=document.getElementById('pw-s'+i);if(b)b.style.background='rgba(255,255,255,.08)';});const sl=document.getElementById('pw-strength-label');if(sl)sl.textContent='';}
-  // Update header (traduit)
+  // ── Show/hide forms ───────────────────────────────────────
+  if(loginForm) loginForm.style.display = tab==='login' ? 'block' : 'none';
+  if(regForm) regForm.style.display = tab==='register' ? 'block' : 'none';
+
+  // ── Header update (i18n) ──────────────────────────────────
   if(tab==='login'){
-    if(title)title.textContent=t('welcome_back');
-    if(sub)sub.textContent=t('sign_in_sub');
+    if(title) title.textContent = (typeof t==='function') ? t('welcome_back') : 'Bon retour';
+    if(sub) sub.textContent = (typeof t==='function') ? t('sign_in_sub') : 'Connectez-vous à votre dashboard ETHONE';
   } else {
-    if(title)title.textContent=t('create_account_title');
-    if(sub)sub.textContent=t('create_account_sub');
+    if(title) title.textContent = (typeof t==='function') ? t('create_account_title') : 'Créer un compte';
+    if(sub) sub.textContent = (typeof t==='function') ? t('create_account_sub') : 'Rejoignez ETHONE et commencez votre aventure';
   }
-  const _ae=document.getElementById('auth-error');
-  if(_ae){ _ae.textContent=''; _ae.style.display='none'; }
+
+  // ── Reset error + pw strength ─────────────────────────────
+  const ae=document.getElementById('auth-error');
+  if(ae){ ae.textContent=''; ae.style.display='none'; }
+  if(tab==='login'){
+    [1,2,3,4].forEach(i=>{ const b=document.getElementById('pw-s'+i); if(b) b.style.background='rgba(255,255,255,.08)'; });
+  }
 }
-
-
-
 function setAuthLoading(v){
   const ld=document.getElementById('auth-loading');
   const er=document.getElementById('auth-error');
   if(ld) ld.style.display=v?'block':'none';
   if(er){ er.textContent=''; er.style.display='none'; }
 }
+
+
+// ── Render links preview in settings ─────────────────────────
+function renderSettingsLinksPreview(){
+  var p=curP(); if(!p) return;
+  var items=p.state.items||[];
+  var countEl=document.getElementById('settings-links-count');
+  var previewEl=document.getElementById('settings-links-preview');
+  var n=items.length;
+  if(countEl) countEl.textContent=n+(n>1?' liens':' lien')+' enregistr\u00e9'+(n>1?'s':'');
+  if(!previewEl) return;
+  if(!n){
+    var btn=document.createElement('button');
+    btn.textContent='Ajouter le premier';
+    btn.style.cssText='background:none;border:none;color:#a78bfa;cursor:pointer;font-size:12px';
+    btn.onclick=function(){openModal('add-item');};
+    var wrap=document.createElement('div');
+    wrap.style.cssText='font-size:12px;color:rgba(250,250,249,.3);padding:4px 0;display:flex;align-items:center;gap:4px';
+    wrap.appendChild(document.createTextNode('Aucun lien \u2014 '));
+    wrap.appendChild(btn);
+    previewEl.innerHTML='';
+    previewEl.appendChild(wrap);
+    return;
+  }
+  previewEl.innerHTML='';
+  var show=items.slice(0,4);
+  show.forEach(function(it){
+    var row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:9px;padding:5px 0;width:100%';
+    var ico=document.createElement('div');
+    ico.style.cssText='width:28px;height:28px;border-radius:7px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px';
+    ico.textContent=it.icon||'\uD83D\uDD17';
+    var info=document.createElement('div');
+    info.style.cssText='flex:1;min-width:0';
+    var nm=document.createElement('div');
+    nm.style.cssText='font-size:12.5px;font-weight:500;color:#fafaf9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
+    nm.textContent=it.name||'Lien';
+    var url=document.createElement('div');
+    url.style.cssText='font-size:10.5px;color:rgba(250,250,249,.35);white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
+    url.textContent=it.url||'';
+    info.appendChild(nm); info.appendChild(url);
+    var del=document.createElement('button');
+    del.textContent='\u00d7';
+    del.style.cssText='background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.15);border-radius:6px;color:#f87171;font-size:11px;padding:3px 8px;cursor:pointer';
+    del.onclick=(function(id){return function(){deleteItem(id);renderSettingsLinksPreview();};})(it.id);
+    row.appendChild(ico); row.appendChild(info); row.appendChild(del);
+    previewEl.appendChild(row);
+  });
+  if(n>4){
+    var more=document.createElement('div');
+    more.style.cssText='font-size:11px;color:rgba(250,250,249,.3);padding-top:4px';
+    var moreBtn=document.createElement('button');
+    moreBtn.textContent='Voir tout';
+    moreBtn.style.cssText='background:none;border:none;color:#a78bfa;cursor:pointer;font-size:11px';
+    moreBtn.onclick=function(){switchPage('files');};
+    more.appendChild(document.createTextNode('+'+(n-4)+' autres \u2192 '));
+    more.appendChild(moreBtn);
+    previewEl.appendChild(more);
+  }
+}
+
 
 // ── Google OAuth ──────────────────────────────────────────────
 async function doGoogle(){
@@ -5930,7 +6049,7 @@ function addAIMessage(role,text){
     :`<div class="ai-avatar nexus"><svg viewBox="0 0 32 32" fill="none" style="width:14px;height:14px"><rect width="32" height="32" rx="8" fill="url(#eai)"/><path d="M8 8h16v3H11v4.5h12v3H11V23h13v3H8V8z" fill="white"/><defs><linearGradient id="eai" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#4c1d95"/></linearGradient></defs></svg></div>`;
   // Simple markdown: **bold**, `code`, [link](url), newlines
   const html=text
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/&/g,'\u0026amp;').replace(/</g,'\u0026lt;').replace(/>/g,'\u0026gt;')
     .replace(/\[([^\]]+)\]\(#open-note-(\d+)\)/g,(_,label,id)=>`<a href="#" onclick="event.preventDefault();openNoteFromAI(${id})" style="color:var(--accent);text-decoration:underline;cursor:pointer">${label}</a>`)
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" style="color:var(--accent);text-decoration:underline">$1</a>')
     .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
@@ -11359,9 +11478,10 @@ function updateAuthLangBar(){
   const lang=typeof _lang!=='undefined'?_lang:'fr';
   document.querySelectorAll('#auth-lang-bar button').forEach(btn=>{
     const isActive=btn.dataset.l===lang;
-    btn.style.background=isActive?'rgba(124,58,237,.9)':'transparent';
-    btn.style.color=isActive?'#fff':'rgba(255,255,255,.35)';
-    btn.style.boxShadow=isActive?'0 2px 8px rgba(124,58,237,.4)':'none';
+    btn.style.background=isActive?'rgba(255,255,255,.12)':'transparent';
+    btn.style.color=isActive?'rgba(255,255,255,.9)':'rgba(255,255,255,.35)';
+    btn.style.boxShadow='none';
+    btn.style.fontWeight=isActive?'600':'400';
   });
 }
 
@@ -13644,6 +13764,8 @@ var I18N = {
     'toast_disconnected': 'Disconnected',
     'welcome_back': 'Welcome back',
     'forgot_password': 'Forgot password?',
+  'or_continue_with': 'or continue with',
+  'remember_me': 'Remember me',
     'sign_in_sub': 'Sign in to your ETHONE dashboard',
     'create_account_title': 'Create account',
     'create_account_sub': 'Join ETHONE and start your journey',
@@ -13791,6 +13913,8 @@ var I18N = {
     'toast_disconnected': 'Déconnecté',
     'welcome_back': 'Bon retour',
     'forgot_password': 'Mot de passe oublié ?',
+  'or_continue_with': 'ou continuer avec',
+  'remember_me': 'Se souvenir de moi',
     'sign_in_sub': 'Connectez-vous à votre dashboard ETHONE',
     'create_account_title': 'Créer un compte',
     'create_account_sub': 'Rejoignez ETHONE et commencez votre aventure',
@@ -14059,6 +14183,8 @@ var I18N = {
     'toast_disconnected': 'Getrennt',
     'welcome_back': 'Willkommen zurück',
     'forgot_password': 'Passwort vergessen?',
+  'or_continue_with': 'oder weiter mit',
+  'remember_me': 'Angemeldet bleiben',
     'sign_in_sub': 'Melde dich bei deinem ETHONE Dashboard an',
     'create_account_title': 'Konto erstellen',
     'create_account_sub': 'Tritt ETHONE bei und starte dein Abenteuer',
@@ -14225,7 +14351,20 @@ function _goToDashboard(profileId){
 (function(){
   if(typeof I18N!=='undefined')applyI18n();
 
-  // ── FAILSAFE: si rien ne s'affiche après 3s, montrer auth ─
+  // ── Détection retour OAuth ─────────────────────────────────
+  const _isOAuthCallback=(
+    window.location.hash.includes('access_token')||
+    window.location.hash.includes('refresh_token')||
+    window.location.search.includes('code=')
+  );
+  // Nettoyer le hash OAuth de l'URL après traitement
+  if(_isOAuthCallback){
+    setTimeout(()=>{history.replaceState(null,'',window.location.pathname);},2000);
+  }
+
+  // ── FAILSAFE ─────────────────────────────────────────────
+  // Plus long si retour OAuth (Supabase a besoin de temps pour échanger le token)
+  const _failsafeMs = _isOAuthCallback ? 7000 : 1500;
   const _bootFailsafe=setTimeout(function(){
     const as=document.getElementById('auth-screen');
     const bs=document.getElementById('nexus-boot-screen');
@@ -14237,12 +14376,15 @@ function _goToDashboard(profileId){
     const asVis=as&&as.style.display==='flex';
     const psVis=ps&&ps.style.display==='flex';
     if(!mcVis&&!asVis&&!psVis){
-      console.warn('[ETHONE] Failsafe: nothing visible after 3s → showAuth()');
-      if(bs) bs.style.display='none';
-      const s=document.getElementById('anti-flash'); if(s) s.remove();
-      if(as){ as.style.cssText+='display:flex!important;'; }
+      console.warn('[ETHONE] Failsafe: forcing showAuth()');
+      try{ showAuth(); }catch(e){
+        // Last resort
+        if(bs) bs.style.cssText='display:none!important';
+        const s=document.getElementById('anti-flash'); if(s) s.remove();
+        if(as) as.style.cssText='position:fixed;inset:0;z-index:10002;display:flex!important;align-items:center;justify-content:center;background:#09090b;padding:20px';
+      }
     }
-  }, 3000);
+  }, _failsafeMs);
   window._bootFailsafeTimer=_bootFailsafe;
 
   sb.auth.getSession().then(async({data:{session},error})=>{
@@ -14442,6 +14584,10 @@ function animatePageIn(pageEl, pageName){
     'connections':()=>{if(typeof loadConnectionsUI==='function')loadConnectionsUI();},
     'github':()=>{if(typeof refreshGithub==='function')refreshGithub();},
   };
+  const renders2={
+    'settings':()=>{if(typeof renderSettingsLinksPreview==='function')renderSettingsLinksPreview();},
+  };
+  if(pageName && renders2[pageName]) renders2[pageName]();
   if(pageName && renders[pageName]) renders[pageName]();
   if(typeof hidePageLoader==='function') setTimeout(hidePageLoader,100);
 }

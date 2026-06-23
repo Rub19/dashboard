@@ -617,14 +617,34 @@ tbody tr:last-child td { border-bottom: none; }
 @media(max-width:600px) {
   .stats-row { grid-template-columns: repeat(2,1fr) !important; gap:6px !important; }
 }
-/* ── END COMPAT ─────────────────────────────────────────────── */
+/* ── LAYOUT FIX: tous les éléments flottants hors du flux flex du body ── */
+#nexus-boot-screen,
+.modal-overlay,
+#presentation-overlay,
+#notif-overlay,
+#notif-panel,
+#cmd-palette-overlay,
+#link-preview,
+#toasts, .toast-container,
+#mobile-bottom-nav,
+#toast-container {
+  position: fixed !important;
+}
+.modal-overlay { inset: 0; z-index: 10000; }
+#presentation-overlay { inset: 0; z-index: 10001; }
+#notif-overlay { inset: 0; z-index: 9000; }
+#notif-panel { top: 0; right: 0; bottom: 0; z-index: 9001; }
+#cmd-palette-overlay { inset: 0; z-index: 10002; }
+#link-preview { z-index: 9500; pointer-events: none; }
+#toasts, .toast-container, #toast-container { bottom: 24px; right: 24px; z-index: 99999; }
+#mobile-bottom-nav { bottom: 0; left: 0; right: 0; z-index: 400; }
 
 </style>
 </head>
 <body>
 
 <!-- PASSWORD SCREEN -->
-<div id="password-screen" style="display:none">
+<div id="password-screen" style="display:none;position:fixed;inset:0;z-index:9998;background:#09090b;align-items:center;justify-content:center;flex-direction:column">
   <div class="pw-avatar" id="pw-avatar"></div>
   <div class="pw-name" id="pw-name">Profile</div>
   <div class="pw-sub" id="pw-sub">Enter your PIN to continue</div>
@@ -646,9 +666,9 @@ tbody tr:last-child td { border-bottom: none; }
 <!-- AUTH SCREEN -->
 <canvas id="bg-canvas" style="position:fixed;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity 1s ease"></canvas>
 
-<div id="nexus-page-loader"></div>
-<div id="nexus-page-transition"></div>
-<canvas id="nexus-particles-bg"></canvas>
+<div id="nexus-page-loader" style="position:fixed;inset:0;z-index:9997;pointer-events:none;display:none"></div>
+<div id="nexus-page-transition" style="position:fixed;inset:0;z-index:9996;pointer-events:none;display:none"></div>
+<canvas id="nexus-particles-bg" style="position:fixed;inset:0;z-index:1;pointer-events:none"></canvas>
 <div id="nexus-boot-screen">
   <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#8b5cf6,#7c3aed);display:flex;align-items:center;justify-content:center">
     <svg width="18" height="18" viewBox="0 0 32 32" fill="none"><path d="M8 8h16v3H11v4.5h12v3H11V23h13v3H8V8z" fill="white"/></svg>
@@ -873,7 +893,7 @@ tbody tr:last-child td { border-bottom: none; }
 </div>
 
 <!-- PROFILE SELECT SCREEN -->
-<div id="profile-screen" style="display:none">
+<div id="profile-screen" style="display:none;position:fixed;inset:0;z-index:9998;background:#09090b">
   <!-- Cursor glow -->
   <div id="ps-cursor-glow"></div>
   <!-- Ember particles canvas -->
@@ -909,11 +929,11 @@ tbody tr:last-child td { border-bottom: none; }
 </div>
 
 <!-- SIDEBAR -->
-<button class="hamburger" id="hamburger" onclick="toggleMobileSidebar()" style="display:none">
+<button class="hamburger" id="hamburger" onclick="toggleMobileSidebar()" style="display:none;position:fixed;top:8px;left:8px;z-index:401">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
 </button>
-<div id="swipe-hint"></div>
-<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeMobileSidebar()"></div>
+<div id="swipe-hint" style="position:fixed;pointer-events:none;z-index:1"></div>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeMobileSidebar()" style="position:fixed;inset:0;z-index:499;display:none"></div>
 <!-- MOBILE TOPBAR -->
 <div id="mobile-topbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:400;height:54px;align-items:center;justify-content:space-between;padding:0 14px;background:rgba(5,5,7,.95);border-bottom:1px solid rgba(255,255,255,.06)">
   <div style="display:flex;align-items:center;gap:10px">
@@ -1071,7 +1091,7 @@ tbody tr:last-child td { border-bottom: none; }
 
   </div>
 </nav>
-<div class="resize-handle" id="resize-handle"></div>
+<div class="resize-handle" id="resize-handle" style="position:absolute"></div>
 
 <!-- MAIN -->
 <main class="main" id="main-content">

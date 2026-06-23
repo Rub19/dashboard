@@ -355,7 +355,7 @@ label:not(.lb-label):not(.lb-check-row) {
 }
 
 /* ── MODALS ─────────────────────────────────────────────────── */
-.modal-overlay { background: rgba(0,0,0,.6); backdrop-filter: blur(4px); }
+.modal-overlay { background: rgba(0,0,0,.6); backdrop-filter: blur(4px); display:none; }
 .modal {
   background: #111113; border: 1px solid rgba(255,255,255,.08); border-radius: 20px;
   box-shadow: 0 24px 80px rgba(0,0,0,.7); animation: scaleIn .18s var(--ease) both;
@@ -618,9 +618,11 @@ tbody tr:last-child td { border-bottom: none; }
   .stats-row { grid-template-columns: repeat(2,1fr) !important; gap:6px !important; }
 }
 /* ── LAYOUT FIX: tous les éléments flottants hors du flux flex du body ── */
-#nexus-boot-screen,
-.modal-overlay,
 #presentation-overlay,
+#notif-overlay,
+#notif-panel,
+#cmd-palette-overlay,
+#link-preview { display: none; }
 #notif-overlay,
 #notif-panel,
 #cmd-palette-overlay,
@@ -3975,7 +3977,7 @@ async function onAuthSuccess(userArg){
         name:username,
         avatarEmoji:AVATARS[0].e,
         avatarBg:AVATARS[0].b,
-        avatarImg:meta.avatar_url||null,
+        avatarImg:null,
         avatarIdx:0,
         state:defState(username)
       }];

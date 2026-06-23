@@ -3927,11 +3927,8 @@ async function doLogout(){
 }
 
 async function onAuthSuccess(userArg){
-  // Afficher le boot pendant le chargement
-  _show('boot');
-  setBootStatus('Chargement...');
-
   try{
+    // Assigner _sbUser en premier — avant tout ce qui pourrait planter
     let user=userArg;
     if(!user){
       const {data,error:ue}=await sb.auth.getUser();
@@ -3940,6 +3937,10 @@ async function onAuthSuccess(userArg){
     }
     _sbUser=user;
     _isAdmin=user?.email===ADMIN_EMAIL;
+
+    // Boot screen pendant le chargement
+    try{ _show('boot'); }catch(e){}
+    setBootStatus('Chargement...');
 
     await loadCloudState();
     setBootStatus('Prêt ✓');
@@ -3956,7 +3957,7 @@ async function onAuthSuccess(userArg){
 
   }catch(err){
     console.error('[NEXUS] onAuthSuccess ERROR:', err, err?.stack);
-    showAuth();
+    try{ showAuth(); }catch(e){}
   }
 }
 async function loadCloudState(){

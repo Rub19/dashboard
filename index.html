@@ -3945,11 +3945,20 @@ async function onAuthSuccess(userArg){
     await loadCloudState();
     setBootStatus('Prêt ✓');
 
+    // Si loadCloudState a échoué (timeout/CORS), créer un profil local minimal
     if(!profiles.length){
-      profiles.push({id:Date.now(),name:'Mon profil',
-        avatarEmoji:AVATARS[0].e,avatarBg:AVATARS[0].b,
-        avatarImg:null,avatarIdx:0,state:defState('Mon profil')});
-      await saveCloudState();
+      console.warn('[NEXUS] loadCloudState returned no profiles — using local fallback');
+      const meta=_sbUser.user_metadata||{};
+      const username=meta.full_name||meta.name||meta.username||_sbUser.email?.split('@')[0]||'User';
+      profiles=[{
+        id:Date.now(),
+        name:username,
+        avatarEmoji:AVATARS[0].e,
+        avatarBg:AVATARS[0].b,
+        avatarImg:meta.avatar_url||null,
+        avatarIdx:0,
+        state:defState(username)
+      }];
     }
     normalizeAllProfiles();
     try{ sessionStorage.setItem('nexus_profiles_'+_sbUser.id,JSON.stringify(profiles)); }catch(e){}
@@ -3962,9 +3971,15 @@ async function onAuthSuccess(userArg){
 }
 async function loadCloudState(){
   if(!_sbUser)return;
-  const {data,error}=await sb.from('dashboard_data').select('*').eq('user_id',_sbUser.id).order('created_at',{ascending:true});
-  if(error)console.error('loadCloudState error:',error);
-  if(data&&data.length){
+  try{
+    const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),8000));
+    const query=sb.from('dashboard_data').select('*').eq('user_id',_sbUser.id).order('created_at',{ascending:true});
+    const {data,error}=await Promise.race([query,timeout.then(()=>{throw new Error('timeout')})]).catch(e=>{
+      console.error('[NEXUS] loadCloudState timeout/error:',e);
+      return {data:null,error:e};
+    });
+    if(error){console.error('loadCloudState error:',error);return;}
+    if(data&&data.length){
     profiles=data.map(d=>{
       const s=d.state||{};
       const idx=s.avatarIdx||0;
@@ -4039,6 +4054,7 @@ async function loadCloudState(){
     }];
     await saveCloudState();
   }
+  }catch(e){ console.error('[NEXUS] loadCloudState catch:',e); }
 }
 
 function updateSyncIndicator(state){

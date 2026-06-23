@@ -656,10 +656,16 @@ tbody tr:last-child td { border-bottom: none; }
 <div id="nexus-page-loader"></div>
 <div id="nexus-page-transition"></div>
 <canvas id="nexus-particles-bg"></canvas>
-<div id="nexus-boot-screen" style="position:fixed;inset:0;z-index:2147483647;background:#09090b;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px">
-  <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(124,58,237,.4)">
-    <svg width="20" height="20" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="url(#eg)"/><path d="M8 8h16v3H11v4.5h12v3H11V23h13v3H8V8z" fill="white"/><defs><linearGradient id="eg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#4c1d95"/></linearGradient></defs></svg>
+<div id="nexus-boot-screen" style="position:fixed;inset:0;z-index:2147483647;background:#09090b;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px">
+  <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#8b5cf6,#7c3aed);display:flex;align-items:center;justify-content:center">
+    <svg width="18" height="18" viewBox="0 0 32 32" fill="none"><path d="M8 8h16v3H11v4.5h12v3H11V23h13v3H8V8z" fill="white"/></svg>
   </div>
+  <div style="display:flex;align-items:center;gap:6px">
+    <div style="width:16px;height:16px;border:2px solid rgba(255,255,255,.1);border-top-color:#8b5cf6;border-radius:50%;animation:bootSpin .7s linear infinite"></div>
+    <span id="boot-status" style="font-size:12px;color:rgba(255,255,255,.35);font-family:Inter,system-ui,sans-serif">Chargement...</span>
+  </div>
+  <style>#nexus-boot-screen{animation:none!important} @keyframes bootSpin{to{transform:rotate(360deg)}}</style>
+</div>
   <div style="display:flex;gap:6px;align-items:center">
     <div style="width:6px;height:6px;border-radius:50%;background:#7c3aed;animation:pulse 1.2s ease-in-out infinite"></div>
     <div style="width:6px;height:6px;border-radius:50%;background:#7c3aed;animation:pulse 1.2s ease-in-out infinite .2s"></div>
@@ -14221,6 +14227,99 @@ function setBootStatus(msg){
   if(el)el.textContent=msg;
 }
 
+function setBootStatus(msg){
+  try{var el=document.getElementById('boot-status');if(el)el.textContent=msg;}catch(e){}
+}
+function showAuth(){
+  // ── HARD STOP any pending timers ──────────────────────────
+  try{clearTimeout(window._bootFailsafeTimer);}catch(e){}
+  try{clearTimeout(window._bootFailsafe2);}catch(e){}
+
+  // ── Step 1: Kill boot screen completely ───────────────────
+  try{
+    var boot=document.getElementById('nexus-boot-screen');
+    if(boot){
+      boot.style.setProperty('display','none','important');
+      boot.setAttribute('hidden','');
+      boot.style.visibility='hidden';
+      boot.style.opacity='0';
+      boot.style.pointerEvents='none';
+    }
+  }catch(e){}
+
+  // ── Step 2: Kill anti-flash ────────────────────────────────
+  try{
+    var af=document.getElementById('anti-flash');
+    if(af) af.parentNode.removeChild(af);
+  }catch(e){}
+
+  // ── Step 3: Hide everything except auth ───────────────────
+  try{
+    ['main-sidebar','main-content','profile-screen','password-screen',
+     'nexus-bg-layer','bg-canvas'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(el){ el.style.setProperty('display','none','important'); }
+    });
+  }catch(e){}
+
+  // ── Step 4: Force-show auth screen ────────────────────────
+  try{
+    var a=document.getElementById('auth-screen');
+    if(a){
+      a.removeAttribute('hidden');
+      a.style.setProperty('display','flex','important');
+      a.style.position='fixed';
+      a.style.inset='0';
+      a.style.zIndex='10002';
+      a.style.alignItems='center';
+      a.style.justifyContent='center';
+      a.style.overflow='auto';
+      a.style.background='#09090b';
+      a.style.padding='20px';
+      a.style.opacity='1';
+      a.style.visibility='visible';
+    }
+  }catch(e){}
+
+  // ── Step 5: Safe optional calls ───────────────────────────
+  try{updateClock();}catch(e){}
+  try{applyI18n();}catch(e){}
+  try{updateAuthLangBar();}catch(e){}
+  setTimeout(function(){
+    try{
+      var f=document.getElementById('auth-login-id');
+      if(f&&document.activeElement!==f) f.focus();
+    }catch(e){}
+  },200);
+}
+
+
+function removeAntiFlash(){
+  const s=document.getElementById('anti-flash');
+  if(s)s.remove();
+  // Forcer display:none sur tout — JS décidera quoi montrer ensuite
+  // NE PAS faire removeProperty car le CSS du stylesheet peut reprendre display:flex
+  ['main-sidebar','main-content','auth-screen','profile-screen','password-screen'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){
+      el.style.setProperty('display','none');
+      el.style.removeProperty('opacity');
+      el.style.removeProperty('visibility');
+    }
+  });
+}
+
+function hideBoot(){
+  removeAntiFlash();
+  const el=document.getElementById('nexus-boot-screen');
+  if(el) el.style.display='none';
+}
+
+function setBootStatus(msg){
+  const el=document.getElementById('boot-status');
+  if(el)el.textContent=msg;
+}
+
 function showAuth(){
   clearTimeout(window._bootFailsafeTimer);
   // Cacher boot
@@ -14434,10 +14533,37 @@ function _goToDashboard(profileId){
     showDashboardOrProfiles();
     clearTimeout(window._bootFailsafeTimer);
 
-  }).catch(err=>{
+  }).catch(function(err){
     console.warn('[NEXUS] Boot error:',err);
-    showAuth();
+    try{showAuth();}catch(e2){
+      // ABSOLUTE LAST RESORT
+      var a=document.getElementById('auth-screen');
+      var b=document.getElementById('nexus-boot-screen');
+      var af=document.getElementById('anti-flash');
+      if(af&&af.parentNode)af.parentNode.removeChild(af);
+      if(b){b.style.display='none';}
+      if(a){a.style.cssText='position:fixed!important;inset:0!important;z-index:10002!important;display:flex!important;background:#09090b!important;align-items:center!important;justify-content:center!important;padding:20px!important';}
+    }
   });
+
+  // ── ABSOLUTE FAILSAFE at 4s — cannot be stopped ──────────
+  window._bootFailsafe2=setTimeout(function(){
+    var mc=document.getElementById('main-content');
+    var as=document.getElementById('auth-screen');
+    var ps=document.getElementById('profile-screen');
+    var visible=(mc&&mc.style.display&&mc.style.display!=='none')||
+                (as&&as.style.display==='flex')||
+                (ps&&ps.style.display==='flex');
+    if(!visible){
+      console.warn('[ETHONE] Hard failsafe at 4s');
+      var af=document.getElementById('anti-flash');
+      if(af&&af.parentNode)af.parentNode.removeChild(af);
+      var b=document.getElementById('nexus-boot-screen');
+      if(b) b.style.cssText='display:none!important';
+      if(as) as.style.cssText='position:fixed!important;inset:0!important;z-index:10002!important;display:flex!important;align-items:center!important;justify-content:center!important;background:#09090b!important;padding:20px!important';
+    }
+  },4000);
+
 })();
 // ══════════════════════════════════════════════════════════════
 //  MOBILE — Gestures + Touch Enhancements

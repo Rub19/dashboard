@@ -2,14 +2,15 @@
 <html lang="en">
 <head>
 <style id="anti-flash">
-/* Applied before first paint — prevents any flash */
-#main-sidebar, #main-content, #auth-screen, #profile-screen, #password-screen {
-  display: none !important;
-}
-#nexus-boot-screen {
-  display: flex !important;
-}
+/* SIMPLE: html.booting cache tout sauf le boot screen */
+html.booting #main-sidebar,
+html.booting #main-content,
+html.booting #auth-screen,
+html.booting #profile-screen,
+html.booting #password-screen { display: none !important; }
+html.booting #nexus-boot-screen { display: flex !important; }
 </style>
+<script>document.documentElement.classList.add('booting');</script>
 <script>
 // Détection GPU compositing pour backdrop-filter
 (function(){
@@ -30,43 +31,32 @@
     }
   },true);
 })();
-// Failsafe: remove anti-flash after 6s max no matter what
+// Failsafe absolu à 10s: si toujours rien d'affiché, forcer auth
 setTimeout(function(){
-  var s=document.getElementById('anti-flash');
-  if(s) s.remove();
-  var boot=document.getElementById('nexus-boot-screen');
-  var sb=document.getElementById('main-sidebar');
+  document.documentElement.classList.remove('booting');
   var mc=document.getElementById('main-content');
-  // Si le boot est encore visible après 6s -> montrer l'auth proprement
-  if(boot&&boot.style.display!=='none'){
-    boot.style.display='none';
-    // Appeler showAuth() si disponible (applique i18n + animations)
-    if(typeof showAuth==='function'){
-      showAuth();
-    } else {
-      // Fallback minimal si JS pas encore parsé
-      var auth=document.getElementById('auth-screen');
-      if(auth){auth.style.display='flex';auth.style.opacity='1';}
-    }
+  var as=document.getElementById('auth-screen');
+  var ps=document.getElementById('profile-screen');
+  var boot=document.getElementById('nexus-boot-screen');
+  var bootHidden=boot&&boot.classList.contains('boot-hidden');
+  var mcVis=mc&&mc.style.display&&mc.style.display!=='none';
+  var asVis=as&&as.style.display==='flex';
+  var psVis=ps&&ps.style.display==='flex';
+  if(!mcVis&&!asVis&&!psVis&&bootHidden){
+    if(typeof showAuth==='function') try{showAuth();}catch(e){}
+    else if(as){ as.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#09090b;padding:20px'; }
   }
-  // Si sidebar hidden mais mc visible -> forcer sidebar
-  if(sb&&mc&&sb.style.display==='none'&&mc.style.display!=='none'){
-    sb.style.display='flex';
-  }
-},6000);
+},10000);
 
-// Failsafe dashboard: si après 4s sidebar visible mais vide -> re-init
+// Failsafe dashboard: si après 5s sidebar visible mais vide -> re-init
 setTimeout(function(){
   var sb=document.getElementById('main-sidebar');
   var nav=document.getElementById('sidebar-nav-main');
   if(sb&&sb.style.display==='flex'&&nav&&!nav.children.length){
-    console.warn('[NEXUS] Dashboard failsafe: sidebar vide, re-init');
-    try{
-      if(typeof renderSidebarNav==='function') renderSidebarNav();
-      if(typeof initDashboard==='function') initDashboard();
-    }catch(e){}
+    try{ if(typeof renderSidebarNav==='function')renderSidebarNav(); }catch(e){}
+    try{ if(typeof initDashboard==='function')initDashboard(); }catch(e){}
   }
-},4000);
+},5000);
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
@@ -656,7 +646,7 @@ tbody tr:last-child td { border-bottom: none; }
 <div id="nexus-page-loader"></div>
 <div id="nexus-page-transition"></div>
 <canvas id="nexus-particles-bg"></canvas>
-<div id="nexus-boot-screen" style="position:fixed;inset:0;z-index:2147483647;background:#09090b;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px">
+<div id="nexus-boot-screen">
   <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#8b5cf6,#7c3aed);display:flex;align-items:center;justify-content:center">
     <svg width="18" height="18" viewBox="0 0 32 32" fill="none"><path d="M8 8h16v3H11v4.5h12v3H11V23h13v3H8V8z" fill="white"/></svg>
   </div>
@@ -664,16 +654,35 @@ tbody tr:last-child td { border-bottom: none; }
     <div style="width:16px;height:16px;border:2px solid rgba(255,255,255,.1);border-top-color:#8b5cf6;border-radius:50%;animation:bootSpin .7s linear infinite"></div>
     <span id="boot-status" style="font-size:12px;color:rgba(255,255,255,.35);font-family:Inter,system-ui,sans-serif">Chargement...</span>
   </div>
-  <style>#nexus-boot-screen{animation:none!important} @keyframes bootSpin{to{transform:rotate(360deg)}}</style>
-</div>
-  <div style="display:flex;gap:6px;align-items:center">
-    <div style="width:6px;height:6px;border-radius:50%;background:#7c3aed;animation:pulse 1.2s ease-in-out infinite"></div>
-    <div style="width:6px;height:6px;border-radius:50%;background:#7c3aed;animation:pulse 1.2s ease-in-out infinite .2s"></div>
-    <div style="width:6px;height:6px;border-radius:50%;background:#7c3aed;animation:pulse 1.2s ease-in-out infinite .4s"></div>
+  <div style="display:flex;gap:6px;align-items:center;margin-top:4px">
+    <div style="width:5px;height:5px;border-radius:50%;background:#7c3aed;animation:pulse 1.2s ease-in-out infinite"></div>
+    <div style="width:5px;height:5px;border-radius:50%;background:#7c3aed;animation:pulse 1.2s ease-in-out infinite .2s"></div>
+    <div style="width:5px;height:5px;border-radius:50%;background:#7c3aed;animation:pulse 1.2s ease-in-out infinite .4s"></div>
   </div>
+  <style>
+    #nexus-boot-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+      background: #09090b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      animation: none !important;
+    }
+    #nexus-boot-screen.boot-hidden {
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+      z-index: -1 !important;
+    }
+    @keyframes bootSpin { to { transform: rotate(360deg); } }
+  </style>
 </div>
 
-<div id="auth-screen" style="position:fixed;inset:0;z-index:10002;display:none;align-items:center;justify-content:center;overflow:auto;background:#09090b;padding:20px">
+<div id="auth-screen" style="position:fixed;inset:0;z-index:2147483646;display:none;align-items:center;justify-content:center;overflow:auto;background:#09090b;padding:20px">
 
   <!-- Canvas particules -->
   <canvas id="auth-particles" style="position:absolute;inset:0;z-index:0;pointer-events:none"></canvas>
@@ -3399,7 +3408,21 @@ let uiLang=_lang; // alias global pour compatibilité
 // ── Supabase client (wrappé pour éviter crash si CDN non chargé) ─────────
 var sb;
 try{
-  sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+  sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON,{
+    auth:{
+      // Tolérer jusqu'à 2h de décalage d'horloge (heure d'été / fuseaux)
+      // Evite l'erreur "Session issued in the future" sur OAuth redirect
+      clockSkewInSeconds: 7200,
+      // Désactiver le lock storage sur multi-tab pour éviter les race conditions
+      lock: undefined,
+      // Persistance de session dans localStorage
+      storage: window.localStorage,
+      storageKey: 'ethone-auth-token',
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true,
+    }
+  });
 }catch(e){
   console.error('[NEXUS] Supabase CDN non chargé:',e.message);
   // sb reste undefined - le boot IIFE gérera l'absence de connexion
@@ -3886,67 +3909,39 @@ async function doRegister(){
 
 async function doLogout(){
   try{ await sb.auth.signOut(); }catch(e){}
+  const _logoutUserId = _sbUser?.id;
   _sbUser=null;_isAdmin=false;
-  // Nettoyer les intervals
   if(typeof _lanyardWS!=='undefined'&&_lanyardWS){try{_lanyardWS.close();}catch(e){}; _lanyardWS=null;}
   if(typeof _lastfmInterval!=='undefined'){clearInterval(_lastfmInterval);_lastfmInterval=null;}
   if(typeof _spotifyAutoRefresh!=='undefined'){clearInterval(_spotifyAutoRefresh);_spotifyAutoRefresh=null;}
   clearInterval(window._npProgressInterval);
   if(window._steamInterval){clearInterval(window._steamInterval);window._steamInterval=null;}
   if(typeof stopAmbientBg==='function')stopAmbientBg();
-  // Masquer tout
-  ['profile-screen','main-sidebar','main-content','password-screen'].forEach(id=>{
-    const el=document.getElementById(id); if(el) el.style.setProperty('display','none');
-  });
-  // Vider session cache
-  try{ if(_sbUser) sessionStorage.removeItem('nexus_profiles_'+_sbUser?.id); }catch(e){}
+  try{ if(_logoutUserId) sessionStorage.removeItem('nexus_profiles_'+_logoutUserId); }catch(e){}
   profiles=[]; currentId=null;
-  // Afficher auth proprement (pas besoin de removeAntiFlash ici, on est déjà dans le dashboard)
-  const authScr=document.getElementById('auth-screen');
-  if(authScr){ authScr.style.setProperty('display','flex'); authScr.style.opacity='1'; }
-  setTimeout(()=>{ if(typeof animateAuthEntrance==='function') animateAuthEntrance(); },80);
+  showAuth();
+  setTimeout(()=>{ try{if(typeof animateAuthEntrance==='function') animateAuthEntrance();}catch(e){} },80);
 }
 
 async function onAuthSuccess(userArg){
-  removeAntiFlash();
-  const authEl=document.getElementById('auth-screen');
-  if(authEl){ authEl.style.setProperty('display','none'); }
-  // Remettre les backgrounds visibles
-  const _blr=document.getElementById('nexus-bg-layer');
-  if(_blr){_blr.style.opacity='';_blr.style.pointerEvents='none';}
-
-  let boot=document.getElementById('nexus-boot-screen');
-  if(!boot){
-    boot=document.createElement('div');
-    boot.id='nexus-boot-screen';
-    boot.style.cssText='position:fixed;inset:0;z-index:2147483647;background:#050507;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px';
-    boot.innerHTML='<div id="boot-logo" style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 30px rgba(124,58,237,.5)"><svg width="24" height="24" viewBox="0 0 20 20" fill="none"><polygon points="10,1 19,10 10,19 1,10" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round"/><polygon points="10,5 15,10 10,15 5,10" fill="white"/></svg></div><div id="boot-status" style="font-size:11px;color:rgba(124,58,237,.5);font-family:JetBrains Mono,monospace;letter-spacing:1px;margin-top:8px">ETHONE</div>';
-    document.body.appendChild(boot);
-  } else {
-    boot.style.display='flex';
-    boot.style.opacity='1';
-  }
+  // Afficher le boot pendant le chargement
+  _show('boot');
+  setBootStatus('Chargement...');
 
   try{
     let user=userArg;
-      if(!user){
+    if(!user){
       const {data,error:ue}=await sb.auth.getUser();
-      if(!data?.user||ue){
-        console.error('[ETHONE] No user - showing auth');
-        if(authEl){ authEl.style.setProperty('display','flex'); }
-        hideBoot(); return;
-      }
+      if(!data?.user||ue){ console.error('[ETHONE] No user'); showAuth(); return; }
       user=data.user;
     }
     _sbUser=user;
     _isAdmin=user?.email===ADMIN_EMAIL;
 
-    setBootStatus && setBootStatus('Chargement...');
     await loadCloudState();
-      setBootStatus && setBootStatus('Prêt ✓');
+    setBootStatus('Prêt ✓');
 
     if(!profiles.length){
-      console.warn('[NEXUS] No profiles - creating default');
       profiles.push({id:Date.now(),name:'Mon profil',
         avatarEmoji:AVATARS[0].e,avatarBg:AVATARS[0].b,
         avatarImg:null,avatarIdx:0,state:defState('Mon profil')});
@@ -3954,13 +3949,11 @@ async function onAuthSuccess(userArg){
     }
     normalizeAllProfiles();
     try{ sessionStorage.setItem('nexus_profiles_'+_sbUser.id,JSON.stringify(profiles)); }catch(e){}
-
     showDashboardOrProfiles();
 
   }catch(err){
-    console.error('[NEXUS] onAuthSuccess FATAL ERROR:', err, err?.stack);
-    if(authEl){ authEl.style.setProperty('display','flex'); }
-    hideBoot();
+    console.error('[NEXUS] onAuthSuccess ERROR:', err, err?.stack);
+    showAuth();
   }
 }
 async function loadCloudState(){
@@ -14201,155 +14194,79 @@ function t(key){ if(!I18N)return key; return (I18N[_lang]?.[key]) ?? (I18N['en']
 
 
 // === BOOT ===
-function removeAntiFlash(){
-  const s=document.getElementById('anti-flash');
-  if(s)s.remove();
-  // Forcer display:none sur tout — JS décidera quoi montrer ensuite
-  // NE PAS faire removeProperty car le CSS du stylesheet peut reprendre display:flex
-  ['main-sidebar','main-content','auth-screen','profile-screen','password-screen'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el){
-      el.style.setProperty('display','none');
-      el.style.removeProperty('opacity');
-      el.style.removeProperty('visibility');
+// ═══════════════════════════════════════════════════════════
+// DISPLAY MANAGER — source unique de vérité pour l'affichage
+// ═══════════════════════════════════════════════════════════
+var _ALL_SCREENS = ['nexus-boot-screen','auth-screen','main-sidebar','main-content','profile-screen','password-screen'];
+
+function _show(what){
+  // 1. Retirer body.booting — libère tous les éléments du CSS anti-flash
+  document.documentElement.classList.remove('booting');
+
+  // 2. Retirer l'ancien style#anti-flash s'il traîne encore
+  var af=document.getElementById('anti-flash');
+  if(af&&af.parentNode)af.parentNode.removeChild(af);
+
+  // 3. Reset inline styles de tous les écrans
+  _ALL_SCREENS.forEach(function(id){
+    var el=document.getElementById(id);
+    if(!el)return;
+    if(id==='nexus-boot-screen'){
+      el.classList.add('boot-hidden');
+    } else {
+      el.style.display='none';
     }
   });
+
+  // 4. Afficher ce qui est demandé
+  if(what==='boot'){
+    var b=document.getElementById('nexus-boot-screen');
+    if(b) b.classList.remove('boot-hidden');
+  } else if(what==='auth'){
+    var a=document.getElementById('auth-screen');
+    if(a) a.style.display='flex';
+    try{updateClock();}catch(e){}
+    try{applyI18n();}catch(e){}
+    try{updateAuthLangBar();}catch(e){}
+    setTimeout(function(){
+      try{if(typeof initAuthParticles==='function')initAuthParticles();}catch(e){}
+      try{if(typeof animateAuthEntrance==='function')animateAuthEntrance();}catch(e){}
+      try{var f=document.getElementById('auth-login-id');if(f)f.focus();}catch(e){}
+    },120);
+  } else if(what==='dashboard'){
+    var sb2=document.getElementById('main-sidebar');
+    var mc2=document.getElementById('main-content');
+    if(sb2) sb2.style.display='flex';
+    if(mc2) mc2.style.display='block';
+  } else if(what==='profiles'){
+    var ps=document.getElementById('profile-screen');
+    if(ps) ps.style.display='flex';
+  } else if(what==='password'){
+    var pw=document.getElementById('password-screen');
+    if(pw) pw.style.display='flex';
+  }
+}
+
+function removeAntiFlash(){
+  document.documentElement.classList.remove('booting');
+  var s=document.getElementById('anti-flash');
+  if(s&&s.parentNode)s.parentNode.removeChild(s);
 }
 
 function hideBoot(){
   removeAntiFlash();
-  const el=document.getElementById('nexus-boot-screen');
-  if(el) el.style.display='none';
-}
-
-function setBootStatus(msg){
-  const el=document.getElementById('boot-status');
-  if(el)el.textContent=msg;
+  var el=document.getElementById('nexus-boot-screen');
+  if(el) el.classList.add('boot-hidden');
 }
 
 function setBootStatus(msg){
   try{var el=document.getElementById('boot-status');if(el)el.textContent=msg;}catch(e){}
 }
-function showAuth(){
-  // ── HARD STOP any pending timers ──────────────────────────
-  try{clearTimeout(window._bootFailsafeTimer);}catch(e){}
-  try{clearTimeout(window._bootFailsafe2);}catch(e){}
-
-  // ── Step 1: Kill boot screen completely ───────────────────
-  try{
-    var boot=document.getElementById('nexus-boot-screen');
-    if(boot){
-      boot.style.setProperty('display','none','important');
-      boot.setAttribute('hidden','');
-      boot.style.visibility='hidden';
-      boot.style.opacity='0';
-      boot.style.pointerEvents='none';
-    }
-  }catch(e){}
-
-  // ── Step 2: Kill anti-flash ────────────────────────────────
-  try{
-    var af=document.getElementById('anti-flash');
-    if(af) af.parentNode.removeChild(af);
-  }catch(e){}
-
-  // ── Step 3: Hide everything except auth ───────────────────
-  try{
-    ['main-sidebar','main-content','profile-screen','password-screen',
-     'nexus-bg-layer','bg-canvas'].forEach(function(id){
-      var el=document.getElementById(id);
-      if(el){ el.style.setProperty('display','none','important'); }
-    });
-  }catch(e){}
-
-  // ── Step 4: Force-show auth screen ────────────────────────
-  try{
-    var a=document.getElementById('auth-screen');
-    if(a){
-      a.removeAttribute('hidden');
-      a.style.setProperty('display','flex','important');
-      a.style.position='fixed';
-      a.style.inset='0';
-      a.style.zIndex='10002';
-      a.style.alignItems='center';
-      a.style.justifyContent='center';
-      a.style.overflow='auto';
-      a.style.background='#09090b';
-      a.style.padding='20px';
-      a.style.opacity='1';
-      a.style.visibility='visible';
-    }
-  }catch(e){}
-
-  // ── Step 5: Safe optional calls ───────────────────────────
-  try{updateClock();}catch(e){}
-  try{applyI18n();}catch(e){}
-  try{updateAuthLangBar();}catch(e){}
-  setTimeout(function(){
-    try{
-      var f=document.getElementById('auth-login-id');
-      if(f&&document.activeElement!==f) f.focus();
-    }catch(e){}
-  },200);
-}
-
-
-function removeAntiFlash(){
-  const s=document.getElementById('anti-flash');
-  if(s)s.remove();
-  // Forcer display:none sur tout — JS décidera quoi montrer ensuite
-  // NE PAS faire removeProperty car le CSS du stylesheet peut reprendre display:flex
-  ['main-sidebar','main-content','auth-screen','profile-screen','password-screen'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el){
-      el.style.setProperty('display','none');
-      el.style.removeProperty('opacity');
-      el.style.removeProperty('visibility');
-    }
-  });
-}
-
-function hideBoot(){
-  removeAntiFlash();
-  const el=document.getElementById('nexus-boot-screen');
-  if(el) el.style.display='none';
-}
-
-function setBootStatus(msg){
-  const el=document.getElementById('boot-status');
-  if(el)el.textContent=msg;
-}
 
 function showAuth(){
   clearTimeout(window._bootFailsafeTimer);
-  // Cacher boot
-  const boot=document.getElementById('nexus-boot-screen');
-  if(boot){ boot.style.cssText='display:none!important'; }
-  // Retirer anti-flash
-  const s=document.getElementById('anti-flash'); if(s) s.remove();
-  // Cacher dashboard
-  ['main-sidebar','main-content','profile-screen','password-screen'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.style.cssText='display:none!important';
-  });
-  // Afficher auth
-  const a=document.getElementById('auth-screen');
-  if(a){ a.style.cssText='position:fixed;inset:0;z-index:10002;display:flex!important;align-items:center;justify-content:center;overflow:auto;background:#09090b;padding:20px;opacity:1'; }
-  // Masquer les backgrounds animés sur l'auth screen
-  ['nexus-bg-layer','bg-canvas'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.style.opacity='0';
-  });
-  updateClock();
-  applyI18n();
-  updateAuthLangBar();
-  setTimeout(()=>{
-    if(typeof initAuthParticles==='function')initAuthParticles();
-    if(typeof animateAuthEntrance==='function')animateAuthEntrance();
-    // Auto-focus email field
-    const loginField=document.getElementById('auth-login-id');
-    if(loginField)loginField.focus();
-  },120);
+  clearTimeout(window._bootFailsafe2);
+  _show('auth');
 }
 
 function normalizeAllProfiles(){
@@ -14376,40 +14293,25 @@ function normalizeAllProfiles(){
 }
 
 function showDashboardOrProfiles(){
-  // showDashboardOrProfiles
-
-  removeAntiFlash();
-  const boot=document.getElementById('nexus-boot-screen');
-  if(boot) boot.style.display='none';
-  ['auth-screen','main-sidebar','main-content','profile-screen','password-screen'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.style.setProperty('display','none');
-  });
-
   if(!profiles||!profiles.length){
-    console.error('[NEXUS] No profiles! Showing auth.');
-    const ae=document.getElementById('auth-screen');
-    if(ae) ae.style.setProperty('display','flex');
-    return;
+    console.error('[NEXUS] No profiles — showing auth');
+    showAuth(); return;
   }
-
   const hasPassword = profiles[0].password && profiles[0].password.value;
-
   if(profiles.length===1 && !hasPassword){
     _goToDashboard(profiles[0].id);
   } else {
     try{renderProfileScreen();}catch(e){console.error('[NEXUS] renderProfileScreen ERROR:',e);}
-    const ps=document.getElementById('profile-screen');
-    if(ps){ps.style.setProperty('display','flex');ps.style.opacity='1';}
+    _show('profiles');
     updateClock();
   }
 }
 
-// Fonction centrale pour aller au dashboard (appelée aussi depuis enterDashboard)
+// Fonction centrale pour aller au dashboard
 function _goToDashboard(profileId){
   const found=profiles.find(p=>String(p.id)===String(profileId));
   if(!found){
-    console.error('[NEXUS] Profile NOT FOUND for id='+profileId+'. Taking profiles[0].');
+    console.error('[NEXUS] Profile NOT FOUND for id='+profileId);
     if(!profiles.length){ showAuth(); return; }
     currentId=profiles[0].id;
   } else {
@@ -14418,29 +14320,25 @@ function _goToDashboard(profileId){
   _valoMatchCache={};
   _valoAllMatches=[];
 
-  const sb_el=document.getElementById('main-sidebar');
-  const mc=document.getElementById('main-content');
-  ['profile-screen','password-screen','auth-screen'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.style.setProperty('display','none');
-  });
-  if(sb_el){sb_el.style.setProperty('display','flex');sb_el.style.opacity='1';}
-  if(mc){mc.style.setProperty('display','block');mc.style.opacity='1';}
+  // Afficher le dashboard
+  _show('dashboard');
 
   const p=curP();
   if(!p){
-    console.error('[NEXUS] curP() STILL NULL after currentId='+currentId+'. Forcing profiles[0].');
+    console.error('[NEXUS] curP() NULL after set — forcing profiles[0]');
     currentId=profiles[0].id;
   }
 
-  renderSidebarNav(); updateSidebarAvatar(); applyI18n(); updateClock();
+  try{ renderSidebarNav(); }catch(e){}
+  try{ updateSidebarAvatar(); }catch(e){}
+  try{ applyI18n(); }catch(e){}
+  try{ updateClock(); }catch(e){}
 
   try{
     initDashboard();
-    }catch(e){
+  }catch(e){
     console.error('[NEXUS] initDashboard THREW:', e, e?.stack);
-    if(sb_el) sb_el.style.setProperty('display','flex');
-    if(mc) mc.style.setProperty('display','block');
+    // Dashboard elements already shown by _show('dashboard') above — keep them visible
   }
 
   const cp=curP();
@@ -14451,77 +14349,150 @@ function _goToDashboard(profileId){
   if(typeof I18N!=='undefined')applyI18n();
 
   // ── Détection retour OAuth ─────────────────────────────────
+  // Supabase v2 PKCE: le code est dans ?code=, les anciens tokens dans le hash
   const _isOAuthCallback=(
     window.location.hash.includes('access_token')||
     window.location.hash.includes('refresh_token')||
     window.location.search.includes('code=')
   );
-  // Nettoyer le hash OAuth de l'URL après traitement
-  if(_isOAuthCallback){
-    setTimeout(()=>{history.replaceState(null,'',window.location.pathname);},2000);
+
+  // Helper: quelque chose est-il visible (body.booting retiré + un écran affiché)?
+  function _somethingVisible(){
+    if(document.documentElement.classList.contains('booting')) return false;
+    var mc=document.getElementById('main-content');
+    var as=document.getElementById('auth-screen');
+    var ps=document.getElementById('profile-screen');
+    var boot=document.getElementById('nexus-boot-screen');
+    return (mc&&mc.style.display!=='none'&&mc.style.display!=='')||
+           (as&&as.style.display==='flex')||
+           (ps&&ps.style.display==='flex')||
+           (boot&&!boot.classList.contains('boot-hidden'));
   }
 
-  // ── FAILSAFE ─────────────────────────────────────────────
-  // Plus long si retour OAuth (Supabase a besoin de temps pour échanger le token)
-  const _failsafeMs = _isOAuthCallback ? 7000 : 1500;
-  const _bootFailsafe=setTimeout(function(){
-    const as=document.getElementById('auth-screen');
-    const bs=document.getElementById('nexus-boot-screen');
-    const mc=document.getElementById('main-content');
-    const sb2=document.getElementById('main-sidebar');
-    const ps=document.getElementById('profile-screen');
-    // Si main-content est pas visible ET auth-screen pas visible → forcer auth
-    const mcVis=mc&&mc.style.display!=='none'&&mc.style.display!=='';
-    const asVis=as&&as.style.display==='flex';
-    const psVis=ps&&ps.style.display==='flex';
-    if(!mcVis&&!asVis&&!psVis){
-      console.warn('[ETHONE] Failsafe: forcing showAuth()');
-      try{ showAuth(); }catch(e){
-        // Last resort
-        if(bs) bs.style.cssText='display:none!important';
-        const s=document.getElementById('anti-flash'); if(s) s.remove();
-        if(as) as.style.cssText='position:fixed;inset:0;z-index:10002;display:flex!important;align-items:center;justify-content:center;background:#09090b;padding:20px';
-      }
+  // Helper: forcer showAuth en absolu
+  function _forceShowAuth(){
+    document.documentElement.classList.remove('booting');
+    var boot=document.getElementById('nexus-boot-screen');
+    if(boot) boot.classList.add('boot-hidden');
+    var as=document.getElementById('auth-screen');
+    if(as){ as.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#09090b;padding:20px'; }
+  }
+
+  // ── FAILSAFE principal ────────────────────────────────────
+  // OAuth: on laisse 9s car PKCE échange le code côté serveur (peut être lent)
+  // Normal: 3s suffit largement
+  const _failsafeMs = _isOAuthCallback ? 9000 : 3000;
+  window._bootFailsafeTimer=setTimeout(function(){
+    if(!_somethingVisible()){
+      console.warn('[ETHONE] Failsafe '+_failsafeMs+'ms: forcing showAuth()');
+      try{ showAuth(); }catch(e){ _forceShowAuth(); }
     }
   }, _failsafeMs);
-  window._bootFailsafeTimer=_bootFailsafe;
 
-  sb.auth.getSession().then(async({data:{session},error})=>{
-    // If getSession fails or returns null, try getUser() as fallback
-    if(!session || error){
-      // Attempt getUser to force token refresh
-      try{
-        const {data:{user},error:ue}=await sb.auth.getUser();
-        if(!user||ue){ showAuth(); return; }
-        // getUser succeeded — get fresh session
-        const {data:{session:s2}}=await sb.auth.getSession();
-        if(!s2){ showAuth(); return; }
-        session=s2;
-      }catch(e){ showAuth(); return; }
+  // ── ABSOLUTE FAILSAFE à 12s — ne peut PAS être arrêté ────
+  window._bootFailsafe2=setTimeout(function(){
+    if(!_somethingVisible()){
+      console.warn('[ETHONE] Hard failsafe 12s');
+      try{ showAuth(); }catch(e){ _forceShowAuth(); }
+    }
+  }, 12000);
+
+  // ── onAuthStateChange : capture SIGNED_IN après redirect OAuth ──
+  // C'est LE listener fiable — Supabase l'appelle quand le token est prêt
+  var _authHandled=false;
+  try{
+    sb.auth.onAuthStateChange(async function(event, session){
+      if(_authHandled) return;
+      if(event==='SIGNED_IN' && session && session.user){
+        _authHandled=true;
+        clearTimeout(window._bootFailsafeTimer);
+        clearTimeout(window._bootFailsafe2);
+        console.log('[ETHONE] onAuthStateChange SIGNED_IN — going to dashboard');
+        // Nettoyer le hash/query OAuth de l'URL
+        if(_isOAuthCallback){
+          try{history.replaceState(null,'',window.location.pathname);}catch(e){}
+        }
+        await onAuthSuccess(session.user);
+      } else if(event==='SIGNED_OUT'){
+        _authHandled=false;
+        showAuth();
+      }
+    });
+  }catch(e){ console.warn('[ETHONE] onAuthStateChange setup failed:',e); }
+
+  // ── Tentative initiale via getSession ─────────────────────
+  sb.auth.getSession().then(async function(res){
+    var session=res && res.data && res.data.session;
+    var err=res && res.error;
+
+    if(!session || err){
+      if(_isOAuthCallback){
+        // ── CAS CLOCK SKEW : Supabase rejette le token "issued in the future" ──
+        // Solution : forcer l'échange manuel du code PKCE si ?code= est dans l'URL
+        var urlCode=new URLSearchParams(window.location.search).get('code');
+        if(urlCode && sb.auth.exchangeCodeForSession){
+          console.log('[ETHONE] Clock skew détecté — tentative exchangeCodeForSession...');
+          setBootStatus('Vérification...');
+          try{
+            var exchangeRes=await sb.auth.exchangeCodeForSession(urlCode);
+            if(exchangeRes && exchangeRes.data && exchangeRes.data.session){
+              console.log('[ETHONE] exchangeCodeForSession OK — session récupérée');
+              // Nettoyer l'URL
+              try{history.replaceState(null,'',window.location.pathname);}catch(e2){}
+              if(!_authHandled){
+                _authHandled=true;
+                clearTimeout(window._bootFailsafeTimer);
+                clearTimeout(window._bootFailsafe2);
+                await onAuthSuccess(exchangeRes.data.session.user);
+              }
+              return;
+            }else{
+              console.warn('[ETHONE] exchangeCodeForSession échoué:',exchangeRes?.error);
+            }
+          }catch(exErr){
+            console.warn('[ETHONE] exchangeCodeForSession exception:',exErr);
+          }
+        }
+        // Sinon laisser onAuthStateChange gérer
+        console.log('[ETHONE] OAuth callback — attente onAuthStateChange...');
+        setBootStatus('Connexion OAuth...');
+        return;
+      }
+      // Pas de session, pas d'OAuth → montrer auth directement
+      if(!_authHandled){
+        showAuth();
+      }
+      return;
     }
 
-    _sbUser=session.user;
-    _isAdmin=session.user?.email===ADMIN_EMAIL;
+    // Session existante — ne pas gérer si onAuthStateChange a déjà pris la main
+    if(_authHandled) return;
+    _authHandled=true;
+    clearTimeout(window._bootFailsafeTimer);
+    clearTimeout(window._bootFailsafe2);
 
-    const cacheKey='nexus_profiles_'+_sbUser.id;
-    const cached=sessionStorage.getItem(cacheKey);
+    _sbUser=session.user;
+    _isAdmin=session.user&&session.user.email===ADMIN_EMAIL;
+
+    var cacheKey='nexus_profiles_'+_sbUser.id;
+    var cached=sessionStorage.getItem(cacheKey);
     if(cached){
       try{
         profiles=JSON.parse(cached);
         normalizeAllProfiles();
         showDashboardOrProfiles();
-        loadCloudState().then(()=>{
+        loadCloudState().then(function(){
           normalizeAllProfiles();
           try{sessionStorage.setItem(cacheKey,JSON.stringify(profiles));}catch(e){}
-          const p=curP();if(p)initSidebarWidgets(p);
-        }).catch(()=>{});
+          var p=curP();if(p)initSidebarWidgets(p);
+        }).catch(function(){});
         return;
       }catch(e){ sessionStorage.removeItem(cacheKey); }
     }
 
-    if(typeof setBootStatus==='function')setBootStatus('Chargement...');
+    setBootStatus('Chargement...');
     await loadCloudState();
-    if(typeof setBootStatus==='function')setBootStatus('Prêt ✓');
+    setBootStatus('Prêt ✓');
     if(!profiles.length){
       profiles.push({id:Date.now(),name:'Mon profil',
         avatarEmoji:AVATARS[0].e,avatarBg:AVATARS[0].b,
@@ -14531,38 +14502,13 @@ function _goToDashboard(profileId){
     normalizeAllProfiles();
     try{sessionStorage.setItem(cacheKey,JSON.stringify(profiles));}catch(e){}
     showDashboardOrProfiles();
-    clearTimeout(window._bootFailsafeTimer);
 
   }).catch(function(err){
-    console.warn('[NEXUS] Boot error:',err);
-    try{showAuth();}catch(e2){
-      // ABSOLUTE LAST RESORT
-      var a=document.getElementById('auth-screen');
-      var b=document.getElementById('nexus-boot-screen');
-      var af=document.getElementById('anti-flash');
-      if(af&&af.parentNode)af.parentNode.removeChild(af);
-      if(b){b.style.display='none';}
-      if(a){a.style.cssText='position:fixed!important;inset:0!important;z-index:10002!important;display:flex!important;background:#09090b!important;align-items:center!important;justify-content:center!important;padding:20px!important';}
+    console.warn('[NEXUS] Boot getSession error:',err);
+    if(!_authHandled){
+      try{showAuth();}catch(e2){ _forceShowAuth(); }
     }
   });
-
-  // ── ABSOLUTE FAILSAFE at 4s — cannot be stopped ──────────
-  window._bootFailsafe2=setTimeout(function(){
-    var mc=document.getElementById('main-content');
-    var as=document.getElementById('auth-screen');
-    var ps=document.getElementById('profile-screen');
-    var visible=(mc&&mc.style.display&&mc.style.display!=='none')||
-                (as&&as.style.display==='flex')||
-                (ps&&ps.style.display==='flex');
-    if(!visible){
-      console.warn('[ETHONE] Hard failsafe at 4s');
-      var af=document.getElementById('anti-flash');
-      if(af&&af.parentNode)af.parentNode.removeChild(af);
-      var b=document.getElementById('nexus-boot-screen');
-      if(b) b.style.cssText='display:none!important';
-      if(as) as.style.cssText='position:fixed!important;inset:0!important;z-index:10002!important;display:flex!important;align-items:center!important;justify-content:center!important;background:#09090b!important;padding:20px!important';
-    }
-  },4000);
 
 })();
 // ══════════════════════════════════════════════════════════════

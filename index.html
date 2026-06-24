@@ -94,8 +94,6 @@ window.onerror = function(msg, src, line, col, err) {
 };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous" onerror="window._supabaseLoadError=true"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" crossorigin="anonymous"></script>
 
 <style>
@@ -3252,6 +3250,20 @@ tbody tr:last-child td { border-bottom: none; }
 <div id="mob-more-overlay" onclick="closeMobMore()" style="display:none;position:fixed;inset:0;z-index:249;background:rgba(0,0,0,.75)"></div>
 
 <script>
+
+// ── GSAP/Anime stubs (librairies non chargées pour éviter les bugs) ──
+if(typeof gsap==='undefined'){
+  window.gsap={
+    from:function(){},to:function(){},fromTo:function(){},
+    timeline:function(){return{from:function(){return this},to:function(){return this},fromTo:function(){return this}}},
+    set:function(){},killTweensOf:function(){}
+  };
+}
+if(typeof anime==='undefined'){
+  window.anime=function(){};
+  window.anime.timeline=function(){return{add:function(){return this}}};
+}
+
 // === GLOBAL CONSTANTS (must be first) ===
 var WORKER_URL='https://raspy-fog-bf5b.rub19-mailpro.workers.dev';
 const LASTFM_KEY = '20a3130a6a13552131356a4dd2bf8071';
@@ -3899,7 +3911,7 @@ async function doLogout(){
     const el=document.getElementById(id); if(el) el.style.setProperty('display','none');
   });
   // Vider session cache
-  try{ if(_sbUser) sessionStorage.removeItem('nexus_profiles_'+_sbUser?.id); }catch(e){}
+  try{ if(_sbUser) sessionStorage.removeItem('ethone_profiles_'+_sbUser?.id); }catch(e){}
   profiles=[]; currentId=null;
   // Afficher auth proprement (pas besoin de removeAntiFlash ici, on est déjà dans le dashboard)
   const authScr=document.getElementById('auth-screen');
@@ -3953,7 +3965,7 @@ async function onAuthSuccess(userArg){
       await saveCloudState();
     }
     normalizeAllProfiles();
-    try{ sessionStorage.setItem('nexus_profiles_'+_sbUser.id,JSON.stringify(profiles)); }catch(e){}
+    try{ sessionStorage.setItem('ethone_profiles_'+_sbUser.id,JSON.stringify(profiles)); }catch(e){}
 
     showDashboardOrProfiles();
 
@@ -4055,7 +4067,7 @@ function updateSyncIndicator(state){
 
 async function saveCloudState(){
   // Update sessionStorage cache
-  if(_sbUser){try{sessionStorage.setItem('nexus_profiles_'+_sbUser.id,JSON.stringify(profiles));}catch(e){}}
+  if(_sbUser){try{sessionStorage.setItem('ethone_profiles_'+_sbUser.id,JSON.stringify(profiles));}catch(e){}}
   if(!_sbUser)return;
   for(const p of profiles){
     // Compress avatar image if too large (Supabase ~1MB per row limit)
@@ -14471,7 +14483,7 @@ function _goToDashboard(profileId){
     const sb2=document.getElementById('main-sidebar');
     const ps=document.getElementById('profile-screen');
     // Si main-content est pas visible ET auth-screen pas visible → forcer auth
-    const mcVis=mc&&mc.style.display!=='none'&&mc.style.display!=='';
+    const mcVis=mc&&mc.style.display==='block';
     const asVis=as&&as.style.display==='flex';
     const psVis=ps&&ps.style.display==='flex';
     if(!mcVis&&!asVis&&!psVis){
@@ -14503,7 +14515,7 @@ function _goToDashboard(profileId){
     _sbUser=session.user;
     _isAdmin=session.user?.email===ADMIN_EMAIL;
 
-    const cacheKey='nexus_profiles_'+_sbUser.id;
+    const cacheKey='ethone_profiles_'+_sbUser.id;
     const cached=sessionStorage.getItem(cacheKey);
     if(cached){
       try{
@@ -14551,7 +14563,7 @@ function _goToDashboard(profileId){
     var mc=document.getElementById('main-content');
     var as=document.getElementById('auth-screen');
     var ps=document.getElementById('profile-screen');
-    var visible=(mc&&mc.style.display&&mc.style.display!=='none')||
+    var visible=(mc&&mc.style.display==='block')||
                 (as&&as.style.display==='flex')||
                 (ps&&ps.style.display==='flex');
     if(!visible){

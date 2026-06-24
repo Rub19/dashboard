@@ -2,57 +2,14 @@
 <html lang="en">
 <head>
 <style id="anti-flash">
-/* ═══ ETHONE DISPLAY SYSTEM ═══
-   Tout est contrôlé via classes sur <html>.
-   Rien d'autre ne peut overrider ces règles.
-*/
-
-/* Par défaut: tout caché */
-#main-sidebar, #main-content,
-#auth-screen, #profile-screen, #password-screen { display: none !important; }
-
-/* Boot screen: visible pendant html.booting */
-#nexus-boot-screen { display: none; }
-html.booting #nexus-boot-screen { display: flex !important; }
-html.booting #main-sidebar,
-html.booting #main-content,
-html.booting #auth-screen,
-html.booting #profile-screen,
-html.booting #password-screen { display: none !important; }
-
-/* Dashboard actif */
-html.show-dashboard #main-sidebar { display: flex !important; }
-html.show-dashboard #main-content { display: block !important; }
-
-/* Auth actif */
-html.show-auth #auth-screen { display: flex !important; }
-
-/* Profiles actif */
-html.show-profiles #profile-screen { display: flex !important; }
-
-/* Password actif */
-html.show-password #password-screen { display: flex !important; }
-
-/* Modals et overlays: toujours fixed, cachés par défaut */
-.modal-overlay { display: none !important; position: fixed; inset: 0; z-index: 10000; }
-.modal-overlay.open { display: flex !important; align-items: center; justify-content: center; }
-#presentation-overlay { display: none !important; position: fixed; inset: 0; z-index: 10001; background: #09090b; flex-direction: column; }
-#presentation-overlay.active { display: flex !important; }
-#notif-overlay { display: none !important; position: fixed; inset: 0; z-index: 9000; background: rgba(0,0,0,.4); }
-#notif-overlay.open { display: block !important; }
-#cmd-palette-overlay { display: none !important; position: fixed; inset: 0; z-index: 10002; align-items: flex-start; justify-content: center; padding-top: 80px; background: rgba(0,0,0,.6); backdrop-filter: blur(4px); }
-#cmd-palette-overlay.open { display: flex !important; }
-#link-preview { display: none !important; position: fixed; z-index: 9500; pointer-events: none; }
-#link-preview.open, #link-preview.visible { display: block !important; }
-#toasts, .toast-container, #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 99999; }
-#mobile-bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 400; }
-#nexus-page-loader, #nexus-page-transition { position: fixed; inset: 0; pointer-events: none; display: none !important; }
-#nexus-particles-bg { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
-#bg-canvas { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
-
-@keyframes bootSpin { to { transform: rotate(360deg); } }
+/* Applied before first paint — prevents any flash */
+#main-sidebar, #main-content, #auth-screen, #profile-screen, #password-screen {
+  display: none !important;
+}
+#ethone-boot-screen {
+  display: flex !important;
+}
 </style>
-<script>document.documentElement.classList.add('booting');</script>
 <script>
 // Détection GPU compositing pour backdrop-filter
 (function(){
@@ -73,26 +30,43 @@ html.show-password #password-screen { display: flex !important; }
     }
   },true);
 })();
-// Failsafe absolu à 10s
+// Failsafe: remove anti-flash after 6s max no matter what
 setTimeout(function(){
-  var html=document.documentElement;
-  var visible=html.classList.contains('show-dashboard')||html.classList.contains('show-auth')||html.classList.contains('show-profiles');
-  if(!visible){
-    html.classList.remove('booting','show-dashboard','show-profiles','show-password');
-    if(typeof showAuth==='function') try{showAuth();}catch(e){ html.classList.add('show-auth'); }
-    else html.classList.add('show-auth');
+  var s=document.getElementById('anti-flash');
+  if(s) s.remove();
+  var boot=document.getElementById('ethone-boot-screen');
+  var sb=document.getElementById('main-sidebar');
+  var mc=document.getElementById('main-content');
+  // Si le boot est encore visible après 6s -> montrer l'auth proprement
+  if(boot&&boot.style.display!=='none'){
+    boot.style.display='none';
+    // Appeler showAuth() si disponible (applique i18n + animations)
+    if(typeof showAuth==='function'){
+      showAuth();
+    } else {
+      // Fallback minimal si JS pas encore parsé
+      var auth=document.getElementById('auth-screen');
+      if(auth){auth.style.display='flex';auth.style.opacity='1';}
+    }
   }
-},10000);
+  // Si sidebar hidden mais mc visible -> forcer sidebar
+  if(sb&&mc&&sb.style.display==='none'&&mc.style.display!=='none'){
+    sb.style.display='flex';
+  }
+},6000);
 
-// Failsafe dashboard: si après 5s sidebar visible mais vide -> re-init
+// Failsafe dashboard: si après 4s sidebar visible mais vide -> re-init
 setTimeout(function(){
   var sb=document.getElementById('main-sidebar');
   var nav=document.getElementById('sidebar-nav-main');
   if(sb&&sb.style.display==='flex'&&nav&&!nav.children.length){
-    try{ if(typeof renderSidebarNav==='function')renderSidebarNav(); }catch(e){}
-    try{ if(typeof initDashboard==='function')initDashboard(); }catch(e){}
+    console.warn('[ETHONE] Dashboard failsafe: sidebar vide, re-init');
+    try{
+      if(typeof renderSidebarNav==='function') renderSidebarNav();
+      if(typeof initDashboard==='function') initDashboard();
+    }catch(e){}
   }
-},5000);
+},4000);
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
@@ -106,10 +80,10 @@ setTimeout(function(){
 <script>
 // Global error handler - catch toutes les erreurs au boot
 window.onerror = function(msg, src, line, col, err) {
-  var boot = document.getElementById('nexus-boot-screen');
+  var boot = document.getElementById('ethone-boot-screen');
   if(boot) {
     boot.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;gap:16px;padding:32px;text-align:center">'
-      + '<div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><polygon points="10,1 19,10 10,19 1,10" fill="none" stroke="white" stroke-width="2"/><polygon points="10,5 15,10 10,15 5,10" fill="white"/></svg></div>'
+      + '<div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 32 32" fill="none"><path d="M8 8h16v3H11v4.5h12v3H11V23h13v3H8V8z" fill="white"/></svg></div>'
       + '<div style="color:#f87171;font-size:13px;font-family:monospace">Erreur: ' + (msg||'Script error') + '</div>'
       + '<div style="color:rgba(255,255,255,.4);font-size:11px;font-family:monospace">' + (src||'') + ':' + (line||'') + '</div>'
       + '<button onclick="location.reload()" style="background:#7c3aed;border:none;border-radius:8px;color:#fff;padding:8px 20px;cursor:pointer;font-size:13px">Recharger</button>'
@@ -388,7 +362,7 @@ label:not(.lb-label):not(.lb-check-row) {
 }
 
 /* ── MODALS ─────────────────────────────────────────────────── */
-.modal-overlay { background: rgba(0,0,0,.6); backdrop-filter: blur(4px); display:none; }
+.modal-overlay { background: rgba(0,0,0,.6); backdrop-filter: blur(4px); }
 .modal {
   background: #111113; border: 1px solid rgba(255,255,255,.08); border-radius: 20px;
   box-shadow: 0 24px 80px rgba(0,0,0,.7); animation: scaleIn .18s var(--ease) both;
@@ -569,196 +543,10 @@ tbody tr:last-child td { border-bottom: none; }
 .mob-nav-btn.active { color: #a78bfa; }
 
 /* ── REVEAL ──────────────────────────────────────────────────── */
-.reveal-hidden { opacity: 0; transform: translateY(12px); transition: opacity .45s ease, transform .45s ease; }
-.reveal-hidden.reveal-d1 { transition-delay: .06s; }
-.reveal-hidden.reveal-d2 { transition-delay: .12s; }
-.reveal-hidden.reveal-d3 { transition-delay: .18s; }
-.reveal-visible { opacity: 1 !important; transform: none !important; }
+.reveal-hidden { opacity: 0; transform: translateY(10px); }
+.reveal-visible { opacity: 1 !important; transform: none !important; transition: opacity .4s ease, transform .4s ease !important; }
 
-/* ── PAGE TRANSITIONS ────────────────────────────────────────── */
-@keyframes pageEnterRight { from { opacity:0; transform:translateX(18px); } to { opacity:1; transform:none; } }
-@keyframes pageEnterLeft  { from { opacity:0; transform:translateX(-18px); } to { opacity:1; transform:none; } }
-@keyframes fadeUp         { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
-.tab-content.page-entering       { animation: fadeUp .2s cubic-bezier(.22,1,.36,1) both; }
-.tab-content.page-entering-right { animation: pageEnterRight .22s cubic-bezier(.22,1,.36,1) both; }
-.tab-content.page-entering-left  { animation: pageEnterLeft .22s cubic-bezier(.22,1,.36,1) both; }
-
-/* ── NAV HOVER & ACTIVE ──────────────────────────────────────── */
-.nav-item { transition: background .14s ease, color .14s ease, transform .14s ease; }
-.nav-item:hover { background: rgba(139,92,246,.08) !important; color: #c4b5fd !important; transform: translateX(2px); }
-.nav-item:hover .nav-icon { color: #a78bfa !important; }
-.nav-item.active .nav-icon svg { filter: drop-shadow(0 0 4px rgba(139,92,246,.5)); }
-@keyframes navIconBounce { 0%,100%{transform:scale(1)} 35%{transform:scale(1.25)} 65%{transform:scale(.9)} }
-
-/* ── BUTTON HOVER EFFECTS ───────────────────────────────────── */
-.btn, .btn-primary, .btn-ghost, .btn-danger { transition: all .16s cubic-bezier(.22,1,.36,1) !important; }
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(139,92,246,.35) !important; }
-.btn-ghost:hover { background: rgba(255,255,255,.08) !important; transform: translateY(-1px); }
-.btn-danger:hover { background: rgba(239,68,68,.15) !important; transform: translateY(-1px); }
-
-/* ── RIPPLE ──────────────────────────────────────────────────── */
-.btn-primary, .btn-ghost { position: relative; overflow: hidden; }
-.press-ripple {
-  position: absolute; border-radius: 50%;
-  background: rgba(255,255,255,.18); transform: translate(-50%,-50%) scale(0);
-  animation: rippleOut .45s ease-out forwards; pointer-events: none;
-}
-@keyframes rippleOut { to { transform: translate(-50%,-50%) scale(1); opacity: 0; } }
-
-/* ── PANEL HOVER & SPOTLIGHT ─────────────────────────────────── */
-.panel { transition: border-color .2s ease, box-shadow .2s ease; }
-.panel:hover { border-color: rgba(139,92,246,.18) !important; box-shadow: 0 4px 24px rgba(0,0,0,.25) !important; }
-.panel-spotlight {
-  position: absolute; width: 180px; height: 180px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(139,92,246,.08) 0%, transparent 70%);
-  pointer-events: none; transform: translate(-50%,-50%); transition: opacity .2s;
-  z-index: 0;
-}
-
-/* ── STAT CARD HOVER ────────────────────────────────────────── */
-.stat-card { transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
-.stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,.3) !important; border-color: rgba(139,92,246,.2) !important; }
-
-/* ── DRAG & DROP ─────────────────────────────────────────────── */
-.overview-widget { transition: box-shadow .18s ease, opacity .18s ease, transform .18s ease; }
-.overview-widget.dragging { opacity: .45; transform: scale(.97); box-shadow: 0 8px 32px rgba(0,0,0,.5); cursor: grabbing; }
-.overview-widget.drag-over { box-shadow: 0 0 0 2px rgba(139,92,246,.7), 0 8px 28px rgba(139,92,246,.15); transform: scale(1.01); }
-.ov-drag-handle { transition: color .15s, background .15s; }
-.ov-drag-handle:hover { color: rgba(124,58,237,.9) !important; background: rgba(124,58,237,.12) !important; }
-
-/* ── MODAL ANIMATION ────────────────────────────────────────── */
-.modal-overlay.open .modal { animation: modalIn .2s cubic-bezier(.22,1,.36,1) both; }
-@keyframes modalIn { from { opacity:0; transform:scale(.96) translateY(8px); } to { opacity:1; transform:none; } }
-
-/* ── TOAST ANIMATION ─────────────────────────────────────────── */
-@keyframes toastIn  { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:none; } }
-@keyframes toastOut { to   { opacity:0; transform:translateX(20px); } }
-.toast-item { animation: toastIn .22s cubic-bezier(.22,1,.36,1) both; }
-.toast-item.removing { animation: toastOut .18s ease forwards; }
-
-/* ── SIDEBAR ITEMS ───────────────────────────────────────────── */
-.logo-icon { transition: transform .2s ease, box-shadow .2s ease; }
-.logo-icon:hover { transform: scale(1.08); box-shadow: 0 4px 18px rgba(124,58,237,.5); }
-.sidebar-avatar { transition: transform .15s ease, box-shadow .15s ease; }
-.sidebar-avatar:hover { transform: scale(1.06); }
-
-/* ── LINK PREVIEW ────────────────────────────────────────────── */
-#link-preview { transition: opacity .15s ease, transform .15s ease; }
-#link-preview.visible { opacity: 1 !important; transform: scale(1) !important; }
-
-/* ── CMD PALETTE ─────────────────────────────────────────────── */
-#cmd-palette-overlay.open #cmd-palette { animation: modalIn .18s cubic-bezier(.22,1,.36,1) both; }
-
-/* ── 3D TILT CARDS ───────────────────────────────────────────── */
-.tilt-card { transform-style: preserve-3d; transition: transform .1s ease; will-change: transform; }
-
-/* ── SCROLL ANIMATIONS ───────────────────────────────────────── */
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.45} }
-@keyframes shimmer { from{background-position:200% 0} to{background-position:-200% 0} }
-@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
-
-/* ── CMD PALETTE ────────────────────────────────────────────── */
-#cmd-palette {
-  background: #18181b; border: 1px solid rgba(255,255,255,.1);
-  border-radius: 14px; width: 560px; max-width: calc(100vw - 32px);
-  box-shadow: 0 24px 80px rgba(0,0,0,.7); overflow: hidden;
-}
-#cmd-input-wrap {
-  display: flex; align-items: center; gap: 10px;
-  padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,.07);
-}
-#cmd-input-icon { display: flex; align-items: center; color: rgba(255,255,255,.3); flex-shrink: 0; width: 16px; height: 16px; }
-#cmd-input-icon svg { width: 16px; height: 16px; }
-#cmd-input {
-  flex: 1; background: transparent; border: none; outline: none;
-  font-size: 14px; color: #fafaf9; font-family: 'Inter', system-ui, sans-serif;
-}
-#cmd-input::placeholder { color: rgba(255,255,255,.25); }
-#cmd-kbd {
-  font-size: 10px; font-family: 'JetBrains Mono', monospace;
-  color: rgba(255,255,255,.3); background: rgba(255,255,255,.07);
-  padding: 2px 7px; border-radius: 5px; border: 1px solid rgba(255,255,255,.1);
-}
-#cmd-results { max-height: 340px; overflow-y: auto; padding: 6px; }
-.cmd-result-item {
-  display: flex; align-items: center; gap: 10px; padding: 8px 10px;
-  border-radius: 8px; cursor: pointer; font-size: 13px; color: rgba(250,250,249,.7);
-  transition: background .12s ease;
-}
-.cmd-result-item:hover, .cmd-result-item.selected {
-  background: rgba(139,92,246,.12); color: #fafaf9;
-}
-.cmd-result-item .cmd-icon { width: 16px; height: 16px; opacity: .5; flex-shrink: 0; }
-.cmd-result-group { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,.2); padding: 8px 10px 4px; font-family: 'JetBrains Mono', monospace; }
-#cmd-footer {
-  display: flex; gap: 16px; padding: 8px 16px;
-  border-top: 1px solid rgba(255,255,255,.06);
-  font-size: 11px; color: rgba(255,255,255,.25);
-}
-.cmd-k {
-  font-family: 'JetBrains Mono', monospace; background: rgba(255,255,255,.07);
-  padding: 1px 5px; border-radius: 4px; border: 1px solid rgba(255,255,255,.1);
-  font-size: 10px; margin-right: 4px;
-}
-
-/* ── NOTIF PANEL ────────────────────────────────────────────── */
-#notif-panel {
-  width: 320px; background: #18181b;
-  border-left: 1px solid rgba(255,255,255,.08);
-  box-shadow: -8px 0 32px rgba(0,0,0,.4);
-  position: fixed; top: 0; right: 0; bottom: 0; z-index: 9001;
-  flex-direction: column;
-  transform: translateX(100%); opacity: 0; pointer-events: none;
-  transition: transform .22s cubic-bezier(.22,1,.36,1), opacity .22s ease;
-  display: flex;
-}
-#notif-panel.open {
-  transform: translateX(0) !important;
-  opacity: 1 !important;
-  pointer-events: all !important;
-}
-.notif-panel-header {
-  display: flex; align-items: flex-start; justify-content: space-between;
-  padding: 18px 16px 14px; border-bottom: 1px solid rgba(255,255,255,.07);
-  flex-shrink: 0;
-}
-.notif-panel-title { font-size: 14px; font-weight: 700; color: #fafaf9; letter-spacing: -.2px; }
-.notif-panel-close {
-  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08);
-  border-radius: 6px; color: rgba(255,255,255,.4); cursor: pointer;
-  font-size: 13px; padding: 3px 8px; transition: all .14s;
-}
-.notif-panel-close:hover { background: rgba(255,255,255,.1); color: #fafaf9; }
-.notif-panel-body { flex: 1; overflow-y: auto; padding: 8px; }
-.notif-panel-clear { padding: 10px 12px; border-top: 1px solid rgba(255,255,255,.06); flex-shrink: 0; }
-.notif-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 32px 16px; }
-.notif-empty-icon { width: 36px; height: 36px; background: rgba(255,255,255,.04); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.25); }
-.notif-empty-text { font-size: 12px; color: rgba(255,255,255,.25); }
-.notif-item { display: flex; gap: 10px; padding: 9px 10px; border-radius: 8px; transition: background .13s; cursor: pointer; }
-.notif-item:hover { background: rgba(255,255,255,.04); }
-.notif-item-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 13px; }
-.notif-item-content { flex: 1; min-width: 0; }
-.notif-item-title { font-size: 12.5px; font-weight: 600; color: #fafaf9; }
-.notif-item-body { font-size: 11.5px; color: rgba(250,250,249,.45); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.notif-item-time { font-size: 10px; color: rgba(255,255,255,.25); white-space: nowrap; flex-shrink: 0; }
-.notif-item.unread .notif-item-title::before { content: ''; display: inline-block; width: 6px; height: 6px; background: #8b5cf6; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
-
-/* ── PRESENTATION MODE ───────────────────────────────────────── */
-.pres-header { display:flex; align-items:center; gap:16px; padding:20px 28px; border-bottom:1px solid rgba(255,255,255,.08); flex-shrink:0; }
-.pres-logo { display:flex; align-items:center; gap:10px; }
-.pres-logo-icon { width:32px; height:32px; border-radius:8px; background:linear-gradient(135deg,#7c3aed,#6d28d9); display:flex; align-items:center; justify-content:center; }
-.pres-logo-text { font-size:15px; font-weight:800; color:#fafaf9; letter-spacing:1px; font-family:'Syne',sans-serif; text-transform:uppercase; }
-.pres-name { font-size:13px; color:rgba(255,255,255,.5); margin-left:auto; }
-.pres-time { font-size:13px; font-weight:700; font-family:var(--mono); color:#a78bfa; }
-.pres-close { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); border-radius:8px; color:rgba(255,255,255,.5); cursor:pointer; padding:6px 12px; font-size:13px; transition:all .15s; }
-.pres-close:hover { background:rgba(255,255,255,.1); color:#fafaf9; }
-.pres-body { flex:1; overflow-y:auto; padding:24px 28px; }
-#pres-exit-hint { text-align:center; padding:12px; font-size:11px; color:rgba(255,255,255,.2); font-family:var(--mono); border-top:1px solid rgba(255,255,255,.05); flex-shrink:0; }
-.nav-label { display: none; }
-.nav-label-text { font-size: 12.5px; font-weight: 500; color: rgba(250,250,249,.65); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.nav-item.active .nav-label-text { color: #fafaf9; font-weight: 600; }
-.nav-badge { font-size: 10px; font-weight: 700; background: rgba(139,92,246,.2); color: #a78bfa; padding: 1px 6px; border-radius: 99px; }
-.nav-section-label { font-size: 9.5px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,.2); padding: 12px 12px 4px; font-family: 'JetBrains Mono', monospace; }
+/* ── GRIDS ───────────────────────────────────────────────────── */
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
 .grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
@@ -836,13 +624,14 @@ tbody tr:last-child td { border-bottom: none; }
 @media(max-width:600px) {
   .stats-row { grid-template-columns: repeat(2,1fr) !important; gap:6px !important; }
 }
+/* ── END COMPAT ─────────────────────────────────────────────── */
 
 </style>
 </head>
 <body>
 
 <!-- PASSWORD SCREEN -->
-<div id="password-screen" style="display:none;position:fixed;inset:0;z-index:9998;background:#09090b;align-items:center;justify-content:center;flex-direction:column">
+<div id="password-screen" style="display:none">
   <div class="pw-avatar" id="pw-avatar"></div>
   <div class="pw-name" id="pw-name">Profile</div>
   <div class="pw-sub" id="pw-sub">Enter your PIN to continue</div>
@@ -864,10 +653,10 @@ tbody tr:last-child td { border-bottom: none; }
 <!-- AUTH SCREEN -->
 <canvas id="bg-canvas" style="position:fixed;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity 1s ease"></canvas>
 
-<div id="nexus-page-loader" style="position:fixed;inset:0;z-index:9997;pointer-events:none;display:none"></div>
-<div id="nexus-page-transition" style="position:fixed;inset:0;z-index:9996;pointer-events:none;display:none"></div>
-<canvas id="nexus-particles-bg" style="position:fixed;inset:0;z-index:1;pointer-events:none"></canvas>
-<div id="nexus-boot-screen">
+<div id="nexus-page-loader"></div>
+<div id="nexus-page-transition"></div>
+<canvas id="nexus-particles-bg"></canvas>
+<div id="ethone-boot-screen" style="position:fixed;inset:0;z-index:2147483647;background:#09090b;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px">
   <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#8b5cf6,#7c3aed);display:flex;align-items:center;justify-content:center">
     <svg width="18" height="18" viewBox="0 0 32 32" fill="none"><path d="M8 8h16v3H11v4.5h12v3H11V23h13v3H8V8z" fill="white"/></svg>
   </div>
@@ -875,29 +664,16 @@ tbody tr:last-child td { border-bottom: none; }
     <div style="width:16px;height:16px;border:2px solid rgba(255,255,255,.1);border-top-color:#8b5cf6;border-radius:50%;animation:bootSpin .7s linear infinite"></div>
     <span id="boot-status" style="font-size:12px;color:rgba(255,255,255,.35);font-family:Inter,system-ui,sans-serif">Chargement...</span>
   </div>
-  <div style="display:flex;gap:6px;align-items:center;margin-top:4px">
-    <div style="width:5px;height:5px;border-radius:50%;background:#7c3aed;animation:pulse 1.2s ease-in-out infinite"></div>
-    <div style="width:5px;height:5px;border-radius:50%;background:#7c3aed;animation:pulse 1.2s ease-in-out infinite .2s"></div>
-    <div style="width:5px;height:5px;border-radius:50%;background:#7c3aed;animation:pulse 1.2s ease-in-out infinite .4s"></div>
+  <style>#ethone-boot-screen{animation:none!important} @keyframes bootSpin{to{transform:rotate(360deg)}}</style>
+</div>
+  <div style="display:flex;gap:6px;align-items:center">
+    <div style="width:6px;height:6px;border-radius:50%;background:#7c3aed;animation:pulse 1.2s ease-in-out infinite"></div>
+    <div style="width:6px;height:6px;border-radius:50%;background:#7c3aed;animation:pulse 1.2s ease-in-out infinite .2s"></div>
+    <div style="width:6px;height:6px;border-radius:50%;background:#7c3aed;animation:pulse 1.2s ease-in-out infinite .4s"></div>
   </div>
-  <style>
-    #nexus-boot-screen {
-      position: fixed;
-      inset: 0;
-      z-index: 9000;
-      background: #09090b;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 12px;
-      animation: none !important;
-    }
-    @keyframes bootSpin { to { transform: rotate(360deg); } }
-  </style>
 </div>
 
-<div id="auth-screen" style="position:fixed;inset:0;z-index:9001;display:none;align-items:center;justify-content:center;overflow:auto;background:#09090b;padding:20px">
+<div id="auth-screen" style="position:fixed;inset:0;z-index:10002;display:none;align-items:center;justify-content:center;overflow:auto;background:#09090b;padding:20px">
 
   <!-- Canvas particules -->
   <canvas id="auth-particles" style="position:absolute;inset:0;z-index:0;pointer-events:none"></canvas>
@@ -1085,7 +861,7 @@ tbody tr:last-child td { border-bottom: none; }
 </div>
 
 <!-- PROFILE SELECT SCREEN -->
-<div id="profile-screen" style="display:none;position:fixed;inset:0;z-index:9998;background:#09090b">
+<div id="profile-screen" style="display:none">
   <!-- Cursor glow -->
   <div id="ps-cursor-glow"></div>
   <!-- Ember particles canvas -->
@@ -1121,11 +897,11 @@ tbody tr:last-child td { border-bottom: none; }
 </div>
 
 <!-- SIDEBAR -->
-<button class="hamburger" id="hamburger" onclick="toggleMobileSidebar()" style="display:none;position:fixed;top:8px;left:8px;z-index:401">
+<button class="hamburger" id="hamburger" onclick="toggleMobileSidebar()" style="display:none">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
 </button>
-<div id="swipe-hint" style="position:fixed;pointer-events:none;z-index:1"></div>
-<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeMobileSidebar()" style="position:fixed;inset:0;z-index:499;display:none"></div>
+<div id="swipe-hint"></div>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeMobileSidebar()"></div>
 <!-- MOBILE TOPBAR -->
 <div id="mobile-topbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:400;height:54px;align-items:center;justify-content:space-between;padding:0 14px;background:rgba(5,5,7,.95);border-bottom:1px solid rgba(255,255,255,.06)">
   <div style="display:flex;align-items:center;gap:10px">
@@ -1140,7 +916,7 @@ tbody tr:last-child td { border-bottom: none; }
   </div>
 </div>
 
-<nav class="sidebar" id="main-sidebar">
+<nav class="sidebar" id="main-sidebar" style="display:none;opacity:1">
   <div class="logo" style="position:relative">
     <div class="logo-icon" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);box-shadow:0 2px 12px rgba(124,58,237,.3)">
       <svg width="14" height="14" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="url(#eg)"/><path d="M8 8h16v3H11v4.5h12v3H11V23h13v3H8V8z" fill="white"/><defs><linearGradient id="eg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#4c1d95"/></linearGradient></defs></svg>
@@ -1283,10 +1059,10 @@ tbody tr:last-child td { border-bottom: none; }
 
   </div>
 </nav>
-<div class="resize-handle" id="resize-handle" style="position:absolute"></div>
+<div class="resize-handle" id="resize-handle"></div>
 
 <!-- MAIN -->
-<main class="main" id="main-content">
+<main class="main" id="main-content" style="display:none;opacity:1">
 
   <!-- OVERVIEW -->
   <div id="page-dashboard" class="tab-content active" style="padding-top:2px">
@@ -2998,7 +2774,7 @@ tbody tr:last-child td { border-bottom: none; }
 
       <!-- Input -->
       <div class="ai-input-row">
-        <textarea class="ai-input" id="ai-input" placeholder="Ask anything about your dashboard…" data-i18n="nexus_ai_desc" data-i18n-attr="placeholder" rows="1"
+        <textarea class="ai-input" id="ai-input" placeholder="Ask anything about your dashboard…" data-i18n="ethone_ai_desc" data-i18n-attr="placeholder" rows="1"
           onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAIMessage()}"
           oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
         <button class="ai-send-btn" id="ai-send-btn" onclick="sendAIMessage()" title="Send">
@@ -3063,7 +2839,7 @@ tbody tr:last-child td { border-bottom: none; }
 </div>
 
 <!-- COMMAND PALETTE -->
-<div id="cmd-palette-overlay" onclick="if(event.target===this)closeCmdPalette()" style="display:none">
+<div id="cmd-palette-overlay" onclick="if(event.target===this)closeCmdPalette()">
   <div id="cmd-palette">
     <div id="cmd-input-wrap">
       <div id="cmd-input-icon">
@@ -3623,23 +3399,9 @@ let uiLang=_lang; // alias global pour compatibilité
 // ── Supabase client (wrappé pour éviter crash si CDN non chargé) ─────────
 var sb;
 try{
-  sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON,{
-    auth:{
-      // Tolérer jusqu'à 2h de décalage d'horloge (heure d'été / fuseaux)
-      // Evite l'erreur "Session issued in the future" sur OAuth redirect
-      clockSkewInSeconds: 7200,
-      // Désactiver le lock storage sur multi-tab pour éviter les race conditions
-      lock: undefined,
-      // Persistance de session dans localStorage
-      storage: window.localStorage,
-      storageKey: 'ethone-auth-token',
-      autoRefreshToken: true,
-      persistSession: true,
-      detectSessionInUrl: true,
-    }
-  });
+  sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 }catch(e){
-  console.error('[NEXUS] Supabase CDN non chargé:',e.message);
+  console.error('[ETHONE] Supabase CDN non chargé:',e.message);
   // sb reste undefined - le boot IIFE gérera l'absence de connexion
   sb={auth:{getSession:()=>Promise.resolve({data:{session:null},error:new Error('Supabase unavailable')}),
            getUser:()=>Promise.resolve({data:{user:null},error:new Error('Supabase unavailable')}),
@@ -3724,7 +3486,7 @@ function showChangelog(){
     {v:'v4.8.0',date:'16/06/2026',changes:['Last.fm: smart refresh — détecte changement de piste en 10s (au lieu de 30s fixe)','Météo: recherche Nominatim améliorée (normalize, capitalize, countrycodes=fr, multi-variantes)','Tokens Groq optimisés: system prompt ultra-compact (~120 tokens vs ~500 avant)','Tokens Groq: historique 4 messages, max_tokens 500, contexte dashboard compressé','Tokens Groq: ~700-900 tokens/message vs ~4K avant']},
     {v:'v4.7.0',date:'16/06/2026',changes:['Now Playing: ne s\'affiche plus au refresh quand Discord est DND sans Spotify','Discord connecté: fallback Last.fm bloqué jusqu\'à réponse Lanyard','updateSpotifyFromLanyard: Discord online sans Spotify → cache le fallback aussi','Last.fm scrobble card: refresh toutes les 10s avec détection changement de piste']},
     {v:'v4.6.0',date:'16/06/2026',changes:['Widget Discord: contour coloré selon statut (rouge DND, vert online, orange idle, transparent invis)','Widget Now Playing: contour vert Spotify (#1db954)','Widget Last.fm: contour rouge (#d51007)','Sidebar compact: items Account (Connexions/Paramètres/IA) maintenant groupés après Main, plus en bas','Flash Connexions corrigé: loadConnectionsUI ne relance plus initSidebarWidgets']},
-    {v:'v4.5.0',date:'16/06/2026',changes:['NEXUS AI: contexte dashboard avec vrais noms (notes, fichiers, tâches, habitudes, objectifs)','NEXUS AI: historique corrigé — saveAIChats sauvegarde en cloud (Supabase)','NEXUS AI: message de bienvenue ne se répète plus au retour sur l\'onglet','NEXUS AI: erreur indiquait Gemini au lieu de Groq — corrigé','Overview widgets: ordre drag-drop sauvegardé et restauré après refresh (Supabase)','Météo: ville manuelle prioritaire — jamais écrasée par géoloc','Page navigation: display:none/block au lieu d\'opacity (élimine le bug page-petite)']},
+    {v:'v4.5.0',date:'16/06/2026',changes:['ETHONE AI: contexte dashboard avec vrais noms (notes, fichiers, tâches, habitudes, objectifs)','ETHONE AI: historique corrigé — saveAIChats sauvegarde en cloud (Supabase)','ETHONE AI: message de bienvenue ne se répète plus au retour sur l\'onglet','ETHONE AI: erreur indiquait Gemini au lieu de Groq — corrigé','Overview widgets: ordre drag-drop sauvegardé et restauré après refresh (Supabase)','Météo: ville manuelle prioritaire — jamais écrasée par géoloc','Page navigation: display:none/block au lieu d\'opacity (élimine le bug page-petite)']},
     {v:'v4.4.0',date:'16/06/2026',changes:['Now Playing (sidebar): logique Discord online→Lanyard / offline→Last.fm fallback','Double widget Spotify corrigé: jamais deux widgets en même temps','Discord offline/invis: widget Last.fm iframe affiché automatiquement','Discord online sans Spotify: widget Now Playing caché']},
     {v:'v4.3.0',date:'16/06/2026',changes:['Boot corrigé: boucle infinie updateBannerDisplay↔updateSidebarAvatar supprimée','POMO_MODES.forEach corrigé (POMO_MODES est une fonction, nécessite ())','Variables globales manquantes déclarées: _ambientFrame, _bgFrame, _bgParticles, _bioSaveTO, _socialSaveTO, _lastRank, _npProgressInterval, _valoMatchList']},
     {v:'v4.0.0',date:'14/06/2026',changes:['Widgets sidebar: chargement automatique au boot (WORKER_URL et LASTFM_KEY déplacés en tête de script)','Boot ultra-rapide: cache sessionStorage + auto-enter si profil unique sans mot de passe','Greeting localisé: Bonjour/Bon après-midi/Bonsoir sans dépendance à t()','Date localisée: jours et mois traduits en FR/EN/ES/DE dans l\'horloge','Sidebar widgets toggle: bouton ◫ Sidebar dans l\'onglet Connexions pour Discord et Last.fm','Personal dashboard remplacé par NEXUS (ou bio si définie)','Changelog: refonte visuelle — timeline verticale, tags par catégorie, plus lisible','Flash au boot corrigé: sidebar/main-content cachés par défaut, écran de chargement NEXUS','Sidebar: fond noir corrigé, overflow:hidden, footer toujours visible','renderDiscordCard appelle refreshDiscordSidebar automatiquement']},
@@ -3737,7 +3499,7 @@ function showChangelog(){
     {v:'v3.5.1',date:'12/06/2026',changes:['Color system: full palette unification — orange #7c3aed + red #6d28d9 everywhere','Auth screen: left panel near-black coherent, buttons orange/red gradient','Auth: card border orange-tinted, right panel explicit dark bg','Root vars: surfaces neutral rgba (no more red-tinted backgrounds)','Root vars: muted colors warm neutral (no more blue-purple muted)','Accent: #7c3aed replaces #e11d48 crimson as primary accent throughout']},
     {v:'v3.5.0',date:'12/06/2026',changes:['Pomodoro v2: larger 160px animated ring with pulse while running','Pomodoro: Web Audio API sounds (tick/start/done/break chimes)','Pomodoro: sound toggle button, SVG controls (reset/play/skip)','Pomodoro: 4-cell stats grid (today/total/focus time/streak)','Last.fm v2: blurred album art hero card for now playing','Last.fm: section labels, track rows, artist bars with new CSS classes','Valorant v2: rank hero with floating emblem + winrate donut ring','Valorant: valo-stats-row with color-coded good/bad KDA/ACS/HS/WR','Valorant: new valo-match-row with left color bar + hover slide','Valorant: valo-agents-grid 3-col with agent images']},
     {v:'v3.4.0',date:'12/06/2026',changes:['Animations: full system — scroll reveal, page transitions, stat counters','Auth: 6 floating animated icons (tasks, stats, gaming, notes, habits, AI)','Auth: animated title gradient shift, staggered feature items with SVG icons','Auth: pulsing orbs, glow logo animation','Profile select: cursor glow follows mouse, staggered card entrance','Dashboard: IntersectionObserver scroll reveal on all panels/cards','Dashboard: animated number counters on stat cards','Dashboard: nav icon bounce on hover, shimmer on active item','Dashboard: page transition with fade+slide on every tab switch','Buttons: ripple effect on all primary/ghost buttons']},
-    {v:'v3.3.0',date:'12/06/2026',changes:['Weather widget v2: animated SVG weather icons (sun, clouds, rain, snow, storm)','Weather: 5-day forecast redesign with clean cards','Weather: feels like / wind / humidity meta row','Weather: location pin with city name','NEXUS AI: new Claude-powered chat assistant page','NEXUS AI: dashboard context awareness (tasks, habits, notes, pomos)','NEXUS AI: typing indicator, markdown support, suggestion chips','NEXUS AI: conversation history (last 24 messages)']},
+    {v:'v3.3.0',date:'12/06/2026',changes:['Weather widget v2: animated SVG weather icons (sun, clouds, rain, snow, storm)','Weather: 5-day forecast redesign with clean cards','Weather: feels like / wind / humidity meta row','Weather: location pin with city name','ETHONE AI: new Claude-powered chat assistant page','ETHONE AI: dashboard context awareness (tasks, habits, notes, pomos)','ETHONE AI: typing indicator, markdown support, suggestion chips','ETHONE AI: conversation history (last 24 messages)']},
     {v:'v3.2.1',date:'12/06/2026',changes:['Bugfix: duplicate modal-add-countdown removed','Bugfix: duplicate github-username-input removed (static HTML removed, JS handles rendering)','Bugfix: missing CSS variables (--radius, --radius-sm, --transition, --glow-blue, --shadow-sm) added as aliases in :root','Full scan: IDs, divs, functions — no remaining issues']},
     {v:'v3.2.0',date:'12/06/2026',changes:['Mobile: full auth screen redesign (left panel hidden, full screen form)','Mobile: profile select adapted (smaller cards, canvas disabled)','Mobile: dashboard single-column layout on <=768px','Mobile: bottom nav SVG icons (Home/Files/Tasks/Gaming/Settings)','Mobile: SVG hamburger, sidebar slides from left','Mobile: stat cards 2-column grid, panels reduced padding','Mobile: settings nav horizontal scrollable sticky','Mobile: all grids forced to 1 column on mobile','Mobile: safe area insets for iPhone notch/home bar']},
     {v:'v3.1.1',date:'12/06/2026',changes:['Icons: all nav emojis replaced with proper Lucide SVG','Favicon: NEXUS SVG diamond icon in browser tab','Stats: full page redesign (2x2 grid, SVG panel-title-icons, habit bars)','Overview: 2-column layout (main content + sidebar widgets)','Overview: widgets logically grouped (no more mixing)','Overview: SVG panel-title-icon on all widgets']},
@@ -4124,111 +3886,88 @@ async function doRegister(){
 
 async function doLogout(){
   try{ await sb.auth.signOut(); }catch(e){}
-  const _logoutUserId = _sbUser?.id;
   _sbUser=null;_isAdmin=false;
+  // Nettoyer les intervals
   if(typeof _lanyardWS!=='undefined'&&_lanyardWS){try{_lanyardWS.close();}catch(e){}; _lanyardWS=null;}
   if(typeof _lastfmInterval!=='undefined'){clearInterval(_lastfmInterval);_lastfmInterval=null;}
   if(typeof _spotifyAutoRefresh!=='undefined'){clearInterval(_spotifyAutoRefresh);_spotifyAutoRefresh=null;}
   clearInterval(window._npProgressInterval);
   if(window._steamInterval){clearInterval(window._steamInterval);window._steamInterval=null;}
   if(typeof stopAmbientBg==='function')stopAmbientBg();
-  try{ if(_logoutUserId) sessionStorage.removeItem('nexus_profiles_'+_logoutUserId); }catch(e){}
+  // Masquer tout
+  ['profile-screen','main-sidebar','main-content','password-screen'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.style.setProperty('display','none');
+  });
+  // Vider session cache
+  try{ if(_sbUser) sessionStorage.removeItem('nexus_profiles_'+_sbUser?.id); }catch(e){}
   profiles=[]; currentId=null;
-  showAuth();
-  setTimeout(()=>{ try{if(typeof animateAuthEntrance==='function') animateAuthEntrance();}catch(e){} },80);
+  // Afficher auth proprement (pas besoin de removeAntiFlash ici, on est déjà dans le dashboard)
+  const authScr=document.getElementById('auth-screen');
+  if(authScr){ authScr.style.setProperty('display','flex'); authScr.style.opacity='1'; }
+  setTimeout(()=>{ if(typeof animateAuthEntrance==='function') animateAuthEntrance(); },80);
 }
 
 async function onAuthSuccess(userArg){
+  removeAntiFlash();
+  const authEl=document.getElementById('auth-screen');
+  if(authEl){ authEl.style.setProperty('display','none'); }
+  // Remettre les backgrounds visibles
+  const _blr=document.getElementById('nexus-bg-layer');
+  if(_blr){_blr.style.opacity='';_blr.style.pointerEvents='none';}
+
+  let boot=document.getElementById('ethone-boot-screen');
+  if(!boot){
+    boot=document.createElement('div');
+    boot.id='ethone-boot-screen';
+    boot.style.cssText='position:fixed;inset:0;z-index:2147483647;background:#050507;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px';
+    boot.innerHTML='<div id="boot-logo" style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 30px rgba(124,58,237,.5)"><svg width="24" height="24" viewBox="0 0 32 32" fill="none"><path d="M8 8h16v3H11v4.5h12v3H11V23h13v3H8V8z" fill="white"/></svg></div><div id="boot-status" style="font-size:11px;color:rgba(124,58,237,.5);font-family:JetBrains Mono,monospace;letter-spacing:1px;margin-top:8px">ETHONE</div>';
+    document.body.appendChild(boot);
+  } else {
+    boot.style.display='flex';
+    boot.style.opacity='1';
+  }
+
   try{
     let user=userArg;
-    if(!user){
+      if(!user){
       const {data,error:ue}=await sb.auth.getUser();
-      if(!data?.user||ue){ console.error('[ETHONE] No user'); showAuth(); return; }
+      if(!data?.user||ue){
+        console.error('[ETHONE] No user - showing auth');
+        if(authEl){ authEl.style.setProperty('display','flex'); }
+        hideBoot(); return;
+      }
       user=data.user;
     }
     _sbUser=user;
     _isAdmin=user?.email===ADMIN_EMAIL;
 
-    // ── Essayer d'abord le cache sessionStorage (instantané) ──
-    const cacheKey='nexus_profiles_'+_sbUser.id;
-    let hasCached=false;
-    try{
-      const cached=sessionStorage.getItem(cacheKey);
-      if(cached){
-        const parsed=JSON.parse(cached);
-        if(parsed&&parsed.length){
-          profiles=parsed;
-          normalizeAllProfiles();
-          hasCached=true;
-        }
-      }
-    }catch(e){}
-
-    if(hasCached){
-      // Afficher immédiatement depuis le cache
-      showDashboardOrProfiles();
-      // Sync en arrière-plan sans bloquer
-      loadCloudState().then(()=>{
-        normalizeAllProfiles();
-        try{ sessionStorage.setItem(cacheKey,JSON.stringify(profiles)); }catch(e){}
-        const p=curP(); if(p) initSidebarWidgets(p);
-      }).catch(()=>{});
-      return;
-    }
-
-    // ── Pas de cache : créer un profil minimal immédiat + charger en parallèle ──
-    const meta=_sbUser.user_metadata||{};
-    const username=meta.full_name||meta.name||meta.username||_sbUser.email?.split('@')[0]||'User';
-    profiles=[{
-      id:_sbUser.id+'_tmp',
-      name:username,
-      avatarEmoji:AVATARS[0].e,
-      avatarBg:AVATARS[0].b,
-      avatarImg:null,
-      avatarIdx:0,
-      state:defState(username)
-    }];
-    normalizeAllProfiles();
-
-    // Afficher le dashboard de suite (profil minimal)
-    _show('boot');
-    setBootStatus('Connexion...');
-
-    // Charger les vraies données (timeout 5s)
+    setBootStatus && setBootStatus('Chargement...');
     await loadCloudState();
+      setBootStatus && setBootStatus('Prêt ✓');
 
-    if(!profiles.length||profiles[0].id===_sbUser.id+'_tmp'){
-      // Toujours pas de données — garder le profil minimal
-      profiles=[{
-        id:Date.now(),
-        name:username,
-        avatarEmoji:AVATARS[0].e,
-        avatarBg:AVATARS[0].b,
-        avatarImg:null,
-        avatarIdx:0,
-        state:defState(username)
-      }];
+    if(!profiles.length){
+      console.warn('[ETHONE] No profiles - creating default');
+      profiles.push({id:Date.now(),name:'Mon profil',
+        avatarEmoji:AVATARS[0].e,avatarBg:AVATARS[0].b,
+        avatarImg:null,avatarIdx:0,state:defState('Mon profil')});
+      await saveCloudState();
     }
     normalizeAllProfiles();
-    try{ sessionStorage.setItem(cacheKey,JSON.stringify(profiles)); }catch(e){}
+    try{ sessionStorage.setItem('nexus_profiles_'+_sbUser.id,JSON.stringify(profiles)); }catch(e){}
+
     showDashboardOrProfiles();
 
   }catch(err){
-    console.error('[NEXUS] onAuthSuccess ERROR:', err, err?.stack);
-    try{ showAuth(); }catch(e){}
+    console.error('[ETHONE] onAuthSuccess FATAL ERROR:', err, err?.stack);
+    if(authEl){ authEl.style.setProperty('display','flex'); }
+    hideBoot();
   }
 }
 async function loadCloudState(){
   if(!_sbUser)return;
-  try{
-    const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),4000));
-    const query=sb.from('dashboard_data').select('*').eq('user_id',_sbUser.id).order('created_at',{ascending:true});
-    const {data,error}=await Promise.race([query,timeout.then(()=>{throw new Error('timeout')})]).catch(e=>{
-      console.error('[NEXUS] loadCloudState timeout/error:',e);
-      return {data:null,error:e};
-    });
-    if(error){console.error('loadCloudState error:',error);return;}
-    if(data&&data.length){
+  const {data,error}=await sb.from('dashboard_data').select('*').eq('user_id',_sbUser.id).order('created_at',{ascending:true});
+  if(error)console.error('loadCloudState error:',error);
+  if(data&&data.length){
     profiles=data.map(d=>{
       const s=d.state||{};
       const idx=s.avatarIdx||0;
@@ -4303,7 +4042,6 @@ async function loadCloudState(){
     }];
     await saveCloudState();
   }
-  }catch(e){ console.error('[NEXUS] loadCloudState catch:',e); }
 }
 
 function updateSyncIndicator(state){
@@ -4669,7 +4407,7 @@ function psStartEmbers(){
   for(let i=0;i<60;i++){const p=spawn();p.y=Math.random()*H;p.life=Math.random();particles.push(p);}
   function frame(){
     if(!document.getElementById('ps-canvas'))return (_psEmbersRunning=false);
-    if(!document.documentElement.classList.contains('show-profiles'))return (_psEmbersRunning=false);
+    if(document.getElementById('profile-screen').style.display==='none')return (_psEmbersRunning=false);
     ctx.clearRect(0,0,W,H);
     if(Math.random()<.4)particles.push(spawn());
     particles=particles.filter(p=>p.life>0);
@@ -4788,16 +4526,24 @@ function goToProfileScreen(){
   if(window._steamInterval){clearInterval(window._steamInterval);window._steamInterval=null;}
   _valoMatchCache={};_valoAllMatches=[];
   stopAmbientBg();
+  ['main-sidebar','main-content','password-screen','auth-screen'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.setProperty('display','none');
+  });
   managingMode=false;
-  try{renderProfileScreen();}catch(e){console.error('[NEXUS] renderProfileScreen:',e);}
-  _show('profiles');
+  try{renderProfileScreen();}catch(e){console.error('[ETHONE] renderProfileScreen:',e);}
+  const s=document.getElementById('profile-screen');
+  if(s){s.style.setProperty('display','flex');s.style.opacity='1';s.classList.remove('hiding');}
   setTimeout(initPsCursorGlow,100);
 }
 
 function showPasswordScreen(id){
   pendingPasswordId=id;pinEntry='';
   const p=getP(id);if(!p)return;
-  _show('password');
+  const ps=document.getElementById('profile-screen');
+  ps.style.setProperty('display','none');
+  const screen=document.getElementById('password-screen');
+  screen.style.setProperty('display','flex');
 
   // avatar
   const avEl=document.getElementById('pw-avatar');
@@ -4860,7 +4606,7 @@ function pinPress(k){
 function checkPinPassword(){
   const p=getP(pendingPasswordId);if(!p)return;
   if(pinEntry===p.password.value){
-    document.documentElement.classList.remove('show-password');
+    document.getElementById('password-screen').style.setProperty('display','none');
     enterDashboard(pendingPasswordId);
   } else {
     document.getElementById('pw-error').textContent='Incorrect PIN. Try again.';
@@ -4873,7 +4619,7 @@ function checkTextPassword(){
   const p=getP(pendingPasswordId);if(!p)return;
   const val=document.getElementById('pw-text-input').value;
   if(val===p.password.value){
-    document.documentElement.classList.remove('show-password');
+    document.getElementById('password-screen').style.setProperty('display','none');
     enterDashboard(pendingPasswordId);
   } else {
     document.getElementById('pw-text-error').textContent='Incorrect password. Try again.';
@@ -4882,6 +4628,7 @@ function checkTextPassword(){
 }
 
 function cancelPasswordScreen(){
+  document.getElementById('password-screen').style.setProperty('display','none');
   pendingPasswordId=null;pinEntry='';
   goToProfileScreen();
 }
@@ -5493,17 +5240,38 @@ function toggleSidebarCompact(){
   const p=curP();if(!p)return;
   p.sidebarCompact=!p.sidebarCompact;
   const sb=document.getElementById('main-sidebar');
-  if(sb) sb.classList.toggle('compact',p.sidebarCompact);
-  // Flex layout handles resizing automatically via sidebar width transition
+  if(sb)sb.classList.toggle('compact',p.sidebarCompact);
+  // Animate main content margin smoothly
+  const main=document.getElementById('main-content');
+  if(main){
+    main.style.transition='margin-left .22s cubic-bezier(.4,0,.2,1)';
+    main.style.marginLeft=p.sidebarCompact?'68px':'220px';
+    setTimeout(()=>{main.style.transition='';},250);
+  }
+  // Resize handle — se déplace avec la sidebar
+  const rh=document.getElementById('resize-handle');
+  if(rh){
+    rh.style.transition='left .22s cubic-bezier(.4,0,.2,1)';
+    rh.style.left=p.sidebarCompact?'64px':(localStorage.getItem('sb_width')||'220')+'px';
+    setTimeout(()=>{rh.style.transition='';},250);
+  }
   saveStateNow();
 }
 
 function applySidebarCompact(){
   const p=curP();if(!p)return;
   const sb=document.getElementById('main-sidebar');
-  if(sb) sb.classList.toggle('compact',!!p.sidebarCompact);
-  // In flex layout, sidebar width change automatically adjusts main-content
-  // No marginLeft needed - flex handles this
+  if(sb)sb.classList.toggle('compact',!!p.sidebarCompact);
+  const main=document.getElementById('main-content');
+  const rh=document.getElementById('resize-handle');
+  if(p.sidebarCompact){
+    if(main)main.style.marginLeft='64px';
+    if(rh)rh.style.left='64px';
+  } else {
+    const savedW=localStorage.getItem('sb_width')||'220';
+    if(main)main.style.marginLeft=savedW+'px';
+    if(rh)rh.style.left=savedW+'px';
+  }
 }
 
 function initDashboard(){
@@ -5512,12 +5280,12 @@ function initDashboard(){
   if(!p){
     // currentId ne matche pas -> prendre le premier profil disponible
     if(!profiles||!profiles.length){
-      console.error('[NEXUS] initDashboard: aucun profil disponible');
+      console.error('[ETHONE] initDashboard: aucun profil disponible');
       return;
     }
     currentId=profiles[0].id;
     p=profiles[0];
-    console.warn('[NEXUS] initDashboard: curP() null, forcé sur profiles[0].id=',currentId);
+    console.warn('[ETHONE] initDashboard: curP() null, forcé sur profiles[0].id=',currentId);
   }
   if(!p.state)p.state=defState(p.name);
   if(!p.state.connections)p.state.connections={};
@@ -6122,7 +5890,7 @@ setInterval(updateClock,1000);
 //  NAVIGATION
 // ===================================================
 // ══════════════════════════════════════════════
-//  NEXUS AI — Claude-powered dashboard assistant
+//  ETHONE AI — Claude-powered dashboard assistant
 // ══════════════════════════════════════════════
 let _aiHistory=[];
 let _aiTyping=false;
@@ -6316,7 +6084,7 @@ function removeAITyping(){
 
 
 // ════════════════════════════════════════════════════════════
-//  NEXUS AI — DASHBOARD ACTIONS
+//  ETHONE AI — DASHBOARD ACTIONS
 //  Parses AI responses for [ACTION:...] commands
 // ════════════════════════════════════════════════════════════
 
@@ -6496,7 +6264,7 @@ async function sendAIMessage(){
     removeAITyping();
     const errMsg=e?.message||'Erreur inconnue';
     addAIMessage('assistant','❌ Erreur: '+errMsg+'. Vérifie ta clé Groq dans Connexions → ETHONE AI.');
-    console.error('[NEXUS AI]',e);
+    console.error('[ETHONE AI]',e);
   }
   _aiTyping=false;
   document.getElementById('ai-send-btn').disabled=false;
@@ -6546,7 +6314,7 @@ function switchPage(page,navEl){
   if(qn&&p0&&qn.value!==p0.state?.note){p0.state.note=qn.value;saveStateNow();}
   document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
   const activePage=document.getElementById('page-'+page);
-  if(!activePage){console.warn('[NEXUS] switchPage: page-'+page+' not found');return;}
+  if(!activePage){console.warn('[ETHONE] switchPage: page-'+page+' not found');return;}
   activePage.classList.add('active');
   animatePageIn(activePage,page);
   document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
@@ -6738,16 +6506,14 @@ function toast(msg,type='info'){
     info:'<svg viewBox="0 0 16 16" fill="none" style="width:11px;height:11px;flex-shrink:0"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2"/><line x1="8" y1="7" x2="8" y2="11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="8" cy="5" r="1" fill="currentColor"/></svg>',
     warning:'<svg viewBox="0 0 16 16" fill="none" style="width:11px;height:11px;flex-shrink:0"><path d="M8 2L14 13H2L8 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><line x1="8" y1="7" x2="8" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="8" cy="12" r="1" fill="currentColor"/></svg>'
   };
-  const el=document.createElement('div');el.className='toast toast-item '+type;
+  const el=document.createElement('div');el.className='toast '+type;
   el.innerHTML='<span>'+(icons[type]||icons.info)+'</span><span>'+escapeHTML(msg)+'</span>';
-  const container=document.getElementById('toasts');
-  if(!container)return;
-  container.appendChild(el);
+  document.getElementById('toasts').appendChild(el);
   if(typeof gsap!=='undefined'){
     gsap.from(el,{x:40,duration:.25,ease:'back.out(1.4)',clearProps:'transform'});
-    setTimeout(()=>{gsap.to(el,{x:40,opacity:0,duration:.2,ease:'power2.in',onComplete:()=>el.remove()});},2800);
+    setTimeout(()=>{gsap.to(el,{x:40,opacity:0,duration:.2,ease:'power2.in',onComplete:()=>el.remove()});},2500);
   } else {
-    setTimeout(()=>{el.classList.add('removing');setTimeout(()=>el.remove(),200);},2800);
+    setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300);},2500);
   }
 }
 
@@ -8344,17 +8110,8 @@ const CMD_PAGES=[
 
 // ══════════════════════════════════════════════════════════════
 let _cmdSelectedIdx=0;
-function openCmdPalette(){
-  const o=document.getElementById('cmd-palette-overlay');
-  if(o){o.style.display='flex';o.classList.add('open');}
-  const i=document.getElementById('cmd-input');
-  if(i){i.value='';i.focus();}
-  _cmdSelectedIdx=0;renderCmdResults();
-}
-function closeCmdPalette(){
-  const o=document.getElementById('cmd-palette-overlay');
-  if(o){o.classList.remove('open');o.style.display='none';}
-}
+function openCmdPalette(){const o=document.getElementById('cmd-palette-overlay');if(o)o.classList.add('open');const i=document.getElementById('cmd-input');if(i){i.value='';i.focus();}_cmdSelectedIdx=0;renderCmdResults();}
+function closeCmdPalette(){document.getElementById('cmd-palette-overlay')?.classList.remove('open');}
 function getCmdItems(q=''){
   const p=curP();q=q.toLowerCase().trim();
   const pages=[
@@ -8586,75 +8343,35 @@ function _makeDraggable(block){
     handle.addEventListener('mouseup',()=>{setTimeout(()=>block.setAttribute('draggable','false'),100);});
     block.setAttribute('draggable','false'); // Par défaut non draggable
   }
-  block.addEventListener('dragstart',function(e){
-    _dragSrc=this;
-    this.classList.add('dragging');
-    e.dataTransfer.effectAllowed='move';
-    e.dataTransfer.setData('text/plain',this.id);
-  });
-  block.addEventListener('dragend',function(){
-    this.classList.remove('dragging');
-    document.querySelectorAll('.drag-over').forEach(el=>el.classList.remove('drag-over'));
-  });
-  block.addEventListener('dragover',function(e){
-    e.preventDefault();
-    e.dataTransfer.dropEffect='move';
-    if(_dragSrc&&_dragSrc!==this)this.classList.add('drag-over');
-  });
-  block.addEventListener('dragleave',function(e){
-    // Only remove if leaving to outside this element
-    if(!this.contains(e.relatedTarget))this.classList.remove('drag-over');
-  });
+  block.addEventListener('dragstart',function(e){_dragSrc=this;this.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
+  block.addEventListener('dragend',function(){this.classList.remove('dragging');document.querySelectorAll('.drag-over').forEach(el=>el.classList.remove('drag-over'));});
+  block.addEventListener('dragover',function(e){e.preventDefault();e.dataTransfer.dropEffect='move';this.classList.add('drag-over');});
+  block.addEventListener('dragleave',function(){this.classList.remove('drag-over');});
   block.addEventListener('drop',function(e){
-    e.preventDefault();e.stopPropagation();
-    this.classList.remove('drag-over');
-    if(!_dragSrc||_dragSrc===this)return;
-    const srcParent=_dragSrc.parentNode;
-    const tgtParent=this.parentNode;
-    // Allow cross-column drops
-    const si=[...srcParent.children].indexOf(_dragSrc);
-    const ti=[...tgtParent.children].indexOf(this);
-    if(srcParent===tgtParent){
-      if(si<ti)tgtParent.insertBefore(_dragSrc,this.nextSibling);
-      else tgtParent.insertBefore(_dragSrc,this);
-    } else {
-      // Cross-column: move widget to target column
-      tgtParent.insertBefore(_dragSrc,this);
+    e.preventDefault();e.stopPropagation();this.classList.remove('drag-over');
+    if(_dragSrc&&_dragSrc!==this&&_dragSrc.parentNode===this.parentNode){
+      const par=this.parentNode;
+      const si=[...par.children].indexOf(_dragSrc);
+      const ti=[...par.children].indexOf(this);
+      if(si<ti)par.insertBefore(_dragSrc,this.nextSibling);
+      else par.insertBefore(_dragSrc,this);
+      saveOverviewOrder();
     }
-    saveOverviewOrder();
   });
 }
 
 function initOverviewDragDrop(){
   const left=document.getElementById('overview-col-left');
   const right=document.getElementById('overview-col-right');
-  if(!left&&!right)return;
-
-  // Assign stable IDs to panels
+  // Assigner des IDs stables aux panels gauche
   const leftNames=['recent-items-panel','tasks-events-panel','quick-note-panel','daily-focus-panel','activity-panel'];
-  const rightNames=['pomo-widget-panel','weather-widget-panel','quote-widget-panel','countdown-widget-panel'];
   if(left)[...left.children].forEach((el,i)=>{if(!el.id)el.id=leftNames[i]||('overview-left-'+i);});
+  // Assigner des IDs stables aux panels droite
+  const rightNames=['pomo-widget-panel','weather-widget-panel','quote-widget-panel','countdown-widget-panel'];
   if(right)[...right.children].forEach((el,i)=>{if(!el.id)el.id=rightNames[i]||('overview-right-'+i);});
-
-  // Make all blocks draggable
-  const allBlocks=[...(left?[...left.children]:[]),...(right?[...right.children]:[])];
-  allBlocks.forEach((block,i)=>{ if(!block.id)block.id='overview-block-'+i; _makeDraggable(block); });
-
-  // Add column-level drop zone (drop at end of column)
-  [left,right].forEach(col=>{
-    if(!col)return;
-    col.addEventListener('dragover',e=>{ e.preventDefault(); e.dataTransfer.dropEffect='move'; });
-    col.addEventListener('drop',e=>{
-      // Only fire if dropping directly on column, not on a child
-      if(e.target!==col)return;
-      e.preventDefault();e.stopPropagation();
-      if(_dragSrc&&_dragSrc.parentNode!==col){
-        col.appendChild(_dragSrc);
-        saveOverviewOrder();
-      }
-    });
-  });
-
+  // Rendre tout draggable
+  const allBlocks=[...( left?[...left.children]:[]), ...(right?[...right.children]:[])];
+  allBlocks.forEach((block,i)=>{if(!block.id)block.id='overview-block-'+i; _makeDraggable(block);});
   restoreOverviewOrder();
 }
 
@@ -8667,7 +8384,7 @@ function saveOverviewOrder(){
   if(!p.state)p.state={};
   p.state.overviewOrder={left:leftIds,right:rightIds};
   saveStateNow();
-  if(_sbUser){clearTimeout(window._saveCloudTimeout);window._saveCloudTimeout=setTimeout(()=>saveCloudState().catch(()=>{}),1500);}
+  if(_sbUser){clearTimeout(_saveCloudTimeout);saveCloudState().catch(()=>{});}
 }
 
 function restoreOverviewOrder(){
@@ -8813,49 +8530,39 @@ function hidePageLoader(){
   setTimeout(()=>{el.classList.remove('done');el.style.opacity='0';},350);
 }
 
-function animatePageIn(pageEl,pageName){
+function animatePageIn(pageEl,page){
   if(!pageEl)return;
-  const page=pageName;
-  const curIdx=PAGE_ORDER?PAGE_ORDER.indexOf(page||''):-1;
-  const prevIdx=_lastPageIdx||0;
-  if(curIdx>=0)_lastPageIdx=curIdx;
+  const curIdx=PAGE_ORDER.indexOf(page||'');
+  const prevIdx=_lastPageIdx;
+  _lastPageIdx=curIdx>=0?curIdx:prevIdx;
 
-  // Animation
   if(typeof gsap!=='undefined'){
-    const dir=(curIdx>=0&&curIdx>prevIdx)?1:-1;
-    pageEl.style.opacity='1';
-    gsap.from(pageEl,{opacity:0,x:dir*16,duration:.22,ease:'power2.out',clearProps:'all',
-      onComplete:()=>{initScrollReveal();animateStatCards();initRipples();hidePageLoader();
-        try{animatePageEnterGSAP(page);}catch(e){}
-        try{initPanelSpotlights();}catch(e){}
-        try{init3DTilt();}catch(e){}
-        try{initNavRipples();}catch(e){}
+    // Utiliser gsap.from (pas fromTo) — l'élément reste visible si l'anim plante
+    const dir=curIdx>prevIdx?1:-1;
+    pageEl.style.opacity='1'; // S'assurer que c'est visible d'abord
+    gsap.from(pageEl,
+      {opacity:0, x:dir*20, duration:.25, ease:'power2.out', clearProps:'all',
+        onComplete:()=>{
+          initScrollReveal();animateStatCards();initRipples();hidePageLoader();
+          animatePageEnterGSAP(page);initPanelSpotlights();init3DTilt();initNavRipples();
+        }
       }
-    });
-  } else if(window.fm&&window.fm.animate){
-    try{window.fm.animate(pageEl,{opacity:[0,1],y:[6,0]},{duration:.2,ease:[.22,1,.36,1]});}catch(e){}
-    setTimeout(hidePageLoader,100);
+    );
   } else {
+    // CSS fallback
     let cls='page-entering';
-    if(page&&curIdx>=0){if(curIdx>prevIdx)cls='page-entering-right';else if(curIdx<prevIdx)cls='page-entering-left';}
+    if(page&&curIdx>=0){
+      if(curIdx>prevIdx)cls='page-entering-right';
+      else if(curIdx<prevIdx)cls='page-entering-left';
+    }
     pageEl.classList.remove('page-entering','page-entering-left','page-entering-right');
     void pageEl.offsetWidth;
     pageEl.classList.add(cls);
-    setTimeout(()=>{pageEl.classList.remove('page-entering','page-entering-left','page-entering-right');
-      initScrollReveal();animateStatCards();initRipples();hidePageLoader();},200);
+    setTimeout(()=>{
+      pageEl.classList.remove('page-entering','page-entering-left','page-entering-right');
+      initScrollReveal();animateStatCards();initRipples();hidePageLoader();
+    },200);
   }
-
-  // Per-page render hooks
-  const hooks={
-    'stats':()=>{try{renderStatsPage();}catch(e){}},
-    'budget':()=>{try{renderBudget();}catch(e){}},
-    'gallery':()=>{try{renderGallery();}catch(e){}},
-    'gaming':()=>{try{loadGamingUI();}catch(e){}},
-    'connections':()=>{try{loadConnectionsUI();}catch(e){}},
-    'github':()=>{try{refreshGithub();}catch(e){}},
-    'settings':()=>{try{renderSettingsLinksPreview();}catch(e){}},
-  };
-  if(page&&hooks[page])hooks[page]();
 }
 
 
@@ -8911,19 +8618,15 @@ function openNotifPanel(){
   _notifOpen=true;
   scanForNotifs();
   renderNotifPanel();
-  const panel=document.getElementById('notif-panel');
-  const overlay=document.getElementById('notif-overlay');
-  if(panel) panel.classList.add('open');
-  if(overlay){ overlay.style.display='block'; overlay.classList.add('open'); }
+  document.getElementById('notif-panel')?.classList.add('open');
+  document.getElementById('notif-overlay')?.classList.add('open');
   setTimeout(()=>{_notifs.forEach(n=>n.unread=false);updateNotifBadge();},600);
 }
 
 function closeNotifPanel(){
   _notifOpen=false;
-  const panel=document.getElementById('notif-panel');
-  const overlay=document.getElementById('notif-overlay');
-  if(panel) panel.classList.remove('open');
-  if(overlay){ overlay.classList.remove('open'); overlay.style.display='none'; }
+  document.getElementById('notif-panel')?.classList.remove('open');
+  document.getElementById('notif-overlay')?.classList.remove('open');
 }
 
 function clearAllNotifs(){
@@ -9516,7 +9219,7 @@ function applyBgTheme(id){
 
   } else if(id==='constellation'){
     // Vérifier que le canvas 2D est disponible
-    try{ ctx.clearRect(0,0,1,1); }catch(e){ console.warn('[NEXUS] Canvas 2D indispo, bgTheme désactivé'); return; }
+    try{ ctx.clearRect(0,0,1,1); }catch(e){ console.warn('[ETHONE] Canvas 2D indispo, bgTheme désactivé'); return; }
     const stars=[];
     for(let i=0;i<80;i++)stars.push({
       x:Math.random()*canvas.width,y:Math.random()*canvas.height,
@@ -10414,7 +10117,7 @@ async function refreshSpotifySidebar(){
     }
 
   }catch(e){
-    console.warn('[NEXUS] Now Playing error:',e.message);
+    console.warn('[ETHONE] Now Playing error:',e.message);
   }
 }
 
@@ -11651,14 +11354,24 @@ function pageTransitionOut(cb){
 
 // ── Sidebar icons entrance ──
 function animateSidebarEntrance(){
-  const items=document.querySelectorAll('.nav-item');
-  if(!items.length)return;
-  if(window.fm&&window.fm.animate){
-    try{window.fm.animate(items,{opacity:[0,1],x:[-6,0]},{delay:window.fm.stagger?window.fm.stagger(0.04):0,duration:.25,ease:[.22,1,.36,1]});}catch(e){}
-  } else if(typeof anime!=='undefined'){
-    anime({targets:'.nav-item',translateX:[-20,0],opacity:[0,1],duration:400,delay:anime.stagger(30,{start:100}),easing:'easeOutCubic'});
-    anime({targets:'.logo-icon',scale:[0.5,1],rotate:['-10deg','0deg'],opacity:[0,1],duration:600,easing:'easeOutElastic(1,.7)'});
-  }
+  if(typeof anime==='undefined')return;
+  anime({
+    targets:'.nav-item',
+    translateX:[-20,0],
+    opacity:[0,1],
+    duration:400,
+    delay:anime.stagger(30,{start:100}),
+    easing:'easeOutCubic',
+  });
+  // Logo bounce
+  anime({
+    targets:'.logo-icon',
+    scale:[0.5,1],
+    rotate:['-10deg','0deg'],
+    opacity:[0,1],
+    duration:600,
+    easing:'easeOutElastic(1,.7)',
+  });
 }
 
 // ── Nav icon bounce au clic ──
@@ -11682,7 +11395,7 @@ function initNavIconBounce(){
 // ── Boot logo animation ──
 function animateBootLogo(){
   if(typeof anime==='undefined')return;
-  const logo=document.querySelector('#nexus-boot-screen .logo, #nexus-boot-screen div:first-child');
+  const logo=document.querySelector('#ethone-boot-screen .logo, #ethone-boot-screen div:first-child');
   if(!logo)return;
   anime({
     targets:logo,
@@ -12239,7 +11952,7 @@ function renderBudget(){
 }
 
 function renderBudgetChart(all){
-  if(typeof Chart==='undefined'){console.warn('[NEXUS] Chart.js not loaded');return;}
+  if(typeof Chart==='undefined'){console.warn('[ETHONE] Chart.js not loaded');return;}
   const canvas=document.getElementById('budget-chart');if(!canvas)return;
   const ctx=canvas.getContext('2d');
   const months=[];
@@ -13822,7 +13535,11 @@ function importData(e){
       toast('Importing...','info');
       await saveCloudState();
       toast('Data imported and saved! ','success');
-      setTimeout(()=>{ goToProfileScreen(); },1000);
+      setTimeout(()=>{
+        document.getElementById('main-sidebar').style.setProperty('display','none');
+        document.getElementById('main-content').style.setProperty('display','none');
+        goToProfileScreen();
+      },1000);
     }catch(err){toast('Invalid file : '+err.message,'error');}
   };
   reader.readAsText(file);
@@ -14034,7 +13751,7 @@ var I18N = {
     'new_note': '+ New note',
     'writing': 'Writing',
     // AI
-    'nexus_ai_desc': 'Ask anything about your dashboard…',
+    'ethone_ai_desc': 'Ask anything about your dashboard…',
     'ai_powered_by': 'Powered by Groq',
     'ai_context_bar': 'ETHONE AI has access to your dashboard context',
     'new_chat': 'New chat',
@@ -14183,7 +13900,7 @@ var I18N = {
     'new_note': '+ Nouvelle note',
     'writing': 'Écriture',
     // AI
-    'nexus_ai_desc': 'Posez une question sur votre dashboard…',
+    'ethone_ai_desc': 'Posez une question sur votre dashboard…',
     'ai_powered_by': 'Propulsé par Groq',
     'ai_context_bar': 'ETHONE AI a accès au contexte de ton dashboard',
     'new_chat': 'Nouveau chat',
@@ -14320,7 +14037,7 @@ var I18N = {
     'add_task': '+ Añadir tarea',
     'new_note': '+ Nueva nota',
     'writing': 'Escritura',
-    'nexus_ai_desc': 'Pregunta algo sobre tu dashboard…',
+    'ethone_ai_desc': 'Pregunta algo sobre tu dashboard…',
     'ai_powered_by': 'Impulsado por Groq',
     'ai_context_bar': 'ETHONE AI tiene acceso al contexto de tu dashboard',
     'new_chat': 'Nuevo chat',
@@ -14454,7 +14171,7 @@ var I18N = {
     'add_task': '+ Aufgabe hinzufügen',
     'new_note': '+ Neue Notiz',
     'writing': 'Schreiben',
-    'nexus_ai_desc': 'Frag etwas über dein Dashboard…',
+    'ethone_ai_desc': 'Frag etwas über dein Dashboard…',
     'ai_powered_by': 'Bereitgestellt von Groq',
     'ai_context_bar': 'ETHONE AI hat Zugriff auf deinen Dashboard-Kontext',
     'new_chat': 'Neuer Chat',
@@ -14483,52 +14200,156 @@ var I18N = {
 function t(key){ if(!I18N)return key; return (I18N[_lang]?.[key]) ?? (I18N['en']?.[key]) ?? key; }
 
 
-// === ETHONE DISPLAY MANAGER ===
-var _SHOW_CLASSES = ['booting','show-dashboard','show-auth','show-profiles','show-password'];
-
-function _show(what){
-  // Retirer toutes les classes d'état
-  var html = document.documentElement;
-  _SHOW_CLASSES.forEach(function(c){ html.classList.remove(c); });
-  // Retirer anti-flash si encore présent
-  var af=document.getElementById('anti-flash');
-  if(af&&af.parentNode)af.parentNode.removeChild(af);
-  // Appliquer la nouvelle classe
-  if(what==='boot')    html.classList.add('booting');
-  if(what==='dashboard') html.classList.add('show-dashboard');
-  if(what==='auth'){
-    html.classList.add('show-auth');
-    try{updateClock();}catch(e){}
-    try{applyI18n();}catch(e){}
-    try{updateAuthLangBar();}catch(e){}
-    setTimeout(function(){
-      try{if(typeof initAuthParticles==='function')initAuthParticles();}catch(e){}
-      try{if(typeof animateAuthEntrance==='function')animateAuthEntrance();}catch(e){}
-      try{var f=document.getElementById('auth-login-id');if(f)f.focus();}catch(e){}
-    },120);
-  }
-  if(what==='profiles') html.classList.add('show-profiles');
-  if(what==='password') html.classList.add('show-password');
-}
-
+// === BOOT ===
 function removeAntiFlash(){
-  document.documentElement.classList.remove('booting');
-  var s=document.getElementById('anti-flash');
-  if(s&&s.parentNode)s.parentNode.removeChild(s);
+  const s=document.getElementById('anti-flash');
+  if(s)s.remove();
+  // Forcer display:none sur tout — JS décidera quoi montrer ensuite
+  // NE PAS faire removeProperty car le CSS du stylesheet peut reprendre display:flex
+  ['main-sidebar','main-content','auth-screen','profile-screen','password-screen'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){
+      el.style.setProperty('display','none');
+      el.style.removeProperty('opacity');
+      el.style.removeProperty('visibility');
+    }
+  });
 }
 
 function hideBoot(){
-  document.documentElement.classList.remove('booting');
+  removeAntiFlash();
+  const el=document.getElementById('ethone-boot-screen');
+  if(el) el.style.display='none';
+}
+
+function setBootStatus(msg){
+  const el=document.getElementById('boot-status');
+  if(el)el.textContent=msg;
 }
 
 function setBootStatus(msg){
   try{var el=document.getElementById('boot-status');if(el)el.textContent=msg;}catch(e){}
 }
+function showAuth(){
+  // ── HARD STOP any pending timers ──────────────────────────
+  try{clearTimeout(window._bootFailsafeTimer);}catch(e){}
+  try{clearTimeout(window._bootFailsafe2);}catch(e){}
+
+  // ── Step 1: Kill boot screen completely ───────────────────
+  try{
+    var boot=document.getElementById('ethone-boot-screen');
+    if(boot){
+      boot.style.setProperty('display','none','important');
+      boot.setAttribute('hidden','');
+      boot.style.visibility='hidden';
+      boot.style.opacity='0';
+      boot.style.pointerEvents='none';
+    }
+  }catch(e){}
+
+  // ── Step 2: Kill anti-flash ────────────────────────────────
+  try{
+    var af=document.getElementById('anti-flash');
+    if(af) af.parentNode.removeChild(af);
+  }catch(e){}
+
+  // ── Step 3: Hide everything except auth ───────────────────
+  try{
+    ['main-sidebar','main-content','profile-screen','password-screen',
+     'nexus-bg-layer','bg-canvas'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(el){ el.style.setProperty('display','none','important'); }
+    });
+  }catch(e){}
+
+  // ── Step 4: Force-show auth screen ────────────────────────
+  try{
+    var a=document.getElementById('auth-screen');
+    if(a){
+      a.removeAttribute('hidden');
+      a.style.setProperty('display','flex','important');
+      a.style.position='fixed';
+      a.style.inset='0';
+      a.style.zIndex='10002';
+      a.style.alignItems='center';
+      a.style.justifyContent='center';
+      a.style.overflow='auto';
+      a.style.background='#09090b';
+      a.style.padding='20px';
+      a.style.opacity='1';
+      a.style.visibility='visible';
+    }
+  }catch(e){}
+
+  // ── Step 5: Safe optional calls ───────────────────────────
+  try{updateClock();}catch(e){}
+  try{applyI18n();}catch(e){}
+  try{updateAuthLangBar();}catch(e){}
+  setTimeout(function(){
+    try{
+      var f=document.getElementById('auth-login-id');
+      if(f&&document.activeElement!==f) f.focus();
+    }catch(e){}
+  },200);
+}
+
+
+function removeAntiFlash(){
+  const s=document.getElementById('anti-flash');
+  if(s)s.remove();
+  // Forcer display:none sur tout — JS décidera quoi montrer ensuite
+  // NE PAS faire removeProperty car le CSS du stylesheet peut reprendre display:flex
+  ['main-sidebar','main-content','auth-screen','profile-screen','password-screen'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){
+      el.style.setProperty('display','none');
+      el.style.removeProperty('opacity');
+      el.style.removeProperty('visibility');
+    }
+  });
+}
+
+function hideBoot(){
+  removeAntiFlash();
+  const el=document.getElementById('ethone-boot-screen');
+  if(el) el.style.display='none';
+}
+
+function setBootStatus(msg){
+  const el=document.getElementById('boot-status');
+  if(el)el.textContent=msg;
+}
 
 function showAuth(){
   clearTimeout(window._bootFailsafeTimer);
-  clearTimeout(window._bootFailsafe2);
-  _show('auth');
+  // Cacher boot
+  const boot=document.getElementById('ethone-boot-screen');
+  if(boot){ boot.style.cssText='display:none!important'; }
+  // Retirer anti-flash
+  const s=document.getElementById('anti-flash'); if(s) s.remove();
+  // Cacher dashboard
+  ['main-sidebar','main-content','profile-screen','password-screen'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.cssText='display:none!important';
+  });
+  // Afficher auth
+  const a=document.getElementById('auth-screen');
+  if(a){ a.style.cssText='position:fixed;inset:0;z-index:10002;display:flex!important;align-items:center;justify-content:center;overflow:auto;background:#09090b;padding:20px;opacity:1'; }
+  // Masquer les backgrounds animés sur l'auth screen
+  ['nexus-bg-layer','bg-canvas'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.opacity='0';
+  });
+  updateClock();
+  applyI18n();
+  updateAuthLangBar();
+  setTimeout(()=>{
+    if(typeof initAuthParticles==='function')initAuthParticles();
+    if(typeof animateAuthEntrance==='function')animateAuthEntrance();
+    // Auto-focus email field
+    const loginField=document.getElementById('auth-login-id');
+    if(loginField)loginField.focus();
+  },120);
 }
 
 function normalizeAllProfiles(){
@@ -14555,25 +14376,40 @@ function normalizeAllProfiles(){
 }
 
 function showDashboardOrProfiles(){
+  // showDashboardOrProfiles
+
+  removeAntiFlash();
+  const boot=document.getElementById('ethone-boot-screen');
+  if(boot) boot.style.display='none';
+  ['auth-screen','main-sidebar','main-content','profile-screen','password-screen'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.setProperty('display','none');
+  });
+
   if(!profiles||!profiles.length){
-    console.error('[NEXUS] No profiles — showing auth');
-    showAuth(); return;
+    console.error('[ETHONE] No profiles! Showing auth.');
+    const ae=document.getElementById('auth-screen');
+    if(ae) ae.style.setProperty('display','flex');
+    return;
   }
+
   const hasPassword = profiles[0].password && profiles[0].password.value;
+
   if(profiles.length===1 && !hasPassword){
     _goToDashboard(profiles[0].id);
   } else {
-    try{renderProfileScreen();}catch(e){console.error('[NEXUS] renderProfileScreen ERROR:',e);}
-    _show('profiles');
+    try{renderProfileScreen();}catch(e){console.error('[ETHONE] renderProfileScreen ERROR:',e);}
+    const ps=document.getElementById('profile-screen');
+    if(ps){ps.style.setProperty('display','flex');ps.style.opacity='1';}
     updateClock();
   }
 }
 
-// Fonction centrale pour aller au dashboard
+// Fonction centrale pour aller au dashboard (appelée aussi depuis enterDashboard)
 function _goToDashboard(profileId){
   const found=profiles.find(p=>String(p.id)===String(profileId));
   if(!found){
-    console.error('[NEXUS] Profile NOT FOUND for id='+profileId);
+    console.error('[ETHONE] Profile NOT FOUND for id='+profileId+'. Taking profiles[0].');
     if(!profiles.length){ showAuth(); return; }
     currentId=profiles[0].id;
   } else {
@@ -14582,25 +14418,29 @@ function _goToDashboard(profileId){
   _valoMatchCache={};
   _valoAllMatches=[];
 
-  // Afficher le dashboard
-  _show('dashboard');
+  const sb_el=document.getElementById('main-sidebar');
+  const mc=document.getElementById('main-content');
+  ['profile-screen','password-screen','auth-screen'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.setProperty('display','none');
+  });
+  if(sb_el){sb_el.style.setProperty('display','flex');sb_el.style.opacity='1';}
+  if(mc){mc.style.setProperty('display','block');mc.style.opacity='1';}
 
   const p=curP();
   if(!p){
-    console.error('[NEXUS] curP() NULL after set — forcing profiles[0]');
+    console.error('[ETHONE] curP() STILL NULL after currentId='+currentId+'. Forcing profiles[0].');
     currentId=profiles[0].id;
   }
 
-  try{ renderSidebarNav(); }catch(e){}
-  try{ updateSidebarAvatar(); }catch(e){}
-  try{ applyI18n(); }catch(e){}
-  try{ updateClock(); }catch(e){}
+  renderSidebarNav(); updateSidebarAvatar(); applyI18n(); updateClock();
 
   try{
     initDashboard();
-  }catch(e){
-    console.error('[NEXUS] initDashboard THREW:', e, e?.stack);
-    // Dashboard elements already shown by _show('dashboard') above — keep them visible
+    }catch(e){
+    console.error('[ETHONE] initDashboard THREW:', e, e?.stack);
+    if(sb_el) sb_el.style.setProperty('display','flex');
+    if(mc) mc.style.setProperty('display','block');
   }
 
   const cp=curP();
@@ -14611,144 +14451,77 @@ function _goToDashboard(profileId){
   if(typeof I18N!=='undefined')applyI18n();
 
   // ── Détection retour OAuth ─────────────────────────────────
-  // Supabase v2 PKCE: le code est dans ?code=, les anciens tokens dans le hash
   const _isOAuthCallback=(
     window.location.hash.includes('access_token')||
     window.location.hash.includes('refresh_token')||
     window.location.search.includes('code=')
   );
-
-  // Helper: quelque chose est-il visible?
-  function _somethingVisible(){
-    var html=document.documentElement;
-    return html.classList.contains('show-dashboard')||
-           html.classList.contains('show-auth')||
-           html.classList.contains('show-profiles')||
-           html.classList.contains('show-password');
+  // Nettoyer le hash OAuth de l'URL après traitement
+  if(_isOAuthCallback){
+    setTimeout(()=>{history.replaceState(null,'',window.location.pathname);},2000);
   }
 
-  // Helper: forcer showAuth en absolu
-  function _forceShowAuth(){
-    var html=document.documentElement;
-    ['booting','show-dashboard','show-profiles','show-password'].forEach(function(c){html.classList.remove(c);});
-    html.classList.add('show-auth');
-  }
-
-  // ── FAILSAFE principal ────────────────────────────────────
-  // OAuth: on laisse 9s car PKCE échange le code côté serveur (peut être lent)
-  // Normal: 3s suffit largement
-  const _failsafeMs = _isOAuthCallback ? 8000 : 6000;
-  window._bootFailsafeTimer=setTimeout(function(){
-    if(!_somethingVisible()){
-      console.warn('[ETHONE] Failsafe '+_failsafeMs+'ms: forcing showAuth()');
-      try{ showAuth(); }catch(e){ _forceShowAuth(); }
+  // ── FAILSAFE ─────────────────────────────────────────────
+  // Plus long si retour OAuth (Supabase a besoin de temps pour échanger le token)
+  const _failsafeMs = _isOAuthCallback ? 7000 : 1500;
+  const _bootFailsafe=setTimeout(function(){
+    const as=document.getElementById('auth-screen');
+    const bs=document.getElementById('ethone-boot-screen');
+    const mc=document.getElementById('main-content');
+    const sb2=document.getElementById('main-sidebar');
+    const ps=document.getElementById('profile-screen');
+    // Si main-content est pas visible ET auth-screen pas visible → forcer auth
+    const mcVis=mc&&mc.style.display!=='none'&&mc.style.display!=='';
+    const asVis=as&&as.style.display==='flex';
+    const psVis=ps&&ps.style.display==='flex';
+    if(!mcVis&&!asVis&&!psVis){
+      console.warn('[ETHONE] Failsafe: forcing showAuth()');
+      try{ showAuth(); }catch(e){
+        // Last resort
+        if(bs) bs.style.cssText='display:none!important';
+        const s=document.getElementById('anti-flash'); if(s) s.remove();
+        if(as) as.style.cssText='position:fixed;inset:0;z-index:10002;display:flex!important;align-items:center;justify-content:center;background:#09090b;padding:20px';
+      }
     }
   }, _failsafeMs);
+  window._bootFailsafeTimer=_bootFailsafe;
 
-  // ── ABSOLUTE FAILSAFE à 12s — ne peut PAS être arrêté ────
-  window._bootFailsafe2=setTimeout(function(){
-    if(!_somethingVisible()){
-      console.warn('[ETHONE] Hard failsafe 12s');
-      try{ showAuth(); }catch(e){ _forceShowAuth(); }
+  sb.auth.getSession().then(async({data:{session},error})=>{
+    // If getSession fails or returns null, try getUser() as fallback
+    if(!session || error){
+      // Attempt getUser to force token refresh
+      try{
+        const {data:{user},error:ue}=await sb.auth.getUser();
+        if(!user||ue){ showAuth(); return; }
+        // getUser succeeded — get fresh session
+        const {data:{session:s2}}=await sb.auth.getSession();
+        if(!s2){ showAuth(); return; }
+        session=s2;
+      }catch(e){ showAuth(); return; }
     }
-  }, 12000);
-
-  // ── onAuthStateChange : capture SIGNED_IN après redirect OAuth ──
-  // C'est LE listener fiable — Supabase l'appelle quand le token est prêt
-  var _authHandled=false;
-  try{
-    sb.auth.onAuthStateChange(async function(event, session){
-      if(_authHandled) return;
-      if(event==='SIGNED_IN' && session && session.user){
-        _authHandled=true;
-        clearTimeout(window._bootFailsafeTimer);
-        clearTimeout(window._bootFailsafe2);
-        console.log('[ETHONE] onAuthStateChange SIGNED_IN — going to dashboard');
-        // Nettoyer le hash/query OAuth de l'URL
-        if(_isOAuthCallback){
-          try{history.replaceState(null,'',window.location.pathname);}catch(e){}
-        }
-        await onAuthSuccess(session.user);
-      } else if(event==='SIGNED_OUT'){
-        _authHandled=false;
-        showAuth();
-      }
-    });
-  }catch(e){ console.warn('[ETHONE] onAuthStateChange setup failed:',e); }
-
-  // ── Tentative initiale via getSession ─────────────────────
-  sb.auth.getSession().then(async function(res){
-    var session=res && res.data && res.data.session;
-    var err=res && res.error;
-
-    if(!session || err){
-      if(_isOAuthCallback){
-        // ── CAS CLOCK SKEW : Supabase rejette le token "issued in the future" ──
-        // Solution : forcer l'échange manuel du code PKCE si ?code= est dans l'URL
-        var urlCode=new URLSearchParams(window.location.search).get('code');
-        if(urlCode && sb.auth.exchangeCodeForSession){
-          console.log('[ETHONE] Clock skew détecté — tentative exchangeCodeForSession...');
-          setBootStatus('Vérification...');
-          try{
-            var exchangeRes=await sb.auth.exchangeCodeForSession(urlCode);
-            if(exchangeRes && exchangeRes.data && exchangeRes.data.session){
-              console.log('[ETHONE] exchangeCodeForSession OK — session récupérée');
-              // Nettoyer l'URL
-              try{history.replaceState(null,'',window.location.pathname);}catch(e2){}
-              if(!_authHandled){
-                _authHandled=true;
-                clearTimeout(window._bootFailsafeTimer);
-                clearTimeout(window._bootFailsafe2);
-                await onAuthSuccess(exchangeRes.data.session.user);
-              }
-              return;
-            }else{
-              console.warn('[ETHONE] exchangeCodeForSession échoué:',exchangeRes?.error);
-            }
-          }catch(exErr){
-            console.warn('[ETHONE] exchangeCodeForSession exception:',exErr);
-          }
-        }
-        // Sinon laisser onAuthStateChange gérer
-        console.log('[ETHONE] OAuth callback — attente onAuthStateChange...');
-        setBootStatus('Connexion OAuth...');
-        return;
-      }
-      // Pas de session, pas d'OAuth → montrer auth directement
-      if(!_authHandled){
-        showAuth();
-      }
-      return;
-    }
-
-    // Session existante — ne pas gérer si onAuthStateChange a déjà pris la main
-    if(_authHandled) return;
-    _authHandled=true;
-    clearTimeout(window._bootFailsafeTimer);
-    clearTimeout(window._bootFailsafe2);
 
     _sbUser=session.user;
-    _isAdmin=session.user&&session.user.email===ADMIN_EMAIL;
+    _isAdmin=session.user?.email===ADMIN_EMAIL;
 
-    var cacheKey='nexus_profiles_'+_sbUser.id;
-    var cached=sessionStorage.getItem(cacheKey);
+    const cacheKey='nexus_profiles_'+_sbUser.id;
+    const cached=sessionStorage.getItem(cacheKey);
     if(cached){
       try{
         profiles=JSON.parse(cached);
         normalizeAllProfiles();
         showDashboardOrProfiles();
-        loadCloudState().then(function(){
+        loadCloudState().then(()=>{
           normalizeAllProfiles();
           try{sessionStorage.setItem(cacheKey,JSON.stringify(profiles));}catch(e){}
-          var p=curP();if(p)initSidebarWidgets(p);
-        }).catch(function(){});
+          const p=curP();if(p)initSidebarWidgets(p);
+        }).catch(()=>{});
         return;
       }catch(e){ sessionStorage.removeItem(cacheKey); }
     }
 
-    setBootStatus('Chargement...');
+    if(typeof setBootStatus==='function')setBootStatus('Chargement...');
     await loadCloudState();
-    setBootStatus('Prêt ✓');
+    if(typeof setBootStatus==='function')setBootStatus('Prêt ✓');
     if(!profiles.length){
       profiles.push({id:Date.now(),name:'Mon profil',
         avatarEmoji:AVATARS[0].e,avatarBg:AVATARS[0].b,
@@ -14758,13 +14531,38 @@ function _goToDashboard(profileId){
     normalizeAllProfiles();
     try{sessionStorage.setItem(cacheKey,JSON.stringify(profiles));}catch(e){}
     showDashboardOrProfiles();
+    clearTimeout(window._bootFailsafeTimer);
 
   }).catch(function(err){
-    console.warn('[NEXUS] Boot getSession error:',err);
-    if(!_authHandled){
-      try{showAuth();}catch(e2){ _forceShowAuth(); }
+    console.warn('[ETHONE] Boot error:',err);
+    try{showAuth();}catch(e2){
+      // ABSOLUTE LAST RESORT
+      var a=document.getElementById('auth-screen');
+      var b=document.getElementById('ethone-boot-screen');
+      var af=document.getElementById('anti-flash');
+      if(af&&af.parentNode)af.parentNode.removeChild(af);
+      if(b){b.style.display='none';}
+      if(a){a.style.cssText='position:fixed!important;inset:0!important;z-index:10002!important;display:flex!important;background:#09090b!important;align-items:center!important;justify-content:center!important;padding:20px!important';}
     }
   });
+
+  // ── ABSOLUTE FAILSAFE at 4s — cannot be stopped ──────────
+  window._bootFailsafe2=setTimeout(function(){
+    var mc=document.getElementById('main-content');
+    var as=document.getElementById('auth-screen');
+    var ps=document.getElementById('profile-screen');
+    var visible=(mc&&mc.style.display&&mc.style.display!=='none')||
+                (as&&as.style.display==='flex')||
+                (ps&&ps.style.display==='flex');
+    if(!visible){
+      console.warn('[ETHONE] Hard failsafe at 4s');
+      var af=document.getElementById('anti-flash');
+      if(af&&af.parentNode)af.parentNode.removeChild(af);
+      var b=document.getElementById('ethone-boot-screen');
+      if(b) b.style.cssText='display:none!important';
+      if(as) as.style.cssText='position:fixed!important;inset:0!important;z-index:10002!important;display:flex!important;align-items:center!important;justify-content:center!important;background:#09090b!important;padding:20px!important';
+    }
+  },4000);
 
 })();
 // ══════════════════════════════════════════════════════════════
@@ -14892,7 +14690,35 @@ function initFramerAnimations(){
 }
 
 // Animate page transition (CSS fallback si pas de FM)
-// animateModalIn / animateToastIn
+function animatePageIn(pageEl, pageName){
+  if(!pageEl) return;
+  pageEl.style.animation='none';
+  pageEl.offsetHeight; // reflow
+  pageEl.style.animation='';
+  // Framer Motion si disponible
+  if(window.fm && window.fm.animate){
+    try{
+      window.fm.animate(pageEl, {opacity:[0,1],y:[6,0]},{duration:.2,ease:[.22,1,.36,1]});
+    }catch(e){}
+  }
+  // Render-specific hooks
+  const renders={
+    'stats':()=>{if(typeof renderStatsPage==='function')renderStatsPage();},
+    'budget':()=>{if(typeof renderBudget==='function')renderBudget();},
+    'gallery':()=>{if(typeof renderGallery==='function')renderGallery();},
+    'gaming':()=>{if(typeof loadGamingUI==='function')loadGamingUI();},
+    'connections':()=>{if(typeof loadConnectionsUI==='function')loadConnectionsUI();},
+    'github':()=>{if(typeof refreshGithub==='function')refreshGithub();},
+  };
+  const renders2={
+    'settings':()=>{if(typeof renderSettingsLinksPreview==='function')renderSettingsLinksPreview();},
+  };
+  if(pageName && renders2[pageName]) renders2[pageName]();
+  if(pageName && renders[pageName]) renders[pageName]();
+  if(typeof hidePageLoader==='function') setTimeout(hidePageLoader,100);
+}
+
+// Animate modal open
 function animateModalIn(modalEl){
   if(!modalEl) return;
   if(window.fm){
@@ -14907,6 +14733,17 @@ function animateToastIn(toastEl){
 }
 
 // Animate sidebar nav items
+function animateSidebarEntrance(){
+  if(!window.fm) return;
+  const items = document.querySelectorAll('.nav-item');
+  if(items.length){
+    window.fm.animate(items, { opacity:[0,1], x:[-6,0] }, {
+      delay: window.fm.stagger(0.04),
+      duration: 0.25,
+      ease: [.22,1,.36,1]
+    });
+  }
+}
 
 </script>
 

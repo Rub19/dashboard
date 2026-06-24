@@ -2,16 +2,56 @@
 <html lang="en">
 <head>
 <style id="anti-flash">
-/* SIMPLE: html.booting cache tout sauf le boot screen */
+/* ═══ ETHONE DISPLAY SYSTEM ═══
+   Tout est contrôlé via classes sur <html>.
+   Rien d'autre ne peut overrider ces règles.
+*/
+
+/* Par défaut: tout caché */
+#main-sidebar, #main-content,
+#auth-screen, #profile-screen, #password-screen { display: none !important; }
+
+/* Boot screen: visible pendant html.booting */
+#nexus-boot-screen { display: none; }
+html.booting #nexus-boot-screen { display: flex !important; }
 html.booting #main-sidebar,
 html.booting #main-content,
 html.booting #auth-screen,
 html.booting #profile-screen,
 html.booting #password-screen { display: none !important; }
-html.booting #nexus-boot-screen { display: flex !important; }
-/* Hors booting: auth/profile/password cachés par défaut, sidebar/main visibles via JS */
-#auth-screen, #profile-screen, #password-screen { display: none; }
-#main-sidebar, #main-content { display: none; }
+
+/* Dashboard actif */
+html.show-dashboard #main-sidebar { display: flex !important; }
+html.show-dashboard #main-content { display: block !important; }
+
+/* Auth actif */
+html.show-auth #auth-screen { display: flex !important; }
+
+/* Profiles actif */
+html.show-profiles #profile-screen { display: flex !important; }
+
+/* Password actif */
+html.show-password #password-screen { display: flex !important; }
+
+/* Modals et overlays: toujours fixed, cachés par défaut */
+.modal-overlay { display: none; position: fixed; inset: 0; z-index: 10000; }
+.modal-overlay.open { display: flex; align-items: center; justify-content: center; }
+#presentation-overlay,
+#notif-overlay,
+#notif-panel,
+#cmd-palette-overlay,
+#link-preview { display: none; position: fixed; }
+#notif-overlay.open, #presentation-overlay.open, #presentation-overlay.active { display: block; inset: 0; z-index: 9000; }
+#notif-panel.open { display: flex; flex-direction: column; top: 0; right: 0; bottom: 0; z-index: 9001; }
+#cmd-palette-overlay.open { display: flex; align-items: flex-start; justify-content: center; inset: 0; z-index: 10002; padding-top: 80px; }
+#link-preview.open, #link-preview.visible { display: block; z-index: 9500; pointer-events: none; }
+#toasts, .toast-container, #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 99999; }
+#mobile-bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 400; }
+#nexus-page-loader, #nexus-page-transition { position: fixed; inset: 0; pointer-events: none; display: none; }
+#nexus-particles-bg { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+#bg-canvas { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+
+@keyframes bootSpin { to { transform: rotate(360deg); } }
 </style>
 <script>document.documentElement.classList.add('booting');</script>
 <script>
@@ -34,20 +74,14 @@ html.booting #nexus-boot-screen { display: flex !important; }
     }
   },true);
 })();
-// Failsafe absolu à 10s: si toujours rien d'affiché, forcer auth
+// Failsafe absolu à 10s
 setTimeout(function(){
-  document.documentElement.classList.remove('booting');
-  var mc=document.getElementById('main-content');
-  var as=document.getElementById('auth-screen');
-  var ps=document.getElementById('profile-screen');
-  var boot=document.getElementById('nexus-boot-screen');
-  var bootHidden=boot&&boot.classList.contains('boot-hidden');
-  var mcVis=mc&&mc.style.display&&mc.style.display!=='none';
-  var asVis=as&&as.style.display==='flex';
-  var psVis=ps&&ps.style.display==='flex';
-  if(!mcVis&&!asVis&&!psVis&&bootHidden){
-    if(typeof showAuth==='function') try{showAuth();}catch(e){}
-    else if(as){ as.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#09090b;padding:20px'; }
+  var html=document.documentElement;
+  var visible=html.classList.contains('show-dashboard')||html.classList.contains('show-auth')||html.classList.contains('show-profiles');
+  if(!visible){
+    html.classList.remove('booting','show-dashboard','show-profiles','show-password');
+    if(typeof showAuth==='function') try{showAuth();}catch(e){ html.classList.add('show-auth'); }
+    else html.classList.add('show-auth');
   }
 },10000);
 
@@ -536,10 +570,180 @@ tbody tr:last-child td { border-bottom: none; }
 .mob-nav-btn.active { color: #a78bfa; }
 
 /* ── REVEAL ──────────────────────────────────────────────────── */
-.reveal-hidden { opacity: 0; transform: translateY(10px); }
-.reveal-visible { opacity: 1 !important; transform: none !important; transition: opacity .4s ease, transform .4s ease !important; }
+.reveal-hidden { opacity: 0; transform: translateY(12px); transition: opacity .45s ease, transform .45s ease; }
+.reveal-hidden.reveal-d1 { transition-delay: .06s; }
+.reveal-hidden.reveal-d2 { transition-delay: .12s; }
+.reveal-hidden.reveal-d3 { transition-delay: .18s; }
+.reveal-visible { opacity: 1 !important; transform: none !important; }
 
-/* ── GRIDS ───────────────────────────────────────────────────── */
+/* ── PAGE TRANSITIONS ────────────────────────────────────────── */
+@keyframes pageEnterRight { from { opacity:0; transform:translateX(18px); } to { opacity:1; transform:none; } }
+@keyframes pageEnterLeft  { from { opacity:0; transform:translateX(-18px); } to { opacity:1; transform:none; } }
+@keyframes fadeUp         { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+.tab-content.page-entering       { animation: fadeUp .2s cubic-bezier(.22,1,.36,1) both; }
+.tab-content.page-entering-right { animation: pageEnterRight .22s cubic-bezier(.22,1,.36,1) both; }
+.tab-content.page-entering-left  { animation: pageEnterLeft .22s cubic-bezier(.22,1,.36,1) both; }
+
+/* ── NAV HOVER & ACTIVE ──────────────────────────────────────── */
+.nav-item { transition: background .14s ease, color .14s ease, transform .14s ease; }
+.nav-item:hover { background: rgba(139,92,246,.08) !important; color: #c4b5fd !important; transform: translateX(2px); }
+.nav-item:hover .nav-icon { color: #a78bfa !important; }
+.nav-item.active .nav-icon svg { filter: drop-shadow(0 0 4px rgba(139,92,246,.5)); }
+@keyframes navIconBounce { 0%,100%{transform:scale(1)} 35%{transform:scale(1.25)} 65%{transform:scale(.9)} }
+
+/* ── BUTTON HOVER EFFECTS ───────────────────────────────────── */
+.btn, .btn-primary, .btn-ghost, .btn-danger { transition: all .16s cubic-bezier(.22,1,.36,1) !important; }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(139,92,246,.35) !important; }
+.btn-ghost:hover { background: rgba(255,255,255,.08) !important; transform: translateY(-1px); }
+.btn-danger:hover { background: rgba(239,68,68,.15) !important; transform: translateY(-1px); }
+
+/* ── RIPPLE ──────────────────────────────────────────────────── */
+.btn-primary, .btn-ghost { position: relative; overflow: hidden; }
+.press-ripple {
+  position: absolute; border-radius: 50%;
+  background: rgba(255,255,255,.18); transform: translate(-50%,-50%) scale(0);
+  animation: rippleOut .45s ease-out forwards; pointer-events: none;
+}
+@keyframes rippleOut { to { transform: translate(-50%,-50%) scale(1); opacity: 0; } }
+
+/* ── PANEL HOVER & SPOTLIGHT ─────────────────────────────────── */
+.panel { transition: border-color .2s ease, box-shadow .2s ease; }
+.panel:hover { border-color: rgba(139,92,246,.18) !important; box-shadow: 0 4px 24px rgba(0,0,0,.25) !important; }
+.panel-spotlight {
+  position: absolute; width: 180px; height: 180px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(139,92,246,.08) 0%, transparent 70%);
+  pointer-events: none; transform: translate(-50%,-50%); transition: opacity .2s;
+  z-index: 0;
+}
+
+/* ── STAT CARD HOVER ────────────────────────────────────────── */
+.stat-card { transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+.stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,.3) !important; border-color: rgba(139,92,246,.2) !important; }
+
+/* ── DRAG & DROP ─────────────────────────────────────────────── */
+.overview-widget { transition: box-shadow .18s ease, opacity .18s ease, transform .18s ease; }
+.overview-widget.dragging { opacity: .45; transform: scale(.97); box-shadow: 0 8px 32px rgba(0,0,0,.5); cursor: grabbing; }
+.overview-widget.drag-over { box-shadow: 0 0 0 2px rgba(139,92,246,.7), 0 8px 28px rgba(139,92,246,.15); transform: scale(1.01); }
+.ov-drag-handle { transition: color .15s, background .15s; }
+.ov-drag-handle:hover { color: rgba(124,58,237,.9) !important; background: rgba(124,58,237,.12) !important; }
+
+/* ── MODAL ANIMATION ────────────────────────────────────────── */
+.modal-overlay.open .modal { animation: modalIn .2s cubic-bezier(.22,1,.36,1) both; }
+@keyframes modalIn { from { opacity:0; transform:scale(.96) translateY(8px); } to { opacity:1; transform:none; } }
+
+/* ── TOAST ANIMATION ─────────────────────────────────────────── */
+@keyframes toastIn  { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:none; } }
+@keyframes toastOut { to   { opacity:0; transform:translateX(20px); } }
+.toast-item { animation: toastIn .22s cubic-bezier(.22,1,.36,1) both; }
+.toast-item.removing { animation: toastOut .18s ease forwards; }
+
+/* ── SIDEBAR ITEMS ───────────────────────────────────────────── */
+.logo-icon { transition: transform .2s ease, box-shadow .2s ease; }
+.logo-icon:hover { transform: scale(1.08); box-shadow: 0 4px 18px rgba(124,58,237,.5); }
+.sidebar-avatar { transition: transform .15s ease, box-shadow .15s ease; }
+.sidebar-avatar:hover { transform: scale(1.06); }
+
+/* ── LINK PREVIEW ────────────────────────────────────────────── */
+#link-preview { transition: opacity .15s ease, transform .15s ease; }
+#link-preview.visible { opacity: 1 !important; transform: scale(1) !important; }
+
+/* ── CMD PALETTE ─────────────────────────────────────────────── */
+#cmd-palette-overlay.open #cmd-palette { animation: modalIn .18s cubic-bezier(.22,1,.36,1) both; }
+
+/* ── 3D TILT CARDS ───────────────────────────────────────────── */
+.tilt-card { transform-style: preserve-3d; transition: transform .1s ease; will-change: transform; }
+
+/* ── SCROLL ANIMATIONS ───────────────────────────────────────── */
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.45} }
+@keyframes shimmer { from{background-position:200% 0} to{background-position:-200% 0} }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+
+/* ── CMD PALETTE ────────────────────────────────────────────── */
+#cmd-palette {
+  background: #18181b; border: 1px solid rgba(255,255,255,.1);
+  border-radius: 14px; width: 560px; max-width: calc(100vw - 32px);
+  box-shadow: 0 24px 80px rgba(0,0,0,.7); overflow: hidden;
+}
+#cmd-input-wrap {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,.07);
+}
+#cmd-input-icon { display: flex; align-items: center; color: rgba(255,255,255,.3); flex-shrink: 0; width: 16px; height: 16px; }
+#cmd-input-icon svg { width: 16px; height: 16px; }
+#cmd-input {
+  flex: 1; background: transparent; border: none; outline: none;
+  font-size: 14px; color: #fafaf9; font-family: 'Inter', system-ui, sans-serif;
+}
+#cmd-input::placeholder { color: rgba(255,255,255,.25); }
+#cmd-kbd {
+  font-size: 10px; font-family: 'JetBrains Mono', monospace;
+  color: rgba(255,255,255,.3); background: rgba(255,255,255,.07);
+  padding: 2px 7px; border-radius: 5px; border: 1px solid rgba(255,255,255,.1);
+}
+#cmd-results { max-height: 340px; overflow-y: auto; padding: 6px; }
+.cmd-result-item {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+  border-radius: 8px; cursor: pointer; font-size: 13px; color: rgba(250,250,249,.7);
+  transition: background .12s ease;
+}
+.cmd-result-item:hover, .cmd-result-item.selected {
+  background: rgba(139,92,246,.12); color: #fafaf9;
+}
+.cmd-result-item .cmd-icon { width: 16px; height: 16px; opacity: .5; flex-shrink: 0; }
+.cmd-result-group { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,.2); padding: 8px 10px 4px; font-family: 'JetBrains Mono', monospace; }
+#cmd-footer {
+  display: flex; gap: 16px; padding: 8px 16px;
+  border-top: 1px solid rgba(255,255,255,.06);
+  font-size: 11px; color: rgba(255,255,255,.25);
+}
+.cmd-k {
+  font-family: 'JetBrains Mono', monospace; background: rgba(255,255,255,.07);
+  padding: 1px 5px; border-radius: 4px; border: 1px solid rgba(255,255,255,.1);
+  font-size: 10px; margin-right: 4px;
+}
+
+/* ── NOTIF PANEL ────────────────────────────────────────────── */
+#notif-panel {
+  width: 320px; background: #18181b;
+  border-left: 1px solid rgba(255,255,255,.08);
+  box-shadow: -8px 0 32px rgba(0,0,0,.4);
+  display: flex; flex-direction: column;
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 9001;
+  transform: translateX(100%); opacity: 0; pointer-events: none;
+  transition: transform .22s cubic-bezier(.22,1,.36,1), opacity .22s ease;
+}
+.notif-panel-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding: 18px 16px 14px; border-bottom: 1px solid rgba(255,255,255,.07);
+  flex-shrink: 0;
+}
+.notif-panel-title { font-size: 14px; font-weight: 700; color: #fafaf9; letter-spacing: -.2px; }
+.notif-panel-close {
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08);
+  border-radius: 6px; color: rgba(255,255,255,.4); cursor: pointer;
+  font-size: 13px; padding: 3px 8px; transition: all .14s;
+}
+.notif-panel-close:hover { background: rgba(255,255,255,.1); color: #fafaf9; }
+.notif-panel-body { flex: 1; overflow-y: auto; padding: 8px; }
+.notif-panel-clear { padding: 10px 12px; border-top: 1px solid rgba(255,255,255,.06); flex-shrink: 0; }
+.notif-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 32px 16px; }
+.notif-empty-icon { width: 36px; height: 36px; background: rgba(255,255,255,.04); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.25); }
+.notif-empty-text { font-size: 12px; color: rgba(255,255,255,.25); }
+.notif-item { display: flex; gap: 10px; padding: 9px 10px; border-radius: 8px; transition: background .13s; cursor: pointer; }
+.notif-item:hover { background: rgba(255,255,255,.04); }
+.notif-item-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 13px; }
+.notif-item-content { flex: 1; min-width: 0; }
+.notif-item-title { font-size: 12.5px; font-weight: 600; color: #fafaf9; }
+.notif-item-body { font-size: 11.5px; color: rgba(250,250,249,.45); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.notif-item-time { font-size: 10px; color: rgba(255,255,255,.25); white-space: nowrap; flex-shrink: 0; }
+.notif-item.unread .notif-item-title::before { content: ''; display: inline-block; width: 6px; height: 6px; background: #8b5cf6; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+
+/* ── SIDEBAR NAV ITEMS (manquants) ──────────────────────────── */
+.nav-label { display: none; }
+.nav-label-text { font-size: 12.5px; font-weight: 500; color: rgba(250,250,249,.65); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nav-item.active .nav-label-text { color: #fafaf9; font-weight: 600; }
+.nav-badge { font-size: 10px; font-weight: 700; background: rgba(139,92,246,.2); color: #a78bfa; padding: 1px 6px; border-radius: 99px; }
+.nav-section-label { font-size: 9.5px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,.2); padding: 12px 12px 4px; font-family: 'JetBrains Mono', monospace; }
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
 .grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
@@ -617,29 +821,6 @@ tbody tr:last-child td { border-bottom: none; }
 @media(max-width:600px) {
   .stats-row { grid-template-columns: repeat(2,1fr) !important; gap:6px !important; }
 }
-/* ── LAYOUT FIX: tous les éléments flottants hors du flux flex du body ── */
-#presentation-overlay,
-#notif-overlay,
-#notif-panel,
-#cmd-palette-overlay,
-#link-preview { display: none; }
-#notif-overlay,
-#notif-panel,
-#cmd-palette-overlay,
-#link-preview,
-#toasts, .toast-container,
-#mobile-bottom-nav,
-#toast-container {
-  position: fixed !important;
-}
-.modal-overlay { inset: 0; z-index: 10000; }
-#presentation-overlay { inset: 0; z-index: 10001; }
-#notif-overlay { inset: 0; z-index: 9000; }
-#notif-panel { top: 0; right: 0; bottom: 0; z-index: 9001; }
-#cmd-palette-overlay { inset: 0; z-index: 10002; }
-#link-preview { z-index: 9500; pointer-events: none; }
-#toasts, .toast-container, #toast-container { bottom: 24px; right: 24px; z-index: 99999; }
-#mobile-bottom-nav { bottom: 0; left: 0; right: 0; z-index: 400; }
 
 </style>
 </head>
@@ -690,24 +871,18 @@ tbody tr:last-child td { border-bottom: none; }
       inset: 0;
       z-index: 9000;
       background: #09090b;
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
       flex-direction: column;
       gap: 12px;
       animation: none !important;
     }
-    #nexus-boot-screen.boot-hidden {
-      display: none !important;
-      visibility: hidden !important;
-      pointer-events: none !important;
-      z-index: -1 !important;
-    }
     @keyframes bootSpin { to { transform: rotate(360deg); } }
   </style>
 </div>
 
-<div id="auth-screen" style="position:fixed;inset:0;z-index:2147483646;display:none;align-items:center;justify-content:center;overflow:auto;background:#09090b;padding:20px">
+<div id="auth-screen" style="position:fixed;inset:0;z-index:9001;display:none;align-items:center;justify-content:center;overflow:auto;background:#09090b;padding:20px">
 
   <!-- Canvas particules -->
   <canvas id="auth-particles" style="position:absolute;inset:0;z-index:0;pointer-events:none"></canvas>
@@ -2873,7 +3048,7 @@ tbody tr:last-child td { border-bottom: none; }
 </div>
 
 <!-- COMMAND PALETTE -->
-<div id="cmd-palette-overlay" onclick="if(event.target===this)closeCmdPalette()">
+<div id="cmd-palette-overlay" onclick="if(event.target===this)closeCmdPalette()" style="display:none">
   <div id="cmd-palette">
     <div id="cmd-input-wrap">
       <div id="cmd-input-icon">
@@ -4442,7 +4617,7 @@ function psStartEmbers(){
   for(let i=0;i<60;i++){const p=spawn();p.y=Math.random()*H;p.life=Math.random();particles.push(p);}
   function frame(){
     if(!document.getElementById('ps-canvas'))return (_psEmbersRunning=false);
-    if(document.getElementById('profile-screen').style.display==='none')return (_psEmbersRunning=false);
+    if(!document.documentElement.classList.contains('show-profiles'))return (_psEmbersRunning=false);
     ctx.clearRect(0,0,W,H);
     if(Math.random()<.4)particles.push(spawn());
     particles=particles.filter(p=>p.life>0);
@@ -4561,24 +4736,16 @@ function goToProfileScreen(){
   if(window._steamInterval){clearInterval(window._steamInterval);window._steamInterval=null;}
   _valoMatchCache={};_valoAllMatches=[];
   stopAmbientBg();
-  ['main-sidebar','main-content','password-screen','auth-screen'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.style.setProperty('display','none');
-  });
   managingMode=false;
   try{renderProfileScreen();}catch(e){console.error('[NEXUS] renderProfileScreen:',e);}
-  const s=document.getElementById('profile-screen');
-  if(s){s.style.setProperty('display','flex');s.style.opacity='1';s.classList.remove('hiding');}
+  _show('profiles');
   setTimeout(initPsCursorGlow,100);
 }
 
 function showPasswordScreen(id){
   pendingPasswordId=id;pinEntry='';
   const p=getP(id);if(!p)return;
-  const ps=document.getElementById('profile-screen');
-  ps.style.setProperty('display','none');
-  const screen=document.getElementById('password-screen');
-  screen.style.setProperty('display','flex');
+  _show('password');
 
   // avatar
   const avEl=document.getElementById('pw-avatar');
@@ -4641,7 +4808,7 @@ function pinPress(k){
 function checkPinPassword(){
   const p=getP(pendingPasswordId);if(!p)return;
   if(pinEntry===p.password.value){
-    document.getElementById('password-screen').style.setProperty('display','none');
+    document.documentElement.classList.remove('show-password');
     enterDashboard(pendingPasswordId);
   } else {
     document.getElementById('pw-error').textContent='Incorrect PIN. Try again.';
@@ -4654,7 +4821,7 @@ function checkTextPassword(){
   const p=getP(pendingPasswordId);if(!p)return;
   const val=document.getElementById('pw-text-input').value;
   if(val===p.password.value){
-    document.getElementById('password-screen').style.setProperty('display','none');
+    document.documentElement.classList.remove('show-password');
     enterDashboard(pendingPasswordId);
   } else {
     document.getElementById('pw-text-error').textContent='Incorrect password. Try again.';
@@ -4663,7 +4830,6 @@ function checkTextPassword(){
 }
 
 function cancelPasswordScreen(){
-  document.getElementById('password-screen').style.setProperty('display','none');
   pendingPasswordId=null;pinEntry='';
   goToProfileScreen();
 }
@@ -5275,38 +5441,17 @@ function toggleSidebarCompact(){
   const p=curP();if(!p)return;
   p.sidebarCompact=!p.sidebarCompact;
   const sb=document.getElementById('main-sidebar');
-  if(sb)sb.classList.toggle('compact',p.sidebarCompact);
-  // Animate main content margin smoothly
-  const main=document.getElementById('main-content');
-  if(main){
-    main.style.transition='margin-left .22s cubic-bezier(.4,0,.2,1)';
-    main.style.marginLeft=p.sidebarCompact?'68px':'220px';
-    setTimeout(()=>{main.style.transition='';},250);
-  }
-  // Resize handle — se déplace avec la sidebar
-  const rh=document.getElementById('resize-handle');
-  if(rh){
-    rh.style.transition='left .22s cubic-bezier(.4,0,.2,1)';
-    rh.style.left=p.sidebarCompact?'64px':(localStorage.getItem('sb_width')||'220')+'px';
-    setTimeout(()=>{rh.style.transition='';},250);
-  }
+  if(sb) sb.classList.toggle('compact',p.sidebarCompact);
+  // Flex layout handles resizing automatically via sidebar width transition
   saveStateNow();
 }
 
 function applySidebarCompact(){
   const p=curP();if(!p)return;
   const sb=document.getElementById('main-sidebar');
-  if(sb)sb.classList.toggle('compact',!!p.sidebarCompact);
-  const main=document.getElementById('main-content');
-  const rh=document.getElementById('resize-handle');
-  if(p.sidebarCompact){
-    if(main)main.style.marginLeft='64px';
-    if(rh)rh.style.left='64px';
-  } else {
-    const savedW=localStorage.getItem('sb_width')||'220';
-    if(main)main.style.marginLeft=savedW+'px';
-    if(rh)rh.style.left=savedW+'px';
-  }
+  if(sb) sb.classList.toggle('compact',!!p.sidebarCompact);
+  // In flex layout, sidebar width change automatically adjusts main-content
+  // No marginLeft needed - flex handles this
 }
 
 function initDashboard(){
@@ -6541,14 +6686,16 @@ function toast(msg,type='info'){
     info:'<svg viewBox="0 0 16 16" fill="none" style="width:11px;height:11px;flex-shrink:0"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2"/><line x1="8" y1="7" x2="8" y2="11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="8" cy="5" r="1" fill="currentColor"/></svg>',
     warning:'<svg viewBox="0 0 16 16" fill="none" style="width:11px;height:11px;flex-shrink:0"><path d="M8 2L14 13H2L8 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><line x1="8" y1="7" x2="8" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="8" cy="12" r="1" fill="currentColor"/></svg>'
   };
-  const el=document.createElement('div');el.className='toast '+type;
+  const el=document.createElement('div');el.className='toast toast-item '+type;
   el.innerHTML='<span>'+(icons[type]||icons.info)+'</span><span>'+escapeHTML(msg)+'</span>';
-  document.getElementById('toasts').appendChild(el);
+  const container=document.getElementById('toasts');
+  if(!container)return;
+  container.appendChild(el);
   if(typeof gsap!=='undefined'){
     gsap.from(el,{x:40,duration:.25,ease:'back.out(1.4)',clearProps:'transform'});
-    setTimeout(()=>{gsap.to(el,{x:40,opacity:0,duration:.2,ease:'power2.in',onComplete:()=>el.remove()});},2500);
+    setTimeout(()=>{gsap.to(el,{x:40,opacity:0,duration:.2,ease:'power2.in',onComplete:()=>el.remove()});},2800);
   } else {
-    setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300);},2500);
+    setTimeout(()=>{el.classList.add('removing');setTimeout(()=>el.remove(),200);},2800);
   }
 }
 
@@ -8145,8 +8292,17 @@ const CMD_PAGES=[
 
 // ══════════════════════════════════════════════════════════════
 let _cmdSelectedIdx=0;
-function openCmdPalette(){const o=document.getElementById('cmd-palette-overlay');if(o)o.classList.add('open');const i=document.getElementById('cmd-input');if(i){i.value='';i.focus();}_cmdSelectedIdx=0;renderCmdResults();}
-function closeCmdPalette(){document.getElementById('cmd-palette-overlay')?.classList.remove('open');}
+function openCmdPalette(){
+  const o=document.getElementById('cmd-palette-overlay');
+  if(o){o.style.display='flex';o.classList.add('open');}
+  const i=document.getElementById('cmd-input');
+  if(i){i.value='';i.focus();}
+  _cmdSelectedIdx=0;renderCmdResults();
+}
+function closeCmdPalette(){
+  const o=document.getElementById('cmd-palette-overlay');
+  if(o){o.classList.remove('open');o.style.display='none';}
+}
 function getCmdItems(q=''){
   const p=curP();q=q.toLowerCase().trim();
   const pages=[
@@ -8378,35 +8534,75 @@ function _makeDraggable(block){
     handle.addEventListener('mouseup',()=>{setTimeout(()=>block.setAttribute('draggable','false'),100);});
     block.setAttribute('draggable','false'); // Par défaut non draggable
   }
-  block.addEventListener('dragstart',function(e){_dragSrc=this;this.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
-  block.addEventListener('dragend',function(){this.classList.remove('dragging');document.querySelectorAll('.drag-over').forEach(el=>el.classList.remove('drag-over'));});
-  block.addEventListener('dragover',function(e){e.preventDefault();e.dataTransfer.dropEffect='move';this.classList.add('drag-over');});
-  block.addEventListener('dragleave',function(){this.classList.remove('drag-over');});
+  block.addEventListener('dragstart',function(e){
+    _dragSrc=this;
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed='move';
+    e.dataTransfer.setData('text/plain',this.id);
+  });
+  block.addEventListener('dragend',function(){
+    this.classList.remove('dragging');
+    document.querySelectorAll('.drag-over').forEach(el=>el.classList.remove('drag-over'));
+  });
+  block.addEventListener('dragover',function(e){
+    e.preventDefault();
+    e.dataTransfer.dropEffect='move';
+    if(_dragSrc&&_dragSrc!==this)this.classList.add('drag-over');
+  });
+  block.addEventListener('dragleave',function(e){
+    // Only remove if leaving to outside this element
+    if(!this.contains(e.relatedTarget))this.classList.remove('drag-over');
+  });
   block.addEventListener('drop',function(e){
-    e.preventDefault();e.stopPropagation();this.classList.remove('drag-over');
-    if(_dragSrc&&_dragSrc!==this&&_dragSrc.parentNode===this.parentNode){
-      const par=this.parentNode;
-      const si=[...par.children].indexOf(_dragSrc);
-      const ti=[...par.children].indexOf(this);
-      if(si<ti)par.insertBefore(_dragSrc,this.nextSibling);
-      else par.insertBefore(_dragSrc,this);
-      saveOverviewOrder();
+    e.preventDefault();e.stopPropagation();
+    this.classList.remove('drag-over');
+    if(!_dragSrc||_dragSrc===this)return;
+    const srcParent=_dragSrc.parentNode;
+    const tgtParent=this.parentNode;
+    // Allow cross-column drops
+    const si=[...srcParent.children].indexOf(_dragSrc);
+    const ti=[...tgtParent.children].indexOf(this);
+    if(srcParent===tgtParent){
+      if(si<ti)tgtParent.insertBefore(_dragSrc,this.nextSibling);
+      else tgtParent.insertBefore(_dragSrc,this);
+    } else {
+      // Cross-column: move widget to target column
+      tgtParent.insertBefore(_dragSrc,this);
     }
+    saveOverviewOrder();
   });
 }
 
 function initOverviewDragDrop(){
   const left=document.getElementById('overview-col-left');
   const right=document.getElementById('overview-col-right');
-  // Assigner des IDs stables aux panels gauche
+  if(!left&&!right)return;
+
+  // Assign stable IDs to panels
   const leftNames=['recent-items-panel','tasks-events-panel','quick-note-panel','daily-focus-panel','activity-panel'];
-  if(left)[...left.children].forEach((el,i)=>{if(!el.id)el.id=leftNames[i]||('overview-left-'+i);});
-  // Assigner des IDs stables aux panels droite
   const rightNames=['pomo-widget-panel','weather-widget-panel','quote-widget-panel','countdown-widget-panel'];
+  if(left)[...left.children].forEach((el,i)=>{if(!el.id)el.id=leftNames[i]||('overview-left-'+i);});
   if(right)[...right.children].forEach((el,i)=>{if(!el.id)el.id=rightNames[i]||('overview-right-'+i);});
-  // Rendre tout draggable
-  const allBlocks=[...( left?[...left.children]:[]), ...(right?[...right.children]:[])];
-  allBlocks.forEach((block,i)=>{if(!block.id)block.id='overview-block-'+i; _makeDraggable(block);});
+
+  // Make all blocks draggable
+  const allBlocks=[...(left?[...left.children]:[]),...(right?[...right.children]:[])];
+  allBlocks.forEach((block,i)=>{ if(!block.id)block.id='overview-block-'+i; _makeDraggable(block); });
+
+  // Add column-level drop zone (drop at end of column)
+  [left,right].forEach(col=>{
+    if(!col)return;
+    col.addEventListener('dragover',e=>{ e.preventDefault(); e.dataTransfer.dropEffect='move'; });
+    col.addEventListener('drop',e=>{
+      // Only fire if dropping directly on column, not on a child
+      if(e.target!==col)return;
+      e.preventDefault();e.stopPropagation();
+      if(_dragSrc&&_dragSrc.parentNode!==col){
+        col.appendChild(_dragSrc);
+        saveOverviewOrder();
+      }
+    });
+  });
+
   restoreOverviewOrder();
 }
 
@@ -8419,7 +8615,7 @@ function saveOverviewOrder(){
   if(!p.state)p.state={};
   p.state.overviewOrder={left:leftIds,right:rightIds};
   saveStateNow();
-  if(_sbUser){clearTimeout(_saveCloudTimeout);saveCloudState().catch(()=>{});}
+  if(_sbUser){clearTimeout(window._saveCloudTimeout);window._saveCloudTimeout=setTimeout(()=>saveCloudState().catch(()=>{}),1500);}
 }
 
 function restoreOverviewOrder(){
@@ -8565,39 +8761,49 @@ function hidePageLoader(){
   setTimeout(()=>{el.classList.remove('done');el.style.opacity='0';},350);
 }
 
-function animatePageIn(pageEl,page){
+function animatePageIn(pageEl,pageName){
   if(!pageEl)return;
-  const curIdx=PAGE_ORDER.indexOf(page||'');
-  const prevIdx=_lastPageIdx;
-  _lastPageIdx=curIdx>=0?curIdx:prevIdx;
+  const page=pageName;
+  const curIdx=PAGE_ORDER?PAGE_ORDER.indexOf(page||''):-1;
+  const prevIdx=_lastPageIdx||0;
+  if(curIdx>=0)_lastPageIdx=curIdx;
 
+  // Animation
   if(typeof gsap!=='undefined'){
-    // Utiliser gsap.from (pas fromTo) — l'élément reste visible si l'anim plante
-    const dir=curIdx>prevIdx?1:-1;
-    pageEl.style.opacity='1'; // S'assurer que c'est visible d'abord
-    gsap.from(pageEl,
-      {opacity:0, x:dir*20, duration:.25, ease:'power2.out', clearProps:'all',
-        onComplete:()=>{
-          initScrollReveal();animateStatCards();initRipples();hidePageLoader();
-          animatePageEnterGSAP(page);initPanelSpotlights();init3DTilt();initNavRipples();
-        }
+    const dir=(curIdx>=0&&curIdx>prevIdx)?1:-1;
+    pageEl.style.opacity='1';
+    gsap.from(pageEl,{opacity:0,x:dir*16,duration:.22,ease:'power2.out',clearProps:'all',
+      onComplete:()=>{initScrollReveal();animateStatCards();initRipples();hidePageLoader();
+        try{animatePageEnterGSAP(page);}catch(e){}
+        try{initPanelSpotlights();}catch(e){}
+        try{init3DTilt();}catch(e){}
+        try{initNavRipples();}catch(e){}
       }
-    );
+    });
+  } else if(window.fm&&window.fm.animate){
+    try{window.fm.animate(pageEl,{opacity:[0,1],y:[6,0]},{duration:.2,ease:[.22,1,.36,1]});}catch(e){}
+    setTimeout(hidePageLoader,100);
   } else {
-    // CSS fallback
     let cls='page-entering';
-    if(page&&curIdx>=0){
-      if(curIdx>prevIdx)cls='page-entering-right';
-      else if(curIdx<prevIdx)cls='page-entering-left';
-    }
+    if(page&&curIdx>=0){if(curIdx>prevIdx)cls='page-entering-right';else if(curIdx<prevIdx)cls='page-entering-left';}
     pageEl.classList.remove('page-entering','page-entering-left','page-entering-right');
     void pageEl.offsetWidth;
     pageEl.classList.add(cls);
-    setTimeout(()=>{
-      pageEl.classList.remove('page-entering','page-entering-left','page-entering-right');
-      initScrollReveal();animateStatCards();initRipples();hidePageLoader();
-    },200);
+    setTimeout(()=>{pageEl.classList.remove('page-entering','page-entering-left','page-entering-right');
+      initScrollReveal();animateStatCards();initRipples();hidePageLoader();},200);
   }
+
+  // Per-page render hooks
+  const hooks={
+    'stats':()=>{try{renderStatsPage();}catch(e){}},
+    'budget':()=>{try{renderBudget();}catch(e){}},
+    'gallery':()=>{try{renderGallery();}catch(e){}},
+    'gaming':()=>{try{loadGamingUI();}catch(e){}},
+    'connections':()=>{try{loadConnectionsUI();}catch(e){}},
+    'github':()=>{try{refreshGithub();}catch(e){}},
+    'settings':()=>{try{renderSettingsLinksPreview();}catch(e){}},
+  };
+  if(page&&hooks[page])hooks[page]();
 }
 
 
@@ -8653,15 +8859,19 @@ function openNotifPanel(){
   _notifOpen=true;
   scanForNotifs();
   renderNotifPanel();
-  document.getElementById('notif-panel')?.classList.add('open');
-  document.getElementById('notif-overlay')?.classList.add('open');
+  const panel=document.getElementById('notif-panel');
+  const overlay=document.getElementById('notif-overlay');
+  if(panel) panel.classList.add('open');
+  if(overlay){ overlay.style.display='block'; overlay.classList.add('open'); }
   setTimeout(()=>{_notifs.forEach(n=>n.unread=false);updateNotifBadge();},600);
 }
 
 function closeNotifPanel(){
   _notifOpen=false;
-  document.getElementById('notif-panel')?.classList.remove('open');
-  document.getElementById('notif-overlay')?.classList.remove('open');
+  const panel=document.getElementById('notif-panel');
+  const overlay=document.getElementById('notif-overlay');
+  if(panel) panel.classList.remove('open');
+  if(overlay){ overlay.classList.remove('open'); overlay.style.display='none'; }
 }
 
 function clearAllNotifs(){
@@ -11389,24 +11599,14 @@ function pageTransitionOut(cb){
 
 // ── Sidebar icons entrance ──
 function animateSidebarEntrance(){
-  if(typeof anime==='undefined')return;
-  anime({
-    targets:'.nav-item',
-    translateX:[-20,0],
-    opacity:[0,1],
-    duration:400,
-    delay:anime.stagger(30,{start:100}),
-    easing:'easeOutCubic',
-  });
-  // Logo bounce
-  anime({
-    targets:'.logo-icon',
-    scale:[0.5,1],
-    rotate:['-10deg','0deg'],
-    opacity:[0,1],
-    duration:600,
-    easing:'easeOutElastic(1,.7)',
-  });
+  const items=document.querySelectorAll('.nav-item');
+  if(!items.length)return;
+  if(window.fm&&window.fm.animate){
+    try{window.fm.animate(items,{opacity:[0,1],x:[-6,0]},{delay:window.fm.stagger?window.fm.stagger(0.04):0,duration:.25,ease:[.22,1,.36,1]});}catch(e){}
+  } else if(typeof anime!=='undefined'){
+    anime({targets:'.nav-item',translateX:[-20,0],opacity:[0,1],duration:400,delay:anime.stagger(30,{start:100}),easing:'easeOutCubic'});
+    anime({targets:'.logo-icon',scale:[0.5,1],rotate:['-10deg','0deg'],opacity:[0,1],duration:600,easing:'easeOutElastic(1,.7)'});
+  }
 }
 
 // ── Nav icon bounce au clic ──
@@ -13570,11 +13770,7 @@ function importData(e){
       toast('Importing...','info');
       await saveCloudState();
       toast('Data imported and saved! ','success');
-      setTimeout(()=>{
-        document.getElementById('main-sidebar').style.setProperty('display','none');
-        document.getElementById('main-content').style.setProperty('display','none');
-        goToProfileScreen();
-      },1000);
+      setTimeout(()=>{ goToProfileScreen(); },1000);
     }catch(err){toast('Invalid file : '+err.message,'error');}
   };
   reader.readAsText(file);
@@ -14235,38 +14431,21 @@ var I18N = {
 function t(key){ if(!I18N)return key; return (I18N[_lang]?.[key]) ?? (I18N['en']?.[key]) ?? key; }
 
 
-// === BOOT ===
-// ═══════════════════════════════════════════════════════════
-// DISPLAY MANAGER — source unique de vérité pour l'affichage
-// ═══════════════════════════════════════════════════════════
-var _ALL_SCREENS = ['nexus-boot-screen','auth-screen','main-sidebar','main-content','profile-screen','password-screen'];
+// === ETHONE DISPLAY MANAGER ===
+var _SHOW_CLASSES = ['booting','show-dashboard','show-auth','show-profiles','show-password'];
 
 function _show(what){
-  // 1. Retirer body.booting — libère tous les éléments du CSS anti-flash
-  document.documentElement.classList.remove('booting');
-
-  // 2. Retirer l'ancien style#anti-flash s'il traîne encore
+  // Retirer toutes les classes d'état
+  var html = document.documentElement;
+  _SHOW_CLASSES.forEach(function(c){ html.classList.remove(c); });
+  // Retirer anti-flash si encore présent
   var af=document.getElementById('anti-flash');
   if(af&&af.parentNode)af.parentNode.removeChild(af);
-
-  // 3. Reset inline styles de tous les écrans
-  _ALL_SCREENS.forEach(function(id){
-    var el=document.getElementById(id);
-    if(!el)return;
-    if(id==='nexus-boot-screen'){
-      el.classList.add('boot-hidden');
-    } else {
-      el.style.display='none';
-    }
-  });
-
-  // 4. Afficher ce qui est demandé
-  if(what==='boot'){
-    var b=document.getElementById('nexus-boot-screen');
-    if(b) b.classList.remove('boot-hidden');
-  } else if(what==='auth'){
-    var a=document.getElementById('auth-screen');
-    if(a) a.style.display='flex';
+  // Appliquer la nouvelle classe
+  if(what==='boot')    html.classList.add('booting');
+  if(what==='dashboard') html.classList.add('show-dashboard');
+  if(what==='auth'){
+    html.classList.add('show-auth');
     try{updateClock();}catch(e){}
     try{applyI18n();}catch(e){}
     try{updateAuthLangBar();}catch(e){}
@@ -14275,18 +14454,9 @@ function _show(what){
       try{if(typeof animateAuthEntrance==='function')animateAuthEntrance();}catch(e){}
       try{var f=document.getElementById('auth-login-id');if(f)f.focus();}catch(e){}
     },120);
-  } else if(what==='dashboard'){
-    var sb2=document.getElementById('main-sidebar');
-    var mc2=document.getElementById('main-content');
-    if(sb2) sb2.style.setProperty('display','flex','important');
-    if(mc2) mc2.style.setProperty('display','block','important');
-  } else if(what==='profiles'){
-    var ps=document.getElementById('profile-screen');
-    if(ps) ps.style.display='flex';
-  } else if(what==='password'){
-    var pw=document.getElementById('password-screen');
-    if(pw) pw.style.display='flex';
   }
+  if(what==='profiles') html.classList.add('show-profiles');
+  if(what==='password') html.classList.add('show-password');
 }
 
 function removeAntiFlash(){
@@ -14296,9 +14466,7 @@ function removeAntiFlash(){
 }
 
 function hideBoot(){
-  removeAntiFlash();
-  var el=document.getElementById('nexus-boot-screen');
-  if(el) el.classList.add('boot-hidden');
+  document.documentElement.classList.remove('booting');
 }
 
 function setBootStatus(msg){
@@ -14398,26 +14566,20 @@ function _goToDashboard(profileId){
     window.location.search.includes('code=')
   );
 
-  // Helper: quelque chose est-il visible (body.booting retiré + un écran affiché)?
+  // Helper: quelque chose est-il visible?
   function _somethingVisible(){
-    if(document.documentElement.classList.contains('booting')) return false;
-    var mc=document.getElementById('main-content');
-    var as=document.getElementById('auth-screen');
-    var ps=document.getElementById('profile-screen');
-    var boot=document.getElementById('nexus-boot-screen');
-    return (mc&&mc.style.display!=='none'&&mc.style.display!=='')||
-           (as&&as.style.display==='flex')||
-           (ps&&ps.style.display==='flex')||
-           (boot&&!boot.classList.contains('boot-hidden'));
+    var html=document.documentElement;
+    return html.classList.contains('show-dashboard')||
+           html.classList.contains('show-auth')||
+           html.classList.contains('show-profiles')||
+           html.classList.contains('show-password');
   }
 
   // Helper: forcer showAuth en absolu
   function _forceShowAuth(){
-    document.documentElement.classList.remove('booting');
-    var boot=document.getElementById('nexus-boot-screen');
-    if(boot) boot.classList.add('boot-hidden');
-    var as=document.getElementById('auth-screen');
-    if(as){ as.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#09090b;padding:20px'; }
+    var html=document.documentElement;
+    ['booting','show-dashboard','show-profiles','show-password'].forEach(function(c){html.classList.remove(c);});
+    html.classList.add('show-auth');
   }
 
   // ── FAILSAFE principal ────────────────────────────────────
@@ -14678,35 +14840,7 @@ function initFramerAnimations(){
 }
 
 // Animate page transition (CSS fallback si pas de FM)
-function animatePageIn(pageEl, pageName){
-  if(!pageEl) return;
-  pageEl.style.animation='none';
-  pageEl.offsetHeight; // reflow
-  pageEl.style.animation='';
-  // Framer Motion si disponible
-  if(window.fm && window.fm.animate){
-    try{
-      window.fm.animate(pageEl, {opacity:[0,1],y:[6,0]},{duration:.2,ease:[.22,1,.36,1]});
-    }catch(e){}
-  }
-  // Render-specific hooks
-  const renders={
-    'stats':()=>{if(typeof renderStatsPage==='function')renderStatsPage();},
-    'budget':()=>{if(typeof renderBudget==='function')renderBudget();},
-    'gallery':()=>{if(typeof renderGallery==='function')renderGallery();},
-    'gaming':()=>{if(typeof loadGamingUI==='function')loadGamingUI();},
-    'connections':()=>{if(typeof loadConnectionsUI==='function')loadConnectionsUI();},
-    'github':()=>{if(typeof refreshGithub==='function')refreshGithub();},
-  };
-  const renders2={
-    'settings':()=>{if(typeof renderSettingsLinksPreview==='function')renderSettingsLinksPreview();},
-  };
-  if(pageName && renders2[pageName]) renders2[pageName]();
-  if(pageName && renders[pageName]) renders[pageName]();
-  if(typeof hidePageLoader==='function') setTimeout(hidePageLoader,100);
-}
-
-// Animate modal open
+// animateModalIn / animateToastIn
 function animateModalIn(modalEl){
   if(!modalEl) return;
   if(window.fm){
@@ -14721,17 +14855,6 @@ function animateToastIn(toastEl){
 }
 
 // Animate sidebar nav items
-function animateSidebarEntrance(){
-  if(!window.fm) return;
-  const items = document.querySelectorAll('.nav-item');
-  if(items.length){
-    window.fm.animate(items, { opacity:[0,1], x:[-6,0] }, {
-      delay: window.fm.stagger(0.04),
-      duration: 0.25,
-      ease: [.22,1,.36,1]
-    });
-  }
-}
 
 </script>
 

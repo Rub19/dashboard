@@ -34,20 +34,19 @@ html.show-profiles #profile-screen { display: flex !important; }
 html.show-password #password-screen { display: flex !important; }
 
 /* Modals et overlays: toujours fixed, cachés par défaut */
-.modal-overlay { display: none; position: fixed; inset: 0; z-index: 10000; }
-.modal-overlay.open { display: flex; align-items: center; justify-content: center; }
-#presentation-overlay,
-#notif-overlay,
-#notif-panel,
-#cmd-palette-overlay,
-#link-preview { display: none; position: fixed; }
-#notif-overlay.open, #presentation-overlay.open, #presentation-overlay.active { display: block; inset: 0; z-index: 9000; }
-#notif-panel.open { display: flex; flex-direction: column; top: 0; right: 0; bottom: 0; z-index: 9001; }
-#cmd-palette-overlay.open { display: flex; align-items: flex-start; justify-content: center; inset: 0; z-index: 10002; padding-top: 80px; }
-#link-preview.open, #link-preview.visible { display: block; z-index: 9500; pointer-events: none; }
+.modal-overlay { display: none !important; position: fixed; inset: 0; z-index: 10000; }
+.modal-overlay.open { display: flex !important; align-items: center; justify-content: center; }
+#presentation-overlay { display: none !important; position: fixed; inset: 0; z-index: 10001; background: #09090b; flex-direction: column; }
+#presentation-overlay.active { display: flex !important; }
+#notif-overlay { display: none !important; position: fixed; inset: 0; z-index: 9000; background: rgba(0,0,0,.4); }
+#notif-overlay.open { display: block !important; }
+#cmd-palette-overlay { display: none !important; position: fixed; inset: 0; z-index: 10002; align-items: flex-start; justify-content: center; padding-top: 80px; background: rgba(0,0,0,.6); backdrop-filter: blur(4px); }
+#cmd-palette-overlay.open { display: flex !important; }
+#link-preview { display: none !important; position: fixed; z-index: 9500; pointer-events: none; }
+#link-preview.open, #link-preview.visible { display: block !important; }
 #toasts, .toast-container, #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 99999; }
 #mobile-bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 400; }
-#nexus-page-loader, #nexus-page-transition { position: fixed; inset: 0; pointer-events: none; display: none; }
+#nexus-page-loader, #nexus-page-transition { position: fixed; inset: 0; pointer-events: none; display: none !important; }
 #nexus-particles-bg { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 #bg-canvas { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
 
@@ -707,10 +706,16 @@ tbody tr:last-child td { border-bottom: none; }
   width: 320px; background: #18181b;
   border-left: 1px solid rgba(255,255,255,.08);
   box-shadow: -8px 0 32px rgba(0,0,0,.4);
-  display: flex; flex-direction: column;
   position: fixed; top: 0; right: 0; bottom: 0; z-index: 9001;
+  flex-direction: column;
   transform: translateX(100%); opacity: 0; pointer-events: none;
   transition: transform .22s cubic-bezier(.22,1,.36,1), opacity .22s ease;
+  display: flex;
+}
+#notif-panel.open {
+  transform: translateX(0) !important;
+  opacity: 1 !important;
+  pointer-events: all !important;
 }
 .notif-panel-header {
   display: flex; align-items: flex-start; justify-content: space-between;
@@ -738,7 +743,17 @@ tbody tr:last-child td { border-bottom: none; }
 .notif-item-time { font-size: 10px; color: rgba(255,255,255,.25); white-space: nowrap; flex-shrink: 0; }
 .notif-item.unread .notif-item-title::before { content: ''; display: inline-block; width: 6px; height: 6px; background: #8b5cf6; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
 
-/* ── SIDEBAR NAV ITEMS (manquants) ──────────────────────────── */
+/* ── PRESENTATION MODE ───────────────────────────────────────── */
+.pres-header { display:flex; align-items:center; gap:16px; padding:20px 28px; border-bottom:1px solid rgba(255,255,255,.08); flex-shrink:0; }
+.pres-logo { display:flex; align-items:center; gap:10px; }
+.pres-logo-icon { width:32px; height:32px; border-radius:8px; background:linear-gradient(135deg,#7c3aed,#6d28d9); display:flex; align-items:center; justify-content:center; }
+.pres-logo-text { font-size:15px; font-weight:800; color:#fafaf9; letter-spacing:1px; font-family:'Syne',sans-serif; text-transform:uppercase; }
+.pres-name { font-size:13px; color:rgba(255,255,255,.5); margin-left:auto; }
+.pres-time { font-size:13px; font-weight:700; font-family:var(--mono); color:#a78bfa; }
+.pres-close { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); border-radius:8px; color:rgba(255,255,255,.5); cursor:pointer; padding:6px 12px; font-size:13px; transition:all .15s; }
+.pres-close:hover { background:rgba(255,255,255,.1); color:#fafaf9; }
+.pres-body { flex:1; overflow-y:auto; padding:24px 28px; }
+#pres-exit-hint { text-align:center; padding:12px; font-size:11px; color:rgba(255,255,255,.2); font-family:var(--mono); border-top:1px solid rgba(255,255,255,.05); flex-shrink:0; }
 .nav-label { display: none; }
 .nav-label-text { font-size: 12.5px; font-weight: 500; color: rgba(250,250,249,.65); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .nav-item.active .nav-label-text { color: #fafaf9; font-weight: 600; }
@@ -4125,7 +4140,6 @@ async function doLogout(){
 
 async function onAuthSuccess(userArg){
   try{
-    // Assigner _sbUser en premier — avant tout ce qui pourrait planter
     let user=userArg;
     if(!user){
       const {data,error:ue}=await sb.auth.getUser();
@@ -4135,18 +4149,56 @@ async function onAuthSuccess(userArg){
     _sbUser=user;
     _isAdmin=user?.email===ADMIN_EMAIL;
 
-    // Boot screen pendant le chargement
-    try{ _show('boot'); }catch(e){}
-    setBootStatus('Chargement...');
+    // ── Essayer d'abord le cache sessionStorage (instantané) ──
+    const cacheKey='nexus_profiles_'+_sbUser.id;
+    let hasCached=false;
+    try{
+      const cached=sessionStorage.getItem(cacheKey);
+      if(cached){
+        const parsed=JSON.parse(cached);
+        if(parsed&&parsed.length){
+          profiles=parsed;
+          normalizeAllProfiles();
+          hasCached=true;
+        }
+      }
+    }catch(e){}
 
+    if(hasCached){
+      // Afficher immédiatement depuis le cache
+      showDashboardOrProfiles();
+      // Sync en arrière-plan sans bloquer
+      loadCloudState().then(()=>{
+        normalizeAllProfiles();
+        try{ sessionStorage.setItem(cacheKey,JSON.stringify(profiles)); }catch(e){}
+        const p=curP(); if(p) initSidebarWidgets(p);
+      }).catch(()=>{});
+      return;
+    }
+
+    // ── Pas de cache : créer un profil minimal immédiat + charger en parallèle ──
+    const meta=_sbUser.user_metadata||{};
+    const username=meta.full_name||meta.name||meta.username||_sbUser.email?.split('@')[0]||'User';
+    profiles=[{
+      id:_sbUser.id+'_tmp',
+      name:username,
+      avatarEmoji:AVATARS[0].e,
+      avatarBg:AVATARS[0].b,
+      avatarImg:null,
+      avatarIdx:0,
+      state:defState(username)
+    }];
+    normalizeAllProfiles();
+
+    // Afficher le dashboard de suite (profil minimal)
+    _show('boot');
+    setBootStatus('Connexion...');
+
+    // Charger les vraies données (timeout 5s)
     await loadCloudState();
-    setBootStatus('Prêt ✓');
 
-    // Si loadCloudState a échoué (timeout/CORS), créer un profil local minimal
-    if(!profiles.length){
-      console.warn('[NEXUS] loadCloudState returned no profiles — using local fallback');
-      const meta=_sbUser.user_metadata||{};
-      const username=meta.full_name||meta.name||meta.username||_sbUser.email?.split('@')[0]||'User';
+    if(!profiles.length||profiles[0].id===_sbUser.id+'_tmp'){
+      // Toujours pas de données — garder le profil minimal
       profiles=[{
         id:Date.now(),
         name:username,
@@ -4158,7 +4210,7 @@ async function onAuthSuccess(userArg){
       }];
     }
     normalizeAllProfiles();
-    try{ sessionStorage.setItem('nexus_profiles_'+_sbUser.id,JSON.stringify(profiles)); }catch(e){}
+    try{ sessionStorage.setItem(cacheKey,JSON.stringify(profiles)); }catch(e){}
     showDashboardOrProfiles();
 
   }catch(err){
@@ -4169,7 +4221,7 @@ async function onAuthSuccess(userArg){
 async function loadCloudState(){
   if(!_sbUser)return;
   try{
-    const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),8000));
+    const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),4000));
     const query=sb.from('dashboard_data').select('*').eq('user_id',_sbUser.id).order('created_at',{ascending:true});
     const {data,error}=await Promise.race([query,timeout.then(()=>{throw new Error('timeout')})]).catch(e=>{
       console.error('[NEXUS] loadCloudState timeout/error:',e);
@@ -14585,7 +14637,7 @@ function _goToDashboard(profileId){
   // ── FAILSAFE principal ────────────────────────────────────
   // OAuth: on laisse 9s car PKCE échange le code côté serveur (peut être lent)
   // Normal: 3s suffit largement
-  const _failsafeMs = _isOAuthCallback ? 9000 : 3000;
+  const _failsafeMs = _isOAuthCallback ? 8000 : 6000;
   window._bootFailsafeTimer=setTimeout(function(){
     if(!_somethingVisible()){
       console.warn('[ETHONE] Failsafe '+_failsafeMs+'ms: forcing showAuth()');

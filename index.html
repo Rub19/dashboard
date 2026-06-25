@@ -11785,7 +11785,9 @@ function exportBudgetPDF(){
     '<td style="padding:8px;color:'+(t.type==='in'?'#16a34a':'#6d28d9')+';font-weight:600">'+(t.type==='in'?'+':'-')+fmt(t.amount)+'</td>'+
     '</tr>'
   ).join('');
-  // Ne pas utiliser template literal avec </body></html> — ça casse le parser HTML
+  // Ne pas utiliser template literal avec 
+
+</body></html> — ça casse le parser HTML
   const css='body{font-family:Arial,sans-serif;padding:32px;color:#111}h1{color:#7c3aed}table{width:100%;border-collapse:collapse}th{background:#7c3aed;color:#fff;padding:10px;text-align:left}.kpi{display:flex;gap:20px;margin-bottom:24px}.kpi-box{background:#f8f8f8;border-radius:8px;padding:16px;flex:1;text-align:center}.kpi-val{font-size:24px;font-weight:700}.kpi-lbl{font-size:12px;color:#666;margin-top:4px}';
   const win=window.open('','_blank');
   if(!win){toast('Popup bloquée — autorise les popups pour ce site','error');return;}
@@ -14621,6 +14623,118 @@ function animateSidebarEntrance(){
     </div>
     <div id="ai-sessions-panel" style="flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:6px"></div>
   </div>
+
+
+
+
+
+<!-- ETHONE HOTFIX: boot/auth/dashboard visibility guard -->
+<script id="ethone-visibility-hotfix">
+(function(){
+  'use strict';
+  if(window.__ETHONE_VISIBILITY_HOTFIX__) return;
+  window.__ETHONE_VISIBILITY_HOTFIX__ = true;
+
+  function $(id){ return document.getElementById(id); }
+  function hide(id){ var el=$(id); if(el) el.style.setProperty('display','none','important'); }
+  function show(id,display){ var el=$(id); if(el){ el.style.setProperty('display',display||'block','important'); el.style.setProperty('opacity','1','important'); el.style.setProperty('visibility','visible','important'); } }
+  function removeAF(){ var af=$('anti-flash'); if(af && af.parentNode) af.parentNode.removeChild(af); }
+  function stopBoot(){ var b=$('ethone-boot-screen'); if(b){ b.style.setProperty('display','none','important'); b.style.setProperty('visibility','hidden','important'); } }
+  function visible(el){
+    if(!el) return false;
+    var cs = window.getComputedStyle ? getComputedStyle(el) : el.style;
+    return cs.display !== 'none' && cs.visibility !== 'hidden' && cs.opacity !== '0';
+  }
+  function hasVisibleScreen(){
+    return visible($('main-content')) || visible($('auth-screen')) || visible($('profile-screen')) || visible($('password-screen'));
+  }
+  function ensureAuth(reason){
+    removeAF(); stopBoot();
+    hide('main-sidebar'); hide('main-content'); hide('profile-screen'); hide('password-screen');
+    var a=$('auth-screen');
+    if(a){
+      a.style.cssText = 'position:fixed!important;inset:0!important;z-index:10002!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:auto!important;background:#09090b!important;padding:20px!important;opacity:1!important;visibility:visible!important;';
+    }
+    var card=$('auth-card'); if(card){ card.style.setProperty('display','block','important'); card.style.setProperty('opacity','1','important'); card.style.setProperty('visibility','visible','important'); }
+    var box=$('lb-box'); if(box){ box.style.setProperty('display','flex','important'); box.style.setProperty('opacity','1','important'); box.style.setProperty('visibility','visible','important'); }
+    try{ if(typeof applyI18n==='function') applyI18n(); }catch(e){}
+    try{ if(typeof updateAuthLangBar==='function') updateAuthLangBar(); }catch(e){}
+    setTimeout(function(){ try{ var i=$('auth-login-id'); if(i) i.focus(); }catch(e){} }, 80);
+    console.warn('[ETHONE HOTFIX] Auth visible:', reason || 'fallback');
+  }
+  function fallbackState(name){
+    if(typeof defState === 'function') return defState(name || 'Mon profil');
+    return {items:[],notes:[],todos:[],habits:[],kanban:[],events:[],activity:[],connections:{},gaming:{},pinned:[],countdowns:[],goals:[],journal:[],budget:[],aiSessions:[]};
+  }
+  function ensureProfile(){
+    try{ if(!Array.isArray(window.profiles)) window.profiles=[]; }catch(e){ window.profiles=[]; }
+    if(!window.profiles.length){
+      var av = (window.AVATARS && window.AVATARS[0]) ? window.AVATARS[0] : {e:'👤',b:'linear-gradient(135deg,#8b5cf6,#7c3aed)'};
+      window.profiles.push({id:Date.now(),name:'Mon profil',avatarEmoji:av.e,avatarBg:av.b,avatarImg:null,avatarIdx:0,state:fallbackState('Mon profil')});
+    }
+    try{ if(typeof normalizeAllProfiles==='function') normalizeAllProfiles(); }catch(e){}
+    if(!window.currentId) window.currentId = window.profiles[0].id;
+  }
+  function ensureDashboard(reason){
+    removeAF(); stopBoot(); ensureProfile();
+    hide('auth-screen'); hide('profile-screen'); hide('password-screen');
+    show('main-sidebar','flex'); show('main-content','block');
+    try{ if(typeof renderSidebarNav==='function') renderSidebarNav(); }catch(e){ console.warn('[ETHONE HOTFIX] renderSidebarNav:', e); }
+    try{ if(typeof updateSidebarAvatar==='function') updateSidebarAvatar(); }catch(e){}
+    try{ if(typeof applyI18n==='function') applyI18n(); }catch(e){}
+    try{ if(typeof updateClock==='function') updateClock(); }catch(e){}
+    try{ if(typeof initDashboard==='function') initDashboard(); }catch(e){ console.warn('[ETHONE HOTFIX] initDashboard:', e); }
+    try{ if(typeof switchPage==='function') switchPage('dashboard', null); }catch(e){}
+    console.warn('[ETHONE HOTFIX] Dashboard visible:', reason || 'fallback');
+  }
+  function withTimeout(promise, ms){
+    return Promise.race([promise, new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout '+ms+'ms')); }, ms); })]);
+  }
+
+  window.__ethoneForceAuth = ensureAuth;
+  window.__ethoneForceDashboard = ensureDashboard;
+
+  window.onAuthSuccess = async function(userArg){
+    removeAF();
+    hide('auth-screen'); hide('profile-screen'); hide('password-screen');
+    var boot=$('ethone-boot-screen');
+    if(boot){ boot.style.setProperty('display','flex','important'); boot.style.setProperty('visibility','visible','important'); boot.style.setProperty('opacity','1','important'); }
+    try{
+      window._sbUser = userArg || window._sbUser || null;
+      if(!window._sbUser && window.sb && sb.auth && sb.auth.getUser){
+        try{ var res = await withTimeout(sb.auth.getUser(), 2500); window._sbUser = res && res.data && res.data.user; }catch(e){}
+      }
+      try{
+        if(typeof loadCloudState==='function') await withTimeout(loadCloudState(), 4500);
+      }catch(e){ console.warn('[ETHONE HOTFIX] Cloud load skipped:', e.message || e); }
+      ensureProfile();
+      try{ if(window._sbUser && sessionStorage) sessionStorage.setItem('ethone_profiles_'+window._sbUser.id, JSON.stringify(window.profiles)); }catch(e){}
+      if(typeof showDashboardOrProfiles==='function'){
+        try{ showDashboardOrProfiles(); }catch(e){ console.warn('[ETHONE HOTFIX] showDashboardOrProfiles:', e); ensureDashboard('showDashboardOrProfiles failed'); }
+      } else {
+        ensureDashboard('no showDashboardOrProfiles');
+      }
+      setTimeout(function(){ if(!hasVisibleScreen()) ensureDashboard('post-login blank'); }, 300);
+    }catch(e){
+      console.error('[ETHONE HOTFIX] onAuthSuccess failed:', e);
+      ensureDashboard('login fallback');
+    }
+  };
+
+  function watchdog(ms, label){
+    setTimeout(function(){
+      try{ if(!hasVisibleScreen()) ensureAuth(label); }
+      catch(e){ ensureAuth(label+' exception'); }
+    }, ms);
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){ watchdog(1200,'fast'); watchdog(3500,'medium'); watchdog(6500,'slow'); });
+  } else {
+    watchdog(1200,'fast'); watchdog(3500,'medium'); watchdog(6500,'slow');
+  }
+  window.addEventListener('load', function(){ watchdog(5000,'load'); });
+})();
+</script>
 
 </body>
 </html>

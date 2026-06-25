@@ -2,17 +2,11 @@
 <html lang="en">
 <head>
 <style id="anti-flash">
-/* Applied before first paint — prevents any flash */
+/* ETHONE SAFE STARTUP: do not hide auth on first paint. This prevents black screen after refresh. */
 html, body { background: #09090b !important; }
-#main-sidebar, #main-content, #auth-screen, #profile-screen, #password-screen {
-  display: none !important;
-}
-#ethone-boot-screen {
-  display: flex !important;
-  position: fixed !important;
-  inset: 0 !important;
-  z-index: 2147483647 !important;
-}
+#main-sidebar, #main-content, #profile-screen, #password-screen { display: none !important; }
+#auth-screen { display: flex !important; }
+#ethone-boot-screen { display: none !important; visibility: hidden !important; opacity: 0 !important; }
 </style>
 <script>
 // Simple failsafe - show auth if nothing visible after 3s
@@ -610,7 +604,7 @@ tbody tr:last-child td { border-bottom: none; }
 <div id="nexus-page-transition" style="position:fixed;inset:0;z-index:99998;pointer-events:none;opacity:0"></div>
 
 <!-- BOOT SCREEN -->
-<div id="ethone-boot-screen" style="position:fixed;inset:0;z-index:2147483647;background:#09090b;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px">
+<div id="ethone-boot-screen" style="position:fixed;inset:0;z-index:2147483647;background:#09090b;display:none;visibility:hidden;opacity:0;align-items:center;justify-content:center;flex-direction:column;gap:16px">
   <style>@keyframes bootSpin{to{transform:rotate(360deg)}} @keyframes bootPulse{0%,100%{opacity:.3}50%{opacity:1}}</style>
   <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#8b5cf6,#7c3aed);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(124,58,237,.4)">
     <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><path d="M8 8h16v3H11v4.5h12v3H11V23h13v3H8V8z" fill="white"/></svg>
@@ -621,7 +615,7 @@ tbody tr:last-child td { border-bottom: none; }
   </div>
 </div>
 
-<div id="auth-screen" style="position:fixed;top:0;left:0;right:0;bottom:0;z-index:10002;display:none;align-items:center;justify-content:center;overflow:auto;background:#09090b;padding:20px">
+<div id="auth-screen" style="position:fixed;top:0;left:0;right:0;bottom:0;z-index:10002;display:flex;align-items:center;justify-content:center;overflow:auto;background:#09090b;padding:20px;opacity:1;visibility:visible">
 
   <!-- Canvas particules -->
   <canvas id="auth-particles" style="position:absolute;inset:0;z-index:0;pointer-events:none"></canvas>
@@ -14771,8 +14765,21 @@ function animateSidebarEntrance(){
     var cs=getComputedStyle(el), r=el.getBoundingClientRect();
     return cs.display!=='none' && cs.visibility!=='hidden' && cs.opacity!=='0' && r.width>20 && r.height>20;
   }
+  function authUsable(){ return isVisible('auth-screen') && isVisible('auth-card') && isVisible('lb-box'); }
+  function profileUsable(){ return isVisible('profile-screen') && (($('profile-screen')||{}).innerText||'').trim().length>20; }
+  function dashboardUsable(){
+    if(!(isVisible('main-sidebar') && isVisible('main-content'))) return false;
+    var active=document.querySelector('.tab-content.active[id^="page-"]');
+    if(!active || !isVisible(active.id)) return false;
+    var txt=(active.innerText||'').replace(/\s+/g,' ').trim();
+    return txt.length>20 || !!active.querySelector('.panel,.stat-card,.topbar,.empty-state,button,.btn,.settings-card,.conn-card,.game-card');
+  }
+  function bodyLooksBlank(){
+    var txt=(document.body.innerText||'').replace(/\s+/g,' ').trim();
+    return !txt || (txt.length<120 && /changelog|v\d+\.\d+/i.test(txt));
+  }
   function hasUsableScreen(){
-    return isVisible('auth-screen') || isVisible('profile-screen') || isVisible('password-screen') || (isVisible('main-sidebar') && isVisible('main-content'));
+    return authUsable() || profileUsable() || isVisible('password-screen') || dashboardUsable();
   }
   function forceAuth(reason){
     removeAntiFlash();
@@ -14799,7 +14806,7 @@ function animateSidebarEntrance(){
     removeAntiFlash();
     var transition=$('nexus-page-transition');
     if(transition){ transition.style.setProperty('display','none','important'); transition.style.setProperty('opacity','0','important'); transition.style.setProperty('visibility','hidden','important'); }
-    if(!hasUsableScreen()) forceAuth(reason);
+    if(!hasUsableScreen() || bodyLooksBlank()) forceAuth(reason);
   }
 
   function startWatchdog(){
@@ -14865,5 +14872,54 @@ function animateSidebarEntrance(){
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){ensureLayout();setTimeout(ensureLayout,800);}); else{ensureLayout();setTimeout(ensureLayout,800);} window.addEventListener('resize',function(){clearTimeout(window.__ethoneResizeAudit);window.__ethoneResizeAudit=setTimeout(ensureLayout,120);});
 })();
 </script>
+
+
+<!-- ETHONE FULL REPAIR FINAL: startup + every page visibility guard -->
+<style id="ethone-full-repair-css">
+  html,body{max-width:100%;overflow-x:hidden!important;background:#09090b!important;}
+  #auth-screen.ethone-auth-ready{display:flex!important;opacity:1!important;visibility:visible!important;}
+  #auth-screen.ethone-auth-ready #auth-card{display:block!important;opacity:1!important;visibility:visible!important;transform:none!important;}
+  #auth-screen.ethone-auth-ready #lb-box{display:flex!important;opacity:1!important;visibility:visible!important;}
+  #ethone-boot-screen.ethone-killed,#nexus-page-transition.ethone-killed,#nexus-page-loader.ethone-killed{display:none!important;opacity:0!important;visibility:hidden!important;pointer-events:none!important;}
+  .tab-content.active{display:block!important;visibility:visible!important;opacity:1!important;}
+  #main-content,.main,.tab-content{min-width:0!important;max-width:100vw!important;overflow-x:hidden!important;}
+  .panel,.settings-card,.conn-card,.game-card,.stat-card,.countdown-card,.goal-card,.journal-entry{min-width:0!important;max-width:100%!important;}
+  .topbar,.topbar-actions{flex-wrap:wrap!important;max-width:100%!important;}
+  img,canvas,video,iframe,svg,table,input,textarea,select{max-width:100%;}
+  .lb-eye{width:36px!important;height:36px!important;right:8px!important;padding:0!important;border-radius:10px!important;display:flex!important;align-items:center!important;justify-content:center!important;background:rgba(255,255,255,.075)!important;border:1px solid rgba(255,255,255,.13)!important;color:rgba(250,250,249,.78)!important;}
+  .lb-eye:hover{background:rgba(139,92,246,.18)!important;border-color:rgba(139,92,246,.35)!important;color:#ddd6fe!important;}
+  .lb-eye svg{width:19px!important;height:19px!important;display:block!important;pointer-events:none!important;}
+  .lb-input{padding-right:56px!important;}
+  @media(max-width:768px){#lb-box{padding:28px 22px!important}.topbar-actions{width:100%;justify-content:flex-start!important}.modal{max-width:96vw!important;max-height:92vh!important;overflow:auto!important}}
+</style>
+<script id="ethone-full-repair-script">
+(function(){
+  'use strict';
+  if(window.__ETHONE_FULL_REPAIR_FINAL__) return;
+  window.__ETHONE_FULL_REPAIR_FINAL__=true;
+  function $(id){return document.getElementById(id);}
+  function css(el){return el?getComputedStyle(el):null;}
+  function visible(el){if(!el)return false;var c=css(el),r=el.getBoundingClientRect();return c.display!=='none'&&c.visibility!=='hidden'&&c.opacity!=='0'&&r.width>10&&r.height>10;}
+  function removeAntiFlash(){var af=$('anti-flash'); if(af&&af.parentNode)af.parentNode.removeChild(af);}
+  function kill(id){var el=$(id); if(el){el.classList.add('ethone-killed');el.style.setProperty('display','none','important');el.style.setProperty('opacity','0','important');el.style.setProperty('visibility','hidden','important');}}
+  function hide(id){var el=$(id); if(el){el.style.setProperty('display','none','important');el.style.setProperty('opacity','0','important');el.style.setProperty('visibility','hidden','important');}}
+  var eye='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+  var eyeOff='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"></path><path d="M10.6 10.6A2.1 2.1 0 0 0 12 15a3 3 0 0 0 2.83-4"></path><path d="M6.3 6.8C3.9 8.4 2.5 12 2.5 12s3.5 6.5 9.5 6.5c1.55 0 2.93-.43 4.12-1.06"></path><path d="M12.7 5.53C18.3 6.02 21.5 12 21.5 12s-.72 1.34-2.03 2.73"></path></svg>';
+  function patchEyes(){document.querySelectorAll('.lb-eye').forEach(function(btn){var m=(btn.getAttribute('onclick')||'').match(/['"]([^'"]+)['"]/);var input=m?$(m[1]):null;btn.innerHTML=(input&&input.type==='text')?eyeOff:eye;btn.type='button';btn.setAttribute('aria-label',(input&&input.type==='text')?'Masquer le mot de passe':'Afficher le mot de passe');btn.setAttribute('title',(input&&input.type==='text')?'Masquer le mot de passe':'Afficher le mot de passe');});}
+  window.togglePwVis=function(inputId,btn){var input=$(inputId);if(!input||!btn)return;input.type=input.type==='text'?'password':'text';btn.innerHTML=input.type==='text'?eyeOff:eye;btn.setAttribute('aria-label',input.type==='text'?'Masquer le mot de passe':'Afficher le mot de passe');btn.setAttribute('title',input.type==='text'?'Masquer le mot de passe':'Afficher le mot de passe');};
+  function authOk(){return visible($('auth-screen'))&&visible($('auth-card'))&&visible($('lb-box'));}
+  function profOk(){return visible($('profile-screen'))&&(($('profile-screen')||{}).innerText||'').trim().length>20;}
+  function dashOk(){var main=$('main-content'),side=$('main-sidebar');if(!(visible(main)&&visible(side)))return false;var active=document.querySelector('.tab-content.active[id^="page-"]');if(!visible(active))return false;var txt=(active.innerText||'').replace(/\s+/g,' ').trim();return txt.length>20||!!active.querySelector('.panel,.stat-card,.topbar,.empty-state,button,.btn,.settings-card,.conn-card,.game-card,.note-item,.todo-item');}
+  function blank(){var t=(document.body.innerText||'').replace(/\s+/g,' ').trim();return !t||(t.length<120&&/changelog|v\d+\.\d+/i.test(t))||(visible($('auth-screen'))&&!authOk());}
+  function forceAuth(reason){removeAntiFlash();kill('ethone-boot-screen');kill('nexus-page-transition');kill('nexus-page-loader');hide('main-sidebar');hide('main-content');hide('profile-screen');hide('password-screen');var a=$('auth-screen');if(a){a.classList.add('ethone-auth-ready');a.style.cssText='position:fixed!important;inset:0!important;z-index:2147483000!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:auto!important;background:#09090b!important;padding:20px!important;opacity:1!important;visibility:visible!important;';}var card=$('auth-card');if(card){card.style.setProperty('display','block','important');card.style.setProperty('opacity','1','important');card.style.setProperty('visibility','visible','important');card.style.setProperty('transform','none','important');}var box=$('lb-box');if(box){box.style.setProperty('display','flex','important');box.style.setProperty('opacity','1','important');box.style.setProperty('visibility','visible','important');}var login=$('form-login');if(login)login.style.setProperty('display','block','important');var reg=$('form-register');if(reg)reg.style.setProperty('display','none','important');patchEyes();try{if(typeof applyI18n==='function')applyI18n();}catch(e){}try{if(typeof updateAuthLangBar==='function')updateAuthLangBar();}catch(e){}setTimeout(function(){try{var i=$('auth-login-id');if(i)i.focus();}catch(e){}},60);console.warn('[ETHONE FULL REPAIR] Sign in forcé:',reason||'fallback');}
+  function ensureOnePage(){var pages=document.querySelectorAll('.tab-content[id^="page-"]');if(!pages.length)return;var active=document.querySelector('.tab-content.active[id^="page-"]');if(!active){active=$('page-dashboard')||pages[0];active.classList.add('active');}pages.forEach(function(p){if(p!==active)p.classList.remove('active');});}
+  var oldSwitch=window.switchPage;if(typeof oldSwitch==='function'&&!oldSwitch.__fullRepair){var wrap=function(page,navEl){try{return oldSwitch.call(this,page,navEl);}catch(e){console.error('[ETHONE FULL REPAIR] switchPage error',page,e);var target=$('page-'+page)||$('page-dashboard')||document.querySelector('.tab-content[id^="page-"]');document.querySelectorAll('.tab-content').forEach(function(el){el.classList.remove('active');});if(target)target.classList.add('active');}finally{setTimeout(function(){ensureOnePage();patchEyes();},30);}};wrap.__fullRepair=true;window.switchPage=wrap;}
+  function check(reason){removeAntiFlash();kill('ethone-boot-screen');kill('nexus-page-transition');kill('nexus-page-loader');patchEyes();ensureOnePage();if(!(authOk()||profOk()||dashOk())||blank())forceAuth(reason);}
+  window.ethoneForceLoginVisible=forceAuth;window.ethoneFixBlackScreen=forceAuth;window.ethoneRunFullAudit=function(){check('manual audit');var ids=[].map.call(document.querySelectorAll('.tab-content[id^="page-"]'),function(e){return e.id.replace('page-','')});var r={pages:ids.length,pageIds:ids,authOk:authOk(),profileOk:profOk(),dashboardOk:dashOk(),activePage:(document.querySelector('.tab-content.active')||{}).id||null,passwordEyeButtons:document.querySelectorAll('.lb-eye').length,buttons:document.querySelectorAll('button,.btn,.nav-item,[onclick]').length};console.log('[ETHONE FULL AUDIT]',r);return r;};
+  function schedule(){[50,250,800,1600,3000,5000,8000].forEach(function(ms){setTimeout(function(){check(ms+'ms');},ms);});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule);else schedule();window.addEventListener('load',function(){setTimeout(function(){check('load');},250);});
+})();
+</script>
+
 </body>
 </html>

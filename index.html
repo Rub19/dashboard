@@ -3593,7 +3593,7 @@ body.eh-compact .stats-row,body.eh-compact .grid-2,body.eh-compact .grid-3,body.
 </div>
 <!-- AUTH SCREEN -->
 <canvas id="bg-canvas" style="position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:0;transition:opacity 1s ease"></canvas>
-<div id="nexus-boot-screen" style="position:fixed;inset:0;z-index:2147483647;background:#050507;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px">
+<div id="nexus-boot-screen" class="ethone-os-boot" style="position:fixed;inset:0;z-index:2147483647;background:#050507;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px">
 <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#8b5cf6,#7c3aed);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(139,92,246,.4)">
 <svg fill="none" height="20" viewbox="0 0 20 20" width="20" aria-hidden="true"><rect x="4" y="5" width="12" height="2" rx="1" fill="white" opacity=".95"></rect><rect x="4" y="9" width="12" height="2" rx="1" fill="white" opacity=".95"></rect><rect x="4" y="13" width="8" height="2" rx="1" fill="white" opacity=".95"></rect></svg>
 </div>
@@ -3802,7 +3802,7 @@ body.eh-compact .stats-row,body.eh-compact .grid-2,body.eh-compact .grid-3,body.
 <button class="ps-signout-btn" onclick="doLogout()">Sign out</button>
 </div>
 <!-- Version -->
-<div onclick="showChangelog()" style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer;white-space:nowrap" title="View changelog">v5.3.2 · changelog</div>
+<div onclick="showChangelog()" style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer;white-space:nowrap" title="View changelog">v5.3.3 · changelog</div>
 </div>
 </div>
 <!-- SIDEBAR -->
@@ -3864,6 +3864,20 @@ body.eh-compact .stats-row,body.eh-compact .grid-2,body.eh-compact .grid-3,body.
 <span class="sb-dc-badge offline" id="sb-dc-badge">—</span>
 </div>
 <div class="sb-wc-sub" id="sb-dc-activity" style="display:none"></div>
+</div>
+</div>
+</div>
+<!-- STEAM NOW PLAYING -->
+<div class="sb-section" id="sb-steam-wrap" style="display:none">
+<div class="sb-widget-card" id="sb-steam-card" style="border-color:rgba(102,192,244,.18);background:linear-gradient(135deg,rgba(27,40,56,.55),rgba(102,192,244,.06))">
+<div class="sb-wc-art" id="sb-steam-art" style="background:rgba(102,192,244,.12);color:var(--steam2)"><span>🎮</span></div>
+<div class="sb-wc-body">
+<div class="sb-wc-top">
+<span class="sb-wc-name" id="sb-steam-game">Steam</span>
+<span style="font-size:9px;color:var(--steam2);font-family:var(--mono);font-weight:700">LIVE</span>
+</div>
+<div class="sb-wc-sub" id="sb-steam-user" style="color:rgba(102,192,244,.75)">Aucun jeu lancé</div>
+<div class="sb-wc-bar"><div class="sb-wc-bar-fill" style="width:100%;background:linear-gradient(90deg,#1b2838,#66c0f4)"></div></div>
 </div>
 </div>
 </div>
@@ -4559,6 +4573,32 @@ Supports markdown: **bold**, *italic*, `code`, ## heading, - list" style="min-he
 </div>
 </div>
 </div>
+<!-- BUDGET -->
+<div aria-live="polite" class="tab-content" data-qa-page="true" id="page-budget" role="tabpanel">
+<div class="topbar">
+<div><div class="section-eyebrow">Budget</div><div class="section-title">Gestion budget</div><div class="page-subtitle">Revenus, dépenses, catégories et solde mensuel</div></div>
+<div class="topbar-actions"><button class="btn btn-primary" onclick="addBudgetEntry()">+ Ajouter</button><button class="btn btn-ghost" onclick="clearBudgetMonth()">Réinitialiser</button></div>
+</div>
+<div class="stats-row">
+<div class="stat-card" style="--card-accent:#34d399"><div class="stat-label">Revenus</div><div class="stat-value" id="budget-income-total">0€</div><div class="stat-sub up">Entrées du mois</div></div>
+<div class="stat-card" style="--card-accent:#f87171"><div class="stat-label">Dépenses</div><div class="stat-value" id="budget-expense-total">0€</div><div class="stat-sub">Sorties du mois</div></div>
+<div class="stat-card" style="--card-accent:#8b5cf6"><div class="stat-label">Solde</div><div class="stat-value" id="budget-balance-total">0€</div><div class="stat-sub" id="budget-balance-sub">Disponible</div></div>
+<div class="stat-card" style="--card-accent:#fbbf24"><div class="stat-label">Plus grosse catégorie</div><div class="stat-value" id="budget-top-cat" style="font-size:20px;letter-spacing:-.5px">—</div><div class="stat-sub">Dépense principale</div></div>
+</div>
+<div class="grid-3">
+<div class="panel">
+<div class="panel-header"><div class="panel-title"><span class="panel-title-icon" style="background:rgba(139,92,246,.12);color:var(--accent)">💸</span>Transactions</div><button class="panel-action" onclick="addBudgetEntry()">Ajouter</button></div>
+<div id="budget-list" class="item-list"></div>
+</div>
+<div class="panel">
+<div class="panel-header"><div class="panel-title"><span class="panel-title-icon" style="background:rgba(52,211,153,.12);color:#34d399">⚙️</span>Options</div></div>
+<div class="modal-field"><label class="modal-label">Budget mensuel cible</label><input class="modal-input" id="budget-target" inputmode="decimal" placeholder="ex: 250" oninput="updateBudgetTarget(this.value)" type="number" min="0" step="0.01"/></div>
+<div class="modal-field"><label class="modal-label">Catégorie par défaut</label><select class="modal-input modal-select" id="budget-default-category" onchange="updateBudgetDefaultCategory(this.value)"><option>Général</option><option>Courses</option><option>Gaming</option><option>Abonnements</option><option>Transport</option><option>École</option><option>Sorties</option></select></div>
+<div class="nx-divider"></div>
+<div style="font-size:12px;color:var(--muted);line-height:1.6">Tu peux masquer cette page dans <strong>Paramètres → Sidebar layout</strong>, comme les autres pages de la navbar.</div>
+</div>
+</div>
+</div>
 <!-- GITHUB -->
 <div aria-live="polite" class="tab-content" data-qa-page="true" id="page-github" role="tabpanel">
 <div class="topbar">
@@ -4571,7 +4611,16 @@ Supports markdown: **bold**, *italic*, `code`, ## heading, - list" style="min-he
 </div>
 <!-- GAMING -->
 <div aria-live="polite" class="tab-content" data-qa-page="true" id="page-gaming" role="tabpanel">
-<div class="topbar"><div><div class="section-eyebrow">Gaming</div><div class="section-title">Your stats</div><div class="page-subtitle">Your Valorant &amp; League of Legends stats in real time</div></div><div class="topbar-actions"><button class="btn btn-primary" onclick="refreshGamingStats()">↻ Refresh</button></div></div>
+<div class="topbar"><div><div class="section-eyebrow">Gaming</div><div class="section-title">Your stats</div><div class="page-subtitle">Your Valorant, Steam &amp; League of Legends stats in real time</div></div><div class="topbar-actions"><button class="btn btn-primary" onclick="refreshGamingStats()">↻ Refresh</button></div></div>
+<!-- STEAM SIDEBAR WIDGET OPTION -->
+<div class="game-card">
+<div class="game-card-header">
+<div class="game-card-logo" style="background:rgba(102,192,244,.12);color:var(--steam2)">🎮</div>
+<div><div class="game-card-title">Steam Widget</div><div class="game-card-sub" id="steam-widget-sub">Affiche le jeu Steam en cours dans la sidebar</div></div>
+<button class="btn btn-ghost" id="steam-widget-toggle" onclick="toggleSidebarWidget('steam')" style="margin-left:auto;font-size:12px">Sidebar</button>
+</div>
+<div class="game-card-body" style="font-size:12px;color:var(--muted);line-height:1.6">Connecte ton compte Steam dans <strong>Connexions</strong>, puis ce widget affichera automatiquement ton jeu en cours dans la navbar/sidebar. Tu peux le cacher ici.</div>
+</div>
 <!-- VALORANT -->
 <div class="game-card">
 <div class="game-card-header">
@@ -6368,7 +6417,7 @@ function saveStateNow(){
 }
 function getP(id){return profiles.find(p=>String(p.id)===String(id))}
 function curP(){return getP(currentId)}
-function defState(name){return{items:[],todos:[],note:'',notes:[],activity:[],username:name||'User',connections:{},gaming:{},habits:[],kanban:[],events:[],pinned:[],manualBadges:{},banner:null,countdown:null,pomoHistory:[],notifEnabled:false,bio:'',socials:{},goals:[],journal:[],countdowns:[],xp:0,dailyFocus:null}}
+function defState(name){return{items:[],todos:[],note:'',notes:[],activity:[],username:name||'User',connections:{},gaming:{},budget:{target:0,defaultCategory:'Général',entries:[]},habits:[],kanban:[],events:[],pinned:[],manualBadges:{},banner:null,countdown:null,pomoHistory:[],notifEnabled:false,bio:'',socials:{},goals:[],journal:[],countdowns:[],xp:0,dailyFocus:null}}
 
 // ===================================================
 //  AVATAR HELPERS
@@ -6805,6 +6854,7 @@ var SVG_ICONS={
   countdown:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
   stats:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
   github:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>',
+  budget:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="3"/><path d="M16 10h3v6h-3a3 3 0 0 1 0-6z"/><path d="M7 10h5"/><path d="M7 14h3"/></svg>',
   gaming:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><circle cx="15.5" cy="11.5" r="1"/><circle cx="17.5" cy="13.5" r="1"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59l-.9 7.27A4 4 0 0 0 5.77 20.5c.387.1.79-.025 1.05-.327l1.89-2.173h6.58l1.89 2.173c.26.302.663.427 1.05.327a4 4 0 0 0 2.97-4.64l-.9-7.27A4 4 0 0 0 17.32 5z"/></svg>',
   connections:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>',
   settings:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
@@ -6823,6 +6873,7 @@ function getDefaultNav(){return [
   {id:'journal',  icon:'journal',  label:t('nav_journal'), section:'main',badge:''},
   {id:'countdown',icon:'countdown',label:t('nav_countdown'),section:'main',badge:''},
   {id:'stats',    icon:'stats',    label:t('nav_stats'),   section:'main',badge:''},
+  {id:'budget',   icon:'budget',   label:t('nav_budget'),  section:'main',badge:''},
   {id:'github',   icon:'github',   label:t('nav_github'),  section:'main',badge:''},
   {id:'gaming',   icon:'gaming',   label:t('nav_gaming'),  section:'main',badge:''},
   {id:'connections',icon:'connections',label:t('nav_connections'),section:'account',badge:''},
@@ -6965,7 +7016,9 @@ function initSidebarWidgets(p){
   const swPrefs=p.state.sidebarWidgets||{};
   const vis=swPrefs.visible||{};
   if(swPrefs.discord===false&&vis.discord===undefined)vis.discord=false;
+  if(swPrefs.steam===false&&vis.steam===undefined)vis.steam=false;
   if(swPrefs.lastfm===false&&vis.lastfm===undefined)vis.lastfm=false;
+  renderSteamSidebarWidget(p);
 
   // ── Discord status card ──
   const dcWrap=document.getElementById('sb-discord-wrap');
@@ -7007,17 +7060,23 @@ function initSidebarWidgets(p){
 // ── SIDEBAR WIDGET MANAGER ─────────────────────────────────────────────────
 const WIDGET_DEFS=[
   {id:'discord', label:'Discord', sub:'Status & activité', icon:'💬', bg:'#5865F2', requires:'discord.userId'},
+  {id:'steam', label:'Steam', sub:'Jeu en cours', icon:'🎮', bg:'rgba(102,192,244,.20)', requires:'steam.steamId'},
   {id:'nowplaying', label:'Now Playing', sub:'Last.fm live', icon:'♪', bg:'rgba(29,185,84,.25)', requires:'lastfm.username'},
   {id:'lastfm', label:'Scrobbling', sub:'Last.fm', icon:'♫', bg:'rgba(213,16,7,.2)', requires:'lastfm.username'},
 ];
 
 function getWidgetPrefs(){
-  const p=curP();if(!p)return{order:['discord','nowplaying','lastfm'],visible:{}};
+  const p=curP();if(!p)return{order:['discord','steam','nowplaying','lastfm'],visible:{}};
   if(!p.state.sidebarWidgets)p.state.sidebarWidgets={};
   const sw=p.state.sidebarWidgets;
+  const visible={...(sw.visible||{})};
+  ['discord','steam','lastfm','nowplaying'].forEach(id=>{
+    if(sw[id]===false&&visible[id]===undefined)visible[id]=false;
+    if(sw[id]===true&&visible[id]===undefined)visible[id]=true;
+  });
   return {
-    order: sw.order||['discord','nowplaying','lastfm'],
-    visible: sw.visible||{}
+    order: sw.order||['discord','steam','nowplaying','lastfm'],
+    visible
   };
 }
 
@@ -7108,6 +7167,7 @@ function applySidebarWidgetOrder(){
   // Map widget id to wrap element
   const idToEl={
     discord: document.getElementById('sb-discord-wrap'),
+    steam: document.getElementById('sb-steam-wrap'),
     nowplaying: document.getElementById('sb-spotify-wrap')||document.getElementById('sb-spotify-iframe-wrap'),
     lastfm: document.getElementById('sb-lastfm-wrap'),
   };
@@ -7154,19 +7214,27 @@ function loadGroqKeyUI(){
 function toggleSidebarWidget(service){
   const p=curP();if(!p)return;
   if(!p.state.sidebarWidgets)p.state.sidebarWidgets={};
-  const current=p.state.sidebarWidgets[service]!==false;// default visible
+  if(!p.state.sidebarWidgets.visible)p.state.sidebarWidgets.visible={};
+  const current=p.state.sidebarWidgets.visible[service]!==false&&p.state.sidebarWidgets[service]!==false;// default visible
+  p.state.sidebarWidgets.visible[service]=!current;
   p.state.sidebarWidgets[service]=!current;
   saveStateNow();
   updateSidebarWidgetToggleBtn(service);
   initSidebarWidgets(p);
+  renderWidgetManager();
 }
 
 function updateSidebarWidgetToggleBtn(service){
   const p=curP();if(!p)return;
-  const visible=p.state.sidebarWidgets?.[service]!==false;
-  const btnId={discord:'dc-sidebar-toggle',lastfm:'lastfm-sidebar-toggle'}[service];
+  const sw=p.state.sidebarWidgets||{};
+  const visible=(sw.visible?.[service]!==false)&&(sw[service]!==false);
+  const btnId={discord:'dc-sidebar-toggle',lastfm:'lastfm-sidebar-toggle',steam:'steam-widget-toggle'}[service];
   const btn=document.getElementById(btnId);
-  if(btn){btn.classList.toggle('active',visible);btn.title=visible?'Hide from sidebar':'Show in sidebar';}
+  if(btn){
+    btn.classList.toggle('active',visible);
+    btn.title=visible?'Hide from sidebar':'Show in sidebar';
+    if(service==='steam')btn.textContent=visible?'Sidebar ON':'Sidebar OFF';
+  }
 }
 
 function initSidebarWidgetToggles(){
@@ -7176,6 +7244,11 @@ function initSidebarWidgetToggles(){
     const btn=document.getElementById('dc-sidebar-toggle');
     if(btn)btn.style.display='flex';
     updateSidebarWidgetToggleBtn('discord');
+  }
+  if(conn.steam?.steamId){
+    const btn=document.getElementById('steam-widget-toggle');
+    if(btn)btn.style.display='inline-flex';
+    updateSidebarWidgetToggleBtn('steam');
   }
   if(conn.lastfm?.username){
     const btn=document.getElementById('lastfm-sidebar-toggle');
@@ -8175,6 +8248,7 @@ function switchPage(page,navEl){
   if(page==='journal'){renderJournal();}
   if(page==='countdown'){renderCountdowns();}
   if(page==='github'){refreshGithub();}
+  if(page==='budget'){renderBudgetUI();}
   // Refresh widgets when back on dashboard
   if(page==='dashboard'){
     const wEl=document.getElementById('weather-widget');
@@ -9722,6 +9796,7 @@ const CMD_PAGES=[
   {icon:'📋',label:'Kanban',page:'kanban',keywords:'kanban board cards'},
   {icon:'📅',label:'Calendar',page:'calendar',keywords:'calendar events schedule'},
   {icon:'📊',label:'Stats',page:'stats',keywords:'stats statistics analytics'},
+  {icon:'💸',label:'Budget',page:'budget',keywords:'budget argent dépenses revenus finance'},
   {icon:'🎮',label:'Gaming',page:'gaming',keywords:'gaming valorant lol steam overwatch'},
   {icon:'🔗',label:'Connections',page:'connections',keywords:'connections discord spotify twitch lastfm'},
   {icon:'⚙️',label:'Settings',page:'settings',keywords:'settings profile security'},
@@ -10067,7 +10142,7 @@ function initRipples(){
 
 // ── PAGE TRANSITION ────────────────────────────
 // ── PAGE ORDER for directional transitions ──────────────
-const PAGE_ORDER=['dashboard','files','notes','todos','habits','kanban','calendar','goals','journal','countdown','stats','github','gaming','connections','settings','ai'];
+const PAGE_ORDER=['dashboard','files','notes','todos','habits','kanban','calendar','goals','journal','countdown','stats','budget','github','gaming','connections','settings','ai'];
 let _lastPageIdx=0;
 
 function animatePageIn(pageEl,page){
@@ -11356,6 +11431,8 @@ async function connectSteam(){
     if(!p.state.connections)p.state.connections={};
     p.state.connections.steam={steamId,apiKey,data};saveStateNow();
     renderSteamCard(data);
+    initSidebarWidgets(p);
+    initSidebarWidgetToggles();
     document.getElementById('steam-disconnect-btn').style.display='inline-flex';
     toast('Steam connected! ','success');
     addActivity('Account Steam connecte','var(--steam2)');
@@ -11442,6 +11519,8 @@ async function refreshSteam(){
     }catch(e){}
     p.state.connections.steam.data=data;saveStateNow();
     renderSteamCard(data);
+    initSidebarWidgets(p);
+    initSidebarWidgetToggles();
     const akInp=document.getElementById('steam-apikey');if(akInp&&apiKey)akInp.value=apiKey;
     toast('Steam updated!','success');
   }catch(e){toast('Steam refresh error : '+e.message,'error');console.error(e);}
@@ -11471,6 +11550,8 @@ function disconnectSteam(){
   const btn=document.getElementById('steam-disconnect-btn');if(btn)btn.style.display='none';
   const rbtn=document.getElementById('steam-refresh-btn');if(rbtn)rbtn.style.display='none';
   const rg=document.getElementById('steam-recent-games');if(rg)rg.style.display='none';
+  renderSteamSidebarWidget(p);
+  initSidebarWidgetToggles();
   toast('Disconnected','info');
 }
 
@@ -13635,7 +13716,116 @@ function loadGamingUI(){
     document.getElementById('ow-account-sub').textContent=username+' · '+(p.state.gaming.ow.platform||'pc').toUpperCase();
     if(_data)renderOWStats(_data,username,'comp');
   }
+  initSidebarWidgetToggles();
+  renderSteamSidebarWidget(p);
   loadCompareDashboardUsers();
+}
+
+
+// ══════════════════════════════════════════════════════════════
+//  BUDGET PAGE
+// ══════════════════════════════════════════════════════════════
+function getBudgetState(){
+  const p=curP();
+  if(!p)return{target:0,defaultCategory:'Général',entries:[]};
+  if(!p.state.budget)p.state.budget={target:0,defaultCategory:'Général',entries:[]};
+  if(!Array.isArray(p.state.budget.entries))p.state.budget.entries=[];
+  return p.state.budget;
+}
+function formatBudgetEUR(n){
+  const v=Number(n)||0;
+  try{return new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:2}).format(v);}catch(e){return v.toFixed(2)+'€';}
+}
+function renderBudgetUI(){
+  const b=getBudgetState();
+  const target=document.getElementById('budget-target'); if(target)target.value=b.target||'';
+  const def=document.getElementById('budget-default-category'); if(def)def.value=b.defaultCategory||'Général';
+  const entries=[...b.entries].sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+  let income=0,expense=0; const cats={};
+  entries.forEach(e=>{const amount=Math.abs(Number(e.amount)||0); if(e.type==='income')income+=amount; else{expense+=amount; cats[e.category||'Général']=(cats[e.category||'Général']||0)+amount;}});
+  const balance=income-expense;
+  const set=(id,txt)=>{const el=document.getElementById(id);if(el)el.textContent=txt;};
+  set('budget-income-total',formatBudgetEUR(income));
+  set('budget-expense-total',formatBudgetEUR(expense));
+  set('budget-balance-total',formatBudgetEUR(balance));
+  set('budget-balance-sub',(b.target?('Objectif restant : '+formatBudgetEUR(Math.max((Number(b.target)||0)-expense,0))):'Disponible'));
+  const top=Object.entries(cats).sort((a,b)=>b[1]-a[1])[0]; set('budget-top-cat',top?top[0]:'—');
+  const list=document.getElementById('budget-list'); if(!list)return;
+  if(!entries.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">💸</div>Aucune transaction pour le moment.<br><span style="color:var(--muted2)">Clique sur “Ajouter” pour commencer ton budget.</span></div>';return;}
+  list.innerHTML=entries.map(e=>{
+    const isIncome=e.type==='income';
+    const sign=isIncome?'+':'-';
+    const color=isIncome?'#34d399':'#f87171';
+    return `<div class="item-row">
+      <div class="item-icon" style="background:${isIncome?'rgba(52,211,153,.10)':'rgba(248,113,113,.10)'};color:${color}">${isIncome?'↗':'↘'}</div>
+      <div class="item-info"><div class="item-name">${escapeHTML(e.label||'Sans titre')}</div><div class="item-meta">${escapeHTML(e.category||'Général')} · ${escapeHTML(e.date||'')}</div></div>
+      <div style="font-family:var(--mono);font-weight:700;color:${color}">${sign}${formatBudgetEUR(Math.abs(Number(e.amount)||0))}</div>
+      <button class="item-btn" onclick="deleteBudgetEntry('${e.id}')" title="Supprimer">×</button>
+    </div>`;
+  }).join('');
+}
+function addBudgetEntry(){
+  const b=getBudgetState();
+  const type=(prompt('Type : revenu ou dépense ?','dépense')||'').toLowerCase();
+  if(!type)return;
+  const isIncome=type.includes('rev')||type.includes('income')||type.includes('+');
+  const label=prompt('Nom de la transaction ?',isIncome?'Revenu':'Dépense')||'';
+  if(!label.trim())return;
+  const amount=parseFloat((prompt('Montant en € ?','10')||'0').replace(',','.'));
+  if(!amount||amount<=0){toast('Montant invalide','error');return;}
+  const category=prompt('Catégorie ?',b.defaultCategory||'Général')||'Général';
+  b.entries.push({id:'b_'+Date.now()+Math.random().toString(16).slice(2),type:isIncome?'income':'expense',label:label.trim(),amount:Math.abs(amount),category:category.trim()||'Général',date:new Date().toISOString().slice(0,10)});
+  saveStateNow(); renderBudgetUI(); updateStats(); toast('Budget mis à jour','success');
+}
+function deleteBudgetEntry(id){
+  const b=getBudgetState();
+  b.entries=b.entries.filter(e=>e.id!==id);
+  saveStateNow(); renderBudgetUI(); toast('Transaction supprimée','info');
+}
+function clearBudgetMonth(){
+  if(!confirm('Supprimer toutes les transactions du budget ?'))return;
+  const b=getBudgetState(); b.entries=[]; saveStateNow(); renderBudgetUI(); toast('Budget réinitialisé','info');
+}
+function updateBudgetTarget(value){
+  const b=getBudgetState(); b.target=parseFloat(String(value||'0').replace(',','.'))||0; saveStateNow(); renderBudgetUI();
+}
+function updateBudgetDefaultCategory(value){
+  const b=getBudgetState(); b.defaultCategory=value||'Général'; saveStateNow();
+}
+
+// ══════════════════════════════════════════════════════════════
+//  STEAM SIDEBAR CURRENT GAME
+// ══════════════════════════════════════════════════════════════
+function getSteamCurrentGame(data){
+  if(!data)return'';
+  if(data.currentGame)return data.currentGame;
+  if(data.stateMessage&&String(data.stateMessage).startsWith('Currently In-Game'))return String(data.stateMessage).replace('Currently In-Game','').trim();
+  if(data.onlineState==='in-game'&&data.stateMessage)return data.stateMessage;
+  return'';
+}
+function renderSteamSidebarWidget(profile){
+  const p=profile||curP();
+  const wrap=document.getElementById('sb-steam-wrap');
+  if(!wrap||!p)return;
+  const conn=p.state?.connections||{};
+  const sw=p.state?.sidebarWidgets||{};
+  const vis=sw.visible||{};
+  if(sw.steam===false&&vis.steam===undefined)vis.steam=false;
+  const steam=conn.steam;
+  const shouldShow=!!(steam?.steamId&&vis.steam!==false);
+  if(!shouldShow){wrap.style.display='none';return;}
+  const data=steam.data||{};
+  const game=getSteamCurrentGame(data);
+  wrap.style.display='block';
+  const gameEl=document.getElementById('sb-steam-game');
+  const userEl=document.getElementById('sb-steam-user');
+  const art=document.getElementById('sb-steam-art');
+  if(gameEl)gameEl.textContent=game||'Aucun jeu lancé';
+  if(userEl)userEl.textContent=(data.displayName||'Steam')+(game?' · En jeu':' · '+(data.onlineState||'Hors ligne'));
+  if(art){
+    const img=(data.recentGames||[]).find(g=>game&&g.name===game)?.img||'';
+    art.innerHTML=img?`<img src="${img}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`:'<span>🎮</span>';
+  }
 }
 
 
@@ -13850,6 +14040,7 @@ var I18N = {
     'nav_countdown': 'Countdown',
     'nav_stats': 'Stats',
     'nav_github': 'GitHub',
+    'nav_budget': 'Budget',
     'nav_gaming': 'Gaming',
     'nav_connections': 'Connections',
     'nav_settings': 'Settings',
@@ -13990,6 +14181,7 @@ var I18N = {
     'nav_countdown': 'Compte à rebours',
     'nav_stats': 'Statistiques',
     'nav_github': 'GitHub',
+    'nav_budget': 'Budget',
     'nav_gaming': 'Gaming',
     'nav_connections': 'Connexions',
     'nav_settings': 'Paramètres',
@@ -14128,6 +14320,7 @@ var I18N = {
     'nav_countdown': 'Cuenta regresiva',
     'nav_stats': 'Estadísticas',
     'nav_github': 'GitHub',
+    'nav_budget': 'Budget',
     'nav_gaming': 'Gaming',
     'nav_connections': 'Conexiones',
     'nav_settings': 'Ajustes',
@@ -14256,6 +14449,7 @@ var I18N = {
     'nav_countdown': 'Countdown',
     'nav_stats': 'Statistiken',
     'nav_github': 'GitHub',
+    'nav_budget': 'Budget',
     'nav_gaming': 'Gaming',
     'nav_connections': 'Verbindungen',
     'nav_settings': 'Einstellungen',
@@ -14390,6 +14584,8 @@ function normalizeAllProfiles(){
     if(!p.state)p.state=defState(p.name);
     if(!p.state.connections)p.state.connections={};
     if(!p.state.gaming)p.state.gaming={};
+    if(!p.state.budget)p.state.budget={target:0,defaultCategory:'Général',entries:[]};
+    if(!Array.isArray(p.state.budget.entries))p.state.budget.entries=[];
     if(!p.state.pinned)p.state.pinned=[];
     if(!p.state.habits)p.state.habits=[];
     if(!p.state.kanban)p.state.kanban=[];
@@ -15575,6 +15771,256 @@ html[lang="fr"] .eh-kbd-hint span::after{content:""}
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(apply,80)); else setTimeout(apply,80);
   setTimeout(apply,500); setTimeout(apply,1500);
+})();
+</script>
+
+
+
+<!-- ETHONE PERSONAL OS UPGRADE — non destructive product/design layer -->
+<style id="ethone-personal-os-system">
+/*
+  ETHONE Personal OS layer
+  - Non destructive: preserves existing pages, auth, profiles, widgets and settings.
+  - Creates a shared design language with an 8px rhythm, premium startup, calmer Home and accessibility states.
+*/
+:root{
+  --os-space-1:8px;
+  --os-space-2:16px;
+  --os-space-3:24px;
+  --os-space-4:32px;
+  --os-space-5:40px;
+  --os-radius-xs:8px;
+  --os-radius-sm:12px;
+  --os-radius-md:16px;
+  --os-radius-lg:24px;
+  --os-radius-xl:32px;
+  --os-ease:cubic-bezier(.2,.8,.2,1);
+  --os-ease-out:cubic-bezier(.16,1,.3,1);
+  --os-focus:0 0 0 3px rgba(139,92,246,.28),0 0 0 1px rgba(255,255,255,.14) inset;
+  --os-card-bg:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.024));
+  --os-card-border:rgba(255,255,255,.082);
+  --os-soft-shadow:0 18px 56px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.055);
+}
+body{
+  letter-spacing:-.005em;
+  background:
+    radial-gradient(1000px 540px at 18% -10%,rgba(139,92,246,.14),transparent 58%),
+    radial-gradient(900px 520px at 100% 8%,rgba(124,58,237,.09),transparent 52%),
+    var(--bg)!important;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.014) 1px,transparent 1px);
+  background-size:64px 64px;
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.42),transparent 78%);
+}
+.logo,.topbar,.panel,.stat-card,.modal,.nav-item,.btn,.modal-input,.search-bar,.item-row,.link-card,.todo-item,.sb-widget-card{transition:background .18s var(--os-ease),border-color .18s var(--os-ease),transform .18s var(--os-ease),box-shadow .18s var(--os-ease),opacity .18s var(--os-ease)!important;}
+.sidebar{
+  background:linear-gradient(180deg,rgba(12,11,17,.84),rgba(7,7,10,.78))!important;
+  border-right:1px solid rgba(255,255,255,.065)!important;
+  box-shadow:inset -1px 0 0 rgba(255,255,255,.025)!important;
+}
+.logo{padding:24px 18px 20px!important;}
+.logo-icon{border-radius:10px!important;box-shadow:0 10px 28px rgba(139,92,246,.24),inset 0 1px 0 rgba(255,255,255,.2)!important;}
+.logo-text{letter-spacing:2.8px!important;background:linear-gradient(135deg,#fff,#c4b5fd)!important;-webkit-background-clip:text!important;background-clip:text!important;-webkit-text-fill-color:transparent!important;}
+.nav-label{padding:16px 10px 8px!important;font-size:8px!important;letter-spacing:3px!important;color:rgba(245,245,247,.24)!important;}
+.nav-item{min-height:36px!important;border-radius:10px!important;padding:8px 10px!important;margin-bottom:2px!important;}
+.nav-item.active{background:linear-gradient(135deg,rgba(139,92,246,.16),rgba(139,92,246,.065))!important;border:1px solid rgba(139,92,246,.22)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.055)!important;}
+.nav-item.active::after{width:2px!important;top:24%!important;bottom:24%!important;box-shadow:0 0 16px rgba(139,92,246,.58)!important;}
+.main{padding:16px 40px 48px!important;}
+.topbar{padding:24px 0!important;margin-bottom:24px!important;border-bottom:1px solid rgba(255,255,255,.055)!important;}
+.page-title,.section-title{font-family:var(--font-display)!important;letter-spacing:-.045em!important;}
+.page-title{font-size:24px!important;line-height:1.05!important;}
+.page-subtitle{font-size:13px!important;color:rgba(245,245,247,.46)!important;}
+.panel,.stat-card,.modal,.link-card,.item-row,.note-area,.modal-input,.search-bar,.conn-card,.kanban-col,.habit-row{border-radius:var(--os-radius-md)!important;border-color:var(--os-card-border)!important;}
+.panel,.stat-card,.modal,.conn-card,.kanban-col{background:var(--os-card-bg)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.035)!important;}
+.panel:hover,.stat-card:hover,.link-card:hover{border-color:rgba(139,92,246,.20)!important;box-shadow:var(--os-soft-shadow)!important;}
+.stat-card{padding:24px!important;}
+.stat-label,.modal-label,.panel-action,.nav-label,.section-eyebrow{font-family:var(--mono)!important;text-transform:uppercase!important;letter-spacing:1.6px!important;}
+.btn{height:38px!important;border-radius:12px!important;padding:0 16px!important;align-items:center!important;}
+.btn-primary{background:linear-gradient(135deg,#8b5cf6,#7c3aed)!important;box-shadow:0 10px 26px rgba(139,92,246,.22),inset 0 1px 0 rgba(255,255,255,.16)!important;}
+.btn-ghost{background:rgba(255,255,255,.045)!important;border-color:rgba(255,255,255,.085)!important;}
+:is(button,a,input,textarea,select,[tabindex]):focus-visible{outline:none!important;box-shadow:var(--os-focus)!important;border-color:rgba(139,92,246,.55)!important;}
+#nexus-boot-screen.ethone-os-boot{
+  background:
+    radial-gradient(720px 420px at 50% 28%,rgba(139,92,246,.16),transparent 64%),
+    linear-gradient(180deg,#08070b,#050507)!important;
+  gap:24px!important;
+  overflow:hidden;
+}
+#nexus-boot-screen.ethone-os-boot::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.016) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(circle at center,rgba(0,0,0,.65),transparent 72%);pointer-events:none;}
+.ethone-boot-core{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center;padding:32px;}
+.ethone-boot-logo{width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,#8b5cf6,#7c3aed);display:flex;align-items:center;justify-content:center;box-shadow:0 24px 70px rgba(139,92,246,.34),inset 0 1px 0 rgba(255,255,255,.22);animation:ethoneBootFloat 1.9s var(--os-ease-out) infinite alternate;}
+.ethone-boot-word{font-family:var(--font-display);font-weight:900;font-size:28px;letter-spacing:4px;text-transform:uppercase;line-height:1;background:linear-gradient(135deg,#fff,#c4b5fd);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.ethone-boot-greeting{font-size:14px;color:rgba(245,245,247,.72);font-weight:650;}
+.ethone-boot-status{min-height:18px;font-size:12px;color:rgba(245,245,247,.45);font-family:var(--mono);letter-spacing:.04em;}
+.ethone-boot-progress{width:min(280px,62vw);height:3px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;}
+.ethone-boot-progress span{display:block;height:100%;width:42%;border-radius:999px;background:linear-gradient(90deg,transparent,#8b5cf6,#c4b5fd);animation:ethoneBootBar 1.35s var(--os-ease) infinite;}
+@keyframes ethoneBootFloat{from{transform:translateY(0) scale(1)}to{transform:translateY(-4px) scale(1.015)}}
+@keyframes ethoneBootBar{0%{transform:translateX(-120%)}100%{transform:translateX(260%)}}
+.ethone-home-hero{position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.085);border-radius:28px;background:linear-gradient(135deg,rgba(139,92,246,.16),rgba(255,255,255,.045) 42%,rgba(255,255,255,.025));box-shadow:0 22px 80px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.08);padding:28px;margin:0 0 24px;}
+.ethone-home-hero::before{content:'';position:absolute;inset:-1px;background:radial-gradient(560px 240px at 88% 0%,rgba(167,139,250,.20),transparent 60%);pointer-events:none;}
+.ethone-home-grid{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(280px,.75fr);gap:24px;align-items:stretch;}
+.ethone-home-kicker{display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:10px;font-family:var(--mono);font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(196,181,253,.78);}
+.ethone-home-dot{width:7px;height:7px;border-radius:50%;background:#8b5cf6;box-shadow:0 0 18px rgba(139,92,246,.75);}
+.ethone-home-title{font-family:var(--font-display);font-size:clamp(30px,4.4vw,56px);font-weight:900;line-height:.96;letter-spacing:-.075em;margin-bottom:12px;color:#fff;}
+.ethone-home-sub{max-width:760px;font-size:14px;line-height:1.7;color:rgba(245,245,247,.58);}
+.ethone-home-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;}
+.ethone-home-pill{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.09);border-radius:999px;background:rgba(5,5,7,.34);padding:8px 12px;color:rgba(245,245,247,.72);font-size:12px;backdrop-filter:blur(14px);}
+.ethone-home-panel{border:1px solid rgba(255,255,255,.085);border-radius:22px;background:rgba(5,5,7,.34);padding:18px;backdrop-filter:blur(18px);display:flex;flex-direction:column;gap:12px;}
+.ethone-home-panel-title{font-size:11px;font-family:var(--mono);font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:rgba(245,245,247,.46);}
+.ethone-home-briefing{font-size:13px;line-height:1.65;color:rgba(245,245,247,.72);}
+.ethone-home-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto;}
+.ethone-home-action{height:auto!important;justify-content:center!important;min-height:40px!important;font-size:12px!important;}
+body[data-light="1"] .ethone-home-hero{background:linear-gradient(135deg,rgba(139,92,246,.13),rgba(255,255,255,.76));border-color:rgba(15,23,36,.08);}
+body[data-light="1"] .ethone-home-title{color:#111827}body[data-light="1"] .ethone-home-sub,body[data-light="1"] .ethone-home-briefing{color:rgba(15,23,36,.62)}body[data-light="1"] .ethone-home-panel,body[data-light="1"] .ethone-home-pill{background:rgba(255,255,255,.58);border-color:rgba(15,23,36,.08);color:rgba(15,23,36,.70)}
+@media(max-width:980px){.main{padding:12px 20px 120px!important}.ethone-home-grid{grid-template-columns:1fr}.ethone-home-actions{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.ethone-home-hero{padding:22px;border-radius:24px}.ethone-home-actions{grid-template-columns:1fr}.ethone-home-title{font-size:34px}.profile-banner{margin-left:-20px!important;margin-right:-20px!important}}
+@media(prefers-reduced-motion:reduce){.ethone-boot-logo,.ethone-boot-progress span{animation:none!important}.logo,.topbar,.panel,.stat-card,.modal,.nav-item,.btn,.modal-input,.search-bar,.item-row,.link-card,.todo-item,.sb-widget-card{transition:none!important}}
+</style>
+<script id="ethone-personal-os-runtime">
+(function(){
+  'use strict';
+  if(window.__ethonePersonalOSRuntime)return; window.__ethonePersonalOSRuntime=true;
+  const $=(s,r=document)=>r.querySelector(s);
+  const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+  const startedAt=Date.now();
+  const statusFR=['Préparation de ton espace','Synchronisation des widgets','Vérification des services connectés','Chargement de ton environnement'];
+  const statusEN=['Preparing your workspace','Synchronizing your widgets','Checking connected services','Loading your environment'];
+  function lang(){return (window._lang||localStorage.getItem('nexus_lang')||document.documentElement.lang||'fr').slice(0,2)}
+  function isFR(){return lang()==='fr'}
+  function greeting(){
+    const h=new Date().getHours();
+    if(isFR()) return h<5?'Bonsoir':h<12?'Bonjour':h<18?'Bon après-midi':'Bonsoir';
+    return h<5?'Good Evening':h<12?'Good Morning':h<18?'Good Afternoon':'Good Evening';
+  }
+  function bootMarkup(){
+    return `<div class="ethone-boot-core" role="status" aria-live="polite">
+      <div class="ethone-boot-logo" aria-hidden="true"><svg fill="none" height="28" viewBox="0 0 20 20" width="28"><rect x="4" y="5" width="12" height="2" rx="1" fill="white" opacity=".96"></rect><rect x="4" y="9" width="12" height="2" rx="1" fill="white" opacity=".96"></rect><rect x="4" y="13" width="8" height="2" rx="1" fill="white" opacity=".96"></rect></svg></div>
+      <div><div class="ethone-boot-word">ETHONE</div><div class="ethone-boot-greeting">${greeting()} — ${isFR()?'bienvenue dans ton espace':'Welcome Back'}</div></div>
+      <div class="ethone-boot-status" id="ethone-boot-status">${(isFR()?statusFR:statusEN)[0]}</div>
+      <div class="ethone-boot-progress" aria-hidden="true"><span></span></div>
+    </div>`;
+  }
+  function enhanceBoot(){
+    const boot=$('#nexus-boot-screen');
+    if(!boot)return;
+    boot.classList.add('ethone-os-boot');
+    if(!boot.dataset.ethoneOsBoot){boot.dataset.ethoneOsBoot='1';boot.innerHTML=bootMarkup();}
+  }
+  let statusIndex=0;
+  setInterval(()=>{const el=$('#ethone-boot-status'); if(!el)return; const list=isFR()?statusFR:statusEN; statusIndex=(statusIndex+1)%list.length; el.textContent=list[statusIndex];},620);
+  const oldHide=window.hideBoot;
+  window.hideBoot=function(){
+    const finish=()=>{
+      try{if(typeof window.removeAntiFlash==='function')window.removeAntiFlash();}catch(e){}
+      const boot=$('#nexus-boot-screen');
+      if(boot){boot.style.transition='opacity .38s cubic-bezier(.2,.8,.2,1), transform .38s cubic-bezier(.2,.8,.2,1)';boot.style.opacity='0';boot.style.transform='scale(.985)';setTimeout(()=>boot.remove(),390);} else if(typeof oldHide==='function'){try{oldHide();}catch(e){}}
+    };
+    enhanceBoot();
+    const min=1050;
+    const wait=Math.max(0,min-(Date.now()-startedAt));
+    setTimeout(finish,wait);
+  };
+  function patchLabels(){
+    try{
+      if(window.I18N){
+        I18N.fr=I18N.fr||{}; I18N.en=I18N.en||{}; I18N.es=I18N.es||{}; I18N.de=I18N.de||{};
+        I18N.fr.nav_overview='Accueil'; I18N.en.nav_overview='Home'; I18N.es.nav_overview='Inicio'; I18N.de.nav_overview='Home';
+      }
+      document.title='ETHONE — Personal OS';
+      if(typeof window.renderSidebarNav==='function')window.renderSidebarNav();
+    }catch(e){}
+  }
+  function mode(){
+    const h=new Date().getHours();
+    const steam=$('#sb-steam-wrap');
+    const steamVisible=steam&&getComputedStyle(steam).display!=='none';
+    if(steamVisible)return 'gaming';
+    if(h>=5&&h<11)return 'morning';
+    if(h>=11&&h<18)return 'focus';
+    if(h>=18&&h<22)return 'evening';
+    return 'night';
+  }
+  function stateNumbers(){
+    let p=null; try{p=typeof window.curP==='function'?window.curP():null;}catch(e){}
+    const st=p?.state||{};
+    const todos=Array.isArray(st.todos)?st.todos:[];
+    const openTodos=todos.filter(t=>!t.done).length;
+    const files=Array.isArray(st.items)?st.items.length:0;
+    const habits=Array.isArray(st.habits)?st.habits.filter(h=>h.doneToday||h.done).length:0;
+    const budget=st.budget||{};
+    const entries=Array.isArray(budget.entries)?budget.entries:[];
+    const spent=entries.filter(e=>String(e.type||'expense')!=='income').reduce((a,e)=>a+Math.abs(Number(e.amount)||0),0);
+    return {name:p?.name||'Rub',openTodos,files,habits,spent};
+  }
+  function copyForMode(m,n){
+    if(isFR()){
+      const map={
+        morning:['Accueil vivant','Commence calmement : météo, agenda, tâches importantes et briefing IA restent prioritaires.'],
+        focus:['Mode concentration','ETHONE met en avant tes projets, notes, fichiers récents et activité GitHub.'],
+        gaming:['Session gaming','Discord, Steam, Spotify et tes widgets gaming deviennent les signaux principaux.'],
+        evening:['Fin de journée','Place au journal, habitudes, résumé productivité et ambiance plus calme.'],
+        night:['Environnement nocturne','ETHONE réduit le bruit visuel et garde seulement l’essentiel sous la main.']
+      };
+      return {kicker:'PERSONAL OS · '+map[m][0],title:`${greeting()}, ${n.name}`,sub:map[m][1],brief:`${n.openTodos} tâche(s) ouvertes · ${n.files} élément(s) stockés · ${n.habits} habitude(s) suivies aujourd’hui · ${n.spent?Math.round(n.spent)+'€ de dépenses ce mois':'budget prêt à suivre'}.`};
+    }
+    const map={
+      morning:['Living Home','Weather, agenda, key tasks and your AI briefing stay in front.'],
+      focus:['Focus Mode','ETHONE emphasizes projects, notes, recent files and GitHub activity.'],
+      gaming:['Gaming Session','Discord, Steam, Spotify and gaming widgets become primary signals.'],
+      evening:['Evening Mode','Journaling, habits, productivity summaries and a calmer atmosphere move forward.'],
+      night:['Night Environment','ETHONE lowers visual noise and keeps the essentials close.']
+    };
+    return {kicker:'PERSONAL OS · '+map[m][0],title:`${greeting()}, ${n.name}`,sub:map[m][1],brief:`${n.openTodos} open task(s) · ${n.files} stored item(s) · ${n.habits} habit(s) tracked today · ${n.spent?'€'+Math.round(n.spent)+' spent this month':'budget ready to track'}.`};
+  }
+  function ensureHome(){
+    const page=$('#page-dashboard'); if(!page)return;
+    let hero=$('#ethone-home-hero');
+    if(!hero){
+      hero=document.createElement('section');
+      hero.id='ethone-home-hero'; hero.className='ethone-home-hero';
+      hero.setAttribute('aria-label','ETHONE Home');
+      hero.innerHTML=`<div class="ethone-home-grid">
+        <div>
+          <div class="ethone-home-kicker"><span class="ethone-home-dot"></span><span id="ethone-home-kicker">PERSONAL OS</span></div>
+          <div class="ethone-home-title" id="ethone-home-title">ETHONE Home</div>
+          <div class="ethone-home-sub" id="ethone-home-sub">Your digital life, organized calmly.</div>
+          <div class="ethone-home-pills">
+            <span class="ethone-home-pill">⌘ <span>${isFR()?'Recherche globale':'Global search'}</span></span>
+            <span class="ethone-home-pill">◇ <span>${isFR()?'Widgets synchronisés':'Widgets synchronized'}</span></span>
+            <span class="ethone-home-pill">AI <span>${isFR()?'Briefing intelligent':'Intelligent briefing'}</span></span>
+          </div>
+        </div>
+        <aside class="ethone-home-panel">
+          <div class="ethone-home-panel-title">${isFR()?'Briefing du moment':'Current briefing'}</div>
+          <div class="ethone-home-briefing" id="ethone-home-briefing"></div>
+          <div class="ethone-home-actions">
+            <button class="btn btn-primary ethone-home-action" onclick="switchPage('ai',null)">${isFR()?'Ouvrir IA':'Open AI'}</button>
+            <button class="btn btn-ghost ethone-home-action" onclick="switchPage('todos',null)">${isFR()?'Voir tâches':'View tasks'}</button>
+          </div>
+        </aside>
+      </div>`;
+      const banner=$('#profile-banner',page);
+      if(banner&&banner.nextSibling)banner.parentNode.insertBefore(hero,banner.nextSibling); else page.prepend(hero);
+    }
+    const n=stateNumbers(), c=copyForMode(mode(),n);
+    $('#ethone-home-kicker')&&( $('#ethone-home-kicker').textContent=c.kicker );
+    $('#ethone-home-title')&&( $('#ethone-home-title').textContent=c.title );
+    $('#ethone-home-sub')&&( $('#ethone-home-sub').textContent=c.sub );
+    $('#ethone-home-briefing')&&( $('#ethone-home-briefing').textContent=c.brief );
+    const title=$('#page-dashboard .topbar .page-title'); if(title) title.innerHTML=isFR()?'ETHONE Home':'ETHONE Home';
+    const sub=$('#page-dashboard .topbar .page-subtitle'); if(sub) sub.textContent=isFR()?'Ton système personnel pour organiser toute ta vie numérique.':'Your personal operating system for your digital life.';
+  }
+  function semanticPolish(){
+    $$('button:not([type])').forEach(b=>b.type='button');
+    $$('.tab-content').forEach(p=>{p.setAttribute('role','tabpanel'); if(!p.hasAttribute('tabindex'))p.setAttribute('tabindex','-1');});
+    $('#main-sidebar')?.setAttribute('aria-label','ETHONE navigation');
+  }
+  function run(){enhanceBoot();patchLabels();ensureHome();semanticPolish();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run); else run();
+  setTimeout(run,250); setTimeout(run,1200); setInterval(()=>{if($('#page-dashboard.active'))ensureHome();},30000);
+  try{new MutationObserver(()=>{enhanceBoot(); if($('#page-dashboard'))ensureHome();}).observe(document.body,{childList:true,subtree:true});}catch(e){}
 })();
 </script>
 

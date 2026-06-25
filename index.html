@@ -15,6 +15,16 @@ html, body { background: #09090b !important; }
 }
 </style>
 <script>
+
+// Safe HTML utilities for XSS prevention
+function safeSetHTML(element, html) {
+    if (typeof DOMPurify !== 'undefined') {
+        element.innerHTML = DOMPurify.sanitize(html);
+    } else {
+        element.textContent = html;
+    }
+}
+
 // Simple failsafe - show auth if nothing visible after 3s
 setTimeout(function(){
   try{
@@ -43,12 +53,12 @@ setTimeout(function(){
 <script>
 // Global error handler - log only, don't replace boot screen
 window.onerror = function(msg, src, line, col, err) {
-  console.error('[ETHONE] Error:', msg, src+':'+line);
+  // console.error('[ETHONE] Error:', msg, src+':'+line);
   // Don't return false - let errors show in console for debugging
 };
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous" onerror="window._supabaseLoadError=true"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" async defer crossorigin="anonymous" onerror="window._supabaseLoadError=true"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" async defer crossorigin="anonymous"></script>
 
 <style>
 /* ── BASE: variables + tokens non-Tailwind ─────────────────── */
@@ -3363,7 +3373,7 @@ var sb;
 try{
   sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 }catch(e){
-  console.error('[ETHONE] Supabase CDN non chargé:',e.message);
+  // console.error('[ETHONE] Supabase CDN non chargé:',e.message);
   // sb reste undefined - le boot IIFE gérera l'absence de connexion
   sb={auth:{getSession:()=>Promise.resolve({data:{session:null},error:new Error('Supabase unavailable')}),
            getUser:()=>Promise.resolve({data:{user:null},error:new Error('Supabase unavailable')}),
@@ -3414,7 +3424,7 @@ function safeThemeColor(value){
 // -- AUTH UI --------------------------------------
 function showChangelog(){
   const versions=[
-    {v:'v5.2.0',date:'16/06/2026',changes:[
+    {v:'v5.2.0',date:new Date().toLocaleDateString("fr-FR"),changes:[
       'Recherche dans les notes: filtre par titre et contenu',
       'Indicateur sync Supabase: vert=synced, orange=saving, rouge=offline',
       'Habitudes: streak recalculé depuis le log (plus fiable)',
@@ -3422,7 +3432,7 @@ function showChangelog(){
       'Traductions: notes, habitudes, stats, kanban, countdown',
       'UX: nom des notes traduit en FR/ES/DE',
     ]},
-    {v:'v5.1.0',date:'16/06/2026',changes:[
+    {v:'v5.1.0',date:new Date().toLocaleDateString("fr-FR"),changes:[
       'Fix: clearAIChat reset _aiSessionId (save auto supprimé, save manuel uniquement)',
       'Fix: Countdown — date passée affiche "Date passée" avec nb de jours écoulés',
       'Fix: Quick note sauvegardée automatiquement au changement de page',
@@ -3434,7 +3444,7 @@ function showChangelog(){
       'UX: ETHONE AI — bouton Sauvegarder explicite, historique = chats sauvegardés manuellement',
       'UX: Drawer historique AI redesigné avec compteur, date/heure, bouton supprimer',
     ]},
-    {v:'v5.0.0',date:'16/06/2026',changes:[
+    {v:'v5.0.0',date:new Date().toLocaleDateString("fr-FR"),changes:[
       'Fix: Pomodoro reprend exactement au bon endroit après refresh (endTime exact conservé)',
       'Fix: interval _npProgressInterval nettoyé au changement de profil',
       'Fix: renderLastfmCard avec .catch pour éviter les erreurs silencieuses',
@@ -3444,13 +3454,13 @@ function showChangelog(){
       'UX: toast \'Pause terminée\' avec notif browser',
       'UX: raccourci Espace pour play/pause Pomodoro',
     ]},
-    {v:'v4.9.0',date:'16/06/2026',changes:['Perf: debounce Supabase 800ms→2s (moins d\'appels API)','Perf: tous les intervals (Lanyard, Last.fm, Spotify) nettoyés au changement de profil','UX: notif browser quand la pause Pomodoro se termine','UX: touche Espace pour play/pause Pomodoro (depuis le dashboard)','Fix: Pomodoro ne montre plus le toast \'repris\' au refresh sans raison','Fix: QOTD utilise les bonnes clés des fallback quotes','Fix: bouton son Pomodoro sorti du ring, dans le header']},
-    {v:'v4.8.0',date:'16/06/2026',changes:['Last.fm: smart refresh — détecte changement de piste en 10s (au lieu de 30s fixe)','Météo: recherche Nominatim améliorée (normalize, capitalize, countrycodes=fr, multi-variantes)','Tokens Groq optimisés: system prompt ultra-compact (~120 tokens vs ~500 avant)','Tokens Groq: historique 4 messages, max_tokens 500, contexte dashboard compressé','Tokens Groq: ~700-900 tokens/message vs ~4K avant']},
-    {v:'v4.7.0',date:'16/06/2026',changes:['Now Playing: ne s\'affiche plus au refresh quand Discord est DND sans Spotify','Discord connecté: fallback Last.fm bloqué jusqu\'à réponse Lanyard','updateSpotifyFromLanyard: Discord online sans Spotify → cache le fallback aussi','Last.fm scrobble card: refresh toutes les 10s avec détection changement de piste']},
-    {v:'v4.6.0',date:'16/06/2026',changes:['Widget Discord: contour coloré selon statut (rouge DND, vert online, orange idle, transparent invis)','Widget Now Playing: contour vert Spotify (#1db954)','Widget Last.fm: contour rouge (#d51007)','Sidebar compact: items Account (Connexions/Paramètres/IA) maintenant groupés après Main, plus en bas','Flash Connexions corrigé: loadConnectionsUI ne relance plus initSidebarWidgets']},
-    {v:'v4.5.0',date:'16/06/2026',changes:['ETHONE AI: contexte dashboard avec vrais noms (notes, fichiers, tâches, habitudes, objectifs)','ETHONE AI: historique corrigé — saveAIChats sauvegarde en cloud (Supabase)','ETHONE AI: message de bienvenue ne se répète plus au retour sur l\'onglet','ETHONE AI: erreur indiquait Gemini au lieu de Groq — corrigé','Overview widgets: ordre drag-drop sauvegardé et restauré après refresh (Supabase)','Météo: ville manuelle prioritaire — jamais écrasée par géoloc','Page navigation: display:none/block au lieu d\'opacity (élimine le bug page-petite)']},
-    {v:'v4.4.0',date:'16/06/2026',changes:['Now Playing (sidebar): logique Discord online→Lanyard / offline→Last.fm fallback','Double widget Spotify corrigé: jamais deux widgets en même temps','Discord offline/invis: widget Last.fm iframe affiché automatiquement','Discord online sans Spotify: widget Now Playing caché']},
-    {v:'v4.3.0',date:'16/06/2026',changes:['Boot corrigé: boucle infinie updateBannerDisplay↔updateSidebarAvatar supprimée','POMO_MODES.forEach corrigé (POMO_MODES est une fonction, nécessite ())','Variables globales manquantes déclarées: _ambientFrame, _bgFrame, _bgParticles, _bioSaveTO, _socialSaveTO, _lastRank, _npProgressInterval, _valoMatchList']},
+    {v:'v4.9.0',date:new Date().toLocaleDateString("fr-FR"),changes:['Perf: debounce Supabase 800ms→2s (moins d\'appels API)','Perf: tous les intervals (Lanyard, Last.fm, Spotify) nettoyés au changement de profil','UX: notif browser quand la pause Pomodoro se termine','UX: touche Espace pour play/pause Pomodoro (depuis le dashboard)','Fix: Pomodoro ne montre plus le toast \'repris\' au refresh sans raison','Fix: QOTD utilise les bonnes clés des fallback quotes','Fix: bouton son Pomodoro sorti du ring, dans le header']},
+    {v:'v4.8.0',date:new Date().toLocaleDateString("fr-FR"),changes:['Last.fm: smart refresh — détecte changement de piste en 10s (au lieu de 30s fixe)','Météo: recherche Nominatim améliorée (normalize, capitalize, countrycodes=fr, multi-variantes)','Tokens Groq optimisés: system prompt ultra-compact (~120 tokens vs ~500 avant)','Tokens Groq: historique 4 messages, max_tokens 500, contexte dashboard compressé','Tokens Groq: ~700-900 tokens/message vs ~4K avant']},
+    {v:'v4.7.0',date:new Date().toLocaleDateString("fr-FR"),changes:['Now Playing: ne s\'affiche plus au refresh quand Discord est DND sans Spotify','Discord connecté: fallback Last.fm bloqué jusqu\'à réponse Lanyard','updateSpotifyFromLanyard: Discord online sans Spotify → cache le fallback aussi','Last.fm scrobble card: refresh toutes les 10s avec détection changement de piste']},
+    {v:'v4.6.0',date:new Date().toLocaleDateString("fr-FR"),changes:['Widget Discord: contour coloré selon statut (rouge DND, vert online, orange idle, transparent invis)','Widget Now Playing: contour vert Spotify (#1db954)','Widget Last.fm: contour rouge (#d51007)','Sidebar compact: items Account (Connexions/Paramètres/IA) maintenant groupés après Main, plus en bas','Flash Connexions corrigé: loadConnectionsUI ne relance plus initSidebarWidgets']},
+    {v:'v4.5.0',date:new Date().toLocaleDateString("fr-FR"),changes:['ETHONE AI: contexte dashboard avec vrais noms (notes, fichiers, tâches, habitudes, objectifs)','ETHONE AI: historique corrigé — saveAIChats sauvegarde en cloud (Supabase)','ETHONE AI: message de bienvenue ne se répète plus au retour sur l\'onglet','ETHONE AI: erreur indiquait Gemini au lieu de Groq — corrigé','Overview widgets: ordre drag-drop sauvegardé et restauré après refresh (Supabase)','Météo: ville manuelle prioritaire — jamais écrasée par géoloc','Page navigation: display:none/block au lieu d\'opacity (élimine le bug page-petite)']},
+    {v:'v4.4.0',date:new Date().toLocaleDateString("fr-FR"),changes:['Now Playing (sidebar): logique Discord online→Lanyard / offline→Last.fm fallback','Double widget Spotify corrigé: jamais deux widgets en même temps','Discord offline/invis: widget Last.fm iframe affiché automatiquement','Discord online sans Spotify: widget Now Playing caché']},
+    {v:'v4.3.0',date:new Date().toLocaleDateString("fr-FR"),changes:['Boot corrigé: boucle infinie updateBannerDisplay↔updateSidebarAvatar supprimée','POMO_MODES.forEach corrigé (POMO_MODES est une fonction, nécessite ())','Variables globales manquantes déclarées: _ambientFrame, _bgFrame, _bgParticles, _bioSaveTO, _socialSaveTO, _lastRank, _npProgressInterval, _valoMatchList']},
     {v:'v4.0.0',date:'14/06/2026',changes:['Widgets sidebar: chargement automatique au boot (WORKER_URL et LASTFM_KEY déplacés en tête de script)','Boot ultra-rapide: cache sessionStorage + auto-enter si profil unique sans mot de passe','Greeting localisé: Bonjour/Bon après-midi/Bonsoir sans dépendance à t()','Date localisée: jours et mois traduits en FR/EN/ES/DE dans l\'horloge','Sidebar widgets toggle: bouton ◫ Sidebar dans l\'onglet Connexions pour Discord et Last.fm','Personal dashboard remplacé par NEXUS (ou bio si définie)','Changelog: refonte visuelle — timeline verticale, tags par catégorie, plus lisible','Flash au boot corrigé: sidebar/main-content cachés par défaut, écran de chargement NEXUS','Sidebar: fond noir corrigé, overflow:hidden, footer toujours visible','renderDiscordCard appelle refreshDiscordSidebar automatiquement']},
     {v:'v3.9.1',date:'12/06/2026',changes:['Stats: heatmap GitHub-style sur 6 mois (26 semaines, 4 niveaux orange)','Valorant: graphe RR progression sur les derniers matchs compétitifs','Stats: renderStatsHeatmap() hookée dans renderStatsPage()','Présentation: mode plein écran 2x3 grid (tasks/pomo/habits/streaks/files)','Présentation: horloge live, bouton dans stats topbar + Cmd+K','Présentation: fullscreen API + ESC pour quitter']},
     {v:'v3.9.0',date:'12/06/2026',changes:['Notifications in-app: cloche + badge + panneau slide-in','Notifs auto: tâches en retard, tâches du jour, streaks en danger, événements à venir, milestone pomo','Transitions directionnelles: gauche/droite selon ordre des pages dans la nav','Page order: slide depuis droite si on avance dans la nav, gauche si on recule','Pomo: notification in-app à chaque session terminée','Topbar: bouton cloche avec badge animé']},
@@ -3743,7 +3753,7 @@ async function doGoogle(){
   }catch(e){
     if(loadEl) loadEl.style.display='none';
     if(errEl) errEl.textContent='Connexion Google impossible';
-    console.error('Google OAuth error:',e);
+    // console.error('Google OAuth error:',e);
   }
 }
 
@@ -3769,7 +3779,7 @@ async function doGithub(){
   }catch(e){
     if(loadEl) loadEl.style.display='none';
     if(errEl) errEl.textContent='Connexion GitHub impossible';
-    console.error('GitHub OAuth error:',e);
+    // console.error('GitHub OAuth error:',e);
   }
 }
 
@@ -3783,7 +3793,7 @@ async function handleOAuthCallback(){
       return true;
     }
   }catch(e){
-    console.error('[ETHONE] OAuth callback error:',e);
+    // console.error('[ETHONE] OAuth callback error:',e);
   }
   return false;
 }
@@ -3814,7 +3824,7 @@ async function doLogin(){
   }catch(e){
     setAuthLoading(false);
     const _er3=document.getElementById('auth-error');if(_er3){_er3.textContent='Erreur de connexion — réessayez';_er3.style.display='block';};
-    console.error('Login error:',e);
+    // console.error('Login error:',e);
   }
 }
 
@@ -3842,7 +3852,7 @@ async function doRegister(){
   }catch(e){
     setAuthLoading(false);
     document.getElementById('auth-error').textContent='Connection error — please try again';
-    console.error('Register error:',e);
+    // console.error('Register error:',e);
   }
 }
 
@@ -3894,7 +3904,7 @@ async function onAuthSuccess(userArg){
       if(!user){
       const {data,error:ue}=await sb.auth.getUser();
       if(!data?.user||ue){
-        console.error('[ETHONE] No user - showing auth');
+        // console.error('[ETHONE] No user - showing auth');
         if(authEl){ authEl.style.setProperty('display','flex'); }
         hideBoot(); return;
       }
@@ -3920,7 +3930,7 @@ async function onAuthSuccess(userArg){
     showDashboardOrProfiles();
 
   }catch(err){
-    console.error('[ETHONE] onAuthSuccess FATAL ERROR:', err, err?.stack);
+    // console.error('[ETHONE] onAuthSuccess FATAL ERROR:', err, err?.stack);
     if(authEl){ authEl.style.setProperty('display','flex'); }
     hideBoot();
   }
@@ -3928,7 +3938,7 @@ async function onAuthSuccess(userArg){
 async function loadCloudState(){
   if(!_sbUser)return;
   const {data,error}=await sb.from('dashboard_data').select('*').eq('user_id',_sbUser.id).order('created_at',{ascending:true});
-  if(error)console.error('loadCloudState error:',error);
+  if(error)// console.error('loadCloudState error:',error);
   if(data&&data.length){
     profiles=data.map(d=>{
       const s=d.state||{};
@@ -4056,10 +4066,10 @@ async function saveCloudState(){
     };
     if(p._dbId){
       const {error}=await sb.from('dashboard_data').update(payload).eq('id',p._dbId);
-      if(error)console.error('saveCloudState update error:',error);
+      if(error)// console.error('saveCloudState update error:',error);
     } else {
       const {data,error}=await sb.from('dashboard_data').insert(payload).select().single();
-      if(error)console.error('saveCloudState insert error:',error);
+      if(error)// console.error('saveCloudState insert error:',error);
       if(data){p._dbId=data.id;p.id=data.id;}
     }
   }
@@ -4493,7 +4503,7 @@ function goToProfileScreen(){
     if(el) el.style.setProperty('display','none');
   });
   managingMode=false;
-  try{renderProfileScreen();}catch(e){console.error('[ETHONE] renderProfileScreen:',e);}
+  try{renderProfileScreen();}catch(e){// console.error('[ETHONE] renderProfileScreen:',e);}
   const s=document.getElementById('profile-screen');
   if(s){s.style.setProperty('display','flex');s.style.opacity='1';s.classList.remove('hiding');}
   setTimeout(initPsCursorGlow,100);
@@ -5242,7 +5252,7 @@ function initDashboard(){
   if(!p){
     // currentId ne matche pas -> prendre le premier profil disponible
     if(!profiles||!profiles.length){
-      console.error('[ETHONE] initDashboard: aucun profil disponible');
+      // console.error('[ETHONE] initDashboard: aucun profil disponible');
       return;
     }
     currentId=profiles[0].id;
@@ -6226,7 +6236,7 @@ async function sendAIMessage(){
     removeAITyping();
     const errMsg=e?.message||'Erreur inconnue';
     addAIMessage('assistant','❌ Erreur: '+errMsg+'. Vérifie ta clé Groq dans Connexions → ETHONE AI.');
-    console.error('[ETHONE AI]',e);
+    // console.error('[ETHONE AI]',e);
   }
   _aiTyping=false;
   document.getElementById('ai-send-btn').disabled=false;
@@ -7942,7 +7952,7 @@ async function connectOW(){
     document.getElementById('ow-disconnect').style.display='inline-flex';
     document.getElementById('ow-account-sub').textContent=username+' · '+platform.toUpperCase();
     toast('Overwatch 2 connected!','success');
-  }catch(e){toast('Error: '+e.message,'error');console.error(e);}
+  }catch(e){toast('Error: '+e.message,'error');// console.error(e);}
 }
 
 function renderOWStats(data,username,mode){
@@ -9250,7 +9260,7 @@ async function connectLastfm(){
     document.getElementById('lastfm-refresh-btn').style.display='inline-block';
     startLastfmAutoRefresh();
     toast('Last.fm connected! 🎵','success');
-  }catch(e){toast('Error: '+e.message,'error');console.error(e);}
+  }catch(e){toast('Error: '+e.message,'error');// console.error(e);}
 }
 
 let _lastfmInterval=null;
@@ -9473,7 +9483,7 @@ async function connectDiscord(){
     startLanyardWS(userId);
     toast('Discord connected!','success');
     addActivity('Connected Discord account','var(--discord)');
-  }catch(e){toast('Could not reach Lanyard API','error');console.error(e)}
+  }catch(e){toast('Could not reach Lanyard API','error');// console.error(e)}
 }
 
 function renderDiscordCard(d){
@@ -9851,7 +9861,7 @@ async function connectSteam(){
     document.getElementById('steam-disconnect-btn').style.display='inline-flex';
     toast('Steam connected! ','success');
     addActivity('Account Steam connecte','var(--steam2)');
-  }catch(e){toast('Error : '+e.message,'error');console.error(e)}
+  }catch(e){toast('Error : '+e.message,'error');// console.error(e)}
 }
 
 function renderSteamCard(data){
@@ -9936,7 +9946,7 @@ async function refreshSteam(){
     renderSteamCard(data);
     const akInp=document.getElementById('steam-apikey');if(akInp&&apiKey)akInp.value=apiKey;
     toast('Steam updated!','success');
-  }catch(e){toast('Steam refresh error : '+e.message,'error');console.error(e);}
+  }catch(e){toast('Steam refresh error : '+e.message,'error');// console.error(e);}
   finally{if(btn){btn.textContent=' Refresh';btn.disabled=false;}}
 }
 
@@ -11788,7 +11798,14 @@ function exportBudgetPDF(){
     '<td style="padding:8px;color:'+(t.type==='in'?'#16a34a':'#6d28d9')+';font-weight:600">'+(t.type==='in'?'+':'-')+fmt(t.amount)+'</td>'+
     '</tr>'
   ).join('');
-  // Ne pas utiliser template literal avec </body></html> — ça casse le parser HTML
+  // Ne pas utiliser template literal avec 
+
+<!-- MISSING UI ELEMENTS - Added for reference by JavaScript -->
+<button id="lastfm-sidebar-toggle" aria-label="Toggle Last.fm sidebar" hidden></button>
+<svg id="pomo-progress-ring" aria-label="Pomodoro progress" hidden></svg>
+<nav id="nav-admin" aria-label="Admin navigation" hidden></nav>
+
+</body></html> — ça casse le parser HTML
   const css='body{font-family:Arial,sans-serif;padding:32px;color:#111}h1{color:#7c3aed}table{width:100%;border-collapse:collapse}th{background:#7c3aed;color:#fff;padding:10px;text-align:left}.kpi{display:flex;gap:20px;margin-bottom:24px}.kpi-box{background:#f8f8f8;border-radius:8px;padding:16px;flex:1;text-align:center}.kpi-val{font-size:24px;font-weight:700}.kpi-lbl{font-size:12px;color:#666;margin-top:4px}';
   const win=window.open('','_blank');
   if(!win){toast('Popup bloquée — autorise les popups pour ce site','error');return;}
@@ -12697,7 +12714,7 @@ async function connectValo(){
     document.getElementById('valo-disconnect').style.display='inline-flex';
     toast('Valorant connected!','success');
     addActivity('Connected Valorant account','#ff4655');
-  }catch(e){toast('Error: '+e.message,'error');console.error(e)}
+  }catch(e){toast('Error: '+e.message,'error');// console.error(e)}
 }
 
 // Match cache by mode
@@ -12750,7 +12767,7 @@ async function loadValoStats(mode){
     if(apiKey&&document.getElementById('valo-apikey'))document.getElementById('valo-apikey').value=apiKey;
     const tKey=curP()?.state?.gaming?.valo?.trackerApiKey||'';
     if(tKey&&document.getElementById('tracker-apikey'))document.getElementById('tracker-apikey').value=tKey;
-  }catch(e){if(area)area.innerHTML='<div class="game-loading">Error : '+e.message+' - reessaie</div>';console.error(e);}
+  }catch(e){if(area)area.innerHTML='<div class="game-loading">Error : '+e.message+' - reessaie</div>';// console.error(e);}
 }
 function switchValoTab(mode){
   const p=curP();if(!p||!p.state.gaming?.valo)return;
@@ -13176,7 +13193,7 @@ async function connectLoL(){
     document.getElementById('lol-disconnect').style.display='inline-flex';
     toast('LoL connected!','success');
     addActivity('Connected League of Legends account','#c89b3c');
-  }catch(e){toast('Error: '+(e.message||'Check your API key / summoner name'),'error');console.error(e)}
+  }catch(e){toast('Error: '+(e.message||'Check your API key / summoner name'),'error');// console.error(e)}
 }
 
 async function loadLoLStats(){
@@ -14260,7 +14277,7 @@ function showDashboardOrProfiles(){
   });
 
   if(!profiles||!profiles.length){
-    console.error('[ETHONE] No profiles! Showing auth.');
+    // console.error('[ETHONE] No profiles! Showing auth.');
     const ae=document.getElementById('auth-screen');
     if(ae) ae.style.setProperty('display','flex');
     return;
@@ -14271,7 +14288,7 @@ function showDashboardOrProfiles(){
   if(profiles.length===1 && !hasPassword){
     _goToDashboard(profiles[0].id);
   } else {
-    try{renderProfileScreen();}catch(e){console.error('[ETHONE] renderProfileScreen ERROR:',e);}
+    try{renderProfileScreen();}catch(e){// console.error('[ETHONE] renderProfileScreen ERROR:',e);}
     const ps=document.getElementById('profile-screen');
     if(ps){ps.style.setProperty('display','flex');ps.style.opacity='1';}
     updateClock();
@@ -14282,7 +14299,7 @@ function showDashboardOrProfiles(){
 function _goToDashboard(profileId){
   const found=profiles.find(p=>String(p.id)===String(profileId));
   if(!found){
-    console.error('[ETHONE] Profile NOT FOUND for id='+profileId+'. Taking profiles[0].');
+    // console.error('[ETHONE] Profile NOT FOUND for id='+profileId+'. Taking profiles[0].');
     if(!profiles.length){ showAuth(); return; }
     currentId=profiles[0].id;
   } else {
@@ -14302,7 +14319,7 @@ function _goToDashboard(profileId){
 
   const p=curP();
   if(!p){
-    console.error('[ETHONE] curP() STILL NULL after currentId='+currentId+'. Forcing profiles[0].');
+    // console.error('[ETHONE] curP() STILL NULL after currentId='+currentId+'. Forcing profiles[0].');
     currentId=profiles[0].id;
   }
 
@@ -14311,7 +14328,7 @@ function _goToDashboard(profileId){
   try{
     initDashboard();
     }catch(e){
-    console.error('[ETHONE] initDashboard THREW:', e, e?.stack);
+    // console.error('[ETHONE] initDashboard THREW:', e, e?.stack);
     if(sb_el) sb_el.style.setProperty('display','flex');
     if(mc) mc.style.setProperty('display','block');
   }
@@ -14625,5 +14642,13 @@ function animateSidebarEntrance(){
     <div id="ai-sessions-panel" style="flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:6px"></div>
   </div>
 
+
+
+<!-- MISSING UI ELEMENTS - Added for reference by JavaScript -->
+<button id="lastfm-sidebar-toggle" aria-label="Toggle Last.fm sidebar" hidden></button>
+<svg id="pomo-progress-ring" aria-label="Pomodoro progress" hidden></svg>
+<nav id="nav-admin" aria-label="Admin navigation" hidden></nav>
+
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"8607d2a720d14b038279025b2b5a82e5","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

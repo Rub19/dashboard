@@ -3770,7 +3770,7 @@ body.eh-compact .stats-row,body.eh-compact .grid-2,body.eh-compact .grid-3,body.
 </form>
 <!-- FOOTER -->
 <p style="text-align:center;font-size:11px;color:rgba(255,255,255,.18);margin-top:28px;font-family:Inter,system-ui,sans-serif;letter-spacing:.2px">
-      ETHONE <span style="opacity:.3">·</span> v5.3
+      ETHONE <span style="opacity:.3">·</span> v5.3.1
     </p>
 </div>
 </div>
@@ -3802,7 +3802,7 @@ body.eh-compact .stats-row,body.eh-compact .grid-2,body.eh-compact .grid-3,body.
 <button class="ps-signout-btn" onclick="doLogout()">Sign out</button>
 </div>
 <!-- Version -->
-<div onclick="showChangelog()" style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer;white-space:nowrap" title="View changelog">v5.2.0 · changelog</div>
+<div onclick="showChangelog()" style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:1px;user-select:none;cursor:pointer;white-space:nowrap" title="View changelog">v5.3.2 · changelog</div>
 </div>
 </div>
 <!-- SIDEBAR -->
@@ -5686,6 +5686,27 @@ function safeThemeColor(value){
 // -- AUTH UI --------------------------------------
 function showChangelog(){
   const versions=[
+    {v:'v5.3.2',date:'25/06/2026',changes:[
+      'i18n: audit complet des textes visibles sur dashboard, connexions, settings, modales, dock, command palette et changelog',
+      'Fix: traduction runtime appliquée aussi aux contenus générés par JavaScript après changement de page ou de langue',
+      'Fix: placeholders, titres, aria-labels et boutons du topbar/search synchronisés avec la langue active',
+      'UI: palette changelog conservée en violet ETHONE avec badges i18n/FIX/UI cohérents',
+      'QA: ajout de ethoneI18nAudit() pour lister les textes anglais restants dans la langue FR'
+    ]},
+    {v:'v5.3.1',date:'25/06/2026',changes:[
+      'Fix: le dock quick actions ne s’affiche plus sur Sign In, Profile Selection ou Password Screen',
+      'Fix: barre de recherche topbar recalibrée pour éviter les chevauchements avec les boutons',
+      'UI: changelog harmonisé avec la palette ETHONE violette et les badges de statut',
+      'UX: titres et descriptions des boutons rapides clarifiés pour notes, tâches, recherche et personnalisation',
+      'Accessibilité: états visibles, aria-labels et focus améliorés sur les actions rapides',
+    ]},
+    {v:'v5.3.0',date:'25/06/2026',changes:[
+      'UI: Profile Selection redesign premium avec cards modernes, hover, sélection active et empty state',
+      'Fix: restauration du vrai profil Rub depuis la source profils globale et le backup local',
+      'UI: icône ETHONE corrigée en carré violet arrondi avec lignes blanches',
+      'UI: Sign In restauré avec langues, Google OAuth, GitHub OAuth, Register, Forgot Password et Remember Me',
+      'Perf: animations premium ajoutées sans casser les préférences reduced-motion',
+    ]},
     {v:'v5.2.0',date:'16/06/2026',changes:[
       'Recherche dans les notes: filtre par titre et contenu',
       'Indicateur sync Supabase: vert=synced, orange=saving, rouge=offline',
@@ -5772,11 +5793,11 @@ function showChangelog(){
     {v:'v1.0.0',date:'05/06/2026',changes:['Initial release','Multi-profile with avatar + PIN','Discord, Steam, Spotify, Valorant, LoL','Kanban, Habits, Calendar, Tasks, Notes, Stats, Pomodoro']},
   ];
   let html=`<div style="position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.75);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.remove()">
-  <div style="background:rgba(10,8,14,.97);border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:0;width:100%;max-width:520px;max-height:82vh;display:flex;flex-direction:column;box-shadow:0 32px 80px rgba(0,0,0,.7)">
+  <div class="ethone-changelog-shell" style="background:rgba(10,8,14,.97);border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:0;width:100%;max-width:560px;max-height:82vh;display:flex;flex-direction:column;box-shadow:0 32px 80px rgba(0,0,0,.7)">
     <!-- Header -->
     <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0">
       <div>
-        <div style="font-size:17px;font-weight:800;letter-spacing:-.02em;font-family:'Syne',sans-serif">Changelog</div>
+        <div class="ethone-changelog-title" style="font-size:17px;font-weight:800;letter-spacing:-.02em;font-family:'Syne',sans-serif">Changelog</div>
         <div style="font-size:11px;color:rgba(245,245,247,.3);margin-top:2px;font-family:'JetBrains Mono',monospace">ETHONE Dashboard</div>
       </div>
       <button onclick="this.closest('[style*=fixed]').remove()" style="width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:rgba(245,245,247,.4);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s" onmouseover="this.style.background='rgba(248,113,113,.1)';this.style.color='#f87171'" onmouseout="this.style.background='rgba(255,255,255,.05)';this.style.color='rgba(245,245,247,.4)'">✕</button>
@@ -15227,16 +15248,93 @@ function showDashboardOrProfiles(){
 
 
 
+
+<style id="ethone-enterprise-final-bugfixes">
+/* ETHONE final QA patch: keep enterprise dock out of auth/profile flows */
+body:not(.eh-dashboard-ready) #eh-dock,
+body:not(.eh-dashboard-ready) #eh-personalize-overlay {
+  display: none !important;
+}
+body.eh-dashboard-ready #eh-dock {
+  display: flex !important;
+}
+#eh-dock[aria-hidden="true"] {
+  display: none !important;
+}
+
+/* Topbar search/action layout: no overlap, cleaner SaaS spacing */
+.topbar {
+  overflow: visible !important;
+}
+.topbar-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+  min-width: 0 !important;
+  max-width: min(100%, 720px) !important;
+}
+.topbar .search-bar {
+  min-width: 0 !important;
+  max-width: 260px !important;
+  flex: 1 1 180px !important;
+  height: 42px !important;
+  border-radius: 16px !important;
+  background: rgba(255,255,255,.055) !important;
+  border-color: rgba(255,255,255,.09) !important;
+}
+.topbar .search-bar input {
+  min-width: 0 !important;
+  width: 100% !important;
+  max-width: 190px !important;
+  text-overflow: ellipsis !important;
+}
+.topbar .eh-kbd-hint {
+  height: 42px !important;
+  border-radius: 16px !important;
+  flex: 0 0 auto !important;
+}
+@media (max-width: 980px) {
+  .topbar { align-items: flex-start !important; }
+  .topbar-actions { width: 100% !important; justify-content: flex-start !important; }
+  .topbar .search-bar { max-width: none !important; flex: 1 1 240px !important; }
+}
+@media (max-width: 620px) {
+  .topbar .eh-kbd-hint span { display: none !important; }
+  .topbar .search-bar { order: 10 !important; flex-basis: 100% !important; }
+  .topbar-actions .btn { min-height: 40px !important; }
+}
+
+/* Dock labels are intentionally hidden visually but clarified with title/aria-label. */
+#eh-dock button:focus-visible,
+.topbar .search-bar:focus-within,
+.topbar .eh-kbd-hint:focus-visible {
+  outline: 2px solid rgba(var(--eh-accent-rgb), .62) !important;
+  outline-offset: 3px !important;
+}
+
+/* Changelog color consistency */
+.ethone-changelog-shell {
+  background: rgba(11,10,16,.98) !important;
+  border: 1px solid rgba(139,92,246,.18) !important;
+  box-shadow: 0 32px 90px rgba(0,0,0,.72), 0 0 0 1px rgba(255,255,255,.035) inset !important;
+}
+.ethone-changelog-title {
+  color: #f8f7fb !important;
+}
+</style>
+
 <!-- ETHONE Enterprise 2026 runtime: safe progressive enhancements -->
 <div class="eh-page-loader" aria-hidden="true"></div>
 <div class="eh-toast" id="eh-toast" aria-live="polite" aria-atomic="true"></div>
-<div class="eh-dock" id="eh-dock" aria-label="Quick actions">
-  <button type="button" data-eh-action="dashboard" title="Dashboard" aria-label="Open dashboard"><i data-lucide="layout-dashboard">⌂</i></button>
-  <button type="button" data-eh-action="search" title="Command palette · Ctrl K" aria-label="Open command palette"><i data-lucide="search">⌕</i></button>
-  <button type="button" data-eh-action="notes" title="Notes" aria-label="Open notes"><i data-lucide="notebook-pen">✎</i></button>
-  <button type="button" data-eh-action="tasks" title="Tasks" aria-label="Open tasks"><i data-lucide="check-square">✓</i></button>
+<div class="eh-dock" id="eh-dock" aria-label="Actions rapides ETHONE" aria-hidden="true">
+  <button type="button" data-eh-action="dashboard" title="Dashboard — revenir à l’accueil" aria-label="Ouvrir le dashboard"><i data-lucide="layout-dashboard">⌂</i></button>
+  <button type="button" data-eh-action="search" title="Recherche globale / Command palette — Ctrl K" aria-label="Ouvrir la recherche globale"><i data-lucide="search">⌕</i></button>
+  <button type="button" data-eh-action="notes" title="Notes — ouvrir tes notes" aria-label="Ouvrir les notes"><i data-lucide="notebook-pen">✎</i></button>
+  <button type="button" data-eh-action="tasks" title="Tasks — ouvrir tes tâches" aria-label="Ouvrir les tâches"><i data-lucide="check-square">✓</i></button>
   <span class="eh-sep" aria-hidden="true"></span>
-  <button type="button" data-eh-action="personalize" title="Personalize" aria-label="Open personalization"><i data-lucide="sliders-horizontal">⚙</i></button>
+  <button type="button" data-eh-action="personalize" title="Personnalisation — thème, accent, background" aria-label="Ouvrir la personnalisation"><i data-lucide="sliders-horizontal">⚙</i></button>
 </div>
 <div class="eh-panel-overlay" id="eh-personalize-overlay" role="dialog" aria-modal="true" aria-labelledby="eh-personalize-title">
   <section class="eh-panel" role="document">
@@ -15295,7 +15393,7 @@ function showDashboardOrProfiles(){
         if(action==='notes'&&window.switchPage)window.switchPage('notes',null);
         if(action==='tasks'&&window.switchPage)window.switchPage('todos',null);
         if(action==='search'){ if(window.openCmdPalette)window.openCmdPalette(); else document.dispatchEvent(new KeyboardEvent('keydown',{key:'k',ctrlKey:true,bubbles:true})); }
-        if(action==='personalize')overlay?.classList.add('open');
+        if(action==='personalize'){ syncEnterpriseChrome(); if(document.body.classList.contains('eh-dashboard-ready')) overlay?.classList.add('open'); }
       }
       if(e.target.closest('[data-eh-close]')||e.target===overlay)overlay?.classList.remove('open');
       const bg=e.target.closest('[data-bg]'); if(bg){state.bg=bg.dataset.bg;localStorage.setItem('ethone:bg',state.bg);applyPrefs();notify('Background updated');}
@@ -15342,7 +15440,21 @@ function showDashboardOrProfiles(){
     };
     window.switchPage.__ehWrapped=true;
   }
+  function isMainDashboardVisible(){
+    const auth=$('#auth-screen'), profile=$('#profile-screen'), pw=$('#password-screen'), main=$('#main-content');
+    const hidden=(el)=>!el||el.style.display==='none'||getComputedStyle(el).display==='none'||getComputedStyle(el).visibility==='hidden';
+    return hidden(auth)&&hidden(profile)&&hidden(pw)&&main&&!hidden(main);
+  }
+  function syncEnterpriseChrome(){
+    const ready=isMainDashboardVisible();
+    document.body.classList.toggle('eh-dashboard-ready',ready);
+    const dock=$('#eh-dock');
+    if(dock) dock.setAttribute('aria-hidden',ready?'false':'true');
+    const overlay=$('#eh-personalize-overlay');
+    if(!ready&&overlay) overlay.classList.remove('open');
+  }
   function updateDock(page){
+    syncEnterpriseChrome();
     const active=page||$('.tab-content.active')?.id?.replace('page-','');
     $$('#eh-dock [data-eh-action]').forEach(b=>b.dataset.active='false');
     if(active==='dashboard')$('#eh-dock [data-eh-action="dashboard"]')?.setAttribute('data-active','true');
@@ -15366,8 +15478,103 @@ function showDashboardOrProfiles(){
   }
   window.ethoneEnterpriseAudit=audit;
   window.ethoneOpenPersonalization=()=>$('#eh-personalize-overlay')?.classList.add('open');
-  function boot(){buildSwatches();wirePanel();applyPrefs();refreshIcons();enhanceCards();wrapSwitchPage();addTopbarHint();improveEmptyPages();updateDock();setTimeout(refreshIcons,500);}
+  function boot(){buildSwatches();wirePanel();applyPrefs();refreshIcons();enhanceCards();wrapSwitchPage();addTopbarHint();improveEmptyPages();updateDock();setTimeout(refreshIcons,500);setInterval(syncEnterpriseChrome,450);try{new MutationObserver(syncEnterpriseChrome).observe(document.body,{attributes:true,subtree:true,attributeFilter:['style','class']});}catch(e){}}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot); else boot();
+})();
+</script>
+
+
+
+<style id="ethone-i18n-full-fix-css">
+/* ETHONE i18n/layout QA: keeps search clean and removes mixed-language visual noise */
+html[lang="fr"] .eh-kbd-hint span::after{content:""}
+.topbar-actions{min-width:0!important;overflow:visible!important}
+.topbar .search-bar{width:clamp(180px,24vw,260px)!important;min-width:160px!important;flex:0 1 260px!important}
+.topbar .search-bar input{width:100%!important;min-width:0!important;max-width:100%!important}
+@media(max-width:720px){.topbar-actions{justify-content:flex-start!important}.topbar .search-bar{order:20!important;width:100%!important;max-width:none!important;flex-basis:100%!important}}
+.eh-panel-title,.eh-panel-sub,.eh-control-label,.eh-density-row span{transition:color .15s ease}
+</style>
+<script id="ethone-full-i18n-runtime-fix">
+(function(){
+  'use strict';
+  if(window.__ethoneFullI18nFix)return; window.__ethoneFullI18nFix=true;
+  const PHRASES={
+    "Profile":"Profil","Enter your PIN to continue":"Entrez votre code PIN pour continuer","Unlock":"Déverrouiller","Back to profiles":"Retour aux profils","← Back to profiles":"← Retour aux profils",
+    "Select user":"Sélectionner","Who's using?":"Qui utilise ?","Choose your profile to continue":"Choisissez votre profil pour continuer","Manage profiles":"Gérer les profils","Sign out":"Déconnexion","Add profile":"Ajouter profil","New workspace":"Nouvel espace","Personal workspace":"Espace personnel","Create your first ETHONE space to retrieve your dashboard, settings and customizations.":"Crée ton premier espace ETHONE pour retrouver ton dashboard, tes réglages et tes personnalisations.","Create your first ETHONE space to access your dashboard, settings and customizations.":"Crée ton premier espace ETHONE pour accéder à ton dashboard, tes réglages et tes personnalisations.","No profiles":"Aucun profil","no_profiles":"Aucun profil",
+    "Personal dashboard":"Dashboard personnel","French":"Français","English":"Anglais","Spanish":"Espagnol","German":"Allemand","Add item":"Ajouter","+ Add":"+ Ajouter","+ Add item":"+ Ajouter","Total Files":"Fichiers","stored items":"éléments stockés","Tasks Done":"Tâches faites","of 0 total":"sur 0 au total","Links Saved":"Liens sauvegardés","bookmarked":"favoris","Time":"Heure","Quick Access":"Accès rapide","+ Pin link":"+ Épingler","No pinned links yet — click + Pin link":"Aucun lien épinglé — cliquez sur + Épingler","Recent items":"Éléments récents","See all →":"Voir tout →","No items yet":"Aucun élément","Upcoming tasks":"Tâches à venir","All →":"Tout →","All done!":"Tout est fait !","Upcoming events":"Événements à venir","Calendar →":"Calendrier →","No events":"Aucun événement","Quick note":"Note rapide","Open →":"Ouvrir →","Activity":"Activité","Recent activity":"Activité récente","Clear":"Vider","Focus du jour":"Focus du jour","No goal for today...":"Pas d'objectif pour aujourd'hui...",
+    "Pomodoro":"Pomodoro","History →":"Historique →","Focus":"Focus","Short":"Court","Short break":"Pause courte","Long":"Long","Long break":"Pause longue","Controls":"Contrôles","Stats":"Stats","Weather":"Météo","Loading weather...":"Chargement météo...","Quote":"Citation","Quote of the day":"Citation du jour","Loading...":"Chargement...","Countdown":"Compte à rebours","Set":"Définir","No countdown set":"Aucun compte à rebours",
+    "Library":"Bibliothèque","Files & Links":"Fichiers & liens","All":"Tout","Files":"Fichiers","Links":"Liens","Images":"Images","No items yet. Click":"Aucun élément. Cliquez sur","Writing":"Écriture","Notes":"Notes","New note":"Nouvelle note","No note selected":"Aucune note sélectionnée","Select a note from the list or create a new one":"Sélectionnez une note dans la liste ou créez-en une","Auto-saved":"Sauvegardé automatiquement","Delete":"Supprimer","Markdown toolbar":"Barre Markdown","Copy":"Copier","0 chars":"0 caractère","0 words":"0 mot",
+    "Productivity":"Productivité","Tasks":"Tâches","Pending":"En cours","Done":"Terminées","High":"Priorité haute","New task":"Nouvelle tâche","To Do":"À faire","0 pending":"0 en cours","Completed":"Terminées","Clear all":"Tout vider","Nothing completed yet":"Rien de terminé pour l'instant","Daily routine":"Routine quotidienne","Habits":"Habitudes","New habit":"Nouvelle habitude","This week":"Cette semaine","No habits yet — add one!":"Aucune habitude — ajoutez-en une !","Streaks":"Séries","Complete habits to build streaks!":"Complétez vos habitudes pour créer une série !","Workflow":"Workflow","New card":"Nouvelle carte","Drop here":"Déposez ici","+ Add card":"+ Ajouter une carte","Schedule":"Planning","Add event":"Ajouter événement","All events":"Tous les événements","Clear past":"Effacer le passé","No events yet":"Aucun événement",
+    "Analytics":"Analyse","Statistics":"Statistiques","Present":"Présenter","Top KPIs":"KPIs principaux","Total items":"Total éléments","files & links":"fichiers & liens","Tasks completed":"Tâches terminées","all time":"depuis toujours","Best habit streak":"Meilleure série","days in a row":"jours d'affilée","Pomodoros":"Pomodoros","0h focus":"0h focus","Activity heatmap":"Heatmap d'activité","LAST 6 MONTHS":"6 DERNIERS MOIS","Less":"Moins","More":"Plus","Charts row":"Ligne graphiques","Activity chart":"Graphique d'activité","LAST 7 DAYS":"7 DERNIERS JOURS","Pomodoro chart":"Graphique Pomodoro","Tasks donut":"Répartition tâches","Habits completion":"Habitudes complétées","WEEKLY GOALS":"OBJECTIFS HEBDO","Weekly Goals":"Objectifs hebdo","+ New goal":"+ Nouvel objectif","Progress overview":"Vue de progression",
+    "Journal":"Journal","Daily entries with mood tracking":"Entrées quotidiennes avec suivi d'humeur","+ Today's entry":"+ Entrée du jour","Entries":"Entrées","Entry viewer/editor":"Lecteur/éditeur d'entrée","No entry selected":"Aucune entrée sélectionnée","Write today's entry to start your journal":"Écrivez l'entrée du jour pour commencer votre journal","Countdowns":"Comptes à rebours","Count down to your important events":"Suivez le temps restant avant vos événements importants","+ New countdown":"+ Nouveau compte à rebours","No countdowns yet":"Aucun compte à rebours","Add an event to start counting down":"Ajoutez un événement pour commencer","+ Add event":"+ Ajouter un événement",
+    "Your stats":"Vos stats","Your Valorant & League of Legends stats in real time":"Vos stats Valorant & League of Legends en temps réel","Not connected":"Non connecté","Connect":"Connecter","Disconnect":"Déconnecter","Region":"Région","Get key ↗":"Obtenir une clé ↗","League of Legends":"League of Legends","Enter your Summoner Name + your free Riot API key":"Entrez votre Summoner Name + votre clé Riot API gratuite","The Riot dev key is free but expires every 24h. Paste yours here.":"La clé développeur Riot est gratuite mais expire toutes les 24h. Collez-la ici.","Compare with Friends":"Comparer avec des amis","Compare your Valorant & Steam stats side by side":"Comparez vos stats Valorant & Steam côte à côte","Add friend":"Ajouter ami","+ Add friend":"+ Ajouter ami","Or pick from dashboard users":"Ou choisissez parmi les utilisateurs du dashboard","Results":"Résultats",
+    "Integrations":"Intégrations","Connections":"Connexions","Link your accounts to enrich your dashboard":"Connectez vos comptes pour enrichir votre dashboard","ETHONE AI — Groq API Key":"ETHONE IA — Clé API Groq","ETHONE AI KEY":"CLÉ ETHONE IA","Free key on":"Clé gratuite sur","Clé gratuite sur":"Clé gratuite sur","Key configured":"Clé configurée","Save":"Sauvegarder","Sidebar Widgets":"Widgets de sidebar","Toggle and reorder widgets shown in the sidebar":"Activez et réorganisez les widgets affichés dans la sidebar","Show your status, avatar and activity via Lanyard":"Affiche votre statut, avatar et activité via Lanyard","Sidebar":"Sidebar","Offline":"Hors ligne","Playing":"En jeu","Some badges (Nitro, etc.) cannot be detected automatically — check the ones you have.":"Certains badges (Nitro, etc.) ne peuvent pas être détectés automatiquement — cochez ceux que vous avez.","DISCORD USER ID":"ID UTILISATEUR DISCORD","Enable Developer Mode in Discord → right-click your name → Copy User ID":"Activez le mode développeur dans Discord → clic droit sur votre nom → Copier l'identifiant utilisateur","Show your status, current game and recent activity":"Affiche votre statut, jeu actuel et activité récente","View profile ↗":"Voir le profil ↗","Recent Games":"Jeux récents","Required for level":"Requis pour le niveau","How to get your free key:":"Comment obtenir votre clé gratuite :","Sign in with your Steam account":"Connectez-vous avec votre compte Steam","Click":"Cliquez","Register":"Register","copy the key":"copiez la clé","Key stored locally, never sent anywhere except Steam.":"Clé stockée localement, jamais envoyée ailleurs qu'à Steam.","Spotify — Now Playing":"Spotify — Lecture en cours","Show what you're listening to in the sidebar":"Affiche ce que vous écoutez dans la sidebar","Remove":"Supprimer","Get your widget URL at":"Récupérez l'URL du widget sur","Track up to 3 streamers — shows live ones in sidebar":"Suivez jusqu'à 3 streamers — affiche les lives dans la sidebar","Streamer list":"Liste des streamers","Add streamer":"Ajouter streamer","ADD STREAMER (max 3)":"AJOUTER STREAMER (max 3)","Show your music history and top artists in your sidebar":"Affiche votre historique musical et vos meilleurs artistes dans la sidebar","LAST.FM USERNAME":"NOM D'UTILISATEUR LAST.FM",
+    "Configuration":"Configuration","Settings":"Paramètres","Security":"Sécurité","Account":"Compte","Content":"Contenu","XP / Level":"XP / Niveau","Next level: 100 XP":"Niveau suivant : 100 XP","Complete tasks, pomodoros and notes to earn XP":"Terminez des tâches, pomodoros et notes pour gagner de l'XP","Quick stats":"Stats rapides","Identity":"Identité","Display name":"Nom affiché","Bio":"Bio","Social links":"Liens sociaux","Appearance":"Apparence","Avatar":"Avatar","Change avatar":"Changer l'avatar","Accent color":"Couleur d'accent","Custom color":"Couleur personnalisée","Animated background":"Fond animé","Profile banner":"Bannière de profil","Click to upload banner ·":"Cliquez pour importer une bannière ·","Sidebar layout":"Disposition sidebar","Drag to reorder · Toggle to show/hide":"Glissez pour réorganiser · Activez/désactivez l'affichage","Data":"Données","Export JSON":"Exporter JSON","Import JSON":"Importer JSON","Enable notifications":"Activer les notifications","Danger zone":"Zone dangereuse","Reset my data":"Réinitialiser mes données","Profile protection":"Protection du profil","Password protection":"Protection par mot de passe","Lock this profile with a PIN or password":"Verrouille ce profil avec un PIN ou un mot de passe","Type":"Type","PIN (4 digits)":"PIN (4 chiffres)","Password (text)":"Mot de passe (texte)","Set your 4-digit PIN":"Définissez votre PIN à 4 chiffres","Set your password":"Définissez votre mot de passe","Save protection":"Sauvegarder la protection","Protected with a":"Protégé avec un","Remove protection":"Supprimer la protection","Account info":"Infos du compte","Username":"Nom d'utilisateur","Session":"Session",
+    "Chats saved":"Chats sauvegardés","Saved chats":"Chats sauvegardés","Powered by Groq":"Propulsé par Groq","History":"Historique","Capabilities":"Capacités","New chat":"Nouveau chat","ETHONE AI has access to your dashboard context":"ETHONE IA a accès au contexte de votre dashboard","Summarize my tasks":"Résumer mes tâches","What should I focus on today?":"Sur quoi me concentrer aujourd'hui ?","Review my habits this week":"Analyser mes habitudes cette semaine","Help me write a note":"Aide-moi à écrire une note","Suggest a Pomodoro schedule":"Suggérer un planning Pomodoro","Ask anything about your dashboard…":"Posez une question sur votre dashboard…","Match Details":"Détails du match","Press ESC to exit":"Appuyez sur Échap pour quitter","Notifications":"Notifications","No notifications":"Aucune notification","navigate":"naviguer","select":"sélectionner","close":"fermer","Personalize ETHONE":"Personnaliser ETHONE","Accent, background and density. Saved locally, without touching Supabase data.":"Accent, arrière-plan et densité. Sauvegardé localement, sans toucher aux données Supabase.","Background":"Arrière-plan","Aurora":"Aurore","Grid":"Grille","Minimal":"Minimal","Compact density":"Densité compacte","Reduce spacing for power users.":"Réduit l'espacement pour les utilisateurs avancés.","Reduced motion":"Animations réduites","Keep transitions calmer.":"Rend les transitions plus calmes.","Close":"Fermer","Actions rapides ETHONE":"Actions rapides ETHONE","Dashboard — revenir à l’accueil":"Dashboard — revenir à l’accueil","Recherche globale / Command palette — Ctrl K":"Recherche globale / Palette de commandes — Ctrl K","Ouvrir la recherche globale":"Ouvrir la recherche globale","Notes — ouvrir tes notes":"Notes — ouvrir vos notes","Tasks — ouvrir tes tâches":"Tâches — ouvrir vos tâches","Personnalisation — thème, accent, background":"Personnalisation — thème, accent, arrière-plan","Ouvrir la personnalisation":"Ouvrir la personnalisation",
+    "New weekly goal":"Nouvel objectif hebdo","GOAL":"OBJECTIF","TARGET (optional)":"OBJECTIF CHIFFRÉ (optionnel)","EMOJI":"EMOJI","Cancel":"Annuler","Add goal":"Ajouter objectif","Journal entry":"Entrée de journal","MOOD":"HUMEUR","TITLE (optional)":"TITRE (optionnel)","WRITE":"ÉCRIRE","Save entry":"Sauvegarder l'entrée","New countdown":"Nouveau compte à rebours","EVENT NAME":"NOM DE L'ÉVÉNEMENT","DATE":"DATE","COLOR":"COULEUR","Add":"Ajouter","Link":"Lien","File":"Fichier","Folder":"Dossier","Image":"Image","Name":"Nom","NAME":"NOM","URL (link only)":"URL (lien uniquement)","File upload":"Import fichier","UPLOAD FILE":"IMPORTER UN FICHIER","Click to choose a file, or drag & drop":"Cliquez pour choisir un fichier ou glissez-déposez","Any file type · stored as link":"Tout type de fichier · stocké comme lien","Folder path (folder type)":"Chemin du dossier (type dossier)","FOLDER CONTENTS":"CONTENU DU DOSSIER","Click to choose a folder":"Cliquez pour choisir un dossier","Lists all files inside":"Liste tous les fichiers à l'intérieur","Image upload":"Import image","Click to choose an image":"Cliquez pour choisir une image","NOTES (optional)":"NOTES (optionnel)","New task":"Nouvelle tâche","TASK":"TÂCHE","PRIORITY":"PRIORITÉ","Normal":"Normal","Low":"Basse","DUE DATE":"DATE LIMITE","TAG":"TAG","Add task":"Ajouter tâche"
+  };
+  const ES={"Connections":"Conexiones","Integrations":"Integraciones","Link your accounts to enrich your dashboard":"Vincula tus cuentas para enriquecer tu dashboard","Settings":"Ajustes","Tasks":"Tareas","Notes":"Notas","Search everything…":"Buscar en todo…","Personalize ETHONE":"Personalizar ETHONE","Accent color":"Color de acento","Background":"Fondo","Compact density":"Densidad compacta","Reduced motion":"Movimiento reducido","Close":"Cerrar","Notifications":"Notificaciones","No notifications":"Sin notificaciones","Add item":"Añadir","Dashboard":"Dashboard","Profile":"Perfil","Security":"Seguridad","Account":"Cuenta","Save":"Guardar","Cancel":"Cancelar","Add":"Añadir","Connect":"Conectar","Disconnect":"Desconectar","Connected":"Conectado","Not connected":"No conectado","Refresh":"Actualizar"};
+  const DE={"Connections":"Verbindungen","Integrations":"Integrationen","Link your accounts to enrich your dashboard":"Verbinde deine Konten, um dein Dashboard zu erweitern","Settings":"Einstellungen","Tasks":"Aufgaben","Notes":"Notizen","Search everything…":"Alles suchen…","Personalize ETHONE":"ETHONE personalisieren","Accent color":"Akzentfarbe","Background":"Hintergrund","Compact density":"Kompakte Dichte","Reduced motion":"Reduzierte Bewegung","Close":"Schließen","Notifications":"Benachrichtigungen","No notifications":"Keine Benachrichtigungen","Add item":"Hinzufügen","Dashboard":"Dashboard","Profile":"Profil","Security":"Sicherheit","Account":"Konto","Save":"Speichern","Cancel":"Abbrechen","Add":"Hinzufügen","Connect":"Verbinden","Disconnect":"Trennen","Connected":"Verbunden","Not connected":"Nicht verbunden","Refresh":"Aktualisieren"};
+  const LANGS={fr:PHRASES,es:{...PHRASES,...ES},de:{...PHRASES,...DE},en:{}};
+  function getLang(){return String(window._lang||localStorage.getItem('nexus_lang')||localStorage.getItem('ethone_lang')||document.documentElement.lang||'fr').slice(0,2).toLowerCase();}
+  function clean(s){return String(s||'').replace(/\s+/g,' ').trim();}
+  function stripEmoji(s){return clean(String(s||'').replace(/^[\p{Emoji_Presentation}\p{Extended_Pictographic}\s]+/u,''));}
+  function tableFor(lang){return LANGS[lang]||LANGS.fr;}
+  function translateText(raw,lang){
+    const txt=clean(raw); if(!txt)return raw;
+    if(lang==='en')return raw;
+    const table=tableFor(lang);
+    if(table[txt]) return raw.replace(txt,table[txt]);
+    const se=stripEmoji(txt); if(se!==txt && table[se]) return raw.replace(se,table[se]);
+    return raw;
+  }
+  function walk(root,lang){
+    const skip='script,style,svg,canvas,input,textarea,select,code,kbd,[contenteditable="true"],.ai-message.user,.note-area,.modal-input';
+    const walker=document.createTreeWalker(root||document.body,NodeFilter.SHOW_TEXT,{acceptNode(node){
+      const p=node.parentElement; if(!p||p.closest(skip))return NodeFilter.FILTER_REJECT;
+      const tx=clean(node.nodeValue); if(!tx||!/[A-Za-z]/.test(tx))return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }});
+    const nodes=[]; while(walker.nextNode())nodes.push(walker.currentNode);
+    nodes.forEach(n=>{const next=translateText(n.nodeValue,lang); if(next!==n.nodeValue)n.nodeValue=next;});
+  }
+  function attrs(root,lang){
+    const table=tableFor(lang);
+    (root||document).querySelectorAll('[placeholder],[title],[aria-label],input[type="button"],input[type="submit"],button[value]').forEach(el=>{
+      ['placeholder','title','aria-label','value'].forEach(a=>{ if(!el.hasAttribute(a))return; const v=clean(el.getAttribute(a)); if(!v)return; const nv=table[v]||table[stripEmoji(v)]; if(nv)el.setAttribute(a,nv); });
+    });
+    const search=document.querySelector('.topbar .search-bar input,#global-search,#cmd-search'); if(search && lang==='fr')search.setAttribute('placeholder','Rechercher…');
+    const kbd=document.querySelectorAll('.eh-kbd-hint span'); kbd.forEach(s=>{if(lang==='fr')s.textContent='Ctrl K';});
+  }
+  function apply(){
+    const lang=getLang(); document.documentElement.lang=lang;
+    walk(document.body,lang); attrs(document,lang);
+    try{ if(window.updateAuthLangBar)window.updateAuthLangBar(); }catch(e){}
+  }
+  let timer=0; function schedule(){clearTimeout(timer); timer=setTimeout(apply,60);}
+  const oldSetLang=window.setLang;
+  if(typeof oldSetLang==='function' && !oldSetLang.__fullI18nWrapped){
+    window.setLang=function(l){const r=oldSetLang.apply(this,arguments);try{window._lang=l;localStorage.setItem('nexus_lang',l);localStorage.setItem('ethone_lang',l);}catch(e){} setTimeout(apply,30); return r;};
+    window.setLang.__fullI18nWrapped=true;
+  }
+  const oldSwitch=window.switchPage;
+  if(typeof oldSwitch==='function' && !oldSwitch.__i18nWrapped){
+    window.switchPage=function(){const r=oldSwitch.apply(this,arguments);setTimeout(apply,80);return r;}; window.switchPage.__i18nWrapped=true;
+  }
+  const oldOpen=window.openModal;
+  if(typeof oldOpen==='function' && !oldOpen.__i18nWrapped){
+    window.openModal=function(){const r=oldOpen.apply(this,arguments);setTimeout(apply,80);return r;}; window.openModal.__i18nWrapped=true;
+  }
+  try{new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true,characterData:true});}catch(e){}
+  window.ethoneApplyFullTranslations=apply;
+  window.ethoneI18nAudit=function(){
+    const lang=getLang(); const english=[];
+    const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode(n){const p=n.parentElement;if(!p||p.closest('script,style,svg,canvas,input,textarea,select'))return NodeFilter.FILTER_REJECT;const tx=clean(n.nodeValue);if(/[A-Za-z]{4,}/.test(tx)&&lang==='fr'&&!/[éèàçùêâîôûëïüÉÈÀÇÙ]/.test(tx))return NodeFilter.FILTER_ACCEPT;return NodeFilter.FILTER_REJECT;}});
+    while(walker.nextNode())english.push(clean(walker.currentNode.nodeValue));
+    console.table([...new Set(english)].slice(0,120)); return [...new Set(english)];
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(apply,80)); else setTimeout(apply,80);
+  setTimeout(apply,500); setTimeout(apply,1500);
 })();
 </script>
 

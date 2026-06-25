@@ -15,62 +15,21 @@ html, body { background: #09090b !important; }
 }
 </style>
 <script>
-// Détection GPU compositing pour backdrop-filter
-(function(){
-  // Tester via canvas - si le GPU est off, certaines ops canvas échouent
+// Simple failsafe - show auth if nothing visible after 3s
+setTimeout(function(){
   try{
-    const canvas=document.createElement('canvas');
-    canvas.width=1;canvas.height=1;
-    const ctx=canvas.getContext('webgl')||canvas.getContext('experimental-webgl');
-    if(!ctx){
-      // Pas de WebGL = pas de GPU compositing = backdrop-filter va planter
-      document.documentElement.classList.add('no-backdrop');
+    var boot=document.getElementById('ethone-boot-screen');
+    var auth=document.getElementById('auth-screen');
+    var mc=document.getElementById('main-content');
+    var ps=document.getElementById('profile-screen');
+    var nothingVisible=(!mc||mc.style.display!=='block')&&(!auth||auth.style.display==='none'||!auth.style.display)&&(!ps||ps.style.display!=='flex');
+    if(nothingVisible){
+      if(boot) boot.style.cssText='display:none!important';
+      var af=document.getElementById('anti-flash'); if(af) af.parentNode&&af.parentNode.removeChild(af);
+      if(auth) auth.style.cssText='position:fixed!important;top:0!important;left:0!important;right:0!important;bottom:0!important;z-index:10002!important;display:flex!important;align-items:center;justify-content:center;overflow:auto;background:#09090b!important;padding:20px';
     }
-  }catch(e){ document.documentElement.classList.add('no-backdrop'); }
-  // Aussi écouter les erreurs de shader
-  window.addEventListener('error',function(e){
-    if(e.message&&(e.message.includes('GpuShader')||e.message.includes('compositing'))){
-      document.documentElement.classList.add('no-backdrop');
-    }
-  },true);
-})();
-// Failsafe: remove anti-flash after 6s max no matter what
-setTimeout(function(){
-  var s=document.getElementById('anti-flash');
-  if(s) s.remove();
-  var boot=document.getElementById('ethone-boot-screen');
-  var sb=document.getElementById('main-sidebar');
-  var mc=document.getElementById('main-content');
-  // Si le boot est encore visible après 6s -> montrer l'auth proprement
-  if(boot&&boot.style.display!=='none'){
-    boot.style.display='none';
-    // Appeler showAuth() si disponible (applique i18n + animations)
-    if(typeof showAuth==='function'){
-      showAuth();
-    } else {
-      // Fallback minimal si JS pas encore parsé
-      var auth=document.getElementById('auth-screen');
-      if(auth){auth.style.display='flex';auth.style.opacity='1';}
-    }
-  }
-  // Si sidebar hidden mais mc visible -> forcer sidebar
-  if(sb&&mc&&sb.style.display==='none'&&mc.style.display!=='none'){
-    sb.style.display='flex';
-  }
-},6000);
-
-// Failsafe dashboard: si après 4s sidebar visible mais vide -> re-init
-setTimeout(function(){
-  var sb=document.getElementById('main-sidebar');
-  var nav=document.getElementById('sidebar-nav-main');
-  if(sb&&sb.style.display==='flex'&&nav&&!nav.children.length){
-    console.warn('[ETHONE] Dashboard failsafe: sidebar vide, re-init');
-    try{
-      if(typeof renderSidebarNav==='function') renderSidebarNav();
-      if(typeof initDashboard==='function') initDashboard();
-    }catch(e){}
-  }
-},4000);
+  }catch(e){}
+},3000);
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
@@ -82,19 +41,10 @@ setTimeout(function(){
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&family=Syne:wght@700;800;900&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
 <script>
-// Global error handler - catch toutes les erreurs au boot
+// Global error handler - log only, don't replace boot screen
 window.onerror = function(msg, src, line, col, err) {
-  var boot = document.getElementById('ethone-boot-screen');
-  if(boot) {
-    boot.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;gap:16px;padding:32px;text-align:center">'
-      + '<div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 32 32" fill="none"><path d="M8 8h16v3H11v4.5h12v3H11V23h13v3H8V8z" fill="white"/></svg></div>'
-      + '<div style="color:#f87171;font-size:13px;font-family:monospace">Erreur: ' + (msg||'Script error') + '</div>'
-      + '<div style="color:rgba(255,255,255,.4);font-size:11px;font-family:monospace">' + (src||'') + ':' + (line||'') + '</div>'
-      + '<button onclick="location.reload()" style="background:#7c3aed;border:none;border-radius:8px;color:#fff;padding:8px 20px;cursor:pointer;font-size:13px">Recharger</button>'
-      + '</div>';
-  }
-  console.error('NEXUS boot error:', msg, src, line, col, err);
-  return false;
+  console.error('[ETHONE] Error:', msg, src+':'+line);
+  // Don't return false - let errors show in console for debugging
 };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous" onerror="window._supabaseLoadError=true"></script>
@@ -364,7 +314,8 @@ label:not(.lb-label):not(.lb-check-row) {
 }
 
 /* ── MODALS ─────────────────────────────────────────────────── */
-.modal-overlay { background: rgba(0,0,0,.6); backdrop-filter: blur(4px); }
+.modal-overlay { display:none; position:fixed; inset:0; background: rgba(0,0,0,.65); backdrop-filter: blur(6px); z-index:10000; padding:16px; align-items:center; justify-content:center; }
+.modal-overlay.open { display:flex; animation:fadeIn .15s ease; }
 .modal {
   background: #111113; border: 1px solid rgba(255,255,255,.08); border-radius: 20px;
   box-shadow: 0 24px 80px rgba(0,0,0,.7); animation: scaleIn .18s var(--ease) both;
@@ -670,7 +621,7 @@ tbody tr:last-child td { border-bottom: none; }
   </div>
 </div>
 
-<div id="auth-screen" style="position:fixed;inset:0;z-index:10002;display:none;align-items:center;justify-content:center;overflow:auto;background:#09090b;padding:20px">
+<div id="auth-screen" style="position:fixed;top:0;left:0;right:0;bottom:0;z-index:10002;display:none;align-items:center;justify-content:center;overflow:auto;background:#09090b;padding:20px">
 
   <!-- Canvas particules -->
   <canvas id="auth-particles" style="position:absolute;inset:0;z-index:0;pointer-events:none"></canvas>
@@ -2785,7 +2736,7 @@ tbody tr:last-child td { border-bottom: none; }
 
 
 <!-- VALO MATCH DETAIL MODAL -->
-<div class="modal-overlay" id="modal-valo-match" onclick="closeModalIfOverlay(event,'valo-match')" style="z-index:10100">
+<div class="modal-overlay" id="modal-valo-match" onclick="closeModalIfOverlay(event,'valo-match')" style="display:none;z-index:10100">
   <div class="modal" style="max-width:720px;width:100%;max-height:88vh;overflow-y:auto">
     <div class="modal-header">
       <div class="modal-title" id="valo-match-title">Match Details</div>
@@ -14238,35 +14189,40 @@ function setBootStatus(msg){
 }
 
 function showAuth(){
-  clearTimeout(window._bootFailsafeTimer);
-  // Cacher boot
-  const boot=document.getElementById('ethone-boot-screen');
-  if(boot){ boot.style.cssText='display:none!important'; }
-  // Retirer anti-flash
-  const s=document.getElementById('anti-flash'); if(s) s.remove();
-  // Cacher dashboard
-  ['main-sidebar','main-content','profile-screen','password-screen'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.style.cssText='display:none!important';
-  });
-  // Afficher auth
-  const a=document.getElementById('auth-screen');
-  if(a){ a.style.cssText='position:fixed;inset:0;z-index:10002;display:flex!important;align-items:center;justify-content:center;overflow:auto;background:#09090b;padding:20px;opacity:1'; }
-  // Masquer les backgrounds animés sur l'auth screen
-  ['nexus-bg-layer','bg-canvas'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.style.opacity='0';
-  });
-  updateClock();
-  applyI18n();
-  updateAuthLangBar();
-  setTimeout(()=>{
-    if(typeof initAuthParticles==='function')initAuthParticles();
-    if(typeof animateAuthEntrance==='function')animateAuthEntrance();
-    // Auto-focus email field
-    const loginField=document.getElementById('auth-login-id');
-    if(loginField)loginField.focus();
-  },120);
+  try{ clearTimeout(window._bootFailsafeTimer); }catch(e){}
+  try{ clearTimeout(window._bootFailsafe2); }catch(e){}
+  // 1. Tuer le boot screen
+  try{
+    var boot=document.getElementById('ethone-boot-screen');
+    if(boot) boot.style.cssText='display:none!important;visibility:hidden!important';
+  }catch(e){}
+  // 2. Retirer l'anti-flash
+  try{
+    var af=document.getElementById('anti-flash');
+    if(af&&af.parentNode) af.parentNode.removeChild(af);
+  }catch(e){}
+  // 3. Cacher dashboard
+  try{
+    ['main-sidebar','main-content','profile-screen','password-screen'].forEach(function(id){
+      try{ var el=document.getElementById(id); if(el) el.style.cssText='display:none!important'; }catch(e){}
+    });
+  }catch(e){}
+  // 4. Afficher auth — c'est le seul truc qui compte
+  try{
+    var a=document.getElementById('auth-screen');
+    if(a){
+      a.style.cssText='position:fixed!important;inset:0!important;top:0!important;left:0!important;right:0!important;bottom:0!important;z-index:10002!important;display:flex!important;align-items:center;justify-content:center;overflow:auto;background:#09090b!important;padding:20px;opacity:1!important;visibility:visible!important';
+    }
+  }catch(e){}
+  // 5. Optionnel — tenter les fonctions UI mais ne pas planter si elles échouent
+  try{ updateClock(); }catch(e){}
+  try{ applyI18n(); }catch(e){}
+  try{ updateAuthLangBar(); }catch(e){}
+  try{
+    setTimeout(function(){
+      try{ var f=document.getElementById('auth-login-id'); if(f)f.focus(); }catch(e){}
+    },150);
+  }catch(e){}
 }
 
 function normalizeAllProfiles(){
@@ -14378,30 +14334,22 @@ function _goToDashboard(profileId){
     setTimeout(()=>{history.replaceState(null,'',window.location.pathname);},2000);
   }
 
-  // ── FAILSAFE ─────────────────────────────────────────────
-  // Plus long si retour OAuth (Supabase a besoin de temps pour échanger le token)
-  const _failsafeMs = _isOAuthCallback ? 7000 : 1500;
-  const _bootFailsafe=setTimeout(function(){
-    const as=document.getElementById('auth-screen');
-    const bs=document.getElementById('ethone-boot-screen');
-    const mc=document.getElementById('main-content');
-    const sb2=document.getElementById('main-sidebar');
-    const ps=document.getElementById('profile-screen');
-    // Si main-content est pas visible ET auth-screen pas visible → forcer auth
-    const mcVis=mc&&mc.style.display==='block';
-    const asVis=as&&as.style.display==='flex';
-    const psVis=ps&&ps.style.display==='flex';
-    if(!mcVis&&!asVis&&!psVis){
-      console.warn('[ETHONE] Failsafe: forcing showAuth()');
-      try{ showAuth(); }catch(e){
-        // Last resort
-        if(bs) bs.style.cssText='display:none!important';
-        const s=document.getElementById('anti-flash'); if(s) s.remove();
-        if(as) as.style.cssText='position:fixed;inset:0;z-index:10002;display:flex!important;align-items:center;justify-content:center;background:#09090b;padding:20px';
+  // ── FAILSAFE 1.5s ─────────────────────────────────────────
+  var _failsafeMs = 1500;
+  window._bootFailsafeTimer=setTimeout(function(){
+    try{
+      var mc=document.getElementById('main-content');
+      var as=document.getElementById('auth-screen');
+      var ps=document.getElementById('profile-screen');
+      var mcVis=mc&&mc.style.display==='block';
+      var asVis=as&&(as.style.display==='flex'||as.style.display==='block');
+      var psVis=ps&&(ps.style.display==='flex'||ps.style.display==='block');
+      if(!mcVis&&!asVis&&!psVis){
+        console.warn('[ETHONE] Failsafe 1.5s: forcing showAuth()');
+        showAuth();
       }
-    }
+    }catch(e){ try{showAuth();}catch(e2){} }
   }, _failsafeMs);
-  window._bootFailsafeTimer=_bootFailsafe;
 
   sb.auth.getSession().then(async({data:{session},error})=>{
     // If getSession fails or returns null, try getUser() as fallback

@@ -25819,6 +25819,203 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
   #auth-screen.ethone-auth-v3 .auth-v3-preview{filter:saturate(.72) contrast(.92)}
 }
 </style>
+<style id="ethone-auth-v5-final-refinement">
+/* Final visual refinement. No layout or authentication behavior changes. */
+#auth-screen.ethone-auth-v3{
+  background:
+    radial-gradient(ellipse 68% 58% at 16% 10%,rgba(139,92,246,.09),transparent 64%),
+    radial-gradient(ellipse 40% 44% at 78% 82%,rgba(124,58,237,.04),transparent 72%),
+    #050507!important;
+}
+#auth-screen.ethone-auth-v3::before{
+  opacity:.24;
+  background-size:5px 5px,76px 76px,76px 76px;
+}
+#auth-screen.ethone-auth-v3::after{
+  background:
+    radial-gradient(ellipse at center,transparent 52%,rgba(0,0,0,.62) 100%),
+    linear-gradient(120deg,rgba(139,92,246,.025),transparent 42%);
+}
+#auth-screen.ethone-auth-v3.ethone-auth-v3-visible{
+  gap:clamp(50px,6.4vw,112px);
+}
+.auth-v3-brand span,
+#auth-screen.ethone-auth-v3 #lb-box > div:first-of-type span{
+  letter-spacing:.02em!important;
+}
+.auth-v3-title{
+  max-width:610px;
+  font-size:clamp(42px,4.55vw,62px);
+  line-height:1.055;
+}
+.auth-v3-copy{
+  max-width:500px;
+  color:rgba(245,245,247,.60);
+  font-size:15px;
+  line-height:1.6;
+}
+.auth-v3-preview{
+  border-color:rgba(255,255,255,.08);
+  background:
+    linear-gradient(150deg,rgba(139,92,246,.028),transparent 40%),
+    rgba(10,10,13,.80);
+  box-shadow:0 24px 70px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.055);
+  opacity:.78;
+}
+.auth-v3-preview-top{padding:11px 12px}
+.auth-v3-brain-card,.auth-v3-mini,.auth-v3-flow{
+  background:linear-gradient(145deg,rgba(255,255,255,.028),rgba(255,255,255,.016));
+}
+.auth-v3-live i{
+  animation:authV5Presence 2.8s ease-in-out infinite;
+}
+.auth-v3-brain-status i{box-shadow:0 0 0 3px rgba(139,92,246,.08)}
+#auth-screen.ethone-auth-v3 #lb-box{
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.042),transparent 30%),
+    rgba(15,15,18,.91)!important;
+  border-color:rgba(255,255,255,.105)!important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.06) inset,
+    0 32px 88px rgba(0,0,0,.46),
+    0 0 0 1px rgba(0,0,0,.28)!important;
+  backdrop-filter:blur(10px) saturate(105%)!important;
+  -webkit-backdrop-filter:blur(10px) saturate(105%)!important;
+}
+#auth-screen.ethone-auth-v3 #lb-box::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  background:linear-gradient(115deg,rgba(255,255,255,.025),transparent 22%);
+}
+#auth-screen.ethone-auth-v3 #auth-form-header{margin-bottom:22px!important}
+#auth-screen.ethone-auth-v3 #auth-form-title{
+  font-size:33px!important;
+  letter-spacing:0!important;
+}
+#auth-screen.ethone-auth-v3 #auth-form-sub{
+  color:rgba(245,245,247,.57)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-tab{
+  color:rgba(245,245,247,.58)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-tab:hover:not(.lb-on){
+  color:rgba(245,245,247,.82)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-tab.lb-on{
+  color:#fff!important;
+  background:rgba(255,255,255,.065)!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.055),0 2px 8px rgba(0,0,0,.20)!important;
+}
+#auth-screen.ethone-auth-v3 label{color:rgba(245,245,247,.70)!important}
+#auth-screen.ethone-auth-v3 .lb-input{
+  color:#fafafa!important;
+  background:#0a0a0d!important;
+  border-color:rgba(255,255,255,.115)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.028)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-input::placeholder{
+  color:rgba(245,245,247,.46)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-input:hover{
+  background:#0d0d10!important;
+  border-color:rgba(255,255,255,.18)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-input:focus{
+  background:#0c0b11!important;
+  border-color:rgba(139,92,246,.78)!important;
+  box-shadow:0 0 0 3px rgba(139,92,246,.13),inset 0 1px 0 rgba(255,255,255,.03)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-input[aria-invalid="true"]{
+  border-color:rgba(248,113,113,.62)!important;
+  animation:authV5Invalid .22s ease-out;
+}
+#auth-screen.ethone-auth-v3 .lb-eye,
+#auth-screen.ethone-auth-v3 .ethone-eye-btn{
+  color:rgba(245,245,247,.60)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-social{
+  color:rgba(245,245,247,.80)!important;
+  border-color:rgba(255,255,255,.105)!important;
+}
+#auth-screen.ethone-auth-v3 #btn-google svg{
+  filter:grayscale(1);
+  opacity:.88;
+}
+#auth-screen.ethone-auth-v3 .lb-err{
+  color:#fecaca!important;
+  border-color:rgba(248,113,113,.24)!important;
+  background:rgba(127,29,29,.16)!important;
+  animation:authV5ErrorIn .2s ease-out;
+}
+#auth-screen.ethone-auth-v3 #auth-lang-bar{
+  top:clamp(20px,2.7vw,34px)!important;
+  right:clamp(20px,3vw,44px)!important;
+  min-height:40px;
+  padding:5px!important;
+  gap:3px!important;
+  border-radius:12px!important;
+  background:rgba(14,14,17,.94)!important;
+  border-color:rgba(255,255,255,.12)!important;
+  box-shadow:0 12px 34px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.035)!important;
+}
+#auth-screen.ethone-auth-v3 #auth-lang-bar button{
+  min-width:41px!important;
+  height:30px!important;
+  padding:0 10px!important;
+  border-radius:8px!important;
+  color:rgba(245,245,247,.68)!important;
+  font-size:11px!important;
+  font-weight:650!important;
+}
+#auth-screen.ethone-auth-v3 #auth-lang-bar button:hover{
+  color:#fff!important;
+  background:rgba(255,255,255,.065)!important;
+}
+#auth-screen.ethone-auth-v3 #auth-lang-bar button[aria-pressed="true"]{
+  color:#fff!important;
+  background:rgba(139,92,246,.72)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 3px 10px rgba(76,29,149,.22)!important;
+}
+#auth-screen.ethone-auth-v3 #auth-lang-bar button:focus-visible{
+  outline:2px solid rgba(196,181,253,.92)!important;
+  outline-offset:2px!important;
+}
+@keyframes authV5Presence{
+  0%,100%{opacity:.65}
+  50%{opacity:1}
+}
+@keyframes authV5ErrorIn{
+  from{opacity:0;transform:translateY(-3px)}
+  to{opacity:1;transform:none}
+}
+@keyframes authV5Invalid{
+  0%,100%{transform:translateX(0)}
+  50%{transform:translateX(2px)}
+}
+@media(max-width:1120px){
+  #auth-screen.ethone-auth-v3.ethone-auth-v3-visible{gap:28px}
+}
+@media(max-width:720px){
+  #auth-screen.ethone-auth-v3 #lb-box{
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+  }
+  #auth-screen.ethone-auth-v3 #auth-lang-bar{
+    top:13px!important;
+    right:14px!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .auth-v3-live i,
+  #auth-screen.ethone-auth-v3 .lb-err,
+  #auth-screen.ethone-auth-v3 .lb-input[aria-invalid="true"]{
+    animation:none!important;
+  }
+}
+</style>
 <script id="ethone-auth-v3-premium-experience">
 (function(){
   "use strict";
@@ -25831,12 +26028,37 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
     if(inline==="none")return false;
     return !!(el.offsetWidth||el.offsetHeight||el.getClientRects().length||inline==="flex"||inline==="grid"||inline==="block");
   }
+  function currentLanguage(){
+    try{
+      return String(window._lang||localStorage.getItem("nexus_lang")||localStorage.getItem("ethone_lang")||document.documentElement.lang||"fr").slice(0,2);
+    }catch(e){
+      return String(document.documentElement.lang||"fr").slice(0,2);
+    }
+  }
+  function syncLanguageControl(){
+    var bar=qs("#auth-lang-bar");
+    if(!bar)return;
+    var buttons=Array.prototype.slice.call(bar.querySelectorAll("button[data-l]"));
+    var styledActive=buttons.filter(function(btn){
+      var bg=(btn.style&&btn.style.background||"").replace(/\s+/g,"").toLowerCase();
+      return !!bg&&bg!=="transparent"&&bg!=="none"&&bg!=="rgba(0,0,0,0)";
+    });
+    var active=styledActive.length===1?(styledActive[0].getAttribute("data-l")||currentLanguage()):currentLanguage();
+    bar.setAttribute("role","group");
+    bar.setAttribute("aria-label","Language");
+    buttons.forEach(function(btn){
+      var code=btn.getAttribute("data-l")||"";
+      btn.type="button";
+      btn.setAttribute("aria-label",code.toUpperCase());
+      btn.setAttribute("aria-pressed",String(code===active));
+    });
+  }
   function heroMarkup(){
     return ''+
       '<section id="auth-v3-hero" aria-hidden="true">'+
         '<div class="auth-v3-brand"><div class="auth-v3-mark">E</div><span>ETHONE</span></div>'+
         '<h2 class="auth-v3-title">Your Personal <span>Operating System</span></h2>'+
-        '<p class="auth-v3-copy">A living workspace where Brain, Workspaces, Marketplace and your daily tools stay organized around the way you think.</p>'+
+        '<p class="auth-v3-copy">Brain, Workspaces and your tools, organized as one.</p>'+
         '<div class="auth-v3-preview">'+
           '<div class="auth-v3-preview-top">'+
             '<div class="auth-v3-rail">E</div>'+
@@ -25871,6 +26093,7 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
     if(!qs("#auth-v3-hero",screen)){
       card.insertAdjacentHTML("beforebegin",heroMarkup());
     }
+    syncLanguageControl();
     sync();
   }
   function sync(){
@@ -25886,6 +26109,7 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
         screen.style.setProperty("visibility","visible","important");
       }
     }
+    syncLanguageControl();
   }
   function boot(){
     apply();
@@ -25895,6 +26119,19 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
       setTimeout(sync,80);
       setTimeout(sync,700);
       setTimeout(sync,1800);
+      if(!screen.dataset.authV5LanguageSync){
+        screen.dataset.authV5LanguageSync="1";
+        screen.addEventListener("click",function(event){
+          if(event.target&&event.target.closest&&event.target.closest("#auth-lang-bar button[data-l]"))setTimeout(syncLanguageControl,0);
+        });
+      }
+      var languageBar=qs("#auth-lang-bar");
+      if(languageBar&&!languageBar.dataset.authV5StyleObserver){
+        languageBar.dataset.authV5StyleObserver="1";
+        try{
+          new MutationObserver(syncLanguageControl).observe(languageBar,{subtree:true,attributes:true,attributeFilter:["style"]});
+        }catch(e){}
+      }
     }
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});

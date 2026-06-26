@@ -47,15 +47,14 @@ html.ethone-safe-mode .particle{
     return false;
   }
   var authBoot=!safe&&!hasSupabaseSession();
-  var lightBoot=safe||authBoot;
+  var lightBoot=safe;
   window.ETHONE_SAFE_MODE=!!safe;
   window.ETHONE_AUTH_BOOT_MODE=!!authBoot;
   window.ETHONE_LIGHT_BOOT_MODE=!!lightBoot;
   window.ETHONE_DISABLE_NON_CRITICAL=!!lightBoot;
-  if(!lightBoot)return;
+  if(!safe)return;
 
   document.documentElement.classList.add("ethone-safe-mode");
-  document.documentElement.classList.toggle("ethone-auth-boot-mode",!!authBoot);
   window.__ethoneSkipServiceWorker=true;
   window.__ethoneSkipMarketplace=true;
   window.__ethoneSkipBrain=true;
@@ -65,10 +64,21 @@ html.ethone-safe-mode .particle{
   var nativeRAF=window.requestAnimationFrame;
   var nativeSetInterval=window.setInterval;
   var nativeFetch=window.fetch;
-  window.requestAnimationFrame=function(){return 0};
+  function authBootDashboardReady(){
+    return false;
+    var main=document.getElementById("main-content");
+    if(!main)return false;
+    var cs=getComputedStyle(main);
+    return cs.display!=="none"&&cs.visibility!=="hidden";
+  }
+  window.requestAnimationFrame=function(cb){
+    if(authBootDashboardReady()&&nativeRAF)return nativeRAF.call(window,cb);
+    return 0;
+  };
   window.cancelAnimationFrame=window.cancelAnimationFrame||function(){};
   window.setInterval=function(fn,delay){
     delay=Number(delay)||0;
+    if(authBootDashboardReady())return nativeSetInterval(fn,delay);
     if(delay<5000)return 0;
     return nativeSetInterval(fn,Math.max(delay,30000));
   };
@@ -78,6 +88,7 @@ html.ethone-safe-mode .particle{
       try{url=String((input&&input.url)||input||"")}catch(e){}
       var same=!url||url.charAt(0)==="/"||url.indexOf(location.origin)===0;
       var auth=/supabase\.co|cdn\.jsdelivr\.net\/npm\/@supabase|\/supabase\//i.test(url);
+      if(authBootDashboardReady())return nativeFetch.apply(this,arguments);
       if(!same&&!auth){
         return Promise.reject(new Error("ETHONE safe mode blocked non-critical request: "+url));
       }
@@ -23150,6 +23161,554 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
   setTimeout(bindAuth,1200);
 })();
 </script>
+<style id="ethone-v2-product-redesign">
+:root{
+  --v2-bg:#07070a;
+  --v2-bg-2:#0c0d12;
+  --v2-ink:#f7f7fb;
+  --v2-muted:rgba(247,247,251,.62);
+  --v2-soft:rgba(247,247,251,.38);
+  --v2-line:rgba(255,255,255,.105);
+  --v2-line-strong:rgba(255,255,255,.18);
+  --v2-surface:rgba(255,255,255,.055);
+  --v2-surface-2:rgba(255,255,255,.082);
+  --v2-surface-3:rgba(255,255,255,.12);
+  --v2-violet:#9d7cff;
+  --v2-violet-2:#6f4dff;
+  --v2-cyan:#67e8f9;
+  --v2-green:#36d399;
+  --v2-amber:#f7c86a;
+  --v2-red:#fb7185;
+  --v2-radius:18px;
+  --v2-radius-lg:28px;
+  --v2-shadow:0 24px 90px rgba(0,0,0,.42);
+  --v2-shadow-soft:0 14px 46px rgba(0,0,0,.28);
+  --v2-ease:cubic-bezier(.2,.8,.2,1);
+}
+html.ethone-v2-ready{color-scheme:dark}
+body.ethone-v2{
+  background:
+    radial-gradient(900px 540px at 42% -10%,rgba(112,77,255,.22),transparent 62%),
+    linear-gradient(180deg,#08080c 0%,#060609 52%,#090a10 100%)!important;
+  color:var(--v2-ink)!important;
+}
+body.ethone-v2::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  pointer-events:none;
+  background:
+    linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.014) 1px,transparent 1px);
+  background-size:52px 52px;
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.9),rgba(0,0,0,.25) 72%,transparent);
+}
+body.ethone-v2::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  opacity:.58;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+}
+body.ethone-v2 #main-sidebar{
+  width:248px!important;
+  padding:14px 10px!important;
+  background:linear-gradient(180deg,rgba(12,13,18,.92),rgba(7,8,12,.76))!important;
+  border-right:1px solid rgba(255,255,255,.105)!important;
+  box-shadow:14px 0 64px rgba(0,0,0,.34)!important;
+  backdrop-filter:blur(26px) saturate(132%)!important;
+}
+body.ethone-v2 #main-sidebar .logo{
+  height:48px!important;
+  margin:0 0 18px!important;
+  padding:0 10px!important;
+}
+body.ethone-v2 #main-sidebar .logo-icon{
+  width:30px!important;
+  height:30px!important;
+  border-radius:9px!important;
+  box-shadow:0 0 0 1px rgba(255,255,255,.16) inset,0 12px 34px rgba(112,77,255,.24)!important;
+}
+body.ethone-v2 #main-sidebar .logo-text{
+  font-size:12px!important;
+  letter-spacing:3px!important;
+  -webkit-text-fill-color:initial!important;
+  background:none!important;
+  color:#fff!important;
+}
+body.ethone-v2 .nav-section{gap:4px!important;margin-bottom:16px!important}
+body.ethone-v2 .nav-item{
+  min-height:40px!important;
+  border-radius:13px!important;
+  color:rgba(247,247,251,.62)!important;
+  border:1px solid transparent!important;
+  background:transparent!important;
+  transition:transform .22s var(--v2-ease),background .22s var(--v2-ease),border-color .22s var(--v2-ease),color .22s var(--v2-ease)!important;
+}
+body.ethone-v2 .nav-item:hover{
+  color:#fff!important;
+  background:rgba(255,255,255,.055)!important;
+  border-color:rgba(255,255,255,.08)!important;
+  transform:translateX(2px);
+}
+body.ethone-v2 .nav-item.active{
+  color:#fff!important;
+  background:linear-gradient(135deg,rgba(157,124,255,.34),rgba(111,77,255,.18))!important;
+  border-color:rgba(157,124,255,.34)!important;
+  box-shadow:0 12px 36px rgba(111,77,255,.18),inset 0 1px 0 rgba(255,255,255,.12)!important;
+}
+body.ethone-v2 .sidebar-footer{
+  padding:10px!important;
+  border-radius:18px!important;
+  background:rgba(255,255,255,.035)!important;
+  border:1px solid rgba(255,255,255,.075)!important;
+}
+body.ethone-v2 .user-card,.ethone-v2 .sb-widget-card{
+  border-radius:15px!important;
+  background:rgba(255,255,255,.052)!important;
+  border:1px solid rgba(255,255,255,.09)!important;
+}
+body.ethone-v2 #main-content{
+  padding:18px 20px 22px!important;
+  background:transparent!important;
+}
+body.ethone-v2 .tab-content{
+  animation:v2PageIn .34s var(--v2-ease);
+}
+@keyframes v2PageIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+body.ethone-v2 .topbar{
+  position:sticky!important;
+  top:12px!important;
+  z-index:60!important;
+  min-height:58px!important;
+  padding:10px 12px 10px 16px!important;
+  margin:0 0 18px!important;
+  border:1px solid rgba(255,255,255,.105)!important;
+  border-radius:22px!important;
+  background:linear-gradient(180deg,rgba(15,16,22,.82),rgba(11,12,17,.68))!important;
+  backdrop-filter:blur(22px) saturate(130%)!important;
+  box-shadow:0 18px 60px rgba(0,0,0,.22)!important;
+}
+body.ethone-v2 #page-dashboard>.topbar,
+body.ethone-v2 #page-dashboard>#profile-banner{display:none!important}
+body.ethone-v2 .page-title,body.ethone-v2 .section-title{
+  color:#fff!important;
+  font:800 25px/1.05 var(--font-display),Inter,sans-serif!important;
+  letter-spacing:0!important;
+}
+body.ethone-v2 .page-subtitle,body.ethone-v2 .section-eyebrow{
+  color:var(--v2-muted)!important;
+}
+body.ethone-v2 .topbar-actions{gap:8px!important}
+body.ethone-v2 .search-bar{
+  width:240px!important;
+  height:38px!important;
+  border-radius:14px!important;
+  background:rgba(255,255,255,.055)!important;
+  border:1px solid rgba(255,255,255,.105)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06)!important;
+}
+body.ethone-v2 button,body.ethone-v2 .btn,body.ethone-v2 input,body.ethone-v2 textarea,body.ethone-v2 select{
+  font-family:Inter,system-ui,sans-serif!important;
+}
+body.ethone-v2 .btn,body.ethone-v2 .btn-primary,body.ethone-v2 .btn-ghost,body.ethone-v2 .panel-action{
+  border-radius:13px!important;
+  transition:transform .18s var(--v2-ease),background .18s var(--v2-ease),border-color .18s var(--v2-ease),box-shadow .18s var(--v2-ease)!important;
+}
+body.ethone-v2 .btn:hover,body.ethone-v2 .panel-action:hover{transform:translateY(-1px)}
+body.ethone-v2 .btn-primary{
+  background:linear-gradient(135deg,var(--v2-violet),var(--v2-violet-2))!important;
+  box-shadow:0 12px 34px rgba(111,77,255,.26),inset 0 1px 0 rgba(255,255,255,.2)!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+}
+body.ethone-v2 .panel,body.ethone-v2 .stat-card,body.ethone-v2 .conn-card,body.ethone-v2 .game-card,
+body.ethone-v2 .settings-card,body.ethone-v2 .kanban-col,body.ethone-v2 .countdown-card,
+body.ethone-v2 .goal-card,body.ethone-v2 .journal-entry,body.ethone-v2 .note-item{
+  border-radius:var(--v2-radius)!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.068),rgba(255,255,255,.038))!important;
+  border:1px solid rgba(255,255,255,.105)!important;
+  box-shadow:var(--v2-shadow-soft)!important;
+  backdrop-filter:blur(20px) saturate(120%)!important;
+}
+body.ethone-v2 .panel:hover,body.ethone-v2 .stat-card:hover,body.ethone-v2 .conn-card:hover,
+body.ethone-v2 .game-card:hover,body.ethone-v2 .settings-card:hover{
+  border-color:rgba(157,124,255,.24)!important;
+  transform:translateY(-1px);
+}
+body.ethone-v2 .panel-header{border-bottom-color:rgba(255,255,255,.07)!important}
+body.ethone-v2 .panel-title,body.ethone-v2 .game-card-title{
+  color:#fff!important;
+  font-weight:760!important;
+  letter-spacing:0!important;
+}
+body.ethone-v2 .empty-state{
+  border-radius:18px!important;
+  color:var(--v2-muted)!important;
+  background:linear-gradient(135deg,rgba(255,255,255,.035),rgba(157,124,255,.04))!important;
+  border:1px dashed rgba(255,255,255,.12)!important;
+}
+body.ethone-v2 .stats-row{
+  display:grid!important;
+  grid-template-columns:1.35fr 1fr 1fr 1fr!important;
+  gap:12px!important;
+}
+body.ethone-v2 #page-dashboard>.stats-row{margin:12px 0 14px!important}
+body.ethone-v2 .stat-card{
+  min-height:120px!important;
+  padding:18px!important;
+  overflow:hidden!important;
+  position:relative!important;
+}
+body.ethone-v2 .stat-card::after{
+  content:"";
+  position:absolute;
+  inset:auto -24px -42px auto;
+  width:118px;
+  height:118px;
+  border-radius:50%;
+  background:radial-gradient(circle, color-mix(in srgb, var(--card-accent, var(--v2-violet)) 38%, transparent), transparent 68%);
+  opacity:.7;
+}
+body.ethone-v2 .stat-label{color:var(--v2-soft)!important;font-size:11px!important;letter-spacing:.08em!important;text-transform:uppercase!important}
+body.ethone-v2 .stat-value,body.ethone-v2 .clock-display{font:850 34px/1 var(--font-display),Inter,sans-serif!important;color:#fff!important;letter-spacing:0!important}
+.ethone-v2-home{
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0,1.35fr) minmax(330px,.72fr);
+  gap:14px;
+  margin:0 0 14px;
+}
+.v2-hero{
+  position:relative;
+  min-height:330px;
+  overflow:hidden;
+  border-radius:30px;
+  border:1px solid rgba(255,255,255,.12);
+  background:
+    linear-gradient(135deg,rgba(13,14,20,.66),rgba(9,10,15,.92)),
+    radial-gradient(700px 300px at 70% 0%,rgba(157,124,255,.24),transparent 64%),
+    linear-gradient(160deg,#10111a,#08090d);
+  box-shadow:var(--v2-shadow);
+}
+.v2-hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(180deg,transparent 0%,rgba(7,7,10,.24) 62%,rgba(7,7,10,.78) 100%),
+    radial-gradient(900px 260px at 50% 8%,rgba(103,232,249,.10),transparent 70%);
+  pointer-events:none;
+}
+.v2-horizon{
+  position:absolute;
+  inset:auto 0 0;
+  height:54%;
+  opacity:.78;
+  background:
+    linear-gradient(150deg,transparent 0 35%,rgba(255,255,255,.06) 35% 36%,transparent 36%),
+    linear-gradient(18deg,transparent 0 42%,rgba(157,124,255,.12) 42% 43%,transparent 43%),
+    linear-gradient(to top,rgba(0,0,0,.62),transparent 74%);
+  clip-path:polygon(0 78%,10% 48%,22% 64%,36% 32%,50% 68%,65% 22%,76% 55%,88% 28%,100% 70%,100% 100%,0 100%);
+}
+.v2-hero-content{position:relative;z-index:2;padding:28px;display:grid;gap:26px;height:100%}
+.v2-command-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.v2-command-search{
+  min-width:260px;
+  height:42px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:0 12px;
+  border-radius:15px;
+  background:rgba(0,0,0,.28);
+  border:1px solid rgba(255,255,255,.11);
+  color:var(--v2-muted);
+  cursor:pointer;
+}
+.v2-kbd{margin-left:auto;color:var(--v2-soft);font:700 10px/1 var(--mono);border:1px solid rgba(255,255,255,.11);border-radius:8px;padding:5px 7px;background:rgba(255,255,255,.04)}
+.v2-hero-title{max-width:760px}
+.v2-hero-title h1{margin:0 0 8px;color:#fff;font:850 clamp(34px,4.5vw,62px)/.96 var(--font-display),Inter,sans-serif;letter-spacing:0}
+.v2-hero-title p{margin:0;color:rgba(247,247,251,.7);font-size:15px;line-height:1.55;max-width:620px}
+.v2-context-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:auto}
+.v2-context-item{
+  padding:13px;
+  min-height:72px;
+  border-radius:17px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.055);
+  backdrop-filter:blur(14px);
+}
+.v2-context-item span{display:block;color:var(--v2-soft);font:750 10px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;margin-bottom:8px}
+.v2-context-item strong{display:block;color:#fff;font:800 18px/1.05 Inter,sans-serif}
+.v2-side{display:grid;gap:14px}
+.v2-brain-panel,.v2-focus-panel,.v2-flow-panel,.v2-widget{
+  border-radius:24px;
+  border:1px solid rgba(255,255,255,.11);
+  background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.043));
+  box-shadow:var(--v2-shadow-soft);
+  backdrop-filter:blur(22px) saturate(125%);
+}
+.v2-brain-panel{padding:20px;min-height:220px;background:linear-gradient(145deg,rgba(157,124,255,.15),rgba(255,255,255,.045) 52%,rgba(103,232,249,.055))}
+.v2-panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}
+.v2-panel-title{display:flex;align-items:center;gap:10px;color:#fff;font:780 14px/1 Inter,sans-serif}
+.v2-orbit{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(157,124,255,.16);border:1px solid rgba(157,124,255,.28);box-shadow:0 0 28px rgba(157,124,255,.22)}
+.v2-brain-text{color:rgba(247,247,251,.74);font-size:13px;line-height:1.58;margin-bottom:16px}
+.v2-brain-actions{display:grid;gap:8px}
+.v2-brain-action,.v2-mini-action{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  width:100%;
+  min-height:40px;
+  padding:0 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(0,0,0,.18);
+  color:rgba(247,247,251,.78);
+  cursor:pointer;
+}
+.v2-brain-action:hover,.v2-mini-action:hover{background:rgba(157,124,255,.14);border-color:rgba(157,124,255,.28);color:#fff}
+.v2-flow-panel{padding:16px}
+.v2-flow-list{display:grid;gap:9px}
+.v2-flow-item{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:10px;border-radius:15px;background:rgba(255,255,255,.038);border:1px solid rgba(255,255,255,.07)}
+.v2-flow-dot{width:9px;height:9px;border-radius:50%;background:var(--v2-violet);box-shadow:0 0 18px rgba(157,124,255,.5)}
+.v2-flow-item strong{font-size:13px;color:#fff}
+.v2-flow-item span{font-size:11px;color:var(--v2-soft)}
+.v2-flow-time{font:700 11px/1 var(--mono);color:var(--v2-muted)}
+.v2-widget-grid{display:grid;grid-template-columns:1.08fr .92fr .95fr;gap:14px;margin-bottom:14px}
+.v2-widget{padding:16px;min-height:180px;position:relative;overflow:hidden}
+.v2-widget.tall{min-height:260px}
+.v2-widget.wide{grid-column:span 2}
+.v2-widget::after{content:"";position:absolute;inset:auto -34px -54px auto;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(157,124,255,.16),transparent 67%);pointer-events:none}
+.v2-widget h3{position:relative;margin:0 0 12px;color:#fff;font:800 15px/1.15 Inter,sans-serif}
+.v2-widget p{position:relative;margin:0;color:var(--v2-muted);font-size:12.5px;line-height:1.48}
+.v2-tasks{display:grid;gap:8px;margin-top:12px}
+.v2-task{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.065);color:rgba(247,247,251,.82);font-size:13px}
+.v2-task i{width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(255,255,255,.24);flex:0 0 auto}
+.v2-spark{display:flex;align-items:end;gap:5px;height:72px;margin-top:18px}
+.v2-spark span{flex:1;min-width:8px;border-radius:999px;background:linear-gradient(180deg,var(--v2-violet),rgba(157,124,255,.18));box-shadow:0 10px 26px rgba(157,124,255,.18)}
+.v2-activity{display:grid;gap:9px;margin-top:12px}
+.v2-activity div{display:flex;align-items:center;justify-content:space-between;gap:10px;color:rgba(247,247,251,.72);font-size:12.5px}
+.v2-pill{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:7px 9px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);color:var(--v2-muted);font-size:11px}
+.v2-section-title{margin:8px 0 12px;display:flex;align-items:center;justify-content:space-between;color:#fff}
+.v2-section-title h2{margin:0;font:820 20px/1.15 var(--font-display),Inter,sans-serif}
+.v2-section-title span{color:var(--v2-soft);font-size:12px}
+body.ethone-v2 .kanban-board{gap:12px!important}
+body.ethone-v2 .kanban-col:nth-child(1){background:linear-gradient(180deg,rgba(251,113,133,.09),rgba(255,255,255,.035))!important}
+body.ethone-v2 .kanban-col:nth-child(2){background:linear-gradient(180deg,rgba(247,200,106,.09),rgba(255,255,255,.035))!important}
+body.ethone-v2 .kanban-col:nth-child(3){background:linear-gradient(180deg,rgba(54,211,153,.09),rgba(255,255,255,.035))!important}
+body.ethone-v2 .cal-grid,body.ethone-v2 .grid-2,body.ethone-v2 .grid-3{gap:14px!important}
+body.ethone-v2 #page-marketplace .panel,body.ethone-v2 #page-store .panel,
+body.ethone-v2 #page-ai .panel{background:linear-gradient(145deg,rgba(157,124,255,.10),rgba(255,255,255,.04))!important}
+body.ethone-v2 .modal-content{
+  border-radius:24px!important;
+  background:linear-gradient(180deg,rgba(18,19,27,.98),rgba(9,10,15,.98))!important;
+  border:1px solid rgba(255,255,255,.13)!important;
+  box-shadow:0 34px 120px rgba(0,0,0,.58)!important;
+}
+body.ethone-v2 :focus-visible{outline:2px solid rgba(157,124,255,.82)!important;outline-offset:3px!important}
+@media(max-width:1180px){
+  .ethone-v2-home{grid-template-columns:1fr}
+  .v2-widget-grid{grid-template-columns:1fr 1fr}
+  body.ethone-v2 .stats-row{grid-template-columns:1fr 1fr!important}
+}
+@media(max-width:760px){
+  body.ethone-v2 #main-content{padding:68px 12px 18px!important}
+  .ethone-v2-home,.v2-widget-grid{grid-template-columns:1fr}
+  .v2-widget.wide{grid-column:auto}
+  .v2-context-strip{grid-template-columns:1fr 1fr}
+  .v2-command-row{align-items:flex-start;flex-direction:column}
+  .v2-command-search{width:100%;min-width:0}
+  .v2-hero-content{padding:20px}
+  body.ethone-v2 .stats-row{grid-template-columns:1fr!important}
+}
+@media(prefers-reduced-motion:reduce){
+  body.ethone-v2 *,body.ethone-v2 *::before,body.ethone-v2 *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+<script id="ethone-v2-product-redesign">
+(function(){
+  "use strict";
+  if(window.__ethoneV2ProductRedesign)return;
+  window.__ethoneV2ProductRedesign=true;
+  var renderTimer=0;
+  function qs(s,r){return (r||document).querySelector(s)}
+  function qsa(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+  function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+  function profile(){
+    try{return typeof window.curP==="function"?window.curP():null}catch(e){return null}
+  }
+  function state(){
+    var p=profile();
+    return p&&p.state?p.state:{};
+  }
+  function nowPhase(){
+    var h=new Date().getHours();
+    if(h<5)return {name:"Night",greeting:"Quiet night",tone:"Plan lightly and keep the workspace calm."};
+    if(h<12)return {name:"Morning",greeting:"Good morning",tone:"Start with focus, then clear the small things."};
+    if(h<18)return {name:"Afternoon",greeting:"Good afternoon",tone:"Keep momentum with the next useful action."};
+    return {name:"Evening",greeting:"Good evening",tone:"Review, close loops, and prepare tomorrow."};
+  }
+  function counts(){
+    var s=state();
+    var todos=Array.isArray(s.todos)?s.todos:[];
+    var notes=Array.isArray(s.notes)?s.notes:[];
+    var items=Array.isArray(s.items)?s.items:[];
+    var habits=Array.isArray(s.habits)?s.habits:[];
+    var events=Array.isArray(s.events)?s.events:[];
+    var done=todos.filter(function(t){return !!t.done}).length;
+    return {todos:todos,notes:notes,items:items,habits:habits,events:events,open:todos.length-done,done:done,files:items.length,links:items.filter(function(i){return i&&i.type==="link"}).length};
+  }
+  function bestAction(c){
+    if(c.open>0)return "Brain suggests prioritizing "+c.open+" open task"+(c.open>1?"s":"")+" before opening new work.";
+    if(c.events.length)return "Brain suggests reviewing today's schedule and preparing the next transition.";
+    if(c.notes.length)return "Brain found recent notes that can be organized into a cleaner workspace.";
+    return "Brain is ready to help shape this workspace. Add tasks, notes, files or widgets to make it personal.";
+  }
+  function shortDate(){
+    try{return new Date().toLocaleDateString((window._lang||"fr"),{weekday:"long",day:"numeric",month:"long"})}catch(e){return new Date().toDateString()}
+  }
+  function nextItems(list,n,map){
+    return list.slice(0,n).map(map).join("")||"";
+  }
+  function ensureHome(){
+    var page=qs("#page-dashboard");
+    if(!page)return;
+    if(!qs("#ethone-v2-home",page)){
+      page.insertAdjacentHTML("afterbegin",
+        '<section class="ethone-v2-home" id="ethone-v2-home">'+
+          '<div class="v2-hero">'+
+            '<div class="v2-horizon"></div>'+
+            '<div class="v2-hero-content">'+
+              '<div class="v2-command-row">'+
+                '<button class="v2-command-search" type="button" data-v2-action="search"><span>Search ETHONE</span><span class="v2-kbd">Ctrl K</span></button>'+
+                '<div class="v2-pill" id="v2-workspace-pill">Workspace: Personal</div>'+
+              '</div>'+
+              '<div class="v2-hero-title"><h1 id="v2-greeting">Good afternoon</h1><p id="v2-tone">ETHONE is organizing your day.</p></div>'+
+              '<div class="v2-context-strip">'+
+                '<div class="v2-context-item"><span>Today</span><strong id="v2-today">-</strong></div>'+
+                '<div class="v2-context-item"><span>Focus</span><strong id="v2-focus">Ready</strong></div>'+
+                '<div class="v2-context-item"><span>Recent</span><strong id="v2-recent">0 items</strong></div>'+
+                '<div class="v2-context-item"><span>Connected</span><strong id="v2-connected">Services</strong></div>'+
+              '</div>'+
+            '</div>'+
+          '</div>'+
+          '<aside class="v2-side">'+
+            '<div class="v2-brain-panel">'+
+              '<div class="v2-panel-head"><div class="v2-panel-title"><span class="v2-orbit">AI</span><span>Brain suggests</span></div><button class="v2-mini-action" type="button" data-v2-page="ai">Open</button></div>'+
+              '<div class="v2-brain-text" id="v2-brain-text">Brain is reading your context.</div>'+
+              '<div class="v2-brain-actions">'+
+                '<button class="v2-brain-action" type="button" data-v2-page="todos"><span>Organize priorities</span><span>-></span></button>'+
+                '<button class="v2-brain-action" type="button" data-v2-page="marketplace"><span>Recommend widgets</span><span>-></span></button>'+
+                '<button class="v2-brain-action" type="button" data-v2-page="workspaces"><span>Prepare workspace</span><span>-></span></button>'+
+              '</div>'+
+            '</div>'+
+            '<div class="v2-flow-panel">'+
+              '<div class="v2-panel-head"><div class="v2-panel-title">Today flow</div><button class="v2-mini-action" type="button" data-v2-page="calendar">Calendar</button></div>'+
+              '<div class="v2-flow-list" id="v2-flow-list"></div>'+
+            '</div>'+
+          '</aside>'+
+        '</section>'+
+        '<section class="v2-section-title"><h2>Live workspace</h2><span>Widgets now adapt to their purpose</span></section>'+
+        '<section class="v2-widget-grid" id="ethone-v2-widgets">'+
+          '<article class="v2-widget tall"><h3>Priority stack</h3><p>Open work ordered for the current moment.</p><div class="v2-tasks" id="v2-priority-stack"></div></article>'+
+          '<article class="v2-widget"><h3>Momentum</h3><p id="v2-momentum-copy">Activity signal</p><div class="v2-spark" id="v2-spark"></div></article>'+
+          '<article class="v2-widget"><h3>Recent memory</h3><p>Notes and files that are still warm.</p><div class="v2-activity" id="v2-recent-memory"></div></article>'+
+          '<article class="v2-widget wide"><h3>Connected signals</h3><p id="v2-connected-copy">Spotify, Discord, GitHub and services stay available without taking over the page.</p><div class="v2-activity" id="v2-signal-list"></div></article>'+
+          '<article class="v2-widget"><h3>Marketplace fit</h3><p id="v2-market-copy">Brain can recommend the next widget or layout based on how you actually work.</p><button class="v2-brain-action" type="button" data-v2-page="marketplace"><span>Explore recommendations</span><span>-></span></button></article>'+
+        '</section>'
+      );
+      page.addEventListener("click",function(e){
+        var action=e.target.closest("[data-v2-action]");
+        if(action&&action.dataset.v2Action==="search"){
+          if(typeof window.openCmdPalette==="function")window.openCmdPalette();
+          return;
+        }
+        var target=e.target.closest("[data-v2-page]");
+        if(target&&typeof window.switchPage==="function"){
+          window.switchPage(target.dataset.v2Page,null);
+        }
+      });
+    }
+  }
+  function renderHome(){
+    ensureHome();
+    var home=qs("#ethone-v2-home");
+    if(!home)return;
+    var c=counts();
+    var s=state();
+    var p=profile();
+    var phase=nowPhase();
+    var name=(p&&p.name)||s.username||"there";
+    var workspace=localStorage.getItem("ethone:active-workspace")||localStorage.getItem("ethone:dashboard-os2")||"Personal";
+    var focus=s.dailyFocus||((c.open>0&&c.todos.find(function(t){return !t.done})||{}).text)||"Ready";
+    qs("#v2-greeting").textContent=phase.greeting+", "+name;
+    qs("#v2-tone").textContent=phase.tone;
+    qs("#v2-today").textContent=shortDate();
+    qs("#v2-focus").textContent=String(focus).slice(0,28);
+    qs("#v2-recent").textContent=c.files+" item"+(c.files===1?"":"s");
+    qs("#v2-connected").textContent=(s.connections&&Object.keys(s.connections).length?Object.keys(s.connections).length:"Ready")+" services";
+    qs("#v2-workspace-pill").textContent="Workspace: "+String(workspace).slice(0,34);
+    qs("#v2-brain-text").textContent=bestAction(c);
+    var flow=qs("#v2-flow-list");
+    if(flow){
+      var events=c.events.slice(0,4);
+      flow.innerHTML=events.length?events.map(function(ev){
+        return '<div class="v2-flow-item"><span class="v2-flow-dot"></span><div><strong>'+esc(ev.title||ev.name||"Event")+'</strong><span>'+esc(ev.note||ev.desc||"Scheduled")+'</span></div><span class="v2-flow-time">'+esc(ev.time||ev.date||"Today")+'</span></div>';
+      }).join(""):[
+        '<div class="v2-flow-item"><span class="v2-flow-dot"></span><div><strong>No fixed events</strong><span>Use the calendar to shape the day.</span></div><span class="v2-flow-time">Open</span></div>',
+        '<div class="v2-flow-item"><span class="v2-flow-dot" style="background:var(--v2-green)"></span><div><strong>Focus block</strong><span>'+esc(phase.name)+' workspace is ready.</span></div><span class="v2-flow-time">Now</span></div>'
+      ].join("");
+    }
+    var stack=qs("#v2-priority-stack");
+    if(stack){
+      var open=c.todos.filter(function(t){return !t.done}).slice(0,5);
+      stack.innerHTML=open.length?open.map(function(t){return '<div class="v2-task"><i></i><span>'+esc(t.text||t.title||"Untitled task")+'</span></div>'}).join(""):'<div class="v2-task"><i style="border-color:var(--v2-green);background:rgba(54,211,153,.22)"></i><span>No urgent tasks. Capture the next useful action.</span></div>';
+    }
+    var spark=qs("#v2-spark");
+    if(spark){
+      var values=[c.done+1,c.open+2,c.notes.length+1,c.files+1,c.habits.length+2,Math.max(2,c.links+1),c.events.length+1];
+      var max=Math.max.apply(Math,values);
+      spark.innerHTML=values.map(function(v){return '<span style="height:'+Math.max(18,Math.round(v/max*72))+'px"></span>'}).join("");
+    }
+    var momentum=qs("#v2-momentum-copy");
+    if(momentum)momentum.textContent=c.done+" tasks completed, "+c.open+" open, "+c.notes.length+" notes in memory.";
+    var recent=qs("#v2-recent-memory");
+    if(recent){
+      var merged=[].concat(c.notes.map(function(n){return {label:n.title||"Note",meta:"Note"}}),c.items.map(function(i){return {label:i.name||i.title||i.url||"Item",meta:i.type||"File"}})).slice(0,4);
+      recent.innerHTML=merged.length?merged.map(function(x){return '<div><span>'+esc(String(x.label).slice(0,34))+'</span><em>'+esc(x.meta)+'</em></div>'}).join(""):'<div><span>No recent memory yet</span><em>Ready</em></div>';
+    }
+    var signals=qs("#v2-signal-list");
+    if(signals){
+      var con=s.connections||{};
+      var names=Object.keys(con).slice(0,4);
+      signals.innerHTML=(names.length?names:["Brain","Marketplace","Workspaces"]).map(function(k){return '<div><span>'+esc(k)+'</span><em>Available</em></div>'}).join("");
+    }
+  }
+  function apply(){
+    document.body.classList.add("ethone-v2");
+    document.documentElement.classList.add("ethone-v2-ready");
+    renderHome();
+  }
+  function schedule(){
+    clearTimeout(renderTimer);
+    renderTimer=setTimeout(apply,120);
+  }
+  window.ethoneV2Render=renderHome;
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",schedule,{once:true});else schedule();
+  window.addEventListener("storage",schedule);
+  document.addEventListener("click",function(e){
+    if(e.target.closest(".nav-item,.panel-action,.btn,.stat-card"))setTimeout(schedule,180);
+  },true);
+  setTimeout(schedule,900);
+  setTimeout(schedule,2400);
+  setInterval(renderHome,30000);
+})();
+</script>
 <style id="ethone-auth-interactivity-emergency-css">
 #auth-screen{pointer-events:auto!important}
 #auth-card,#lb-box,#auth-lang-bar,#auth-screen form,#auth-screen button,#auth-screen input{pointer-events:auto!important}
@@ -23413,6 +23972,487 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",bind,{once:true});else bind();
   setTimeout(bind,300);
   setTimeout(bind,1500);
+})();
+</script>
+<style id="ethone-2026-experience-redesign">
+body.ethone-2026-ui{
+  --x-bg:#050509;
+  --x-panel:rgba(255,255,255,.072);
+  --x-panel-2:rgba(255,255,255,.045);
+  --x-line:rgba(255,255,255,.12);
+  --x-line-soft:rgba(255,255,255,.075);
+  --x-text:#fbfbff;
+  --x-muted:rgba(251,251,255,.62);
+  --x-dim:rgba(251,251,255,.38);
+  --x-purple:#a78bfa;
+  --x-blue:#7dd3fc;
+  --x-green:#4ade80;
+  --x-yellow:#facc15;
+  --x-red:#fb7185;
+  --x-radius:22px;
+  background:
+    radial-gradient(900px 460px at 45% -18%,rgba(167,139,250,.22),transparent 58%),
+    radial-gradient(760px 420px at 92% 16%,rgba(125,211,252,.12),transparent 62%),
+    linear-gradient(180deg,#06060a,#050509 44%,#090a10)!important;
+}
+body.ethone-2026-ui #main-sidebar{
+  width:76px!important;
+  min-width:76px!important;
+  max-width:76px!important;
+  flex:0 0 76px!important;
+  padding:16px 10px!important;
+  background:rgba(7,8,12,.72)!important;
+  border-right:1px solid rgba(255,255,255,.10)!important;
+  backdrop-filter:blur(30px) saturate(140%)!important;
+}
+body.ethone-2026-ui #main-sidebar .logo{
+  justify-content:center!important;
+  padding:0!important;
+  margin-bottom:20px!important;
+}
+body.ethone-2026-ui #main-sidebar .logo-text,
+body.ethone-2026-ui #main-sidebar .nav-label,
+body.ethone-2026-ui #main-sidebar .nav-shortcut,
+body.ethone-2026-ui #main-sidebar .user-info,
+body.ethone-2026-ui #main-sidebar .switch-hint,
+body.ethone-2026-ui #sb-sync-label,
+body.ethone-2026-ui #sidebar-compact-btn{
+  display:none!important;
+}
+body.ethone-2026-ui #main-sidebar .nav-item{
+  width:48px!important;
+  height:48px!important;
+  min-height:48px!important;
+  margin:0 auto 7px!important;
+  padding:0!important;
+  justify-content:center!important;
+  border-radius:18px!important;
+  background:transparent!important;
+  border:1px solid transparent!important;
+  font-size:0!important;
+  overflow:hidden!important;
+}
+body.ethone-2026-ui #main-sidebar .nav-item svg,
+body.ethone-2026-ui #main-sidebar .nav-icon{
+  margin:0!important;
+  width:18px!important;
+  height:18px!important;
+  font-size:18px!important;
+}
+body.ethone-2026-ui #main-sidebar .nav-item:hover{
+  transform:translateX(0) scale(1.04)!important;
+  background:rgba(255,255,255,.07)!important;
+}
+body.ethone-2026-ui #main-sidebar .nav-item.active{
+  background:linear-gradient(135deg,rgba(167,139,250,.42),rgba(125,211,252,.14))!important;
+  border-color:rgba(255,255,255,.18)!important;
+  box-shadow:0 18px 48px rgba(109,40,217,.25),inset 0 1px 0 rgba(255,255,255,.18)!important;
+}
+body.ethone-2026-ui #main-sidebar .sidebar-footer{
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+}
+body.ethone-2026-ui #main-sidebar .user-card{
+  width:48px!important;
+  height:48px!important;
+  padding:0!important;
+  justify-content:center!important;
+  margin:10px auto 0!important;
+  border-radius:18px!important;
+}
+body.ethone-2026-ui #main-sidebar .sidebar-avatar{margin:0!important}
+body.ethone-2026-ui #main-sidebar .sb-section{display:none!important}
+body.ethone-2026-ui #main-content{
+  padding:18px 22px 28px 98px!important;
+  margin-left:0!important;
+}
+body.ethone-2026-ui .topbar{
+  min-height:52px!important;
+  max-width:calc(100vw - 126px)!important;
+  margin:0 0 16px!important;
+  border-radius:18px!important;
+  background:rgba(8,9,14,.68)!important;
+}
+body.ethone-2026-ui #page-dashboard>.stats-row,
+body.ethone-2026-ui #pinned-panel,
+body.ethone-2026-ui #overview-grid-main{
+  display:none!important;
+}
+body.ethone-2026-ui .ethone-v2-home,
+body.ethone-2026-ui .v2-section-title,
+body.ethone-2026-ui .v2-widget-grid{
+  display:none!important;
+}
+.x26-home{
+  display:grid;
+  grid-template-columns:minmax(0,1.45fr) minmax(360px,.7fr);
+  gap:18px;
+  min-height:calc(100vh - 54px);
+}
+.x26-stage{
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  gap:18px;
+  min-width:0;
+}
+.x26-commandbar{
+  min-height:64px;
+  display:grid;
+  grid-template-columns:1fr auto auto;
+  gap:12px;
+  align-items:center;
+  padding:10px;
+  border:1px solid var(--x-line);
+  border-radius:24px;
+  background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.04));
+  box-shadow:0 22px 80px rgba(0,0,0,.34);
+  backdrop-filter:blur(26px) saturate(130%);
+}
+.x26-search{
+  height:44px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:0 14px;
+  border-radius:17px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(0,0,0,.22);
+  color:var(--x-muted);
+  cursor:pointer;
+}
+.x26-search strong{color:#fff;font-size:13px;font-weight:760}
+.x26-search span{font-size:12px;color:var(--x-dim)}
+.x26-kbd{margin-left:auto;padding:6px 8px;border-radius:10px;border:1px solid rgba(255,255,255,.12);font:800 10px/1 var(--mono);color:var(--x-muted);background:rgba(255,255,255,.045)}
+.x26-status{
+  height:44px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:0 13px;
+  border-radius:17px;
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.085);
+  color:var(--x-muted);
+  font-size:12px;
+}
+.x26-dot{width:8px;height:8px;border-radius:50%;background:var(--x-green);box-shadow:0 0 18px rgba(74,222,128,.5)}
+.x26-hero{
+  position:relative;
+  overflow:hidden;
+  border-radius:34px;
+  border:1px solid rgba(255,255,255,.14);
+  background:
+    radial-gradient(680px 260px at 72% 8%,rgba(167,139,250,.24),transparent 66%),
+    linear-gradient(150deg,rgba(18,20,32,.92),rgba(8,9,15,.92));
+  box-shadow:0 34px 130px rgba(0,0,0,.46);
+}
+.x26-hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(120deg,transparent 0 30%,rgba(255,255,255,.06) 30.2% 30.8%,transparent 31%),
+    linear-gradient(20deg,transparent 0 52%,rgba(125,211,252,.08) 52.2% 52.9%,transparent 53.2%);
+  opacity:.75;
+}
+.x26-hero-inner{
+  position:relative;
+  z-index:1;
+  min-height:430px;
+  padding:34px;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+}
+.x26-context{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:var(--x-muted);
+  font-size:13px;
+}
+.x26-context b{color:#fff;font-weight:780}
+.x26-title{align-self:center;max-width:780px}
+.x26-title h1{
+  margin:0;
+  color:#fff;
+  font:900 clamp(40px,4.3vw,62px)/.96 var(--font-display),Inter,sans-serif;
+  letter-spacing:0;
+  max-width:680px;
+}
+.x26-title p{
+  margin:18px 0 0;
+  max-width:600px;
+  color:rgba(251,251,255,.68);
+  font-size:16px;
+  line-height:1.55;
+}
+.x26-launchpad{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+}
+.x26-launch{
+  min-height:116px;
+  padding:16px;
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.11);
+  background:rgba(0,0,0,.22);
+  backdrop-filter:blur(16px);
+  cursor:pointer;
+  display:grid;
+  align-content:space-between;
+  transition:transform .22s cubic-bezier(.2,.8,.2,1),background .22s,border-color .22s;
+}
+.x26-launch:hover{transform:translateY(-3px);background:rgba(255,255,255,.075);border-color:rgba(167,139,250,.34)}
+.x26-launch i{width:34px;height:34px;border-radius:14px;display:grid;place-items:center;font-style:normal;background:rgba(167,139,250,.18);color:#fff;border:1px solid rgba(255,255,255,.10)}
+.x26-launch strong{font-size:15px;color:#fff}
+.x26-launch span{font-size:12px;color:var(--x-dim);line-height:1.35}
+.x26-lower{
+  display:grid;
+  grid-template-columns:.85fr 1.15fr;
+  gap:18px;
+}
+.x26-panel{
+  border-radius:28px;
+  border:1px solid var(--x-line);
+  background:linear-gradient(180deg,rgba(255,255,255,.072),rgba(255,255,255,.038));
+  box-shadow:0 24px 90px rgba(0,0,0,.34);
+  padding:20px;
+  min-width:0;
+}
+.x26-panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.x26-panel-head h2{margin:0;color:#fff;font:850 18px/1.1 var(--font-display),Inter,sans-serif}
+.x26-panel-head span{color:var(--x-dim);font-size:12px}
+.x26-timeline{display:grid;gap:10px}
+.x26-time-row{
+  display:grid;
+  grid-template-columns:54px 1fr auto;
+  gap:12px;
+  align-items:center;
+  padding:10px;
+  border-radius:17px;
+  border:1px solid rgba(255,255,255,.075);
+  background:rgba(255,255,255,.035);
+}
+.x26-time-row time{font:850 12px/1 var(--mono);color:var(--x-muted)}
+.x26-time-row strong{color:#fff;font-size:13px}
+.x26-time-row span{color:var(--x-dim);font-size:11px}
+.x26-chip{padding:6px 8px;border-radius:999px;background:rgba(167,139,250,.13);color:#d8caff;border:1px solid rgba(167,139,250,.22);font-size:10px;font-weight:800}
+.x26-task-stack{display:grid;gap:9px}
+.x26-task-row{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:10px;
+  align-items:center;
+  padding:12px;
+  border-radius:18px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+}
+.x26-check{width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(255,255,255,.25)}
+.x26-task-row strong{color:#fff;font-size:13px}
+.x26-task-row span{color:var(--x-dim);font-size:11px}
+.x26-task-row div span{display:block;margin-top:4px}
+.x26-side{
+  display:grid;
+  grid-template-rows:auto auto 1fr;
+  gap:18px;
+}
+.x26-brain{
+  padding:22px;
+  border-radius:32px;
+  border:1px solid rgba(167,139,250,.28);
+  background:
+    radial-gradient(360px 180px at 88% 0%,rgba(125,211,252,.18),transparent 68%),
+    linear-gradient(145deg,rgba(167,139,250,.18),rgba(255,255,255,.05));
+  box-shadow:0 34px 120px rgba(91,33,182,.22);
+}
+.x26-orb{
+  width:48px;
+  height:48px;
+  border-radius:19px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,rgba(167,139,250,.38),rgba(125,211,252,.16));
+  border:1px solid rgba(255,255,255,.16);
+  color:#fff;
+  font-weight:900;
+  margin-bottom:18px;
+}
+.x26-brain h2{margin:0 0 10px;color:#fff;font:900 28px/1 var(--font-display),Inter,sans-serif}
+.x26-brain p{margin:0 0 18px;color:rgba(251,251,255,.72);font-size:13px;line-height:1.56}
+.x26-brain button,.x26-small-btn{
+  width:100%;
+  min-height:42px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.13);
+  background:rgba(0,0,0,.22);
+  color:#fff;
+  cursor:pointer;
+}
+.x26-signal-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.x26-signal{
+  min-height:120px;
+  padding:15px;
+  border-radius:24px;
+  border:1px solid rgba(255,255,255,.10);
+  background:linear-gradient(180deg,rgba(255,255,255,.064),rgba(255,255,255,.035));
+}
+.x26-signal span{display:block;color:var(--x-dim);font:800 10px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}
+.x26-signal strong{display:block;color:#fff;font-size:22px;font-weight:880}
+.x26-signal p{margin:8px 0 0;color:var(--x-muted);font-size:12px;line-height:1.4}
+.x26-dock{
+  position:fixed;
+  left:50%;
+  bottom:18px;
+  transform:translateX(-50%);
+  z-index:900;
+  display:flex;
+  gap:8px;
+  padding:8px;
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(9,10,15,.72);
+  backdrop-filter:blur(24px) saturate(140%);
+  box-shadow:0 22px 80px rgba(0,0,0,.42);
+}
+.x26-dock button{height:38px;padding:0 14px;border-radius:15px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.055);color:rgba(251,251,255,.78);cursor:pointer}
+.x26-dock button:hover{background:rgba(167,139,250,.18);color:#fff}
+body.ethone-2026-ui .panel,
+body.ethone-2026-ui .stat-card,
+body.ethone-2026-ui .game-card,
+body.ethone-2026-ui .settings-card,
+body.ethone-2026-ui .conn-card{
+  border-radius:24px!important;
+}
+body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
+  opacity:.72;
+}
+@media(max-width:1180px){
+  .x26-home,.x26-lower{grid-template-columns:1fr}
+  body.ethone-2026-ui #main-content{padding-left:92px!important}
+}
+@media(max-width:760px){
+  body.ethone-2026-ui #main-sidebar{width:0!important;transform:translateX(-100%)}
+  body.ethone-2026-ui .mobile-bottom-nav{display:none!important}
+  body.ethone-2026-ui #main-content{padding:64px 10px 112px!important}
+  .x26-home{gap:14px}
+  .x26-commandbar,.x26-launchpad,.x26-signal-grid{grid-template-columns:1fr}
+  .x26-commandbar{padding:8px;border-radius:20px}
+  .x26-search{min-width:0}
+  .x26-search span{max-width:142px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .x26-hero{border-radius:28px}
+  .x26-hero-inner{padding:20px;min-height:430px}
+  .x26-title{max-width:100%;min-width:0}
+  .x26-title h1{font-size:36px;line-height:1.02;max-width:100%;overflow-wrap:break-word}
+  .x26-title p{font-size:13px;line-height:1.45;margin-top:14px}
+  .x26-launch{min-height:92px;padding:14px}
+  .x26-dock{left:10px;right:10px;bottom:14px;transform:none;overflow:auto;justify-content:flex-start}
+  .x26-dock button{height:36px;padding:0 12px;white-space:nowrap}
+}
+</style>
+<script id="ethone-2026-experience-redesign">
+(function(){
+  "use strict";
+  if(window.__ethone2026Experience)return;
+  window.__ethone2026Experience=true;
+  var timer=0;
+  function qs(s,r){return (r||document).querySelector(s)}
+  function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+  function profile(){try{return typeof window.curP==="function"?window.curP():null}catch(e){return null}}
+  function data(){var p=profile();return p&&p.state?p.state:{}}
+  function counts(){var s=data(),todos=Array.isArray(s.todos)?s.todos:[],items=Array.isArray(s.items)?s.items:[],notes=Array.isArray(s.notes)?s.notes:[],events=Array.isArray(s.events)?s.events:[],habits=Array.isArray(s.habits)?s.habits:[];return{todos,items,notes,events,habits,open:todos.filter(t=>!t.done).length,done:todos.filter(t=>t.done).length}}
+  function phase(){var h=new Date().getHours();return h<5?"Night":h<12?"Morning":h<18?"Afternoon":"Evening"}
+  function ensure(){
+    var page=qs("#page-dashboard"); if(!page)return;
+    if(!qs("#ethone-2026-home",page)){
+      page.insertAdjacentHTML("afterbegin",
+        '<section class="x26-home" id="ethone-2026-home">'+
+          '<div class="x26-stage">'+
+            '<div class="x26-commandbar">'+
+              '<button class="x26-search" type="button" data-x26-action="search"><strong>Search ETHONE</strong><span>apps, files, commands, Brain</span><em class="x26-kbd">Ctrl K</em></button>'+
+              '<div class="x26-status"><i class="x26-dot"></i><span id="x26-status-text">Live workspace</span></div>'+
+              '<button class="x26-small-btn" type="button" data-x26-page="settings">Personalize</button>'+
+            '</div>'+
+            '<div class="x26-hero">'+
+              '<div class="x26-hero-inner">'+
+                '<div class="x26-context"><span id="x26-date">Today</span><span>•</span><b id="x26-workspace">Personal OS</b></div>'+
+                '<div class="x26-title"><h1 id="x26-title">Your day, already organized.</h1><p id="x26-subtitle">ETHONE brings tasks, notes, services, Brain and workspaces into one calm command surface.</p></div>'+
+                '<div class="x26-launchpad">'+
+                  '<button class="x26-launch" type="button" data-x26-page="ai"><i>AI</i><strong>Brain</strong><span>Ask, organize, explain and prepare your next move.</span></button>'+
+                  '<button class="x26-launch" type="button" data-x26-page="marketplace"><i>MK</i><strong>Marketplace</strong><span>Discover widgets, layouts and extensions that fit you.</span></button>'+
+                  '<button class="x26-launch" type="button" data-x26-page="workspaces"><i>WS</i><strong>Workspaces</strong><span>Switch context without rebuilding your setup.</span></button>'+
+                '</div>'+
+              '</div>'+
+            '</div>'+
+            '<div class="x26-lower">'+
+              '<div class="x26-panel"><div class="x26-panel-head"><h2>Today flow</h2><span id="x26-flow-count">0 events</span></div><div class="x26-timeline" id="x26-timeline"></div></div>'+
+              '<div class="x26-panel"><div class="x26-panel-head"><h2>Priority stack</h2><span id="x26-task-count">0 open</span></div><div class="x26-task-stack" id="x26-task-stack"></div></div>'+
+            '</div>'+
+          '</div>'+
+          '<aside class="x26-side">'+
+            '<section class="x26-brain"><div class="x26-orb">B</div><h2>Brain is present.</h2><p id="x26-brain-copy">It watches context quietly and suggests what matters next.</p><button type="button" data-x26-page="ai">Open Brain</button></section>'+
+            '<section class="x26-signal-grid">'+
+              '<div class="x26-signal"><span>Focus</span><strong id="x26-focus-count">Ready</strong><p id="x26-focus-copy">The next action is surfaced here.</p></div>'+
+              '<div class="x26-signal"><span>Memory</span><strong id="x26-memory-count">0</strong><p>Recent notes, files and activity.</p></div>'+
+              '<div class="x26-signal"><span>Widgets</span><strong id="x26-widget-count">Live</strong><p>Different forms for different information.</p></div>'+
+              '<div class="x26-signal"><span>Connected</span><strong id="x26-service-count">Ready</strong><p>Services stay available without clutter.</p></div>'+
+            '</section>'+
+            '<section class="x26-panel"><div class="x26-panel-head"><h2>Quick routes</h2><span>Command</span></div><div class="x26-task-stack"><button class="x26-small-btn" data-x26-page="todos">Tasks</button><button class="x26-small-btn" data-x26-page="notes">Notes</button><button class="x26-small-btn" data-x26-page="calendar">Calendar</button></div></section>'+
+          '</aside>'+
+        '</section>'+
+        '<nav class="x26-dock" id="ethone-2026-dock"><button data-x26-page="dashboard">Home</button><button data-x26-page="ai">Brain</button><button data-x26-page="marketplace">Marketplace</button><button data-x26-page="workspaces">Workspaces</button><button data-x26-action="search">Search</button></nav>'
+      );
+      page.addEventListener("click",function(e){
+        var a=e.target.closest("[data-x26-action]");
+        if(a&&a.dataset.x26Action==="search"&&typeof window.openCmdPalette==="function"){window.openCmdPalette();return}
+        var p=e.target.closest("[data-x26-page]");
+        if(p&&typeof window.switchPage==="function")window.switchPage(p.dataset.x26Page,null);
+      });
+    }
+  }
+  function render(){
+    ensure();
+    var bootWarning=qs("#ethone-boot-warning");
+    if(bootWarning)bootWarning.remove();
+    var c=counts(),s=data(),p=profile(),ph=phase();
+    var name=(p&&p.name)||s.username||"there";
+    var firstOpen=c.todos.find(function(t){return !t.done});
+    var title=qs("#x26-title"); if(title)title.textContent=ph==="Night"?"Quiet mode, "+name+".":ph+" command center, "+name+".";
+    var subtitle=qs("#x26-subtitle"); if(subtitle)subtitle.textContent=firstOpen?("Next: "+(firstOpen.text||firstOpen.title||"continue your priority")+" while Brain keeps the rest organized."):"Everything important is visible. Capture the next idea or open Brain for a recommendation.";
+    var date=qs("#x26-date"); if(date)date.textContent=new Date().toLocaleDateString(window._lang||"fr",{weekday:"long",day:"numeric",month:"long"});
+    var ws=qs("#x26-workspace"); if(ws)ws.textContent=localStorage.getItem("ethone:active-workspace")||"Personal OS";
+    var status=qs("#x26-status-text"); if(status)status.textContent=c.open+" open tasks • "+c.items.length+" items";
+    var brain=qs("#x26-brain-copy"); if(brain)brain.textContent=c.open?("Brain found "+c.open+" open task"+(c.open>1?"s":"")+" and can arrange a clean sequence."):
+      "Brain is ready to recommend widgets, organize notes or prepare a workspace.";
+    var focus=qs("#x26-focus-count"); if(focus)focus.textContent=firstOpen?String(firstOpen.text||firstOpen.title).slice(0,20):"Ready";
+    var memory=qs("#x26-memory-count"); if(memory)memory.textContent=String(c.notes.length+c.items.length);
+    var services=qs("#x26-service-count"); if(services)services.textContent=s.connections?String(Object.keys(s.connections).length||"Ready"):"Ready";
+    var flow=qs("#x26-timeline");
+    if(flow){
+      qs("#x26-flow-count").textContent=c.events.length+" event"+(c.events.length===1?"":"s");
+      flow.innerHTML=(c.events.slice(0,5).map(function(ev){return '<div class="x26-time-row"><time>'+esc(ev.time||ev.date||"Today")+'</time><div><strong>'+esc(ev.title||ev.name||"Event")+'</strong><span>'+esc(ev.note||ev.desc||"Schedule")+'</span></div><em class="x26-chip">Plan</em></div>'}).join("")||
+      '<div class="x26-time-row"><time>Now</time><div><strong>No events locked</strong><span>Create a focus block or open Calendar.</span></div><em class="x26-chip">Open</em></div>');
+    }
+    var stack=qs("#x26-task-stack");
+    if(stack){
+      qs("#x26-task-count").textContent=c.open+" open";
+      stack.innerHTML=(c.todos.filter(function(t){return !t.done}).slice(0,6).map(function(t){return '<div class="x26-task-row"><i class="x26-check"></i><div><strong>'+esc(t.text||t.title||"Untitled task")+'</strong><span>'+esc(t.priority||t.tag||"Task")+'</span></div><em class="x26-chip">Today</em></div>'}).join("")||
+      '<div class="x26-task-row"><i class="x26-check"></i><div><strong>No active priority</strong><span>Add a task or ask Brain what to do next.</span></div><em class="x26-chip">Calm</em></div>');
+    }
+  }
+  function apply(){document.body.classList.add("ethone-2026-ui");render()}
+  function schedule(){clearTimeout(timer);timer=setTimeout(apply,80)}
+  window.ethone2026Render=render;
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",schedule,{once:true});else schedule();
+  document.addEventListener("click",function(){setTimeout(render,180)},true);
+  setTimeout(schedule,800);
+  setTimeout(schedule,2200);
 })();
 </script>
 </body>

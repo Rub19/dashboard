@@ -26016,6 +26016,179 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
   }
 }
 </style>
+<style id="ethone-auth-v8-product-pass">
+/* V8 keeps the approved structure and makes the two columns read as one system. */
+#auth-screen.ethone-auth-v3.ethone-auth-v3-visible{
+  grid-template-columns:minmax(620px,780px) minmax(390px,448px);
+  justify-content:center;
+  gap:clamp(34px,3.5vw,56px);
+  padding:clamp(32px,4vw,58px)!important;
+}
+#auth-v3-hero{
+  width:100%;
+  max-width:780px;
+  gap:20px;
+}
+.auth-v3-title{max-width:640px}
+.auth-v3-copy{
+  max-width:470px;
+  margin-top:-2px;
+  color:rgba(245,245,247,.62);
+}
+.auth-v3-preview{
+  width:100%;
+  max-width:none;
+  opacity:.84;
+  filter:saturate(.78) contrast(.96);
+  border-color:rgba(255,255,255,.09);
+  background:
+    linear-gradient(145deg,rgba(139,92,246,.035),transparent 38%),
+    rgba(10,10,13,.86);
+  box-shadow:
+    0 28px 72px rgba(0,0,0,.38),
+    inset 0 1px 0 rgba(255,255,255,.06);
+}
+.auth-v3-preview::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  border-radius:inherit;
+  background:linear-gradient(105deg,rgba(255,255,255,.018),transparent 24%);
+}
+.auth-v3-preview-top{
+  grid-template-columns:38px minmax(128px,154px) minmax(180px,1fr) auto;
+}
+.auth-v3-preview-home{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  min-width:0;
+}
+.auth-v3-preview-home time{
+  color:rgba(245,245,247,.42);
+  font:600 11px/1 var(--mono,monospace);
+  font-variant-numeric:tabular-nums;
+}
+.auth-v3-command{
+  color:rgba(245,245,247,.62);
+  background:rgba(255,255,255,.024);
+}
+.auth-v3-live{
+  color:rgba(245,245,247,.68);
+  border-color:rgba(139,92,246,.20);
+  background:rgba(139,92,246,.055);
+}
+.auth-v3-preview-body{grid-template-columns:1.08fr .92fr}
+.auth-v3-brain-card,.auth-v3-flow,.auth-v3-mini{
+  border-color:rgba(255,255,255,.07);
+  background:linear-gradient(145deg,rgba(255,255,255,.034),rgba(255,255,255,.018));
+}
+.auth-v3-brain-orb{
+  background:
+    radial-gradient(circle at 48% 44%,rgba(167,139,250,.24),rgba(139,92,246,.07) 56%,rgba(255,255,255,.018));
+}
+.auth-v3-flow-row{
+  position:relative;
+  margin-left:-7px;
+  margin-right:-7px;
+  padding:6px 7px;
+  border-radius:8px;
+  transition:color .22s ease,background .22s ease;
+}
+.auth-v3-flow-row.is-now{
+  color:rgba(255,255,255,.82);
+  background:rgba(139,92,246,.065);
+}
+.auth-v3-flow-row.is-now::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:8px;
+  bottom:8px;
+  width:2px;
+  border-radius:2px;
+  background:#8b5cf6;
+}
+.auth-v3-flow-row.is-now time{color:#c4b5fd}
+#auth-screen.ethone-auth-v3 #auth-card{
+  align-self:center;
+}
+#auth-screen.ethone-auth-v3 #lb-box{
+  border-color:rgba(255,255,255,.115)!important;
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.046),transparent 31%),
+    rgba(15,15,18,.93)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.065),
+    0 30px 82px rgba(0,0,0,.43),
+    0 0 0 1px rgba(0,0,0,.32)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-input{
+  background:#09090c!important;
+  border-color:rgba(255,255,255,.125)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-input:hover{
+  background:#0d0d10!important;
+  border-color:rgba(255,255,255,.19)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-input:focus{
+  background:#0c0b11!important;
+  border-color:rgba(139,92,246,.82)!important;
+  box-shadow:0 0 0 3px rgba(139,92,246,.14),inset 0 1px 0 rgba(255,255,255,.03)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-social{
+  min-height:51px!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.037),rgba(255,255,255,.018))!important;
+  border-color:rgba(255,255,255,.115)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.028)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-social:hover{
+  color:#fff!important;
+  background:linear-gradient(180deg,rgba(139,92,246,.095),rgba(139,92,246,.045))!important;
+  border-color:rgba(139,92,246,.34)!important;
+  box-shadow:0 8px 22px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.05)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-social:active{
+  transform:translateY(0) scale(.985)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-social:disabled,
+#auth-screen.ethone-auth-v3 .lb-btn-primary:disabled{
+  cursor:wait!important;
+  opacity:.62!important;
+  transform:none!important;
+}
+#auth-screen.ethone-auth-v3 .lb-btn-primary{
+  box-shadow:0 10px 28px rgba(76,29,149,.27),inset 0 1px 0 rgba(255,255,255,.16)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-btn-primary:hover{
+  box-shadow:0 13px 34px rgba(76,29,149,.32),inset 0 1px 0 rgba(255,255,255,.18)!important;
+}
+@media(max-width:1240px){
+  #auth-screen.ethone-auth-v3.ethone-auth-v3-visible{
+    grid-template-columns:minmax(520px,1fr) minmax(390px,448px);
+    gap:32px;
+    padding:38px!important;
+  }
+}
+@media(max-width:1120px){
+  #auth-screen.ethone-auth-v3.ethone-auth-v3-visible{
+    grid-template-columns:1fr!important;
+    padding:88px clamp(20px,5vw,48px) 38px!important;
+  }
+  #auth-v3-hero{max-width:760px}
+}
+@media(max-width:720px){
+  #auth-screen.ethone-auth-v3.ethone-auth-v3-visible{
+    grid-template-columns:1fr!important;
+    padding:72px 14px 18px!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .auth-v3-flow-row{transition:none}
+}
+</style>
 <script id="ethone-auth-v3-premium-experience">
 (function(){
   "use strict";
@@ -26062,7 +26235,7 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
         '<div class="auth-v3-preview">'+
           '<div class="auth-v3-preview-top">'+
             '<div class="auth-v3-rail">E</div>'+
-            '<div class="auth-v3-preview-home">Home</div>'+
+            '<div class="auth-v3-preview-home"><span>Home</span><time datetime="">--:--</time></div>'+
             '<div class="auth-v3-command">Search ETHONE <span>Brain, files, commands</span></div>'+
             '<div class="auth-v3-live"><i></i><span>Online</span></div>'+
           '</div>'+
@@ -26085,6 +26258,37 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
         '</div>'+
       '</section>';
   }
+  function updatePreviewRuntime(){
+    var hero=qs("#auth-v3-hero");
+    if(!hero)return;
+    var now=new Date();
+    var clock=qs(".auth-v3-preview-home time",hero);
+    if(clock){
+      var hours=String(now.getHours()).padStart(2,"0");
+      var minutes=String(now.getMinutes()).padStart(2,"0");
+      clock.textContent=hours+":"+minutes;
+      clock.setAttribute("datetime",hours+":"+minutes);
+    }
+    var live=qs(".auth-v3-live span",hero);
+    if(live)live.textContent=navigator.onLine===false?"Offline":"Synced";
+    var rows=Array.prototype.slice.call(hero.querySelectorAll(".auth-v3-flow-row"));
+    var hour=now.getHours();
+    var active=hour<12?0:(hour<16?1:2);
+    rows.forEach(function(row,index){
+      var time=qs("time",row);
+      if(time&&!time.dataset.previewTime)time.dataset.previewTime=time.textContent||"";
+      row.classList.toggle("is-now",index===active);
+      if(time)time.textContent=index===active?"Now":time.dataset.previewTime;
+    });
+  }
+  function startPreviewRuntime(){
+    updatePreviewRuntime();
+    if(!window.__ethoneAuthV8PreviewTimer){
+      window.__ethoneAuthV8PreviewTimer=setInterval(updatePreviewRuntime,30000);
+      window.addEventListener("online",updatePreviewRuntime);
+      window.addEventListener("offline",updatePreviewRuntime);
+    }
+  }
   function apply(){
     var screen=qs("#auth-screen");
     var card=qs("#auth-card");
@@ -26093,6 +26297,7 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
     if(!qs("#auth-v3-hero",screen)){
       card.insertAdjacentHTML("beforebegin",heroMarkup());
     }
+    startPreviewRuntime();
     syncLanguageControl();
     sync();
   }

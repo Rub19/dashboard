@@ -37,11 +37,25 @@ html.ethone-safe-mode .particle{
   var params;
   try{params=new URLSearchParams(location.search||"");}catch(e){params={has:function(){return false},get:function(){return null}}}
   var safe=params.has("safe")&&params.get("safe")!=="0";
+  function hasSupabaseSession(){
+    try{
+      for(var i=0;i<localStorage.length;i++){
+        var key=localStorage.key(i)||"";
+        if(/^sb-/.test(key)&&/auth-token|session/i.test(key))return true;
+      }
+    }catch(e){}
+    return false;
+  }
+  var authBoot=!safe&&!hasSupabaseSession();
+  var lightBoot=safe||authBoot;
   window.ETHONE_SAFE_MODE=!!safe;
-  window.ETHONE_DISABLE_NON_CRITICAL=!!safe;
-  if(!safe)return;
+  window.ETHONE_AUTH_BOOT_MODE=!!authBoot;
+  window.ETHONE_LIGHT_BOOT_MODE=!!lightBoot;
+  window.ETHONE_DISABLE_NON_CRITICAL=!!lightBoot;
+  if(!lightBoot)return;
 
   document.documentElement.classList.add("ethone-safe-mode");
+  document.documentElement.classList.toggle("ethone-auth-boot-mode",!!authBoot);
   window.__ethoneSkipServiceWorker=true;
   window.__ethoneSkipMarketplace=true;
   window.__ethoneSkipBrain=true;
@@ -84,14 +98,14 @@ html.ethone-safe-mode .particle{
 (function(){
   if(window.__ethoneBootWatchdog)return;
   window.__ethoneBootWatchdog=true;
-  var BOOT_TIMEOUT=window.ETHONE_SAFE_MODE?1800:5000;
+  var BOOT_TIMEOUT=window.ETHONE_LIGHT_BOOT_MODE?1800:5000;
   var ERROR_TEXT="ETHONE a demarre en mode secours: une ressource externe ou une synchronisation a pris trop de temps.";
   function visible(el){if(!el)return false;var cs=getComputedStyle(el);return cs.display!=="none"&&cs.visibility!=="hidden"&&el.getBoundingClientRect().width>20&&el.getBoundingClientRect().height>20}
   function removeAntiFlash(){var af=document.getElementById("anti-flash");if(af)af.remove()}
   function hideBoot(){["nexus-boot-screen","ethone-boot-screen","nexus-page-loader","nexus-page-transition"].forEach(function(id){var el=document.getElementById(id);if(el){el.style.setProperty("display","none","important");el.style.setProperty("visibility","hidden","important");el.style.opacity="0"}})}
   function showWarning(){if(document.getElementById("ethone-boot-warning"))return;var div=document.createElement("div");div.id="ethone-boot-warning";div.className="ethone-boot-warning";div.setAttribute("role","status");div.textContent=ERROR_TEXT;document.body.appendChild(div)}
   function showFallback(){
-    if(!document.body)return;
+    if(!document.body){setTimeout(showFallback,250);return;}
     removeAntiFlash();hideBoot();
     var main=document.getElementById("main-content"),profile=document.getElementById("profile-screen"),auth=document.getElementById("auth-screen"),password=document.getElementById("password-screen");
     if(visible(main)||visible(profile)||visible(auth)||visible(password))return;
@@ -102,6 +116,7 @@ html.ethone-safe-mode .particle{
   window.ethoneBootFallback=showFallback;
   window.addEventListener("error",function(){setTimeout(showFallback,0)});
   window.addEventListener("unhandledrejection",function(){setTimeout(showFallback,0)});
+  setTimeout(showFallback,BOOT_TIMEOUT);
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",function(){setTimeout(showFallback,BOOT_TIMEOUT)});
   else setTimeout(showFallback,BOOT_TIMEOUT);
   window.addEventListener("load",function(){setTimeout(showFallback,BOOT_TIMEOUT)});
@@ -6548,7 +6563,7 @@ function psUntilt(el){
 
 let _psEmbersRunning=false;
 function psStartEmbers(){
-  if(window.ETHONE_SAFE_MODE)return;
+  if(window.ETHONE_LIGHT_BOOT_MODE)return;
   if(_psEmbersRunning)return;
   const canvas=document.getElementById('ps-canvas');
   if(!canvas)return;
@@ -10636,7 +10651,7 @@ function openValoMatchDetail(idx,name,tag){
 }
 
 function startAmbientBg(){
-  if(window.ETHONE_SAFE_MODE)return;
+  if(window.ETHONE_LIGHT_BOOT_MODE)return;
   // Don't start ambient if a custom bg theme is active
   const _activeBg=curP()?.bgTheme;
   if(_activeBg&&_activeBg!=='none')return;
@@ -10723,7 +10738,7 @@ function pickBgTheme(id){
 
 function applyBgTheme(id){
   const canvas=document.getElementById('bg-canvas');if(!canvas)return;
-  if(window.ETHONE_SAFE_MODE){canvas.style.opacity='0';return;}
+  if(window.ETHONE_LIGHT_BOOT_MODE){canvas.style.opacity='0';return;}
   cancelAnimationFrame(_bgFrame);_bgParticles=[];
   // Stop ambient before applying custom theme
   if(_ambientFrame){cancelAnimationFrame(_ambientFrame);_ambientFrame=null;}
@@ -15526,7 +15541,7 @@ body.eh-dashboard-ready #eh-dock {
 <script id="ethone-enterprise-2026-runtime">
 (function(){
   'use strict';
-  if(window.ETHONE_SAFE_MODE)return;
+  if(window.ETHONE_LIGHT_BOOT_MODE)return;
   if(window.__ethoneEnterprise2026)return;window.__ethoneEnterprise2026=true;
   const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
   const accents={violet:['#8b5cf6','139,92,246'],blue:['#3b82f6','59,130,246'],emerald:['#10b981','16,185,129'],rose:['#f43f5e','244,63,94'],amber:['#f59e0b','245,158,11'],slate:['#94a3b8','148,163,184']};
@@ -16129,7 +16144,7 @@ body[data-light="1"].ethone-personal-os-ready .ethone-pos-context-card strong{co
 <script id="ethone-personal-os-vision-runtime">
 (function(){
   "use strict";
-  if(window.ETHONE_SAFE_MODE)return;
+  if(window.ETHONE_LIGHT_BOOT_MODE)return;
   if(window.__ethonePersonalOSVision)return;
   window.__ethonePersonalOSVision=true;
   const $=(s,r=document)=>r.querySelector(s);
@@ -16660,7 +16675,7 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
 <script id="ethone-dashboard-os2-runtime">
 (function(){
   "use strict";
-  if(window.ETHONE_SAFE_MODE)return;
+  if(window.ETHONE_LIGHT_BOOT_MODE)return;
   if(window.__ethoneDashboardOS2)return;
   window.__ethoneDashboardOS2=true;
   const $=(s,r=document)=>r.querySelector(s);
@@ -22894,7 +22909,7 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
     if(typeof reducedMotion.addEventListener==="function")reducedMotion.addEventListener("change",reduceMotionState);
     else if(typeof reducedMotion.addListener==="function")reducedMotion.addListener(reduceMotionState);
   }
-  if(!window.ETHONE_SAFE_MODE&&"MutationObserver" in window){
+  if(!window.ETHONE_LIGHT_BOOT_MODE&&"MutationObserver" in window){
     new MutationObserver(scheduleHardening).observe(document.documentElement,{childList:true,subtree:true});
   }
 

@@ -25202,6 +25202,387 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
   }
 }
 </style>
+<style id="ethone-auth-v31-minimal-overrides">
+#auth-screen.ethone-auth-v3{
+  --auth-v3-ink:#f7f7fb;
+  --auth-v3-muted:rgba(247,247,251,.66);
+  --auth-v3-dim:rgba(247,247,251,.42);
+  --auth-v3-line:rgba(255,255,255,.105);
+  --auth-v3-glass:rgba(20,20,24,.70);
+  --auth-v3-violet:#8b5cf6;
+  --auth-v3-cyan:#8b5cf6;
+  --auth-v3-green:#8b5cf6;
+  --auth-v3-rose:#8b5cf6;
+  background:
+    radial-gradient(circle at 18% 88%,rgba(124,58,237,.16),transparent 34%),
+    radial-gradient(circle at 82% 18%,rgba(139,92,246,.10),transparent 28%),
+    linear-gradient(135deg,#050506 0%,#0d0d10 52%,#07070a 100%)!important;
+}
+#auth-screen.ethone-auth-v3.ethone-auth-v3-visible{
+  grid-template-columns:minmax(0,1.02fr) minmax(390px,.72fr);
+  gap:clamp(32px,5vw,86px);
+  padding:clamp(32px,5vw,76px)!important;
+}
+#auth-screen.ethone-auth-v3::before{
+  background:linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:96px 96px;
+  opacity:.12;
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.72),transparent 74%);
+}
+#auth-screen.ethone-auth-v3::after{
+  background:
+    radial-gradient(circle at 14% 16%,rgba(139,92,246,.12),transparent 26%),
+    radial-gradient(circle at 68% 76%,rgba(139,92,246,.08),transparent 30%);
+  filter:none;
+  animation:none!important;
+}
+#auth-screen.ethone-auth-v3 #auth-particles,
+#auth-screen.ethone-auth-v3 .auth-orb{
+  display:none!important;
+}
+#auth-v3-hero{
+  width:min(860px,100%);
+  min-height:auto;
+  gap:clamp(16px,2vw,28px);
+}
+.auth-v3-brand{
+  gap:13px;
+}
+.auth-v3-mark{
+  width:44px;
+  height:44px;
+  border-radius:12px;
+  font:850 21px/1 Inter,system-ui,sans-serif;
+  background:linear-gradient(180deg,#9b6dff,#6d42d8)!important;
+  box-shadow:0 12px 34px rgba(139,92,246,.20),inset 0 1px 0 rgba(255,255,255,.22)!important;
+}
+.auth-v3-brand span{
+  font:760 18px/1 Inter,system-ui,sans-serif;
+}
+.auth-v3-eyebrow{
+  display:none!important;
+}
+.auth-v3-title{
+  max-width:670px;
+  font:760 clamp(42px,5vw,68px)/1.04 Inter,system-ui,sans-serif;
+}
+.auth-v3-title span{
+  display:inline;
+  color:#fff;
+  background:none;
+  text-shadow:none;
+}
+.auth-v3-title::after{
+  content:"";
+  display:inline-block;
+  width:.14em;
+  height:.14em;
+  margin-left:.1em;
+  border-radius:50%;
+  background:var(--auth-v3-violet);
+  vertical-align:.08em;
+}
+.auth-v3-copy{
+  max-width:570px;
+  color:rgba(247,247,251,.56);
+  font:440 clamp(15px,1.25vw,18px)/1.62 Inter,system-ui,sans-serif;
+}
+.auth-v3-preview{
+  width:min(760px,100%);
+  min-height:0;
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.10);
+  background:linear-gradient(180deg,rgba(255,255,255,.052),rgba(255,255,255,.022)),rgba(13,13,17,.82);
+  box-shadow:0 24px 70px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.08);
+  backdrop-filter:none;
+}
+.auth-v3-preview::before{
+  background:radial-gradient(circle at 48% 38%,rgba(139,92,246,.10),transparent 36%);
+  opacity:1;
+}
+.auth-v3-preview-top{
+  grid-template-columns:42px minmax(110px,170px) 1fr auto;
+  gap:14px;
+  padding:14px;
+  border-bottom:1px solid rgba(255,255,255,.075);
+}
+.auth-v3-rail{
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  background:rgba(139,92,246,.20)!important;
+  border:1px solid rgba(139,92,246,.28);
+}
+.auth-v3-preview-home{
+  color:#f5f5f7;
+  font:720 13px/1 Inter,system-ui,sans-serif;
+}
+.auth-v3-command{
+  height:38px;
+  border-radius:12px;
+  gap:9px;
+  padding:0 13px;
+  color:rgba(255,255,255,.58);
+  border-color:rgba(255,255,255,.08);
+  background:rgba(255,255,255,.028);
+  box-shadow:none;
+  font:620 12px/1 Inter,system-ui,sans-serif;
+}
+.auth-v3-command span{
+  color:rgba(255,255,255,.32);
+  font-weight:520;
+}
+.auth-v3-live{
+  height:34px;
+  padding:0 11px;
+  border-radius:11px;
+  border-color:rgba(139,92,246,.16);
+  color:rgba(255,255,255,.58);
+  background:rgba(139,92,246,.055);
+  font:700 11px/1 Inter,system-ui,sans-serif;
+}
+.auth-v3-live i{
+  background:#8b5cf6;
+  box-shadow:none;
+}
+.auth-v3-preview-body{
+  grid-template-columns:1.04fr .96fr;
+  gap:12px;
+  padding:14px;
+}
+.auth-v3-brain-card,
+.auth-v3-mini,
+.auth-v3-flow{
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.032);
+  box-shadow:none;
+  backdrop-filter:none;
+}
+.auth-v3-brain-card{
+  min-height:140px;
+  border-radius:18px;
+  padding:20px;
+  grid-template-columns:1fr 104px;
+}
+.auth-v3-brain-card h3,
+.auth-v3-mini h3,
+.auth-v3-flow h3{
+  font:720 16px/1.22 Inter,system-ui,sans-serif;
+}
+.auth-v3-brain-card p,
+.auth-v3-mini p,
+.auth-v3-flow p{
+  color:rgba(247,247,251,.48);
+  font:430 13px/1.45 Inter,system-ui,sans-serif;
+}
+.auth-v3-brain-status{
+  display:inline-flex;
+  gap:7px;
+  align-items:center;
+  margin-bottom:14px;
+  color:rgba(247,247,251,.52);
+  font:650 11px/1 Inter,system-ui,sans-serif;
+}
+.auth-v3-brain-status i{
+  width:7px;
+  height:7px;
+  border-radius:99px;
+  background:#8b5cf6;
+}
+.auth-v3-brain-orb{
+  width:94px;
+  height:94px;
+  font:760 30px/1 Inter,system-ui,sans-serif;
+  background:radial-gradient(circle at 50% 48%,rgba(139,92,246,.34),rgba(139,92,246,.12) 54%,rgba(255,255,255,.035) 100%);
+  box-shadow:inset 0 0 34px rgba(255,255,255,.04);
+  animation:none!important;
+}
+.auth-v3-brain-orb::before,
+.auth-v3-brain-orb::after{
+  display:none;
+}
+.auth-v3-mini-grid{
+  margin:0 14px 14px!important;
+  grid-template-columns:1fr;
+  gap:12px;
+}
+.auth-v3-mini,
+.auth-v3-flow{
+  border-radius:18px;
+  padding:16px;
+}
+.auth-v3-flow{
+  min-height:140px;
+}
+.auth-v3-meter{
+  display:none;
+}
+.auth-v3-market-item,
+.auth-v3-workspace-item{
+  margin-top:12px;
+  padding:12px;
+  border-radius:13px;
+  background:rgba(255,255,255,.035);
+  border-color:rgba(255,255,255,.065);
+  color:rgba(255,255,255,.66);
+  font:620 12px/1 Inter,system-ui,sans-serif;
+}
+.auth-v3-market-item{display:none}
+.auth-v3-workspace-item i{
+  width:26px;
+  height:26px;
+  border-radius:8px;
+  background:rgba(139,92,246,.18)!important;
+  box-shadow:none!important;
+}
+.auth-v3-flow-row{
+  grid-template-columns:46px 1fr;
+  gap:10px;
+  margin-top:15px;
+  color:rgba(255,255,255,.66);
+  font:560 12px/1.3 Inter,system-ui,sans-serif;
+}
+.auth-v3-flow-row time,
+.auth-v3-flow-row span{
+  color:rgba(255,255,255,.36);
+}
+.auth-v3-stat-strip{
+  display:none;
+}
+#auth-screen.ethone-auth-v3 #auth-card{
+  width:min(462px,100%)!important;
+  max-width:462px!important;
+  animation:authV3CardIn .32s ease-out both!important;
+}
+#auth-screen.ethone-auth-v3 #lb-box{
+  border-radius:26px!important;
+  padding:clamp(30px,3.2vw,44px)!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.060),rgba(255,255,255,.026)),rgba(18,18,22,.72)!important;
+  border:1px solid rgba(255,255,255,.105)!important;
+  box-shadow:0 28px 80px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.07)!important;
+  backdrop-filter:blur(18px) saturate(115%)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(115%)!important;
+}
+#auth-screen.ethone-auth-v3 #lb-box::before{
+  opacity:.18;
+  background:linear-gradient(90deg,transparent,rgba(139,92,246,.42),transparent)!important;
+}
+#auth-screen.ethone-auth-v3 #lb-box > div:first-of-type div{
+  border-radius:12px!important;
+  background:linear-gradient(180deg,#9b6dff,#6d42d8)!important;
+  box-shadow:0 12px 34px rgba(139,92,246,.18),inset 0 1px 0 rgba(255,255,255,.18)!important;
+}
+#auth-screen.ethone-auth-v3 #auth-form-title{
+  font:720 38px/1.08 Inter,system-ui,sans-serif!important;
+  color:#fff!important;
+}
+#auth-screen.ethone-auth-v3 #auth-form-sub{
+  color:rgba(247,247,251,.50)!important;
+  font-size:14px!important;
+}
+#auth-screen.ethone-auth-v3 .lb-tab{
+  height:43px!important;
+  border-radius:13px!important;
+  font-weight:650!important;
+}
+#auth-screen.ethone-auth-v3 .lb-input{
+  height:56px!important;
+  border-radius:14px!important;
+  background:rgba(255,255,255,.045)!important;
+  border:1px solid rgba(255,255,255,.095)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045)!important;
+  transition:border-color .16s ease,background .16s ease,transform .16s ease!important;
+}
+#auth-screen.ethone-auth-v3 .lb-input:hover{
+  background:rgba(255,255,255,.060)!important;
+  border-color:rgba(255,255,255,.14)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-input:focus{
+  transform:none;
+  border-color:rgba(139,92,246,.56)!important;
+  background:rgba(139,92,246,.055)!important;
+  box-shadow:0 0 0 3px rgba(139,92,246,.11)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-btn-primary{
+  height:56px!important;
+  border-radius:15px!important;
+  background:#7c3aed!important;
+  font-weight:760!important;
+  box-shadow:0 16px 40px rgba(124,58,237,.20),inset 0 1px 0 rgba(255,255,255,.16)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-btn-primary:hover{
+  transform:translateY(-1px)!important;
+  filter:none;
+  background:#8b5cf6!important;
+  box-shadow:0 18px 46px rgba(124,58,237,.26),inset 0 1px 0 rgba(255,255,255,.18)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-social{
+  min-height:54px!important;
+  border-radius:14px!important;
+  justify-content:center!important;
+  color:rgba(255,255,255,.76)!important;
+  background:rgba(255,255,255,.035)!important;
+  border:1px solid rgba(255,255,255,.085)!important;
+  box-shadow:none!important;
+  font-weight:650!important;
+}
+#auth-screen.ethone-auth-v3 .lb-social:hover{
+  transform:translateY(-1px);
+  border-color:rgba(139,92,246,.28)!important;
+  background:rgba(139,92,246,.075)!important;
+  box-shadow:none!important;
+}
+#auth-screen.ethone-auth-v3 .lb-eye,
+#auth-screen.ethone-auth-v3 .ethone-eye-btn{
+  background:rgba(255,255,255,.045)!important;
+  border-color:rgba(255,255,255,.08)!important;
+}
+#auth-screen.ethone-auth-v3 #auth-lang-bar{
+  background:rgba(19,19,23,.72)!important;
+  border-color:rgba(255,255,255,.08)!important;
+  box-shadow:none!important;
+  backdrop-filter:blur(16px)!important;
+}
+#auth-screen.ethone-auth-v3 #auth-lang-bar button{
+  height:31px!important;
+  min-width:41px!important;
+}
+#auth-screen.ethone-auth-v3 .lb-err{
+  border-color:rgba(248,113,113,.20)!important;
+  background:rgba(248,113,113,.08)!important;
+}
+@keyframes authV3CardIn{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:none}
+}
+@media(max-width:1120px){
+  #auth-screen.ethone-auth-v3.ethone-auth-v3-visible{
+    grid-template-columns:1fr!important;
+    padding:90px clamp(20px,5vw,48px) 40px!important;
+    gap:28px;
+  }
+  #auth-v3-hero{min-height:auto}
+  .auth-v3-title{font-size:clamp(42px,9vw,66px)}
+}
+@media(max-width:720px){
+  #auth-screen.ethone-auth-v3.ethone-auth-v3-visible{
+    grid-template-columns:1fr!important;
+    padding:78px 14px 24px!important;
+    gap:22px;
+  }
+  #auth-screen.ethone-auth-v3 #auth-card{
+    justify-self:center!important;
+    width:100%!important;
+    max-width:390px!important;
+  }
+  #auth-v3-hero{display:none!important}
+  #auth-screen.ethone-auth-v3 #auth-form-title{font-size:31px!important}
+  #auth-screen.ethone-auth-v3 #lb-box{border-radius:22px!important;padding:28px!important}
+}
+@media(max-width:420px){
+  .auth-v3-title{font-size:34px}
+}
+</style>
 <script id="ethone-auth-v3-premium-experience">
 (function(){
   "use strict";
@@ -25218,40 +25599,30 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
     return ''+
       '<section id="auth-v3-hero" aria-hidden="true">'+
         '<div class="auth-v3-brand"><div class="auth-v3-mark">E</div><span>ETHONE</span></div>'+
-        '<div class="auth-v3-eyebrow"><i></i><span>Brain OS is ready before you sign in</span></div>'+
-        '<h2 class="auth-v3-title">Your Personal <span>Operating System.</span></h2>'+
-        '<p class="auth-v3-copy">Enter a living workspace where Brain, Workspaces, Marketplace and your daily tools stay organized around the way you think.</p>'+
+        '<h2 class="auth-v3-title">Your Personal <span>Operating System</span></h2>'+
+        '<p class="auth-v3-copy">A living workspace where Brain, Workspaces, Marketplace and your daily tools stay organized around the way you think.</p>'+
         '<div class="auth-v3-preview">'+
           '<div class="auth-v3-preview-top">'+
             '<div class="auth-v3-rail">E</div>'+
-            '<div class="auth-v3-command">Search ETHONE <span>apps, widgets, files, Brain</span></div>'+
-            '<div class="auth-v3-live"><i></i><span>Live context</span></div>'+
+            '<div class="auth-v3-preview-home">Home</div>'+
+            '<div class="auth-v3-command">Search ETHONE <span>Brain, files, commands</span></div>'+
+            '<div class="auth-v3-live"><i></i><span>Online</span></div>'+
           '</div>'+
           '<div class="auth-v3-preview-body">'+
-            '<div>'+
-              '<div class="auth-v3-brain-card">'+
-                '<div><h3>Brain is present.</h3><p>Ready to organize your dashboard, recommend the next action and prepare the right workspace.</p></div>'+
-                '<div class="auth-v3-brain-orb">E</div>'+
-              '</div>'+
-              '<div class="auth-v3-mini-grid" style="margin-top:16px">'+
-                '<div class="auth-v3-mini"><h3>Marketplace</h3><p>Personal widgets and layouts.</p><div class="auth-v3-market-item"><i></i><span>Focus Timer Pack</span></div></div>'+
-                '<div class="auth-v3-mini"><h3>Workspaces</h3><p>Contexts ready when you are.</p><div class="auth-v3-workspace-item"><i></i><span>Personal OS</span></div></div>'+
-              '</div>'+
+            '<div class="auth-v3-brain-card">'+
+              '<div><div class="auth-v3-brain-status"><i></i><span>Brain · Online</span></div><h3>Brain is present.</h3><p>Ready to help you think, plan and build without taking over the interface.</p></div>'+
+              '<div class="auth-v3-brain-orb">E</div>'+
             '</div>'+
-            '<div>'+
-              '<div class="auth-v3-flow">'+
-                '<h3>Today flow</h3>'+
-                '<p>Brain keeps the sequence calm.</p>'+
-                '<div class="auth-v3-flow-row"><time>09:00</time><div>Deep work<span>Dashboard polish</span></div></div>'+
-                '<div class="auth-v3-flow-row"><time>13:30</time><div>Review<span>Workspace sync</span></div></div>'+
-                '<div class="auth-v3-meter"><i></i><i></i><i></i><i></i><i></i></div>'+
-              '</div>'+
+            '<div class="auth-v3-flow">'+
+              '<h3>Today focus</h3>'+
+              '<p>A calm sequence for your next session.</p>'+
+              '<div class="auth-v3-flow-row"><time>10:00</time><div>Deep work<span>Dashboard polish</span></div></div>'+
+              '<div class="auth-v3-flow-row"><time>13:30</time><div>Review<span>Workspace sync</span></div></div>'+
+              '<div class="auth-v3-flow-row"><time>16:00</time><div>Design<span>Project brief</span></div></div>'+
             '</div>'+
           '</div>'+
-          '<div class="auth-v3-stat-strip">'+
-            '<div class="auth-v3-stat"><b>12</b><span>Smart widgets</span></div>'+
-            '<div class="auth-v3-stat"><b>3</b><span>Active spaces</span></div>'+
-            '<div class="auth-v3-stat"><b>AI</b><span>Context aware</span></div>'+
+          '<div class="auth-v3-mini-grid">'+
+            '<div class="auth-v3-mini"><h3>Workspaces</h3><p>Contexts ready when you are.</p><div class="auth-v3-workspace-item"><i></i><span>Personal</span></div></div>'+
           '</div>'+
         '</div>'+
       '</section>';

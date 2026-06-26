@@ -1,4 +1,4 @@
-const ETHONE_VERSION = "2026-06-26-production-v3";
+const ETHONE_VERSION = "2026-06-26-production-v7-emergency-safe";
 const ETHONE_CACHE = `ethone-${ETHONE_VERSION}`;
 const ETHONE_OFFLINE_URL = "./index.html";
 const ETHONE_CORE_ASSETS = [

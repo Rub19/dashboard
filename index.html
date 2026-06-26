@@ -13,6 +13,108 @@
   visibility: visible !important;
 }
 </style>
+<style id="ethone-safe-mode-css">
+html.ethone-safe-mode *,
+html.ethone-safe-mode *::before,
+html.ethone-safe-mode *::after{
+  animation:none !important;
+  transition:none !important;
+  scroll-behavior:auto !important;
+}
+html.ethone-safe-mode canvas,
+html.ethone-safe-mode .auth-orb,
+html.ethone-safe-mode .orb,
+html.ethone-safe-mode .bg-orb,
+html.ethone-safe-mode .meteor,
+html.ethone-safe-mode .particle{
+  display:none !important;
+}
+</style>
+<script id="ethone-safe-mode">
+(function(){
+  if(window.__ethoneSafeModeBoot)return;
+  window.__ethoneSafeModeBoot=true;
+  var params;
+  try{params=new URLSearchParams(location.search||"");}catch(e){params={has:function(){return false},get:function(){return null}}}
+  var safe=params.has("safe")&&params.get("safe")!=="0";
+  window.ETHONE_SAFE_MODE=!!safe;
+  window.ETHONE_DISABLE_NON_CRITICAL=!!safe;
+  if(!safe)return;
+
+  document.documentElement.classList.add("ethone-safe-mode");
+  window.__ethoneSkipServiceWorker=true;
+  window.__ethoneSkipMarketplace=true;
+  window.__ethoneSkipBrain=true;
+  window.__ethoneSkipAIPreload=true;
+  window.__ethoneSkipExternalWidgets=true;
+
+  var nativeRAF=window.requestAnimationFrame;
+  var nativeSetInterval=window.setInterval;
+  var nativeFetch=window.fetch;
+  window.requestAnimationFrame=function(){return 0};
+  window.cancelAnimationFrame=window.cancelAnimationFrame||function(){};
+  window.setInterval=function(fn,delay){
+    delay=Number(delay)||0;
+    if(delay<5000)return 0;
+    return nativeSetInterval(fn,Math.max(delay,30000));
+  };
+  if(nativeFetch){
+    window.fetch=function(input,init){
+      var url="";
+      try{url=String((input&&input.url)||input||"")}catch(e){}
+      var same=!url||url.charAt(0)==="/"||url.indexOf(location.origin)===0;
+      var auth=/supabase\.co|cdn\.jsdelivr\.net\/npm\/@supabase|\/supabase\//i.test(url);
+      if(!same&&!auth){
+        return Promise.reject(new Error("ETHONE safe mode blocked non-critical request: "+url));
+      }
+      return nativeFetch.apply(this,arguments);
+    };
+  }
+  if("serviceWorker" in navigator&&navigator.serviceWorker.getRegistrations){
+    navigator.serviceWorker.getRegistrations().then(function(regs){
+      regs.forEach(function(reg){try{reg.unregister()}catch(e){}});
+    }).catch(function(){});
+  }
+})();
+</script>
+<style id="ethone-boot-watchdog-css">
+.ethone-boot-warning{position:fixed;left:16px;right:16px;top:16px;z-index:2147483647;max-width:720px;margin:0 auto;padding:12px 14px;border:1px solid rgba(251,191,36,.34);border-radius:12px;background:rgba(24,18,8,.94);color:#fde68a;font:13px/1.45 Inter,system-ui,sans-serif;box-shadow:0 16px 48px rgba(0,0,0,.34)}
+</style>
+<script id="ethone-boot-watchdog">
+(function(){
+  if(window.__ethoneBootWatchdog)return;
+  window.__ethoneBootWatchdog=true;
+  var BOOT_TIMEOUT=window.ETHONE_SAFE_MODE?1800:5000;
+  var ERROR_TEXT="ETHONE a demarre en mode secours: une ressource externe ou une synchronisation a pris trop de temps.";
+  function visible(el){if(!el)return false;var cs=getComputedStyle(el);return cs.display!=="none"&&cs.visibility!=="hidden"&&el.getBoundingClientRect().width>20&&el.getBoundingClientRect().height>20}
+  function removeAntiFlash(){var af=document.getElementById("anti-flash");if(af)af.remove()}
+  function hideBoot(){["nexus-boot-screen","ethone-boot-screen","nexus-page-loader","nexus-page-transition"].forEach(function(id){var el=document.getElementById(id);if(el){el.style.setProperty("display","none","important");el.style.setProperty("visibility","hidden","important");el.style.opacity="0"}})}
+  function showWarning(){if(document.getElementById("ethone-boot-warning"))return;var div=document.createElement("div");div.id="ethone-boot-warning";div.className="ethone-boot-warning";div.setAttribute("role","status");div.textContent=ERROR_TEXT;document.body.appendChild(div)}
+  function showFallback(){
+    if(!document.body)return;
+    removeAntiFlash();hideBoot();
+    var main=document.getElementById("main-content"),profile=document.getElementById("profile-screen"),auth=document.getElementById("auth-screen"),password=document.getElementById("password-screen");
+    if(visible(main)||visible(profile)||visible(auth)||visible(password))return;
+    if(auth){auth.style.setProperty("display","flex","important");auth.style.setProperty("visibility","visible","important");auth.style.opacity="1";var card=document.getElementById("auth-card")||document.getElementById("lb-box");if(card){card.style.setProperty("display","block","important");card.style.setProperty("visibility","visible","important");card.style.opacity="1"}}
+    else if(main){main.style.setProperty("display","block","important");main.style.setProperty("visibility","visible","important")}
+    showWarning();
+  }
+  window.ethoneBootFallback=showFallback;
+  window.addEventListener("error",function(){setTimeout(showFallback,0)});
+  window.addEventListener("unhandledrejection",function(){setTimeout(showFallback,0)});
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",function(){setTimeout(showFallback,BOOT_TIMEOUT)});
+  else setTimeout(showFallback,BOOT_TIMEOUT);
+  window.addEventListener("load",function(){setTimeout(showFallback,BOOT_TIMEOUT)});
+})();
+</script>
+<script id="ethone-auth-i18n-source">
+window.ETHONE_AUTH_TEXT={
+  fr:{welcome_back:"Bon retour",sign_in_sub:"Connectez-vous a votre dashboard ETHONE",sign_in:"Connexion",create_account:"Creer un compte",email_or_username:"Email ou identifiant",password:"Mot de passe",forgot_password:"Mot de passe oublie ?",remember_me:"Se souvenir de moi",sign_in_btn:"Se connecter",or_continue_with:"ou continuer avec",username:"Identifiant",email_optional:"Email (optionnel)",create_account_btn:"Creer un compte",reg_user_ph:"Choisissez un identifiant",reg_email_ph:"vous@exemple.com",reg_pw_ph:"Min. 6 caracteres",login_ph:"vous@exemple.com",pw_ph:"Mot de passe",reset_need_email:"Entre ton email d'abord",reset_sent:"Email de reinitialisation envoye.",reset_error:"Impossible d'envoyer l'email",fill_all:"Veuillez remplir tous les champs",wrong:"Identifiants incorrects",connect_error:"Erreur de connexion. Reessayez.",user_pw_required:"Identifiant et mot de passe requis",pw_short:"Mot de passe trop court (6 caracteres min)",username_taken:"Cet identifiant est deja pris",google_error:"Connexion Google impossible",github_error:"Connexion GitHub impossible",supabase_offline:"Supabase n'est pas disponible. Verifie la connexion puis recharge la page."},
+  en:{welcome_back:"Welcome back",sign_in_sub:"Sign in to your ETHONE dashboard",sign_in:"Sign in",create_account:"Create account",email_or_username:"Email or username",password:"Password",forgot_password:"Forgot password?",remember_me:"Remember me",sign_in_btn:"Sign in",or_continue_with:"or continue with",username:"Username",email_optional:"Email (optional)",create_account_btn:"Create account",reg_user_ph:"Choose a username",reg_email_ph:"you@example.com",reg_pw_ph:"Min. 6 characters",login_ph:"you@example.com",pw_ph:"Password",reset_need_email:"Enter your email address first",reset_sent:"Reset email sent. Check your inbox.",reset_error:"Error sending reset email",fill_all:"Fill in all fields",wrong:"Wrong credentials",connect_error:"Connection error. Please try again.",user_pw_required:"Username and password required",pw_short:"Password too short (6 chars min)",username_taken:"Username already taken",google_error:"Google sign-in unavailable",github_error:"GitHub sign-in unavailable",supabase_offline:"Supabase is unavailable. Check your connection and reload."},
+  es:{welcome_back:"Bienvenido de nuevo",sign_in_sub:"Conectate a tu dashboard ETHONE",sign_in:"Iniciar sesion",create_account:"Crear cuenta",email_or_username:"Email o usuario",password:"Contrasena",forgot_password:"Olvidaste la contrasena?",remember_me:"Recordarme",sign_in_btn:"Entrar",or_continue_with:"o continuar con",username:"Usuario",email_optional:"Email (opcional)",create_account_btn:"Crear cuenta",reg_user_ph:"Elige un usuario",reg_email_ph:"tu@ejemplo.com",reg_pw_ph:"Min. 6 caracteres",login_ph:"tu@ejemplo.com",pw_ph:"Contrasena",reset_need_email:"Introduce primero tu email",reset_sent:"Email enviado.",reset_error:"Error al enviar el email",fill_all:"Completa todos los campos",wrong:"Credenciales incorrectas",connect_error:"Error de conexion. Intentalo de nuevo.",user_pw_required:"Usuario y contrasena requeridos",pw_short:"Contrasena demasiado corta",username_taken:"Usuario ya usado",google_error:"Conexion Google imposible",github_error:"Conexion GitHub imposible",supabase_offline:"Supabase no esta disponible. Verifica la conexion y recarga."},
+  de:{welcome_back:"Willkommen zurueck",sign_in_sub:"Melde dich in deinem ETHONE Dashboard an",sign_in:"Anmelden",create_account:"Konto erstellen",email_or_username:"E-Mail oder Benutzername",password:"Passwort",forgot_password:"Passwort vergessen?",remember_me:"Angemeldet bleiben",sign_in_btn:"Anmelden",or_continue_with:"oder weiter mit",username:"Benutzername",email_optional:"E-Mail (optional)",create_account_btn:"Konto erstellen",reg_user_ph:"Benutzernamen waehlen",reg_email_ph:"du@beispiel.com",reg_pw_ph:"Mind. 6 Zeichen",login_ph:"du@beispiel.com",pw_ph:"Passwort",reset_need_email:"Gib zuerst deine E-Mail ein",reset_sent:"Reset-E-Mail gesendet.",reset_error:"Fehler beim Senden",fill_all:"Bitte alle Felder ausfuellen",wrong:"Falsche Zugangsdaten",connect_error:"Verbindungsfehler. Bitte erneut versuchen.",user_pw_required:"Benutzername und Passwort erforderlich",pw_short:"Passwort zu kurz",username_taken:"Benutzername bereits vergeben",google_error:"Google-Anmeldung nicht moeglich",github_error:"GitHub-Anmeldung nicht moeglich",supabase_offline:"Supabase ist nicht verfuegbar. Verbindung pruefen und neu laden."}
+};
+</script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <meta content="#050507" name="theme-color"/>
@@ -5684,6 +5786,7 @@ function createSupabaseOfflineClient(){
   };
 }
 var sb=(window.supabase&&typeof window.supabase.createClient==='function')?window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON):createSupabaseOfflineClient();
+window.sb=sb;
 let _sbUser=null;
 let _isAdmin=false;
 let _ambientFrame=null;
@@ -6008,12 +6111,12 @@ async function onAuthSuccess(userArg){
     _isAdmin=user?.email===ADMIN_EMAIL;
 
     // 4. Charge les données
-    await loadCloudState();
+    await ethoneWithTimeout(loadCloudState(),4500,'Cloud profile load');
     if(!profiles.length){
       profiles.push({id:Date.now(),name:'Mon profil',
         avatarEmoji:AVATARS[0].e,avatarBg:AVATARS[0].b,
         avatarImg:null,avatarIdx:0,state:defState('Mon profil')});
-      await saveCloudState();
+      await ethoneWithTimeout(saveCloudState(),4500,'Initial cloud profile save').catch(()=>{});
     }
     normalizeAllProfiles();
     try{ sessionStorage.setItem('nexus_profiles_'+_sbUser.id,JSON.stringify(profiles)); }catch(e){}
@@ -6445,6 +6548,7 @@ function psUntilt(el){
 
 let _psEmbersRunning=false;
 function psStartEmbers(){
+  if(window.ETHONE_SAFE_MODE)return;
   if(_psEmbersRunning)return;
   const canvas=document.getElementById('ps-canvas');
   if(!canvas)return;
@@ -10532,6 +10636,7 @@ function openValoMatchDetail(idx,name,tag){
 }
 
 function startAmbientBg(){
+  if(window.ETHONE_SAFE_MODE)return;
   // Don't start ambient if a custom bg theme is active
   const _activeBg=curP()?.bgTheme;
   if(_activeBg&&_activeBg!=='none')return;
@@ -10618,6 +10723,7 @@ function pickBgTheme(id){
 
 function applyBgTheme(id){
   const canvas=document.getElementById('bg-canvas');if(!canvas)return;
+  if(window.ETHONE_SAFE_MODE){canvas.style.opacity='0';return;}
   cancelAnimationFrame(_bgFrame);_bgParticles=[];
   // Stop ambient before applying custom theme
   if(_ambientFrame){cancelAnimationFrame(_ambientFrame);_ambientFrame=null;}
@@ -12116,7 +12222,7 @@ function getWeekDays(){
 function habitStreak(h){
   const today=new Date();today.setHours(0,0,0,0);
   let streak=0;let d=new Date(today);
-  while(true){
+  while(streak<3660){
     const key=d.toISOString().slice(0,10);
     if(!h.log||!h.log[key])break;
     streak++;d.setDate(d.getDate()-1);
@@ -14405,7 +14511,12 @@ var I18N = {
   },
 };
 
-function t(key){ if(!I18N)return key; return (I18N[_lang]?.[key]) ?? (I18N['en']?.[key]) ?? key; }
+function t(key){
+  const lang=(_lang||localStorage.getItem('nexus_lang')||localStorage.getItem('ethone_lang')||'fr').slice(0,2);
+  const auth=window.ETHONE_AUTH_TEXT;
+  const resolved=(I18N&&((I18N[lang]?.[key]) ?? (I18N['en']?.[key]))) || (auth&&((auth[lang]?.[key]) ?? (auth.fr?.[key]) ?? (auth.en?.[key])));
+  return resolved || key;
+}
 
 
 // === BOOT ===
@@ -14508,18 +14619,25 @@ function showDashboardOrProfiles(){
   }
 }
 
+function ethoneWithTimeout(promise,ms,label){
+  return Promise.race([
+    promise,
+    new Promise((_,reject)=>setTimeout(()=>reject(new Error((label||'Operation')+' timed out')),ms))
+  ]);
+}
+
 (function(){
   if(typeof I18N!=='undefined')applyI18n();
 
-  sb.auth.getSession().then(async({data:{session},error})=>{
+  ethoneWithTimeout(sb.auth.getSession(),4200,'Supabase session').then(async({data:{session},error})=>{
     // If getSession fails or returns null, try getUser() as fallback
     if(!session || error){
       // Attempt getUser to force token refresh
       try{
-        const {data:{user},error:ue}=await sb.auth.getUser();
+        const {data:{user},error:ue}=await ethoneWithTimeout(sb.auth.getUser(),3500,'Supabase user');
         if(!user||ue){ showAuth(); return; }
         // getUser succeeded — get fresh session
-        const {data:{session:s2}}=await sb.auth.getSession();
+        const {data:{session:s2}}=await ethoneWithTimeout(sb.auth.getSession(),3500,'Supabase refreshed session');
         if(!s2){ showAuth(); return; }
         session=s2;
       }catch(e){ showAuth(); return; }
@@ -14535,7 +14653,7 @@ function showDashboardOrProfiles(){
         profiles=JSON.parse(cached);
         normalizeAllProfiles();
         showDashboardOrProfiles();
-        loadCloudState().then(()=>{
+        ethoneWithTimeout(loadCloudState(),4500,'Cloud profile refresh').then(()=>{
           normalizeAllProfiles();
           try{sessionStorage.setItem(cacheKey,JSON.stringify(profiles));}catch(e){}
           const p=curP();if(p)initSidebarWidgets(p);
@@ -14544,12 +14662,12 @@ function showDashboardOrProfiles(){
       }catch(e){ sessionStorage.removeItem(cacheKey); }
     }
 
-    await loadCloudState();
+    await ethoneWithTimeout(loadCloudState(),4500,'Cloud profile load');
     if(!profiles.length){
       profiles.push({id:Date.now(),name:'Mon profil',
         avatarEmoji:AVATARS[0].e,avatarBg:AVATARS[0].b,
         avatarImg:null,avatarIdx:0,state:defState('Mon profil')});
-      await saveCloudState();
+      await ethoneWithTimeout(saveCloudState(),4500,'Initial cloud profile save').catch(()=>{});
     }
     normalizeAllProfiles();
     try{sessionStorage.setItem(cacheKey,JSON.stringify(profiles));}catch(e){}
@@ -15408,6 +15526,7 @@ body.eh-dashboard-ready #eh-dock {
 <script id="ethone-enterprise-2026-runtime">
 (function(){
   'use strict';
+  if(window.ETHONE_SAFE_MODE)return;
   if(window.__ethoneEnterprise2026)return;window.__ethoneEnterprise2026=true;
   const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
   const accents={violet:['#8b5cf6','139,92,246'],blue:['#3b82f6','59,130,246'],emerald:['#10b981','16,185,129'],rose:['#f43f5e','244,63,94'],amber:['#f59e0b','245,158,11'],slate:['#94a3b8','148,163,184']};
@@ -15455,7 +15574,7 @@ body.eh-dashboard-ready #eh-dock {
     });
     $('#eh-density-toggle')?.addEventListener('click',()=>{state.compact=!state.compact;localStorage.setItem('ethone:compact',state.compact?'1':'0');applyPrefs();notify(state.compact?'Compact density on':'Comfort density on');});
     $('#eh-motion-toggle')?.addEventListener('click',()=>{state.reduced=!state.reduced;localStorage.setItem('ethone:reducedMotion',state.reduced?'1':'0');applyPrefs();notify(state.reduced?'Reduced motion on':'Motion restored');});
-    document.addEventListener('keydown',e=>{if(e.key==='Escape')overlay?.classList.remove('open'); if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='j'){e.preventDefault();overlay?.classList.toggle('open');}});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')overlay?.classList.remove('open'); if((e.ctrlKey||e.metaKey)&&!e.shiftKey&&e.key.toLowerCase()==='j'){e.preventDefault();overlay?.classList.toggle('open');}});
   }
   function enhanceCards(){
     const targets='.panel,.stat-card,.conn-card,.game-card,.settings-card,.countdown-card,.goal-card,.journal-entry,.note-item,.kanban-col,.ps-card-inner,.ps-add-card';
@@ -15533,7 +15652,12 @@ body.eh-dashboard-ready #eh-dock {
   }
   window.ethoneEnterpriseAudit=audit;
   window.ethoneOpenPersonalization=()=>$('#eh-personalize-overlay')?.classList.add('open');
-  function boot(){buildSwatches();wirePanel();applyPrefs();refreshIcons();enhanceCards();wrapSwitchPage();addTopbarHint();improveEmptyPages();updateDock();setTimeout(refreshIcons,500);setInterval(syncEnterpriseChrome,450);try{new MutationObserver(syncEnterpriseChrome).observe(document.body,{attributes:true,subtree:true,attributeFilter:['style','class']});}catch(e){}}
+  let _ehSyncTimer=0;
+  function scheduleEnterpriseChrome(){
+    clearTimeout(_ehSyncTimer);
+    _ehSyncTimer=setTimeout(syncEnterpriseChrome,250);
+  }
+  function boot(){buildSwatches();wirePanel();applyPrefs();refreshIcons();enhanceCards();wrapSwitchPage();addTopbarHint();improveEmptyPages();updateDock();setTimeout(refreshIcons,500);setInterval(syncEnterpriseChrome,5000);try{new MutationObserver(scheduleEnterpriseChrome).observe(document.body,{attributes:true,subtree:true,attributeFilter:['style','class']});}catch(e){}}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot); else boot();
 })();
 </script>
@@ -16005,6 +16129,7 @@ body[data-light="1"].ethone-personal-os-ready .ethone-pos-context-card strong{co
 <script id="ethone-personal-os-vision-runtime">
 (function(){
   "use strict";
+  if(window.ETHONE_SAFE_MODE)return;
   if(window.__ethonePersonalOSVision)return;
   window.__ethonePersonalOSVision=true;
   const $=(s,r=document)=>r.querySelector(s);
@@ -16535,6 +16660,7 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
 <script id="ethone-dashboard-os2-runtime">
 (function(){
   "use strict";
+  if(window.ETHONE_SAFE_MODE)return;
   if(window.__ethoneDashboardOS2)return;
   window.__ethoneDashboardOS2=true;
   const $=(s,r=document)=>r.querySelector(s);
@@ -17155,6 +17281,7 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
 <script id="ethone-ai-core-runtime">
 (function(){
   "use strict";
+  if(window.ETHONE_SAFE_MODE||window.__ethoneSkipAIPreload)return;
   if(window.__ethoneAICoreRuntime)return;
   window.__ethoneAICoreRuntime=true;
   const $=(s,r=document)=>r.querySelector(s);
@@ -17819,6 +17946,7 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
 <script id="ethone-ai-everywhere-runtime">
 (function(){
   "use strict";
+  if(window.ETHONE_SAFE_MODE||window.__ethoneSkipAIPreload)return;
   if(window.__ethoneAIEverywhere)return;
   window.__ethoneAIEverywhere=true;
   const $=(s,r=document)=>r.querySelector(s);
@@ -18020,7 +18148,7 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
     const target=e.target.closest(".todo-item,.item-row,.note-item,.panel,.stat-card,.conn-card,.game-card,.kanban-card,.cal-event,.journal-entry,.ethone-os2-card,textarea,input,[contenteditable='true']");
     const selected=String(window.getSelection&&window.getSelection()||"").trim();
     if(!target&&!selected)return;
-    e.preventDefault();
+    if(e.defaultPrevented)return;
     ensureContextMenu();
     const ctx=contextFromElement(target||e.target);
     state.lastContext=ctx;
@@ -18140,7 +18268,7 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
     patchSwitchPage();
   }
   document.addEventListener("click",handleClick);
-  document.addEventListener("contextmenu",showContextMenu);
+  // Native browser context menu remains enabled for production debugging and accessibility.
   document.addEventListener("keydown",e=>{
     if((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key.toLowerCase()==="a"){e.preventDefault();openCopilot(contextFromElement(document.activeElement))}
     if(e.key==="Escape"){hideContextMenu()}
@@ -18597,6 +18725,7 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
 <script id="ethone-intelligence-33a-runtime">
 (function(){
   "use strict";
+  if(window.ETHONE_SAFE_MODE||window.__ethoneSkipBrain)return;
   if(window.__ethoneIntelligence33A)return;
   window.__ethoneIntelligence33A=true;
   const $=(s,r=document)=>r.querySelector(s);
@@ -19421,6 +19550,7 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
 <script id="ethone-brain-33b-runtime">
 (function(){
   "use strict";
+  if(window.ETHONE_SAFE_MODE||window.__ethoneSkipBrain)return;
   if(window.__ethoneBrain33B)return;
   window.__ethoneBrain33B=true;
   const $=(s,r=document)=>r.querySelector(s);
@@ -20289,6 +20419,7 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
 <script id="ethone-brain-34-runtime">
 (function(){
   "use strict";
+  if(window.ETHONE_SAFE_MODE||window.__ethoneSkipBrain)return;
   if(window.__ethoneBrain34)return;
   window.__ethoneBrain34=true;
   const $=(s,r=document)=>r.querySelector(s);
@@ -20959,6 +21090,7 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
 <script id="ethone-brain-platform-35-runtime">
 (function(){
   "use strict";
+  if(window.ETHONE_SAFE_MODE||window.__ethoneSkipBrain)return;
   if(window.__ethoneBrainPlatform35)return;
   window.__ethoneBrainPlatform35=true;
   const $=(s,r=document)=>r.querySelector(s);
@@ -21561,6 +21693,7 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
 <script id="ethone-brain-os-36-runtime">
 (function(){
   "use strict";
+  if(window.ETHONE_SAFE_MODE||window.__ethoneSkipBrain)return;
   if(window.__ethoneBrainOS36)return;
   window.__ethoneBrainOS36=true;
   const $=(s,r=document)=>r.querySelector(s);
@@ -22287,6 +22420,7 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
 <script id="ethone-marketplace-41-runtime">
 (function(){
   "use strict";
+  if(window.ETHONE_SAFE_MODE||window.__ethoneSkipMarketplace)return;
   if(window.__ethoneMarketplace41)return;
   window.__ethoneMarketplace41=true;
   const $=(s,r=document)=>r.querySelector(s);
@@ -22716,6 +22850,7 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
     });
   }
   function registerServiceWorker(){
+    if(window.ETHONE_SAFE_MODE||window.__ethoneSkipServiceWorker)return;
     if(!("serviceWorker" in navigator))return;
     if(location.protocol==="file:")return;
     navigator.serviceWorker.register("./sw.js",{updateViaCache:"none"}).then(function(registration){
@@ -22759,7 +22894,7 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
     if(typeof reducedMotion.addEventListener==="function")reducedMotion.addEventListener("change",reduceMotionState);
     else if(typeof reducedMotion.addListener==="function")reducedMotion.addListener(reduceMotionState);
   }
-  if("MutationObserver" in window){
+  if(!window.ETHONE_SAFE_MODE&&"MutationObserver" in window){
     new MutationObserver(scheduleHardening).observe(document.documentElement,{childList:true,subtree:true});
   }
 
@@ -22784,6 +22919,220 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
   else {runHardening();registerServiceWorker();}
   setTimeout(runHardening,600);
   setTimeout(runHardening,1800);
+})();
+</script>
+<script id="ethone-auth-production-fix">
+(function(){
+  "use strict";
+  if(window.__ethoneAuthProductionFix)return;
+  window.__ethoneAuthProductionFix=true;
+  var AUTH=window.ETHONE_AUTH_TEXT||{};
+  function lang(){
+    return String(window._lang||localStorage.getItem("nexus_lang")||localStorage.getItem("ethone_lang")||"fr").slice(0,2).toLowerCase();
+  }
+  function tr(key){
+    var l=lang();
+    return (AUTH[l]&&AUTH[l][key])||(AUTH.fr&&AUTH.fr[key])||(AUTH.en&&AUTH.en[key])||key;
+  }
+  function qs(s,r){return (r||document).querySelector(s)}
+  function qsa(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+  function setText(selector,key){
+    var el=typeof selector==="string"?qs(selector):selector;
+    if(el)el.textContent=tr(key);
+  }
+  function setPlaceholder(selector,key){
+    var el=typeof selector==="string"?qs(selector):selector;
+    if(el)el.setAttribute("placeholder",tr(key));
+  }
+  function setErr(message,good){
+    var er=qs("#auth-error");
+    if(!er)return;
+    er.textContent=message||"";
+    er.style.display=message?"block":"none";
+    er.style.color=good?"#22c55e":"";
+  }
+  function setLoading(value){
+    var ld=qs("#auth-loading");
+    if(ld)ld.style.display=value?"block":"none";
+    if(value)setErr("");
+  }
+  function supabaseReady(){
+    return !!(window.sb&&window.sb.auth&&!window.sb.__offline);
+  }
+  function redirectUrl(){
+    var path=location.pathname||"/";
+    if(/\/404\.html$/i.test(path))path=path.replace(/\/404\.html$/i,"/index.html");
+    return location.origin+path;
+  }
+  function timeout(promise,ms,label){
+    return Promise.race([promise,new Promise(function(_,reject){setTimeout(function(){reject(new Error((label||"Request")+" timed out"))},ms)})]);
+  }
+  function applyAuthTranslations(){
+    var l=lang();
+    qsa("#auth-lang-bar button").forEach(function(btn){
+      var active=btn.dataset.l===l;
+      btn.style.background=active?"rgba(124,58,237,.85)":"transparent";
+      btn.style.color=active?"#fff":"rgba(255,255,255,.42)";
+      btn.style.fontWeight=active?"700":"600";
+      btn.type="button";
+    });
+    qsa("#auth-screen [data-i18n]").forEach(function(el){
+      var key=el.getAttribute("data-i18n");
+      var attr=el.getAttribute("data-i18n-attr");
+      var value=tr(key);
+      if(value===key&&/_/.test(key))value=(AUTH.fr&&AUTH.fr[key])||(AUTH.en&&AUTH.en[key])||el.textContent||key;
+      if(attr)el.setAttribute(attr,value);
+      else el.textContent=value;
+    });
+    setPlaceholder("#auth-login-id","login_ph");
+    setPlaceholder("#auth-login-pw","pw_ph");
+    setPlaceholder("#auth-reg-username","reg_user_ph");
+    setPlaceholder("#auth-reg-email","reg_email_ph");
+    setPlaceholder("#auth-reg-pw","reg_pw_ph");
+    var loginBtn=qs("#auth-login-btn");
+    if(loginBtn){
+      var svg=loginBtn.querySelector("svg")?loginBtn.querySelector("svg").outerHTML:"";
+      loginBtn.innerHTML=tr("sign_in_btn")+svg;
+    }
+    var regBtn=qs("#form-register .lb-btn-primary");
+    if(regBtn){
+      var rsvg=regBtn.querySelector("svg")?regBtn.querySelector("svg").outerHTML:"";
+      regBtn.innerHTML=tr("create_account_btn")+rsvg;
+    }
+    qsa("#auth-screen button").forEach(function(btn){
+      if(!btn.type||btn.type==="submit")btn.type="button";
+    });
+  }
+  function switchTab(tab){
+    var login=qs("#form-login"), reg=qs("#form-register");
+    var tabLogin=qs("#tab-login"), tabReg=qs("#tab-register");
+    if(login)login.style.display=tab==="login"?"block":"none";
+    if(reg)reg.style.display=tab==="register"?"block":"none";
+    var base="flex:1;height:38px;border:none;border-radius:9px;font-size:13px;font-family:Inter,system-ui,sans-serif;cursor:pointer;transition:all .15s";
+    if(tabLogin)tabLogin.style.cssText=base+(tab==="login"?";font-weight:600;background:#1c1c1f;color:rgba(250,250,249,.92);box-shadow:0 1px 4px rgba(0,0,0,.4)":";font-weight:500;background:transparent;color:rgba(250,250,249,.35)");
+    if(tabReg)tabReg.style.cssText=base+(tab==="register"?";font-weight:600;background:#1c1c1f;color:rgba(250,250,249,.92);box-shadow:0 1px 4px rgba(0,0,0,.4)":";font-weight:500;background:transparent;color:rgba(250,250,249,.35)");
+    setErr("");
+    applyAuthTranslations();
+  }
+  async function login(){
+    var id=(qs("#auth-login-id")&&qs("#auth-login-id").value||"").trim();
+    var pw=qs("#auth-login-pw")&&qs("#auth-login-pw").value||"";
+    var remember=!!(qs("#auth-remember")&&qs("#auth-remember").checked);
+    localStorage.setItem("ethone_remember_auth",remember?"1":"0");
+    if(!id||!pw){setErr(tr("fill_all"));return}
+    if(!supabaseReady()){setErr(tr("supabase_offline"));return}
+    setLoading(true);
+    try{
+      var email=id;
+      if(!/@/.test(id)){
+        try{
+          var res=await timeout(fetch(WORKER_URL+"/supabase/username?username="+encodeURIComponent(id)),6000,"Username lookup");
+          if(res.ok){var json=await res.json();if(json&&json.email)email=json.email}
+        }catch(e){}
+        if(email===id)email=id+"@dashboard.local";
+      }
+      var result=await timeout(window.sb.auth.signInWithPassword({email:email,password:pw}),12000,"Email login");
+      setLoading(false);
+      if(result.error){setErr(result.error.message||tr("wrong"));return}
+      if(typeof window.onAuthSuccess==="function")await window.onAuthSuccess(result.data&&result.data.user);
+    }catch(e){
+      setLoading(false);
+      setErr(e.message||tr("connect_error"));
+      console.error("[ETHONE] login",e);
+    }
+  }
+  async function register(){
+    var username=(qs("#auth-reg-username")&&qs("#auth-reg-username").value||"").trim();
+    var email=(qs("#auth-reg-email")&&qs("#auth-reg-email").value||"").trim();
+    var pw=qs("#auth-reg-pw")&&qs("#auth-reg-pw").value||"";
+    if(!username||!pw){setErr(tr("user_pw_required"));return}
+    if(pw.length<6){setErr(tr("pw_short"));return}
+    if(!supabaseReady()){setErr(tr("supabase_offline"));return}
+    setLoading(true);
+    try{
+      var existing=await timeout(window.sb.from("profiles").select("id").eq("username",username).maybeSingle(),8000,"Username check");
+      if(existing.data){setLoading(false);setErr(tr("username_taken"));return}
+      var regEmail=email||username+"@dashboard.local";
+      var result=await timeout(window.sb.auth.signUp({email:regEmail,password:pw,options:{data:{username:username}}}),12000,"Create account");
+      setLoading(false);
+      if(result.error){setErr(result.error.message);return}
+      var relogin=await timeout(window.sb.auth.signInWithPassword({email:regEmail,password:pw}),12000,"Post-signup login").catch(function(){return null});
+      if(relogin&&!relogin.error&&typeof window.onAuthSuccess==="function")await window.onAuthSuccess(relogin.data&&relogin.data.user);
+      else setErr(tr("reset_sent"),true);
+    }catch(e){
+      setLoading(false);
+      setErr(e.message||tr("connect_error"));
+      console.error("[ETHONE] register",e);
+    }
+  }
+  async function forgotPassword(){
+    var id=(qs("#auth-login-id")&&qs("#auth-login-id").value||"").trim();
+    if(!id||!/@/.test(id)){setErr(tr("reset_need_email"));return}
+    if(!supabaseReady()){setErr(tr("supabase_offline"));return}
+    setLoading(true);
+    try{
+      var result=await timeout(window.sb.auth.resetPasswordForEmail(id,{redirectTo:redirectUrl()}),12000,"Password reset");
+      setLoading(false);
+      if(result.error)setErr(result.error.message||tr("reset_error"));
+      else setErr(tr("reset_sent"),true);
+    }catch(e){setLoading(false);setErr(e.message||tr("reset_error"));console.error("[ETHONE] forgot password",e)}
+  }
+  async function oauth(provider){
+    if(!supabaseReady()){setErr(tr(provider==="google"?"google_error":"github_error"));return}
+    setLoading(true);
+    try{
+      var result=await timeout(window.sb.auth.signInWithOAuth({provider:provider,options:{redirectTo:redirectUrl(),scopes:provider==="google"?"email profile":"read:user user:email"}}),12000,"OAuth");
+      if(result.error){setLoading(false);setErr(result.error.message||tr(provider==="google"?"google_error":"github_error"))}
+    }catch(e){setLoading(false);setErr(e.message||tr(provider==="google"?"google_error":"github_error"));console.error("[ETHONE] oauth "+provider,e)}
+  }
+  function bindAuth(){
+    applyAuthTranslations();
+    var remembered=localStorage.getItem("ethone_remember_auth");
+    var remember=qs("#auth-remember");
+    if(remember&&remembered!==null)remember.checked=remembered==="1";
+    var tabLogin=qs("#tab-login"), tabReg=qs("#tab-register");
+    [tabLogin,tabReg,qs("#auth-login-btn"),qs("#form-register .lb-btn-primary"),qs("#form-login .lb-ghost"),qs("#btn-google"),qs("#btn-github")].forEach(function(btn){if(btn)btn.removeAttribute("onclick")});
+    if(tabLogin&&!tabLogin.dataset.authFixed){tabLogin.dataset.authFixed="1";tabLogin.addEventListener("click",function(e){e.preventDefault();switchTab("login")})}
+    if(tabReg&&!tabReg.dataset.authFixed){tabReg.dataset.authFixed="1";tabReg.addEventListener("click",function(e){e.preventDefault();switchTab("register")})}
+    var loginBtn=qs("#auth-login-btn");
+    if(loginBtn&&!loginBtn.dataset.authFixed){loginBtn.dataset.authFixed="1";loginBtn.addEventListener("click",function(e){e.preventDefault();login()})}
+    var regBtn=qs("#form-register .lb-btn-primary");
+    if(regBtn&&!regBtn.dataset.authFixed){regBtn.dataset.authFixed="1";regBtn.addEventListener("click",function(e){e.preventDefault();register()})}
+    var forgot=qs("#form-login .lb-ghost");
+    if(forgot&&!forgot.dataset.authFixed){forgot.dataset.authFixed="1";forgot.addEventListener("click",function(e){e.preventDefault();forgotPassword()})}
+    var google=qs("#btn-google"), github=qs("#btn-github");
+    if(google&&!google.dataset.authFixed){google.dataset.authFixed="1";google.addEventListener("click",function(e){e.preventDefault();oauth("google")})}
+    if(github&&!github.dataset.authFixed){github.dataset.authFixed="1";github.addEventListener("click",function(e){e.preventDefault();oauth("github")})}
+    qsa("#auth-lang-bar button").forEach(function(btn){
+      btn.removeAttribute("onclick");
+      if(btn.dataset.authFixed)return;
+      btn.dataset.authFixed="1";
+      btn.addEventListener("click",function(e){
+        e.preventDefault();
+        var l=btn.dataset.l||"fr";
+        window._lang=l;
+        localStorage.setItem("nexus_lang",l);
+        localStorage.setItem("ethone_lang",l);
+        if(window.applyI18n)try{window.applyI18n()}catch(err){}
+        applyAuthTranslations();
+      });
+    });
+    if(window.sb&&window.sb.__offline)setErr(tr("supabase_offline"));
+  }
+  window.updateAuthLangBar=applyAuthTranslations;
+  window.switchAuthTab=switchTab;
+  window.doLogin=login;
+  window.doRegister=register;
+  window.doForgotPassword=forgotPassword;
+  window.doGoogle=function(){return oauth("google")};
+  window.doGithub=function(){return oauth("github")};
+  window.ethoneAuthAudit=function(){
+    var raw=qsa("#auth-screen [data-i18n]").filter(function(el){return /^[a-z0-9_]+$/.test((el.textContent||"").trim())}).map(function(el){return el.getAttribute("data-i18n")+":"+el.textContent.trim()});
+    return {lang:lang(),supabase:!!window.sb,offline:!!(window.sb&&window.sb.__offline),rawKeys:raw,loginVisible:qs("#form-login")?getComputedStyle(qs("#form-login")).display:null,registerVisible:qs("#form-register")?getComputedStyle(qs("#form-register")).display:null};
+  };
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",bindAuth);else bindAuth();
+  setTimeout(bindAuth,250);
+  setTimeout(bindAuth,1200);
 })();
 </script>
 </body>

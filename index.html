@@ -25583,6 +25583,242 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
   .auth-v3-title{font-size:34px}
 }
 </style>
+<style id="ethone-auth-v4-premium-polish">
+/* Visual-only V4 layer: matches the dashboard without touching auth behavior. */
+#auth-screen.ethone-auth-v3{
+  --auth-v4-bg:#050507;
+  --auth-v4-panel:#101013;
+  --auth-v4-field:#0b0b0e;
+  --auth-v4-text:#f5f5f7;
+  --auth-v4-muted:rgba(245,245,247,.52);
+  --auth-v4-dim:rgba(245,245,247,.34);
+  --auth-v4-purple:#8b5cf6;
+  background:
+    radial-gradient(ellipse 72% 64% at 18% 12%,rgba(139,92,246,.105),transparent 62%),
+    radial-gradient(ellipse 50% 52% at 82% 78%,rgba(124,58,237,.055),transparent 68%),
+    var(--auth-v4-bg)!important;
+}
+#auth-screen.ethone-auth-v3::before{
+  background-image:
+    radial-gradient(circle,rgba(255,255,255,.08) 0 .45px,transparent .7px),
+    linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+  background-size:5px 5px,72px 72px,72px 72px;
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.72),rgba(0,0,0,.28) 72%,transparent);
+  opacity:.28;
+}
+#auth-screen.ethone-auth-v3::after{
+  background:
+    radial-gradient(ellipse at center,transparent 48%,rgba(0,0,0,.56) 100%),
+    linear-gradient(118deg,rgba(139,92,246,.035),transparent 38%);
+  opacity:1;
+}
+#auth-screen.ethone-auth-v3 > div[style*="background-image"]{display:none!important}
+#auth-screen.ethone-auth-v3.ethone-auth-v3-visible{
+  grid-template-columns:minmax(0,1fr) minmax(390px,448px);
+  gap:clamp(46px,6vw,104px);
+  padding:clamp(32px,5vw,72px)!important;
+}
+#auth-v3-hero{width:min(790px,100%);gap:clamp(16px,1.8vw,24px)}
+.auth-v3-brand{gap:12px}
+.auth-v3-mark{
+  width:40px;height:40px;border-radius:10px;
+  background:#7c3aed!important;border:1px solid rgba(255,255,255,.13);
+  box-shadow:0 10px 30px rgba(76,29,149,.24),inset 0 1px 0 rgba(255,255,255,.18)!important;
+  font-size:19px;
+}
+.auth-v3-brand span{color:rgba(245,245,247,.9);font-size:16px;font-weight:700}
+.auth-v3-title{
+  max-width:630px;color:var(--auth-v4-text);
+  font-size:clamp(42px,4.65vw,64px);font-weight:720;line-height:1.06;
+}
+.auth-v3-title::after{
+  width:.12em;height:.12em;margin-left:.08em;background:var(--auth-v4-purple);
+}
+.auth-v3-copy{
+  max-width:540px;color:var(--auth-v4-muted);
+  font-size:clamp(14px,1.1vw,16px);line-height:1.65;
+}
+.auth-v3-preview{
+  width:min(720px,100%);border-radius:16px;
+  border-color:rgba(255,255,255,.07);
+  background:rgba(10,10,13,.78);
+  box-shadow:0 22px 64px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.045);
+  opacity:.76;filter:blur(.22px) saturate(.72) contrast(.92);
+}
+.auth-v3-preview::before{
+  background:linear-gradient(135deg,rgba(139,92,246,.055),transparent 48%);
+}
+.auth-v3-preview-top{
+  grid-template-columns:38px minmax(90px,145px) 1fr auto;
+  gap:12px;padding:12px;border-bottom-color:rgba(255,255,255,.055);
+}
+.auth-v3-rail{
+  width:38px;height:38px;border-radius:9px;
+  background:rgba(139,92,246,.14)!important;border-color:rgba(139,92,246,.22);
+}
+.auth-v3-command{
+  height:36px;border-radius:9px;background:rgba(255,255,255,.02);
+  border-color:rgba(255,255,255,.06);
+}
+.auth-v3-live{height:32px;border-radius:9px;background:rgba(139,92,246,.04)}
+.auth-v3-preview-body{gap:10px;padding:12px}
+.auth-v3-brain-card,.auth-v3-mini,.auth-v3-flow{
+  border-color:rgba(255,255,255,.055);background:rgba(255,255,255,.022);
+}
+.auth-v3-brain-card{
+  min-height:128px;border-radius:13px;padding:17px;grid-template-columns:1fr 88px;
+}
+.auth-v3-flow{min-height:128px}
+.auth-v3-mini,.auth-v3-flow{border-radius:13px;padding:14px}
+.auth-v3-brain-card h3,.auth-v3-mini h3,.auth-v3-flow h3{font-size:15px}
+.auth-v3-brain-card p,.auth-v3-mini p,.auth-v3-flow p{
+  color:rgba(245,245,247,.4);font-size:12px;
+}
+.auth-v3-brain-orb{
+  width:82px;height:82px;color:rgba(255,255,255,.72);font-size:26px;
+  background:radial-gradient(circle at 48% 45%,rgba(139,92,246,.25),rgba(139,92,246,.07) 58%,rgba(255,255,255,.02));
+  box-shadow:inset 0 0 28px rgba(255,255,255,.025);
+}
+.auth-v3-mini-grid{margin:0 12px 12px!important;gap:10px}
+.auth-v3-workspace-item{
+  border-radius:9px;background:rgba(255,255,255,.025);
+}
+#auth-screen.ethone-auth-v3 #auth-card{
+  width:min(448px,100%)!important;max-width:448px!important;
+}
+#auth-screen.ethone-auth-v3 #lb-box{
+  border-radius:20px!important;padding:clamp(30px,3vw,40px)!important;
+  background:linear-gradient(145deg,rgba(255,255,255,.032),transparent 34%),rgba(16,16,19,.94)!important;
+  border:1px solid rgba(255,255,255,.085)!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.045) inset,0 26px 72px rgba(0,0,0,.42),0 0 0 1px rgba(0,0,0,.24)!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+#auth-screen.ethone-auth-v3 #lb-box::before{
+  height:1px!important;opacity:.46;
+  background:linear-gradient(90deg,transparent,rgba(167,139,250,.30),rgba(255,255,255,.12),transparent)!important;
+}
+#auth-screen.ethone-auth-v3 #lb-box > div:first-of-type{margin-bottom:25px!important}
+#auth-screen.ethone-auth-v3 #lb-box > div:first-of-type div{
+  border-radius:10px!important;background:#7c3aed!important;
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 8px 24px rgba(76,29,149,.22),inset 0 1px 0 rgba(255,255,255,.16)!important;
+}
+#auth-screen.ethone-auth-v3 #lb-box > div:first-of-type span{
+  font-size:15px!important;font-weight:700!important;
+}
+#auth-screen.ethone-auth-v3 #auth-form-title{
+  margin-bottom:8px!important;font-size:34px!important;font-weight:720!important;line-height:1.1!important;
+}
+#auth-screen.ethone-auth-v3 #auth-form-sub{
+  color:var(--auth-v4-muted)!important;font-size:13.5px!important;line-height:1.55!important;
+}
+#auth-screen.ethone-auth-v3 .lb-tab{
+  height:40px!important;border-radius:9px!important;color:var(--auth-v4-dim)!important;
+  font-size:12.5px!important;
+  transition:color .16s ease,background .16s ease,box-shadow .16s ease!important;
+}
+#auth-screen.ethone-auth-v3 .lb-tab:hover:not(.lb-on){
+  color:rgba(245,245,247,.72)!important;background:rgba(255,255,255,.03)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-tab.lb-on{
+  color:#fff!important;background:rgba(139,92,246,.15)!important;
+  box-shadow:inset 0 0 0 1px rgba(139,92,246,.12)!important;
+}
+#auth-screen.ethone-auth-v3 label{
+  color:rgba(245,245,247,.64)!important;font-size:11.5px!important;font-weight:600!important;
+}
+#auth-screen.ethone-auth-v3 .lb-input{
+  height:52px!important;border-radius:11px!important;color:#f7f7f8!important;
+  caret-color:var(--auth-v4-purple)!important;background:#0b0b0e!important;
+  border:1px solid rgba(255,255,255,.10)!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.022) inset!important;
+  transition:border-color .16s ease,background .16s ease,box-shadow .16s ease!important;
+}
+#auth-screen.ethone-auth-v3 .lb-input::placeholder{
+  color:rgba(245,245,247,.38)!important;opacity:1!important;
+}
+#auth-screen.ethone-auth-v3 .lb-input:hover{
+  background:#0e0e12!important;border-color:rgba(255,255,255,.15)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-input:focus{
+  background:#0d0c12!important;border-color:rgba(139,92,246,.72)!important;
+  box-shadow:0 0 0 3px rgba(139,92,246,.12)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-btn-primary{
+  height:52px!important;border-radius:11px!important;background:#7c3aed!important;
+  font-size:14px!important;font-weight:700!important;
+  box-shadow:0 8px 22px rgba(76,29,149,.24),inset 0 1px 0 rgba(255,255,255,.14)!important;
+  transition:background .16s ease,transform .16s ease,box-shadow .16s ease!important;
+}
+#auth-screen.ethone-auth-v3 .lb-btn-primary:hover{
+  background:#8b5cf6!important;transform:translateY(-1px)!important;
+  box-shadow:0 11px 28px rgba(76,29,149,.30),inset 0 1px 0 rgba(255,255,255,.16)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-btn-primary:active{
+  background:#6d28d9!important;transform:translateY(0) scale(.99)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-social{
+  min-height:50px!important;border-radius:11px!important;color:rgba(245,245,247,.74)!important;
+  background:#0c0c0f!important;border:1px solid rgba(255,255,255,.09)!important;
+  transition:color .16s ease,background .16s ease,border-color .16s ease,transform .16s ease!important;
+}
+#auth-screen.ethone-auth-v3 .lb-social:hover{
+  color:#fff!important;background:rgba(139,92,246,.075)!important;
+  border-color:rgba(139,92,246,.30)!important;transform:translateY(-1px);
+}
+#auth-screen.ethone-auth-v3 .lb-social:active{transform:translateY(0) scale(.995)}
+#auth-screen.ethone-auth-v3 .lb-eye,#auth-screen.ethone-auth-v3 .ethone-eye-btn{
+  width:34px!important;height:34px!important;right:9px!important;border-radius:8px!important;
+  color:rgba(245,245,247,.5)!important;background:rgba(255,255,255,.035)!important;
+  border-color:rgba(255,255,255,.07)!important;
+  transition:color .16s ease,background .16s ease,border-color .16s ease!important;
+}
+#auth-screen.ethone-auth-v3 .lb-eye:hover,#auth-screen.ethone-auth-v3 .ethone-eye-btn:hover{
+  color:#fff!important;background:rgba(139,92,246,.11)!important;border-color:rgba(139,92,246,.24)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-ghost{color:rgba(245,245,247,.45)!important}
+#auth-screen.ethone-auth-v3 .lb-ghost:hover{color:#c4b5fd!important}
+#auth-screen.ethone-auth-v3 #auth-lang-bar{
+  padding:4px!important;gap:2px!important;border-radius:11px!important;
+  background:rgba(12,12,15,.92)!important;border:1px solid rgba(255,255,255,.08)!important;
+  box-shadow:0 10px 30px rgba(0,0,0,.22)!important;backdrop-filter:none!important;
+}
+#auth-screen.ethone-auth-v3 #auth-lang-bar button{
+  min-width:38px!important;height:29px!important;padding:0 9px!important;border-radius:7px!important;
+  font-size:10.5px!important;transition:color .16s ease,background .16s ease!important;
+}
+#auth-screen.ethone-auth-v3 #auth-lang-bar button:hover{
+  color:#fff!important;background:rgba(139,92,246,.10)!important;
+}
+#auth-screen.ethone-auth-v3 input[type="checkbox"]{accent-color:var(--auth-v4-purple)}
+#auth-screen.ethone-auth-v3 button:focus-visible,#auth-screen.ethone-auth-v3 input:focus-visible{
+  outline:2px solid rgba(167,139,250,.86)!important;outline-offset:3px!important;
+}
+@media(max-width:1120px){
+  #auth-screen.ethone-auth-v3.ethone-auth-v3-visible{
+    gap:30px;padding:88px clamp(20px,5vw,48px) 38px!important;
+  }
+  #auth-v3-hero{width:min(760px,100%)}
+}
+@media(max-width:720px){
+  #auth-screen.ethone-auth-v3.ethone-auth-v3-visible{padding:72px 14px 18px!important}
+  #auth-screen.ethone-auth-v3 #auth-card{
+    align-self:start!important;height:auto!important;min-height:0!important;
+  }
+  #auth-screen.ethone-auth-v3 #lb-box{
+    height:auto!important;min-height:0!important;border-radius:17px!important;padding:26px!important;
+  }
+  #auth-screen.ethone-auth-v3 #auth-form-title{font-size:29px!important}
+  #auth-screen.ethone-auth-v3 #auth-lang-bar{top:13px!important;right:14px!important}
+  #auth-screen.ethone-auth-v3 div[style*="grid-template-columns:1fr 1fr"]{
+    grid-template-columns:1fr 1fr!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  #auth-screen.ethone-auth-v3 .auth-v3-preview{filter:saturate(.72) contrast(.92)}
+}
+</style>
 <script id="ethone-auth-v3-premium-experience">
 (function(){
   "use strict";

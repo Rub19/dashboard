@@ -52,6 +52,71 @@ html.ethone-safe-mode .particle{
   window.ETHONE_AUTH_BOOT_MODE=!!authBoot;
   window.ETHONE_LIGHT_BOOT_MODE=!!lightBoot;
   window.ETHONE_DISABLE_NON_CRITICAL=!!lightBoot;
+  window.__ethoneLeanProductionBoot=true;
+  if(authBoot&&!safe){
+    window.__ethoneDeferredHeavyForAuth=true;
+    window.__ethoneSkipAIPreload=true;
+    window.__ethoneSkipBrain=true;
+    window.__ethoneSkipMarketplace=true;
+    window.__ethoneSkipExternalWidgets=true;
+  }
+  window.ethoneIsDashboardVisible=function(){
+    try{
+      var main=document.getElementById("main-content");
+      if(!main)return false;
+      var cs=getComputedStyle(main);
+      var rect=main.getBoundingClientRect();
+      return cs.display!=="none"&&cs.visibility!=="hidden"&&rect.width>20&&rect.height>20;
+    }catch(e){return false}
+  };
+  window.ethoneRunWhenDashboardReady=function(key,fn){
+    if(typeof fn!=="function")return;
+    var doneKey="__ethoneBootDeferred_"+key;
+    if(window[doneKey])return;
+    function run(){
+      if(window[doneKey])return;
+      window[doneKey]=true;
+      try{fn()}catch(error){setTimeout(function(){throw error},0)}
+    }
+    if(window.ethoneIsDashboardVisible())return run();
+    var started=Date.now();
+    var timer=setInterval(function(){
+      if(window.ethoneIsDashboardVisible()||Date.now()-started>45000){
+        clearInterval(timer);
+        run();
+      }
+    },600);
+    window.addEventListener("ethone:dashboard-ready",function(){
+      clearInterval(timer);
+      run();
+    },{once:true});
+  };
+  window.ethoneIsPageVisible=function(page){
+    try{
+      var el=document.getElementById("page-"+page);
+      if(!el)return false;
+      var cs=getComputedStyle(el);
+      var rect=el.getBoundingClientRect();
+      return el.classList.contains("active")&&cs.display!=="none"&&cs.visibility!=="hidden"&&rect.width>20&&rect.height>20;
+    }catch(e){return false}
+  };
+  window.ethoneRunWhenPageReady=function(key,pages,fn){
+    if(typeof fn!=="function")return;
+    pages=Array.isArray(pages)?pages:[pages];
+    var doneKey="__ethoneBootDeferred_"+key;
+    if(window[doneKey])return;
+    function ready(){return pages.some(function(page){return window.ethoneIsPageVisible(page)})}
+    function run(){
+      if(window[doneKey])return;
+      window[doneKey]=true;
+      try{fn()}catch(error){setTimeout(function(){throw error},0)}
+    }
+    if(ready())return run();
+    var timer=setInterval(function(){if(ready()){clearInterval(timer);run()}},700);
+    window.addEventListener("ethone:page-ready",function(event){
+      if(event&&event.detail&&pages.indexOf(event.detail.page)>-1){clearInterval(timer);run()}
+    });
+  };
   if(!safe)return;
 
   document.documentElement.classList.add("ethone-safe-mode");
@@ -152,7 +217,7 @@ window.ETHONE_AUTH_TEXT={
 <link href="manifest.webmanifest" rel="manifest"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500&amp;family=Syne:wght@700;800;900&amp;family=Cabinet+Grotesk:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
-<script crossorigin="anonymous" onerror="window._supabaseLoadError=true" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script async crossorigin="anonymous" onerror="window._supabaseLoadError=true" onload="window.dispatchEvent(new Event('ethone:supabase-loaded'))" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -3510,7 +3575,7 @@ html{background:var(--ethone-bg)!important;scroll-behavior:smooth} body{backgrou
 
 <!-- ETHONE Enterprise 2026 UI System: premium shell, layout, motion, personalization -->
 <link rel="preconnect" href="https://unpkg.com" crossorigin>
-<script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" onerror="window.__lucideFailed=true"></script>
+<script async src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" onerror="window.__lucideFailed=true" onload="try{window.lucide&&window.lucide.createIcons&&window.lucide.createIcons()}catch(e){}"></script>
 <style id="ethone-enterprise-2026-system">
 :root{
   --eh-bg:#07070a;
@@ -6103,6 +6168,11 @@ async function doLogout(){
 }
 
 async function onAuthSuccess(userArg){
+  if(window.__ethoneDeferredHeavyForAuth&&!sessionStorage.getItem('ethone:post-auth-full-boot')){
+    try{sessionStorage.setItem('ethone:post-auth-full-boot','1')}catch(e){}
+    location.replace(location.href);
+    return;
+  }
   // 1. Supprime l'anti-flash AVANT tout, sinon le !important bloque les display
   removeAntiFlash();
   const authEl=document.getElementById('auth-screen');
@@ -6574,7 +6644,7 @@ function psUntilt(el){
 
 let _psEmbersRunning=false;
 function psStartEmbers(){
-  if(window.ETHONE_LIGHT_BOOT_MODE)return;
+  if(window.ETHONE_LIGHT_BOOT_MODE||window.__ethoneLeanProductionBoot)return;
   if(_psEmbersRunning)return;
   const canvas=document.getElementById('ps-canvas');
   if(!canvas)return;
@@ -6679,6 +6749,8 @@ function enterDashboard(id){
     document.getElementById('main-content').style.display='block';document.getElementById('main-content').style.visibility='visible';
     renderSidebarNav(); updateSidebarAvatar(); applyI18n();
     initDashboard();
+    try{window.dispatchEvent(new Event('ethone:dashboard-ready'))}catch(e){}
+    try{window.dispatchEvent(new CustomEvent('ethone:page-ready',{detail:{page:'dashboard'}}))}catch(e){}
     // Only start ambient bg if no custom bg theme is set
     if(!curP()?.bgTheme||curP()?.bgTheme==='none') setTimeout(startAmbientBg,300);
   },180);
@@ -8368,6 +8440,7 @@ function switchPage(page,navEl){
   if(page==='habits'){if(typeof renderHabits==='function')renderHabits();}
   if(page==='kanban'){if(typeof renderKanban==='function')renderKanban();}
   if(page==='calendar'){calYear=new Date().getFullYear();calMonth=new Date().getMonth();if(typeof renderCalendar==='function')renderCalendar();}
+  try{window.dispatchEvent(new CustomEvent('ethone:page-ready',{detail:{page:page}}))}catch(e){}
 }
 
 function switchSettingsTab(tab,el){
@@ -14634,6 +14707,8 @@ function showDashboardOrProfiles(){
     const main=document.getElementById('main-content'); if(main){main.style.display='block';main.style.visibility='visible';}
     renderSidebarNav(); updateSidebarAvatar(); applyI18n(); updateClock();
     initDashboard(); hideBoot();
+    try{window.dispatchEvent(new Event('ethone:dashboard-ready'))}catch(e){}
+    try{window.dispatchEvent(new CustomEvent('ethone:page-ready',{detail:{page:'dashboard'}}))}catch(e){}
     if(!curP()?.bgTheme||curP()?.bgTheme==='none') setTimeout(startAmbientBg,400);
   } else {
     setEthoneMode('profile');
@@ -14704,6 +14779,21 @@ function ethoneWithTimeout(promise,ms,label){
     showAuth();
   });
 })();
+window.addEventListener('ethone:supabase-loaded',function(){
+  setTimeout(async function(){
+    try{
+      if(window.ETHONE_AUTH_BOOT_MODE)return;
+      if(window.ethoneIsDashboardVisible&&window.ethoneIsDashboardVisible())return;
+      const auth=document.getElementById('auth-screen');
+      if(!auth||getComputedStyle(auth).display==='none')return;
+      if(!(window.supabase&&typeof window.supabase.createClient==='function'))return;
+      window.sb=sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+      const result=await ethoneWithTimeout(window.sb.auth.getSession(),4200,'Supabase session retry');
+      const session=result&&result.data&&result.data.session;
+      if(session&&session.user&&typeof onAuthSuccess==='function')await onAuthSuccess(session.user);
+    }catch(e){console.warn('[ETHONE] Supabase async session retry failed:',e)}
+  },0);
+});
 // ══════════════════════════════════════════════════════════════
 //  MOBILE — Gestures + Touch Enhancements
 // ══════════════════════════════════════════════════════════════
@@ -15684,7 +15774,8 @@ body.eh-dashboard-ready #eh-dock {
     _ehSyncTimer=setTimeout(syncEnterpriseChrome,250);
   }
   function boot(){buildSwatches();wirePanel();applyPrefs();refreshIcons();enhanceCards();wrapSwitchPage();addTopbarHint();improveEmptyPages();updateDock();setTimeout(refreshIcons,500);setInterval(syncEnterpriseChrome,5000);try{new MutationObserver(scheduleEnterpriseChrome).observe(document.body,{attributes:true,subtree:true,attributeFilter:['style','class']});}catch(e){}}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot); else boot();
+  function startBoot(){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();}
+  if(window.ethoneRunWhenDashboardReady)window.ethoneRunWhenDashboardReady('enterprise-2026-runtime',startBoot);else startBoot();
 })();
 </script>
 
@@ -15702,6 +15793,7 @@ html[lang="fr"] .eh-kbd-hint span::after{content:""}
 <script id="ethone-full-i18n-runtime-fix">
 (function(){
   'use strict';
+  if(window.__ethoneLeanProductionBoot)return;
   if(window.__ethoneFullI18nFix)return; window.__ethoneFullI18nFix=true;
   const PHRASES={
     "Profile":"Profil","Enter your PIN to continue":"Entrez votre code PIN pour continuer","Unlock":"Déverrouiller","Back to profiles":"Retour aux profils","← Back to profiles":"← Retour aux profils",
@@ -15770,7 +15862,11 @@ html[lang="fr"] .eh-kbd-hint span::after{content:""}
   if(typeof oldOpen==='function' && !oldOpen.__i18nWrapped){
     window.openModal=function(){const r=oldOpen.apply(this,arguments);setTimeout(apply,80);return r;}; window.openModal.__i18nWrapped=true;
   }
-  try{new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true,characterData:true});}catch(e){}
+  function startI18nRuntime(){
+    try{new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true,characterData:true});}catch(e){}
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(apply,80),{once:true}); else setTimeout(apply,80);
+    setTimeout(apply,500); setTimeout(apply,1500);
+  }
   window.ethoneApplyFullTranslations=apply;
   window.ethoneI18nAudit=function(){
     const lang=getLang(); const english=[];
@@ -15778,8 +15874,7 @@ html[lang="fr"] .eh-kbd-hint span::after{content:""}
     while(walker.nextNode())english.push(clean(walker.currentNode.nodeValue));
     console.table([...new Set(english)].slice(0,120)); return [...new Set(english)];
   };
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(apply,80)); else setTimeout(apply,80);
-  setTimeout(apply,500); setTimeout(apply,1500);
+  if(window.ethoneRunWhenDashboardReady)window.ethoneRunWhenDashboardReady('full-i18n-runtime',startI18nRuntime);else startI18nRuntime();
 })();
 </script>
 
@@ -16156,6 +16251,7 @@ body[data-light="1"].ethone-personal-os-ready .ethone-pos-context-card strong{co
 (function(){
   "use strict";
   if(window.ETHONE_LIGHT_BOOT_MODE)return;
+  if(window.__ethoneLeanProductionBoot)return;
   if(window.__ethonePersonalOSVision)return;
   window.__ethonePersonalOSVision=true;
   const $=(s,r=document)=>r.querySelector(s);
@@ -16401,14 +16497,17 @@ body[data-light="1"].ethone-personal-os-ready .ethone-pos-context-card strong{co
     patchLabels();
     ensureHome();
   }
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run);
-  else run();
-  setTimeout(run,240);
-  setTimeout(run,1200);
-  setInterval(()=>{if($("#page-dashboard.active"))ensureHome()},30000);
-  try{
-    new MutationObserver(()=>{enhanceBoot(); if($("#page-dashboard"))ensureHome()}).observe(document.body,{childList:true,subtree:true});
-  }catch(e){}
+  function startPersonalOs(){
+    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run,{once:true});
+    else run();
+    setTimeout(run,240);
+    setTimeout(run,1200);
+    setInterval(()=>{if($("#page-dashboard.active"))ensureHome()},30000);
+    try{
+      new MutationObserver(()=>{enhanceBoot(); if($("#page-dashboard"))ensureHome()}).observe(document.body,{childList:true,subtree:true});
+    }catch(e){}
+  }
+  if(window.ethoneRunWhenDashboardReady)window.ethoneRunWhenDashboardReady("personal-os-vision",startPersonalOs);else startPersonalOs();
 })();
 </script>
 <style id="ethone-dashboard-os2-css">
@@ -16687,6 +16786,7 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
 (function(){
   "use strict";
   if(window.ETHONE_LIGHT_BOOT_MODE)return;
+  if(window.__ethoneLeanProductionBoot)return;
   if(window.__ethoneDashboardOS2)return;
   window.__ethoneDashboardOS2=true;
   const $=(s,r=document)=>r.querySelector(s);
@@ -17108,12 +17208,15 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
     applyState();
     exposePersonalization();
   }
-  document.addEventListener("click",handleClick);
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run);else run();
-  setTimeout(run,300);
-  setTimeout(run,1200);
-  setInterval(()=>{if($("#page-dashboard")){renderOps();renderDock()}},30000);
-  try{new MutationObserver(()=>{if($("#page-dashboard")){makeTopbar();addOps();enhanceWidgets();applyState()}}).observe(document.body,{childList:true,subtree:true})}catch(e){}
+  function startOS2(){
+    document.addEventListener("click",handleClick);
+    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run,{once:true});else run();
+    setTimeout(run,300);
+    setTimeout(run,1200);
+    setInterval(()=>{if($("#page-dashboard")){renderOps();renderDock()}},30000);
+    try{new MutationObserver(()=>{if($("#page-dashboard")){makeTopbar();addOps();enhanceWidgets();applyState()}}).observe(document.body,{childList:true,subtree:true})}catch(e){}
+  }
+  if(window.ethoneRunWhenDashboardReady)window.ethoneRunWhenDashboardReady("dashboard-os2",startOS2);else startOS2();
 })();
 </script>
 <style id="ethone-ai-core-css">
@@ -17753,11 +17856,14 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
     overrideChat();
     patchWelcome();
   }
-  document.addEventListener("click",handleClick);
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run);else run();
-  setTimeout(run,350);
-  setTimeout(run,1300);
-  try{new MutationObserver(()=>{if($("#page-ai")){aiCoreHeader();patchAILabels();overrideChat()}}).observe(document.body,{childList:true,subtree:true})}catch(e){}
+  function startAICore(){
+    document.addEventListener("click",handleClick);
+    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run,{once:true});else run();
+    setTimeout(run,350);
+    setTimeout(run,1300);
+    try{new MutationObserver(()=>{if($("#page-ai")){aiCoreHeader();patchAILabels();overrideChat()}}).observe(document.body,{childList:true,subtree:true})}catch(e){}
+  }
+  if(window.ethoneRunWhenPageReady)window.ethoneRunWhenPageReady("ai-core-runtime","ai",startAICore);else startAICore();
 })();
 </script>
 <style id="ethone-ai-everywhere-css">
@@ -18293,17 +18399,20 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
     patchCoreForSafeIntent();
     patchSwitchPage();
   }
-  document.addEventListener("click",handleClick);
-  // Native browser context menu remains enabled for production debugging and accessibility.
-  document.addEventListener("keydown",e=>{
-    if((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key.toLowerCase()==="a"){e.preventDefault();openCopilot(contextFromElement(document.activeElement))}
-    if(e.key==="Escape"){hideContextMenu()}
-    if(e.key==="Enter"&&document.activeElement?.id==="aie-copilot-input"&&!e.shiftKey){e.preventDefault();sendCopilot()}
-  });
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run);else run();
-  setTimeout(run,350);
-  setTimeout(run,1400);
-  setInterval(()=>{if(document.body)run()},20000);
+  function startAIEverywhere(){
+    document.addEventListener("click",handleClick);
+    // Native browser context menu remains enabled for production debugging and accessibility.
+    document.addEventListener("keydown",e=>{
+      if((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key.toLowerCase()==="a"){e.preventDefault();openCopilot(contextFromElement(document.activeElement))}
+      if(e.key==="Escape"){hideContextMenu()}
+      if(e.key==="Enter"&&document.activeElement?.id==="aie-copilot-input"&&!e.shiftKey){e.preventDefault();sendCopilot()}
+    });
+    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run,{once:true});else run();
+    setTimeout(run,350);
+    setTimeout(run,1400);
+    setInterval(()=>{if(document.body)run()},20000);
+  }
+  if(window.ethoneRunWhenPageReady)window.ethoneRunWhenPageReady("ai-everywhere-runtime","ai",startAIEverywhere);else startAIEverywhere();
   window.ETHONEAIEverywhere={openCopilot,contextFromElement,askCore,run};
 })();
 </script>
@@ -19144,12 +19253,15 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
     updateLiveContext();
     renderActivity();
   }
-  document.addEventListener("click",handleClick);
-  document.addEventListener("selectionchange",()=>{setTimeout(updateLiveContext,60)});
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run);else run();
-  setTimeout(run,350);
-  setTimeout(run,1400);
-  setInterval(run,25000);
+  function startIntelligence(){
+    document.addEventListener("click",handleClick);
+    document.addEventListener("selectionchange",()=>{setTimeout(updateLiveContext,60)});
+    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run,{once:true});else run();
+    setTimeout(run,350);
+    setTimeout(run,1400);
+    setInterval(run,25000);
+  }
+  if(window.ethoneRunWhenPageReady)window.ethoneRunWhenPageReady("intelligence-33a-runtime","ai",startIntelligence);else startIntelligence();
   window.ETHONEIntelligence={run,open:openIntelligenceWithPrompt,context:currentContext,briefingCards,facts};
 })();
 </script>
@@ -20021,11 +20133,14 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
     renameCopilot();
     renderBrain();
   }
-  document.addEventListener("click",handleClick);
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run);else run();
-  setTimeout(run,350);
-  setTimeout(run,1500);
-  setInterval(run,30000);
+  function startBrain33B(){
+    document.addEventListener("click",handleClick);
+    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run,{once:true});else run();
+    setTimeout(run,350);
+    setTimeout(run,1500);
+    setInterval(run,30000);
+  }
+  if(window.ethoneRunWhenPageReady)window.ethoneRunWhenPageReady("brain-33b-runtime","ai",startBrain33B);else startBrain33B();
   window.ETHONEBrain={run,open:sendToBrain,facts:dataFacts,timeline:addTimeline,memory:()=>state.memory,recommendations};
 })();
 </script>
@@ -20878,13 +20993,16 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
     renameCopilot();
     updateDashboard();
   }
-  document.addEventListener("click",handleClick);
-  document.addEventListener("input",handleInput);
-  document.addEventListener("keydown",handleKey);
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run);else run();
-  setTimeout(run,350);
-  setTimeout(run,1500);
-  setInterval(run,30000);
+  function startBrain34(){
+    document.addEventListener("click",handleClick);
+    document.addEventListener("input",handleInput);
+    document.addEventListener("keydown",handleKey);
+    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run,{once:true});else run();
+    setTimeout(run,350);
+    setTimeout(run,1500);
+    setInterval(run,30000);
+  }
+  if(window.ethoneRunWhenPageReady)window.ethoneRunWhenPageReady("brain-34-runtime","ai",startBrain34);else startBrain34();
   window.ETHONEBrain34={run,search:runSearch,command:executeCommand,timeline:addTimeline,facts,recommendations,marketplace,automations};
 })();
 </script>
@@ -21472,11 +21590,14 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
     patchNavigation();
     rename();
   }
-  document.addEventListener("click",handleClick);
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run);else run();
-  setTimeout(run,350);
-  setTimeout(run,1500);
-  setInterval(run,30000);
+  function startBrainPlatform35(){
+    document.addEventListener("click",handleClick);
+    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run,{once:true});else run();
+    setTimeout(run,350);
+    setTimeout(run,1500);
+    setInterval(run,30000);
+  }
+  if(window.ethoneRunWhenPageReady)window.ethoneRunWhenPageReady("brain-platform-35-runtime","ai",startBrainPlatform35);else startBrainPlatform35();
   window.ETHONEBrainPlatform={
     run,
     context:facts,
@@ -21987,11 +22108,14 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
     patchCommand();
     rename();
   }
-  document.addEventListener("click",handleClick);
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run);else run();
-  setTimeout(run,350);
-  setTimeout(run,1500);
-  setInterval(run,30000);
+  function startBrainOS36(){
+    document.addEventListener("click",handleClick);
+    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run,{once:true});else run();
+    setTimeout(run,350);
+    setTimeout(run,1500);
+    setInterval(run,30000);
+  }
+  if(window.ethoneRunWhenPageReady)window.ethoneRunWhenPageReady("brain-os-36-runtime","ai",startBrainOS36);else startBrainOS36();
   window.ETHONEBrainOS={
     run,
     facts,
@@ -22760,12 +22884,15 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
     ensureShell("store");
     patchBrain();
   }
-  document.addEventListener("click",handleClick);
-  document.addEventListener("input",handleInput);
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run);else run();
-  setTimeout(run,400);
-  setTimeout(run,1600);
-  setInterval(()=>{if($("#page-marketplace")||$("#page-store"))run()},30000);
+  function startMarketplace41(){
+    document.addEventListener("click",handleClick);
+    document.addEventListener("input",handleInput);
+    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run,{once:true});else run();
+    setTimeout(run,400);
+    setTimeout(run,1600);
+    setInterval(()=>{if($("#page-marketplace")||$("#page-store"))run()},30000);
+  }
+  if(window.ethoneRunWhenPageReady)window.ethoneRunWhenPageReady("marketplace-41-runtime",["marketplace","store"],startMarketplace41);else startMarketplace41();
   window.ETHONEMarketplace={run,catalog:()=>catalog.slice(),search:q=>{state.query=q||"";save();renderAll();return filtered()},install,update,favorite,recommendations:recommended,state:()=>state,__patched:true};
 })();
 </script>
@@ -23533,6 +23660,7 @@ body.ethone-v2 :focus-visible{outline:2px solid rgba(157,124,255,.82)!important;
 <script id="ethone-v2-product-redesign">
 (function(){
   "use strict";
+  if(window.__ethoneLeanProductionBoot)return;
   if(window.__ethoneV2ProductRedesign)return;
   window.__ethoneV2ProductRedesign=true;
   var renderTimer=0;
@@ -23699,14 +23827,17 @@ body.ethone-v2 :focus-visible{outline:2px solid rgba(157,124,255,.82)!important;
     renderTimer=setTimeout(apply,120);
   }
   window.ethoneV2Render=renderHome;
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",schedule,{once:true});else schedule();
-  window.addEventListener("storage",schedule);
-  document.addEventListener("click",function(e){
-    if(e.target.closest(".nav-item,.panel-action,.btn,.stat-card"))setTimeout(schedule,180);
-  },true);
-  setTimeout(schedule,900);
-  setTimeout(schedule,2400);
-  setInterval(renderHome,30000);
+  function startV2Redesign(){
+    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",schedule,{once:true});else schedule();
+    window.addEventListener("storage",schedule);
+    document.addEventListener("click",function(e){
+      if(e.target.closest(".nav-item,.panel-action,.btn,.stat-card"))setTimeout(schedule,180);
+    },true);
+    setTimeout(schedule,900);
+    setTimeout(schedule,2400);
+    setInterval(renderHome,30000);
+  }
+  if(window.ethoneRunWhenDashboardReady)window.ethoneRunWhenDashboardReady("v2-product-redesign",startV2Redesign);else startV2Redesign();
 })();
 </script>
 <style id="ethone-auth-interactivity-emergency-css">
@@ -23764,7 +23895,7 @@ body.ethone-v2 :focus-visible{outline:2px solid rgba(157,124,255,.82)!important;
     return location.origin+path;
   }
   function ensureSupabase(){
-    if(window.sb&&window.sb.auth)return window.sb;
+    if(window.sb&&window.sb.auth&&!window.sb.__offline)return window.sb;
     try{
       if(window.supabase&&typeof window.supabase.createClient==="function"&&window.SUPABASE_URL&&window.SUPABASE_ANON){
         window.sb=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON);
@@ -23947,6 +24078,7 @@ body.ethone-v2 :focus-visible{outline:2px solid rgba(157,124,255,.82)!important;
     if(remember&&remembered!==null)remember.checked=remembered==="1";
     applyTranslations();
     if(!ensureSupabase()||window.sb&&window.sb.__offline)setErr(tr("supabase_offline"));
+    else if((qs("#auth-error")?.textContent||"")===tr("supabase_offline"))setErr("");
     document.documentElement.dataset.ethoneAuthInteractive="true";
     if(missing.length)debugBanner("Auth binding incomplet: elements manquants: "+missing.join(", "));
     return {missing:missing,bound:qsa("#auth-screen [data-auth-interactive='1']").length,supabase:!!ensureSupabase(),offline:!!(window.sb&&window.sb.__offline),authVisible:visible(qs("#auth-screen"))};
@@ -23970,6 +24102,7 @@ body.ethone-v2 :focus-visible{outline:2px solid rgba(157,124,255,.82)!important;
     else if(event.target&&event.target.closest&&event.target.closest("#form-register")){event.preventDefault();register()}
   },true);
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",bind,{once:true});else bind();
+  window.addEventListener("ethone:supabase-loaded",function(){setTimeout(bind,0)});
   setTimeout(bind,300);
   setTimeout(bind,1500);
 })();
@@ -24082,6 +24215,12 @@ body.ethone-2026-ui #overview-grid-main{
 body.ethone-2026-ui .ethone-v2-home,
 body.ethone-2026-ui .v2-section-title,
 body.ethone-2026-ui .v2-widget-grid{
+  display:none!important;
+}
+body.ethone-2026-ui .mobile-bottom-nav{
+  display:none!important;
+}
+body.ethone-2026-ui #eh-dock{
   display:none!important;
 }
 .x26-home{
@@ -24311,7 +24450,7 @@ body.ethone-2026-ui .v2-widget-grid{
   left:50%;
   bottom:18px;
   transform:translateX(-50%);
-  z-index:900;
+  z-index:30000;
   display:flex;
   gap:8px;
   padding:8px;
@@ -24449,10 +24588,13 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
   function apply(){document.body.classList.add("ethone-2026-ui");render()}
   function schedule(){clearTimeout(timer);timer=setTimeout(apply,80)}
   window.ethone2026Render=render;
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",schedule,{once:true});else schedule();
-  document.addEventListener("click",function(){setTimeout(render,180)},true);
-  setTimeout(schedule,800);
-  setTimeout(schedule,2200);
+  function start2026Redesign(){
+    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",schedule,{once:true});else schedule();
+    document.addEventListener("click",function(){setTimeout(render,180)},true);
+    setTimeout(schedule,800);
+    setTimeout(schedule,2200);
+  }
+  if(window.ethoneRunWhenDashboardReady)window.ethoneRunWhenDashboardReady("experience-2026-redesign",start2026Redesign);else start2026Redesign();
 })();
 </script>
 </body>

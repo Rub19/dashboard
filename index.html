@@ -26189,6 +26189,134 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
   .auth-v3-flow-row{transition:none}
 }
 </style>
+<style id="ethone-auth-v9-release-audit">
+/* Release audit: hierarchy, alignment and state clarity only. */
+#auth-screen.ethone-auth-v3{
+  background:
+    radial-gradient(ellipse 54% 46% at 24% 64%,rgba(139,92,246,.075),transparent 68%),
+    radial-gradient(ellipse 58% 48% at 14% 8%,rgba(139,92,246,.055),transparent 66%),
+    #050507!important;
+}
+#auth-screen.ethone-auth-v3::after{
+  background:radial-gradient(ellipse at center,transparent 54%,rgba(0,0,0,.64) 100%);
+}
+#auth-screen.ethone-auth-v3 #auth-lang-bar{
+  right:clamp(32px,5.7vw,82px)!important;
+}
+.auth-v3-copy{
+  color:rgba(245,245,247,.64);
+}
+.auth-v3-preview{
+  opacity:.86;
+  border-color:rgba(255,255,255,.095);
+  box-shadow:
+    0 30px 78px rgba(0,0,0,.40),
+    0 0 54px rgba(76,29,149,.055),
+    inset 0 1px 0 rgba(255,255,255,.065);
+}
+.auth-v3-preview-home time{color:rgba(245,245,247,.50)}
+.auth-v3-live{color:rgba(245,245,247,.74)}
+.auth-v3-brain-status{color:rgba(245,245,247,.60)}
+.auth-v3-brain-card p,.auth-v3-flow p,.auth-v3-mini p{
+  color:rgba(245,245,247,.46);
+}
+#auth-screen.ethone-auth-v3 #lb-box{
+  padding:38px 40px 39px!important;
+  border-color:rgba(255,255,255,.12)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.07),
+    0 32px 86px rgba(0,0,0,.45),
+    0 0 0 1px rgba(0,0,0,.34)!important;
+}
+#auth-screen.ethone-auth-v3 #lb-box > div:first-of-type{
+  margin-bottom:23px!important;
+}
+#auth-screen.ethone-auth-v3 #auth-form-header{
+  margin-bottom:20px!important;
+}
+#auth-screen.ethone-auth-v3 #lb-box > div:has(> #tab-login){
+  margin-bottom:24px!important;
+  background:rgba(255,255,255,.032)!important;
+  border-color:rgba(255,255,255,.075)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-tab{
+  color:rgba(245,245,247,.58)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-tab.is-active{
+  color:#fff!important;
+  background:rgba(255,255,255,.072)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.052),
+    0 3px 9px rgba(0,0,0,.22)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-tab:not(.is-active):hover{
+  color:rgba(245,245,247,.82)!important;
+  background:rgba(255,255,255,.025)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-input{
+  color:#fafafa!important;
+  background:#09090c!important;
+  border-color:rgba(255,255,255,.13)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-input::placeholder{
+  color:rgba(245,245,247,.48)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-input:focus{
+  background:#0c0b11!important;
+  border-color:rgba(139,92,246,.86)!important;
+  box-shadow:
+    0 0 0 3px rgba(139,92,246,.145),
+    inset 0 1px 0 rgba(255,255,255,.035)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-btn-primary,
+#auth-screen.ethone-auth-v3 .lb-social{
+  transition:
+    color .16s ease,
+    background .16s ease,
+    border-color .16s ease,
+    box-shadow .16s ease,
+    transform .16s ease!important;
+}
+#auth-screen.ethone-auth-v3 .lb-btn-primary:focus-visible,
+#auth-screen.ethone-auth-v3 .lb-social:focus-visible,
+#auth-screen.ethone-auth-v3 .lb-tab:focus-visible{
+  outline:2px solid rgba(196,181,253,.92)!important;
+  outline-offset:3px!important;
+}
+#auth-screen.ethone-auth-v3 .lb-btn-primary[aria-busy="true"] svg{
+  display:none;
+}
+#auth-screen.ethone-auth-v3 .lb-btn-primary[aria-busy="true"]::after{
+  content:"";
+  width:15px;
+  height:15px;
+  border:2px solid rgba(255,255,255,.32);
+  border-top-color:#fff;
+  border-radius:50%;
+  animation:authV9Spin .7s linear infinite;
+}
+#auth-screen.ethone-auth-v3 #auth-loading div{
+  width:18px!important;
+  height:18px!important;
+  border-width:2px!important;
+  border-color:rgba(255,255,255,.10)!important;
+  border-top-color:#8b5cf6!important;
+}
+@keyframes authV9Spin{to{transform:rotate(360deg)}}
+@media(max-width:720px){
+  #auth-screen.ethone-auth-v3 #lb-box{
+    padding:26px!important;
+  }
+  #auth-screen.ethone-auth-v3 #auth-lang-bar{
+    right:14px!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  #auth-screen.ethone-auth-v3 .lb-btn-primary[aria-busy="true"]::after{
+    animation-duration:1.4s!important;
+  }
+}
+</style>
 <script id="ethone-auth-v3-premium-experience">
 (function(){
   "use strict";
@@ -26241,19 +26369,19 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
           '</div>'+
           '<div class="auth-v3-preview-body">'+
             '<div class="auth-v3-brain-card">'+
-              '<div><div class="auth-v3-brain-status"><i></i><span>Brain · Online</span></div><h3>Brain is present.</h3><p>Ready to help you think, plan and build without taking over the interface.</p></div>'+
+              '<div><div class="auth-v3-brain-status"><i></i><span>Brain · Online</span></div><h3>Brain is present.</h3><p>Ready to think, plan and build with you.</p></div>'+
               '<div class="auth-v3-brain-orb">E</div>'+
             '</div>'+
             '<div class="auth-v3-flow">'+
               '<h3>Today focus</h3>'+
-              '<p>A calm sequence for your next session.</p>'+
+              '<p>Your next session, already arranged.</p>'+
               '<div class="auth-v3-flow-row"><time>10:00</time><div>Deep work<span>Dashboard polish</span></div></div>'+
               '<div class="auth-v3-flow-row"><time>13:30</time><div>Review<span>Workspace sync</span></div></div>'+
               '<div class="auth-v3-flow-row"><time>16:00</time><div>Design<span>Project brief</span></div></div>'+
             '</div>'+
           '</div>'+
           '<div class="auth-v3-mini-grid">'+
-            '<div class="auth-v3-mini"><h3>Workspaces</h3><p>Contexts ready when you are.</p><div class="auth-v3-workspace-item"><i></i><span>Personal</span></div></div>'+
+            '<div class="auth-v3-mini"><h3>Workspaces</h3><p>Your contexts, ready.</p><div class="auth-v3-workspace-item"><i></i><span>Personal</span></div></div>'+
           '</div>'+
         '</div>'+
       '</section>';
@@ -26270,7 +26398,11 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
       clock.setAttribute("datetime",hours+":"+minutes);
     }
     var live=qs(".auth-v3-live span",hero);
-    if(live)live.textContent=navigator.onLine===false?"Offline":"Synced";
+    var connected=navigator.onLine!==false;
+    var calmState=now.getMinutes()%2===0?"Synced":"Ready";
+    if(live)live.textContent=connected?calmState:"Offline";
+    var brainState=qs(".auth-v3-brain-status span",hero);
+    if(brainState)brainState.textContent=connected?"Brain · "+calmState:"Brain · Offline";
     var rows=Array.prototype.slice.call(hero.querySelectorAll(".auth-v3-flow-row"));
     var hour=now.getHours();
     var active=hour<12?0:(hour<16?1:2);
@@ -26289,6 +26421,29 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
       window.addEventListener("offline",updatePreviewRuntime);
     }
   }
+  function syncTabControl(){
+    var loginForm=qs("#form-login");
+    var registerForm=qs("#form-register");
+    var loginTab=qs("#tab-login");
+    var registerTab=qs("#tab-register");
+    if(!loginForm||!registerForm||!loginTab||!registerTab)return;
+    var loginActive=getComputedStyle(loginForm).display!=="none";
+    var tabList=loginTab.parentElement;
+    if(tabList){
+      tabList.setAttribute("role","tablist");
+      tabList.setAttribute("aria-label","Authentication");
+    }
+    loginTab.setAttribute("role","tab");
+    registerTab.setAttribute("role","tab");
+    loginTab.setAttribute("aria-controls","form-login");
+    registerTab.setAttribute("aria-controls","form-register");
+    loginTab.setAttribute("aria-selected",String(loginActive));
+    registerTab.setAttribute("aria-selected",String(!loginActive));
+    loginTab.classList.toggle("is-active",loginActive);
+    registerTab.classList.toggle("is-active",!loginActive);
+    loginForm.setAttribute("aria-hidden",String(!loginActive));
+    registerForm.setAttribute("aria-hidden",String(loginActive));
+  }
   function apply(){
     var screen=qs("#auth-screen");
     var card=qs("#auth-card");
@@ -26298,6 +26453,7 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
       card.insertAdjacentHTML("beforebegin",heroMarkup());
     }
     startPreviewRuntime();
+    syncTabControl();
     syncLanguageControl();
     sync();
   }
@@ -26314,6 +26470,7 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
         screen.style.setProperty("visibility","visible","important");
       }
     }
+    syncTabControl();
     syncLanguageControl();
   }
   function boot(){
@@ -26335,6 +26492,16 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
         languageBar.dataset.authV5StyleObserver="1";
         try{
           new MutationObserver(syncLanguageControl).observe(languageBar,{subtree:true,attributes:true,attributeFilter:["style"]});
+        }catch(e){}
+      }
+      var loginForm=qs("#form-login");
+      var registerForm=qs("#form-register");
+      if(loginForm&&registerForm&&!screen.dataset.authV9TabObserver){
+        screen.dataset.authV9TabObserver="1";
+        try{
+          var tabObserver=new MutationObserver(syncTabControl);
+          tabObserver.observe(loginForm,{attributes:true,attributeFilter:["style"]});
+          tabObserver.observe(registerForm,{attributes:true,attributeFilter:["style"]});
         }catch(e){}
       }
     }

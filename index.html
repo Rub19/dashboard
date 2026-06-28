@@ -24597,6 +24597,1706 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
   if(window.ethoneRunWhenDashboardReady)window.ethoneRunWhenDashboardReady("experience-2026-redesign",start2026Redesign);else start2026Redesign();
 })();
 </script>
+<style id="ethone-dashboard-vnext-css">
+body.ethone-2026-ui{
+  --vn-bg:#050507;
+  --vn-surface:#101014;
+  --vn-surface-2:#15151a;
+  --vn-line:rgba(255,255,255,.10);
+  --vn-line-strong:rgba(255,255,255,.16);
+  --vn-text:#f5f5f7;
+  --vn-muted:#a5a5ae;
+  --vn-dim:#7f7f89;
+  --vn-accent:#8b5cf6;
+  background:
+    radial-gradient(760px 460px at 42% -12%,rgba(139,92,246,.075),transparent 66%),
+    var(--vn-bg)!important;
+}
+body.ethone-2026-ui #main-content{
+  padding:14px 18px 30px 94px!important;
+}
+body.ethone-2026-ui #page-dashboard{
+  min-height:0!important;
+  height:auto!important;
+}
+body.ethone-2026-ui #page-dashboard>#profile-banner,
+body.ethone-2026-ui #page-dashboard>.topbar,
+body.ethone-2026-ui #page-dashboard>#gaming-overview-wrap,
+body.ethone-2026-ui #page-dashboard>.stats-row,
+body.ethone-2026-ui #page-dashboard>#pinned-panel,
+body.ethone-2026-ui #page-dashboard>#overview-grid-main{
+  display:none!important;
+}
+body.ethone-2026-ui .topbar{
+  max-width:none!important;
+  min-height:48px!important;
+  margin:0 0 12px!important;
+  border-radius:10px!important;
+  background:rgba(9,9,12,.90)!important;
+  border-color:rgba(255,255,255,.07)!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+}
+.vn-home{
+  width:100%;
+  min-height:calc(100vh - 76px);
+  color:var(--vn-text);
+}
+.vn-heading{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:20px;
+  padding:0 12px 10px;
+}
+.vn-heading h1{
+  margin:0;
+  color:#fff;
+  font:760 25px/1.15 var(--font-display),Inter,sans-serif;
+  letter-spacing:0;
+}
+.vn-heading p{
+  margin:5px 0 0;
+  color:var(--vn-muted);
+  font-size:12px;
+}
+.vn-heading-meta{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--vn-muted);
+  font-size:11px;
+}
+.vn-live-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--vn-accent);
+  box-shadow:0 0 0 4px rgba(139,92,246,.10);
+  animation:vnPulse 4.2s ease-in-out infinite;
+}
+.vn-brain-strip{
+  display:grid;
+  grid-template-columns:126px minmax(190px,.72fr) minmax(290px,1fr) auto;
+  align-items:center;
+  min-height:104px;
+  margin-bottom:8px;
+  border:1px solid var(--vn-line-strong);
+  border-radius:12px;
+  background:
+    linear-gradient(110deg,rgba(139,92,246,.055),transparent 28%),
+    rgba(14,14,18,.94);
+  box-shadow:0 18px 46px rgba(0,0,0,.26),inset 0 1px 0 rgba(255,255,255,.035);
+}
+.vn-brain-state,
+.vn-brain-context,
+.vn-brain-action{
+  min-width:0;
+  padding:18px 24px;
+}
+.vn-brain-context,
+.vn-brain-action{
+  border-left:1px solid var(--vn-line);
+}
+.vn-brain-label{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  color:#fff;
+  font:800 11px/1 var(--mono);
+  letter-spacing:.18em;
+  text-transform:uppercase;
+}
+.vn-brain-state span,
+.vn-kicker{
+  display:block;
+  margin-top:8px;
+  color:var(--vn-dim);
+  font:700 9px/1 var(--mono);
+  letter-spacing:.09em;
+  text-transform:uppercase;
+}
+.vn-brain-state strong{
+  display:block;
+  margin-top:5px;
+  color:#c4b5fd;
+  font-size:11px;
+}
+.vn-brain-context b,
+.vn-brain-action b{
+  display:block;
+  margin-top:7px;
+  color:#fff;
+  font-size:13px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.vn-brain-action p{
+  margin:5px 0 0;
+  color:var(--vn-muted);
+  font-size:11px;
+  line-height:1.42;
+}
+.vn-brain-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  padding:18px;
+}
+.vn-button{
+  min-height:38px;
+  padding:0 14px;
+  border-radius:9px;
+  border:1px solid var(--vn-line-strong);
+  background:rgba(255,255,255,.025);
+  color:#e7e7eb;
+  font:650 11px/1 Inter,sans-serif;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:background .16s ease,border-color .16s ease,color .16s ease,transform .16s ease;
+}
+.vn-button:hover{
+  color:#fff;
+  border-color:rgba(139,92,246,.48);
+  background:rgba(139,92,246,.08);
+  transform:translateY(-1px);
+}
+.vn-button:active{transform:translateY(0) scale(.985)}
+.vn-button.primary{
+  min-width:124px;
+  border-color:#8b5cf6;
+  background:#7c3aed;
+  color:#fff;
+  box-shadow:0 8px 22px rgba(76,29,149,.22);
+}
+.vn-button.primary:hover{background:#8b5cf6}
+.vn-modules{
+  display:grid;
+  grid-template-columns:repeat(9,minmax(0,1fr));
+  min-height:48px;
+  margin-bottom:10px;
+  border-bottom:1px solid var(--vn-line);
+}
+.vn-module{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  min-width:0;
+  border:0;
+  background:transparent;
+  color:#aaaab3;
+  font:600 10.5px/1 Inter,sans-serif;
+  cursor:pointer;
+  transition:color .16s ease,background .16s ease;
+}
+.vn-module i{
+  width:16px;
+  height:16px;
+  display:grid;
+  place-items:center;
+  color:inherit;
+  font-style:normal;
+}
+.vn-module svg{width:16px;height:16px;stroke-width:1.8}
+.vn-module:hover{color:#fff;background:rgba(255,255,255,.022)}
+.vn-module.active{color:#c4b5fd}
+.vn-module.active::after{
+  content:"";
+  position:absolute;
+  left:20%;
+  right:20%;
+  bottom:-1px;
+  height:2px;
+  border-radius:2px 2px 0 0;
+  background:var(--vn-accent);
+}
+.vn-operating-grid{
+  display:grid;
+  grid-template-columns:minmax(300px,.98fr) minmax(330px,1.08fr) minmax(300px,.92fr);
+  gap:10px;
+}
+.vn-surface{
+  min-width:0;
+  border:1px solid var(--vn-line);
+  border-radius:12px;
+  background:rgba(14,14,18,.92);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+}
+.vn-surface-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  min-height:43px;
+  padding:0 14px;
+  border-bottom:1px solid var(--vn-line);
+}
+.vn-surface-head h2{
+  margin:0;
+  color:#fff;
+  font-size:13px;
+  font-weight:720;
+}
+.vn-surface-head span,
+.vn-text-button{
+  color:var(--vn-dim);
+  font-size:10px;
+}
+.vn-text-button{
+  border:0;
+  padding:5px;
+  background:transparent;
+  cursor:pointer;
+}
+.vn-text-button:hover{color:#c4b5fd}
+.vn-section-label{
+  padding:11px 14px 6px;
+  color:var(--vn-dim);
+  font:750 9px/1 var(--mono);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.vn-row{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:10px;
+  min-height:48px;
+  margin:0 12px;
+  padding:7px 2px;
+  border-bottom:1px solid rgba(255,255,255,.065);
+}
+.vn-row:last-child{border-bottom:0}
+.vn-row-mark{
+  width:20px;
+  height:20px;
+  border:1.5px solid #60606a;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  color:#fff;
+  font-size:9px;
+}
+.vn-row-mark.done{
+  border-color:#8b5cf6;
+  background:#7c3aed;
+}
+.vn-row-text{min-width:0}
+.vn-row-text strong{
+  display:block;
+  overflow:hidden;
+  color:#eeeeF1;
+  font-size:11px;
+  font-weight:650;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.vn-row-text span{
+  display:block;
+  margin-top:3px;
+  overflow:hidden;
+  color:var(--vn-dim);
+  font-size:9.5px;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.vn-row-meta{
+  color:#aaaab3;
+  font:650 9px/1 var(--mono);
+  white-space:nowrap;
+}
+.vn-progress{
+  height:3px;
+  margin:8px 14px 12px;
+  overflow:hidden;
+  border-radius:3px;
+  background:#24242a;
+}
+.vn-progress i{
+  display:block;
+  height:100%;
+  border-radius:inherit;
+  background:#8b5cf6;
+}
+.vn-time-row{
+  display:grid;
+  grid-template-columns:48px 1fr auto;
+  align-items:center;
+  gap:8px;
+  min-height:34px;
+  padding:0 14px;
+}
+.vn-time-row time{color:#aaaab3;font:650 9px/1 var(--mono)}
+.vn-time-row strong{color:#dddde2;font-size:10px;font-weight:600}
+.vn-time-row span{color:var(--vn-dim);font-size:9px}
+.vn-change-list{padding:4px 0}
+.vn-change{
+  display:grid;
+  grid-template-columns:45px 1fr 7px;
+  align-items:center;
+  gap:9px;
+  min-height:48px;
+  margin:0 14px;
+  border-bottom:1px solid rgba(255,255,255,.065);
+}
+.vn-change time{color:#9b9ba5;font:650 9px/1 var(--mono)}
+.vn-change strong{display:block;color:#e9e9ed;font-size:10.5px;font-weight:620}
+.vn-change span{display:block;margin-top:3px;color:var(--vn-dim);font-size:9px}
+.vn-change i{width:6px;height:6px;border-radius:50%;background:#8b5cf6}
+.vn-insights{padding:8px 14px 12px}
+.vn-insight{
+  display:flex;
+  align-items:flex-start;
+  gap:9px;
+  min-height:35px;
+  padding:6px 0;
+}
+.vn-insight i{
+  width:20px;
+  height:20px;
+  flex:0 0 20px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(139,92,246,.26);
+  border-radius:6px;
+  color:#c4b5fd;
+  font-style:normal;
+  font-size:9px;
+}
+.vn-insight strong{display:block;color:#e7e7eb;font-size:10px}
+.vn-insight span{display:block;margin-top:2px;color:var(--vn-dim);font-size:9px;line-height:1.3}
+.vn-context-block{padding:12px 14px;border-bottom:1px solid var(--vn-line)}
+.vn-context-block:last-child{border-bottom:0}
+.vn-context-block small{
+  display:block;
+  margin-bottom:8px;
+  color:var(--vn-dim);
+  font:750 9px/1 var(--mono);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.vn-context-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.vn-context-title strong{color:#fff;font-size:11px}
+.vn-file{
+  display:grid;
+  grid-template-columns:16px 1fr auto;
+  gap:8px;
+  align-items:center;
+  min-height:28px;
+}
+.vn-file i{color:#a5a5ae;font-style:normal;font-size:10px}
+.vn-file strong{overflow:hidden;color:#dcdce1;font-size:9.5px;text-overflow:ellipsis;white-space:nowrap}
+.vn-file span{color:var(--vn-dim);font-size:8.5px}
+.vn-workspace-list{display:flex;gap:7px;flex-wrap:wrap}
+.vn-workspace-pill{
+  padding:6px 9px;
+  border:1px solid var(--vn-line);
+  border-radius:7px;
+  color:#d6d6dc;
+  background:#15151a;
+  font-size:9px;
+}
+.vn-memory-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.vn-memory-grid strong{display:block;color:#fff;font-size:18px}
+.vn-memory-grid span{display:block;margin-top:4px;color:var(--vn-dim);font-size:8.5px}
+.vn-utility-grid{
+  display:grid;
+  grid-template-columns:.88fr 1fr 1fr 1.1fr;
+  gap:10px;
+  margin-top:10px;
+}
+.vn-utility{
+  min-height:124px;
+  padding:13px;
+}
+.vn-utility-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+.vn-utility-head h3{margin:0;color:#fff;font-size:11px}
+.vn-utility-head button{border:0;background:transparent;color:#8f8f99;font-size:9px;cursor:pointer}
+.vn-note-line{
+  width:100%;
+  height:36px;
+  padding:0 10px;
+  border:1px solid var(--vn-line);
+  border-radius:8px;
+  background:#17171c;
+  color:#a9a9b2;
+  text-align:left;
+  font-size:9.5px;
+  cursor:pointer;
+}
+.vn-mini-row{
+  display:grid;
+  grid-template-columns:7px 1fr auto;
+  align-items:center;
+  gap:8px;
+  min-height:26px;
+  border-bottom:1px solid rgba(255,255,255,.055);
+}
+.vn-mini-row:last-child{border-bottom:0}
+.vn-mini-row i{width:6px;height:6px;border-radius:50%;background:#8b5cf6}
+.vn-mini-row strong{color:#dcdce1;font-size:9px;font-weight:600}
+.vn-mini-row span{color:var(--vn-dim);font-size:8px}
+.vn-goal{margin-bottom:10px}
+.vn-goal strong{display:flex;justify-content:space-between;color:#e7e7eb;font-size:9.5px}
+.vn-goal .vn-progress{margin:6px 0 0}
+.vn-market{
+  display:grid;
+  grid-template-columns:34px 1fr;
+  gap:10px;
+  align-items:center;
+}
+.vn-market-icon{
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(139,92,246,.28);
+  border-radius:9px;
+  color:#c4b5fd;
+  background:rgba(139,92,246,.08);
+}
+.vn-market strong{display:block;color:#fff;font-size:10px}
+.vn-market span{display:block;margin-top:4px;color:var(--vn-dim);font-size:8.5px;line-height:1.35}
+.vn-empty{
+  padding:16px 14px;
+  color:var(--vn-muted);
+  font-size:10px;
+  line-height:1.45;
+}
+body.ethone-2026-ui #ethone-2026-dock{display:none!important}
+@keyframes vnPulse{0%,100%{opacity:.6}50%{opacity:1}}
+@media(max-width:1220px){
+  .vn-brain-strip{grid-template-columns:110px minmax(170px,.62fr) 1fr}
+  .vn-brain-actions{grid-column:1/-1;padding:0 18px 14px}
+  .vn-operating-grid{grid-template-columns:1fr 1fr}
+  .vn-context-surface{grid-column:1/-1}
+  .vn-utility-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:900px){
+  .vn-heading{align-items:flex-start;flex-direction:column}
+  .vn-heading-meta{display:none}
+  .vn-brain-strip{grid-template-columns:1fr 1fr}
+  .vn-brain-action{grid-column:1/-1;border-top:1px solid var(--vn-line)}
+  .vn-brain-actions{grid-column:1/-1}
+  .vn-modules{display:flex;overflow-x:auto;scrollbar-width:none}
+  .vn-module{min-width:104px;height:48px}
+  .vn-operating-grid{grid-template-columns:1fr}
+  .vn-context-surface{grid-column:auto}
+}
+@media(max-width:760px){
+  body.ethone-2026-ui #main-content{padding:62px 10px 86px!important}
+  .vn-heading{padding:0 4px 10px}
+  .vn-heading h1{font-size:22px}
+  .vn-brain-strip{grid-template-columns:1fr;border-radius:10px}
+  .vn-brain-context,.vn-brain-action{border-left:0;border-top:1px solid var(--vn-line)}
+  .vn-brain-actions{justify-content:flex-start;overflow-x:auto}
+  .vn-brain-actions .vn-button{min-width:max-content}
+  .vn-operating-grid,.vn-utility-grid{grid-template-columns:1fr}
+  .vn-surface{border-radius:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  .vn-live-dot{animation:none}
+  .vn-button{transition:none}
+}
+</style>
+<style id="ethone-home-commercial-css">
+body.ethone-2026-ui{
+  --vh-bg:#050507;
+  --vh-panel:#101014;
+  --vh-panel-2:#131318;
+  --vh-input:#17171c;
+  --vh-line:rgba(255,255,255,.095);
+  --vh-line-strong:rgba(255,255,255,.15);
+  --vh-text:#f5f5f7;
+  --vh-muted:#a5a5ae;
+  --vh-dim:#777780;
+  --vh-accent:#8b5cf6;
+  background:
+    radial-gradient(720px 420px at 44% -18%,rgba(139,92,246,.075),transparent 70%),
+    var(--vh-bg)!important;
+}
+body.ethone-2026-ui #main-content{
+  padding:10px 18px 28px 94px!important;
+}
+body.ethone-2026-ui #main-sidebar{
+  border-right:1px solid rgba(255,255,255,.075)!important;
+  background:#08080b!important;
+  box-shadow:none!important;
+}
+body.ethone-2026-ui #main-sidebar .nav-item{
+  min-height:40px!important;
+  margin:2px 0!important;
+  border-radius:9px!important;
+  color:#8e8e98!important;
+  transition:color .18s ease,background .18s ease,border-color .18s ease!important;
+}
+body.ethone-2026-ui #main-sidebar .nav-item:hover{
+  color:#eeeef2!important;
+  background:rgba(255,255,255,.045)!important;
+}
+body.ethone-2026-ui #main-sidebar .nav-item.active{
+  color:#fff!important;
+  border-color:rgba(139,92,246,.18)!important;
+  background:rgba(139,92,246,.105)!important;
+}
+body.ethone-2026-ui #main-sidebar .nav-item.active::after{
+  width:2px!important;
+  height:18px!important;
+  top:50%!important;
+  right:auto!important;
+  bottom:auto!important;
+  left:-1px!important;
+  transform:translateY(-50%)!important;
+  border-radius:0 2px 2px 0!important;
+  background:#8b5cf6!important;
+}
+body.ethone-2026-ui #main-sidebar .nav-icon,
+body.ethone-2026-ui #main-sidebar .nav-item svg{
+  width:18px!important;
+  height:18px!important;
+  stroke-width:1.7!important;
+}
+@media(min-width:1181px){
+  body.ethone-2026-ui #main-sidebar:not(.compact){
+    width:184px!important;
+    min-width:184px!important;
+    padding:10px!important;
+  }
+  body.ethone-2026-ui #main-sidebar:not(.compact) .logo{
+    justify-content:flex-start!important;
+    padding:4px 7px 14px!important;
+  }
+  body.ethone-2026-ui #main-sidebar:not(.compact) .logo-text,
+  body.ethone-2026-ui #main-sidebar:not(.compact) .nav-label-text,
+  body.ethone-2026-ui #main-sidebar:not(.compact) .user-info{
+    display:block!important;
+  }
+  body.ethone-2026-ui #main-sidebar:not(.compact) .nav-label-text{
+    font-size:11.5px!important;
+    line-height:1.2!important;
+  }
+  body.ethone-2026-ui #main-sidebar:not(.compact) .nav-item{
+    justify-content:flex-start!important;
+    width:100%!important;
+    min-width:0!important;
+    padding:0 10px!important;
+    gap:11px!important;
+  }
+  body.ethone-2026-ui #main-sidebar:not(.compact) .nav-section{
+    width:100%!important;
+    padding:0!important;
+  }
+  body.ethone-2026-ui:has(#main-sidebar:not(.compact)) #main-content{
+    padding-left:202px!important;
+  }
+}
+.vh-home{
+  width:100%;
+  max-width:1540px;
+  min-height:calc(100vh - 52px);
+  margin:0 auto;
+  color:var(--vh-text);
+}
+.vh-topbar{
+  display:grid;
+  grid-template-columns:minmax(220px,320px) 1fr auto;
+  align-items:center;
+  min-height:48px;
+  margin-bottom:14px;
+  padding-bottom:10px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.vh-search{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  height:36px;
+  padding:0 11px;
+  border:1px solid var(--vh-line);
+  border-radius:9px;
+  background:#0d0d11;
+  color:#85858f;
+  cursor:pointer;
+  font:500 11px/1 Inter,sans-serif;
+  text-align:left;
+  transition:border-color .18s ease,background .18s ease,color .18s ease;
+}
+.vh-search:hover,
+.vh-search:focus-visible{
+  color:#d9d9df;
+  border-color:rgba(139,92,246,.42);
+  background:#111116;
+  outline:0;
+}
+.vh-search svg{width:15px;height:15px;stroke-width:1.8}
+.vh-search span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vh-search kbd{
+  margin-left:auto;
+  color:#686872;
+  font:600 9px/1 var(--mono);
+}
+.vh-top-context{
+  justify-self:center;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  height:34px;
+  padding:0 12px;
+  border:1px solid var(--vh-line);
+  border-radius:8px;
+  background:rgba(255,255,255,.018);
+  color:#d7d7dd;
+  cursor:pointer;
+  font-size:10.5px;
+}
+.vh-top-context:hover{border-color:var(--vh-line-strong);background:rgba(255,255,255,.035)}
+.vh-top-context svg{width:14px;height:14px}
+.vh-top-actions{display:flex;align-items:center;justify-content:flex-end;gap:7px}
+.vh-sync{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin-right:5px;
+  color:#8f8f99;
+  font-size:10px;
+}
+.vh-dot{
+  width:6px;
+  height:6px;
+  flex:0 0 6px;
+  border-radius:50%;
+  background:var(--vh-accent);
+  box-shadow:0 0 0 3px rgba(139,92,246,.10);
+}
+.vh-icon-button{
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  border:1px solid transparent;
+  border-radius:8px;
+  background:transparent;
+  color:#9696a0;
+  cursor:pointer;
+  transition:color .18s ease,background .18s ease,border-color .18s ease;
+}
+.vh-icon-button:hover,
+.vh-icon-button:focus-visible{
+  color:#fff;
+  border-color:var(--vh-line);
+  background:rgba(255,255,255,.035);
+  outline:0;
+}
+.vh-icon-button svg{width:17px;height:17px;stroke-width:1.7}
+.vh-avatar{
+  width:32px;
+  height:32px;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  border:1px solid rgba(139,92,246,.28);
+  border-radius:9px;
+  background:#17171c;
+  color:#d8ccff;
+  cursor:pointer;
+  font:750 11px/1 Inter,sans-serif;
+}
+.vh-hero{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:end;
+  gap:24px;
+  padding:5px 6px 16px;
+}
+.vh-hero h1{
+  margin:0;
+  max-width:760px;
+  color:#fff;
+  font:760 clamp(28px,3vw,40px)/1.06 var(--font-display),Inter,sans-serif;
+  letter-spacing:0;
+}
+.vh-hero-copy{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin:8px 0 0;
+  color:var(--vh-muted);
+  font-size:12px;
+}
+.vh-hero-copy strong{color:#c4b5fd;font-weight:650}
+.vh-hero-actions{display:flex;gap:8px}
+.vh-button{
+  min-height:40px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:0 15px;
+  border:1px solid var(--vh-line-strong);
+  border-radius:9px;
+  background:#111115;
+  color:#e8e8ec;
+  cursor:pointer;
+  font:650 10.5px/1 Inter,sans-serif;
+  transition:transform .16s ease,background .18s ease,border-color .18s ease,color .18s ease;
+}
+.vh-button:hover{color:#fff;border-color:rgba(139,92,246,.5);background:#17151f;transform:translateY(-1px)}
+.vh-button:active{transform:translateY(0) scale(.985)}
+.vh-button:focus-visible{outline:2px solid #a78bfa;outline-offset:2px}
+.vh-button.primary{
+  min-width:140px;
+  border-color:#8b5cf6;
+  background:#7c3aed;
+  color:#fff;
+  box-shadow:0 8px 24px rgba(76,29,149,.20);
+}
+.vh-button.primary:hover{background:#8b5cf6}
+.vh-button svg{width:15px;height:15px;stroke-width:1.8}
+.vh-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.02fr) minmax(0,1.08fr) minmax(280px,.96fr);
+  gap:10px;
+}
+.vh-home>.vh-grid:not(.vh-secondary){min-height:340px}
+.vh-panel{
+  min-width:0;
+  overflow:hidden;
+  border:1px solid var(--vh-line);
+  border-radius:10px;
+  background:
+    linear-gradient(145deg,rgba(139,92,246,.025),transparent 38%),
+    var(--vh-panel);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025),0 12px 32px rgba(0,0,0,.12);
+  transition:border-color .18s ease,transform .18s ease;
+}
+.vh-panel:hover{border-color:rgba(255,255,255,.135)}
+.vh-panel-head{
+  min-height:45px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:0 15px;
+  border-bottom:1px solid var(--vh-line);
+}
+.vh-title{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+}
+.vh-title h2,.vh-title h3{
+  margin:0;
+  color:#fff;
+  font-size:13px;
+  font-weight:730;
+}
+.vh-title svg{width:15px;height:15px;color:#b8a3ff;stroke-width:1.8}
+.vh-link{
+  padding:5px;
+  border:0;
+  background:transparent;
+  color:#85858f;
+  cursor:pointer;
+  font:550 9px/1 Inter,sans-serif;
+}
+.vh-link:hover,.vh-link:focus-visible{color:#c4b5fd;outline:0}
+.vh-label{
+  display:block;
+  color:#777780;
+  font:700 8.5px/1 var(--mono);
+  letter-spacing:.09em;
+  text-transform:uppercase;
+}
+.vh-brain-body{padding:15px}
+.vh-recommendation{
+  display:grid;
+  grid-template-columns:38px minmax(0,1fr);
+  gap:11px;
+  align-items:start;
+  padding-bottom:14px;
+  border-bottom:1px solid var(--vh-line);
+}
+.vh-rec-icon{
+  width:38px;height:38px;display:grid;place-items:center;
+  border:1px solid rgba(139,92,246,.28);
+  border-radius:9px;background:rgba(139,92,246,.09);color:#c4b5fd;
+}
+.vh-rec-icon svg{width:19px;height:19px}
+.vh-recommendation strong{display:block;margin-top:8px;color:#f2f2f5;font-size:12.5px}
+.vh-recommendation p{margin:5px 0 10px;color:#9696a0;font-size:10px;line-height:1.42}
+.vh-inline-actions{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.vh-small-button{
+  min-height:30px;padding:0 11px;border:1px solid rgba(139,92,246,.34);border-radius:7px;
+  background:rgba(139,92,246,.11);color:#cdbfff;cursor:pointer;font:650 9.5px/1 Inter,sans-serif;
+}
+.vh-small-button:hover{background:rgba(139,92,246,.18);border-color:rgba(139,92,246,.55)}
+.vh-summary{padding-top:13px}
+.vh-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:9px}
+.vh-summary-item{
+  min-width:0;padding:9px;border:1px solid rgba(255,255,255,.065);border-radius:7px;background:rgba(255,255,255,.014);
+}
+.vh-summary-item strong{display:block;color:#fff;font-size:14px}
+.vh-summary-item span{display:block;margin-top:4px;overflow:hidden;color:#777780;font-size:8.5px;text-overflow:ellipsis;white-space:nowrap}
+.vh-focus-body{padding:15px}
+.vh-focus-task{display:flex;align-items:flex-start;gap:10px;margin:9px 0 12px}
+.vh-check{
+  width:18px;height:18px;flex:0 0 18px;display:grid;place-items:center;
+  border:1px solid #8b5cf6;border-radius:50%;color:#c4b5fd;font-size:8px;
+}
+.vh-focus-task strong{display:block;color:#fff;font-size:13px}
+.vh-focus-task span{display:block;margin-top:4px;color:#898993;font-size:9.5px}
+.vh-objective{padding:12px 0;border-top:1px solid var(--vh-line);border-bottom:1px solid var(--vh-line)}
+.vh-objective-line{display:flex;justify-content:space-between;gap:12px;margin-top:8px;color:#dedee3;font-size:10px}
+.vh-progress{height:4px;margin-top:8px;overflow:hidden;border-radius:3px;background:#24242a}
+.vh-progress i{display:block;height:100%;border-radius:inherit;background:#8b5cf6}
+.vh-session{
+  display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:9px;
+  margin-top:12px;padding:10px;border:1px solid var(--vh-line);border-radius:8px;background:var(--vh-panel-2);
+}
+.vh-session svg{width:17px;height:17px;color:#aaaab3}
+.vh-session strong{display:block;color:#eeeef2;font-size:10.5px}
+.vh-session span{display:block;margin-top:3px;color:#777780;font-size:8.5px}
+.vh-timeline-body{padding:4px 0}
+.vh-timeline-section{padding:12px 15px;border-bottom:1px solid var(--vh-line)}
+.vh-timeline-section:last-child{border-bottom:0}
+.vh-event{
+  display:grid;grid-template-columns:56px minmax(0,1fr) auto;align-items:center;gap:8px;min-height:31px;
+}
+.vh-event time{color:#8f8f99;font:600 8.5px/1 var(--mono)}
+.vh-event strong{overflow:hidden;color:#dedee3;font-size:9.5px;font-weight:620;text-overflow:ellipsis;white-space:nowrap}
+.vh-event span{color:#777780;font-size:8px}
+.vh-secondary{margin-top:10px}
+.vh-home>.vh-secondary{min-height:290px}
+.vh-list{padding:5px 14px 8px}
+.vh-list-row{
+  display:grid;grid-template-columns:24px minmax(0,1fr) auto;align-items:center;gap:9px;
+  min-height:42px;border-bottom:1px solid rgba(255,255,255,.06);
+}
+.vh-list-row:last-child{border-bottom:0}
+.vh-list-icon{
+  width:22px;height:22px;display:grid;place-items:center;border:1px solid rgba(139,92,246,.22);
+  border-radius:6px;color:#bca7ff;background:rgba(139,92,246,.055);
+}
+.vh-list-icon svg{width:12px;height:12px;stroke-width:1.8}
+.vh-list-row strong{display:block;overflow:hidden;color:#e4e4e8;font-size:9.5px;text-overflow:ellipsis;white-space:nowrap}
+.vh-list-row small{display:block;margin-top:3px;overflow:hidden;color:#73737c;font-size:8px;text-overflow:ellipsis;white-space:nowrap}
+.vh-list-row>span{color:#777780;font-size:8px}
+.vh-rail{display:grid;grid-template-rows:1fr auto;gap:10px}
+.vh-insights{padding:8px 14px}
+.vh-insight{display:flex;gap:9px;padding:7px 0}
+.vh-insight-icon{width:21px;height:21px;flex:0 0 21px;display:grid;place-items:center;border:1px solid rgba(139,92,246,.22);border-radius:6px;color:#bca7ff}
+.vh-insight-icon svg{width:12px;height:12px}
+.vh-insight strong{display:block;color:#e2e2e7;font-size:9.5px}
+.vh-insight span{display:block;margin-top:3px;color:#777780;font-size:8px;line-height:1.35}
+.vh-memory{display:grid;grid-template-columns:repeat(3,1fr);padding:13px 15px}
+.vh-memory strong{display:block;color:#fff;font-size:17px}
+.vh-memory span{display:block;margin-top:3px;color:#777780;font-size:8px}
+.vh-quick{
+  margin-top:10px;
+  padding:12px 14px;
+}
+.vh-quick-head{margin-bottom:9px;color:#fff;font-size:11px;font-weight:700}
+.vh-quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.vh-quick-action{
+  min-height:52px;display:grid;grid-template-columns:30px minmax(0,1fr) auto;align-items:center;gap:9px;
+  padding:0 11px;border:1px solid var(--vh-line);border-radius:8px;background:#111115;color:#dddde2;
+  cursor:pointer;text-align:left;transition:border-color .18s ease,background .18s ease,transform .16s ease;
+}
+.vh-quick-action:hover{border-color:rgba(139,92,246,.38);background:#15131c;transform:translateY(-1px)}
+.vh-quick-action:focus-visible{outline:2px solid #a78bfa;outline-offset:2px}
+.vh-quick-action>i{width:28px;height:28px;display:grid;place-items:center;border-radius:7px;color:#c4b5fd;background:rgba(139,92,246,.075);font-style:normal}
+.vh-quick-action svg{width:15px;height:15px}
+.vh-quick-action strong{display:block;color:#eeeef2;font-size:9.5px}
+.vh-quick-action span{display:block;margin-top:3px;color:#777780;font-size:8px}
+.vh-quick-action>.vh-chevron{width:13px;height:13px;color:#686872}
+.vh-empty{padding:17px 15px;color:#8b8b95;font-size:9.5px;line-height:1.45}
+@media(max-width:1180px){
+  .vh-home>.vh-grid:not(.vh-secondary),
+  .vh-home>.vh-secondary{min-height:0}
+  .vh-grid{grid-template-columns:1fr 1fr}
+  .vh-timeline{grid-column:1/-1}
+  .vh-timeline-body{display:grid;grid-template-columns:1fr 1fr}
+  .vh-timeline-section{border-bottom:0;border-right:1px solid var(--vh-line)}
+  .vh-timeline-section:last-child{border-right:0}
+  .vh-rail{grid-column:1/-1;grid-template-columns:1.35fr .65fr;grid-template-rows:auto}
+}
+@media(max-width:900px){
+  .vh-topbar{grid-template-columns:minmax(170px,1fr) auto}
+  .vh-top-context{display:none}
+  .vh-sync span{display:none}
+  .vh-hero{align-items:start}
+  .vh-hero h1{font-size:30px}
+  .vh-secondary{grid-template-columns:1fr 1fr}
+  .vh-rail{grid-column:1/-1}
+  .vh-quick-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:760px){
+  body.ethone-2026-ui #main-content{padding:62px 10px 82px!important}
+  .vh-home{min-height:calc(100vh - 72px)}
+  .vh-topbar{grid-template-columns:1fr auto;min-height:42px;margin-bottom:10px}
+  .vh-top-actions .vh-sync,.vh-top-actions .vh-avatar{display:none}
+  .vh-search{height:34px}
+  .vh-hero{grid-template-columns:1fr;padding:4px 4px 14px;gap:12px}
+  .vh-hero h1{font-size:27px}
+  .vh-hero-copy{align-items:flex-start;line-height:1.4;flex-wrap:wrap}
+  .vh-hero-actions{display:grid;grid-template-columns:1fr 1fr}
+  .vh-button{width:100%;min-width:0!important}
+  .vh-grid{display:grid;grid-template-columns:1fr}
+  .vh-brain,.vh-focus,.vh-timeline{grid-column:auto}
+  .vh-timeline-body{display:block}
+  .vh-timeline-section{border-right:0;border-bottom:1px solid var(--vh-line)}
+  .vh-secondary{
+    display:flex;
+    gap:10px;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    scrollbar-width:none;
+  }
+  .vh-secondary>.vh-panel,.vh-secondary>.vh-rail{
+    width:86vw;
+    min-width:86vw;
+    scroll-snap-align:start;
+  }
+  .vh-rail{display:grid;grid-template-columns:1fr;grid-template-rows:auto}
+  .vh-summary-grid{grid-template-columns:1fr 1fr}
+  .vh-quick{padding:11px}
+  .vh-quick-grid{grid-template-columns:1fr 1fr}
+  .vh-quick-action{grid-template-columns:26px minmax(0,1fr);min-height:58px}
+  .vh-quick-action>.vh-chevron{display:none}
+}
+@media(max-width:390px){
+  .vh-hero h1{font-size:24px}
+  .vh-quick-grid{grid-template-columns:1fr}
+  .vh-quick-action{min-height:50px}
+}
+@media(prefers-reduced-motion:reduce){
+  .vh-panel,.vh-button,.vh-quick-action,.vh-search,.vh-icon-button{transition:none!important}
+}
+</style>
+<script id="ethone-dashboard-vnext-runtime">
+(function(){
+  "use strict";
+  if(window.__ethoneHomeCommercial)return;
+  return;
+  if(window.__ethoneDashboardVNext)return;
+  window.__ethoneDashboardVNext=true;
+  var renderTimer=0;
+  function qs(s,r){return (r||document).querySelector(s)}
+  function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+  function profile(){try{return typeof window.curP==="function"?window.curP():null}catch(e){return null}}
+  function state(){var p=profile();return p&&p.state?p.state:{}}
+  function list(v){return Array.isArray(v)?v:[]}
+  function activeWorkspace(){
+    try{return localStorage.getItem("ethone:active-workspace")||"Personal OS"}catch(e){return"Personal OS"}
+  }
+  function phase(){
+    var h=new Date().getHours();
+    return h<5?"Good night":h<12?"Good morning":h<18?"Good afternoon":"Good evening";
+  }
+  function icon(name,fallback){return '<i data-lucide="'+name+'" aria-hidden="true">'+fallback+'</i>'}
+  function moduleButton(label,iconName,route,active){
+    return '<button class="vn-module'+(active?' active':'')+'" type="button" data-vn-page="'+route+'">'+icon(iconName,label.charAt(0))+'<span>'+label+'</span></button>';
+  }
+  function markup(){
+    return '<section class="vn-home" id="ethone-2026-home">'+
+      '<header class="vn-heading"><div><h1 id="vn-greeting">Your operating system.</h1><p id="vn-date">Today</p></div><div class="vn-heading-meta"><i class="vn-live-dot"></i><span id="vn-sync">Synced just now</span></div></header>'+
+      '<section class="vn-brain-strip" aria-label="Brain operating status">'+
+        '<div class="vn-brain-state"><div class="vn-brain-label">BRAIN <i class="vn-live-dot"></i></div><span>Operational</span><strong>Pulse steady</strong></div>'+
+        '<div class="vn-brain-context"><span class="vn-kicker">Current context</span><b id="vn-context">Personal OS</b></div>'+
+        '<div class="vn-brain-action"><span class="vn-kicker">Next best action</span><b id="vn-next-action">Choose your next priority</b><p id="vn-next-reason">Brain is reading your current context.</p></div>'+
+        '<div class="vn-brain-actions"><button class="vn-button primary" type="button" data-vn-page="todos">'+icon("play","")+' Start focus</button><button class="vn-button" type="button" data-vn-page="ai">Prep with Brain</button><button class="vn-button" type="button" data-vn-page="notes">Review notes</button></div>'+
+      '</section>'+
+      '<nav class="vn-modules" aria-label="Brain OS modules">'+
+        moduleButton("Brain","brain","ai",true)+
+        moduleButton("Planner","calendar-days","calendar")+
+        moduleButton("Insights","chart-no-axes-combined","stats")+
+        moduleButton("Automation","bot","ai")+
+        moduleButton("Vision","eye","ai")+
+        moduleButton("Context","layers-3","workspaces")+
+        moduleButton("Marketplace","shopping-bag","marketplace")+
+        moduleButton("Providers","cloud","connections")+
+        moduleButton("Memory","book-open","ai")+
+      '</nav>'+
+      '<div class="vn-operating-grid">'+
+        '<section class="vn-surface"><div class="vn-surface-head"><h2>Today&apos;s focus</h2><button class="vn-text-button" type="button" data-vn-page="todos" id="vn-task-count">0 tasks</button></div><div class="vn-section-label">Priority tasks</div><div id="vn-focus-list"></div><div class="vn-progress"><i id="vn-focus-progress" style="width:0%"></i></div><div class="vn-section-label">Upcoming</div><div id="vn-upcoming-list"></div></section>'+
+        '<section class="vn-surface"><div class="vn-surface-head"><h2>What changed today</h2><button class="vn-text-button" type="button" data-vn-page="stats">View all</button></div><div class="vn-change-list" id="vn-change-list"></div><div class="vn-surface-head"><h2>Brain insights</h2><span id="vn-insight-time">Updated now</span></div><div class="vn-insights" id="vn-insight-list"></div></section>'+
+        '<aside class="vn-surface vn-context-surface"><div class="vn-surface-head"><h2>Context</h2><button class="vn-text-button" type="button" data-vn-page="workspaces">Change</button></div><div class="vn-context-block"><small>Active workspace</small><div class="vn-context-title"><strong id="vn-active-workspace">Personal OS</strong><span class="vn-live-dot"></span></div></div><div class="vn-context-block"><small>Recent files and notes</small><div id="vn-file-list"></div></div><div class="vn-context-block"><small>Pinned workspaces</small><div class="vn-workspace-list" id="vn-workspace-list"></div></div><div class="vn-context-block"><small>Memory summary</small><div class="vn-memory-grid" id="vn-memory-grid"></div></div></aside>'+
+      '</div>'+
+      '<div class="vn-utility-grid">'+
+        '<section class="vn-surface vn-utility"><div class="vn-utility-head"><h3>Quick note</h3><button type="button" data-vn-page="notes">Open</button></div><button class="vn-note-line" type="button" data-vn-page="notes" id="vn-note-line">Capture a thought...</button></section>'+
+        '<section class="vn-surface vn-utility"><div class="vn-utility-head"><h3>Automation status</h3><button type="button" data-vn-page="ai">Manage</button></div><div id="vn-automation-list"></div></section>'+
+        '<section class="vn-surface vn-utility"><div class="vn-utility-head"><h3>Goal progress</h3><button type="button" data-vn-page="goals">View goals</button></div><div id="vn-goal-list"></div></section>'+
+        '<section class="vn-surface vn-utility"><div class="vn-utility-head"><h3>Marketplace pick</h3><button type="button" data-vn-page="marketplace">Explore</button></div><div class="vn-market"><div class="vn-market-icon">'+icon("sparkles","M")+'</div><div><strong>Built for your context</strong><span id="vn-market-copy">See widgets and automations selected for this workspace.</span></div></div></section>'+
+      '</div>'+
+    '</section>';
+  }
+  function ensure(){
+    var page=qs("#page-dashboard");
+    if(!page)return null;
+    var current=qs("#ethone-2026-home",page);
+    if(current&&!current.classList.contains("vn-home"))current.remove();
+    var dock=qs("#ethone-2026-dock");if(dock)dock.remove();
+    var home=qs("#ethone-2026-home",page);
+    if(!home){
+      page.insertAdjacentHTML("afterbegin",markup());
+      home=qs("#ethone-2026-home",page);
+    }
+    if(home&&!home.dataset.vnBound){
+      home.dataset.vnBound="1";
+      home.addEventListener("click",function(e){
+        var button=e.target.closest("[data-vn-page]");
+        if(button&&typeof window.switchPage==="function")window.switchPage(button.dataset.vnPage,null);
+      });
+    }
+    try{if(window.lucide&&!window.__lucideFailed)window.lucide.createIcons()}catch(e){}
+    return home;
+  }
+  function taskRows(todos){
+    var visible=todos.slice(0,3);
+    if(!visible.length)return '<div class="vn-empty">No priorities yet. Add a task or ask Brain to prepare your next move.</div>';
+    return visible.map(function(t){
+      var done=!!t.done;
+      var label=t.text||t.title||"Untitled task";
+      var sub=t.priority||t.tag||(done?"Completed":"Today");
+      return '<div class="vn-row"><i class="vn-row-mark '+(done?'done':'')+'">'+(done?'&#10003;':'')+'</i><div class="vn-row-text"><strong>'+esc(label)+'</strong><span>'+esc(sub)+'</span></div><span class="vn-row-meta">'+(done?'Done':'Open')+'</span></div>';
+    }).join("");
+  }
+  function eventRows(events){
+    var visible=events.slice(0,4);
+    if(!visible.length)return '<div class="vn-empty">No upcoming events. Your schedule is clear.</div>';
+    return visible.map(function(ev){
+      return '<div class="vn-time-row"><time>'+esc(ev.time||ev.date||"Today")+'</time><strong>'+esc(ev.title||ev.name||"Event")+'</strong><span>'+esc(ev.duration||ev.tag||"Plan")+'</span></div>';
+    }).join("");
+  }
+  function changes(s,todos,notes,events){
+    var out=[];
+    todos.filter(function(t){return t.done}).slice(0,2).forEach(function(t){out.push(["Now","Completed "+(t.text||t.title||"task"),"Tasks"])});
+    notes.slice(0,2).forEach(function(n){out.push(["Today","Note updated: "+(n.title||n.name||"Quick note"),"Notes"])});
+    events.slice(0,2).forEach(function(ev){out.push([ev.time||"Today",ev.title||ev.name||"Calendar updated","Calendar"])});
+    if(!out.length)out.push(["Now","Your workspace is ready","ETHONE"]);
+    return out.slice(0,5).map(function(row){return '<div class="vn-change"><time>'+esc(row[0])+'</time><div><strong>'+esc(row[1])+'</strong><span>'+esc(row[2])+'</span></div><i></i></div>'}).join("");
+  }
+  function insights(open,events,notes,habits){
+    var out=[];
+    if(open.length)out.push(["Priority detected",open.length+" open task"+(open.length===1?"":"s")+"; start with "+String(open[0].text||open[0].title||"the first priority")+"."]);
+    if(events.length>1)out.push(["Schedule awareness",events.length+" events are visible in your current planning context."]);
+    if(notes.length)out.push(["Recent understanding",notes.length+" note"+(notes.length===1?"":"s")+" can support Brain context."]);
+    if(habits.length)out.push(["Routine signal",habits.length+" habit signal"+(habits.length===1?"":"s")+" available for Insights."]);
+    if(!out.length)out.push(["Calm state","Nothing urgent is competing for your attention."]);
+    return out.slice(0,3).map(function(row){return '<div class="vn-insight"><i>B</i><div><strong>'+esc(row[0])+'</strong><span>'+esc(row[1])+'</span></div></div>'}).join("");
+  }
+  function files(notes,items){
+    var combined=notes.map(function(n){return{name:n.title||n.name||"Note",type:"Note"}}).concat(items.map(function(i){return{name:i.title||i.name||i.text||"Item",type:i.type||"Item"}})).slice(0,5);
+    if(!combined.length)return '<div class="vn-empty">Recent files and notes will appear here.</div>';
+    return combined.map(function(f){return '<div class="vn-file"><i>F</i><strong>'+esc(f.name)+'</strong><span>'+esc(f.type)+'</span></div>'}).join("");
+  }
+  function workspacePills(s){
+    var spaces=list(s.workspaces).map(function(w){return w.name||w.title||w}).filter(Boolean).slice(0,3);
+    if(!spaces.length)spaces=[activeWorkspace(),"Work"];
+    return spaces.map(function(w){return '<span class="vn-workspace-pill">'+esc(w)+'</span>'}).join("");
+  }
+  function automations(s){
+    var autos=list(s.automations).slice(0,3);
+    if(!autos.length)return '<div class="vn-mini-row"><i></i><strong>No automations running</strong><span>Ready</span></div><div class="vn-mini-row"><i></i><strong>Brain can suggest one</strong><span>Optional</span></div>';
+    return autos.map(function(a){return '<div class="vn-mini-row"><i></i><strong>'+esc(a.name||a.title||"Automation")+'</strong><span>'+esc(a.status||"Ready")+'</span></div>'}).join("");
+  }
+  function goals(s,todos){
+    var goals=list(s.goals).slice(0,2);
+    if(!goals.length){
+      var total=todos.length,done=todos.filter(function(t){return t.done}).length,pct=total?Math.round(done/total*100):0;
+      goals=[{title:"Task completion",progress:pct}];
+    }
+    return goals.map(function(g){var pct=Math.max(0,Math.min(100,Number(g.progress||g.percent||0)));return '<div class="vn-goal"><strong><span>'+esc(g.title||g.name||"Goal")+'</span><span>'+pct+'%</span></strong><div class="vn-progress"><i style="width:'+pct+'%"></i></div></div>'}).join("");
+  }
+  function render(){
+    var home=ensure();if(!home)return;
+    var s=state(),p=profile();
+    var todos=list(s.todos),notes=list(s.notes),items=list(s.items),events=list(s.events),habits=list(s.habits);
+    var open=todos.filter(function(t){return !t.done}),done=todos.length-open.length;
+    var name=(p&&p.name)||s.username||"there";
+    var first=open[0];
+    qs("#vn-greeting").textContent=phase()+", "+name+".";
+    qs("#vn-date").textContent=new Date().toLocaleDateString(window._lang||"en",{weekday:"long",month:"long",day:"numeric"});
+    qs("#vn-context").textContent=activeWorkspace();
+    qs("#vn-active-workspace").textContent=activeWorkspace();
+    qs("#vn-next-action").textContent=first?(first.text||first.title||"Continue your priority"):(events[0]?(events[0].title||events[0].name||"Review your next event"):"Capture your next priority");
+    qs("#vn-next-reason").textContent=first?"Completing this reduces the clearest open loop in your current context.":"Brain sees a calm workspace and can help shape the next move.";
+    qs("#vn-task-count").textContent=open.length+" open";
+    qs("#vn-focus-list").innerHTML=taskRows(todos);
+    qs("#vn-upcoming-list").innerHTML=eventRows(events);
+    qs("#vn-focus-progress").style.width=(todos.length?Math.round(done/todos.length*100):0)+"%";
+    qs("#vn-change-list").innerHTML=changes(s,todos,notes,events);
+    qs("#vn-insight-list").innerHTML=insights(open,events,notes,habits);
+    qs("#vn-insight-time").textContent="Updated "+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+    qs("#vn-file-list").innerHTML=files(notes,items);
+    qs("#vn-workspace-list").innerHTML=workspacePills(s);
+    qs("#vn-memory-grid").innerHTML='<div><strong>'+notes.length+'</strong><span>Notes</span></div><div><strong>'+events.length+'</strong><span>Events</span></div><div><strong>'+done+'</strong><span>Done</span></div>';
+    qs("#vn-note-line").textContent=notes[0]?(notes[0].title||notes[0].name||"Open recent note"):"Capture a thought...";
+    qs("#vn-automation-list").innerHTML=automations(s);
+    qs("#vn-goal-list").innerHTML=goals(s,todos);
+    qs("#vn-market-copy").textContent="Recommendations tuned to "+activeWorkspace()+" and your current activity.";
+    qs("#vn-sync").textContent=navigator.onLine===false?"Offline":"Synced just now";
+    try{if(window.lucide&&!window.__lucideFailed)window.lucide.createIcons()}catch(e){}
+  }
+  function schedule(){clearTimeout(renderTimer);renderTimer=setTimeout(render,80)}
+  function boot(){
+    document.body.classList.add("ethone-2026-ui");
+    schedule();
+    if(!document.body.dataset.vnDashboardBound){
+      document.body.dataset.vnDashboardBound="1";
+      document.addEventListener("click",function(){setTimeout(render,180)},true);
+      window.addEventListener("online",render);
+      window.addEventListener("offline",render);
+    }
+    setTimeout(render,900);
+    setTimeout(render,2400);
+  }
+  window.ethoneDashboardVNextRender=render;
+  if(window.ethoneRunWhenDashboardReady)window.ethoneRunWhenDashboardReady("dashboard-vnext",boot);else if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+})();
+</script>
+<style id="ethone-brain-home-css">
+.bh-hero{
+  align-items:center;
+  min-height:108px;
+  padding:8px 6px 18px;
+}
+.bh-hero .vh-hero-copy{font-size:12.5px}
+.bh-hero .vh-hero-copy svg{width:15px;height:15px;color:#b9a4ff}
+.bh-context-strip{
+  display:flex;
+  align-items:center;
+  gap:0;
+  min-height:42px;
+  margin:0 6px 10px;
+  border-top:1px solid rgba(255,255,255,.065);
+  border-bottom:1px solid rgba(255,255,255,.065);
+}
+.bh-context-item{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 22px;
+  border-right:1px solid rgba(255,255,255,.065);
+  color:#81818b;
+  font-size:9.5px;
+}
+.bh-context-item:first-child{padding-left:4px}
+.bh-context-item:last-child{border-right:0}
+.bh-context-item svg{width:14px;height:14px;color:#a9a9b2;stroke-width:1.7}
+.bh-context-item span{color:#777780}
+.bh-context-item strong{overflow:hidden;color:#d8d8dd;font-weight:620;text-overflow:ellipsis;white-space:nowrap}
+.bh-core{
+  min-height:344px;
+  margin-bottom:10px;
+}
+.bh-core-label{
+  padding:14px 18px 0;
+  color:#9f7aea;
+  font:750 8.5px/1 var(--mono);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.bh-core-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.12fr) minmax(360px,.88fr);
+  min-height:312px;
+}
+.bh-brief,
+.bh-suggested{
+  min-width:0;
+  padding:16px 18px 18px;
+}
+.bh-suggested{border-left:1px solid var(--vh-line)}
+.bh-core-heading{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  min-height:43px;
+  padding-bottom:12px;
+  border-bottom:1px solid var(--vh-line);
+}
+.bh-core-heading>i{
+  width:25px;height:25px;display:grid;place-items:center;color:#c4b5fd;
+}
+.bh-core-heading svg{width:18px;height:18px;stroke-width:1.8}
+.bh-core-heading h2{margin:0;color:#fff;font-size:13px;font-weight:730}
+.bh-core-heading p{margin:4px 0 0;color:#7f7f89;font-size:9px}
+.bh-summary-copy{
+  margin:12px 0 0;
+  color:#cfcfd5;
+  font-size:10px;
+  line-height:1.5;
+}
+.bh-brief-lower{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+  margin-top:14px;
+  padding-top:13px;
+  border-top:1px solid var(--vh-line);
+}
+.bh-brief-lower>div+div{padding-left:18px;border-left:1px solid var(--vh-line)}
+.bh-priority,
+.bh-upcoming{
+  display:grid;
+  grid-template-columns:18px minmax(0,1fr) auto;
+  align-items:center;
+  gap:8px;
+  min-height:34px;
+}
+.bh-priority>span:first-child{color:#85858f;font:650 8.5px/1 var(--mono)}
+.bh-priority strong,.bh-upcoming strong{
+  display:block;overflow:hidden;color:#dedee3;font-size:9.5px;font-weight:620;text-overflow:ellipsis;white-space:nowrap;
+}
+.bh-priority small,.bh-upcoming small{color:#777780;font-size:8px}
+.bh-upcoming{grid-template-columns:44px minmax(0,1fr)}
+.bh-upcoming time{color:#8d8d97;font:600 8.5px/1 var(--mono)}
+.bh-action-body{padding:13px 0 0}
+.bh-action-task{display:flex;align-items:flex-start;gap:10px;margin:9px 0 8px}
+.bh-action-task .vh-check{margin-top:2px}
+.bh-action-task strong{display:block;color:#fff;font-size:15px}
+.bh-action-task span{display:block;margin-top:5px;color:#777780;font-size:8.5px}
+.bh-action-copy{max-width:480px;margin:10px 0 12px;color:#a0a0a9;font-size:10px;line-height:1.48}
+.bh-why{
+  margin-top:14px;
+  padding-top:13px;
+  border-top:1px solid var(--vh-line);
+}
+.bh-why-row{display:flex;align-items:center;gap:8px;min-height:25px;color:#9b9ba5;font-size:9px}
+.bh-why-row i{width:13px;height:13px;display:grid;place-items:center;border-radius:50%;background:#7c3aed;color:#fff;font-style:normal;font-size:8px}
+.bh-module-grid{
+  display:grid;
+  grid-template-columns:1.05fr 1.35fr 1.05fr 1fr 1fr 1.1fr;
+  gap:8px;
+}
+.bh-module{min-height:276px}
+.bh-module .vh-panel-head{min-height:43px;padding:0 12px}
+.bh-module .vh-title{gap:6px}
+.bh-module .vh-title .vh-dot{display:none}
+.bh-module .vh-title h2{font-size:10.5px}
+.bh-module .vh-link{font-size:7.5px;white-space:nowrap}
+.bh-module-body{padding:8px 12px 12px}
+.bh-stat{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.055)}
+.bh-stat:last-child{border-bottom:0}
+.bh-stat-line{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#d8d8dd;font-size:8.8px}
+.bh-stat-line strong{font-size:9px}
+.bh-stat .vh-progress{height:3px;margin-top:6px}
+.bh-compact-row{
+  display:grid;
+  grid-template-columns:20px minmax(0,1fr) auto;
+  align-items:center;
+  gap:7px;
+  min-height:36px;
+  border-bottom:1px solid rgba(255,255,255,.055);
+}
+.bh-compact-row:last-child{border-bottom:0}
+.bh-compact-row>i{
+  width:20px;height:20px;display:grid;place-items:center;border:1px solid rgba(139,92,246,.2);
+  border-radius:6px;color:#b9a4ff;font-style:normal;
+}
+.bh-compact-row svg{width:11px;height:11px;stroke-width:1.8}
+.bh-compact-row strong{display:block;overflow:hidden;color:#dddde2;font-size:8.8px;text-overflow:ellipsis;white-space:nowrap}
+.bh-compact-row small{display:block;margin-top:2px;overflow:hidden;color:#71717a;font-size:7.6px;text-overflow:ellipsis;white-space:nowrap}
+.bh-compact-row>span{color:#777780;font-size:7.5px;white-space:nowrap}
+.bh-status{display:flex;align-items:center;gap:5px;color:#888892!important}
+.bh-status::before{content:"";width:5px;height:5px;border-radius:50%;background:#8b5cf6}
+.bh-empty{padding:14px 0;color:#7f7f89;font-size:8.5px;line-height:1.45}
+.bh-memory-section{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.055)}
+.bh-memory-section:last-child{border-bottom:0}
+.bh-memory-section .vh-label{margin-bottom:6px}
+.bh-memory-section strong{display:block;overflow:hidden;color:#dddde2;font-size:8.8px;text-overflow:ellipsis;white-space:nowrap}
+.bh-memory-section span{display:block;margin-top:3px;color:#71717a;font-size:7.7px}
+.bh-quick{margin-top:10px}
+@media(max-width:1300px){
+  .bh-module-grid{grid-template-columns:repeat(3,1fr)}
+  .bh-module{min-height:230px}
+}
+@media(max-width:980px){
+  .bh-core-grid{grid-template-columns:1fr}
+  .bh-suggested{border-left:0;border-top:1px solid var(--vh-line)}
+  .bh-core{min-height:0}
+  .bh-module-grid{grid-template-columns:1fr 1fr}
+  .bh-context-strip{overflow-x:auto;scrollbar-width:none}
+  .bh-context-item{min-width:max-content}
+}
+@media(max-width:760px){
+  .bh-hero{min-height:0;padding-bottom:14px}
+  .bh-context-strip{margin:0 4px 10px}
+  .bh-context-item{padding:0 14px}
+  .bh-core-grid{display:block}
+  .bh-brief,.bh-suggested{padding:14px}
+  .bh-brief-lower{grid-template-columns:1fr;gap:12px}
+  .bh-brief-lower>div+div{padding:12px 0 0;border-left:0;border-top:1px solid var(--vh-line)}
+  .bh-module-grid{
+    display:flex;
+    gap:9px;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    scrollbar-width:none;
+  }
+  .bh-module{width:82vw;min-width:82vw;min-height:250px;scroll-snap-align:start}
+}
+@media(prefers-reduced-motion:reduce){
+  .bh-module{transition:none!important}
+}
+</style>
+<script id="ethone-home-commercial-runtime">
+(function(){
+  "use strict";
+  if(window.__ethoneHomeCommercial)return;
+  window.__ethoneHomeCommercial=true;
+  var renderTimer=0;
+  var words={
+    en:{
+      search:"Search anything...",synced:"Synced just now",offline:"Offline",continueFocus:"Continue focus",askBrain:"Ask Brain",
+      analyzed:"Brain analyzed your workspace.",ready:"recommendations are ready.",brain:"Brain",focus:"Focus",timeline:"Timeline",
+      workspace:"Workspace",activity:"Activity",quickActions:"Quick Actions",seeAll:"See all",viewPlanner:"View planner",
+      viewCalendar:"View calendar",currentRecommendation:"Current recommendation",todaySummary:"Today summary",
+      startSession:"Start session",why:"Why this",mostImportant:"Most important task",objective:"Objective",nextSession:"Next session",
+      upcoming:"Upcoming events",deadlines:"Deadlines",recent:"Recent",brainInsights:"Brain insights",memorySummary:"Memory summary",
+      createNote:"Create note",newTask:"New task",openMarketplace:"Open marketplace",notes:"Notes",files:"Files",projects:"Projects",
+      tasks:"Tasks",events:"Events",completed:"Completed",open:"Open",noTasks:"No open task. Brain can help define the next move.",
+      noEvents:"No upcoming event. Your calendar is clear.",noRecent:"Recent workspace activity will appear here.",
+      noDeadline:"No open deadline.",personalOS:"Personal OS",today:"Today",recently:"Recently",now:"Now",plan:"Plan",
+      calmTitle:"Calm workspace",calmCopy:"Nothing urgent is competing for your attention.",contextTitle:"Context is ready",
+      contextCopy:"Brain can use your recent notes and events.",scheduleTitle:"Schedule awareness",capture:"Capture what matters",
+      addTaskCopy:"Add a task to your focus list",noteCopy:"Capture an idea or decision",marketCopy:"Explore tools and templates",
+      brainCopy:"Get answers and recommendations"
+    },
+    fr:{
+      search:"Rechercher dans ETHONE...",synced:"Synchronisé à l'instant",offline:"Hors ligne",continueFocus:"Continuer le focus",askBrain:"Demander à Brain",
+      analyzed:"Brain a analysé votre espace.",ready:"recommandations sont prêtes.",brain:"Brain",focus:"Focus",timeline:"Chronologie",
+      workspace:"Espace de travail",activity:"Activité",quickActions:"Actions rapides",seeAll:"Tout voir",viewPlanner:"Voir le planning",
+      viewCalendar:"Voir le calendrier",currentRecommendation:"Recommandation actuelle",todaySummary:"Résumé du jour",
+      startSession:"Démarrer la session",why:"Pourquoi",mostImportant:"Tâche la plus importante",objective:"Objectif",nextSession:"Prochaine session",
+      upcoming:"Événements à venir",deadlines:"Échéances",recent:"Récents",brainInsights:"Analyses Brain",memorySummary:"Résumé mémoire",
+      createNote:"Créer une note",newTask:"Nouvelle tâche",openMarketplace:"Ouvrir Marketplace",notes:"Notes",files:"Fichiers",projects:"Projets",
+      tasks:"Tâches",events:"Événements",completed:"Terminées",open:"Ouvertes",noTasks:"Aucune tâche ouverte. Brain peut définir la prochaine étape.",
+      noEvents:"Aucun événement à venir. Votre calendrier est libre.",noRecent:"L'activité récente apparaîtra ici.",
+      noDeadline:"Aucune échéance ouverte.",personalOS:"OS personnel",today:"Aujourd'hui",recently:"Récemment",now:"Maintenant",plan:"Planifier",
+      calmTitle:"Espace calme",calmCopy:"Rien d'urgent ne réclame votre attention.",contextTitle:"Contexte prêt",
+      contextCopy:"Brain peut utiliser vos notes et événements récents.",scheduleTitle:"Lecture du planning",capture:"Capturer l'essentiel",
+      addTaskCopy:"Ajouter une tâche à votre focus",noteCopy:"Capturer une idée ou décision",marketCopy:"Explorer outils et modèles",
+      brainCopy:"Obtenir réponses et recommandations"
+    },
+    es:{
+      search:"Buscar en ETHONE...",synced:"Sincronizado ahora",offline:"Sin conexión",continueFocus:"Continuar enfoque",askBrain:"Preguntar a Brain",
+      analyzed:"Brain analizó tu espacio.",ready:"recomendaciones están listas.",brain:"Brain",focus:"Enfoque",timeline:"Cronología",
+      workspace:"Espacio de trabajo",activity:"Actividad",quickActions:"Acciones rápidas",seeAll:"Ver todo",viewPlanner:"Ver planificación",
+      viewCalendar:"Ver calendario",currentRecommendation:"Recomendación actual",todaySummary:"Resumen de hoy",
+      startSession:"Iniciar sesión",why:"Por qué",mostImportant:"Tarea más importante",objective:"Objetivo",nextSession:"Próxima sesión",
+      upcoming:"Próximos eventos",deadlines:"Fechas límite",recent:"Reciente",brainInsights:"Análisis de Brain",memorySummary:"Resumen de memoria",
+      createNote:"Crear nota",newTask:"Nueva tarea",openMarketplace:"Abrir Marketplace",notes:"Notas",files:"Archivos",projects:"Proyectos",
+      tasks:"Tareas",events:"Eventos",completed:"Completadas",open:"Abiertas",noTasks:"No hay tareas abiertas. Brain puede definir el siguiente paso.",
+      noEvents:"No hay próximos eventos. Tu calendario está libre.",noRecent:"La actividad reciente aparecerá aquí.",
+      noDeadline:"No hay fechas límite.",personalOS:"OS personal",today:"Hoy",recently:"Recientemente",now:"Ahora",plan:"Plan",
+      calmTitle:"Espacio tranquilo",calmCopy:"Nada urgente compite por tu atención.",contextTitle:"Contexto listo",
+      contextCopy:"Brain puede usar tus notas y eventos recientes.",scheduleTitle:"Conciencia del calendario",capture:"Captura lo importante",
+      addTaskCopy:"Añade una tarea a tu enfoque",noteCopy:"Captura una idea o decisión",marketCopy:"Explora herramientas y plantillas",
+      brainCopy:"Obtén respuestas y recomendaciones"
+    },
+    de:{
+      search:"ETHONE durchsuchen...",synced:"Gerade synchronisiert",offline:"Offline",continueFocus:"Fokus fortsetzen",askBrain:"Brain fragen",
+      analyzed:"Brain hat deinen Bereich analysiert.",ready:"Empfehlungen sind bereit.",brain:"Brain",focus:"Fokus",timeline:"Zeitleiste",
+      workspace:"Arbeitsbereich",activity:"Aktivität",quickActions:"Schnellaktionen",seeAll:"Alle anzeigen",viewPlanner:"Planer öffnen",
+      viewCalendar:"Kalender öffnen",currentRecommendation:"Aktuelle Empfehlung",todaySummary:"Heutige Übersicht",
+      startSession:"Sitzung starten",why:"Warum",mostImportant:"Wichtigste Aufgabe",objective:"Ziel",nextSession:"Nächste Sitzung",
+      upcoming:"Bevorstehende Termine",deadlines:"Fristen",recent:"Zuletzt",brainInsights:"Brain-Einblicke",memorySummary:"Gedächtnisübersicht",
+      createNote:"Notiz erstellen",newTask:"Neue Aufgabe",openMarketplace:"Marketplace öffnen",notes:"Notizen",files:"Dateien",projects:"Projekte",
+      tasks:"Aufgaben",events:"Termine",completed:"Erledigt",open:"Offen",noTasks:"Keine offene Aufgabe. Brain kann den nächsten Schritt definieren.",
+      noEvents:"Keine bevorstehenden Termine. Dein Kalender ist frei.",noRecent:"Letzte Aktivitäten erscheinen hier.",
+      noDeadline:"Keine offene Frist.",personalOS:"Persönliches OS",today:"Heute",recently:"Kürzlich",now:"Jetzt",plan:"Plan",
+      calmTitle:"Ruhiger Bereich",calmCopy:"Nichts Dringendes beansprucht deine Aufmerksamkeit.",contextTitle:"Kontext ist bereit",
+      contextCopy:"Brain kann aktuelle Notizen und Termine nutzen.",scheduleTitle:"Zeitplan erkannt",capture:"Wichtiges festhalten",
+      addTaskCopy:"Aufgabe zur Fokusliste hinzufügen",noteCopy:"Idee oder Entscheidung festhalten",marketCopy:"Tools und Vorlagen entdecken",
+      brainCopy:"Antworten und Empfehlungen erhalten"
+    }
+  };
+  var brainWords={
+    en:{brainHome:"Brain Home",todaysBrief:"Today's Brief",briefSub:"Your day, understood and organized.",morningSummary:"Morning summary",currentPriorities:"Current priorities",suggestedAction:"Suggested Action",suggestedSub:"Brain's next best action for you.",nextBestAction:"Next best action",whyItMatters:"Why it matters",openTask:"Open task",insights:"Insights",context:"Context",automation:"Automation",vision:"Vision",providers:"Providers",memory:"Memory",focusTime:"Focus time",productivity:"Productivity",habits:"Habits",recentFiles:"Recent files",conversations:"Conversations",running:"Running",recommended:"Recommended",images:"Images",documents:"Documents",available:"Available",active:"Active",configured:"Configured",pinned:"Pinned",recentMemories:"Recent memories",noAutomation:"No automation is currently running.",noVision:"No recent visual analysis.",noMemory:"No authorized memory yet.",briefCalm:"Your workspace is calm and ready.",continueProject:"Continue where you left off.",updated:"items updated",schedule:"Schedule"},
+    fr:{brainHome:"Accueil Brain",todaysBrief:"Brief du jour",briefSub:"Votre journée, comprise et organisée.",morningSummary:"Résumé du matin",currentPriorities:"Priorités actuelles",suggestedAction:"Action suggérée",suggestedSub:"La meilleure prochaine action selon Brain.",nextBestAction:"Prochaine action",whyItMatters:"Pourquoi c'est important",openTask:"Ouvrir",insights:"Analyses",context:"Contexte",automation:"Automatisation",vision:"Vision",providers:"Fournisseurs",memory:"Mémoire",focusTime:"Temps de focus",productivity:"Productivité",habits:"Habitudes",recentFiles:"Fichiers récents",conversations:"Conversations",running:"En cours",recommended:"Recommandée",images:"Images",documents:"Documents",available:"Disponible",active:"Actif",configured:"Configuré",pinned:"Épinglé",recentMemories:"Mémoires récentes",noAutomation:"Aucune automatisation en cours.",noVision:"Aucune analyse visuelle récente.",noMemory:"Aucune mémoire autorisée.",briefCalm:"Votre espace est calme et prêt.",continueProject:"Reprendre là où vous vous êtes arrêté.",updated:"éléments mis à jour",schedule:"Planning"},
+    es:{brainHome:"Inicio Brain",todaysBrief:"Resumen de hoy",briefSub:"Tu día, entendido y organizado.",morningSummary:"Resumen de la mañana",currentPriorities:"Prioridades actuales",suggestedAction:"Acción sugerida",suggestedSub:"La mejor siguiente acción según Brain.",nextBestAction:"Siguiente acción",whyItMatters:"Por qué importa",openTask:"Abrir",insights:"Análisis",context:"Contexto",automation:"Automatización",vision:"Visión",providers:"Proveedores",memory:"Memoria",focusTime:"Tiempo de enfoque",productivity:"Productividad",habits:"Hábitos",recentFiles:"Archivos recientes",conversations:"Conversaciones",running:"En curso",recommended:"Recomendada",images:"Imágenes",documents:"Documentos",available:"Disponible",active:"Activo",configured:"Configurado",pinned:"Fijado",recentMemories:"Memorias recientes",noAutomation:"No hay automatizaciones en curso.",noVision:"No hay análisis visual reciente.",noMemory:"No hay memoria autorizada.",briefCalm:"Tu espacio está tranquilo y listo.",continueProject:"Continúa donde lo dejaste.",updated:"elementos actualizados",schedule:"Agenda"},
+    de:{brainHome:"Brain Home",todaysBrief:"Tagesbriefing",briefSub:"Dein Tag, verstanden und organisiert.",morningSummary:"Morgenübersicht",currentPriorities:"Aktuelle Prioritäten",suggestedAction:"Empfohlene Aktion",suggestedSub:"Brains beste nächste Aktion für dich.",nextBestAction:"Nächste Aktion",whyItMatters:"Warum es wichtig ist",openTask:"Öffnen",insights:"Einblicke",context:"Kontext",automation:"Automatisierung",vision:"Vision",providers:"Anbieter",memory:"Gedächtnis",focusTime:"Fokuszeit",productivity:"Produktivität",habits:"Gewohnheiten",recentFiles:"Letzte Dateien",conversations:"Gespräche",running:"Aktiv",recommended:"Empfohlen",images:"Bilder",documents:"Dokumente",available:"Verfügbar",active:"Aktiv",configured:"Konfiguriert",pinned:"Angeheftet",recentMemories:"Letzte Erinnerungen",noAutomation:"Keine Automatisierung aktiv.",noVision:"Keine aktuelle visuelle Analyse.",noMemory:"Noch keine autorisierte Erinnerung.",briefCalm:"Dein Bereich ist ruhig und bereit.",continueProject:"Dort weitermachen, wo du aufgehört hast.",updated:"Elemente aktualisiert",schedule:"Zeitplan"}
+  };
+  Object.keys(brainWords).forEach(function(l){Object.assign(words[l],brainWords[l])});
+  function qs(s,r){return (r||document).querySelector(s)}
+  function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+  function lang(){var l=String(window._lang||document.documentElement.lang||"en").toLowerCase().slice(0,2);return words[l]?l:"en"}
+  function tr(k){return words[lang()][k]||words.en[k]||k}
+  function profile(){try{return typeof window.curP==="function"?window.curP():null}catch(e){return null}}
+  function state(){var p=profile();return p&&p.state?p.state:{}}
+  function list(v){return Array.isArray(v)?v:[]}
+  function workspaceName(){
+    try{return localStorage.getItem("ethone:active-workspace")||tr("personalOS")}catch(e){return tr("personalOS")}
+  }
+  function phase(){
+    var h=new Date().getHours(),l=lang();
+    if(l==="fr")return h<5?"Bonne nuit":h<12?"Bonjour":h<18?"Bon après-midi":"Bonsoir";
+    if(l==="es")return h<5?"Buenas noches":h<12?"Buenos días":h<18?"Buenas tardes":"Buenas noches";
+    if(l==="de")return h<5?"Gute Nacht":h<12?"Guten Morgen":h<18?"Guten Tag":"Guten Abend";
+    return h<5?"Good night":h<12?"Good morning":h<18?"Good afternoon":"Good evening";
+  }
+  function icon(name,fallback){return '<i data-lucide="'+name+'" aria-hidden="true">'+(fallback||"")+'</i>'}
+  function pageButton(label,page,iconName,primary){
+    return '<button class="vh-button'+(primary?' primary':'')+'" type="button" data-vn-page="'+page+'">'+icon(iconName)+'<span>'+label+'</span></button>';
+  }
+  function panelHead(title,iconName,action,page){
+    return '<div class="vh-panel-head"><div class="vh-title">'+icon(iconName)+'<h2>'+title+'</h2><span class="vh-dot" aria-hidden="true"></span></div><button class="vh-link" type="button" data-vn-page="'+page+'">'+action+'</button></div>';
+  }
+  function markup(){
+    return '<section class="vn-home vh-home" id="ethone-2026-home" data-lang="'+lang()+'">'+
+      '<header class="vh-topbar">'+
+        '<button class="vh-search" type="button" data-vh-action="search" aria-label="'+tr("search")+'">'+icon("search")+'<span>'+tr("search")+'</span><kbd>⌘ K</kbd></button>'+
+        '<div class="vh-top-context" aria-label="'+tr("workspace")+'">'+icon("layout-grid")+'<span id="vh-workspace-top">'+esc(workspaceName())+'</span></div>'+
+        '<div class="vh-top-actions"><div class="vh-sync"><i class="vh-dot"></i><span id="vh-sync">'+tr("synced")+'</span></div><button class="vh-icon-button" type="button" data-vh-action="notifications" aria-label="Notifications">'+icon("bell")+'</button><button class="vh-avatar" type="button" data-vh-action="profile" id="vh-avatar" aria-label="Profile">E</button></div>'+
+      '</header>'+
+      '<section class="vh-hero bh-hero"><div><h1 id="vh-greeting">ETHONE</h1><p class="vh-hero-copy">'+icon("brain")+'<span id="bh-hero-sentence">'+tr("analyzed")+'</span></p></div><div class="vh-hero-actions">'+pageButton(tr("continueFocus"),"todos","arrow-right",true)+pageButton(tr("askBrain"),"ai","brain",false)+'</div></section>'+
+      '<div class="bh-context-strip" aria-label="'+tr("context")+'"><div class="bh-context-item">'+icon("folder")+'<span>'+tr("workspace")+'</span><strong id="bh-context-workspace"></strong></div><div class="bh-context-item">'+icon("calendar-days")+'<span>'+tr("schedule")+'</span><strong id="bh-context-schedule"></strong></div><div class="bh-context-item">'+icon("target")+'<span>'+tr("focus")+'</span><strong id="bh-context-focus"></strong></div><div class="bh-context-item">'+icon("activity")+'<span>'+tr("activity")+'</span><strong id="bh-context-activity"></strong></div></div>'+
+      '<section class="vh-panel bh-core"><div class="bh-core-label">'+tr("brainHome")+'</div><div class="bh-core-grid">'+
+        '<div class="bh-brief"><div class="bh-core-heading"><i>'+icon("scan-line")+'</i><div><h2>'+tr("todaysBrief")+'</h2><p>'+tr("briefSub")+'</p></div></div><p class="bh-summary-copy" id="bh-summary-copy"></p><div class="bh-brief-lower"><div><span class="vh-label">'+tr("currentPriorities")+'</span><div id="bh-priorities" style="margin-top:7px"></div></div><div><span class="vh-label">'+tr("upcoming")+'</span><div id="bh-upcoming" style="margin-top:7px"></div></div></div></div>'+
+        '<div class="bh-suggested"><div class="bh-core-heading"><i>'+icon("sparkles")+'</i><div><h2>'+tr("suggestedAction")+'</h2><p>'+tr("suggestedSub")+'</p></div></div><div class="bh-action-body"><span class="vh-label">'+tr("nextBestAction")+'</span><div class="bh-action-task"><i class="vh-check"></i><div><strong id="bh-action-title"></strong><span id="bh-action-context"></span></div></div><p class="bh-action-copy" id="bh-action-copy"></p><button class="vh-small-button" type="button" data-vn-page="todos">'+tr("openTask")+' →</button><div class="bh-why"><span class="vh-label">'+tr("whyItMatters")+'</span><div id="bh-why-list" style="margin-top:7px"></div></div></div></div>'+
+      '</div></section>'+
+      '<div class="bh-module-grid">'+
+        '<section class="vh-panel bh-module">'+panelHead(tr("insights"),"chart-no-axes-combined",tr("seeAll"),"stats")+'<div class="bh-module-body" id="bh-insights"></div></section>'+
+        '<section class="vh-panel bh-module">'+panelHead(tr("context"),"layout-grid",tr("seeAll"),"files")+'<div class="bh-module-body" id="bh-context-list"></div></section>'+
+        '<section class="vh-panel bh-module">'+panelHead(tr("automation"),"bot",tr("seeAll"),"ai")+'<div class="bh-module-body" id="bh-automation"></div></section>'+
+        '<section class="vh-panel bh-module">'+panelHead(tr("vision"),"eye",tr("seeAll"),"ai")+'<div class="bh-module-body" id="bh-vision"></div></section>'+
+        '<section class="vh-panel bh-module">'+panelHead(tr("providers"),"server",tr("seeAll"),"connections")+'<div class="bh-module-body" id="bh-providers"></div></section>'+
+        '<section class="vh-panel bh-module">'+panelHead(tr("memory"),"brain",tr("seeAll"),"ai")+'<div class="bh-module-body" id="bh-memory"></div></section>'+
+      '</div>'+
+      '<section class="vh-panel vh-quick bh-quick"><div class="vh-quick-head">'+tr("quickActions")+'</div><div class="vh-quick-grid">'+
+        quickAction(tr("askBrain"),tr("brainCopy"),"ai","sparkles")+
+        quickAction(tr("createNote"),tr("noteCopy"),"notes","notebook-pen")+
+        quickAction(tr("newTask"),tr("addTaskCopy"),"todos","circle-check")+
+        quickAction(tr("openMarketplace"),tr("marketCopy"),"marketplace","store")+
+      '</div></section>'+
+    '</section>';
+  }
+  function quickAction(title,copy,page,iconName){
+    return '<button class="vh-quick-action" type="button" data-vn-page="'+page+'"><i>'+icon(iconName)+'</i><span><strong>'+title+'</strong><span>'+copy+'</span></span>'+icon("chevron-right","") .replace("<i ","<i class=\"vh-chevron\" ")+'</button>';
+  }
+  function ensureMarketplacePage(){
+    if(qs("#page-marketplace"))return;
+    var main=qs("#main-content");if(!main)return;
+    var page=document.createElement("div");
+    page.className="tab-content";
+    page.id="page-marketplace";
+    page.setAttribute("data-qa-page","true");
+    page.setAttribute("role","tabpanel");
+    page.innerHTML='<div class="ethone-os2-page-hero"><div><div class="ethone-os2-label">ETHONE OS</div><h2>ETHONE Marketplace</h2><p>The App Store for your Personal OS.</p></div><button class="btn btn-primary" type="button" onclick="switchPage(&quot;dashboard&quot;,null)">ETHONE Home</button></div><div id="ethone-os2-page-marketplace"></div>';
+    main.appendChild(page);
+  }
+  function ensure(){
+    var page=qs("#page-dashboard");if(!page)return null;
+    var current=qs("#ethone-2026-home",page);
+    if(current&&(!current.classList.contains("vh-home")||current.dataset.lang!==lang()))current.remove();
+    var dock=qs("#ethone-2026-dock");if(dock)dock.remove();
+    var home=qs("#ethone-2026-home",page);
+    if(!home){page.insertAdjacentHTML("afterbegin",markup());home=qs("#ethone-2026-home",page)}
+    if(home&&!home.dataset.vhBound){
+      home.dataset.vhBound="1";
+      home.addEventListener("click",function(e){
+        var action=e.target.closest("[data-vh-action]");
+        if(action){
+          var kind=action.dataset.vhAction;
+          if(kind==="search"&&typeof window.openCmdPalette==="function")window.openCmdPalette();
+          if(kind==="notifications"&&typeof window.toggleNotifPanel==="function")window.toggleNotifPanel();
+          if(kind==="profile"&&typeof window.goToProfileScreen==="function")window.goToProfileScreen();
+          return;
+        }
+        var button=e.target.closest("[data-vn-page]");
+        if(button&&typeof window.switchPage==="function"){
+          if(button.dataset.vnPage==="marketplace")ensureMarketplacePage();
+          window.switchPage(button.dataset.vnPage,null);
+        }
+      });
+    }
+    try{if(window.lucide&&!window.__lucideFailed)window.lucide.createIcons()}catch(e){}
+    return home;
+  }
+  function titleOf(v,fallback){return v&&(v.text||v.title||v.name)||fallback}
+  function eventRows(events){
+    if(!events.length)return '<div class="vh-empty">'+tr("noEvents")+'</div>';
+    return events.slice(0,4).map(function(ev){
+      return '<div class="vh-event"><time>'+esc(ev.time||ev.date||tr("today"))+'</time><strong>'+esc(titleOf(ev,tr("events")))+'</strong><span>'+esc(ev.duration||ev.tag||tr("plan"))+'</span></div>';
+    }).join("");
+  }
+  function deadlineRows(open){
+    if(!open.length)return '<div class="vh-empty">'+tr("noDeadline")+'</div>';
+    return open.slice(0,4).map(function(t){
+      return '<div class="vh-event"><time>'+esc(t.due||t.date||tr("today"))+'</time><strong>'+esc(titleOf(t,tr("tasks")))+'</strong><span>'+esc(t.priority||tr("open"))+'</span></div>';
+    }).join("");
+  }
+  function workspaceRows(notes,items){
+    var rows=notes.map(function(n){return{title:titleOf(n,tr("notes")),type:tr("notes"),icon:"notebook-pen"}})
+      .concat(items.map(function(i){return{title:titleOf(i,tr("files")),type:i.type||tr("files"),icon:i.type==="project"?"folder-kanban":"file"}})).slice(0,5);
+    if(!rows.length)return '<div class="vh-empty">'+tr("noRecent")+'</div>';
+    return rows.map(function(r){return '<div class="vh-list-row"><i class="vh-list-icon">'+icon(r.icon)+'</i><div><strong>'+esc(r.title)+'</strong><small>'+esc(workspaceName())+' · '+esc(r.type)+'</small></div><span>'+tr("recently")+'</span></div>'}).join("");
+  }
+  function activityRows(done,notes,events){
+    var rows=[];
+    done.slice(0,2).forEach(function(t){rows.push({title:titleOf(t,tr("completed")),meta:tr("tasks")+" · "+tr("completed"),icon:"circle-check"})});
+    notes.slice(0,2).forEach(function(n){rows.push({title:titleOf(n,tr("notes")),meta:tr("notes"),icon:"notebook-pen"})});
+    events.slice(0,1).forEach(function(e){rows.push({title:titleOf(e,tr("events")),meta:tr("timeline"),icon:"calendar-days"})});
+    if(!rows.length)return '<div class="vh-empty">'+tr("noRecent")+'</div>';
+    return rows.slice(0,5).map(function(r){return '<div class="vh-list-row"><i class="vh-list-icon">'+icon(r.icon)+'</i><div><strong>'+esc(r.title)+'</strong><small>'+esc(r.meta)+'</small></div><span>'+tr("recently")+'</span></div>'}).join("");
+  }
+  function insightRows(open,events,notes){
+    var rows=[];
+    if(open.length)rows.push({title:titleOf(open[0],tr("mostImportant")),copy:open.length+" "+tr("open").toLowerCase()+" · "+tr("focus"),icon:"target"});
+    if(events.length)rows.push({title:tr("scheduleTitle"),copy:events.length+" "+tr("events").toLowerCase()+" · "+titleOf(events[0],tr("nextSession")),icon:"calendar-clock"});
+    if(notes.length)rows.push({title:tr("contextTitle"),copy:tr("contextCopy"),icon:"brain"});
+    if(!rows.length)rows.push({title:tr("calmTitle"),copy:tr("calmCopy"),icon:"sparkles"});
+    return rows.slice(0,3).map(function(r){return '<div class="vh-insight"><i class="vh-insight-icon">'+icon(r.icon)+'</i><div><strong>'+esc(r.title)+'</strong><span>'+esc(r.copy)+'</span></div></div>'}).join("");
+  }
+  function compactRow(iconName,title,sub,status){
+    return '<div class="bh-compact-row"><i>'+icon(iconName)+'</i><div><strong>'+esc(title)+'</strong><small>'+esc(sub||"")+'</small></div>'+(status?'<span>'+esc(status)+'</span>':"")+'</div>';
+  }
+  function priorityRows(open,events){
+    var rows=open.slice(0,3);
+    if(!rows.length&&events.length)rows=events.slice(0,2);
+    if(!rows.length)return '<div class="bh-empty">'+tr("noTasks")+'</div>';
+    return rows.map(function(item,i){return '<div class="bh-priority"><span>'+(i+1)+'</span><strong>'+esc(titleOf(item,tr("tasks")))+'</strong><small>'+esc(item.priority||item.tag||tr("today"))+'</small></div>'}).join("");
+  }
+  function upcomingRows(events){
+    if(!events.length)return '<div class="bh-empty">'+tr("noEvents")+'</div>';
+    return events.slice(0,3).map(function(ev){return '<div class="bh-upcoming"><time>'+esc(ev.time||ev.date||tr("today"))+'</time><div><strong>'+esc(titleOf(ev,tr("events")))+'</strong><small>'+esc(ev.duration||ev.tag||tr("schedule"))+'</small></div></div>'}).join("");
+  }
+  function briefSentence(done,open,notes,events){
+    if(!done.length&&!open.length&&!notes.length&&!events.length)return tr("briefCalm");
+    var l=lang();
+    if(l==="fr")return done.length+" tâche(s) terminée(s), "+notes.length+" note(s) disponible(s) et "+events.length+" événement(s) dans votre planning.";
+    if(l==="es")return done.length+" tarea(s) completada(s), "+notes.length+" nota(s) disponible(s) y "+events.length+" evento(s) en tu agenda.";
+    if(l==="de")return done.length+" Aufgabe(n) erledigt, "+notes.length+" Notiz(en) verfügbar und "+events.length+" Termin(e) im Zeitplan.";
+    return done.length+" task(s) completed, "+notes.length+" note(s) available and "+events.length+" event(s) on your schedule.";
+  }
+  function heroSentence(recommendation){
+    var title=recommendation?titleOf(recommendation,tr("continueProject")):"";
+    if(!title)return tr("analyzed")+" "+tr("briefCalm");
+    var l=lang();
+    if(l==="fr")return "Brain a analysé votre espace. Continuez "+title+".";
+    if(l==="es")return "Brain analizó tu espacio. Continúa "+title+".";
+    if(l==="de")return "Brain hat deinen Bereich analysiert. Weiter mit "+title+".";
+    return "Brain analyzed your workspace. Continue "+title+".";
+  }
+  function aiConfig(){
+    try{return window.ETHONEAICore&&typeof window.ETHONEAICore.config==="function"?window.ETHONEAICore.config():{}}catch(e){return{}}
+  }
+  function insightsModule(s,todos,habits){
+    var done=todos.filter(function(t){return !!t.done}).length,total=todos.length;
+    var focus=Number(s.focusMinutes||s.stats&&s.stats.focusMinutes||s.pomodoro&&s.pomodoro.totalMinutes||0);
+    var productivity=total?Math.round(done/total*100):0;
+    var habitDone=habits.filter(function(h){return h.done||h.completed}).length;
+    var habitPct=habits.length?Math.round(habitDone/habits.length*100):0;
+    return [
+      [tr("focusTime"),Math.floor(focus/60)+"h "+(focus%60)+"m",Math.min(100,Math.round(focus/360*100))],
+      [tr("productivity"),done+" / "+total,productivity],
+      [tr("habits"),habitDone+" / "+habits.length,habitPct]
+    ].map(function(row){return '<div class="bh-stat"><div class="bh-stat-line"><span>'+row[0]+'</span><strong>'+row[1]+'</strong></div><div class="vh-progress"><i style="width:'+row[2]+'%"></i></div></div>'}).join("");
+  }
+  function contextModule(notes,items){
+    var cfg=aiConfig(),conversations=list(cfg.conversations);
+    var rows=items.slice(0,2).map(function(i){return compactRow("file",titleOf(i,tr("files")),i.type||tr("files"),tr("recently"))});
+    rows=rows.concat(notes.slice(0,2).map(function(n){return compactRow("notebook-pen",titleOf(n,tr("notes")),tr("notes"),tr("recently"))}));
+    if(conversations[0])rows.push(compactRow("messages-square",titleOf(conversations[0],"Brain"),tr("conversations"),tr("recently")));
+    return rows.slice(0,5).join("")||'<div class="bh-empty">'+tr("noRecent")+'</div>';
+  }
+  function automationModule(s){
+    var autos=list(s.automations);
+    if(!autos.length)return '<div class="bh-empty">'+tr("noAutomation")+'</div>'+compactRow("sparkles",tr("recommended"),tr("askBrain"),tr("available"));
+    return autos.slice(0,5).map(function(a){return compactRow("bot",titleOf(a,tr("automation")),a.description||tr("automation"),a.status||tr("running"))}).join("");
+  }
+  function visionModule(items){
+    var visual=items.filter(function(i){var t=String(i.type||"").toLowerCase(),n=String(titleOf(i,"")).toLowerCase();return /image|photo|pdf|document/.test(t)||/\.(png|jpe?g|webp|pdf)$/i.test(n)});
+    if(!visual.length)return '<div class="bh-empty">'+tr("noVision")+'</div>';
+    return visual.slice(0,5).map(function(i){var type=String(i.type||"").toLowerCase();return compactRow(type.indexOf("image")>-1?"image":"file-text",titleOf(i,tr("documents")),i.type||tr("documents"),tr("recently"))}).join("");
+  }
+  function providerModule(){
+    var cfg=aiConfig(),providers=cfg.providers||{},active=cfg.activeProvider||cfg.preferredProvider||cfg.defaultProvider||"";
+    var defs=[["openai","OpenAI"],["anthropic","Claude"],["groq","Groq"],["lmstudio","LM Studio"],["ollama","Ollama"]];
+    return defs.map(function(row){
+      var p=providers[row[0]]||{},configured=!!(p.apiKey||p.endpoint||p.baseUrl),status=active===row[0]?tr("active"):(configured?tr("configured"):tr("available"));
+      return compactRow("server",row[1],p.model||p.defaultModel||tr("providers"),status).replace('<span>','<span class="bh-status">');
+    }).join("");
+  }
+  function memoryModule(notes){
+    var cfg=aiConfig(),memory=list(cfg.memory),pinned=notes.filter(function(n){return n.pinned||n.favorite});
+    var html="";
+    if(pinned[0])html+='<div class="bh-memory-section"><span class="vh-label">'+tr("pinned")+'</span><strong>'+esc(titleOf(pinned[0],tr("notes")))+'</strong><span>'+tr("notes")+'</span></div>';
+    if(memory[0])html+='<div class="bh-memory-section"><span class="vh-label">'+tr("recentMemories")+'</span><strong>'+esc(titleOf(memory[0],memory[0].value||tr("memory")))+'</strong><span>'+tr("recently")+'</span></div>';
+    if(!html&&notes[0])html+='<div class="bh-memory-section"><span class="vh-label">'+tr("recentMemories")+'</span><strong>'+esc(titleOf(notes[0],tr("notes")))+'</strong><span>'+tr("notes")+'</span></div>';
+    return html||'<div class="bh-empty">'+tr("noMemory")+'</div>';
+  }
+  function render(){
+    var home=ensure();if(!home)return;
+    var s=state(),p=profile();
+    var todos=list(s.todos),notes=list(s.notes),items=list(s.items),events=list(s.events),habits=list(s.habits);
+    var open=todos.filter(function(t){return !t.done}),done=todos.filter(function(t){return !!t.done});
+    var name=(p&&p.name)||s.username||"there";
+    var recommendation=open[0]||events[0]||notes[0];
+    var recTitle=recommendation?titleOf(recommendation,tr("capture")):tr("capture");
+    var recCopy=open[0]?tr("addTaskCopy"):(events[0]?tr("scheduleTitle"):(notes[0]?tr("contextCopy"):tr("calmCopy")));
+    qs("#vh-greeting",home).textContent=phase()+", "+name+".";
+    qs("#bh-hero-sentence",home).textContent=heroSentence(recommendation);
+    qs("#vh-workspace-top",home).textContent=workspaceName();
+    qs("#vh-sync",home).textContent=navigator.onLine===false?tr("offline"):tr("synced");
+    qs("#vh-avatar",home).textContent=String(name).trim().charAt(0).toUpperCase()||"E";
+    qs("#bh-context-workspace",home).textContent=workspaceName();
+    qs("#bh-context-schedule",home).textContent=events.length+" "+tr("events").toLowerCase();
+    qs("#bh-context-focus",home).textContent=open.length+" "+tr("open").toLowerCase();
+    qs("#bh-context-activity",home).textContent=(done.length+notes.length+items.length)+" "+tr("updated");
+    qs("#bh-summary-copy",home).textContent=briefSentence(done,open,notes,events);
+    qs("#bh-priorities",home).innerHTML=priorityRows(open,events);
+    qs("#bh-upcoming",home).innerHTML=upcomingRows(events);
+    qs("#bh-action-title",home).textContent=recTitle;
+    qs("#bh-action-context",home).textContent=workspaceName()+" · "+(open[0]?(open[0].priority||tr("open")):(events[0]?tr("schedule"):tr("context")));
+    qs("#bh-action-copy",home).textContent=recCopy;
+    qs("#bh-why-list",home).innerHTML='<div class="bh-why-row"><i>✓</i><span>'+esc(recCopy)+'</span></div><div class="bh-why-row"><i>✓</i><span>'+esc(events.length?events.length+" "+tr("events").toLowerCase()+" · "+tr("schedule"):tr("calmCopy"))+'</span></div>';
+    qs("#bh-insights",home).innerHTML=insightsModule(s,todos,habits);
+    qs("#bh-context-list",home).innerHTML=contextModule(notes,items);
+    qs("#bh-automation",home).innerHTML=automationModule(s);
+    qs("#bh-vision",home).innerHTML=visionModule(items);
+    qs("#bh-providers",home).innerHTML=providerModule();
+    qs("#bh-memory",home).innerHTML=memoryModule(notes);
+    try{if(window.lucide&&!window.__lucideFailed)window.lucide.createIcons()}catch(e){}
+  }
+  function schedule(){clearTimeout(renderTimer);renderTimer=setTimeout(render,70)}
+  function boot(){
+    document.body.classList.add("ethone-2026-ui","ethone-home-commercial");
+    schedule();
+    if(!document.body.dataset.vhDashboardBound){
+      document.body.dataset.vhDashboardBound="1";
+      document.addEventListener("click",function(){setTimeout(render,160)},true);
+      window.addEventListener("online",render);
+      window.addEventListener("offline",render);
+    }
+    setTimeout(render,700);
+    setTimeout(render,1800);
+  }
+  window.ethoneDashboardVNextRender=render;
+  window.ethoneHomeCommercialRender=render;
+  if(window.ethoneRunWhenDashboardReady)window.ethoneRunWhenDashboardReady("home-commercial",boot);
+  else if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});
+  else boot();
+})();
+</script>
 <style id="ethone-auth-v3-premium-experience">
 #auth-screen.ethone-auth-v3{
   --auth-v3-ink:#fbfbff;
@@ -26317,6 +28017,127 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
   }
 }
 </style>
+<style id="ethone-auth-v10-accessibility-finish">
+/* Production accessibility finish: deterministic colors, including autofill. */
+#auth-screen.ethone-auth-v3{
+  color-scheme:dark;
+}
+#auth-screen.ethone-auth-v3 #auth-form-sub{color:#a9a9b2!important}
+#auth-screen.ethone-auth-v3 label{color:#d0d0d6!important}
+#auth-screen.ethone-auth-v3 .lb-ghost{color:#aaaab3!important}
+#auth-screen.ethone-auth-v3 .lb-ghost:hover{color:#d8ccff!important}
+#auth-screen.ethone-auth-v3 #auth-or-text{color:#9696a0!important}
+#auth-screen.ethone-auth-v3 #lb-box > p:last-child{color:#90909a!important}
+#auth-screen.ethone-auth-v3 .lb-tab{color:#b2b2ba!important}
+#auth-screen.ethone-auth-v3 .lb-tab.is-active{color:#fff!important}
+#auth-screen.ethone-auth-v3 #auth-lang-bar button{color:#b7b7bf!important}
+#auth-screen.ethone-auth-v3 #auth-lang-bar button[aria-pressed="true"]{color:#fff!important}
+#auth-screen.ethone-auth-v3 #auth-lang-bar{border-color:#5f5f69!important}
+#auth-screen.ethone-auth-v3 #lb-box > div:has(> #tab-login){border-color:#5f5f69!important}
+#auth-screen.ethone-auth-v3 .lb-input{
+  color:#fff!important;
+  background:#17171c!important;
+  border:1px solid #666672!important;
+  caret-color:#b69cff!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-input::placeholder{
+  color:#a5a5ae!important;
+  opacity:1!important;
+}
+#auth-screen.ethone-auth-v3 .lb-input:hover{
+  color:#fff!important;
+  background:#1a1a20!important;
+  border-color:#70707a!important;
+}
+#auth-screen.ethone-auth-v3 .lb-input:focus{
+  color:#fff!important;
+  background:#191820!important;
+  border-color:#9b75f7!important;
+  box-shadow:0 0 0 3px rgba(139,92,246,.20),inset 0 1px 0 rgba(255,255,255,.035)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-input:disabled{
+  color:#aaaab2!important;
+  background:#121216!important;
+  border-color:#292930!important;
+  cursor:not-allowed;
+  opacity:1!important;
+}
+#auth-screen.ethone-auth-v3 .lb-input:-webkit-autofill,
+#auth-screen.ethone-auth-v3 .lb-input:-webkit-autofill:hover,
+#auth-screen.ethone-auth-v3 .lb-input:-webkit-autofill:focus,
+#auth-screen.ethone-auth-v3 .lb-input:autofill{
+  -webkit-text-fill-color:#fff!important;
+  caret-color:#b69cff!important;
+  border-color:#454550!important;
+  -webkit-box-shadow:0 0 0 1000px #17171c inset,0 0 0 3px rgba(139,92,246,.10)!important;
+  box-shadow:0 0 0 1000px #17171c inset,0 0 0 3px rgba(139,92,246,.10)!important;
+  transition:background-color 9999s ease-out 0s;
+}
+#auth-screen.ethone-auth-v3 .lb-eye,
+#auth-screen.ethone-auth-v3 .ethone-eye-btn{
+  color:#b6b6be!important;
+  background:#202027!important;
+  border-color:#666672!important;
+}
+#auth-screen.ethone-auth-v3 .lb-eye:hover,
+#auth-screen.ethone-auth-v3 .ethone-eye-btn:hover{
+  color:#fff!important;
+  background:#2a2436!important;
+  border-color:#6f55ad!important;
+}
+#auth-screen.ethone-auth-v3 .lb-social{
+  position:relative;
+  min-height:52px!important;
+  color:#f1f1f3!important;
+  background:#151519!important;
+  border-color:#5f5f69!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-social svg{
+  position:absolute;
+  left:14px;
+  width:18px!important;
+  height:18px!important;
+  opacity:.92;
+}
+#auth-screen.ethone-auth-v3 .lb-social:hover{
+  color:#fff!important;
+  background:#1d1925!important;
+  border-color:#7054b2!important;
+  box-shadow:0 8px 20px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.05)!important;
+}
+#auth-screen.ethone-auth-v3 .lb-social:active{
+  background:#18151e!important;
+  transform:translateY(0) scale(.985)!important;
+}
+.auth-v3-copy{color:#aaaab3}
+.auth-v3-preview-home time,
+.auth-v3-command span,
+.auth-v3-flow-row time,
+.auth-v3-flow-row span{
+  color:#a1a1ab;
+}
+.auth-v3-brain-status,
+.auth-v3-brain-card p,
+.auth-v3-flow p,
+.auth-v3-mini p{
+  color:#aeaeb7;
+}
+.auth-v3-workspace-item,
+.auth-v3-flow-row{color:#d0d0d5}
+.auth-v3-brain-orb{
+  animation:authV10BrainPulse 5.2s ease-in-out infinite!important;
+  transform-origin:center;
+}
+@keyframes authV10BrainPulse{
+  0%,100%{transform:scale(1);opacity:.92}
+  50%{transform:scale(1.018);opacity:1}
+}
+@media(prefers-reduced-motion:reduce){
+  .auth-v3-brain-orb{animation:none!important;opacity:1}
+}
+</style>
 <script id="ethone-auth-v3-premium-experience">
 (function(){
   "use strict";
@@ -26509,6 +28330,853 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});
   else boot();
   window.addEventListener("ethone:auth-ready",boot);
+})();
+</script>
+<style id="ethone-v2-global-ui-foundation">
+body.ethone-2026-ui{
+  --ui-bg:#09090b;
+  --ui-surface:#101014;
+  --ui-surface-raised:#15151a;
+  --ui-surface-input:#17171c;
+  --ui-border:rgba(255,255,255,.10);
+  --ui-border-strong:rgba(255,255,255,.16);
+  --ui-text:#f5f5f2;
+  --ui-text-secondary:#aaaab2;
+  --ui-text-tertiary:#777780;
+  --ui-accent:#8b5cf6;
+  --ui-accent-hover:#a78bfa;
+  --ui-accent-soft:rgba(139,92,246,.11);
+  --ui-danger:#ef4444;
+  --ui-danger-hover:#f87171;
+  --ui-radius-card:10px;
+  --ui-radius-control:8px;
+  --ui-space-1:4px;
+  --ui-space-2:8px;
+  --ui-space-3:12px;
+  --ui-space-4:16px;
+  --ui-space-5:20px;
+  --ui-control-height:38px;
+  --ui-transition:180ms cubic-bezier(.2,.8,.2,1);
+  --bg:var(--ui-bg)!important;
+  --bg2:var(--ui-surface)!important;
+  --card:var(--ui-surface)!important;
+  --card2:var(--ui-surface-raised)!important;
+  --panel:var(--ui-surface)!important;
+  --border:var(--ui-border)!important;
+  --border2:var(--ui-border-strong)!important;
+  --text:var(--ui-text)!important;
+  --muted:var(--ui-text-secondary)!important;
+  --muted2:var(--ui-text-tertiary)!important;
+  --accent:var(--ui-accent)!important;
+  --accent2:var(--ui-accent-hover)!important;
+  --accent3:var(--ui-danger)!important;
+  --accent4:var(--ui-text-secondary)!important;
+  --accent5:var(--ui-accent-hover)!important;
+  --purple:var(--ui-accent)!important;
+  --cyan:var(--ui-accent)!important;
+  --blue:var(--ui-accent)!important;
+  --green:var(--ui-accent-hover)!important;
+  --yellow:var(--ui-text-secondary)!important;
+  --red:var(--ui-danger)!important;
+  --surface:var(--ui-surface)!important;
+  --surface2:var(--ui-surface-raised)!important;
+  --surface3:var(--ui-surface-input)!important;
+  --r-sm:var(--ui-radius-control)!important;
+  --r-md:var(--ui-radius-card)!important;
+  --r-lg:var(--ui-radius-card)!important;
+  color:var(--ui-text);
+  background:var(--ui-bg)!important;
+}
+body.ethone-2026-ui #main-content{
+  color:var(--ui-text)!important;
+  background:
+    radial-gradient(720px 420px at 45% -16%,rgba(139,92,246,.055),transparent 72%),
+    var(--ui-bg)!important;
+}
+body.ethone-2026-ui #main-content *,
+body.ethone-2026-ui #main-sidebar *{
+  box-sizing:border-box;
+}
+body.ethone-2026-ui #main-content :is(
+  .panel,.stat-card,.settings-card,.conn-card,.game-card,.pres-card,
+  .ethone-os2-card,.ethone-os2-page-hero,.aic-panel,.eic-panel,.b34-panel,
+  .bp35-panel,.bos36-panel,.mp41-panel,.v2-widget,.v2-panel,.x26-panel,
+  .vh-panel,.brain-panel,.overview-widget,.pinned-card
+){
+  border:1px solid var(--ui-border)!important;
+  border-radius:var(--ui-radius-card)!important;
+  background:
+    linear-gradient(145deg,rgba(139,92,246,.018),transparent 42%),
+    var(--ui-surface)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.025),
+    0 12px 30px rgba(0,0,0,.14)!important;
+  transition:border-color var(--ui-transition),background var(--ui-transition),transform var(--ui-transition)!important;
+}
+body.ethone-2026-ui #main-content :is(
+  .panel,.settings-card,.conn-card,.game-card,.pres-card,.ethone-os2-card,
+  .aic-panel,.eic-panel,.b34-panel,.bp35-panel,.bos36-panel,.mp41-panel,
+  .v2-widget,.v2-panel,.x26-panel,.vh-panel,.brain-panel,.overview-widget,.pinned-card
+):hover{
+  border-color:var(--ui-border-strong)!important;
+}
+body.ethone-2026-ui #main-content :is(.settings-card,.conn-card,.game-card,.pres-card,.ethone-os2-card){
+  padding:var(--ui-space-4)!important;
+}
+body.ethone-2026-ui #main-content :is(
+  .panel-header,.game-card-header,.settings-card-title,.mp41-section-head,
+  .aic-head,.eic-head,.b34-section-head,.x26-panel-head,.vh-panel-head
+){
+  min-height:44px!important;
+  padding-left:var(--ui-space-4)!important;
+  padding-right:var(--ui-space-4)!important;
+  border-bottom-color:var(--ui-border)!important;
+}
+body.ethone-2026-ui #main-content :is(
+  .btn,.aic-btn,.eic-btn,.b34-btn,.bp35-btn,.bos36-btn,.mp41-btn,
+  .ethone-os2-pillbtn,.ethone-os2-iconbtn,.panel-action,.kanban-add-btn,
+  .item-btn,.pomo-ctrl-btn,.cat-tab,.brain-btn
+),
+body.ethone-2026-ui :is(.modal,.cmd-palette,#notifications-panel) :is(
+  .btn,.aic-btn,.eic-btn,.b34-btn,.bp35-btn,.bos36-btn,.mp41-btn,.modal-close
+){
+  min-height:var(--ui-control-height)!important;
+  padding:0 13px!important;
+  border:1px solid var(--ui-border-strong)!important;
+  border-radius:var(--ui-radius-control)!important;
+  background:var(--ui-surface-raised)!important;
+  color:var(--ui-text)!important;
+  box-shadow:none!important;
+  font-family:Inter,system-ui,sans-serif!important;
+  font-size:11px!important;
+  font-weight:650!important;
+  letter-spacing:0!important;
+  transition:color var(--ui-transition),background var(--ui-transition),border-color var(--ui-transition),transform var(--ui-transition)!important;
+}
+body.ethone-2026-ui #main-content button{
+  border-radius:var(--ui-radius-control)!important;
+  letter-spacing:0!important;
+  transition:color var(--ui-transition),background var(--ui-transition),border-color var(--ui-transition),transform var(--ui-transition),opacity var(--ui-transition)!important;
+}
+body.ethone-2026-ui #main-content :is(
+  .btn,.aic-btn,.eic-btn,.b34-btn,.bp35-btn,.bos36-btn,.mp41-btn,
+  .ethone-os2-pillbtn,.ethone-os2-iconbtn,.panel-action,.kanban-add-btn,
+  .item-btn,.pomo-ctrl-btn,.cat-tab,.brain-btn
+):hover{
+  color:#fff!important;
+  border-color:rgba(139,92,246,.48)!important;
+  background:#1a1722!important;
+  transform:translateY(-1px);
+}
+body.ethone-2026-ui #main-content :is(
+  .btn,.aic-btn,.eic-btn,.b34-btn,.bp35-btn,.bos36-btn,.mp41-btn,
+  .ethone-os2-pillbtn,.ethone-os2-iconbtn,.panel-action,.kanban-add-btn,
+  .item-btn,.pomo-ctrl-btn,.cat-tab,.brain-btn
+):active{
+  transform:translateY(0) scale(.985);
+}
+body.ethone-2026-ui #main-content :is(
+  .btn,.aic-btn,.eic-btn,.b34-btn,.bp35-btn,.bos36-btn,.mp41-btn,
+  .ethone-os2-pillbtn,.ethone-os2-iconbtn,.panel-action,.kanban-add-btn,
+  .item-btn,.pomo-ctrl-btn,.cat-tab,.brain-btn
+):focus-visible,
+body.ethone-2026-ui #main-content :is(input,textarea,select):focus-visible{
+  outline:2px solid var(--ui-accent-hover)!important;
+  outline-offset:2px!important;
+}
+body.ethone-2026-ui #main-content :is(
+  .btn-primary,.primary,[data-variant="primary"],.aic-btn.primary,.eic-btn.primary,
+  .b34-btn.primary,.bp35-btn.primary,.bos36-btn.primary,.mp41-btn.primary
+){
+  border-color:var(--ui-accent)!important;
+  background:var(--ui-accent)!important;
+  color:#fff!important;
+  box-shadow:0 8px 22px rgba(76,29,149,.18)!important;
+}
+body.ethone-2026-ui #main-content :is(
+  .btn-primary,.primary,[data-variant="primary"],.aic-btn.primary,.eic-btn.primary,
+  .b34-btn.primary,.bp35-btn.primary,.bos36-btn.primary,.mp41-btn.primary
+):hover{
+  border-color:var(--ui-accent-hover)!important;
+  background:var(--ui-accent-hover)!important;
+}
+body.ethone-2026-ui #main-content :is(.btn-danger,[data-danger],[data-variant="danger"]){
+  border-color:rgba(239,68,68,.58)!important;
+  background:rgba(239,68,68,.12)!important;
+  color:#fecaca!important;
+}
+body.ethone-2026-ui #main-content :is(.btn-danger,[data-danger],[data-variant="danger"]):hover{
+  border-color:var(--ui-danger-hover)!important;
+  background:rgba(239,68,68,.2)!important;
+  color:#fff!important;
+}
+body.ethone-2026-ui #main-content :is(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]),
+  textarea,select,.modal-input,.modal-select
+),
+body.ethone-2026-ui .modal :is(.modal-input,.modal-select,input:not([type="checkbox"]):not([type="radio"]),textarea,select){
+  min-height:var(--ui-control-height)!important;
+  padding:9px 12px!important;
+  border:1px solid var(--ui-border-strong)!important;
+  border-radius:var(--ui-radius-control)!important;
+  background:var(--ui-surface-input)!important;
+  color:var(--ui-text)!important;
+  box-shadow:none!important;
+  font-family:Inter,system-ui,sans-serif!important;
+  font-size:12px!important;
+  line-height:1.35!important;
+  caret-color:var(--ui-accent-hover);
+  transition:border-color var(--ui-transition),background var(--ui-transition),box-shadow var(--ui-transition)!important;
+}
+body.ethone-2026-ui #main-content :is(input,textarea,select):hover,
+body.ethone-2026-ui .modal :is(input,textarea,select):hover{
+  border-color:rgba(255,255,255,.22)!important;
+}
+body.ethone-2026-ui #main-content :is(input,textarea,select):focus,
+body.ethone-2026-ui .modal :is(input,textarea,select):focus{
+  border-color:var(--ui-accent)!important;
+  background:#19191f!important;
+  box-shadow:0 0 0 3px rgba(139,92,246,.11)!important;
+}
+body.ethone-2026-ui #main-content :is(input,textarea)::placeholder,
+body.ethone-2026-ui .modal :is(input,textarea)::placeholder{
+  color:#85858e!important;
+  opacity:1!important;
+}
+body.ethone-2026-ui #main-content :is(h1,.page-title,.vh-hero h1){
+  color:#fff!important;
+  font-family:var(--font-display),Inter,sans-serif!important;
+  font-weight:760!important;
+  letter-spacing:0!important;
+  line-height:1.08!important;
+}
+body.ethone-2026-ui #main-content :is(h2,.panel-title,.settings-card-title,.mp41-h,.b34-title){
+  color:var(--ui-text)!important;
+  font-weight:720!important;
+  letter-spacing:0!important;
+  line-height:1.2!important;
+}
+body.ethone-2026-ui #main-content :is(h3,.game-card-title,.conn-title){
+  color:var(--ui-text)!important;
+  font-weight:680!important;
+  letter-spacing:0!important;
+  line-height:1.25!important;
+}
+body.ethone-2026-ui #main-content :is(
+  .page-subtitle,.panel-subtitle,.game-card-sub,.conn-subtitle,.settings-card-sub,
+  .mp41-sub,.b34-sub,.muted
+){
+  color:var(--ui-text-secondary)!important;
+  line-height:1.45!important;
+}
+body.ethone-2026-ui #main-content :is(
+  .section-eyebrow,.modal-label,.vh-label,.bh-core-label,.mp41-kicker,.ethone-os2-label
+){
+  color:var(--ui-text-tertiary)!important;
+  font-family:var(--mono)!important;
+  font-size:9px!important;
+  font-weight:700!important;
+  letter-spacing:.08em!important;
+}
+body.ethone-2026-ui #main-content :is(
+  .stats-row,.settings-grid,.connections-grid,.game-grid,.ethone-os2-page-grid,
+  .mp41-grid,.aic-grid,.b34-grid,.overview-grid
+){
+  gap:var(--ui-space-3)!important;
+}
+body.ethone-2026-ui #main-content .tab-content.active{
+  min-width:0;
+  max-width:100%;
+}
+body.ethone-2026-ui #main-content :is(
+  p,span,strong,small,label,.panel-title,.game-card-title,.conn-title,.settings-card-title
+){
+  overflow-wrap:break-word;
+}
+body.ethone-2026-ui #main-content :is(img,video,canvas){
+  max-width:100%;
+}
+body.ethone-2026-ui :is(.modal,#cmd-palette,#notifications-panel,.notif-panel){
+  border:1px solid var(--ui-border-strong)!important;
+  border-radius:var(--ui-radius-card)!important;
+  background:var(--ui-surface)!important;
+  box-shadow:0 24px 70px rgba(0,0,0,.46)!important;
+}
+body.ethone-2026-ui :is(.modal-overlay,#cmd-palette-overlay){
+  background:rgba(0,0,0,.68)!important;
+}
+body.ethone-2026-ui #main-sidebar{
+  background:#0b0b0e!important;
+  border-right-color:var(--ui-border)!important;
+}
+body.ethone-2026-ui #main-sidebar .nav-item{
+  border-radius:var(--ui-radius-control)!important;
+  transition:color var(--ui-transition),background var(--ui-transition),border-color var(--ui-transition)!important;
+}
+body.ethone-2026-ui #main-sidebar .nav-item.active{
+  border-color:rgba(139,92,246,.22)!important;
+  background:var(--ui-accent-soft)!important;
+}
+body.ethone-2026-ui #page-settings span:has(+ input[id^="social-"]){
+  filter:grayscale(1);
+  opacity:.72;
+}
+body.ethone-2026-ui #page-connections :is(.conn-icon,.widget-row-icon){
+  border:1px solid rgba(139,92,246,.22)!important;
+  background:var(--ui-accent-soft)!important;
+  color:#c4b5fd!important;
+}
+body.ethone-2026-ui #page-connections .dc-card-banner{
+  background:#21172f!important;
+}
+body.ethone-2026-ui #page-connections .dc-badge-v2{
+  border-color:rgba(139,92,246,.38)!important;
+  background:rgba(139,92,246,.10)!important;
+  filter:grayscale(.35);
+}
+body.ethone-2026-ui #main-content :is(a,.text-link,.panel-action){
+  color:#c4b5fd;
+}
+body.ethone-2026-ui #main-content :is(a,.text-link):hover{
+  color:#ddd6fe;
+}
+@media(max-width:900px){
+  body.ethone-2026-ui #main-content :is(.settings-grid,.connections-grid,.game-grid,.ethone-os2-page-grid,.mp41-grid){
+    gap:10px!important;
+  }
+}
+@media(max-width:760px){
+  body.ethone-2026-ui #main-content :is(.panel,.settings-card,.conn-card,.game-card,.stat-card,.mp41-panel){
+    border-radius:9px!important;
+  }
+  body.ethone-2026-ui #main-content :is(.settings-card,.conn-card,.game-card,.ethone-os2-card){
+    padding:14px!important;
+  }
+  body.ethone-2026-ui #main-content :is(
+    .btn,.aic-btn,.eic-btn,.b34-btn,.bp35-btn,.bos36-btn,.mp41-btn,
+    .ethone-os2-pillbtn,.panel-action
+  ){
+    min-height:40px!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  body.ethone-2026-ui #main-content *,
+  body.ethone-2026-ui #main-sidebar *,
+  body.ethone-2026-ui .modal *{
+    transition-duration:.01ms!important;
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    scroll-behavior:auto!important;
+  }
+}
+</style>
+<style id="ethone-dashboard-v4-css">
+body.ethone-dashboard-v4 #page-dashboard{
+  padding:0!important;
+}
+body.ethone-dashboard-v4 #page-dashboard>.dashboard-header,
+body.ethone-dashboard-v4 #page-dashboard>.stats-row,
+body.ethone-dashboard-v4 #page-dashboard>.main-grid,
+body.ethone-dashboard-v4 #page-dashboard>.overview-grid,
+body.ethone-dashboard-v4 #page-dashboard>.quick-actions,
+body.ethone-dashboard-v4 #page-dashboard>#ethone-v2-home,
+body.ethone-dashboard-v4 #page-dashboard>#ethone-v2-widgets,
+body.ethone-dashboard-v4 #page-dashboard>.v2-section-title{
+  display:none!important;
+}
+.d4-home{
+  --d4-bg:#09090b;
+  --d4-surface:#101014;
+  --d4-surface-raised:#15151a;
+  --d4-line:rgba(255,255,255,.09);
+  --d4-line-strong:rgba(255,255,255,.15);
+  --d4-text:#f5f5f2;
+  --d4-muted:#aaaab2;
+  --d4-dim:#74747d;
+  --d4-accent:#8b5cf6;
+  --d4-accent-hover:#a78bfa;
+  width:100%;
+  min-height:100vh;
+  padding:14px 18px 18px;
+  color:var(--d4-text);
+  background:var(--d4-bg);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+.d4-home *,
+.d4-home *::before,
+.d4-home *::after{box-sizing:border-box}
+.d4-topbar{
+  min-height:42px;
+  display:grid;
+  grid-template-columns:minmax(220px,320px) 1fr auto;
+  align-items:center;
+  gap:14px;
+  padding-bottom:12px;
+  border-bottom:1px solid rgba(255,255,255,.065);
+}
+.d4-search{
+  height:34px;
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:0 11px;
+  border:1px solid var(--d4-line);
+  border-radius:8px;
+  background:#0e0e12;
+  color:var(--d4-muted);
+  text-align:left;
+  transition:border-color 180ms ease,background-color 180ms ease,color 180ms ease;
+}
+.d4-search:hover,.d4-search:focus-visible{border-color:rgba(139,92,246,.42);background:#121117;color:#fff}
+.d4-search svg{width:15px;height:15px}
+.d4-search span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.d4-search kbd{margin-left:auto;color:var(--d4-dim);font:600 9px/1 ui-monospace,SFMono-Regular,Consolas,monospace}
+.d4-workspace{
+  justify-self:center;
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 10px;
+  border:1px solid var(--d4-line);
+  border-radius:8px;
+  color:#d7d7dc;
+  background:#0d0d10;
+  font-size:10px;
+}
+.d4-workspace svg{width:14px;height:14px;color:var(--d4-muted)}
+.d4-top-actions{display:flex;align-items:center;justify-content:flex-end;gap:9px}
+.d4-sync{display:flex;align-items:center;gap:7px;color:var(--d4-muted);font-size:9px}
+.d4-live-dot{width:6px;height:6px;border-radius:50%;background:var(--d4-accent);box-shadow:0 0 0 3px rgba(139,92,246,.10)}
+.d4-icon-button,.d4-avatar{
+  width:34px;height:34px;display:grid;place-items:center;
+  border:1px solid transparent;border-radius:8px;background:transparent;color:var(--d4-muted);
+  transition:border-color 180ms ease,background-color 180ms ease,color 180ms ease;
+}
+.d4-icon-button:hover,.d4-icon-button:focus-visible,.d4-avatar:hover,.d4-avatar:focus-visible{
+  border-color:var(--d4-line);background:#141419;color:#fff;
+}
+.d4-icon-button svg{width:16px;height:16px}
+.d4-avatar{border-color:var(--d4-line);background:#141419;color:#fff;font-size:10px;font-weight:750}
+.d4-command{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 332px;
+  gap:12px;
+  margin-top:12px;
+}
+.d4-panel{
+  min-width:0;
+  border:1px solid var(--d4-line);
+  border-radius:10px;
+  background:var(--d4-surface);
+  box-shadow:0 12px 30px rgba(0,0,0,.14);
+  transition:border-color 180ms ease,background-color 180ms ease,transform 180ms ease;
+}
+.d4-panel:hover{border-color:rgba(255,255,255,.14)}
+.d4-hero{
+  min-height:142px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 250px auto;
+  align-items:center;
+  gap:22px;
+  padding:20px 22px;
+}
+.d4-drag{
+  position:absolute;top:12px;left:9px;
+  width:13px;height:20px;color:#55555f;opacity:.65;
+}
+.d4-drag svg{width:13px;height:13px}
+.d4-widget{position:relative;contain:layout paint style}
+.d4-hero-copy{min-width:0;padding-left:8px}
+.d4-hero h1{
+  margin:0;
+  color:#fff;
+  font-family:Syne,Inter,system-ui,sans-serif;
+  font-size:clamp(28px,3vw,43px);
+  font-weight:760;
+  line-height:1.02;
+  letter-spacing:0;
+}
+.d4-hero-copy>p{display:flex;align-items:center;gap:8px;margin:10px 0 0;color:var(--d4-muted);font-size:11px}
+.d4-hero-copy>p svg{width:15px;height:15px;color:#c4b5fd}
+.d4-session{
+  display:grid;
+  grid-template-columns:1fr auto;
+  align-items:center;
+  gap:15px;
+  min-height:78px;
+  padding:12px 14px;
+  border-left:1px solid var(--d4-line);
+  border-right:1px solid var(--d4-line);
+}
+.d4-date{display:block;color:var(--d4-muted);font-size:9px;text-transform:capitalize}
+.d4-time{display:block;margin-top:5px;color:#fff;font-size:27px;font-weight:700;line-height:1}
+.d4-session-state{display:grid;gap:8px;color:#c9c9cf;font-size:9px}
+.d4-session-state span{display:flex;align-items:center;gap:7px;white-space:nowrap}
+.d4-session-state svg{width:13px;height:13px;color:#8d8d97}
+.d4-hero-actions{display:grid;gap:8px;min-width:156px}
+.d4-button{
+  min-height:38px;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:0 13px;border:1px solid var(--d4-line-strong);border-radius:8px;
+  background:#121216;color:#f0f0f3;font-size:10px;font-weight:680;
+  transition:border-color 180ms ease,background-color 180ms ease,transform 180ms ease;
+}
+.d4-button:hover{border-color:rgba(139,92,246,.46);background:#17151f;transform:translateY(-1px)}
+.d4-button:active{transform:translateY(0) scale(.985)}
+.d4-button.primary{border-color:#8b5cf6;background:#8b5cf6;color:#fff}
+.d4-button.primary:hover{border-color:#a78bfa;background:#a78bfa}
+.d4-button svg{width:14px;height:14px}
+.d4-today{padding:0 15px 14px}
+.d4-panel-head{
+  min-height:49px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  border-bottom:1px solid var(--d4-line);
+}
+.d4-panel-title{display:flex;align-items:center;gap:9px;min-width:0}
+.d4-panel-title svg{width:16px;height:16px;color:#c4b5fd;stroke-width:1.8}
+.d4-panel-title h2,.d4-panel-title h3{margin:0;color:#f2f2f4;font-size:12px;font-weight:720}
+.d4-panel-title p{margin:3px 0 0;color:var(--d4-dim);font-size:8.5px}
+.d4-favorite{
+  width:30px;height:30px;display:grid;place-items:center;
+  border:0;border-radius:7px;background:transparent;color:#686872;
+  transition:background-color 180ms ease,color 180ms ease;
+}
+.d4-favorite:hover,.d4-favorite:focus-visible{background:#19191e;color:#c4b5fd}
+.d4-favorite.is-favorite{color:#c4b5fd}
+.d4-favorite svg{width:14px;height:14px}
+.d4-today-block{padding:12px 0;border-bottom:1px solid var(--d4-line)}
+.d4-today-block:last-child{border-bottom:0}
+.d4-label{display:block;color:#8f8f99;font:700 8px/1 ui-monospace,SFMono-Regular,Consolas,monospace;text-transform:uppercase;letter-spacing:.08em}
+.d4-today-line{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:9px;color:#d8d8dc;font-size:9.5px}
+.d4-today-line strong{color:#fff;font-weight:700}
+.d4-progress{height:4px;margin-top:9px;overflow:hidden;border-radius:999px;background:#24242a}
+.d4-progress i{display:block;height:100%;border-radius:inherit;background:var(--d4-accent)}
+.d4-mini-list{display:grid;gap:8px;margin-top:10px}
+.d4-mini-row{display:grid;grid-template-columns:17px minmax(0,1fr) auto;align-items:center;gap:8px;color:#c7c7cd;font-size:9px}
+.d4-mini-row>i{width:16px;height:16px;display:grid;place-items:center;border:1px solid #3b3b43;border-radius:50%;color:#8a8a94;font-style:normal}
+.d4-mini-row>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.d4-mini-row>small{color:var(--d4-dim);font-size:8px}
+.d4-main{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 332px;
+  gap:12px;
+  margin-top:12px;
+  align-items:start;
+}
+.d4-brain{min-height:352px}
+.d4-brain>.d4-panel-head{padding:0 16px 0 22px}
+.d4-brain-grid{display:grid;grid-template-columns:210px minmax(0,1fr) 240px;min-height:302px}
+.d4-brain-column{min-width:0;padding:17px 18px}
+.d4-brain-column+.d4-brain-column{border-left:1px solid var(--d4-line)}
+.d4-brain-status{display:grid;gap:12px}
+.d4-brain-metrics{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--d4-line);border-left:1px solid var(--d4-line)}
+.d4-brain-metric{min-width:0;padding:11px;border-right:1px solid var(--d4-line);border-bottom:1px solid var(--d4-line)}
+.d4-brain-metric strong{display:block;color:#fff;font-size:13px}
+.d4-brain-metric span{display:block;margin-top:4px;color:var(--d4-dim);font-size:8px}
+.d4-state-row{display:grid;grid-template-columns:72px 1fr 28px;align-items:center;gap:8px;color:#b7b7bf;font-size:8.5px}
+.d4-state-row .d4-progress{margin:0}
+.d4-state-row strong{color:#dddde2;font-size:8.5px;text-align:right}
+.d4-recommendation{display:flex;flex-direction:column;height:100%}
+.d4-recommendation>p{max-width:560px;margin:15px 0;color:#b8b8c0;font-size:11px;line-height:1.55}
+.d4-next-action{
+  display:grid;grid-template-columns:24px minmax(0,1fr) auto;align-items:center;gap:10px;
+  margin-top:auto;padding:14px 0;border-top:1px solid var(--d4-line);border-bottom:1px solid var(--d4-line);
+}
+.d4-next-action>i{width:20px;height:20px;border:1px solid #6d4bd6;border-radius:50%}
+.d4-next-action strong{display:block;color:#fff;font-size:13px}
+.d4-next-action span{display:block;margin-top:4px;color:var(--d4-dim);font-size:8.5px}
+.d4-open-action{
+  height:32px;padding:0 11px;border:1px solid rgba(139,92,246,.55);border-radius:7px;
+  background:rgba(139,92,246,.08);color:#d6c8ff;font-size:9px;
+}
+.d4-open-action:hover{background:rgba(139,92,246,.16)}
+.d4-explanation{margin-top:12px;color:#9797a1;font-size:9px;line-height:1.5}
+.d4-reminders{display:flex;flex-direction:column}
+.d4-reminders #bh-why-list{margin-top:12px!important}
+.d4-reminders .bh-why-row{min-height:31px}
+.d4-view-link{
+  margin-top:auto;align-self:flex-start;padding:6px 0;border:0;background:transparent;color:#b9a7f9;font-size:9px;
+}
+.d4-view-link:hover{color:#ddd6fe}
+.d4-modules{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+  margin-top:12px;
+}
+.d4-module{min-height:244px;content-visibility:auto;contain-intrinsic-size:244px}
+.d4-module>.d4-panel-head{padding:0 12px 0 17px}
+.d4-module-body{padding:8px 14px 12px}
+.d4-timeline-row{
+  display:grid;grid-template-columns:44px 12px minmax(0,1fr);gap:8px;align-items:start;
+  min-height:45px;padding:8px 0;border-bottom:1px solid var(--d4-line);
+}
+.d4-timeline-row:last-child{border-bottom:0}
+.d4-timeline-row time{color:#8c8c96;font:650 8px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace}
+.d4-timeline-mark{width:7px;height:7px;margin-top:2px;border-radius:50%;background:var(--d4-accent);box-shadow:0 0 0 3px rgba(139,92,246,.10)}
+.d4-timeline-row strong{display:block;color:#dedee3;font-size:9.5px}
+.d4-timeline-row small{display:block;margin-top:3px;color:var(--d4-dim);font-size:8px}
+.d4-module .vh-list{padding:0}
+.d4-module .vh-list-row{min-height:42px}
+.d4-insights-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.d4-insight-cell{padding:10px;border:1px solid var(--d4-line);border-radius:8px;background:#121216}
+.d4-insight-cell span{display:block;color:var(--d4-dim);font-size:8px}
+.d4-insight-cell strong{display:block;margin-top:5px;color:#fff;font-size:12px}
+.d4-quick{margin-top:12px;padding:12px 14px}
+.d4-quick-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.d4-quick-head h2{margin:0;color:#fff;font-size:11px}
+.d4-quick-head span{color:var(--d4-dim);font-size:8px}
+.d4-quick-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}
+.d4-quick-action{
+  min-width:0;min-height:52px;display:flex;align-items:center;gap:9px;padding:0 10px;
+  border:1px solid var(--d4-line);border-radius:8px;background:#111115;color:#dddde2;text-align:left;
+  transition:border-color 180ms ease,background-color 180ms ease,transform 180ms ease;
+}
+.d4-quick-action:hover{border-color:rgba(139,92,246,.38);background:#15131c;transform:translateY(-1px)}
+.d4-quick-action:active{transform:translateY(0) scale(.985)}
+.d4-quick-action>i{width:25px;height:25px;flex:0 0 25px;display:grid;place-items:center;border-radius:7px;background:rgba(139,92,246,.08);color:#c4b5fd;font-style:normal}
+.d4-quick-action svg{width:14px;height:14px}
+.d4-quick-action span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:8.5px;font-weight:650}
+.d4-compat{display:none!important}
+.d4-home :is(button,[tabindex]):focus-visible{outline:2px solid #a78bfa;outline-offset:2px}
+.d4-home [data-v4-hidden="true"]{display:none!important}
+@media(max-width:1366px){
+  .d4-home{padding:12px 14px 16px}
+  .d4-command,.d4-main{grid-template-columns:minmax(0,1fr) 290px}
+  .d4-hero{grid-template-columns:minmax(0,1fr) 220px auto;gap:16px;padding:18px}
+  .d4-brain-grid{grid-template-columns:190px minmax(0,1fr) 210px}
+  .d4-quick-action{padding:0 8px}
+}
+@media(max-width:1180px){
+  .d4-command{grid-template-columns:1fr}
+  .d4-today{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:0 14px}
+  .d4-today>.d4-panel-head{grid-column:1/-1}
+  .d4-today-block{min-width:0;padding:12px;border-bottom:0;border-right:1px solid var(--d4-line)}
+  .d4-today-block:last-child{border-right:0}
+  .d4-main{grid-template-columns:1fr}
+  .d4-quick-grid{grid-template-columns:repeat(4,1fr)}
+}
+@media(max-width:1024px){
+  .d4-topbar{grid-template-columns:minmax(180px,1fr) auto}
+  .d4-workspace{display:none}
+  .d4-hero{grid-template-columns:minmax(0,1fr) 210px}
+  .d4-hero-actions{grid-column:1/-1;display:flex;justify-content:flex-end}
+  .d4-session{border-right:0}
+  .d4-brain-grid{grid-template-columns:180px minmax(0,1fr)}
+  .d4-reminders{grid-column:1/-1;border-top:1px solid var(--d4-line);border-left:0!important;min-height:150px}
+  .d4-modules{grid-template-columns:1fr 1fr}
+  .d4-module:last-child{grid-column:1/-1}
+}
+@media(max-width:768px){
+  .d4-home{padding:10px}
+  .d4-topbar{grid-template-columns:1fr auto}
+  .d4-sync{display:none}
+  .d4-command,.d4-main,.d4-modules{gap:9px;margin-top:9px}
+  .d4-hero{grid-template-columns:1fr;padding:17px 15px}
+  .d4-hero-copy{padding-left:0}
+  .d4-hero h1{font-size:29px}
+  .d4-session{grid-template-columns:1fr auto;border:0;border-top:1px solid var(--d4-line);border-bottom:1px solid var(--d4-line)}
+  .d4-hero-actions{grid-column:auto;display:grid;grid-template-columns:1fr 1fr}
+  .d4-today{grid-template-columns:1fr 1fr}
+  .d4-today-block:nth-of-type(2){border-right:0}
+  .d4-today-block:nth-of-type(-n+2){border-bottom:1px solid var(--d4-line)}
+  .d4-brain-grid{grid-template-columns:1fr}
+  .d4-brain-column+.d4-brain-column{border-left:0;border-top:1px solid var(--d4-line)}
+  .d4-modules{grid-template-columns:1fr}
+  .d4-module:last-child{grid-column:auto}
+  .d4-quick-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:460px){
+  .d4-home{padding:8px}
+  .d4-top-actions .d4-icon-button{display:none}
+  .d4-hero h1{font-size:26px}
+  .d4-session{grid-template-columns:1fr}
+  .d4-session-state{grid-template-columns:1fr 1fr}
+  .d4-today{grid-template-columns:1fr}
+  .d4-today-block{border-right:0!important;border-bottom:1px solid var(--d4-line)!important}
+  .d4-today-block:last-child{border-bottom:0!important}
+  .d4-brain-metrics{grid-template-columns:1fr 1fr}
+  .d4-next-action{grid-template-columns:22px minmax(0,1fr)}
+  .d4-open-action{grid-column:2}
+  .d4-quick-grid{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+  .d4-home *,.d4-home *::before,.d4-home *::after{animation:none!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+</style>
+<script id="ethone-dashboard-v4">
+(function(){
+  "use strict";
+  if(window.__ethoneDashboardV4)return;
+  window.__ethoneDashboardV4=true;
+  var timer=0,clockTimer=0;
+  var words={
+    fr:{search:"Rechercher dans ETHONE...",workspace:"Espace de travail",synced:"Synchronise a l'instant",offline:"Hors ligne",personal:"OS personnel",continueFocus:"Continuer le focus",askBrain:"Demander a Brain",brainAnalyzed:"Brain a analyse votre espace.",today:"Aujourd'hui",brainOS:"Brain OS",brainSub:"Votre journee, comprise et organisee.",summary:"Resume du jour",globalState:"Etat general",recommendation:"Recommandation du jour",nextAction:"Prochaine action",why:"Pourquoi c'est important",reminders:"Rappels",open:"Ouvrir",focus:"Focus",objectives:"Objectifs",habits:"Habitudes",planning:"Planning",timeline:"Chronologie",workspacePanel:"Espace de travail",activity:"Activite & analyses",quick:"Actions rapides",quickHint:"Disponibles partout dans ETHONE",note:"Nouvelle note",task:"Nouvelle tache",file:"Nouveau fichier",event:"Nouvel evenement",market:"Marketplace",brain:"Brain",spaces:"Espaces",tasks:"Taches",events:"Evenements",notes:"Notes",files:"Fichiers",productivity:"Productivite",energy:"Energie",load:"Charge",concentration:"Concentration",session:"Session active",online:"En ligne",noReminder:"Aucun rappel urgent.",noEvent:"Aucun evenement a venir.",noRecent:"Aucune activite recente.",noGoal:"Aucun objectif actif.",noHabit:"Aucune habitude active.",calm:"Votre espace est calme. Brain reste disponible.",updated:"mis a jour",favorite:"Ajouter aux favoris",unfavorite:"Retirer des favoris"},
+    en:{search:"Search ETHONE...",workspace:"Workspace",synced:"Synced just now",offline:"Offline",personal:"Personal OS",continueFocus:"Continue focus",askBrain:"Ask Brain",brainAnalyzed:"Brain analyzed your workspace.",today:"Today",brainOS:"Brain OS",brainSub:"Your day, understood and organized.",summary:"Today summary",globalState:"Overall state",recommendation:"Recommendation of the day",nextAction:"Next action",why:"Why it matters",reminders:"Reminders",open:"Open",focus:"Focus",objectives:"Goals",habits:"Habits",planning:"Planning",timeline:"Timeline",workspacePanel:"Workspace",activity:"Activity & insights",quick:"Quick actions",quickHint:"Available everywhere in ETHONE",note:"New note",task:"New task",file:"New file",event:"New event",market:"Marketplace",brain:"Brain",spaces:"Workspaces",tasks:"Tasks",events:"Events",notes:"Notes",files:"Files",productivity:"Productivity",energy:"Energy",load:"Load",concentration:"Concentration",session:"Active session",online:"Online",noReminder:"No urgent reminder.",noEvent:"No upcoming event.",noRecent:"No recent activity.",noGoal:"No active goal.",noHabit:"No active habit.",calm:"Your workspace is calm. Brain remains available.",updated:"updated",favorite:"Add to favorites",unfavorite:"Remove from favorites"},
+    es:{search:"Buscar en ETHONE...",workspace:"Espacio de trabajo",synced:"Sincronizado ahora",offline:"Sin conexion",personal:"OS personal",continueFocus:"Continuar enfoque",askBrain:"Preguntar a Brain",brainAnalyzed:"Brain analizo tu espacio.",today:"Hoy",brainOS:"Brain OS",brainSub:"Tu dia, entendido y organizado.",summary:"Resumen de hoy",globalState:"Estado general",recommendation:"Recomendacion del dia",nextAction:"Siguiente accion",why:"Por que importa",reminders:"Recordatorios",open:"Abrir",focus:"Enfoque",objectives:"Objetivos",habits:"Habitos",planning:"Agenda",timeline:"Cronologia",workspacePanel:"Espacio de trabajo",activity:"Actividad y analisis",quick:"Acciones rapidas",quickHint:"Disponibles en todo ETHONE",note:"Nueva nota",task:"Nueva tarea",file:"Nuevo archivo",event:"Nuevo evento",market:"Marketplace",brain:"Brain",spaces:"Espacios",tasks:"Tareas",events:"Eventos",notes:"Notas",files:"Archivos",productivity:"Productividad",energy:"Energia",load:"Carga",concentration:"Concentracion",session:"Sesion activa",online:"En linea",noReminder:"Sin recordatorios urgentes.",noEvent:"Sin proximos eventos.",noRecent:"Sin actividad reciente.",noGoal:"Sin objetivo activo.",noHabit:"Sin habito activo.",calm:"Tu espacio esta tranquilo. Brain sigue disponible.",updated:"actualizado",favorite:"Anadir a favoritos",unfavorite:"Quitar de favoritos"},
+    de:{search:"ETHONE durchsuchen...",workspace:"Arbeitsbereich",synced:"Gerade synchronisiert",offline:"Offline",personal:"Personliches OS",continueFocus:"Fokus fortsetzen",askBrain:"Brain fragen",brainAnalyzed:"Brain hat deinen Bereich analysiert.",today:"Heute",brainOS:"Brain OS",brainSub:"Dein Tag, verstanden und organisiert.",summary:"Tagesubersicht",globalState:"Gesamtstatus",recommendation:"Empfehlung des Tages",nextAction:"Nachste Aktion",why:"Warum es wichtig ist",reminders:"Erinnerungen",open:"Offnen",focus:"Fokus",objectives:"Ziele",habits:"Gewohnheiten",planning:"Planung",timeline:"Zeitleiste",workspacePanel:"Arbeitsbereich",activity:"Aktivitat & Einblicke",quick:"Schnellaktionen",quickHint:"Uberall in ETHONE verfugbar",note:"Neue Notiz",task:"Neue Aufgabe",file:"Neue Datei",event:"Neuer Termin",market:"Marketplace",brain:"Brain",spaces:"Bereiche",tasks:"Aufgaben",events:"Termine",notes:"Notizen",files:"Dateien",productivity:"Produktivitat",energy:"Energie",load:"Auslastung",concentration:"Konzentration",session:"Aktive Sitzung",online:"Online",noReminder:"Keine dringende Erinnerung.",noEvent:"Kein bevorstehender Termin.",noRecent:"Keine aktuelle Aktivitat.",noGoal:"Kein aktives Ziel.",noHabit:"Keine aktive Gewohnheit.",calm:"Dein Bereich ist ruhig. Brain bleibt verfugbar.",updated:"aktualisiert",favorite:"Zu Favoriten hinzufugen",unfavorite:"Aus Favoriten entfernen"}
+  };
+  function qs(s,r){return (r||document).querySelector(s)}
+  function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+  function lang(){var l=String(window._lang||document.documentElement.lang||"fr").toLowerCase().slice(0,2);return words[l]?l:"fr"}
+  function tr(k){return words[lang()][k]||words.en[k]||k}
+  function icon(name){return '<i data-lucide="'+name+'" aria-hidden="true"></i>'}
+  function profile(){try{return typeof window.curP==="function"?window.curP():null}catch(e){return null}}
+  function state(){var p=profile();return p&&p.state?p.state:{}}
+  function list(v){return Array.isArray(v)?v:[]}
+  function titleOf(v,fallback){return v&&(v.text||v.title||v.name)||fallback}
+  function workspaceName(){try{return localStorage.getItem("ethone:active-workspace")||tr("personal")}catch(e){return tr("personal")}}
+  function phase(){
+    var h=new Date().getHours(),l=lang();
+    if(l==="fr")return h<5?"Bonne nuit":h<12?"Bonjour":h<18?"Bon apres-midi":"Bonsoir";
+    if(l==="es")return h<5?"Buenas noches":h<12?"Buenos dias":h<18?"Buenas tardes":"Buenas noches";
+    if(l==="de")return h<5?"Gute Nacht":h<12?"Guten Morgen":h<18?"Guten Tag":"Guten Abend";
+    return h<5?"Good night":h<12?"Good morning":h<18?"Good afternoon":"Good evening";
+  }
+  function layoutPrefs(){
+    try{return Object.assign({order:[],hidden:[],favorites:[]},JSON.parse(localStorage.getItem("ethone:dashboard-v4-layout")||"{}"))}catch(e){return{order:[],hidden:[],favorites:[]}}
+  }
+  function savePrefs(p){try{localStorage.setItem("ethone:dashboard-v4-layout",JSON.stringify(p))}catch(e){}}
+  function widgetHead(title,sub,iconName,id){
+    return '<div class="d4-panel-head"><div class="d4-panel-title">'+icon(iconName)+'<div><h2>'+title+'</h2>'+(sub?'<p>'+sub+'</p>':"")+'</div></div><button class="d4-favorite" type="button" data-v4-favorite="'+id+'" aria-label="'+tr("favorite")+'">'+icon("star")+'</button></div>';
+  }
+  function quick(label,page,iconName){
+    return '<button class="d4-quick-action" type="button" data-v4-page="'+page+'"><i>'+icon(iconName)+'</i><span>'+label+'</span></button>';
+  }
+  function markup(){
+    return '<section class="vn-home vh-home d4-home" id="ethone-2026-home" data-vh-bound="1" data-lang="'+lang()+'">'+
+      '<header class="d4-topbar"><button class="d4-search" type="button" data-v4-action="search" aria-label="'+tr("search")+'">'+icon("search")+'<span>'+tr("search")+'</span><kbd>Ctrl K</kbd></button><div class="d4-workspace">'+icon("layout-grid")+'<span id="vh-workspace-top">'+esc(workspaceName())+'</span></div><div class="d4-top-actions"><div class="d4-sync"><i class="d4-live-dot"></i><span id="vh-sync">'+tr("synced")+'</span></div><button class="d4-icon-button" type="button" data-v4-action="notifications" aria-label="Notifications">'+icon("bell")+'</button><button class="d4-avatar" type="button" data-v4-action="profile" id="vh-avatar" aria-label="Profile">E</button></div></header>'+
+      '<div class="d4-command"><section class="d4-panel d4-hero d4-widget" data-widget-id="command"><span class="d4-drag" aria-hidden="true">'+icon("grip-vertical")+'</span><div class="d4-hero-copy"><h1 id="vh-greeting">ETHONE</h1><p>'+icon("brain")+'<span id="bh-hero-sentence">'+tr("brainAnalyzed")+'</span></p></div><div class="d4-session"><div><span class="d4-date" id="d4-date"></span><strong class="d4-time" id="d4-time"></strong></div><div class="d4-session-state"><span>'+icon("cloud")+'<b id="d4-session">'+tr("session")+'</b></span><span>'+icon("circle-dot")+'<b>'+tr("online")+'</b></span></div></div><div class="d4-hero-actions"><button class="d4-button primary" type="button" data-v4-page="todos">'+icon("arrow-right")+'<span>'+tr("continueFocus")+'</span></button><button class="d4-button" type="button" data-v4-page="ai">'+icon("brain")+'<span>'+tr("askBrain")+'</span></button></div></section>'+
+      '<aside class="d4-panel d4-today d4-widget" data-widget-id="today">'+widgetHead(tr("today"),"", "sun","today")+'<div class="d4-today-block"><span class="d4-label">'+tr("focus")+'</span><div class="d4-today-line"><span id="d4-focus-copy">0m / 3h</span><strong id="d4-focus-pct">0%</strong></div><div class="d4-progress"><i id="d4-focus-bar" style="width:0%"></i></div></div><div class="d4-today-block"><span class="d4-label">'+tr("objectives")+'</span><div class="d4-mini-list" id="d4-goals"></div></div><div class="d4-today-block"><span class="d4-label">'+tr("habits")+'</span><div class="d4-mini-list" id="d4-habits"></div></div><div class="d4-today-block"><span class="d4-label">'+tr("planning")+'</span><div class="d4-mini-list" id="d4-planning"></div></div></aside></div>'+
+      '<div class="d4-main"><section class="d4-panel d4-brain d4-widget" data-widget-id="brain"><span class="d4-drag" aria-hidden="true">'+icon("grip-vertical")+'</span>'+widgetHead(tr("brainOS"),tr("brainSub"),"brain-circuit","brain")+'<div class="d4-brain-grid"><div class="d4-brain-column d4-brain-status"><span class="d4-label">'+tr("summary")+'</span><div class="d4-brain-metrics"><div class="d4-brain-metric"><strong id="d4-task-count">0</strong><span>'+tr("tasks")+'</span></div><div class="d4-brain-metric"><strong id="d4-event-count">0</strong><span>'+tr("events")+'</span></div><div class="d4-brain-metric"><strong id="d4-focus-count">0m</strong><span>'+tr("focus")+'</span></div><div class="d4-brain-metric"><strong id="d4-habit-count">0 / 0</strong><span>'+tr("habits")+'</span></div></div><span class="d4-label">'+tr("globalState")+'</span><div id="d4-global-state"></div></div><div class="d4-brain-column d4-recommendation"><span class="d4-label">'+tr("recommendation")+'</span><p id="bh-summary-copy"></p><span class="d4-label">'+tr("nextAction")+'</span><div class="d4-next-action"><i></i><div><strong id="bh-action-title"></strong><span id="bh-action-context"></span></div><button class="d4-open-action" type="button" data-v4-page="todos">'+tr("open")+' '+icon("arrow-right")+'</button></div><p class="d4-explanation" id="bh-action-copy"></p></div><div class="d4-brain-column d4-reminders"><span class="d4-label">'+tr("reminders")+'</span><div id="bh-why-list"></div><button class="d4-view-link" type="button" data-v4-page="todos">'+tr("open")+' '+tr("reminders")+' '+icon("arrow-right")+'</button></div></div><div class="d4-compat"><div id="bh-priorities"></div><div id="bh-upcoming"></div><div id="bh-automation"></div><div id="bh-vision"></div><div id="bh-providers"></div><div id="bh-memory"></div><div id="bh-context-workspace"></div><div id="bh-context-schedule"></div><div id="bh-context-focus"></div><div id="bh-context-activity"></div></div></section></div>'+
+      '<div class="d4-modules" id="d4-widget-grid"><section class="d4-panel d4-module d4-widget" data-widget-id="timeline"><span class="d4-drag" aria-hidden="true">'+icon("grip-vertical")+'</span>'+widgetHead(tr("timeline"),"", "calendar-clock","timeline")+'<div class="d4-module-body" id="d4-timeline"></div></section><section class="d4-panel d4-module d4-widget" data-widget-id="workspace"><span class="d4-drag" aria-hidden="true">'+icon("grip-vertical")+'</span>'+widgetHead(tr("workspacePanel"),"", "folder-kanban","workspace")+'<div class="d4-module-body"><div class="vh-list" id="bh-context-list"></div></div></section><section class="d4-panel d4-module d4-widget" data-widget-id="activity"><span class="d4-drag" aria-hidden="true">'+icon("grip-vertical")+'</span>'+widgetHead(tr("activity"),"", "chart-no-axes-combined","activity")+'<div class="d4-module-body"><div id="bh-insights"></div><div class="d4-insights-grid" id="d4-activity"></div></div></section></div>'+
+      '<section class="d4-panel d4-quick"><div class="d4-quick-head"><h2>'+tr("quick")+'</h2><span>'+tr("quickHint")+'</span></div><div class="d4-quick-grid">'+quick(tr("note"),"notes","notebook-pen")+quick(tr("task"),"todos","circle-check")+quick(tr("file"),"files","file-plus-2")+quick(tr("event"),"calendar","calendar-plus")+quick(tr("market"),"marketplace","store")+quick(tr("brain"),"ai","brain")+quick(tr("spaces"),"workspaces","layout-grid")+'</div></section>'+
+    '</section>';
+  }
+  function ensure(){
+    var page=qs("#page-dashboard");if(!page)return null;
+    var old=qs("#ethone-2026-home",page);
+    if(old&&(!old.classList.contains("d4-home")||old.dataset.lang!==lang()))old.remove();
+    var home=qs("#ethone-2026-home",page);
+    if(!home){page.insertAdjacentHTML("afterbegin",markup());home=qs("#ethone-2026-home",page)}
+    if(home&&!home.dataset.d4Bound){
+      home.dataset.d4Bound="1";
+      home.addEventListener("click",function(e){
+        var favorite=e.target.closest("[data-v4-favorite]");
+        if(favorite){toggleFavorite(favorite.dataset.v4Favorite);return}
+        var action=e.target.closest("[data-v4-action]");
+        if(action){
+          if(action.dataset.v4Action==="search"&&typeof window.openCmdPalette==="function")window.openCmdPalette();
+          if(action.dataset.v4Action==="notifications"&&typeof window.toggleNotifPanel==="function")window.toggleNotifPanel();
+          if(action.dataset.v4Action==="profile"&&typeof window.goToProfileScreen==="function")window.goToProfileScreen();
+          return;
+        }
+        var pageButton=e.target.closest("[data-v4-page]");
+        if(pageButton&&typeof window.switchPage==="function")window.switchPage(pageButton.dataset.v4Page,null);
+      });
+    }
+    applyLayout(home);
+    try{if(window.lucide&&!window.__lucideFailed)window.lucide.createIcons()}catch(e){}
+    return home;
+  }
+  function applyLayout(home){
+    var prefs=layoutPrefs(),grid=qs("#d4-widget-grid",home);
+    if(grid&&prefs.order.length)prefs.order.forEach(function(id){var w=qs('[data-widget-id="'+id+'"]',grid);if(w)grid.appendChild(w)});
+    Array.prototype.forEach.call(home.querySelectorAll("[data-widget-id]"),function(w){
+      var id=w.dataset.widgetId,hidden=prefs.hidden.indexOf(id)>-1,fav=prefs.favorites.indexOf(id)>-1;
+      w.dataset.v4Hidden=hidden?"true":"false";
+      var b=qs('[data-v4-favorite="'+id+'"]',w);
+      if(b){b.classList.toggle("is-favorite",fav);b.setAttribute("aria-label",fav?tr("unfavorite"):tr("favorite"));b.setAttribute("aria-pressed",fav?"true":"false")}
+    });
+  }
+  function toggleFavorite(id){
+    var p=layoutPrefs(),i=p.favorites.indexOf(id);
+    if(i>-1)p.favorites.splice(i,1);else p.favorites.push(id);
+    savePrefs(p);var home=qs("#ethone-2026-home");if(home)applyLayout(home);
+  }
+  function clock(home){
+    var now=new Date(),locale=lang()==="en"?"en-GB":lang()==="de"?"de-DE":lang()==="es"?"es-ES":"fr-FR";
+    var date=qs("#d4-date",home),time=qs("#d4-time",home);
+    if(date)date.textContent=now.toLocaleDateString(locale,{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+    if(time)time.textContent=now.toLocaleTimeString(locale,{hour:"2-digit",minute:"2-digit"});
+  }
+  function percent(n,d){return d?Math.max(0,Math.min(100,Math.round(n/d*100))):0}
+  function brainSentence(open,events,notes){
+    if(open.length)return tr("brainAnalyzed")+" "+open.length+" "+tr("tasks").toLowerCase()+".";
+    if(events.length)return tr("brainAnalyzed")+" "+events.length+" "+tr("events").toLowerCase()+".";
+    if(notes.length)return tr("brainAnalyzed")+" "+notes.length+" "+tr("notes").toLowerCase()+".";
+    return tr("calm");
+  }
+  function miniRows(items,type,empty){
+    if(!items.length)return '<div class="d4-mini-row"><i>-</i><span>'+empty+'</span><small></small></div>';
+    return items.slice(0,3).map(function(x){return '<div class="d4-mini-row"><i></i><span>'+esc(titleOf(x,type))+'</span><small>'+esc(x.progress!=null?x.progress+"%":x.time||x.date||"")+'</small></div>'}).join("");
+  }
+  function timelineRows(events,open){
+    var rows=events.slice(0,3).map(function(e){return{time:e.time||e.date||tr("today"),title:titleOf(e,tr("events")),meta:e.duration||e.tag||tr("planning")}});
+    if(rows.length<3)open.slice(0,3-rows.length).forEach(function(t){rows.push({time:t.due||tr("today"),title:titleOf(t,tr("tasks")),meta:t.priority||tr("focus")})});
+    if(!rows.length)return '<div class="vh-empty">'+tr("noEvent")+'</div>';
+    return rows.map(function(r){return '<div class="d4-timeline-row"><time>'+esc(r.time)+'</time><i class="d4-timeline-mark"></i><div><strong>'+esc(r.title)+'</strong><small>'+esc(r.meta)+'</small></div></div>'}).join("");
+  }
+  function workspaceRows(notes,items){
+    var rows=notes.map(function(n){return{title:titleOf(n,tr("notes")),type:tr("notes"),icon:"notebook-pen"}}).concat(items.map(function(i){return{title:titleOf(i,tr("files")),type:i.type||tr("files"),icon:"file"}})).slice(0,5);
+    if(!rows.length)return '<div class="vh-empty">'+tr("noRecent")+'</div>';
+    return rows.map(function(r){return '<div class="vh-list-row"><i class="vh-list-icon">'+icon(r.icon)+'</i><div><strong>'+esc(r.title)+'</strong><small>'+esc(workspaceName())+' · '+esc(r.type)+'</small></div><span>'+tr("updated")+'</span></div>'}).join("");
+  }
+  function render(){
+    var home=ensure();if(!home)return;
+    var s=state(),p=profile(),todos=list(s.todos),notes=list(s.notes),items=list(s.items),events=list(s.events),habits=list(s.habits),goals=list(s.goals);
+    var open=todos.filter(function(t){return !t.done}),done=todos.filter(function(t){return !!t.done}),habitDone=habits.filter(function(h){return h.done||h.completed});
+    var focus=Number(s.focusMinutes||s.stats&&s.stats.focusMinutes||s.pomodoro&&s.pomodoro.totalMinutes||0),focusTarget=Number(s.focusTarget||180),focusPct=percent(focus,focusTarget);
+    var name=(p&&p.name)||s.username||"ETHONE",rec=open[0]||events[0]||notes[0],recTitle=titleOf(rec,tr("calm"));
+    qs("#vh-greeting",home).textContent=phase()+", "+name+".";
+    qs("#bh-hero-sentence",home).textContent=brainSentence(open,events,notes);
+    qs("#vh-workspace-top",home).textContent=workspaceName();
+    qs("#vh-sync",home).textContent=navigator.onLine===false?tr("offline"):tr("synced");
+    qs("#vh-avatar",home).textContent=String(name).trim().charAt(0).toUpperCase()||"E";
+    qs("#d4-session",home).textContent=workspaceName();
+    qs("#d4-task-count",home).textContent=open.length;
+    qs("#d4-event-count",home).textContent=events.length;
+    qs("#d4-focus-count",home).textContent=focus+"m";
+    qs("#d4-habit-count",home).textContent=habitDone.length+" / "+habits.length;
+    qs("#d4-focus-copy",home).textContent=focus+"m / "+focusTarget+"m";
+    qs("#d4-focus-pct",home).textContent=focusPct+"%";
+    qs("#d4-focus-bar",home).style.width=focusPct+"%";
+    qs("#d4-goals",home).innerHTML=miniRows(goals,tr("objectives"),tr("noGoal"));
+    qs("#d4-habits",home).innerHTML=miniRows(habits,tr("habits"),tr("noHabit"));
+    qs("#d4-planning",home).innerHTML=miniRows(events,tr("events"),tr("noEvent"));
+    qs("#bh-summary-copy",home).textContent=brainSentence(open,events,notes);
+    qs("#bh-action-title",home).textContent=recTitle;
+    qs("#bh-action-context",home).textContent=workspaceName()+" · "+(open[0]?tr("focus"):events[0]?tr("planning"):tr("brain"));
+    qs("#bh-action-copy",home).textContent=open[0]?tr("continueFocus"):events[0]?tr("planning"):tr("calm");
+    var reminderRows=open.slice(0,2).concat(events.slice(0,1));
+    qs("#bh-why-list",home).innerHTML=reminderRows.length?reminderRows.map(function(x){return '<div class="bh-why-row"><i>✓</i><span>'+esc(titleOf(x,tr("reminders")))+'</span></div>'}).join(""):'<div class="bh-why-row"><i>✓</i><span>'+tr("noReminder")+'</span></div>';
+    var productivity=percent(done.length,todos.length),habitPct=percent(habitDone.length,habits.length);
+    qs("#d4-global-state",home).innerHTML=[[tr("productivity"),productivity],[tr("energy"),Math.min(100,35+focusPct)],[tr("load"),Math.min(100,open.length*12+events.length*8)],[tr("concentration"),Math.max(focusPct,habitPct)]].map(function(r){return '<div class="d4-state-row"><span>'+r[0]+'</span><div class="d4-progress"><i style="width:'+r[1]+'%"></i></div><strong>'+r[1]+'%</strong></div>'}).join("");
+    qs("#d4-timeline",home).innerHTML=timelineRows(events,open);
+    qs("#bh-context-list",home).innerHTML=workspaceRows(notes,items);
+    qs("#bh-insights",home).innerHTML="";
+    qs("#d4-activity",home).innerHTML='<div class="d4-insight-cell"><span>'+tr("focus")+'</span><strong>'+focus+'m</strong></div><div class="d4-insight-cell"><span>'+tr("tasks")+'</span><strong>'+done.length+" / "+todos.length+'</strong></div><div class="d4-insight-cell"><span>'+tr("habits")+'</span><strong>'+habitDone.length+" / "+habits.length+'</strong></div><div class="d4-insight-cell"><span>'+tr("files")+'</span><strong>'+items.length+'</strong></div>';
+    clock(home);applyLayout(home);
+    try{if(window.lucide&&!window.__lucideFailed)window.lucide.createIcons()}catch(e){}
+  }
+  function schedule(){clearTimeout(timer);timer=setTimeout(render,80)}
+  function boot(){
+    document.body.classList.add("ethone-2026-ui","ethone-dashboard-v4");
+    schedule();
+    window.addEventListener("storage",schedule);
+    window.addEventListener("online",schedule);
+    window.addEventListener("offline",schedule);
+    document.addEventListener("visibilitychange",function(){if(!document.hidden)schedule()});
+    clearInterval(clockTimer);
+    clockTimer=setInterval(function(){if(!document.hidden){var h=qs("#ethone-2026-home.d4-home");if(h)clock(h)}},60000);
+    setTimeout(schedule,650);
+    setTimeout(schedule,1900);
+  }
+  window.ethoneDashboardV4Render=render;
+  if(window.ethoneRunWhenDashboardReady)window.ethoneRunWhenDashboardReady("dashboard-v4",boot);
+  else if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});
+  else boot();
 })();
 </script>
 </body>

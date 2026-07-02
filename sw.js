@@ -1,4 +1,4 @@
-const ETHONE_VERSION = "2026-07-02-production-v19-auth-layout";
+const ETHONE_VERSION = "2026-07-02-production-v21-auth-reference";
 const ETHONE_CACHE = `ethone-${ETHONE_VERSION}`;
 const ETHONE_OFFLINE_URL = "./index.html";
 const ETHONE_CORE_ASSETS = [

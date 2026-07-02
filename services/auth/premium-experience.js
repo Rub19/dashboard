@@ -35,12 +35,22 @@
     var active=styledActive.length===1?(styledActive[0].getAttribute("data-l")||currentLanguage()):currentLanguage();
     bar.setAttribute("role","group");
     bar.setAttribute("aria-label","Language");
+    var activeBtn=null;
     buttons.forEach(function(btn){
       var code=btn.getAttribute("data-l")||"";
       btn.type="button";
       btn.setAttribute("aria-label",code.toUpperCase());
       btn.setAttribute("aria-pressed",String(code===active));
+      if(code===active)activeBtn=btn;
     });
+    var slider=qs("#auth-langbar-slider");
+    if(slider&&activeBtn){
+      var barRect=bar.getBoundingClientRect(),btnRect=activeBtn.getBoundingClientRect();
+      if(btnRect.width>0){
+        slider.style.width=btnRect.width+"px";
+        slider.style.transform="translateX("+(btnRect.left-barRect.left)+"px)";
+      }
+    }
   }
   function heroMarkup(){
     var copy=heroText();
@@ -195,6 +205,16 @@
     registerTab.classList.toggle("is-active",!loginActive);
     loginForm.setAttribute("aria-hidden",String(!loginActive));
     registerForm.setAttribute("aria-hidden",String(loginActive));
+    var tabSlider=qs("#auth-tabs-slider");
+    var tabWrap=qs("#auth-tabs-wrap");
+    if(tabSlider&&tabWrap){
+      var activeTab=loginActive?loginTab:registerTab;
+      var wrapRect=tabWrap.getBoundingClientRect(),tabRect=activeTab.getBoundingClientRect();
+      if(tabRect.width>0){
+        tabSlider.style.width=tabRect.width+"px";
+        tabSlider.style.transform="translateX("+(tabRect.left-wrapRect.left)+"px)";
+      }
+    }
   }
   function apply(){
     var screen=qs("#auth-screen");
@@ -235,6 +255,14 @@
       setTimeout(sync,80);
       setTimeout(sync,700);
       setTimeout(sync,1800);
+      if(!window.__ethoneAuthSliderResize){
+        window.__ethoneAuthSliderResize=true;
+        var resizeTimer=null;
+        window.addEventListener("resize",function(){
+          clearTimeout(resizeTimer);
+          resizeTimer=setTimeout(function(){syncTabControl();syncLanguageControl()},60);
+        });
+      }
       if(!screen.dataset.authV5LanguageSync){
         screen.dataset.authV5LanguageSync="1";
         screen.addEventListener("click",function(event){

@@ -48,7 +48,7 @@
     var l=lang();
     qsa("#auth-lang-bar button").forEach(function(btn){
       var active=btn.dataset.l===l;
-      btn.style.background=active?"rgba(124,58,237,.85)":"transparent";
+      btn.style.background="transparent";
       btn.style.color=active?"#fff":"rgba(255,255,255,.42)";
       btn.style.fontWeight=active?"700":"600";
       btn.type="button";
@@ -86,8 +86,8 @@
     if(login)login.style.display=tab==="login"?"block":"none";
     if(reg)reg.style.display=tab==="register"?"block":"none";
     var base="flex:1;height:38px;border:none;border-radius:9px;font-size:13px;font-family:Inter,system-ui,sans-serif;cursor:pointer;transition:all .15s";
-    if(tabLogin)tabLogin.style.cssText=base+(tab==="login"?";font-weight:600;background:#7c3aed;color:#fff;box-shadow:0 4px 14px rgba(124,58,237,.4)":";font-weight:500;background:transparent;color:rgba(250,250,249,.35)");
-    if(tabReg)tabReg.style.cssText=base+(tab==="register"?";font-weight:600;background:#7c3aed;color:#fff;box-shadow:0 4px 14px rgba(124,58,237,.4)":";font-weight:500;background:transparent;color:rgba(250,250,249,.35)");
+    if(tabLogin)tabLogin.style.cssText=base+(tab==="login"?";font-weight:600;background:transparent;color:#fff;box-shadow:none":";font-weight:500;background:transparent;color:rgba(250,250,249,.35)");
+    if(tabReg)tabReg.style.cssText=base+(tab==="register"?";font-weight:600;background:transparent;color:#fff;box-shadow:none":";font-weight:500;background:transparent;color:rgba(250,250,249,.35)");
     setErr("");
     applyAuthTranslations();
   }

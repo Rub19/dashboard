@@ -1,4 +1,4 @@
-const ETHONE_VERSION = "2026-07-02-production-v18-ux-audit";
+const ETHONE_VERSION = "2026-07-02-production-v19-auth-layout";
 const ETHONE_CACHE = `ethone-${ETHONE_VERSION}`;
 const ETHONE_OFFLINE_URL = "./index.html";
 const ETHONE_CORE_ASSETS = [
@@ -7,8 +7,12 @@ const ETHONE_CORE_ASSETS = [
   "./ui/tokens.css",
   "./ui/components.css",
   "./ui/app.css",
+  "./ui/auth.css",
   "./ui/accessibility.js",
   "./core/runtime.js",
+  "./services/language/auth-dictionary.js",
+  "./services/auth/interactivity.js",
+  "./services/auth/premium-experience.js",
   "./pages/dashboard-v4.js",
   "./icons/ethone-icon.svg",
   "./icons/ethone-icon-192.png",

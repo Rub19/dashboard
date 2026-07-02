@@ -13,7 +13,7 @@
     removeAntiFlash();hideBoot();
     var main=document.getElementById("main-content"),profile=document.getElementById("profile-screen"),auth=document.getElementById("auth-screen"),password=document.getElementById("password-screen");
     if(visible(main)||visible(profile)||visible(auth)||visible(password))return;
-    if(auth){auth.style.setProperty("display","grid","important");auth.style.setProperty("visibility","visible","important");auth.style.opacity="1";var card=document.getElementById("auth-card")||document.getElementById("lb-box");if(card){card.style.setProperty("display","block","important");card.style.setProperty("visibility","visible","important");card.style.opacity="1"}}
+    if(auth){auth.style.setProperty("display","flex","important");auth.style.setProperty("visibility","visible","important");auth.style.opacity="1";var card=document.getElementById("auth-card")||document.getElementById("lb-box");if(card){card.style.setProperty("display","block","important");card.style.setProperty("visibility","visible","important");card.style.opacity="1"}}
     else if(main){main.style.setProperty("display","block","important");main.style.setProperty("visibility","visible","important")}
     showWarning();
   }

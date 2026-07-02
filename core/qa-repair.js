@@ -50,7 +50,7 @@
     qsa('[style*="overflow:hidden"]').forEach(el=>{ if(el.classList.contains('main')||el.classList.contains('tab-content')) el.style.overflow='visible'; });
     document.documentElement.style.overflowX='hidden'; document.body.style.overflowX='hidden';
   }
-  function showLogin(){removeAntiFlash(); closeFloatingUI(); hide(qs('#main-sidebar')); hide(qs('#main-content')); hide(qs('#profile-screen')); hide(qs('#password-screen')); const a=qs('#auth-screen'); show(a,'grid'); const card=qs('#auth-card'); if(card) show(card,'block'); fixEyeButtons();}
+  function showLogin(){removeAntiFlash(); closeFloatingUI(); hide(qs('#main-sidebar')); hide(qs('#main-content')); hide(qs('#profile-screen')); hide(qs('#password-screen')); const a=qs('#auth-screen'); show(a,'flex'); const card=qs('#auth-card'); if(card) show(card,'block'); fixEyeButtons();}
   window.ethoneForceLoginVisible=showLogin;
   window.ethoneCloseFloatingUI=closeFloatingUI;
   function cleanProfilesVisual(){

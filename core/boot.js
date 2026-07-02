@@ -21,7 +21,7 @@ function showAuth(){
   setEthoneMode('auth');
   ['main-sidebar','main-content','profile-screen','password-screen'].forEach(id=>{const el=document.getElementById(id);if(el){el.style.display='none';el.style.visibility='hidden';}});
   const a=document.getElementById('auth-screen');
-  if(a){a.style.display='flex';a.style.visibility='visible';a.style.opacity='1';}
+  if(a){a.style.display='grid';a.style.visibility='visible';a.style.opacity='1';}
   const card=document.getElementById('auth-card')||document.getElementById('lb-box');
   if(card){card.style.display='block';card.style.visibility='visible';card.style.opacity='1';}
   hideBoot(); updateClock();

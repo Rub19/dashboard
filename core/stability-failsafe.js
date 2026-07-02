@@ -5,7 +5,7 @@
       var af=document.getElementById('anti-flash'); if(af) af.remove();
       ['nexus-boot-screen','nexus-page-transition','command-palette','notifications-panel'].forEach(function(id){var e=document.getElementById(id); if(e){e.style.display='none'; e.classList&&e.classList.remove('open','visible','active');}});
       document.documentElement.className=(document.documentElement.className||'').replace(/ethone-\w+-mode/g,'')+' ethone-auth-mode';
-      var a=document.getElementById('auth-screen'); if(a){a.style.cssText+=';display:flex!important;visibility:visible!important;opacity:1!important;';}
+      var a=document.getElementById('auth-screen'); if(a){a.style.cssText+=';display:grid!important;visibility:visible!important;opacity:1!important;';}
       var c=document.getElementById('auth-card')||document.getElementById('lb-box'); if(c){c.style.display='block';c.style.visibility='visible';c.style.opacity='1';}
       var s=document.getElementById('main-sidebar'); if(s)s.style.display='none';
       var m=document.getElementById('main-content'); if(m)m.style.display='none';

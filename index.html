@@ -11455,27 +11455,27 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
   min-height:100vh;
   color:var(--ink);
   background:
-    radial-gradient(ellipse 58% 48% at 18% 14%, rgba(124,58,237,.11), transparent 62%),
-    radial-gradient(ellipse 48% 42% at 84% 18%, rgba(139,92,246,.065), transparent 58%),
-    radial-gradient(ellipse 55% 58% at 78% 88%, rgba(124,58,237,.06), transparent 62%),
-    radial-gradient(ellipse 40% 40% at 8% 90%, rgba(139,92,246,.045), transparent 55%),
+    radial-gradient(ellipse 58% 48% at 18% 14%, rgba(124,58,237,.075), transparent 62%),
+    radial-gradient(ellipse 48% 42% at 84% 18%, rgba(139,92,246,.045), transparent 58%),
+    radial-gradient(ellipse 55% 58% at 78% 88%, rgba(124,58,237,.04), transparent 62%),
+    radial-gradient(ellipse 40% 40% at 8% 90%, rgba(139,92,246,.03), transparent 55%),
     linear-gradient(180deg,#08080a 0%,#0a0a0d 45%,#08080a 100%)!important;
 }
 #auth-screen.ethone-auth-v3::before{
   content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
   background-image:
-    linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+    linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
   background-size:64px 64px;
-  mask-image:radial-gradient(ellipse 72% 62% at 50% 38%, #000 0%, transparent 78%);
-  -webkit-mask-image:radial-gradient(ellipse 72% 62% at 50% 38%, #000 0%, transparent 78%);
-  opacity:.55;
+  mask-image:radial-gradient(ellipse 65% 55% at 50% 38%, #000 0%, transparent 72%);
+  -webkit-mask-image:radial-gradient(ellipse 65% 55% at 50% 38%, #000 0%, transparent 72%);
+  opacity:.28;
 }
 #auth-screen.ethone-auth-v3::after{
   content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
   background:
-    radial-gradient(ellipse 100% 90% at 50% 45%, transparent 45%, rgba(0,0,0,.6) 100%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+    radial-gradient(ellipse 100% 90% at 50% 45%, transparent 40%, rgba(0,0,0,.68) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
   background-size:cover,180px 180px;
   mix-blend-mode:normal;
 }
@@ -11487,7 +11487,7 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
 /* ── Layout grid ── */
 #auth-screen.ethone-auth-v3.ethone-auth-v3-visible{
   display:grid!important;
-  grid-template-columns:minmax(0,1fr) minmax(420px,480px);
+  grid-template-columns:minmax(560px,920px) minmax(420px,480px);
   max-width:1420px;
   margin:0 auto;
   align-items:start!important;
@@ -11503,8 +11503,8 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
 }
 #auth-screen.ethone-auth-v3:not(.ethone-auth-v3-visible){display:none!important}
 
-@keyframes authFadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-@keyframes authCardIn{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes authFadeUp{from{opacity:0}to{opacity:1}}
+@keyframes authCardIn{from{opacity:0}to{opacity:1}}
 @keyframes authGlowPulse{0%,100%{opacity:.55}50%{opacity:1}}
 
 /* ── Hero column ── */
@@ -11513,10 +11513,10 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
   width:100%;max-width:920px;
   min-height:auto;
   display:flex;flex-direction:column;
-  gap:var(--sp-3);
+  gap:var(--sp-4);
   animation:authFadeUp .55s var(--ease) both;
 }
-.auth-v3-brand{display:flex;align-items:center;gap:var(--sp-2);margin-bottom:2px}
+.auth-v3-brand{display:flex;align-items:center;gap:var(--sp-2);margin-bottom:0}
 .auth-v3-mark{
   width:46px;height:46px;border-radius:var(--radius-sm);
   display:flex;align-items:center;justify-content:center;
@@ -11589,23 +11589,24 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
 #auth-screen.ethone-auth-v3 #auth-card{
   position:relative;z-index:3;
   width:100%;
+  max-width:none!important;
   align-self:start!important;
   animation:authCardIn .6s var(--ease) both;
   animation-delay:.1s;
 }
 #auth-screen.ethone-auth-v3 #lb-box{
   position:relative;
-  border-radius:var(--radius-xl)!important;
-  padding:var(--sp-4) var(--sp-4) var(--sp-3)!important;
+  border-radius:24px!important;
+  padding:var(--sp-4) var(--sp-4) var(--sp-4)!important;
   background:
     linear-gradient(155deg,rgba(255,255,255,.06),transparent 46%),
     rgba(16,16,20,.88)!important;
   border:1px solid var(--line)!important;
   box-shadow:
     0 1px 0 rgba(255,255,255,.07) inset,
-    0 44px 110px rgba(0,0,0,.55),
+    0 32px 90px rgba(0,0,0,.5),
     0 0 0 1px rgba(0,0,0,.32),
-    0 0 140px -48px var(--accent-glow)!important;
+    0 0 90px -46px var(--accent-glow)!important;
   backdrop-filter:blur(30px) saturate(150%)!important;
   -webkit-backdrop-filter:blur(30px) saturate(150%)!important;
   overflow:visible!important;
@@ -11657,7 +11658,7 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
   border-radius:calc(var(--radius-md) - 4px);
   background:linear-gradient(155deg,var(--accent-2),var(--accent) 85%);
   box-shadow:0 6px 18px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,.24);
-  transition:transform .4s var(--ease-spring), width .4s var(--ease-spring);
+  transition:transform .23s cubic-bezier(.4,0,.2,1), width .23s cubic-bezier(.4,0,.2,1);
   will-change:transform;
   z-index:0;
   pointer-events:none;
@@ -11685,12 +11686,12 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
   border:1px solid var(--line)!important;
   color:var(--ink)!important;
   caret-color:var(--accent-2)!important;
-  padding:0 44px 0 15px!important;
+  padding:0 44px 0 16px!important;
   font-size:14px!important;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.02)!important;
-  transition:border-color .18s var(--ease),background .18s var(--ease),box-shadow .18s var(--ease),transform .18s var(--ease)!important;
+  transition:border-color .2s var(--ease),background .2s var(--ease),box-shadow .2s var(--ease),transform .2s var(--ease)!important;
 }
-#auth-screen.ethone-auth-v3 .lb-input::placeholder{color:var(--ink-faint)!important;opacity:1!important}
+#auth-screen.ethone-auth-v3 .lb-input::placeholder{color:rgba(248,247,251,.38)!important;opacity:1!important}
 #auth-screen.ethone-auth-v3 .lb-input:hover{
   background:rgba(255,255,255,.05)!important;
   border-color:rgba(255,255,255,.17)!important;
@@ -11699,7 +11700,7 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
   background:rgba(124,58,237,.06)!important;
   border-color:rgba(139,92,246,.72)!important;
   box-shadow:0 0 0 4px rgba(124,58,237,.14), 0 10px 28px -10px var(--accent-glow)!important;
-  transform:translateY(-1px);
+  transform:translateY(-1px) scale(1.004);
 }
 #auth-screen.ethone-auth-v3 .lb-input:disabled{
   color:var(--ink-faint)!important;background:rgba(255,255,255,.02)!important;
@@ -11742,12 +11743,12 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
   background:linear-gradient(155deg,var(--accent-2),var(--accent) 85%)!important;
   font-size:14px!important;font-weight:700!important;
   box-shadow:0 1px 0 rgba(255,255,255,.2) inset, 0 12px 30px var(--accent-glow)!important;
-  transition:transform .18s var(--ease-spring),box-shadow .22s var(--ease),filter .22s var(--ease)!important;
+  transition:transform .2s var(--ease),box-shadow .2s var(--ease),filter .2s var(--ease)!important;
 }
 #auth-screen.ethone-auth-v3 .lb-btn-primary:hover{
-  transform:translateY(-2px)!important;
+  transform:translateY(-1.5px)!important;
   filter:brightness(1.07);
-  box-shadow:0 1px 0 rgba(255,255,255,.24) inset, 0 18px 40px var(--accent-glow)!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.24) inset, 0 16px 36px var(--accent-glow)!important;
 }
 #auth-screen.ethone-auth-v3 .lb-btn-primary:active{
   transform:translateY(0) scale(.98)!important;
@@ -11770,20 +11771,20 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
 
 #auth-screen.ethone-auth-v3 .lb-social{
   position:relative;
-  height:46px!important;min-height:46px!important;
+  height:48px!important;min-height:48px!important;
   border-radius:var(--radius-sm)!important;
   background:rgba(255,255,255,.03)!important;
   border:1px solid var(--line)!important;
   color:var(--ink-soft)!important;
   font-weight:600!important;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.03)!important;
-  transition:background .2s var(--ease),border-color .2s var(--ease),color .2s var(--ease),transform .18s var(--ease-spring)!important;
+  transition:background .2s var(--ease),border-color .2s var(--ease),color .2s var(--ease),transform .2s var(--ease)!important;
 }
 #auth-screen.ethone-auth-v3 .lb-social:hover{
   background:rgba(255,255,255,.065)!important;
   border-color:rgba(255,255,255,.22)!important;
   color:#fff!important;
-  transform:translateY(-1.5px);
+  transform:translateY(-1px);
 }
 #auth-screen.ethone-auth-v3 .lb-social:active{transform:translateY(0) scale(.98)}
 #auth-screen.ethone-auth-v3 .lb-social svg{position:relative;z-index:1}
@@ -11798,33 +11799,34 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
 }
 @keyframes authErrIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 
-/* ── Language switcher ── */
+/* ── Language switcher — capsule, matches segmented control language ── */
 #auth-screen.ethone-auth-v3 #auth-lang-bar{
   position:fixed!important;
-  top:clamp(20px,3vw,36px)!important;right:clamp(20px,3.4vw,48px)!important;
+  top:clamp(28px,4vw,56px)!important;right:clamp(20px,4vw,56px)!important;
   bottom:auto!important;left:auto!important;transform:none!important;
   z-index:100012!important;
   padding:4px!important;gap:2px!important;
-  border-radius:99px!important;
-  background:rgba(12,12,16,.78)!important;
+  border-radius:18px!important;
+  background:rgba(12,12,16,.8)!important;
   border:1px solid var(--line)!important;
-  box-shadow:0 16px 44px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.05)!important;
-  backdrop-filter:blur(22px) saturate(150%)!important;
-  -webkit-backdrop-filter:blur(22px) saturate(150%)!important;
+  box-shadow:0 14px 38px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.05)!important;
+  backdrop-filter:blur(16px) saturate(150%)!important;
+  -webkit-backdrop-filter:blur(16px) saturate(150%)!important;
 }
 #auth-langbar-slider{
   position:absolute;top:4px;left:4px;height:calc(100% - 8px);width:0;
-  border-radius:99px;
+  border-radius:14px;
   background:linear-gradient(155deg,var(--accent-2),var(--accent) 85%);
-  box-shadow:0 4px 14px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,.24);
-  transition:transform .4s var(--ease-spring), width .4s var(--ease-spring);
+  box-shadow:0 4px 14px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,.24), inset 0 0 0 1px rgba(0,0,0,.08);
+  transition:transform .23s cubic-bezier(.4,0,.2,1), width .23s cubic-bezier(.4,0,.2,1);
   z-index:0;
   pointer-events:none;
 }
 #auth-screen.ethone-auth-v3 #auth-lang-bar button{
   position:relative;z-index:1;
+  display:flex!important;align-items:center!important;justify-content:center!important;
   min-width:38px!important;height:29px!important;padding:0 11px!important;
-  border-radius:99px!important;font-size:10.5px!important;font-weight:700!important;
+  border-radius:14px!important;font-size:10.5px!important;font-weight:700!important;
   background:transparent!important;
   color:var(--ink-faint)!important;
   transition:color .2s var(--ease)!important;
@@ -11842,12 +11844,12 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
 }
 @media(max-width:1100px){
   #auth-screen.ethone-auth-v3.ethone-auth-v3-visible{
-    grid-template-columns:1fr!important;
+    grid-template-columns:minmax(0,1fr)!important;
     max-width:640px;
     align-content:start;
     padding:88px clamp(20px,5vw,42px) 40px!important;
   }
-  #auth-v3-hero{max-width:100%;gap:var(--sp-2)}
+  #auth-v3-hero{max-width:100%;min-width:0;gap:var(--sp-2)}
   .auth-v3-title{font-size:clamp(40px,8vw,58px)!important}
   #auth-screen.ethone-auth-v3 #auth-card{justify-self:center}
 }

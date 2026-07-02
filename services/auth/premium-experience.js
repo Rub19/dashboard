@@ -246,6 +246,22 @@
     syncTabControl();
     syncLanguageControl();
     syncHeroLanguage();
+    syncLangBarTop();
+  }
+  function syncLangBarTop(){
+    var bar=qs("#auth-lang-bar");
+    var card=qs("#auth-card");
+    if(!bar||!card)return;
+    var cardTop=card.getBoundingClientRect().top;
+    if(cardTop>0)bar.style.setProperty("top",cardTop+"px","important");
+  }
+  function settleEntranceAnimations(){
+    ["auth-v3-hero","auth-card"].forEach(function(id){
+      var el=qs("#"+id);
+      if(el)el.style.animation="none";
+    });
+    var preview=qs(".auth-v3-preview");
+    if(preview)preview.style.animation="none";
   }
   function boot(){
     apply();
@@ -255,13 +271,16 @@
       setTimeout(sync,80);
       setTimeout(sync,700);
       setTimeout(sync,1800);
+      setTimeout(settleEntranceAnimations,900);
       if(!window.__ethoneAuthSliderResize){
         window.__ethoneAuthSliderResize=true;
         var resizeTimer=null;
         window.addEventListener("resize",function(){
           clearTimeout(resizeTimer);
-          resizeTimer=setTimeout(function(){syncTabControl();syncLanguageControl()},60);
+          resizeTimer=setTimeout(function(){syncTabControl();syncLanguageControl();syncLangBarTop()},60);
         });
+        try{new ResizeObserver(function(){syncLangBarTop()}).observe(qs("#auth-card"))}catch(e){}
+        setInterval(syncLangBarTop,500);
       }
       if(!screen.dataset.authV5LanguageSync){
         screen.dataset.authV5LanguageSync="1";

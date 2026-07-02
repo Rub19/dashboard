@@ -177,12 +177,55 @@
       }).join("");
     }
   }
+  function nudgeActivityBars(){
+    var hero=qs("#auth-v3-hero");
+    if(!hero)return;
+    var bars=Array.prototype.slice.call(hero.querySelectorAll("#apc-bars .ab"));
+    if(!bars.length)return;
+    var pick=bars[Math.floor(Math.random()*bars.length)];
+    if(pick.classList.contains("now"))return;
+    var current=parseFloat(pick.style.height)||30;
+    var delta=(Math.random()*10-5);
+    var next=Math.min(96,Math.max(8,current+delta));
+    pick.style.height=next+"%";
+  }
   function startPreviewRuntime(){
     updatePreviewRuntime();
     if(!window.__ethoneAuthV8PreviewTimer){
-      window.__ethoneAuthV8PreviewTimer=setInterval(syncHeroLanguage,30000);
+      window.__ethoneAuthV8PreviewTimer=setInterval(syncHeroLanguage,20000);
       window.addEventListener("online",updatePreviewRuntime);
       window.addEventListener("offline",updatePreviewRuntime);
+    }
+    if(!window.__ethoneAuthV10ActivityTimer){
+      window.__ethoneAuthV10ActivityTimer=setInterval(nudgeActivityBars,4200);
+    }
+  }
+  function syncCardHeight(){
+    var loginForm=qs("#form-login");
+    var registerForm=qs("#form-register");
+    if(!loginForm||!registerForm)return;
+    loginForm.style.minHeight="";
+    registerForm.style.minHeight="";
+    var loginWasHidden=getComputedStyle(loginForm).display==="none";
+    var registerWasHidden=getComputedStyle(registerForm).display==="none";
+    var measure=function(form,wasHidden){
+      if(!wasHidden)return form.scrollHeight;
+      var prevPosition=form.style.position,prevVisibility=form.style.visibility,prevDisplay=form.style.display;
+      form.style.position="absolute";
+      form.style.visibility="hidden";
+      form.style.display="block";
+      var h=form.scrollHeight;
+      form.style.position=prevPosition;
+      form.style.visibility=prevVisibility;
+      form.style.display=prevDisplay;
+      return h;
+    };
+    var loginHeight=measure(loginForm,loginWasHidden);
+    var registerHeight=measure(registerForm,registerWasHidden);
+    var target=Math.max(loginHeight,registerHeight);
+    if(target>0){
+      loginForm.style.minHeight=target+"px";
+      registerForm.style.minHeight=target+"px";
     }
   }
   function syncTabControl(){
@@ -231,6 +274,7 @@
     syncTabControl();
     syncLanguageControl();
     syncHeroLanguage();
+    syncCardHeight();
     sync();
   }
   function sync(){
@@ -249,6 +293,7 @@
     syncTabControl();
     syncLanguageControl();
     syncHeroLanguage();
+    syncCardHeight();
   }
   function settleEntranceAnimations(){
     ["auth-v3-hero","auth-card"].forEach(function(id){
@@ -272,7 +317,7 @@
         var resizeTimer=null;
         window.addEventListener("resize",function(){
           clearTimeout(resizeTimer);
-          resizeTimer=setTimeout(function(){syncTabControl();syncLanguageControl()},60);
+          resizeTimer=setTimeout(function(){syncTabControl();syncLanguageControl();syncCardHeight()},60);
         });
       }
       if(!screen.dataset.authV5LanguageSync){
@@ -281,8 +326,20 @@
           if(event.target&&event.target.closest&&event.target.closest("#auth-lang-bar button[data-l]")){
             setTimeout(syncLanguageControl,0);
             setTimeout(syncHeroLanguage,0);
+            setTimeout(syncCardHeight,30);
           }
         });
+      }
+      var cardBox=qs("#lb-box");
+      if(cardBox&&!cardBox.dataset.authV10TextObserver){
+        cardBox.dataset.authV10TextObserver="1";
+        var textSyncTimer=null;
+        try{
+          new MutationObserver(function(){
+            clearTimeout(textSyncTimer);
+            textSyncTimer=setTimeout(syncCardHeight,30);
+          }).observe(cardBox,{subtree:true,characterData:true,childList:true});
+        }catch(e){}
       }
       var languageBar=qs("#auth-lang-bar");
       if(languageBar&&!languageBar.dataset.authV5StyleObserver){

@@ -3820,6 +3820,7 @@ body.eh-compact .stats-row,body.eh-compact .grid-2,body.eh-compact .grid-3,body.
 </div>
 </div>
 <nav class="sidebar" id="main-sidebar" style="display:none" aria-label="Navigation principale">
+<div id="nav-active-pill" aria-hidden="true"></div>
 <div class="logo" style="position:relative">
 <div class="logo-icon" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);box-shadow:0 2px 12px rgba(139,92,246,.3)">
 <svg fill="none" height="14" viewbox="0 0 20 20" width="14" aria-hidden="true"><rect x="4" y="5" width="12" height="2" rx="1" fill="white" opacity=".95"></rect><rect x="4" y="9" width="12" height="2" rx="1" fill="white" opacity=".95"></rect><rect x="4" y="13" width="8" height="2" rx="1" fill="white" opacity=".95"></rect></svg>
@@ -5628,6 +5629,7 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <script id="ethone-legacy-calendar" src="./widgets/calendar.js"></script>
 <script id="ethone-legacy-stats-page" src="./widgets/stats-page.js"></script>
 <script id="ethone-legacy-resizable-sidebar" src="./pages/dashboard/resizable-sidebar.js"></script>
+<script id="ethone-nav-active-pill" src="./pages/dashboard/nav-active-pill.js"></script>
 <script id="ethone-legacy-sound" src="./ui/sound.js"></script>
 <script id="ethone-legacy-weather" src="./widgets/weather.js"></script>
 <script id="ethone-legacy-pomodoro" src="./widgets/pomodoro.js"></script>
@@ -11269,6 +11271,160 @@ body.ethone-2026-ui #main-sidebar .nav-item svg{
 }
 </style>
 <script id="ethone-home-commercial-runtime" src="./pages/home-commercial.js"></script>
+<style id="ethone-sidebar-premium">
+/* ============================================================================
+   ETHONE V6 — Premium Sidebar
+   Single source of truth for #main-sidebar. Spacing scale: 8/16/24/32.
+   Placed last in cascade + high-specificity selectors to beat legacy
+   body.ethone-2026-ui / body.ethone-v2 / html.ethone-personal-os-ready passes.
+   ============================================================================ */
+#main-sidebar.sidebar{
+  background:linear-gradient(180deg,rgba(11,11,15,.88),rgba(8,8,11,.93))!important;
+  border-right:1px solid rgba(255,255,255,.08)!important;
+  box-shadow:1px 0 0 rgba(255,255,255,.03) inset, 10px 0 36px -20px rgba(0,0,0,.55)!important;
+  backdrop-filter:blur(28px) saturate(150%)!important;
+  -webkit-backdrop-filter:blur(28px) saturate(150%)!important;
+}
+#main-sidebar .logo{
+  padding:20px 18px 18px!important;
+  gap:11px!important;
+  border-bottom:1px solid rgba(255,255,255,.07)!important;
+}
+#main-sidebar .logo-icon{
+  width:30px!important;height:30px!important;border-radius:9px!important;
+  background:linear-gradient(155deg,#8b5cf6,#7c3aed 80%)!important;
+  box-shadow:0 8px 20px rgba(139,92,246,.32), inset 0 1px 0 rgba(255,255,255,.24)!important;
+}
+#main-sidebar .logo-text{
+  font-family:'Syne',Inter,sans-serif!important;
+  font-size:13px!important;font-weight:800!important;letter-spacing:2px!important;
+}
+#main-sidebar .nav-section{padding:10px 10px 0!important}
+#main-sidebar .nav-label{
+  font-size:9.5px!important;font-weight:700!important;letter-spacing:.14em!important;
+  color:rgba(248,247,251,.28)!important;
+  padding:16px 10px 6px!important;
+  font-family:var(--mono)!important;
+}
+#main-sidebar .nav-item,
+body.ethone-2026-ui #main-sidebar .nav-item,
+body.ethone-v2 #main-sidebar .nav-item,
+html.ethone-personal-os-ready #main-sidebar .nav-item{
+  position:relative;z-index:1;
+  display:flex;align-items:center;gap:10px;
+  height:38px!important;min-height:38px!important;padding:0 12px!important;
+  border-radius:11px!important;
+  margin:0 0 2px!important;
+  font-size:13px!important;font-weight:500!important;
+  color:rgba(248,247,251,.5)!important;
+  border:1px solid transparent!important;background:transparent!important;
+  box-shadow:none!important;
+  transition:color .18s cubic-bezier(.22,1,.36,1),background .18s cubic-bezier(.22,1,.36,1)!important;
+}
+#main-sidebar .nav-item:hover,
+body.ethone-2026-ui #main-sidebar .nav-item:hover,
+body.ethone-v2 #main-sidebar .nav-item:hover,
+html.ethone-personal-os-ready #main-sidebar .nav-item:hover{
+  color:rgba(248,247,251,.9)!important;
+  background:rgba(255,255,255,.05)!important;
+  transform:none!important;
+}
+#main-sidebar .nav-item.active,
+body.ethone-2026-ui #main-sidebar .nav-item.active,
+body.ethone-v2 #main-sidebar .nav-item.active,
+html.ethone-personal-os-ready #main-sidebar .nav-item.active{
+  color:#fff!important;
+  background:transparent!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+}
+#main-sidebar .nav-item.active::before,
+#main-sidebar .nav-item.active::after,
+body.ethone-2026-ui #main-sidebar .nav-item.active::after,
+body.ethone-v2 #main-sidebar .nav-item.active::after,
+html.ethone-personal-os-ready #main-sidebar .nav-item.active::after{
+  display:none!important;
+}
+#main-sidebar .nav-item .nav-icon svg{animation:none!important}
+#main-sidebar .nav-icon,
+body.ethone-2026-ui #main-sidebar .nav-icon{
+  width:17px!important;height:17px!important;font-size:17px!important;opacity:.85!important;
+  transition:opacity .18s cubic-bezier(.22,1,.36,1),color .18s cubic-bezier(.22,1,.36,1)!important;
+}
+#main-sidebar .nav-item.active .nav-icon{color:#fff!important;opacity:1!important}
+#main-sidebar .nav-label-text{position:relative;z-index:1}
+#main-sidebar .nav-badge{
+  position:relative;z-index:1;
+  background:rgba(139,92,246,.16)!important;color:#c4b5fd!important;
+  border:1px solid rgba(139,92,246,.24)!important;
+  font-size:9.5px!important;font-weight:700!important;padding:2px 7px!important;
+}
+
+/* Sliding active pill — one indicator system, same language as auth tabs */
+#nav-active-pill{
+  position:absolute;left:10px;top:0;
+  height:38px;width:0;
+  border-radius:11px;
+  background:linear-gradient(155deg,#8b5cf6,#7c3aed 85%);
+  box-shadow:0 8px 22px rgba(139,92,246,.4), inset 0 1px 0 rgba(255,255,255,.2);
+  transition:transform .4s cubic-bezier(.34,1.56,.64,1), width .4s cubic-bezier(.34,1.56,.64,1), height .2s ease, opacity .2s ease;
+  z-index:0;
+  pointer-events:none;
+  opacity:0;
+}
+#nav-active-pill.visible{opacity:1}
+.sidebar.compact #nav-active-pill{border-radius:10px}
+
+#main-sidebar .user-card{
+  border-radius:12px!important;
+  padding:10px!important;
+  gap:11px!important;
+  border:1px solid transparent!important;
+  transition:background .18s cubic-bezier(.22,1,.36,1)!important;
+}
+#main-sidebar .user-card:hover{background:rgba(255,255,255,.05)!important}
+#main-sidebar .sidebar-avatar{
+  width:36px!important;height:36px!important;
+  border-radius:50%!important;
+  border:1.5px solid rgba(139,92,246,.32)!important;
+  box-shadow:0 4px 14px rgba(0,0,0,.3)!important;
+}
+#main-sidebar .user-name{font-size:13px!important;font-weight:650!important;color:rgba(248,247,251,.92)!important}
+#main-sidebar .user-role{font-size:10.5px!important;color:rgba(248,247,251,.36)!important}
+#main-sidebar .switch-hint{
+  font-size:10px!important;font-weight:600!important;color:#a78bfa!important;
+  opacity:0;transition:opacity .18s ease!important;
+}
+#main-sidebar .user-card:hover .switch-hint{opacity:1!important}
+
+#main-sidebar .sidebar-footer,
+body.ethone-2026-ui #main-sidebar .sidebar-footer,
+body.ethone-v2 #main-sidebar .sidebar-footer{
+  padding:12px 10px 10px!important;
+}
+#main-sidebar .sb-widget-card,
+body.ethone-v2 #main-sidebar .sb-widget-card{
+  border-radius:12px!important;
+  transition:border-color .18s cubic-bezier(.22,1,.36,1), transform .18s cubic-bezier(.22,1,.36,1)!important;
+}
+#main-sidebar .sb-widget-card:hover{transform:translateY(-1px)!important}
+#main-sidebar .sb-wc-avatar{border-radius:50%!important}
+#main-sidebar .sb-dc-dot{border-width:2px!important}
+
+.resize-handle{transition:background .18s cubic-bezier(.22,1,.36,1)!important}
+.resize-handle:hover,.resize-handle.dragging{background:rgba(139,92,246,.4)!important}
+
+#sidebar-compact-btn{border-radius:8px!important}
+
+/* Circular avatars everywhere — profile pictures must never be square */
+.ps-avatar,.ps-add-icon,.profile-banner-avatar,.pw-avatar,#topbar-avatar{
+  border-radius:50%!important;
+}
+@media(prefers-reduced-motion:reduce){
+  #nav-active-pill{transition:opacity .2s ease!important}
+  #main-sidebar .nav-item{transition:none!important}
+}
+</style>
 <style id="ethone-auth-premium">
 /* ============================================================================
    ETHONE — Premium Auth Screen

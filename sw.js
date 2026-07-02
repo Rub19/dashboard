@@ -1,9 +1,15 @@
-const ETHONE_VERSION = "2026-06-26-production-v14-boot-stability-redesign";
+const ETHONE_VERSION = "2026-07-02-production-v18-ux-audit";
 const ETHONE_CACHE = `ethone-${ETHONE_VERSION}`;
 const ETHONE_OFFLINE_URL = "./index.html";
 const ETHONE_CORE_ASSETS = [
   "./index.html",
   "./manifest.webmanifest",
+  "./ui/tokens.css",
+  "./ui/components.css",
+  "./ui/app.css",
+  "./ui/accessibility.js",
+  "./core/runtime.js",
+  "./pages/dashboard-v4.js",
   "./icons/ethone-icon.svg",
   "./icons/ethone-icon-192.png",
   "./icons/ethone-icon-512.png"

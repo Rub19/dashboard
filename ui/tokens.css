@@ -1,0 +1,156 @@
+/*
+ * ETHONE Design System
+ * Global visual tokens. Legacy aliases are intentionally preserved so that
+ * existing pages can adopt the system without changing application logic.
+ */
+:root {
+  color-scheme: dark;
+
+  /* Color */
+  --surface-0: #09090b;
+  --surface-1: #101014;
+  --surface-2: #15151a;
+  --surface-3: #17171c;
+  --surface-raised: #1c1c22;
+  --surface-hover: #202026;
+  --surface-control: #24242a;
+  --surface-switch: #292930;
+  --surface-translucent: rgba(9, 9, 11, 0.94);
+
+  --text-primary: #f5f5f2;
+  --text-on-accent: #ffffff;
+  --text-strong: #d7d7dc;
+  --text-secondary: #aaaab2;
+  --text-tertiary: #85858f;
+  --text-disabled: #666670;
+  --text-accent: #c4b5fd;
+  --text-danger: #fca5a5;
+  --text-danger-strong: #fecaca;
+
+  --border-subtle: rgba(255, 255, 255, 0.065);
+  --border-primary: rgba(255, 255, 255, 0.09);
+  --border-secondary: rgba(255, 255, 255, 0.15);
+  --border-hover: rgba(255, 255, 255, 0.22);
+  --border-focus: rgba(167, 139, 250, 0.76);
+
+  --accent: #8b5cf6;
+  --accent-hover: #a78bfa;
+  --accent-active: #7c3aed;
+  --accent-contrast: #7c3aed;
+  --accent-contrast-hover: #8550e8;
+  --accent-soft: rgba(139, 92, 246, 0.13);
+  --accent-soft-hover: rgba(139, 92, 246, 0.16);
+  --accent-border: rgba(139, 92, 246, 0.3);
+  --accent-shadow: rgba(139, 92, 246, 0.22);
+
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #a78bfa;
+  --danger-soft: rgba(239, 68, 68, 0.1);
+  --danger-soft-hover: rgba(239, 68, 68, 0.16);
+  --danger-border: rgba(239, 68, 68, 0.34);
+  --danger-border-hover: rgba(239, 68, 68, 0.52);
+
+  /* Radius */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 14px;
+  --radius-full: 999px;
+
+  /* Shadow */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.16);
+  --shadow-md: 0 16px 44px rgba(0, 0, 0, 0.24);
+  --shadow-lg: 0 28px 80px rgba(0, 0, 0, 0.48);
+  --shadow-sidebar: 10px 0 34px rgba(0, 0, 0, 0.12);
+  --shadow-control: 0 8px 22px rgba(139, 92, 246, 0.18);
+  --shadow-control-hover: 0 10px 28px rgba(139, 92, 246, 0.24);
+  --shadow-inset: inset 0 0 0 1px var(--accent-border);
+
+  /* Spacing */
+  --spacing-2xs: 4px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+
+  /* Typography */
+  --font-sans: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: Syne, Inter, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-md: 13px;
+  --text-lg: 15px;
+  --text-xl: 18px;
+  --text-2xl: 24px;
+  --text-hero: clamp(30px, 4vw, 42px);
+
+  /* Motion */
+  --motion-fast: 160ms;
+  --motion-normal: 200ms;
+  --motion-slow: 240ms;
+  --ease-standard: cubic-bezier(0.2, 0.75, 0.2, 1);
+
+  /* Layout */
+  --control-height: 40px;
+  --control-height-lg: 44px;
+  --sidebar-width: 244px;
+  --content-max: 1600px;
+  --focus-ring: 0 0 0 3px rgba(139, 92, 246, 0.15);
+  --overlay-backdrop: rgba(0, 0, 0, 0.68);
+  --overlay-backdrop-soft: rgba(0, 0, 0, 0.66);
+
+  /* Compatibility aliases */
+  --bg: var(--surface-0);
+  --surface: var(--surface-1);
+  --surface2: var(--surface-2);
+  --surface3: var(--surface-3);
+  --text: var(--text-primary);
+  --muted: var(--text-secondary);
+  --muted2: var(--text-tertiary);
+  --border: var(--border-primary);
+  --border2: var(--border-secondary);
+  --accent-light: var(--accent-hover);
+  --accent-h: var(--accent-active);
+  --accent-glow: rgba(139, 92, 246, 0.24);
+  --accent-subtle: var(--accent-soft);
+  --r-sm: var(--radius-md);
+  --radius: var(--radius-lg);
+  --transition: var(--motion-normal) ease;
+
+  /* Aesthetic compatibility aliases */
+  --ethone-aesthetic-bg: var(--surface-0);
+  --ethone-aesthetic-surface: var(--surface-1);
+  --ethone-aesthetic-raised: var(--surface-2);
+  --ethone-aesthetic-input: var(--surface-3);
+  --ethone-aesthetic-line: var(--border-primary);
+  --ethone-aesthetic-line-strong: var(--border-secondary);
+  --ethone-aesthetic-text: var(--text-primary);
+  --ethone-aesthetic-muted: var(--text-secondary);
+  --ethone-aesthetic-dim: var(--text-tertiary);
+  --ethone-aesthetic-purple: var(--accent);
+  --ethone-aesthetic-purple-hover: var(--accent-hover);
+  --ethone-aesthetic-purple-contrast: var(--accent-contrast);
+  --ethone-aesthetic-purple-contrast-hover: var(--accent-contrast-hover);
+  --ethone-aesthetic-danger: var(--danger);
+  --ethone-aesthetic-success: var(--success);
+  --ethone-aesthetic-card-radius: var(--radius-lg);
+  --ethone-aesthetic-control-radius: var(--radius-md);
+  --ethone-aesthetic-fast: var(--motion-fast);
+  --ethone-aesthetic-normal: var(--motion-normal);
+  --ethone-aesthetic-shadow: var(--shadow-md);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 1ms;
+    --motion-normal: 1ms;
+    --motion-slow: 1ms;
+  }
+}

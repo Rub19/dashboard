@@ -20,6 +20,7 @@ var SVG_ICONS={
   stats:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
   github:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>',
   gaming:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><circle cx="15.5" cy="11.5" r="1"/><circle cx="17.5" cy="13.5" r="1"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59l-.9 7.27A4 4 0 0 0 5.77 20.5c.387.1.79-.025 1.05-.327l1.89-2.173h6.58l1.89 2.173c.26.302.663.427 1.05.327a4 4 0 0 0 2.97-4.64l-.9-7.27A4 4 0 0 0 17.32 5z"/></svg>',
+  valorant:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><line x1="12" y1="3.5" x2="12" y2="7.5"/><line x1="12" y1="16.5" x2="12" y2="20.5"/><line x1="3.5" y1="12" x2="7.5" y2="12"/><line x1="16.5" y1="12" x2="20.5" y2="12"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>',
   connections:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>',
   settings:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
   ai:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><circle cx="9" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1" fill="currentColor" stroke="none"/></svg>',
@@ -39,6 +40,7 @@ function getDefaultNav(){return [
   {id:'stats',    icon:'stats',    label:t('nav_stats'),   section:'main',badge:''},
   {id:'github',   icon:'github',   label:t('nav_github'),  section:'main',badge:''},
   {id:'gaming',   icon:'gaming',   label:t('nav_gaming'),  section:'main',badge:''},
+  {id:'valorant-accounts',icon:'valorant',label:t('nav_valorant_accounts'),section:'main',badge:''},
   {id:'connections',icon:'connections',label:t('nav_connections'),section:'account',badge:''},
   {id:'settings', icon:'settings', label:t('nav_settings'),section:'account',badge:''},
   {id:'ai',       icon:'ai',       label:t('nav_ai'),      section:'account',badge:''},
@@ -54,7 +56,7 @@ function renderSidebarNav(){
       const saved=p.sidebarConfig.find(s=>s.id===item.id);
       // 'settings' and 'ai' are always visible regardless of saved config
       const alwaysVisible=['settings','ai'].includes(item.id);
-      return{...item,visible:alwaysVisible||(saved?saved.visible!==false:true)};
+      return{...item,visible:alwaysVisible||(saved?saved.visible!==false:true),pinned:!!saved?.pinned};
     }).filter(i=>i.visible!==false);
     nav.sort((a,b)=>{
       const ai=p.sidebarConfig.findIndex(s=>s.id===a.id);
@@ -82,7 +84,17 @@ function renderSidebarNav(){
 
   mainEl.innerHTML='';
   acctEl.innerHTML='';
-  nav.filter(i=>i.section==='main').forEach(item=>mainEl.appendChild(makeItem(item)));
+  const mainItems=nav.filter(i=>i.section==='main');
+  const pinnedItems=mainItems.filter(i=>i.pinned);
+  const restItems=mainItems.filter(i=>!i.pinned);
+  if(pinnedItems.length){
+    const lbl=document.createElement('div');
+    lbl.className='nav-label sb-pinned-label';
+    lbl.textContent='Favoris';
+    mainEl.appendChild(lbl);
+    pinnedItems.forEach(item=>mainEl.appendChild(makeItem(item)));
+  }
+  restItems.forEach(item=>mainEl.appendChild(makeItem(item)));
   acctEl.innerHTML='<div class="nav-label">Account</div>';
   nav.filter(i=>i.section==='account').forEach(item=>acctEl.appendChild(makeItem(item)));
 }

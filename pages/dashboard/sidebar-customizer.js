@@ -12,7 +12,7 @@ function renderSidebarCustomize(){
   // Merge saved order/visibility with defaults
   let items=allItems.map(item=>{
     const savedItem=saved?.find?.(s=>s.id===item.id);
-    return{...item,visible:savedItem?savedItem.visible!==false:true};
+    return{...item,visible:savedItem?savedItem.visible!==false:true,pinned:!!savedItem?.pinned};
   });
   // Sort by saved order if available
   if(saved?.length){
@@ -28,7 +28,7 @@ function renderSidebarCustomize(){
     const row=document.createElement('div');
     row.setAttribute('draggable','true');
     row.dataset.id=item.id;
-    row.style.cssText='display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);cursor:grab;transition:all .15s;margin-bottom:3px';
+    row.style.cssText='position:relative;display:flex;align-items:center;gap:10px;padding:8px 34px 8px 10px;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);cursor:grab;transition:all .15s;margin-bottom:3px';
     row.innerHTML=`
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:14px;height:14px;color:rgba(245,245,247,.25);flex-shrink:0"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       <span style="flex:1;font-size:13px;font-weight:500;color:${item.visible?'var(--text)':'rgba(245,245,247,.3)'}">${escapeHTML(item.label)}</span>
@@ -38,6 +38,9 @@ function renderSidebarCustomize(){
           <div style="position:absolute;top:2px;${item.visible?'right:2px':'left:2px'};width:14px;height:14px;border-radius:50%;background:#fff;transition:all .2s"></div>
         </div>
       </label>
+      <button type="button" class="sb-pin-btn${item.pinned?' pinned':''}" onclick="toggleSidebarItemPin('${item.id}')" title="${item.pinned?'Retirer des favoris':'Épingler'}">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="${item.pinned?'currentColor':'none'}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 3h6l-1 6 3 3H7l3-3-1-6Z"/></svg>
+      </button>
     `;
     // Drag events
     row.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',item.id);row.style.opacity='.4';});
@@ -53,6 +56,17 @@ function renderSidebarCustomize(){
     });
     container.appendChild(row);
   });
+}
+
+function toggleSidebarItemPin(id){
+  const p=curP();if(!p)return;
+  if(!p.sidebarConfig)p.sidebarConfig=getDefaultNav().map(i=>({id:i.id,visible:true}));
+  let item=p.sidebarConfig.find(i=>i.id===id);
+  if(!item){item={id,visible:true};p.sidebarConfig.push(item);}
+  item.pinned=!item.pinned;
+  saveStateNow();
+  renderSidebarCustomize();
+  renderSidebarNav();
 }
 
 function toggleSidebarItem(id,visible){

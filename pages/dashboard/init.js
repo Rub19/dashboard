@@ -69,7 +69,11 @@ function toggleSidebarCompact(){
   // Adjust main content margin to match sidebar width
   const main=document.getElementById('main-content');
   if(main)main.style.marginLeft=p.sidebarCompact?'58px':'';
+  const resize=window.ethoneSidebarResize;
+  if(resize){if(p.sidebarCompact)resize.suspendForCompact();else resize.resumeFromCompact();}
   saveStateNow();
+  if(typeof window.ethoneNotifyManualCompactToggle==='function')window.ethoneNotifyManualCompactToggle();
+  if(typeof window.ethoneUpdateSidebarScrollFade==='function')setTimeout(window.ethoneUpdateSidebarScrollFade,240);
 }
 
 function applySidebarCompact(){
@@ -78,6 +82,7 @@ function applySidebarCompact(){
   if(sb)sb.classList.toggle('compact',!!p.sidebarCompact);
   const main=document.getElementById('main-content');
   if(main&&p.sidebarCompact)main.style.marginLeft='58px';
+  if(window.ethoneSidebarResize&&p.sidebarCompact)window.ethoneSidebarResize.suspendForCompact();
 }
 
 function initDashboard(){

@@ -11455,27 +11455,20 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
   min-height:100vh;
   color:var(--ink);
   background:
-    radial-gradient(ellipse 58% 48% at 18% 14%, rgba(124,58,237,.075), transparent 62%),
-    radial-gradient(ellipse 48% 42% at 84% 18%, rgba(139,92,246,.045), transparent 58%),
-    radial-gradient(ellipse 55% 58% at 78% 88%, rgba(124,58,237,.04), transparent 62%),
-    radial-gradient(ellipse 40% 40% at 8% 90%, rgba(139,92,246,.03), transparent 55%),
+    radial-gradient(ellipse 58% 48% at 18% 14%, rgba(124,58,237,.06), transparent 62%),
+    radial-gradient(ellipse 48% 42% at 84% 18%, rgba(139,92,246,.035), transparent 58%),
+    radial-gradient(ellipse 55% 58% at 78% 88%, rgba(124,58,237,.03), transparent 62%),
+    radial-gradient(ellipse 40% 40% at 8% 90%, rgba(139,92,246,.02), transparent 55%),
     linear-gradient(180deg,#08080a 0%,#0a0a0d 45%,#08080a 100%)!important;
 }
 #auth-screen.ethone-auth-v3::before{
-  content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
-  background-image:
-    linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
-  background-size:64px 64px;
-  mask-image:radial-gradient(ellipse 65% 55% at 50% 38%, #000 0%, transparent 72%);
-  -webkit-mask-image:radial-gradient(ellipse 65% 55% at 50% 38%, #000 0%, transparent 72%);
-  opacity:.28;
+  content:none;
 }
 #auth-screen.ethone-auth-v3::after{
   content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
   background:
-    radial-gradient(ellipse 100% 90% at 50% 45%, transparent 40%, rgba(0,0,0,.68) 100%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+    radial-gradient(ellipse 100% 90% at 50% 45%, transparent 45%, rgba(0,0,0,.62) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.018'/%3E%3C/svg%3E");
   background-size:cover,180px 180px;
   mix-blend-mode:normal;
 }
@@ -11484,18 +11477,27 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
   display:none!important;
 }
 
-/* ── Layout grid ── */
+/* ── Layout grid ──
+   Real 2-row grid: header sits above the left column only; the preview
+   and the login card share ROW 2, so their tops align by construction
+   (no magic margins). #auth-v3-hero is display:contents so its two
+   children (header, preview) become direct grid items alongside the card. */
 #auth-screen.ethone-auth-v3.ethone-auth-v3-visible{
   display:grid!important;
-  grid-template-columns:minmax(560px,920px) minmax(420px,480px);
-  max-width:1420px;
+  grid-template-columns:minmax(520px,760px) minmax(400px,440px);
+  grid-template-rows:auto 1fr;
+  grid-template-areas:
+    "header  ."
+    "preview card";
+  max-width:1280px;
   margin:0 auto;
   align-items:start!important;
   align-content:safe center;
   justify-content:center;
-  gap:clamp(40px,5vw,80px);
+  row-gap:var(--sp-3);
+  column-gap:clamp(32px,3.6vw,56px);
   min-height:100%;
-  padding:clamp(28px,4vw,56px) clamp(20px,4vw,56px)!important;
+  padding:clamp(20px,3vw,40px) clamp(20px,3.6vw,48px)!important;
   overflow:auto!important;
   box-sizing:border-box;
   position:relative;
@@ -11507,13 +11509,15 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
 @keyframes authCardIn{from{opacity:0}to{opacity:1}}
 @keyframes authGlowPulse{0%,100%{opacity:.55}50%{opacity:1}}
 
-/* ── Hero column ── */
-#auth-v3-hero{
+#auth-v3-hero{display:contents}
+
+/* ── Header (logo + title + copy) — independent, sits above the left column ── */
+.auth-v3-header{
+  grid-area:header;
   position:relative;z-index:2;
-  width:100%;max-width:920px;
-  min-height:auto;
+  width:100%;max-width:720px;
   display:flex;flex-direction:column;
-  gap:var(--sp-4);
+  gap:var(--sp-2);
   animation:authFadeUp .55s var(--ease) both;
 }
 .auth-v3-brand{display:flex;align-items:center;gap:var(--sp-2);margin-bottom:0}
@@ -11558,11 +11562,13 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
   margin:0;
 }
 
-/* ── Dashboard preview outer chrome ── */
+/* ── Dashboard preview outer chrome — shares grid row 2 with the login card ── */
 .auth-v3-preview{
+  grid-area:preview;
+  align-self:start;
   position:relative;z-index:2;
   opacity:1!important;filter:none!important;
-  margin-top:var(--sp-2);
+  margin-top:0;
   width:100%;max-width:none;
   border-radius:var(--radius-xl)!important;
   border:1px solid var(--line)!important;
@@ -11585,8 +11591,9 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
   opacity:.7;pointer-events:none;
 }
 
-/* ── Login card ── */
+/* ── Login card — shares grid row 2 with the dashboard preview ── */
 #auth-screen.ethone-auth-v3 #auth-card{
+  grid-area:card;
   position:relative;z-index:3;
   width:100%;
   max-width:none!important;
@@ -11837,26 +11844,28 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
 
 /* ── Responsive ── */
 @media(min-width:1800px){
-  #auth-screen.ethone-auth-v3.ethone-auth-v3-visible{max-width:1520px}
+  #auth-screen.ethone-auth-v3.ethone-auth-v3-visible{max-width:1360px}
 }
 @media(max-width:1400px){
-  #auth-screen.ethone-auth-v3.ethone-auth-v3-visible{gap:clamp(32px,4vw,56px)}
+  #auth-screen.ethone-auth-v3.ethone-auth-v3-visible{column-gap:clamp(28px,3.4vw,48px)}
 }
 @media(max-width:1100px){
   #auth-screen.ethone-auth-v3.ethone-auth-v3-visible{
     grid-template-columns:minmax(0,1fr)!important;
+    grid-template-areas:"header" "preview" "card"!important;
     max-width:640px;
     align-content:start;
-    padding:88px clamp(20px,5vw,42px) 40px!important;
+    row-gap:var(--sp-3);
+    padding:64px clamp(20px,5vw,42px) 40px!important;
   }
-  #auth-v3-hero{max-width:100%;min-width:0;gap:var(--sp-2)}
+  .auth-v3-header{max-width:100%}
   .auth-v3-title{font-size:clamp(40px,8vw,58px)!important}
   #auth-screen.ethone-auth-v3 #auth-card{justify-self:center}
 }
 @media(max-width:720px){
   #auth-screen.ethone-auth-v3.ethone-auth-v3-visible{
-    padding:76px 16px 28px!important;
-    gap:var(--sp-3);
+    padding:24px 16px 28px!important;
+    row-gap:var(--sp-3);
   }
   #auth-screen.ethone-auth-v3 #auth-lang-bar{top:14px!important;right:14px!important}
   .auth-v3-brand{gap:10px}

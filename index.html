@@ -11291,10 +11291,13 @@ body.ethone-2026-ui #main-sidebar .nav-item svg{
   display:grid!important;
   grid-template-columns:minmax(0,.98fr) minmax(392px,.68fr);
   gap:clamp(20px,3vw,44px);
-  align-items:center;
+  align-items:start!important;
+  align-content:safe center;
   justify-content:center;
+  min-height:100%;
   padding:clamp(18px,3.6vw,52px)!important;
   overflow:auto!important;
+  box-sizing:border-box;
 }
 #auth-screen.ethone-auth-v3:not(.ethone-auth-v3-visible){
   display:none!important;
@@ -12786,7 +12789,7 @@ body.ethone-2026-ui #main-sidebar .nav-item svg{
 }
 .auth-v3-flow-row.is-now time{color:#c4b5fd}
 #auth-screen.ethone-auth-v3 #auth-card{
-  align-self:center;
+  align-self:start!important;
 }
 #auth-screen.ethone-auth-v3 #lb-box{
   border-color:rgba(255,255,255,.115)!important;

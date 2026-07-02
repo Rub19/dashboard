@@ -374,13 +374,13 @@ body.ethone-2026-ui #main-content :is(
   background:var(--surface-hover)!important;
   transform:translateY(-1px);
 }
-body.ethone-2026-ui :is(.btn-primary,.d4-button.primary,.lb-btn-primary){
+body.ethone-2026-ui :is(.btn-primary,.d4-button.primary){
   border-color:var(--accent-contrast)!important;
   background:var(--accent-contrast)!important;
   color:var(--text-on-accent)!important;
   box-shadow:var(--shadow-control)!important;
 }
-body.ethone-2026-ui :is(.btn-primary,.d4-button.primary,.lb-btn-primary):hover{
+body.ethone-2026-ui :is(.btn-primary,.d4-button.primary):hover{
   border-color:var(--accent-contrast-hover)!important;
   background:var(--accent-contrast-hover)!important;
   box-shadow:var(--shadow-control-hover)!important;
@@ -693,77 +693,6 @@ body #profile-screen :is(.ps-card-inner,.ps-add-card){
   border-radius:var(--radius-md)!important;
 }
 
-/* Authentication polish, preserving layout and handlers */
-#auth-screen{
-  background:var(--surface-0)!important;
-}
-#auth-screen::before{
-  opacity:.18!important;
-  background-image:none!important;
-}
-#auth-screen :where(.auth-orb,#auth-particles){opacity:.12!important}
-#auth-screen #lb-box{
-  border:1px solid var(--border-secondary)!important;
-  border-radius:var(--radius-xl)!important;
-  background:var(--surface-1)!important;
-  box-shadow:var(--shadow-lg)!important;
-  backdrop-filter:blur(10px)!important;
-  -webkit-backdrop-filter:blur(10px)!important;
-}
-#auth-screen .lb-tabs{
-  padding:var(--spacing-2xs)!important;
-  border:1px solid var(--border-primary)!important;
-  border-radius:var(--radius-lg)!important;
-  background:var(--surface-0)!important;
-}
-#auth-screen .lb-tab{
-  min-height:38px!important;
-  border-radius:var(--radius-md)!important;
-  color:var(--text-secondary)!important;
-}
-#auth-screen .lb-tab.active{
-  background:var(--surface-hover)!important;
-  color:var(--text-primary)!important;
-  box-shadow:var(--shadow-inset)!important;
-}
-#auth-screen .lb-input{
-  height:46px!important;
-  border:1px solid var(--border-secondary)!important;
-  border-radius:var(--radius-md)!important;
-  background:var(--surface-3)!important;
-  color:var(--text-on-accent)!important;
-  font-size:13px!important;
-}
-#auth-screen .lb-input::placeholder{color:var(--text-tertiary)!important;opacity:1!important}
-#auth-screen .lb-input:focus{
-  border-color:var(--border-focus)!important;
-  box-shadow:var(--focus-ring)!important;
-}
-#auth-screen :where(.lb-social,.lb-btn-primary,.lb-eye,.ethone-eye-btn){
-  border-radius:var(--radius-md)!important;
-}
-#auth-screen .lb-social{
-  min-height:44px!important;
-  border-color:var(--border-secondary)!important;
-  background:var(--surface-2)!important;
-  color:var(--text-strong)!important;
-}
-#auth-screen .lb-social:hover{border-color:var(--accent-border)!important;background:var(--surface-hover)!important}
-#auth-screen #auth-lang-bar{
-  padding:var(--spacing-2xs)!important;
-  border:1px solid var(--border-secondary)!important;
-  border-radius:var(--radius-lg)!important;
-  background:var(--surface-1)!important;
-  backdrop-filter:blur(8px)!important;
-}
-#auth-screen #auth-lang-bar button{
-  min-width:42px;
-  min-height:32px;
-  border-radius:var(--radius-sm)!important;
-  color:var(--text-secondary)!important;
-}
-#auth-screen #auth-lang-bar button.active{background:var(--accent-soft-hover)!important;color:var(--text-on-accent)!important}
-
 /* Responsive visual consistency */
 @media(max-width:900px){
   body.ethone-2026-ui #main-content :where(.panel,.settings-card,.conn-card,.game-card,.goal-card,.journal-entry,.countdown-card,.kanban-col,.note-item){
@@ -819,50 +748,18 @@ body #profile-screen :is(.ps-card-inner,.ps-add-card){
   #cmd-palette{border-radius:var(--radius-lg)!important}
   #cmd-footer{gap:var(--spacing-xs)!important;overflow-x:auto}
   #profile-screen .ps-inner{padding:var(--spacing-lg) var(--spacing-sm)!important}
-  #auth-screen #lb-box{border-radius:var(--radius-xl)!important;padding:var(--spacing-lg) var(--spacing-md)!important}
 }
 body.ethone-2026-ui #main-content .d4-button.primary,
-body.ethone-2026-ui #main-content .btn-primary,
-body.ethone-2026-ui #auth-screen .lb-btn-primary{
+body.ethone-2026-ui #main-content .btn-primary{
   border-color:var(--accent-contrast)!important;
   background-color:var(--accent-contrast)!important;
   background-image:none!important;
 }
 body.ethone-2026-ui #main-content .d4-button.primary:hover,
-body.ethone-2026-ui #main-content .btn-primary:hover,
-body.ethone-2026-ui #auth-screen .lb-btn-primary:hover{
+body.ethone-2026-ui #main-content .btn-primary:hover{
   border-color:var(--accent-contrast-hover)!important;
   background-color:var(--accent-contrast-hover)!important;
 }
-body #auth-screen.ethone-auth-v3 #lb-box{
-  border:1px solid var(--border-secondary)!important;
-  border-radius:var(--radius-xl)!important;
-  background:var(--surface-1)!important;
-  box-shadow:var(--shadow-lg)!important;
-}
-body #auth-screen.ethone-auth-v3 :is(
-  input.lb-input,button.lb-btn-primary,button.lb-social,button.lb-eye,
-  button.ethone-eye-btn,button.lb-tab
-){
-  border-radius:var(--radius-md)!important;
-}
-body #auth-screen.ethone-auth-v3 input.lb-input{
-  border-color:var(--border-secondary)!important;
-  background:var(--surface-3)!important;
-  color:var(--text-primary)!important;
-}
-body #auth-screen.ethone-auth-v3 button.lb-social{
-  border-color:var(--border-secondary)!important;
-  background:var(--surface-2)!important;
-  color:var(--text-strong)!important;
-}
-body #auth-screen.ethone-auth-v3 :is(.lb-tabs,#auth-lang-bar){
-  border-radius:var(--radius-lg)!important;
-}
-body #auth-screen.ethone-auth-v3 #auth-lang-bar button{
-  border-radius:var(--radius-sm)!important;
-}
-
 /* Premium product shell */
 body.ethone-2026-ui #main-sidebar .nav-item[data-page="gaming"],
 body.ethone-2026-ui #main-sidebar .nav-item[data-page="github"]{

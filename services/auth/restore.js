@@ -35,7 +35,7 @@
       if(key && AUTH_TEXT[l]?.[key]) lb.textContent=AUTH_TEXT[l][key];
     });
     const forgot=document.querySelector('#form-login .lb-ghost'); if(forgot) forgot.textContent=tr('forgot_password');
-    const remember=document.querySelector('label[for="auth-remember"], #auth-remember + span'); if(remember) remember.textContent=tr('remember_me');
+    const remember=document.querySelector('#auth-remember + span'); if(remember) remember.textContent=tr('remember_me');
     const loginBtn=document.getElementById('auth-login-btn'); if(loginBtn){ const svg=loginBtn.querySelector('svg')?.outerHTML||''; loginBtn.innerHTML=tr('sign_in_btn')+svg; }
   };
   const oldSetLang=window.setLang;

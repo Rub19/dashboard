@@ -56,9 +56,11 @@
     var copy=heroText();
     return ''+
       '<section id="auth-v3-hero" aria-hidden="true">'+
-        '<div class="auth-v3-brand"><div class="auth-v3-mark">E</div><span>ETHONE</span><b class="auth-v3-badge" data-auth-hero="badge">'+copy.badge+'</b></div>'+
-        '<h2 class="auth-v3-title" data-auth-hero="title">'+copy.title+'</h2>'+
-        '<p class="auth-v3-copy" data-auth-hero="copy">'+copy.copy+'</p>'+
+        '<div class="auth-v3-header">'+
+          '<div class="auth-v3-brand"><div class="auth-v3-mark">E</div><span>ETHONE</span><b class="auth-v3-badge" data-auth-hero="badge">'+copy.badge+'</b></div>'+
+          '<h2 class="auth-v3-title" data-auth-hero="title">'+copy.title+'</h2>'+
+          '<p class="auth-v3-copy" data-auth-hero="copy">'+copy.copy+'</p>'+
+        '</div>'+
         '<div class="auth-v3-preview" id="auth-preview">'+
           '<div id="auth-preview-bar">'+
             '<div class="apb-dot apb-r"></div><div class="apb-dot apb-y"></div><div class="apb-dot apb-g"></div>'+
@@ -71,13 +73,13 @@
           '<div id="auth-preview-body">'+
             '<div id="auth-preview-sb">'+
               '<div class="apsb-logo">E</div>'+
-              '<div class="apsb-item on" title="Home">🏠</div>'+
-              '<div class="apsb-item" title="Tasks">✓</div>'+
-              '<div class="apsb-item" title="Notes">📝</div>'+
-              '<div class="apsb-item" title="Habits">🔥</div>'+
-              '<div class="apsb-item" title="Workspaces">⬢</div>'+
-              '<div class="apsb-item" title="Marketplace">🛍</div>'+
-              '<div class="apsb-item apsb-brain" title="Brain">⚡</div>'+
+              '<div class="apsb-item on" title="Home"><i data-lucide="layout-dashboard"></i></div>'+
+              '<div class="apsb-item" title="Tasks"><i data-lucide="square-check-big"></i></div>'+
+              '<div class="apsb-item" title="Notes"><i data-lucide="notebook-pen"></i></div>'+
+              '<div class="apsb-item" title="Habits"><i data-lucide="circle-gauge"></i></div>'+
+              '<div class="apsb-item" title="Workspaces"><i data-lucide="panels-top-left"></i></div>'+
+              '<div class="apsb-item" title="Marketplace"><i data-lucide="store"></i></div>'+
+              '<div class="apsb-item apsb-brain" title="Brain"><i data-lucide="brain"></i></div>'+
             '</div>'+
             '<div id="auth-preview-content">'+
               '<div id="apc-clock">'+
@@ -178,7 +180,7 @@
   function startPreviewRuntime(){
     updatePreviewRuntime();
     if(!window.__ethoneAuthV8PreviewTimer){
-      window.__ethoneAuthV8PreviewTimer=setInterval(syncHeroLanguage,1000);
+      window.__ethoneAuthV8PreviewTimer=setInterval(syncHeroLanguage,30000);
       window.addEventListener("online",updatePreviewRuntime);
       window.addEventListener("offline",updatePreviewRuntime);
     }
@@ -224,6 +226,7 @@
     if(!qs("#auth-v3-hero",screen)){
       card.insertAdjacentHTML("beforebegin",heroMarkup());
     }
+    try{if(window.lucide&&!window.__lucideFailed)window.lucide.createIcons()}catch(e){}
     startPreviewRuntime();
     syncTabControl();
     syncLanguageControl();
@@ -236,8 +239,8 @@
     var visible=isVisible(screen);
     screen.classList.toggle("ethone-auth-v3-visible",visible);
     if(visible){
-      if(screen.style.getPropertyValue("display")!=="grid"||screen.style.getPropertyPriority("display")!=="important"){
-        screen.style.setProperty("display","grid","important");
+      if(screen.style.getPropertyValue("display")!=="flex"||screen.style.getPropertyPriority("display")!=="important"){
+        screen.style.setProperty("display","flex","important");
       }
       if(screen.style.getPropertyValue("visibility")!=="visible"||screen.style.getPropertyPriority("visibility")!=="important"){
         screen.style.setProperty("visibility","visible","important");
@@ -246,14 +249,6 @@
     syncTabControl();
     syncLanguageControl();
     syncHeroLanguage();
-    syncLangBarTop();
-  }
-  function syncLangBarTop(){
-    var bar=qs("#auth-lang-bar");
-    var card=qs("#auth-card");
-    if(!bar||!card)return;
-    var cardTop=card.getBoundingClientRect().top;
-    if(cardTop>0)bar.style.setProperty("top",cardTop+"px","important");
   }
   function settleEntranceAnimations(){
     ["auth-v3-hero","auth-card"].forEach(function(id){
@@ -277,10 +272,8 @@
         var resizeTimer=null;
         window.addEventListener("resize",function(){
           clearTimeout(resizeTimer);
-          resizeTimer=setTimeout(function(){syncTabControl();syncLanguageControl();syncLangBarTop()},60);
+          resizeTimer=setTimeout(function(){syncTabControl();syncLanguageControl()},60);
         });
-        try{new ResizeObserver(function(){syncLangBarTop()}).observe(qs("#auth-card"))}catch(e){}
-        setInterval(syncLangBarTop,500);
       }
       if(!screen.dataset.authV5LanguageSync){
         screen.dataset.authV5LanguageSync="1";

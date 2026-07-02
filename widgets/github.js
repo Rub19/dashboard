@@ -26,7 +26,80 @@ async function connectGithub(){
   saveStateNow();refreshGithub();
 }
 
+async function connectGithubFromConnections(){
+  const input=document.getElementById('github-conn-username');
+  if(!input)return;
+  const username=input.value.trim();
+  if(!username){toast('Enter a username','error');return;}
+  const p=curP();if(!p)return;
+  if(!p.state.connections)p.state.connections={};
+  p.state.connections.github={username};
+  saveStateNow();
+  updateGithubConnBadge();
+  renderGithubSidebar();
+  toast('GitHub connected!','success');
+}
+
+function disconnectGithub(){
+  const p=curP();if(!p)return;
+  if(p.state.connections)delete p.state.connections.github;
+  saveStateNow();
+  updateGithubConnBadge();
+  const wrap=document.getElementById('sb-github-wrap');
+  if(wrap)wrap.style.setProperty('display','none','important');
+  const input=document.getElementById('github-conn-username');
+  if(input)input.value='';
+  toast('GitHub disconnected','info');
+}
+
+function updateGithubConnBadge(){
+  const p=curP();if(!p)return;
+  const username=p.state.connections?.github?.username;
+  const badge=document.getElementById('github-conn-badge');
+  const disconnectBtn=document.getElementById('github-conn-disconnect-btn');
+  const input=document.getElementById('github-conn-username');
+  if(badge){
+    badge.textContent=username?'Connected':'Not connected';
+    badge.className='conn-status-badge '+(username?'connected':'disconnected');
+  }
+  if(disconnectBtn)disconnectBtn.style.display=username?'inline-flex':'none';
+  if(input&&username)input.value=username;
+}
+
+async function renderGithubSidebar(){
+  const p=curP();if(!p)return;
+  const username=p.state.connections?.github?.username;
+  const wrap=document.getElementById('sb-github-wrap');
+  if(!wrap)return;
+  const vis=p.state.sidebarWidgets?.visible||{};
+  if(!username||vis.github===false){wrap.style.setProperty('display','none','important');return;}
+  const nameEl=document.getElementById('sb-github-name');
+  const subEl=document.getElementById('sb-github-activity');
+  const avEl=document.getElementById('sb-github-avatar');
+  if(nameEl)nameEl.textContent='@'+username;
+  if(subEl)subEl.textContent='—';
+  wrap.style.setProperty('display','block','important');
+  try{
+    const [eventsRes,userRes]=await Promise.all([
+      fetch(`https://api.github.com/users/${username}/events/public?per_page=10`,{signal:AbortSignal.timeout(8000)}),
+      fetch(`https://api.github.com/users/${username}`,{signal:AbortSignal.timeout(8000)})
+    ]);
+    if(eventsRes.ok){
+      const events=await eventsRes.json();
+      const pushCount=events.filter(e=>e.type==='PushEvent').length;
+      if(subEl)subEl.textContent=pushCount?pushCount+' commit'+(pushCount>1?'s':'')+' récemment':'Aucune activité récente';
+    }
+    if(userRes.ok){
+      const user=await userRes.json();
+      if(avEl&&user.avatar_url)avEl.innerHTML=`<img src="${user.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.remove()">`;
+    }
+  }catch(e){
+    if(subEl)subEl.textContent='Hors ligne';
+  }
+}
+
 async function refreshGithub(){
+  renderGithubSidebar();
   const p=curP();if(!p)return;
   const username=p.state.connections?.github?.username;
   const content=document.getElementById('github-content');

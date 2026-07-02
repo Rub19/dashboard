@@ -96,6 +96,12 @@
   --motion-normal: 200ms;
   --motion-slow: 240ms;
   --ease-standard: cubic-bezier(0.2, 0.75, 0.2, 1);
+  --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Ambient glow — promoted from the auth experience for reuse across future views */
+  --glow-accent-soft: 0 0 48px rgba(139, 92, 246, 0.08);
+  --glow-accent-strong: 0 0 70px rgba(139, 92, 246, 0.12);
+  --radius-2xl: 20px;
 
   /* Layout */
   --control-height: 40px;

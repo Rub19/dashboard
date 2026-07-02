@@ -3743,6 +3743,7 @@ GitHub
 </div>
 <div class="user-card" onclick="goToProfileScreen()">
 <div class="sidebar-avatar" id="sidebar-avatar"></div>
+<span class="sidebar-avatar-status" id="sidebar-avatar-status" aria-hidden="true"></span>
 <div class="user-info">
 <div class="user-name" id="display-username">User</div>
 <div class="user-role" id="sidebar-user-role">ETHONE</div>
@@ -3750,6 +3751,10 @@ GitHub
 <span class="switch-hint">Switch ↗</span>
 </div>
 <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.09),transparent);margin:6px 4px 10px"></div>
+<!-- LIVE SECTION — unified live widgets -->
+<div class="sb-live-section" id="sb-live-section" style="display:none">
+<div class="sb-live-header"><span class="sb-live-dot"></span><span>LIVE</span></div>
+<div class="sb-live-list" id="sb-live-list">
 <!-- DISCORD v3 -->
 <div class="sb-section" id="sb-discord-wrap" style="display:none">
 <div class="sb-widget-card" id="sb-discord-card">
@@ -3802,14 +3807,6 @@ GitHub
 </div>
 </div>
 </div>
-<!-- TWITCH -->
-<div class="sb-section" id="sb-twitch-wrap" style="display:none">
-<div class="sb-section-label" style="color:#a970ff">
-<span style="width:5px;height:5px;border-radius:50%;background:#ff0000;display:inline-block;animation:pulse 1.5s infinite;flex-shrink:0"></span>
-        Live
-      </div>
-<div id="sb-twitch-list" style="display:flex;flex-direction:column;gap:5px"></div>
-</div>
 <!-- LAST.FM v3 -->
 <div class="sb-section" id="sb-lastfm-wrap" style="display:none">
 <div class="sb-widget-card sb-wc-red" id="sb-lastfm-content">
@@ -3821,6 +3818,39 @@ GitHub
 </div>
 <div class="sb-wc-sub sb-wc-sub-red" id="sb-lfm-artist">—</div>
 <div class="sb-wc-bar"><div class="sb-wc-bar-fill sb-wc-bar-red" style="width:100%"></div></div>
+</div>
+</div>
+</div>
+<!-- TWITCH -->
+<div class="sb-section" id="sb-twitch-wrap" style="display:none">
+<div id="sb-twitch-list" style="display:flex;flex-direction:column;gap:5px"></div>
+</div>
+<!-- STEAM -->
+<div class="sb-section" id="sb-steam-wrap" style="display:none">
+<div class="sb-widget-card sb-wc-steam" id="sb-steam-card">
+<div class="sb-wc-avatar" id="sb-steam-avatar">
+<span id="sb-steam-av-fallback">🎮</span>
+<div class="sb-dc-dot offline" id="sb-steam-status"></div>
+</div>
+<div class="sb-wc-body">
+<div class="sb-wc-top">
+<span class="sb-wc-name" id="sb-steam-name">—</span>
+</div>
+<div class="sb-wc-sub" id="sb-steam-activity" style="display:none"></div>
+</div>
+</div>
+</div>
+<!-- GITHUB -->
+<div class="sb-section" id="sb-github-wrap" style="display:none">
+<div class="sb-widget-card sb-wc-github" id="sb-github-card">
+<div class="sb-wc-avatar" id="sb-github-avatar"><span id="sb-github-av-fallback">⌥</span></div>
+<div class="sb-wc-body">
+<div class="sb-wc-top">
+<span class="sb-wc-name" id="sb-github-name">—</span>
+</div>
+<div class="sb-wc-sub" id="sb-github-activity">—</div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -4431,6 +4461,47 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 </div>
 </div>
 </div>
+<!-- VALORANT ACCOUNTS -->
+<div aria-live="polite" class="tab-content" data-qa-page="true" id="page-valorant-accounts" role="tabpanel">
+<div class="topbar">
+<div><div class="page-title">Valorant Accounts</div><div class="page-subtitle">Gestion de vos comptes</div></div>
+<div class="topbar-actions">
+<button class="btn btn-ghost" onclick="vaExportMenu(event)">Export</button>
+<button class="btn btn-ghost" onclick="document.getElementById('va-import-input').click()">Import</button>
+<input accept=".json,.csv" id="va-import-input" onchange="vaImportFile(this)" style="display:none" type="file"/>
+<button class="btn btn-primary" onclick="vaOpenNewAccount()">+ Nouveau compte</button>
+</div>
+</div>
+<div class="va-stats" id="va-stats"></div>
+<div class="va-toolbar">
+<div class="va-search-wrap">
+<svg fill="none" height="15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24" width="15"><circle cx="11" cy="11" r="7"></circle><line x1="21" x2="16.65" y1="21" y2="16.65"></line></svg>
+<input class="va-search" id="va-search" oninput="vaRender()" placeholder="Rechercher un compte, pseudo, tag, email…" type="text"/>
+</div>
+<div class="va-filter-tabs" id="va-filter-tabs"></div>
+<div class="va-toolbar-right">
+<div id="va-group-slot"></div>
+<button class="va-icon-btn" id="va-columns-btn" onclick="vaOpenColumnsMenu(event)" title="Colonnes">
+<svg fill="none" height="15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24" width="15"><rect height="18" rx="2" width="18" x="3" y="3"></rect><line x1="9" x2="9" y1="3" y2="21"></line><line x1="15" x2="15" y1="3" y2="21"></line></svg>
+</button>
+</div>
+</div>
+<div class="va-table-wrap" id="va-table-wrap">
+<table class="va-table" id="va-table">
+<thead id="va-thead"></thead>
+<tbody id="va-tbody"></tbody>
+</table>
+<div class="va-empty-state" id="va-empty-state" style="display:none">
+<div class="va-empty-icon">🎯</div>
+<div class="va-empty-title">Aucun compte</div>
+<div class="va-empty-sub">Ajoute ton premier compte Valorant pour commencer.</div>
+</div>
+</div>
+</div>
+<div class="va-bulk-bar" id="va-bulk-bar"></div>
+<div class="va-detail-overlay" id="va-detail-overlay" onclick="vaCloseDetail()"></div>
+<div class="va-detail-panel" id="va-detail-panel"></div>
+<div class="va-ctx-menu" id="va-ctx-menu"></div>
 <!-- JOURNAL -->
 <div aria-live="polite" class="tab-content" data-qa-page="true" id="page-journal" role="tabpanel">
 <div class="topbar">
@@ -4820,6 +4891,22 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <input class="modal-input" id="lastfm-username" placeholder="Your Last.fm username" style="flex:1" type="text"/>
 <button class="btn btn-primary" onclick="connectLastfm()">Connect</button>
 <button class="btn btn-ghost" id="lastfm-disconnect-btn" onclick="disconnectLastfm()" style="display:none">Disconnect</button>
+</div>
+</div>
+</div>
+<!-- GITHUB -->
+<div class="conn-card">
+<div class="conn-header">
+<div class="conn-icon" style="background:#24292e">⌥</div>
+<div><div class="conn-title">GitHub</div><div class="conn-subtitle">Show your recent activity in your sidebar</div></div>
+<span class="conn-status-badge disconnected" id="github-conn-badge">Not connected</span>
+</div>
+<div class="modal-field">
+<div class="modal-label">GITHUB USERNAME</div>
+<div style="display:flex;gap:8px">
+<input class="modal-input" id="github-conn-username" placeholder="e.g. rub19" style="flex:1" type="text"/>
+<button class="btn btn-primary" onclick="connectGithubFromConnections()">Connect</button>
+<button class="btn btn-ghost" id="github-conn-disconnect-btn" onclick="disconnectGithub()" style="display:none">Disconnect</button>
 </div>
 </div>
 </div>
@@ -5484,6 +5571,8 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <script id="ethone-legacy-sidebar-customizer" src="./pages/dashboard/sidebar-customizer.js"></script>
 <script id="ethone-legacy-sidebar-widgets-init" src="./pages/dashboard/sidebar-widgets-init.js"></script>
 <script id="ethone-legacy-sidebar-widget-manager" src="./pages/dashboard/sidebar-widget-manager.js"></script>
+<script id="ethone-sidebar-tooltip" src="./pages/dashboard/sidebar-tooltip.js"></script>
+<script id="ethone-sidebar-scrollfade" src="./pages/dashboard/sidebar-scrollfade.js"></script>
 <script id="ethone-legacy-dashboard-init" src="./pages/dashboard/init.js"></script>
 <script id="ethone-legacy-profile-settings" src="./pages/profile/settings.js"></script>
 <script id="ethone-legacy-theme" src="./services/theme/legacy.js"></script>
@@ -5546,6 +5635,11 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <script id="ethone-legacy-valorant-disconnect" src="./pages/gaming/valorant-disconnect.js"></script>
 <script id="ethone-legacy-league" src="./pages/gaming/league.js"></script>
 <script id="ethone-legacy-gaming-helpers" src="./pages/gaming/helpers.js"></script>
+<script id="ethone-va-dropdown" src="./pages/valorant-accounts/dropdown.js"></script>
+<script id="ethone-va-context-menu" src="./pages/valorant-accounts/context-menu.js"></script>
+<script id="ethone-va-detail-panel" src="./pages/valorant-accounts/detail-panel.js"></script>
+<script id="ethone-va-import-export" src="./pages/valorant-accounts/import-export.js"></script>
+<script id="ethone-va-index" src="./pages/valorant-accounts/index.js"></script>
 <script id="ethone-legacy-mobile-sidebar" src="./pages/dashboard/mobile-sidebar.js"></script>
 <script id="ethone-legacy-import-export" src="./actions/import-export.js"></script>
 <script id="ethone-legacy-desktop-notifications" src="./actions/desktop-notifications.js"></script>
@@ -11327,6 +11421,142 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
   #nav-active-pill{transition:opacity .2s ease!important}
   #main-sidebar .nav-item{transition:none!important}
 }
+
+/* ══════════════════════════════════════════════════════════════
+   ETHONE SIDEBAR V7 — premium pass (resize, collapse, live, drag)
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Resize handle: invisible at rest, wide hit zone, glow on hover/drag ── */
+.resize-handle{width:2px!important}
+.resize-handle::before{
+  content:'';position:absolute;top:0;bottom:0;left:-4px;width:10px;
+}
+.resize-handle:hover,.resize-handle.dragging{
+  background:linear-gradient(180deg,rgba(139,92,246,.55),rgba(124,58,237,.4))!important;
+  box-shadow:0 0 14px rgba(139,92,246,.35)!important;
+}
+#main-sidebar.sb-resizing{transition:none!important}
+#main-sidebar.sb-resize-reset{transition:width .26s var(--ease-premium,cubic-bezier(.22,1,.36,1))!important}
+
+/* ── Compact tooltip ── */
+.sb-tooltip{
+  position:fixed;z-index:2000;top:0;left:0;
+  padding:6px 10px;border-radius:8px;
+  background:rgba(14,13,20,.96);border:1px solid rgba(139,92,246,.25);
+  color:rgba(248,247,251,.92);font-size:12px;font-weight:600;font-family:var(--font);
+  white-space:nowrap;pointer-events:none;
+  box-shadow:0 10px 28px rgba(0,0,0,.4),0 0 0 1px rgba(0,0,0,.2);
+  opacity:0;transform:translate(-6px,-50%);
+  transition:opacity .15s var(--ease-premium,cubic-bezier(.22,1,.36,1)),transform .15s var(--ease-premium,cubic-bezier(.22,1,.36,1));
+}
+.sb-tooltip.visible{opacity:1;transform:translate(0,-50%)}
+.sb-tooltip::before{
+  content:'';position:absolute;top:50%;left:-4px;width:8px;height:8px;
+  background:rgba(14,13,20,.96);border-left:1px solid rgba(139,92,246,.25);border-bottom:1px solid rgba(139,92,246,.25);
+  transform:translateY(-50%) rotate(45deg);
+}
+
+/* ── Nav item glow + icon micro-animation ── */
+#main-sidebar .nav-item:hover{box-shadow:0 0 0 1px rgba(255,255,255,.04) inset,0 4px 16px -6px rgba(139,92,246,.28)!important}
+#main-sidebar .nav-item:hover .nav-icon{transform:scale(1.08)!important}
+#main-sidebar .nav-item.active .nav-icon{transform:scale(1.04)}
+#nav-active-pill{box-shadow:0 8px 22px rgba(139,92,246,.4),inset 0 1px 0 rgba(255,255,255,.2),0 0 22px rgba(139,92,246,.14)!important}
+
+/* ── User card: avatar halo + online status dot ── */
+#main-sidebar .user-card{position:relative}
+#main-sidebar .sidebar-avatar{position:relative;box-shadow:0 4px 14px rgba(0,0,0,.3),0 0 0 4px rgba(139,92,246,.06)!important}
+.sidebar-avatar-status{
+  position:absolute;left:34px;top:32px;
+  width:10px;height:10px;border-radius:50%;
+  background:rgba(255,255,255,.15);
+  border:2px solid #0b0b0f;
+  box-shadow:0 0 6px rgba(0,0,0,.4);
+  transition:background-color .3s ease;
+  pointer-events:none;
+}
+.sidebar-avatar-status.online{background:#34d399;box-shadow:0 0 8px rgba(52,211,153,.55)}
+.sidebar-avatar-status.saving{background:#fbbf24;box-shadow:0 0 8px rgba(251,191,36,.5)}
+.sidebar-avatar-status.error{background:#f87171;box-shadow:0 0 8px rgba(248,113,113,.5)}
+.sidebar.compact .sidebar-avatar-status{left:24px;top:26px}
+
+/* ── LIVE section ── */
+.sb-live-section{margin-top:2px}
+.sb-live-header{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 8px 8px;
+  color:rgba(248,247,251,.32);
+  font-size:9.5px;font-weight:700;letter-spacing:.14em;font-family:var(--mono);
+}
+.sb-live-dot{
+  width:5px;height:5px;border-radius:50%;background:#34d399;flex-shrink:0;
+  box-shadow:0 0 6px rgba(52,211,153,.6);
+  animation:pulse 1.8s ease-in-out infinite;
+}
+.sb-live-list{display:flex;flex-direction:column;gap:5px}
+.sb-widget-card{
+  transition:border-color .18s var(--ease-premium,cubic-bezier(.22,1,.36,1)),transform .18s var(--ease-premium,cubic-bezier(.22,1,.36,1)),box-shadow .18s var(--ease-premium,cubic-bezier(.22,1,.36,1))!important;
+}
+#main-sidebar .sb-widget-card:hover{
+  transform:translateY(-1px)!important;
+  box-shadow:0 8px 20px -8px rgba(0,0,0,.5)!important;
+}
+.sb-wc-steam{border-color:rgba(102,192,244,.18)!important}
+.sb-wc-steam .sb-wc-avatar{background:rgba(27,40,56,.6)}
+.sb-wc-github{border-color:rgba(255,255,255,.12)!important}
+.sb-wc-github .sb-wc-avatar{background:rgba(255,255,255,.06)}
+.widget-row-icon svg{width:14px;height:14px;stroke:#fff}
+.sidebar.compact .sb-live-section{display:none!important}
+
+/* ── Drag & drop visual feedback (nav-item reorder + widget manager) ── */
+[draggable="true"]{transition:opacity .15s ease,transform .15s ease}
+[draggable="true"].dragging{opacity:.35!important;transform:scale(.98)}
+.widget-row.drag-over{
+  border-color:rgba(139,92,246,.5)!important;
+  box-shadow:0 0 0 1px rgba(139,92,246,.3) inset!important;
+}
+
+/* ── Scroll fade on nav list ── */
+#sidebar-nav-main.sb-fade-top:not(.sb-fade-bottom){
+  mask-image:linear-gradient(to bottom,transparent,black 20px);
+  -webkit-mask-image:linear-gradient(to bottom,transparent,black 20px);
+}
+#sidebar-nav-main.sb-fade-bottom:not(.sb-fade-top){
+  mask-image:linear-gradient(to top,transparent,black 20px);
+  -webkit-mask-image:linear-gradient(to top,transparent,black 20px);
+}
+#sidebar-nav-main.sb-fade-top.sb-fade-bottom{
+  mask-image:linear-gradient(to bottom,transparent,black 20px,black calc(100% - 20px),transparent);
+  -webkit-mask-image:linear-gradient(to bottom,transparent,black 20px,black calc(100% - 20px),transparent);
+}
+
+/* ── Pinned / favorites mini-section ── */
+.sb-pinned-label{
+  padding:12px 10px 6px;font-size:9.5px;font-weight:700;letter-spacing:.14em;
+  color:rgba(248,247,251,.28);font-family:var(--mono);
+}
+.sb-pin-btn{
+  position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  width:20px;height:20px;display:flex;align-items:center;justify-content:center;
+  border-radius:6px;color:rgba(245,245,247,.25);background:transparent;border:0;cursor:pointer;
+  opacity:0;transition:opacity .15s ease,color .15s ease,background-color .15s ease;
+}
+[data-id]:hover .sb-pin-btn{opacity:1}
+.sb-pin-btn:hover{color:#c4b5fd;background:rgba(139,92,246,.12)}
+.sb-pin-btn.pinned{opacity:1;color:#a78bfa}
+
+/* ── Responsive: laptop auto-compact, tablet overlay ── */
+@media(min-width:1025px) and (max-width:1200px){
+  #main-sidebar.sidebar:not(.sb-user-expanded){width:58px!important;min-width:58px!important}
+}
+@media(min-width:769px) and (max-width:1024px){
+  #main-sidebar.sidebar{
+    position:fixed!important;transform:translateX(-100%)!important;
+    transition:transform .28s var(--ease-premium,cubic-bezier(.22,1,.36,1))!important;
+  }
+  #main-sidebar.sidebar.mobile-open{transform:translateX(0)!important}
+  #main-sidebar .nav-item{min-height:44px!important}
+  .resize-handle{display:none!important}
+}
 </style>
 <script id="ethone-auth-v3-premium-experience" src="./services/auth/premium-experience.js?v=21"></script>
 <link rel="stylesheet" href="./pages/dashboard-v4.css">
@@ -11334,6 +11564,7 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
 <link rel="stylesheet" href="./ui/components.css">
 <link rel="stylesheet" href="./ui/app.css">
 <link rel="stylesheet" href="./ui/auth.css?v=22">
+<link rel="stylesheet" href="./pages/valorant-accounts/style.css">
 <script src="./ui/accessibility.js"></script>
 <script src="./pages/dashboard-v4.js"></script>
 </body>

@@ -18,10 +18,10 @@
     }
   }
   var HERO_TEXT={
-    fr:{title:"Votre système <span>d'exploitation personnel.</span>",copy:"Brain, vos espaces et vos outils, réunis en un seul endroit.",badge:"OS Personnel",search:"Brain, fichiers, commandes…",ready:"Prêt",morning:"Session matinale",work:"Session de travail",evening:"Mode soirée",night:"Mode nuit",brainLabel:"ETHONE Brain",score:"Score de productivité",tasksLabel:"TÂCHES",t1:"Synchro Brain",t2:"Revoir Marketplace",t3:"Session focus · 2h",t4:"Habitudes du jour",habitsLabel:"HABITUDES",h1:"Session focus",h2:"Espaces",h3:"Automatisations",activityLabel:"ACTIVITÉ DU JOUR"},
-    en:{title:"Your Personal <span>Operating System<i>.</i></span>",copy:"Brain, Workspaces and your tools — organized as one.",badge:"Personal OS",search:"Brain, files, commands…",ready:"Ready",morning:"Morning session",work:"Work session",evening:"Evening mode",night:"Night mode",brainLabel:"ETHONE Brain",score:"Productivity score",tasksLabel:"TASKS",t1:"Brain memory sync",t2:"Review Marketplace",t3:"Focus session · 2h",t4:"Daily habits",habitsLabel:"HABITS",h1:"Focus session",h2:"Workspaces",h3:"Automations",activityLabel:"ACTIVITY TODAY"},
-    es:{title:"Tu sistema <span>operativo personal.</span>",copy:"Brain, tus espacios y tus herramientas, todo en un mismo lugar.",badge:"OS Personal",search:"Brain, archivos, comandos…",ready:"Listo",morning:"Sesión matutina",work:"Sesión de trabajo",evening:"Modo tarde",night:"Modo noche",brainLabel:"ETHONE Brain",score:"Puntuación de productividad",tasksLabel:"TAREAS",t1:"Sincronizar Brain",t2:"Revisar Marketplace",t3:"Sesión de enfoque · 2h",t4:"Hábitos diarios",habitsLabel:"HÁBITOS",h1:"Sesión de enfoque",h2:"Espacios",h3:"Automatizaciones",activityLabel:"ACTIVIDAD DE HOY"},
-    de:{title:"Dein persönliches <span>Betriebssystem.</span>",copy:"Brain, Workspaces und deine Werkzeuge an einem Ort.",badge:"Persönliches OS",search:"Brain, Dateien, Befehle…",ready:"Bereit",morning:"Morgen-Sitzung",work:"Arbeitssitzung",evening:"Abendmodus",night:"Nachtmodus",brainLabel:"ETHONE Brain",score:"Produktivitätswert",tasksLabel:"AUFGABEN",t1:"Brain-Sync",t2:"Marketplace prüfen",t3:"Fokus-Sitzung · 2h",t4:"Tägliche Gewohnheiten",habitsLabel:"GEWOHNHEITEN",h1:"Fokus-Sitzung",h2:"Workspaces",h3:"Automatisierungen",activityLabel:"AKTIVITÄT HEUTE"}
+    fr:{title:"Votre système <span>d'exploitation personnel.</span>",copy:"Brain, vos espaces et vos outils, réunis en un seul endroit.",badge:"OS Personnel",search:"Brain, fichiers, commandes…",ready:"Prêt",morning:"Session matinale",work:"Session de travail",evening:"Mode soirée",night:"Mode nuit",brainLabel:"ETHONE Brain",score:"Score de productivité",tasksLabel:"TÂCHES",t1:"Synchro Brain",t2:"Revoir Marketplace",t3:"Session focus · 2h",t4:"Habitudes du jour",habitsLabel:"HABITUDES",h1:"Session focus",h2:"Espaces",h3:"Automatisations",activityLabel:"ACTIVITÉ DU JOUR",recentLabel:"ACTIVITÉ RÉCENTE",r1:"Synchro Brain terminée",r1time:"à l'instant",r2:"Nouvelle note dans Espaces",r2time:"il y a 12 min",notif:"Notifications"},
+    en:{title:"Your Personal <span>Operating System<i>.</i></span>",copy:"Brain, Workspaces and your tools — organized as one.",badge:"Personal OS",search:"Brain, files, commands…",ready:"Ready",morning:"Morning session",work:"Work session",evening:"Evening mode",night:"Night mode",brainLabel:"ETHONE Brain",score:"Productivity score",tasksLabel:"TASKS",t1:"Brain memory sync",t2:"Review Marketplace",t3:"Focus session · 2h",t4:"Daily habits",habitsLabel:"HABITS",h1:"Focus session",h2:"Workspaces",h3:"Automations",activityLabel:"ACTIVITY TODAY",recentLabel:"RECENT ACTIVITY",r1:"Brain sync completed",r1time:"just now",r2:"New note in Workspaces",r2time:"12 min ago",notif:"Notifications"},
+    es:{title:"Tu sistema <span>operativo personal.</span>",copy:"Brain, tus espacios y tus herramientas, todo en un mismo lugar.",badge:"OS Personal",search:"Brain, archivos, comandos…",ready:"Listo",morning:"Sesión matutina",work:"Sesión de trabajo",evening:"Modo tarde",night:"Modo noche",brainLabel:"ETHONE Brain",score:"Puntuación de productividad",tasksLabel:"TAREAS",t1:"Sincronizar Brain",t2:"Revisar Marketplace",t3:"Sesión de enfoque · 2h",t4:"Hábitos diarios",habitsLabel:"HÁBITOS",h1:"Sesión de enfoque",h2:"Espacios",h3:"Automatizaciones",activityLabel:"ACTIVIDAD DE HOY",recentLabel:"ACTIVIDAD RECIENTE",r1:"Sincronización Brain lista",r1time:"ahora mismo",r2:"Nueva nota en Espacios",r2time:"hace 12 min",notif:"Notificaciones"},
+    de:{title:"Dein persönliches <span>Betriebssystem.</span>",copy:"Brain, Workspaces und deine Werkzeuge an einem Ort.",badge:"Persönliches OS",search:"Brain, Dateien, Befehle…",ready:"Bereit",morning:"Morgen-Sitzung",work:"Arbeitssitzung",evening:"Abendmodus",night:"Nachtmodus",brainLabel:"ETHONE Brain",score:"Produktivitätswert",tasksLabel:"AUFGABEN",t1:"Brain-Sync",t2:"Marketplace prüfen",t3:"Fokus-Sitzung · 2h",t4:"Tägliche Gewohnheiten",habitsLabel:"GEWOHNHEITEN",h1:"Fokus-Sitzung",h2:"Workspaces",h3:"Automatisierungen",activityLabel:"AKTIVITÄT HEUTE",recentLabel:"LETZTE AKTIVITÄT",r1:"Brain-Sync abgeschlossen",r1time:"gerade eben",r2:"Neue Notiz in Workspaces",r2time:"vor 12 Min.",notif:"Benachrichtigungen"}
   };
   function heroText(){return HERO_TEXT[currentLanguage()]||HERO_TEXT.fr}
   function syncLanguageControl(){
@@ -68,6 +68,10 @@
               '<span id="apu-time">--:--</span>'+
               '<div id="auth-preview-search" data-auth-hero="search">'+copy.search+'</div>'+
               '<div id="auth-preview-ready"><div class="apr-dot"></div><span data-auth-hero="ready">'+copy.ready+'</span></div>'+
+              '<button type="button" id="apc-notif-bell" data-auth-hero-label="notif" tabindex="-1">'+
+                '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8a5 5 0 0 1 10 0c0 3.2 1 4.5 1.5 5H3.5C4 12.5 5 11.2 5 8Z"/><path d="M8.3 15.5a1.8 1.8 0 0 0 3.4 0"/></svg>'+
+                '<span id="apc-notif-badge">2</span>'+
+              '</button>'+
             '</div>'+
           '</div>'+
           '<div id="auth-preview-body">'+
@@ -84,7 +88,7 @@
             '<div id="auth-preview-content">'+
               '<div id="apc-clock">'+
                 '<div id="apc-time">--:--</div>'+
-                '<div id="apc-clock-r"><div id="apc-date">—</div><div id="apc-status"><div class="apc-sdot"></div><span id="apc-stxt"></span></div></div>'+
+                '<div id="apc-clock-r"><div id="apc-date">—</div><div id="apc-status"><div class="apc-sdot"></div><span id="apc-stxt"></span></div><div id="apc-week" aria-hidden="true"></div></div>'+
               '</div>'+
               '<div id="apc-row1">'+
                 '<div id="apc-brain">'+
@@ -111,6 +115,11 @@
                 '<div class="apch-row"><span class="apch-n" data-auth-hero="h2">'+copy.h2+'</span><div class="apch-dots"><div class="apch-d on"></div><div class="apch-d on"></div><div class="apch-d"></div><div class="apch-d on"></div><div class="apch-d now"></div><div class="apch-d"></div><div class="apch-d"></div></div></div>'+
                 '<div class="apch-row"><span class="apch-n" data-auth-hero="h3">'+copy.h3+'</span><div class="apch-dots"><div class="apch-d on"></div><div class="apch-d"></div><div class="apch-d on"></div><div class="apch-d on"></div><div class="apch-d"></div><div class="apch-d"></div><div class="apch-d"></div></div></div>'+
               '</div>'+
+              '<div id="apc-recent">'+
+                '<div class="apct-lbl" data-auth-hero="recentLabel">'+copy.recentLabel+'</div>'+
+                '<div class="apcr-row"><span class="apcr-dot"></span><span class="apcr-t" data-auth-hero="r1">'+copy.r1+'</span><span class="apcr-time" data-auth-hero="r1time">'+copy.r1time+'</span></div>'+
+                '<div class="apcr-row"><span class="apcr-dot"></span><span class="apcr-t" data-auth-hero="r2">'+copy.r2+'</span><span class="apcr-time" data-auth-hero="r2time">'+copy.r2time+'</span></div>'+
+              '</div>'+
               '<div id="apc-activity">'+
                 '<div class="apct-lbl" data-auth-hero="activityLabel">'+copy.activityLabel+'</div>'+
                 '<div id="apc-bars"></div>'+
@@ -130,6 +139,8 @@
         if(key==="title")element.innerHTML=copy[key];
         else element.textContent=copy[key];
       }
+      var labelTarget=qs('[data-auth-hero-label="'+key+'"]',hero);
+      if(labelTarget)labelTarget.setAttribute("aria-label",copy[key]);
     });
     updatePreviewRuntime();
   }
@@ -149,6 +160,15 @@
       var l=currentLanguage();
       var D=DAYS[l]||DAYS.en, M=MONTHS[l]||MONTHS.en;
       dateEl.textContent=D[now.getDay()]+", "+M[now.getMonth()]+" "+now.getDate();
+      var weekEl=qs("#apc-week",hero);
+      if(weekEl){
+        var todayIdx=now.getDay();
+        var order=[1,2,3,4,5,6,0];
+        weekEl.innerHTML=order.map(function(dayIndex){
+          var isToday=dayIndex===todayIdx;
+          return '<span class="apcw-d'+(isToday?" today":"")+'">'+D[dayIndex].replace(/[^A-Za-zÀ-ÿ]/g,"").charAt(0).toUpperCase()+'</span>';
+        }).join("");
+      }
     }
     var copy=heroText();
     var statusEl=qs("#apc-stxt",hero);
@@ -160,8 +180,8 @@
       hero.dataset.previewScoreAnimated="1";
       setTimeout(function(){
         var f1=qs("#apcb-f1",hero),f2=qs("#apcb-f2",hero);
-        if(f1)f1.style.width="78%";
-        if(f2)f2.style.width="52%";
+        if(f1)f1.style.transform="scaleX(0.78)";
+        if(f2)f2.style.transform="scaleX(0.52)";
       },320);
     }
     var bars=qs("#apc-bars",hero);
@@ -172,8 +192,9 @@
       var ni=Math.floor(now.getHours()/24*d.length);
       bars.innerHTML=d.map(function(v,i){
         var p=Math.round(v/mx*100);
+        var scale=(Math.max(p,10)/100).toFixed(3);
         var cl=i===ni?"now":p>80?"pk":p>55?"hi":"";
-        return '<div class="ab '+cl+'" style="height:'+p+'%"></div>';
+        return '<div class="ab '+cl+'" style="transform:scaleY('+scale+')"></div>';
       }).join("");
     }
   }
@@ -184,10 +205,11 @@
     if(!bars.length)return;
     var pick=bars[Math.floor(Math.random()*bars.length)];
     if(pick.classList.contains("now"))return;
-    var current=parseFloat(pick.style.height)||30;
-    var delta=(Math.random()*10-5);
-    var next=Math.min(96,Math.max(8,current+delta));
-    pick.style.height=next+"%";
+    var match=/scaleY\(([\d.]+)\)/.exec(pick.style.transform);
+    var current=match?parseFloat(match[1]):0.3;
+    var delta=(Math.random()*0.1-0.05);
+    var next=Math.min(0.96,Math.max(0.1,current+delta));
+    pick.style.transform="scaleY("+next.toFixed(3)+")";
   }
   function startPreviewRuntime(){
     updatePreviewRuntime();
@@ -305,6 +327,7 @@
   }
   function boot(){
     apply();
+    try{if(document.fonts&&document.fonts.ready)document.fonts.ready.then(syncCardHeight)}catch(e){}
     var screen=qs("#auth-screen");
     if(screen){
       try{new MutationObserver(sync).observe(screen,{attributes:true,attributeFilter:["style","class"]})}catch(e){}

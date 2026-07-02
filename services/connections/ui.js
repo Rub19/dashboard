@@ -36,6 +36,7 @@ function loadConnectionsUI(){
     renderLastfmCard(conn.lastfm).catch(()=>{});
     startLastfmAutoRefresh();
   }
+  if(typeof updateGithubConnBadge==='function')updateGithubConnBadge();
   // Sync sidebar widgets visibility sans re-render nav (évite le flash)
   const p2=curP();
   if(p2){

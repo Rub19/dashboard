@@ -37,8 +37,8 @@ async function refreshSpotifySidebar(){
   const wrap=document.getElementById('sb-spotify-iframe-wrap');
   const lfm=p.state.connections?.lastfm;
 
-  if(!lfm?.username){if(wrap)wrap.style.display='none';return;}
-  if(wrap)wrap.style.display='block';
+  if(!lfm?.username){if(wrap)wrap.style.setProperty('display','none','important');return;}
+  if(wrap)wrap.style.setProperty('display','block','important');
 
   try{
     const data=await fetchLastfm('user.getrecenttracks',`user=${encodeURIComponent(lfm.username)}&limit=1`);

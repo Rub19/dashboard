@@ -105,8 +105,8 @@ function updateTwitchSidebar(liveStreamers){
   const wrap=document.getElementById('sb-twitch-wrap');
   const listEl=document.getElementById('sb-twitch-list');
   if(!wrap||!listEl)return;
-  if(!liveStreamers.length){wrap.style.display='none';return;}
-  wrap.style.display='block';
+  if(!liveStreamers.length){wrap.style.setProperty('display','none','important');return;}
+  wrap.style.setProperty('display','block','important');
   listEl.innerHTML=liveStreamers.map(s=>`
     <a href="https://twitch.tv/${s.username}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:8px;text-decoration:none;padding:6px 8px;background:rgba(145,71,255,.08);border:1px solid rgba(145,71,255,.2);border-radius:var(--r-sm)">
       <img src="${s.avatar||''}" style="width:28px;height:28px;border-radius:50%;border:2px solid #ff0000;flex-shrink:0" onerror="this.style.display='none'">
@@ -131,6 +131,6 @@ function disconnectTwitch(){
   if(p.state.connections)delete p.state.connections.twitch;
   saveStateNow();
   renderTwitchCard();
-  document.getElementById('sb-twitch-wrap').style.display='none';
+  document.getElementById('sb-twitch-wrap').style.setProperty('display','none','important');
   toast('Twitch disconnected','info');
 }

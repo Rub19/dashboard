@@ -39,6 +39,7 @@ function switchPage(page,navEl){
   if(page==='journal'){renderJournal();}
   if(page==='countdown'){renderCountdowns();}
   if(page==='github'){refreshGithub();}
+  if(page==='valorant-accounts'){vaRender();}
   // Refresh widgets when back on dashboard
   if(page==='dashboard'){
     const wEl=document.getElementById('weather-widget');

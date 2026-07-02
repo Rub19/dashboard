@@ -63,6 +63,7 @@ async function connectSteam(){
 }
 
 function renderSteamCard(data){
+  renderSteamSidebar(data);
   const badge=document.getElementById('steam-badge');
   if(badge){badge.textContent='Connected';badge.className='conn-status-badge connected';}
   const preview=document.getElementById('steam-preview');
@@ -122,6 +123,40 @@ function renderSteamCard(data){
 }
 
 
+function renderSteamSidebar(data){
+  const p=curP();
+  const wrap=document.getElementById('sb-steam-wrap');
+  if(!wrap||!data)return;
+  const vis=p?.state?.sidebarWidgets?.visible||{};
+  if(vis.steam===false){wrap.style.setProperty('display','none','important');return;}
+  const nameEl=document.getElementById('sb-steam-name');
+  const subEl=document.getElementById('sb-steam-activity');
+  const avEl=document.getElementById('sb-steam-avatar');
+  const statusDot=document.getElementById('sb-steam-status');
+  if(nameEl)nameEl.textContent=data.displayName||'Unknown';
+  const gameName=data.stateMessage&&data.stateMessage.startsWith('Currently In-Game')?data.stateMessage.replace('Currently In-Game','').trim():null;
+  if(subEl){
+    if(gameName){subEl.textContent='En jeu · '+gameName;subEl.style.display='block';}
+    else{subEl.style.display='none';}
+  }
+  if(statusDot){
+    statusDot.className='sb-dc-dot '+(gameName?'online':(data.onlineState==='offline'?'offline':'online'));
+  }
+  if(avEl&&data.avatarFull){
+    const fb=document.getElementById('sb-steam-av-fallback');
+    if(fb)fb.style.display='none';
+    let img=avEl.querySelector('img');
+    if(!img){
+      img=document.createElement('img');
+      img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%';
+      img.onerror=()=>{img.style.display='none';if(fb)fb.style.display='';};
+      avEl.appendChild(img);
+    }
+    img.src=data.avatarFull;
+  }
+  wrap.style.setProperty('display','block','important');
+}
+
 async function refreshSteam(){
   const p=curP();if(!p||!p.state.connections?.steam)return;
   const {steamId,apiKey=''}=p.state.connections.steam;
@@ -171,5 +206,6 @@ function disconnectSteam(){
   const btn=document.getElementById('steam-disconnect-btn');if(btn)btn.style.display='none';
   const rbtn=document.getElementById('steam-refresh-btn');if(rbtn)rbtn.style.display='none';
   const rg=document.getElementById('steam-recent-games');if(rg)rg.style.display='none';
+  const sbWrap=document.getElementById('sb-steam-wrap');if(sbWrap)sbWrap.style.setProperty('display','none','important');
   toast('Disconnected','info');
 }

@@ -92,8 +92,8 @@ function refreshDiscordSidebar(){
   }
   // Show widget if userId exists (even if offline/no data yet)
   const hasConnection=conn?.userId||conn?.data;
-  if(!hasConnection){if(wrap)wrap.style.display='none';return}
-  if(wrap)wrap.style.display='block';
+  if(!hasConnection){if(wrap)wrap.style.setProperty('display','none','important');return}
+  if(wrap)wrap.style.setProperty('display','block','important');
   if(!conn?.data){
     // Show placeholder while loading
     const nameEl=document.getElementById('sb-dc-name');
@@ -164,7 +164,7 @@ function updateSpotifyFromLanyard(d){
 
   if(isDiscordOnline&&sp&&sp.song){
     // Discord online + Spotify playing → Lanyard widget
-    if(wrap)wrap.style.display='block';
+    if(wrap)wrap.style.setProperty('display','block','important');
     if(iframeWrap)iframeWrap.style.display='none';
     const artEl=document.getElementById('np-art');
     if(artEl){
@@ -184,7 +184,7 @@ function updateSpotifyFromLanyard(d){
       if(timeRow)timeRow.style.display='none';
     }
   } else {
-    if(wrap)wrap.style.display='none';
+    if(wrap)wrap.style.setProperty('display','none','important');
     const eq=document.getElementById('sb-eq-anim');if(eq)eq.style.display='none';
     clearInterval(window._npProgressInterval);
     const p=curP();
@@ -236,7 +236,7 @@ function disconnectDiscord(){
   const btn=document.getElementById('dc-disconnect-btn');
   if(btn)btn.style.display='none';
   const wrap=document.getElementById('sb-discord-wrap');
-  if(wrap)wrap.style.display='none';
+  if(wrap)wrap.style.setProperty('display','none','important');
   toast('Disconnected','info');
 }
 

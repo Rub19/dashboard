@@ -6,6 +6,13 @@ function updateSyncIndicator(state){
   const labels={saving:'Sync…',saved:'Synced ✓',error:'Offline',offline:'Local'};
   if(dot)dot.style.background=colors[state]||colors.offline;
   if(label)label.textContent=labels[state]||'—';
+
+  const statusDot=document.getElementById('sidebar-avatar-status');
+  const roleEl=document.getElementById('sidebar-user-role');
+  const statusClass={saving:'saving',saved:'online',error:'error',offline:''};
+  const statusText={saving:'Synchronisation…',saved:'En ligne',error:'Hors ligne',offline:'Local'};
+  if(statusDot)statusDot.className='sidebar-avatar-status'+(statusClass[state]?' '+statusClass[state]:'');
+  if(roleEl)roleEl.textContent=statusText[state]||'—';
 }
 
 async function saveCloudState(){

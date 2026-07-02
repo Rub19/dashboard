@@ -159,8 +159,8 @@ function updateLastfmSidebar(data,nowTrack,topArtists){
   if(!wrap||!content||!data)return;
   // Only show if actually now playing
   const isNow=nowTrack?.['@attr']?.nowplaying;
-  if(!nowTrack||!isNow){wrap.style.display='none';return;}
-  wrap.style.display='block';
+  if(!nowTrack||!isNow){wrap.style.setProperty('display','none','important');return;}
+  wrap.style.setProperty('display','block','important');
   const img=nowTrack.image?.[2]?.['#text']||'';
   // Update pill elements directly
   const artEl=document.getElementById('sb-lfm-art');
@@ -193,7 +193,7 @@ function disconnectLastfm(){
   document.getElementById('lastfm-disconnect-btn').style.display='none';
   document.getElementById('lastfm-refresh-btn').style.display='none';
   document.getElementById('lastfm-username').value='';
-  document.getElementById('sb-lastfm-wrap').style.display='none';
+  document.getElementById('sb-lastfm-wrap').style.setProperty('display','none','important');
   toast('Last.fm disconnected','info');
 }
 

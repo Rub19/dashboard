@@ -66,9 +66,8 @@ function toggleSidebarCompact(){
   p.sidebarCompact=!p.sidebarCompact;
   const sb=document.getElementById('main-sidebar');
   if(sb)sb.classList.toggle('compact',p.sidebarCompact);
-  // Adjust main content margin to match sidebar width
-  const main=document.getElementById('main-content');
-  if(main)main.style.marginLeft=p.sidebarCompact?'58px':'';
+  // Width (and the main-content grid track that depends on it) is driven
+  // entirely by the --sidebar-w CSS var — see resizable-sidebar.js.
   const resize=window.ethoneSidebarResize;
   if(resize){if(p.sidebarCompact)resize.suspendForCompact();else resize.resumeFromCompact();}
   saveStateNow();
@@ -80,9 +79,13 @@ function applySidebarCompact(){
   const p=curP();if(!p)return;
   const sb=document.getElementById('main-sidebar');
   if(sb)sb.classList.toggle('compact',!!p.sidebarCompact);
-  const main=document.getElementById('main-content');
-  if(main&&p.sidebarCompact)main.style.marginLeft='58px';
   if(window.ethoneSidebarResize&&p.sidebarCompact)window.ethoneSidebarResize.suspendForCompact();
+  // Dashboard boot can finish well after the one-time laptop-range
+  // auto-compact check (which fires shortly after DOMContentLoaded, while
+  // the login screen is still showing). Re-run it now so a laptop-width
+  // viewport still ends up compact even if the user's saved preference
+  // was "expanded" and this function ran last.
+  if(typeof window.applyResponsiveSidebar==='function')window.applyResponsiveSidebar();
 }
 
 function initDashboard(){

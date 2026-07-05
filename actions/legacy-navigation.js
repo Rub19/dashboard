@@ -40,6 +40,7 @@ function switchPage(page,navEl){
   if(page==='countdown'){renderCountdowns();}
   if(page==='github'){refreshGithub();}
   if(page==='valorant-accounts'){vaRender();}
+  if(page==='databases'){if(typeof renderDatabasesHome==='function')renderDatabasesHome();}
   // Refresh widgets when back on dashboard
   if(page==='dashboard'){
     const wEl=document.getElementById('weather-widget');

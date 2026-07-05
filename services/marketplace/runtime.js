@@ -297,7 +297,12 @@
         const res=old.apply(this,arguments);
         const text=String(q||"").trim();
         if(text.length>1){
-          const item={icon:"MP",label:"Search Marketplace: "+text,sub:"Widgets, themes, layouts, plugins, automations and collections",tag:"Marketplace",action:()=>{if(typeof window.closeCmdPalette==="function")window.closeCmdPalette();if(typeof window.switchPage==="function")window.switchPage("marketplace",null);state.query=text;save();setTimeout(renderAll,120)}};
+          const item={icon:"MP",label:"Search Marketplace: "+text,sub:"Widgets, themes, layouts, plugins, automations and collections",tag:"Marketplace",action:()=>{
+            if(typeof window.closeCmdPalette==="function")window.closeCmdPalette();
+            const actions=window.Ethone&&window.Ethone.get&&window.Ethone.get("actions");
+            if(actions&&actions.has("dashboard.nav.marketplace"))actions.dispatch("dashboard.nav.marketplace");
+            state.query=text;save();setTimeout(renderAll,120);
+          }};
           res.actions=[item].concat(res.actions||[]);
           res.all=[item].concat(res.all||[]);
         }

@@ -21,7 +21,10 @@ var VA_RANKS=(function(){
   out.push({value:"radiant",label:"Radiant",color:"#f4e389",category:"Rangs"});
   return out;
 })();
-function vaRankDef(value){return VA_RANKS.find(function(r){return r.value===value;})||VA_RANKS[0];}
+function vaRankDef(value){
+  var opts=vaOptionsFor("rank");
+  return opts.find(function(r){return r.value===value;})||opts[0]||VA_RANKS[0];
+}
 
 var VA_REGIONS=[
   {value:"eu",label:"Europe (EU)"},
@@ -41,7 +44,10 @@ var VA_AUTH_DEFS=[
   {value:"none",label:"Rien",color:"#7a7a82",icon:"—"},
   {value:"noaccess",label:"No Access",color:"#ef4444",icon:"⛔"},
 ];
-function vaAuthDef(value){return VA_AUTH_DEFS.find(function(a){return a.value===value;})||VA_AUTH_DEFS[4];}
+function vaAuthDef(value){
+  var opts=vaOptionsFor("authMethod");
+  return opts.find(function(a){return a.value===value;})||opts.find(function(a){return a.value==="none";})||opts[0]||VA_AUTH_DEFS[4];
+}
 
 var VA_TAG_PRESETS=[
   {value:"Main",label:"⭐ Main",color:"#f4c542"},
@@ -52,9 +58,52 @@ var VA_TAG_PRESETS=[
   {value:"Premium",label:"💰 Premium",color:"#facc15"},
 ];
 function vaTagDef(value){
-  var d=VA_TAG_PRESETS.find(function(t){return t.value===value;});
+  var opts=vaOptionsFor("tags");
+  var d=opts.find(function(t){return t.value===value;});
   if(d)return d;
   return {value:value,label:value,color:"#8b8b93"};
+}
+
+// ══════════════════════════════════════════════════════════════
+//  DROPDOWN DEFINITIONS — single source of truth for select/multiselect
+//  option lists, shared by built-in columns (rank/authMethod/tags) and
+//  user-created custom columns. Editable live via the dropdown editor.
+// ══════════════════════════════════════════════════════════════
+var VA_BUILTIN_DEFAULTS={rank:VA_RANKS,authMethod:VA_AUTH_DEFS,tags:VA_TAG_PRESETS};
+function vaCustomColumnDef(colKey){
+  return vaView().customColumns.find(function(c){return c.key===colKey;});
+}
+function vaOptionsFor(colKey){
+  var v=vaView();
+  if(!v.dropdownDefs)v.dropdownDefs={};
+  if(v.dropdownDefs[colKey])return v.dropdownDefs[colKey];
+  if(VA_BUILTIN_DEFAULTS[colKey]){
+    var seeded=VA_BUILTIN_DEFAULTS[colKey].map(function(o){return Object.assign({},o);});
+    v.dropdownDefs[colKey]=seeded;
+    return seeded;
+  }
+  var custom=vaCustomColumnDef(colKey);
+  if(custom){
+    if(!custom.options)custom.options=[];
+    return custom.options;
+  }
+  return [];
+}
+function vaOptionDef(colKey,value){
+  var opts=vaOptionsFor(colKey);
+  var d=opts.find(function(o){return o.value===value;});
+  if(d)return d;
+  return {value:value,label:value,color:"#8b8b93"};
+}
+function vaSaveDropdownOptions(colKey,newOptions){
+  var v=vaView();
+  if(VA_BUILTIN_DEFAULTS[colKey]){
+    v.dropdownDefs[colKey]=newOptions;
+  }else{
+    var custom=vaCustomColumnDef(colKey);
+    if(custom)custom.options=newOptions;
+  }
+  vaSaveView();
 }
 
 var VA_COLUMNS=[
@@ -110,23 +159,38 @@ function vaAccounts(){
   return p.state.valorantAccounts;
 }
 function vaView(){
-  var p=curP();if(!p)return{columnOrder:null,columnWidths:{},hiddenColumns:[],pinnedColumns:[],activeFilterView:"all",sort:[],groupBy:null,knownTags:[]};
-  if(!p.state.valorantAccountsView)p.state.valorantAccountsView={columnOrder:null,columnWidths:{},hiddenColumns:[],pinnedColumns:[],activeFilterView:"all",sort:[],groupBy:null,knownTags:[]};
+  var p=curP();if(!p)return{columnOrder:null,columnWidths:{},hiddenColumns:[],pinnedColumns:[],activeFilterView:"all",sort:[],groupBy:null,knownTags:[],customColumns:[],dropdownDefs:{},lockedColumns:[]};
+  if(!p.state.valorantAccountsView)p.state.valorantAccountsView={columnOrder:null,columnWidths:{},hiddenColumns:[],pinnedColumns:[],activeFilterView:"all",sort:[],groupBy:null,knownTags:[],customColumns:[],dropdownDefs:{},lockedColumns:[]};
   var v=p.state.valorantAccountsView;
   if(!v.columnWidths)v.columnWidths={};
   if(!v.hiddenColumns)v.hiddenColumns=[];
   if(!v.pinnedColumns)v.pinnedColumns=[];
   if(!v.sort)v.sort=[];
   if(!v.knownTags)v.knownTags=[];
+  if(!v.customColumns)v.customColumns=[];
+  if(!v.dropdownDefs)v.dropdownDefs={};
+  if(!v.lockedColumns)v.lockedColumns=[];
+  if(!v.columnLabels)v.columnLabels={};
   return v;
 }
 function vaSaveView(){saveStateNow();}
+function vaAllColumnDefs(){
+  var v=vaView();
+  var builtins=VA_COLUMNS.map(function(c){
+    var override=v.columnLabels&&v.columnLabels[c.key];
+    return override?Object.assign({},c,{label:override}):c;
+  });
+  return builtins.concat(v.customColumns.map(function(c){
+    return {key:c.key,label:c.label,width:c.width||150,type:c.type,custom:true};
+  }));
+}
 function vaOrderedColumns(){
   var v=vaView();
-  var order=v.columnOrder&&v.columnOrder.length?v.columnOrder:VA_COLUMNS.map(function(c){return c.key;});
-  var byKey={};VA_COLUMNS.forEach(function(c){byKey[c.key]=c;});
+  var all=vaAllColumnDefs();
+  var order=v.columnOrder&&v.columnOrder.length?v.columnOrder:all.map(function(c){return c.key;});
+  var byKey={};all.forEach(function(c){byKey[c.key]=c;});
   var out=order.map(function(k){return byKey[k];}).filter(Boolean);
-  VA_COLUMNS.forEach(function(c){if(out.indexOf(c)===-1)out.push(c);});
+  all.forEach(function(c){if(out.indexOf(c)===-1)out.push(c);});
   return out;
 }
 function vaVisibleColumns(){
@@ -320,14 +384,19 @@ function vaRenderThead(){
     if(c.key==="avatar"||c.key==="actions"){html+='<th style="'+style+'"></th>';return;}
     var sortIdx=v.sort.findIndex(function(s){return s.col===c.key;});
     var sortInfo=sortIdx>-1?v.sort[sortIdx]:null;
-    html+='<th style="'+style+'" data-col="'+c.key+'" class="va-th'+(sortInfo?" sorted":"")+'">'+
+    var locked=v.lockedColumns.indexOf(c.key)>-1;
+    html+='<th style="'+style+'" data-col="'+c.key+'" class="va-th'+(sortInfo?" sorted":"")+(locked?" locked":"")+'" draggable="'+(!locked)+'">'+
+      (locked?'<span class="va-th-lock">'+VA_LOCK_SVG+"</span>":"")+
       '<span class="va-th-label">'+esc(c.label)+"</span>"+
       (sortInfo?'<span class="va-th-sort">'+(sortInfo.dir==="asc"?"↑":"↓")+(v.sort.length>1?(sortIdx+1):"")+"</span>":"")+
-      '<span class="va-th-resize" data-col="'+c.key+'"></span>'+
+      (locked?"":'<span class="va-th-resize" data-col="'+c.key+'"></span>')+
     "</th>";
   });
+  html+='<th class="va-th-add"><button type="button" id="va-add-column-btn" title="Ajouter une colonne">'+VA_PLUS_SVG+"</button></th>";
   html+="</tr>";
   thead.innerHTML=html;
+  var addBtn=document.getElementById("va-add-column-btn");
+  if(addBtn)addBtn.addEventListener("click",function(e){vaOpenAddColumnPopover(e.currentTarget);});
 
   var selectAll=document.getElementById("va-select-all");
   if(selectAll)selectAll.addEventListener("change",function(){
@@ -360,26 +429,202 @@ function vaRenderThead(){
       e.preventDefault();
       vaOpenColumnContextMenu(e,th.dataset.col);
     });
+    th.addEventListener("dblclick",function(e){
+      if(e.target.classList.contains("va-th-resize"))return;
+      e.stopPropagation();
+      vaStartColumnRename(th,th.dataset.col);
+    });
+    th.addEventListener("dragstart",function(e){
+      e.dataTransfer.setData("text/plain",th.dataset.col);
+      th.classList.add("dragging");
+    });
+    th.addEventListener("dragend",function(){th.classList.remove("dragging");});
+    th.addEventListener("dragover",function(e){
+      if(th.classList.contains("locked"))return;
+      e.preventDefault();
+      th.classList.add("drag-over");
+    });
+    th.addEventListener("dragleave",function(){th.classList.remove("drag-over");});
+    th.addEventListener("drop",function(e){
+      e.preventDefault();
+      th.classList.remove("drag-over");
+      var fromKey=e.dataTransfer.getData("text/plain");
+      var toKey=th.dataset.col;
+      if(fromKey===toKey||th.classList.contains("locked"))return;
+      vaReorderColumn(fromKey,toKey);
+    });
   });
   vaWireColumnResize();
 }
+var VA_LOCK_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="10" height="10"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+var VA_PLUS_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+function vaReorderColumn(fromKey,toKey){
+  var v=vaView();
+  if(!v.columnOrder||!v.columnOrder.length)v.columnOrder=vaAllColumnDefs().map(function(c){return c.key;});
+  var fromIdx=v.columnOrder.indexOf(fromKey);
+  var toIdx=v.columnOrder.indexOf(toKey);
+  if(fromIdx===-1||toIdx===-1)return;
+  var moved=v.columnOrder.splice(fromIdx,1)[0];
+  v.columnOrder.splice(toIdx,0,moved);
+  vaSaveView();
+  vaRender();
+}
+var VA_TYPE_TO_GENERIC={rank:"select",auth:"select",tags:"multiselect",riot:"text",longtext:"text",bool:"checkbox",number:"genericNumber",region:"text"};
+function vaGenericTypeFor(type){return VA_TYPE_TO_GENERIC[type]||type;}
+function vaIsCustomColumn(colKey){return vaView().customColumns.some(function(c){return c.key===colKey;});}
+function vaIsOptionsType(type){return type==="select"||type==="multiselect"||type==="rank"||type==="auth"||type==="tags";}
+
+function vaRenameColumn(colKey,newLabel){
+  newLabel=(newLabel||"").trim();
+  if(!newLabel)return;
+  var custom=vaCustomColumnDef(colKey);
+  if(custom){
+    custom.label=newLabel;
+  }else{
+    var v=vaView();
+    if(!v.columnLabels)v.columnLabels={};
+    v.columnLabels[colKey]=newLabel;
+  }
+  vaSaveView();
+  vaRender();
+}
+function vaStartColumnRename(th,colKey){
+  if(th.querySelector(".va-th-rename-input"))return;
+  var labelEl=th.querySelector(".va-th-label");
+  var current=labelEl.textContent;
+  var input=document.createElement("input");
+  input.className="va-th-rename-input";
+  input.value=current;
+  labelEl.replaceWith(input);
+  input.focus();input.select();
+  function commit(){vaRenameColumn(colKey,input.value);}
+  input.addEventListener("blur",commit);
+  input.addEventListener("keydown",function(e){
+    e.stopPropagation();
+    if(e.key==="Enter"){e.preventDefault();commit();}
+    if(e.key==="Escape"){e.preventDefault();vaRenderThead();}
+  });
+  input.addEventListener("click",function(e){e.stopPropagation();});
+}
+function vaDuplicateColumn(colKey){
+  var colDef=vaAllColumnDefs().find(function(c){return c.key===colKey;});
+  if(!colDef)return;
+  var v=vaView();
+  var newType=vaGenericTypeFor(colDef.type);
+  var newCol={key:"custom_"+vaNewId(),label:colDef.label+" (copie)",type:newType,width:colDef.width||150};
+  if(vaIsOptionsType(colDef.type)||vaIsOptionsType(newType)){
+    newCol.options=vaOptionsFor(colKey).map(function(o){return Object.assign({},o);});
+  }
+  v.customColumns.push(newCol);
+  if(!v.columnOrder||!v.columnOrder.length)v.columnOrder=vaAllColumnDefs().map(function(c){return c.key;});
+  var idx=v.columnOrder.indexOf(colKey);
+  v.columnOrder.splice(idx>-1?idx+1:v.columnOrder.length,0,newCol.key);
+  vaSaveView();
+  vaRender();
+  toast("Colonne dupliquée","success");
+}
+function vaChangeColumnType(colKey,newType){
+  var custom=vaCustomColumnDef(colKey);
+  if(!custom)return;
+  if(custom.type===newType)return;
+  if(!confirm("Changer le type effacera les valeurs déjà saisies dans cette colonne. Continuer ?"))return;
+  custom.type=newType;
+  if(vaIsOptionsType(newType))custom.options=[];
+  else delete custom.options;
+  vaAccounts().forEach(function(a){delete a[colKey];});
+  vaSaveView();
+  saveStateNow();
+  vaRender();
+}
+function vaDeleteColumn(colKey){
+  if(!vaIsCustomColumn(colKey))return;
+  if(!confirm("Supprimer cette colonne ? Les données associées seront perdues pour tous les comptes."))return;
+  var v=vaView();
+  v.customColumns=v.customColumns.filter(function(c){return c.key!==colKey;});
+  if(v.columnOrder)v.columnOrder=v.columnOrder.filter(function(k){return k!==colKey;});
+  v.hiddenColumns=v.hiddenColumns.filter(function(k){return k!==colKey;});
+  v.pinnedColumns=v.pinnedColumns.filter(function(k){return k!==colKey;});
+  v.lockedColumns=v.lockedColumns.filter(function(k){return k!==colKey;});
+  vaAccounts().forEach(function(a){delete a[colKey];});
+  vaSaveView();
+  saveStateNow();
+  vaRender();
+  toast("Colonne supprimée","success");
+}
+function vaToggleColumnLock(colKey){
+  var v=vaView();
+  var idx=v.lockedColumns.indexOf(colKey);
+  if(idx>-1)v.lockedColumns.splice(idx,1);
+  else v.lockedColumns.push(colKey);
+  vaSaveView();
+  vaRender();
+}
+
+var VA_COLUMN_TYPE_CHOICES=[
+  {value:"text",label:"Texte"},
+  {value:"genericNumber",label:"Nombre"},
+  {value:"date",label:"Date"},
+  {value:"time",label:"Heure"},
+  {value:"checkbox",label:"Checkbox"},
+  {value:"select",label:"Dropdown"},
+  {value:"multiselect",label:"Multi-dropdown"},
+  {value:"color",label:"Couleur"},
+  {value:"email",label:"Email"},
+  {value:"phone",label:"Téléphone"},
+  {value:"url",label:"URL"},
+  {value:"image",label:"Image"},
+  {value:"image",label:"Avatar"},
+  {value:"multiselect",label:"Tags"},
+  {value:"select",label:"Rang"},
+  {value:"progress",label:"Progression"},
+  {value:"text",label:"Note"},
+  {value:"button",label:"Bouton"},
+  {value:"icon",label:"Icône"},
+  {value:"select",label:"Badge"},
+];
+
 function vaOpenColumnContextMenu(e,colKey){
   var v=vaView();
   var pinned=v.pinnedColumns.indexOf(colKey)>-1;
-  vaOpenContextMenu(e.clientX,e.clientY,[
-    {label:pinned?"Désépingler":"Épingler à gauche",onClick:function(){
+  var locked=v.lockedColumns.indexOf(colKey)>-1;
+  var isCustom=vaIsCustomColumn(colKey);
+  var colDef=vaAllColumnDefs().find(function(c){return c.key===colKey;});
+  var th=document.querySelector('.va-th[data-col="'+colKey+'"]');
+  var items=[
+    {label:"Renommer",onClick:function(){if(th)vaStartColumnRename(th,colKey);}},
+    {label:"Dupliquer",onClick:function(){vaDuplicateColumn(colKey);}},
+  ];
+  if(isCustom){
+    items.push({label:"Changer le type",onClick:function(){
+      vaOpenDropdown(th||document.body,{title:"Changer le type",searchable:false,items:VA_COLUMN_TYPE_CHOICES,onChange:function(v2){vaChangeColumnType(colKey,v2);}});
+    }});
+  }
+  if(colDef&&(vaIsOptionsType(colDef.type)||(isCustom&&(colDef.type==="select"||colDef.type==="multiselect")))){
+    items.push({label:"Modifier le dropdown",onClick:function(){vaOpenDropdownEditor(colKey);}});
+  }else if(isCustom){
+    items.push({label:"Créer un dropdown",onClick:function(){vaChangeColumnType(colKey,"select");vaOpenDropdownEditor(colKey);}});
+  }
+  items.push({divider:true});
+  items.push({label:locked?"Déverrouiller":"Verrouiller",onClick:function(){vaToggleColumnLock(colKey);}});
+  if(!locked){
+    items.push({label:pinned?"Désépingler":"Épingler à gauche",onClick:function(){
       if(pinned)v.pinnedColumns=v.pinnedColumns.filter(function(k){return k!==colKey;});
       else v.pinnedColumns.push(colKey);
       vaSaveView();vaRender();
-    }},
-    {label:"Masquer la colonne",onClick:function(){
+    }});
+    items.push({label:"Masquer la colonne",onClick:function(){
       v.hiddenColumns.push(colKey);
       vaSaveView();vaRender();
-    }},
-    {divider:true},
-    {label:"Trier croissant",onClick:function(){v.sort=[{col:colKey,dir:"asc"}];vaSaveView();vaRender();}},
-    {label:"Trier décroissant",onClick:function(){v.sort=[{col:colKey,dir:"desc"}];vaSaveView();vaRender();}},
-  ]);
+    }});
+  }
+  items.push({divider:true});
+  items.push({label:"Trier croissant",onClick:function(){v.sort=[{col:colKey,dir:"asc"}];vaSaveView();vaRender();}});
+  items.push({label:"Trier décroissant",onClick:function(){v.sort=[{col:colKey,dir:"desc"}];vaSaveView();vaRender();}});
+  if(isCustom&&!locked){
+    items.push({divider:true});
+    items.push({label:"Supprimer la colonne",danger:true,onClick:function(){vaDeleteColumn(colKey);}});
+  }
+  vaOpenContextMenu(e.clientX,e.clientY,items);
 }
 function vaWireColumnResize(){
   var thead=document.getElementById("va-thead");if(!thead)return;
@@ -422,7 +667,7 @@ function vaCellHTML(a,col){
     case "avatar":
       return a.avatar?'<img src="'+esc(a.avatar)+'" class="va-avatar-img" onerror="this.remove()">':'<div class="va-avatar-fallback">'+esc((a.inGameName||a.riotId||"?")[0].toUpperCase())+"</div>";
     case "riot":
-      return '<span class="va-cell-text va-cell-strong">'+esc(a.riotId||"—")+(a.riotTag?'<span class="va-riot-tag">#'+esc(a.riotTag)+"</span>":"")+"</span>";
+      return '<span class="va-cell-text va-cell-strong">'+(a.icon?'<span class="va-row-icon">'+esc(a.icon)+"</span> ":"")+esc(a.riotId||"—")+(a.riotTag?'<span class="va-riot-tag">#'+esc(a.riotTag)+"</span>":"")+"</span>";
     case "password":
       return '<span class="va-pw-cell" data-id="'+a.id+'"><span class="va-pw-dots">••••••••</span><span class="va-pw-plain" style="display:none">'+esc(a.password||"")+'</span><button type="button" class="va-mini-btn va-pw-eye" title="Afficher">'+VA_EYE_SVG+'</button><button type="button" class="va-mini-btn va-copy-btn" data-copy="password" title="Copier">'+VA_COPY_SVG+"</button></span>";
     case "rank":
@@ -445,6 +690,38 @@ function vaCellHTML(a,col){
       return '<span class="va-cell-text va-cell-muted">'+(a.skinValue?esc(a.skinValue):"—")+"</span>";
     case "actions":
       return '<button type="button" class="va-mini-btn va-row-menu-btn" title="Actions">'+VA_DOTS_SVG+"</button>";
+
+    // ── Generic types (custom columns) ──
+    case "text":
+      return '<span class="va-cell-text va-cell-truncate">'+esc(a[col.key]||"—")+"</span>";
+    case "email":
+      return a[col.key]?'<a class="va-cell-link" href="mailto:'+esc(a[col.key])+'" onclick="event.stopPropagation()">'+esc(a[col.key])+"</a>":'<span class="va-cell-text va-cell-muted">—</span>';
+    case "phone":
+      return a[col.key]?'<a class="va-cell-link" href="tel:'+esc(a[col.key])+'" onclick="event.stopPropagation()">'+esc(a[col.key])+"</a>":'<span class="va-cell-text va-cell-muted">—</span>';
+    case "url":
+      return a[col.key]?'<a class="va-cell-link" href="'+esc(a[col.key])+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">'+esc(a[col.key].replace(/^https?:\/\//,""))+"</a>":'<span class="va-cell-text va-cell-muted">—</span>';
+    case "genericNumber":
+      return '<span class="va-cell-text va-cell-muted">'+(a[col.key]!=null&&a[col.key]!==""?esc(a[col.key]):"—")+"</span>";
+    case "time":
+      return '<span class="va-cell-text va-cell-muted">'+esc(a[col.key]||"—")+"</span>";
+    case "checkbox":
+      return a[col.key]?'<span class="va-bool-yes">✓</span>':'<span class="va-bool-no">–</span>';
+    case "select":
+      var sd=vaOptionDef(col.key,a[col.key]);
+      return a[col.key]?'<span class="va-badge" style="--bc:'+sd.color+'">'+(sd.icon?sd.icon+" ":"")+esc(sd.label)+"</span>":'<span class="va-cell-text va-cell-muted">—</span>';
+    case "multiselect":
+      return '<span class="va-tags-cell">'+(a[col.key]||[]).map(function(t){var td=vaOptionDef(col.key,t);return '<span class="va-badge" style="--bc:'+td.color+'">'+(td.icon?td.icon+" ":"")+esc(td.label)+"</span>";}).join("")+"</span>";
+    case "color":
+      return a[col.key]?'<span class="va-color-cell" style="--cc:'+esc(a[col.key])+'"><span class="va-color-swatch"></span>'+esc(a[col.key])+"</span>":'<span class="va-cell-text va-cell-muted">—</span>';
+    case "image":
+      return a[col.key]?'<img src="'+esc(a[col.key])+'" class="va-avatar-img" onerror="this.remove()">':'<div class="va-avatar-fallback">—</div>';
+    case "icon":
+      return '<span class="va-icon-cell">'+esc(a[col.key]||"—")+"</span>";
+    case "button":
+      return a[col.key]?'<a class="va-cell-btn" href="'+esc(a[col.key])+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">'+esc(col.buttonLabel||"Ouvrir ↗")+"</a>":'<span class="va-cell-text va-cell-muted">—</span>';
+    case "progress":
+      var pct=Math.max(0,Math.min(100,parseFloat(a[col.key])||0));
+      return '<span class="va-progress-cell"><span class="va-progress-track"><span class="va-progress-fill" style="width:'+pct+'%"></span></span><span class="va-progress-label">'+pct+"%</span></span>";
     default:
       return '<span class="va-cell-text">'+esc(a[col.key]||"—")+"</span>";
   }
@@ -469,7 +746,8 @@ function vaRenderRows(){
     }
     g.items.forEach(function(a){
       var sel=!!_vaSelected[a.id];
-      html+='<tr class="va-row'+(sel?" selected":"")+'" data-id="'+a.id+'" draggable="'+(v.sort.length||v.groupBy?"false":"true")+'">';
+      var rowColorStyle=a.rowColor?' style="--rc:'+esc(a.rowColor)+'"':"";
+      html+='<tr class="va-row'+(sel?" selected":"")+(a.rowColor?" colored":"")+'" data-id="'+a.id+'" draggable="'+(v.sort.length||v.groupBy?"false":"true")+'"'+rowColorStyle+'>';
       cols.forEach(function(c){
         var w=v.columnWidths[c.key]||c.width;
         var pinned=v.pinnedColumns.indexOf(c.key)>-1;
@@ -556,7 +834,9 @@ function vaWireRowEvents(){
       vaOpenRowContextMenu(r.left,r.bottom+4,id);
     });
   });
-  tbody.querySelectorAll('[data-col="rank"],[data-col="region"],[data-col="authMethod"],[data-col="tags"]').forEach(function(cell){
+  var VA_READONLY_COLS=["lastLogin","lastModified","password","avatar","actions"];
+  tbody.querySelectorAll("[data-col]").forEach(function(cell){
+    if(VA_READONLY_COLS.indexOf(cell.dataset.col)>-1)return;
     cell.addEventListener("click",function(e){
       if(e.detail>1)return;
       e.stopPropagation();
@@ -591,18 +871,63 @@ function vaOpenCellEditor(cell){
   var a=vaAccounts().find(function(x){return x.id===id;});
   if(!a)return;
   if(col==="rank"){
-    vaOpenDropdown(cell,{title:"Rank",items:VA_RANKS,selected:a.rank,onChange:function(v){vaSetField(a,"rank",v);vaRender();}});
+    vaOpenDropdown(cell,{title:"Rank",items:vaOptionsFor("rank"),selected:a.rank,onChange:function(v){vaSetField(a,"rank",v);vaRender();}});
   }else if(col==="region"){
     vaOpenDropdown(cell,{title:"Région",items:VA_REGIONS,selected:a.region,onChange:function(v){vaSetField(a,"region",v);vaRender();}});
   }else if(col==="authMethod"){
-    vaOpenDropdown(cell,{title:"Authentification",items:VA_AUTH_DEFS,selected:a.authMethod,onChange:function(v){vaSetField(a,"authMethod",v);vaRender();}});
+    vaOpenDropdown(cell,{title:"Authentification",items:vaOptionsFor("authMethod"),selected:a.authMethod,onChange:function(v){vaSetField(a,"authMethod",v);vaRender();}});
   }else if(col==="tags"){
     var v=vaView();
-    var items=VA_TAG_PRESETS.concat((v.knownTags||[]).filter(function(kt){return !VA_TAG_PRESETS.some(function(p){return p.value===kt;});}).map(function(kt){return vaTagDef(kt);}));
+    var items=vaOptionsFor("tags").concat((v.knownTags||[]).filter(function(kt){return !vaOptionsFor("tags").some(function(p){return p.value===kt;});}).map(function(kt){return vaTagDef(kt);}));
     vaOpenDropdown(cell,{title:"Tags",multi:true,allowCreate:true,items:items,selected:(a.tags||[]).slice(),
       onCreate:function(val){if(v.knownTags.indexOf(val)===-1){v.knownTags.push(val);vaSaveView();}},
       onChange:function(vals){vaSetField(a,"tags",vals);vaRender();}});
+  }else{
+    var colDef=vaAllColumnDefs().find(function(c){return c.key===col;});
+    if(colDef)vaOpenGenericCellEditor(cell,a,colDef);
   }
+}
+function vaOpenGenericCellEditor(cell,a,colDef){
+  var type=colDef.type;
+  if(type==="select"){
+    vaOpenDropdown(cell,{title:colDef.label,items:vaOptionsFor(colDef.key),selected:a[colDef.key],onChange:function(v){vaSetField(a,colDef.key,v);vaRender();}});
+  }else if(type==="multiselect"){
+    vaOpenDropdown(cell,{title:colDef.label,multi:true,allowCreate:true,items:vaOptionsFor(colDef.key),selected:(a[colDef.key]||[]).slice(),
+      onCreate:function(val){var opts=vaOptionsFor(colDef.key);if(!opts.some(function(o){return o.value===val;})){opts.push({value:val,label:val,color:"#8b8b93"});vaSaveDropdownOptions(colDef.key,opts);}},
+      onChange:function(vals){vaSetField(a,colDef.key,vals);vaRender();}});
+  }else if(type==="checkbox"||type==="bool"){
+    vaSetField(a,colDef.key,!a[colDef.key]);
+    vaRenderRows();
+  }else{
+    var inputType=(type==="color")?"color":(type==="date")?"date":(type==="time")?"time":(type==="genericNumber"||type==="progress"||type==="number")?"number":"text";
+    vaOpenInlineCellEditor(cell,a,colDef,inputType);
+  }
+}
+function vaOpenInlineCellEditor(cell,a,colDef,inputType){
+  if(cell.querySelector(".va-cell-edit-input"))return;
+  var current=a[colDef.key]==null?"":a[colDef.key];
+  var input=document.createElement("input");
+  input.type=inputType;
+  input.className="va-cell-edit-input";
+  input.value=current;
+  if(inputType==="number"){input.min=0;if(colDef.type==="progress")input.max=100;}
+  cell.innerHTML="";
+  cell.appendChild(input);
+  input.focus();
+  if(input.select)input.select();
+  function commit(){
+    var val=input.value;
+    if(inputType==="number")val=parseFloat(val)||0;
+    vaSetField(a,colDef.key,val);
+    vaRenderRows();
+  }
+  input.addEventListener("blur",commit);
+  input.addEventListener("keydown",function(e){
+    e.stopPropagation();
+    if(e.key==="Enter"){e.preventDefault();commit();}
+    if(e.key==="Escape"){e.preventDefault();vaRenderRows();}
+  });
+  input.addEventListener("click",function(e){e.stopPropagation();});
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -641,8 +966,43 @@ function vaOpenRowContextMenu(x,y,id){
     {label:multi?"Dupliquer la sélection":"Dupliquer",shortcut:"Ctrl+D",onClick:function(){multi?vaDuplicateSelected():vaDuplicateAccount(id);}},
     {label:"Copier",shortcut:"Ctrl+C",onClick:vaCopySelectedTSV},
     {divider:true},
+    {label:"Colorer la ligne",onClick:function(){vaColorRow(id,x,y);}},
+    {label:"Ajouter une note",onClick:function(){
+      vaOpenDetail(id);
+      setTimeout(function(){var f=document.querySelector('.va-dp-field[data-field="notes"] .va-dp-edit');if(f)f.click();},320);
+    }},
+    {label:"Ajouter une icône",onClick:function(){vaPromptRowIcon(id);}},
+    {divider:true},
     {label:"Supprimer",shortcut:"Suppr",danger:true,onClick:function(){multi?vaDeleteSelected():vaDeleteAccounts([id]);}},
   ]);
+}
+function vaColorRow(id,x,y){
+  var a=vaAccounts().find(function(v){return v.id===id;});
+  if(!a)return;
+  var swatches=["","#ef4444","#f59e0b","#facc15","#34d399","#60a5fa","#8b5cf6","#f472b6"];
+  var pop=document.createElement("div");
+  pop.className="va-dpe-swatch-pop va-row-color-pop";
+  pop.innerHTML=swatches.map(function(c){return '<button type="button" class="va-dpe-swatch'+(c?"":" none")+'" style="--sc:'+(c||"transparent")+'" data-color="'+c+'" title="'+(c||"Aucune")+'"></button>';}).join("");
+  document.body.appendChild(pop);
+  pop.style.top=y+"px";pop.style.left=x+"px";
+  pop.querySelectorAll("button").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      vaSetField(a,"rowColor",btn.dataset.color||"");
+      pop.remove();
+      vaRenderRows();
+    });
+  });
+  setTimeout(function(){
+    document.addEventListener("mousedown",function h(e){if(!pop.contains(e.target)){pop.remove();document.removeEventListener("mousedown",h);}});
+  },0);
+}
+function vaPromptRowIcon(id){
+  var a=vaAccounts().find(function(v){return v.id===id;});
+  if(!a)return;
+  var val=prompt("Icône / emoji pour ce compte :",a.icon||"");
+  if(val==null)return;
+  vaSetField(a,"icon",val.trim().slice(0,4));
+  vaRenderRows();
 }
 function vaDuplicateAccount(id){
   var list=vaAccounts();
@@ -739,7 +1099,7 @@ function vaOpenNewAccount(){
 // ══════════════════════════════════════════════════════════════
 function vaOpenColumnsMenu(e){
   var v=vaView();
-  var items=VA_COLUMNS.filter(function(c){return !c.lockedVis;}).map(function(c){return {value:c.key,label:c.label};});
+  var items=vaAllColumnDefs().filter(function(c){return !c.lockedVis;}).map(function(c){return {value:c.key,label:c.label};});
   vaOpenDropdown(e.currentTarget,{
     title:"Colonnes visibles",
     multi:true,
@@ -752,6 +1112,82 @@ function vaOpenColumnsMenu(e){
       vaRender();
     }
   });
+}
+
+// ══════════════════════════════════════════════════════════════
+//  ADD COLUMN POPOVER
+// ══════════════════════════════════════════════════════════════
+function vaOpenAddColumnPopover(anchorEl){
+  var panel=document.getElementById("va-addcol-panel");
+  if(!panel){
+    panel=document.createElement("div");
+    panel.id="va-addcol-panel";
+    document.body.appendChild(panel);
+  }
+  panel.className="va-dd-panel va-addcol-panel";
+  panel.innerHTML=
+    '<div class="va-dd-title">Nouvelle colonne</div>'+
+    '<div class="va-addcol-body">'+
+      '<input type="text" id="va-addcol-name" class="va-dd-search" placeholder="Nom de la colonne" autocomplete="off" style="margin:0 0 8px">'+
+      '<div class="va-addcol-types" id="va-addcol-types">'+
+        VA_COLUMN_TYPE_CHOICES.map(function(t,i){return '<button type="button" class="va-addcol-type" data-idx="'+i+'">'+esc(t.label)+"</button>";}).join("")+
+      "</div>"+
+      '<button type="button" class="va-addcol-create" id="va-addcol-create" disabled>Créer la colonne</button>'+
+    "</div>";
+  var nameInput=panel.querySelector("#va-addcol-name");
+  var createBtn=panel.querySelector("#va-addcol-create");
+  var selectedIdx=null;
+  function updateCreateState(){createBtn.disabled=!(nameInput.value.trim()&&selectedIdx!=null);}
+  panel.querySelectorAll(".va-addcol-type").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      panel.querySelectorAll(".va-addcol-type").forEach(function(b){b.classList.remove("selected");});
+      btn.classList.add("selected");
+      selectedIdx=parseInt(btn.dataset.idx,10);
+      updateCreateState();
+    });
+  });
+  nameInput.addEventListener("input",updateCreateState);
+  nameInput.addEventListener("keydown",function(e){if(e.key==="Enter"&&!createBtn.disabled)createBtn.click();});
+  createBtn.addEventListener("click",function(){
+    var typeChoice=VA_COLUMN_TYPE_CHOICES[selectedIdx];
+    vaCreateColumn(nameInput.value.trim(),typeChoice.value);
+    closePopover();
+  });
+  var r=anchorEl.getBoundingClientRect();
+  panel.style.visibility="hidden";
+  panel.classList.add("open");
+  var pw=panel.offsetWidth,ph=panel.offsetHeight;
+  var left=Math.min(r.left,window.innerWidth-pw-10);
+  var top=r.bottom+6;
+  if(top+ph>window.innerHeight-10)top=Math.max(10,r.top-ph-6);
+  panel.style.left=left+"px";
+  panel.style.top=top+"px";
+  panel.style.visibility="";
+  setTimeout(function(){nameInput.focus();},10);
+  function closePopover(){
+    panel.classList.remove("open");
+    document.removeEventListener("mousedown",outsideHandler);
+  }
+  function outsideHandler(e){
+    if(!panel.contains(e.target)&&e.target!==anchorEl)closePopover();
+  }
+  setTimeout(function(){document.addEventListener("mousedown",outsideHandler);},0);
+}
+function vaCreateColumn(name,type){
+  var v=vaView();
+  var newCol={key:"custom_"+vaNewId(),label:name,type:type,width:150};
+  if(vaIsOptionsType(type))newCol.options=[];
+  v.customColumns.push(newCol);
+  if(!v.columnOrder||!v.columnOrder.length)v.columnOrder=vaAllColumnDefs().map(function(c){return c.key;}).filter(function(k){return k!==newCol.key;});
+  var actionsIdx=v.columnOrder.indexOf("actions");
+  if(actionsIdx>-1)v.columnOrder.splice(actionsIdx,0,newCol.key);
+  else v.columnOrder.push(newCol.key);
+  vaSaveView();
+  vaRender();
+  toast("Colonne créée","success");
+  if(vaIsOptionsType(type)){
+    setTimeout(function(){vaOpenDropdownEditor(newCol.key);},150);
+  }
 }
 
 // ══════════════════════════════════════════════════════════════

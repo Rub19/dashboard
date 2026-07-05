@@ -1,19 +1,19 @@
 /* ETHONE legacy compatibility module: resizable-sidebar. */
-//  RESIZABLE SIDEBAR
+//  RESIZABLE SIDEBAR — single source of truth: the --sidebar-w CSS var.
+//  The grid app-shell reads it for the column track, the resize handle
+//  reads it for its own position (left:var(--sidebar-w)) — nothing else
+//  needs manual JS syncing anymore.
 // ===================================================
 (function(){
   const handle = document.getElementById('resize-handle');
   const sidebar = document.querySelector('.sidebar');
-  const main = document.querySelector('.main');
-  if(!handle||!sidebar||!main) return;
+  const root = document.documentElement;
+  if(!handle||!sidebar) return;
 
-  const DEFAULT_W = 240, MIN_W = 160, MAX_W = 400;
+  const DEFAULT_W = 240, MIN_W = 220, MAX_W = 320, COMPACT_W = 72;
 
   function applyWidth(w){
-    sidebar.style.setProperty('width', w+'px', 'important');
-    sidebar.style.setProperty('min-width', w+'px', 'important');
-    main.style.marginLeft = w+'px';
-    handle.style.left = w+'px';
+    root.style.setProperty('--sidebar-w', w+'px');
     const availW = w - 24;
     const scale = Math.min(availW / 310, 0.95);
     const iframe = document.getElementById('nowplaying-iframe');
@@ -73,13 +73,12 @@
     setTimeout(()=>sidebar.classList.remove('sb-resize-reset'), 260);
   });
 
-  // Compact mode uses a different fixed width (58px) driven by CSS; our own
-  // inline !important width would otherwise outrank it. Yield while compact,
-  // reclaim the saved width when expanded again.
+  // Compact mode pins the width to COMPACT_W; expanding restores the last
+  // saved width. Both just flip the same CSS var — no per-element sync.
   window.ethoneSidebarResize={
+    COMPACT_W, DEFAULT_W, MIN_W, MAX_W,
     suspendForCompact(){
-      sidebar.style.removeProperty('width');
-      sidebar.style.removeProperty('min-width');
+      root.style.setProperty('--sidebar-w', COMPACT_W+'px');
       handle.style.display='none';
     },
     resumeFromCompact(){

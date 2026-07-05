@@ -245,7 +245,12 @@
   function applySafeIntent(text){
     const trusted=!!(window.ETHONEAICore?.config?.().privacy?.trustedActions);
     const lower=text.toLowerCase();
-    if(/open gaming workspace|ouvre.*gaming/.test(lower)){if(typeof window.switchPage==="function")switchPage("workspaces",null);return true}
+    if(/open gaming workspace|ouvre.*gaming/.test(lower)){
+      var actions=window.Ethone&&window.Ethone.get&&window.Ethone.get("actions");
+      if(actions&&actions.has("dashboard.nav.workspaces"))actions.dispatch("dashboard.nav.workspaces");
+      else if(typeof window.switchPage==="function")switchPage("gaming",null);
+      return true;
+    }
     if(/install.*spotify|installe.*spotify/.test(lower)){
       if(!trusted&&!confirm("Install/enable Spotify widget recommendation locally?"))return true;
       try{

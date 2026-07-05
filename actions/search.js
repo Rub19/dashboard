@@ -1,12 +1,4 @@
 /* ETHONE legacy compatibility module: search. */
-// ===================================================
-//  GLOBAL SEARCH
-// ===================================================
-document.getElementById('global-search').addEventListener('input',function(){
-  const q=this.value.toLowerCase();if(!q)return;
-  const p=curP(),match=p?(p.state.items||[]).filter(i=>i.name.toLowerCase().includes(q)):[];
-  if(match.length){toast('Found '+match.length+' item(s)','info');setTimeout(()=>{switchPage('files',null);document.getElementById('files-search').value=q;filterItems()},400)}
-});
-
-
-// ===================================================
+// Superseded by components/command-palette.js (Ctrl+K / global search).
+// The #global-search input is read-only and only opens the palette via
+// openCmdPalette() — this module intentionally does nothing anymore.

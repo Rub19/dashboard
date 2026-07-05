@@ -56,8 +56,6 @@ function applyResponsiveSidebar(){
   if(!inLaptopRange){
     if(sb.dataset.autoCompact==='1'){
       sb.classList.remove('compact');
-      const main=document.getElementById('main-content');
-      if(main)main.style.marginLeft='';
       if(window.ethoneSidebarResize)window.ethoneSidebarResize.resumeFromCompact();
     }
     delete sb.dataset.autoCompact;
@@ -68,8 +66,6 @@ function applyResponsiveSidebar(){
   if(!sb.classList.contains('compact')){
     sb.classList.add('compact');
     sb.dataset.autoCompact='1';
-    const main=document.getElementById('main-content');
-    if(main)main.style.marginLeft='58px';
     if(window.ethoneSidebarResize)window.ethoneSidebarResize.suspendForCompact();
   }
 }

@@ -2486,7 +2486,8 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   display:none;align-items:flex-start;justify-content:center;
   padding-top:80px;
 }
-#cmd-palette-overlay.open{display:flex;animation:fadeIn .12s ease}
+#cmd-palette-overlay.open{display:flex;animation:fadeIn var(--motion-fast,160ms) var(--ease-premium,ease)}
+@keyframes cmdPaletteIn{from{opacity:0;transform:scale(.98) translateY(-4px)}to{opacity:1;transform:scale(1) translateY(0)}}
 #cmd-palette{
   width:100%;max-width:560px;
   background:rgba(10,8,14,.96);
@@ -2494,6 +2495,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   border-radius:16px;
   box-shadow:0 32px 80px rgba(0,0,0,.8),0 0 0 1px rgba(139,92,246,.08);
   overflow:hidden;
+  animation:cmdPaletteIn var(--motion-normal,200ms) var(--ease-premium,ease);
 }
 #cmd-input-wrap{
   display:flex;align-items:center;gap:10px;
@@ -2523,12 +2525,16 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 .cmd-item{
   display:flex;align-items:center;gap:10px;
   padding:9px 10px;border-radius:8px;cursor:pointer;
-  transition:background .1s;
+  transition:background var(--motion-fast,160ms) var(--ease-premium,ease),border-color var(--motion-fast,160ms) var(--ease-premium,ease),transform var(--motion-fast,160ms) var(--ease-premium,ease);
   border:1px solid transparent;
 }
 .cmd-item:hover,.cmd-item.selected{
   background:rgba(139,92,246,.1);border-color:rgba(139,92,246,.15);
 }
+.cmd-item.selected{transform:translateX(2px)}
+.cmd-item.is-disabled{opacity:.55}
+@keyframes cmdHighlightPulse{0%,100%{box-shadow:0 0 0 0 rgba(139,92,246,0)}30%{box-shadow:0 0 0 4px var(--accent-soft,rgba(139,92,246,.13))}}
+.cmd-highlight-pulse{animation:cmdHighlightPulse 1.2s var(--ease-premium,ease) 2}
 .cmd-item-icon{
   width:30px;height:30px;border-radius:8px;flex-shrink:0;
   background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.07);
@@ -3722,6 +3728,7 @@ GitHub
 <button class="btn btn-primary" onclick="openModal('add-item')" style="padding:6px 12px;font-size:12px;border-radius:8px">+ Add</button>
 </div>
 </div>
+<div class="app-shell" id="app-shell">
 <nav class="sidebar" id="main-sidebar" style="display:none" aria-label="Navigation principale">
 <div id="nav-active-pill" aria-hidden="true"></div>
 <div class="logo" style="position:relative">
@@ -4502,6 +4509,10 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <div class="va-detail-overlay" id="va-detail-overlay" onclick="vaCloseDetail()"></div>
 <div class="va-detail-panel" id="va-detail-panel"></div>
 <div class="va-ctx-menu" id="va-ctx-menu"></div>
+<!-- DATABASES -->
+<div aria-live="polite" class="tab-content" data-qa-page="true" id="page-databases" role="tabpanel">
+<div id="db-root"><div class="db-boot-placeholder">Chargement des bases de données…</div></div>
+</div>
 <!-- JOURNAL -->
 <div aria-live="polite" class="tab-content" data-qa-page="true" id="page-journal" role="tabpanel">
 <div class="topbar">
@@ -5110,6 +5121,7 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 </div><!-- /settings-layout -->
 </div>
 </main>
+</div><!-- /app-shell -->
 <div aria-live="polite" class="tab-content" data-qa-page="true" id="page-ai" role="tabpanel">
 <!-- Panel historique inline (z-index dans le contexte de page-ai) -->
 <div id="ai-history-panel">
@@ -5228,7 +5240,7 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <div id="cmd-input-icon">
 <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" x2="16.65" y1="21" y2="16.65"></line></svg>
 </div>
-<input autocomplete="off" id="cmd-input" oninput="renderCmdResults()" onkeydown="handleCmdKey(event)" placeholder="Search pages, items, actions…"/>
+<input autocomplete="off" id="cmd-input" oninput="onCmdInput()" onkeydown="handleCmdKey(event)" placeholder="Search pages, items, actions…"/>
 <span id="cmd-kbd">ESC</span>
 </div>
 <div id="cmd-results"></div>
@@ -5406,6 +5418,23 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 </div>
 </div>
 </div>
+<div class="modal-overlay" id="modal-add-habit" onclick="closeModalIfOverlay(event,'add-habit')">
+<div class="modal" style="max-width:400px">
+<div class="modal-title">🌿 New habit</div>
+<div class="modal-field">
+<div class="modal-label">NAME</div>
+<input class="modal-input" id="habit-name-input" onkeydown="if(event.key==='Enter')addHabit()" placeholder="e.g. Drink water" type="text"/>
+</div>
+<div class="modal-field">
+<div class="modal-label">ICON (optional)</div>
+<input class="modal-input" id="habit-icon-input" onkeydown="if(event.key==='Enter')addHabit()" placeholder="e.g. 💧" type="text"/>
+</div>
+<div class="modal-actions">
+<button class="btn btn-ghost" onclick="closeModal('add-habit')">Cancel</button>
+<button class="btn btn-primary" onclick="addHabit()">Add habit</button>
+</div>
+</div>
+</div>
 <div class="modal-overlay" id="modal-create-profile" onclick="closeModalIfOverlay(event,'create-profile')">
 <div class="modal">
 <div class="modal-title" id="create-profile-title">✨ Create profile</div>
@@ -5553,6 +5582,7 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <script src="./services/settings.js"></script>
 <script src="./actions/navigation.js"></script>
 <script src="./actions/notifications.js"></script>
+<script src="./actions/action-registry.js"></script>
 <script src="./components/registry.js"></script>
 <script src="./widgets/registry.js"></script>
 <script src="./utils/guards.js"></script>
@@ -5636,10 +5666,27 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <script id="ethone-legacy-league" src="./pages/gaming/league.js"></script>
 <script id="ethone-legacy-gaming-helpers" src="./pages/gaming/helpers.js"></script>
 <script id="ethone-va-dropdown" src="./pages/valorant-accounts/dropdown.js"></script>
+<script id="ethone-va-dropdown-editor" src="./pages/valorant-accounts/dropdown-editor.js"></script>
 <script id="ethone-va-context-menu" src="./pages/valorant-accounts/context-menu.js"></script>
 <script id="ethone-va-detail-panel" src="./pages/valorant-accounts/detail-panel.js"></script>
 <script id="ethone-va-import-export" src="./pages/valorant-accounts/import-export.js"></script>
 <script id="ethone-va-index" src="./pages/valorant-accounts/index.js"></script>
+<script id="ethone-db-state" src="./pages/databases/state.js"></script>
+<script id="ethone-db-context-menu" src="./pages/databases/context-menu.js"></script>
+<script id="ethone-db-dropdown" src="./pages/databases/dropdown.js"></script>
+<script id="ethone-db-dropdown-editor" src="./pages/databases/dropdown-editor.js"></script>
+<script id="ethone-db-templates" src="./pages/databases/templates.js"></script>
+<script id="ethone-db-table" src="./pages/databases/table-view.js"></script>
+<script id="ethone-db-import-export" src="./pages/databases/import-export.js"></script>
+<script id="ethone-db-kanban" src="./pages/databases/kanban-view.js"></script>
+<script id="ethone-db-gallery" src="./pages/databases/gallery-view.js"></script>
+<script id="ethone-db-calendar" src="./pages/databases/calendar-view.js"></script>
+<script id="ethone-db-timeline" src="./pages/databases/timeline-view.js"></script>
+<script id="ethone-db-relation" src="./pages/databases/relation-field.js"></script>
+<script id="ethone-db-formula" src="./pages/databases/formula.js"></script>
+<script id="ethone-db-rating" src="./pages/databases/rating-field.js"></script>
+<script id="ethone-db-detail" src="./pages/databases/detail-panel.js"></script>
+<script id="ethone-db-home" src="./pages/databases/home.js"></script>
 <script id="ethone-legacy-mobile-sidebar" src="./pages/dashboard/mobile-sidebar.js"></script>
 <script id="ethone-legacy-import-export" src="./actions/import-export.js"></script>
 <script id="ethone-legacy-desktop-notifications" src="./actions/desktop-notifications.js"></script>
@@ -11544,18 +11591,187 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
 .sb-pin-btn:hover{color:#c4b5fd;background:rgba(139,92,246,.12)}
 .sb-pin-btn.pinned{opacity:1;color:#a78bfa}
 
-/* ── Responsive: laptop auto-compact, tablet overlay ── */
-@media(min-width:1025px) and (max-width:1200px){
-  #main-sidebar.sidebar:not(.sb-user-expanded){width:58px!important;min-width:58px!important}
+/* ══════════════════════════════════════════════════════════════
+   ETHONE APP SHELL V8 — real CSS Grid layout, replaces the old
+   position:fixed + JS margin-left coordination. Single source of
+   truth for sidebar width: the --sidebar-w custom property.
+   ══════════════════════════════════════════════════════════════ */
+:root{--sidebar-w:240px}
+.app-shell{
+  position:relative;
+  display:grid;
+  grid-template-columns:var(--sidebar-w) 1fr;
+  align-items:start;
+  min-height:100vh;
 }
+#main-sidebar.sidebar,
+body.ethone-2026-ui #main-sidebar,
+body.ethone-2026-ui #main-sidebar:not(.compact),
+body.ethone-v2 #main-sidebar{
+  grid-column:1;
+  position:sticky!important;
+  top:0;
+  left:auto!important;
+  height:100vh;
+  width:auto!important;
+  min-width:0!important;
+  max-width:none!important;
+  align-self:start;
+}
+.resize-handle{
+  position:absolute!important;
+  top:0!important;bottom:0!important;
+  left:var(--sidebar-w)!important;
+  z-index:400;
+}
+#main-content.main{
+  grid-column:2;
+  min-width:0;
+  overflow-x:hidden;
+  margin-left:0!important;
+  padding-left:24px!important;
+}
+/* Neutralize every legacy hardcoded sidebar-clearance padding scattered
+   across older theme blocks (92px/94px/98px/202px etc.) — none of them
+   match the dynamic width anymore now that grid owns the layout. */
+body.ethone-2026-ui #main-content,
+body.ethone-2026-ui:has(#main-sidebar) #main-content,
+body.ethone-v2 #main-content{
+  padding-left:24px!important;
+  margin-left:0!important;
+}
+.sidebar.compact ~ .resize-handle,
+#app-shell:has(.sidebar.compact) .resize-handle{left:var(--sidebar-w)!important}
+
+/* ── Logo: never crop, clean spacing ── */
+#main-sidebar .logo{
+  display:flex;align-items:center;gap:10px;
+  min-width:0;
+  overflow:hidden;
+}
+#main-sidebar .logo-icon{flex-shrink:0}
+#main-sidebar .logo-text{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.sidebar.compact .logo{justify-content:center}
+
+/* ── Nav items: consistent sizing, icon scale, truncation-safe ── */
+#main-sidebar .nav-item{min-width:0}
+#main-sidebar .nav-icon{width:19px!important;height:19px!important;flex-shrink:0}
+#main-sidebar .nav-icon svg{width:19px!important;height:19px!important}
+#main-sidebar .nav-label-text{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  line-height:1.2;
+}
+
+/* ── Active state: lighter, less overpowering ── */
+#nav-active-pill{
+  background:linear-gradient(155deg,rgba(139,92,246,.85),rgba(124,58,237,.78) 85%)!important;
+  box-shadow:0 4px 14px rgba(139,92,246,.24),inset 0 1px 0 rgba(255,255,255,.14)!important;
+}
+#main-sidebar .nav-item.active{position:relative}
+#main-sidebar .nav-item.active::before{
+  content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+  width:2.5px;height:16px;border-radius:2px;
+  background:#c4b5fd;
+  opacity:.9;
+}
+.sidebar.compact #main-sidebar .nav-item.active::before{display:none}
+
+/* ── Premium scrollbars (Chromium + Firefox) ── */
+#sidebar-nav-main,
+#main-content,
+.sb-live-list,
+.modal-content,
+.va-dd-list,
+.va-table-wrap,
+.va-detail-panel,
+#cmd-results,
+.ui-dropdown{
+  scrollbar-width:thin;
+  scrollbar-color:rgba(139,92,246,.35) transparent;
+}
+#sidebar-nav-main::-webkit-scrollbar,
+#main-content::-webkit-scrollbar,
+.sb-live-list::-webkit-scrollbar,
+.modal-content::-webkit-scrollbar,
+.va-dd-list::-webkit-scrollbar,
+.va-table-wrap::-webkit-scrollbar,
+.va-detail-panel::-webkit-scrollbar,
+#cmd-results::-webkit-scrollbar,
+.ui-dropdown::-webkit-scrollbar{
+  width:7px;height:7px;
+}
+#sidebar-nav-main::-webkit-scrollbar-track,
+#main-content::-webkit-scrollbar-track,
+.sb-live-list::-webkit-scrollbar-track,
+.modal-content::-webkit-scrollbar-track,
+.va-dd-list::-webkit-scrollbar-track,
+.va-table-wrap::-webkit-scrollbar-track,
+.va-detail-panel::-webkit-scrollbar-track,
+#cmd-results::-webkit-scrollbar-track,
+.ui-dropdown::-webkit-scrollbar-track{
+  background:transparent;
+}
+#sidebar-nav-main::-webkit-scrollbar-thumb,
+#main-content::-webkit-scrollbar-thumb,
+.sb-live-list::-webkit-scrollbar-thumb,
+.modal-content::-webkit-scrollbar-thumb,
+.va-dd-list::-webkit-scrollbar-thumb,
+.va-table-wrap::-webkit-scrollbar-thumb,
+.va-detail-panel::-webkit-scrollbar-thumb,
+#cmd-results::-webkit-scrollbar-thumb,
+.ui-dropdown::-webkit-scrollbar-thumb{
+  background:transparent;
+  border-radius:99px;
+  border:1.5px solid transparent;
+  background-clip:padding-box;
+  transition:background-color .2s ease;
+}
+#sidebar-nav-main:hover::-webkit-scrollbar-thumb,
+#main-content:hover::-webkit-scrollbar-thumb,
+.sb-live-list:hover::-webkit-scrollbar-thumb,
+.modal-content:hover::-webkit-scrollbar-thumb,
+.va-dd-list:hover::-webkit-scrollbar-thumb,
+.va-table-wrap:hover::-webkit-scrollbar-thumb,
+.va-detail-panel:hover::-webkit-scrollbar-thumb,
+#cmd-results:hover::-webkit-scrollbar-thumb,
+.ui-dropdown:hover::-webkit-scrollbar-thumb{
+  background-color:rgba(139,92,246,.38);
+}
+#sidebar-nav-main::-webkit-scrollbar-thumb:hover,
+#main-content::-webkit-scrollbar-thumb:hover,
+.va-table-wrap::-webkit-scrollbar-thumb:hover{
+  background-color:rgba(139,92,246,.55);
+}
+
+/* ── LIVE widgets: tighter, scrollable if many ── */
+.sb-live-list{max-height:220px;overflow-y:auto;padding-right:2px}
+.sb-widget-card{padding:8px 9px!important}
+.sb-wc-avatar{width:26px!important;height:26px!important}
+
+/* ── Responsive: laptop auto-compact, tablet overlay ── */
 @media(min-width:769px) and (max-width:1024px){
   #main-sidebar.sidebar{
     position:fixed!important;transform:translateX(-100%)!important;
     transition:transform .28s var(--ease-premium,cubic-bezier(.22,1,.36,1))!important;
+    height:100vh;
   }
   #main-sidebar.sidebar.mobile-open{transform:translateX(0)!important}
   #main-sidebar .nav-item{min-height:44px!important}
   .resize-handle{display:none!important}
+  .app-shell{grid-template-columns:1fr}
+  #main-content.main{grid-column:1}
+}
+@media(max-width:768px){
+  .app-shell{grid-template-columns:1fr}
+  #main-content.main{grid-column:1;padding-left:14px!important}
 }
 </style>
 <script id="ethone-auth-v3-premium-experience" src="./services/auth/premium-experience.js?v=21"></script>
@@ -11565,7 +11781,9 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
 <link rel="stylesheet" href="./ui/app.css">
 <link rel="stylesheet" href="./ui/auth.css?v=22">
 <link rel="stylesheet" href="./pages/valorant-accounts/style.css">
+<link rel="stylesheet" href="./pages/databases/style.css">
 <script src="./ui/accessibility.js"></script>
+<script src="./pages/dashboard/widget-catalog.js"></script>
 <script src="./pages/dashboard-v4.js"></script>
 </body>
 </html>

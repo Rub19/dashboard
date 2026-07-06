@@ -101,11 +101,8 @@ html.ethone-safe-mode .particle{
   --glow-blue:0 0 20px rgba(139,92,246,.25);
 }
 
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
-::-webkit-scrollbar-thumb:hover{background:var(--muted2)}
+/* Scrollbar: see the single canonical ::-webkit-scrollbar rule further down
+   (layout audit — this was one of 4 competing global definitions). */
 
 body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;min-height:100vh;display:flex;overflow-x:hidden;-webkit-font-smoothing:antialiased;gap:0}
 
@@ -319,7 +316,15 @@ body[data-light="1"] #sb-sync-indicator{background:rgba(0,0,0,.04);border-color:
 body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .nav-icon{width:17px;height:17px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:inherit}.nav-icon svg{width:100%;height:100%}
 .nav-badge{margin-left:auto;background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px;font-family:var(--mono);min-width:17px;text-align:center}
-.sidebar-footer{flex-shrink:0;padding:10px 8px 8px;border-top:1px solid rgba(255,255,255,.06);max-height:55vh;overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
+/* Layout-audit fix: .sidebar-footer used to be its own scrolling region
+   (max-height:55vh + overflow-y:auto) wrapping BOTH the user card AND the
+   LIVE widget list, while #sb-live-list (below) ALSO has its own independent
+   scroll (max-height:220px). Two nested scrollers meant the user card moved
+   with the outer scroll and mouse-wheel behavior over LIVE was ambiguous.
+   Now .sidebar-footer is a plain flex column that just sizes to its content
+   (Compte always visible, never scrolls) — #sb-live-list remains the ONLY
+   scrollable region here. */
+.sidebar-footer{display:flex;flex-direction:column;flex-shrink:0;padding:10px 8px 8px;border-top:1px solid rgba(255,255,255,.06);overflow-x:hidden;scrollbar-width:none}
 .sidebar.compact{width:58px!important;min-width:58px!important;overflow:hidden}
 .sidebar.compact .sb-widget,.sidebar.compact #sb-lastfm-wrap,.sidebar.compact .sb-widget-label,
 .sidebar.compact .sb-section,.sidebar.compact .sb-section-label{display:none!important}
@@ -550,9 +555,6 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideInRight{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
-::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:4px}
 .quote-text{font-size:14px;line-height:1.7;color:var(--text);font-style:italic}
 .quote-author{font-size:12px;color:var(--muted);margin-top:8px}
 .section-label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
@@ -671,10 +673,6 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 
 /* ── BACKGROUND CANVAS ── */
 #bg-canvas{opacity:1!important}
-
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:99px}
 
 /* ── SIDEBAR ── */
 .sidebar{
@@ -2230,10 +2228,14 @@ h1,h2,.section-title,.page-title{font-family:'Syne',sans-serif;letter-spacing:-.
 .xp-card-v2{border-radius:var(--r-lg)}
 .xp-level-badge{border-radius:var(--r-md)}
 
-/* ══ SCROLLBAR ══ */
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:99px}
-::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.18)}
+/* ══ SCROLLBAR — single canonical definition (layout audit; this used to be
+   4 competing global ::-webkit-scrollbar blocks with different widths/colors) ══ */
+*{scrollbar-width:thin;scrollbar-color:var(--surface-control) transparent}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--surface-control);border-radius:var(--radius-full);transition:background-color var(--motion-fast) ease}
+::-webkit-scrollbar-thumb:hover{background:var(--text-tertiary)}
+#sidebar-nav-main,#sb-live-list,#main-content{scroll-behavior:smooth;scrollbar-gutter:stable}
 
 /* ══ SELECTION ══ */
 ::selection{background:rgba(139,92,246,.3);color:#fff}
@@ -3313,12 +3315,17 @@ html.ethone-dashboard-mode #auth-screen,html.ethone-dashboard-mode #profile-scre
 <style id="ethone-purple-brand-overrides">
 /* ETHONE purple restore layer — keeps the stable old dashboard structure, but restores the ETHONE name/colors */
 :root{
-  --accent:#8b5cf6!important;
-  --accent-light:#a78bfa!important;
-  --accent-h:#7c3aed!important;
-  --accent-glow:rgba(139,92,246,.25)!important;
-  --accent-subtle:rgba(139,92,246,.10)!important;
-  --border3:rgba(139,92,246,.30)!important;
+  /* accent-family vars intentionally NOT !important: the Theme Engine (services/theme/legacy.js
+     pickTheme/applyCustomColor) sets these inline on <html> when the user picks a color, and an
+     !important rule here would silently always win over that inline override — which is exactly
+     what was happening before this fix (theme swatches updated stored state but never the actual
+     rendered color). --grad-primary and the logo mark stay purple-branded on purpose. */
+  --accent:#8b5cf6;
+  --accent-light:#a78bfa;
+  --accent-h:#7c3aed;
+  --accent-glow:rgba(139,92,246,.25);
+  --accent-subtle:rgba(139,92,246,.10);
+  --border3:rgba(139,92,246,.30);
   --grad-primary:linear-gradient(135deg,#8b5cf6,#7c3aed)!important;
   --grad-accent:linear-gradient(135deg,#8b5cf6,#7c3aed)!important;
   --grad-card:linear-gradient(135deg,rgba(139,92,246,.08),rgba(124,58,237,.04))!important;
@@ -3344,7 +3351,7 @@ input:focus,textarea:focus,.modal-input:focus,.search-bar:focus-within{border-co
 :root{
   --ethone-bg:#08070b;--ethone-bg-soft:#0d0b12;--ethone-surface:rgba(255,255,255,.045);--ethone-surface-2:rgba(255,255,255,.068);--ethone-surface-3:rgba(255,255,255,.092);
   --ethone-border:rgba(255,255,255,.095);--ethone-border-strong:rgba(255,255,255,.16);--ethone-text:#f7f4ff;--ethone-muted:rgba(247,244,255,.58);--ethone-muted-2:rgba(247,244,255,.36);
-  --accent:#8b5cf6!important;--accent-light:#a78bfa!important;--accent-glow:rgba(139,92,246,.22)!important;--accent-subtle:rgba(139,92,246,.105)!important;--border3:rgba(139,92,246,.28)!important;
+  --accent:#8b5cf6;--accent-light:#a78bfa;--accent-glow:rgba(139,92,246,.22);--accent-subtle:rgba(139,92,246,.105);--border3:rgba(139,92,246,.28);
   --grad-primary:linear-gradient(135deg,#8b5cf6,#6d5dfc 55%,#5b21b6)!important;--r-xs:8px;--r-sm:12px;--r-md:16px;--r-lg:20px;--r-xl:24px;--r-2xl:30px;
   --shadow-premium:0 18px 55px rgba(0,0,0,.36),0 1px 0 rgba(255,255,255,.04) inset;--shadow-card:0 10px 32px rgba(0,0,0,.22);
   --font:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;--font-display:'Syne','Inter',system-ui,sans-serif;
@@ -4444,6 +4451,91 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <div id="stats-habits-list" style="display:flex;flex-direction:column;gap:7px;padding:2px 0"></div>
 </div>
 </div>
+<!-- ── V29 ANALYTICS — Progression / Focus / Productivity ── -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+<div class="panel">
+<div class="panel-header">
+<div class="panel-title">
+<div class="panel-title-icon" style="background:rgba(139,92,246,.1);color:#8b5cf6">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" style="width:13px;height:13px" viewbox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+</div>
+            Progression
+          </div>
+<span style="font-size:10px;color:var(--muted2);font-family:var(--mono)">TRACKED XP · 30 DAYS</span>
+</div>
+<div style="display:flex;align-items:center;gap:14px;margin-bottom:10px">
+<div style="font-size:26px;font-weight:800;color:var(--text)" id="an-xp-level">Lvl 1</div>
+<div style="flex:1;min-width:0">
+<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted2);margin-bottom:4px"><span id="an-xp-total">0 XP</span><span id="an-xp-next">Next: 50 XP</span></div>
+<div class="xp-bar-v2"><div class="xp-bar-fill-v2" id="an-xp-progress-bar"></div></div>
+</div>
+</div>
+<div id="an-progression-bars" style="display:flex;align-items:flex-end;gap:2px;height:70px"></div>
+<div style="font-size:10px;color:var(--muted2);margin-top:6px">Cumulative XP from timestamped tasks (+10) &amp; focus sessions (+25) — the only two sources with reliable dates. Other XP sources (notes, items, habits streaks…) count toward the total above but aren't placed on this curve.</div>
+</div>
+<div class="panel">
+<div class="panel-header">
+<div class="panel-title">
+<div class="panel-title-icon" style="background:rgba(248,113,113,.1);color:#f87171">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" style="width:13px;height:13px" viewbox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+</div>
+            Focus time
+          </div>
+<span style="font-size:10px;color:var(--muted2);font-family:var(--mono)" id="an-focus-total">LAST 14 DAYS</span>
+</div>
+<div id="an-focus-bars" style="display:flex;align-items:flex-end;gap:4px;height:80px"></div>
+<div id="an-focus-labels" style="display:flex;gap:4px;margin-top:5px"></div>
+</div>
+</div>
+<div class="panel" style="margin-bottom:12px">
+<div class="panel-header">
+<div class="panel-title">
+<div class="panel-title-icon" style="background:rgba(52,211,153,.1);color:#34d399">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" style="width:13px;height:13px" viewbox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+</div>
+            Productivity
+          </div>
+<span style="font-size:10px;color:var(--muted2);font-family:var(--mono)">TASKS COMPLETED · LAST 30 DAYS</span>
+</div>
+<div id="an-productivity-bars" style="display:flex;align-items:flex-end;gap:2px;height:80px"></div>
+</div>
+<!-- ── V29 ANALYTICS — Habits calendars / Goals / History ── -->
+<div style="display:grid;grid-template-columns:1.3fr 1fr;gap:12px;margin-bottom:12px">
+<div class="panel">
+<div class="panel-header">
+<div class="panel-title">
+<div class="panel-title-icon" style="background:rgba(251,191,36,.1);color:#fbbf24">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" style="width:13px;height:13px" viewbox="0 0 24 24"><rect height="18" rx="2" width="18" x="3" y="4"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg>
+</div>
+            Habits — last 30 days
+          </div>
+</div>
+<div id="an-habits-calendars" style="display:flex;flex-direction:column;gap:12px"></div>
+</div>
+<div class="panel">
+<div class="panel-header">
+<div class="panel-title">
+<div class="panel-title-icon" style="background:rgba(139,92,246,.1);color:#8b5cf6">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" style="width:13px;height:13px" viewbox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
+</div>
+            Goals this week
+          </div>
+</div>
+<div id="an-goals-list" style="display:flex;flex-direction:column;gap:9px"></div>
+</div>
+</div>
+<div class="panel" style="margin-bottom:12px">
+<div class="panel-header">
+<div class="panel-title">
+<div class="panel-title-icon" style="background:rgba(139,92,246,.1);color:#8b5cf6">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" style="width:13px;height:13px" viewbox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+</div>
+            History
+          </div>
+<span style="font-size:10px;color:var(--muted2);font-family:var(--mono)">RECENT ACTIVITY</span>
+</div>
+<div id="an-history-list" style="display:flex;flex-direction:column;gap:2px;max-height:280px;overflow-y:auto"></div>
+</div>
 </div>
 <!-- WEEKLY GOALS -->
 <div aria-live="polite" class="tab-content" data-qa-page="true" id="page-goals" role="tabpanel">
@@ -4932,8 +5024,21 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <div class="settings-layout">
 <!-- Left nav -->
 <div class="settings-nav">
-<button class="settings-nav-item active" onclick="switchSettingsTab('profilee',this)"><span class="settings-nav-icon">👤</span><span data-i18n="profile">Profile</span></button>
-<button class="settings-nav-item" onclick="switchSettingsTab('theme',this)"><span class="settings-nav-icon">🎨</span><span data-i18n="theme">Theme</span></button>
+<button class="settings-nav-item active" onclick="switchSettingsTab('profilee',this)"><span class="settings-nav-icon">👤</span><span data-i18n="settings_general">General</span></button>
+<button class="settings-nav-item" onclick="switchSettingsTab('theme',this)"><span class="settings-nav-icon">🎨</span><span data-i18n="settings_appearance">Appearance</span></button>
+<button class="settings-nav-item" onclick="switchSettingsTab('workspaces',this)"><span class="settings-nav-icon">🗂️</span><span data-i18n="settings_workspaces">Workspaces</span></button>
+<button class="settings-nav-item" onclick="switchSettingsTab('widgets',this)"><span class="settings-nav-icon">🧩</span><span data-i18n="settings_widgets">Widgets</span></button>
+<button class="settings-nav-item" onclick="switchSettingsTab('plugins',this)"><span class="settings-nav-icon">🔌</span><span data-i18n="settings_plugins">Plugins</span></button>
+<button class="settings-nav-item" onclick="switchSettingsTab('brain',this)"><span class="settings-nav-icon">🧠</span><span data-i18n="settings_brain">Brain</span></button>
+<button class="settings-nav-item" onclick="switchSettingsTab('automation',this)"><span class="settings-nav-icon">⚡</span><span data-i18n="settings_automation">Automation</span></button>
+<button class="settings-nav-item" onclick="switchSettingsTab('marketplace',this)"><span class="settings-nav-icon">🛍️</span><span data-i18n="settings_marketplace">Marketplace</span></button>
+<button class="settings-nav-item" onclick="switchSettingsTab('notifications',this)"><span class="settings-nav-icon">🔔</span><span data-i18n="settings_notifications">Notifications</span></button>
+<button class="settings-nav-item" onclick="switchSettingsTab('keyboard',this)"><span class="settings-nav-icon">⌨️</span><span data-i18n="settings_keyboard">Keyboard</span></button>
+<button class="settings-nav-item" onclick="switchSettingsTab('developer',this)"><span class="settings-nav-icon">🛠️</span><span data-i18n="settings_developer">Developer</span></button>
+<button class="settings-nav-item" onclick="switchSettingsTab('experimental',this)"><span class="settings-nav-icon">🧪</span><span data-i18n="settings_experimental">Experimental</span></button>
+<button class="settings-nav-item" onclick="switchSettingsTab('backup',this)"><span class="settings-nav-icon">💾</span><span data-i18n="settings_backup">Backup</span></button>
+<button class="settings-nav-item" onclick="switchSettingsTab('importx',this)"><span class="settings-nav-icon">⬆️</span><span data-i18n="settings_import">Import</span></button>
+<button class="settings-nav-item" onclick="switchSettingsTab('exportx',this)"><span class="settings-nav-icon">⬇️</span><span data-i18n="settings_export">Export</span></button>
 <button class="settings-nav-item" onclick="switchSettingsTab('security',this)"><span class="settings-nav-icon">🔒</span><span data-i18n="security">Security</span></button>
 <button class="settings-nav-item" onclick="switchSettingsTab('account',this)"><span class="settings-nav-icon">⚙️</span><span data-i18n="account">Account</span></button>
 </div>
@@ -5004,17 +5109,148 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 </div>
 </div>
 </div>
-<!-- Data -->
+<!-- Language -->
 <div class="settings-card">
-<div class="settings-card-title">Data</div>
+<div class="settings-card-title">Language</div>
+<div class="modal-field">
+<label class="modal-label">Interface language</label>
+<div class="theme-segmented" id="general-lang-seg" style="margin-top:6px">
+<button data-val="fr" onclick="setLang('fr')" type="button">Français</button>
+<button data-val="en" onclick="setLang('en')" type="button">English</button>
+<button data-val="es" onclick="setLang('es')" type="button">Español</button>
+<button data-val="de" onclick="setLang('de')" type="button">Deutsch</button>
+</div>
+</div>
+</div>
+</div>
+<!-- ── WORKSPACES TAB (V28) ── -->
+<div class="settings-section" id="settings-workspaces">
+<div class="settings-card">
+<div class="settings-card-title" data-i18n="settings_workspaces">Workspaces</div>
+<div style="font-size:12px;color:var(--muted2);margin-bottom:12px">Create separate named spaces to organize your context. Switching the active workspace updates its label across ETHONE.</div>
+<div id="ws-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px"></div>
+<button class="btn btn-primary" onclick="wsCreate()" style="font-size:12px">+ New workspace</button>
+</div>
+</div>
+<!-- ── WIDGETS TAB (V28) ── -->
+<div class="settings-section" id="settings-widgets">
+<div class="settings-card">
+<div class="settings-card-title">Active dashboard widgets</div>
+<div id="widgets-active-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px"></div>
+<button class="btn btn-ghost" onclick="widgetsReset()" style="font-size:12px">↺ Reset dashboard layout</button>
+</div>
+<div class="settings-card">
+<div class="settings-card-title">Add a widget</div>
+<div id="widgets-add-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px"></div>
+</div>
+</div>
+<!-- ── PLUGINS TAB (V28) ── -->
+<div class="settings-section" id="settings-plugins">
+<div class="settings-card">
+<div class="settings-card-title">Installed &amp; available integrations</div>
+<div style="font-size:12px;color:var(--muted2);margin-bottom:12px">Connect ETHONE to external services. Configuring an integration opens its dedicated Connexions panel.</div>
+<div id="plugins-list" style="display:flex;flex-direction:column;gap:6px"></div>
+</div>
+</div>
+<!-- ── BRAIN TAB (V28) ── -->
+<div class="settings-section" id="settings-brain">
+<div class="settings-card">
+<div class="settings-card-title">ETHONE AI Core status</div>
+<div id="brain-status" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px"></div>
+<button class="btn btn-primary" onclick="switchPage('ai')" style="font-size:12px">Open Brain settings →</button>
+</div>
+</div>
+<!-- ── AUTOMATION TAB (V28) ── -->
+<div class="settings-section" id="settings-automation">
+<div class="settings-card">
+<div class="settings-card-title" data-i18n="settings_automation">Automation</div>
+<div style="font-size:12px;color:var(--muted2);margin-bottom:12px">Simple rules: a trigger runs an action automatically. Checked every minute while ETHONE is open.</div>
+<div id="automation-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px"></div>
+<button class="btn btn-primary" onclick="automationCreate()" style="font-size:12px">+ New rule</button>
+</div>
+</div>
+<!-- ── MARKETPLACE TAB (V28) ── -->
+<div class="settings-section" id="settings-marketplace">
+<div class="settings-card">
+<div class="settings-card-title">Marketplace</div>
+<div id="marketplace-summary" style="font-size:12px;color:var(--muted2);margin-bottom:12px"></div>
+<div id="marketplace-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px"></div>
+</div>
+</div>
+<!-- ── NOTIFICATIONS TAB (V28) ── -->
+<div class="settings-section" id="settings-notifications">
+<div class="settings-card">
+<div class="settings-card-title">Notifications</div>
+<div class="toggle-row">
+<div><div class="toggle-label">Desktop notifications</div><div class="toggle-sub">Ask the browser for permission</div></div>
+<button class="btn btn-ghost" id="notif-btn" onclick="requestNotifPermission()" style="font-size:12px">🔔 Enable</button>
+</div>
+<div class="nx-divider"></div>
+<div id="notif-categories" style="display:flex;flex-direction:column;gap:2px"></div>
+<div class="nx-divider"></div>
+<div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+<div class="modal-field" style="margin:0"><label class="modal-label">Quiet hours start</label><input class="modal-input" id="notif-quiet-start" oninput="notifSetQuiet('quietStart',this.value)" style="width:120px" type="time"/></div>
+<div class="modal-field" style="margin:0"><label class="modal-label">Quiet hours end</label><input class="modal-input" id="notif-quiet-end" oninput="notifSetQuiet('quietEnd',this.value)" style="width:120px" type="time"/></div>
+</div>
+</div>
+</div>
+<!-- ── KEYBOARD TAB (V28) ── -->
+<div class="settings-section" id="settings-keyboard">
+<div class="settings-card">
+<div class="settings-card-title">Keyboard shortcuts</div>
+<div id="keyboard-list" style="display:flex;flex-direction:column;gap:4px"></div>
+</div>
+</div>
+<!-- ── DEVELOPER TAB (V28) ── -->
+<div class="settings-section" id="settings-developer">
+<div class="settings-card">
+<div class="settings-card-title">Environment</div>
+<div id="dev-env-info" style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted2);margin-bottom:14px"></div>
+<div class="toggle-row">
+<div><div class="toggle-label">Verbose debug logging</div><div class="toggle-sub">Logs extra diagnostics to the browser console</div></div>
+<label class="toggle"><input id="dev-debug-toggle" onchange="devSetDebug(this.checked)" type="checkbox"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+</div>
+<div class="nx-divider"></div>
+<button class="btn btn-ghost" onclick="devClearCaches()" style="font-size:12px">🧹 Clear local caches</button>
+</div>
+</div>
+<!-- ── EXPERIMENTAL TAB (V28) ── -->
+<div class="settings-section" id="settings-experimental">
+<div class="settings-card">
+<div class="settings-card-title">Experimental features</div>
+<div style="font-size:12px;color:var(--muted2);margin-bottom:12px">Legacy/experimental toggles. May be unstable or have limited effect.</div>
+<div id="experimental-list" style="display:flex;flex-direction:column;gap:2px"></div>
+</div>
+</div>
+<!-- ── BACKUP TAB (V28) ── -->
+<div class="settings-section" id="settings-backup">
+<div class="settings-card">
+<div class="settings-card-title">Backup</div>
 <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px">
-<button class="btn btn-ghost" onclick="exportData()" style="font-size:12px">⬇ Export JSON</button>
-<button class="btn btn-ghost" onclick="document.getElementById('import-file').click()" style="font-size:12px">⬆ Import JSON</button>
-<input accept=".json" id="import-file" onchange="importData(event)" style="display:none" type="file"/>
-<button class="btn btn-ghost" id="notif-btn" onclick="requestNotifPermission()" style="font-size:12px">🔔 Enable notifications</button>
+<button class="btn btn-primary" onclick="backupNow()" style="font-size:12px">☁ Sync now</button>
+<button class="btn btn-ghost" onclick="backupDownload()" style="font-size:12px">⬇ Download backup file</button>
+<button class="btn btn-ghost" onclick="document.getElementById('backup-restore-file').click()" style="font-size:12px">⬆ Restore from file</button>
+<input accept=".json" id="backup-restore-file" onchange="backupRestore(event)" style="display:none" type="file"/>
 </div>
 <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(248,113,113,.5);font-family:var(--mono);margin-bottom:8px">Danger zone</div>
 <button class="btn btn-danger" onclick="resetProfileData()" style="font-size:12px">🗑 Reset my data</button>
+</div>
+</div>
+<!-- ── IMPORT TAB (V28) ── -->
+<div class="settings-section" id="settings-importx">
+<div class="settings-card">
+<div class="settings-card-title">Import data</div>
+<div style="font-size:12px;color:var(--muted2);margin-bottom:12px">Import a previously exported ETHONE JSON file into this profile.</div>
+<button class="btn btn-primary" onclick="document.getElementById('import-file').click()" style="font-size:12px">⬆ Choose JSON file</button>
+<input accept=".json" id="import-file" onchange="importData(event)" style="display:none" type="file"/>
+</div>
+</div>
+<!-- ── EXPORT TAB (V28) ── -->
+<div class="settings-section" id="settings-exportx">
+<div class="settings-card">
+<div class="settings-card-title">Export data</div>
+<div style="font-size:12px;color:var(--muted2);margin-bottom:12px">Download all of this profile's data as a JSON file.</div>
+<button class="btn btn-primary" onclick="exportData()" style="font-size:12px">⬇ Export JSON</button>
 </div>
 </div>
 <!-- ── THEME TAB (V25 Theme Engine) ── -->
@@ -5712,6 +5948,7 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <script id="ethone-legacy-animations" src="./ui/animations.js"></script>
 <script id="ethone-legacy-notifications" src="./actions/legacy-notifications.js"></script>
 <script id="ethone-legacy-heatmap" src="./widgets/heatmap.js"></script>
+<script id="ethone-analytics-charts" src="./widgets/analytics-charts.js"></script>
 <script id="ethone-legacy-presentation" src="./pages/presentation/index.js"></script>
 <script id="ethone-legacy-valorant-match-detail" src="./pages/gaming/valorant-match-detail.js"></script>
 <script id="ethone-legacy-backgrounds" src="./services/theme/backgrounds.js"></script>
@@ -5767,6 +6004,7 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <script id="ethone-db-home" src="./pages/databases/home.js"></script>
 <script id="ethone-theme-engine" src="./services/theme/engine.js"></script>
 <script id="ethone-theme-editor" src="./pages/settings/theme-editor.js"></script>
+<script id="ethone-settings-premium" src="./pages/settings/settings-premium.js"></script>
 <script id="ethone-legacy-mobile-sidebar" src="./pages/dashboard/mobile-sidebar.js"></script>
 <script id="ethone-legacy-import-export" src="./actions/import-export.js"></script>
 <script id="ethone-legacy-desktop-notifications" src="./actions/desktop-notifications.js"></script>
@@ -7242,7 +7480,11 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
 .aie-hidden{display:none!important}
 @media(max-width:920px){.aie-home-insights{grid-template-columns:1fr}.aie-copilot-toggle{right:14px;bottom:calc(104px + env(safe-area-inset-bottom,0px))}.aie-copilot{right:14px;bottom:calc(160px + env(safe-area-inset-bottom,0px))}}
 </style>
-<script id="ethone-ai-everywhere-runtime" src="./services/ai/everywhere.js"></script>
+<!-- ETHONE V30 — disabled: superseded by services/ai/brain-os-36.js (5 overlapping Brain/context
+     implementations were all loading simultaneously, each wrapping window.switchPage and running
+     its own ~20-30s interval; this caused a confirmed hang when navigating to the AI page. Files
+     kept on disk, untouched, in case anything unique needs to be ported forward — just not loaded.
+<script id="ethone-ai-everywhere-runtime" src="./services/ai/everywhere.js"></script> -->
 <style id="ethone-intelligence-33a-css">
 /* ETHONE Intelligence 3.3A: OS-native intelligence experience layer. */
 :root{
@@ -7684,7 +7926,8 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
   }
 }
 </style>
-<script id="ethone-intelligence-33a-runtime" src="./services/ai/intelligence-33a.js"></script>
+<!-- ETHONE V30 — disabled, see the ethone-ai-everywhere-runtime comment above for why:
+<script id="ethone-intelligence-33a-runtime" src="./services/ai/intelligence-33a.js"></script> -->
 <style id="ethone-brain-33b-css">
 /* ETHONE Brain 3.3B: central intelligence layer connecting pages, widgets and routines. */
 :root{
@@ -8105,7 +8348,8 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
   }
 }
 </style>
-<script id="ethone-brain-33b-runtime" src="./services/ai/brain-33b.js"></script>
+<!-- ETHONE V30 — disabled, see the ethone-ai-everywhere-runtime comment above for why:
+<script id="ethone-brain-33b-runtime" src="./services/ai/brain-33b.js"></script> -->
 <style id="ethone-brain-34-css">
 /* ETHONE Brain 3.4: morning-first Brain dashboard, universal search and command layer. */
 :root{
@@ -8519,7 +8763,8 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
   }
 }
 </style>
-<script id="ethone-brain-34-runtime" src="./services/ai/brain-34.js"></script>
+<!-- ETHONE V30 — disabled, see the ethone-ai-everywhere-runtime comment above for why:
+<script id="ethone-brain-34-runtime" src="./services/ai/brain-34.js"></script> -->
 <style id="ethone-brain-platform-35-css">
 /* ETHONE Brain 3.5: complete Intelligence Platform with specialized engines. */
 :root{
@@ -8745,7 +8990,8 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
   .bp35-engine-grid,.bp35-matrix{grid-template-columns:1fr}
 }
 </style>
-<script id="ethone-brain-platform-35-runtime" src="./services/ai/brain-platform-35.js"></script>
+<!-- ETHONE V30 — disabled, see the ethone-ai-everywhere-runtime comment above for why:
+<script id="ethone-brain-platform-35-runtime" src="./services/ai/brain-platform-35.js"></script> -->
 <style id="ethone-brain-os-36-css">
 /* ETHONE Brain OS 3.6: invisible intelligence operating platform vision layer. */
 :root{
@@ -8972,7 +9218,11 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
   .bos36-engine-map,.bos36-matrix{grid-template-columns:1fr}
 }
 </style>
-<script id="ethone-brain-os-36-runtime" src="./services/ai/brain-os-36.js"></script>
+<!-- ETHONE V30 — disabled: confirmed (via live testing) to hang the entire tab when navigating
+     to the AI page — reproducible even after fixing the obvious document.body.innerText cost in
+     mode(), so a deeper issue remains unidentified. Kept on disk with the innerText fix applied
+     for whoever picks this back up; do not re-enable without re-testing switchPage('ai') first.
+<script id="ethone-brain-os-36-runtime" src="./services/ai/brain-os-36.js"></script> -->
 <style id="ethone-marketplace-41-css">
 /* ETHONE Marketplace 4.1: living extensible platform ecosystem. */
 :root{
@@ -10194,7 +10444,10 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
 }
 @media(max-width:1180px){
   .x26-home,.x26-lower{grid-template-columns:1fr}
-  body.ethone-2026-ui #main-content{padding-left:92px!important}
+  /* layout audit: removed a dead padding-left:92px!important — confirmed via
+     live computed-style testing that the Grid-based rule further down
+     (body.ethone-2026-ui #main-content{padding-left:24px!important}) already
+     wins by source order, so this legacy pre-Grid value was always inert. */
 }
 @media(max-width:760px){
   body.ethone-2026-ui #main-sidebar{width:0!important;transform:translateX(-100%)}
@@ -10819,9 +11072,11 @@ body.ethone-2026-ui #main-sidebar .nav-item svg{
     width:100%!important;
     padding:0!important;
   }
-  body.ethone-2026-ui:has(#main-sidebar:not(.compact)) #main-content{
-    padding-left:202px!important;
-  }
+  /* layout audit: removed a live, active padding-left:202px!important here —
+     confirmed via direct testing that it out-specificities the Grid-based
+     24px rule (extra :not(.compact) raises its specificity), so #main-content
+     always had ~178px of dead extra left-padding on top of wherever the
+     Grid actually placed it, independent of the real --sidebar-w value. */
 }
 .vh-home{
   width:100%;

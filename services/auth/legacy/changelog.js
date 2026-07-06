@@ -108,7 +108,7 @@ function showChangelog(){
     {v:'v1.1.0',date:'05/06/2026',changes:['Changelog popup','Admin button in sidebar for owner']},
     {v:'v1.0.0',date:'05/06/2026',changes:['Initial release','Multi-profile with avatar + PIN','Discord, Steam, Spotify, Valorant, LoL','Kanban, Habits, Calendar, Tasks, Notes, Stats, Pomodoro']},
   ];
-  let html=`<div style="position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.75);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.remove()">
+  let html=`<div style="position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.75);backdrop-filter:blur(calc(12px * var(--theme-blur-scale)));display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.remove()">
   <div class="ethone-changelog-shell" style="background:rgba(10,8,14,.97);border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:0;width:100%;max-width:560px;max-height:82vh;display:flex;flex-direction:column;box-shadow:0 32px 80px rgba(0,0,0,.7)">
     <!-- Header -->
     <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0">

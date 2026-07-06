@@ -85,6 +85,15 @@
       handle.style.display='';
       const w=parseInt(localStorage.getItem('sb_width')||String(DEFAULT_W));
       applyWidth(Math.min(Math.max(w,MIN_W),MAX_W));
+    },
+    // Driven by the Theme Editor's width slider — same persistence as manual drag.
+    setWidth(w){
+      w=Math.min(Math.max(w,MIN_W),MAX_W);
+      applyWidth(w);
+      localStorage.setItem('sb_width', w);
+    },
+    currentWidth(){
+      return parseInt(localStorage.getItem('sb_width')||String(DEFAULT_W));
     }
   };
 })();

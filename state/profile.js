@@ -23,7 +23,10 @@ let pinEntry='';
 function loadState(){try{const d=localStorage.getItem('myspace_profiles_backup');if(d)profiles=JSON.parse(d)}catch(e){}}
 let _saveCloudTimeout=null;
 function saveStateNow(){
-  try{localStorage.setItem('myspace_profiles_backup',JSON.stringify(profiles))}catch(e){}
+  try{
+    localStorage.setItem('myspace_profiles_backup',JSON.stringify(profiles));
+    localStorage.setItem('myspace_profiles_backup_owner',(_sbUser&&_sbUser.id)||'');
+  }catch(e){}
   if(_sbUser){
     clearTimeout(_saveCloudTimeout);
     _saveCloudTimeout=setTimeout(()=>{
@@ -33,7 +36,7 @@ function saveStateNow(){
 }
 function getP(id){return profiles.find(p=>String(p.id)===String(id))}
 function curP(){return getP(currentId)}
-function defState(name){return{items:[],todos:[],note:'',notes:[],activity:[],username:name||'User',connections:{},gaming:{},habits:[],kanban:[],events:[],pinned:[],manualBadges:{},banner:null,countdown:null,pomoHistory:[],notifEnabled:false,bio:'',socials:{},goals:[],journal:[],countdowns:[],xp:0,dailyFocus:null,valorantAccounts:[],valorantAccountsView:{columnOrder:null,columnWidths:{},hiddenColumns:[],pinnedColumns:[],activeFilterView:'all',sort:[],groupBy:null,knownTags:[],customColumns:[],dropdownDefs:{},lockedColumns:[],columnLabels:{}},databases:[],databasesView:{lastOpenedId:null,order:null,favorites:[]}}}
+function defState(name){return{items:[],todos:[],note:'',notes:[],activity:[],username:name||'User',connections:{},gaming:{},habits:[],kanban:[],events:[],pinned:[],manualBadges:{},banner:null,countdown:null,pomoHistory:[],notifEnabled:false,notifPrefs:{tasks:true,habits:true,events:true,ai:true,system:true,quietStart:'',quietEnd:''},bio:'',socials:{},goals:[],journal:[],countdowns:[],xp:0,dailyFocus:null,valorantAccounts:[],valorantAccountsView:{columnOrder:null,columnWidths:{},hiddenColumns:[],pinnedColumns:[],activeFilterView:'all',sort:[],groupBy:null,knownTags:[],customColumns:[],dropdownDefs:{},lockedColumns:[],columnLabels:{}},databases:[],databasesView:{lastOpenedId:null,order:null,favorites:[]},automationRules:[]}}
 
 // ===================================================
 //  AVATAR HELPERS

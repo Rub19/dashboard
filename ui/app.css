@@ -485,13 +485,13 @@ body.ethone-2026-ui :where(.lang-option,.dropdown-item,.context-menu-item,.menu-
 body #cmd-palette-overlay{
   padding:calc(var(--spacing-xl) * 2 + var(--spacing-xs)) var(--spacing-md) var(--spacing-md)!important;
   background:var(--overlay-backdrop-soft)!important;
-  backdrop-filter:blur(8px)!important;
-  -webkit-backdrop-filter:blur(8px)!important;
+  backdrop-filter:blur(calc(8px * var(--theme-blur-scale)))!important;
+  -webkit-backdrop-filter:blur(calc(8px * var(--theme-blur-scale)))!important;
 }
 body #cmd-palette-overlay.open{
   background:var(--overlay-backdrop-soft)!important;
-  backdrop-filter:blur(8px)!important;
-  -webkit-backdrop-filter:blur(8px)!important;
+  backdrop-filter:blur(calc(8px * var(--theme-blur-scale)))!important;
+  -webkit-backdrop-filter:blur(calc(8px * var(--theme-blur-scale)))!important;
   animation:ethoneOverlayIn 160ms ease both!important;
 }
 body.ethone-2026-ui #cmd-palette{
@@ -565,8 +565,8 @@ body.ethone-2026-ui #cmd-palette{
 body.ethone-2026-ui .modal-overlay{
   padding:var(--spacing-md)!important;
   background:var(--overlay-backdrop)!important;
-  backdrop-filter:blur(8px)!important;
-  -webkit-backdrop-filter:blur(8px)!important;
+  backdrop-filter:blur(calc(8px * var(--theme-blur-scale)))!important;
+  -webkit-backdrop-filter:blur(calc(8px * var(--theme-blur-scale)))!important;
 }
 body.ethone-2026-ui .modal-overlay.open{animation:ethoneOverlayIn 160ms ease both!important}
 body.ethone-2026-ui .modal{
@@ -729,7 +729,7 @@ body #profile-screen :is(.ps-card-inner,.ps-add-card){
     padding:0 var(--spacing-sm)!important;
     border-bottom-color:var(--border-primary)!important;
     background:var(--surface-translucent)!important;
-    backdrop-filter:blur(10px)!important;
+    backdrop-filter:blur(calc(10px * var(--theme-blur-scale)))!important;
   }
   body.ethone-2026-ui #mobile-topbar button{border-radius:var(--radius-md)!important}
   body.ethone-2026-ui #main-sidebar{box-shadow:var(--shadow-lg)!important}

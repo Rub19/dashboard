@@ -88,7 +88,10 @@ async function deleteProfile(id){
   const toDelete=profiles.find(p=>p.id===id);
   profiles=profiles.filter(p=>p.id!==id);
   // Save locally first
-  try{localStorage.setItem('myspace_profiles_backup',JSON.stringify(profiles));}catch(e){}
+  try{
+    localStorage.setItem('myspace_profiles_backup',JSON.stringify(profiles));
+    localStorage.setItem('myspace_profiles_backup_owner',(_sbUser&&_sbUser.id)||'');
+  }catch(e){}
   // Delete from Supabase DB if it has a db record
   if(toDelete?._dbId&&_sbUser){
     try{

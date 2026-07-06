@@ -18,7 +18,7 @@ function renderStatsHeatmap(){
     actMap[d]=(actMap[d]||0)+weight;
   };
   activity.forEach(a=>addDate(a.ts,1));
-  todos.filter(t=>t.done&&t.doneDate).forEach(t=>addDate(t.doneDate,2));
+  todos.filter(t=>t.done&&t.doneAt).forEach(t=>addDate(t.doneAt,2));
   pomo.forEach(h=>addDate(h.ts,1));
   items.forEach(i=>addDate(i.date?new Date(i.date).toLocaleDateString('en-CA'):null,1));
 

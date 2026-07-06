@@ -61,6 +61,8 @@ function buildPageResults(){
     {id:'search.brain.open',icon:'🤖',title:t('nav_ai'),sub:t('nav_ai'),keywords:'brain ai assistant chat ask ia'},
     {id:'dashboard.nav.marketplace',icon:'🛍️',title:marketLabel,sub:marketLabel,keywords:'marketplace shop store'},
     {id:'dashboard.nav.workspaces',icon:'🗂️',title:spacesLabel,sub:spacesLabel,keywords:'workspaces spaces'},
+    {id:'search.databases.home',icon:'🗄️',title:t('nav_databases')||'Databases',sub:t('nav_databases')||'Databases',keywords:'database databases table records'},
+    {id:'search.settings.openTab',context:{tab:'plugins'},icon:'🔌',title:'Plugins',sub:'Settings',keywords:'plugins integrations discord spotify steam twitch github valorant'},
   ].map(e=>Object.assign({category:'pages'},e));
 }
 function buildQuickActionResults(){
@@ -123,12 +125,38 @@ function buildEventResults(q){
 function buildSettingsResults(q){
   if(!q)return [];
   return [
-    {tab:'profilee',label:'Profile',keywords:'profile avatar name'},
-    {tab:'security',label:'Security',keywords:'security password'},
-    {tab:'account',label:'Account',keywords:'account email username'}
+    {tab:'profilee',label:'General',keywords:'profile avatar name general'},
+    {tab:'theme',label:'Appearance',keywords:'theme appearance color accent radius blur glow'},
+    {tab:'widgets',label:'Widgets',keywords:'widgets dashboard layout'},
+    {tab:'brain',label:'Brain',keywords:'brain ai provider model'},
+    {tab:'automation',label:'Automation',keywords:'automation rules reminders'},
+    {tab:'notifications',label:'Notifications',keywords:'notifications alerts quiet hours'},
+    {tab:'keyboard',label:'Keyboard',keywords:'keyboard shortcuts hotkeys'},
+    {tab:'developer',label:'Developer',keywords:'developer debug console'},
+    {tab:'experimental',label:'Experimental',keywords:'experimental beta flags'},
+    {tab:'backup',label:'Backup',keywords:'backup sync restore'},
+    {tab:'importx',label:'Import',keywords:'import data json'},
+    {tab:'exportx',label:'Export',keywords:'export data json'},
+    {tab:'security',label:'Security',keywords:'security password pin'},
+    {tab:'account',label:'Account',keywords:'account email username sign out'}
   ].map(x=>({
     id:'search.settings.openTab',context:{tab:x.tab},category:'settings',
     icon:'⚙️',title:x.label,sub:'Settings',keywords:x.keywords
+  }));
+}
+function buildDatabaseResults(q){
+  if(!q)return [];
+  if(typeof dbList!=='function')return [];
+  return dbList().map(db=>({
+    id:'search.databases.open',context:{dbId:db.id},category:'databases',
+    icon:db.icon||'🗄️',title:db.name||'Untitled',sub:(db.rows?db.rows.length:0)+' rows',keywords:db.name||''
+  }));
+}
+function buildThemeResults(q){
+  if(!q||typeof THEMES==='undefined')return [];
+  return THEMES.map((th,idx)=>({
+    id:'search.theme.pick',context:{themeIdx:idx},category:'themes',
+    icon:'🎨',title:'Theme: '+th.name,sub:'Switch accent color',keywords:'theme color accent '+th.name
   }));
 }
 
@@ -136,7 +164,8 @@ function cmdCategoryLabel(cat){
   const map={
     pages:t('cmd_pages'),actions:t('cmd_actions'),
     notes:t('nav_notes'),tasks:t('nav_tasks'),files:t('cmd_files'),
-    habits:t('nav_habits'),calendar:t('nav_calendar'),settings:t('nav_settings')
+    habits:t('nav_habits'),calendar:t('nav_calendar'),settings:t('nav_settings'),
+    databases:t('nav_databases')||'Databases',themes:'Themes'
   };
   return map[cat]||cat;
 }
@@ -157,6 +186,8 @@ function buildAllResults(q){
     {key:'files',items:scoreAndCap(buildItemResults(q),q?CAP:4)},
     {key:'habits',items:scoreAndCap(buildHabitResults(q),CAP)},
     {key:'calendar',items:scoreAndCap(buildEventResults(q),CAP)},
+    {key:'databases',items:scoreAndCap(buildDatabaseResults(q),CAP)},
+    {key:'themes',items:scoreAndCap(buildThemeResults(q),CAP)},
     {key:'settings',items:scoreAndCap(buildSettingsResults(q),CAP)},
   ];
   const sections=[],all=[];
@@ -272,6 +303,9 @@ function registerSearchActions(){
   Actions.register('search.settings.openTab',{handler:ctx=>openSettingsTab((ctx&&ctx.tab)||'profilee')});
   Actions.register('search.connections.open',{handler:()=>switchPage('connections',null)});
   Actions.register('search.brain.open',{handler:()=>{switchPage('ai',null);focusAIInput();}});
+  Actions.register('search.databases.home',{handler:()=>switchPage('databases',null)});
+  Actions.register('search.databases.open',{handler:ctx=>{switchPage('databases',null);if(ctx&&ctx.dbId!=null&&typeof dbOpenDatabase==='function')dbOpenDatabase(ctx.dbId);}});
+  Actions.register('search.theme.pick',{handler:ctx=>{if(ctx&&ctx.themeIdx!=null&&typeof pickTheme==='function')pickTheme(ctx.themeIdx);}});
 
   Actions.register('search.profile.switch',{handler:()=>goToProfileScreen()});
   Actions.register('search.presentation.open',{handler:()=>openPresentationMode()});

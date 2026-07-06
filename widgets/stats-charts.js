@@ -21,6 +21,9 @@ function renderStatsPage(){
   // Heatmap
   renderStatsHeatmap();
 
+  // V29 Analytics — Progression/Focus/Productivity/Habits calendars/Goals/History
+  if(typeof renderAnalyticsExtra==='function')renderAnalyticsExtra();
+
   // Activity bars (last 7 days)
   const barsEl=document.getElementById('stats-activity-bars');
   const labelsEl=document.getElementById('stats-activity-labels');

@@ -6,6 +6,17 @@
 :root {
   color-scheme: dark;
 
+  /* Theme Engine scales — all default to neutral (1 = unscaled). A Theme
+     Editor sets these at runtime via document.documentElement.style.setProperty;
+     everything below that references them adapts automatically, with zero
+     changes needed in consuming CSS. See services/theme/engine.js. */
+  --theme-radius-scale: 1;
+  --theme-blur-scale: 1;
+  --theme-motion-scale: 1;
+  --theme-glow-scale: 1;
+  --theme-font-scale: 1;
+  --theme-surface-opacity: 1;
+
   /* Color */
   --surface-0: #09090b;
   --surface-1: #101014;
@@ -15,7 +26,7 @@
   --surface-hover: #202026;
   --surface-control: #24242a;
   --surface-switch: #292930;
-  --surface-translucent: rgba(9, 9, 11, 0.94);
+  --surface-translucent: rgba(9, 9, 11, calc(0.94 * var(--theme-surface-opacity)));
 
   --text-primary: #f5f5f2;
   --text-on-accent: #ffffff;
@@ -52,12 +63,13 @@
   --danger-border: rgba(239, 68, 68, 0.34);
   --danger-border-hover: rgba(239, 68, 68, 0.52);
 
-  /* Radius */
-  --radius-xs: 6px;
-  --radius-sm: 8px;
-  --radius-md: 10px;
-  --radius-lg: 12px;
-  --radius-xl: 14px;
+  /* Radius — every consumer references these tokens (never a literal px),
+     so scaling them here is all a Theme Editor needs to do. */
+  --radius-xs: calc(6px * var(--theme-radius-scale));
+  --radius-sm: calc(8px * var(--theme-radius-scale));
+  --radius-md: calc(10px * var(--theme-radius-scale));
+  --radius-lg: calc(12px * var(--theme-radius-scale));
+  --radius-xl: calc(14px * var(--theme-radius-scale));
   --radius-full: 999px;
 
   /* Shadow */
@@ -66,8 +78,8 @@
   --shadow-md: 0 16px 44px rgba(0, 0, 0, 0.24);
   --shadow-lg: 0 28px 80px rgba(0, 0, 0, 0.48);
   --shadow-sidebar: 10px 0 34px rgba(0, 0, 0, 0.12);
-  --shadow-control: 0 8px 22px rgba(139, 92, 246, 0.18);
-  --shadow-control-hover: 0 10px 28px rgba(139, 92, 246, 0.24);
+  --shadow-control: 0 calc(8px * var(--theme-glow-scale)) calc(22px * var(--theme-glow-scale)) rgba(139, 92, 246, calc(0.18 * var(--theme-glow-scale)));
+  --shadow-control-hover: 0 calc(10px * var(--theme-glow-scale)) calc(28px * var(--theme-glow-scale)) rgba(139, 92, 246, calc(0.24 * var(--theme-glow-scale)));
   --shadow-inset: inset 0 0 0 1px var(--accent-border);
 
   /* Spacing */
@@ -79,29 +91,31 @@
   --spacing-xl: 32px;
   --spacing-2xl: 48px;
 
-  /* Typography */
+  /* Typography — font family swapped via [data-font] on <html> below;
+     sizes scale continuously via --theme-font-scale. */
   --font-sans: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-display: Syne, Inter, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
-  --text-xs: 11px;
-  --text-sm: 12px;
-  --text-md: 13px;
-  --text-lg: 15px;
-  --text-xl: 18px;
-  --text-2xl: 24px;
+  --text-xs: calc(11px * var(--theme-font-scale));
+  --text-sm: calc(12px * var(--theme-font-scale));
+  --text-md: calc(13px * var(--theme-font-scale));
+  --text-lg: calc(15px * var(--theme-font-scale));
+  --text-xl: calc(18px * var(--theme-font-scale));
+  --text-2xl: calc(24px * var(--theme-font-scale));
   --text-hero: clamp(30px, 4vw, 42px);
 
-  /* Motion */
-  --motion-fast: 160ms;
-  --motion-normal: 200ms;
-  --motion-slow: 240ms;
+  /* Motion — the prefers-reduced-motion floor below always wins regardless
+     of this scale, so OS-level accessibility settings are never overridden. */
+  --motion-fast: calc(160ms * var(--theme-motion-scale));
+  --motion-normal: calc(200ms * var(--theme-motion-scale));
+  --motion-slow: calc(240ms * var(--theme-motion-scale));
   --ease-standard: cubic-bezier(0.2, 0.75, 0.2, 1);
   --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
 
   /* Ambient glow — promoted from the auth experience for reuse across future views */
-  --glow-accent-soft: 0 0 48px rgba(139, 92, 246, 0.08);
-  --glow-accent-strong: 0 0 70px rgba(139, 92, 246, 0.12);
-  --radius-2xl: 20px;
+  --glow-accent-soft: 0 0 calc(48px * var(--theme-glow-scale)) rgba(139, 92, 246, calc(0.08 * var(--theme-glow-scale)));
+  --glow-accent-strong: 0 0 calc(70px * var(--theme-glow-scale)) rgba(139, 92, 246, calc(0.12 * var(--theme-glow-scale)));
+  --radius-2xl: calc(20px * var(--theme-radius-scale));
 
   /* Layout */
   --control-height: 40px;
@@ -109,8 +123,8 @@
   --sidebar-width: 244px;
   --content-max: 1600px;
   --focus-ring: 0 0 0 3px rgba(139, 92, 246, 0.15);
-  --overlay-backdrop: rgba(0, 0, 0, 0.68);
-  --overlay-backdrop-soft: rgba(0, 0, 0, 0.66);
+  --overlay-backdrop: rgba(0, 0, 0, calc(0.68 * var(--theme-surface-opacity)));
+  --overlay-backdrop-soft: rgba(0, 0, 0, calc(0.66 * var(--theme-surface-opacity)));
 
   /* Compatibility aliases */
   --bg: var(--surface-0);
@@ -159,4 +173,39 @@
     --motion-normal: 1ms;
     --motion-slow: 1ms;
   }
+}
+
+/* ══════════════════════════════════════════════
+   Theme Engine — categorical axes (Font family, Density)
+   Applied via a data-attribute on <html>, set by services/theme/engine.js.
+   ══════════════════════════════════════════════ */
+html[data-font="grotesk"] { --font-sans: "Cabinet Grotesk", Inter, system-ui, sans-serif; }
+html[data-font="system"] { --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+
+/* #main-content is chained in (and .settings-card etc. doubled) purely to
+   out-specificity ui/app.css's `body.ethone-2026-ui #main-content :is(...)`
+   card-padding rule — both use !important, so raw specificity decides. */
+html[data-density="cozy"] #main-content .panel.panel,
+html[data-density="cozy"] #main-content .stat-card.stat-card,
+html[data-density="cozy"] #main-content .settings-card.settings-card {
+  padding: 14px !important;
+}
+html[data-density="cozy"] .stats-row,
+html[data-density="cozy"] .grid-2,
+html[data-density="cozy"] .grid-3 {
+  gap: 12px !important;
+}
+html[data-density="compact"] #main-content .panel.panel,
+html[data-density="compact"] #main-content .stat-card.stat-card,
+html[data-density="compact"] #main-content .settings-card.settings-card {
+  padding: 12px !important;
+}
+html[data-density="compact"] .topbar {
+  padding: 10px 0 !important;
+  margin-bottom: 14px !important;
+}
+html[data-density="compact"] .stats-row,
+html[data-density="compact"] .grid-2,
+html[data-density="compact"] .grid-3 {
+  gap: 8px !important;
 }

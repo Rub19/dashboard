@@ -102,7 +102,7 @@ function applyCustomColor(hex){
   // save as custom
   p.themeIdx=99;p.customAccent=hex;saveStateNow();
   updateBannerDisplay();
-  toast(uiLang==='fr'?'Couleur appliquée !':'Custom color applied!','success');
+  toast((window._lang||'fr')==='fr'?'Couleur appliquée !':'Custom color applied!','success');
 }
 
 function pickTheme(idx){
@@ -112,5 +112,5 @@ function pickTheme(idx){
   applyTheme(idx);
   renderThemeSwatches();
   updateBannerDisplay();
-  toast(uiLang==='fr'?'Thème appliqué !':'Theme applied!','success');
+  toast((window._lang||'fr')==='fr'?'Thème appliqué !':'Theme applied!','success');
 }

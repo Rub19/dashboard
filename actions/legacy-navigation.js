@@ -66,6 +66,17 @@ function switchSettingsTab(tab,el){
   const sec=document.getElementById('settings-'+tab);
   if(sec)sec.classList.add('active');
   if(tab==='account')loadAccountInfo();
+  if(tab==='theme'&&typeof renderThemeEditor==='function')renderThemeEditor();
+  if(tab==='workspaces'&&typeof renderWorkspacesSettings==='function')renderWorkspacesSettings();
+  if(tab==='widgets'&&typeof renderWidgetsSettings==='function')renderWidgetsSettings();
+  if(tab==='plugins'&&typeof renderPluginsSettings==='function')renderPluginsSettings();
+  if(tab==='brain'&&typeof renderBrainSettings==='function')renderBrainSettings();
+  if(tab==='automation'&&typeof renderAutomationSettings==='function')renderAutomationSettings();
+  if(tab==='marketplace'&&typeof renderMarketplaceSettings==='function')renderMarketplaceSettings();
+  if(tab==='notifications'&&typeof renderNotificationsSettings==='function')renderNotificationsSettings();
+  if(tab==='keyboard'&&typeof renderKeyboardSettings==='function')renderKeyboardSettings();
+  if(tab==='developer'&&typeof renderDeveloperSettings==='function')renderDeveloperSettings();
+  if(tab==='experimental'&&typeof renderExperimentalSettings==='function')renderExperimentalSettings();
 }
 
 async function loadAccountInfo(){

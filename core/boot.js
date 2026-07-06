@@ -53,7 +53,10 @@ function normalizeAllProfiles(){
     }
     profiles=Array.from(seen.values()).slice(0,6);
   }
-  try{localStorage.setItem('myspace_profiles_backup',JSON.stringify(profiles));}catch(e){}
+  try{
+    localStorage.setItem('myspace_profiles_backup',JSON.stringify(profiles));
+    localStorage.setItem('myspace_profiles_backup_owner',(_sbUser&&_sbUser.id)||'');
+  }catch(e){}
 }
 function ethoneCleanProfileList(opts){
   const before=Array.isArray(profiles)?profiles.length:0;

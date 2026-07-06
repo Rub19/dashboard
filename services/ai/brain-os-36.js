@@ -98,7 +98,13 @@
   function mode(){
     const page=activePage();
     const h=new Date().getHours();
-    const text=(document.body?.innerText||"").toLowerCase();
+    /* Scoped to the active page's textContent, not document.body.innerText: with ~18 pages
+       simultaneously present in the DOM (hidden via CSS, not removed), .innerText on body forces
+       a full layout/visibility resolution across all of them every call — confirmed via live
+       testing to be expensive enough (called from run() at 350ms/1500ms/every 30s/every click)
+       to make the whole tab appear hung. textContent skips layout entirely. */
+    const activeEl=document.querySelector(".tab-content.active");
+    const text=(activeEl?activeEl.textContent:"").toLowerCase();
     if(page==="gaming"||/steam|valorant|twitch|discord/.test(text)&&h>=18)return "Gaming";
     if(page==="github"||/vscode|commit|repository|pull request/.test(text))return "Developer";
     if(page==="notes"||/study|revision|school|lecture/.test(text))return "Study";

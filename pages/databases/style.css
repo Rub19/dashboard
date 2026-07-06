@@ -172,7 +172,7 @@
 .db-table-wrap{
   position:relative;border:1px solid var(--border-primary);border-radius:var(--radius-xl);
   background:var(--surface-1);box-shadow:var(--shadow-sm);overflow:auto;
-  max-height:calc(100vh - 320px);backdrop-filter:blur(6px);
+  max-height:calc(100vh - 320px);backdrop-filter:blur(calc(6px * var(--theme-blur-scale)));
 }
 .db-table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
 .db-table thead{position:sticky;top:0;z-index:4}
@@ -243,7 +243,7 @@
 .db-empty-state{display:none;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;color:var(--text-tertiary);font-size:13px}
 .db-table-wrap.empty .db-table{display:none}
 
-.db-bulk-bar{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--border-secondary);border-radius:var(--radius-xl);background:var(--surface-translucent);backdrop-filter:blur(20px);box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:opacity 200ms var(--ease-premium),transform 200ms var(--ease-premium);z-index:500}
+.db-bulk-bar{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--border-secondary);border-radius:var(--radius-xl);background:var(--surface-translucent);backdrop-filter:blur(calc(20px * var(--theme-blur-scale)));box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:opacity 200ms var(--ease-premium),transform 200ms var(--ease-premium);z-index:500}
 .db-bulk-bar.open{opacity:1;pointer-events:auto;transform:translate(-50%,0)}
 .db-bulk-count{font-size:12.5px;font-weight:600;color:var(--text-secondary);padding-right:6px}
 .db-bulk-btn{height:32px;padding:0 14px;border:1px solid var(--border-secondary);border-radius:var(--radius-md);background:var(--surface-2);color:var(--text-primary);font-size:12.5px;font-weight:600;cursor:pointer;transition:all var(--motion-fast) ease}
@@ -296,7 +296,7 @@
 .db-addcol-create:hover{background:var(--accent-contrast-hover)}
 .db-addcol-create:disabled{opacity:.4;cursor:not-allowed}
 
-.db-dpe-overlay{position:fixed;inset:0;z-index:3000;display:flex;align-items:center;justify-content:center;background:var(--overlay-backdrop);backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity 200ms var(--ease-premium);padding:20px}
+.db-dpe-overlay{position:fixed;inset:0;z-index:3000;display:flex;align-items:center;justify-content:center;background:var(--overlay-backdrop);backdrop-filter:blur(calc(8px * var(--theme-blur-scale)));opacity:0;pointer-events:none;transition:opacity 200ms var(--ease-premium);padding:20px}
 .db-dpe-overlay.open{opacity:1;pointer-events:auto}
 .db-dpe-modal{width:min(480px,100%);max-height:min(600px,90vh);display:flex;flex-direction:column;border:1px solid var(--border-secondary);border-radius:var(--radius-xl);background:var(--surface-1);box-shadow:var(--shadow-lg);transform:scale(.96) translateY(8px);transition:transform 220ms var(--ease-premium)}
 .db-dpe-overlay.open .db-dpe-modal{transform:scale(1) translateY(0)}
@@ -331,11 +331,17 @@
 /* ══════════════════════════════════════════════
    Detail side panel
    ══════════════════════════════════════════════ */
-.db-detail-overlay{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity 220ms var(--ease-premium)}
+.db-detail-overlay{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.45);backdrop-filter:blur(calc(2px * var(--theme-blur-scale)));opacity:0;pointer-events:none;transition:opacity 220ms var(--ease-premium)}
 .db-detail-overlay.open{opacity:1;pointer-events:auto}
-.db-detail-panel{position:fixed;top:0;right:0;bottom:0;width:min(420px,100vw);z-index:901;background:var(--surface-1);border-left:1px solid var(--border-secondary);box-shadow:var(--shadow-lg);transform:translateX(100%);transition:transform 260ms var(--ease-premium);overflow-y:auto}
-.db-detail-panel.open{transform:translateX(0)}
-.db-dp-header{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px;padding:16px 18px;background:var(--surface-translucent);backdrop-filter:blur(16px);border-bottom:1px solid var(--border-primary)}
+/* Layout-audit fix: this panel scrolls internally (overflow-y:auto) and has a
+   position:sticky header — a full-width translateX(100%) slide forces the
+   browser to recompute the sticky header's offset every animation frame
+   across the whole 420px travel, which is the confirmed jank source. A small
+   opacity+scale entrance reads as equally premium but needs no such
+   recalculation since the element barely moves. */
+.db-detail-panel{position:fixed;top:0;right:0;bottom:0;width:min(420px,100vw);z-index:901;background:var(--surface-1);border-left:1px solid var(--border-secondary);box-shadow:var(--shadow-lg);opacity:0;transform:scale(0.98);pointer-events:none;transition:opacity 220ms var(--ease-premium),transform 220ms var(--ease-premium);overflow-y:auto}
+.db-detail-panel.open{opacity:1;transform:scale(1);pointer-events:auto}
+.db-dp-header{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px;padding:16px 18px;background:var(--surface-translucent);backdrop-filter:blur(calc(16px * var(--theme-blur-scale)));border-bottom:1px solid var(--border-primary)}
 .db-dp-close{width:28px;height:28px;opacity:1;color:var(--text-secondary)}
 .db-dp-title{font:700 15px/1.2 var(--font-display);color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .db-dp-body{padding:18px}

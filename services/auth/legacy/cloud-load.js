@@ -23,6 +23,11 @@ async function loadCloudState(){
         sidebarCompact:s.sidebarCompact||false,
         customAccent:s.customAccent||null,
         bannerImg:s.bannerImg||null,
+        theme:s.theme||null,
+        workspaces:s.workspaces||null,
+        activeWorkspaceId:s.activeWorkspaceId||null,
+        experimentalFlags:s.experimentalFlags||null,
+        devDebug:s.devDebug||false,
         state:{
           items:s.items||[],
           todos:s.todos||[],
@@ -39,6 +44,8 @@ async function loadCloudState(){
           manualBadges:s.manualBadges||{},
           pomoHistory:s.pomoHistory||[],
           notifEnabled:s.notifEnabled||false,
+          notifPrefs:s.notifPrefs||{tasks:true,habits:true,events:true,ai:true,system:true,quietStart:'',quietEnd:''},
+          automationRules:s.automationRules||[],
           bio:s.bio||'',
           socials:s.socials||{},
           goals:s.goals||[],
@@ -52,14 +59,29 @@ async function loadCloudState(){
           aiSessions:s.aiSessions||[],
           overviewOrder:s.overviewOrder||[],
           dailyFocus:s.dailyFocus||null,
+          valorantAccounts:s.valorantAccounts||[],
+          valorantAccountsView:s.valorantAccountsView||{columnOrder:null,columnWidths:{},hiddenColumns:[],pinnedColumns:[],activeFilterView:'all',sort:[],groupBy:null,knownTags:[],customColumns:[],dropdownDefs:{},lockedColumns:[],columnLabels:{}},
+          databases:s.databases||[],
+          databasesView:s.databasesView||{lastOpenedId:null,order:null,favorites:[]},
         }
       };
     });
   } else {
-    // New user — try localStorage backup first
+    // New user (no cloud rows yet) — try localStorage backup first, but ONLY if
+    // it was saved by THIS SAME Supabase user id. Different login methods for the
+    // same email (e.g. password account vs "Continue with Google") are separate
+    // Supabase auth users unless identities are linked, so a fresh Google login
+    // lands here with zero cloud rows. Without this check we'd silently adopt
+    // whatever profiles were last cached locally by a DIFFERENT account on this
+    // browser and re-insert every one of them as new rows under the new user id
+    // (this is exactly how the account got duplicated before this fix).
     try{
+      const backupOwner=localStorage.getItem('myspace_profiles_backup_owner');
       const backup=localStorage.getItem('myspace_profiles_backup');
-      if(backup){const parsed=JSON.parse(backup);if(parsed&&parsed.length){profiles=parsed;await saveCloudState();return;}}
+      if(backup&&backupOwner===_sbUser.id){
+        const parsed=JSON.parse(backup);
+        if(parsed&&parsed.length){profiles=parsed;await saveCloudState();return;}
+      }
     }catch(e){}
     // Create default profile
     const meta=_sbUser.user_metadata||{};

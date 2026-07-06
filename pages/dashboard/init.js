@@ -123,6 +123,7 @@ function initDashboard(){
   renderPomo();
   if(typeof renderDailyFocus==='function')renderDailyFocus();
   if(typeof applyTheme==='function')applyTheme(p.themeIdx||0);
+  if(typeof bootThemeEngine==='function')bootThemeEngine();
   if(typeof updateBannerDisplay==='function')updateBannerDisplay();
   initDarkMode();
   initNotifState(p);

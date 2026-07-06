@@ -3737,7 +3737,6 @@ GitHub
 </div>
 <div class="app-shell" id="app-shell">
 <nav class="sidebar" id="main-sidebar" style="display:none" aria-label="Navigation principale">
-<div id="nav-active-pill" aria-hidden="true"></div>
 <div class="logo" style="position:relative">
 <div class="logo-icon" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);box-shadow:0 2px 12px rgba(139,92,246,.3)">
 <svg fill="none" height="14" viewbox="0 0 20 20" width="14" aria-hidden="true"><rect x="4" y="5" width="12" height="2" rx="1" fill="white" opacity=".95"></rect><rect x="4" y="9" width="12" height="2" rx="1" fill="white" opacity=".95"></rect><rect x="4" y="13" width="8" height="2" rx="1" fill="white" opacity=".95"></rect></svg>
@@ -5966,7 +5965,6 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <script id="ethone-legacy-calendar" src="./widgets/calendar.js"></script>
 <script id="ethone-legacy-stats-page" src="./widgets/stats-page.js"></script>
 <script id="ethone-legacy-resizable-sidebar" src="./pages/dashboard/resizable-sidebar.js"></script>
-<script id="ethone-nav-active-pill" src="./pages/dashboard/nav-active-pill.js"></script>
 <script id="ethone-legacy-sound" src="./ui/sound.js"></script>
 <script id="ethone-legacy-weather" src="./widgets/weather.js"></script>
 <script id="ethone-legacy-pomodoro" src="./widgets/pomodoro.js"></script>
@@ -7081,7 +7079,7 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
   .ethone-os2-dock,.ethone-os2-dock-btn,.ethone-os2-iconbtn,.ethone-os2-workspace{transition:none!important}
 }
 </style>
-<script id="ethone-dashboard-os2-runtime" src="./pages/dashboard-os2.js"></script>
+<script id="ethone-dashboard-os2-runtime" src="./pages/dashboard-os2.js?v=freeze-fix-1"></script>
 <style id="ethone-ai-core-css">
 /* ETHONE AI Core: provider-neutral intelligence platform layer. */
 :root{
@@ -7270,7 +7268,7 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
   .aic-hero{display:block}
 }
 </style>
-<script id="ethone-ai-core-runtime" src="./services/ai/core.js"></script>
+<script id="ethone-ai-core-runtime" src="./services/ai/core.js?v=freeze-fix-1"></script>
 <style id="ethone-ai-everywhere-css">
 /* ETHONE AI Everywhere: contextual copilot, page actions, widget actions and command palette AI. */
 :root{
@@ -11713,9 +11711,9 @@ body.ethone-2026-ui #main-sidebar .nav-item.active,
 body.ethone-v2 #main-sidebar .nav-item.active,
 html.ethone-personal-os-ready #main-sidebar .nav-item.active{
   color:#fff!important;
-  background:transparent!important;
-  border-color:transparent!important;
-  box-shadow:none!important;
+  background:rgba(139,92,246,.14)!important;
+  border-color:rgba(167,139,250,.25)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.055),0 5px 18px -12px rgba(139,92,246,.7)!important;
 }
 #main-sidebar .nav-item.active::before,
 #main-sidebar .nav-item.active::after,
@@ -11730,8 +11728,9 @@ body.ethone-2026-ui #main-sidebar .nav-icon{
   width:17px!important;height:17px!important;font-size:17px!important;opacity:.85!important;
   transition:opacity .18s cubic-bezier(.22,1,.36,1),color .18s cubic-bezier(.22,1,.36,1)!important;
 }
-#main-sidebar .nav-item.active .nav-icon{color:#fff!important;opacity:1!important}
-#main-sidebar .nav-label-text{position:relative;z-index:1}
+#main-sidebar .nav-item.active .nav-icon{color:#c4b5fd!important;opacity:1!important}
+#main-sidebar .nav-label-text{position:relative;z-index:1;flex:1}
+#main-sidebar .nav-item.active .nav-label-text{color:#fff!important;opacity:1!important}
 #main-sidebar .nav-badge{
   position:relative;z-index:1;
   background:rgba(139,92,246,.16)!important;color:#c4b5fd!important;
@@ -11740,20 +11739,6 @@ body.ethone-2026-ui #main-sidebar .nav-icon{
 }
 
 /* Sliding active pill — one indicator system, same language as auth tabs */
-#nav-active-pill{
-  position:absolute;left:10px;top:0;
-  height:38px;width:0;
-  border-radius:11px;
-  background:linear-gradient(155deg,#8b5cf6,#7c3aed 85%);
-  box-shadow:0 8px 22px rgba(139,92,246,.4), inset 0 1px 0 rgba(255,255,255,.2);
-  transition:transform .4s cubic-bezier(.34,1.56,.64,1), width .4s cubic-bezier(.34,1.56,.64,1), height .2s ease, opacity .2s ease;
-  z-index:0;
-  pointer-events:none;
-  opacity:0;
-}
-#nav-active-pill.visible{opacity:1}
-.sidebar.compact #nav-active-pill{border-radius:10px}
-
 #main-sidebar .user-card{
   border-radius:12px!important;
   padding:10px!important;
@@ -11800,7 +11785,6 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
   border-radius:50%!important;
 }
 @media(prefers-reduced-motion:reduce){
-  #nav-active-pill{transition:opacity .2s ease!important}
   #main-sidebar .nav-item{transition:none!important}
 }
 
@@ -11842,7 +11826,6 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
 #main-sidebar .nav-item:hover{box-shadow:0 0 0 1px rgba(255,255,255,.04) inset,0 4px 16px -6px rgba(139,92,246,.28)!important}
 #main-sidebar .nav-item:hover .nav-icon{transform:scale(1.08)!important}
 #main-sidebar .nav-item.active .nav-icon{transform:scale(1.04)}
-#nav-active-pill{box-shadow:0 8px 22px rgba(139,92,246,.4),inset 0 1px 0 rgba(255,255,255,.2),0 0 22px rgba(139,92,246,.14)!important}
 
 /* ── User card: avatar halo + online status dot ── */
 #main-sidebar .user-card{position:relative}
@@ -12006,19 +11989,6 @@ body.ethone-v2 #main-content{
 }
 
 /* ── Active state: lighter, less overpowering ── */
-#nav-active-pill{
-  background:linear-gradient(155deg,rgba(139,92,246,.85),rgba(124,58,237,.78) 85%)!important;
-  box-shadow:0 4px 14px rgba(139,92,246,.24),inset 0 1px 0 rgba(255,255,255,.14)!important;
-}
-#main-sidebar .nav-item.active{position:relative}
-#main-sidebar .nav-item.active::before{
-  content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);
-  width:2.5px;height:16px;border-radius:2px;
-  background:#c4b5fd;
-  opacity:.9;
-}
-.sidebar.compact #main-sidebar .nav-item.active::before{display:none}
-
 /* ── Premium scrollbars (Chromium + Firefox) ── */
 #sidebar-nav-main,
 #main-content,
@@ -12114,11 +12084,13 @@ body.ethone-v2 #main-content{
 <link rel="stylesheet" href="./ui/tokens.css">
 <link rel="stylesheet" href="./ui/components.css">
 <link rel="stylesheet" href="./ui/app.css">
-<link rel="stylesheet" href="./ui/auth.css?v=22">
+<link rel="stylesheet" href="./ui/auth.css?v=24">
+<link rel="stylesheet" href="./pages/settings/settings-v2.css?v=1">
 <link rel="stylesheet" href="./pages/valorant-accounts/style.css">
 <link rel="stylesheet" href="./pages/databases/style.css">
 <script src="./ui/accessibility.js"></script>
 <script src="./pages/dashboard/widget-catalog.js"></script>
 <script src="./pages/dashboard-v4.js"></script>
+<script src="./pages/settings/settings-v2.js?v=1"></script>
 </body>
 </html>

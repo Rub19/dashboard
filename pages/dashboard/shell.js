@@ -79,6 +79,8 @@ function renderSidebarNav(){
     button.className='nav-item'+(isActive?' active':'');
     button.dataset.page=item.id;
     button.setAttribute('aria-current',isActive?'page':'false');
+    button.setAttribute('aria-label',item.label);
+    button.title=item.label;
     button.onclick=()=>switchPage(item.id,button);
     button.innerHTML=`<span class="nav-icon" aria-hidden="true">${icon}</span><span class="nav-label-text">${escapeHTML(item.label)}</span>${item.badge?`<span class="nav-badge">${item.badge}</span>`:''}`;
     return button;

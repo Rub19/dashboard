@@ -7,6 +7,16 @@
   const $=(s,r=document)=>r.querySelector(s);
   const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
   const storeKey="ethone:ai-core";
+  const providerPageSize=4;
+  const pendingRequests=new Map();
+  let providersExpanded=false;
+  let runtimeStarted=false;
+  let pageMountScheduled=false;
+  let legacyMigrationChecked=false;
+  let activeManagerTab="providers";
+  const mountedTabs=new Set();
+  const clock=()=>window.performance&&typeof window.performance.now==="function"?window.performance.now():Date.now();
+  const debug=message=>console.info("[ETHONE IA] "+message);
   const providerCatalog=[
     {id:"groq",name:"Groq",kind:"cloud",modelMode:"openai",baseUrl:"https://api.groq.com/openai/v1",modelsPath:"/models",chatPath:"/chat/completions",streaming:true,features:["fast","tools","openai-compatible"]},
     {id:"openai",name:"OpenAI",kind:"cloud",modelMode:"openai",baseUrl:"https://api.openai.com/v1",modelsPath:"/models",chatPath:"/chat/completions",streaming:true,features:["reasoning","vision","tools"]},
@@ -42,10 +52,20 @@
     cfg.settings=Object.assign({},defaultConfig.settings,cfg.settings||{});
     cfg.taskRouting=Object.assign({},defaultConfig.taskRouting,cfg.taskRouting||{});
     cfg.fallbackProviders=Array.isArray(cfg.fallbackProviders)?cfg.fallbackProviders:[];
+    cfg.memory=Array.isArray(cfg.memory)?cfg.memory.slice(-80):[];
+    cfg.logs=Array.isArray(cfg.logs)?cfg.logs.slice(-120):[];
+    cfg.conversations=Array.isArray(cfg.conversations)?cfg.conversations.slice(-80):[];
+    Object.keys(cfg.providers).forEach(id=>{
+      const provider=cfg.providers[id];
+      if(provider&&Array.isArray(provider.models))provider.models=provider.models.slice(0,300);
+    });
     return cfg;
   }
   let config=loadConfig();
-  function saveConfig(){localStorage.setItem(storeKey,JSON.stringify(config));syncProfileConfig()}
+  function saveConfig(syncProfile){
+    localStorage.setItem(storeKey,JSON.stringify(config));
+    if(syncProfile!==false)syncProfileConfig();
+  }
   function profile(){
     try{return typeof window.curP==="function"?window.curP():null}catch(e){return null}
   }
@@ -64,6 +84,8 @@
     try{if(typeof window.saveStateNow==="function")window.saveStateNow()}catch(e){}
   }
   function migrateLegacy(){
+    if(legacyMigrationChecked)return;
+    legacyMigrationChecked=true;
     const p=profile();
     const groqKey=p?.state?.connections?.groqKey||"";
     if(groqKey&&!config.providers.groq?.apiKey){
@@ -76,7 +98,7 @@
       });
       config.defaultProvider=config.defaultProvider||"groq";
       log("migration","Legacy Groq key imported into ETHONE AI Core.");
-      saveConfig();
+      saveConfig(false);
     }
   }
   function catalog(id){return providerCatalog.find(p=>p.id===id)}
@@ -85,10 +107,21 @@
     const saved=config.providers[id]||{};
     return Object.assign({enabled:false,apiKey:"",endpoint:meta?.baseUrl||"",model:"",models:[],health:"unknown",latency:null,lastError:"",updatedAt:0},saved);
   }
-  function updateProvider(id,next){
+  function updateProvider(id,next,options){
+    const opts=options||{};
     config.providers[id]=Object.assign(providerState(id),next||{});
-    saveConfig();
-    renderAIManager();
+    saveConfig(opts.syncProfile!==false);
+    if(opts.render!==false)renderAIManager({force:true});
+  }
+  function fetchWithTimeout(url,options,timeout,key){
+    const controller=new AbortController();
+    if(key&&pendingRequests.has(key))pendingRequests.get(key).abort();
+    if(key)pendingRequests.set(key,controller);
+    const timer=setTimeout(()=>controller.abort(),timeout);
+    return fetch(url,Object.assign({},options||{},{signal:controller.signal})).finally(()=>{
+      clearTimeout(timer);
+      if(key&&pendingRequests.get(key)===controller)pendingRequests.delete(key);
+    });
   }
   function authHeaders(meta,st){
     if(meta.kind==="local")return {"Content-Type":"application/json"};
@@ -111,12 +144,12 @@
       ? base+meta.modelsPath+(st.apiKey?"?key="+encodeURIComponent(st.apiKey):"")
       : base+meta.modelsPath;
     const started=Date.now();
-    const res=await fetch(url,{headers:authHeaders(meta,st),signal:AbortSignal.timeout(12000)});
+    const res=await fetchWithTimeout(url,{headers:authHeaders(meta,st)},12000,"models:"+id);
     if(!res.ok)throw new Error("Models HTTP "+res.status);
     const data=await res.json();
     let models=normalizeModels(meta,data);
     if(meta.modelMode==="gemini")models=models.map(m=>String(m).replace(/^models\//,""));
-    updateProvider(id,{models,health:"ok",latency:Date.now()-started,lastError:"",updatedAt:Date.now(),model:st.model&&models.includes(st.model)?st.model:(models[0]||"")});
+    updateProvider(id,{models,health:"ok",latency:Date.now()-started,lastError:"",updatedAt:Date.now(),model:st.model&&models.includes(st.model)?st.model:(models[0]||"")},{render:false,syncProfile:false});
     log("models",meta.name+" returned "+models.length+" model(s).");
     return models;
   }
@@ -133,7 +166,7 @@
   async function ensureModel(id){
     const st=providerState(id);
     if(st.model)return st.model;
-    if(st.models&&st.models.length){updateProvider(id,{model:st.models[0]});return st.models[0]}
+    if(st.models&&st.models.length){updateProvider(id,{model:st.models[0]},{render:false,syncProfile:false});return st.models[0]}
     const models=await refreshModels(id);
     if(models[0])return models[0];
     throw new Error("No model available for "+id);
@@ -162,7 +195,7 @@
       url=base+meta.chatPath;
       body={model,messages:toOpenAIMessages(request.system,request.messages),max_tokens:request.maxTokens,temperature:request.temperature,stream:false};
     }
-    const res=await fetch(url,{method:"POST",headers,body:JSON.stringify(body),signal:AbortSignal.timeout(35000)});
+    const res=await fetchWithTimeout(url,{method:"POST",headers,body:JSON.stringify(body)},35000,"chat:"+id);
     if(!res.ok){
       let err=await res.json().catch(()=>null);
       throw new Error(err?.error?.message||err?.message||("HTTP "+res.status));
@@ -173,7 +206,7 @@
     else if(meta.modelMode==="anthropic")content=(data.content||[]).map(x=>x.text||"").join("");
     else if(meta.modelMode==="gemini")content=(data.candidates?.[0]?.content?.parts||[]).map(x=>x.text||"").join("");
     else content=data.choices?.[0]?.message?.content||"";
-    updateProvider(id,{health:"ok",latency:Date.now()-started,lastError:"",updatedAt:Date.now(),model});
+    updateProvider(id,{health:"ok",latency:Date.now()-started,lastError:"",updatedAt:Date.now(),model},{render:false,syncProfile:false});
     return {content:content||"No response generated.",provider:id,model,latency:Date.now()-started,raw:data};
   }
   function buildSystemPrompt(ctx,lang2){
@@ -200,7 +233,7 @@
         maybeMemory(input,result.content);
         return result;
       }catch(e){
-        updateProvider(id,{health:"error",lastError:e.message,updatedAt:Date.now()});
+        updateProvider(id,{health:"error",lastError:e.message,updatedAt:Date.now()},{render:false,syncProfile:false});
         failures.push(catalog(id).name+": "+e.message);
         log("failover",catalog(id).name+" failed. "+e.message);
       }
@@ -228,7 +261,7 @@
       config.memory.push({id:Date.now(),key:"user-note",value:m[1].slice(0,240),source:"explicit",ts:Date.now()});
       if(config.memory.length>80)config.memory=config.memory.slice(-80);
       saveConfig();
-      renderAIManager();
+      renderAIManager({force:activeManagerTab==="memory"});
     }
   }
   function log(type,message){
@@ -240,7 +273,25 @@
     const msg=err?.message||String(err||"Unknown error");
     return "**ETHONE AI Core** could not complete the request.\n\n"+msg+"\n\nOpen **AI Core** to check provider health, refresh models, or configure a fallback provider.";
   }
-  window.ETHONEAICore={complete,refreshModels,providerCatalog,providerState,updateProvider,config:()=>config,save:saveConfig,log,chooseProvider};
+  window.ETHONEAICore={
+    complete,
+    refreshModels,
+    providerCatalog,
+    providerState,
+    updateProvider,
+    config:()=>config,
+    save:saveConfig,
+    log,
+    chooseProvider,
+    audit:()=>({
+      runtimeStarted,
+      activeTab:activeManagerTab,
+      mountedTabs:Array.from(mountedTabs),
+      providerCards:$$(".aic-provider",$("#aic-tab-providers")||document).length,
+      pendingRequests:pendingRequests.size,
+      pageMountScheduled
+    })
+  };
   function aiCoreHeader(){
     const ai=$("#page-ai");
     if(!ai||$("#aic-shell",ai))return;
@@ -275,8 +326,7 @@
       '<div class="aic-tab-content" id="aic-tab-logs"></div>';
     shell.insertAdjacentElement("afterend",manager);
   }
-  function renderAIManager(){
-    migrateLegacy();
+  function updateManagerSummary(){
     const def=catalog(config.defaultProvider);
     const st=providerState(config.defaultProvider);
     $("#aic-default-status")&&( $("#aic-default-status").textContent=def?def.name:"None" );
@@ -285,16 +335,36 @@
     $("#aic-memory-status")&&( $("#aic-memory-status").textContent=config.privacy.memory?"On":"Off" );
     const routing=$("#aic-routing-summary");
     if(routing)routing.innerHTML=Object.entries(config.taskRouting).map(([task,id])=>'<div class="aic-route-item"><strong>'+task+'</strong><span>'+((catalog(id)||{}).name||id)+'</span></div>').join("");
-    renderProviders();
-    renderSettings();
-    renderMemory();
-    renderPlugins();
-    renderLogs();
     patchAILabels();
+  }
+  function renderManagerTab(tab,force){
+    const name=["providers","settings","memory","plugins","logs"].includes(tab)?tab:"providers";
+    const host=$("#aic-tab-"+name);
+    if(!host)return;
+    if(!force&&mountedTabs.has(name)&&host.childElementCount)return;
+    if(name==="providers")renderProviders();
+    if(name==="settings")renderSettings();
+    if(name==="memory")renderMemory();
+    if(name==="plugins")renderPlugins();
+    if(name==="logs")renderLogs();
+    mountedTabs.add(name);
+    debug("tab mounted: "+name);
+  }
+  function renderAIManager(options){
+    const opts=options||{};
+    migrateLegacy();
+    updateManagerSummary();
+    renderManagerTab(activeManagerTab,!!opts.force);
   }
   function renderProviders(){
     const host=$("#aic-tab-providers");if(!host)return;
-    host.innerHTML='<div class="aic-provider-list">'+providerCatalog.map(meta=>{
+    const ordered=providerCatalog.slice().sort((a,b)=>{
+      if(a.id===config.defaultProvider)return -1;
+      if(b.id===config.defaultProvider)return 1;
+      return Number(providerState(b.id).enabled)-Number(providerState(a.id).enabled);
+    });
+    const visible=providersExpanded?ordered:ordered.slice(0,providerPageSize);
+    host.innerHTML='<div class="aic-provider-list">'+visible.map(meta=>{
       const st=providerState(meta.id);
       const status=st.health==="ok"?"ok":st.health==="error"?"warn":"";
       return '<article class="aic-provider" data-provider="'+meta.id+'">'+
@@ -305,7 +375,9 @@
         '<div class="aic-actions"><button class="aic-btn primary" data-aic-save-provider="'+meta.id+'" type="button">Save</button><button class="aic-btn" data-aic-refresh-models="'+meta.id+'" type="button">Refresh models</button><button class="aic-btn" data-aic-default="'+meta.id+'" type="button">'+(config.defaultProvider===meta.id?"Default":"Set default")+'</button></div>'+
         (st.lastError?'<div class="aic-log" style="margin-top:8px;color:#fecaca">'+escape(st.lastError)+'</div>':'')+
       '</article>';
-    }).join("")+'</div>';
+    }).join("")+'</div>'+
+      (ordered.length>providerPageSize?'<div class="aic-actions"><button class="aic-btn" data-aic-provider-toggle type="button">'+(providersExpanded?"Show fewer providers":"Show all providers ("+ordered.length+")")+'</button></div>':'');
+    debug("providers rendered");
   }
   function modelOptions(st){
     const models=st.models&&st.models.length?st.models:(st.model?[st.model]:[""]);
@@ -340,8 +412,16 @@
   function handleClick(e){
     const tab=e.target.closest("[data-aic-tab]");
     if(tab){
+      activeManagerTab=tab.dataset.aicTab;
       $$(".aic-tab").forEach(x=>x.classList.toggle("active",x===tab));
-      $$(".aic-tab-content").forEach(x=>x.classList.toggle("active",x.id==="aic-tab-"+tab.dataset.aicTab));
+      $$(".aic-tab-content").forEach(x=>x.classList.toggle("active",x.id==="aic-tab-"+activeManagerTab));
+      renderManagerTab(activeManagerTab,true);
+      return;
+    }
+    const providerToggle=e.target.closest("[data-aic-provider-toggle]");
+    if(providerToggle){
+      providersExpanded=!providersExpanded;
+      renderProviders();
       return;
     }
     const save=e.target.closest("[data-aic-save-provider]");
@@ -356,26 +436,35 @@
       return;
     }
     const refresh=e.target.closest("[data-aic-refresh-models]");
-    if(refresh){refreshModels(refresh.dataset.aicRefreshModels).then(()=>toast("Models refreshed","success")).catch(err=>{log("models",err.message);renderAIManager();toast(err.message,"error")});return}
+    if(refresh){
+      const providerId=refresh.dataset.aicRefreshModels;
+      refresh.disabled=true;
+      refresh.setAttribute("aria-busy","true");
+      refreshModels(providerId)
+        .then(()=>{renderAIManager({force:true});toast("Models refreshed","success")})
+        .catch(err=>{log("models",err.message);renderAIManager({force:true});toast(err.name==="AbortError"?"Model refresh cancelled":err.message,"error")})
+        .finally(()=>{refresh.disabled=false;refresh.removeAttribute("aria-busy")});
+      return;
+    }
     const def=e.target.closest("[data-aic-default]");
-    if(def){config.defaultProvider=def.dataset.aicDefault;providerState(config.defaultProvider).enabled=true;saveConfig();renderAIManager();toast("Default provider updated","success");return}
+    if(def){config.defaultProvider=def.dataset.aicDefault;providerState(config.defaultProvider).enabled=true;saveConfig();renderAIManager({force:true});toast("Default provider updated","success");return}
     const setBtn=e.target.closest("[data-aic-save-settings]");
     if(setBtn){
       $$("[data-aic-setting]").forEach(el=>{const k=el.dataset.aicSetting;config.settings[k]=el.type==="number"?Number(el.value):el.value});
       const fb=$("[data-aic-fallbacks]")?.value||"";
       config.fallbackProviders=fb.split(",").map(x=>x.trim()).filter(Boolean);
-      saveConfig();renderAIManager();toast("AI settings applied","success");return;
+      saveConfig();renderAIManager({force:true});toast("AI settings applied","success");return;
     }
     const toggle=e.target.closest("[data-aic-toggle]");
-    if(toggle){const k=toggle.dataset.aicToggle;config.privacy[k]=!config.privacy[k];saveConfig();renderAIManager();return}
+    if(toggle){const k=toggle.dataset.aicToggle;config.privacy[k]=!config.privacy[k];saveConfig();renderAIManager({force:true});return}
     const plugin=e.target.closest("[data-aic-plugin]");
-    if(plugin){const k=plugin.dataset.aicPlugin;config.plugins[k]=!config.plugins[k];saveConfig();renderAIManager();return}
+    if(plugin){const k=plugin.dataset.aicPlugin;config.plugins[k]=!config.plugins[k];saveConfig();renderAIManager({force:true});return}
     const addMem=e.target.closest("[data-aic-add-memory]");
-    if(addMem){const value=prompt("Visible memory to store in ETHONE AI Core:");if(value){config.memory.push({id:Date.now(),key:"manual",value:value.slice(0,300),source:"user",ts:Date.now()});config.privacy.memory=true;saveConfig();renderAIManager()};return}
+    if(addMem){const value=prompt("Visible memory to store in ETHONE AI Core:");if(value){config.memory.push({id:Date.now(),key:"manual",value:value.slice(0,300),source:"user",ts:Date.now()});config.privacy.memory=true;saveConfig();renderAIManager({force:true})};return}
     const delMem=e.target.closest("[data-aic-delete-memory]");
-    if(delMem){config.memory=config.memory.filter(m=>String(m.id)!==String(delMem.dataset.aicDeleteMemory));saveConfig();renderAIManager();return}
+    if(delMem){config.memory=config.memory.filter(m=>String(m.id)!==String(delMem.dataset.aicDeleteMemory));saveConfig();renderAIManager({force:true});return}
     const clear=e.target.closest("[data-aic-clear-memory]");
-    if(clear&&confirm("Clear all visible AI memory?")){config.memory=[];saveConfig();renderAIManager();return}
+    if(clear&&confirm("Clear all visible AI memory?")){config.memory=[];saveConfig();renderAIManager({force:true});return}
   }
   function wrapLegacyGroqKey(){
     if(typeof window.saveGroqKey==="function"&&!window.saveGroqKey.__aicWrapped){
@@ -419,7 +508,7 @@
       try{_aiTyping=false}catch(e){}
       if(send)send.disabled=false;
       $("#ai-input")?.focus();
-      renderAIManager();
+      renderAIManager({force:activeManagerTab==="logs"});
     };
     window.sendAIMessage.__aicWrapped=true;
   }
@@ -428,8 +517,7 @@
       const old=window.initAIChat;
       window.initAIChat=function(){
         old.apply(this,arguments);
-        aiCoreHeader();
-        renderAIManager();
+        mountAIPage();
       };
       window.initAIChat.__aicWrapped=true;
     }
@@ -439,20 +527,46 @@
     console.log("[ETHONE AI Core]",msg);
   }
   function escape(s){return String(s||"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
-  function run(){
-    migrateLegacy();
+  function isAIVisible(){
+    const page=$("#page-ai");
+    return !!(page&&page.classList.contains("active"));
+  }
+  function abortPending(prefix){
+    pendingRequests.forEach((controller,key)=>{
+      if(!prefix||key.startsWith(prefix))controller.abort();
+    });
+  }
+  function mountAIPage(){
+    if(pageMountScheduled||!isAIVisible())return;
+    pageMountScheduled=true;
+    const started=clock();
+    debug("init start");
     aiCoreHeader();
-    renderAIManager();
+    updateManagerSummary();
+    const schedule=window.requestAnimationFrame||function(callback){return setTimeout(callback,0)};
+    schedule(()=>{
+      pageMountScheduled=false;
+      if(!isAIVisible())return;
+      try{
+        renderAIManager();
+        debug("init complete in "+Math.round(clock()-started)+"ms");
+      }catch(error){
+        console.error("[ETHONE IA] init failed",error);
+      }
+    });
+  }
+  function startAICore(){
+    if(runtimeStarted)return;
+    runtimeStarted=true;
+    document.addEventListener("click",handleClick);
     wrapLegacyGroqKey();
     overrideChat();
     patchWelcome();
-  }
-  function startAICore(){
-    document.addEventListener("click",handleClick);
-    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run,{once:true});else run();
-    setTimeout(run,350);
-    setTimeout(run,1300);
-    try{new MutationObserver(()=>{if($("#page-ai")){aiCoreHeader();patchAILabels();overrideChat()}}).observe(document.body,{childList:true,subtree:true})}catch(e){}
+    mountAIPage();
+    window.addEventListener("ethone:page-ready",event=>{
+      if(event?.detail?.page==="ai")mountAIPage();
+      else abortPending("models:");
+    });
   }
   if(window.ethoneRunWhenPageReady)window.ethoneRunWhenPageReady("ai-core-runtime","ai",startAICore);else startAICore();
 })();

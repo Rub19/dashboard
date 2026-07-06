@@ -94,8 +94,27 @@ body.ethone-2026-ui #main-sidebar .nav-item:hover{
 body.ethone-2026-ui #main-sidebar .nav-item.active{
   color:var(--text-primary)!important;
   border-color:var(--accent-border)!important;
-  background:var(--accent-soft)!important;
-  box-shadow:inset 3px 0 0 var(--accent)!important;
+  background:rgba(139,92,246,.14)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.055),0 5px 18px -12px rgba(139,92,246,.7)!important;
+}
+body.ethone-2026-ui #main-sidebar .nav-item.active::before,
+body.ethone-2026-ui #main-sidebar .nav-item.active::after{
+  display:none!important;
+}
+body.ethone-2026-ui #main-sidebar .nav-item .nav-label-text{
+  min-width:0;
+  flex:1;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+body.ethone-2026-ui #main-sidebar .nav-item.active .nav-icon{
+  color:#c4b5fd!important;
+  opacity:1!important;
+}
+body.ethone-2026-ui #main-sidebar .nav-item.active .nav-label-text{
+  color:#fff!important;
+  opacity:1!important;
 }
 body.ethone-2026-ui #main-sidebar .sidebar-bottom,
 body.ethone-2026-ui #main-sidebar .sidebar-footer{

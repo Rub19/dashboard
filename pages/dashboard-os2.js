@@ -295,6 +295,9 @@
     if(!window.switchPage||window.switchPage.__os2Wrapped)return;
     const old=window.switchPage;
     window.switchPage=function(page,navEl){
+      // ETHONE IA owns its own lazy lifecycle. Rebuilding every OS2 page here
+      // caused dozens of unrelated cards and observers to run before first paint.
+      if(page==="ai")return old.apply(this,arguments);
       ensurePages();
       const target=$("#page-"+page);
       if(target){

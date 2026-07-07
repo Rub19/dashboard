@@ -1,3 +1,6 @@
+/* SUPERSEDED — replaced by components/context-menu.js (single shared controller factory,
+   see window.dbOpenContextMenu/window.dbCloseContextMenu registered from there).
+   No longer loaded via <script> in index.html. Kept on disk for reference only. */
 /* ETHONE Database Builder — generic right-click context menu (duplicated from pages/valorant-accounts/context-menu.js, db-prefixed for independence). */
 (function(){
   "use strict";

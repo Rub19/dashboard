@@ -48,7 +48,7 @@ html.ethone-safe-mode .particle{
 <link href="manifest.webmanifest" rel="manifest"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500&amp;family=Syne:wght@700;800;900&amp;family=Cabinet+Grotesk:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
-<script async crossorigin="anonymous" onerror="window._supabaseLoadError=true" onload="window.dispatchEvent(new Event('ethone:supabase-loaded'))" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script crossorigin="anonymous" onerror="window._supabaseLoadError=true" onload="window.dispatchEvent(new Event('ethone:supabase-loaded'))" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -316,14 +316,12 @@ body[data-light="1"] #sb-sync-indicator{background:rgba(0,0,0,.04);border-color:
 body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .nav-icon{width:17px;height:17px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:inherit}.nav-icon svg{width:100%;height:100%}
 .nav-badge{margin-left:auto;background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px;font-family:var(--mono);min-width:17px;text-align:center}
-/* Layout-audit fix: .sidebar-footer used to be its own scrolling region
-   (max-height:55vh + overflow-y:auto) wrapping BOTH the user card AND the
-   LIVE widget list, while #sb-live-list (below) ALSO has its own independent
-   scroll (max-height:220px). Two nested scrollers meant the user card moved
-   with the outer scroll and mouse-wheel behavior over LIVE was ambiguous.
-   Now .sidebar-footer is a plain flex column that just sizes to its content
-   (Compte always visible, never scrolls) — #sb-live-list remains the ONLY
-   scrollable region here. */
+/* Layout-audit fix (kept for history): .sidebar-footer used to be its own
+   scrolling region wrapping both the user card and the LIVE widget list,
+   which also scrolled independently — two nested scrollers. The LIVE widgets
+   have since moved out of the sidebar entirely into #live-panel (see
+   .live-panel-body), so .sidebar-footer here is just the user card + footer
+   links, sized to content, never scrolling. */
 .sidebar-footer{display:flex;flex-direction:column;flex-shrink:0;padding:10px 8px 8px;border-top:1px solid rgba(255,255,255,.06);overflow-x:hidden;scrollbar-width:none}
 .sidebar.compact{width:58px!important;min-width:58px!important;overflow:hidden}
 .sidebar.compact .sb-widget,.sidebar.compact #sb-lastfm-wrap,.sidebar.compact .sb-widget-label,
@@ -426,9 +424,8 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 
 /* items */
 .cat-tabs{display:flex;gap:2px;margin-bottom:14px;background:rgba(255,255,255,.03);padding:3px;border-radius:8px;width:fit-content;border:1px solid rgba(255,255,255,.06)}
-.cat-tab{padding:5px 13px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;color:rgba(255,255,255,.35);border:none;background:none;font-family:var(--font);transition:all .2s}
-.cat-tab:hover{color:rgba(255,255,255,.7)}
-.cat-tab.active{background:rgba(255,255,255,.07);color:var(--text);position:relative}.cat-tab.active::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:1.5px;background:var(--accent);border-radius:99px}
+.cat-tab{padding:5px 13px;border-radius:6px;cursor:pointer;border:none;background:none;font-family:var(--font);transition:all .2s}
+/* font-size/font-weight/color/hover/active are set once, below (── CAT TABS ──). */
 .item-list{display:flex;flex-direction:column;gap:3px}
 .item-row{display:flex;align-items:center;gap:11px;padding:8px 10px;border-radius:8px;cursor:pointer;border:1px solid transparent;transition:all .2s;position:relative;overflow:hidden}
 .item-row:hover{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.06)}
@@ -529,17 +526,12 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .divider{height:1px;background:var(--border);margin:14px 0}
 .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:2px 0}
 .toggle-label{font-size:13.5px;color:var(--text)}
-.toggle{position:relative;width:38px;height:22px;cursor:pointer;flex-shrink:0}
-.toggle input{opacity:0;width:0;height:0;position:absolute}
-.toggle-track{position:absolute;inset:0;background:var(--surface3);border-radius:11px;transition:background .2s ease}
-.toggle input:checked+.toggle-track{background:var(--accent)}
-.toggle-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform .2s ease}
-.toggle input:checked~.toggle-thumb{transform:translateX(16px)}
+/* Switch itself is .ui-switch (ui/components.css) — no local .toggle/.toggle-track/.toggle-thumb here anymore. */
 
 /* settings tabs */
 .settings-tabs{display:flex;gap:4px;margin-bottom:20px;background:var(--surface2);padding:4px;border-radius:var(--r-sm);width:fit-content}
 .settings-tab{padding:7px 18px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;color:var(--muted);border:none;background:none;font-family:var(--font);transition:all .2s ease}
-.settings-tab.active{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.settings-tab.active{background:rgba(255,255,255,.07);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.3)}
 
 /* misc */
 .toast-container{position:fixed;bottom:24px;right:24px;display:flex;flex-direction:column;gap:8px;z-index:20000}
@@ -584,8 +576,15 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
    ══════════════════════════════════════════════ */
 
 /* ── HAMBURGER ── */
+/* position:fixed is load-bearing: this button is a direct child of a flex
+   body (<body style="display:flex">), not of any positioned wrapper. Without
+   taking it out of flow, showing it (mobile-sidebar.js toggles display:flex
+   on tablet widths) inserts a real 38px flex item before .app-shell and
+   shrinks/offsets the entire shell — this is exactly how it was found: a
+   static, in-flow "ghost" hamburger silently pushing the whole layout. */
 .hamburger{
   display:none!important;
+  position:fixed;top:12px;left:12px;z-index:401;
   width:38px;height:38px;
   background:rgba(5,5,7,.9);border:1px solid rgba(255,255,255,.1);
   border-radius:10px;cursor:pointer;color:var(--text);
@@ -862,9 +861,8 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
   border-color:rgba(255,255,255,.06);
   padding:3px;border-radius:8px;
 }
-.cat-tab{color:var(--muted2);font-size:12px}
-.cat-tab:hover{color:var(--muted)}
-.cat-tab.active{background:rgba(255,255,255,.07);color:var(--text);position:relative}.cat-tab.active::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:1.5px;background:var(--accent);border-radius:99px}
+/* .cat-tab color/hover/active are set once (── CAT TABS ── below); this
+   duplicate always lost the cascade to that later definition. */
 
 .item-row{border-radius:9px}
 .item-row:hover{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.07)}
@@ -989,7 +987,7 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 
 /* ── SETTINGS ── */
 .settings-tabs{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.06)}
-.settings-tab.active{background:rgba(255,255,255,.07)}
+/* .settings-tab.active background is set once, above (base .settings-tab rule). */
 
 /* ── PINNED GRID ── */
 .pinned-card{background:rgba(255,255,255,.025);border-color:rgba(255,255,255,.06)}
@@ -1048,12 +1046,7 @@ body[data-light="1"] #sb-sync-label{color:rgba(15,23,36,.5)}
 .modal-textarea{resize:vertical;min-height:80px;line-height:1.6}
 
 /* ── TOGGLE ── */
-.toggle{position:relative;display:inline-block;width:40px;height:22px}
-.toggle input{opacity:0;width:0;height:0}
-.toggle-track{position:absolute;inset:0;background:rgba(255,255,255,.08);border-radius:99px;transition:background .2s;border:1px solid rgba(255,255,255,.1)}
-.toggle input:checked+.toggle-track{background:linear-gradient(135deg,#8b5cf6,#7c3aed);border-color:transparent}
-.toggle-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.4)}
-.toggle input:checked~.toggle-thumb{transform:translateX(18px)}
+/* Switch itself is .ui-switch (ui/components.css) — no local .toggle/.toggle-track/.toggle-thumb here anymore. */
 .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05)}
 .toggle-row:last-child{border-bottom:none}
 .toggle-label{font-size:13px;font-weight:500}
@@ -2468,18 +2461,7 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 .widget-row-icon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
 .widget-row-label{flex:1;font-size:12.5px;font-weight:600;color:var(--text)}
 .widget-row-sub{font-size:10.5px;color:rgba(245,245,247,.35);margin-top:1px}
-.widget-toggle-switch{
-  width:32px;height:18px;border-radius:9px;flex-shrink:0;cursor:pointer;
-  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.1);
-  position:relative;transition:background .2s,border-color .2s;
-}
-.widget-toggle-switch.on{background:rgba(139,92,246,.7);border-color:rgba(139,92,246,.5)}
-.widget-toggle-switch::after{
-  content:'';position:absolute;top:2px;left:2px;
-  width:12px;height:12px;border-radius:50%;background:#fff;
-  transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.4);
-}
-.widget-toggle-switch.on::after{transform:translateX(14px)}
+/* Switch itself is .ui-switch (ui/components.css) — .widget-toggle-switch removed. */
 
 /* ══ COMMAND PALETTE ══ */
 #cmd-palette-overlay{
@@ -2910,8 +2892,10 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   backdrop-filter:blur(calc(28px * var(--theme-blur-scale))) saturate(1.4);
   -webkit-backdrop-filter:blur(calc(28px * var(--theme-blur-scale))) saturate(1.4);
   box-shadow:2px 0 24px rgba(0,0,0,.35), 1px 0 0 0 var(--border3);
-  position:fixed;top:0;left:0;z-index:300;
-  transition:width .22s ease, box-shadow .4s ease, background .4s ease;
+  /* position is owned by #main-sidebar.sidebar (sticky, app-shell grid section) —
+     no position/top/left here anymore, avoids fighting that rule. */
+  z-index:300;
+  transition:box-shadow .4s ease, background .4s ease;
 }
 #page-ai.active{
   display:flex!important;flex-direction:column;align-items:center;
@@ -2934,10 +2918,15 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 #page-ai .ai-page{max-width:720px;width:100%;padding:0 20px}
 #sidebar-nav-main{overflow-y:auto;flex:1 1 auto;padding:0 6px;min-height:0;scrollbar-width:none}
 #sidebar-nav-account{flex:0 0 auto;padding:0 6px 4px;min-height:0}
-/* En compact: nav-main ne prend plus tout l'espace, account reste juste après */
+/* En compact: nav-main ne prend plus tout l'espace, account reste juste après.
+   overflow-y:auto (au lieu de visible) + max-height : avec beaucoup d'items
+   épinglés ("Favoris"), la liste peut dépasser la hauteur disponible — sans
+   ça le contenu débordait silencieusement par-dessus le footer/user-card. */
 .sidebar.compact #sidebar-nav-main{
-  flex:0 0 auto;
-  overflow-y:visible;
+  flex:0 1 auto;
+  max-height:calc(100vh - 220px);
+  overflow-y:auto;
+  scrollbar-width:none;
   display:flex;flex-direction:column;align-items:center;
 }
 .sidebar.compact #sidebar-nav-account{
@@ -3021,7 +3010,12 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   .section-eyebrow{font-size:8px!important}
 
   /* ── SIDEBAR (slide-in) ──────────────────────────────────────── */
-  .sidebar{
+  /* Selector must out-specificity body.ethone-2026-ui #main-sidebar:not(.compact)
+     (index.html ~11982, position:sticky!important) or this off-canvas drawer
+     silently loses and the sidebar sits sticky/in-flow, fully overlapping
+     #main-content in the single-column mobile grid. */
+  body.ethone-2026-ui #main-sidebar.sidebar:not(.compact),
+  body.ethone-v2 #main-sidebar.sidebar{
     position:fixed!important;top:0;left:0;bottom:0;
     transform:translateX(-100%);
     transition:transform .28s cubic-bezier(.4,0,.2,1),
@@ -3031,7 +3025,8 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
     overflow-y:auto;overflow-x:hidden;
     box-shadow:none;
   }
-  .sidebar.mobile-open{
+  body.ethone-2026-ui #main-sidebar.sidebar.mobile-open,
+  body.ethone-v2 #main-sidebar.sidebar.mobile-open{
     transform:translateX(0)!important;
     box-shadow:8px 0 40px rgba(0,0,0,.6)!important;
   }
@@ -3743,6 +3738,7 @@ GitHub
 </div>
 <span class="logo-text" id="logo-text-el" style="background:linear-gradient(135deg,#fff,#fda4af);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:900;letter-spacing:1.5px;font-family:'Syne',sans-serif;text-transform:uppercase">ETHONE</span>
 </div>
+<div class="nav-active-pill" id="nav-active-pill" aria-hidden="true"></div>
 <div class="nav-section" id="sidebar-nav-main"></div>
 <div class="nav-section" id="sidebar-nav-account"></div>
 <!-- Compact toggle — always visible at bottom -->
@@ -3765,109 +3761,6 @@ GitHub
 </div>
 <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.09),transparent);margin:6px 4px 10px"></div>
 <!-- LIVE SECTION — unified live widgets -->
-<div class="sb-live-section" id="sb-live-section" style="display:none">
-<div class="sb-live-header"><span class="sb-live-dot"></span><span>LIVE</span></div>
-<div class="sb-live-list" id="sb-live-list">
-<!-- DISCORD v3 -->
-<div class="sb-section" id="sb-discord-wrap" style="display:none">
-<div class="sb-widget-card" id="sb-discord-card">
-<div class="sb-wc-avatar" id="sb-dc-avatar">
-<span id="sb-dc-av-fallback">💬</span>
-<div class="sb-dc-dot offline" id="sb-dc-status"></div>
-</div>
-<div class="sb-wc-body">
-<div class="sb-wc-top">
-<span class="sb-wc-name" id="sb-dc-name">—</span>
-<span class="sb-dc-badge offline" id="sb-dc-badge">—</span>
-</div>
-<div class="sb-wc-sub" id="sb-dc-activity" style="display:none"></div>
-</div>
-</div>
-</div>
-<!-- NOW PLAYING v3 (Lanyard Spotify) -->
-<div class="sb-section" id="sb-spotify-wrap" style="display:none">
-<div class="sb-widget-card sb-wc-green" id="np-pill">
-<div class="sb-wc-art" id="np-art"><span>♪</span></div>
-<div class="sb-wc-body">
-<div class="sb-wc-top">
-<span class="sb-wc-name" id="np-song">—</span>
-<div class="sb-eq" id="sb-eq-anim" style="display:none"><span></span><span></span><span></span><span></span></div>
-</div>
-<div class="sb-wc-sub sb-wc-sub-green" id="np-artist">—</div>
-<div class="sb-wc-bar"><div class="sb-wc-bar-fill sb-wc-bar-green" id="np-bar-fill" style="width:0%"></div></div>
-<div id="np-time-row" style="display:none;justify-content:space-between;margin-top:3px">
-<span id="np-elapsed" style="font-size:9px;color:rgba(29,185,84,.6);font-family:var(--mono)">0:00</span>
-<span id="np-duration" style="font-size:9px;color:rgba(245,245,247,.25);font-family:var(--mono)">0:00</span>
-</div>
-</div>
-</div>
-</div>
-<!-- FALLBACK Now Playing (Last.fm) -->
-<div class="sb-section" id="sb-spotify-iframe-wrap" style="display:none">
-<div class="sb-widget-card sb-wc-green" id="np-pill-fallback">
-<div class="sb-wc-art" id="np-art-fallback"><span>♪</span></div>
-<div class="sb-wc-body">
-<div class="sb-wc-top">
-<span class="sb-wc-name" id="np-fallback-track">—</span>
-<div class="sb-eq" id="np-fallback-eq" style="display:none"><span></span><span></span><span></span></div>
-</div>
-<div class="sb-wc-sub sb-wc-sub-green" id="np-fallback-artist">—</div>
-<div class="sb-wc-bar"><div class="sb-wc-bar-fill sb-wc-bar-green" style="width:0%"></div></div>
-<div id="np-fallback-time-row" style="display:none;justify-content:space-between;margin-top:3px">
-<span id="np-fallback-elapsed" style="font-size:9px;color:rgba(29,185,84,.7);font-family:var(--mono)">0:00</span>
-<span id="np-fallback-duration" style="font-size:9px;color:rgba(245,245,247,.25);font-family:var(--mono)">0:00</span>
-</div>
-</div>
-</div>
-</div>
-<!-- LAST.FM v3 -->
-<div class="sb-section" id="sb-lastfm-wrap" style="display:none">
-<div class="sb-widget-card sb-wc-red" id="sb-lastfm-content">
-<div class="sb-wc-art" id="sb-lfm-art"><span>♫</span></div>
-<div class="sb-wc-body">
-<div class="sb-wc-top">
-<span class="sb-wc-name" id="sb-lfm-track">—</span>
-<div class="sb-eq sb-eq-lfm" id="sb-lfm-eq" style="display:none"><span></span><span></span><span></span><span></span></div>
-</div>
-<div class="sb-wc-sub sb-wc-sub-red" id="sb-lfm-artist">—</div>
-<div class="sb-wc-bar"><div class="sb-wc-bar-fill sb-wc-bar-red" style="width:100%"></div></div>
-</div>
-</div>
-</div>
-<!-- TWITCH -->
-<div class="sb-section" id="sb-twitch-wrap" style="display:none">
-<div id="sb-twitch-list" style="display:flex;flex-direction:column;gap:5px"></div>
-</div>
-<!-- STEAM -->
-<div class="sb-section" id="sb-steam-wrap" style="display:none">
-<div class="sb-widget-card sb-wc-steam" id="sb-steam-card">
-<div class="sb-wc-avatar" id="sb-steam-avatar">
-<span id="sb-steam-av-fallback">🎮</span>
-<div class="sb-dc-dot offline" id="sb-steam-status"></div>
-</div>
-<div class="sb-wc-body">
-<div class="sb-wc-top">
-<span class="sb-wc-name" id="sb-steam-name">—</span>
-</div>
-<div class="sb-wc-sub" id="sb-steam-activity" style="display:none"></div>
-</div>
-</div>
-</div>
-<!-- GITHUB -->
-<div class="sb-section" id="sb-github-wrap" style="display:none">
-<div class="sb-widget-card sb-wc-github" id="sb-github-card">
-<div class="sb-wc-avatar" id="sb-github-avatar"><span id="sb-github-av-fallback">⌥</span></div>
-<div class="sb-wc-body">
-<div class="sb-wc-top">
-<span class="sb-wc-name" id="sb-github-name">—</span>
-</div>
-<div class="sb-wc-sub" id="sb-github-activity">—</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
 </nav>
 <div class="resize-handle" id="resize-handle"></div>
 <!-- MAIN -->
@@ -3932,6 +3825,7 @@ GitHub
 <div class="search-bar" onclick="openCmdPalette()" style="cursor:pointer" title="Cmd+K"><span style="color:rgba(255,255,255,.3);font-size:13px">🔍</span><input id="global-search" placeholder="Search (⌘K)…" readonly="" style="cursor:pointer" type="text"/></div>
 <button onclick="openModal('shortcuts')" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .2s" title="Raccourcis clavier">⌨️</button>
 <button id="theme-mode-btn" onclick="toggleDarkLight()" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;cursor:pointer;font-size:15px;transition:all .2s" title="Toggle dark/light mode">🌙</button>
+<button id="live-panel-toggle-btn" onclick="toggleLivePanel()" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;cursor:pointer;font-size:15px;transition:all .2s" title="Widgets en direct">◫</button>
 <button id="topbar-profile-btn" onclick="goToProfileScreen()" onmouseout="this.style.borderColor='rgba(255,255,255,.08)'" onmouseover="this.style.borderColor='rgba(139,92,246,.3)'" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:5px 10px 5px 6px;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s;overflow:hidden;max-width:150px" title="Switch profile">
 <div id="topbar-avatar" style="width:24px;height:24px;border-radius:6px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;background:rgba(255,255,255,.08);position:relative"></div>
 <span id="topbar-username" style="font-size:12px;font-weight:600;color:rgba(255,255,255,.75);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:80px"></span>
@@ -4823,11 +4717,11 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 </div>
 <div id="groq-key-status" style="font-size:11px;color:var(--muted);margin-top:6px"></div>
 </div>
-<!-- SIDEBAR WIDGET MANAGER -->
+<!-- LIVE PANEL WIDGET MANAGER -->
 <div class="conn-card" id="sidebar-widget-manager">
 <div class="conn-header" style="margin-bottom:12px">
 <div class="conn-icon" style="background:rgba(255,255,255,.08)">◫</div>
-<div><div class="conn-title">Sidebar Widgets</div><div class="conn-subtitle">Toggle and reorder widgets shown in the sidebar</div></div>
+<div><div class="conn-title">Widgets du panneau</div><div class="conn-subtitle">Afficher, épingler et réordonner les widgets du panneau (droite)</div></div>
 </div>
 <div id="widget-order-list" style="display:flex;flex-direction:column;gap:6px"></div>
 </div>
@@ -5207,7 +5101,7 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <div id="dev-env-info" style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted2);margin-bottom:14px"></div>
 <div class="toggle-row">
 <div><div class="toggle-label">Verbose debug logging</div><div class="toggle-sub">Logs extra diagnostics to the browser console</div></div>
-<label class="toggle"><input id="dev-debug-toggle" onchange="devSetDebug(this.checked)" type="checkbox"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+<label class="ui-switch" role="switch"><input id="dev-debug-toggle" onchange="devSetDebug(this.checked)" type="checkbox"/></label>
 </div>
 <div class="nx-divider"></div>
 <button class="btn btn-ghost" onclick="devClearCaches()" style="font-size:12px">🧹 Clear local caches</button>
@@ -5284,7 +5178,7 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <div class="toggle-label">Compact mode</div>
 <div class="toggle-sub">Collapse to icons-only navigation</div>
 </div>
-<label class="toggle"><input id="theme-compact-toggle" onchange="onThemeCompactToggle(this.checked)" type="checkbox"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+<label class="ui-switch" role="switch"><input id="theme-compact-toggle" onchange="onThemeCompactToggle(this.checked)" type="checkbox"/></label>
 </div>
 <div class="nx-divider"></div>
 <div style="font-size:12px;color:var(--muted2);margin-bottom:10px">Drag to reorder · Toggle to show/hide</div>
@@ -5361,7 +5255,7 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <div class="toggle-label">Password protection</div>
 <div class="toggle-sub">Lock this profile with a PIN or password</div>
 </div>
-<label class="toggle"><input id="pw-enable-toggle" onchange="togglePasswordSetup()" type="checkbox"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+<label class="ui-switch" role="switch"><input id="pw-enable-toggle" onchange="togglePasswordSetup()" type="checkbox"/></label>
 </div>
 <div id="pw-setup-section" style="display:none;margin-top:16px">
 <div class="modal-field">
@@ -5434,6 +5328,122 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 </div><!-- /settings-layout -->
 </div>
 </main>
+<div class="live-panel-resize-handle" id="live-panel-resize-handle" title="Redimensionner"></div>
+<div class="live-panel-mobile-overlay" id="live-panel-mobile-overlay" onclick="toggleLivePanel(false)"></div>
+<aside class="live-panel" id="live-panel" aria-label="Widgets en direct">
+<div class="live-panel-header">
+<span class="live-panel-title">Widgets</span>
+<div class="live-panel-header-actions">
+<button class="live-panel-icon-btn" id="live-panel-add-btn" onclick="openLivePanelAddPicker()" title="Ajouter un widget" aria-label="Ajouter un widget">+</button>
+<button class="live-panel-icon-btn" id="live-panel-manage-btn" onclick="openLivePanelManager()" title="Gérer les widgets" aria-label="Gérer les widgets">⋯</button>
+<button class="live-panel-icon-btn" id="live-panel-retract-btn" onclick="toggleLivePanel()" title="Rétracter le panneau" aria-label="Rétracter le panneau">›</button>
+</div>
+</div>
+<div class="live-panel-body" id="live-panel-body">
+<div class="live-panel-empty" id="live-panel-empty-placeholder">Aucun widget actif — clique sur + pour en ajouter.</div>
+<div class="sb-live-section" id="sb-live-section" style="display:none">
+<div class="sb-live-list" id="sb-live-list">
+<!-- DISCORD v3 -->
+<div class="sb-section" id="sb-discord-wrap" style="display:none">
+<div class="sb-widget-card" id="sb-discord-card">
+<div class="sb-wc-avatar" id="sb-dc-avatar">
+<span id="sb-dc-av-fallback">💬</span>
+<div class="sb-dc-dot offline" id="sb-dc-status"></div>
+</div>
+<div class="sb-wc-body">
+<div class="sb-wc-top">
+<span class="sb-wc-name" id="sb-dc-name">—</span>
+<span class="sb-dc-badge offline" id="sb-dc-badge">—</span>
+</div>
+<div class="sb-wc-sub" id="sb-dc-activity" style="display:none"></div>
+</div>
+</div>
+</div>
+<!-- NOW PLAYING v3 (Lanyard Spotify) -->
+<div class="sb-section" id="sb-spotify-wrap" style="display:none">
+<div class="sb-widget-card sb-wc-green" id="np-pill">
+<div class="sb-wc-art" id="np-art"><span>♪</span></div>
+<div class="sb-wc-body">
+<div class="sb-wc-top">
+<span class="sb-wc-name" id="np-song">—</span>
+<div class="sb-eq" id="sb-eq-anim" style="display:none"><span></span><span></span><span></span><span></span></div>
+</div>
+<div class="sb-wc-sub sb-wc-sub-green" id="np-artist">—</div>
+<div class="sb-wc-bar"><div class="sb-wc-bar-fill sb-wc-bar-green" id="np-bar-fill" style="width:0%"></div></div>
+<div id="np-time-row" style="display:none;justify-content:space-between;margin-top:3px">
+<span id="np-elapsed" style="font-size:9px;color:rgba(29,185,84,.6);font-family:var(--mono)">0:00</span>
+<span id="np-duration" style="font-size:9px;color:rgba(245,245,247,.25);font-family:var(--mono)">0:00</span>
+</div>
+</div>
+</div>
+</div>
+<!-- FALLBACK Now Playing (Last.fm) -->
+<div class="sb-section" id="sb-spotify-iframe-wrap" style="display:none">
+<div class="sb-widget-card sb-wc-green" id="np-pill-fallback">
+<div class="sb-wc-art" id="np-art-fallback"><span>♪</span></div>
+<div class="sb-wc-body">
+<div class="sb-wc-top">
+<span class="sb-wc-name" id="np-fallback-track">—</span>
+<div class="sb-eq" id="np-fallback-eq" style="display:none"><span></span><span></span><span></span></div>
+</div>
+<div class="sb-wc-sub sb-wc-sub-green" id="np-fallback-artist">—</div>
+<div class="sb-wc-bar"><div class="sb-wc-bar-fill sb-wc-bar-green" style="width:0%"></div></div>
+<div id="np-fallback-time-row" style="display:none;justify-content:space-between;margin-top:3px">
+<span id="np-fallback-elapsed" style="font-size:9px;color:rgba(29,185,84,.7);font-family:var(--mono)">0:00</span>
+<span id="np-fallback-duration" style="font-size:9px;color:rgba(245,245,247,.25);font-family:var(--mono)">0:00</span>
+</div>
+</div>
+</div>
+</div>
+<!-- LAST.FM v3 -->
+<div class="sb-section" id="sb-lastfm-wrap" style="display:none">
+<div class="sb-widget-card sb-wc-red" id="sb-lastfm-content">
+<div class="sb-wc-art" id="sb-lfm-art"><span>♫</span></div>
+<div class="sb-wc-body">
+<div class="sb-wc-top">
+<span class="sb-wc-name" id="sb-lfm-track">—</span>
+<div class="sb-eq sb-eq-lfm" id="sb-lfm-eq" style="display:none"><span></span><span></span><span></span><span></span></div>
+</div>
+<div class="sb-wc-sub sb-wc-sub-red" id="sb-lfm-artist">—</div>
+<div class="sb-wc-bar"><div class="sb-wc-bar-fill sb-wc-bar-red" style="width:100%"></div></div>
+</div>
+</div>
+</div>
+<!-- TWITCH -->
+<div class="sb-section" id="sb-twitch-wrap" style="display:none">
+<div id="sb-twitch-list" style="display:flex;flex-direction:column;gap:5px"></div>
+</div>
+<!-- STEAM -->
+<div class="sb-section" id="sb-steam-wrap" style="display:none">
+<div class="sb-widget-card sb-wc-steam" id="sb-steam-card">
+<div class="sb-wc-avatar" id="sb-steam-avatar">
+<span id="sb-steam-av-fallback">🎮</span>
+<div class="sb-dc-dot offline" id="sb-steam-status"></div>
+</div>
+<div class="sb-wc-body">
+<div class="sb-wc-top">
+<span class="sb-wc-name" id="sb-steam-name">—</span>
+</div>
+<div class="sb-wc-sub" id="sb-steam-activity" style="display:none"></div>
+</div>
+</div>
+</div>
+<!-- GITHUB -->
+<div class="sb-section" id="sb-github-wrap" style="display:none">
+<div class="sb-widget-card sb-wc-github" id="sb-github-card">
+<div class="sb-wc-avatar" id="sb-github-avatar"><span id="sb-github-av-fallback">⌥</span></div>
+<div class="sb-wc-body">
+<div class="sb-wc-top">
+<span class="sb-wc-name" id="sb-github-name">—</span>
+</div>
+<div class="sb-wc-sub" id="sb-github-activity">—</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</aside>
 </div><!-- /app-shell -->
 <div aria-live="polite" class="tab-content" data-qa-page="true" id="page-ai" role="tabpanel">
 <!-- Panel historique inline (z-index dans le contexte de page-ai) -->
@@ -5765,7 +5775,7 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <div class="modal-field" style="margin-top:14px">
 <div class="toggle-row" style="margin-bottom:12px">
 <span class="toggle-label" style="font-size:13px">🔒 Protect with password</span>
-<label class="toggle"><input id="create-pw-toggle" onchange="toggleCreatePwSection()" type="checkbox"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+<label class="ui-switch" role="switch"><input id="create-pw-toggle" onchange="toggleCreatePwSection()" type="checkbox"/></label>
 </div>
 <div id="create-pw-section" style="display:none">
 <div class="modal-field" style="margin-bottom:10px">
@@ -5926,6 +5936,7 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <script id="ethone-legacy-navigation" src="./actions/legacy-navigation.js"></script>
 <script id="ethone-legacy-modals" src="./components/modals.js"></script>
 <script id="ethone-legacy-toast" src="./components/toast.js"></script>
+<script id="ethone-ui-primitives" src="./components/ui-primitives.js"></script>
 <script id="ethone-legacy-activity" src="./services/activity.js"></script>
 <script id="ethone-legacy-items" src="./pages/items/index.js"></script>
 <script id="ethone-legacy-notes" src="./pages/notes/index.js"></script>
@@ -5965,6 +5976,10 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <script id="ethone-legacy-calendar" src="./widgets/calendar.js"></script>
 <script id="ethone-legacy-stats-page" src="./widgets/stats-page.js"></script>
 <script id="ethone-legacy-resizable-sidebar" src="./pages/dashboard/resizable-sidebar.js"></script>
+<script id="ethone-nav-active-pill" src="./pages/dashboard/nav-active-pill.js"></script>
+<script id="ethone-live-panel-resize" src="./pages/dashboard/live-panel-resize.js"></script>
+<script id="ethone-live-panel-catalog" src="./pages/dashboard/live-panel-catalog.js"></script>
+<script id="ethone-live-panel-widget-resize" src="./pages/dashboard/live-panel-widget-resize.js"></script>
 <script id="ethone-legacy-sound" src="./ui/sound.js"></script>
 <script id="ethone-legacy-weather" src="./widgets/weather.js"></script>
 <script id="ethone-legacy-pomodoro" src="./widgets/pomodoro.js"></script>
@@ -5978,15 +5993,13 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <script id="ethone-legacy-valorant-disconnect" src="./pages/gaming/valorant-disconnect.js"></script>
 <script id="ethone-legacy-league" src="./pages/gaming/league.js"></script>
 <script id="ethone-legacy-gaming-helpers" src="./pages/gaming/helpers.js"></script>
-<script id="ethone-va-dropdown" src="./pages/valorant-accounts/dropdown.js"></script>
+<script id="ethone-ui-dropdown" src="./components/dropdown.js"></script>
 <script id="ethone-va-dropdown-editor" src="./pages/valorant-accounts/dropdown-editor.js"></script>
-<script id="ethone-va-context-menu" src="./pages/valorant-accounts/context-menu.js"></script>
+<script id="ethone-ui-context-menu" src="./components/context-menu.js"></script>
 <script id="ethone-va-detail-panel" src="./pages/valorant-accounts/detail-panel.js"></script>
 <script id="ethone-va-import-export" src="./pages/valorant-accounts/import-export.js"></script>
 <script id="ethone-va-index" src="./pages/valorant-accounts/index.js"></script>
 <script id="ethone-db-state" src="./pages/databases/state.js"></script>
-<script id="ethone-db-context-menu" src="./pages/databases/context-menu.js"></script>
-<script id="ethone-db-dropdown" src="./pages/databases/dropdown.js"></script>
 <script id="ethone-db-dropdown-editor" src="./pages/databases/dropdown-editor.js"></script>
 <script id="ethone-db-templates" src="./pages/databases/templates.js"></script>
 <script id="ethone-db-table" src="./pages/databases/table-view.js"></script>
@@ -11766,14 +11779,13 @@ body.ethone-2026-ui #main-sidebar .sidebar-footer,
 body.ethone-v2 #main-sidebar .sidebar-footer{
   padding:12px 10px 10px!important;
 }
-#main-sidebar .sb-widget-card,
-body.ethone-v2 #main-sidebar .sb-widget-card{
+.live-panel .sb-widget-card{
   border-radius:12px!important;
   transition:border-color .18s cubic-bezier(.22,1,.36,1), transform .18s cubic-bezier(.22,1,.36,1)!important;
 }
-#main-sidebar .sb-widget-card:hover{transform:translateY(-1px)!important}
-#main-sidebar .sb-wc-avatar{border-radius:50%!important}
-#main-sidebar .sb-dc-dot{border-width:2px!important}
+.live-panel .sb-widget-card:hover{transform:translateY(-1px)!important}
+.live-panel .sb-wc-avatar{border-radius:50%!important}
+.live-panel .sb-dc-dot{border-width:2px!important}
 
 .resize-handle{transition:background .18s cubic-bezier(.22,1,.36,1)!important}
 .resize-handle:hover,.resize-handle.dragging{background:rgba(139,92,246,.4)!important}
@@ -11844,24 +11856,13 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
 .sidebar-avatar-status.error{background:#f87171;box-shadow:0 0 8px rgba(248,113,113,.5)}
 .sidebar.compact .sidebar-avatar-status{left:24px;top:26px}
 
-/* ── LIVE section ── */
-.sb-live-section{margin-top:2px}
-.sb-live-header{
-  display:flex;align-items:center;gap:6px;
-  padding:6px 8px 8px;
-  color:rgba(248,247,251,.32);
-  font-size:9.5px;font-weight:700;letter-spacing:.14em;font-family:var(--mono);
-}
-.sb-live-dot{
-  width:5px;height:5px;border-radius:50%;background:#34d399;flex-shrink:0;
-  box-shadow:0 0 6px rgba(52,211,153,.6);
-  animation:pulse 1.8s ease-in-out infinite;
-}
-.sb-live-list{display:flex;flex-direction:column;gap:5px}
+/* ── LIVE section (now hosted in .live-panel, not the sidebar) ── */
+.sb-live-section{margin-top:0}
+.sb-live-list{display:flex;flex-direction:column;gap:8px}
 .sb-widget-card{
   transition:border-color .18s var(--ease-premium,cubic-bezier(.22,1,.36,1)),transform .18s var(--ease-premium,cubic-bezier(.22,1,.36,1)),box-shadow .18s var(--ease-premium,cubic-bezier(.22,1,.36,1))!important;
 }
-#main-sidebar .sb-widget-card:hover{
+.live-panel .sb-widget-card:hover{
   transform:translateY(-1px)!important;
   box-shadow:0 8px 20px -8px rgba(0,0,0,.5)!important;
 }
@@ -11870,7 +11871,6 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
 .sb-wc-github{border-color:rgba(255,255,255,.12)!important}
 .sb-wc-github .sb-wc-avatar{background:rgba(255,255,255,.06)}
 .widget-row-icon svg{width:14px;height:14px;stroke:#fff}
-.sidebar.compact .sb-live-section{display:none!important}
 
 /* ── Drag & drop visual feedback (nav-item reorder + widget manager) ── */
 [draggable="true"]{transition:opacity .15s ease,transform .15s ease}
@@ -11914,13 +11914,90 @@ body.ethone-v2 #main-sidebar .sb-widget-card{
    position:fixed + JS margin-left coordination. Single source of
    truth for sidebar width: the --sidebar-w custom property.
    ══════════════════════════════════════════════════════════════ */
-:root{--sidebar-w:240px}
+:root{--sidebar-w:260px;--live-panel-w:280px}
 .app-shell{
   position:relative;
   display:grid;
-  grid-template-columns:var(--sidebar-w) 1fr;
+  grid-template-columns:var(--sidebar-w) 1fr var(--live-panel-w);
   align-items:start;
   min-height:100vh;
+  /* body is display:flex; without this, a flex item defaults to flex:0 1 auto
+     and sizes to its own max-content width instead of filling the flex line.
+     At desktop widths the grid's own content happened to be wide enough that
+     this went unnoticed — at mobile/tablet widths (where page content reflows
+     narrower) the shell visibly shrank to content width and left main-content
+     squeezed into the leftover space. */
+  width:100%;
+  flex:1 1 auto;
+  min-width:0;
+}
+.app-shell.live-panel-retracted{grid-template-columns:var(--sidebar-w) 1fr 0px}
+
+/* ── LIVE PANEL (right, retractable) ── */
+.live-panel{
+  grid-column:3;
+  position:sticky;top:0;
+  height:100vh;
+  min-width:0;
+  overflow:hidden;
+  display:flex;flex-direction:column;
+  background:rgba(9,8,14,.82);
+  border-left:1px solid rgba(255,255,255,.075);
+  backdrop-filter:blur(calc(24px * var(--theme-blur-scale,1))) saturate(140%);
+  -webkit-backdrop-filter:blur(calc(24px * var(--theme-blur-scale,1))) saturate(140%);
+}
+.app-shell.live-panel-retracted .live-panel{border-left-color:transparent}
+.live-panel-header{
+  flex:0 0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:8px;padding:16px 14px 12px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  white-space:nowrap;
+}
+.live-panel-title{font-size:12.5px;font-weight:700;letter-spacing:.4px;color:rgba(245,245,247,.6);text-transform:uppercase}
+.live-panel-header-actions{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.live-panel-icon-btn{
+  width:28px;height:28px;display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(255,255,255,.08);border-radius:8px;background:rgba(255,255,255,.03);
+  color:rgba(245,245,247,.45);cursor:pointer;font-size:14px;line-height:1;
+  transition:all .15s;flex-shrink:0;
+}
+.live-panel-icon-btn:hover{background:rgba(139,92,246,.12);border-color:rgba(139,92,246,.24);color:#d8ccff}
+.live-panel-body{
+  flex:1 1 auto;min-height:0;overflow-y:auto;
+  padding:12px 10px 16px;
+  display:flex;flex-direction:column;gap:8px;
+  scroll-behavior:smooth;scrollbar-gutter:stable;
+}
+.live-panel-empty{padding:24px 12px;text-align:center;font-size:12px;color:rgba(245,245,247,.3)}
+.live-panel-resize-handle{
+  position:absolute!important;top:0!important;bottom:0!important;
+  right:var(--live-panel-w)!important;
+  width:6px;z-index:400;cursor:col-resize;
+  transform:translateX(50%);
+}
+.live-panel-resize-handle:hover,.live-panel-resize-handle.dragging{background:rgba(139,92,246,.25)}
+.app-shell.live-panel-retracted .live-panel-resize-handle{display:none}
+@media(max-width:1200px){
+  .app-shell{grid-template-columns:var(--sidebar-w) 1fr 0px}
+  .live-panel-resize-handle{display:none}
+  /* Below the grid breakpoint the panel becomes an overlay (mirrors the
+     sidebar's own mobile-open pattern) instead of just disappearing —
+     the topbar toggle button still opens it, sliding in from the right. */
+  .live-panel{
+    position:fixed!important;top:0;right:0;
+    width:min(320px,88vw)!important;height:100vh;
+    transform:translateX(100%);
+    transition:transform .25s var(--ease-premium,cubic-bezier(.22,1,.36,1));
+    z-index:500;
+    box-shadow:-16px 0 40px rgba(0,0,0,.35);
+  }
+  .live-panel.mobile-open{transform:translateX(0)}
+  .live-panel-mobile-overlay{
+    display:none;position:fixed;inset:0;z-index:499;
+    background:rgba(0,0,0,.4);backdrop-filter:blur(2px);
+  }
+  .live-panel-mobile-overlay.mobile-open{display:block}
 }
 #main-sidebar.sidebar,
 body.ethone-2026-ui #main-sidebar,
@@ -11992,7 +12069,7 @@ body.ethone-v2 #main-content{
 /* ── Premium scrollbars (Chromium + Firefox) ── */
 #sidebar-nav-main,
 #main-content,
-.sb-live-list,
+.live-panel-body,
 .modal-content,
 .va-dd-list,
 .va-table-wrap,
@@ -12004,7 +12081,7 @@ body.ethone-v2 #main-content{
 }
 #sidebar-nav-main::-webkit-scrollbar,
 #main-content::-webkit-scrollbar,
-.sb-live-list::-webkit-scrollbar,
+.live-panel-body::-webkit-scrollbar,
 .modal-content::-webkit-scrollbar,
 .va-dd-list::-webkit-scrollbar,
 .va-table-wrap::-webkit-scrollbar,
@@ -12015,7 +12092,7 @@ body.ethone-v2 #main-content{
 }
 #sidebar-nav-main::-webkit-scrollbar-track,
 #main-content::-webkit-scrollbar-track,
-.sb-live-list::-webkit-scrollbar-track,
+.live-panel-body::-webkit-scrollbar-track,
 .modal-content::-webkit-scrollbar-track,
 .va-dd-list::-webkit-scrollbar-track,
 .va-table-wrap::-webkit-scrollbar-track,
@@ -12026,7 +12103,7 @@ body.ethone-v2 #main-content{
 }
 #sidebar-nav-main::-webkit-scrollbar-thumb,
 #main-content::-webkit-scrollbar-thumb,
-.sb-live-list::-webkit-scrollbar-thumb,
+.live-panel-body::-webkit-scrollbar-thumb,
 .modal-content::-webkit-scrollbar-thumb,
 .va-dd-list::-webkit-scrollbar-thumb,
 .va-table-wrap::-webkit-scrollbar-thumb,
@@ -12041,7 +12118,7 @@ body.ethone-v2 #main-content{
 }
 #sidebar-nav-main:hover::-webkit-scrollbar-thumb,
 #main-content:hover::-webkit-scrollbar-thumb,
-.sb-live-list:hover::-webkit-scrollbar-thumb,
+.live-panel-body:hover::-webkit-scrollbar-thumb,
 .modal-content:hover::-webkit-scrollbar-thumb,
 .va-dd-list:hover::-webkit-scrollbar-thumb,
 .va-table-wrap:hover::-webkit-scrollbar-thumb,
@@ -12056,19 +12133,66 @@ body.ethone-v2 #main-content{
   background-color:rgba(139,92,246,.55);
 }
 
-/* ── LIVE widgets: tighter, scrollable if many ── */
-.sb-live-list{max-height:220px;overflow-y:auto;padding-right:2px}
+/* ── LIVE widgets: card sizing (scrolling is handled once, by .live-panel-body) ── */
 .sb-widget-card{padding:8px 9px!important}
 .sb-wc-avatar{width:26px!important;height:26px!important}
 
+/* ── Live panel: catalog widgets (Weather/Clock/Calendar/CPU/RAM/Network/Custom) ── */
+.lp-catalog-widget{
+  border:1px solid rgba(255,255,255,.07);border-radius:12px;
+  background:rgba(255,255,255,.03);padding:10px 11px;
+  position:relative;
+}
+.lp-empty{font-size:11.5px;color:rgba(245,245,247,.3);padding:4px 0}
+.lp-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:3px 0;font-size:12px}
+.lp-row strong{color:var(--text);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lp-row span{color:rgba(245,245,247,.35);font-size:10.5px;flex-shrink:0}
+.lp-clock{display:flex;flex-direction:column;gap:2px}
+.lp-clock-time{font-size:20px;font-weight:800;color:var(--text);font-family:var(--mono)}
+.lp-clock-date{font-size:11px;color:rgba(245,245,247,.4);text-transform:capitalize}
+.lp-gauge-top{display:flex;align-items:center;justify-content:space-between;font-size:11.5px;font-weight:600;color:rgba(245,245,247,.6);margin-bottom:6px}
+.lp-demo-badge{font-size:8.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:rgba(251,191,36,.85);background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.25);border-radius:99px;padding:1px 6px}
+.lp-gauge-track{height:5px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden}
+.lp-gauge-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#8b5cf6,#a78bfa);width:0%;transition:width .6s ease}
+.lp-gauge-value{margin-top:5px;font-size:14px;font-weight:700;color:var(--text);font-family:var(--mono)}
+.lp-custom-title{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:3px}
+.lp-custom-content{font-size:11.5px;color:rgba(245,245,247,.5);white-space:pre-wrap;word-break:break-word}
+.lp-catalog-widget-remove{
+  position:absolute;top:6px;right:6px;width:20px;height:20px;
+  display:flex;align-items:center;justify-content:center;border-radius:6px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  color:rgba(245,245,247,.3);font-size:11px;cursor:pointer;opacity:0;transition:opacity .15s;
+}
+.lp-catalog-widget:hover .lp-catalog-widget-remove{opacity:1}
+.lp-catalog-widget-remove:hover{background:rgba(248,113,113,.15);color:#fca5a5;border-color:rgba(248,113,113,.25)}
+.sb-section,.lp-catalog-widget{overflow:hidden}
+.lp-widget-resize-handle{
+  position:absolute;left:0;right:0;bottom:0;height:6px;cursor:row-resize;
+  display:flex;align-items:flex-end;justify-content:center;
+}
+.lp-widget-resize-handle::after{
+  content:'';width:28px;height:3px;border-radius:99px;
+  background:rgba(255,255,255,.1);margin-bottom:1px;transition:background .15s;
+}
+.lp-widget-resize-handle:hover::after,.lp-widget-resize-handle.dragging::after{background:rgba(139,92,246,.55)}
+
 /* ── Responsive: laptop auto-compact, tablet overlay ── */
 @media(min-width:769px) and (max-width:1024px){
-  #main-sidebar.sidebar{
+  /* Same specificity fight as the ≤768 rule above — must beat
+     body.ethone-2026-ui #main-sidebar:not(.compact){position:sticky!important}. */
+  body.ethone-2026-ui #main-sidebar.sidebar:not(.compact),
+  body.ethone-v2 #main-sidebar.sidebar{
     position:fixed!important;transform:translateX(-100%)!important;
     transition:transform .28s var(--ease-premium,cubic-bezier(.22,1,.36,1))!important;
     height:100vh;
+    /* Taking the sidebar out of grid flow (fixed) also removes the grid
+       track that used to give it its width — without an explicit width here
+       it shrink-wraps to its content's natural size instead of a real drawer
+       (found shrinking to ~99px, an arbitrary content-driven value). */
+    width:min(280px,88vw)!important;min-width:0!important;max-width:none!important;
   }
-  #main-sidebar.sidebar.mobile-open{transform:translateX(0)!important}
+  body.ethone-2026-ui #main-sidebar.sidebar.mobile-open,
+  body.ethone-v2 #main-sidebar.sidebar.mobile-open{transform:translateX(0)!important}
   #main-sidebar .nav-item{min-height:44px!important}
   .resize-handle{display:none!important}
   .app-shell{grid-template-columns:1fr}
@@ -12079,12 +12203,12 @@ body.ethone-v2 #main-content{
   #main-content.main{grid-column:1;padding-left:14px!important}
 }
 </style>
-<script id="ethone-auth-v3-premium-experience" src="./services/auth/premium-experience.js?v=21"></script>
+<script id="ethone-auth-v3-premium-experience" src="./services/auth/premium-experience.js?v=23"></script>
 <link rel="stylesheet" href="./pages/dashboard-v4.css">
 <link rel="stylesheet" href="./ui/tokens.css">
 <link rel="stylesheet" href="./ui/components.css">
 <link rel="stylesheet" href="./ui/app.css">
-<link rel="stylesheet" href="./ui/auth.css?v=24">
+<link rel="stylesheet" href="./ui/auth.css?v=26">
 <link rel="stylesheet" href="./pages/settings/settings-v2.css?v=1">
 <link rel="stylesheet" href="./pages/valorant-accounts/style.css">
 <link rel="stylesheet" href="./pages/databases/style.css">

@@ -227,7 +227,7 @@ function renderAutomationSettings(){
     return '<div class="toggle-row" style="align-items:center">'+
       '<div style="flex:1;min-width:0"><div style="font-size:12px;color:var(--text)">'+_stEsc(auRuleLabel(r))+'</div></div>'+
       '<div style="display:flex;gap:6px;align-items:center;flex-shrink:0">'+
-        '<label class="toggle"><input type="checkbox" '+(r.enabled?'checked':'')+' onchange="automationToggle(\''+r.id+'\',this.checked)"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>'+
+        '<label class="ui-switch" role="switch"><input type="checkbox" '+(r.enabled?'checked':'')+' onchange="automationToggle(\''+r.id+'\',this.checked)"/></label>'+
         '<button class="btn btn-ghost" style="font-size:11px;padding:5px 9px" onclick="automationDelete(\''+r.id+'\')">Delete</button>'+
       '</div></div>';
   }).join(''):'<div style="font-size:12px;color:var(--muted2)">No rules yet.</div>';
@@ -316,7 +316,7 @@ function renderNotificationsSettings(){
   var wrap=document.getElementById('notif-categories');
   if(wrap){
     wrap.innerHTML=cats.map(function(c){
-      return '<div class="toggle-row"><div class="toggle-label">'+c[1]+'</div><label class="toggle"><input type="checkbox" '+(prefs[c[0]]?'checked':'')+' onchange="notifToggleCategory(\''+c[0]+'\',this.checked)"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>';
+      return '<div class="toggle-row"><div class="toggle-label">'+c[1]+'</div><label class="ui-switch" role="switch"><input type="checkbox" '+(prefs[c[0]]?'checked':'')+' onchange="notifToggleCategory(\''+c[0]+'\',this.checked)"/></label></div>';
     }).join('');
   }
   var s=document.getElementById('notif-quiet-start');if(s)s.value=prefs.quietStart||'';
@@ -393,7 +393,7 @@ function renderExperimentalSettings(){
   ];
   wrap.innerHTML=flags.map(function(f){
     var val=localStorage.getItem(f.key)==='1';
-    return '<div class="toggle-row"><div><div class="toggle-label">'+f.label+'</div><div class="toggle-sub">'+f.sub+'</div></div><label class="toggle"><input type="checkbox" '+(val?'checked':'')+' onchange="expToggle(\''+f.key+'\',this.checked)"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>';
+    return '<div class="toggle-row"><div><div class="toggle-label">'+f.label+'</div><div class="toggle-sub">'+f.sub+'</div></div><label class="ui-switch" role="switch"><input type="checkbox" '+(val?'checked':'')+' onchange="expToggle(\''+f.key+'\',this.checked)"/></label></div>';
   }).join('');
 }
 function expToggle(key,val){

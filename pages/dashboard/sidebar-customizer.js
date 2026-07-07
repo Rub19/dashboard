@@ -32,11 +32,8 @@ function renderSidebarCustomize(){
     row.innerHTML=`
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:14px;height:14px;color:rgba(245,245,247,.25);flex-shrink:0"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       <span style="flex:1;font-size:13px;font-weight:500;color:${item.visible?'var(--text)':'rgba(245,245,247,.3)'}">${escapeHTML(item.label)}</span>
-      <label style="display:flex;align-items:center;cursor:pointer">
-        <input type="checkbox" ${item.visible?'checked':''} onchange="toggleSidebarItem('${item.id}',this.checked)" style="display:none">
-        <div onclick="toggleSidebarItem('${item.id}',!${item.visible})" style="width:34px;height:18px;border-radius:99px;background:${item.visible?'linear-gradient(90deg,#8b5cf6,#7c3aed)':'rgba(255,255,255,.1)'};position:relative;transition:background .2s;cursor:pointer">
-          <div style="position:absolute;top:2px;${item.visible?'right:2px':'left:2px'};width:14px;height:14px;border-radius:50%;background:#fff;transition:all .2s"></div>
-        </div>
+      <label class="ui-switch" role="switch">
+        <input type="checkbox" ${item.visible?'checked':''} onchange="toggleSidebarItem('${item.id}',this.checked)">
       </label>
       <button type="button" class="sb-pin-btn${item.pinned?' pinned':''}" onclick="toggleSidebarItemPin('${item.id}')" title="${item.pinned?'Retirer des favoris':'Épingler'}">
         <svg viewBox="0 0 24 24" width="12" height="12" fill="${item.pinned?'currentColor':'none'}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 3h6l-1 6 3 3H7l3-3-1-6Z"/></svg>

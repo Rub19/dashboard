@@ -1,3 +1,6 @@
+/* SUPERSEDED — replaced by components/context-menu.js (single shared controller factory,
+   see window.vaOpenContextMenu/window.vaCloseContextMenu registered from there).
+   No longer loaded via <script> in index.html. Kept on disk for reference only. */
 /* ETHONE Valorant Accounts — generic right-click context menu. */
 (function(){
   "use strict";

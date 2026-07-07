@@ -18,10 +18,66 @@
     }
   }
   var HERO_TEXT={
-    fr:{title:"Votre système <span>d'exploitation personnel.</span>",copy:"Brain, vos espaces et vos outils, réunis en un seul endroit.",badge:"OS Personnel",search:"Brain, fichiers, commandes…",ready:"Prêt",morning:"Session matinale",work:"Session de travail",evening:"Mode soirée",night:"Mode nuit",brainLabel:"ETHONE Brain",score:"Score de productivité",tasksLabel:"TÂCHES",t1:"Synchro Brain",t2:"Revoir Marketplace",t3:"Session focus · 2h",t4:"Habitudes du jour",habitsLabel:"HABITUDES",h1:"Session focus",h2:"Espaces",h3:"Automatisations",activityLabel:"ACTIVITÉ DU JOUR",recentLabel:"ACTIVITÉ RÉCENTE",r1:"Synchro Brain terminée",r1time:"à l'instant",r2:"Nouvelle note dans Espaces",r2time:"il y a 12 min",notif:"Notifications"},
-    en:{title:"Your Personal <span>Operating System<i>.</i></span>",copy:"Brain, Workspaces and your tools — organized as one.",badge:"Personal OS",search:"Brain, files, commands…",ready:"Ready",morning:"Morning session",work:"Work session",evening:"Evening mode",night:"Night mode",brainLabel:"ETHONE Brain",score:"Productivity score",tasksLabel:"TASKS",t1:"Brain memory sync",t2:"Review Marketplace",t3:"Focus session · 2h",t4:"Daily habits",habitsLabel:"HABITS",h1:"Focus session",h2:"Workspaces",h3:"Automations",activityLabel:"ACTIVITY TODAY",recentLabel:"RECENT ACTIVITY",r1:"Brain sync completed",r1time:"just now",r2:"New note in Workspaces",r2time:"12 min ago",notif:"Notifications"},
-    es:{title:"Tu sistema <span>operativo personal.</span>",copy:"Brain, tus espacios y tus herramientas, todo en un mismo lugar.",badge:"OS Personal",search:"Brain, archivos, comandos…",ready:"Listo",morning:"Sesión matutina",work:"Sesión de trabajo",evening:"Modo tarde",night:"Modo noche",brainLabel:"ETHONE Brain",score:"Puntuación de productividad",tasksLabel:"TAREAS",t1:"Sincronizar Brain",t2:"Revisar Marketplace",t3:"Sesión de enfoque · 2h",t4:"Hábitos diarios",habitsLabel:"HÁBITOS",h1:"Sesión de enfoque",h2:"Espacios",h3:"Automatizaciones",activityLabel:"ACTIVIDAD DE HOY",recentLabel:"ACTIVIDAD RECIENTE",r1:"Sincronización Brain lista",r1time:"ahora mismo",r2:"Nueva nota en Espacios",r2time:"hace 12 min",notif:"Notificaciones"},
-    de:{title:"Dein persönliches <span>Betriebssystem.</span>",copy:"Brain, Workspaces und deine Werkzeuge an einem Ort.",badge:"Persönliches OS",search:"Brain, Dateien, Befehle…",ready:"Bereit",morning:"Morgen-Sitzung",work:"Arbeitssitzung",evening:"Abendmodus",night:"Nachtmodus",brainLabel:"ETHONE Brain",score:"Produktivitätswert",tasksLabel:"AUFGABEN",t1:"Brain-Sync",t2:"Marketplace prüfen",t3:"Fokus-Sitzung · 2h",t4:"Tägliche Gewohnheiten",habitsLabel:"GEWOHNHEITEN",h1:"Fokus-Sitzung",h2:"Workspaces",h3:"Automatisierungen",activityLabel:"AKTIVITÄT HEUTE",recentLabel:"LETZTE AKTIVITÄT",r1:"Brain-Sync abgeschlossen",r1time:"gerade eben",r2:"Neue Notiz in Workspaces",r2time:"vor 12 Min.",notif:"Benachrichtigungen"}
+    fr:{
+      title:"Votre système <span>d'exploitation personnel<i>.</i></span>",
+      copy:"Brain, vos espaces et vos outils, réunis en un seul endroit.",
+      badge:"OS Personnel",search:"Rechercher dans ETHONE…",ready:"Brain en ligne",
+      morning:"Session matinale",work:"Session de travail",evening:"Mode soirée",night:"Mode nuit",
+      greeting:"Bonjour.",greetingSub:"Votre espace est prêt pour avancer.",
+      home:"Accueil",brainNav:"Brain",workspacesNav:"Espaces",tasksNav:"Tâches",calendarNav:"Calendrier",
+      brainLabel:"Recommandation Brain",recTitle:"Continuer le projet ETHONE",
+      recCopy:"Vos priorités sont organisées et la prochaine action est prête.",
+      openPlan:"Ouvrir le plan",askBrain:"Demander à Brain",
+      focusLabel:"Focus",deepWork:"Travail profond",nextBreak:"Prochaine pause",focusStreak:"Série focus",days:"7 jours",
+      tasksLabel:"TÂCHES DU JOUR",viewAll:"Tout voir",t1:"Synchroniser la mémoire Brain",t2:"Revoir Marketplace",t3:"Session focus · 2h",t4:"Habitudes du jour",
+      activityLabel:"ACTIVITÉ",last7:"7 derniers jours",focusTime:"Temps de focus",completed:"Terminées",
+      allSystems:"Tous les systèmes opérationnels",synced:"Synchronisé",github:"GitHub connecté",notif:"Notifications"
+    },
+    en:{
+      title:"Your Personal <span>Operating System<i>.</i></span>",
+      copy:"Brain, Workspaces and your tools — organized as one.",
+      badge:"Personal OS",search:"Search ETHONE…",ready:"Brain online",
+      morning:"Morning session",work:"Work session",evening:"Evening mode",night:"Night mode",
+      greeting:"Good morning.",greetingSub:"Your workspace is ready for focused work.",
+      home:"Home",brainNav:"Brain",workspacesNav:"Workspaces",tasksNav:"Tasks",calendarNav:"Calendar",
+      brainLabel:"Brain recommendation",recTitle:"Continue Project ETHONE",
+      recCopy:"Your priorities are organized and the next action is ready.",
+      openPlan:"Open plan",askBrain:"Ask Brain",
+      focusLabel:"Focus",deepWork:"Deep work",nextBreak:"Next break",focusStreak:"Focus streak",days:"7 days",
+      tasksLabel:"TODAY'S TASKS",viewAll:"View all",t1:"Sync Brain memory",t2:"Review Marketplace",t3:"Focus session · 2h",t4:"Daily habits",
+      activityLabel:"ACTIVITY",last7:"Last 7 days",focusTime:"Focus time",completed:"Completed",
+      allSystems:"All systems operational",synced:"Synced",github:"GitHub connected",notif:"Notifications"
+    },
+    es:{
+      title:"Tu sistema <span>operativo personal<i>.</i></span>",
+      copy:"Brain, tus espacios y tus herramientas, todo en un mismo lugar.",
+      badge:"OS Personal",search:"Buscar en ETHONE…",ready:"Brain conectado",
+      morning:"Sesión matutina",work:"Sesión de trabajo",evening:"Modo tarde",night:"Modo noche",
+      greeting:"Buenos días.",greetingSub:"Tu espacio está listo para avanzar.",
+      home:"Inicio",brainNav:"Brain",workspacesNav:"Espacios",tasksNav:"Tareas",calendarNav:"Calendario",
+      brainLabel:"Recomendación de Brain",recTitle:"Continuar Proyecto ETHONE",
+      recCopy:"Tus prioridades están organizadas y la siguiente acción está lista.",
+      openPlan:"Abrir plan",askBrain:"Preguntar a Brain",
+      focusLabel:"Enfoque",deepWork:"Trabajo profundo",nextBreak:"Próxima pausa",focusStreak:"Racha de enfoque",days:"7 días",
+      tasksLabel:"TAREAS DE HOY",viewAll:"Ver todo",t1:"Sincronizar memoria Brain",t2:"Revisar Marketplace",t3:"Sesión de enfoque · 2h",t4:"Hábitos diarios",
+      activityLabel:"ACTIVIDAD",last7:"Últimos 7 días",focusTime:"Tiempo de enfoque",completed:"Completadas",
+      allSystems:"Todos los sistemas operativos",synced:"Sincronizado",github:"GitHub conectado",notif:"Notificaciones"
+    },
+    de:{
+      title:"Dein persönliches <span>Betriebssystem<i>.</i></span>",
+      copy:"Brain, Workspaces und deine Werkzeuge an einem Ort.",
+      badge:"Persönliches OS",search:"ETHONE durchsuchen…",ready:"Brain online",
+      morning:"Morgen-Sitzung",work:"Arbeitssitzung",evening:"Abendmodus",night:"Nachtmodus",
+      greeting:"Guten Morgen.",greetingSub:"Dein Workspace ist bereit für fokussierte Arbeit.",
+      home:"Start",brainNav:"Brain",workspacesNav:"Workspaces",tasksNav:"Aufgaben",calendarNav:"Kalender",
+      brainLabel:"Brain-Empfehlung",recTitle:"Projekt ETHONE fortsetzen",
+      recCopy:"Deine Prioritäten sind organisiert und der nächste Schritt ist bereit.",
+      openPlan:"Plan öffnen",askBrain:"Brain fragen",
+      focusLabel:"Fokus",deepWork:"Deep Work",nextBreak:"Nächste Pause",focusStreak:"Fokus-Serie",days:"7 Tage",
+      tasksLabel:"HEUTIGE AUFGABEN",viewAll:"Alle anzeigen",t1:"Brain-Speicher synchronisieren",t2:"Marketplace prüfen",t3:"Fokus-Sitzung · 2h",t4:"Tägliche Gewohnheiten",
+      activityLabel:"AKTIVITÄT",last7:"Letzte 7 Tage",focusTime:"Fokuszeit",completed:"Erledigt",
+      allSystems:"Alle Systeme betriebsbereit",synced:"Synchronisiert",github:"GitHub verbunden",notif:"Benachrichtigungen"
+    }
   };
   function heroText(){return HERO_TEXT[currentLanguage()]||HERO_TEXT.fr}
   function syncLanguageControl(){
@@ -76,53 +132,59 @@
           '</div>'+
           '<div id="auth-preview-body">'+
             '<div id="auth-preview-sb">'+
-              '<div class="apsb-logo">E</div>'+
-              '<div class="apsb-item on" title="Home"><i data-lucide="layout-dashboard"></i></div>'+
-              '<div class="apsb-item" title="Tasks"><i data-lucide="square-check-big"></i></div>'+
-              '<div class="apsb-item" title="Notes"><i data-lucide="notebook-pen"></i></div>'+
-              '<div class="apsb-item" title="Habits"><i data-lucide="circle-gauge"></i></div>'+
-              '<div class="apsb-item" title="Workspaces"><i data-lucide="panels-top-left"></i></div>'+
-              '<div class="apsb-item" title="Marketplace"><i data-lucide="store"></i></div>'+
-              '<div class="apsb-item apsb-brain" title="Brain"><i data-lucide="brain"></i></div>'+
+              '<div class="apsb-brand"><div class="apsb-logo">E</div><span>ETHONE</span></div>'+
+              '<div class="apsb-nav">'+
+                '<div class="apsb-item on"><i data-lucide="house"></i><span data-auth-hero="home">'+copy.home+'</span></div>'+
+                '<div class="apsb-item"><i data-lucide="brain"></i><span data-auth-hero="brainNav">'+copy.brainNav+'</span></div>'+
+                '<div class="apsb-item"><i data-lucide="panels-top-left"></i><span data-auth-hero="workspacesNav">'+copy.workspacesNav+'</span></div>'+
+                '<div class="apsb-item"><i data-lucide="square-check-big"></i><span data-auth-hero="tasksNav">'+copy.tasksNav+'</span></div>'+
+                '<div class="apsb-item"><i data-lucide="calendar-days"></i><span data-auth-hero="calendarNav">'+copy.calendarNav+'</span></div>'+
+              '</div>'+
+              '<div class="apsb-spaces"><span></span><span></span><span></span></div>'+
+              '<div class="apsb-user"><div>A</div><span>Alex</span></div>'+
             '</div>'+
             '<div id="auth-preview-content">'+
-              '<div id="apc-clock">'+
-                '<div id="apc-time">--:--</div>'+
-                '<div id="apc-clock-r"><div id="apc-date">—</div><div id="apc-status"><div class="apc-sdot"></div><span id="apc-stxt"></span></div><div id="apc-week" aria-hidden="true"></div></div>'+
+              '<div id="apc-overview">'+
+                '<div class="apc-welcome"><strong data-auth-hero="greeting">'+copy.greeting+'</strong><span data-auth-hero="greetingSub">'+copy.greetingSub+'</span></div>'+
+                '<div id="apc-clock">'+
+                  '<div id="apc-time">--:--</div>'+
+                  '<div id="apc-clock-r"><div id="apc-date">—</div><div id="apc-status"><div class="apc-sdot"></div><span id="apc-stxt"></span></div><div id="apc-week" aria-hidden="true"></div></div>'+
+                '</div>'+
               '</div>'+
-              '<div id="apc-row1">'+
+              '<div id="apc-grid">'+
                 '<div id="apc-brain">'+
                   '<div class="apct-lbl"><span class="apct-dot"></span><span data-auth-hero="brainLabel">'+copy.brainLabel+'</span></div>'+
-                  '<div id="apcb-score">78</div>'+
-                  '<div id="apcb-lbl" data-auth-hero="score">'+copy.score+'</div>'+
+                  '<h3 data-auth-hero="recTitle">'+copy.recTitle+'</h3>'+
+                  '<p data-auth-hero="recCopy">'+copy.recCopy+'</p>'+
+                  '<div class="apc-brain-actions"><button type="button" tabindex="-1" data-auth-hero="openPlan">'+copy.openPlan+'</button><button type="button" tabindex="-1" data-auth-hero="askBrain">'+copy.askBrain+'</button></div>'+
+                '</div>'+
+                '<div id="apc-focus">'+
+                  '<div class="apct-lbl" data-auth-hero="focusLabel">'+copy.focusLabel+'</div>'+
+                  '<div class="apc-focus-row"><span data-auth-hero="deepWork">'+copy.deepWork+'</span><strong>45 min</strong></div>'+
+                  '<div class="apc-focus-row"><span data-auth-hero="nextBreak">'+copy.nextBreak+'</span><strong>11:00</strong></div>'+
                   '<div class="apcb-bar"><div class="apcb-bf" id="apcb-f1"></div></div>'+
-                  '<div class="apcb-bar"><div class="apcb-bf" id="apcb-f2" style="opacity:.4"></div></div>'+
-                  '<div id="apc-modules">'+
-                    '<span class="apcm">Brain</span><span class="apcm">Automations</span><span class="apcm">Insights</span><span class="apcm">Workspaces</span><span class="apcm">Marketplace</span>'+
-                  '</div>'+
+                  '<div class="apc-focus-row apc-focus-streak"><span data-auth-hero="focusStreak">'+copy.focusStreak+'</span><strong data-auth-hero="days">'+copy.days+'</strong></div>'+
                 '</div>'+
                 '<div id="apc-tasks">'+
-                  '<div class="apct-lbl" data-auth-hero="tasksLabel">'+copy.tasksLabel+'</div>'+
-                  '<div class="apct-row"><div class="apct-chk done">✓</div><div class="apct-t done" data-auth-hero="t1">'+copy.t1+'</div></div>'+
-                  '<div class="apct-row"><div class="apct-chk"></div><div class="apct-t" data-auth-hero="t2">'+copy.t2+'</div></div>'+
-                  '<div class="apct-row"><div class="apct-chk"></div><div class="apct-t" data-auth-hero="t3">'+copy.t3+'</div></div>'+
-                  '<div class="apct-row"><div class="apct-chk done">✓</div><div class="apct-t done" data-auth-hero="t4">'+copy.t4+'</div></div>'+
+                  '<div class="apc-card-head"><div class="apct-lbl" data-auth-hero="tasksLabel">'+copy.tasksLabel+'</div><span data-auth-hero="viewAll">'+copy.viewAll+'</span></div>'+
+                  '<div class="apct-row"><div class="apct-chk done">✓</div><div class="apct-t done" data-auth-hero="t1">'+copy.t1+'</div><time>09:30</time></div>'+
+                  '<div class="apct-row"><div class="apct-chk"></div><div class="apct-t" data-auth-hero="t2">'+copy.t2+'</div><time>11:00</time></div>'+
+                  '<div class="apct-row"><div class="apct-chk"></div><div class="apct-t" data-auth-hero="t3">'+copy.t3+'</div><time>14:00</time></div>'+
+                  '<div class="apct-row"><div class="apct-chk done">✓</div><div class="apct-t done" data-auth-hero="t4">'+copy.t4+'</div><time>17:30</time></div>'+
+                '</div>'+
+                '<div id="apc-activity">'+
+                  '<div class="apc-card-head"><div class="apct-lbl" data-auth-hero="activityLabel">'+copy.activityLabel+'</div><span data-auth-hero="last7">'+copy.last7+'</span></div>'+
+                  '<div id="apc-bars"></div>'+
+                  '<div class="apc-activity-stats">'+
+                    '<div><span data-auth-hero="focusTime">'+copy.focusTime+'</span><strong>32h 14m</strong></div>'+
+                    '<div><span data-auth-hero="completed">'+copy.completed+'</span><strong>23</strong></div>'+
+                  '</div>'+
                 '</div>'+
               '</div>'+
-              '<div id="apc-habits">'+
-                '<div class="apct-lbl" data-auth-hero="habitsLabel">'+copy.habitsLabel+'</div>'+
-                '<div class="apch-row"><span class="apch-n" data-auth-hero="h1">'+copy.h1+'</span><div class="apch-dots"><div class="apch-d on"></div><div class="apch-d on"></div><div class="apch-d on"></div><div class="apch-d on"></div><div class="apch-d now"></div><div class="apch-d"></div><div class="apch-d"></div></div></div>'+
-                '<div class="apch-row"><span class="apch-n" data-auth-hero="h2">'+copy.h2+'</span><div class="apch-dots"><div class="apch-d on"></div><div class="apch-d on"></div><div class="apch-d"></div><div class="apch-d on"></div><div class="apch-d now"></div><div class="apch-d"></div><div class="apch-d"></div></div></div>'+
-                '<div class="apch-row"><span class="apch-n" data-auth-hero="h3">'+copy.h3+'</span><div class="apch-dots"><div class="apch-d on"></div><div class="apch-d"></div><div class="apch-d on"></div><div class="apch-d on"></div><div class="apch-d"></div><div class="apch-d"></div><div class="apch-d"></div></div></div>'+
-              '</div>'+
-              '<div id="apc-recent">'+
-                '<div class="apct-lbl" data-auth-hero="recentLabel">'+copy.recentLabel+'</div>'+
-                '<div class="apcr-row"><span class="apcr-dot"></span><span class="apcr-t" data-auth-hero="r1">'+copy.r1+'</span><span class="apcr-time" data-auth-hero="r1time">'+copy.r1time+'</span></div>'+
-                '<div class="apcr-row"><span class="apcr-dot"></span><span class="apcr-t" data-auth-hero="r2">'+copy.r2+'</span><span class="apcr-time" data-auth-hero="r2time">'+copy.r2time+'</span></div>'+
-              '</div>'+
-              '<div id="apc-activity">'+
-                '<div class="apct-lbl" data-auth-hero="activityLabel">'+copy.activityLabel+'</div>'+
-                '<div id="apc-bars"></div>'+
+              '<div id="apc-statusbar">'+
+                '<span><i></i><b data-auth-hero="allSystems">'+copy.allSystems+'</b></span>'+
+                '<span><i data-lucide="refresh-cw"></i><b data-auth-hero="synced">'+copy.synced+'</b></span>'+
+                '<span><svg class="apc-github-glyph" viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="M10 1.25A8.75 8.75 0 0 0 7.24 18.3c.44.08.6-.2.6-.43v-1.52c-2.44.53-2.95-1.04-2.95-1.04-.4-1.01-.97-1.28-.97-1.28-.8-.55.06-.54.06-.54.88.06 1.35.91 1.35.91.78 1.34 2.05.95 2.55.73.08-.57.31-.95.56-1.17-1.95-.22-4-1-4-4.33 0-.96.34-1.74.9-2.35-.09-.22-.39-1.11.09-2.32 0 0 .74-.24 2.41.9a8.34 8.34 0 0 1 4.4 0c1.67-1.14 2.4-.9 2.4-.9.49 1.21.18 2.1.1 2.32.56.61.9 1.39.9 2.35 0 3.34-2.06 4.1-4.02 4.31.31.27.59.81.59 1.63v2.3c0 .24.16.52.6.43A8.75 8.75 0 0 0 10 1.25Z"/></svg><b data-auth-hero="github">'+copy.github+'</b></span>'+
               '</div>'+
             '</div>'+
           '</div>'+
@@ -327,6 +389,17 @@
   }
   function boot(){
     apply();
+    if(typeof window.setLang==="function"&&!window.setLang.__authHeroSyncWrapped){
+      var previousSetLang=window.setLang;
+      window.setLang=function(){
+        var result=previousSetLang.apply(this,arguments);
+        setTimeout(syncLanguageControl,20);
+        setTimeout(syncHeroLanguage,40);
+        setTimeout(syncHeroLanguage,140);
+        return result;
+      };
+      window.setLang.__authHeroSyncWrapped=true;
+    }
     try{if(document.fonts&&document.fonts.ready)document.fonts.ready.then(syncCardHeight)}catch(e){}
     var screen=qs("#auth-screen");
     if(screen){
@@ -349,9 +422,10 @@
           if(event.target&&event.target.closest&&event.target.closest("#auth-lang-bar button[data-l]")){
             setTimeout(syncLanguageControl,0);
             setTimeout(syncHeroLanguage,0);
+            setTimeout(syncHeroLanguage,80);
             setTimeout(syncCardHeight,30);
           }
-        });
+        },true);
       }
       var cardBox=qs("#lb-box");
       if(cardBox&&!cardBox.dataset.authV10TextObserver){

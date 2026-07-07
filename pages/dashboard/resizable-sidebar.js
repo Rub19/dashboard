@@ -10,7 +10,7 @@
   const root = document.documentElement;
   if(!handle||!sidebar) return;
 
-  const DEFAULT_W = 240, MIN_W = 220, MAX_W = 320, COMPACT_W = 72;
+  const DEFAULT_W = 260, MIN_W = 236, MAX_W = 340, COMPACT_W = 72;
 
   function applyWidth(w){
     root.style.setProperty('--sidebar-w', w+'px');
@@ -22,6 +22,10 @@
       const wrap = document.getElementById('nowplaying-iframe-wrap');
       if(wrap) wrap.style.height = Math.round(68*scale)+'px';
     }
+    // --sidebar-w lives on <html>, not #main-sidebar, so nav-active-pill.js's
+    // MutationObserver on the sidebar element never sees this change — without
+    // this direct call the pill silently stops tracking during an active drag.
+    if(typeof window.ethonePositionNavPill === 'function') window.ethonePositionNavPill();
   }
 
   // Restore saved width
@@ -80,6 +84,7 @@
     suspendForCompact(){
       root.style.setProperty('--sidebar-w', COMPACT_W+'px');
       handle.style.display='none';
+      if(typeof window.ethonePositionNavPill === 'function') window.ethonePositionNavPill();
     },
     resumeFromCompact(){
       handle.style.display='';

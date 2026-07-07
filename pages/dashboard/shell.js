@@ -28,21 +28,21 @@ var SVG_ICONS={
 };
 
 function getDefaultNav(){return [
-  {id:'dashboard',icon:'dashboard',label:t('nav_overview'),section:'main',badge:''},
-  {id:'files',    icon:'files',    label:t('nav_files'),   section:'main',badge:''},
-  {id:'notes',    icon:'notes',    label:t('nav_notes'),   section:'main',badge:''},
-  {id:'todos',    icon:'todos',    label:t('nav_tasks'),   section:'main',badge:''},
-  {id:'habits',   icon:'habits',   label:t('nav_habits'),  section:'main',badge:''},
-  {id:'kanban',   icon:'kanban',   label:t('nav_kanban'),  section:'main',badge:''},
-  {id:'calendar', icon:'calendar', label:t('nav_calendar'),section:'main',badge:''},
-  {id:'goals',    icon:'goals',    label:t('nav_goals'),   section:'main',badge:''},
-  {id:'journal',  icon:'journal',  label:t('nav_journal'), section:'main',badge:''},
-  {id:'countdown',icon:'countdown',label:t('nav_countdown'),section:'main',badge:''},
-  {id:'stats',    icon:'stats',    label:t('nav_stats'),   section:'main',badge:''},
-  {id:'github',   icon:'github',   label:t('nav_github'),  section:'main',badge:''},
-  {id:'gaming',   icon:'gaming',   label:t('nav_gaming'),  section:'main',badge:''},
-  {id:'valorant-accounts',icon:'valorant',label:t('nav_valorant_accounts'),section:'main',badge:''},
-  {id:'databases',icon:'databases',label:t('nav_databases'),section:'main',badge:''},
+  {id:'dashboard',icon:'dashboard',label:t('nav_overview'),section:'main',badge:'',group:'core'},
+  {id:'files',    icon:'files',    label:t('nav_files'),   section:'main',badge:'',group:'core'},
+  {id:'notes',    icon:'notes',    label:t('nav_notes'),   section:'main',badge:'',group:'core'},
+  {id:'todos',    icon:'todos',    label:t('nav_tasks'),   section:'main',badge:'',group:'core'},
+  {id:'habits',   icon:'habits',   label:t('nav_habits'),  section:'main',badge:'',group:'core'},
+  {id:'kanban',   icon:'kanban',   label:t('nav_kanban'),  section:'main',badge:'',group:'core'},
+  {id:'calendar', icon:'calendar', label:t('nav_calendar'),section:'main',badge:'',group:'core'},
+  {id:'goals',    icon:'goals',    label:t('nav_goals'),   section:'main',badge:'',group:'core'},
+  {id:'journal',  icon:'journal',  label:t('nav_journal'), section:'main',badge:'',group:'core'},
+  {id:'countdown',icon:'countdown',label:t('nav_countdown'),section:'main',badge:'',group:'core'},
+  {id:'stats',    icon:'stats',    label:t('nav_stats'),   section:'main',badge:'',group:'core'},
+  {id:'github',   icon:'github',   label:t('nav_github'),  section:'main',badge:'',group:'extras'},
+  {id:'gaming',   icon:'gaming',   label:t('nav_gaming'),  section:'main',badge:'',group:'extras'},
+  {id:'valorant-accounts',icon:'valorant',label:t('nav_valorant_accounts'),section:'main',badge:'',group:'extras'},
+  {id:'databases',icon:'databases',label:t('nav_databases'),section:'main',badge:'',group:'extras'},
   {id:'connections',icon:'connections',label:t('nav_connections'),section:'account',badge:''},
   {id:'settings', icon:'settings', label:t('nav_settings'),section:'account',badge:''},
   {id:'ai',       icon:'ai',       label:t('nav_ai'),      section:'account',badge:''},
@@ -98,7 +98,30 @@ function renderSidebarNav(){
     mainEl.appendChild(lbl);
     pinnedItems.forEach(item=>mainEl.appendChild(makeItem(item)));
   }
-  restItems.forEach(item=>mainEl.appendChild(makeItem(item)));
+  // Custom drag order can interleave 'core'/'extras' items freely — once the
+  // user has reordered, their order IS the grouping, so auto-dividers would
+  // just flicker in and out. Only show the divider on the untouched default order.
+  const groupsAreContiguous=(()=>{
+    let seenExtras=false,backToCore=false;
+    for(const it of restItems){
+      if(it.group==='extras')seenExtras=true;
+      else if(seenExtras)backToCore=true;
+    }
+    return !backToCore;
+  })();
+  let lastGroup=null;
+  restItems.forEach(item=>{
+    // Only 'extras' gets its own divider — 'core' is the implicit default
+    // section and doesn't need a redundant label right after Favoris/top.
+    if(groupsAreContiguous&&item.group==='extras'&&lastGroup!=='extras'){
+      const glbl=document.createElement('div');
+      glbl.className='nav-label sb-group-label';
+      glbl.textContent='Gaming & Data';
+      mainEl.appendChild(glbl);
+    }
+    lastGroup=item.group;
+    mainEl.appendChild(makeItem(item));
+  });
   acctEl.innerHTML='<div class="nav-label">Account</div>';
   nav.filter(i=>i.section==='account').forEach(item=>acctEl.appendChild(makeItem(item)));
 }

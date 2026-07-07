@@ -493,38 +493,9 @@
   transform: translateZ(0);
 }
 
-#page-settings .btn-primary {
-  border: 1px solid rgba(255, 255, 255, 0.14) !important;
-  color: #fff !important;
-  background: linear-gradient(135deg, #9071fb, #704deb) !important;
-  box-shadow: 0 9px 24px rgba(111, 74, 230, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
-}
-
-#page-settings .btn-primary:hover {
-  filter: brightness(1.07);
-  box-shadow: 0 12px 30px rgba(111, 74, 230, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
-  transform: translateY(-1px) !important;
-}
-
-#page-settings .btn-ghost {
-  border: 1px solid rgba(255, 255, 255, 0.09) !important;
-  color: #aca6b3 !important;
-  background: rgba(255, 255, 255, 0.025) !important;
-  box-shadow: none !important;
-}
-
-#page-settings .btn-ghost:hover {
-  color: #efebf4 !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
-  background: rgba(255, 255, 255, 0.05) !important;
-  transform: translateY(-1px) !important;
-}
-
-#page-settings .btn-danger {
-  border-color: rgba(239, 104, 115, 0.22) !important;
-  color: #ffb4bb !important;
-  background: rgba(239, 104, 115, 0.075) !important;
-}
+/* Buttons on this page use the global .btn-primary/.btn-ghost/.btn-danger
+   (ui/app.css) — the page-local color/shadow override that made Settings'
+   buttons look different from the rest of the dashboard has been removed. */
 
 #page-settings .btn:focus-visible,
 #page-settings button:focus-visible,
@@ -562,35 +533,8 @@
   line-height: 1.45;
 }
 
-#page-settings .toggle {
-  width: 40px;
-  height: 22px;
-  flex: 0 0 40px;
-}
-
-#page-settings .toggle-track {
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  background: #24242b !important;
-}
-
-#page-settings .toggle-thumb {
-  width: 16px !important;
-  height: 16px !important;
-  top: 3px !important;
-  left: 3px !important;
-  background: #d5d1db !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.32) !important;
-}
-
-#page-settings .toggle input:checked + .toggle-track {
-  border-color: rgba(139, 108, 255, 0.55) !important;
-  background: rgba(124, 86, 238, 0.78) !important;
-}
-
-#page-settings .toggle input:checked ~ .toggle-thumb {
-  left: 21px !important;
-  background: #fff !important;
-}
+/* Switch itself is .ui-switch (ui/components.css) — the local .toggle/.toggle-track/
+   .toggle-thumb override that caused the Notifications-page switch bug is gone. */
 
 #page-settings .theme-segmented {
   min-height: 42px;

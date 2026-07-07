@@ -23,7 +23,6 @@
     ".avatar-opt[onclick]",
     ".ai-session-item[onclick]",
     ".valo-match-row[onclick]",
-    ".widget-toggle-switch[onclick]",
     "#daily-focus-check[onclick]",
     "#custom-color-preview[onclick]",
     "#mob-topbar-avatar[onclick]",

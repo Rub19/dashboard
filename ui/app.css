@@ -70,8 +70,8 @@ body.ethone-2026-ui #main-sidebar .nav-list{
 }
 body.ethone-2026-ui #main-sidebar .nav-item{
   width:100%;
-  min-height:40px!important;
-  margin:2px 0!important;
+  min-height:42px!important;
+  margin:1px 0!important;
   padding:0 var(--spacing-sm)!important;
   gap:var(--spacing-sm)!important;
   border:1px solid transparent!important;
@@ -81,21 +81,24 @@ body.ethone-2026-ui #main-sidebar .nav-item{
   font-family:inherit;
   font-weight:500;
   text-align:left;
+  position:relative;
+  z-index:1; /* sit above .nav-active-pill, which is positioned behind at z-index:0 */
 }
 body.ethone-2026-ui #main-sidebar .nav-item svg{
-  width:17px!important;
-  height:17px!important;
+  width:18px!important;
+  height:18px!important;
   stroke-width:1.75!important;
+  flex-shrink:0;
 }
 body.ethone-2026-ui #main-sidebar .nav-item:hover{
   color:var(--text-primary)!important;
   background:var(--surface-2)!important;
 }
 body.ethone-2026-ui #main-sidebar .nav-item.active{
-  color:var(--text-primary)!important;
-  border-color:var(--accent-border)!important;
-  background:rgba(139,92,246,.14)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.055),0 5px 18px -12px rgba(139,92,246,.7)!important;
+  color:#fff!important;
+  border-color:transparent!important;
+  background:transparent!important;
+  box-shadow:none!important;
 }
 body.ethone-2026-ui #main-sidebar .nav-item.active::before,
 body.ethone-2026-ui #main-sidebar .nav-item.active::after{
@@ -116,6 +119,32 @@ body.ethone-2026-ui #main-sidebar .nav-item.active .nav-label-text{
   color:#fff!important;
   opacity:1!important;
 }
+
+/* ── Sliding active-indicator pill (real element this time — nav-active-pill.js
+   previously targeted #nav-active-pill, which never existed in the DOM). One
+   pill, positioned/sized via JS getBoundingClientRect() against whichever
+   .nav-item is active, transform/width/height are all interpolable so a plain
+   transition works (unlike grid-template-columns, which silently no-ops). ── */
+body.ethone-2026-ui #main-sidebar{position:relative}
+.nav-active-pill{
+  position:absolute;
+  top:0;left:8px;
+  z-index:0;
+  border-radius:var(--radius-md);
+  background:rgba(139,92,246,.16);
+  border:1px solid var(--accent-border);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 6px 20px -12px rgba(139,92,246,.75);
+  opacity:0;
+  pointer-events:none;
+  transition:
+    transform var(--motion-fast,180ms) var(--ease-premium,cubic-bezier(.22,1,.36,1)),
+    width var(--motion-fast,180ms) var(--ease-premium,cubic-bezier(.22,1,.36,1)),
+    height var(--motion-fast,180ms) var(--ease-premium,cubic-bezier(.22,1,.36,1)),
+    opacity 120ms ease;
+  will-change:transform;
+}
+.nav-active-pill.visible{opacity:1}
+.sidebar.compact .nav-active-pill{left:8px}
 body.ethone-2026-ui #main-sidebar .sidebar-bottom,
 body.ethone-2026-ui #main-sidebar .sidebar-footer{
   padding:var(--spacing-sm)!important;
@@ -454,29 +483,7 @@ body.ethone-2026-ui :where(input,textarea,select,.modal-input):focus{
   box-shadow:var(--focus-ring)!important;
 }
 body.ethone-2026-ui textarea{min-height:88px!important;resize:vertical}
-body.ethone-2026-ui :where(.toggle,.widget-toggle-switch){
-  width:42px!important;
-  height:24px!important;
-}
-body.ethone-2026-ui :where(.toggle-track,.widget-toggle-switch){
-  border:1px solid var(--border-secondary)!important;
-  border-radius:var(--radius-full)!important;
-  background:var(--surface-switch)!important;
-}
-body.ethone-2026-ui .toggle input:checked+.toggle-track,
-body.ethone-2026-ui .widget-toggle-switch.on{
-  border-color:var(--accent)!important;
-  background:var(--accent)!important;
-}
-body.ethone-2026-ui .toggle-thumb{
-  width:18px!important;
-  height:18px!important;
-  top:3px!important;
-  left:3px!important;
-  border-radius:var(--radius-full)!important;
-  box-shadow:var(--shadow-xs)!important;
-}
-body.ethone-2026-ui .toggle input:checked~.toggle-thumb{transform:translateX(18px)!important}
+/* Switch itself is .ui-switch (ui/components.css) — .toggle/.widget-toggle-switch no longer used. */
 body.ethone-2026-ui .toggle-row{min-height:48px;padding:var(--spacing-sm) 0!important}
 body.ethone-2026-ui .toggle-label{font-size:13px!important}
 body.ethone-2026-ui .toggle-sub{color:var(--text-tertiary)!important;font-size:11px!important}

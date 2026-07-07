@@ -4,6 +4,7 @@ function renderValoModeContent(mmr,matches,name,tag,mode){
   let html='';
   const puuid=curP()?.state?.gaming?.valo?.puuid||'';
   const nameLow=name.toLowerCase(),tagLow=tag.toLowerCase();
+  const currentData=mmr?.current_data||mmr;
 
   function findMe(m){
     const players=m.players?.all_players||[];

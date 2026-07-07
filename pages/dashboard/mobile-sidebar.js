@@ -41,8 +41,11 @@ function checkMobileLayout(){
   const isTablet=window.innerWidth>768&&window.innerWidth<=1024;
   const mobTopbar=document.getElementById('mobile-topbar');
   if(mobTopbar) mobTopbar.style.setProperty('display',isMobile?'flex':'none','important');
+  // Tablet-only: #mobile-topbar already ships its own toggle button (and its
+  // own avatar/name/add-button header) for true mobile widths, so showing
+  // this standalone button there too would duplicate it on-screen.
   const hb=document.getElementById('hamburger');
-  if(hb) hb.style.setProperty('display',(isMobile||isTablet)?'flex':'none','important');
+  if(hb) hb.style.setProperty('display',isTablet?'flex':'none','important');
 }
 
 // ── Laptop range (1025-1200px): auto-compact unless the user explicitly

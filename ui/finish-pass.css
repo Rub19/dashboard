@@ -1,0 +1,507 @@
+/* ETHONE finish pass: production polish without changing product logic. */
+
+:root{
+  --ethone-sidebar-item-h:40px;
+  --ethone-scrollbar:rgba(255,255,255,.13);
+  --ethone-scrollbar-hover:rgba(167,139,250,.32);
+}
+
+html,
+body{
+  overscroll-behavior:none;
+}
+
+body.ethone-2026-ui,
+body.ethone-v2,
+html.ethone-personal-os-ready body{
+  scrollbar-color:var(--ethone-scrollbar) transparent;
+}
+
+body.ethone-2026-ui::-webkit-scrollbar,
+body.ethone-v2::-webkit-scrollbar,
+#main-content::-webkit-scrollbar,
+.live-panel-body::-webkit-scrollbar,
+.modal::-webkit-scrollbar{
+  width:8px;
+  height:8px;
+}
+
+body.ethone-2026-ui::-webkit-scrollbar-track,
+body.ethone-v2::-webkit-scrollbar-track,
+#main-content::-webkit-scrollbar-track,
+.live-panel-body::-webkit-scrollbar-track,
+.modal::-webkit-scrollbar-track{
+  background:transparent;
+}
+
+body.ethone-2026-ui::-webkit-scrollbar-thumb,
+body.ethone-v2::-webkit-scrollbar-thumb,
+#main-content::-webkit-scrollbar-thumb,
+.live-panel-body::-webkit-scrollbar-thumb,
+.modal::-webkit-scrollbar-thumb{
+  border:2px solid transparent;
+  border-radius:999px;
+  background:var(--ethone-scrollbar);
+  background-clip:padding-box;
+}
+
+body.ethone-2026-ui::-webkit-scrollbar-thumb:hover,
+body.ethone-v2::-webkit-scrollbar-thumb:hover,
+#main-content::-webkit-scrollbar-thumb:hover,
+.live-panel-body::-webkit-scrollbar-thumb:hover,
+.modal::-webkit-scrollbar-thumb:hover{
+  background:var(--ethone-scrollbar-hover);
+  background-clip:padding-box;
+}
+
+/* Auth must fit a 1080p viewport without becoming a page-within-a-page. */
+@media (min-width:901px){
+  #auth-screen.ethone-auth-v3-visible{
+    width:100vw!important;
+    min-height:100dvh!important;
+    height:100dvh!important;
+    padding:clamp(12px,1.35vh,22px) clamp(18px,2vw,34px)!important;
+    overflow:hidden!important;
+  }
+
+  #auth-layout{
+    width:min(100%,1900px)!important;
+    max-height:calc(100dvh - clamp(24px,2.7vh,44px))!important;
+    grid-template-columns:minmax(0,1.55fr) minmax(450px,.65fr)!important;
+    column-gap:clamp(28px,3.4vw,64px)!important;
+    row-gap:clamp(14px,1.9vh,24px)!important;
+    align-items:start!important;
+  }
+
+  .auth-v3-brand{
+    margin-bottom:clamp(10px,1.8vh,24px)!important;
+  }
+
+  .auth-v3-title{
+    max-width:min(1050px,100%)!important;
+    font-size:clamp(48px,4.3vw,82px)!important;
+    line-height:.92!important;
+  }
+
+  .auth-v3-copy{
+    max-width:760px!important;
+    margin-top:clamp(7px,1.1vh,14px)!important;
+  }
+
+  .auth-v3-preview{
+    height:clamp(470px,55vh,620px)!important;
+    min-height:0!important;
+    box-shadow:
+      0 34px 78px -48px rgba(0,0,0,.88),
+      0 0 calc(42px * var(--theme-glow-scale,1)) rgba(var(--accent-rgb,139,92,246),.12),
+      inset 0 1px 0 rgba(255,255,255,.055)!important;
+  }
+
+  #lb-box{
+    width:min(100%,470px)!important;
+    min-height:0!important;
+    align-self:start!important;
+    padding:clamp(24px,2vw,34px)!important;
+  }
+}
+
+@media (min-width:901px) and (max-height:940px){
+  #auth-layout{
+    grid-template-columns:minmax(0,1.5fr) minmax(440px,.66fr)!important;
+    row-gap:12px!important;
+  }
+
+  .auth-v3-title{
+    font-size:clamp(40px,3.65vw,64px)!important;
+  }
+
+  .auth-v3-preview{
+    height:clamp(430px,54vh,560px)!important;
+  }
+
+  #lb-box{
+    padding:24px 28px!important;
+  }
+}
+
+@media (min-width:901px) and (max-height:820px){
+  #auth-screen.ethone-auth-v3-visible{
+    padding-block:10px!important;
+  }
+
+  #auth-layout{
+    grid-template-columns:minmax(0,1.42fr) minmax(420px,.68fr)!important;
+    column-gap:28px!important;
+    row-gap:9px!important;
+  }
+
+  .auth-v3-brand{
+    margin-bottom:8px!important;
+  }
+
+  .auth-v3-title{
+    max-width:820px!important;
+    font-size:clamp(34px,3.55vw,48px)!important;
+    line-height:.96!important;
+  }
+
+  .auth-v3-copy{
+    font-size:12px!important;
+    line-height:1.45!important;
+    margin-top:6px!important;
+  }
+
+  .auth-v3-preview{
+    height:min(445px,calc(100dvh - 202px))!important;
+  }
+
+  #lb-box{
+    width:min(100%,444px)!important;
+    padding:19px 23px!important;
+  }
+
+  .auth-field{
+    margin-bottom:9px!important;
+  }
+
+  .lb-input,
+  .lb-btn-primary{
+    height:41px!important;
+  }
+
+  .auth-divider{
+    margin-block:10px 9px!important;
+  }
+}
+
+@media (max-width:900px){
+  #auth-screen.ethone-auth-v3-visible{
+    height:auto!important;
+    min-height:100dvh!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+  }
+}
+
+/* Single-scroll app shell: sidebar navigates, content scrolls. */
+body.ethone-2026-ui:has(#main-sidebar:not([style*="display:none"])),
+body.ethone-v2:has(#main-sidebar:not([style*="display:none"])){
+  height:100dvh;
+  overflow:hidden;
+}
+
+body.ethone-2026-ui #main-content,
+body.ethone-v2 #main-content{
+  height:100dvh!important;
+  max-height:100dvh!important;
+  min-height:0;
+  align-self:stretch!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  scroll-behavior:smooth;
+}
+
+body.ethone-2026-ui #main-content.main,
+body.ethone-v2 #main-content.main{
+  min-height:0!important;
+  padding-bottom:clamp(24px,4vh,46px)!important;
+}
+
+body.ethone-2026-ui #main-content > .tab-content.active,
+body.ethone-v2 #main-content > .tab-content.active{
+  min-height:0!important;
+}
+
+#main-sidebar.sidebar{
+  height:100dvh!important;
+  max-height:100dvh!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+
+.live-panel{
+  position:fixed!important;
+  top:0!important;
+  right:0!important;
+  bottom:auto!important;
+  z-index:360!important;
+  height:100dvh!important;
+  max-height:100dvh!important;
+  overflow:hidden!important;
+}
+
+.live-panel.retracted{
+  transform:translateX(calc(100% - 42px))!important;
+}
+
+.live-panel.mobile-open{
+  transform:translateX(0)!important;
+}
+
+.live-panel-body{
+  min-height:0!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+}
+
+#sidebar-nav-main{
+  min-height:0!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  scrollbar-width:none!important;
+}
+
+#sidebar-nav-main::-webkit-scrollbar{
+  width:0!important;
+  height:0!important;
+}
+
+#sidebar-nav-account{
+  overflow:hidden!important;
+}
+
+/* The absolute active pill caused empty purple bars on resize/scroll. The active
+   state now lives inside the nav item itself. */
+#nav-active-pill{
+  display:none!important;
+  opacity:0!important;
+  pointer-events:none!important;
+  visibility:hidden!important;
+}
+
+#main-sidebar .nav-item,
+body.ethone-2026-ui #main-sidebar .nav-item,
+body.ethone-v2 #main-sidebar .nav-item,
+html.ethone-personal-os-ready #main-sidebar .nav-item{
+  contain:paint;
+  height:var(--ethone-sidebar-item-h)!important;
+  min-height:var(--ethone-sidebar-item-h)!important;
+  width:100%!important;
+  max-width:100%!important;
+  overflow:hidden!important;
+  isolation:isolate;
+}
+
+#main-sidebar .nav-item::before,
+#main-sidebar .nav-item::after{
+  display:none!important;
+}
+
+#main-sidebar .nav-item.active,
+body.ethone-2026-ui #main-sidebar .nav-item.active,
+body.ethone-v2 #main-sidebar .nav-item.active,
+html.ethone-personal-os-ready #main-sidebar .nav-item.active{
+  color:#fff!important;
+  background:
+    linear-gradient(90deg,rgba(var(--accent-rgb,139,92,246),.18),rgba(var(--accent-rgb,139,92,246),.08))!important;
+  border-color:rgba(var(--accent-rgb,139,92,246),.28)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06),
+    0 8px 24px -18px rgba(var(--accent-rgb,139,92,246),.86)!important;
+}
+
+#main-sidebar .nav-item.active > .nav-icon,
+#main-sidebar .nav-item.active svg{
+  color:#d8ccff!important;
+}
+
+#main-sidebar .nav-label-text{
+  min-width:0!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  text-overflow:ellipsis!important;
+}
+
+#main-sidebar.compact .nav-label-text,
+#main-sidebar.compact .nav-badge{
+  display:none!important;
+}
+
+#main-sidebar .nav-icon{
+  display:grid!important;
+  place-items:center!important;
+  flex:0 0 19px!important;
+}
+
+/* Live widgets belong to the right panel only. */
+#main-sidebar :is(#sb-live-section,#sb-live-list,.sb-section,.sb-widget,.sidebar-widget){
+  display:none!important;
+}
+
+.live-panel .sb-section[hidden],
+.live-panel .sb-section.is-widget-hidden{
+  display:none!important;
+}
+
+.live-panel .sb-widget-card,
+.live-panel .widget-row,
+.live-panel .lp-add-card{
+  border-radius:var(--radius-lg)!important;
+  border-color:var(--border-primary)!important;
+  background:rgba(var(--surface-1-rgb,18,18,24),var(--theme-surface-opacity,.68))!important;
+}
+
+.live-panel .ui-switch{
+  flex:0 0 auto;
+}
+
+/* Emoji containment: avoid system emoji breaking premium rhythm. */
+:where(
+  .empty-icon,
+  .va-empty-icon,
+  .panel-title-icon,
+  .settings-nav-icon,
+  .conn-icon,
+  .game-card-logo,
+  .item-icon,
+  .link-favicon,
+  .widget-row-icon,
+  .mob-icon,
+  .upload-zone-text > span:first-child,
+  #sb-dc-av-fallback,
+  #np-art span,
+  #np-art-fallback span,
+  #sb-lfm-art span
+){
+  display:inline-grid;
+  place-items:center;
+  width:1.55em;
+  height:1.55em;
+  min-width:1.55em;
+  line-height:1;
+  vertical-align:middle;
+  font-family:"Segoe UI Symbol","Segoe UI Emoji","Apple Color Emoji",system-ui,sans-serif;
+  font-size:.95em;
+}
+
+:where(.empty-icon,.va-empty-icon,.panel-title-icon,.settings-nav-icon,.conn-icon,.game-card-logo,.item-icon,.mob-icon){
+  color:rgba(var(--accent-rgb,139,92,246),.92);
+  background:rgba(var(--accent-rgb,139,92,246),.10);
+  border:1px solid rgba(var(--accent-rgb,139,92,246),.18);
+  border-radius:var(--radius-md);
+}
+
+/* Preference axes should be visibly reflected everywhere, not only on settings. */
+body.ethone-2026-ui :where(.card,.panel,.settings-card,.conn-card,.game-card,.ethone-os2-card,.d4-panel,.modal,.dropdown,.widget,.apc-card),
+body.ethone-v2 :where(.card,.panel,.settings-card,.conn-card,.game-card,.ethone-os2-card,.d4-panel,.modal,.dropdown,.widget,.apc-card){
+  border-radius:var(--radius-lg)!important;
+}
+
+body.ethone-2026-ui :where(.card,.panel,.settings-card,.conn-card,.game-card,.ethone-os2-card,.d4-panel,.modal,.dropdown,.widget),
+body.ethone-v2 :where(.card,.panel,.settings-card,.conn-card,.game-card,.ethone-os2-card,.d4-panel,.modal,.dropdown,.widget){
+  box-shadow:var(--shadow-sm)!important;
+}
+
+html[data-density="compact"] #main-content{
+  --section-gap:var(--spacing-sm);
+}
+
+html[data-density="comfortable"] #main-content{
+  --section-gap:var(--spacing-lg);
+}
+
+/* Dashboard V4 readability guard. Prevent Brain/cards from collapsing into
+   letter-by-letter columns when the live panel reduces the content width. */
+body.ethone-2026-ui .d4-home,
+body.ethone-v2 .d4-home{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+}
+
+body.ethone-2026-ui .d4-widgetgrid,
+body.ethone-v2 .d4-widgetgrid{
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  gap:var(--spacing-md)!important;
+  align-items:stretch!important;
+  width:100%!important;
+  min-width:0!important;
+}
+
+body.ethone-2026-ui .d4-widget,
+body.ethone-v2 .d4-widget{
+  min-width:0!important;
+  overflow:hidden!important;
+}
+
+body.ethone-2026-ui .d4-widget-body,
+body.ethone-v2 .d4-widget-body{
+  min-width:0!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+}
+
+body.ethone-2026-ui .d4-brain-grid,
+body.ethone-v2 .d4-brain-grid{
+  display:grid!important;
+  grid-template-columns:minmax(190px,.9fr) minmax(260px,1.2fr) minmax(190px,.9fr)!important;
+  gap:var(--spacing-md)!important;
+  min-width:0!important;
+}
+
+body.ethone-2026-ui .d4-brain-column,
+body.ethone-v2 .d4-brain-column,
+body.ethone-2026-ui .d4-next-action,
+body.ethone-v2 .d4-next-action{
+  min-width:0!important;
+}
+
+body.ethone-2026-ui .d4-label,
+body.ethone-v2 .d4-label,
+body.ethone-2026-ui .d4-brain-column p,
+body.ethone-v2 .d4-brain-column p,
+body.ethone-2026-ui .d4-next-action span,
+body.ethone-v2 .d4-next-action span,
+body.ethone-2026-ui .d4-next-action strong,
+body.ethone-v2 .d4-next-action strong{
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+}
+
+@media (max-width:1500px){
+  body.ethone-2026-ui .d4-brain-grid,
+  body.ethone-v2 .d4-brain-grid{
+    grid-template-columns:minmax(220px,.92fr) minmax(300px,1.08fr)!important;
+  }
+
+  body.ethone-2026-ui .d4-reminders,
+  body.ethone-v2 .d4-reminders{
+    grid-column:1 / -1!important;
+  }
+}
+
+@media (max-width:1180px){
+  body.ethone-2026-ui .d4-widgetgrid,
+  body.ethone-v2 .d4-widgetgrid{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  }
+
+  body.ethone-2026-ui .d4-brain-grid,
+  body.ethone-v2 .d4-brain-grid{
+    grid-template-columns:1fr!important;
+  }
+}
+
+@media (max-width:760px){
+  body.ethone-2026-ui .d4-widgetgrid,
+  body.ethone-v2 .d4-widgetgrid{
+    grid-template-columns:1fr!important;
+  }
+
+  body.ethone-2026-ui .d4-widget,
+  body.ethone-v2 .d4-widget{
+    grid-column:1 / -1!important;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,
+  *::before,
+  *::after{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    scroll-behavior:auto!important;
+    transition-duration:.001ms!important;
+  }
+}

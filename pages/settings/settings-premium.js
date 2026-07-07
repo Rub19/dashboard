@@ -180,7 +180,7 @@ function renderPluginsSettings(){
           (installed&&!d.custom?'<button class="btn btn-ghost" style="font-size:11px;padding:5px 9px" onclick="pluginUninstall(\''+d.id+'\')">Uninstall</button>':'')+
           '<button class="btn btn-ghost" style="font-size:11px;padding:5px 9px" onclick="switchPage(\''+configureTarget+'\',null)">Configure</button>'+
         '</div>'
-        :'<span style="font-size:11px;color:var(--muted2)">Coming soon</span>')+
+        :'<span style="font-size:11px;color:var(--muted2)">Ready in Integration Hub</span>')+
     '</div>';
   }).join('');
 }

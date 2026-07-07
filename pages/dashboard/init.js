@@ -163,8 +163,12 @@ function initDashboard(){
     // Double RAF ensures layout is complete
     requestAnimationFrame(()=>requestAnimationFrame(_applyBg));
   }
-  // Apply custom accent if any
-  if(p.customAccent)applyCustomColor(p.customAccent);
+  // Restore custom accent silently. User-facing toasts belong to manual changes,
+  // not dashboard boot.
+  if(p.customAccent){
+    if(typeof window.applyStoredCustomAccent==='function')window.applyStoredCustomAccent(p.customAccent);
+    else if(typeof applyCustomColor==='function')applyCustomColor(p.customAccent);
+  }
   // Delay weather/quote to let DOM and geolocation settle
   setTimeout(()=>{fetchWeather();fetchQuote();},800);
   updateBannerDisplay();

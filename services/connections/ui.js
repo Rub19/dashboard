@@ -45,4 +45,7 @@ function loadConnectionsUI(){
     // juste mettre à jour les toggles visuels dans la page connexions
   }
   loadGroqKeyUI();
+  if(typeof window.ethoneIntegrationHub==='object'&&window.ethoneIntegrationHub){
+    window.ethoneIntegrationHub.render();
+  }
 }

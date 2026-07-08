@@ -114,7 +114,9 @@
     if(typeof reducedMotion.addEventListener==="function")reducedMotion.addEventListener("change",reduceMotionState);
     else if(typeof reducedMotion.addListener==="function")reducedMotion.addListener(reduceMotionState);
   }
-  if(!window.ETHONE_LIGHT_BOOT_MODE&&"MutationObserver" in window){
+  var lightBoot=false;
+  try{lightBoot=!!(window.ETHONE_LIGHT_BOOT_MODE||document.documentElement.classList.contains("ethone-stable-boot")||document.documentElement.dataset.ethoneStableBoot==="1")}catch(e){lightBoot=!!window.ETHONE_LIGHT_BOOT_MODE}
+  if(!lightBoot&&"MutationObserver" in window){
     new MutationObserver(scheduleHardening).observe(document.documentElement,{childList:true,subtree:true});
   }
 

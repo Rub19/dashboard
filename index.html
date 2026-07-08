@@ -32,7 +32,8 @@ html.ethone-safe-mode .particle{
 }
 </style>
 <script id="ethone-safe-mode" src="./core/safe-mode.js"></script>
-<script id="ethone-boot-sequence" src="./core/boot-sequence.js?v=70"></script>
+<script id="ethone-emergency-performance-guard" src="./core/emergency-performance-guard.js?v=98"></script>
+<script id="ethone-boot-sequence" src="./core/boot-sequence.js?v=98"></script>
 <style id="ethone-boot-watchdog-css">
 .ethone-boot-warning{position:fixed;left:16px;right:16px;top:16px;z-index:2147483647;max-width:720px;margin:0 auto;padding:12px 14px;border:1px solid rgba(251,191,36,.34);border-radius:12px;background:rgba(24,18,8,.94);color:#fde68a;font:13px/1.45 Inter,system-ui,sans-serif;box-shadow:0 16px 48px rgba(0,0,0,.34)}
 </style>
@@ -5915,6 +5916,7 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <script src="./actions/navigation.js"></script>
 <script src="./actions/notifications.js"></script>
 <script src="./actions/action-registry.js"></script>
+<script id="ethone-lazy-modules" src="./core/lazy-modules.js?v=98"></script>
 <script id="ethone-coming-soon" src="./ui/coming-soon.js?v=71"></script>
 <script src="./components/registry.js"></script>
 <script src="./widgets/registry.js?v=2"></script>
@@ -5934,7 +5936,7 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <script id="ethone-legacy-dashboard-shell" src="./pages/dashboard/shell.js?v=75"></script>
 <script id="ethone-legacy-sidebar-customizer" src="./pages/dashboard/sidebar-customizer.js"></script>
 <script id="ethone-legacy-sidebar-widgets-init" src="./pages/dashboard/sidebar-widgets-init.js"></script>
-<script id="ethone-legacy-sidebar-widget-manager" src="./pages/dashboard/sidebar-widget-manager.js"></script>
+<script id="ethone-legacy-sidebar-widget-manager"  type="application/ethone-lazy" data-ethone-lazy-group="widgets" data-src="./pages/dashboard/sidebar-widget-manager.js"></script>
 <script id="ethone-sidebar-tooltip" src="./pages/dashboard/sidebar-tooltip.js"></script>
 <script id="ethone-sidebar-scrollfade" src="./pages/dashboard/sidebar-scrollfade.js"></script>
 <script id="ethone-legacy-dashboard-init" src="./pages/dashboard/init.js"></script>
@@ -5949,7 +5951,7 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <script id="ethone-legacy-modals" src="./components/modals.js"></script>
 <script id="ethone-legacy-toast" src="./components/toast.js"></script>
 <script id="ethone-ui-primitives" src="./components/ui-primitives.js"></script>
-<script id="ethone-legacy-activity" src="./services/activity.js"></script>
+<script id="ethone-legacy-activity"  type="application/ethone-lazy" data-ethone-lazy-group="activity" data-src="./services/activity.js"></script>
 <script id="ethone-legacy-items" src="./pages/items/index.js?v=86"></script>
 <script id="ethone-legacy-notes" src="./pages/notes/index.js?v=85"></script>
 <script id="ethone-legacy-todos" src="./pages/tasks/index.js"></script>
@@ -5962,27 +5964,27 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <script id="ethone-legacy-stats-charts" src="./widgets/stats-charts.js"></script>
 <script id="ethone-legacy-settings-profile" src="./pages/settings/profile.js"></script>
 <script id="ethone-legacy-search" src="./actions/search.js"></script>
-<script id="ethone-legacy-connections-ui" src="./services/connections/ui.js"></script>
-<script id="ethone-legacy-connections-badges" src="./services/connections/badges.js"></script>
+<script id="ethone-legacy-connections-ui"  type="application/ethone-lazy" data-ethone-lazy-group="connections" data-src="./services/connections/ui.js"></script>
+<script id="ethone-legacy-connections-badges"  type="application/ethone-lazy" data-ethone-lazy-group="connections" data-src="./services/connections/badges.js"></script>
 <script id="ethone-legacy-command-palette" src="./components/command-palette.js?v=82"></script>
 <script id="ethone-legacy-link-preview" src="./components/link-preview.js"></script>
 <script id="ethone-legacy-widget-drag" src="./components/widget-drag.js"></script>
 <script id="ethone-motion-system" src="./ui/motion-system.js"></script>
-<script id="ethone-legacy-animations" src="./ui/animations.js"></script>
-<script id="ethone-legacy-notifications" src="./actions/legacy-notifications.js"></script>
-<script id="ethone-notification-center" src="./actions/notification-center.js?v=1"></script>
+<script id="ethone-legacy-animations"  type="application/ethone-lazy" data-ethone-lazy-group="polish" data-src="./ui/animations.js"></script>
+<script id="ethone-legacy-notifications"  type="application/ethone-lazy" data-ethone-lazy-group="notifications" data-src="./actions/legacy-notifications.js"></script>
+<script id="ethone-notification-center"  type="application/ethone-lazy" data-ethone-lazy-group="notifications" data-src="./actions/notification-center.js?v=1"></script>
 <script id="ethone-legacy-heatmap" src="./widgets/heatmap.js"></script>
 <script id="ethone-analytics-charts" src="./widgets/analytics-charts.js"></script>
-<script id="ethone-legacy-presentation" src="./pages/presentation/index.js"></script>
-<script id="ethone-legacy-valorant-match-detail" src="./pages/gaming/valorant-match-detail.js"></script>
+<script id="ethone-legacy-presentation"  type="application/ethone-lazy" data-ethone-lazy-group="presentation" data-src="./pages/presentation/index.js"></script>
+<script id="ethone-legacy-valorant-match-detail"  type="application/ethone-lazy" data-ethone-lazy-group="gaming" data-src="./pages/gaming/valorant-match-detail.js"></script>
 <script id="ethone-legacy-backgrounds" src="./services/theme/backgrounds.js"></script>
-<script id="ethone-legacy-lastfm" src="./services/connections/lastfm.js"></script>
-<script id="ethone-legacy-discord" src="./services/connections/discord.js?v=68"></script>
-<script id="ethone-legacy-lanyard" src="./services/connections/lanyard.js?v=71"></script>
-<script id="ethone-legacy-steam" src="./services/connections/steam.js?v=68"></script>
-<script id="ethone-legacy-spotify" src="./services/connections/spotify.js"></script>
-<script id="ethone-legacy-twitch" src="./services/connections/twitch.js"></script>
-<script id="ethone-legacy-compare" src="./services/connections/compare.js"></script>
+<script id="ethone-legacy-lastfm"  type="application/ethone-lazy" data-ethone-lazy-group="connections" data-src="./services/connections/lastfm.js"></script>
+<script id="ethone-legacy-discord"  type="application/ethone-lazy" data-ethone-lazy-group="connections" data-src="./services/connections/discord.js?v=68"></script>
+<script id="ethone-legacy-lanyard"  type="application/ethone-lazy" data-ethone-lazy-group="connections" data-src="./services/connections/lanyard.js?v=71"></script>
+<script id="ethone-legacy-steam"  type="application/ethone-lazy" data-ethone-lazy-group="connections" data-src="./services/connections/steam.js?v=68"></script>
+<script id="ethone-legacy-spotify"  type="application/ethone-lazy" data-ethone-lazy-group="connections" data-src="./services/connections/spotify.js"></script>
+<script id="ethone-legacy-twitch"  type="application/ethone-lazy" data-ethone-lazy-group="connections" data-src="./services/connections/twitch.js"></script>
+<script id="ethone-legacy-compare"  type="application/ethone-lazy" data-ethone-lazy-group="connections" data-src="./services/connections/compare.js"></script>
 <script id="ethone-legacy-pinned" src="./widgets/pinned.js"></script>
 <script id="ethone-legacy-countdown-widget" src="./widgets/countdown-compact.js"></script>
 <script id="ethone-legacy-habits" src="./widgets/habits.js"></script>
@@ -5991,52 +5993,52 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <script id="ethone-legacy-stats-page" src="./widgets/stats-page.js"></script>
 <script id="ethone-legacy-resizable-sidebar" src="./pages/dashboard/resizable-sidebar.js"></script>
 <script id="ethone-nav-active-pill" src="./pages/dashboard/nav-active-pill.js"></script>
-<script id="ethone-live-panel-resize" src="./pages/dashboard/live-panel-resize.js?v=2"></script>
-<script id="ethone-live-panel-catalog" src="./pages/dashboard/live-panel-catalog.js"></script>
-<script id="ethone-live-panel-widget-resize" src="./pages/dashboard/live-panel-widget-resize.js"></script>
-<script id="ethone-micro-interactions" src="./ui/micro-interactions.js"></script>
+<script id="ethone-live-panel-resize"  type="application/ethone-lazy" data-ethone-lazy-group="widgets" data-src="./pages/dashboard/live-panel-resize.js?v=2"></script>
+<script id="ethone-live-panel-catalog"  type="application/ethone-lazy" data-ethone-lazy-group="widgets" data-src="./pages/dashboard/live-panel-catalog.js"></script>
+<script id="ethone-live-panel-widget-resize"  type="application/ethone-lazy" data-ethone-lazy-group="widgets" data-src="./pages/dashboard/live-panel-widget-resize.js"></script>
+<script id="ethone-micro-interactions"  type="application/ethone-lazy" data-ethone-lazy-group="polish" data-src="./ui/micro-interactions.js"></script>
 <script id="ethone-legacy-sound" src="./ui/sound.js"></script>
 <script id="ethone-legacy-weather" src="./widgets/weather.js"></script>
 <script id="ethone-legacy-pomodoro" src="./widgets/pomodoro.js?v=68"></script>
 <script id="ethone-legacy-daily-focus" src="./widgets/daily-focus.js?v=68"></script>
 <script id="ethone-legacy-quote" src="./widgets/quote.js"></script>
-<script id="ethone-legacy-gaming" src="./pages/gaming/index.js"></script>
-<script id="ethone-legacy-valorant-connect" src="./pages/gaming/valorant-connect.js"></script>
-<script id="ethone-legacy-valorant-render" src="./pages/gaming/valorant-render.js"></script>
-<script id="ethone-legacy-valorant-map" src="./pages/gaming/valorant-map.js"></script>
-<script id="ethone-legacy-valorant-mode" src="./pages/gaming/valorant-mode.js"></script>
-<script id="ethone-legacy-valorant-disconnect" src="./pages/gaming/valorant-disconnect.js"></script>
-<script id="ethone-legacy-league" src="./pages/gaming/league.js"></script>
-<script id="ethone-legacy-gaming-helpers" src="./pages/gaming/helpers.js"></script>
-<script id="ethone-gaming-hub" src="./pages/gaming/hub.js?v=1"></script>
+<script id="ethone-legacy-gaming"  type="application/ethone-lazy" data-ethone-lazy-group="gaming" data-src="./pages/gaming/index.js"></script>
+<script id="ethone-legacy-valorant-connect"  type="application/ethone-lazy" data-ethone-lazy-group="gaming" data-src="./pages/gaming/valorant-connect.js"></script>
+<script id="ethone-legacy-valorant-render"  type="application/ethone-lazy" data-ethone-lazy-group="gaming" data-src="./pages/gaming/valorant-render.js"></script>
+<script id="ethone-legacy-valorant-map"  type="application/ethone-lazy" data-ethone-lazy-group="gaming" data-src="./pages/gaming/valorant-map.js"></script>
+<script id="ethone-legacy-valorant-mode"  type="application/ethone-lazy" data-ethone-lazy-group="gaming" data-src="./pages/gaming/valorant-mode.js"></script>
+<script id="ethone-legacy-valorant-disconnect"  type="application/ethone-lazy" data-ethone-lazy-group="gaming" data-src="./pages/gaming/valorant-disconnect.js"></script>
+<script id="ethone-legacy-league"  type="application/ethone-lazy" data-ethone-lazy-group="gaming" data-src="./pages/gaming/league.js"></script>
+<script id="ethone-legacy-gaming-helpers"  type="application/ethone-lazy" data-ethone-lazy-group="gaming" data-src="./pages/gaming/helpers.js"></script>
+<script id="ethone-gaming-hub"  type="application/ethone-lazy" data-ethone-lazy-group="gaming" data-src="./pages/gaming/hub.js?v=1"></script>
 <script id="ethone-ui-dropdown" src="./components/dropdown.js"></script>
-<script id="ethone-va-dropdown-editor" src="./pages/valorant-accounts/dropdown-editor.js"></script>
+<script id="ethone-va-dropdown-editor"  type="application/ethone-lazy" data-ethone-lazy-group="gaming" data-src="./pages/valorant-accounts/dropdown-editor.js"></script>
 <script id="ethone-ui-context-menu" src="./components/context-menu.js"></script>
-<script id="ethone-va-detail-panel" src="./pages/valorant-accounts/detail-panel.js"></script>
-<script id="ethone-va-import-export" src="./pages/valorant-accounts/import-export.js"></script>
-<script id="ethone-va-index" src="./pages/valorant-accounts/index.js"></script>
-<script id="ethone-db-state" src="./pages/databases/state.js"></script>
-<script id="ethone-db-dropdown-editor" src="./pages/databases/dropdown-editor.js"></script>
-<script id="ethone-db-templates" src="./pages/databases/templates.js"></script>
-<script id="ethone-db-table" src="./pages/databases/table-view.js"></script>
-<script id="ethone-db-import-export" src="./pages/databases/import-export.js"></script>
-<script id="ethone-db-kanban" src="./pages/databases/kanban-view.js"></script>
-<script id="ethone-db-gallery" src="./pages/databases/gallery-view.js"></script>
-<script id="ethone-db-calendar" src="./pages/databases/calendar-view.js"></script>
-<script id="ethone-db-timeline" src="./pages/databases/timeline-view.js"></script>
-<script id="ethone-db-list" src="./pages/databases/list-view.js"></script>
-<script id="ethone-db-relation" src="./pages/databases/relation-field.js"></script>
-<script id="ethone-db-formula" src="./pages/databases/formula.js"></script>
-<script id="ethone-db-rating" src="./pages/databases/rating-field.js"></script>
-<script id="ethone-db-detail" src="./pages/databases/detail-panel.js"></script>
-<script id="ethone-db-home" src="./pages/databases/home.js"></script>
-<script id="ethone-timeline-page" src="./pages/timeline/index.js?v=77"></script>
-<script id="ethone-health-page" src="./pages/health/index.js?v=90"></script>
-<script id="ethone-version-history-page" src="./pages/version-history/index.js?v=82"></script>
-<script id="ethone-theme-editor" src="./pages/settings/theme-editor.js"></script>
-<script id="ethone-settings-premium" src="./pages/settings/settings-premium.js?v=68"></script>
+<script id="ethone-va-detail-panel"  type="application/ethone-lazy" data-ethone-lazy-group="gaming" data-src="./pages/valorant-accounts/detail-panel.js"></script>
+<script id="ethone-va-import-export"  type="application/ethone-lazy" data-ethone-lazy-group="gaming" data-src="./pages/valorant-accounts/import-export.js"></script>
+<script id="ethone-va-index"  type="application/ethone-lazy" data-ethone-lazy-group="gaming" data-src="./pages/valorant-accounts/index.js"></script>
+<script id="ethone-db-state"  type="application/ethone-lazy" data-ethone-lazy-group="databases" data-src="./pages/databases/state.js"></script>
+<script id="ethone-db-dropdown-editor"  type="application/ethone-lazy" data-ethone-lazy-group="databases" data-src="./pages/databases/dropdown-editor.js"></script>
+<script id="ethone-db-templates"  type="application/ethone-lazy" data-ethone-lazy-group="databases" data-src="./pages/databases/templates.js"></script>
+<script id="ethone-db-table"  type="application/ethone-lazy" data-ethone-lazy-group="databases" data-src="./pages/databases/table-view.js"></script>
+<script id="ethone-db-import-export"  type="application/ethone-lazy" data-ethone-lazy-group="databases" data-src="./pages/databases/import-export.js"></script>
+<script id="ethone-db-kanban"  type="application/ethone-lazy" data-ethone-lazy-group="databases" data-src="./pages/databases/kanban-view.js"></script>
+<script id="ethone-db-gallery"  type="application/ethone-lazy" data-ethone-lazy-group="databases" data-src="./pages/databases/gallery-view.js"></script>
+<script id="ethone-db-calendar"  type="application/ethone-lazy" data-ethone-lazy-group="databases" data-src="./pages/databases/calendar-view.js"></script>
+<script id="ethone-db-timeline"  type="application/ethone-lazy" data-ethone-lazy-group="databases" data-src="./pages/databases/timeline-view.js"></script>
+<script id="ethone-db-list"  type="application/ethone-lazy" data-ethone-lazy-group="databases" data-src="./pages/databases/list-view.js"></script>
+<script id="ethone-db-relation"  type="application/ethone-lazy" data-ethone-lazy-group="databases" data-src="./pages/databases/relation-field.js"></script>
+<script id="ethone-db-formula"  type="application/ethone-lazy" data-ethone-lazy-group="databases" data-src="./pages/databases/formula.js"></script>
+<script id="ethone-db-rating"  type="application/ethone-lazy" data-ethone-lazy-group="databases" data-src="./pages/databases/rating-field.js"></script>
+<script id="ethone-db-detail"  type="application/ethone-lazy" data-ethone-lazy-group="databases" data-src="./pages/databases/detail-panel.js"></script>
+<script id="ethone-db-home"  type="application/ethone-lazy" data-ethone-lazy-group="databases" data-src="./pages/databases/home.js"></script>
+<script id="ethone-timeline-page"  type="application/ethone-lazy" data-ethone-lazy-group="activity" data-src="./pages/timeline/index.js?v=77"></script>
+<script id="ethone-health-page"  type="application/ethone-lazy" data-ethone-lazy-group="health" data-src="./pages/health/index.js?v=90"></script>
+<script id="ethone-version-history-page"  type="application/ethone-lazy" data-ethone-lazy-group="versions" data-src="./pages/version-history/index.js?v=82"></script>
+<script id="ethone-theme-editor"  type="application/ethone-lazy" data-ethone-lazy-group="settings-advanced" data-src="./pages/settings/theme-editor.js"></script>
+<script id="ethone-settings-premium"  type="application/ethone-lazy" data-ethone-lazy-group="settings-advanced" data-src="./pages/settings/settings-premium.js?v=68"></script>
 <script id="ethone-settings-functional" src="./services/settings/functional.js"></script>
-<script id="ethone-spaces-ui" src="./services/spaces-ui.js?v=1"></script>
+<script id="ethone-spaces-ui"  type="application/ethone-lazy" data-ethone-lazy-group="spaces" data-src="./services/spaces-ui.js?v=1"></script>
 <link rel="stylesheet" href="./ui/first-run.css?v=73">
 <script id="ethone-first-run" src="./services/onboarding/first-run.js?v=75"></script>
 <style id="ethone-backup-manager-css">
@@ -6067,8 +6069,8 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 @media(max-width:1120px){.backup-hero,.backup-row{grid-template-columns:1fr}.backup-row-meta,.backup-row-actions{justify-content:flex-start}.backup-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:640px){.backup-hero-actions,.backup-stats{grid-template-columns:1fr}}
 </style>
-<script id="ethone-backup-manager-runtime" src="./services/backup-manager.js?v=82"></script>
-<script id="ethone-cloud-runtime" src="./services/cloud.js?v=89"></script>
+<script id="ethone-backup-manager-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="settings-advanced" data-src="./services/backup-manager.js?v=82"></script>
+<script id="ethone-cloud-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="settings-advanced" data-src="./services/cloud.js?v=89"></script>
 <style id="ethone-keyboard-shortcuts-css">
 .kb-page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px;padding:18px;border:1px solid rgba(255,255,255,.08);border-radius:22px;background:radial-gradient(420px 180px at 12% 0%,rgba(139,92,246,.16),transparent 66%),linear-gradient(180deg,rgba(255,255,255,.052),rgba(255,255,255,.026))}
 .kb-kicker{color:rgba(196,181,253,.86);font:900 10px/1 var(--mono);letter-spacing:1.3px;text-transform:uppercase;margin-bottom:8px}
@@ -6091,12 +6093,12 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 @media(max-width:760px){.kb-page-head{display:grid;padding:15px}.kb-row{grid-template-columns:1fr}.kb-capture,.kb-icon{width:100%}}
 </style>
 <script id="ethone-keyboard-shortcuts-runtime" src="./services/keyboard-shortcuts.js?v=68"></script>
-<script id="ethone-automation-builder" src="./pages/automation-builder/index.js"></script>
-<script id="ethone-studio-runtime" src="./pages/studio/index.js?v=1"></script>
+<script id="ethone-automation-builder"  type="application/ethone-lazy" data-ethone-lazy-group="automation" data-src="./pages/automation-builder/index.js"></script>
+<script id="ethone-studio-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="studio" data-src="./pages/studio/index.js?v=1"></script>
 <script id="ethone-legacy-mobile-sidebar" src="./pages/dashboard/mobile-sidebar.js"></script>
 <script id="ethone-legacy-import-export" src="./actions/import-export.js"></script>
-<script id="ethone-legacy-desktop-notifications" src="./actions/desktop-notifications.js"></script>
-<script id="ethone-legacy-gaming-overview" src="./widgets/gaming-overview.js"></script>
+<script id="ethone-legacy-desktop-notifications"  type="application/ethone-lazy" data-ethone-lazy-group="notifications" data-src="./actions/desktop-notifications.js"></script>
+<script id="ethone-legacy-gaming-overview"  type="application/ethone-lazy" data-ethone-lazy-group="gaming" data-src="./widgets/gaming-overview.js"></script>
 <script id="ethone-legacy-i18n-data" src="./services/language/dictionary.js"></script>
 <script id="ethone-legacy-boot" src="./core/boot.js"></script>
 <script id="ethone-legacy-mobile-gestures" src="./ui/mobile-gestures.js"></script>
@@ -6512,8 +6514,8 @@ body.eh-dashboard-ready #eh-dock {
     </div>
   </section>
 </div>
-<script id="ethone-enterprise-2026-runtime" src="./core/enterprise-runtime.js?v=71"></script>
-<script id="ethone-desktop-environment" src="./ui/desktop-environment.js?v=88"></script>
+<script id="ethone-enterprise-2026-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="desktop" data-src="./core/enterprise-runtime.js?v=71"></script>
+<script id="ethone-desktop-environment"  type="application/ethone-lazy" data-ethone-lazy-group="desktop" data-src="./ui/desktop-environment.js?v=88"></script>
 
 
 
@@ -6897,7 +6899,7 @@ body[data-light="1"].ethone-personal-os-ready .ethone-pos-context-card strong{co
   html.ethone-personal-os-ready *{scroll-behavior:auto!important}
 }
 </style>
-<script id="ethone-personal-os-vision-runtime" src="./pages/personal-os-vision.js"></script>
+<script id="ethone-personal-os-vision-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="shell-experimental" data-src="./pages/personal-os-vision.js"></script>
 <style id="ethone-dashboard-os2-css">
 /* ETHONE Dashboard OS2 layer: editable Home, Dock, Marketplace, Store, Command Center, Workspaces, Timeline. */
 :root{
@@ -7170,7 +7172,7 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
   .ethone-os2-dock,.ethone-os2-dock-btn,.ethone-os2-iconbtn,.ethone-os2-workspace{transition:none!important}
 }
 </style>
-<script id="ethone-dashboard-os2-runtime" src="./pages/dashboard-os2.js?v=71"></script>
+<script id="ethone-dashboard-os2-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="shell-experimental" data-src="./pages/dashboard-os2.js?v=71"></script>
 <style id="ethone-ai-core-css">
 /* ETHONE AI Core: provider-neutral intelligence platform layer. */
 :root{
@@ -7426,7 +7428,7 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
   .aic-state-dot{animation:none!important}
 }
 </style>
-<script id="ethone-ai-core-runtime" src="./services/ai/core.js?v=71"></script>
+<script id="ethone-ai-core-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="ai" data-src="./services/ai/core.js?v=71"></script>
 <style id="ethone-ai-everywhere-css">
 /* ETHONE AI Everywhere: contextual copilot, page actions, widget actions and command palette AI. */
 :root{
@@ -7716,10 +7718,10 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
 @media(max-width:920px){.aie-home-insights{grid-template-columns:1fr}.aie-copilot-toggle{right:14px;bottom:calc(104px + env(safe-area-inset-bottom,0px))}.aie-copilot{right:14px;bottom:calc(160px + env(safe-area-inset-bottom,0px))}.aie-suggestion-stack{right:14px;bottom:calc(220px + env(safe-area-inset-bottom,0px))}}
 </style>
 <!-- ETHONE Brain OS global context layer: lightweight, guarded, no automatic provider calls. -->
-<script id="ethone-brain-intelligence-runtime" src="./services/ai/brain-intelligence.js?v=1"></script>
-<script id="ethone-ai-everywhere-runtime" src="./services/ai/everywhere.js?v=71"></script>
-<script id="ethone-brain-os-global-runtime" src="./services/ai/brain-os-global.js?v=3"></script>
-<script id="ethone-side-panels-runtime" src="./services/ui/side-panels.js?v=71"></script>
+<script id="ethone-brain-intelligence-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="ai brain-os" data-src="./services/ai/brain-intelligence.js?v=1"></script>
+<script id="ethone-ai-everywhere-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="ai" data-src="./services/ai/everywhere.js?v=71"></script>
+<script id="ethone-brain-os-global-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="ai brain-os" data-src="./services/ai/brain-os-global.js?v=3"></script>
+<script id="ethone-side-panels-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="side-panels" data-src="./services/ui/side-panels.js?v=71"></script>
 <style id="ethone-intelligence-33a-css">
 /* ETHONE Intelligence 3.3A: OS-native intelligence experience layer. */
 :root{
@@ -10963,7 +10965,7 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
   .theme-palette.large{grid-template-columns:1fr}
 }
 </style>
-<script id="ethone-marketplace-41-runtime" src="./services/marketplace/runtime.js"></script>
+<script id="ethone-marketplace-41-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="marketplace" data-src="./services/marketplace/runtime.js"></script>
 <style id="ethone-production-hardening-css">
 @media (prefers-reduced-motion: reduce){
   html.ethone-reduced-motion *,html.ethone-reduced-motion *::before,html.ethone-reduced-motion *::after{
@@ -11370,7 +11372,7 @@ body.ethone-v2 :focus-visible{outline:2px solid rgba(157,124,255,.82)!important;
   body.ethone-v2 *,body.ethone-v2 *::before,body.ethone-v2 *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 }
 </style>
-<script id="ethone-v2-product-redesign" src="./ui/product-redesign.js"></script>
+<script id="ethone-v2-product-redesign"  type="application/ethone-lazy" data-ethone-lazy-group="shell-experimental" data-src="./ui/product-redesign.js"></script>
 <style id="ethone-auth-interactivity-emergency-css">
 #auth-screen{pointer-events:auto!important}
 #auth-card,#lb-box,#auth-lang-bar,#auth-screen form,#auth-screen button,#auth-screen input{pointer-events:auto!important}
@@ -11769,7 +11771,7 @@ body.ethone-2026-ui #page-dashboard .panel:not(.x26-panel){
   .x26-dock button{height:36px;padding:0 12px;white-space:nowrap}
 }
 </style>
-<script id="ethone-2026-experience-redesign" src="./ui/experience-redesign.js"></script>
+<script id="ethone-2026-experience-redesign"  type="application/ethone-lazy" data-ethone-lazy-group="shell-experimental" data-src="./ui/experience-redesign.js"></script>
 <style id="ethone-dashboard-vnext-css">
 body.ethone-2026-ui{
   --vn-bg:#050507;
@@ -12950,7 +12952,7 @@ body.ethone-2026-ui #main-sidebar .nav-item svg{
   .bh-module{transition:none!important}
 }
 </style>
-<script id="ethone-home-commercial-runtime" src="./pages/home-commercial.js"></script>
+<script id="ethone-home-commercial-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="shell-experimental" data-src="./pages/home-commercial.js"></script>
 <style id="ethone-sidebar-premium">
 /* ============================================================================
    ETHONE V6 — Premium Sidebar
@@ -13562,36 +13564,36 @@ body.ethone-v2 #main-content{
 <link rel="stylesheet" href="./ui/brain-os-v5.css?v=96">
 <link rel="stylesheet" href="./ui/os-experience-polish.css?v=97">
 <script src="./ui/accessibility.js"></script>
-<script src="./pages/dashboard/widget-catalog.js?v=83"></script>
-<script src="./services/ui/widget-builder.js?v=84"></script>
+<script id="ethone-dashboard-widget-catalog"  type="application/ethone-lazy" data-ethone-lazy-group="widgets" data-src="./pages/dashboard/widget-catalog.js?v=83"></script>
+<script id="ethone-widget-builder-service"  type="application/ethone-lazy" data-ethone-lazy-group="widgets studio" data-src="./services/ui/widget-builder.js?v=84"></script>
 <script src="./pages/dashboard-v4.js?v=84"></script>
-<script src="./services/usage-learning.js?v=80"></script>
-<script src="./services/ui/smart-layouts.js?v=95"></script>
-<script src="./services/ui/widget-marketplace.js?v=2"></script>
-<script src="./ui/native-shell.js?v=1"></script>
-<script src="./ui/status-bar.js?v=71"></script>
-<script src="./ui/mission-control.js?v=96"></script>
+<script id="ethone-usage-learning"  type="application/ethone-lazy" data-ethone-lazy-group="smart-layouts" data-src="./services/usage-learning.js?v=80"></script>
+<script id="ethone-smart-layouts-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="smart-layouts" data-src="./services/ui/smart-layouts.js?v=95"></script>
+<script id="ethone-widget-marketplace-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="marketplace widgets" data-src="./services/ui/widget-marketplace.js?v=2"></script>
+<script id="ethone-native-shell-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="desktop" data-src="./ui/native-shell.js?v=1"></script>
+<script id="ethone-status-bar-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="desktop" data-src="./ui/status-bar.js?v=71"></script>
+<script id="ethone-mission-control-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="mission-control" data-src="./ui/mission-control.js?v=96"></script>
 <script src="./ui/profile-switcher.js?v=76"></script>
-<script src="./ui/app-library.js?v=1"></script>
-<script src="./ui/morning-briefing.js?v=1"></script>
-<script src="./services/achievements.js?v=1"></script>
-<script src="./services/ui/universe.js?v=1"></script>
-<script src="./pages/import-assistant/index.js?v=1"></script>
+<script id="ethone-app-library-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="app-library" data-src="./ui/app-library.js?v=1"></script>
+<script id="ethone-morning-briefing-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="morning-briefing" data-src="./ui/morning-briefing.js?v=1"></script>
+<script id="ethone-achievements-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="achievements" data-src="./services/achievements.js?v=1"></script>
+<script id="ethone-universe-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="universe" data-src="./services/ui/universe.js?v=1"></script>
+<script id="ethone-import-assistant-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="import" data-src="./pages/import-assistant/index.js?v=1"></script>
 <script src="./pages/settings/settings-v2.js?v=1"></script>
-<script src="./services/connections/integration-hub.js?v=68"></script>
-<script src="./services/plugins/plugin-hub.js?v=68"></script>
-<script src="./services/plugins/plugin-sdk.js?v=1"></script>
-<script src="./services/ai/agent.js?v=87"></script>
+<script id="ethone-integration-hub-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="connections" data-src="./services/connections/integration-hub.js?v=68"></script>
+<script id="ethone-plugin-hub-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="plugins marketplace" data-src="./services/plugins/plugin-hub.js?v=68"></script>
+<script id="ethone-plugin-sdk-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="plugins marketplace" data-src="./services/plugins/plugin-sdk.js?v=1"></script>
+<script id="ethone-ai-agent-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="ai" data-src="./services/ai/agent.js?v=87"></script>
 <script src="./ui/finish-pass.js?v=1"></script>
 <script src="./ui/release-polish.js?v=71"></script>
-<script src="./ui/permanent-dock.js?v=71"></script>
-<script src="./services/memory/central-memory.js?v=71"></script>
-<script src="./services/time-machine.js?v=81"></script>
+<script id="ethone-permanent-dock-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="desktop" data-src="./ui/permanent-dock.js?v=71"></script>
+<script id="ethone-central-memory-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="time-machine" data-src="./services/memory/central-memory.js?v=71"></script>
+<script id="ethone-time-machine-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="time-machine" data-src="./services/time-machine.js?v=81"></script>
 <script src="./core/ui-isolation.js?v=70"></script>
 <script src="./ui/clarity-polish.js?v=91"></script>
 <script src="./ui/mobile.js?v=92"></script>
-<script src="./services/ui/flow.js?v=96"></script>
-<script src="./services/brain-os/context-engine.js?v=96"></script>
-<script src="./ui/os-experience-polish.js?v=97"></script>
+<script id="ethone-flow-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="flows" data-src="./services/ui/flow.js?v=98"></script>
+<script id="ethone-brain-os-v5-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="ai brain-os" data-src="./services/brain-os/context-engine.js?v=98"></script>
+<script id="ethone-os-experience-polish-runtime"  type="application/ethone-lazy" data-ethone-lazy-group="polish" data-src="./ui/os-experience-polish.js?v=98"></script>
 </body>
 </html>

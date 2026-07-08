@@ -33,6 +33,13 @@
     return "classic";
   }
   function canMount(layer){
+    var stableBoot=false;
+    try{stableBoot=!!(window.__ethoneDisableExperimentalBoot||document.documentElement.classList.contains("ethone-stable-boot")||document.documentElement.dataset.ethoneStableBoot==="1")}catch(e){stableBoot=!!window.__ethoneDisableExperimentalBoot}
+    if(stableBoot){
+      if(layer==="desktop"||layer==="split"||layer==="widgets-panel"||layer==="permanent-dock"||layer==="enterprise-dock"||layer==="side-panels"||layer==="native-shell"||layer==="status-bar"){
+        return false;
+      }
+    }
     var mode=layoutMode();
     var pState=profileState();
     if(layer==="desktop")return mode==="desktop"&&read("ethone:desktop-enabled","0")==="1";

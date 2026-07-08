@@ -43,6 +43,9 @@
   }
 
   function isLightBoot() {
+    try {
+      if (document.documentElement.classList.contains("ethone-stable-boot") || document.documentElement.dataset.ethoneStableBoot === "1") return true;
+    } catch (e) {}
     return !!(window.ETHONE_LIGHT_BOOT_MODE || window.ETHONE_SAFE_MODE || window.__ethoneSkipExternalWidgets);
   }
 

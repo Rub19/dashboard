@@ -1,4 +1,4 @@
-const ETHONE_VERSION = "2026-07-08-production-v97-os-experience-polish";
+const ETHONE_VERSION = "2026-07-08-production-v98-emergency-stable-boot";
 const ETHONE_CACHE = `ethone-${ETHONE_VERSION}`;
 const ETHONE_OFFLINE_URL = "./index.html";
 const ETHONE_CORE_ASSETS = [
@@ -45,8 +45,10 @@ const ETHONE_CORE_ASSETS = [
   "./ui/os-sidebar.css",
   "./ui/auth.css",
   "./core/safe-mode.js",
+  "./core/emergency-performance-guard.js",
   "./core/boot.js",
   "./core/boot-sequence.js",
+  "./core/lazy-modules.js",
   "./core/ui-isolation.js",
   "./core/enterprise-runtime.js",
   "./core/qa-repair.js",
@@ -142,10 +144,43 @@ const ETHONE_CORE_ASSETS = [
   "./icons/ethone-icon-512.png"
 ];
 
+const ETHONE_BOOT_ASSETS = [
+  "./index.html",
+  "./manifest.webmanifest",
+  "./ui/auth.css",
+  "./ui/tokens.css",
+  "./ui/components.css",
+  "./ui/app.css",
+  "./ui/layout-integrity.css",
+  "./ui/clarity-polish.css",
+  "./ui/mobile.css",
+  "./pages/dashboard-v4.css",
+  "./core/safe-mode.js",
+  "./core/emergency-performance-guard.js",
+  "./core/boot-sequence.js",
+  "./core/lazy-modules.js",
+  "./core/runtime.js",
+  "./core/boot.js",
+  "./actions/action-registry.js",
+  "./actions/legacy-navigation.js",
+  "./services/auth/interactivity.js",
+  "./services/auth/premium-experience.js",
+  "./services/language/auth-dictionary.js",
+  "./services/language/runtime.js",
+  "./services/settings.js",
+  "./services/theme.js",
+  "./pages/dashboard/init.js",
+  "./pages/dashboard/shell.js",
+  "./pages/dashboard-v4.js",
+  "./icons/ethone-icon.svg",
+  "./icons/ethone-icon-192.png",
+  "./icons/ethone-icon-512.png"
+];
+
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(ETHONE_CACHE)
-      .then(cache => cache.addAll(ETHONE_CORE_ASSETS.map(url => new Request(url, { cache: "reload" }))))
+      .then(cache => cache.addAll(ETHONE_BOOT_ASSETS.map(url => new Request(url, { cache: "reload" }))))
       .then(() => self.skipWaiting())
   );
 });

@@ -15,7 +15,7 @@
   function now(){return new Date().toISOString()}
   function profile(){try{return typeof window.curP==="function"?window.curP():null}catch(e){return null}}
   function state(){var p=profile();if(!p)return {};if(!p.state)p.state={};return p.state}
-  function toastSafe(message,type){if(typeof window.toast==="function")window.toast(message,type||"info");else console.log("[ETHONE Backup]",message)}
+  function toastSafe(message,type){if(typeof window.toast==="function")window.toast(message,type||"info")}
   function esc(value){
     if(typeof window.escapeHTML==="function")return window.escapeHTML(value);
     return String(value==null?"":value).replace(/[&<>"]/g,function(ch){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]});
@@ -274,6 +274,7 @@
           '<div class="backup-hero-actions">'+
             '<input class="modal-input" id="backup-description" placeholder="Description, e.g. Before dashboard changes" />'+
             '<button class="btn btn-primary" type="button" data-backup-create>Create backup</button>'+
+            '<button class="btn btn-ghost" type="button" data-backup-time-machine>Open Time Machine</button>'+
             '<button class="btn btn-ghost" type="button" data-backup-import>Import</button>'+
             '<button class="btn btn-ghost" type="button" data-backup-export-latest>Export latest</button>'+
             '<button class="btn btn-ghost" type="button" data-backup-rollback>Rollback</button>'+
@@ -325,6 +326,12 @@
     }
     if(target.closest("[data-backup-create-export]")){
       exportBackup(createBackup("Created before export").id);
+      return;
+    }
+    if(target.closest("[data-backup-time-machine]")){
+      if(window.ETHONETimeMachine&&typeof window.ETHONETimeMachine.open==="function")window.ETHONETimeMachine.open();
+      else if(typeof window.runAction==="function")window.runAction("timeMachine.open",{source:"backup-manager"});
+      else toastSafe("Time Machine unavailable","info");
       return;
     }
     if(target.closest("[data-backup-import]")){

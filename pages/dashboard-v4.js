@@ -56,7 +56,7 @@
   function esc(v){return Core.dom.escapeHTML(v)}
   function lang(){var l=Language.current();return words[l]?l:"fr"}
   var extraWords={
-    fr:{layouts:"Layouts",newLayout:"Nouveau",duplicateLayout:"Dupliquer",deleteLayout:"Supprimer",layoutName:"Nom du layout",cannotDeleteLast:"Garde au moins un layout",layoutDeleted:"Layout supprimÃ©",layoutCreated:"Layout crÃ©Ã©",layoutDuplicated:"Layout dupliquÃ©",widgetLibrary:"BibliothÃ¨que de widgets"},
+    fr:{layouts:"Layouts",newLayout:"Nouveau",duplicateLayout:"Dupliquer",deleteLayout:"Supprimer",layoutName:"Nom du layout",cannotDeleteLast:"Garde au moins un layout",layoutDeleted:"Layout supprime",layoutCreated:"Layout cree",layoutDuplicated:"Layout duplique",widgetLibrary:"Bibliotheque de widgets"},
     en:{layouts:"Layouts",newLayout:"New",duplicateLayout:"Duplicate",deleteLayout:"Delete",layoutName:"Layout name",cannotDeleteLast:"Keep at least one layout",layoutDeleted:"Layout deleted",layoutCreated:"Layout created",layoutDuplicated:"Layout duplicated",widgetLibrary:"Widget library"},
     es:{layouts:"Layouts",newLayout:"Nuevo",duplicateLayout:"Duplicar",deleteLayout:"Eliminar",layoutName:"Nombre del layout",cannotDeleteLast:"Conserva al menos un layout",layoutDeleted:"Layout eliminado",layoutCreated:"Layout creado",layoutDuplicated:"Layout duplicado",widgetLibrary:"Biblioteca de widgets"},
     de:{layouts:"Layouts",newLayout:"Neu",duplicateLayout:"Duplizieren",deleteLayout:"Loschen",layoutName:"Layoutname",cannotDeleteLast:"Mindestens ein Layout behalten",layoutDeleted:"Layout geloscht",layoutCreated:"Layout erstellt",layoutDuplicated:"Layout dupliziert",widgetLibrary:"Widget-Bibliothek"}
@@ -432,6 +432,32 @@
     var el=qs("#d4-widget-picker");
     if(el)el.remove();
   }
+  function addWidgetTypeToLayout(type,options){
+    options=options||{};
+    var home=qs("#ethone-2026-home");
+    var Widgets=App.get("widgets"),cat=Widgets?Widgets.get(type):null;
+    if(!cat)return false;
+    var prefs=editMode&&workingPrefs?workingPrefs:layoutPrefs();
+    var count=prefs.instances.filter(function(w){return w.type===type}).length;
+    var max=cat.maxInstances||Infinity;
+    if(count>=max){if(typeof window.toast==="function")window.toast(tr("maxInstancesReached"),"info");return false}
+    var size=Object.assign({},options.size||cat.defaultSize||{col:2,row:1});
+    prefs.instances.push({
+      instanceId:type.replace(/[^a-z0-9_-]/gi,"-")+"-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,6),
+      type:type,
+      size:size,
+      locked:false,
+      config:options.config||{}
+    });
+    if(editMode&&workingPrefs){
+      workingPrefs=prefs;
+      if(home)applyLayout(home,workingPrefs);
+    }else{
+      savePrefs(prefs);
+      render();
+    }
+    return true;
+  }
   function refreshLayoutTools(home){
     var sel=qs("#d4-layout-select",home);
     if(sel)sel.innerHTML=layoutOptionsHTML();
@@ -440,8 +466,14 @@
     return "layout-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,6);
   }
   function promptLayoutName(fallback){
-    var name=window.prompt(tr("layoutName"),fallback||"Dashboard");
-    return name&&name.trim()?name.trim():null;
+    var base=String(fallback||"Dashboard").trim()||"Dashboard";
+    var lib=layoutLibrary();
+    var name=base,i=2;
+    while(lib.layouts.some(function(l){return String(l.name||"").toLowerCase()===name.toLowerCase()})){
+      name=base+" "+i;
+      i++;
+    }
+    return name;
   }
 
   // ── Markup + boot ────────────────────────────────────────────────────
@@ -449,7 +481,7 @@
     return '<section class="vn-home vh-home d4-home" id="ethone-2026-home" data-vh-bound="1" data-lang="'+lang()+'">'+
       '<header class="d4-topbar"><button class="d4-search" type="button" data-v4-action-id="dashboard.action.search" aria-label="'+tr("search")+'">'+icon("search")+'<span>'+tr("search")+'</span><kbd>Ctrl K</kbd></button><button class="d4-workspace" type="button" data-v4-action-id="dashboard.workspace.toggle" aria-expanded="false" aria-controls="d4-workspace-switcher"><span class="d4-ws-active-icon">'+icon(workspaceIconName())+'</span><span id="vh-workspace-top">'+esc(workspaceName())+'</span>'+icon("chevron-down")+'</button><div class="d4-top-actions"><div class="d4-sync"><i class="d4-live-dot"></i><span id="vh-sync">'+tr("synced")+'</span></div><button class="d4-icon-button" type="button" data-v4-action-id="dashboard.action.notifications" aria-label="Notifications">'+icon("bell")+'</button><button class="d4-icon-button" type="button" data-v4-action-id="dashboard.edit.toggle" id="d4-edit-toggle" aria-label="'+tr("editToggleLabel")+'" aria-pressed="false">'+icon("layout-dashboard")+'</button><button class="d4-avatar" type="button" data-v4-action-id="dashboard.action.profile" id="vh-avatar" aria-label="Profile">E</button></div></header>'+
       '<section class="d4-workspace-switcher" id="d4-workspace-switcher" hidden><div class="d4-ws-switcher-head"><div><strong>Workspaces</strong><span>Chaque espace possede son dashboard, ses widgets et son contexte.</span></div><button class="d4-editbar-btn" type="button" data-v4-action-id="dashboard.workspace.create">'+tr("newLayout")+'</button></div><div class="d4-ws-grid">'+workspaceSwitcherHTML()+'</div></section>'+
-      '<div class="d4-editbar" id="d4-editbar" hidden><span class="d4-editbar-title">'+icon("move")+tr("editMode")+'</span><div class="d4-layout-tools"><label><span>'+tr("layouts")+'</span><select id="d4-layout-select" data-v4-layout-select>'+layoutOptionsHTML()+'</select></label><button class="d4-editbar-btn" type="button" data-v4-action-id="dashboard.layout.new">'+tr("newLayout")+'</button><button class="d4-editbar-btn" type="button" data-v4-action-id="dashboard.layout.duplicate">'+tr("duplicateLayout")+'</button><button class="d4-editbar-btn danger" type="button" data-v4-action-id="dashboard.layout.delete">'+tr("deleteLayout")+'</button></div><div class="d4-editbar-actions"><button class="d4-editbar-btn" type="button" data-v4-action-id="dashboard.edit.addWidget">'+icon("plus")+tr("addWidget")+'</button><button class="d4-editbar-btn" type="button" data-v4-action-id="dashboard.edit.reset">'+tr("editReset")+'</button><button class="d4-editbar-btn" type="button" data-v4-action-id="dashboard.edit.cancel">'+tr("editCancel")+'</button><button class="d4-editbar-btn primary" type="button" data-v4-action-id="dashboard.edit.save">'+tr("editSave")+'</button></div></div>'+
+      '<div class="d4-editbar" id="d4-editbar" hidden><span class="d4-editbar-title">'+icon("move")+tr("editMode")+'</span><div class="d4-layout-tools"><label><span>'+tr("layouts")+'</span><select id="d4-layout-select" data-v4-layout-select>'+layoutOptionsHTML()+'</select></label><button class="d4-editbar-btn" type="button" data-v4-action-id="dashboard.layout.new">'+tr("newLayout")+'</button><button class="d4-editbar-btn" type="button" data-v4-action-id="dashboard.layout.duplicate">'+tr("duplicateLayout")+'</button><button class="d4-editbar-btn danger" type="button" data-v4-action-id="dashboard.layout.delete">'+tr("deleteLayout")+'</button></div><div class="d4-editbar-actions"><button class="d4-editbar-btn" type="button" data-v4-action-id="dashboard.edit.openBuilder">'+icon("wand-sparkles")+'Widget Builder</button><button class="d4-editbar-btn" type="button" data-v4-action-id="dashboard.edit.addWidget">'+icon("plus")+tr("addWidget")+'</button><button class="d4-editbar-btn" type="button" data-v4-action-id="dashboard.edit.reset">'+tr("editReset")+'</button><button class="d4-editbar-btn" type="button" data-v4-action-id="dashboard.edit.cancel">'+tr("editCancel")+'</button><button class="d4-editbar-btn primary" type="button" data-v4-action-id="dashboard.edit.save">'+tr("editSave")+'</button></div></div>'+
       '<div class="d4-widgetgrid" id="d4-widget-grid"></div>'+
     '</section>';
   }
@@ -715,18 +747,15 @@
       var home=qs("#ethone-2026-home");if(!home)return;
       openWidgetPicker(home);
     }});
+    Actions.register("dashboard.edit.openBuilder",{handler:function(){
+      if(window.ETHONEWidgetBuilder&&typeof window.ETHONEWidgetBuilder.open==="function")window.ETHONEWidgetBuilder.open();
+      else if(typeof window.toast==="function")window.toast("Widget Builder indisponible","info");
+    }});
     Actions.register("dashboard.edit.addWidgetType",{handler:function(ctx){
       var home=qs("#ethone-2026-home");if(!home)return;
-      var type=ctx.el.dataset.widgetType;
-      var Widgets=App.get("widgets"),cat=Widgets?Widgets.get(type):null;
-      if(!cat)return;
-      if(!workingPrefs)workingPrefs=layoutPrefs();
-      var count=workingPrefs.instances.filter(function(w){return w.type===type}).length;
-      var max=cat.maxInstances||Infinity;
-      if(count>=max){if(typeof window.toast==="function")window.toast(tr("maxInstancesReached"),"info");return}
-      workingPrefs.instances.push({instanceId:type+"-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,6),type:type,size:Object.assign({},cat.defaultSize||{col:2,row:1}),locked:false,config:{}});
+      var type=ctx.widgetType||(ctx.el&&ctx.el.dataset?ctx.el.dataset.widgetType:"");
+      addWidgetTypeToLayout(type,{config:ctx.config||{}});
       closeWidgetPicker();
-      applyLayout(home,workingPrefs);
     }});
     Actions.register("dashboard.edit.closePicker",{handler:function(){closeWidgetPicker()}});
     Actions.register("dashboard.widget.lock",{handler:function(ctx){
@@ -781,6 +810,7 @@
     setTimeout(schedule,1900);
   }
   window.ethoneDashboardV4Render=render;
+  window.ethoneDashboardV4AddWidget=function(type,options){return addWidgetTypeToLayout(type,options||{})};
   if(window.ethoneRunWhenDashboardReady)window.ethoneRunWhenDashboardReady("dashboard-v4",boot);
   else if(document.readyState==="loading")Events.listen(document,"DOMContentLoaded",boot,{once:true},"dashboard-v4-boot");
   else boot();

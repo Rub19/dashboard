@@ -8,6 +8,7 @@
   const handle = document.getElementById('live-panel-resize-handle');
   const panel = document.getElementById('live-panel');
   const shell = document.getElementById('app-shell');
+  const overlay = document.getElementById('live-panel-mobile-overlay');
   const root = document.documentElement;
   if(!handle||!panel||!shell) return;
 
@@ -20,8 +21,21 @@
   const savedW = parseInt(localStorage.getItem('lp_width')||String(DEFAULT_W));
   applyWidth(Math.min(Math.max(savedW, MIN_W), MAX_W));
 
-  const wasRetracted = localStorage.getItem('lp_retracted') === '1';
+  function canMountPanel(){
+    if(window.ethoneCanMountUI)return window.ethoneCanMountUI('widgets-panel');
+    return localStorage.getItem('ethone:widgets-panel-open') === '1' || localStorage.getItem('ethone:widgets-panel-pinned') === '1';
+  }
+  function syncPanelState(open){
+    const isOpen = !!open;
+    document.body.classList.toggle('ethone-widgets-panel-enabled', isOpen);
+    panel.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+    if(overlay)overlay.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+  }
+
+  const panelAllowed = canMountPanel();
+  const wasRetracted = !panelAllowed || localStorage.getItem('lp_retracted') === '1';
   if(wasRetracted) shell.classList.add('live-panel-retracted');
+  syncPanelState(!wasRetracted);
 
   let dragging = false, startX = 0, startW = 0, pendingW = null, raf = null;
 
@@ -68,13 +82,15 @@
   });
 
   const MOBILE_BREAKPOINT = 1200;
-  const overlay = document.getElementById('live-panel-mobile-overlay');
 
   window.toggleLivePanel = function(force){
     const isMobileRange = window.innerWidth <= MOBILE_BREAKPOINT;
     if(isMobileRange){
       const open = typeof force === 'boolean' ? force : !panel.classList.contains('mobile-open');
       panel.classList.toggle('mobile-open', open);
+      localStorage.setItem('ethone:widgets-panel-open', open ? '1' : '0');
+      syncPanelState(open);
+      if(open&&typeof window.initSidebarWidgets==='function'&&typeof window.curP==='function')setTimeout(()=>window.initSidebarWidgets(window.curP()),40);
       if(overlay){
         overlay.classList.toggle('mobile-open', open);
         overlay.setAttribute('aria-hidden', open ? 'false' : 'true');
@@ -84,6 +100,9 @@
     const retracted = typeof force === 'boolean' ? !force : !shell.classList.contains('live-panel-retracted');
     shell.classList.toggle('live-panel-retracted', retracted);
     localStorage.setItem('lp_retracted', retracted ? '1' : '0');
+    localStorage.setItem('ethone:widgets-panel-open', retracted ? '0' : '1');
+    syncPanelState(!retracted);
+    if(!retracted&&typeof window.initSidebarWidgets==='function'&&typeof window.curP==='function')setTimeout(()=>window.initSidebarWidgets(window.curP()),40);
     const btn = document.getElementById('live-panel-retract-btn');
     if(btn) btn.textContent = retracted ? '‹' : '›';
   };
@@ -103,8 +122,12 @@
   });
 
   // Temporary stubs — replaced by pages/dashboard/sidebar-widget-manager.js (Phase 3).
-  if(typeof window.openLivePanelAddPicker !== 'function') window.openLivePanelAddPicker = function(){};
-  if(typeof window.openLivePanelManager !== 'function') window.openLivePanelManager = function(){};
+  if(typeof window.openLivePanelAddPicker !== 'function') window.openLivePanelAddPicker = function(){
+    if(typeof window.toast==='function')window.toast('Bibliotheque de widgets bientot disponible','info');
+  };
+  if(typeof window.openLivePanelManager !== 'function') window.openLivePanelManager = function(){
+    if(typeof window.toast==='function')window.toast('Gestion des widgets bientot disponible','info');
+  };
 
   window.ethoneLivePanelResize = {
     DEFAULT_W, MIN_W, MAX_W,

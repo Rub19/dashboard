@@ -1,0 +1,233 @@
+/* ETHONE Clarity Polish
+   Final readability, icon and lightweight performance pass. */
+
+:root{
+  --clarity-icon-size:20px;
+  --clarity-icon-stroke:1.9;
+  --clarity-control-height:38px;
+  --clarity-control-height-lg:44px;
+  --clarity-text:#f8f5ff;
+  --clarity-secondary:rgba(248,245,255,.72);
+  --clarity-muted:rgba(248,245,255,.58);
+  --clarity-faint:rgba(248,245,255,.42);
+  --clarity-border:rgba(255,255,255,.115);
+  --clarity-border-strong:rgba(255,255,255,.18);
+  --clarity-accent-rgb:var(--accent-rgb,var(--eh-accent-rgb,139,92,246));
+  --clarity-ease:cubic-bezier(.22,1,.36,1);
+}
+
+html{
+  -webkit-text-size-adjust:100%;
+}
+
+body.ethone-2026-ui,
+body.ethone-v2,
+#auth-screen,
+#profile-screen{
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
+}
+
+body.ethone-2026-ui :where(p,span,small,label,button,input,textarea,select,a,li,td,th),
+body.ethone-v2 :where(p,span,small,label,button,input,textarea,select,a,li,td,th),
+#auth-screen :where(p,span,small,label,button,input,textarea,select,a),
+#profile-screen :where(p,span,small,label,button,input,textarea,select,a){
+  line-height:1.42;
+}
+
+body.ethone-2026-ui :where(.page-subtitle,.section-subtitle,.panel-subtitle,.card-subtitle,.muted,.toggle-sub,.settings-card p,.settings-v2-page-description,.conn-subtitle,.game-card-sub,.aic-sub,.ph-card p,.ec-domain span,.health-panel p),
+body.ethone-v2 :where(.page-subtitle,.section-subtitle,.panel-subtitle,.card-subtitle,.muted,.toggle-sub,.settings-card p,.settings-v2-page-description,.conn-subtitle,.game-card-sub,.aic-sub,.ph-card p,.ec-domain span,.health-panel p){
+  color:var(--clarity-secondary)!important;
+}
+
+body.ethone-2026-ui :where(small,.meta,.caption,.eyebrow,.section-eyebrow,.settings-v2-mini-sub,.version-meta,.timeline-event time,.health-row em),
+body.ethone-v2 :where(small,.meta,.caption,.eyebrow,.section-eyebrow,.settings-v2-mini-sub,.version-meta,.timeline-event time,.health-row em){
+  color:var(--clarity-muted)!important;
+  font-size:max(11px,.78rem);
+}
+
+body.ethone-2026-ui :where(input,textarea,select)::placeholder,
+body.ethone-v2 :where(input,textarea,select)::placeholder,
+#auth-screen :where(input,textarea,select)::placeholder{
+  color:var(--clarity-faint)!important;
+}
+
+body.ethone-2026-ui :where(
+  [data-lucide],svg.lucide,button svg,.btn svg,.panel-action svg,.nav-item svg,
+  .settings-nav-item svg,.settings-nav-icon svg,.sidebar-icon svg,.nav-icon svg,
+  .dock-icon svg,.app-icon svg,.ph-logo svg,.ih-logo svg,.ec-stat svg,.health-metric svg,
+  .timeline-event-icon svg,.aic-button svg,.aic-insight svg,.version-filter svg,.tm-stat svg
+),
+body.ethone-v2 :where(
+  [data-lucide],svg.lucide,button svg,.btn svg,.panel-action svg,.nav-item svg,
+  .settings-nav-item svg,.settings-nav-icon svg,.sidebar-icon svg,.nav-icon svg,
+  .dock-icon svg,.app-icon svg
+),
+#auth-screen :where([data-lucide],svg.lucide,button svg),
+#profile-screen :where([data-lucide],svg.lucide,button svg){
+  width:var(--clarity-icon-size)!important;
+  height:var(--clarity-icon-size)!important;
+  min-width:var(--clarity-icon-size)!important;
+  flex:0 0 var(--clarity-icon-size)!important;
+  stroke-width:var(--clarity-icon-stroke)!important;
+  color:currentColor;
+  vertical-align:middle;
+}
+
+body.ethone-2026-ui :where(.settings-nav-icon,.sidebar-icon,.nav-icon,.dock-icon,.app-icon,.ih-logo,.ih-mini-logo,.ph-logo,.ec-stat>i,.health-metric>i,.timeline-event-icon),
+body.ethone-v2 :where(.settings-nav-icon,.sidebar-icon,.nav-icon,.dock-icon,.app-icon){
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:32px;
+  min-width:32px;
+  height:32px;
+  overflow:hidden;
+  color:var(--clarity-secondary);
+}
+
+body.ethone-2026-ui :where(.active,.is-active,[aria-current="page"],[aria-selected="true"]) :where(.settings-nav-icon,.sidebar-icon,.nav-icon,.dock-icon,.app-icon,svg,[data-lucide]),
+body.ethone-v2 :where(.active,.is-active,[aria-current="page"],[aria-selected="true"]) :where(.settings-nav-icon,.sidebar-icon,.nav-icon,.dock-icon,.app-icon,svg,[data-lucide]){
+  color:#fff!important;
+}
+
+body.ethone-2026-ui :where(button,.btn,.panel-action,.item-btn,.settings-action,.aic-button,.mp41-btn,.ph-actions button,.ih-plugin-actions button,.health-hero-actions button,.version-filter,.tm-search button),
+body.ethone-v2 :where(button,.btn,.panel-action,.item-btn,.settings-action,.aic-button,.mp41-btn),
+#auth-screen :where(button,.auth-action,.auth-oauth-btn,.auth-tab),
+#profile-screen :where(button){
+  position:relative;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  min-height:var(--clarity-control-height);
+  min-width:0;
+  max-width:100%;
+  white-space:nowrap;
+  text-decoration:none;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+body.ethone-2026-ui :where(button,.btn,.panel-action,.item-btn,.settings-action,.aic-button,.mp41-btn,.ph-actions button,.ih-plugin-actions button,.health-hero-actions button) > :where(span,strong,small,b),
+body.ethone-v2 :where(button,.btn,.panel-action,.item-btn,.settings-action,.aic-button,.mp41-btn) > :where(span,strong,small,b),
+#auth-screen :where(button,.auth-action,.auth-oauth-btn,.auth-tab) > :where(span,strong,small,b){
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+body.ethone-2026-ui :where(.btn-primary,.primary,[data-variant="primary"],.modal-submit,.auth-submit),
+body.ethone-v2 :where(.btn-primary,.primary,[data-variant="primary"],.modal-submit),
+#auth-screen :where(.auth-submit,.login-submit,.btn-primary){
+  min-height:var(--clarity-control-height-lg);
+  color:#fff!important;
+  text-shadow:0 1px 1px rgba(0,0,0,.18);
+}
+
+body.ethone-2026-ui :where(button,.btn,[role="button"]):disabled,
+body.ethone-v2 :where(button,.btn,[role="button"]):disabled,
+#auth-screen :where(button,.btn,[role="button"]):disabled{
+  cursor:not-allowed!important;
+  filter:saturate(.72);
+}
+
+body.ethone-2026-ui :where(.settings-nav-item,.nav-item,.os-nav-item,.sidebar-item,.pdock-item,.cmd-item,.dropdown-item,.context-menu-item),
+body.ethone-v2 :where(.settings-nav-item,.nav-item,.os-nav-item,.sidebar-item,.cmd-item){
+  min-width:0;
+  overflow:hidden;
+}
+
+body.ethone-2026-ui :where(.settings-nav-item,.nav-item,.os-nav-item,.sidebar-item,.pdock-item,.cmd-item,.dropdown-item,.context-menu-item) > :where(span,strong,b,small),
+body.ethone-v2 :where(.settings-nav-item,.nav-item,.os-nav-item,.sidebar-item,.cmd-item) > :where(span,strong,b,small){
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+body.ethone-2026-ui :where(.panel,.settings-card,.conn-card,.game-card,.ph-card,.ih-card,.ec-panel,.health-panel,.version-panel,.tm-detail,.aic-panel),
+body.ethone-v2 :where(.panel,.settings-card,.conn-card,.game-card){
+  min-width:0;
+}
+
+body.ethone-2026-ui :where(.ethone-heavy-surface),
+body.ethone-v2 :where(.ethone-heavy-surface){
+  content-visibility:auto;
+  contain-intrinsic-size:900px 720px;
+}
+
+body.ethone-2026-ui :where(.tab-content[id^="page-"]:not(.active):not(.de-window-page)),
+body.ethone-v2 :where(.tab-content[id^="page-"]:not(.active):not(.de-window-page)){
+  content-visibility:hidden;
+  contain-intrinsic-size:1px 1px;
+}
+
+body.ethone-2026-ui :where(.ethone-clarity-icon),
+body.ethone-v2 :where(.ethone-clarity-icon){
+  font-size:0!important;
+}
+
+body.ethone-2026-ui :where(.ethone-clarity-icon svg),
+body.ethone-v2 :where(.ethone-clarity-icon svg){
+  display:block;
+}
+
+body.ethone-2026-ui :where(.ethone-readable-button),
+body.ethone-v2 :where(.ethone-readable-button){
+  isolation:isolate;
+}
+
+body.ethone-2026-ui :where(.ethone-readable-button)::after,
+body.ethone-v2 :where(.ethone-readable-button)::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  opacity:0;
+  box-shadow:inset 0 0 0 1px rgba(var(--clarity-accent-rgb),.32);
+  transition:opacity 160ms var(--clarity-ease);
+}
+
+body.ethone-2026-ui :where(.ethone-readable-button:hover)::after,
+body.ethone-v2 :where(.ethone-readable-button:hover)::after,
+body.ethone-2026-ui :where(.ethone-readable-button:focus-visible)::after,
+body.ethone-v2 :where(.ethone-readable-button:focus-visible)::after{
+  opacity:1;
+}
+
+body.ethone-clarity-low-power :where(.auth-particle,.ambient-particle,.glow-orb,.orb,.nebula-particle,.universe-star){
+  display:none!important;
+}
+
+body.ethone-clarity-low-power :where(.panel,.settings-card,.conn-card,.game-card,.auth-v3-card,.de-window,.pdock,.side-panel-shell){
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+
+@media(max-width:900px){
+  body.ethone-2026-ui :where(button,.btn,.panel-action,.item-btn,.settings-action,.aic-button,.mp41-btn),
+  body.ethone-v2 :where(button,.btn,.panel-action,.item-btn,.settings-action,.aic-button,.mp41-btn){
+    min-height:40px;
+  }
+
+  body.ethone-2026-ui :where(.settings-nav-icon,.sidebar-icon,.nav-icon,.dock-icon,.app-icon),
+  body.ethone-v2 :where(.settings-nav-icon,.sidebar-icon,.nav-icon,.dock-icon,.app-icon){
+    width:34px;
+    min-width:34px;
+    height:34px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  body.ethone-2026-ui *,
+  body.ethone-v2 *,
+  #auth-screen *,
+  #profile-screen *{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    scroll-behavior:auto!important;
+    transition-duration:.001ms!important;
+  }
+}

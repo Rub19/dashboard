@@ -7,6 +7,7 @@
   var ERROR_KEY="ethone:health-errors";
   var API_KEY="ethone:health-api-failures";
   var PAGE_KEY="ethone:health-page-metrics";
+  var SAMPLE_KEY="ethone:health-monitor-samples";
   var lastScan=null;
   var timers={refresh:null};
 
@@ -152,7 +153,38 @@
         counters.lagSamples=counters.lagSamples.slice(-30);
       },2500);
     }catch(e){}
+    installPerformanceObservers();
     installPageMonitor();
+  }
+  function installPerformanceObservers(){
+    if(window.__ethoneHealthPerfObserversInstalled)return;
+    window.__ethoneHealthPerfObserversInstalled=true;
+    window.__ethoneHealthLongTasks=window.__ethoneHealthLongTasks||[];
+    window.__ethoneHealthPaints=window.__ethoneHealthPaints||{};
+    window.__ethoneHealthObservers=window.__ethoneHealthObservers||[];
+    try{
+      if("PerformanceObserver" in window){
+        var longTaskObserver=new PerformanceObserver(function(list){
+          list.getEntries().forEach(function(entry){
+            window.__ethoneHealthLongTasks.push({name:entry.name||"longtask",duration:Math.round(entry.duration||0),start:Math.round(entry.startTime||0),ts:Date.now()});
+          });
+          window.__ethoneHealthLongTasks=window.__ethoneHealthLongTasks.slice(-80);
+        });
+        longTaskObserver.observe({entryTypes:["longtask"]});
+        window.__ethoneHealthObservers.push(longTaskObserver);
+      }
+    }catch(e){}
+    try{
+      if("PerformanceObserver" in window){
+        var paintObserver=new PerformanceObserver(function(list){
+          list.getEntries().forEach(function(entry){
+            window.__ethoneHealthPaints[entry.name]=Math.round(entry.startTime||0);
+          });
+        });
+        paintObserver.observe({entryTypes:["paint"]});
+        window.__ethoneHealthObservers.push(paintObserver);
+      }
+    }catch(e){}
   }
   function installPageMonitor(){
     if(typeof window.switchPage!=="function"||window.switchPage.__healthWrapped)return;
@@ -177,9 +209,10 @@
   });
 
   function status(score){
-    if(score>=90)return {key:"ok",label:"Tout fonctionne correctement.",tone:"good"};
-    if(score>=74)return {key:"watch",label:"Quelques points demandent attention.",tone:"warn"};
-    return {key:"critical",label:"ETHONE necessite un diagnostic.",tone:"bad"};
+    if(score>=94)return {key:"excellent",title:"Excellent",label:"ETHONE fonctionne avec une marge saine.",tone:"good"};
+    if(score>=86)return {key:"ok",title:"Stable",label:"Tout fonctionne correctement.",tone:"good"};
+    if(score>=74)return {key:"watch",title:"A surveiller",label:"Quelques points demandent attention.",tone:"warn"};
+    return {key:"critical",title:"Critique",label:"ETHONE necessite un diagnostic.",tone:"bad"};
   }
   function bytes(n){
     n=Number(n)||0;
@@ -221,34 +254,47 @@
   }
   function pluginRows(s,issues){
     var plugins=s.plugins||{};
+    var defs=[];
+    try{
+      if(window.ETHONEPluginHub&&Array.isArray(window.ETHONEPluginHub.plugins))defs=window.ETHONEPluginHub.plugins.slice();
+    }catch(e){}
     var ids=Object.keys(plugins);
+    defs.forEach(function(def){if(def&&def.id&&ids.indexOf(def.id)===-1)ids.push(def.id)});
     var rows=ids.map(function(id){
       var p=plugins[id]||{};
+      var def=defs.find(function(item){return item&&item.id===id})||{};
       var installed=!!p.installed;
       var enabled=!!p.enabled;
       var bad=p.status==="error"||p.status==="failed";
-      if(installed&&!enabled)pushIssue(issues,"warn","Plugin desactive: "+id,"Le plugin est installe mais inactif.","Plugins","Activer ou reparer");
-      if(bad)pushIssue(issues,"bad","Plugin en erreur: "+id,"Le dernier statut indique un echec.","Plugins","Reparer");
-      return {id:id,name:id,state:bad?"error":enabled?"connected":installed?"pending":"disconnected",label:bad?"Erreur":enabled?"Actif":installed?"Installe":"Inactif",memory:p.memory||p.memoryMb||0};
+      var soon=def.ready===false;
+      if(installed&&!enabled)pushIssue(issues,"warn","Plugin desactive: "+(def.name||id),"Le plugin est installe mais inactif.","Plugins","Activer ou reparer");
+      if(bad)pushIssue(issues,"bad","Plugin en erreur: "+(def.name||id),"Le dernier statut indique un echec.","Plugins","Reparer");
+      return {id:id,name:def.name||id,icon:def.icon||"plug",installed:installed,ready:def.ready!==false,state:bad?"error":soon?"pending":enabled?"connected":installed?"pending":"disconnected",label:bad?"Erreur":soon?"Pret API":enabled?"Actif":installed?"Installe":"Disponible",memory:p.memory||p.memoryMb||def.memory||0};
     });
     if(!rows.length)rows.push({id:"none",name:"Aucun plugin installe",state:"pending",label:"Disponible",memory:0});
     return rows;
   }
   function apiRows(s,issues){
     var con=s.connections||{};
+    var aiConfig=null;
+    try{aiConfig=JSON.parse(localStorage.getItem("ethone:ai-core:v1")||"null")}catch(e){}
+    var aiProviders=aiConfig&&aiConfig.providers||{};
     var providers=[
-      ["groq","Groq",con.groqKey||con.groq&&con.groq.key],
-      ["openai","OpenAI",con.openaiKey||con.openai&&con.openai.key],
-      ["claude","Claude",con.claudeKey||con.claude&&con.claude.key],
-      ["gemini","Gemini",con.geminiKey||con.gemini&&con.gemini.key],
-      ["openrouter","OpenRouter",con.openrouterKey||con.openrouter&&con.openrouter.key],
-      ["ollama","Ollama",con.ollama&&con.ollama.url]
+      ["groq","Groq",con.groqKey||con.groq&&con.groq.key||aiProviders.groq&&aiProviders.groq.apiKey],
+      ["openai","OpenAI",con.openaiKey||con.openai&&con.openai.key||aiProviders.openai&&aiProviders.openai.apiKey],
+      ["anthropic","Claude",con.claudeKey||con.claude&&con.claude.key||aiProviders.anthropic&&aiProviders.anthropic.apiKey],
+      ["gemini","Gemini",con.geminiKey||con.gemini&&con.gemini.key||aiProviders.gemini&&aiProviders.gemini.apiKey],
+      ["openrouter","OpenRouter",con.openrouterKey||con.openrouter&&con.openrouter.key||aiProviders.openrouter&&aiProviders.openrouter.apiKey],
+      ["ollama","Ollama",con.ollama&&con.ollama.url||aiProviders.ollama&&aiProviders.ollama.endpoint]
     ];
-    return providers.map(function(p){
+    var rows=providers.map(function(p){
       var ok=connectedValue(p[2]);
-      if(p[0]==="groq"&&!ok)pushIssue(issues,"warn","Provider IA indisponible","Aucune cle Groq detectee pour ETHONE AI Core.","API","Configurer un provider");
       return {id:p[0],name:p[1],state:ok?"connected":"disconnected",label:ok?"Configure":"Non configure"};
     });
+    if(!rows.some(function(row){return row.state==="connected"})){
+      pushIssue(issues,"warn","Aucun provider IA configure","ETHONE AI Core n'a pas encore de provider disponible.","API","Configurer un provider");
+    }
+    return rows;
   }
   function storageInfo(issues){
     var used=0,keys=0,quota=0;
@@ -290,11 +336,29 @@
     var nav=null;
     try{nav=performance.getEntriesByType&&performance.getEntriesByType("navigation")[0]}catch(e){}
     var load=nav?Math.round(nav.loadEventEnd||nav.domContentLoadedEventEnd||0):0;
+    var domReady=nav?Math.round(nav.domContentLoadedEventEnd||nav.domInteractive||0):0;
+    var response=nav?Math.round((nav.responseEnd||0)-(nav.requestStart||0)):0;
+    var paints=window.__ethoneHealthPaints||{};
+    var fcp=paints["first-contentful-paint"]||0;
     var resources=0;
     try{resources=performance.getEntriesByType("resource").length}catch(e){}
     if(load>5000)pushIssue(issues,"warn","Demarrage lent","Le chargement a pris environ "+load+" ms.","Performance","Verifier les scripts lourds");
+    if(fcp>2500)pushIssue(issues,"warn","Premier rendu lent","Le premier rendu utile est mesure autour de "+fcp+" ms.","Chargement","Reduire les scripts initiaux");
     if(resources>260)pushIssue(issues,"warn","Beaucoup de ressources","ETHONE a observe "+resources+" ressources chargees.","Performance","Surveiller le bundle");
-    return {load:load,resources:resources,online:navigator?navigator.onLine!==false:true};
+    return {load:load,domReady:domReady,response:response,fcp:fcp,resources:resources,online:navigator?navigator.onLine!==false:true};
+  }
+  function cpuInfo(issues){
+    var counters=window.__ethoneHealthCounters||{lagSamples:[]};
+    var samples=Array.isArray(counters.lagSamples)?counters.lagSamples.slice(-30):[];
+    var avgLag=samples.length?samples.reduce(function(a,b){return a+b},0)/samples.length:0;
+    var maxLag=samples.length?Math.max.apply(Math,samples):0;
+    var longTasks=(window.__ethoneHealthLongTasks||[]).filter(function(x){return Date.now()-(x.ts||0)<1000*60*10});
+    var longTotal=longTasks.reduce(function(sum,item){return sum+(item.duration||0)},0);
+    var cores=(navigator&&navigator.hardwareConcurrency)||0;
+    var pressure=Math.min(100,Math.round((avgLag/2.2)+(maxLag/6)+(longTasks.length*3)+(longTotal/180)));
+    if(pressure>70)pushIssue(issues,"bad","CPU sous pression","Lag moyen "+Math.round(avgLag)+" ms, "+longTasks.length+" long tasks recentes.","CPU","Reduire animations ou modules actifs");
+    else if(pressure>42)pushIssue(issues,"warn","CPU a surveiller","ETHONE detecte une reactivite plus faible que normal.","CPU","Fermer les panneaux lourds");
+    return {pressure:pressure,avgLag:Math.round(avgLag),maxLag:Math.round(maxLag),longTasks:longTasks.length,longTaskTime:Math.round(longTotal),cores:cores,label:pressure+"%"};
   }
   function isVisible(el){
     if(!el||!el.isConnected)return false;
@@ -408,6 +472,7 @@
     var s=state();
     var issues=[];
     var perf=performanceInfo(issues);
+    var cpu=cpuInfo(issues);
     var mem=memoryInfo(issues);
     var storage=storageInfo(issues);
     var errors=readErrors();
@@ -427,6 +492,8 @@
     var score=100;
     issues.forEach(function(i){score-=i.severity==="bad"?14:i.severity==="warn"?7:3});
     if(mem.ratio>.7)score-=5;
+    if(cpu.pressure>70)score-=12;
+    else if(cpu.pressure>42)score-=6;
     if(storage.ratio>.82)score-=7;
     if(widgets.broken.length)score-=Math.min(16,widgets.broken.length*4);
     if(buttons.missing.length)score-=Math.min(20,buttons.missing.length*6);
@@ -434,10 +501,22 @@
     if(apiFailures.rows.length)score-=Math.min(14,apiFailures.rows.length*3);
     if(leaks.signals.length)score-=Math.min(18,leaks.signals.length*5);
     if(!perf.online)score-=18;
+    if(perf.fcp>2500)score-=6;
     score=Math.max(0,Math.min(100,score));
     var st=status(score);
-    lastScan={score:score,status:st,perf:perf,memory:mem,storage:storage,errors:errors,integrations:integrations,plugins:plugins,apis:apis,sync:sync,buttons:buttons,widgets:widgets,pages:pages,apiFailures:apiFailures,leaks:leaks,issues:issues,at:Date.now()};
+    lastScan={score:score,status:st,perf:perf,cpu:cpu,memory:mem,storage:storage,errors:errors,integrations:integrations,plugins:plugins,apis:apis,sync:sync,buttons:buttons,widgets:widgets,pages:pages,apiFailures:apiFailures,leaks:leaks,issues:issues,at:Date.now()};
+    saveSample(lastScan);
     return lastScan;
+  }
+  function saveSample(data){
+    try{
+      var list=JSON.parse(localStorage.getItem(SAMPLE_KEY)||"[]");
+      if(!Array.isArray(list))list=[];
+      var last=list[0];
+      if(last&&Date.now()-(last.ts||0)<25000)return;
+      list.unshift({ts:Date.now(),score:data.score,cpu:data.cpu.pressure,memory:Math.round((data.memory.ratio||0)*100),load:data.perf.load||0,errors:data.errors.length,api:data.apiFailures.total||0});
+      localStorage.setItem(SAMPLE_KEY,JSON.stringify(list.slice(0,96)));
+    }catch(e){}
   }
   function ensurePage(){
     if(document.getElementById("page-health"))return;
@@ -453,7 +532,8 @@
     else document.getElementById("main-content")?.appendChild(page);
   }
   function gauge(score,tone){
-    return '<div class="health-gauge '+esc(tone)+'" style="--health-score:'+score+'"><div><strong>'+score+'%</strong><span>ETHONE Health</span></div></div>';
+    var title=lastScan&&lastScan.status&&lastScan.status.title||"Health";
+    return '<div class="health-gauge '+esc(tone)+'" style="--health-score:'+score+'"><div><strong>'+score+'%</strong><span>'+esc(title)+'</span></div></div>';
   }
   function metric(label,value,sub,icon,tone){
     return '<article class="health-metric '+esc(tone||"")+'"><i data-lucide="'+esc(icon||"activity")+'"></i><span>'+esc(label)+'</span><strong>'+esc(value)+'</strong><small>'+esc(sub||"")+'</small></article>';
@@ -471,6 +551,19 @@
     if(!rows||!rows.length)return '<div class="health-empty compact"><strong>'+esc(empty||"Aucun signal")+'</strong><span>Le diagnostic est propre.</span></div>';
     return rows.map(mapper).join("");
   }
+  function readSamples(){
+    try{
+      var list=JSON.parse(localStorage.getItem(SAMPLE_KEY)||"[]");
+      return Array.isArray(list)?list.slice(0,18):[];
+    }catch(e){return []}
+  }
+  function sparkline(values,key){
+    if(!values.length)return '<div class="health-spark empty"></div>';
+    return '<div class="health-spark" aria-hidden="true">'+values.slice().reverse().map(function(item){
+      var value=Math.max(4,Math.min(100,Number(item[key])||0));
+      return '<i style="height:'+value+'%"></i>';
+    }).join("")+'</div>';
+  }
   function renderHealthPage(){
     ensurePage();
     var data=scan();
@@ -478,31 +571,46 @@
     if(!root)return;
     var memValue=data.memory.available?Math.round(data.memory.ratio*100)+"%":"N/A";
     var storageValue=data.storage.quota?Math.round(data.storage.ratio*100)+"%":data.storage.label;
+    var loadValue=data.perf.load?data.perf.load+" ms":"OK";
+    var fcpValue=data.perf.fcp?data.perf.fcp+" ms":"N/A";
+    var pluginProblems=data.plugins.filter(function(p){return p.state==="error"||(p.installed&&p.state==="pending")}).length;
+    var samples=readSamples();
     var widgetValue=data.widgets.broken.length?data.widgets.broken.length+" broken":"OK";
     var buttonValue=data.buttons.missing.length?data.buttons.missing.length+" dead":"OK";
     var apiValue=data.apiFailures.rows.length?data.apiFailures.rows.length+" fail":"OK";
     var leakValue=data.leaks.signals.length?data.leaks.signals.length+" signal":"OK";
     root.innerHTML=
       '<section class="health-hero">'+
-        '<div class="health-copy"><div class="health-kicker">ETHONE Diagnostic</div><h1>Dashboard Health</h1><p>'+esc(data.status.label)+'</p><div class="health-hero-actions"><button class="btn btn-primary" type="button" data-health-refresh>Relancer le diagnostic</button><button class="btn btn-ghost" type="button" data-health-clear-errors>Effacer les erreurs</button><button class="btn btn-ghost" type="button" data-health-clear-api>Effacer API logs</button></div></div>'+
+        '<div class="health-copy"><div class="health-kicker">ETHONE Health Monitor</div><h1>ETHONE Health</h1><p><strong>'+esc(data.score+'% '+data.status.title)+'.</strong> '+esc(data.status.label)+'</p><div class="health-hero-actions"><button class="btn btn-primary" type="button" data-health-refresh>Relancer le diagnostic</button><button class="btn btn-ghost" type="button" data-health-clear-errors>Effacer les erreurs</button><button class="btn btn-ghost" type="button" data-health-clear-api>Effacer API logs</button></div></div>'+
         gauge(data.score,data.status.tone)+
       '</section>'+
+      '<section class="health-monitor-strip">'+
+        '<article><span>Score</span><strong>'+esc(data.score)+'%</strong>'+sparkline(samples,"score")+'</article>'+
+        '<article><span>CPU</span><strong>'+esc(data.cpu.label)+'</strong>'+sparkline(samples,"cpu")+'</article>'+
+        '<article><span>Memoire</span><strong>'+esc(memValue)+'</strong>'+sparkline(samples,"memory")+'</article>'+
+        '<article><span>Load</span><strong>'+esc(loadValue)+'</strong>'+sparkline(samples,"load")+'</article>'+
+      '</section>'+
       '<section class="health-metrics">'+
-        metric("Performance",data.perf.load?data.perf.load+" ms":"OK",data.perf.resources+" ressources","gauge",data.perf.load>5000?"warn":"good")+
+        metric("CPU",data.cpu.label,data.cpu.cores?data.cpu.cores+" coeurs / "+data.cpu.avgLag+" ms lag":"Event loop "+data.cpu.avgLag+" ms","cpu",data.cpu.pressure>70?"bad":data.cpu.pressure>42?"warn":"good")+
         metric("Memoire",memValue,data.memory.label,"memory-stick",data.memory.ratio>.7?"warn":"good")+
+        metric("API",apiValue,data.apiFailures.total+" echecs 24h / "+data.apis.filter(function(x){return x.state==="connected"}).length+" providers","cloud-off",data.apiFailures.rows.length?"warn":"good")+
+        metric("Plugins",pluginProblems?pluginProblems+" attention":"OK",data.plugins.length+" plugins surveilles","plug",pluginProblems?"warn":"good")+
+        metric("Erreurs",String(data.errors.length),data.errors.length?"Capturees par Health Monitor":"Aucune erreur recente","bug",data.errors.length?"warn":"good")+
+        metric("Temps de chargement",loadValue,"DOM "+data.perf.domReady+" ms / FCP "+fcpValue,"timer",data.perf.load>5000||data.perf.fcp>2500?"warn":"good")+
+        metric("Performances",data.pages.slow.length?data.pages.slow.length+" lente(s)":"OK",data.perf.resources+" ressources / "+data.pages.rows.length+" pages","gauge",data.pages.slow.length?"warn":"good")+
         metric("Stockage",storageValue,data.storage.keys+" entrees locales","database",data.storage.ratio>.82?"warn":"good")+
         metric("Widgets",widgetValue,data.widgets.total+" widgets visibles","layout-dashboard",data.widgets.broken.length?"warn":"good")+
         metric("Boutons",buttonValue,data.buttons.total+" controles visibles","mouse-pointer-click",data.buttons.missing.length?"bad":data.buttons.placeholder.length?"warn":"good")+
         metric("Pages lentes",String(data.pages.slow.length),data.pages.rows.length+" pages mesurees","timer",data.pages.slow.length?"warn":"good")+
-        metric("API",apiValue,data.apiFailures.total+" echecs 24h","cloud-off",data.apiFailures.rows.length?"warn":"good")+
         metric("Fuites",leakValue,data.leaks.domNodes+" DOM nodes","radar",data.leaks.signals.length?"warn":"good")+
-        metric("Erreurs",String(data.errors.length),data.errors.length?"Capturees par Health":"Aucune erreur recente","bug",data.errors.length?"warn":"good")+
       '</section>'+
       '<section class="health-grid">'+
         '<article class="health-panel health-issues"><div class="health-panel-head"><div><h2>Attention</h2><p>Les signaux qui peuvent impacter ETHONE.</p></div><span>'+data.issues.length+'</span></div><div class="health-issue-list">'+(data.issues.length?data.issues.map(issueHTML).join(""):'<div class="health-empty"><i data-lucide="circle-check"></i><strong>Aucun probleme critique</strong><span>ETHONE fonctionne correctement.</span></div>')+'</div></article>'+
         '<article class="health-panel health-dashboard"><div class="health-panel-head"><div><h2>Dashboard Integrity</h2><p>Widgets, boutons morts, pages lentes et signaux de fuite.</p></div></div><div class="health-diagnostic-list">'+
           diagRow("Widgets",data.widgets.broken.length?data.widgets.broken.length+" widget(s) suspect(s)":"Aucun widget casse",data.widgets.total+" total",data.widgets.broken.length?"warn":"good","layout-dashboard")+
           diagRow("Boutons",data.buttons.missing.length?data.buttons.missing.length+" handler(s) manquant(s)":"Handlers OK",data.buttons.total+" boutons",data.buttons.missing.length?"bad":"good","mouse-pointer-click")+
+          diagRow("CPU",data.cpu.pressure>42?"Pression detectee":"CPU stable",data.cpu.longTasks+" long tasks / "+data.cpu.longTaskTime+" ms",data.cpu.pressure>70?"bad":data.cpu.pressure>42?"warn":"good","cpu")+
+          diagRow("Chargement",data.perf.load>5000?"Demarrage lent":"Chargement OK","Load "+data.perf.load+" ms / FCP "+fcpValue,data.perf.load>5000||data.perf.fcp>2500?"warn":"good","timer")+
           diagRow("Pages",data.pages.slow.length?data.pages.slow.length+" transition(s) lente(s)":"Transitions OK",data.pages.rows.length+" mesurees",data.pages.slow.length?"warn":"good","timer")+
           diagRow("Memory leaks",data.leaks.signals.length?data.leaks.signals.join(" / "):"Aucun signal fort",data.leaks.avgLag+" ms lag",data.leaks.signals.length?"warn":"good","radar")+
         '</div></article>'+
@@ -529,6 +637,7 @@
   function install(){
     installHealthMonitor();
     ensurePage();
+    registerActions();
     document.addEventListener("click",function(e){
       if(e.target.closest("[data-health-refresh]")){renderHealthPage();return}
       if(e.target.closest("[data-health-clear-errors]")){clearErrors();return}
@@ -544,8 +653,25 @@
     },30000);
     renderHealthPage();
   }
+  function registerActions(){
+    var Actions=window.ACTION_REGISTRY||window.ETHONEActions||(window.Ethone&&window.Ethone.get&&window.Ethone.get("actions"));
+    if(!Actions||!Actions.register||window.__ethoneHealthActions)return;
+    window.__ethoneHealthActions=true;
+    Actions.register("health.open",{label:"Open Health Monitor",handler:function(){
+      if(typeof window.switchPage==="function")window.switchPage("health");
+      setTimeout(renderHealthPage,80);
+      return true;
+    }});
+    Actions.register("health.scan",{label:"Run Health Monitor scan",handler:function(){
+      renderHealthPage();
+      try{if(typeof window.toast==="function")window.toast("Health Monitor scan complete","success")}catch(e){}
+      return true;
+    }});
+    Actions.register("health.clearErrors",{label:"Clear Health Monitor errors",handler:function(){clearErrors();return true}});
+  }
 
   window.ETHONEHealth={scan:scan,render:renderHealthPage,recordError:recordError,errors:readErrors,clearErrors:clearErrors,clearApiFailures:clearApiFailures};
+  window.ETHONEHealthMonitor=window.ETHONEHealth;
   window.renderHealthPage=renderHealthPage;
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",install,{once:true});
   else install();

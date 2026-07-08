@@ -110,11 +110,19 @@
     if(!login||!reg)warn("Missing auth form for tab switch",{login:!!login,register:!!reg});
     if(login)login.style.display=tab==="login"?"block":"none";
     if(reg)reg.style.display=tab==="register"?"block":"none";
-    var base="flex:1;height:38px;border:none;border-radius:9px;font-size:13px;font-family:Inter,system-ui,sans-serif;cursor:pointer;transition:all .15s";
-    if(tl)tl.style.cssText=base+(tab==="login"?";font-weight:600;background:transparent;color:#fff;box-shadow:none":";font-weight:500;background:transparent;color:rgba(250,250,249,.35)");
-    if(trb)trb.style.cssText=base+(tab==="register"?";font-weight:600;background:transparent;color:#fff;box-shadow:none":";font-weight:500;background:transparent;color:rgba(250,250,249,.35)");
+    if(tl){
+      tl.removeAttribute("style");
+      tl.classList.toggle("is-active",tab==="login");
+      tl.setAttribute("aria-selected",String(tab==="login"));
+    }
+    if(trb){
+      trb.removeAttribute("style");
+      trb.classList.toggle("is-active",tab==="register");
+      trb.setAttribute("aria-selected",String(tab==="register"));
+    }
     setErr("");
     applyTranslations();
+    if(typeof window.ethoneSyncAuthHeroLanguage==="function")setTimeout(window.ethoneSyncAuthHeroLanguage,0);
   }
   function togglePassword(btn){
     var inputId="";
@@ -216,6 +224,7 @@
   function setLanguage(l){
     l=String(l||"fr").slice(0,2).toLowerCase();
     window._lang=l;
+    document.documentElement.lang=l;
     try{localStorage.setItem("nexus_lang",l);localStorage.setItem("ethone_lang",l)}catch(e){}
     if(typeof window.applyI18n==="function"){try{window.applyI18n()}catch(e){warn("Global i18n failed; auth fallback applied",e)}}
     applyTranslations();

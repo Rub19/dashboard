@@ -1,0 +1,248 @@
+/* ETHONE Layout Integrity
+   Defensive shell rules: one active UI layer, no ghost pages, no accidental overflow. */
+:root{
+  --z-ethone-sidebar:700;
+  --z-ethone-dock:1800;
+  --z-ethone-desktop:2200;
+  --z-ethone-side-panel:2600;
+  --z-ethone-native-shell:2700;
+  --z-ethone-overlay:9000;
+  --z-ethone-modal:10000;
+  --z-ethone-command:20000;
+  --z-ethone-toast:21000;
+}
+
+html,
+body{
+  max-width:100%;
+  overflow-x:hidden;
+}
+
+html.ethone-dashboard-mode body,
+body.ethone-dashboard-mounted{
+  overflow:hidden;
+}
+
+#main-content,
+#main-content.main,
+.main-content,
+.tab-content,
+.app-shell{
+  min-width:0;
+  max-width:100%;
+  box-sizing:border-box;
+}
+
+body.ethone-dashboard-mounted #main-content.main{
+  overflow:auto;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+}
+
+.tab-content[id^="page-"]:not(.active):not(.de-window-page){
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+.tab-content[id^="page-"].active{
+  isolation:isolate;
+}
+
+.tab-content[aria-hidden="true"]:not(.de-window-page){
+  pointer-events:none!important;
+}
+
+body:not(.ethone-desktop-mode) #ethone-desktop{
+  display:none!important;
+  pointer-events:none!important;
+}
+
+body.ethone-desktop-mode{
+  overflow:hidden!important;
+}
+
+body.ethone-desktop-mode #ethone-desktop{
+  display:block!important;
+  z-index:var(--z-ethone-desktop);
+}
+
+body.ethone-layout-desktop #main-sidebar,
+body.ethone-layout-desktop #mobile-bottom-nav,
+body.ethone-layout-desktop #eh-dock,
+body.ethone-layout-desktop #ethone-permanent-dock,
+body.ethone-layout-desktop #ethone-os2-dock,
+body.ethone-layout-desktop #ethone-side-panels,
+body.ethone-layout-desktop #ethone-native-shell,
+body.ethone-layout-desktop .de-desktop-launcher{
+  display:none!important;
+  pointer-events:none!important;
+}
+
+body.ethone-layout-desktop #main-content.main{
+  margin-left:0!important;
+  width:100%!important;
+  max-width:100%!important;
+}
+
+#main-sidebar{
+  z-index:var(--z-ethone-sidebar);
+}
+
+#ethone-permanent-dock,
+.pdock{
+  z-index:var(--z-ethone-dock);
+}
+
+body:not(.ethone-permanent-dock-enabled) #ethone-permanent-dock,
+body:not(.ethone-permanent-dock-ready) #ethone-permanent-dock{
+  display:none!important;
+  pointer-events:none!important;
+}
+
+body:not(.ethone-enterprise-dock-enabled) #eh-dock,
+body.ethone-layout-classic #ethone-os2-dock{
+  display:none!important;
+  pointer-events:none!important;
+}
+
+#ethone-side-panels{
+  z-index:var(--z-ethone-side-panel);
+}
+
+#ethone-side-panels:not(.is-open) .side-panel-shell{
+  opacity:0!important;
+  transform:translateX(18px) scale(.985)!important;
+  pointer-events:none!important;
+}
+
+#ethone-side-panels:not(.is-open) .side-panel-rail{
+  opacity:0!important;
+  transform:translateY(-50%) translateX(14px)!important;
+  pointer-events:none!important;
+}
+
+body:not(.ethone-side-panels-enabled) #ethone-side-panels,
+body.ethone-layout-desktop #ethone-side-panels{
+  display:none!important;
+  pointer-events:none!important;
+}
+
+#ethone-native-shell{
+  z-index:var(--z-ethone-native-shell);
+}
+
+body:not(.ethone-native-shell-enabled) #ethone-native-shell,
+body.ethone-layout-desktop #ethone-native-shell{
+  display:none!important;
+  pointer-events:none!important;
+}
+
+.modal-overlay,
+.eh-panel-overlay,
+.spaces-overlay,
+.theme-creator-overlay,
+.wm-creator-overlay,
+.db-dpe-overlay,
+#notif-overlay,
+#presentation-overlay{
+  z-index:var(--z-ethone-overlay);
+}
+
+.modal-overlay.open,
+.eh-panel-overlay.open,
+.spaces-overlay.open,
+.theme-creator-overlay.open,
+.wm-creator-overlay.open,
+.db-dpe-overlay.open{
+  z-index:var(--z-ethone-modal);
+}
+
+.modal-overlay:not(.open),
+.eh-panel-overlay:not(.open),
+.spaces-overlay:not(.open),
+.theme-creator-overlay:not(.open),
+.wm-creator-overlay:not(.open),
+.db-dpe-overlay:not(.open),
+.db-detail-overlay:not(.open),
+.va-detail-overlay:not(.open){
+  pointer-events:none!important;
+}
+
+#cmd-palette-overlay{
+  z-index:var(--z-ethone-command);
+}
+
+#cmd-palette-overlay:not(.open){
+  display:none!important;
+  pointer-events:none!important;
+}
+
+#notif-panel{
+  z-index:calc(var(--z-ethone-overlay) + 1);
+}
+
+#notif-overlay:not(.open){
+  opacity:0!important;
+  pointer-events:none!important;
+}
+
+#notif-panel:not(.open){
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+  transform:translateX(110%)!important;
+}
+
+#ai-sessions-drawer:not(.open){
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+  transform:translateX(100%)!important;
+}
+
+#notif-panel.open,
+#ai-sessions-drawer.open{
+  opacity:1!important;
+  visibility:visible!important;
+}
+
+#pdock-popover:not(.is-open),
+#pdock-manager:not(.is-open),
+#de-launchpad[aria-hidden="true"]{
+  pointer-events:none!important;
+}
+
+.lang-dropdown:not(.open) .lang-menu,
+.ui-dropdown:not(.open),
+.dropdown:not(.open) > .dropdown-menu,
+.context-menu:not(.open),
+.ui-context-menu:not(.open),
+.db-ctx-menu:not(.open),
+.aie-context-menu:not(.open),
+.sb-tooltip:not(.visible){
+  pointer-events:none!important;
+}
+
+.native-page-exit:not(.active),
+.native-page-enter:not(.active),
+.is-leaving:not(.active){
+  animation:none!important;
+  transform:none!important;
+}
+
+.ethone-ui-isolating *{
+  min-width:0;
+}
+
+@media (max-width:900px){
+  body.ethone-dashboard-mounted #main-content.main{
+    width:100%!important;
+  }
+  #ethone-side-panels .side-panel-shell{
+    right:10px;
+    left:10px;
+    width:auto!important;
+    max-width:none;
+  }
+}

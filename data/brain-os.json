@@ -1,0 +1,123 @@
+{
+  "schema": 1,
+  "version": "5.0.0",
+  "defaults": {
+    "enabled": true,
+    "automationLevel": "suggest",
+    "autoApplyThreshold": 8.5,
+    "suggestThreshold": 5.25,
+    "privacy": "local",
+    "learning": true
+  },
+  "contexts": [
+    {
+      "id": "development",
+      "flow": "development",
+      "label": "Development",
+      "signals": ["github", "terminal", "code", "repo", "commit", "debug", "database", "studio"],
+      "pages": ["github", "ai", "notes", "databases", "studio"],
+      "widgets": ["github", "terminal", "aiSuggestions", "notes", "cpu", "ram"],
+      "reason": "ETHONE sees development signals: GitHub, code, notes or database work."
+    },
+    {
+      "id": "gaming",
+      "flow": "gaming",
+      "label": "Gaming",
+      "signals": ["gaming", "valorant", "steam", "discord", "riot", "twitch"],
+      "pages": ["gaming", "valorant-accounts", "connections"],
+      "widgets": ["discord", "spotify", "steam", "valorant", "nowPlaying"],
+      "reason": "ETHONE sees gaming signals: Discord, Valorant, Steam or evening play habits."
+    },
+    {
+      "id": "study",
+      "flow": "study",
+      "label": "Study",
+      "signals": ["study", "pdf", "course", "notes", "files", "revision", "flashcards"],
+      "pages": ["notes", "files", "calendar"],
+      "widgets": ["notes", "calendar", "productivity", "goals", "habits"],
+      "reason": "ETHONE sees study signals: notes, files, focus or planning."
+    },
+    {
+      "id": "streaming",
+      "flow": "streaming",
+      "label": "Streaming",
+      "signals": ["stream", "obs", "twitch", "clips", "chat"],
+      "pages": ["connections", "gaming", "calendar"],
+      "widgets": ["twitch", "discord", "spotify", "nowPlaying", "cpu", "ram"],
+      "reason": "ETHONE sees streaming signals: OBS, Twitch, Discord or content planning."
+    },
+    {
+      "id": "creative",
+      "flow": "creative",
+      "label": "Creative",
+      "signals": ["creative", "design", "figma", "moodboard", "assets", "draft"],
+      "pages": ["files", "notes", "studio"],
+      "widgets": ["notes", "timelineFeed", "aiSuggestions"],
+      "reason": "ETHONE sees creative signals: assets, notes, studio or moodboard work."
+    },
+    {
+      "id": "morning",
+      "flow": "morning",
+      "label": "Morning",
+      "signals": ["morning", "weather", "briefing", "calendar", "habits", "tasks"],
+      "pages": ["dashboard", "calendar", "todos", "habits", "goals"],
+      "widgets": ["weather", "calendar", "today", "habits", "goals"],
+      "reason": "It is morning, so ETHONE prepares briefing, calendar, weather and priorities."
+    },
+    {
+      "id": "night",
+      "flow": "night",
+      "label": "Night",
+      "signals": ["night", "journal", "recap", "spotify", "relax"],
+      "pages": ["journal", "notes", "calendar"],
+      "widgets": ["spotify", "nowPlaying", "timelineFeed", "notes"],
+      "reason": "It is night, so ETHONE prepares recap, journal and calm context."
+    }
+  ],
+  "predictions": [
+    {
+      "id": "github-next",
+      "flow": "development",
+      "label": "You may open GitHub next.",
+      "signals": ["github", "repo", "commit", "development"]
+    },
+    {
+      "id": "valorant-next",
+      "flow": "gaming",
+      "label": "You may launch Valorant or Discord next.",
+      "signals": ["valorant", "discord", "gaming", "evening"]
+    },
+    {
+      "id": "focus-next",
+      "flow": "study",
+      "label": "You may start a Focus session next.",
+      "signals": ["tasks", "notes", "calendar", "focus"]
+    },
+    {
+      "id": "spotify-next",
+      "flow": "night",
+      "label": "Spotify is likely part of this session.",
+      "signals": ["spotify", "music", "evening", "night"]
+    }
+  ],
+  "automations": [
+    {
+      "id": "apply-recommended-flow",
+      "label": "Apply recommended Flow",
+      "description": "Switch ETHONE to the best detected Flow after user approval.",
+      "action": "brainos.applyRecommended"
+    },
+    {
+      "id": "open-briefing",
+      "label": "Open intelligent briefing",
+      "description": "Show today's tasks, events, weather and recommended Flow.",
+      "action": "briefing.open"
+    },
+    {
+      "id": "open-brain",
+      "label": "Open ETHONE AI with context",
+      "description": "Open Brain with the current page and workspace context.",
+      "action": "brain.open"
+    }
+  ]
+}

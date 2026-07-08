@@ -80,7 +80,10 @@
     const lang=getLang(); const english=[];
     const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode(n){const p=n.parentElement;if(!p||p.closest('script,style,svg,canvas,input,textarea,select'))return NodeFilter.FILTER_REJECT;const tx=clean(n.nodeValue);if(/[A-Za-z]{4,}/.test(tx)&&lang==='fr'&&!/[éèàçùêâîôûëïüÉÈÀÇÙ]/.test(tx))return NodeFilter.FILTER_ACCEPT;return NodeFilter.FILTER_REJECT;}});
     while(walker.nextNode())english.push(clean(walker.currentNode.nodeValue));
-    console.table([...new Set(english)].slice(0,120)); return [...new Set(english)];
+    const result=[...new Set(english)];
+    window.__ethoneI18nAudit=result;
+    try{if(localStorage.getItem('ethone:debug-i18n')==='1'||/[?&]debugI18n=1\b/.test(location.search))console.table(result.slice(0,120));}catch(e){}
+    return result;
   };
   if(window.ethoneRunWhenDashboardReady)window.ethoneRunWhenDashboardReady('full-i18n-runtime',startI18nRuntime);else startI18nRuntime();
 })();

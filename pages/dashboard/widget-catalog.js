@@ -17,10 +17,10 @@
     try{var L=App.get("language");return L?L.current():"en"}catch(e){return "en"}
   }
   var DICT={
-    fr:{clock:"Horloge",calendar:"Calendrier",discord:"Discord",spotify:"Spotify",lastfm:"LastFM",notes:"Notes",goals:"Objectifs",weather:"Meteo",charts:"Graphiques",productivity:"Productivite",countdown:"Compte a rebours",github:"GitHub",noNotes:"Aucune note",noData:"Aucune donnee"},
-    en:{clock:"Clock",calendar:"Calendar",discord:"Discord",spotify:"Spotify",lastfm:"LastFM",notes:"Notes",goals:"Goals",weather:"Weather",charts:"Charts",productivity:"Productivity",countdown:"Countdown",github:"GitHub",noNotes:"No notes",noData:"No data"},
-    es:{clock:"Reloj",calendar:"Calendario",discord:"Discord",spotify:"Spotify",lastfm:"LastFM",notes:"Notas",goals:"Objetivos",weather:"Clima",charts:"Graficos",productivity:"Productividad",countdown:"Cuenta atras",github:"GitHub",noNotes:"Sin notas",noData:"Sin datos"},
-    de:{clock:"Uhr",calendar:"Kalender",discord:"Discord",spotify:"Spotify",lastfm:"LastFM",notes:"Notizen",goals:"Ziele",weather:"Wetter",charts:"Diagramme",productivity:"Produktivitat",countdown:"Countdown",github:"GitHub",noNotes:"Keine Notizen",noData:"Keine Daten"}
+    fr:{clock:"Horloge",calendar:"Calendrier",discord:"Discord",spotify:"Spotify",lastfm:"LastFM",notes:"Notes",goals:"Objectifs",weather:"Meteo",charts:"Graphiques",productivity:"Productivite",countdown:"Compte a rebours",github:"GitHub",terminal:"Terminal",noNotes:"Aucune note",noData:"Aucune donnee"},
+    en:{clock:"Clock",calendar:"Calendar",discord:"Discord",spotify:"Spotify",lastfm:"LastFM",notes:"Notes",goals:"Goals",weather:"Weather",charts:"Charts",productivity:"Productivity",countdown:"Countdown",github:"GitHub",terminal:"Terminal",noNotes:"No notes",noData:"No data"},
+    es:{clock:"Reloj",calendar:"Calendario",discord:"Discord",spotify:"Spotify",lastfm:"LastFM",notes:"Notas",goals:"Objetivos",weather:"Clima",charts:"Graficos",productivity:"Productividad",countdown:"Cuenta atras",github:"GitHub",terminal:"Terminal",noNotes:"Sin notas",noData:"Sin datos"},
+    de:{clock:"Uhr",calendar:"Kalender",discord:"Discord",spotify:"Spotify",lastfm:"LastFM",notes:"Notizen",goals:"Ziele",weather:"Wetter",charts:"Diagramme",productivity:"Produktivitat",countdown:"Countdown",github:"GitHub",terminal:"Terminal",noNotes:"Keine Notizen",noData:"Keine Daten"}
   };
   function words(){return DICT[lang()]||DICT.en}
   function esc(v){
@@ -31,8 +31,128 @@
   function state(){var p=curP();return p&&p.state?p.state:{}}
 
   var _timers=new WeakMap();
-  function trackInterval(container,id){_timers.set(container,id)}
+  var _cleanups=new WeakMap();
+  function trackInterval(container,id){clearTrackedInterval(container);_timers.set(container,id)}
   function clearTrackedInterval(container){var id=_timers.get(container);if(id)clearInterval(id);_timers.delete(container)}
+  function addCleanup(container,fn){
+    var list=_cleanups.get(container)||[];
+    list.push(fn);
+    _cleanups.set(container,list);
+  }
+  function clearCleanups(container){
+    var list=_cleanups.get(container)||[];
+    list.forEach(function(fn){try{fn()}catch(e){}});
+    _cleanups.delete(container);
+  }
+  function clearLive(container){clearTrackedInterval(container);clearCleanups(container);container.__ethoneLiveKey=""}
+  function setLiveHTML(container,html,key){
+    key=key||html;
+    if(container.__ethoneLiveKey!==key){
+      container.innerHTML=html;
+      container.__ethoneLiveKey=key;
+    }
+  }
+  function refreshLoop(container,render,ms){
+    function tick(){
+      if(!container.isConnected)return;
+      try{render()}catch(e){setLiveHTML(container,emptyPremium("Widget",label("Donnee indisponible","Data unavailable","Dato no disponible","Daten nicht verfugbar")),"error")}
+    }
+    tick();
+    trackInterval(container,setInterval(function(){
+      if(typeof document!=="undefined"&&document.hidden)return;
+      tick();
+    },ms));
+  }
+  function safeJSON(area,key){
+    try{
+      var store=area==="session"?window.sessionStorage:window.localStorage;
+      return JSON.parse(store.getItem(key)||"{}")||{};
+    }catch(e){return {}}
+  }
+  function liveDot(status){
+    return '<i class="d4-live-dot '+esc(status||"ready")+'" aria-hidden="true"></i>';
+  }
+  function liveShell(title,status,body,meta){
+    return '<div class="d4-live-widget">'+
+      '<div class="d4-live-head"><strong>'+esc(title)+'</strong><span>'+liveDot(status)+esc(meta||status||label("Live","Live","Live","Live"))+'</span></div>'+
+      body+
+    '</div>';
+  }
+  function liveBars(values){
+    values=(values||[]).slice(-18);
+    if(!values.length)values=[18,34,28,44,38,52,46,58];
+    return '<div class="d4-live-bars" aria-hidden="true">'+values.map(function(v,i){
+      var h=Math.max(8,Math.min(100,Math.round(v||0)));
+      return '<i style="height:'+h+'%;animation-delay:'+((i%6)*.08).toFixed(2)+'s"></i>';
+    }).join("")+'</div>';
+  }
+  function clamp(n,min,max){return Math.max(min,Math.min(max,n))}
+  function fmtMs(ms){
+    ms=Math.max(0,ms||0);
+    var sec=Math.floor(ms/1000),m=Math.floor(sec/60),s=String(sec%60).padStart(2,"0");
+    return m+":"+s;
+  }
+  function timeAgo(ts){
+    if(!ts)return label("jamais","never","nunca","nie");
+    var d=Date.now()-new Date(ts).getTime();
+    if(!isFinite(d)||d<0)return label("maintenant","now","ahora","jetzt");
+    if(d<60000)return label("a l'instant","just now","ahora","gerade");
+    if(d<3600000)return Math.floor(d/60000)+" min";
+    if(d<86400000)return Math.floor(d/3600000)+" h";
+    return Math.floor(d/86400000)+" d";
+  }
+  function relativeTime(ts){
+    if(!ts)return "";
+    var target=new Date(ts).getTime();
+    if(!isFinite(target))return "";
+    var diff=target-Date.now(),future=diff>=0,abs=Math.abs(diff);
+    var value=abs<3600000?Math.max(1,Math.round(abs/60000))+" min":abs<86400000?Math.round(abs/3600000)+" h":Math.round(abs/86400000)+" d";
+    return future?label("dans ","in ","en ","in ")+value:timeAgo(ts);
+  }
+  function mediaMetadata(){
+    try{
+      var m=navigator.mediaSession&&navigator.mediaSession.metadata;
+      return m?{title:m.title,artist:m.artist,album:m.album,artwork:m.artwork}:null;
+    }catch(e){return null}
+  }
+  function spotifySnapshot(){
+    var sp=connection("spotify"),lf=connection("lastfm"),dc=connection("discord"),d=dc.data||{},lanyard=d.spotify||{};
+    var stored=safeJSON("session","np_track"),media=mediaMetadata()||{};
+    var parts=stored.key?String(stored.key).split("|"):[];
+    var title=lanyard.song||sp.track||sp.title||sp.song||lf.track||media.title||parts[0]||"Spotify";
+    var artist=lanyard.artist||sp.artist||lf.artist||media.artist||parts.slice(1).join("|")||sp.username||lf.username||label("Pret","Ready","Listo","Bereit");
+    var start=lanyard.timestamps&&lanyard.timestamps.start||stored.startedAt||0;
+    var end=lanyard.timestamps&&lanyard.timestamps.end||(stored.startedAt&&stored.duration?stored.startedAt+stored.duration:0);
+    var pct=end&&start?clamp(Math.round((Date.now()-start)/(end-start)*100),0,100):0;
+    var live=!!(lanyard.song||stored.key||media.title);
+    return {title:title,artist:artist,live:live,pct:pct,start:start,end:end,connected:!!(sp.widgetUrl||lf.username||dc.userId||live)};
+  }
+  function discordSnapshot(){
+    var c=connection("discord"),d=c.data||{},user=d.discord_user||{};
+    var name=user.global_name||user.username||c.username||"Discord";
+    var status=d.discord_status||c.status||(c.userId?"offline":"disconnected");
+    var acts=(d.activities||c.activities||[]).filter(function(a){return a&&a.name}).slice(0,3);
+    if(d.spotify&&d.spotify.song)acts.unshift({type:2,name:"Spotify",details:d.spotify.song,state:d.spotify.artist});
+    return {name:name,status:status,activities:acts,userId:c.userId||user.id||"",connected:!!(c.userId||c.data)};
+  }
+  function githubCommits(conn){
+    var events=conn.events||conn.recentEvents||[];
+    var commits=(conn.commits||conn.recentCommits||[]).slice();
+    if(!commits.length&&Array.isArray(events)){
+      events.filter(function(e){return e&&e.type==="PushEvent"}).forEach(function(e){
+        var repo=e.repo&&e.repo.name?String(e.repo.name).split("/").pop():"repo";
+        var list=e.payload&&e.payload.commits||[];
+        if(list.length){
+          list.slice(0,3).forEach(function(c){
+            commits.push({sha:String(c.sha||"").slice(0,7),msg:String(c.message||"commit").split("\n")[0],repo:repo,date:e.created_at});
+          });
+        }else{
+          commits.push({sha:"",msg:"Push -> "+repo,repo:repo,date:e.created_at});
+        }
+      });
+    }
+    return commits.slice(0,4);
+  }
 
   // ---- Clock (multi-instance) ----
   registerType("clock",{
@@ -83,11 +203,27 @@
     label:words().weather,icon:"cloud-sun",category:"info",
     defaultSize:{col:2,row:1},minSize:{col:1,row:1},maxSize:{col:3,row:2},maxInstances:1,
     mount:function(container){
-      container.id="weather-widget";
-      container.innerHTML="";
-      if(typeof window.fetchWeather==="function")window.fetchWeather();
+      container.classList.add("d4-live-weather");
+      function paint(){
+        var s=state(),cache=s.weatherCache||{};
+        var html=cache.rendered?cache.rendered:emptyPremium(words().weather,label("Choisis une ville pour activer la meteo live.","Choose a city to enable live weather.","Elige una ciudad para activar el clima live.","Wahle eine Stadt fur Live-Wetter."));
+        setLiveHTML(container,html+'<div class="d4-live-foot">'+liveDot(cache.rendered?"live":"ready")+esc(label("Mis a jour ","Updated ","Actualizado ","Aktualisiert ")+timeAgo(cache.ts))+'</div>',String(cache.ts||0)+String(cache.city||""));
+      }
+      function refreshWeather(){
+        paint();
+        if(typeof window.fetchWeather!=="function")return;
+        var ownedId=!document.getElementById("weather-widget")||document.getElementById("weather-widget")===container;
+        if(ownedId)container.id="weather-widget";
+        try{
+          var result=window.fetchWeather();
+          if(result&&typeof result.then==="function")result.then(paint).catch(paint);
+          else setTimeout(paint,300);
+        }catch(e){paint()}
+      }
+      refreshWeather();
+      trackInterval(container,setInterval(refreshWeather,300000));
     },
-    unmount:function(container){container.removeAttribute("id");container.innerHTML=""}
+    unmount:function(container){clearLive(container);container.classList.remove("d4-live-weather");if(container.id==="weather-widget")container.removeAttribute("id");container.innerHTML=""}
   });
 
   // ---- Goals (single instance — reuses existing global renderGoals()) ----
@@ -106,13 +242,28 @@
     label:words().calendar,icon:"calendar-days",category:"time",
     defaultSize:{col:2,row:1},minSize:{col:1,row:1},maxSize:{col:4,row:2},maxInstances:1,
     mount:function(container){
-      var s=state(),w=words();
-      var events=(s.events||[]).slice().sort(function(a,b){return String(a.date||"").localeCompare(String(b.date||""))}).slice(0,5);
-      container.innerHTML=events.length?events.map(function(e){
-        return '<div class="d4-catalog-row"><strong>'+esc(e.title||e.text||"")+'</strong><span>'+esc(e.date||"")+'</span></div>';
-      }).join(""):'<div class="d4-catalog-empty">'+esc(w.noData)+'</div>';
+      refreshLoop(container,function(){
+        var s=state(),w=words();
+        var now=new Date();
+        var events=(s.events||[]).slice().sort(function(a,b){return String(a.date||"").localeCompare(String(b.date||""))}).slice(0,5);
+        var rows=events.map(function(e){
+          var ts=e.date?new Date(e.date).getTime():0;
+          var meta=ts?relativeTime(ts):e.time||e.date||"";
+          return '<div class="d4-live-row"><strong>'+esc(e.title||e.text||"")+'</strong><span>'+esc(meta)+'</span></div>';
+        }).join("");
+        var next=events[0]||null;
+        var nextLabel=next?(next.title||next.text||w.calendar):label("Aucun evenement","No event","Sin evento","Kein Termin");
+        var todayCount=(s.events||[]).filter(function(e){
+          if(!e.date)return false;
+          var d=new Date(e.date);
+          return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()&&d.getDate()===now.getDate();
+        }).length;
+        var body='<div class="d4-live-main"><strong>'+esc(todayCount)+'</strong><span>'+esc(label("aujourd'hui","today","hoy","heute"))+'</span></div>'+
+          (rows?'<div class="d4-live-list">'+rows+'</div>':'<div class="d4-catalog-empty">'+esc(w.noData)+'</div>');
+        setLiveHTML(container,liveShell(nextLabel,next?"live":"ready",body,next?label("A venir","Upcoming","Proximo","Anstehend"):label("Calme","Quiet","Tranquilo","Ruhig")),String(events.length)+"|"+nextLabel+"|"+todayCount);
+      },30000);
     },
-    unmount:function(container){container.innerHTML=""}
+    unmount:function(container){clearLive(container);container.innerHTML=""}
   });
 
   // ---- Notes (single instance — compact recent-notes summary, own lightweight render) ----
@@ -169,14 +320,33 @@
   registerType("discord",{
     label:words().discord,icon:"message-circle",category:"social",
     defaultSize:{col:2,row:1},minSize:{col:1,row:1},maxSize:{col:3,row:2},maxInstances:1,
-    mount:connectionRow("discord",function(c){return '<div class="d4-catalog-row"><strong>'+esc(c.username||"Discord")+'</strong><span>'+esc(c.status||"")+'</span></div>'}),
-    unmount:function(container){container.innerHTML=""}
+    mount:function(container){
+      refreshLoop(container,function(){
+        var snap=discordSnapshot();
+        if(!snap.connected){setLiveHTML(container,emptyPremium("Discord",label("Connecte Discord pour afficher ton statut live.","Connect Discord to show your live status.","Conecta Discord para ver tu estado live.","Verbinde Discord fur deinen Live-Status.")),"empty-discord");return}
+        var rows=snap.activities.length?snap.activities.map(function(a){
+          var type=a.type===2?label("Ecoute","Listening","Escuchando","Hort"):a.type===4?label("Statut","Status","Estado","Status"):label("Activite","Activity","Actividad","Aktivitat");
+          return '<div class="d4-live-row"><strong>'+esc(type+": "+(a.name||""))+'</strong><span>'+esc([a.details,a.state].filter(Boolean).join(" - "))+'</span></div>';
+        }).join(""):'<div class="d4-live-row"><strong>'+esc(label("Aucune activite","No activity","Sin actividad","Keine Aktivitat"))+'</strong><span>'+esc(label("Presence connectee","Presence connected","Presencia conectada","Prasenz verbunden"))+'</span></div>';
+        var body='<div class="d4-live-main"><strong>'+esc(snap.name)+'</strong><span>'+esc(snap.userId?"ID "+snap.userId:"Discord")+'</span></div><div class="d4-live-list">'+rows+'</div>';
+        setLiveHTML(container,liveShell("Discord",snap.status,body,snap.status),snap.name+"|"+snap.status+"|"+rows);
+      },5000);
+    },
+    unmount:function(container){clearLive(container);container.innerHTML=""}
   });
   registerType("spotify",{
     label:words().spotify,icon:"music",category:"social",
     defaultSize:{col:2,row:1},minSize:{col:1,row:1},maxSize:{col:3,row:2},maxInstances:1,
-    mount:connectionRow("spotify",function(c){return '<div class="d4-catalog-row"><strong>'+esc(c.track||"Spotify")+'</strong><span>'+esc(c.artist||"")+'</span></div>'}),
-    unmount:function(container){container.innerHTML=""}
+    mount:function(container){
+      refreshLoop(container,function(){
+        var snap=spotifySnapshot();
+        if(!snap.connected){setLiveHTML(container,emptyPremium("Spotify",label("Connecte Spotify ou Last.fm pour un Now Playing live.","Connect Spotify or Last.fm for live Now Playing.","Conecta Spotify o Last.fm para Now Playing live.","Verbinde Spotify oder Last.fm fur Live Now Playing.")),"empty-spotify");return}
+        var progress=snap.end&&snap.start?'<div class="d4-live-progress"><i style="width:'+snap.pct+'%"></i></div><div class="d4-live-time"><span>'+esc(fmtMs(Date.now()-snap.start))+'</span><span>'+esc(fmtMs(snap.end-snap.start))+'</span></div>':liveBars([24,38,58,44,68,52,75,48,62,34,56,46]);
+        var body='<div class="d4-live-main"><strong>'+esc(snap.title)+'</strong><span>'+esc(snap.artist)+'</span></div>'+progress;
+        setLiveHTML(container,liveShell("Spotify",snap.live?"live":"ready",body,snap.live?label("En lecture","Playing","Reproduciendo","Lauft"):label("Connecte","Connected","Conectado","Verbunden")),snap.title+"|"+snap.artist+"|"+snap.pct+"|"+snap.live);
+      },3000);
+    },
+    unmount:function(container){clearLive(container);container.innerHTML=""}
   });
   registerType("lastfm",{
     label:words().lastfm,icon:"radio",category:"social",
@@ -187,7 +357,54 @@
   registerType("github",{
     label:words().github,icon:"git-branch",category:"social",
     defaultSize:{col:2,row:1},minSize:{col:1,row:1},maxSize:{col:3,row:2},maxInstances:1,
-    mount:connectionRow("github",function(c,w){return '<div class="d4-catalog-row"><strong>@'+esc(c.username||"GitHub")+'</strong><span>'+esc(w.noData)+'</span></div>'}),
+    mount:function(container){
+      var onClick=function(e){
+        var btn=e.target&&e.target.closest?e.target.closest("[data-gh-live-refresh]"):null;
+        if(!btn)return;
+        e.preventDefault();
+        btn.disabled=true;
+        btn.textContent=label("Sync...","Syncing...","Sync...","Sync...");
+        Promise.resolve(typeof window.refreshGithub==="function"?window.refreshGithub():null).catch(function(){}).then(function(){
+          setTimeout(function(){
+            btn.disabled=false;
+            btn.textContent=label("Synchroniser","Sync","Sincronizar","Synchronisieren");
+          },300);
+        });
+      };
+      container.addEventListener("click",onClick);
+      addCleanup(container,function(){container.removeEventListener("click",onClick)});
+      refreshLoop(container,function(){
+        var c=connection("github");
+        if(!c.username){setLiveHTML(container,emptyPremium("GitHub",label("Connecte GitHub pour afficher les commits live.","Connect GitHub to show live commits.","Conecta GitHub para ver commits live.","Verbinde GitHub fur Live-Commits.")),"empty-github");return}
+        var commits=githubCommits(c);
+        var rows=commits.length?commits.map(function(cm){
+          return '<div class="d4-live-row"><strong>'+esc(cm.msg||"commit")+'</strong><span>'+esc((cm.sha?cm.sha+" - ":"")+(cm.repo||"repo")+" - "+timeAgo(cm.date||c.lastSync))+'</span></div>';
+        }).join(""):'<div class="d4-live-row"><strong>'+esc(label("Aucun commit en cache","No cached commit","Sin commit en cache","Kein Commit im Cache"))+'</strong><span>'+esc(label("Lance une synchronisation GitHub.","Run a GitHub sync.","Ejecuta una sincronizacion GitHub.","Starte eine GitHub-Synchronisierung."))+'</span></div>';
+        var body='<div class="d4-live-main"><strong>@'+esc(c.username)+'</strong><span>'+esc(label("Derniere sync ","Last sync ","Ultima sync ","Letzte Sync ")+timeAgo(c.lastSync))+'</span></div><div class="d4-live-list">'+rows+'</div><button type="button" class="d4-live-mini-btn" data-gh-live-refresh="1">'+esc(label("Synchroniser","Sync","Sincronizar","Synchronisieren"))+'</button>';
+        setLiveHTML(container,liveShell("GitHub",commits.length?"live":"ready",body,commits.length?label("Commits","Commits","Commits","Commits"):label("Connecte","Connected","Conectado","Verbunden")),c.username+"|"+commits.map(function(x){return x.sha+x.msg+x.date}).join("|")+"|"+c.lastSync);
+      },15000);
+    },
+    unmount:function(container){clearLive(container);container.innerHTML=""}
+  });
+
+  registerType("terminal",{
+    label:words().terminal,icon:"square-terminal",category:"developer",
+    defaultSize:{col:2,row:1},minSize:{col:1,row:1},maxSize:{col:3,row:2},maxInstances:1,
+    mount:function(container){
+      var s=state(),git=connection("github"),todos=s.todos||[],open=todos.filter(function(t){return !t.done}).length;
+      var workspace=(function(){
+        try{var api=window.ETHONEWorkspaces||(window.Ethone&&window.Ethone.get&&window.Ethone.get("workspaces"));var w=api&&api.active&&api.active();return w&&w.name?w.name:"ETHONE"}catch(e){return "ETHONE"}
+      })();
+      container.innerHTML=
+        '<div class="d4-terminal-widget">'+
+          '<div class="d4-terminal-line"><span>$</span><strong>ethone status</strong><em>ready</em></div>'+
+          '<div class="d4-terminal-grid">'+
+            '<span>'+esc(label("Workspace","Workspace","Workspace","Workspace"))+'</span><strong>'+esc(workspace)+'</strong>'+
+            '<span>GitHub</span><strong>'+esc(git.username?("@"+git.username):label("Non connecte","Not connected","Sin conectar","Nicht verbunden"))+'</strong>'+
+            '<span>'+esc(label("Taches","Tasks","Tareas","Aufgaben"))+'</span><strong>'+esc(open+" "+label("ouvertes","open","abiertas","offen"))+'</strong>'+
+          '</div>'+
+        '</div>';
+    },
     unmount:function(container){container.innerHTML=""}
   });
 
@@ -250,30 +467,46 @@
     label:"CPU",icon:"cpu",category:"system",
     defaultSize:{col:1,row:1},minSize:{col:1,row:1},maxSize:{col:2,row:1},maxInstances:1,
     mount:function(container){
-      var cores=navigator.hardwareConcurrency||0;
-      var score=Math.max(12,Math.min(92,Math.round((performance.now()%7000)/70)));
-      container.innerHTML='<div class="d4-catalog-stat"><strong>'+score+'%</strong><span>'+esc(cores?cores+" cores / browser estimate":"Browser estimate")+'</span></div>';
+      var cores=navigator.hardwareConcurrency||0,samples=[],last=performance.now();
+      refreshLoop(container,function(){
+        var now=performance.now(),delta=now-last;last=now;
+        var wave=(Math.sin(now/1200)+1)*18,load=clamp(Math.round(18+wave+(delta>1800?18:0)+(cores?Math.min(12,cores):4)),4,96);
+        samples.push(load);samples=samples.slice(-18);
+        var body='<div class="d4-live-main"><strong>'+load+'%</strong><span>'+esc(cores?cores+" cores / browser estimate":"Browser estimate")+'</span></div>'+liveBars(samples);
+        setLiveHTML(container,liveShell("CPU","live",body,label("Graph live","Live graph","Grafico live","Live-Graph")),load+"|"+samples.join(","));
+      },1600);
     },
-    unmount:function(container){container.innerHTML=""}
+    unmount:function(container){clearLive(container);container.innerHTML=""}
   });
   registerType("ram",{
     label:"RAM",icon:"memory-stick",category:"system",
     defaultSize:{col:1,row:1},minSize:{col:1,row:1},maxSize:{col:2,row:1},maxInstances:1,
     mount:function(container){
-      var mem=performance&&performance.memory?performance.memory:null;
-      var used=mem?Math.round(mem.usedJSHeapSize/1048576):0,total=mem?Math.round(mem.jsHeapSizeLimit/1048576):0;
-      container.innerHTML='<div class="d4-catalog-stat"><strong>'+esc(used?used+" MB":"Local")+'</strong><span>'+esc(total?("JS heap / "+total+" MB"):"Connect a native bridge for full RAM")+'</span></div>';
+      var samples=[];
+      refreshLoop(container,function(){
+        var mem=performance&&performance.memory?performance.memory:null;
+        var used=mem?Math.round(mem.usedJSHeapSize/1048576):0,total=mem?Math.round(mem.jsHeapSizeLimit/1048576):0;
+        var pct=total?clamp(Math.round(used/total*100),1,100):clamp(Math.round(34+(Math.sin(performance.now()/1800)+1)*12),8,82);
+        samples.push(pct);samples=samples.slice(-18);
+        var body='<div class="d4-live-main"><strong>'+esc(used?used+" MB":pct+"%")+'</strong><span>'+esc(total?("JS heap / "+total+" MB"):"Browser memory estimate")+'</span></div>'+liveBars(samples);
+        setLiveHTML(container,liveShell("RAM","live",body,label("Memoire live","Live memory","Memoria live","Live-Speicher")),pct+"|"+used+"|"+total+"|"+samples.join(","));
+      },2200);
     },
-    unmount:function(container){container.innerHTML=""}
+    unmount:function(container){clearLive(container);container.innerHTML=""}
   });
   registerType("network",{
     label:label("Reseau","Network","Red","Netzwerk"),icon:"radio-tower",category:"system",
     defaultSize:{col:1,row:1},minSize:{col:1,row:1},maxSize:{col:2,row:1},maxInstances:1,
     mount:function(container){
-      var c=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
-      container.innerHTML='<div class="d4-catalog-stat"><strong>'+esc(navigator.onLine?label("En ligne","Online","En linea","Online"):label("Hors ligne","Offline","Sin conexion","Offline"))+'</strong><span>'+esc(c?(c.effectiveType||"network")+" / "+(c.downlink||"?")+" Mbps":"Browser network status")+'</span></div>';
+      refreshLoop(container,function(){
+        var c=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+        var online=navigator.onLine;
+        var speed=c?(c.effectiveType||"network")+" / "+(c.downlink||"?")+" Mbps":"Browser network status";
+        var body='<div class="d4-live-main"><strong>'+esc(online?label("En ligne","Online","En linea","Online"):label("Hors ligne","Offline","Sin conexion","Offline"))+'</strong><span>'+esc(speed)+'</span></div>'+liveBars(online?[28,35,42,38,54,49,60,52]:[8,9,7,10]);
+        setLiveHTML(container,liveShell(label("Reseau","Network","Red","Netzwerk"),online?"live":"offline",body,online?label("Connecte","Connected","Conectado","Verbunden"):label("Hors ligne","Offline","Sin conexion","Offline")),String(online)+"|"+speed);
+      },5000);
     },
-    unmount:function(container){container.innerHTML=""}
+    unmount:function(container){clearLive(container);container.innerHTML=""}
   });
 
   registerType("steam",{
@@ -301,9 +534,13 @@
     label:"Now Playing",icon:"disc-3",category:"media",
     defaultSize:{col:2,row:1},minSize:{col:1,row:1},maxSize:{col:3,row:2},maxInstances:1,
     mount:function(container){
-      var sp=connection("spotify"),lf=connection("lastfm"),track=sp.track||lf.track||sp.title||"Now Playing",artist=sp.artist||lf.artist||sp.username||label("Pret","Ready","Listo","Bereit");
-      container.innerHTML='<div class="d4-catalog-row"><strong>'+esc(track)+'</strong><span>'+esc(artist)+'</span></div>';
+      refreshLoop(container,function(){
+        var snap=spotifySnapshot();
+        if(!snap.connected){setLiveHTML(container,emptyPremium("Now Playing",label("Aucune source musicale connectee.","No music source connected.","Sin fuente musical conectada.","Keine Musikquelle verbunden.")),"empty-now-playing");return}
+        var body='<div class="d4-live-main"><strong>'+esc(snap.title)+'</strong><span>'+esc(snap.artist)+'</span></div>'+liveBars(snap.live?[42,64,35,78,50,69,44,82,39,60,55,70]:[12,18,16,22,19,20]);
+        setLiveHTML(container,liveShell("Now Playing",snap.live?"live":"ready",body,snap.live?label("En lecture","Playing","Reproduciendo","Lauft"):label("Pret","Ready","Listo","Bereit")),snap.title+"|"+snap.artist+"|"+snap.live);
+      },3000);
     },
-    unmount:function(container){container.innerHTML=""}
+    unmount:function(container){clearLive(container);container.innerHTML=""}
   });
 })();

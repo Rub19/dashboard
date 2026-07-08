@@ -7,6 +7,12 @@
   const $=(s,r=document)=>r.querySelector(s);
   const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
   const state={lastContext:null,lastSelection:"",messages:[],pendingAction:null,suggestions:new Set(),started:false,lastRun:0,workflowHooks:false};
+  function diag(label,error){
+    try{
+      window.__ethoneAIEverywhereDiagnostics=(window.__ethoneAIEverywhereDiagnostics||[]).slice(-30);
+      window.__ethoneAIEverywhereDiagnostics.push({label:label,message:error&&error.message?error.message:String(error||""),at:new Date().toISOString()});
+    }catch(e){}
+  }
   function lang(){return String(window._lang||localStorage.getItem("nexus_lang")||document.documentElement.lang||"fr").slice(0,2).toLowerCase()}
   function isFR(){return lang()==="fr"}
   function profileState(){try{const p=typeof window.curP==="function"?window.curP():null;return p&&p.state?p.state:{}}catch(e){return {}}}
@@ -198,7 +204,7 @@
       input.value="";
       const ctx=state.lastContext||contextFromElement(document.activeElement);
       state.messages.push({role:"user",text});
-      try{renderCopilot()}catch(error){console.warn("[ETHONE AI Everywhere] copilot render failed",error)}
+      try{renderCopilot()}catch(error){diag("copilot render",error)}
       const result=await askCore(text+"\n\nCurrent ETHONE context:\n"+JSON.stringify({page:ctx.page,kind:ctx.kind,label:ctx.label,text:ctx.text,facts:ctx.facts}).slice(0,2400),{allowLocalIntent:true});
       state.messages.push({role:"assistant",text:result.content||"No response."});
     }catch(e){
@@ -206,7 +212,7 @@
       console.error("[ETHONE AI Everywhere] copilot request failed",e);
     }finally{
       state.pendingAction=null;
-      try{renderCopilot()}catch(error){console.warn("[ETHONE AI Everywhere] copilot final render failed",error)}
+      try{renderCopilot()}catch(error){diag("copilot final render",error)}
     }
   }
   function ensurePageActions(){
@@ -463,7 +469,7 @@
       const args=arguments;
       const result=fn.apply(this,args);
       Promise.resolve(result).catch(function(){}).then(function(){
-        setTimeout(()=>{try{after(result,before,args)}catch(e){console.warn("[ETHONE Brain OS hook]",name,e)}},80);
+        setTimeout(()=>{try{after(result,before,args)}catch(e){diag("hook "+name,e)}},80);
       });
       return result;
     };
@@ -655,7 +661,7 @@
     }
     return false;
   }
-  function toast(msg,type){if(typeof window.toast==="function"){try{window.toast(msg,type||"info");return}catch(e){}}console.log("[ETHONE AI Everywhere]",msg)}
+  function toast(msg,type){if(typeof window.toast==="function"){try{window.toast(msg,type||"info");return}catch(e){}}}
   function handleClick(e){
     try{
       if(e.target.closest("#aie-copilot-toggle")){openCopilot(contextFromElement(document.activeElement));return}
@@ -773,7 +779,7 @@
           ttl:12000
         });
         else if(/github|discord|spotify|steam|twitch|valorant|integration|sync/.test(raw))integrationSuggestion(source||category||title,entry);
-      }catch(error){console.warn("[ETHONE AI Everywhere] timeline suggestion failed",error)}
+      }catch(error){diag("timeline suggestion",error)}
     });
   }
   function escape(s){return String(s||"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}

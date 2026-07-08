@@ -25,7 +25,6 @@
   function data(){var p=profile();return p&&p.state?p.state:{}}
   function notify(message,type){
     try{if(typeof window.toast==="function"){window.toast(message,type||"info");return}}catch(e){}
-    try{console.log("[ETHONE Side Panels]",message)}catch(e){}
   }
   function save(){
     try{localStorage.setItem(storageKey,JSON.stringify({pinned:state.pinned,width:state.width,history:state.history.slice(0,12)}))}catch(e){}
@@ -42,6 +41,32 @@
     var main=$("#main-content"),auth=$("#auth-screen"),profileScreen=$("#profile-screen"),password=$("#password-screen");
     function hidden(el){if(!el)return true;var cs=getComputedStyle(el);return el.hidden||cs.display==="none"||cs.visibility==="hidden"}
     return !!main&&!hidden(main)&&hidden(auth)&&hidden(profileScreen)&&hidden(password);
+  }
+  function layoutMode(){
+    try{
+      if(typeof window.ethoneGetLayoutMode==="function")return window.ethoneGetLayoutMode();
+      if(window.ETHONEBootSequence&&typeof window.ETHONEBootSequence.layoutMode==="function")return window.ETHONEBootSequence.layoutMode();
+    }catch(e){}
+    try{return localStorage.getItem("ethone:layout-mode")||"classic"}catch(e){return "classic"}
+  }
+  function canMount(){
+    if(!isAppVisible())return false;
+    if(layoutMode()==="desktop")return false;
+    try{
+      if(window.ethoneCanMountUI&&window.ethoneCanMountUI("side-panels")===false)return false;
+    }catch(e){}
+    return true;
+  }
+  function syncRootState(){
+    var root=$("#ethone-side-panels");
+    var open=!!state.active;
+    if(root){
+      root.classList.toggle("is-open",open);
+      root.classList.toggle("is-pinned",open&&!!state.pinned);
+      root.classList.toggle("is-detached",!!state.detached);
+      root.setAttribute("aria-hidden",canMount()?"false":"true");
+    }
+    document.body.classList.toggle("ethone-side-panel-open",open&&canMount());
   }
   function panelInfo(id){
     var map={
@@ -110,7 +135,7 @@
   }
   function open(id,options){
     if(!panelPages.includes(id))return false;
-    if(!isAppVisible())return false;
+    if(!canMount())return false;
     ensureRoot();
     state.active=id;
     state.detached=false;
@@ -120,6 +145,7 @@
       shell.classList.add("open");
       shell.setAttribute("aria-hidden","false");
     }
+    syncRootState();
     renderRail();
     renderPanel();
     save();
@@ -135,11 +161,14 @@
       shell.classList.remove("open");
       shell.setAttribute("aria-hidden","true");
     }
+    syncRootState();
     renderRail();
+    save();
   }
   function togglePin(){
     state.pinned=!state.pinned;
     save();
+    syncRootState();
     renderPanel();
     notify(state.pinned?t("Panneau epingle","Panel pinned"):t("Panneau libere","Panel unpinned"),"info");
   }
@@ -290,20 +319,20 @@
     });
     document.addEventListener("keydown",function(e){
       if(e.key==="Escape")close(false);
-      if((e.ctrlKey||e.metaKey)&&e.altKey&&e.key.toLowerCase()==="b"){e.preventDefault();open(state.active||"ai")}
+      if((e.ctrlKey||e.metaKey)&&e.altKey&&e.key.toLowerCase()==="b"){e.preventDefault();if(canMount())open(state.active||"ai")}
     });
-    window.addEventListener("ethone:page-ready",function(){if(state.active)renderPanel();});
+    window.addEventListener("ethone:page-ready",function(){if(!canMount())close(true);else if(state.active)renderPanel();});
     window.addEventListener("ethone:dashboard-ready",function(){setTimeout(sync,120)});
   }
   function patchNavigation(){
     if(typeof window.switchPage!=="function"||window.switchPage.__sidePanelsWrapped)return;
     originalSwitchPage=window.switchPage;
     window.switchPage=function(page,navEl){
-      if(!bypass&&panelPages.includes(page)&&isAppVisible()){
+      if(!bypass&&panelPages.includes(page)&&canMount()){
         open(page,{toast:false});
         return;
       }
-      if(!bypass&&page==="connections"&&navEl&&navEl.dataset&&/spotify|discord/.test(String(navEl.dataset.panel||""))){
+      if(!bypass&&page==="connections"&&navEl&&navEl.dataset&&/spotify|discord/.test(String(navEl.dataset.panel||""))&&canMount()){
         open(navEl.dataset.panel,{toast:false});
         return;
       }
@@ -312,11 +341,13 @@
     window.switchPage.__sidePanelsWrapped=true;
   }
   function sync(){
-    if(!isAppVisible())return;
-    ensureRoot();
+    if(!canMount()){close(true);return;}
     patchNavigation();
+    if(state.active||state.pinned)ensureRoot();
+    else {syncRootState();return;}
     renderRail();
     if(state.active)renderPanel();
+    syncRootState();
   }
   function boot(){
     load();
@@ -328,10 +359,11 @@
 
   window.ETHONESidePanels={
     open:open,
-    close:function(){close(true)},
+    close:function(force){close(force!==false)},
     pin:togglePin,
     detach:detach,
     full:openFullPage,
+    sync:sync,
     state:function(){return JSON.parse(JSON.stringify(state))}
   };
   boot();

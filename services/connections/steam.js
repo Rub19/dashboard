@@ -136,7 +136,7 @@ function renderSteamSidebar(data){
   if(nameEl)nameEl.textContent=data.displayName||'Unknown';
   const gameName=data.stateMessage&&data.stateMessage.startsWith('Currently In-Game')?data.stateMessage.replace('Currently In-Game','').trim():null;
   if(subEl){
-    if(gameName){subEl.textContent='En jeu Â· '+gameName;subEl.style.display='block';}
+    if(gameName){subEl.textContent='En jeu - '+gameName;subEl.style.display='block';}
     else{subEl.style.display='none';}
   }
   if(statusDot){

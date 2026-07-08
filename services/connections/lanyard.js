@@ -1,62 +1,125 @@
 /* ETHONE legacy compatibility module: lanyard. */
 // === LANYARD WEBSOCKET (real-time) ===
-let _lanyardWS = null, _lanyardHB = null, _lanyardUserId = null;
+let _lanyardWS = null;
+let _lanyardHB = null;
+let _lanyardUserId = null;
+let _lanyardPoll = null;
+let _lanyardRetryTimer = null;
+let _lanyardRetryDelay = 5000;
 
-function startLanyardWS(userId){
-  if(_lanyardWS){_lanyardWS.close();clearInterval(_lanyardHB);}
+function _lanyardCurrentDiscordId() {
+  try {
+    const p = curP();
+    return p && p.state && p.state.connections && p.state.connections.discord
+      ? p.state.connections.discord.userId
+      : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function _lanyardStoreData(data) {
+  const p = curP();
+  if (!p || !p.state || !p.state.connections || !p.state.connections.discord) return;
+  p.state.connections.discord.data = data;
+  saveStateNow();
+  if (typeof renderDiscordCard === "function") renderDiscordCard(data);
+  if (typeof refreshDiscordSidebar === "function") refreshDiscordSidebar();
+}
+
+function _lanyardClearRetry() {
+  clearTimeout(_lanyardRetryTimer);
+  _lanyardRetryTimer = null;
+}
+
+function _lanyardClearPolling() {
+  clearInterval(_lanyardPoll);
+  _lanyardPoll = null;
+}
+
+function startLanyardWS(userId) {
+  if (!userId) return;
+  if (_lanyardUserId === userId && _lanyardWS && (_lanyardWS.readyState === 0 || _lanyardWS.readyState === 1)) return;
+
+  stopLanyardWS();
   _lanyardUserId = userId;
-  let _lanyardRetry=5000; // reset délai de reconnexion
-  try{
-    _lanyardWS = new WebSocket('wss://api.lanyard.rest/socket');
-    _lanyardWS.onopen = ()=>
-    _lanyardWS.onmessage = e => {
-      const msg = JSON.parse(e.data);
-      if(msg.op === 1){ // HELLO
-        const interval = msg.d.heartbeat_interval;
+  _lanyardRetryDelay = 5000;
+
+  try {
+    _lanyardWS = new WebSocket("wss://api.lanyard.rest/socket");
+    _lanyardWS.onopen = function () {
+      _lanyardRetryDelay = 5000;
+      _lanyardClearPolling();
+    };
+    _lanyardWS.onmessage = function (event) {
+      let msg;
+      try { msg = JSON.parse(event.data); } catch (e) { return; }
+      if (!msg) return;
+
+      if (msg.op === 1) {
+        const interval = msg.d && msg.d.heartbeat_interval ? msg.d.heartbeat_interval : 30000;
         clearInterval(_lanyardHB);
-        _lanyardHB = setInterval(()=>{ if(_lanyardWS.readyState===1) _lanyardWS.send(JSON.stringify({op:3})); }, interval);
-        // Subscribe
-        _lanyardWS.send(JSON.stringify({op:2, d:{subscribe_to_id: userId}}));
-      } else if(msg.op === 0){ // EVENT
-        const d = msg.d;
-        if(msg.t==='INIT_STATE'||msg.t==='PRESENCE_UPDATE'){
-          const data = msg.t==='INIT_STATE' ? d : d;
-          const p = curP(); if(!p) return;
-          if(!p.state.connections?.discord) return;
-          p.state.connections.discord.data = data;
-          saveStateNow();
-          renderDiscordCard(data);
-          refreshDiscordSidebar();
+        _lanyardHB = setInterval(function () {
+          if (_lanyardWS && _lanyardWS.readyState === 1) {
+            _lanyardWS.send(JSON.stringify({ op: 3 }));
+          }
+        }, interval);
+        if (_lanyardWS && _lanyardWS.readyState === 1) {
+          _lanyardWS.send(JSON.stringify({ op: 2, d: { subscribe_to_id: userId } }));
         }
+        return;
+      }
+
+      if (msg.op === 0 && (msg.t === "INIT_STATE" || msg.t === "PRESENCE_UPDATE")) {
+        if (_lanyardCurrentDiscordId() !== userId) return;
+        _lanyardStoreData(msg.d);
       }
     };
-    let _lanyardRetry=5000;
-    _lanyardWS.onclose = ()=>{
+    _lanyardWS.onclose = function () {
       clearInterval(_lanyardHB);
-      // Reconnexion exponentielle: 5s → 10s → 20s → 30s max
-      setTimeout(()=>{
-        const p=curP();
-        if(p?.state?.connections?.discord?.userId===userId){
-          _lanyardRetry=Math.min(_lanyardRetry*2,30000);
+      _lanyardHB = null;
+      _lanyardClearRetry();
+      _lanyardRetryTimer = setTimeout(function () {
+        if (_lanyardCurrentDiscordId() === userId) {
+          _lanyardRetryDelay = Math.min(_lanyardRetryDelay * 2, 30000);
           startLanyardWS(userId);
         }
-      }, _lanyardRetry);
+      }, _lanyardRetryDelay);
     };
-    _lanyardWS.onerror = ()=> _lanyardWS.close();
-  } catch(err){ console.warn('[Lanyard WS] WebSocket not available, falling back to polling'); startLanyardPolling(userId); }
+    _lanyardWS.onerror = function () {
+      try { _lanyardWS.close(); } catch (e) {}
+      startLanyardPolling(userId);
+    };
+  } catch (e) {
+    startLanyardPolling(userId);
+  }
 }
 
-function stopLanyardWS(){
-  if(_lanyardWS){_lanyardWS.onclose=null;_lanyardWS.close();_lanyardWS=null;}
+function stopLanyardWS() {
+  if (_lanyardWS) {
+    _lanyardWS.onclose = null;
+    try { _lanyardWS.close(); } catch (e) {}
+    _lanyardWS = null;
+  }
   clearInterval(_lanyardHB);
+  _lanyardHB = null;
+  _lanyardClearRetry();
+  _lanyardClearPolling();
 }
 
-function startLanyardPolling(userId){
-  setInterval(()=>{
-    const p=curP();if(!p)return;
-    if(p.state.connections?.discord?.userId!==userId)return;
-    fetch('https://api.lanyard.rest/v1/users/'+userId).then(r=>r.json()).then(j=>{
-      if(j.success){p.state.connections.discord.data=j.data;saveStateNow();renderDiscordCard(j.data);refreshDiscordSidebar();}
-    }).catch(()=>{});
-  },20000);
+function startLanyardPolling(userId) {
+  if (!userId) return;
+  _lanyardClearPolling();
+  _lanyardPoll = setInterval(function () {
+    if (_lanyardCurrentDiscordId() !== userId) {
+      _lanyardClearPolling();
+      return;
+    }
+    fetch("https://api.lanyard.rest/v1/users/" + encodeURIComponent(userId))
+      .then(function (response) { return response.json(); })
+      .then(function (json) {
+        if (json && json.success) _lanyardStoreData(json.data);
+      })
+      .catch(function () {});
+  }, 20000);
 }

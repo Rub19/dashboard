@@ -88,8 +88,18 @@ function applySidebarCompact(){
   if(typeof window.applyResponsiveSidebar==='function')window.applyResponsiveSidebar();
 }
 
+function scheduleDashboardWork(label,fn,delay){
+  if(typeof fn!=='function')return;
+  const run=()=>{try{fn()}catch(e){console.warn('[ETHONE boot] deferred task failed:',label,e);}};
+  const idle=window.requestIdleCallback;
+  setTimeout(()=>{if(idle)idle(run,{timeout:1200});else run();},Number(delay)||0);
+}
+
 function initDashboard(){
   const p=curP();if(!p)return;
+  const now=Date.now();
+  if(window.__ethoneInitDashboardAt&&now-window.__ethoneInitDashboardAt<300)return;
+  window.__ethoneInitDashboardAt=now;
   if(!p.state)p.state=defState(p.name);
   if(!p.state.connections)p.state.connections={};
 
@@ -107,9 +117,9 @@ function initDashboard(){
   document.getElementById('quick-note').value=p.state.note||'';
   document.getElementById('main-note').value=p.state.note||'';
   updateClock();
-  updateStats();
+  scheduleDashboardWork('stats',()=>updateStats(),80);
   // Pré-charger état pomo depuis localStorage avant renderPomo
-  (()=>{
+  scheduleDashboardWork('pomo-restore',()=>{
     const _end=parseInt(localStorage.getItem('pomo_end')||0);
     if(_end){
       const _rem=Math.round((_end-Date.now())/1000);
@@ -119,35 +129,43 @@ function initDashboard(){
         pomoRemaining=_rem;
       }
     }
-  })();
-  renderPomo();
-  if(typeof renderDailyFocus==='function')renderDailyFocus();
-  if(typeof applyTheme==='function')applyTheme(p.themeIdx||0);
-  if(typeof bootThemeEngine==='function')bootThemeEngine();
-  if(typeof updateBannerDisplay==='function')updateBannerDisplay();
-  initDarkMode();
-  initNotifState(p);
+    renderPomo();
+    restorePomoIfRunning();
+  },120);
+  scheduleDashboardWork('daily-focus',()=>{if(typeof renderDailyFocus==='function')renderDailyFocus();},160);
+  scheduleDashboardWork('theme',()=>{
+    if(typeof applyTheme==='function')applyTheme(p.themeIdx||0);
+    if(typeof bootThemeEngine==='function')bootThemeEngine();
+    initDarkMode();
+  },200);
+  scheduleDashboardWork('banner',()=>{if(typeof updateBannerDisplay==='function')updateBannerDisplay();},240);
+  scheduleDashboardWork('notifications',()=>initNotifState(p),280);
   updateSyncIndicator(_sbUser?'saved':'offline');
 
   // ── VISIBLE CONTENT ─────────────────────────────────────────────────
-  renderRecentItems();renderActivity();renderTodos();renderOverviewEvents();
-  if(typeof renderPinnedLinks==='function')renderPinnedLinks();
-  loadConnectionsUI();
-  initSidebarWidgets(p);
+  scheduleDashboardWork('home-content',()=>{
+    renderRecentItems();renderActivity();renderTodos();renderOverviewEvents();
+    if(typeof renderPinnedLinks==='function')renderPinnedLinks();
+    if(typeof renderCountdown==='function')renderCountdown();
+  },320);
+  scheduleDashboardWork('connections-ui',()=>loadConnectionsUI(),520);
+  if(!window.ethoneCanMountUI||window.ethoneCanMountUI('widgets-panel')){
+    scheduleDashboardWork('sidebar-widgets',()=>initSidebarWidgets(p),680);
+  }
   const adminBtn=document.getElementById('nav-admin');
   if(adminBtn)adminBtn.style.display=_isAdmin?'flex':'none';
   // ── DEFERRED (non-critical) ───────────────────────────────────────────
   // Restaurer pomo immédiatement (avant le setTimeout) pour éviter flash 25:00
-  restorePomoIfRunning();
-  setTimeout(()=>{
+  scheduleDashboardWork('secondary-dashboard-render',()=>{
     if(typeof renderGamingOverview==='function')renderGamingOverview();
     initAnimations();
     startNotifScan();
-  },500);
-  checkMobileLayout();
-  if(typeof renderCountdown==='function')renderCountdown();;
-  refreshSpotifySidebar();
-  applyTheme(p.themeIdx||0);
+  },760);
+  scheduleDashboardWork('mobile-layout',()=>checkMobileLayout(),820);
+  if(!window.ethoneCanMountUI||window.ethoneCanMountUI('widgets-panel')){
+    scheduleDashboardWork('spotify-sidebar',()=>refreshSpotifySidebar(),900);
+  }
+  scheduleDashboardWork('theme-refresh',()=>{if(typeof applyTheme==='function')applyTheme(p.themeIdx||0);},960);
   // Apply bgTheme — wait for paint then size canvas properly
   if(p.bgTheme&&p.bgTheme!=='none'){
     const _applyBg=()=>{
@@ -166,16 +184,21 @@ function initDashboard(){
   // Restore custom accent silently. User-facing toasts belong to manual changes,
   // not dashboard boot.
   if(p.customAccent){
-    if(typeof window.applyStoredCustomAccent==='function')window.applyStoredCustomAccent(p.customAccent);
-    else if(typeof applyCustomColor==='function')applyCustomColor(p.customAccent);
+    scheduleDashboardWork('custom-accent',()=>{
+      if(typeof window.applyStoredCustomAccent==='function')window.applyStoredCustomAccent(p.customAccent);
+      else if(typeof applyCustomColor==='function')applyCustomColor(p.customAccent);
+    },1040);
   }
   // Delay weather/quote to let DOM and geolocation settle
-  setTimeout(()=>{fetchWeather();fetchQuote();},800);
-  updateBannerDisplay();
-  renderPinnedLinks();
-  renderCountdown();
-  addActivity('Welcome back, '+p.name,'var(--accent)');
-  pomoReset();
+  scheduleDashboardWork('weather-quote',()=>{fetchWeather();fetchQuote();},1500);
+  scheduleDashboardWork('banner-refresh',()=>{if(typeof updateBannerDisplay==='function')updateBannerDisplay();},1120);
+  try{
+    const welcomeKey='ethone:welcome-activity:'+p.id;
+    if(sessionStorage.getItem(welcomeKey)!=='1'){
+      sessionStorage.setItem(welcomeKey,'1');
+      scheduleDashboardWork('welcome-activity',()=>addActivity('Welcome back, '+p.name,'var(--accent)'),1000);
+    }
+  }catch(e){}
 }
 
 function updateSidebarAvatar(){

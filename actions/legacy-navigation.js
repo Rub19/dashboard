@@ -1,10 +1,18 @@
 /* ETHONE legacy compatibility module: navigation. */
 function switchPage(page,navEl){
   if(page==='timeline')page='activity';
+  const safeInvoke=(label,fn)=>{
+    try{return fn();}
+    catch(error){
+      console.warn('[ETHONE navigation] '+label+' failed:',error);
+      if(typeof toast==='function')toast('Une section a ete chargee en mode degrade.','warning');
+      return null;
+    }
+  };
   // Sauvegarder la quick note avant de changer de page
   const qn=document.getElementById('quick-note');
   const p0=curP();
-  if(qn&&p0&&qn.value!==p0.state?.note){p0.state.note=qn.value;saveStateNow();}
+  if(qn&&p0&&qn.value!==p0.state?.note)safeInvoke('save quick note',()=>{p0.state.note=qn.value;saveStateNow();});
   const activePage=document.getElementById('page-'+page);
   if(!activePage){
     console.warn('[ETHONE navigation] Unknown page:',page);
@@ -29,40 +37,57 @@ function switchPage(page,navEl){
   });
   setMobNav(page);
   // Close sidebar on mobile after navigation
-  if(window.innerWidth<=768)closeMobileSidebar();
+  if(window.innerWidth<=768&&typeof closeMobileSidebar==='function')safeInvoke('close mobile sidebar',()=>closeMobileSidebar());
   const p=curP();if(!p)return;
-  if(page==='files')renderItems();
-  if(page==='todos')renderTodos();
-  if(page==='notes'){initNotes();}
-  if(page==='stats'){renderStatsPage();}
-  if(page==='ai'){initAIChat();}
-  if(page==='goals'){renderGoals();}
-  if(page==='journal'){renderJournal();}
-  if(page==='countdown'){renderCountdowns();}
-  if(page==='github'){refreshGithub();}
-  if(page==='activity'&&typeof renderActivityPage==='function')renderActivityPage();
-  if(page==='health'&&typeof renderHealthPage==='function')renderHealthPage();
-  if(page==='versions'&&typeof renderVersionHistoryPage==='function')renderVersionHistoryPage();
-  if(page==='marketplace'&&typeof renderMarketplacePage==='function')renderMarketplacePage();
-  if(page==='studio'&&typeof renderStudioPage==='function')renderStudioPage();
-  if(page==='import'&&typeof renderImportAssistant==='function')renderImportAssistant();
-  if(page==='valorant-accounts'){vaRender();}
-  if(page==='databases'){if(typeof renderDatabasesHome==='function')renderDatabasesHome();}
+  if(page==='files'&&typeof renderItems==='function')safeInvoke('files render',()=>renderItems());
+  if(page==='todos'&&typeof renderTodos==='function')safeInvoke('todos render',()=>renderTodos());
+  if(page==='notes'&&typeof initNotes==='function')safeInvoke('notes init',()=>initNotes());
+  if(page==='stats'&&typeof renderStatsPage==='function')safeInvoke('stats render',()=>renderStatsPage());
+  if(page==='ai'&&typeof initAIChat==='function')safeInvoke('ai init',()=>initAIChat());
+  if(page==='goals'&&typeof renderGoals==='function')safeInvoke('goals render',()=>renderGoals());
+  if(page==='journal'&&typeof renderJournal==='function')safeInvoke('journal render',()=>renderJournal());
+  if(page==='countdown'&&typeof renderCountdowns==='function')safeInvoke('countdown render',()=>renderCountdowns());
+  if(page==='github'&&typeof refreshGithub==='function')safeInvoke('github refresh',()=>refreshGithub());
+  if(page==='activity'&&typeof renderActivityPage==='function')safeInvoke('activity render',()=>renderActivityPage());
+  if(page==='health'&&typeof renderHealthPage==='function')safeInvoke('health render',()=>renderHealthPage());
+  if(page==='versions'&&typeof renderVersionHistoryPage==='function')safeInvoke('versions render',()=>renderVersionHistoryPage());
+  if(page==='marketplace'&&typeof renderMarketplacePage==='function')safeInvoke('marketplace render',()=>renderMarketplacePage());
+  if(page==='studio'&&typeof renderStudioPage==='function')safeInvoke('studio render',()=>renderStudioPage());
+  if(page==='import'&&typeof renderImportAssistant==='function')safeInvoke('import render',()=>renderImportAssistant());
+  if(page==='valorant-accounts'&&typeof vaRender==='function')safeInvoke('valorant accounts render',()=>vaRender());
+  if(page==='databases'&&typeof renderDatabasesHome==='function')safeInvoke('databases render',()=>renderDatabasesHome());
   // Refresh widgets when back on dashboard
   if(page==='dashboard'){
     const wEl=document.getElementById('weather-widget');
     const qEl=document.getElementById('quote-widget');
     const weatherEmpty=!wEl||wEl.querySelector('.empty-icon');
     const quoteEmpty=!qEl||qEl.querySelector('.empty-icon');
-    if(weatherEmpty)fetchWeather();
-    if(quoteEmpty)fetchQuote();
+    if(weatherEmpty&&typeof fetchWeather==='function')safeInvoke('weather refresh',()=>fetchWeather());
+    if(quoteEmpty&&typeof fetchQuote==='function')safeInvoke('quote refresh',()=>fetchQuote());
   }
-  if(page==='settings'){document.getElementById('settings-name').value=p.name;updateSettingsPreview();loadSecuritySettings();loadBannerSettings();renderBgThemeBtns();renderProfileXP(p);renderProfileQuickStats(p);}
-  if(page==='connections'){loadConnectionsUI();renderWidgetManager();loadGroqKeyUI();}
-  if(page==='gaming')loadGamingUI();
-  if(page==='habits'){if(typeof renderHabits==='function')renderHabits();}
-  if(page==='kanban'){if(typeof renderKanban==='function')renderKanban();}
-  if(page==='calendar'){calYear=new Date().getFullYear();calMonth=new Date().getMonth();if(typeof renderCalendar==='function')renderCalendar();}
+  if(page==='settings')safeInvoke('settings init',()=>{
+    const nameInput=document.getElementById('settings-name');
+    if(nameInput)nameInput.value=p.name||'';
+    if(typeof updateSettingsPreview==='function')updateSettingsPreview();
+    if(typeof loadSecuritySettings==='function')loadSecuritySettings();
+    if(typeof loadBannerSettings==='function')loadBannerSettings();
+    if(typeof renderBgThemeBtns==='function')renderBgThemeBtns();
+    if(typeof renderProfileXP==='function')renderProfileXP(p);
+    if(typeof renderProfileQuickStats==='function')renderProfileQuickStats(p);
+  });
+  if(page==='connections')safeInvoke('connections init',()=>{
+    if(typeof loadConnectionsUI==='function')loadConnectionsUI();
+    if(typeof renderWidgetManager==='function')renderWidgetManager();
+    if(typeof loadGroqKeyUI==='function')loadGroqKeyUI();
+  });
+  if(page==='gaming'&&typeof loadGamingUI==='function')safeInvoke('gaming init',()=>loadGamingUI());
+  if(page==='habits'&&typeof renderHabits==='function')safeInvoke('habits render',()=>renderHabits());
+  if(page==='kanban'&&typeof renderKanban==='function')safeInvoke('kanban render',()=>renderKanban());
+  if(page==='calendar')safeInvoke('calendar render',()=>{
+    window.calYear=new Date().getFullYear();
+    window.calMonth=new Date().getMonth();
+    if(typeof renderCalendar==='function')renderCalendar();
+  });
   try{window.dispatchEvent(new CustomEvent('ethone:page-ready',{detail:{page:page}}))}catch(e){}
 }
 
@@ -91,22 +116,24 @@ function switchPage(page,navEl){
 
 function switchSettingsTab(tab,el){
   document.querySelectorAll('.settings-nav-item').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
+  if(!el)el=document.querySelector(".settings-nav-item[data-settings-tab='"+tab+"'],.settings-nav-item[onclick*=\"'"+tab+"'\"]");
+  if(el)el.classList.add('active');
   document.querySelectorAll('.settings-section').forEach(s=>s.classList.remove('active'));
   const sec=document.getElementById('settings-'+tab);
   if(sec)sec.classList.add('active');
-  if(tab==='account')loadAccountInfo();
-  if(tab==='theme'&&typeof renderThemeEditor==='function')renderThemeEditor();
-  if(tab==='workspaces'&&typeof renderWorkspacesSettings==='function')renderWorkspacesSettings();
-  if(tab==='widgets'&&typeof renderWidgetsSettings==='function')renderWidgetsSettings();
-  if(tab==='plugins'&&typeof renderPluginsSettings==='function')renderPluginsSettings();
-  if(tab==='brain'&&typeof renderBrainSettings==='function')renderBrainSettings();
-  if(tab==='automation'&&typeof renderAutomationSettings==='function')renderAutomationSettings();
-  if(tab==='marketplace'&&typeof renderMarketplaceSettings==='function')renderMarketplaceSettings();
-  if(tab==='notifications'&&typeof renderNotificationsSettings==='function')renderNotificationsSettings();
-  if(tab==='keyboard'&&typeof renderKeyboardSettings==='function')renderKeyboardSettings();
-  if(tab==='developer'&&typeof renderDeveloperSettings==='function')renderDeveloperSettings();
-  if(tab==='experimental'&&typeof renderExperimentalSettings==='function')renderExperimentalSettings();
+  const safeSettings=(label,fn)=>{try{return fn()}catch(error){console.warn('[ETHONE settings] '+label+' failed:',error);if(typeof toast==='function')toast('Parametre charge en mode degrade.','warning')}};
+  if(tab==='account'&&typeof loadAccountInfo==='function')safeSettings('account',()=>loadAccountInfo());
+  if(tab==='theme'&&typeof renderThemeEditor==='function')safeSettings('theme',()=>renderThemeEditor());
+  if(tab==='workspaces'&&typeof renderWorkspacesSettings==='function')safeSettings('workspaces',()=>renderWorkspacesSettings());
+  if(tab==='widgets'&&typeof renderWidgetsSettings==='function')safeSettings('widgets',()=>renderWidgetsSettings());
+  if(tab==='plugins'&&typeof renderPluginsSettings==='function')safeSettings('plugins',()=>renderPluginsSettings());
+  if(tab==='brain'&&typeof renderBrainSettings==='function')safeSettings('brain',()=>renderBrainSettings());
+  if(tab==='automation'&&typeof renderAutomationSettings==='function')safeSettings('automation',()=>renderAutomationSettings());
+  if(tab==='marketplace'&&typeof renderMarketplaceSettings==='function')safeSettings('marketplace',()=>renderMarketplaceSettings());
+  if(tab==='notifications'&&typeof renderNotificationsSettings==='function')safeSettings('notifications',()=>renderNotificationsSettings());
+  if(tab==='keyboard'&&typeof renderKeyboardSettings==='function')safeSettings('keyboard',()=>renderKeyboardSettings());
+  if(tab==='developer'&&typeof renderDeveloperSettings==='function')safeSettings('developer',()=>renderDeveloperSettings());
+  if(tab==='experimental'&&typeof renderExperimentalSettings==='function')safeSettings('experimental',()=>renderExperimentalSettings());
 }
 
 async function loadAccountInfo(){

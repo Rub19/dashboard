@@ -15,6 +15,7 @@
     {id:"youtube",name:"YouTube",accent:"#FF3B30",icon:"play-circle",desc:"Channel uploads, subscriptions and creator analytics summary.",statePath:"connections.youtube",fields:[["channel","Channel URL or handle","@ethone"],["apiKey","API key optional","AIza...","password"]],placeholder:"YouTube Data API support is prepared. Add a channel now; API key/OAuth can be connected later.",preview:["Latest videos","Channel stats","Upload queue"]},
     {id:"battlenet",name:"Battle.net",accent:"#60A5FA",icon:"sparkles",desc:"Battle.net identity, games and session context.",statePath:"connections.battlenet",fields:[["battleTag","BattleTag","Name#1234"],["region","Region","eu"]],placeholder:"Battle.net OAuth requires a client configured server-side. ETHONE keeps the account locally and shows the future sync model.",preview:["BattleTag","Games","Session history"]}
   ];
+  var pendingDisconnect={id:"",at:0};
 
   function p(){try{return typeof window.curP==="function"?window.curP():null}catch(e){return null}}
   function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(m){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]})}
@@ -179,7 +180,12 @@
 
   async function disconnect(id){
     var def=defs.find(function(d){return d.id===id});if(!def)return;
-    if(!confirm("Disconnect "+def.name+"?"))return;
+    if(pendingDisconnect.id!==id||Date.now()-pendingDisconnect.at>5000){
+      pendingDisconnect={id:id,at:Date.now()};
+      toast("Click Disconnect again to disconnect "+def.name+".","warning");
+      return;
+    }
+    pendingDisconnect={id:"",at:0};
     try{
       if(def.legacyDisconnect&&typeof window[def.legacyDisconnect]==="function"){
         var oldConfirm=window.confirm;
@@ -296,8 +302,8 @@
     }
   });
 
-  document.addEventListener("DOMContentLoaded",boot,{once:true});
-  window.addEventListener("ethone:dashboard-ready",boot);
-  window.addEventListener("ethone:page-ready",boot);
+  window.addEventListener("ethone:page-ready",function(event){
+    if(!event.detail||["connections","settings","developer"].indexOf(event.detail.page)>-1)boot();
+  });
   window.ethoneIntegrationHub={render:render,renderSettings:renderSettings,defs:defs,connect:connect,test:test,refresh:refresh,disconnect:disconnect};
 })();

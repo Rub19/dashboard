@@ -21,6 +21,10 @@
     github:{label:"GitHub",icon:"git-branch",color:"#f5f5f7"},
     discord:{label:"Discord",icon:"message-circle",color:"#8b5cf6"},
     spotify:{label:"Spotify",icon:"music",color:"#34d399"},
+    marketplace:{label:"Marketplace",icon:"store",color:"#a78bfa"},
+    database:{label:"Databases",icon:"database",color:"#c4b5fd"},
+    calendar:{label:"Calendrier",icon:"calendar-days",color:"#60a5fa"},
+    files:{label:"Fichiers",icon:"folder-open",color:"#fbbf24"},
     workspace:{label:"Workspaces",icon:"layers-3",color:"#c4b5fd"},
     content:{label:"Contenu",icon:"file-plus",color:"#8b5cf6"},
     task:{label:"Taches",icon:"check-circle-2",color:"#34d399"},
@@ -52,6 +56,10 @@
     if(/github|commit|repository|pull request|repo/.test(raw))return "github";
     if(/discord|lanyard|presence/.test(raw))return "discord";
     if(/spotify|now playing|track|music/.test(raw))return "spotify";
+    if(/marketplace|store|widget marketplace|theme marketplace|install|rating|review/.test(raw))return "marketplace";
+    if(/database|table|board|gallery|relation|record/.test(raw))return "database";
+    if(/calendar|event|meeting|deadline|planning|schedule/.test(raw))return "calendar";
+    if(/file|fichier|folder|drive|upload|import|export|quick look/.test(raw))return "files";
     if(/workspace|space|environment/.test(raw))return "workspace";
     if(/sync|synch|synchron|refresh|cloud|saved/.test(raw))return "sync";
     if(/delete|deleted|remove|removed|suppression|supprime/.test(raw))return "deletion";
@@ -59,7 +67,7 @@
     if(/create|created|new|add|added|creation|nouveau|nouvelle/.test(raw))return "creation";
     if(/login|log in|welcome|connexion|connecte|sign in|profile|session/.test(raw))return "auth";
     if(/task|todo|tache|objectif|goal|completed|done|accompli/.test(raw))return "task";
-    if(/note|file|fichier|item|link|lien|journal|database|added|removed|opened/.test(raw))return "content";
+    if(/note|item|link|lien|journal|added|removed|opened/.test(raw))return "content";
     if(/discord|github|spotify|steam|twitch|valorant|riot|last\.fm|integration|account|api key/.test(raw))return "integration";
     if(/pomodoro|focus|session/.test(raw))return "focus";
     if(/error|erreur|fail|invalid|missing|denied/.test(raw))return "error";
@@ -80,6 +88,8 @@
     if(typeof input==="string")input={title:input};
     var category=inferCategory(input.title+" "+(input.body||""),input.category,input.type);
     var ts=input.ts||input.createdAt||now();
+    var p=profile();
+    var user=input.user||(p?{id:p.id||p.name,name:p.name||"User"}:null);
     return {
       id:input.id||("tl-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,7)),
       dedupe:input.dedupe||"",
@@ -92,6 +102,7 @@
       time:input.time||new Date(ts).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}),
       source:input.source||"",
       workspace:input.workspace||workspace(),
+      user:user,
       meta:input.meta||null,
       action:input.action||null
     };

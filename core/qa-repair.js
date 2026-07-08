@@ -8,6 +8,9 @@
   function hide(el){if(el){el.style.setProperty('display','none','important');el.style.setProperty('visibility','hidden','important');el.setAttribute('aria-hidden','true')}}
   function removeAntiFlash(){const af=qs('#anti-flash'); if(af) af.remove(); qsa('#ethone-boot-screen,#nexus-boot-screen,#nexus-page-loader,#nexus-page-transition').forEach(hide)}
   function visible(el){return !!(el && el.offsetParent!==null && getComputedStyle(el).display!=='none' && getComputedStyle(el).visibility!=='hidden')}
+  function debugQA(){
+    try{return localStorage.getItem('ethone:debug-qa')==='1'||/[?&]debugQA=1\b/.test(location.search)}catch(e){return false}
+  }
   function fixEyeButtons(){
     qsa('.lb-eye,button[onclick*="togglePwVis"]').forEach(btn=>{
       btn.classList.add('ethone-eye-btn'); btn.type='button'; btn.setAttribute('aria-label','Afficher ou masquer le mot de passe'); btn.setAttribute('title','Afficher / masquer le mot de passe');
@@ -24,6 +27,9 @@
     if(typeof oldToggle==='function' && oldToggle!==window.togglePwVis){ try{}catch(e){} }
   };
   function closeFloatingUI(){
+    if(window.ETHONEUIIsolation&&typeof window.ETHONEUIIsolation.closeTransientUI==='function'){
+      try{window.ETHONEUIIsolation.closeTransientUI();return;}catch(e){}
+    }
     qsa('.modal-overlay.open').forEach(m=>m.classList.remove('open'));
     qsa('#notif-panel,#cmd-palette,#command-palette,#nexus-page-transition,.lang-menu.open,.dropdown.open').forEach(el=>{el.classList.remove('open','active','visible'); if(el.id!=='cmd-palette') hide(el);});
     const np=qs('#notif-panel'); if(np) hide(np);
@@ -82,7 +88,13 @@
     const missingHandlers=qsa('[onclick]').filter(el=>{const code=el.getAttribute('onclick')||''; const m=code.match(/^\s*([a-zA-Z_$][\w$]*)\s*\(/); return m && typeof window[m[1]]!=='function';}).map(el=>({text:(el.textContent||el.title||el.id||el.className||'button').trim().slice(0,80),handler:(el.getAttribute('onclick')||'').slice(0,80)}));
     const horizontalOverflow=Math.max(0,document.documentElement.scrollWidth-window.innerWidth);
     const report={pages,totalPages:pages.length,duplicateIds,missingHandlers,horizontalOverflow,visible:{auth:visible(qs('#auth-screen')),profile:visible(qs('#profile-screen')),password:visible(qs('#password-screen')),main:visible(qs('#main-content'))}};
-    console.groupCollapsed('%cETHONE QA audit','color:#a78bfa;font-weight:700'); console.table(pages); console.log(report); console.groupEnd(); return report;
+    window.__ethoneQAAuditReport=report;
+    if(debugQA()){
+      console.groupCollapsed('%cETHONE QA audit','color:#a78bfa;font-weight:700');
+      console.table(pages);
+      console.groupEnd();
+    }
+    return report;
   }
   window.ethoneRunFullAudit=runAudit;
   document.addEventListener('keydown',e=>{if(e.key==='Escape') closeFloatingUI();});

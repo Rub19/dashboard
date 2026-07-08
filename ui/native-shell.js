@@ -43,7 +43,9 @@
   }
 
   function appVisible(){
-    return !!qs("#main-content")&&hidden(qs("#auth-screen"))&&hidden(qs("#profile-screen"))&&hidden(qs("#password-screen"));
+    var enabled=false;
+    try{enabled=localStorage.getItem("ethone:native-shell-enabled")==="1"}catch(e){}
+    return enabled&&!!qs("#main-content")&&hidden(qs("#auth-screen"))&&hidden(qs("#profile-screen"))&&hidden(qs("#password-screen"));
   }
 
   function currentPage(){

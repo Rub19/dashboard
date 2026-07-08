@@ -21,7 +21,9 @@
   const mountedTabs=new Set();
   const aiState={status:"disconnected",message:"Provider manager ready.",sync:false,error:""};
   const clock=()=>window.performance&&typeof window.performance.now==="function"?window.performance.now():Date.now();
-  const debug=message=>console.info("[ETHONE IA] "+message);
+  const debugEnabled=()=>{try{return localStorage.getItem("ethone:debug-ai")==="1"||/[?&]debugAI=1\b/.test(location.search)}catch(e){return false}};
+  const debug=message=>{if(debugEnabled())console.info("[ETHONE IA] "+message)};
+  const diag=(label,error)=>{try{window.__ethoneAICoreDiagnostics=(window.__ethoneAICoreDiagnostics||[]).slice(-40);window.__ethoneAICoreDiagnostics.push({label:label,message:error&&error.message?error.message:String(error||""),at:new Date().toISOString()})}catch(e){}};
   const providerCatalog=[
     {id:"groq",name:"Groq",kind:"cloud",modelMode:"openai",baseUrl:"https://api.groq.com/openai/v1",modelsPath:"/models",chatPath:"/chat/completions",streaming:true,features:["fast","tools","openai-compatible"]},
     {id:"openai",name:"OpenAI",kind:"cloud",modelMode:"openai",baseUrl:"https://api.openai.com/v1",modelsPath:"/models",chatPath:"/chat/completions",streaming:true,features:["reasoning","vision","tools"]},
@@ -73,7 +75,7 @@
     return Math.min(max,Math.max(min,v));
   }
   function saveConfig(syncProfile){
-    try{localStorage.setItem(storeKey,JSON.stringify(config))}catch(error){console.warn("[ETHONE IA] config save failed",error)}
+    try{localStorage.setItem(storeKey,JSON.stringify(config))}catch(error){diag("config save",error)}
     if(syncProfile!==false){
       clearTimeout(saveTimer);
       saveTimer=setTimeout(syncProfileConfig,180);
@@ -97,7 +99,7 @@
       });
       try{if(typeof window.saveStateNow==="function")window.saveStateNow()}catch(e){}
     }catch(error){
-      console.warn("[ETHONE IA] profile sync failed",error);
+      diag("profile sync",error);
     }
   }
   function migrateLegacy(){
@@ -577,7 +579,7 @@
         const inp=$("#ai-input");if(!inp)return;
         const text=inp.value.trim();if(!text)return;
         inp.value="";inp.style.height="auto";
-        try{if(typeof window.addAIMessage==="function")addAIMessage("user",text)}catch(error){console.warn("[ETHONE IA] user message render failed",error)}
+        try{if(typeof window.addAIMessage==="function")addAIMessage("user",text)}catch(error){diag("user message render",error)}
         try{_aiHistory.push({role:"user",content:text,ts:Date.now(),origin:document.querySelector(".tab-content.active")?.id||"page-ai"})}catch(e){}
         try{_aiTyping=true}catch(e){}
         if(typeof window.showAITyping==="function"){showAITyping();typingShown=true}
@@ -586,7 +588,7 @@
         try{
           executed=typeof window.executeAIActions==="function"?executeAIActions(result.content):executed;
         }catch(error){
-          console.warn("[ETHONE IA] action execution failed",error);
+          diag("action execution",error);
           executed={clean:result.content,results:["AI action failed safely: "+error.message]};
         }
         if(typingShown&&typeof window.removeAITyping==="function"){removeAITyping();typingShown=false}
@@ -627,7 +629,6 @@
   }
   function toast(msg,type){
     if(typeof window.toast==="function"){try{window.toast(msg,type||"info");return}catch(e){}}
-    console.log("[ETHONE AI Core]",msg);
   }
   function escape(s){return String(s||"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
   function isAIVisible(){

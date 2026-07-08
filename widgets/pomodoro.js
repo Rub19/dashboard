@@ -21,7 +21,7 @@ function togglePomoSound(){
     }
   }
   if(btn)btn.style.color=_pomoSoundEnabled?'var(--muted2)':'rgba(248,113,113,.7)';
-  toast(_pomoSoundEnabled?'Sound on ðŸ””':'Sound off ðŸ”‡','info');
+  toast(_pomoSoundEnabled?'Sound on':'Sound off','info');
 }
 
 function playPomoSound(type){
@@ -84,7 +84,7 @@ function pomoSelectMode(idx){
 
 function pomoReset(){
   clearInterval(pomoInterval);pomoRunning=false;pomoInterval=null;
-  // Supprimer TOUTES les clÃ©s pomo du localStorage
+  // Supprimer TOUTES les cles pomo du localStorage
   localStorage.removeItem('pomo_end');
   localStorage.removeItem('pomo_idx');
   localStorage.removeItem('pomo_count');
@@ -108,7 +108,7 @@ function pomoSkip(){
 function pomoToggle(){
   if(pomoRunning){
     clearInterval(pomoInterval);pomoRunning=false;pomoInterval=null;
-    // Supprimer pomo_end â€” le timer est en pause, pas en cours
+    // Supprimer pomo_end: le timer est en pause, pas en cours
     localStorage.removeItem('pomo_end');
     renderPomo();return;
   }
@@ -122,7 +122,7 @@ function pomoToggle(){
   pomoInterval=setInterval(()=>{
     const remaining=Math.round((parseInt(localStorage.getItem('pomo_end')||endTime)-Date.now())/1000);
     pomoRemaining=Math.max(0,remaining);
-    // Mettre Ã  jour localStorage Ã  chaque tick pour fiabilitÃ© aprÃ¨s reload
+    // Mettre a jour localStorage a chaque tick pour fiabilite apres reload
     localStorage.setItem('pomo_idx',pomoIdx);
     localStorage.setItem('pomo_count',pomoCount);
     // Tick sound on each new minute
@@ -136,16 +136,16 @@ function pomoToggle(){
         playPomoSound('done');
         addActivity('Focus session complete!','var(--accent3)','focus');
         notifyPomoComplete(pomoCount);
-        toast(uiLang==='fr'?'Focus terminÃ© ! Prends une pause ðŸŽ‰':uiLang==='es'?'Â¡Enfoque completo! TÃ³mate un descanso ðŸŽ‰':'Focus done! Take a break ðŸŽ‰','success');
-        sendNotif('Pomodoro complete! ðŸ…','Time for a break â€” great work!','');
+        toast(uiLang==='fr'?'Focus termine ! Prends une pause':uiLang==='es'?'Enfoque completo! Tomate un descanso':'Focus done! Take a break','success');
+        sendNotif('Pomodoro complete!','Time for a break - great work!','');
         pomoIdx=pomoCount%4===0?2:1;
         // Flash animation
         const wrap=document.getElementById('pomo-ring-wrap');
         if(wrap){wrap.classList.add('pomo-flash');setTimeout(()=>wrap.classList.remove('pomo-flash'),2000);}
       } else {
         playPomoSound('break');
-        toast('Break terminÃ©e â€” au boulot ! ðŸ’ª','info');
-        sendNotif('Pause terminÃ©e ðŸ’ª',"C'est reparti â€” session Focus !",'ðŸ…');
+        toast('Break terminee - au boulot !','info');
+        sendNotif('Pause terminee',"C'est reparti - session Focus !",'');
         pomoIdx=0;
       }
       pomoRemaining=POMO_MODES()[pomoIdx].duration;
@@ -158,14 +158,14 @@ function pomoToggle(){
 // Restore timer if page was reloaded while running
 function restorePomoIfRunning(){
   const savedEnd=parseInt(localStorage.getItem('pomo_end')||0);
-  if(!savedEnd)return; // pas de timer sauvegardÃ© â†’ rien Ã  faire
+  if(!savedEnd)return; // pas de timer sauvegarde: rien a faire
   const remaining=Math.round((savedEnd-Date.now())/1000);
   pomoIdx=parseInt(localStorage.getItem('pomo_idx')||0);
   pomoCount=parseInt(localStorage.getItem('pomo_count')||0);
   if(remaining>0){
-    // Timer encore actif â†’ reprendre avec l'endTime EXACT sauvegardÃ©
+    // Timer encore actif: reprendre avec l'endTime exact sauvegarde
     pomoRemaining=remaining;
-    pomoRunning=true; // marquer comme running avant de dÃ©marrer l'interval
+    pomoRunning=true; // marquer comme running avant de demarrer l'interval
     let lastMin=Math.ceil(pomoRemaining/60);
     pomoInterval=setInterval(()=>{
       const rem=Math.round((savedEnd-Date.now())/1000);
@@ -182,22 +182,22 @@ function restorePomoIfRunning(){
           playPomoSound('done');
           addActivity('Focus session complete!','var(--accent3)','focus');
           notifyPomoComplete(pomoCount);
-          toast(uiLang==='fr'?'Focus terminÃ© ! Prends une pause ðŸŽ‰':uiLang==='es'?'Â¡Enfoque completo! TÃ³mate un descanso ðŸŽ‰':'Focus done! Take a break ðŸŽ‰','success');
-          sendNotif('Pomodoro complete! ðŸ…','Time for a break â€” great work!','');
+          toast(uiLang==='fr'?'Focus termine ! Prends une pause':uiLang==='es'?'Enfoque completo! Tomate un descanso':'Focus done! Take a break','success');
+          sendNotif('Pomodoro complete!','Time for a break - great work!','');
           pomoIdx=pomoCount%4===0?2:1;
         } else {
           playPomoSound('break');
-          toast('Break terminÃ©e â€” au boulot ! ðŸ’ª','info');
-          sendNotif('Pause terminÃ©e ðŸ’ª',"C'est reparti â€” session Focus !",'ðŸ…');
+          toast('Break terminee - au boulot !','info');
+          sendNotif('Pause terminee',"C'est reparti - session Focus !",'');
           pomoIdx=0;
         }
         pomoRemaining=POMO_MODES()[pomoIdx].duration;
       }
       renderPomo();
     },500);
-    renderPomo(); // afficher immÃ©diatement le bon temps
+    renderPomo(); // afficher immediatement le bon temps
   } else {
-    // Timer expirÃ© pendant l'absence â†’ nettoyer silencieusement
+    // Timer expire pendant l'absence: nettoyer silencieusement
     localStorage.removeItem('pomo_end');
     localStorage.removeItem('pomo_idx');
     localStorage.removeItem('pomo_count');

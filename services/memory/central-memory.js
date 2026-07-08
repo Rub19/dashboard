@@ -11,6 +11,10 @@
   var maxSnapshotBytes=900000;
   var saveTimer=0;
   var renderTimer=0;
+  var searchTimer=0;
+  var lastEventSignature="";
+  var lastEventAt=0;
+  var lastSnapshotHash="";
   var originalSwitchPage=null;
   var originalSaveStateNow=null;
   var originalOpenCmdPalette=null;
@@ -44,7 +48,6 @@
     if(typeof window.toast==="function"){
       try{window.toast(message,type||"info");return}catch(e){}
     }
-    try{console.log("[ETHONE Memory]",message)}catch(e){}
   }
 
   function currentPage(){
@@ -110,6 +113,11 @@
   }
 
   function addEvent(type,title,meta){
+    var signature=[type||"activity",title||type||"Activity",JSON.stringify(meta||{})].join("|");
+    var ts=Date.now();
+    if(signature===lastEventSignature&&ts-lastEventAt<900)return null;
+    lastEventSignature=signature;
+    lastEventAt=ts;
     var event={
       id:"mem-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,6),
       ts:now(),
@@ -231,6 +239,9 @@
 
   function captureSnapshot(label,reason){
     var p=safeProfile();
+    var liteHash=hashStateLite(p)+"|"+currentPage()+"|"+profileKey();
+    if(reason==="auto"&&liteHash===lastSnapshotHash)return null;
+    lastSnapshotHash=liteHash;
     var profileClone=snapshotProfile(p);
     var snapshot={
       id:"snap-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,7),
@@ -309,7 +320,10 @@
       if(typeof window.saveStateNow==="function")window.saveStateNow();
       return true;
     }catch(e){
-      console.warn("[ETHONE Memory] profile restore failed",e);
+      try{
+        window.__ethoneMemoryDiagnostics=(window.__ethoneMemoryDiagnostics||[]).slice(-20);
+        window.__ethoneMemoryDiagnostics.push({label:"profile restore",message:e&&e.message?e.message:String(e),at:new Date().toISOString()});
+      }catch(_){}
       return false;
     }
   }
@@ -433,7 +447,12 @@
       if(!target)return;
       if(target.id==="cmd-input"||target.id==="global-search"||target.id==="files-search"){
         var value=String(target.value||"").trim();
-        if(value)addEvent("search","Search: "+value,{query:value,field:target.id,page:currentPage()});
+        clearTimeout(searchTimer);
+        if(value){
+          searchTimer=setTimeout(function(){
+            addEvent("search","Search: "+value,{query:value,field:target.id,page:currentPage()});
+          },420);
+        }
       }
     },true);
   }
@@ -595,9 +614,9 @@
     syncVisibility();
     captureCurrentState("boot");
     setTimeout(resumeLastSession,450);
-    setInterval(function(){syncVisibility();captureCurrentState("heartbeat")},15000);
-    setInterval(function(){captureSnapshot("Auto snapshot","auto")},5*60*1000);
-    try{new MutationObserver(syncVisibility).observe(document.body,{attributes:true,subtree:true,attributeFilter:["style","class","hidden"]})}catch(e){}
+    setInterval(function(){if(isAppVisible()){syncVisibility();captureCurrentState("heartbeat")}},60000);
+    setInterval(function(){if(isAppVisible())captureSnapshot("Auto snapshot","auto")},10*60*1000);
+    try{new MutationObserver(syncVisibility).observe(document.body,{attributes:true,attributeFilter:["style","class","hidden"]})}catch(e){}
   }
 
   window.ETHONEMemory={

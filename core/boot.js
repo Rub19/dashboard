@@ -86,13 +86,16 @@ function showDashboardOrProfiles(){
   if(profiles.length===1&&!profiles[0].password){
     const p=profiles[0]; currentId=p.id;
     setEthoneMode('dashboard');
+    try{if(window.ETHONEBootSequence)window.ETHONEBootSequence.prepareDashboardMount();}catch(e){}
     const ps=document.getElementById('profile-screen'); if(ps){ps.style.display='none';ps.style.visibility='hidden';}
     const sbEl=document.getElementById('main-sidebar'); if(sbEl){sbEl.style.display='flex';sbEl.style.visibility='visible';}
     const main=document.getElementById('main-content'); if(main){main.style.display='block';main.style.visibility='visible';}
-    renderSidebarNav(); updateSidebarAvatar(); applyI18n(); updateClock();
-    initDashboard(); hideBoot();
+    try{applyI18n();}catch(error){console.warn('[ETHONE boot] i18n refresh skipped',error);}
+    try{initDashboard();}catch(error){console.error('[ETHONE boot] Dashboard init failed',error);}
+    hideBoot();
     try{window.dispatchEvent(new Event('ethone:dashboard-ready'))}catch(e){}
     try{window.dispatchEvent(new CustomEvent('ethone:page-ready',{detail:{page:'dashboard'}}))}catch(e){}
+    try{if(window.ETHONEBootSequence)window.ETHONEBootSequence.finishDashboardMount();}catch(e){}
     if(!curP()?.bgTheme||curP()?.bgTheme==='none') setTimeout(startAmbientBg,400);
   } else {
     setEthoneMode('profile');

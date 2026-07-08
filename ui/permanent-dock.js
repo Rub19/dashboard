@@ -49,7 +49,6 @@
     if(typeof window.toast==="function"){
       try{window.toast(message,type||"info");return}catch(e){}
     }
-    try{console.log("[ETHONE Dock]",message)}catch(e){}
   }
 
   function registry(){
@@ -147,6 +146,14 @@
       return p&&p.state&&p.state.permanentDock?p.state.permanentDock:null;
     }catch(e){return null}
   }
+  function dockEnabled(){
+    try{
+      if(window.ethoneCanMountUI&&!window.ethoneCanMountUI("permanent-dock"))return false;
+      var p=typeof window.curP==="function"?window.curP():null;
+      if(p&&p.state&&p.state.permanentDockEnabled===true)return true;
+    }catch(e){}
+    try{return localStorage.getItem("ethone:permanent-dock-enabled")==="1"}catch(e){return false}
+  }
 
   function load(){
     var saved=readProfileDock();
@@ -204,7 +211,7 @@
   }
 
   function syncVisibility(){
-    document.body.classList.toggle("ethone-permanent-dock-ready",isAppVisible());
+    document.body.classList.toggle("ethone-permanent-dock-ready",isAppVisible()&&dockEnabled());
   }
 
   function itemButton(item){
@@ -274,6 +281,7 @@
 
   function render(){
     renderQueued=false;
+    if(!dockEnabled()){syncVisibility();return;}
     ensureRoot();
     syncVisibility();
     renderRail();
@@ -444,11 +452,8 @@
   }
 
   function addFolder(){
-    var name="Dossier";
-    try{
-      var promptValue=window.prompt&&window.prompt("Nom du dossier",name);
-      if(promptValue)name=promptValue.trim().slice(0,32)||name;
-    }catch(e){}
+    var count=state.items.filter(function(item){return item.type==="folder"}).length;
+    var name="Dossier "+(count+1);
     state.items.push(normalizeItem({id:uid("dock-folder"),type:"folder",label:name,icon:"folder",section:"shortcuts",children:[]}));
     save();
     scheduleRender();
@@ -614,6 +619,7 @@
   }
 
   function boot(){
+    if(!dockEnabled()){syncVisibility();return;}
     load();
     ensureRoot();
     bindGlobal();
@@ -623,12 +629,15 @@
   }
 
   window.ethonePermanentDock={
+    enable:function(){try{localStorage.setItem("ethone:permanent-dock-enabled","1")}catch(e){};load();scheduleRender();syncVisibility();},
+    disable:function(){try{localStorage.setItem("ethone:permanent-dock-enabled","0")}catch(e){};syncVisibility();},
     render:scheduleRender,
     reset:resetDock,
     openManager:function(){openManager(true)},
     getState:function(){return clone(state)}
   };
 
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});
+  if(window.ethoneRunWhenDashboardReady)window.ethoneRunWhenDashboardReady("permanent-dock",function(){setTimeout(boot,360)});
+  else if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});
   else boot();
 })();

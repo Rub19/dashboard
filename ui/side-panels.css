@@ -24,6 +24,12 @@
   pointer-events:auto;
 }
 
+.side-panels-root:not(.is-open) .side-panel-rail{
+  opacity:0;
+  transform:translateY(-50%) translateX(14px);
+  pointer-events:none;
+}
+
 .side-rail-item{
   width:42px;
   height:42px;
@@ -104,6 +110,12 @@
   opacity:1;
   transform:none;
   pointer-events:auto;
+}
+
+.side-panels-root:not(.is-open) .side-panel-shell{
+  opacity:0;
+  transform:translateX(18px) scale(.985);
+  pointer-events:none;
 }
 
 .side-panel-resize{

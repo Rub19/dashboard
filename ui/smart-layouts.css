@@ -13,6 +13,66 @@
     linear-gradient(180deg, rgba(255,255,255,.052), rgba(255,255,255,.026));
   box-shadow:var(--shadow-xs);
 }
+.d4-smartbar-recs{
+  grid-column:1 / -1;
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+  padding-top:4px;
+}
+.d4-smart-rec{
+  min-height:54px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:9px 10px;
+  border:1px solid var(--border-secondary);
+  border-radius:var(--radius-md);
+  background:linear-gradient(180deg, rgba(255,255,255,.046), rgba(255,255,255,.02));
+  color:var(--text-secondary);
+  text-align:left;
+  transition:
+    transform var(--motion-fast) var(--ease-standard),
+    border-color var(--motion-fast) var(--ease-standard),
+    background-color var(--motion-fast) var(--ease-standard),
+    color var(--motion-fast) var(--ease-standard),
+    box-shadow var(--motion-fast) var(--ease-standard);
+}
+.d4-smart-rec svg{
+  width:16px;
+  height:16px;
+  flex:0 0 auto;
+  color:var(--text-accent);
+}
+.d4-smart-rec span{
+  min-width:0;
+  display:grid;
+  gap:3px;
+}
+.d4-smart-rec strong{
+  color:var(--text-primary);
+  font-size:11px;
+  font-weight:780;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.d4-smart-rec small{
+  color:var(--text-tertiary);
+  font-size:10px;
+  line-height:1.35;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.d4-smart-rec:hover,
+.d4-smart-rec:focus-visible{
+  transform:translateY(-1px);
+  border-color:var(--accent-border);
+  background:var(--surface-hover);
+  color:var(--text-primary);
+  box-shadow:0 12px 30px -24px var(--accent);
+}
 .d4-smartbar-main{min-width:0}
 .d4-smart-kicker{
   display:block;
@@ -88,14 +148,63 @@
   box-shadow:0 0 0 1px rgba(255,255,255,.025) inset, 0 10px 24px -18px var(--accent);
 }
 body[data-smart-layout="work"] .d4-home{--workspace-wallpaper:radial-gradient(circle at 12% 2%, rgba(157,124,255,.13), transparent 34%), #09090b}
+body[data-smart-layout="development"] .d4-home{--workspace-wallpaper:radial-gradient(circle at 18% 0%, rgba(139,92,246,.14), transparent 32%), #08080b}
 body[data-smart-layout="morning"] .d4-home{--workspace-wallpaper:radial-gradient(circle at 18% -4%, rgba(167,139,250,.14), transparent 32%), #09090b}
 body[data-smart-layout="gaming"] .d4-home{--workspace-wallpaper:radial-gradient(circle at 70% 4%, rgba(168,85,247,.15), transparent 32%), #09090b}
 body[data-smart-layout="evening"] .d4-home{--workspace-wallpaper:radial-gradient(circle at 74% -6%, rgba(124,58,237,.13), transparent 34%), #08080b}
 body[data-smart-layout="music"] .d4-home{--workspace-wallpaper:radial-gradient(circle at 72% 0%, rgba(139,92,246,.14), transparent 30%), #09090b}
 body[data-smart-layout="focus"] .d4-home{--workspace-wallpaper:radial-gradient(circle at 50% -10%, rgba(139,92,246,.10), transparent 34%), #07070a}
 body[data-smart-layout="morning"] .d4-smartbar,
+body[data-smart-layout="development"] .d4-smartbar,
 body[data-smart-layout="evening"] .d4-smartbar{
   border-color:color-mix(in srgb, var(--accent-border) 72%, transparent);
+}
+.d4-terminal-widget{
+  display:grid;
+  gap:10px;
+  padding:var(--spacing-md);
+}
+.d4-terminal-line{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+  font-family:var(--font-mono);
+  font-size:11px;
+}
+.d4-terminal-line span{
+  color:var(--text-accent);
+}
+.d4-terminal-line strong{
+  color:var(--text-primary);
+  font-weight:760;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.d4-terminal-line em{
+  margin-left:auto;
+  color:var(--success);
+  font-style:normal;
+  font-size:10px;
+}
+.d4-terminal-grid{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  gap:7px 12px;
+  padding-top:8px;
+  border-top:1px solid var(--border-secondary);
+  font-size:10px;
+}
+.d4-terminal-grid span{
+  color:var(--text-tertiary);
+}
+.d4-terminal-grid strong{
+  color:var(--text-secondary);
+  font-weight:680;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
 body.ethone-smart-focus #eh-dock,
 body.ethone-smart-focus .side-panel-rail,
@@ -124,6 +233,9 @@ body.ethone-smart-focus .d4-smartbar{
   .d4-smartbar-actions{
     flex-wrap:wrap;
   }
+  .d4-smartbar-recs{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
 }
 @media(max-width:640px){
   .d4-smartbar{
@@ -141,6 +253,12 @@ body.ethone-smart-focus .d4-smartbar{
   .d4-smart-chip,
   .d4-smart-toggle{
     width:100%;
+  }
+  .d4-smartbar-recs{
+    grid-template-columns:1fr;
+  }
+  .d4-smart-rec small{
+    white-space:normal;
   }
 }
 @media(prefers-reduced-motion:reduce){

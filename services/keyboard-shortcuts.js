@@ -8,6 +8,8 @@
 
   var STORAGE_KEY="ethone:keyboard-shortcuts";
   var recordingId="";
+  var resetConfirmAt=0;
+  var EXTERNAL=[];
   var DEFAULTS=[
     def("command.palette","Navigation","Open command palette","Ctrl+K",true,function(){toggleCommandPalette()}),
     def("command.spotlight","Navigation","Open Spotlight Search","Ctrl+Space",true,function(){toggleSpotlightSearch()}),
@@ -61,7 +63,7 @@
   }
   function shortcuts(){
     var custom=customMap();
-    return DEFAULTS.map(function(item){
+    return DEFAULTS.concat(EXTERNAL).map(function(item){
       return Object.assign({},item,{shortcut:custom[item.id]===null?"":(custom[item.id]||item.defaultShortcut)});
     });
   }
@@ -71,6 +73,18 @@
     if(!target)return false;
     var tag=target.tagName;
     return tag==="INPUT"||tag==="TEXTAREA"||tag==="SELECT"||target.isContentEditable;
+  }
+  function isAppReadyForShortcuts(){
+    var main=document.getElementById("main-content");
+    if(!main)return false;
+    var mainStyle=getComputedStyle(main);
+    if(mainStyle.display==="none"||mainStyle.visibility==="hidden")return false;
+    var blocking=["auth-screen","profile-screen","password-screen"];
+    for(var i=0;i<blocking.length;i++){
+      var el=document.getElementById(blocking[i]);
+      if(el&&getComputedStyle(el).display!=="none"&&getComputedStyle(el).visibility!=="hidden")return false;
+    }
+    return true;
   }
   function keyName(event){
     if(event.code&&/^Digit[0-9]$/.test(event.code))return event.code.replace("Digit","");
@@ -146,10 +160,33 @@
     notify("Shortcut disabled","info");
   }
   function resetAll(){
-    if(!confirm("Reset all keyboard shortcuts to defaults?"))return;
+    if(Date.now()-resetConfirmAt>5000){
+      resetConfirmAt=Date.now();
+      notify("Click Reset all again to restore default shortcuts.","warning");
+      return;
+    }
+    resetConfirmAt=0;
     save({});
     renderKeyboardSettings();
     notify("Keyboard shortcuts reset","success");
+  }
+  function registerShortcut(definition){
+    if(!definition||!definition.id||typeof definition.handler!=="function")return false;
+    var item=def(
+      String(definition.id),
+      definition.group||"Plugins",
+      definition.label||definition.id,
+      definition.shortcut||"",
+      definition.allowInInputs===true,
+      definition.handler
+    );
+    item.pluginId=definition.pluginId||"";
+    item.description=definition.description||"";
+    var idx=EXTERNAL.findIndex(function(entry){return entry.id===item.id});
+    if(idx>-1)EXTERNAL[idx]=item;
+    else EXTERNAL.push(item);
+    renderKeyboardSettings();
+    return true;
   }
   function execute(item,event){
     if(!item||typeof item.handler!=="function")return false;
@@ -171,6 +208,7 @@
     if(!combo)return;
     var item=shortcuts().find(function(entry){return normalizeCombo(entry.shortcut)===combo});
     if(!item)return;
+    if(!isAppReadyForShortcuts()&&item.id!=="system.escape")return;
     if(isEditableTarget(event.target)&&!item.allowInInputs)return;
     execute(item,event);
   }
@@ -301,6 +339,7 @@
     reset:resetShortcut,
     disable:disableShortcut,
     resetAll:resetAll,
+    register:registerShortcut,
     eventToCombo:eventToCombo,
     normalize:normalizeCombo,
     render:renderKeyboardSettings,

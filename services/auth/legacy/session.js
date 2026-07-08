@@ -2,8 +2,6 @@
 async function onAuthSuccess(userArg){
   if(window.__ethoneDeferredHeavyForAuth&&!sessionStorage.getItem('ethone:post-auth-full-boot')){
     try{sessionStorage.setItem('ethone:post-auth-full-boot','1')}catch(e){}
-    location.replace(location.href);
-    return;
   }
   // 1. Supprime l'anti-flash AVANT tout, sinon le !important bloque les display
   removeAntiFlash();

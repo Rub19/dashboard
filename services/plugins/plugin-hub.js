@@ -16,6 +16,7 @@
     plugin("googledrive","Google Drive","folder","#8b5cf6","ETHONE Labs","1.1.5","Workspace files, folders and document context for Vision and Brain.",["Read files metadata","Read selected documents","Use workspace folders"],["Folder setting added","Drive API placeholder","Quick Look preparation"],{sync:"Files",memory:21.3,ready:false,soon:"Google Drive needs OAuth scopes and file permissions before live sync can run.",settings:{account:"",folder:""}}),
     plugin("battlenet","Battle.net","sparkles","#8b5cf6","ETHONE Gaming","1.0.0","Battle.net identity, games and session context for gaming environments.",["Read BattleTag","Read game library","Use session context"],["BattleTag setting","Region selector","OAuth placeholder complete"],{sync:"Gaming profile",memory:13.2,ready:false,soon:"Battle.net OAuth needs a server-side client before live game library sync is available.",settings:{battleTag:"",region:"eu"}})
   ];
+  var pendingRemoval={id:"",at:0};
 
   function plugin(id,name,icon,accent,author,version,desc,permissions,changelog,extra){
     return Object.assign({id:id,name:name,icon:icon,accent:accent,author:author,version:version,desc:desc,permissions:permissions,changelog:changelog},extra||{});
@@ -83,7 +84,12 @@
   }
   function uninstall(id){
     var def=find(id),st=pluginState(id);if(!def)return;
-    if(!confirm("Uninstall "+def.name+" plugin? Connection data is kept in Connections."))return;
+    if(pendingRemoval.id!==id||Date.now()-pendingRemoval.at>5000){
+      pendingRemoval={id:id,at:Date.now()};
+      toast("Click Remove again to uninstall "+def.name+". Connection data is kept.","warning");
+      return;
+    }
+    pendingRemoval={id:"",at:0};
     st.installed=false;st.enabled=false;st.status="available";st.updatedAt=now();
     pushHistory(st,"info","Plugin uninstalled");
     activity(def,"removed","Connection data kept in Integration Hub.");
@@ -138,6 +144,30 @@
       if(st.installed&&!st.settings)st.settings=Object.assign({},def.settings||{});
     });
     save();render();toast("Plugin Hub audit complete","success");
+  }
+  function register(definition){
+    if(!definition||!definition.id)return null;
+    var id=String(definition.id).trim().toLowerCase().replace(/[^a-z0-9_-]+/g,"-").replace(/^-+|-+$/g,"");
+    if(!id)return null;
+    var existing=find(id);
+    var normalized=plugin(
+      id,
+      definition.name||definition.title||id,
+      definition.icon||"plug",
+      definition.accent||"#8b5cf6",
+      definition.author||"Community",
+      definition.version||"1.0.0",
+      definition.description||definition.desc||"Community plugin for ETHONE.",
+      Array.isArray(definition.permissions)?definition.permissions:["Runs locally inside ETHONE"],
+      Array.isArray(definition.changelog)?definition.changelog:["Registered with ETHONE Plugin SDK"],
+      Object.assign({sync:definition.sync||"Plugin runtime",memory:Number(definition.memory||12),settings:definition.settings||{}},definition.extra||{})
+    );
+    normalized.sdk=true;
+    if(existing)Object.assign(existing,normalized);
+    else plugins.push(normalized);
+    try{window.dispatchEvent(new CustomEvent("ethone:plugin-hub-register",{detail:{plugin:normalized}}))}catch(e){}
+    render();
+    return normalized;
   }
   function find(id){return plugins.find(function(x){return x.id===id})}
   function settingRows(def,st){
@@ -221,8 +251,8 @@
     }
     render();
   }
-  document.addEventListener("DOMContentLoaded",boot,{once:true});
-  window.addEventListener("ethone:dashboard-ready",boot);
-  window.addEventListener("ethone:page-ready",function(event){if(!event.detail||event.detail.page==="settings")boot()});
-  window.ETHONEPluginHub={render:render,install:install,uninstall:uninstall,repair:repair,reinstall:reinstall,audit:audit,plugins:plugins,state:pluginState};
+  window.addEventListener("ethone:page-ready",function(event){
+    if(!event.detail||["settings","plugins","developer"].indexOf(event.detail.page)>-1)boot();
+  });
+  window.ETHONEPluginHub={render:render,install:install,uninstall:uninstall,repair:repair,reinstall:reinstall,audit:audit,register:register,plugins:plugins,state:pluginState};
 })();

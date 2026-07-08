@@ -58,7 +58,7 @@ function renderDiscordCard(d){
   const name=d.discord_user.global_name||d.discord_user.username;
   const nameEl=document.getElementById('dc-preview-name');
   if(nameEl)nameEl.textContent=name;
-  const statusMap={online:'ðŸŸ¢ Online',idle:'ðŸŸ¡ Idle',dnd:'ðŸ”´ Do Not Disturb',offline:'âš« Offline'};
+  const statusMap={online:'Online',idle:'Idle',dnd:'Do Not Disturb',offline:'Offline'};
   const subEl=document.getElementById('dc-preview-sub');
   if(subEl)subEl.textContent=statusMap[d.discord_status]||'âš« Offline';
   // Activity
@@ -69,7 +69,7 @@ function renderDiscordCard(d){
       const typeLabel=act.type===2?'Listening to':'Playing';
       document.getElementById('dc-activity-type').textContent=typeLabel;
       document.getElementById('dc-activity-name').textContent=act.name||'';
-      document.getElementById('dc-activity-detail').textContent=[act.details,act.state].filter(Boolean).join(' Â· ');
+      document.getElementById('dc-activity-detail').textContent=[act.details,act.state].filter(Boolean).join(' - ');
       actEl.style.display='block';
     } else {
       actEl.style.display='none';
@@ -190,10 +190,10 @@ function updateSpotifyFromLanyard(d){
     const p=curP();
     const lfm=p?.state?.connections?.lastfm;
     const hasDiscordConn=!!(p?.state?.connections?.discord?.userId);
-    // Si Discord connectÃ© et online/idle/dnd mais pas de Spotify â†’ cacher le fallback aussi
-    // (pas de musique du tout plutÃ´t que montrer Last.fm Ã  la place)
+    // Si Discord est connecte et online/idle/dnd mais sans Spotify, cacher aussi le fallback.
+    // Pas de musique du tout plutot que montrer Last.fm a la place.
     if(!isDiscordOnline&&lfm?.username&&iframeWrap){
-      // Discord offline/invis â†’ montrer Last.fm + dÃ©marrer auto-refresh
+      // Discord offline/invisible: montrer Last.fm et demarrer l'auto-refresh.
       iframeWrap.style.display='block';
       refreshSpotifySidebar();
       if(!_spotifyAutoRefresh)startSpotifyAutoRefresh();

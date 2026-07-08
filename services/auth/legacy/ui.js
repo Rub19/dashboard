@@ -12,13 +12,24 @@ function togglePwVis(inputId,btn){
 }
 
 function switchAuthTab(tab){
-  document.getElementById('form-login').style.display=tab==='login'?'block':'none';
-  document.getElementById('form-register').style.display=tab==='register'?'block':'none';
-  document.getElementById('tab-login').style.background=tab==='login'?'var(--accent)':'transparent';
-  document.getElementById('tab-login').style.color=tab==='login'?'#fff':'var(--muted)';
-  document.getElementById('tab-register').style.background=tab==='register'?'var(--accent)':'transparent';
-  document.getElementById('tab-register').style.color=tab==='register'?'#fff':'var(--muted)';
-  document.getElementById('auth-error').textContent='';
+  const login=document.getElementById('form-login');
+  const register=document.getElementById('form-register');
+  const tabLogin=document.getElementById('tab-login');
+  const tabRegister=document.getElementById('tab-register');
+  if(login)login.style.display=tab==='login'?'block':'none';
+  if(register)register.style.display=tab==='register'?'block':'none';
+  if(tabLogin){
+    tabLogin.removeAttribute('style');
+    tabLogin.classList.toggle('is-active',tab==='login');
+    tabLogin.setAttribute('aria-selected',String(tab==='login'));
+  }
+  if(tabRegister){
+    tabRegister.removeAttribute('style');
+    tabRegister.classList.toggle('is-active',tab==='register');
+    tabRegister.setAttribute('aria-selected',String(tab==='register'));
+  }
+  const error=document.getElementById('auth-error');
+  if(error)error.textContent='';
 }
 
 function setAuthLoading(v){

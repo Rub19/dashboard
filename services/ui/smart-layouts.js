@@ -1,5 +1,5 @@
 /* ETHONE Smart Layouts.
- * Context-aware dashboard layouts for Work, Gaming, Music and Focus.
+ * Context-aware dashboard layouts for Development, Work, Gaming, Music and Focus.
  * Reads existing local state only: no provider calls, no Supabase writes, no backend changes.
  */
 (function(){
@@ -40,6 +40,12 @@
     return Object.assign({enabled:true,overrideMode:null,lastMode:"control",lastReason:""},saved||{});
   }
   function saveState(next){writeJSON(STORAGE_KEY,next)}
+  function flowControlsLayout(){
+    try{
+      var flow=readJSON("ethone:flow:v1",null);
+      return !!(flow&&flow.activeId&&document.body.classList.contains("ethone-flow-active"));
+    }catch(e){return false}
+  }
 
   function inst(instanceId,type,col,row,locked){
     return {instanceId:instanceId,type:type,size:{col:col,row:row},locked:!!locked,config:{}};
@@ -76,6 +82,21 @@
         inst("timeline","timeline",2,1),
         inst("quickActions","quickActions",6,1)
       ],[],["github-smart","notes-work","today-work"])
+    },
+    "smart-development":{
+      id:"smart-development",
+      name:"Smart Development",
+      prefs:prefs([
+        inst("command","hero",4,1),
+        inst("github-development","github",2,1),
+        inst("brain","brain",4,1),
+        inst("terminal-development","terminal",2,1),
+        inst("ai-suggestions-development","aiSuggestions",2,1),
+        inst("notes-development","notes",2,1),
+        inst("productivity-development","productivity",2,1),
+        inst("timeline-feed-development","timelineFeed",2,1),
+        inst("quickActions","quickActions",6,1)
+      ],[],["github-development","terminal-development","ai-suggestions-development"])
     },
     "smart-gaming":{
       id:"smart-gaming",
@@ -135,7 +156,7 @@
       ],[],["brain","today","ai-suggestions-focus"])
     }
   };
-  var MODE_LAYOUT={morning:"smart-morning",work:"smart-work",gaming:"smart-gaming",evening:"smart-evening",music:"smart-music",focus:"smart-focus",control:null};
+  var MODE_LAYOUT={morning:"smart-morning",development:"smart-development",work:"smart-work",gaming:"smart-gaming",evening:"smart-evening",music:"smart-music",focus:"smart-focus",control:null};
   var CONTROL_LAYOUT={
     id:"control",
     name:"Control Center",
@@ -236,8 +257,16 @@
     var name=((ws&&ws.name)||"")+" "+((ws&&ws.id)||"")+" "+page;
     var c=s.connections||{},open=(s.todos||[]).filter(function(t){return !t.done});
     var taskText=open.map(function(t){return String(t.title||t.text||"")}).join(" ").toLowerCase();
-    return /work|dev|development|study|ai-research|github|databases|notes|files|todos|calendar/.test(name.toLowerCase())||
-      !!(c.github&&c.github.username)||/code|github|repo|commit|client|projet|project|build|fix|bug/.test(taskText);
+    return /work|study|etudes|school|client|notes|files|todos|calendar|planning|focus/.test(name.toLowerCase())||
+      /client|projet|project|meeting|deadline|review|brief|task|todo|planning|focus/.test(taskText);
+  }
+  function hasDevelopment(s,page,ws){
+    var name=((ws&&ws.name)||"")+" "+((ws&&ws.id)||"")+" "+((ws&&ws.template)||"")+" "+page;
+    var c=s.connections||{},open=(s.todos||[]).filter(function(t){return !t.done});
+    var notes=(s.notes||[]).slice(0,8);
+    var text=(name+" "+open.map(function(t){return t.title||t.text||""}).join(" ")+" "+notes.map(function(n){return n.title||n.content||""}).join(" ")).toLowerCase();
+    return /dev|develop|code|github|repo|commit|debug|terminal|database|studio|build|api|bug|fix/.test(text)||
+      !!(c.github&&(c.github.username||c.github.connected));
   }
   function timeContext(){
     var h=new Date().getHours();
@@ -248,15 +277,17 @@
   function detect(){
     var s=scopedState(),page=currentPage(),ws=activeWorkspace();
     var timeMode=timeContext();
-    var learned=null,learnedScores={};
+    var learned=null,learnedScores={},contextScores={};
     try{
       if(window.ETHONEUsageLearning){
         learned=window.ETHONEUsageLearning.preferredMode&&window.ETHONEUsageLearning.preferredMode();
         learnedScores=window.ETHONEUsageLearning.scores&&window.ETHONEUsageLearning.scores()||{};
+        contextScores=window.ETHONEUsageLearning.contextScores&&window.ETHONEUsageLearning.contextScores()||{};
       }
     }catch(e){}
-    var signals={focus:focusRunning(),gaming:hasGaming(s,page,ws)||learned==="gaming",music:hasMusic(s)||learned==="music",work:hasWork(s,page,ws)||learned==="work",morning:timeMode==="morning",evening:timeMode==="evening",learned:!!learned};
+    var signals={focus:focusRunning(),development:hasDevelopment(s,page,ws)||learned==="development",gaming:hasGaming(s,page,ws)||learned==="gaming",music:hasMusic(s)||learned==="music",work:hasWork(s,page,ws)||learned==="work",morning:timeMode==="morning",evening:timeMode==="evening",learned:!!learned};
     if(signals.focus)return {mode:"focus",reason:t("Session Focus active : distractions reduites.","Active Focus session: distractions reduced."),signals:signals};
+    if(signals.development)return {mode:"development",reason:learned==="development"?t("Habitude detectee : GitHub, Terminal, AI et Notes remontent automatiquement.","Habit detected: GitHub, Terminal, AI and Notes move up automatically."):t("Contexte developpement detecte : GitHub, Terminal, AI et Notes passent devant.","Development context detected: GitHub, Terminal, AI and Notes move forward."),signals:signals,scores:learnedScores,contextScores:contextScores};
     if(signals.gaming)return {mode:"gaming",reason:learned==="gaming"?t("Habitude detectee : Valorant, Steam et Discord remontent automatiquement.","Habit detected: Valorant, Steam and Discord move up automatically."):t("Contexte gaming detecte : Valorant et presence passent devant.","Gaming context detected: Valorant and presence move forward."),signals:signals,scores:learnedScores};
     if(signals.work)return {mode:"work",reason:learned==="work"?t("Habitude detectee : GitHub, notes et taches remontent automatiquement.","Habit detected: GitHub, notes and tasks move up automatically."):t("Contexte travail detecte : GitHub et Brain restent visibles.","Work context detected: GitHub and Brain stay visible."),signals:signals,scores:learnedScores};
     if(signals.music)return {mode:"music",reason:learned==="music"?t("Habitude detectee : Spotify et Now Playing remontent automatiquement.","Habit detected: Spotify and Now Playing move up automatically."):t("Musique detectee : Now Playing devient prioritaire.","Music detected: Now Playing becomes a priority."),signals:signals,scores:learnedScores};
@@ -269,6 +300,7 @@
     var map={
       control:t("Controle","Control"),
       morning:t("Matin","Morning"),
+      development:t("Dev","Dev"),
       work:t("Travail","Work"),
       gaming:"Gaming",
       evening:t("Soir","Evening"),
@@ -278,7 +310,45 @@
     return map[mode]||mode;
   }
   function icon(mode){
-    return {control:"layout-dashboard",morning:"sunrise",work:"git-branch",gaming:"crosshair",evening:"moon-star",music:"music",focus:"timer"}[mode]||"sparkles";
+    return {control:"layout-dashboard",morning:"sunrise",development:"square-terminal",work:"briefcase-business",gaming:"crosshair",evening:"moon-star",music:"music",focus:"timer"}[mode]||"sparkles";
+  }
+  function recommendationsFor(mode){
+    try{
+      if(window.ETHONEUsageLearning&&typeof window.ETHONEUsageLearning.recommendations==="function"){
+        return window.ETHONEUsageLearning.recommendations(mode,4)||[];
+      }
+    }catch(e){}
+    var fallback={
+      development:[
+        {id:"github",title:"GitHub",body:t("Contexte repo visible.","Repository context visible."),widget:"github",action:"github.open"},
+        {id:"terminal",title:"Terminal",body:t("Commandes et debug proches.","Commands and debug nearby."),widget:"terminal",action:"command.open"},
+        {id:"ai",title:"ETHONE AI",body:t("Brain aide le code.","Brain helps the code flow."),widget:"aiSuggestions",action:"ai.open"},
+        {id:"notes",title:t("Notes","Notes"),body:t("Notes techniques visibles.","Technical notes visible."),widget:"notes",action:"notes.open"}
+      ],
+      gaming:[
+        {id:"discord",title:"Discord",body:t("Presence gaming visible.","Gaming presence visible."),widget:"discord",action:"connections.open"},
+        {id:"spotify",title:"Spotify",body:t("Musique de session.","Session music."),widget:"nowPlaying",action:"connections.open"},
+        {id:"valorant",title:"Valorant",body:t("Compte et rang visibles.","Account and rank visible."),widget:"valorant",action:"valorant-accounts.open"},
+        {id:"steam",title:"Steam",body:t("Activite jeu visible.","Game activity visible."),widget:"steam",action:"gaming.open"}
+      ],
+      work:[
+        {id:"calendar",title:"Calendar",body:t("Planning en premier.","Schedule first."),widget:"calendar",action:"calendar.open"},
+        {id:"tasks",title:t("Taches","Tasks"),body:t("Priorites ouvertes.","Open priorities."),widget:"today",action:"todos.open"},
+        {id:"notes",title:t("Notes","Notes"),body:t("Contexte recent.","Recent context."),widget:"notes",action:"notes.open"},
+        {id:"focus",title:"Focus",body:t("Session profonde.","Deep work session."),widget:"productivity",action:"focus.continue"}
+      ]
+    };
+    return fallback[mode]||fallback.work;
+  }
+  function actionRegistry(){
+    try{return window.ACTION_REGISTRY||window.ETHONEActions||(window.Ethone&&window.Ethone.get&&window.Ethone.get("actions"))||null}catch(e){return null}
+  }
+  function runSmartAction(action,ctx){
+    var A=actionRegistry();
+    if(A&&typeof A.dispatch==="function")return A.dispatch(action,ctx||{source:"smart-layouts"});
+    if(typeof window.runAction==="function")return window.runAction(action,ctx||{source:"smart-layouts"});
+    toast(t("Action indisponible","Action unavailable"),"info");
+    return false;
   }
   function renderBar(result,settings){
     var home=$("#ethone-2026-home");
@@ -292,7 +362,8 @@
       if(top&&top.nextSibling)top.parentNode.insertBefore(bar,top.nextSibling);
       else home.prepend(bar);
     }
-    var modes=["morning","work","gaming","evening","music","focus"];
+    var modes=["morning","development","work","gaming","evening","music","focus"];
+    var recs=recommendationsFor(result.mode).slice(0,4);
     bar.innerHTML=
       '<div class="d4-smartbar-main">'+
         '<span class="d4-smart-kicker">Smart Layouts</span>'+
@@ -305,6 +376,14 @@
       '<div class="d4-smartbar-actions">'+
         '<button type="button" class="d4-smart-toggle '+(settings.enabled?'active':'')+'" data-smart-action="toggle">'+(settings.enabled?"Auto":"Off")+'</button>'+
         (settings.overrideMode?'<button type="button" class="d4-smart-toggle" data-smart-action="auto">'+t("Auto","Auto")+'</button>':"")+
+      '</div>'+
+      '<div class="d4-smartbar-recs" aria-label="'+t("Recommandations dashboard","Dashboard recommendations")+'">'+
+        recs.map(function(r){
+          return '<button type="button" class="d4-smart-rec" data-smart-run="'+esc(r.action||"")+'" data-smart-widget="'+esc(r.widget||"")+'" data-smart-rec-id="'+esc(r.id||"")+'">'+
+            '<i data-lucide="'+icon(r.id||r.widget||"sparkles")+'" aria-hidden="true"></i>'+
+            '<span><strong>'+esc(r.title||r.id||"Recommendation")+'</strong><small>'+esc(r.body||"")+'</small></span>'+
+          '</button>';
+        }).join("")+
       '</div>';
     try{window.lucide&&window.lucide.createIcons&&window.lucide.createIcons()}catch(e){}
   }
@@ -318,9 +397,16 @@
     ensureLibrary();
     var settings=state();
     var result=detect();
-    if(settings.overrideMode)result.mode=settings.overrideMode;
+    if(settings.overrideMode){
+      result.mode=settings.overrideMode;
+      result.reason=t("Mode manuel actif : ETHONE garde ce dashboard jusqu'au retour en Auto.","Manual mode active: ETHONE keeps this dashboard until Auto is restored.");
+    }
     applyClasses(result.mode,settings);
     renderBar(result,settings);
+    if(flowControlsLayout()){
+      document.body.classList.add("ethone-flow-controls-layout");
+      return;
+    }
     var signature=[settings.enabled,settings.overrideMode||"auto",result.mode,result.reason,currentPage()].join("|");
     if(!force&&signature===lastSignature)return;
     lastSignature=signature;
@@ -366,10 +452,19 @@
         toast(t("Layout force : ","Forced layout: ")+modeLabel(st.overrideMode),"info");
         evaluate(true);
       }
+      var rec=e.target.closest("[data-smart-run]");
+      if(rec){
+        var widget=rec.dataset.smartWidget;
+        if(widget&&window.ETHONEUsageLearning&&typeof window.ETHONEUsageLearning.trackWidget==="function"){
+          window.ETHONEUsageLearning.trackWidget(widget,1.5);
+        }
+        runSmartAction(rec.dataset.smartRun,{source:"smart-layout-recommendation",widget:widget,el:rec});
+      }
     });
-    ["ethone:page-ready","ethone:workspace-change","ethone:workspace-update","ethone:space-change","ethone:space-update","ethone:dashboard-ready","ethone:smart-layout-refresh"].forEach(function(name){
+    ["ethone:page-ready","ethone:workspace-change","ethone:workspace-update","ethone:space-change","ethone:space-update","ethone:smart-layout-refresh"].forEach(function(name){
       window.addEventListener(name,function(){schedule(160)});
     });
+    window.addEventListener("ethone:dashboard-ready",function(){schedule(1800)});
     window.addEventListener("storage",function(e){if(!e.key||/ethone|pomo|np_track/.test(e.key))schedule(160)});
     document.addEventListener("visibilitychange",function(){if(!document.hidden)schedule(120)});
     setInterval(function(){if(!document.hidden)evaluate(false)},8000);
@@ -384,6 +479,7 @@
   window.ETHONESmartLayouts={
     refresh:function(){evaluate(true)},
     detect:detect,
+    recommendations:function(mode){return recommendationsFor(mode||detect().mode)},
     state:state,
     setEnabled:function(on){var s=state();s.enabled=!!on;if(!on)s.overrideMode=null;saveState(s);evaluate(true)},
     setMode:function(mode){var s=state();s.enabled=true;s.overrideMode=MODE_LAYOUT[mode]?mode:null;saveState(s);evaluate(true)}

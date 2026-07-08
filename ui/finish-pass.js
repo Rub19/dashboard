@@ -1,6 +1,7 @@
 (function(){
   if(window.__ethoneFinishPassBooted)return;
   window.__ethoneFinishPassBooted=true;
+  let bootScheduled=false;
 
   const STATIC_WIDGETS={
     discord:'#sb-discord-wrap',
@@ -172,9 +173,19 @@
     polishSidebar();
   }
 
+  function scheduleBoot(){
+    if(bootScheduled)return;
+    bootScheduled=true;
+    setTimeout(function(){
+      bootScheduled=false;
+      if(document.body&&document.body.classList.contains('ethone-dashboard-booting'))return scheduleBoot();
+      boot();
+    },180);
+  }
+
   document.addEventListener('DOMContentLoaded',boot,{once:true});
-  window.addEventListener('ethone:dashboard-ready',boot);
-  window.addEventListener('ethone:page-ready',boot);
+  window.addEventListener('ethone:dashboard-ready',scheduleBoot);
+  window.addEventListener('ethone:page-ready',scheduleBoot);
   window.addEventListener('resize',function(){requestAnimationFrame(polishSidebar);},{passive:true});
 
   window.ethoneFinishPass={

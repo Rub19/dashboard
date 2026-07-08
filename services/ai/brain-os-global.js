@@ -86,17 +86,35 @@
     p.state.brainSignals=p.state.brainSignals.slice(0,80);
     try{if(typeof window.saveStateNow==="function")window.saveStateNow()}catch(e){}
   }
+  function intelligenceReport(){
+    try{
+      if(window.ETHONEBrainIntelligence&&typeof window.ETHONEBrainIntelligence.report==="function")return window.ETHONEBrainIntelligence.report();
+    }catch(e){}
+    return null;
+  }
   function suggestions(ctx){
     ctx=ctx||currentContext();
     var f=ctx.facts;
     var out=[];
+    var report=intelligenceReport();
+    if(report&&Array.isArray(report.recommendations)){
+      report.recommendations.forEach(function(r){
+        out.push({id:"brain-"+r.id,title:r.title,body:r.body,action:r.action||"analyze",severity:r.severity});
+      });
+    }
     if(f.openTodos>0)out.push({id:"plan",title:text("Planifier maintenant","Plan now"),body:text("Brain voit "+f.openTodos+" tache(s) ouvertes. Il peut proposer l'ordre le plus calme.","Brain sees "+f.openTodos+" open task(s). It can suggest the calmest order."),action:"plan"});
     if(ctx.page==="notes"&&ctx.text.length>80)out.push({id:"summarize",title:text("Resumer cette note","Summarize this note"),body:text("Transformer la note en resume, decisions et prochaines actions.","Turn the note into a summary, decisions and next actions."),action:"summarize"});
     if(ctx.page==="files"&&f.files>0)out.push({id:"organize",title:text("Organiser les fichiers","Organize files"),body:text("Brain peut proposer tags, dossiers et liens avec tes notes.","Brain can suggest tags, folders and links to notes."),action:"organize"});
     if(ctx.page==="calendar"&&f.events>0)out.push({id:"schedule",title:text("Optimiser le planning","Optimize schedule"),body:text("Detecter conflits, buffers et meilleurs blocs de focus.","Detect conflicts, buffers and better focus blocks."),action:"plan"});
     if(f.notes>3)out.push({id:"memory",title:text("Mettre a jour la memoire","Update memory"),body:text("Brain peut identifier les preferences utiles a retenir, avec validation.","Brain can identify useful preferences to remember, with validation."),action:"memory"});
     out.push({id:"search",title:text("Rechercher dans ETHONE","Search ETHONE"),body:text("Brain Search retrouve pages, notes, taches, fichiers et activite.","Brain Search finds pages, notes, tasks, files and activity."),action:"search"});
-    return out.slice(0,5);
+    var seen={};
+    return out.filter(function(item){
+      var key=item.action+"-"+item.id;
+      if(seen[key])return false;
+      seen[key]=true;
+      return true;
+    }).slice(0,6);
   }
   function actionList(ctx){
     ctx=ctx||currentContext();
@@ -108,10 +126,23 @@
       ["analyze",text("Analyser","Analyze"),text("Explique les signaux importants","Explain important signals")],
       ["search",text("Rechercher","Search"),text("Cherche dans ETHONE","Search across ETHONE")]
     ];
+    try{
+      if(window.ETHONEPluginSDK&&typeof window.ETHONEPluginSDK.brainCommands==="function"){
+        window.ETHONEPluginSDK.brainCommands().forEach(function(command){
+          base.push([command.id,command.label,command.description||text("Commande Brain ajoutee par un plugin","Brain command added by a plugin")]);
+        });
+      }
+    }catch(e){}
     return base;
   }
   function promptFor(action,ctx){
     ctx=ctx||currentContext();
+    try{
+      if(window.ETHONEBrainIntelligence&&typeof window.ETHONEBrainIntelligence.prompt==="function"){
+        if(action&&action.indexOf("automation:")===0)return window.ETHONEBrainIntelligence.prompt("automations");
+        if(/^(briefing|detect-conflicts|automations|memory|plan|analyze)$/.test(action))return window.ETHONEBrainIntelligence.prompt(action);
+      }
+    }catch(e){}
     var data="Page: "+ctx.page+"\nWorkspace: "+ctx.workspace+"\nFacts: "+JSON.stringify(ctx.facts)+"\nContext: "+(ctx.text||"");
     var prompts={
       summarize:"Summarize this ETHONE context. Extract decisions, important details and next actions.\n"+data,
@@ -126,6 +157,27 @@
   }
   function openCopilot(action,ctx){
     ctx=ctx||currentContext();
+    if(action&&/^plugin\.[a-z0-9_-]+\.brain\./.test(action)){
+      try{
+        if(window.ETHONEPluginSDK&&typeof window.ETHONEPluginSDK.runBrainCommand==="function"){
+          window.ETHONEPluginSDK.runBrainCommand(action,{context:ctx});
+          return;
+        }
+      }catch(e){}
+    }
+    if(action&&action.indexOf("automation:")===0){
+      var templateId=action.slice("automation:".length);
+      var created=false;
+      try{
+        created=!!(window.ETHONEBrainIntelligence&&typeof window.ETHONEBrainIntelligence.createAutomation==="function"&&window.ETHONEBrainIntelligence.createAutomation(templateId));
+      }catch(e){created=false}
+      storeSignal("brain_automation",{action:action,template:templateId,created:created});
+      if(created){
+        recordTimeline({title:"Brain automation draft created",body:templateId,category:"ai",source:"brain-os",meta:{template:templateId}});
+        render();
+        return;
+      }
+    }
     var prompt=promptFor(action,ctx);
     storeSignal("brain_action",{action:action,label:ctx.pageLabel});
     recordTimeline({title:"Brain action: "+action,body:ctx.pageLabel,category:"ai",source:"brain-os",meta:{page:ctx.page,action:action}});
@@ -187,6 +239,7 @@
         '<button type="button" data-brain-close aria-label="Close">x</button>'+
       '</div>'+
       '<div class="brain-os-tabs" role="tablist">'+
+        tabButton("briefing",text("Briefing","Briefing"))+
         tabButton("suggestions",text("Suggestions","Suggestions"))+
         tabButton("actions",text("Actions","Actions"))+
         tabButton("context",text("Contexte","Context"))+
@@ -224,13 +277,53 @@
     $$("#brain-os-panel [data-brain-tab]").forEach(function(btn){btn.classList.toggle("active",btn.dataset.brainTab===state.tab)});
     var body=$("#brain-os-body");
     if(!body)return;
-    if(state.tab==="suggestions")body.innerHTML=renderSuggestions(ctx);
+    if(state.tab==="briefing")body.innerHTML=renderBriefing(ctx);
+    else if(state.tab==="suggestions")body.innerHTML=renderSuggestions(ctx);
     else if(state.tab==="actions")body.innerHTML=renderActions(ctx);
     else if(state.tab==="context")body.innerHTML=renderContext(ctx);
     else if(state.tab==="search")body.innerHTML=renderSearch();
     else if(state.tab==="memory")body.innerHTML=renderMemory();
     else body.innerHTML=renderTimeline();
     renderPageStrip(ctx);
+  }
+  function renderBriefing(ctx){
+    var report=intelligenceReport();
+    if(!report){
+      return '<div class="brain-os-empty">'+text("Brain prepare le briefing intelligent.","Brain is preparing the intelligent briefing.")+'</div>';
+    }
+    var summary=report.summary||{};
+    var metrics=[
+      [text("Taches ouvertes","Open tasks"),summary.open||0],
+      [text("Faites aujourd'hui","Done today"),summary.doneToday||0],
+      [text("En retard","Overdue"),(summary.overdue||[]).length],
+      [text("Evenements","Events"),(summary.eventsToday||[]).length]
+    ];
+    var plan=(report.plan||[]).slice(0,5).map(function(item){
+      return '<div class="brain-os-plan-item"><span>'+escapeHTML(item.time||"")+'</span><strong>'+escapeHTML(item.title||"")+'</strong><p>'+escapeHTML(item.body||"")+'</p></div>';
+    }).join("");
+    var forgotten=(report.forgottenTasks||[]).slice(0,4).map(function(task){
+      return '<div class="brain-os-row"><strong>'+escapeHTML(task.title)+'</strong><span>'+escapeHTML(task.reason||"")+'</span></div>';
+    }).join("");
+    var conflicts=(report.conflicts||[]).slice(0,3).map(function(conflict){
+      return '<div class="brain-os-row"><strong>'+escapeHTML(conflict.date||"")+'</strong><span>'+escapeHTML((conflict.events||[]).join(", "))+'</span></div>';
+    }).join("");
+    var automations=(report.automations||[]).slice(0,3).map(function(item){
+      return '<article class="brain-os-automation"><div><strong>'+escapeHTML(item.title)+'</strong><p>'+escapeHTML(item.body)+'</p></div><button type="button" class="brain-os-action" data-brain-action="automation:'+escapeHTML(item.id)+'">'+text("Creer brouillon","Create draft")+'</button></article>';
+    }).join("");
+    var prefs=(report.preferences||[]).filter(function(pref){return pref.status==="candidate"}).slice(0,3).map(function(pref){
+      return '<div class="brain-os-preference"><div><strong>'+escapeHTML(pref.title)+'</strong><span>'+escapeHTML(String(pref.value||""))+'</span></div><div class="brain-os-pref-actions"><button type="button" data-brain-pref-accept="'+escapeHTML(pref.id)+'">'+text("Memoriser","Remember")+'</button><button type="button" data-brain-pref-forget="'+escapeHTML(pref.id)+'">'+text("Ignorer","Ignore")+'</button></div></div>';
+    }).join("");
+    return '<section class="brain-os-briefing">'+
+      '<div class="brain-os-briefing-head"><span>Brain Intelligence</span><strong>'+text("Briefing du jour","Today briefing")+'</strong><p>'+escapeHTML((report.recommendations&&report.recommendations[0]&&report.recommendations[0].body)||text("Brain analyse tes signaux locaux pour proposer la prochaine action utile.","Brain analyzes local signals to suggest the next useful action."))+'</p></div>'+
+      '<div class="brain-os-metrics">'+metrics.map(function(m){return '<div class="brain-os-metric"><span>'+escapeHTML(m[0])+'</span><strong>'+escapeHTML(m[1])+'</strong></div>'}).join("")+'</div>'+
+      '<div class="brain-os-section"><div class="brain-os-section-title">'+text("Planning propose","Suggested plan")+'</div><div class="brain-os-plan">'+(plan||'<div class="brain-os-empty">'+text("Aucun planning prioritaire pour le moment.","No priority plan yet.")+'</div>')+'</div></div>'+
+      ((forgotten||conflicts)?'<div class="brain-os-split">'+
+        '<div class="brain-os-list"><div class="brain-os-section-title">'+text("Taches a recuperer","Tasks to recover")+'</div>'+(forgotten||'<div class="brain-os-empty">'+text("Aucune tache oubliee detectee.","No forgotten tasks detected.")+'</div>')+'</div>'+
+        '<div class="brain-os-list"><div class="brain-os-section-title">'+text("Conflits","Conflicts")+'</div>'+(conflicts||'<div class="brain-os-empty">'+text("Aucun conflit detecte.","No conflict detected.")+'</div>')+'</div>'+
+      '</div>':"")+
+      '<div class="brain-os-section"><div class="brain-os-section-title">'+text("Automatisations suggerees","Suggested automations")+'</div>'+(automations||'<div class="brain-os-empty">'+text("Brain proposera des automatisations apres plus d activite.","Brain will suggest automations after more activity.")+'</div>')+'</div>'+
+      '<div class="brain-os-section"><div class="brain-os-section-title">'+text("Memoire a confirmer","Memory to confirm")+'</div>'+(prefs||'<div class="brain-os-empty">'+text("Aucune preference en attente.","No pending preference.")+'</div>')+'</div>'+
+    '</section>';
   }
   function renderSuggestions(ctx){
     return suggestions(ctx).map(function(s){
@@ -274,9 +367,18 @@
   function renderMemory(){
     var signals=(profileState().brainSignals||[]).slice(0,8);
     var mem=null;
+    var report=intelligenceReport();
+    var prefs=report&&Array.isArray(report.preferences)?report.preferences:[];
     try{mem=window.ETHONEMemory&&window.ETHONEMemory.state?window.ETHONEMemory.state():null}catch(e){}
     var rows=signals.map(function(s){return '<div class="brain-os-row"><strong>'+escapeHTML(s.type)+'</strong><span>'+escapeHTML(s.page||"")+" - "+escapeHTML(formatTime(s.ts))+'</span></div>'}).join("");
+    var preferenceRows=prefs.slice(0,10).map(function(pref){
+      var pending=pref.status==="candidate";
+      return '<div class="brain-os-preference"><div><strong>'+escapeHTML(pref.title)+'</strong><span>'+escapeHTML(String(pref.value||""))+' / '+escapeHTML(pref.status||"candidate")+'</span></div>'+
+        (pending?'<div class="brain-os-pref-actions"><button type="button" data-brain-pref-accept="'+escapeHTML(pref.id)+'">'+text("Memoriser","Remember")+'</button><button type="button" data-brain-pref-forget="'+escapeHTML(pref.id)+'">'+text("Ignorer","Ignore")+'</button></div>':"")+
+      '</div>';
+    }).join("");
     return '<section class="brain-os-card"><span>Memory</span><strong>'+text("Memoire visible","Visible memory")+'</strong><p>'+text("Brain garde des signaux legers et visibles pour reprendre le contexte, sans executer d action importante sans confirmation.","Brain keeps lightweight visible signals to resume context, without executing meaningful actions without confirmation.")+'</p><button type="button" class="brain-os-action" data-brain-memory-open>'+text("Ouvrir Memory Center","Open Memory Center")+'</button></section>'+
+      '<div class="brain-os-list"><div class="brain-os-section-title">'+text("Preferences Brain","Brain preferences")+'</div>'+(preferenceRows||'<div class="brain-os-empty">'+text("Aucune preference visible pour le moment.","No visible preference yet.")+'</div>')+'</div>'+
       '<div class="brain-os-list">'+(rows||'<div class="brain-os-empty">'+text("Aucun signal Brain pour le moment.","No Brain signals yet.")+'</div>')+'</div>'+
       '<div class="brain-os-mini">'+(mem?text("Snapshots: ","Snapshots: ")+(mem.snapshots||[]).length+" / "+text("Events: ","Events: ")+(mem.events||[]).length:"")+'</div>';
   }
@@ -299,7 +401,7 @@
     page.dataset.brainStrip="1";
     var strip=document.createElement("section");
     strip.className="brain-os-strip";
-    strip.innerHTML='<div><span>Brain Context</span><strong class="brain-os-strip-status">'+escapeHTML(ctx.pageLabel+" / "+ctx.workspace)+'</strong></div><div class="brain-os-strip-actions"><button type="button" data-brain-open-tab="suggestions">'+text("Suggestions","Suggestions")+'</button><button type="button" data-brain-open-tab="actions">'+text("Actions","Actions")+'</button><button type="button" data-brain-open-tab="search">Search</button></div>';
+    strip.innerHTML='<div><span>Brain Context</span><strong class="brain-os-strip-status">'+escapeHTML(ctx.pageLabel+" / "+ctx.workspace)+'</strong></div><div class="brain-os-strip-actions"><button type="button" data-brain-open-tab="briefing">'+text("Briefing","Briefing")+'</button><button type="button" data-brain-open-tab="suggestions">'+text("Suggestions","Suggestions")+'</button><button type="button" data-brain-open-tab="actions">'+text("Actions","Actions")+'</button><button type="button" data-brain-open-tab="search">Search</button></div>';
     var topbar=$(".topbar",page)||page.firstElementChild;
     if(topbar&&topbar.parentNode)topbar.parentNode.insertBefore(strip,topbar.nextSibling);
     else page.prepend(strip);
@@ -338,6 +440,18 @@
       if(tab){openPanel(tab.dataset.brainTab||tab.dataset.brainOpenTab);return}
       var action=e.target.closest("[data-brain-action]");
       if(action){openCopilot(action.dataset.brainAction,currentContext());return}
+      var prefAccept=e.target.closest("[data-brain-pref-accept]");
+      if(prefAccept){
+        try{if(window.ETHONEBrainIntelligence&&window.ETHONEBrainIntelligence.acceptPreference)window.ETHONEBrainIntelligence.acceptPreference(prefAccept.dataset.brainPrefAccept)}catch(err){}
+        render();
+        return;
+      }
+      var prefForget=e.target.closest("[data-brain-pref-forget]");
+      if(prefForget){
+        try{if(window.ETHONEBrainIntelligence&&window.ETHONEBrainIntelligence.forgetPreference)window.ETHONEBrainIntelligence.forgetPreference(prefForget.dataset.brainPrefForget)}catch(err){}
+        render();
+        return;
+      }
       if(e.target.closest("[data-brain-memory-open]")){
         if(window.ETHONEMemory&&typeof window.ETHONEMemory.open==="function")window.ETHONEMemory.open();
         return;
@@ -375,6 +489,7 @@
     });
     window.addEventListener("ethone:timeline",scheduleRender);
     window.addEventListener("ethone:memory-event",scheduleRender);
+    window.addEventListener("ethone:brain-intelligence",scheduleRender);
   }
   function boot(){
     if(state.started)return;
@@ -388,6 +503,7 @@
       var ctx=currentContext();
       recordTimeline({title:"Brain OS online",body:ctx.pageLabel+" context layer active.",category:"ai",source:"brain-os",dedupe:"brain-online-"+new Date().toLocaleDateString("en-CA"),meta:{page:ctx.page}});
       storeSignal("brain_online",{page:ctx.page});
+      try{if(window.ETHONEBrainIntelligence&&window.ETHONEBrainIntelligence.schedule)window.ETHONEBrainIntelligence.schedule("brain-os-online",350)}catch(e){}
       scheduleRender();
     },1600);
   }
@@ -399,6 +515,7 @@
     suggestions:function(){return suggestions(currentContext())},
     actions:function(){return actionList(currentContext())},
     search:search,
+    report:function(){return intelligenceReport()},
     runAction:function(action){openCopilot(action,currentContext())},
     render:render
   };

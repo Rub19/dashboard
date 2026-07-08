@@ -41,7 +41,9 @@
   };
   const oldSetLang=window.setLang;
   window.setLang=function(l){
+    l=String(l||'fr').slice(0,2).toLowerCase();
     try{ if(typeof oldSetLang==='function') oldSetLang(l); else { window._lang=l; localStorage.setItem('nexus_lang',l); } }catch(e){ window._lang=l; localStorage.setItem('nexus_lang',l); }
+    document.documentElement.lang=l;
     try{ localStorage.setItem('ethone_lang',l); }catch(e){}
     setTimeout(window.updateAuthLangBar,0);
   };
@@ -58,9 +60,16 @@
     const tabLogin=document.getElementById('tab-login'), tabReg=document.getElementById('tab-register');
     if(loginForm)loginForm.style.display=tab==='login'?'block':'none';
     if(regForm)regForm.style.display=tab==='register'?'block':'none';
-    const base='flex:1;height:38px;border:none;border-radius:9px;font-size:13px;font-family:Inter,system-ui,sans-serif;cursor:pointer;transition:all .15s';
-    if(tabLogin)tabLogin.style.cssText=base+(tab==='login'?';font-weight:600;background:transparent;color:#fff;box-shadow:none':' ;font-weight:500;background:transparent;color:rgba(250,250,249,.35)');
-    if(tabReg)tabReg.style.cssText=base+(tab==='register'?';font-weight:600;background:transparent;color:#fff;box-shadow:none':' ;font-weight:500;background:transparent;color:rgba(250,250,249,.35)');
+    if(tabLogin){
+      tabLogin.removeAttribute('style');
+      tabLogin.classList.toggle('is-active',tab==='login');
+      tabLogin.setAttribute('aria-selected',String(tab==='login'));
+    }
+    if(tabReg){
+      tabReg.removeAttribute('style');
+      tabReg.classList.toggle('is-active',tab==='register');
+      tabReg.setAttribute('aria-selected',String(tab==='register'));
+    }
     setErr(''); window.updateAuthLangBar();
   };
   window.doForgotPassword=async function(){

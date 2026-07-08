@@ -21,6 +21,7 @@
     notifications: { label: "Notifications", icon: "bell", group: "Preferences", description: "Choose when and how ETHONE is allowed to get your attention." },
     keyboard: { label: "Keyboard shortcuts", icon: "command", group: "Preferences", description: "Review every keyboard command and speed up common workflows." },
     backup: { label: "Backup & sync", icon: "cloud", group: "Preferences", description: "Sync, download or restore a secure copy of your ETHONE data." },
+    cloud: { label: "ETHONE Cloud", icon: "cloud-cog", group: "Preferences", description: "Synchronize workspaces, dashboard, themes, widgets, plugins, notes, tasks, calendar and files." },
     importx: { label: "Import", icon: "upload", group: "Preferences", description: "Bring a compatible ETHONE data archive into this profile." },
     exportx: { label: "Export", icon: "download", group: "Preferences", description: "Download your profile data in a portable JSON archive." },
     security: { label: "Security", icon: "shield-check", group: "Preferences", description: "Protect this profile and manage local access controls." },
@@ -31,7 +32,7 @@
   var ORDER = [
     "profilee", "account", "theme",
     "workspaces", "widgets", "brain", "automation", "marketplace", "plugins",
-    "notifications", "keyboard", "backup", "importx", "exportx", "security",
+    "notifications", "keyboard", "backup", "cloud", "importx", "exportx", "security",
     "developer", "experimental"
   ];
 

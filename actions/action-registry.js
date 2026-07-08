@@ -350,6 +350,10 @@
     if (typeof global.openLivePanelManager === "function") return global.openLivePanelManager();
     return widgetsPanel(true);
   } });
+  register("widgets.builder.open", { label: "Widget Builder", handler: function () {
+    if (global.ETHONEWidgetBuilder && typeof global.ETHONEWidgetBuilder.open === "function") return global.ETHONEWidgetBuilder.open();
+    toast(unavailableMessage(), "info");
+  } });
   register("command.open", { label: "Command palette", handler: function () {
     if (typeof global.openCmdPalette === "function") global.openCmdPalette();
     else toast(unavailableMessage(), "info");

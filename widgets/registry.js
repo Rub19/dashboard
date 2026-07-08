@@ -15,6 +15,12 @@
     return true;
   }
 
+  function update(name, definition) {
+    if (!name || !definition) return false;
+    widgets.set(name, definition);
+    return true;
+  }
+
   function mount(name, target, context) {
     var widget = widgets.get(name);
     if (!widget || typeof widget.mount !== "function" || !target) return false;
@@ -24,9 +30,15 @@
 
   app.define("widgets", Object.freeze({
     register: register,
+    update: update,
     mount: mount,
     get: function get(name) {
       return widgets.get(name) || null;
+    },
+    list: function list() {
+      return Array.from(widgets.keys()).map(function (id) {
+        return { id: id, definition: widgets.get(id) };
+      });
     }
   }));
 })(window);

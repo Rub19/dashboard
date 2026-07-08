@@ -40,6 +40,25 @@ const CMD_WIDGET_FALLBACKS = [
   ["ram", "RAM", "memory system performance widget"]
 ];
 
+const CMD_MARKETPLACE_FALLBACKS = [
+  ["widgets", "Widget Marketplace", "Widgets", "Install dashboard widgets, mini apps and AI widgets", "spotify discord github weather ai suggestions timeline dashboard widget marketplace"],
+  ["plugins", "Plugin Hub", "Plugins", "Install integrations and ETHONE extensions", "plugins extensions discord spotify github steam twitch valorant obs youtube marketplace"],
+  ["themes", "Theme Marketplace", "Themes", "Install or create premium ETHONE themes", "theme themes accent purple midnight oled nord tokyo dracula catppuccin marketplace"],
+  ["layouts", "Layout Store", "Layouts", "Dashboard layouts for work, gaming and focus", "layout layouts dashboard workspace personal operating system marketplace"],
+  ["automations", "Automation Packs", "Automations", "Workflow packs for Brain and widgets", "automation automations workflow brain tasks notes calendar marketplace"],
+  ["ai-agents", "AI Agents", "AI Agents", "Specialized Brain agents and prompts", "ai agents brain provider prompt marketplace"]
+];
+
+const CMD_INTEGRATION_ACTIONS = [
+  { suffix: "open", title: "Open {name}", sub: "Integration surface", id: "search.integration.open", keywords: "open launch view integration service", priority: 90 },
+  { suffix: "settings", title: "{name} settings", sub: "Configure connection", id: "search.integration.settings", keywords: "settings configure account api key oauth connection", priority: 42 },
+  { suffix: "connect", title: "Connect {name}", sub: "Start or reconnect", id: "search.integration.connect", keywords: "connect reconnect login oauth account authorize", priority: 30 },
+  { suffix: "disconnect", title: "Disconnect {name}", sub: "Requires confirmation in Integration Hub", id: "search.integration.disconnect", keywords: "disconnect remove logout unlink disable", priority: 28 },
+  { suffix: "refresh", title: "Refresh {name}", sub: "Test sync status", id: "search.integration.refresh", keywords: "refresh test sync status update", priority: 22 },
+  { suffix: "widget", title: "Create {name} widget", sub: "Open widget marketplace", id: "search.widget.createService", keywords: "create widget dashboard card panel marketplace", priority: 26 },
+  { suffix: "dashboard", title: "Add {name} to Dashboard", sub: "Add widget to Home", id: "search.widget.addDashboard", keywords: "add dashboard widget pin home quick action", priority: 24 }
+];
+
 function cmdLang() {
   try { return typeof _lang !== "undefined" ? _lang : "en"; } catch (e) { return "en"; }
 }
@@ -65,6 +84,24 @@ function cmdProfile() {
   try { return typeof curP === "function" ? curP() : null; } catch (e) { return null; }
 }
 
+function cmdState() {
+  const profile = cmdProfile();
+  return profile && profile.state ? profile.state : {};
+}
+
+function cmdSave() {
+  try { if (typeof saveStateNow === "function") saveStateNow(); } catch (e) {}
+}
+
+function cmdToast(message, type) {
+  try {
+    if (typeof toast === "function") {
+      toast(message, type || "info");
+      return;
+    }
+  } catch (e) {}
+}
+
 function cmdActions() {
   try { return window.Ethone && window.Ethone.get("actions"); } catch (e) { return null; }
 }
@@ -73,6 +110,9 @@ function cmdRun(actionId, context) {
   const actions = cmdActions();
   if (actions && typeof actions.dispatch === "function") {
     return actions.dispatch(actionId, Object.assign({ source: "command-palette" }, context || {}));
+  }
+  if (typeof window.runAction === "function") {
+    return window.runAction(actionId, Object.assign({ source: "command-palette" }, context || {}));
   }
   return false;
 }
@@ -269,9 +309,14 @@ function buildQuickActionResults() {
     { id: "search.universe.open", icon: "Orbit", title: "Open ETHONE Universe", sub: "Planet navigation for Spaces", kbd: "Ctrl+Shift+U", keywords: "universe planets spaces immersive navigation gaming dev study brain files calendar marketplace settings" },
     { id: "search.briefing.open", icon: "Brief", title: "Open Morning Briefing", sub: "Daily ETHONE summary", keywords: "morning briefing daily summary today tasks events goals spotify github weather quote brain" },
     { id: "search.achievements.open", icon: "Trophy", title: "Open Achievements", sub: "Badges, levels and streaks", keywords: "achievements badges levels streaks trophies tasks focus github spotify workspace" },
+    { id: "timeMachine.open", icon: "History", title: "Open Time Machine", sub: "Restore layouts, widgets, settings, notes and workspaces", keywords: "time machine snapshot snapshots restore rollback history layouts widgets settings notes dashboard workspaces" },
+    { id: "timeMachine.snapshot", icon: "Save", title: "Create Time Machine snapshot", sub: "Save a restore point now", keywords: "create snapshot save restore point checkpoint time machine backup" },
+    { id: "widgets.builder.open", icon: "Widget", title: "Open Widget Builder", sub: "Create a custom dashboard widget without code", keywords: "widget builder custom no code create dashboard card source layout animation action" },
     { id: "search.spotify.launch", icon: "Music", title: "Launch Spotify", sub: "Open Spotify integration", keywords: "launch spotify music play open now playing audio integration" },
     { id: "search.ai.ask", icon: "AI", title: "Ask ETHONE AI", sub: "Open contextual intelligence", keywords: "ask ethone ai brain summarize analyse organize create improve" },
     { id: "search.workspaces.switcher", icon: "Space", title: "Switch workspace", sub: "Open ETHONE Spaces", keywords: "switch workspace spaces personal gaming development study environment" },
+    { id: "onboarding.open", icon: "OS", title: "Revoir l'onboarding", sub: "Relancer la premiere configuration ETHONE", keywords: "onboarding first run tutoriel tutorial guide bienvenue setup configuration premiere utilisation" },
+    { id: "whatsnew.open", icon: "New", title: "Voir les nouveautes", sub: "Version ETHONE et changelog", keywords: "nouveautes whats new changelog version update release notes mise a jour" },
     { id: "search.nav.import", icon: "Import", title: "Import data", sub: "Notion, Todoist, CSV, JSON...", keywords: "import data assistant notion todoist calendar csv excel markdown json" },
     { id: "search.profile.switch", icon: "User", title: "Switch profile", sub: "Profile select", keywords: "switch profile change user" },
     { id: "search.presentation.open", icon: "TV", title: "Presentation mode", sub: "Full-screen dashboard on TV", kbd: "P", keywords: "presentation tv fullscreen mode" },
@@ -306,22 +351,68 @@ function buildWorkspaceResults(query) {
 
 function buildIntegrationResults(query) {
   if (!query) return [];
-  return CMD_INTEGRATIONS.map(function (integration) {
+  return cmdIntegrationDefs().map(function (integration) {
     return {
       id: "search.integration.open",
       context: { integrationId: integration.id },
       category: "integrations",
       icon: "Plug",
       title: integration.title,
-      sub: integration.sub,
+      sub: integration.sub || "Integration",
       keywords: integration.keywords
     };
   });
 }
 
+function cmdIntegrationDefs() {
+  const byId = new Map();
+  CMD_INTEGRATIONS.forEach(function (integration) {
+    byId.set(integration.id, Object.assign({}, integration));
+  });
+  try {
+    const hubDefs = window.ethoneIntegrationHub
+      ? (typeof window.ethoneIntegrationHub.defs === "function" ? window.ethoneIntegrationHub.defs() : window.ethoneIntegrationHub.defs)
+      : [];
+    hubDefs.forEach(function (def) {
+      byId.set(def.id, {
+        id: def.id,
+        title: def.name || def.id,
+        sub: def.placeholder ? "Integration ready" : "Integration",
+        keywords: [def.id, def.name, def.desc, (def.preview || []).join(" "), "integration connection settings widgets plugins marketplace"].join(" ")
+      });
+    });
+  } catch (e) {}
+  return Array.from(byId.values());
+}
+
+function buildIntegrationActionResults(query) {
+  if (!query) return [];
+  const q = normalizeCmdText(query);
+  const matched = cmdIntegrationDefs().filter(function (integration) {
+    return scoreMatch([integration.title, integration.id, integration.keywords].join(" "), q) >= (q.length <= 3 ? 30 : 54);
+  }).slice(0, 4);
+  const out = [];
+  matched.forEach(function (integration) {
+    CMD_INTEGRATION_ACTIONS.forEach(function (action, actionIndex) {
+      out.push({
+        id: action.id,
+        context: { integrationId: integration.id, widgetType: integration.id, query: integration.title },
+        category: "contextActions",
+        icon: action.suffix === "disconnect" ? "Off" : action.suffix === "widget" || action.suffix === "dashboard" ? "Widget" : "Go",
+        title: action.title.replace("{name}", integration.title),
+        sub: action.sub,
+        badge: integration.title,
+        keywords: [integration.title, integration.id, integration.keywords, action.keywords].join(" "),
+        priority: action.priority || (22 - actionIndex)
+      });
+    });
+  });
+  return out;
+}
+
 function buildPluginResults(query) {
   if (!query) return [];
-  return CMD_INTEGRATIONS.map(function (plugin) {
+  return cmdIntegrationDefs().map(function (plugin) {
     return {
       id: "search.plugin.open",
       context: { pluginId: plugin.id },
@@ -484,8 +575,15 @@ function buildSettingsResults(query) {
 }
 
 function buildDatabaseResults(query) {
-  if (!query || typeof dbList !== "function") return [];
-  return dbList().map(function (db) {
+  if (!query) return [];
+  let databases = [];
+  try {
+    if (typeof dbList === "function") databases = dbList();
+    else databases = cmdState().databases || [];
+  } catch (e) {
+    databases = cmdState().databases || [];
+  }
+  return (Array.isArray(databases) ? databases : []).map(function (db) {
     return {
       id: "search.databases.open",
       context: { dbId: db.id },
@@ -493,7 +591,7 @@ function buildDatabaseResults(query) {
       icon: "Data",
       title: db.name || "Untitled",
       sub: (db.rows ? db.rows.length : 0) + " rows",
-      keywords: [db.name, "database table records"].join(" ")
+      keywords: [db.name, db.description, (db.columns || []).map(function (col) { return col.name || col.key || ""; }).join(" "), "database table records notion builder"].join(" ")
     };
   });
 }
@@ -513,9 +611,101 @@ function buildThemeResults(query) {
   });
 }
 
+function buildMarketplaceResults(query) {
+  if (!query) return [];
+  let items = [];
+  try {
+    if (window.ETHONEMarketplace && typeof window.ETHONEMarketplace.catalog === "function") {
+      items = items.concat(window.ETHONEMarketplace.catalog().map(function (entry) {
+        return {
+          source: "marketplace",
+          id: entry.id,
+          title: entry.title || entry.name || entry.id,
+          category: entry.category || "Marketplace",
+          description: entry.description || entry.desc || "",
+          tags: Array.isArray(entry.tags) ? entry.tags.join(" ") : "",
+          author: entry.author || "",
+          rating: entry.rating || ""
+        };
+      }));
+    }
+  } catch (e) {}
+  try {
+    if (window.ETHONEWidgetMarketplace && typeof window.ETHONEWidgetMarketplace.catalog === "function") {
+      items = items.concat(window.ETHONEWidgetMarketplace.catalog().map(function (entry) {
+        return {
+          source: "widget-marketplace",
+          id: entry.type || entry.id,
+          title: entry.title || entry.label || entry.name || entry.type,
+          category: entry.category || "Widgets",
+          description: entry.description || entry.desc || "",
+          tags: [entry.type, entry.kind, "widget dashboard marketplace"].join(" "),
+          author: entry.author || "ETHONE"
+        };
+      }));
+    }
+  } catch (e) {}
+  if (!items.length) {
+    items = CMD_MARKETPLACE_FALLBACKS.map(function (row) {
+      return { source: "fallback", id: row[0], title: row[1], category: row[2], description: row[3], tags: row[4], author: "ETHONE" };
+    });
+  }
+  const seen = new Set();
+  return items.filter(function (entry) {
+    const key = entry.source + ":" + entry.id;
+    if (!entry.id || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).map(function (entry) {
+    return {
+      id: "search.marketplace.openItem",
+      context: { itemId: entry.id, query: entry.title, category: entry.category, source: entry.source },
+      category: "marketplace",
+      icon: entry.category === "Themes" ? "Theme" : entry.category === "Plugins" ? "Ext" : "Store",
+      title: entry.title,
+      sub: entry.category + (entry.author ? " - " + entry.author : ""),
+      badge: entry.source === "widget-marketplace" ? "Widget Store" : "Marketplace",
+      keywords: [entry.title, entry.category, entry.description, entry.tags, entry.author, "marketplace store install rating version changelog"].join(" ")
+    };
+  });
+}
+
+function buildAIConversationResults(query) {
+  if (!query) return [];
+  const st = cmdState();
+  const out = [];
+  (Array.isArray(st.aiSessions) ? st.aiSessions : []).forEach(function (session) {
+    const messages = Array.isArray(session.messages) ? session.messages : [];
+    const last = messages[messages.length - 1] || {};
+    out.push({
+      id: "search.ai.conversation.open",
+      context: { sessionId: session.id, source: "legacy" },
+      category: "ai",
+      icon: "AI",
+      title: session.title || session.preview || "AI conversation",
+      sub: session.ts ? new Date(session.ts).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }) : "Saved chat",
+      keywords: [session.title, session.preview, last.content, messages.map(function (m) { return m.content || ""; }).slice(-4).join(" "), "ai conversation brain chat history"].join(" ")
+    });
+  });
+  const core = st.aiCore || {};
+  (Array.isArray(core.conversations) ? core.conversations : []).forEach(function (conversation) {
+    out.push({
+      id: "search.ai.conversation.open",
+      context: { conversationId: conversation.id, source: "core" },
+      category: "ai",
+      icon: "AI",
+      title: conversation.input || "Brain request",
+      sub: [conversation.provider, conversation.model, conversation.origin].filter(Boolean).join(" - ") || "AI Core",
+      keywords: [conversation.input, conversation.context, conversation.provider, conversation.model, conversation.origin, "ai core brain conversation provider"].join(" ")
+    });
+  });
+  return out.slice(-40);
+}
+
 function cmdCategoryLabel(category) {
   const map = {
     actions: cmdLabel("cmd_actions", "Actions"),
+    contextActions: "Smart actions",
     pages: cmdLabel("cmd_pages", "Pages"),
     integrations: cmdLabel("integrations", "Integrations"),
     settings: cmdLabel("nav_settings", "Settings"),
@@ -528,7 +718,9 @@ function cmdCategoryLabel(category) {
     calendar: cmdLabel("nav_calendar", "Calendar"),
     databases: cmdLabel("nav_databases", "Databases"),
     workspaces: "Workspaces",
-    themes: "Themes"
+    themes: "Themes",
+    marketplace: "Marketplace",
+    ai: "AI Conversations"
   };
   return map[category] || category;
 }
@@ -537,19 +729,22 @@ function buildAllResults(query) {
   const q = normalizeCmdText(query || "");
   const contentCap = q ? 7 : 4;
   const groups = [
-    { key: "actions", items: buildQuickActionResults(), cap: q ? 5 : null },
+    { key: "contextActions", items: buildIntegrationActionResults(q), cap: q ? 10 : 0 },
+    { key: "actions", items: buildQuickActionResults(), cap: q ? 6 : null },
     { key: "integrations", items: buildIntegrationResults(q), cap: 8 },
+    { key: "widgets", items: buildWidgetResults(q), cap: 8 },
+    { key: "marketplace", items: buildMarketplaceResults(q), cap: 8 },
+    { key: "plugins", items: buildPluginResults(q), cap: 8 },
     { key: "pages", items: buildPageResults(), cap: q ? 8 : null },
     { key: "settings", items: buildSettingsResults(q), cap: 8 },
     { key: "workspaces", items: buildWorkspaceResults(q), cap: 6 },
     { key: "notes", items: buildNoteResults(q), cap: contentCap },
     { key: "tasks", items: buildTaskResults(q), cap: contentCap },
     { key: "files", items: buildItemResults(q), cap: q ? contentCap : 4 },
-    { key: "widgets", items: buildWidgetResults(q), cap: 8 },
-    { key: "plugins", items: buildPluginResults(q), cap: 8 },
     { key: "habits", items: buildHabitResults(q), cap: contentCap },
     { key: "calendar", items: buildEventResults(q), cap: contentCap },
     { key: "databases", items: buildDatabaseResults(q), cap: contentCap },
+    { key: "ai", items: buildAIConversationResults(q), cap: contentCap },
     { key: "themes", items: buildThemeResults(q), cap: 5 }
   ];
 
@@ -561,7 +756,7 @@ function buildAllResults(query) {
     let scored = group.items.map(function (item) {
       const base = scoreMatch(cmdSearchText(item.title, item.sub, item.keywords), q);
       const titleBoost = q && normalizeCmdText(item.title).startsWith(q) ? 18 : 0;
-      return { item: item, score: base + titleBoost - groupIndex * 0.01 };
+      return { item: item, score: base + titleBoost + (item.priority || 0) - groupIndex * 0.01 };
     }).filter(function (entry) {
       return q ? entry.score >= minScore : entry.score > 0;
     });
@@ -599,14 +794,17 @@ function renderCmdResults() {
 
   let html = "";
   let index = 0;
+  const queryText = normalizeCmdText(query);
+  html += '<div class="cmd-search-summary"><div><strong>' + cmdEsc(queryText ? all.length + " results" : "Universal Search") + '</strong><span>' + cmdEsc(queryText ? "Searching pages, widgets, files, notes, tasks, plugins, AI and Marketplace." : "Type to search ETHONE or run an action.") + '</span></div><kbd>Enter</kbd></div>';
   sections.forEach(function (section) {
-    html += '<div class="cmd-section-label">' + cmdEsc(section.label) + '</div>';
+    html += '<div class="cmd-section-label"><span>' + cmdEsc(section.label) + '</span><small>' + section.items.length + '</small></div>';
     section.items.forEach(function (item) {
       const selected = index === _cmdSelectedIdx;
       const enabled = isCmdItemEnabled(item);
-      html += '<div class="cmd-item' + (selected ? " selected" : "") + (!enabled ? " is-disabled" : "") + '" data-idx="' + index + '" onmousedown="event.preventDefault();executeCmdItem(' + index + ')" onmouseover="_cmdSelectedIdx=' + index + ';renderCmdResults()">' +
+      html += '<div class="cmd-item' + (selected ? " selected" : "") + (!enabled ? " is-disabled" : "") + '" data-category="' + cmdEsc(item.category || section.key) + '" data-idx="' + index + '" onmousedown="event.preventDefault();executeCmdItem(' + index + ')" onmouseover="_cmdSelectedIdx=' + index + ';renderCmdResults()">' +
         '<div class="cmd-item-icon">' + cmdEsc(item.icon || "Go") + '</div>' +
         '<div class="cmd-item-main"><div class="cmd-item-label">' + cmdEsc(item.title) + '</div>' + (item.sub ? '<div class="cmd-item-sub">' + cmdEsc(item.sub) + '</div>' : "") + '</div>' +
+        '<div class="cmd-item-meta"><span>' + cmdEsc(item.badge || cmdCategoryLabel(item.category || section.key)) + '</span>' + (item.detail ? '<small>' + cmdEsc(item.detail) + '</small>' : "") + '</div>' +
         (item.kbd ? '<span class="cmd-item-kbd">' + cmdEsc(item.kbd) + '</span>' : "") +
         (!enabled ? '<span class="cmd-item-tag">' + cmdEsc(cmdLabel("unavailable", "Unavailable")) + '</span>' : "") +
       '</div>';
@@ -630,7 +828,7 @@ function executeCmdItem(index) {
   requestAnimationFrame(function () {
     const Actions = window.Ethone && window.Ethone.get("actions");
     if (Actions) Actions.dispatch(item.id, item.context);
-    else console.warn("[ETHONE cmd-palette] Action registry unavailable");
+    else if (typeof window.toast === "function") window.toast("Commandes indisponibles pour le moment.", "warning");
   });
 }
 
@@ -705,6 +903,26 @@ function focusIntegration(id) {
   }, 220);
 }
 
+function runIntegrationHubAction(id, action) {
+  focusIntegration(id);
+  if (action === "open" || action === "settings") return;
+  setTimeout(function () {
+    try {
+      const hub = window.ethoneIntegrationHub;
+      if (hub && typeof hub[action] === "function") {
+        hub[action](id);
+        return;
+      }
+      const selector = '[data-ih-action="' + action + '"][data-ih-id="' + id + '"]';
+      const btn = document.querySelector(selector);
+      if (btn && !btn.disabled) btn.click();
+      else cmdToast("Action indisponible pour cette integration.", "info");
+    } catch (e) {
+      cmdToast("Impossible d'executer cette action pour le moment.", "error");
+    }
+  }, 240);
+}
+
 function openWidgetSearch(widgetType) {
   openSettingsTab("widgets");
   setTimeout(function () {
@@ -714,6 +932,86 @@ function openWidgetSearch(widgetType) {
       input.dispatchEvent(new Event("input", { bubbles: true }));
     }
   }, 160);
+}
+
+function openServiceWidgetCreator(widgetType, query) {
+  try {
+    if (window.ETHONEWidgetMarketplace && typeof window.ETHONEWidgetMarketplace.open === "function") {
+      window.ETHONEWidgetMarketplace.open();
+      setTimeout(function () {
+        if (typeof window.ETHONEWidgetMarketplace.search === "function") window.ETHONEWidgetMarketplace.search(query || widgetType || "");
+        const input = document.getElementById("wm-search-input");
+        if (input) {
+          input.value = query || widgetType || "";
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+          input.focus({ preventScroll: true });
+        }
+      }, 180);
+      return;
+    }
+  } catch (e) {}
+  openWidgetSearch(widgetType);
+}
+
+function addWidgetToDashboard(widgetType) {
+  cmdGo("dashboard");
+  setTimeout(function () {
+    const Actions = cmdActions();
+    let widgetExists = false;
+    try {
+      const registry = window.Ethone && window.Ethone.get && window.Ethone.get("widgets");
+      widgetExists = !!(registry && typeof registry.get === "function" && registry.get(widgetType));
+    } catch (e) {}
+    if (!widgetExists) {
+      openServiceWidgetCreator(widgetType, widgetType);
+      return;
+    }
+    const fakeEl = document.createElement("button");
+    fakeEl.dataset.widgetType = widgetType || "";
+    if (Actions && typeof Actions.has === "function" && Actions.has("dashboard.edit.addWidgetType")) {
+      const ok = Actions.dispatch("dashboard.edit.addWidgetType", { source: "command-palette", el: fakeEl, widgetType: widgetType });
+      if (ok) {
+        cmdToast("Widget ajoute au dashboard.", "success");
+        return;
+      }
+    }
+    openServiceWidgetCreator(widgetType, widgetType);
+  }, 180);
+}
+
+function openMarketplaceSearch(query, category) {
+  cmdGo("marketplace");
+  setTimeout(function () {
+    try {
+      if (window.ETHONEMarketplace && typeof window.ETHONEMarketplace.search === "function") window.ETHONEMarketplace.search(query || "");
+    } catch (e) {}
+    const input = document.querySelector('[id^="mp41-search-"]');
+    if (input) {
+      input.value = query || "";
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.focus({ preventScroll: true });
+    }
+    if (category) {
+      const wanted = normalizeCmdText(category);
+      const tab = Array.prototype.find.call(document.querySelectorAll("[data-mp41-category]"), function (node) {
+        return normalizeCmdText(node.dataset.mp41Category || node.textContent) === wanted;
+      });
+      if (tab) tab.click();
+    }
+  }, 220);
+}
+
+function openAIConversation(ctx) {
+  cmdGo("ai");
+  setTimeout(function () {
+    if (ctx && ctx.source === "legacy" && ctx.sessionId != null && typeof loadAISession === "function") {
+      loadAISession(ctx.sessionId);
+      return;
+    }
+    if (typeof toggleAISessions === "function") toggleAISessions();
+    focusAIInput();
+    if (ctx && ctx.conversationId != null) cmdToast("Conversation AI Core ouverte dans ETHONE AI.", "info");
+  }, 180);
 }
 
 function openPluginSearch(pluginId) {
@@ -754,8 +1052,16 @@ function registerSearchActions() {
   } });
 
   Actions.register("search.integration.open", { handler: function (ctx) { focusIntegration(ctx && ctx.integrationId); } });
+  Actions.register("search.integration.settings", { handler: function (ctx) { runIntegrationHubAction(ctx && ctx.integrationId, "settings"); } });
+  Actions.register("search.integration.connect", { handler: function (ctx) { runIntegrationHubAction(ctx && ctx.integrationId, "connect"); } });
+  Actions.register("search.integration.disconnect", { handler: function (ctx) { runIntegrationHubAction(ctx && ctx.integrationId, "disconnect"); } });
+  Actions.register("search.integration.refresh", { handler: function (ctx) { runIntegrationHubAction(ctx && ctx.integrationId, "refresh"); } });
   Actions.register("search.plugin.open", { handler: function (ctx) { openPluginSearch(ctx && ctx.pluginId); } });
   Actions.register("search.widget.open", { handler: function (ctx) { openWidgetSearch(ctx && ctx.widgetType); } });
+  Actions.register("search.widget.createService", { handler: function (ctx) { openServiceWidgetCreator(ctx && ctx.widgetType, ctx && ctx.query); } });
+  Actions.register("search.widget.addDashboard", { handler: function (ctx) { addWidgetToDashboard(ctx && ctx.widgetType); } });
+  Actions.register("search.marketplace.openItem", { handler: function (ctx) { openMarketplaceSearch((ctx && (ctx.query || ctx.itemId)) || "", ctx && ctx.category); } });
+  Actions.register("search.ai.conversation.open", { handler: function (ctx) { openAIConversation(ctx || {}); } });
 
   Actions.register("search.notes.open", { handler: function (ctx) {
     cmdGo("notes");
@@ -839,6 +1145,16 @@ window.onCmdInput = onCmdInput;
 window.handleCmdKey = handleCmdKey;
 window.executeCmdItem = executeCmdItem;
 window.renderCmdResults = renderCmdResults;
+window.ETHONEUniversalSearch = {
+  search: function (query) { return buildAllResults(query || ""); },
+  score: fuzzyScore,
+  normalize: normalizeCmdText,
+  open: openCmdPalette,
+  openSpotlight: openSpotlightSearch,
+  sources: function () {
+    return ["actions", "integrations", "widgets", "marketplace", "plugins", "pages", "settings", "workspaces", "notes", "tasks", "files", "habits", "calendar", "databases", "ai"];
+  }
+};
 
 document.addEventListener("keydown", function (event) {
   if (window.ETHONEKeyboardShortcuts && window.ETHONEKeyboardShortcuts.isEnabled && window.ETHONEKeyboardShortcuts.isEnabled()) return;

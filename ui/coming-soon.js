@@ -6,6 +6,7 @@
   var STORE_KEY="ethone:coming-soon-notify";
   var scanTimer=0;
   var pendingRoots=[];
+  var suppressMutationScanUntil=0;
 
   function esc(value){
     return String(value==null?"":value).replace(/[&<>"]/g,function(ch){
@@ -27,7 +28,6 @@
         return;
       }
     }catch(e){}
-    console.info("[ETHONE Coming Soon]",message);
   }
   function readList(){
     try{
@@ -152,8 +152,8 @@
     scanTimer=setTimeout(function(){
       var roots=pendingRoots.splice(0,pendingRoots.length);
       if(!roots.length)roots=[document];
-      roots.slice(0,80).forEach(function(item){scan(item||document);});
-    },40);
+      roots.slice(0,24).forEach(function(item){scan(item||document);});
+    },160);
   }
   function handleComingSoon(el,event){
     if(!el)return false;
@@ -206,6 +206,7 @@
     },true);
     try{
       var observer=new MutationObserver(function(mutations){
+        if(Date.now()<suppressMutationScanUntil||document.body.classList.contains("ethone-dashboard-booting"))return;
         mutations.forEach(function(mutation){
           Array.prototype.forEach.call(mutation.addedNodes||[],function(node){
             if(node&&node.nodeType===1)scheduleScan(node);
@@ -215,7 +216,12 @@
       observer.observe(document.documentElement,{childList:true,subtree:true});
     }catch(e){}
     window.addEventListener("ethone:page-ready",function(){scheduleScan(document);});
-    window.addEventListener("ethone:dashboard-ready",function(){scheduleScan(document);});
+    window.addEventListener("ethone:dashboard-ready",function(){
+      suppressMutationScanUntil=Date.now()+3000;
+      setTimeout(function(){
+        scheduleScan(document.querySelector(".tab-content.active")||document.getElementById("main-content")||document);
+      },3400);
+    });
     registerActionBridge();
     scan(document);
   }

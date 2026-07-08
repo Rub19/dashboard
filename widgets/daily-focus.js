@@ -1,5 +1,5 @@
 ﻿/* ETHONE legacy compatibility module: daily-focus. */
-// â•â• FOCUS DU JOUR â•â•
+// FOCUS DU JOUR
 function renderDailyFocus(){
   const p=curP();if(!p)return;
   const today=new Date().toLocaleDateString('en-CA');
@@ -44,7 +44,7 @@ function editDailyFocus(){
   display.innerHTML=`<input id="daily-focus-input" value="${escapeHTML(current)}" placeholder="Mon objectif pour aujourd'hui..."
     style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:6px 10px;color:var(--text);font-family:var(--font);font-size:13px;outline:none">
     <button onclick="saveDailyFocus()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:6px 14px;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap">OK</button>
-    <button onclick="const d=document.getElementById('daily-focus-display');if(d)d.innerHTML=dailyFocusMarkup();renderDailyFocus();" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0 4px">âœ•</button>`;
+    <button onclick="const d=document.getElementById('daily-focus-display');if(d)d.innerHTML=dailyFocusMarkup();renderDailyFocus();" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0 4px">&times;</button>`;
   const inp=document.getElementById('daily-focus-input');
   if(inp){inp.focus();inp.select();inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();saveDailyFocus();}});}
 }
@@ -71,7 +71,7 @@ function toggleDailyFocusDone(){
   p.state.dailyFocus.done=!p.state.dailyFocus.done;
   if(p.state.dailyFocus.done){
     addActivity('Objectif du jour accompli !','#4ade80','task');
-    toast('ðŸŽ¯ Objectif accompli !','success');
+    toast('Objectif accompli !','success');
   }
   renderDailyFocus();
   saveStateNow();
@@ -101,7 +101,7 @@ function renderPomo(){
 
   // Mode badge
   const badge=document.getElementById('pomo-mode-badge');
-  if(badge)badge.textContent=mode.label.toUpperCase()+(pomoIdx===0?' Â· SESSION '+(pomoCount+1):'');
+  if(badge)badge.textContent=mode.label.toUpperCase()+(pomoIdx===0?' - SESSION '+(pomoCount+1):'');
 
   // Ring progress + color + pulse
   const ring=document.getElementById('pomo-ring');
@@ -167,10 +167,10 @@ function renderPomoStats(){
   const mode=POMO_MODES()[pomoIdx];
 
   container.innerHTML=[
-    {label:'Today',   val:todaySessions, extra:'ðŸ…', color:mode.ring},
+    {label:'Today',   val:todaySessions, extra:'', color:mode.ring},
     {label:'Total',   val:totalSessions, extra:'', color:'var(--text)'},
     {label:'Focus',   val:totalMins>=60?(totalMins/60).toFixed(1)+'h':totalMins+'m', extra:'', color:'#34d399'},
-    {label:'Streak',  val:streak,        extra:'ðŸ”¥', color:'#fbbf24'},
+    {label:'Streak',  val:streak,        extra:'', color:'#fbbf24'},
   ].map(s=>`<div class="pomo-stat-cell">
     <div class="pomo-stat-val">${s.val}${s.extra}</div>
     <div class="pomo-stat-lbl">${s.label}</div>

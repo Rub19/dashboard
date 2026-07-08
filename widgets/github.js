@@ -151,6 +151,32 @@ async function refreshGithub(){
       return [{sha:'',msg:`Push → ${e.repo?.name?.split('/')[1]||''}`,repo:e.repo?.name?.split('/')[1]||'',date:new Date(e.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})}];
     }).slice(0,8);
 
+    if(!p.state.connections)p.state.connections={};
+    if(!p.state.connections.github)p.state.connections.github={username};
+    Object.assign(p.state.connections.github,{
+      username,
+      user:{
+        name:user.name||username,
+        avatar_url:user.avatar_url||'',
+        public_repos:user.public_repos||0,
+        followers:user.followers||0,
+        following:user.following||0
+      },
+      events,
+      repos:repos.map(r=>({
+        name:r.name,
+        html_url:r.html_url,
+        language:r.language,
+        stargazers_count:r.stargazers_count||0,
+        forks_count:r.forks_count||0,
+        pushed_at:r.pushed_at
+      })),
+      commits,
+      lastSync:Date.now(),
+      status:'connected'
+    });
+    saveStateNow();
+
     content.innerHTML=`
       <!-- Profile card -->
       <div class="grid-2" style="margin-bottom:16px">

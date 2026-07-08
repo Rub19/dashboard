@@ -40,7 +40,7 @@ function getDefaultNav(){return [
   {id:'stats',icon:'stats',label:t('nav_stats'),section:'main',badge:'',group:'core'},
   {id:'activity',icon:'timeline',label:'Activity',section:'main',badge:'',group:'smart'},
   {id:'health',icon:'health',label:'Health',section:'main',badge:'',group:'smart'},
-  {id:'versions',icon:'versions',label:'Versions',section:'main',badge:'',group:'smart'},
+  {id:'versions',icon:'versions',label:'Version Center',section:'main',badge:'',group:'smart'},
   {id:'studio',icon:'studio',label:'Studio',section:'main',badge:'Create',group:'smart'},
   {id:'marketplace',icon:'marketplace',label:'Marketplace',section:'main',badge:'',group:'extras'},
   {id:'github',icon:'github',label:t('nav_github'),section:'main',badge:'',group:'extras'},

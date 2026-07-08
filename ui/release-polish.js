@@ -18,10 +18,13 @@
   function schedule(){
     if(scheduled)return;
     scheduled=true;
-    requestAnimationFrame(function(){
-      scheduled=false;
-      apply();
-    });
+    setTimeout(function(){
+      requestAnimationFrame(function(){
+        scheduled=false;
+        if(document.body&&document.body.classList.contains("ethone-dashboard-booting"))return schedule();
+        apply();
+      });
+    },document.body&&document.body.classList.contains("ethone-dashboard-booting")?520:180);
   }
 
   function detectInputMode(){
@@ -98,7 +101,10 @@
       el.classList.add("ethone-action-unavailable");
       setTimeout(function(){el.classList.remove("ethone-action-unavailable")},700);
       notify("Action indisponible pour le moment. Recharge ETHONE si le problème persiste.","warning");
-      try{console.warn("[ETHONE quality] Missing action handler:",missing.join(", "),el)}catch(e){}
+      try{
+        window.__ethoneMissingActionWarnings=(window.__ethoneMissingActionWarnings||[]).slice(-30);
+        window.__ethoneMissingActionWarnings.push({handlers:missing,element:(el.textContent||el.title||el.id||"action").trim().slice(0,80),at:new Date().toISOString()});
+      }catch(e){}
     },true);
   }
 
@@ -227,7 +233,7 @@
     window.addEventListener("ethone:page-ready",schedule);
     window.addEventListener("resize",schedule,{passive:true});
     document.addEventListener("click",schedule,true);
-    try{new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["class","style","aria-busy","data-loading"]});}catch(e){}
+    try{new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true});}catch(e){}
   }
 
   window.ethoneReleasePolish={apply:apply,report:report};

@@ -32,7 +32,6 @@
   function fr(){return lang()==="fr"}
   function toast(msg,type){
     if(typeof window.toast==="function"){try{window.toast(msg,type||"info");return}catch(e){}}
-    console.log("[ETHONE]",msg);
   }
   function profileState(){
     try{const p=typeof window.curP==="function"?window.curP():null;return p&&p.state?p.state:{}}catch(e){return {}}
@@ -415,6 +414,22 @@
     window.ethoneOS2SetTheme=function(v){state.theme=v||"default";save();applyState()};
     window.ethoneOS2Audit=function(){return {state,facts:facts(),pages:$$(".tab-content").length,widgets:$$(".ethone-os2-widget").length}};
   }
+  function dashboardActive(){
+    const page=$("#page-dashboard");
+    return !!(page&&page.classList.contains("active"));
+  }
+  let mutationTimer=0;
+  function scheduleDashboardSync(){
+    if(!dashboardActive())return;
+    clearTimeout(mutationTimer);
+    mutationTimer=setTimeout(()=>{
+      if(!dashboardActive())return;
+      makeTopbar();
+      addOps();
+      enhanceWidgets();
+      applyState();
+    },120);
+  }
   function run(){
     ensurePages();
     makeTopbar();
@@ -433,8 +448,8 @@
     if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run,{once:true});else run();
     setTimeout(run,300);
     setTimeout(run,1200);
-    setInterval(()=>{if($("#page-dashboard")){renderOps();renderDock()}},30000);
-    try{new MutationObserver(()=>{if($("#page-dashboard")){makeTopbar();addOps();enhanceWidgets();applyState()}}).observe(document.body,{childList:true,subtree:true})}catch(e){}
+    setInterval(()=>{if(dashboardActive()){renderOps();renderDock()}},30000);
+    try{new MutationObserver(scheduleDashboardSync).observe(document.body,{childList:true,subtree:true})}catch(e){}
   }
   if(window.ethoneRunWhenDashboardReady)window.ethoneRunWhenDashboardReady("dashboard-os2",startOS2);else startOS2();
 })();

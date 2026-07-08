@@ -7,6 +7,18 @@
 */
 
 function _stEsc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m];});}
+var __settingsConfirmMap={};
+function _stTwoStep(key,message){
+  var now=Date.now();
+  if(!__settingsConfirmMap[key]||now-__settingsConfirmMap[key]>5000){
+    __settingsConfirmMap[key]=now;
+    if(typeof toast==='function')toast(message,'warning');
+    return false;
+  }
+  delete __settingsConfirmMap[key];
+  return true;
+}
+function _stAutoName(prefix,count){return prefix+' '+String((count||0)+1);}
 
 /* openSettingsTab is defined once in components/command-palette.js — reused here,
    not redeclared, to avoid two competing definitions racing on script load order. */
@@ -24,7 +36,7 @@ window.renderGeneralSettings=renderGeneralSettings;
 // ================= WORKSPACES =================
 function wsEnsure(p){
   if(!Array.isArray(p.workspaces)||!p.workspaces.length){
-    p.workspaces=[{id:'personal',name:(window._lang||'fr')==='fr'?'Personnel':'Personal',icon:'🏠'}];
+    p.workspaces=[{id:'personal',name:(window._lang||'fr')==='fr'?'Personnel':'Personal',icon:'PE'}];
   }
   if(!p.activeWorkspaceId)p.activeWorkspaceId=p.workspaces[0].id;
   return p.workspaces;
@@ -49,8 +61,8 @@ function renderWorkspacesSettings(){
 function wsCreate(){
   var p=curP();if(!p)return;
   var list=wsEnsure(p);
-  var name=prompt('Workspace name:');if(!name)return;
-  var icons=['🏠','💼','🎮','📚','🎨','🚀'];
+  var name=_stAutoName('Workspace',list.length);
+  var icons=['PE','WK','GM','ST','CR','DV'];
   list.push({id:'ws-'+Date.now().toString(36),name:name.slice(0,40),icon:icons[list.length%icons.length]});
   saveStateNow();renderWorkspacesSettings();
   if(typeof toast==='function')toast('Workspace created','success');
@@ -73,7 +85,7 @@ function wsSwitch(id){
 }
 function wsDelete(id){
   var p=curP();if(!p)return;
-  if(!confirm('Delete this workspace?'))return;
+  if(!_stTwoStep('workspace-delete-'+id,'Click Delete again to remove this workspace.'))return;
   p.workspaces=(p.workspaces||[]).filter(function(x){return x.id!==id;});
   if(p.activeWorkspaceId===id&&p.workspaces.length)wsSwitch(p.workspaces[0].id);
   saveStateNow();renderWorkspacesSettings();
@@ -106,7 +118,8 @@ function renderWorkspacesSettingsV2(){
   }).join('');
 }
 function wsCreateV2(){
-  var name=prompt('Workspace name:');if(!name)return;
+  var current=window.ETHONEWorkspaces&&window.ETHONEWorkspaces.all?window.ETHONEWorkspaces.all():((curP()&&curP().workspaces)||[]);
+  var name=_stAutoName('Workspace',current.length);
   if(window.ETHONEWorkspaces&&window.ETHONEWorkspaces.create)window.ETHONEWorkspaces.create({name:name.slice(0,40),label:name.slice(0,40)});
   else {var p=curP();if(!p)return;var list=wsEnsureV2(p);list.push({id:'ws-'+Date.now().toString(36),name:name.slice(0,40),icon:'layout-grid'});saveStateNow();}
   renderWorkspacesSettingsV2();
@@ -128,7 +141,7 @@ function wsAccentV2(id,val){
   if(window.ETHONEWorkspaces&&window.ETHONEWorkspaces.update)window.ETHONEWorkspaces.update(id,{accent:val});
 }
 function wsDeleteV2(id){
-  if(!confirm('Delete this workspace?'))return;
+  if(!_stTwoStep('workspace-delete-v2-'+id,'Click Delete again to remove this workspace.'))return;
   if(window.ETHONEWorkspaces&&window.ETHONEWorkspaces.remove)window.ETHONEWorkspaces.remove(id);
   else {var p=curP();if(!p)return;p.workspaces=(p.workspaces||[]).filter(function(x){return x.id!==id;});if(p.activeWorkspaceId===id&&p.workspaces.length)wsSwitchV2(p.workspaces[0].id);saveStateNow();}
   renderWorkspacesSettingsV2();
@@ -180,7 +193,7 @@ function renderWidgetsSettings(){
         var cat=Widgets.get(t);
         var count=instances.filter(function(w){return w.type===t;}).length;
         var atMax=count>=(cat.maxInstances||Infinity);
-        return '<button class="btn btn-ghost" style="font-size:12px;padding:10px" '+(atMax?'disabled':'')+' onclick="widgetsAdd(\''+t+'\')">'+_stEsc(cat.label||t)+(atMax?' ✓':' +')+'</button>';
+        return '<button class="btn btn-ghost" style="font-size:12px;padding:10px" '+(atMax?'disabled':'')+' onclick="widgetsAdd(\''+t+'\')">'+_stEsc(cat.label||t)+(atMax?' Added':' +')+'</button>';
       }).join('');
     }
   }
@@ -194,7 +207,7 @@ function widgetsAdd(type){
   prefs.instances.push({instanceId:type+'-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6),type:type,size:Object.assign({},cat.defaultSize||{col:2,row:1}),locked:false,config:{}});
   widgetsSaveLayout(prefs);
   renderWidgetsSettings();
-  if(typeof toast==='function')toast('Widget added — open the dashboard to see it','success');
+  if(typeof toast==='function')toast('Widget added - open the dashboard to see it','success');
 }
 function widgetsRemove(instanceId){
   var prefs=widgetsLayout();
@@ -214,7 +227,7 @@ function widgetsToggleVisibility(instanceId,visible){
   if(typeof toast==='function')toast(visible?'Widget visible':'Widget hidden','success');
 }
 function widgetsReset(){
-  if(!confirm('Reset the dashboard layout to defaults?'))return;
+  if(!_stTwoStep('widgets-reset','Click Reset again to restore the default dashboard layout.'))return;
   widgetsSaveLayout({});
   renderWidgetsSettings();
   if(typeof toast==='function')toast('Layout reset — open the dashboard to see it','success');
@@ -223,18 +236,18 @@ window.widgetsAdd=widgetsAdd;window.widgetsRemove=widgetsRemove;window.widgetsTo
 
 // ================= PLUGINS =================
 var PLUGIN_DEFS=[
-  {id:'discord',label:'Discord',icon:'🎮',real:true},
-  {id:'spotify',label:'Spotify',icon:'🎵',real:true},
-  {id:'steam',label:'Steam',icon:'🕹️',real:true},
-  {id:'twitch',label:'Twitch',icon:'📺',real:true},
-  {id:'lastfm',label:'Last.fm',icon:'🎧',real:true},
-  {id:'github',label:'GitHub',icon:'💻',real:true},
-  {id:'valorant',label:'Valorant',icon:'🎯',real:true,custom:true},
-  {id:'googlecalendar',label:'Google Calendar',icon:'📅',real:false},
-  {id:'googledrive',label:'Google Drive',icon:'📁',real:false},
-  {id:'obs',label:'OBS',icon:'🎬',real:false},
-  {id:'youtube',label:'YouTube',icon:'▶️',real:false},
-  {id:'battlenet',label:'Battle.net',icon:'⚔️',real:false}
+  {id:'discord',label:'Discord',icon:'DI',real:true},
+  {id:'spotify',label:'Spotify',icon:'SP',real:true},
+  {id:'steam',label:'Steam',icon:'ST',real:true},
+  {id:'twitch',label:'Twitch',icon:'TW',real:true},
+  {id:'lastfm',label:'Last.fm',icon:'FM',real:true},
+  {id:'github',label:'GitHub',icon:'GH',real:true},
+  {id:'valorant',label:'Valorant',icon:'VA',real:true,custom:true},
+  {id:'googlecalendar',label:'Google Calendar',icon:'GC',real:false},
+  {id:'googledrive',label:'Google Drive',icon:'GD',real:false},
+  {id:'obs',label:'OBS',icon:'OB',real:false},
+  {id:'youtube',label:'YouTube',icon:'YT',real:false},
+  {id:'battlenet',label:'Battle.net',icon:'BN',real:false}
 ];
 function renderPluginsSettings(){
   var p=curP();if(!p)return;
@@ -258,7 +271,7 @@ function renderPluginsSettings(){
 function pluginUninstall(id){
   var p=curP();if(!p||!p.state.connections)return;
   var def=PLUGIN_DEFS.find(function(d){return d.id===id;});
-  if(!confirm('Disconnect '+(def?def.label:id)+'? You can reconnect it any time from Connexions.'))return;
+  if(!_stTwoStep('plugin-uninstall-'+id,'Click Uninstall again to disconnect '+(def?def.label:id)+'.'))return;
   delete p.state.connections[id];
   saveStateNow();
   renderPluginsSettings();
@@ -287,7 +300,7 @@ window.renderBrainSettings=renderBrainSettings;
 // ================= AUTOMATION =================
 function auRuleLabel(r){
   var trig=r.triggerType==='dailyTime'?('At '+r.triggerValue+' every day'):('Every '+r.triggerValue+' completed tasks');
-  return trig+' → show reminder: "'+r.actionValue+'"';
+  return trig+' -> show reminder: "'+r.actionValue+'"';
 }
 function renderAutomationSettings(){
   var p=curP();if(!p)return;
@@ -306,9 +319,9 @@ function renderAutomationSettings(){
 function automationCreate(){
   var p=curP();if(!p)return;
   if(!Array.isArray(p.state.automationRules))p.state.automationRules=[];
-  var triggerType=confirm('OK = daily time trigger. Cancel = completed-task-count trigger.')?'dailyTime':'taskCount';
-  var triggerValue=triggerType==='dailyTime'?(prompt('Time (HH:MM):','09:00')||'09:00'):(prompt('Number of completed tasks:','5')||'5');
-  var actionValue=prompt('Reminder message to show:','Reminder!')||'Reminder!';
+  var triggerType='dailyTime';
+  var triggerValue='09:00';
+  var actionValue='Daily reminder';
   p.state.automationRules.push({id:'rule-'+Date.now().toString(36),triggerType:triggerType,triggerValue:triggerValue,actionType:'toast',actionValue:actionValue,enabled:true,lastFired:null});
   saveStateNow();renderAutomationSettings();
   if(typeof toast==='function')toast('Rule created','success');
@@ -453,9 +466,9 @@ function devSetDebug(val){
   if(typeof toast==='function')toast(val?'Verbose logging enabled':'Verbose logging disabled','info');
 }
 function devClearCaches(){
-  if(!confirm('Clear local caches (Marketplace cache, AI Core cache)? This does not delete your profile data.'))return;
+  if(!_stTwoStep('dev-clear-caches','Click Clear caches again to clear Marketplace and AI Core caches.'))return;
   ['ethone:marketplace-41','ethone:ai-core'].forEach(function(k){try{localStorage.removeItem(k);}catch(e){}});
-  if(typeof toast==='function')toast('Local caches cleared — reload the page','success');
+  if(typeof toast==='function')toast('Local caches cleared - reload the page','success');
 }
 window.renderDeveloperSettings=renderDeveloperSettings;window.devSetDebug=devSetDebug;window.devClearCaches=devClearCaches;
 
@@ -502,7 +515,7 @@ function backupRestore(evt){
     try{
       var parsed=JSON.parse(reader.result);
       if(!Array.isArray(parsed)||!parsed.length)throw new Error('bad format');
-      if(!confirm('Replace ALL local profiles with this backup file? This cannot be undone.')){evt.target.value='';return;}
+      if(!_stTwoStep('backup-restore','Click restore again and select the file again to replace local profiles.')){evt.target.value='';return;}
       profiles=parsed;
       if(typeof normalizeAllProfiles==='function')normalizeAllProfiles();
       saveStateNow();

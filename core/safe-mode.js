@@ -37,8 +37,56 @@
       return cs.display!=="none"&&cs.visibility!=="hidden"&&rect.width>20&&rect.height>20;
     }catch(e){return false}
   };
+  var dashboardReadyQueue=[];
+  var dashboardReadyFlushing=false;
+  var homeRendererKey={
+    "dashboard-v4":"dashboard-v4",
+    "home-commercial":"home-commercial",
+    "experience-2026-redesign":"experience-2026-redesign",
+    "v2-product-redesign":"v2-product-redesign",
+    "personal-os-vision":"personal-os-vision",
+    "dashboard-os2":"dashboard-os2"
+  };
+  function readLocal(key,fallback){
+    try{var value=localStorage.getItem(key);return value==null?fallback:value}catch(e){return fallback}
+  }
+  function preferredHomeRenderer(){
+    var preferred=readLocal("ethone:home-renderer","dashboard-v4");
+    return homeRendererKey[preferred]?preferred:"dashboard-v4";
+  }
+  function shouldSkipDashboardReady(key){
+    if(!key)return false;
+    if(homeRendererKey[key]&&key!==preferredHomeRenderer())return true;
+    return false;
+  }
+  function dashboardReadyDelay(key){
+    if(key==="dashboard-v4")return 0;
+    if(key==="enterprise-2026-runtime")return 120;
+    if(key==="release-polish")return 180;
+    if(key==="desktop-environment")return 260;
+    if(key==="permanent-dock")return 340;
+    if(key==="status-bar")return 420;
+    return 160;
+  }
+  function enqueueDashboardReady(key,run){
+    dashboardReadyQueue.push({key:key,run:run});
+    if(dashboardReadyFlushing)return;
+    dashboardReadyFlushing=true;
+    function next(){
+      var item=dashboardReadyQueue.shift();
+      if(!item){dashboardReadyFlushing=false;return}
+      setTimeout(function(){
+        try{item.run()}finally{setTimeout(next,70)}
+      },dashboardReadyDelay(item.key));
+    }
+    setTimeout(next,0);
+  }
   window.ethoneRunWhenDashboardReady=function(key,fn){
     if(typeof fn!=="function")return;
+    if(shouldSkipDashboardReady(key)){
+      window["__ethoneBootDeferred_"+key]=true;
+      return;
+    }
     var doneKey="__ethoneBootDeferred_"+key;
     if(window[doneKey])return;
     function run(){
@@ -46,17 +94,17 @@
       window[doneKey]=true;
       try{fn()}catch(error){setTimeout(function(){throw error},0)}
     }
-    if(window.ethoneIsDashboardVisible())return run();
+    if(window.ethoneIsDashboardVisible())return enqueueDashboardReady(key,run);
     var started=Date.now();
     var timer=setInterval(function(){
       if(window.ethoneIsDashboardVisible()||Date.now()-started>45000){
         clearInterval(timer);
-        run();
+        enqueueDashboardReady(key,run);
       }
     },600);
     window.addEventListener("ethone:dashboard-ready",function(){
       clearInterval(timer);
-      run();
+      enqueueDashboardReady(key,run);
     },{once:true});
   };
   window.ethoneIsPageVisible=function(page){
@@ -80,7 +128,11 @@
       try{fn()}catch(error){setTimeout(function(){throw error},0)}
     }
     if(ready())return run();
-    var timer=setInterval(function(){if(ready()){clearInterval(timer);run()}},700);
+    var started=Date.now();
+    var timer=setInterval(function(){
+      if(ready()){clearInterval(timer);run();return}
+      if(Date.now()-started>60000)clearInterval(timer);
+    },900);
     window.addEventListener("ethone:page-ready",function(event){
       if(event&&event.detail&&pages.indexOf(event.detail.page)>-1){clearInterval(timer);run()}
     });

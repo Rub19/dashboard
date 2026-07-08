@@ -66,6 +66,8 @@ async function loadCloudState(){
           backupSnapshots:s.backupSnapshots||[],
           backupHistory:s.backupHistory||[],
           backupMeta:s.backupMeta||null,
+          ethoneCloud:s.ethoneCloud||null,
+          ethoneCloudMeta:s.ethoneCloudMeta||null,
         }
       };
     });

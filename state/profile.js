@@ -171,6 +171,7 @@ function toggleManageMode(){managingMode=!managingMode;renderProfileScreen()}
 
 function enterDashboard(id){
   normalizeAllProfiles(); setEthoneMode('dashboard');
+  try{if(window.ETHONEBootSequence)window.ETHONEBootSequence.prepareDashboardMount();}catch(e){}
   currentId=id;
   // Reinit global caches for new profile
   _valoMatchCache={};
@@ -183,10 +184,11 @@ function enterDashboard(id){
     screen.style.opacity=''; screen.style.transition='';
     document.getElementById('main-sidebar').style.display='flex';document.getElementById('main-sidebar').style.visibility='visible';
     document.getElementById('main-content').style.display='block';document.getElementById('main-content').style.visibility='visible';
-    renderSidebarNav(); updateSidebarAvatar(); applyI18n();
-    initDashboard();
+    try{applyI18n();}catch(e){}
+    try{initDashboard();}catch(error){console.error('[ETHONE boot] Dashboard init failed',error);}
     try{window.dispatchEvent(new Event('ethone:dashboard-ready'))}catch(e){}
     try{window.dispatchEvent(new CustomEvent('ethone:page-ready',{detail:{page:'dashboard'}}))}catch(e){}
+    try{if(window.ETHONEBootSequence)window.ETHONEBootSequence.finishDashboardMount();}catch(e){}
     // Only start ambient bg if no custom bg theme is set
     if(!curP()?.bgTheme||curP()?.bgTheme==='none') setTimeout(startAmbientBg,300);
   },180);

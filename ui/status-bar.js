@@ -271,7 +271,10 @@
         if(typeof window.switchPage==="function")window.switchPage(id==="spotify"?"connections":"dashboard");
       }
     }catch(e){
-      console.warn("[ETHONE Status Bar] action failed",id,e);
+      try{
+        window.__ethoneStatusBarErrors=(window.__ethoneStatusBarErrors||[]).slice(-20);
+        window.__ethoneStatusBarErrors.push({id:id,message:e&&e.message?e.message:String(e),at:new Date().toISOString()});
+      }catch(_){}
     }
   }
   function startTimers(){
@@ -282,7 +285,7 @@
       metrics.lastTick=now;
       refresh();
     },2000));
-    timers.push(setInterval(updateVisibility,700));
+    timers.push(setInterval(updateVisibility,2500));
   }
   function init(){
     build();
@@ -292,7 +295,6 @@
     setTimeout(refresh,80);
     renderIcons();
     setTimeout(renderIcons,500);
-    console.info("[ETHONE Status Bar] ready");
   }
 
   window.ETHONEStatusBar={
@@ -302,6 +304,7 @@
     toggleItem:function(id,value){config.items[id]=value==null?!(config.items[id]!==false):!!value;writeConfig();renderMenu();applyConfig();refresh();renderIcons()}
   };
 
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});
+  if(window.ethoneRunWhenDashboardReady)window.ethoneRunWhenDashboardReady("status-bar",function(){setTimeout(init,420)});
+  else if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});
   else init();
 })();

@@ -299,28 +299,30 @@
     var recommendation=open[0]||events[0]||notes[0];
     var recTitle=recommendation?titleOf(recommendation,tr("capture")):tr("capture");
     var recCopy=open[0]?tr("addTaskCopy"):(events[0]?tr("scheduleTitle"):(notes[0]?tr("contextCopy"):tr("calmCopy")));
-    qs("#vh-greeting",home).textContent=phase()+", "+name+".";
-    qs("#bh-hero-sentence",home).textContent=heroSentence(recommendation);
-    qs("#vh-workspace-top",home).textContent=workspaceName();
-    qs("#vh-sync",home).textContent=navigator.onLine===false?tr("offline"):tr("synced");
-    qs("#vh-avatar",home).textContent=String(name).trim().charAt(0).toUpperCase()||"E";
-    qs("#bh-context-workspace",home).textContent=workspaceName();
-    qs("#bh-context-schedule",home).textContent=events.length+" "+tr("events").toLowerCase();
-    qs("#bh-context-focus",home).textContent=open.length+" "+tr("open").toLowerCase();
-    qs("#bh-context-activity",home).textContent=(done.length+notes.length+items.length)+" "+tr("updated");
-    qs("#bh-summary-copy",home).textContent=briefSentence(done,open,notes,events);
-    qs("#bh-priorities",home).innerHTML=priorityRows(open,events);
-    qs("#bh-upcoming",home).innerHTML=upcomingRows(events);
-    qs("#bh-action-title",home).textContent=recTitle;
-    qs("#bh-action-context",home).textContent=workspaceName()+" · "+(open[0]?(open[0].priority||tr("open")):(events[0]?tr("schedule"):tr("context")));
-    qs("#bh-action-copy",home).textContent=recCopy;
-    qs("#bh-why-list",home).innerHTML='<div class="bh-why-row"><i>✓</i><span>'+esc(recCopy)+'</span></div><div class="bh-why-row"><i>✓</i><span>'+esc(events.length?events.length+" "+tr("events").toLowerCase()+" · "+tr("schedule"):tr("calmCopy"))+'</span></div>';
-    qs("#bh-insights",home).innerHTML=insightsModule(s,todos,habits);
-    qs("#bh-context-list",home).innerHTML=contextModule(notes,items);
-    qs("#bh-automation",home).innerHTML=automationModule(s);
-    qs("#bh-vision",home).innerHTML=visionModule(items);
-    qs("#bh-providers",home).innerHTML=providerModule();
-    qs("#bh-memory",home).innerHTML=memoryModule(notes);
+    function setText(sel,value){var el=qs(sel,home);if(el)el.textContent=value}
+    function setHTML(sel,value){var el=qs(sel,home);if(el)el.innerHTML=value}
+    setText("#vh-greeting",phase()+", "+name+".");
+    setText("#bh-hero-sentence",heroSentence(recommendation));
+    setText("#vh-workspace-top",workspaceName());
+    setText("#vh-sync",navigator.onLine===false?tr("offline"):tr("synced"));
+    setText("#vh-avatar",String(name).trim().charAt(0).toUpperCase()||"E");
+    setText("#bh-context-workspace",workspaceName());
+    setText("#bh-context-schedule",events.length+" "+tr("events").toLowerCase());
+    setText("#bh-context-focus",open.length+" "+tr("open").toLowerCase());
+    setText("#bh-context-activity",(done.length+notes.length+items.length)+" "+tr("updated"));
+    setText("#bh-summary-copy",briefSentence(done,open,notes,events));
+    setHTML("#bh-priorities",priorityRows(open,events));
+    setHTML("#bh-upcoming",upcomingRows(events));
+    setText("#bh-action-title",recTitle);
+    setText("#bh-action-context",workspaceName()+" · "+(open[0]?(open[0].priority||tr("open")):(events[0]?tr("schedule"):tr("context"))));
+    setText("#bh-action-copy",recCopy);
+    setHTML("#bh-why-list",'<div class="bh-why-row"><i>✓</i><span>'+esc(recCopy)+'</span></div><div class="bh-why-row"><i>✓</i><span>'+esc(events.length?events.length+" "+tr("events").toLowerCase()+" · "+tr("schedule"):tr("calmCopy"))+'</span></div>');
+    setHTML("#bh-insights",insightsModule(s,todos,habits));
+    setHTML("#bh-context-list",contextModule(notes,items));
+    setHTML("#bh-automation",automationModule(s));
+    setHTML("#bh-vision",visionModule(items));
+    setHTML("#bh-providers",providerModule());
+    setHTML("#bh-memory",memoryModule(notes));
     try{if(window.lucide&&!window.__lucideFailed)window.lucide.createIcons()}catch(e){}
   }
   function schedule(){clearTimeout(renderTimer);renderTimer=setTimeout(render,70)}

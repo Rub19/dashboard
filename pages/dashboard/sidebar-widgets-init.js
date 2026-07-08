@@ -4,6 +4,14 @@
 // ══════════════════════════════════════════════════════════════
 function initSidebarWidgets(p){
   if(!p)return;
+  if(window.ethoneCanMountUI&&!window.ethoneCanMountUI('widgets-panel')){
+    ['sb-discord-wrap','sb-spotify-wrap','sb-spotify-iframe-wrap','sb-lastfm-wrap','sb-github-wrap','sb-steam-wrap','sb-twitch-wrap'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el)el.style.setProperty('display','none','important');
+    });
+    if(typeof updateLiveSectionVisibility==='function')setTimeout(updateLiveSectionVisibility,50);
+    return;
+  }
   const conn=p.state?.connections||{};
   const setWidgetDisplay=(id,show)=>{
     const el=document.getElementById(id);

@@ -1,4 +1,6 @@
-/* ETHONE legacy compatibility module: activity. */
+/* ETHONE legacy compatibility module: activity.
+ * The old dashboard activity feed now reads from ETHONE Timeline.
+ */
 // ===================================================
 //  ACTIVITY
 // ===================================================
@@ -25,20 +27,36 @@ function renderOverviewEvents(){
   }).join('');
 }
 
-
-function addActivity(text,color='var(--accent)'){
+function addActivity(text,color='var(--accent)',category){
   const p=curP();if(!p)return;
+  if(window.ETHONETimeline&&typeof window.ETHONETimeline.record==='function'){
+    window.ETHONETimeline.record({title:String(text ?? ''),color,category,source:'legacy'});
+    return;
+  }
   const n=new Date(),time=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
   const ts=n.toISOString();
+  if(!p.state.activity)p.state.activity=[];
   p.state.activity.unshift({text:String(text ?? ''),color,time,ts});
   if(p.state.activity.length>50)p.state.activity.pop();
   saveStateNow();renderActivity();
 }
+
 function renderActivity(){
   const list=document.getElementById('activity-list');if(!list)return;
-  const p=curP(),acts=p?(p.state.activity||[]):[];
+  const p=curP();
+  const acts=window.ETHONETimeline&&p?window.ETHONETimeline.items():(p?(p.state.activity||[]):[]);
   if(!acts.length){list.innerHTML='<div class="empty-state"><div class="empty-icon"></div>No activity yet</div>';return}
-  list.innerHTML=acts.slice(0,10).map(a=>'<div class="activity-item"><div class="activity-dot" style="background:'+escapeHTML(a.color||'var(--accent)')+'"></div><div><div class="activity-text">'+escapeHTML(a.text)+'</div><div class="activity-time">'+escapeHTML(a.time)+'</div></div></div>').join('');
+  list.innerHTML=acts.slice(0,10).map(a=>{
+    const title=a.title||a.text||'Activity';
+    const body=a.body||'';
+    const time=a.time||(a.ts?new Date(a.ts).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}):'');
+    const color=a.color||'var(--accent)';
+    return '<div class="activity-item"><div class="activity-dot" style="background:'+escapeHTML(color)+'"></div><div><div class="activity-text">'+escapeHTML(title)+'</div>'+(body?'<div class="activity-meta">'+escapeHTML(body)+'</div>':'')+'<div class="activity-time">'+escapeHTML(time)+'</div></div></div>';
+  }).join('');
 }
 
-function clearActivity(){const p=curP();if(!p)return;p.state.activity=[];saveStateNow();renderActivity()}
+function clearActivity(){
+  const p=curP();if(!p)return;
+  if(window.ETHONETimeline&&typeof window.ETHONETimeline.clear==='function')window.ETHONETimeline.clear();
+  else {p.state.activity=[];saveStateNow();renderActivity();}
+}

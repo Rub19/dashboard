@@ -281,7 +281,9 @@ window.removeCustomWidgetInstance=removeCustomWidgetInstance;
 // ── Live panel header actions ──────────────────────────────────────────────
 window.openLivePanelManager=function(){
   if(typeof window.ethoneLivePanelResize!=='undefined' && window.ethoneLivePanelResize.isRetracted()) window.toggleLivePanel(true);
-  if(typeof switchPage==='function') switchPage('connections');
+  const Actions=window.Ethone&&window.Ethone.get&&window.Ethone.get('actions');
+  if(Actions&&Actions.dispatch)Actions.dispatch('navigation.open',{page:'connections',source:'live-panel-manager'});
+  else if(typeof switchPage==='function') switchPage('connections');
   setTimeout(()=>{
     const card=document.getElementById('sidebar-widget-manager');
     if(card)card.scrollIntoView({behavior:'smooth',block:'start'});

@@ -1,22 +1,36 @@
-/* ETHONE legacy compatibility module: animations. */
-//  ETHONE — Animation System JS
-// ══════════════════════════════════════════════
+/* ETHONE animation compatibility layer.
+   Public function names are preserved; implementation delegates to the
+   canonical Motion System when available. */
 
-// ── SCROLL REVEAL ──────────────────────────────
-let _revealObserver=null;
+var _revealObserver=null;
+var _lastPageIdx=0;
+var PAGE_ORDER=[
+  'dashboard','files','notes','todos','habits','kanban','calendar','goals',
+  'journal','countdown','stats','activity','health','versions','github',
+  'gaming','connections','marketplace','databases','valorant-accounts',
+  'settings','ai'
+];
+
+function motion(){
+  return window.ETHONEMotion||null;
+}
+
 function initScrollReveal(){
   if(_revealObserver)_revealObserver.disconnect();
-  // Add reveal classes to panels and cards
-  const targets=document.querySelectorAll('.panel,.stat-card,.game-card,.conn-card,.settings-card,.xp-card');
-  targets.forEach((el,i)=>{
+  var targets=document.querySelectorAll('.panel,.stat-card,.game-card,.conn-card,.settings-card,.xp-card,.d4-card,.d4-widget,.timeline-card,.db-card,.va-panel');
+  targets.forEach(function(el,i){
     if(!el.classList.contains('reveal-hidden')&&!el.classList.contains('reveal-visible')){
       el.classList.add('reveal-hidden');
-      const delay=i%4;
-      if(delay>0)el.classList.add(`reveal-d${delay}`);
+      var delay=i%4;
+      if(delay>0)el.classList.add('reveal-d'+delay);
     }
   });
-  _revealObserver=new IntersectionObserver((entries)=>{
-    entries.forEach(entry=>{
+  if(!('IntersectionObserver' in window)){
+    targets.forEach(function(el){el.classList.remove('reveal-hidden');el.classList.add('reveal-visible');});
+    return;
+  }
+  _revealObserver=new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
       if(entry.isIntersecting){
         entry.target.classList.remove('reveal-hidden');
         entry.target.classList.add('reveal-visible');
@@ -24,127 +38,131 @@ function initScrollReveal(){
       }
     });
   },{threshold:.08,rootMargin:'0px 0px -20px 0px'});
-  targets.forEach(el=>_revealObserver.observe(el));
+  targets.forEach(function(el){_revealObserver.observe(el);});
 }
 
-// ── ANIMATED STAT COUNTERS ─────────────────────
-function animateCounter(el,target,duration=800,suffix=''){
+function animateCounter(el,target,duration,suffix){
   if(!el)return;
-  const start=performance.now();
-  const startVal=0;
-  const isFloat=String(target).includes('.');
-  const step=(now)=>{
-    const elapsed=now-start;
-    const progress=Math.min(elapsed/duration,1);
-    // Ease out cubic
-    const eased=1-Math.pow(1-progress,3);
-    const current=startVal+(target-startVal)*eased;
+  duration=duration||800;
+  suffix=suffix||'';
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce){
+    el.textContent=target+suffix;
+    return;
+  }
+  var start=performance.now();
+  var startVal=0;
+  var isFloat=String(target).indexOf('.')>-1;
+  function step(now){
+    var elapsed=now-start;
+    var progress=Math.min(elapsed/duration,1);
+    var eased=1-Math.pow(1-progress,3);
+    var current=startVal+(target-startVal)*eased;
     el.textContent=(isFloat?current.toFixed(1):Math.round(current))+suffix;
     if(progress<1)requestAnimationFrame(step);
     else el.textContent=target+suffix;
-  };
+  }
   requestAnimationFrame(step);
 }
 
 function animateStatCards(){
-  const statMap={
-    'stat-files':'items','stat-tasks':'done','stat-links':'links'
-  };
-  const p=curP();if(!p)return;
-  const items=(p.state?.items||[]).length;
-  const done=(p.state?.todos||[]).filter(t=>t.done).length;
-  const links=(p.state?.items||[]).filter(i=>i.type==='link').length;
-  const vals={'stat-files':items,'stat-tasks':done,'stat-links':links};
-  Object.entries(vals).forEach(([id,val])=>{
-    const el=document.getElementById(id);
-    if(el)animateCounter(el,val,700);
+  var p=typeof curP==='function'?curP():null;
+  if(!p)return;
+  var items=((p.state&&p.state.items)||[]).length;
+  var done=((p.state&&p.state.todos)||[]).filter(function(t){return t.done;}).length;
+  var links=((p.state&&p.state.items)||[]).filter(function(i){return i.type==='link';}).length;
+  var vals={'stat-files':items,'stat-tasks':done,'stat-links':links};
+  Object.keys(vals).forEach(function(id){
+    var el=document.getElementById(id);
+    if(el)animateCounter(el,vals[id],700);
   });
 }
 
-// ── PROFILE SCREEN CURSOR GLOW ─────────────────
 function initPsCursorGlow(){
-  const glow=document.getElementById('ps-cursor-glow');
-  if(!glow)return;
-  const screen=document.getElementById('profile-screen');
-  if(!screen)return;
-  const move=(e)=>{
-    glow.style.left=e.clientX+'px';
-    glow.style.top=e.clientY+'px';
+  var glow=document.getElementById('ps-cursor-glow');
+  var screen=document.getElementById('profile-screen');
+  if(!glow||!screen||screen.dataset.motionGlowBound==='1')return;
+  screen.dataset.motionGlowBound='1';
+  var raf=0;
+  var last=null;
+  function apply(){
+    raf=0;
+    if(!last)return;
+    glow.style.transform='translate3d('+(last.clientX||0)+'px,'+(last.clientY||0)+'px,0)';
     glow.style.opacity='1';
-  };
-  const leave=()=>glow.style.opacity='0';
-  screen.addEventListener('mousemove',move);
-  screen.addEventListener('mouseleave',leave);
+  }
+  screen.addEventListener('mousemove',function(e){
+    last=e;
+    if(!raf)raf=requestAnimationFrame(apply);
+  },{passive:true});
+  screen.addEventListener('mouseleave',function(){glow.style.opacity='0';},{passive:true});
 }
 
-// ── NAV ICON HOVER BOUNCE ──────────────────────
 function initNavAnimations(){
-  document.querySelectorAll('.nav-item').forEach(item=>{
-    item.addEventListener('mouseenter',()=>{
-      const icon=item.querySelector('.nav-icon svg');
-      if(icon){icon.style.animation='none';requestAnimationFrame(()=>{icon.style.animation='navIconBounce .4s ease';});}
-    });
+  document.querySelectorAll('.nav-item').forEach(function(item){
+    if(item.dataset.motionHoverBound==='1')return;
+    item.dataset.motionHoverBound='1';
+    item.addEventListener('mouseenter',function(){
+      var icon=item.querySelector('.nav-icon svg,.nav-icon');
+      var m=motion();
+      if(icon&&m)m.pop(icon,{duration:m.duration.micro()});
+    },{passive:true});
   });
 }
 
-// ── RIPPLE EFFECT ON BUTTONS ───────────────────
 function addRipple(e){
-  const btn=e.currentTarget;
-  const rect=btn.getBoundingClientRect();
-  const size=Math.max(rect.width,rect.height)*2;
-  const x=e.clientX-rect.left;const y=e.clientY-rect.top;
-  const ripple=document.createElement('span');
+  var m=motion();
+  if(m)return m.ripple(e.currentTarget,e);
+  var btn=e.currentTarget;
+  var rect=btn.getBoundingClientRect();
+  var size=Math.max(rect.width,rect.height)*1.7;
+  var x=e.clientX-rect.left;
+  var y=e.clientY-rect.top;
+  var ripple=document.createElement('span');
   ripple.className='press-ripple';
-  ripple.style.cssText=`width:${size}px;height:${size}px;left:${x}px;top:${y}px`;
+  ripple.style.cssText='width:'+size+'px;height:'+size+'px;left:'+x+'px;top:'+y+'px';
   btn.appendChild(ripple);
-  setTimeout(()=>ripple.remove(),500);
-}
-function initRipples(){
-  document.querySelectorAll('.btn-primary,.btn-ghost').forEach(btn=>{
-    btn.removeEventListener('click',addRipple);
-    btn.addEventListener('click',addRipple);
-  });
+  setTimeout(function(){ripple.remove();},500);
 }
 
-// ── PAGE TRANSITION ────────────────────────────
-// ── PAGE ORDER for directional transitions ──────────────
-const PAGE_ORDER=['dashboard','files','notes','todos','habits','kanban','calendar','goals','journal','countdown','stats','github','gaming','connections','settings','ai'];
-let _lastPageIdx=0;
+function initRipples(){
+  document.querySelectorAll('.btn-primary,.btn-ghost,.ui-button,.panel-action').forEach(function(btn){
+    btn.classList.add('motion-press');
+  });
+}
 
 function animatePageIn(pageEl,page){
   if(!pageEl)return;
-  const curIdx=PAGE_ORDER.indexOf(page||'');
-  const prevIdx=_lastPageIdx;
-  let cls='page-entering';
+  var curIdx=PAGE_ORDER.indexOf(page||'');
+  var prevIdx=_lastPageIdx;
+  var cls='page-entering';
+  var preset='slideUp';
   if(page&&curIdx>=0){
-    if(curIdx>prevIdx)cls='page-entering-right';
-    else if(curIdx<prevIdx)cls='page-entering-left';
+    if(curIdx>prevIdx){cls='page-entering-right';preset='slideLeft';}
+    else if(curIdx<prevIdx){cls='page-entering-left';preset='slideRight';}
     _lastPageIdx=curIdx;
   }
   pageEl.classList.remove('page-entering','page-entering-left','page-entering-right');
-  void pageEl.offsetWidth;
   pageEl.classList.add(cls);
-  setTimeout(()=>{
+  var m=motion();
+  var done=m?m.enter(pageEl,preset,{duration:m.duration.normal()}):Promise.resolve();
+  done.finally(function(){
     pageEl.classList.remove('page-entering','page-entering-left','page-entering-right');
     initScrollReveal();
     animateStatCards();
     initRipples();
-  },300);
+    initNavAnimations();
+  });
 }
 
-
-// ── INIT ON DASHBOARD READY ────────────────────
 function initAnimations(){
-  setTimeout(()=>{
+  setTimeout(function(){
     initScrollReveal();
     animateStatCards();
     initNavAnimations();
     initRipples();
     initPsCursorGlow();
-    initLinkPreviews();
-    initOverviewDragDrop();
+    if(typeof initLinkPreviews==='function')initLinkPreviews();
+    if(typeof initOverviewDragDrop==='function')initOverviewDragDrop();
   },100);
 }
-
-
-// ══════════════════════════════════════════════════════════════

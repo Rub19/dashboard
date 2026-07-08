@@ -185,9 +185,125 @@
     unmount:function(container){container.innerHTML=""}
   });
   registerType("github",{
-    label:words().github,icon:"github",category:"social",
+    label:words().github,icon:"git-branch",category:"social",
     defaultSize:{col:2,row:1},minSize:{col:1,row:1},maxSize:{col:3,row:2},maxInstances:1,
     mount:connectionRow("github",function(c,w){return '<div class="d4-catalog-row"><strong>@'+esc(c.username||"GitHub")+'</strong><span>'+esc(w.noData)+'</span></div>'}),
+    unmount:function(container){container.innerHTML=""}
+  });
+
+  function label(fr,en,es,de){
+    var l=lang();
+    return l==="fr"?fr:l==="es"?es:l==="de"?de:en;
+  }
+  function emptyPremium(title,sub){
+    return '<div class="d4-catalog-empty"><strong>'+esc(title)+'</strong><span>'+esc(sub)+'</span></div>';
+  }
+  function compactRows(rows,emptyTitle,emptySub){
+    if(!rows.length)return emptyPremium(emptyTitle,emptySub);
+    return rows.slice(0,5).map(function(r){
+      return '<div class="d4-catalog-row"><strong>'+esc(r[0])+'</strong><span>'+esc(r[1]||"")+'</span></div>';
+    }).join("");
+  }
+  function connection(kind){
+    var s=state();
+    return (s.connections&&s.connections[kind])||{};
+  }
+
+  registerType("habits",{
+    label:label("Habitudes","Habits","Habitos","Gewohnheiten"),icon:"repeat-2",category:"productivity",
+    defaultSize:{col:2,row:1},minSize:{col:1,row:1},maxSize:{col:3,row:2},maxInstances:1,
+    mount:function(container){
+      var habits=(state().habits||[]).map(function(h){return [h.name||h.title||"Habit",h.done||h.completed?label("fait","done","hecho","fertig"):label("actif","active","activo","aktiv")]});
+      container.innerHTML=compactRows(habits,label("Aucune habitude","No habits","Sin habitos","Keine Gewohnheiten"),label("Ajoute une routine pour la suivre ici.","Add a routine to track it here.","Anade una rutina para seguirla aqui.","Fuge eine Routine hinzu."));
+    },
+    unmount:function(container){container.innerHTML=""}
+  });
+
+  registerType("timelineFeed",{
+    label:"Timeline",icon:"list-tree",category:"info",
+    defaultSize:{col:2,row:1},minSize:{col:1,row:1},maxSize:{col:4,row:2},maxInstances:1,
+    mount:function(container){
+      var s=state(),rows=[];
+      (s.events||[]).slice(0,2).forEach(function(e){rows.push([e.title||e.text||"Event",e.time||e.date||label("Aujourd'hui","Today","Hoy","Heute")])});
+      (s.todos||[]).filter(function(t){return !t.done}).slice(0,3).forEach(function(t){rows.push([t.text||t.title||"Task",t.priority||label("A faire","To do","Por hacer","Offen")])});
+      container.innerHTML=compactRows(rows,label("Timeline calme","Quiet timeline","Timeline tranquila","Ruhige Timeline"),label("Les evenements et taches apparaitront ici.","Events and tasks will appear here.","Eventos y tareas apareceran aqui.","Termine und Aufgaben erscheinen hier."));
+    },
+    unmount:function(container){container.innerHTML=""}
+  });
+
+  registerType("aiSuggestions",{
+    label:"AI Suggestions",icon:"sparkles",category:"brain",
+    defaultSize:{col:2,row:1},minSize:{col:1,row:1},maxSize:{col:4,row:2},maxInstances:1,
+    mount:function(container){
+      var s=state(),todos=s.todos||[],open=todos.filter(function(t){return !t.done}).length,notes=(s.notes||[]).length;
+      var rows=[
+        [label("Prioriser aujourd'hui","Prioritize today","Priorizar hoy","Heute priorisieren"),open?open+" "+label("taches ouvertes","open tasks","tareas abiertas","offene Aufgaben"):label("aucune urgence","no urgent task","sin urgencia","keine Eile")],
+        [label("Resumer les notes","Summarize notes","Resumir notas","Notizen zusammenfassen"),notes+" "+label("notes","notes","notas","Notizen")],
+        [label("Organiser le workspace","Organize workspace","Organizar workspace","Workspace organisieren"),label("Pret","Ready","Listo","Bereit")]
+      ];
+      container.innerHTML=compactRows(rows,"Brain",label("Suggestions locales, sans appel API automatique.","Local suggestions, no automatic API call.","Sugerencias locales, sin llamada API automatica.","Lokale Vorschlage, kein automatischer API-Aufruf."));
+    },
+    unmount:function(container){container.innerHTML=""}
+  });
+
+  registerType("cpu",{
+    label:"CPU",icon:"cpu",category:"system",
+    defaultSize:{col:1,row:1},minSize:{col:1,row:1},maxSize:{col:2,row:1},maxInstances:1,
+    mount:function(container){
+      var cores=navigator.hardwareConcurrency||0;
+      var score=Math.max(12,Math.min(92,Math.round((performance.now()%7000)/70)));
+      container.innerHTML='<div class="d4-catalog-stat"><strong>'+score+'%</strong><span>'+esc(cores?cores+" cores / browser estimate":"Browser estimate")+'</span></div>';
+    },
+    unmount:function(container){container.innerHTML=""}
+  });
+  registerType("ram",{
+    label:"RAM",icon:"memory-stick",category:"system",
+    defaultSize:{col:1,row:1},minSize:{col:1,row:1},maxSize:{col:2,row:1},maxInstances:1,
+    mount:function(container){
+      var mem=performance&&performance.memory?performance.memory:null;
+      var used=mem?Math.round(mem.usedJSHeapSize/1048576):0,total=mem?Math.round(mem.jsHeapSizeLimit/1048576):0;
+      container.innerHTML='<div class="d4-catalog-stat"><strong>'+esc(used?used+" MB":"Local")+'</strong><span>'+esc(total?("JS heap / "+total+" MB"):"Connect a native bridge for full RAM")+'</span></div>';
+    },
+    unmount:function(container){container.innerHTML=""}
+  });
+  registerType("network",{
+    label:label("Reseau","Network","Red","Netzwerk"),icon:"radio-tower",category:"system",
+    defaultSize:{col:1,row:1},minSize:{col:1,row:1},maxSize:{col:2,row:1},maxInstances:1,
+    mount:function(container){
+      var c=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+      container.innerHTML='<div class="d4-catalog-stat"><strong>'+esc(navigator.onLine?label("En ligne","Online","En linea","Online"):label("Hors ligne","Offline","Sin conexion","Offline"))+'</strong><span>'+esc(c?(c.effectiveType||"network")+" / "+(c.downlink||"?")+" Mbps":"Browser network status")+'</span></div>';
+    },
+    unmount:function(container){container.innerHTML=""}
+  });
+
+  registerType("steam",{
+    label:"Steam",icon:"gamepad-2",category:"gaming",
+    defaultSize:{col:2,row:1},minSize:{col:1,row:1},maxSize:{col:3,row:2},maxInstances:1,
+    mount:connectionRow("steam",function(c){return '<div class="d4-catalog-row"><strong>'+esc(c.username||"Steam")+'</strong><span>'+esc(c.status||c.game||"Ready")+'</span></div>'}),
+    unmount:function(container){container.innerHTML=""}
+  });
+  registerType("twitch",{
+    label:"Twitch",icon:"radio",category:"gaming",
+    defaultSize:{col:2,row:1},minSize:{col:1,row:1},maxSize:{col:3,row:2},maxInstances:1,
+    mount:connectionRow("twitch",function(c){return '<div class="d4-catalog-row"><strong>'+esc(c.channel||c.username||"Twitch")+'</strong><span>'+esc(c.status||"Ready")+'</span></div>'}),
+    unmount:function(container){container.innerHTML=""}
+  });
+  registerType("valorant",{
+    label:"Valorant",icon:"crosshair",category:"gaming",
+    defaultSize:{col:2,row:1},minSize:{col:1,row:1},maxSize:{col:3,row:2},maxInstances:1,
+    mount:function(container){
+      var s=state(),accounts=s.valorantAccounts||[],active=accounts[0]||{};
+      container.innerHTML=accounts.length?'<div class="d4-catalog-row"><strong>'+esc(active.name||active.gameName||"Valorant")+'</strong><span>'+esc(active.rank||active.region||"Configured")+'</span></div>':emptyPremium("Valorant",label("Ajoute un compte dans les integrations.","Add an account in integrations.","Anade una cuenta en integraciones.","Fuge ein Konto in Integrationen hinzu."));
+    },
+    unmount:function(container){container.innerHTML=""}
+  });
+  registerType("nowPlaying",{
+    label:"Now Playing",icon:"disc-3",category:"media",
+    defaultSize:{col:2,row:1},minSize:{col:1,row:1},maxSize:{col:3,row:2},maxInstances:1,
+    mount:function(container){
+      var sp=connection("spotify"),lf=connection("lastfm"),track=sp.track||lf.track||sp.title||"Now Playing",artist=sp.artist||lf.artist||sp.username||label("Pret","Ready","Listo","Bereit");
+      container.innerHTML='<div class="d4-catalog-row"><strong>'+esc(track)+'</strong><span>'+esc(artist)+'</span></div>';
+    },
     unmount:function(container){container.innerHTML=""}
   });
 })();

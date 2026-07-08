@@ -1,4 +1,4 @@
-/* ETHONE legacy compatibility module: valorant-connect. */
+﻿/* ETHONE legacy compatibility module: valorant-connect. */
 async function connectValo(){
   const raw=document.getElementById('valo-name').value.trim();
   const region=document.getElementById('valo-region').value;
@@ -18,7 +18,7 @@ async function connectValo(){
     await loadValoStats();
     document.getElementById('valo-disconnect').style.display='inline-flex';
     toast('Valorant connected!','success');
-    addActivity('Connected Valorant account','#ff4655');
+    addActivity('Connected Valorant account','#ff4655','integration');
   }catch(e){toast('Error: '+e.message,'error');console.error(e)}
 }
 

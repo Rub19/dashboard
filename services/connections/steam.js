@@ -1,4 +1,4 @@
-/* ETHONE legacy compatibility module: steam. */
+﻿/* ETHONE legacy compatibility module: steam. */
 // === STEAM ===
 
 async function fetchSteamAPI(endpoint,apiKey,params){
@@ -58,7 +58,7 @@ async function connectSteam(){
     renderSteamCard(data);
     document.getElementById('steam-disconnect-btn').style.display='inline-flex';
     toast('Steam connected! ','success');
-    addActivity('Account Steam connecte','var(--steam2)');
+    addActivity('Account Steam connecte','var(--steam2)','integration');
   }catch(e){toast('Error : '+e.message,'error');console.error(e)}
 }
 
@@ -136,7 +136,7 @@ function renderSteamSidebar(data){
   if(nameEl)nameEl.textContent=data.displayName||'Unknown';
   const gameName=data.stateMessage&&data.stateMessage.startsWith('Currently In-Game')?data.stateMessage.replace('Currently In-Game','').trim():null;
   if(subEl){
-    if(gameName){subEl.textContent='En jeu · '+gameName;subEl.style.display='block';}
+    if(gameName){subEl.textContent='En jeu Â· '+gameName;subEl.style.display='block';}
     else{subEl.style.display='none';}
   }
   if(statusDot){

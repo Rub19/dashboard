@@ -54,6 +54,11 @@
   function activePage(){
     return document.querySelector(".tab-content.active")?.id?.replace("page-","")||"dashboard";
   }
+  function shouldAutoRefresh(){
+    if(document.visibilityState==="hidden")return false;
+    const page=activePage();
+    return page==="ai"||page==="dashboard";
+  }
   function pageLabel(id){
     const map={dashboard:"ETHONE Home",ai:"ETHONE Brain",todos:"Tasks",notes:"Notes",files:"Files",habits:"Habits",calendar:"Calendar",github:"GitHub",marketplace:"Marketplace",store:"Store",workspaces:"Workspaces",timeline:"Timeline",stats:"Statistics",gaming:"Gaming",settings:"Settings",connections:"Connections",notes:"Notes",kanban:"Kanban"};
     return map[id]||String(id||"Workspace");
@@ -371,7 +376,7 @@
       window.switchPage=function(){
         const from=activePage();
         const r=old.apply(this,arguments);
-        setTimeout(()=>{if(from!==activePage())addTimeline("navigation","Opened "+pageLabel(activePage()),"Brain observed workspace movement from "+pageLabel(from)+".");run();},100);
+        setTimeout(()=>{if(from!==activePage())addTimeline("navigation","Opened "+pageLabel(activePage()),"Brain observed workspace movement from "+pageLabel(from)+".");if(shouldAutoRefresh())run();},100);
         return r;
       };
       window.switchPage.__brain34Wrapped=true;
@@ -441,7 +446,7 @@
     if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run,{once:true});else run();
     setTimeout(run,350);
     setTimeout(run,1500);
-    setInterval(run,30000);
+    setInterval(()=>{if(shouldAutoRefresh())run();},30000);
   }
   if(window.ethoneRunWhenPageReady)window.ethoneRunWhenPageReady("brain-34-runtime","ai",startBrain34);else startBrain34();
   window.ETHONEBrain34={run,search:runSearch,command:executeCommand,timeline:addTimeline,facts,recommendations,marketplace,automations};

@@ -1,333 +1,712 @@
-/* Extracted from index.html. Preserve global contracts and load order. */
+/* ETHONE Marketplace: premium store surface for widgets, plugins, themes, layouts and packs. */
 (function(){
   "use strict";
-  if(window.ETHONE_SAFE_MODE||window.__ethoneSkipMarketplace)return;
-  if(window.__ethoneMarketplace41)return;
-  window.__ethoneMarketplace41=true;
-  const $=(s,r=document)=>r.querySelector(s);
-  const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
-  const storeKey="ethone:marketplace-41";
-  const state=load();
-  function load(){
+  if(window.ETHONE_SAFE_MODE)return;
+  if(window.__ethoneMarketplaceStore)return;
+  window.__ethoneMarketplaceStore=true;
+
+  const $=(selector,root=document)=>root.querySelector(selector);
+  const $$=(selector,root=document)=>Array.from(root.querySelectorAll(selector));
+  const STORE_KEY="ethone:marketplace-store";
+  const CATEGORIES=["Widgets","Plugins","Themes","Layouts","Automations","Templates","AI Agents","Packs"];
+  const state=loadState();
+
+  const catalog=[
+    item("brain-daily-brief","AI Agents","Brain Daily Brief","ETHONE Labs","A morning intelligence agent that turns tasks, calendar, notes and recent activity into a precise daily plan.",["Brain","Planner","Briefing"],"2.4.0",4.9,"24.8k","1.1 MB","Brain OS, Home, Workspaces",["Read tasks","Read notes","Read calendar","Use ETHONE AI"],["New workspace-aware briefing","Better priority explanations","Reduced startup work"],["Feels native to ETHONE.","Actually helps me decide what to do first."],"agent"),
+    item("github-command-center","Widgets","GitHub Command Center","ETHONE Labs","Repository pulse, pull requests, commits, issue triage and developer focus signals in one dashboard widget.",["GitHub","Developer","Stats"],"3.1.2",4.8,"19.4k","1.8 MB","Dashboard, Developer Workspace",["Access GitHub","Read dashboard context"],["Pull request health panel","Compact contribution graph","Better error states"],["The developer widget ETHONE needed.","Clean and useful without noise."],"widget"),
+    item("spotify-flow","Widgets","Spotify Flow","Studio Pulse","Now playing, focus playlists, recent listening and Brain music context for work or gaming sessions.",["Spotify","Music","Focus"],"1.9.0",4.8,"17.2k","1.2 MB","Dashboard, Gaming, Focus",["Access Spotify","Read workspace mode"],["New minimal now-playing view","Focus playlist shortcut","Timeline events"],["Beautiful in the sidebar panel.","Makes sessions feel alive."],"widget"),
+    item("discord-presence-pro","Plugins","Discord Presence Pro","ETHONE Labs","Presence, friends online, voice activity and gaming session context prepared for Brain recommendations.",["Discord","Presence","Gaming"],"2.8.6",4.7,"22.1k","2.3 MB","Gaming, Streaming, Brain",["Access Discord","Read activity status"],["Cleaner connection state","Voice activity preview","Retry controls"],["Finally not an empty placeholder.","The status design is excellent."],"plugin"),
+    item("minimal-graphite","Themes","Minimal Graphite","Aster Studio","A quiet ETHONE theme with graphite surfaces, purple focus states, balanced contrast and premium spacing.",["Dark","Minimal","Purple"],"1.5.1",4.9,"34.6k","840 KB","All Workspaces",["Apply theme preferences"],["Sharper focus rings","Improved contrast","Reduced visual noise"],["Feels like a native app.","Perfect dark theme."],"theme"),
+    item("developer-pro-layout","Layouts","Developer Pro Layout","ETHONE Labs","A workspace layout for deep work: Brain, GitHub, tasks, notes, files and focus timeline aligned for engineering days.",["Developer","Layout","Focus"],"2.6.0",4.8,"13.9k","460 KB","Dashboard, Workspaces",["Modify dashboard layout","Read widget list"],["Resizable widget map","Better laptop breakpoint","Pinned Brain rail"],["More useful than my old dashboard.","The hierarchy is strong."],"layout"),
+    item("morning-startup","Automations","Morning Startup","Brain Systems","Weather, calendar, priorities, habits and Brain briefing automation that prepares ETHONE before you start.",["Automation","Morning","Brain"],"2.0.3",4.9,"11.8k","980 KB","Brain OS, Planner, Home",["Read calendar","Read tasks","Run approved automations"],["Permission review step","Better failed-action handling","Workspace-specific routines"],["This makes ETHONE feel alive.","A perfect start sequence."],"automation"),
+    item("evening-recap","Automations","Evening Recap","Brain Systems","Summarizes completed tasks, notes, habits, music and workspace activity into a calm end-of-day recap.",["Automation","Recap","Habits"],"1.8.4",4.8,"9.7k","1.0 MB","Brain OS, Timeline",["Read tasks","Read notes","Write timeline events"],["Timeline export","Habit insights","Less repetitive wording"],["Useful without being intrusive.","Nice final ritual."],"automation"),
+    item("student-os","Templates","Student OS","Community Studio","A complete study workspace with notes, tasks, calendar, files, Pomodoro, habits and Brain tutor actions.",["Study","Notes","Calendar"],"1.4.2",4.7,"14.5k","760 KB","Study Workspace",["Create workspace template","Create default widgets"],["Cleaner notes structure","Exam timeline view","Tutor prompt pack"],["Great starting point for school.","Everything is already organized."],"template"),
+    item("creator-launch-kit","Templates","Creator Launch Kit","Vercelized","A creator workspace for content planning, uploads, analytics, assets, publishing checklists and AI review.",["Creator","Content","Planning"],"1.2.0",4.6,"8.3k","1.4 MB","Creator Workspace",["Create workspace template","Read files metadata"],["Publishing timeline","Asset checklist","Review prompts"],["Very polished template.","Feels ready for real work."],"template"),
+    item("obs-stream-bridge","Plugins","OBS Stream Bridge","StreamForge","Scene status, recording state, stream health and quick controls ready for the local OBS bridge.",["OBS","Streaming","Twitch"],"1.0.1",4.5,"7.4k","3.2 MB","Streaming Workspace",["Connect local bridge","Read stream status"],["Local bridge preparation","Safer connection states","Scene preview cards"],["No more empty placeholder.","The interface explains the limits."],"plugin"),
+    item("valorant-session-pack","Packs","Valorant Session Pack","Arena Tools","Gaming dashboard pack with Valorant MMR, session goals, Discord status, Spotify focus and match notes.",["Valorant","Gaming","Pack"],"1.6.5",4.7,"12.6k","2.6 MB","Gaming Workspace",["Read gaming integrations","Create widgets","Write session notes"],["Match note widget","Better rank display","Session timeline"],["Makes the gaming workspace feel complete.","Exactly the pack I wanted."],"pack"),
+    item("quiet-aurora-pack","Packs","Quiet Aurora Pack","Aster Studio","Wallpapers, theme accents, icons and dashboard surfaces tuned for a calm premium ETHONE setup.",["Wallpaper","Icons","Theme"],"2.2.0",4.8,"18.9k","6.2 MB","All Workspaces",["Apply appearance settings"],["New low-motion variants","Sharper icon masks","Better OLED contrast"],["Subtle and premium.","Good taste, not flashy."],"pack"),
+    item("memory-curator","AI Agents","Memory Curator","Brain Systems","Reviews visible memories, suggests cleanup, explains what Brain remembers and keeps the user in control.",["Memory","Privacy","Brain"],"1.1.3",4.9,"6.8k","720 KB","Brain OS, Settings",["Read visible memories","Suggest memory changes"],["Editable memory review","Privacy summary","Workspace-aware cleanup"],["Makes Brain trustworthy.","Good transparency."],"agent"),
+    item("linear-focus-theme","Themes","Linear Focus","Northstar UI","A precise dark theme inspired by professional issue trackers: dense, calm, readable and fast.",["Dark","Productivity","Dense"],"1.0.8",4.7,"15.1k","920 KB","All Workspaces",["Apply theme preferences"],["Better keyboard focus","Softer panel borders","Compact density preset"],["Very professional.","Great for work mode."],"theme"),
+    item("automation-scheduler","Plugins","Automation Scheduler","ETHONE Labs","A reusable scheduler UI for recurring routines, reminders, sync jobs and approved automations.",["Scheduler","Automation","System"],"2.3.7",4.8,"10.2k","1.5 MB","Planner, Automation Engine",["Read automations","Create approved schedules"],["Recurring job history","Retry controls","Timeline integration"],["Feels like a real OS service.","Clear and dependable."],"plugin")
+  ];
+
+  function item(id,category,title,author,description,tags,version,rating,downloads,size,compat,permissions,changelog,reviews,visual){
+    return {id,category,title,author,description,tags,version,rating,downloads,size,compat,permissions,changelog,reviews,visual,updated:changelog.length>2};
+  }
+
+  const THEME_MARKETPLACE=[
+    themeItem("minimal-graphite","Minimal Graphite","Aster Studio","A quiet graphite interface with violet focus states, soft contrast and low-noise panels.",["Dark","Minimal","Purple"],"1.5.1",4.9,"34.6k",["#09090b","#17171c","#8b5cf6","#f5f3ff","#a1a1aa"],{accent:"#8b5cf6",accent2:"#34d399",accent3:"#fb7185",accent4:"#d8c17a",accent5:"#a78bfa",bg:"#09090b",surface:"#17171c",glow:"rgba(139,92,246,0.23)",radius:1,blur:.85,density:"comfortable",fontFamily:"inter",fontScale:1,opacity:.96,glowScale:.86},["Sharper focus rings","Improved contrast on dark fields","Reduced visual noise"],["Dashboard overview","Settings window","Files explorer"]),
+    themeItem("linear-focus-theme","Linear Focus","Northstar UI","A precise productivity theme with compact rhythm, readable borders and professional purple accents.",["Dark","Productivity","Dense"],"1.0.8",4.7,"15.1k",["#0a0a0d","#141419","#7c6df8","#f7f7fb","#8a8a96"],{accent:"#7c6df8",accent2:"#86efac",accent3:"#fb7185",accent4:"#fde68a",accent5:"#c4b5fd",bg:"#0a0a0d",surface:"#141419",glow:"rgba(124,109,248,0.18)",radius:.82,blur:.65,density:"compact",fontFamily:"inter",fontScale:.97,opacity:.98,glowScale:.58},["Compact density preset","Softer panel borders","Better keyboard focus"],["Task board","Command palette","Developer workspace"]),
+    themeItem("obsidian-violet","Obsidian Violet","ETHONE Labs","An OLED-first theme with deep black surfaces, high contrast text and a restrained violet glow.",["OLED","High Contrast","Premium"],"2.0.0",4.8,"21.7k",["#050507","#101014","#a78bfa","#ffffff","#71717a"],{accent:"#a78bfa",accent2:"#5eead4",accent3:"#fda4af",accent4:"#facc15",accent5:"#ddd6fe",bg:"#050507",surface:"#101014",glow:"rgba(167,139,250,0.20)",radius:1.08,blur:.5,density:"cozy",fontFamily:"system",fontScale:1.01,opacity:1,glowScale:.72},["OLED-safe background","Higher text contrast","Cleaner glass layers"],["Home hero","Marketplace cards","Brain panel"]),
+    themeItem("studio-amethyst","Studio Amethyst","Vercelized","A creative workspace theme with warmer violet panels, soft depth and polished preview surfaces.",["Creative","Purple","Glass"],"1.2.3",4.6,"9.8k",["#0c0812","#1a1124","#9d7cff","#fff7ff","#bda7ff"],{accent:"#9d7cff",accent2:"#34d399",accent3:"#fb7185",accent4:"#fbbf24",accent5:"#c4b5fd",bg:"#0c0812",surface:"#1a1124",glow:"rgba(157,124,255,0.26)",radius:1.22,blur:1.08,density:"comfortable",fontFamily:"grotesk",fontScale:1.03,opacity:.92,glowScale:1.05},["New creative preview states","Warmer glass surfaces","Better panel separation"],["Creator dashboard","Theme detail","Profile view"])
+  ];
+
+  function themeItem(id,title,author,description,tags,version,rating,downloads,palette,tokens,changelog,screenshots){
+    return {
+      id,category:"Themes",title,author,description,tags,version,rating,downloads,
+      size:"Theme",compat:"All Workspaces",permissions:["Apply appearance settings","Save theme to profile"],
+      changelog,reviews:["Looks native to ETHONE.","Polished without feeling noisy."],visual:"theme",
+      updated:changelog.length>2,palette,tokens,screenshots,isTheme:true
+    };
+  }
+
+  function loadState(){
     try{
-      const saved=JSON.parse(localStorage.getItem(storeKey)||"{}");
+      const saved=JSON.parse(localStorage.getItem(STORE_KEY)||"{}");
       return {
-        installed:saved.installed||{},
-        favorites:saved.favorites||{},
-        reviews:saved.reviews||{},
-        query:saved.query||"",
-        category:saved.category||"All",
-        detail:null,
-        updates:saved.updates||{},
+        category:CATEGORIES.includes(saved.category)?saved.category:"Widgets",
+        query:String(saved.query||""),
+        selected:saved.selected||"brain-daily-brief",
+        installed:saved.installed&&typeof saved.installed==="object"?saved.installed:{},
+        favorites:saved.favorites&&typeof saved.favorites==="object"?saved.favorites:{},
+        customThemes:Array.isArray(saved.customThemes)?saved.customThemes:[],
+        activeThemeId:saved.activeThemeId||"",
         history:Array.isArray(saved.history)?saved.history:[]
       };
     }catch(e){
-      return {installed:{},favorites:{},reviews:{},query:"",category:"All",detail:null,updates:{},history:[]};
+      return {category:"Widgets",query:"",selected:"brain-daily-brief",installed:{},favorites:{},customThemes:[],activeThemeId:"",history:[]};
     }
   }
+
   function save(){
-    localStorage.setItem(storeKey,JSON.stringify(state));
-    const p=profile();
-    if(p&&p.state){
-      p.state.marketplace41=Object.assign({},p.state.marketplace41||{},{
-        installed:state.installed,
-        favorites:state.favorites,
-        reviews:state.reviews,
-        updates:state.updates,
-        history:state.history.slice(-80),
-        updatedAt:Date.now()
-      });
-      try{if(typeof window.saveStateNow==="function")window.saveStateNow()}catch(e){}
-    }
-  }
-  function profile(){
-    try{return typeof window.curP==="function"?window.curP():null}catch(e){return null}
-  }
-  function ps(){
-    const p=profile();
-    return p&&p.state?p.state:{};
-  }
-  function escape(s){
-    return String(s||"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
-  }
-  const catalog=[
-    {id:"github-heatmap",type:"Widget",title:"GitHub Heatmap",creator:"ETHONE Labs",desc:"Contribution heatmap, commit streaks, repository pulse and Brain developer summaries.",tags:["github","developer","stats"],permissions:["Access GitHub","Access Dashboard","Access AI"],version:"2.1.0",rating:4.9,downloads:"18.2k",size:"1.8 MB",compat:"Dashboard, Workspaces, Brain",updated:true,collection:"Developer Essentials"},
-    {id:"spotify-flow",type:"Widget",title:"Spotify Flow",creator:"Studio Pulse",desc:"Now playing, release radar, focus playlists and listening timeline widgets.",tags:["spotify","music","focus"],permissions:["Access Spotify","Access Dashboard"],version:"1.7.4",rating:4.8,downloads:"14.7k",size:"1.2 MB",compat:"Dashboard, Gaming, Focus",updated:false,collection:"Gaming Setup"},
-    {id:"discord-rich",type:"Widget",title:"Discord Rich Presence",creator:"ETHONE Labs",desc:"Friends online, voice channel status, activities and gaming session context.",tags:["discord","gaming","presence"],permissions:["Access Discord","Access Dashboard"],version:"3.0.2",rating:4.7,downloads:"21.4k",size:"2.4 MB",compat:"Gaming, Streaming, Brain",updated:true,collection:"Gaming Setup"},
-    {id:"minimal-glass",type:"Theme",title:"Minimal Glass",creator:"Aster Studio",desc:"Quiet dark surfaces, compact spacing, crisp panels and refined focus states.",tags:["minimal","dark","glass"],permissions:["Access Theme","Access Dashboard"],version:"1.4.0",rating:4.9,downloads:"32.8k",size:"860 KB",compat:"All workspaces",updated:false,collection:"Minimal Workspace"},
-    {id:"developer-pro-layout",type:"Layout",title:"Developer Pro Layout",creator:"ETHONE Labs",desc:"GitHub, tasks, notes, files and Brain controls arranged for deep work.",tags:["developer","github","productivity"],permissions:["Access Dashboard","Access Workspaces","Access Notes"],version:"2.3.1",rating:4.8,downloads:"11.9k",size:"420 KB",compat:"Work, Developer",updated:false,collection:"Developer Essentials"},
-    {id:"morning-automation",type:"Automation Pack",title:"Morning Startup",creator:"Brain Systems",desc:"Weather, calendar, priorities, habits and Brain briefing sequence.",tags:["automation","morning","brain"],permissions:["Access Calendar","Access Tasks","Access Habits","Access AI"],version:"1.9.0",rating:4.9,downloads:"9.6k",size:"980 KB",compat:"Brain OS, Dashboard",updated:true,collection:"AI Power User"},
-    {id:"evening-recap",type:"Automation Pack",title:"Evening Recap",creator:"Brain Systems",desc:"Summarizes tasks, habits, music, Discord, notes and achievements before night mode.",tags:["automation","recap","habits"],permissions:["Access Tasks","Access Notes","Access Spotify","Access Discord","Access AI"],version:"1.6.2",rating:4.8,downloads:"8.1k",size:"1.1 MB",compat:"Brain OS, Personal",updated:false,collection:"AI Power User"},
-    {id:"glass-icons",type:"Icon Pack",title:"Glass Glyphs",creator:"Nora Vale",desc:"A polished icon family for dense dashboards and custom workspaces.",tags:["icons","glass","theme"],permissions:["Access Theme"],version:"1.2.8",rating:4.6,downloads:"25.5k",size:"2.7 MB",compat:"All workspaces",updated:true,collection:"Minimal Workspace"},
-    {id:"aurora-wallpapers",type:"Wallpaper Pack",title:"Quiet Aurora",creator:"Aster Studio",desc:"Animated and static wallpapers tuned for low distraction and premium surfaces.",tags:["wallpaper","animated","focus"],permissions:["Access Theme","Access Dashboard"],version:"2.0.0",rating:4.7,downloads:"17.3k",size:"6.4 MB",compat:"All devices",updated:false,collection:"Home Office"},
-    {id:"obs-bridge",type:"Developer Extension",title:"OBS Bridge",creator:"StreamForge",desc:"Scene status, stream controls, recording indicators and Brain streaming prep.",tags:["obs","streaming","twitch"],permissions:["Access Automations","Access Dashboard","Access Files"],version:"0.9.8",rating:4.5,downloads:"6.2k",size:"3.1 MB",compat:"Streaming Workspace",updated:true,collection:"Streaming Starter Pack"},
-    {id:"study-planner",type:"Workspace Template",title:"Student Productivity",creator:"Community",desc:"Notes, tasks, Pomodoro, calendar, files and Brain tutor actions.",tags:["study","notes","calendar"],permissions:["Access Notes","Access Tasks","Access Calendar"],version:"1.3.3",rating:4.7,downloads:"12.1k",size:"740 KB",compat:"Study Workspace",updated:false,collection:"Student Productivity"},
-    {id:"brain-market-guide",type:"Brain Plugin",title:"Marketplace Guide",creator:"Brain Systems",desc:"Lets Brain explain why widgets, layouts and automations fit your behavior.",tags:["brain","marketplace","recommendations"],permissions:["Access AI","Access Marketplace","Access Dashboard"],version:"1.0.0",rating:4.9,downloads:"5.4k",size:"680 KB",compat:"Brain OS",updated:false,collection:"AI Power User"}
-  ];
-  const categories=["All","Widgets","Themes","Layouts","Icon Packs","Wallpaper Packs","Brain Plugins","Automation Packs","Workspace Templates","Developer Extensions","Community"];
-  const collectionDefs=[
-    ["Developer Essentials","GitHub, layouts, automation and deep-work widgets for developer routines."],
-    ["Gaming Setup","Discord, Spotify, Steam, Valorant and stream-ready workspace pieces."],
-    ["Minimal Workspace","Themes, icon packs and layouts for a calmer ETHONE."],
-    ["Streaming Starter Pack","OBS, Twitch, scene controls and creator tooling."],
-    ["Student Productivity","Study workspace, notes, Pomodoro, calendar and AI tutor flows."],
-    ["AI Power User","Brain plugins, automations and provider-aware workflows."],
-    ["Home Office","Meetings, calendar, focus and wallpaper packs."],
-    ["Creator Toolkit","Publishing, templates, reviews and community profile upgrades."]
-  ];
-  function facts(){
-    const s=ps();
-    const todos=Array.isArray(s.todos)?s.todos:[];
-    const notes=Array.isArray(s.notes)?s.notes:[];
-    const habits=Array.isArray(s.habits)?s.habits:[];
-    const con=s.connections||{};
-    return {
-      openTodos:todos.filter(t=>!t.done).length,
-      notes:notes.length,
-      habits:habits.length,
-      connections:Object.keys(con).filter(k=>!!con[k]).length,
-      installed:installedIds().length,
-      favorites:Object.values(state.favorites).filter(Boolean).length,
-      updates:catalog.filter(i=>i.updated&&state.installed[i.id]).length,
-      widgets:document.querySelectorAll(".panel,.stat-card,.conn-card,.game-card,.ethone-os2-card,.brain-widget").length
-    };
-  }
-  function installedIds(){return Object.keys(state.installed).filter(k=>state.installed[k])}
-  function normalizedType(item){return item.type.endsWith("Pack")?item.type+"s":item.type+"s"}
-  function matchesCategory(item,cat){
-    if(cat==="All")return true;
-    if(cat==="Community")return item.creator==="Community";
-    if(cat==="Widgets")return item.type==="Widget";
-    return normalizedType(item)===cat||item.type===cat.replace(/s$/,"");
-  }
-  function scoreItem(item,q){
-    const f=facts();
-    const hay=(item.title+" "+item.type+" "+item.desc+" "+item.tags.join(" ")+" "+item.collection).toLowerCase();
-    const query=String(q||"").toLowerCase().trim();
-    let score=0;
-    if(!query)score+=1;
-    query.split(/\s+/).filter(Boolean).forEach(w=>{if(hay.includes(w))score+=4});
-    if(f.openTodos&&/productivity|task|automation|brain/.test(hay))score+=2;
-    if(f.notes&&/notes|study|brain/.test(hay))score+=2;
-    if(/discord|gaming|spotify|steam|valorant/.test(hay))score+=1;
-    if(item.updated)score+=.6;
-    if(state.installed[item.id])score-=1;
-    return score;
-  }
-  function filtered(){
-    return catalog.filter(i=>matchesCategory(i,state.category)).map(i=>Object.assign({score:scoreItem(i,state.query)},i)).filter(i=>!state.query||i.score>0).sort((a,b)=>b.score-a.score||b.rating-a.rating);
-  }
-  function recommended(){
-    return catalog.map(i=>Object.assign({score:scoreItem(i,"")},i)).sort((a,b)=>b.score-a.score||b.rating-a.rating).slice(0,6);
-  }
-  function ensureShell(pageId){
-    const page=$("#page-"+pageId);
-    const host=$("#ethone-os2-page-"+pageId);
-    if(!page||!host)return;
-    page.classList.add("marketplace41-ready");
-    if(host.dataset.mp41Ready)return;
-    host.dataset.mp41Ready="1";
-    host.innerHTML='<section class="mp41-shell" id="mp41-shell-'+pageId+'"></section>';
-    render(pageId);
-  }
-  function render(pageId){
-    const shell=$("#mp41-shell-"+pageId);
-    if(!shell)return;
-    const f=facts();
-    shell.innerHTML=
-      '<section class="mp41-panel mp41-hero">'+
-        '<div class="mp41-top"><div><div class="mp41-kicker">ETHONE Marketplace</div><div class="mp41-title">The App Store for your Personal OS.</div><div class="mp41-copy">Discover widgets, themes, layouts, icon packs, wallpapers, Brain plugins, automations, workspace templates, developer extensions and community creations. Brain personalizes every recommendation and explains why it fits.</div></div><div class="mp41-status">'+f.installed+' installed / '+f.updates+' updates</div></div>'+
-        '<div class="mp41-search"><div class="mp41-search-row"><div class="mp41-search-mark">MP</div><input id="mp41-search-'+pageId+'" value="'+escape(state.query)+'" placeholder="Search naturally: minimal dark widgets, gaming dashboard, GitHub statistics, Brain plugins..."><button class="mp41-btn primary" data-mp41-search-run type="button">Search</button></div></div>'+
-        '<div class="mp41-quick">'+categories.map(c=>'<button class="mp41-tab '+(state.category===c?"active":"")+'" data-mp41-category="'+escape(c)+'" type="button">'+escape(c)+'</button>').join("")+'</div>'+
-        '<div class="mp41-stats">'+stat("Installed",f.installed,"Synced locally and profile-ready")+stat("Updates",f.updates,"Release notes and rollback support")+stat("Favorites",f.favorites,"Bookmarks and collections")+stat("Catalog",catalog.length,"Widgets, packs, plugins and templates")+'</div>'+
-      '</section>'+
-      '<section class="mp41-layout">'+
-        '<main class="mp41-panel mp41-section"><div class="mp41-section-head"><div><div class="mp41-h">'+(state.query?"Search Results":"Featured and Recommended")+'</div><div class="mp41-sub">Personalized using widgets, workspace, Brain, connected services and dashboard signals.</div></div><button class="mp41-btn" data-mp41-brain type="button">Ask Brain why</button></div><div class="mp41-grid" id="mp41-grid-'+pageId+'"></div></main>'+
-        '<aside class="mp41-side">'+
-          '<section class="mp41-panel mp41-section"><div class="mp41-section-head"><div><div class="mp41-h">Brain Picks</div><div class="mp41-sub">Never random. Every pick has a reason.</div></div></div><div class="mp41-list" id="mp41-brain-'+pageId+'"></div></section>'+
-          '<section class="mp41-panel mp41-section"><div class="mp41-section-head"><div><div class="mp41-h">Updates</div><div class="mp41-sub">Version history, breaking changes and rollback-ready metadata.</div></div></div><div class="mp41-list" id="mp41-updates-'+pageId+'"></div></section>'+
-          '<section class="mp41-panel mp41-section"><div class="mp41-section-head"><div><div class="mp41-h">Community</div><div class="mp41-sub">Creators, reviews, publishing and shared collections.</div></div></div><div class="mp41-list" id="mp41-community-'+pageId+'"></div></section>'+
-        '</aside>'+
-      '</section>'+
-      '<section class="mp41-panel mp41-section"><div class="mp41-section-head"><div><div class="mp41-h">Collections</div><div class="mp41-sub">Curated ways to evolve ETHONE without app updates.</div></div></div><div class="mp41-collections">'+collectionDefs.map(c=>'<article class="mp41-collection"><strong>'+escape(c[0])+'</strong><span>'+escape(c[1])+'</span><div class="mp41-actions"><button class="mp41-btn" data-mp41-collection="'+escape(c[0])+'" type="button">Explore</button></div></article>').join("")+'</div></section>';
-    renderGrid(pageId);
-    renderSide(pageId);
-    ensureDetail();
-  }
-  function stat(label,value,sub){return '<article class="mp41-stat"><span>'+escape(label)+'</span><strong>'+escape(value)+'</strong><p>'+escape(sub)+'</p></article>'}
-  function renderGrid(pageId){
-    const host=$("#mp41-grid-"+pageId);if(!host)return;
-    const items=filtered().slice(0,12);
-    host.innerHTML=items.length?items.map(itemCard).join(""):'<article class="mp41-row"><strong>No exact result</strong><span>Try a natural query like gaming dashboard, purple themes, GitHub statistics or Brain plugins.</span></article>';
-  }
-  function itemCard(item){
-    const on=!!state.installed[item.id];
-    return '<article class="mp41-item '+(on?"is-installed":"")+'" data-mp41-item="'+item.id+'">'+
-      '<div class="mp41-preview"></div><div class="mp41-item-body">'+
-      '<div class="mp41-item-meta"><span class="mp41-type">'+escape(item.type)+'</span><span class="mp41-rating">★ '+item.rating+'</span></div>'+
-      '<h3>'+escape(item.title)+'</h3><p>'+escape(item.desc)+'</p>'+
-      '<div class="mp41-tags">'+item.tags.slice(0,3).map(t=>'<span class="mp41-tag">'+escape(t)+'</span>').join("")+'</div>'+
-      '<div class="mp41-actions"><button class="mp41-btn '+(on?"installed":"primary")+'" data-mp41-install="'+item.id+'" type="button">'+(on?"Installed":"Install")+'</button><button class="mp41-btn" data-mp41-detail="'+item.id+'" type="button">Details</button><button class="mp41-btn" data-mp41-fav="'+item.id+'" type="button">'+(state.favorites[item.id]?"Saved":"Save")+'</button></div>'+
-      '</div></article>';
-  }
-  function renderSide(pageId){
-    const brain=$("#mp41-brain-"+pageId);
-    if(brain)brain.innerHTML=recommended().slice(0,4).map(i=>'<div class="mp41-row"><strong>'+escape(i.title)+'</strong><span>'+reason(i)+'</span><div class="mp41-actions"><button class="mp41-btn" data-mp41-detail="'+i.id+'" type="button">View</button></div></div>').join("");
-    const updates=$("#mp41-updates-"+pageId);
-    const ups=catalog.filter(i=>i.updated);
-    if(updates)updates.innerHTML=ups.map(i=>'<div class="mp41-row"><strong>'+escape(i.title)+' '+escape(i.version)+'</strong><span>Release notes: better Brain compatibility, permissions clarity and dashboard performance. Rollback supported.</span><div class="mp41-actions"><button class="mp41-btn" data-mp41-update="'+i.id+'" type="button">Update</button></div></div>').join("");
-    const community=$("#mp41-community-"+pageId);
-    if(community)community.innerHTML=[
-      ["Creator profiles","Avatars, bios, published content, downloads, ratings, followers and verified badges."],
-      ["Publish Center","Future publishing for widgets, themes, layouts, icon packs, automations and Brain plugins."],
-      ["Reviews","Ratings and reviews are stored locally now and profile/Supabase-ready."]
-    ].map(r=>'<div class="mp41-row"><strong>'+r[0]+'</strong><span>'+r[1]+'</span></div>').join("");
-  }
-  function reason(item){
-    const f=facts();
-    if(item.tags.includes("github"))return "Recommended because developer and productivity signals improve with GitHub context.";
-    if(item.tags.includes("gaming"))return "Recommended because Gaming workspaces benefit from Discord, Spotify and session widgets.";
-    if(item.tags.includes("brain"))return "Recommended because Brain OS can explain and automate this content.";
-    if(f.openTodos&&/task|automation|layout/.test(item.tags.join(" ")))return "Recommended because open tasks need better planning and automation.";
-    return "Recommended because it fits your current dashboard and Marketplace preferences.";
-  }
-  function ensureDetail(){
-    if($("#mp41-detail"))return;
-    const d=document.createElement("div");
-    d.id="mp41-detail";
-    d.className="mp41-detail";
-    document.body.appendChild(d);
-  }
-  function openDetail(id){
-    const item=catalog.find(i=>i.id===id);if(!item)return;
-    const on=!!state.installed[id];
-    const d=$("#mp41-detail");if(!d)return;
-    d.innerHTML='<div class="mp41-detail-card">'+
-      '<div class="mp41-detail-hero"><div class="mp41-detail-top"><div><div class="mp41-kicker">'+escape(item.type)+' / '+escape(item.creator)+'</div><div class="mp41-detail-title">'+escape(item.title)+'</div><div class="mp41-detail-copy">'+escape(item.desc)+'</div><div class="mp41-quick"><button class="mp41-btn '+(on?"installed":"primary")+'" data-mp41-install="'+item.id+'" type="button">'+(on?"Installed":"Install")+'</button><button class="mp41-btn" data-mp41-fav="'+item.id+'" type="button">'+(state.favorites[item.id]?"Saved":"Save")+'</button><button class="mp41-btn" data-mp41-close type="button">Close</button></div></div><div class="mp41-status">★ '+item.rating+' / '+item.downloads+'</div></div></div>'+
-      '<div class="mp41-detail-grid"><main class="mp41-list">'+
-        section("Features",[item.desc,"Personalized by Brain recommendations.","Lazy-loaded preview and profile-ready install state.","Compatible with "+item.compat+"."])+
-        section("Version history",["Current version "+item.version+".","Release notes include compatibility, performance and permissions clarity.","Rollback support is prepared in the install history."])+
-        section("Reviews",reviewLines(item))+
-      '</main><aside class="mp41-list">'+
-        section("Permissions",item.permissions)+
-        section("Developer",[item.creator,"Verified publisher profile ready.","Downloads: "+item.downloads,"Installation size: "+item.size])+
-        section("Compatibility",[item.compat,"Dependencies checked before install.","Supabase sync-ready metadata."])+
-      '</aside></div></div>';
-    d.classList.add("open");
-  }
-  function section(title,rows){return '<section class="mp41-row"><strong>'+escape(title)+'</strong>'+rows.map(r=>'<span>'+escape(r)+'</span>').join("")+'</section>'}
-  function reviewLines(item){
-    const saved=state.reviews[item.id];
-    return [saved||"Beautiful, useful and clearly integrated with ETHONE.","Permissions are understandable before install.","Feels native to the Personal OS."];
-  }
-  function closeDetail(){$("#mp41-detail")?.classList.remove("open")}
-  function install(id){
-    const item=catalog.find(i=>i.id===id);if(!item)return;
-    state.installed[id]=!state.installed[id];
-    state.history.push({ts:Date.now(),type:state.installed[id]?"install":"remove",id,title:item.title,version:item.version});
-    if(state.history.length>120)state.history=state.history.slice(-120);
+    try{localStorage.setItem(STORE_KEY,JSON.stringify(state));}catch(e){}
     try{
-      const os2=JSON.parse(localStorage.getItem("ethone:dashboard-os2")||"{}");
-      os2.installed=Object.assign({},os2.installed||{}, {[id]:state.installed[id]});
-      localStorage.setItem("ethone:dashboard-os2",JSON.stringify(os2));
+      const profile=typeof window.curP==="function"?window.curP():null;
+      if(profile&&profile.state){
+        profile.state.marketplace=Object.assign({},profile.state.marketplace||{},{
+          installed:state.installed,
+          favorites:state.favorites,
+          customThemes:state.customThemes,
+          activeThemeId:state.activeThemeId,
+          history:state.history.slice(-80),
+          updatedAt:Date.now()
+        });
+        if(typeof window.saveStateNow==="function")window.saveStateNow();
+      }
     }catch(e){}
-    save();
-    document.querySelectorAll('[data-mp41-item="'+id+'"]').forEach(el=>{el.classList.add("mp41-installing");setTimeout(()=>el.classList.remove("mp41-installing"),850)});
-    toast((state.installed[id]?"Installed ":"Removed ")+item.title,"success");
-    renderAll();
   }
-  function favorite(id){
-    state.favorites[id]=!state.favorites[id];
-    save();renderAll();
+
+  function escapeHTML(value){
+    return String(value??"").replace(/[&<>"]/g,function(ch){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch];
+    });
   }
-  function update(id){
-    const item=catalog.find(i=>i.id===id);if(!item)return;
-    state.updates[id]={version:item.version,updatedAt:Date.now(),rollback:true};
-    state.installed[id]=true;
-    save();
-    toast(item.title+" updated. Rollback point saved.","success");
-    renderAll();
+
+  function installedIds(){
+    return Object.keys(state.installed).filter(function(id){return !!state.installed[id];});
   }
-  function askBrain(){
-    const prompt="Recommend ETHONE Marketplace content for this user. Explain why each widget, theme, layout, plugin or automation pack is useful. Current catalog: "+catalog.map(i=>i.title+" ("+i.type+")").join(", ")+". Installed: "+installedIds().join(", ")+". User signals: "+JSON.stringify(facts());
-    if(window.ETHONEBrainOS?.route)window.ETHONEBrainOS.route(prompt);
-    else if(window.ETHONEBrainPlatform?.send)window.ETHONEBrainPlatform.send(prompt);
-    else if(typeof window.switchPage==="function"){window.switchPage("ai",null);setTimeout(()=>{const input=$("#ai-input");if(input){input.value=prompt;if(typeof window.sendAIMessage==="function")window.sendAIMessage()}},180)}
+
+  function customThemeItems(){
+    return state.customThemes.map(function(theme){
+      return Object.assign({},theme,{
+        category:"Themes",
+        author:theme.author||"You",
+        tags:Array.isArray(theme.tags)?theme.tags:["Custom","Local"],
+        version:theme.version||"1.0.0",
+        rating:theme.rating||5,
+        downloads:"Local",
+        size:"Local",
+        compat:"This profile",
+        permissions:["Apply appearance settings","Saved locally"],
+        changelog:Array.isArray(theme.changelog)?theme.changelog:["Created locally in ETHONE Theme Studio"],
+        reviews:["Your custom ETHONE theme."],
+        visual:"theme",
+        updated:false,
+        isTheme:true,
+        custom:true
+      });
+    });
   }
-  function renderAll(){["marketplace","store"].forEach(id=>{if($("#mp41-shell-"+id))render(id)})}
-  function handleClick(e){
-    const cat=e.target.closest("[data-mp41-category]");
-    if(cat){state.category=cat.dataset.mp41Category;state.query="";save();renderAll();return}
-    const col=e.target.closest("[data-mp41-collection]");
-    if(col){state.category="All";state.query=col.dataset.mp41Collection;save();renderAll();return}
-    const detail=e.target.closest("[data-mp41-detail]");
-    if(detail){openDetail(detail.dataset.mp41Detail);return}
-    const installBtn=e.target.closest("[data-mp41-install]");
-    if(installBtn){install(installBtn.dataset.mp41Install);return}
-    const fav=e.target.closest("[data-mp41-fav]");
-    if(fav){favorite(fav.dataset.mp41Fav);return}
-    const upd=e.target.closest("[data-mp41-update]");
-    if(upd){update(upd.dataset.mp41Update);return}
-    if(e.target.closest("[data-mp41-close]")){closeDetail();return}
-    if(e.target.closest("[data-mp41-brain]")){askBrain();return}
-    if(e.target.closest("#mp41-detail")&&!e.target.closest(".mp41-detail-card"))closeDetail();
+
+  function allThemeItems(){
+    const existing=catalog.filter(function(entry){return entry.category==="Themes";});
+    const existingById={};
+    existing.forEach(function(entry){existingById[entry.id]=entry;});
+    const enriched=THEME_MARKETPLACE.map(function(theme){
+      return Object.assign({},existingById[theme.id]||{},theme);
+    });
+    return enriched.concat(customThemeItems());
   }
-  function handleInput(e){
-    if(e.target&&String(e.target.id||"").startsWith("mp41-search-")){
-      state.query=e.target.value;
+
+  function marketplaceItems(){
+    if(state.category==="Themes")return allThemeItems();
+    return catalog.filter(function(entry){return entry.category===state.category;});
+  }
+
+  function filteredItems(){
+    const query=state.query.trim().toLowerCase();
+    return marketplaceItems().filter(function(entry){
+      if(!query)return true;
+      const haystack=[entry.title,entry.author,entry.description,entry.category,entry.tags.join(" "),entry.compat,(entry.palette||[]).join(" ")].join(" ").toLowerCase();
+      return haystack.includes(query);
+    }).sort(function(a,b){
+      return Number(!!state.installed[b.id])-Number(!!state.installed[a.id])||Number(state.activeThemeId===b.id)-Number(state.activeThemeId===a.id)||b.rating-a.rating||a.title.localeCompare(b.title);
+    });
+  }
+
+  function ensurePage(id){
+    if($("#page-"+id))return;
+    const page=document.createElement("div");
+    page.className="tab-content";
+    page.id="page-"+id;
+    page.setAttribute("role","tabpanel");
+    page.setAttribute("aria-live","polite");
+    page.dataset.qaPage="true";
+    page.innerHTML='<div id="ethone-os2-page-'+id+'"></div>';
+    const settings=$("#page-settings")||$("#page-ai")||$(".content");
+    if(settings&&settings.parentNode)settings.parentNode.insertBefore(page,settings);
+    else document.body.appendChild(page);
+  }
+
+  function ensureShell(pageId){
+    ensurePage(pageId);
+    const page=$("#page-"+pageId);
+    if(!page)return null;
+    let host=$("#ethone-os2-page-"+pageId,page);
+    if(!host){
+      host=document.createElement("div");
+      host.id="ethone-os2-page-"+pageId;
+      page.appendChild(host);
+    }
+    page.classList.add("marketplace41-ready");
+    if(!$("#mp41-shell-"+pageId,host)){
+      host.innerHTML='<section class="mp41-shell mp-store" id="mp41-shell-'+pageId+'"></section>';
+    }
+    return $("#mp41-shell-"+pageId,host);
+  }
+
+  function getSelected(){
+    const visible=filteredItems();
+    return visible.find(function(entry){return entry.id===state.selected;})||visible[0]||catalog[0];
+  }
+
+  function renderMarketplacePage(pageId){
+    const shell=ensureShell(pageId||"marketplace");
+    if(!shell)return;
+    const selected=getSelected();
+    const installed=installedIds();
+    shell.innerHTML=
+      '<section class="mp41-panel mp41-hero mp-store-hero">'+
+        '<div class="mp41-top">'+
+          '<div>'+
+            '<div class="mp41-kicker">ETHONE Marketplace</div>'+
+            '<div class="mp41-title">A real store for your Personal OS.</div>'+
+            '<div class="mp41-copy">Discover, preview and install widgets, plugins, themes, layouts, automations, templates, AI agents and packs. Every item has metadata, permissions, reviews and release notes before it touches your workspace.</div>'+
+          '</div>'+
+          '<div class="mp41-status">'+installed.length+' installed</div>'+
+        '</div>'+
+        '<div class="mp-store-search" role="search">'+
+          '<span class="mp-store-search-icon">K</span>'+
+          '<input id="mp41-search-'+pageId+'" value="'+escapeHTML(state.query)+'" placeholder="Search widgets, themes, Brain agents, layouts..." autocomplete="off" />'+
+        '</div>'+
+        '<div class="mp-store-categories" role="tablist" aria-label="Marketplace categories">'+
+          CATEGORIES.map(function(category){
+            return '<button class="mp41-tab '+(state.category===category?'active':'')+'" data-mp41-category="'+escapeHTML(category)+'" type="button" role="tab" aria-selected="'+(state.category===category?'true':'false')+'">'+escapeHTML(category)+'</button>';
+          }).join("")+
+        '</div>'+
+        '<div class="mp41-stats">'+
+          stat("Catalog",catalog.length,"Production-ready surfaces, no empty placeholder cards")+
+          stat("Categories",CATEGORIES.length,"Widgets, plugins, themes, layouts and more")+
+          stat("Installed",installed.length,"Saved locally and profile-ready")+
+          stat("Updates",catalog.filter(function(i){return i.updated;}).length,"Changelog and rollback metadata")+
+        '</div>'+
+      '</section>'+
+      '<section class="mp-store-layout">'+
+        '<main class="mp41-panel mp-store-catalog" aria-label="Marketplace catalog">'+
+          '<div class="mp41-section-head"><div><div class="mp41-h">'+escapeHTML(state.category)+'</div><div class="mp41-sub">'+(state.category==="Themes"?"Theme marketplace with previews, palettes, changelogs and local custom themes.":"Raycast-style catalog, tuned for ETHONE workspaces and Brain OS.")+'</div></div><div class="mp41-head-actions">'+(state.category==="Themes"?'<button class="mp41-btn primary" data-theme-create type="button">Create theme</button>':'')+'<button class="mp41-btn" data-mp41-brain type="button">Ask Brain</button></div></div>'+
+          '<div class="mp-store-grid">'+filteredItems().map(card).join("")+'</div>'+
+        '</main>'+
+        '<aside class="mp41-panel mp-store-detail" aria-live="polite">'+detail(selected)+'</aside>'+
+      '</section>'+
+      '<section class="mp41-panel mp-store-collections">'+
+        '<div class="mp41-section-head"><div><div class="mp41-h">Curated collections</div><div class="mp41-sub">Install a direction, not just an item.</div></div></div>'+
+        '<div class="mp-store-collection-grid">'+collection("Developer Stack","GitHub Command Center, Developer Pro Layout and Automation Scheduler.","developer")+collection("Brain OS Power","Daily Brief, Memory Curator and Morning Startup.","brain")+collection("Gaming Setup","Valorant Session Pack, Discord Presence Pro and Spotify Flow.","gaming")+collection("Minimal Premium","Minimal Graphite, Linear Focus and Quiet Aurora Pack.","minimal")+'</div>'+
+      '</section>';
+  }
+
+  function stat(label,value,sub){
+    return '<article class="mp41-stat"><span>'+escapeHTML(label)+'</span><strong>'+escapeHTML(value)+'</strong><p>'+escapeHTML(sub)+'</p></article>';
+  }
+
+  function card(entry){
+    const active=entry.id===getSelected().id;
+    const installed=!!state.installed[entry.id];
+    const themeActive=entry.category==="Themes"&&state.activeThemeId===entry.id;
+    return '<article class="mp-store-card '+(active?'is-active':'')+' '+(installed?'is-installed':'')+'" data-mp41-select="'+entry.id+'" tabindex="0">'+
+      '<div class="mp-store-thumb '+escapeHTML(entry.visual)+'">'+previewMarkup(entry)+'</div>'+
+      '<div class="mp-store-card-body">'+
+        '<div class="mp-store-card-top"><span>'+escapeHTML(entry.category)+'</span><span>'+(themeActive?'Active':'* '+entry.rating)+'</span></div>'+
+        '<h3>'+escapeHTML(entry.title)+'</h3>'+
+        '<p>'+escapeHTML(entry.description)+'</p>'+
+        (entry.category==="Themes"?paletteMarkup(entry.palette):'')+
+        '<div class="mp-store-tags">'+entry.tags.slice(0,3).map(function(tag){return '<span>'+escapeHTML(tag)+'</span>';}).join("")+'</div>'+
+        '<div class="mp-store-actions">'+
+          '<button class="mp41-btn '+(installed?'installed':'primary')+'" data-mp41-install="'+entry.id+'" type="button">'+(entry.category==="Themes"?(themeActive?'Active':installed?'Apply':'Install'):(installed?'Installed':'Install'))+'</button>'+
+          '<button class="mp41-btn" data-mp41-select="'+entry.id+'" type="button">Details</button>'+
+        '</div>'+
+      '</div>'+
+    '</article>';
+  }
+
+  function previewMarkup(entry){
+    if(entry.category==="Themes"){
+      const palette=entry.palette&&entry.palette.length?entry.palette:["#09090b","#17171c","#8b5cf6","#f5f3ff"];
+      return '<div class="theme-preview-window" style="--theme-preview-accent:'+escapeHTML(palette[2]||"#8b5cf6")+';--theme-preview-bg:'+escapeHTML(palette[0]||"#09090b")+';--theme-preview-surface:'+escapeHTML(palette[1]||"#17171c")+'"><div class="theme-preview-top"><i></i><i></i><i></i></div><div class="theme-preview-body"><aside></aside><main><strong>'+escapeHTML(entry.title)+'</strong><span></span><span></span><div></div></main></div></div>';
+    }
+    return '<div class="mp-preview-window"><i></i><i></i><i></i><strong>'+escapeHTML(entry.title.slice(0,2).toUpperCase())+'</strong><span></span><span></span><span></span></div>';
+  }
+
+  function paletteMarkup(palette){
+    if(!palette||!palette.length)return "";
+    return '<div class="theme-palette">'+palette.slice(0,6).map(function(color){return '<span style="background:'+escapeHTML(color)+'" title="'+escapeHTML(color)+'"></span>';}).join("")+'</div>';
+  }
+
+  function detail(entry){
+    if(!entry)return '<div class="mp-store-empty">Select an item.</div>';
+    if(entry.category==="Themes")return themeDetail(entry);
+    const installed=!!state.installed[entry.id];
+    return '<div class="mp-detail-head">'+
+        '<div class="mp-store-thumb large '+escapeHTML(entry.visual)+'">'+previewMarkup(entry)+'</div>'+
+        '<div><div class="mp41-kicker">'+escapeHTML(entry.category)+' / '+escapeHTML(entry.author)+'</div><h2>'+escapeHTML(entry.title)+'</h2><p>'+escapeHTML(entry.description)+'</p></div>'+
+      '</div>'+
+      '<div class="mp-detail-actions">'+
+        '<button class="mp41-btn '+(installed?'installed':'primary')+'" data-mp41-install="'+entry.id+'" type="button">'+(installed?'Remove':'Install')+'</button>'+
+        '<button class="mp41-btn" data-mp41-favorite="'+entry.id+'" type="button">'+(state.favorites[entry.id]?'Saved':'Save')+'</button>'+
+        '<button class="mp41-btn" data-coming-soon="Marketplace live test" data-coming-soon-description="Sandbox testing for marketplace items will be enabled when the plugin/widget runtime verifier is connected." type="button">Test</button>'+
+      '</div>'+
+      '<div class="mp-detail-meta">'+
+        meta("Version",entry.version)+meta("Author",entry.author)+meta("Downloads",entry.downloads)+meta("Size",entry.size)+meta("Compatibility",entry.compat)+
+      '</div>'+
+      detailSection("Screenshots",[
+        "Preview card, compact widget state and installed configuration are available before install.",
+        "All previews are HTML/CSS surfaces, not static screenshots."
+      ])+
+      detailSection("Permissions",entry.permissions)+
+      detailSection("Changelog",entry.changelog)+
+      detailSection("Reviews",entry.reviews);
+  }
+
+  function themeDetail(entry){
+    const installed=!!state.installed[entry.id];
+    const active=state.activeThemeId===entry.id;
+    return '<div class="theme-detail">'+
+      '<div class="mp-detail-head">'+
+        '<div class="mp-store-thumb large theme">'+previewMarkup(entry)+'</div>'+
+        '<div><div class="mp41-kicker">Theme / '+escapeHTML(entry.author)+'</div><h2>'+escapeHTML(entry.title)+'</h2><p>'+escapeHTML(entry.description)+'</p>'+paletteMarkup(entry.palette)+'</div>'+
+      '</div>'+
+      '<div class="mp-detail-actions">'+
+        '<button class="mp41-btn '+(active?'installed':'primary')+'" data-mp41-install="'+entry.id+'" type="button">'+(active?'Active theme':installed?'Apply theme':'Install theme')+'</button>'+
+        '<button class="mp41-btn" data-theme-preview="'+entry.id+'" type="button">Preview</button>'+
+        '<button class="mp41-btn" data-mp41-favorite="'+entry.id+'" type="button">'+(state.favorites[entry.id]?'Saved':'Save')+'</button>'+
+        (entry.custom?'<button class="mp41-btn" data-theme-edit="'+entry.id+'" type="button">Edit</button>':'')+
+      '</div>'+
+      '<div class="mp-detail-meta">'+
+        meta("Version",entry.version)+meta("Author",entry.author)+meta("Downloads",entry.downloads)+meta("Status",active?"Active":installed?"Installed":"Not installed")+meta("Compatibility",entry.compat)+
+      '</div>'+
+      '<section class="mp-detail-section"><h3>Palette</h3><div class="theme-palette large">'+(entry.palette||[]).map(function(color){return '<span style="background:'+escapeHTML(color)+'"><em>'+escapeHTML(color)+'</em></span>';}).join("")+'</div></section>'+
+      detailSection("Screenshots",entry.screenshots||["Dashboard","Settings","Widgets"])+
+      detailSection("Changelog",entry.changelog||[])+
+      detailSection("Permissions",entry.permissions||[])+
+    '</div>';
+  }
+
+  function meta(label,value){
+    return '<div><span>'+escapeHTML(label)+'</span><strong>'+escapeHTML(value)+'</strong></div>';
+  }
+
+  function detailSection(title,rows){
+    return '<section class="mp-detail-section"><h3>'+escapeHTML(title)+'</h3>'+rows.map(function(row){return '<p>'+escapeHTML(row)+'</p>';}).join("")+'</section>';
+  }
+
+  function collection(title,copy,query){
+    return '<article class="mp-store-collection"><strong>'+escapeHTML(title)+'</strong><span>'+escapeHTML(copy)+'</span><button class="mp41-btn" data-mp41-query="'+escapeHTML(query)+'" type="button">Explore</button></article>';
+  }
+
+  function setSelected(id){
+    if(allItems().some(function(entry){return entry.id===id;})){
+      state.selected=id;
       save();
       renderAll();
     }
   }
-  function patchBrain(){
-    if(window.ETHONEMarketplace?.__patched)return;
-    if(window.ETHONEAICore&&!window.ETHONEAICore.__mp41Patched){
-      const old=window.ETHONEAICore.complete;
-      if(typeof old==="function"){
-        window.ETHONEAICore.complete=function(input,opts){
-          const prefix="ETHONE Marketplace 4.1 directive: Marketplace is a living App Store for the Personal OS, not a widget download page. It includes widgets, themes, layouts, icon packs, wallpaper packs, Brain plugins, automation packs, workspace templates, developer extensions and community creations. Recommendations must be personalized, permission-aware, Supabase/profile-ready and always explain why.\n\n";
-          return old.call(this,prefix+String(input||""),opts);
-        };
-        window.ETHONEAICore.__mp41Patched=true;
+
+  function install(id){
+    const entry=allItems().find(function(item){return item.id===id;});
+    if(!entry)return;
+    if(entry.category==="Themes"){
+      state.installed[id]=true;
+      state.activeThemeId=id;
+      applyThemePackage(entry,true);
+      state.history.push({id,action:"apply-theme",title:entry.title,category:entry.category,version:entry.version,ts:Date.now()});
+      state.history=state.history.slice(-120);
+      save();
+      notify("Theme applied: "+entry.title,"Theme Marketplace","success");
+      recordTimeline(entry,"applied");
+      renderAll();
+      return;
+    }
+    state.installed[id]=!state.installed[id];
+    state.history.push({id,action:state.installed[id]?"install":"remove",title:entry.title,category:entry.category,version:entry.version,ts:Date.now()});
+    state.history=state.history.slice(-120);
+    save();
+    notify((state.installed[id]?"Installed ":"Removed ")+entry.title,"Marketplace",state.installed[id]?"success":"info");
+    recordTimeline(entry,state.installed[id]?"installed":"removed");
+    renderAll();
+  }
+
+  function favorite(id){
+    const entry=allItems().find(function(item){return item.id===id;});
+    if(!entry)return;
+    state.favorites[id]=!state.favorites[id];
+    save();
+    notify((state.favorites[id]?"Saved ":"Removed ")+entry.title,"Marketplace","info");
+    renderAll();
+  }
+
+  function testConnection(id){
+    const entry=allItems().find(function(item){return item.id===id;});
+    if(!entry)return;
+    if(entry.category==="Themes"){previewTheme(entry);return;}
+    if(window.ETHONEComingSoon&&typeof window.ETHONEComingSoon.open==="function"){
+      window.ETHONEComingSoon.open("Marketplace live test","Sandbox testing for "+entry.title+" will be available when the runtime verifier is connected.");
+    }else notify("Marketplace live testing is coming soon.","Marketplace","info");
+  }
+
+  function allItems(){
+    const byId={};
+    catalog.forEach(function(entry){byId[entry.id]=entry;});
+    allThemeItems().forEach(function(entry){byId[entry.id]=entry;});
+    return Object.keys(byId).map(function(id){return byId[id];});
+  }
+
+  function applyThemePackage(entry,persist){
+    if(!entry||!entry.tokens)return;
+    const tokens=entry.tokens;
+    const root=document.documentElement.style;
+    const accent=tokens.accent||"#8b5cf6";
+    const rgb=hexToRgb(accent);
+    root.setProperty("--accent",accent);
+    root.setProperty("--accent-light",tokens.accent5||accent);
+    root.setProperty("--accent2",tokens.accent2||"#34d399");
+    root.setProperty("--accent3",tokens.accent3||"#fb7185");
+    root.setProperty("--accent4",tokens.accent4||"#fbbf24");
+    root.setProperty("--accent5",tokens.accent5||"#a78bfa");
+    root.setProperty("--accent-glow",tokens.glow||"rgba("+rgb+",0.24)");
+    root.setProperty("--accent-subtle","rgba("+rgb+",0.10)");
+    root.setProperty("--border3","rgba("+rgb+",0.24)");
+    root.setProperty("--eh-accent-rgb",rgb);
+    root.setProperty("--bg",tokens.bg||"#09090b");
+    root.setProperty("--surface",tokens.surface||"#17171c");
+    root.setProperty("--theme-radius-scale",tokens.radius!=null?tokens.radius:1);
+    root.setProperty("--theme-blur-scale",tokens.blur!=null?tokens.blur:1);
+    root.setProperty("--theme-glow-scale",tokens.glowScale!=null?tokens.glowScale:1);
+    root.setProperty("--theme-surface-opacity",tokens.opacity!=null?tokens.opacity:1);
+    root.setProperty("--theme-font-scale",tokens.fontScale!=null?tokens.fontScale:1);
+    document.documentElement.setAttribute("data-density",tokens.density==="comfortable"?"":(tokens.density||""));
+    document.documentElement.setAttribute("data-font",tokens.fontFamily==="inter"?"":(tokens.fontFamily||""));
+    if(persist){
+      const profile=typeof window.curP==="function"?window.curP():null;
+      if(profile){
+        profile.themeIdx=99;
+        profile.customAccent=accent;
+        profile.marketplaceTheme={id:entry.id,title:entry.title,author:entry.author,tokens:Object.assign({},tokens),palette:(entry.palette||[]).slice(),version:entry.version};
+        if(!profile.state)profile.state={};
+        profile.state.marketplaceTheme=profile.marketplaceTheme;
+        if(profile.theme){
+          ["radius","blur","density","fontFamily","fontScale","opacity"].forEach(function(key){
+            if(tokens[key]!=null)profile.theme[key]=tokens[key];
+          });
+        }
+        try{if(typeof window.saveStateNow==="function")window.saveStateNow();}catch(e){}
       }
     }
-    if(typeof window.getCmdItems==="function"&&!window.getCmdItems.__mp41Wrapped){
-      const old=window.getCmdItems;
-      window.getCmdItems=function(q){
-        const res=old.apply(this,arguments);
-        const text=String(q||"").trim();
-        if(text.length>1){
-          const item={icon:"MP",label:"Search Marketplace: "+text,sub:"Widgets, themes, layouts, plugins, automations and collections",tag:"Marketplace",action:()=>{
-            if(typeof window.closeCmdPalette==="function")window.closeCmdPalette();
-            const actions=window.Ethone&&window.Ethone.get&&window.Ethone.get("actions");
-            if(actions&&actions.has("dashboard.nav.marketplace"))actions.dispatch("dashboard.nav.marketplace");
-            state.query=text;save();setTimeout(renderAll,120);
-          }};
-          res.actions=[item].concat(res.actions||[]);
-          res.all=[item].concat(res.all||[]);
-        }
-        return res;
-      };
-      window.getCmdItems.__mp41Wrapped=true;
+  }
+
+  function restoreMarketplaceTheme(){
+    const profile=typeof window.curP==="function"?window.curP():null;
+    const active=profile&&(profile.marketplaceTheme||(profile.state&&profile.state.marketplaceTheme));
+    if(!active||!active.tokens)return;
+    applyThemePackage({id:active.id,title:active.title,author:active.author,tokens:active.tokens,palette:active.palette,version:active.version,category:"Themes"},false);
+    state.activeThemeId=active.id||state.activeThemeId;
+  }
+
+  function previewTheme(entry){
+    applyThemePackage(entry,false);
+    notify("Previewing "+entry.title+". Install it to keep this theme after reload.","Theme Marketplace","info");
+    setTimeout(restoreMarketplaceTheme,6000);
+  }
+
+  function openThemeCreator(id){
+    const existing=id?allThemeItems().find(function(entry){return entry.id===id;}):null;
+    const theme=existing&&existing.custom?existing:null;
+    const palette=(theme&&theme.palette)||["#09090b","#17171c","#8b5cf6","#f5f3ff","#a1a1aa"];
+    const tokens=(theme&&theme.tokens)||{};
+    closeThemeCreator();
+    const overlay=document.createElement("div");
+    overlay.className="theme-creator-overlay";
+    overlay.setAttribute("role","dialog");
+    overlay.setAttribute("aria-modal","true");
+    overlay.setAttribute("aria-label",theme?"Edit custom ETHONE theme":"Create custom ETHONE theme");
+    overlay.innerHTML=
+      '<form class="theme-creator-card" data-theme-creator-form data-theme-id="'+escapeHTML(theme?theme.id:"")+'">'+
+        '<div class="theme-creator-head">'+
+          '<div><span>Theme Studio</span><h2>'+(theme?"Edit your theme":"Create your theme")+'</h2><p>Build a local ETHONE theme with a palette, version and changelog. It stays compatible with the current appearance engine.</p></div>'+
+          '<button class="mp41-btn" data-theme-creator-close type="button" aria-label="Close theme creator">Close</button>'+
+        '</div>'+
+        '<div class="theme-creator-grid">'+
+          creatorField("Theme name","title","text",theme?theme.title:"My ETHONE Theme")+
+          creatorField("Author","author","text",theme?theme.author:"You")+
+          creatorField("Version","version","text",theme?theme.version:"1.0.0")+
+          creatorField("Accent","accent","color",tokens.accent||palette[2]||"#8b5cf6")+
+          creatorField("Background","bg","color",tokens.bg||palette[0]||"#09090b")+
+          creatorField("Surface","surface","color",tokens.surface||palette[1]||"#17171c")+
+          creatorField("Text","text","color",palette[3]||"#f5f3ff")+
+          creatorField("Muted","muted","color",palette[4]||"#a1a1aa")+
+          '<label class="theme-creator-field wide"><span>Description</span><textarea name="description" rows="3">'+escapeHTML(theme?theme.description:"A custom premium ETHONE theme tuned for my workspace.")+'</textarea></label>'+
+          '<label class="theme-creator-field wide"><span>Changelog</span><textarea name="changelog" rows="3">'+escapeHTML((theme&&theme.changelog?theme.changelog:["Created locally in ETHONE Theme Studio"]).join("\\n"))+'</textarea></label>'+
+        '</div>'+
+        '<div class="theme-creator-preview" aria-hidden="true">'+
+          '<div class="theme-preview-window" style="--theme-bg:'+(tokens.bg||palette[0]||"#09090b")+';--theme-surface:'+(tokens.surface||palette[1]||"#17171c")+';--theme-accent:'+(tokens.accent||palette[2]||"#8b5cf6")+'">'+
+            '<div class="theme-preview-top"><span></span><span></span><span></span><strong>ETHONE</strong></div>'+
+            '<div class="theme-preview-body"><aside><i></i><i></i><i></i></aside><main><b></b><em></em><div><span></span><span></span></div></main></div>'+
+          '</div>'+
+          paletteMarkup([tokens.bg||palette[0],tokens.surface||palette[1],tokens.accent||palette[2],palette[3],palette[4]])+
+        '</div>'+
+        '<div class="theme-creator-actions">'+
+          (theme?'<button class="mp41-btn danger" data-theme-delete="'+escapeHTML(theme.id)+'" type="button">Delete</button>':'<span></span>')+
+          '<div><button class="mp41-btn" data-theme-creator-close type="button">Cancel</button><button class="mp41-btn primary" data-theme-save type="submit">Save and apply</button></div>'+
+        '</div>'+
+      '</form>';
+    document.body.appendChild(overlay);
+    const first=overlay.querySelector("input[name='title']");
+    if(first)first.focus();
+  }
+
+  function creatorField(label,name,type,value){
+    return '<label class="theme-creator-field"><span>'+escapeHTML(label)+'</span><input name="'+escapeHTML(name)+'" type="'+escapeHTML(type)+'" value="'+escapeHTML(value)+'" required /></label>';
+  }
+
+  function closeThemeCreator(){
+    $$(".theme-creator-overlay").forEach(function(node){node.remove();});
+  }
+
+  function saveCustomTheme(form){
+    if(!form)return;
+    const data=new FormData(form);
+    const id=form.dataset.themeId||("custom-theme-"+Date.now().toString(36));
+    const accent=String(data.get("accent")||"#8b5cf6");
+    const bg=String(data.get("bg")||"#09090b");
+    const surface=String(data.get("surface")||"#17171c");
+    const text=String(data.get("text")||"#f5f3ff");
+    const muted=String(data.get("muted")||"#a1a1aa");
+    const title=String(data.get("title")||"Custom ETHONE Theme").trim()||"Custom ETHONE Theme";
+    const theme=themeItem(
+      id,
+      title,
+      String(data.get("author")||"You").trim()||"You",
+      String(data.get("description")||"A custom premium ETHONE theme.").trim(),
+      ["Custom","Local"],
+      String(data.get("version")||"1.0.0").trim()||"1.0.0",
+      5,
+      "Local",
+      [bg,surface,accent,text,muted],
+      {
+        accent,
+        accent2:"#34d399",
+        accent3:"#fb7185",
+        accent4:"#d8c17a",
+        accent5:accent,
+        bg,
+        surface,
+        glow:"rgba("+hexToRgb(accent)+",0.22)",
+        radius:1,
+        blur:.85,
+        density:"comfortable",
+        fontFamily:"inter",
+        fontScale:1,
+        opacity:.96,
+        glowScale:.86
+      },
+      String(data.get("changelog")||"Created locally in ETHONE Theme Studio").split(/\r?\n/).map(function(line){return line.trim();}).filter(Boolean),
+      ["Custom dashboard preview","Custom card surfaces","Custom focus states"]
+    );
+    theme.custom=true;
+    state.customThemes=state.customThemes.filter(function(item){return item.id!==id;}).concat(theme);
+    state.category="Themes";
+    state.selected=id;
+    state.installed[id]=true;
+    state.activeThemeId=id;
+    applyThemePackage(theme,true);
+    state.history.push({id,action:"create-theme",title:theme.title,category:"Themes",version:theme.version,ts:Date.now()});
+    state.history=state.history.slice(-120);
+    save();
+    closeThemeCreator();
+    notify("Custom theme saved and applied: "+theme.title,"Theme Marketplace","success");
+    recordTimeline(theme,"created");
+    renderAll();
+  }
+
+  function deleteCustomTheme(id){
+    const entry=state.customThemes.find(function(item){return item.id===id;});
+    state.customThemes=state.customThemes.filter(function(item){return item.id!==id;});
+    delete state.installed[id];
+    if(state.activeThemeId===id)state.activeThemeId="";
+    if(state.selected===id)state.selected="minimal-graphite";
+    save();
+    closeThemeCreator();
+    notify("Custom theme removed"+(entry?": "+entry.title:""),"Theme Marketplace","info");
+    renderAll();
+  }
+
+  function hexToRgb(hex){
+    hex=String(hex||"#8b5cf6").replace("#","");
+    if(hex.length===3)hex=hex.split("").map(function(c){return c+c;}).join("");
+    const r=parseInt(hex.slice(0,2),16)||139,g=parseInt(hex.slice(2,4),16)||92,b=parseInt(hex.slice(4,6),16)||246;
+    return r+","+g+","+b;
+  }
+
+  function askBrain(){
+    const prompt="Recommend Marketplace items for my current ETHONE workspace. Include widgets, plugins, themes, layouts, automations, templates, AI agents and packs. Installed: "+installedIds().join(", ")+". Catalog: "+catalog.map(function(i){return i.title+" ("+i.category+")";}).join(", ");
+    if(typeof window.switchPage==="function")window.switchPage("ai",null);
+    setTimeout(function(){
+      const input=$("#ai-input");
+      if(input){
+        input.value=prompt;
+        input.focus();
+      }
+    },180);
+  }
+
+  function notify(message,title,type){
+    if(window.ETHONENotifications&&typeof window.ETHONENotifications.notify==="function"){
+      window.ETHONENotifications.notify({title:title||"Marketplace",message,category:type||"info",source:"Marketplace"});
+      return;
+    }
+    if(typeof window.toast==="function")window.toast(message,type||"info");
+  }
+
+  function recordTimeline(entry,action){
+    if(window.ETHONETimeline&&typeof window.ETHONETimeline.record==="function"){
+      window.ETHONETimeline.record({
+        title:entry.title+" "+action,
+        description:entry.category+" "+entry.version+" in ETHONE Marketplace.",
+        category:"system",
+        source:"Marketplace"
+      });
     }
   }
-  function toast(msg,type){
-    if(typeof window.toast==="function"){try{window.toast(msg,type||"info");return}catch(e){}}
-    console.log("[ETHONE Marketplace]",msg);
+
+  function handleClick(event){
+    const createTheme=event.target.closest("[data-theme-create]");
+    if(createTheme){openThemeCreator();return;}
+    const previewThemeButton=event.target.closest("[data-theme-preview]");
+    if(previewThemeButton){
+      const entry=allItems().find(function(item){return item.id===previewThemeButton.dataset.themePreview;});
+      if(entry)previewTheme(entry);
+      return;
+    }
+    const editThemeButton=event.target.closest("[data-theme-edit]");
+    if(editThemeButton){openThemeCreator(editThemeButton.dataset.themeEdit);return;}
+    if(event.target.closest("[data-theme-creator-close]")){closeThemeCreator();return;}
+    const deleteThemeButton=event.target.closest("[data-theme-delete]");
+    if(deleteThemeButton){deleteCustomTheme(deleteThemeButton.dataset.themeDelete);return;}
+    const category=event.target.closest("[data-mp41-category]");
+    if(category){state.category=category.dataset.mp41Category;state.query="";state.selected=(filteredItems()[0]||catalog[0]).id;save();renderAll();return;}
+    const select=event.target.closest("[data-mp41-select]");
+    if(select){setSelected(select.dataset.mp41Select);return;}
+    const installButton=event.target.closest("[data-mp41-install]");
+    if(installButton){event.stopPropagation();install(installButton.dataset.mp41Install);return;}
+    const favoriteButton=event.target.closest("[data-mp41-favorite]");
+    if(favoriteButton){favorite(favoriteButton.dataset.mp41Favorite);return;}
+    const testButton=event.target.closest("[data-mp41-test]");
+    if(testButton){testConnection(testButton.dataset.mp41Test);return;}
+    const queryButton=event.target.closest("[data-mp41-query]");
+    if(queryButton){state.query=queryButton.dataset.mp41Query;save();renderAll();return;}
+    if(event.target.closest("[data-mp41-brain]"))askBrain();
   }
+
+  function handleSubmit(event){
+    const form=event.target.closest("[data-theme-creator-form]");
+    if(!form)return;
+    event.preventDefault();
+    saveCustomTheme(form);
+  }
+
+  function handleInput(event){
+    if(event.target&&String(event.target.id||"").startsWith("mp41-search-")){
+      state.query=event.target.value;
+      const first=filteredItems()[0];
+      if(first)state.selected=first.id;
+      save();
+      renderAll();
+    }
+  }
+
+  function handleKeydown(event){
+    const card=event.target.closest(".mp-store-card");
+    if(!card)return;
+    if(event.key==="Enter"||event.key===" "){
+      event.preventDefault();
+      setSelected(card.dataset.mp41Select);
+    }
+  }
+
+  function patchActions(){
+    const actions=window.Ethone&&window.Ethone.get&&window.Ethone.get("actions");
+    if(actions&&typeof actions.register==="function"){
+      actions.register("dashboard.nav.marketplace",{label:"Marketplace",handler:function(){
+        if(typeof window.switchPage==="function")window.switchPage("marketplace",null);
+      }});
+    }
+  }
+
+  function renderAll(){
+    ["marketplace","store"].forEach(function(id){
+      if($("#page-"+id))renderMarketplacePage(id);
+    });
+  }
+
   function run(){
-    ensureShell("marketplace");
-    ensureShell("store");
-    patchBrain();
+    ensurePage("marketplace");
+    restoreMarketplaceTheme();
+    setTimeout(restoreMarketplaceTheme,250);
+    setTimeout(restoreMarketplaceTheme,1200);
+    renderMarketplacePage("marketplace");
+    patchActions();
   }
-  function startMarketplace41(){
+
+  function start(){
     document.addEventListener("click",handleClick);
     document.addEventListener("input",handleInput);
-    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run,{once:true});else run();
-    setTimeout(run,400);
-    setTimeout(run,1600);
-    setInterval(()=>{if($("#page-marketplace")||$("#page-store"))run()},30000);
+    document.addEventListener("submit",handleSubmit);
+    document.addEventListener("keydown",handleKeydown);
+    window.addEventListener("ethone:page-ready",function(event){
+      restoreMarketplaceTheme();
+      if(event.detail&&event.detail.page==="marketplace")renderMarketplacePage("marketplace");
+    });
+    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run,{once:true});
+    else run();
   }
-  if(window.ethoneRunWhenPageReady)window.ethoneRunWhenPageReady("marketplace-41-runtime",["marketplace","store"],startMarketplace41);else startMarketplace41();
-  window.ETHONEMarketplace={run,catalog:()=>catalog.slice(),search:q=>{state.query=q||"";save();renderAll();return filtered()},install,update,favorite,recommendations:recommended,state:()=>state,__patched:true};
+
+  start();
+  window.renderMarketplacePage=function(){renderMarketplacePage("marketplace");};
+  window.ETHONEMarketplace={
+    run,
+    catalog:function(){return catalog.slice();},
+    categories:function(){return CATEGORIES.slice();},
+    themes:function(){return allThemeItems();},
+    applyTheme:function(id){install(id);},
+    createTheme:function(theme){
+      if(!theme||!theme.id)return null;
+      state.customThemes=state.customThemes.filter(function(item){return item.id!==theme.id;}).concat(theme);
+      save();
+      renderAll();
+      return theme;
+    },
+    install,
+    favorite,
+    search:function(query){state.query=query||"";save();renderAll();return filteredItems();},
+    recommendations:function(){return catalog.slice().sort(function(a,b){return b.rating-a.rating;}).slice(0,6);},
+    state:function(){return state;}
+  };
 })();

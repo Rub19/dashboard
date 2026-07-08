@@ -48,6 +48,7 @@ async function onAuthSuccess(userArg){
     }
     normalizeAllProfiles();
     try{ sessionStorage.setItem('nexus_profiles_'+_sbUser.id,JSON.stringify(profiles)); }catch(e){}
+    try{ if(window.ETHONETimeline)window.ETHONETimeline.record({dedupe:'auth-'+_sbUser.id+'-'+new Date().toLocaleDateString('en-CA'),title:'Connexion ETHONE',body:user.email||'',category:'auth',icon:'log-in',source:'auth'}); }catch(e){}
 
     // 5. Affiche le dashboard — hideBoot() est appelé à l'intérieur
     showDashboardOrProfiles();

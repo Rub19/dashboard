@@ -128,6 +128,31 @@
     btn.setAttribute("aria-pressed",String(show));
     btn.setAttribute("aria-label",show?"Masquer le mot de passe":"Afficher le mot de passe");
   }
+  function updatePasswordStrength(value){
+    var bar=qs("#pw-strength-bar");
+    if(!bar)return;
+    var pw=String(value||"");
+    var score=0;
+    if(pw.length>=6)score+=1;
+    if(pw.length>=10)score+=1;
+    if(/[A-Z]/.test(pw)&&/[a-z]/.test(pw))score+=1;
+    if(/\d/.test(pw))score+=1;
+    if(/[^A-Za-z0-9]/.test(pw))score+=1;
+    var pct=Math.min(100,score*20);
+    var color=pct>=80?"#22c55e":pct>=60?"#a78bfa":pct>=40?"#f59e0b":"#ef4444";
+    bar.style.setProperty("--pw-strength",pct+"%");
+    bar.style.setProperty("--pw-strength-color",color);
+    bar.setAttribute("aria-valuemin","0");
+    bar.setAttribute("aria-valuemax","100");
+    bar.setAttribute("aria-valuenow",String(pct));
+    bar.setAttribute("role","meter");
+    bar.dataset.strength=String(score);
+    qsa(".pw-s",bar).forEach(function(segment,index){
+      var active=index<Math.ceil(score/1.25);
+      segment.style.background=active?color:"rgba(255,255,255,.075)";
+      segment.style.transform=active?"scaleY(1.25)":"scaleY(1)";
+    });
+  }
   async function login(){
     var client=supabaseReady(); if(!client)return;
     var id=(qs("#auth-login-id")&&qs("#auth-login-id").value||"").trim();
@@ -194,6 +219,10 @@
     try{localStorage.setItem("nexus_lang",l);localStorage.setItem("ethone_lang",l)}catch(e){}
     if(typeof window.applyI18n==="function"){try{window.applyI18n()}catch(e){warn("Global i18n failed; auth fallback applied",e)}}
     applyTranslations();
+    if(typeof window.ethoneSyncAuthHeroLanguage==="function"){
+      setTimeout(window.ethoneSyncAuthHeroLanguage,0);
+      setTimeout(window.ethoneSyncAuthHeroLanguage,80);
+    }
   }
   function routeClick(target,event){
     var button=target.closest&&target.closest("#tab-login,#tab-register,#auth-login-btn,#form-register .lb-btn-primary,#form-login .lb-ghost,#btn-google,#btn-github,#auth-lang-bar button,.lb-eye,button[onclick*='togglePwVis']");
@@ -241,7 +270,17 @@
   window.doForgotPassword=forgot;
   window.doGoogle=function(){return oauth("google")};
   window.doGithub=function(){return oauth("github")};
+  window.updatePwStrength=updatePasswordStrength;
   window.updateAuthLangBar=applyTranslations;
+  if(!window.updateAuthLangBar.__heroSyncWrapped){
+    var updateAuthLangBarBase=window.updateAuthLangBar;
+    window.updateAuthLangBar=function(){
+      var result=updateAuthLangBarBase.apply(this,arguments);
+      if(typeof window.ethoneSyncAuthHeroLanguage==="function")setTimeout(window.ethoneSyncAuthHeroLanguage,0);
+      return result;
+    };
+    window.updateAuthLangBar.__heroSyncWrapped=true;
+  }
   window.togglePwVis=function(inputId,btn){var b=btn||qs("button[onclick*='"+inputId+"']");if(b)togglePassword(b);else{var input=qs("#"+CSS.escape(inputId));if(input)input.type=input.type==="password"?"text":"password"}};
   window.ethoneAuthInteractivityAudit=function(){
     return bind();

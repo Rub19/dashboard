@@ -1,4 +1,4 @@
-/* ETHONE legacy compatibility module: discord. */
+﻿/* ETHONE legacy compatibility module: discord. */
 // === DISCORD ===
 async function connectDiscord(){
   const userId=document.getElementById('dc-userid').value.trim();
@@ -20,7 +20,7 @@ async function connectDiscord(){
     if(typeof renderManualBadgesUI==='function')renderManualBadgesUI();
     startLanyardWS(userId);
     toast('Discord connected!','success');
-    addActivity('Connected Discord account','var(--discord)');
+    addActivity('Connected Discord account','var(--discord)','integration');
   }catch(e){toast('Could not reach Lanyard API','error');console.error(e)}
 }
 
@@ -58,9 +58,9 @@ function renderDiscordCard(d){
   const name=d.discord_user.global_name||d.discord_user.username;
   const nameEl=document.getElementById('dc-preview-name');
   if(nameEl)nameEl.textContent=name;
-  const statusMap={online:'🟢 Online',idle:'🟡 Idle',dnd:'🔴 Do Not Disturb',offline:'⚫ Offline'};
+  const statusMap={online:'ðŸŸ¢ Online',idle:'ðŸŸ¡ Idle',dnd:'ðŸ”´ Do Not Disturb',offline:'âš« Offline'};
   const subEl=document.getElementById('dc-preview-sub');
-  if(subEl)subEl.textContent=statusMap[d.discord_status]||'⚫ Offline';
+  if(subEl)subEl.textContent=statusMap[d.discord_status]||'âš« Offline';
   // Activity
   const actEl=document.getElementById('dc-preview-activity');
   const act=d.activities?.find(a=>a.type===0||a.type===2||a.type===4);
@@ -69,7 +69,7 @@ function renderDiscordCard(d){
       const typeLabel=act.type===2?'Listening to':'Playing';
       document.getElementById('dc-activity-type').textContent=typeLabel;
       document.getElementById('dc-activity-name').textContent=act.name||'';
-      document.getElementById('dc-activity-detail').textContent=[act.details,act.state].filter(Boolean).join(' · ');
+      document.getElementById('dc-activity-detail').textContent=[act.details,act.state].filter(Boolean).join(' Â· ');
       actEl.style.display='block';
     } else {
       actEl.style.display='none';
@@ -145,7 +145,7 @@ function refreshDiscordSidebar(){
     if(act){
       const isSpotify=act.type===2;
       const actColor=isSpotify?'rgba(29,185,84,.85)':'rgba(88,101,242,.85)';
-      actEl.innerHTML=`<span style="color:${actColor};font-size:10.5px">${isSpotify?'♪ ':'▶ '}<span>${act.name||''}</span></span>`;
+      actEl.innerHTML=`<span style="color:${actColor};font-size:10.5px">${isSpotify?'â™ª ':'â–¶ '}<span>${act.name||''}</span></span>`;
       actEl.style.display='block';
     } else {
       actEl.style.display='none';
@@ -163,13 +163,13 @@ function updateSpotifyFromLanyard(d){
   const isDiscordOnline=['online','idle','dnd'].includes(dcStatus);
 
   if(isDiscordOnline&&sp&&sp.song){
-    // Discord online + Spotify playing → Lanyard widget
+    // Discord online + Spotify playing â†’ Lanyard widget
     if(wrap)wrap.style.setProperty('display','block','important');
     if(iframeWrap)iframeWrap.style.display='none';
     const artEl=document.getElementById('np-art');
     if(artEl){
-      if(sp.album_art_url)artEl.innerHTML=`<img src="${sp.album_art_url}" alt="album" onerror="this.innerHTML='♪'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:8px;display:block">`;
-      else artEl.innerHTML='<span>♪</span>';
+      if(sp.album_art_url)artEl.innerHTML=`<img src="${sp.album_art_url}" alt="album" onerror="this.innerHTML='â™ª'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:8px;display:block">`;
+      else artEl.innerHTML='<span>â™ª</span>';
     }
     const songEl=document.getElementById('np-song');if(songEl)songEl.textContent=sp.song;
     const artistEl=document.getElementById('np-artist');if(artistEl)artistEl.textContent=sp.artist;
@@ -190,15 +190,15 @@ function updateSpotifyFromLanyard(d){
     const p=curP();
     const lfm=p?.state?.connections?.lastfm;
     const hasDiscordConn=!!(p?.state?.connections?.discord?.userId);
-    // Si Discord connecté et online/idle/dnd mais pas de Spotify → cacher le fallback aussi
-    // (pas de musique du tout plutôt que montrer Last.fm à la place)
+    // Si Discord connectÃ© et online/idle/dnd mais pas de Spotify â†’ cacher le fallback aussi
+    // (pas de musique du tout plutÃ´t que montrer Last.fm Ã  la place)
     if(!isDiscordOnline&&lfm?.username&&iframeWrap){
-      // Discord offline/invis → montrer Last.fm + démarrer auto-refresh
+      // Discord offline/invis â†’ montrer Last.fm + dÃ©marrer auto-refresh
       iframeWrap.style.display='block';
       refreshSpotifySidebar();
       if(!_spotifyAutoRefresh)startSpotifyAutoRefresh();
     } else if(iframeWrap){
-      // Discord online mais pas de Spotify → cacher fallback + stopper refresh
+      // Discord online mais pas de Spotify â†’ cacher fallback + stopper refresh
       iframeWrap.style.display='none';
       clearInterval(_spotifyAutoRefresh);_spotifyAutoRefresh=null;
     }
@@ -256,5 +256,5 @@ async function refreshDiscord(){
       toast('Discord refreshed!','success');
     }
   }catch(e){toast('Could not reach Lanyard','error');}
-  finally{if(btn)btn.innerHTML='↻ Refresh';}
+  finally{if(btn)btn.innerHTML='â†» Refresh';}
 }

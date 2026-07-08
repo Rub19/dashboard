@@ -37,6 +37,7 @@
     const forgot=document.querySelector('#form-login .lb-ghost'); if(forgot) forgot.textContent=tr('forgot_password');
     const remember=document.querySelector('#auth-remember + span'); if(remember) remember.textContent=tr('remember_me');
     const loginBtn=document.getElementById('auth-login-btn'); if(loginBtn){ const svg=loginBtn.querySelector('svg')?.outerHTML||''; loginBtn.innerHTML=tr('sign_in_btn')+svg; }
+    if(typeof window.ethoneSyncAuthHeroLanguage==='function')setTimeout(window.ethoneSyncAuthHeroLanguage,0);
   };
   const oldSetLang=window.setLang;
   window.setLang=function(l){

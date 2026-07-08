@@ -28,10 +28,47 @@
     return call("showToast", [message, type]);
   }
 
+  function center() {
+    return global.ETHONENotifications || null;
+  }
+
+  function push(notification) {
+    var api = center();
+    if (api && typeof api.notify === "function") return api.notify(notification);
+    notification = notification || {};
+    return call("addNotif", [
+      notification.icon || "bell",
+      notification.title || notification.message || "Notification",
+      notification.body || notification.sub || "",
+      notification.action || null
+    ]);
+  }
+
+  function history() {
+    var api = center();
+    return api && typeof api.history === "function" ? api.history() : [];
+  }
+
+  function markAllRead() {
+    var api = center();
+    if (api && typeof api.markRead === "function") return api.markRead();
+    return false;
+  }
+
+  function clear() {
+    var api = center();
+    if (api && typeof api.clear === "function") return api.clear();
+    return call("clearAllNotifs");
+  }
+
   app.define("notifications", Object.freeze({
     toggle: toggle,
     open: open,
     close: close,
-    toast: toast
+    toast: toast,
+    push: push,
+    history: history,
+    markAllRead: markAllRead,
+    clear: clear
   }));
 })(window);

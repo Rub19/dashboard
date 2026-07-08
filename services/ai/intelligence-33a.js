@@ -19,6 +19,11 @@
   function activePage(){
     return document.querySelector(".tab-content.active")?.id?.replace("page-","")||"dashboard";
   }
+  function shouldAutoRefresh(){
+    if(document.visibilityState==="hidden")return false;
+    const page=activePage();
+    return page==="ai"||page==="dashboard";
+  }
   function pageLabel(id){
     const map={dashboard:"ETHONE Home",ai:"Intelligence Center",todos:"Tasks",notes:"Notes",files:"Files",habits:"Habits",calendar:"Calendar",github:"GitHub",marketplace:"Marketplace",store:"Store",workspaces:"Workspaces",timeline:"Timeline",settings:"Settings",connections:"Connections",stats:"Statistics",gaming:"Gaming","command-center":"Command Center"};
     return map[id]||String(id||"Workspace");
@@ -376,7 +381,7 @@
       const old=window.switchPage;
       window.switchPage=function(){
         const r=old.apply(this,arguments);
-        setTimeout(run,100);
+        setTimeout(()=>{if(shouldAutoRefresh())run();},100);
         return r;
       };
       window.switchPage.__eicWrapped=true;
@@ -400,7 +405,7 @@
     if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run,{once:true});else run();
     setTimeout(run,350);
     setTimeout(run,1400);
-    setInterval(run,25000);
+    setInterval(()=>{if(shouldAutoRefresh())run();},25000);
   }
   if(window.ethoneRunWhenPageReady)window.ethoneRunWhenPageReady("intelligence-33a-runtime","ai",startIntelligence);else startIntelligence();
   window.ETHONEIntelligence={run,open:openIntelligenceWithPrompt,context:currentContext,briefingCards,facts};

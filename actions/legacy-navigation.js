@@ -1,5 +1,6 @@
 /* ETHONE legacy compatibility module: navigation. */
 function switchPage(page,navEl){
+  if(page==='timeline')page='activity';
   // Sauvegarder la quick note avant de changer de page
   const qn=document.getElementById('quick-note');
   const p0=curP();
@@ -39,6 +40,12 @@ function switchPage(page,navEl){
   if(page==='journal'){renderJournal();}
   if(page==='countdown'){renderCountdowns();}
   if(page==='github'){refreshGithub();}
+  if(page==='activity'&&typeof renderActivityPage==='function')renderActivityPage();
+  if(page==='health'&&typeof renderHealthPage==='function')renderHealthPage();
+  if(page==='versions'&&typeof renderVersionHistoryPage==='function')renderVersionHistoryPage();
+  if(page==='marketplace'&&typeof renderMarketplacePage==='function')renderMarketplacePage();
+  if(page==='studio'&&typeof renderStudioPage==='function')renderStudioPage();
+  if(page==='import'&&typeof renderImportAssistant==='function')renderImportAssistant();
   if(page==='valorant-accounts'){vaRender();}
   if(page==='databases'){if(typeof renderDatabasesHome==='function')renderDatabasesHome();}
   // Refresh widgets when back on dashboard
@@ -58,6 +65,29 @@ function switchPage(page,navEl){
   if(page==='calendar'){calYear=new Date().getFullYear();calMonth=new Date().getMonth();if(typeof renderCalendar==='function')renderCalendar();}
   try{window.dispatchEvent(new CustomEvent('ethone:page-ready',{detail:{page:page}}))}catch(e){}
 }
+
+(function installSwitchPageHookApi(){
+  if(window.__ethoneSwitchPageHookApi)return;
+  window.__ethoneSwitchPageHookApi=true;
+  window.__ethoneSwitchPageHooks=[];
+  window.ethoneAddSwitchPageHook=function(name,handler){
+    if(!name||typeof handler!=='function')return false;
+    if(window.__ethoneSwitchPageHooks.some(h=>h.name===name))return true;
+    window.__ethoneSwitchPageHooks.push({name:name,handler:handler});
+    return true;
+  };
+  var baseSwitchPage=window.switchPage||switchPage;
+  if(baseSwitchPage.__ethoneHookDispatcher)return;
+  window.switchPage=function(page,navEl){
+    var result=baseSwitchPage.apply(this,arguments);
+    var hooks=window.__ethoneSwitchPageHooks||[];
+    hooks.slice().forEach(function(hook){
+      try{hook.handler(page,navEl,result)}catch(e){console.warn('[ETHONE navigation hook] '+hook.name+' failed',e)}
+    });
+    return result;
+  };
+  window.switchPage.__ethoneHookDispatcher=true;
+})();
 
 function switchSettingsTab(tab,el){
   document.querySelectorAll('.settings-nav-item').forEach(t=>t.classList.remove('active'));

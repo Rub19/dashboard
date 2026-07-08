@@ -370,7 +370,8 @@
     const pageBtn=e.target.closest("[data-os2-page]");
     if(pageBtn){
       const page=pageBtn.dataset.os2Page;
-      if(page==="dashboard"&&window.switchPage)window.switchPage("dashboard",null);
+      const Actions=window.Ethone&&window.Ethone.get&&window.Ethone.get("actions");
+      if(Actions&&Actions.dispatch)Actions.dispatch("navigation.open",{page:page,el:pageBtn,source:"dashboard-os2"});
       else if(window.switchPage)window.switchPage(page,null);
       return;
     }

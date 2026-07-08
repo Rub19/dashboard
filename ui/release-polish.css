@@ -1,0 +1,302 @@
+/* ETHONE Release Polish
+   Cross-app quality pass: consistency, accessibility, spacing and performance. */
+
+:root{
+  --rp-focus:0 0 0 3px rgba(var(--accent-rgb,139,92,246),.18),0 0 0 1px rgba(var(--accent-rgb,139,92,246),.58);
+  --rp-transition:180ms cubic-bezier(.22,1,.36,1);
+  --rp-card-bg:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));
+  --rp-card-border:rgba(255,255,255,.095);
+  --rp-card-border-hover:rgba(167,139,250,.24);
+}
+
+html{
+  text-rendering:geometricPrecision;
+}
+
+body{
+  min-width:320px;
+}
+
+body.ethone-2026-ui,
+body.ethone-v2,
+body.ethone-desktop-mode{
+  background:
+    radial-gradient(circle at 32% -12%,rgba(var(--accent-rgb,139,92,246),.13),transparent 34%),
+    #09090b!important;
+}
+
+body.ethone-2026-ui * ,
+body.ethone-v2 * ,
+body.ethone-desktop-mode *{
+  box-sizing:border-box;
+}
+
+body.ethone-2026-ui :where(button,a,input,textarea,select,[role="button"],[tabindex]):focus,
+body.ethone-v2 :where(button,a,input,textarea,select,[role="button"],[tabindex]):focus{
+  outline:none;
+}
+
+html.ethone-keyboard-nav body.ethone-2026-ui :where(button,a,input,textarea,select,[role="button"],[tabindex]):focus-visible,
+html.ethone-keyboard-nav body.ethone-v2 :where(button,a,input,textarea,select,[role="button"],[tabindex]):focus-visible,
+html.ethone-keyboard-nav body.ethone-desktop-mode :where(button,a,input,textarea,select,[role="button"],[tabindex]):focus-visible{
+  outline:none!important;
+  box-shadow:var(--rp-focus)!important;
+  border-color:rgba(var(--accent-rgb,139,92,246),.56)!important;
+}
+
+body.ethone-2026-ui :where(button,.btn,.panel-action,.nav-item,.settings-nav-item,.cat-tab,.mob-nav-btn,.de-chip,.de-dock button),
+body.ethone-v2 :where(button,.btn,.panel-action,.nav-item,.settings-nav-item,.cat-tab,.mob-nav-btn,.de-chip,.de-dock button){
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+
+body.ethone-2026-ui :where(button,.btn,.panel-action,.nav-item,.settings-nav-item,.cat-tab,.mob-nav-btn,.de-chip,.de-dock button):not(:disabled):active,
+body.ethone-v2 :where(button,.btn,.panel-action,.nav-item,.settings-nav-item,.cat-tab,.mob-nav-btn,.de-chip,.de-dock button):not(:disabled):active{
+  transform:translateY(1px) scale(.992)!important;
+}
+
+body.ethone-2026-ui :where(button,.btn,.panel-action,.item-btn,.settings-nav-item,.cat-tab,.mob-nav-btn,.de-chip):disabled,
+body.ethone-v2 :where(button,.btn,.panel-action,.item-btn,.settings-nav-item,.cat-tab,.mob-nav-btn,.de-chip):disabled{
+  cursor:not-allowed!important;
+  opacity:.48!important;
+}
+
+body.ethone-2026-ui :where(input,textarea,select,.modal-input,.lb-input,.ui-input,.ui-search),
+body.ethone-v2 :where(input,textarea,select,.modal-input,.lb-input,.ui-input,.ui-search){
+  min-height:var(--control-height,40px);
+  color:var(--text-primary,#f5f5f2)!important;
+  background:rgba(23,23,28,.92)!important;
+  border:1px solid rgba(255,255,255,.11)!important;
+  border-radius:var(--radius-md,10px)!important;
+  transition:border-color var(--rp-transition),box-shadow var(--rp-transition),background-color var(--rp-transition)!important;
+}
+
+body.ethone-2026-ui :where(input,textarea,select,.modal-input,.lb-input,.ui-input,.ui-search)::placeholder,
+body.ethone-v2 :where(input,textarea,select,.modal-input,.lb-input,.ui-input,.ui-search)::placeholder{
+  color:rgba(245,245,247,.42)!important;
+  opacity:1!important;
+}
+
+body.ethone-2026-ui :where(input,textarea,select,.modal-input,.lb-input,.ui-input,.ui-search):hover,
+body.ethone-v2 :where(input,textarea,select,.modal-input,.lb-input,.ui-input,.ui-search):hover{
+  border-color:rgba(255,255,255,.17)!important;
+}
+
+body.ethone-2026-ui :where(input,textarea,select,.modal-input,.lb-input,.ui-input,.ui-search):focus,
+body.ethone-v2 :where(input,textarea,select,.modal-input,.lb-input,.ui-input,.ui-search):focus{
+  border-color:rgba(var(--accent-rgb,139,92,246),.62)!important;
+  box-shadow:0 0 0 3px rgba(var(--accent-rgb,139,92,246),.15)!important;
+}
+
+body.ethone-2026-ui :where(.panel,.stat-card,.settings-card,.conn-card,.game-card,.modal,.dropdown,.d4-panel,.d4-widget,.ethone-os2-card,.db-card,.va-panel,.timeline-card,.ab-block),
+body.ethone-v2 :where(.panel,.stat-card,.settings-card,.conn-card,.game-card,.modal,.dropdown,.d4-panel,.d4-widget,.ethone-os2-card,.db-card,.va-panel,.timeline-card,.ab-block){
+  border-color:var(--rp-card-border)!important;
+  background:var(--rp-card-bg)!important;
+  transition:border-color var(--rp-transition),background var(--rp-transition),box-shadow var(--rp-transition),transform var(--rp-transition)!important;
+}
+
+body.ethone-2026-ui :where(.panel,.stat-card,.settings-card,.conn-card,.game-card,.d4-panel,.d4-widget,.ethone-os2-card,.db-card,.va-panel,.timeline-card):hover,
+body.ethone-v2 :where(.panel,.stat-card,.settings-card,.conn-card,.game-card,.d4-panel,.d4-widget,.ethone-os2-card,.db-card,.va-panel,.timeline-card):hover{
+  border-color:var(--rp-card-border-hover)!important;
+}
+
+body.ethone-2026-ui :where(.page-title,.section-title,.panel-title,.settings-card-title,.conn-title,.game-card-title,.d4-title),
+body.ethone-v2 :where(.page-title,.section-title,.panel-title,.settings-card-title,.conn-title,.game-card-title,.d4-title){
+  color:#f7f4ff!important;
+  overflow-wrap:normal;
+  word-break:normal;
+}
+
+body.ethone-2026-ui :where(.page-subtitle,.section-eyebrow,.panel-subtitle,.conn-subtitle,.toggle-sub,.settings-v2-mini-sub,.d4-muted),
+body.ethone-v2 :where(.page-subtitle,.section-eyebrow,.panel-subtitle,.conn-subtitle,.toggle-sub,.settings-v2-mini-sub,.d4-muted){
+  color:rgba(245,245,247,.52)!important;
+}
+
+body.ethone-2026-ui :where(.topbar,.settings-v2-shell,.d4-home,.db-shell,.timeline-shell),
+body.ethone-v2 :where(.topbar,.settings-v2-shell,.d4-home,.db-shell,.timeline-shell){
+  min-width:0!important;
+}
+
+body.ethone-2026-ui :where(.topbar),
+body.ethone-v2 :where(.topbar){
+  align-items:center!important;
+}
+
+body.ethone-2026-ui :where(.topbar-actions),
+body.ethone-v2 :where(.topbar-actions){
+  display:flex;
+  align-items:center;
+  gap:8px!important;
+  min-width:0;
+}
+
+body.ethone-2026-ui :where(.btn,.panel-action,.item-btn,.settings-nav-item,.cat-tab),
+body.ethone-v2 :where(.btn,.panel-action,.item-btn,.settings-nav-item,.cat-tab){
+  min-height:34px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+}
+
+body.ethone-2026-ui :where(.btn svg,.panel-action svg,.item-btn svg,.settings-nav-item svg,.nav-item svg),
+body.ethone-v2 :where(.btn svg,.panel-action svg,.item-btn svg,.settings-nav-item svg,.nav-item svg){
+  flex:0 0 auto;
+}
+
+body.ethone-2026-ui :where(.item-row,.todo-item,.note-list-item,.db-row,.timeline-event,.conn-card,.game-card),
+body.ethone-v2 :where(.item-row,.todo-item,.note-list-item,.db-row,.timeline-event,.conn-card,.game-card){
+  min-width:0!important;
+}
+
+body.ethone-2026-ui :where(.item-row,.todo-item,.note-list-item,.db-row,.timeline-event) :where(strong,b,span,p,div),
+body.ethone-v2 :where(.item-row,.todo-item,.note-list-item,.db-row,.timeline-event) :where(strong,b,span,p,div){
+  min-width:0;
+}
+
+.ethone-text-guard,
+body.ethone-2026-ui :where(.nav-label-text,.conn-title,.conn-subtitle,.game-card-title,.game-card-sub,.panel-title,.settings-card-title,.db-cell,.timeline-event-title),
+body.ethone-v2 :where(.nav-label-text,.conn-title,.conn-subtitle,.game-card-title,.game-card-sub,.panel-title,.settings-card-title,.db-cell,.timeline-event-title){
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+body.ethone-2026-ui :where(.nav-label-text,.conn-title,.game-card-title,.settings-card-title,.timeline-event-title),
+body.ethone-v2 :where(.nav-label-text,.conn-title,.game-card-title,.settings-card-title,.timeline-event-title){
+  white-space:nowrap;
+}
+
+.ethone-skeleton,
+body.ethone-2026-ui :where(.db-boot-placeholder,.loading,.skeleton),
+body.ethone-v2 :where(.db-boot-placeholder,.loading,.skeleton){
+  position:relative;
+  overflow:hidden;
+  border-radius:var(--radius-lg,12px);
+  color:rgba(255,255,255,.48)!important;
+  background:linear-gradient(90deg,rgba(255,255,255,.04),rgba(255,255,255,.075),rgba(255,255,255,.04))!important;
+  background-size:220% 100%!important;
+  animation:ethoneSkeleton 1.25s linear infinite;
+}
+
+@keyframes ethoneSkeleton{
+  to{background-position:-220% 0}
+}
+
+.ethone-pressing{
+  transform:scale(.992)!important;
+}
+
+.ethone-action-unavailable{
+  animation:ethoneUnavailable .48s var(--ease-premium,cubic-bezier(.22,1,.36,1)) both!important;
+}
+
+@keyframes ethoneUnavailable{
+  0%,100%{transform:translateX(0)}
+  26%{transform:translateX(-3px)}
+  58%{transform:translateX(3px)}
+}
+
+#ethone-quality-toast{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:2147483400;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  pointer-events:none;
+}
+
+.ethone-quality-toast-item{
+  max-width:min(360px,calc(100vw - 36px));
+  padding:11px 13px;
+  border:1px solid rgba(255,255,255,.11);
+  border-radius:16px;
+  color:#fff;
+  background:rgba(18,18,24,.94);
+  box-shadow:0 18px 54px rgba(0,0,0,.34);
+  backdrop-filter:blur(calc(14px * var(--theme-blur-scale,1)));
+  animation:ethoneToastIn .2s var(--ease-premium,cubic-bezier(.22,1,.36,1)) both;
+  font-size:12px;
+  font-weight:720;
+}
+
+.ethone-quality-toast-item.leaving{
+  opacity:0;
+  transform:translateY(6px);
+  transition:opacity .18s ease,transform .18s ease;
+}
+
+@keyframes ethoneToastIn{
+  from{opacity:0;transform:translateY(8px) scale(.98)}
+  to{opacity:1;transform:none}
+}
+
+.ethone-scroll-surface{
+  scrollbar-gutter:stable;
+}
+
+html.ethone-overflow-guard,
+html.ethone-overflow-guard body{
+  overflow-x:hidden!important;
+}
+
+#notif-overlay[aria-hidden="true"],
+#live-panel-mobile-overlay[aria-hidden="true"],
+.sidebar-overlay[aria-hidden="true"]{
+  pointer-events:none!important;
+}
+
+body.ethone-low-power,
+body.ethone-low-power *{
+  --theme-blur-scale:.55!important;
+  --theme-glow-scale:.55!important;
+}
+
+body.ethone-low-power :where(.panel,.stat-card,.settings-card,.conn-card,.game-card,.de-window,.de-dock,.eh-dock,.auth-v3-preview,#lb-box){
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+
+body.ethone-low-power :where(.auth-particle,.ambient-particle,.orb,.glow-orb){
+  display:none!important;
+}
+
+@media(max-width:1180px){
+  body.ethone-2026-ui .topbar,
+  body.ethone-v2 .topbar{
+    flex-wrap:wrap;
+  }
+
+  body.ethone-2026-ui .topbar-actions,
+  body.ethone-v2 .topbar-actions{
+    width:100%;
+    justify-content:flex-start!important;
+  }
+}
+
+@media(max-width:760px){
+  body.ethone-2026-ui #main-content.main,
+  body.ethone-v2 #main-content.main{
+    padding-inline:12px!important;
+  }
+
+  body.ethone-2026-ui :where(.panel,.settings-card,.conn-card,.game-card,.stat-card),
+  body.ethone-v2 :where(.panel,.settings-card,.conn-card,.game-card,.stat-card){
+    border-radius:18px!important;
+  }
+
+  body.ethone-2026-ui :where(.topbar-actions .btn,.topbar-actions button),
+  body.ethone-v2 :where(.topbar-actions .btn,.topbar-actions button){
+    flex:1 1 auto;
+    min-width:min(150px,100%);
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .ethone-skeleton,
+  body.ethone-2026-ui :where(.db-boot-placeholder,.loading,.skeleton),
+  body.ethone-v2 :where(.db-boot-placeholder,.loading,.skeleton){
+    animation:none!important;
+  }
+}

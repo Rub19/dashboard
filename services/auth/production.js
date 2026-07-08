@@ -192,11 +192,19 @@
         localStorage.setItem("ethone_lang",l);
         if(window.applyI18n)try{window.applyI18n()}catch(err){}
         applyAuthTranslations();
+        if(typeof window.ethoneSyncAuthHeroLanguage==="function"){
+          setTimeout(window.ethoneSyncAuthHeroLanguage,0);
+          setTimeout(window.ethoneSyncAuthHeroLanguage,80);
+        }
       });
     });
     if(window.sb&&window.sb.__offline)setErr(tr("supabase_offline"));
   }
-  window.updateAuthLangBar=applyAuthTranslations;
+  window.updateAuthLangBar=function(){
+    var result=applyAuthTranslations.apply(this,arguments);
+    if(typeof window.ethoneSyncAuthHeroLanguage==="function")setTimeout(window.ethoneSyncAuthHeroLanguage,0);
+    return result;
+  };
   window.switchAuthTab=switchTab;
   window.doLogin=login;
   window.doRegister=register;

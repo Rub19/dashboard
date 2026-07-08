@@ -92,6 +92,7 @@ function newNote(){
   const note={id:Date.now(),title:'Nouvelle note',content:'',color:'',pinned:false,created:new Date().toISOString(),updated:new Date().toISOString()};
   p.state.notes.unshift(note);saveStateNow();
   _currentNoteId=note.id;renderNotesList();selectNote(note.id);
+  addActivity('Nouvelle note creee','var(--accent)','content');
   setTimeout(()=>{const t=document.getElementById('note-title-input');if(t){t.focus();t.select();}},100);
 }
 

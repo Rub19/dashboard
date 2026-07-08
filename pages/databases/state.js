@@ -26,7 +26,8 @@ function dbDefaultViews(startCol,endCol,dateCol,imageCol,groupCol,titleCol){
     {id:"v2",type:"kanban",name:"Board",config:{groupByColumn:groupCol||null}},
     {id:"v3",type:"calendar",name:"Calendar",config:{dateColumn:dateCol||null}},
     {id:"v4",type:"gallery",name:"Gallery",config:{imageColumn:imageCol||null,titleColumn:titleCol||null,metaColumns:[]}},
-    {id:"v5",type:"timeline",name:"Timeline",config:{startColumn:startCol||null,endColumn:endCol||null}}
+    {id:"v5",type:"timeline",name:"Timeline",config:{startColumn:startCol||null,endColumn:endCol||null}},
+    {id:"v6",type:"list",name:"List",config:{titleColumn:titleCol||null,sort:[],filters:[]}}
   ];
 }
 

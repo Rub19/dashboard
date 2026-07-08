@@ -7,6 +7,7 @@
 // ══════════════════════════════════════════════
 let _aiHistory=[];
 let _aiTyping=false;
+const AI_DOM_MESSAGE_LIMIT=80;
 
 function getAIContext(){
   const p=curP();if(!p)return{summary:'No profile loaded',counts:{}};
@@ -143,11 +144,13 @@ function initAIChat(){
   if(msgContainer&&msgContainer.children.length>0){
     // Juste update le context label
     const ctx=getAIContext();
-    document.getElementById('ai-ctx-label').textContent=`${ctx.profile} · ${ctx.counts.pending} tasks · ${ctx.counts.habits} habits`;
+    const ctxLabel=document.getElementById('ai-ctx-label');
+    if(ctxLabel)ctxLabel.textContent=`${ctx.profile} · ${ctx.counts.pending} tasks · ${ctx.counts.habits} habits`;
     return;
   }
   const ctx=getAIContext();
-  document.getElementById('ai-ctx-label').textContent=`${ctx.profile} · ${ctx.counts.pending} tasks · ${ctx.counts.habits} habits`;
+  const ctxLabel=document.getElementById('ai-ctx-label');
+  if(ctxLabel)ctxLabel.textContent=`${ctx.profile} · ${ctx.counts.pending} tasks · ${ctx.counts.habits} habits`;
   if(_aiHistory.length===0){
     const welcomeMsg={
       fr:`Salut **${ctx.profile}** ! Je suis ETHONE AI, ton assistant personnel propulsé par Groq.\n\nJe peux voir tes tâches, habitudes, notes et plus encore. Comment puis-je t'aider aujourd'hui ?`,
@@ -163,13 +166,14 @@ function addAIMessage(role,text){
   const p=curP();
   const msgs=document.getElementById('ai-messages');if(!msgs)return;
   const isUser=role==='user';
+  text=String(text||'');
   const avatarHtml=isUser
     ?`<div class="ai-avatar user-av">${p?.avatarImg?`<img src="${p.avatarImg}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`:(p?.avatarEmoji||'👤')}</div>`
     :`<div class="ai-avatar nexus"><svg viewBox="0 0 20 20" fill="none" style="width:14px;height:14px" aria-hidden="true"><rect x="4" y="5" width="12" height="2" rx="1" fill="white" opacity=".95"/><rect x="4" y="9" width="12" height="2" rx="1" fill="white" opacity=".95"/><rect x="4" y="13" width="8" height="2" rx="1" fill="white" opacity=".95"/></svg></div>`;
   // Simple markdown: **bold**, `code`, [link](url), newlines
   const html=text
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/\[([^\]]+)\]\(#open-note-(\d+)\)/g,(_,label,id)=>`<a href="#" onclick="event.preventDefault();openNoteFromAI(${id})" style="color:var(--accent);text-decoration:underline;cursor:pointer">${label}</a>`)
+    .replace(/\[([^\]]+)\]\(#open-note-(\d+)\)/g,(_,label,id)=>`<a href="about:blank" onclick="event.preventDefault();openNoteFromAI(${id})" style="color:var(--accent);text-decoration:underline;cursor:pointer">${label}</a>`)
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" style="color:var(--accent);text-decoration:underline">$1</a>')
     .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
     .replace(/`([^`]+)`/g,'<code>$1</code>')
@@ -178,6 +182,7 @@ function addAIMessage(role,text){
   div.className=`ai-msg ${role}`;
   div.innerHTML=`${isUser?'':avatarHtml}<div class="ai-bubble">${html}</div>${isUser?avatarHtml:''}`;
   msgs.appendChild(div);
+  while(msgs.children.length>AI_DOM_MESSAGE_LIMIT)msgs.removeChild(msgs.firstElementChild);
   msgs.scrollTop=msgs.scrollHeight;
   // Always keep suggestions visible
   if(isUser){const s=document.getElementById('ai-suggestions');if(s)s.style.display='flex';}
@@ -188,7 +193,9 @@ function showAITyping(){
   const div=document.createElement('div');
   div.className='ai-msg assistant';div.id='ai-typing-indicator';
   div.innerHTML=`<div class="ai-avatar nexus"><svg viewBox="0 0 20 20" fill="none" style="width:14px;height:14px" aria-hidden="true"><rect x="4" y="5" width="12" height="2" rx="1" fill="white" opacity=".95"/><rect x="4" y="9" width="12" height="2" rx="1" fill="white" opacity=".95"/><rect x="4" y="13" width="8" height="2" rx="1" fill="white" opacity=".95"/></svg></div><div class="ai-typing"><span></span><span></span><span></span></div>`;
-  msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;
+  msgs.appendChild(div);
+  while(msgs.children.length>AI_DOM_MESSAGE_LIMIT)msgs.removeChild(msgs.firstElementChild);
+  msgs.scrollTop=msgs.scrollHeight;
 }
 
 function removeAITyping(){

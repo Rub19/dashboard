@@ -25,7 +25,7 @@ function renderPinnedLinks(){
   if(!links.length){grid.innerHTML='<div style="font-size:12px;color:var(--muted);padding:4px 2px">No pinned links yet - click + Pin link</div>';return}
   grid.innerHTML=links.map(l=>{
     const url=safeUrl(l.url);
-    return '<a class="pinned-card" href="'+escapeHTML(url||'#')+'" target="_blank" rel="noopener noreferrer">'+
+    return '<a class="pinned-card" href="'+escapeHTML(url||'about:blank')+'" target="_blank" rel="noopener noreferrer">'+
       '<button class="pinned-remove" onclick="event.preventDefault();event.stopPropagation();removePinnedLink('+l.id+')">&times;</button>'+
       '<div class="pinned-favicon">'+escapeHTML(l.icon)+'</div>'+
       '<div class="pinned-name">'+escapeHTML(l.name)+'</div>'+

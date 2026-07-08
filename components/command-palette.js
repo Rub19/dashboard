@@ -1,341 +1,869 @@
-/* ETHONE global search + command palette (Ctrl+K). */
-// === GLOBAL SEARCH + COMMAND PALETTE ===
+/* ETHONE global search + command palette (Ctrl+K).
+   This is the main search engine for pages, actions, integrations,
+   settings, local content, widgets and plugins. */
 
-let _cmdSelectedIdx=0;
-let _cmdDebounceTimer=null;
-let _cmdKeyboardNav=false;
+let _cmdSelectedIdx = 0;
+let _cmdRenderFrame = 0;
+let _cmdKeyboardNav = false;
+let _cmdMode = "command";
 
-function openCmdPalette(){
-  const o=document.getElementById('cmd-palette-overlay');
-  if(o)o.classList.add('open');
-  const i=document.getElementById('cmd-input');
-  if(i)i.value='';
-  _cmdSelectedIdx=0;
+const CMD_INTEGRATIONS = [
+  { id: "discord", title: "Discord", sub: "Integration", keywords: "discord presence lanyard status voice activity messages settings notes tasks files widgets plugins" },
+  { id: "spotify", title: "Spotify", sub: "Integration", keywords: "spotify music now playing audio listening settings notes tasks files widgets plugins" },
+  { id: "github", title: "GitHub", sub: "Integration", keywords: "github git commits repositories developer code settings notes tasks files widgets plugins" },
+  { id: "steam", title: "Steam", sub: "Integration", keywords: "steam gaming games playtime settings notes tasks files widgets plugins" },
+  { id: "twitch", title: "Twitch", sub: "Integration", keywords: "twitch stream streaming live settings notes tasks files widgets plugins" },
+  { id: "valorant", title: "Valorant", sub: "Integration", keywords: "valorant riot gaming accounts rank matches settings notes tasks files widgets plugins" },
+  { id: "googlecalendar", title: "Google Calendar", sub: "Integration", keywords: "google calendar meetings events schedule settings notes tasks files widgets plugins" },
+  { id: "googledrive", title: "Google Drive", sub: "Integration", keywords: "google drive files documents folders cloud settings notes tasks widgets plugins" },
+  { id: "obs", title: "OBS", sub: "Integration", keywords: "obs studio streaming recording scenes websocket settings notes tasks files widgets plugins" },
+  { id: "youtube", title: "YouTube", sub: "Integration", keywords: "youtube videos channel creator uploads settings notes tasks files widgets plugins" },
+  { id: "battlenet", title: "Battle.net", sub: "Integration", keywords: "battle battlenet battle.net blizzard gaming settings notes tasks files widgets plugins" },
+  { id: "lastfm", title: "Last.fm", sub: "Integration", keywords: "lastfm last fm music scrobbles listening settings notes tasks files widgets plugins" }
+];
+
+const CMD_WIDGET_FALLBACKS = [
+  ["clock", "Clock", "time date hour widget"],
+  ["calendar", "Calendar", "events schedule meetings widget"],
+  ["discord", "Discord", "presence social integration widget"],
+  ["spotify", "Spotify", "music now playing integration widget"],
+  ["lastfm", "LastFM", "music scrobble history widget"],
+  ["github", "GitHub", "commits repositories developer widget"],
+  ["weather", "Weather", "weather forecast meteo widget"],
+  ["goals", "Goals", "objectives progress widget"],
+  ["habits", "Habits", "routine streak widget"],
+  ["notes", "Notes", "notes documents writing widget"],
+  ["productivity", "Productivity", "tasks stats analytics widget"],
+  ["timelineFeed", "Timeline", "activity events history widget"],
+  ["aiSuggestions", "AI Suggestions", "brain recommendations widget"],
+  ["cpu", "CPU", "system performance widget"],
+  ["ram", "RAM", "memory system performance widget"]
+];
+
+function cmdLang() {
+  try { return typeof _lang !== "undefined" ? _lang : "en"; } catch (e) { return "en"; }
+}
+
+function cmdLabel(key, fallback) {
+  try {
+    if (typeof t === "function") {
+      const value = t(key);
+      return value && value !== key ? value : fallback;
+    }
+  } catch (e) {}
+  return fallback || key;
+}
+
+function cmdEsc(value) {
+  try { if (typeof escapeHTML === "function") return escapeHTML(value); } catch (e) {}
+  return String(value == null ? "" : value).replace(/[&<>"]/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+  });
+}
+
+function cmdProfile() {
+  try { return typeof curP === "function" ? curP() : null; } catch (e) { return null; }
+}
+
+function cmdActions() {
+  try { return window.Ethone && window.Ethone.get("actions"); } catch (e) { return null; }
+}
+
+function cmdRun(actionId, context) {
+  const actions = cmdActions();
+  if (actions && typeof actions.dispatch === "function") {
+    return actions.dispatch(actionId, Object.assign({ source: "command-palette" }, context || {}));
+  }
+  return false;
+}
+
+function cmdGo(page) {
+  if (!page) return;
+  if (cmdRun("navigation.open", { page: page })) return;
+  if (typeof switchPage === "function") switchPage(page, null);
+}
+
+function openCmdPalette(options) {
+  options = typeof options === "string" ? { query: options } : (options || {});
+  _cmdMode = options.mode === "spotlight" ? "spotlight" : "command";
+  const overlay = document.getElementById("cmd-palette-overlay");
+  if (overlay) {
+    overlay.classList.add("open");
+    overlay.classList.toggle("spotlight-open", _cmdMode === "spotlight");
+    overlay.dataset.mode = _cmdMode;
+  }
+  const input = document.getElementById("cmd-input");
+  if (input) {
+    input.value = options.query || "";
+    input.placeholder = _cmdMode === "spotlight"
+      ? "Search pages, widgets, files, commands, settings..."
+      : "Search pages, items, actions...";
+    input.setAttribute("aria-label", _cmdMode === "spotlight" ? "ETHONE Spotlight Search" : "ETHONE Command Palette");
+    if (!input.dataset.cmdInputBound) {
+      input.dataset.cmdInputBound = "1";
+      input.addEventListener("input", onCmdInput);
+    }
+  }
+  _cmdSelectedIdx = 0;
   renderCmdResults();
-  requestAnimationFrame(()=>{if(i)i.focus();});
-}
-function closeCmdPalette(){
-  document.getElementById('cmd-palette-overlay')?.classList.remove('open');
-  const i=document.getElementById('cmd-input');
-  if(i)i.value='';
-}
-function onCmdInput(){
-  clearTimeout(_cmdDebounceTimer);
-  _cmdDebounceTimer=setTimeout(renderCmdResults,60);
+  requestAnimationFrame(function () { if (input) input.focus(); });
 }
 
-// --- Matching ---
-function scoreMatch(haystack,q){
-  if(!q)return 1;
-  const i=haystack.indexOf(q);
-  if(i===-1)return 0;
-  if(haystack===q)return 100;
-  if(haystack.startsWith(q))return 80;
-  try{if(new RegExp('\\b'+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).test(haystack))return 60;}catch(e){}
-  return 30-Math.min(i,20);
-}
-function cmdSearchText(title,sub,keywords){
-  return (String(title||'')+' '+String(sub||'')+' '+String(keywords||'')).toLowerCase();
-}
-function isCmdItemEnabled(item){
-  try{const Actions=window.Ethone&&window.Ethone.get('actions');return Actions?Actions.isEnabled(item.id):true;}catch(e){return true;}
+function closeCmdPalette() {
+  const overlay = document.getElementById("cmd-palette-overlay");
+  if (overlay) {
+    overlay.classList.remove("open", "spotlight-open");
+    overlay.dataset.mode = "";
+  }
+  const input = document.getElementById("cmd-input");
+  if (input) input.value = "";
 }
 
-// --- Per-category result builders ---
-function buildPageResults(){
-  const marketLabel='Marketplace';
-  const spacesLabel=_lang==='fr'?'Espaces':_lang==='es'?'Espacios':_lang==='de'?'Bereiche':'Workspaces';
+function openSpotlightSearch(query) {
+  openCmdPalette({ mode: "spotlight", query: query || "" });
+}
+
+function onCmdInput() {
+  if (_cmdRenderFrame) cancelAnimationFrame(_cmdRenderFrame);
+  _cmdRenderFrame = requestAnimationFrame(renderCmdResults);
+}
+
+function normalizeCmdText(value) {
+  return String(value == null ? "" : value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function fuzzyScore(text, query) {
+  text = normalizeCmdText(text);
+  query = normalizeCmdText(query);
+  if (!query) return 1;
+  if (!text) return 0;
+  if (text === query) return 150;
+
+  const direct = text.indexOf(query);
+  if (direct >= 0) {
+    const boundary = direct === 0 || text.charAt(direct - 1) === " ";
+    return (boundary ? 118 : 96) - Math.min(direct, 36);
+  }
+
+  let best = 0;
+  const words = text.split(/\s+/);
+  for (const word of words) {
+    if (!word) continue;
+    if (word === query) best = Math.max(best, 142);
+    else if (word.startsWith(query)) best = Math.max(best, 110 - Math.max(0, word.length - query.length));
+    else if (word.includes(query)) best = Math.max(best, 82 - Math.min(word.indexOf(query), 24));
+    else if (query.length >= 4 && Math.abs(word.length - query.length) <= 2) {
+      const distance = cmdEditDistance(word, query, 2);
+      if (distance <= 2) best = Math.max(best, 104 - distance * 18 - Math.abs(word.length - query.length) * 4);
+    }
+  }
+
+  let qi = 0;
+  let score = 0;
+  let streak = 0;
+  let start = -1;
+  let last = -1;
+  for (let ti = 0; ti < text.length && qi < query.length; ti += 1) {
+    if (text[ti] === query[qi]) {
+      if (start < 0) start = ti;
+      last = ti;
+      streak += 1;
+      score += 6 + Math.min(streak, 5) * 2;
+      if (ti === 0 || text[ti - 1] === " ") score += 8;
+      qi += 1;
+    } else {
+      streak = 0;
+    }
+  }
+  if (qi !== query.length) return best;
+  const span = last >= start ? last - start + 1 : query.length;
+  score -= Math.min(start < 0 ? 0 : start, 24);
+  score -= Math.max(0, span - query.length) * 1.7;
+  score -= Math.max(0, text.length - query.length) * 0.12;
+  return Math.max(best, score);
+}
+
+function cmdEditDistance(a, b, limit) {
+  if (Math.abs(a.length - b.length) > limit) return limit + 1;
+  let prev = [];
+  let cur = [];
+  for (let j = 0; j <= b.length; j += 1) prev[j] = j;
+  for (let i = 1; i <= a.length; i += 1) {
+    cur[0] = i;
+    let rowMin = cur[0];
+    for (let j = 1; j <= b.length; j += 1) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + cost);
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) {
+        cur[j] = Math.min(cur[j], prev[j - 2] + 1);
+      }
+      rowMin = Math.min(rowMin, cur[j]);
+    }
+    if (rowMin > limit) return limit + 1;
+    const tmp = prev;
+    prev = cur;
+    cur = tmp;
+  }
+  return prev[b.length];
+}
+
+function scoreMatch(haystack, query) {
+  return fuzzyScore(haystack, query);
+}
+
+function cmdSearchText(title, sub, keywords) {
+  return [title, sub, keywords].map(function (v) { return String(v || ""); }).join(" ");
+}
+
+function isCmdItemEnabled(item) {
+  try {
+    const Actions = window.Ethone && window.Ethone.get("actions");
+    return Actions ? Actions.isEnabled(item.id) : true;
+  } catch (e) {
+    return true;
+  }
+}
+
+function buildPageResults() {
+  const l = cmdLang();
+  const spacesLabel = l === "fr" ? "Espaces" : l === "es" ? "Espacios" : l === "de" ? "Bereiche" : "Workspaces";
   return [
-    {id:'search.nav.overview',icon:'🏠',title:t('nav_overview'),sub:t('nav_overview'),keywords:'home overview main dashboard focus pomodoro timer'},
-    {id:'dashboard.nav.files',icon:'📁',title:t('nav_files'),sub:t('nav_files'),keywords:'files links documents'},
-    {id:'dashboard.nav.notes',icon:'📝',title:t('nav_notes'),sub:t('nav_notes'),keywords:'notes write text'},
-    {id:'dashboard.nav.todos',icon:'✅',title:t('nav_tasks'),sub:t('nav_tasks'),keywords:'tasks todos checklist'},
-    {id:'search.nav.kanban',icon:'📋',title:t('nav_kanban'),sub:t('nav_kanban'),keywords:'kanban board cards'},
-    {id:'dashboard.nav.calendar',icon:'📅',title:t('nav_calendar'),sub:t('nav_calendar'),keywords:'calendar events schedule'},
-    {id:'search.habits.open',icon:'🔥',title:t('nav_habits'),sub:t('nav_habits'),keywords:'habits streak daily'},
-    {id:'search.nav.gaming',icon:'🎮',title:t('nav_gaming'),sub:t('nav_gaming'),keywords:'gaming valorant lol steam overwatch riot'},
-    {id:'search.nav.valorantAccounts',icon:'🎯',title:t('nav_valorant_accounts'),sub:t('nav_gaming'),keywords:'valorant riot valo accounts'},
-    {id:'search.nav.stats',icon:'📊',title:t('nav_stats'),sub:t('nav_stats'),keywords:'stats statistics analytics'},
-    {id:'search.connections.open',icon:'🔗',title:t('nav_connections'),sub:t('nav_connections'),keywords:'connections discord spotify twitch lastfm github groq'},
-    {id:'search.settings.openTab',context:{tab:'profilee'},icon:'⚙️',title:t('nav_settings'),sub:t('nav_settings'),keywords:'settings profile account security password'},
-    {id:'search.brain.open',icon:'🤖',title:t('nav_ai'),sub:t('nav_ai'),keywords:'brain ai assistant chat ask ia'},
-    {id:'dashboard.nav.marketplace',icon:'🛍️',title:marketLabel,sub:marketLabel,keywords:'marketplace shop store'},
-    {id:'dashboard.nav.workspaces',icon:'🗂️',title:spacesLabel,sub:spacesLabel,keywords:'workspaces spaces'},
-    {id:'search.databases.home',icon:'🗄️',title:t('nav_databases')||'Databases',sub:t('nav_databases')||'Databases',keywords:'database databases table records'},
-    {id:'search.settings.openTab',context:{tab:'plugins'},icon:'🔌',title:'Plugins',sub:'Settings',keywords:'plugins integrations discord spotify steam twitch github valorant'},
-  ].map(e=>Object.assign({category:'pages'},e));
+    { id: "search.nav.dashboard", icon: "Home", title: cmdLabel("nav_overview", "Overview"), sub: "ETHONE Home", keywords: "home overview dashboard main personal os brain focus pomodoro" },
+    { id: "search.nav.files", icon: "Files", title: cmdLabel("nav_files", "Files"), sub: "Files, links and documents", keywords: "files links documents finder explorer quick look tags favorites recent" },
+    { id: "search.nav.notes", icon: "Note", title: cmdLabel("nav_notes", "Notes"), sub: "Notes workspace", keywords: "notes write markdown text documents" },
+    { id: "search.nav.todos", icon: "Task", title: cmdLabel("nav_tasks", "Tasks"), sub: "Tasks and todos", keywords: "tasks todos checklist reminders work" },
+    { id: "search.nav.kanban", icon: "Board", title: cmdLabel("nav_kanban", "Kanban"), sub: "Workflow board", keywords: "kanban board cards workflow" },
+    { id: "search.nav.calendar", icon: "Cal", title: cmdLabel("nav_calendar", "Calendar"), sub: "Events and schedule", keywords: "calendar events schedule agenda meetings" },
+    { id: "search.nav.habits", icon: "Loop", title: cmdLabel("nav_habits", "Habits"), sub: "Daily routines", keywords: "habits streak daily routine" },
+    { id: "search.nav.gaming", icon: "Game", title: cmdLabel("nav_gaming", "Gaming"), sub: "Gaming stats and sessions", keywords: "gaming valorant riot steam discord spotify twitch" },
+    { id: "search.nav.valorantAccounts", icon: "Valo", title: cmdLabel("nav_valorant_accounts", "Valorant Accounts"), sub: "Gaming", keywords: "valorant riot valo accounts" },
+    { id: "search.nav.stats", icon: "Stats", title: cmdLabel("nav_stats", "Statistics"), sub: "Analytics", keywords: "stats statistics analytics productivity charts" },
+    { id: "search.nav.activity", icon: "Activity", title: "Activity", sub: "ETHONE journal", keywords: "activity timeline history journal logs connexions creations modifications suppressions sync ai plugins github discord spotify workspaces" },
+    { id: "search.nav.health", icon: "Health", title: "Health Center", sub: "Diagnostics", keywords: "health diagnostic diagnostics performance memory storage errors integrations api plugins sync status score" },
+    { id: "search.nav.versions", icon: "Version", title: "Version History", sub: "Snapshots and restore", keywords: "version history versions snapshots restore rollback compare diff git notion figma backup" },
+    { id: "search.nav.github", icon: "Git", title: "GitHub", sub: "Developer activity", keywords: "github git repositories commits developer" },
+    { id: "search.connections.open", icon: "Link", title: cmdLabel("nav_connections", "Connections"), sub: "Integration Hub", keywords: "connections integrations discord spotify twitch lastfm github steam google obs youtube battle net" },
+    { id: "search.settings.openTab", context: { tab: "profilee" }, icon: "Set", title: cmdLabel("nav_settings", "Settings"), sub: "Preferences", keywords: "settings profile account security password preferences" },
+    { id: "search.brain.open", icon: "AI", title: cmdLabel("nav_ai", "ETHONE AI"), sub: "Ask ETHONE Brain", keywords: "brain ai assistant chat ask ia intelligence" },
+    { id: "search.nav.marketplace", icon: "Store", title: "Marketplace", sub: "Store", keywords: "marketplace shop store plugins widgets themes layouts automations templates" },
+    { id: "search.nav.workspaces", icon: "Space", title: spacesLabel, sub: "Workspace switcher", keywords: "workspaces spaces environments context" },
+    { id: "search.nav.import", icon: "Import", title: "Import Assistant", sub: "Import Notion, Todoist, CSV, JSON...", keywords: "import assistant notion todoist google calendar discord spotify github csv excel markdown json assistant" },
+    { id: "search.databases.home", icon: "Data", title: cmdLabel("nav_databases", "Databases"), sub: "Database Builder", keywords: "database databases table records notion" },
+    { id: "search.settings.openTab", context: { tab: "plugins" }, icon: "Plug", title: "Plugins", sub: "Settings", keywords: "plugins integrations extensions discord spotify steam twitch github valorant" }
+  ].map(function (entry) { return Object.assign({ category: "pages" }, entry); });
 }
-function buildQuickActionResults(){
+
+function buildQuickActionResults() {
   return [
-    {id:'search.items.create',icon:'➕',title:'Add item',sub:'File, link or folder',kbd:'Ctrl+A',keywords:'add item file link folder new'},
-    {id:'search.notes.create',icon:'📝',title:'New note',sub:'Create a note',kbd:'N',keywords:'new note create write'},
-    {id:'search.todos.create',icon:'✅',title:'Add task',sub:'Quick task',kbd:'T',keywords:'add task new todo create'},
-    {id:'search.calendar.create',icon:'📅',title:'New event',sub:'Add to calendar',keywords:'new event add calendar create'},
-    {id:'search.profile.switch',icon:'🔄',title:'Switch profile',sub:'Profile select',keywords:'switch profile change user'},
-    {id:'search.presentation.open',icon:'🖥️',title:'Presentation mode',sub:'Full-screen dashboard on TV',kbd:'P',keywords:'presentation tv fullscreen mode'},
-    {id:'search.language.toggle',icon:'🌐',title:'Toggle language',sub:'FR/EN/ES/DE',keywords:'language toggle fr en es de'},
-  ].map(e=>Object.assign({category:'actions'},e));
+    { id: "search.notes.create", icon: "Note", title: "Create note", sub: "Start a new note", kbd: "Ctrl+N", keywords: "create note new note write document" },
+    { id: "search.todos.create", icon: "Task", title: "Create task", sub: "Add a task to your list", kbd: "Ctrl+Alt+N", keywords: "create task add task new todo reminder" },
+    { id: "search.items.create", icon: "+", title: "Add file or link", sub: "File, link or folder", kbd: "Ctrl+Alt+F", keywords: "add item file link folder new create" },
+    { id: "search.calendar.create", icon: "Cal", title: "Create event", sub: "Add to calendar", kbd: "Ctrl+Alt+E", keywords: "new event add calendar create meeting schedule" },
+    { id: "search.theme.change", icon: "Theme", title: "Change theme", sub: "Open Appearance settings", keywords: "change theme appearance accent color density typography background purple" },
+    { id: "search.applibrary.open", icon: "Apps", title: "Open App Library", sub: "Search, pin, hide and organize apps", kbd: "Ctrl+Shift+L", keywords: "app library apps applications ios launcher springboard pin hide folder organize" },
+    { id: "search.universe.open", icon: "Orbit", title: "Open ETHONE Universe", sub: "Planet navigation for Spaces", kbd: "Ctrl+Shift+U", keywords: "universe planets spaces immersive navigation gaming dev study brain files calendar marketplace settings" },
+    { id: "search.briefing.open", icon: "Brief", title: "Open Morning Briefing", sub: "Daily ETHONE summary", keywords: "morning briefing daily summary today tasks events goals spotify github weather quote brain" },
+    { id: "search.achievements.open", icon: "Trophy", title: "Open Achievements", sub: "Badges, levels and streaks", keywords: "achievements badges levels streaks trophies tasks focus github spotify workspace" },
+    { id: "search.spotify.launch", icon: "Music", title: "Launch Spotify", sub: "Open Spotify integration", keywords: "launch spotify music play open now playing audio integration" },
+    { id: "search.ai.ask", icon: "AI", title: "Ask ETHONE AI", sub: "Open contextual intelligence", keywords: "ask ethone ai brain summarize analyse organize create improve" },
+    { id: "search.workspaces.switcher", icon: "Space", title: "Switch workspace", sub: "Open ETHONE Spaces", keywords: "switch workspace spaces personal gaming development study environment" },
+    { id: "search.nav.import", icon: "Import", title: "Import data", sub: "Notion, Todoist, CSV, JSON...", keywords: "import data assistant notion todoist calendar csv excel markdown json" },
+    { id: "search.profile.switch", icon: "User", title: "Switch profile", sub: "Profile select", keywords: "switch profile change user" },
+    { id: "search.presentation.open", icon: "TV", title: "Presentation mode", sub: "Full-screen dashboard on TV", kbd: "P", keywords: "presentation tv fullscreen mode" },
+    { id: "search.language.toggle", icon: "Lang", title: "Toggle language", sub: "FR/EN/ES/DE", keywords: "language toggle fr en es de" }
+  ].map(function (entry) { return Object.assign({ category: "actions" }, entry); });
 }
-function buildNoteResults(q){
-  if(!q)return [];
-  const p=curP();
-  return (p?.state?.notes||[]).map(n=>({
-    id:'search.notes.open',context:{noteId:n.id},category:'notes',
-    icon:'📝',title:n.title||'Untitled',sub:(n.content||'').slice(0,60)||'Note',
-    keywords:n.content||''
-  }));
+
+function buildWorkspaceResults(query) {
+  if (!query) return [];
+  const profile = cmdProfile();
+  let list = Array.isArray(profile?.workspaces) ? profile.workspaces : [];
+  try {
+    if (!list.length) {
+      const cachedName = localStorage.getItem("ethone:active-workspace") || localStorage.getItem("ethone:active-space-id") || "";
+      if (cachedName) list = [{ id: localStorage.getItem("ethone:active-workspace-id") || "active", name: cachedName, description: "Current ETHONE Space" }];
+    }
+  } catch (e) {
+    if (!list) list = [];
+  }
+  return (Array.isArray(list) ? list : []).map(function (workspace) {
+    return {
+      id: "search.workspace.open",
+      context: { workspaceId: workspace.id },
+      category: "workspaces",
+      icon: workspace.emoji || "Space",
+      title: workspace.name || workspace.label || "Workspace",
+      sub: workspace.description || "ETHONE Space",
+      keywords: [workspace.name, workspace.label, workspace.description, workspace.template, "workspace space environment"].join(" ")
+    };
+  });
 }
-function buildTaskResults(q){
-  if(!q)return [];
-  const p=curP();
-  return (p?.state?.todos||[]).map(td=>({
-    id:'search.todos.open',context:{todoId:td.id},category:'tasks',
-    icon:td.done?'✔️':'⬜',title:td.text||'Untitled',sub:td.done?'Done':(td.due?('Due '+td.due):'Task'),
-    keywords:td.tag||''
-  }));
+
+function buildIntegrationResults(query) {
+  if (!query) return [];
+  return CMD_INTEGRATIONS.map(function (integration) {
+    return {
+      id: "search.integration.open",
+      context: { integrationId: integration.id },
+      category: "integrations",
+      icon: "Plug",
+      title: integration.title,
+      sub: integration.sub,
+      keywords: integration.keywords
+    };
+  });
 }
-function itemToCmdResult(item){
+
+function buildPluginResults(query) {
+  if (!query) return [];
+  return CMD_INTEGRATIONS.map(function (plugin) {
+    return {
+      id: "search.plugin.open",
+      context: { pluginId: plugin.id },
+      category: "plugins",
+      icon: "Ext",
+      title: plugin.title,
+      sub: "Plugin",
+      keywords: plugin.keywords + " extension plugin marketplace store"
+    };
+  });
+}
+
+function widgetDefinitions() {
+  const seen = new Set();
+  const out = [];
+  const registry = window.Ethone && window.Ethone.get && window.Ethone.get("widgets");
+  const types = Array.isArray(window.__ethoneWidgetCatalogTypes) ? window.__ethoneWidgetCatalogTypes : [];
+  types.forEach(function (type) {
+    if (seen.has(type)) return;
+    seen.add(type);
+    let def = null;
+    try { def = registry && registry.get ? registry.get(type) : null; } catch (e) {}
+    out.push([type, (def && def.label) || type, [type, def && def.category, "widget dashboard"].join(" ")]);
+  });
+  CMD_WIDGET_FALLBACKS.forEach(function (row) {
+    if (!seen.has(row[0])) {
+      seen.add(row[0]);
+      out.push(row);
+    }
+  });
+  return out;
+}
+
+function buildWidgetResults(query) {
+  if (!query) return [];
+  return widgetDefinitions().map(function (row) {
+    return {
+      id: "search.widget.open",
+      context: { widgetType: row[0] },
+      category: "widgets",
+      icon: "Widget",
+      title: row[1],
+      sub: "Widget",
+      keywords: row[2]
+    };
+  });
+}
+
+function buildNoteResults(query) {
+  if (!query) return [];
+  const profile = cmdProfile();
+  return (profile?.state?.notes || []).map(function (note) {
+    return {
+      id: "search.notes.open",
+      context: { noteId: note.id },
+      category: "notes",
+      icon: "Note",
+      title: note.title || "Untitled",
+      sub: (note.content || "").slice(0, 70) || "Note",
+      keywords: [note.content, note.tag, note.color, "note notes document"].join(" ")
+    };
+  });
+}
+
+function buildTaskResults(query) {
+  if (!query) return [];
+  const profile = cmdProfile();
+  return (profile?.state?.todos || []).map(function (task) {
+    return {
+      id: "search.todos.open",
+      context: { todoId: task.id },
+      category: "tasks",
+      icon: task.done ? "Done" : "Task",
+      title: task.text || task.title || "Untitled",
+      sub: task.done ? "Done" : (task.due ? "Due " + task.due : "Task"),
+      keywords: [task.tag, task.priority, task.description, "task todo reminder"].join(" ")
+    };
+  });
+}
+
+function itemToCmdResult(item) {
   return {
-    id:'search.items.open',context:{itemId:item.id},category:'files',
-    icon:item.type==='link'?'🔗':item.type==='folder'?'📁':item.type==='image'?'🖼️':'📄',
-    title:item.name||'Untitled',sub:item.url||item.type||'File',
-    keywords:item.tag||''
+    id: "search.items.open",
+    context: { itemId: item.id },
+    category: "files",
+    icon: item.type === "link" ? "Link" : item.type === "folder" ? "Folder" : item.type === "image" ? "Img" : "File",
+    title: item.name || "Untitled",
+    sub: item.url || item.meta || item.type || "File",
+    keywords: [item.tag, item.meta, item.type, item.url, "file files document link image folder"].join(" ")
   };
 }
-function buildItemResults(q){
-  const p=curP();
-  return (p?.state?.items||[]).map(itemToCmdResult);
+
+function buildItemResults(query) {
+  const profile = cmdProfile();
+  return (profile?.state?.items || []).map(itemToCmdResult);
 }
-function buildHabitResults(q){
-  if(!q)return [];
-  const p=curP();
-  return (p?.state?.habits||[]).map(h=>({
-    id:'search.habits.open',category:'habits',
-    icon:h.icon||'🔥',title:h.name||'Untitled',sub:'Habit'+(h.streak?(' · '+h.streak+' day streak'):'')
-  }));
+
+function buildHabitResults(query) {
+  if (!query) return [];
+  const profile = cmdProfile();
+  return (profile?.state?.habits || []).map(function (habit) {
+    return {
+      id: "search.habits.open",
+      category: "habits",
+      icon: "Loop",
+      title: habit.name || "Untitled",
+      sub: "Habit" + (habit.streak ? " - " + habit.streak + " day streak" : ""),
+      keywords: [habit.icon, habit.name, "habit routine streak"].join(" ")
+    };
+  });
 }
-function buildEventResults(q){
-  if(!q)return [];
-  const p=curP();
-  return (p?.state?.events||[]).map(ev=>({
-    id:'search.calendar.open',context:{date:ev.date},category:'calendar',
-    icon:'📅',title:ev.title||'Untitled',sub:ev.date||'Event'
-  }));
+
+function buildEventResults(query) {
+  if (!query) return [];
+  const profile = cmdProfile();
+  return (profile?.state?.events || []).map(function (event) {
+    return {
+      id: "search.calendar.open",
+      context: { date: event.date },
+      category: "calendar",
+      icon: "Cal",
+      title: event.title || "Untitled",
+      sub: event.date || "Event",
+      keywords: [event.title, event.date, event.time, "calendar event meeting schedule"].join(" ")
+    };
+  });
 }
-function buildSettingsResults(q){
-  if(!q)return [];
+
+function buildSettingsResults(query) {
+  if (!query) return [];
   return [
-    {tab:'profilee',label:'General',keywords:'profile avatar name general'},
-    {tab:'theme',label:'Appearance',keywords:'theme appearance color accent radius blur glow'},
-    {tab:'widgets',label:'Widgets',keywords:'widgets dashboard layout'},
-    {tab:'brain',label:'Brain',keywords:'brain ai provider model'},
-    {tab:'automation',label:'Automation',keywords:'automation rules reminders'},
-    {tab:'notifications',label:'Notifications',keywords:'notifications alerts quiet hours'},
-    {tab:'keyboard',label:'Keyboard',keywords:'keyboard shortcuts hotkeys'},
-    {tab:'developer',label:'Developer',keywords:'developer debug console'},
-    {tab:'experimental',label:'Experimental',keywords:'experimental beta flags'},
-    {tab:'backup',label:'Backup',keywords:'backup sync restore'},
-    {tab:'importx',label:'Import',keywords:'import data json'},
-    {tab:'exportx',label:'Export',keywords:'export data json'},
-    {tab:'security',label:'Security',keywords:'security password pin'},
-    {tab:'account',label:'Account',keywords:'account email username sign out'}
-  ].map(x=>({
-    id:'search.settings.openTab',context:{tab:x.tab},category:'settings',
-    icon:'⚙️',title:x.label,sub:'Settings',keywords:x.keywords
-  }));
-}
-function buildDatabaseResults(q){
-  if(!q)return [];
-  if(typeof dbList!=='function')return [];
-  return dbList().map(db=>({
-    id:'search.databases.open',context:{dbId:db.id},category:'databases',
-    icon:db.icon||'🗄️',title:db.name||'Untitled',sub:(db.rows?db.rows.length:0)+' rows',keywords:db.name||''
-  }));
-}
-function buildThemeResults(q){
-  if(!q||typeof THEMES==='undefined')return [];
-  return THEMES.map((th,idx)=>({
-    id:'search.theme.pick',context:{themeIdx:idx},category:'themes',
-    icon:'🎨',title:'Theme: '+th.name,sub:'Switch accent color',keywords:'theme color accent '+th.name
-  }));
+    { tab: "profilee", label: "Profile", keywords: "profile avatar name general account" },
+    { tab: "account", label: "Account", keywords: "account email username session sign out" },
+    { tab: "theme", label: "Appearance", keywords: "theme appearance color accent radius blur glow typography density background" },
+    { tab: "workspaces", label: "Workspaces", keywords: "workspaces spaces layout wallpaper accent" },
+    { tab: "widgets", label: "Dashboard widgets", keywords: "widgets dashboard layout cards clock calendar discord spotify github weather" },
+    { tab: "brain", label: "Brain & AI", keywords: "brain ai provider model openai claude groq gemini memory" },
+    { tab: "automation", label: "Automation", keywords: "automation rules reminders workflows shortcuts" },
+    { tab: "marketplace", label: "Marketplace", keywords: "marketplace store plugins widgets themes layouts templates" },
+    { tab: "plugins", label: "Integrations & plugins", keywords: "plugins integrations discord spotify steam twitch github valorant google drive obs youtube battle net" },
+    { tab: "notifications", label: "Notifications", keywords: "notifications alerts quiet hours center reminders" },
+    { tab: "keyboard", label: "Keyboard shortcuts", keywords: "keyboard shortcuts hotkeys ctrl command search" },
+    { tab: "backup", label: "Backup & sync", keywords: "backup sync restore cloud import export" },
+    { tab: "importx", label: "Import", keywords: "import data json restore" },
+    { tab: "exportx", label: "Export", keywords: "export data json backup" },
+    { tab: "security", label: "Security", keywords: "security password pin two factor sessions tokens" },
+    { tab: "developer", label: "Developer", keywords: "developer debug console logs workers supabase" },
+    { tab: "experimental", label: "Experimental", keywords: "experimental beta flags labs" }
+  ].map(function (entry) {
+    return {
+      id: "search.settings.openTab",
+      context: { tab: entry.tab },
+      category: "settings",
+      icon: "Set",
+      title: entry.label,
+      sub: "Settings",
+      keywords: entry.keywords
+    };
+  });
 }
 
-function cmdCategoryLabel(cat){
-  const map={
-    pages:t('cmd_pages'),actions:t('cmd_actions'),
-    notes:t('nav_notes'),tasks:t('nav_tasks'),files:t('cmd_files'),
-    habits:t('nav_habits'),calendar:t('nav_calendar'),settings:t('nav_settings'),
-    databases:t('nav_databases')||'Databases',themes:'Themes'
+function buildDatabaseResults(query) {
+  if (!query || typeof dbList !== "function") return [];
+  return dbList().map(function (db) {
+    return {
+      id: "search.databases.open",
+      context: { dbId: db.id },
+      category: "databases",
+      icon: "Data",
+      title: db.name || "Untitled",
+      sub: (db.rows ? db.rows.length : 0) + " rows",
+      keywords: [db.name, "database table records"].join(" ")
+    };
+  });
+}
+
+function buildThemeResults(query) {
+  if (!query || typeof THEMES === "undefined") return [];
+  return THEMES.map(function (theme, index) {
+    return {
+      id: "search.theme.pick",
+      context: { themeIdx: index },
+      category: "themes",
+      icon: "Theme",
+      title: "Theme: " + theme.name,
+      sub: "Switch accent color",
+      keywords: "theme color accent appearance " + theme.name
+    };
+  });
+}
+
+function cmdCategoryLabel(category) {
+  const map = {
+    actions: cmdLabel("cmd_actions", "Actions"),
+    pages: cmdLabel("cmd_pages", "Pages"),
+    integrations: cmdLabel("integrations", "Integrations"),
+    settings: cmdLabel("nav_settings", "Settings"),
+    notes: cmdLabel("nav_notes", "Notes"),
+    tasks: cmdLabel("nav_tasks", "Tasks"),
+    files: cmdLabel("cmd_files", "Files"),
+    widgets: "Widgets",
+    plugins: "Plugins",
+    habits: cmdLabel("nav_habits", "Habits"),
+    calendar: cmdLabel("nav_calendar", "Calendar"),
+    databases: cmdLabel("nav_databases", "Databases"),
+    workspaces: "Workspaces",
+    themes: "Themes"
   };
-  return map[cat]||cat;
+  return map[category] || category;
 }
 
-function buildAllResults(q){
-  q=(q||'').toLowerCase().trim();
-  const CAP=5;
-  function scoreAndCap(items,cap){
-    let scored=items.map(item=>({item,score:scoreMatch(cmdSearchText(item.title,item.sub,item.keywords),q)})).filter(x=>x.score>0);
-    scored.sort((a,b)=>b.score-a.score);
-    return (cap?scored.slice(0,cap):scored).map(x=>x.item);
-  }
-  const groups=[
-    {key:'actions',items:scoreAndCap(buildQuickActionResults(),null)},
-    {key:'pages',items:scoreAndCap(buildPageResults(),null)},
-    {key:'notes',items:scoreAndCap(buildNoteResults(q),CAP)},
-    {key:'tasks',items:scoreAndCap(buildTaskResults(q),CAP)},
-    {key:'files',items:scoreAndCap(buildItemResults(q),q?CAP:4)},
-    {key:'habits',items:scoreAndCap(buildHabitResults(q),CAP)},
-    {key:'calendar',items:scoreAndCap(buildEventResults(q),CAP)},
-    {key:'databases',items:scoreAndCap(buildDatabaseResults(q),CAP)},
-    {key:'themes',items:scoreAndCap(buildThemeResults(q),CAP)},
-    {key:'settings',items:scoreAndCap(buildSettingsResults(q),CAP)},
+function buildAllResults(query) {
+  const q = normalizeCmdText(query || "");
+  const contentCap = q ? 7 : 4;
+  const groups = [
+    { key: "actions", items: buildQuickActionResults(), cap: q ? 5 : null },
+    { key: "integrations", items: buildIntegrationResults(q), cap: 8 },
+    { key: "pages", items: buildPageResults(), cap: q ? 8 : null },
+    { key: "settings", items: buildSettingsResults(q), cap: 8 },
+    { key: "workspaces", items: buildWorkspaceResults(q), cap: 6 },
+    { key: "notes", items: buildNoteResults(q), cap: contentCap },
+    { key: "tasks", items: buildTaskResults(q), cap: contentCap },
+    { key: "files", items: buildItemResults(q), cap: q ? contentCap : 4 },
+    { key: "widgets", items: buildWidgetResults(q), cap: 8 },
+    { key: "plugins", items: buildPluginResults(q), cap: 8 },
+    { key: "habits", items: buildHabitResults(q), cap: contentCap },
+    { key: "calendar", items: buildEventResults(q), cap: contentCap },
+    { key: "databases", items: buildDatabaseResults(q), cap: contentCap },
+    { key: "themes", items: buildThemeResults(q), cap: 5 }
   ];
-  const sections=[],all=[];
-  groups.forEach(g=>{
-    if(g.items.length){sections.push({key:g.key,label:cmdCategoryLabel(g.key),items:g.items});all.push(...g.items);}
-  });
-  return{sections,all};
-}
 
-function renderCmdResults(){
-  const q=document.getElementById('cmd-input')?.value||'';
-  const{sections,all}=buildAllResults(q);
-  _cmdSelectedIdx=all.length?Math.max(0,Math.min(_cmdSelectedIdx,all.length-1)):0;
-  const c=document.getElementById('cmd-results');if(!c)return;
-  let html='',gi=0;
-  if(!all.length){
-    html='<div style="text-align:center;padding:28px;color:var(--muted2);font-size:13px">No results</div>';
-  }else{
-    sections.forEach(sec=>{
-      html+=`<div class="cmd-section-label">${escapeHTML(sec.label)}</div>`;
-      sec.items.forEach(item=>{
-        const idx=gi,sel=idx===_cmdSelectedIdx,enabled=isCmdItemEnabled(item);
-        html+=`<div class="cmd-item${sel?' selected':''}${!enabled?' is-disabled':''}" data-idx="${idx}" onmousedown="event.preventDefault();executeCmdItem(${idx})" onmouseover="_cmdSelectedIdx=${idx};renderCmdResults()">
-          <div class="cmd-item-icon">${item.icon||'◆'}</div>
-          <div style="flex:1;min-width:0"><div class="cmd-item-label">${escapeHTML(item.title)}</div>${item.sub?`<div class="cmd-item-sub">${escapeHTML(item.sub)}</div>`:''}</div>
-          ${item.kbd?`<span class="cmd-item-kbd">${escapeHTML(item.kbd)}</span>`:''}
-          ${!enabled?`<span class="cmd-item-tag">${escapeHTML(t('coming_soon'))}</span>`:''}
-        </div>`;
-        gi++;
-      });
+  const sections = [];
+  const all = [];
+
+  groups.forEach(function (group, groupIndex) {
+    const minScore = !q ? 0 : q.length <= 2 ? 18 : q.length <= 4 ? 32 : 50;
+    let scored = group.items.map(function (item) {
+      const base = scoreMatch(cmdSearchText(item.title, item.sub, item.keywords), q);
+      const titleBoost = q && normalizeCmdText(item.title).startsWith(q) ? 18 : 0;
+      return { item: item, score: base + titleBoost - groupIndex * 0.01 };
+    }).filter(function (entry) {
+      return q ? entry.score >= minScore : entry.score > 0;
     });
-  }
-  c.innerHTML=html;
-  if(_cmdKeyboardNav){
-    const selEl=c.querySelector('.cmd-item.selected');
-    if(selEl)selEl.scrollIntoView({block:'nearest'});
-  }
-  _cmdKeyboardNav=false;
+
+    scored.sort(function (a, b) {
+      return b.score - a.score || String(a.item.title || "").localeCompare(String(b.item.title || ""));
+    });
+
+    if (group.cap) scored = scored.slice(0, group.cap);
+    const items = scored.map(function (entry) { return entry.item; });
+    if (items.length) {
+      sections.push({ key: group.key, label: cmdCategoryLabel(group.key), items: items });
+      all.push.apply(all, items);
+    }
+  });
+
+  return { sections: sections, all: all };
 }
 
-function executeCmdItem(idx){
-  const{all}=buildAllResults(document.getElementById('cmd-input')?.value||'');
-  const item=all[idx];
-  if(!item)return;
+function renderCmdResults() {
+  _cmdRenderFrame = 0;
+  const input = document.getElementById("cmd-input");
+  const query = input ? input.value : "";
+  const result = buildAllResults(query);
+  const sections = result.sections;
+  const all = result.all;
+  const container = document.getElementById("cmd-results");
+  if (!container) return;
+  _cmdSelectedIdx = all.length ? Math.max(0, Math.min(_cmdSelectedIdx, all.length - 1)) : 0;
+
+  if (!all.length) {
+    container.innerHTML = '<div class="cmd-empty-state">No result. Try a page, service, note, task, file or widget.</div>';
+    return;
+  }
+
+  let html = "";
+  let index = 0;
+  sections.forEach(function (section) {
+    html += '<div class="cmd-section-label">' + cmdEsc(section.label) + '</div>';
+    section.items.forEach(function (item) {
+      const selected = index === _cmdSelectedIdx;
+      const enabled = isCmdItemEnabled(item);
+      html += '<div class="cmd-item' + (selected ? " selected" : "") + (!enabled ? " is-disabled" : "") + '" data-idx="' + index + '" onmousedown="event.preventDefault();executeCmdItem(' + index + ')" onmouseover="_cmdSelectedIdx=' + index + ';renderCmdResults()">' +
+        '<div class="cmd-item-icon">' + cmdEsc(item.icon || "Go") + '</div>' +
+        '<div class="cmd-item-main"><div class="cmd-item-label">' + cmdEsc(item.title) + '</div>' + (item.sub ? '<div class="cmd-item-sub">' + cmdEsc(item.sub) + '</div>' : "") + '</div>' +
+        (item.kbd ? '<span class="cmd-item-kbd">' + cmdEsc(item.kbd) + '</span>' : "") +
+        (!enabled ? '<span class="cmd-item-tag">' + cmdEsc(cmdLabel("unavailable", "Unavailable")) + '</span>' : "") +
+      '</div>';
+      index += 1;
+    });
+  });
+  container.innerHTML = html;
+  if (_cmdKeyboardNav) {
+    const selected = container.querySelector(".cmd-item.selected");
+    if (selected) selected.scrollIntoView({ block: "nearest" });
+  }
+  _cmdKeyboardNav = false;
+}
+
+function executeCmdItem(index) {
+  const input = document.getElementById("cmd-input");
+  const result = buildAllResults(input ? input.value : "");
+  const item = result.all[index];
+  if (!item) return;
   closeCmdPalette();
-  requestAnimationFrame(()=>{
-    const Actions=window.Ethone&&window.Ethone.get('actions');
-    if(Actions)Actions.dispatch(item.id,item.context);
-    else console.warn('[ETHONE cmd-palette] Action registry unavailable');
+  requestAnimationFrame(function () {
+    const Actions = window.Ethone && window.Ethone.get("actions");
+    if (Actions) Actions.dispatch(item.id, item.context);
+    else console.warn("[ETHONE cmd-palette] Action registry unavailable");
   });
 }
-function handleCmdKey(e){
-  const{all}=buildAllResults(document.getElementById('cmd-input')?.value||'');
-  if(e.key==='Escape'){closeCmdPalette();return;}
-  if(!all.length)return;
-  if(e.key==='ArrowDown'){e.preventDefault();_cmdKeyboardNav=true;_cmdSelectedIdx=(_cmdSelectedIdx+1)%all.length;renderCmdResults();}
-  else if(e.key==='ArrowUp'){e.preventDefault();_cmdKeyboardNav=true;_cmdSelectedIdx=(_cmdSelectedIdx-1+all.length)%all.length;renderCmdResults();}
-  else if(e.key==='Enter'){e.preventDefault();executeCmdItem(_cmdSelectedIdx);}
+
+function handleCmdKey(event) {
+  const input = document.getElementById("cmd-input");
+  const all = buildAllResults(input ? input.value : "").all;
+  if (event.key === "Escape") {
+    closeCmdPalette();
+    return;
+  }
+  if (!all.length) return;
+  if (event.key === "ArrowDown") {
+    event.preventDefault();
+    _cmdKeyboardNav = true;
+    _cmdSelectedIdx = (_cmdSelectedIdx + 1) % all.length;
+    renderCmdResults();
+  } else if (event.key === "ArrowUp") {
+    event.preventDefault();
+    _cmdKeyboardNav = true;
+    _cmdSelectedIdx = (_cmdSelectedIdx - 1 + all.length) % all.length;
+    renderCmdResults();
+  } else if (event.key === "Enter") {
+    event.preventDefault();
+    executeCmdItem(_cmdSelectedIdx);
+  } else if (
+    event.key === "Backspace" ||
+    event.key === "Delete" ||
+    event.key === "Paste" ||
+    (event.key && event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey)
+  ) {
+    setTimeout(onCmdInput, 0);
+  }
 }
 
-// --- Search action handlers ---
-function openSettingsTab(tab){
-  switchPage('settings',null);
-  const btn=document.querySelector('.settings-nav-item[onclick*="\''+tab+'\'"]');
-  if(btn)switchSettingsTab(tab,btn);
-}
-function focusAIInput(){
-  setTimeout(()=>{document.getElementById('ai-input')?.focus();},100);
-}
-function highlightTodo(id){
-  setTimeout(()=>{
-    const el=document.querySelector('.todo-item[onclick*="toggleTodo('+id+')"]');
-    if(el){
-      el.scrollIntoView({block:'center',behavior:'smooth'});
-      el.classList.add('cmd-highlight-pulse');
-      setTimeout(()=>el.classList.remove('cmd-highlight-pulse'),1200);
+function openSettingsTab(tab) {
+  cmdGo("settings");
+  setTimeout(function () {
+    let btn = document.querySelector('.settings-nav-item[data-settings-tab="' + tab + '"]');
+    if (!btn) {
+      btn = Array.prototype.find.call(document.querySelectorAll(".settings-nav-item"), function (node) {
+        return String(node.getAttribute("onclick") || "").indexOf("'" + tab + "'") !== -1 ||
+          String(node.getAttribute("onclick") || "").indexOf('"' + tab + '"') !== -1;
+      });
     }
-  },150);
+    if (typeof switchSettingsTab === "function") switchSettingsTab(tab, btn || null);
+  }, 60);
 }
-function registerSearchActions(){
-  const Actions=window.Ethone&&window.Ethone.get('actions');
-  if(!Actions||window.__ethoneSearchActionsRegistered)return;
-  window.__ethoneSearchActionsRegistered=true;
 
-  Actions.register('search.nav.overview',{handler:()=>switchPage('dashboard',null)});
-  Actions.register('search.nav.kanban',{handler:()=>switchPage('kanban',null)});
-  Actions.register('search.nav.gaming',{handler:()=>switchPage('gaming',null)});
-  Actions.register('search.nav.stats',{handler:()=>switchPage('stats',null)});
-  Actions.register('search.nav.valorantAccounts',{handler:()=>switchPage('valorant-accounts',null)});
+function focusAIInput() {
+  setTimeout(function () { document.getElementById("ai-input")?.focus(); }, 100);
+}
 
-  Actions.register('search.notes.open',{handler:ctx=>{switchPage('notes',null);if(ctx&&ctx.noteId!=null&&typeof selectNote==='function')selectNote(ctx.noteId);}});
-  Actions.register('search.notes.create',{handler:()=>{switchPage('notes',null);if(typeof newNote==='function')newNote();}});
+function pulseElement(element) {
+  if (!element) return;
+  element.scrollIntoView({ block: "center", behavior: "smooth" });
+  element.classList.add("cmd-highlight-pulse");
+  setTimeout(function () { element.classList.remove("cmd-highlight-pulse"); }, 1400);
+}
 
-  Actions.register('search.todos.open',{handler:ctx=>{switchPage('todos',null);if(ctx&&ctx.todoId!=null)highlightTodo(ctx.todoId);}});
-  Actions.register('search.todos.create',{handler:()=>openModal('add-todo')});
+function highlightTodo(id) {
+  setTimeout(function () {
+    const el = document.querySelector('.todo-item[onclick*="toggleTodo(' + id + ')"],[data-todo-id="' + id + '"]');
+    pulseElement(el);
+  }, 150);
+}
 
-  Actions.register('search.items.open',{handler:ctx=>{if(ctx&&ctx.itemId!=null&&typeof openItem==='function')openItem(ctx.itemId);else switchPage('files',null);}});
-  Actions.register('search.items.create',{handler:()=>openModal('add-item')});
+function focusIntegration(id) {
+  cmdGo(id === "valorant" ? "connections" : "connections");
+  setTimeout(function () {
+    const card = document.getElementById("ih-card-" + id);
+    pulseElement(card);
+  }, 220);
+}
 
-  Actions.register('search.habits.open',{handler:()=>switchPage('habits',null)});
-
-  Actions.register('search.calendar.open',{handler:ctx=>{
-    switchPage('calendar',null);
-    if(ctx&&ctx.date){
-      const d=new Date(ctx.date);
-      if(!isNaN(d)){calYear=d.getFullYear();calMonth=d.getMonth();}
-      if(typeof renderCalendar==='function')renderCalendar();
-      if(typeof showDayEvents==='function')showDayEvents(ctx.date);
+function openWidgetSearch(widgetType) {
+  openSettingsTab("widgets");
+  setTimeout(function () {
+    const input = document.getElementById("settings-v2-search-input");
+    if (input) {
+      input.value = widgetType || "widgets";
+      input.dispatchEvent(new Event("input", { bubbles: true }));
     }
-  }});
-  Actions.register('search.calendar.create',{handler:()=>openModal('add-event')});
-
-  Actions.register('search.settings.openTab',{handler:ctx=>openSettingsTab((ctx&&ctx.tab)||'profilee')});
-  Actions.register('search.connections.open',{handler:()=>switchPage('connections',null)});
-  Actions.register('search.brain.open',{handler:()=>{switchPage('ai',null);focusAIInput();}});
-  Actions.register('search.databases.home',{handler:()=>switchPage('databases',null)});
-  Actions.register('search.databases.open',{handler:ctx=>{switchPage('databases',null);if(ctx&&ctx.dbId!=null&&typeof dbOpenDatabase==='function')dbOpenDatabase(ctx.dbId);}});
-  Actions.register('search.theme.pick',{handler:ctx=>{if(ctx&&ctx.themeIdx!=null&&typeof pickTheme==='function')pickTheme(ctx.themeIdx);}});
-
-  Actions.register('search.profile.switch',{handler:()=>goToProfileScreen()});
-  Actions.register('search.presentation.open',{handler:()=>openPresentationMode()});
-  Actions.register('search.language.toggle',{handler:()=>{
-    const langs=['fr','en','es','de'];const idx=langs.indexOf(_lang);
-    setLangAndClose(langs[(idx+1)%langs.length],'lang-dd-topbar');
-  }});
+  }, 160);
 }
+
+function openPluginSearch(pluginId) {
+  openSettingsTab("plugins");
+  setTimeout(function () {
+    const row = document.querySelector('[data-ih-id="' + pluginId + '"],#ih-card-' + pluginId);
+    if (row) pulseElement(row);
+  }, 220);
+}
+
+function registerSearchActions() {
+  const Actions = window.Ethone && window.Ethone.get("actions");
+  if (!Actions || window.__ethoneSearchActionsRegistered) return;
+  window.__ethoneSearchActionsRegistered = true;
+
+  Actions.register("search.nav.dashboard", { handler: function () { cmdGo("dashboard"); } });
+  Actions.register("search.nav.files", { handler: function () { cmdGo("files"); } });
+  Actions.register("search.nav.notes", { handler: function () { cmdGo("notes"); } });
+  Actions.register("search.nav.todos", { handler: function () { cmdGo("todos"); } });
+  Actions.register("search.nav.kanban", { handler: function () { cmdGo("kanban"); } });
+  Actions.register("search.nav.calendar", { handler: function () { cmdGo("calendar"); } });
+  Actions.register("search.nav.habits", { handler: function () { cmdGo("habits"); } });
+  Actions.register("search.nav.gaming", { handler: function () { cmdGo("gaming"); } });
+  Actions.register("search.nav.valorantAccounts", { handler: function () { cmdGo("valorant-accounts"); } });
+  Actions.register("search.nav.stats", { handler: function () { cmdGo("stats"); } });
+  Actions.register("search.nav.activity", { handler: function () { cmdGo("activity"); } });
+  Actions.register("search.nav.health", { handler: function () { cmdGo("health"); } });
+  Actions.register("search.nav.versions", { handler: function () { cmdGo("versions"); } });
+  Actions.register("search.nav.github", { handler: function () { cmdGo("github"); } });
+  Actions.register("search.nav.marketplace", { handler: function () { cmdGo("marketplace"); } });
+  Actions.register("search.nav.import", { handler: function () { cmdGo("import"); } });
+  Actions.register("search.nav.workspaces", { handler: function () {
+    cmdGo("dashboard");
+    setTimeout(function () {
+      const btn = document.querySelector('[data-v4-action-id="dashboard.workspace.toggle"],.d4-workspace');
+      if (btn) btn.click();
+    }, 180);
+  } });
+
+  Actions.register("search.integration.open", { handler: function (ctx) { focusIntegration(ctx && ctx.integrationId); } });
+  Actions.register("search.plugin.open", { handler: function (ctx) { openPluginSearch(ctx && ctx.pluginId); } });
+  Actions.register("search.widget.open", { handler: function (ctx) { openWidgetSearch(ctx && ctx.widgetType); } });
+
+  Actions.register("search.notes.open", { handler: function (ctx) {
+    cmdGo("notes");
+    if (ctx && ctx.noteId != null && typeof selectNote === "function") setTimeout(function () { selectNote(ctx.noteId); }, 80);
+  } });
+  Actions.register("search.notes.create", { handler: function () { cmdRun("notes.new"); } });
+
+  Actions.register("search.todos.open", { handler: function (ctx) { cmdGo("todos"); if (ctx && ctx.todoId != null) highlightTodo(ctx.todoId); } });
+  Actions.register("search.todos.create", { handler: function () { cmdRun("tasks.new"); } });
+
+  Actions.register("search.items.open", { handler: function (ctx) {
+    cmdGo("files");
+    if (ctx && ctx.itemId != null && typeof selectFile === "function") setTimeout(function () { selectFile(ctx.itemId); }, 120);
+    else if (ctx && ctx.itemId != null && typeof openItem === "function") setTimeout(function () { openItem(ctx.itemId); }, 120);
+  } });
+  Actions.register("search.items.create", { handler: function () { cmdRun("files.new"); } });
+
+  Actions.register("search.habits.open", { handler: function () { cmdGo("habits"); } });
+  Actions.register("search.calendar.open", { handler: function (ctx) {
+    cmdGo("calendar");
+    if (ctx && ctx.date) {
+      setTimeout(function () {
+        const d = new Date(ctx.date);
+        if (!isNaN(d)) {
+          try { calYear = d.getFullYear(); calMonth = d.getMonth(); } catch (e) {}
+        }
+        if (typeof renderCalendar === "function") renderCalendar();
+        if (typeof showDayEvents === "function") showDayEvents(ctx.date);
+      }, 90);
+    }
+  } });
+  Actions.register("search.calendar.create", { handler: function () { cmdRun("calendar.new"); } });
+
+  Actions.register("search.settings.openTab", { handler: function (ctx) { cmdRun("settings.tab.open", { tab: (ctx && ctx.tab) || "profilee" }); } });
+  Actions.register("search.theme.change", { handler: function () { cmdRun("theme.open"); } });
+  Actions.register("search.applibrary.open", { handler: function () { cmdRun("appLibrary.open"); } });
+  Actions.register("search.universe.open", { handler: function () { cmdRun("universe.open"); } });
+  Actions.register("search.briefing.open", { handler: function () { cmdRun("briefing.open"); } });
+  Actions.register("search.achievements.open", { handler: function () { cmdRun("achievements.open"); } });
+  Actions.register("search.connections.open", { handler: function () { cmdGo("connections"); } });
+  Actions.register("search.brain.open", { handler: function () { cmdRun("brain.open"); focusAIInput(); } });
+  Actions.register("search.ai.ask", { handler: function () {
+    if (window.ETHONEAIEverywhere && typeof window.ETHONEAIEverywhere.openCopilot === "function") {
+      window.ETHONEAIEverywhere.openCopilot(window.ETHONEAIEverywhere.contextFromElement(document.activeElement));
+    } else {
+      cmdRun("brain.open");
+      focusAIInput();
+    }
+  } });
+  Actions.register("search.spotify.launch", { handler: function () {
+    focusIntegration("spotify");
+    try { window.open("https://open.spotify.com/", "_blank", "noopener,noreferrer"); } catch (e) {}
+  } });
+  Actions.register("search.workspaces.switcher", { handler: function () { cmdRun("spaces.open"); } });
+  Actions.register("search.workspace.open", { handler: function (ctx) {
+    const api = window.ETHONESpaces || window.ETHONEWorkspaces;
+    if (api && typeof api.setActive === "function" && ctx && ctx.workspaceId) api.setActive(ctx.workspaceId);
+    cmdGo("dashboard");
+  } });
+  Actions.register("search.databases.home", { handler: function () { cmdGo("databases"); } });
+  Actions.register("search.databases.open", { handler: function (ctx) {
+    cmdGo("databases");
+    if (ctx && ctx.dbId != null && typeof dbOpenDatabase === "function") setTimeout(function () { dbOpenDatabase(ctx.dbId); }, 90);
+  } });
+  Actions.register("search.theme.pick", { handler: function (ctx) { if (ctx && ctx.themeIdx != null && typeof pickTheme === "function") pickTheme(ctx.themeIdx); } });
+  Actions.register("search.profile.switch", { handler: function () { cmdRun("profile.switch"); } });
+  Actions.register("search.presentation.open", { handler: function () { if (typeof openPresentationMode === "function") openPresentationMode(); } });
+  Actions.register("search.language.toggle", { handler: function () {
+    const langs = ["fr", "en", "es", "de"];
+    const idx = langs.indexOf(cmdLang());
+    if (typeof setLangAndClose === "function") setLangAndClose(langs[(idx + 1) % langs.length], "lang-dd-topbar");
+  } });
+}
+
 registerSearchActions();
 
-// ══════════════════════════════════════════════════════════════
-document.addEventListener('keydown',e=>{
-  if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();const o=document.getElementById('cmd-palette-overlay');if(o?.classList.contains('open'))closeCmdPalette();else openCmdPalette();}
-  const _tag=document.activeElement?.tagName;
-  const _inInput=_tag==='INPUT'||_tag==='TEXTAREA'||document.activeElement?.isContentEditable;
-  if(!document.getElementById('cmd-palette-overlay')?.classList.contains('open')){
-    if(_inInput)return;
-    // Raccourcis de navigation
-    if(e.key==='n'&&!e.ctrlKey&&!e.metaKey&&!e.shiftKey){e.preventDefault();switchPage('notes',null);}
-    if(e.key==='t'&&!e.ctrlKey&&!e.metaKey&&!e.shiftKey){e.preventDefault();switchPage('todos',null);}
-    if(e.key==='g'&&!e.ctrlKey&&!e.metaKey&&!e.shiftKey){e.preventDefault();switchPage('gaming',null);}
-    if(e.key==='h'&&!e.ctrlKey&&!e.metaKey&&!e.shiftKey){e.preventDefault();switchPage('habits',null);}
-    // Espace → play/pause Pomodoro si on est sur le dashboard
-    if(e.code==='Space'){
-      const dash=document.getElementById('page-dashboard');
-      if(dash&&dash.classList.contains('active')&&document.getElementById('pomo-ring-wrap')){
-        e.preventDefault();pomoToggle();
-      }
+window.openCmdPalette = openCmdPalette;
+window.closeCmdPalette = closeCmdPalette;
+window.openSpotlightSearch = openSpotlightSearch;
+window.onCmdInput = onCmdInput;
+window.handleCmdKey = handleCmdKey;
+window.executeCmdItem = executeCmdItem;
+window.renderCmdResults = renderCmdResults;
+
+document.addEventListener("keydown", function (event) {
+  if (window.ETHONEKeyboardShortcuts && window.ETHONEKeyboardShortcuts.isEnabled && window.ETHONEKeyboardShortcuts.isEnabled()) return;
+  if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+    event.preventDefault();
+    const overlay = document.getElementById("cmd-palette-overlay");
+    if (overlay?.classList.contains("open")) closeCmdPalette();
+    else openCmdPalette();
+    return;
+  }
+
+  const tag = document.activeElement?.tagName;
+  const inInput = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || document.activeElement?.isContentEditable;
+  if (document.getElementById("cmd-palette-overlay")?.classList.contains("open") || inInput) return;
+
+  if (event.key === "n" && !event.ctrlKey && !event.metaKey && !event.shiftKey) { event.preventDefault(); cmdGo("notes"); }
+  if (event.key === "t" && !event.ctrlKey && !event.metaKey && !event.shiftKey) { event.preventDefault(); cmdGo("todos"); }
+  if (event.key === "g" && !event.ctrlKey && !event.metaKey && !event.shiftKey) { event.preventDefault(); cmdGo("gaming"); }
+  if (event.key === "h" && !event.ctrlKey && !event.metaKey && !event.shiftKey) { event.preventDefault(); cmdGo("habits"); }
+
+  if (event.code === "Space") {
+    const dash = document.getElementById("page-dashboard");
+    if (dash && dash.classList.contains("active") && document.getElementById("pomo-ring-wrap") && typeof pomoToggle === "function") {
+      event.preventDefault();
+      pomoToggle();
     }
   }
 });
-
-// ══════════════════════════════════════════════════════════════

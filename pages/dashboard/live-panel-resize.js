@@ -75,7 +75,10 @@
     if(isMobileRange){
       const open = typeof force === 'boolean' ? force : !panel.classList.contains('mobile-open');
       panel.classList.toggle('mobile-open', open);
-      if(overlay) overlay.classList.toggle('mobile-open', open);
+      if(overlay){
+        overlay.classList.toggle('mobile-open', open);
+        overlay.setAttribute('aria-hidden', open ? 'false' : 'true');
+      }
       return;
     }
     const retracted = typeof force === 'boolean' ? !force : !shell.classList.contains('live-panel-retracted');
@@ -92,7 +95,10 @@
     const isMobileRange = window.innerWidth <= MOBILE_BREAKPOINT;
     if(!isMobileRange){
       panel.classList.remove('mobile-open');
-      if(overlay) overlay.classList.remove('mobile-open');
+      if(overlay){
+        overlay.classList.remove('mobile-open');
+        overlay.setAttribute('aria-hidden','true');
+      }
     }
   });
 

@@ -1,20 +1,25 @@
 /* Extracted from index.html. Preserve global contracts and load order. */
 (function(){
   "use strict";
-  if(window.ETHONE_SAFE_MODE||window.__ethoneSkipAIPreload)return;
+  if(window.ETHONE_SAFE_MODE)return;
   if(window.__ethoneAICoreRuntime)return;
   window.__ethoneAICoreRuntime=true;
   const $=(s,r=document)=>r.querySelector(s);
   const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
   const storeKey="ethone:ai-core";
   const providerPageSize=4;
+  const modelDisplayLimit=120;
   const pendingRequests=new Map();
+  let saveTimer=0;
+  let logSaveTimer=0;
   let providersExpanded=false;
   let runtimeStarted=false;
   let pageMountScheduled=false;
+  let renderLocked=false;
   let legacyMigrationChecked=false;
-  let activeManagerTab="providers";
+  let activeManagerTab="settings";
   const mountedTabs=new Set();
+  const aiState={status:"disconnected",message:"Provider manager ready.",sync:false,error:""};
   const clock=()=>window.performance&&typeof window.performance.now==="function"?window.performance.now():Date.now();
   const debug=message=>console.info("[ETHONE IA] "+message);
   const providerCatalog=[
@@ -62,26 +67,38 @@
     return cfg;
   }
   let config=loadConfig();
+  function finite(value,fallback,min,max){
+    const n=Number(value);
+    const v=Number.isFinite(n)?n:fallback;
+    return Math.min(max,Math.max(min,v));
+  }
   function saveConfig(syncProfile){
-    localStorage.setItem(storeKey,JSON.stringify(config));
-    if(syncProfile!==false)syncProfileConfig();
+    try{localStorage.setItem(storeKey,JSON.stringify(config))}catch(error){console.warn("[ETHONE IA] config save failed",error)}
+    if(syncProfile!==false){
+      clearTimeout(saveTimer);
+      saveTimer=setTimeout(syncProfileConfig,180);
+    }
   }
   function profile(){
     try{return typeof window.curP==="function"?window.curP():null}catch(e){return null}
   }
   function syncProfileConfig(){
-    const p=profile();
-    if(!p||!p.state)return;
-    p.state.aiCore=Object.assign({},p.state.aiCore||{},{
-      defaultProvider:config.defaultProvider,
-      fallbackProviders:config.fallbackProviders,
-      privacy:config.privacy,
-      settings:config.settings,
-      memory:config.memory,
-      plugins:config.plugins,
-      conversations:config.conversations.slice(-30)
-    });
-    try{if(typeof window.saveStateNow==="function")window.saveStateNow()}catch(e){}
+    try{
+      const p=profile();
+      if(!p||!p.state)return;
+      p.state.aiCore=Object.assign({},p.state.aiCore||{},{
+        defaultProvider:config.defaultProvider,
+        fallbackProviders:config.fallbackProviders,
+        privacy:config.privacy,
+        settings:config.settings,
+        memory:config.memory,
+        plugins:config.plugins,
+        conversations:config.conversations.slice(-30)
+      });
+      try{if(typeof window.saveStateNow==="function")window.saveStateNow()}catch(e){}
+    }catch(error){
+      console.warn("[ETHONE IA] profile sync failed",error);
+    }
   }
   function migrateLegacy(){
     if(legacyMigrationChecked)return;
@@ -139,6 +156,7 @@
     const meta=catalog(id), st=providerState(id);
     if(!meta)throw new Error("Unknown provider");
     if(meta.kind==="cloud"&&!st.apiKey)throw new Error("API key required");
+    setAIState("syncing","Refreshing "+meta.name+" models...",true,"");
     const base=(st.endpoint||meta.baseUrl).replace(/\/$/,"");
     const url=meta.modelMode==="gemini"
       ? base+meta.modelsPath+(st.apiKey?"?key="+encodeURIComponent(st.apiKey):"")
@@ -149,8 +167,13 @@
     const data=await res.json();
     let models=normalizeModels(meta,data);
     if(meta.modelMode==="gemini")models=models.map(m=>String(m).replace(/^models\//,""));
+    if(models.length>modelDisplayLimit){
+      log("models",meta.name+" returned "+models.length+" model(s); showing first "+modelDisplayLimit+" for UI stability.");
+      models=models.slice(0,modelDisplayLimit);
+    }
     updateProvider(id,{models,health:"ok",latency:Date.now()-started,lastError:"",updatedAt:Date.now(),model:st.model&&models.includes(st.model)?st.model:(models[0]||"")},{render:false,syncProfile:false});
     log("models",meta.name+" returned "+models.length+" model(s).");
+    setAIState("connected",meta.name+" connected. "+models.length+" model(s) available.",false,"");
     return models;
   }
   function chooseProvider(task){
@@ -217,13 +240,18 @@
     return "ETHONE AI Core. Lang:"+lang2+". Date:"+today+".\nACTIONS:"+actions+"\nDATA:"+(ctx.summary||"")+"\nMEMORY:"+memory+"\nRules: concise, answer in "+lang2+", use ACTION when useful, never expose API keys."+custom;
   }
   async function complete(input){
+    setAIState("loading","Generating response...",true,"");
     const ctx=typeof window.getAIContext==="function"?window.getAIContext():{summary:""};
     const uiLang=window._lang||"fr";
     const lang2=uiLang==="fr"?"fr":uiLang==="es"?"es":uiLang==="de"?"de":"en";
-    const messages=(typeof _aiHistory!=="undefined"?_aiHistory:(window._aiHistory||[])).slice(-Number(config.settings.contextSize||6));
-    const request={system:buildSystemPrompt(ctx,lang2),messages,temperature:Number(config.settings.temperature||.7),maxTokens:Number(config.settings.maxTokens||650),task:detectTask(input)};
+    const messages=(typeof _aiHistory!=="undefined"?_aiHistory:(window._aiHistory||[])).slice(-finite(config.settings.contextSize,6,2,24));
+    const request={system:buildSystemPrompt(ctx,lang2),messages,temperature:finite(config.settings.temperature,.7,0,2),maxTokens:finite(config.settings.maxTokens,650,128,8192),task:detectTask(input)};
     const candidates=chooseProvider(request.task);
-    if(!candidates.length)throw new Error("No configured AI provider. Open AI Core Provider Manager and connect Groq, OpenAI, Ollama or another provider.");
+    if(!candidates.length){
+      const error=new Error("No configured AI provider. Open AI Core Provider Manager and connect Groq, OpenAI, Ollama or another provider.");
+      setAIState("empty","No provider configured.",false,error.message);
+      throw error;
+    }
     const failures=[];
     for(const id of candidates){
       try{
@@ -231,6 +259,7 @@
         log("request","Answered by "+catalog(id).name+" / "+result.model+" in "+result.latency+"ms.");
         recordConversation(input,result,ctx);
         maybeMemory(input,result.content);
+        setAIState("connected","Answered by "+catalog(result.provider).name+".",false,"");
         return result;
       }catch(e){
         updateProvider(id,{health:"error",lastError:e.message,updatedAt:Date.now()},{render:false,syncProfile:false});
@@ -238,7 +267,9 @@
         log("failover",catalog(id).name+" failed. "+e.message);
       }
     }
-    throw new Error("All configured providers failed. "+failures.join(" | "));
+    const error=new Error("All configured providers failed. "+failures.join(" | "));
+    setAIState("error","All configured providers failed.",false,error.message);
+    throw error;
   }
   function detectTask(text){
     const t=String(text||"").toLowerCase();
@@ -267,7 +298,24 @@
   function log(type,message){
     config.logs.push({ts:Date.now(),type,message});
     if(config.logs.length>120)config.logs=config.logs.slice(-120);
-    localStorage.setItem(storeKey,JSON.stringify(config));
+    clearTimeout(logSaveTimer);
+    logSaveTimer=setTimeout(()=>{try{localStorage.setItem(storeKey,JSON.stringify(config))}catch(e){}},240);
+  }
+  function setAIState(status,message,sync,error){
+    aiState.status=status||aiState.status;
+    aiState.message=message||aiState.message||"";
+    aiState.sync=!!sync;
+    aiState.error=error||"";
+    updateAIStateUI();
+  }
+  function updateAIStateUI(){
+    const root=$("#aic-state");
+    if(!root)return;
+    root.dataset.state=aiState.status;
+    root.setAttribute("aria-busy",String(!!aiState.sync));
+    const label=$(".aic-state-label",root),copy=$(".aic-state-copy",root);
+    if(label)label.textContent=aiState.status;
+    if(copy)copy.textContent=aiState.error||aiState.message||"Ready";
   }
   function gracefulError(err){
     const msg=err?.message||String(err||"Unknown error");
@@ -301,6 +349,7 @@
     shell.innerHTML=
       '<div class="aic-panel aic-hero">'+
         '<div><div class="aic-kicker">ETHONE AI Core</div><div class="aic-title">Unified intelligence platform</div><div class="aic-copy">Provider-neutral AI routing for Groq, OpenAI, Claude, Gemini, OpenRouter, Ollama, LM Studio and future MCP plugins. The chat below now talks only through ETHONE AI Core.</div>'+
+        '<div class="aic-state" id="aic-state" data-state="disconnected" aria-live="polite"><span class="aic-state-dot"></span><strong class="aic-state-label">disconnected</strong><span class="aic-state-copy">Provider manager ready.</span></div>'+
         '<div class="aic-status-grid"><div class="aic-status"><span>Default</span><strong id="aic-default-status">-</strong></div><div class="aic-status"><span>Model</span><strong id="aic-model-status">-</strong></div><div class="aic-status"><span>Fallbacks</span><strong id="aic-fallback-status">-</strong></div><div class="aic-status"><span>Memory</span><strong id="aic-memory-status">-</strong></div></div></div>'+
       '</div>'+
       '<aside class="aic-panel aic-side-card"><div class="aic-kicker">Routing</div><div id="aic-routing-summary"></div></aside>';
@@ -313,14 +362,14 @@
     manager.className="aic-panel";
     manager.innerHTML=
       '<div class="aic-tabs">'+
-        '<button class="aic-tab active" data-aic-tab="providers" type="button">Providers</button>'+
-        '<button class="aic-tab" data-aic-tab="settings" type="button">Settings</button>'+
+        '<button class="aic-tab" data-aic-tab="providers" type="button">Providers</button>'+
+        '<button class="aic-tab active" data-aic-tab="settings" type="button">Settings</button>'+
         '<button class="aic-tab" data-aic-tab="memory" type="button">Memory</button>'+
         '<button class="aic-tab" data-aic-tab="plugins" type="button">Plugins / MCP</button>'+
         '<button class="aic-tab" data-aic-tab="logs" type="button">Logs</button>'+
       '</div>'+
-      '<div class="aic-tab-content active" id="aic-tab-providers"></div>'+
-      '<div class="aic-tab-content" id="aic-tab-settings"></div>'+
+      '<div class="aic-tab-content" id="aic-tab-providers"></div>'+
+      '<div class="aic-tab-content active" id="aic-tab-settings"></div>'+
       '<div class="aic-tab-content" id="aic-tab-memory"></div>'+
       '<div class="aic-tab-content" id="aic-tab-plugins"></div>'+
       '<div class="aic-tab-content" id="aic-tab-logs"></div>';
@@ -335,26 +384,43 @@
     $("#aic-memory-status")&&( $("#aic-memory-status").textContent=config.privacy.memory?"On":"Off" );
     const routing=$("#aic-routing-summary");
     if(routing)routing.innerHTML=Object.entries(config.taskRouting).map(([task,id])=>'<div class="aic-route-item"><strong>'+task+'</strong><span>'+((catalog(id)||{}).name||id)+'</span></div>').join("");
+    const active=chooseProvider("fast");
+    if(active.length)setAIState("connected","Ready. "+active.length+" provider route(s) configured.",false,"");
+    else setAIState("empty","No provider is fully configured yet.",false,"");
     patchAILabels();
   }
   function renderManagerTab(tab,force){
-    const name=["providers","settings","memory","plugins","logs"].includes(tab)?tab:"providers";
-    const host=$("#aic-tab-"+name);
-    if(!host)return;
-    if(!force&&mountedTabs.has(name)&&host.childElementCount)return;
-    if(name==="providers")renderProviders();
-    if(name==="settings")renderSettings();
-    if(name==="memory")renderMemory();
-    if(name==="plugins")renderPlugins();
-    if(name==="logs")renderLogs();
-    mountedTabs.add(name);
-    debug("tab mounted: "+name);
+    try{
+      const name=["providers","settings","memory","plugins","logs"].includes(tab)?tab:"providers";
+      const host=$("#aic-tab-"+name);
+      if(!host)return;
+      if(!force&&mountedTabs.has(name)&&host.childElementCount)return;
+      if(name==="providers")renderProviders();
+      if(name==="settings")renderSettings();
+      if(name==="memory")renderMemory();
+      if(name==="plugins")renderPlugins();
+      if(name==="logs")renderLogs();
+      mountedTabs.add(name);
+      debug("tab mounted: "+name);
+    }catch(error){
+      console.error("[ETHONE IA] tab render failed",error);
+      setAIState("error","AI tab render failed.",false,error.message);
+    }
   }
   function renderAIManager(options){
+    if(renderLocked)return;
+    renderLocked=true;
     const opts=options||{};
-    migrateLegacy();
-    updateManagerSummary();
-    renderManagerTab(activeManagerTab,!!opts.force);
+    try{
+      migrateLegacy();
+      updateManagerSummary();
+      renderManagerTab(activeManagerTab,!!opts.force);
+    }catch(error){
+      console.error("[ETHONE IA] manager render failed",error);
+      setAIState("error","AI manager render failed.",false,error.message);
+    }finally{
+      renderLocked=false;
+    }
   }
   function renderProviders(){
     const host=$("#aic-tab-providers");if(!host)return;
@@ -397,7 +463,10 @@
   function renderPlugins(){
     const host=$("#aic-tab-plugins");if(!host)return;
     const defs=[["github","GitHub MCP","Repositories, issues, commits and pull requests."],["discord","Discord","Presence and community context."],["spotify","Spotify","Listening context and playback signals."],["weather","Weather","Forecast context for planning."],["calendar","Calendar","Agenda and scheduling context."],["notes","Notes","Notebook and writing actions."],["files","Files","Library and local knowledge."],["mcp","External MCP","Future standardized tool servers."]];
-    host.innerHTML='<div class="aic-plugin-grid">'+defs.map(([id,name,sub])=>'<div class="aic-plugin"><div><strong>'+name+'</strong><span>'+sub+'</span></div><button class="aic-btn '+(config.plugins[id]?"primary":"")+'" data-aic-plugin="'+id+'" type="button">'+(config.plugins[id]?"Enabled":"Enable")+'</button></div>').join("")+'</div>';
+    host.innerHTML='<div class="aic-plugin-grid">'+defs.map(([id,name,sub])=>{
+      const soon=id==="mcp";
+      return '<div class="aic-plugin"'+(soon?' data-feature-status="coming-soon" data-feature-name="'+escape(name)+'" data-coming-soon-description="External MCP servers need the future secure tool bridge before they can run inside ETHONE."':'')+'><div><strong>'+name+'</strong><span>'+sub+'</span></div>'+(soon?'<button class="aic-btn" data-coming-soon="'+escape(name)+'" data-coming-soon-description="External MCP servers need the future secure tool bridge before they can run inside ETHONE." data-coming-soon-notify="true" type="button">Notify me</button>':'<button class="aic-btn '+(config.plugins[id]?"primary":"")+'" data-aic-plugin="'+id+'" type="button">'+(config.plugins[id]?"Enabled":"Enable")+'</button>')+'</div>';
+    }).join("")+'</div>';
   }
   function renderLogs(){
     const host=$("#aic-tab-logs");if(!host)return;
@@ -410,61 +479,81 @@
     if(ctx&&ctx.textContent&&!ctx.textContent.includes("Core"))ctx.textContent=ctx.textContent+" / Core";
   }
   function handleClick(e){
-    const tab=e.target.closest("[data-aic-tab]");
-    if(tab){
-      activeManagerTab=tab.dataset.aicTab;
-      $$(".aic-tab").forEach(x=>x.classList.toggle("active",x===tab));
-      $$(".aic-tab-content").forEach(x=>x.classList.toggle("active",x.id==="aic-tab-"+activeManagerTab));
-      renderManagerTab(activeManagerTab,true);
-      return;
-    }
-    const providerToggle=e.target.closest("[data-aic-provider-toggle]");
-    if(providerToggle){
-      providersExpanded=!providersExpanded;
-      renderProviders();
-      return;
-    }
-    const save=e.target.closest("[data-aic-save-provider]");
-    if(save){
-      const id=save.dataset.aicSaveProvider;
-      updateProvider(id,{enabled:true,endpoint:$("[data-aic-endpoint='"+id+"']")?.value.trim()||catalog(id).baseUrl,apiKey:$("[data-aic-key='"+id+"']")?.value.trim()||providerState(id).apiKey,model:$("[data-aic-model='"+id+"']")?.value||""});
-      if(id==="groq"&&profile()?.state?.connections){
-        profile().state.connections.groqKey=providerState(id).apiKey;
-        try{if(typeof window.saveStateNow==="function")window.saveStateNow()}catch(err){}
+    try{
+      const page=$("#page-ai");
+      if(!page||!page.contains(e.target))return;
+      const tab=e.target.closest("[data-aic-tab]");
+      if(tab){
+        activeManagerTab=tab.dataset.aicTab;
+        $$(".aic-tab").forEach(x=>x.classList.toggle("active",x===tab));
+        $$(".aic-tab-content").forEach(x=>x.classList.toggle("active",x.id==="aic-tab-"+activeManagerTab));
+        renderManagerTab(activeManagerTab,true);
+        return;
       }
-      toast("Provider saved: "+catalog(id).name,"success");
-      return;
+      const providerToggle=e.target.closest("[data-aic-provider-toggle]");
+      if(providerToggle){
+        providersExpanded=!providersExpanded;
+        renderProviders();
+        return;
+      }
+      const save=e.target.closest("[data-aic-save-provider]");
+      if(save){
+        const id=save.dataset.aicSaveProvider;
+        const meta=catalog(id);
+        if(!meta)throw new Error("Unknown provider: "+id);
+        setAIState("syncing","Saving "+meta.name+" provider...",true,"");
+        updateProvider(id,{enabled:true,endpoint:$("[data-aic-endpoint='"+id+"']")?.value.trim()||meta.baseUrl,apiKey:$("[data-aic-key='"+id+"']")?.value.trim()||providerState(id).apiKey,model:$("[data-aic-model='"+id+"']")?.value||""});
+        if(id==="groq"&&profile()?.state?.connections){
+          profile().state.connections.groqKey=providerState(id).apiKey;
+          try{if(typeof window.saveStateNow==="function")window.saveStateNow()}catch(err){}
+        }
+        setAIState("connected","Provider saved: "+meta.name,false,"");
+        toast("Provider saved: "+meta.name,"success");
+        return;
+      }
+      const refresh=e.target.closest("[data-aic-refresh-models]");
+      if(refresh){
+        const providerId=refresh.dataset.aicRefreshModels;
+        refresh.disabled=true;
+        refresh.setAttribute("aria-busy","true");
+        refreshModels(providerId)
+          .then(()=>{renderAIManager({force:true});toast("Models refreshed","success")})
+          .catch(err=>{setAIState("error","Model refresh failed.",false,err.message);log("models",err.message);renderAIManager({force:true});toast(err.name==="AbortError"?"Model refresh cancelled":err.message,"error")})
+          .finally(()=>{refresh.disabled=false;refresh.removeAttribute("aria-busy")});
+        return;
+      }
+      const def=e.target.closest("[data-aic-default]");
+      if(def){config.defaultProvider=def.dataset.aicDefault;providerState(config.defaultProvider).enabled=true;saveConfig();renderAIManager({force:true});toast("Default provider updated","success");return}
+      const setBtn=e.target.closest("[data-aic-save-settings]");
+      if(setBtn){
+        $$("[data-aic-setting]").forEach(el=>{
+          const k=el.dataset.aicSetting;
+          if(el.type==="number"){
+            const limits={temperature:[.7,0,2],maxTokens:[650,128,8192],contextSize:[6,2,24]}[k]||[0,0,9999];
+            config.settings[k]=finite(el.value,limits[0],limits[1],limits[2]);
+            el.value=String(config.settings[k]);
+          }else config.settings[k]=el.value;
+        });
+        const fb=$("[data-aic-fallbacks]")?.value||"";
+        config.fallbackProviders=fb.split(",").map(x=>x.trim()).filter(Boolean);
+        saveConfig();renderAIManager({force:true});toast("AI settings applied","success");return;
+      }
+      const toggle=e.target.closest("[data-aic-toggle]");
+      if(toggle){const k=toggle.dataset.aicToggle;config.privacy[k]=!config.privacy[k];saveConfig();renderAIManager({force:true});return}
+      const plugin=e.target.closest("[data-aic-plugin]");
+      if(plugin&&plugin.hasAttribute("data-coming-soon"))return;
+      if(plugin){const k=plugin.dataset.aicPlugin;config.plugins[k]=!config.plugins[k];saveConfig();renderAIManager({force:true});return}
+      const addMem=e.target.closest("[data-aic-add-memory]");
+      if(addMem){const value=prompt("Visible memory to store in ETHONE AI Core:");if(value){config.memory.push({id:Date.now(),key:"manual",value:value.slice(0,300),source:"user",ts:Date.now()});config.privacy.memory=true;saveConfig();renderAIManager({force:true})};return}
+      const delMem=e.target.closest("[data-aic-delete-memory]");
+      if(delMem){config.memory=config.memory.filter(m=>String(m.id)!==String(delMem.dataset.aicDeleteMemory));saveConfig();renderAIManager({force:true});return}
+      const clear=e.target.closest("[data-aic-clear-memory]");
+      if(clear&&confirm("Clear all visible AI memory?")){config.memory=[];saveConfig();renderAIManager({force:true});return}
+    }catch(error){
+      console.error("[ETHONE IA] action failed",error);
+      setAIState("error","AI action failed.",false,error.message);
+      toast(error.message||"AI action failed","error");
     }
-    const refresh=e.target.closest("[data-aic-refresh-models]");
-    if(refresh){
-      const providerId=refresh.dataset.aicRefreshModels;
-      refresh.disabled=true;
-      refresh.setAttribute("aria-busy","true");
-      refreshModels(providerId)
-        .then(()=>{renderAIManager({force:true});toast("Models refreshed","success")})
-        .catch(err=>{log("models",err.message);renderAIManager({force:true});toast(err.name==="AbortError"?"Model refresh cancelled":err.message,"error")})
-        .finally(()=>{refresh.disabled=false;refresh.removeAttribute("aria-busy")});
-      return;
-    }
-    const def=e.target.closest("[data-aic-default]");
-    if(def){config.defaultProvider=def.dataset.aicDefault;providerState(config.defaultProvider).enabled=true;saveConfig();renderAIManager({force:true});toast("Default provider updated","success");return}
-    const setBtn=e.target.closest("[data-aic-save-settings]");
-    if(setBtn){
-      $$("[data-aic-setting]").forEach(el=>{const k=el.dataset.aicSetting;config.settings[k]=el.type==="number"?Number(el.value):el.value});
-      const fb=$("[data-aic-fallbacks]")?.value||"";
-      config.fallbackProviders=fb.split(",").map(x=>x.trim()).filter(Boolean);
-      saveConfig();renderAIManager({force:true});toast("AI settings applied","success");return;
-    }
-    const toggle=e.target.closest("[data-aic-toggle]");
-    if(toggle){const k=toggle.dataset.aicToggle;config.privacy[k]=!config.privacy[k];saveConfig();renderAIManager({force:true});return}
-    const plugin=e.target.closest("[data-aic-plugin]");
-    if(plugin){const k=plugin.dataset.aicPlugin;config.plugins[k]=!config.plugins[k];saveConfig();renderAIManager({force:true});return}
-    const addMem=e.target.closest("[data-aic-add-memory]");
-    if(addMem){const value=prompt("Visible memory to store in ETHONE AI Core:");if(value){config.memory.push({id:Date.now(),key:"manual",value:value.slice(0,300),source:"user",ts:Date.now()});config.privacy.memory=true;saveConfig();renderAIManager({force:true})};return}
-    const delMem=e.target.closest("[data-aic-delete-memory]");
-    if(delMem){config.memory=config.memory.filter(m=>String(m.id)!==String(delMem.dataset.aicDeleteMemory));saveConfig();renderAIManager({force:true});return}
-    const clear=e.target.closest("[data-aic-clear-memory]");
-    if(clear&&confirm("Clear all visible AI memory?")){config.memory=[];saveConfig();renderAIManager({force:true});return}
   }
   function wrapLegacyGroqKey(){
     if(typeof window.saveGroqKey==="function"&&!window.saveGroqKey.__aicWrapped){
@@ -481,34 +570,48 @@
   function overrideChat(){
     if(typeof window.sendAIMessage!=="function"||window.sendAIMessage.__aicWrapped)return;
     window.sendAIMessage=async function(){
-      if(typeof _aiTyping!=="undefined"&&_aiTyping)return;
-      const inp=$("#ai-input");if(!inp)return;
-      const text=inp.value.trim();if(!text)return;
-      inp.value="";inp.style.height="auto";
-      if(typeof window.addAIMessage==="function")addAIMessage("user",text);
-      try{_aiHistory.push({role:"user",content:text,ts:Date.now(),origin:document.querySelector(".tab-content.active")?.id||"page-ai"})}catch(e){}
-      try{_aiTyping=true}catch(e){}
       const send=$("#ai-send-btn");if(send)send.disabled=true;
-      if(typeof window.showAITyping==="function")showAITyping();
+      let typingShown=false;
       try{
+        if(typeof _aiTyping!=="undefined"&&_aiTyping)return;
+        const inp=$("#ai-input");if(!inp)return;
+        const text=inp.value.trim();if(!text)return;
+        inp.value="";inp.style.height="auto";
+        try{if(typeof window.addAIMessage==="function")addAIMessage("user",text)}catch(error){console.warn("[ETHONE IA] user message render failed",error)}
+        try{_aiHistory.push({role:"user",content:text,ts:Date.now(),origin:document.querySelector(".tab-content.active")?.id||"page-ai"})}catch(e){}
+        try{_aiTyping=true}catch(e){}
+        if(typeof window.showAITyping==="function"){showAITyping();typingShown=true}
         const result=await complete(text);
-        const executed=typeof window.executeAIActions==="function"?executeAIActions(result.content):{clean:result.content,results:[]};
-        if(typeof window.removeAITyping==="function")removeAITyping();
-        if(typeof window.addAIMessage==="function"){
-          addAIMessage("assistant",executed.clean);
-          if(executed.results?.length)executed.results.forEach(r=>addAIMessage("assistant",r));
+        let executed={clean:result.content,results:[]};
+        try{
+          executed=typeof window.executeAIActions==="function"?executeAIActions(result.content):executed;
+        }catch(error){
+          console.warn("[ETHONE IA] action execution failed",error);
+          executed={clean:result.content,results:["AI action failed safely: "+error.message]};
+        }
+        if(typingShown&&typeof window.removeAITyping==="function"){removeAITyping();typingShown=false}
+        try{
+          if(typeof window.addAIMessage==="function"){
+            addAIMessage("assistant",executed.clean);
+            if(executed.results?.length)executed.results.forEach(r=>addAIMessage("assistant",r));
+          }
+        }catch(error){
+          console.error("[ETHONE IA] assistant message render failed",error);
+          setAIState("error","AI response render failed.",false,error.message);
         }
         try{_aiHistory.push({role:"assistant",content:executed.clean,ts:Date.now(),provider:result.provider,model:result.model});if(_aiHistory.length>32)_aiHistory=_aiHistory.slice(-32)}catch(e){}
         try{if(typeof window.saveAIChats==="function")saveAIChats()}catch(e){}
       }catch(e){
-        if(typeof window.removeAITyping==="function")removeAITyping();
-        if(typeof window.addAIMessage==="function")addAIMessage("assistant",gracefulError(e));
+        if(typingShown&&typeof window.removeAITyping==="function"){removeAITyping();typingShown=false}
+        try{if(typeof window.addAIMessage==="function")addAIMessage("assistant",gracefulError(e))}catch(renderError){console.error("[ETHONE IA] error render failed",renderError)}
+        setAIState("error","AI request failed.",false,e.message);
         console.error("[ETHONE AI Core]",e);
+      }finally{
+        try{_aiTyping=false}catch(e){}
+        if(send)send.disabled=false;
+        try{$("#ai-input")?.focus()}catch(e){}
+        try{renderAIManager({force:activeManagerTab==="logs"})}catch(error){console.error("[ETHONE IA] final render failed",error)}
       }
-      try{_aiTyping=false}catch(e){}
-      if(send)send.disabled=false;
-      $("#ai-input")?.focus();
-      renderAIManager({force:activeManagerTab==="logs"});
     };
     window.sendAIMessage.__aicWrapped=true;
   }
@@ -536,15 +639,36 @@
       if(!prefix||key.startsWith(prefix))controller.abort();
     });
   }
+  function scheduleIdle(callback){
+    let done=false;
+    function run(){
+      if(done)return;
+      done=true;
+      callback();
+    }
+    if(window.requestIdleCallback){
+      const id=window.requestIdleCallback(run,{timeout:350});
+      setTimeout(run,420);
+      return id;
+    }
+    if(window.requestAnimationFrame)return window.requestAnimationFrame(run);
+    return setTimeout(run,0);
+  }
   function mountAIPage(){
     if(pageMountScheduled||!isAIVisible())return;
     pageMountScheduled=true;
     const started=clock();
     debug("init start");
-    aiCoreHeader();
-    updateManagerSummary();
-    const schedule=window.requestAnimationFrame||function(callback){return setTimeout(callback,0)};
-    schedule(()=>{
+    try{
+      aiCoreHeader();
+      updateManagerSummary();
+    }catch(error){
+      pageMountScheduled=false;
+      console.error("[ETHONE IA] shell mount failed",error);
+      setAIState("error","AI shell mount failed.",false,error.message);
+      return;
+    }
+    scheduleIdle(()=>{
       pageMountScheduled=false;
       if(!isAIVisible())return;
       try{
@@ -552,6 +676,7 @@
         debug("init complete in "+Math.round(clock()-started)+"ms");
       }catch(error){
         console.error("[ETHONE IA] init failed",error);
+        setAIState("error","AI init failed.",false,error.message);
       }
     });
   }

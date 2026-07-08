@@ -55,6 +55,11 @@
   function activePage(){
     return document.querySelector(".tab-content.active")?.id?.replace("page-","")||"dashboard";
   }
+  function shouldAutoRefresh(){
+    if(document.visibilityState==="hidden")return false;
+    const page=activePage();
+    return page==="ai"||page==="dashboard";
+  }
   function pageLabel(id){
     const map={dashboard:"ETHONE Home",ai:"ETHONE Brain",todos:"Tasks",notes:"Notes",files:"Files",habits:"Habits",calendar:"Calendar",github:"GitHub",marketplace:"Marketplace",store:"Store",workspaces:"Workspaces",timeline:"Timeline",stats:"Statistics",gaming:"Gaming",settings:"Settings",connections:"Connections"};
     return map[id]||String(id||"Workspace");
@@ -346,7 +351,7 @@
       window.switchPage=function(){
         const from=activePage();
         const r=oldSwitch.apply(this,arguments);
-        setTimeout(()=>{addTimeline("navigation","Workspace changed",from+" to "+activePage());run();},120);
+        setTimeout(()=>{addTimeline("navigation","Workspace changed",from+" to "+activePage());if(shouldAutoRefresh())run();},120);
         return r;
       };
       window.switchPage.__brain33bWrapped=true;
@@ -451,7 +456,7 @@
     if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run,{once:true});else run();
     setTimeout(run,350);
     setTimeout(run,1500);
-    setInterval(run,30000);
+    setInterval(()=>{if(shouldAutoRefresh())run();},30000);
   }
   if(window.ethoneRunWhenPageReady)window.ethoneRunWhenPageReady("brain-33b-runtime","ai",startBrain33B);else startBrain33B();
   window.ETHONEBrain={run,open:sendToBrain,facts:dataFacts,timeline:addTimeline,memory:()=>state.memory,recommendations};

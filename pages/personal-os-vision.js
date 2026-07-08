@@ -179,8 +179,8 @@
           '<div class="ethone-pos-brief-label">'+(isFR()?"Briefing du moment":"Current briefing")+'</div>'+
           '<div class="ethone-pos-brief-text" id="ethone-pos-brief"></div>'+
           '<div class="ethone-pos-actions">'+
-            '<button class="btn btn-primary ethone-pos-action" type="button" onclick="switchPage(\'ai\',null)">'+(isFR()?"Ouvrir IA":"Open AI")+'</button>'+
-            '<button class="btn btn-ghost ethone-pos-action" type="button" onclick="switchPage(\'todos\',null)">'+(isFR()?"Voir taches":"View tasks")+'</button>'+
+            '<button class="btn btn-primary ethone-pos-action" type="button" onclick="runAction(\'brain.open\',{el:this,source:\'personal-os-vision\'})">'+(isFR()?"Ouvrir IA":"Open AI")+'</button>'+
+            '<button class="btn btn-ghost ethone-pos-action" type="button" onclick="runAction(\'navigation.open\',{page:\'todos\',el:this,source:\'personal-os-vision\'})">'+(isFR()?"Voir taches":"View tasks")+'</button>'+
           '</div>'+
         '</aside>'+
       '</div>';

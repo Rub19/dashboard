@@ -2526,8 +2526,10 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   color:var(--muted);
 }
 .cmd-item-icon svg{width:14px;height:14px}
+.cmd-item-main{flex:1;min-width:0}
 .cmd-item-label{font-size:13.5px;font-weight:500;color:var(--text);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cmd-item-sub{font-size:11px;color:var(--muted2);margin-top:1px}
+.cmd-empty-state{text-align:center;padding:28px;color:var(--muted2);font-size:13px;line-height:1.5}
 .cmd-item-kbd{
   font-size:10px;color:rgba(245,245,247,.3);
   background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
@@ -3712,7 +3714,7 @@ GitHub
 </div>
 </div>
 <!-- SIDEBAR -->
-<button class="hamburger" id="hamburger" onclick="toggleMobileSidebar()" style="display:none">
+<button type="button" class="hamburger" id="hamburger" onclick="toggleMobileSidebar()" aria-label="Open sidebar" title="Open sidebar" style="display:none">
 <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24"><line x1="3" x2="21" y1="6" y2="6"></line><line x1="3" x2="21" y1="12" y2="12"></line><line x1="3" x2="21" y1="18" y2="18"></line></svg>
 </button>
 <div id="swipe-hint"></div>
@@ -3720,7 +3722,7 @@ GitHub
 <!-- MOBILE TOPBAR -->
 <div id="mobile-topbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:400;height:54px;align-items:center;justify-content:space-between;padding:0 14px;background:rgba(5,5,7,.92);backdrop-filter:blur(calc(16px * var(--theme-blur-scale)));border-bottom:1px solid rgba(255,255,255,.06)">
 <div style="display:flex;align-items:center;gap:10px">
-<button onclick="toggleMobileSidebar()" style="width:34px;height:34px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted)">
+<button type="button" onclick="toggleMobileSidebar()" aria-label="Open sidebar" title="Open sidebar" style="width:34px;height:34px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted)">
 <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" style="width:16px;height:16px" viewbox="0 0 24 24"><line x1="3" x2="21" y1="6" y2="6"></line><line x1="3" x2="21" y1="12" y2="12"></line><line x1="3" x2="21" y1="18" y2="18"></line></svg>
 </button>
 <div id="mob-topbar-avatar" onclick="goToProfileScreen()" style="width:32px;height:32px;border-radius:9px;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;position:relative;border:1.5px solid rgba(139,92,246,.25);cursor:pointer;font-size:14px">👤</div>
@@ -3775,7 +3777,7 @@ GitHub
 <div class="profile-banner-avatar" id="profile-banner-avatar"></div>
 <div style="flex:1;min-width:0">
 <div class="profile-banner-name" id="profile-banner-name">User</div>
-<div class="profile-banner-role" id="profile-banner-bio-el">Personal dashboard</div>
+<div class="profile-banner-role" data-i18n="personal_dashboard" id="profile-banner-bio-el">Personal dashboard</div>
 <div id="profile-banner-socials" style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap"></div>
 </div>
 <div id="profile-banner-level" style="flex-shrink:0;display:none;background:rgba(0,0,0,.4);backdrop-filter:blur(calc(12px * var(--theme-blur-scale)));border-radius:10px;padding:6px 14px;text-align:center;border:1px solid rgba(139,92,246,.2)">
@@ -3823,7 +3825,7 @@ GitHub
 <span id="notif-badge"></span>
 </button>
 <div class="search-bar" onclick="openCmdPalette()" style="cursor:pointer" title="Cmd+K"><span style="color:rgba(255,255,255,.3);font-size:13px">🔍</span><input id="global-search" placeholder="Search (⌘K)…" readonly="" style="cursor:pointer" type="text"/></div>
-<button onclick="openModal('shortcuts')" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .2s" title="Raccourcis clavier">⌨️</button>
+<button onclick="window.ETHONEKeyboardShortcuts&&ETHONEKeyboardShortcuts.open?ETHONEKeyboardShortcuts.open():openModal('shortcuts')" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .2s" title="Raccourcis clavier">⌨️</button>
 <button id="theme-mode-btn" onclick="toggleDarkLight()" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;cursor:pointer;font-size:15px;transition:all .2s" title="Toggle dark/light mode">🌙</button>
 <button id="live-panel-toggle-btn" onclick="toggleLivePanel()" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;cursor:pointer;font-size:15px;transition:all .2s" title="Widgets en direct">◫</button>
 <button id="topbar-profile-btn" onclick="goToProfileScreen()" onmouseout="this.style.borderColor='rgba(255,255,255,.08)'" onmouseover="this.style.borderColor='rgba(139,92,246,.3)'" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:5px 10px 5px 6px;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s;overflow:hidden;max-width:150px" title="Switch profile">
@@ -3834,8 +3836,8 @@ GitHub
 </div>
 </div>
 <div class="stats-row">
-<div class="stat-card" onclick="switchPage('files',null)" style="--card-accent:#8b5cf6"><div class="stat-label" data-i18n="total_files">Total Files</div><div class="stat-value" id="stat-files">0</div><div class="stat-sub">stored items</div></div>
-<div class="stat-card" onclick="switchPage('todos',null)" style="--card-accent:#34d399"><div class="stat-label" data-i18n="tasks_done">Tasks Done</div><div class="stat-value" id="stat-tasks">0</div><div class="stat-sub up" id="stat-tasks-sub">of 0 total</div></div>
+<div class="stat-card" onclick="runAction('navigation.open',{page:'files',el:this,source:'dashboard-stat'})" style="--card-accent:#8b5cf6"><div class="stat-label" data-i18n="total_files">Total Files</div><div class="stat-value" id="stat-files">0</div><div class="stat-sub">stored items</div></div>
+<div class="stat-card" onclick="runAction('navigation.open',{page:'todos',el:this,source:'dashboard-stat'})" style="--card-accent:#34d399"><div class="stat-label" data-i18n="tasks_done">Tasks Done</div><div class="stat-value" id="stat-tasks">0</div><div class="stat-sub up" id="stat-tasks-sub">of 0 total</div></div>
 <div class="stat-card" style="--card-accent:#f87171"><div class="stat-label" data-i18n="links_saved">Links Saved</div><div class="stat-value" id="stat-links">0</div><div class="stat-sub">bookmarked</div></div>
 <div class="stat-card" style="--card-accent:#fbbf24"><div class="stat-label" data-i18n="time">Time</div><div class="clock-display" id="clock-main">00:00</div><div class="clock-date" id="clock-date-sub"></div></div>
 </div>
@@ -3869,7 +3871,7 @@ GitHub
 </div>
               Recent items
             </div>
-<button class="panel-action" onclick="switchPage('files',null)">See all →</button>
+<button class="panel-action" onclick="runAction('navigation.open',{page:'files',el:this,source:'dashboard-panel'})">See all →</button>
 </div>
 <div id="recent-items-list"><div class="empty-state" style="padding:20px"><div class="empty-icon">📂</div><div class="empty-label">No items yet</div></div></div>
 </div>
@@ -3883,7 +3885,7 @@ GitHub
 </div>
                 Upcoming tasks
               </div>
-<button class="panel-action" onclick="switchPage('todos',null)">All →</button>
+<button class="panel-action" onclick="runAction('navigation.open',{page:'todos',el:this,source:'dashboard-panel'})">All →</button>
 </div>
 <div id="overview-todos"><div class="empty-state" style="padding:16px"><div class="empty-icon">🎉</div><div class="empty-label">All done!</div></div></div>
 </div>
@@ -3895,7 +3897,7 @@ GitHub
 </div>
                 Upcoming events
               </div>
-<button class="panel-action" onclick="switchPage('calendar',null)">Calendar →</button>
+<button class="panel-action" onclick="runAction('navigation.open',{page:'calendar',el:this,source:'dashboard-panel'})">Calendar →</button>
 </div>
 <div id="overview-events"><div class="empty-state" style="padding:16px"><div class="empty-icon">📅</div><div class="empty-label">No events</div></div></div>
 </div>
@@ -3909,7 +3911,7 @@ GitHub
 </div>
               Quick note
             </div>
-<button class="panel-action" onclick="switchPage('notes',null)">Open →</button>
+<button class="panel-action" onclick="runAction('navigation.open',{page:'notes',el:this,source:'dashboard-panel'})">Open →</button>
 </div>
 <textarea class="note-area" data-i18n="quick_note_placeholder" data-i18n-attr="placeholder" id="quick-note" oninput="saveNote()" placeholder="Type a quick note…" rows="3"></textarea>
 </div>
@@ -3959,7 +3961,7 @@ GitHub
 <button class="pomo-sound-btn" id="pomo-sound-btn" onclick="togglePomoSound()" title="Toggle sound">
 <svg fill="none" id="pomo-sound-icon" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
 </button>
-<button class="panel-action" data-i18n="history" onclick="switchPage('stats',null)">Historique →</button>
+<button class="panel-action" data-i18n="history" onclick="runAction('navigation.open',{page:'stats',el:this,source:'dashboard-panel'})">Historique →</button>
 </div>
 </div>
 <div class="pomo-display">
@@ -3987,7 +3989,7 @@ GitHub
 <button class="pomo-ctrl-btn" onclick="pomoReset()" title="Reset">
 <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 .49-3.51"></path></svg>
 </button>
-<button class="pomo-play-v2" id="pomo-play-btn" onclick="pomoToggle()">
+<button type="button" class="pomo-play-v2" id="pomo-play-btn" onclick="pomoToggle()" aria-label="Start or pause focus timer" title="Start or pause focus timer">
 <svg fill="none" id="pomo-play-icon" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><polygon fill="currentColor" points="5 3 19 12 5 21 5 3"></polygon></svg>
 </button>
 <button class="pomo-ctrl-btn" onclick="pomoSkip()" title="Skip">
@@ -4131,7 +4133,7 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <div class="note-context-section">
 <div class="note-context-title">Brain</div>
 <p>Utilisez le contexte de cette note pour poursuivre votre travail avec Brain.</p>
-<button class="btn btn-primary note-context-action" onclick="switchPage('ai',null)">Demander à Brain</button>
+<button class="btn btn-primary note-context-action" onclick="runAction('brain.open',{el:this,source:'note-context'})">Demander à Brain</button>
 </div>
 <div class="note-context-section">
 <div class="note-context-title">Détails</div>
@@ -4698,6 +4700,10 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 </div>
 </div>
 </div>
+<div aria-live="polite" class="tab-content" data-qa-page="true" id="page-marketplace" role="tabpanel">
+<div id="ethone-os2-page-marketplace"></div>
+</div>
+<div aria-live="polite" class="tab-content" data-qa-page="true" id="page-studio" role="tabpanel"></div>
 <div aria-live="polite" class="tab-content" data-qa-page="true" id="page-connections" role="tabpanel">
 <div class="topbar"><div><div class="section-eyebrow">Integrations</div><div class="section-title">Connections</div><div class="page-subtitle">Link your accounts to enrich your dashboard</div></div></div>
 <!-- ETHONE AI KEY -->
@@ -4796,7 +4802,7 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <div id="steam-current-game" style="display:none"><span style="font-size:11px;background:rgba(102,192,244,.12);color:var(--steam2);padding:2px 8px;border-radius:20px">🎮 <span id="steam-game-name">—</span></span></div>
 </div>
 </div>
-<a class="btn btn-ghost" href="#" id="steam-profile-link" rel="noopener noreferrer" style="font-size:12px;padding:7px 12px" target="_blank">View profile ↗</a>
+<a class="btn btn-ghost" href="https://steamcommunity.com" id="steam-profile-link" rel="noopener noreferrer" style="font-size:12px;padding:7px 12px" target="_blank">View profile ↗</a>
 </div>
 <div id="steam-recent-games" style="display:none;margin-bottom:14px">
 <div class="section-label" style="padding:0 2px">Recent Games</div>
@@ -5050,16 +5056,16 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <div class="settings-card">
 <div class="settings-card-title">ETHONE AI Core status</div>
 <div id="brain-status" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px"></div>
-<button class="btn btn-primary" onclick="switchPage('ai')" style="font-size:12px">Open Brain settings →</button>
+<button class="btn btn-primary" onclick="runAction('brain.open',{el:this,source:'settings-brain'})" style="font-size:12px">Open Brain settings →</button>
 </div>
 </div>
 <!-- ── AUTOMATION TAB (V28) ── -->
 <div class="settings-section" id="settings-automation">
 <div class="settings-card">
 <div class="settings-card-title" data-i18n="settings_automation">Automation</div>
-<div style="font-size:12px;color:var(--muted2);margin-bottom:12px">Simple rules: a trigger runs an action automatically. Checked every minute while ETHONE is open.</div>
+<div class="automation-builder-subtitle">Crée des workflows visuels façon Zapier, n8n et Apple Shortcuts. Les blocs locaux, les tests, les notes, les tâches et les notifications fonctionnent maintenant. Les triggers externes restent <span class="ethone-coming-soon-badge">Coming Soon</span>.</div>
 <div id="automation-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px"></div>
-<button class="btn btn-primary" onclick="automationCreate()" style="font-size:12px">+ New rule</button>
+<button class="btn btn-primary automation-builder-create" onclick="automationCreate()" style="font-size:12px">+ Nouveau workflow</button>
 </div>
 </div>
 <!-- ── MARKETPLACE TAB (V28) ── -->
@@ -5874,23 +5880,23 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <div class="toast-container" id="toasts"></div>
 <!-- MOBILE BOTTOM NAV -->
 <nav class="mobile-bottom-nav" id="mobile-bottom-nav" aria-label="Navigation mobile">
-<button class="mob-nav-btn active" id="mob-btn-dashboard" onclick="switchPage('dashboard',null);setMobNav('dashboard')">
+<button class="mob-nav-btn active" id="mob-btn-dashboard" onclick="runAction('navigation.open',{page:'dashboard',el:this,source:'mobile-nav'});setMobNav('dashboard')">
 <span class="mob-icon"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24"><rect height="7" rx="1.5" width="7" x="3" y="3"></rect><rect height="7" rx="1.5" width="7" x="14" y="3"></rect><rect height="7" rx="1.5" width="7" x="3" y="14"></rect><rect height="7" rx="1.5" width="7" x="14" y="14"></rect></svg></span>
     Home
   </button>
-<button class="mob-nav-btn" id="mob-btn-files" onclick="switchPage('files',null);setMobNav('files')">
+<button class="mob-nav-btn" id="mob-btn-files" onclick="runAction('navigation.open',{page:'files',el:this,source:'mobile-nav'});setMobNav('files')">
 <span class="mob-icon"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></span>
     Files
   </button>
-<button class="mob-nav-btn" id="mob-btn-todos" onclick="switchPage('todos',null);setMobNav('todos')">
+<button class="mob-nav-btn" id="mob-btn-todos" onclick="runAction('navigation.open',{page:'todos',el:this,source:'mobile-nav'});setMobNav('todos')">
 <span class="mob-icon"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></span>
     Tasks
   </button>
-<button class="mob-nav-btn" id="mob-btn-gaming" onclick="switchPage('gaming',null);setMobNav('gaming')">
+<button class="mob-nav-btn" id="mob-btn-gaming" onclick="runAction('navigation.open',{page:'gaming',el:this,source:'mobile-nav'});setMobNav('gaming')">
 <span class="mob-icon"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24"><line x1="6" x2="10" y1="12" y2="12"></line><line x1="8" x2="8" y1="10" y2="14"></line><circle cx="15.5" cy="11.5" r="1"></circle><circle cx="17.5" cy="13.5" r="1"></circle><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59l-.9 7.27A4 4 0 0 0 5.77 20.5c.387.1.79-.025 1.05-.327l1.89-2.173h6.58l1.89 2.173c.26.302.663.427 1.05.327a4 4 0 0 0 2.97-4.64l-.9-7.27A4 4 0 0 0 17.32 5z"></path></svg></span>
     Gaming
   </button>
-<button class="mob-nav-btn" id="mob-btn-settings" onclick="switchPage('settings',null);setMobNav('settings')">
+<button class="mob-nav-btn" id="mob-btn-settings" onclick="runAction('navigation.open',{page:'settings',el:this,source:'mobile-nav'});setMobNav('settings')">
 <span class="mob-icon"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></span>
     Settings
   </button>
@@ -5900,12 +5906,15 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <script src="./core/events.js"></script>
 <script src="./state/store.js"></script>
 <script src="./services/storage.js"></script>
+<script src="./services/workspaces.js"></script>
+<script src="./services/timeline.js"></script>
 <script src="./services/language/index.js"></script>
 <script src="./services/theme.js"></script>
 <script src="./services/settings.js"></script>
 <script src="./actions/navigation.js"></script>
 <script src="./actions/notifications.js"></script>
 <script src="./actions/action-registry.js"></script>
+<script id="ethone-coming-soon" src="./ui/coming-soon.js?v=1"></script>
 <script src="./components/registry.js"></script>
 <script src="./widgets/registry.js"></script>
 <script src="./utils/guards.js"></script>
@@ -5928,6 +5937,7 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <script id="ethone-sidebar-scrollfade" src="./pages/dashboard/sidebar-scrollfade.js"></script>
 <script id="ethone-legacy-dashboard-init" src="./pages/dashboard/init.js"></script>
 <script id="ethone-legacy-profile-settings" src="./pages/profile/settings.js"></script>
+<script id="ethone-theme-engine" src="./services/theme/engine.js"></script>
 <script id="ethone-legacy-theme" src="./services/theme/legacy.js"></script>
 <script id="ethone-legacy-profile-banner" src="./pages/profile/banner.js"></script>
 <script id="ethone-legacy-clock" src="./widgets/clock.js"></script>
@@ -5955,8 +5965,10 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <script id="ethone-legacy-command-palette" src="./components/command-palette.js"></script>
 <script id="ethone-legacy-link-preview" src="./components/link-preview.js"></script>
 <script id="ethone-legacy-widget-drag" src="./components/widget-drag.js"></script>
+<script id="ethone-motion-system" src="./ui/motion-system.js"></script>
 <script id="ethone-legacy-animations" src="./ui/animations.js"></script>
 <script id="ethone-legacy-notifications" src="./actions/legacy-notifications.js"></script>
+<script id="ethone-notification-center" src="./actions/notification-center.js?v=1"></script>
 <script id="ethone-legacy-heatmap" src="./widgets/heatmap.js"></script>
 <script id="ethone-analytics-charts" src="./widgets/analytics-charts.js"></script>
 <script id="ethone-legacy-presentation" src="./pages/presentation/index.js"></script>
@@ -5980,6 +5992,7 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <script id="ethone-live-panel-resize" src="./pages/dashboard/live-panel-resize.js"></script>
 <script id="ethone-live-panel-catalog" src="./pages/dashboard/live-panel-catalog.js"></script>
 <script id="ethone-live-panel-widget-resize" src="./pages/dashboard/live-panel-widget-resize.js"></script>
+<script id="ethone-micro-interactions" src="./ui/micro-interactions.js"></script>
 <script id="ethone-legacy-sound" src="./ui/sound.js"></script>
 <script id="ethone-legacy-weather" src="./widgets/weather.js"></script>
 <script id="ethone-legacy-pomodoro" src="./widgets/pomodoro.js"></script>
@@ -5993,6 +6006,7 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <script id="ethone-legacy-valorant-disconnect" src="./pages/gaming/valorant-disconnect.js"></script>
 <script id="ethone-legacy-league" src="./pages/gaming/league.js"></script>
 <script id="ethone-legacy-gaming-helpers" src="./pages/gaming/helpers.js"></script>
+<script id="ethone-gaming-hub" src="./pages/gaming/hub.js?v=1"></script>
 <script id="ethone-ui-dropdown" src="./components/dropdown.js"></script>
 <script id="ethone-va-dropdown-editor" src="./pages/valorant-accounts/dropdown-editor.js"></script>
 <script id="ethone-ui-context-menu" src="./components/context-menu.js"></script>
@@ -6008,14 +6022,72 @@ Markdown pris en charge : **gras**, *italique*, `code`, ## titre, - liste" style
 <script id="ethone-db-gallery" src="./pages/databases/gallery-view.js"></script>
 <script id="ethone-db-calendar" src="./pages/databases/calendar-view.js"></script>
 <script id="ethone-db-timeline" src="./pages/databases/timeline-view.js"></script>
+<script id="ethone-db-list" src="./pages/databases/list-view.js"></script>
 <script id="ethone-db-relation" src="./pages/databases/relation-field.js"></script>
 <script id="ethone-db-formula" src="./pages/databases/formula.js"></script>
 <script id="ethone-db-rating" src="./pages/databases/rating-field.js"></script>
 <script id="ethone-db-detail" src="./pages/databases/detail-panel.js"></script>
 <script id="ethone-db-home" src="./pages/databases/home.js"></script>
-<script id="ethone-theme-engine" src="./services/theme/engine.js"></script>
+<script id="ethone-timeline-page" src="./pages/timeline/index.js"></script>
+<script id="ethone-health-page" src="./pages/health/index.js"></script>
+<script id="ethone-version-history-page" src="./pages/version-history/index.js"></script>
 <script id="ethone-theme-editor" src="./pages/settings/theme-editor.js"></script>
 <script id="ethone-settings-premium" src="./pages/settings/settings-premium.js"></script>
+<script id="ethone-settings-functional" src="./services/settings/functional.js"></script>
+<script id="ethone-spaces-ui" src="./services/spaces-ui.js?v=1"></script>
+<style id="ethone-backup-manager-css">
+.backup-manager{display:grid;gap:14px}
+.backup-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,420px);gap:18px;align-items:end;background:radial-gradient(520px 220px at 12% -10%,rgba(139,92,246,.18),transparent 66%),linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.026))!important}
+.backup-kicker{color:rgba(196,181,253,.86);font:900 10px/1 var(--mono);letter-spacing:1.3px;text-transform:uppercase;margin-bottom:8px}
+.backup-hero h3{margin:0;color:#fff;font:950 clamp(26px,3vw,44px)/.98 var(--font-display);letter-spacing:-.05em}
+.backup-hero p,.backup-io-card p{margin:10px 0 0;color:rgba(245,243,255,.62);font-size:13px;line-height:1.55}
+.backup-hero-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.backup-hero-actions .modal-input{grid-column:1/-1}
+.backup-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.backup-stat{border:1px solid rgba(255,255,255,.075);border-radius:16px;background:rgba(255,255,255,.034);padding:14px}
+.backup-stat span{display:block;color:rgba(245,243,255,.45);font:900 10px/1 var(--mono);letter-spacing:1px;text-transform:uppercase}
+.backup-stat strong{display:block;margin-top:9px;color:#fff;font:900 22px/1 var(--font-display)}
+.backup-list{display:grid;gap:9px}
+.backup-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;border:1px solid rgba(255,255,255,.075);border-radius:16px;background:rgba(255,255,255,.032);padding:12px;transition:border-color .18s ease,background .18s ease,transform .18s ease}
+.backup-row:hover{transform:translateY(-1px);border-color:rgba(167,139,250,.28);background:rgba(139,92,246,.07)}
+.backup-row-main{min-width:0}
+.backup-row-main strong{display:block;color:#fff;font:850 13px/1.25 var(--font);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.backup-row-main span{display:block;margin-top:5px;color:rgba(245,243,255,.45);font-size:11px}
+.backup-row-meta{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.backup-row-meta span{border:1px solid rgba(255,255,255,.08);border-radius:999px;background:rgba(255,255,255,.04);color:rgba(245,243,255,.58);padding:5px 8px;font:800 10px/1 var(--font)}
+.backup-row-meta .cloud-on{color:#d8b4fe;border-color:rgba(167,139,250,.28);background:rgba(139,92,246,.12)}
+.backup-row-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.backup-row-actions .btn{font-size:11px!important;min-height:32px!important;padding-inline:10px!important}
+.backup-empty{border:1px dashed rgba(255,255,255,.10);border-radius:16px;padding:22px;text-align:center;color:rgba(245,243,255,.48);font-size:13px}
+.backup-io-card{display:grid;gap:12px}
+@media(max-width:1120px){.backup-hero,.backup-row{grid-template-columns:1fr}.backup-row-meta,.backup-row-actions{justify-content:flex-start}.backup-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.backup-hero-actions,.backup-stats{grid-template-columns:1fr}}
+</style>
+<script id="ethone-backup-manager-runtime" src="./services/backup-manager.js?v=1"></script>
+<style id="ethone-keyboard-shortcuts-css">
+.kb-page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px;padding:18px;border:1px solid rgba(255,255,255,.08);border-radius:22px;background:radial-gradient(420px 180px at 12% 0%,rgba(139,92,246,.16),transparent 66%),linear-gradient(180deg,rgba(255,255,255,.052),rgba(255,255,255,.026))}
+.kb-kicker{color:rgba(196,181,253,.86);font:900 10px/1 var(--mono);letter-spacing:1.3px;text-transform:uppercase;margin-bottom:8px}
+.kb-page-head h3{margin:0;color:#fff;font:950 clamp(24px,2.5vw,38px)/1 var(--font-display);letter-spacing:-.045em}
+.kb-page-head p{margin:9px 0 0;color:rgba(245,243,255,.60);font-size:13px;line-height:1.5}
+.kb-actions{display:flex;gap:8px;flex-wrap:wrap}
+.kb-group{display:grid;gap:8px;margin-bottom:18px}
+.kb-group-title{color:rgba(245,243,255,.48);font:900 10px/1 var(--mono);letter-spacing:1.2px;text-transform:uppercase;padding:0 4px}
+.kb-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(150px,210px) auto auto;gap:10px;align-items:center;border:1px solid rgba(255,255,255,.075);border-radius:16px;background:rgba(255,255,255,.032);padding:10px;transition:border-color .18s cubic-bezier(.2,.8,.2,1),background .18s cubic-bezier(.2,.8,.2,1),transform .18s cubic-bezier(.2,.8,.2,1)}
+.kb-row:hover,.kb-row.is-recording{transform:translateY(-1px);border-color:rgba(167,139,250,.30);background:rgba(139,92,246,.08)}
+.kb-row-main{min-width:0}
+.kb-row-main strong,.kb-row-main span{display:block}
+.kb-row-main strong{color:#fff;font:850 13px/1.25 var(--font)}
+.kb-row-main span{margin-top:4px;color:rgba(245,243,255,.38);font:800 10px/1 var(--mono)}
+.kb-capture,.kb-icon{min-height:34px;border:1px solid rgba(255,255,255,.09);border-radius:12px;background:rgba(255,255,255,.045);color:rgba(245,243,255,.70);cursor:pointer;transition:background .16s ease,border-color .16s ease,color .16s ease}
+.kb-capture:hover,.kb-icon:hover,.kb-capture:focus-visible,.kb-icon:focus-visible{border-color:rgba(167,139,250,.36);background:rgba(139,92,246,.12);color:#fff;outline:0}
+.kb-capture kbd{font:900 11px/1 var(--mono);color:#fff;background:rgba(0,0,0,.20);border:1px solid rgba(255,255,255,.10);border-radius:9px;padding:6px 9px}
+.kb-row.is-recording .kb-capture{color:#fff;border-color:rgba(167,139,250,.48);background:linear-gradient(135deg,rgba(139,92,246,.26),rgba(124,58,237,.14));box-shadow:0 0 0 4px rgba(139,92,246,.10)}
+.kb-row.has-conflict{border-color:rgba(248,113,113,.38)}
+@media(max-width:760px){.kb-page-head{display:grid;padding:15px}.kb-row{grid-template-columns:1fr}.kb-capture,.kb-icon{width:100%}}
+</style>
+<script id="ethone-keyboard-shortcuts-runtime" src="./services/keyboard-shortcuts.js?v=1"></script>
+<script id="ethone-automation-builder" src="./pages/automation-builder/index.js"></script>
+<script id="ethone-studio-runtime" src="./pages/studio/index.js?v=1"></script>
 <script id="ethone-legacy-mobile-sidebar" src="./pages/dashboard/mobile-sidebar.js"></script>
 <script id="ethone-legacy-import-export" src="./actions/import-export.js"></script>
 <script id="ethone-legacy-desktop-notifications" src="./actions/desktop-notifications.js"></script>
@@ -6429,13 +6501,14 @@ body.eh-dashboard-ready #eh-dock {
     </div>
     <div class="eh-panel-grid">
       <div class="eh-control-card"><div class="eh-control-label">Accent color</div><div class="eh-swatches" id="eh-accent-swatches"></div></div>
-      <div class="eh-control-card"><div class="eh-control-label">Background</div><div class="eh-bg-options" id="eh-bg-options"><button class="eh-bg-option" data-bg="aurora">Aurora</button><button class="eh-bg-option" data-bg="grid">Grid</button><button class="eh-bg-option" data-bg="none">Minimal</button></div></div>
-      <div class="eh-control-card"><div class="eh-density-row"><span><strong style="display:block;color:#fff;margin-bottom:2px">Compact density</strong>Reduce spacing for power users.</span><button type="button" class="eh-switch" id="eh-density-toggle" aria-pressed="false"></button></div></div>
-      <div class="eh-control-card"><div class="eh-density-row"><span><strong style="display:block;color:#fff;margin-bottom:2px">Reduced motion</strong>Keep transitions calmer.</span><button type="button" class="eh-switch" id="eh-motion-toggle" aria-pressed="false"></button></div></div>
+      <div class="eh-control-card"><div class="eh-control-label">Background</div><div class="eh-bg-options" id="eh-bg-options"><button type="button" class="eh-bg-option" data-bg="aurora" aria-label="Use Aurora background">Aurora</button><button type="button" class="eh-bg-option" data-bg="grid" aria-label="Use Grid background">Grid</button><button type="button" class="eh-bg-option" data-bg="none" aria-label="Use Minimal background">Minimal</button></div></div>
+      <div class="eh-control-card"><div class="eh-density-row"><span><strong style="display:block;color:#fff;margin-bottom:2px">Compact density</strong>Reduce spacing for power users.</span><button type="button" class="eh-switch" id="eh-density-toggle" aria-pressed="false" aria-label="Toggle compact density" title="Toggle compact density"></button></div></div>
+      <div class="eh-control-card"><div class="eh-density-row"><span><strong style="display:block;color:#fff;margin-bottom:2px">Reduced motion</strong>Keep transitions calmer.</span><button type="button" class="eh-switch" id="eh-motion-toggle" aria-pressed="false" aria-label="Toggle reduced motion" title="Toggle reduced motion"></button></div></div>
     </div>
   </section>
 </div>
 <script id="ethone-enterprise-2026-runtime" src="./core/enterprise-runtime.js"></script>
+<script id="ethone-desktop-environment" src="./ui/desktop-environment.js"></script>
 
 
 
@@ -7150,6 +7223,67 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
   margin-bottom:10px;
 }
 .aic-copy{max-width:700px;color:var(--aic-muted);font-size:13px;line-height:1.65}
+.aic-state{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  max-width:720px;
+  margin:14px 0 0;
+  padding:9px 11px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;
+  background:rgba(5,5,7,.24);
+  color:var(--aic-muted);
+  font-size:11px;
+}
+.aic-state-dot{
+  flex:0 0 auto;
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background:var(--aic-muted-2);
+  box-shadow:0 0 0 3px rgba(255,255,255,.04);
+}
+.aic-state strong{
+  flex:0 0 auto;
+  color:#fff;
+  font:850 9px/1 var(--mono);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.aic-state-copy{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.aic-state[data-state="connected"] .aic-state-dot{
+  background:var(--aic-success);
+  box-shadow:0 0 0 3px rgba(52,211,153,.12);
+}
+.aic-state[data-state="empty"]{
+  border-color:rgba(251,191,36,.18);
+  background:rgba(251,191,36,.055);
+}
+.aic-state[data-state="empty"] .aic-state-dot{
+  background:var(--aic-warning);
+  box-shadow:0 0 0 3px rgba(251,191,36,.10);
+}
+.aic-state[data-state="loading"] .aic-state-dot,
+.aic-state[data-state="syncing"] .aic-state-dot{
+  background:var(--aic-warning);
+  animation:aicPulse 1s var(--aic-ease) infinite;
+}
+.aic-state[data-state="error"]{
+  border-color:rgba(248,113,113,.28);
+  background:rgba(248,113,113,.08);
+  color:#fecaca;
+}
+.aic-state[data-state="error"] .aic-state-dot{
+  background:var(--aic-danger);
+  box-shadow:0 0 0 3px rgba(248,113,113,.12);
+}
+@keyframes aicPulse{50%{opacity:.38;transform:scale(.82)}}
 .aic-status-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:16px}
 .aic-status{
   min-width:0;
@@ -7225,7 +7359,10 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
   padding:0 10px;
   font:760 11px/1 var(--font);
   cursor:pointer;
+  transition:background .16s var(--aic-ease),border-color .16s var(--aic-ease),color .16s var(--aic-ease),opacity .16s var(--aic-ease),transform .16s var(--aic-ease);
 }
+.aic-btn:hover:not(:disabled){transform:translateY(-1px);color:#fff;border-color:rgba(139,92,246,.28)}
+.aic-btn:disabled,.aic-btn[aria-busy="true"]{opacity:.52;cursor:progress;transform:none}
 .aic-btn.primary{background:rgba(139,92,246,.18);border-color:rgba(139,92,246,.34);color:#fff}
 .aic-btn.danger{background:rgba(248,113,113,.10);border-color:rgba(248,113,113,.22);color:#fecaca}
 .aic-memory-list,.aic-log-list,.aic-plugin-grid{display:grid;gap:8px}
@@ -7280,8 +7417,11 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
   .aic-status-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .aic-hero{display:block}
 }
+@media(prefers-reduced-motion:reduce){
+  .aic-state-dot{animation:none!important}
+}
 </style>
-<script id="ethone-ai-core-runtime" src="./services/ai/core.js?v=freeze-fix-1"></script>
+<script id="ethone-ai-core-runtime" src="./services/ai/core.js?v=freeze-fix-2"></script>
 <style id="ethone-ai-everywhere-css">
 /* ETHONE AI Everywhere: contextual copilot, page actions, widget actions and command palette AI. */
 :root{
@@ -7320,6 +7460,17 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
 }
 .aie-chip:hover{transform:translateY(-1px);color:#fff;border-color:rgba(139,92,246,.32);background:rgba(139,92,246,.11)}
 .aie-chip.primary{color:#fff;background:rgba(139,92,246,.18);border-color:rgba(139,92,246,.34)}
+.aie-page-ai-button{
+  border-color:rgba(167,139,250,.36)!important;
+  background:linear-gradient(135deg,rgba(139,92,246,.95),rgba(124,58,237,.78))!important;
+  box-shadow:0 12px 34px rgba(124,58,237,.18),inset 0 1px 0 rgba(255,255,255,.16)!important;
+  color:#fff!important;
+  white-space:nowrap;
+}
+.aie-page-ai-button:hover{
+  transform:translateY(-1px);
+  box-shadow:0 16px 42px rgba(124,58,237,.24),inset 0 1px 0 rgba(255,255,255,.18)!important;
+}
 .aie-home-insights{
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
@@ -7358,7 +7509,8 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
   right:22px;
   bottom:calc(88px + env(safe-area-inset-bottom,0px));
   z-index:2147482400;
-  width:48px;
+  min-width:62px;
+  padding:0 13px;
   height:48px;
   border:1px solid rgba(255,255,255,.14);
   border-radius:17px;
@@ -7366,7 +7518,12 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
   color:#fff;
   box-shadow:0 20px 70px rgba(139,92,246,.32),inset 0 1px 0 rgba(255,255,255,.22);
   cursor:pointer;
-  font:900 14px/1 var(--font);
+  font:900 13px/1 var(--font);
+  transition:transform .18s var(--aie-ease),box-shadow .18s var(--aie-ease),filter .18s var(--aie-ease);
+}
+.aie-copilot-toggle:hover{
+  transform:translateY(-2px) scale(1.02);
+  filter:saturate(1.08);
 }
 .aie-copilot{
   position:fixed;
@@ -7488,14 +7645,75 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
   line-height:1.5;
 }
 .aie-confirm .aie-actions{display:flex;gap:8px;margin-top:10px}
+.aie-suggestion-stack{
+  position:fixed;
+  right:22px;
+  bottom:calc(206px + env(safe-area-inset-bottom,0px));
+  z-index:2147482399;
+  width:min(360px,calc(100vw - 28px));
+  display:grid;
+  gap:10px;
+  pointer-events:none;
+}
+.aie-suggestion-card{
+  pointer-events:auto;
+  opacity:0;
+  transform:translateY(8px) scale(.98);
+  border:1px solid rgba(167,139,250,.20);
+  border-radius:20px;
+  background:linear-gradient(180deg,rgba(21,18,30,.96),rgba(9,9,14,.96));
+  box-shadow:0 24px 86px rgba(0,0,0,.44),0 0 0 1px rgba(139,92,246,.06);
+  padding:14px;
+  transition:opacity .18s var(--aie-ease),transform .18s var(--aie-ease);
+}
+.aie-suggestion-card.visible{
+  opacity:1;
+  transform:none;
+}
+.aie-suggestion-top,
+.aie-suggestion-actions{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.aie-suggestion-top span{
+  color:rgba(196,181,253,.82);
+  font:900 9px/1 var(--mono);
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+.aie-suggestion-top button{
+  width:26px;
+  height:26px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:9px;
+  background:rgba(255,255,255,.04);
+  color:rgba(255,255,255,.58);
+  cursor:pointer;
+}
+.aie-suggestion-card strong{
+  display:block;
+  margin-top:10px;
+  color:#fff;
+  font:900 14px/1.2 var(--font);
+}
+.aie-suggestion-card p{
+  margin:7px 0 12px;
+  color:var(--aie-muted);
+  font-size:12px;
+  line-height:1.45;
+}
+.aie-suggestion-actions{
+  justify-content:flex-start;
+}
 .aie-hidden{display:none!important}
-@media(max-width:920px){.aie-home-insights{grid-template-columns:1fr}.aie-copilot-toggle{right:14px;bottom:calc(104px + env(safe-area-inset-bottom,0px))}.aie-copilot{right:14px;bottom:calc(160px + env(safe-area-inset-bottom,0px))}}
+@media(max-width:920px){.aie-home-insights{grid-template-columns:1fr}.aie-copilot-toggle{right:14px;bottom:calc(104px + env(safe-area-inset-bottom,0px))}.aie-copilot{right:14px;bottom:calc(160px + env(safe-area-inset-bottom,0px))}.aie-suggestion-stack{right:14px;bottom:calc(220px + env(safe-area-inset-bottom,0px))}}
 </style>
-<!-- ETHONE V30 — disabled: superseded by services/ai/brain-os-36.js (5 overlapping Brain/context
-     implementations were all loading simultaneously, each wrapping window.switchPage and running
-     its own ~20-30s interval; this caused a confirmed hang when navigating to the AI page. Files
-     kept on disk, untouched, in case anything unique needs to be ported forward — just not loaded.
-<script id="ethone-ai-everywhere-runtime" src="./services/ai/everywhere.js"></script> -->
+<!-- ETHONE Brain OS global context layer: lightweight, guarded, no automatic provider calls. -->
+<script id="ethone-ai-everywhere-runtime" src="./services/ai/everywhere.js?v=brain-os-2"></script>
+<script id="ethone-brain-os-global-runtime" src="./services/ai/brain-os-global.js?v=1"></script>
+<script id="ethone-side-panels-runtime" src="./services/ui/side-panels.js?v=1"></script>
 <style id="ethone-intelligence-33a-css">
 /* ETHONE Intelligence 3.3A: OS-native intelligence experience layer. */
 :root{
@@ -9671,6 +9889,1072 @@ body.os2-theme-focus #overview-col-right{opacity:.72}
   .mp41-status,.mp41-search-mark{margin-bottom:12px}
   .mp41-grid,.mp41-collections,.mp41-stats{grid-template-columns:1fr}
   .mp41-detail{padding:12px}
+}
+</style>
+<style id="ethone-analytics-vnext-css">
+#page-stats.analytics-vnext-ready .analytics-legacy-panel{
+  display:none!important;
+}
+.analytics-vnext-root{
+  display:grid;
+  gap:16px;
+  margin:0 0 18px;
+}
+.anv-hero,
+.anv-panel,
+.anv-metric{
+  border:1px solid rgba(255,255,255,.085);
+  background:
+    radial-gradient(560px 240px at 18% -20%,rgba(139,92,246,.16),transparent 62%),
+    linear-gradient(180deg,rgba(255,255,255,.052),rgba(255,255,255,.026));
+  box-shadow:0 18px 56px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.045);
+}
+.anv-hero{
+  min-height:210px;
+  border-radius:28px;
+  padding:24px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 220px;
+  gap:18px;
+  align-items:end;
+  overflow:hidden;
+  position:relative;
+}
+.anv-hero::after{
+  content:"";
+  position:absolute;
+  width:360px;
+  height:360px;
+  right:-120px;
+  top:-160px;
+  background:radial-gradient(circle,rgba(139,92,246,.24),transparent 68%);
+  pointer-events:none;
+}
+.anv-hero span,
+.anv-chart-label{
+  color:rgba(196,181,253,.9);
+  font:900 10px/1 var(--mono);
+  text-transform:uppercase;
+  letter-spacing:.11em;
+}
+.anv-hero h2{
+  max-width:820px;
+  margin:12px 0 10px;
+  color:#fff;
+  font:950 clamp(38px,4.7vw,68px)/.92 var(--font-display);
+  letter-spacing:-.055em;
+}
+.anv-hero p{
+  max-width:820px;
+  margin:0;
+  color:rgba(245,243,255,.66);
+  font-size:14px;
+  line-height:1.55;
+}
+.anv-score{
+  position:relative;
+  z-index:1;
+  border:1px solid rgba(167,139,250,.22);
+  border-radius:24px;
+  background:rgba(9,9,13,.54);
+  padding:18px;
+  text-align:right;
+}
+.anv-score b{
+  display:block;
+  color:#fff;
+  font:950 58px/.9 var(--font-display);
+  letter-spacing:-.05em;
+}
+.anv-score span,
+.anv-score em{
+  display:block;
+}
+.anv-score span{
+  margin-top:6px;
+  color:rgba(245,243,255,.86);
+  font:850 12px/1.2 var(--font);
+}
+.anv-score em{
+  margin-top:8px;
+  color:rgba(196,181,253,.72);
+  font:800 10px/1.35 var(--mono);
+  font-style:normal;
+  text-transform:uppercase;
+}
+.anv-metrics{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
+}
+.anv-metric{
+  border-radius:20px;
+  padding:16px;
+  transition:transform .18s cubic-bezier(.2,.8,.2,1),border-color .18s cubic-bezier(.2,.8,.2,1);
+}
+.anv-metric:hover{
+  transform:translateY(-2px);
+  border-color:color-mix(in srgb,var(--anv-accent) 36%,rgba(255,255,255,.10));
+}
+.anv-metric-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  color:rgba(245,243,255,.54);
+  font:850 10px/1 var(--mono);
+  text-transform:uppercase;
+  letter-spacing:.09em;
+}
+.anv-metric-top b{
+  color:var(--anv-accent);
+  font:900 10px/1 var(--mono);
+}
+.anv-metric strong{
+  display:block;
+  margin:14px 0 7px;
+  color:#fff;
+  font:950 28px/1 var(--font-display);
+  letter-spacing:-.035em;
+}
+.anv-metric small{
+  color:rgba(245,243,255,.56);
+  font-size:12px;
+}
+.anv-grid{
+  display:grid;
+  gap:12px;
+  align-items:stretch;
+}
+.anv-grid.primary{
+  grid-template-columns:minmax(0,1.55fr) minmax(320px,.75fr);
+}
+.anv-grid.secondary{
+  grid-template-columns:1fr 1fr 1fr;
+}
+.anv-grid.tertiary{
+  grid-template-columns:1fr 1fr 1.25fr;
+}
+.anv-panel{
+  min-width:0;
+  border-radius:22px;
+  padding:16px;
+}
+.anv-panel.wide{
+  min-height:340px;
+}
+.anv-panel-head{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:14px;
+}
+.anv-panel h3{
+  margin:0;
+  color:#fff;
+  font:900 15px/1.2 var(--font);
+}
+.anv-panel p{
+  margin:6px 0 0;
+  color:rgba(245,243,255,.54);
+  font-size:12px;
+  line-height:1.45;
+}
+.anv-chart-stack{
+  display:grid;
+  gap:18px;
+}
+.anv-chart-label{
+  margin-bottom:8px;
+}
+.anv-bars{
+  height:136px;
+  display:flex;
+  align-items:end;
+  gap:5px;
+  padding:12px 8px 22px;
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:18px;
+  background:rgba(0,0,0,.16);
+}
+.anv-bar{
+  flex:1;
+  min-width:0;
+  height:100%;
+  display:flex;
+  align-items:end;
+  justify-content:center;
+  position:relative;
+}
+.anv-bar i{
+  display:block;
+  width:100%;
+  height:var(--h);
+  min-height:4px;
+  border-radius:8px 8px 3px 3px;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--c) 90%,#fff 10%),color-mix(in srgb,var(--c) 72%,#000 28%));
+  box-shadow:0 8px 20px color-mix(in srgb,var(--c) 20%,transparent);
+  opacity:.92;
+  transition:height .24s cubic-bezier(.2,.8,.2,1),opacity .18s ease;
+}
+.anv-bar:hover i{
+  opacity:1;
+}
+.anv-bar em{
+  position:absolute;
+  bottom:-18px;
+  color:rgba(245,243,255,.42);
+  font:800 9px/1 var(--mono);
+  font-style:normal;
+}
+.anv-line{
+  width:100%;
+  height:130px;
+  padding:10px;
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:18px;
+  background:linear-gradient(180deg,rgba(255,255,255,.032),rgba(0,0,0,.10));
+}
+.anv-donut-wrap{
+  display:grid;
+  grid-template-columns:142px minmax(0,1fr);
+  gap:16px;
+  align-items:center;
+}
+.anv-donut{
+  width:142px;
+  height:142px;
+  transform:rotate(-90deg);
+}
+.anv-donut circle{
+  fill:none;
+  stroke-width:4.2;
+}
+.anv-donut .base{
+  stroke:rgba(255,255,255,.08);
+}
+.anv-donut-legend{
+  display:grid;
+  gap:8px;
+}
+.anv-donut-legend span{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:rgba(245,243,255,.66);
+  font-size:12px;
+}
+.anv-donut-legend i{
+  width:10px;
+  height:10px;
+  border-radius:4px;
+}
+.anv-donut-legend b{
+  margin-left:auto;
+  color:#fff;
+}
+.anv-heatmap{
+  display:grid;
+  grid-template-columns:repeat(15,1fr);
+  gap:6px;
+}
+.anv-heatmap span{
+  aspect-ratio:1;
+  min-height:14px;
+  border-radius:6px;
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.05);
+}
+.anv-heatmap span[data-level="1"]{background:rgba(139,92,246,.18)}
+.anv-heatmap span[data-level="2"]{background:rgba(139,92,246,.34)}
+.anv-heatmap span[data-level="3"]{background:rgba(139,92,246,.58)}
+.anv-heatmap span[data-level="4"]{background:#8b5cf6;box-shadow:0 0 18px rgba(139,92,246,.22)}
+.anv-compare{
+  display:grid;
+  gap:12px;
+}
+.anv-compare-row{
+  display:grid;
+  gap:7px;
+}
+.anv-compare-label{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  font-size:12px;
+}
+.anv-compare-label strong{
+  color:#fff;
+}
+.anv-compare-label span{
+  color:rgba(196,181,253,.78);
+  font:850 10px/1 var(--mono);
+}
+.anv-compare-bars{
+  display:grid;
+  gap:4px;
+}
+.anv-compare-bars i,
+.anv-compare-bars b{
+  display:block;
+  height:8px;
+  border-radius:999px;
+}
+.anv-compare-bars i{
+  width:var(--w);
+  background:var(--c);
+  box-shadow:0 8px 22px color-mix(in srgb,var(--c) 20%,transparent);
+}
+.anv-compare-bars b{
+  width:var(--w);
+  background:rgba(255,255,255,.09);
+}
+.anv-service-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+}
+.anv-service{
+  min-width:0;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:16px;
+  background:rgba(255,255,255,.035);
+  padding:11px;
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr);
+  column-gap:9px;
+}
+.anv-service span{
+  grid-row:span 2;
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  border-radius:12px;
+  color:#fff;
+  background:rgba(255,255,255,.07);
+  font:900 10px/1 var(--mono);
+}
+.anv-service.on span{
+  background:rgba(139,92,246,.28);
+  box-shadow:0 0 22px rgba(139,92,246,.18);
+}
+.anv-service strong{
+  min-width:0;
+  color:#fff;
+  font:850 12px/1.15 var(--font);
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.anv-service em{
+  color:rgba(245,243,255,.48);
+  font:750 10px/1.2 var(--font);
+  font-style:normal;
+}
+.anv-mini-list{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin-bottom:12px;
+}
+.anv-mini-list div{
+  border:1px solid rgba(255,255,255,.065);
+  border-radius:15px;
+  background:rgba(255,255,255,.03);
+  padding:10px;
+}
+.anv-mini-list strong{
+  display:block;
+  color:#fff;
+  font:950 24px/1 var(--font-display);
+}
+.anv-mini-list span{
+  display:block;
+  margin-top:5px;
+  color:rgba(245,243,255,.50);
+  font-size:11px;
+}
+.anv-feed{
+  display:grid;
+  gap:7px;
+  max-height:255px;
+  overflow:auto;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(167,139,250,.28) transparent;
+}
+.anv-feed div{
+  display:grid;
+  grid-template-columns:9px minmax(0,1fr) auto;
+  align-items:center;
+  gap:9px;
+  padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,.045);
+}
+.anv-feed span{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#8b5cf6;
+  box-shadow:0 0 16px rgba(139,92,246,.34);
+}
+.anv-feed strong{
+  min-width:0;
+  color:rgba(255,255,255,.84);
+  font:760 12px/1.3 var(--font);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.anv-feed em,
+.anv-empty{
+  color:rgba(245,243,255,.45);
+  font:800 10px/1 var(--mono);
+  font-style:normal;
+}
+.anv-empty{
+  padding:22px;
+  border:1px dashed rgba(255,255,255,.10);
+  border-radius:16px;
+  text-align:center;
+}
+@media(max-width:1240px){
+  .anv-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .anv-grid.primary,.anv-grid.secondary,.anv-grid.tertiary{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  .anv-hero{grid-template-columns:1fr;align-items:start;padding:18px;border-radius:22px}
+  .anv-score{text-align:left}
+  .anv-score b{font-size:44px}
+  .anv-metrics,.anv-donut-wrap,.anv-service-grid,.anv-mini-list{grid-template-columns:1fr}
+  .anv-bars{gap:3px;padding-inline:6px}
+}
+</style>
+<style id="ethone-marketplace-store-css">
+/* ETHONE Marketplace Store: Raycast-style premium storefront, violet-only identity. */
+:root{
+  --mp41-panel:rgba(18,18,24,.78);
+  --mp41-panel-soft:rgba(255,255,255,.035);
+  --mp41-border:rgba(255,255,255,.10);
+  --mp41-border-soft:rgba(255,255,255,.065);
+  --mp41-text:#f5f3ff;
+  --mp41-muted:rgba(245,243,255,.66);
+  --mp41-muted-2:rgba(245,243,255,.44);
+  --mp41-blue:#8b5cf6;
+  --mp41-violet:var(--accent,#8b5cf6);
+  --mp41-green:#9be7c0;
+  --mp41-amber:#d8c17a;
+  --mp41-red:#fb7185;
+}
+.mp-store{
+  max-width:1440px;
+  gap:16px;
+}
+.mp-store-hero{
+  min-height:auto;
+  padding:24px;
+  background:
+    radial-gradient(780px 310px at 16% -8%,rgba(139,92,246,.22),transparent 62%),
+    radial-gradient(540px 260px at 96% 8%,rgba(139,92,246,.10),transparent 64%),
+    linear-gradient(180deg,rgba(255,255,255,.060),rgba(255,255,255,.026));
+}
+.mp-store-hero .mp41-title{
+  max-width:840px;
+  font-size:clamp(42px,4.2vw,70px);
+}
+.mp-store-hero .mp41-copy{
+  max-width:880px;
+}
+.mp41-kicker,
+.mp41-type{
+  color:rgba(196,181,253,.92);
+}
+.mp41-btn:focus-visible,
+.mp41-tab:focus-visible,
+.mp-store-card:focus-visible,
+.mp-store-search input:focus-visible{
+  outline:2px solid rgba(167,139,250,.84);
+  outline-offset:3px;
+}
+.mp41-btn:hover{
+  border-color:rgba(167,139,250,.34);
+  background:rgba(139,92,246,.12);
+}
+.mp41-btn.primary{
+  border-color:rgba(167,139,250,.45);
+  background:linear-gradient(135deg,rgba(139,92,246,.92),rgba(124,58,237,.74));
+  box-shadow:0 12px 34px rgba(124,58,237,.18);
+}
+.mp41-tab.active{
+  border-color:rgba(167,139,250,.45);
+  background:linear-gradient(180deg,rgba(139,92,246,.28),rgba(124,58,237,.16));
+}
+.mp-store-search{
+  margin-top:22px;
+  display:grid;
+  grid-template-columns:38px minmax(0,1fr);
+  align-items:center;
+  gap:10px;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:18px;
+  background:rgba(9,9,13,.66);
+  padding:9px 12px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+.mp-store-search-icon{
+  width:30px;
+  height:30px;
+  display:grid;
+  place-items:center;
+  border-radius:11px;
+  color:#fff;
+  background:rgba(139,92,246,.25);
+  border:1px solid rgba(167,139,250,.24);
+  font:900 11px/1 var(--font);
+}
+.mp-store-search input{
+  width:100%;
+  height:36px;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:#fff;
+  font:760 14px/1 var(--font);
+}
+.mp-store-search input::placeholder{color:rgba(245,243,255,.42)}
+.mp-store-categories{
+  display:flex;
+  gap:8px;
+  overflow:auto;
+  scrollbar-width:none;
+  padding:3px 0;
+  margin-top:14px;
+}
+.mp-store-categories::-webkit-scrollbar{display:none}
+.mp-store-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(360px,420px);
+  gap:16px;
+  align-items:start;
+}
+.mp-store-catalog,
+.mp-store-detail,
+.mp-store-collections{
+  padding:16px;
+}
+.mp-store-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+}
+.mp-store-card{
+  display:grid;
+  grid-template-columns:132px minmax(0,1fr);
+  gap:13px;
+  min-height:172px;
+  border:1px solid rgba(255,255,255,.078);
+  border-radius:20px;
+  background:linear-gradient(180deg,rgba(255,255,255,.052),rgba(255,255,255,.025));
+  padding:10px;
+  cursor:pointer;
+  transition:transform .18s var(--mp41-ease),border-color .18s var(--mp41-ease),background .18s var(--mp41-ease);
+}
+.mp-store-card:hover,
+.mp-store-card.is-active{
+  transform:translateY(-2px);
+  border-color:rgba(167,139,250,.32);
+  background:linear-gradient(180deg,rgba(139,92,246,.105),rgba(255,255,255,.028));
+}
+.mp-store-thumb{
+  position:relative;
+  min-height:148px;
+  border-radius:16px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.10);
+  background:
+    radial-gradient(130px 120px at 24% 18%,rgba(167,139,250,.44),transparent 66%),
+    linear-gradient(135deg,rgba(25,25,32,.95),rgba(10,10,15,.96));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+}
+.mp-store-thumb.large{
+  min-height:180px;
+}
+.mp-store-thumb.theme,
+.mp-store-thumb.layout,
+.mp-store-thumb.pack{
+  background:
+    radial-gradient(150px 125px at 72% 20%,rgba(139,92,246,.38),transparent 66%),
+    linear-gradient(135deg,rgba(20,20,26,.96),rgba(12,10,18,.96));
+}
+.mp-preview-window{
+  position:absolute;
+  inset:18px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(7,7,11,.52);
+  padding:12px;
+}
+.mp-preview-window i{
+  display:inline-block;
+  width:6px;
+  height:6px;
+  margin-right:4px;
+  border-radius:99px;
+  background:rgba(255,255,255,.28);
+}
+.mp-preview-window strong{
+  display:block;
+  margin:18px 0 12px;
+  color:#fff;
+  font:900 22px/1 var(--font-display);
+}
+.mp-preview-window span{
+  display:block;
+  height:7px;
+  margin-top:7px;
+  border-radius:99px;
+  background:rgba(167,139,250,.22);
+}
+.mp-preview-window span:nth-child(6){width:72%}
+.mp-preview-window span:nth-child(7){width:48%}
+.mp-store-card-body{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+}
+.mp-store-card-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  color:rgba(196,181,253,.88);
+  font:850 10px/1 var(--mono);
+  letter-spacing:.8px;
+  text-transform:uppercase;
+}
+.mp-store-card h3{
+  margin:10px 0 7px;
+  color:#fff;
+  font:900 17px/1.12 var(--font);
+}
+.mp-store-card p{
+  margin:0;
+  color:var(--mp41-muted);
+  font-size:12px;
+  line-height:1.48;
+  display:-webkit-box;
+  -webkit-line-clamp:3;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.mp-store-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:10px;
+}
+.mp-store-tags span{
+  border:1px solid rgba(255,255,255,.075);
+  border-radius:999px;
+  background:rgba(255,255,255,.035);
+  color:rgba(245,243,255,.58);
+  padding:5px 7px;
+  font:800 9px/1 var(--font);
+}
+.mp-store-actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-top:auto;
+  padding-top:12px;
+}
+.mp41-head-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.mp41-btn.danger{
+  border-color:rgba(251,113,133,.32);
+  background:rgba(251,113,133,.09);
+  color:#ffe4e9;
+}
+.mp41-btn.danger:hover{
+  border-color:rgba(251,113,133,.52);
+  background:rgba(251,113,133,.15);
+}
+.theme-palette{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-top:10px;
+}
+.theme-palette span{
+  width:24px;
+  height:24px;
+  border-radius:9px;
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 10px 22px rgba(0,0,0,.20);
+}
+.theme-palette.large{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:8px;
+}
+.theme-palette.large span{
+  width:auto;
+  height:62px;
+  position:relative;
+  overflow:hidden;
+  border-radius:14px;
+}
+.theme-palette.large span em{
+  position:absolute;
+  left:8px;
+  right:8px;
+  bottom:8px;
+  border-radius:8px;
+  padding:5px 6px;
+  color:#fff;
+  background:rgba(0,0,0,.42);
+  font:850 9px/1 var(--mono);
+  text-shadow:0 1px 8px rgba(0,0,0,.6);
+}
+.theme-preview-window{
+  position:absolute;
+  inset:14px;
+  border-radius:16px;
+  border:1px solid color-mix(in srgb,var(--theme-preview-accent,var(--theme-accent,#8b5cf6)) 26%,rgba(255,255,255,.12));
+  background:
+    radial-gradient(140px 90px at 74% 18%,color-mix(in srgb,var(--theme-preview-accent,var(--theme-accent,#8b5cf6)) 32%,transparent),transparent 70%),
+    linear-gradient(180deg,var(--theme-preview-surface,var(--theme-surface,#17171c)),var(--theme-preview-bg,var(--theme-bg,#09090b)));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 18px 44px rgba(0,0,0,.26);
+  overflow:hidden;
+}
+.theme-preview-top{
+  height:34px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  padding:0 12px;
+  border-bottom:1px solid rgba(255,255,255,.075);
+  background:rgba(255,255,255,.025);
+}
+.theme-preview-top i,
+.theme-preview-top span{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:color-mix(in srgb,var(--theme-preview-accent,var(--theme-accent,#8b5cf6)) 62%,#fff);
+  opacity:.72;
+}
+.theme-preview-top strong{
+  margin-left:6px;
+  color:rgba(255,255,255,.72);
+  font:900 10px/1 var(--font-display);
+  letter-spacing:2px;
+}
+.theme-preview-body{
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr);
+  gap:10px;
+  padding:12px;
+}
+.theme-preview-body aside{
+  display:grid;
+  gap:8px;
+  align-content:start;
+}
+.theme-preview-body aside::before,
+.theme-preview-body aside i,
+.theme-preview-body aside::after{
+  content:"";
+  display:block;
+  width:24px;
+  height:24px;
+  border-radius:9px;
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.08);
+}
+.theme-preview-body aside::before{
+  background:color-mix(in srgb,var(--theme-preview-accent,var(--theme-accent,#8b5cf6)) 54%,rgba(255,255,255,.08));
+}
+.theme-preview-body main{
+  min-width:0;
+  display:grid;
+  gap:8px;
+}
+.theme-preview-body strong{
+  color:#fff;
+  font:900 15px/1.1 var(--font);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.theme-preview-body b,
+.theme-preview-body em,
+.theme-preview-body span,
+.theme-preview-body main>div{
+  display:block;
+  border-radius:10px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.075);
+}
+.theme-preview-body b{height:34px;background:color-mix(in srgb,var(--theme-preview-accent,var(--theme-accent,#8b5cf6)) 22%,rgba(255,255,255,.06))}
+.theme-preview-body em{height:22px;width:72%}
+.theme-preview-body main>span{height:9px}
+.theme-preview-body main>span:nth-of-type(2){width:62%}
+.theme-preview-body main>div{
+  height:30px;
+  display:flex;
+  gap:5px;
+  padding:6px;
+  align-items:end;
+}
+.theme-preview-body main>div span{
+  flex:1;
+  height:100%;
+  border-radius:5px;
+  background:color-mix(in srgb,var(--theme-preview-accent,var(--theme-accent,#8b5cf6)) 48%,rgba(255,255,255,.08));
+}
+.mp-store-detail{
+  position:sticky;
+  top:18px;
+  max-height:calc(100vh - 42px);
+  overflow:auto;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(167,139,250,.38) transparent;
+}
+.mp-detail-head{
+  display:grid;
+  gap:14px;
+}
+.mp-detail-head h2{
+  margin:8px 0 8px;
+  color:#fff;
+  font-family:var(--font-display);
+  font-size:clamp(28px,3vw,42px);
+  line-height:.98;
+  letter-spacing:-.045em;
+}
+.mp-detail-head p{
+  margin:0;
+  color:var(--mp41-muted);
+  font-size:13px;
+  line-height:1.55;
+}
+.mp-detail-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:14px 0;
+}
+.mp-detail-meta{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+}
+.mp-detail-meta div,
+.mp-detail-section{
+  border:1px solid rgba(255,255,255,.075);
+  border-radius:14px;
+  background:rgba(255,255,255,.032);
+  padding:10px;
+}
+.mp-detail-meta span{
+  display:block;
+  color:var(--mp41-muted-2);
+  font:850 9px/1 var(--mono);
+  letter-spacing:1px;
+  text-transform:uppercase;
+  margin-bottom:6px;
+}
+.mp-detail-meta strong{
+  display:block;
+  color:#fff;
+  font-size:12px;
+  line-height:1.35;
+}
+.mp-detail-section{
+  margin-top:10px;
+}
+.mp-detail-section h3{
+  margin:0 0 7px;
+  color:#fff;
+  font:900 12px/1.2 var(--font);
+}
+.mp-detail-section p{
+  margin:5px 0 0;
+  color:var(--mp41-muted);
+  font-size:11.8px;
+  line-height:1.45;
+}
+.mp-store-collection-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
+}
+.mp-store-collection{
+  border:1px solid rgba(255,255,255,.078);
+  border-radius:18px;
+  background:linear-gradient(180deg,rgba(255,255,255,.050),rgba(255,255,255,.026));
+  padding:14px;
+  min-height:138px;
+}
+.mp-store-collection strong,
+.mp-store-collection span{
+  display:block;
+}
+.mp-store-collection strong{
+  color:#fff;
+  font:900 13px/1.2 var(--font);
+  margin-bottom:8px;
+}
+.mp-store-collection span{
+  color:var(--mp41-muted);
+  font-size:11.8px;
+  line-height:1.45;
+  margin-bottom:12px;
+}
+.theme-creator-overlay{
+  position:fixed;
+  inset:0;
+  z-index:10050;
+  display:grid;
+  place-items:center;
+  padding:24px;
+  background:rgba(3,3,6,.72);
+  backdrop-filter:blur(18px);
+}
+.theme-creator-card{
+  width:min(920px,100%);
+  max-height:min(92vh,820px);
+  overflow:auto;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:28px;
+  background:
+    radial-gradient(520px 260px at 18% -10%,rgba(139,92,246,.18),transparent 68%),
+    linear-gradient(180deg,rgba(22,22,30,.96),rgba(10,10,15,.96));
+  box-shadow:0 30px 120px rgba(0,0,0,.54),0 0 0 1px rgba(139,92,246,.08);
+  padding:22px;
+}
+.theme-creator-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:18px;
+  margin-bottom:18px;
+}
+.theme-creator-head span{
+  display:block;
+  margin-bottom:8px;
+  color:rgba(196,181,253,.9);
+  font:900 10px/1 var(--mono);
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+.theme-creator-head h2{
+  margin:0;
+  color:#fff;
+  font:950 clamp(28px,3vw,44px)/.95 var(--font-display);
+  letter-spacing:-.045em;
+}
+.theme-creator-head p{
+  max-width:620px;
+  margin:10px 0 0;
+  color:rgba(245,243,255,.62);
+  font-size:13px;
+  line-height:1.5;
+}
+.theme-creator-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
+}
+.theme-creator-field{
+  display:grid;
+  gap:7px;
+}
+.theme-creator-field.wide{
+  grid-column:span 2;
+}
+.theme-creator-field span{
+  color:rgba(245,243,255,.70);
+  font:850 11px/1 var(--font);
+}
+.theme-creator-field input,
+.theme-creator-field textarea{
+  width:100%;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:15px;
+  background:rgba(8,8,12,.72);
+  color:#fff;
+  padding:12px 13px;
+  outline:0;
+  font:760 13px/1.3 var(--font);
+  transition:border-color .18s var(--mp41-ease),box-shadow .18s var(--mp41-ease),background .18s var(--mp41-ease);
+}
+.theme-creator-field input[type=color]{
+  min-height:44px;
+  padding:5px;
+}
+.theme-creator-field textarea{
+  min-height:84px;
+  resize:vertical;
+}
+.theme-creator-field input:focus,
+.theme-creator-field textarea:focus{
+  border-color:rgba(167,139,250,.58);
+  box-shadow:0 0 0 4px rgba(139,92,246,.14);
+  background:rgba(12,12,18,.9);
+}
+.theme-creator-preview{
+  position:relative;
+  min-height:210px;
+  margin-top:16px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:22px;
+  background:rgba(255,255,255,.035);
+  overflow:hidden;
+}
+.theme-creator-preview .theme-preview-window{
+  inset:18px 18px 54px;
+}
+.theme-creator-preview .theme-palette{
+  position:absolute;
+  left:20px;
+  bottom:16px;
+  margin:0;
+}
+.theme-creator-actions{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:18px;
+}
+.theme-creator-actions>div{
+  display:flex;
+  gap:8px;
+}
+@media(max-width:1280px){
+  .mp-store-layout{grid-template-columns:1fr}
+  .mp-store-detail{position:relative;top:auto;max-height:none}
+}
+@media(max-width:940px){
+  .mp-store-grid,.mp-store-collection-grid,.mp41-stats{grid-template-columns:1fr 1fr}
+  .mp-store-card{grid-template-columns:112px minmax(0,1fr)}
+  .theme-creator-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:640px){
+  .mp-store-hero{padding:18px}
+  .mp-store-grid,.mp-store-collection-grid,.mp41-stats,.mp-detail-meta{grid-template-columns:1fr}
+  .mp-store-card{grid-template-columns:1fr}
+  .mp-store-thumb{min-height:136px}
+  .mp41-head-actions,.theme-creator-head,.theme-creator-actions{align-items:stretch;flex-direction:column}
+  .theme-creator-grid{grid-template-columns:1fr}
+  .theme-creator-field.wide{grid-column:auto}
+  .theme-palette.large{grid-template-columns:1fr}
 }
 </style>
 <script id="ethone-marketplace-41-runtime" src="./services/marketplace/runtime.js"></script>
@@ -12208,17 +13492,64 @@ body.ethone-v2 #main-content{
 <link rel="stylesheet" href="./ui/tokens.css">
 <link rel="stylesheet" href="./ui/components.css">
 <link rel="stylesheet" href="./ui/app.css">
+<link rel="stylesheet" href="./ui/notification-center.css?v=1">
+<link rel="stylesheet" href="./ui/desktop-environment.css">
 <link rel="stylesheet" href="./ui/auth.css?v=26">
 <link rel="stylesheet" href="./pages/settings/settings-v2.css?v=1">
 <link rel="stylesheet" href="./ui/finish-pass.css?v=1">
 <link rel="stylesheet" href="./ui/integrations.css?v=1">
+<link rel="stylesheet" href="./ui/plugin-hub.css?v=1">
+<link rel="stylesheet" href="./ui/ai-brain-os.css?v=1">
+<link rel="stylesheet" href="./pages/timeline/style.css?v=1">
+<link rel="stylesheet" href="./pages/health/style.css?v=1">
+<link rel="stylesheet" href="./pages/version-history/style.css?v=1">
 <link rel="stylesheet" href="./pages/valorant-accounts/style.css">
 <link rel="stylesheet" href="./pages/databases/style.css">
+<link rel="stylesheet" href="./pages/automation-builder/style.css">
+<link rel="stylesheet" href="./pages/import-assistant/style.css?v=1">
+<link rel="stylesheet" href="./pages/gaming/hub.css?v=1">
+<link rel="stylesheet" href="./ui/release-polish.css">
+<link rel="stylesheet" href="./pages/items/explorer.css">
+<link rel="stylesheet" href="./ui/permanent-dock.css">
+<link rel="stylesheet" href="./services/memory/central-memory.css">
+<link rel="stylesheet" href="./ui/design-language.css?v=1">
+<link rel="stylesheet" href="./ui/spaces.css?v=1">
+<link rel="stylesheet" href="./ui/os-sidebar.css?v=1">
+<link rel="stylesheet" href="./ui/motion-system.css?v=1">
+<link rel="stylesheet" href="./ui/micro-interactions.css?v=1">
+<link rel="stylesheet" href="./ui/theme-engine.css?v=1">
+<link rel="stylesheet" href="./ui/component-library.css?v=1">
+<link rel="stylesheet" href="./ui/background-engine.css?v=1">
+<link rel="stylesheet" href="./ui/brain-os-global.css?v=1">
+<link rel="stylesheet" href="./ui/side-panels.css?v=1">
+<link rel="stylesheet" href="./ui/smart-layouts.css?v=1">
+<link rel="stylesheet" href="./ui/widget-marketplace.css?v=1">
+<link rel="stylesheet" href="./ui/native-shell.css?v=1">
+<link rel="stylesheet" href="./ui/status-bar.css?v=1">
+<link rel="stylesheet" href="./ui/app-library.css?v=1">
+<link rel="stylesheet" href="./ui/morning-briefing.css?v=1">
+<link rel="stylesheet" href="./ui/achievements.css?v=1">
+<link rel="stylesheet" href="./ui/universe.css?v=1">
+<link rel="stylesheet" href="./pages/studio/style.css?v=1">
 <script src="./ui/accessibility.js"></script>
 <script src="./pages/dashboard/widget-catalog.js"></script>
 <script src="./pages/dashboard-v4.js"></script>
+<script src="./services/usage-learning.js?v=1"></script>
+<script src="./services/ui/smart-layouts.js?v=1"></script>
+<script src="./services/ui/widget-marketplace.js?v=1"></script>
+<script src="./ui/native-shell.js?v=1"></script>
+<script src="./ui/status-bar.js?v=1"></script>
+<script src="./ui/app-library.js?v=1"></script>
+<script src="./ui/morning-briefing.js?v=1"></script>
+<script src="./services/achievements.js?v=1"></script>
+<script src="./services/ui/universe.js?v=1"></script>
+<script src="./pages/import-assistant/index.js?v=1"></script>
 <script src="./pages/settings/settings-v2.js?v=1"></script>
 <script src="./services/connections/integration-hub.js?v=1"></script>
+<script src="./services/plugins/plugin-hub.js?v=1"></script>
 <script src="./ui/finish-pass.js?v=1"></script>
+<script src="./ui/release-polish.js"></script>
+<script src="./ui/permanent-dock.js"></script>
+<script src="./services/memory/central-memory.js"></script>
 </body>
 </html>

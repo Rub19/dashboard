@@ -145,7 +145,9 @@
     nav.appendChild(foot);
 
     qs(".settings-v2-back", nav).addEventListener("click", function () {
-      if (typeof window.switchPage === "function") window.switchPage("dashboard");
+      var Actions = window.Ethone && window.Ethone.get && window.Ethone.get("actions");
+      if (Actions && Actions.dispatch) Actions.dispatch("dashboard.open", { source: "settings-v2" });
+      else if (typeof window.switchPage === "function") window.switchPage("dashboard");
     });
 
     var search = qs("#settings-v2-search-input", nav);

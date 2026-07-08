@@ -14,6 +14,17 @@
 
   function go(page, source) {
     if (!page || typeof global.switchPage !== "function") return false;
+    if (page === "timeline") page = "activity";
+    if (page === "tasks") page = "todos";
+    if (page === "brain") page = "ai";
+    if (!document.getElementById("page-" + page)) {
+      console.warn("[ETHONE navigation] Refused unknown page:", page);
+      try {
+        var actions = app.get("actions");
+        if (actions && typeof actions.toastUnavailable === "function") actions.toastUnavailable();
+      } catch (e) {}
+      return false;
+    }
     var previous = current();
     app.get("events").emit("navigation:before", { from: previous, to: page, source: source || null });
     global.switchPage(page, source || null);

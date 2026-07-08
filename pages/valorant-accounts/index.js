@@ -982,7 +982,7 @@ function vaColorRow(id,x,y){
   var swatches=["","#ef4444","#f59e0b","#facc15","#34d399","#60a5fa","#8b5cf6","#f472b6"];
   var pop=document.createElement("div");
   pop.className="va-dpe-swatch-pop va-row-color-pop";
-  pop.innerHTML=swatches.map(function(c){return '<button type="button" class="va-dpe-swatch'+(c?"":" none")+'" style="--sc:'+(c||"transparent")+'" data-color="'+c+'" title="'+(c||"Aucune")+'"></button>';}).join("");
+  pop.innerHTML=swatches.map(function(c){return '<button type="button" class="va-dpe-swatch'+(c?"":" none")+'" style="--sc:'+(c||"transparent")+'" data-color="'+c+'" aria-label="Choisir la couleur '+(c||"Aucune")+'" title="'+(c||"Aucune")+'"></button>';}).join("");
   document.body.appendChild(pop);
   pop.style.top=y+"px";pop.style.left=x+"px";
   pop.querySelectorAll("button").forEach(function(btn){

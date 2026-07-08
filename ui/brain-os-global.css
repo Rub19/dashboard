@@ -1,0 +1,408 @@
+/* ETHONE Brain OS Global Layer */
+:root{
+  --brain-os-width:min(440px,calc(100vw - 28px));
+  --brain-os-radius:var(--radius-xl);
+  --brain-os-border:var(--border-secondary);
+  --brain-os-surface:
+    linear-gradient(180deg,color-mix(in srgb,var(--surface-2) 88%,white 4%),var(--surface-1));
+  --brain-os-muted:var(--text-secondary);
+}
+
+.brain-os-orb{
+  position:fixed;
+  right:22px;
+  bottom:calc(82px + env(safe-area-inset-bottom,0px));
+  z-index:2147482300;
+  min-width:86px;
+  height:42px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  border:1px solid var(--accent-border);
+  border-radius:999px;
+  background:
+    radial-gradient(circle at 28% 20%,color-mix(in srgb,var(--accent) 24%,transparent),transparent 58%),
+    linear-gradient(180deg,color-mix(in srgb,var(--surface-2) 88%,white 4%),var(--surface-1));
+  color:var(--text-primary);
+  box-shadow:var(--shadow-md),0 0 calc(34px * var(--theme-glow-scale)) color-mix(in srgb,var(--accent) 16%,transparent);
+  cursor:pointer;
+  transition:transform var(--motion-fast) var(--ease-premium),border-color var(--motion-fast) var(--ease-premium),box-shadow var(--motion-fast) var(--ease-premium);
+}
+
+.brain-os-orb:hover{
+  transform:translateY(-2px);
+  border-color:var(--accent);
+  box-shadow:var(--shadow-lg),0 0 calc(42px * var(--theme-glow-scale)) color-mix(in srgb,var(--accent) 22%,transparent);
+}
+
+.brain-os-orb strong{
+  font:800 var(--text-sm)/1 var(--font-sans);
+}
+
+.brain-os-orb-pulse{
+  width:9px;
+  height:9px;
+  border-radius:999px;
+  background:var(--accent);
+  box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 15%,transparent);
+  animation:brainOsPulse 2.8s ease-in-out infinite;
+}
+
+.brain-os-panel{
+  position:fixed;
+  right:22px;
+  bottom:calc(136px + env(safe-area-inset-bottom,0px));
+  z-index:2147482301;
+  width:var(--brain-os-width);
+  max-height:min(720px,calc(100vh - 132px));
+  display:none;
+  overflow:hidden;
+  border:1px solid var(--brain-os-border);
+  border-radius:var(--brain-os-radius);
+  background:var(--brain-os-surface);
+  color:var(--text-primary);
+  box-shadow:var(--shadow-lg),inset 0 1px 0 rgba(255,255,255,.07);
+  backdrop-filter:blur(calc(18px * var(--theme-blur-scale)));
+}
+
+.brain-os-panel.open{
+  display:flex;
+  flex-direction:column;
+  animation:brainOsIn var(--motion-fast) var(--ease-premium) both;
+}
+
+.brain-os-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:var(--spacing-sm);
+  padding:16px;
+  border-bottom:1px solid var(--border-primary);
+}
+
+.brain-os-head span{
+  display:block;
+  color:var(--text-accent);
+  font:850 10px/1 var(--font-mono);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+
+.brain-os-head strong{
+  display:block;
+  margin-top:6px;
+  font:850 var(--text-lg)/1.15 var(--font-sans);
+}
+
+.brain-os-head em{
+  display:block;
+  margin-top:5px;
+  color:var(--text-tertiary);
+  font-style:normal;
+  font-size:var(--text-sm);
+}
+
+.brain-os-head button,
+.brain-os-action,
+.brain-os-strip-actions button{
+  border:1px solid var(--border-primary);
+  border-radius:var(--radius-md);
+  background:var(--surface-2);
+  color:var(--text-secondary);
+  cursor:pointer;
+  transition:transform var(--motion-fast) var(--ease-premium),background var(--motion-fast) var(--ease-premium),border-color var(--motion-fast) var(--ease-premium),color var(--motion-fast) var(--ease-premium);
+}
+
+.brain-os-head button{
+  width:32px;
+  height:32px;
+}
+
+.brain-os-tabs{
+  display:flex;
+  gap:4px;
+  padding:8px;
+  overflow:auto hidden;
+  border-bottom:1px solid var(--border-primary);
+}
+
+.brain-os-tabs button{
+  flex:0 0 auto;
+  min-height:32px;
+  padding:0 10px;
+  border:1px solid transparent;
+  border-radius:var(--radius-md);
+  background:transparent;
+  color:var(--text-tertiary);
+  font:760 var(--text-xs)/1 var(--font-sans);
+  cursor:pointer;
+}
+
+.brain-os-tabs button:hover,
+.brain-os-tabs button.active{
+  color:var(--text-primary);
+  background:var(--accent-soft);
+  border-color:var(--accent-border);
+}
+
+.brain-os-body{
+  display:grid;
+  gap:10px;
+  padding:14px;
+  overflow:auto;
+}
+
+.brain-os-card,
+.brain-os-context,
+.brain-os-list,
+.brain-os-search{
+  border:1px solid var(--border-primary);
+  border-radius:var(--radius-lg);
+  background:color-mix(in srgb,var(--surface-2) 82%,transparent);
+  box-shadow:var(--shadow-xs);
+}
+
+.brain-os-card{
+  padding:13px;
+}
+
+.brain-os-card span,
+.brain-os-mini{
+  color:var(--text-tertiary);
+  font:760 var(--text-xs)/1 var(--font-mono);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.brain-os-card strong{
+  display:block;
+  margin-top:8px;
+  font:820 var(--text-md)/1.25 var(--font-sans);
+}
+
+.brain-os-card p{
+  margin:7px 0 12px;
+  color:var(--brain-os-muted);
+  font-size:var(--text-sm);
+  line-height:1.5;
+}
+
+.brain-os-action{
+  min-height:34px;
+  padding:0 11px;
+  font:780 var(--text-xs)/1 var(--font-sans);
+}
+
+.brain-os-action:hover,
+.brain-os-strip-actions button:hover{
+  transform:translateY(-1px);
+  color:var(--text-primary);
+  border-color:var(--accent-border);
+  background:var(--accent-soft);
+}
+
+.brain-os-action.primary{
+  color:var(--text-on-accent);
+  border-color:var(--accent);
+  background:linear-gradient(180deg,var(--accent-hover),var(--accent-active));
+  box-shadow:var(--shadow-control);
+}
+
+.brain-os-action-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+.brain-os-action-card,
+.brain-os-result{
+  width:100%;
+  min-height:72px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+  gap:6px;
+  padding:12px;
+  border:1px solid var(--border-primary);
+  border-radius:var(--radius-lg);
+  background:color-mix(in srgb,var(--surface-2) 84%,transparent);
+  color:var(--text-primary);
+  cursor:pointer;
+  text-align:left;
+}
+
+.brain-os-action-card:hover,
+.brain-os-result:hover{
+  border-color:var(--accent-border);
+  background:var(--accent-soft);
+}
+
+.brain-os-action-card span,
+.brain-os-result em{
+  color:var(--text-secondary);
+  font-size:var(--text-xs);
+  font-style:normal;
+  line-height:1.35;
+}
+
+.brain-os-context{
+  display:grid;
+  gap:0;
+  overflow:hidden;
+}
+
+.brain-os-context-line,
+.brain-os-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:11px 12px;
+  border-bottom:1px solid var(--border-primary);
+}
+
+.brain-os-context-line:last-child,
+.brain-os-row:last-child{
+  border-bottom:0;
+}
+
+.brain-os-context-line span,
+.brain-os-row span,
+.brain-os-result span{
+  color:var(--text-tertiary);
+  font-size:var(--text-xs);
+}
+
+.brain-os-context-line strong,
+.brain-os-row strong{
+  min-width:0;
+  overflow:hidden;
+  color:var(--text-primary);
+  font-size:var(--text-sm);
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.brain-os-search{
+  padding:8px;
+}
+
+.brain-os-search input{
+  width:100%;
+  min-height:38px;
+  border:1px solid var(--border-primary);
+  border-radius:var(--radius-md);
+  background:var(--surface-3);
+  color:var(--text-primary);
+  padding:0 12px;
+}
+
+.brain-os-results,
+.brain-os-list{
+  display:grid;
+  gap:8px;
+}
+
+.brain-os-result{
+  min-height:auto;
+}
+
+.brain-os-result strong{
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.brain-os-empty{
+  padding:18px;
+  color:var(--text-tertiary);
+  border:1px dashed var(--border-primary);
+  border-radius:var(--radius-lg);
+  text-align:center;
+  font-size:var(--text-sm);
+}
+
+.brain-os-strip{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:0 0 14px;
+  padding:11px 12px;
+  border:1px solid var(--border-primary);
+  border-radius:var(--radius-xl);
+  background:
+    radial-gradient(180px 90px at 0 50%,color-mix(in srgb,var(--accent) 10%,transparent),transparent 72%),
+    color-mix(in srgb,var(--surface-1) 86%,transparent);
+  box-shadow:var(--shadow-xs);
+}
+
+.brain-os-strip span{
+  display:block;
+  margin-bottom:4px;
+  color:var(--text-accent);
+  font:800 10px/1 var(--font-mono);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+
+.brain-os-strip strong{
+  color:var(--text-primary);
+  font-size:var(--text-sm);
+}
+
+.brain-os-strip-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+}
+
+.brain-os-strip-actions button{
+  min-height:30px;
+  padding:0 10px;
+  font:760 var(--text-xs)/1 var(--font-sans);
+}
+
+@keyframes brainOsPulse{
+  0%,100%{opacity:.72;transform:scale(.96)}
+  50%{opacity:1;transform:scale(1.08)}
+}
+
+@keyframes brainOsIn{
+  from{opacity:0;transform:translateY(10px) scale(.985)}
+  to{opacity:1;transform:none}
+}
+
+@media(max-width:760px){
+  .brain-os-orb{
+    right:14px;
+    bottom:calc(92px + env(safe-area-inset-bottom,0px));
+  }
+
+  .brain-os-panel{
+    right:10px;
+    left:10px;
+    width:auto;
+    bottom:calc(144px + env(safe-area-inset-bottom,0px));
+    max-height:calc(100vh - 170px);
+  }
+
+  .brain-os-action-grid{
+    grid-template-columns:1fr;
+  }
+
+  .brain-os-strip{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .brain-os-orb-pulse,
+  .brain-os-panel.open{
+    animation:none!important;
+  }
+}

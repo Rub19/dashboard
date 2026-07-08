@@ -62,6 +62,7 @@ function onThemeSegmented(key,value,btnEl){
 function onThemeSidebarWidth(value){
   var w=parseInt(value,10);
   if(window.ethoneSidebarResize)window.ethoneSidebarResize.setWidth(w);
+  if(typeof setThemeField==='function')setThemeField('sidebarWidth',w);
   setText('theme-sidebar-width-val',w+'px');
 }
 function onThemeCompactToggle(checked){

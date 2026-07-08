@@ -1,4 +1,4 @@
-/* ETHONE legacy compatibility module: league. */
+﻿/* ETHONE legacy compatibility module: league. */
 // -- LEAGUE OF LEGENDS -----------------------------
 async function connectLoL(){
   const raw=document.getElementById('lol-name').value.trim();
@@ -33,7 +33,7 @@ async function connectLoL(){
     await loadLoLStats();
     document.getElementById('lol-disconnect').style.display='inline-flex';
     toast('LoL connected!','success');
-    addActivity('Connected League of Legends account','#c89b3c');
+    addActivity('Connected League of Legends account','#c89b3c','integration');
   }catch(e){toast('Error: '+(e.message||'Check your API key / summoner name'),'error');console.error(e)}
 }
 

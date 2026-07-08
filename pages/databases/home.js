@@ -93,8 +93,8 @@ function dbHomeCardHTML(db){
   var fav=v.favorites.indexOf(db.id)>-1;
   return '<div class="db-home-card" data-db-action-id="databases.open" data-db-id="'+db.id+'" style="--dc:'+dbEsc(db.color)+'">'+
     '<div class="db-home-card-top"><span class="db-home-card-icon">'+dbEsc(db.icon)+"</span>"+
-      '<button type="button" class="db-mini-btn db-home-card-fav'+(fav?" active":"")+'" data-db-action-id="databases.toggleFavorite" data-db-id="'+db.id+'" title="'+dbEsc("Favori")+'">'+(fav?DB_STAR_FILLED_SVG:DB_STAR_SVG)+"</button>"+
-      '<button type="button" class="db-mini-btn db-home-card-menu" data-db-action-id="databases.cardMenu" data-db-id="'+db.id+'">'+DB_DOTS_SVG+"</button>"+
+      '<button type="button" class="db-mini-btn db-home-card-fav'+(fav?" active":"")+'" data-db-action-id="databases.toggleFavorite" data-db-id="'+db.id+'" aria-label="'+dbEsc(fav?"Retirer des favoris":"Ajouter aux favoris")+'" title="'+dbEsc("Favori")+'">'+(fav?DB_STAR_FILLED_SVG:DB_STAR_SVG)+"</button>"+
+      '<button type="button" class="db-mini-btn db-home-card-menu" data-db-action-id="databases.cardMenu" data-db-id="'+db.id+'" aria-label="'+dbEsc("Ouvrir le menu de "+db.name)+'" title="'+dbEsc("Menu")+'">'+DB_DOTS_SVG+"</button>"+
     "</div>"+
     '<div class="db-home-card-name">'+dbEsc(db.name)+"</div>"+
     '<div class="db-home-card-meta">'+(db.rows?db.rows.length:0)+" · "+(db.views?db.views.length:0)+"</div>"+
@@ -148,7 +148,7 @@ function dbOpenIconColorPicker(anchor,current,onChange){
     '<div class="db-icp-icons">'+DB_ICON_CHOICES.map(function(ic){return '<button type="button" class="db-icp-icon'+(ic===icon?" selected":"")+'" data-icon="'+ic+'">'+ic+"</button>";}).join("")+
       '<span class="db-icp-icon db-icp-icon-custom"><input type="text" maxlength="4" id="db-icp-custom-icon" placeholder="…"></span>'+
     "</div>"+
-    '<div class="db-icp-colors">'+DB_SWATCHES_HOME.map(function(c){return '<button type="button" class="db-icp-color'+(c===color?" selected":"")+'" style="--cc:'+c+'" data-color="'+c+'"></button>';}).join("")+
+    '<div class="db-icp-colors">'+DB_SWATCHES_HOME.map(function(c){return '<button type="button" class="db-icp-color'+(c===color?" selected":"")+'" style="--cc:'+c+'" data-color="'+c+'" aria-label="Choisir la couleur '+c+'" title="'+c+'"></button>';}).join("")+
       '<input type="color" id="db-icp-custom-color" class="db-icp-custom-color" value="'+(color||"#8b5cf6")+'">'+
     "</div>";
   document.body.appendChild(pop);
@@ -273,6 +273,7 @@ function dbRenderActiveView(container,db,view){
   else if(view.type==="gallery"&&typeof dbRenderGallery==="function")dbRenderGallery(container,db,view);
   else if(view.type==="calendar"&&typeof dbRenderCalendarView==="function")dbRenderCalendarView(container,db,view);
   else if(view.type==="timeline"&&typeof dbRenderTimeline==="function")dbRenderTimeline(container,db,view);
+  else if(view.type==="list"&&typeof dbRenderListView==="function")dbRenderListView(container,db,view);
   else container.innerHTML="";
   try{if(window.lucide&&!window.__lucideFailed)window.lucide.createIcons();}catch(e){}
 }
@@ -330,6 +331,7 @@ function dbOpenAddViewMenu(anchor){
 function dbAddView(db,type){
   var id="v"+dbNewId();
   var names={table:"Table",kanban:"Board",gallery:"Gallery",calendar:"Calendar",timeline:"Timeline"};
+  names.list="List";
   var view={id:id,type:type,name:names[type]||type,config:dbDefaultViewConfig(db,type)};
   db.views.push(view);
   dbTouch(db);saveStateNow();
@@ -345,6 +347,7 @@ function dbDefaultViewConfig(db,type){
   if(type==="gallery")return {imageColumn:imageCol?imageCol.key:null,titleColumn:primary?primary.key:null,metaColumns:[]};
   if(type==="calendar")return {dateColumn:dateCols[0]?dateCols[0].key:null};
   if(type==="timeline")return {startColumn:dateCols[0]?dateCols[0].key:null,endColumn:dateCols[1]?dateCols[1].key:null};
+  if(type==="list")return {titleColumn:primary?primary.key:null,sort:[],filters:[]};
   return {sort:[],groupBy:null,filters:[],activeFilterView:"all"};
 }
 function dbOpenViewTabMenu(x,y,viewId){
@@ -408,3 +411,15 @@ function dbRegisterActions(){
   Actions.register("databases.import",{handler:function(){var db=dbActiveDb();if(db&&typeof dbStartImport==="function")dbStartImport(db);}});
 }
 dbRegisterActions();
+
+var dbViewTypeChoicesBase=dbViewTypeChoices;
+dbViewTypeChoices=function(){
+  var choices=dbViewTypeChoicesBase();
+  if(!choices.some(function(c){return c.value==="list";}))choices.push({value:"list",label:"List"});
+  return choices;
+};
+var dbViewIconBase=dbViewIcon;
+dbViewIcon=function(type){
+  if(type==="list")return '<span class="db-view-tab-icon">☰</span>';
+  return dbViewIconBase(type);
+};

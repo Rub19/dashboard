@@ -63,6 +63,9 @@ async function loadCloudState(){
           valorantAccountsView:s.valorantAccountsView||{columnOrder:null,columnWidths:{},hiddenColumns:[],pinnedColumns:[],activeFilterView:'all',sort:[],groupBy:null,knownTags:[],customColumns:[],dropdownDefs:{},lockedColumns:[],columnLabels:{}},
           databases:s.databases||[],
           databasesView:s.databasesView||{lastOpenedId:null,order:null,favorites:[]},
+          backupSnapshots:s.backupSnapshots||[],
+          backupHistory:s.backupHistory||[],
+          backupMeta:s.backupMeta||null,
         }
       };
     });

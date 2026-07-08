@@ -1,8 +1,8 @@
-/* ETHONE legacy compatibility module: ai-actions. */
-// ════════════════════════════════════════════════════════════
-//  ETHONE AI — DASHBOARD ACTIONS
+﻿/* ETHONE legacy compatibility module: ai-actions. */
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+//  ETHONE AI â€” DASHBOARD ACTIONS
 //  Parses AI responses for [ACTION:...] commands
-// ════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 const AI_ACTIONS={
   create_task({text,priority,due}){
@@ -11,7 +11,7 @@ const AI_ACTIONS={
     const todo={id:Date.now(),text,priority:priority||'medium',done:false,color:'',
       due:due||'',tag:'',date:new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short'})};
     p.state.todos.unshift(todo);saveStateNow();renderTodos();updateStats();
-    addActivity('AI: '+text,'var(--accent2)');
+    addActivity('AI: '+text,'var(--accent2)','system');
     return t_ai('task_created',{text});
   },
   create_note({title,content}){
@@ -24,7 +24,7 @@ const AI_ACTIONS={
     // Return message with clickable link to open the note
     const lang=_lang||'fr';
     const t=title||'Note';
-    const msgs={fr:`📝 Note créée : **[${t}](#open-note-${noteId})**`,en:`📝 Note created: **[${t}](#open-note-${noteId})**`,es:`📝 Nota creada: **[${t}](#open-note-${noteId})**`,de:`📝 Notiz erstellt: **[${t}](#open-note-${noteId})**`};
+    const msgs={fr:`ðŸ“ Note crÃ©Ã©e : **[${t}](#open-note-${noteId})**`,en:`ðŸ“ Note created: **[${t}](#open-note-${noteId})**`,es:`ðŸ“ Nota creada: **[${t}](#open-note-${noteId})**`,de:`ðŸ“ Notiz erstellt: **[${t}](#open-note-${noteId})**`};
     return msgs[lang]||msgs.fr;
   },
   create_event({title,date}){
@@ -57,7 +57,7 @@ const AI_ACTIONS={
     const p=curP();if(!p)return '';
     const todos=(p.state.todos||[]).filter(t=>!t.done);
     if(!todos.length)return t_ai('no_tasks');
-    return todos.map((t,i)=>`${i+1}. **${t.text}**${t.priority==='high'?' 🔴':''}${t.due?' ('+t.due+')':''}`).join('\n');
+    return todos.map((t,i)=>`${i+1}. **${t.text}**${t.priority==='high'?' ðŸ”´':''}${t.due?' ('+t.due+')':''}`).join('\n');
   },
 };
 
@@ -66,43 +66,43 @@ function t_ai(key,vars={}){
   const lang=_lang||'fr';
   const msgs={
     fr:{
-      action_fail:'❌ Action impossible.',
-      task_created:'✅ Tâche créée : **{text}**',
-      note_created:'📝 Note créée : **{title}**',
-      event_created:'📅 Événement ajouté : **{title}** le {date}',
-      task_done:'✅ Tâche terminée : **{text}**',
-      task_deleted:'🗑️ Tâche supprimée : **{text}**',
-      task_not_found:'❌ Tâche introuvable : **{text}**',
-      no_tasks:'Aucune tâche en attente.',
+      action_fail:'âŒ Action impossible.',
+      task_created:'âœ… TÃ¢che crÃ©Ã©e : **{text}**',
+      note_created:'ðŸ“ Note crÃ©Ã©e : **{title}**',
+      event_created:'ðŸ“… Ã‰vÃ©nement ajoutÃ© : **{title}** le {date}',
+      task_done:'âœ… TÃ¢che terminÃ©e : **{text}**',
+      task_deleted:'ðŸ—‘ï¸ TÃ¢che supprimÃ©e : **{text}**',
+      task_not_found:'âŒ TÃ¢che introuvable : **{text}**',
+      no_tasks:'Aucune tÃ¢che en attente.',
     },
     en:{
-      action_fail:'❌ Action failed.',
-      task_created:'✅ Task created: **{text}**',
-      note_created:'📝 Note created: **{title}**',
-      event_created:'📅 Event added: **{title}** on {date}',
-      task_done:'✅ Task completed: **{text}**',
-      task_deleted:'🗑️ Task deleted: **{text}**',
-      task_not_found:'❌ Task not found: **{text}**',
+      action_fail:'âŒ Action failed.',
+      task_created:'âœ… Task created: **{text}**',
+      note_created:'ðŸ“ Note created: **{title}**',
+      event_created:'ðŸ“… Event added: **{title}** on {date}',
+      task_done:'âœ… Task completed: **{text}**',
+      task_deleted:'ðŸ—‘ï¸ Task deleted: **{text}**',
+      task_not_found:'âŒ Task not found: **{text}**',
       no_tasks:'No pending tasks.',
     },
     es:{
-      action_fail:'❌ Acción fallida.',
-      task_created:'✅ Tarea creada: **{text}**',
-      note_created:'📝 Nota creada: **{title}**',
-      event_created:'📅 Evento añadido: **{title}** el {date}',
-      task_done:'✅ Tarea completada: **{text}**',
-      task_deleted:'🗑️ Tarea eliminada: **{text}**',
-      task_not_found:'❌ Tarea no encontrada: **{text}**',
+      action_fail:'âŒ AcciÃ³n fallida.',
+      task_created:'âœ… Tarea creada: **{text}**',
+      note_created:'ðŸ“ Nota creada: **{title}**',
+      event_created:'ðŸ“… Evento aÃ±adido: **{title}** el {date}',
+      task_done:'âœ… Tarea completada: **{text}**',
+      task_deleted:'ðŸ—‘ï¸ Tarea eliminada: **{text}**',
+      task_not_found:'âŒ Tarea no encontrada: **{text}**',
       no_tasks:'Sin tareas pendientes.',
     },
     de:{
-      action_fail:'❌ Aktion fehlgeschlagen.',
-      task_created:'✅ Aufgabe erstellt: **{text}**',
-      note_created:'📝 Notiz erstellt: **{title}**',
-      event_created:'📅 Ereignis hinzugefügt: **{title}** am {date}',
-      task_done:'✅ Aufgabe erledigt: **{text}**',
-      task_deleted:'🗑️ Aufgabe gelöscht: **{text}**',
-      task_not_found:'❌ Aufgabe nicht gefunden: **{text}**',
+      action_fail:'âŒ Aktion fehlgeschlagen.',
+      task_created:'âœ… Aufgabe erstellt: **{text}**',
+      note_created:'ðŸ“ Notiz erstellt: **{title}**',
+      event_created:'ðŸ“… Ereignis hinzugefÃ¼gt: **{title}** am {date}',
+      task_done:'âœ… Aufgabe erledigt: **{text}**',
+      task_deleted:'ðŸ—‘ï¸ Aufgabe gelÃ¶scht: **{text}**',
+      task_not_found:'âŒ Aufgabe nicht gefunden: **{text}**',
       no_tasks:'Keine ausstehenden Aufgaben.',
     },
   };
@@ -114,16 +114,22 @@ function t_ai(key,vars={}){
 // Parse and execute actions from AI reply
 function executeAIActions(reply){
   const actionRegex=/\[ACTION:(\w+)\s*({[^}]*})?\]/g;
+  reply=String(reply||'');
   let clean=reply;
   const results=[];
   let match;
   while((match=actionRegex.exec(reply))!==null){
     const name=match[1];
     let params={};
-    try{if(match[2])params=JSON.parse(match[2]);}catch(e){}
+    try{if(match[2])params=JSON.parse(match[2]);}catch(e){params={}}
     if(AI_ACTIONS[name]){
-      const res=AI_ACTIONS[name](params);
-      if(res)results.push(res);
+      try{
+        const res=AI_ACTIONS[name](params);
+        if(res)results.push(res);
+      }catch(error){
+        console.error('[ETHONE AI Action]',name,error);
+        results.push('Action failed safely: '+(error.message||name));
+      }
     }
     clean=clean.replace(match[0],'');
   }
@@ -134,72 +140,41 @@ async function sendAIMessage(){
   if(_aiTyping)return;
   const inp=document.getElementById('ai-input');if(!inp)return;
   const text=inp.value.trim();if(!text)return;
+  const sendBtn=document.getElementById('ai-send-btn');
+  let typingShown=false;
   inp.value='';inp.style.height='auto';
-  addAIMessage('user',text);
-  _aiHistory.push({role:'user',content:text});
+  try{addAIMessage('user',text)}catch(error){console.error('[ETHONE AI] user render failed',error)}
+  try{_aiHistory.push({role:'user',content:text})}catch(error){console.warn('[ETHONE AI] history push failed',error)}
   _aiTyping=true;
-  document.getElementById('ai-send-btn').disabled=true;
-  showAITyping();
-  const ctx=getAIContext();
-  const uiLang=_lang||'fr';
-  const lang2=uiLang==='fr'?'fr':uiLang==='es'?'es':uiLang==='de'?'de':'en';
-  const today=new Date().toISOString().slice(0,10);
-  // Actions ultra-compactes
-  const actions='[create_task text,priority,due][create_note title,content][create_event title,date][complete_task text][delete_task text][list_tasks]';
-  const system=`ETHONE AI. Lang:${lang2}. Date:${today}.\nACTIONS:${actions}\nDATA:${ctx.summary}\nRègles: concis, réponds en ${lang2}, utilise ACTION si besoin.`;
+  if(sendBtn)sendBtn.disabled=true;
+  try{showAITyping();typingShown=true}catch(error){console.warn('[ETHONE AI] typing render failed',error)}
   try{
     if(window.ETHONEAICore&&typeof window.ETHONEAICore.complete==='function'){
       const result=await window.ETHONEAICore.complete(text);
       const {clean:reply,results}=executeAIActions(result.content);
-      removeAITyping();
-      addAIMessage('assistant',reply);
-      if(results.length)results.forEach(r=>addAIMessage('assistant',r));
-      _aiHistory.push({role:'assistant',content:reply,ts:Date.now(),provider:result.provider,model:result.model});
-      if(_aiHistory.length>32)_aiHistory=_aiHistory.slice(-32);
-      saveAIChats();
-      _aiTyping=false;
-      document.getElementById('ai-send-btn').disabled=false;
-      document.getElementById('ai-input')?.focus();
+      if(typingShown){removeAITyping();typingShown=false}
+      try{
+        addAIMessage('assistant',reply||'No response generated.');
+        if(results.length)results.forEach(r=>addAIMessage('assistant',r));
+      }catch(error){console.error('[ETHONE AI] assistant render failed',error)}
+      try{
+        _aiHistory.push({role:'assistant',content:reply,ts:Date.now(),provider:result.provider,model:result.model});
+        if(_aiHistory.length>32)_aiHistory=_aiHistory.slice(-32);
+        saveAIChats();
+      }catch(error){console.warn('[ETHONE AI] history save failed',error)}
       return;
     }
     throw new Error('ETHONE AI Core unavailable. Configure providers from the AI Core interface.');
-    const groqKey=curP()?.state?.connections?.groqKey||'';
-    if(!groqKey){
-      removeAITyping();
-      addAIMessage('assistant','⚙️ Ajoute ta clé **Groq API** dans Connexions → ETHONE AI. Gratuit sur [console.groq.com/keys](https://console.groq.com/keys).');
-      _aiTyping=false;
-      document.getElementById('ai-send-btn').disabled=false;
-      return;
-    }
-    const groqMessages=[{role:'system',content:system},..._aiHistory.slice(-4)];
-    const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+groqKey},
-      body:JSON.stringify({model:'llama-3.1-8b-instant',messages:groqMessages,max_tokens:500,temperature:0.7}),
-      signal:AbortSignal.timeout(30000)
-    });
-    if(!res.ok){
-      const err=await res.json().catch(()=>({}));
-      throw new Error(err?.error?.message||'HTTP '+res.status);
-    }
-    const data=await res.json();
-    const rawReply=data.choices?.[0]?.message?.content||'Pas de réponse générée.';
-    const {clean:reply,results}=executeAIActions(rawReply);
-    removeAITyping();
-    addAIMessage('assistant',reply);
-    if(results.length)results.forEach(r=>addAIMessage('assistant',r));
-    _aiHistory.push({role:'assistant',content:reply});
-    if(_aiHistory.length>24)_aiHistory=_aiHistory.slice(-24);
-    saveAIChats();
   }catch(e){
-    removeAITyping();
+    if(typingShown){removeAITyping();typingShown=false}
     const errMsg=e?.message||'Erreur inconnue';
-    addAIMessage('assistant','❌ Erreur: '+errMsg+'. Vérifie ta clé Groq dans Connexions → ETHONE AI.');
+    try{addAIMessage('assistant','Erreur: '+errMsg+'. Verifie ta configuration dans ETHONE AI Core.')}catch(error){console.error('[ETHONE AI] error render failed',error)}
     console.error('[ETHONE AI]',e);
+  }finally{
+    _aiTyping=false;
+    if(sendBtn)sendBtn.disabled=false;
+    document.getElementById('ai-input')?.focus();
   }
-  _aiTyping=false;
-  document.getElementById('ai-send-btn').disabled=false;
-  document.getElementById('ai-input')?.focus();
 }
 
 function sendAISuggestion(btn){
@@ -220,10 +195,10 @@ function openNoteFromAI(noteId){
 function showAICapabilities(){
   const lang=_lang||'fr';
   const caps={
-    fr:`**ETHONE AI peut interagir avec ton dashboard :**\n\n✅ **Créer une tâche** — *Ajoute une tâche: acheter du pain*\n✅ **Terminer une tâche** — *Marque X comme fait*\n🗑️ **Supprimer une tâche** — *Supprime la tâche X*\n📝 **Créer une note** — *Crée une note: idées projet*\n📅 **Ajouter un événement** — *Ajoute réunion le 2025-06-20*\n📋 **Lister mes tâches** — *Quelles sont mes tâches ?*\n💬 **Conseils & planning** — *Sur quoi me concentrer ?*\n\nParle-moi naturellement, je comprends le contexte !`,
-    en:`**ETHONE AI can:**\n\n📋 **Tasks** — Summarize, prioritize, suggest a schedule\n📖 **Notes** — Writing help, summaries\n🔥 **Habits** — Analyze your streaks, suggest improvements\n📅 **Events** — Remind you of upcoming events\n⏱️ **Pomodoro** — Suggest work sessions\n💬 **Chat** — Answer any question\n\nAsk me anything!`,
-    es:`**ETHONE AI puede:**\n\n📋 **Tareas** — Resumir, priorizar, sugerir un horario\n📖 **Notas** — Ayuda a escribir, resúmenes\n🔥 **Hábitos** — Analizar tus rachas, sugerir mejoras\n📅 **Eventos** — Recordar tus próximos eventos\n⏱️ **Pomodoro** — Sugerir sesiones de trabajo\n💬 **Chat** — Responder cualquier pregunta`,
-    de:`**ETHONE AI kann:**\n\n📋 **Aufgaben** — Zusammenfassen, priorisieren, Zeitplan vorschlagen\n📖 **Notizen** — Schreibhilfe, Zusammenfassungen\n🔥 **Gewohnheiten** — Streaks analysieren, Verbesserungen vorschlagen\n📅 **Ereignisse** — Bevorstehende Ereignisse erinnern\n⏱️ **Pomodoro** — Arbeitssitzungen vorschlagen\n💬 **Chat** — Jede Frage beantworten`,
+    fr:`**ETHONE AI peut interagir avec ton dashboard :**\n\nâœ… **CrÃ©er une tÃ¢che** â€” *Ajoute une tÃ¢che: acheter du pain*\nâœ… **Terminer une tÃ¢che** â€” *Marque X comme fait*\nðŸ—‘ï¸ **Supprimer une tÃ¢che** â€” *Supprime la tÃ¢che X*\nðŸ“ **CrÃ©er une note** â€” *CrÃ©e une note: idÃ©es projet*\nðŸ“… **Ajouter un Ã©vÃ©nement** â€” *Ajoute rÃ©union le 2025-06-20*\nðŸ“‹ **Lister mes tÃ¢ches** â€” *Quelles sont mes tÃ¢ches ?*\nðŸ’¬ **Conseils & planning** â€” *Sur quoi me concentrer ?*\n\nParle-moi naturellement, je comprends le contexte !`,
+    en:`**ETHONE AI can:**\n\nðŸ“‹ **Tasks** â€” Summarize, prioritize, suggest a schedule\nðŸ“– **Notes** â€” Writing help, summaries\nðŸ”¥ **Habits** â€” Analyze your streaks, suggest improvements\nðŸ“… **Events** â€” Remind you of upcoming events\nâ±ï¸ **Pomodoro** â€” Suggest work sessions\nðŸ’¬ **Chat** â€” Answer any question\n\nAsk me anything!`,
+    es:`**ETHONE AI puede:**\n\nðŸ“‹ **Tareas** â€” Resumir, priorizar, sugerir un horario\nðŸ“– **Notas** â€” Ayuda a escribir, resÃºmenes\nðŸ”¥ **HÃ¡bitos** â€” Analizar tus rachas, sugerir mejoras\nðŸ“… **Eventos** â€” Recordar tus prÃ³ximos eventos\nâ±ï¸ **Pomodoro** â€” Sugerir sesiones de trabajo\nðŸ’¬ **Chat** â€” Responder cualquier pregunta`,
+    de:`**ETHONE AI kann:**\n\nðŸ“‹ **Aufgaben** â€” Zusammenfassen, priorisieren, Zeitplan vorschlagen\nðŸ“– **Notizen** â€” Schreibhilfe, Zusammenfassungen\nðŸ”¥ **Gewohnheiten** â€” Streaks analysieren, Verbesserungen vorschlagen\nðŸ“… **Ereignisse** â€” Bevorstehende Ereignisse erinnern\nâ±ï¸ **Pomodoro** â€” Arbeitssitzungen vorschlagen\nðŸ’¬ **Chat** â€” Jede Frage beantworten`,
   };
   addAIMessage('assistant', caps[lang]||caps.fr);
 }

@@ -28,7 +28,7 @@ function dbRenderGallery(container,db,view){
 }
 function dbRenderGalleryGrid(container,db,view,imageCol,titleCol){
   var grid=container.querySelector("#db-gallery-grid");
-  var rows=dbRows(db);
+  var rows=(typeof dbGetFilteredRows==="function")?dbGetFilteredRows(db,view):dbRows(db);
   var metaCols=dbVisibleColumns(db).filter(function(c){return !c.primary&&(!imageCol||c.key!==imageCol.key);}).slice(0,2);
   grid.innerHTML=rows.map(function(r){
     var imgSrc=imageCol?r[imageCol.key]:null;

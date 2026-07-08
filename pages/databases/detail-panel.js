@@ -20,6 +20,7 @@ function dbFieldRow(db,row,col){
   var value=row[col.key];
   var display;
   var editable=true;
+  if((col.type==="status"||col.type==="dropdown")&&typeof Object.assign==="function")col=Object.assign({},col,{type:"select"});
   if(col.type==="checkbox"){
     display='<span class="db-dp-value">'+(value?"Oui":"Non")+"</span>";
   }else if(col.type==="select"){
@@ -79,6 +80,7 @@ function dbStartDetailEdit(db,row,colKey){
   if(!fieldRowEl||fieldRowEl.querySelector(".db-dp-edit-input"))return;
   var valueEl=fieldRowEl.querySelector(".db-dp-field-value");
   var type=colDef.type;
+  if(type==="status"||type==="dropdown")type="select";
   if(type==="select"){
     dbOpenDropdown(valueEl,{title:colDef.label,items:dbOptionsFor(db,colKey),selected:row[colKey],onChange:function(v){dbSetField(db,row,colKey,v);dbRenderDetailPanel(db,row);dbRerenderView();}});
     return;

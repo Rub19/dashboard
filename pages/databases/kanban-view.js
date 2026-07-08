@@ -25,7 +25,7 @@ function dbRenderKanban(container,db,view){
 }
 function dbRenderKanbanBoard(container,db,view,groupCol){
   var board=container.querySelector("#db-kanban-board");
-  var rows=dbRows(db);
+  var rows=(typeof dbGetFilteredRows==="function")?dbGetFilteredRows(db,view):dbRows(db);
   var options=dbOptionsFor(db,groupCol.key).slice();
   var primary=dbPrimaryColumn(db);
   var metaCols=dbVisibleColumns(db).filter(function(c){return !c.primary&&c.key!==groupCol.key;}).slice(0,2);

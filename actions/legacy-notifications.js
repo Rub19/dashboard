@@ -43,6 +43,33 @@ function clearAllNotifs(){
   renderNotifPanel();
 }
 
+function notifRunAction(actionId, context){
+  const Actions=window.Ethone&&window.Ethone.get&&window.Ethone.get('actions');
+  if(Actions&&Actions.dispatch)return Actions.dispatch(actionId,context||{source:'legacy-notifications'});
+  if(actionId==='navigation.open'&&context&&context.page&&typeof switchPage==='function')return switchPage(context.page,null);
+  return false;
+}
+
+function legacyNotifPrefs(){
+  const p=typeof curP==='function'?curP():null;
+  if(!p)return {tasks:true,habits:true,events:true,ai:true,system:true,quietStart:'',quietEnd:''};
+  p.state=p.state||{};
+  if(!p.state.notifPrefs)p.state.notifPrefs={tasks:true,habits:true,events:true,ai:true,system:true,quietStart:'',quietEnd:''};
+  return p.state.notifPrefs;
+}
+function legacyNotifQuiet(prefs){
+  const start=prefs&&prefs.quietStart,end=prefs&&prefs.quietEnd;
+  if(!start||!end)return false;
+  const now=new Date();
+  const cur=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  return start<end?(cur>=start&&cur<=end):(cur>=start||cur<=end);
+}
+function legacyNotifAllowed(key){
+  const prefs=legacyNotifPrefs();
+  if(legacyNotifQuiet(prefs))return false;
+  return prefs[key||'system']!==false;
+}
+
 function scanForNotifs(){
   const p=curP();if(!p)return;
   const now=new Date();
@@ -50,42 +77,42 @@ function scanForNotifs(){
 
   // Overdue tasks
   const overdue=(p.state?.todos||[]).filter(t=>!t.done&&t.dueDate&&new Date(t.dueDate)<now);
-  if(overdue.length&&!_notifs.find(n=>n.id==='overdue')){
+  if(legacyNotifAllowed('tasks')&&overdue.length&&!_notifs.find(n=>n.id==='overdue')){
     _notifs.push({id:'overdue',icon:'⚠️',title:`${overdue.length} overdue task${overdue.length>1?'s':''}`,
       sub:overdue.slice(0,2).map(t=>t.text).join(', '),time:now,unread:true,
-      action:()=>{closeNotifPanel();switchPage('todos',null);}});
+      action:()=>{closeNotifPanel();notifRunAction('navigation.open',{page:'todos',source:'legacy-notifications'});}});
   }
 
   // Due today
   const dueToday=(p.state?.todos||[]).filter(t=>!t.done&&t.dueDate&&new Date(t.dueDate).toLocaleDateString('en-CA')===todayStr);
-  if(dueToday.length&&!_notifs.find(n=>n.id==='due-today')){
+  if(legacyNotifAllowed('tasks')&&dueToday.length&&!_notifs.find(n=>n.id==='due-today')){
     _notifs.push({id:'due-today',icon:'📅',title:`${dueToday.length} task${dueToday.length>1?'s':''} due today`,
       sub:dueToday.slice(0,2).map(t=>t.text).join(', '),time:now,unread:true,
-      action:()=>{closeNotifPanel();switchPage('todos',null);}});
+      action:()=>{closeNotifPanel();notifRunAction('navigation.open',{page:'todos',source:'legacy-notifications'});}});
   }
 
   // Upcoming events
   const upcoming=(p.state?.events||[]).filter(e=>{const d=new Date(e.date);return d>=now&&d<new Date(now.getTime()+86400000);});
-  if(upcoming.length&&!_notifs.find(n=>n.id==='upcoming-events')){
+  if(legacyNotifAllowed('events')&&upcoming.length&&!_notifs.find(n=>n.id==='upcoming-events')){
     _notifs.push({id:'upcoming-events',icon:'🗓',title:`${upcoming.length} event${upcoming.length>1?'s':''} in next 24h`,
       sub:upcoming.slice(0,2).map(e=>e.title).join(', '),time:now,unread:false,
-      action:()=>{closeNotifPanel();switchPage('calendar',null);}});
+      action:()=>{closeNotifPanel();notifRunAction('navigation.open',{page:'calendar',source:'legacy-notifications'});}});
   }
 
   // Habits at risk (streak >= 3 but not done today)
   const atRisk=(p.state?.habits||[]).filter(h=>h.streak>=3&&h.lastDone!==todayStr);
-  if(atRisk.length&&!_notifs.find(n=>n.id==='habit-risk')){
+  if(legacyNotifAllowed('habits')&&atRisk.length&&!_notifs.find(n=>n.id==='habit-risk')){
     _notifs.push({id:'habit-risk',icon:'🔥',title:`${atRisk.length} streak${atRisk.length>1?'s':''} at risk!`,
       sub:atRisk.slice(0,2).map(h=>h.name+' ('+h.streak+'d)').join(', '),time:now,unread:true,
-      action:()=>{closeNotifPanel();switchPage('habits',null);}});
+      action:()=>{closeNotifPanel();notifRunAction('navigation.open',{page:'habits',source:'legacy-notifications'});}});
   }
 
   // Pomo milestone
   const todayPomos=(p.state?.pomoHistory||[]).filter(h=>h.ts&&new Date(h.ts).toLocaleDateString('en-CA')===todayStr).length;
-  if(todayPomos>=4&&!_notifs.find(n=>n.id==='pomo-milestone')){
+  if(legacyNotifAllowed('system')&&todayPomos>=4&&!_notifs.find(n=>n.id==='pomo-milestone')){
     _notifs.push({id:'pomo-milestone',icon:'🍅',title:`${todayPomos} pomodoros today!`,
       sub:'Great focus session — keep it up',time:now,unread:false,
-      action:()=>{closeNotifPanel();switchPage('stats',null);}});
+      action:()=>{closeNotifPanel();notifRunAction('navigation.open',{page:'stats',source:'legacy-notifications'});}});
   }
 }
 

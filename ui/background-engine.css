@@ -1,0 +1,218 @@
+#bg-canvas {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+  opacity: 0;
+  transition: opacity 420ms ease;
+  filter: blur(var(--ethone-bg-canvas-blur, 0));
+}
+
+.ethone-bg-css-layer,
+.ethone-bg-media-layer {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.ethone-bg-css-layer::after,
+.ethone-bg-media-layer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 12%, rgba(var(--accent-rgb, 139, 92, 246), .11), transparent 34%),
+    rgba(5, 5, 8, calc(var(--bg-media-dim, 58) / 100));
+  box-shadow: inset 0 0 140px rgba(0, 0, 0, .68);
+}
+
+.ethone-bg-gradient {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(var(--accent-rgb, 139, 92, 246), .22), transparent 34%),
+    radial-gradient(circle at 78% 72%, rgba(124, 58, 237, .16), transparent 32%),
+    linear-gradient(135deg, rgba(10, 10, 14, 1), rgba(18, 14, 28, .96), rgba(5, 5, 8, 1));
+  animation: ethoneGradientDrift 18s ease-in-out infinite alternate;
+}
+
+.ethone-bg-glass {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, .035), transparent 28%),
+    radial-gradient(circle at 25% 20%, rgba(var(--accent-rgb, 139, 92, 246), .18), transparent 36%),
+    radial-gradient(circle at 82% 70%, rgba(255, 255, 255, .045), transparent 30%),
+    rgba(7, 7, 11, .9);
+}
+
+.ethone-bg-glass::before {
+  content: "";
+  position: absolute;
+  inset: 8% 10%;
+  border: 1px solid rgba(255, 255, 255, .055);
+  border-radius: 42px;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .012) 42%, transparent 62%),
+    rgba(255, 255, 255, .018);
+  transform: rotate(-4deg) scale(1.08);
+  filter: blur(.2px);
+  animation: ethoneGlassFloat 16s ease-in-out infinite alternate;
+}
+
+.ethone-bg-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(var(--bg-media-blur, 18px)) saturate(1.05) brightness(.82);
+  transform: scale(1.06);
+}
+
+.ethone-bg-media-empty {
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 30% 24%, rgba(var(--accent-rgb, 139, 92, 246), .18), transparent 32%),
+    linear-gradient(135deg, rgba(12, 10, 18, .95), rgba(5, 5, 8, 1));
+}
+
+.ethone-bg-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+  gap: 8px;
+  width: 100%;
+}
+
+.ethone-bg-preset {
+  min-height: 54px;
+  padding: 10px 11px;
+  border: 1px solid var(--border-primary, rgba(255, 255, 255, .09));
+  border-radius: var(--radius-md, 14px);
+  background: var(--surface-2, rgba(255, 255, 255, .04));
+  color: var(--text-primary, #f5f3ff);
+  cursor: pointer;
+  text-align: left;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.ethone-bg-preset span,
+.ethone-bg-preset small {
+  display: block;
+}
+
+.ethone-bg-preset span {
+  font-size: 12px;
+  font-weight: 760;
+}
+
+.ethone-bg-preset small {
+  margin-top: 5px;
+  color: var(--text-tertiary, rgba(255, 255, 255, .48));
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.ethone-bg-preset:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent-border, rgba(139, 92, 246, .32));
+  background: var(--accent-soft, rgba(139, 92, 246, .12));
+}
+
+.ethone-bg-preset.active {
+  border-color: var(--accent, #8b5cf6);
+  background: linear-gradient(135deg, var(--accent-soft, rgba(139, 92, 246, .14)), rgba(255, 255, 255, .035));
+  box-shadow: 0 0 0 1px rgba(var(--accent-rgb, 139, 92, 246), .16), 0 14px 34px rgba(var(--accent-rgb, 139, 92, 246), .14);
+}
+
+.ethone-bg-media-controls {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 160px 160px;
+  gap: 10px;
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid var(--border-primary, rgba(255, 255, 255, .09));
+  border-radius: var(--radius-lg, 18px);
+  background: var(--surface-1, rgba(255, 255, 255, .025));
+}
+
+.ethone-bg-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.ethone-bg-field label {
+  color: var(--text-tertiary, rgba(255, 255, 255, .5));
+  font-size: 11px;
+  font-weight: 760;
+}
+
+.ethone-bg-field input[type="url"] {
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--border-secondary, rgba(255, 255, 255, .14));
+  border-radius: var(--radius-sm, 10px);
+  background: var(--surface-2, rgba(255, 255, 255, .04));
+  color: var(--text-primary, #f5f3ff);
+  outline: none;
+}
+
+.ethone-bg-field input[type="url"]:focus {
+  border-color: var(--accent, #8b5cf6);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb, 139, 92, 246), .18);
+}
+
+.ethone-bg-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ethone-bg-actions button {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--border-primary, rgba(255, 255, 255, .09));
+  border-radius: var(--radius-sm, 10px);
+  background: var(--surface-2, rgba(255, 255, 255, .04));
+  color: var(--text-primary, #f5f3ff);
+  font-size: 12px;
+  font-weight: 720;
+  cursor: pointer;
+}
+
+.ethone-bg-actions button:hover {
+  border-color: var(--accent-border, rgba(139, 92, 246, .32));
+  background: var(--accent-soft, rgba(139, 92, 246, .12));
+}
+
+.ethone-bg-media-controls p {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--text-tertiary, rgba(255, 255, 255, .48));
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+@keyframes ethoneGradientDrift {
+  from { filter: saturate(.9) hue-rotate(0deg); transform: scale(1); }
+  to { filter: saturate(1.12) hue-rotate(10deg); transform: scale(1.04); }
+}
+
+@keyframes ethoneGlassFloat {
+  from { opacity: .55; transform: rotate(-4deg) translate3d(-1%, -1%, 0) scale(1.08); }
+  to { opacity: .82; transform: rotate(-2deg) translate3d(1%, 1%, 0) scale(1.11); }
+}
+
+@media (max-width: 720px) {
+  .ethone-bg-media-controls {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ethone-bg-gradient,
+  .ethone-bg-glass::before {
+    animation: none !important;
+  }
+}

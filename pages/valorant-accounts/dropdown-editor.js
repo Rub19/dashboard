@@ -29,7 +29,7 @@
     modal.innerHTML=
       '<div class="va-dpe-header">'+
         '<div class="va-dpe-title">Modifier le dropdown — '+esc(labelForColumn(currentKey))+"</div>"+
-        '<button type="button" class="va-mini-btn va-dpe-close" id="va-dpe-close">✕</button>'+
+        '<button type="button" class="va-mini-btn va-dpe-close" id="va-dpe-close" aria-label="Fermer" title="Fermer">✕</button>'+
       "</div>"+
       '<div class="va-dpe-body">'+
         '<div class="va-dpe-list" id="va-dpe-list">'+renderRows()+"</div>"+
@@ -46,11 +46,11 @@
     return workingOptions.map(function(o,i){
       return '<div class="va-dpe-row" draggable="true" data-idx="'+i+'">'+
         '<span class="va-dpe-drag">⠿</span>'+
-        '<button type="button" class="va-dpe-color" data-idx="'+i+'" style="--bc:'+esc(o.color||"#8b8b93")+'"></button>'+
+        '<button type="button" class="va-dpe-color" data-idx="'+i+'" style="--bc:'+esc(o.color||"#8b8b93")+'" aria-label="Changer la couleur de '+esc(o.label||"cette option")+'" title="Changer la couleur"></button>'+
         '<input type="text" class="va-dpe-icon-input" data-idx="'+i+'" value="'+esc(o.icon||"")+'" placeholder="🎯" maxlength="4">'+
         '<input type="text" class="va-dpe-label-input" data-idx="'+i+'" value="'+esc(o.label||"")+'" placeholder="Nom de l\'option">'+
         '<span class="va-badge va-dpe-preview" style="--bc:'+esc(o.color||"#8b8b93")+'">'+(o.icon?esc(o.icon)+" ":"")+esc(o.label||"—")+"</span>"+
-        '<button type="button" class="va-mini-btn va-dpe-delete" data-idx="'+i+'" title="Supprimer">'+VA_TRASH_SVG+"</button>"+
+        '<button type="button" class="va-mini-btn va-dpe-delete" data-idx="'+i+'" aria-label="Supprimer '+esc(o.label||"cette option")+'" title="Supprimer">'+VA_TRASH_SVG+"</button>"+
       "</div>";
     }).join("");
   }
@@ -134,7 +134,7 @@
     if(_colorPickerEl){_colorPickerEl.remove();_colorPickerEl=null;}
     var pop=document.createElement("div");
     pop.className="va-dpe-swatch-pop";
-    pop.innerHTML=VA_SWATCHES.map(function(c){return '<button type="button" class="va-dpe-swatch" style="--sc:'+c+'" data-color="'+c+'"></button>';}).join("")+
+    pop.innerHTML=VA_SWATCHES.map(function(c){return '<button type="button" class="va-dpe-swatch" style="--sc:'+c+'" data-color="'+c+'" aria-label="Choisir la couleur '+c+'" title="'+c+'"></button>';}).join("")+
       '<input type="color" class="va-dpe-custom-color" value="'+(workingOptions[idx].color||"#8b8b93")+'">';
     document.body.appendChild(pop);
     _colorPickerEl=pop;

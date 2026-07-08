@@ -9,7 +9,14 @@ function getAudioCtx(){
   return _audioCtx;
 }
 
-function playClick(type='soft'){
+function playClick(type='soft',opts){
+  opts=opts||{};
+  if(!opts.force&&window.ETHONEFeedback&&typeof window.ETHONEFeedback.soundEnabled==='function'&&!window.ETHONEFeedback.soundEnabled())return;
+  try{
+    if(!opts.force&&!window.ETHONEFeedback&&localStorage.getItem('ethone:micro:sound')!=='1')return;
+  }catch(e){
+    if(!opts.force)return;
+  }
   try{
     const ctx = getAudioCtx();
     if(ctx.state==='suspended') ctx.resume();
@@ -55,6 +62,10 @@ function playClick(type='soft'){
 
 function createPressRipple(el,e){
   if(!el||el.disabled)return;
+  if(window.ETHONEMotion&&typeof window.ETHONEMotion.ripple==='function'){
+    window.ETHONEMotion.ripple(el,e);
+    return;
+  }
   const rect=el.getBoundingClientRect();
   if(!rect.width||!rect.height)return;
   const size=Math.max(rect.width,rect.height)*1.65;
@@ -74,7 +85,7 @@ function createPressRipple(el,e){
 // Delegated click listener - covers ALL interactive elements
 document.addEventListener('click', e => {
   const t = e.target;
-  const interactive=t.closest('.btn, button, .nav-item, .cat-tab, .settings-tab, .todo-item, .item-row, .kanban-card, .pinned-card, .link-card, .stat-card, .ps-add, .ps-profile, .ps-manage-btn, .pw-num, .toggle, .theme-swatch, .avatar-opt, .habit-day, .cal-day, .cal-nav, .panel-action');
+  const interactive=t&&t.closest?t.closest('.btn, button, .nav-item, .cat-tab, .settings-tab, .todo-item, .item-row, .kanban-card, .pinned-card, .link-card, .stat-card, .ps-add, .ps-profile, .ps-manage-btn, .pw-num, .toggle, .theme-swatch, .avatar-opt, .habit-day, .cal-day, .cal-nav, .panel-action'):null;
   if(interactive)createPressRipple(interactive,e);
   // Success sound for primary action buttons
   if(t.classList.contains('btn-primary')){

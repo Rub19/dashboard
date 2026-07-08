@@ -29,7 +29,7 @@
     modal.innerHTML=
       '<div class="db-dpe-header">'+
         '<div class="db-dpe-title">Modifier le dropdown — '+esc(labelForColumn(currentKey))+"</div>"+
-        '<button type="button" class="db-mini-btn db-dpe-close" id="db-dpe-close">✕</button>'+
+        '<button type="button" class="db-mini-btn db-dpe-close" id="db-dpe-close" aria-label="Fermer" title="Fermer">✕</button>'+
       "</div>"+
       '<div class="db-dpe-body">'+
         '<div class="db-dpe-list" id="db-dpe-list">'+renderRows()+"</div>"+
@@ -46,11 +46,11 @@
     return workingOptions.map(function(o,i){
       return '<div class="db-dpe-row" draggable="true" data-idx="'+i+'">'+
         '<span class="db-dpe-drag">⠿</span>'+
-        '<button type="button" class="db-dpe-color" data-idx="'+i+'" style="--bc:'+esc(o.color||"#8b8b93")+'"></button>'+
+        '<button type="button" class="db-dpe-color" data-idx="'+i+'" style="--bc:'+esc(o.color||"#8b8b93")+'" aria-label="Changer la couleur de '+esc(o.label||"cette option")+'" title="Changer la couleur"></button>'+
         '<input type="text" class="db-dpe-icon-input" data-idx="'+i+'" value="'+esc(o.icon||"")+'" placeholder="🎯" maxlength="4">'+
         '<input type="text" class="db-dpe-label-input" data-idx="'+i+'" value="'+esc(o.label||"")+'" placeholder="Nom de l\'option">'+
         '<span class="db-badge db-dpe-preview" style="--bc:'+esc(o.color||"#8b8b93")+'">'+(o.icon?esc(o.icon)+" ":"")+esc(o.label||"—")+"</span>"+
-        '<button type="button" class="db-mini-btn db-dpe-delete" data-idx="'+i+'" title="Supprimer">'+DB_TRASH_SVG+"</button>"+
+        '<button type="button" class="db-mini-btn db-dpe-delete" data-idx="'+i+'" aria-label="Supprimer '+esc(o.label||"cette option")+'" title="Supprimer">'+DB_TRASH_SVG+"</button>"+
       "</div>";
     }).join("");
   }
@@ -134,7 +134,7 @@
     if(_colorPickerEl){_colorPickerEl.remove();_colorPickerEl=null;}
     var pop=document.createElement("div");
     pop.className="db-dpe-swatch-pop";
-    pop.innerHTML=DB_SWATCHES.map(function(c){return '<button type="button" class="db-dpe-swatch" style="--sc:'+c+'" data-color="'+c+'"></button>';}).join("")+
+    pop.innerHTML=DB_SWATCHES.map(function(c){return '<button type="button" class="db-dpe-swatch" style="--sc:'+c+'" data-color="'+c+'" aria-label="Choisir la couleur '+c+'" title="'+c+'"></button>';}).join("")+
       '<input type="color" class="db-dpe-custom-color" value="'+(workingOptions[idx].color||"#8b8b93")+'">';
     document.body.appendChild(pop);
     _colorPickerEl=pop;

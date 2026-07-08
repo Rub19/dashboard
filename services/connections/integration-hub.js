@@ -126,6 +126,11 @@
 
   async function test(id){
     var def=defs.find(function(d){return d.id===id});if(!def)return;
+    if(def.placeholder){
+      setMessage(def,def.placeholder,"warning");
+      toast(def.name+" live API is coming soon","info");
+      return;
+    }
     var data=conn(def),values=Object.assign({},data,readFields(def));
     var error=validate(def,values);
     if(error&&Object.keys(data).length===0){setMessage(def,error,"error");toast(error,"error");return;}
@@ -156,6 +161,11 @@
 
   async function refresh(id){
     var def=defs.find(function(d){return d.id===id});if(!def)return;
+    if(def.placeholder){
+      setMessage(def,def.placeholder,"warning");
+      toast(def.name+" live sync is coming soon","info");
+      return;
+    }
     setLoading(def,true,"Refreshing...");
     try{
       if(def.legacyRefresh&&typeof window[def.legacyRefresh]==="function")await Promise.resolve(window[def.legacyRefresh]());
@@ -209,12 +219,14 @@
   }
   function card(def){
     var data=conn(def),st=statusLabel(def,data),meta=data._ethone||{},history=Array.isArray(meta.history)?meta.history:[];
-    return '<article class="ih-card" id="ih-card-'+def.id+'" style="--ih-accent:'+def.accent+'">'+
+    var soon=!!def.placeholder;
+    var soonAttrs=soon?' data-coming-soon="'+esc(def.name+' live API')+'" data-coming-soon-description="'+esc(def.placeholder)+'" data-coming-soon-note="false"':'';
+    return '<article class="ih-card" id="ih-card-'+def.id+'" style="--ih-accent:'+def.accent+'"'+(soon?' data-feature-status="coming-soon" data-feature-name="'+esc(def.name)+' live API" data-coming-soon-description="'+esc(def.placeholder)+'"':'')+'>'+
       '<div class="ih-head"><div class="ih-logo"><i data-lucide="'+def.icon+'"></i></div><div><h3>'+esc(def.name)+'</h3><p>'+esc(def.desc)+'</p></div><span class="ih-status '+st[1]+'">'+st[0]+'</span></div>'+
       '<div class="ih-body">'+
         '<div class="ih-fields">'+def.fields.map(function(f){return '<label><span>'+esc(f[1])+'</span><input id="ih-'+def.id+'-'+f[0]+'" type="'+(f[3]||"text")+'" value="'+esc(valueOf(def,f[0]))+'" placeholder="'+esc(f[2]||"")+'"></label>'}).join("")+'</div>'+
         '<div class="ih-preview"><div class="ih-preview-title">Preview</div><div class="ih-preview-grid">'+def.preview.map(function(x){return '<div><strong>'+esc(previewValue(def,x,data))+'</strong><span>'+esc(x)+'</span></div>'}).join("")+'</div>'+(def.placeholder?'<p class="ih-placeholder">'+esc(def.placeholder)+'</p>':'')+'</div>'+
-        '<div class="ih-actions"><button class="btn btn-primary" type="button" data-ih-action="connect" data-ih-id="'+def.id+'">'+(isConnected(def)?"Reconnect":"Connect")+'</button><button class="btn btn-ghost" type="button" data-ih-action="test" data-ih-id="'+def.id+'">Test</button><button class="btn btn-ghost" type="button" data-ih-action="refresh" data-ih-id="'+def.id+'">Refresh</button><button class="btn btn-ghost" type="button" data-ih-action="disconnect" data-ih-id="'+def.id+'" '+(!isConnected(def)?"disabled":"")+'>Disconnect</button></div>'+
+        '<div class="ih-actions"><button class="btn btn-primary" type="button" data-ih-action="connect" data-ih-id="'+def.id+'">'+(soon?"Save setup":(isConnected(def)?"Reconnect":"Connect"))+'</button>'+(soon?'<button class="btn btn-ghost" type="button"'+soonAttrs+'>Test</button><button class="btn btn-ghost" type="button"'+soonAttrs+'>Refresh</button>':'<button class="btn btn-ghost" type="button" data-ih-action="test" data-ih-id="'+def.id+'">Test</button><button class="btn btn-ghost" type="button" data-ih-action="refresh" data-ih-id="'+def.id+'">Refresh</button>')+'<button class="btn btn-ghost" type="button" data-ih-action="disconnect" data-ih-id="'+def.id+'" '+(!isConnected(def)?"disabled":"")+'>Disconnect</button></div>'+
         '<div class="ih-message" id="ih-msg-'+def.id+'"></div>'+
         '<div class="ih-sync"><div><span>Last sync</span><strong>'+labelDate(data.lastSync)+'</strong></div><div><span>Saved</span><strong>'+(isConnected(def)?"Local profile":"Waiting")+'</strong></div></div>'+
         '<div class="ih-history">'+(history.length?history.map(function(h){return '<div><i class="'+esc(h.type||"info")+'"></i><span>'+esc(h.message)+'</span><time>'+labelDate(h.at)+'</time></div>'}).join(""):'<div><i></i><span>No sync history yet</span><time>-</time></div>')+'</div>'+
@@ -242,7 +254,7 @@
       if(top&&top.nextSibling)top.parentNode.insertBefore(host,top.nextSibling);
       else page.appendChild(host);
     }
-    host.innerHTML='<div class="ih-hero"><div><div class="section-eyebrow">Integration Hub</div><h2>Connected services</h2><p>Every external service has a complete connection surface, local persistence, status, testing and sync history.</p></div><button class="btn btn-ghost" type="button" data-ih-action="refresh-all">Refresh all</button></div><div class="ih-grid">'+defs.map(card).join("")+'</div>';
+    host.innerHTML='<div class="ih-hero"><div><div class="section-eyebrow">Integration Hub</div><h2>Connected services</h2><p>Every external service has a complete connection surface. Live APIs marked Coming Soon keep local settings safely until their worker/OAuth bridge is ready.</p></div><button class="btn btn-ghost" type="button" data-ih-action="refresh-all">Refresh all ready APIs</button></div><div class="ih-grid">'+defs.map(card).join("")+'</div>';
     try{if(window.lucide&&!window.__lucideFailed)window.lucide.createIcons()}catch(e){}
   }
 
@@ -251,7 +263,7 @@
     var prof=p();if(!prof)return;
     wrap.innerHTML=defs.map(function(def){
       var st=statusLabel(def,conn(def));
-      return '<div class="toggle-row ih-plugin-row"><div class="ih-plugin-main"><span class="ih-mini-logo" style="--ih-accent:'+def.accent+'"><i data-lucide="'+def.icon+'"></i></span><div><strong>'+esc(def.name)+'</strong><small>'+esc(def.desc)+'</small></div></div><div class="ih-plugin-actions"><span class="ih-status '+st[1]+'">'+st[0]+'</span><button class="btn btn-ghost" type="button" data-ih-action="configure" data-ih-id="'+def.id+'">Configure</button></div></div>';
+      return '<div class="toggle-row ih-plugin-row"><div class="ih-plugin-main"><span class="ih-mini-logo" style="--ih-accent:'+def.accent+'"><i data-lucide="'+def.icon+'"></i></span><div><strong>'+esc(def.name)+(def.placeholder?' <span class="ethone-coming-soon-badge">Coming Soon</span>':'')+'</strong><small>'+esc(def.desc)+'</small></div></div><div class="ih-plugin-actions"><span class="ih-status '+st[1]+'">'+st[0]+'</span><button class="btn btn-ghost" type="button" data-ih-action="configure" data-ih-id="'+def.id+'">Configure</button></div></div>';
     }).join("");
     try{if(window.lucide&&!window.__lucideFailed)window.lucide.createIcons()}catch(e){}
   }
@@ -274,7 +286,7 @@
     else if(action==="test")test(id);
     else if(action==="refresh")refresh(id);
     else if(action==="disconnect")disconnect(id);
-    else if(action==="refresh-all")defs.forEach(function(d){if(isConnected(d))refresh(d.id)});
+    else if(action==="refresh-all")defs.forEach(function(d){if(isConnected(d)&&!d.placeholder)refresh(d.id)});
     else if(action==="configure"){
       if(typeof window.switchPage==="function")window.switchPage("connections",null);
       setTimeout(function(){

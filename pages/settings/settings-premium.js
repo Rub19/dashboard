@@ -80,6 +80,62 @@ function wsDelete(id){
 }
 window.wsCreate=wsCreate;window.wsRename=wsRename;window.wsSwitch=wsSwitch;window.wsDelete=wsDelete;
 
+// Workspaces V2 override: delegates to the modular ETHONEWorkspaces service.
+function wsEnsureV2(p){
+  if(window.ETHONEWorkspaces&&window.ETHONEWorkspaces.all)return window.ETHONEWorkspaces.all();
+  if(!Array.isArray(p.workspaces)||!p.workspaces.length)p.workspaces=[{id:'personal',name:'Personnel',icon:'home'}];
+  if(!p.activeWorkspaceId)p.activeWorkspaceId=p.workspaces[0].id;
+  return p.workspaces;
+}
+function renderWorkspacesSettingsV2(){
+  var p=curP();if(!p)return;
+  var list=wsEnsureV2(p);
+  var wrap=document.getElementById('ws-list');if(!wrap)return;
+  wrap.innerHTML=list.map(function(w){
+    var active=w.id===p.activeWorkspaceId;
+    return '<div class="toggle-row" style="align-items:center">'+
+      '<div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">'+
+        '<span style="font-size:11px;color:var(--accent);font-weight:800;width:28px;text-align:center">'+_stEsc((w.name||'W').slice(0,2).toUpperCase())+'</span>'+
+        '<input class="modal-input" style="max-width:220px" value="'+_stEsc(w.name)+'" oninput="wsRename(\''+w.id+'\',this.value)"/>'+
+        '<input class="modal-input" style="max-width:92px" value="'+_stEsc(w.accent||'#8b5cf6')+'" oninput="wsAccent(\''+w.id+'\',this.value)" title="Accent color"/>'+
+      '</div>'+
+      '<div style="display:flex;gap:6px;flex-shrink:0">'+
+        (active?'<span style="font-size:11px;color:var(--accent);font-weight:700;padding:6px 10px">Active</span>':'<button class="btn btn-ghost" style="font-size:11px;padding:6px 10px" onclick="wsSwitch(\''+w.id+'\')">Activate</button>')+
+        (list.length>1?'<button class="btn btn-ghost" style="font-size:11px;padding:6px 10px" onclick="wsDelete(\''+w.id+'\')">Delete</button>':'')+
+      '</div></div>';
+  }).join('');
+}
+function wsCreateV2(){
+  var name=prompt('Workspace name:');if(!name)return;
+  if(window.ETHONEWorkspaces&&window.ETHONEWorkspaces.create)window.ETHONEWorkspaces.create({name:name.slice(0,40),label:name.slice(0,40)});
+  else {var p=curP();if(!p)return;var list=wsEnsureV2(p);list.push({id:'ws-'+Date.now().toString(36),name:name.slice(0,40),icon:'layout-grid'});saveStateNow();}
+  renderWorkspacesSettingsV2();
+  if(typeof toast==='function')toast('Workspace created','success');
+}
+function wsRenameV2(id,val){
+  if(window.ETHONEWorkspaces&&window.ETHONEWorkspaces.update){window.ETHONEWorkspaces.update(id,{name:val.slice(0,40),label:val.slice(0,40)});return}
+  var p=curP();if(!p)return;var w=(p.workspaces||[]).find(function(x){return x.id===id;});if(!w)return;w.name=val.slice(0,40);saveStateNow();
+}
+function wsSwitchV2(id){
+  var w=null;
+  if(window.ETHONEWorkspaces&&window.ETHONEWorkspaces.setActive)w=window.ETHONEWorkspaces.setActive(id);
+  else {var p=curP();if(!p)return;w=(p.workspaces||[]).find(function(x){return x.id===id;});if(!w)return;p.activeWorkspaceId=id;saveStateNow();}
+  renderWorkspacesSettingsV2();
+  if(typeof toast==='function'&&w)toast('Switched to '+w.name,'success');
+}
+function wsAccentV2(id,val){
+  if(!/^#[0-9a-fA-F]{3,6}$/.test(String(val||'')))return;
+  if(window.ETHONEWorkspaces&&window.ETHONEWorkspaces.update)window.ETHONEWorkspaces.update(id,{accent:val});
+}
+function wsDeleteV2(id){
+  if(!confirm('Delete this workspace?'))return;
+  if(window.ETHONEWorkspaces&&window.ETHONEWorkspaces.remove)window.ETHONEWorkspaces.remove(id);
+  else {var p=curP();if(!p)return;p.workspaces=(p.workspaces||[]).filter(function(x){return x.id!==id;});if(p.activeWorkspaceId===id&&p.workspaces.length)wsSwitchV2(p.workspaces[0].id);saveStateNow();}
+  renderWorkspacesSettingsV2();
+}
+window.renderWorkspacesSettings=renderWorkspacesSettingsV2;
+window.wsCreate=wsCreateV2;window.wsRename=wsRenameV2;window.wsSwitch=wsSwitchV2;window.wsAccent=wsAccentV2;window.wsDelete=wsDeleteV2;
+
 // ================= WIDGETS =================
 function widgetsCatalog(){
   return (window.Ethone&&window.Ethone.get)?window.Ethone.get('widgets'):null;
@@ -103,9 +159,13 @@ function renderWidgetsSettings(){
         var cat=Widgets?Widgets.get(inst.type):null;
         var label=cat?cat.label:inst.type;
         var locked=cat&&cat.hiddenFromPicker;
+        var hidden=Array.isArray(prefs.hidden)&&prefs.hidden.indexOf(inst.instanceId)>-1;
         return '<div class="toggle-row" style="align-items:center">'+
-          '<div style="font-size:13px;color:var(--text)">'+_stEsc(label)+'</div>'+
-          (locked?'<span style="font-size:11px;color:var(--muted2)">Core</span>':'<button class="btn btn-ghost" style="font-size:11px;padding:5px 9px" onclick="widgetsRemove(\''+inst.instanceId+'\')">Remove</button>')+
+          '<div style="font-size:13px;color:var(--text);display:flex;flex-direction:column;gap:2px"><span>'+_stEsc(label)+'</span><small style="font-size:10px;color:var(--muted2)">'+(hidden?'Hidden from dashboard':'Visible on dashboard')+'</small></div>'+
+          '<div style="display:flex;align-items:center;gap:8px">'+
+            '<label class="ui-switch" role="switch" title="Toggle widget visibility"><input type="checkbox" '+(!hidden?'checked':'')+' onchange="widgetsToggleVisibility(\''+inst.instanceId+'\',this.checked)"/></label>'+
+            (locked?'<span style="font-size:11px;color:var(--muted2)">Core</span>':'<button class="btn btn-ghost" style="font-size:11px;padding:5px 9px" onclick="widgetsRemove(\''+inst.instanceId+'\')">Remove</button>')+
+          '</div>'+
         '</div>';
       }).join('');
     }
@@ -139,8 +199,19 @@ function widgetsAdd(type){
 function widgetsRemove(instanceId){
   var prefs=widgetsLayout();
   prefs.instances=(prefs.instances||[]).filter(function(w){return w.instanceId!==instanceId;});
+  prefs.hidden=(prefs.hidden||[]).filter(function(id){return id!==instanceId;});
   widgetsSaveLayout(prefs);
   renderWidgetsSettings();
+}
+function widgetsToggleVisibility(instanceId,visible){
+  var prefs=widgetsLayout();
+  if(!Array.isArray(prefs.hidden))prefs.hidden=[];
+  var idx=prefs.hidden.indexOf(instanceId);
+  if(visible&&idx>-1)prefs.hidden.splice(idx,1);
+  if(!visible&&idx===-1)prefs.hidden.push(instanceId);
+  widgetsSaveLayout(prefs);
+  renderWidgetsSettings();
+  if(typeof toast==='function')toast(visible?'Widget visible':'Widget hidden','success');
 }
 function widgetsReset(){
   if(!confirm('Reset the dashboard layout to defaults?'))return;
@@ -148,7 +219,7 @@ function widgetsReset(){
   renderWidgetsSettings();
   if(typeof toast==='function')toast('Layout reset — open the dashboard to see it','success');
 }
-window.widgetsAdd=widgetsAdd;window.widgetsRemove=widgetsRemove;window.widgetsReset=widgetsReset;
+window.widgetsAdd=widgetsAdd;window.widgetsRemove=widgetsRemove;window.widgetsToggleVisibility=widgetsToggleVisibility;window.widgetsReset=widgetsReset;
 
 // ================= PLUGINS =================
 var PLUGIN_DEFS=[
@@ -178,7 +249,7 @@ function renderPluginsSettings(){
         '<div style="display:flex;align-items:center;gap:8px">'+
           '<span style="font-size:11px;color:'+(installed?'#22c55e':'var(--muted2)')+'">'+(installed?'Connected':'Not connected')+'</span>'+
           (installed&&!d.custom?'<button class="btn btn-ghost" style="font-size:11px;padding:5px 9px" onclick="pluginUninstall(\''+d.id+'\')">Uninstall</button>':'')+
-          '<button class="btn btn-ghost" style="font-size:11px;padding:5px 9px" onclick="switchPage(\''+configureTarget+'\',null)">Configure</button>'+
+          '<button class="btn btn-ghost" style="font-size:11px;padding:5px 9px" onclick="runAction(\'navigation.open\',{page:\''+configureTarget+'\',el:this,source:\'settings-plugins\'})">Configure</button>'+
         '</div>'
         :'<span style="font-size:11px;color:var(--muted2)">Ready in Integration Hub</span>')+
     '</div>';
@@ -328,11 +399,15 @@ function notifToggleCategory(key,val){
   var p=curP();if(!p)return;
   if(!p.state.notifPrefs)p.state.notifPrefs={};
   p.state.notifPrefs[key]=val;saveStateNow();
+  try{window.dispatchEvent(new CustomEvent('ethone:notification-preferences-changed',{detail:{key:key,value:val}}));}catch(e){}
+  try{if(window.ETHONENotifications&&typeof window.ETHONENotifications.render==='function')window.ETHONENotifications.render();}catch(e){}
 }
 function notifSetQuiet(key,val){
   var p=curP();if(!p)return;
   if(!p.state.notifPrefs)p.state.notifPrefs={};
   p.state.notifPrefs[key]=val;saveStateNow();
+  try{window.dispatchEvent(new CustomEvent('ethone:notification-preferences-changed',{detail:{key:key,value:val}}));}catch(e){}
+  try{if(window.ETHONENotifications&&typeof window.ETHONENotifications.render==='function')window.ETHONENotifications.render();}catch(e){}
 }
 window.notifToggleCategory=notifToggleCategory;window.notifSetQuiet=notifSetQuiet;
 
@@ -445,8 +520,10 @@ window.backupNow=backupNow;window.backupDownload=backupDownload;window.backupRes
   function wireDeadButtons(){
     var Actions=(window.Ethone&&window.Ethone.get)?window.Ethone.get('actions'):null;
     if(!Actions)return;
-    Actions.register('dashboard.nav.workspaces',{enabled:true,label:'Workspaces',handler:function(){openSettingsTab('workspaces');}});
-    Actions.register('dashboard.nav.marketplace',{enabled:true,label:'Marketplace',handler:function(){openSettingsTab('marketplace');}});
+    Actions.register('dashboard.nav.workspaces',{enabled:true,label:'Workspaces',handler:function(){Actions.dispatch('spaces.open',{source:'settings-premium'});}});
+    Actions.register('dashboard.nav.marketplace',{enabled:true,label:'Marketplace',handler:function(){
+      Actions.dispatch('marketplace.open',{source:'settings-premium'});
+    }});
   }
   function wireDeadButtonsDeferred(){setTimeout(wireDeadButtons,300);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wireDeadButtonsDeferred);

@@ -8,24 +8,36 @@ var DB_LOCK_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
 var DB_COLUMN_TYPE_CHOICES=[
   {value:"text",label:"Texte"},
   {value:"genericNumber",label:"Nombre"},
-  {value:"date",label:"Date"},
-  {value:"checkbox",label:"Checkbox"},
-  {value:"select",label:"Dropdown"},
-  {value:"multiselect",label:"Multi Dropdown"},
-  {value:"relation",label:"Relation"},
-  {value:"image",label:"Image"},
-  {value:"tags",label:"Tags"},
   {value:"email",label:"Email"},
+  {value:"phone",label:"Téléphone"},
   {value:"url",label:"URL"},
-  {value:"progress",label:"Progress"},
+  {value:"image",label:"Image"},
+  {value:"date",label:"Date"},
+  {value:"relation",label:"Relation"},
+  {value:"checkbox",label:"Checkbox"},
+  {value:"multiselect",label:"Multi-select"},
+  {value:"select",label:"Dropdown"},
+  {value:"dropdown",label:"Dropdown personnalisé"},
+  {value:"tags",label:"Tags"},
+  {value:"user",label:"Utilisateur"},
+  {value:"status",label:"Statut"},
+  {value:"progress",label:"Progression"},
+  {value:"color",label:"Couleur"},
+  {value:"file",label:"Fichier"},
   {value:"formula",label:"Formula"},
   {value:"button",label:"Button"},
   {value:"rating",label:"Rating"},
   {value:"emoji",label:"Emoji"}
 ];
-function dbIsOptionsType(type){return type==="select"||type==="multiselect"||type==="tags";}
+function dbIsOptionsType(type){return type==="select"||type==="multiselect"||type==="tags"||type==="dropdown"||type==="status";}
 
 var _dbSelected={},_dbFocusId=null;
+
+function dbNormalizeColumnType(type){
+  if(type==="dropdown"||type==="status")return "select";
+  if(type==="phone"||type==="user"||type==="file")return "text";
+  return type;
+}
 
 function dbFmtDate(iso){
   if(!iso)return "—";
@@ -63,7 +75,12 @@ function dbAddRow(db){
 //  CELL RENDER
 // ══════════════════════════════════════════════════════════════
 function dbCellHTML(db,row,col){
-  switch(col.type){
+  var normalizedType=dbNormalizeColumnType(col.type);
+  if(col.type==="phone"&&row[col.key])return '<a class="db-cell-link" href="tel:'+dbEsc(row[col.key])+'" onclick="event.stopPropagation()">'+dbEsc(row[col.key])+"</a>";
+  if(col.type==="file"&&row[col.key])return '<a class="db-cell-btn" href="'+dbEsc(row[col.key])+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">'+dbEsc(col.buttonLabel||"Ouvrir")+"</a>";
+  if(col.type==="user"&&row[col.key])return '<span class="db-user-cell"><span>'+dbEsc(String(row[col.key]).slice(0,1).toUpperCase())+'</span>'+dbEsc(row[col.key])+"</span>";
+  if(col.type==="color"&&row[col.key])return '<span class="db-color-cell"><i style="--color:'+dbEsc(row[col.key])+'"></i>'+dbEsc(row[col.key])+"</span>";
+  switch(normalizedType){
     case "text":
       return '<span class="db-cell-text db-cell-truncate">'+dbEsc(row[col.key]||"—")+"</span>";
     case "email":
@@ -129,10 +146,44 @@ function dbCompareRows(db,a,b,col,dir){
   else res=String(av).localeCompare(String(bv),"fr",{numeric:true,sensitivity:"base"});
   return dir==="desc"?-res:res;
 }
+function dbFilterValue(db,row,colKey){
+  var col=dbColumnByKey(db,colKey);
+  var value=row[colKey];
+  if(col&&col.type==="select")return value?dbOptionDef(db,colKey,value).label:"";
+  if(col&&dbIsOptionsType(col.type)&&Array.isArray(value))return value.map(function(v){return dbOptionDef(db,colKey,v).label||v;}).join(", ");
+  return value==null?"":value;
+}
+function dbRowPassFilters(db,row,filters){
+  filters=(filters||[]).filter(function(f){return f&&f.col&&f.op;});
+  if(!filters.length)return true;
+  return filters.every(function(f){
+    var raw=row[f.col];
+    var value=dbFilterValue(db,row,f.col);
+    var text=String(value==null?"":value).toLowerCase();
+    var needle=String(f.value==null?"":f.value).toLowerCase();
+    if(f.op==="contains")return text.indexOf(needle)>-1;
+    if(f.op==="not_contains")return text.indexOf(needle)===-1;
+    if(f.op==="is")return text===needle;
+    if(f.op==="is_not")return text!==needle;
+    if(f.op==="empty")return Array.isArray(raw)?!raw.length:!raw;
+    if(f.op==="not_empty")return Array.isArray(raw)?!!raw.length:!!raw;
+    if(f.op==="checked")return !!raw;
+    if(f.op==="unchecked")return !raw;
+    var n=parseFloat(raw), cmp=parseFloat(f.value);
+    if(isNaN(n)||isNaN(cmp))return false;
+    if(f.op==="gt")return n>cmp;
+    if(f.op==="lt")return n<cmp;
+    if(f.op==="gte")return n>=cmp;
+    if(f.op==="lte")return n<=cmp;
+    return true;
+  });
+}
 function dbGetFilteredRows(db,view){
   var rows=dbRows(db).slice();
+  if(!view.config)view.config={};
   var q=(document.getElementById("db-search")||{}).value||"";
   rows=rows.filter(function(r){return dbSearchMatch(db,r,q);});
+  rows=rows.filter(function(r){return dbRowPassFilters(db,r,view.config.filters||[]);});
   var sort=(view.config&&view.config.sort)||[];
   if(sort.length){
     rows.sort(function(a,b){
@@ -172,6 +223,8 @@ function dbRenderTable(container,db,view){
     '<div class="db-table-toolbar">'+
       '<div class="db-search-wrap">'+DB_SEARCH_SVG+'<input type="text" id="db-search" class="db-search-input" placeholder="Rechercher…" autocomplete="off"></div>'+
       '<div class="db-toolbar-right">'+
+        '<button type="button" class="db-toolbar-btn" id="db-filter-btn"><span>Filtres</span><b class="db-toolbar-count" id="db-filter-count"></b></button>'+
+        '<button type="button" class="db-toolbar-btn" id="db-sort-btn"><span>Tri</span><b class="db-toolbar-count" id="db-sort-count"></b></button>'+
         '<button type="button" class="db-toolbar-btn" id="db-group-btn">'+DB_GROUP_SVG+'<span id="db-group-label"></span></button>'+
         '<button type="button" class="db-toolbar-btn" id="db-columns-btn">'+DB_COLUMNS_SVG+"<span>Colonnes</span></button>"+
         '<button type="button" class="db-toolbar-btn primary" id="db-add-row-btn">'+DB_PLUS_SVG+"<span>"+dbEsc(t("db_add_row"))+"</span></button>"+
@@ -186,6 +239,7 @@ function dbRenderTable(container,db,view){
   container.querySelector("#db-search").addEventListener("input",function(){dbRenderTableRows(container,db,view);});
   container.querySelector("#db-add-row-btn").addEventListener("click",function(){dbAddRow(db);dbRenderTableRows(container,db,view);});
   container.querySelector("#db-columns-btn").addEventListener("click",function(e){dbOpenColumnsMenu(e.currentTarget,db);});
+  dbWireFilterSortButtons(container,db,view);
   dbWireGroupBtn(container,db,view);
   dbRenderThead(container,db,view);
   dbRenderTableRows(container,db,view);
@@ -349,8 +403,17 @@ function dbChangeColumnType(db,colKey,newType){
   if(col.type===newType)return;
   if(!confirm("Changer le type effacera les valeurs déjà saisies dans cette colonne. Continuer ?"))return;
   col.type=newType;
-  if(dbIsOptionsType(newType))col.options=[];
-  else delete col.options;
+  if(dbIsOptionsType(newType)){
+    col.options=[];
+    if(newType==="status")col.options=[
+      {value:"not_started",label:"Not started",color:"#7a7a82"},
+      {value:"in_progress",label:"In progress",color:"#8b5cf6"},
+      {value:"done",label:"Done",color:"#34d399"},
+      {value:"blocked",label:"Blocked",color:"#ef4444"}
+    ];
+  }else{
+    delete col.options;
+  }
   dbRows(db).forEach(function(r){delete r[colKey];});
   dbTouch(db);saveStateNow();
 }
@@ -504,6 +567,12 @@ function dbOpenAddColumnPopover(anchorEl,db,view,container){
 function dbCreateColumn(db,name,type){
   var newCol={key:"col_"+dbNewId(),label:name||"Colonne",type:type,width:150};
   if(dbIsOptionsType(type))newCol.options=[];
+  if(type==="status")newCol.options=[
+    {value:"not_started",label:"Not started",color:"#7a7a82"},
+    {value:"in_progress",label:"In progress",color:"#8b5cf6"},
+    {value:"done",label:"Done",color:"#34d399"},
+    {value:"blocked",label:"Blocked",color:"#ef4444"}
+  ];
   if(type==="rating")newCol.maxStars=5;
   db.columns.push(newCol);
   if(!db.columnOrder||!db.columnOrder.length)db.columnOrder=db.columns.map(function(c){return c.key;});
@@ -644,7 +713,7 @@ function dbOpenCellEditor(cell,db,view,container){
 }
 function dbOpenGenericCellEditor(cell,db,row,colDef,view,container){
   var type=colDef.type;
-  if(type==="select"){
+  if(type==="select"||type==="dropdown"||type==="status"){
     dbOpenDropdown(cell,{title:colDef.label,items:dbOptionsFor(db,colDef.key),selected:row[colDef.key],onChange:function(v){dbSetField(db,row,colDef.key,v);dbRenderTableRows(container,db,view);}});
   }else if(type==="multiselect"||type==="tags"){
     dbOpenDropdown(cell,{title:colDef.label,multi:true,allowCreate:true,items:dbOptionsFor(db,colDef.key),selected:(row[colDef.key]||[]).slice(),
@@ -661,8 +730,10 @@ function dbOpenGenericCellEditor(cell,db,row,colDef,view,container){
     dbRenderTableRows(container,db,view);
   }else if(type==="relation"){
     if(typeof dbOpenRelationPicker==="function")dbOpenRelationPicker(cell,db,row,colDef,function(){dbRenderTableRows(container,db,view);});
+  }else if(type==="color"){
+    dbOpenInlineCellEditor(cell,db,row,colDef,"color",view,container);
   }else{
-    var inputType=(type==="date")?"date":(type==="genericNumber"||type==="progress")?"number":"text";
+    var inputType=(type==="date")?"date":(type==="genericNumber"||type==="progress")?"number":(type==="email"?"email":(type==="url"||type==="file")?"url":(type==="phone"?"tel":"text"));
     dbOpenInlineCellEditor(cell,db,row,colDef,inputType,view,container);
   }
 }
@@ -736,7 +807,7 @@ function dbColorRow(db,id,x,y,container,view){
   var swatches=["","#ef4444","#f59e0b","#facc15","#34d399","#60a5fa","#8b5cf6","#f472b6"];
   var pop=document.createElement("div");
   pop.className="db-dpe-swatch-pop db-row-color-pop";
-  pop.innerHTML=swatches.map(function(c){return '<button type="button" class="db-dpe-swatch'+(c?"":" none")+'" style="--sc:'+(c||"transparent")+'" data-color="'+c+'"></button>';}).join("");
+  pop.innerHTML=swatches.map(function(c){return '<button type="button" class="db-dpe-swatch'+(c?"":" none")+'" style="--sc:'+(c||"transparent")+'" data-color="'+c+'" aria-label="Choisir la couleur '+(c||"Aucune")+'" title="'+(c||"Aucune")+'"></button>';}).join("");
   document.body.appendChild(pop);
   pop.style.top=y+"px";pop.style.left=x+"px";
   pop.querySelectorAll("button").forEach(function(btn){
@@ -829,3 +900,86 @@ document.addEventListener("keydown",function(e){
     if(_dbFocusId!=null)dbOpenDetail(db,_dbFocusId);
   }
 });
+
+function dbWireFilterSortButtons(container,db,view){
+  if(!view.config)view.config={};
+  if(!Array.isArray(view.config.filters))view.config.filters=[];
+  if(!Array.isArray(view.config.sort))view.config.sort=[];
+  var filterBtn=container.querySelector("#db-filter-btn"),sortBtn=container.querySelector("#db-sort-btn");
+  var filterCount=container.querySelector("#db-filter-count"),sortCount=container.querySelector("#db-sort-count");
+  if(filterCount)filterCount.textContent=view.config.filters.length?String(view.config.filters.length):"";
+  if(sortCount)sortCount.textContent=view.config.sort.length?String(view.config.sort.length):"";
+  if(filterBtn)filterBtn.addEventListener("click",function(){dbOpenFilterPanel(filterBtn,db,view,container);});
+  if(sortBtn)sortBtn.addEventListener("click",function(){dbOpenSortPanel(sortBtn,db,view,container);});
+}
+function dbCloseAdvancedPanel(){var panel=document.getElementById("db-advanced-panel");if(panel)panel.remove();}
+function dbRenderAdvancedTarget(container,db,view){
+  if(view&&view.type==="list"&&typeof dbRenderListView==="function")dbRenderListView(container,db,view);
+  else dbRenderTable(container,db,view);
+}
+function dbPanelPosition(panel,anchor){
+  var r=anchor.getBoundingClientRect();
+  panel.style.visibility="hidden";panel.classList.add("open");
+  var pw=panel.offsetWidth,ph=panel.offsetHeight;
+  var left=Math.min(r.left,window.innerWidth-pw-12),top=r.bottom+8;
+  if(top+ph>window.innerHeight-12)top=Math.max(12,r.top-ph-8);
+  panel.style.left=Math.max(12,left)+"px";panel.style.top=top+"px";panel.style.visibility="";
+}
+function dbAdvancedOutside(e){var panel=document.getElementById("db-advanced-panel");if(panel&&!panel.contains(e.target))dbCloseAdvancedPanel();}
+function dbOpenFilterPanel(anchor,db,view,container){
+  dbCloseAdvancedPanel();
+  if(!Array.isArray(view.config.filters))view.config.filters=[];
+  var panel=document.createElement("div");
+  panel.id="db-advanced-panel";panel.className="db-advanced-panel";
+  panel.innerHTML='<div class="db-advanced-head"><strong>Filtres avancés</strong><button type="button" data-db-close>Fermer</button></div>'+
+    '<div class="db-advanced-list">'+view.config.filters.map(function(f,i){return dbFilterRowHTML(db,f,i);}).join("")+'</div>'+
+    '<div class="db-advanced-new">'+dbFilterEditorHTML(db,"filter-new")+'<button type="button" class="db-advanced-primary" data-db-add-filter>Ajouter le filtre</button></div>'+
+    '<div class="db-advanced-actions"><button type="button" data-db-clear-filters>Tout effacer</button></div>';
+  document.body.appendChild(panel);dbPanelPosition(panel,anchor);
+  panel.addEventListener("click",function(e){
+    if(e.target.closest("[data-db-close]")){dbCloseAdvancedPanel();return;}
+    var remove=e.target.closest("[data-db-remove-filter]");
+    if(remove){view.config.filters.splice(parseInt(remove.dataset.dbRemoveFilter,10),1);dbTouch(db);saveStateNow();dbCloseAdvancedPanel();dbRenderAdvancedTarget(container,db,view);return;}
+    if(e.target.closest("[data-db-clear-filters]")){view.config.filters=[];dbTouch(db);saveStateNow();dbCloseAdvancedPanel();dbRenderAdvancedTarget(container,db,view);return;}
+    if(e.target.closest("[data-db-add-filter]")){
+      var f=dbReadFilterEditor(panel,"filter-new");
+      if(f.col&&f.op){view.config.filters.push(f);dbTouch(db);saveStateNow();dbCloseAdvancedPanel();dbRenderAdvancedTarget(container,db,view);}
+    }
+  });
+  setTimeout(function(){document.addEventListener("mousedown",dbAdvancedOutside,{once:true});},0);
+}
+function dbFilterEditorHTML(db,prefix){
+  var ops=[["contains","contient"],["not_contains","ne contient pas"],["is","est"],["is_not","n'est pas"],["empty","est vide"],["not_empty","n'est pas vide"],["checked","coché"],["unchecked","non coché"],["gt",">"],["lt","<"],["gte",">="],["lte","<="]];
+  return '<select class="db-advanced-select" data-db-filter-col="'+prefix+'">'+dbVisibleColumns(db).map(function(c){return '<option value="'+dbEsc(c.key)+'">'+dbEsc(c.label)+'</option>';}).join("")+'</select>'+
+    '<select class="db-advanced-select" data-db-filter-op="'+prefix+'">'+ops.map(function(o){return '<option value="'+o[0]+'">'+dbEsc(o[1])+'</option>';}).join("")+'</select>'+
+    '<input class="db-advanced-input" data-db-filter-value="'+prefix+'" placeholder="Valeur">';
+}
+function dbReadFilterEditor(root,prefix){
+  return {col:(root.querySelector('[data-db-filter-col="'+prefix+'"]')||{}).value||"",op:(root.querySelector('[data-db-filter-op="'+prefix+'"]')||{}).value||"contains",value:(root.querySelector('[data-db-filter-value="'+prefix+'"]')||{}).value||""};
+}
+function dbFilterRowHTML(db,filter,index){
+  var col=dbColumnByKey(db,filter.col);
+  return '<div class="db-advanced-row"><span>'+dbEsc(col?col.label:filter.col)+'</span><span>'+dbEsc(filter.op)+'</span><strong>'+dbEsc(filter.value||"—")+'</strong><button type="button" data-db-remove-filter="'+index+'">Retirer</button></div>';
+}
+function dbOpenSortPanel(anchor,db,view,container){
+  dbCloseAdvancedPanel();
+  if(!Array.isArray(view.config.sort))view.config.sort=[];
+  var panel=document.createElement("div");
+  panel.id="db-advanced-panel";panel.className="db-advanced-panel";
+  panel.innerHTML='<div class="db-advanced-head"><strong>Tri avancé</strong><button type="button" data-db-close>Fermer</button></div>'+
+    '<div class="db-advanced-list">'+view.config.sort.map(function(s,i){var c=dbColumnByKey(db,s.col);return '<div class="db-advanced-row"><span>'+dbEsc(c?c.label:s.col)+'</span><strong>'+dbEsc(s.dir==="desc"?"Décroissant":"Croissant")+'</strong><button type="button" data-db-remove-sort="'+i+'">Retirer</button></div>';}).join("")+'</div>'+
+    '<div class="db-advanced-new"><select class="db-advanced-select" id="db-sort-col">'+dbVisibleColumns(db).map(function(c){return '<option value="'+dbEsc(c.key)+'">'+dbEsc(c.label)+'</option>';}).join("")+'</select><select class="db-advanced-select" id="db-sort-dir"><option value="asc">Croissant</option><option value="desc">Décroissant</option></select><button type="button" class="db-advanced-primary" data-db-add-sort>Ajouter le tri</button></div>'+
+    '<div class="db-advanced-actions"><button type="button" data-db-clear-sort>Tout effacer</button></div>';
+  document.body.appendChild(panel);dbPanelPosition(panel,anchor);
+  panel.addEventListener("click",function(e){
+    if(e.target.closest("[data-db-close]")){dbCloseAdvancedPanel();return;}
+    var remove=e.target.closest("[data-db-remove-sort]");
+    if(remove){view.config.sort.splice(parseInt(remove.dataset.dbRemoveSort,10),1);dbTouch(db);saveStateNow();dbCloseAdvancedPanel();dbRenderAdvancedTarget(container,db,view);return;}
+    if(e.target.closest("[data-db-clear-sort]")){view.config.sort=[];dbTouch(db);saveStateNow();dbCloseAdvancedPanel();dbRenderAdvancedTarget(container,db,view);return;}
+    if(e.target.closest("[data-db-add-sort]")){
+      var col=(panel.querySelector("#db-sort-col")||{}).value,dir=(panel.querySelector("#db-sort-dir")||{}).value||"asc";
+      if(col){view.config.sort.push({col:col,dir:dir});dbTouch(db);saveStateNow();dbCloseAdvancedPanel();dbRenderAdvancedTarget(container,db,view);}
+    }
+  });
+  setTimeout(function(){document.addEventListener("mousedown",dbAdvancedOutside,{once:true});},0);
+}

@@ -1,263 +1,664 @@
-/* ETHONE legacy compatibility module: backgrounds. */
-function startAmbientBg(){
-  if(window.ETHONE_LIGHT_BOOT_MODE)return;
-  // Don't start ambient if a custom bg theme is active
-  const _activeBg=curP()?.bgTheme;
-  if(_activeBg&&_activeBg!=='none')return;
-  const canvas=document.getElementById('bg-canvas');
-  if(!canvas||_ambientFrame)return;
-  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
-  const ctx=canvas.getContext('2d');
-  canvas.style.opacity='1';
-  // Resize handler for ambient
-  const _ambientResize=()=>{if(!_ambientFrame)return;canvas.width=window.innerWidth;canvas.height=window.innerHeight;};
-  window.addEventListener('resize',_ambientResize);
-  // Dust particles — tiny, slow, orange/white
-  const pts=[];
-  const N=90;
-  for(let i=0;i<N;i++){
-    pts.push({
-      x:Math.random()*canvas.width,
-      y:Math.random()*canvas.height,
-      r:Math.random()*1.2+0.3,
-      vx:(Math.random()-.5)*0.18,
-      vy:(Math.random()-.5)*0.18,
-      o:Math.random()*0.18+0.04,
-      c:Math.random()<.3?'139,92,246':'245,245,247'
-    });
-  }
-  // Orbs — slow pulsing radial gradients
-  const orbs=[
-    {x:.15,y:.2,r:.32,c:'139,92,246',s:0,sp:.0007},
-    {x:.82,y:.75,r:.28,c:'124,58,237',s:2,sp:.0009},
-    {x:.5,y:.55,r:.22,c:'139,92,246',s:4,sp:.0005},
+/* ETHONE Background Engine
+   GPU-friendly animated backgrounds with legacy API compatibility:
+   startAmbientBg, stopAmbientBg, renderBgThemeBtns, pickBgTheme, applyBgTheme. */
+(function () {
+  "use strict";
+
+  var BACKGROUND_THEMES = [
+    { name: "None", id: "none", kind: "static" },
+    { name: "Aurora", id: "aurora", kind: "canvas" },
+    { name: "Particles", id: "particles", kind: "canvas" },
+    { name: "Nebula", id: "nebula", kind: "canvas" },
+    { name: "Stars", id: "stars", kind: "canvas" },
+    { name: "Glass", id: "glass", kind: "css" },
+    { name: "Cyber", id: "cyber", kind: "canvas" },
+    { name: "Rain", id: "rain", kind: "canvas" },
+    { name: "Snow", id: "snow", kind: "canvas" },
+    { name: "Matrix", id: "matrix", kind: "canvas" },
+    { name: "Gradient", id: "gradient", kind: "css" },
+    { name: "Image", id: "image", kind: "media" },
+    { name: "GIF", id: "gif", kind: "media" },
+    { name: "Video", id: "video", kind: "media" }
   ];
-  let t=0;
-  const W=canvas.width,H=canvas.height;
-  const draw=()=>{
-    ctx.clearRect(0,0,W,H);
-    // Orbs
-    orbs.forEach(o=>{
-      const pulse=0.5+0.5*Math.sin(t*o.sp*1000+o.s);
-      const g=ctx.createRadialGradient(o.x*W,o.y*H,0,o.x*W,o.y*H,o.r*W);
-      g.addColorStop(0,`rgba(${o.c},${0.045+pulse*0.025})`);
-      g.addColorStop(1,`rgba(${o.c},0)`);
-      ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-    });
-    // Dust
-    pts.forEach(p=>{
-      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-      ctx.fillStyle=`rgba(${p.c},${p.o})`;ctx.fill();
-      p.x+=p.vx;p.y+=p.vy;
-      if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5;
-      if(p.y<-5)p.y=H+5;if(p.y>H+5)p.y=-5;
-    });
-    t+=0.016;
-    _ambientFrame=requestAnimationFrame(draw);
-  };
-  draw();
-}
-function stopAmbientBg(){
-  if(_ambientFrame){cancelAnimationFrame(_ambientFrame);_ambientFrame=null;}
-  const canvas=document.getElementById('bg-canvas');
-  if(canvas)canvas.style.opacity='0';
-}
 
-function renderBgThemeBtns(){
-  const p=curP();
-  const cur=p?.bgTheme||'none';
-  const container=document.getElementById('bg-theme-btns');
-  if(!container)return;
-  container.innerHTML=BG_THEMES.map(b=>`<button onclick="pickBgTheme('${b.id}')" style="padding:7px 16px;border-radius:var(--r-sm);border:1.5px solid ${b.id===cur?'var(--accent)':'var(--border2)'};background:${b.id===cur?'var(--accent-subtle)':'var(--surface2)'};color:${b.id===cur?'var(--accent)':'var(--muted)'};font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s ease">${b.name}</button>`).join('');
-}
+  var frame = 0;
+  var ambientFrame = 0;
+  var resizeTimer = 0;
+  var particles = [];
+  var mediaObjectUrl = "";
+  var runtimeMediaSrc = "";
+  var activeId = "";
+  var activeSignature = "";
 
-function pickBgTheme(id){
-  const p=curP();if(!p)return;
-  p.bgTheme=id;
-  saveStateNow();
-  const c=document.getElementById('bg-canvas');
-  if(c){c.width=window.innerWidth;c.height=window.innerHeight;}
-  applyBgTheme(id);
-  // Update sidebar transparency based on whether a bg is active
-  const sb=document.getElementById('main-sidebar');
-  if(sb)sb.style.background=(!id||id==='none')?'':'rgba(5,5,7,.5)';
-  renderBgThemeBtns();
-  toast('Background updated!','success');
-}
-
-function applyBgTheme(id){
-  const canvas=document.getElementById('bg-canvas');if(!canvas)return;
-  if(window.ETHONE_LIGHT_BOOT_MODE){canvas.style.opacity='0';return;}
-  cancelAnimationFrame(_bgFrame);_bgParticles=[];
-  // Stop ambient before applying custom theme
-  if(_ambientFrame){cancelAnimationFrame(_ambientFrame);_ambientFrame=null;}
-  if(!id||id==='none'){
-    // Restart ambient on "none"
-    startAmbientBg();
-    return;
+  function profile() {
+    try { return typeof window.curP === "function" ? window.curP() : null; } catch (e) { return null; }
   }
-  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
-  const ctx=canvas.getContext('2d');
-  canvas.style.opacity='1';
-  const accent=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#3b82f6';
-  const rgb=[parseInt(accent.slice(1,3),16),parseInt(accent.slice(3,5),16),parseInt(accent.slice(5,7),16)];
 
-  if(id==='particles'){
-    const N=55;
-    for(let i=0;i<N;i++)_bgParticles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*2+0.5,vx:(Math.random()-.5)*0.3,vy:(Math.random()-.5)*0.3,o:Math.random()*0.4+0.1});
-    const draw=()=>{
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      _bgParticles.forEach((a,i)=>{
-        _bgParticles.slice(i+1).forEach(b=>{
-          const d=Math.hypot(a.x-b.x,a.y-b.y);
-          if(d<130){ctx.beginPath();ctx.strokeStyle=`rgba(${rgb},${(1-d/130)*0.12})`;ctx.lineWidth=0.5;ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}
-        });
-        ctx.beginPath();ctx.arc(a.x,a.y,a.r,0,Math.PI*2);ctx.fillStyle=`rgba(${rgb},${a.o})`;ctx.fill();
-        a.x+=a.vx;a.y+=a.vy;if(a.x<0||a.x>canvas.width)a.vx*=-1;if(a.y<0||a.y>canvas.height)a.vy*=-1;
-      });
-      _bgFrame=requestAnimationFrame(draw);
-    };draw();
-  } else if(id==='aurora'){
-    let t=0;
-    const draw=()=>{
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      for(let i=0;i<3;i++){
-        const x=canvas.width*(0.3+i*0.2+Math.sin(t*0.3+i)*0.15);
-        const y=canvas.height*(0.4+Math.sin(t*0.25+i*1.5)*0.2);
-        const g=ctx.createRadialGradient(x,y,0,x,y,canvas.width*0.45);
-        g.addColorStop(0,`rgba(${rgb},0.07)`);g.addColorStop(1,`rgba(${rgb},0)`);
-        ctx.fillStyle=g;ctx.fillRect(0,0,canvas.width,canvas.height);
-      }
-      t+=0.004;_bgFrame=requestAnimationFrame(draw);
-    };draw();
-  } else if(id==='grid'){
-    const sz=44;let o=0;
-    const draw=()=>{
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      ctx.strokeStyle=`rgba(${rgb},0.07)`;ctx.lineWidth=0.5;
-      for(let x=(o%sz)-sz;x<canvas.width+sz;x+=sz){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,canvas.height);ctx.stroke();}
-      for(let y=(o%sz)-sz;y<canvas.height+sz;y+=sz){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke();}
-      o+=0.2;_bgFrame=requestAnimationFrame(draw);
-    };draw();
-  } else if(id==='waves'){
-    let t=0;
-    const draw=()=>{
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      for(let w=0;w<4;w++){
-        ctx.beginPath();
-        for(let x=0;x<=canvas.width;x+=3){
-          const y=canvas.height*(0.5+0.06*(w+1))+Math.sin(x*0.006+t*(0.3+w*0.1)+w*2)*60;
-          x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
-        }
-        ctx.strokeStyle=`rgba(${rgb},${0.07-w*0.015})`;ctx.lineWidth=1.5;ctx.stroke();
-      }
-      t+=0.006;_bgFrame=requestAnimationFrame(draw);
-    };draw();
+  function save() {
+    try { if (typeof window.saveStateNow === "function") window.saveStateNow(); } catch (e) {}
+  }
 
-  } else if(id==='meteors'){
-    const meteors=[];
-    const spawnMeteor=()=>{
-      const angle=Math.PI/4;
-      const startX=Math.random()*canvas.width*1.5;
-      meteors.push({x:startX,y:-20,vx:Math.cos(angle)*8,vy:Math.sin(angle)*8,
-        len:Math.random()*120+60,alpha:Math.random()*0.5+0.3,w:Math.random()*1.5+0.5,life:1});
+  function toastSafe(message, type) {
+    try { if (typeof window.toast === "function") window.toast(message, type || "info"); } catch (e) {}
+  }
+
+  function isLightBoot() {
+    return !!(window.ETHONE_LIGHT_BOOT_MODE || window.ETHONE_SAFE_MODE || window.__ethoneSkipExternalWidgets);
+  }
+
+  function isReducedMotion() {
+    try { return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); } catch (e) { return false; }
+  }
+
+  function langIsFr() {
+    try { return (window._lang || "fr") === "fr"; } catch (e) { return true; }
+  }
+
+  function esc(value) {
+    return String(value == null ? "" : value).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
+
+  function getCanvas() {
+    return document.getElementById("bg-canvas");
+  }
+
+  function getAccentRgb() {
+    var raw = getComputedStyle(document.documentElement).getPropertyValue("--accent-rgb").trim();
+    if (/^\d+,\s*\d+,\s*\d+$/.test(raw)) return raw;
+    var accent = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#8b5cf6";
+    if (accent.charAt(0) !== "#") return "139,92,246";
+    if (accent.length === 4) accent = "#" + accent[1] + accent[1] + accent[2] + accent[2] + accent[3] + accent[3];
+    return [
+      parseInt(accent.slice(1, 3), 16) || 139,
+      parseInt(accent.slice(3, 5), 16) || 92,
+      parseInt(accent.slice(5, 7), 16) || 246
+    ].join(",");
+  }
+
+  function sizeCanvas(canvas) {
+    var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    var width = Math.max(1, window.innerWidth);
+    var height = Math.max(1, window.innerHeight);
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+    canvas.style.width = width + "px";
+    canvas.style.height = height + "px";
+    var ctx = canvas.getContext("2d");
+    if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { width: width, height: height, dpr: dpr, ctx: ctx };
+  }
+
+  function stopFrames() {
+    if (frame) cancelAnimationFrame(frame);
+    if (ambientFrame) cancelAnimationFrame(ambientFrame);
+    frame = 0;
+    ambientFrame = 0;
+    try { if (typeof window._bgFrame !== "undefined") window._bgFrame = null; } catch (e) {}
+    try { if (typeof window._ambientFrame !== "undefined") window._ambientFrame = null; } catch (e) {}
+    particles = [];
+  }
+
+  function clearLayers() {
+    stopFrames();
+    var canvas = getCanvas();
+    if (canvas) {
+      var ctx = canvas.getContext("2d");
+      if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+      canvas.style.opacity = "0";
+    }
+    var css = document.getElementById("ethone-bg-css-layer");
+    if (css) css.remove();
+    var media = document.getElementById("ethone-bg-media-layer");
+    if (media) media.remove();
+    document.documentElement.removeAttribute("data-bg-theme");
+  }
+
+  function ensureCssLayer(id) {
+    var layer = document.getElementById("ethone-bg-css-layer");
+    if (!layer) {
+      layer = document.createElement("div");
+      layer.id = "ethone-bg-css-layer";
+      layer.setAttribute("aria-hidden", "true");
+      document.body.insertBefore(layer, document.body.firstChild);
+    }
+    layer.className = "ethone-bg-css-layer ethone-bg-" + id;
+    return layer;
+  }
+
+  function getMediaConfig() {
+    var p = profile();
+    var cfg = p && p.bgMedia ? p.bgMedia : {};
+    return {
+      src: cfg.src || "",
+      type: cfg.type || "image",
+      blur: Number.isFinite(Number(cfg.blur)) ? Number(cfg.blur) : 18,
+      dim: Number.isFinite(Number(cfg.dim)) ? Number(cfg.dim) : 58
     };
-    for(let i=0;i<8;i++)setTimeout(spawnMeteor,i*400);
-    let spawnT=0;
-    const draw=()=>{
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      spawnT++;if(spawnT%90===0)spawnMeteor();
-      for(let i=meteors.length-1;i>=0;i--){
-        const m=meteors[i];
-        const grad=ctx.createLinearGradient(m.x,m.y,m.x-m.vx*m.len/8,m.y-m.vy*m.len/8);
-        grad.addColorStop(0,`rgba(${rgb},${m.alpha*m.life})`);
-        grad.addColorStop(1,`rgba(${rgb},0)`);
-        ctx.beginPath();ctx.moveTo(m.x,m.y);
-        ctx.lineTo(m.x-m.vx*m.len/8,m.y-m.vy*m.len/8);
-        ctx.strokeStyle=grad;ctx.lineWidth=m.w;ctx.stroke();
-        m.x+=m.vx;m.y+=m.vy;m.life-=0.012;
-        if(m.life<=0||m.x>canvas.width+100||m.y>canvas.height+100)meteors.splice(i,1);
-      }
-      _bgFrame=requestAnimationFrame(draw);
-    };draw();
-
-  } else if(id==='noise'){
-    let t=0;
-    const sz=5;
-    const cols=Math.ceil(canvas.width/sz)+1,rows=Math.ceil(canvas.height/sz)+1;
-    const draw=()=>{
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      for(let x=0;x<cols;x++){
-        for(let y=0;y<rows;y++){
-          // Smooth noise via sin/cos combination
-          const n=(Math.sin(x*0.12+t)*Math.cos(y*0.09+t*0.6)+Math.sin((x+y)*0.07+t*0.4))*0.5+0.5;
-          if(n>0.45){
-            ctx.fillStyle=`rgba(${rgb},${(n-0.45)*0.12})`;
-            ctx.fillRect(x*sz,y*sz,sz,sz);
-          }
-        }
-      }
-      t+=0.018;_bgFrame=requestAnimationFrame(draw);
-    };draw();
-
-  } else if(id==='hexagons'){
-    const R=32,h=R*Math.sqrt(3);let t=0;
-    const draw=()=>{
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      const cols=Math.ceil(canvas.width/(R*3))+2;
-      const rows=Math.ceil(canvas.height/h)+2;
-      for(let row=0;row<rows;row++){
-        for(let col=0;col<cols;col++){
-          const cx=col*R*3+(row%2)*R*1.5-R;
-          const cy=row*h-h/2;
-          const pulse=Math.sin(t*0.5+(col+row)*0.4)*0.5+0.5;
-          ctx.beginPath();
-          for(let i=0;i<6;i++){
-            const a=Math.PI/3*i-Math.PI/6;
-            const px=cx+R*0.85*Math.cos(a),py=cy+R*0.85*Math.sin(a);
-            i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
-          }
-          ctx.closePath();
-          ctx.strokeStyle=`rgba(${rgb},${0.04+pulse*0.06})`;
-          ctx.lineWidth=0.8;ctx.stroke();
-        }
-      }
-      t+=0.008;_bgFrame=requestAnimationFrame(draw);
-    };draw();
-
-  } else if(id==='constellation'){
-    const stars=[];
-    for(let i=0;i<80;i++)stars.push({
-      x:Math.random()*canvas.width,y:Math.random()*canvas.height,
-      r:Math.random()*1.2+0.3,twinkle:Math.random()*Math.PI*2,speed:Math.random()*0.02+0.005
-    });
-    let t=0;
-    const draw=()=>{
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      // Draw connections
-      for(let i=0;i<stars.length;i++){
-        for(let j=i+1;j<stars.length;j++){
-          const d=Math.hypot(stars[i].x-stars[j].x,stars[i].y-stars[j].y);
-          if(d<110){
-            const a=(1-d/110)*0.08;
-            ctx.beginPath();ctx.moveTo(stars[i].x,stars[i].y);ctx.lineTo(stars[j].x,stars[j].y);
-            ctx.strokeStyle=`rgba(${rgb},${a})`;ctx.lineWidth=0.6;ctx.stroke();
-          }
-        }
-      }
-      // Draw stars
-      stars.forEach(s=>{
-        s.twinkle+=s.speed;
-        const glow=0.3+Math.sin(s.twinkle)*0.25;
-        ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-        ctx.fillStyle=`rgba(${rgb},${glow})`;ctx.fill();
-      });
-      t+=0.01;_bgFrame=requestAnimationFrame(draw);
-    };draw();
   }
-}
 
-window.addEventListener('resize',()=>{
-  const c=document.getElementById('bg-canvas');
-  if(c&&c.style.opacity!=='0'){const p=curP();c.width=window.innerWidth;c.height=window.innerHeight;if(p?.bgTheme)applyBgTheme(p.bgTheme);}
-});
+  function setMediaConfig(next) {
+    var p = profile();
+    if (!p) return;
+    p.bgMedia = Object.assign({}, getMediaConfig(), next || {});
+    save();
+  }
+
+  function ensureMediaLayer(type, src, options) {
+    options = options || getMediaConfig();
+    var layer = document.getElementById("ethone-bg-media-layer");
+    if (!layer) {
+      layer = document.createElement("div");
+      layer.id = "ethone-bg-media-layer";
+      layer.className = "ethone-bg-media-layer";
+      layer.setAttribute("aria-hidden", "true");
+      document.body.insertBefore(layer, document.body.firstChild);
+    }
+    layer.innerHTML = "";
+    layer.style.setProperty("--bg-media-blur", Math.max(0, options.blur || 0) + "px");
+    layer.style.setProperty("--bg-media-dim", Math.max(0, Math.min(90, options.dim || 58)) + "%");
+
+    if (!src) {
+      layer.innerHTML = '<div class="ethone-bg-media-empty"></div>';
+      return layer;
+    }
+
+    var el;
+    if (type === "video") {
+      el = document.createElement("video");
+      el.src = src;
+      el.autoplay = true;
+      el.loop = true;
+      el.muted = true;
+      el.playsInline = true;
+    } else {
+      el = document.createElement("img");
+      el.src = src;
+      el.alt = "";
+    }
+    el.className = "ethone-bg-media";
+    layer.appendChild(el);
+    return layer;
+  }
+
+  function pickBgTheme(id) {
+    var p = profile();
+    if (!p) return;
+    p.bgTheme = id;
+    save();
+    applyBgTheme(id, { force: true });
+    renderBgThemeBtns();
+    toastSafe(langIsFr() ? "Fond mis a jour." : "Background updated.", "success");
+  }
+
+  function startAmbientBg() {
+    if (isLightBoot()) return;
+    var p = profile();
+    if (p && p.bgTheme && p.bgTheme !== "none") return;
+    applyCanvasTheme("ambient", true);
+  }
+
+  function stopAmbientBg() {
+    if (ambientFrame) cancelAnimationFrame(ambientFrame);
+    ambientFrame = 0;
+    var canvas = getCanvas();
+    if (canvas) canvas.style.opacity = "0";
+  }
+
+  function backgroundSignature(id) {
+    var media = getMediaConfig();
+    return [
+      id || "none",
+      media.src || "",
+      runtimeMediaSrc || "",
+      media.blur,
+      media.dim,
+      getAccentRgb()
+    ].join("|");
+  }
+
+  function applyBgTheme(id, options) {
+    options = options || {};
+    id = id || "none";
+    var signature = backgroundSignature(id);
+    if (!options.force && activeId === id && activeSignature === signature) return;
+    activeId = id;
+    activeSignature = signature;
+    clearLayers();
+    document.documentElement.dataset.bgTheme = id;
+
+    var canvas = getCanvas();
+    if (!canvas || isLightBoot()) {
+      if (canvas) canvas.style.opacity = "0";
+      return;
+    }
+
+    if (id === "none") {
+      startAmbientBg();
+      return;
+    }
+    if (id === "glass" || id === "gradient") {
+      canvas.style.opacity = "0";
+      ensureCssLayer(id);
+      return;
+    }
+    if (id === "image" || id === "gif" || id === "video") {
+      canvas.style.opacity = "0";
+      var media = getMediaConfig();
+      ensureMediaLayer(id, runtimeMediaSrc || media.src, Object.assign({}, media, { type: id }));
+      return;
+    }
+    applyCanvasTheme(id, false);
+  }
+
+  function applyCanvasTheme(id, ambient) {
+    var canvas = getCanvas();
+    if (!canvas || isReducedMotion()) {
+      if (id === "ambient" || id === "aurora" || id === "gradient") ensureCssLayer("gradient");
+      return;
+    }
+    var sized = sizeCanvas(canvas);
+    var ctx = sized.ctx;
+    if (!ctx) return;
+    canvas.style.opacity = "1";
+    var rgb = getAccentRgb();
+    var width = sized.width;
+    var height = sized.height;
+
+    if (id === "ambient") drawAmbient(ctx, width, height, rgb);
+    else if (id === "aurora") drawAurora(ctx, width, height, rgb);
+    else if (id === "particles") drawParticles(ctx, width, height, rgb);
+    else if (id === "nebula") drawNebula(ctx, width, height, rgb);
+    else if (id === "stars") drawStars(ctx, width, height, rgb);
+    else if (id === "cyber") drawCyber(ctx, width, height, rgb);
+    else if (id === "rain") drawRain(ctx, width, height, rgb);
+    else if (id === "snow") drawSnow(ctx, width, height, rgb);
+    else if (id === "matrix") drawMatrix(ctx, width, height, rgb);
+    else drawAurora(ctx, width, height, rgb);
+
+    try {
+      if (ambient) window._ambientFrame = ambientFrame;
+      else window._bgFrame = frame;
+    } catch (e) {}
+  }
+
+  function loop(draw, ambient) {
+    function tick() {
+      draw();
+      if (ambient) ambientFrame = requestAnimationFrame(tick);
+      else frame = requestAnimationFrame(tick);
+    }
+    tick();
+  }
+
+  function drawAmbient(ctx, width, height, rgb) {
+    var pts = createPoints(70, width, height, 1.1);
+    var t = 0;
+    loop(function () {
+      ctx.clearRect(0, 0, width, height);
+      softOrb(ctx, width * (.18 + Math.sin(t * .35) * .02), height * .22, width * .34, rgb, .045);
+      softOrb(ctx, width * (.82 + Math.cos(t * .28) * .02), height * .76, width * .28, "124,58,237", .035);
+      pts.forEach(function (p) {
+        p.x += p.vx * .45;
+        p.y += p.vy * .45;
+        wrap(p, width, height);
+        dot(ctx, p.x, p.y, p.r, p.c || rgb, p.o * .55);
+      });
+      t += .008;
+    }, true);
+  }
+
+  function drawAurora(ctx, width, height, rgb) {
+    var t = 0;
+    loop(function () {
+      ctx.clearRect(0, 0, width, height);
+      for (var i = 0; i < 5; i += 1) {
+        var x = width * (.18 + i * .17 + Math.sin(t + i) * .06);
+        var y = height * (.26 + Math.cos(t * .72 + i) * .12);
+        softOrb(ctx, x, y, width * (.34 + i * .02), i % 2 ? "124,58,237" : rgb, .07);
+      }
+      t += .006;
+    });
+  }
+
+  function drawParticles(ctx, width, height, rgb) {
+    particles = createPoints(Math.min(90, Math.round(width / 18)), width, height, 1.8);
+    loop(function () {
+      ctx.clearRect(0, 0, width, height);
+      for (var i = 0; i < particles.length; i += 1) {
+        var a = particles[i];
+        for (var j = i + 1; j < particles.length; j += 1) {
+          var b = particles[j];
+          var d = Math.hypot(a.x - b.x, a.y - b.y);
+          if (d < 130) line(ctx, a.x, a.y, b.x, b.y, rgb, (1 - d / 130) * .13);
+        }
+        a.x += a.vx;
+        a.y += a.vy;
+        if (a.x < 0 || a.x > width) a.vx *= -1;
+        if (a.y < 0 || a.y > height) a.vy *= -1;
+        dot(ctx, a.x, a.y, a.r, rgb, a.o);
+      }
+    });
+  }
+
+  function drawNebula(ctx, width, height, rgb) {
+    var clouds = createPoints(18, width, height, 1).map(function (p, i) {
+      p.radius = width * (.12 + Math.random() * .22);
+      p.phase = i * .7;
+      p.color = i % 3 === 0 ? "255,255,255" : (i % 2 ? "124,58,237" : rgb);
+      p.o = i % 3 === 0 ? .025 : .06;
+      return p;
+    });
+    var t = 0;
+    loop(function () {
+      ctx.clearRect(0, 0, width, height);
+      clouds.forEach(function (c) {
+        softOrb(ctx, c.x + Math.sin(t + c.phase) * 18, c.y + Math.cos(t * .8 + c.phase) * 14, c.radius, c.color, c.o);
+      });
+      grain(ctx, width, height, rgb, .018);
+      t += .005;
+    });
+  }
+
+  function drawStars(ctx, width, height, rgb) {
+    var stars = createPoints(150, width, height, 1.4);
+    stars.forEach(function (s) { s.tw = Math.random() * 6.28; s.vy = Math.random() * .08 + .02; });
+    loop(function () {
+      ctx.clearRect(0, 0, width, height);
+      softOrb(ctx, width * .78, height * .18, width * .25, rgb, .035);
+      stars.forEach(function (s) {
+        s.tw += .025;
+        s.y += s.vy;
+        if (s.y > height + 8) { s.y = -8; s.x = Math.random() * width; }
+        dot(ctx, s.x, s.y, s.r, Math.random() > .82 ? rgb : "255,255,255", .22 + Math.sin(s.tw) * .15);
+      });
+    });
+  }
+
+  function drawCyber(ctx, width, height, rgb) {
+    var t = 0;
+    loop(function () {
+      ctx.clearRect(0, 0, width, height);
+      var gap = 48;
+      ctx.lineWidth = .65;
+      for (var x = (t % gap) - gap; x < width + gap; x += gap) line(ctx, x, 0, x + height * .22, height, rgb, .065);
+      for (var y = 0; y < height; y += gap) line(ctx, 0, y + Math.sin(t * .02 + y) * 4, width, y, rgb, .045);
+      for (var i = 0; i < 9; i += 1) {
+        var px = (t * (1.4 + i * .16) + i * 173) % (width + 180) - 90;
+        line(ctx, px, height * (.16 + (i % 6) * .12), px + 120, height * (.16 + (i % 6) * .12), rgb, .18);
+      }
+      t += .8;
+    });
+  }
+
+  function drawRain(ctx, width, height, rgb) {
+    var drops = createPoints(Math.min(170, Math.round(width / 8)), width, height, 1);
+    drops.forEach(function (d) { d.len = 12 + Math.random() * 26; d.vy = 5 + Math.random() * 7; d.vx = -1.6 + Math.random() * .6; });
+    loop(function () {
+      ctx.clearRect(0, 0, width, height);
+      drops.forEach(function (d) {
+        line(ctx, d.x, d.y, d.x + d.vx * d.len * .22, d.y + d.len, Math.random() > .86 ? rgb : "255,255,255", .13);
+        d.x += d.vx;
+        d.y += d.vy;
+        if (d.y > height + 40) { d.y = -40; d.x = Math.random() * width; }
+        if (d.x < -40) d.x = width + 40;
+      });
+    });
+  }
+
+  function drawSnow(ctx, width, height, rgb) {
+    var flakes = createPoints(Math.min(130, Math.round(width / 10)), width, height, 2.4);
+    flakes.forEach(function (f) { f.vy = .4 + Math.random() * 1.1; f.phase = Math.random() * 6.28; });
+    var t = 0;
+    loop(function () {
+      ctx.clearRect(0, 0, width, height);
+      flakes.forEach(function (f) {
+        f.y += f.vy;
+        f.x += Math.sin(t + f.phase) * .22;
+        if (f.y > height + 8) { f.y = -8; f.x = Math.random() * width; }
+        dot(ctx, f.x, f.y, f.r, Math.random() > .88 ? rgb : "255,255,255", f.o * .55);
+      });
+      t += .025;
+    });
+  }
+
+  function drawMatrix(ctx, width, height, rgb) {
+    var font = 14;
+    var columns = Math.ceil(width / font);
+    var drops = Array.from({ length: columns }, function () { return Math.random() * -height; });
+    var chars = "ETHONE01BRAINOS";
+    loop(function () {
+      ctx.fillStyle = "rgba(5,5,8,.16)";
+      ctx.fillRect(0, 0, width, height);
+      ctx.font = "600 " + font + "px ui-monospace, SFMono-Regular, Menlo, monospace";
+      for (var i = 0; i < columns; i += 1) {
+        var ch = chars[Math.floor(Math.random() * chars.length)];
+        var x = i * font;
+        var y = drops[i] * font;
+        ctx.fillStyle = "rgba(" + rgb + ",.42)";
+        ctx.fillText(ch, x, y);
+        drops[i] += 1;
+        if (y > height && Math.random() > .975) drops[i] = 0;
+      }
+    });
+  }
+
+  function createPoints(count, width, height, maxR) {
+    var list = [];
+    for (var i = 0; i < count; i += 1) {
+      list.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        r: Math.random() * maxR + .35,
+        vx: (Math.random() - .5) * .55,
+        vy: (Math.random() - .5) * .55,
+        o: Math.random() * .3 + .12,
+        c: Math.random() > .72 ? "255,255,255" : getAccentRgb()
+      });
+    }
+    return list;
+  }
+
+  function wrap(p, width, height) {
+    if (p.x < -8) p.x = width + 8;
+    if (p.x > width + 8) p.x = -8;
+    if (p.y < -8) p.y = height + 8;
+    if (p.y > height + 8) p.y = -8;
+  }
+
+  function dot(ctx, x, y, r, color, opacity) {
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(" + color + "," + opacity + ")";
+    ctx.fill();
+  }
+
+  function line(ctx, x1, y1, x2, y2, color, opacity) {
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.strokeStyle = "rgba(" + color + "," + opacity + ")";
+    ctx.stroke();
+  }
+
+  function softOrb(ctx, x, y, radius, color, opacity) {
+    var g = ctx.createRadialGradient(x, y, 0, x, y, radius);
+    g.addColorStop(0, "rgba(" + color + "," + opacity + ")");
+    g.addColorStop(.58, "rgba(" + color + "," + opacity * .34 + ")");
+    g.addColorStop(1, "rgba(" + color + ",0)");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+  }
+
+  function grain(ctx, width, height, rgb, opacity) {
+    ctx.fillStyle = "rgba(" + rgb + "," + opacity + ")";
+    for (var i = 0; i < 90; i += 1) {
+      ctx.fillRect(Math.random() * width, Math.random() * height, 1, 1);
+    }
+  }
+
+  function renderBgThemeBtns() {
+    var p = profile();
+    var cur = (p && p.bgTheme) || "none";
+    var media = getMediaConfig();
+    var container = document.getElementById("bg-theme-btns");
+    if (!container) return;
+    container.innerHTML = [
+      '<div class="ethone-bg-picker-grid">',
+      BACKGROUND_THEMES.map(function (item) {
+        return '<button class="ethone-bg-preset' + (item.id === cur ? " active" : "") + '" type="button" data-bg-pick="' + esc(item.id) + '">' +
+          '<span>' + esc(item.name) + '</span><small>' + esc(item.kind) + '</small></button>';
+      }).join(""),
+      '</div>',
+      '<div class="ethone-bg-media-controls">',
+      '<div class="ethone-bg-field wide"><label>Media URL</label><input id="ethone-bg-media-url" type="url" placeholder="https://... image, GIF or video" value="' + esc(media.src) + '"></div>',
+      '<div class="ethone-bg-field"><label>Blur</label><input id="ethone-bg-media-blur" type="range" min="0" max="40" step="1" value="' + esc(media.blur) + '"></div>',
+      '<div class="ethone-bg-field"><label>Dim</label><input id="ethone-bg-media-dim" type="range" min="20" max="82" step="1" value="' + esc(media.dim) + '"></div>',
+      '<div class="ethone-bg-actions">',
+      '<button type="button" data-bg-media="image">Use image</button>',
+      '<button type="button" data-bg-media="gif">Use GIF</button>',
+      '<button type="button" data-bg-media="video">Use video</button>',
+      '<button type="button" data-bg-upload>Upload</button>',
+      '<button type="button" data-bg-clear>Clear</button>',
+      '</div>',
+      '<input id="ethone-bg-file-input" type="file" accept="image/*,video/*" hidden>',
+      '<p>' + esc(langIsFr() ? "Les images et GIF legers peuvent etre sauvegardes localement. Pour les videos lourdes, utilise plutot une URL." : "Light images and GIFs can be saved locally. For large videos, prefer a URL.") + '</p>',
+      '</div>'
+    ].join("");
+  }
+
+  function bindControls() {
+    document.addEventListener("click", function (event) {
+      var pick = event.target.closest("[data-bg-pick]");
+      if (pick) {
+        pickBgTheme(pick.getAttribute("data-bg-pick"));
+        return;
+      }
+      var mediaButton = event.target.closest("[data-bg-media]");
+      if (mediaButton) {
+        applyMediaFromControls(mediaButton.getAttribute("data-bg-media"));
+        return;
+      }
+      if (event.target.closest("[data-bg-upload]")) {
+        var input = document.getElementById("ethone-bg-file-input");
+        if (input) input.click();
+        return;
+      }
+      if (event.target.closest("[data-bg-clear]")) {
+        if (mediaObjectUrl) {
+          try { URL.revokeObjectURL(mediaObjectUrl); } catch (e) {}
+          mediaObjectUrl = "";
+        }
+        runtimeMediaSrc = "";
+        setMediaConfig({ src: "" });
+        var p = profile();
+        if (p) p.bgTheme = "none";
+        save();
+        applyBgTheme("none");
+        renderBgThemeBtns();
+      }
+    });
+
+    document.addEventListener("input", function (event) {
+      if (event.target && event.target.id === "ethone-bg-media-blur") {
+        setMediaConfig({ blur: Number(event.target.value) || 0 });
+        if (isMediaActive()) applyBgTheme((profile() && profile().bgTheme) || "image", { force: true });
+      }
+      if (event.target && event.target.id === "ethone-bg-media-dim") {
+        setMediaConfig({ dim: Number(event.target.value) || 58 });
+        if (isMediaActive()) applyBgTheme((profile() && profile().bgTheme) || "image", { force: true });
+      }
+    });
+
+    document.addEventListener("change", function (event) {
+      if (event.target && event.target.id === "ethone-bg-file-input") handleFileUpload(event.target);
+    });
+  }
+
+  function isMediaActive() {
+    var p = profile();
+    return !!(p && /^(image|gif|video)$/.test(p.bgTheme || ""));
+  }
+
+  function applyMediaFromControls(type) {
+    if (mediaObjectUrl) {
+      try { URL.revokeObjectURL(mediaObjectUrl); } catch (e) {}
+      mediaObjectUrl = "";
+    }
+    runtimeMediaSrc = "";
+    var input = document.getElementById("ethone-bg-media-url");
+    var blur = document.getElementById("ethone-bg-media-blur");
+    var dim = document.getElementById("ethone-bg-media-dim");
+    setMediaConfig({
+      type: type,
+      src: input ? input.value.trim() : "",
+      blur: blur ? Number(blur.value) || 0 : 18,
+      dim: dim ? Number(dim.value) || 58 : 58
+    });
+    pickBgTheme(type);
+  }
+
+  function handleFileUpload(input) {
+    var file = input.files && input.files[0];
+    if (!file) return;
+    var type = file.type.indexOf("video/") === 0 ? "video" : (file.type === "image/gif" ? "gif" : "image");
+    if (mediaObjectUrl) {
+      try { URL.revokeObjectURL(mediaObjectUrl); } catch (e) {}
+    }
+    mediaObjectUrl = URL.createObjectURL(file);
+    var canPersist = file.size <= 8 * 1024 * 1024 && type !== "video";
+    if (!canPersist) {
+      runtimeMediaSrc = mediaObjectUrl;
+      setMediaConfig({ type: type });
+      pickBgTheme(type);
+      toastSafe(langIsFr() ? "Apercu charge. Utilise une URL pour conserver ce media apres rechargement." : "Preview loaded. Use a URL to keep this media after reload.", "info");
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function () {
+      setMediaConfig({ type: type, src: String(reader.result || "") });
+      pickBgTheme(type);
+    };
+    reader.onerror = function () {
+      setMediaConfig({ type: type, src: mediaObjectUrl });
+      pickBgTheme(type);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function restoreBackground(force) {
+    var p = profile();
+    applyBgTheme((p && p.bgTheme) || "none", { force: force === true });
+    renderBgThemeBtns();
+  }
+
+  window.addEventListener("resize", function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () { restoreBackground(true); }, 140);
+  });
+  window.addEventListener("ethone:theme-changed", function () {
+    var p = profile();
+    if (p && p.bgTheme && !/^(image|gif|video|glass|gradient)$/.test(p.bgTheme)) restoreBackground(true);
+  });
+  window.addEventListener("ethone:page-ready", restoreBackground);
+  document.addEventListener("DOMContentLoaded", function () {
+    bindControls();
+    setTimeout(restoreBackground, 250);
+    setTimeout(restoreBackground, 1200);
+  });
+
+  window.startAmbientBg = startAmbientBg;
+  window.stopAmbientBg = stopAmbientBg;
+  window.renderBgThemeBtns = renderBgThemeBtns;
+  window.pickBgTheme = pickBgTheme;
+  window.applyBgTheme = applyBgTheme;
+  window.ETHONEBackgrounds = {
+    themes: BACKGROUND_THEMES,
+    apply: applyBgTheme,
+    pick: pickBgTheme,
+    render: renderBgThemeBtns,
+    media: setMediaConfig,
+    restore: restoreBackground
+  };
+})();

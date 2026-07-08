@@ -46,6 +46,185 @@
     document.body.classList.toggle("ethone-low-power",!!(lowMemory||lowCpu||saveData));
   }
 
+  function ensureToastHost(){
+    var host=qs("#ethone-quality-toast");
+    if(!host){
+      host=document.createElement("div");
+      host.id="ethone-quality-toast";
+      host.setAttribute("aria-live","polite");
+      host.setAttribute("aria-relevant","additions text");
+      document.body.appendChild(host);
+    }
+    return host;
+  }
+
+  function installToastSystem(){
+    if(window.__ethoneToastSystem)return;
+    window.__ethoneToastSystem=true;
+    var active={};
+    var timers=new WeakMap();
+    var maxToasts=5;
+    function close(item){
+      if(!item||item.classList.contains("leaving"))return;
+      item.classList.add("leaving");
+      var key=item.dataset.toastKey;
+      if(key)delete active[key];
+      var timer=timers.get(item);
+      if(timer)clearTimeout(timer);
+      setTimeout(function(){if(item.parentNode)item.parentNode.removeChild(item)},220);
+    }
+    function arm(item,duration){
+      var timer=timers.get(item);
+      if(timer)clearTimeout(timer);
+      timers.set(item,setTimeout(function(){close(item)},duration));
+    }
+    function iconFor(type){
+      if(type==="success")return "OK";
+      if(type==="warning")return "!";
+      if(type==="error")return "!";
+      return "i";
+    }
+    function render(message,type,options){
+      message=String(message||"").trim();
+      if(!message)return null;
+      type=type==="success"||type==="warning"||type==="error"?" "+type:" info";
+      var cleanType=type.trim();
+      options=options||{};
+      var duration=typeof options.duration==="number"?options.duration:(cleanType==="error"?7200:4200);
+      var key=(cleanType+"|"+message).toLowerCase();
+      var existing=active[key];
+      if(existing&&existing.parentNode){
+        var count=(parseInt(existing.dataset.toastCount||"1",10)||1)+1;
+        existing.dataset.toastCount=String(count);
+        var countEl=existing.querySelector(".ethone-toast-count");
+        if(countEl){
+          countEl.textContent="x"+count;
+          countEl.hidden=false;
+        }
+        existing.classList.remove("leaving");
+        arm(existing,duration);
+        return existing;
+      }
+      var host=ensureToastHost();
+      var item=document.createElement("div");
+      item.className="ethone-quality-toast-item ethone-toast-"+cleanType;
+      item.dataset.toastKey=key;
+      item.dataset.toastCount="1";
+      item.setAttribute("role",cleanType==="error"?"alert":"status");
+      var icon=document.createElement("span");
+      icon.className="ethone-toast-icon";
+      icon.textContent=iconFor(cleanType);
+      var text=document.createElement("span");
+      text.className="ethone-toast-text";
+      text.textContent=message;
+      var countBadge=document.createElement("span");
+      countBadge.className="ethone-toast-count";
+      countBadge.hidden=true;
+      var closeBtn=document.createElement("button");
+      closeBtn.type="button";
+      closeBtn.className="ethone-toast-close";
+      closeBtn.setAttribute("aria-label","Fermer la notification");
+      closeBtn.textContent="x";
+      closeBtn.addEventListener("click",function(event){
+        event.preventDefault();
+        close(item);
+      });
+      item.appendChild(icon);
+      item.appendChild(text);
+      item.appendChild(countBadge);
+      item.appendChild(closeBtn);
+      active[key]=item;
+      host.appendChild(item);
+      qsa(".ethone-quality-toast-item",host).slice(0,-maxToasts).forEach(close);
+      arm(item,duration);
+      try{window.dispatchEvent(new CustomEvent("ethone:toast",{detail:{message:message,type:cleanType}}))}catch(e){}
+      return item;
+    }
+    window.ethoneToast=render;
+    window.toast=render;
+  }
+
+  function loadLazyGroup(group){
+    if(window.ETHONELazyModules&&typeof window.ETHONELazyModules.load==="function"){
+      return Promise.resolve(window.ETHONELazyModules.load(group));
+    }
+    return Promise.reject(new Error("ETHONE lazy loader unavailable"));
+  }
+
+  function installWidgetPanelProxy(){
+    if(window.__ethoneWidgetPanelProxy)return;
+    window.__ethoneWidgetPanelProxy=true;
+    var loading=false;
+    function isSafeMode(){
+      try{return new URLSearchParams(location.search||"").get("safe")==="1"}catch(e){return false}
+    }
+    function desiredOpen(force){
+      if(typeof force==="boolean")return force;
+      var shell=qs("#app-shell");
+      var panel=qs("#live-panel");
+      if(window.innerWidth<=1200&&panel)return !panel.classList.contains("mobile-open");
+      if(document.body&&!document.body.classList.contains("ethone-widgets-panel-enabled"))return true;
+      if(shell)return shell.classList.contains("live-panel-retracted");
+      return localStorage.getItem("ethone:widgets-panel-open")!=="1";
+    }
+    function setBusy(busy){
+      qsa("#live-panel-toggle-btn,#live-panel-retract-btn,#live-panel-add-btn,#live-panel-manage-btn").forEach(function(btn){
+        btn.classList.toggle("ethone-loading-inline",!!busy);
+        btn.setAttribute("aria-busy",busy?"true":"false");
+      });
+    }
+    function ensureLoaded(openAfter,callback){
+      if(isSafeMode()){
+        notify("Le panneau Widgets est desactive en Safe Mode.","info");
+        return Promise.resolve(false);
+      }
+      if(loading)return Promise.resolve(false);
+      loading=true;
+      setBusy(true);
+      if(typeof openAfter==="boolean"){
+        try{localStorage.setItem("ethone:widgets-panel-open",openAfter?"1":"0")}catch(e){}
+      }
+      return loadLazyGroup("widgets").then(function(){
+        loading=false;
+        setBusy(false);
+        if(document.body)document.body.classList.remove("ethone-emergency-minimal");
+        if(typeof callback==="function")callback();
+        return true;
+      }).catch(function(){
+        loading=false;
+        setBusy(false);
+        notify("Impossible de charger le panneau Widgets pour le moment.","warning");
+        return false;
+      });
+    }
+    function proxyToggle(force){
+      var current=window.toggleLivePanel;
+      if(current&&current!==proxyToggle)return current(force);
+      var open=desiredOpen(force);
+      return ensureLoaded(open,function(){
+        if(typeof window.toggleLivePanel==="function"&&window.toggleLivePanel!==proxyToggle){
+          window.toggleLivePanel(open);
+        }
+      });
+    }
+    function proxyPicker(kind){
+      var real=kind==="manager"?window.openLivePanelManager:window.openLivePanelAddPicker;
+      var self=kind==="manager"?proxyManager:proxyAdd;
+      if(typeof real==="function"&&real!==self)return real();
+      return ensureLoaded(true,function(){
+        var fn=kind==="manager"?window.openLivePanelManager:window.openLivePanelAddPicker;
+        if(typeof fn==="function"&&fn!==self)fn();
+      });
+    }
+    function proxyAdd(){return proxyPicker("add")}
+    function proxyManager(){return proxyPicker("manager")}
+    proxyAdd.__ethoneProxy=true;
+    proxyManager.__ethoneProxy=true;
+    if(typeof window.toggleLivePanel!=="function")window.toggleLivePanel=proxyToggle;
+    if(typeof window.openLivePanelAddPicker!=="function")window.openLivePanelAddPicker=proxyAdd;
+    if(typeof window.openLivePanelManager!=="function")window.openLivePanelManager=proxyManager;
+  }
+
   function normalizeButtons(){
     qsa("button:not([type])").forEach(function(btn){btn.type="button"});
     qsa("button,.btn,.panel-action,.item-btn,.cat-tab,.settings-nav-item,.nav-item,[role='button']").forEach(function(el){
@@ -62,20 +241,14 @@
   }
 
   function notify(message,type){
+    if(typeof window.ethoneToast==="function"){
+      try{window.ethoneToast(message,type||"info");return;}catch(e){}
+    }
     if(typeof window.toast==="function"){
       try{window.toast(message,type||"info");return;}catch(e){}
     }
-    var host=qs("#ethone-quality-toast");
-    if(!host){
-      host=document.createElement("div");
-      host.id="ethone-quality-toast";
-      document.body.appendChild(host);
-    }
-    var item=document.createElement("div");
-    item.className="ethone-quality-toast-item";
-    item.textContent=message;
-    host.appendChild(item);
-    setTimeout(function(){item.classList.add("leaving");setTimeout(function(){item.remove()},220)},2600);
+    installToastSystem();
+    try{window.ethoneToast(message,type||"info")}catch(e){}
   }
 
   function inlineActionNames(code){
@@ -214,6 +387,8 @@
   }
 
   function apply(){
+    installToastSystem();
+    installWidgetPanelProxy();
     applyPerformanceBudget();
     normalizeButtons();
     normalizeTextOverflow();
@@ -227,6 +402,8 @@
 
   function boot(){
     detectInputMode();
+    installToastSystem();
+    installWidgetPanelProxy();
     installActionGuard();
     apply();
     window.addEventListener("ethone:dashboard-ready",schedule);

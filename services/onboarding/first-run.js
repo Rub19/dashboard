@@ -13,6 +13,7 @@
   var settingsTimer=0;
   var userMenuTimer=0;
   var whatsNewTimer=0;
+  var previewClockTimer=0;
   var manualOpen=false;
   var devSession=false;
   var userMenuDocBound=false;
@@ -285,13 +286,93 @@
     return root;
   }
 
+  function stepState(st,index){
+    if(st.completed||index<st.step)return "done";
+    if(index===st.step)return "active";
+    return "pending";
+  }
+
+  function estimateMinutes(st){
+    var remaining=Math.max(0,STEPS.length-1-st.step);
+    return Math.max(1,Math.ceil((remaining+1)*0.28));
+  }
+
+  function currentSpaceLabel(st){
+    if(st.selections.space==="custom")return (st.selections.customSpaceName||"Custom Space").trim()||"Custom Space";
+    return labelFrom(SPACE_OPTIONS,st.selections.space);
+  }
+
+  function syncOnboardingVars(st){
+    if(!root||!st||!st.selections)return;
+    var style=st.selections.style||defaultState().selections.style;
+    var rgb=hexToRgb(style.accent).join(",");
+    root.style.setProperty("--fron-accent",style.accent||"#8b5cf6");
+    root.style.setProperty("--fron-accent-rgb",rgb);
+    root.dataset.fronTheme=style.theme||"ethone-purple";
+    root.dataset.fronDensity=style.density||"comfortable";
+    root.dataset.fronFont=style.font||"inter";
+    root.classList.toggle("fron-motion-off",style.animations===false);
+  }
+
+  function assistantCopy(st){
+    var space=currentSpaceLabel(st);
+    var style=st.selections.style||defaultState().selections.style;
+    var widgets=st.selections.widgets||[];
+    var connections=st.selections.connections||[];
+    var brain=st.selections.brain||{};
+    if(st.step===0)return {
+      title:"Configuration guidee",
+      body:"ETHONE va preparer un environnement clair, rapide et modifiable plus tard.",
+      meta:"Aucune API n'est appelee pendant l'onboarding."
+    };
+    if(st.step===1)return {
+      title:"Space en cours",
+      body:"Le Space "+space+" servira de base a votre dashboard, vos widgets et votre contexte Brain.",
+      meta:"Vous pourrez creer d'autres Spaces ensuite."
+    };
+    if(st.step===2)return {
+      title:"Identite visuelle",
+      body:"Accent "+(style.accent||"#8b5cf6")+" avec densite "+(style.density||"comfortable")+". La preview se met a jour instantanement.",
+      meta:style.animations?"Micro-interactions activees.":"Animations reduites pour un rendu plus calme."
+    };
+    if(st.step===3)return {
+      title:"Dashboard initial",
+      body:widgets.length+" widgets selectionnes. ETHONE composera un tableau de bord utile des la premiere ouverture.",
+      meta:widgets.indexOf("brain")>-1?"Brain sera visible au centre de l'experience.":"Vous pourrez ajouter Brain plus tard depuis Widgets."
+    };
+    if(st.step===4)return {
+      title:"Connexions preparees",
+      body:connections.length?connections.length+" services seront prepares sans connexion automatique.":"Aucun service externe ne sera prepare pour l'instant.",
+      meta:"Les autorisations restent dans Connexions ou Settings."
+    };
+    if(st.step===5)return {
+      title:"Brain OS",
+      body:brain.enabled?"Brain utilisera "+labelFrom(PROVIDERS,brain.provider)+" comme provider prefere.":"Brain restera desactive au demarrage.",
+      meta:"Memoire, suggestions et automatisations restent controlables."
+    };
+    return {
+      title:"Pret a entrer",
+      body:"ETHONE va appliquer le Space, le style, le dashboard initial et les preferences Brain.",
+      meta:"La configuration reste reversible depuis Settings."
+    };
+  }
+
+  function renderAssistant(st){
+    var copy=assistantCopy(st);
+    return '<div class="fron-assistant-host"><aside class="fron-assistant">'+
+      '<span class="fron-assistant-pulse" aria-hidden="true"></span>'+
+      '<div><strong>'+esc(copy.title)+'</strong><p>'+esc(copy.body)+'</p><small>'+esc(copy.meta)+'</small></div>'+
+    '</aside></div>';
+  }
+
   function renderProgress(st){
     return STEPS.map(function(step,index){
       var classes=["fron-step-link"];
-      if(index===st.step)classes.push("is-active");
-      if(index<st.step||st.completed)classes.push("is-done");
+      var state=stepState(st,index);
+      if(state==="active")classes.push("is-active");
+      if(state==="done")classes.push("is-done");
       return '<button class="'+classes.join(" ")+'" type="button" data-fron-action="goto" data-step="'+index+'">'+
-        '<span class="fron-step-num">'+(index+1)+'</span>'+
+        '<span class="fron-step-num">'+(state==="done"?'&#10003;':(index+1))+'</span>'+
         '<span class="fron-step-meta"><strong>'+esc(step.short)+'</strong><span>'+esc(step.id)+'</span></span>'+
       '</button>';
     }).join("");
@@ -307,21 +388,21 @@
   }
 
   function renderWelcome(){
+    var items=[
+      {label:"Space",sub:"Un environnement principal coherent.",icon:"layout-dashboard"},
+      {label:"Style",sub:"Un theme ETHONE applique partout.",icon:"paintbrush"},
+      {label:"Widgets",sub:"Un dashboard utile des le premier lancement.",icon:"blocks"},
+      {label:"Brain",sub:"Une intelligence contextuelle, jamais intrusive.",icon:"brain-circuit"}
+    ];
     return '<div class="fron-welcome">'+
-      '<div>'+
-        '<div class="fron-control-panel">'+
-          '<div class="fron-control-row">'+
-            '<h3>Ce que l onboarding va preparer</h3>'+
-            '<div class="fron-card-grid">'+
-              choiceCard({id:"os",code:"OS",label:"Space principal",sub:"Un environnement de depart adapte a votre usage."},true,"noop")+
-              choiceCard({id:"style",code:"UI",label:"Style global",sub:"Accent, densite, fond et motion coherents."},true,"noop")+
-              choiceCard({id:"widgets",code:"WD",label:"Widgets",sub:"Un dashboard initial pret a utiliser."},true,"noop")+
-              choiceCard({id:"brain",code:"AI",label:"Brain",sub:"Un assistant contextuel configure sans friction."},true,"noop")+
-            '</div>'+
-          '</div>'+
-        '</div>'+
+      '<div class="fron-welcome-card">'+
+        '<span class="fron-kicker">Personal Operating System</span>'+
+        '<h3>Configurez ETHONE comme un environnement, pas comme un formulaire.</h3>'+
+        '<p>En quelques choix, ETHONE prepare un Space, un style, un dashboard et Brain tout en gardant une base rapide et reversible.</p>'+
       '</div>'+
-      '<div class="fron-hero-orb" aria-hidden="true"><strong>ETHONE</strong></div>'+
+      '<div class="fron-mini-grid">'+items.map(function(item){
+        return '<article><span>'+iconMarkup(item.icon)+'</span><strong>'+esc(item.label)+'</strong><small>'+esc(item.sub)+'</small></article>';
+      }).join("")+'</div>'+
     '</div>';
   }
 
@@ -373,7 +454,6 @@
           return '<button class="fron-chip'+((style.font||"inter")===item.id?' is-selected':'')+'" type="button" data-fron-action="select-font" data-id="'+esc(item.id)+'">'+esc(item.label)+'</button>';
         }).join("")+'</div>'+
       '</div>'+
-      renderStylePreview(style)+
     '</div>';
   }
 
@@ -388,6 +468,113 @@
         '<div class="fron-preview-grid"><div></div><div></div><div></div></div>'+
       '</div>'+
     '</div>';
+  }
+
+  function previewWidgetLabel(id){
+    var item=findById(WIDGET_OPTIONS,id);
+    return item&&item.label?item.label:id;
+  }
+
+  function previewWidgetIcon(id){
+    var item=findById(WIDGET_OPTIONS,id);
+    return item&&item.icon?item.icon:"square";
+  }
+
+  function previewMetric(id,index){
+    var metrics={
+      today:"4 focus",
+      notes:"12 notes",
+      calendar:"2 events",
+      tasks:"5 tasks",
+      spotify:"Live",
+      discord:"Online",
+      github:"3 commits",
+      brain:"Ready",
+      focus:"42 min",
+      clock:"Now",
+      weather:"18 deg"
+    };
+    return metrics[id]||("Slot "+(index+1));
+  }
+
+  function renderPreviewWidgets(st){
+    var widgets=(st.selections.widgets||[]).slice(0,6);
+    if(!widgets.length)widgets=["brain","today","tasks"];
+    return widgets.map(function(id,index){
+      var wide=index===0||id==="brain"?" is-wide":"";
+      return '<article class="fron-live-widget'+wide+'" style="--delay:'+index+'">'+
+        '<span>'+iconMarkup(previewWidgetIcon(id))+'</span>'+
+        '<strong>'+esc(previewWidgetLabel(id))+'</strong>'+
+        '<small>'+esc(previewMetric(id,index))+'</small>'+
+        '<i aria-hidden="true"></i>'+
+      '</article>';
+    }).join("");
+  }
+
+  function renderPreviewConnections(st){
+    var connections=(st.selections.connections||[]).slice(0,4);
+    if(!connections.length)return '<span class="fron-live-chip is-muted">Connexions optionnelles</span>';
+    return connections.map(function(id){
+      return '<span class="fron-live-chip">'+esc(labelFrom(CONNECTION_OPTIONS,id))+'</span>';
+    }).join("");
+  }
+
+  function renderLivePreview(st){
+    var style=st.selections.style||defaultState().selections.style;
+    var rgb=hexToRgb(style.accent).join(",");
+    var space=currentSpaceLabel(st);
+    var brain=st.selections.brain||{};
+    var widgetCount=(st.selections.widgets||[]).length;
+    var connectionCount=(st.selections.connections||[]).length;
+    return '<section class="fron-live-preview" style="--preview-accent:'+esc(style.accent)+';--preview-rgb:'+esc(rgb)+'" data-preview-theme="'+esc(style.theme||"ethone-purple")+'" data-preview-density="'+esc(style.density||"comfortable")+'" data-preview-font="'+esc(style.font||"inter")+'">'+
+      '<div class="fron-live-top">'+
+        '<div><span>Live ETHONE Preview</span><strong>'+esc(space)+'</strong></div>'+
+        '<em>'+esc(style.density||"comfortable")+'</em>'+
+      '</div>'+
+      '<div class="fron-live-window">'+
+        '<div class="fron-live-sidebar" aria-hidden="true"><b>E</b><i></i><i></i><i></i><i></i></div>'+
+        '<div class="fron-live-main">'+
+          '<div class="fron-live-bar"><span>Brain, files, commands...</span><b>'+iconMarkup("sparkles")+' Ready</b></div>'+
+          '<div class="fron-live-hero">'+
+            '<div><small>Aujourd hui</small><strong>'+esc(space)+'</strong><p>'+widgetCount+' widgets · '+connectionCount+' connexions · Brain '+(brain.enabled?'active':'off')+'</p></div>'+
+            '<time data-fron-preview-clock>'+new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})+'</time>'+
+          '</div>'+
+          '<div class="fron-live-brain '+(brain.enabled?'is-on':'is-off')+'">'+
+            '<span class="fron-live-brain-dot"></span>'+
+            '<div><strong>'+esc(brain.enabled?"Brain analyse votre setup":"Brain en pause")+'</strong><small>'+esc(brain.enabled?"Provider "+labelFrom(PROVIDERS,brain.provider):"Activable a tout moment")+'</small></div>'+
+          '</div>'+
+          '<div class="fron-live-grid">'+renderPreviewWidgets(st)+'</div>'+
+          '<div class="fron-live-connections">'+renderPreviewConnections(st)+'</div>'+
+        '</div>'+
+      '</div>'+
+    '</section>';
+  }
+
+  function refreshPreviewOnly(st){
+    if(!root)return;
+    syncOnboardingVars(st);
+    var preview=root.querySelector(".fron-live-preview-host");
+    if(preview)preview.innerHTML=renderLivePreview(st);
+    var assistant=root.querySelector(".fron-assistant-host");
+    if(assistant)assistant.outerHTML=renderAssistant(st);
+    refreshIcons(root);
+  }
+
+  function updatePreviewClock(){
+    if(!root||!root.classList.contains("is-open"))return;
+    var clock=root.querySelector("[data-fron-preview-clock]");
+    if(clock)clock.textContent=new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
+  }
+
+  function startPreviewClock(){
+    clearInterval(previewClockTimer);
+    updatePreviewClock();
+    previewClockTimer=setInterval(updatePreviewClock,30000);
+  }
+
+  function stopPreviewClock(){
+    clearInterval(previewClockTimer);
+    previewClockTimer=0;
   }
 
   function renderWidgets(st){
@@ -479,21 +666,29 @@
     var progress=Math.round(((st.step+1)/STEPS.length)*100);
     var showClose=true;
     ensureRoot();
+    syncOnboardingVars(st);
     root.innerHTML='<div class="fron-overlay" role="presentation">'+
-      '<section class="fron-shell" role="dialog" aria-modal="true" aria-labelledby="fron-title">'+
+      '<section class="fron-shell fron-shell-v6" role="dialog" aria-modal="true" aria-labelledby="fron-title">'+
         '<aside class="fron-rail">'+
           '<div class="fron-brand"><div class="fron-logo">E</div><div><strong>ETHONE</strong><span>First Run Experience</span></div></div>'+
+          '<div class="fron-rail-status">'+
+            '<div><span>Progression</span><strong>Etape '+(st.step+1)+'/'+STEPS.length+'</strong></div>'+
+            '<div><span>Temps restant</span><strong>~ '+estimateMinutes(st)+' min</strong></div>'+
+          '</div>'+
           '<div class="fron-progress-list">'+renderProgress(st)+'</div>'+
-          '<div class="fron-rail-note">Chaque choix peut etre modifie plus tard dans Settings. L onboarding ne lance aucun service externe sans votre action.</div>'+
+          '<div class="fron-rail-note">Vos choix restent modifiables dans Settings. Les integrations sont preparees sans requete externe automatique.</div>'+
         '</aside>'+
         '<main class="fron-main">'+
           '<header class="fron-head">'+
-            '<div><span class="fron-eyebrow">Etape '+(st.step+1)+' / '+STEPS.length+'</span><h2 id="fron-title">'+esc(step.title)+'</h2><p>'+esc(step.sub)+'</p></div>'+
+            '<div><span class="fron-eyebrow">Configuration ETHONE OS</span><h2 id="fron-title">'+esc(step.title)+'</h2><p>'+esc(step.sub)+'</p></div>'+
             (showClose?'<button class="fron-close" type="button" data-fron-action="close" aria-label="Fermer">x</button>':'')+
           '</header>'+
-          '<div class="fron-body">'+renderBody(st)+'</div>'+
+          '<div class="fron-body">'+
+            '<section class="fron-stage">'+renderAssistant(st)+'<div class="fron-step-content">'+renderBody(st)+'</div></section>'+
+            '<aside class="fron-live-preview-host" aria-label="Apercu ETHONE en direct">'+renderLivePreview(st)+'</aside>'+
+          '</div>'+
           '<footer class="fron-footer">'+
-            '<div class="fron-progress-track" aria-hidden="true" style="--fron-progress:'+progress+'%"><i></i></div>'+
+            '<div class="fron-progress-wrap"><span>Step '+(st.step+1)+' of '+STEPS.length+'</span><div class="fron-progress-track" aria-hidden="true" style="--fron-progress:'+progress+'%"><i></i></div></div>'+
             '<div class="fron-actions">'+
               (st.step>0?'<button class="fron-btn" type="button" data-fron-action="back">Retour</button>':'')+
               (!isLast?'<button class="fron-btn" type="button" data-fron-action="skip">Passer cette etape</button>':'')+
@@ -506,6 +701,7 @@
     root.classList.add("is-open");
     document.body.classList.add("ethone-first-run-active");
     refreshIcons(root);
+    startPreviewClock();
     setTimeout(function(){
       var btn=root.querySelector(".fron-btn-primary");
       if(btn)btn.focus({preventScroll:true});
@@ -555,6 +751,7 @@
     var st=currentState||readState();
     if(field==="customSpaceName")st.selections.customSpaceName=event.target.value.slice(0,48);
     writeState(st);
+    refreshPreviewOnly(st);
   }
 
   function handleKeydown(event){
@@ -571,6 +768,7 @@
       writeState(st);
     }
     if(root)root.classList.remove("is-open");
+    stopPreviewClock();
     document.body.classList.remove("ethone-first-run-active");
     manualOpen=false;
     devSession=false;

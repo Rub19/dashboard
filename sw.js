@@ -1,4 +1,4 @@
-const ETHONE_VERSION = "2026-07-08-production-v98-emergency-stable-boot";
+const ETHONE_VERSION = "2026-07-09-production-v100-release-stability";
 const ETHONE_CACHE = `ethone-${ETHONE_VERSION}`;
 const ETHONE_OFFLINE_URL = "./index.html";
 const ETHONE_CORE_ASSETS = [
@@ -38,6 +38,7 @@ const ETHONE_CORE_ASSETS = [
   "./ui/flow.css",
   "./ui/brain-os-v5.css",
   "./ui/os-experience-polish.css",
+  "./ui/release-polish.css",
   "./ui/first-run.css",
   "./pages/studio/style.css",
   "./pages/import-assistant/style.css",
@@ -153,7 +154,9 @@ const ETHONE_BOOT_ASSETS = [
   "./ui/app.css",
   "./ui/layout-integrity.css",
   "./ui/clarity-polish.css",
+  "./ui/release-polish.css",
   "./ui/mobile.css",
+  "./ui/first-run.css",
   "./pages/dashboard-v4.css",
   "./core/safe-mode.js",
   "./core/emergency-performance-guard.js",
@@ -161,10 +164,12 @@ const ETHONE_BOOT_ASSETS = [
   "./core/lazy-modules.js",
   "./core/runtime.js",
   "./core/boot.js",
+  "./ui/release-polish.js",
   "./actions/action-registry.js",
   "./actions/legacy-navigation.js",
   "./services/auth/interactivity.js",
   "./services/auth/premium-experience.js",
+  "./services/onboarding/first-run.js",
   "./services/language/auth-dictionary.js",
   "./services/language/runtime.js",
   "./services/settings.js",

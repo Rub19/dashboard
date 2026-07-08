@@ -217,7 +217,22 @@
       global.toggleLivePanel(open);
       return true;
     }
-    return openPage("connections", null);
+    if (global.ETHONELazyModules && typeof global.ETHONELazyModules.load === "function") {
+      try {
+        if (typeof open === "boolean") global.localStorage && global.localStorage.setItem("ethone:widgets-panel-open", open ? "1" : "0");
+        else global.localStorage && global.localStorage.setItem("ethone:widgets-panel-open", "1");
+      } catch (e) {}
+      Promise.resolve(global.ETHONELazyModules.load("widgets")).then(function () {
+        if (global.document && global.document.body) global.document.body.classList.remove("ethone-emergency-minimal");
+        if (typeof global.toggleLivePanel === "function") global.toggleLivePanel(typeof open === "boolean" ? open : true);
+        else toast(unavailableMessage(), "info");
+      }).catch(function () {
+        toast("Impossible de charger le panneau Widgets pour le moment.", "warning");
+      });
+      return true;
+    }
+    toast(unavailableMessage(), "info");
+    return false;
   }
 
   function openSpaceSwitcher() {

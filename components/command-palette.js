@@ -916,7 +916,7 @@ function runIntegrationHubAction(id, action) {
       const selector = '[data-ih-action="' + action + '"][data-ih-id="' + id + '"]';
       const btn = document.querySelector(selector);
       if (btn && !btn.disabled) btn.click();
-      else cmdToast("Action indisponible pour cette integration.", "info");
+      else cmdToast("Fonctionnalite bientot disponible pour cette integration.", "info");
     } catch (e) {
       cmdToast("Impossible d'executer cette action pour le moment.", "error");
     }

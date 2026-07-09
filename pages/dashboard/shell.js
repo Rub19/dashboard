@@ -82,17 +82,26 @@ function renderSidebarNav(){
   const makeItem=(item,opts={})=>{
     const icon=SVG_ICONS[item.icon]||SVG_ICONS.dashboard;
     const isActive=page===item.id;
+    const pageExists=!!document.getElementById('page-'+item.id);
     const button=document.createElement('button');
     button.type='button';
-    button.className='nav-item os-nav-item'+(isActive?' active':'')+(opts.smart?' os-smart-item':'')+(item.pinned?' is-pinned':'');
+    button.className='nav-item os-nav-item SidebarItem'+(isActive?' active':'')+(opts.smart?' os-smart-item':'')+(item.pinned?' is-pinned':'')+(!pageExists?' is-disabled':'');
     button.dataset.page=item.id;
     button.dataset.navId=item.id;
-    button.draggable=opts.draggable!==false;
+    button.draggable=opts.draggable!==false&&pageExists;
     button.setAttribute('aria-current',isActive?'page':'false');
     button.setAttribute('aria-label',item.label);
-    button.title=item.label;
+    button.title=pageExists?item.label:(item.label+' - Coming Soon');
     button.dataset.actionId='navigation.open';
+    if(!pageExists){
+      button.disabled=true;
+      button.setAttribute('aria-disabled','true');
+    }
     button.onclick=function(){
+      if(!pageExists){
+        if(typeof toast==='function')toast('Fonctionnalite bientot disponible','info');
+        return;
+      }
       const Actions=window.Ethone&&window.Ethone.get&&window.Ethone.get('actions');
       if(Actions&&Actions.dispatch)Actions.dispatch('navigation.open',{page:item.id,el:button,source:'sidebar'});
       else switchPage(item.id,button);
@@ -124,29 +133,29 @@ function ensureOsSidebarShell(){
   const sb=document.getElementById('main-sidebar');
   if(!sb||sb.dataset.osSidebarReady==='1')return;
   sb.dataset.osSidebarReady='1';
-  sb.classList.add('os-sidebar');
+  sb.classList.add('os-sidebar','SidebarRoot');
+  sb.setAttribute('aria-label','Navigation principale');
   sb.innerHTML=`
     <div class="os-sidebar-bg" aria-hidden="true"></div>
-    <div class="os-sidebar-header">
-      <div class="os-brand-row">
+    <div class="os-sidebar-header SidebarHeader">
+      <div class="os-brand-row SidebarBrand">
         <div class="logo-icon os-logo-mark" aria-hidden="true"><svg fill="none" height="14" viewBox="0 0 20 20" width="14"><rect x="4" y="5" width="12" height="2" rx="1" fill="white" opacity=".95"></rect><rect x="4" y="9" width="12" height="2" rx="1" fill="white" opacity=".95"></rect><rect x="4" y="13" width="8" height="2" rx="1" fill="white" opacity=".95"></rect></svg></div>
         <div class="os-brand-copy"><span class="logo-text" id="logo-text-el">ETHONE</span><small>Personal OS</small></div>
         <button class="os-icon-btn" id="sidebar-compact-btn" type="button" title="Compact mode" aria-label="Compact mode">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4 4 8l4 4"/><path d="M4 8h14"/><path d="m16 12 4 4-4 4"/><path d="M6 16h14"/></svg>
         </button>
       </div>
-      <button class="os-workspace-switcher" type="button" id="os-sidebar-workspace" title="Switch Workspace">
+      <button class="os-workspace-switcher SidebarWorkspace" type="button" id="os-sidebar-workspace" title="Switch Workspace">
         <span class="os-workspace-orb" id="os-sidebar-workspace-orb"></span>
         <span><strong id="os-sidebar-workspace-name">Workspace</strong><small id="os-sidebar-workspace-sub">Active environment</small></span>
         <i aria-hidden="true">v</i>
       </button>
-      <button class="os-quick-search" type="button" id="os-sidebar-search" title="Ctrl+K">
+      <button class="os-quick-search SidebarSearch" type="button" id="os-sidebar-search" title="Ctrl+K">
         <span>Search ETHONE</span><kbd>Ctrl K</kbd>
       </button>
     </div>
-    <div class="nav-active-pill" id="nav-active-pill" aria-hidden="true"></div>
-    <div class="nav-section os-sidebar-scroll" id="sidebar-nav-main"></div>
-    <div class="nav-section os-sidebar-bottom" id="sidebar-nav-account"></div>
+    <div class="nav-section os-sidebar-scroll SidebarNav" id="sidebar-nav-main"></div>
+    <div class="nav-section os-sidebar-bottom SidebarFooter" id="sidebar-nav-account"></div>
   `;
   const compact=document.getElementById('sidebar-compact-btn');
   if(compact)compact.onclick=function(e){e.preventDefault();if(typeof toggleSidebarCompact==='function')toggleSidebarCompact();};
@@ -179,7 +188,7 @@ function updateOsSidebarHeader(p,page){
 
 function sectionShell(title,key,children){
   const section=document.createElement('section');
-  section.className='os-nav-section';
+  section.className='os-nav-section SidebarSection';
   section.dataset.section=key;
   const collapsed=localStorage.getItem('ethone:sidebar:section:'+key)==='0';
   section.innerHTML=`<button class="os-section-head" type="button" aria-expanded="${collapsed?'false':'true'}"><span>${escapeHTML(title)}</span><i aria-hidden="true">v</i></button><div class="os-section-body"></div>`;
@@ -217,7 +226,7 @@ function renderOsPinnedLinks(){
   return pins.map(pin=>{
     const btn=document.createElement('button');
     btn.type='button';
-    btn.className='nav-item os-nav-item os-pinned-link';
+    btn.className='nav-item os-nav-item os-pinned-link SidebarItem';
     btn.title=pin.name||pin.url||'Pinned';
     btn.onclick=function(){try{window.open(pin.url,'_blank','noopener,noreferrer')}catch(e){}};
     btn.innerHTML=`<span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 3h6l-1 6 3 3H7l3-3-1-6Z"/></svg></span><span class="nav-label-text">${escapeHTML(pin.name||pin.url||'Pinned')}</span>`;
@@ -227,7 +236,7 @@ function renderOsPinnedLinks(){
 
 function renderBottomActions(bottomItems,makeItem){
   const wrap=document.createElement('div');
-  wrap.className='os-bottom-wrap';
+  wrap.className='os-bottom-wrap SidebarFooterInner';
   wrap.innerHTML=`
     <div id="sb-sync-indicator" class="os-sync-indicator"><span id="sb-sync-dot"></span><span id="sb-sync-label">Sync</span></div>
     <div class="os-bottom-actions">
@@ -238,7 +247,7 @@ function renderBottomActions(bottomItems,makeItem){
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/></svg>
       </button>
     </div>
-    <button class="user-card os-user-card" type="button" id="os-sidebar-profile">
+    <button class="user-card os-user-card SidebarProfile" type="button" id="os-sidebar-profile">
       <div class="sidebar-avatar" id="sidebar-avatar"></div>
       <span class="sidebar-avatar-status" id="sidebar-avatar-status" aria-hidden="true"></span>
       <div class="user-info"><div class="user-name" id="display-username">User</div><div class="user-role" id="sidebar-user-role">ETHONE</div></div>
@@ -248,9 +257,36 @@ function renderBottomActions(bottomItems,makeItem){
   `;
   const settingsSlot=wrap.querySelector('.os-settings-slot');
   bottomItems.forEach(item=>settingsSlot.appendChild(makeItem(item,{draggable:false})));
-  wrap.querySelector('#os-sidebar-notifications').onclick=function(){if(typeof toggleNotifPanel==='function')toggleNotifPanel();};
-  wrap.querySelector('#os-sidebar-widgets').onclick=function(){if(typeof toggleLivePanel==='function')toggleLivePanel();};
-  wrap.querySelector('#os-sidebar-profile').onclick=function(){if(typeof goToProfileScreen==='function')goToProfileScreen();};
+  const notifBtn=wrap.querySelector('#os-sidebar-notifications');
+  const widgetsBtn=wrap.querySelector('#os-sidebar-widgets');
+  const profileBtn=wrap.querySelector('#os-sidebar-profile');
+  if(notifBtn){
+    notifBtn.dataset.actionId='notifications.open';
+    notifBtn.onclick=function(e){
+      e.preventDefault();
+      const Actions=window.Ethone&&window.Ethone.get&&window.Ethone.get('actions');
+      if(Actions&&Actions.dispatch)Actions.dispatch('notifications.open',{el:notifBtn,source:'sidebar'});
+      else if(typeof toggleNotifPanel==='function')toggleNotifPanel();
+    };
+  }
+  if(widgetsBtn){
+    widgetsBtn.dataset.actionId='widgets.open';
+    widgetsBtn.onclick=function(e){
+      e.preventDefault();
+      const Actions=window.Ethone&&window.Ethone.get&&window.Ethone.get('actions');
+      if(Actions&&Actions.dispatch)Actions.dispatch('widgets.open',{el:widgetsBtn,source:'sidebar'});
+      else if(typeof toggleLivePanel==='function')toggleLivePanel();
+    };
+  }
+  if(profileBtn){
+    profileBtn.dataset.actionId='profile.switch';
+    profileBtn.onclick=function(e){
+      e.preventDefault();
+      const Actions=window.Ethone&&window.Ethone.get&&window.Ethone.get('actions');
+      if(Actions&&Actions.dispatch)Actions.dispatch('profile.switch',{el:profileBtn,source:'sidebar'});
+      else if(typeof goToProfileScreen==='function')goToProfileScreen();
+    };
+  }
   return wrap;
 }
 

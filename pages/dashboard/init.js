@@ -79,7 +79,10 @@ function applySidebarCompact(){
   const p=curP();if(!p)return;
   const sb=document.getElementById('main-sidebar');
   if(sb)sb.classList.toggle('compact',!!p.sidebarCompact);
-  if(window.ethoneSidebarResize&&p.sidebarCompact)window.ethoneSidebarResize.suspendForCompact();
+  if(window.ethoneSidebarResize){
+    if(p.sidebarCompact)window.ethoneSidebarResize.suspendForCompact();
+    else window.ethoneSidebarResize.resumeFromCompact();
+  }
   // Dashboard boot can finish well after the one-time laptop-range
   // auto-compact check (which fires shortly after DOMContentLoaded, while
   // the login screen is still showing). Re-run it now so a laptop-width
@@ -112,8 +115,15 @@ function initDashboard(){
   document.getElementById('display-username').textContent=p.name;
   document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
   document.getElementById('page-dashboard').classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
-  const firstNav=document.querySelector('.nav-item');if(firstNav)firstNav.classList.add('active');
+  document.querySelectorAll('#main-sidebar .nav-item').forEach(el=>{
+    el.classList.remove('active');
+    el.setAttribute('aria-current','false');
+  });
+  const dashboardNav=document.querySelector('#main-sidebar .nav-item[data-page="dashboard"]');
+  if(dashboardNav){
+    dashboardNav.classList.add('active');
+    dashboardNav.setAttribute('aria-current','page');
+  }
   document.getElementById('quick-note').value=p.state.note||'';
   document.getElementById('main-note').value=p.state.note||'';
   updateClock();
@@ -210,7 +220,7 @@ function updateSidebarAvatar(){
     if(p.avatarImg){
       const img=document.createElement('img');
       img.src=p.avatarImg;
-      img.style.cssText='width:34px;height:34px;object-fit:cover;border-radius:7px;display:block';
+      img.style.cssText='width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block';
       img.onerror=()=>{ el.innerHTML=`<span style="font-size:15px;font-weight:700;color:var(--accent)">${(p.name||'U')[0].toUpperCase()}</span>`; };
       el.style.background='transparent';
       el.appendChild(img);

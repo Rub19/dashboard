@@ -11,8 +11,14 @@ function setMobNav(page){
 function toggleMobileSidebar(){
   const sidebarEl=document.getElementById('main-sidebar');
   const ov=document.getElementById('sidebar-overlay');
+  if(!sidebarEl)return;
   sidebarEl.classList.toggle('mobile-open');
-  if(ov)ov.classList.toggle('mobile-open');
+  const open=sidebarEl.classList.contains('mobile-open');
+  sidebarEl.setAttribute('aria-expanded',open?'true':'false');
+  if(ov){
+    ov.classList.toggle('mobile-open',open);
+    ov.setAttribute('aria-hidden',open?'false':'true');
+  }
   // Hide swipe hint once user discovers the sidebar
   const hint=document.getElementById('swipe-hint');
   if(hint&&sidebarEl.classList.contains('mobile-open')){
@@ -26,8 +32,12 @@ if(localStorage.getItem('nexus_swipe_discovered')){
   const h=document.getElementById('swipe-hint');if(h)h.style.display='none';
 }
 function closeMobileSidebar(){
-  document.getElementById('main-sidebar')?.classList.remove('mobile-open');
-  document.getElementById('sidebar-overlay')?.classList.remove('mobile-open');
+  const sidebar=document.getElementById('main-sidebar');
+  const overlay=document.getElementById('sidebar-overlay');
+  sidebar?.classList.remove('mobile-open');
+  sidebar?.setAttribute('aria-expanded','false');
+  overlay?.classList.remove('mobile-open');
+  overlay?.setAttribute('aria-hidden','true');
 }
 // Auto-close sidebar on nav click (mobile)
 document.addEventListener('click',e=>{

@@ -21,7 +21,7 @@ function switchPage(page,navEl){
   document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
   activePage.classList.add('active');
   animatePageIn(activePage,page);
-  document.querySelectorAll('.nav-item').forEach(el=>{
+  document.querySelectorAll('#main-sidebar .nav-item').forEach(el=>{
     el.classList.remove('active');
     el.setAttribute('aria-current','false');
   });
@@ -29,7 +29,7 @@ function switchPage(page,navEl){
     navEl.classList.add('active');
     navEl.setAttribute('aria-current','page');
   }
-  else document.querySelectorAll('.nav-item').forEach(el=>{
+  else document.querySelectorAll('#main-sidebar .nav-item').forEach(el=>{
     if(el.dataset.page===page){
       el.classList.add('active');
       el.setAttribute('aria-current','page');

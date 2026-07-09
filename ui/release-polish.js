@@ -241,6 +241,10 @@
   }
 
   function notify(message,type){
+    if(String(message||"").toLowerCase().indexOf("action indisponible")!==-1){
+      message="Fonctionnalite bientot disponible ou module en cours de chargement.";
+      type=type==="error"?"info":type;
+    }
     if(typeof window.ethoneToast==="function"){
       try{window.ethoneToast(message,type||"info");return;}catch(e){}
     }
@@ -273,12 +277,59 @@
       event.stopPropagation();
       el.classList.add("ethone-action-unavailable");
       setTimeout(function(){el.classList.remove("ethone-action-unavailable")},700);
-      notify("Action indisponible pour le moment. Recharge ETHONE si le problème persiste.","warning");
+      notify("Fonctionnalite bientot disponible ou module en cours de chargement.","info");
       try{
         window.__ethoneMissingActionWarnings=(window.__ethoneMissingActionWarnings||[]).slice(-30);
         window.__ethoneMissingActionWarnings.push({handlers:missing,element:(el.textContent||el.title||el.id||"action").trim().slice(0,80),at:new Date().toISOString()});
       }catch(e){}
     },true);
+  }
+
+  function installProfileContextMenu(){
+    if(installProfileContextMenu.done)return;
+    installProfileContextMenu.done=true;
+    function closeMenu(){
+      var menu=qs("#ethone-profile-context-menu");
+      if(menu)menu.remove();
+    }
+    function run(id){
+      var A=window.Ethone&&window.Ethone.get&&window.Ethone.get("actions");
+      if(A&&typeof A.dispatch==="function")return A.dispatch(id,{source:"profile-context-menu"});
+      if(id==="settings.open"&&typeof window.switchPage==="function")return window.switchPage("settings",null);
+      if(id==="profile.switch"&&typeof window.goToProfileScreen==="function")return window.goToProfileScreen();
+      if(id==="auth.signout"&&typeof window.signOut==="function")return window.signOut();
+      notify("Fonctionnalite bientot disponible.","info");
+    }
+    document.addEventListener("contextmenu",function(event){
+      var profile=event.target&&event.target.closest&&event.target.closest("#os-sidebar-profile");
+      if(!profile)return;
+      event.preventDefault();
+      closeMenu();
+      var rect=profile.getBoundingClientRect();
+      var menu=document.createElement("div");
+      menu.id="ethone-profile-context-menu";
+      menu.className="ethone-profile-context-menu";
+      menu.innerHTML=[
+        '<button type="button" data-action="profile.switch"><span>Profil</span></button>',
+        '<button type="button" data-action="settings.open"><span>Parametres</span></button>',
+        '<button type="button" data-action="auth.signout"><span>Deconnexion</span></button>'
+      ].join("");
+      menu.style.left=Math.min(rect.right+8,window.innerWidth-190)+"px";
+      menu.style.bottom=Math.max(12,window.innerHeight-rect.bottom)+"px";
+      document.body.appendChild(menu);
+      qsa("button",menu).forEach(function(btn){
+        btn.addEventListener("click",function(e){
+          e.preventDefault();
+          var id=btn.getAttribute("data-action");
+          closeMenu();
+          run(id);
+        });
+      });
+    });
+    document.addEventListener("click",function(event){
+      if(!event.target.closest||!event.target.closest("#ethone-profile-context-menu"))closeMenu();
+    },true);
+    document.addEventListener("keydown",function(event){if(event.key==="Escape")closeMenu()});
   }
 
   function normalizeTextOverflow(){
@@ -389,6 +440,7 @@
   function apply(){
     installToastSystem();
     installWidgetPanelProxy();
+    installProfileContextMenu();
     applyPerformanceBudget();
     normalizeButtons();
     normalizeTextOverflow();
@@ -404,6 +456,7 @@
     detectInputMode();
     installToastSystem();
     installWidgetPanelProxy();
+    installProfileContextMenu();
     installActionGuard();
     apply();
     window.addEventListener("ethone:dashboard-ready",schedule);

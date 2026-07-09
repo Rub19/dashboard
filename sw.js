@@ -1,4 +1,4 @@
-const ETHONE_VERSION = "2026-07-09-production-v100-release-stability";
+const ETHONE_VERSION = "2026-07-09-production-v106-sidebar-root-fix";
 const ETHONE_CACHE = `ethone-${ETHONE_VERSION}`;
 const ETHONE_OFFLINE_URL = "./index.html";
 const ETHONE_CORE_ASSETS = [
@@ -54,6 +54,11 @@ const ETHONE_CORE_ASSETS = [
   "./core/enterprise-runtime.js",
   "./core/qa-repair.js",
   "./pages/dashboard/init.js",
+  "./pages/dashboard/shell.js",
+  "./pages/dashboard/resizable-sidebar.js",
+  "./pages/dashboard/nav-active-pill.js",
+  "./pages/dashboard/mobile-sidebar.js",
+  "./pages/dashboard/sidebar-widgets-init.js",
   "./pages/dashboard/widget-catalog.js",
   "./pages/dashboard-v4.css",
   "./pages/dashboard/live-panel-resize.js",
@@ -72,6 +77,7 @@ const ETHONE_CORE_ASSETS = [
   "./ui/accessibility.js",
   "./core/runtime.js",
   "./components/command-palette.js",
+  "./components/toast.js",
   "./actions/action-registry.js",
   "./actions/legacy-navigation.js",
   "./widgets/registry.js",
@@ -155,6 +161,7 @@ const ETHONE_BOOT_ASSETS = [
   "./ui/layout-integrity.css",
   "./ui/clarity-polish.css",
   "./ui/release-polish.css",
+  "./ui/os-sidebar.css",
   "./ui/mobile.css",
   "./ui/first-run.css",
   "./pages/dashboard-v4.css",
@@ -176,6 +183,9 @@ const ETHONE_BOOT_ASSETS = [
   "./services/theme.js",
   "./pages/dashboard/init.js",
   "./pages/dashboard/shell.js",
+  "./pages/dashboard/resizable-sidebar.js",
+  "./pages/dashboard/nav-active-pill.js",
+  "./pages/dashboard/mobile-sidebar.js",
   "./pages/dashboard-v4.js",
   "./icons/ethone-icon.svg",
   "./icons/ethone-icon-192.png",

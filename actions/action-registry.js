@@ -74,11 +74,11 @@
 
   function failedMessage() {
     return text({
-      fr: "Action indisponible pour le moment",
-      en: "Action unavailable right now",
-      es: "Accion no disponible ahora",
-      de: "Aktion momentan nicht verfugbar"
-    }, "Action unavailable right now");
+      fr: "Operation impossible pour le moment",
+      en: "Operation could not be completed",
+      es: "Operacion no completada",
+      de: "Vorgang konnte nicht abgeschlossen werden"
+    }, "Operation could not be completed");
   }
 
   function register(id, descriptor) {
@@ -236,7 +236,7 @@
   }
 
   function openSpaceSwitcher() {
-    var btn = document.querySelector('[data-space-action="open"],.space-switcher-button,[data-v4-action-id="dashboard.workspace.toggle"],.d4-workspace,#os-sidebar-workspace');
+    var btn = document.querySelector('[data-space-action="open"],.space-switcher-button,[data-v4-action-id="dashboard.workspace.toggle"],.d4-workspace');
     if (btn && typeof btn.click === "function") {
       btn.click();
       return true;
@@ -272,9 +272,11 @@
       ["#global-search", "command.open"],
       [".search-bar", "command.open"],
       ["#live-panel-toggle-btn", "widgets.open"],
-      ["#live-panel-retract-btn", "widgets.open"],
+      ["#live-panel-retract-btn", "widgets.collapse"],
+      ["#live-panel-close-btn", "widgets.close"],
       ["#live-panel-add-btn", "widgets.add"],
       ["#live-panel-manage-btn", "widgets.manage"],
+      ["#os-sidebar-widgets", "widgets.open"],
       ["#topbar-profile-btn", "profile.switch"],
       ["#mob-topbar-avatar", "profile.switch"],
       ["#mob-topbar-name", "profile.switch"]
@@ -310,7 +312,8 @@
 
   register("navigation.open", { label: "Open page", handler: function (ctx) {
     var navEl = ctx.el && ctx.el.classList && ctx.el.classList.contains("nav-item") ? ctx.el : null;
-    return openPage(ctx.page, navEl);
+    var page = ctx.page || (ctx.el && ctx.el.dataset && (ctx.el.dataset.actionPage || ctx.el.dataset.page)) || "";
+    return openPage(page, navEl);
   } });
   [
     "dashboard", "files", "notes", "todos", "tasks", "kanban", "calendar", "habits", "goals",
@@ -356,7 +359,28 @@
   } });
   register("focus.continue", { label: "Continue focus", handler: focusPomodoro });
   register("profile.switch", { label: "Switch profile", handler: profileSwitch });
+  register("auth.signout", { label: "Sign out", handler: function () {
+    if (typeof global.signOut === "function") return global.signOut();
+    try {
+      if (global.sb && global.sb.auth && typeof global.sb.auth.signOut === "function") {
+        return Promise.resolve(global.sb.auth.signOut()).then(function () {
+          if (typeof global.showAuth === "function") global.showAuth();
+        });
+      }
+    } catch (e) {}
+    toast(unavailableMessage(), "info");
+    return false;
+  } });
   register("widgets.open", { label: "Widgets", handler: function () { return widgetsPanel(); } });
+  register("widgets.close", { label: "Close widgets", handler: function () {
+    if (typeof global.closeLivePanel === "function") return global.closeLivePanel();
+    if (typeof global.toggleLivePanel === "function") return global.toggleLivePanel(false);
+    return widgetsPanel(false);
+  } });
+  register("widgets.collapse", { label: "Collapse widgets", handler: function () {
+    if (typeof global.collapseLivePanel === "function") return global.collapseLivePanel();
+    return widgetsPanel(true);
+  } });
   register("widgets.add", { label: "Add widget", handler: function () {
     if (typeof global.openLivePanelAddPicker === "function") return global.openLivePanelAddPicker();
     return widgetsPanel(true);

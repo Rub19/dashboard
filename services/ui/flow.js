@@ -192,7 +192,7 @@
       }
     } catch (e) {
       console.warn("[ETHONE Flow] action failed", id, e);
-      notify("Action indisponible: " + id, "warning");
+      notify("Fonctionnalite bientot disponible: " + id, "info");
       return false;
     }
     return false;

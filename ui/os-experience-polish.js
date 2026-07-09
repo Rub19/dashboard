@@ -92,7 +92,7 @@
     }
     if (isDisabled(el)) {
       el.classList.add("ethone-os-disabled");
-      if (!el.getAttribute("title")) el.setAttribute("title", "Action indisponible pour le moment");
+      if (!el.getAttribute("title")) el.setAttribute("title", "Fonctionnalite bientot disponible");
     }
   }
 

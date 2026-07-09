@@ -347,7 +347,7 @@
     var A=actionRegistry();
     if(A&&typeof A.dispatch==="function")return A.dispatch(action,ctx||{source:"smart-layouts"});
     if(typeof window.runAction==="function")return window.runAction(action,ctx||{source:"smart-layouts"});
-    toast(t("Action indisponible","Action unavailable"),"info");
+    toast(t("Fonctionnalite bientot disponible","Feature coming soon"),"info");
     return false;
   }
   function renderBar(result,settings){

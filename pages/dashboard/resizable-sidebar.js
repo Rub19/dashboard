@@ -1,107 +1,154 @@
-/* ETHONE legacy compatibility module: resizable-sidebar. */
-//  RESIZABLE SIDEBAR — single source of truth: the --sidebar-w CSS var.
-//  The grid app-shell reads it for the column track, the resize handle
-//  reads it for its own position (left:var(--sidebar-w)) — nothing else
-//  needs manual JS syncing anymore.
-// ===================================================
+/* ETHONE Sidebar Root Fix.
+   Single source of truth for sidebar sizing: --sidebar-w on <html>. */
 (function(){
-  const handle = document.getElementById('resize-handle');
-  const sidebar = document.querySelector('.sidebar');
-  const root = document.documentElement;
-  if(!handle||!sidebar) return;
+  "use strict";
+  if(window.__ethoneSidebarResizeReady)return;
+  window.__ethoneSidebarResizeReady=true;
 
-  const DEFAULT_W = 260, MIN_W = 236, MAX_W = 340, COMPACT_W = 72;
+  var handle=document.getElementById("resize-handle");
+  var sidebar=document.getElementById("main-sidebar");
+  var root=document.documentElement;
+  if(!handle||!sidebar)return;
 
-  function applyWidth(w){
-    root.style.setProperty('--sidebar-w', w+'px');
-    const availW = w - 24;
-    const scale = Math.min(availW / 310, 0.95);
-    const iframe = document.getElementById('nowplaying-iframe');
-    if(iframe){
-      iframe.style.transform = 'translateX(-50%) scale('+scale.toFixed(3)+')';
-      const wrap = document.getElementById('nowplaying-iframe-wrap');
-      if(wrap) wrap.style.height = Math.round(68*scale)+'px';
-    }
-    // --sidebar-w lives on <html>, not #main-sidebar, so nav-active-pill.js's
-    // MutationObserver on the sidebar element never sees this change — without
-    // this direct call the pill silently stops tracking during an active drag.
-    if(typeof window.ethonePositionNavPill === 'function') window.ethonePositionNavPill();
+  var DEFAULT_W=260;
+  var MIN_W=236;
+  var MAX_W=336;
+  var COMPACT_W=76;
+  var WIDTH_KEY="sb_width";
+  var COMPACT_KEY="ethone:sidebar:compact";
+
+  function clamp(value){
+    value=parseInt(value,10);
+    if(!Number.isFinite(value))value=DEFAULT_W;
+    return Math.min(Math.max(value,MIN_W),MAX_W);
   }
 
-  // Restore saved width
-  const savedW = parseInt(localStorage.getItem('sb_width')||String(DEFAULT_W));
-  applyWidth(Math.min(Math.max(savedW, MIN_W), MAX_W));
+  function readWidth(){
+    try{return clamp(localStorage.getItem(WIDTH_KEY)||DEFAULT_W)}catch(e){return DEFAULT_W}
+  }
 
-  let dragging = false, startX = 0, startW = 0, pendingW = null, raf = null;
+  function persistWidth(width){
+    try{localStorage.setItem(WIDTH_KEY,String(clamp(width)))}catch(e){}
+  }
+
+  function applyWidth(width){
+    width=clamp(width);
+    root.style.setProperty("--sidebar-w",width+"px");
+    sidebar.style.removeProperty("width");
+    sidebar.style.removeProperty("min-width");
+    sidebar.style.removeProperty("max-width");
+    if(typeof window.ethoneUpdateSidebarScrollFade==="function")window.ethoneUpdateSidebarScrollFade();
+    return width;
+  }
+
+  function isCompact(){
+    return sidebar.classList.contains("compact");
+  }
+
+  function setCompact(compact){
+    compact=!!compact;
+    sidebar.classList.toggle("compact",compact);
+    try{localStorage.setItem(COMPACT_KEY,compact?"1":"0")}catch(e){}
+    if(compact){
+      root.style.setProperty("--sidebar-w",COMPACT_W+"px");
+      handle.hidden=true;
+      handle.style.display="none";
+      sidebar.setAttribute("aria-label","Navigation compacte");
+    }else{
+      handle.hidden=false;
+      handle.style.display="";
+      applyWidth(readWidth());
+      sidebar.setAttribute("aria-label","Navigation principale");
+    }
+    if(typeof window.ethoneUpdateSidebarScrollFade==="function")setTimeout(window.ethoneUpdateSidebarScrollFade,80);
+  }
+
+  applyWidth(readWidth());
+  try{
+    if(localStorage.getItem(COMPACT_KEY)==="1")setCompact(true);
+  }catch(e){}
+
+  var dragging=false;
+  var startX=0;
+  var startW=0;
+  var pendingW=null;
+  var raf=0;
+  var pointerId=null;
 
   function flush(){
-    raf = null;
-    if(pendingW==null) return;
+    raf=0;
+    if(pendingW==null)return;
     applyWidth(pendingW);
   }
 
-  handle.addEventListener('mousedown', e=>{
-    dragging = true;
-    startX = e.clientX;
-    startW = sidebar.offsetWidth;
-    handle.classList.add('dragging');
-    sidebar.classList.add('sb-resizing');
-    document.body.style.userSelect = 'none';
-    document.body.style.cursor = 'col-resize';
-    e.preventDefault();
+  function schedule(width){
+    pendingW=clamp(width);
+    if(!raf)raf=requestAnimationFrame(flush);
+  }
+
+  function start(event){
+    if(isCompact())return;
+    dragging=true;
+    pointerId=event.pointerId;
+    startX=event.clientX;
+    startW=sidebar.getBoundingClientRect().width||readWidth();
+    handle.classList.add("dragging");
+    sidebar.classList.add("sb-resizing");
+    document.body.classList.add("ethone-sidebar-resizing");
+    try{handle.setPointerCapture(pointerId)}catch(e){}
+    event.preventDefault();
+  }
+
+  function move(event){
+    if(!dragging)return;
+    schedule(startW+(event.clientX-startX));
+  }
+
+  function end(){
+    if(!dragging)return;
+    dragging=false;
+    if(raf){cancelAnimationFrame(raf);raf=0}
+    if(pendingW!=null){applyWidth(pendingW);pendingW=null}
+    handle.classList.remove("dragging");
+    sidebar.classList.remove("sb-resizing");
+    document.body.classList.remove("ethone-sidebar-resizing");
+    persistWidth(sidebar.getBoundingClientRect().width||readWidth());
+    try{if(pointerId!=null)handle.releasePointerCapture(pointerId)}catch(e){}
+    pointerId=null;
+  }
+
+  if(window.PointerEvent){
+    handle.addEventListener("pointerdown",start);
+    handle.addEventListener("pointermove",move);
+    handle.addEventListener("pointerup",end);
+    handle.addEventListener("pointercancel",end);
+  }else{
+    handle.addEventListener("mousedown",start);
+    document.addEventListener("mousemove",move);
+    document.addEventListener("mouseup",end);
+  }
+
+  handle.addEventListener("dblclick",function(event){
+    event.preventDefault();
+    var width=applyWidth(DEFAULT_W);
+    persistWidth(width);
   });
 
-  document.addEventListener('mousemove', e=>{
-    if(!dragging) return;
-    pendingW = Math.min(Math.max(startW + (e.clientX - startX), MIN_W), MAX_W);
-    if(raf==null) raf = requestAnimationFrame(flush);
-  });
-
-  document.addEventListener('mouseup', ()=>{
-    if(!dragging) return;
-    dragging = false;
-    if(raf!=null){ cancelAnimationFrame(raf); raf=null; }
-    if(pendingW!=null){ applyWidth(pendingW); pendingW=null; }
-    handle.classList.remove('dragging');
-    sidebar.classList.remove('sb-resizing');
-    document.body.style.userSelect = '';
-    document.body.style.cursor = '';
-    localStorage.setItem('sb_width', sidebar.offsetWidth);
-  });
-
-  handle.addEventListener('dblclick', e=>{
-    e.preventDefault();
-    sidebar.classList.add('sb-resize-reset');
-    applyWidth(DEFAULT_W);
-    localStorage.setItem('sb_width', DEFAULT_W);
-    setTimeout(()=>sidebar.classList.remove('sb-resize-reset'), 260);
-  });
-
-  // Compact mode pins the width to COMPACT_W; expanding restores the last
-  // saved width. Both just flip the same CSS var — no per-element sync.
   window.ethoneSidebarResize={
-    COMPACT_W, DEFAULT_W, MIN_W, MAX_W,
-    suspendForCompact(){
-      root.style.setProperty('--sidebar-w', COMPACT_W+'px');
-      handle.style.display='none';
-      if(typeof window.ethonePositionNavPill === 'function') window.ethonePositionNavPill();
+    COMPACT_W:COMPACT_W,
+    DEFAULT_W:DEFAULT_W,
+    MIN_W:MIN_W,
+    MAX_W:MAX_W,
+    suspendForCompact:function(){setCompact(true)},
+    resumeFromCompact:function(){setCompact(false)},
+    setCompact:setCompact,
+    setWidth:function(width){
+      setCompact(false);
+      width=applyWidth(width);
+      persistWidth(width);
+      return width;
     },
-    resumeFromCompact(){
-      handle.style.display='';
-      const w=parseInt(localStorage.getItem('sb_width')||String(DEFAULT_W));
-      applyWidth(Math.min(Math.max(w,MIN_W),MAX_W));
-    },
-    // Driven by the Theme Editor's width slider — same persistence as manual drag.
-    setWidth(w){
-      w=Math.min(Math.max(w,MIN_W),MAX_W);
-      applyWidth(w);
-      localStorage.setItem('sb_width', w);
-    },
-    currentWidth(){
-      return parseInt(localStorage.getItem('sb_width')||String(DEFAULT_W));
-    }
+    currentWidth:function(){return isCompact()?COMPACT_W:readWidth()},
+    isCompact:isCompact
   };
 })();
-
-
-// ===================================================

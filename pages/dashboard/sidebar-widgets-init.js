@@ -2,6 +2,38 @@
 // ══════════════════════════════════════════════════════════════
 //  SIDEBAR WIDGETS INIT — called on every dashboard load
 // ══════════════════════════════════════════════════════════════
+function ethoneScheduleWidgetTask(label,fn,delay){
+  if(typeof fn!=='function')return;
+  const run=()=>{try{fn()}catch(e){console.warn('[ETHONE widgets] task failed:',label,e);}};
+  const idle=window.requestIdleCallback;
+  setTimeout(()=>{if(idle)idle(run,{timeout:1400});else run();},Number(delay)||0);
+}
+
+function ethoneWidgetInitSignature(p){
+  try{
+    const state=p&&p.state?p.state:{};
+    const conn=state.connections||{};
+    const prefs=state.liveWidgets||state.sidebarWidgets||{};
+    return JSON.stringify({
+      discord:!!conn.discord?.userId,
+      lastfm:!!conn.lastfm?.username,
+      github:!!conn.github?.username,
+      steam:!!conn.steam?.data,
+      visible:prefs.visible||{},
+      sidebar:prefs
+    });
+  }catch(e){return 'unknown'}
+}
+
+function ethoneScheduleSidebarWidgetsInit(p,delay){
+  if(!p)return false;
+  window.__ethoneSidebarWidgetsSchedule=window.__ethoneSidebarWidgetsSchedule||{};
+  clearTimeout(window.__ethoneSidebarWidgetsSchedule.timer);
+  window.__ethoneSidebarWidgetsSchedule.timer=setTimeout(()=>initSidebarWidgets(p),Number(delay)||120);
+  return true;
+}
+window.ethoneScheduleSidebarWidgetsInit=ethoneScheduleSidebarWidgetsInit;
+
 function initSidebarWidgets(p){
   if(!p)return;
   if(window.ethoneCanMountUI&&!window.ethoneCanMountUI('widgets-panel')){
@@ -12,6 +44,19 @@ function initSidebarWidgets(p){
     if(typeof updateLiveSectionVisibility==='function')setTimeout(updateLiveSectionVisibility,50);
     return;
   }
+  window.__ethoneSidebarWidgetsInit=window.__ethoneSidebarWidgetsInit||{running:false,lastAt:0,lastSig:''};
+  const initState=window.__ethoneSidebarWidgetsInit;
+  const signature=ethoneWidgetInitSignature(p);
+  const now=Date.now();
+  if(initState.running)return;
+  if(initState.lastSig===signature&&now-initState.lastAt<1800){
+    if(typeof updateLiveSectionVisibility==='function')ethoneScheduleWidgetTask('visibility',updateLiveSectionVisibility,80);
+    return;
+  }
+  initState.running=true;
+  initState.lastSig=signature;
+  initState.lastAt=now;
+  setTimeout(()=>{initState.running=false},0);
   const conn=p.state?.connections||{};
   const setWidgetDisplay=(id,show)=>{
     const el=document.getElementById(id);
@@ -36,8 +81,10 @@ function initSidebarWidgets(p){
     if(ifrWrap)ifrWrap.style.setProperty('display','none','important');
     // NE PAS démarrer le auto-refresh Last.fm fallback quand Discord est connecté
     clearInterval(_spotifyAutoRefresh);
-    refreshDiscordSidebar();
-    startLanyardWS(conn.discord.userId);
+    ethoneScheduleWidgetTask('discord',()=>{
+      refreshDiscordSidebar();
+      startLanyardWS(conn.discord.userId);
+    },120);
   } else {
     setWidgetDisplay('sb-discord-wrap',false);
     // No Discord — always use Last.fm fallback for Now Playing
@@ -46,8 +93,10 @@ function initSidebarWidgets(p){
     if(conn.lastfm?.username&&vis.nowplaying!==false){
       const ifrWrap=document.getElementById('sb-spotify-iframe-wrap');
       if(ifrWrap)ifrWrap.style.setProperty('display','block','important');
-      refreshSpotifySidebar();
-      startSpotifyAutoRefresh();
+      ethoneScheduleWidgetTask('spotify',()=>{
+        refreshSpotifySidebar();
+        startSpotifyAutoRefresh();
+      },160);
     }else{
       setWidgetDisplay('sb-spotify-iframe-wrap',false);
     }
@@ -55,22 +104,24 @@ function initSidebarWidgets(p){
 
   // ── Last.fm scrobble card ──
   if(conn.lastfm?.username&&vis.lastfm!==false){
-    renderLastfmCard(conn.lastfm).catch(()=>{});
-    startLastfmAutoRefresh();
+    ethoneScheduleWidgetTask('lastfm',()=>{
+      renderLastfmCard(conn.lastfm).catch(()=>{});
+      startLastfmAutoRefresh();
+    },220);
   }else{
     setWidgetDisplay('sb-lastfm-wrap',false);
   }
 
   // ── GitHub activity card ──
   if(conn.github?.username&&vis.github!==false&&typeof renderGithubSidebar==='function'){
-    renderGithubSidebar().catch(()=>{});
+    ethoneScheduleWidgetTask('github',()=>renderGithubSidebar().catch(()=>{}),280);
   }else{
     setWidgetDisplay('sb-github-wrap',false);
   }
 
   // ── Steam status card (re-render from cache; toggling visibility hits this too) ──
   if(conn.steam?.data&&vis.steam!==false&&typeof renderSteamSidebar==='function'){
-    renderSteamSidebar(conn.steam.data);
+    ethoneScheduleWidgetTask('steam',()=>renderSteamSidebar(conn.steam.data),340);
   }else{
     setWidgetDisplay('sb-steam-wrap',false);
   }
@@ -80,5 +131,5 @@ function initSidebarWidgets(p){
     setWidgetDisplay('sb-twitch-wrap',false);
   }
 
-  if(typeof updateLiveSectionVisibility==='function')setTimeout(updateLiveSectionVisibility,50);
+  if(typeof updateLiveSectionVisibility==='function')ethoneScheduleWidgetTask('visibility',updateLiveSectionVisibility,420);
 }

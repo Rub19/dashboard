@@ -576,3 +576,311 @@ body.ethone-dashboard-v4 #d4-widget-grid,
     max-width:100%!important;
   }
 }
+
+/* Dashboard critical fix pass: widgets panel states, sidebar stability, profile and icons. */
+:root{
+  --live-panel-rail-w:48px;
+}
+
+.app-shell.live-panel-collapsed,
+body.ethone-widgets-panel-rail .app-shell{
+  grid-template-columns:var(--sidebar-w,260px) minmax(0,1fr) var(--live-panel-rail-w,48px)!important;
+}
+
+body.ethone-widgets-panel-enabled.ethone-widgets-panel-rail .live-panel{
+  width:var(--live-panel-rail-w,48px)!important;
+  min-width:var(--live-panel-rail-w,48px)!important;
+  max-width:var(--live-panel-rail-w,48px)!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  transform:none!important;
+}
+
+body.ethone-widgets-panel-enabled:not(.ethone-widgets-panel-rail) .live-panel{
+  opacity:1!important;
+  pointer-events:auto!important;
+  transform:none!important;
+}
+
+.live-panel{
+  transition:width 220ms var(--ease-premium,cubic-bezier(.22,1,.36,1)),opacity 180ms ease,transform 220ms var(--ease-premium,cubic-bezier(.22,1,.36,1))!important;
+}
+
+.live-panel-header{
+  min-height:54px;
+}
+
+.live-panel-icon-btn{
+  min-width:32px!important;
+  width:32px!important;
+  height:32px!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:10px!important;
+  font-size:14px!important;
+  line-height:1!important;
+}
+
+.live-panel-icon-btn:active{
+  transform:scale(.96)!important;
+}
+
+body.ethone-widgets-panel-rail .live-panel-header{
+  height:100%;
+  padding:10px 7px!important;
+  display:flex!important;
+  align-items:flex-start!important;
+  justify-content:center!important;
+}
+
+body.ethone-widgets-panel-rail .live-panel-title,
+body.ethone-widgets-panel-rail #live-panel-add-btn,
+body.ethone-widgets-panel-rail #live-panel-manage-btn,
+body.ethone-widgets-panel-rail #live-panel-close-btn,
+body.ethone-widgets-panel-rail .live-panel-body{
+  display:none!important;
+}
+
+body.ethone-widgets-panel-rail #live-panel-retract-btn{
+  width:34px!important;
+  height:34px!important;
+  color:#ddd6fe!important;
+  background:rgba(139,92,246,.16)!important;
+  border-color:rgba(139,92,246,.28)!important;
+}
+
+body.ethone-widgets-panel-rail .live-panel-resize-handle{
+  display:none!important;
+}
+
+.live-panel-empty{
+  min-height:calc(100dvh - 110px);
+  padding:28px 18px!important;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  text-align:center;
+  color:rgba(248,245,255,.66)!important;
+}
+
+.live-panel-empty[hidden]{
+  display:none!important;
+}
+
+.live-panel-empty-art{
+  width:86px;
+  height:74px;
+  position:relative;
+  margin-bottom:4px;
+  border-radius:24px;
+  background:linear-gradient(145deg,rgba(139,92,246,.16),rgba(255,255,255,.035));
+  border:1px solid rgba(255,255,255,.09);
+  box-shadow:0 18px 52px rgba(0,0,0,.28),0 0 34px rgba(139,92,246,.12);
+}
+
+.live-panel-empty-art span{
+  position:absolute;
+  border-radius:10px;
+  background:rgba(139,92,246,.22);
+  border:1px solid rgba(255,255,255,.08);
+}
+
+.live-panel-empty-art span:nth-child(1){left:12px;top:12px;width:25px;height:20px}
+.live-panel-empty-art span:nth-child(2){right:12px;top:12px;width:25px;height:32px}
+.live-panel-empty-art span:nth-child(3){left:12px;bottom:12px;width:34px;height:22px}
+.live-panel-empty-art span:nth-child(4){right:12px;bottom:12px;width:18px;height:18px;border-radius:999px}
+
+.live-panel-empty strong{
+  color:#fff;
+  font-size:15px;
+  font-weight:780;
+}
+
+.live-panel-empty p{
+  max-width:260px;
+  margin:0;
+  color:rgba(248,245,255,.5);
+  font-size:12px;
+  line-height:1.55;
+}
+
+.live-panel-empty-btn{
+  margin-top:4px;
+  min-height:36px;
+  padding:0 14px;
+  border:1px solid rgba(139,92,246,.34);
+  border-radius:12px;
+  color:#fff;
+  background:linear-gradient(135deg,rgba(139,92,246,.92),rgba(124,58,237,.86));
+  box-shadow:0 14px 34px rgba(139,92,246,.2);
+  font:760 12px/1 Inter,system-ui,sans-serif;
+  cursor:pointer;
+}
+
+.live-panel-empty-btn:hover{
+  filter:brightness(1.06);
+  transform:translateY(-1px);
+}
+
+#main-sidebar.os-sidebar,
+body.ethone-2026-ui #main-sidebar.os-sidebar,
+body.ethone-v2 #main-sidebar.os-sidebar{
+  flex:0 0 var(--sidebar-w,260px)!important;
+  width:var(--sidebar-w,260px)!important;
+  min-width:var(--sidebar-w,260px)!important;
+  max-width:var(--sidebar-w,260px)!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+}
+
+#main-sidebar.os-sidebar .os-sidebar-header,
+#main-sidebar.os-sidebar .os-sidebar-bottom{
+  flex:0 0 auto!important;
+}
+
+#sidebar-nav-main.os-sidebar-scroll{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  padding-bottom:12px!important;
+}
+
+#sidebar-nav-account.os-sidebar-bottom{
+  flex:0 0 auto!important;
+  overflow:visible!important;
+}
+
+#main-sidebar.os-sidebar .os-bottom-actions .os-icon-btn{
+  height:38px!important;
+  min-height:38px!important;
+}
+
+#main-sidebar.os-sidebar .os-user-card{
+  min-height:68px!important;
+  padding:10px!important;
+  gap:10px!important;
+  border-radius:18px!important;
+}
+
+#main-sidebar.os-sidebar .sidebar-avatar{
+  width:46px!important;
+  height:46px!important;
+  min-width:46px!important;
+  border-radius:50%!important;
+}
+
+#main-sidebar.os-sidebar .sidebar-avatar-status{
+  width:13px!important;
+  height:13px!important;
+  right:auto!important;
+  left:42px!important;
+  bottom:13px!important;
+  border:2px solid rgba(12,12,16,.96)!important;
+}
+
+#main-sidebar.os-sidebar .os-user-card:hover{
+  background:rgba(255,255,255,.065)!important;
+  border-color:rgba(139,92,246,.2)!important;
+}
+
+.ethone-profile-context-menu{
+  position:fixed;
+  z-index:2147483200;
+  width:180px;
+  padding:6px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:14px;
+  background:rgba(16,16,22,.96);
+  box-shadow:0 24px 70px rgba(0,0,0,.45);
+  backdrop-filter:blur(16px);
+}
+
+.ethone-profile-context-menu button{
+  width:100%;
+  min-height:34px;
+  display:flex;
+  align-items:center;
+  padding:0 10px;
+  border:0;
+  border-radius:10px;
+  color:rgba(248,245,255,.82);
+  background:transparent;
+  text-align:left;
+  font:720 12px/1 Inter,system-ui,sans-serif;
+  cursor:pointer;
+}
+
+.ethone-profile-context-menu button:hover,
+.ethone-profile-context-menu button:focus-visible{
+  color:#fff;
+  outline:none;
+  background:rgba(139,92,246,.14);
+}
+
+#main-content :where(button svg,.btn svg,[data-lucide]),
+#main-sidebar :where(button svg,.nav-icon svg,[data-lucide]),
+.live-panel :where(button svg,[data-lucide]){
+  min-width:18px;
+  min-height:18px;
+  stroke-width:1.85;
+  vertical-align:middle;
+}
+
+#main-content :where(button,.btn,.d4-quick-action,.d4-button,.d4-icon-button),
+#main-sidebar :where(button,.nav-item),
+.live-panel :where(button){
+  transition:background-color 170ms var(--ease-premium,cubic-bezier(.22,1,.36,1)),border-color 170ms var(--ease-premium,cubic-bezier(.22,1,.36,1)),color 170ms var(--ease-premium,cubic-bezier(.22,1,.36,1)),transform 170ms var(--ease-premium,cubic-bezier(.22,1,.36,1)),box-shadow 170ms var(--ease-premium,cubic-bezier(.22,1,.36,1))!important;
+}
+
+body.ethone-widgets-panel-enabled #d4-widget-grid{
+  grid-auto-flow:dense;
+}
+
+@media(min-width:1201px) and (max-width:1500px){
+  body.ethone-widgets-panel-enabled .d4-widgetgrid{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  }
+
+  body.ethone-widgets-panel-enabled #d4-widget-grid [data-widget-id]{
+    grid-column:span 2!important;
+    grid-row:auto!important;
+  }
+
+  body.ethone-widgets-panel-enabled #d4-widget-grid [data-widget-type="hero"],
+  body.ethone-widgets-panel-enabled #d4-widget-grid [data-widget-type="today"],
+  body.ethone-widgets-panel-enabled #d4-widget-grid [data-widget-type="brain"],
+  body.ethone-widgets-panel-enabled #d4-widget-grid [data-widget-type="quickActions"]{
+    grid-column:span 4!important;
+  }
+}
+
+@media(max-width:1200px){
+  body.ethone-widgets-panel-enabled .app-shell.live-panel-collapsed,
+  body.ethone-widgets-panel-rail .app-shell{
+    grid-template-columns:var(--sidebar-w,260px) minmax(0,1fr) 0px!important;
+  }
+}
+
+@media(max-width:900px){
+  #main-sidebar.os-sidebar,
+  body.ethone-2026-ui #main-sidebar.os-sidebar,
+  body.ethone-v2 #main-sidebar.os-sidebar{
+    width:min(86vw,318px)!important;
+    min-width:min(86vw,318px)!important;
+    max-width:min(86vw,318px)!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .live-panel,
+  .live-panel-icon-btn,
+  .live-panel-empty-btn,
+  .ethone-profile-context-menu{
+    transition:none!important;
+    animation:none!important;
+  }
+}

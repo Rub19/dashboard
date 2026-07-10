@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ETHONE Responsive QA</title>
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #050507;
+    }
+
+    #responsive-stage {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: start center;
+      overflow: hidden;
+    }
+
+    #responsive-app {
+      display: block;
+      border: 0;
+      transform-origin: top center;
+    }
+  </style>
+</head>
+<body>
+  <main id="responsive-stage">
+    <iframe id="responsive-app" title="ETHONE responsive QA"></iframe>
+  </main>
+  <script>
+    (function () {
+      "use strict";
+
+      var params = new URLSearchParams(location.search);
+      var width = Math.max(320, Math.min(2560, Number(params.get("width")) || 1280));
+      var height = Math.max(568, Math.min(1600, Number(params.get("height")) || 720));
+      var mode = params.get("mode") === "layout" ? "layout" : "auth";
+      var frame = document.getElementById("responsive-app");
+      var source = mode === "layout"
+        ? "layout-collision-harness.html#" + (params.get("page") || "dashboard")
+        : "../../index.html?responsiveQa=1&build=338";
+
+      frame.style.width = width + "px";
+      frame.style.height = height + "px";
+      frame.style.transform = "scale(" + Math.min(innerWidth / width, innerHeight / height) + ")";
+      frame.src = source;
+      frame.dataset.viewport = width + "x" + height;
+    })();
+  </script>
+</body>
+</html>

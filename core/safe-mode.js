@@ -89,23 +89,41 @@
     }
     var doneKey="__ethoneBootDeferred_"+key;
     if(window[doneKey])return;
+    var timer=0;
+    var queued=false;
+    var readyHandler=null;
+    function cleanup(){
+      if(timer){clearInterval(timer);timer=0}
+      if(readyHandler){window.removeEventListener("ethone:dashboard-ready",readyHandler);readyHandler=null}
+    }
     function run(){
+      cleanup();
       if(window[doneKey])return;
       window[doneKey]=true;
-      try{fn()}catch(error){setTimeout(function(){throw error},0)}
+      try{fn()}catch(error){
+        try{
+          if(window.ETHONEBootManager&&typeof window.ETHONEBootManager.setStatus==="function"){
+            window.ETHONEBootManager.setStatus("dashboard-ready:"+key,"failed",{error:error&&error.message?error.message:String(error)});
+          }
+        }catch(e){}
+        console.warn("[ETHONE boot] Dashboard-ready module failed:",key,error);
+      }
     }
-    if(window.ethoneIsDashboardVisible())return enqueueDashboardReady(key,run);
+    function queue(){
+      if(queued||window[doneKey])return;
+      queued=true;
+      cleanup();
+      enqueueDashboardReady(key,run);
+    }
+    if(window.ethoneIsDashboardVisible())return queue();
     var started=Date.now();
-    var timer=setInterval(function(){
+    timer=setInterval(function(){
       if(window.ethoneIsDashboardVisible()||Date.now()-started>45000){
-        clearInterval(timer);
-        enqueueDashboardReady(key,run);
+        queue();
       }
     },600);
-    window.addEventListener("ethone:dashboard-ready",function(){
-      clearInterval(timer);
-      enqueueDashboardReady(key,run);
-    },{once:true});
+    readyHandler=function(){queue()};
+    window.addEventListener("ethone:dashboard-ready",readyHandler);
   };
   window.ethoneIsPageVisible=function(page){
     try{
@@ -116,26 +134,65 @@
       return el.classList.contains("active")&&cs.display!=="none"&&cs.visibility!=="hidden"&&rect.width>20&&rect.height>20;
     }catch(e){return false}
   };
+  var pageReadyPending=Object.create(null);
+  var pageReadyTimer=0;
+  var pageReadyHandler=null;
+  function pageReadyKeys(){return Object.keys(pageReadyPending)}
+  function releasePageReadyRuntime(){
+    if(pageReadyKeys().length)return;
+    if(pageReadyTimer){clearInterval(pageReadyTimer);pageReadyTimer=0}
+    if(pageReadyHandler){window.removeEventListener("ethone:page-ready",pageReadyHandler);pageReadyHandler=null}
+  }
+  function runPageReadyEntry(entry){
+    if(!entry)return;
+    delete pageReadyPending[entry.key];
+    if(window[entry.doneKey]){releasePageReadyRuntime();return}
+    window[entry.doneKey]=true;
+    try{entry.fn()}catch(error){
+      try{
+        if(window.ETHONEBootManager&&typeof window.ETHONEBootManager.setStatus==="function"){
+          window.ETHONEBootManager.setStatus("page-ready:"+entry.key,"failed",{error:error&&error.message?error.message:String(error)});
+        }
+      }catch(e){}
+      console.warn("[ETHONE boot] Page-ready module failed:",entry.key,error);
+    }
+    releasePageReadyRuntime();
+  }
+  function flushPageReady(event){
+    var page=event&&event.detail&&event.detail.page;
+    pageReadyKeys().forEach(function(key){
+      var entry=pageReadyPending[key];
+      if(!entry)return;
+      if(window[entry.doneKey]){delete pageReadyPending[key];return}
+      var matchesEvent=page&&entry.pages.indexOf(page)>-1;
+      var visible=!event&&entry.pages.some(function(name){return window.ethoneIsPageVisible(name)});
+      if(matchesEvent||visible)runPageReadyEntry(entry);
+    });
+    releasePageReadyRuntime();
+  }
+  function ensurePageReadyRuntime(){
+    if(!pageReadyHandler){
+      pageReadyHandler=function(event){flushPageReady(event)};
+      window.addEventListener("ethone:page-ready",pageReadyHandler);
+    }
+    if(pageReadyTimer)return;
+    pageReadyTimer=setInterval(function(){
+      flushPageReady(null);
+      if(!pageReadyKeys().length)return;
+      var now=Date.now();
+      var hasFresh=pageReadyKeys().some(function(key){return now-pageReadyPending[key].started<=60000});
+      if(!hasFresh){clearInterval(pageReadyTimer);pageReadyTimer=0}
+    },900);
+  }
   window.ethoneRunWhenPageReady=function(key,pages,fn){
     if(typeof fn!=="function")return;
     pages=Array.isArray(pages)?pages:[pages];
     var doneKey="__ethoneBootDeferred_"+key;
     if(window[doneKey])return;
-    function ready(){return pages.some(function(page){return window.ethoneIsPageVisible(page)})}
-    function run(){
-      if(window[doneKey])return;
-      window[doneKey]=true;
-      try{fn()}catch(error){setTimeout(function(){throw error},0)}
-    }
-    if(ready())return run();
-    var started=Date.now();
-    var timer=setInterval(function(){
-      if(ready()){clearInterval(timer);run();return}
-      if(Date.now()-started>60000)clearInterval(timer);
-    },900);
-    window.addEventListener("ethone:page-ready",function(event){
-      if(event&&event.detail&&pages.indexOf(event.detail.page)>-1){clearInterval(timer);run()}
-    });
+    var entry={key:String(key),doneKey:doneKey,pages:pages.map(String),fn:fn,started:Date.now()};
+    if(entry.pages.some(function(page){return window.ethoneIsPageVisible(page)})){runPageReadyEntry(entry);return}
+    pageReadyPending[entry.key]=entry;
+    ensurePageReadyRuntime();
   };
   if(!safe)return;
 

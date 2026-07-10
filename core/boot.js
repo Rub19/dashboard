@@ -16,22 +16,67 @@ function hideBoot(){
 function setEthoneMode(mode){
   document.documentElement.className=(document.documentElement.className||'').replace(/ethone-\w+-mode/g,'').trim()+' ethone-'+mode+'-mode';
 }
+function ethoneSetSurfaceInert(el,inert){
+  if(!el)return;
+  try{
+    if('inert' in el)el.inert=!!inert;
+    else if(inert)el.setAttribute('inert','');
+    else el.removeAttribute('inert');
+  }catch(error){
+    if(inert)el.setAttribute('inert','');
+    else el.removeAttribute('inert');
+  }
+}
+function ethoneSetSurfaceVisible(id,display){
+  const el=document.getElementById(id);
+  if(!el)return;
+  if(display==='none'){
+    el.classList.remove('ethone-auth-v3-visible');
+    ethoneSetSurfaceInert(el,true);
+    el.style.setProperty('display','none','important');
+    el.style.setProperty('visibility','hidden','important');
+    el.style.setProperty('opacity','0','important');
+    el.setAttribute('aria-hidden','true');
+    return;
+  }
+  const closedMobileSidebar=id==='main-sidebar'&&
+    window.matchMedia&&window.matchMedia('(max-width: 1024px)').matches&&
+    !el.classList.contains('mobile-open');
+  if(closedMobileSidebar){
+    ethoneSetSurfaceInert(el,true);
+    el.style.setProperty('display',display,'important');
+    el.style.removeProperty('visibility');
+    el.style.removeProperty('opacity');
+    el.setAttribute('aria-hidden','true');
+    return;
+  }
+  ethoneSetSurfaceInert(el,false);
+  if(display==='css')el.style.removeProperty('display');
+  else el.style.setProperty('display',display,'important');
+  el.style.setProperty('visibility','visible','important');
+  el.style.setProperty('opacity','1','important');
+  el.removeAttribute('aria-hidden');
+}
 function showAuth(){
   removeAntiFlash();
   setEthoneMode('auth');
-  ['main-sidebar','main-content','profile-screen','password-screen'].forEach(id=>{const el=document.getElementById(id);if(el){el.style.display='none';el.style.visibility='hidden';}});
+  ['app-shell','main-sidebar','main-content','profile-screen','password-screen'].forEach(id=>ethoneSetSurfaceVisible(id,'none'));
   const a=document.getElementById('auth-screen');
-  if(a){a.style.display='grid';a.style.visibility='visible';a.style.opacity='1';}
+  if(a){a.classList.add('ethone-auth-v3-visible');ethoneSetSurfaceVisible('auth-screen','grid');}
   const card=document.getElementById('auth-card')||document.getElementById('lb-box');
-  if(card){card.style.display='block';card.style.visibility='visible';card.style.opacity='1';}
-  hideBoot(); updateClock();
+  if(card){card.style.setProperty('display','block','important');card.style.setProperty('visibility','visible','important');card.style.setProperty('opacity','1','important');}
+  hideBoot(); if(typeof updateClock==='function')updateClock();
 }
 
 function normalizeAllProfiles(){
   if(!Array.isArray(profiles)) profiles=[];
-  profiles=profiles.filter(Boolean);
-  profiles.forEach(p=>{
+  const seenIds=new Set();
+  const normalized=[];
+  profiles.filter(p=>p&&typeof p==='object').forEach(p=>{
     if(!p.id)p.id=Date.now()+Math.random().toString(16).slice(2);
+    const stableId=String(p.id);
+    if(seenIds.has(stableId))return;
+    seenIds.add(stableId);
     if(!p.name)p.name='Profil';
     if(!p.state)p.state=defState(p.name);
     if(!p.state.connections)p.state.connections={};
@@ -40,70 +85,49 @@ function normalizeAllProfiles(){
     if(!p.state.habits)p.state.habits=[];
     if(!p.state.kanban)p.state.kanban=[];
     if(!p.state.events)p.state.events=[];
+    normalized.push(p);
   });
-  // Anti-bug: if Rub exists, keep only the real Rub profile visible/local.
-  const rubs=profiles.filter(p=>String(p.name||'').trim().toLowerCase()==='rub');
-  if(rubs.length){
-    profiles=[rubs[0]];
-  }else{
-    const seen=new Map();
-    for(const p of profiles){
-      const key=String(p.name||'').trim().toLowerCase()+'|'+(p.avatarImg||p.avatarEmoji||'');
-      if(!seen.has(key)) seen.set(key,p);
-    }
-    profiles=Array.from(seen.values()).slice(0,6);
-  }
+  profiles=normalized;
   try{
-    localStorage.setItem('myspace_profiles_backup',JSON.stringify(profiles));
+    localStorage.setItem('myspace_profiles_backup',JSON.stringify(sanitizeProfilesForPersistence(profiles)));
     localStorage.setItem('myspace_profiles_backup_owner',(_sbUser&&_sbUser.id)||'');
   }catch(e){}
 }
 function ethoneCleanProfileList(opts){
   const before=Array.isArray(profiles)?profiles.length:0;
   normalizeAllProfiles();
-  if(_sbUser){try{sessionStorage.setItem('nexus_profiles_'+_sbUser.id,JSON.stringify(profiles));}catch(e){}}
+  if(_sbUser){try{sessionStorage.setItem('nexus_profiles_'+_sbUser.id,JSON.stringify(sanitizeProfilesForPersistence(profiles)));}catch(e){}}
   if(!opts||opts.render!==false){try{renderProfileScreen();}catch(e){}}
   return {before:before,after:profiles.length};
 }
 window.ethoneCleanProfileList=ethoneCleanProfileList;
-async function ethoneDeleteDuplicateProfilesFromCloud(){
-  normalizeAllProfiles();
-  if(!_sbUser||!sb){console.warn('[ETHONE] Connecte-toi avant de nettoyer le cloud.');return;}
-  const keep=profiles[0]; if(!keep){return;}
-  try{
-    const {data}=await sb.from('dashboard_data').select('id,profile_name,created_at').eq('user_id',_sbUser.id);
-    const toDelete=(data||[]).filter(row=>String(row.id)!==String(keep._dbId||keep.id));
-    for(const row of toDelete){await sb.from('dashboard_data').delete().eq('id',row.id);}
-    console.warn('[ETHONE] Profils cloud supprimés:',toDelete.length);
-    await loadCloudState(); normalizeAllProfiles(); saveStateNow(); renderProfileScreen();
-  }catch(e){console.error('[ETHONE] Nettoyage cloud impossible:',e);}
-}
-window.ethoneDeleteDuplicateProfilesFromCloud=ethoneDeleteDuplicateProfilesFromCloud;
 
 function showDashboardOrProfiles(){
   normalizeAllProfiles();
-  ['auth-screen','password-screen'].forEach(id=>{const el=document.getElementById(id);if(el){el.style.display='none';el.style.visibility='hidden';}});
+  ['auth-screen','password-screen'].forEach(id=>ethoneSetSurfaceVisible(id,'none'));
   if(profiles.length===1&&!profiles[0].password){
     const p=profiles[0]; currentId=p.id;
     setEthoneMode('dashboard');
     try{if(window.ETHONEBootSequence)window.ETHONEBootSequence.prepareDashboardMount();}catch(e){}
-    const ps=document.getElementById('profile-screen'); if(ps){ps.style.display='none';ps.style.visibility='hidden';}
-    const sbEl=document.getElementById('main-sidebar'); if(sbEl){sbEl.style.display='flex';sbEl.style.visibility='visible';}
-    const main=document.getElementById('main-content'); if(main){main.style.display='block';main.style.visibility='visible';}
+    ethoneSetSurfaceVisible('profile-screen','none');
+    ethoneSetSurfaceVisible('app-shell','css');
+    ethoneSetSurfaceVisible('main-sidebar','flex');
+    ethoneSetSurfaceVisible('main-content','block');
     try{applyI18n();}catch(error){console.warn('[ETHONE boot] i18n refresh skipped',error);}
     try{initDashboard();}catch(error){console.error('[ETHONE boot] Dashboard init failed',error);}
     hideBoot();
     try{window.dispatchEvent(new Event('ethone:dashboard-ready'))}catch(e){}
     try{window.dispatchEvent(new CustomEvent('ethone:page-ready',{detail:{page:'dashboard'}}))}catch(e){}
     try{if(window.ETHONEBootSequence)window.ETHONEBootSequence.finishDashboardMount();}catch(e){}
-    if(!curP()?.bgTheme||curP()?.bgTheme==='none') setTimeout(startAmbientBg,400);
+    if(!window.__ethoneSkipAnimatedBackgrounds&&(!curP()?.bgTheme||curP()?.bgTheme==='none')&&typeof startAmbientBg==='function') setTimeout(startAmbientBg,400);
   } else {
     setEthoneMode('profile');
-    const sbEl=document.getElementById('main-sidebar'); if(sbEl){sbEl.style.display='none';sbEl.style.visibility='hidden';}
-    const main=document.getElementById('main-content'); if(main){main.style.display='none';main.style.visibility='hidden';}
+    ethoneSetSurfaceVisible('app-shell','none');
+    ethoneSetSurfaceVisible('main-sidebar','none');
+    ethoneSetSurfaceVisible('main-content','none');
     renderProfileScreen();
-    const ps=document.getElementById('profile-screen'); if(ps){ps.style.display='flex';ps.style.visibility='visible';ps.style.opacity='1';}
-    hideBoot(); updateClock();
+    ethoneSetSurfaceVisible('profile-screen','flex');
+    hideBoot(); if(typeof updateClock==='function')updateClock();
   }
 }
 
@@ -115,7 +139,7 @@ function ethoneWithTimeout(promise,ms,label){
 }
 
 (function(){
-  if(typeof I18N!=='undefined')applyI18n();
+  if(typeof I18N!=='undefined'&&typeof applyI18n==='function')applyI18n();
 
   ethoneWithTimeout(sb.auth.getSession(),4200,'Supabase session').then(async({data:{session},error})=>{
     // If getSession fails or returns null, try getUser() as fallback
@@ -143,8 +167,14 @@ function ethoneWithTimeout(promise,ms,label){
         showDashboardOrProfiles();
         ethoneWithTimeout(loadCloudState(),4500,'Cloud profile refresh').then(()=>{
           normalizeAllProfiles();
-          try{sessionStorage.setItem(cacheKey,JSON.stringify(profiles));}catch(e){}
-          const p=curP();if(p)initSidebarWidgets(p);
+          try{sessionStorage.setItem(cacheKey,JSON.stringify(sanitizeProfilesForPersistence(profiles)));}catch(e){}
+          const p=curP();
+          if(
+            p &&
+            !window.__ethoneSkipExternalWidgets &&
+            (!window.ethoneCanMountUI||window.ethoneCanMountUI('widgets-panel')) &&
+            typeof initSidebarWidgets==='function'
+          )initSidebarWidgets(p);
         }).catch(()=>{});
         return;
       }catch(e){ sessionStorage.removeItem(cacheKey); }
@@ -158,7 +188,7 @@ function ethoneWithTimeout(promise,ms,label){
       await ethoneWithTimeout(saveCloudState(),4500,'Initial cloud profile save').catch(()=>{});
     }
     normalizeAllProfiles();
-    try{sessionStorage.setItem(cacheKey,JSON.stringify(profiles));}catch(e){}
+    try{sessionStorage.setItem(cacheKey,JSON.stringify(sanitizeProfilesForPersistence(profiles)));}catch(e){}
     showDashboardOrProfiles();
 
   }).catch(err=>{

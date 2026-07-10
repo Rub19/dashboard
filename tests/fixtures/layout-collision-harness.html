@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ETHONE Layout Collision QA</title>
+  <style>
+    html,
+    body,
+    iframe {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      border: 0;
+      overflow: hidden;
+      background: #09090b;
+    }
+
+    iframe {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <iframe id="ethone-layout-app" title="ETHONE layout QA" src="../../index.html?layoutCollisionQa=1&amp;build=338"></iframe>
+  <script>
+    (function () {
+      "use strict";
+
+      var PROFILE_ID = "ethone-layout-collision-qa";
+      var frame = document.getElementById("ethone-layout-app");
+      var guardBusy = false;
+
+      function waitFor(check, timeout, label) {
+        var started = Date.now();
+        return new Promise(function (resolve, reject) {
+          (function poll() {
+            try {
+              if (check()) {
+                resolve();
+                return;
+              }
+            } catch (error) {}
+            if (Date.now() - started > timeout) {
+              reject(new Error("Layout QA harness timed out while waiting for " + (label || "the application") + "."));
+              return;
+            }
+            setTimeout(poll, 70);
+          })();
+        });
+      }
+
+      function runInApp(source) {
+        return frame.contentWindow.eval(source);
+      }
+
+      function requestedPage() {
+        var raw = location.hash.replace(/^#/, "") || "dashboard";
+        return /^[a-z0-9-]+$/.test(raw) ? raw : "dashboard";
+      }
+
+      function installRuntimeCollector() {
+        runInApp("(function(){" +
+          "var root=document.documentElement;" +
+          "if(root.dataset.ethoneQaErrorCollector==='1')return true;" +
+          "root.dataset.ethoneQaErrorCollector='1';root.dataset.ethoneQaRuntimeErrors='[]';" +
+          "function push(value){try{var list=JSON.parse(root.dataset.ethoneQaRuntimeErrors||'[]');list.push(value);root.dataset.ethoneQaRuntimeErrors=JSON.stringify(list.slice(-100));}catch(error){}}" +
+          "window.addEventListener('error',function(event){push({type:'error',message:event.message||'Runtime error',source:event.filename||'',line:event.lineno||0});});" +
+          "window.addEventListener('unhandledrejection',function(event){push({type:'rejection',message:String(event.reason&&event.reason.message||event.reason||'Unhandled rejection')});});" +
+          "return true;" +
+        "})()");
+      }
+
+      function collectReport() {
+        var raw = runInApp("(function(){" +
+          "function visible(el){if(!el)return false;var style=getComputedStyle(el),rect=el.getBoundingClientRect();return style.display!=='none'&&style.visibility!=='hidden'&&style.opacity!=='0'&&rect.width>0&&rect.height>0;}" +
+          "var active=document.querySelector('.tab-content.active[id^=\\\"page-\\\"]');" +
+          "var buttons=active?Array.from(active.querySelectorAll('button,[role=\\\"button\\\"]')):[];" +
+          "var overlays=Array.from(document.querySelectorAll('.modal-overlay,.overlay,.backdrop,[role=\\\"dialog\\\"],.cmd-overlay,.dropdown-menu,.context-menu')).filter(visible);" +
+          "var ids={},duplicates=[];Array.from(document.querySelectorAll('[id]')).forEach(function(el){ids[el.id]=(ids[el.id]||0)+1;});Object.keys(ids).forEach(function(id){if(ids[id]>1)duplicates.push(id);});" +
+          "var sidebar=document.querySelector('.sidebar');" +
+          "var sidebarActive=sidebar?Array.from(sidebar.querySelectorAll('[data-page].active,[data-page][aria-current=\\\"page\\\"]')).filter(visible):[];" +
+          "var activeRect=active?active.getBoundingClientRect():null;" +
+          "var overflowNodes=active&&activeRect?Array.from(active.querySelectorAll('*')).filter(function(el){if(!visible(el))return false;var rect=el.getBoundingClientRect();return rect.right>activeRect.right+1||rect.left<activeRect.left-1||el.scrollWidth>el.clientWidth+1;}).slice(0,16).map(function(el){var rect=el.getBoundingClientRect();return {tag:el.tagName.toLowerCase(),id:el.id||'',className:String(el.className&&el.className.baseVal||el.className||'').slice(0,100),right:Math.round((rect.right-activeRect.right)*10)/10,left:Math.round((activeRect.left-rect.left)*10)/10,scroll:el.scrollWidth-el.clientWidth};}):[];" +
+          "var pageText=active?(active.innerText||''):'';" +
+          "var errors=[];try{errors=JSON.parse(document.documentElement.dataset.ethoneQaRuntimeErrors||'[]');}catch(error){}" +
+          "return JSON.stringify({route:active&&active.id?active.id.replace(/^page-/,''):'',activePages:Array.from(document.querySelectorAll('.tab-content.active')).filter(visible).length,docOverflow:Math.max(0,document.documentElement.scrollWidth-document.documentElement.clientWidth),pageOverflow:active?Math.max(0,active.scrollWidth-active.clientWidth):0,overflowNodes:overflowNodes,visibleOverlays:overlays.length,duplicateIds:duplicates.slice(0,20),blankButtons:buttons.filter(function(button){return visible(button)&&!(button.textContent||'').trim()&&!button.getAttribute('aria-label')&&!button.getAttribute('title');}).length,disabledWithoutReason:buttons.filter(function(button){return button.disabled&&!button.getAttribute('title')&&!button.getAttribute('aria-label');}).length,provisionalTerms:['Coming Soon','Lorem ipsum','placeholder','Action indisponible'].filter(function(term){return pageText.toLowerCase().indexOf(term.toLowerCase())!==-1;}),sidebarActive:sidebarActive.map(function(el){return el.getAttribute('data-page');}),runtimeErrors:errors,focusId:document.activeElement&&document.activeElement.id||'',bodyMode:document.body.dataset.layoutMode||document.body.dataset.ethoneSurfaceMode||''});" +
+        "})()");
+        var report = JSON.parse(raw || "{}");
+        frame.dataset.qaReport = JSON.stringify(report);
+        return report;
+      }
+
+      function cleanupQaStorage() {
+        try {
+          runInApp("Object.keys(localStorage).filter(function(key){return key.indexOf('" + PROFILE_ID + "')!==-1}).forEach(function(key){localStorage.removeItem(key)});true");
+        } catch (error) {}
+      }
+
+      async function mountQaProfile() {
+        await waitFor(function () {
+          return runInApp("document.readyState === 'complete' && typeof window.showDashboardOrProfiles === 'function' && typeof window.defState === 'function'");
+        }, 30000, "the profile runtime");
+
+        runInApp("(function(){" +
+          "window.__ethoneSkipExternalWidgets=true;" +
+          "window.__ethoneDisableExperimentalBoot=true;" +
+          "window.saveCloudState=function(){return Promise.resolve(true)};" +
+          "var state=window.defState('Layout QA');" +
+          "state.firstRun={completed:true,completedAt:new Date().toISOString()};" +
+          "state.note='Une note suffisamment longue pour verifier le retour a la ligne sans debordement horizontal.';" +
+          "var qa={id:'" + PROFILE_ID + "',name:'Layout QA',avatarEmoji:null,avatarBg:'#20163a',avatarImg:null,avatarIdx:0,settings:{},state:state};" +
+          "profiles=[qa];currentId=qa.id;" +
+          "_sbUser={id:qa.id,email:'layout-qa@local.test',user_metadata:{full_name:qa.name}};" +
+          "localStorage.setItem('ethone:first-run:v1:'+qa.id,JSON.stringify({completed:true,completedAt:new Date().toISOString(),step:6,selections:{}}));" +
+          "localStorage.setItem('ethone:whats-new:seen','5.4.0');" +
+          "localStorage.setItem('ethone:version-center:last-seen','1.0.0');" +
+          "localStorage.setItem('ethone:version-center:disable-popup','1');" +
+          "window.showDashboardOrProfiles();" +
+          "document.body.classList.add('ethone-dashboard-mounted');" +
+          "return true;" +
+        "})()");
+
+        await waitFor(function () {
+          return runInApp("Boolean(document.body.classList.contains('ethone-dashboard-mounted') && document.getElementById('main-content') && getComputedStyle(document.getElementById('main-content')).display !== 'none')");
+        }, 18000, "the dashboard shell");
+        installRuntimeCollector();
+      }
+
+      async function openRequestedPage() {
+        var page = requestedPage();
+        await waitFor(function () {
+          return runInApp("typeof window.runAction === 'function' && Boolean(window.ACTION_REGISTRY)");
+        }, 24000, "the action registry");
+        var opened = await Promise.resolve(runInApp("window.runAction('navigation.open',{page:'" + page + "',source:'layout-qa'})"));
+        if (opened === false && runInApp("Boolean(document.getElementById('page-" + page + "'))")) {
+          runInApp("window.switchPage('" + page + "',null)");
+        }
+        await waitFor(function () {
+          return runInApp("Boolean(document.getElementById('page-" + page + "') && document.getElementById('page-" + page + "').classList.contains('active'))");
+        }, 24000, "page " + page);
+        await new Promise(function (resolve) { setTimeout(resolve, 360); });
+        collectReport();
+        document.title = "ETHONE Layout QA - " + page;
+      }
+
+      async function boot() {
+        await mountQaProfile();
+        /* Supabase's offline fallback and legacy visibility guards may settle
+           several seconds after window.load. Re-assert only the synthetic QA
+           profile once those deferred boot paths are quiet. */
+        await new Promise(function (resolve) { setTimeout(resolve, 8200); });
+        if (!runInApp("Boolean(document.body.classList.contains('ethone-dashboard-mounted') && getComputedStyle(document.getElementById('main-content')).display !== 'none')")) {
+          await mountQaProfile();
+        }
+        await new Promise(function (resolve) { setTimeout(resolve, 650); });
+        await openRequestedPage();
+        setInterval(function () {
+          try { collectReport(); } catch (error) {}
+          if (guardBusy) return;
+          var authReplacedDashboard = runInApp("(function(){var auth=document.getElementById('auth-screen'),main=document.getElementById('main-content');return Boolean(auth&&main&&getComputedStyle(auth).display!=='none'&&getComputedStyle(main).display==='none');})()");
+          if (!authReplacedDashboard) return;
+          guardBusy = true;
+          mountQaProfile().then(openRequestedPage).catch(function (error) {
+            document.title = "ETHONE Layout QA recovery error: " + error.message;
+          }).finally(function () { guardBusy = false; });
+        }, 1200);
+      }
+
+      window.addEventListener("hashchange", function () {
+        openRequestedPage().catch(function (error) {
+          document.title = "ETHONE Layout QA error: " + error.message;
+        });
+      });
+      window.addEventListener("pagehide", cleanupQaStorage, { once: true });
+      window.ETHONEQaHarness = {
+        navigate: function (page) {
+          location.hash = String(page || "dashboard").replace(/[^a-z0-9-]/gi, "");
+          return openRequestedPage();
+        },
+        report: function () { return collectReport(); }
+      };
+
+      function start() {
+        if (guardBusy) return;
+        guardBusy = true;
+        boot().catch(function (error) {
+          document.title = "ETHONE Layout QA error: " + error.message;
+        }).finally(function () { guardBusy = false; });
+      }
+
+      if (frame.contentDocument && frame.contentDocument.readyState === "complete") {
+        start();
+      } else {
+        frame.addEventListener("load", start, { once: true });
+      }
+    })();
+  </script>
+</body>
+</html>

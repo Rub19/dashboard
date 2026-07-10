@@ -125,6 +125,7 @@
     STATE_KEYS.forEach(function(key){
       if(state[key]!==undefined)stateSnap[key]=clone(state[key]);
     });
+    if(window.ETHONESecurity&&ETHONESecurity.sanitizeObject)stateSnap=ETHONESecurity.sanitizeObject(stateSnap);
     return {
       id:p.id||"",
       name:p.name||p.username||"ETHONE",
@@ -175,6 +176,7 @@
     var p=captureProfile();
     if(!p){if(!opts.quiet)toast("Time Machine needs an active profile.","error");return null}
     var payload={profile:p,localStorage:captureLocalStorage()};
+    if(window.ETHONESecurity&&ETHONESecurity.sanitizeObject)payload=ETHONESecurity.sanitizeObject(payload);
     var sig=signature(payload);
     var store=readStore();
     var type=classifyReason(reason||label);

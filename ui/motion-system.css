@@ -8,8 +8,11 @@
   --motion-slide-distance:var(--motion-distance-sm,8px);
   --motion-enter-distance:var(--motion-distance-md,14px);
   --motion-ripple-size:220px;
-  --motion-ripple-color:rgba(255,255,255,.34);
-  --motion-glow-color:rgba(var(--accent-rgb,139,92,246),.24);
+  --motion-ripple-color:rgba(var(--color-white-rgb),.34);
+  --motion-glow-color:rgba(var(--accent-rgb,var(--primary-rgb)),.24);
+  --motion-system-ease:var(--ease-premium,cubic-bezier(.22,1,.36,1));
+  --motion-system-ease-colors:var(--ease-standard,cubic-bezier(.2,.75,.2,1));
+  --motion-system-cap:var(--motion-max,250ms);
 }
 
 /* Canonical utility classes */
@@ -26,7 +29,7 @@
 .motion-expand{animation:ethoneMotionExpand var(--motion-normal) var(--ease-premium) both}
 .motion-collapse{animation:ethoneMotionCollapse var(--motion-fast) var(--ease-premium) both}
 .motion-glow{animation:ethoneMotionGlow var(--motion-slower) var(--ease-premium) both}
-.motion-loading{animation:ethoneMotionLoading 1.1s var(--ease-linear) infinite}
+.motion-loading{animation:ethoneMotionLoading var(--motion-slow) var(--ease-linear) infinite}
 
 .motion-hover-lift,
 .motion-hover-scale,
@@ -35,14 +38,14 @@
   will-change:transform,opacity;
 }
 
-.motion-hover-lift:hover{transform:translate3d(0,-1px,0)}
+.motion-hover-lift:hover{transform:translate3d(0,var(--motion-card-y,-2px),0)}
 .motion-hover-scale:hover{transform:scale(var(--motion-scale-pop,1.018))}
 .motion-press:active{transform:scale(var(--motion-scale-press,.985))}
 .motion-gpu{transform:translateZ(0);backface-visibility:hidden;will-change:transform,opacity}
 
 .motion-focus-ring:focus-visible{
   outline:0!important;
-  box-shadow:0 0 0 3px rgba(var(--accent-rgb,139,92,246),.18),0 0 0 1px rgba(var(--accent-rgb,139,92,246),.52)!important;
+  box-shadow:0 0 0 3px rgba(var(--accent-rgb,var(--primary-rgb)),.18),0 0 0 1px rgba(var(--accent-rgb,var(--primary-rgb)),.52)!important;
 }
 
 /* Shared interaction normalization for existing components. */
@@ -52,7 +55,8 @@ body.ethone-2026-ui :where(
   .cmd-item,.notif-item,.timeline-event,.timeline-card,.pdock-item,.de-chip,
   .dropdown-item,.context-menu-item,.ui-button,.ui-card[data-interactive="true"],
   .ui-widget[data-interactive="true"],.d4-card,.d4-widget,.d4-panel,.conn-card,
-  .settings-card,.stat-card,.game-card,.db-card,.va-panel,.ph-card
+  .settings-card,.stat-card,.game-card,.db-card,.va-panel,.ph-card,
+  .mp-store-card,.mp-brain-card,.mp-store-collection
 ),
 body.ethone-v2 :where(
   input,textarea,select,
@@ -60,9 +64,120 @@ body.ethone-v2 :where(
   .cmd-item,.notif-item,.timeline-event,.timeline-card,.pdock-item,.de-chip,
   .dropdown-item,.context-menu-item,.ui-button,.ui-card[data-interactive="true"],
   .ui-widget[data-interactive="true"],.d4-card,.d4-widget,.d4-panel,.conn-card,
-  .settings-card,.stat-card,.game-card,.db-card,.va-panel,.ph-card
+  .settings-card,.stat-card,.game-card,.db-card,.va-panel,.ph-card,
+  .mp-store-card,.mp-brain-card,.mp-store-collection
 ){
   transition:var(--motion-transition)!important;
+}
+
+/* Global Motion Grammar
+   One language for hover, page, card, sidebar, modal, tooltip, dropdown,
+   widget and notification motion. All values resolve to <= 250ms. */
+body.ethone-2026-ui :where(
+  button,a,[role="button"],.btn,.ui-button,.panel-action,.toolbar button,
+  .nav-item,.os-nav-item,.sidebar-item,.settings-nav-item,.cat-tab,.settings-tab,
+  .dropdown-item,.context-menu-item,.cmd-item,.tooltip-trigger,.pdock-item,
+  input,textarea,select,.ui-input,.ui-search,.modal-input,.search-bar
+),
+body.ethone-v2 :where(
+  button,a,[role="button"],.btn,.ui-button,.panel-action,.toolbar button,
+  .nav-item,.os-nav-item,.sidebar-item,.settings-nav-item,.cat-tab,.settings-tab,
+  .dropdown-item,.context-menu-item,.cmd-item,.tooltip-trigger,.pdock-item,
+  input,textarea,select,.ui-input,.ui-search,.modal-input,.search-bar
+),
+#auth-screen :where(button,a,[role="button"],input,textarea,select,.lb-input,.lb-tab,.lb-social,.lb-btn-primary),
+#profile-screen :where(button,a,[role="button"],input,textarea,select){
+  transition:
+    transform var(--motion-hover) var(--motion-system-ease),
+    opacity var(--motion-hover) var(--motion-system-ease),
+    color var(--motion-hover) var(--motion-system-ease-colors),
+    background-color var(--motion-hover) var(--motion-system-ease-colors),
+    border-color var(--motion-hover) var(--motion-system-ease-colors),
+    box-shadow var(--motion-hover) var(--motion-system-ease-colors)!important;
+}
+
+body.ethone-2026-ui :where(
+  .panel,.stat-card,.settings-card,.conn-card,.game-card,.goal-card,.journal-entry,
+  .countdown-card,.kanban-col,.note-item,.item-row,.todo-item,.kanban-card,
+  .timeline-card,.timeline-event,.db-card,.db-list-row,.va-panel,.ph-card,
+  .mp-store-card,.mp-brain-card,.mp-store-collection,
+  .d4-card,.d4-panel,.d4-widget,.ui-card,.ui-panel,.ui-widget
+),
+body.ethone-v2 :where(
+  .panel,.stat-card,.settings-card,.conn-card,.game-card,.goal-card,.journal-entry,
+  .countdown-card,.kanban-col,.note-item,.item-row,.todo-item,.kanban-card,
+  .timeline-card,.timeline-event,.db-card,.db-list-row,.va-panel,.ph-card,
+  .mp-store-card,.mp-brain-card,.mp-store-collection,
+  .d4-card,.d4-panel,.d4-widget,.ui-card,.ui-panel,.ui-widget
+){
+  transition:var(--motion-transition-surface)!important;
+  backface-visibility:hidden;
+}
+
+body.ethone-2026-ui :where(
+  .panel,.stat-card,.settings-card,.conn-card,.game-card,.goal-card,.journal-entry,
+  .countdown-card,.kanban-col,.note-item,.item-row,.todo-item,.kanban-card,
+  .timeline-card,.timeline-event,.db-card,.db-list-row,.va-panel,.ph-card,
+  .mp-store-card,.mp-brain-card,.mp-store-collection,
+  .d4-card,.d4-widget,.ui-card[data-interactive="true"],.ui-widget[data-interactive="true"]
+):hover,
+body.ethone-v2 :where(
+  .panel,.stat-card,.settings-card,.conn-card,.game-card,.goal-card,.journal-entry,
+  .countdown-card,.kanban-col,.note-item,.item-row,.todo-item,.kanban-card,
+  .timeline-card,.timeline-event,.db-card,.db-list-row,.va-panel,.ph-card,
+  .mp-store-card,.mp-brain-card,.mp-store-collection,
+  .d4-card,.d4-widget,.ui-card[data-interactive="true"],.ui-widget[data-interactive="true"]
+):hover{
+  transform:translate3d(0,var(--motion-card-y,-2px),0);
+}
+
+body.ethone-2026-ui :where(#main-sidebar,.os-sidebar,.sidebar,.sidebar-nav,.sidebar-footer,.nav-active-pill),
+body.ethone-v2 :where(#main-sidebar,.os-sidebar,.sidebar,.sidebar-nav,.sidebar-footer,.nav-active-pill){
+  transition:
+    transform var(--motion-sidebar) var(--motion-system-ease),
+    opacity var(--motion-sidebar) var(--motion-system-ease),
+    width var(--motion-sidebar) var(--motion-system-ease),
+    min-width var(--motion-sidebar) var(--motion-system-ease),
+    background-color var(--motion-sidebar) var(--motion-system-ease-colors),
+    border-color var(--motion-sidebar) var(--motion-system-ease-colors),
+    box-shadow var(--motion-sidebar) var(--motion-system-ease-colors)!important;
+}
+
+body.ethone-2026-ui :where(
+  .modal,.ui-modal,.modal-content,.dialog,.cmd-palette,.command-palette,#cmd-palette,
+  .dropdown,.ui-dropdown,.context-menu,.tooltip,.ethone-tooltip,.db-dd-panel,.va-dd-panel,
+  .db-ctx-menu,.va-ctx-menu,.side-panel-shell,.notification-center,.toast,.ui-toast,
+  .notif-item,.notification-item,.ethone-quality-toast-item
+),
+body.ethone-v2 :where(
+  .modal,.ui-modal,.modal-content,.dialog,.cmd-palette,.command-palette,#cmd-palette,
+  .dropdown,.ui-dropdown,.context-menu,.tooltip,.ethone-tooltip,.db-dd-panel,.va-dd-panel,
+  .db-ctx-menu,.va-ctx-menu,.side-panel-shell,.notification-center,.toast,.ui-toast,
+  .notif-item,.notification-item,.ethone-quality-toast-item
+){
+  transition:
+    transform var(--motion-modal) var(--motion-system-ease),
+    opacity var(--motion-modal) var(--motion-system-ease),
+    border-color var(--motion-modal) var(--motion-system-ease-colors),
+    background-color var(--motion-modal) var(--motion-system-ease-colors),
+    box-shadow var(--motion-modal) var(--motion-system-ease-colors)!important;
+  will-change:transform,opacity;
+}
+
+body.ethone-2026-ui :where(.tooltip,.ethone-tooltip,.tooltip-content,[role="tooltip"]),
+body.ethone-v2 :where(.tooltip,.ethone-tooltip,.tooltip-content,[role="tooltip"]){
+  animation-duration:var(--motion-tooltip)!important;
+  transition-duration:var(--motion-tooltip)!important;
+}
+
+body.ethone-2026-ui :where(.dropdown,.ui-dropdown,.context-menu,.db-dd-panel,.va-dd-panel,.db-ctx-menu,.va-ctx-menu),
+body.ethone-v2 :where(.dropdown,.ui-dropdown,.context-menu,.db-dd-panel,.va-dd-panel,.db-ctx-menu,.va-ctx-menu){
+  animation-duration:var(--motion-dropdown)!important;
+}
+
+body.ethone-2026-ui :where(.notif-item,.notification-item,.toast,.ui-toast,.ethone-quality-toast-item),
+body.ethone-v2 :where(.notif-item,.notification-item,.toast,.ui-toast,.ethone-quality-toast-item){
+  animation-duration:var(--motion-notification)!important;
 }
 
 body.ethone-2026-ui :where(button,.btn,.panel-action,.cat-tab,.settings-nav-item,.cmd-item,.dropdown-item,.context-menu-item,.ui-button):not(:disabled):active,
@@ -78,7 +193,7 @@ body.ethone-v2 :where(.modal-overlay.open,#cmd-palette-overlay.open,.spaces-over
 
 body.ethone-2026-ui :where(.modal,.cmd-palette,.command-palette,#cmd-palette,.spaces-panel,.ui-modal,.ui-dropdown,.ui-toast),
 body.ethone-v2 :where(.modal,.cmd-palette,.command-palette,#cmd-palette,.spaces-panel,.ui-modal,.ui-dropdown,.ui-toast){
-  animation:ethoneMotionScaleIn var(--motion-normal) var(--ease-premium) both;
+  animation:ethoneMotionScaleIn var(--motion-modal) var(--ease-premium) both;
 }
 
 /* Page-level transition classes used by ui/animations.js. */
@@ -87,9 +202,9 @@ body.ethone-v2 :where(.modal,.cmd-palette,.command-palette,#cmd-palette,.spaces-
 .page-entering-left{
   will-change:opacity,transform;
 }
-.page-entering{animation:ethoneMotionSlideUp var(--motion-normal) var(--ease-premium) both!important}
-.page-entering-right{animation:ethoneMotionPageRight var(--motion-normal) var(--ease-premium) both!important}
-.page-entering-left{animation:ethoneMotionPageLeft var(--motion-normal) var(--ease-premium) both!important}
+.page-entering{animation:ethoneMotionSlideUp var(--motion-page) var(--ease-premium) both!important}
+.page-entering-right{animation:ethoneMotionPageRight var(--motion-page) var(--ease-premium) both!important}
+.page-entering-left{animation:ethoneMotionPageLeft var(--motion-page) var(--ease-premium) both!important}
 
 .reveal-hidden{
   opacity:0!important;
@@ -100,9 +215,9 @@ body.ethone-v2 :where(.modal,.cmd-palette,.command-palette,#cmd-palette,.spaces-
   transform:translate3d(0,0,0)!important;
   transition:var(--motion-transition)!important;
 }
-.reveal-d1{transition-delay:35ms!important}
-.reveal-d2{transition-delay:70ms!important}
-.reveal-d3{transition-delay:105ms!important}
+.reveal-d1{transition-delay:18ms!important}
+.reveal-d2{transition-delay:34ms!important}
+.reveal-d3{transition-delay:50ms!important}
 
 /* Ripple is transform/opacity only. JS sets size and coordinates. */
 .press-ripple,
@@ -111,7 +226,7 @@ body.ethone-v2 :where(.modal,.cmd-palette,.command-palette,#cmd-palette,.spaces-
   z-index:2;
   pointer-events:none;
   border-radius:999px;
-  background:radial-gradient(circle,rgba(255,255,255,.40) 0%,rgba(var(--accent-rgb,139,92,246),.22) 42%,rgba(255,255,255,0) 72%);
+  background:radial-gradient(circle,rgba(var(--color-white-rgb),.40) 0%,rgba(var(--accent-rgb,var(--primary-rgb)),.22) 42%,rgba(var(--color-white-rgb),0) 72%);
   transform:translate(-50%,-50%) scale(0);
   opacity:.86;
   mix-blend-mode:screen;
@@ -121,29 +236,34 @@ body.ethone-v2 :where(.modal,.cmd-palette,.command-palette,#cmd-palette,.spaces-
 
 /* Legacy keyframe aliases point to the same motion language. */
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes slideUp{from{opacity:0;transform:translate3d(0,var(--motion-slide-distance),0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes slideUp{from{opacity:0;transform:translate3d(0,var(--motion-slide-distance),0) scale(.992)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
 @keyframes slideInRight{from{opacity:0;transform:translate3d(var(--motion-slide-distance),0,0)}to{opacity:1;transform:translate3d(0,0,0)}}
 @keyframes slideInLeft{from{opacity:0;transform:translate3d(calc(var(--motion-slide-distance) * -1),0,0)}to{opacity:1;transform:translate3d(0,0,0)}}
-@keyframes slideUpFade{from{opacity:0;transform:translate3d(0,var(--motion-enter-distance),0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes slideUpFade{from{opacity:0;transform:translate3d(0,var(--motion-enter-distance),0) scale(.992)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
 @keyframes pressRipple{from{opacity:.86;transform:translate(-50%,-50%) scale(0)}to{opacity:0;transform:translate(-50%,-50%) scale(1)}}
+@keyframes bounceIn{from{opacity:0;transform:scale(.982)}to{opacity:1;transform:scale(1)}}
+@keyframes iconPop{from{transform:scale(.988)}to{transform:scale(1)}}
+@keyframes glow{from{opacity:.86;transform:scale(.998)}50%{opacity:1;transform:scale(1.002)}to{opacity:.92;transform:scale(1)}}
+@keyframes panelReveal{from{opacity:0;transform:translate3d(0,var(--motion-slide-distance),0) scale(.992)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+@keyframes borderTrace{from{opacity:.84;transform:translateZ(0)}to{opacity:1;transform:translateZ(0)}}
 
 @keyframes ethoneMotionFadeIn{from{opacity:0}to{opacity:1}}
 @keyframes ethoneMotionFadeOut{from{opacity:1}to{opacity:0}}
-@keyframes ethoneMotionSlideUp{from{opacity:0;transform:translate3d(0,var(--motion-slide-distance),0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes ethoneMotionSlideUp{from{opacity:0;transform:translate3d(0,var(--motion-slide-distance),0) scale(.992)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
 @keyframes ethoneMotionSlideDown{from{opacity:0;transform:translate3d(0,calc(var(--motion-slide-distance) * -1),0)}to{opacity:1;transform:translate3d(0,0,0)}}
 @keyframes ethoneMotionSlideLeft{from{opacity:0;transform:translate3d(var(--motion-slide-distance),0,0)}to{opacity:1;transform:translate3d(0,0,0)}}
 @keyframes ethoneMotionSlideRight{from{opacity:0;transform:translate3d(calc(var(--motion-slide-distance) * -1),0,0)}to{opacity:1;transform:translate3d(0,0,0)}}
-@keyframes ethoneMotionScaleIn{from{opacity:0;transform:scale(.975)}to{opacity:1;transform:scale(1)}}
-@keyframes ethoneMotionScaleOut{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.975)}}
-@keyframes ethoneMotionPop{0%{opacity:0;transform:scale(.96)}70%{opacity:1;transform:scale(1.018)}100%{opacity:1;transform:scale(1)}}
-@keyframes ethoneMotionSpring{0%{opacity:0;transform:translate3d(0,10px,0) scale(.98)}72%{opacity:1;transform:translate3d(0,-1px,0) scale(1.004)}100%{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+@keyframes ethoneMotionScaleIn{from{opacity:0;transform:translate3d(0,6px,0) scale(var(--motion-scale-modal,.982))}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+@keyframes ethoneMotionScaleOut{from{opacity:1;transform:translate3d(0,0,0) scale(1)}to{opacity:0;transform:translate3d(0,4px,0) scale(var(--motion-scale-modal,.982))}}
+@keyframes ethoneMotionPop{from{opacity:0;transform:scale(.982)}to{opacity:1;transform:scale(1)}}
+@keyframes ethoneMotionSpring{0%{opacity:0;transform:translate3d(0,8px,0) scale(.986)}76%{opacity:1;transform:translate3d(0,-1px,0) scale(1.002)}100%{opacity:1;transform:translate3d(0,0,0) scale(1)}}
 @keyframes ethoneMotionExpand{from{opacity:0;transform:scaleY(.96);transform-origin:top}to{opacity:1;transform:scaleY(1);transform-origin:top}}
 @keyframes ethoneMotionCollapse{from{opacity:1;transform:scaleY(1);transform-origin:top}to{opacity:0;transform:scaleY(.96);transform-origin:top}}
 @keyframes ethoneMotionGlow{from{opacity:.72;transform:scale(.99)}50%{opacity:1;transform:scale(1.01)}to{opacity:.88;transform:scale(1)}}
 @keyframes ethoneMotionLoading{from{transform:translate3d(-100%,0,0)}to{transform:translate3d(100%,0,0)}}
 @keyframes ethoneMotionRipple{0%{opacity:.86;transform:translate(-50%,-50%) scale(0)}70%{opacity:.24}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
-@keyframes ethoneMotionPageRight{from{opacity:0;transform:translate3d(10px,0,0)}to{opacity:1;transform:translate3d(0,0,0)}}
-@keyframes ethoneMotionPageLeft{from{opacity:0;transform:translate3d(-10px,0,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes ethoneMotionPageRight{from{opacity:0;transform:translate3d(10px,0,0) scale(.996)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+@keyframes ethoneMotionPageLeft{from{opacity:0;transform:translate3d(-10px,0,0) scale(.996)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
 
 @media(prefers-reduced-motion:reduce){
   :root{

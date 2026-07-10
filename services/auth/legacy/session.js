@@ -27,7 +27,8 @@ async function onAuthSuccess(userArg){
     if(!user){
       const {data,error:ue}=await sb.auth.getUser();
       if(!data?.user||ue){
-        if(authEl) authEl.style.display='flex';
+        if(typeof showAuth==='function')showAuth();
+        else if(authEl) authEl.style.display='flex';
         hideBoot();
         return;
       }
@@ -45,7 +46,7 @@ async function onAuthSuccess(userArg){
       await ethoneWithTimeout(saveCloudState(),4500,'Initial cloud profile save').catch(()=>{});
     }
     normalizeAllProfiles();
-    try{ sessionStorage.setItem('nexus_profiles_'+_sbUser.id,JSON.stringify(profiles)); }catch(e){}
+    try{ sessionStorage.setItem('nexus_profiles_'+_sbUser.id,JSON.stringify(sanitizeProfilesForPersistence(profiles))); }catch(e){}
     try{ if(window.ETHONETimeline)window.ETHONETimeline.record({dedupe:'auth-'+_sbUser.id+'-'+new Date().toLocaleDateString('en-CA'),title:'Connexion ETHONE',body:user.email||'',category:'auth',icon:'log-in',source:'auth'}); }catch(e){}
 
     // 5. Affiche le dashboard — hideBoot() est appelé à l'intérieur
@@ -53,7 +54,8 @@ async function onAuthSuccess(userArg){
 
   }catch(err){
     console.error('[ETHONE] onAuthSuccess error:',err);
-    if(authEl) authEl.style.display='flex';
+    if(typeof showAuth==='function')showAuth();
+    else if(authEl) authEl.style.display='flex';
     hideBoot();
   }
 }

@@ -3,6 +3,8 @@
   "use strict";
   if(window.__ethoneAuthV3Premium)return;
   window.__ethoneAuthV3Premium=true;
+  var authSyncFrame=0;
+  var previewTick=0;
   function qs(sel,root){return (root||document).querySelector(sel)}
   function isVisible(el){
     if(!el)return false;
@@ -111,13 +113,13 @@
   function heroMarkup(){
     var copy=heroText();
     return ''+
-      '<section id="auth-v3-hero" aria-hidden="true">'+
+      '<section id="auth-v3-hero" aria-labelledby="auth-v3-title">'+
         '<div class="auth-v3-header">'+
           '<div class="auth-v3-brand"><div class="auth-v3-mark">E</div><span>ETHONE</span><b class="auth-v3-badge" data-auth-hero="badge">'+copy.badge+'</b></div>'+
-          '<h2 class="auth-v3-title" data-auth-hero="title">'+copy.title+'</h2>'+
+          '<h2 class="auth-v3-title" id="auth-v3-title" data-auth-hero="title">'+copy.title+'</h2>'+
           '<p class="auth-v3-copy" data-auth-hero="copy">'+copy.copy+'</p>'+
         '</div>'+
-        '<div class="auth-v3-preview" id="auth-preview">'+
+        '<div class="auth-v3-preview" id="auth-preview" aria-hidden="true" inert>'+
           '<div id="auth-preview-bar">'+
             '<div class="apb-dot apb-r"></div><div class="apb-dot apb-y"></div><div class="apb-dot apb-g"></div>'+
             '<div id="auth-preview-url">'+
@@ -211,6 +213,13 @@
     syncHeroLanguage();
     syncCardHeight();
   }
+  function scheduleAuthLanguageExperience(){
+    if(authSyncFrame)return;
+    authSyncFrame=requestAnimationFrame(function(){
+      authSyncFrame=0;
+      syncAuthLanguageExperience();
+    });
+  }
   function updatePreviewRuntime(){
     var hero=qs("#auth-v3-hero");
     if(!hero)return;
@@ -280,21 +289,31 @@
   }
   function startPreviewRuntime(){
     updatePreviewRuntime();
-    if(!window.__ethoneAuthV8PreviewTimer){
-      window.__ethoneAuthV8PreviewTimer=setInterval(syncHeroLanguage,20000);
+    if(!window.__ethoneAuthPreviewNetworkBound){
+      window.__ethoneAuthPreviewNetworkBound=true;
       window.addEventListener("online",updatePreviewRuntime);
       window.addEventListener("offline",updatePreviewRuntime);
     }
     if(!window.__ethoneAuthV10ActivityTimer){
-      window.__ethoneAuthV10ActivityTimer=setInterval(nudgeActivityBars,4200);
+      window.__ethoneAuthV10ActivityTimer=setInterval(function(){
+        var screen=qs("#auth-screen");
+        if(!screen||!isVisible(screen))return;
+        nudgeActivityBars();
+        previewTick+=1;
+        if(previewTick%5===0)syncHeroLanguage();
+      },4200);
     }
+  }
+  function stopPreviewRuntime(){
+    if(window.__ethoneAuthV8PreviewTimer){clearInterval(window.__ethoneAuthV8PreviewTimer);window.__ethoneAuthV8PreviewTimer=0}
+    if(window.__ethoneAuthV10ActivityTimer){clearInterval(window.__ethoneAuthV10ActivityTimer);window.__ethoneAuthV10ActivityTimer=0}
   }
   function syncCardHeight(){
     var loginForm=qs("#form-login");
     var registerForm=qs("#form-register");
     if(!loginForm||!registerForm)return;
-    loginForm.style.minHeight="";
-    registerForm.style.minHeight="";
+    loginForm.style.removeProperty("min-height");
+    registerForm.style.removeProperty("min-height");
     var loginWasHidden=getComputedStyle(loginForm).display==="none";
     var registerWasHidden=getComputedStyle(registerForm).display==="none";
     var measure=function(form,wasHidden){
@@ -311,10 +330,12 @@
     };
     var loginHeight=measure(loginForm,loginWasHidden);
     var registerHeight=measure(registerForm,registerWasHidden);
-    var target=Math.max(loginHeight,registerHeight);
+    var target=Math.ceil(Math.max(loginHeight,registerHeight));
     if(target>0){
-      loginForm.style.minHeight=target+"px";
-      registerForm.style.minHeight=target+"px";
+      // Inline important deliberately wins legacy responsive rules so both
+      // tabs retain one stable form region without shifting the card shell.
+      loginForm.style.setProperty("min-height",target+"px","important");
+      registerForm.style.setProperty("min-height",target+"px","important");
     }
   }
   function syncTabControl(){
@@ -378,7 +399,8 @@
       if(screen.style.getPropertyValue("visibility")!=="visible"||screen.style.getPropertyPriority("visibility")!=="important"){
         screen.style.setProperty("visibility","visible","important");
       }
-    }
+      startPreviewRuntime();
+    }else stopPreviewRuntime();
     syncTabControl();
     syncLanguageControl();
     syncHeroLanguage();
@@ -399,9 +421,7 @@
       var previousSetLang=window.setLang;
       window.setLang=function(){
         var result=previousSetLang.apply(this,arguments);
-        setTimeout(syncAuthLanguageExperience,20);
-        setTimeout(syncAuthLanguageExperience,80);
-        setTimeout(syncAuthLanguageExperience,180);
+        scheduleAuthLanguageExperience();
         return result;
       };
       window.setLang.__authHeroSyncWrapped=true;
@@ -422,47 +442,11 @@
           resizeTimer=setTimeout(function(){syncTabControl();syncLanguageControl();syncCardHeight()},60);
         });
       }
-      if(!screen.dataset.authV5LanguageSync){
-        screen.dataset.authV5LanguageSync="1";
-        screen.addEventListener("click",function(event){
-          if(event.target&&event.target.closest&&event.target.closest("#auth-lang-bar button[data-l]")){
-            setTimeout(syncAuthLanguageExperience,0);
-            setTimeout(syncAuthLanguageExperience,80);
-            setTimeout(syncAuthLanguageExperience,180);
-          }
-        },true);
-      }
-      var cardBox=qs("#lb-box");
-      if(cardBox&&!cardBox.dataset.authV10TextObserver){
-        cardBox.dataset.authV10TextObserver="1";
-        var textSyncTimer=null;
-        try{
-          new MutationObserver(function(){
-            clearTimeout(textSyncTimer);
-            textSyncTimer=setTimeout(syncCardHeight,30);
-          }).observe(cardBox,{subtree:true,characterData:true,childList:true});
-        }catch(e){}
-      }
-      var languageBar=qs("#auth-lang-bar");
-      if(languageBar&&!languageBar.dataset.authV5StyleObserver){
-        languageBar.dataset.authV5StyleObserver="1";
-        try{
-          new MutationObserver(syncLanguageControl).observe(languageBar,{subtree:true,attributes:true,attributeFilter:["style"]});
-        }catch(e){}
-      }
-      var loginForm=qs("#form-login");
-      var registerForm=qs("#form-register");
-      if(loginForm&&registerForm&&!screen.dataset.authV9TabObserver){
-        screen.dataset.authV9TabObserver="1";
-        try{
-          var tabObserver=new MutationObserver(syncTabControl);
-          tabObserver.observe(loginForm,{attributes:true,attributeFilter:["style"]});
-          tabObserver.observe(registerForm,{attributes:true,attributeFilter:["style"]});
-        }catch(e){}
-      }
     }
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});
   else boot();
   window.addEventListener("ethone:auth-ready",boot);
+  window.addEventListener("ethone:auth-tab-change",function(){syncTabControl();syncCardHeight()});
+  window.addEventListener("ethone:dashboard-ready",stopPreviewRuntime);
 })();

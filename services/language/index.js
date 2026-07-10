@@ -16,11 +16,16 @@
   }
 
   function current() {
-    return normalize(global._lang || document.documentElement.lang || storage.get("language", "fr"));
+    var state = app.get("state");
+    var canonical = state && state.getState ? state.getState().language : "";
+    return normalize(canonical || global._lang || storage.get("language", "") || document.documentElement.lang || "fr");
   }
 
   function set(language) {
     var next = normalize(language);
+    if (global.ETHONEStateConsistency && typeof global.ETHONEStateConsistency.setLanguage === "function") {
+      global.ETHONEStateConsistency.setLanguage(next);
+    }
     storage.set("language", next);
     if (typeof global.setLang === "function") global.setLang(next);
     document.documentElement.lang = next;

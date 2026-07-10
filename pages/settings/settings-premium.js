@@ -1,9 +1,8 @@
-/* ETHONE V28 — Settings Premium.
+/* ETHONE Settings Premium.
    Workspaces, Widgets, Plugins, Brain, Automation, Marketplace, Notifications,
    Keyboard, Developer, Experimental, Backup, Import, Export.
    Reuses existing real infra (dashboard-v4 widget layout, p.state.connections,
-   ETHONE AI Core, window.ETHONEMarketplace) instead of re-implementing it —
-   see the V28 research pass for what was already real vs. built from scratch here.
+   ETHONE AI Core, window.ETHONEMarketplace) instead of re-implementing it.
 */
 
 function _stEsc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m];});}
@@ -323,18 +322,18 @@ function automationCreate(){
   var triggerValue='09:00';
   var actionValue='Daily reminder';
   p.state.automationRules.push({id:'rule-'+Date.now().toString(36),triggerType:triggerType,triggerValue:triggerValue,actionType:'toast',actionValue:actionValue,enabled:true,lastFired:null});
-  saveStateNow();renderAutomationSettings();
+  saveStateNow();renderAutomationSettings();syncAutomationTimer();
   if(typeof toast==='function')toast('Rule created','success');
 }
 function automationToggle(id,val){
   var p=curP();if(!p)return;
   var r=(p.state.automationRules||[]).find(function(x){return x.id===id;});if(!r)return;
-  r.enabled=val;saveStateNow();
+  r.enabled=val;saveStateNow();syncAutomationTimer();
 }
 function automationDelete(id){
   var p=curP();if(!p)return;
   p.state.automationRules=(p.state.automationRules||[]).filter(function(x){return x.id!==id;});
-  saveStateNow();renderAutomationSettings();
+  saveStateNow();renderAutomationSettings();syncAutomationTimer();
 }
 window.automationCreate=automationCreate;window.automationToggle=automationToggle;window.automationDelete=automationDelete;
 
@@ -363,7 +362,25 @@ function automationEvaluate(){
   });
   if(changed)saveStateNow();
 }
-if(!window.__ethoneAutomationTimer)window.__ethoneAutomationTimer=setInterval(automationEvaluate,60000);
+var _automationTimer=0;
+function syncAutomationTimer(){
+  if(_automationTimer){clearInterval(_automationTimer);_automationTimer=0;}
+  var p=curP();
+  var rules=p&&p.state&&Array.isArray(p.state.automationRules)?p.state.automationRules:[];
+  if(document.hidden||!rules.some(function(rule){return rule&&rule.enabled;})){
+    window.__ethoneAutomationTimer=0;
+    return;
+  }
+  _automationTimer=setInterval(automationEvaluate,60000);
+  window.__ethoneAutomationTimer=_automationTimer;
+}
+document.addEventListener('visibilitychange',syncAutomationTimer);
+window.addEventListener('pagehide',function(){
+  if(_automationTimer)clearInterval(_automationTimer);
+  _automationTimer=0;
+  window.__ethoneAutomationTimer=0;
+},{once:true});
+syncAutomationTimer();
 
 // ================= MARKETPLACE =================
 function renderMarketplaceSettings(){
@@ -452,10 +469,17 @@ function renderDeveloperSettings(){
     try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);lsBytes+=(k.length+(localStorage.getItem(k)||'').length);}}catch(e){}
     function row(l,v){return '<div>'+l+': <strong style="color:var(--text)">'+_stEsc(v)+'</strong></div>';}
     wrap.innerHTML=
-      row('Build','ETHONE 2026.07 (V28)')+
+      '<div>Build: <strong id="settings-release-build" style="color:var(--text)">ETHONE 1.0.0</strong></div>'+
       row('User agent',navigator.userAgent)+
       row('Online',navigator.onLine?'Yes':'No')+
       row('Local storage used',Math.round(lsBytes/1024)+' KB');
+    fetch('./data/version-center.json',{cache:'no-store'}).then(function(response){
+      if(!response.ok)throw new Error('Version manifest unavailable');
+      return response.json();
+    }).then(function(data){
+      var target=document.getElementById('settings-release-build');
+      if(target)target.textContent='ETHONE '+(data.currentVersion||(data.metadata&&data.metadata.version)||'1.0.0')+' · '+((data.metadata&&data.metadata.build)||'production');
+    }).catch(function(){});
   }
   var t=document.getElementById('dev-debug-toggle');
   if(t)t.checked=localStorage.getItem('ethone:debug')==='1';

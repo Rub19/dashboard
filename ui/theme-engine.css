@@ -4,15 +4,15 @@
   --theme-card-bg:linear-gradient(180deg,color-mix(in srgb,var(--surface-1) 88%,white 4%),var(--surface-1));
   --theme-widget-bg:linear-gradient(180deg,color-mix(in srgb,var(--surface-2) 82%,white 3%),var(--surface-1));
   --theme-sidebar-bg:
-    radial-gradient(circle at 50% -10%,rgba(var(--accent-rgb,139,92,246),calc(.16 * var(--theme-glow-scale))),transparent 36%),
+    radial-gradient(circle at 50% -10%,rgba(var(--accent-rgb,var(--primary-rgb)),calc(.16 * var(--theme-glow-scale))),transparent 36%),
     linear-gradient(180deg,color-mix(in srgb,var(--surface-1) 92%,black 8%),var(--surface-0));
   --theme-modal-bg:linear-gradient(180deg,color-mix(in srgb,var(--surface-2) 84%,white 4%),var(--surface-1));
 }
 
 html[data-ethone-theme] body{
   background:
-    radial-gradient(circle at 28% -18%,rgba(var(--accent-rgb,139,92,246),calc(.13 * var(--theme-glow-scale))),transparent 38%),
-    radial-gradient(circle at 96% 4%,rgba(var(--accent-rgb,139,92,246),calc(.06 * var(--theme-glow-scale))),transparent 28%),
+    radial-gradient(circle at 28% -18%,rgba(var(--accent-rgb,var(--primary-rgb)),calc(.13 * var(--theme-glow-scale))),transparent 38%),
+    radial-gradient(circle at 96% 4%,rgba(var(--accent-rgb,var(--primary-rgb)),calc(.06 * var(--theme-glow-scale))),transparent 28%),
     var(--surface-0)!important;
 }
 
@@ -28,7 +28,7 @@ html[data-ethone-theme] :where(
 ){
   background:var(--theme-card-bg)!important;
   border-color:var(--border-primary)!important;
-  box-shadow:var(--shadow-sm),inset 0 1px 0 rgba(255,255,255,.04)!important;
+  box-shadow:var(--shadow-sm),inset 0 1px 0 rgba(var(--color-white-rgb),.04)!important;
 }
 
 html[data-ethone-theme] :where(
@@ -37,20 +37,20 @@ html[data-ethone-theme] :where(
   .timeline-card,.timeline-event,.db-card,.db-list-row,.va-panel,.ph-card
 ):hover{
   border-color:var(--accent-border)!important;
-  box-shadow:var(--shadow-md),0 0 calc(32px * var(--theme-glow-scale)) rgba(var(--accent-rgb,139,92,246),.08),inset 0 1px 0 rgba(255,255,255,.055)!important;
+  box-shadow:var(--shadow-md),0 0 calc(32px * var(--theme-glow-scale)) rgba(var(--accent-rgb,var(--primary-rgb)),.08),inset 0 1px 0 rgba(var(--color-white-rgb),.055)!important;
 }
 
 html[data-ethone-theme] #main-sidebar.sidebar,
 html[data-ethone-theme] #main-sidebar.os-sidebar{
   background:var(--theme-sidebar-bg)!important;
   border-right-color:var(--border-primary)!important;
-  box-shadow:inset -1px 0 0 rgba(255,255,255,.035),22px 0 72px rgba(0,0,0,.24)!important;
+  box-shadow:inset -1px 0 0 rgba(var(--color-white-rgb),.035),22px 0 72px rgba(var(--color-black-rgb),.24)!important;
 }
 
 html[data-ethone-theme] :where(.modal,.ui-modal,.cmd-palette,.command-palette,#cmd-palette,.spaces-panel,.dropdown,.ui-dropdown,.context-menu,.db-dd-panel,.va-dd-panel){
   background:var(--theme-modal-bg)!important;
   border-color:var(--border-secondary)!important;
-  box-shadow:var(--shadow-lg),0 0 calc(46px * var(--theme-glow-scale)) rgba(var(--accent-rgb,139,92,246),.10)!important;
+  box-shadow:var(--shadow-lg),0 0 calc(46px * var(--theme-glow-scale)) rgba(var(--accent-rgb,var(--primary-rgb)),.10)!important;
 }
 
 html[data-ethone-theme] :where(#notif-panel,.notif-panel,.notification-center,.toast,.ethone-quality-toast-item,.notif-item){
@@ -66,7 +66,7 @@ html[data-ethone-theme] :where(input,textarea,select,.modal-input,.ui-input,.ui-
 
 html[data-ethone-theme] :where(input,textarea,select,.modal-input,.ui-input,.ui-search):focus{
   border-color:var(--border-focus)!important;
-  box-shadow:0 0 0 3px rgba(var(--accent-rgb,139,92,246),.15)!important;
+  box-shadow:0 0 0 3px rgba(var(--accent-rgb,var(--primary-rgb)),.15)!important;
 }
 
 html[data-ethone-theme] :where(.btn-primary,.primary,[data-variant="primary"],.modal-submit){
@@ -124,7 +124,7 @@ html[data-ethone-theme] ::-webkit-scrollbar-thumb{
 
 .theme-preset-card.active{
   border-color:var(--accent-border)!important;
-  box-shadow:var(--shadow-sm),0 0 calc(28px * var(--theme-glow-scale)) rgba(var(--accent-rgb,139,92,246),.12)!important;
+  box-shadow:var(--shadow-sm),0 0 calc(28px * var(--theme-glow-scale)) rgba(var(--accent-rgb,var(--primary-rgb)),.12)!important;
 }
 
 .theme-preset-preview{
@@ -134,7 +134,7 @@ html[data-ethone-theme] ::-webkit-scrollbar-thumb{
   gap:4px;
   overflow:hidden;
   border-radius:var(--radius-md);
-  border:1px solid rgba(255,255,255,.08);
+  border:1px solid rgba(var(--color-white-rgb),.08);
 }
 
 .theme-preset-preview span{

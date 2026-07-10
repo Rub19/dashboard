@@ -33,6 +33,11 @@
   function hardenExternalLinks(){
     all("a[href]").forEach(function(link){
       var href=link.getAttribute("href")||"";
+      if(/^\s*javascript:/i.test(href)||/^\s*data:/i.test(href)){
+        link.setAttribute("href","#");
+        link.setAttribute("aria-disabled","true");
+        return;
+      }
       if(!/^https?:\/\//i.test(href))return;
       var external=false;
       try{external=new URL(href,location.href).origin!==location.origin;}catch(e){}
@@ -41,6 +46,16 @@
       var rel=(link.getAttribute("rel")||"").split(/\s+/).filter(Boolean);
       ["noopener","noreferrer"].forEach(function(token){if(rel.indexOf(token)===-1)rel.push(token);});
       link.setAttribute("rel",rel.join(" "));
+    });
+  }
+  function hardenMediaUrls(){
+    all("[src]").forEach(function(node){
+      var src=node.getAttribute("src")||"";
+      if(!src)return;
+      if(/^\s*javascript:/i.test(src)){node.removeAttribute("src");return;}
+      if(/^\s*data:/i.test(src)&&!/^data:image\/(?:png|jpe?g|gif|webp);base64,/i.test(src)){
+        node.removeAttribute("src");
+      }
     });
   }
   function normalizeButtons(){
@@ -54,6 +69,39 @@
       var icon=button.querySelector("svg");
       if(icon)button.setAttribute("aria-label","Action ETHONE");
     });
+  }
+  function ethoneSecuritySweepStorage(){
+    var allow=/^(?:sb-|supabase\.auth|nexus_lang|ethone_lang|ethone_remember_auth|myspace_profiles_backup|myspace_profiles_backup_owner)$/i;
+    var sensitive=window.ETHONESecurity&&ETHONESecurity.isSensitiveKey
+      ? ETHONESecurity.isSensitiveKey
+      : function(key){return /password|secret|token|api[_-]?key|apikey|credential|bearer/i.test(String(key||""));};
+    [localStorage,sessionStorage].forEach(function(store){
+      try{
+        var remove=[];
+        for(var i=0;i<store.length;i++){
+          var key=store.key(i);
+          if(!key||allow.test(key))continue;
+          if(sensitive(key))remove.push(key);
+        }
+        remove.forEach(function(key){try{store.removeItem(key);}catch(error){}});
+      }catch(error){}
+    });
+  }
+  function sanitizeStoredProfileBackup(){
+    if(!window.ETHONESecurity||!ETHONESecurity.sanitizeProfilesForPersistence)return;
+    try{
+      var raw=localStorage.getItem("myspace_profiles_backup");
+      if(!raw)return;
+      var parsed=JSON.parse(raw);
+      if(!Array.isArray(parsed))return;
+      var jobs=parsed.map(function(profile){
+        if(!profile||!profile.password||!Object.prototype.hasOwnProperty.call(profile.password,"value")||!ETHONESecurity.createProfileLock)return Promise.resolve();
+        return ETHONESecurity.createProfileLock(profile.password.type,profile.password.value).then(function(lock){profile.password=lock;}).catch(function(){});
+      });
+      Promise.all(jobs).then(function(){
+        try{localStorage.setItem("myspace_profiles_backup",JSON.stringify(ETHONESecurity.sanitizeProfilesForPersistence(parsed)));}catch(error){}
+      });
+    }catch(error){}
   }
   function reduceMotionState(){
     if(reducedMotion&&reducedMotion.matches)document.documentElement.classList.add("ethone-reduced-motion");
@@ -72,6 +120,7 @@
   function registerServiceWorker(){
     if(window.ETHONE_SAFE_MODE||window.__ethoneSkipServiceWorker)return;
     if(!("serviceWorker" in navigator))return;
+    if(navigator.webdriver)return;
     if(location.protocol==="file:")return;
     navigator.serviceWorker.register("./sw.js",{updateViaCache:"none"}).then(function(registration){
       function activateWaitingWorker(){
@@ -99,8 +148,11 @@
   function runHardening(){
     reduceMotionState();
     hardenExternalLinks();
+    hardenMediaUrls();
     normalizeButtons();
     labelInteractiveControls();
+    ethoneSecuritySweepStorage();
+    sanitizeStoredProfileBackup();
     installEmptyPageGuard();
   }
   function scheduleHardening(){
@@ -117,7 +169,11 @@
   var lightBoot=false;
   try{lightBoot=!!(window.ETHONE_LIGHT_BOOT_MODE||document.documentElement.classList.contains("ethone-stable-boot")||document.documentElement.dataset.ethoneStableBoot==="1")}catch(e){lightBoot=!!window.ETHONE_LIGHT_BOOT_MODE}
   if(!lightBoot&&"MutationObserver" in window){
-    new MutationObserver(scheduleHardening).observe(document.documentElement,{childList:true,subtree:true});
+    if(window.ETHONEDOMRuntime&&typeof window.ETHONEDOMRuntime.subscribe==="function"){
+      window.ETHONEDOMRuntime.subscribe("production-hardening",scheduleHardening);
+    }else{
+      new MutationObserver(scheduleHardening).observe(document.documentElement,{childList:true,subtree:true});
+    }
   }
 
   window.ETHONEProductionQA={
@@ -134,6 +190,7 @@
       };
     },
     harden:runHardening,
+    securitySweep:ethoneSecuritySweepStorage,
     errors:function(){return runtimeErrors.slice();}
   };
 

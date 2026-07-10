@@ -15,12 +15,24 @@
   function escapeHTML(value){return String(value==null?"":value).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
   function profile(){try{return typeof window.curP==="function"?window.curP():null}catch(e){return null}}
   function profileState(){var p=profile();return p&&p.state?p.state:{}}
-  function activePage(){var el=$(".tab-content.active[id^='page-']");return el?el.id.replace(/^page-/,""):"dashboard"}
+  function osSnapshot(){try{return window.ETHONEOSContext&&typeof window.ETHONEOSContext.snapshot==="function"?window.ETHONEOSContext.snapshot():null}catch(e){return null}}
+  function activePage(){var os=osSnapshot();if(os&&os.page&&os.page.id)return os.page.id;var el=$(".tab-content.active[id^='page-']");return el?el.id.replace(/^page-/,""):"dashboard"}
   function pageLabel(page){
     var map={dashboard:"Home",files:"Files",notes:"Notes",todos:"Tasks",habits:"Habits",kanban:"Kanban",calendar:"Calendar",stats:"Analytics",settings:"Settings",connections:"Connections",gaming:"Gaming",github:"GitHub",marketplace:"Marketplace",store:"Store",workspaces:"Workspaces",timeline:"Timeline",ai:"AI Core",goals:"Goals",journal:"Journal",countdown:"Countdowns","valorant-accounts":"Valorant",databases:"Databases"};
     return map[page]||String(page||"dashboard").replace(/-/g," ");
   }
   function facts(){
+    var os=osSnapshot();
+    if(os&&os.facts){
+      return {
+        openTodos:os.facts.tasks&&os.facts.tasks.open||0,
+        doneTodos:os.facts.tasks&&os.facts.tasks.done||0,
+        notes:os.facts.notes&&os.facts.notes.total||0,
+        files:os.facts.files&&os.facts.files.total||0,
+        habits:os.facts.habits&&os.facts.habits.total||0,
+        events:os.facts.calendar&&os.facts.calendar.total||0
+      };
+    }
     var s=profileState();
     var todos=Array.isArray(s.todos)?s.todos:[];
     var notes=Array.isArray(s.notes)?s.notes:[];
@@ -37,6 +49,8 @@
     };
   }
   function workspaceLabel(){
+    var os=osSnapshot();
+    if(os&&os.workspace&&os.workspace.name)return os.workspace.name;
     try{
       var active=window.ETHONEWorkspaces&&window.ETHONEWorkspaces.active?window.ETHONEWorkspaces.active():null;
       if(active&&active.name)return active.name;
@@ -393,6 +407,12 @@
   function renderPageStrip(ctx){
     var page=$(".tab-content.active[id^='page-']");
     if(!page||page.id==="page-ai")return;
+    if($(".brain-everywhere-strip",page)){
+      var legacyStrip=$(".brain-os-strip",page);
+      if(legacyStrip)legacyStrip.remove();
+      delete page.dataset.brainStrip;
+      return;
+    }
     if(page.dataset.brainStrip==="1"){
       var status=$(".brain-os-strip-status",page);
       if(status)status.textContent=ctx.pageLabel+" / "+ctx.workspace;

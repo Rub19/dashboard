@@ -10,6 +10,9 @@ let _aiTyping=false;
 const AI_DOM_MESSAGE_LIMIT=80;
 
 function getAIContext(){
+  if(window.ETHONEOSContext&&typeof window.ETHONEOSContext.aiContext==="function"){
+    try{return window.ETHONEOSContext.aiContext()}catch(e){}
+  }
   const p=curP();if(!p)return{summary:'No profile loaded',counts:{}};
   const s=p.state||{};
   const todos=(s.todos||[]);
@@ -167,14 +170,21 @@ function addAIMessage(role,text){
   const msgs=document.getElementById('ai-messages');if(!msgs)return;
   const isUser=role==='user';
   text=String(text||'');
+  const esc=window.ETHONESecurity&&ETHONESecurity.escapeHTML?ETHONESecurity.escapeHTML:function(v){return String(v||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))};
+  const safeAvatar=window.ETHONESecurity&&ETHONESecurity.safeImageSrc?ETHONESecurity.safeImageSrc(p&&p.avatarImg):'';
+  const safeHref=function(url){
+    url=String(url||'').trim();
+    if(url==='about:blank')return url;
+    try{const u=new URL(url,location.origin);return /^https?:$/.test(u.protocol)?u.href:'#'}catch(e){return '#'}
+  };
   const avatarHtml=isUser
-    ?`<div class="ai-avatar user-av">${p?.avatarImg?`<img src="${p.avatarImg}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`:(p?.avatarEmoji||'👤')}</div>`
+    ?`<div class="ai-avatar user-av">${safeAvatar?`<img src="${esc(safeAvatar)}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`:esc(p?.avatarEmoji||'User')}</div>`
     :`<div class="ai-avatar nexus"><svg viewBox="0 0 20 20" fill="none" style="width:14px;height:14px" aria-hidden="true"><rect x="4" y="5" width="12" height="2" rx="1" fill="white" opacity=".95"/><rect x="4" y="9" width="12" height="2" rx="1" fill="white" opacity=".95"/><rect x="4" y="13" width="8" height="2" rx="1" fill="white" opacity=".95"/></svg></div>`;
   // Simple markdown: **bold**, `code`, [link](url), newlines
   const html=text
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/\[([^\]]+)\]\(#open-note-(\d+)\)/g,(_,label,id)=>`<a href="about:blank" onclick="event.preventDefault();openNoteFromAI(${id})" style="color:var(--accent);text-decoration:underline;cursor:pointer">${label}</a>`)
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" style="color:var(--accent);text-decoration:underline">$1</a>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g,(_,label,url)=>'<a href="'+esc(safeHref(url))+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:underline">'+esc(label)+'</a>')
     .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
     .replace(/`([^`]+)`/g,'<code>$1</code>')
     .replace(/\n/g,'<br>');

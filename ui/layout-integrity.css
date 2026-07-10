@@ -12,6 +12,38 @@
   --z-ethone-toast:21000;
 }
 
+/* Production readiness: a Marketplace child's min-content width must never
+   expand the page track beyond the application viewport. */
+#page-marketplace .mp41-shell {
+  width: calc(100% - 40px);
+  max-width: min(1440px, calc(100% - 40px));
+  min-width: 0;
+  grid-template-columns: minmax(0,1fr);
+  overflow-x: clip;
+}
+#page-marketplace .mp41-shell > *,
+#page-marketplace .mp41-panel,
+#page-marketplace .mp-store-layout,
+#page-marketplace .mp-store-grid,
+#page-marketplace .mp-brain-grid,
+#page-marketplace .mp-store-collection-grid {
+  min-width: 0;
+  max-width: 100%;
+}
+#page-marketplace .mp-store-categories {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+@media (max-width: 640px) {
+  #page-marketplace .mp41-shell {
+    width: 100%;
+    max-width: 100%;
+    margin-inline: 0;
+  }
+}
+
 html,
 body{
   max-width:100%;
@@ -87,6 +119,14 @@ body.ethone-layout-desktop #main-content.main{
 
 #main-sidebar{
   z-index:var(--z-ethone-sidebar);
+}
+
+/* AppShell already exposes Spaces from its sidebar and topbar. Keeping the
+   legacy floating launcher mounted creates a high-z-index hit target over
+   live-panel header controls on narrower desktop layouts. */
+body.ethone-dashboard-mounted #ethone-spaces-root > .space-switcher-button{
+  display:none!important;
+  pointer-events:none!important;
 }
 
 #ethone-permanent-dock,
@@ -166,7 +206,14 @@ body.ethone-layout-desktop #ethone-native-shell{
 .db-dpe-overlay:not(.open),
 .db-detail-overlay:not(.open),
 .va-detail-overlay:not(.open){
+  opacity:0!important;
+  visibility:hidden!important;
   pointer-events:none!important;
+}
+
+.db-detail-overlay.open,
+.va-detail-overlay.open{
+  visibility:visible!important;
 }
 
 #cmd-palette-overlay{
@@ -207,6 +254,21 @@ body.ethone-layout-desktop #ethone-native-shell{
   visibility:visible!important;
 }
 
+/* Notification filters stay visible without an internal horizontal rail. */
+#notif-panel.notification-center-v2 .nc2-filter-row{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  width:100%!important;
+  gap:8px!important;
+  overflow:visible!important;
+}
+
+#notif-panel.notification-center-v2 .nc2-filter{
+  width:100%!important;
+  min-width:0!important;
+  justify-content:flex-start!important;
+}
+
 #pdock-popover:not(.is-open),
 #pdock-manager:not(.is-open),
 #de-launchpad[aria-hidden="true"]{
@@ -244,5 +306,521 @@ body.ethone-layout-desktop #ethone-native-shell{
     left:10px;
     width:auto!important;
     max-width:none;
+  }
+}
+
+/* The active mobile page sits in its own high isolation layer. Keep the
+   on-demand Widgets sheet above that page and the mobile navigation, while
+   remaining below notifications, modals and the command palette. */
+@media (max-width:1200px){
+  #live-panel{
+    z-index:5600!important;
+  }
+
+  #live-panel-mobile-overlay{
+    z-index:5590!important;
+  }
+}
+
+/* Final collision contract.
+   Brain Everywhere is the canonical global launcher. Keeping the older Brain
+   OS launcher mounted beside it created a second flex item on narrow screens
+   and reduced AppShell by the width of that hidden control. */
+body:has(#ethone-brain-everywhere-root) > #brain-os-orb,
+body:has(#ethone-brain-everywhere-root) > #brain-os-panel{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+/* Dashboard and mobile navigation already expose Brain as a first-class
+   action. Suppress the redundant floating launcher in those contexts so it
+   cannot cover cards, quick actions or the persistent bottom navigation. */
+body.ethone-dashboard-v4 #ethone-brain-everywhere-root{
+  display:none!important;
+}
+
+/* Fixed launchers must never cover the final actionable row. */
+body.ethone-dashboard-mounted #main-content.main,
+body.ethone-2026-ui #main-content.main,
+body.ethone-v2 #main-content.main{
+  padding-bottom:max(92px,calc(72px + env(safe-area-inset-bottom,0px)))!important;
+  scroll-padding-bottom:max(92px,calc(72px + env(safe-area-inset-bottom,0px)));
+}
+
+#aie-suggestion-stack{
+  position:relative!important;
+  inset:auto!important;
+  z-index:2!important;
+  width:100%!important;
+  max-height:none;
+  display:flex!important;
+  align-items:flex-end;
+  margin:0 0 var(--spacing-md,16px)!important;
+  overflow:visible;
+  contain:layout paint;
+}
+
+#aie-suggestion-stack > .aie-suggestion-card{
+  width:min(440px,100%);
+  margin-left:auto;
+}
+
+#aie-suggestion-stack > .aie-suggestion-card:nth-child(n+2){
+  display:none!important;
+}
+
+/* Brain Everywhere is the canonical in-page context surface. Legacy Brain OS
+   rows are removed by their runtimes; this visual guard prevents a late lazy
+   mount from flashing a second toolbar during route transitions. */
+.tab-content:has(.brain-everywhere-strip) > .brain-os-strip,
+.tab-content:has(.brain-everywhere-strip) > .aie-page-actions[data-aie-page-actions]{
+  display:none!important;
+}
+
+/* Chart columns are semantic buttons but not toolbar controls. The global
+   44px target must not become their minimum grid-track width. */
+body.ethone-2026-ui #main-content #page-activity .aic-hour,
+body.ethone-v2 #main-content #page-activity .aic-hour{
+  display:grid!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  padding:0!important;
+  border:0!important;
+  background:none!important;
+  box-shadow:none!important;
+}
+
+/* Interactive cards keep card semantics even after keyboard/UX enhancers add
+   role=button and the shared interaction classes. */
+body.ethone-2026-ui #main-content #page-widget-marketplace .wm-card,
+body.ethone-v2 #main-content #page-widget-marketplace .wm-card{
+  min-height:258px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  justify-content:flex-start!important;
+  gap:12px!important;
+  padding:15px!important;
+  white-space:normal!important;
+  overflow:hidden!important;
+  text-align:left!important;
+}
+
+#page-widget-marketplace .wm-card :where(.wm-card-copy,.wm-card-copy strong,.wm-card-copy p){
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere;
+}
+
+body.ethone-2026-ui #main-content #page-widget-marketplace .wm-rating button,
+body.ethone-v2 #main-content #page-widget-marketplace .wm-rating button{
+  width:28px!important;
+  min-width:28px!important;
+  height:28px!important;
+  min-height:28px!important;
+  padding:0!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+
+#page-versions .version-filterbar{
+  flex-wrap:wrap;
+  overflow-x:visible;
+}
+
+#page-widget-marketplace .wm-toolbar{
+  grid-template-columns:minmax(240px,420px) minmax(124px,160px) auto!important;
+}
+
+#page-widget-marketplace .wm-tabs{
+  grid-column:1/-1!important;
+  justify-content:flex-start!important;
+  flex-wrap:wrap!important;
+  overflow-x:visible!important;
+}
+
+body.ethone-2026-ui #main-content #page-marketplace :where(.mp-brain-card,.mp-store-card),
+body.ethone-v2 #main-content #page-marketplace :where(.mp-brain-card,.mp-store-card){
+  display:grid!important;
+  align-items:center!important;
+  white-space:normal!important;
+  overflow:hidden!important;
+  text-align:left!important;
+}
+
+body.ethone-2026-ui #main-content #page-marketplace .mp-brain-card,
+body.ethone-v2 #main-content #page-marketplace .mp-brain-card{
+  min-height:86px!important;
+  grid-template-columns:44px minmax(0,1fr) auto!important;
+  gap:10px!important;
+  padding:10px!important;
+}
+
+#page-marketplace .mp-brain-card .mp41-btn{
+  min-width:70px!important;
+}
+
+body.ethone-2026-ui #main-content #page-marketplace .mp-store-card,
+body.ethone-v2 #main-content #page-marketplace .mp-store-card{
+  grid-template-columns:132px minmax(0,1fr)!important;
+  gap:13px!important;
+  min-height:172px!important;
+  padding:10px!important;
+}
+
+#page-marketplace :where(.mp-brain-card,.mp-store-card) :where(strong,span,small,p,.mp-store-card-body){
+  min-width:0!important;
+  max-width:100%!important;
+}
+
+@media (max-width:1180px){
+  body.ethone-2026-ui #main-content #page-marketplace .mp-store-card,
+  body.ethone-v2 #main-content #page-marketplace .mp-store-card{
+    grid-template-columns:112px minmax(0,1fr)!important;
+  }
+}
+
+@media (max-width:1024px){
+  /* Finish-pass.css keeps four dashboard tracks until 760px, which leaves
+     hero widgets in half-width cells on tablets. Restore the Dashboard V4
+     two-track contract here; every widget spans the available content width
+     before the dedicated phone layout takes over. */
+  body.ethone-dashboard-v4 #page-dashboard .d4-widgetgrid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+
+  body.ethone-dashboard-v4 #page-dashboard #d4-widget-grid > [data-widget-id]{
+    grid-column:1 / -1!important;
+    grid-row:auto!important;
+  }
+
+  #app-shell{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    flex:1 1 100%!important;
+  }
+
+  #main-content.main{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+  }
+
+  body.ethone-2026-ui #main-sidebar.sidebar:not(.mobile-open),
+  body.ethone-v2 #main-sidebar.sidebar:not(.mobile-open){
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+
+  body.ethone-2026-ui #main-sidebar.sidebar.mobile-open,
+  body.ethone-v2 #main-sidebar.sidebar.mobile-open{
+    visibility:visible!important;
+    pointer-events:auto!important;
+  }
+}
+
+@media (max-width:768px){
+  /* The mobile dock owns the bottom 96px of the viewport. Constrain the
+     single scrolling surface above it so controls never travel underneath a
+     translucent navigation layer while scrolling. */
+  body.ethone-dashboard-mounted #main-content.main,
+  body.ethone-2026-ui #main-content.main,
+  body.ethone-v2 #main-content.main{
+    height:calc(100dvh - 96px)!important;
+    max-height:calc(100dvh - 96px)!important;
+    flex:0 0 calc(100dvh - 96px)!important;
+  }
+
+  #ethone-brain-everywhere-root{
+    display:none!important;
+  }
+
+  /* The persistent mobile navigation already exposes Brain and retains the
+     active page context. Removing the desktop strip returns the first screen
+     to the page itself instead of repeating three large AI actions. */
+  .brain-everywhere-strip{
+    display:none!important;
+  }
+
+  /* Decorative ambient light is unnecessary on constrained viewports and
+     otherwise paints beyond the viewport edge without adding information. */
+  .d4-sd-orb{
+    display:none!important;
+  }
+
+  /* Legacy mobile layers alternately force modals to 92dvh and 100dvh while
+     later polish restores outer spacing. Let short dialogs size to content,
+     and cap long dialogs to one internal scroll surface inside the viewport. */
+  body.ethone-mobile .modal-overlay.open{
+    align-items:center!important;
+    justify-content:center!important;
+    padding:max(12px,env(safe-area-inset-top,0px)) 12px max(12px,env(safe-area-inset-bottom,0px))!important;
+  }
+
+  body.ethone-mobile .modal-overlay.open > .modal{
+    width:min(100%,440px)!important;
+    max-width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:calc(100dvh - 24px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))!important;
+    margin:0!important;
+    border-radius:var(--radius-xl)!important;
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
+  }
+
+  body.ethone-mobile #notif-panel.notification-center.open{
+    top:calc(58px + env(safe-area-inset-top,0px) + 8px)!important;
+    right:8px!important;
+    bottom:calc(88px + env(safe-area-inset-bottom,0px) + 8px)!important;
+    left:8px!important;
+    width:auto!important;
+    height:auto!important;
+    max-height:none!important;
+    border-radius:var(--radius-xl)!important;
+  }
+
+  body.ethone-mobile #notif-panel .nc2-filter-row{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    width:100%!important;
+    overflow:visible!important;
+    gap:8px!important;
+  }
+
+  body.ethone-mobile #notif-panel .nc2-filter{
+    width:100%!important;
+    min-width:0!important;
+    justify-content:flex-start!important;
+  }
+
+  body.ethone-mobile:has(#notif-panel.open) #ethone-ux-status{
+    bottom:calc(152px + env(safe-area-inset-bottom,0px))!important;
+  }
+
+  body.ethone-mobile #cmd-footer{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    width:100%!important;
+    gap:6px!important;
+    padding:8px!important;
+    overflow:hidden!important;
+  }
+
+  body.ethone-mobile #cmd-footer > span{
+    min-width:0!important;
+    justify-content:center!important;
+    overflow:hidden!important;
+    font-size:0!important;
+  }
+
+  body.ethone-mobile #cmd-footer .cmd-k{
+    max-width:100%!important;
+    padding-inline:6px!important;
+    font-size:9px!important;
+    white-space:nowrap!important;
+  }
+
+  /* Contextual suggestions are desktop affordances. On phones the persistent
+     Brain destination already exists in the bottom navigation; a floating
+     card would cover primary actions and reduce the usable viewport. */
+  #aie-suggestion-stack{
+    display:none!important;
+  }
+
+  /* Mobile toasts live below the fixed top bar, never on top of the content
+     controls or the persistent navigation dock. */
+  #ethone-quality-toast,
+  html body #toasts.nc-toast-stack{
+    top:70px!important;
+    right:12px!important;
+    bottom:auto!important;
+    left:12px!important;
+    width:auto!important;
+    max-height:min(42dvh,360px)!important;
+  }
+
+  #page-files .files-tools{
+    display:flex!important;
+    width:100%!important;
+    min-width:0!important;
+    flex:1 1 100%!important;
+    flex-wrap:wrap!important;
+    overflow-x:visible!important;
+  }
+
+  #page-files .files-select{
+    min-width:0!important;
+    flex:1 1 112px!important;
+  }
+
+  #page-files .files-view-toggle{
+    min-width:0!important;
+    flex:1 1 176px!important;
+  }
+
+  #page-files .files-view-toggle button{
+    min-width:0!important;
+    flex:1 1 0!important;
+    padding-inline:6px!important;
+  }
+
+  #page-files .files-icon-btn{
+    width:44px!important;
+    flex:0 0 44px!important;
+  }
+
+  #page-kanban .kanban-board{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    width:100%!important;
+    min-width:0!important;
+    overflow-x:visible!important;
+    scroll-snap-type:none!important;
+  }
+
+  #page-kanban .kanban-col{
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    scroll-snap-align:none!important;
+  }
+
+  #page-marketplace .mp41-shell,
+  #page-marketplace .mp41-shell > *{
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    box-sizing:border-box!important;
+  }
+
+  #page-marketplace :where(.mp-store-search,.mp-store-search input,.mp41-title,.mp41-copy,.mp41-tabs,.mp41-layout,.mp41-grid,.mp41-section){
+    min-width:0!important;
+    max-width:100%!important;
+    box-sizing:border-box!important;
+  }
+
+  #page-marketplace .mp-store-search input{
+    width:100%!important;
+  }
+
+  #page-marketplace .mp41-title{
+    overflow-wrap:anywhere;
+  }
+
+  #page-marketplace .mp-store-categories{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    width:100%!important;
+    min-width:0!important;
+    overflow-x:visible!important;
+    gap:8px!important;
+  }
+
+  #page-marketplace .mp-store-categories .mp41-tab{
+    width:100%!important;
+    min-width:0!important;
+    min-height:44px!important;
+    justify-content:center!important;
+    padding-inline:8px!important;
+  }
+
+  body.ethone-2026-ui #main-content #page-marketplace .mp-brain-card,
+  body.ethone-v2 #main-content #page-marketplace .mp-brain-card{
+    grid-template-columns:44px minmax(0,1fr)!important;
+  }
+
+  #page-marketplace .mp-brain-card .mp41-btn{
+    grid-column:1/-1!important;
+    width:100%!important;
+  }
+
+  body.ethone-2026-ui #main-content #page-marketplace .mp-store-card,
+  body.ethone-v2 #main-content #page-marketplace .mp-store-card{
+    grid-template-columns:1fr!important;
+  }
+
+  #page-versions .version-filterbar{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    width:100%!important;
+    overflow-x:visible!important;
+  }
+
+  #page-versions .version-filter{
+    width:100%!important;
+    min-width:0!important;
+    justify-content:center!important;
+    padding-inline:8px!important;
+  }
+
+  #page-widget-marketplace :where(
+    .wm-shell,
+    .wm-shell > *,
+    .wm-toolbar,
+    .wm-tabs,
+    .wm-layout,
+    .wm-grid,
+    .wm-card,
+    .wm-detail,
+    .wm-detail-head,
+    .wm-detail-head > div,
+    .wm-detail-actions
+  ){
+    min-width:0!important;
+    max-width:100%!important;
+    box-sizing:border-box!important;
+  }
+
+  #page-widget-marketplace .wm-toolbar{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    width:100%!important;
+  }
+
+  #page-widget-marketplace :where(.wm-search,.wm-sort,#wm-marketplace-entry){
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    justify-self:stretch!important;
+  }
+
+  #page-widget-marketplace .wm-tabs{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    width:100%!important;
+    overflow-x:visible!important;
+    gap:8px!important;
+  }
+
+  #page-widget-marketplace .wm-tabs button,
+  #page-widget-marketplace .wm-btn{
+    width:100%!important;
+    min-width:0!important;
+  }
+
+  body.ethone-2026-ui #main-content #page-widget-marketplace .wm-rating button,
+  body.ethone-v2 #main-content #page-widget-marketplace .wm-rating button{
+    width:40px!important;
+    min-width:40px!important;
+    height:40px!important;
+    min-height:40px!important;
+  }
+
+  #page-widget-marketplace :where(.wm-detail-head h3,.wm-detail-head p,.wm-code){
+    max-width:100%!important;
+    overflow-wrap:anywhere;
+  }
+
+  body.ethone-dashboard-mounted #main-content.main,
+  body.ethone-2026-ui #main-content.main,
+  body.ethone-v2 #main-content.main{
+    padding-bottom:max(142px,calc(126px + env(safe-area-inset-bottom,0px)))!important;
+    scroll-padding-bottom:max(142px,calc(126px + env(safe-area-inset-bottom,0px)));
   }
 }

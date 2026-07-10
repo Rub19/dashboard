@@ -8,7 +8,7 @@ function renderSidebarCustomize(){
   const p=curP();if(!p)return;
 
   const allItems=getDefaultNav();
-  const saved=p.sidebarConfig;
+  const saved=ensureSidebarConfig(p);
   // Merge saved order/visibility with defaults
   let items=allItems.map(item=>{
     const savedItem=saved?.find?.(s=>s.id===item.id);
@@ -28,10 +28,10 @@ function renderSidebarCustomize(){
     const row=document.createElement('div');
     row.setAttribute('draggable','true');
     row.dataset.id=item.id;
-    row.style.cssText='position:relative;display:flex;align-items:center;gap:10px;padding:8px 34px 8px 10px;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);cursor:grab;transition:all .15s;margin-bottom:3px';
+    row.style.cssText='position:relative;display:flex;align-items:center;gap:10px;padding:8px 34px 8px 10px;border-radius:8px;background:rgba(var(--color-white-rgb),.03);border:1px solid rgba(var(--color-white-rgb),.06);cursor:grab;transition:all .15s;margin-bottom:3px';
     row.innerHTML=`
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:14px;height:14px;color:rgba(245,245,247,.25);flex-shrink:0"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
-      <span style="flex:1;font-size:13px;font-weight:500;color:${item.visible?'var(--text)':'rgba(245,245,247,.3)'}">${escapeHTML(item.label)}</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:14px;height:14px;color:rgba(var(--text-primary-rgb),.25);flex-shrink:0"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
+      <span style="flex:1;font-size:13px;font-weight:500;color:${item.visible?'var(--text)':'rgba(var(--text-primary-rgb),.3)'}">${escapeHTML(item.label)}</span>
       <label class="ui-switch" role="switch">
         <input type="checkbox" ${item.visible?'checked':''} onchange="toggleSidebarItem('${item.id}',this.checked)">
       </label>
@@ -42,11 +42,11 @@ function renderSidebarCustomize(){
     // Drag events
     row.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',item.id);row.style.opacity='.4';});
     row.addEventListener('dragend',()=>row.style.opacity='1');
-    row.addEventListener('dragover',e=>{e.preventDefault();row.style.borderColor='rgba(139,92,246,.4)';});
-    row.addEventListener('dragleave',()=>row.style.borderColor='rgba(255,255,255,.06)');
+    row.addEventListener('dragover',e=>{e.preventDefault();row.style.borderColor='rgba(var(--primary-rgb),.4)';});
+    row.addEventListener('dragleave',()=>row.style.borderColor='rgba(var(--color-white-rgb),.06)');
     row.addEventListener('drop',e=>{
       e.preventDefault();
-      row.style.borderColor='rgba(255,255,255,.06)';
+      row.style.borderColor='rgba(var(--color-white-rgb),.06)';
       const draggedId=e.dataTransfer.getData('text/plain');
       if(draggedId===item.id)return;
       reorderSidebarItem(draggedId,item.id);
@@ -55,9 +55,34 @@ function renderSidebarCustomize(){
   });
 }
 
+function ensureSidebarConfig(p){
+  if(!p)return[];
+  const defaults=getDefaultNav().map(item=>({id:item.id,visible:true,pinned:false}));
+  const saved=Array.isArray(p.sidebarConfig)?p.sidebarConfig:[];
+  const merged=defaults.map(item=>{
+    const existing=saved.find(entry=>entry&&entry.id===item.id);
+    return existing?{
+      id:item.id,
+      visible:existing.visible!==false,
+      pinned:!!existing.pinned
+    }:item;
+  });
+  saved.forEach(entry=>{
+    if(entry&&entry.id&&!merged.some(item=>item.id===entry.id)){
+      merged.push({
+        id:entry.id,
+        visible:entry.visible!==false,
+        pinned:!!entry.pinned
+      });
+    }
+  });
+  p.sidebarConfig=merged;
+  return merged;
+}
+
 function toggleSidebarItemPin(id){
   const p=curP();if(!p)return;
-  if(!p.sidebarConfig)p.sidebarConfig=getDefaultNav().map(i=>({id:i.id,visible:true}));
+  ensureSidebarConfig(p);
   let item=p.sidebarConfig.find(i=>i.id===id);
   if(!item){item={id,visible:true};p.sidebarConfig.push(item);}
   item.pinned=!item.pinned;
@@ -68,7 +93,7 @@ function toggleSidebarItemPin(id){
 
 function toggleSidebarItem(id,visible){
   const p=curP();if(!p)return;
-  if(!p.sidebarConfig)p.sidebarConfig=getDefaultNav().map(i=>({id:i.id,visible:true}));
+  ensureSidebarConfig(p);
   const item=p.sidebarConfig.find(i=>i.id===id);
   if(item)item.visible=visible;
   else p.sidebarConfig.push({id,visible});
@@ -79,8 +104,7 @@ function toggleSidebarItem(id,visible){
 
 function reorderSidebarItem(fromId,toId){
   const p=curP();if(!p)return;
-  const allItems=getDefaultNav();
-  if(!p.sidebarConfig)p.sidebarConfig=allItems.map(i=>({id:i.id,visible:true}));
+  ensureSidebarConfig(p);
   const fromIdx=p.sidebarConfig.findIndex(i=>i.id===fromId);
   const toIdx=p.sidebarConfig.findIndex(i=>i.id===toId);
   if(fromIdx===-1||toIdx===-1)return;

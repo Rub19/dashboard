@@ -1,0 +1,1235 @@
+[
+  {
+    "route": "dashboard",
+    "ready": true,
+    "title": "ETHONE Layout QA - dashboard",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [
+        {
+          "className": "d4-ambient-chip",
+          "id": "d4-ambient-chip",
+          "left": -697.6,
+          "right": -333.8,
+          "scroll": 33,
+          "tag": "span"
+        },
+        {
+          "className": "d4-drag",
+          "id": "",
+          "left": -34,
+          "right": -1071,
+          "scroll": 7,
+          "tag": "span"
+        },
+        {
+          "className": "d4-drag",
+          "id": "",
+          "left": -758,
+          "right": -347,
+          "scroll": 7,
+          "tag": "span"
+        },
+        {
+          "className": "d4-drag",
+          "id": "",
+          "left": -396,
+          "right": -709,
+          "scroll": 7,
+          "tag": "span"
+        },
+        {
+          "className": "d4-drag",
+          "id": "",
+          "left": -758,
+          "right": -347,
+          "scroll": 7,
+          "tag": "span"
+        },
+        {
+          "className": "d4-drag",
+          "id": "",
+          "left": -34,
+          "right": -1071,
+          "scroll": 7,
+          "tag": "span"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -244.3,
+          "right": -795.4,
+          "scroll": 2,
+          "tag": "span"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -392.6,
+          "right": -647.2,
+          "scroll": 8,
+          "tag": "span"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -540.8,
+          "right": -498.9,
+          "scroll": 23,
+          "tag": "span"
+        },
+        {
+          "className": "d4-sd-orb",
+          "id": "",
+          "left": 57,
+          "right": -1025,
+          "scroll": 0,
+          "tag": "div"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -379.6,
+          "right": -678.7,
+          "scroll": 24,
+          "tag": "strong"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -627,
+          "right": -431.3,
+          "scroll": 5,
+          "tag": "small"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -627,
+          "right": -431.3,
+          "scroll": 13,
+          "tag": "strong"
+        },
+        {
+          "className": "d4-sd-action ghost ethone-ux-button ethone-readable-button",
+          "id": "",
+          "left": -1051,
+          "right": -15,
+          "scroll": 3,
+          "tag": "button"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -55,
+          "right": -833,
+          "scroll": 538,
+          "tag": "p"
+        }
+      ],
+      "pageOverflow": 0,
+      "provisionalTerms": [],
+      "route": "dashboard",
+      "runtimeErrors": [],
+      "sidebarActive": [
+        "dashboard"
+      ],
+      "visibleOverlays": 0
+    }
+  },
+  {
+    "route": "files",
+    "ready": true,
+    "title": "ETHONE Layout QA - files",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [
+        {
+          "className": "",
+          "id": "",
+          "left": -787.8,
+          "right": -315.5,
+          "scroll": 14,
+          "tag": "span"
+        }
+      ],
+      "pageOverflow": 0,
+      "provisionalTerms": [],
+      "route": "files",
+      "runtimeErrors": [],
+      "sidebarActive": [
+        "files"
+      ],
+      "visibleOverlays": 0
+    }
+  },
+  {
+    "route": "notes",
+    "ready": true,
+    "title": "ETHONE Layout QA - notes",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [],
+      "pageOverflow": 0,
+      "provisionalTerms": [],
+      "route": "notes",
+      "runtimeErrors": [],
+      "sidebarActive": [
+        "notes"
+      ],
+      "visibleOverlays": 0
+    }
+  },
+  {
+    "route": "todos",
+    "ready": true,
+    "title": "ETHONE Layout QA - todos",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [],
+      "pageOverflow": 0,
+      "provisionalTerms": [],
+      "route": "todos",
+      "runtimeErrors": [],
+      "sidebarActive": [
+        "todos"
+      ],
+      "visibleOverlays": 0
+    }
+  },
+  {
+    "route": "habits",
+    "ready": true,
+    "title": "ETHONE Layout QA - habits",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [],
+      "pageOverflow": 0,
+      "provisionalTerms": [],
+      "route": "habits",
+      "runtimeErrors": [],
+      "sidebarActive": [
+        "habits"
+      ],
+      "visibleOverlays": 0
+    }
+  },
+  {
+    "route": "kanban",
+    "ready": true,
+    "title": "ETHONE Layout QA - kanban",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [],
+      "pageOverflow": 0,
+      "provisionalTerms": [],
+      "route": "kanban",
+      "runtimeErrors": [],
+      "sidebarActive": [
+        "kanban"
+      ],
+      "visibleOverlays": 0
+    }
+  },
+  {
+    "route": "calendar",
+    "ready": true,
+    "title": "ETHONE Layout QA - calendar",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [],
+      "pageOverflow": 0,
+      "provisionalTerms": [],
+      "route": "calendar",
+      "runtimeErrors": [],
+      "sidebarActive": [
+        "calendar"
+      ],
+      "visibleOverlays": 0
+    }
+  },
+  {
+    "route": "stats",
+    "ready": true,
+    "title": "ETHONE Layout QA - stats",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [],
+      "pageOverflow": 0,
+      "provisionalTerms": [],
+      "route": "stats",
+      "runtimeErrors": [],
+      "sidebarActive": [
+        "stats"
+      ],
+      "visibleOverlays": 0
+    }
+  },
+  {
+    "route": "goals",
+    "ready": true,
+    "title": "ETHONE Layout QA - goals",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [
+        {
+          "className": "",
+          "id": "",
+          "left": -55,
+          "right": -840.7,
+          "scroll": 546,
+          "tag": "p"
+        }
+      ],
+      "pageOverflow": 0,
+      "provisionalTerms": [],
+      "route": "goals",
+      "runtimeErrors": [],
+      "sidebarActive": [
+        "goals"
+      ],
+      "visibleOverlays": 0
+    }
+  },
+  {
+    "route": "journal",
+    "ready": true,
+    "title": "ETHONE Layout QA - journal",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [],
+      "pageOverflow": 0,
+      "provisionalTerms": [],
+      "route": "journal",
+      "runtimeErrors": [],
+      "sidebarActive": [
+        "journal"
+      ],
+      "visibleOverlays": 0
+    }
+  },
+  {
+    "route": "countdown",
+    "ready": true,
+    "title": "ETHONE Layout QA - countdown",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [],
+      "pageOverflow": 0,
+      "provisionalTerms": [],
+      "route": "countdown",
+      "runtimeErrors": [],
+      "sidebarActive": [
+        "countdown"
+      ],
+      "visibleOverlays": 0
+    }
+  },
+  {
+    "route": "github",
+    "ready": true,
+    "title": "ETHONE Layout QA - github",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [
+        {
+          "className": "",
+          "id": "",
+          "left": -55,
+          "right": -840.7,
+          "scroll": 554,
+          "tag": "p"
+        }
+      ],
+      "pageOverflow": 0,
+      "provisionalTerms": [],
+      "route": "github",
+      "runtimeErrors": [],
+      "sidebarActive": [
+        "github"
+      ],
+      "visibleOverlays": 0
+    }
+  },
+  {
+    "route": "gaming",
+    "ready": true,
+    "title": "ETHONE Layout QA - gaming",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [],
+      "pageOverflow": 0,
+      "provisionalTerms": [],
+      "route": "gaming",
+      "runtimeErrors": [],
+      "sidebarActive": [
+        "gaming"
+      ],
+      "visibleOverlays": 0
+    }
+  },
+  {
+    "route": "valorant-accounts",
+    "ready": true,
+    "title": "ETHONE Layout QA - valorant-accounts",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [],
+      "pageOverflow": 0,
+      "provisionalTerms": [],
+      "route": "valorant-accounts",
+      "runtimeErrors": [],
+      "sidebarActive": [
+        "valorant-accounts"
+      ],
+      "visibleOverlays": 0
+    }
+  },
+  {
+    "route": "databases",
+    "ready": true,
+    "title": "ETHONE Layout QA - databases",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [
+        {
+          "className": "",
+          "id": "db-root",
+          "left": 0,
+          "right": 0,
+          "scroll": 2,
+          "tag": "div"
+        },
+        {
+          "className": "db-boot-placeholder ethone-motion-active ethone-skeleton",
+          "id": "",
+          "left": -1.9,
+          "right": 1.9,
+          "scroll": 0,
+          "tag": "div"
+        }
+      ],
+      "pageOverflow": 2,
+      "provisionalTerms": [],
+      "route": "databases",
+      "runtimeErrors": [],
+      "sidebarActive": [
+        "databases"
+      ],
+      "visibleOverlays": 0
+    }
+  },
+  {
+    "route": "marketplace",
+    "ready": true,
+    "title": "ETHONE Layout QA - marketplace",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [
+        {
+          "className": "",
+          "id": "",
+          "left": -55,
+          "right": -854.3,
+          "scroll": 559,
+          "tag": "p"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -365.5,
+          "right": -655,
+          "scroll": 9,
+          "tag": "strong"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -120,
+          "right": -966,
+          "scroll": 64,
+          "tag": "strong"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -120,
+          "right": -966,
+          "scroll": 97,
+          "tag": "strong"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -120,
+          "right": -966,
+          "scroll": 84,
+          "tag": "strong"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -120,
+          "right": -966,
+          "scroll": 95,
+          "tag": "strong"
+        }
+      ],
+      "pageOverflow": 0,
+      "provisionalTerms": [],
+      "route": "marketplace",
+      "runtimeErrors": [],
+      "sidebarActive": [
+        "marketplace"
+      ],
+      "visibleOverlays": 0
+    }
+  },
+  {
+    "route": "widget-marketplace",
+    "ready": true,
+    "title": "ETHONE Layout QA - widget-marketplace",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [
+        {
+          "className": "wm-fav ethone-icon-row ethone-ux-button ethone-ux-icon-only",
+          "id": "",
+          "left": -301,
+          "right": -786,
+          "scroll": 10,
+          "tag": "button"
+        },
+        {
+          "className": "wm-fav ethone-icon-row ethone-ux-button ethone-ux-icon-only",
+          "id": "",
+          "left": -641,
+          "right": -446,
+          "scroll": 10,
+          "tag": "button"
+        },
+        {
+          "className": "wm-fav ethone-icon-row ethone-ux-button ethone-ux-icon-only",
+          "id": "",
+          "left": -301,
+          "right": -786,
+          "scroll": 10,
+          "tag": "button"
+        },
+        {
+          "className": "wm-fav ethone-icon-row ethone-ux-button ethone-ux-icon-only",
+          "id": "",
+          "left": -641,
+          "right": -446,
+          "scroll": 10,
+          "tag": "button"
+        },
+        {
+          "className": "wm-fav ethone-icon-row ethone-ux-button ethone-ux-icon-only",
+          "id": "",
+          "left": -301,
+          "right": -786,
+          "scroll": 10,
+          "tag": "button"
+        },
+        {
+          "className": "wm-fav ethone-icon-row ethone-ux-button ethone-ux-icon-only",
+          "id": "",
+          "left": -641,
+          "right": -446,
+          "scroll": 10,
+          "tag": "button"
+        },
+        {
+          "className": "wm-fav ethone-icon-row ethone-ux-button ethone-ux-icon-only",
+          "id": "",
+          "left": -301,
+          "right": -786,
+          "scroll": 10,
+          "tag": "button"
+        },
+        {
+          "className": "wm-code",
+          "id": "",
+          "left": -723,
+          "right": -43,
+          "scroll": 83,
+          "tag": "pre"
+        }
+      ],
+      "pageOverflow": 0,
+      "provisionalTerms": [],
+      "route": "widget-marketplace",
+      "runtimeErrors": [],
+      "sidebarActive": [],
+      "visibleOverlays": 0
+    }
+  },
+  {
+    "route": "connections",
+    "ready": true,
+    "title": "ETHONE Layout QA - connections",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [
+        {
+          "className": "",
+          "id": "",
+          "left": -55,
+          "right": -854.3,
+          "scroll": 559,
+          "tag": "p"
+        },
+        {
+          "className": "live-panel-icon-btn ethone-icon-shell ethone-lucide-replaced ethone-icon-row ethone-ux-button ethone",
+          "id": "",
+          "left": -1003,
+          "right": -81,
+          "scroll": 8,
+          "tag": "button"
+        },
+        {
+          "className": "live-panel-icon-btn ethone-icon-shell ethone-lucide-replaced ethone-icon-row ethone-ux-button ethone",
+          "id": "",
+          "left": -1003,
+          "right": -81,
+          "scroll": 8,
+          "tag": "button"
+        },
+        {
+          "className": "live-panel-icon-btn ethone-icon-shell ethone-lucide-replaced ethone-icon-row ethone-ux-button ethone",
+          "id": "",
+          "left": -1003,
+          "right": -81,
+          "scroll": 8,
+          "tag": "button"
+        },
+        {
+          "className": "live-panel-icon-btn ethone-icon-shell ethone-lucide-replaced ethone-icon-row ethone-ux-button ethone",
+          "id": "",
+          "left": -1003,
+          "right": -81,
+          "scroll": 8,
+          "tag": "button"
+        },
+        {
+          "className": "live-panel-icon-btn ethone-icon-shell ethone-lucide-replaced ethone-icon-row ethone-ux-button ethone",
+          "id": "",
+          "left": -1003,
+          "right": -81,
+          "scroll": 8,
+          "tag": "button"
+        },
+        {
+          "className": "live-panel-icon-btn ethone-icon-shell ethone-lucide-replaced ethone-icon-row ethone-ux-button ethone",
+          "id": "",
+          "left": -1003,
+          "right": -81,
+          "scroll": 8,
+          "tag": "button"
+        },
+        {
+          "className": "live-panel-icon-btn ethone-icon-shell ethone-lucide-replaced ethone-icon-row ethone-ux-button ethone",
+          "id": "",
+          "left": -1003,
+          "right": -81,
+          "scroll": 8,
+          "tag": "button"
+        },
+        {
+          "className": "live-panel-icon-btn ethone-icon-shell ethone-lucide-replaced ethone-icon-row ethone-ux-button ethone",
+          "id": "",
+          "left": -1003,
+          "right": -81,
+          "scroll": 8,
+          "tag": "button"
+        },
+        {
+          "className": "live-panel-icon-btn ethone-icon-shell ethone-lucide-replaced ethone-icon-row ethone-ux-button ethone",
+          "id": "",
+          "left": -1003,
+          "right": -81,
+          "scroll": 8,
+          "tag": "button"
+        },
+        {
+          "className": "live-panel-icon-btn ethone-icon-shell ethone-lucide-replaced ethone-icon-row ethone-ux-button ethone",
+          "id": "",
+          "left": -1003,
+          "right": -81,
+          "scroll": 8,
+          "tag": "button"
+        },
+        {
+          "className": "live-panel-icon-btn ethone-icon-shell ethone-lucide-replaced ethone-icon-row ethone-ux-button ethone",
+          "id": "",
+          "left": -1003,
+          "right": -81,
+          "scroll": 8,
+          "tag": "button"
+        },
+        {
+          "className": "live-panel-icon-btn ethone-icon-shell ethone-lucide-replaced ethone-icon-row ethone-ux-button ethone",
+          "id": "",
+          "left": -1003,
+          "right": -81,
+          "scroll": 8,
+          "tag": "button"
+        }
+      ],
+      "pageOverflow": 0,
+      "provisionalTerms": [],
+      "route": "connections",
+      "runtimeErrors": [],
+      "sidebarActive": [
+        "connections"
+      ],
+      "visibleOverlays": 0
+    }
+  },
+  {
+    "route": "settings",
+    "ready": true,
+    "title": "ETHONE Layout QA - settings",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [],
+      "pageOverflow": 0,
+      "provisionalTerms": [],
+      "route": "settings",
+      "runtimeErrors": [],
+      "sidebarActive": [
+        "settings"
+      ],
+      "visibleOverlays": 0
+    }
+  },
+  {
+    "route": "ai",
+    "ready": true,
+    "title": "ETHONE Layout QA - ai",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [
+        {
+          "className": "ai-send-btn ethone-icon-row ethone-readable-button ethone-ux-button ethone-ux-icon-only",
+          "id": "ai-send-btn",
+          "left": -1076,
+          "right": 0,
+          "scroll": 4,
+          "tag": "button"
+        }
+      ],
+      "pageOverflow": 0,
+      "provisionalTerms": [],
+      "route": "ai",
+      "runtimeErrors": [],
+      "sidebarActive": [
+        "ai"
+      ],
+      "visibleOverlays": 0
+    }
+  },
+  {
+    "route": "activity",
+    "ready": true,
+    "title": "ETHONE Layout QA - activity",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [
+        {
+          "className": "",
+          "id": "",
+          "left": -55,
+          "right": -815.6,
+          "scroll": 521,
+          "tag": "p"
+        },
+        {
+          "className": "ethone-icon-text-row ethone-icon-row ethone-ux-button ethone-ux-icon-only ethone-readable-button",
+          "id": "",
+          "left": -1071.4,
+          "right": -17.1,
+          "scroll": 10,
+          "tag": "button"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -983,
+          "right": -57,
+          "scroll": 22,
+          "tag": "span"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -1069,
+          "right": -15,
+          "scroll": 10,
+          "tag": "strong"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -212.5,
+          "right": -895.3,
+          "scroll": 6,
+          "tag": "small"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -273.3,
+          "right": -834.5,
+          "scroll": 6,
+          "tag": "small"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -334.2,
+          "right": -773.6,
+          "scroll": 8,
+          "tag": "small"
+        },
+        {
+          "className": "activity-heatmap-grid",
+          "id": "",
+          "left": -723,
+          "right": -15,
+          "scroll": 4,
+          "tag": "div"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -737.5,
+          "right": -379.5,
+          "scroll": 19,
+          "tag": "span"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -769.7,
+          "right": -347.3,
+          "scroll": 19,
+          "tag": "span"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -801.8,
+          "right": -315.2,
+          "scroll": 19,
+          "tag": "span"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -834,
+          "right": -283,
+          "scroll": 19,
+          "tag": "span"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -866.2,
+          "right": -250.8,
+          "scroll": 19,
+          "tag": "span"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -898.3,
+          "right": -218.7,
+          "scroll": 19,
+          "tag": "span"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -930.5,
+          "right": -186.5,
+          "scroll": 19,
+          "tag": "span"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -962.7,
+          "right": -154.3,
+          "scroll": 19,
+          "tag": "span"
+        }
+      ],
+      "pageOverflow": 0,
+      "provisionalTerms": [],
+      "route": "activity",
+      "runtimeErrors": [],
+      "sidebarActive": [
+        "activity"
+      ],
+      "visibleOverlays": 0
+    }
+  },
+  {
+    "route": "health",
+    "ready": true,
+    "title": "ETHONE Layout QA - health",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [
+        {
+          "className": "",
+          "id": "",
+          "left": -55,
+          "right": -840.7,
+          "scroll": 546,
+          "tag": "p"
+        },
+        {
+          "className": "",
+          "id": "",
+          "left": -985,
+          "right": -15,
+          "scroll": 21,
+          "tag": "span"
+        },
+        {
+          "className": "ethone-icon-text-row ethone-icon-row ethone-ux-button ethone-ux-icon-only",
+          "id": "",
+          "left": -1071.4,
+          "right": -17.1,
+          "scroll": 10,
+          "tag": "button"
+        }
+      ],
+      "pageOverflow": 0,
+      "provisionalTerms": [],
+      "route": "health",
+      "runtimeErrors": [],
+      "sidebarActive": [
+        "health"
+      ],
+      "visibleOverlays": 0
+    }
+  },
+  {
+    "route": "versions",
+    "ready": true,
+    "title": "ETHONE Layout QA - versions",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [
+        {
+          "className": "",
+          "id": "",
+          "left": -55,
+          "right": -840.7,
+          "scroll": 546,
+          "tag": "p"
+        },
+        {
+          "className": "version-release-main",
+          "id": "",
+          "left": -44.8,
+          "right": -723.6,
+          "scroll": 269,
+          "tag": "span"
+        },
+        {
+          "className": "version-release-count",
+          "id": "",
+          "left": -402.4,
+          "right": -707.2,
+          "scroll": 7,
+          "tag": "span"
+        },
+        {
+          "className": "version-release-main",
+          "id": "",
+          "left": -45.1,
+          "right": -720,
+          "scroll": 246,
+          "tag": "span"
+        },
+        {
+          "className": "version-release-count",
+          "id": "",
+          "left": -406,
+          "right": -707.2,
+          "scroll": 3,
+          "tag": "span"
+        },
+        {
+          "className": "version-release-main",
+          "id": "",
+          "left": -46.1,
+          "right": -720.7,
+          "scroll": 167,
+          "tag": "span"
+        },
+        {
+          "className": "version-release-count",
+          "id": "",
+          "left": -405.3,
+          "right": -707.2,
+          "scroll": 2,
+          "tag": "span"
+        },
+        {
+          "className": "version-release-main",
+          "id": "",
+          "left": -45.7,
+          "right": -720.4,
+          "scroll": 196,
+          "tag": "span"
+        },
+        {
+          "className": "version-release-count",
+          "id": "",
+          "left": -405.6,
+          "right": -707.2,
+          "scroll": 3,
+          "tag": "span"
+        },
+        {
+          "className": "ethone-icon-text-row ethone-icon-row ethone-ux-button ethone-ux-icon-only",
+          "id": "",
+          "left": -1071.4,
+          "right": -17.1,
+          "scroll": 10,
+          "tag": "button"
+        }
+      ],
+      "pageOverflow": 0,
+      "provisionalTerms": [],
+      "route": "versions",
+      "runtimeErrors": [],
+      "sidebarActive": [
+        "versions"
+      ],
+      "visibleOverlays": 0
+    }
+  },
+  {
+    "route": "studio",
+    "ready": true,
+    "title": "ETHONE Layout QA - studio",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [
+        {
+          "className": "",
+          "id": "",
+          "left": -55,
+          "right": -840.7,
+          "scroll": 546,
+          "tag": "p"
+        },
+        {
+          "className": "ethone-icon-text-row ethone-icon-row ethone-ux-button ethone-ux-icon-only ethone-readable-button",
+          "id": "",
+          "left": -1074,
+          "right": -14,
+          "scroll": 10,
+          "tag": "button"
+        }
+      ],
+      "pageOverflow": 0,
+      "provisionalTerms": [],
+      "route": "studio",
+      "runtimeErrors": [],
+      "sidebarActive": [],
+      "visibleOverlays": 0
+    }
+  },
+  {
+    "route": "import",
+    "ready": true,
+    "title": "ETHONE Layout QA - import",
+    "report": {
+      "activePages": 1,
+      "blankButtons": 0,
+      "bodyMode": "",
+      "disabledWithoutReason": 0,
+      "docOverflow": 0,
+      "duplicateIds": [],
+      "focusId": "",
+      "overflowNodes": [
+        {
+          "className": "",
+          "id": "",
+          "left": -55,
+          "right": -840.7,
+          "scroll": 546,
+          "tag": "p"
+        },
+        {
+          "className": "ethone-icon-text-row ethone-icon-row ethone-ux-button ethone-ux-icon-only",
+          "id": "",
+          "left": -1071.4,
+          "right": -17.1,
+          "scroll": 10,
+          "tag": "button"
+        }
+      ],
+      "pageOverflow": 0,
+      "provisionalTerms": [],
+      "route": "import",
+      "runtimeErrors": [],
+      "sidebarActive": [
+        "import"
+      ],
+      "visibleOverlays": 0
+    }
+  }
+]

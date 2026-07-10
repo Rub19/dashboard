@@ -1,11 +1,11 @@
 /* ETHONE V5 Brain OS, Context Engine and Command Center. */
 :root {
-  --bos-accent: var(--flow-accent, var(--accent, #8b5cf6));
-  --bos-accent-rgb: var(--flow-accent-rgb, 139, 92, 246);
-  --bos-surface: rgba(12, 12, 18, 0.88);
-  --bos-surface-strong: rgba(18, 17, 26, 0.96);
-  --bos-border: rgba(255, 255, 255, 0.11);
-  --bos-muted: rgba(242, 238, 255, 0.64);
+  --bos-accent: var(--flow-accent, var(--accent, var(--primary)));
+  --bos-accent-rgb: var(--flow-accent-rgb,var(--primary-rgb));
+  --bos-surface: rgba(var(--surface-1-rgb), 0.88);
+  --bos-surface-strong: rgba(var(--surface-2-rgb), 0.96);
+  --bos-border: rgba(var(--color-white-rgb), 0.11);
+  --bos-muted: rgba(var(--text-primary-rgb), 0.64);
 }
 
 html[data-ethone-flow-theme] body.ethone-flow-active {
@@ -19,7 +19,7 @@ html[data-ethone-flow-theme] body.ethone-flow-active {
   z-index: 3720;
   display: none;
   pointer-events: none;
-  color: #faf8ff;
+  color: var(--text-primary);
   font-family: var(--font, inherit);
 }
 
@@ -33,7 +33,7 @@ html[data-ethone-flow-theme] body.ethone-flow-active {
   inset: 0;
   background:
     radial-gradient(circle at 50% 18%, rgba(var(--bos-accent-rgb), 0.22), transparent 34%),
-    rgba(4, 4, 8, 0.72);
+    rgba(var(--surface-0-rgb), 0.72);
   backdrop-filter: blur(20px);
 }
 
@@ -49,9 +49,9 @@ html[data-ethone-flow-theme] body.ethone-flow-active {
   border-radius: 30px;
   background:
     radial-gradient(circle at 14% 0%, rgba(var(--bos-accent-rgb), 0.16), transparent 34%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.026)),
+    linear-gradient(135deg, rgba(var(--color-white-rgb), 0.09), rgba(var(--color-white-rgb), 0.026)),
     var(--bos-surface-strong);
-  box-shadow: 0 36px 130px rgba(0, 0, 0, 0.62);
+  box-shadow: 0 36px 130px rgba(var(--color-black-rgb), 0.62);
   animation: bos-pop 180ms ease both;
 }
 
@@ -61,7 +61,7 @@ html[data-ethone-flow-theme] body.ethone-flow-active {
   gap: 16px;
   align-items: center;
   padding: 22px 24px 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(var(--color-white-rgb), 0.08);
 }
 
 .bos-title {
@@ -84,7 +84,7 @@ html[data-ethone-flow-theme] body.ethone-flow-active {
 
 .bos-title strong {
   display: block;
-  color: #fff;
+  color: var(--text-primary);
   font-size: 22px;
   line-height: 1.1;
   letter-spacing: 0;
@@ -103,10 +103,10 @@ html[data-ethone-flow-theme] body.ethone-flow-active {
 .bos-card button,
 .bos-result {
   min-height: 38px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(var(--color-white-rgb), 0.1);
   border-radius: 14px;
-  color: rgba(255, 255, 255, 0.88);
-  background: rgba(255, 255, 255, 0.055);
+  color: rgba(var(--color-white-rgb), 0.88);
+  background: rgba(var(--color-white-rgb), 0.055);
   cursor: pointer;
   transition: transform 170ms ease, border-color 170ms ease, background 170ms ease, color 170ms ease;
 }
@@ -128,7 +128,7 @@ html[data-ethone-flow-theme] body.ethone-flow-active {
 }
 
 .bos-button.primary {
-  color: #fff;
+  color: var(--text-primary);
   border-color: rgba(var(--bos-accent-rgb), 0.44);
   background: linear-gradient(135deg, rgba(var(--bos-accent-rgb), 0.98), rgba(var(--bos-accent-rgb), 0.65));
   box-shadow: 0 14px 36px rgba(var(--bos-accent-rgb), 0.22);
@@ -144,7 +144,7 @@ html[data-ethone-flow-theme] body.ethone-flow-active {
 .bos-chip:focus-visible,
 .bos-result:focus-visible,
 .bos-card button:focus-visible {
-  color: #fff;
+  color: var(--text-primary);
   border-color: rgba(var(--bos-accent-rgb), 0.46);
   background: rgba(var(--bos-accent-rgb), 0.15);
   outline: none;
@@ -156,16 +156,16 @@ html[data-ethone-flow-theme] body.ethone-flow-active {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 10px;
   padding: 14px 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.075);
+  border-bottom: 1px solid rgba(var(--color-white-rgb), 0.075);
 }
 
 .bos-search {
   width: 100%;
   min-height: 44px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(var(--color-white-rgb), 0.1);
   border-radius: 16px;
-  color: #fff;
-  background: rgba(8, 8, 12, 0.74);
+  color: var(--text-primary);
+  background: rgba(var(--surface-0-rgb), 0.74);
   padding: 0 14px;
   outline: none;
 }
@@ -198,24 +198,24 @@ html[data-ethone-flow-theme] body.ethone-flow-active {
   display: grid;
   gap: 13px;
   padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(var(--color-white-rgb), 0.09);
   border-radius: 22px;
   background:
     radial-gradient(circle at 88% 0%, rgba(var(--bos-accent-rgb), 0.11), transparent 42%),
-    rgba(255, 255, 255, 0.045);
+    rgba(var(--color-white-rgb), 0.045);
 }
 
 .bos-card h3,
 .bos-card strong {
   margin: 0;
-  color: #fff;
+  color: var(--text-primary);
   letter-spacing: 0;
 }
 
 .bos-card h3 {
   font-size: 13px;
   text-transform: uppercase;
-  color: rgba(244, 240, 255, 0.58);
+  color: rgba(var(--text-primary-rgb), 0.58);
 }
 
 .bos-card p {
@@ -234,7 +234,7 @@ html[data-ethone-flow-theme] body.ethone-flow-active {
   height: 8px;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(var(--color-white-rgb), 0.08);
 }
 
 .bos-score i {
@@ -270,14 +270,14 @@ html[data-ethone-flow-theme] body.ethone-flow-active {
 .bos-kpi {
   min-width: 0;
   padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(var(--color-white-rgb), 0.08);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(var(--color-white-rgb), 0.04);
 }
 
 .bos-kpi span {
   display: block;
-  color: rgba(242, 238, 255, 0.54);
+  color: rgba(var(--text-primary-rgb), 0.54);
   font-size: 10px;
   font-weight: 760;
   text-transform: uppercase;
@@ -321,7 +321,7 @@ html[data-ethone-flow-theme] body.ethone-flow-active {
 
 .bos-empty {
   padding: 18px;
-  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border: 1px dashed rgba(var(--color-white-rgb), 0.1);
   border-radius: 18px;
   color: var(--bos-muted);
   text-align: center;
@@ -337,10 +337,10 @@ html[data-ethone-flow-theme] body.ethone-flow-active {
 .bos-setting select,
 .bos-setting input {
   min-height: 38px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(var(--color-white-rgb), 0.1);
   border-radius: 13px;
-  color: #fff;
-  background: rgba(8, 8, 12, 0.74);
+  color: var(--text-primary);
+  background: rgba(var(--surface-0-rgb), 0.74);
   padding: 0 10px;
 }
 

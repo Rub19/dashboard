@@ -92,7 +92,7 @@
     const entries=Array.isArray(budget.entries)?budget.entries:[];
     const spent=entries.filter(e=>String(e.type||"expense")!=="income").reduce((a,e)=>a+Math.abs(Number(e.amount)||0),0);
     return {
-      name:p&&p.name?p.name:"Rub",
+      name:p&&p.name?p.name:"Utilisateur",
       openTodos:todos.filter(t=>!t.done).length,
       doneTodos:todos.filter(t=>t.done).length,
       files:items.length,

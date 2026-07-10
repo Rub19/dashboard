@@ -1,7 +1,7 @@
 /* ETHONE Central Memory */
 :root{
-  --memory-accent:var(--accent,#8b5cf6);
-  --memory-accent-rgb:var(--eh-accent-rgb,139,92,246);
+  --memory-accent:var(--accent,var(--primary));
+  --memory-accent-rgb:var(--eh-accent-rgb,var(--primary-rgb));
 }
 
 .ethone-memory-fab{
@@ -14,11 +14,11 @@
   gap:9px;
   height:44px;
   padding:0 13px 0 10px;
-  border:1px solid rgba(167,139,250,.22);
+  border:1px solid rgba(var(--primary-hover-rgb),.22);
   border-radius:17px;
-  color:#fff;
-  background:linear-gradient(135deg,rgba(var(--memory-accent-rgb),.22),rgba(15,15,22,.78));
-  box-shadow:0 18px 58px rgba(0,0,0,.36),0 0 26px rgba(var(--memory-accent-rgb),.12),inset 0 1px 0 rgba(255,255,255,.06);
+  color:var(--text-primary);
+  background:linear-gradient(135deg,rgba(var(--memory-accent-rgb),.22),rgba(var(--surface-1-rgb),.78));
+  box-shadow:0 18px 58px rgba(var(--color-black-rgb),.36),0 0 26px rgba(var(--memory-accent-rgb),.12),inset 0 1px 0 rgba(var(--color-white-rgb),.06);
   backdrop-filter:blur(calc(18px * var(--theme-blur-scale,1))) saturate(1.12);
   -webkit-backdrop-filter:blur(calc(18px * var(--theme-blur-scale,1))) saturate(1.12);
   cursor:pointer;
@@ -39,8 +39,8 @@ body.ethone-desktop-mode .ethone-memory-fab{
 .ethone-memory-fab:hover,
 .ethone-memory-fab:focus-visible{
   transform:translateY(-2px);
-  border-color:rgba(167,139,250,.36);
-  background:linear-gradient(135deg,rgba(var(--memory-accent-rgb),.30),rgba(20,20,28,.86));
+  border-color:rgba(var(--primary-hover-rgb),.36);
+  background:linear-gradient(135deg,rgba(var(--memory-accent-rgb),.30),rgba(var(--surface-3-rgb),.86));
   outline:none;
 }
 
@@ -66,11 +66,11 @@ body.ethone-desktop-mode .ethone-memory-fab{
   display:none;
   flex-direction:column;
   overflow:hidden;
-  border:1px solid rgba(255,255,255,.105);
+  border:1px solid rgba(var(--color-white-rgb),.105);
   border-radius:26px;
-  color:#f8f7fb;
-  background:linear-gradient(180deg,rgba(25,25,34,.97),rgba(9,9,13,.97));
-  box-shadow:0 34px 120px rgba(0,0,0,.58),0 0 0 1px rgba(255,255,255,.035) inset,0 0 42px rgba(var(--memory-accent-rgb),.10);
+  color:var(--text-primary);
+  background:linear-gradient(180deg,rgba(var(--surface-3-rgb),.97),rgba(var(--surface-0-rgb),.97));
+  box-shadow:0 34px 120px rgba(var(--color-black-rgb),.58),0 0 0 1px rgba(var(--color-white-rgb),.035) inset,0 0 42px rgba(var(--memory-accent-rgb),.10);
   backdrop-filter:blur(calc(24px * var(--theme-blur-scale,1))) saturate(1.16);
   -webkit-backdrop-filter:blur(calc(24px * var(--theme-blur-scale,1))) saturate(1.16);
 }
@@ -85,12 +85,12 @@ body.ethone-desktop-mode .ethone-memory-fab{
   justify-content:space-between;
   gap:14px;
   padding:18px 18px 13px;
-  border-bottom:1px solid rgba(255,255,255,.075);
+  border-bottom:1px solid rgba(var(--color-white-rgb),.075);
 }
 
 .ethone-memory-title{
   margin:0;
-  color:#fff;
+  color:var(--text-primary);
   font-size:18px;
   line-height:1.08;
   letter-spacing:-.02em;
@@ -98,7 +98,7 @@ body.ethone-desktop-mode .ethone-memory-fab{
 
 .ethone-memory-sub{
   margin-top:6px;
-  color:rgba(248,247,251,.56);
+  color:rgba(var(--text-primary-rgb),.56);
   font-size:12px;
   line-height:1.45;
 }
@@ -106,10 +106,10 @@ body.ethone-desktop-mode .ethone-memory-fab{
 .ethone-memory-close{
   width:36px;
   height:36px;
-  border:1px solid rgba(255,255,255,.08);
+  border:1px solid rgba(var(--color-white-rgb),.08);
   border-radius:13px;
-  color:rgba(255,255,255,.72);
-  background:rgba(255,255,255,.045);
+  color:rgba(var(--color-white-rgb),.72);
+  background:rgba(var(--color-white-rgb),.045);
   cursor:pointer;
 }
 
@@ -119,19 +119,19 @@ body.ethone-desktop-mode .ethone-memory-fab{
   padding:14px;
   overflow:auto;
   scrollbar-width:thin;
-  scrollbar-color:rgba(255,255,255,.16) transparent;
+  scrollbar-color:rgba(var(--color-white-rgb),.16) transparent;
 }
 
 .ethone-memory-card{
-  border:1px solid rgba(255,255,255,.08);
+  border:1px solid rgba(var(--color-white-rgb),.08);
   border-radius:19px;
   padding:13px;
-  background:rgba(255,255,255,.038);
+  background:rgba(var(--color-white-rgb),.038);
 }
 
 .ethone-memory-card h4{
   margin:0 0 10px;
-  color:#fff;
+  color:var(--text-primary);
   font-size:12px;
   letter-spacing:.06em;
   text-transform:uppercase;
@@ -146,9 +146,9 @@ body.ethone-desktop-mode .ethone-memory-fab{
 .ethone-memory-kpi{
   min-width:0;
   padding:10px;
-  border:1px solid rgba(255,255,255,.07);
+  border:1px solid rgba(var(--color-white-rgb),.07);
   border-radius:15px;
-  background:rgba(255,255,255,.035);
+  background:rgba(var(--color-white-rgb),.035);
 }
 
 .ethone-memory-kpi strong,
@@ -160,13 +160,13 @@ body.ethone-desktop-mode .ethone-memory-fab{
 }
 
 .ethone-memory-kpi strong{
-  color:#fff;
+  color:var(--text-primary);
   font-size:15px;
 }
 
 .ethone-memory-kpi span{
   margin-top:3px;
-  color:rgba(248,247,251,.46);
+  color:rgba(var(--text-primary-rgb),.46);
   font-size:10px;
   font-weight:800;
   letter-spacing:.04em;
@@ -182,10 +182,10 @@ body.ethone-desktop-mode .ethone-memory-fab{
 .ethone-memory-btn{
   min-height:34px;
   padding:0 11px;
-  border:1px solid rgba(255,255,255,.085);
+  border:1px solid rgba(var(--color-white-rgb),.085);
   border-radius:12px;
-  color:rgba(255,255,255,.78);
-  background:rgba(255,255,255,.045);
+  color:rgba(var(--color-white-rgb),.78);
+  background:rgba(var(--color-white-rgb),.045);
   cursor:pointer;
   font-size:11px;
   font-weight:850;
@@ -195,15 +195,15 @@ body.ethone-desktop-mode .ethone-memory-fab{
 .ethone-memory-btn:hover,
 .ethone-memory-btn:focus-visible{
   transform:translateY(-1px);
-  color:#fff;
-  border-color:rgba(167,139,250,.26);
+  color:var(--text-primary);
+  border-color:rgba(var(--primary-hover-rgb),.26);
   background:rgba(var(--memory-accent-rgb),.15);
   outline:none;
 }
 
 .ethone-memory-btn.primary{
-  color:#fff;
-  border-color:rgba(167,139,250,.28);
+  color:var(--text-primary);
+  border-color:rgba(var(--primary-hover-rgb),.28);
   background:linear-gradient(135deg,rgba(var(--memory-accent-rgb),.42),rgba(var(--memory-accent-rgb),.24));
 }
 
@@ -218,7 +218,7 @@ body.ethone-desktop-mode .ethone-memory-fab{
 }
 
 .ethone-memory-row:hover{
-  background:rgba(255,255,255,.035);
+  background:rgba(var(--color-white-rgb),.035);
 }
 
 .ethone-memory-meta{
@@ -234,13 +234,13 @@ body.ethone-desktop-mode .ethone-memory-fab{
 }
 
 .ethone-memory-meta strong{
-  color:#fff;
+  color:var(--text-primary);
   font-size:12.5px;
 }
 
 .ethone-memory-meta span{
   margin-top:3px;
-  color:rgba(248,247,251,.48);
+  color:rgba(var(--text-primary-rgb),.48);
   font-size:11px;
 }
 
@@ -248,7 +248,7 @@ body.ethone-desktop-mode .ethone-memory-fab{
   flex:0 0 auto;
   padding:4px 7px;
   border-radius:999px;
-  color:#ddd6fe;
+  color:var(--text-accent);
   background:rgba(var(--memory-accent-rgb),.13);
   font-size:9px;
   font-weight:900;
@@ -258,9 +258,9 @@ body.ethone-desktop-mode .ethone-memory-fab{
 
 .ethone-memory-empty{
   padding:16px;
-  border:1px dashed rgba(255,255,255,.11);
+  border:1px dashed rgba(var(--color-white-rgb),.11);
   border-radius:16px;
-  color:rgba(248,247,251,.48);
+  color:rgba(var(--text-primary-rgb),.48);
   text-align:center;
   font-size:12px;
 }

@@ -100,6 +100,32 @@
     catch(error){return [];}
   }
 
+  function activeSurface(event){
+    var page=event&&event.detail&&event.detail.page;
+    if(page){
+      var pageRoot=document.getElementById("page-"+page);
+      if(pageRoot)return pageRoot;
+    }
+    var active=document.querySelector(".tab-content.active");
+    if(active)return active;
+    var auth=document.getElementById("auth-screen");
+    if(auth&&getComputedStyle(auth).display!=="none")return auth;
+    var profile=document.getElementById("profile-screen");
+    if(profile&&getComputedStyle(profile).display!=="none")return profile;
+    return document.getElementById("main-content")||document;
+  }
+
+  function leanRuntime(){
+    try{
+      return !!(
+        window.ETHONE_STABLE_BOOT ||
+        window.ETHONE_LIGHT_BOOT_MODE ||
+        window.__ethoneLeanProductionBoot ||
+        document.documentElement.dataset.ethoneStableBoot==="1"
+      );
+    }catch(error){return !!(window.ETHONE_STABLE_BOOT||window.ETHONE_LIGHT_BOOT_MODE||window.__ethoneLeanProductionBoot);}
+  }
+
   function normalizeIconKey(text){
     return String(text||"")
       .replace(/[\uFE0E\uFE0F]/g,"")
@@ -184,7 +210,11 @@
     if(document.body)document.body.classList.toggle("ethone-clarity-low-power",!!(lowMemory||lowCpu||saveData));
   }
 
-  function renderLucide(){
+  function renderLucide(root){
+    if(window.ETHONEIconSystem&&typeof window.ETHONEIconSystem.apply==="function"){
+      try{window.ETHONEIconSystem.apply(root||document);renderedIcons=true;return}catch(error){}
+    }
+    if(renderedIcons)return;
     if(!window.lucide||window.__lucideFailed||typeof window.lucide.createIcons!=="function")return;
     try{
       window.lucide.createIcons({
@@ -205,7 +235,7 @@
     replaceEmojiIcons(root);
     normalizeButtons(root);
     normalizeText(root);
-    renderLucide();
+    renderLucide(root);
   }
 
   function schedule(root){
@@ -224,19 +254,25 @@
   }
 
   function boot(){
-    apply(document);
+    apply(activeSurface());
     ["ethone:dashboard-ready","ethone:page-ready","ethone:boot-sequence-complete","ethone:theme-change","ethone:settings-change"].forEach(function(name){
-      window.addEventListener(name,function(){schedule(document)},{passive:true});
+      window.addEventListener(name,function(event){schedule(name==="ethone:dashboard-ready"?document:activeSurface(event))},{passive:true});
     });
-    document.addEventListener("click",function(){schedule(document)},true);
-    window.addEventListener("resize",function(){schedule(document)},{passive:true});
-    try{
-      new MutationObserver(function(mutations){
-        for(var i=0;i<mutations.length;i++){
-          if(mutations[i].addedNodes&&mutations[i].addedNodes.length){schedule(document);return;}
+    window.addEventListener("ethone:profile-ready",function(){schedule(document.getElementById("profile-screen")||document)},{passive:true});
+    window.addEventListener("resize",applyLowPowerBudget,{passive:true});
+    if(!leanRuntime()){
+      try{
+        if(window.ETHONEDOMRuntime&&typeof window.ETHONEDOMRuntime.subscribe==="function"){
+          window.ETHONEDOMRuntime.subscribe("clarity-polish",function(){schedule(document)});
+        }else{
+          new MutationObserver(function(mutations){
+            for(var i=0;i<mutations.length;i++){
+              if(mutations[i].addedNodes&&mutations[i].addedNodes.length){schedule(document);return;}
+            }
+          }).observe(document.body,{childList:true,subtree:true});
         }
-      }).observe(document.body,{childList:true,subtree:true});
-    }catch(error){}
+      }catch(error){}
+    }
   }
 
   window.ETHONEClarityPolish={apply:apply,refresh:function(){schedule(document)}};

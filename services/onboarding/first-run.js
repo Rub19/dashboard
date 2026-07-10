@@ -14,11 +14,15 @@
   var userMenuTimer=0;
   var whatsNewTimer=0;
   var previewClockTimer=0;
+  var launchTimers=[];
+  var previewRevision=0;
+  var isCompleting=false;
   var manualOpen=false;
   var devSession=false;
+  var globalKeyBound=false;
   var userMenuDocBound=false;
   var currentState=null;
-  var WHATS_NEW_VERSION="5.4.0";
+  var WHATS_NEW_VERSION=window.ETHONE_ONBOARDING_RELEASE_VERSION||"5.4.0";
   var WHATS_NEW_KEY="ethone:whats-new:seen";
   var WHATS_NEW_ITEMS=[
     {type:"Nouveau",title:"First Run Experience",body:"Un onboarding premium configure maintenant le Space, le style, le dashboard et Brain."},
@@ -35,6 +39,20 @@
     {id:"streaming",code:"ST",label:"Streaming",sub:"OBS, scenes, chat, musique et planning.",icon:"radio"},
     {id:"creative",code:"CR",label:"Creatif",sub:"Idees, contenus, moodboards et production visuelle.",icon:"palette"},
     {id:"custom",code:"CU",label:"Personnalise",sub:"Construis un environnement ETHONE a ton image.",icon:"sparkles"}
+  ];
+
+  var FLOW_OPTIONS=[
+    {id:"personal",code:"PE",label:"Personal Flow",sub:"Journal, calendrier et contexte quotidien.",icon:"home",accent:"#8b5cf6"},
+    {id:"development",code:"DV",label:"Development Flow",sub:"GitHub, Brain, notes et concentration.",icon:"square-terminal",accent:"#7c3aed"},
+    {id:"gaming",code:"GM",label:"Gaming Flow",sub:"Discord, Spotify, jeux et performances.",icon:"gamepad-2",accent:"#a855f7"},
+    {id:"study",code:"ST",label:"Study Flow",sub:"Notes, fichiers, planning et focus.",icon:"book-open-check",accent:"#c084fc"},
+    {id:"streaming",code:"SR",label:"Streaming Flow",sub:"OBS, chat, musique et production live.",icon:"radio",accent:"#d946ef"}
+  ];
+
+  var DASHBOARD_OPTIONS=[
+    {id:"control",code:"CT",label:"Control",sub:"Une vue equilibree pour tout piloter.",icon:"layout-dashboard"},
+    {id:"focus",code:"FO",label:"Focus",sub:"Priorites et travail profond au premier plan.",icon:"panel-top"},
+    {id:"ambient",code:"AM",label:"Ambient",sub:"Un espace plus visuel et respirant.",icon:"gallery-horizontal-end"}
   ];
 
   var ACCENTS=[
@@ -115,7 +133,7 @@
 
   function defaultState(){
     return {
-      version:1,
+      version:2,
       completed:false,
       completedAt:null,
       dismissedAt:null,
@@ -123,6 +141,8 @@
       selections:{
         space:"personal",
         customSpaceName:"",
+        flow:"personal",
+        dashboard:"control",
         style:{theme:"ethone-purple",accent:"#8b5cf6",density:"comfortable",animations:true,background:"aurora",font:"inter"},
         widgets:["today","notes","tasks","calendar","focus","brain"],
         connections:[],
@@ -155,6 +175,8 @@
     if(raw.selections&&typeof raw.selections==="object"){
       base.selections.space=raw.selections.space||base.selections.space;
       base.selections.customSpaceName=raw.selections.customSpaceName||"";
+      base.selections.flow=raw.selections.flow||base.selections.flow;
+      base.selections.dashboard=raw.selections.dashboard||base.selections.dashboard;
       if(raw.selections.style)base.selections.style=Object.assign({},base.selections.style,raw.selections.style);
       if(Array.isArray(raw.selections.widgets))base.selections.widgets=raw.selections.widgets.slice();
       if(Array.isArray(raw.selections.connections))base.selections.connections=raw.selections.connections.slice();
@@ -302,6 +324,28 @@
     return labelFrom(SPACE_OPTIONS,st.selections.space);
   }
 
+  function flowForSpace(spaceId){
+    if(spaceId==="development"||spaceId==="work")return "development";
+    if(spaceId==="gaming")return "gaming";
+    if(spaceId==="study")return "study";
+    if(spaceId==="streaming"||spaceId==="creative")return "streaming";
+    return "personal";
+  }
+
+  function dashboardForSpace(spaceId){
+    if(spaceId==="development"||spaceId==="work"||spaceId==="study")return "focus";
+    if(spaceId==="gaming"||spaceId==="streaming"||spaceId==="creative")return "ambient";
+    return "control";
+  }
+
+  function currentFlow(st){
+    return findById(FLOW_OPTIONS,st.selections.flow||"personal");
+  }
+
+  function currentDashboard(st){
+    return findById(DASHBOARD_OPTIONS,st.selections.dashboard||"control");
+  }
+
   function syncOnboardingVars(st){
     if(!root||!st||!st.selections)return;
     var style=st.selections.style||defaultState().selections.style;
@@ -326,9 +370,9 @@
       meta:"Aucune API n'est appelee pendant l'onboarding."
     };
     if(st.step===1)return {
-      title:"Space en cours",
-      body:"Le Space "+space+" servira de base a votre dashboard, vos widgets et votre contexte Brain.",
-      meta:"Vous pourrez creer d'autres Spaces ensuite."
+      title:"Votre environnement prend forme",
+      body:"Le Space "+space+" et le "+currentFlow(st).label+" construisent deja la preview a droite.",
+      meta:"Le Flow organise le contexte sans changer vos donnees."
     };
     if(st.step===2)return {
       title:"Identite visuelle",
@@ -336,8 +380,8 @@
       meta:style.animations?"Micro-interactions activees.":"Animations reduites pour un rendu plus calme."
     };
     if(st.step===3)return {
-      title:"Dashboard initial",
-      body:widgets.length+" widgets selectionnes. ETHONE composera un tableau de bord utile des la premiere ouverture.",
+      title:"Dashboard vivant",
+      body:currentDashboard(st).label+" organise "+widgets.length+" widgets dans la preview en temps reel.",
       meta:widgets.indexOf("brain")>-1?"Brain sera visible au centre de l'experience.":"Vous pourrez ajouter Brain plus tard depuis Widgets."
     };
     if(st.step===4)return {
@@ -351,9 +395,9 @@
       meta:"Memoire, suggestions et automatisations restent controlables."
     };
     return {
-      title:"Pret a entrer",
-      body:"ETHONE va appliquer le Space, le style, le dashboard initial et les preferences Brain.",
-      meta:"La configuration reste reversible depuis Settings."
+      title:"Pret au lancement",
+      body:"ETHONE va construire "+space+", activer "+currentFlow(st).label+" et composer le dashboard "+currentDashboard(st).label+".",
+      meta:"La sequence finale applique vos choix sans appel reseau."
     };
   }
 
@@ -379,7 +423,7 @@
   }
 
   function choiceCard(item,isSelected,action){
-    return '<button class="fron-choice'+(isSelected?' is-selected':'')+'" type="button" data-fron-action="'+esc(action)+'" data-id="'+esc(item.id)+'">'+
+    return '<button class="fron-choice'+(isSelected?' is-selected':'')+'" type="button" data-fron-action="'+esc(action)+'" data-id="'+esc(item.id)+'" aria-pressed="'+(isSelected?'true':'false')+'">'+
       '<span class="fron-choice-top"><span class="fron-choice-icon">'+iconMarkup(item.icon||"sparkles")+'</span><span class="fron-choice-code">'+esc(item.code||item.label.slice(0,2).toUpperCase())+'</span></span>'+
       '<b>'+esc(item.label)+'</b>'+
       '<span>'+esc(item.sub||"")+'</span>'+
@@ -414,6 +458,12 @@
     if(current==="custom"){
       html+='<div class="fron-custom-space"><input class="fron-input" data-fron-field="customSpaceName" value="'+esc(st.selections.customSpaceName)+'" placeholder="Nom du Space"/></div>';
     }
+    html+='<section class="fron-experience-section">'+
+      '<div class="fron-section-heading"><div><span>Flow initial</span><h3>Choisissez votre rythme</h3></div><small>La preview se transforme instantanement.</small></div>'+
+      '<div class="fron-card-grid fron-card-grid-compact fron-flow-grid">'+FLOW_OPTIONS.map(function(item){
+        return choiceCard(item,(st.selections.flow||"personal")===item.id,"select-flow");
+      }).join("")+'</div>'+
+    '</section>';
     return html;
   }
 
@@ -497,12 +547,51 @@
     return metrics[id]||("Slot "+(index+1));
   }
 
-  function renderPreviewWidgets(st){
-    var widgets=(st.selections.widgets||[]).slice(0,6);
+  function previewContext(st){
+    var flow=currentFlow(st);
+    var contexts={
+      personal:{eyebrow:"Daily system",headline:"Votre journee, organisee sans bruit.",status:"Contexte personnel actif"},
+      development:{eyebrow:"Build session",headline:"Code, notes et priorites dans le meme contexte.",status:"Environnement de developpement pret"},
+      gaming:{eyebrow:"Gaming session",headline:"Jeux, presence et musique au meme endroit.",status:"Mode gaming synchronise"},
+      study:{eyebrow:"Study session",headline:"Cours, planning et focus restent alignes.",status:"Session d'etude preparee"},
+      streaming:{eyebrow:"Live control",headline:"Production, chat et diffusion restent visibles.",status:"Regie streaming prete"}
+    };
+    return Object.assign({flow:flow},contexts[flow.id]||contexts.personal);
+  }
+
+  function orderedWidgetIds(st){
+    var widgets=(st.selections.widgets||[]).slice();
+    var layout=st.selections.dashboard||"control";
+    var priorities={
+      control:["brain","today","tasks","calendar","notes","focus","github","spotify","discord","weather","clock"],
+      focus:["focus","tasks","calendar","notes","brain","github","today","clock","weather","spotify","discord"],
+      ambient:["today","spotify","weather","calendar","brain","discord","github","notes","tasks","focus","clock"]
+    };
+    var order=priorities[layout]||priorities.control;
+    widgets.sort(function(a,b){
+      var ai=order.indexOf(a),bi=order.indexOf(b);
+      return (ai<0?99:ai)-(bi<0?99:bi);
+    });
+    return widgets;
+  }
+
+  function orderedPreviewWidgets(st,preferredId){
+    var all=orderedWidgetIds(st);
+    var visible=all.slice(0,6);
+    if(preferredId&&all.indexOf(preferredId)>-1&&visible.indexOf(preferredId)===-1){
+      if(visible.length<6)visible.push(preferredId);
+      else visible[visible.length-1]=preferredId;
+    }
+    return visible;
+  }
+
+  function renderPreviewWidgets(st,preferredId){
+    var widgets=orderedPreviewWidgets(st,preferredId);
     if(!widgets.length)widgets=["brain","today","tasks"];
     return widgets.map(function(id,index){
-      var wide=index===0||id==="brain"?" is-wide":"";
-      return '<article class="fron-live-widget'+wide+'" style="--delay:'+index+'">'+
+      var layout=st.selections.dashboard||"control";
+      var wide=index===0||(layout==="control"&&id==="brain")?" is-wide":"";
+      return '<article class="fron-live-widget'+wide+'" data-preview-widget="'+esc(id)+'" style="--delay:'+index+'">'+
         '<span>'+iconMarkup(previewWidgetIcon(id))+'</span>'+
         '<strong>'+esc(previewWidgetLabel(id))+'</strong>'+
         '<small>'+esc(previewMetric(id,index))+'</small>'+
@@ -519,45 +608,71 @@
     }).join("");
   }
 
-  function renderLivePreview(st){
+  function renderLivePreview(st,cause,preferredWidget){
     var style=st.selections.style||defaultState().selections.style;
     var rgb=hexToRgb(style.accent).join(",");
     var space=currentSpaceLabel(st);
+    var flow=currentFlow(st);
+    var dashboard=currentDashboard(st);
+    var context=previewContext(st);
     var brain=st.selections.brain||{};
     var widgetCount=(st.selections.widgets||[]).length;
     var connectionCount=(st.selections.connections||[]).length;
-    return '<section class="fron-live-preview" style="--preview-accent:'+esc(style.accent)+';--preview-rgb:'+esc(rgb)+'" data-preview-theme="'+esc(style.theme||"ethone-purple")+'" data-preview-density="'+esc(style.density||"comfortable")+'" data-preview-font="'+esc(style.font||"inter")+'">'+
+    var completion=Math.min(100,24+widgetCount*7+connectionCount*3+(brain.enabled?12:0));
+    previewRevision+=1;
+    return '<section class="fron-live-preview'+(cause?' is-preview-updating':'')+'" style="--preview-accent:'+esc(style.accent)+';--preview-rgb:'+esc(rgb)+';--preview-completion:'+completion+'%;--preview-completion-scale:'+(completion/100)+'" data-preview-revision="'+previewRevision+'" data-preview-cause="'+esc(cause||"initial")+'" data-preview-theme="'+esc(style.theme||"ethone-purple")+'" data-preview-density="'+esc(style.density||"comfortable")+'" data-preview-font="'+esc(style.font||"inter")+'" data-preview-background="'+esc(style.background||"none")+'" data-preview-flow="'+esc(flow.id)+'" data-preview-layout="'+esc(dashboard.id)+'">'+
       '<div class="fron-live-top">'+
         '<div><span>Live ETHONE Preview</span><strong>'+esc(space)+'</strong></div>'+
-        '<em>'+esc(style.density||"comfortable")+'</em>'+
+        '<div class="fron-live-top-meta"><em>'+iconMarkup(flow.icon)+' '+esc(flow.label)+'</em><em>'+esc(dashboard.label)+'</em></div>'+
       '</div>'+
       '<div class="fron-live-window">'+
         '<div class="fron-live-sidebar" aria-hidden="true"><b>E</b><i></i><i></i><i></i><i></i></div>'+
         '<div class="fron-live-main">'+
           '<div class="fron-live-bar"><span>Brain, files, commands...</span><b>'+iconMarkup("sparkles")+' Ready</b></div>'+
           '<div class="fron-live-hero">'+
-            '<div><small>Aujourd hui</small><strong>'+esc(space)+'</strong><p>'+widgetCount+' widgets · '+connectionCount+' connexions · Brain '+(brain.enabled?'active':'off')+'</p></div>'+
+            '<div><small>'+esc(context.eyebrow)+'</small><strong>'+esc(space)+'</strong><p>'+esc(context.headline)+'</p></div>'+
             '<time data-fron-preview-clock>'+new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})+'</time>'+
           '</div>'+
           '<div class="fron-live-brain '+(brain.enabled?'is-on':'is-off')+'">'+
             '<span class="fron-live-brain-dot"></span>'+
-            '<div><strong>'+esc(brain.enabled?"Brain analyse votre setup":"Brain en pause")+'</strong><small>'+esc(brain.enabled?"Provider "+labelFrom(PROVIDERS,brain.provider):"Activable a tout moment")+'</small></div>'+
+            '<div><strong>'+esc(brain.enabled?context.status:"Brain en pause")+'</strong><small>'+esc(brain.enabled?"Provider "+labelFrom(PROVIDERS,brain.provider):"Activable a tout moment")+'</small></div>'+
           '</div>'+
-          '<div class="fron-live-grid">'+renderPreviewWidgets(st)+'</div>'+
-          '<div class="fron-live-connections">'+renderPreviewConnections(st)+'</div>'+
+          '<div class="fron-live-grid">'+renderPreviewWidgets(st,preferredWidget)+'</div>'+
+          '<div class="fron-live-footer"><div class="fron-live-connections">'+renderPreviewConnections(st)+'</div><div class="fron-live-build" aria-label="Configuration '+completion+' pour cent"><span>System build</span><i><b></b></i></div></div>'+
         '</div>'+
       '</div>'+
     '</section>';
   }
 
-  function refreshPreviewOnly(st){
+  function refreshPreviewOnly(st,options){
     if(!root)return;
+    options=options||{};
     syncOnboardingVars(st);
     var preview=root.querySelector(".fron-live-preview-host");
-    if(preview)preview.innerHTML=renderLivePreview(st);
+    if(preview)preview.innerHTML=renderLivePreview(st,options.cause||"selection",options.cause==="toggle-widget"?options.focusId:null);
     var assistant=root.querySelector(".fron-assistant-host");
     if(assistant)assistant.outerHTML=renderAssistant(st);
     refreshIcons(root);
+  }
+
+  function refreshStepOnly(st,options){
+    if(!root)return;
+    options=options||{};
+    var content=root.querySelector(".fron-step-content");
+    if(!content)return;
+    var scrollTop=content.scrollTop;
+    content.innerHTML=renderBody(st);
+    content.scrollTop=scrollTop;
+    content.dataset.updateCause=options.cause||"selection";
+    refreshIcons(content);
+    if(options.focusAction){
+      var candidates=content.querySelectorAll('[data-fron-action="'+options.focusAction+'"]');
+      for(var i=0;i<candidates.length;i++){
+        if(options.focusId&&candidates[i].dataset.id!==String(options.focusId))continue;
+        try{candidates[i].focus({preventScroll:true})}catch(e){candidates[i].focus()}
+        break;
+      }
+    }
   }
 
   function updatePreviewClock(){
@@ -577,11 +692,117 @@
     previewClockTimer=0;
   }
 
+  function clearLaunchTimers(){
+    launchTimers.forEach(function(timer){clearTimeout(timer)});
+    launchTimers=[];
+  }
+
+  function launchAfter(callback,delay){
+    var timer=setTimeout(callback,delay);
+    launchTimers.push(timer);
+    return timer;
+  }
+
+  function renderLaunchSequence(st){
+    var space=currentSpaceLabel(st);
+    var flow=currentFlow(st);
+    var dashboard=currentDashboard(st);
+    var widgets=orderedPreviewWidgets(st).slice(0,4);
+    if(!widgets.length)widgets=["brain","today","tasks","calendar"];
+    var stages=[
+      {icon:"palette",label:"Style",detail:labelFrom(THEME_OPTIONS,st.selections.style.theme)},
+      {icon:"boxes",label:"Contexte",detail:space+" / "+flow.label},
+      {icon:"layout-dashboard",label:"Dashboard",detail:dashboard.label+" / "+st.selections.widgets.length+" widgets"},
+      {icon:"brain-circuit",label:"Brain",detail:st.selections.brain.enabled?"Contexte pret":"Desactive"}
+    ];
+    return '<div class="fron-overlay fron-launch-overlay" role="presentation">'+
+      '<section class="fron-launch-shell" role="status" aria-live="polite" aria-label="Construction de votre environnement ETHONE">'+
+        '<div class="fron-launch-copy">'+
+          '<span class="fron-launch-logo">E<i></i></span>'+
+          '<span class="fron-kicker">ETHONE System Launch</span>'+
+          '<h2>Construction de '+esc(space)+'</h2>'+
+          '<p data-fron-launch-status>Preparation de votre environnement personnel...</p>'+
+          '<div class="fron-launch-progress" aria-hidden="true"><i></i></div>'+
+          '<ol class="fron-launch-stages">'+stages.map(function(stage,index){
+            return '<li data-fron-launch-stage="'+index+'"><span>'+iconMarkup(stage.icon)+'</span><div><strong>'+esc(stage.label)+'</strong><small>'+esc(stage.detail)+'</small></div><i>'+iconMarkup("check")+'</i></li>';
+          }).join("")+'</ol>'+
+        '</div>'+
+        '<div class="fron-launch-visual" style="--preview-accent:'+esc(st.selections.style.accent)+';--preview-rgb:'+esc(hexToRgb(st.selections.style.accent).join(","))+'" data-preview-theme="'+esc(st.selections.style.theme)+'" data-preview-layout="'+esc(dashboard.id)+'">'+
+          '<div class="fron-launch-window">'+
+            '<header><span><i></i><i></i><i></i></span><b>ETHONE</b><em>System ready</em></header>'+
+            '<div class="fron-launch-dashboard">'+
+              '<aside><b>E</b><i></i><i></i><i></i></aside>'+
+              '<main><div class="fron-launch-hero"><span>'+esc(flow.label)+'</span><strong>'+esc(space)+'</strong><small>Votre environnement se construit.</small></div>'+
+              '<div class="fron-launch-widget-grid">'+widgets.map(function(id,index){
+                return '<article style="--delay:'+index+'"><span>'+iconMarkup(previewWidgetIcon(id))+'</span><strong>'+esc(previewWidgetLabel(id))+'</strong><i></i></article>';
+              }).join("")+'</div></main>'+
+            '</div>'+
+          '</div>'+
+          '<div class="fron-launch-ready"><span>'+iconMarkup("check")+'</span><strong>Votre espace est pret.</strong><small>Bienvenue dans ETHONE.</small></div>'+
+        '</div>'+
+      '</section>'+
+    '</div>';
+  }
+
+  function activateLaunchStage(index){
+    if(!root)return;
+    var stages=root.querySelectorAll("[data-fron-launch-stage]");
+    for(var i=0;i<stages.length;i++){
+      stages[i].classList.toggle("is-active",i===index);
+      stages[i].classList.toggle("is-done",i<index);
+    }
+    var status=root.querySelector("[data-fron-launch-status]");
+    if(status&&stages[index]){
+      var label=stages[index].querySelector("strong");
+      status.textContent=(label?label.textContent:"ETHONE")+" en cours...";
+    }
+    var progress=root.querySelector(".fron-launch-progress i");
+    if(progress)progress.style.transform="scaleX("+((index+1)/Math.max(1,stages.length))+")";
+    var widgets=root.querySelectorAll(".fron-launch-widget-grid article");
+    if(widgets[index])widgets[index].classList.add("is-mounted");
+  }
+
+  function runLaunchSequence(st,onReady,onDone){
+    ensureRoot();
+    clearLaunchTimers();
+    stopPreviewClock();
+    root.classList.add("is-launching");
+    root.innerHTML=renderLaunchSequence(st);
+    refreshIcons(root);
+    var reduced=root.classList.contains("fron-motion-off")||(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    var delays=reduced?[0,18,36,54]:[90,340,590,840];
+    delays.forEach(function(delay,index){launchAfter(function(){activateLaunchStage(index)},delay)});
+    launchAfter(function(){
+      var stages=root.querySelectorAll("[data-fron-launch-stage]");
+      for(var i=0;i<stages.length;i++){stages[i].classList.remove("is-active");stages[i].classList.add("is-done")}
+      var progress=root.querySelector(".fron-launch-progress i");
+      if(progress)progress.style.transform="scaleX(1)";
+      var status=root.querySelector("[data-fron-launch-status]");
+      if(status)status.textContent="Votre environnement est pret.";
+      var shell=root.querySelector(".fron-launch-shell");
+      if(shell)shell.classList.add("is-ready");
+      if(typeof onReady==="function")onReady();
+    },reduced?80:1080);
+    launchAfter(function(){root.classList.add("is-launch-complete");document.body.classList.add("ethone-first-run-dashboard-enter")},reduced?100:1280);
+    launchAfter(function(){if(typeof onDone==="function")onDone()},reduced?130:1510);
+  }
+
   function renderWidgets(st){
     var widgets=st.selections.widgets;
-    return '<div class="fron-card-grid">'+WIDGET_OPTIONS.map(function(item){
-      return choiceCard(item,selected(widgets,item.id),"toggle-widget");
-    }).join("")+'</div>';
+    return '<div class="fron-control-panel">'+
+      '<section class="fron-control-row fron-dashboard-choice">'+
+        '<div class="fron-section-heading"><div><span>Dashboard</span><h3>Choisissez une composition</h3></div><small>Les widgets gardent les memes donnees.</small></div>'+
+        '<div class="fron-card-grid fron-card-grid-compact">'+DASHBOARD_OPTIONS.map(function(item){
+          return choiceCard(item,(st.selections.dashboard||"control")===item.id,"select-dashboard");
+        }).join("")+'</div>'+
+      '</section>'+
+      '<section class="fron-control-row">'+
+        '<div class="fron-section-heading"><div><span>Modules</span><h3>Composez votre vue</h3></div><small>'+widgets.length+' selectionnes</small></div>'+
+        '<div class="fron-card-grid">'+WIDGET_OPTIONS.map(function(item){
+          return choiceCard(item,selected(widgets,item.id),"toggle-widget");
+        }).join("")+'</div>'+
+      '</section>'+
+    '</div>';
   }
 
   function renderConnections(st){
@@ -639,13 +860,16 @@
     var connNames=sel.connections.map(function(id){return labelFrom(CONNECTION_OPTIONS,id)}).join(", ")||"Aucune connexion rapide";
     var provider=labelFrom(PROVIDERS,sel.brain.provider);
     var theme=labelFrom(THEME_OPTIONS,sel.style.theme);
+    var flow=currentFlow(st);
+    var dashboard=currentDashboard(st);
     return '<div class="fron-summary">'+
       '<div class="fron-summary-card"><span>Space</span><strong>'+esc(space)+'</strong><p>ETHONE creera ou activera cet environnement comme point de depart.</p></div>'+
-      '<div class="fron-summary-card"><span>Style</span><strong>'+esc(theme)+' · '+esc(sel.style.density)+'</strong><p>'+esc(findById(BACKGROUNDS,sel.style.background).label)+' avec accent global '+esc(sel.style.accent)+'.</p></div>'+
+      '<div class="fron-summary-card"><span>Flow</span><strong>'+esc(flow.label)+'</strong><p>'+esc(flow.sub)+'</p></div>'+
+      '<div class="fron-summary-card"><span>Style</span><strong>'+esc(theme)+' &middot; '+esc(sel.style.density)+'</strong><p>'+esc(findById(BACKGROUNDS,sel.style.background).label)+' avec accent global '+esc(sel.style.accent)+'.</p></div>'+
       '<div class="fron-summary-card"><span>Widgets</span><strong>'+esc(sel.widgets.length)+' selectionnes</strong><p>'+esc(widgetNames)+'</p></div>'+
       '<div class="fron-summary-card"><span>Connexions</span><strong>'+esc(sel.connections.length)+' preparees</strong><p>'+esc(connNames)+'</p></div>'+
       '<div class="fron-summary-card"><span>Brain</span><strong>'+(sel.brain.enabled?'Active':'Desactive')+'</strong><p>Provider prefere : '+esc(provider)+'. Modifiable dans Settings ou ETHONE IA.</p></div>'+
-      '<div class="fron-summary-card"><span>Dashboard</span><strong>Layout initial</strong><p>Un dashboard premium sera cree avec les widgets choisis.</p></div>'+
+      '<div class="fron-summary-card"><span>Dashboard</span><strong>'+esc(dashboard.label)+'</strong><p>'+esc(dashboard.sub)+'</p></div>'+
     '</div>';
   }
 
@@ -681,7 +905,7 @@
         '<main class="fron-main">'+
           '<header class="fron-head">'+
             '<div><span class="fron-eyebrow">Configuration ETHONE OS</span><h2 id="fron-title">'+esc(step.title)+'</h2><p>'+esc(step.sub)+'</p></div>'+
-            (showClose?'<button class="fron-close" type="button" data-fron-action="close" aria-label="Fermer">x</button>':'')+
+            (showClose?'<button class="fron-close" type="button" data-fron-action="close" aria-label="Fermer">'+iconMarkup("x")+'</button>':'')+
           '</header>'+
           '<div class="fron-body">'+
             '<section class="fron-stage">'+renderAssistant(st)+'<div class="fron-step-content">'+renderBody(st)+'</div></section>'+
@@ -708,11 +932,16 @@
     },30);
   }
 
-  function update(fn){
+  function update(fn,options){
     var st=currentState||readState();
     fn(st);
     st.step=Math.max(0,Math.min(STEPS.length-1,st.step));
     writeState(st);
+    if(options&&options.partial){
+      refreshStepOnly(st,options);
+      refreshPreviewOnly(st,options);
+      return;
+    }
     render();
   }
 
@@ -730,7 +959,13 @@
     if(action==="finish"){complete();return}
     update(function(st){
       var id=btn.dataset.id;
-      if(action==="select-space")st.selections.space=id;
+      if(action==="select-space"){
+        st.selections.space=id;
+        st.selections.flow=flowForSpace(id);
+        st.selections.dashboard=dashboardForSpace(id);
+      }
+      if(action==="select-flow")st.selections.flow=id;
+      if(action==="select-dashboard")st.selections.dashboard=id;
       if(action==="select-theme")st.selections.style.theme=id;
       if(action==="select-accent")st.selections.style.accent=id;
       if(action==="select-density")st.selections.style.density=id;
@@ -742,7 +977,7 @@
       if(action==="toggle-brain")st.selections.brain.enabled=!st.selections.brain.enabled;
       if(action==="toggle-brain-feature")st.selections.brain[id]=!st.selections.brain[id];
       if(action==="select-provider")st.selections.brain.provider=id;
-    });
+    },{partial:true,cause:action,focusAction:action,focusId:btn.dataset.id});
   }
 
   function handleInput(event){
@@ -751,25 +986,57 @@
     var st=currentState||readState();
     if(field==="customSpaceName")st.selections.customSpaceName=event.target.value.slice(0,48);
     writeState(st);
-    refreshPreviewOnly(st);
+    refreshPreviewOnly(st,{cause:"custom-space"});
   }
 
   function handleKeydown(event){
+    if(isCompleting)return;
     if(event.key==="Escape"){
-      var st=currentState||readState();
-      if(manualOpen||st.completed)close();
+      event.preventDefault();
+      close();
+      return;
+    }
+    if(event.key==="Enter"){
+      var action=event.target&&event.target.closest?event.target.closest("[data-fron-action]"):null;
+      if(action&&root&&root.contains(action)&&action.tagName==="BUTTON"){
+        event.preventDefault();
+        action.click();
+      }
     }
   }
 
-  function close(){
+  function handleGlobalKeydown(event){
+    if(isCompleting||event.key!=="Escape"||!root||!root.classList.contains("is-open"))return;
+    event.preventDefault();
+    close();
+  }
+
+  function bindGlobalKeyboard(){
+    if(globalKeyBound)return;
+    document.addEventListener("keydown",handleGlobalKeydown,true);
+    globalKeyBound=true;
+  }
+
+  function unbindGlobalKeyboard(){
+    if(!globalKeyBound)return;
+    document.removeEventListener("keydown",handleGlobalKeydown,true);
+    globalKeyBound=false;
+  }
+
+  function close(options){
+    options=options||{};
     var st=currentState||readState();
-    if(st&&!st.completed){
+    if(st&&!st.completed&&!options.preserveState){
       st.dismissedAt=new Date().toISOString();
       writeState(st);
     }
-    if(root)root.classList.remove("is-open");
+    clearLaunchTimers();
+    if(root)root.classList.remove("is-open","is-launching","is-launch-complete");
+    unbindGlobalKeyboard();
     stopPreviewClock();
     document.body.classList.remove("ethone-first-run-active");
+    document.body.classList.remove("ethone-first-run-dashboard-enter");
+    isCompleting=false;
     manualOpen=false;
     devSession=false;
   }
@@ -871,6 +1138,9 @@
 
   function open(options){
     options=options||{};
+    clearLaunchTimers();
+    isCompleting=false;
+    if(root)root.classList.remove("is-launching","is-launch-complete");
     manualOpen=!!options.manual;
     devSession=!!options.dev;
     var st=readState();
@@ -880,6 +1150,7 @@
     if(options.resume)st.dismissedAt=null;
     writeState(st);
     render();
+    bindGlobalKeyboard();
     try{window.dispatchEvent(new CustomEvent("ethone:first-run-open",{detail:{manual:manualOpen}}))}catch(e){}
     return true;
   }
@@ -1015,25 +1286,33 @@
   }
 
   function dashboardInstances(st){
-    var widgets=st.selections.widgets.slice();
+    var widgets=orderedWidgetIds(st);
+    var layout=st.selections.dashboard||"control";
+    var heroColumns=layout==="control"?4:6;
     var out=[
-      {instanceId:"command",type:"hero",size:{col:4,row:1},locked:false,config:{}}
+      {instanceId:"command",type:"hero",size:{col:heroColumns,row:1},locked:false,config:{}}
     ];
     function add(instanceId,type,col,row,locked){
       if(out.some(function(item){return item.instanceId===instanceId}))return;
       out.push({instanceId:instanceId,type:type,size:{col:col,row:row},locked:!!locked,config:{}});
     }
-    if(selected(widgets,"brain"))add("brain","brain",4,1,false);
-    if(selected(widgets,"today"))add("today","today",2,2,false);
-    if(selected(widgets,"calendar"))add("calendar-home","calendar",2,1,false);
-    if(selected(widgets,"notes"))add("notes-home","notes",2,1,false);
-    if(selected(widgets,"tasks"))add("tasks-home","timeline",2,1,false);
-    if(selected(widgets,"focus"))add("focus-home","productivity",2,1,false);
-    if(selected(widgets,"spotify"))add("spotify-home","spotify",2,1,false);
-    if(selected(widgets,"discord"))add("discord-home","discord",2,1,false);
-    if(selected(widgets,"github"))add("github-home","github",2,1,false);
-    if(selected(widgets,"clock"))add("clock-home","clock",2,1,false);
-    if(selected(widgets,"weather"))add("weather-home","weather",2,1,false);
+    var definitions={
+      brain:["brain","brain",layout==="ambient"?6:4,1],
+      today:["today","today",2,layout==="control"?2:1],
+      calendar:["calendar-home","calendar",2,1],
+      notes:["notes-home","notes",2,1],
+      tasks:["tasks-home","timeline",2,1],
+      focus:["focus-home","productivity",2,1],
+      spotify:["spotify-home","spotify",2,1],
+      discord:["discord-home","discord",2,1],
+      github:["github-home","github",2,1],
+      clock:["clock-home","clock",2,1],
+      weather:["weather-home","weather",2,1]
+    };
+    widgets.forEach(function(id){
+      var def=definitions[id];
+      if(def)add(def[0],def[1],def[2],def[3],false);
+    });
     add("quickActions","quickActions",6,1,false);
     if(out.length<4){
       add("brain","brain",4,1,false);
@@ -1062,6 +1341,22 @@
       var raw=localStorage.getItem(key);
       return raw?JSON.parse(raw):fallback;
     }catch(e){return fallback}
+  }
+
+  function applyFlowPreference(st){
+    var flowId=st&&st.selections&&st.selections.flow?st.selections.flow:"personal";
+    var saved=getJSON("ethone:flow:v1",null);
+    if(!saved||typeof saved!=="object")saved={version:1,activeId:flowId,customFlows:[],installed:[],favorites:[flowId],recent:[],dismissedSuggestions:{},history:[]};
+    saved.activeId=flowId;
+    saved.recent=[flowId].concat((Array.isArray(saved.recent)?saved.recent:[]).filter(function(id){return id!==flowId})).slice(0,8);
+    saved.history=Array.isArray(saved.history)?saved.history:[];
+    saved.history.unshift({id:flowId,at:Date.now(),source:"first-run"});
+    saved.history=saved.history.slice(0,40);
+    setJSON("ethone:flow:v1",saved);
+    try{
+      if(window.ETHONEFlow&&typeof window.ETHONEFlow.setInitial==="function")window.ETHONEFlow.setInitial(flowId,{source:"first-run"});
+    }catch(e){diagnostic("flow setup",e)}
+    try{window.dispatchEvent(new CustomEvent("ethone:first-run-flow",{detail:{id:flowId}}))}catch(e){}
   }
 
   function applyDashboardLayout(st,workspace){
@@ -1118,38 +1413,48 @@
   }
 
   function complete(){
+    if(isCompleting)return false;
+    isCompleting=true;
     var st=currentState||readState();
+    var isDev=devSession;
     try{
-      if(devSession){
+      if(isDev){
         try{localStorage.setItem(storageKey()+":dev-preview",JSON.stringify(st))}catch(e){}
-        close();
-        if(typeof window.toast==="function")window.toast("Onboarding ferme en mode developpement. Aucune donnee profil modifiee.","info");
-        return;
+      }else{
+        applyStylePrefs(st.selections.style);
+        var ws=ensureWorkspace(st);
+        applyDashboardLayout(st,ws);
+        applyFlowPreference(st);
+        applyConnectionPrefs(st);
+        applyBrainPrefs(st);
+        recordActivity("ETHONE onboarding completed");
+        st.completed=true;
+        st.completedAt=new Date().toISOString();
+        st.step=STEPS.length-1;
+        writeState(st);
+        markWhatsNewSeen();
+        saveProfileNow();
       }
-      applyStylePrefs(st.selections.style);
-      var ws=ensureWorkspace(st);
-      applyDashboardLayout(st,ws);
-      applyConnectionPrefs(st);
-      applyBrainPrefs(st);
-      recordActivity("ETHONE onboarding completed");
-      st.completed=true;
-      st.completedAt=new Date().toISOString();
-      st.step=STEPS.length-1;
-      writeState(st);
-      markWhatsNewSeen();
-      saveProfileNow();
-      close();
-      try{if(typeof window.initDashboard==="function")window.initDashboard()}catch(e){diagnostic("dashboard refresh",e)}
-      try{window.dispatchEvent(new CustomEvent("ethone:first-run-complete",{detail:{state:clone(st)}}))}catch(e){}
-      if(typeof window.toast==="function")window.toast("ETHONE est pret.","success");
+      runLaunchSequence(st,function(){
+        if(isDev)return;
+        try{if(typeof window.initDashboard==="function")window.initDashboard()}catch(e){diagnostic("dashboard refresh",e)}
+        try{window.dispatchEvent(new CustomEvent("ethone:first-run-complete",{detail:{state:clone(st)}}))}catch(e){}
+      },function(){
+        close({preserveState:true});
+        if(typeof window.toast==="function")window.toast(isDev?"Apercu termine. Aucune donnee profil modifiee.":"ETHONE est pret.",isDev?"info":"success");
+      });
+      return true;
     }catch(error){
       console.error("[ETHONE First Run] completion failed",error);
       if(typeof window.toast==="function")window.toast("Configuration partielle enregistree. Vous pouvez continuer dans Settings.","error");
-      st.completed=true;
-      st.completedAt=new Date().toISOString();
-      writeState(st);
-      saveProfileNow();
-      close();
+      if(!isDev){
+        st.completed=true;
+        st.completedAt=new Date().toISOString();
+        writeState(st);
+        saveProfileNow();
+      }
+      close({preserveState:true});
+      return false;
     }
   }
 

@@ -17,7 +17,8 @@ function updateSyncIndicator(state){
 
 async function saveCloudState(){
   // Update sessionStorage cache
-  if(_sbUser){try{sessionStorage.setItem('nexus_profiles_'+_sbUser.id,JSON.stringify(profiles));}catch(e){}}
+  const safeProfiles=typeof sanitizeProfilesForPersistence==='function'?sanitizeProfilesForPersistence(profiles):profiles;
+  if(_sbUser){try{sessionStorage.setItem('nexus_profiles_'+_sbUser.id,JSON.stringify(safeProfiles));}catch(e){}}
   if(!_sbUser)return;
   for(const p of profiles){
     // Compress avatar image if too large (Supabase ~1MB per row limit)
@@ -31,12 +32,12 @@ async function saveCloudState(){
       user_id:_sbUser.id,
       profile_name:p.name||'User',
       state:{
-        ...p.state,
+        ...(window.ETHONESecurity&&ETHONESecurity.sanitizeObject?ETHONESecurity.sanitizeObject(p.state):p.state),
         avatarEmoji:p.avatarEmoji,
         avatarBg:p.avatarBg,
         avatarImg:avatarImg,
         avatarIdx:p.avatarIdx,
-        password:p.password||null,
+        password:window.ETHONESecurity&&ETHONESecurity.sanitizeProfileLock?ETHONESecurity.sanitizeProfileLock(p.password):p.password||null,
         themeIdx:p.themeIdx||0,
         bgTheme:p.bgTheme||'none',
         sidebarConfig:p.sidebarConfig||null,
@@ -60,6 +61,7 @@ async function saveCloudState(){
       },
       updated_at:new Date().toISOString()
     };
+    if(window.ETHONESecurity&&ETHONESecurity.sanitizeObject)payload.state=ETHONESecurity.sanitizeObject(payload.state);
     if(p._dbId){
       const {error}=await sb.from('dashboard_data').update(payload).eq('id',p._dbId);
       if(error)console.error('saveCloudState update error:',error);

@@ -1,10 +1,10 @@
 #ethone-app-library{
-  --al-bg:rgba(8,8,12,.72);
-  --al-surface:rgba(255,255,255,.064);
-  --al-surface-2:rgba(255,255,255,.036);
-  --al-border:rgba(255,255,255,.11);
-  --al-muted:rgba(247,244,255,.58);
-  --al-accent:var(--accent,#8b5cf6);
+  --al-bg:rgba(var(--surface-0-rgb),.72);
+  --al-surface:rgba(var(--color-white-rgb),.064);
+  --al-surface-2:rgba(var(--color-white-rgb),.036);
+  --al-border:rgba(var(--color-white-rgb),.11);
+  --al-muted:rgba(var(--text-primary-rgb),.58);
+  --al-accent:var(--accent,var(--primary));
   position:fixed;
   inset:auto 22px calc(86px + env(safe-area-inset-bottom,0px)) auto;
   z-index:2300;
@@ -24,9 +24,9 @@ body:not(.ethone-app-library-ready) #ethone-app-library{
   padding:0 14px;
   border:1px solid var(--al-border);
   border-radius:18px;
-  background:linear-gradient(180deg,rgba(24,24,32,.86),rgba(13,13,18,.8));
-  color:#fff;
-  box-shadow:0 18px 54px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.08);
+  background:linear-gradient(180deg,rgba(var(--surface-3-rgb),.86),rgba(var(--surface-1-rgb),.8));
+  color:var(--text-primary);
+  box-shadow:0 18px 54px rgba(var(--color-black-rgb),.34),inset 0 1px 0 rgba(var(--color-white-rgb),.08);
   backdrop-filter:blur(calc(18px * var(--theme-blur-scale,1))) saturate(1.12);
   -webkit-backdrop-filter:blur(calc(18px * var(--theme-blur-scale,1))) saturate(1.12);
   cursor:pointer;
@@ -38,8 +38,8 @@ body:not(.ethone-app-library-ready) #ethone-app-library{
 
 .al-launcher:hover{
   transform:translateY(-2px);
-  border-color:color-mix(in srgb,var(--al-accent) 36%,rgba(255,255,255,.12));
-  background:linear-gradient(180deg,rgba(34,31,44,.92),rgba(16,15,22,.86));
+  border-color:color-mix(in srgb,var(--al-accent) 36%,rgba(var(--color-white-rgb),.12));
+  background:linear-gradient(180deg,rgba(var(--surface-3-rgb),.92),rgba(var(--surface-1-rgb),.86));
 }
 
 .al-launcher svg{
@@ -57,7 +57,7 @@ body:not(.ethone-app-library-ready) #ethone-app-library{
   pointer-events:auto;
   background:
     radial-gradient(circle at 50% 18%,color-mix(in srgb,var(--al-accent) 16%,transparent),transparent 38%),
-    rgba(0,0,0,.56);
+    rgba(var(--color-black-rgb),.56);
   backdrop-filter:blur(calc(16px * var(--theme-blur-scale,1))) saturate(1.08);
   -webkit-backdrop-filter:blur(calc(16px * var(--theme-blur-scale,1))) saturate(1.08);
 }
@@ -77,8 +77,8 @@ body:not(.ethone-app-library-ready) #ethone-app-library{
   border-radius:30px;
   background:
     radial-gradient(760px 260px at 24% 0%,color-mix(in srgb,var(--al-accent) 18%,transparent),transparent 70%),
-    linear-gradient(180deg,rgba(24,24,32,.97),rgba(10,10,14,.98));
-  box-shadow:0 42px 140px rgba(0,0,0,.62),inset 0 1px 0 rgba(255,255,255,.075);
+    linear-gradient(180deg,rgba(var(--surface-3-rgb),.97),rgba(var(--surface-0-rgb),.98));
+  box-shadow:0 42px 140px rgba(var(--color-black-rgb),.62),inset 0 1px 0 rgba(var(--color-white-rgb),.075);
   animation:alEnter .22s cubic-bezier(.22,1,.36,1) both;
 }
 
@@ -91,7 +91,7 @@ body:not(.ethone-app-library-ready) #ethone-app-library{
 }
 
 .al-eyebrow{
-  color:color-mix(in srgb,var(--al-accent) 78%,#fff 8%);
+  color:color-mix(in srgb,var(--al-accent) 78%,var(--text-primary) 8%);
   font:850 10px/1 var(--mono,"JetBrains Mono",monospace);
   letter-spacing:.18em;
   text-transform:uppercase;
@@ -100,7 +100,7 @@ body:not(.ethone-app-library-ready) #ethone-app-library{
 
 .al-title{
   margin:0;
-  color:#fff;
+  color:var(--text-primary);
   font-size:clamp(28px,4vw,44px);
   line-height:1;
   letter-spacing:-.06em;
@@ -123,9 +123,9 @@ body:not(.ethone-app-library-ready) #ethone-app-library{
 }
 
 .al-icon-btn,.al-chip{
-  border:1px solid rgba(255,255,255,.105);
-  background:rgba(255,255,255,.052);
-  color:rgba(247,244,255,.72);
+  border:1px solid rgba(var(--color-white-rgb),.105);
+  background:rgba(var(--color-white-rgb),.052);
+  color:rgba(var(--text-primary-rgb),.72);
   cursor:pointer;
   transition:transform .16s ease,border-color .16s ease,background .16s ease,color .16s ease;
 }
@@ -140,9 +140,9 @@ body:not(.ethone-app-library-ready) #ethone-app-library{
 
 .al-icon-btn:hover,.al-chip:hover{
   transform:translateY(-1px);
-  border-color:color-mix(in srgb,var(--al-accent) 34%,rgba(255,255,255,.12));
-  background:color-mix(in srgb,var(--al-accent) 14%,rgba(255,255,255,.052));
-  color:#fff;
+  border-color:color-mix(in srgb,var(--al-accent) 34%,rgba(var(--color-white-rgb),.12));
+  background:color-mix(in srgb,var(--al-accent) 14%,rgba(var(--color-white-rgb),.052));
+  color:var(--text-primary);
 }
 
 .al-search-row{
@@ -157,16 +157,16 @@ body:not(.ethone-app-library-ready) #ethone-app-library{
   display:flex;
   align-items:center;
   gap:12px;
-  border:1px solid rgba(255,255,255,.1);
+  border:1px solid rgba(var(--color-white-rgb),.1);
   border-radius:18px;
-  background:rgba(255,255,255,.045);
+  background:rgba(var(--color-white-rgb),.045);
   padding:0 14px;
 }
 
 .al-search svg{
   width:18px;
   height:18px;
-  color:color-mix(in srgb,var(--al-accent) 72%,#fff 4%);
+  color:color-mix(in srgb,var(--al-accent) 72%,var(--text-primary) 4%);
   flex:0 0 auto;
 }
 
@@ -176,14 +176,14 @@ body:not(.ethone-app-library-ready) #ethone-app-library{
   outline:0!important;
   background:transparent!important;
   box-shadow:none!important;
-  color:#fff!important;
+  color:var(--text-primary)!important;
   padding:0!important;
   min-height:0!important;
   font-size:14px!important;
 }
 
 .al-search input::placeholder{
-  color:rgba(247,244,255,.34);
+  color:rgba(var(--text-primary-rgb),.34);
 }
 
 .al-chip{
@@ -195,9 +195,9 @@ body:not(.ethone-app-library-ready) #ethone-app-library{
 }
 
 .al-chip.active{
-  color:#fff;
-  background:color-mix(in srgb,var(--al-accent) 22%,rgba(255,255,255,.04));
-  border-color:color-mix(in srgb,var(--al-accent) 46%,rgba(255,255,255,.12));
+  color:var(--text-primary);
+  background:color-mix(in srgb,var(--al-accent) 22%,rgba(var(--color-white-rgb),.04));
+  border-color:color-mix(in srgb,var(--al-accent) 46%,rgba(var(--color-white-rgb),.12));
 }
 
 .al-tabs{
@@ -219,7 +219,7 @@ body:not(.ethone-app-library-ready) #ethone-app-library{
 }
 
 .al-body::-webkit-scrollbar-thumb{
-  background:rgba(255,255,255,.14);
+  background:rgba(var(--color-white-rgb),.14);
   border-radius:99px;
 }
 
@@ -236,7 +236,7 @@ body:not(.ethone-app-library-ready) #ethone-app-library{
 }
 
 .al-section-title{
-  color:#fff;
+  color:var(--text-primary);
   font-size:13px;
   font-weight:830;
   letter-spacing:-.02em;
@@ -262,10 +262,10 @@ body:not(.ethone-app-library-ready) #ethone-app-library{
 .al-app,.al-folder{
   position:relative;
   min-width:0;
-  border:1px solid rgba(255,255,255,.092);
+  border:1px solid rgba(var(--color-white-rgb),.092);
   border-radius:24px;
   background:linear-gradient(180deg,var(--al-surface),var(--al-surface-2));
-  box-shadow:0 1px 0 rgba(255,255,255,.045) inset,0 14px 40px rgba(0,0,0,.18);
+  box-shadow:0 1px 0 rgba(var(--color-white-rgb),.045) inset,0 14px 40px rgba(var(--color-black-rgb),.18);
   cursor:pointer;
   transition:transform .18s cubic-bezier(.22,1,.36,1),border-color .18s ease,background .18s ease;
 }
@@ -282,10 +282,10 @@ body:not(.ethone-app-library-ready) #ethone-app-library{
 
 .al-app:hover,.al-folder:hover,.al-app.drag-over,.al-folder.drag-over{
   transform:translateY(-3px);
-  border-color:color-mix(in srgb,var(--app-color,var(--al-accent)) 44%,rgba(255,255,255,.14));
+  border-color:color-mix(in srgb,var(--app-color,var(--al-accent)) 44%,rgba(var(--color-white-rgb),.14));
   background:
     radial-gradient(190px 90px at 50% 0%,color-mix(in srgb,var(--app-color,var(--al-accent)) 16%,transparent),transparent 74%),
-    linear-gradient(180deg,rgba(255,255,255,.072),rgba(255,255,255,.04));
+    linear-gradient(180deg,rgba(var(--color-white-rgb),.072),rgba(var(--color-white-rgb),.04));
 }
 
 .al-app.is-dragging{
@@ -299,11 +299,11 @@ body:not(.ethone-app-library-ready) #ethone-app-library{
   display:grid;
   place-items:center;
   border-radius:19px;
-  color:#fff;
+  color:var(--text-primary);
   background:
-    radial-gradient(circle at 28% 18%,rgba(255,255,255,.2),transparent 34%),
-    linear-gradient(135deg,color-mix(in srgb,var(--app-color,var(--al-accent)) 82%,#fff 4%),color-mix(in srgb,var(--app-color,var(--al-accent)) 46%,#050507 46%));
-  box-shadow:0 14px 34px color-mix(in srgb,var(--app-color,var(--al-accent)) 24%,transparent),inset 0 1px 0 rgba(255,255,255,.16);
+    radial-gradient(circle at 28% 18%,rgba(var(--color-white-rgb),.2),transparent 34%),
+    linear-gradient(135deg,color-mix(in srgb,var(--app-color,var(--al-accent)) 82%,var(--text-primary) 4%),color-mix(in srgb,var(--app-color,var(--al-accent)) 46%,var(--surface-0) 46%));
+  box-shadow:0 14px 34px color-mix(in srgb,var(--app-color,var(--al-accent)) 24%,transparent),inset 0 1px 0 rgba(var(--color-white-rgb),.16);
 }
 
 .al-app-icon svg{
@@ -318,7 +318,7 @@ body:not(.ethone-app-library-ready) #ethone-app-library{
 
 .al-app-name{
   width:100%;
-  color:#fff;
+  color:var(--text-primary);
   font-size:13px;
   font-weight:760;
   line-height:1.22;
@@ -352,17 +352,17 @@ body:not(.ethone-app-library-ready) #ethone-app-library{
 .al-control{
   width:28px;
   height:28px;
-  border:1px solid rgba(255,255,255,.1);
+  border:1px solid rgba(var(--color-white-rgb),.1);
   border-radius:10px;
-  background:rgba(0,0,0,.18);
-  color:rgba(247,244,255,.72);
+  background:rgba(var(--color-black-rgb),.18);
+  color:rgba(var(--text-primary-rgb),.72);
   cursor:pointer;
 }
 
 .al-control:hover,.al-control.active{
-  color:#fff;
-  background:color-mix(in srgb,var(--al-accent) 22%,rgba(255,255,255,.04));
-  border-color:color-mix(in srgb,var(--al-accent) 38%,rgba(255,255,255,.12));
+  color:var(--text-primary);
+  background:color-mix(in srgb,var(--al-accent) 22%,rgba(var(--color-white-rgb),.04));
+  border-color:color-mix(in srgb,var(--al-accent) 38%,rgba(var(--color-white-rgb),.12));
 }
 
 .al-folder{
@@ -378,7 +378,7 @@ body:not(.ethone-app-library-ready) #ethone-app-library{
 }
 
 .al-folder-name{
-  color:#fff;
+  color:var(--text-primary);
   font-weight:820;
   letter-spacing:-.02em;
 }
@@ -401,8 +401,8 @@ body:not(.ethone-app-library-ready) #ethone-app-library{
   border-radius:13px;
   display:grid;
   place-items:center;
-  background:color-mix(in srgb,var(--mini-color,var(--al-accent)) 18%,rgba(255,255,255,.045));
-  color:#fff;
+  background:color-mix(in srgb,var(--mini-color,var(--al-accent)) 18%,rgba(var(--color-white-rgb),.045));
+  color:var(--text-primary);
 }
 
 .al-folder-icon svg{
@@ -411,9 +411,9 @@ body:not(.ethone-app-library-ready) #ethone-app-library{
 }
 
 .al-empty{
-  border:1px dashed rgba(255,255,255,.12);
+  border:1px dashed rgba(var(--color-white-rgb),.12);
   border-radius:22px;
-  background:rgba(255,255,255,.025);
+  background:rgba(var(--color-white-rgb),.025);
   color:var(--al-muted);
   padding:24px;
   text-align:center;
@@ -422,7 +422,7 @@ body:not(.ethone-app-library-ready) #ethone-app-library{
 
 .al-folder-view{
   display:none;
-  border-top:1px solid rgba(255,255,255,.08);
+  border-top:1px solid rgba(var(--color-white-rgb),.08);
   padding:16px 22px 22px;
   min-height:0;
   overflow:auto;

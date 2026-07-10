@@ -92,20 +92,21 @@ function renderProfileQuickStats(p){
   const habitStreak=Math.max(...(p.state.habits||[]).map(h=>h.streak||0),0);
   const notesCount=(p.state.notes||[]).length;
   const stats=[
-    {label:'Tasks done',val:doneTasks+'/'+totalTasks,icon:'✅',color:'var(--accent2)'},
-    {label:'Pomodoros',val:pomoDone+'🍅',icon:'',color:'var(--accent3)'},
-    {label:'Best streak',val:habitStreak+'🔥',icon:'',color:'var(--accent4)'},
-    {label:'Notes',val:notesCount,icon:'📝',color:'var(--accent5)'},
+    {label:'Tasks done',val:doneTasks+'/'+totalTasks,icon:'circle-check-big',color:'var(--accent2)'},
+    {label:'Pomodoros',val:pomoDone,icon:'timer',color:'var(--accent3)'},
+    {label:'Best streak',val:habitStreak,icon:'flame',color:'var(--accent4)'},
+    {label:'Notes',val:notesCount,icon:'notebook-pen',color:'var(--accent5)'},
   ];
   container.innerHTML=stats.map(s=>`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px;text-align:center">
-    <div style="font-size:16px;font-weight:700;color:${s.color}">${s.val}</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:5px;font-size:16px;font-weight:700;color:${s.color}"><i data-lucide="${s.icon}" aria-hidden="true" style="width:15px;height:15px"></i><span>${s.val}</span></div>
     <div style="font-size:10px;color:var(--muted);margin-top:2px">${s.label}</div>
   </div>`).join('');
+  try{if(window.lucide&&!window.__lucideFailed)window.lucide.createIcons({attrs:{'stroke-width':1.9,'aria-hidden':'true'}},container)}catch(e){}
 }
 
 function updateProfileBio(val){
   const p=curP();if(!p)return;
-  if(!p.state.bio!==undefined)p.state.bio=val;
+  if(!p.state)p.state={};
   p.state.bio=val;
   clearTimeout(window._bioSaveTO);
   window._bioSaveTO=setTimeout(()=>saveStateNow(),800);

@@ -15,11 +15,24 @@
     pill.style.transform="none";
   }
 
+  function leanRuntime(){
+    try{
+      return !!(
+        window.ETHONE_STABLE_BOOT ||
+        window.ETHONE_LIGHT_BOOT_MODE ||
+        window.__ethoneLeanProductionBoot ||
+        document.documentElement.dataset.ethoneStableBoot==="1"
+      );
+    }catch(e){return !!(window.ETHONE_STABLE_BOOT||window.ETHONE_LIGHT_BOOT_MODE||window.__ethoneLeanProductionBoot)}
+  }
+
   function boot(){
     hidePill();
-    try{
-      new MutationObserver(hidePill).observe(document.documentElement,{childList:true,subtree:true});
-    }catch(e){}
+    if(!leanRuntime()){
+      try{
+        new MutationObserver(hidePill).observe(document.documentElement,{childList:true,subtree:true});
+      }catch(e){}
+    }
   }
 
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});

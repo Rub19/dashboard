@@ -9,6 +9,8 @@
 
   var App=window.Ethone;
   var DATA_FIELDS=["items","todos","notes","goals","habits","events","connections","gaming","kanban","pinned","journal","countdowns","dailyFocus","aiSessions","automationRules","databases","valorantAccounts","filesState","notifPrefs","liveWidgets","weatherCache"];
+  var transitionTimer=0;
+  var lastTemplateClass="";
   var DEFAULTS=[
     {id:"personal",name:"Personal",label:"Personal",icon:"home",emoji:"H",accent:"#8b5cf6",wallpaper:"radial-gradient(circle at 18% 12%, rgba(139,92,246,.18), transparent 34%), #09090b",layoutId:"ws-personal-control",template:"control",description:"Life, notes, planning and daily operating context.",favorites:["dashboard","notes","todos","calendar"]},
     {id:"development",name:"Development",label:"Development",icon:"code-2",emoji:"DEV",accent:"#9d7cff",wallpaper:"radial-gradient(circle at 30% 16%, rgba(157,124,255,.16), transparent 32%), #09090b",layoutId:"ws-dev-focus",template:"focus",description:"Code, GitHub, databases, docs and deep work.",favorites:["dashboard","github","databases","ai"]},
@@ -30,6 +32,47 @@
     if(field==="dailyFocus")return null;
     return [];
   }
+  function defaultWidgets(template){
+    var map={
+      focus:["hero","brain","tasks","notes","calendar","goals","quickActions"],
+      gaming:["hero","brain","discord","spotify","steam","valorant","nowPlaying","quickActions"],
+      study:["hero","brain","notes","calendar","files","focus","timeline","quickActions"],
+      streaming:["hero","brain","discord","spotify","calendar","activity","quickActions"],
+      control:["hero","today","brain","timeline","workspace","activity","quickActions"]
+    };
+    return (map[template]||map.control).slice();
+  }
+  function defaultIntegrations(template){
+    var map={
+      focus:["github","google-calendar","google-drive"],
+      gaming:["discord","spotify","steam","riot"],
+      study:["google-calendar","google-drive"],
+      streaming:["discord","spotify","twitch","youtube","obs"],
+      control:["google-calendar","github"]
+    };
+    return (map[template]||map.control).slice();
+  }
+  function environmentDefaults(w){
+    var template=(w&&w.template)||"control";
+    var widgets=defaultWidgets(template);
+    var integrations=defaultIntegrations(template);
+    return {
+      theme:{preset:"ethone-purple",density:"comfortable",motion:true},
+      background:{type:"ambient",value:w&&w.wallpaper||"#09090b",dim:.88},
+      brain:{enabled:true,mode:template==="gaming"?"coach":template==="focus"?"builder":template==="study"?"study":template==="streaming"?"producer":"contextual",memory:true,suggestions:true},
+      dashboard:{layoutId:w&&w.layoutId||"",template:template,widgets:widgets,lastOpened:"dashboard"},
+      widgets:{active:widgets,favorites:(w&&Array.isArray(w.favorites)?w.favorites.slice():["dashboard","notes","todos"]),hidden:[],panelPinned:false},
+      notes:{pinned:[],tags:[]},
+      tasks:{view:"today",priority:"smart"},
+      integrations:{enabled:integrations,pinned:integrations.slice(0,3),status:{}}
+    };
+  }
+  function mergeObject(base,value){
+    return Object.assign({},base||{},value||{});
+  }
+  function normalizeArray(value,fallback){
+    return Array.isArray(value)?value.slice():(fallback||[]).slice();
+  }
   function dataFromState(state){
     var out={};
     state=state||{};
@@ -39,13 +82,31 @@
     return out;
   }
   function ensureData(w){
+    var env=environmentDefaults(w);
     w.data=w.data||{};
     DATA_FIELDS.forEach(function(field){
       if(w.data[field]===undefined)w.data[field]=fieldDefault(field);
     });
-    w.settings=w.settings||{density:"comfortable",animations:true,brainMode:"contextual"};
-    w.integrations=w.integrations||{};
-    w.ai=w.ai||{memory:[],briefings:[],provider:null};
+    w.settings=mergeObject({density:"comfortable",animations:true,brainMode:env.brain.mode},w.settings);
+    w.theme=mergeObject(env.theme,w.theme);
+    w.background=mergeObject(env.background,w.background);
+    w.brain=mergeObject(env.brain,w.brain);
+    w.dashboard=mergeObject(env.dashboard,w.dashboard);
+    w.widgets=mergeObject(env.widgets,w.widgets);
+    w.notes=mergeObject(env.notes,w.notes);
+    w.tasks=mergeObject(env.tasks,w.tasks);
+    w.integrations=mergeObject(env.integrations,w.integrations);
+    w.ai=mergeObject({memory:[],briefings:[],provider:null},w.ai);
+    w.widgets.active=normalizeArray(w.widgets.active,env.widgets.active);
+    w.widgets.favorites=normalizeArray(w.widgets.favorites,env.widgets.favorites);
+    w.widgets.hidden=normalizeArray(w.widgets.hidden,[]);
+    w.integrations.enabled=normalizeArray(w.integrations.enabled,env.integrations.enabled);
+    w.integrations.pinned=normalizeArray(w.integrations.pinned,env.integrations.pinned);
+    w.notes.pinned=normalizeArray(w.notes.pinned,[]);
+    w.notes.tags=normalizeArray(w.notes.tags,[]);
+    w.dashboard.layoutId=w.dashboard.layoutId||w.layoutId||("ws-"+(w.id||Date.now())+"-layout");
+    w.layoutId=w.layoutId||w.dashboard.layoutId;
+    w.dashboard.template=w.dashboard.template||w.template||"control";
     w.sidebarConfig=Array.isArray(w.sidebarConfig)?w.sidebarConfig:null;
     w.dock=w.dock&&typeof w.dock==="object"?w.dock:null;
     w.logo=w.logo||"";
@@ -88,8 +149,10 @@
       p.activeWorkspaceId=p.activeWorkspaceId||p.workspaces[0].id;
       changed=true;
     }else{
+      var before="";
+      try{before=JSON.stringify(p.workspaces)}catch(e){before=""}
       p.workspaces=p.workspaces.map(function(w,i){return normalizeWorkspace(w,i,p.state)});
-      changed=true;
+      try{changed=changed||before!==JSON.stringify(p.workspaces)}catch(e){changed=true}
     }
     if(!p.activeWorkspaceId||!p.workspaces.some(function(w){return w.id===p.activeWorkspaceId})){
       p.activeWorkspaceId=p.workspaces[0].id;
@@ -114,6 +177,12 @@
     w.data=dataFromState(p.state||{});
     w.sidebarConfig=copy(p.sidebarConfig||null);
     w.dock=copy(p.state&&p.state.permanentDock||null);
+    w.dashboard=mergeObject(w.dashboard,{
+      layoutId:w.layoutId,
+      activePage:(function(){var el=document.querySelector(".tab-content.active[id^='page-']");return el?el.id.replace(/^page-/,""):"dashboard"})(),
+      updatedAt:new Date().toISOString()
+    });
+    w.widgets=mergeObject(w.widgets,{live:copy(p.state&&p.state.liveWidgets||{})});
     w.settings=Object.assign({},w.settings||{},{
       density:document.documentElement.getAttribute("data-density")||w.settings&&w.settings.density||"comfortable",
       font:document.documentElement.getAttribute("data-font")||w.settings&&w.settings.font||"",
@@ -130,6 +199,10 @@
     });
     p.state.activeWorkspaceId=w.id;
     p.state.activeWorkspaceName=w.name;
+    p.state.activeSpace=w.id;
+    p.state.spaceContext=spaceContext(w.id);
+    p.state.spaceBrain=copy(w.brain||{});
+    p.state.spaceDashboard=copy(w.dashboard||{});
     if(Array.isArray(w.sidebarConfig))p.sidebarConfig=copy(w.sidebarConfig);
     if(w.dock)p.state.permanentDock=copy(w.dock);
     if(w.settings&&w.settings.sidebarWidth){
@@ -150,32 +223,56 @@
   function applyVisual(w){
     if(!w)return;
     var root=document.documentElement,st=coreStorage(),rgb=hexToRgb(w.accent);
+    var body=document.body;
+    var template=String(w.template||w.dashboard&&w.dashboard.template||"control").replace(/[^a-z0-9_-]/gi,"-").toLowerCase();
     root.style.setProperty("--accent",w.accent);
+    root.style.setProperty("--space-accent",w.accent);
+    root.style.setProperty("--space-accent-rgb",rgb.join(","));
     root.style.setProperty("--accent-hover",mix(w.accent,.22));
     root.style.setProperty("--accent-active",mix(w.accent,-.12));
     root.style.setProperty("--accent-border","rgba("+rgb.join(",")+",.32)");
     root.style.setProperty("--accent-soft","rgba("+rgb.join(",")+",.13)");
     root.style.setProperty("--accent-shadow","rgba("+rgb.join(",")+",.22)");
-    root.style.setProperty("--workspace-wallpaper",w.wallpaper||"#09090b");
-    document.body.dataset.workspace=w.id;
-    document.body.dataset.space=w.id;
-    document.body.classList.add("ethone-spaces-ready");
+    root.style.setProperty("--workspace-wallpaper",w.wallpaper||w.background&&w.background.value||"#09090b");
+    root.style.setProperty("--space-wallpaper",w.wallpaper||w.background&&w.background.value||"#09090b");
+    root.dataset.space=w.id;
+    root.dataset.spaceTemplate=template;
+    root.dataset.spaceBrain=w.brain&&w.brain.mode||"contextual";
+    root.dataset.spaceTheme=w.theme&&w.theme.preset||"ethone-purple";
+    if(body){
+      if(lastTemplateClass)body.classList.remove(lastTemplateClass);
+      lastTemplateClass="ethone-space-template-"+template;
+      body.dataset.workspace=w.id;
+      body.dataset.space=w.id;
+      body.dataset.spaceTemplate=template;
+      body.dataset.spaceBrain=w.brain&&w.brain.mode||"contextual";
+      body.classList.add("ethone-spaces-ready",lastTemplateClass);
+    }
     if(st)st.set("ethone:active-workspace",w.name);
     try{localStorage.setItem("ethone:active-workspace-id",w.id)}catch(e){}
     try{localStorage.setItem("ethone:active-space-id",w.id)}catch(e){}
+    try{if(window.ETHONEStateConsistency&&window.ETHONEStateConsistency.setWorkspace)window.ETHONEStateConsistency.setWorkspace({id:w.id,name:w.name||w.label||""})}catch(e){}
   }
   function setActive(id,opts){
     opts=opts||{};
     var p=profile();if(!p)return null;
     var list=ensure(),next=list.find(function(w){return w.id===id});
     if(!next)return null;
+    var previous=list.find(function(w){return w.id===p.activeWorkspaceId})||null;
+    document.body.dataset.spaceTransitionLabel=next.name||"ETHONE Space";
+    document.body.dataset.spaceTransitionTemplate=next.template||"control";
+    document.body.classList.add("ethone-space-transitioning","ethone-space-changing");
+    window.dispatchEvent(new CustomEvent("ethone:space-transition-start",{detail:{from:copy(previous),to:copy(next)}}));
     if(p.activeWorkspaceId!==next.id)snapshot(p.activeWorkspaceId);
     p.activeWorkspaceId=next.id;
     applyData(next);
     applyVisual(next);
     save();
-    document.body.classList.add("ethone-space-transitioning");
-    setTimeout(function(){document.body.classList.remove("ethone-space-transitioning")},420);
+    clearTimeout(transitionTimer);
+    transitionTimer=setTimeout(function(){
+      document.body.classList.remove("ethone-space-transitioning","ethone-space-changing");
+      window.dispatchEvent(new CustomEvent("ethone:space-transition-end",{detail:{space:copy(next),workspace:copy(next)}}));
+    },620);
     window.dispatchEvent(new CustomEvent("ethone:workspace-change",{detail:{workspace:copy(next)}}));
     window.dispatchEvent(new CustomEvent("ethone:space-change",{detail:{space:copy(next),workspace:copy(next)}}));
     if(!opts.silent&&typeof window.toast==="function")window.toast("Workspace: "+next.name,"success");
@@ -297,9 +394,34 @@
     DATA_FIELDS.forEach(function(field){out[field]=copy(w.data[field]!==undefined?w.data[field]:fieldDefault(field))});
     out.activeWorkspaceId=w.id;
     out.activeWorkspaceName=w.name;
+    out.activeSpace=w.id;
+    out.spaceContext=spaceContext(w.id);
     return out;
   }
-  var api={all:all,active:active,setActive:setActive,update:update,create:create,duplicate:duplicate,remove:remove,snapshot:snapshot,scopedState:scopedState,applyVisual:applyVisual,serialize:serialize,exportSpace:exportSpace,importSpace:importSpace,share:share,setFavorite:setFavorite,dataFields:DATA_FIELDS.slice(),defaults:function(){return copy(DEFAULTS)}};
+  function spaceContext(id){
+    var list=ensure(),w=list.find(function(x){return x.id===(id||active()&&active().id)})||active();
+    if(!w)return null;
+    ensureData(w);
+    return {
+      id:w.id,
+      name:w.name,
+      template:w.template,
+      dashboard:copy(w.dashboard),
+      widgets:copy(w.widgets),
+      theme:copy(w.theme),
+      background:copy(w.background),
+      brain:copy(w.brain),
+      notes:copy(w.notes),
+      tasks:copy(w.tasks),
+      integrations:copy(w.integrations),
+      favorites:copy(w.favorites||[])
+    };
+  }
+  function dashboard(id){var c=spaceContext(id);return c&&c.dashboard}
+  function widgets(id){var c=spaceContext(id);return c&&c.widgets}
+  function brain(id){var c=spaceContext(id);return c&&c.brain}
+  function integrations(id){var c=spaceContext(id);return c&&c.integrations}
+  var api={all:all,active:active,setActive:setActive,update:update,create:create,duplicate:duplicate,remove:remove,snapshot:snapshot,scopedState:scopedState,applyVisual:applyVisual,serialize:serialize,exportSpace:exportSpace,importSpace:importSpace,share:share,setFavorite:setFavorite,spaceContext:spaceContext,environment:spaceContext,dashboard:dashboard,widgets:widgets,brain:brain,integrations:integrations,dataFields:DATA_FIELDS.slice(),defaults:function(){return copy(DEFAULTS)}};
   window.ETHONEWorkspaces=api;
   window.ETHONESpaces=api;
   if(App&&App.define)App.define("workspaces",Object.freeze(api));

@@ -5,9 +5,9 @@
   var defs=[
     {id:"discord",name:"Discord",accent:"#5865F2",icon:"message-circle",desc:"Presence, avatar, activity and Spotify signals through Lanyard.",statePath:"connections.discord",fields:[["userId","Discord User ID","123456789012345678"]],legacyConnect:"connectDiscord",legacyRefresh:"refreshDiscord",legacyDisconnect:"disconnectDiscord",preview:["Presence","Rich activity","Now Playing"]},
     {id:"spotify",name:"Spotify",accent:"#1DB954",icon:"music",desc:"Now Playing widget through your existing widget URL or Discord presence.",statePath:"connections.spotify",fields:[["widgetUrl","Now Playing widget URL","https://widget.nowplaying.site/..."]],legacyConnect:"connectSpotify",legacyRefresh:"refreshSpotifySidebar",legacyDisconnect:"disconnectSpotify",preview:["Track","Artist","Progress"]},
-    {id:"github",name:"GitHub",accent:"#f5f5f5",icon:"git-branch",desc:"Developer activity, repositories, commits and profile context.",statePath:"connections.github",fields:[["username","GitHub username","rub19"],["token","Token optional","ghp_...","password"]],legacyConnect:"connectGithubFromConnections",legacyRefresh:"refreshGithub",legacyDisconnect:"disconnectGithub",preview:["Commits","Repositories","Profile"]},
+    {id:"github",name:"GitHub",accent:"#f5f5f5",icon:"git-branch",desc:"Developer activity, repositories, commits and profile context.",statePath:"connections.github",fields:[["username","GitHub username","octocat"],["token","Token optional","ghp_...","password"]],legacyConnect:"connectGithubFromConnections",legacyRefresh:"refreshGithub",legacyDisconnect:"disconnectGithub",preview:["Commits","Repositories","Profile"]},
     {id:"steam",name:"Steam",accent:"#66C0F4",icon:"gamepad-2",desc:"Profile, current game, recent games and gaming signals.",statePath:"connections.steam",fields:[["steamId","SteamID64","76561198XXXXXXXXX"],["apiKey","Steam API key optional","XXXXXXXXXXXXXXXX","password"]],legacyConnect:"connectSteam",legacyRefresh:"refreshSteam",legacyDisconnect:"disconnectSteam",preview:["Current game","Recent games","Steam level"]},
-    {id:"twitch",name:"Twitch",accent:"#9147FF",icon:"tv",desc:"Track streamers, live status, category and viewer count.",statePath:"connections.twitch",fields:[["username","Streamer username","squeezie"]],legacyConnect:"connectTwitch",legacyRefresh:"refreshTwitch",legacyDisconnect:"disconnectTwitch",preview:["Live status","Category","Viewers"]},
+    {id:"twitch",name:"Twitch",accent:"#9147FF",icon:"tv",desc:"Track streamers, live status, category and viewer count.",statePath:"connections.twitch",fields:[["username","Streamer username","creator_name"]],legacyConnect:"connectTwitch",legacyRefresh:"refreshTwitch",legacyDisconnect:"disconnectTwitch",preview:["Live status","Category","Viewers"]},
     {id:"valorant",name:"Valorant",accent:"#FF4655",icon:"target",desc:"Rank, recent matches and competitive progression from the Gaming module.",statePath:"gaming.valo",fields:[["riotId","Riot ID","Name#TAG"],["region","Region","eu"]],legacyConnect:"connectValo",legacyRefresh:"loadValoStats",legacyDisconnect:"disconnectValo",preview:["Rank","RR","Matches"]},
     {id:"googlecalendar",name:"Google Calendar",accent:"#A78BFA",icon:"calendar-days",desc:"Upcoming meetings, deadlines and Brain planning context.",statePath:"connections.googlecalendar",fields:[["account","Google account","you@gmail.com"],["calendarId","Calendar ID optional","primary"]],placeholder:"OAuth is prepared for a Worker/Supabase callback. Until then ETHONE stores the account locally and shows the planned calendar surface.",preview:["Upcoming events","Focus blocks","Meeting prep"]},
     {id:"googledrive",name:"Google Drive",accent:"#C4B5FD",icon:"folder",desc:"Recent files, folders and workspace documents.",statePath:"connections.googledrive",fields:[["account","Google account","you@gmail.com"],["folder","Folder or Drive URL optional","https://drive.google.com/..."]],placeholder:"Drive API needs OAuth scopes. This panel is ready for the future backend callback and keeps local settings now.",preview:["Recent files","Pinned folders","Shared docs"]},
@@ -16,6 +16,10 @@
     {id:"battlenet",name:"Battle.net",accent:"#60A5FA",icon:"sparkles",desc:"Battle.net identity, games and session context.",statePath:"connections.battlenet",fields:[["battleTag","BattleTag","Name#1234"],["region","Region","eu"]],placeholder:"Battle.net OAuth requires a client configured server-side. ETHONE keeps the account locally and shows the future sync model.",preview:["BattleTag","Games","Session history"]}
   ];
   var pendingDisconnect={id:"",at:0};
+
+  function releaseDefs(){
+    return defs.filter(function(def){return !def.placeholder;});
+  }
 
   function p(){try{return typeof window.curP==="function"?window.curP():null}catch(e){return null}}
   function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(m){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]})}
@@ -232,7 +236,7 @@
       '<div class="ih-body">'+
         '<div class="ih-fields">'+def.fields.map(function(f){return '<label><span>'+esc(f[1])+'</span><input id="ih-'+def.id+'-'+f[0]+'" type="'+(f[3]||"text")+'" value="'+esc(valueOf(def,f[0]))+'" placeholder="'+esc(f[2]||"")+'"></label>'}).join("")+'</div>'+
         '<div class="ih-preview"><div class="ih-preview-title">Preview</div><div class="ih-preview-grid">'+def.preview.map(function(x){return '<div><strong>'+esc(previewValue(def,x,data))+'</strong><span>'+esc(x)+'</span></div>'}).join("")+'</div>'+(def.placeholder?'<p class="ih-placeholder">'+esc(def.placeholder)+'</p>':'')+'</div>'+
-        '<div class="ih-actions"><button class="btn btn-primary" type="button" data-ih-action="connect" data-ih-id="'+def.id+'">'+(soon?"Save setup":(isConnected(def)?"Reconnect":"Connect"))+'</button>'+(soon?'<button class="btn btn-ghost" type="button"'+soonAttrs+'>Test</button><button class="btn btn-ghost" type="button"'+soonAttrs+'>Refresh</button>':'<button class="btn btn-ghost" type="button" data-ih-action="test" data-ih-id="'+def.id+'">Test</button><button class="btn btn-ghost" type="button" data-ih-action="refresh" data-ih-id="'+def.id+'">Refresh</button>')+'<button class="btn btn-ghost" type="button" data-ih-action="disconnect" data-ih-id="'+def.id+'" '+(!isConnected(def)?"disabled":"")+'>Disconnect</button></div>'+
+        '<div class="ih-actions"><button class="btn btn-primary" type="button" data-ih-action="connect" data-ih-id="'+def.id+'">'+(soon?"Save setup":(isConnected(def)?"Reconnect":"Connect"))+'</button>'+(soon?'<button class="btn btn-ghost" type="button"'+soonAttrs+'>Test</button><button class="btn btn-ghost" type="button"'+soonAttrs+'>Refresh</button>':'<button class="btn btn-ghost" type="button" data-ih-action="test" data-ih-id="'+def.id+'">Test</button><button class="btn btn-ghost" type="button" data-ih-action="refresh" data-ih-id="'+def.id+'">Refresh</button>')+'<button class="btn btn-ghost" type="button" data-ih-action="disconnect" data-ih-id="'+def.id+'" title="'+(!isConnected(def)?"Connect this service first":"Disconnect this service")+'" '+(!isConnected(def)?"disabled":"")+'>Disconnect</button></div>'+ 
         '<div class="ih-message" id="ih-msg-'+def.id+'"></div>'+
         '<div class="ih-sync"><div><span>Last sync</span><strong>'+labelDate(data.lastSync)+'</strong></div><div><span>Saved</span><strong>'+(isConnected(def)?"Local profile":"Waiting")+'</strong></div></div>'+
         '<div class="ih-history">'+(history.length?history.map(function(h){return '<div><i class="'+esc(h.type||"info")+'"></i><span>'+esc(h.message)+'</span><time>'+labelDate(h.at)+'</time></div>'}).join(""):'<div><i></i><span>No sync history yet</span><time>-</time></div>')+'</div>'+
@@ -260,14 +264,14 @@
       if(top&&top.nextSibling)top.parentNode.insertBefore(host,top.nextSibling);
       else page.appendChild(host);
     }
-    host.innerHTML='<div class="ih-hero"><div><div class="section-eyebrow">Integration Hub</div><h2>Connected services</h2><p>Every external service has a complete connection surface. Live APIs marked Coming Soon keep local settings safely until their worker/OAuth bridge is ready.</p></div><button class="btn btn-ghost" type="button" data-ih-action="refresh-all">Refresh all ready APIs</button></div><div class="ih-grid">'+defs.map(card).join("")+'</div>';
+    host.innerHTML='<div class="ih-hero"><div><div class="section-eyebrow">Integration Hub</div><h2>Connected services</h2><p>Configure, test and refresh the integrations supported by the current ETHONE runtime.</p></div><button class="btn btn-ghost" type="button" data-ih-action="refresh-all">Refresh connected services</button></div><div class="ih-grid">'+releaseDefs().map(card).join("")+'</div>';
     try{if(window.lucide&&!window.__lucideFailed)window.lucide.createIcons()}catch(e){}
   }
 
   function renderSettings(){
     var wrap=document.getElementById("plugins-list");if(!wrap)return;
     var prof=p();if(!prof)return;
-    wrap.innerHTML=defs.map(function(def){
+    wrap.innerHTML=releaseDefs().map(function(def){
       var st=statusLabel(def,conn(def));
       return '<div class="toggle-row ih-plugin-row"><div class="ih-plugin-main"><span class="ih-mini-logo" style="--ih-accent:'+def.accent+'"><i data-lucide="'+def.icon+'"></i></span><div><strong>'+esc(def.name)+(def.placeholder?' <span class="ethone-coming-soon-badge">Coming Soon</span>':'')+'</strong><small>'+esc(def.desc)+'</small></div></div><div class="ih-plugin-actions"><span class="ih-status '+st[1]+'">'+st[0]+'</span><button class="btn btn-ghost" type="button" data-ih-action="configure" data-ih-id="'+def.id+'">Configure</button></div></div>';
     }).join("");
@@ -292,7 +296,7 @@
     else if(action==="test")test(id);
     else if(action==="refresh")refresh(id);
     else if(action==="disconnect")disconnect(id);
-    else if(action==="refresh-all")defs.forEach(function(d){if(isConnected(d)&&!d.placeholder)refresh(d.id)});
+    else if(action==="refresh-all")releaseDefs().forEach(function(d){if(isConnected(d))refresh(d.id)});
     else if(action==="configure"){
       if(typeof window.switchPage==="function")window.switchPage("connections",null);
       setTimeout(function(){
@@ -305,5 +309,5 @@
   window.addEventListener("ethone:page-ready",function(event){
     if(!event.detail||["connections","settings","developer"].indexOf(event.detail.page)>-1)boot();
   });
-  window.ethoneIntegrationHub={render:render,renderSettings:renderSettings,defs:defs,connect:connect,test:test,refresh:refresh,disconnect:disconnect};
+  window.ethoneIntegrationHub={render:render,renderSettings:renderSettings,defs:function(){return releaseDefs().slice();},connect:connect,test:test,refresh:refresh,disconnect:disconnect};
 })();

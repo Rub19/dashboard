@@ -3,19 +3,19 @@
 
 :root{
   --native-shell-h:44px;
-  --native-shell-bg:rgba(13,13,17,.74);
-  --native-shell-border:rgba(255,255,255,.1);
-  --native-shell-text:#f6f3ff;
-  --native-shell-muted:rgba(246,243,255,.58);
-  --native-shell-accent:var(--accent,#8b5cf6);
-  --native-shell-shadow:0 18px 52px rgba(0,0,0,.34),0 0 0 1px rgba(139,92,246,.08);
+  --native-shell-bg:rgba(var(--surface-1-rgb),.74);
+  --native-shell-border:rgba(var(--color-white-rgb),.1);
+  --native-shell-text:var(--text-primary);
+  --native-shell-muted:rgba(var(--text-primary-rgb),.58);
+  --native-shell-accent:var(--accent,var(--primary));
+  --native-shell-shadow:0 18px 52px rgba(var(--color-black-rgb),.34),0 0 0 1px rgba(var(--primary-rgb),.08);
 }
 
 html.ethone-native-shell body{
   background:
-    radial-gradient(circle at 16% 8%,rgba(139,92,246,.12),transparent 34%),
-    radial-gradient(circle at 78% 12%,rgba(139,92,246,.08),transparent 30%),
-    linear-gradient(180deg,#070708 0%,#0a0a0d 44%,#060608 100%)!important;
+    radial-gradient(circle at 16% 8%,rgba(var(--primary-rgb),.12),transparent 34%),
+    radial-gradient(circle at 78% 12%,rgba(var(--primary-rgb),.08),transparent 30%),
+    linear-gradient(180deg,var(--surface-0) 0%,var(--surface-0) 44%,var(--surface-0) 100%)!important;
 }
 
 body.ethone-native-shell-ready #main-content.main{
@@ -69,19 +69,19 @@ body.ethone-native-shell-hidden #ethone-native-shell{
   height:8px;
   border-radius:50%;
   display:block;
-  background:rgba(255,255,255,.26);
+  background:rgba(var(--color-white-rgb),.26);
 }
 
-.native-window-dots i:nth-child(1){background:#ff5f57}
-.native-window-dots i:nth-child(2){background:#febc2e}
-.native-window-dots i:nth-child(3){background:#28c840}
+.native-window-dots i:nth-child(1){background:var(--error)}
+.native-window-dots i:nth-child(2){background:var(--warning)}
+.native-window-dots i:nth-child(3){background:var(--success)}
 
 .native-shell-status{
   min-width:142px;
   display:grid;
   gap:1px;
   padding-right:6px;
-  border-right:1px solid rgba(255,255,255,.08);
+  border-right:1px solid rgba(var(--color-white-rgb),.08);
 }
 
 .native-shell-status strong{
@@ -113,9 +113,9 @@ body.ethone-native-shell-hidden #ethone-native-shell{
   justify-content:center;
   gap:7px;
   padding:0 11px;
-  color:rgba(246,243,255,.82);
-  background:rgba(255,255,255,.045);
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);
+  color:rgba(var(--text-primary-rgb),.82);
+  background:rgba(var(--color-white-rgb),.045);
+  box-shadow:inset 0 0 0 1px rgba(var(--color-white-rgb),.07);
   cursor:pointer;
   font-size:11px;
   font-weight:720;
@@ -130,9 +130,9 @@ body.ethone-native-shell-hidden #ethone-native-shell{
 
 .native-shell-action:hover{
   transform:translateY(-1px);
-  color:#fff;
-  background:rgba(139,92,246,.16);
-  box-shadow:inset 0 0 0 1px rgba(139,92,246,.34),0 10px 28px rgba(139,92,246,.18);
+  color:var(--text-primary);
+  background:rgba(var(--primary-rgb),.16);
+  box-shadow:inset 0 0 0 1px rgba(var(--primary-rgb),.34),0 10px 28px rgba(var(--primary-rgb),.18);
 }
 
 .native-shell-action:active{
@@ -140,18 +140,18 @@ body.ethone-native-shell-hidden #ethone-native-shell{
 }
 
 .native-shell-action:focus-visible{
-  outline:2px solid rgba(139,92,246,.72);
+  outline:2px solid rgba(var(--primary-rgb),.72);
   outline-offset:2px;
 }
 
 .native-shell-action.is-primary{
-  color:#fff;
-  background:linear-gradient(135deg,rgba(139,92,246,.95),rgba(111,58,224,.92));
-  box-shadow:0 10px 24px rgba(139,92,246,.24),inset 0 0 0 1px rgba(255,255,255,.16);
+  color:var(--text-primary);
+  background:linear-gradient(135deg,rgba(var(--primary-rgb),.95),rgba(var(--primary-active-rgb),.92));
+  box-shadow:0 10px 24px rgba(var(--primary-rgb),.24),inset 0 0 0 1px rgba(var(--color-white-rgb),.16);
 }
 
 .native-shell-kbd{
-  color:rgba(255,255,255,.46);
+  color:rgba(var(--color-white-rgb),.46);
   font-size:10px;
   font-weight:700;
 }
@@ -182,12 +182,12 @@ body.ethone-native-split #main-content.main{
 
 body.ethone-native-split #ethone-side-panels .side-panel-shell,
 body.ethone-native-split .side-panel-shell{
-  box-shadow:0 26px 90px rgba(0,0,0,.48),0 0 0 1px rgba(139,92,246,.18)!important;
+  box-shadow:0 26px 90px rgba(var(--color-black-rgb),.48),0 0 0 1px rgba(var(--primary-rgb),.18)!important;
 }
 
 html.ethone-native-shell :where(.de-window,.pdock,.notification-center,#notif-panel,.cmd-palette,.side-panel-shell,.widget-marketplace-shell){
   scrollbar-width:thin;
-  scrollbar-color:rgba(139,92,246,.42) transparent;
+  scrollbar-color:rgba(var(--primary-rgb),.42) transparent;
 }
 
 html.ethone-native-shell :where(.de-window,.pdock,.notification-center,#notif-panel,.cmd-palette,.side-panel-shell,.widget-marketplace-shell)::-webkit-scrollbar{
@@ -196,14 +196,14 @@ html.ethone-native-shell :where(.de-window,.pdock,.notification-center,#notif-pa
 }
 
 html.ethone-native-shell :where(.de-window,.pdock,.notification-center,#notif-panel,.cmd-palette,.side-panel-shell,.widget-marketplace-shell)::-webkit-scrollbar-thumb{
-  background:rgba(139,92,246,.34);
+  background:rgba(var(--primary-rgb),.34);
   border-radius:999px;
   border:2px solid transparent;
   background-clip:content-box;
 }
 
 html.ethone-native-shell :where(.de-window,.side-panel-shell,#notif-panel.notification-center,.cmd-palette){
-  border-color:rgba(255,255,255,.11)!important;
+  border-color:rgba(var(--color-white-rgb),.11)!important;
 }
 
 html.ethone-native-shell :where(.de-window,.side-panel-shell,#notif-panel.notification-center){

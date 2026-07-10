@@ -1,4 +1,4 @@
-﻿/* ETHONE legacy compatibility module: daily-focus. */
+/* ETHONE legacy compatibility module: daily-focus. */
 // FOCUS DU JOUR
 function renderDailyFocus(){
   const p=curP();if(!p)return;
@@ -15,8 +15,8 @@ function renderDailyFocus(){
     textEl.style.textDecoration=df.done?'line-through':'none';
     if(checkBox){
       checkBox.style.display='flex';
-      checkBox.style.border=df.done?'2px solid #4ade80':'2px solid rgba(255,255,255,.15)';
-      checkBox.style.background=df.done?'rgba(74,222,128,.12)':'transparent';
+      checkBox.style.border=df.done?'2px solid var(--success)':'2px solid rgba(var(--color-white-rgb),.15)';
+      checkBox.style.background=df.done?'rgba(var(--success-rgb),.12)':'transparent';
     }
     if(checkIcon)checkIcon.style.opacity=df.done?'1':'0';
   } else {
@@ -29,8 +29,8 @@ function renderDailyFocus(){
 }
 
 function dailyFocusMarkup(){
-  return `<div id="daily-focus-check" onclick="toggleDailyFocusDone()" style="display:none;width:22px;height:22px;border-radius:6px;border:2px solid rgba(255,255,255,.15);background:transparent;cursor:pointer;flex-shrink:0;align-items:center;justify-content:center;transition:all .2s">
-<svg fill="none" id="daily-focus-check-icon" style="width:12px;height:12px;opacity:0;transition:opacity .15s" viewBox="0 0 16 16"><polyline points="2,8 6,12 14,4" stroke="#4ade80" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></polyline></svg>
+  return `<div id="daily-focus-check" onclick="toggleDailyFocusDone()" style="display:none;width:22px;height:22px;border-radius:6px;border:2px solid rgba(var(--color-white-rgb),.15);background:transparent;cursor:pointer;flex-shrink:0;align-items:center;justify-content:center;transition:all .2s">
+<svg fill="none" id="daily-focus-check-icon" style="width:12px;height:12px;opacity:0;transition:opacity .15s" viewBox="0 0 16 16"><polyline points="2,8 6,12 14,4" stroke="var(--success)" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></polyline></svg>
 </div>
 <span id="daily-focus-text" style="flex:1;font-size:13px;color:var(--muted);font-style:italic">Pas d'objectif pour aujourd'hui...</span>`;
 }
@@ -42,8 +42,8 @@ function editDailyFocus(){
   const panel=document.getElementById('daily-focus-panel');if(!panel)return;
   const display=document.getElementById('daily-focus-display');if(!display)return;
   display.innerHTML=`<input id="daily-focus-input" value="${escapeHTML(current)}" placeholder="Mon objectif pour aujourd'hui..."
-    style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:6px 10px;color:var(--text);font-family:var(--font);font-size:13px;outline:none">
-    <button onclick="saveDailyFocus()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:6px 14px;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap">OK</button>
+    style="flex:1;background:rgba(var(--color-white-rgb),.06);border:1px solid rgba(var(--color-white-rgb),.12);border-radius:8px;padding:6px 10px;color:var(--text);font-family:var(--font);font-size:13px;outline:none">
+    <button onclick="saveDailyFocus()" style="background:var(--accent);color:var(--text-on-accent);border:none;border-radius:8px;padding:6px 14px;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap">OK</button>
     <button onclick="const d=document.getElementById('daily-focus-display');if(d)d.innerHTML=dailyFocusMarkup();renderDailyFocus();" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0 4px">&times;</button>`;
   const inp=document.getElementById('daily-focus-input');
   if(inp){inp.focus();inp.select();inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();saveDailyFocus();}});}
@@ -70,7 +70,7 @@ function toggleDailyFocusDone(){
   if(!p.state.dailyFocus||p.state.dailyFocus.date!==today)return;
   p.state.dailyFocus.done=!p.state.dailyFocus.done;
   if(p.state.dailyFocus.done){
-    addActivity('Objectif du jour accompli !','#4ade80','task');
+    if(typeof addActivity==='function')addActivity('Objectif du jour accompli !','var(--success)','task');
     toast('Objectif accompli !','success');
   }
   renderDailyFocus();
@@ -91,7 +91,7 @@ function renderPomo(){
   const mode=POMO_MODES()[pomoIdx];
   const total=mode.duration;
   const pct=pomoRemaining/total;
-  // r=68, circumference = 2*PI*68 â‰ˆ 427
+  // r=68, circumference = 2*PI*68 ≈ 427
   const circumference=427;
 
   // Time display
@@ -137,9 +137,9 @@ function renderPomo(){
   const btn=document.getElementById('pomo-play-btn');
   const icon=document.getElementById('pomo-play-icon');
   if(btn){
-    btn.style.background=pomoRunning?'rgba(255,255,255,.06)':mode.ring;
+    btn.style.background=pomoRunning?'rgba(var(--color-white-rgb),.06)':mode.ring;
     btn.style.boxShadow=pomoRunning?'none':`0 4px 20px ${mode.ring}50`;
-    btn.style.color='#fff';
+    btn.style.color='var(--text-on-accent)';
   }
   if(icon){
     icon.innerHTML=pomoRunning
@@ -169,8 +169,8 @@ function renderPomoStats(){
   container.innerHTML=[
     {label:'Today',   val:todaySessions, extra:'', color:mode.ring},
     {label:'Total',   val:totalSessions, extra:'', color:'var(--text)'},
-    {label:'Focus',   val:totalMins>=60?(totalMins/60).toFixed(1)+'h':totalMins+'m', extra:'', color:'#34d399'},
-    {label:'Streak',  val:streak,        extra:'', color:'#fbbf24'},
+    {label:'Focus',   val:totalMins>=60?(totalMins/60).toFixed(1)+'h':totalMins+'m', extra:'', color:'var(--success)'},
+    {label:'Streak',  val:streak,        extra:'', color:'var(--warning)'},
   ].map(s=>`<div class="pomo-stat-cell">
     <div class="pomo-stat-val">${s.val}${s.extra}</div>
     <div class="pomo-stat-lbl">${s.label}</div>

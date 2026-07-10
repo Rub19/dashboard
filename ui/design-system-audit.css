@@ -1,0 +1,872 @@
+/*
+ * ETHONE Design System Audit
+ * Final visual contract for release-candidate UI consistency.
+ *
+ * This file is intentionally loaded last. It does not change product logic or
+ * layout architecture; it maps legacy selectors onto one shared component
+ * language so buttons, cards, forms, menus, modals, widgets and notifications
+ * behave consistently across every page.
+ */
+
+:root {
+  --ds-radius-control: var(--radius-md);
+  --ds-radius-surface: var(--radius-lg);
+  --ds-radius-menu: var(--radius-lg);
+  --ds-radius-pill: var(--radius-full);
+
+  --ds-surface-base: linear-gradient(180deg, rgba(var(--surface-2-rgb), .96), rgba(var(--surface-1-rgb), .98));
+  --ds-surface-muted: linear-gradient(180deg, rgba(var(--surface-3-rgb), .90), rgba(var(--surface-2-rgb), .94));
+  --ds-surface-control: linear-gradient(180deg, rgba(var(--surface-3-rgb), .98), rgba(var(--surface-2-rgb), .98));
+  --ds-surface-control-hover: linear-gradient(180deg, color-mix(in srgb, var(--accent) 10%, var(--surface-3)), rgba(var(--surface-2-rgb), .98));
+  --ds-surface-primary: linear-gradient(180deg, var(--accent-hover), var(--accent-active));
+  --ds-surface-danger: linear-gradient(180deg, rgba(var(--error-rgb), .16), rgba(var(--error-rgb), .10));
+
+  --ds-border: var(--border-primary);
+  --ds-border-strong: var(--border-secondary);
+  --ds-border-hover: color-mix(in srgb, var(--border-secondary) 62%, var(--accent) 38%);
+  --ds-border-focus: var(--border-focus);
+
+  --ds-shadow-xs: var(--shadow-xs);
+  --ds-shadow-sm: var(--shadow-sm);
+  --ds-shadow-md: var(--shadow-md);
+  --ds-shadow-lg: var(--shadow-lg);
+  --ds-focus: 0 0 0 3px rgba(var(--primary-rgb), .16);
+
+  --ds-control-height-sm: 34px;
+  --ds-control-height: var(--control-height);
+  --ds-control-height-lg: var(--control-height-lg);
+  --ds-control-padding-x: var(--spacing-sm);
+
+  --ds-ease: var(--ease-premium);
+  --ds-fast: min(var(--motion-fast), var(--motion-max));
+  --ds-normal: min(var(--motion-normal), var(--motion-max));
+  --ds-transition-control:
+    color var(--ds-fast) var(--ds-ease),
+    background var(--ds-fast) var(--ds-ease),
+    background-color var(--ds-fast) var(--ds-ease),
+    border-color var(--ds-fast) var(--ds-ease),
+    box-shadow var(--ds-fast) var(--ds-ease),
+    opacity var(--ds-fast) var(--ds-ease),
+    transform var(--ds-fast) var(--ds-ease);
+}
+
+/* Base accessibility and motion contract */
+body :where(button, a, input, textarea, select, [role="button"], [tabindex]):focus-visible {
+  outline: 0 !important;
+  border-color: var(--ds-border-focus) !important;
+  box-shadow: var(--ds-focus), var(--ds-shadow-xs) !important;
+}
+
+body :where(button, .btn, .ui-button, .ethone-button, [role="button"]) {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+body :where(button, .btn, .ui-button, .ethone-button, [role="button"]):disabled,
+body :where(button, .btn, .ui-button, .ethone-button, [role="button"])[aria-disabled="true"],
+body :where(button, .btn, .ui-button, .ethone-button, [role="button"]).disabled {
+  cursor: not-allowed !important;
+  opacity: .45 !important;
+  transform: none !important;
+  box-shadow: var(--ds-shadow-xs) !important;
+}
+
+/* Buttons */
+body :where(
+  .btn,
+  .ui-button,
+  .ethone-button,
+  button:not(.unstyled):not(.ps-delete-btn),
+  [role="button"],
+  .panel-action,
+  .item-btn,
+  .settings-action,
+  .settings-nav-item,
+  .cat-tab,
+  .d4-button,
+  .d4-icon-button,
+  .d4-widget-btn,
+  .d4-quick-action,
+  .vh-button,
+  .version-filter,
+  .mp41-btn,
+  .mp-store-btn,
+  .aic-btn,
+  .aie-chip,
+  .eic-btn,
+  .kb-capture,
+  .kb-icon,
+  .files-tool-btn,
+  .files-icon-btn,
+  .backup-action,
+  .timeline-filter button,
+  .health-hero-actions button,
+  .lb-tab,
+  .lb-social,
+  .lb-ghost,
+  .lb-btn-primary
+) {
+  min-height: var(--ds-control-height-sm) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: var(--spacing-xs) !important;
+  padding: 0 var(--ds-control-padding-x) !important;
+  border: 1px solid var(--ds-border) !important;
+  border-radius: var(--ds-radius-control) !important;
+  background: var(--ds-surface-control) !important;
+  color: var(--text-secondary) !important;
+  box-shadow: var(--ds-shadow-xs) !important;
+  font-family: var(--font-sans) !important;
+  font-size: var(--type-label) !important;
+  font-weight: 720 !important;
+  line-height: var(--leading-control) !important;
+  text-decoration: none !important;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: var(--ds-transition-control) !important;
+}
+
+body :where(
+  .btn,
+  .ui-button,
+  .ethone-button,
+  button:not(.unstyled):not(.ps-delete-btn),
+  [role="button"],
+  .panel-action,
+  .item-btn,
+  .settings-action,
+  .cat-tab,
+  .d4-button,
+  .d4-icon-button,
+  .d4-widget-btn,
+  .vh-button,
+  .version-filter,
+  .mp41-btn,
+  .mp-store-btn,
+  .aic-btn,
+  .aie-chip,
+  .eic-btn,
+  .kb-capture,
+  .kb-icon,
+  .files-tool-btn,
+  .files-icon-btn,
+  .backup-action,
+  .lb-tab,
+  .lb-social,
+  .lb-ghost,
+  .lb-btn-primary
+):not(:disabled):not([aria-disabled="true"]):hover {
+  color: var(--text-primary) !important;
+  border-color: var(--ds-border-hover) !important;
+  background: var(--ds-surface-control-hover) !important;
+  box-shadow: var(--ds-shadow-sm), 0 0 calc(22px * var(--theme-glow-scale)) rgba(var(--primary-rgb), .08) !important;
+  transform: translateY(-1px) !important;
+}
+
+body :where(.btn, .ui-button, .ethone-button, button:not(.unstyled), [role="button"]):not(:disabled):active {
+  transform: translateY(0) scale(var(--motion-scale-press)) !important;
+}
+
+body :where(
+  .btn-primary,
+  .primary,
+  .ui-button--primary,
+  .ethone-button--primary,
+  [data-variant="primary"],
+  .modal-submit,
+  .auth-submit,
+  .login-submit,
+  .lb-btn-primary,
+  button[type="submit"]
+) {
+  border-color: color-mix(in srgb, var(--accent) 70%, white 8%) !important;
+  background: var(--ds-surface-primary) !important;
+  color: var(--text-on-accent) !important;
+  box-shadow: var(--shadow-control) !important;
+}
+
+body :where(
+  .btn-ghost,
+  .ghost,
+  .ui-button--ghost,
+  [data-variant="ghost"],
+  .lb-ghost
+) {
+  background: transparent !important;
+  color: var(--text-secondary) !important;
+  box-shadow: none !important;
+}
+
+body :where(
+  .btn-danger,
+  .danger,
+  .ui-button--danger,
+  .ethone-button--danger,
+  [data-variant="danger"],
+  [data-danger="true"]
+) {
+  border-color: var(--danger-border) !important;
+  background: var(--ds-surface-danger) !important;
+  color: var(--text-danger-strong) !important;
+}
+
+body :where(
+  .btn-success,
+  .success,
+  [data-variant="success"]
+) {
+  border-color: var(--success-border) !important;
+  background: var(--success-soft) !important;
+  color: #bbf7d0 !important;
+}
+
+body :where(.icon-btn, .ui-icon-button, .d4-icon-button, .files-icon-btn, .modal-close, .version-popup-close, .aie-copilot-close) {
+  width: var(--ds-control-height) !important;
+  min-width: var(--ds-control-height) !important;
+  padding: 0 !important;
+}
+
+body :where(button, .btn, .ui-button, .ethone-button)[aria-busy="true"],
+body :where(button, .btn, .ui-button, .ethone-button).is-loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none !important;
+}
+
+body :where(button, .btn, .ui-button, .ethone-button)[aria-busy="true"]::after,
+body :where(button, .btn, .ui-button, .ethone-button).is-loading::after {
+  content: "";
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(var(--text-primary-rgb), .28);
+  border-top-color: var(--text-primary);
+  border-radius: var(--radius-full);
+  animation: ethoneDsSpin var(--motion-slower) linear infinite;
+}
+
+/* Forms */
+body :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  textarea,
+  select,
+  .ui-input,
+  .ui-search,
+  .ui-textarea,
+  .modal-input,
+  .modal-select,
+  .lb-input,
+  .ai-input,
+  .aic-field input,
+  .aic-field select,
+  .aic-field textarea,
+  .cmd-search,
+  #cmd-input,
+  .settings-search,
+  .search-bar input,
+  .files-select,
+  .va-search
+) {
+  min-height: var(--ds-control-height) !important;
+  border: 1px solid var(--ds-border) !important;
+  border-radius: var(--ds-radius-control) !important;
+  background: var(--ds-surface-control) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--ds-shadow-xs) !important;
+  font-family: var(--font-sans) !important;
+  font-size: var(--type-body) !important;
+  line-height: var(--leading-body) !important;
+  outline: 0 !important;
+  transition:
+    background var(--ds-fast) var(--ds-ease),
+    border-color var(--ds-fast) var(--ds-ease),
+    box-shadow var(--ds-fast) var(--ds-ease),
+    opacity var(--ds-fast) var(--ds-ease) !important;
+}
+
+body :where(textarea, .ui-textarea, .ai-input, .aic-field textarea) {
+  min-height: 88px !important;
+  padding: var(--spacing-sm) !important;
+  resize: vertical;
+}
+
+body :where(input, textarea)::placeholder {
+  color: var(--text-tertiary) !important;
+  opacity: 1 !important;
+}
+
+body :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  textarea,
+  select,
+  .ui-input,
+  .ui-search,
+  .modal-input,
+  .modal-select,
+  .lb-input
+):hover {
+  border-color: var(--ds-border-strong) !important;
+}
+
+body :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  textarea,
+  select,
+  .ui-input,
+  .ui-search,
+  .modal-input,
+  .modal-select,
+  .lb-input
+):focus {
+  border-color: var(--ds-border-focus) !important;
+  box-shadow: var(--ds-focus), var(--ds-shadow-xs) !important;
+}
+
+body :where(input, textarea, select):disabled {
+  cursor: not-allowed;
+  opacity: .48;
+}
+
+body :where(input[type="checkbox"], .ui-checkbox, .ethone-checkbox) {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+
+body :where(input[type="range"], .ui-slider, .theme-slider) {
+  accent-color: var(--accent);
+}
+
+body :where(.ui-switch, .ethone-switch, .switch, .toggle, .settings-switch, .theme-switch) {
+  border-color: var(--ds-border-strong) !important;
+  border-radius: var(--radius-full) !important;
+  background: var(--surface-switch) !important;
+  box-shadow: var(--ds-shadow-xs) !important;
+  transition: var(--ds-transition-control) !important;
+}
+
+/* Surfaces: cards, panels, widgets */
+body :where(
+  .ui-card,
+  .ui-panel,
+  .ui-widget,
+  .ethone-card,
+  .ethone-panel,
+  .ethone-widget,
+  .panel,
+  .card,
+  .widget,
+  .stat-card,
+  .settings-card,
+  .conn-card,
+  .integration-card,
+  .game-card,
+  .plugin-card,
+  .market-card,
+  .version-card,
+  .version-panel,
+  .version-current-card,
+  .health-card,
+  .health-panel,
+  .timeline-card,
+  .timeline-panel,
+  .timeline-event,
+  .timeline-stat,
+  .activity-card,
+  .tm-card,
+  .d4-panel,
+  .d4-widget,
+  .d4-card,
+  .d4-module,
+  .d4-picker-tile,
+  .aic-panel,
+  .eic-panel,
+  .b34-panel,
+  .bp35-panel,
+  .bos36-panel,
+  .database-card,
+  .db-card,
+  .db-kanban-card,
+  .file-card,
+  .files-card,
+  .note-item,
+  .notes-card,
+  .kanban-col,
+  .kanban-card,
+  .goal-card,
+  .journal-entry,
+  .countdown-card,
+  .xp-card,
+  .xp-card-v2,
+  .space-settings-card,
+  .backup-manager-card,
+  .backup-row,
+  .ab-card,
+  .ab-block,
+  .mp-card,
+  .mp41-card,
+  .mp-store-card,
+  .theme-card,
+  .achievement-card,
+  .al-app,
+  .al-folder,
+  .mc-card
+) {
+  border: 1px solid var(--ds-border) !important;
+  border-radius: var(--ds-radius-surface) !important;
+  background: var(--ds-surface-base) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--ds-shadow-sm) !important;
+  transition:
+    border-color var(--ds-fast) var(--ds-ease),
+    background var(--ds-fast) var(--ds-ease),
+    box-shadow var(--ds-fast) var(--ds-ease),
+    opacity var(--ds-fast) var(--ds-ease),
+    transform var(--ds-fast) var(--ds-ease) !important;
+}
+
+body .notes-card,
+body .kanban-card,
+body .db-kanban-card,
+#page-settings .xp-card-v2,
+body .space-settings-card {
+  border: 1px solid var(--ds-border) !important;
+  border-radius: var(--ds-radius-surface) !important;
+  background: var(--ds-surface-base) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--ds-shadow-sm) !important;
+  transition:
+    border-color var(--ds-fast) var(--ds-ease),
+    background var(--ds-fast) var(--ds-ease),
+    box-shadow var(--ds-fast) var(--ds-ease),
+    opacity var(--ds-fast) var(--ds-ease),
+    transform var(--ds-fast) var(--ds-ease) !important;
+}
+
+body :where(
+  .ui-card,
+  .ui-widget,
+  .panel,
+  .card,
+  .widget,
+  .stat-card,
+  .settings-card,
+  .conn-card,
+  .integration-card,
+  .game-card,
+  .timeline-event,
+  .backup-row,
+  .d4-widget,
+  .db-kanban-card,
+  .files-card,
+  .note-item,
+  .notes-card,
+  .kanban-col,
+  .kanban-card,
+  .xp-card,
+  .xp-card-v2,
+  .space-settings-card,
+  .mp-card,
+  .mp41-card,
+  .mp-store-card,
+  .theme-card,
+  .al-app
+):hover {
+  border-color: var(--ds-border-hover) !important;
+  box-shadow: var(--ds-shadow-md), 0 0 calc(28px * var(--theme-glow-scale)) rgba(var(--primary-rgb), .06) !important;
+  transform: translateY(-1px);
+}
+
+body :where(.hero-card, .d4-hero, .version-hero, .health-hero, .timeline-hero, .ethone-os2-page-hero) {
+  border-color: var(--ds-border-strong) !important;
+  border-radius: var(--radius-2xl) !important;
+  background:
+    radial-gradient(520px 220px at 88% 0, rgba(var(--primary-rgb), .12), transparent 70%),
+    var(--ds-surface-base) !important;
+  box-shadow: var(--ds-shadow-lg) !important;
+}
+
+body :where(.panel-title, .settings-card-title, .conn-title, .game-card-title, .d4-title, .section-title, .version-title) {
+  color: var(--text-primary) !important;
+  font-weight: 780 !important;
+}
+
+body :where(.panel-subtitle, .page-subtitle, .conn-subtitle, .d4-muted, .settings-card-subtitle, .timeline-muted) {
+  color: var(--text-secondary) !important;
+}
+
+/* Badges, tags and status pills */
+body :where(
+  .badge,
+  .tag,
+  .ui-badge,
+  .ui-tag,
+  .ethone-badge,
+  .ethone-tag,
+  .nav-badge,
+  .status-badge,
+  .version-badge,
+  .health-badge,
+  .coming-soon-badge,
+  .ethone-coming-soon-badge,
+  .files-pill,
+  .aic-badge,
+  .lp-demo-badge
+) {
+  min-height: 22px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  padding: 0 var(--spacing-xs) !important;
+  border: 1px solid var(--ds-border) !important;
+  border-radius: var(--ds-radius-pill) !important;
+  background: rgba(var(--color-white-rgb), .055) !important;
+  color: var(--text-secondary) !important;
+  box-shadow: none !important;
+  font: 720 var(--type-caption) / 1 var(--font-sans) !important;
+  letter-spacing: 0 !important;
+}
+
+body :where(.badge.active, .tag.active, .ui-badge--accent, .ui-tag--accent, .nav-badge, .version-badge.current, .aic-badge.ok) {
+  border-color: var(--accent-border) !important;
+  background: var(--accent-soft) !important;
+  color: var(--text-accent) !important;
+}
+
+body :where(.status-success, .badge-success, .success-badge, .aic-badge.ok) {
+  border-color: var(--success-border) !important;
+  background: var(--success-soft) !important;
+  color: #bbf7d0 !important;
+}
+
+body :where(.status-warning, .badge-warning, .warning-badge, .aic-badge.warn) {
+  border-color: var(--warning-border) !important;
+  background: var(--warning-soft) !important;
+  color: #fde68a !important;
+}
+
+body :where(.status-error, .badge-error, .error-badge) {
+  border-color: var(--error-border) !important;
+  background: var(--error-soft) !important;
+  color: var(--text-error-strong) !important;
+}
+
+/* Menus, dropdowns, command palette, modals and overlays */
+body :where(
+  .ui-dropdown,
+  .ethone-dropdown,
+  .dropdown,
+  .dropdown-menu,
+  .context-menu,
+  .ui-context-menu,
+  .db-dd-panel,
+  .va-dd-panel,
+  .cmd-palette,
+  .command-palette,
+  #cmd-palette,
+  .modal,
+  .ui-modal,
+  .dialog,
+  .modal-card,
+  .modal-content,
+  .settings-dialog,
+  .side-panel-shell,
+  .pdock-popover,
+  .pdock-manager,
+  .notification-center,
+  .version-popup-shell,
+  .fron-shell
+) {
+  border: 1px solid var(--ds-border-strong) !important;
+  border-radius: var(--ds-radius-surface) !important;
+  background: var(--ds-surface-base) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--ds-shadow-lg) !important;
+  backdrop-filter: blur(calc(14px * var(--theme-blur-scale))) saturate(135%);
+}
+
+body :where(.ui-dropdown, .dropdown, .dropdown-menu, .context-menu, .ui-context-menu, .db-dd-panel, .va-dd-panel) {
+  border-radius: var(--ds-radius-menu) !important;
+  box-shadow: var(--ds-shadow-md) !important;
+}
+
+body :where(
+  .ui-dropdown-item,
+  .ui-context-menu-item,
+  .dropdown-item,
+  .context-menu-item,
+  .cmd-item,
+  .db-dd-option,
+  .va-dd-option,
+  [role="menuitem"]
+) {
+  min-height: 34px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--spacing-xs) !important;
+  padding: 0 var(--spacing-sm) !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--text-secondary) !important;
+  transition: var(--ds-transition-control) !important;
+}
+
+body :where(.ui-dropdown-item, .ui-context-menu-item, .dropdown-item, .context-menu-item, .cmd-item, .db-dd-option, .va-dd-option, [role="menuitem"]):hover,
+body :where(.ui-dropdown-item, .ui-context-menu-item, .dropdown-item, .context-menu-item, .cmd-item, .db-dd-option, .va-dd-option, [role="menuitem"]).active,
+body :where(.ui-dropdown-item, .ui-context-menu-item, .dropdown-item, .context-menu-item, .cmd-item, .db-dd-option, .va-dd-option, [role="menuitem"])[data-active="true"] {
+  color: var(--text-primary) !important;
+  background: var(--accent-soft) !important;
+}
+
+body :where(.modal-overlay, .ui-overlay, .dialog-overlay, .version-popup-overlay, .fron-overlay, .sidebar-overlay) {
+  background: var(--overlay-backdrop) !important;
+  backdrop-filter: blur(calc(10px * var(--theme-blur-scale))) !important;
+}
+
+/* Notifications and toasts */
+body :where(.toast, .ui-toast, .ethone-toast, .ethone-quality-toast-item, .notif-item, .notification-item) {
+  border: 1px solid var(--ds-border-strong) !important;
+  border-radius: var(--ds-radius-menu) !important;
+  background: var(--ds-surface-base) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--ds-shadow-lg) !important;
+}
+
+body :where(.toast.success, .ui-toast.success, .notif-item.success) {
+  border-color: var(--success-border) !important;
+}
+
+body :where(.toast.warning, .ui-toast.warning, .notif-item.warning) {
+  border-color: var(--warning-border) !important;
+}
+
+body :where(.toast.error, .ui-toast.error, .notif-item.error) {
+  border-color: var(--error-border) !important;
+}
+
+/* Sidebar items keep the sidebar layout, but share active/hover contracts. */
+body :where(.nav-item, .ui-sidebar-item, .ethone-sidebar-item, .os-nav-item) {
+  min-height: 38px !important;
+  border: 1px solid transparent !important;
+  border-radius: var(--radius-lg) !important;
+  color: var(--text-secondary) !important;
+  transition: var(--ds-transition-control) !important;
+}
+
+body :where(.nav-item, .ui-sidebar-item, .ethone-sidebar-item, .os-nav-item):hover {
+  color: var(--text-primary) !important;
+  background: rgba(var(--color-white-rgb), .052) !important;
+  border-color: var(--ds-border) !important;
+}
+
+body :where(.nav-item, .ui-sidebar-item, .ethone-sidebar-item, .os-nav-item).active,
+body :where(.nav-item, .ui-sidebar-item, .ethone-sidebar-item, .os-nav-item)[aria-current="page"] {
+  color: var(--text-primary) !important;
+  background: linear-gradient(90deg, rgba(var(--primary-rgb), .14), rgba(var(--surface-2-rgb), .72)) !important;
+  border-color: var(--accent-border) !important;
+  box-shadow: inset 3px 0 0 var(--accent), 0 0 calc(22px * var(--theme-glow-scale)) rgba(var(--primary-rgb), .08) !important;
+}
+
+/* Tables and list rows */
+body :where(table, .ethone-table, .ui-table, .db-table, .activity-table, .settings-table) {
+  color: var(--text-primary);
+  font: 500 var(--type-body) / 1.45 var(--font-sans);
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+body :where(table, .ethone-table, .ui-table, .db-table, .activity-table, .settings-table) :where(th, td) {
+  border-bottom: 1px solid var(--ds-border);
+}
+
+body :where(table, .ethone-table, .ui-table, .db-table, .activity-table, .settings-table) :where(th) {
+  color: var(--text-tertiary);
+  font: 760 var(--type-caption) / 1.2 var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+body :where(.item-row, .todo-item, .settings-row, .health-row, .version-item, .timeline-row, .d4-mini-row, .backup-row) {
+  border-radius: var(--radius-lg) !important;
+  transition: var(--ds-transition-control) !important;
+}
+
+body :where(.item-row, .todo-item, .settings-row, .health-row, .version-item, .timeline-row, .d4-mini-row, .backup-row):hover {
+  background: rgba(var(--color-white-rgb), .045) !important;
+}
+
+/* Progress, loading and skeletons */
+body :where(.progress, .progress-bar, .ui-progress, .d4-progress, .health-meter, .version-progress, progress) {
+  border-radius: var(--radius-full) !important;
+  overflow: hidden;
+  background: rgba(var(--color-white-rgb), .075) !important;
+}
+
+body :where(.progress > span, .ui-progress > span, .d4-progress i, .health-meter-fill, .version-progress-fill) {
+  background: linear-gradient(90deg, var(--accent), var(--accent-hover)) !important;
+}
+
+body :where(.skeleton, .ui-skeleton, .ethone-skeleton, .loading, .db-boot-placeholder) {
+  border-radius: var(--ds-radius-menu) !important;
+  background:
+    linear-gradient(90deg, rgba(var(--surface-2-rgb), .82), rgba(var(--surface-3-rgb), .95), rgba(var(--surface-2-rgb), .82)) !important;
+  background-size: 220% 100% !important;
+  animation: ethoneDsSkeleton var(--motion-slower) linear infinite;
+}
+
+/* Tooltip */
+body [data-tooltip]::before,
+body :where(.tooltip, .ui-tooltip, .ethone-tooltip) {
+  border: 1px solid var(--ds-border-strong) !important;
+  border-radius: var(--radius-sm) !important;
+  background: var(--surface-raised) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--ds-shadow-md) !important;
+  font: 650 var(--type-caption) / 1.25 var(--font-sans) !important;
+}
+
+/* Auth and language controls: keep the login craft, align it with the product system. */
+#auth-screen :where(#auth-lang-bar, #auth-card #auth-tabs-wrap),
+body :where(.lang-trigger, .lang-menu) {
+  border: 1px solid var(--ds-border) !important;
+  border-radius: var(--ds-radius-menu) !important;
+  background: var(--ds-surface-panel) !important;
+  box-shadow: var(--ds-shadow-sm), var(--ds-inset) !important;
+}
+
+#auth-screen :where(#auth-langbar-slider, #auth-tabs-slider) {
+  border-color: var(--accent-border) !important;
+  border-radius: calc(var(--ds-radius-control) - 2px) !important;
+  background: var(--ds-surface-primary) !important;
+  box-shadow: var(--shadow-control), var(--ds-inset) !important;
+  transition: transform var(--motion-fast) var(--ease-premium), width var(--motion-fast) var(--ease-premium) !important;
+}
+
+#auth-screen :where(#auth-lang-bar button, #auth-card .lb-tab),
+body :where(.lang-trigger) {
+  min-height: var(--ds-control-height-sm) !important;
+  border-radius: var(--ds-radius-control) !important;
+  color: var(--text-secondary) !important;
+  transition: var(--ds-transition-control) !important;
+}
+
+#auth-screen #auth-lang-bar {
+  border-radius: var(--ds-radius-menu) !important;
+}
+
+#auth-screen #auth-lang-bar button {
+  min-height: var(--ds-control-height-sm) !important;
+  border-radius: var(--ds-radius-control) !important;
+  transition: var(--ds-transition-control) !important;
+}
+
+#auth-screen #auth-langbar-slider {
+  border-radius: calc(var(--ds-radius-control) - 2px) !important;
+}
+
+#auth-screen :where(#auth-lang-bar button:hover, #auth-card .lb-tab:hover),
+body :where(.lang-trigger:hover) {
+  color: var(--text-primary) !important;
+  background: var(--ds-surface-hover) !important;
+}
+
+#auth-screen :where(#auth-lang-bar button[aria-pressed="true"], #auth-card .lb-tab.is-active, #auth-card .lb-tab[aria-selected="true"]) {
+  color: var(--text-on-accent) !important;
+  text-shadow: none !important;
+}
+
+#auth-screen :where(.lb-input) {
+  min-height: var(--ds-control-height) !important;
+  border-radius: var(--ds-radius-control) !important;
+  border-color: var(--ds-border) !important;
+  background: var(--ds-surface-control) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--ds-inset) !important;
+  transition: var(--ds-transition-control) !important;
+}
+
+#auth-screen :where(.lb-input:hover) {
+  border-color: var(--ds-border-strong) !important;
+  background: var(--ds-surface-control-hover) !important;
+}
+
+#auth-screen :where(.lb-input:focus, .lb-input:focus-visible) {
+  border-color: var(--accent-border-strong) !important;
+  background: var(--ds-surface-control-hover) !important;
+  box-shadow: var(--ds-focus), var(--ds-inset) !important;
+}
+
+#auth-screen :where(.lb-input::placeholder) {
+  color: var(--text-tertiary) !important;
+}
+
+#auth-screen :where(#auth-card .lb-btn-primary) {
+  min-height: 52px !important;
+  border-radius: var(--ds-radius-control) !important;
+  border-color: var(--accent-border) !important;
+  color: var(--text-on-accent) !important;
+  background: var(--ds-surface-primary) !important;
+  box-shadow: var(--shadow-control), var(--ds-inset) !important;
+  transition: var(--ds-transition-control) !important;
+}
+
+#auth-screen :where(#auth-card .lb-btn-primary:hover:not(:disabled)) {
+  filter: none !important;
+  transform: translateY(-1px) !important;
+  background: linear-gradient(135deg, var(--accent-hover), var(--accent)) !important;
+  box-shadow: var(--shadow-hover), var(--ds-inset) !important;
+}
+
+#auth-screen :where(#auth-card .lb-social, #auth-card .lb-ghost, #auth-card .lb-eye),
+body :where(.lang-option) {
+  border-radius: var(--ds-radius-control) !important;
+  border-color: var(--ds-border) !important;
+  background: var(--ds-surface-control) !important;
+  color: var(--text-secondary) !important;
+  transition: var(--ds-transition-control) !important;
+}
+
+#auth-screen :where(#auth-card .lb-social:hover, #auth-card .lb-ghost:hover, #auth-card .lb-eye:hover),
+body :where(.lang-option:hover, .lang-option.active) {
+  border-color: var(--accent-border) !important;
+  background: var(--ds-surface-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+#auth-screen :where(.lb-tab:focus-visible, .lb-btn-primary:focus-visible, .lb-social:focus-visible, .lb-ghost:focus-visible, .lb-eye:focus-visible, #auth-lang-bar button:focus-visible),
+body :where(.lang-trigger:focus-visible, .lang-option:focus-visible) {
+  outline: none !important;
+  box-shadow: var(--ds-focus), var(--ds-inset) !important;
+}
+
+@keyframes ethoneDsSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ethoneDsSkeleton {
+  to { background-position: -220% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body :where(*) {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  body :where(.skeleton, .ui-skeleton, .ethone-skeleton, .loading, .db-boot-placeholder) {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 760px) {
+  :root {
+    --ds-control-height: 42px;
+    --ds-control-height-sm: 38px;
+  }
+
+  body :where(.modal, .ui-modal, .dialog, .modal-card, .modal-content, .version-popup-shell, .fron-shell) {
+    border-radius: var(--radius-xl) !important;
+  }
+}

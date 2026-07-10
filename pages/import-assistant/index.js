@@ -73,6 +73,15 @@
   function sourceById(id){return sourceDefs.find(function(s){return s.id===id})||sourceDefs[0]}
   function renderImportAssistant(){
     var page=ensurePage();
+    if(page.dataset.importRendered==="1"&&$("#page-import .import-assistant")){
+      renderSources();
+      renderRoutes();
+      updateSourcePanel();
+      renderHistory();
+      renderIcons();
+      return;
+    }
+    page.dataset.importRendered="1";
     page.innerHTML=
       '<div class="import-assistant">'+
         '<section class="import-hero">'+
@@ -94,7 +103,7 @@
               '<section class="import-card" id="import-analysis-card"><div class="import-card-head"><div><h3>Analyse</h3><p>ETHONE détecte automatiquement la structure et prépare les pages à créer.</p></div></div><div class="import-grid" id="import-metrics"></div><div class="import-status" id="import-status">'+icon("info")+'En attente d’un fichier.</div></section>'+
               '<section class="import-card"><div class="import-card-head"><div><h3>Destination</h3><p>Garde Auto pour laisser ETHONE créer les bonnes pages, ou force une destination.</p></div></div><div class="import-route-grid" id="import-routes"></div></section>'+
               '<section class="import-card"><div class="import-card-head"><div><h3>Prévisualisation</h3><p>Les 8 premières lignes ou entrées détectées.</p></div></div><div class="import-preview" id="import-preview"><table><tbody><tr><td>Aucun fichier analysé.</td></tr></tbody></table></div></section>'+
-              '<div class="import-actions"><button class="btn btn-ghost" type="button" data-import-action="reset">Réinitialiser</button><button class="btn btn-primary" type="button" id="import-run-btn" data-import-action="run" disabled>'+icon("wand-sparkles")+'Créer dans ETHONE</button></div>'+
+              '<div class="import-actions"><button class="btn btn-ghost" type="button" data-import-action="reset">Réinitialiser</button><button class="btn btn-primary" type="button" id="import-run-btn" data-import-action="run" title="Importez et validez un fichier avant de créer le contenu" disabled>'+icon("wand-sparkles")+'Créer dans ETHONE</button></div>'+
             '</div>'+
           '</main>'+
         '</section>'+
@@ -548,7 +557,7 @@
   function installNavigationHook(){
     if(typeof window.ethoneAddSwitchPageHook==="function"){
       window.ethoneAddSwitchPageHook("import-assistant",function(page){
-        if(page==="import")setTimeout(renderImportAssistant,0);
+        if(page==="import"&&!$("#page-import .import-assistant"))setTimeout(renderImportAssistant,0);
       });
       return;
     }
@@ -556,7 +565,7 @@
       var old=window.switchPage;
       window.switchPage=function(page,navEl){
         var result=old.apply(this,arguments);
-        if(page==="import")setTimeout(renderImportAssistant,0);
+        if(page==="import"&&!$("#page-import .import-assistant"))setTimeout(renderImportAssistant,0);
         return result;
       };
       window.switchPage.__importAssistantWrapped=true;

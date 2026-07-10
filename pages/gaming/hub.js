@@ -203,7 +203,7 @@
         '<article class="gh-account-card">'+gameHeader("VA","Valorant","valo-account-sub","valo-badge",!!ctx.app.gaming.valo)+
           '<div id="valo-stats-area"><div class="game-not-connected">Connect Riot ID to load rank, matches and progression.</div></div>'+
           '<div class="game-input-row" style="margin-top:12px">'+
-            '<input class="modal-input" id="valo-name" placeholder="Name#TAG  (ex: Rub19#Boss)" type="text" value="'+esc(valo.name&&valo.tag?valo.name+"#"+valo.tag:"")+'"/>'+
+            '<input class="modal-input" id="valo-name" placeholder="Name#TAG (ex: Player#EUW)" type="text" value="'+esc(valo.name&&valo.tag?valo.name+"#"+valo.tag:"")+'"/>'+
             '<button class="btn btn-primary" onclick="connectValo()">Connect</button>'+
             '<button class="btn btn-ghost" id="valo-disconnect" onclick="disconnectValo()" style="'+(ctx.app.gaming.valo?'':'display:none')+'">Disconnect</button>'+
           '</div>'+regionHTML("valo",valo.region||"eu",["eu","na","ap","kr","br","latam"])+
@@ -224,7 +224,7 @@
         '<article class="gh-account-card">'+gameHeader("OW","Overwatch 2","ow-account-sub","ow-badge",!!ctx.app.gaming.ow)+
           '<div id="ow-stats-area"><div class="game-not-connected">Optional local Overwatch profile.</div></div>'+
           '<div class="game-input-row" style="margin-top:12px">'+
-            '<input class="modal-input" id="ow-username" placeholder="BattleTag (e.g. Rub19-1234)" type="text" value="'+esc(ow.username||"")+'"/>'+
+            '<input class="modal-input" id="ow-username" placeholder="BattleTag (e.g. Player-1234)" type="text" value="'+esc(ow.username||"")+'"/>'+
             '<select class="game-region-select" id="ow-platform"><option value="pc">PC</option><option value="psn">PSN</option><option value="xbl">Xbox</option></select>'+
             '<button class="btn btn-primary" onclick="connectOW()">Connect</button>'+
             '<button class="btn btn-ghost" id="ow-disconnect" onclick="disconnectOW()" style="'+(ctx.app.gaming.ow?'':'display:none')+'">Disconnect</button>'+

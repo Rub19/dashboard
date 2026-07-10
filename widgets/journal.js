@@ -9,7 +9,7 @@ function selectMood(emoji,label){
   document.querySelectorAll('#journal-mood-picks button').forEach(b=>{
     const active=b.dataset.mood===emoji;
     b.style.background=active?'var(--accent)':'none';
-    b.style.color=active?'#fff':'var(--text)';
+    b.style.color=active?'var(--text-on-accent)':'var(--text)';
     b.style.borderColor=active?'var(--accent)':'var(--border2)';
   });
 }

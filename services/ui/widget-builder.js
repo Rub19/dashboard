@@ -387,9 +387,9 @@
       if(!ok){
         var A=actions();
         if(A&&A.dispatch){
-          var fake=document.createElement("button");
-          fake.dataset.widgetType=type;
-          ok=A.dispatch("dashboard.edit.addWidgetType",{el:fake,widgetType:type,source:"widget-builder"});
+          var actionElement=document.createElement("button");
+          actionElement.dataset.widgetType=type;
+          ok=A.dispatch("dashboard.edit.addWidgetType",{el:actionElement,widgetType:type,source:"widget-builder"});
         }
       }
       toast(ok?"Widget ajoute au dashboard":"Impossible d ajouter le widget",""+(ok?"success":"error"));

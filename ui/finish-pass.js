@@ -44,14 +44,23 @@
     const accent=/^#[0-9a-f]{6}$/i.test(String(hex||''))?hex:'#8b5cf6';
     const rgb=hexToRgb(accent);
     const rgbText=`${rgb.r},${rgb.g},${rgb.b}`;
+    const actionPair=window.ETHONEColorContrast&&typeof window.ETHONEColorContrast.actionPair==='function'
+      ?window.ETHONEColorContrast.actionPair(accent,'#ffffff',4.5)
+      :{base:mix(accent,'#000000',.16),hover:accent};
     const root=document.documentElement.style;
+    root.setProperty('--primary',accent);
+    root.setProperty('--primary-rgb',rgbText);
+    root.setProperty('--primary-hover',mix(accent,'#ffffff',.16));
+    root.setProperty('--primary-hover-rgb',hexToRgbTriplet(mix(accent,'#ffffff',.16)));
+    root.setProperty('--primary-active',mix(accent,'#000000',.16));
+    root.setProperty('--primary-active-rgb',hexToRgbTriplet(mix(accent,'#000000',.16)));
     root.setProperty('--accent',accent);
     root.setProperty('--accent-rgb',rgbText);
     root.setProperty('--accent-hover',mix(accent,'#ffffff',.16));
     root.setProperty('--accent-active',mix(accent,'#000000',.16));
     root.setProperty('--accent-light',mix(accent,'#ffffff',.28));
-    root.setProperty('--accent-contrast',accent);
-    root.setProperty('--accent-contrast-hover',mix(accent,'#ffffff',.10));
+    root.setProperty('--accent-contrast',actionPair.base);
+    root.setProperty('--accent-contrast-hover',actionPair.hover);
     root.setProperty('--accent-border',`rgba(${rgbText},.28)`);
     root.setProperty('--accent-subtle',`rgba(${rgbText},.09)`);
     root.setProperty('--accent-soft',`rgba(${rgbText},.13)`);
@@ -60,6 +69,11 @@
     root.setProperty('--focus-ring',`0 0 0 3px rgba(${rgbText},.22)`);
     root.setProperty('--text-accent',mix(accent,'#ffffff',.36));
     root.setProperty('--glow-purple',`0 0 28px rgba(${rgbText},.22)`);
+  }
+
+  function hexToRgbTriplet(hex){
+    const rgb=hexToRgb(hex);
+    return `${rgb.r},${rgb.g},${rgb.b}`;
   }
 
   function currentAccent(){

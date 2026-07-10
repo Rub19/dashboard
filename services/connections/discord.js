@@ -20,7 +20,7 @@ async function connectDiscord(){
     if(typeof renderManualBadgesUI==='function')renderManualBadgesUI();
     startLanyardWS(userId);
     toast('Discord connected!','success');
-    addActivity('Connected Discord account','var(--discord)','integration');
+    if(typeof addActivity==='function')addActivity('Connected Discord account','var(--discord)','integration');
   }catch(e){toast('Could not reach Lanyard API','error');console.error(e)}
 }
 
@@ -60,7 +60,7 @@ function renderDiscordCard(d){
   if(nameEl)nameEl.textContent=name;
   const statusMap={online:'Online',idle:'Idle',dnd:'Do Not Disturb',offline:'Offline'};
   const subEl=document.getElementById('dc-preview-sub');
-  if(subEl)subEl.textContent=statusMap[d.discord_status]||'âš« Offline';
+  if(subEl)subEl.textContent=statusMap[d.discord_status]||'Offline';
   // Activity
   const actEl=document.getElementById('dc-preview-activity');
   const act=d.activities?.find(a=>a.type===0||a.type===2||a.type===4);
@@ -145,7 +145,9 @@ function refreshDiscordSidebar(){
     if(act){
       const isSpotify=act.type===2;
       const actColor=isSpotify?'rgba(29,185,84,.85)':'rgba(88,101,242,.85)';
-      actEl.innerHTML=`<span style="color:${actColor};font-size:10.5px">${isSpotify?'â™ª ':'â–¶ '}<span>${act.name||''}</span></span>`;
+      actEl.innerHTML='<span style="color:'+actColor+';font-size:10.5px;display:inline-flex;align-items:center;gap:5px"><i data-lucide="'+(isSpotify?'music-2':'gamepad-2')+'" aria-hidden="true"></i><span></span></span>';
+      const activityLabel=actEl.querySelector('span span');
+      if(activityLabel)activityLabel.textContent=act.name||'';
       actEl.style.display='block';
     } else {
       actEl.style.display='none';
@@ -163,13 +165,19 @@ function updateSpotifyFromLanyard(d){
   const isDiscordOnline=['online','idle','dnd'].includes(dcStatus);
 
   if(isDiscordOnline&&sp&&sp.song){
-    // Discord online + Spotify playing â†’ Lanyard widget
+    // Discord online with Spotify playing: use the Lanyard widget.
     if(wrap)wrap.style.setProperty('display','block','important');
     if(iframeWrap)iframeWrap.style.display='none';
     const artEl=document.getElementById('np-art');
     if(artEl){
-      if(sp.album_art_url)artEl.innerHTML=`<img src="${sp.album_art_url}" alt="album" onerror="this.innerHTML='â™ª'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:8px;display:block">`;
-      else artEl.innerHTML='<span>â™ª</span>';
+      if(sp.album_art_url){
+        artEl.innerHTML='<img alt="Album cover" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:8px;display:block">';
+        const albumImage=artEl.querySelector('img');
+        if(albumImage){
+          albumImage.src=sp.album_art_url;
+          albumImage.addEventListener('error',function(){artEl.innerHTML='<i data-lucide="music-2" aria-hidden="true"></i>';},{once:true});
+        }
+      } else artEl.innerHTML='<i data-lucide="music-2" aria-hidden="true"></i>';
     }
     const songEl=document.getElementById('np-song');if(songEl)songEl.textContent=sp.song;
     const artistEl=document.getElementById('np-artist');if(artistEl)artistEl.textContent=sp.artist;
@@ -195,12 +203,12 @@ function updateSpotifyFromLanyard(d){
     if(!isDiscordOnline&&lfm?.username&&iframeWrap){
       // Discord offline/invisible: montrer Last.fm et demarrer l'auto-refresh.
       iframeWrap.style.display='block';
-      refreshSpotifySidebar();
-      if(!_spotifyAutoRefresh)startSpotifyAutoRefresh();
+      if(typeof refreshSpotifySidebar==='function')refreshSpotifySidebar();
+      if(typeof startSpotifyAutoRefresh==='function')startSpotifyAutoRefresh();
     } else if(iframeWrap){
-      // Discord online mais pas de Spotify â†’ cacher fallback + stopper refresh
+      // Discord online without Spotify: hide the fallback and stop refresh.
       iframeWrap.style.display='none';
-      clearInterval(_spotifyAutoRefresh);_spotifyAutoRefresh=null;
+      if(typeof stopSpotifyAutoRefresh==='function')stopSpotifyAutoRefresh();
     }
   }
 }
@@ -226,6 +234,9 @@ function updateNpProgress(start,end){
 function disconnectDiscord(){
   const p=curP();if(!p)return;
   if(!confirm('Disconnect Discord?'))return;
+  if(typeof stopLanyardWS==='function')stopLanyardWS();
+  clearInterval(window._npProgressInterval);
+  window._npProgressInterval=null;
   delete p.state.connections.discord;saveStateNow();
   const badge=document.getElementById('dc-badge');
   if(badge){badge.textContent='Not connected';badge.className='conn-status-badge disconnected';}
@@ -256,5 +267,5 @@ async function refreshDiscord(){
       toast('Discord refreshed!','success');
     }
   }catch(e){toast('Could not reach Lanyard','error');}
-  finally{if(btn)btn.innerHTML='â†» Refresh';}
+  finally{if(btn)btn.innerHTML='<i data-lucide="refresh-cw" aria-hidden="true"></i><span>Refresh</span>';}
 }

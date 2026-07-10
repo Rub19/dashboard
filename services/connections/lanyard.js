@@ -105,6 +105,8 @@ function stopLanyardWS() {
   _lanyardHB = null;
   _lanyardClearRetry();
   _lanyardClearPolling();
+  _lanyardUserId = null;
+  _lanyardRetryDelay = 5000;
 }
 
 function startLanyardPolling(userId) {

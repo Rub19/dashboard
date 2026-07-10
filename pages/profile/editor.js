@@ -37,7 +37,11 @@ function openEditProfile(id){
   editingProfileId=id;
   document.getElementById('new-profile-name').value=p.name;
   selAvatarIdx=p.avatarIdx||0;createUpload=p.avatarImg||null;
-  if(createUpload){document.getElementById('create-upload-preview').style.display='flex';document.getElementById('create-upload-img').src=createUpload}
+  if(createUpload){
+    const safeUpload=profileSafeImageSrc(createUpload);
+    document.getElementById('create-upload-preview').style.display=safeUpload?'flex':'none';
+    if(safeUpload)document.getElementById('create-upload-img').src=safeUpload;
+  }
   else{document.getElementById('create-upload-preview').style.display='none'}
   document.getElementById('create-profile-title').textContent=' Edit profile';
   document.getElementById('create-profile-btn').textContent='Save';
@@ -47,7 +51,7 @@ function openEditProfile(id){
 
 function cancelCreateProfile(){editingProfileId=null;closeModal('create-profile')}
 
-function submitCreateProfile(){
+async function submitCreateProfile(){
   const name=document.getElementById('new-profile-name').value.trim();
   if(!name){toast('Enter a name','error');return}
   const av=AVATARS[selAvatarIdx]||AVATARS[0];
@@ -60,11 +64,15 @@ function submitCreateProfile(){
     if(type==='pin'){
       const pins=['create-pw-p1','create-pw-p2','create-pw-p3','create-pw-p4'].map(id=>document.getElementById(id).value);
       if(pins.some(v=>!/^\d$/.test(v))){toast('Enter a valid 4-digit PIN','error');return}
-      pwObj={type:'pin',value:pins.join('')};
+      pwObj=window.ETHONESecurity&&ETHONESecurity.createProfileLock
+        ? await ETHONESecurity.createProfileLock('pin',pins.join(''))
+        : {type:'pin',value:pins.join('')};
     } else {
       const val=document.getElementById('create-pw-text').value;
       if(!val){toast('Enter a password','error');return}
-      pwObj={type:'text',value:val};
+      pwObj=window.ETHONESecurity&&ETHONESecurity.createProfileLock
+        ? await ETHONESecurity.createProfileLock('text',val)
+        : {type:'text',value:val};
     }
   }
   if(editingProfileId){
@@ -89,7 +97,7 @@ async function deleteProfile(id){
   profiles=profiles.filter(p=>p.id!==id);
   // Save locally first
   try{
-    localStorage.setItem('myspace_profiles_backup',JSON.stringify(profiles));
+    localStorage.setItem('myspace_profiles_backup',JSON.stringify(sanitizeProfilesForPersistence(profiles)));
     localStorage.setItem('myspace_profiles_backup_owner',(_sbUser&&_sbUser.id)||'');
   }catch(e){}
   // Delete from Supabase DB if it has a db record

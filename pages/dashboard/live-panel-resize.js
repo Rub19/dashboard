@@ -53,8 +53,19 @@
     if(document.body.classList.contains("ethone-widgets-panel-enabled"))return "open";
     return "closed";
   }
+  function stableBoot(){
+    try{
+      return !!(
+        window.__ethoneDisableExperimentalBoot ||
+        window.ETHONE_STABLE_BOOT ||
+        window.ETHONE_LIGHT_BOOT_MODE ||
+        document.documentElement.dataset.ethoneStableBoot==="1"
+      );
+    }catch(e){return !!(window.__ethoneDisableExperimentalBoot||window.ETHONE_STABLE_BOOT||window.ETHONE_LIGHT_BOOT_MODE)}
+  }
   function canMountPanel(){
     if(document.documentElement.classList.contains("ethone-auth-mode")||document.body.classList.contains("ethone-auth-mode"))return false;
+    if(stableBoot())return false;
     var requested=read(OPEN_KEY,"0")==="1"||read("ethone:widgets-panel-pinned","0")==="1"||read(MODE_KEY,"closed")!=="closed";
     if(window.ethoneCanMountUI){
       try{return requested||window.ethoneCanMountUI("widgets-panel")}catch(e){}
@@ -246,7 +257,7 @@
     if(currentMode()==="rail"&&!event.target.closest("button"))setMode("open");
   });
   if(overlay)overlay.addEventListener("click",function(){setMode("closed")});
-  if(body){
+  if(body&&!stableBoot()){
     try{new MutationObserver(syncEmptyState).observe(body,{childList:true,subtree:true,attributes:true,attributeFilter:["style","class","hidden"]})}catch(e){}
   }
   document.addEventListener("keydown",function(event){
@@ -266,15 +277,35 @@
   window.collapseLivePanel=function(){setMode(currentMode()==="rail"?"open":"rail")};
   window.closeLivePanel=function(){setMode("closed")};
   if(typeof window.openLivePanelAddPicker!=="function"||window.openLivePanelAddPicker.__ethoneProxy){
-    window.openLivePanelAddPicker=function(){
+    window.openLivePanelAddPicker=function ethoneFallbackOpenLivePanelAddPicker(){
       setMode("open");
+      if(window.ETHONELazyModules&&typeof window.ETHONELazyModules.load==="function"){
+        return Promise.resolve(window.ETHONELazyModules.load("widgets")).then(function(){
+          if(typeof window.openLivePanelAddPicker==="function"&&window.openLivePanelAddPicker!==ethoneFallbackOpenLivePanelAddPicker)return window.openLivePanelAddPicker();
+          if(typeof window.toast==="function")window.toast("Bibliotheque de widgets bientot disponible","info");
+          return true;
+        }).catch(function(){
+          if(typeof window.toast==="function")window.toast("Impossible de charger les widgets pour le moment","warning");
+          return false;
+        });
+      }
       if(typeof window.toast==="function")window.toast("Bibliotheque de widgets bientot disponible","info");
       return true;
     };
   }
   if(typeof window.openLivePanelManager!=="function"||window.openLivePanelManager.__ethoneProxy){
-    window.openLivePanelManager=function(){
+    window.openLivePanelManager=function ethoneFallbackOpenLivePanelManager(){
       setMode("open");
+      if(window.ETHONELazyModules&&typeof window.ETHONELazyModules.load==="function"){
+        return Promise.resolve(window.ETHONELazyModules.load("widgets")).then(function(){
+          if(typeof window.openLivePanelManager==="function"&&window.openLivePanelManager!==ethoneFallbackOpenLivePanelManager)return window.openLivePanelManager();
+          if(typeof window.toast==="function")window.toast("Gestion des widgets bientot disponible","info");
+          return true;
+        }).catch(function(){
+          if(typeof window.toast==="function")window.toast("Impossible de charger les widgets pour le moment","warning");
+          return false;
+        });
+      }
       if(typeof window.toast==="function")window.toast("Gestion des widgets bientot disponible","info");
       return true;
     };

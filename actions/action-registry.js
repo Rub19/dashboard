@@ -24,6 +24,19 @@
     focus: "dashboard",
     pomodoro: "dashboard"
   };
+  var EXPERIMENTAL_PAGES = {
+    studio: true,
+    automation: true,
+    "automation-builder": true,
+    spaces: true
+  };
+  var EXPERIMENTAL_ACTIONS = {
+    "appLibrary.open": true,
+    "universe.open": true,
+    "briefing.open": true,
+    "achievements.open": true,
+    "widgets.builder.open": true
+  };
 
   function normalizeId(id) {
     return String(id || "").trim();
@@ -63,13 +76,28 @@
     console[type === "error" ? "error" : "warn"]("[ETHONE action]", message);
   }
 
+  function emit(name, detail) {
+    try {
+      global.dispatchEvent(new CustomEvent(name, { detail: detail || {} }));
+    } catch (e) {}
+  }
+
   function unavailableMessage() {
     return text({
-      fr: "Fonctionnalite bientot disponible",
-      en: "Feature coming soon",
-      es: "Funcion disponible pronto",
-      de: "Funktion bald verfugbar"
-    }, "Feature coming soon");
+      fr: "Cette commande ne peut pas etre executee dans le contexte actuel",
+      en: "This command cannot run in the current context",
+      es: "Este comando no se puede ejecutar en el contexto actual",
+      de: "Dieser Befehl kann im aktuellen Kontext nicht ausgefuhrt werden"
+    }, "This command cannot run in the current context");
+  }
+
+  function productionDisabledMessage() {
+    return text({
+      fr: "Fonctionnalite desactivee en mode production",
+      en: "Feature disabled in production mode",
+      es: "Funcion desactivada en modo produccion",
+      de: "Funktion im Produktionsmodus deaktiviert"
+    }, "Feature disabled in production mode");
   }
 
   function failedMessage() {
@@ -79,6 +107,23 @@
       es: "Operacion no completada",
       de: "Vorgang konnte nicht abgeschlossen werden"
     }, "Operation could not be completed");
+  }
+
+  function experimentalEnabled() {
+    try {
+      if (new URLSearchParams(global.location && global.location.search || "").get("experimental") === "1") return true;
+      return global.localStorage && global.localStorage.getItem("ethone:experimental-enabled") === "1";
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function isExperimentalPage(page) {
+    return !!EXPERIMENTAL_PAGES[normalizePage(page)];
+  }
+
+  function isExperimentalAction(id) {
+    return !!EXPERIMENTAL_ACTIONS[resolveId(id)];
   }
 
   function register(id, descriptor) {
@@ -130,26 +175,41 @@
     id = resolveId(id);
     var d = registry[id];
     var ctx = Object.assign({ actionId: id, source: "action-registry" }, context || {});
+    if (isExperimentalAction(id) && !experimentalEnabled()) {
+      emit("ethone:action-unavailable", { id: id, context: ctx, el: ctx.el || null, reason: "production-disabled" });
+      toast(productionDisabledMessage(), "info");
+      return false;
+    }
     if (!d) {
       console.warn("[ETHONE actions] Unknown action id:", id, ctx);
+      emit("ethone:action-unavailable", { id: id, context: ctx, el: ctx.el || null, reason: "unknown" });
       toast(unavailableMessage(), "info");
       return false;
     }
     if (!isEnabled(id, ctx)) {
+      emit("ethone:action-unavailable", { id: id, context: ctx, el: ctx.el || null, reason: d.disabledReason || "disabled" });
       toast(d.disabledReason || d.unavailableMessage || unavailableMessage(), "info");
       return false;
     }
+    emit("ethone:action-start", { id: id, context: ctx, el: ctx.el || null });
     try {
       var result = d.handler(ctx);
       if (result && typeof result.then === "function") {
-        result.catch(function (error) {
+        return result.then(function (value) {
+          emit("ethone:action-complete", { id: id, context: ctx, el: ctx.el || null, result: value });
+          return value === false ? false : true;
+        }).catch(function (error) {
           console.error("[ETHONE actions] Async action failed:", id, error);
+          emit("ethone:action-error", { id: id, context: ctx, el: ctx.el || null, error: error });
           toast(failedMessage(), "error");
+          return false;
         });
       }
-      return true;
+      emit("ethone:action-complete", { id: id, context: ctx, el: ctx.el || null, result: result });
+      return result === false ? false : true;
     } catch (error) {
       console.error("[ETHONE actions] Action failed:", id, error);
+      emit("ethone:action-error", { id: id, context: ctx, el: ctx.el || null, error: error });
       toast(failedMessage(), "error");
       return false;
     }
@@ -159,6 +219,18 @@
     return !!document.getElementById("page-" + page);
   }
 
+  function canLazyLoadPage(page) {
+    try {
+      return !!(
+        global.ETHONELazyModules &&
+        typeof global.ETHONELazyModules.canLoadPage === "function" &&
+        global.ETHONELazyModules.canLoadPage(page)
+      );
+    } catch (e) {
+      return false;
+    }
+  }
+
   function normalizePage(page) {
     page = String(page || "").trim();
     return PAGE_ALIASES[page] || page;
@@ -166,7 +238,30 @@
 
   function openPage(page, source) {
     page = normalizePage(page);
-    if (!page || !pageExists(page)) {
+    if (isExperimentalPage(page) && !experimentalEnabled()) {
+      toast(productionDisabledMessage(), "info");
+      return false;
+    }
+    if (!page) {
+      console.warn("[ETHONE actions] Unknown page:", page);
+      toast(unavailableMessage(), "info");
+      return false;
+    }
+    if (!pageExists(page) && canLazyLoadPage(page)) {
+      return Promise.resolve(global.ETHONELazyModules.loadForPage(page)).then(function () {
+        if (!pageExists(page)) {
+          console.warn("[ETHONE actions] Lazy page did not mount:", page);
+          toast(unavailableMessage(), "info");
+          return false;
+        }
+        return openPage(page, source);
+      }).catch(function (error) {
+        console.error("[ETHONE actions] Lazy page load failed:", page, error);
+        toast(failedMessage(), "error");
+        return false;
+      });
+    }
+    if (!pageExists(page)) {
       console.warn("[ETHONE actions] Unknown page:", page);
       toast(unavailableMessage(), "info");
       return false;
@@ -176,7 +271,7 @@
       if (navigation && typeof navigation.go === "function") return navigation.go(page, source || null);
     } catch (e) {}
     if (typeof global.switchPage === "function") {
-      global.switchPage(page, source || null);
+      global.switchPage(page, source && source.classList ? source : null);
       return true;
     }
     toast(failedMessage(), "error");
@@ -235,6 +330,106 @@
     return false;
   }
 
+  function notificationsPanel() {
+    if (typeof global.toggleNotifPanel === "function") {
+      global.toggleNotifPanel();
+      return true;
+    }
+    var notifications = app.get("notifications");
+    if (notifications && typeof notifications.toggle === "function") {
+      var toggled = notifications.toggle();
+      if (toggled !== false) return true;
+    }
+    if (global.ETHONELazyModules && typeof global.ETHONELazyModules.load === "function") {
+      return Promise.resolve(global.ETHONELazyModules.load("notifications")).then(function () {
+        if (typeof global.toggleNotifPanel === "function") {
+          global.toggleNotifPanel();
+          return true;
+        }
+        var lateNotifications = app.get("notifications");
+        if (lateNotifications && typeof lateNotifications.toggle === "function") {
+          lateNotifications.toggle();
+          return true;
+        }
+        toast(unavailableMessage(), "info");
+        return false;
+      }).catch(function () {
+        toast("Impossible de charger les notifications pour le moment.", "warning");
+        return false;
+      });
+    }
+    toast(unavailableMessage(), "info");
+    return false;
+  }
+
+  function openInspector(runDiagnostic) {
+    function openLoaded() {
+      if (global.ETHONEInspector && typeof global.ETHONEInspector.open === "function") {
+        global.ETHONEInspector.open();
+        if (runDiagnostic && typeof global.ETHONEInspector.runFullDiagnostic === "function") {
+          setTimeout(function () { global.ETHONEInspector.runFullDiagnostic(); }, 40);
+        }
+        return true;
+      }
+      toast(unavailableMessage(), "info");
+      return false;
+    }
+    if (global.ETHONEInspector) return openLoaded();
+    if (global.ETHONELazyModules && typeof global.ETHONELazyModules.load === "function") {
+      return Promise.resolve(global.ETHONELazyModules.load("developer-inspector")).then(function (loaded) {
+        if (loaded === false) {
+          toast(unavailableMessage(), "info");
+          return false;
+        }
+        return openLoaded();
+      }).catch(function (error) {
+        console.error("[ETHONE actions] Inspector load failed:", error);
+        toast(failedMessage(), "error");
+        return false;
+      });
+    }
+    toast(unavailableMessage(), "info");
+    return false;
+  }
+
+  function openFirstRun(view) {
+    function openLoaded() {
+      var firstRun = global.ETHONEFirstRun;
+      if (!firstRun) {
+        toast(unavailableMessage(), "info");
+        return false;
+      }
+      if (view === "whats-new" && typeof firstRun.openWhatsNew === "function") {
+        firstRun.openWhatsNew({ manual: true });
+        return true;
+      }
+      if (typeof firstRun.replay === "function") {
+        firstRun.replay();
+        return true;
+      }
+      if (typeof firstRun.open === "function") {
+        firstRun.open({ manual: true, force: true, restart: true, resume: true });
+        return true;
+      }
+      toast(unavailableMessage(), "info");
+      return false;
+    }
+
+    if (global.ETHONEFirstRun) return openLoaded();
+    if (global.ETHONELazyModules && typeof global.ETHONELazyModules.load === "function") {
+      return Promise.resolve(global.ETHONELazyModules.load("onboarding")).then(function (loaded) {
+        if (loaded === false) return false;
+        return openLoaded();
+      }).catch(function (error) {
+        console.error("[ETHONE actions] Onboarding load failed:", error);
+        toast(failedMessage(), "error");
+        return false;
+      });
+    }
+    toast(unavailableMessage(), "info");
+    return false;
+  }
+
   function openSpaceSwitcher() {
     var btn = document.querySelector('[data-space-action="open"],.space-switcher-button,[data-v4-action-id="dashboard.workspace.toggle"],.d4-workspace');
     if (btn && typeof btn.click === "function") {
@@ -251,6 +446,7 @@
     root.addEventListener("click", function (event) {
       var el = event.target && event.target.closest && event.target.closest("[data-action-id],[data-ethone-action],[data-action]");
       if (!el) return;
+      if (el.closest && el.closest("#main-sidebar [data-sidebar-local='1']")) return;
       var id = el.dataset.actionId || el.dataset.ethoneAction || "";
       if (!id && el.dataset.action && (el.dataset.action.indexOf(".") > -1 || has(el.dataset.action))) id = el.dataset.action;
       if (!id) return;
@@ -397,12 +593,11 @@
     if (typeof global.openCmdPalette === "function") global.openCmdPalette();
     else toast(unavailableMessage(), "info");
   } });
-  register("notifications.open", { label: "Notifications", handler: function () {
-    if (typeof global.toggleNotifPanel === "function") return global.toggleNotifPanel();
-    var n = app.get("notifications");
-    if (n && typeof n.toggle === "function") return n.toggle();
-    toast(unavailableMessage(), "info");
-  } });
+  register("inspector.open", { label: "Open Inspector", handler: function () { return openInspector(false); } });
+  register("inspector.diagnostic.run", { label: "Run Full Diagnostic", handler: function () { return openInspector(true); } });
+  register("notifications.open", { label: "Notifications", handler: notificationsPanel });
+  register("onboarding.open", { label: "Open onboarding", handler: function () { return openFirstRun("onboarding"); } });
+  register("whatsnew.open", { label: "Open What's New", handler: function () { return openFirstRun("whats-new"); } });
   register("settings.tab.open", { label: "Open settings tab", handler: function (ctx) { return openSettingsTab(ctx.tab || "profilee"); } });
   register("spaces.open", { label: "Workspaces", handler: openSpaceSwitcher });
   register("appLibrary.open", { label: "App Library", handler: function () {

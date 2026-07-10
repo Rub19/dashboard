@@ -8,13 +8,26 @@ function setMobNav(page){
   if(btn)btn.classList.add('active');
 }
 
+function syncMobileSidebarA11y(sidebar,open){
+  if(sidebar){
+    sidebar.setAttribute('aria-hidden',open?'false':'true');
+    sidebar.setAttribute('aria-expanded',open?'true':'false');
+  }
+  document.querySelectorAll('#hamburger,#mobile-topbar button[onclick*="toggleMobileSidebar"]').forEach(button=>{
+    button.setAttribute('aria-controls','main-sidebar');
+    button.setAttribute('aria-expanded',open?'true':'false');
+    button.setAttribute('aria-label',open?'Close sidebar':'Open sidebar');
+    button.title=open?'Close sidebar':'Open sidebar';
+  });
+}
+
 function toggleMobileSidebar(){
   const sidebarEl=document.getElementById('main-sidebar');
   const ov=document.getElementById('sidebar-overlay');
   if(!sidebarEl)return;
   sidebarEl.classList.toggle('mobile-open');
   const open=sidebarEl.classList.contains('mobile-open');
-  sidebarEl.setAttribute('aria-expanded',open?'true':'false');
+  syncMobileSidebarA11y(sidebarEl,open);
   if(ov){
     ov.classList.toggle('mobile-open',open);
     ov.setAttribute('aria-hidden',open?'false':'true');
@@ -35,7 +48,7 @@ function closeMobileSidebar(){
   const sidebar=document.getElementById('main-sidebar');
   const overlay=document.getElementById('sidebar-overlay');
   sidebar?.classList.remove('mobile-open');
-  sidebar?.setAttribute('aria-expanded','false');
+  syncMobileSidebarA11y(sidebar,false);
   overlay?.classList.remove('mobile-open');
   overlay?.setAttribute('aria-hidden','true');
 }
@@ -49,6 +62,7 @@ document.addEventListener('click',e=>{
 function checkMobileLayout(){
   const isMobile=window.innerWidth<=768;
   const isTablet=window.innerWidth>768&&window.innerWidth<=1024;
+  const usesOffCanvas=isMobile||isTablet;
   const mobTopbar=document.getElementById('mobile-topbar');
   if(mobTopbar) mobTopbar.style.setProperty('display',isMobile?'flex':'none','important');
   // Tablet-only: #mobile-topbar already ships its own toggle button (and its
@@ -56,6 +70,25 @@ function checkMobileLayout(){
   // this standalone button there too would duplicate it on-screen.
   const hb=document.getElementById('hamburger');
   if(hb) hb.style.setProperty('display',isTablet?'flex':'none','important');
+
+  const sidebar=document.getElementById('main-sidebar');
+  const overlay=document.getElementById('sidebar-overlay');
+  if(!sidebar)return;
+
+  if(!usesOffCanvas){
+    sidebar.classList.remove('mobile-open');
+    syncMobileSidebarA11y(sidebar,false);
+    sidebar.removeAttribute('aria-hidden');
+    sidebar.removeAttribute('aria-expanded');
+    overlay?.classList.remove('mobile-open');
+    overlay?.setAttribute('aria-hidden','true');
+    return;
+  }
+
+  const isOpen=sidebar.classList.contains('mobile-open');
+  syncMobileSidebarA11y(sidebar,isOpen);
+  overlay?.classList.toggle('mobile-open',isOpen);
+  overlay?.setAttribute('aria-hidden',isOpen?'false':'true');
 }
 
 // ── Laptop range (1025-1200px): auto-compact unless the user explicitly
@@ -99,6 +132,9 @@ window.addEventListener('resize',()=>{
   clearTimeout(_responsiveTimer);
   _responsiveTimer=setTimeout(applyResponsiveSidebar,80);
 });
-document.addEventListener('DOMContentLoaded',()=>setTimeout(applyResponsiveSidebar,300));
+document.addEventListener('DOMContentLoaded',()=>{
+  checkMobileLayout();
+  setTimeout(()=>applyResponsiveSidebar(),300);
+});
 
 // ===================================================

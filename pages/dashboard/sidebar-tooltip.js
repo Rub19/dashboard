@@ -2,15 +2,13 @@
 (function(){
   "use strict";
   var tip=null;
+  var showFrame=0;
   function ensureTip(){
     if(tip)return tip;
     tip=document.createElement('div');
     tip.className='sb-tooltip';
     tip.setAttribute('role','tooltip');
     document.body.appendChild(tip);
-    // Force a layout flush so the entrance transition reliably plays even
-    // when requestAnimationFrame is throttled (e.g. background tab).
-    void tip.offsetWidth;
     return tip;
   }
   function labelFor(el){
@@ -33,9 +31,14 @@
     var r=el.getBoundingClientRect();
     t.style.top=(r.top+r.height/2)+'px';
     t.style.left=(r.right+10)+'px';
-    t.classList.add('visible');
+    if(showFrame)cancelAnimationFrame(showFrame);
+    showFrame=requestAnimationFrame(function(){
+      showFrame=0;
+      if(tip===t)t.classList.add('visible');
+    });
   }
   function hide(){
+    if(showFrame){cancelAnimationFrame(showFrame);showFrame=0;}
     if(tip)tip.classList.remove('visible');
   }
   document.addEventListener('mouseover',function(e){

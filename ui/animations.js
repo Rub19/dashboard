@@ -41,28 +41,12 @@ function initScrollReveal(){
   targets.forEach(function(el){_revealObserver.observe(el);});
 }
 
-function animateCounter(el,target,duration,suffix){
+function animateCounter(el,target,_duration,suffix){
   if(!el)return;
-  duration=duration||800;
   suffix=suffix||'';
-  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(reduce){
-    el.textContent=target+suffix;
-    return;
-  }
-  var start=performance.now();
-  var startVal=0;
-  var isFloat=String(target).indexOf('.')>-1;
-  function step(now){
-    var elapsed=now-start;
-    var progress=Math.min(elapsed/duration,1);
-    var eased=1-Math.pow(1-progress,3);
-    var current=startVal+(target-startVal)*eased;
-    el.textContent=(isFloat?current.toFixed(1):Math.round(current))+suffix;
-    if(progress<1)requestAnimationFrame(step);
-    else el.textContent=target+suffix;
-  }
-  requestAnimationFrame(step);
+  el.textContent=target+suffix;
+  var m=motion();
+  if(m)m.pop(el);
 }
 
 function animateStatCards(){

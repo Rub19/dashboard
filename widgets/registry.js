@@ -24,8 +24,28 @@
   function mount(name, target, context) {
     var widget = widgets.get(name);
     if (!widget || typeof widget.mount !== "function" || !target) return false;
-    widget.mount(target, context || {});
-    return true;
+    try {
+      target.closest && target.closest(".d4-widget,.sb-widget-card,.ethone-premium-widget") && target.closest(".d4-widget,.sb-widget-card,.ethone-premium-widget").classList.add("widget-is-loading");
+      widget.mount(target, context || {});
+      var shell = target.closest && target.closest(".d4-widget,.sb-widget-card,.ethone-premium-widget");
+      if (shell) {
+        shell.classList.remove("widget-is-loading", "widget-is-error");
+        shell.dataset.widgetState = "ready";
+      }
+      return true;
+    } catch (error) {
+      console.warn("[ETHONE widgets] mount failed:", name, error);
+      try {
+        target.innerHTML = '<div class="premium-widget-error"><strong>Widget unavailable</strong><small>ETHONE isolated this widget after a render error.</small></div>';
+        var errorShell = target.closest && target.closest(".d4-widget,.sb-widget-card,.ethone-premium-widget");
+        if (errorShell) {
+          errorShell.classList.remove("widget-is-loading");
+          errorShell.classList.add("widget-is-error");
+          errorShell.dataset.widgetState = "error";
+        }
+      } catch (renderError) {}
+      return false;
+    }
   }
 
   app.define("widgets", Object.freeze({

@@ -58,7 +58,7 @@ async function connectSteam(){
     renderSteamCard(data);
     document.getElementById('steam-disconnect-btn').style.display='inline-flex';
     toast('Steam connected! ','success');
-    addActivity('Account Steam connecte','var(--steam2)','integration');
+    if(typeof addActivity==='function')addActivity('Account Steam connecte','var(--steam2)','integration');
   }catch(e){toast('Error : '+e.message,'error');console.error(e)}
 }
 

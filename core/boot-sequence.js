@@ -35,16 +35,23 @@
   function canMount(layer){
     var stableBoot=false;
     try{stableBoot=!!(window.__ethoneDisableExperimentalBoot||document.documentElement.classList.contains("ethone-stable-boot")||document.documentElement.dataset.ethoneStableBoot==="1")}catch(e){stableBoot=!!window.__ethoneDisableExperimentalBoot}
+    var desktopRequested=read("ethone:desktop-enabled","0")==="1"||read("ethone:layout-mode","")==="desktop";
+    var pState=profileState();
+    var widgetsRequested=bool("ethone:widgets-panel-open",false)||bool("ethone:widgets-panel-pinned",false)||pState.widgetsPanelPinned===true;
     if(stableBoot){
-      if(layer==="desktop"||layer==="split"||layer==="widgets-panel"||layer==="permanent-dock"||layer==="enterprise-dock"||layer==="side-panels"||layer==="native-shell"||layer==="status-bar"){
+      if(layer==="desktop")return desktopRequested;
+      // Stable boot prevents expensive layers from mounting automatically, but
+      // an explicit Widgets-panel request must remain authoritative. Otherwise
+      // BootSequence.sync() races the panel controller and closes it again.
+      if(layer==="widgets-panel")return widgetsRequested;
+      if(layer==="desktop"||layer==="split"||layer==="permanent-dock"||layer==="enterprise-dock"||layer==="side-panels"||layer==="native-shell"||layer==="status-bar"){
         return false;
       }
     }
     var mode=layoutMode();
-    var pState=profileState();
     if(layer==="desktop")return mode==="desktop"&&read("ethone:desktop-enabled","0")==="1";
     if(layer==="split")return mode==="split";
-    if(layer==="widgets-panel")return bool("ethone:widgets-panel-open",false)||bool("ethone:widgets-panel-pinned",false)||pState.widgetsPanelPinned===true;
+    if(layer==="widgets-panel")return widgetsRequested;
     if(layer==="permanent-dock")return mode==="classic"&&(bool("ethone:permanent-dock-enabled",false)||pState.permanentDockEnabled===true);
     if(layer==="enterprise-dock")return mode==="classic"&&bool("ethone:enterprise-dock-enabled",false)&&!canMount("permanent-dock");
     if(layer==="side-panels")return mode!=="desktop";
@@ -117,9 +124,13 @@
     document.body.classList.toggle("ethone-native-shell-enabled",canMount("native-shell"));
     document.body.classList.toggle("ethone-statusbar-enabled",canMount("status-bar"));
   }
-  function syncChrome(){
+  function syncChrome(options){
+    options=options||{};
     applyClasses();
-    closeTransientUI();
+    // Normal runtime synchronization runs after many DOM mutations. Closing
+    // transient UI here made command palettes and notification panels vanish
+    // shortly after opening. Only an explicit shell transition may clear it.
+    if(options.closeTransient===true)closeTransientUI();
     var ehDock=document.getElementById("eh-dock");
     if(ehDock)ehDock.setAttribute("aria-hidden",canMount("enterprise-dock")?"false":"true");
     var os2Dock=document.getElementById("ethone-os2-dock");
@@ -143,9 +154,9 @@
     state.startedAt=Date.now();
     banner("Preparing your ETHONE workspace");
     document.body.classList.add("ethone-dashboard-booting");
-    syncChrome();
+    syncChrome({closeTransient:true});
     clearTimeout(COMPLETE_TIMER);
-    COMPLETE_TIMER=setTimeout(finishDashboardMount,1800);
+    COMPLETE_TIMER=setTimeout(finishDashboardMount,950);
   }
   function finishDashboardMount(){
     clearTimeout(COMPLETE_TIMER);
@@ -159,7 +170,7 @@
           setTimeout(function(){try{window.ETHONEDesktop.enable()}catch(e){}},80);
         }
         try{window.dispatchEvent(new CustomEvent("ethone:boot-sequence-complete",{detail:{mode:state.mode,duration:Date.now()-state.startedAt}}))}catch(e){}
-      },120);
+      },40);
     });
   }
   function setMode(mode){
@@ -167,7 +178,7 @@
     write("ethone:layout-mode",mode);
     if(mode!=="desktop")write("ethone:desktop-enabled","0");
     applyClasses();
-    syncChrome();
+    syncChrome({closeTransient:true});
     return state.mode;
   }
 

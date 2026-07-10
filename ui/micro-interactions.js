@@ -83,10 +83,17 @@
 
   function pulse(el,kind){
     if(!feedbackEnabled()||!el)return;
+    const motion=window.ETHONEMotion;
+    if(motion&&typeof motion.animate==="function"){
+      const preset=kind==="mi-focus-pulse"?"focus":kind==="mi-toggle-pop"?"pop":"press";
+      motion.animate(el,preset);
+      return;
+    }
     el.classList.remove(kind);
-    void el.offsetWidth;
-    el.classList.add(kind);
-    window.setTimeout(()=>el.classList.remove(kind),360);
+    window.setTimeout(()=>{
+      el.classList.add(kind);
+      window.setTimeout(()=>el.classList.remove(kind),180);
+    },0);
   }
 
   function setPointerVars(el,event){
@@ -108,11 +115,6 @@
       if(!el||!feedbackEnabled())return;
       el.classList.add("mi-hover-ready");
       setPointerVars(el,event);
-    },{passive:true});
-
-    document.addEventListener("pointermove",function(event){
-      const el=event.target.closest(".panel,.stat-card,.settings-card,.conn-card,.game-card,.d4-card,.d4-widget,.db-card,.va-panel,.timeline-card,.ph-card");
-      if(el)setPointerVars(el,event);
     },{passive:true});
 
     document.addEventListener("focusin",function(event){
@@ -154,7 +156,7 @@
   }
 
   function observeDynamicFeedback(){
-    if(!("MutationObserver" in window)||document.documentElement.dataset.microObserverBound==="1")return;
+    if(!("MutationObserver" in window)||!document.body||document.documentElement.dataset.microObserverBound==="1")return;
     document.documentElement.dataset.microObserverBound="1";
     const observer=new MutationObserver(function(records){
       records.forEach(function(record){
@@ -170,7 +172,12 @@
         });
       });
     });
-    observer.observe(document.body,{childList:true,subtree:true});
+    try{
+      observer.observe(document.body,{childList:true,subtree:true});
+      window.__ethoneMicroInteractionObserver=observer;
+    }catch(error){
+      delete document.documentElement.dataset.microObserverBound;
+    }
   }
 
   function prefSwitch(name,label,sub){

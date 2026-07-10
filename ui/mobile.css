@@ -6,8 +6,8 @@
   --mobile-nav-h:76px;
   --mobile-page-pad:14px;
   --mobile-safe-bottom:max(10px,env(safe-area-inset-bottom));
-  --mobile-shell-bg:rgba(9,9,12,.94);
-  --mobile-shell-border:rgba(255,255,255,.105);
+  --mobile-shell-bg:rgba(var(--surface-0-rgb),.94);
+  --mobile-shell-border:rgba(var(--color-white-rgb),.105);
   --mobile-tap:44px;
 }
 
@@ -36,8 +36,8 @@
     min-height:100dvh;
     overflow:hidden!important;
     background:
-      radial-gradient(circle at 50% -8%,rgba(var(--accent-rgb,139,92,246),.14),transparent 42%),
-      #09090b!important;
+      radial-gradient(circle at 50% -8%,rgba(var(--accent-rgb,var(--primary-rgb)),.14),transparent 42%),
+      var(--surface-0)!important;
   }
 
   body.ethone-mobile *{
@@ -89,7 +89,7 @@
     height:calc(var(--mobile-topbar-h) + env(safe-area-inset-top))!important;
     padding:env(safe-area-inset-top) 14px 0!important;
     z-index:5200!important;
-    background:linear-gradient(180deg,rgba(9,9,12,.98),rgba(9,9,12,.88))!important;
+    background:linear-gradient(180deg,rgba(var(--surface-0-rgb),.98),rgba(var(--surface-0-rgb),.88))!important;
     border-bottom:1px solid var(--mobile-shell-border)!important;
     backdrop-filter:blur(14px)!important;
     -webkit-backdrop-filter:blur(14px)!important;
@@ -114,7 +114,7 @@
   body.ethone-mobile #mob-topbar-name{
     max-width:44vw;
     overflow:hidden;
-    color:#f7f4ff!important;
+    color:var(--text-primary)!important;
     text-overflow:ellipsis;
     white-space:nowrap;
     font:760 14px/1 Inter,system-ui,sans-serif!important;
@@ -132,8 +132,8 @@
     opacity:0!important;
     pointer-events:none!important;
     border-right:1px solid var(--mobile-shell-border)!important;
-    background:rgba(10,10,14,.98)!important;
-    box-shadow:0 28px 90px rgba(0,0,0,.52)!important;
+    background:rgba(var(--surface-0-rgb),.98)!important;
+    box-shadow:0 28px 90px rgba(var(--color-black-rgb),.52)!important;
     transition:opacity 180ms cubic-bezier(.22,1,.36,1),transform 220ms cubic-bezier(.22,1,.36,1)!important;
   }
 
@@ -147,7 +147,7 @@
     z-index:5350!important;
     opacity:1!important;
     pointer-events:auto!important;
-    background:rgba(0,0,0,.48)!important;
+    background:rgba(var(--color-black-rgb),.48)!important;
     backdrop-filter:blur(4px)!important;
   }
 
@@ -165,10 +165,10 @@
     align-items:center!important;
     gap:4px!important;
     padding:8px!important;
-    border:1px solid rgba(255,255,255,.13)!important;
+    border:1px solid rgba(var(--color-white-rgb),.13)!important;
     border-radius:26px!important;
-    background:linear-gradient(180deg,rgba(22,22,29,.92),rgba(10,10,14,.94))!important;
-    box-shadow:0 22px 70px rgba(0,0,0,.46),0 0 0 1px rgba(139,92,246,.08) inset!important;
+    background:linear-gradient(180deg,rgba(var(--surface-3-rgb),.92),rgba(var(--surface-0-rgb),.94))!important;
+    box-shadow:0 22px 70px rgba(var(--color-black-rgb),.46),0 0 0 1px rgba(var(--primary-rgb),.08) inset!important;
     backdrop-filter:blur(18px)!important;
     -webkit-backdrop-filter:blur(18px)!important;
   }
@@ -186,7 +186,7 @@
     padding:0 4px!important;
     border:1px solid transparent!important;
     border-radius:20px!important;
-    color:rgba(248,245,255,.56)!important;
+    color:rgba(var(--text-primary-rgb),.56)!important;
     background:transparent!important;
     box-shadow:none!important;
     font:740 10px/1 Inter,system-ui,sans-serif!important;
@@ -225,19 +225,19 @@
 
   body.ethone-mobile .mob-nav-btn.active,
   body.ethone-mobile .mob-nav-btn[aria-current="page"]{
-    color:#fff!important;
-    border-color:rgba(var(--accent-rgb,139,92,246),.32)!important;
-    background:rgba(var(--accent-rgb,139,92,246),.16)!important;
+    color:var(--text-primary)!important;
+    border-color:rgba(var(--accent-rgb,var(--primary-rgb)),.32)!important;
+    background:rgba(var(--accent-rgb,var(--primary-rgb)),.16)!important;
   }
 
   body.ethone-mobile .mob-nav-btn.is-primary{
-    color:#fff!important;
-    background:linear-gradient(180deg,rgba(167,139,250,.98),rgba(var(--accent-rgb,139,92,246),.88))!important;
-    box-shadow:0 12px 30px rgba(var(--accent-rgb,139,92,246),.28)!important;
+    color:var(--text-primary)!important;
+    background:linear-gradient(180deg,rgba(var(--primary-hover-rgb),.98),rgba(var(--accent-rgb,var(--primary-rgb)),.88))!important;
+    box-shadow:0 12px 30px rgba(var(--accent-rgb,var(--primary-rgb)),.28)!important;
   }
 
   body.ethone-mobile .mob-nav-btn.is-primary:not(.active){
-    color:#fff!important;
+    color:var(--text-primary)!important;
   }
 
   body.ethone-mobile :where(#ethone-permanent-dock,#eh-dock,#ethone-os2-dock,#ethone-status-bar,#ethone-native-shell,.pdock,.de-dock){
@@ -399,7 +399,9 @@
   }
 }
 
-@media(max-width:390px),(max-height:720px){
+/* Keep the desktop product preview visible on short laptop screens. The
+   height-only selector previously matched every 720px-high desktop viewport. */
+@media (max-width:390px), (max-width:640px) and (max-height:720px){
   .auth-v3-preview{
     display:none!important;
   }
@@ -599,13 +601,13 @@
     height:52px!important;
     padding:0 12px!important;
     border-radius:18px!important;
-    background:rgba(255,255,255,.035)!important;
-    border-color:rgba(255,255,255,.075)!important;
+    background:rgba(var(--color-white-rgb),.035)!important;
+    border-color:rgba(var(--color-white-rgb),.075)!important;
   }
 
   body.ethone-mobile #page-settings .settings-nav-item.active{
-    background:rgba(var(--accent-rgb,139,92,246),.18)!important;
-    border-color:rgba(var(--accent-rgb,139,92,246),.28)!important;
+    background:rgba(var(--accent-rgb,var(--primary-rgb)),.18)!important;
+    border-color:rgba(var(--accent-rgb,var(--primary-rgb)),.28)!important;
   }
 
   body.ethone-mobile #page-settings .settings-content{
@@ -647,9 +649,47 @@
 
 @media(max-width:768px){
   body.ethone-mobile #page-ai.active{
-    height:auto!important;
+    position:fixed!important;
+    inset:0!important;
+    z-index:5100!important;
+    display:block!important;
+    align-items:stretch!important;
+    width:100vw!important;
+    max-width:100vw!important;
+    height:100dvh!important;
     min-height:calc(100dvh - var(--mobile-topbar-h) - var(--mobile-nav-h))!important;
-    padding:0!important;
+    padding:calc(var(--mobile-topbar-h) + env(safe-area-inset-top) + 8px) 10px calc(var(--mobile-nav-h) + var(--mobile-safe-bottom) + 10px)!important;
+    margin:0!important;
+    background:rgba(var(--surface-0-rgb),.98)!important;
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
+    overscroll-behavior:contain;
+    scrollbar-width:none;
+    contain:layout paint;
+  }
+
+  body.ethone-mobile #page-ai.active::-webkit-scrollbar{
+    width:0;
+    height:0;
+  }
+
+  body.ethone-mobile #page-ai,
+  body.ethone-mobile #page-ai *{
+    box-sizing:border-box;
+  }
+
+  body.ethone-mobile #page-ai :where(#ai-history-panel,#ai-sessions-drawer){
+    max-width:min(88vw,320px)!important;
+  }
+
+  body.ethone-mobile #page-ai #ai-history-panel:not(.open){
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+
+  body.ethone-mobile #page-ai #ai-history-panel.open{
+    visibility:visible!important;
+    pointer-events:auto!important;
   }
 
   body.ethone-mobile #page-ai .topbar,
@@ -663,6 +703,31 @@
 
   body.ethone-mobile #page-ai .topbar{
     padding-top:0!important;
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:12px!important;
+    min-width:0!important;
+  }
+
+  body.ethone-mobile #page-ai .topbar-actions{
+    width:100%!important;
+    min-width:0!important;
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px!important;
+  }
+
+  body.ethone-mobile #page-ai .topbar-actions .btn{
+    width:100%!important;
+    min-width:0!important;
+    justify-content:center!important;
+    padding-inline:10px!important;
+  }
+
+  body.ethone-mobile #page-ai .ai-page{
+    min-width:0!important;
+    overflow:visible!important;
+    padding-bottom:8px!important;
   }
 
   body.ethone-mobile #page-ai :where(#aic-shell,#aic-manager,#brain-shell,#eic-center,.b34-dashboard){
@@ -677,22 +742,45 @@
   }
 
   body.ethone-mobile #page-ai :where(.ai-input-row,.aic-input-row,.b34-input-row){
-    position:sticky!important;
-    bottom:calc(var(--mobile-nav-h) + var(--mobile-safe-bottom) + 8px)!important;
+    position:relative!important;
+    bottom:auto!important;
     z-index:20!important;
     margin:10px 0 0!important;
     padding:8px!important;
-    border:1px solid rgba(255,255,255,.10)!important;
+    border:1px solid rgba(var(--color-white-rgb),.10)!important;
     border-radius:20px!important;
-    background:rgba(12,12,16,.94)!important;
+    background:rgba(var(--surface-0-rgb),.94)!important;
     backdrop-filter:blur(12px)!important;
   }
 
   body.ethone-mobile #page-ai textarea,
   body.ethone-mobile #page-ai .ai-input{
+    width:100%!important;
+    min-width:0!important;
     min-height:46px!important;
     max-height:32dvh!important;
     font-size:15px!important;
+  }
+
+  body.ethone-mobile #page-ai .ai-suggestions{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:8px!important;
+    margin-bottom:12px!important;
+  }
+
+  body.ethone-mobile #page-ai .ai-suggestion{
+    width:100%!important;
+    min-height:44px!important;
+    white-space:normal!important;
+    text-align:left!important;
+    justify-content:flex-start!important;
+  }
+
+  body.ethone-mobile #page-ai .ai-send-btn{
+    width:46px!important;
+    min-width:46px!important;
+    height:46px!important;
   }
 
   body.ethone-mobile #page-ai :where(.provider-card,.aic-card,.b34-card,.panel){
@@ -740,11 +828,11 @@
 
 @media(max-width:768px){
   body.ethone-mobile :where(.auth-v3-preview,.d4-live-bars i,.ambient-particle,.auth-particle,.glow-orb,.orb){
-    animation-duration:3s!important;
+    animation-duration:var(--motion-slower)!important;
   }
 
   body.ethone-mobile :where(.auth-v3-preview,.panel,.settings-card,.conn-card,.game-card,.d4-widget,.modal){
-    box-shadow:0 14px 44px rgba(0,0,0,.28)!important;
+    box-shadow:0 14px 44px rgba(var(--color-black-rgb),.28)!important;
   }
 
   body.ethone-mobile :where(.auth-orb,.ambient-particle,.glow-orb,.orb,.universe-star,.nebula-particle){

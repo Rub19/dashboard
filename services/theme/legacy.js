@@ -94,6 +94,12 @@ function renderThemeSwatches(){
 function applyCustomColorVars(hex){
   const rgb=hexToRgb(hex);
   const r=document.documentElement.style;
+  r.setProperty('--primary',hex);
+  r.setProperty('--primary-hover',hex);
+  r.setProperty('--primary-active',hex);
+  r.setProperty('--primary-rgb',rgb);
+  r.setProperty('--primary-hover-rgb',rgb);
+  r.setProperty('--primary-active-rgb',rgb);
   r.setProperty('--accent',hex);
   r.setProperty('--accent-hover',hex);
   r.setProperty('--accent-active',hex);

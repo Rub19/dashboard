@@ -2,11 +2,11 @@
    Cross-app quality pass: consistency, accessibility, spacing and performance. */
 
 :root{
-  --rp-focus:0 0 0 3px rgba(var(--accent-rgb,139,92,246),.18),0 0 0 1px rgba(var(--accent-rgb,139,92,246),.58);
+  --rp-focus:0 0 0 3px rgba(var(--accent-rgb,var(--primary-rgb)),.18),0 0 0 1px rgba(var(--accent-rgb,var(--primary-rgb)),.58);
   --rp-transition:180ms cubic-bezier(.22,1,.36,1);
-  --rp-card-bg:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));
-  --rp-card-border:rgba(255,255,255,.095);
-  --rp-card-border-hover:rgba(167,139,250,.24);
+  --rp-card-bg:linear-gradient(145deg,rgba(var(--color-white-rgb),.055),rgba(var(--color-white-rgb),.025));
+  --rp-card-border:rgba(var(--color-white-rgb),.095);
+  --rp-card-border-hover:rgba(var(--primary-hover-rgb),.24);
 }
 
 html{
@@ -21,8 +21,8 @@ body.ethone-2026-ui,
 body.ethone-v2,
 body.ethone-desktop-mode{
   background:
-    radial-gradient(circle at 32% -12%,rgba(var(--accent-rgb,139,92,246),.13),transparent 34%),
-    #09090b!important;
+    radial-gradient(circle at 32% -12%,rgba(var(--accent-rgb,var(--primary-rgb)),.13),transparent 34%),
+    var(--surface-0)!important;
 }
 
 body.ethone-2026-ui * ,
@@ -41,7 +41,7 @@ html.ethone-keyboard-nav body.ethone-v2 :where(button,a,input,textarea,select,[r
 html.ethone-keyboard-nav body.ethone-desktop-mode :where(button,a,input,textarea,select,[role="button"],[tabindex]):focus-visible{
   outline:none!important;
   box-shadow:var(--rp-focus)!important;
-  border-color:rgba(var(--accent-rgb,139,92,246),.56)!important;
+  border-color:rgba(var(--accent-rgb,var(--primary-rgb)),.56)!important;
 }
 
 body.ethone-2026-ui :where(button,.btn,.panel-action,.nav-item,.settings-nav-item,.cat-tab,.mob-nav-btn,.de-chip,.de-dock button),
@@ -64,28 +64,28 @@ body.ethone-v2 :where(button,.btn,.panel-action,.item-btn,.settings-nav-item,.ca
 body.ethone-2026-ui :where(input,textarea,select,.modal-input,.lb-input,.ui-input,.ui-search),
 body.ethone-v2 :where(input,textarea,select,.modal-input,.lb-input,.ui-input,.ui-search){
   min-height:var(--control-height,40px);
-  color:var(--text-primary,#f5f5f2)!important;
-  background:rgba(23,23,28,.92)!important;
-  border:1px solid rgba(255,255,255,.11)!important;
+  color:var(--text-primary,var(--text-primary))!important;
+  background:rgba(var(--surface-3-rgb),.92)!important;
+  border:1px solid rgba(var(--color-white-rgb),.11)!important;
   border-radius:var(--radius-md,10px)!important;
   transition:border-color var(--rp-transition),box-shadow var(--rp-transition),background-color var(--rp-transition)!important;
 }
 
 body.ethone-2026-ui :where(input,textarea,select,.modal-input,.lb-input,.ui-input,.ui-search)::placeholder,
 body.ethone-v2 :where(input,textarea,select,.modal-input,.lb-input,.ui-input,.ui-search)::placeholder{
-  color:rgba(245,245,247,.42)!important;
+  color:rgba(var(--text-primary-rgb),.42)!important;
   opacity:1!important;
 }
 
 body.ethone-2026-ui :where(input,textarea,select,.modal-input,.lb-input,.ui-input,.ui-search):hover,
 body.ethone-v2 :where(input,textarea,select,.modal-input,.lb-input,.ui-input,.ui-search):hover{
-  border-color:rgba(255,255,255,.17)!important;
+  border-color:rgba(var(--color-white-rgb),.17)!important;
 }
 
 body.ethone-2026-ui :where(input,textarea,select,.modal-input,.lb-input,.ui-input,.ui-search):focus,
 body.ethone-v2 :where(input,textarea,select,.modal-input,.lb-input,.ui-input,.ui-search):focus{
-  border-color:rgba(var(--accent-rgb,139,92,246),.62)!important;
-  box-shadow:0 0 0 3px rgba(var(--accent-rgb,139,92,246),.15)!important;
+  border-color:rgba(var(--accent-rgb,var(--primary-rgb)),.62)!important;
+  box-shadow:0 0 0 3px rgba(var(--accent-rgb,var(--primary-rgb)),.15)!important;
 }
 
 body.ethone-2026-ui :where(.panel,.stat-card,.settings-card,.conn-card,.game-card,.modal,.dropdown,.d4-panel,.d4-widget,.ethone-os2-card,.db-card,.va-panel,.timeline-card,.ab-block),
@@ -102,14 +102,14 @@ body.ethone-v2 :where(.panel,.stat-card,.settings-card,.conn-card,.game-card,.d4
 
 body.ethone-2026-ui :where(.page-title,.section-title,.panel-title,.settings-card-title,.conn-title,.game-card-title,.d4-title),
 body.ethone-v2 :where(.page-title,.section-title,.panel-title,.settings-card-title,.conn-title,.game-card-title,.d4-title){
-  color:#f7f4ff!important;
+  color:var(--text-primary)!important;
   overflow-wrap:normal;
   word-break:normal;
 }
 
 body.ethone-2026-ui :where(.page-subtitle,.section-eyebrow,.panel-subtitle,.conn-subtitle,.toggle-sub,.settings-v2-mini-sub,.d4-muted),
 body.ethone-v2 :where(.page-subtitle,.section-eyebrow,.panel-subtitle,.conn-subtitle,.toggle-sub,.settings-v2-mini-sub,.d4-muted){
-  color:rgba(245,245,247,.52)!important;
+  color:rgba(var(--text-primary-rgb),.52)!important;
 }
 
 body.ethone-2026-ui :where(.topbar,.settings-v2-shell,.d4-home,.db-shell,.timeline-shell),
@@ -172,10 +172,10 @@ body.ethone-v2 :where(.db-boot-placeholder,.loading,.skeleton){
   position:relative;
   overflow:hidden;
   border-radius:var(--radius-lg,12px);
-  color:rgba(255,255,255,.48)!important;
-  background:linear-gradient(90deg,rgba(255,255,255,.04),rgba(255,255,255,.075),rgba(255,255,255,.04))!important;
+  color:rgba(var(--color-white-rgb),.48)!important;
+  background:linear-gradient(90deg,rgba(var(--color-white-rgb),.04),rgba(var(--color-white-rgb),.075),rgba(var(--color-white-rgb),.04))!important;
   background-size:220% 100%!important;
-  animation:ethoneSkeleton 1.25s linear infinite;
+  animation:ethoneSkeleton var(--motion-slower) linear infinite;
 }
 
 @keyframes ethoneSkeleton{
@@ -187,7 +187,7 @@ body.ethone-v2 :where(.db-boot-placeholder,.loading,.skeleton){
 }
 
 .ethone-action-unavailable{
-  animation:ethoneUnavailable .48s var(--ease-premium,cubic-bezier(.22,1,.36,1)) both!important;
+  animation:ethoneUnavailable var(--motion-slower) var(--ease-premium,cubic-bezier(.22,1,.36,1)) both!important;
 }
 
 @keyframes ethoneUnavailable{
@@ -210,11 +210,11 @@ body.ethone-v2 :where(.db-boot-placeholder,.loading,.skeleton){
 .ethone-quality-toast-item{
   max-width:min(360px,calc(100vw - 36px));
   padding:11px 13px;
-  border:1px solid rgba(255,255,255,.11);
+  border:1px solid rgba(var(--color-white-rgb),.11);
   border-radius:16px;
-  color:#fff;
-  background:rgba(18,18,24,.94);
-  box-shadow:0 18px 54px rgba(0,0,0,.34);
+  color:var(--text-primary);
+  background:rgba(var(--surface-2-rgb),.94);
+  box-shadow:0 18px 54px rgba(var(--color-black-rgb),.34);
   backdrop-filter:blur(calc(14px * var(--theme-blur-scale,1)));
   animation:ethoneToastIn .2s var(--ease-premium,cubic-bezier(.22,1,.36,1)) both;
   font-size:12px;
@@ -321,16 +321,16 @@ body.ethone-low-power :where(.auth-particle,.ambient-particle,.orb,.glow-orb){
   display:grid;
   place-items:center;
   border-radius:999px;
-  color:#fff;
-  background:rgba(139,92,246,.22);
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
+  color:var(--text-primary);
+  background:rgba(var(--primary-rgb),.22);
+  box-shadow:inset 0 0 0 1px rgba(var(--color-white-rgb),.08);
   font-size:11px;
   font-weight:820;
 }
 
-.ethone-toast-success .ethone-toast-icon{background:rgba(16,185,129,.2);color:#7ddfbd}
-.ethone-toast-warning .ethone-toast-icon{background:rgba(245,158,11,.2);color:#ffd08a}
-.ethone-toast-error .ethone-toast-icon{background:rgba(239,68,68,.2);color:#ff9a9a}
+.ethone-toast-success .ethone-toast-icon{background:rgba(var(--success-rgb),.2);color:var(--success)}
+.ethone-toast-warning .ethone-toast-icon{background:rgba(var(--warning-rgb),.2);color:var(--warning)}
+.ethone-toast-error .ethone-toast-icon{background:rgba(var(--error-rgb),.2);color:var(--text-error)}
 
 .ethone-toast-text{
   min-width:0;
@@ -342,8 +342,8 @@ body.ethone-low-power :where(.auth-particle,.ambient-particle,.orb,.glow-orb){
   min-width:24px;
   padding:2px 6px;
   border-radius:999px;
-  color:rgba(255,255,255,.72);
-  background:rgba(255,255,255,.08);
+  color:rgba(var(--color-white-rgb),.72);
+  background:rgba(var(--color-white-rgb),.08);
   font-size:10px;
   text-align:center;
 }
@@ -355,15 +355,15 @@ body.ethone-low-power :where(.auth-particle,.ambient-particle,.orb,.glow-orb){
   place-items:center;
   border:0;
   border-radius:999px;
-  color:rgba(255,255,255,.62);
+  color:rgba(var(--color-white-rgb),.62);
   background:transparent;
   cursor:pointer;
 }
 
 .ethone-toast-close:hover,
 .ethone-toast-close:focus-visible{
-  color:#fff;
-  background:rgba(255,255,255,.1);
+  color:var(--text-primary);
+  background:rgba(var(--color-white-rgb),.1);
   outline:none;
 }
 
@@ -644,9 +644,9 @@ body.ethone-widgets-panel-rail .live-panel-body{
 body.ethone-widgets-panel-rail #live-panel-retract-btn{
   width:34px!important;
   height:34px!important;
-  color:#ddd6fe!important;
-  background:rgba(139,92,246,.16)!important;
-  border-color:rgba(139,92,246,.28)!important;
+  color:var(--text-accent)!important;
+  background:rgba(var(--primary-rgb),.16)!important;
+  border-color:rgba(var(--primary-rgb),.28)!important;
 }
 
 body.ethone-widgets-panel-rail .live-panel-resize-handle{
@@ -662,7 +662,7 @@ body.ethone-widgets-panel-rail .live-panel-resize-handle{
   justify-content:center;
   gap:12px;
   text-align:center;
-  color:rgba(248,245,255,.66)!important;
+  color:rgba(var(--text-primary-rgb),.66)!important;
 }
 
 .live-panel-empty[hidden]{
@@ -675,16 +675,16 @@ body.ethone-widgets-panel-rail .live-panel-resize-handle{
   position:relative;
   margin-bottom:4px;
   border-radius:24px;
-  background:linear-gradient(145deg,rgba(139,92,246,.16),rgba(255,255,255,.035));
-  border:1px solid rgba(255,255,255,.09);
-  box-shadow:0 18px 52px rgba(0,0,0,.28),0 0 34px rgba(139,92,246,.12);
+  background:linear-gradient(145deg,rgba(var(--primary-rgb),.16),rgba(var(--color-white-rgb),.035));
+  border:1px solid rgba(var(--color-white-rgb),.09);
+  box-shadow:0 18px 52px rgba(var(--color-black-rgb),.28),0 0 34px rgba(var(--primary-rgb),.12);
 }
 
 .live-panel-empty-art span{
   position:absolute;
   border-radius:10px;
-  background:rgba(139,92,246,.22);
-  border:1px solid rgba(255,255,255,.08);
+  background:rgba(var(--primary-rgb),.22);
+  border:1px solid rgba(var(--color-white-rgb),.08);
 }
 
 .live-panel-empty-art span:nth-child(1){left:12px;top:12px;width:25px;height:20px}
@@ -693,7 +693,7 @@ body.ethone-widgets-panel-rail .live-panel-resize-handle{
 .live-panel-empty-art span:nth-child(4){right:12px;bottom:12px;width:18px;height:18px;border-radius:999px}
 
 .live-panel-empty strong{
-  color:#fff;
+  color:var(--text-primary);
   font-size:15px;
   font-weight:780;
 }
@@ -701,7 +701,7 @@ body.ethone-widgets-panel-rail .live-panel-resize-handle{
 .live-panel-empty p{
   max-width:260px;
   margin:0;
-  color:rgba(248,245,255,.5);
+  color:rgba(var(--text-primary-rgb),.5);
   font-size:12px;
   line-height:1.55;
 }
@@ -710,11 +710,11 @@ body.ethone-widgets-panel-rail .live-panel-resize-handle{
   margin-top:4px;
   min-height:36px;
   padding:0 14px;
-  border:1px solid rgba(139,92,246,.34);
+  border:1px solid rgba(var(--primary-rgb),.34);
   border-radius:12px;
-  color:#fff;
-  background:linear-gradient(135deg,rgba(139,92,246,.92),rgba(124,58,237,.86));
-  box-shadow:0 14px 34px rgba(139,92,246,.2);
+  color:var(--text-primary);
+  background:linear-gradient(135deg,rgba(var(--primary-rgb),.92),rgba(var(--primary-active-rgb),.86));
+  box-shadow:0 14px 34px rgba(var(--primary-rgb),.2);
   font:760 12px/1 Inter,system-ui,sans-serif;
   cursor:pointer;
 }
@@ -779,12 +779,12 @@ body.ethone-v2 #main-sidebar.os-sidebar{
   right:auto!important;
   left:42px!important;
   bottom:13px!important;
-  border:2px solid rgba(12,12,16,.96)!important;
+  border:2px solid rgba(var(--surface-0-rgb),.96)!important;
 }
 
 #main-sidebar.os-sidebar .os-user-card:hover{
-  background:rgba(255,255,255,.065)!important;
-  border-color:rgba(139,92,246,.2)!important;
+  background:rgba(var(--color-white-rgb),.065)!important;
+  border-color:rgba(var(--primary-rgb),.2)!important;
 }
 
 .ethone-profile-context-menu{
@@ -792,10 +792,10 @@ body.ethone-v2 #main-sidebar.os-sidebar{
   z-index:2147483200;
   width:180px;
   padding:6px;
-  border:1px solid rgba(255,255,255,.12);
+  border:1px solid rgba(var(--color-white-rgb),.12);
   border-radius:14px;
-  background:rgba(16,16,22,.96);
-  box-shadow:0 24px 70px rgba(0,0,0,.45);
+  background:rgba(var(--surface-1-rgb),.96);
+  box-shadow:0 24px 70px rgba(var(--color-black-rgb),.45);
   backdrop-filter:blur(16px);
 }
 
@@ -807,7 +807,7 @@ body.ethone-v2 #main-sidebar.os-sidebar{
   padding:0 10px;
   border:0;
   border-radius:10px;
-  color:rgba(248,245,255,.82);
+  color:rgba(var(--text-primary-rgb),.82);
   background:transparent;
   text-align:left;
   font:720 12px/1 Inter,system-ui,sans-serif;
@@ -816,9 +816,9 @@ body.ethone-v2 #main-sidebar.os-sidebar{
 
 .ethone-profile-context-menu button:hover,
 .ethone-profile-context-menu button:focus-visible{
-  color:#fff;
+  color:var(--text-primary);
   outline:none;
-  background:rgba(139,92,246,.14);
+  background:rgba(var(--primary-rgb),.14);
 }
 
 #main-content :where(button svg,.btn svg,[data-lucide]),

@@ -64,7 +64,7 @@ function updateBannerDisplay(){
   if(bioEl)bioEl.textContent=p.state.bio||'ETHONE';
 
   // XP level badge
-  renderProfileXP(p);
+  if(typeof renderProfileXP==='function')renderProfileXP(p);
 
   // Social links
   const socialsEl=document.getElementById('profile-banner-socials');
@@ -79,7 +79,7 @@ function updateBannerDisplay(){
   }
 
   // NE PAS appeler updateSidebarAvatar ici — elle appelle updateBannerDisplay → boucle infinie
-  updateTopbarProfile();
+  if(typeof updateTopbarProfile==='function')updateTopbarProfile();
 }
 
 function loadBannerSettings(){
@@ -90,7 +90,7 @@ function loadBannerSettings(){
     if(p.bannerImg){img.src=p.bannerImg;prev.style.display='block'}
     else prev.style.display='none';
   }
-  renderThemeSwatches();
-  renderBgThemeBtns();
-  renderSidebarCustomize();
+  if(typeof renderThemeSwatches==='function')renderThemeSwatches();
+  if(typeof renderBgThemeBtns==='function')renderBgThemeBtns();
+  if(typeof renderSidebarCustomize==='function')renderSidebarCustomize();
 }

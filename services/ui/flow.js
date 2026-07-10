@@ -672,8 +672,7 @@
     if (!ui.transition) return;
     ui.transition.innerHTML = '<div class="ef-transition-card"><span class="ef-icon">' + icon(flow.icon || "sparkles") + '</span><strong>' + esc(flow.name || "ETHONE Flow") + '</strong><span>Transformation de l’environnement...</span></div>';
     ui.transition.classList.remove("open");
-    void ui.transition.offsetWidth;
-    ui.transition.classList.add("open");
+    requestAnimationFrame(function(){if(ui.transition)ui.transition.classList.add("open");});
     renderIcons(ui.transition);
     setTimeout(function () { if (ui.transition) ui.transition.classList.remove("open"); }, 560);
   }
@@ -712,6 +711,23 @@
     updateRoot();
     try { window.dispatchEvent(new CustomEvent("ethone:flow-change", { detail: { flow: clone(flow) } })); } catch (e) {}
     if (!options || !options.silent) notify(flow.name + " activé.", "success");
+    return true;
+  }
+  function setInitialFlow(id, options) {
+    var flow = getFlow(id);
+    if (!flow) return false;
+    options = options || {};
+    state.activeId = flow.id;
+    state.recent = [flow.id].concat(state.recent.filter(function (item) { return item !== flow.id; })).slice(0, 8);
+    state.history.unshift({ id: flow.id, at: Date.now(), source: options.source || "initial" });
+    state.history = state.history.slice(0, 40);
+    saveState();
+    if (document.body) {
+      document.body.classList.add("ethone-flow-active");
+      document.body.dataset.ethoneFlow = flow.id;
+    }
+    updateRoot();
+    try { window.dispatchEvent(new CustomEvent("ethone:flow-selection", { detail: { flow: clone(flow), source: options.source || "initial" } })); } catch (e) {}
     return true;
   }
   function suggestionKey(flowId) {
@@ -804,6 +820,7 @@
   }
   window.ETHONEFlow = {
     apply: applyFlow,
+    setInitial: setInitialFlow,
     open: openSwitcher,
     openSwitcher: openSwitcher,
     openBuilder: function () { openBuilder(null); },

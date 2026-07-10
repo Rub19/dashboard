@@ -1,0 +1,2964 @@
+[
+  {
+    "route": "dashboard",
+    "active": "page-dashboard",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "button.primary.ethone-icon-row.ethone-ux-button"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "button.ethone-icon-row.ethone-ux-button.ethone-readable-button"
+      }
+    ],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 926,
+          "l": 292,
+          "r": 466,
+          "t": 892
+        },
+        "z": "2147483450"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 3333,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [],
+    "scrollContainers": [
+      {
+        "bottom": 928,
+        "client": 928,
+        "el": "#main-content",
+        "scroll": 3333,
+        "top": 0
+      }
+    ],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "route": "files",
+    "active": "page-files",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "div.panel.ethone-ux-card.files-explorer-host"
+      }
+    ],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 924,
+          "l": 292,
+          "r": 466,
+          "t": 890
+        },
+        "z": "2147483450"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 1333,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [],
+    "scrollContainers": [
+      {
+        "bottom": 928,
+        "client": 928,
+        "el": "#main-content",
+        "scroll": 1333,
+        "top": 0
+      }
+    ],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "route": "notes",
+    "active": "page-notes",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#note-tags-input"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#note-relation-select"
+      }
+    ],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 924,
+          "l": 316,
+          "r": 442,
+          "t": 890
+        },
+        "z": "2147483450"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 2281,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [],
+    "scrollContainers": [
+      {
+        "bottom": 928,
+        "client": 928,
+        "el": "#main-content",
+        "scroll": 2281,
+        "top": 0
+      }
+    ],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "route": "todos",
+    "active": "page-todos",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 924,
+          "l": 292,
+          "r": 466,
+          "t": 890
+        },
+        "z": "2147483450"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 958,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [],
+    "scrollContainers": [
+      {
+        "bottom": 928,
+        "client": 928,
+        "el": "#main-content",
+        "scroll": 958,
+        "top": 0
+      }
+    ],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "route": "habits",
+    "active": "page-habits",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 924,
+          "l": 292,
+          "r": 466,
+          "t": 890
+        },
+        "z": "2147483450"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 928,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [],
+    "scrollContainers": [],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "route": "kanban",
+    "active": "page-kanban",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 924,
+          "l": 292,
+          "r": 466,
+          "t": 890
+        },
+        "z": "2147483450"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 928,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [],
+    "scrollContainers": [],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "route": "calendar",
+    "active": "page-calendar",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "div.panel.ethone-ux-card"
+      }
+    ],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 924,
+          "l": 292,
+          "r": 466,
+          "t": 890
+        },
+        "z": "2147483450"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 1195,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [],
+    "scrollContainers": [
+      {
+        "bottom": 928,
+        "client": 928,
+        "el": "#main-content",
+        "scroll": 1195,
+        "top": 0
+      }
+    ],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "route": "stats",
+    "active": "page-stats",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "div.panel.ethone-ux-card"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#stats-tasks-donut"
+      }
+    ],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 924,
+          "l": 292,
+          "r": 466,
+          "t": 890
+        },
+        "z": "2147483450"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 2529,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [],
+    "scrollContainers": [
+      {
+        "bottom": 928,
+        "client": 928,
+        "el": "#main-content",
+        "scroll": 2529,
+        "top": 0
+      }
+    ],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "route": "activity",
+    "active": "page-activity",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "button.timeline-stat.ethone-icon-row.ethone-ux-button"
+      },
+      {
+        "axis": "y",
+        "by": "section.aic-panel.aic-feed-panel.ethone-ux-card",
+        "el": "h3"
+      }
+    ],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 924,
+          "l": 292,
+          "r": 466,
+          "t": 890
+        },
+        "z": "2147483450"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 4743,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [
+      {
+        "a": "button.timeline-stat.active.ethone-icon-row",
+        "area": 7946,
+        "b": "#mob-btn-dashboard"
+      },
+      {
+        "a": "button.timeline-stat.active.ethone-icon-row",
+        "area": 5355,
+        "b": "#mob-btn-ai"
+      },
+      {
+        "a": "button.timeline-stat.ethone-icon-row.ethone-ux-button",
+        "area": 2185,
+        "b": "#mob-btn-ai"
+      },
+      {
+        "a": "button.timeline-stat.ethone-icon-row.ethone-ux-button",
+        "area": 8120,
+        "b": "#mob-btn-widgets"
+      },
+      {
+        "a": "button.timeline-stat.ethone-icon-row.ethone-ux-button",
+        "area": 2764,
+        "b": "#mob-btn-spaces"
+      },
+      {
+        "a": "button.timeline-stat.ethone-icon-row.ethone-ux-button",
+        "area": 4776,
+        "b": "#mob-btn-spaces"
+      },
+      {
+        "a": "button.timeline-stat.ethone-icon-row.ethone-ux-button",
+        "area": 8120,
+        "b": "#mob-btn-settings"
+      }
+    ],
+    "scrollContainers": [
+      {
+        "bottom": 928,
+        "client": 928,
+        "el": "#main-content",
+        "scroll": 4743,
+        "top": 0
+      }
+    ],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "route": "health",
+    "active": "page-health",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 924,
+          "l": 292,
+          "r": 466,
+          "t": 890
+        },
+        "z": "2147483450"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 8537,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [],
+    "scrollContainers": [
+      {
+        "bottom": 928,
+        "client": 928,
+        "el": "#main-content",
+        "scroll": 8537,
+        "top": 0
+      }
+    ],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "route": "versions",
+    "active": "page-versions",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#version-search"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "button.version-filter.active.ethone-icon-row"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "button.version-filter.ethone-icon-row.ethone-ux-button"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "button.version-release-row.selected.ethone-icon-row"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "button.version-release-row.ethone-icon-row.ethone-ux-button"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "h2"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "h3"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#version-description"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "button.btn.btn-primary.ethone-ux-button"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "button.btn.btn-ghost.ethone-ux-button"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#version-snapshot-search"
+      }
+    ],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 924,
+          "l": 292,
+          "r": 466,
+          "t": 890
+        },
+        "z": "2147483450"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 6078,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [],
+    "scrollContainers": [
+      {
+        "bottom": 928,
+        "client": 928,
+        "el": "#main-content",
+        "scroll": 6078,
+        "top": 0
+      }
+    ],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "route": "goals",
+    "active": "page-goals",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 924,
+          "l": 292,
+          "r": 466,
+          "t": 890
+        },
+        "z": "2147483450"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 928,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [],
+    "scrollContainers": [],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "route": "valorant-accounts",
+    "active": "page-valorant-accounts",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#va-detail-panel",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 758,
+          "r": 1526,
+          "t": 0
+        },
+        "z": "901"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 924,
+          "l": 292,
+          "r": 466,
+          "t": 890
+        },
+        "z": "2147483450"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 928,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [],
+    "scrollContainers": [],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "route": "databases",
+    "active": "page-databases",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#va-detail-panel",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 758,
+          "r": 1526,
+          "t": 0
+        },
+        "z": "901"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 924,
+          "l": 292,
+          "r": 466,
+          "t": 890
+        },
+        "z": "2147483450"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 928,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [],
+    "scrollContainers": [],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "route": "journal",
+    "active": "page-journal",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#va-detail-panel",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 758,
+          "r": 1526,
+          "t": 0
+        },
+        "z": "901"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 924,
+          "l": 292,
+          "r": 466,
+          "t": 890
+        },
+        "z": "2147483450"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 928,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [],
+    "scrollContainers": [],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "route": "countdown",
+    "active": "page-countdown",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#va-detail-panel",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 758,
+          "r": 1526,
+          "t": 0
+        },
+        "z": "901"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 924,
+          "l": 292,
+          "r": 466,
+          "t": 890
+        },
+        "z": "2147483450"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 928,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [],
+    "scrollContainers": [],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "route": "github",
+    "active": "page-github",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#va-detail-panel",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 758,
+          "r": 1526,
+          "t": 0
+        },
+        "z": "901"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 924,
+          "l": 292,
+          "r": 466,
+          "t": 890
+        },
+        "z": "2147483450"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 928,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [],
+    "scrollContainers": [],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "route": "gaming",
+    "active": "page-gaming",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#va-detail-panel",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 758,
+          "r": 1526,
+          "t": 0
+        },
+        "z": "901"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 924,
+          "l": 292,
+          "r": 466,
+          "t": 890
+        },
+        "z": "2147483450"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 3930,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [
+      {
+        "a": "button.gh-mini-btn.ethone-ux-button.ethone-readable-button",
+        "area": 1172,
+        "b": "#mob-btn-dashboard"
+      },
+      {
+        "a": "button.gh-mini-btn.ethone-ux-button.ethone-readable-button",
+        "area": 1123,
+        "b": "#mob-btn-dashboard"
+      },
+      {
+        "a": "button.gh-mini-btn.ethone-ux-button.ethone-readable-button",
+        "area": 629,
+        "b": "#mob-btn-ai"
+      },
+      {
+        "a": "button.gh-mini-btn.ethone-ux-button.ethone-readable-button",
+        "area": 2215,
+        "b": "#mob-btn-ai"
+      },
+      {
+        "a": "button.gh-mini-btn.ethone-ux-button.ethone-readable-button",
+        "area": 1063,
+        "b": "#mob-btn-widgets"
+      },
+      {
+        "a": "button.gh-mini-btn.ethone-ux-button.ethone-readable-button",
+        "area": 1849,
+        "b": "#mob-btn-spaces"
+      },
+      {
+        "a": "button.gh-mini-btn.ethone-ux-button.ethone-readable-button",
+        "area": 1135,
+        "b": "#mob-btn-spaces"
+      },
+      {
+        "a": "button.gh-mini-btn.ethone-ux-button.ethone-readable-button",
+        "area": 984,
+        "b": "#mob-btn-settings"
+      }
+    ],
+    "scrollContainers": [
+      {
+        "bottom": 928,
+        "client": 928,
+        "el": "#main-content",
+        "scroll": 3930,
+        "top": 0
+      }
+    ],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "route": "marketplace",
+    "active": "page-marketplace",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "button.mp41-btn.ethone-ux-button.ethone-readable-button"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "div.panel.ethone-auto-empty.ethone-ux-card"
+      }
+    ],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#va-detail-panel",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 758,
+          "r": 1526,
+          "t": 0
+        },
+        "z": "901"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 924,
+          "l": 292,
+          "r": 466,
+          "t": 890
+        },
+        "z": "2147483450"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 9101,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [],
+    "scrollContainers": [
+      {
+        "bottom": 928,
+        "client": 928,
+        "el": "#main-content",
+        "scroll": 9101,
+        "top": 0
+      }
+    ],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "route": "studio",
+    "active": "page-studio",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#va-detail-panel",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 758,
+          "r": 1526,
+          "t": 0
+        },
+        "z": "901"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 924,
+          "l": 292,
+          "r": 466,
+          "t": 890
+        },
+        "z": "2147483450"
+      },
+      {
+        "el": "#ethone-quality-toast",
+        "position": "fixed",
+        "rect": {
+          "b": 194,
+          "l": 12,
+          "r": 746,
+          "t": 70
+        },
+        "z": "2147483400"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 928,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [
+      {
+        "a": "button.ethone-icon-row.ethone-ux-button.ethone-readable-button",
+        "area": 330,
+        "b": "button.ethone-toast-close.ethone-icon-text-row.ethone-icon-row"
+      }
+    ],
+    "scrollContainers": [],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "route": "import",
+    "active": "page-import",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "h3"
+      }
+    ],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#va-detail-panel",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 758,
+          "r": 1526,
+          "t": 0
+        },
+        "z": "901"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 924,
+          "l": 292,
+          "r": 466,
+          "t": 890
+        },
+        "z": "2147483450"
+      },
+      {
+        "el": "#ethone-quality-toast",
+        "position": "fixed",
+        "rect": {
+          "b": 194,
+          "l": 12,
+          "r": 746,
+          "t": 70
+        },
+        "z": "2147483400"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 2134,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [],
+    "scrollContainers": [
+      {
+        "bottom": 928,
+        "client": 928,
+        "el": "#main-content",
+        "scroll": 2134,
+        "top": 0
+      }
+    ],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "route": "connections",
+    "active": "page-connections",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "button.live-panel-icon-btn.ethone-icon-shell.ethone-lucide-replaced"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#dc-refresh-btn"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#dc-sidebar-toggle"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#dc-userid"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "button.btn.btn-primary.ethone-readable-button"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#dc-disconnect-btn"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#steam-refresh-btn"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#steam-id"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#steam-disconnect-btn"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "a"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#steam-apikey"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "button.btn.btn-ghost.ethone-readable-button"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "button.btn.btn-primary.ethone-icon-text-row"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#spotify-refresh-btn"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#spotify-url"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#spotify-disconnect-btn"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#twitch-refresh-btn"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#twitch-username"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#lastfm-refresh-btn"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#lastfm-sidebar-toggle"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#lastfm-username"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#lastfm-disconnect-btn"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#github-conn-username"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#github-conn-disconnect-btn"
+      }
+    ],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#va-detail-panel",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 758,
+          "r": 1526,
+          "t": 0
+        },
+        "z": "901"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 924,
+          "l": 292,
+          "r": 466,
+          "t": 890
+        },
+        "z": "2147483450"
+      },
+      {
+        "el": "#ethone-quality-toast",
+        "position": "fixed",
+        "rect": {
+          "b": 194,
+          "l": 12,
+          "r": 746,
+          "t": 70
+        },
+        "z": "2147483400"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 2920,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [
+      {
+        "a": "button.live-panel-icon-btn.ethone-icon-shell.ethone-lucide-replaced",
+        "area": 1360,
+        "b": "#mob-btn-settings"
+      }
+    ],
+    "scrollContainers": [
+      {
+        "bottom": 928,
+        "client": 928,
+        "el": "#main-content",
+        "scroll": 2920,
+        "top": 0
+      }
+    ],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "route": "settings",
+    "active": "page-settings",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#va-detail-panel",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 758,
+          "r": 1526,
+          "t": 0
+        },
+        "z": "901"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 924,
+          "l": 292,
+          "r": 466,
+          "t": 890
+        },
+        "z": "2147483450"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 2597,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [],
+    "scrollContainers": [
+      {
+        "bottom": 928,
+        "client": 928,
+        "el": "#main-content",
+        "scroll": 2597,
+        "top": 0
+      }
+    ],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "route": "ai",
+    "active": "page-ai",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "button.primary.ethone-icon-row.ethone-ux-button"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "button.ethone-icon-row.ethone-ux-button"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "button.ai-suggestion.ethone-readable-button.ethone-ux-button"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#ai-input"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "#ai-send-btn"
+      }
+    ],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#va-detail-panel",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 758,
+          "r": 1526,
+          "t": 0
+        },
+        "z": "901"
+      },
+      {
+        "el": "#page-ai",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 768,
+          "t": 0
+        },
+        "z": "5100"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 924,
+          "l": 292,
+          "r": 466,
+          "t": 890
+        },
+        "z": "2147483450"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 928,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [
+      {
+        "a": "button.aic-tab",
+        "area": 2069,
+        "b": "#mob-btn-dashboard"
+      },
+      {
+        "a": "button.aic-tab.active",
+        "area": 953,
+        "b": "#mob-btn-dashboard"
+      },
+      {
+        "a": "button.aic-tab.active",
+        "area": 839,
+        "b": "#mob-btn-ai"
+      },
+      {
+        "a": "button.aic-tab",
+        "area": 1893,
+        "b": "#mob-btn-ai"
+      },
+      {
+        "a": "button.aic-tab",
+        "area": 242,
+        "b": "#mob-btn-ai"
+      },
+      {
+        "a": "button.aic-tab",
+        "area": 2341,
+        "b": "#mob-btn-widgets"
+      },
+      {
+        "a": "button.aic-tab",
+        "area": 824,
+        "b": "#mob-btn-widgets"
+      },
+      {
+        "a": "button.aic-tab",
+        "area": 482,
+        "b": "#mob-btn-spaces"
+      }
+    ],
+    "scrollContainers": [
+      {
+        "bottom": 1024,
+        "client": 1024,
+        "el": "#page-ai",
+        "scroll": 2168,
+        "top": 0
+      }
+    ],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "route": "widget-marketplace",
+    "active": "page-widget-marketplace",
+    "body": {
+      "clientHeight": 1024,
+      "overflowY": "hidden",
+      "scrollHeight": 1024
+    },
+    "clipped": [
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "button.wm-btn.primary.ethone-ux-button"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "button.wm-btn.ethone-is-disabled.ethone-ux-button"
+      },
+      {
+        "axis": "y",
+        "by": "#app-shell",
+        "el": "button.wm-btn.ethone-ux-button.ethone-readable-button"
+      }
+    ],
+    "document": {
+      "clientHeight": 1024,
+      "clientWidth": 768,
+      "scrollHeight": 1024,
+      "scrollWidth": 758
+    },
+    "fixed": [
+      {
+        "el": "#ethone-dynamic-vignette",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#bg-canvas",
+        "position": "fixed",
+        "rect": {
+          "b": 150,
+          "l": 0,
+          "r": 300,
+          "t": 0
+        },
+        "z": "-1"
+      },
+      {
+        "el": "#mobile-topbar",
+        "position": "fixed",
+        "rect": {
+          "b": 58,
+          "l": 0,
+          "r": 758,
+          "t": 0
+        },
+        "z": "5200"
+      },
+      {
+        "el": "#va-detail-panel",
+        "position": "fixed",
+        "rect": {
+          "b": 1024,
+          "l": 758,
+          "r": 1526,
+          "t": 0
+        },
+        "z": "901"
+      },
+      {
+        "el": "#mobile-bottom-nav",
+        "position": "fixed",
+        "rect": {
+          "b": 1014,
+          "l": 12,
+          "r": 746,
+          "t": 938
+        },
+        "z": "5300"
+      },
+      {
+        "el": "#ethone-ux-status",
+        "position": "fixed",
+        "rect": {
+          "b": 924,
+          "l": 292,
+          "r": 466,
+          "t": 890
+        },
+        "z": "2147483450"
+      }
+    ],
+    "main": {
+      "clientHeight": 928,
+      "clientWidth": 758,
+      "overflowY": "auto",
+      "scrollHeight": 3540,
+      "scrollTop": 0,
+      "scrollWidth": 758
+    },
+    "outOfViewport": [],
+    "overlaps": [],
+    "scrollContainers": [
+      {
+        "bottom": 928,
+        "client": 928,
+        "el": "#main-content",
+        "scroll": 3540,
+        "top": 0
+      }
+    ],
+    "textClips": [],
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  }
+]

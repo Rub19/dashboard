@@ -6,7 +6,9 @@
   window.__ethoneAIEverywhere=true;
   const $=(s,r=document)=>r.querySelector(s);
   const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
-  const state={lastContext:null,lastSelection:"",messages:[],pendingAction:null,suggestions:new Set(),started:false,lastRun:0,workflowHooks:false};
+  const MAX_VISIBLE_SUGGESTIONS=1;
+  const MAX_TRACKED_SUGGESTIONS=80;
+  const state={lastContext:null,lastSelection:"",messages:[],pendingAction:null,suggestions:new Set(),recentSuggestions:new Map(),started:false,lastRun:0,workflowHooks:false};
   function diag(label,error){
     try{
       window.__ethoneAIEverywhereDiagnostics=(window.__ethoneAIEverywhereDiagnostics||[]).slice(-30);
@@ -16,9 +18,26 @@
   function lang(){return String(window._lang||localStorage.getItem("nexus_lang")||document.documentElement.lang||"fr").slice(0,2).toLowerCase()}
   function isFR(){return lang()==="fr"}
   function profileState(){try{const p=typeof window.curP==="function"?window.curP():null;return p&&p.state?p.state:{}}catch(e){return {}}}
-  function activePage(){return document.querySelector(".tab-content.active")?.id?.replace("page-","")||"dashboard"}
+  function osSnapshot(){try{return window.ETHONEOSContext&&typeof window.ETHONEOSContext.snapshot==="function"?window.ETHONEOSContext.snapshot():null}catch(e){return null}}
+  function activePage(){const os=osSnapshot();return os&&os.page&&os.page.id?os.page.id:(document.querySelector(".tab-content.active")?.id?.replace("page-","")||"dashboard")}
+  function hasCanonicalBrainStrip(page){return !!(page&&page.querySelector(".brain-everywhere-strip"))}
   function pageLabel(page){const map={dashboard:"ETHONE Home",files:"Files",notes:"Notes",todos:"Tasks",habits:"Habits",kanban:"Kanban",calendar:"Calendar",stats:"Statistics",settings:"Settings",connections:"Connections",gaming:"Gaming",github:"GitHub",marketplace:"Marketplace",store:"Store",workspaces:"Workspaces",timeline:"Timeline","command-center":"Command Center",ai:"AI Core",goals:"Goals",journal:"Journal",countdown:"Countdowns","valorant-accounts":"Valorant Accounts",databases:"Databases"};return map[page]||page}
   function facts(){
+    const os=osSnapshot();
+    if(os&&os.facts){
+      const f=os.facts;
+      return {
+        openTodos:f.tasks&&f.tasks.open||0,
+        doneTodos:f.tasks&&f.tasks.done||0,
+        notes:f.notes&&f.notes.total||0,
+        files:f.files&&f.files.total||0,
+        habits:f.habits&&f.habits.total||0,
+        events:f.calendar&&f.calendar.total||0,
+        quickNote:profileState().note||"",
+        integrations:f.integrations&&f.integrations.connected||0,
+        providers:f.ai&&f.ai.providers||0
+      };
+    }
     const s=profileState();
     const todos=Array.isArray(s.todos)?s.todos:[];
     const notes=Array.isArray(s.notes)?s.notes:[];
@@ -47,7 +66,8 @@
     if(page==="github")text=JSON.stringify(profileState().connections?.github||{}).slice(0,1800)||text;
     var workspace="";
     try{workspace=window.ETHONEWorkspaces&&window.ETHONEWorkspaces.active?window.ETHONEWorkspaces.active():localStorage.getItem("ethone:dashboard-os2")||""}catch(e){workspace=localStorage.getItem("ethone:dashboard-os2")||""}
-    return {page,kind,label,text,selected,facts:facts(),workspace:workspace};
+    const os=osSnapshot();
+    return {page,kind,label,text,selected,facts:facts(),workspace:os&&os.workspace?os.workspace:workspace,mode:os&&os.mode?os.mode:null,summary:os&&os.summary?os.summary:""};
   }
   function actionDefs(page){
     const common=[
@@ -217,10 +237,16 @@
   }
   function ensurePageActions(){
     $$(".tab-content[data-qa-page='true']").forEach(page=>{
+      let bar=$(".aie-page-actions[data-aie-page-actions]",page);
+      if(hasCanonicalBrainStrip(page)){
+        if(bar)bar.remove();
+        page.dataset.aieActions="canonical";
+        return;
+      }
       if(page.dataset.aieActions)return;
       page.dataset.aieActions="1";
       const id=page.id.replace("page-","");
-      const bar=document.createElement("div");
+      bar=document.createElement("div");
       bar.className="aie-page-actions";
       bar.setAttribute("data-aie-page-actions",id);
       bar.innerHTML=actionDefs(id).slice(0,4).map(([aid,label])=>'<button class="aie-chip '+(aid==="ask"?"primary":"")+'" type="button" data-aie-page-action="'+aid+'">'+label+'</button>').join("");
@@ -246,18 +272,49 @@
     else page.prepend(section);
   }
   function ensureSuggestionStack(){
-    if($("#aie-suggestion-stack"))return;
-    const stack=document.createElement("div");
-    stack.id="aie-suggestion-stack";
-    stack.className="aie-suggestion-stack";
-    document.body.appendChild(stack);
+    let stack=$("#aie-suggestion-stack");
+    if(!stack){
+      stack=document.createElement("div");
+      stack.id="aie-suggestion-stack";
+      stack.className="aie-suggestion-stack";
+    }
+    const page=$(".tab-content.active");
+    if(page){
+      const anchor=$(".aie-page-bar",page)||page.firstElementChild;
+      if(anchor&&anchor.parentNode===page)anchor.insertAdjacentElement("afterend",stack);
+      else if(stack.parentNode!==page)page.prepend(stack);
+    }else if(!stack.parentNode){
+      document.body.appendChild(stack);
+    }
+    return stack;
+  }
+  function trimSuggestionStack(stack,incomingId){
+    if(!stack)return;
+    const incomingIsPageHelp=String(incomingId||"").indexOf("page-help-")===0;
+    Array.from(stack.querySelectorAll(".aie-suggestion-card")).forEach(function(card){
+      const currentId=String(card.dataset.aieSuggestion||"");
+      if(incomingIsPageHelp&&currentId.indexOf("page-help-")===0){
+        state.suggestions.delete(currentId);
+        card.remove();
+      }
+    });
+    const cards=Array.from(stack.querySelectorAll(".aie-suggestion-card"));
+    cards.slice(Math.max(0,MAX_VISIBLE_SUGGESTIONS-1)).forEach(function(card){
+      state.suggestions.delete(String(card.dataset.aieSuggestion||""));
+      card.remove();
+    });
   }
   function emitSuggestion(options){
     const opt=options||{};
     const id=opt.id||("sig-"+Date.now());
-    if(state.suggestions.has(id))return;
+    if(state.suggestions.has(id)||state.recentSuggestions.has(id))return;
     state.suggestions.add(id);
-    ensureSuggestionStack();
+    state.recentSuggestions.set(id,Date.now());
+    while(state.recentSuggestions.size>MAX_TRACKED_SUGGESTIONS){
+      state.recentSuggestions.delete(state.recentSuggestions.keys().next().value);
+    }
+    const stack=ensureSuggestionStack();
+    trimSuggestionStack(stack,id);
     const card=document.createElement("article");
     card.className="aie-suggestion-card";
     card.dataset.aieSuggestion=id;
@@ -269,12 +326,13 @@
     card.__aiePrompt=opt.prompt||opt.body||"Help me with this ETHONE context.";
     card.__aieContext=opt.context||contextFromElement(document.activeElement);
     card.__aieActions=actions;
-    $("#aie-suggestion-stack")?.prepend(card);
+    stack?.prepend(card);
     setTimeout(()=>card.classList.add("visible"),20);
     if(opt.autoHide!==false)setTimeout(()=>dismissSuggestion(id),opt.ttl||18000);
   }
   function dismissSuggestion(id){
     const card=document.querySelector('[data-aie-suggestion="'+CSS.escape(String(id))+'"]');
+    state.suggestions.delete(String(id));
     if(card){card.classList.remove("visible");setTimeout(()=>card.remove(),180);}
   }
   function dailyBriefing(){
@@ -283,6 +341,8 @@
     if(p.state.brainLastBriefing===today)return;
     p.state.brainLastBriefing=today;
     saveProfile();
+    const pageElement=$(".tab-content.active");
+    if(activePage()!=="dashboard"||hasCanonicalBrainStrip(pageElement))return;
     const f=facts();
     emitSuggestion({
       id:"daily-briefing-"+today,
@@ -435,6 +495,8 @@
   function pageContextSuggestion(){
     const page=activePage();
     if(!page||page==="ai"||page==="dashboard")return;
+    const pageElement=$(".tab-content.active");
+    if(hasCanonicalBrainStrip(pageElement))return;
     const bucket=Math.floor(Date.now()/600000);
     const ctx=contextFromElement(document.activeElement);
     emitSuggestion({
@@ -746,6 +808,14 @@
       const old=window.switchPage;
       window.switchPage=function(){
         const r=old.apply(this,arguments);
+        const stack=$("#aie-suggestion-stack");
+        if(stack){
+          $$("[data-aie-suggestion^='page-help-']",stack).forEach(card=>{
+            state.suggestions.delete(String(card.dataset.aieSuggestion||""));
+            card.remove();
+          });
+          if(!stack.children.length)stack.remove();
+        }
         setTimeout(function(){run({reason:"navigation"});pageContextSuggestion()},120);
         return r;
       };
@@ -796,6 +866,8 @@
     if(!profile()||document.documentElement.classList.contains("ethone-auth-mode")||document.documentElement.classList.contains("ethone-profile-mode"))return;
     ensureCopilot();
     if(activePage()==="ai")return;
+    const activeSuggestionStack=$("#aie-suggestion-stack");
+    if(activeSuggestionStack&&activeSuggestionStack.children.length)ensureSuggestionStack();
     ensurePageAIButtons();
     ensurePageActions();
     ensureHomeInsights();

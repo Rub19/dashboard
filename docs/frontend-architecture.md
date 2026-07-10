@@ -1,111 +1,76 @@
 # ETHONE Front-End Architecture
 
-## Compatibility Boundary
+## Runtime Shape
 
-ETHONE remains backward compatible with the existing single-page application.
-The former inline application has been split into ordered classic-script
-modules. Authentication, Supabase, Workers, routing, translations, PWA behavior
-and existing global entry points therefore keep their current contracts while
-new code uses the shared ETHONE APIs.
+ETHONE is a static, classic-script application. `index.html` owns the document markup and deterministic asset declarations. It does not contain application CSS beyond the three boot-critical anti-flash/safe-mode blocks.
 
-## Folders
+- `ui/app-foundation.css`: preserved base cascade for the existing application markup.
+- `ui/tokens.css`, `ui/components.css`: shared design tokens and component primitives.
+- `core/`: boot, isolation, lazy loading, event, and DOM lifecycle infrastructure.
+- `actions/`: stable user-action and navigation contracts.
+- `components/`: reusable overlays, command palette, modal, toast, and input primitives.
+- `pages/`: page-owned render and interaction controllers.
+- `services/`: cross-page stateful capabilities such as auth, settings, AI, workspaces, and onboarding.
+- `state/`: profile/application state adapters.
+- `widgets/`: widget controllers registered through `widgets/registry.js`.
 
-- `core/`: application registry, boot sequence, events and runtime utilities.
-- `ui/`: Design System tokens, reusable primitives and compatibility mappings.
-- `pages/`: page-level controllers, shells and rendering.
-- `components/`: reusable interface behavior such as modals and search.
-- `widgets/`: isolated dashboard widget controllers.
-- `services/`: authentication, AI, language, settings and external adapters.
-- `state/`: shared observable state and profile state.
-- `actions/`: navigation, notifications and user command handlers.
-- `utils/`: pure guards and development audit helpers.
+## Boot Boundary
 
-## Design System Contract
+The eager path should contain only auth, the core namespace, state/storage adapters, navigation, shell infrastructure, and lightweight global UX behavior. Feature-heavy modules are declared with:
 
-`ui/tokens.css` is the only source of truth for colors, spacing, radii, shadows,
-typography and motion. Legacy CSS variables remain aliases during migration.
+```html
+<script type="application/ethone-lazy"
+        data-ethone-lazy-group="feature"
+        data-src="./path/to/module.js"></script>
+```
 
-`ui/components.css` exposes the reusable `.ui-*` component API:
+`core/lazy-modules.js` activates groups in DOM order and keeps their stylesheet cascade position stable.
 
-- layout: `ui-section`, `ui-panel`, `ui-card`, `ui-widget`
-- actions: `ui-button` and its variants
-- forms: `ui-input`, `ui-search`, `ui-checkbox`, `ui-switch`
-- feedback: `ui-badge`, `ui-tag`, `ui-toast`, `ui-progress`
-- navigation: `ui-tabs`, `ui-tab`, `ui-sidebar-item`
-- layers: `ui-overlay`, `ui-modal`, `ui-dropdown`
-- identity: `ui-avatar`
+## DOM Lifecycle
 
-`ui/app.css` maps existing ETHONE selectors to these tokens. Page-specific
-compatibility rules live there until their markup can adopt `.ui-*` classes.
+`core/dom-runtime.js` is the single owner of deep child-list observation. Enhancement modules subscribe by stable name:
 
-`ui/accessibility.js` is the compatibility accessibility layer. It gives
-keyboard semantics to legacy clickable surfaces, synchronizes tab and page
-ARIA states, labels icon-only controls, associates unlabeled form controls with
-their visible placeholder, and describes existing dialogs. New components
-should provide these semantics directly in their markup.
+```js
+window.ETHONEDOMRuntime.subscribe("module-name", function (batch) {
+  // batch.roots contains newly mounted element roots.
+});
+```
 
-## JavaScript Contract
+Registering the same name replaces the previous callback. Subscribers must keep their own work idempotent and bounded. A module may keep a local observer only as a compatibility fallback when `ETHONEDOMRuntime` is unavailable.
 
-`core/app.js` exposes `window.Ethone`, the module registry used by modern code.
-The primary shared modules are:
+## Onboarding Boundary
 
-- `core/events.js`: keyed DOM listeners and application event bus
-- `state/store.js`: small observable state container
-- `services/storage.js`: guarded persistent storage
-- `services/language/index.js`: language state and translation facade
-- `services/theme.js`: theme state and application
-- `services/settings.js`: settings persistence and change events
-- `actions/navigation.js`: navigation and routing facade
-- `actions/notifications.js`: notification facade
-- `components/registry.js`: reusable component registry
-- `widgets/registry.js`: widget lifecycle registry
+`services/onboarding/gate.js` is the lightweight dashboard decision layer. It reads the existing profile/local completion markers and loads the `onboarding` group only for an unfinished first run or unread release summary. The full UI remains in `services/onboarding/first-run.js` and its two lazy stylesheets.
 
-`core/runtime.js` exposes the compatibility-level `window.EthoneCore`:
+## Compatibility Rules
 
-- `dom.query`, `dom.queryAll`, `dom.escapeHTML`
-- `storage.get`, `storage.set`, `storage.getJSON`, `storage.setJSON`
-- `timing.debounce`
+- Route/page IDs, Action Registry IDs, storage keys, and public globals are compatibility contracts.
+- Do not delete a file because its name contains `legacy`; first prove that no asset declaration or dynamic loader reaches it.
+- Do not append lazy styles to the document head. Activate their existing link elements in place so cascade order remains deterministic.
+- Page modules own page logic; global polish modules must stay generic and idempotent.
+- New deep MutationObservers are prohibited; use `ETHONEDOMRuntime`.
 
-Page controllers may consume this API but must not place business state inside
-the core module.
+## Repository Audit
 
-`pages/dashboard-v4.js` owns only Dashboard V4 rendering and interactions. It
-uses the central event, navigation, notification, language and storage facades.
-Its page-specific styles live in `pages/dashboard-v4.css` and consume only
-Design System tokens.
+Run:
 
-## Load Order
+```powershell
+node scripts/codebase-audit.mjs
+```
 
-`index.html` loads scripts in this order:
+The audit fails for missing local assets, duplicate asset declarations, orphaned JavaScript/CSS files, disabled module declarations, and invalid service-worker boot assets.
 
-1. boot protection and production safeguards
-2. `core/runtime.js` and the modern shared facades
-3. ordered compatibility modules extracted from the former inline application
-4. page experiences and visual enhancement modules
+The structural contract is:
 
-Compatibility modules remain classic scripts on purpose: their original global
-lexical scope and execution order are part of the existing application contract.
-New modules must register through `window.Ethone` instead of adding new globals.
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tests/codebase-cleanup-contract.ps1
+```
 
-## Size Policy
+## Safe Refactoring Order
 
-- UI controllers and business modules should remain below 300 lines.
-- Large static dictionaries may exceed that limit because they contain data,
-  not control flow.
-- Repeated DOM listeners must use `Ethone.Events.listen()` with a stable key.
-- Navigation, notifications, storage, language, theme and settings must use the
-  central facades.
-- Page-specific CSS belongs beside its page; shared values belong in
-  `ui/tokens.css`.
-
-## Migration Rules
-
-1. Preserve existing IDs, global entry points and event contracts.
-2. Keep business logic out of UI primitives and rendering functions.
-3. Keep Supabase, Worker and external access behind service adapters.
-4. Do not add inline scripts or page-specific inline styles to `index.html`.
-5. Validate authentication, navigation, responsive layout and console output
-   after every extraction.
-6. Native interactive elements are mandatory. A clickable `div` is allowed
-   only inside the compatibility boundary and must be normalized by
-   `ui/accessibility.js`.
+1. Add or update a contract test.
+2. Confirm the test fails for the intended reason.
+3. Make the smallest structural change.
+4. Run `node --check` on changed JavaScript.
+5. Run all contracts.
+6. Reload the local app and verify console, layout, and the affected interaction.

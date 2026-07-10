@@ -1,0 +1,286 @@
+/* ETHONE Keyboard First: global keyboard access and visible focus. */
+
+:root {
+  --kf-focus: color-mix(in srgb, var(--accent, #8b5cf6) 72%, #ffffff 28%);
+  --kf-focus-soft: color-mix(in srgb, var(--accent, #8b5cf6) 18%, transparent);
+  --kf-focus-border: color-mix(in srgb, var(--accent, #8b5cf6) 54%, rgba(255,255,255,.18));
+}
+
+.ethone-sr-only {
+  position: fixed !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+  pointer-events: none !important;
+}
+
+.kf-skip-link {
+  position: fixed;
+  left: 18px;
+  top: 14px;
+  z-index: 2147483000;
+  transform: translate3d(0, -140%, 0);
+  opacity: 0;
+  border: 1px solid var(--kf-focus-border);
+  border-radius: 999px;
+  background: rgba(12, 12, 18, .96);
+  color: var(--text, #fff);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, .42), 0 0 0 5px var(--kf-focus-soft);
+  padding: 10px 14px;
+  font: 850 12px/1 var(--font, Inter, system-ui);
+  text-decoration: none;
+  /* It remains keyboard-focusable while visually hidden, but must never
+     intercept pointer input over the interface beneath it. */
+  pointer-events: none;
+  transition: opacity var(--motion-fast, 140ms) var(--ease-premium, ease),
+    transform var(--motion-fast, 140ms) var(--ease-premium, ease);
+}
+
+.kf-skip-link:focus-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  outline: 0;
+  pointer-events: auto;
+}
+
+html.ethone-keyboard-first :where(
+  button,
+  a[href],
+  input,
+  textarea,
+  select,
+  summary,
+  [role="button"],
+  [role="tab"],
+  [role="radio"],
+  [role="menuitem"],
+  [role="option"],
+  [tabindex]:not([tabindex="-1"]),
+  .kf-focusable
+):focus-visible {
+  outline: 2px solid var(--kf-focus) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 5px var(--kf-focus-soft), var(--shadow-sm, 0 8px 22px rgba(0,0,0,.22)) !important;
+  border-color: var(--kf-focus-border) !important;
+}
+
+html.ethone-keyboard-first :where(.cmd-item,.nav-item,.os-nav-item,.settings-nav-item,.cat-tab,.mp-store-card,.wm-card,.d4-widget,.sb-widget-card,.pdock-item):focus-visible {
+  transform: translate3d(0, -1px, 0);
+}
+
+html.ethone-keyboard-first :where(.kf-focusable,[role="button"],[role="tab"],[role="radio"],[role="menuitem"],[role="option"]) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.ethone-keyboard-first :where(.kf-focusable,[role="button"],[role="tab"],[role="radio"],[role="menuitem"],[role="option"]):not(:disabled):not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+.kf-key-pressed,
+html.ethone-keyboard-first :where(.kf-focusable,[role="button"],[role="tab"],[role="radio"],[role="menuitem"],[role="option"]):active {
+  transform: translate3d(0, 1px, 0) scale(.992);
+}
+
+.kf-shortcut-hud {
+  position: fixed;
+  right: 20px;
+  bottom: max(18px, env(safe-area-inset-bottom, 0px) + 12px);
+  z-index: 2147482500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: min(92vw, 620px);
+  padding: 8px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(22,22,28,.88), rgba(12,12,18,.88));
+  color: rgba(245,245,247,.66);
+  box-shadow: 0 18px 54px rgba(0,0,0,.36);
+  pointer-events: none;
+  opacity: 0;
+  transform: translate3d(0, 12px, 0) scale(.985);
+  transition: opacity var(--motion-normal, 190ms) var(--ease-premium, ease),
+    transform var(--motion-normal, 190ms) var(--ease-premium, ease);
+}
+
+html.ethone-keyboard-nav .kf-shortcut-hud,
+body.ethone-keyboard-nav .kf-shortcut-hud {
+  opacity: .96;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+html.ethone-keyboard-nav .kf-shortcut-hud[aria-hidden="true"],
+body.ethone-keyboard-nav .kf-shortcut-hud[aria-hidden="true"] {
+  opacity: 0;
+  transform: translate3d(0, 10px, 0) scale(.985);
+}
+
+.kf-shortcut-hud span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  font: 780 11px/1 var(--font, Inter, system-ui);
+}
+
+.kf-shortcut-hud kbd,
+.kf-kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 22px;
+  padding: 0 7px;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 8px;
+  background: rgba(255,255,255,.07);
+  color: rgba(255,255,255,.92);
+  box-shadow: inset 0 -1px 0 rgba(0,0,0,.28);
+  font: 850 10px/1 var(--mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+}
+
+html.ethone-keyboard-first :where(.nav-item,.os-nav-item,.mob-nav-btn,.settings-nav-item,.search-bar,.d4-search)[data-kbd-shortcut] {
+  position: relative;
+}
+
+html.ethone-keyboard-first :where(.nav-item,.os-nav-item,.mob-nav-btn,.settings-nav-item,.search-bar,.d4-search)[data-kbd-shortcut]::after {
+  content: attr(data-kbd-shortcut);
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translate3d(6px, -50%, 0);
+  opacity: 0;
+  max-width: 82px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: 1px solid rgba(255,255,255,.11);
+  border-radius: 8px;
+  background: rgba(255,255,255,.055);
+  color: rgba(245,245,247,.72);
+  padding: 4px 6px;
+  font: 850 9px/1 var(--mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  pointer-events: none;
+  transition: opacity var(--motion-fast, 140ms) var(--ease-premium, ease),
+    transform var(--motion-fast, 140ms) var(--ease-premium, ease);
+}
+
+html.ethone-keyboard-nav :where(.nav-item,.os-nav-item,.mob-nav-btn,.settings-nav-item,.search-bar,.d4-search)[data-kbd-shortcut]:focus-visible::after,
+html.ethone-keyboard-nav :where(.nav-item,.os-nav-item,.mob-nav-btn,.settings-nav-item,.search-bar,.d4-search)[data-kbd-shortcut]:hover::after {
+  opacity: 1;
+  transform: translate3d(0, -50%, 0);
+}
+
+#main-content:focus-visible {
+  outline: 2px solid var(--kf-focus) !important;
+  outline-offset: -6px !important;
+}
+
+@media (max-width: 768px) {
+  .kf-shortcut-hud {
+    left: 12px;
+    right: 12px;
+    bottom: calc(var(--mobile-nav-h, 76px) + var(--mobile-safe-bottom, 10px) + 14px);
+    justify-content: center;
+    border-radius: 18px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .kf-shortcut-hud::-webkit-scrollbar {
+    display: none;
+  }
+
+  .kf-shortcut-hud span:nth-child(n+4) {
+    display: none;
+  }
+
+  html.ethone-keyboard-first :where(.nav-item,.os-nav-item,.mob-nav-btn,.settings-nav-item,.search-bar,.d4-search)[data-kbd-shortcut]::after {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .kf-shortcut-hud {
+    justify-content: flex-start;
+    padding: 8px 10px;
+  }
+
+  .kf-shortcut-hud span:nth-child(n+3) {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kf-skip-link,
+  .kf-shortcut-hud,
+  html.ethone-keyboard-first :where(.nav-item,.os-nav-item,.mob-nav-btn,.settings-nav-item,.search-bar,.d4-search)[data-kbd-shortcut]::after {
+    transition: none !important;
+  }
+
+  .kf-key-pressed,
+  html.ethone-keyboard-first :where(.cmd-item,.nav-item,.os-nav-item,.settings-nav-item,.cat-tab,.mp-store-card,.wm-card,.d4-widget,.sb-widget-card,.pdock-item):focus-visible {
+    transform: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --kf-focus: #c4b5fd;
+    --kf-focus-soft: rgba(196, 181, 253, .28);
+    --kf-focus-border: #ddd6fe;
+  }
+
+  html.ethone-keyboard-first :where(
+    button,
+    a[href],
+    input,
+    textarea,
+    select,
+    summary,
+    [role="button"],
+    [role="tab"],
+    [role="radio"],
+    [role="menuitem"],
+    [role="option"],
+    [tabindex]:not([tabindex="-1"])
+  ):focus-visible {
+    outline-width: 3px !important;
+    box-shadow: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .kf-skip-link,
+  .kf-shortcut-hud,
+  .kf-shortcut-hud kbd,
+  .kf-kbd {
+    border: 1px solid ButtonText;
+    background: Canvas;
+    color: CanvasText;
+    forced-color-adjust: auto;
+  }
+
+  html.ethone-keyboard-first :where(
+    button,
+    a[href],
+    input,
+    textarea,
+    select,
+    summary,
+    [role="button"],
+    [role="tab"],
+    [role="radio"],
+    [role="menuitem"],
+    [role="option"],
+    [tabindex]:not([tabindex="-1"])
+  ):focus-visible {
+    outline: 3px solid Highlight !important;
+    outline-offset: 3px !important;
+    box-shadow: none !important;
+  }
+}

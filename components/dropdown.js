@@ -164,29 +164,31 @@
       if(searchInput)setTimeout(function(){searchInput.focus();},10);
     }
 
-    document.addEventListener("mousedown",function(e){
+    function handleDocumentMouseDown(e){
       if(panel&&panel.classList.contains("open")&&!e.target.closest("."+cls("panel"))&&!e.target.closest("."+cls("trigger-active"))){
         close();
       }
-    });
-    document.addEventListener("keydown",function(e){
-      if(e.key==="Escape"&&panel&&panel.classList.contains("open"))close();
-    });
-    window.addEventListener("resize",close);
-    window.addEventListener("scroll",function(e){
+    }
+    function handleScroll(e){
       if(!panel||!panel.classList.contains("open"))return;
       if(panel.contains(e.target))return;
       close();
-    },true);
+    }
 
-    return {open:open, close:close};
+    return {open:open, close:close, handleDocumentMouseDown:handleDocumentMouseDown, handleScroll:handleScroll};
   }
 
   var dbCtrl=createDropdownController("db-dd");
+  var vaCtrl=createDropdownController("va-dd");
+  var controllers=[dbCtrl,vaCtrl];
+  document.addEventListener("mousedown",function(e){controllers.forEach(function(controller){controller.handleDocumentMouseDown(e);});});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")controllers.forEach(function(controller){controller.close();});});
+  window.addEventListener("resize",function(){controllers.forEach(function(controller){controller.close();});});
+  window.addEventListener("scroll",function(e){controllers.forEach(function(controller){controller.handleScroll(e);});},true);
+
   window.dbOpenDropdown=dbCtrl.open;
   window.dbCloseDropdown=dbCtrl.close;
 
-  var vaCtrl=createDropdownController("va-dd");
   window.vaOpenDropdown=vaCtrl.open;
   window.vaCloseDropdown=vaCtrl.close;
 })();

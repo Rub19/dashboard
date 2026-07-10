@@ -8,6 +8,7 @@
   var rootId="ethone-spaces-root";
   var importInputId="ethone-space-import-input";
   var renderTimer=0;
+  var previousFocus=null;
   var $=function(s,r){return (r||document).querySelector(s)};
   var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
   var esc=function(v){return String(v==null?"":v).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})};
@@ -35,6 +36,37 @@
       db:Array.isArray(d.databases)?d.databases.length:0
     };
   }
+  function spaceProfile(space){
+    var c=counts(space),widgets=space&&space.widgets||{},brain=space&&space.brain||{},integrations=space&&space.integrations||{};
+    var activeWidgets=Array.isArray(widgets.active)?widgets.active.length:0;
+    var enabledIntegrations=Array.isArray(integrations.enabled)?integrations.enabled.length:0;
+    return {
+      tasks:c.tasks,
+      notes:c.notes,
+      files:c.files,
+      db:c.db,
+      widgets:activeWidgets,
+      brain:brain.enabled!==false?brain.mode||"contextual":"off",
+      integrations:enabledIntegrations,
+      template:space&&space.template||"control",
+      theme:space&&space.theme&&space.theme.preset||"ethone-purple"
+    };
+  }
+  function modulePill(label,value,iconName){
+    return '<span class="space-module-pill">'+icon(iconName)+'<b>'+esc(label)+'</b><em>'+esc(value)+'</em></span>';
+  }
+  function environmentHTML(space){
+    var p=spaceProfile(space);
+    return '<div class="spaces-environment-strip">'+
+      modulePill("Dashboard",p.template,"layout-dashboard")+
+      modulePill("Widgets",p.widgets,"blocks")+
+      modulePill("Brain",p.brain,"brain")+
+      modulePill("Integrations",p.integrations,"plug")+
+    '</div>';
+  }
+  function option(value,label,current){
+    return '<option value="'+esc(value)+'"'+(String(current)===String(value)?' selected':'')+'>'+esc(label)+'</option>';
+  }
   function active(){var svc=api();return svc&&svc.active?svc.active():null}
   function all(){var svc=api();return svc&&svc.all?svc.all():[]}
   function scheduleRender(){
@@ -49,7 +81,7 @@
     root.className="spaces-root";
     root.innerHTML=
       '<button type="button" class="space-switcher-button" data-space-action="open" aria-label="Open ETHONE Spaces"></button>'+
-      '<div class="spaces-overlay" data-space-action="close" aria-hidden="true">'+
+      '<div class="spaces-overlay" data-space-action="close" aria-hidden="true" inert>'+
         '<section class="spaces-panel" role="dialog" aria-modal="true" aria-label="ETHONE Spaces">'+
           '<div class="spaces-panel-head">'+
             '<div><span>ETHONE Spaces</span><h2>Change environment</h2><p>Dashboards, widgets, notes, tasks, databases, integrations and visual identity stay isolated per Space.</p></div>'+
@@ -86,18 +118,19 @@
     btn.style.setProperty("--space-accent",current.accent||"#8b5cf6");
     btn.innerHTML=
       '<span class="space-switcher-mark">'+spaceInitial(current)+'</span>'+
-      '<span class="space-switcher-copy"><strong>'+esc(current.name||"Space")+'</strong><small>ETHONE Space</small></span>'+
+      '<span class="space-switcher-copy"><strong>'+esc(current.name||"Space")+'</strong><small>'+esc((current.brain&&current.brain.mode||"contextual")+" Brain · "+(current.widgets&&Array.isArray(current.widgets.active)?current.widgets.active.length:0)+" widgets")+'</small></span>'+
       '<span class="space-switcher-chevron">'+icon("chevrons-up-down")+'</span>';
   }
   function renderOverlay(root,current,list){
     var preview=$("#spaces-active-preview",root),grid=$("#spaces-grid",root);
     if(preview&&current){
-      var c=counts(current);
+      var c=counts(current),p=spaceProfile(current);
       preview.style.setProperty("--space-accent",current.accent||"#8b5cf6");
       preview.innerHTML=
         '<div class="spaces-preview-mark">'+spaceInitial(current)+'</div>'+
         '<div class="spaces-preview-main"><span>Current environment</span><strong>'+esc(current.name)+'</strong><p>'+esc(current.description||"A complete ETHONE operating context.")+'</p></div>'+
-        '<div class="spaces-preview-stats"><b>'+c.tasks+'</b><span>tasks</span><b>'+c.notes+'</b><span>notes</span><b>'+c.files+'</b><span>files</span></div>';
+        '<div class="spaces-preview-stats"><b>'+c.tasks+'</b><span>tasks</span><b>'+c.notes+'</b><span>notes</span><b>'+p.widgets+'</b><span>widgets</span><b>'+p.integrations+'</b><span>apps</span></div>'+
+        environmentHTML(current);
     }
     if(grid){
       grid.innerHTML=list.map(function(space){
@@ -109,6 +142,7 @@
             '<span class="space-card-state">'+(isActive?"Active":"Switch")+'</span>'+
           '</button>'+
           '<div class="space-card-meta"><span>'+c.tasks+' tasks</span><span>'+c.notes+' notes</span><span>'+c.db+' db</span></div>'+
+          environmentHTML(space)+
           '<div class="space-card-actions">'+
             '<button type="button" data-space-action="duplicate" data-space-id="'+esc(space.id)+'">Duplicate</button>'+
             '<button type="button" data-space-action="export" data-space-id="'+esc(space.id)+'">Export</button>'+
@@ -121,13 +155,28 @@
   }
   function openOverlay(){
     var root=ensureRoot();
-    $(".spaces-overlay",root).classList.add("open");
-    $(".spaces-overlay",root).setAttribute("aria-hidden","false");
+    var overlay=$(".spaces-overlay",root);
+    previousFocus=document.activeElement;
+    overlay.inert=false;
+    overlay.classList.add("open");
+    overlay.setAttribute("aria-hidden","false");
+    setTimeout(function(){
+      var close=$(".spaces-close",overlay);
+      if(close)close.focus({preventScroll:true});
+    },20);
   }
   function closeOverlay(){
     var root=$("#"+rootId);if(!root)return;
     var overlay=$(".spaces-overlay",root);
-    if(overlay){overlay.classList.remove("open");overlay.setAttribute("aria-hidden","true");}
+    if(overlay){
+      overlay.classList.remove("open");
+      overlay.setAttribute("aria-hidden","true");
+      overlay.inert=true;
+    }
+    if(previousFocus&&previousFocus.isConnected&&typeof previousFocus.focus==="function"){
+      try{previousFocus.focus({preventScroll:true})}catch(e){previousFocus.focus()}
+    }
+    previousFocus=null;
   }
   function switchSpace(id){
     var svc=api();if(!svc||!svc.setActive)return;
@@ -137,6 +186,7 @@
       scheduleRender();
       try{if(typeof window.renderSidebarNav==="function")window.renderSidebarNav()}catch(e){}
       try{window.dispatchEvent(new CustomEvent("ethone:page-ready",{detail:{page:"dashboard"}}))}catch(e){}
+      try{window.dispatchEvent(new CustomEvent("ethone:space-ui-switched",{detail:{space:next}}))}catch(e){}
     }
   }
   function createSpace(){
@@ -212,7 +262,7 @@
       if(!action)return;
       var name=action.dataset.spaceAction,id=action.dataset.spaceId;
       if(name==="open")openOverlay();
-      if(name==="close"&&e.target===action)closeOverlay();
+      if(name==="close"&&(action.classList.contains("spaces-close")||e.target===action))closeOverlay();
       if(name==="settings")openSettings();
       if(name==="create")createSpace();
       if(name==="duplicate")duplicateSpace(id);
@@ -220,6 +270,13 @@
       if(name==="export")downloadSpace(id);
       if(name==="share")shareSpace(id);
       if(name==="import")$("#"+importInputId,root).click();
+    });
+    document.addEventListener("keydown",function(e){
+      if(e.key==="Escape"&&$(".spaces-overlay.open",root)){
+        e.preventDefault();
+        e.stopPropagation();
+        closeOverlay();
+      }
     });
     $("#"+importInputId,root).addEventListener("change",function(e){
       importSpaceFile(e.target.files&&e.target.files[0]);
@@ -250,16 +307,22 @@
     try{window.lucide&&window.lucide.createIcons&&window.lucide.createIcons()}catch(e){}
   }
   function settingsCard(space){
-    var isActive=active()&&active().id===space.id,c=counts(space);
+    var isActive=active()&&active().id===space.id,c=counts(space),p=spaceProfile(space);
+    var brainMode=space.brain&&space.brain.mode||"contextual";
+    var density=space.theme&&space.theme.density||space.settings&&space.settings.density||"comfortable";
     return '<article class="space-settings-card'+(isActive?" active":"")+'" style="--space-accent:'+esc(space.accent||"#8b5cf6")+'">'+
       '<div class="space-settings-top"><div class="space-settings-logo">'+spaceInitial(space)+'</div><div><strong>'+esc(space.name)+'</strong><span>'+esc(space.description||"Independent ETHONE environment")+'</span></div></div>'+
+      environmentHTML(space)+
       '<div class="space-settings-fields">'+
         '<label>Name<input value="'+esc(space.name)+'" oninput="ETHONESpacesUI.update(\''+esc(space.id)+'\',{name:this.value,label:this.value})"></label>'+
         '<label>Accent<input value="'+esc(space.accent||"#8b5cf6")+'" oninput="ETHONESpacesUI.update(\''+esc(space.id)+'\',{accent:this.value})"></label>'+
         '<label>Wallpaper<input value="'+esc(space.wallpaper||"")+'" oninput="ETHONESpacesUI.update(\''+esc(space.id)+'\',{wallpaper:this.value})"></label>'+
+        '<label>Template<select onchange="ETHONESpacesUI.setField(\''+esc(space.id)+'\',\'template\',this.value)">'+option("control","Control Center",space.template)+option("focus","Development / Focus",space.template)+option("gaming","Gaming",space.template)+option("study","Study",space.template)+option("streaming","Streaming",space.template)+'</select></label>'+
+        '<label>Brain<select onchange="ETHONESpacesUI.setField(\''+esc(space.id)+'\',\'brain.mode\',this.value)">'+option("contextual","Contextual",brainMode)+option("builder","Builder",brainMode)+option("coach","Gaming Coach",brainMode)+option("study","Study",brainMode)+option("producer","Producer",brainMode)+'</select></label>'+
+        '<label>Density<select onchange="ETHONESpacesUI.setField(\''+esc(space.id)+'\',\'theme.density\',this.value)">'+option("comfortable","Comfortable",density)+option("cozy","Cozy",density)+option("compact","Compact",density)+'</select></label>'+
         '<label>Description<textarea oninput="ETHONESpacesUI.update(\''+esc(space.id)+'\',{description:this.value})">'+esc(space.description||"")+'</textarea></label>'+
       '</div>'+
-      '<div class="space-settings-stats"><span>'+c.tasks+' tasks</span><span>'+c.notes+' notes</span><span>'+c.files+' files</span><span>'+c.db+' databases</span></div>'+
+      '<div class="space-settings-stats"><span>'+c.tasks+' tasks</span><span>'+c.notes+' notes</span><span>'+c.files+' files</span><span>'+c.db+' databases</span><span>'+p.widgets+' widgets</span><span>'+p.integrations+' integrations</span></div>'+
       '<div class="space-settings-card-actions">'+
         (isActive?'<button type="button" class="btn btn-primary" disabled>Active</button>':'<button type="button" class="btn btn-primary" onclick="ETHONESpacesUI.switch(\''+esc(space.id)+'\')">Switch</button>')+
         '<button type="button" class="btn btn-ghost" onclick="ETHONESpacesUI.duplicate(\''+esc(space.id)+'\')">Duplicate</button>'+
@@ -273,6 +336,21 @@
     var svc=api();if(!svc||!svc.update)return;
     svc.update(id,patch||{});
     scheduleRender();
+  }
+  function setField(id,path,value){
+    var space=all().find(function(w){return w.id===id});
+    if(!space)return;
+    var patch={},parts=String(path||"").split(".");
+    if(parts.length===1){
+      patch[parts[0]]=value;
+      if(parts[0]==="template")patch.dashboard=Object.assign({},space.dashboard||{},{template:value});
+    }else if(parts.length===2){
+      var parent=Object.assign({},space[parts[0]]||{});
+      parent[parts[1]]=value;
+      patch[parts[0]]=parent;
+      if(parts[0]==="theme"&&parts[1]==="density")patch.settings=Object.assign({},space.settings||{},{density:value});
+    }
+    updateSpace(id,patch);
   }
   function bootHashImport(){
     if(!location.hash||location.hash.indexOf("#space=")!==0)return;
@@ -288,6 +366,7 @@
     try{
       var Actions=window.Ethone&&window.Ethone.get&&window.Ethone.get("actions");
       if(Actions&&Actions.register){
+        Actions.register("spaces.open",{enabled:true,label:"Spaces",handler:openOverlay});
         Actions.register("dashboard.nav.workspaces",{enabled:true,label:"Spaces",handler:openOverlay});
       }
     }catch(e){}
@@ -305,6 +384,7 @@
     import:function(){var root=ensureRoot();$("#"+importInputId,root).click();},
     switch:switchSpace,
     update:updateSpace,
+    setField:setField,
     settings:renderSettings
   };
   window.renderWorkspacesSettings=renderSettings;

@@ -1,0 +1,338 @@
+/* ETHONE Ultimate Visual Polish
+   Final optical corrections only. Runtime behavior and page structure stay intact. */
+
+:root {
+  --sidebar-compact-width: 76px;
+  --sidebar-icon-width: 58px;
+  --icon-stroke: 1.9;
+  --visual-safe-gap: 6px;
+  --radius-control: calc(14px * var(--theme-radius-scale, 1));
+
+  /* Keep the last interaction layer on the canonical glass engine. */
+  --ux-final-surface: var(--glass-surface);
+  --ux-final-control: var(--glass-control);
+  --ux-final-control-hover: color-mix(in srgb, var(--surface-hover) 88%, white 3%);
+  --ux-final-border: var(--glass-border);
+  --ux-final-border-hover: var(--glass-border-strong);
+  --ux-final-shadow: var(--glass-shadow-soft);
+  --ux-final-shadow-hover: var(--glass-shadow);
+  --ds6-text-subtle: #918aa3;
+}
+
+/* The saved expanded width must not leak into compact modes. The root token is
+   changed only while a compact desktop mode is active, so the app grid and the
+   sidebar always agree on the same width. */
+@media (min-width: 901px) {
+  html[data-sidebar-mode="compact"],
+  html:has(#main-sidebar.os-sidebar.compact:not(.icon-only)) {
+    --sidebar-w: var(--sidebar-compact-width) !important;
+  }
+
+  html[data-sidebar-mode="icon"],
+  html:has(#main-sidebar.os-sidebar.icon-only) {
+    --sidebar-w: var(--sidebar-icon-width) !important;
+  }
+
+  #main-sidebar.os-sidebar.ethone-sidebar-final.compact:not(.icon-only) {
+    width: var(--sidebar-compact-width) !important;
+    min-width: var(--sidebar-compact-width) !important;
+    max-width: var(--sidebar-compact-width) !important;
+  }
+
+  #main-sidebar.os-sidebar.ethone-sidebar-final.icon-only {
+    width: var(--sidebar-icon-width) !important;
+    min-width: var(--sidebar-icon-width) !important;
+    max-width: var(--sidebar-icon-width) !important;
+  }
+
+  #main-sidebar.os-sidebar.ethone-sidebar-final.compact .os-empty-row,
+  #main-sidebar.os-sidebar.ethone-sidebar-final.icon-only .os-empty-row {
+    display: none !important;
+  }
+}
+
+/* Icon geometry: preserve the component hierarchy while removing optical drift. */
+:where(
+  .SidebarItem .nav-icon,
+  .os-icon-btn > svg,
+  .settings-nav-item > svg,
+  .cmd-item-icon > svg,
+  .d4-quick-action svg,
+  .panel-action > svg,
+  .modal-close > svg,
+  .notif-panel-close > svg
+) {
+  flex: 0 0 auto !important;
+  overflow: visible !important;
+  stroke-width: var(--icon-stroke) !important;
+  shape-rendering: geometricPrecision;
+}
+
+:where(button, [role="button"]) > :where(svg, [data-lucide]) {
+  vertical-align: middle;
+}
+
+.settings-social-icon {
+  width: var(--icon-shell-sm) !important;
+  min-width: var(--icon-shell-sm) !important;
+  height: var(--icon-shell-sm) !important;
+  display: inline-grid !important;
+  place-items: center;
+  flex: 0 0 var(--icon-shell-sm) !important;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  color: var(--text-tertiary);
+}
+
+.settings-social-icon :where(svg, [data-lucide]) {
+  width: var(--icon-size-sm) !important;
+  height: var(--icon-size-sm) !important;
+  min-width: var(--icon-size-sm) !important;
+}
+
+/* Notification badges need a safety gutter outside their icon buttons. */
+#apc-notif-bell,
+#notif-bell-btn {
+  overflow: visible !important;
+  isolation: isolate;
+}
+
+#apc-notif-badge {
+  top: -4px !important;
+  right: -4px !important;
+  z-index: 3;
+  min-width: 14px !important;
+  height: 14px !important;
+  padding-inline: 3px !important;
+  line-height: 14px !important;
+  font-size: 7.5px !important;
+  box-shadow:
+    0 0 0 3px rgba(var(--surface-0-rgb), .96),
+    0 5px 14px rgba(var(--error-rgb, 239, 68, 68), .28) !important;
+  pointer-events: none;
+}
+
+#notif-badge {
+  top: -5px !important;
+  right: -5px !important;
+  z-index: 3;
+  box-shadow:
+    0 0 0 3px rgba(var(--surface-0-rgb), .96),
+    0 6px 18px rgba(var(--primary-rgb), .30) !important;
+  pointer-events: none;
+}
+
+/* The V6 onboarding grid previously allowed its middle row to grow beyond the
+   shell, pushing the footer controls outside the visible dialog. */
+.fron-shell-v6 .fron-main {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.fron-shell-v6 .fron-body,
+.fron-shell-v6 .fron-stage,
+.fron-shell-v6 .fron-live-preview-host,
+.fron-shell-v6 .fron-step-content {
+  min-height: 0;
+}
+
+.fron-shell-v6 .fron-stage,
+.fron-shell-v6 .fron-live-preview-host {
+  overflow: hidden;
+}
+
+.fron-shell-v6 .fron-footer {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
+  border-top: 1px solid rgba(var(--color-white-rgb), .065);
+  background: linear-gradient(180deg, rgba(var(--surface-1-rgb), .54), rgba(var(--surface-1-rgb), .86));
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+}
+
+.fron-shell-v6 .fron-live-grid {
+  grid-auto-rows: minmax(0, 1fr);
+  gap: 6px;
+}
+
+.fron-shell-v6 .fron-live-widget {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: 8px;
+  row-gap: 1px;
+  align-content: center;
+  padding: 6px 8px;
+}
+
+.fron-shell-v6 .fron-live-widget > span {
+  grid-row: 1 / span 2;
+  width: 22px;
+  height: 22px;
+  border-radius: 8px;
+}
+
+.fron-shell-v6 .fron-live-widget > span i {
+  width: 13px;
+  height: 13px;
+}
+
+.fron-shell-v6 .fron-live-widget > strong,
+.fron-shell-v6 .fron-live-widget > small {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fron-shell-v6 .fron-live-widget > strong {
+  font-size: 10.5px;
+  line-height: 1.15;
+}
+
+.fron-shell-v6 .fron-live-widget > small {
+  font-size: 9.5px;
+  line-height: 1.15;
+}
+
+.fron-shell-v6 .fron-live-widget > i {
+  display: none;
+}
+
+/* Modal surfaces already expose their own shortcut hints. Hiding the global HUD
+   avoids duplicate chrome and prevents it from covering panel actions. */
+html:has(#cmd-palette-overlay.open) #ethone-keyboard-hud,
+html:has(#notif-panel.open) #ethone-keyboard-hud,
+html:has(.modal-overlay.open) #ethone-keyboard-hud,
+html:has([role="dialog"][aria-modal="true"]) #ethone-keyboard-hud {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transform: translate3d(0, 6px, 0) !important;
+}
+
+/* Raycast-like keyboard selection: visible without turning the full row purple. */
+body #cmd-palette .cmd-item.selected,
+body #cmd-palette .cmd-item[aria-selected="true"] {
+  color: var(--text-primary) !important;
+  border-color: rgba(var(--accent-rgb, var(--primary-rgb)), .36) !important;
+  background:
+    linear-gradient(90deg, rgba(var(--accent-rgb, var(--primary-rgb)), .18), rgba(var(--accent-rgb, var(--primary-rgb)), .07) 42%, rgba(var(--color-white-rgb), .035)) !important;
+  box-shadow:
+    inset 3px 0 0 rgba(var(--accent-rgb, var(--primary-rgb)), .92),
+    0 12px 32px rgba(var(--color-black-rgb), .22),
+    inset 0 1px 0 rgba(var(--color-white-rgb), .06) !important;
+}
+
+body #cmd-palette .cmd-item.selected .cmd-item-label,
+body #cmd-palette .cmd-item[aria-selected="true"] .cmd-item-label {
+  color: var(--text-primary) !important;
+}
+
+/* High-value login surfaces use the same depth and border recipe as the app. */
+#auth-screen #lb-box,
+#auth-screen .auth-v3-preview,
+#auth-screen #auth-lang-bar {
+  border-color: var(--glass-border-strong) !important;
+}
+
+#auth-screen #lb-box {
+  box-shadow:
+    0 28px 76px rgba(var(--color-black-rgb), .44),
+    0 0 64px rgba(var(--primary-rgb), .075),
+    inset 0 1px 0 rgba(var(--color-white-rgb), .06) !important;
+}
+
+#auth-screen .auth-v3-preview {
+  box-shadow:
+    0 32px 90px rgba(var(--color-black-rgb), .46),
+    0 0 72px rgba(var(--primary-rgb), .07),
+    inset 0 1px 0 rgba(var(--color-white-rgb), .055) !important;
+}
+
+#auth-card :where(.lb-input, .lb-social, #auth-tabs-wrap) {
+  border-color: var(--glass-border) !important;
+}
+
+#auth-card :where(.lb-input, .lb-social):hover {
+  border-color: var(--glass-border-strong) !important;
+}
+
+/* Settings profile fields predate the shared control system and carried a
+   page-specific 9px radius. Keep their layout intact while resolving their
+   geometry through the same responsive token used by the rest of ETHONE. */
+html body #page-settings .modal-input,
+html body #page-settings .modal-select,
+html body #page-settings input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+html body #page-settings textarea,
+html body #page-settings select {
+  border-radius: var(--radius-control) !important;
+}
+
+/* Preview chrome is still interface text: it must remain readable even when
+   rendered inside the compact Marketplace screenshots. */
+body #page-marketplace .mp-screenshot-top span {
+  color: var(--text-tertiary) !important;
+  font-size: var(--type-micro) !important;
+  line-height: 1.2 !important;
+}
+
+/* Guard content columns against accidental minimum-content overflow. */
+:where(
+  #main-content,
+  .main,
+  .tab-content,
+  .page,
+  .settings-page,
+  .ai-page,
+  .marketplace-page,
+  .brain-page
+) {
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (max-width: 900px) {
+  .fron-shell-v6 .fron-stage,
+  .fron-shell-v6 .fron-live-preview-host {
+    overflow: visible;
+  }
+
+  .fron-shell-v6 .fron-body {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .fron-shell-v6 .fron-footer {
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+}
+
+/* Mobile app chrome owns the bottom safe area. Keep transient feedback and the
+   global Brain affordance above the navigation rail instead of layering them
+   over its touch targets. */
+@media (max-width: 768px) {
+  #ethone-ux-status {
+    bottom: calc(100px + env(safe-area-inset-bottom)) !important;
+  }
+
+  #ethone-brain-everywhere-root {
+    bottom: calc(100px + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body .cmd-item,
+  #ethone-keyboard-hud,
+  #apc-notif-badge,
+  #notif-badge {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

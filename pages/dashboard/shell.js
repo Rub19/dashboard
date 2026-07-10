@@ -26,6 +26,12 @@ var SVG_ICONS={
   ,studio:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a2 2 0 0 1 2-2h8l6 6v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M14 3v6h6"/><path d="M8 15h8"/><path d="M8 11h3"/></svg>'
 };
 
+function sidebarCopy(fr,en,es,de){
+  let lang='fr';
+  try{lang=String(document.documentElement.lang||localStorage.getItem('ethone:lang')||localStorage.getItem('lang')||'fr').slice(0,2).toLowerCase()}catch(e){}
+  return ({fr:fr,en:en,es:es||en,de:de||en})[lang]||en;
+}
+
 function getDefaultNav(){return [
   {id:'dashboard',icon:'dashboard',label:t('nav_overview'),section:'main',badge:'',group:'core'},
   {id:'files',icon:'files',label:t('nav_files'),section:'main',badge:'',group:'core'},
@@ -38,32 +44,114 @@ function getDefaultNav(){return [
   {id:'journal',icon:'journal',label:t('nav_journal'),section:'main',badge:'',group:'core'},
   {id:'countdown',icon:'countdown',label:t('nav_countdown'),section:'main',badge:'',group:'core'},
   {id:'stats',icon:'stats',label:t('nav_stats'),section:'main',badge:'',group:'core'},
-  {id:'activity',icon:'timeline',label:'Activity',section:'main',badge:'',group:'smart'},
-  {id:'health',icon:'health',label:'Health',section:'main',badge:'',group:'smart'},
-  {id:'versions',icon:'versions',label:'Version Center',section:'main',badge:'',group:'smart'},
+  {id:'activity',icon:'timeline',label:sidebarCopy('Activité','Activity','Actividad','Aktivität'),section:'main',badge:'',group:'smart'},
+  {id:'health',icon:'health',label:sidebarCopy('Santé','Health','Salud','Systemstatus'),section:'main',badge:'',group:'smart'},
+  {id:'versions',icon:'versions',label:sidebarCopy('Centre des versions','Version Center','Centro de versiones','Versionszentrum'),section:'main',badge:'',group:'smart'},
   {id:'studio',icon:'studio',label:'Studio',section:'main',badge:'Create',group:'smart'},
   {id:'marketplace',icon:'marketplace',label:'Marketplace',section:'main',badge:'',group:'extras'},
   {id:'github',icon:'github',label:t('nav_github'),section:'main',badge:'',group:'extras'},
   {id:'gaming',icon:'gaming',label:t('nav_gaming'),section:'main',badge:'',group:'extras'},
   {id:'valorant-accounts',icon:'valorant',label:t('nav_valorant_accounts'),section:'main',badge:'',group:'extras'},
   {id:'databases',icon:'databases',label:t('nav_databases'),section:'main',badge:'',group:'extras'},
-  {id:'import',icon:'import',label:'Import',section:'main',badge:'New',group:'extras'},
+  {id:'import',icon:'import',label:sidebarCopy('Importer','Import','Importar','Importieren'),section:'main',badge:'',group:'extras'},
   {id:'connections',icon:'connections',label:t('nav_connections'),section:'main',badge:'',group:'extras'},
   {id:'settings',icon:'settings',label:t('nav_settings'),section:'account',badge:''},
   {id:'ai',icon:'ai',label:t('nav_ai'),section:'account',badge:''}
 ];}
 
+const SIDEBAR_EXPERIMENTAL_PAGES=new Set(['studio']);
+
+function sidebarExperimentalEnabled(){
+  try{
+    const params=new URLSearchParams(location.search||'');
+    return params.get('experimental')==='1'||localStorage.getItem('ethone:experimental-enabled')==='1';
+  }catch(e){return false}
+}
+
+function sidebarDebugEnabled(){
+  try{
+    const params=new URLSearchParams(location.search||'');
+    return params.get('debug')==='true'||params.get('sidebarDebug')==='1'||localStorage.getItem('ethone:sidebar-debug')==='1';
+  }catch(e){return false}
+}
+
+function sidebarDebug(label,detail){
+  if(!sidebarDebugEnabled())return;
+  try{console.debug('[ETHONE Sidebar]',label,detail||'')}catch(e){}
+}
+
+function sidebarAction(actionId,context,fallback){
+  try{
+    context=Object.assign({source:'sidebar'},context||{});
+    sidebarDebug('action start',{actionId:actionId,context:context});
+    const Actions=window.Ethone&&window.Ethone.get&&window.Ethone.get('actions');
+    if(Actions&&typeof Actions.dispatch==='function'){
+      const ok=Actions.dispatch(actionId,context);
+      sidebarDebug('action registry result',{actionId:actionId,ok:ok});
+      if(ok&&typeof ok.then==='function')return ok;
+      return ok!==false;
+    }
+    if(typeof fallback==='function'){
+      const result=fallback();
+      sidebarDebug('action fallback result',{actionId:actionId,result:result});
+      return result;
+    }
+  }catch(error){
+    console.error('[ETHONE Sidebar] action failed:',actionId,error);
+    if(typeof toast==='function')toast('Action sidebar impossible pour le moment','warning');
+  }
+  return false;
+}
+
+function sidebarCanOpenPage(page){
+  if(!page)return false;
+  if(SIDEBAR_EXPERIMENTAL_PAGES.has(page)&&!sidebarExperimentalEnabled())return false;
+  if(document.getElementById('page-'+page))return true;
+  try{
+    return !!(
+      window.ETHONELazyModules&&
+      typeof window.ETHONELazyModules.canLoadPage==='function'&&
+      window.ETHONELazyModules.canLoadPage(page)
+    );
+  }catch(e){return false}
+}
+
+function sidebarNavigate(page,button){
+  try{
+    if(!page)return false;
+    sidebarDebug('navigation start',{page:page,button:button&&button.id});
+    if(!sidebarCanOpenPage(page)){
+      sidebarDebug('navigation missing page',{page:page});
+      if(typeof toast==='function')toast(sidebarCopy("Cette page n'est pas disponible dans cette version.","This page is not available in this release.","Esta pagina no esta disponible en esta version.","Diese Seite ist in dieser Version nicht verfügbar."),'info');
+      return false;
+    }
+    const ok=sidebarAction('navigation.open',{page:page,el:button},function(){
+      if(typeof switchPage==='function'){
+        switchPage(page,button||null);
+        return true;
+      }
+      return false;
+    });
+    sidebarDebug('navigation done',{page:page,ok:ok});
+    return ok!==false;
+  }catch(error){
+    console.error('[ETHONE Sidebar] navigation failed:',page,error);
+    if(typeof toast==='function')toast('Navigation impossible pour le moment','warning');
+    return false;
+  }
+}
+
 function renderSidebarNav(){
   const p=curP();
   const baseNav=getDefaultNav();
   ensureOsSidebarShell();
-  let nav=baseNav;
+  let nav=baseNav.filter(item=>!SIDEBAR_EXPERIMENTAL_PAGES.has(item.id)||sidebarExperimentalEnabled());
   if(p&&Array.isArray(p.sidebarConfig)&&p.sidebarConfig.length){
     nav=baseNav.map(item=>{
       const saved=p.sidebarConfig.find(s=>s.id===item.id);
       const alwaysVisible=['settings','ai','health'].includes(item.id);
       return {...item,visible:alwaysVisible||(saved?saved.visible!==false:true),pinned:!!(saved&&saved.pinned)};
-    }).filter(i=>i.visible!==false);
+    }).filter(i=>i.visible!==false&&(!SIDEBAR_EXPERIMENTAL_PAGES.has(i.id)||sidebarExperimentalEnabled()));
     nav.sort((a,b)=>{
       const ai=p.sidebarConfig.findIndex(s=>s.id===a.id);
       const bi=p.sidebarConfig.findIndex(s=>s.id===b.id);
@@ -82,31 +170,37 @@ function renderSidebarNav(){
   const makeItem=(item,opts={})=>{
     const icon=SVG_ICONS[item.icon]||SVG_ICONS.dashboard;
     const isActive=page===item.id;
-    const pageExists=!!document.getElementById('page-'+item.id);
+    const pageExists=sidebarCanOpenPage(item.id);
     const button=document.createElement('button');
     button.type='button';
     button.className='nav-item os-nav-item SidebarItem'+(isActive?' active':'')+(opts.smart?' os-smart-item':'')+(item.pinned?' is-pinned':'')+(!pageExists?' is-disabled':'');
     button.dataset.page=item.id;
     button.dataset.navId=item.id;
+    button.dataset.sidebarLocal='1';
     button.draggable=opts.draggable!==false&&pageExists;
-    button.setAttribute('aria-current',isActive?'page':'false');
+    if(isActive)button.setAttribute('aria-current','page');
     button.setAttribute('aria-label',item.label);
-    button.title=pageExists?item.label:(item.label+' - Coming Soon');
-    button.dataset.actionId='navigation.open';
+    button.title=pageExists?item.label:(item.label+' - '+sidebarCopy('non disponible','unavailable','no disponible','nicht verfügbar'));
     if(!pageExists){
       button.disabled=true;
       button.setAttribute('aria-disabled','true');
     }
-    button.onclick=function(){
+    button.addEventListener('click',function(event){
+      event.preventDefault();
+      sidebarDebug('item click',{page:item.id,label:item.label,disabled:!pageExists});
       if(!pageExists){
-        if(typeof toast==='function')toast('Fonctionnalite bientot disponible','info');
+        if(typeof toast==='function')toast(sidebarCopy("Cette page n'est pas disponible dans cette version.","This page is not available in this release.","Esta pagina no esta disponible en esta version.","Diese Seite ist in dieser Version nicht verfügbar."),'info');
         return;
       }
-      const Actions=window.Ethone&&window.Ethone.get&&window.Ethone.get('actions');
-      if(Actions&&Actions.dispatch)Actions.dispatch('navigation.open',{page:item.id,el:button,source:'sidebar'});
-      else switchPage(item.id,button);
-    };
-    button.innerHTML=`<span class="nav-icon" aria-hidden="true">${icon}</span><span class="nav-label-text">${escapeHTML(item.label)}</span>${item.badge?`<span class="nav-badge">${item.badge}</span>`:''}${item.pinned?'<span class="os-pin-dot" aria-hidden="true"></span>':''}`;
+      sidebarNavigate(item.id,button);
+    });
+    button.addEventListener('keydown',function(event){
+      if(event.key==='Enter'||event.key===' '){
+        sidebarDebug('item keyboard',{page:item.id,key:event.key});
+      }
+    });
+    const displayBadge=pageExists?item.badge:sidebarCopy('Indisponible','Unavailable','No disponible','Nicht verfügbar');
+    button.innerHTML=`<span class="nav-icon" aria-hidden="true">${icon}</span><span class="nav-label-text">${escapeHTML(item.label)}</span>${displayBadge?`<span class="nav-badge">${displayBadge}</span>`:''}${item.pinned?'<span class="os-pin-dot" aria-hidden="true"></span>':''}`;
     wireOsNavDrag(button,item.id);
     return button;
   };
@@ -119,10 +213,10 @@ function renderSidebarNav(){
   const smartItems=nav.filter(i=>['ai','activity','health','versions'].includes(i.id));
   const bottomItems=nav.filter(i=>i.id==='settings');
 
-  mainEl.appendChild(sectionShell('Favorites','favorites',pinnedItems.length?pinnedItems.map(i=>makeItem(i,{draggable:true})):[emptyRow('No favorites','Pin pages from Settings')]));
-  mainEl.appendChild(sectionShell('Navigation','navigation',regularItems.map(i=>makeItem(i,{draggable:true}))));
-  mainEl.appendChild(renderRecentSection(baseNav,makeItem));
-  mainEl.appendChild(sectionShell('Smart','smart',smartItems.map(i=>makeItem(i,{smart:true,draggable:false})).concat(renderOsPinnedLinks())));
+  mainEl.appendChild(sectionShell(sidebarCopy('Favoris','Favorites','Favoritos','Favoriten'),'favorites',pinnedItems.length?pinnedItems.map(i=>makeItem(i,{draggable:true})):[emptyRow(sidebarCopy('Aucun favori','No favorites','Sin favoritos','Keine Favoriten'),sidebarCopy('Épinglez des pages depuis les paramètres','Pin pages from Settings','Fija paginas desde Ajustes','Seiten in den Einstellungen anheften'))]));
+  mainEl.appendChild(sectionShell(sidebarCopy('Navigation','Navigation','Navegación','Navigation'),'navigation',regularItems.map(i=>makeItem(i,{draggable:true}))));
+  mainEl.appendChild(renderRecentSection(baseNav,makeItem,page));
+  mainEl.appendChild(sectionShell(sidebarCopy('Intelligent','Smart','Inteligente','Intelligent'),'smart',smartItems.map(i=>makeItem(i,{smart:true,draggable:false})).concat(renderOsPinnedLinks())));
   acctEl.appendChild(renderBottomActions(bottomItems,makeItem));
 
   if(typeof window.ethonePositionNavPill==='function')setTimeout(window.ethonePositionNavPill,30);
@@ -140,37 +234,57 @@ function ensureOsSidebarShell(){
     <div class="os-sidebar-header SidebarHeader">
       <div class="os-brand-row SidebarBrand">
         <div class="logo-icon os-logo-mark" aria-hidden="true"><svg fill="none" height="14" viewBox="0 0 20 20" width="14"><rect x="4" y="5" width="12" height="2" rx="1" fill="white" opacity=".95"></rect><rect x="4" y="9" width="12" height="2" rx="1" fill="white" opacity=".95"></rect><rect x="4" y="13" width="8" height="2" rx="1" fill="white" opacity=".95"></rect></svg></div>
-        <div class="os-brand-copy"><span class="logo-text" id="logo-text-el">ETHONE</span><small>Personal OS</small></div>
-        <button class="os-icon-btn" id="sidebar-compact-btn" type="button" title="Compact mode" aria-label="Compact mode">
+        <div class="os-brand-copy"><span class="logo-text" id="logo-text-el">ETHONE</span><small>${sidebarCopy('Système personnel','Personal OS','Sistema personal','Persönliches OS')}</small></div>
+        <button class="os-icon-btn" id="sidebar-compact-btn" type="button" title="${sidebarCopy('Mode compact','Compact mode','Modo compacto','Kompaktmodus')}" aria-label="${sidebarCopy('Mode compact','Compact mode','Modo compacto','Kompaktmodus')}">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4 4 8l4 4"/><path d="M4 8h14"/><path d="m16 12 4 4-4 4"/><path d="M6 16h14"/></svg>
         </button>
       </div>
-      <button class="os-workspace-switcher SidebarWorkspace" type="button" id="os-sidebar-workspace" title="Switch Workspace">
+      <button class="os-workspace-switcher SidebarWorkspace" type="button" id="os-sidebar-workspace" title="${sidebarCopy("Changer d'espace","Switch Workspace","Cambiar espacio","Arbeitsbereich wechseln")}">
         <span class="os-workspace-orb" id="os-sidebar-workspace-orb"></span>
-        <span><strong id="os-sidebar-workspace-name">Workspace</strong><small id="os-sidebar-workspace-sub">Active environment</small></span>
+        <span><strong id="os-sidebar-workspace-name">${sidebarCopy('Espace','Workspace','Espacio','Arbeitsbereich')}</strong><small id="os-sidebar-workspace-sub">${sidebarCopy('Environnement actif','Active environment','Entorno activo','Aktive Umgebung')}</small></span>
         <i aria-hidden="true">v</i>
       </button>
       <button class="os-quick-search SidebarSearch" type="button" id="os-sidebar-search" title="Ctrl+K">
-        <span>Search ETHONE</span><kbd>Ctrl K</kbd>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.4-3.4"></path></svg>
+        <span>${sidebarCopy('Rechercher dans ETHONE','Search ETHONE','Buscar en ETHONE','ETHONE durchsuchen')}</span><kbd>Ctrl K</kbd>
       </button>
     </div>
-    <div class="nav-section os-sidebar-scroll SidebarNav" id="sidebar-nav-main"></div>
-    <div class="nav-section os-sidebar-bottom SidebarFooter" id="sidebar-nav-account"></div>
+    <div class="nav-section os-sidebar-scroll SidebarNav" id="sidebar-nav-main" role="navigation" aria-label="Pages ETHONE" tabindex="0"></div>
+    <div class="nav-section os-sidebar-bottom SidebarFooter" id="sidebar-nav-account" role="group" aria-label="Actions du compte"></div>
   `;
   const compact=document.getElementById('sidebar-compact-btn');
-  if(compact)compact.onclick=function(e){e.preventDefault();if(typeof toggleSidebarCompact==='function')toggleSidebarCompact();};
+  if(compact){
+    compact.dataset.sidebarLocal='1';
+    compact.onclick=function(e){
+      e.preventDefault();
+      sidebarDebug('compact toggle');
+      if(typeof toggleSidebarCompact==='function')toggleSidebarCompact();
+    };
+  }
   const search=document.getElementById('os-sidebar-search');
-  if(search){search.dataset.actionId='command.open';search.onclick=function(){
-    const Actions=window.Ethone&&window.Ethone.get&&window.Ethone.get('actions');
-    if(Actions&&Actions.dispatch)Actions.dispatch('command.open',{el:search,source:'sidebar'});
-    else if(typeof openCmdPalette==='function')openCmdPalette();
-  };}
+  if(search){
+    search.dataset.sidebarLocal='1';
+    search.onclick=function(event){
+      event.preventDefault();
+      sidebarDebug('search click');
+      sidebarAction('command.open',{el:search},function(){
+        if(typeof openCmdPalette==='function'){openCmdPalette();return true;}
+        return false;
+      });
+    };
+  }
   const workspace=document.getElementById('os-sidebar-workspace');
-  if(workspace){workspace.dataset.actionId='spaces.open';workspace.onclick=function(){
-    const Actions=window.Ethone&&window.Ethone.get&&window.Ethone.get('actions');
-    if(Actions&&Actions.dispatch)Actions.dispatch('spaces.open',{el:workspace,source:'sidebar'});
-    else if(typeof switchPage==='function')switchPage('dashboard',null);
-  };}
+  if(workspace){
+    workspace.dataset.sidebarLocal='1';
+    workspace.onclick=function(event){
+      event.preventDefault();
+      sidebarDebug('workspace click');
+      sidebarAction('spaces.open',{el:workspace},function(){
+        if(typeof switchPage==='function'){switchPage('settings',null);return true;}
+        return false;
+      });
+    };
+  }
 }
 
 function updateOsSidebarHeader(p,page){
@@ -180,8 +294,8 @@ function updateOsSidebarHeader(p,page){
     const orb=document.getElementById('os-sidebar-workspace-orb');
     let w=null;
     if(window.ETHONEWorkspaces&&window.ETHONEWorkspaces.active)w=window.ETHONEWorkspaces.active();
-    if(name)name.textContent=(w&&w.name)||(p&&p.activeWorkspaceId)||'Personal';
-    if(sub)sub.textContent=(page||'dashboard')+' environment';
+    if(name)name.textContent=(w&&w.name)||(p&&p.activeWorkspaceId)||sidebarCopy('Personnel','Personal','Personal','Persönlich');
+    if(sub)sub.textContent=sidebarCopy('Environnement actif','Active environment','Entorno activo','Aktive Umgebung');
     if(orb)orb.style.background=(w&&w.accent)||'linear-gradient(135deg,#8b5cf6,#a78bfa)';
   }catch(e){}
 }
@@ -191,17 +305,21 @@ function sectionShell(title,key,children){
   section.className='os-nav-section SidebarSection';
   section.dataset.section=key;
   const collapsed=localStorage.getItem('ethone:sidebar:section:'+key)==='0';
-  section.innerHTML=`<button class="os-section-head" type="button" aria-expanded="${collapsed?'false':'true'}"><span>${escapeHTML(title)}</span><i aria-hidden="true">v</i></button><div class="os-section-body"></div>`;
+  section.innerHTML=`<button class="os-section-head" type="button" aria-expanded="${collapsed?'false':'true'}" aria-controls="sidebar-section-${key}"><span>${escapeHTML(title)}</span><i aria-hidden="true">v</i></button><div class="os-section-body" id="sidebar-section-${key}"></div>`;
   const body=section.querySelector('.os-section-body');
   children.forEach(child=>{
     if(child instanceof Node)body.appendChild(child);
     else console.warn('[ETHONE sidebar] Ignored invalid navigation node',child);
   });
   if(collapsed)section.classList.add('collapsed');
+  body.hidden=collapsed;
+  body.inert=collapsed;
   section.querySelector('.os-section-head').onclick=function(){
     section.classList.toggle('collapsed');
     const isOpen=!section.classList.contains('collapsed');
     this.setAttribute('aria-expanded',isOpen?'true':'false');
+    body.hidden=!isOpen;
+    body.inert=!isOpen;
     localStorage.setItem('ethone:sidebar:section:'+key,isOpen?'1':'0');
   };
   return section;
@@ -214,10 +332,10 @@ function emptyRow(title,sub){
   return row;
 }
 
-function renderRecentSection(baseNav,makeItem){
-  const recent=readOsRecentPages();
+function renderRecentSection(baseNav,makeItem,currentPage){
+  const recent=readOsRecentPages().filter(id=>id!==currentPage);
   const pages=recent.map(id=>baseNav.find(i=>i.id===id)).filter(Boolean).slice(0,4);
-  return sectionShell('Recent','recent',pages.length?pages.map(i=>makeItem(i,{draggable:false})):[emptyRow('No recent pages','Navigation will appear here')]);
+  return sectionShell(sidebarCopy('Récentes','Recent','Recientes','Zuletzt'),'recent',pages.length?pages.map(i=>makeItem(i,{draggable:false})):[emptyRow(sidebarCopy('Aucune page récente','No recent pages','Sin paginas recientes','Keine kürzlich geöffneten Seiten'),sidebarCopy('Votre navigation apparaîtra ici','Navigation will appear here','Tu navegación aparecerá aquí','Ihre Navigation erscheint hier'))]);
 }
 
 function renderOsPinnedLinks(){
@@ -228,6 +346,7 @@ function renderOsPinnedLinks(){
     btn.type='button';
     btn.className='nav-item os-nav-item os-pinned-link SidebarItem';
     btn.title=pin.name||pin.url||'Pinned';
+    btn.dataset.sidebarLocal='1';
     btn.onclick=function(){try{window.open(pin.url,'_blank','noopener,noreferrer')}catch(e){}};
     btn.innerHTML=`<span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 3h6l-1 6 3 3H7l3-3-1-6Z"/></svg></span><span class="nav-label-text">${escapeHTML(pin.name||pin.url||'Pinned')}</span>`;
     return btn;
@@ -238,7 +357,7 @@ function renderBottomActions(bottomItems,makeItem){
   const wrap=document.createElement('div');
   wrap.className='os-bottom-wrap SidebarFooterInner';
   wrap.innerHTML=`
-    <div id="sb-sync-indicator" class="os-sync-indicator"><span id="sb-sync-dot"></span><span id="sb-sync-label">Sync</span></div>
+    <div id="sb-sync-indicator" class="os-sync-indicator"><span id="sb-sync-dot"></span><span id="sb-sync-label">${sidebarCopy('Synchronisé','Synced','Sincronizado','Synchronisiert')}</span></div>
     <div class="os-bottom-actions">
       <button class="os-icon-btn" type="button" id="os-sidebar-notifications" title="Notifications" aria-label="Notifications">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
@@ -247,11 +366,11 @@ function renderBottomActions(bottomItems,makeItem){
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/></svg>
       </button>
     </div>
-    <button class="user-card os-user-card SidebarProfile" type="button" id="os-sidebar-profile">
+    <button class="user-card os-user-card SidebarProfile" type="button" id="os-sidebar-profile" aria-label="Ouvrir le menu profil" title="Profil">
       <div class="sidebar-avatar" id="sidebar-avatar"></div>
       <span class="sidebar-avatar-status" id="sidebar-avatar-status" aria-hidden="true"></span>
       <div class="user-info"><div class="user-name" id="display-username">User</div><div class="user-role" id="sidebar-user-role">ETHONE</div></div>
-      <span class="switch-hint">Switch</span>
+      <span class="switch-hint">${sidebarCopy('Changer','Switch','Cambiar','Wechseln')}</span>
     </button>
     <div class="os-settings-slot"></div>
   `;
@@ -261,30 +380,36 @@ function renderBottomActions(bottomItems,makeItem){
   const widgetsBtn=wrap.querySelector('#os-sidebar-widgets');
   const profileBtn=wrap.querySelector('#os-sidebar-profile');
   if(notifBtn){
-    notifBtn.dataset.actionId='notifications.open';
+    notifBtn.dataset.sidebarLocal='1';
     notifBtn.onclick=function(e){
       e.preventDefault();
-      const Actions=window.Ethone&&window.Ethone.get&&window.Ethone.get('actions');
-      if(Actions&&Actions.dispatch)Actions.dispatch('notifications.open',{el:notifBtn,source:'sidebar'});
-      else if(typeof toggleNotifPanel==='function')toggleNotifPanel();
+      sidebarDebug('notifications click');
+      sidebarAction('notifications.open',{el:notifBtn},function(){
+        if(typeof toggleNotifPanel==='function'){toggleNotifPanel();return true;}
+        return false;
+      });
     };
   }
   if(widgetsBtn){
-    widgetsBtn.dataset.actionId='widgets.open';
+    widgetsBtn.dataset.sidebarLocal='1';
     widgetsBtn.onclick=function(e){
       e.preventDefault();
-      const Actions=window.Ethone&&window.Ethone.get&&window.Ethone.get('actions');
-      if(Actions&&Actions.dispatch)Actions.dispatch('widgets.open',{el:widgetsBtn,source:'sidebar'});
-      else if(typeof toggleLivePanel==='function')toggleLivePanel();
+      sidebarDebug('widgets click');
+      sidebarAction('widgets.open',{el:widgetsBtn},function(){
+        if(typeof toggleLivePanel==='function'){toggleLivePanel();return true;}
+        return false;
+      });
     };
   }
   if(profileBtn){
-    profileBtn.dataset.actionId='profile.switch';
+    profileBtn.dataset.sidebarLocal='1';
     profileBtn.onclick=function(e){
       e.preventDefault();
-      const Actions=window.Ethone&&window.Ethone.get&&window.Ethone.get('actions');
-      if(Actions&&Actions.dispatch)Actions.dispatch('profile.switch',{el:profileBtn,source:'sidebar'});
-      else if(typeof goToProfileScreen==='function')goToProfileScreen();
+      sidebarDebug('profile click');
+      sidebarAction('profile.switch',{el:profileBtn},function(){
+        if(typeof goToProfileScreen==='function'){goToProfileScreen();return true;}
+        return false;
+      });
     };
   }
   return wrap;
@@ -317,4 +442,7 @@ function wireOsNavDrag(button,id){
 window.addEventListener('ethone:page-ready',function(e){
   const page=e&&e.detail&&e.detail.page;
   writeOsRecentPage(page);
+  document.querySelectorAll('#sidebar-section-recent [data-page]').forEach(function(item){
+    if(item.dataset.page===page)item.remove();
+  });
 });

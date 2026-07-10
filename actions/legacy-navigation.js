@@ -1,6 +1,7 @@
 /* ETHONE legacy compatibility module: navigation. */
 function switchPage(page,navEl){
   if(page==='timeline')page='activity';
+  const navTarget=navEl&&navEl.classList?navEl:null;
   const safeInvoke=(label,fn)=>{
     try{return fn();}
     catch(error){
@@ -18,26 +19,48 @@ function switchPage(page,navEl){
     console.warn('[ETHONE navigation] Unknown page:',page);
     return;
   }
-  document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
-  activePage.classList.add('active');
-  animatePageIn(activePage,page);
-  document.querySelectorAll('#main-sidebar .nav-item').forEach(el=>{
+  // Page visibility and interactivity are one atomic state.  Hidden pages are
+  // inert for accessibility, so merely moving the `active` class could leave
+  // the newly visible page unable to receive pointer or keyboard input until
+  // a later isolation pass happened to run.
+  document.querySelectorAll('.tab-content').forEach(el=>{
+    const active=el===activePage;
+    el.classList.toggle('active',active);
+    el.setAttribute('aria-hidden',active?'false':'true');
+    try{el.inert=!active}catch(error){}
+  });
+  // The main scroll surface is shared by every classic page. Carrying its
+  // offset into the next route made pages appear clipped or open halfway down.
+  const mainScroll=document.getElementById('main-content');
+  if(mainScroll){mainScroll.scrollTop=0;mainScroll.scrollLeft=0;}
+  activePage.scrollTop=0;
+  activePage.scrollLeft=0;
+  if(typeof animatePageIn==='function')safeInvoke('page animation',()=>animatePageIn(activePage,page));
+  else {
+    activePage.style.opacity='1';
+    activePage.style.transform='none';
+  }
+  const sidebarNavItems=Array.from(document.querySelectorAll('#main-sidebar .nav-item'));
+  sidebarNavItems.forEach(el=>{
     el.classList.remove('active');
     el.setAttribute('aria-current','false');
   });
-  if(navEl){
-    navEl.classList.add('active');
-    navEl.setAttribute('aria-current','page');
+  const matchingNavItems=sidebarNavItems.filter(el=>el.dataset.page===page);
+  const activeNavTarget=matchingNavItems.find(el=>{
+    const section=el.closest('.os-nav-section');
+    return !section||section.dataset.section!=='recent';
+  })||navTarget||matchingNavItems[0];
+  if(activeNavTarget){
+    activeNavTarget.classList.add('active');
+    activeNavTarget.setAttribute('aria-current','page');
   }
-  else document.querySelectorAll('#main-sidebar .nav-item').forEach(el=>{
-    if(el.dataset.page===page){
-      el.classList.add('active');
-      el.setAttribute('aria-current','page');
-    }
-  });
   setMobNav(page);
-  // Close sidebar on mobile after navigation
-  if(window.innerWidth<=768&&typeof closeMobileSidebar==='function')safeInvoke('close mobile sidebar',()=>closeMobileSidebar());
+  // Close the off-canvas drawer after navigation at every responsive
+  // breakpoint. Width-only checks left the tablet overlay blocking the page.
+  const mobileSidebar=document.getElementById('main-sidebar');
+  if(mobileSidebar&&mobileSidebar.classList.contains('mobile-open')&&typeof closeMobileSidebar==='function'){
+    safeInvoke('close mobile sidebar',()=>closeMobileSidebar());
+  }
   const p=curP();if(!p)return;
   if(page==='files'&&typeof renderItems==='function')safeInvoke('files render',()=>renderItems());
   if(page==='todos'&&typeof renderTodos==='function')safeInvoke('todos render',()=>renderTodos());
@@ -58,6 +81,9 @@ function switchPage(page,navEl){
   if(page==='databases'&&typeof renderDatabasesHome==='function')safeInvoke('databases render',()=>renderDatabasesHome());
   // Refresh widgets when back on dashboard
   if(page==='dashboard'){
+    if(typeof window.ethoneDashboardV4Render==='function'){
+      safeInvoke('dashboard v4 render',()=>window.ethoneDashboardV4Render());
+    }
     const wEl=document.getElementById('weather-widget');
     const qEl=document.getElementById('quote-widget');
     const weatherEmpty=!wEl||wEl.querySelector('.empty-icon');
@@ -88,6 +114,11 @@ function switchPage(page,navEl){
     window.calMonth=new Date().getMonth();
     if(typeof renderCalendar==='function')renderCalendar();
   });
+  try{
+    if(window.ETHONEStateConsistency&&typeof window.ETHONEStateConsistency.recordNavigation==='function'){
+      window.ETHONEStateConsistency.recordNavigation(page);
+    }
+  }catch(e){}
   try{window.dispatchEvent(new CustomEvent('ethone:page-ready',{detail:{page:page}}))}catch(e){}
 }
 
@@ -136,14 +167,31 @@ function switchSettingsTab(tab,el){
   if(tab==='experimental'&&typeof renderExperimentalSettings==='function')safeSettings('experimental',()=>renderExperimentalSettings());
 }
 
+// Lazy page modules and delegated UI handlers resolve settings navigation
+// through `window`. Keep the legacy declaration explicitly available there;
+// relying on an implicit global made every settings tab inert in some runtimes.
+window.switchSettingsTab=switchSettingsTab;
+
 async function loadAccountInfo(){
-  if(!_sbUser){document.getElementById('account-info').textContent='Not signed in';return;}
-  const {data}=await sb.from('profiles').select('username,email').eq('id',_sbUser.id).single();
   const info=document.getElementById('account-info');
-  if(data){
-    info.innerHTML=`Signed in as <strong>${data.username||'-'}</strong> . <span style="color:var(--muted)">${data.email||_sbUser.email||'-'}</span>`;
-    document.getElementById('account-username').value=data.username||'';
-    document.getElementById('account-email').value=data.email||_sbUser.email||'';
+  const usernameInput=document.getElementById('account-username');
+  const emailInput=document.getElementById('account-email');
+  if(!_sbUser){if(info)info.textContent='Not signed in';return;}
+  const metadata=_sbUser.user_metadata||{};
+  const fallback={username:metadata.username||metadata.full_name||'',email:_sbUser.email||''};
+  const render=function(data){
+    const account=data||fallback;
+    if(info)info.innerHTML=`Signed in as <strong>${escapeHTML(account.username||'ETHONE user')}</strong> · <span style="color:var(--muted)">${escapeHTML(account.email||fallback.email||'Local session')}</span>`;
+    if(usernameInput)usernameInput.value=account.username||'';
+    if(emailInput)emailInput.value=account.email||fallback.email||'';
+  };
+  render(fallback);
+  try{
+    if(!sb||!sb.from)return;
+    const result=await sb.from('profiles').select('username,email').eq('id',_sbUser.id).single();
+    if(result&&result.data)render(result.data);
+  }catch(error){
+    render(fallback);
   }
 }
 

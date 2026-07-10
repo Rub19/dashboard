@@ -20,6 +20,16 @@
     var l=lang();
     return map[l]||map.en||fallback;
   }
+  function leanRuntime(){
+    try{
+      return !!(
+        window.ETHONE_STABLE_BOOT ||
+        window.ETHONE_LIGHT_BOOT_MODE ||
+        window.__ethoneLeanProductionBoot ||
+        document.documentElement.dataset.ethoneStableBoot==="1"
+      );
+    }catch(e){return !!(window.ETHONE_STABLE_BOOT||window.ETHONE_LIGHT_BOOT_MODE||window.__ethoneLeanProductionBoot);}
+  }
   function toast(message,type){
     try{
       if(typeof window.toast==="function"){window.toast(message,type||"info");return;}
@@ -204,17 +214,19 @@
       }
       if(el)handleComingSoon(el,event);
     },true);
-    try{
-      var observer=new MutationObserver(function(mutations){
-        if(Date.now()<suppressMutationScanUntil||document.body.classList.contains("ethone-dashboard-booting"))return;
-        mutations.forEach(function(mutation){
-          Array.prototype.forEach.call(mutation.addedNodes||[],function(node){
-            if(node&&node.nodeType===1)scheduleScan(node);
+    if(!leanRuntime()){
+      try{
+        var observer=new MutationObserver(function(mutations){
+          if(Date.now()<suppressMutationScanUntil||document.body.classList.contains("ethone-dashboard-booting"))return;
+          mutations.forEach(function(mutation){
+            Array.prototype.forEach.call(mutation.addedNodes||[],function(node){
+              if(node&&node.nodeType===1)scheduleScan(node);
+            });
           });
         });
-      });
-      observer.observe(document.documentElement,{childList:true,subtree:true});
-    }catch(e){}
+        observer.observe(document.documentElement,{childList:true,subtree:true});
+      }catch(e){}
+    }
     window.addEventListener("ethone:page-ready",function(){scheduleScan(document);});
     window.addEventListener("ethone:dashboard-ready",function(){
       suppressMutationScanUntil=Date.now()+3000;
@@ -223,7 +235,7 @@
       },3400);
     });
     registerActionBridge();
-    scan(document);
+    scan(leanRuntime()?(document.querySelector(".tab-content.active")||document.getElementById("auth-screen")||document.getElementById("main-content")||document):document);
   }
   function registerActionBridge(){
     try{

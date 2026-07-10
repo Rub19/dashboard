@@ -1,0 +1,544 @@
+/* ETHONE Developer Inspector - lazy stylesheet */
+.ethone-inspector {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483200;
+  display: none;
+  justify-content: flex-end;
+  background: rgba(0, 0, 0, .26);
+  backdrop-filter: blur(10px);
+  color: rgba(248, 247, 255, .92);
+  pointer-events: none;
+}
+
+.ethone-inspector.open {
+  display: flex;
+  pointer-events: auto;
+  animation: eiFadeIn 160ms cubic-bezier(.2, .8, .2, 1);
+}
+
+.ei-panel {
+  width: min(1120px, calc(100vw - 28px));
+  height: calc(100vh - 28px);
+  margin: 14px;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 24px;
+  background:
+    radial-gradient(560px 220px at 16% -10%, rgba(139, 92, 246, .18), transparent 66%),
+    linear-gradient(180deg, rgba(20, 20, 28, .98), rgba(11, 11, 16, .98));
+  box-shadow: 0 34px 120px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(255, 255, 255, .07);
+  transform: translateX(14px) scale(.99);
+  animation: eiPanelIn 180ms cubic-bezier(.2, .8, .2, 1) forwards;
+}
+
+.ei-header {
+  min-height: 72px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.ei-brand {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ei-logo {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: #fff;
+  font: 900 14px/1 var(--font, Inter, system-ui);
+  background: linear-gradient(135deg, var(--accent, #8b5cf6), #6d3cf5);
+  box-shadow: 0 14px 34px rgba(139, 92, 246, .26);
+}
+
+.ei-brand strong {
+  display: block;
+  color: #fff;
+  font: 850 15px/1.15 var(--font, Inter, system-ui);
+  letter-spacing: -.01em;
+}
+
+.ei-brand small {
+  display: block;
+  margin-top: 4px;
+  color: rgba(245, 243, 255, .48);
+  font-size: 11px;
+}
+
+.ei-header-actions,
+.ei-report-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ei-button,
+.ei-icon-button,
+.ei-tabs button,
+.ei-tool {
+  min-height: 38px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, .052);
+  color: rgba(248, 247, 255, .78);
+  font: 800 12px/1 var(--font, Inter, system-ui);
+  cursor: pointer;
+  transition: transform 160ms cubic-bezier(.2, .8, .2, 1), border-color 160ms ease, background 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+
+.ei-button {
+  padding: 0 13px;
+}
+
+.ei-button-primary {
+  border-color: rgba(167, 139, 250, .36);
+  background: linear-gradient(135deg, rgba(139, 92, 246, .98), rgba(124, 58, 237, .94));
+  color: #fff;
+  box-shadow: 0 14px 30px rgba(139, 92, 246, .22);
+}
+
+.ei-icon-button {
+  width: 38px;
+  padding: 0;
+}
+
+.ei-button:hover,
+.ei-icon-button:hover,
+.ei-tabs button:hover,
+.ei-tool:hover {
+  transform: translateY(-1px);
+  border-color: rgba(167, 139, 250, .28);
+  background: rgba(139, 92, 246, .12);
+  color: #fff;
+}
+
+.ei-button:focus-visible,
+.ei-icon-button:focus-visible,
+.ei-tabs button:focus-visible,
+.ei-tool:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, .18);
+  border-color: rgba(167, 139, 250, .54);
+}
+
+.ei-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 10px 18px;
+  overflow-x: auto;
+  border-bottom: 1px solid rgba(255, 255, 255, .07);
+  scrollbar-width: none;
+}
+
+.ei-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.ei-tabs button {
+  flex: 0 0 auto;
+  padding: 0 12px;
+  min-height: 34px;
+  color: rgba(245, 243, 255, .54);
+}
+
+.ei-tabs button.active {
+  border-color: rgba(167, 139, 250, .30);
+  background: rgba(139, 92, 246, .15);
+  color: #fff;
+}
+
+.ei-body {
+  min-height: 0;
+  overflow: auto;
+  padding: 16px 18px 20px;
+  scrollbar-color: rgba(139, 92, 246, .28) transparent;
+}
+
+.ei-view {
+  display: none;
+}
+
+.ei-view.active {
+  display: block;
+  animation: eiFadeUp 160ms cubic-bezier(.2, .8, .2, 1);
+}
+
+.ei-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.ei-metric,
+.ei-card {
+  border: 1px solid rgba(255, 255, 255, .09);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .028));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .045);
+}
+
+.ei-metric {
+  min-height: 106px;
+  padding: 14px;
+}
+
+.ei-metric span,
+.ei-card-head span,
+.ei-row small,
+.ei-module small,
+.ei-request small,
+.ei-log small {
+  color: rgba(245, 243, 255, .46);
+  font-size: 11px;
+}
+
+.ei-metric span {
+  display: block;
+  font: 900 10px/1 var(--mono, "JetBrains Mono", monospace);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.ei-metric strong {
+  display: block;
+  margin-top: 12px;
+  color: #fff;
+  font: 900 24px/1.05 var(--font-display, var(--font, Inter, system-ui));
+  letter-spacing: -.035em;
+  word-break: break-word;
+}
+
+.ei-metric small {
+  display: block;
+  margin-top: 8px;
+  color: rgba(245, 243, 255, .42);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.ei-metric.ok { border-color: rgba(52, 211, 153, .16); }
+.ei-metric.warn { border-color: rgba(251, 191, 36, .30); }
+.ei-metric.critical { border-color: rgba(248, 113, 113, .36); }
+
+.ei-card {
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.ei-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.ei-card-head strong {
+  color: #fff;
+  font: 850 13px/1.2 var(--font, Inter, system-ui);
+}
+
+.ei-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.ei-columns h4 {
+  margin: 0 0 8px;
+  color: rgba(245, 243, 255, .58);
+  font: 900 10px/1 var(--mono, "JetBrains Mono", monospace);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.ei-list {
+  display: grid;
+  gap: 6px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.ei-list li,
+.ei-empty,
+.ei-row,
+.ei-module,
+.ei-request,
+.ei-log {
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, .075);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, .035);
+  color: rgba(245, 243, 255, .70);
+}
+
+.ei-list li {
+  padding: 8px 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+.ei-empty {
+  padding: 18px;
+  text-align: center;
+  color: rgba(245, 243, 255, .45);
+  font-size: 12px;
+}
+
+.ei-empty.small {
+  padding: 10px;
+  text-align: left;
+}
+
+.ei-table,
+.ei-module-list,
+.ei-request-list,
+.ei-log-list,
+.ei-diagnostic-list {
+  display: grid;
+  gap: 8px;
+}
+
+.ei-row,
+.ei-module,
+.ei-request,
+.ei-log {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+}
+
+.ei-row span,
+.ei-module span,
+.ei-request span,
+.ei-log span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(245, 243, 255, .74);
+  font-size: 12px;
+}
+
+.ei-row strong,
+.ei-module b,
+.ei-request b,
+.ei-log b {
+  color: #fff;
+  font: 850 11px/1 var(--mono, "JetBrains Mono", monospace);
+}
+
+.ei-module.failed,
+.ei-request.failed,
+.ei-log.error,
+.ei-diag.critical {
+  border-color: rgba(248, 113, 113, .32);
+  background: rgba(248, 113, 113, .075);
+}
+
+.ei-module.disabled,
+.ei-log.warn,
+.ei-diag.warning {
+  border-color: rgba(251, 191, 36, .26);
+  background: rgba(251, 191, 36, .055);
+}
+
+.ei-module.loaded,
+.ei-diag.ok {
+  border-color: rgba(52, 211, 153, .14);
+}
+
+.ei-log {
+  grid-template-columns: 68px minmax(0, 1fr) 190px;
+}
+
+.ei-log span {
+  white-space: normal;
+  line-height: 1.35;
+}
+
+.ei-report-actions {
+  justify-content: flex-start;
+  margin-bottom: 12px;
+}
+
+.ei-diag {
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .035);
+  padding: 13px;
+}
+
+.ei-diag > div {
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.ei-diag b {
+  width: fit-content;
+  padding: 6px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .055);
+  color: rgba(245, 243, 255, .78);
+  font: 900 10px/1 var(--mono, "JetBrains Mono", monospace);
+  text-transform: uppercase;
+}
+
+.ei-diag strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #fff;
+  font: 850 13px/1.2 var(--font, Inter, system-ui);
+}
+
+.ei-diag > div span {
+  color: rgba(245, 243, 255, .45);
+  font-size: 11px;
+}
+
+.ei-diag p {
+  margin: 10px 0;
+  color: rgba(245, 243, 255, .74);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.ei-diag dl {
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr);
+  gap: 6px 10px;
+  margin: 0;
+}
+
+.ei-diag dt {
+  color: rgba(245, 243, 255, .42);
+  font: 900 10px/1.35 var(--mono, "JetBrains Mono", monospace);
+  text-transform: uppercase;
+}
+
+.ei-diag dd {
+  min-width: 0;
+  margin: 0;
+  color: rgba(245, 243, 255, .66);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.ei-tool-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ei-tool {
+  height: auto;
+  min-height: 76px;
+  padding: 13px;
+  text-align: left;
+}
+
+.ei-tool strong {
+  display: block;
+  color: #fff;
+  font: 850 13px/1.2 var(--font, Inter, system-ui);
+}
+
+.ei-tool span {
+  display: block;
+  margin-top: 6px;
+  color: rgba(245, 243, 255, .48);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+@media (max-width: 960px) {
+  .ei-grid,
+  .ei-columns,
+  .ei-tool-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ei-panel {
+    width: calc(100vw - 20px);
+    height: calc(100vh - 20px);
+    margin: 10px;
+  }
+}
+
+@media (max-width: 640px) {
+  .ei-header {
+    display: grid;
+  }
+
+  .ei-header-actions {
+    justify-content: flex-start;
+  }
+
+  .ei-grid,
+  .ei-columns,
+  .ei-tool-grid,
+  .ei-diag > div,
+  .ei-diag dl,
+  .ei-row,
+  .ei-module,
+  .ei-request,
+  .ei-log {
+    grid-template-columns: 1fr;
+  }
+
+  .ei-panel {
+    border-radius: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ethone-inspector.open,
+  .ei-panel,
+  .ei-view.active {
+    animation: none;
+  }
+
+  .ei-button,
+  .ei-icon-button,
+  .ei-tabs button,
+  .ei-tool {
+    transition: none;
+  }
+}
+
+@keyframes eiFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes eiPanelIn {
+  to { transform: translateX(0) scale(1); }
+}
+
+@keyframes eiFadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}

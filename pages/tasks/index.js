@@ -33,28 +33,29 @@ function addTodo(){
   p.state.todos.unshift(todo);saveStateNow();closeModal('add-todo');
   ['todo-text','todo-due','todo-tag'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   _todoColor='';selectTodoColor('');
-  renderTodos();updateStats();
-  addActivity('New task: '+text,'var(--accent2)','task');toast('Task added!','success');
+  renderTodos();if(typeof updateStats==='function')updateStats();
+  if(typeof addActivity==='function')addActivity('New task: '+text,'var(--accent2)','task');toast('Task added!','success');
 }
 
 function toggleTodo(id){
   const p=curP();if(!p)return;
   const t=p.state.todos.find(t=>t.id===id);if(!t)return;
   t.done=!t.done;if(t.done)t.doneAt=new Date().toISOString();
-  saveStateNow();renderTodos();updateStats();
-  if(t.done){addActivity(t.text+' completed','var(--accent2)','task');toast('Task done! ðŸŽ‰','success');}
+  saveStateNow();renderTodos();if(typeof updateStats==='function')updateStats();
+  if(t.done){if(typeof addActivity==='function')addActivity(t.text+' completed','var(--accent2)','task');toast('Task completed','success');}
 }
 
 function deleteTodo(id){
   const p=curP();if(!p)return;
   p.state.todos=p.state.todos.filter(t=>t.id!==id);
-  saveStateNow();renderTodos();updateStats();
+  saveStateNow();renderTodos();if(typeof updateStats==='function')updateStats();
+  toast('Task deleted','info');
 }
 
 function clearDone(){
   const p=curP();if(!p)return;
   p.state.todos=p.state.todos.filter(t=>!t.done);
-  saveStateNow();renderTodos();updateStats();toast('Cleared','info');
+  saveStateNow();renderTodos();if(typeof updateStats==='function')updateStats();toast('Cleared','info');
 }
 
 function renderTodos(){
@@ -74,10 +75,14 @@ function renderTodos(){
   if(pc)pc.textContent=pending.length+' pending';
 
   const renderItem=(t,isDone)=>{
-    const pIcon={high:'ðŸ”¥',low:'ðŸŸ¢',normal:''}[t.priority]||'';
+    const pIcon={
+      high:'<span class="ethone-inline-icon" aria-label="High priority"><i data-lucide="flame" aria-hidden="true"></i></span>',
+      low:'<span class="ethone-inline-icon" aria-label="Low priority"><i data-lucide="circle" aria-hidden="true"></i></span>',
+      normal:''
+    }[t.priority]||'';
     const today=new Date().toLocaleDateString('en-CA');
     const overdue=t.due&&!t.done&&t.due<today;
-    const dueStr=t.due?`<span style="font-size:10px;color:${overdue?'var(--accent3)':'var(--muted)'}">ðŸ“… ${new Date(t.due+'T12:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}${overdue?' âš ï¸':''}</span>`:'';
+    const dueStr=t.due?`<span class="ethone-icon-row" style="font-size:10px;color:${overdue?'var(--accent3)':'var(--muted)'}"><i data-lucide="calendar-days" aria-hidden="true"></i>${new Date(t.due+'T12:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}${overdue?'<i data-lucide="triangle-alert" aria-label="Overdue"></i>':''}</span>`:'';
     const tagStr=t.tag?`<span style="font-size:10px;background:var(--surface3);padding:1px 7px;border-radius:10px;color:var(--muted)">${escapeHTML(t.tag)}</span>`:'';
     const colorBar=t.color?`style="border-left:3px solid ${t.color}"`:'' ;
     return `<div class="todo-item" ${colorBar} onclick="toggleTodo(${t.id})">
@@ -86,16 +91,20 @@ function renderTodos(){
         <div class="todo-text${isDone?' done':''}">${pIcon} ${escapeHTML(t.text)}</div>
         <div style="display:flex;gap:6px;margin-top:3px;flex-wrap:wrap">${dueStr}${tagStr}</div>
       </div>
-      <button class="item-btn" onclick="event.stopPropagation();deleteTodo(${t.id})" style="opacity:.5;flex-shrink:0">ðŸ—‘ï¸</button>
+      <button class="item-btn" type="button" aria-label="Delete task" onclick="event.stopPropagation();deleteTodo(${t.id})" style="opacity:.65;flex-shrink:0"><i data-lucide="trash-2" aria-hidden="true"></i></button>
     </div>`;
   };
 
-  if(pL)pL.innerHTML=!pending.length?'<div class="empty-state" style="padding:20px"><div class="empty-icon">ðŸŽ‰</div>All done!</div>':pending.map(t=>renderItem(t,false)).join('');
-  if(dL)dL.innerHTML=!done.length?'<div class="empty-state" style="padding:20px"><div class="empty-icon">ðŸ“‹</div>Nothing completed yet</div>':done.map(t=>renderItem(t,true)).join('');
+  if(pL)pL.innerHTML=!pending.length?'<div class="empty-state" style="padding:20px"><div class="empty-icon"><i data-lucide="circle-check-big" aria-hidden="true"></i></div>All done!</div>':pending.map(t=>renderItem(t,false)).join('');
+  if(dL)dL.innerHTML=!done.length?'<div class="empty-state" style="padding:20px"><div class="empty-icon"><i data-lucide="list-todo" aria-hidden="true"></i></div>Nothing completed yet</div>':done.map(t=>renderItem(t,true)).join('');
 
   // Overview mini-list
   const ov=document.getElementById('overview-todos');
   const allPending=todos.filter(t=>!t.done);
-  if(ov)ov.innerHTML=!allPending.length?'<div class="empty-state" style="padding:16px"><div style="font-size:20px;margin-bottom:6px">ðŸŽ‰</div>No pending tasks!</div>':allPending.slice(0,3).map(t=>`<div class="todo-item" onclick="toggleTodo(${t.id})"><div class="todo-check"></div><div class="todo-text">${escapeHTML(t.text)}</div></div>`).join('');
+  if(ov)ov.innerHTML=!allPending.length?'<div class="empty-state" style="padding:16px"><div class="empty-icon"><i data-lucide="circle-check-big" aria-hidden="true"></i></div>No pending tasks!</div>':allPending.slice(0,3).map(t=>`<div class="todo-item" onclick="toggleTodo(${t.id})"><div class="todo-check"></div><div class="todo-text">${escapeHTML(t.text)}</div></div>`).join('');
   const badge=document.getElementById('todo-count');if(badge)badge.textContent=allPending.length||'';
+  try{
+    const root=document.getElementById('page-todos')||document.getElementById('overview-todos');
+    if(root&&window.ETHONEIconSystem&&typeof window.ETHONEIconSystem.apply==='function')window.ETHONEIconSystem.apply(root);
+  }catch(error){}
 }

@@ -1,0 +1,936 @@
+/*
+ * ETHONE UX Final Polish
+ * Last-mile interaction layer: buttons, cards, sliders, lists, popups,
+ * notifications and focus states share one quiet premium behavior.
+ */
+
+:root {
+  --ux-final-ease: var(--ease-premium, cubic-bezier(0.22, 1, 0.36, 1));
+  --ux-final-fast: var(--motion-fast, 140ms);
+  --ux-final-normal: var(--motion-normal, 190ms);
+  --ux-final-ring: 0 0 0 3px rgba(var(--accent-rgb, var(--primary-rgb, 139, 92, 246)), 0.18);
+  --ux-final-border: rgba(var(--color-white-rgb, 255, 255, 255), 0.105);
+  --ux-final-border-hover: rgba(var(--color-white-rgb, 255, 255, 255), 0.17);
+  --ux-final-surface: linear-gradient(180deg, rgba(var(--surface-2-rgb, 21, 21, 26), 0.82), rgba(var(--surface-1-rgb, 16, 16, 20), 0.72));
+  --ux-final-control: rgba(var(--surface-3-rgb, 23, 23, 28), 0.84);
+  --ux-final-control-hover: rgba(var(--surface-hover-rgb, 32, 32, 38), 0.92);
+  --ux-final-shadow: 0 12px 36px rgba(var(--color-black-rgb, 0, 0, 0), 0.26), inset 0 1px 0 rgba(var(--color-white-rgb, 255, 255, 255), 0.04);
+  --ux-final-shadow-hover: 0 16px 44px rgba(var(--color-black-rgb, 0, 0, 0), 0.32), inset 0 1px 0 rgba(var(--color-white-rgb, 255, 255, 255), 0.055);
+}
+
+html.ethone-ux-final {
+  scrollbar-color: rgba(var(--color-white-rgb, 255, 255, 255), 0.18) transparent;
+}
+
+html.ethone-ux-final * {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.ethone-ux-final :where(button, a, input, textarea, select, [role="button"], [tabindex]) {
+  outline: none;
+}
+
+html.ethone-ux-final :where(button, a, input, textarea, select, [role="button"], [tabindex]):focus-visible {
+  box-shadow: var(--ux-final-ring), var(--shadow-xs, 0 1px 2px rgba(0, 0, 0, 0.2)) !important;
+  border-color: var(--border-focus, rgba(var(--accent-rgb, var(--primary-rgb, 139, 92, 246)), 0.76)) !important;
+}
+
+html.ethone-ux-final :where(
+  button,
+  .btn,
+  .ui-button,
+  .ethone-button,
+  .panel-action,
+  .item-btn,
+  .cat-tab,
+  .settings-nav-item,
+  .dropdown-item,
+  .context-menu-item,
+  .cmd-item,
+  .cmd-pin,
+  .toast button,
+  .notification button,
+  .modal-actions button,
+  .d4-button,
+  .d4-open-action,
+  .d4-quick-action,
+  .aic-button,
+  .mp41-btn,
+  .version-filter,
+  .tm-button,
+  .health-row,
+  .timeline-stat,
+  .mob-nav-btn
+) {
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  border-radius: var(--radius-lg, 12px);
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  transform: translateZ(0);
+  transition:
+    transform var(--ux-final-fast) var(--ux-final-ease),
+    background-color var(--ux-final-fast) var(--ux-final-ease),
+    border-color var(--ux-final-fast) var(--ux-final-ease),
+    color var(--ux-final-fast) var(--ux-final-ease),
+    box-shadow var(--ux-final-fast) var(--ux-final-ease),
+    opacity var(--ux-final-fast) var(--ux-final-ease) !important;
+}
+
+html.ethone-ux-final :where(
+  button,
+  .btn,
+  .ui-button,
+  .ethone-button,
+  .panel-action,
+  .item-btn,
+  .cat-tab,
+  .settings-nav-item,
+  .dropdown-item,
+  .context-menu-item,
+  .cmd-pin,
+  .modal-actions button,
+  .d4-button,
+  .d4-open-action,
+  .aic-button,
+  .mp41-btn,
+  .version-filter,
+  .tm-button,
+  .mob-nav-btn
+):hover:not(:disabled):not([aria-disabled="true"]) {
+  transform: translate3d(0, -1px, 0);
+}
+
+html.ethone-ux-final :where(
+  button,
+  .btn,
+  .ui-button,
+  .ethone-button,
+  .panel-action,
+  .item-btn,
+  .cat-tab,
+  .settings-nav-item,
+  .dropdown-item,
+  .context-menu-item,
+  .cmd-pin,
+  .modal-actions button,
+  .d4-button,
+  .d4-open-action,
+  .aic-button,
+  .mp41-btn,
+  .version-filter,
+  .tm-button,
+  .mob-nav-btn
+):active:not(:disabled):not([aria-disabled="true"]),
+html.ethone-ux-final .ethone-ux-pressed {
+  transform: translate3d(0, 0, 0) scale(0.985) !important;
+}
+
+html.ethone-ux-final :where(button:disabled, .btn:disabled, [aria-disabled="true"], .is-disabled, .ethone-is-disabled) {
+  cursor: not-allowed !important;
+  opacity: 0.52 !important;
+  transform: none !important;
+  filter: saturate(0.65);
+}
+
+html.ethone-ux-final :where(.btn-primary, .ui-button-primary, .primary, .d4-button-primary, .mp41-btn-primary) {
+  color: var(--text-on-accent, #fff) !important;
+  background:
+    linear-gradient(180deg, var(--accent-contrast-hover, #8550e8), var(--accent-contrast, #7c3aed)) !important;
+  border-color: color-mix(in srgb, var(--accent-contrast-hover, #8550e8) 82%, white 10%) !important;
+  box-shadow: 0 12px 30px rgba(var(--accent-rgb, var(--primary-rgb, 139, 92, 246)), 0.23), inset 0 1px 0 rgba(var(--color-white-rgb, 255, 255, 255), 0.18) !important;
+}
+
+html.ethone-ux-final :where(.btn-primary, .ui-button-primary, .primary, .d4-button-primary, .mp41-btn-primary):hover:not(:disabled) {
+  box-shadow: 0 16px 38px rgba(var(--accent-rgb, var(--primary-rgb, 139, 92, 246)), 0.28), inset 0 1px 0 rgba(var(--color-white-rgb, 255, 255, 255), 0.24) !important;
+}
+
+html.ethone-ux-final :where(.btn-ghost, .btn-secondary, .ui-button-secondary, .panel-action, .item-btn, .cat-tab, .cmd-pin, .modal-actions .btn-ghost) {
+  background: rgba(var(--color-white-rgb, 255, 255, 255), 0.048) !important;
+  border-color: var(--ux-final-border) !important;
+  color: var(--text-secondary, #b7b7bf) !important;
+}
+
+html.ethone-ux-final :where(.btn-ghost, .btn-secondary, .ui-button-secondary, .panel-action, .item-btn, .cat-tab, .cmd-pin, .modal-actions .btn-ghost):hover:not(:disabled) {
+  background: rgba(var(--color-white-rgb, 255, 255, 255), 0.075) !important;
+  border-color: var(--ux-final-border-hover) !important;
+  color: var(--text-primary, #f5f5f2) !important;
+}
+
+html.ethone-ux-final :where(
+  .panel,
+  .stat-card,
+  .settings-card,
+  .conn-card,
+  .game-card,
+  .note-item,
+  .todo-item,
+  .kanban-card,
+  .countdown-card,
+  .journal-entry,
+  .goal-card,
+  .pinned-card,
+  .link-card,
+  .widget,
+  .d4-card,
+  .d4-widget,
+  .aic-panel,
+  .version-panel,
+  .version-card,
+  .health-panel,
+  .mp41-card,
+  .tm-panel,
+  .tm-stat,
+  .ec-panel,
+  .ih-card,
+  .ph-card
+) {
+  border-color: var(--ux-final-border) !important;
+  background: var(--ux-final-surface) !important;
+  box-shadow: var(--ux-final-shadow) !important;
+  transform: translateZ(0);
+  transition:
+    transform var(--ux-final-normal) var(--ux-final-ease),
+    border-color var(--ux-final-normal) var(--ux-final-ease),
+    background-color var(--ux-final-normal) var(--ux-final-ease),
+    box-shadow var(--ux-final-normal) var(--ux-final-ease),
+    opacity var(--ux-final-normal) var(--ux-final-ease) !important;
+}
+
+html.ethone-ux-final :where(
+  .panel,
+  .stat-card,
+  .settings-card,
+  .conn-card,
+  .game-card,
+  .note-item,
+  .todo-item,
+  .kanban-card,
+  .countdown-card,
+  .journal-entry,
+  .goal-card,
+  .pinned-card,
+  .link-card,
+  .widget,
+  .d4-card,
+  .d4-widget,
+  .aic-panel,
+  .version-panel,
+  .version-card,
+  .health-panel,
+  .mp41-card,
+  .tm-panel,
+  .ec-panel,
+  .ih-card,
+  .ph-card
+):hover {
+  border-color: var(--ux-final-border-hover) !important;
+  box-shadow: var(--ux-final-shadow-hover) !important;
+}
+
+html.ethone-ux-final :where(.stat-card, .link-card, .pinned-card, .kanban-card, .note-item, .todo-item, .d4-quick-action):hover {
+  transform: translate3d(0, -1px, 0);
+}
+
+html.ethone-ux-final :where(.panel-header, .settings-card-header, .modal-header, .toast, .notification-item, .cmd-search-summary) {
+  min-width: 0;
+}
+
+html.ethone-ux-final :where(.panel-title, .settings-card-title, .conn-title, .game-card-title, .modal-title, .cmd-item-label) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+html.ethone-ux-final :where(.cmd-item, .dropdown-item, .context-menu-item, .settings-nav-item, .nav-item, .todo-item, .note-item, .item-row, .timeline-event, .version-row, .health-row) {
+  gap: var(--spacing-sm, 12px);
+}
+
+html.ethone-ux-final :where(.cmd-item:hover, .dropdown-item:hover, .context-menu-item:hover, .settings-nav-item:hover, .nav-item:hover) {
+  background-color: rgba(var(--color-white-rgb, 255, 255, 255), 0.058) !important;
+}
+
+html.ethone-ux-final :where(.cmd-item.selected, .settings-nav-item.active, .nav-item.active, .cat-tab.active, .version-filter.active) {
+  background:
+    linear-gradient(180deg, rgba(var(--accent-rgb, var(--primary-rgb, 139, 92, 246)), 0.16), rgba(var(--accent-rgb, var(--primary-rgb, 139, 92, 246)), 0.085)) !important;
+  border-color: rgba(var(--accent-rgb, var(--primary-rgb, 139, 92, 246)), 0.32) !important;
+  color: var(--text-primary, #f5f5f2) !important;
+}
+
+html.ethone-ux-final :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select, .modal-input, .modal-select, .ai-input, .search-bar, .ui-input, .ui-search) {
+  border-color: var(--ux-final-border) !important;
+  background: var(--ux-final-control) !important;
+  color: var(--text-primary, #f5f5f2) !important;
+  box-shadow: inset 0 1px 0 rgba(var(--color-white-rgb, 255, 255, 255), 0.035) !important;
+  transition:
+    border-color var(--ux-final-fast) var(--ux-final-ease),
+    background-color var(--ux-final-fast) var(--ux-final-ease),
+    box-shadow var(--ux-final-fast) var(--ux-final-ease) !important;
+}
+
+html.ethone-ux-final :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select, .modal-input, .modal-select, .ai-input, .search-bar, .ui-input, .ui-search):hover {
+  border-color: var(--ux-final-border-hover) !important;
+  background: var(--ux-final-control-hover) !important;
+}
+
+html.ethone-ux-final :where(input::placeholder, textarea::placeholder) {
+  color: rgba(var(--text-secondary-rgb, 183, 183, 191), 0.46) !important;
+}
+
+html.ethone-ux-final input[type="range"] {
+  width: 100%;
+  min-height: 28px;
+  accent-color: var(--accent, #8b5cf6);
+  cursor: pointer;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+html.ethone-ux-final input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: var(--radius-full, 999px);
+  background: linear-gradient(90deg, rgba(var(--accent-rgb, var(--primary-rgb, 139, 92, 246)), 0.58), rgba(var(--color-white-rgb, 255, 255, 255), 0.11));
+}
+
+html.ethone-ux-final input[type="range"]::-webkit-slider-thumb {
+  width: 18px;
+  height: 18px;
+  margin-top: -6px;
+  border: 1px solid rgba(var(--color-white-rgb, 255, 255, 255), 0.3);
+  border-radius: var(--radius-full, 999px);
+  background: var(--text-primary, #f5f5f2);
+  box-shadow: 0 8px 20px rgba(var(--color-black-rgb, 0, 0, 0), 0.34);
+  -webkit-appearance: none;
+}
+
+html.ethone-ux-final input[type="range"]::-moz-range-track {
+  height: 6px;
+  border: 0;
+  border-radius: var(--radius-full, 999px);
+  background: linear-gradient(90deg, rgba(var(--accent-rgb, var(--primary-rgb, 139, 92, 246)), 0.58), rgba(var(--color-white-rgb, 255, 255, 255), 0.11));
+}
+
+html.ethone-ux-final input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgba(var(--color-white-rgb, 255, 255, 255), 0.3);
+  border-radius: var(--radius-full, 999px);
+  background: var(--text-primary, #f5f5f2);
+  box-shadow: 0 8px 20px rgba(var(--color-black-rgb, 0, 0, 0), 0.34);
+}
+
+html.ethone-ux-final :where(.modal-overlay, .overlay, .cmd-overlay, #cmd-palette-overlay, .notif-panel-overlay, .side-panel-backdrop) {
+  backdrop-filter: var(--glass-filter-overlay, blur(18px) saturate(1.16)) !important;
+}
+
+html.ethone-ux-final :where(.modal, #cmd-palette, .dropdown-menu, .context-menu, .notif-panel, .side-panel, .popover, .tooltip, .toast, .ethone-toast) {
+  border-color: var(--glass-border-strong, rgba(var(--color-white-rgb, 255, 255, 255), 0.15)) !important;
+  background: var(--glass-surface-raised, var(--ux-final-surface)) !important;
+  box-shadow: var(--glass-shadow, 0 22px 70px rgba(0, 0, 0, 0.36)) !important;
+}
+
+html.ethone-ux-final :where(.toast-container, .ethone-toast-stack, #toast-container) {
+  gap: 10px !important;
+  pointer-events: none;
+}
+
+html.ethone-ux-final :where(.toast, .ethone-toast, .notification-toast) {
+  pointer-events: auto;
+  min-width: min(340px, calc(100vw - 32px));
+  max-width: min(420px, calc(100vw - 32px));
+  border-radius: var(--radius-lg, 12px) !important;
+  animation-duration: var(--ux-final-normal) !important;
+  animation-timing-function: var(--ux-final-ease) !important;
+}
+
+html.ethone-ux-final :where(.empty-state, .ethone-polished-empty-state, .timeline-empty, .version-empty, .health-empty, .tm-empty, .ec-empty) {
+  border: 1px dashed rgba(var(--color-white-rgb, 255, 255, 255), 0.105);
+  border-radius: var(--radius-xl, 14px);
+  background: rgba(var(--color-white-rgb, 255, 255, 255), 0.026);
+  color: var(--text-secondary, #b7b7bf);
+}
+
+html.ethone-ux-final :where(.skeleton, .loading-skeleton, [data-loading="true"]) {
+  position: relative;
+  overflow: hidden;
+  background: rgba(var(--color-white-rgb, 255, 255, 255), 0.045) !important;
+}
+
+html.ethone-ux-final :where(.skeleton, .loading-skeleton, [data-loading="true"])::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(var(--color-white-rgb, 255, 255, 255), 0.075), transparent);
+  animation: ethone-ux-skeleton 1.4s var(--ux-final-ease) infinite;
+}
+
+@keyframes ethone-ux-skeleton {
+  to { transform: translateX(100%); }
+}
+
+html.ethone-ux-final ::selection {
+  color: var(--text-on-accent, #fff);
+  background: rgba(var(--accent-rgb, var(--primary-rgb, 139, 92, 246)), 0.45);
+}
+
+html.ethone-ux-final ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+html.ethone-ux-final ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html.ethone-ux-final ::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: var(--radius-full, 999px);
+  background: rgba(var(--color-white-rgb, 255, 255, 255), 0.16);
+  background-clip: padding-box;
+}
+
+html.ethone-ux-final ::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--color-white-rgb, 255, 255, 255), 0.24);
+  background-clip: padding-box;
+}
+
+@media (max-width: 768px) {
+  html.ethone-ux-final :where(button, .btn, .panel-action, .item-btn, .cat-tab, .settings-nav-item, .dropdown-item, .context-menu-item, .d4-button, .aic-button, .mp41-btn) {
+    min-height: 44px;
+  }
+
+  html.ethone-ux-final :where(.toast, .ethone-toast, .notification-toast) {
+    width: calc(100vw - 24px);
+    max-width: calc(100vw - 24px);
+  }
+}
+
+/* Auth fit guard: the login panel must remain complete on compact laptop
+   viewports without hiding the product preview or introducing page scroll. */
+@media (min-width: 901px) and (max-height: 800px) {
+  #auth-screen.ethone-auth-v3-visible {
+    overflow: hidden !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-layout {
+    min-height: calc(100dvh - 16px) !important;
+    row-gap: 8px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-v3-preview {
+    display: block !important;
+    height: min(440px, calc(100dvh - 184px)) !important;
+    min-height: 0 !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #lb-box {
+    min-height: 0 !important;
+    padding: 15px 22px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-card-brand {
+    margin-bottom: 7px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-form-header,
+  #auth-screen.ethone-auth-v3-visible #auth-tabs-wrap {
+    margin-bottom: 8px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-form-title {
+    margin-bottom: 4px !important;
+    font-size: 25px !important;
+    line-height: 1.08 !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-form-sub {
+    font-size: 11px !important;
+    line-height: 1.28 !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-card #auth-tabs-wrap {
+    height: 46px !important;
+    min-height: 46px !important;
+    padding: 4px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-card .lb-tab {
+    height: 38px !important;
+    min-height: 38px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-card #form-login,
+  #auth-screen.ethone-auth-v3-visible #auth-card #form-register {
+    min-height: 0 !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-field {
+    margin-bottom: 8px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-field > label,
+  #auth-screen.ethone-auth-v3-visible .auth-label-row label {
+    margin-bottom: 5px !important;
+    font-size: 10.5px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .lb-input {
+    height: 38px !important;
+    min-height: 38px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .lb-eye {
+    width: 30px !important;
+    height: 30px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-remember {
+    margin: 0 0 8px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-card .lb-btn-primary {
+    height: 42px !important;
+    min-height: 42px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-divider {
+    margin: 8px 0 !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-card .lb-social {
+    height: 36px !important;
+    min-height: 36px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-card-footer {
+    display: none !important;
+  }
+}
+
+/* Compact phone layout: preserve the full sign-in action in the first mobile
+   viewport while keeping one intentional scroll area for exceptional states. */
+@media (max-width: 640px) and (min-height: 700px) and (max-height: 960px) {
+  #auth-screen.ethone-auth-v3-visible {
+    padding: 12px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-layout {
+    row-gap: 6px !important;
+    padding-bottom: 12px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-v3-brand {
+    margin-bottom: 9px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-v3-title {
+    font-size: clamp(28px, 7.8vw, 31px) !important;
+    line-height: 1 !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-v3-copy {
+    display: none !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-card {
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #lb-box {
+    padding: 18px 20px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-card-brand {
+    margin-bottom: 11px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-form-header,
+  #auth-screen.ethone-auth-v3-visible #auth-tabs-wrap {
+    margin-bottom: 11px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-card #auth-tabs-wrap {
+    height: 46px !important;
+    min-height: 46px !important;
+    padding: 4px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-card .lb-tab {
+    height: 38px !important;
+    min-height: 38px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-field {
+    margin-bottom: 8px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-field > label,
+  #auth-screen.ethone-auth-v3-visible .auth-label-row label {
+    margin-bottom: 5px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .lb-input {
+    height: 42px !important;
+    min-height: 42px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .lb-eye {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-remember {
+    min-height: 16px !important;
+    height: 16px !important;
+    margin: 0 0 10px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-remember input[type="checkbox"] {
+    width: 16px !important;
+    min-width: 16px !important;
+    min-height: 16px !important;
+    height: 16px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .lb-ghost {
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 0 !important;
+    font-size: 10.5px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-card .lb-btn-primary {
+    height: 46px !important;
+    min-height: 46px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-divider {
+    margin: 8px 0 !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-social-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-card .lb-social {
+    height: 44px !important;
+    min-height: 44px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-card-footer {
+    display: none !important;
+  }
+}
+
+@media (max-width: 375px) and (max-height: 820px) {
+  #auth-screen.ethone-auth-v3-visible {
+    padding: 8px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-layout {
+    padding-bottom: 0 !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #lb-box {
+    padding: 14px 20px !important;
+  }
+}
+
+/* Tablet auth layout: the preview and header previously occupied the same
+   named grid area, while the fixed-height shell clipped the OAuth actions. */
+@media (min-width: 641px) and (max-width: 900px) {
+  html.ethone-auth-mode,
+  html.ethone-auth-mode body {
+    overflow: hidden !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible {
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    align-content: start !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    padding: 12px 20px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-layout {
+    width: min(560px, 100%) !important;
+    min-height: 0 !important;
+    margin: 0 auto !important;
+    grid-template-columns: 1fr !important;
+    grid-template-areas: "language" "header" "card" !important;
+    row-gap: 10px !important;
+    padding: 0 0 12px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-v3-hero {
+    grid-area: header !important;
+    width: 100% !important;
+    display: block !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-v3-header {
+    width: 100% !important;
+    display: grid !important;
+    justify-items: center !important;
+    gap: 8px !important;
+    text-align: center !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-v3-brand {
+    display: none !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-v3-title {
+    max-width: 540px !important;
+    font-size: clamp(32px, 5vw, 38px) !important;
+    line-height: 1 !important;
+    text-align: center !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-v3-copy {
+    max-width: 460px !important;
+    margin-top: 6px !important;
+    font-size: 12px !important;
+    line-height: 1.35 !important;
+    text-align: center !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-v3-preview {
+    display: none !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-card {
+    grid-area: card !important;
+    width: min(430px, 100%) !important;
+    max-width: 430px !important;
+    justify-self: center !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #lb-box {
+    min-height: 0 !important;
+    padding: 18px 22px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-card-brand,
+  #auth-screen.ethone-auth-v3-visible #auth-form-header,
+  #auth-screen.ethone-auth-v3-visible #auth-tabs-wrap {
+    margin-bottom: 10px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-form-title {
+    font-size: 28px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-form-sub {
+    font-size: 12px !important;
+    line-height: 1.35 !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-card #auth-tabs-wrap {
+    height: 46px !important;
+    min-height: 46px !important;
+    padding: 4px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-card .lb-tab {
+    height: 38px !important;
+    min-height: 38px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-field {
+    margin-bottom: 8px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-field > label,
+  #auth-screen.ethone-auth-v3-visible .auth-label-row label {
+    margin-bottom: 5px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .lb-input {
+    height: 42px !important;
+    min-height: 42px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .lb-eye {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-remember {
+    min-height: 16px !important;
+    height: 16px !important;
+    margin: 0 0 10px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-remember input[type="checkbox"] {
+    width: 16px !important;
+    min-width: 16px !important;
+    min-height: 16px !important;
+    height: 16px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .lb-ghost {
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 0 !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-card .lb-btn-primary {
+    height: 46px !important;
+    min-height: 46px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-divider {
+    margin: 8px 0 !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-card .lb-social {
+    height: 44px !important;
+    min-height: 44px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-card-footer {
+    display: none !important;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 900px) and (min-height: 821px) {
+  #auth-screen.ethone-auth-v3-visible {
+    align-content: center !important;
+    align-items: center !important;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 900px) and (max-height: 820px) {
+  #auth-screen.ethone-auth-v3-visible {
+    align-items: flex-start !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-layout {
+    row-gap: 7px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-v3-brand,
+  #auth-screen.ethone-auth-v3-visible .auth-v3-copy {
+    display: none !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-v3-title {
+    font-size: 31px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #lb-box {
+    padding: 15px 22px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-card-brand,
+  #auth-screen.ethone-auth-v3-visible #auth-form-header,
+  #auth-screen.ethone-auth-v3-visible #auth-tabs-wrap {
+    margin-bottom: 8px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-form-title {
+    font-size: 25px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-field {
+    margin-bottom: 8px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .lb-input {
+    height: 38px !important;
+    min-height: 38px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-remember {
+    min-height: 16px !important;
+    height: 16px !important;
+    margin: 0 0 8px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-card .lb-btn-primary {
+    height: 42px !important;
+    min-height: 42px !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible .auth-divider {
+    margin: 8px 0 !important;
+  }
+
+  #auth-screen.ethone-auth-v3-visible #auth-card .lb-social {
+    height: 38px !important;
+    min-height: 38px !important;
+  }
+}
+
+/* Auth is a self-contained surface. Mobile application chrome must not remain
+   reachable behind it by touch or keyboard. */
+html.ethone-auth-mode :where(#mobile-topbar, #mobile-bottom-nav, #hamburger) {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Password visibility is an input affordance, not an in-flow button. A broad
+   global button normalizer changed it to `position: relative`, creating a
+   second row on narrow login layouts. */
+#auth-screen.ethone-auth-v3-visible .auth-password > .lb-eye {
+  position: absolute !important;
+  top: 50% !important;
+  right: 6px !important;
+  bottom: auto !important;
+  left: auto !important;
+  margin: 0 !important;
+  transform: translate3d(0, -50%, 0) !important;
+}
+
+#auth-screen.ethone-auth-v3-visible .auth-password > .lb-eye:active {
+  transform: translate3d(0, -50%, 0) scale(.96) !important;
+}
+
+/* Final shell arbitration. Older sidebar layers carry equally-specific
+   off-canvas transforms, so the open drawer could keep `mobile-open` while
+   remaining visually outside the viewport. */
+@media (max-width: 1024px) {
+  html.ethone-ux-final body:is(.ethone-mobile,.ethone-tablet) #app-shell #main-sidebar.sidebar.os-sidebar.ethone-sidebar-final.mobile-open {
+    left: 0 !important;
+    transform: translate3d(0, 0, 0) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    z-index: 5700 !important;
+  }
+
+  html.ethone-ux-final body:is(.ethone-mobile,.ethone-tablet) .sidebar-overlay.mobile-open {
+    z-index: 5690 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+}
+
+@media (max-width: 390px) {
+  html.ethone-ux-final body.ethone-mobile #mobile-bottom-nav .mob-nav-btn span:last-child {
+    font-size: 9px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.ethone-ux-final *,
+  html.ethone-ux-final *::before,
+  html.ethone-ux-final *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
+  }
+}

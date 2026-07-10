@@ -9,6 +9,15 @@ function ethoneScheduleWidgetTask(label,fn,delay){
   setTimeout(()=>{if(idle)idle(run,{timeout:1400});else run();},Number(delay)||0);
 }
 
+function ethoneWidgetCall(label,fnName,args){
+  args=Array.isArray(args)?args:[];
+  const boot=window.ETHONEBootManager;
+  if(boot&&typeof boot.safeCall==='function')return boot.safeCall('widgets.'+label,fnName,args,{lazyGroup:'connections',autoLoad:false});
+  const fn=window[fnName];
+  if(typeof fn!=='function')return false;
+  try{return fn.apply(window,args)}catch(e){console.warn('[ETHONE widgets] task failed:',label,e);return false}
+}
+
 function ethoneWidgetInitSignature(p){
   try{
     const state=p&&p.state?p.state:{};
@@ -80,10 +89,10 @@ function initSidebarWidgets(p){
     if(npWrap)npWrap.style.setProperty('display','none','important');
     if(ifrWrap)ifrWrap.style.setProperty('display','none','important');
     // NE PAS démarrer le auto-refresh Last.fm fallback quand Discord est connecté
-    clearInterval(_spotifyAutoRefresh);
+    ethoneWidgetCall('spotify.stop-auto-refresh','stopSpotifyAutoRefresh');
     ethoneScheduleWidgetTask('discord',()=>{
-      refreshDiscordSidebar();
-      startLanyardWS(conn.discord.userId);
+      ethoneWidgetCall('discord.refresh','refreshDiscordSidebar');
+      ethoneWidgetCall('discord.lanyard','startLanyardWS',[conn.discord.userId]);
     },120);
   } else {
     setWidgetDisplay('sb-discord-wrap',false);
@@ -94,8 +103,8 @@ function initSidebarWidgets(p){
       const ifrWrap=document.getElementById('sb-spotify-iframe-wrap');
       if(ifrWrap)ifrWrap.style.setProperty('display','block','important');
       ethoneScheduleWidgetTask('spotify',()=>{
-        refreshSpotifySidebar();
-        startSpotifyAutoRefresh();
+        ethoneWidgetCall('spotify.refresh','refreshSpotifySidebar');
+        ethoneWidgetCall('spotify.start-auto-refresh','startSpotifyAutoRefresh');
       },160);
     }else{
       setWidgetDisplay('sb-spotify-iframe-wrap',false);
@@ -105,8 +114,9 @@ function initSidebarWidgets(p){
   // ── Last.fm scrobble card ──
   if(conn.lastfm?.username&&vis.lastfm!==false){
     ethoneScheduleWidgetTask('lastfm',()=>{
-      renderLastfmCard(conn.lastfm).catch(()=>{});
-      startLastfmAutoRefresh();
+      const rendered=ethoneWidgetCall('lastfm.render','renderLastfmCard',[conn.lastfm]);
+      if(rendered&&typeof rendered.catch==='function')rendered.catch(()=>{});
+      ethoneWidgetCall('lastfm.start-auto-refresh','startLastfmAutoRefresh');
     },220);
   }else{
     setWidgetDisplay('sb-lastfm-wrap',false);

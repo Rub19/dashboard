@@ -74,7 +74,7 @@
     for (var i = 0; i < possible.length; i += 1) {
       if (possible[i] && String(possible[i]).trim()) return String(possible[i]).trim();
     }
-    return "Rub";
+    return text("Utilisateur", "User", "Usuario", "Benutzer");
   }
 
   function asArray(value) {

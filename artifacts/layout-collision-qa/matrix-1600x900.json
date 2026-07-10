@@ -1,0 +1,233 @@
+{
+  "label": "1600x900",
+  "rows": [
+    {
+      "route": "dashboard",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 1,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 1050,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    },
+    {
+      "route": "files",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 1,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 1050,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    },
+    {
+      "route": "notes",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 1,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 1050,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    },
+    {
+      "route": "kanban",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 1,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 1050,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    },
+    {
+      "route": "calendar",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 1,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 1050,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    },
+    {
+      "route": "activity",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 1,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 1050,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    },
+    {
+      "route": "versions",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 1,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 1050,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    },
+    {
+      "route": "marketplace",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 1,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 1050,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    },
+    {
+      "route": "widget-marketplace",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 1,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 1050,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    },
+    {
+      "route": "settings",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 1,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 1050,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    },
+    {
+      "route": "ai",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 1,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 1050,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    },
+    {
+      "route": "connections",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 1,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 1050,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    }
+  ]
+}

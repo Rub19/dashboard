@@ -56,14 +56,19 @@ function initSidebarWidgetToggles(){
     if(btn)btn.style.display='flex';
     updateSidebarWidgetToggleBtn('lastfm');
   }
-  renderWidgetManager();
-  applySidebarWidgetOrder();
+  ethoneBootCall('widgets.manager.render','renderWidgetManager',[],{lazyGroup:'widgets',autoLoad:false});
+  ethoneBootCall('widgets.order.apply','applySidebarWidgetOrder',[],{lazyGroup:'widgets',autoLoad:false});
 }
 
 
 function toggleSidebarCompact(){
+  if(window.ETHONESidebarFinal&&typeof window.ETHONESidebarFinal.cycleMode==='function'){
+    window.ETHONESidebarFinal.cycleMode();
+    return;
+  }
   const p=curP();if(!p)return;
   p.sidebarCompact=!p.sidebarCompact;
+  p.sidebarMode=p.sidebarCompact?'compact':'full';
   const sb=document.getElementById('main-sidebar');
   if(sb)sb.classList.toggle('compact',p.sidebarCompact);
   // Width (and the main-content grid track that depends on it) is driven
@@ -77,6 +82,12 @@ function toggleSidebarCompact(){
 
 function applySidebarCompact(){
   const p=curP();if(!p)return;
+  if(window.ETHONESidebarFinal&&typeof window.ETHONESidebarFinal.applyMode==='function'){
+    const mode=['full','compact','icon'].includes(p.sidebarMode)?p.sidebarMode:(p.sidebarCompact?'compact':'full');
+    window.ETHONESidebarFinal.applyMode(mode,{silent:true});
+    if(typeof window.applyResponsiveSidebar==='function')window.applyResponsiveSidebar();
+    return;
+  }
   const sb=document.getElementById('main-sidebar');
   if(sb)sb.classList.toggle('compact',!!p.sidebarCompact);
   if(window.ethoneSidebarResize){
@@ -93,9 +104,32 @@ function applySidebarCompact(){
 
 function scheduleDashboardWork(label,fn,delay){
   if(typeof fn!=='function')return;
-  const run=()=>{try{fn()}catch(e){console.warn('[ETHONE boot] deferred task failed:',label,e);}};
+  const run=()=>{
+    const boot=window.ETHONEBootManager;
+    if(boot&&typeof boot.run==='function')return boot.run(label,fn);
+    try{fn()}catch(e){console.warn('[ETHONE boot] deferred task failed:',label,e);}
+  };
   const idle=window.requestIdleCallback;
   setTimeout(()=>{if(idle)idle(run,{timeout:1200});else run();},Number(delay)||0);
+}
+
+function ethoneBootCall(label,fnName,args,options){
+  const boot=window.ETHONEBootManager;
+  if(boot&&typeof boot.safeCall==='function')return boot.safeCall(label,fnName,args||[],options||{});
+  const fn=window[fnName];
+  if(typeof fn!=='function')return false;
+  try{return fn.apply(window,args||[]);}catch(e){console.warn('[ETHONE boot] task failed:',label,e);return false;}
+}
+
+function ethoneStableBoot(){
+  try{
+    return !!(
+      window.ETHONE_STABLE_BOOT ||
+      window.ETHONE_LIGHT_BOOT_MODE ||
+      window.__ethoneDisableExperimentalBoot ||
+      document.documentElement.dataset.ethoneStableBoot==='1'
+    );
+  }catch(e){return !!(window.ETHONE_STABLE_BOOT||window.ETHONE_LIGHT_BOOT_MODE||window.__ethoneDisableExperimentalBoot)}
 }
 
 function initDashboard(){
@@ -127,7 +161,9 @@ function initDashboard(){
   document.getElementById('quick-note').value=p.state.note||'';
   document.getElementById('main-note').value=p.state.note||'';
   updateClock();
-  scheduleDashboardWork('stats',()=>updateStats(),80);
+  scheduleDashboardWork('stats',()=>{
+    if(typeof updateStats==='function')updateStats();
+  },80);
   // Pré-charger état pomo depuis localStorage avant renderPomo
   scheduleDashboardWork('pomo-restore',()=>{
     const _end=parseInt(localStorage.getItem('pomo_end')||0);
@@ -149,16 +185,19 @@ function initDashboard(){
     initDarkMode();
   },200);
   scheduleDashboardWork('banner',()=>{if(typeof updateBannerDisplay==='function')updateBannerDisplay();},240);
-  scheduleDashboardWork('notifications',()=>initNotifState(p),280);
-  updateSyncIndicator(_sbUser?'saved':'offline');
+  scheduleDashboardWork('notifications',()=>ethoneBootCall('notifications.desktop-state','initNotifState',[p],{lazyGroup:'notifications',autoLoad:false}),280);
+  ethoneBootCall('sync.indicator','updateSyncIndicator',[_sbUser?'saved':'offline']);
 
   // ── VISIBLE CONTENT ─────────────────────────────────────────────────
   scheduleDashboardWork('home-content',()=>{
-    renderRecentItems();renderActivity();renderTodos();renderOverviewEvents();
-    if(typeof renderPinnedLinks==='function')renderPinnedLinks();
-    if(typeof renderCountdown==='function')renderCountdown();
+    ethoneBootCall('dashboard.recent-items','renderRecentItems');
+    ethoneBootCall('dashboard.activity-feed','renderActivity',[],{lazyGroup:'activity',autoLoad:false});
+    ethoneBootCall('dashboard.todos','renderTodos');
+    ethoneBootCall('dashboard.overview-events','renderOverviewEvents',[],{lazyGroup:'activity',autoLoad:false});
+    ethoneBootCall('dashboard.pinned-links','renderPinnedLinks');
+    ethoneBootCall('dashboard.countdown','renderCountdown');
   },320);
-  scheduleDashboardWork('connections-ui',()=>loadConnectionsUI(),520);
+  scheduleDashboardWork('connections-ui',()=>ethoneBootCall('connections.ui','loadConnectionsUI',[],{lazyGroup:'connections',autoLoad:false}),520);
   if(!window.ethoneCanMountUI||window.ethoneCanMountUI('widgets-panel')){
     scheduleDashboardWork('sidebar-widgets',()=>initSidebarWidgets(p),680);
   }
@@ -167,17 +206,17 @@ function initDashboard(){
   // ── DEFERRED (non-critical) ───────────────────────────────────────────
   // Restaurer pomo immédiatement (avant le setTimeout) pour éviter flash 25:00
   scheduleDashboardWork('secondary-dashboard-render',()=>{
-    if(typeof renderGamingOverview==='function')renderGamingOverview();
-    initAnimations();
-    startNotifScan();
+    ethoneBootCall('dashboard.gaming-overview','renderGamingOverview',[],{lazyGroup:'gaming',autoLoad:false});
+    ethoneBootCall('polish.animations','initAnimations',[],{lazyGroup:'polish',autoLoad:false});
+    ethoneBootCall('notifications.scan','startNotifScan',[],{lazyGroup:'notifications',autoLoad:false});
   },760);
   scheduleDashboardWork('mobile-layout',()=>checkMobileLayout(),820);
   if(!window.ethoneCanMountUI||window.ethoneCanMountUI('widgets-panel')){
-    scheduleDashboardWork('spotify-sidebar',()=>refreshSpotifySidebar(),900);
+    scheduleDashboardWork('spotify-sidebar',()=>ethoneBootCall('connections.spotify-sidebar','refreshSpotifySidebar',[],{lazyGroup:'connections',autoLoad:false}),900);
   }
   scheduleDashboardWork('theme-refresh',()=>{if(typeof applyTheme==='function')applyTheme(p.themeIdx||0);},960);
   // Apply bgTheme — wait for paint then size canvas properly
-  if(p.bgTheme&&p.bgTheme!=='none'){
+  if(p.bgTheme&&p.bgTheme!=='none'&&!window.__ethoneSkipAnimatedBackgrounds&&typeof applyBgTheme==='function'){
     const _applyBg=()=>{
       const c=document.getElementById('bg-canvas');
       if(!c)return;
@@ -186,7 +225,7 @@ function initDashboard(){
       applyBgTheme(p.bgTheme);
       // Make sidebar transparent
       const sb=document.getElementById('main-sidebar');
-      if(sb)sb.style.background='rgba(5,5,7,.5)';
+      if(sb)sb.style.background='rgba(var(--surface-0-rgb),.5)';
     };
     // Double RAF ensures layout is complete
     requestAnimationFrame(()=>requestAnimationFrame(_applyBg));
@@ -200,13 +239,18 @@ function initDashboard(){
     },1040);
   }
   // Delay weather/quote to let DOM and geolocation settle
-  scheduleDashboardWork('weather-quote',()=>{fetchWeather();fetchQuote();},1500);
+  if(!window.__ethoneSkipExternalWidgets&&!ethoneStableBoot()){
+    scheduleDashboardWork('weather-quote',()=>{
+      ethoneBootCall('dashboard.weather','fetchWeather');
+      ethoneBootCall('dashboard.quote','fetchQuote');
+    },1500);
+  }
   scheduleDashboardWork('banner-refresh',()=>{if(typeof updateBannerDisplay==='function')updateBannerDisplay();},1120);
   try{
     const welcomeKey='ethone:welcome-activity:'+p.id;
     if(sessionStorage.getItem(welcomeKey)!=='1'){
       sessionStorage.setItem(welcomeKey,'1');
-      scheduleDashboardWork('welcome-activity',()=>addActivity('Welcome back, '+p.name,'var(--accent)'),1000);
+      if(!ethoneStableBoot())scheduleDashboardWork('welcome-activity',()=>ethoneBootCall('activity.welcome','addActivity',['Welcome back, '+p.name,'var(--accent)'],{lazyGroup:'activity',autoLoad:false}),1000);
     }
   }catch(e){}
 }
@@ -225,7 +269,7 @@ function updateSidebarAvatar(){
       el.style.background='transparent';
       el.appendChild(img);
     } else {
-      el.style.background=p.avatarBg||'rgba(139,92,246,.15)';
+      el.style.background=p.avatarBg||'rgba(var(--primary-rgb),.15)';
       const span=document.createElement('span');
       span.style.cssText=`font-size:${p.avatarEmoji?'18px':'15px'};line-height:1;font-weight:${p.avatarEmoji?'400':'700'};color:${p.avatarEmoji?'inherit':'var(--accent)'}`;
       span.textContent=p.avatarEmoji||(p.name||'U')[0].toUpperCase();
@@ -244,11 +288,13 @@ function updateSettingsPreview(){
   const p=curP();if(!p)return;
   const el=document.getElementById('settings-avatar-preview');
   if(el){
-    el.style.background=p.avatarImg?'transparent':(p.avatarBg||'#1e1e24');
+    el.style.background=p.avatarImg?'transparent':(p.avatarBg||'var(--surface-raised)');
     el.style.position='relative';
     el.innerHTML=avatarHTML(p,54,11);
   }
-  renderThemeSwatches();renderBgThemeBtns();renderSidebarCustomize();
+  if(typeof renderThemeSwatches==='function')renderThemeSwatches();
+  if(typeof renderBgThemeBtns==='function')renderBgThemeBtns();
+  if(typeof renderSidebarCustomize==='function')renderSidebarCustomize();
 
   // Restore custom color preview
   if(p.customAccent){
@@ -270,8 +316,8 @@ function updateSettingsPreview(){
   });
 
   // XP + Level
-  renderProfileXP(p);
+  if(typeof renderProfileXP==='function')renderProfileXP(p);
 
   // Quick stats
-  renderProfileQuickStats(p);
+  if(typeof renderProfileQuickStats==='function')renderProfileQuickStats(p);
 }

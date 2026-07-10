@@ -87,7 +87,9 @@
         return;
       }
     } catch (error) {}
-    console[type === "error" ? "error" : "log"]("[ETHONE Cloud]", message);
+    if (type === "error" && global.console && typeof global.console.error === "function") {
+      global.console.error("[ETHONE Cloud]", message);
+    }
   }
 
   function logActivity(title, body, category) {

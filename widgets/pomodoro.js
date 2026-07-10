@@ -9,6 +9,20 @@ function POMO_MODES(){return [
 let pomoIdx=0, pomoRemaining=0, pomoRunning=false, pomoInterval=null, pomoCount=0;
 let _pomoSoundEnabled=true;
 
+function pomoLanguage(){
+  return String(window._lang||document.documentElement.lang||'en').toLowerCase().slice(0,2);
+}
+
+function sendPomoDesktopNotification(title,body){
+  if(!('Notification' in window)||Notification.permission!=='granted')return false;
+  try{
+    const p=typeof curP==='function'?curP():null;
+    if(p&&p.state&&p.state.notifEnabled===false)return false;
+    new Notification(title,{body:body||''});
+    return true;
+  }catch(e){return false;}
+}
+
 function togglePomoSound(){
   _pomoSoundEnabled=!_pomoSoundEnabled;
   const icon=document.getElementById('pomo-sound-icon');
@@ -134,10 +148,11 @@ function pomoToggle(){
       if(pomoIdx===0){ // 0=Focus
         pomoCount++;savePomoSession();
         playPomoSound('done');
-        addActivity('Focus session complete!','var(--accent3)','focus');
+        if(typeof addActivity==='function')addActivity('Focus session complete!','var(--accent3)','focus');
         notifyPomoComplete(pomoCount);
-        toast(uiLang==='fr'?'Focus termine ! Prends une pause':uiLang==='es'?'Enfoque completo! Tomate un descanso':'Focus done! Take a break','success');
-        sendNotif('Pomodoro complete!','Time for a break - great work!','');
+        const language=pomoLanguage();
+        toast(language==='fr'?'Focus termine ! Prends une pause':language==='es'?'Enfoque completo! Tomate un descanso':'Focus done! Take a break','success');
+        sendPomoDesktopNotification('Pomodoro complete!','Time for a break - great work!');
         pomoIdx=pomoCount%4===0?2:1;
         // Flash animation
         const wrap=document.getElementById('pomo-ring-wrap');
@@ -145,7 +160,7 @@ function pomoToggle(){
       } else {
         playPomoSound('break');
         toast('Break terminee - au boulot !','info');
-        sendNotif('Pause terminee',"C'est reparti - session Focus !",'');
+        sendPomoDesktopNotification('Pause terminee',"C'est reparti - session Focus !");
         pomoIdx=0;
       }
       pomoRemaining=POMO_MODES()[pomoIdx].duration;
@@ -180,15 +195,16 @@ function restorePomoIfRunning(){
         if(pomoIdx===0){
           pomoCount++;savePomoSession();
           playPomoSound('done');
-          addActivity('Focus session complete!','var(--accent3)','focus');
+          if(typeof addActivity==='function')addActivity('Focus session complete!','var(--accent3)','focus');
           notifyPomoComplete(pomoCount);
-          toast(uiLang==='fr'?'Focus termine ! Prends une pause':uiLang==='es'?'Enfoque completo! Tomate un descanso':'Focus done! Take a break','success');
-          sendNotif('Pomodoro complete!','Time for a break - great work!','');
+          const language=pomoLanguage();
+          toast(language==='fr'?'Focus termine ! Prends une pause':language==='es'?'Enfoque completo! Tomate un descanso':'Focus done! Take a break','success');
+          sendPomoDesktopNotification('Pomodoro complete!','Time for a break - great work!');
           pomoIdx=pomoCount%4===0?2:1;
         } else {
           playPomoSound('break');
           toast('Break terminee - au boulot !','info');
-          sendNotif('Pause terminee',"C'est reparti - session Focus !",'');
+          sendPomoDesktopNotification('Pause terminee',"C'est reparti - session Focus !");
           pomoIdx=0;
         }
         pomoRemaining=POMO_MODES()[pomoIdx].duration;

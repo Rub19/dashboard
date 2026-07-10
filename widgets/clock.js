@@ -37,4 +37,14 @@ function updateClock(){
   const gf=document.getElementById('greeting-full');if(gf)gf.textContent=fullGreet;
   const gd=document.getElementById('greeting-date');if(gd)gd.textContent=ds+', '+h+':'+m+':'+s;
 }
-setInterval(updateClock,1000);
+function startEthoneClock(){
+  if(window.__ethoneClockInterval)return;
+  updateClock();
+  window.__ethoneClockInterval=setInterval(function(){
+    if(document.hidden)return;
+    if(!document.getElementById('clock-main')&&!document.getElementById('greeting-date'))return;
+    updateClock();
+  },1000);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startEthoneClock,{once:true});
+else startEthoneClock();

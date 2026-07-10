@@ -71,6 +71,7 @@ async function loadCloudState(){
         }
       };
     });
+    if(typeof upgradeLoadedProfileLocks==='function')upgradeLoadedProfileLocks(profiles);
   } else {
     // New user (no cloud rows yet) — try localStorage backup first, but ONLY if
     // it was saved by THIS SAME Supabase user id. Different login methods for the
@@ -85,7 +86,12 @@ async function loadCloudState(){
       const backup=localStorage.getItem('myspace_profiles_backup');
       if(backup&&backupOwner===_sbUser.id){
         const parsed=JSON.parse(backup);
-        if(parsed&&parsed.length){profiles=parsed;await saveCloudState();return;}
+        if(parsed&&parsed.length){
+          profiles=parsed;
+          if(typeof upgradeLoadedProfileLocks==='function')upgradeLoadedProfileLocks(profiles);
+          await saveCloudState();
+          return;
+        }
       }
     }catch(e){}
     // Create default profile

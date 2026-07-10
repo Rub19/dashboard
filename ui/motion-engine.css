@@ -1,0 +1,461 @@
+/* ETHONE Motion Engine 6.0
+   One animation grammar for the product shell.
+   Finite UI motion stays compositor-friendly: transform + opacity first. */
+
+:root{
+  --motion-engine-version: 6.0;
+  --motion-duration-fade: var(--motion-fast, 140ms);
+  --motion-duration-slide: var(--motion-normal, 190ms);
+  --motion-duration-scale: var(--motion-fast, 140ms);
+  --motion-duration-blur: var(--motion-normal, 190ms);
+  --motion-duration-elevation: var(--motion-card, 190ms);
+  --motion-duration-hover: var(--motion-fast, 140ms);
+  --motion-duration-press: var(--motion-micro, 90ms);
+  --motion-duration-focus: var(--motion-fast, 140ms);
+  --motion-loop: 1200ms;
+  --motion-ease-natural: var(--ease-premium, cubic-bezier(.19,1,.22,1));
+  --motion-ease-control: var(--ease-standard, cubic-bezier(.2,.78,.18,1));
+  --motion-ease-press: cubic-bezier(.2,.8,.2,1);
+  --motion-hover-y: -1px;
+  --motion-hover-scale: 1.006;
+  --motion-press-scale: var(--motion-scale-press, .986);
+  --motion-blur-from: 8px;
+  --motion-focus-shadow: 0 0 0 3px rgba(var(--primary-rgb), .18), 0 0 0 1px rgba(var(--primary-rgb), .52);
+  --motion-elevation-shadow: 0 18px 54px rgba(var(--color-black-rgb), .30), inset 0 1px 0 rgba(var(--color-white-rgb), .055);
+  --motion-transition-hover:
+    transform var(--motion-duration-hover) var(--motion-ease-natural),
+    opacity var(--motion-duration-hover) var(--motion-ease-natural),
+    color var(--motion-duration-hover) var(--motion-ease-control),
+    background-color var(--motion-duration-hover) var(--motion-ease-control),
+    border-color var(--motion-duration-hover) var(--motion-ease-control);
+  --motion-transition-elevation:
+    transform var(--motion-duration-elevation) var(--motion-ease-natural),
+    box-shadow var(--motion-duration-elevation) var(--motion-ease-control),
+    border-color var(--motion-duration-elevation) var(--motion-ease-control),
+    background-color var(--motion-duration-elevation) var(--motion-ease-control);
+  --motion-transition-focus:
+    box-shadow var(--motion-duration-focus) var(--motion-ease-control),
+    outline-color var(--motion-duration-focus) var(--motion-ease-control);
+}
+
+html.ethone-motion-reduced{
+  --motion-duration-fade: 80ms;
+  --motion-duration-slide: 100ms;
+  --motion-duration-scale: 80ms;
+  --motion-duration-blur: 100ms;
+  --motion-duration-elevation: 100ms;
+  --motion-duration-hover: 90ms;
+  --motion-duration-press: 60ms;
+  --motion-duration-focus: 90ms;
+  --motion-distance-xs: 0px;
+  --motion-distance-sm: 2px;
+  --motion-distance-md: 4px;
+  --motion-hover-y: 0px;
+  --motion-hover-scale: 1;
+  --motion-press-scale: .995;
+}
+
+/* Canonical primitives */
+.motion-fade,
+.motion-fade-in{animation:ethoneMotionFadeIn var(--motion-duration-fade) var(--motion-ease-natural) both!important}
+.motion-fade-out{animation:ethoneMotionFadeOut var(--motion-duration-fade) var(--motion-ease-natural) both!important}
+.motion-slide,
+.motion-slide-up{animation:ethoneMotionSlideUp var(--motion-duration-slide) var(--motion-ease-natural) both!important}
+.motion-slide-down{animation:ethoneMotionSlideDown var(--motion-duration-slide) var(--motion-ease-natural) both!important}
+.motion-slide-left{animation:ethoneMotionSlideLeft var(--motion-duration-slide) var(--motion-ease-natural) both!important}
+.motion-slide-right{animation:ethoneMotionSlideRight var(--motion-duration-slide) var(--motion-ease-natural) both!important}
+.motion-scale,
+.motion-scale-in{animation:ethoneMotionScaleIn var(--motion-duration-scale) var(--motion-ease-natural) both!important}
+.motion-scale-out{animation:ethoneMotionScaleOut var(--motion-duration-scale) var(--motion-ease-natural) both!important}
+.motion-blur{animation:ethoneMotionBlurIn var(--motion-duration-blur) var(--motion-ease-natural) both!important}
+.motion-elevation{transition:var(--motion-transition-elevation)!important}
+.motion-hover{transition:var(--motion-transition-hover)!important}
+.motion-press{transition:transform var(--motion-duration-press) var(--motion-ease-press)!important}
+.motion-focus{transition:var(--motion-transition-focus)!important}
+
+/* Controls */
+html body :where(
+  button,
+  a[href],
+  input,
+  textarea,
+  select,
+  summary,
+  [role="button"],
+  [role="tab"],
+  [role="menuitem"],
+  [onclick],
+  [data-action],
+  [data-route],
+  [data-page],
+  .clickable,
+  .btn,
+  .ui-button,
+  .panel-action,
+  .item-btn,
+  .settings-action,
+  .nav-item,
+  .os-nav-item,
+  .sidebar-item,
+  .settings-nav-item,
+  .dropdown-item,
+  .context-menu-item,
+  .cmd-item,
+  .cat-tab,
+  .settings-tab,
+  .toolbar-button,
+  .icon-button,
+  .d4-button,
+  .d4-icon-button,
+  .d4-widget-btn,
+  .d4-quick-action,
+  .os-icon-btn,
+  .os-workspace-switcher,
+  .os-quick-search,
+  .lb-tab,
+  .lb-social,
+  .lb-ghost,
+  .lb-btn-primary
+){
+  transition:var(--motion-transition-hover)!important;
+  backface-visibility:hidden;
+}
+
+@media (hover:hover) and (pointer:fine){
+  html body :where(
+    button,
+    a[href],
+    [role="button"],
+    [role="tab"],
+    [role="menuitem"],
+    [onclick],
+    [data-action],
+    [data-route],
+    [data-page],
+    .clickable,
+    .btn,
+    .ui-button,
+    .panel-action,
+    .item-btn,
+    .settings-action,
+    .dropdown-item,
+    .context-menu-item,
+    .cmd-item,
+    .cat-tab,
+    .settings-tab,
+    .toolbar-button,
+    .icon-button,
+    .d4-button,
+    .d4-icon-button,
+    .d4-widget-btn,
+    .d4-quick-action,
+    .os-icon-btn,
+    .lb-tab,
+    .lb-social,
+    .lb-ghost,
+    .lb-btn-primary
+  ):not(:disabled):not([aria-disabled="true"]):hover{
+    transform:translate3d(0,var(--motion-hover-y),0);
+  }
+}
+
+html body :where(
+  button,
+  a[href],
+  [role="button"],
+  [role="tab"],
+  [role="menuitem"],
+  [onclick],
+  [data-action],
+  [data-route],
+  [data-page],
+  .clickable,
+  .btn,
+  .ui-button,
+  .panel-action,
+  .item-btn,
+  .settings-action,
+  .dropdown-item,
+  .context-menu-item,
+  .cmd-item,
+  .cat-tab,
+  .settings-tab,
+  .toolbar-button,
+  .icon-button,
+  .d4-button,
+  .d4-icon-button,
+  .d4-widget-btn,
+  .d4-quick-action,
+  .os-icon-btn,
+  .lb-tab,
+  .lb-social,
+  .lb-ghost,
+  .lb-btn-primary
+):not(:disabled):not([aria-disabled="true"]):active{
+  transform:translate3d(0,0,0) scale(var(--motion-press-scale))!important;
+  transition-duration:var(--motion-duration-press)!important;
+}
+
+html body :where(
+  button,
+  a[href],
+  input,
+  textarea,
+  select,
+  summary,
+  [tabindex]:not([tabindex="-1"]),
+  [role="button"],
+  [role="tab"],
+  [role="menuitem"],
+  [onclick],
+  [data-action],
+  [data-route],
+  [data-page],
+  .clickable,
+  .btn,
+  .ui-button,
+  .nav-item,
+  .os-nav-item,
+  .sidebar-item,
+  .settings-nav-item,
+  .cmd-item,
+  .dropdown-item,
+  .context-menu-item
+):focus-visible{
+  outline:0!important;
+  box-shadow:var(--motion-focus-shadow)!important;
+  transition:var(--motion-transition-focus)!important;
+}
+
+/* Surfaces */
+html body :where(
+  .panel,
+  .card,
+  .widget,
+  .ui-panel,
+  .ui-card,
+  .ui-widget,
+  .settings-card,
+  .conn-card,
+  .game-card,
+  .goal-card,
+  .habit-card,
+  .journal-entry,
+  .countdown-card,
+  .kanban-col,
+  .kanban-card,
+  .note-item,
+  .notes-card,
+  .file-card,
+  .files-panel,
+  .market-card,
+  .marketplace-card,
+  .plugin-card,
+  .widget-card,
+  .overview-widget,
+  .d4-card,
+  .d4-widget,
+  .brain-card,
+  .brain-module,
+  .ai-panel,
+  .ai-provider-card,
+  .onboarding-card,
+  .health-card,
+  .version-card,
+  .activity-card,
+  .timeline-card,
+  .backup-card,
+  .db-card,
+  .integration-card,
+  .space-card,
+  .flow-card
+){
+  transition:var(--motion-transition-elevation)!important;
+  backface-visibility:hidden;
+}
+
+@media (hover:hover) and (pointer:fine){
+  html body :where(
+    .stat-card,
+    .settings-card,
+    .conn-card,
+    .game-card,
+    .kanban-card,
+    .note-item,
+    .file-card,
+    .market-card,
+    .marketplace-card,
+    .plugin-card,
+    .widget-card,
+    .d4-card,
+    .d4-widget,
+    .brain-card,
+    .ai-provider-card,
+    .timeline-card,
+    .db-card,
+    .integration-card,
+    .space-card,
+    .flow-card
+  ):hover{
+    transform:translate3d(0,var(--motion-hover-y),0) scale(var(--motion-hover-scale));
+  }
+}
+
+/* Shell, overlays, menus */
+html body :where(
+  #main-sidebar,
+  .os-sidebar,
+  .sidebar,
+  #live-panel,
+  .live-panel,
+  .side-panel,
+  .side-panel-shell,
+  .native-window,
+  .desktop-window,
+  .modal,
+  .dialog,
+  .dropdown-menu,
+  .context-menu,
+  .tooltip,
+  #cmd-palette,
+  .cmd-palette,
+  .command-palette,
+  #notif-panel,
+  .notification-center,
+  .notification-center-panel,
+  .toast,
+  .ui-toast,
+  .notif-item,
+  .notification-item
+){
+  transition:
+    transform var(--motion-duration-slide) var(--motion-ease-natural),
+    opacity var(--motion-duration-fade) var(--motion-ease-natural),
+    border-color var(--motion-duration-hover) var(--motion-ease-control),
+    background-color var(--motion-duration-hover) var(--motion-ease-control),
+    box-shadow var(--motion-duration-elevation) var(--motion-ease-control)!important;
+  backface-visibility:hidden;
+}
+
+html body :where(
+  .modal-overlay.open,
+  #cmd-palette-overlay.open,
+  #notif-overlay.open,
+  .sidebar-overlay.open,
+  .eh-panel-overlay.open,
+  .spaces-overlay.open,
+  .db-detail-overlay.open,
+  .va-detail-overlay.open,
+  .first-run-overlay.open,
+  .onboarding-overlay.open,
+  .mission-control-overlay.open,
+  .app-library-overlay.open,
+  .side-panel-overlay.open
+){
+  animation:ethoneMotionFadeIn var(--motion-duration-fade) var(--motion-ease-natural) both!important;
+}
+
+html body :where(
+  .modal,
+  .dialog,
+  #cmd-palette,
+  .cmd-palette,
+  .command-palette,
+  .dropdown-menu,
+  .context-menu,
+  .ui-dropdown,
+  .ui-toast,
+  .toast
+){
+  animation-duration:var(--motion-duration-scale)!important;
+  animation-timing-function:var(--motion-ease-natural)!important;
+}
+
+.page-entering{animation:ethoneMotionSlideUp var(--motion-duration-slide) var(--motion-ease-natural) both!important}
+.page-entering-right{animation:ethoneMotionPageRight var(--motion-duration-slide) var(--motion-ease-natural) both!important}
+.page-entering-left{animation:ethoneMotionPageLeft var(--motion-duration-slide) var(--motion-ease-natural) both!important}
+
+.reveal-hidden{
+  opacity:0!important;
+  transform:translate3d(0,var(--motion-distance-md,12px),0) scale(.996)!important;
+}
+.reveal-visible{
+  opacity:1!important;
+  transform:translate3d(0,0,0) scale(1)!important;
+  transition:opacity var(--motion-duration-slide) var(--motion-ease-natural), transform var(--motion-duration-slide) var(--motion-ease-natural)!important;
+}
+
+/* Keep loops subtle and cheap. */
+html body :where(.motion-loading,.ai-typing span,.sb-eq span){
+  animation-duration:var(--motion-loop)!important;
+  animation-timing-function:linear!important;
+  will-change:transform,opacity;
+}
+
+html body :where(.motion-glow,.cmd-highlight-pulse,.auth-orb,.auth-float-icon){
+  animation-duration:var(--motion-duration-blur)!important;
+  animation-timing-function:var(--motion-ease-natural)!important;
+}
+
+.press-ripple,
+.motion-ripple{
+  animation:ethoneMotionRipple var(--motion-duration-press) var(--motion-ease-press) forwards!important;
+}
+
+/* Legacy keyframes are redirected to the same engine. */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translate3d(0,var(--motion-distance-sm,6px),0) scale(.996)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+@keyframes slideIn{from{opacity:0;transform:translate3d(calc(var(--motion-distance-sm,6px) * -1),0,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes slideInRight{from{opacity:0;transform:translate3d(var(--motion-distance-sm,6px),0,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes slideInLeft{from{opacity:0;transform:translate3d(calc(var(--motion-distance-sm,6px) * -1),0,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes slideUpFade{from{opacity:0;transform:translate3d(0,var(--motion-distance-md,12px),0) scale(.996)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+@keyframes bounceIn{from{opacity:0;transform:scale(.986)}to{opacity:1;transform:scale(1)}}
+@keyframes iconPop{from{transform:scale(.985)}to{transform:scale(1)}}
+@keyframes glow{0%,100%{opacity:.9;transform:scale(1)}50%{opacity:1;transform:scale(1.004)}}
+@keyframes pulse{0%,100%{opacity:.72;transform:scale(.96)}50%{opacity:1;transform:scale(1)}}
+@keyframes pulseG{0%,100%{opacity:.66;transform:scale(.92)}50%{opacity:1;transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translate3d(0,0,0)}25%{transform:translate3d(-3px,0,0)}75%{transform:translate3d(3px,0,0)}}
+@keyframes wobble{from{transform:rotate(-1deg)}to{transform:rotate(1deg)}}
+@keyframes shimmer{0%,100%{opacity:.86}50%{opacity:1}}
+@keyframes panelReveal{from{opacity:0;transform:translate3d(0,var(--motion-distance-sm,6px),0) scale(.996)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+@keyframes tmFade{from{opacity:0}to{opacity:1}}
+@keyframes tmRise{from{opacity:0;transform:translate3d(0,var(--motion-distance-md,12px),0) scale(.986)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+@keyframes universeJumpIn{from{opacity:0;transform:scale(.986);filter:blur(var(--motion-blur-from))}to{opacity:1;transform:scale(1);filter:blur(0)}}
+@keyframes universeJumpOut{to{opacity:0;transform:scale(1.01);filter:blur(2px)}}
+
+@keyframes ethoneMotionFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes ethoneMotionFadeOut{from{opacity:1}to{opacity:0}}
+@keyframes ethoneMotionSlideUp{from{opacity:0;transform:translate3d(0,var(--motion-distance-sm,6px),0) scale(.996)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+@keyframes ethoneMotionSlideDown{from{opacity:0;transform:translate3d(0,calc(var(--motion-distance-sm,6px) * -1),0) scale(.996)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+@keyframes ethoneMotionSlideLeft{from{opacity:0;transform:translate3d(var(--motion-distance-sm,6px),0,0) scale(.998)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+@keyframes ethoneMotionSlideRight{from{opacity:0;transform:translate3d(calc(var(--motion-distance-sm,6px) * -1),0,0) scale(.998)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+@keyframes ethoneMotionScaleIn{from{opacity:0;transform:translate3d(0,4px,0) scale(.986)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+@keyframes ethoneMotionScaleOut{from{opacity:1;transform:translate3d(0,0,0) scale(1)}to{opacity:0;transform:translate3d(0,4px,0) scale(.986)}}
+@keyframes ethoneMotionBlurIn{from{opacity:0;filter:blur(var(--motion-blur-from));transform:translate3d(0,4px,0) scale(.996)}to{opacity:1;filter:blur(0);transform:translate3d(0,0,0) scale(1)}}
+@keyframes ethoneMotionElevation{from{transform:translate3d(0,0,0);box-shadow:var(--glass-shadow-soft,0 12px 38px rgba(0,0,0,.24))}to{transform:translate3d(0,var(--motion-hover-y),0);box-shadow:var(--motion-elevation-shadow)}}
+@keyframes ethoneMotionPageRight{from{opacity:0;transform:translate3d(var(--motion-distance-md,12px),0,0) scale(.998)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+@keyframes ethoneMotionPageLeft{from{opacity:0;transform:translate3d(calc(var(--motion-distance-md,12px) * -1),0,0) scale(.998)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+@keyframes ethoneMotionRipple{0%{opacity:.42;transform:translate(-50%,-50%) scale(0)}70%{opacity:.18}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
+
+html.ethone-motion-off *,
+html.ethone-motion-off *::before,
+html.ethone-motion-off *::after{
+  animation:none!important;
+  transition-duration:1ms!important;
+  scroll-behavior:auto!important;
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,
+  *::before,
+  *::after{
+    animation:none!important;
+    transition-duration:1ms!important;
+    scroll-behavior:auto!important;
+  }
+  .reveal-hidden,
+  .reveal-visible{
+    opacity:1!important;
+    transform:none!important;
+  }
+}

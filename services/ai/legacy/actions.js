@@ -8,8 +8,8 @@ const AI_ACTIONS={
     if(!text)return t_ai('action_fail');
     const todo={id:Date.now(),text,priority:priority||'medium',done:false,color:'',
       due:due||'',tag:'',date:new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short'})};
-    p.state.todos.unshift(todo);saveStateNow();renderTodos();updateStats();
-    addActivity('AI: '+text,'var(--accent2)','system');
+    p.state.todos.unshift(todo);saveStateNow();if(typeof renderTodos==='function')renderTodos();if(typeof updateStats==='function')updateStats();
+    if(typeof addActivity==='function')addActivity('AI: '+text,'var(--accent2)','system');
     return t_ai('task_created',{text});
   },
   create_note({title,content}){
@@ -40,7 +40,7 @@ const AI_ACTIONS={
     const todo=(p.state.todos||[]).find(t=>!t.done&&t.text.toLowerCase().includes((text||'').toLowerCase()));
     if(!todo)return t_ai('task_not_found',{text});
     todo.done=true;todo.doneAt=new Date().toISOString();
-    saveStateNow();renderTodos();updateStats();
+    saveStateNow();if(typeof renderTodos==='function')renderTodos();if(typeof updateStats==='function')updateStats();
     return t_ai('task_done',{text:todo.text});
   },
   delete_task({text}){
@@ -48,7 +48,7 @@ const AI_ACTIONS={
     const before=(p.state.todos||[]).length;
     p.state.todos=(p.state.todos||[]).filter(t=>!t.text.toLowerCase().includes((text||'').toLowerCase()));
     if(p.state.todos.length===before)return t_ai('task_not_found',{text});
-    saveStateNow();renderTodos();updateStats();
+    saveStateNow();if(typeof renderTodos==='function')renderTodos();if(typeof updateStats==='function')updateStats();
     return t_ai('task_deleted',{text});
   },
   list_tasks(){

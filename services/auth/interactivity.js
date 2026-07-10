@@ -31,7 +31,7 @@
     if(!er){warn("Missing #auth-error; cannot show auth message",message);return}
     er.textContent=message||"";
     er.style.display=message?"block":"none";
-    er.style.color=good?"#22c55e":"";
+    er.style.color=good?"var(--success)":"";
   }
   function setLoading(value){
     var ld=qs("#auth-loading");
@@ -101,7 +101,7 @@
       btn.type="button";
       var active=(btn.dataset.l||btn.getAttribute("data-l"))===lang();
       btn.style.background="transparent";
-      btn.style.color=active?"#fff":"rgba(255,255,255,.42)";
+      btn.style.color=active?"var(--text-on-accent)":"rgba(var(--text-primary-rgb),.42)";
       btn.style.fontWeight=active?"700":"600";
     });
   }
@@ -123,6 +123,7 @@
     setErr("");
     applyTranslations();
     if(typeof window.ethoneSyncAuthHeroLanguage==="function")setTimeout(window.ethoneSyncAuthHeroLanguage,0);
+    try{window.dispatchEvent(new CustomEvent("ethone:auth-tab-change",{detail:{tab:tab}}))}catch(e){}
   }
   function togglePassword(btn){
     var inputId="";
@@ -147,7 +148,7 @@
     if(/\d/.test(pw))score+=1;
     if(/[^A-Za-z0-9]/.test(pw))score+=1;
     var pct=Math.min(100,score*20);
-    var color=pct>=80?"#22c55e":pct>=60?"#a78bfa":pct>=40?"#f59e0b":"#ef4444";
+    var color=pct>=80?"var(--success)":pct>=60?"var(--primary-hover)":pct>=40?"var(--warning)":"var(--error)";
     bar.style.setProperty("--pw-strength",pct+"%");
     bar.style.setProperty("--pw-strength-color",color);
     bar.setAttribute("aria-valuemin","0");
@@ -157,7 +158,7 @@
     bar.dataset.strength=String(score);
     qsa(".pw-s",bar).forEach(function(segment,index){
       var active=index<Math.ceil(score/1.25);
-      segment.style.background=active?color:"rgba(255,255,255,.075)";
+      segment.style.background=active?color:"rgba(var(--color-white-rgb),.075)";
       segment.style.transform=active?"scaleY(1.25)":"scaleY(1)";
     });
   }
@@ -223,10 +224,16 @@
   }
   function setLanguage(l){
     l=String(l||"fr").slice(0,2).toLowerCase();
-    window._lang=l;
-    document.documentElement.lang=l;
-    try{localStorage.setItem("nexus_lang",l);localStorage.setItem("ethone_lang",l)}catch(e){}
-    if(typeof window.applyI18n==="function"){try{window.applyI18n()}catch(e){warn("Global i18n failed; auth fallback applied",e)}}
+    var applied=false;
+    if(typeof window.setLang==="function"){
+      try{window.setLang(l);applied=true}catch(e){warn("Global language update failed; auth fallback applied",e)}
+    }
+    if(!applied){
+      window._lang=l;
+      document.documentElement.lang=l;
+      try{localStorage.setItem("nexus_lang",l);localStorage.setItem("ethone_lang",l)}catch(e){}
+      if(typeof window.applyI18n==="function"){try{window.applyI18n()}catch(e){warn("Global i18n failed; auth fallback applied",e)}}
+    }
     applyTranslations();
     if(typeof window.ethoneSyncAuthHeroLanguage==="function"){
       setTimeout(window.ethoneSyncAuthHeroLanguage,0);
@@ -260,7 +267,10 @@
   function bind(){
     var missing=REQUIRED.filter(function(sel){return !qs(sel)});
     missing.forEach(function(sel){warn("Missing auth element "+sel)});
-    qsa("#auth-screen button").forEach(function(btn){btn.type="button";btn.dataset.authInteractive="1"});
+    qsa("#auth-screen button").forEach(function(btn){
+      if(!btn.hasAttribute("type"))btn.type="button";
+      btn.dataset.authInteractive="1";
+    });
     qsa("#auth-screen form").forEach(function(form){form.dataset.authInteractive="1"});
     qsa(".lb-eye,button[onclick*='togglePwVis']").forEach(function(btn){btn.type="button";btn.dataset.authInteractive="1";btn.setAttribute("aria-label","Afficher ou masquer le mot de passe")});
     var remembered=localStorage.getItem("ethone_remember_auth");

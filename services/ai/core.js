@@ -15,6 +15,9 @@
   let providersExpanded=false;
   let runtimeStarted=false;
   let pageMountScheduled=false;
+  let pageMountCancel=null;
+  let clickRoot=null;
+  let pageReadyHandler=null;
   let renderLocked=false;
   let legacyMigrationChecked=false;
   let activeManagerTab="settings";
@@ -239,11 +242,29 @@
     const actions="[create_task text,priority,due][create_note title,content][create_event title,date][complete_task text][delete_task text][list_tasks]";
     const memory=config.privacy.memory?config.memory.map(m=>m.key+":"+m.value).join("|"):"memory disabled";
     const custom=config.settings.systemPrompt?("\nCUSTOM:"+config.settings.systemPrompt):"";
-    return "ETHONE AI Core. Lang:"+lang2+". Date:"+today+".\nACTIONS:"+actions+"\nDATA:"+(ctx.summary||"")+"\nMEMORY:"+memory+"\nRules: concise, answer in "+lang2+", use ACTION when useful, never expose API keys."+custom;
+    const os=ctx&&ctx.os?ctx.os:null;
+    const osFacts=os?JSON.stringify({
+      page:os.page,
+      workspace:os.workspace,
+      flow:os.mode,
+      facts:os.facts&&{
+        tasks:os.facts.tasks,
+        notes:os.facts.notes,
+        files:os.facts.files,
+        calendar:os.facts.calendar,
+        widgets:os.facts.widgets,
+        integrations:{connected:os.facts.integrations&&os.facts.integrations.connected,ids:os.facts.integrations&&os.facts.integrations.connectedIds},
+        ai:os.facts.ai
+      },
+      attention:os.attention
+    }).slice(0,2200):"";
+    return "ETHONE AI Core. Lang:"+lang2+". Date:"+today+".\nACTIONS:"+actions+"\nDATA:"+(ctx.summary||"")+"\nOS_CONTEXT:"+osFacts+"\nMEMORY:"+memory+"\nRules: concise, answer in "+lang2+", use ACTION when useful, never expose API keys."+custom;
   }
   async function complete(input){
     setAIState("loading","Generating response...",true,"");
-    const ctx=typeof window.getAIContext==="function"?window.getAIContext():{summary:""};
+    const ctx=window.ETHONEOSContext&&typeof window.ETHONEOSContext.aiContext==="function"
+      ? window.ETHONEOSContext.aiContext()
+      : (typeof window.getAIContext==="function"?window.getAIContext():{summary:""});
     const uiLang=window._lang||"fr";
     const lang2=uiLang==="fr"?"fr":uiLang==="es"?"es":uiLang==="de"?"de":"en";
     const messages=(typeof _aiHistory!=="undefined"?_aiHistory:(window._aiHistory||[])).slice(-finite(config.settings.contextSize,6,2,24));
@@ -333,8 +354,11 @@
     save:saveConfig,
     log,
     chooseProvider,
+    activate:activateAIPage,
+    deactivate:deactivateAIPage,
     audit:()=>({
       runtimeStarted,
+      active:!!clickRoot,
       activeTab:activeManagerTab,
       mountedTabs:Array.from(mountedTabs),
       providerCards:$$(".aic-provider",$("#aic-tab-providers")||document).length,
@@ -637,23 +661,66 @@
   }
   function abortPending(prefix){
     pendingRequests.forEach((controller,key)=>{
-      if(!prefix||key.startsWith(prefix))controller.abort();
+      if(!prefix||key.startsWith(prefix)){
+        controller.abort();
+        pendingRequests.delete(key);
+      }
     });
   }
   function scheduleIdle(callback){
     let done=false;
+    let idleId=0;
+    let frameId=0;
+    let timeoutId=0;
+    function clearHandles(){
+      if(timeoutId){clearTimeout(timeoutId);timeoutId=0}
+      if(idleId&&window.cancelIdleCallback){window.cancelIdleCallback(idleId);idleId=0}
+      if(frameId&&window.cancelAnimationFrame){window.cancelAnimationFrame(frameId);frameId=0}
+    }
     function run(){
       if(done)return;
       done=true;
+      clearHandles();
       callback();
     }
     if(window.requestIdleCallback){
-      const id=window.requestIdleCallback(run,{timeout:350});
-      setTimeout(run,420);
-      return id;
+      idleId=window.requestIdleCallback(run,{timeout:350});
+      timeoutId=setTimeout(run,420);
+    }else if(window.requestAnimationFrame){
+      frameId=window.requestAnimationFrame(run);
+    }else{
+      timeoutId=setTimeout(run,0);
     }
-    if(window.requestAnimationFrame)return window.requestAnimationFrame(run);
-    return setTimeout(run,0);
+    return function cancelIdleTask(){
+      if(done)return;
+      done=true;
+      clearHandles();
+    };
+  }
+  function cancelScheduledMount(){
+    if(pageMountCancel)pageMountCancel();
+    pageMountCancel=null;
+    pageMountScheduled=false;
+  }
+  function activateAIPage(){
+    const page=$("#page-ai");
+    if(!page||!isAIVisible())return false;
+    if(clickRoot!==page){
+      if(clickRoot)clickRoot.removeEventListener("click",handleClick);
+      clickRoot=page;
+      clickRoot.addEventListener("click",handleClick);
+    }
+    mountAIPage();
+    return true;
+  }
+  function deactivateAIPage(){
+    cancelScheduledMount();
+    abortPending();
+    if(clickRoot){
+      clickRoot.removeEventListener("click",handleClick);
+      clickRoot=null;
+    }
+    return true;
   }
   function mountAIPage(){
     if(pageMountScheduled||!isAIVisible())return;
@@ -669,7 +736,8 @@
       setAIState("error","AI shell mount failed.",false,error.message);
       return;
     }
-    scheduleIdle(()=>{
+    pageMountCancel=scheduleIdle(()=>{
+      pageMountCancel=null;
       pageMountScheduled=false;
       if(!isAIVisible())return;
       try{
@@ -684,15 +752,15 @@
   function startAICore(){
     if(runtimeStarted)return;
     runtimeStarted=true;
-    document.addEventListener("click",handleClick);
     wrapLegacyGroqKey();
     overrideChat();
     patchWelcome();
-    mountAIPage();
-    window.addEventListener("ethone:page-ready",event=>{
-      if(event?.detail?.page==="ai")mountAIPage();
-      else abortPending("models:");
-    });
+    activateAIPage();
+    pageReadyHandler=event=>{
+      if(event?.detail?.page==="ai")activateAIPage();
+      else deactivateAIPage();
+    };
+    window.addEventListener("ethone:page-ready",pageReadyHandler);
   }
   if(window.ethoneRunWhenPageReady)window.ethoneRunWhenPageReady("ai-core-runtime","ai",startAICore);else startAICore();
 })();

@@ -2,8 +2,8 @@
 
 :root{
   --ethone-sidebar-item-h:40px;
-  --ethone-scrollbar:rgba(255,255,255,.13);
-  --ethone-scrollbar-hover:rgba(167,139,250,.32);
+  --ethone-scrollbar:rgba(var(--color-white-rgb),.13);
+  --ethone-scrollbar-hover:rgba(var(--primary-hover-rgb),.32);
 }
 
 html,
@@ -92,9 +92,9 @@ body.ethone-v2::-webkit-scrollbar-thumb:hover,
     height:clamp(470px,55vh,620px)!important;
     min-height:0!important;
     box-shadow:
-      0 34px 78px -48px rgba(0,0,0,.88),
-      0 0 calc(42px * var(--theme-glow-scale,1)) rgba(var(--accent-rgb,139,92,246),.12),
-      inset 0 1px 0 rgba(255,255,255,.055)!important;
+      0 34px 78px -48px rgba(var(--color-black-rgb),.88),
+      0 0 calc(42px * var(--theme-glow-scale,1)) rgba(var(--accent-rgb,var(--primary-rgb)),.12),
+      inset 0 1px 0 rgba(var(--color-white-rgb),.055)!important;
   }
 
   #lb-box{
@@ -291,18 +291,18 @@ html.ethone-personal-os-ready #main-sidebar .nav-item{
 body.ethone-2026-ui #main-sidebar .nav-item.active,
 body.ethone-v2 #main-sidebar .nav-item.active,
 html.ethone-personal-os-ready #main-sidebar .nav-item.active{
-  color:#fff!important;
+  color:var(--text-primary)!important;
   background:
-    linear-gradient(90deg,rgba(var(--accent-rgb,139,92,246),.18),rgba(var(--accent-rgb,139,92,246),.08))!important;
-  border-color:rgba(var(--accent-rgb,139,92,246),.28)!important;
+    linear-gradient(90deg,rgba(var(--accent-rgb,var(--primary-rgb)),.18),rgba(var(--accent-rgb,var(--primary-rgb)),.08))!important;
+  border-color:rgba(var(--accent-rgb,var(--primary-rgb)),.28)!important;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.06),
-    0 8px 24px -18px rgba(var(--accent-rgb,139,92,246),.86)!important;
+    inset 0 1px 0 rgba(var(--color-white-rgb),.06),
+    0 8px 24px -18px rgba(var(--accent-rgb,var(--primary-rgb)),.86)!important;
 }
 
 #main-sidebar .nav-item.active > .nav-icon,
 #main-sidebar .nav-item.active svg{
-  color:#d8ccff!important;
+  color:var(--text-accent)!important;
 }
 
 #main-sidebar .nav-label-text{
@@ -375,9 +375,9 @@ html.ethone-personal-os-ready #main-sidebar .nav-item.active{
 }
 
 :where(.empty-icon,.va-empty-icon,.panel-title-icon,.settings-nav-icon,.conn-icon,.game-card-logo,.item-icon,.mob-icon){
-  color:rgba(var(--accent-rgb,139,92,246),.92);
-  background:rgba(var(--accent-rgb,139,92,246),.10);
-  border:1px solid rgba(var(--accent-rgb,139,92,246),.18);
+  color:rgba(var(--accent-rgb,var(--primary-rgb)),.92);
+  background:rgba(var(--accent-rgb,var(--primary-rgb)),.10);
+  border:1px solid rgba(var(--accent-rgb,var(--primary-rgb)),.18);
   border-radius:var(--radius-md);
 }
 

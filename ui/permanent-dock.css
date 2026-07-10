@@ -2,14 +2,14 @@
    Progressive UI layer: no routing/auth/backend logic is replaced. */
 :root{
   --pdock-radius:22px;
-  --pdock-surface:rgba(13,13,18,.74);
-  --pdock-surface-strong:rgba(24,24,32,.92);
-  --pdock-border:rgba(255,255,255,.11);
-  --pdock-border-strong:rgba(139,92,246,.32);
-  --pdock-text:#f8f7fb;
-  --pdock-muted:rgba(248,247,251,.58);
-  --pdock-accent:var(--accent,#8b5cf6);
-  --pdock-accent-rgb:var(--eh-accent-rgb,139,92,246);
+  --pdock-surface:rgba(var(--surface-1-rgb),.74);
+  --pdock-surface-strong:rgba(var(--surface-3-rgb),.92);
+  --pdock-border:rgba(var(--color-white-rgb),.11);
+  --pdock-border-strong:rgba(var(--primary-rgb),.32);
+  --pdock-text:var(--text-primary);
+  --pdock-muted:rgba(var(--text-primary-rgb),.58);
+  --pdock-accent:var(--accent,var(--primary));
+  --pdock-accent-rgb:var(--eh-accent-rgb,var(--primary-rgb));
   --pdock-ease:cubic-bezier(.2,.8,.2,1);
   --pdock-spring:cubic-bezier(.16,1.18,.3,1);
 }
@@ -62,10 +62,10 @@ body.ethone-desktop-mode .pdock{
   border-radius:calc(var(--pdock-radius) + 10px);
   background:
     radial-gradient(380px 86px at 50% 100%,rgba(var(--pdock-accent-rgb),.16),transparent 68%),
-    linear-gradient(180deg,rgba(28,28,38,.82),var(--pdock-surface));
+    linear-gradient(180deg,rgba(var(--surface-3-rgb),.82),var(--pdock-surface));
   box-shadow:
-    0 26px 90px rgba(0,0,0,.46),
-    0 0 0 1px rgba(255,255,255,.035) inset,
+    0 26px 90px rgba(var(--color-black-rgb),.46),
+    0 0 0 1px rgba(var(--color-white-rgb),.035) inset,
     0 0 42px rgba(var(--pdock-accent-rgb),.09);
   backdrop-filter:blur(calc(22px * var(--theme-blur-scale,1))) saturate(1.18);
   -webkit-backdrop-filter:blur(calc(22px * var(--theme-blur-scale,1))) saturate(1.18);
@@ -84,7 +84,7 @@ body.ethone-desktop-mode .pdock{
   height:30px;
   margin:0 2px 7px;
   border-radius:99px;
-  background:linear-gradient(180deg,transparent,rgba(255,255,255,.16),transparent);
+  background:linear-gradient(180deg,transparent,rgba(var(--color-white-rgb),.16),transparent);
 }
 
 .pdock-item{
@@ -94,11 +94,11 @@ body.ethone-desktop-mode .pdock{
   width:48px;
   height:48px;
   flex:0 0 48px;
-  border:1px solid rgba(255,255,255,.075);
+  border:1px solid rgba(var(--color-white-rgb),.075);
   border-radius:18px;
-  color:rgba(248,247,251,.72);
-  background:linear-gradient(180deg,rgba(255,255,255,.068),rgba(255,255,255,.026));
-  box-shadow:0 12px 28px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.055);
+  color:rgba(var(--text-primary-rgb),.72);
+  background:linear-gradient(180deg,rgba(var(--color-white-rgb),.068),rgba(var(--color-white-rgb),.026));
+  box-shadow:0 12px 28px rgba(var(--color-black-rgb),.24),inset 0 1px 0 rgba(var(--color-white-rgb),.055);
   cursor:pointer;
   transition:
     transform .22s var(--pdock-spring),
@@ -113,10 +113,10 @@ body.ethone-desktop-mode .pdock{
 
 .pdock-item:hover,
 .pdock-item:focus-visible{
-  color:#fff;
+  color:var(--text-primary);
   border-color:rgba(var(--pdock-accent-rgb),.34);
-  background:linear-gradient(180deg,rgba(var(--pdock-accent-rgb),.24),rgba(255,255,255,.045));
-  box-shadow:0 18px 44px rgba(0,0,0,.34),0 0 26px rgba(var(--pdock-accent-rgb),.16),inset 0 1px 0 rgba(255,255,255,.09);
+  background:linear-gradient(180deg,rgba(var(--pdock-accent-rgb),.24),rgba(var(--color-white-rgb),.045));
+  box-shadow:0 18px 44px rgba(var(--color-black-rgb),.34),0 0 26px rgba(var(--pdock-accent-rgb),.16),inset 0 1px 0 rgba(var(--color-white-rgb),.09);
   transform:translateY(-11px) scale(1.18);
   outline:none;
 }
@@ -130,7 +130,7 @@ body.ethone-desktop-mode .pdock{
 }
 
 .pdock-item.is-active{
-  color:#fff;
+  color:var(--text-primary);
   border-color:var(--pdock-border-strong);
   background:linear-gradient(180deg,rgba(var(--pdock-accent-rgb),.25),rgba(var(--pdock-accent-rgb),.08));
 }
@@ -177,15 +177,15 @@ body.ethone-desktop-mode .pdock{
   bottom:calc(100% + 12px);
   max-width:150px;
   padding:7px 10px;
-  border:1px solid rgba(255,255,255,.1);
+  border:1px solid rgba(var(--color-white-rgb),.1);
   border-radius:12px;
-  color:#fff;
+  color:var(--text-primary);
   font-size:11px;
   font-weight:700;
   letter-spacing:.01em;
   white-space:nowrap;
-  background:rgba(13,13,18,.94);
-  box-shadow:0 14px 36px rgba(0,0,0,.38);
+  background:rgba(var(--surface-1-rgb),.94);
+  box-shadow:0 14px 36px rgba(var(--color-black-rgb),.38);
   opacity:0;
   pointer-events:none;
   transform:translateX(-50%) translateY(5px) scale(.96);
@@ -202,11 +202,11 @@ body.ethone-desktop-mode .pdock{
 .pdock-manager{
   position:fixed;
   z-index:2450;
-  border:1px solid rgba(255,255,255,.105);
+  border:1px solid rgba(var(--color-white-rgb),.105);
   border-radius:24px;
   color:var(--pdock-text);
-  background:linear-gradient(180deg,rgba(26,26,36,.96),rgba(11,11,16,.96));
-  box-shadow:0 28px 100px rgba(0,0,0,.58),0 0 0 1px rgba(255,255,255,.035) inset;
+  background:linear-gradient(180deg,rgba(var(--surface-3-rgb),.96),rgba(var(--surface-0-rgb),.96));
+  box-shadow:0 28px 100px rgba(var(--color-black-rgb),.58),0 0 0 1px rgba(var(--color-white-rgb),.035) inset;
   backdrop-filter:blur(calc(24px * var(--theme-blur-scale,1))) saturate(1.16);
   -webkit-backdrop-filter:blur(calc(24px * var(--theme-blur-scale,1))) saturate(1.16);
 }
@@ -236,9 +236,9 @@ body.ethone-desktop-mode .pdock{
 .pdock-folder-btn,
 .pdock-menu-btn{
   width:100%;
-  border:1px solid rgba(255,255,255,.075);
-  color:rgba(248,247,251,.78);
-  background:rgba(255,255,255,.045);
+  border:1px solid rgba(var(--color-white-rgb),.075);
+  color:rgba(var(--text-primary-rgb),.78);
+  background:rgba(var(--color-white-rgb),.045);
   cursor:pointer;
   transition:background .16s var(--pdock-ease),border-color .16s var(--pdock-ease),color .16s var(--pdock-ease),transform .16s var(--pdock-ease);
 }
@@ -275,7 +275,7 @@ body.ethone-desktop-mode .pdock{
 .pdock-menu-btn:hover,
 .pdock-folder-btn:focus-visible,
 .pdock-menu-btn:focus-visible{
-  color:#fff;
+  color:var(--text-primary);
   border-color:rgba(var(--pdock-accent-rgb),.24);
   background:rgba(var(--pdock-accent-rgb),.15);
   transform:translateY(-1px);
@@ -283,8 +283,8 @@ body.ethone-desktop-mode .pdock{
 }
 
 .pdock-menu-btn.danger:hover{
-  border-color:rgba(248,113,113,.32);
-  background:rgba(248,113,113,.12);
+  border-color:rgba(var(--error-rgb),.32);
+  background:rgba(var(--error-rgb),.12);
 }
 
 .pdock-manager{
@@ -307,12 +307,12 @@ body.ethone-desktop-mode .pdock{
   justify-content:space-between;
   gap:14px;
   padding:18px 18px 12px;
-  border-bottom:1px solid rgba(255,255,255,.07);
+  border-bottom:1px solid rgba(var(--color-white-rgb),.07);
 }
 
 .pdock-manager-title{
   margin:0;
-  color:#fff;
+  color:var(--text-primary);
   font-size:18px;
   line-height:1.1;
 }
@@ -328,9 +328,9 @@ body.ethone-desktop-mode .pdock{
   width:36px;
   height:36px;
   border-radius:13px;
-  border:1px solid rgba(255,255,255,.08);
-  color:rgba(255,255,255,.72);
-  background:rgba(255,255,255,.045);
+  border:1px solid rgba(var(--color-white-rgb),.08);
+  color:rgba(var(--color-white-rgb),.72);
+  background:rgba(var(--color-white-rgb),.045);
   cursor:pointer;
 }
 
@@ -342,15 +342,15 @@ body.ethone-desktop-mode .pdock{
 }
 
 .pdock-manager-section{
-  border:1px solid rgba(255,255,255,.075);
+  border:1px solid rgba(var(--color-white-rgb),.075);
   border-radius:18px;
   padding:12px;
-  background:rgba(255,255,255,.035);
+  background:rgba(var(--color-white-rgb),.035);
 }
 
 .pdock-manager-section h4{
   margin:0 0 9px;
-  color:#fff;
+  color:var(--text-primary);
   font-size:12px;
   letter-spacing:.06em;
   text-transform:uppercase;
@@ -371,7 +371,7 @@ body.ethone-desktop-mode .pdock{
 }
 
 .pdock-manager-row:hover{
-  background:rgba(255,255,255,.04);
+  background:rgba(var(--color-white-rgb),.04);
 }
 
 .pdock-manager-meta{
@@ -379,7 +379,7 @@ body.ethone-desktop-mode .pdock{
   display:flex;
   align-items:center;
   gap:10px;
-  color:#fff;
+  color:var(--text-primary);
   font-size:13px;
   font-weight:700;
 }
@@ -387,7 +387,7 @@ body.ethone-desktop-mode .pdock{
 .pdock-manager-meta svg{
   width:18px;
   height:18px;
-  color:rgba(255,255,255,.78);
+  color:rgba(var(--color-white-rgb),.78);
 }
 
 .pdock-manager-meta span{
@@ -407,10 +407,10 @@ body.ethone-desktop-mode .pdock{
 .pdock-chip{
   min-height:30px;
   padding:0 10px;
-  border:1px solid rgba(255,255,255,.08);
+  border:1px solid rgba(var(--color-white-rgb),.08);
   border-radius:999px;
-  color:rgba(255,255,255,.76);
-  background:rgba(255,255,255,.045);
+  color:rgba(var(--color-white-rgb),.76);
+  background:rgba(var(--color-white-rgb),.045);
   font-size:11px;
   font-weight:800;
   cursor:pointer;
@@ -419,7 +419,7 @@ body.ethone-desktop-mode .pdock{
 
 .pdock-chip:hover,
 .pdock-chip:focus-visible{
-  color:#fff;
+  color:var(--text-primary);
   border-color:rgba(var(--pdock-accent-rgb),.24);
   background:rgba(var(--pdock-accent-rgb),.16);
   transform:translateY(-1px);
@@ -427,8 +427,8 @@ body.ethone-desktop-mode .pdock{
 }
 
 .pdock-chip.danger:hover{
-  border-color:rgba(248,113,113,.3);
-  background:rgba(248,113,113,.12);
+  border-color:rgba(var(--error-rgb),.3);
+  background:rgba(var(--error-rgb),.12);
 }
 
 .pdock-manager-footer{
@@ -437,7 +437,7 @@ body.ethone-desktop-mode .pdock{
   justify-content:space-between;
   gap:8px;
   padding:12px 14px 14px;
-  border-top:1px solid rgba(255,255,255,.07);
+  border-top:1px solid rgba(var(--color-white-rgb),.07);
 }
 
 @media(max-width:920px){

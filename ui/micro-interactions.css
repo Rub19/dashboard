@@ -4,10 +4,10 @@
 
 :root{
   --mi-ease:var(--ease-premium,cubic-bezier(.22,1,.36,1));
-  --mi-fast:var(--motion-fast,160ms);
-  --mi-normal:var(--motion-normal,220ms);
-  --mi-glow:rgba(var(--accent-rgb,139,92,246),.18);
-  --mi-glow-strong:rgba(var(--accent-rgb,139,92,246),.28);
+  --mi-fast:var(--motion-fast,140ms);
+  --mi-normal:var(--motion-normal,190ms);
+  --mi-glow:rgba(var(--accent-rgb,var(--primary-rgb)),.18);
+  --mi-glow-strong:rgba(var(--accent-rgb,var(--primary-rgb)),.28);
 }
 
 html.ethone-micro-feedback body :where(
@@ -26,7 +26,7 @@ html.ethone-micro-feedback body :where(
   .db-card,.db-list-row,.va-panel,.timeline-card,.timeline-event,.ph-card,
   .item-row,.todo-item,.note-list-item,.kanban-card,.link-card,.pinned-card
 ):hover{
-  transform:translate3d(0,-1px,0);
+  transform:translate3d(0,var(--motion-card-y,-2px),0);
 }
 
 html.ethone-micro-feedback body :where(
@@ -62,7 +62,7 @@ html.ethone-micro-feedback body :where(input,textarea,select,.ui-input,.ui-searc
 }
 
 html.ethone-micro-feedback body :where(input,textarea,select,.ui-input,.ui-search,.modal-input,.lb-input).mi-input-active{
-  box-shadow:0 0 0 3px rgba(var(--accent-rgb,139,92,246),.14),0 0 26px rgba(var(--accent-rgb,139,92,246),.08)!important;
+  box-shadow:0 0 0 3px rgba(var(--accent-rgb,var(--primary-rgb)),.14),0 0 26px rgba(var(--accent-rgb,var(--primary-rgb)),.08)!important;
 }
 
 html.ethone-micro-feedback body :where(input[type="checkbox"],input[type="radio"],.ui-checkbox){
@@ -83,16 +83,16 @@ html.ethone-micro-feedback body :where(.ui-switch,label.ui-switch,.toggle,[role=
 
 html.ethone-micro-feedback body :where(.ui-switch,label.ui-switch,.toggle,[role="switch"]).mi-toggle-pop,
 html.ethone-micro-feedback body :where(input[type="checkbox"],input[type="radio"]).mi-toggle-pop{
-  animation:miTogglePop var(--motion-normal,220ms) var(--ease-pop,cubic-bezier(.18,1.3,.32,1)) both;
+  animation:miTogglePop var(--motion-normal,190ms) var(--ease-pop,cubic-bezier(.18,1.02,.26,1)) both;
 }
 
 html.ethone-micro-feedback body :where(.dropdown.open,.ui-dropdown.open,.db-dd-panel.open,.va-dd-panel.open,.context-menu.open,.db-ctx-menu.open,.va-ctx-menu.open,.lang-menu.open){
-  animation:miMenuIn var(--motion-fast,160ms) var(--mi-ease) both!important;
+  animation:miMenuIn var(--motion-dropdown,190ms) var(--mi-ease) both!important;
   transform-origin:top;
 }
 
 html.ethone-micro-feedback body :where(.notif-item,.ethone-quality-toast-item,.toast,.notification-item).mi-new{
-  animation:miNotificationIn var(--motion-normal,220ms) var(--mi-ease) both!important;
+  animation:miNotificationIn var(--motion-notification,190ms) var(--mi-ease) both!important;
 }
 
 .mi-clicked{
@@ -118,21 +118,21 @@ html.ethone-micro-feedback body :where(.notif-item,.ethone-quality-toast-item,.t
   justify-content:space-between;
   gap:16px;
   padding:12px;
-  border:1px solid rgba(255,255,255,.08);
+  border:1px solid rgba(var(--color-white-rgb),.08);
   border-radius:var(--radius-lg,14px);
-  background:rgba(255,255,255,.035);
+  background:rgba(var(--color-white-rgb),.035);
 }
 
 .mi-pref-row strong{
   display:block;
-  color:var(--text-primary,#f5f5f2);
+  color:var(--text-primary,var(--text-primary));
   font-size:13px;
 }
 
 .mi-pref-row span{
   display:block;
   margin-top:3px;
-  color:var(--text-tertiary,#85858f);
+  color:var(--text-tertiary,var(--text-tertiary));
   font-size:11.5px;
   line-height:1.35;
 }
@@ -141,9 +141,9 @@ html.ethone-micro-feedback body :where(.notif-item,.ethone-quality-toast-item,.t
   width:48px;
   height:28px;
   flex:0 0 auto;
-  border:1px solid rgba(255,255,255,.12);
+  border:1px solid rgba(var(--color-white-rgb),.12);
   border-radius:999px;
-  background:rgba(255,255,255,.07);
+  background:rgba(var(--color-white-rgb),.07);
   padding:3px;
   cursor:pointer;
 }
@@ -154,19 +154,19 @@ html.ethone-micro-feedback body :where(.notif-item,.ethone-quality-toast-item,.t
   width:20px;
   height:20px;
   border-radius:999px;
-  background:#fff;
+  background:var(--text-primary);
   transform:translate3d(0,0,0);
   transition:transform var(--mi-fast) var(--mi-ease);
 }
 
 .mi-pref-switch[aria-pressed="true"]{
-  background:rgba(var(--accent-rgb,139,92,246),.34);
-  border-color:rgba(var(--accent-rgb,139,92,246),.42);
+  background:rgba(var(--accent-rgb,var(--primary-rgb)),.34);
+  border-color:rgba(var(--accent-rgb,var(--primary-rgb)),.42);
 }
 
 .mi-pref-switch[aria-pressed="true"]::before{
   transform:translate3d(20px,0,0);
-  background:#f7f4ff;
+  background:var(--text-primary);
 }
 
 @keyframes miPress{
@@ -182,17 +182,17 @@ html.ethone-micro-feedback body :where(.notif-item,.ethone-quality-toast-item,.t
 
 @keyframes miTogglePop{
   0%{transform:scale(.94)}
-  70%{transform:scale(1.08)}
+  70%{transform:scale(1.018)}
   100%{transform:scale(1)}
 }
 
 @keyframes miMenuIn{
-  from{opacity:0;transform:translate3d(0,-4px,0) scale(.985)}
+  from{opacity:0;transform:translate3d(0,-6px,0) scale(.988)}
   to{opacity:1;transform:translate3d(0,0,0) scale(1)}
 }
 
 @keyframes miNotificationIn{
-  from{opacity:0;transform:translate3d(8px,0,0) scale(.985)}
+  from{opacity:0;transform:translate3d(8px,0,0) scale(.988)}
   to{opacity:1;transform:translate3d(0,0,0) scale(1)}
 }
 

@@ -4,7 +4,7 @@ async function connectValo(){
   const region=document.getElementById('valo-region').value;
   const apiKey=(document.getElementById('valo-apikey')?.value||'').trim();
   const trackerApiKey=(document.getElementById('tracker-apikey')?.value||'').trim();
-  if(!raw||!raw.includes('#')){toast('Format: Name#TAG (ex: Rub19#Boss)','error');return}
+  if(!raw||!raw.includes('#')){toast('Format: Name#TAG (ex: Player#EUW)','error');return}
   const [name,...tagParts]=raw.split('#');
   const tag=tagParts.join('#');
   toast('Fetching Valorant stats...','info');
@@ -18,7 +18,7 @@ async function connectValo(){
     await loadValoStats();
     document.getElementById('valo-disconnect').style.display='inline-flex';
     toast('Valorant connected!','success');
-    addActivity('Connected Valorant account','#ff4655','integration');
+    if(typeof addActivity==='function')addActivity('Connected Valorant account','#ff4655','integration');
   }catch(e){toast('Error: '+e.message,'error');console.error(e)}
 }
 

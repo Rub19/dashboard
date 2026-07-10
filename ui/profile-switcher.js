@@ -263,6 +263,7 @@
       if (event.target.closest("#ethone-profile-switcher-root")) return;
       var trigger = event.target.closest("#topbar-profile-btn,#mob-topbar-avatar,#mob-topbar-name,#main-sidebar .user-card,[data-action-id='profile.switch'],[data-ethone-action='profile.switch']");
       if (!trigger) return;
+      if (trigger.closest && trigger.closest("#main-sidebar [data-sidebar-local='1']")) return;
       event.preventDefault();
       event.stopImmediatePropagation();
       open();

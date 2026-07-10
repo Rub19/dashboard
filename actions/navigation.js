@@ -18,6 +18,25 @@
     if (page === "tasks") page = "todos";
     if (page === "brain") page = "ai";
     if (!document.getElementById("page-" + page)) {
+      try {
+        if (
+          global.ETHONELazyModules &&
+          typeof global.ETHONELazyModules.canLoadPage === "function" &&
+          global.ETHONELazyModules.canLoadPage(page) &&
+          typeof global.ETHONELazyModules.loadForPage === "function"
+        ) {
+          return Promise.resolve(global.ETHONELazyModules.loadForPage(page)).then(function () {
+            if (!document.getElementById("page-" + page)) {
+              console.warn("[ETHONE navigation] Lazy page did not mount:", page);
+              return false;
+            }
+            return go(page, source);
+          }).catch(function (error) {
+            console.warn("[ETHONE navigation] Lazy page load failed:", page, error);
+            return false;
+          });
+        }
+      } catch (e) {}
       console.warn("[ETHONE navigation] Refused unknown page:", page);
       try {
         var actions = app.get("actions");
@@ -27,7 +46,7 @@
     }
     var previous = current();
     app.get("events").emit("navigation:before", { from: previous, to: page, source: source || null });
-    global.switchPage(page, source || null);
+    global.switchPage(page, source && source.classList ? source : null);
     app.get("state").setState({ page: page });
     app.get("events").emit("navigation:after", { from: previous, to: page, source: source || null });
     return true;

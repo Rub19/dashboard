@@ -4,9 +4,9 @@
   "currentVersion": "1.0.0",
   "metadata": {
     "version": "1.0.0",
-    "build": "2026.07.08-v75-version-center",
-    "releaseDate": "2026-07-08",
-    "buildTime": "2026-07-08T18:45:00+02:00",
+    "build": "2026.07.10-v338-production-readiness",
+    "releaseDate": "2026-07-10",
+    "buildTime": "2026-07-10T22:00:00+02:00",
     "branch": "production",
     "commit": "",
     "status": "Stable",
@@ -29,13 +29,13 @@
   "versions": [
     {
       "version": "1.0.0",
-      "build": "2026.07.08-v75-version-center",
-      "releaseDate": "2026-07-08",
+      "build": "2026.07.10-v338-production-readiness",
+      "releaseDate": "2026-07-10",
       "type": "Stable",
       "status": "Stable",
       "branch": "production",
       "commit": "",
-      "description": "First production release candidate foundation for ETHONE as a Personal Operating System.",
+      "description": "Production readiness release focused on truthful product surfaces, profile safety and layout integrity.",
       "sections": {
         "features": [
           "Version Center powered by a JSON release manifest.",
@@ -43,10 +43,20 @@
           "New version popup with one-time persistence per release."
         ],
         "improvements": [
+          "Marketplace now exposes only verified local theme packages and no fabricated social proof.",
+          "Sidebar chrome and empty states follow the active language consistently.",
           "Release metadata now includes build, branch, status, environment and API version.",
           "The existing local snapshot system remains available inside Version Center."
         ],
         "fixes": [
+          "Profile normalization no longer contains account-specific cleanup or silent truncation.",
+          "Activity filters keep readable labels on laptop viewports.",
+          "Marketplace stays inside the application viewport without horizontal clipping.",
+          "QA safeguards no longer inject temporary content into lazy pages.",
+          "Command Palette no longer exposes unfinished release items or unsupported integrations.",
+          "Developer-specific example values were replaced by neutral production examples.",
+          "Authentication and profile surfaces now display the same release version.",
+          "Early runtime errors and unhandled rejections are retained for production diagnostics.",
           "Login layout fit pass for small laptop screens.",
           "Closed notification and AI session panels no longer stay visible or clickable off-screen.",
           "Language switching now keeps the document language synchronized."

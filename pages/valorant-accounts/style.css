@@ -95,7 +95,7 @@
   transition:color var(--motion-fast) ease;
 }
 .va-tab:hover{color:var(--text-primary)}
-.va-tab.active{color:#fff}
+.va-tab.active{color:var(--text-primary)}
 
 .va-toolbar-right{display:flex;align-items:center;gap:8px;flex:0 0 auto}
 .va-icon-btn{
@@ -374,7 +374,7 @@
    ══════════════════════════════════════════════ */
 .va-detail-overlay{
   position:fixed;inset:0;z-index:900;
-  background:rgba(0,0,0,.45);
+  background:rgba(var(--color-black-rgb),.45);
   backdrop-filter:blur(2px);
   opacity:0;pointer-events:none;
   transition:opacity 220ms var(--ease-premium);
@@ -388,7 +388,7 @@
   border-left:1px solid var(--border-secondary);
   box-shadow:var(--shadow-lg);
   transform:translateX(100%);
-  transition:transform 260ms var(--ease-premium);
+  transition:transform var(--motion-slower) var(--ease-premium);
   overflow-y:auto;
 }
 .va-detail-panel.open{transform:translateX(0)}
@@ -545,9 +545,9 @@ textarea.va-dp-edit-input{min-height:70px;resize:vertical}
   text-decoration:none;
   transition:all var(--motion-fast) ease;
 }
-.va-cell-btn:hover{background:var(--accent-hover);color:#fff}
+.va-cell-btn:hover{background:var(--accent-hover);color:var(--text-primary)}
 .va-color-cell{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:11.5px;color:var(--text-secondary)}
-.va-color-swatch{width:14px;height:14px;border-radius:4px;background:var(--cc);border:1px solid rgba(255,255,255,.18)}
+.va-color-swatch{width:14px;height:14px;border-radius:4px;background:var(--cc);border:1px solid rgba(var(--color-white-rgb),.18)}
 .va-icon-cell{font-size:16px}
 .va-progress-cell{display:flex;align-items:center;gap:8px;width:100%}
 .va-progress-track{flex:1;height:5px;border-radius:99px;background:var(--surface-3);overflow:hidden}
@@ -589,7 +589,7 @@ textarea.va-dp-edit-input{min-height:70px;resize:vertical}
   width:100%;height:34px;
   border:0;border-radius:var(--radius-md);
   background:var(--accent-contrast);
-  color:#fff;
+  color:var(--text-primary);
   font-size:12.5px;font-weight:650;
   cursor:pointer;
   transition:background var(--motion-fast) ease,opacity var(--motion-fast) ease;
@@ -643,7 +643,7 @@ textarea.va-dp-edit-input{min-height:70px;resize:vertical}
 .va-dpe-drag{color:var(--text-disabled);font-size:13px;cursor:grab;flex-shrink:0}
 .va-dpe-color{
   width:22px;height:22px;flex-shrink:0;
-  border:1px solid rgba(255,255,255,.18);
+  border:1px solid rgba(var(--color-white-rgb),.18);
   border-radius:50%;
   background:var(--bc);
   cursor:pointer;
@@ -694,7 +694,7 @@ textarea.va-dp-edit-input{min-height:70px;resize:vertical}
   height:32px;padding:0 16px;
   border:0;border-radius:var(--radius-md);
   background:var(--accent-contrast);
-  color:#fff;
+  color:var(--text-primary);
   font-size:12.5px;font-weight:650;
   cursor:pointer;
   transition:background var(--motion-fast) ease;
@@ -712,14 +712,14 @@ textarea.va-dp-edit-input{min-height:70px;resize:vertical}
 }
 .va-dpe-swatch{
   width:24px;height:24px;
-  border:1px solid rgba(255,255,255,.18);
+  border:1px solid rgba(var(--color-white-rgb),.18);
   border-radius:50%;
   background:var(--sc);
   cursor:pointer;
   transition:transform 120ms ease;
 }
 .va-dpe-swatch:hover{transform:scale(1.12)}
-.va-dpe-swatch.none{background:repeating-conic-gradient(#3a3a42 0% 25%, transparent 0% 50%) 50%/8px 8px}
+.va-dpe-swatch.none{background:repeating-conic-gradient(var(--border-secondary) 0% 25%, transparent 0% 50%) 50%/8px 8px}
 .va-dpe-custom-color{
   grid-column:span 4;
   width:100%;height:28px;

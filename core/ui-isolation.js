@@ -6,6 +6,7 @@
   window.__ethoneUIIsolation=true;
 
   var scheduled=0;
+  var scheduledDue=0;
   var syncing=false;
   var lastPage="";
   var singletonSelectors=[
@@ -21,6 +22,17 @@
     "#notif-overlay",
     "#ai-sessions-drawer"
   ];
+
+  function leanRuntime(){
+    try{
+      return !!(
+        window.ETHONE_STABLE_BOOT ||
+        window.ETHONE_LIGHT_BOOT_MODE ||
+        window.__ethoneLeanProductionBoot ||
+        document.documentElement.dataset.ethoneStableBoot==="1"
+      );
+    }catch(e){return !!(window.ETHONE_STABLE_BOOT||window.ETHONE_LIGHT_BOOT_MODE||window.__ethoneLeanProductionBoot)}
+  }
 
   function qs(sel,root){return (root||document).querySelector(sel)}
   function qsa(sel,root){return Array.prototype.slice.call((root||document).querySelectorAll(sel))}
@@ -74,7 +86,11 @@
     var appVisible=isAppVisible();
 
     if(force||!appVisible){
-      closeAllMatching([
+      try{
+        if(typeof window.closeAllModals==="function")window.closeAllModals({restoreFocus:false});
+        else if(window.ETHONEModals&&typeof window.ETHONEModals.closeAll==="function")window.ETHONEModals.closeAll({restoreFocus:false});
+      }catch(e){}
+      var transientSelectors=[
         ".modal-overlay.open",
         ".eh-panel-overlay.open",
         ".spaces-overlay.open",
@@ -85,10 +101,11 @@
         ".va-detail-overlay.open",
         ".sidebar-overlay.mobile-open",
         "#live-panel-mobile-overlay.mobile-open",
-        "#cmd-palette-overlay.open",
         "#notif-overlay.open",
         "#notif-panel.open",
         "#presentation-overlay.active",
+        "#ethone-version-popup-root.is-open",
+        "#ethone-whats-new-root.is-open",
         "#ai-sessions-drawer.open",
         ".lang-dropdown.open",
         ".dropdown.open",
@@ -100,11 +117,18 @@
         ".aie-context-menu.open",
         ".sb-tooltip.visible",
         ".tooltip.visible"
-      ],["open","active","visible","mobile-open","show","is-open"]);
+      ];
+      if(force||reason==="navigation"||reason==="history"||reason==="hash"||reason==="escape"||appVisible){
+        transientSelectors.push("#cmd-palette-overlay.open");
+      }
+      closeAllMatching(transientSelectors,["open","active","visible","mobile-open","show","is-open"]);
       var livePanel=qs("#live-panel-mobile-overlay");
       if(livePanel)livePanel.setAttribute("aria-hidden","true");
-      try{if(typeof window.closeCmdPalette==="function")window.closeCmdPalette()}catch(e){}
+      if(force||reason==="navigation"||reason==="history"||reason==="hash"||reason==="escape"||appVisible){
+        try{if(typeof window.closeCmdPalette==="function")window.closeCmdPalette()}catch(e){}
+      }
       try{if(typeof window.closeNotifPanel==="function")window.closeNotifPanel()}catch(e){}
+      document.body.classList.remove("ethone-version-popup-active","ethone-whats-new-active");
     }
 
     if(force||mode!=="desktop"){
@@ -239,11 +263,19 @@
     }
   }
   function schedule(reason,delay){
+    var wait=delay==null?120:delay;
+    var due=Date.now()+wait;
+    // Keep the earliest pending integrity pass. DOM mutations can be
+    // continuous (clock, progress, live widgets); a classic debounce kept
+    // postponing navigation cleanup forever and left active pages inert.
+    if(scheduled&&scheduledDue&&scheduledDue<=due)return;
     clearTimeout(scheduled);
+    scheduledDue=due;
     scheduled=setTimeout(function(){
       scheduled=0;
+      scheduledDue=0;
       sync(reason||"scheduled");
-    },delay==null?120:delay);
+    },wait);
   }
   function wrapSwitchPage(){
     if(typeof window.switchPage!=="function"||window.switchPage.__uiIsolationWrapped)return;
@@ -279,10 +311,29 @@
     window.addEventListener("popstate",function(){closeTransientUI("history",true);schedule("history",80)});
     window.addEventListener("hashchange",function(){closeTransientUI("hash",true);schedule("hash",80)});
     document.addEventListener("keydown",function(event){
-      if(event.key==="Escape")schedule("escape",20);
+      if(event.key==="Escape"){
+        if(window.ETHONEAccessibility&&typeof window.ETHONEAccessibility.closeTopLayer==="function"){
+          try{
+            if(window.ETHONEAccessibility.closeTopLayer()){
+              event.preventDefault();
+              event.stopImmediatePropagation();
+              schedule("escape",20);
+              return;
+            }
+          }catch(e){}
+        }
+        closeTransientUI("escape",true);
+        schedule("escape",20);
+      }
     },true);
     try{
-      new MutationObserver(function(){schedule("mutation",180)}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["class","style","hidden","aria-hidden"]});
+      var light=leanRuntime();
+      new MutationObserver(function(){schedule("mutation",light?420:180)}).observe(
+        document.body,
+        light
+          ? {childList:true,subtree:true}
+          : {childList:true,subtree:true,attributes:true,attributeFilter:["class","style","hidden","aria-hidden"]}
+      );
     }catch(e){}
   }
 

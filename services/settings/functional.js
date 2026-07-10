@@ -49,12 +49,22 @@
     return {density:1,spacing:16,xs:6,sm:10,md:16,lg:24};
   }
   function applyFunctionalVars(){
-    var p=profile(),t=theme(),r=root();
+    var p=profile();
+    var hasProfileSidebarWidth=!!(p&&p.theme&&p.theme.sidebarWidth!=null);
+    var storedSidebarWidth=null;
+    try{storedSidebarWidth=localStorage.getItem("sb_width")}catch(e){}
+    var t=theme(),r=root();
     var accent=(p&&p.customAccent)||t.customAccent||getComputedStyle(r).getPropertyValue("--accent").trim()||DEFAULTS.accent;
     var rgb=hexToRgb(accent);
     var radius=clamp(t.radius,.5,1.6,1),blur=clamp(t.blur,0,1.6,1),glow=clamp(t.glow,0,1.6,1),motion=clamp(t.motion,0,1,1),opacity=clamp(t.opacity,.72,1,1);
     var d=densityMap(t.density);
 
+    setVar("--primary",accent);
+    setVar("--primary-hover",accent);
+    setVar("--primary-active",accent);
+    setVar("--primary-rgb",rgb);
+    setVar("--primary-hover-rgb",rgb);
+    setVar("--primary-active-rgb",rgb);
     setVar("--accent",accent);
     setVar("--eh-accent",accent);
     setVar("--accent-light",accent);
@@ -97,19 +107,41 @@
     setVar("--r-lg",Math.round(20*radius)+"px");
     setVar("--theme-blur-scale",blur);
     setVar("--blur",Math.round(24*blur)+"px");
+    setVar("--glass-blur","calc(18px * var(--theme-blur-scale))");
+    setVar("--glass-overlay-blur","var(--glass-blur)");
+    setVar("--glass-saturation","1.16");
+    setVar("--glass-brightness","1.02");
+    setVar("--glass-filter","blur(var(--glass-blur)) saturate(var(--glass-saturation)) brightness(var(--glass-brightness))");
+    setVar("--glass-filter-overlay","blur(var(--glass-overlay-blur)) saturate(var(--glass-saturation)) brightness(var(--glass-brightness))");
     setVar("--theme-glow-scale",glow);
     setVar("--glow",glow);
     setVar("--theme-surface-opacity",opacity);
     setVar("--surface-opacity",opacity);
-    setVar("--surface-1","rgba(15,15,20,"+opacity+")");
-    setVar("--surface-2","rgba(22,22,29,"+opacity+")");
-    setVar("--surface-3","rgba(30,30,39,"+opacity+")");
+    setVar("--glass-card-opacity",Math.max(.68,Math.min(.92,opacity*.82)).toFixed(3));
+    setVar("--glass-panel-opacity",Math.max(.72,Math.min(.94,opacity*.86)).toFixed(3));
+    setVar("--glass-raised-opacity",Math.max(.78,Math.min(.96,opacity*.90)).toFixed(3));
+    setVar("--glass-overlay-opacity",Math.max(.46,Math.min(.72,opacity*.66)).toFixed(3));
+    setVar("--glass-overlay-opacity-soft",Math.max(.34,Math.min(.58,opacity*.52)).toFixed(3));
+    setVar("--glass-surface","linear-gradient(180deg,rgba(var(--surface-2-rgb),var(--glass-card-opacity)),rgba(var(--surface-1-rgb),var(--glass-card-opacity)))");
+    setVar("--glass-surface-flat","rgba(var(--surface-1-rgb),var(--glass-card-opacity))");
+    setVar("--glass-surface-panel","linear-gradient(180deg,rgba(var(--surface-2-rgb),var(--glass-panel-opacity)),rgba(var(--surface-1-rgb),var(--glass-panel-opacity)))");
+    setVar("--glass-surface-raised","linear-gradient(180deg,rgba(var(--surface-3-rgb),var(--glass-raised-opacity)),rgba(var(--surface-1-rgb),var(--glass-raised-opacity)))");
+    setVar("--glass-control","rgba(var(--surface-3-rgb),"+Math.max(.64,Math.min(.86,opacity*.74)).toFixed(3)+")");
+    setVar("--glass-border","rgba(var(--color-white-rgb),.095)");
+    setVar("--glass-border-strong","rgba(var(--color-white-rgb),.15)");
+    setVar("--glass-shadow","0 22px 70px rgba(var(--color-black-rgb),.36), inset 0 1px 0 rgba(var(--color-white-rgb),.055)");
+    setVar("--glass-shadow-soft","0 12px 38px rgba(var(--color-black-rgb),.24), inset 0 1px 0 rgba(var(--color-white-rgb),.045)");
+    setVar("--glass-page-bg","radial-gradient(circle at 18% -12%,rgba(var(--primary-rgb),.11),transparent 34%),radial-gradient(circle at 84% 0%,rgba(var(--primary-active-rgb),.07),transparent 30%),linear-gradient(180deg,var(--surface-0),rgba(var(--surface-0-rgb),.985))");
+    setVar("--surface-1","rgba(var(--surface-1-rgb),"+opacity+")");
+    setVar("--surface-2","rgba(var(--surface-2-rgb),"+opacity+")");
+    setVar("--surface-3","rgba(var(--surface-3-rgb),"+opacity+")");
     setVar("--surface","var(--surface-1)");
     setVar("--eh-surface","var(--surface-1)");
     setVar("--eh-surface-2","var(--surface-2)");
     setVar("--eh-surface-3","var(--surface-3)");
-    setVar("--border-primary","rgba(255,255,255,.11)");
-    setVar("--border-secondary","rgba(255,255,255,.07)");
+    setVar("--border","rgba(var(--color-white-rgb),.11)");
+    setVar("--border-primary","var(--border)");
+    setVar("--border-secondary","rgba(var(--color-white-rgb),.07)");
     setVar("--eh-stroke","var(--border-primary)");
     setVar("--eh-stroke-strong","var(--border-secondary)");
     setVar("--theme-motion-scale",motion);
@@ -120,7 +152,9 @@
     r.dataset.ethoneFont=t.fontFamily||"inter";
 
     if(!p||!p.sidebarCompact){
-      var width=clamp(t.sidebarWidth||localStorage.getItem("sb_width"),220,340,260);
+      var widthSource=hasProfileSidebarWidth?t.sidebarWidth:(storedSidebarWidth||t.sidebarWidth);
+      var width=clamp(widthSource,220,340,260);
+      t.sidebarWidth=width;
       setVar("--sidebar-w",Math.round(width)+"px");
       try{localStorage.setItem("sb_width",String(Math.round(width)))}catch(e){}
     }
@@ -137,7 +171,7 @@
     var lang=(window._lang||localStorage.getItem("nexus_lang")||localStorage.getItem("ethone_lang")||"fr").slice(0,2);
     document.querySelectorAll("#general-lang-seg button").forEach(function(btn){btn.classList.toggle("active",btn.dataset.val===lang)});
     var sw=document.getElementById("theme-sidebar-width");
-    if(sw)sw.value=Math.round(t.sidebarWidth||localStorage.getItem("sb_width")||260);
+    if(sw)sw.value=Math.round(t.sidebarWidth||260);
     var swv=document.getElementById("theme-sidebar-width-val");
     if(swv)swv.textContent=(sw?sw.value:(t.sidebarWidth||260))+"px";
     var compact=document.getElementById("theme-compact-toggle");
@@ -197,6 +231,7 @@
       var old=window.setLang;
       window.setLang=function(lang){
         var result=old.apply(this,arguments);
+        try{if(window.ETHONEStateConsistency&&window.ETHONEStateConsistency.setLanguage)window.ETHONEStateConsistency.setLanguage(lang)}catch(e){}
         try{localStorage.setItem("nexus_lang",lang);localStorage.setItem("ethone_lang",lang)}catch(e){}
         setTimeout(function(){syncSettingsUi();if(window.ethoneApplyFullTranslations)window.ethoneApplyFullTranslations()},40);
         return result;

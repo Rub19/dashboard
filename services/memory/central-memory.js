@@ -234,6 +234,7 @@
     try{
       if(out&&out.state)delete out.state.centralMemory;
     }catch(e){}
+    if(window.ETHONESecurity&&ETHONESecurity.sanitizeObject)out=ETHONESecurity.sanitizeObject(out);
     return out;
   }
 
@@ -251,7 +252,7 @@
       profileKey:profileKey(),
       activePage:currentPage(),
       scroll:captureScroll(),
-      localStorage:localStorageSubset(),
+      localStorage:window.ETHONESecurity&&ETHONESecurity.sanitizeObject?ETHONESecurity.sanitizeObject(localStorageSubset()):localStorageSubset(),
       workspace:captureWorkspaces(),
       widgets:captureWidgets(),
       desktop:captureDesktop(),

@@ -6,10 +6,17 @@ function showPasswordScreen(id){
   setEthoneMode('password');
   pendingPasswordId=id;pinEntry='';
   const p=getP(id);if(!p)return;
-  const ps=document.getElementById('profile-screen');
-  ps.style.display='none';
-  const screen=document.getElementById('password-screen');
-  screen.style.display='flex';
+  if(typeof ethoneSetSurfaceVisible==='function'){
+    ethoneSetSurfaceVisible('auth-screen','none');
+    ethoneSetSurfaceVisible('app-shell','none');
+    ethoneSetSurfaceVisible('profile-screen','none');
+    ethoneSetSurfaceVisible('password-screen','flex');
+  }else{
+    const appShell=document.getElementById('app-shell');
+    if(appShell){appShell.style.display='none';appShell.style.visibility='hidden';appShell.setAttribute('inert','');}
+    document.getElementById('profile-screen').style.display='none';
+    document.getElementById('password-screen').style.display='flex';
+  }
 
   // avatar
   const avEl=document.getElementById('pw-avatar');
@@ -69,9 +76,13 @@ function pinPress(k){
   }
 }
 
-function checkPinPassword(){
+async function checkPinPassword(){
   const p=getP(pendingPasswordId);if(!p)return;
-  if(pinEntry===p.password.value){
+  const verified=window.ETHONESecurity&&ETHONESecurity.verifyProfileLock
+    ? await ETHONESecurity.verifyProfileLock(p.password,pinEntry)
+    : {ok:pinEntry===p.password.value};
+  if(verified.ok){
+    if(verified.migrated){p.password=verified.migrated;saveStateNow();}
     document.getElementById('password-screen').style.display='none';
     enterDashboard(pendingPasswordId);
   } else {
@@ -81,10 +92,14 @@ function checkPinPassword(){
   }
 }
 
-function checkTextPassword(){
+async function checkTextPassword(){
   const p=getP(pendingPasswordId);if(!p)return;
   const val=document.getElementById('pw-text-input').value;
-  if(val===p.password.value){
+  const verified=window.ETHONESecurity&&ETHONESecurity.verifyProfileLock
+    ? await ETHONESecurity.verifyProfileLock(p.password,val)
+    : {ok:val===p.password.value};
+  if(verified.ok){
+    if(verified.migrated){p.password=verified.migrated;saveStateNow();}
     document.getElementById('password-screen').style.display='none';
     enterDashboard(pendingPasswordId);
   } else {

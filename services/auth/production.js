@@ -26,7 +26,7 @@
     if(!er)return;
     er.textContent=message||"";
     er.style.display=message?"block":"none";
-    er.style.color=good?"#22c55e":"";
+    er.style.color=good?"var(--success)":"";
   }
   function setLoading(value){
     var ld=qs("#auth-loading");
@@ -49,7 +49,7 @@
     qsa("#auth-lang-bar button").forEach(function(btn){
       var active=btn.dataset.l===l;
       btn.style.background="transparent";
-      btn.style.color=active?"#fff":"rgba(255,255,255,.42)";
+      btn.style.color=active?"var(--text-on-accent)":"rgba(var(--text-primary-rgb),.42)";
       btn.style.fontWeight=active?"700":"600";
       btn.type="button";
     });
@@ -77,7 +77,7 @@
       regBtn.innerHTML=tr("create_account_btn")+rsvg;
     }
     qsa("#auth-screen button").forEach(function(btn){
-      if(!btn.type||btn.type==="submit")btn.type="button";
+      if(!btn.hasAttribute("type"))btn.type="button";
     });
   }
   function switchTab(tab){

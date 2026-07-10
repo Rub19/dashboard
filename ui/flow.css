@@ -1,18 +1,18 @@
 /* ETHONE Flow: context switching, builder and marketplace. */
 :root {
-  --flow-accent: var(--accent, #8b5cf6);
+  --flow-accent: var(--accent, var(--primary));
   --flow-accent-rgb: 139, 92, 246;
-  --flow-surface: rgba(12, 12, 17, 0.82);
-  --flow-surface-strong: rgba(20, 19, 28, 0.92);
-  --flow-border: rgba(255, 255, 255, 0.11);
-  --flow-muted: rgba(235, 231, 255, 0.66);
+  --flow-surface: rgba(var(--surface-0-rgb), 0.82);
+  --flow-surface-strong: rgba(var(--surface-3-rgb),0.92);
+  --flow-border: rgba(var(--color-white-rgb), 0.11);
+  --flow-muted: rgba(var(--text-primary-rgb),0.66);
 }
 
 #ethone-flow-root {
   position: fixed;
   z-index: 2460;
   pointer-events: none;
-  color: #f6f3ff;
+  color: var(--text-primary);
   font-family: var(--font, inherit);
 }
 
@@ -39,9 +39,9 @@ body[data-page="login"] #ethone-flow-root {
   border-radius: 22px;
   background:
     radial-gradient(circle at 20% 0%, rgba(var(--flow-accent-rgb), 0.17), transparent 48%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025)),
+    linear-gradient(135deg, rgba(var(--color-white-rgb), 0.08), rgba(var(--color-white-rgb), 0.025)),
     var(--flow-surface);
-  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(var(--flow-accent-rgb), 0.05);
+  box-shadow: 0 22px 70px rgba(var(--color-black-rgb), 0.42), 0 0 0 1px rgba(var(--flow-accent-rgb), 0.05);
   backdrop-filter: blur(18px);
   pointer-events: auto;
   transform: translateZ(0);
@@ -65,7 +65,7 @@ body[data-page="login"] #ethone-flow-root {
 
 .ef-current:hover,
 .ef-current:focus-visible {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(var(--color-white-rgb), 0.06);
   outline: none;
 }
 
@@ -79,10 +79,10 @@ body[data-page="login"] #ethone-flow-root {
   display: grid;
   place-items: center;
   border-radius: 14px;
-  color: #fff;
+  color: var(--text-primary);
   background:
     linear-gradient(145deg, rgba(var(--flow-accent-rgb), 0.96), rgba(var(--flow-accent-rgb), 0.58)),
-    #8b5cf6;
+    var(--primary);
   box-shadow: 0 12px 34px rgba(var(--flow-accent-rgb), 0.32);
 }
 
@@ -100,7 +100,7 @@ body[data-page="login"] #ethone-flow-root {
 .ef-title strong {
   display: block;
   overflow: hidden;
-  color: #fff;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 760;
   line-height: 1.15;
@@ -135,10 +135,10 @@ body[data-page="login"] #ethone-flow-root {
   align-items: center;
   justify-content: center;
   gap: 7px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(var(--color-white-rgb), 0.1);
   border-radius: 14px;
-  color: rgba(255, 255, 255, 0.88);
-  background: rgba(255, 255, 255, 0.055);
+  color: rgba(var(--color-white-rgb), 0.88);
+  background: rgba(var(--color-white-rgb), 0.055);
   cursor: pointer;
   transition: transform 170ms ease, border-color 170ms ease, background 170ms ease, color 170ms ease;
 }
@@ -150,7 +150,7 @@ body[data-page="login"] #ethone-flow-root {
 
 .ef-btn:hover,
 .ef-btn:focus-visible {
-  color: #fff;
+  color: var(--text-primary);
   border-color: rgba(var(--flow-accent-rgb), 0.42);
   background: rgba(var(--flow-accent-rgb), 0.15);
   outline: none;
@@ -162,13 +162,13 @@ body[data-page="login"] #ethone-flow-root {
 }
 
 .ef-btn.primary {
-  color: #fff;
+  color: var(--text-primary);
   background: linear-gradient(135deg, rgba(var(--flow-accent-rgb), 0.98), rgba(var(--flow-accent-rgb), 0.66));
   box-shadow: 0 16px 36px rgba(var(--flow-accent-rgb), 0.2);
 }
 
 .ef-btn.is-active {
-  color: #fff;
+  color: var(--text-primary);
   border-color: rgba(var(--flow-accent-rgb), 0.54);
   background: rgba(var(--flow-accent-rgb), 0.18);
 }
@@ -181,7 +181,7 @@ body[data-page="login"] #ethone-flow-root {
   border: 1px solid rgba(var(--flow-accent-rgb), 0.28);
   border-radius: 20px;
   background: var(--flow-surface-strong);
-  box-shadow: 0 22px 80px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 22px 80px rgba(var(--color-black-rgb), 0.5);
   padding: 12px;
   display: none;
   pointer-events: auto;
@@ -213,7 +213,7 @@ body[data-page="login"] #ethone-flow-root {
   display: none;
   place-items: center;
   padding: 24px;
-  background: rgba(5, 5, 8, 0.66);
+  background: rgba(var(--surface-0-rgb), 0.66);
   backdrop-filter: blur(18px);
   pointer-events: auto;
 }
@@ -233,9 +233,9 @@ body[data-page="login"] #ethone-flow-root {
   border-radius: 28px;
   background:
     radial-gradient(circle at 14% 0%, rgba(var(--flow-accent-rgb), 0.18), transparent 42%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.026)),
-    rgba(11, 11, 16, 0.96);
-  box-shadow: 0 34px 110px rgba(0, 0, 0, 0.58);
+    linear-gradient(135deg, rgba(var(--color-white-rgb), 0.08), rgba(var(--color-white-rgb), 0.026)),
+    rgba(var(--surface-0-rgb), 0.96);
+  box-shadow: 0 34px 110px rgba(var(--color-black-rgb), 0.58);
 }
 
 .ef-head {
@@ -244,7 +244,7 @@ body[data-page="login"] #ethone-flow-root {
   justify-content: space-between;
   gap: 18px;
   padding: 22px 24px 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(var(--color-white-rgb), 0.08);
 }
 
 .ef-title {
@@ -275,12 +275,12 @@ body[data-page="login"] #ethone-flow-root {
   align-content: start;
   min-height: 172px;
   padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(var(--color-white-rgb), 0.09);
   border-radius: 22px;
-  color: #f9f7ff;
+  color: var(--text-primary);
   background:
     radial-gradient(circle at 85% 10%, rgba(var(--flow-accent-rgb), 0.14), transparent 40%),
-    rgba(255, 255, 255, 0.045);
+    rgba(var(--color-white-rgb), 0.045);
   text-align: left;
   cursor: pointer;
   transition: transform 190ms ease, border-color 190ms ease, background 190ms ease, box-shadow 190ms ease;
@@ -291,7 +291,7 @@ body[data-page="login"] #ethone-flow-root {
 .ef-card.active {
   border-color: rgba(var(--flow-accent-rgb), 0.46);
   background: rgba(var(--flow-accent-rgb), 0.11);
-  box-shadow: 0 20px 54px rgba(0, 0, 0, 0.34);
+  box-shadow: 0 20px 54px rgba(var(--color-black-rgb), 0.34);
   transform: translateY(-2px);
   outline: none;
 }
@@ -336,10 +336,10 @@ body[data-page="login"] #ethone-flow-root {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(var(--color-white-rgb), 0.1);
   border-radius: 999px;
-  color: rgba(255, 255, 255, 0.78);
-  background: rgba(255, 255, 255, 0.052);
+  color: rgba(var(--color-white-rgb), 0.78);
+  background: rgba(var(--color-white-rgb), 0.052);
   padding: 5px 9px;
   font-size: 11px;
   font-weight: 700;
@@ -353,7 +353,7 @@ body[data-page="login"] #ethone-flow-root {
 .ef-chip:hover,
 .ef-chip:focus-visible,
 .ef-chip.active {
-  color: #fff;
+  color: var(--text-primary);
   border-color: rgba(var(--flow-accent-rgb), 0.42);
   background: rgba(var(--flow-accent-rgb), 0.15);
   outline: none;
@@ -371,9 +371,9 @@ body[data-page="login"] #ethone-flow-root {
   gap: 14px;
   align-content: start;
   padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(var(--color-white-rgb), 0.08);
   border-radius: 24px;
-  background: rgba(255, 255, 255, 0.045);
+  background: rgba(var(--color-white-rgb), 0.045);
 }
 
 .ef-field {
@@ -383,7 +383,7 @@ body[data-page="login"] #ethone-flow-root {
 
 .ef-field label,
 .ef-panel h3 {
-  color: #fff;
+  color: var(--text-primary);
   font-size: 12px;
   font-weight: 780;
   letter-spacing: 0;
@@ -394,10 +394,10 @@ body[data-page="login"] #ethone-flow-root {
 .ef-field select,
 .ef-search {
   width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(var(--color-white-rgb), 0.1);
   border-radius: 16px;
-  color: #fff;
-  background: rgba(12, 12, 18, 0.86);
+  color: var(--text-primary);
+  background: rgba(var(--surface-1-rgb), 0.86);
   padding: 12px 13px;
   font: inherit;
   outline: none;
@@ -412,7 +412,7 @@ body[data-page="login"] #ethone-flow-root {
 .ef-field input::placeholder,
 .ef-field textarea::placeholder,
 .ef-search::placeholder {
-  color: rgba(236, 231, 255, 0.48);
+  color: rgba(var(--text-primary-rgb),0.48);
 }
 
 .ef-field input:focus,
@@ -421,7 +421,7 @@ body[data-page="login"] #ethone-flow-root {
 .ef-search:focus {
   border-color: rgba(var(--flow-accent-rgb), 0.62);
   box-shadow: 0 0 0 3px rgba(var(--flow-accent-rgb), 0.16);
-  background: rgba(18, 17, 26, 0.96);
+  background: rgba(var(--surface-2-rgb), 0.96);
 }
 
 .ef-sequence {
@@ -436,9 +436,9 @@ body[data-page="login"] #ethone-flow-root {
   align-items: center;
   min-height: 42px;
   padding: 7px 8px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(var(--color-white-rgb), 0.08);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(var(--color-white-rgb), 0.04);
   cursor: grab;
 }
 
@@ -451,7 +451,7 @@ body[data-page="login"] #ethone-flow-root {
 }
 
 .ef-danger {
-  color: #fecaca;
+  color: var(--text-error-strong);
 }
 
 .ef-transition {
@@ -460,17 +460,17 @@ body[data-page="login"] #ethone-flow-root {
   z-index: 3900;
   display: none;
   place-items: center;
-  color: #fff;
+  color: var(--text-primary);
   background:
     radial-gradient(circle at 50% 46%, rgba(var(--flow-accent-rgb), 0.24), transparent 32%),
-    rgba(4, 4, 7, 0.64);
+    rgba(var(--surface-0-rgb), 0.64);
   backdrop-filter: blur(16px);
   pointer-events: none;
 }
 
 .ef-transition.open {
   display: grid;
-  animation: ef-flow 520ms ease both;
+  animation: ef-flow var(--motion-slower) var(--ease-standard) both;
 }
 
 .ef-transition-card {
@@ -479,10 +479,10 @@ body[data-page="login"] #ethone-flow-root {
   gap: 12px;
   min-width: 220px;
   padding: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(var(--color-white-rgb), 0.12);
   border-radius: 26px;
-  background: rgba(12, 12, 17, 0.72);
-  box-shadow: 0 26px 90px rgba(0, 0, 0, 0.42);
+  background: rgba(var(--surface-0-rgb), 0.72);
+  box-shadow: 0 26px 90px rgba(var(--color-black-rgb), 0.42);
 }
 
 body.ethone-flow-active .app-shell,

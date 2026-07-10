@@ -7,15 +7,15 @@
 
   var MS_DAY=86400000;
   var COLORS={
-    focus:"#f87171",
-    spotify:"#a78bfa",
-    github:"#8b5cf6",
-    habits:"#fbbf24",
-    goals:"#34d399",
-    gaming:"#fb7185",
-    discord:"#c4b5fd",
-    productivity:"#7c6df8",
-    muted:"rgba(255,255,255,.12)"
+    focus:"var(--error)",
+    spotify:"var(--primary-hover)",
+    github:"var(--primary)",
+    habits:"var(--warning)",
+    goals:"var(--success)",
+    gaming:"var(--error)",
+    discord:"var(--text-accent)",
+    productivity:"var(--primary-active)",
+    muted:"rgba(var(--color-white-rgb),.12)"
   };
 
   function profile(){try{return typeof window.curP==="function"?window.curP():null}catch(e){return null}}
@@ -267,7 +267,7 @@
         metricCard("Commits GitHub",github+" signals",connectionSignal("github")?"GitHub connected":"From timeline",COLORS.github,"DEV")+
         metricCard("Productivite",productivity+" actions",trend(productivity,sum(previous,"productivity"))+" vs previous",COLORS.productivity,"WORK")+
       '</section>'+
-      '<section class="anv-grid primary">'+
+      '<section class="anv-grid anv-grid-primary">'+
         panel("Tendances principales","Focus, productivity, integrations and gaming over 14 days.",
           '<div class="anv-chart-stack">'+
             '<div><div class="anv-chart-label">Focus time</div>'+barChart(data,"focus",COLORS.focus," min")+'</div>'+
@@ -275,7 +275,7 @@
           '</div>',"wide")+
         panel("Repartition des signaux","How ETHONE understands the current period.",donut(sourceRows.filter(function(r){return r.value>0}).length?sourceRows:sourceRows.slice(0,4)),"")+
       '</section>'+
-      '<section class="anv-grid secondary">'+
+      '<section class="anv-grid anv-grid-secondary">'+
         panel("Heatmap 30 jours","Intensity from focus, tasks, habits, goals, integrations and gaming.",heatmap(month,["focus","productivity","habits","goals","github","spotify","discord","gaming"]),"")+
         panel("Comparaisons","Current 14 days against the previous 14 days.",
           comparison([
@@ -286,7 +286,7 @@
           ]),"")+
         panel("Integrations","Connected services and local analytics readiness.",integrationStatus(),"")+
       '</section>'+
-      '<section class="anv-grid tertiary">'+
+      '<section class="anv-grid anv-grid-tertiary">'+
         panel("Habitudes et objectifs","Completion signals from habits and weekly goals.",
           '<div class="anv-mini-list">'+
             '<div><strong>'+habits+'</strong><span>habit completions</span></div>'+

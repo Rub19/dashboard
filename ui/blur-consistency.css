@@ -1,0 +1,332 @@
+/* ETHONE Blur Consistency Audit
+   Single glass/blur engine for every visible product surface.
+   Loaded late on purpose so older page-specific blur recipes cannot drift. */
+
+:root{
+  --glass-blur: calc(18px * var(--theme-blur-scale, 1));
+  --glass-overlay-blur: var(--glass-blur);
+  --glass-saturation: 1.16;
+  --glass-brightness: 1.02;
+  --glass-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation)) brightness(var(--glass-brightness));
+  --glass-filter-overlay: blur(var(--glass-overlay-blur)) saturate(var(--glass-saturation)) brightness(var(--glass-brightness));
+  --glass-card-opacity: calc(0.82 * var(--theme-surface-opacity, 1));
+  --glass-panel-opacity: calc(0.86 * var(--theme-surface-opacity, 1));
+  --glass-raised-opacity: calc(0.9 * var(--theme-surface-opacity, 1));
+  --glass-overlay-opacity: calc(0.66 * var(--theme-surface-opacity, 1));
+  --glass-overlay-opacity-soft: calc(0.52 * var(--theme-surface-opacity, 1));
+  --glass-surface: linear-gradient(180deg, rgba(var(--surface-2-rgb), var(--glass-card-opacity)), rgba(var(--surface-1-rgb), var(--glass-card-opacity)));
+  --glass-surface-flat: rgba(var(--surface-1-rgb), var(--glass-card-opacity));
+  --glass-surface-panel: linear-gradient(180deg, rgba(var(--surface-2-rgb), var(--glass-panel-opacity)), rgba(var(--surface-1-rgb), var(--glass-panel-opacity)));
+  --glass-surface-raised: linear-gradient(180deg, rgba(var(--surface-3-rgb), var(--glass-raised-opacity)), rgba(var(--surface-1-rgb), var(--glass-raised-opacity)));
+  --glass-control: rgba(var(--surface-3-rgb), calc(0.74 * var(--theme-surface-opacity, 1)));
+  --glass-border: rgba(var(--color-white-rgb), .095);
+  --glass-border-strong: rgba(var(--color-white-rgb), .15);
+  --glass-shadow: 0 22px 70px rgba(var(--color-black-rgb), .36), inset 0 1px 0 rgba(var(--color-white-rgb), .055);
+  --glass-shadow-soft: 0 12px 38px rgba(var(--color-black-rgb), .24), inset 0 1px 0 rgba(var(--color-white-rgb), .045);
+  --glass-page-bg:
+    radial-gradient(circle at 18% -12%, rgba(var(--primary-rgb), .11), transparent 34%),
+    radial-gradient(circle at 84% 0%, rgba(var(--primary-active-rgb), .07), transparent 30%),
+    linear-gradient(180deg, var(--surface-0), rgba(var(--surface-0-rgb), .985));
+}
+
+html,
+body,
+#auth-screen,
+#profile-screen,
+#password-screen{
+  background: var(--glass-page-bg) !important;
+}
+
+#main-content,
+.main,
+.tab-content,
+.page,
+.d4-home,
+.settings-page,
+.ai-page,
+.brain-page,
+.marketplace-page{
+  background: transparent !important;
+}
+
+/* Primary product surfaces: one blur, saturation, brightness and opacity. */
+:where(
+  #auth-card,
+  .auth-v3-preview,
+  .apc-card,
+  .panel,
+  .stat-card,
+  .settings-card,
+  .conn-card,
+  .game-card,
+  .goal-card,
+  .habit-card,
+  .journal-entry,
+  .countdown-card,
+  .kanban-col,
+  .kanban-card,
+  .note-item,
+  .notes-card,
+  .notes-editor-shell,
+  .file-card,
+  .files-panel,
+  .market-card,
+  .marketplace-card,
+  .plugin-card,
+  .plugin-hub-card,
+  .widget-card,
+  .overview-widget,
+  .d4-card,
+  .d4-widget,
+  .brain-card,
+  .brain-module,
+  .ai-panel,
+  .ai-provider-card,
+  .ai-memory-card,
+  .ai-settings-card,
+  .onboarding-card,
+  .first-run-card,
+  .fr-card,
+  .health-card,
+  .version-card,
+  .activity-card,
+  .timeline-card,
+  .backup-card,
+  .kb-row,
+  .db-card,
+  .db-table-wrap,
+  .valo-card,
+  .integration-card,
+  .app-card,
+  .achievement-card,
+  .space-card,
+  .flow-card,
+  .studio-card,
+  .universe-card,
+  .tm-shell,
+  .wb-shell
+){
+  background: var(--glass-surface) !important;
+  border-color: var(--glass-border) !important;
+  box-shadow: var(--glass-shadow-soft) !important;
+  backdrop-filter: var(--glass-filter) !important;
+  -webkit-backdrop-filter: var(--glass-filter) !important;
+}
+
+/* Raised shells and persistent OS chrome. */
+:where(
+  #main-sidebar.os-sidebar,
+  .sidebar,
+  #mobile-topbar,
+  .topbar,
+  .status-bar,
+  .eh-dock,
+  .permanent-dock,
+  .live-panel,
+  .side-panel,
+  .native-window,
+  .desktop-window,
+  #notif-panel,
+  .notif-center,
+  .notification-center,
+  .notification-center-panel,
+  #cmd-palette,
+  .cmd-palette,
+  .command-palette,
+  .modal,
+  .dialog,
+  .dropdown-menu,
+  .context-menu,
+  .tooltip,
+  .sidebar-profile-menu,
+  #ai-sessions-drawer,
+  .spaces-shell,
+  .mission-control-shell,
+  .app-library-shell,
+  .profile-switcher-shell
+){
+  background: var(--glass-surface-raised) !important;
+  border-color: var(--glass-border-strong) !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: var(--glass-filter) !important;
+  -webkit-backdrop-filter: var(--glass-filter) !important;
+}
+
+/* Overlays use one shared dim/blur recipe. */
+:where(
+  .modal-overlay,
+  .sidebar-overlay,
+  #cmd-palette-overlay,
+  #notif-overlay,
+  .eh-panel-overlay,
+  .spaces-overlay,
+  .db-detail-overlay,
+  .va-detail-overlay,
+  .tm-overlay,
+  .wb-overlay,
+  .fr-overlay,
+  .first-run-overlay,
+  .onboarding-overlay,
+  .profile-switcher-overlay,
+  .mission-control-overlay,
+  .app-library-overlay,
+  .universe-overlay,
+  .drawer-overlay,
+  .side-panel-overlay
+){
+  background: rgba(var(--surface-0-rgb), var(--glass-overlay-opacity)) !important;
+  backdrop-filter: var(--glass-filter-overlay) !important;
+  -webkit-backdrop-filter: var(--glass-filter-overlay) !important;
+}
+
+/* Controls are translucent but do not invent alternate glass values. */
+:where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea,
+  select,
+  .modal-input,
+  .search-bar,
+  .ai-input,
+  .lb-input,
+  .cmd-input,
+  .command-input,
+  .dropdown-trigger,
+  .segmented,
+  .cat-tabs,
+  .settings-tabs,
+  .theme-slider,
+  .widget-row,
+  .item-row,
+  .todo-item,
+  .link-card,
+  .pinned-card,
+  .ai-suggestion,
+  .notif-item,
+  .toast,
+  .nt-toast,
+  .eh-toast-item
+){
+  background: var(--glass-control) !important;
+  border-color: var(--glass-border) !important;
+}
+
+/* Login was intentionally more opaque before; align it with the product shell. */
+#auth-screen{
+  --auth-surface: var(--glass-surface-flat) !important;
+  --auth-surface-2: var(--glass-control) !important;
+  --auth-surface-3: rgba(var(--surface-3-rgb), var(--glass-raised-opacity)) !important;
+  --auth-border: var(--glass-border) !important;
+  --auth-border-strong: var(--glass-border-strong) !important;
+}
+
+#auth-screen #auth-card,
+#auth-screen .auth-v3-preview,
+#auth-screen #auth-lang-bar{
+  background: var(--glass-surface-raised) !important;
+  backdrop-filter: var(--glass-filter) !important;
+  -webkit-backdrop-filter: var(--glass-filter) !important;
+}
+
+/* Some older polish layers force a different blur on these high-value pages. */
+body.ethone-2026-ui :where(
+  #main-sidebar,
+  #cmd-palette,
+  #cmd-palette-overlay,
+  .modal,
+  .modal-overlay,
+  #notif-panel,
+  #notif-overlay,
+  .eh-dock,
+  .eh-panel-overlay,
+  .ai-page :is(.panel,.stat-card,.settings-card,.ai-panel,.ai-provider-card),
+  .settings-page :is(.panel,.settings-card,.stat-card),
+  .marketplace-page :is(.panel,.market-card,.plugin-card),
+  .brain-page :is(.panel,.brain-card,.brain-module)
+){
+  backdrop-filter: var(--glass-filter) !important;
+  -webkit-backdrop-filter: var(--glass-filter) !important;
+}
+
+body.ethone-2026-ui :where(
+  #cmd-palette-overlay,
+  #notif-overlay,
+  .modal-overlay,
+  .sidebar-overlay,
+  .eh-panel-overlay,
+  .spaces-overlay,
+  .db-detail-overlay,
+  .va-detail-overlay,
+  .tm-overlay,
+  .wb-overlay,
+  .fr-overlay,
+  .first-run-overlay,
+  .onboarding-overlay,
+  .profile-switcher-overlay,
+  .mission-control-overlay,
+  .app-library-overlay,
+  .universe-overlay,
+  .drawer-overlay,
+  .side-panel-overlay
+){
+  background: rgba(var(--surface-0-rgb), var(--glass-overlay-opacity)) !important;
+  backdrop-filter: var(--glass-filter-overlay) !important;
+  -webkit-backdrop-filter: var(--glass-filter-overlay) !important;
+}
+
+body #cmd-palette-overlay,
+body #notif-overlay,
+body .modal-overlay,
+body .sidebar-overlay,
+body .eh-panel-overlay,
+body .spaces-overlay,
+body .db-detail-overlay,
+body .va-detail-overlay,
+body .tm-overlay,
+body .wb-overlay,
+body .fr-overlay,
+body .first-run-overlay,
+body .onboarding-overlay,
+body .profile-switcher-overlay,
+body .mission-control-overlay,
+body .app-library-overlay,
+body .universe-overlay,
+body .drawer-overlay,
+body .side-panel-overlay{
+  background: rgba(var(--surface-0-rgb), var(--glass-overlay-opacity)) !important;
+  backdrop-filter: var(--glass-filter-overlay) !important;
+  -webkit-backdrop-filter: var(--glass-filter-overlay) !important;
+}
+
+@media (prefers-reduced-transparency: reduce){
+  :root{
+    --glass-card-opacity: .96;
+    --glass-panel-opacity: .97;
+    --glass-raised-opacity: .98;
+    --glass-overlay-opacity: .78;
+  }
+
+  :where(
+    #auth-card,
+    .auth-v3-preview,
+    .panel,
+    .stat-card,
+    .settings-card,
+    .conn-card,
+    .game-card,
+    .modal,
+    #cmd-palette,
+    #notif-panel,
+    #main-sidebar,
+    .live-panel,
+    .side-panel
+  ){
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+@media (max-width: 700px){
+  :root{
+    --glass-blur: calc(14px * var(--theme-blur-scale, 1));
+  }
+}

@@ -18,7 +18,7 @@
   border-radius:var(--radius-xl);
   background:
     radial-gradient(580px 220px at 10% -30%, var(--accent-shadow), transparent 72%),
-    linear-gradient(180deg, rgba(255,255,255,.058), rgba(255,255,255,.026));
+    linear-gradient(180deg, rgba(var(--color-white-rgb),.058), rgba(var(--color-white-rgb),.026));
   box-shadow:var(--shadow-sm);
 }
 .wm-kicker{
@@ -32,7 +32,7 @@
 .wm-hero h2{
   margin:0;
   max-width:760px;
-  color:#fff;
+  color:var(--text-primary);
   font-family:var(--font-display,var(--font-sans));
   font-size:clamp(32px,5vw,58px);
   line-height:.98;
@@ -58,7 +58,7 @@
 }
 .wm-hero-stats strong{
   display:block;
-  color:#fff;
+  color:var(--text-primary);
   font-size:24px;
   line-height:1;
 }
@@ -166,7 +166,7 @@
 .wm-detail{
   border:1px solid var(--border-primary);
   border-radius:var(--radius-lg);
-  background:linear-gradient(180deg, rgba(255,255,255,.052), rgba(255,255,255,.028));
+  background:linear-gradient(180deg, rgba(var(--color-white-rgb),.052), rgba(var(--color-white-rgb),.028));
   box-shadow:var(--shadow-xs);
 }
 .wm-card{
@@ -182,7 +182,7 @@
 .wm-card:focus-visible{
   transform:translateY(-2px);
   border-color:var(--accent-border);
-  background:linear-gradient(180deg, rgba(139,92,246,.075), rgba(255,255,255,.032));
+  background:linear-gradient(180deg, rgba(var(--primary-rgb),.075), rgba(var(--color-white-rgb),.032));
   box-shadow:var(--shadow-sm);
   outline:0;
 }
@@ -255,13 +255,13 @@
   color:var(--text-accent);
 }
 .wm-badge.update{
-  border-color:rgba(251,191,36,.32);
-  background:rgba(251,191,36,.08);
-  color:#facc15;
+  border-color:rgba(var(--warning-rgb),.32);
+  background:rgba(var(--warning-rgb),.08);
+  color:var(--warning);
 }
 .wm-card-copy strong{
   display:block;
-  color:#fff;
+  color:var(--text-primary);
   font-size:15px;
   font-weight:780;
 }
@@ -317,7 +317,7 @@
   outline:0;
 }
 .wm-rating button.active{
-  color:#c4b5fd;
+  color:var(--text-accent);
 }
 .wm-card-actions,
 .wm-detail-actions{
@@ -373,7 +373,7 @@
 }
 .wm-detail-head h3{
   margin:3px 0 0;
-  color:#fff;
+  color:var(--text-primary);
   font-size:22px;
   line-height:1.1;
 }
@@ -407,7 +407,7 @@
 .wm-detail-grid strong{
   display:block;
   margin-top:5px;
-  color:#fff;
+  color:var(--text-primary);
   font-size:12px;
   overflow:hidden;
   text-overflow:ellipsis;
@@ -420,7 +420,7 @@
 }
 .wm-detail h4{
   margin:0;
-  color:#fff;
+  color:var(--text-primary);
   font-size:12px;
 }
 .wm-empty{
@@ -480,7 +480,7 @@
   display:grid;
   place-items:center;
   padding:22px;
-  background:rgba(0,0,0,.62);
+  background:rgba(var(--color-black-rgb),.62);
   backdrop-filter:blur(10px);
 }
 .wm-creator{

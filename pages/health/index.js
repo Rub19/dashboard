@@ -10,6 +10,10 @@
   var SAMPLE_KEY="ethone:health-monitor-samples";
   var lastScan=null;
   var timers={refresh:null};
+  var storageEstimatePromise=null;
+  var storageEstimateAt=0;
+  var samplingActive=false;
+  var performanceObservers=[];
 
   function esc(v){
     return String(v==null?"":v).replace(/[&<>"']/g,function(m){
@@ -143,21 +147,10 @@
         }
       },true);
     }catch(e){}
-    try{
-      var lagLast=performance.now();
-      window.__ethoneHealthLagTimer=setInterval(function(){
-        var now=performance.now();
-        var lag=Math.max(0,now-lagLast-2500);
-        lagLast=now;
-        counters.lagSamples.push(lag);
-        counters.lagSamples=counters.lagSamples.slice(-30);
-      },2500);
-    }catch(e){}
-    installPerformanceObservers();
     installPageMonitor();
   }
   function installPerformanceObservers(){
-    if(window.__ethoneHealthPerfObserversInstalled)return;
+    if(performanceObservers.length)return;
     window.__ethoneHealthPerfObserversInstalled=true;
     window.__ethoneHealthLongTasks=window.__ethoneHealthLongTasks||[];
     window.__ethoneHealthPaints=window.__ethoneHealthPaints||{};
@@ -171,6 +164,7 @@
           window.__ethoneHealthLongTasks=window.__ethoneHealthLongTasks.slice(-80);
         });
         longTaskObserver.observe({entryTypes:["longtask"]});
+        performanceObservers.push(longTaskObserver);
         window.__ethoneHealthObservers.push(longTaskObserver);
       }
     }catch(e){}
@@ -182,9 +176,43 @@
           });
         });
         paintObserver.observe({entryTypes:["paint"]});
+        performanceObservers.push(paintObserver);
         window.__ethoneHealthObservers.push(paintObserver);
       }
     }catch(e){}
+  }
+  function healthPageActive(){
+    var page=document.getElementById("page-health");
+    return !!(page&&page.classList.contains("active")&&!document.hidden);
+  }
+  function startHealthSampling(){
+    if(samplingActive||!healthPageActive())return;
+    samplingActive=true;
+    var counters=window.__ethoneHealthCounters||{lagSamples:[]};
+    try{
+      var lagLast=performance.now();
+      window.__ethoneHealthLagTimer=setInterval(function(){
+        var now=performance.now();
+        var lag=Math.max(0,now-lagLast-2500);
+        lagLast=now;
+        counters.lagSamples.push(lag);
+        counters.lagSamples=counters.lagSamples.slice(-30);
+      },2500);
+    }catch(e){}
+    installPerformanceObservers();
+    if(timers.refresh)clearInterval(timers.refresh);
+    timers.refresh=setInterval(function(){if(healthPageActive())renderHealthPage()},30000);
+  }
+  function stopHealthSampling(){
+    samplingActive=false;
+    if(window.__ethoneHealthLagTimer)clearInterval(window.__ethoneHealthLagTimer);
+    window.__ethoneHealthLagTimer=null;
+    if(timers.refresh)clearInterval(timers.refresh);
+    timers.refresh=null;
+    performanceObservers.forEach(function(observer){try{observer.disconnect()}catch(e){}});
+    performanceObservers=[];
+    window.__ethoneHealthObservers=[];
+    window.__ethoneHealthPerfObserversInstalled=false;
   }
   function installPageMonitor(){
     if(typeof window.switchPage!=="function"||window.switchPage.__healthWrapped)return;
@@ -308,12 +336,19 @@
     var estimate={used:used,quota:quota,keys:keys,ratio:0,label:bytes(used)};
     if(navigator&&navigator.storage&&navigator.storage.estimate){
       estimate.async=true;
-      navigator.storage.estimate().then(function(v){
-        try{
-          window.__ethoneStorageEstimate={used:v.usage||used,quota:v.quota||0};
-          if(document.getElementById("page-health")?.classList.contains("active"))renderHealthPage();
-        }catch(e){}
-      }).catch(function(){});
+      var shouldRefresh=Date.now()-storageEstimateAt>60000;
+      if(shouldRefresh&&!storageEstimatePromise){
+        storageEstimateAt=Date.now();
+        storageEstimatePromise=navigator.storage.estimate().then(function(v){
+          try{
+            var hadEstimate=!!window.__ethoneStorageEstimate;
+            window.__ethoneStorageEstimate={used:v.usage||used,quota:v.quota||0};
+            if(!hadEstimate&&document.getElementById("page-health")?.classList.contains("active")){
+              setTimeout(renderHealthPage,0);
+            }
+          }catch(e){}
+        }).catch(function(){}).then(function(){storageEstimatePromise=null});
+      }
     }
     var asyncEstimate=window.__ethoneStorageEstimate;
     if(asyncEstimate){
@@ -644,13 +679,13 @@
       if(e.target.closest("[data-health-clear-api]")){clearApiFailures();return}
     });
     window.addEventListener("ethone:page-ready",function(e){
-      if(e.detail&&e.detail.page==="health")renderHealthPage();
+      var page=e&&e.detail&&e.detail.page;
+      if(page!=="health"){stopHealthSampling();return}
+      startHealthSampling();
+      renderHealthPage();
     });
-    if(timers.refresh)clearInterval(timers.refresh);
-    timers.refresh=setInterval(function(){
-      var page=document.getElementById("page-health");
-      if(page&&page.classList.contains("active"))renderHealthPage();
-    },30000);
+    document.addEventListener("visibilitychange",function(){if(healthPageActive())startHealthSampling();else stopHealthSampling()});
+    startHealthSampling();
     renderHealthPage();
   }
   function registerActions(){
@@ -670,7 +705,7 @@
     Actions.register("health.clearErrors",{label:"Clear Health Monitor errors",handler:function(){clearErrors();return true}});
   }
 
-  window.ETHONEHealth={scan:scan,render:renderHealthPage,recordError:recordError,errors:readErrors,clearErrors:clearErrors,clearApiFailures:clearApiFailures};
+  window.ETHONEHealth={scan:scan,render:renderHealthPage,recordError:recordError,errors:readErrors,clearErrors:clearErrors,clearApiFailures:clearApiFailures,start:startHealthSampling,stop:stopHealthSampling};
   window.ETHONEHealthMonitor=window.ETHONEHealth;
   window.renderHealthPage=renderHealthPage;
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",install,{once:true});

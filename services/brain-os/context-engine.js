@@ -582,6 +582,7 @@
     }
     document.addEventListener("change", onSettingChange, true);
     document.addEventListener("keydown", function (event) {
+      if (event.defaultPrevented) return;
       if (state.open && event.key === "Escape") { event.preventDefault(); closeCommandCenter(); return; }
       var commandCombo = (event.ctrlKey || event.metaKey) && event.shiftKey && (event.code === "Space" || event.key === " ");
       if (commandCombo && !isTyping(event.target)) {

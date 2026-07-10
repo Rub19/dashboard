@@ -1,0 +1,211 @@
+/*
+ * ETHONE Typography System
+ * A single readable scale for headings, subtitles, body text, labels, badges,
+ * dates and captions. It intentionally avoids viewport-scaled type so the UI
+ * stays stable across dashboard, panels and mobile shells.
+ */
+
+:root {
+  --type-color-primary: var(--text-primary);
+  --type-color-secondary: rgba(var(--text-primary-rgb), 0.74);
+  --type-color-muted: rgba(var(--text-primary-rgb), 0.62);
+  --type-color-caption: rgba(var(--text-primary-rgb), 0.56);
+}
+
+html {
+  font-family: var(--font-sans);
+  font-size: var(--type-body);
+  line-height: var(--leading-body);
+}
+
+body.ethone-2026-ui,
+body.ethone-v2,
+#auth-screen,
+#profile-screen {
+  font-family: var(--font-sans);
+  font-size: var(--type-body);
+  line-height: var(--leading-body);
+  color: var(--type-color-primary);
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+}
+
+body.ethone-2026-ui :where(h1,h2,h3,h4,h5,h6),
+body.ethone-v2 :where(h1,h2,h3,h4,h5,h6),
+#auth-screen :where(h1,h2,h3,h4,h5,h6),
+#profile-screen :where(h1,h2,h3,h4,h5,h6) {
+  margin-block: 0;
+  color: var(--type-color-primary);
+  font-family: var(--font-display);
+  font-weight: 780;
+  line-height: var(--leading-title);
+  letter-spacing: var(--tracking) !important;
+  text-wrap: balance;
+}
+
+body.ethone-2026-ui :where(.page-title,.settings-v2-page-title,.section-title,.modal-title,.auth-title,.fr-title,.vh-title,.aic-title),
+body.ethone-v2 :where(.page-title,.section-title,.modal-title),
+#auth-screen :where(.auth-title,.auth-v3-title),
+#profile-screen :where(.pw-name,.ps-title) {
+  color: var(--type-color-primary) !important;
+  font-family: var(--font-display) !important;
+  font-size: var(--type-title) !important;
+  font-weight: 780 !important;
+  line-height: var(--leading-title) !important;
+  letter-spacing: var(--tracking) !important;
+}
+
+body.ethone-2026-ui :where(.page-subtitle,.section-subtitle,.panel-subtitle,.card-subtitle,.settings-v2-page-description,.auth-subtitle,.fr-subtitle,.vh-subtitle,.aic-subtitle),
+body.ethone-v2 :where(.page-subtitle,.section-subtitle,.panel-subtitle,.card-subtitle),
+#auth-screen :where(.auth-subtitle,.auth-v3-subtitle),
+#profile-screen :where(.pw-sub,.ps-sub) {
+  color: var(--type-color-secondary) !important;
+  font-size: var(--type-body-sm) !important;
+  font-weight: 500;
+  line-height: var(--leading-body) !important;
+  letter-spacing: var(--tracking) !important;
+}
+
+body.ethone-2026-ui :where(p,li,td,th,input,textarea,select),
+body.ethone-v2 :where(p,li,td,th,input,textarea,select),
+#auth-screen :where(p,input,textarea,select),
+#profile-screen :where(p,input,textarea,select) {
+  font-size: var(--type-body);
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking);
+}
+
+body.ethone-2026-ui :where(button,.btn,.ui-button,.ethone-button,.panel-action,.item-btn,.settings-action,.cat-tab,.settings-tab,.modal-submit,.modal-close,.d4-button,.d4-open-action,.d4-quick-action,.d4-icon-button,.d4-editbar-btn,.d4-widget-btn,.vh-button,.aic-btn,.aic-button,.mp41-btn),
+body.ethone-v2 :where(button,.btn,.ui-button,.ethone-button,.panel-action,.item-btn,.settings-action,.cat-tab,.settings-tab,.modal-submit,.modal-close),
+#auth-screen :where(button,.auth-action,.auth-oauth-btn,.auth-tab,.auth-submit),
+#profile-screen :where(button) {
+  font-family: var(--font-sans) !important;
+  font-size: var(--type-label) !important;
+  font-weight: 680 !important;
+  line-height: var(--leading-control) !important;
+  letter-spacing: var(--tracking) !important;
+}
+
+body.ethone-2026-ui :where(.label,.field-label,.modal-label,.section-label,.stat-label,.settings-v2-group-label,.settings-v2-label,.d4-label),
+body.ethone-v2 :where(.label,.field-label,.modal-label,.section-label,.stat-label),
+#auth-screen :where(label,.auth-label),
+#profile-screen :where(label) {
+  color: var(--type-color-caption) !important;
+  font-size: var(--type-label) !important;
+  font-weight: 720 !important;
+  line-height: var(--leading-caption) !important;
+  letter-spacing: var(--tracking-label) !important;
+}
+
+body.ethone-2026-ui :where(.caption,.meta,.date,.time,.item-meta,.activity-time,.version-meta,.timeline-event time,.settings-v2-mini-sub,.toggle-sub,small),
+body.ethone-v2 :where(.caption,.meta,.date,.time,.item-meta,.activity-time,small),
+#auth-screen :where(small,.auth-caption),
+#profile-screen :where(small) {
+  color: var(--type-color-caption) !important;
+  font-size: var(--type-caption) !important;
+  line-height: var(--leading-caption) !important;
+  letter-spacing: var(--tracking) !important;
+}
+
+body.ethone-2026-ui :where(.ui-badge,.ui-tag,.badge,.tag,.nav-badge,.conn-status-badge,.d4-ws-card-state,.nx-tag),
+body.ethone-v2 :where(.ui-badge,.ui-tag,.badge,.tag,.nav-badge),
+#auth-screen :where(.auth-badge,.auth-v3-badge) {
+  min-height: 22px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--type-color-secondary) !important;
+  font-size: var(--type-caption) !important;
+  font-weight: 720 !important;
+  line-height: 1 !important;
+  letter-spacing: var(--tracking) !important;
+}
+
+body.ethone-2026-ui :where(.muted,.text-muted,.empty-state,.conn-subtitle,.game-card-sub,.aic-sub,.health-panel p,.settings-card p),
+body.ethone-v2 :where(.muted,.text-muted,.empty-state,.conn-subtitle,.game-card-sub) {
+  color: var(--type-color-muted) !important;
+}
+
+body.ethone-2026-ui :where(button,.btn,.ui-button,.ethone-button,.nav-item,.os-nav-item,.settings-nav-item,.dropdown-item,.context-menu-item,.cmd-item,.ui-sidebar-item,.ui-badge,.ui-tag,.badge,.tag,.d4-quick-action),
+body.ethone-v2 :where(button,.btn,.ui-button,.nav-item,.settings-nav-item,.dropdown-item,.context-menu-item,.cmd-item,.ui-sidebar-item),
+#auth-screen :where(button,.auth-action,.auth-oauth-btn,.auth-tab) {
+  align-items: center !important;
+}
+
+body.ethone-2026-ui :where(button,.btn,.ui-button,.ethone-button,.nav-item,.os-nav-item,.settings-nav-item,.dropdown-item,.context-menu-item,.cmd-item,.ui-sidebar-item,.ui-badge,.ui-tag,.badge,.tag,.d4-quick-action) :where(svg,[data-lucide],img),
+body.ethone-v2 :where(button,.btn,.ui-button,.nav-item,.settings-nav-item,.dropdown-item,.context-menu-item,.cmd-item,.ui-sidebar-item) :where(svg,[data-lucide],img),
+#auth-screen :where(button,.auth-action,.auth-oauth-btn,.auth-tab) :where(svg,[data-lucide],img) {
+  flex: 0 0 auto;
+  vertical-align: middle;
+}
+
+body.ethone-2026-ui :where(button,.btn,.ui-button,.ethone-button,.nav-item,.os-nav-item,.settings-nav-item,.dropdown-item,.context-menu-item,.cmd-item,.ui-sidebar-item,.ui-badge,.ui-tag,.badge,.tag,.d4-quick-action) > :where(span,strong,small,b),
+body.ethone-v2 :where(button,.btn,.ui-button,.nav-item,.settings-nav-item,.dropdown-item,.context-menu-item,.cmd-item,.ui-sidebar-item) > :where(span,strong,small,b),
+#auth-screen :where(button,.auth-action,.auth-oauth-btn,.auth-tab) > :where(span,strong,small,b) {
+  line-height: inherit;
+}
+
+body.ethone-dashboard-v4 .d4-home {
+  font-size: var(--type-body);
+  line-height: var(--leading-body);
+}
+
+body.ethone-dashboard-v4 .d4-hero h1 {
+  font-size: var(--type-hero) !important;
+  line-height: var(--leading-hero) !important;
+  letter-spacing: var(--tracking) !important;
+}
+
+body.ethone-dashboard-v4 .d4-hero-copy > p {
+  color: var(--type-color-secondary) !important;
+  font-size: var(--type-body) !important;
+  line-height: var(--leading-body) !important;
+}
+
+body.ethone-dashboard-v4 :where(.d4-panel-title h2,.d4-panel-title h3,.d4-quick-head h2) {
+  font-size: var(--type-body-lg) !important;
+  font-weight: 760 !important;
+  line-height: var(--leading-title) !important;
+}
+
+body.ethone-dashboard-v4 :where(.d4-panel-title p,.d4-quick-head span,.d4-brain-metric span,.d4-next-action span,.d4-explanation,.d4-insight-cell span,.d4-live-main span,.d4-live-row span,.d4-live-foot,.d4-catalog-empty span,.d4-catalog-stat span) {
+  color: var(--type-color-muted) !important;
+  font-size: var(--type-caption) !important;
+  line-height: var(--leading-caption) !important;
+}
+
+body.ethone-dashboard-v4 :where(.d4-date,.d4-session-state,.d4-today-line,.d4-mini-row,.d4-state-row,.d4-timeline-row strong,.d4-timeline-row small,.d4-quick-action span,.d4-live-head,.d4-live-head strong,.d4-live-head span,.d4-live-row strong,.d4-live-time,.d4-live-mini-btn,.d4-open-action,.d4-view-link) {
+  font-size: var(--type-caption) !important;
+  line-height: var(--leading-caption) !important;
+}
+
+body.ethone-dashboard-v4 :where(.d4-time,.d4-catalog-clock-time,.d4-catalog-cd-value,.d4-catalog-stat strong) {
+  font-size: var(--type-display) !important;
+  line-height: 1 !important;
+  letter-spacing: var(--tracking) !important;
+}
+
+body.ethone-dashboard-v4 :where(.d4-live-main strong) {
+  font-size: var(--type-title-sm) !important;
+  line-height: var(--leading-title) !important;
+}
+
+body.ethone-dashboard-v4 :where(.d4-panel-title,.d4-quick-action,.d4-session-state span,.d4-live-head,.d4-live-foot,.d4-mini-row,.d4-timeline-row) {
+  align-items: center;
+}
+
+@media (max-width: 1366px) {
+  body.ethone-dashboard-v4 .d4-hero h1 {
+    font-size: var(--type-display) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  body.ethone-dashboard-v4 .d4-hero h1 {
+    font-size: calc(28px * var(--theme-font-scale)) !important;
+  }
+
+  body.ethone-2026-ui,
+  body.ethone-v2 {
+    font-size: var(--type-body);
+  }
+}

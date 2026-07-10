@@ -1,0 +1,442 @@
+/*
+ * ETHONE Consistency Audit
+ * Final token enforcement layer. This keeps existing layouts and logic intact
+ * while making repeated primitives share one visual contract.
+ */
+
+:root {
+  --consistency-radius-control: var(--radius-md);
+  --consistency-radius-card: var(--radius-xl);
+  --consistency-radius-compact: var(--radius-lg);
+  --consistency-border: var(--border-primary);
+  --consistency-border-strong: var(--border-secondary);
+  --consistency-surface-control: rgba(var(--color-white-rgb), 0.045);
+  --consistency-surface-control-hover: rgba(var(--color-white-rgb), 0.072);
+  --consistency-surface-card: linear-gradient(180deg, rgba(var(--surface-2-rgb), 0.94), rgba(var(--surface-1-rgb), 0.98));
+  --consistency-surface-card-hover: linear-gradient(180deg, rgba(var(--surface-3-rgb), 0.96), rgba(var(--surface-2-rgb), 0.98));
+  --consistency-surface-modal: linear-gradient(180deg, rgba(var(--surface-2-rgb), 0.98), rgba(var(--surface-1-rgb), 0.99));
+  --consistency-shadow-card: var(--shadow-sm);
+  --consistency-shadow-raised: var(--shadow-md);
+  --consistency-shadow-modal: var(--shadow-lg);
+  --consistency-transition: transform var(--motion-fast) var(--ease-premium),
+    opacity var(--motion-fast) var(--ease-premium),
+    color var(--motion-fast) var(--ease-standard),
+    background-color var(--motion-fast) var(--ease-standard),
+    border-color var(--motion-fast) var(--ease-standard),
+    box-shadow var(--motion-fast) var(--ease-standard);
+}
+
+body.ethone-2026-ui,
+body.ethone-v2,
+#auth-screen,
+#profile-screen,
+#password-screen {
+  font-family: var(--font-sans) !important;
+  color: var(--text-primary);
+  letter-spacing: var(--tracking);
+}
+
+body.ethone-2026-ui :where(*),
+body.ethone-v2 :where(*),
+#auth-screen :where(*),
+#profile-screen :where(*) {
+  letter-spacing: var(--tracking);
+}
+
+/* One button language */
+body.ethone-2026-ui :where(
+  button,
+  .btn,
+  .ui-button,
+  .ethone-button,
+  [role="button"],
+  .panel-action,
+  .item-btn,
+  .settings-action,
+  .settings-nav-item,
+  .dropdown-item,
+  .context-menu-item,
+  .cmd-item,
+  .cat-tab,
+  .timeline-filter button,
+  .timeline-month-actions button,
+  .health-hero-actions button,
+  .version-filter,
+  .vh-button,
+  .mp41-btn,
+  .aic-btn,
+  .aic-button,
+  .d4-button,
+  .d4-icon-button,
+  .d4-widget-btn,
+  .d4-quick-action
+),
+body.ethone-v2 :where(
+  button,
+  .btn,
+  .ui-button,
+  .ethone-button,
+  [role="button"],
+  .panel-action,
+  .item-btn,
+  .settings-action,
+  .settings-nav-item,
+  .dropdown-item,
+  .context-menu-item,
+  .cmd-item,
+  .cat-tab
+),
+#auth-screen :where(button, .lb-tab, .lb-btn-primary, .lb-social, .lb-ghost),
+#profile-screen :where(button),
+#password-screen :where(button) {
+  min-height: var(--control-height);
+  border-radius: var(--consistency-radius-control) !important;
+  font-family: var(--font-sans) !important;
+  font-size: var(--type-label) !important;
+  font-weight: 680 !important;
+  line-height: var(--leading-control) !important;
+  transition: var(--consistency-transition) !important;
+  transform: translateZ(0);
+}
+
+body.ethone-2026-ui :where(
+  button,
+  .btn,
+  .ui-button,
+  .ethone-button,
+  [role="button"],
+  .panel-action,
+  .item-btn,
+  .settings-action,
+  .dropdown-item,
+  .context-menu-item,
+  .cmd-item,
+  .cat-tab,
+  .vh-button,
+  .mp41-btn,
+  .aic-btn,
+  .aic-button,
+  .d4-button,
+  .d4-icon-button,
+  .d4-widget-btn
+):not(.primary):not(.btn-primary):not(.ui-button--primary):not(.danger):not(.btn-danger):not([data-variant="primary"]),
+body.ethone-v2 :where(
+  button,
+  .btn,
+  .ui-button,
+  .ethone-button,
+  [role="button"],
+  .panel-action,
+  .item-btn,
+  .settings-action,
+  .dropdown-item,
+  .context-menu-item,
+  .cmd-item,
+  .cat-tab
+):not(.primary):not(.btn-primary):not(.ui-button--primary):not(.danger):not(.btn-danger):not([data-variant="primary"]) {
+  border: 1px solid var(--consistency-border) !important;
+  background: var(--consistency-surface-control) !important;
+  color: var(--text-secondary) !important;
+  box-shadow: var(--shadow-xs) !important;
+}
+
+body.ethone-2026-ui :where(
+  .primary,
+  .btn-primary,
+  .ui-button--primary,
+  [data-variant="primary"],
+  .modal-submit,
+  .auth-submit,
+  .login-submit,
+  .lb-btn-primary
+),
+body.ethone-v2 :where(.primary, .btn-primary, .ui-button--primary, [data-variant="primary"], .modal-submit),
+#auth-screen :where(.lb-btn-primary, .auth-submit, .login-submit) {
+  border-color: rgba(var(--primary-rgb), 0.56) !important;
+  background: linear-gradient(180deg, var(--primary-hover), var(--primary-active)) !important;
+  color: var(--text-on-accent) !important;
+  box-shadow: var(--shadow-control) !important;
+}
+
+body.ethone-2026-ui :where(.danger, .btn-danger, .ui-button--danger, [data-variant="danger"], [data-danger="true"]),
+body.ethone-v2 :where(.danger, .btn-danger, .ui-button--danger, [data-variant="danger"], [data-danger="true"]) {
+  border-color: var(--danger-border) !important;
+  background: var(--danger-soft) !important;
+  color: var(--text-danger-strong) !important;
+}
+
+body.ethone-2026-ui :where(button, .btn, .ui-button, [role="button"]):not(:disabled):not([aria-disabled="true"]):hover,
+body.ethone-v2 :where(button, .btn, .ui-button, [role="button"]):not(:disabled):not([aria-disabled="true"]):hover,
+#auth-screen :where(button, .lb-tab, .lb-btn-primary, .lb-social, .lb-ghost):not(:disabled):hover {
+  border-color: var(--border-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+body.ethone-2026-ui :where(button, .btn, .ui-button, [role="button"]):active:not(:disabled),
+body.ethone-v2 :where(button, .btn, .ui-button, [role="button"]):active:not(:disabled),
+#auth-screen :where(button, .lb-tab, .lb-btn-primary, .lb-social, .lb-ghost):active:not(:disabled) {
+  transform: scale(var(--motion-scale-press)) !important;
+}
+
+/* One field language */
+body.ethone-2026-ui :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea,
+  select,
+  .ui-input,
+  .ui-search,
+  .modal-input,
+  .search-bar,
+  .cmd-search,
+  .settings-search
+),
+body.ethone-v2 :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea,
+  select,
+  .ui-input,
+  .ui-search,
+  .modal-input,
+  .search-bar
+),
+#auth-screen :where(input:not([type="checkbox"]):not([type="radio"]), textarea, select) {
+  min-height: var(--control-height);
+  border: 1px solid var(--consistency-border) !important;
+  border-radius: var(--consistency-radius-control) !important;
+  background: var(--surface-3) !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-sans) !important;
+  font-size: var(--type-body) !important;
+  box-shadow: var(--shadow-xs) !important;
+  transition: border-color var(--motion-fast) var(--ease-standard), box-shadow var(--motion-fast) var(--ease-standard), background-color var(--motion-fast) var(--ease-standard) !important;
+}
+
+body.ethone-2026-ui :where(input, textarea)::placeholder,
+body.ethone-v2 :where(input, textarea)::placeholder,
+#auth-screen :where(input, textarea)::placeholder {
+  color: var(--text-tertiary) !important;
+  opacity: 1 !important;
+}
+
+body.ethone-2026-ui :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select):focus,
+body.ethone-v2 :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select):focus,
+#auth-screen :where(input:not([type="checkbox"]):not([type="radio"]), textarea, select):focus {
+  border-color: var(--border-focus) !important;
+  outline: 0 !important;
+  box-shadow: var(--focus-ring), var(--shadow-xs) !important;
+}
+
+/* One card language */
+body.ethone-2026-ui #main-content :where(
+  .ui-panel,
+  .ui-card,
+  .ui-widget,
+  .panel,
+  .card,
+  .widget,
+  .settings-card,
+  .conn-card,
+  .game-card,
+  .plugin-card,
+  .market-card,
+  .version-card,
+  .version-panel,
+  .health-card,
+  .health-panel,
+  .timeline-card,
+  .timeline-panel,
+  .timeline-event,
+  .timeline-stat,
+  .activity-card,
+  .tm-card,
+  .d4-panel,
+  .d4-widget,
+  .d4-card,
+  .d4-module,
+  .d4-picker-tile,
+  .aic-panel,
+  .integration-card,
+  .database-card,
+  .file-card,
+  .note-item,
+  .kanban-col,
+  .goal-card,
+  .journal-entry,
+  .countdown-card
+),
+body.ethone-v2 #main-content :where(
+  .ui-panel,
+  .ui-card,
+  .ui-widget,
+  .panel,
+  .card,
+  .widget,
+  .settings-card,
+  .conn-card,
+  .game-card,
+  .timeline-card,
+  .timeline-event,
+  .note-item,
+  .kanban-col
+) {
+  border: 1px solid var(--consistency-border) !important;
+  border-radius: var(--consistency-radius-card) !important;
+  background: var(--consistency-surface-card) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--consistency-shadow-card) !important;
+  transition: var(--consistency-transition) !important;
+}
+
+body.ethone-2026-ui #main-content :where(.d4-hero, .ethone-os2-page-hero, .version-hero, .health-hero, .timeline-hero) {
+  border-color: var(--consistency-border-strong) !important;
+  border-radius: var(--radius-2xl) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+body.ethone-2026-ui #main-content :where(
+  .item-row,
+  .todo-item,
+  .health-row,
+  .version-item,
+  .timeline-filter,
+  .d4-mini-row,
+  .d4-state-row,
+  .d4-timeline-row,
+  .d4-activity-row,
+  .backup-row
+) {
+  border-radius: var(--consistency-radius-compact) !important;
+}
+
+/* One overlay/modal language */
+body.ethone-2026-ui :where(
+  .modal,
+  .ui-modal,
+  .modal-card,
+  .modal-content,
+  .dialog,
+  .cmd-palette,
+  .command-palette,
+  #cmd-palette,
+  .dropdown-menu,
+  .ui-dropdown,
+  .context-menu,
+  .ui-context-menu,
+  .db-dd-panel,
+  .va-dd-panel,
+  .side-panel-shell,
+  .pdock-popover,
+  .pdock-manager,
+  .notification-center,
+  .toast,
+  .ui-toast,
+  .ethone-quality-toast-item
+),
+body.ethone-v2 :where(
+  .modal,
+  .ui-modal,
+  .modal-card,
+  .modal-content,
+  .dialog,
+  .cmd-palette,
+  .command-palette,
+  #cmd-palette,
+  .dropdown-menu,
+  .ui-dropdown,
+  .context-menu,
+  .ui-context-menu,
+  .side-panel-shell,
+  .notification-center,
+  .toast,
+  .ui-toast
+) {
+  border: 1px solid var(--consistency-border-strong) !important;
+  border-radius: var(--consistency-radius-card) !important;
+  background: var(--consistency-surface-modal) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--consistency-shadow-modal) !important;
+}
+
+body.ethone-2026-ui :where(.dropdown-menu, .ui-dropdown, .context-menu, .ui-context-menu, .db-dd-panel, .va-dd-panel),
+body.ethone-v2 :where(.dropdown-menu, .ui-dropdown, .context-menu, .ui-context-menu) {
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+body.ethone-2026-ui :where(.toast, .ui-toast, .ethone-quality-toast-item, .notif-item, .notification-item),
+body.ethone-v2 :where(.toast, .ui-toast, .notif-item, .notification-item) {
+  border-radius: var(--radius-lg) !important;
+}
+
+/* Badges, tags, switches and progress share compact tokens. */
+body.ethone-2026-ui :where(.badge, .tag, .ui-badge, .ui-tag, .nav-badge, .status-badge, .version-badge, .health-badge, .coming-soon-badge),
+body.ethone-v2 :where(.badge, .tag, .ui-badge, .ui-tag, .nav-badge, .status-badge, .coming-soon-badge) {
+  min-height: 22px;
+  border: 1px solid var(--consistency-border) !important;
+  border-radius: var(--radius-full) !important;
+  background: rgba(var(--color-white-rgb), 0.055) !important;
+  color: var(--text-secondary) !important;
+  font: 720 var(--type-caption) / 1 var(--font-sans) !important;
+}
+
+body.ethone-2026-ui :where(.switch, .toggle, .ui-switch, .settings-switch, .theme-switch),
+body.ethone-v2 :where(.switch, .toggle, .ui-switch, .settings-switch, .theme-switch) {
+  border-radius: var(--radius-full) !important;
+  transition: var(--consistency-transition) !important;
+}
+
+body.ethone-2026-ui :where(progress, .progress, .progress-bar, .d4-progress, .health-meter, .version-progress),
+body.ethone-v2 :where(progress, .progress, .progress-bar) {
+  border-radius: var(--radius-full) !important;
+  overflow: hidden;
+}
+
+/* Keep motion coherent and capped. */
+body.ethone-2026-ui :where(
+  button,
+  a,
+  input,
+  textarea,
+  select,
+  .btn,
+  .panel,
+  .card,
+  .widget,
+  .modal,
+  .dropdown-menu,
+  .context-menu,
+  .toast,
+  .nav-item,
+  .settings-nav-item,
+  .cmd-item
+),
+body.ethone-v2 :where(
+  button,
+  a,
+  input,
+  textarea,
+  select,
+  .btn,
+  .panel,
+  .card,
+  .widget,
+  .modal,
+  .dropdown-menu,
+  .context-menu,
+  .toast,
+  .nav-item,
+  .settings-nav-item,
+  .cmd-item
+) {
+  animation-duration: min(var(--motion-normal), var(--motion-max)) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.ethone-2026-ui :where(*),
+  body.ethone-v2 :where(*),
+  #auth-screen :where(*) {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

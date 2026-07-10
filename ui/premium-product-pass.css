@@ -1,0 +1,522 @@
+/*
+ * ETHONE Premium Product Pass
+ * Final art-direction layer: quieter surfaces, intentional accent usage,
+ * consistent interaction states and native-app readability.
+ */
+
+:root {
+  --premium-surface-flat: rgba(var(--surface-1-rgb), 0.96);
+  --premium-surface-card: linear-gradient(180deg, rgba(var(--surface-2-rgb), 0.94), rgba(var(--surface-1-rgb), 0.98));
+  --premium-surface-card-hover: linear-gradient(180deg, rgba(var(--surface-3-rgb), 0.96), rgba(var(--surface-2-rgb), 0.98));
+  --premium-surface-control: rgba(var(--color-white-rgb), 0.045);
+  --premium-surface-control-hover: rgba(var(--color-white-rgb), 0.072);
+  --premium-surface-active: rgba(var(--color-white-rgb), 0.08);
+  --premium-line: rgba(var(--color-white-rgb), 0.082);
+  --premium-line-strong: rgba(var(--color-white-rgb), 0.14);
+  --premium-line-hover: rgba(var(--color-white-rgb), 0.18);
+  --premium-accent-line: rgba(var(--primary-rgb), 0.34);
+  --premium-accent-soft: rgba(var(--primary-rgb), 0.105);
+  --premium-accent-softer: rgba(var(--primary-rgb), 0.065);
+  --premium-text: rgba(var(--text-primary-rgb), 0.94);
+  --premium-text-secondary: rgba(var(--text-primary-rgb), 0.70);
+  --premium-text-muted: rgba(var(--text-primary-rgb), 0.52);
+  --premium-shadow-card: 0 14px 42px rgba(var(--color-black-rgb), 0.24), inset 0 1px 0 rgba(var(--color-white-rgb), 0.035);
+  --premium-shadow-card-hover: 0 18px 54px rgba(var(--color-black-rgb), 0.30), inset 0 1px 0 rgba(var(--color-white-rgb), 0.05);
+  --premium-shadow-hero: 0 28px 92px rgba(var(--color-black-rgb), 0.42), inset 0 1px 0 rgba(var(--color-white-rgb), 0.055);
+  --premium-shadow-control: inset 0 1px 0 rgba(var(--color-white-rgb), 0.035);
+  --premium-transition: transform var(--motion-fast) var(--ease-premium), opacity var(--motion-fast) var(--ease-premium), color var(--motion-fast) var(--ease-standard), border-color var(--motion-fast) var(--ease-standard), background-color var(--motion-fast) var(--ease-standard), box-shadow var(--motion-fast) var(--ease-standard);
+}
+
+body.ethone-2026-ui,
+body.ethone-v2 {
+  color: var(--premium-text);
+  background:
+    radial-gradient(circle at 52% -12%, rgba(var(--primary-rgb), 0.075), transparent 34%),
+    linear-gradient(180deg, var(--surface-0), rgba(var(--color-black-rgb), 1) 100%);
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body.ethone-2026-ui :where(h1,h2,h3,h4,.page-title,.section-title,.panel-title,.d4-title,.d4-panel-title),
+body.ethone-v2 :where(h1,h2,h3,h4,.page-title,.section-title,.panel-title) {
+  color: var(--text-primary);
+  letter-spacing: 0;
+}
+
+body.ethone-2026-ui :where(p,small,label,.muted,.subtitle,.page-subtitle,.section-subtitle,.panel-subtitle,.d4-muted,.d4-dim,.card-description),
+body.ethone-v2 :where(p,small,label,.muted,.subtitle,.page-subtitle,.section-subtitle,.panel-subtitle,.card-description) {
+  color: var(--premium-text-secondary);
+}
+
+body.ethone-2026-ui :where(.caption,.meta,.date,.timestamp,.helper,.hint,.text-muted,.d4-sync,.d4-widget-meta),
+body.ethone-v2 :where(.caption,.meta,.date,.timestamp,.helper,.hint,.text-muted) {
+  color: var(--premium-text-muted);
+}
+
+body.ethone-2026-ui :where(
+  .ui-panel,
+  .ui-card,
+  .ui-widget,
+  .panel,
+  .card,
+  .widget,
+  .settings-card,
+  .conn-card,
+  .game-card,
+  .plugin-card,
+  .market-card,
+  .version-card,
+  .health-card,
+  .timeline-card,
+  .activity-card,
+  .tm-card,
+  .d4-panel,
+  .d4-widget,
+  .d4-card,
+  .d4-module,
+  .d4-picker-tile
+),
+body.ethone-v2 :where(
+  .ui-panel,
+  .ui-card,
+  .ui-widget,
+  .panel,
+  .card,
+  .widget,
+  .settings-card,
+  .conn-card,
+  .game-card
+) {
+  border-color: var(--premium-line) !important;
+  background: var(--premium-surface-card) !important;
+  box-shadow: var(--premium-shadow-card) !important;
+  transition: var(--premium-transition) !important;
+}
+
+body.ethone-2026-ui :where(
+  .ui-card,
+  .ui-widget,
+  .panel,
+  .card,
+  .widget,
+  .settings-card,
+  .conn-card,
+  .game-card,
+  .plugin-card,
+  .market-card,
+  .version-card,
+  .health-card,
+  .timeline-card,
+  .activity-card,
+  .tm-card,
+  .d4-panel,
+  .d4-widget,
+  .d4-card,
+  .d4-module,
+  .d4-picker-tile
+):hover,
+body.ethone-v2 :where(
+  .ui-card,
+  .ui-widget,
+  .panel,
+  .card,
+  .widget,
+  .settings-card,
+  .conn-card,
+  .game-card
+):hover {
+  border-color: var(--premium-line-hover) !important;
+  background: var(--premium-surface-card-hover) !important;
+  box-shadow: var(--premium-shadow-card-hover) !important;
+  transform: none;
+}
+
+body.ethone-2026-ui :where(
+  .ui-card[data-interactive="true"],
+  .ui-widget[data-interactive="true"],
+  .conn-card,
+  .game-card,
+  .plugin-card,
+  .market-card,
+  .d4-quick-action,
+  .d4-picker-tile,
+  .d4-ws-card
+):hover,
+body.ethone-v2 :where(
+  .ui-card[data-interactive="true"],
+  .ui-widget[data-interactive="true"],
+  .conn-card,
+  .game-card
+):hover {
+  transform: translateY(-1px);
+}
+
+body.ethone-dashboard-v4 :where(.d4-hero,.d4-brain,.d4-today) {
+  border-color: var(--premium-line-strong) !important;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(var(--primary-rgb), 0.085), transparent 34%),
+    linear-gradient(180deg, rgba(var(--surface-2-rgb), 0.98), rgba(var(--surface-1-rgb), 0.99)) !important;
+  box-shadow: var(--premium-shadow-hero) !important;
+}
+
+body.ethone-dashboard-v4 :where(.d4-module,.d4-quick-action,.d4-brain-metric,.d4-insight,.d4-timeline-item,.d4-activity-row) {
+  box-shadow: inset 0 1px 0 rgba(var(--color-white-rgb), 0.03) !important;
+}
+
+body.ethone-2026-ui :where(
+  button,
+  .btn,
+  .ui-button,
+  [role="button"],
+  .panel-action,
+  .item-btn,
+  .settings-action,
+  .settings-nav-item,
+  .dropdown-item,
+  .context-menu-item,
+  .cmd-item,
+  .d4-button,
+  .d4-icon-button,
+  .d4-widget-btn,
+  .d4-quick-action
+),
+body.ethone-v2 :where(
+  button,
+  .btn,
+  .ui-button,
+  [role="button"],
+  .panel-action,
+  .item-btn,
+  .settings-action,
+  .settings-nav-item,
+  .dropdown-item,
+  .context-menu-item,
+  .cmd-item
+) {
+  transition: var(--premium-transition) !important;
+}
+
+body.ethone-2026-ui :where(
+  button,
+  .btn,
+  .ui-button,
+  [role="button"],
+  .panel-action,
+  .item-btn,
+  .settings-action,
+  .dropdown-item,
+  .context-menu-item,
+  .cmd-item,
+  .d4-button,
+  .d4-icon-button,
+  .d4-widget-btn
+):not(.primary):not(.btn-primary):not(.ui-button--primary):not(.auth-submit):not(.login-submit):not([data-variant="primary"]),
+body.ethone-v2 :where(
+  button,
+  .btn,
+  .ui-button,
+  [role="button"],
+  .panel-action,
+  .item-btn,
+  .settings-action,
+  .dropdown-item,
+  .context-menu-item,
+  .cmd-item
+):not(.primary):not(.btn-primary):not(.ui-button--primary):not(.auth-submit):not(.login-submit):not([data-variant="primary"]) {
+  border-color: var(--premium-line);
+  background: var(--premium-surface-control);
+  color: var(--premium-text-secondary);
+  box-shadow: var(--premium-shadow-control);
+}
+
+body.ethone-2026-ui :where(
+  button,
+  .btn,
+  .ui-button,
+  [role="button"],
+  .panel-action,
+  .item-btn,
+  .settings-action,
+  .dropdown-item,
+  .context-menu-item,
+  .cmd-item,
+  .d4-button,
+  .d4-icon-button,
+  .d4-widget-btn
+):not(.primary):not(.btn-primary):not(.ui-button--primary):not(.auth-submit):not(.login-submit):not([data-variant="primary"]):hover,
+body.ethone-v2 :where(
+  button,
+  .btn,
+  .ui-button,
+  [role="button"],
+  .panel-action,
+  .item-btn,
+  .settings-action,
+  .dropdown-item,
+  .context-menu-item,
+  .cmd-item
+):not(.primary):not(.btn-primary):not(.ui-button--primary):not(.auth-submit):not(.login-submit):not([data-variant="primary"]):hover {
+  border-color: var(--premium-line-hover);
+  background: var(--premium-surface-control-hover);
+  color: var(--text-primary);
+  box-shadow: 0 10px 28px rgba(var(--color-black-rgb), 0.18), inset 0 1px 0 rgba(var(--color-white-rgb), 0.045);
+}
+
+body.ethone-2026-ui :where(
+  .primary,
+  .btn-primary,
+  .ui-button--primary,
+  [data-variant="primary"],
+  .auth-submit,
+  .login-submit,
+  .d4-button.primary,
+  .d4-editbar-btn.primary
+),
+body.ethone-v2 :where(
+  .primary,
+  .btn-primary,
+  .ui-button--primary,
+  [data-variant="primary"],
+  .auth-submit,
+  .login-submit
+) {
+  border-color: rgba(var(--primary-hover-rgb), 0.48) !important;
+  background: linear-gradient(180deg, var(--primary-hover), var(--primary-active)) !important;
+  color: var(--text-on-accent) !important;
+  box-shadow: 0 12px 32px rgba(var(--primary-rgb), 0.22), inset 0 1px 0 rgba(var(--color-white-rgb), 0.22) !important;
+}
+
+body.ethone-2026-ui :where(
+  .primary,
+  .btn-primary,
+  .ui-button--primary,
+  [data-variant="primary"],
+  .auth-submit,
+  .login-submit,
+  .d4-button.primary,
+  .d4-editbar-btn.primary
+):hover,
+body.ethone-v2 :where(
+  .primary,
+  .btn-primary,
+  .ui-button--primary,
+  [data-variant="primary"],
+  .auth-submit,
+  .login-submit
+):hover {
+  box-shadow: 0 16px 40px rgba(var(--primary-rgb), 0.27), inset 0 1px 0 rgba(var(--color-white-rgb), 0.24) !important;
+  transform: translateY(-1px);
+}
+
+body.ethone-2026-ui :where(input,textarea,select,.ui-input,.ui-search,.search-input,.d4-search),
+body.ethone-v2 :where(input,textarea,select,.ui-input,.ui-search,.search-input) {
+  border-color: var(--premium-line) !important;
+  background: rgba(var(--surface-3-rgb), 0.86) !important;
+  color: var(--text-primary) !important;
+  box-shadow: inset 0 1px 0 rgba(var(--color-white-rgb), 0.025) !important;
+}
+
+body.ethone-2026-ui :where(input,textarea,select,.ui-input,.ui-search,.search-input,.d4-search):hover,
+body.ethone-v2 :where(input,textarea,select,.ui-input,.ui-search,.search-input):hover {
+  border-color: var(--premium-line-hover) !important;
+  background: rgba(var(--surface-raised-rgb), 0.88) !important;
+}
+
+body.ethone-2026-ui :where(input,textarea,select,.ui-input,.ui-search,.search-input,.d4-search):focus,
+body.ethone-v2 :where(input,textarea,select,.ui-input,.ui-search,.search-input):focus,
+body.ethone-2026-ui :where(input,textarea,select,.ui-input,.ui-search,.search-input,.d4-search):focus-within,
+body.ethone-v2 :where(input,textarea,select,.ui-input,.ui-search,.search-input):focus-within {
+  border-color: var(--premium-accent-line) !important;
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.13), inset 0 1px 0 rgba(var(--color-white-rgb), 0.035) !important;
+}
+
+body.ethone-2026-ui :where(.badge,.tag,.ui-badge,.ui-tag,.pill,.chip,.nav-badge,.d4-ws-card-state),
+body.ethone-v2 :where(.badge,.tag,.ui-badge,.ui-tag,.pill,.chip,.nav-badge) {
+  border-color: var(--premium-line);
+  background: rgba(var(--color-white-rgb), 0.045);
+  color: var(--premium-text-secondary);
+  box-shadow: none;
+}
+
+body.ethone-2026-ui :where(.active,.is-active,[aria-current="page"],[aria-selected="true"]) :where(.badge,.tag,.ui-badge,.ui-tag,.pill,.chip),
+body.ethone-2026-ui :where(.badge,.tag,.ui-badge,.ui-tag,.pill,.chip).active,
+body.ethone-v2 :where(.active,.is-active,[aria-current="page"],[aria-selected="true"]) :where(.badge,.tag,.ui-badge,.ui-tag,.pill,.chip),
+body.ethone-v2 :where(.badge,.tag,.ui-badge,.ui-tag,.pill,.chip).active {
+  border-color: var(--premium-accent-line);
+  background: var(--premium-accent-soft);
+  color: var(--text-primary);
+}
+
+body.ethone-2026-ui :where([data-lucide],svg.lucide,button svg,.btn svg,.panel-action svg,.item-btn svg,.nav-icon svg,.d4-icon-button svg),
+body.ethone-v2 :where([data-lucide],svg.lucide,button svg,.btn svg,.panel-action svg,.item-btn svg,.nav-icon svg) {
+  color: currentColor;
+  stroke-width: var(--icon-stroke, 2);
+  vector-effect: non-scaling-stroke;
+}
+
+body.ethone-2026-ui :where(.icon,.nav-icon,.settings-nav-icon,.sidebar-icon,.ethone-icon-shell,.d4-ws-active-icon),
+body.ethone-v2 :where(.icon,.nav-icon,.settings-nav-icon,.sidebar-icon,.ethone-icon-shell) {
+  color: var(--premium-text-secondary);
+}
+
+body.ethone-2026-ui :where(.active,.is-active,[aria-current="page"],[aria-selected="true"]) :where(.icon,.nav-icon,.settings-nav-icon,.sidebar-icon,.ethone-icon-shell),
+body.ethone-v2 :where(.active,.is-active,[aria-current="page"],[aria-selected="true"]) :where(.icon,.nav-icon,.settings-nav-icon,.sidebar-icon,.ethone-icon-shell) {
+  color: var(--text-primary);
+}
+
+body.ethone-2026-ui #main-sidebar.os-sidebar,
+body.ethone-v2 #main-sidebar.os-sidebar {
+  background:
+    linear-gradient(180deg, rgba(var(--surface-1-rgb), 0.985), rgba(var(--surface-0-rgb), 0.978)) !important;
+  border-right-color: rgba(var(--color-white-rgb), 0.055) !important;
+  box-shadow: 14px 0 50px rgba(var(--color-black-rgb), 0.24), inset -1px 0 0 rgba(var(--color-white-rgb), 0.025) !important;
+}
+
+body.ethone-2026-ui #main-sidebar.os-sidebar .os-sidebar-bg,
+body.ethone-v2 #main-sidebar.os-sidebar .os-sidebar-bg {
+  opacity: 0.34 !important;
+}
+
+body.ethone-2026-ui #main-sidebar.os-sidebar .nav-item.os-nav-item,
+body.ethone-v2 #main-sidebar.os-sidebar .nav-item.os-nav-item {
+  color: var(--premium-text-secondary) !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+body.ethone-2026-ui #main-sidebar.os-sidebar .nav-item.os-nav-item:hover,
+body.ethone-v2 #main-sidebar.os-sidebar .nav-item.os-nav-item:hover {
+  color: var(--text-primary) !important;
+  background: var(--premium-surface-control-hover) !important;
+  border-color: var(--premium-line) !important;
+}
+
+body.ethone-2026-ui #main-sidebar.os-sidebar .nav-item.os-nav-item.active,
+body.ethone-v2 #main-sidebar.os-sidebar .nav-item.os-nav-item.active {
+  color: var(--text-primary) !important;
+  background:
+    linear-gradient(90deg, var(--premium-accent-soft), transparent 74%),
+    var(--premium-surface-active) !important;
+  border-color: rgba(var(--primary-rgb), 0.22) !important;
+  box-shadow: inset 0 1px 0 rgba(var(--color-white-rgb), 0.035) !important;
+}
+
+body.ethone-2026-ui #main-sidebar.os-sidebar .nav-item.os-nav-item.active::before,
+body.ethone-v2 #main-sidebar.os-sidebar .nav-item.os-nav-item.active::before {
+  background: linear-gradient(180deg, var(--primary-hover), var(--primary-active)) !important;
+  box-shadow: 0 0 18px rgba(var(--primary-rgb), 0.18) !important;
+}
+
+body.ethone-2026-ui :where(.modal,.ui-modal,.dropdown-menu,.ui-dropdown,.context-menu,.cmd-shell,.command-palette,.toast,.ui-toast,.notification-toast),
+body.ethone-v2 :where(.modal,.ui-modal,.dropdown-menu,.ui-dropdown,.context-menu,.cmd-shell,.command-palette,.toast,.ui-toast,.notification-toast) {
+  border-color: var(--premium-line-strong) !important;
+  background: linear-gradient(180deg, rgba(var(--surface-2-rgb), 0.98), rgba(var(--surface-1-rgb), 0.985)) !important;
+  box-shadow: 0 28px 90px rgba(var(--color-black-rgb), 0.48), inset 0 1px 0 rgba(var(--color-white-rgb), 0.055) !important;
+}
+
+body.ethone-2026-ui :where(.divider,.separator,.section-divider,hr),
+body.ethone-v2 :where(.divider,.separator,.section-divider,hr) {
+  border-color: rgba(var(--color-white-rgb), 0.055) !important;
+}
+
+body.ethone-2026-ui :where(.danger,.btn-danger,.ui-button--danger),
+body.ethone-v2 :where(.danger,.btn-danger,.ui-button--danger) {
+  border-color: rgba(var(--error-rgb), 0.32) !important;
+  background: rgba(var(--error-rgb), 0.095) !important;
+  color: var(--text-error-strong) !important;
+  box-shadow: none !important;
+}
+
+body.ethone-2026-ui .settings-toggle-row,
+body.ethone-v2 .settings-toggle-row {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 9px 11px;
+  border: 1px solid var(--premium-line);
+  border-radius: var(--radius-md);
+  background: var(--premium-surface-control);
+  color: var(--premium-text-secondary);
+  cursor: pointer;
+  transition: var(--premium-transition);
+}
+
+body.ethone-2026-ui .settings-toggle-row:hover,
+body.ethone-v2 .settings-toggle-row:hover {
+  border-color: var(--premium-line-hover);
+  background: var(--premium-surface-control-hover);
+  color: var(--text-primary);
+}
+
+body.ethone-2026-ui .settings-toggle-row input,
+body.ethone-v2 .settings-toggle-row input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+  flex: 0 0 auto;
+}
+
+body.ethone-2026-ui .settings-toggle-row span,
+body.ethone-v2 .settings-toggle-row span {
+  min-width: 0;
+  font: 650 var(--type-body-sm) / var(--leading-body) var(--font-sans);
+}
+
+body.ethone-2026-ui :where(.success,.btn-success,.ui-button--success),
+body.ethone-v2 :where(.success,.btn-success,.ui-button--success) {
+  border-color: rgba(var(--success-rgb), 0.30) !important;
+  background: rgba(var(--success-rgb), 0.09) !important;
+  color: color-mix(in srgb, var(--success) 52%, var(--text-primary)) !important;
+  box-shadow: none !important;
+}
+
+body.ethone-2026-ui :where(.warning,.btn-warning),
+body.ethone-v2 :where(.warning,.btn-warning) {
+  border-color: rgba(var(--warning-rgb), 0.30) !important;
+  background: rgba(var(--warning-rgb), 0.09) !important;
+  color: color-mix(in srgb, var(--warning) 48%, var(--text-primary)) !important;
+  box-shadow: none !important;
+}
+
+body.ethone-2026-ui :where(.ethone-emoji-badge,.emoji-badge,.emoji-icon),
+body.ethone-v2 :where(.ethone-emoji-badge,.emoji-badge,.emoji-icon) {
+  display: inline-grid;
+  place-items: center;
+  min-width: 30px;
+  min-height: 30px;
+  border: 1px solid var(--premium-line);
+  border-radius: var(--radius-md);
+  background: rgba(var(--color-white-rgb), 0.045);
+  box-shadow: inset 0 1px 0 rgba(var(--color-white-rgb), 0.045);
+  font-size: 16px;
+  line-height: 1;
+}
+
+body.ethone-2026-ui :where(.noisy-glow,.animated-glow,.glow-heavy),
+body.ethone-v2 :where(.noisy-glow,.animated-glow,.glow-heavy) {
+  filter: none !important;
+  box-shadow: var(--premium-shadow-card) !important;
+}
+
+body.ethone-2026-ui :where(a,button,.btn,.ui-button,[role="button"],input,textarea,select,.nav-item,.settings-nav-item,.d4-icon-button):focus-visible,
+body.ethone-v2 :where(a,button,.btn,.ui-button,[role="button"],input,textarea,select,.nav-item,.settings-nav-item):focus-visible {
+  outline: 0 !important;
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.14), 0 0 0 1px rgba(var(--primary-hover-rgb), 0.72), var(--premium-shadow-control) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.ethone-2026-ui *,
+  body.ethone-v2 * {
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (max-width: 768px) {
+  body.ethone-2026-ui :where(.ui-panel,.ui-card,.ui-widget,.panel,.card,.widget,.settings-card,.d4-panel,.d4-widget),
+  body.ethone-v2 :where(.ui-panel,.ui-card,.ui-widget,.panel,.card,.widget,.settings-card) {
+    box-shadow: 0 10px 32px rgba(var(--color-black-rgb), 0.22), inset 0 1px 0 rgba(var(--color-white-rgb), 0.03) !important;
+  }
+}

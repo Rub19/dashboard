@@ -18,6 +18,10 @@
   ];
   var pendingRemoval={id:"",at:0};
 
+  function releasePlugins(){
+    return plugins.filter(function(def){return def.ready!==false;});
+  }
+
   function plugin(id,name,icon,accent,author,version,desc,permissions,changelog,extra){
     return Object.assign({id:id,name:name,icon:icon,accent:accent,author:author,version:version,desc:desc,permissions:permissions,changelog:changelog},extra||{});
   }
@@ -200,10 +204,11 @@
     '</article>';
   }
   function summary(){
-    var installed=plugins.filter(function(def){return pluginState(def.id).installed}).length;
-    var enabled=plugins.filter(function(def){var st=pluginState(def.id);return st.installed&&st.enabled}).length;
-    var connected=plugins.filter(function(def){return isConnected(def.id)}).length;
-    var memory=plugins.reduce(function(sum,def){var st=pluginState(def.id);return sum+(st.installed?memoryFor(def,st):0)},0);
+    var available=releasePlugins();
+    var installed=available.filter(function(def){return pluginState(def.id).installed}).length;
+    var enabled=available.filter(function(def){var st=pluginState(def.id);return st.installed&&st.enabled}).length;
+    var connected=available.filter(function(def){return isConnected(def.id)}).length;
+    var memory=available.reduce(function(sum,def){var st=pluginState(def.id);return sum+(st.installed?memoryFor(def,st):0)},0);
     return {installed:installed,enabled:enabled,connected:connected,memory:Math.round(memory*10)/10};
   }
   function render(){
@@ -212,8 +217,8 @@
     var s=summary();
     host.innerHTML='<section class="ph-shell">'+
       '<div class="ph-hero"><div><div class="section-eyebrow">Plugin Hub</div><h2>Extensions for your Personal OS</h2><p>Install, repair and manage modular plugins without touching backend logic. Connections remain configured in the Integration Hub.</p></div><button class="btn btn-ghost" type="button" data-ph-action="audit">Audit plugins</button></div>'+
-      '<div class="ph-stats"><div><span>Installed</span><strong>'+s.installed+'/'+plugins.length+'</strong></div><div><span>Enabled</span><strong>'+s.enabled+'</strong></div><div><span>Connected</span><strong>'+s.connected+'</strong></div><div><span>Memory</span><strong>'+s.memory+' MB</strong></div></div>'+
-      '<div class="ph-grid">'+plugins.map(card).join("")+'</div>'+
+      '<div class="ph-stats"><div><span>Installed</span><strong>'+s.installed+'/'+releasePlugins().length+'</strong></div><div><span>Enabled</span><strong>'+s.enabled+'</strong></div><div><span>Connected</span><strong>'+s.connected+'</strong></div><div><span>Memory</span><strong>'+s.memory+' MB</strong></div></div>'+ 
+      '<div class="ph-grid">'+releasePlugins().map(card).join("")+'</div>'+ 
     '</section>';
     try{if(window.lucide&&!window.__lucideFailed)window.lucide.createIcons()}catch(e){}
   }

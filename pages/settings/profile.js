@@ -13,7 +13,11 @@ function resetProfileData(){
   if(!confirm('Reset ALL your data?'))return;
   const p=curP();if(!p)return;
   p.state=defState(p.name);saveStateNow();
-  renderItems();renderTodos();renderActivity();renderRecentItems();updateStats();
+  if(typeof renderItems==='function')renderItems();
+  if(typeof renderTodos==='function')renderTodos();
+  if(typeof renderActivity==='function')renderActivity();
+  if(typeof renderRecentItems==='function')renderRecentItems();
+  if(typeof updateStats==='function')updateStats();
   document.getElementById('main-note').value='';document.getElementById('quick-note').value='';
   toast('Data cleared','info');
 }
@@ -59,7 +63,7 @@ function pinAutoFocus(el,nextId){
   if(el.value.length===1&&nextId){document.getElementById(nextId)?.focus()}
 }
 
-function savePassword(){
+async function savePassword(){
   const p=curP();if(!p)return;
   const type=document.getElementById('pw-type-select').value;
   let value='';
@@ -71,7 +75,9 @@ function savePassword(){
     value=document.getElementById('pw-text-setup-input').value;
     if(!value){toast('Enter a password','error');return}
   }
-  p.password={type,value};
+  p.password=window.ETHONESecurity&&ETHONESecurity.createProfileLock
+    ? await ETHONESecurity.createProfileLock(type,value)
+    : {type,value};
   saveStateNow();
   toast('Protection saved! ','success');
   loadSecuritySettings();

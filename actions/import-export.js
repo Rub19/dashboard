@@ -11,7 +11,7 @@ function exportData(){
   a.click();
   URL.revokeObjectURL(url);
   toast('Data exported!','success');
-  addActivity('Data exported','var(--accent2)','system');
+  if(typeof addActivity==='function')addActivity('Data exported','var(--accent2)','system');
 }
 function importData(e){
   const file=e.target.files[0];if(!file)return;

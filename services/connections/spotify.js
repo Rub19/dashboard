@@ -17,6 +17,8 @@ function connectSpotify(){
 function disconnectSpotify(){
   const p=curP();if(!p)return;
   if(!confirm('Remove Spotify widget?'))return;
+  stopSpotifyAutoRefresh();
+  stopSpotifyPlaybackTimers();
   delete p.state.connections.spotify;saveStateNow();
   refreshSpotifySidebar();
   const badge=document.getElementById('spotify-badge');
@@ -126,6 +128,17 @@ function updateNpFallbackProgress(){
 
 // Auto-refresh Now Playing every 30s
 let _spotifyAutoRefresh=null;
+function stopSpotifyAutoRefresh(){
+  clearInterval(_spotifyAutoRefresh);
+  _spotifyAutoRefresh=null;
+}
+function stopSpotifyPlaybackTimers(){
+  clearInterval(_npProgressTimer);
+  _npProgressTimer=null;
+  _npCurrentTrack=null;
+  _npStartTime=null;
+  _npDurationMs=0;
+}
 function startSpotifyAutoRefresh(){
   clearInterval(_spotifyAutoRefresh);
   refreshSpotifySidebar();

@@ -4,34 +4,34 @@
  * forcing every surface, control and overlay to speak the same visual language.
  */
 :root{
-  --edl-bg:#09090b;
-  --edl-bg-soft:#0d0d11;
-  --edl-surface-1:rgba(18,18,23,.86);
-  --edl-surface-2:rgba(24,24,31,.88);
-  --edl-surface-3:rgba(30,30,38,.92);
-  --edl-surface-hover:rgba(38,38,47,.9);
-  --edl-text:#f7f4ff;
-  --edl-text-soft:rgba(247,244,255,.72);
-  --edl-muted:rgba(247,244,255,.52);
-  --edl-faint:rgba(247,244,255,.34);
-  --edl-line:rgba(255,255,255,.09);
-  --edl-line-strong:rgba(255,255,255,.145);
-  --edl-accent:var(--accent,#8b5cf6);
-  --edl-accent-hover:var(--accent-hover,#a78bfa);
-  --edl-accent-rgb:var(--eh-accent-rgb,139,92,246);
-  --edl-danger:#ef4444;
-  --edl-success:#22c55e;
-  --edl-warning:#f59e0b;
+  --edl-bg:var(--surface-0);
+  --edl-bg-soft:var(--surface-1);
+  --edl-surface-1:rgba(var(--surface-2-rgb),.86);
+  --edl-surface-2:rgba(var(--surface-3-rgb),.88);
+  --edl-surface-3:rgba(var(--surface-3-rgb),.92);
+  --edl-surface-hover:rgba(var(--surface-3-rgb),.9);
+  --edl-text:var(--text-primary);
+  --edl-text-soft:rgba(var(--text-primary-rgb),.72);
+  --edl-muted:rgba(var(--text-primary-rgb),.52);
+  --edl-faint:rgba(var(--text-primary-rgb),.34);
+  --edl-line:rgba(var(--color-white-rgb),.09);
+  --edl-line-strong:rgba(var(--color-white-rgb),.145);
+  --edl-accent:var(--accent,var(--primary));
+  --edl-accent-hover:var(--accent-hover,var(--primary-hover));
+  --edl-accent-rgb:var(--eh-accent-rgb,var(--primary-rgb));
+  --edl-danger:var(--error);
+  --edl-success:var(--success);
+  --edl-warning:var(--warning);
   --edl-radius-xs:var(--radius-xs,6px);
   --edl-radius-sm:var(--radius-sm,8px);
   --edl-radius-md:var(--radius-md,12px);
   --edl-radius-lg:var(--radius-lg,16px);
   --edl-radius-xl:var(--radius-xl,22px);
   --edl-radius-2xl:var(--radius-2xl,28px);
-  --edl-shadow-xs:0 1px 0 rgba(255,255,255,.035) inset;
-  --edl-shadow-sm:0 12px 34px rgba(0,0,0,.2),var(--edl-shadow-xs);
-  --edl-shadow-md:0 22px 64px rgba(0,0,0,.32),var(--edl-shadow-xs);
-  --edl-shadow-lg:0 36px 120px rgba(0,0,0,.52),var(--edl-shadow-xs);
+  --edl-shadow-xs:0 1px 0 rgba(var(--color-white-rgb),.035) inset;
+  --edl-shadow-sm:0 12px 34px rgba(var(--color-black-rgb),.2),var(--edl-shadow-xs);
+  --edl-shadow-md:0 22px 64px rgba(var(--color-black-rgb),.32),var(--edl-shadow-xs);
+  --edl-shadow-lg:0 36px 120px rgba(var(--color-black-rgb),.52),var(--edl-shadow-xs);
   --edl-glow:0 0 calc(34px * var(--theme-glow-scale,1)) rgba(var(--edl-accent-rgb),calc(.12 * var(--theme-glow-scale,1)));
   --edl-gap-xs:var(--spacing-xs,8px);
   --edl-gap-sm:var(--spacing-sm,12px);
@@ -111,7 +111,7 @@ body.ethone-v2 button:not(.nav-item):not(.pdock-item):not(.timeline-day){
   border:1px solid var(--edl-line)!important;
   border-radius:var(--edl-radius-md)!important;
   color:var(--edl-text-soft)!important;
-  background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.028))!important;
+  background:linear-gradient(180deg,rgba(var(--color-white-rgb),.055),rgba(var(--color-white-rgb),.028))!important;
   box-shadow:var(--edl-shadow-xs)!important;
   font-weight:780!important;
   cursor:pointer;
@@ -127,9 +127,9 @@ body.ethone-2026-ui :where(
 body.ethone-2026-ui button:not(.nav-item):not(.pdock-item):not(.timeline-day):hover,
 body.ethone-v2 :where(.btn,.panel-action,.d4-button,.vh-button,.settings-action,.cat-tab):hover{
   transform:translateY(-1px);
-  color:#fff!important;
+  color:var(--text-primary)!important;
   border-color:rgba(var(--edl-accent-rgb),.28)!important;
-  background:linear-gradient(180deg,rgba(var(--edl-accent-rgb),.15),rgba(255,255,255,.04))!important;
+  background:linear-gradient(180deg,rgba(var(--edl-accent-rgb),.15),rgba(var(--color-white-rgb),.04))!important;
   box-shadow:var(--edl-shadow-sm),0 0 24px rgba(var(--edl-accent-rgb),.08)!important;
 }
 
@@ -148,9 +148,9 @@ body.ethone-v2 .de-traffic button{
   transform:none!important;
 }
 
-.de-traffic button:nth-child(1){background:#ff5f57!important}
-.de-traffic button:nth-child(2){background:#febc2e!important}
-.de-traffic button:nth-child(3){background:#28c840!important}
+.de-traffic button:nth-child(1){background:var(--error)!important}
+.de-traffic button:nth-child(2){background:var(--warning)!important}
+.de-traffic button:nth-child(3){background:var(--success)!important}
 
 body.ethone-2026-ui :where(
   .btn-primary,.primary,[data-variant="primary"],.d4-button.primary,
@@ -159,16 +159,16 @@ body.ethone-2026-ui :where(
 ),
 body.ethone-v2 :where(.btn-primary,.primary,[data-variant="primary"],.modal-submit){
   border-color:rgba(var(--edl-accent-rgb),.52)!important;
-  color:#fff!important;
+  color:var(--text-primary)!important;
   background:linear-gradient(180deg,var(--edl-accent-hover),var(--edl-accent))!important;
   box-shadow:0 14px 34px rgba(var(--edl-accent-rgb),.22),var(--edl-shadow-xs)!important;
 }
 
 body.ethone-2026-ui :where(.btn-danger,.danger,.danger-btn,[data-danger="true"]),
 body.ethone-v2 :where(.btn-danger,.danger,.danger-btn,[data-danger="true"]){
-  border-color:rgba(239,68,68,.28)!important;
-  color:#fecaca!important;
-  background:linear-gradient(180deg,rgba(239,68,68,.18),rgba(239,68,68,.07))!important;
+  border-color:rgba(var(--error-rgb),.28)!important;
+  color:var(--text-error-strong)!important;
+  background:linear-gradient(180deg,rgba(var(--error-rgb),.18),rgba(var(--error-rgb),.07))!important;
 }
 
 body.ethone-2026-ui :where(button,.btn,[role="button"]):active:not(:disabled),
@@ -198,7 +198,7 @@ body.ethone-v2 :where(
   border:1px solid var(--edl-line)!important;
   border-radius:var(--edl-radius-lg)!important;
   color:var(--edl-text)!important;
-  background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.032))!important;
+  background:linear-gradient(180deg,rgba(var(--color-white-rgb),.055),rgba(var(--color-white-rgb),.032))!important;
   box-shadow:var(--edl-shadow-xs)!important;
 }
 
@@ -282,8 +282,8 @@ body.ethone-v2 #main-sidebar{
   border-right:1px solid var(--edl-line)!important;
   background:
     radial-gradient(circle at 50% 0,rgba(var(--edl-accent-rgb),.075),transparent 34%),
-    linear-gradient(180deg,rgba(12,12,16,.98),rgba(8,8,11,.98))!important;
-  box-shadow:14px 0 48px rgba(0,0,0,.22)!important;
+    linear-gradient(180deg,rgba(var(--surface-0-rgb),.98),rgba(var(--surface-0-rgb),.98))!important;
+  box-shadow:14px 0 48px rgba(var(--color-black-rgb),.22)!important;
 }
 
 body.ethone-2026-ui #main-sidebar .nav-item,
@@ -296,14 +296,14 @@ body.ethone-v2 #main-sidebar .nav-item{
 
 body.ethone-2026-ui #main-sidebar .nav-item:hover,
 body.ethone-v2 #main-sidebar .nav-item:hover{
-  color:#fff!important;
+  color:var(--text-primary)!important;
   border-color:var(--edl-line)!important;
-  background:rgba(255,255,255,.045)!important;
+  background:rgba(var(--color-white-rgb),.045)!important;
 }
 
 body.ethone-2026-ui #main-sidebar .nav-item.active,
 body.ethone-v2 #main-sidebar .nav-item.active{
-  color:#fff!important;
+  color:var(--text-primary)!important;
 }
 
 .nav-active-pill{
@@ -324,7 +324,7 @@ body.ethone-v2 #main-sidebar .nav-item.active{
   border-radius:var(--edl-radius-2xl)!important;
   background:
     radial-gradient(240px 90px at 50% 100%,rgba(var(--edl-accent-rgb),.12),transparent 70%),
-    linear-gradient(180deg,rgba(24,24,31,.82),rgba(12,12,17,.78))!important;
+    linear-gradient(180deg,rgba(var(--surface-3-rgb),.82),rgba(var(--surface-0-rgb),.78))!important;
   box-shadow:var(--edl-shadow-md)!important;
 }
 
@@ -339,10 +339,10 @@ body.ethone-v2 #main-sidebar .nav-item.active{
 .pdock-item.is-active,
 .de-dock button:hover,
 .de-dock button.active{
-  color:#fff!important;
+  color:var(--text-primary)!important;
   border-color:rgba(var(--edl-accent-rgb),.28)!important;
   background:rgba(var(--edl-accent-rgb),.16)!important;
-  box-shadow:0 14px 34px rgba(0,0,0,.24),0 0 22px rgba(var(--edl-accent-rgb),.1)!important;
+  box-shadow:0 14px 34px rgba(var(--color-black-rgb),.24),0 0 22px rgba(var(--edl-accent-rgb),.1)!important;
 }
 
 .de-window,
@@ -350,7 +350,7 @@ body.ethone-v2 #main-sidebar .nav-item.active{
 .pdock-manager{
   border:1px solid var(--edl-line-strong)!important;
   border-radius:var(--edl-radius-2xl)!important;
-  background:linear-gradient(180deg,rgba(24,24,31,.96),rgba(11,11,16,.96))!important;
+  background:linear-gradient(180deg,rgba(var(--surface-3-rgb),.96),rgba(var(--surface-0-rgb),.96))!important;
   box-shadow:var(--edl-shadow-lg)!important;
 }
 
@@ -365,14 +365,14 @@ body.ethone-v2 :where(
   border:1px solid var(--edl-line-strong)!important;
   border-radius:var(--edl-radius-2xl)!important;
   color:var(--edl-text)!important;
-  background:linear-gradient(180deg,rgba(26,26,34,.98),rgba(12,12,18,.98))!important;
+  background:linear-gradient(180deg,rgba(var(--surface-3-rgb),.98),rgba(var(--surface-1-rgb),.98))!important;
   box-shadow:var(--edl-shadow-lg)!important;
 }
 
 #cmd-palette-overlay.open,
 .modal-overlay.open,
 #notif-overlay.open{
-  background:rgba(0,0,0,.58)!important;
+  background:rgba(var(--color-black-rgb),.58)!important;
   backdrop-filter:blur(calc(18px * var(--theme-blur-scale,1))) saturate(1.05)!important;
   -webkit-backdrop-filter:blur(calc(18px * var(--theme-blur-scale,1))) saturate(1.05)!important;
 }
@@ -385,7 +385,7 @@ body.ethone-v2 :where(.cmd-item,.dropdown-item,.context-menu-item){
 
 body.ethone-2026-ui :where(.cmd-item,.dropdown-item,.context-menu-item,.pdock-menu-btn,.pdock-folder-btn):hover,
 body.ethone-v2 :where(.cmd-item,.dropdown-item,.context-menu-item):hover{
-  color:#fff!important;
+  color:var(--text-primary)!important;
   background:rgba(var(--edl-accent-rgb),.13)!important;
 }
 
@@ -398,7 +398,7 @@ body.ethone-v2 :where(.modal,.modal-content,.modal-box,.modal-card,.ui-modal),
   color:var(--edl-text)!important;
   background:
     radial-gradient(260px 160px at 100% 0,rgba(var(--edl-accent-rgb),.1),transparent 68%),
-    linear-gradient(180deg,rgba(25,25,33,.98),rgba(11,11,17,.98))!important;
+    linear-gradient(180deg,rgba(var(--surface-3-rgb),.98),rgba(var(--surface-1-rgb),.98))!important;
   box-shadow:var(--edl-shadow-lg)!important;
 }
 
@@ -427,10 +427,10 @@ body.ethone-v2 :where(#notif-panel,.notif-item){
 
 .toast.success,
 .eh-toast-item.success,
-.notif-item.success{border-color:rgba(34,197,94,.28)!important}
+.notif-item.success{border-color:rgba(var(--success-rgb),.28)!important}
 .toast.error,
 .eh-toast-item.error,
-.notif-item.error{border-color:rgba(239,68,68,.3)!important}
+.notif-item.error{border-color:rgba(var(--error-rgb),.3)!important}
 .toast.info,
 .eh-toast-item.info{border-color:rgba(var(--edl-accent-rgb),.28)!important}
 
@@ -464,7 +464,7 @@ body.ethone-v2 :where(#notif-panel,.notif-item){
 .timeline-day.today,
 .timeline-day.has-events{
   border-color:rgba(var(--edl-accent-rgb),.34)!important;
-  color:#fff!important;
+  color:var(--text-primary)!important;
   background:rgba(var(--edl-accent-rgb),.14)!important;
 }
 
@@ -483,7 +483,7 @@ body.ethone-v2 :where(table,.data-table,.db-table,.items-table){
 body.ethone-2026-ui :where(th,.table-head,.db-table-head),
 body.ethone-v2 :where(th,.table-head,.db-table-head){
   color:var(--edl-muted)!important;
-  background:rgba(255,255,255,.035)!important;
+  background:rgba(var(--color-white-rgb),.035)!important;
   font-size:11px!important;
   font-weight:900!important;
   letter-spacing:.08em!important;
@@ -492,7 +492,7 @@ body.ethone-v2 :where(th,.table-head,.db-table-head){
 
 body.ethone-2026-ui :where(td,th),
 body.ethone-v2 :where(td,th){
-  border-color:rgba(255,255,255,.065)!important;
+  border-color:rgba(var(--color-white-rgb),.065)!important;
 }
 
 body.ethone-2026-ui :where(tr:hover td,.table-row:hover,.db-row:hover),
@@ -506,7 +506,7 @@ body.ethone-v2 :where(.badge,.tag,.ui-badge,.ui-tag,.status-pill,.nav-badge,kbd)
   border:1px solid var(--edl-line)!important;
   border-radius:999px!important;
   color:var(--edl-text-soft)!important;
-  background:rgba(255,255,255,.045)!important;
+  background:rgba(var(--color-white-rgb),.045)!important;
   box-shadow:var(--edl-shadow-xs)!important;
 }
 
@@ -514,7 +514,7 @@ body.ethone-2026-ui :where(progress,.progress-bar,.ui-progress),
 body.ethone-v2 :where(progress,.progress-bar,.ui-progress){
   overflow:hidden;
   border-radius:999px!important;
-  background:rgba(255,255,255,.07)!important;
+  background:rgba(var(--color-white-rgb),.07)!important;
 }
 
 body.ethone-2026-ui :where(.avatar,.ui-avatar,.profile-avatar,.sidebar-avatar,#topbar-avatar),
@@ -533,7 +533,7 @@ body.ethone-v2 :where(.avatar,.ui-avatar,.profile-avatar,.sidebar-avatar,#topbar
   border:1px solid var(--edl-line)!important;
   border-radius:var(--edl-radius-md)!important;
   color:var(--edl-text)!important;
-  background:rgba(16,16,22,.96)!important;
+  background:rgba(var(--surface-1-rgb),.96)!important;
   box-shadow:var(--edl-shadow-md)!important;
 }
 
@@ -541,7 +541,7 @@ body.ethone-v2 :where(.avatar,.ui-avatar,.profile-avatar,.sidebar-avatar,#topbar
 body.ethone-2026-ui :where(*),
 body.ethone-v2 :where(*){
   scrollbar-width:thin;
-  scrollbar-color:rgba(255,255,255,.16) transparent;
+  scrollbar-color:rgba(var(--color-white-rgb),.16) transparent;
 }
 
 body.ethone-2026-ui :where(*)::-webkit-scrollbar,
@@ -554,7 +554,7 @@ body.ethone-2026-ui :where(*)::-webkit-scrollbar-thumb,
 body.ethone-v2 :where(*)::-webkit-scrollbar-thumb{
   border:2px solid transparent;
   border-radius:999px;
-  background:rgba(255,255,255,.16);
+  background:rgba(var(--color-white-rgb),.16);
   background-clip:padding-box;
 }
 

@@ -10,7 +10,7 @@
   var Notifications=App.get("notifications");
   var Language=App.get("language");
   var Storage=App.get("storage");
-  var timer=0,clockTimer=0;
+  var timer=0,clockTimer=0,widgetCatalogLoading=false,widgetCatalogFailed=false;
   var lastRenderState={nextActionTarget:null,reminderTarget:null};
   var editMode=false,workingPrefs=null;
   var RESIZE_MIN_COL=1,RESIZE_MAX_COL=6,RESIZE_MIN_ROW=1,RESIZE_MAX_ROW=3;
@@ -204,7 +204,7 @@
     return widgetHead(tr("activity"),"","chart-no-axes-combined")+'<div class="d4-module-body"><div id="bh-insights"></div><div class="d4-insights-grid" id="d4-activity"></div></div>';
   }
   function quickActionsInnerHTML(){
-    return '<div class="d4-quick-head"><h2>'+tr("quick")+'</h2><span>'+tr("quickHint")+'</span></div><div class="d4-quick-grid">'+quick(tr("note"),"dashboard.nav.notes","notebook-pen")+quick(tr("task"),"dashboard.nav.todos","circle-check")+quick(tr("file"),"dashboard.nav.files","file-plus-2")+quick(tr("event"),"dashboard.nav.calendar","calendar-plus")+quick(tr("market"),"dashboard.nav.marketplace","store",false)+quick(tr("brain"),"dashboard.nav.ai","brain")+quick(tr("spaces"),"dashboard.nav.workspaces","layout-grid",false)+'</div>';
+    return '<div class="d4-quick-head"><h2>'+tr("quick")+'</h2><span>'+tr("quickHint")+'</span></div><div class="d4-quick-grid">'+quick(tr("note"),"dashboard.nav.notes","notebook-pen")+quick(tr("task"),"dashboard.nav.todos","circle-check")+quick(tr("file"),"dashboard.nav.files","file-plus-2")+quick(tr("event"),"dashboard.nav.calendar","calendar-plus")+quick(tr("market"),"dashboard.nav.marketplace","store",false)+quick(tr("brain"),"dashboard.nav.ai","brain")+quick(tr("spaces"),"dashboard.nav.workspaces","layout-grid")+'</div>';
   }
   function workspaceSwitcherHTML(){
     var svc=workspaces(),items=svc&&svc.all?svc.all():[],active=activeWorkspace();
@@ -244,13 +244,16 @@
   function widgetShell(inst){
     var extra=TYPE_CLASS[inst.type]||"";
     var locked=!!inst.locked;
-    return '<section class="d4-panel d4-widget'+(extra?" "+extra:"")+(locked?" d4-locked":"")+'" data-widget-id="'+esc(inst.instanceId)+'" data-widget-type="'+esc(inst.type)+'" draggable="'+(locked?"false":"true")+'" style="grid-column:span '+inst.size.col+';grid-row:span '+inst.size.row+'">'+
+    return '<section class="d4-panel d4-widget'+(extra?" "+extra:"")+(locked?" d4-locked":"")+'" data-widget-id="'+esc(inst.instanceId)+'" data-widget-type="'+esc(inst.type)+'" data-widget-state="loading" draggable="'+(locked?"false":"true")+'" style="grid-column:span '+inst.size.col+';grid-row:span '+inst.size.row+'">'+
       '<span class="d4-drag" aria-hidden="true">'+icon("grip-vertical")+'</span>'+
       '<div class="d4-widget-toolbar">'+
         '<button class="d4-favorite" type="button" data-v4-favorite="'+esc(inst.instanceId)+'" aria-label="'+tr("favorite")+'">'+icon("star")+'</button>'+
+        '<button class="d4-widget-btn" type="button" data-v4-action-id="dashboard.widget.refresh" data-widget-id="'+esc(inst.instanceId)+'" aria-label="Refresh widget">'+icon("refresh-cw")+'</button>'+
+        '<button class="d4-widget-btn" type="button" data-v4-action-id="dashboard.widget.detach" data-widget-id="'+esc(inst.instanceId)+'" aria-label="Detach widget">'+icon("panel-top-open")+'</button>'+
         '<button class="d4-widget-btn" type="button" data-v4-action-id="dashboard.widget.lock" data-widget-id="'+esc(inst.instanceId)+'" aria-label="'+tr(locked?"unlock":"lock")+'">'+icon(locked?"lock":"lock-open")+'</button>'+
         '<button class="d4-widget-btn" type="button" data-v4-action-id="dashboard.widget.duplicate" data-widget-id="'+esc(inst.instanceId)+'" aria-label="'+tr("duplicate")+'">'+icon("copy")+'</button>'+
         '<button class="d4-widget-btn" type="button" data-v4-action-id="dashboard.widget.hide" data-widget-id="'+esc(inst.instanceId)+'" aria-label="'+tr("hide")+'">'+icon("eye-off")+'</button>'+
+        '<button class="d4-widget-btn" type="button" data-v4-action-id="dashboard.widget.menu" data-widget-id="'+esc(inst.instanceId)+'" aria-label="Widget menu">'+icon("more-horizontal")+'</button>'+
         '<button class="d4-widget-btn danger" type="button" data-v4-action-id="dashboard.widget.delete" data-widget-id="'+esc(inst.instanceId)+'" aria-label="'+tr("delete")+'">'+icon("trash-2")+'</button>'+
       '</div>'+
       '<div class="d4-widget-body" data-widget-mount="'+esc(inst.instanceId)+'"></div>'+
@@ -266,12 +269,38 @@
     prefs.instances.forEach(function(inst){
       seen[inst.instanceId]=true;
       var cat=Widgets.get(inst.type);
+      if(!cat&&requestWidgetCatalog())cat=Widgets.get(inst.type);
       var el=existing[inst.instanceId];
       if(!el){
         grid.insertAdjacentHTML("beforeend",widgetShell(inst));
         el=grid.lastElementChild;
         var mountEl=el?qs("[data-widget-mount]",el):null;
-        if(cat&&typeof cat.mount==="function"&&mountEl)cat.mount(mountEl,{instanceId:inst.instanceId,config:inst.config||{},home:home});
+        if(cat&&typeof cat.mount==="function"&&mountEl){
+          el.classList.add("widget-is-loading");
+          try{
+            cat.mount(mountEl,{instanceId:inst.instanceId,config:inst.config||{},home:home});
+            el.classList.remove("widget-is-loading","widget-is-error");
+            el.dataset.widgetState="ready";
+          }catch(error){
+            console.warn("[ETHONE dashboard] widget mount failed",inst.type,error);
+            mountEl.innerHTML='<div class="premium-widget-error"><strong>Widget unavailable</strong><small>ETHONE isolated this widget after a render error.</small></div>';
+            el.classList.remove("widget-is-loading");
+            el.classList.add("widget-is-error");
+            el.dataset.widgetState="error";
+          }
+        }else if(mountEl){
+          if(widgetCatalogLoading&&!widgetCatalogFailed){
+            mountEl.innerHTML='<div class="pw-empty-state">'+icon("loader-circle")+'<div><strong>Loading widget</strong><span>ETHONE is preparing this widget.</span></div></div>';
+            el.classList.add("widget-is-loading");
+            el.classList.remove("widget-is-empty","widget-is-error");
+            el.dataset.widgetState="loading";
+          }else{
+            mountEl.innerHTML='<div class="pw-empty-state">'+icon("box")+'<div><strong>Widget not installed</strong><span>Open the widget library to add this source.</span></div></div>';
+            el.classList.remove("widget-is-loading");
+            el.classList.add("widget-is-empty");
+            el.dataset.widgetState="empty";
+          }
+        }
       }else{
         el.style.gridColumn="span "+inst.size.col;
         el.style.gridRow="span "+inst.size.row;
@@ -279,6 +308,21 @@
         el.setAttribute("draggable",inst.locked?"false":"true");
         var lockBtn=qs('[data-v4-action-id="dashboard.widget.lock"]',el);
         if(lockBtn){lockBtn.setAttribute("aria-label",tr(inst.locked?"unlock":"lock"));lockBtn.innerHTML=icon(inst.locked?"lock":"lock-open")}
+        var existingMount=qs("[data-widget-mount]",el);
+        if(cat&&typeof cat.mount==="function"&&existingMount&&(el.dataset.widgetState==="loading"||el.dataset.widgetState==="empty"||/Widget (not installed|unavailable)|Loading widget/.test(existingMount.textContent||""))){
+          el.classList.add("widget-is-loading");
+          try{
+            cat.mount(existingMount,{instanceId:inst.instanceId,config:inst.config||{},home:home});
+            el.classList.remove("widget-is-loading","widget-is-empty","widget-is-error");
+            el.dataset.widgetState="ready";
+          }catch(error){
+            console.warn("[ETHONE dashboard] widget remount failed",inst.type,error);
+            existingMount.innerHTML='<div class="premium-widget-error"><strong>Widget unavailable</strong><small>ETHONE isolated this widget after a render error.</small></div>';
+            el.classList.remove("widget-is-loading","widget-is-empty");
+            el.classList.add("widget-is-error");
+            el.dataset.widgetState="error";
+          }
+        }
         grid.appendChild(el);
       }
     });
@@ -291,6 +335,7 @@
       el.remove();
     });
     try{if(window.lucide&&!window.__lucideFailed)window.lucide.createIcons()}catch(e){}
+    try{if(window.ETHONEPremiumWidgets&&typeof window.ETHONEPremiumWidgets.enhance==="function")window.ETHONEPremiumWidgets.enhance(grid)}catch(e){}
   }
   function applyLayout(home,overridePrefs){
     var prefs=overridePrefs||layoutPrefs();
@@ -310,6 +355,22 @@
   }
 
   // ── Drag reorder ─────────────────────────────────────────────────────
+  function requestWidgetCatalog(){
+    if(widgetCatalogLoading||widgetCatalogFailed)return false;
+    var lazy=window.ETHONELazyModules;
+    if(!lazy||typeof lazy.load!=="function")return false;
+    widgetCatalogLoading=true;
+    Promise.resolve(lazy.load("widgets")).then(function(ok){
+      widgetCatalogLoading=false;
+      if(ok===false)widgetCatalogFailed=true;
+      schedule(20);
+    }).catch(function(error){
+      widgetCatalogLoading=false;
+      widgetCatalogFailed=true;
+      console.warn("[ETHONE dashboard] widget catalog lazy load failed",error);
+    });
+    return true;
+  }
   function bindDragAndDrop(home){
     var grid=qs("#d4-widget-grid",home);
     if(!grid)return;
@@ -519,6 +580,7 @@
     }
     applyLayout(home,editMode?workingPrefs:null);
     try{if(window.lucide&&!window.__lucideFailed)window.lucide.createIcons()}catch(e){}
+    try{if(window.ETHONEPremiumWidgets&&typeof window.ETHONEPremiumWidgets.enhance==="function")window.ETHONEPremiumWidgets.enhance(home)}catch(e){}
     return home;
   }
 
@@ -758,6 +820,36 @@
       closeWidgetPicker();
     }});
     Actions.register("dashboard.edit.closePicker",{handler:function(){closeWidgetPicker()}});
+    Actions.register("dashboard.widget.refresh",{handler:function(ctx){
+      var widget=ctx.el&&ctx.el.closest?ctx.el.closest(".d4-widget"):null;
+      if(window.ETHONEPremiumWidgets&&typeof window.ETHONEPremiumWidgets.refresh==="function")return window.ETHONEPremiumWidgets.refresh(widget);
+      render();
+      return true;
+    }});
+    Actions.register("dashboard.widget.detach",{handler:function(ctx){
+      var widget=ctx.el&&ctx.el.closest?ctx.el.closest(".d4-widget"):null;
+      if(window.ETHONEPremiumWidgets&&typeof window.ETHONEPremiumWidgets.detach==="function")return !!window.ETHONEPremiumWidgets.detach(widget);
+      if(typeof window.toast==="function")window.toast("Detachement du widget bientot disponible","info");
+      return false;
+    }});
+    Actions.register("dashboard.widget.snapLeft",{handler:function(ctx){
+      var widget=ctx.el&&ctx.el.closest?ctx.el.closest(".d4-widget"):null;
+      if(window.ETHONEPremiumWidgets&&typeof window.ETHONEPremiumWidgets.snap==="function")return window.ETHONEPremiumWidgets.snap(widget,"left");
+      return false;
+    }});
+    Actions.register("dashboard.widget.snapRight",{handler:function(ctx){
+      var widget=ctx.el&&ctx.el.closest?ctx.el.closest(".d4-widget"):null;
+      if(window.ETHONEPremiumWidgets&&typeof window.ETHONEPremiumWidgets.snap==="function")return window.ETHONEPremiumWidgets.snap(widget,"right");
+      return false;
+    }});
+    Actions.register("dashboard.widget.menu",{handler:function(ctx){
+      var widget=ctx.el&&ctx.el.closest?ctx.el.closest(".d4-widget"):null;
+      if(window.ETHONEPremiumWidgets&&typeof window.ETHONEPremiumWidgets.menu==="function"){
+        var rect=widget?widget.getBoundingClientRect():(ctx.el?ctx.el.getBoundingClientRect():{left:20,top:20,right:260});
+        return window.ETHONEPremiumWidgets.menu(widget,Math.max(16,rect.right-240),rect.top+42);
+      }
+      return false;
+    }});
     Actions.register("dashboard.widget.lock",{handler:function(ctx){
       var home=qs("#ethone-2026-home");if(!home)return;
       var idx=requireEditingInstance(ctx.el.dataset.widgetId);if(idx<0)return;
@@ -792,12 +884,28 @@
       applyLayout(home,workingPrefs);
     }});
   }
-  function schedule(){clearTimeout(timer);timer=setTimeout(render,80)}
+  function isDashboardVisible(){
+    var page=qs("#page-dashboard");
+    if(page&&!page.classList.contains("active"))return false;
+    if(document.hidden)return false;
+    return !!qs("#main-content");
+  }
+  function schedule(delay){
+    clearTimeout(timer);
+    timer=setTimeout(function(){
+      if(isDashboardVisible())render();
+    },typeof delay==="number"?delay:80);
+  }
+  function idleRefresh(){
+    var run=function(){schedule(0)};
+    if(window.requestIdleCallback)window.requestIdleCallback(run,{timeout:900});
+    else setTimeout(run,900);
+  }
   function boot(){
     document.body.classList.add("ethone-2026-ui","ethone-dashboard-v4");
     registerCoreWidgetTypes();
     registerActions();
-    schedule();
+    schedule(40);
     Events.listen(window,"storage",schedule,false,"dashboard-v4-storage");
     Events.listen(window,"online",schedule,false,"dashboard-v4-online");
     Events.listen(window,"offline",schedule,false,"dashboard-v4-offline");
@@ -805,9 +913,12 @@
     Events.listen(window,"ethone:workspace-update",schedule,false,"dashboard-v4-workspace-update");
     Events.listen(document,"visibilitychange",function(){if(!document.hidden)schedule()},false,"dashboard-v4-visibility");
     clearInterval(clockTimer);
-    clockTimer=setInterval(function(){if(!document.hidden){var h=qs("#ethone-2026-home.d4-home");if(h)clock(h)}},60000);
-    setTimeout(schedule,650);
-    setTimeout(schedule,1900);
+    clockTimer=setInterval(function(){
+      if(!isDashboardVisible())return;
+      var h=qs("#ethone-2026-home.d4-home");
+      if(h)clock(h);
+    },60000);
+    idleRefresh();
   }
   window.ethoneDashboardV4Render=render;
   window.ethoneDashboardV4AddWidget=function(type,options){return addWidgetTypeToLayout(type,options||{})};

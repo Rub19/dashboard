@@ -10,31 +10,47 @@
 
   var targets = new WeakMap();
   var bus = document.createDocumentFragment();
+  var activeListeners = 0;
 
   function listen(target, type, handler, options, key) {
     if (!target || typeof target.addEventListener !== "function" || typeof handler !== "function") {
       return function noop() {};
     }
 
+    var registrations = null;
+    var registrationKey = "";
     if (key) {
-      var registrations = targets.get(target);
+      registrations = targets.get(target);
       if (!registrations) {
         registrations = Object.create(null);
         targets.set(target, registrations);
       }
-      var registrationKey = type + ":" + key;
+      registrationKey = type + ":" + key;
       if (registrations[registrationKey]) registrations[registrationKey]();
+      if (targets.get(target) !== registrations) targets.set(target, registrations);
     }
 
-    target.addEventListener(type, handler, options);
+    var dispose = null;
+    var once = !!(options && typeof options === "object" && options.once);
+    var eventHandler = once ? function handleOnceEvent() {
+      try { return handler.apply(this, arguments); }
+      finally { if (dispose) dispose(); }
+    } : handler;
+    target.addEventListener(type, eventHandler, options);
+    activeListeners += 1;
     var disposed = false;
-    var dispose = function disposeListener() {
+    dispose = function disposeListener() {
       if (disposed) return;
       disposed = true;
-      target.removeEventListener(type, handler, options);
+      target.removeEventListener(type, eventHandler, options);
+      activeListeners = Math.max(0, activeListeners - 1);
+      if (registrations && registrations[registrationKey] === dispose) {
+        delete registrations[registrationKey];
+        if (!Object.keys(registrations).length) targets.delete(target);
+      }
     };
 
-    if (key) targets.get(target)[type + ":" + key] = dispose;
+    if (key) registrations[registrationKey] = dispose;
     return dispose;
   }
 
@@ -53,10 +69,15 @@
     bus.dispatchEvent(new CustomEvent(name, { detail: detail }));
   }
 
+  function stats() {
+    return { listeners: activeListeners };
+  }
+
   app.define("events", Object.freeze({
     listen: listen,
     delegate: delegate,
     on: on,
-    emit: emit
+    emit: emit,
+    stats: stats
   }));
 })(window);

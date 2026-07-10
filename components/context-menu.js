@@ -60,21 +60,24 @@
       m.style.visibility="";
     }
 
-    document.addEventListener("mousedown",function(e){
+    function handleDocumentMouseDown(e){
       if(menuEl&&menuEl.classList.contains("open")&&!e.target.closest("#"+menuId))close();
-    });
-    document.addEventListener("keydown",function(e){if(e.key==="Escape")close();});
-    window.addEventListener("scroll",close,true);
-    window.addEventListener("resize",close);
+    }
 
-    return {open:open, close:close};
+    return {open:open, close:close, handleDocumentMouseDown:handleDocumentMouseDown};
   }
 
   var dbCtrl=createContextMenuController("db");
+  var vaCtrl=createContextMenuController("va");
+  var controllers=[dbCtrl,vaCtrl];
+  document.addEventListener("mousedown",function(e){controllers.forEach(function(controller){controller.handleDocumentMouseDown(e);});});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")controllers.forEach(function(controller){controller.close();});});
+  window.addEventListener("scroll",function(){controllers.forEach(function(controller){controller.close();});},true);
+  window.addEventListener("resize",function(){controllers.forEach(function(controller){controller.close();});});
+
   window.dbOpenContextMenu=dbCtrl.open;
   window.dbCloseContextMenu=dbCtrl.close;
 
-  var vaCtrl=createContextMenuController("va");
   window.vaOpenContextMenu=vaCtrl.open;
   window.vaCloseContextMenu=vaCtrl.close;
 })();

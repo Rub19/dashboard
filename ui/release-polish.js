@@ -7,6 +7,7 @@
   var qsa=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
   var qs=function(s,r){return (r||document).querySelector(s)};
   var scheduled=false;
+  var pendingRoot=null;
   var ignoredInlineNames={
     if:1,for:1,while:1,switch:1,return:1,const:1,let:1,var:1,new:1,
     setTimeout:1,clearTimeout:1,setInterval:1,clearInterval:1,
@@ -15,14 +16,43 @@
     add:1,remove:1,toggle:1,contains:1,trim:1
   };
 
-  function schedule(){
+  function leanRuntime(){
+    try{
+      return !!(
+        window.ETHONE_STABLE_BOOT ||
+        window.ETHONE_LIGHT_BOOT_MODE ||
+        window.__ethoneLeanProductionBoot ||
+        document.documentElement.dataset.ethoneStableBoot==="1"
+      );
+    }catch(e){return !!(window.ETHONE_STABLE_BOOT||window.ETHONE_LIGHT_BOOT_MODE||window.__ethoneLeanProductionBoot)}
+  }
+
+  function activeSurface(event){
+    var page=event&&event.detail&&event.detail.page;
+    if(page){
+      var pageRoot=qs("#page-"+page);
+      if(pageRoot)return pageRoot;
+    }
+    var active=qs(".tab-content.active");
+    if(active)return active;
+    var auth=qs("#auth-screen");
+    if(auth&&getComputedStyle(auth).display!=="none")return auth;
+    var profile=qs("#profile-screen");
+    if(profile&&getComputedStyle(profile).display!=="none")return profile;
+    return qs("#main-content")||document;
+  }
+
+  function schedule(root){
+    if(root&&root.nodeType)pendingRoot=root;
     if(scheduled)return;
     scheduled=true;
     setTimeout(function(){
       requestAnimationFrame(function(){
         scheduled=false;
         if(document.body&&document.body.classList.contains("ethone-dashboard-booting"))return schedule();
-        apply();
+        var target=pendingRoot||activeSurface();
+        pendingRoot=null;
+        apply(target);
       });
     },document.body&&document.body.classList.contains("ethone-dashboard-booting")?520:180);
   }
@@ -225,18 +255,11 @@
     if(typeof window.openLivePanelManager!=="function")window.openLivePanelManager=proxyManager;
   }
 
-  function normalizeButtons(){
-    qsa("button:not([type])").forEach(function(btn){btn.type="button"});
-    qsa("button,.btn,.panel-action,.item-btn,.cat-tab,.settings-nav-item,.nav-item,[role='button']").forEach(function(el){
+  function normalizeButtons(root){
+    qsa("button:not([type])",root).forEach(function(btn){btn.type="button"});
+    qsa("button,.btn,.panel-action,.item-btn,.cat-tab,.settings-nav-item,.nav-item,[role='button']",root).forEach(function(el){
       if(el.dataset.releasePolished)return;
       el.dataset.releasePolished="1";
-      el.addEventListener("pointerdown",function(){
-        if(el.matches(":disabled,[aria-disabled='true']"))return;
-        el.classList.add("ethone-pressing");
-      },{passive:true});
-      ["pointerup","pointercancel","pointerleave","blur"].forEach(function(type){
-        el.addEventListener(type,function(){el.classList.remove("ethone-pressing")},{passive:true});
-      });
     });
   }
 
@@ -332,8 +355,8 @@
     document.addEventListener("keydown",function(event){if(event.key==="Escape")closeMenu()});
   }
 
-  function normalizeTextOverflow(){
-    qsa(".nav-label-text,.conn-title,.conn-subtitle,.game-card-title,.game-card-sub,.panel-title,.settings-card-title,.db-cell,.timeline-event-title").forEach(function(el){
+  function normalizeTextOverflow(root){
+    qsa(".nav-label-text,.conn-title,.conn-subtitle,.game-card-title,.game-card-sub,.panel-title,.settings-card-title,.db-cell,.timeline-event-title",root).forEach(function(el){
       el.classList.add("ethone-text-guard");
       if(!el.title){
         var text=(el.textContent||"").trim().replace(/\s+/g," ");
@@ -342,18 +365,18 @@
     });
   }
 
-  function normalizeLoadingStates(){
-    qsa(".db-boot-placeholder,.loading,.skeleton,[data-loading='true']").forEach(function(el){
+  function normalizeLoadingStates(root){
+    qsa(".db-boot-placeholder,.loading,.skeleton,[data-loading='true']",root).forEach(function(el){
       el.classList.add("ethone-skeleton");
       if(!el.getAttribute("aria-live"))el.setAttribute("aria-live","polite");
     });
-    qsa("[aria-busy='true']").forEach(function(el){
+    qsa("[aria-busy='true']",root).forEach(function(el){
       el.classList.add("ethone-skeleton");
     });
   }
 
-  function normalizeKeyboardNavigation(){
-    qsa("#sidebar-nav-main,#sidebar-nav-account,.settings-nav,.cat-tabs,.ui-tabs").forEach(function(group){
+  function normalizeKeyboardNavigation(root){
+    qsa("#sidebar-nav-main,#sidebar-nav-account,.settings-nav,.cat-tabs,.ui-tabs",root).forEach(function(group){
       if(group.dataset.releaseKeys)return;
       group.dataset.releaseKeys="1";
       group.addEventListener("keydown",function(e){
@@ -375,8 +398,23 @@
     });
   }
 
-  function normalizeClickableSemantics(){
-    qsa("[onclick]").forEach(function(el){
+  function normalizeClickableSemantics(root){
+    var overlaySelector = [
+      ".modal-overlay",
+      ".sidebar-overlay",
+      ".eh-panel-overlay",
+      ".spaces-overlay",
+      ".theme-creator-overlay",
+      ".wm-creator-overlay",
+      ".db-dpe-overlay",
+      ".db-detail-overlay",
+      ".va-detail-overlay",
+      "#notif-overlay",
+      "#live-panel-mobile-overlay",
+      "#cmd-palette-overlay"
+    ].join(",");
+    qsa("[onclick]",root).forEach(function(el){
+      if(el.matches && el.matches(overlaySelector))return;
       if(!/^(BUTTON|A|INPUT|SELECT|TEXTAREA|SUMMARY)$/.test(el.tagName)){
         if(!el.getAttribute("role"))el.setAttribute("role","button");
         if(!el.hasAttribute("tabindex"))el.tabIndex=0;
@@ -386,10 +424,12 @@
         if(text)el.setAttribute("aria-label",text.slice(0,120));
       }
     });
-    qsa(".modal-overlay,.sidebar-overlay,#notif-overlay,#live-panel-mobile-overlay").forEach(function(el){
+    qsa(overlaySelector,root).forEach(function(el){
       el.setAttribute("aria-hidden",el.classList.contains("open")?"false":"true");
       el.setAttribute("role","presentation");
       el.removeAttribute("tabindex");
+      el.classList.remove("ethone-readable-button");
+      if(el.dataset)delete el.dataset.clarityButton;
     });
   }
 
@@ -401,8 +441,18 @@
     });
   }
 
-  function normalizeExternalLinks(){
-    qsa('a[target="_blank"]').forEach(function(a){
+  function ensureCanonicalPageMounts(){
+    var main=qs("#main-content");
+    var ai=qs("#page-ai");
+    if(!main||!ai)return;
+    if(ai.parentElement!==main){
+      main.appendChild(ai);
+      ai.dataset.releaseReparented="main-content";
+    }
+  }
+
+  function normalizeExternalLinks(root){
+    qsa('a[target="_blank"]',root).forEach(function(a){
       var rel=(a.getAttribute("rel")||"").split(/\s+/);
       ["noopener","noreferrer"].forEach(function(token){if(rel.indexOf(token)===-1)rel.push(token)});
       a.setAttribute("rel",rel.filter(Boolean).join(" "));
@@ -437,18 +487,20 @@
     };
   }
 
-  function apply(){
+  function apply(root){
+    root=root||activeSurface();
     installToastSystem();
     installWidgetPanelProxy();
     installProfileContextMenu();
     applyPerformanceBudget();
-    normalizeButtons();
-    normalizeTextOverflow();
-    normalizeLoadingStates();
-    normalizeKeyboardNavigation();
-    normalizeClickableSemantics();
+    ensureCanonicalPageMounts();
+    normalizeButtons(root);
+    normalizeTextOverflow(root);
+    normalizeLoadingStates(root);
+    normalizeKeyboardNavigation(root);
+    normalizeClickableSemantics(root);
     normalizeHiddenPages();
-    normalizeExternalLinks();
+    normalizeExternalLinks(root);
     normalizeScrollSurfaces();
   }
 
@@ -458,12 +510,24 @@
     installWidgetPanelProxy();
     installProfileContextMenu();
     installActionGuard();
-    apply();
-    window.addEventListener("ethone:dashboard-ready",schedule);
-    window.addEventListener("ethone:page-ready",schedule);
-    window.addEventListener("resize",schedule,{passive:true});
-    document.addEventListener("click",schedule,true);
-    try{new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true});}catch(e){}
+    apply(activeSurface());
+    window.addEventListener("ethone:dashboard-ready",function(){schedule(document)});
+    window.addEventListener("ethone:profile-ready",function(){schedule(qs("#profile-screen")||document)});
+    window.addEventListener("ethone:page-ready",function(event){schedule(activeSurface(event))});
+    window.addEventListener("resize",function(){applyPerformanceBudget();normalizeScrollSurfaces()},{passive:true});
+    if(!leanRuntime()){
+      try{
+        var observeDeep=localStorage.getItem("ethone:deep-polish-observer")==="1";
+        if(observeDeep){
+          if(window.ETHONEDOMRuntime&&typeof window.ETHONEDOMRuntime.subscribe==="function"){
+            window.ETHONEDOMRuntime.subscribe("release-polish",function(){schedule(activeSurface())});
+          }else{
+            var host=qs("#main-content")||document.body;
+            new MutationObserver(schedule).observe(host,{childList:true,subtree:false});
+          }
+        }
+      }catch(e){}
+    }
   }
 
   window.ethoneReleasePolish={apply:apply,report:report};

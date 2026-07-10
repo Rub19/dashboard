@@ -1,0 +1,318 @@
+{
+  "label": "1366x768",
+  "rows": [
+    {
+      "route": "dashboard",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 2,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 350,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          },
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 840,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    },
+    {
+      "route": "files",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 2,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 350,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          },
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 840,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    },
+    {
+      "route": "notes",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 4,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 350,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          },
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 840,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          },
+          {
+            "a": "#note-color-pick",
+            "area": 555,
+            "b": "button.aie-chip"
+          },
+          {
+            "a": "#note-color-pick",
+            "area": 209,
+            "b": "button.aie-chip"
+          }
+        ]
+      }
+    },
+    {
+      "route": "kanban",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 3,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 350,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          },
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 840,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          },
+          {
+            "a": "button.kanban-add-btn.ethone-icon-text-row.ethone-icon-row",
+            "area": 289,
+            "b": "button.ethone-icon-text-row.ethone-icon-row"
+          }
+        ]
+      }
+    },
+    {
+      "route": "calendar",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 2,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 350,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          },
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 840,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    },
+    {
+      "route": "activity",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 2,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 350,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          },
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 840,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    },
+    {
+      "route": "versions",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 2,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 350,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          },
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 840,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    },
+    {
+      "route": "marketplace",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 4,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 350,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          },
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 840,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          },
+          {
+            "a": "button.mp41-btn.primary.ethone-ux-button",
+            "area": 351,
+            "b": "article.mp-brain-card.kf-focusable.ethone-ux-button"
+          },
+          {
+            "a": "button.mp41-btn.primary.ethone-ux-button",
+            "area": 438,
+            "b": "article.mp-brain-card.kf-focusable.ethone-ux-button"
+          }
+        ]
+      }
+    },
+    {
+      "route": "widget-marketplace",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 2,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 350,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          },
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 840,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    },
+    {
+      "route": "settings",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 2,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 350,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          },
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 840,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    },
+    {
+      "route": "ai",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 2,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 350,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          },
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 840,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    },
+    {
+      "route": "connections",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 2,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 350,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          },
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 840,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    }
+  ]
+}

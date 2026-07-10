@@ -17,6 +17,10 @@
     def("command.actions","Navigation","Open action palette","Ctrl+Shift+P",true,function(){openCommandPaletteWith("> ")}),
     def("ai.open","AI","Open contextual AI","Ctrl+Shift+A",true,function(){openAI()}),
     def("shortcuts.open","System","Open Keyboard Shortcuts","Ctrl+/",true,function(){openKeyboardPage()}),
+    def("focus.main","System","Focus current page","Alt+M",true,function(){focusKeyboardTarget("main")}),
+    def("focus.sidebar","System","Focus sidebar","Alt+0",true,function(){focusKeyboardTarget("sidebar")}),
+    def("widgets.open","System","Open widgets panel","Ctrl+Alt+B",true,function(){runKeyboardAction("widgets.open")}),
+    def("mission.open","System","Open Mission Control","F2",true,function(){openMissionControlShortcut()}),
     def("desktop.toggle","Desktop","Toggle Desktop Mode","Ctrl+Alt+D",true,function(){desktop("toggle")}),
     def("desktop.window","Desktop","Open current page in a window","Ctrl+Alt+W",true,function(){desktop("openCurrent")}),
     def("desktop.split","Desktop","Arrange windows in Split View","Ctrl+Alt+S",true,function(){desktop("split")}),
@@ -238,7 +242,36 @@
       }
     },40);
   }
-  function go(page){if(typeof window.switchPage==="function")window.switchPage(page,null)}
+  function runKeyboardAction(id,context){
+    try{
+      var actions=window.Ethone&&window.Ethone.get&&window.Ethone.get("actions");
+      if(actions&&typeof actions.dispatch==="function")return actions.dispatch(id,Object.assign({source:"keyboard-shortcuts"},context||{}));
+      if(typeof window.runAction==="function")return window.runAction(id,Object.assign({source:"keyboard-shortcuts"},context||{}));
+    }catch(e){}
+    return false;
+  }
+  function focusKeyboardTarget(target){
+    if(window.ETHONEKeyboardFirst){
+      if(target==="main"&&typeof window.ETHONEKeyboardFirst.focusMain==="function")return window.ETHONEKeyboardFirst.focusMain();
+      if(target==="sidebar"&&typeof window.ETHONEKeyboardFirst.focusSidebar==="function")return window.ETHONEKeyboardFirst.focusSidebar();
+    }
+    var el=target==="sidebar"?(document.getElementById("main-sidebar")||document.querySelector(".sidebar")):(document.getElementById("main-content")||document.querySelector(".main-content"));
+    if(!el)return false;
+    if(!el.hasAttribute("tabindex"))el.setAttribute("tabindex",target==="main"?"-1":"0");
+    try{el.focus({preventScroll:false})}catch(e){try{el.focus()}catch(err){}}
+    return document.activeElement===el;
+  }
+  function openMissionControlShortcut(){
+    if(typeof window.openMissionControl==="function")return window.openMissionControl();
+    if(runKeyboardAction("mission.open"))return true;
+    if(runKeyboardAction("desktop.missionControl"))return true;
+    openCommandPaletteWith("mission");
+    return true;
+  }
+  function go(page){
+    if(runKeyboardAction(page+".open"))return;
+    if(typeof window.switchPage==="function")window.switchPage(page,null);
+  }
   function openModalSafe(id){if(typeof window.openModal==="function")window.openModal(id)}
   function openAI(){
     if(window.ETHONEAIEverywhere&&typeof window.ETHONEAIEverywhere.openCopilot==="function"){
@@ -261,10 +294,31 @@
     else if(window.ETHONENotifications&&typeof window.ETHONENotifications.open==="function")window.ETHONENotifications.open();
   }
   function closeFloatingUI(){
+    if(window.ETHONEAccessibility&&typeof window.ETHONEAccessibility.closeTopLayer==="function"){
+      try{if(window.ETHONEAccessibility.closeTopLayer())return true}catch(e){}
+    }
+    if(typeof window.ethoneForceCloseTransientUI==="function"){
+      try{window.ethoneForceCloseTransientUI()}catch(e){}
+    }
+    if(window.ETHONESpacesUI&&typeof window.ETHONESpacesUI.close==="function"){
+      try{window.ETHONESpacesUI.close()}catch(e){}
+    }
+    if(window.ETHONESidebarFinal&&typeof window.ETHONESidebarFinal.closeProfileMenu==="function"){
+      try{window.ETHONESidebarFinal.closeProfileMenu()}catch(e){}
+    }
     if(typeof window.closeCmdPalette==="function")window.closeCmdPalette();
-    document.querySelectorAll(".modal-overlay.open,.dropdown.open,.lang-menu.open,.aie-copilot.open,.aie-context-menu.open").forEach(function(el){el.classList.remove("open")});
+    document.querySelectorAll(".modal-overlay.open,.dropdown.open,.lang-menu.open,.aie-copilot.open,.aie-context-menu.open,#ethone-version-popup-root.is-open,#ethone-whats-new-root.is-open").forEach(function(el){el.classList.remove("open","active","visible","is-open")});
+    document.body.classList.remove("ethone-version-popup-active","ethone-whats-new-active","ethone-modal-open","ethone-command-open","ethone-mission-control-open","ethone-presentation-open");
+    return true;
   }
   function desktop(action){
+    if(window.ETHONEWindowManager){
+      var wm=window.ETHONEWindowManager;
+      if(action==="toggle"&&typeof wm.toggle==="function"){wm.toggle();return;}
+      if(action==="openCurrent"&&typeof wm.openCurrent==="function"){wm.openCurrent();return;}
+      if(action==="split"&&typeof wm.split==="function"){wm.split();return;}
+      if(action==="closeActive"&&typeof wm.closeActive==="function"){wm.closeActive();return;}
+    }
     if(!window.ETHONEDesktop){
       notify("Desktop Mode indisponible","warning");
       return;

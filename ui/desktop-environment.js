@@ -90,6 +90,19 @@
       }));
     }catch(e){}
   }
+  function setDesktopLayout(active){
+    try{
+      localStorage.setItem("ethone:desktop-enabled",active?"1":"0");
+      localStorage.setItem("ethone:layout-mode",active?"desktop":"classic");
+    }catch(e){}
+    try{
+      document.documentElement.classList.toggle("ethone-window-manager-active",!!active);
+      document.body.classList.toggle("ethone-window-manager-active",!!active);
+    }catch(e){}
+    try{
+      if(window.ETHONEBootSequence&&typeof window.ETHONEBootSequence.sync==="function")window.ETHONEBootSequence.sync();
+    }catch(e){}
+  }
   function registry(){
     var nav=[];
     try{if(typeof window.getDefaultNav==="function")nav=window.getDefaultNav()||[]}catch(e){}
@@ -193,6 +206,7 @@
     if(!isDashboardVisible())return;
     readSaved();
     state.enabled=true;
+    setDesktopLayout(true);
     ensureRoot();
     document.body.classList.add("ethone-desktop-mode");
     var root=qs("#ethone-desktop");
@@ -211,6 +225,7 @@
     var root=qs("#ethone-desktop");
     if(root)root.setAttribute("aria-hidden","true");
     save();
+    setDesktopLayout(false);
     if(originalSwitchPage){
       suppressRoute=true;
       try{originalSwitchPage(currentPage()||"dashboard",null)}catch(e){}
@@ -261,6 +276,8 @@
   }
   function openPage(page,opts){
     if(!document.getElementById("page-"+page))return;
+    state.enabled=true;
+    setDesktopLayout(true);
     ensureRoot();
     document.body.classList.add("ethone-desktop-mode");
     if(originalSwitchPage&&!suppressRoute){
@@ -933,6 +950,7 @@
     split:splitActive,
     snapActive:function(side){var active=state.activeWindow;if(active)setSplit(active,side==="right"?"right":"left");},
     maximizeActive:function(){var active=state.activeWindow;if(active)maximizeWindow(active);},
+    pinActive:function(){var active=state.activeWindow;if(active)togglePinWindow(active);},
     closeActive:closeActive,
     minimizeActive:function(){var active=state.activeWindow;if(active)minimizeWindow(active)},
     switchWorkspace:switchWorkspace,

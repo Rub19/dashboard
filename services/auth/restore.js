@@ -16,7 +16,7 @@
     document.querySelectorAll('#auth-lang-bar button').forEach(btn=>{
       const active=btn.dataset.l===l;
       btn.style.background='transparent';
-      btn.style.color=active?'#fff':'rgba(255,255,255,.42)';
+      btn.style.color=active?'var(--text-on-accent)':'rgba(var(--text-primary-rgb),.42)';
       btn.style.fontWeight=active?'700':'600';
     });
     setText('auth-form-title',tr('welcome_back'));
@@ -47,7 +47,7 @@
     try{ localStorage.setItem('ethone_lang',l); }catch(e){}
     setTimeout(window.updateAuthLangBar,0);
   };
-  function setErr(msg, good){ const er=document.getElementById('auth-error'); if(!er)return; er.textContent=msg||''; er.style.display=msg?'block':'none'; er.style.color=good?'#22c55e':''; }
+  function setErr(msg, good){ const er=document.getElementById('auth-error'); if(!er)return; er.textContent=msg||''; er.style.display=msg?'block':'none'; er.style.color=good?'var(--success)':''; }
   window.setAuthLoading=function(v){ const ld=document.getElementById('auth-loading'); if(ld)ld.style.display=v?'block':'none'; if(v)setErr(''); };
   window.ethoneEyeIcon=function(off){ return off ? '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" width="17" height="17"><path d="M2.5 2.5l15 15"/><path d="M8.6 8.6a2 2 0 0 0 2.8 2.8"/><path d="M7.1 4.4A8.9 8.9 0 0 1 10 4c5 0 8 6 8 6a13.4 13.4 0 0 1-2.1 2.9"/><path d="M5.1 5.9C3.2 7.2 2 10 2 10s3 6 8 6a8.8 8.8 0 0 0 4.1-1"/></svg>' : '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" width="17" height="17"><path d="M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6z"/><circle cx="10" cy="10" r="2.5"/></svg>'; };
   window.togglePwVis=function(inputId,btn){

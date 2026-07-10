@@ -1,0 +1,411 @@
+/*
+ * ETHONE Icon System
+ * Normalizes icon size, stroke, spacing and lightweight interaction feedback
+ * across navigation, cards, panels, widgets, toasts and important emoji icons.
+ */
+
+:root {
+  --icon-system-ease: var(--ease-premium, cubic-bezier(0.22, 1, 0.36, 1));
+  --icon-system-duration: var(--motion-hover, 150ms);
+}
+
+body.ethone-2026-ui :where([data-lucide], svg.lucide),
+body.ethone-v2 :where([data-lucide], svg.lucide),
+#auth-screen :where([data-lucide], svg.lucide),
+#profile-screen :where([data-lucide], svg.lucide) {
+  width: var(--icon-size-md) !important;
+  height: var(--icon-size-md) !important;
+  min-width: var(--icon-size-md) !important;
+  flex: 0 0 var(--icon-size-md) !important;
+  stroke-width: var(--icon-stroke) !important;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  color: currentColor;
+  vertical-align: middle;
+}
+
+body.ethone-2026-ui :where(
+  .ethone-icon-shell,
+  .ethone-clarity-icon,
+  .nav-icon,
+  .sidebar-icon,
+  .os-nav-icon,
+  .settings-nav-icon,
+  .dock-icon,
+  .app-icon,
+  .item-icon,
+  .panel-title-icon,
+  .conn-icon,
+  .ih-logo,
+  .ih-mini-logo,
+  .ph-logo,
+  .health-metric > i,
+  .timeline-event-icon,
+  .ethone-toast-icon,
+  .d4-ws-active-icon,
+  .d4-ws-card-icon,
+  .d4-quick-action > i,
+  .d4-mini-row > i,
+  .empty-icon
+),
+body.ethone-v2 :where(
+  .ethone-icon-shell,
+  .ethone-clarity-icon,
+  .nav-icon,
+  .sidebar-icon,
+  .settings-nav-icon,
+  .dock-icon,
+  .app-icon,
+  .item-icon,
+  .panel-title-icon,
+  .conn-icon,
+  .ethone-toast-icon
+) {
+  width: var(--icon-shell-md) !important;
+  min-width: var(--icon-shell-md) !important;
+  height: var(--icon-shell-md) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 var(--icon-shell-md) !important;
+  border: 1px solid var(--icon-muted-border);
+  border-radius: var(--radius-md);
+  background: var(--icon-muted-bg);
+  color: var(--icon-color);
+  line-height: 1 !important;
+  overflow: hidden;
+  transform: translateZ(0);
+  transition:
+    color var(--icon-system-duration) var(--icon-system-ease),
+    background-color var(--icon-system-duration) var(--icon-system-ease),
+    border-color var(--icon-system-duration) var(--icon-system-ease),
+    box-shadow var(--icon-system-duration) var(--icon-system-ease),
+    transform var(--icon-system-duration) var(--icon-system-ease);
+}
+
+body.ethone-2026-ui :where(.panel-title-icon, .d4-favorite, .d4-icon-button, .d4-widget-btn, .item-btn),
+body.ethone-v2 :where(.panel-title-icon, .item-btn) {
+  width: var(--icon-shell-sm) !important;
+  min-width: var(--icon-shell-sm) !important;
+  height: var(--icon-shell-sm) !important;
+  flex-basis: var(--icon-shell-sm) !important;
+}
+
+body.ethone-2026-ui :where(.empty-icon, .conn-icon, .profile-banner-avatar, .pw-avatar),
+body.ethone-v2 :where(.empty-icon, .conn-icon) {
+  width: var(--icon-shell-lg) !important;
+  min-width: var(--icon-shell-lg) !important;
+  height: var(--icon-shell-lg) !important;
+  flex-basis: var(--icon-shell-lg) !important;
+  border-radius: var(--radius-lg);
+}
+
+body.ethone-2026-ui :where(.ethone-icon-shell, .ethone-clarity-icon, .nav-icon, .os-nav-icon, .settings-nav-icon, .dock-icon, .app-icon, .item-icon, .conn-icon, .ih-logo, .ph-logo, .d4-quick-action > i, .d4-mini-row > i) :where(svg, [data-lucide]),
+body.ethone-v2 :where(.ethone-icon-shell, .ethone-clarity-icon, .nav-icon, .settings-nav-icon, .dock-icon, .app-icon, .item-icon, .conn-icon) :where(svg, [data-lucide]) {
+  width: var(--icon-size-md) !important;
+  height: var(--icon-size-md) !important;
+  min-width: var(--icon-size-md) !important;
+}
+
+body.ethone-2026-ui :where(.active, .is-active, [aria-current="page"], [aria-selected="true"]) :where(.ethone-icon-shell, .ethone-clarity-icon, .nav-icon, .os-nav-icon, .settings-nav-icon, .dock-icon, .app-icon),
+body.ethone-v2 :where(.active, .is-active, [aria-current="page"], [aria-selected="true"]) :where(.ethone-icon-shell, .ethone-clarity-icon, .nav-icon, .settings-nav-icon, .dock-icon, .app-icon) {
+  border-color: var(--accent-border);
+  background: var(--icon-active-bg);
+  color: var(--icon-color-active) !important;
+  box-shadow: inset 0 1px 0 rgba(var(--color-white-rgb), 0.08), 0 8px 22px rgba(var(--color-black-rgb), 0.16);
+}
+
+body.ethone-2026-ui :where(
+  button:hover,
+  .btn:hover,
+  .nav-item:hover,
+  .os-nav-item:hover,
+  .settings-nav-item:hover,
+  .dropdown-item:hover,
+  .context-menu-item:hover,
+  .cmd-item:hover,
+  .d4-quick-action:hover
+) :where(.ethone-icon-shell, .ethone-clarity-icon, .nav-icon, .os-nav-icon, .settings-nav-icon, .dock-icon, .app-icon, .item-icon, .panel-title-icon, .d4-quick-action > i, svg, [data-lucide]),
+body.ethone-v2 :where(
+  button:hover,
+  .btn:hover,
+  .nav-item:hover,
+  .settings-nav-item:hover,
+  .dropdown-item:hover,
+  .context-menu-item:hover,
+  .cmd-item:hover
+) :where(.ethone-icon-shell, .ethone-clarity-icon, .nav-icon, .settings-nav-icon, .dock-icon, .app-icon, .item-icon, .panel-title-icon, svg, [data-lucide]) {
+  color: var(--text-primary) !important;
+}
+
+body.ethone-2026-ui :where(
+  button:hover,
+  .btn:hover,
+  .nav-item:hover,
+  .os-nav-item:hover,
+  .settings-nav-item:hover,
+  .dropdown-item:hover,
+  .context-menu-item:hover,
+  .cmd-item:hover,
+  .d4-quick-action:hover
+) :where(.ethone-icon-shell, .ethone-clarity-icon, .nav-icon, .os-nav-icon, .settings-nav-icon, .dock-icon, .app-icon, .item-icon, .panel-title-icon, .d4-quick-action > i),
+body.ethone-v2 :where(
+  button:hover,
+  .btn:hover,
+  .nav-item:hover,
+  .settings-nav-item:hover,
+  .dropdown-item:hover,
+  .context-menu-item:hover,
+  .cmd-item:hover
+) :where(.ethone-icon-shell, .ethone-clarity-icon, .nav-icon, .settings-nav-icon, .dock-icon, .app-icon, .item-icon, .panel-title-icon) {
+  border-color: var(--border-hover);
+  background: var(--icon-hover-bg);
+  transform: translate3d(0, -1px, 0);
+}
+
+body.ethone-2026-ui :where(button:active, .btn:active, .nav-item:active, .os-nav-item:active, .settings-nav-item:active, .dropdown-item:active, .context-menu-item:active, .cmd-item:active, .d4-quick-action:active) :where(.ethone-icon-shell, .ethone-clarity-icon, .nav-icon, .os-nav-icon, .settings-nav-icon, .dock-icon, .app-icon, .item-icon, .panel-title-icon, .d4-quick-action > i),
+body.ethone-v2 :where(button:active, .btn:active, .nav-item:active, .settings-nav-item:active, .dropdown-item:active, .context-menu-item:active, .cmd-item:active) :where(.ethone-icon-shell, .ethone-clarity-icon, .nav-icon, .settings-nav-icon, .dock-icon, .app-icon, .item-icon, .panel-title-icon) {
+  transform: translate3d(0, 0, 0) scale(var(--motion-scale-press, 0.985));
+}
+
+body.ethone-2026-ui :where(button, .btn, .nav-item, .os-nav-item, .settings-nav-item, .dropdown-item, .context-menu-item, .cmd-item, .d4-quick-action, .ui-sidebar-item),
+body.ethone-v2 :where(button, .btn, .nav-item, .settings-nav-item, .dropdown-item, .context-menu-item, .cmd-item, .ui-sidebar-item),
+#auth-screen :where(button, .auth-action, .auth-oauth-btn, .auth-tab) {
+  gap: var(--icon-gap) !important;
+}
+
+body.ethone-2026-ui :where(.ethone-emoji-badge, .emoji-badge, .avatar-opt, .weather-icon, .empty-icon, .profile-banner-avatar, .pw-avatar, .ps-add-icon),
+body.ethone-v2 :where(.ethone-emoji-badge, .emoji-badge, .weather-icon, .empty-icon),
+#auth-screen :where(.ethone-emoji-badge, .emoji-badge),
+#profile-screen :where(.ethone-emoji-badge, .emoji-badge, .avatar-opt) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: var(--icon-shell-lg);
+  height: var(--icon-shell-lg);
+  min-width: var(--icon-shell-lg);
+  border: 1px solid var(--emoji-badge-border);
+  border-radius: var(--radius-lg);
+  background: var(--emoji-badge-bg);
+  box-shadow: var(--emoji-badge-shadow);
+  color: var(--text-primary);
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", system-ui, sans-serif;
+  font-size: var(--icon-size-lg) !important;
+  line-height: 1 !important;
+  text-shadow: 0 1px 10px rgba(var(--color-black-rgb), 0.28);
+  transform: translateZ(0);
+  transition:
+    transform var(--icon-system-duration) var(--icon-system-ease),
+    border-color var(--icon-system-duration) var(--icon-system-ease),
+    background-color var(--icon-system-duration) var(--icon-system-ease),
+    box-shadow var(--icon-system-duration) var(--icon-system-ease);
+}
+
+body.ethone-2026-ui :where(button:hover, .btn:hover, .nav-item:hover, .settings-nav-item:hover, .d4-quick-action:hover) :where(.ethone-emoji-badge, .emoji-badge),
+body.ethone-v2 :where(button:hover, .btn:hover, .nav-item:hover, .settings-nav-item:hover) :where(.ethone-emoji-badge, .emoji-badge),
+body.ethone-2026-ui :where(.ethone-emoji-badge, .emoji-badge, .avatar-opt, .weather-icon, .empty-icon, .profile-banner-avatar, .pw-avatar, .ps-add-icon):hover,
+body.ethone-v2 :where(.ethone-emoji-badge, .emoji-badge, .weather-icon, .empty-icon):hover {
+  border-color: var(--accent-border);
+  box-shadow: var(--emoji-badge-shadow), 0 0 22px rgba(var(--primary-rgb), 0.12);
+  transform: translate3d(0, -1px, 0);
+}
+
+body.ethone-2026-ui :where(.ethone-emoji-badge, .emoji-badge, .avatar-opt, .weather-icon, .empty-icon, .profile-banner-avatar, .pw-avatar, .ps-add-icon):active,
+body.ethone-v2 :where(.ethone-emoji-badge, .emoji-badge, .weather-icon, .empty-icon):active {
+  transform: scale(var(--motion-scale-press, 0.985));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.ethone-2026-ui :where(.ethone-icon-shell, .ethone-clarity-icon, .nav-icon, .settings-nav-icon, .dock-icon, .app-icon, .item-icon, .ethone-emoji-badge, .emoji-badge),
+  body.ethone-v2 :where(.ethone-icon-shell, .ethone-clarity-icon, .nav-icon, .settings-nav-icon, .dock-icon, .app-icon, .item-icon, .ethone-emoji-badge, .emoji-badge) {
+    transition-duration: 1ms !important;
+  }
+}
+
+/* Icon System 6.0: Lucide is the only visual icon language for ETHONE UI. */
+body :where(.ethone-icon, svg.lucide, [data-lucide]) {
+  width: var(--icon-size-md) !important;
+  height: var(--icon-size-md) !important;
+  min-width: var(--icon-size-md) !important;
+  stroke-width: var(--icon-stroke) !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+  color: currentColor !important;
+  vector-effect: non-scaling-stroke;
+}
+
+body :where(
+  .ethone-icon-shell,
+  .ethone-lucide-replaced,
+  .ethone-clarity-icon,
+  .cmd-item-icon,
+  .nav-icon,
+  .sidebar-icon,
+  .os-nav-icon,
+  .settings-nav-icon,
+  .dock-icon,
+  .app-icon,
+  .mob-icon,
+  .item-icon,
+  .panel-title-icon,
+  .stat-card-icon,
+  .conn-icon,
+  .game-card-logo,
+  .timeline-event-icon,
+  .ethone-toast-icon,
+  .notif-empty-icon,
+  .activity-empty-icon,
+  .va-empty-icon,
+  .ps-empty-icon,
+  .empty-icon
+) {
+  width: var(--icon-shell-md) !important;
+  min-width: var(--icon-shell-md) !important;
+  height: var(--icon-shell-md) !important;
+  flex: 0 0 var(--icon-shell-md) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  border-radius: var(--radius-md) !important;
+  border: 1px solid var(--icon-muted-border) !important;
+  background: var(--icon-muted-bg) !important;
+  color: var(--icon-color) !important;
+  font-size: 0 !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+  text-indent: 0 !important;
+  overflow: hidden !important;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+body :where(
+  .ethone-icon-shell,
+  .ethone-lucide-replaced,
+  .ethone-clarity-icon,
+  .cmd-item-icon,
+  .nav-icon,
+  .sidebar-icon,
+  .os-nav-icon,
+  .settings-nav-icon,
+  .dock-icon,
+  .app-icon,
+  .mob-icon,
+  .item-icon,
+  .panel-title-icon,
+  .stat-card-icon,
+  .conn-icon,
+  .game-card-logo,
+  .timeline-event-icon,
+  .ethone-toast-icon,
+  .notif-empty-icon,
+  .activity-empty-icon,
+  .va-empty-icon,
+  .ps-empty-icon,
+  .empty-icon
+) :where(svg, [data-lucide]) {
+  width: var(--icon-size-md) !important;
+  height: var(--icon-size-md) !important;
+  min-width: var(--icon-size-md) !important;
+  flex: 0 0 var(--icon-size-md) !important;
+}
+
+body :where(.panel-title-icon, .stat-card-icon, .timeline-event-icon, .cmd-item-icon, .settings-nav-icon) {
+  width: var(--icon-shell-sm) !important;
+  min-width: var(--icon-shell-sm) !important;
+  height: var(--icon-shell-sm) !important;
+  flex-basis: var(--icon-shell-sm) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+body :where(.empty-icon, .notif-empty-icon, .activity-empty-icon, .va-empty-icon, .conn-icon, .game-card-logo) {
+  width: var(--icon-shell-lg) !important;
+  min-width: var(--icon-shell-lg) !important;
+  height: var(--icon-shell-lg) !important;
+  flex-basis: var(--icon-shell-lg) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+body :where(.ethone-icon-text-row) {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--icon-gap);
+}
+
+body :where(.ethone-inline-icon) {
+  width: var(--icon-shell-sm);
+  min-width: var(--icon-shell-sm);
+  height: var(--icon-shell-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--icon-muted-border);
+  border-radius: var(--radius-sm);
+  background: var(--icon-muted-bg);
+  color: var(--icon-color);
+  line-height: 1;
+  vertical-align: middle;
+  transform: translateZ(0);
+}
+
+body :where(.ethone-inline-icon) :where(svg, [data-lucide]) {
+  width: var(--icon-size-sm) !important;
+  height: var(--icon-size-sm) !important;
+  min-width: var(--icon-size-sm) !important;
+}
+
+body :where(
+  button:hover,
+  .btn:hover,
+  .nav-item:hover,
+  .os-nav-item:hover,
+  .settings-nav-item:hover,
+  .dropdown-item:hover,
+  .context-menu-item:hover,
+  .cmd-item:hover,
+  .d4-quick-action:hover
+) :where(.ethone-icon-shell, .ethone-lucide-replaced, .ethone-clarity-icon, .ethone-inline-icon, .cmd-item-icon, .nav-icon, .settings-nav-icon, .dock-icon, .app-icon, .item-icon, .panel-title-icon) {
+  color: var(--text-primary) !important;
+  border-color: var(--border-hover) !important;
+  background: var(--icon-hover-bg) !important;
+  transform: translate3d(0, -1px, 0);
+}
+
+body :where(
+  .active,
+  .is-active,
+  [aria-current="page"],
+  [aria-selected="true"],
+  .selected
+) :where(.ethone-icon-shell, .ethone-lucide-replaced, .ethone-clarity-icon, .cmd-item-icon, .nav-icon, .settings-nav-icon, .dock-icon, .app-icon, .item-icon) {
+  color: var(--icon-color-active) !important;
+  border-color: var(--accent-border) !important;
+  background: var(--icon-active-bg) !important;
+}
+
+body :where(.cmd-item-icon) {
+  color: var(--text-secondary) !important;
+}
+
+body :where(.cmd-item.selected .cmd-item-icon, .cmd-pin.is-pinned) {
+  color: var(--text-primary) !important;
+  border-color: var(--accent-border) !important;
+  background: var(--icon-active-bg) !important;
+}
+
+body :where(.ethone-icon-row) {
+  gap: var(--icon-gap) !important;
+}
+
+body :where(.ethone-emoji-badge:not(.ethone-lucide-replaced), .emoji-badge:not(.ethone-lucide-replaced)) {
+  font-size: 0 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body :where(.ethone-icon-shell, .ethone-lucide-replaced, .ethone-clarity-icon, .ethone-inline-icon, .cmd-item-icon, .nav-icon, .settings-nav-icon, .dock-icon, .app-icon, .item-icon) {
+    transition-duration: 1ms !important;
+    transform: none !important;
+    will-change: auto;
+  }
+}

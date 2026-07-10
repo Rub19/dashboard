@@ -28,10 +28,10 @@
 .achievement-level,
 .achievement-streaks,
 .achievement-progress {
-  border: 1px solid var(--border-primary, rgba(255, 255, 255, .09));
+  border: 1px solid var(--border-primary, rgba(var(--color-white-rgb), .09));
   border-radius: var(--radius-lg, 18px);
-  background: linear-gradient(180deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .025));
-  box-shadow: inset 0 1px rgba(255, 255, 255, .055);
+  background: linear-gradient(180deg, rgba(var(--color-white-rgb), .055), rgba(var(--color-white-rgb), .025));
+  box-shadow: inset 0 1px rgba(var(--color-white-rgb), .055);
 }
 
 .achievement-level {
@@ -42,14 +42,14 @@
 }
 
 .achievement-level span {
-  color: var(--text-tertiary, rgba(255, 255, 255, .48));
+  color: var(--text-tertiary, rgba(var(--color-white-rgb), .48));
   font-size: 10px;
   font-weight: 850;
   letter-spacing: .14em;
 }
 
 .achievement-level strong {
-  color: #fff;
+  color: var(--text-primary);
   font-size: 34px;
   line-height: 1;
   letter-spacing: -.05em;
@@ -65,14 +65,14 @@
 
 .achievement-progress strong {
   display: block;
-  color: var(--text-primary, #f5f3ff);
+  color: var(--text-primary, var(--text-primary));
   font-size: 17px;
 }
 
 .achievement-progress span {
   display: block;
   margin-top: 4px;
-  color: var(--text-tertiary, rgba(255, 255, 255, .52));
+  color: var(--text-tertiary, rgba(var(--color-white-rgb), .52));
   font-size: 12px;
 }
 
@@ -82,7 +82,7 @@
   margin-top: 12px;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(255, 255, 255, .075);
+  background: rgba(var(--color-white-rgb), .075);
 }
 
 .achievement-bar i,
@@ -90,9 +90,9 @@
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--accent, #8b5cf6), var(--accent-hover, #a78bfa));
-  box-shadow: 0 0 18px rgba(var(--accent-rgb, 139, 92, 246), .34);
-  transition: width 360ms ease;
+  background: linear-gradient(90deg, var(--accent, var(--primary)), var(--accent-hover, var(--primary-hover)));
+  box-shadow: 0 0 18px rgba(var(--accent-rgb,var(--primary-rgb)), .34);
+  transition: width var(--motion-slower) var(--ease-standard);
 }
 
 .achievement-streaks {
@@ -108,18 +108,18 @@
   gap: 3px;
   place-items: center;
   border-radius: 14px;
-  background: rgba(255, 255, 255, .026);
+  background: rgba(var(--color-white-rgb), .026);
   padding: 8px;
 }
 
 .achievement-streaks strong {
-  color: #fff;
+  color: var(--text-primary);
   font-size: 21px;
   line-height: 1;
 }
 
 .achievement-streaks span {
-  color: var(--text-tertiary, rgba(255, 255, 255, .48));
+  color: var(--text-tertiary, rgba(var(--color-white-rgb), .48));
   font-size: 10px;
   font-weight: 760;
 }
@@ -136,17 +136,17 @@
   gap: 12px;
   min-height: 128px;
   padding: 13px;
-  border: 1px solid var(--border-primary, rgba(255, 255, 255, .09));
+  border: 1px solid var(--border-primary, rgba(var(--color-white-rgb), .09));
   border-radius: var(--radius-lg, 18px);
   background:
-    radial-gradient(circle at 0 0, rgba(var(--accent-rgb, 139, 92, 246), .11), transparent 44%),
-    rgba(255, 255, 255, .028);
+    radial-gradient(circle at 0 0, rgba(var(--accent-rgb,var(--primary-rgb)), .11), transparent 44%),
+    rgba(var(--color-white-rgb), .028);
   transition: transform 170ms ease, border-color 170ms ease, background 170ms ease, opacity 170ms ease;
 }
 
 .achievement-badge:hover {
   transform: translateY(-1px);
-  border-color: rgba(var(--accent-rgb, 139, 92, 246), .28);
+  border-color: rgba(var(--accent-rgb,var(--primary-rgb)), .28);
 }
 
 .achievement-badge.locked {
@@ -155,10 +155,10 @@
 }
 
 .achievement-badge.unlocked {
-  border-color: rgba(var(--accent-rgb, 139, 92, 246), .32);
+  border-color: rgba(var(--accent-rgb,var(--primary-rgb)), .32);
   background:
-    radial-gradient(circle at 12% 0, rgba(var(--accent-rgb, 139, 92, 246), .18), transparent 45%),
-    linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .028));
+    radial-gradient(circle at 12% 0, rgba(var(--accent-rgb,var(--primary-rgb)), .18), transparent 45%),
+    linear-gradient(180deg, rgba(var(--color-white-rgb), .06), rgba(var(--color-white-rgb), .028));
 }
 
 .achievement-badge-icon {
@@ -166,10 +166,10 @@
   place-items: center;
   width: 42px;
   height: 42px;
-  border: 1px solid rgba(255, 255, 255, .1);
+  border: 1px solid rgba(var(--color-white-rgb), .1);
   border-radius: 15px;
-  background: rgba(var(--accent-rgb, 139, 92, 246), .13);
-  color: var(--accent-hover, #a78bfa);
+  background: rgba(var(--accent-rgb,var(--primary-rgb)), .13);
+  color: var(--accent-hover, var(--primary-hover));
 }
 
 .achievement-badge-icon svg {
@@ -190,7 +190,7 @@
 }
 
 .achievement-badge-meta span {
-  color: var(--text-tertiary, rgba(255, 255, 255, .48));
+  color: var(--text-tertiary, rgba(var(--color-white-rgb), .48));
   font-size: 10px;
   font-weight: 850;
   letter-spacing: .08em;
@@ -198,13 +198,13 @@
 }
 
 .achievement-badge-meta b {
-  color: var(--accent-hover, #a78bfa);
+  color: var(--accent-hover, var(--primary-hover));
   font-size: 11px;
 }
 
 .achievement-badge strong {
   display: block;
-  color: var(--text-primary, #f5f3ff);
+  color: var(--text-primary, var(--text-primary));
   font-size: 13px;
   line-height: 1.25;
 }
@@ -212,7 +212,7 @@
 .achievement-badge p {
   min-height: 35px;
   margin: 6px 0 0;
-  color: var(--text-tertiary, rgba(255, 255, 255, .54));
+  color: var(--text-tertiary, rgba(var(--color-white-rgb), .54));
   font-size: 11.5px;
   line-height: 1.5;
 }
@@ -233,14 +233,14 @@
   gap: 12px;
   width: min(360px, calc(100vw - 32px));
   padding: 13px;
-  border: 1px solid rgba(var(--accent-rgb, 139, 92, 246), .34);
+  border: 1px solid rgba(var(--accent-rgb,var(--primary-rgb)), .34);
   border-radius: 18px;
   background:
-    radial-gradient(circle at 0 0, rgba(var(--accent-rgb, 139, 92, 246), .23), transparent 42%),
-    rgba(13, 13, 18, .94);
-  box-shadow: 0 22px 70px rgba(0, 0, 0, .46), 0 0 42px rgba(var(--accent-rgb, 139, 92, 246), .18);
+    radial-gradient(circle at 0 0, rgba(var(--accent-rgb,var(--primary-rgb)), .23), transparent 42%),
+    rgba(var(--surface-1-rgb), .94);
+  box-shadow: 0 22px 70px rgba(var(--color-black-rgb), .46), 0 0 42px rgba(var(--accent-rgb,var(--primary-rgb)), .18);
   backdrop-filter: blur(18px);
-  animation: achievementToastIn 260ms cubic-bezier(.2, .8, .2, 1) both;
+  animation: achievementToastIn var(--motion-slower) var(--ease-standard) both;
 }
 
 .achievement-unlock-toast.leaving {
@@ -253,8 +253,8 @@
   width: 42px;
   height: 42px;
   border-radius: 15px;
-  background: rgba(var(--accent-rgb, 139, 92, 246), .14);
-  color: var(--accent-hover, #a78bfa);
+  background: rgba(var(--accent-rgb,var(--primary-rgb)), .14);
+  color: var(--accent-hover, var(--primary-hover));
 }
 
 .achievement-unlock-toast strong,
@@ -263,13 +263,13 @@
 }
 
 .achievement-unlock-toast strong {
-  color: #fff;
+  color: var(--text-primary);
   font-size: 13px;
 }
 
 .achievement-unlock-toast span {
   margin-top: 4px;
-  color: var(--text-tertiary, rgba(255, 255, 255, .58));
+  color: var(--text-tertiary, rgba(var(--color-white-rgb), .58));
   font-size: 12px;
 }
 

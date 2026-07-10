@@ -79,13 +79,13 @@ function dbRenderHomeGrid(root){
     return (b.updatedAt||"").localeCompare(a.updatedAt||"");
   });
   var cardsHTML=list.map(dbHomeCardHTML).join("");
+  var addCardHTML=list.length?'<button type="button" class="db-home-card db-home-card-new" data-db-action-id="databases.openTemplatePicker">'+DB_PLUS_SVG+"<span>"+dbEsc(t("db_new_database"))+"</span></button>":"";
+  var emptyHTML=list.length?"":'<section class="db-home-empty" role="status"><span class="db-home-empty-icon" aria-hidden="true"><i data-lucide="database"></i></span><strong>'+dbEsc(t("db_no_databases"))+'</strong><p>'+dbEsc(t("db_empty_description"))+'</p><button type="button" class="db-new-btn db-empty-action" data-db-action-id="databases.openTemplatePicker">'+DB_PLUS_SVG+"<span>"+dbEsc(t("db_new_database"))+"</span></button></section>";
   root.innerHTML='<div class="db-home">'+
     '<header class="db-home-header"><div class="db-home-title"><h1>'+dbEsc(t("nav_databases"))+'</h1><p>'+list.length+"</p></div>"+
-    '<button type="button" class="db-new-btn" data-db-action-id="databases.openTemplatePicker">'+DB_PLUS_SVG+"<span>"+dbEsc(t("db_new_database"))+"</span></button></header>"+
-    '<div class="db-home-grid">'+cardsHTML+
-      '<button type="button" class="db-home-card db-home-card-new" data-db-action-id="databases.openTemplatePicker">'+DB_PLUS_SVG+"<span>"+dbEsc(t("db_new_database"))+"</span></button>"+
-    "</div>"+
-    (list.length?"":'<div class="db-home-empty">'+dbEsc(t("db_no_databases"))+"</div>")+
+    (list.length?'<button type="button" class="db-new-btn" data-db-action-id="databases.openTemplatePicker">'+DB_PLUS_SVG+"<span>"+dbEsc(t("db_new_database"))+"</span></button>":"")+"</header>"+
+    '<div class="db-home-grid">'+cardsHTML+addCardHTML+"</div>"+
+    emptyHTML+
   "</div>";
 }
 function dbHomeCardHTML(db){

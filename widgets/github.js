@@ -105,7 +105,10 @@ async function refreshGithub(){
   const content=document.getElementById('github-content');
   const sub=document.getElementById('github-sub');
   if(!username){
-    if(content)content.innerHTML=`<div class="panel" style="max-width:480px;margin:0 auto"><div class="panel-header"><div class="panel-title">🔗 Connect GitHub</div></div><div class="modal-field"><div class="modal-label">GITHUB USERNAME</div><div style="display:flex;gap:8px"><input type="text" class="modal-input" id="github-username-input" placeholder="e.g. rub19" style="flex:1"><button class="btn btn-primary" onclick="connectGithub()">Connect</button></div></div></div>`;
+    if(content){
+      content.innerHTML=`<div class="panel" style="max-width:480px;margin:0 auto"><div class="panel-header"><div class="panel-title"><i data-lucide="github" aria-hidden="true"></i><span>Connect GitHub</span></div></div><div class="modal-field"><div class="modal-label">GITHUB USERNAME</div><div style="display:flex;gap:8px"><input type="text" class="modal-input" id="github-username-input" placeholder="e.g. octocat" style="flex:1"><button class="btn btn-primary" onclick="connectGithub()">Connect</button></div></div></div>`;
+      try{if(window.lucide&&!window.__lucideFailed)window.lucide.createIcons()}catch(e){}
+    }
     return;
   }
   if(sub)sub.textContent=`@${username}`;

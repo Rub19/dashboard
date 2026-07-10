@@ -10,7 +10,7 @@
   var STORAGE_KEY="ethone:smart-layouts:v1";
   var LAYOUT_KEY="ethone:dashboard-v4-layouts";
   var ACTIVE_LAYOUT_KEY="ethone:dashboard-v4-layout";
-  var timer=0,lastSignature="",lastApplied="";
+  var timer=0,hourTimer=0,lastSignature="",lastApplied="";
 
   function $(s,r){return (r||document).querySelector(s)}
   function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
@@ -347,7 +347,7 @@
     var A=actionRegistry();
     if(A&&typeof A.dispatch==="function")return A.dispatch(action,ctx||{source:"smart-layouts"});
     if(typeof window.runAction==="function")return window.runAction(action,ctx||{source:"smart-layouts"});
-    toast(t("Fonctionnalite bientot disponible","Feature coming soon"),"info");
+    toast(t("Cette commande ne peut pas etre executee dans ce contexte","This command cannot run in the current context"),"info");
     return false;
   }
   function renderBar(result,settings){
@@ -423,6 +423,16 @@
     }
   }
   function schedule(delay){clearTimeout(timer);timer=setTimeout(function(){evaluate(false)},delay||120)}
+  function scheduleHourRefresh(){
+    clearTimeout(hourTimer);
+    if(document.hidden)return;
+    var now=new Date();
+    var delay=(60-now.getMinutes())*60000-now.getSeconds()*1000-now.getMilliseconds()+500;
+    hourTimer=setTimeout(function(){
+      evaluate(false);
+      scheduleHourRefresh();
+    },Math.max(30000,delay));
+  }
   function bind(){
     document.addEventListener("click",function(e){
       var action=e.target.closest("[data-smart-action]");
@@ -464,15 +474,15 @@
     ["ethone:page-ready","ethone:workspace-change","ethone:workspace-update","ethone:space-change","ethone:space-update","ethone:smart-layout-refresh"].forEach(function(name){
       window.addEventListener(name,function(){schedule(160)});
     });
-    window.addEventListener("ethone:dashboard-ready",function(){schedule(1800)});
+    window.addEventListener("ethone:dashboard-ready",function(){schedule(1800);scheduleHourRefresh()});
     window.addEventListener("storage",function(e){if(!e.key||/ethone|pomo|np_track/.test(e.key))schedule(160)});
-    document.addEventListener("visibilitychange",function(){if(!document.hidden)schedule(120)});
-    setInterval(function(){if(!document.hidden)evaluate(false)},8000);
+    document.addEventListener("visibilitychange",function(){if(!document.hidden){schedule(120);scheduleHourRefresh()}else clearTimeout(hourTimer)});
   }
   function boot(){
     ensureLibrary();
     bind();
     schedule(400);
+    scheduleHourRefresh();
     setTimeout(function(){evaluate(true)},1600);
   }
 

@@ -154,7 +154,7 @@ body :where(button,.btn,.ethone-button,[role="button"]){
   border:2px solid color-mix(in srgb,var(--text-primary) 28%,transparent);
   border-top-color:var(--text-primary);
   border-radius:999px;
-  animation:ethoneComponentSpin .72s linear infinite;
+  animation:ethoneComponentSpin var(--motion-slower) linear infinite;
 }
 
 /* Inputs, selects and search */
@@ -432,7 +432,7 @@ select,
   background:linear-gradient(90deg,color-mix(in srgb,var(--surface-2) 80%,white 2%),color-mix(in srgb,var(--surface-3) 78%,white 7%),color-mix(in srgb,var(--surface-2) 80%,white 2%))!important;
   background-size:220% 100%!important;
   color:transparent!important;
-  animation:ethoneComponentSkeleton 1.25s linear infinite;
+  animation:ethoneComponentSkeleton var(--motion-slower) linear infinite;
 }
 
 .ethone-skeleton::selection,

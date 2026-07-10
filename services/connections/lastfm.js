@@ -39,11 +39,11 @@ let _lastfmNowPlaying=null;  // track key en cours "artist|title"
 let _lastfmTrackEnd=null;    // timestamp estimé de fin de piste
 
 function startLastfmAutoRefresh(){
-  if(_lastfmInterval)clearInterval(_lastfmInterval);
+  stopLastfmAutoRefresh();
   // Poll toutes les 10s pour détecter changement de piste rapidement
   _lastfmInterval=setInterval(async()=>{
     const p=curP();
-    if(!p?.state?.connections?.lastfm)return;
+    if(!p?.state?.connections?.lastfm){stopLastfmAutoRefresh();return;}
     // Fetch rapide juste le nowplaying pour voir si la piste a changé
     try{
       const data=await fetchLastfm('user.getrecenttracks',`user=${encodeURIComponent(p.state.connections.lastfm.username)}&limit=1`);
@@ -56,12 +56,17 @@ function startLastfmAutoRefresh(){
         _lastfmNowPlaying=key;
         await renderLastfmCard(p.state.connections.lastfm);
         // Aussi refresh le widget Now Playing sidebar
-        if(document.getElementById('sb-spotify-iframe-wrap')?.style.display==='block'){
+        if(document.getElementById('sb-spotify-iframe-wrap')?.style.display==='block'&&typeof refreshSpotifySidebar==='function'){
           refreshSpotifySidebar();
         }
       }
     }catch(e){}
   },10000); // check toutes les 10s (léger, juste 1 track)
+}
+
+function stopLastfmAutoRefresh(){
+  if(_lastfmInterval)clearInterval(_lastfmInterval);
+  _lastfmInterval=null;
 }
 
 async function renderLastfmCard(data){
@@ -184,6 +189,11 @@ async function refreshLastfm(){
 
 function disconnectLastfm(){
   const p=curP();if(!p)return;
+  stopLastfmAutoRefresh();
+  if(typeof stopSpotifyAutoRefresh==='function')stopSpotifyAutoRefresh();
+  if(typeof stopSpotifyPlaybackTimers==='function')stopSpotifyPlaybackTimers();
+  _lastfmNowPlaying=null;
+  _lastfmTrackEnd=null;
   delete p.state.connections.lastfm;
   saveStateNow();
   document.getElementById('lastfm-badge').textContent='Not connected';

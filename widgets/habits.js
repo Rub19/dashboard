@@ -15,7 +15,7 @@ function addHabit(){
 }
 function toggleHabitDay(habitId,dateStr){
   const p=curP();if(!p)return;
-  const h=p.state.habits.find(h=>h.id===habitId);if(!h)return;
+  const h=p.state.habits.find(h=>String(h.id)===String(habitId));if(!h)return;
   if(!h.log)h.log={};
   h.log[dateStr]=!h.log[dateStr];
   // Recalculer le streak depuis le log
@@ -25,7 +25,7 @@ function toggleHabitDay(habitId,dateStr){
 }
 function deleteHabit(id){
   const p=curP();if(!p)return;
-  p.state.habits=(p.state.habits||[]).filter(h=>h.id!==id);
+  p.state.habits=(p.state.habits||[]).filter(h=>String(h.id)!==String(id));
   saveStateNow();renderHabits();
 }
 function getWeekDays(){
@@ -44,6 +44,9 @@ function habitStreak(h){
   }
   return streak;
 }
+function habitInlineArg(value){
+  return String(value).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+}
 function renderHabits(){
   const p=curP();if(!p)return;const list=document.getElementById('habits-list');const streakEl=document.getElementById('habits-streaks');
   if(!list)return;
@@ -60,10 +63,11 @@ function renderHabits(){
       const isToday=d.getTime()===today.getTime();
       const done=h.log&&h.log[key];
       const isFuture=d>today;
-      return '<div class="habit-day'+(done?' done':'')+(isToday&&!done?' today':'')+'" onclick="'+(isFuture?'':('toggleHabitDay('+h.id+',\''+key+'\')'))+'" style="'+(isFuture?'opacity:.3;cursor:default':'')+'" title="'+escapeHTML(d.toLocaleDateString('en',{weekday:'short',month:'short',day:'numeric'}))+'">'+dayLabels[i]+'</div>';
+      const habitArg=habitInlineArg(h.id);
+      return '<div class="habit-day'+(done?' done':'')+(isToday&&!done?' today':'')+'" onclick="'+(isFuture?'':('toggleHabitDay(\''+habitArg+'\',\''+key+'\')'))+'" style="'+(isFuture?'opacity:.3;cursor:default':'')+'" title="'+escapeHTML(d.toLocaleDateString('en',{weekday:'short',month:'short',day:'numeric'}))+'">'+dayLabels[i]+'</div>';
     }).join('');
     const streak=habitStreak(h);
-    return '<div class="habit-row"><span style="font-size:18px">'+escapeHTML(h.icon)+'</span><span class="habit-name">'+escapeHTML(h.name)+'</span><div class="habit-days">'+dayBtns+'</div><span class="habit-streak">'+(streak>0?streak:'')+'</span><button class="habit-del" onclick="deleteHabit('+h.id+')">&times;</button></div>';
+    return '<div class="habit-row"><span style="font-size:18px">'+escapeHTML(h.icon)+'</span><span class="habit-name">'+escapeHTML(h.name)+'</span><div class="habit-days">'+dayBtns+'</div><span class="habit-streak">'+(streak>0?streak:'')+'</span><button class="habit-del" onclick="deleteHabit(\''+habitInlineArg(h.id)+'\')">&times;</button></div>';
   }).join('');
   if(streakEl){
     const sorted=[...habits].sort((a,b)=>habitStreak(b)-habitStreak(a));

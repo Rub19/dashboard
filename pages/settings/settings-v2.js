@@ -26,7 +26,7 @@
     exportx: { label: "Export", icon: "download", group: "Preferences", description: "Download your profile data in a portable JSON archive." },
     security: { label: "Security", icon: "shield-check", group: "Preferences", description: "Protect this profile and manage local access controls." },
     developer: { label: "Developer", icon: "terminal", group: "Advanced", description: "Inspect the runtime environment, diagnostics and local caches." },
-    experimental: { label: "Experimental", icon: "flask-conical", group: "Advanced", description: "Preview advanced capabilities that are still being evaluated." }
+    experimental: { label: "Experimental", icon: "flask-conical", group: "Advanced", description: "Preview advanced capabilities that are still being evaluated.", experimental: true }
   };
 
   var ORDER = [
@@ -36,11 +36,91 @@
     "developer", "experimental"
   ];
 
+  var FR_DESCRIPTIONS = {
+    profilee: "G\u00e9rez votre identit\u00e9, votre profil, votre avatar et la langue.",
+    account: "Consultez votre compte ETHONE, vos identifiants et la session active.",
+    theme: "Ajustez le th\u00e8me, la densit\u00e9, les animations et l'apparence globale.",
+    workspaces: "Organisez vos espaces et choisissez le contexte ouvert par ETHONE.",
+    widgets: "G\u00e9rez les widgets du dashboard, leur visibilit\u00e9 et leur disposition.",
+    brain: "Configurez ETHONE AI, ses providers, sa m\u00e9moire et son comportement.",
+    automation: "G\u00e9rez les r\u00e8gles qui automatisent vos actions r\u00e9p\u00e9titives.",
+    marketplace: "Consultez le contenu install\u00e9 et d\u00e9couvrez les extensions ETHONE.",
+    plugins: "Connectez vos services et g\u00e9rez les outils disponibles dans ETHONE.",
+    notifications: "Choisissez quand et comment ETHONE peut attirer votre attention.",
+    keyboard: "Consultez et personnalisez les raccourcis clavier de l'application.",
+    backup: "Sauvegardez, synchronisez ou restaurez une copie de vos donn\u00e9es.",
+    cloud: "Synchronisez vos espaces, widgets, notes, t\u00e2ches et pr\u00e9f\u00e9rences.",
+    importx: "Importez une archive de donn\u00e9es compatible avec ETHONE.",
+    exportx: "T\u00e9l\u00e9chargez les donn\u00e9es de votre profil dans un format portable.",
+    security: "Prot\u00e9gez ce profil et g\u00e9rez les contr\u00f4les d'acc\u00e8s locaux.",
+    developer: "Inspectez le runtime, les diagnostics et les caches locaux.",
+    experimental: "Pr\u00e9visualisez les fonctions avanc\u00e9es encore en \u00e9valuation."
+  };
+
+  var GROUP_COPY = {
+    fr: { Personal: "Personnel", System: "Syst\u00e8me", Preferences: "Pr\u00e9f\u00e9rences", Advanced: "Avanc\u00e9" },
+    es: { Personal: "Personal", System: "Sistema", Preferences: "Preferencias", Advanced: "Avanzado" },
+    de: { Personal: "Pers\u00f6nlich", System: "System", Preferences: "Pr\u00e4ferenzen", Advanced: "Erweitert" }
+  };
+
   var currentTab = "profilee";
   var originalSwitch = null;
+  var settingsClockTimer = 0;
 
   function qs(selector, root) {
     return (root || document).querySelector(selector);
+  }
+
+  function translated(key, fallback) {
+    try {
+      if (typeof window.t === "function") {
+        var value = window.t(key);
+        if (value && value !== key) return value;
+      }
+    } catch (error) {}
+    return fallback;
+  }
+
+  function currentLanguage() {
+    return String(window._lang || document.documentElement.lang || "en").slice(0, 2).toLowerCase();
+  }
+
+  function experimentalEnabled() {
+    try {
+      return new URLSearchParams(window.location.search || "").get("experimental") === "1"
+        || localStorage.getItem("ethone:experimental-enabled") === "1";
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function localizedGroup(group) {
+    var map = GROUP_COPY[currentLanguage()];
+    return map && map[group] || group;
+  }
+
+  function shellCopy() {
+    var language = currentLanguage();
+    if (language === "fr") return {
+      noMatch: "Aucun param\u00e8tre correspondant.", saved: "Enregistr\u00e9 automatiquement",
+      live: "Aper\u00e7u en direct", system: "Votre syst\u00e8me ETHONE",
+      preview: "Aper\u00e7u discret des r\u00e9glages actuels.", operational: "Pr\u00e9f\u00e9rences actives"
+    };
+    if (language === "es") return {
+      noMatch: "Ningun ajuste coincide.", saved: "Guardado automaticamente",
+      live: "Vista previa", system: "Tu sistema ETHONE",
+      preview: "Vista previa de los ajustes actuales.", operational: "Preferencias activas"
+    };
+    if (language === "de") return {
+      noMatch: "Keine passende Einstellung.", saved: "Automatisch gespeichert",
+      live: "Live-Vorschau", system: "Dein ETHONE-System",
+      preview: "Vorschau der aktuellen Einstellungen.", operational: "Einstellungen aktiv"
+    };
+    return {
+      noMatch: "No matching setting.", saved: "Saved automatically",
+      live: "Live preview", system: "Your ETHONE system",
+      preview: "A quiet preview of the current interface settings.", operational: "Preferences active"
+    };
   }
 
   function tabFromButton(button) {
@@ -84,6 +164,27 @@
       }) + '</strong><span>' + String(subtitle).replace(/[&<>"]/g, function (char) {
         return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[char];
       }) + '</span></div>';
+    updatePreviewSummary();
+  }
+
+  function updatePreviewSummary() {
+    var profile = safeProfile();
+    var state = profile.state || {};
+    var tasks = Array.isArray(state.todos) ? state.todos : [];
+    var pending = tasks.filter(function (task) { return task && !task.done; });
+    var notes = Array.isArray(state.notes) ? state.notes : [];
+    var focus = String(state.dailyFocus || (pending[0] && (pending[0].text || pending[0].title)) || "").trim();
+    var language = currentLanguage();
+    var brain = qs("#settings-v2-preview-brain");
+    var focusEl = qs("#settings-v2-preview-focus");
+    var today = qs("#settings-v2-preview-today");
+    if (brain) brain.textContent = pending.length
+      ? (language === "fr" ? pending.length + " priorit\u00e9(s) ouverte(s)." : pending.length + " open priorities.")
+      : (language === "fr" ? "Aucune t\u00e2che urgente." : "No urgent tasks.");
+    if (focusEl) focusEl.textContent = focus || (language === "fr" ? "Votre espace est pr\u00eat." : "Your workspace is ready.");
+    if (today) today.textContent = language === "fr"
+      ? pending.length + " t\u00e2che(s) ouverte(s) \u00b7 " + notes.length + " note(s)"
+      : pending.length + " open task(s) \u00b7 " + notes.length + " note(s)";
   }
 
   function buildNav(nav) {
@@ -97,6 +198,10 @@
       byTab[tab] = button;
       button.setAttribute("data-settings-tab", tab);
       button.setAttribute("title", META[tab].label);
+      var available = !META[tab].experimental || experimentalEnabled();
+      button.hidden = !available;
+      button.inert = !available;
+      button.setAttribute("aria-hidden", available ? "false" : "true");
       var icon = qs(".settings-nav-icon", button);
       if (icon) icon.innerHTML = iconMarkup(META[tab].icon);
       var label = button.querySelector("span:last-child");
@@ -109,10 +214,10 @@
       '<button class="settings-v2-back" type="button" aria-label="Back to dashboard" title="Back to dashboard">' +
         iconMarkup("arrow-left") +
       '</button>' +
-      '<h2 class="settings-v2-nav-title">Settings</h2>' +
+      '<h2 class="settings-v2-nav-title">' + translated("settings", "Settings") + '</h2>' +
       '<label class="settings-v2-search">' +
         iconMarkup("search") +
-        '<input type="search" id="settings-v2-search-input" placeholder="Search settings" autocomplete="off" aria-label="Search settings">' +
+        '<input type="search" id="settings-v2-search-input" placeholder="' + translated("search_placeholder", "Search settings") + '" autocomplete="off" aria-label="' + translated("search_placeholder", "Search settings") + '">' +
         '<span class="settings-v2-search-kbd">/</span>' +
       '</label>';
 
@@ -121,12 +226,12 @@
     var lastGroup = "";
     ORDER.forEach(function (tab) {
       var button = byTab[tab];
-      if (!button) return;
+      if (!button || button.hidden) return;
       var group = META[tab].group;
       if (group !== lastGroup) {
         var label = document.createElement("div");
         label.className = "settings-v2-group-label";
-        label.textContent = group;
+        label.textContent = localizedGroup(group);
         list.appendChild(label);
         lastGroup = group;
       }
@@ -134,7 +239,7 @@
     });
     var empty = document.createElement("div");
     empty.className = "settings-v2-nav-empty";
-    empty.textContent = "No matching setting.";
+    empty.textContent = shellCopy().noMatch;
     list.appendChild(empty);
 
     var foot = document.createElement("div");
@@ -144,6 +249,20 @@
     nav.prepend(head);
     nav.appendChild(list);
     nav.appendChild(foot);
+
+    // Inline handlers are retained for backward compatibility, but the
+    // settings shell owns one stable delegated listener. This also works in
+    // environments where inline script execution is restricted.
+    nav.addEventListener("click", function (event) {
+      var button = event.target && event.target.closest
+        ? event.target.closest(".settings-nav-item")
+        : null;
+      if (!button || !nav.contains(button)) return;
+      var tab = tabFromButton(button);
+      if (!tab || typeof window.switchSettingsTab !== "function") return;
+      event.preventDefault();
+      window.switchSettingsTab(tab, button);
+    });
 
     qs(".settings-v2-back", nav).addEventListener("click", function () {
       var Actions = window.Ethone && window.Ethone.get && window.Ethone.get("actions");
@@ -157,11 +276,12 @@
       var visibleCount = 0;
       ORDER.forEach(function (tab) {
         var button = byTab[tab];
-        if (!button) return;
+        if (!button || button.getAttribute("aria-hidden") === "true") return;
         var match = !query ||
           META[tab].label.toLowerCase().indexOf(query) !== -1 ||
           META[tab].description.toLowerCase().indexOf(query) !== -1 ||
-          META[tab].group.toLowerCase().indexOf(query) !== -1;
+          META[tab].group.toLowerCase().indexOf(query) !== -1 ||
+          String(button.textContent || "").toLowerCase().indexOf(query) !== -1;
         button.hidden = !match;
         if (match) visibleCount += 1;
       });
@@ -196,10 +316,10 @@
     head.className = "settings-v2-page-head";
     head.innerHTML =
       '<div class="settings-v2-page-title-wrap">' +
-        '<h1 class="settings-v2-page-title" id="settings-v2-title">Profile</h1>' +
+        '<h1 class="settings-v2-page-title" id="settings-v2-title">' + translated("settings_general", "Profile") + '</h1>' +
         '<p class="settings-v2-page-description" id="settings-v2-description"></p>' +
       '</div>' +
-      '<div class="settings-v2-save-state"><span class="settings-v2-save-dot"></span><span>Saved automatically</span></div>';
+      '<div class="settings-v2-save-state"><span class="settings-v2-save-dot"></span><span>' + shellCopy().saved + '</span></div>';
     content.prepend(head);
   }
 
@@ -209,9 +329,9 @@
     aside.className = "settings-v2-context";
     aside.setAttribute("aria-label", "ETHONE live preview");
     aside.innerHTML =
-      '<div class="settings-v2-context-label">Live preview</div>' +
-      '<h2 class="settings-v2-context-title">Your ETHONE system</h2>' +
-      '<p class="settings-v2-context-copy" id="settings-v2-context-copy">A quiet preview of the current interface settings.</p>' +
+      '<div class="settings-v2-context-label">' + shellCopy().live + '</div>' +
+      '<h2 class="settings-v2-context-title">' + shellCopy().system + '</h2>' +
+      '<p class="settings-v2-context-copy" id="settings-v2-context-copy">' + shellCopy().preview + '</p>' +
       '<div class="settings-v2-preview">' +
         '<div class="settings-v2-preview-bar"><span class="settings-v2-preview-mark">E</span><span>ETHONE</span></div>' +
         '<div class="settings-v2-preview-body">' +
@@ -227,22 +347,23 @@
             '<div class="settings-v2-preview-date" id="settings-v2-preview-date">ETHONE is ready</div>' +
             '<div class="settings-v2-mini-card brain">' +
               '<div class="settings-v2-mini-label">Brain</div>' +
-              '<div class="settings-v2-mini-title">Your workspace is organized and ready.</div>' +
+              '<div class="settings-v2-mini-title" id="settings-v2-preview-brain">Your workspace is ready.</div>' +
               '<div class="settings-v2-mini-progress"><span></span></div>' +
             '</div>' +
             '<div class="settings-v2-mini-card">' +
               '<div class="settings-v2-mini-label">Focus</div>' +
-              '<div class="settings-v2-mini-title">Continue your highest-priority task.</div>' +
+              '<div class="settings-v2-mini-title" id="settings-v2-preview-focus">Your workspace is ready.</div>' +
             '</div>' +
             '<div class="settings-v2-mini-card">' +
               '<div class="settings-v2-mini-label">Today</div>' +
-              '<div class="settings-v2-mini-title">3 tasks · 1 workspace update</div>' +
+              '<div class="settings-v2-mini-title" id="settings-v2-preview-today">0 open tasks · 0 notes</div>' +
             '</div>' +
           '</div>' +
         '</div>' +
       '</div>' +
-      '<div class="settings-v2-system"><span></span>All systems operational</div>';
+      '<div class="settings-v2-system"><span></span>' + shellCopy().operational + '</div>';
     layout.appendChild(aside);
+    updatePreviewSummary();
   }
 
   function updateClock() {
@@ -262,19 +383,45 @@
     }
   }
 
-  function updateHead(tab) {
+  function settingsPageActive() {
+    var page = qs("#page-settings");
+    return !!(page && page.classList.contains("active") && !document.hidden);
+  }
+
+  function startSettingsClock() {
+    if (settingsClockTimer || !settingsPageActive()) return;
+    updateClock();
+    settingsClockTimer = setInterval(updateClock, 60000);
+    window.__ethoneSettingsV2Clock = settingsClockTimer;
+  }
+
+  function stopSettingsClock() {
+    if (settingsClockTimer) clearInterval(settingsClockTimer);
+    settingsClockTimer = 0;
+    window.__ethoneSettingsV2Clock = null;
+  }
+
+  function syncSettingsClock() {
+    if (settingsPageActive()) startSettingsClock();
+    else stopSettingsClock();
+  }
+
+  function updateHead(tab, options) {
     var meta = META[tab] || META.profilee;
     currentTab = tab;
     var title = qs("#settings-v2-title");
     var description = qs("#settings-v2-description");
     var context = qs("#settings-v2-context-copy");
-    if (title) title.textContent = meta.label;
-    if (description) description.textContent = meta.description;
-    if (context) context.textContent = tab === "theme"
-      ? "Changes appear instantly across the ETHONE interface."
-      : "This preview stays synchronized with your personal operating system.";
+    var navLabel = qs('.settings-nav-item[data-settings-tab="' + tab + '"] span:last-child');
+    if (title) title.textContent = navLabel && navLabel.textContent.trim() ? navLabel.textContent.trim() : meta.label;
+    if (description) description.textContent = currentLanguage() === "fr" && FR_DESCRIPTIONS[tab]
+      ? FR_DESCRIPTIONS[tab]
+      : meta.description;
+    if (context) context.textContent = currentLanguage() === "fr"
+      ? (tab === "theme" ? "Les changements apparaissent instantan\u00e9ment dans ETHONE." : "Cet aper\u00e7u reste synchronis\u00e9 avec votre syst\u00e8me personnel.")
+      : (tab === "theme" ? "Changes appear instantly across the ETHONE interface." : "This preview stays synchronized with your personal operating system.");
     var content = qs("#page-settings .settings-content");
-    if (content && window.matchMedia("(max-width: 760px)").matches) {
+    if (content && options && options.reveal && window.matchMedia("(max-width: 760px)").matches) {
       content.scrollIntoView({ block: "start", behavior: "smooth" });
     }
   }
@@ -283,9 +430,9 @@
     if (window.switchSettingsTab && window.switchSettingsTab.__settingsV2Wrapped) return;
     if (typeof window.switchSettingsTab !== "function") return;
     originalSwitch = window.switchSettingsTab;
-    var wrapped = function (tab, element) {
-      originalSwitch(tab, element);
-      updateHead(tab);
+    var wrapped = function (tab, element, options) {
+      originalSwitch(tab, element, options);
+      updateHead(tab, { reveal: !options || options.reveal !== false });
     };
     wrapped.__settingsV2Wrapped = true;
     window.switchSettingsTab = wrapped;
@@ -305,7 +452,9 @@
     wrapSwitchHandler();
 
     var active = qs(".settings-nav-item.active", nav);
-    updateHead(tabFromButton(active) || currentTab);
+    // Opening Settings starts at the category list on mobile. Only an
+    // explicit category selection should reveal the detail pane.
+    updateHead(tabFromButton(active) || currentTab, { reveal: false });
     updateClock();
     renderProfileSummary();
 
@@ -313,9 +462,7 @@
       if (window.lucide && !window.__lucideFailed) window.lucide.createIcons();
     } catch (error) {}
 
-    if (!window.__ethoneSettingsV2Clock) {
-      window.__ethoneSettingsV2Clock = setInterval(updateClock, 60000);
-    }
+    syncSettingsClock();
   }
 
   if (document.readyState === "loading") {
@@ -329,6 +476,13 @@
       mount();
       renderProfileSummary();
       updateClock();
-    }
+      startSettingsClock();
+    } else stopSettingsClock();
   });
+  document.addEventListener("visibilitychange", syncSettingsClock);
+  window.ETHONESettingsV2Lifecycle = {
+    start: startSettingsClock,
+    stop: stopSettingsClock,
+    stats: function () { return { active: !!settingsClockTimer }; }
+  };
 }());

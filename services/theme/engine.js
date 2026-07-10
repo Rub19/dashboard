@@ -267,15 +267,44 @@ function applyFullTheme(theme){
 function applyThemeTokens(tokens,theme){
   var r=document.documentElement.style;
   var accent=tokens.accent;
+  var accentHover=tokens.accentHover||accent;
+  var accentActive=tokens.accentActive||accent;
   var accentRgb=tokens.accentRgb||hexToRgbTriplet(accent);
+  var accentHoverRgb=hexToRgbTriplet(accentHover);
+  var accentActiveRgb=hexToRgbTriplet(accentActive);
+  var success=tokens.success||"#22c55e";
+  var warning=tokens.warning||"#f59e0b";
+  var error=tokens.error||tokens.danger||"#ef4444";
+  var info=tokens.info||accentHover;
+  var successRgb=hexToRgbTriplet(success);
+  var warningRgb=hexToRgbTriplet(warning);
+  var errorRgb=hexToRgbTriplet(error);
+  var infoRgb=hexToRgbTriplet(info);
   var glowAlpha=typeof tokens.glow==="number"?tokens.glow:.2;
   var shadowAlpha=typeof tokens.shadow==="number"?tokens.shadow:.48;
+  var actionPair=window.ETHONEColorContrast&&typeof window.ETHONEColorContrast.actionPair==="function"
+    ?window.ETHONEColorContrast.actionPair(accent,"#ffffff",4.5)
+    :{base:accentActive,hover:accentActive};
 
   setVars({
+    "--color-white-rgb":"255,255,255",
+    "--color-black-rgb":"0,0,0",
+    "--primary":accent,
+    "--primary-hover":accentHover,
+    "--primary-active":accentActive,
+    "--primary-rgb":accentRgb,
+    "--primary-hover-rgb":accentHoverRgb,
+    "--primary-active-rgb":accentActiveRgb,
+    "--on-primary":"#ffffff",
+    "--text-on-accent":"var(--on-primary)",
     "--surface-0":tokens.bg,
     "--surface-1":tokens.surface1,
     "--surface-2":tokens.surface2,
     "--surface-3":tokens.surface3,
+    "--surface-0-rgb":hexToRgbTriplet(normalizeHex(tokens.bg)||"#09090b"),
+    "--surface-1-rgb":hexToRgbTriplet(normalizeHex(tokens.surface1)||"#101014"),
+    "--surface-2-rgb":hexToRgbTriplet(normalizeHex(tokens.surface2)||"#15151a"),
+    "--surface-3-rgb":hexToRgbTriplet(normalizeHex(tokens.surface3)||"#17171c"),
     "--surface-raised":tokens.raised,
     "--surface-hover":tokens.hover,
     "--surface":tokens.surface1,
@@ -283,32 +312,70 @@ function applyThemeTokens(tokens,theme){
     "--surface-switch":tokens.switch,
     "--surface-translucent":toRgba(tokens.bg,Math.max(.72,Math.min(1,theme.opacity||tokens.opacity||1))),
     "--text-primary":tokens.text,
+    "--text-primary-rgb":hexToRgbTriplet(normalizeHex(tokens.text)||"#f5f5f2"),
     "--text-strong":tokens.strong,
+    "--text-strong-rgb":hexToRgbTriplet(normalizeHex(tokens.strong)||"#d7d7dc"),
     "--text-secondary":tokens.secondary,
+    "--text-secondary-rgb":hexToRgbTriplet(normalizeHex(tokens.secondary)||"#aaaab2"),
     "--text-tertiary":tokens.tertiary,
-    "--text-accent":tokens.accentHover,
+    "--text-tertiary-rgb":hexToRgbTriplet(normalizeHex(tokens.tertiary)||"#85858f"),
+    "--text-accent":accentHover,
+    "--text-error":"#fca5a5",
+    "--text-error-strong":"#fecaca",
+    "--text-danger":"var(--text-error)",
+    "--text-danger-strong":"var(--text-error-strong)",
+    "--border":tokens.border,
     "--border-primary":tokens.border,
     "--border-secondary":tokens.border2,
     "--border-hover":alphaFromColor(tokens.border2,.28),
     "--border-focus":"rgba("+accentRgb+",.76)",
     "--accent":accent,
-    "--accent-hover":tokens.accentHover,
-    "--accent-active":tokens.accentActive,
-    "--accent-contrast":tokens.accentActive,
-    "--accent-contrast-hover":tokens.accentHover,
+    "--accent-hover":accentHover,
+    "--accent-active":accentActive,
+    "--accent-rgb":accentRgb,
+    "--accent-hover-rgb":accentHoverRgb,
+    "--accent-active-rgb":accentActiveRgb,
+    "--accent-contrast":actionPair.base,
+    "--accent-contrast-hover":actionPair.hover,
+    "--primary-soft":"rgba("+accentRgb+",.13)",
+    "--primary-soft-hover":"rgba("+accentRgb+",.18)",
+    "--primary-border":"rgba("+accentRgb+",.32)",
+    "--primary-shadow":"rgba("+accentRgb+",.22)",
     "--accent-soft":"rgba("+accentRgb+",.13)",
     "--accent-soft-hover":"rgba("+accentRgb+",.18)",
     "--accent-border":"rgba("+accentRgb+",.32)",
     "--accent-shadow":"rgba("+accentRgb+",.22)",
-    "--accent-light":tokens.accentHover,
-    "--accent-h":tokens.accentActive,
+    "--accent-light":accentHover,
+    "--accent-h":accentActive,
     "--accent-glow":"rgba("+accentRgb+","+Math.max(.1,glowAlpha)+")",
     "--accent-subtle":"rgba("+accentRgb+",.10)",
-    "--accent-rgb":accentRgb,
     "--eh-accent":"var(--accent)",
     "--eh-accent-rgb":accentRgb,
-    "--grad-primary":"linear-gradient(135deg,rgb("+accentRgb+"),"+tokens.accentActive+")",
-    "--grad-accent":"linear-gradient(135deg,rgb("+accentRgb+"),"+tokens.accentActive+")",
+    "--success":success,
+    "--success-rgb":successRgb,
+    "--success-soft":"rgba("+successRgb+",.12)",
+    "--success-border":"rgba("+successRgb+",.34)",
+    "--warning":warning,
+    "--warning-rgb":warningRgb,
+    "--warning-soft":"rgba("+warningRgb+",.12)",
+    "--warning-border":"rgba("+warningRgb+",.34)",
+    "--error":error,
+    "--error-rgb":errorRgb,
+    "--error-soft":"rgba("+errorRgb+",.10)",
+    "--error-soft-hover":"rgba("+errorRgb+",.16)",
+    "--error-border":"rgba("+errorRgb+",.34)",
+    "--error-border-hover":"rgba("+errorRgb+",.52)",
+    "--danger":"var(--error)",
+    "--danger-soft":"var(--error-soft)",
+    "--danger-soft-hover":"var(--error-soft-hover)",
+    "--danger-border":"var(--error-border)",
+    "--danger-border-hover":"var(--error-border-hover)",
+    "--info":info,
+    "--info-rgb":infoRgb,
+    "--info-soft":"rgba("+infoRgb+",.12)",
+    "--info-border":"rgba("+infoRgb+",.34)",
+    "--grad-primary":"linear-gradient(135deg,rgb("+accentRgb+"),"+accentActive+")",
+    "--grad-accent":"linear-gradient(135deg,rgb("+accentRgb+"),"+accentActive+")",
     "--grad-card":"linear-gradient(135deg,rgba("+accentRgb+",.08),rgba("+accentRgb+",.04))",
     "--bg":tokens.bg,
     "--bg-rgb":hexToRgbTriplet(normalizeHex(tokens.bg)||"#09090b"),
@@ -332,6 +399,27 @@ function applyThemeTokens(tokens,theme){
     "--shadow-control":"0 calc(8px * var(--theme-glow-scale)) calc(22px * var(--theme-glow-scale)) rgba("+accentRgb+",.18)",
     "--shadow-control-hover":"0 calc(10px * var(--theme-glow-scale)) calc(28px * var(--theme-glow-scale)) rgba("+accentRgb+",.24)",
     "--overlay-backdrop":"rgba(0,0,0,"+(tokens.id==="glass"?".58":".68")+")",
+    "--glass-blur":"calc(18px * var(--theme-blur-scale))",
+    "--glass-overlay-blur":"var(--glass-blur)",
+    "--glass-saturation":tokens.id==="glass"?"1.18":"1.16",
+    "--glass-brightness":tokens.id==="oled"?"1":"1.02",
+    "--glass-filter":"blur(var(--glass-blur)) saturate(var(--glass-saturation)) brightness(var(--glass-brightness))",
+    "--glass-filter-overlay":"blur(var(--glass-overlay-blur)) saturate(var(--glass-saturation)) brightness(var(--glass-brightness))",
+    "--glass-card-opacity":Math.max(.68,Math.min(.92,(theme.opacity!=null?theme.opacity:tokens.opacity)*.82)).toFixed(3),
+    "--glass-panel-opacity":Math.max(.72,Math.min(.94,(theme.opacity!=null?theme.opacity:tokens.opacity)*.86)).toFixed(3),
+    "--glass-raised-opacity":Math.max(.78,Math.min(.96,(theme.opacity!=null?theme.opacity:tokens.opacity)*.90)).toFixed(3),
+    "--glass-overlay-opacity":tokens.id==="glass"?".56":".66",
+    "--glass-overlay-opacity-soft":tokens.id==="glass"?".42":".52",
+    "--glass-surface":"linear-gradient(180deg,rgba(var(--surface-2-rgb),var(--glass-card-opacity)),rgba(var(--surface-1-rgb),var(--glass-card-opacity)))",
+    "--glass-surface-flat":"rgba(var(--surface-1-rgb),var(--glass-card-opacity))",
+    "--glass-surface-panel":"linear-gradient(180deg,rgba(var(--surface-2-rgb),var(--glass-panel-opacity)),rgba(var(--surface-1-rgb),var(--glass-panel-opacity)))",
+    "--glass-surface-raised":"linear-gradient(180deg,rgba(var(--surface-3-rgb),var(--glass-raised-opacity)),rgba(var(--surface-1-rgb),var(--glass-raised-opacity)))",
+    "--glass-control":"rgba(var(--surface-3-rgb),"+Math.max(.64,Math.min(.86,(theme.opacity!=null?theme.opacity:tokens.opacity)*.74)).toFixed(3)+")",
+    "--glass-border":"rgba(255,255,255,.095)",
+    "--glass-border-strong":"rgba(255,255,255,.15)",
+    "--glass-shadow":"0 22px 70px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.055)",
+    "--glass-shadow-soft":"0 12px 38px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.045)",
+    "--glass-page-bg":"radial-gradient(circle at 18% -12%,rgba("+accentRgb+",.11),transparent 34%),radial-gradient(circle at 84% 0%,rgba("+accentRgb+",.07),transparent 30%),linear-gradient(180deg,var(--surface-0),rgba(var(--surface-0-rgb),.985))",
     "--theme-preview-bg":tokens.bg,
     "--theme-preview-surface":tokens.surface1
   });
@@ -344,12 +432,25 @@ function applyThemeTokens(tokens,theme){
 
 function applyCustomAccentTokens(hex){
   var rgb=hexToRgbTriplet(hex);
+  var actionPair=window.ETHONEColorContrast&&typeof window.ETHONEColorContrast.actionPair==="function"
+    ?window.ETHONEColorContrast.actionPair(hex,"#ffffff",4.5)
+    :{base:hex,hover:hex};
   setVars({
+    "--primary":hex,
+    "--primary-hover":hex,
+    "--primary-active":hex,
+    "--primary-rgb":rgb,
+    "--primary-hover-rgb":rgb,
+    "--primary-active-rgb":rgb,
     "--accent":hex,
     "--accent-hover":hex,
     "--accent-active":hex,
-    "--accent-light":hex,
     "--accent-rgb":rgb,
+    "--accent-hover-rgb":rgb,
+    "--accent-active-rgb":rgb,
+    "--accent-contrast":actionPair.base,
+    "--accent-contrast-hover":actionPair.hover,
+    "--accent-light":hex,
     "--eh-accent":"var(--accent)",
     "--eh-accent-rgb":rgb,
     "--grad-primary":"linear-gradient(135deg,rgb("+rgb+"),rgb("+rgb+"))",
@@ -361,6 +462,10 @@ function applyCustomAccentTokens(hex){
     "--accent-soft-hover":"rgba("+rgb+",.18)",
     "--accent-border":"rgba("+rgb+",.32)",
     "--accent-shadow":"rgba("+rgb+",.22)",
+    "--primary-soft":"rgba("+rgb+",.13)",
+    "--primary-soft-hover":"rgba("+rgb+",.18)",
+    "--primary-border":"rgba("+rgb+",.32)",
+    "--primary-shadow":"rgba("+rgb+",.22)",
     "--border3":"rgba("+rgb+",.22)",
     "--border-focus":"rgba("+rgb+",.76)",
     "--glow-blue":"0 0 24px rgba("+rgb+",.25)",
@@ -406,6 +511,7 @@ function alphaFromColor(color,fallback){
 }
 
 function dispatchThemeChanged(name,value){
+  try{if(window.ETHONEStateConsistency&&window.ETHONEStateConsistency.setTheme)window.ETHONEStateConsistency.setTheme(getTheme());}catch(e){}
   try{window.dispatchEvent(new CustomEvent("ethone:theme-changed",{detail:{name:name,value:value,theme:getTheme()}}));}catch(e){}
 }
 

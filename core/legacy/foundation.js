@@ -53,8 +53,14 @@ function updateAllLangDropdowns(){
 }
 
 function setLang(lang){
+  lang=String(lang||'fr').slice(0,2).toLowerCase();
+  if(!['fr','en','es','de'].includes(lang))lang='fr';
   _lang = lang;
-  localStorage.setItem('nexus_lang', lang);
+  try{
+    document.documentElement.lang=lang;
+    localStorage.setItem('nexus_lang', lang);
+    localStorage.setItem('ethone_lang', lang);
+  }catch(e){}
   applyI18n();
   updateAllLangDropdowns();
   if(typeof renderSidebarNav==='function') renderSidebarNav();
@@ -63,6 +69,7 @@ function setLang(lang){
     const tab=document.getElementById('pomo-tab-'+i);
     if(tab) tab.textContent=labels[i];
   });
+  try{window.dispatchEvent(new CustomEvent('ethone:language-changed',{detail:{language:lang}}))}catch(e){}
 }
 
 function applyI18n(){
@@ -145,7 +152,8 @@ let _isAdmin=false;
 let _ambientFrame=null;
 let _bgFrame=null;
 let _bgParticles=[];
-let _lang=localStorage.getItem('nexus_lang')||'fr';
+let _lang=localStorage.getItem('nexus_lang')||localStorage.getItem('ethone_lang')||'fr';
+try{document.documentElement.lang=_lang}catch(e){}
 let _bioSaveTO=null;
 let _socialSaveTO=null;
 let _npProgressInterval=null;

@@ -14,12 +14,12 @@
   pointer-events:auto;
   opacity:0;
   transform:translateY(10px) scale(.985);
-  border:1px solid rgba(139,92,246,.22);
+  border:1px solid rgba(var(--primary-rgb),.22);
   border-radius:18px;
   background:
-    radial-gradient(circle at 12% 0%,rgba(139,92,246,.18),transparent 42%),
-    linear-gradient(180deg,rgba(20,18,28,.94),rgba(12,12,16,.94));
-  box-shadow:0 18px 54px rgba(0,0,0,.42),0 0 0 1px rgba(255,255,255,.035) inset;
+    radial-gradient(circle at 12% 0%,rgba(var(--primary-rgb),.18),transparent 42%),
+    linear-gradient(180deg,rgba(var(--surface-2-rgb),.94),rgba(var(--surface-0-rgb),.94));
+  box-shadow:0 18px 54px rgba(var(--color-black-rgb),.42),0 0 0 1px rgba(var(--color-white-rgb),.035) inset;
   padding:13px;
   transition:opacity .18s ease,transform .18s ease,border-color .18s ease;
   backdrop-filter:blur(calc(18px * var(--theme-blur-scale,1))) saturate(1.15);
@@ -37,7 +37,7 @@
   margin-bottom:8px;
 }
 .aie-suggestion-top span{
-  color:rgba(196,181,253,.82);
+  color:rgba(var(--primary-hover-rgb),.82);
   font:800 9px/1 var(--mono,'JetBrains Mono',monospace);
   letter-spacing:.14em;
   text-transform:uppercase;
@@ -45,22 +45,22 @@
 .aie-suggestion-top button{
   width:24px;
   height:24px;
-  border:1px solid rgba(255,255,255,.08);
+  border:1px solid rgba(var(--color-white-rgb),.08);
   border-radius:9px;
-  background:rgba(255,255,255,.04);
-  color:rgba(255,255,255,.48);
+  background:rgba(var(--color-white-rgb),.04);
+  color:rgba(var(--color-white-rgb),.48);
   cursor:pointer;
 }
 .aie-suggestion-card strong{
   display:block;
-  color:#fff;
+  color:var(--text-primary);
   font-size:13.5px;
   line-height:1.25;
   letter-spacing:-.01em;
 }
 .aie-suggestion-card p{
   margin:6px 0 0;
-  color:rgba(248,247,255,.62);
+  color:rgba(var(--text-primary-rgb),.62);
   font-size:12px;
   line-height:1.48;
 }
@@ -73,12 +73,12 @@
 .aie-suggestion-options{
   margin-top:10px;
   padding-top:10px;
-  border-top:1px solid rgba(255,255,255,.06);
+  border-top:1px solid rgba(var(--color-white-rgb),.06);
 }
 .aie-suggestion-options .aie-chip{
   height:28px;
   font-size:11px;
-  background:rgba(255,255,255,.035);
+  background:rgba(var(--color-white-rgb),.035);
 }
 @media(max-width:760px){
   .aie-suggestion-stack{

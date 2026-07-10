@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>ETHONE Memory Lifecycle Harness</title>
+  <style>
+    body { margin: 0; background: #09090b; color: #f4f4f5; font: 14px/1.5 system-ui, sans-serif; }
+    main { max-width: 960px; margin: 32px auto; padding: 24px; }
+    pre { padding: 20px; border: 1px solid #27272a; background: #111113; white-space: pre-wrap; }
+    iframe { position: fixed; width: 1280px; height: 800px; left: -20000px; top: 0; border: 0; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>ETHONE Memory Lifecycle Harness</h1>
+    <pre id="result" aria-live="polite">RUNNING</pre>
+  </main>
+  <iframe id="app" src="../index.html?ethone-memory-harness=1" title="ETHONE test runtime"></iframe>
+  <script>
+    (function () {
+      "use strict";
+      var output = document.getElementById("result");
+      var frame = document.getElementById("app");
+      function wait(ms) { return new Promise(function (resolve) { setTimeout(resolve, ms); }); }
+      function waitFor(check, timeout) {
+        var started = Date.now();
+        return new Promise(function (resolve, reject) {
+          (function poll() {
+            try { if (check()) { resolve(); return; } } catch (error) {}
+            if (Date.now() - started > timeout) { reject(new Error("Harness timeout")); return; }
+            setTimeout(poll, 25);
+          }());
+        });
+      }
+      function setPage(runtime, page) {
+        var doc = runtime.document;
+        Array.prototype.forEach.call(doc.querySelectorAll(".tab-content"), function (node) {
+          var active = node.id === "page-" + page;
+          node.classList.toggle("active", active);
+          node.setAttribute("aria-hidden", active ? "false" : "true");
+          try { node.inert = !active; } catch (error) {}
+        });
+        runtime.dispatchEvent(new runtime.CustomEvent("ethone:page-ready", { detail: { page: page } }));
+      }
+      async function loadAndActivate(runtime, page) {
+        setPage(runtime, page);
+        await runtime.ETHONELazyModules.loadForPage(page);
+        setPage(runtime, page);
+        await wait(8);
+      }
+      async function cycle(runtime, page, count) {
+        for (var index = 0; index < count; index += 1) {
+          setPage(runtime, page);
+          await wait(2);
+          setPage(runtime, "dashboard");
+        }
+      }
+      async function run() {
+        await waitFor(function () {
+          return frame.contentWindow && frame.contentWindow.ETHONELazyModules;
+        }, 12000);
+        var runtime = frame.contentWindow;
+        var errors = [];
+        runtime.addEventListener("error", function (event) { errors.push(event.message || "runtime error"); });
+        runtime.addEventListener("unhandledrejection", function (event) {
+          errors.push(event.reason && event.reason.message ? event.reason.message : String(event.reason || "rejection"));
+        });
+
+        var pages = ["settings", "ai", "marketplace", "health"];
+        for (var loadIndex = 0; loadIndex < pages.length; loadIndex += 1) {
+          await loadAndActivate(runtime, pages[loadIndex]);
+          setPage(runtime, "dashboard");
+        }
+        var eventBaseline = runtime.Ethone && runtime.Ethone.get("events") && runtime.Ethone.get("events").stats().listeners;
+        for (var cycleIndex = 0; cycleIndex < pages.length; cycleIndex += 1) {
+          await cycle(runtime, pages[cycleIndex], 25);
+        }
+        await wait(500);
+
+        var modal = runtime.document.querySelector(".modal-overlay[id^='modal-']");
+        if (modal) {
+          var modalId = modal.id.replace(/^modal-/, "");
+          for (var modalIndex = 0; modalIndex < 25; modalIndex += 1) {
+            runtime.openModal(modalId);
+            runtime.closeAllModals({ restoreFocus: false });
+          }
+        }
+
+        var report = {
+          settings: runtime.ETHONESettingsV2Lifecycle && runtime.ETHONESettingsV2Lifecycle.stats(),
+          ai: runtime.ETHONEAICore && runtime.ETHONEAICore.audit(),
+          marketplace: runtime.ETHONEMarketplace && runtime.ETHONEMarketplace.audit(),
+          health: {
+            lagTimer: !!runtime.__ethoneHealthLagTimer,
+            observers: (runtime.__ethoneHealthObservers || []).length
+          },
+          modals: runtime.ETHONEModals && runtime.ETHONEModals.stats(),
+          eventRegistry: {
+            before: eventBaseline,
+            after: runtime.Ethone && runtime.Ethone.get("events") && runtime.Ethone.get("events").stats().listeners
+          },
+          errors: errors
+        };
+        var pass = !!(
+          report.settings && !report.settings.active &&
+          report.ai && !report.ai.active && !report.ai.pageMountScheduled && report.ai.pendingRequests === 0 &&
+          report.marketplace && !report.marketplace.active && !report.marketplace.previewTimer && report.marketplace.startupTimers === 0 &&
+          !report.health.lagTimer && report.health.observers === 0 &&
+          report.modals && report.modals.focusEntries === 0 &&
+          report.eventRegistry.before === report.eventRegistry.after &&
+          report.errors.length === 0
+        );
+        output.textContent = JSON.stringify({ pass: pass, cycles: 25, report: report }, null, 2);
+        output.dataset.status = pass ? "PASS" : "FAIL";
+      }
+      frame.addEventListener("load", function () {
+        run().catch(function (error) {
+          output.textContent = JSON.stringify({ pass: false, error: error.message, stack: error.stack }, null, 2);
+          output.dataset.status = "FAIL";
+        });
+      }, { once: true });
+    }());
+  </script>
+</body>
+</html>

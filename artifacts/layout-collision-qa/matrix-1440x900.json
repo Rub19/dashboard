@@ -1,0 +1,378 @@
+{
+  "label": "1440x900",
+  "rows": [
+    {
+      "route": "dashboard",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 1,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 1050,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    },
+    {
+      "route": "files",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 1,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 1050,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    },
+    {
+      "route": "notes",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 4,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 1050,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          },
+          {
+            "a": "#note-relation-select",
+            "area": 755,
+            "b": "button.aie-chip"
+          },
+          {
+            "a": "#note-relation-select",
+            "area": 4080,
+            "b": "button.aie-chip"
+          },
+          {
+            "a": "#note-relation-select",
+            "area": 3438,
+            "b": "button.aie-chip"
+          }
+        ]
+      }
+    },
+    {
+      "route": "kanban",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 1,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 1050,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    },
+    {
+      "route": "calendar",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 1,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 1050,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    },
+    {
+      "route": "activity",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 10,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 1050,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          },
+          {
+            "a": "button.aic-button.danger.ethone-icon-row",
+            "area": 570,
+            "b": "button.ethone-icon-text-row.ethone-icon-row"
+          },
+          {
+            "a": "button.timeline-stat.ethone-icon-row.ethone-ux-button",
+            "area": 4191,
+            "b": "button.aie-chip"
+          },
+          {
+            "a": "button.timeline-stat.ethone-icon-row.ethone-ux-button",
+            "area": 1541,
+            "b": "button.aie-chip"
+          },
+          {
+            "a": "button.timeline-stat.ethone-icon-row.ethone-ux-button",
+            "area": 225,
+            "b": "button.aie-chip"
+          },
+          {
+            "a": "button.timeline-stat.ethone-icon-row.ethone-ux-button",
+            "area": 4264,
+            "b": "button.aie-chip"
+          },
+          {
+            "a": "button.timeline-stat.ethone-icon-row.ethone-ux-button",
+            "area": 1416,
+            "b": "button.aie-chip"
+          },
+          {
+            "a": "button.timeline-stat.ethone-icon-row.ethone-ux-button",
+            "area": 2627,
+            "b": "button.aie-chip.primary"
+          },
+          {
+            "a": "button.timeline-stat.ethone-icon-row.ethone-ux-button",
+            "area": 1292,
+            "b": "button.aie-chip"
+          },
+          {
+            "a": "button.timeline-stat.ethone-icon-row.ethone-ux-button",
+            "area": 198,
+            "b": "button.aie-chip"
+          }
+        ]
+      }
+    },
+    {
+      "route": "versions",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 3,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 1050,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          },
+          {
+            "a": "button.version-filter.ethone-icon-row.ethone-ux-button",
+            "area": 127,
+            "b": "button.aie-chip"
+          },
+          {
+            "a": "button.version-filter.ethone-icon-row.ethone-ux-button",
+            "area": 127,
+            "b": "button.aie-chip"
+          }
+        ]
+      }
+    },
+    {
+      "route": "marketplace",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 7,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 1050,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          },
+          {
+            "a": "article.mp-brain-card.kf-focusable.ethone-ux-button",
+            "area": 2928,
+            "b": "button.aie-chip"
+          },
+          {
+            "a": "article.mp-brain-card.kf-focusable.ethone-ux-button",
+            "area": 1982,
+            "b": "button.aie-chip"
+          },
+          {
+            "a": "article.mp-brain-card.kf-focusable.ethone-ux-button",
+            "area": 313,
+            "b": "button.aie-chip"
+          },
+          {
+            "a": "article.mp-brain-card.kf-focusable.ethone-ux-button",
+            "area": 1973,
+            "b": "button.aie-chip.primary"
+          },
+          {
+            "a": "article.mp-brain-card.kf-focusable.ethone-ux-button",
+            "area": 1480,
+            "b": "button.aie-chip"
+          },
+          {
+            "a": "button.mp41-btn.primary.ethone-ux-button",
+            "area": 208,
+            "b": "button.aie-chip"
+          }
+        ]
+      }
+    },
+    {
+      "route": "widget-marketplace",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 1,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 1050,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          }
+        ]
+      }
+    },
+    {
+      "route": "settings",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 5,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 1050,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          },
+          {
+            "a": "#settings-name",
+            "area": 1142,
+            "b": "button.aie-chip"
+          },
+          {
+            "a": "#settings-name",
+            "area": 1207,
+            "b": "button.aie-chip"
+          },
+          {
+            "a": "#settings-bio",
+            "area": 2469,
+            "b": "button.aie-chip.primary"
+          },
+          {
+            "a": "#settings-bio",
+            "area": 1720,
+            "b": "button.aie-chip"
+          }
+        ]
+      }
+    },
+    {
+      "route": "ai",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 3,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 1050,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          },
+          {
+            "a": "button.aic-btn.ethone-ux-button.ethone-readable-button",
+            "area": 182,
+            "b": "button.aie-chip"
+          },
+          {
+            "a": "button.aic-btn.ethone-ux-button.ethone-readable-button",
+            "area": 683,
+            "b": "button.aie-chip.primary"
+          }
+        ]
+      }
+    },
+    {
+      "route": "connections",
+      "docOverflow": 0,
+      "mainOverflow": 0,
+      "out": 0,
+      "text": 0,
+      "overlaps": 4,
+      "details": {
+        "out": [],
+        "text": [],
+        "overlaps": [
+          {
+            "a": "button.nav-item.os-nav-item.SidebarItem",
+            "area": 1050,
+            "b": "button.nav-item.os-nav-item.SidebarItem"
+          },
+          {
+            "a": "button.btn.btn-primary.ethone-ux-button",
+            "area": 614,
+            "b": "button.aie-chip"
+          },
+          {
+            "a": "button.btn.btn-ghost.ethone-ux-button",
+            "area": 1096,
+            "b": "button.aie-chip"
+          },
+          {
+            "a": "button.btn.btn-ghost.ethone-ux-button",
+            "area": 1188,
+            "b": "button.aie-chip"
+          }
+        ]
+      }
+    }
+  ]
+}

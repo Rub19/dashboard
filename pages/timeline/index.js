@@ -150,7 +150,7 @@
     var p=profile();
     return rawItems().map(function(e){
       var cat=category(e.category);
-      var user=e.user||{id:p&&p.id,name:p&&p.name||"Rub"};
+      var user=e.user||{id:p&&p.id,name:p&&p.name||"Utilisateur"};
       if(typeof user==="string")user={id:user,name:user};
       return Object.assign({},e,{
         title:e.title||e.text||"Activity",
@@ -341,7 +341,8 @@
     var html="";
     for(var h=0;h<24;h++){
       var n=counts[h]||0;
-      html+='<button type="button" class="aic-hour" title="'+h+'h - '+n+' evenements"><span style="height:'+Math.max(4,Math.round(n/max*100))+'%"></span><small>'+((h%4===0)?h:"")+'</small></button>';
+      var hourLabel=h+"h - "+n+" evenements";
+      html+='<button type="button" class="aic-hour" title="'+esc(hourLabel)+'" aria-label="'+esc(hourLabel)+'"><span style="height:'+Math.max(4,Math.round(n/max*100))+'%"></span><small>'+((h%4===0)?h:"")+'</small></button>';
     }
     return html;
   }

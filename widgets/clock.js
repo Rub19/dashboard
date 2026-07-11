@@ -2,9 +2,13 @@
 // ===================================================
 //  CLOCK
 // ===================================================
+function ethoneSetClockText(id,value){
+  const element=document.getElementById(id);
+  if(element&&element.textContent!==value)element.textContent=value;
+}
 function updateClock(){
   const n=new Date(),h=String(n.getHours()).padStart(2,'0'),m=String(n.getMinutes()).padStart(2,'0'),s=String(n.getSeconds()).padStart(2,'0');
-  const cl=document.getElementById('clock-main');if(cl)cl.textContent=h+':'+m;
+  ethoneSetClockText('clock-main',h+':'+m);
   // Localized day/month names
   const days={
     fr:['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'],
@@ -22,7 +26,7 @@ function updateClock(){
   const dayNames=days[lang]||days.en;
   const monthNames=months[lang]||months.en;
   const ds=dayNames[n.getDay()]+', '+monthNames[n.getMonth()]+' '+n.getDate();
-  const dSub=document.getElementById('clock-date-sub');if(dSub)dSub.textContent=ds;
+  ethoneSetClockText('clock-date-sub',ds);
   const h24=n.getHours();
   // Full localized greetings — no dependency on t() to avoid key fallback bug
   const GREETS={
@@ -33,9 +37,9 @@ function updateClock(){
   };
   const slot=h24<12?'morning':h24<18?'afternoon':'evening';
   const fullGreet=(GREETS[lang]||GREETS.en)[slot];
-  const gt=document.getElementById('greeting-time');if(gt)gt.textContent='';
-  const gf=document.getElementById('greeting-full');if(gf)gf.textContent=fullGreet;
-  const gd=document.getElementById('greeting-date');if(gd)gd.textContent=ds+', '+h+':'+m+':'+s;
+  ethoneSetClockText('greeting-time','');
+  ethoneSetClockText('greeting-full',fullGreet);
+  ethoneSetClockText('greeting-date',ds+', '+h+':'+m+':'+s);
 }
 function startEthoneClock(){
   if(window.__ethoneClockInterval)return;

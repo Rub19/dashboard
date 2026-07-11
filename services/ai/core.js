@@ -387,18 +387,18 @@
     manager.id="aic-manager";
     manager.className="aic-panel";
     manager.innerHTML=
-      '<div class="aic-tabs">'+
-        '<button class="aic-tab" data-aic-tab="providers" type="button">Providers</button>'+
-        '<button class="aic-tab active" data-aic-tab="settings" type="button">Settings</button>'+
-        '<button class="aic-tab" data-aic-tab="memory" type="button">Memory</button>'+
-        '<button class="aic-tab" data-aic-tab="plugins" type="button">Plugins / MCP</button>'+
-        '<button class="aic-tab" data-aic-tab="logs" type="button">Logs</button>'+
+      '<div class="aic-tabs" role="tablist" aria-label="AI Core sections">'+
+        '<button class="aic-tab" id="aic-tab-btn-providers" data-aic-tab="providers" type="button" role="tab" aria-controls="aic-tab-providers" aria-selected="false" tabindex="-1">Providers</button>'+
+        '<button class="aic-tab active" id="aic-tab-btn-settings" data-aic-tab="settings" type="button" role="tab" aria-controls="aic-tab-settings" aria-selected="true">Settings</button>'+
+        '<button class="aic-tab" id="aic-tab-btn-memory" data-aic-tab="memory" type="button" role="tab" aria-controls="aic-tab-memory" aria-selected="false" tabindex="-1">Memory</button>'+
+        '<button class="aic-tab" id="aic-tab-btn-plugins" data-aic-tab="plugins" type="button" role="tab" aria-controls="aic-tab-plugins" aria-selected="false" tabindex="-1">Plugins / MCP</button>'+
+        '<button class="aic-tab" id="aic-tab-btn-logs" data-aic-tab="logs" type="button" role="tab" aria-controls="aic-tab-logs" aria-selected="false" tabindex="-1">Logs</button>'+
       '</div>'+
-      '<div class="aic-tab-content" id="aic-tab-providers"></div>'+
-      '<div class="aic-tab-content active" id="aic-tab-settings"></div>'+
-      '<div class="aic-tab-content" id="aic-tab-memory"></div>'+
-      '<div class="aic-tab-content" id="aic-tab-plugins"></div>'+
-      '<div class="aic-tab-content" id="aic-tab-logs"></div>';
+      '<div class="aic-tab-content" id="aic-tab-providers" role="tabpanel" aria-labelledby="aic-tab-btn-providers" aria-hidden="true"></div>'+
+      '<div class="aic-tab-content active" id="aic-tab-settings" role="tabpanel" aria-labelledby="aic-tab-btn-settings" aria-hidden="false"></div>'+
+      '<div class="aic-tab-content" id="aic-tab-memory" role="tabpanel" aria-labelledby="aic-tab-btn-memory" aria-hidden="true"></div>'+
+      '<div class="aic-tab-content" id="aic-tab-plugins" role="tabpanel" aria-labelledby="aic-tab-btn-plugins" aria-hidden="true"></div>'+
+      '<div class="aic-tab-content" id="aic-tab-logs" role="tabpanel" aria-labelledby="aic-tab-btn-logs" aria-hidden="true"></div>';
     shell.insertAdjacentElement("afterend",manager);
   }
   function updateManagerSummary(){
@@ -464,7 +464,7 @@
         '<div class="aic-field"><label>Endpoint</label><input data-aic-endpoint="'+meta.id+'" value="'+escape(st.endpoint||meta.baseUrl)+'" placeholder="'+escape(meta.baseUrl)+'"></div>'+
         (meta.kind==="cloud"?'<div class="aic-field"><label>API key</label><input type="password" data-aic-key="'+meta.id+'" value="'+escape(st.apiKey||"")+'" placeholder="Stored locally"></div>':'')+
         '<div class="aic-field"><label>Model</label><select data-aic-model="'+meta.id+'">'+modelOptions(st)+'</select></div>'+
-        '<div class="aic-actions"><button class="aic-btn primary" data-aic-save-provider="'+meta.id+'" type="button">Save</button><button class="aic-btn" data-aic-refresh-models="'+meta.id+'" type="button">Refresh models</button><button class="aic-btn" data-aic-default="'+meta.id+'" type="button">'+(config.defaultProvider===meta.id?"Default":"Set default")+'</button></div>'+
+        '<div class="aic-actions"><button class="aic-btn primary" data-aic-save-provider="'+meta.id+'" type="button" aria-label="Save '+escape(meta.name)+' provider"><i data-lucide="save" aria-hidden="true"></i><span>Save</span></button><button class="aic-btn" data-aic-refresh-models="'+meta.id+'" type="button">Refresh models</button><button class="aic-btn" data-aic-default="'+meta.id+'" type="button">'+(config.defaultProvider===meta.id?"Default":"Set default")+'</button></div>'+
         (st.lastError?'<div class="aic-log" style="margin-top:8px;color:#fecaca">'+escape(st.lastError)+'</div>':'')+
       '</article>';
     }).join("")+'</div>'+
@@ -511,9 +511,9 @@
       const tab=e.target.closest("[data-aic-tab]");
       if(tab){
         activeManagerTab=tab.dataset.aicTab;
-        $$(".aic-tab").forEach(x=>x.classList.toggle("active",x===tab));
-        $$(".aic-tab-content").forEach(x=>x.classList.toggle("active",x.id==="aic-tab-"+activeManagerTab));
-        renderManagerTab(activeManagerTab,true);
+        $$(".aic-tab").forEach(x=>{const active=x===tab;x.classList.toggle("active",active);x.setAttribute("aria-selected",String(active));x.tabIndex=active?0:-1});
+        $$(".aic-tab-content").forEach(x=>{const active=x.id==="aic-tab-"+activeManagerTab;x.classList.toggle("active",active);x.setAttribute("aria-hidden",String(!active))});
+        renderManagerTab(activeManagerTab,false);
         return;
       }
       const providerToggle=e.target.closest("[data-aic-provider-toggle]");
@@ -528,13 +528,15 @@
         const meta=catalog(id);
         if(!meta)throw new Error("Unknown provider: "+id);
         setAIState("syncing","Saving "+meta.name+" provider...",true,"");
-        updateProvider(id,{enabled:true,endpoint:$("[data-aic-endpoint='"+id+"']")?.value.trim()||meta.baseUrl,apiKey:$("[data-aic-key='"+id+"']")?.value.trim()||providerState(id).apiKey,model:$("[data-aic-model='"+id+"']")?.value||""});
+        updateProvider(id,{enabled:true,endpoint:$("[data-aic-endpoint='"+id+"']")?.value.trim()||meta.baseUrl,apiKey:$("[data-aic-key='"+id+"']")?.value.trim()||providerState(id).apiKey,model:$("[data-aic-model='"+id+"']")?.value||""},{render:false});
         if(id==="groq"&&profile()?.state?.connections){
           profile().state.connections.groqKey=providerState(id).apiKey;
           try{if(typeof window.saveStateNow==="function")window.saveStateNow()}catch(err){}
         }
-        setAIState("connected","Provider saved: "+meta.name,false,"");
-        toast("Provider saved: "+meta.name,"success");
+        const connected=meta.kind==="local"||!!providerState(id).apiKey;
+        renderAIManager({force:true});
+        setAIState(connected?"connected":"disconnected",connected?"Provider saved: "+meta.name:meta.name+" saved. Add an API key to connect.",false,"");
+        toast(connected?"Provider saved: "+meta.name:meta.name+" saved. API key required.",connected?"success":"info");
         return;
       }
       const refresh=e.target.closest("[data-aic-refresh-models]");
@@ -544,7 +546,7 @@
         refresh.setAttribute("aria-busy","true");
         refreshModels(providerId)
           .then(()=>{renderAIManager({force:true});toast("Models refreshed","success")})
-          .catch(err=>{setAIState("error","Model refresh failed.",false,err.message);log("models",err.message);renderAIManager({force:true});toast(err.name==="AbortError"?"Model refresh cancelled":err.message,"error")})
+          .catch(err=>{log("models",err.message);renderAIManager({force:true});setAIState("error","Model refresh failed.",false,err.message);toast(err.name==="AbortError"?"Model refresh cancelled":err.message,"error")})
           .finally(()=>{refresh.disabled=false;refresh.removeAttribute("aria-busy")});
         return;
       }

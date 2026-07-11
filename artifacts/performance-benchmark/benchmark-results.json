@@ -1,0 +1,148 @@
+{
+  "generatedAt": "2026-07-11T01:45:00+02:00",
+  "environment": {
+    "origin": "http://127.0.0.1:4173/",
+    "browser": "Chromium via Chrome DevTools Protocol",
+    "cache": "disabled for cold-start samples",
+    "landingSamples": 3,
+    "dashboardProfile": "isolated synthetic profile ethone-performance-qa"
+  },
+  "targets": {
+    "dashboardUsableMs": 2000,
+    "frameBudgetMs": 16.7,
+    "runtimeErrors": 0,
+    "warmCycleGrowth": 0
+  },
+  "landing": {
+    "baseline": {
+      "loadMs": 1162.4,
+      "fcpMs": 300,
+      "lcpMs": 1356,
+      "longTaskTotalMs": 263
+    },
+    "finalMedian": {
+      "domContentLoadedMs": 557.6,
+      "loadMs": 587.9,
+      "firstPaintMs": 72,
+      "fcpMs": 72,
+      "lcpMs": 768,
+      "cls": 0,
+      "longTaskTotalMs": 202,
+      "longTaskMaxMs": 202
+    },
+    "improvementPercent": {
+      "load": 49.4,
+      "fcp": 76,
+      "lcp": 43.4,
+      "longTaskTotal": 23.2
+    }
+  },
+  "dashboardColdMount": {
+    "baseline": {
+      "shellMs": 15.4,
+      "usableMs": 1975,
+      "longTaskTotalMs": 1336,
+      "lazyDecodedBytes": 292558
+    },
+    "final": {
+      "shellMs": 11.8,
+      "usableMs": 532.3,
+      "longTaskTotalMs": 583,
+      "longTaskMaxMs": 119,
+      "cls": 0.0119,
+      "lazyResources": 18,
+      "lazyDecodedBytes": 292925,
+      "runtimeErrors": 0,
+      "rejectedPromises": 0,
+      "failedModules": 0,
+      "liveDomNodes": 4810,
+      "settledTimers": 1,
+      "settledIntervals": 5,
+      "settledObservers": 5
+    },
+    "improvementPercent": {
+      "shell": 23.4,
+      "usable": 73,
+      "longTaskTotal": 56.4
+    }
+  },
+  "pageOpen": [
+    {
+      "page": "Settings",
+      "baselineMs": 1298.7,
+      "finalMs": 547,
+      "improvementPercent": 57.9,
+      "decodedBytes": 50242,
+      "errors": 0
+    },
+    {
+      "page": "ETHONE AI",
+      "baselineMs": 1475.1,
+      "finalMs": 426.5,
+      "improvementPercent": 71.1,
+      "decodedBytes": 275505,
+      "errors": 0
+    },
+    {
+      "page": "Marketplace",
+      "baselineMs": 1315.5,
+      "finalMs": 161.9,
+      "improvementPercent": 87.7,
+      "decodedBytes": 60812,
+      "errors": 0
+    },
+    {
+      "page": "Files",
+      "baselineMs": 1057.3,
+      "finalMs": 469,
+      "improvementPercent": 55.6,
+      "decodedBytes": 68340,
+      "errors": 0
+    },
+    {
+      "page": "Notes",
+      "baselineMs": 1368.8,
+      "finalMs": 223.3,
+      "improvementPercent": 83.7,
+      "decodedBytes": 50245,
+      "errors": 0
+    }
+  ],
+  "steadyState": {
+    "sampleMs": 2506.2,
+    "animationFrames": 598,
+    "medianFrameIntervalMs": 4.2,
+    "p95FrameIntervalMs": 4.3,
+    "p99FrameIntervalMs": 4.4,
+    "framesOver16_7Ms": 0,
+    "longTasks": 0,
+    "layoutDurationMs": 0,
+    "scriptDurationMs": 16.4,
+    "mainThreadTaskDurationMs": 336.7,
+    "usedHeapBytes": 9304016
+  },
+  "warmNavigationLifecycle": {
+    "transitions": 12,
+    "addedListeners": 0,
+    "addedIntervals": 0,
+    "domNodeGrowth": 0,
+    "heapBeforeBytes": 16099539,
+    "heapAfterBytes": 13865494,
+    "errors": 0
+  },
+  "bundleInventory": {
+    "indexBytes": 206255,
+    "before": {
+      "eagerJs": { "count": 95, "bytes": 980226 },
+      "lazyJs": { "count": 136, "bytes": 2278468 },
+      "eagerCss": { "count": 40, "bytes": 1168060 },
+      "lazyCss": { "count": 47, "bytes": 721972 }
+    },
+    "after": {
+      "eagerJs": { "count": 95, "bytes": 985082 },
+      "lazyJs": { "count": 136, "bytes": 2278801 },
+      "eagerCss": { "count": 40, "bytes": 1168060 },
+      "lazyCss": { "count": 47, "bytes": 721972 }
+    }
+  }
+}

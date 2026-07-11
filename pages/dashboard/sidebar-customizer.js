@@ -5,6 +5,7 @@
 function renderSidebarCustomize(){
   const container=document.getElementById('sidebar-customize-list');
   if(!container)return;
+  bindSidebarCustomizerDrag(container);
   const p=curP();if(!p)return;
 
   const allItems=getDefaultNav();
@@ -26,6 +27,7 @@ function renderSidebarCustomize(){
   container.innerHTML='';
   items.forEach(item=>{
     const row=document.createElement('div');
+    row.className='sidebar-customize-row';
     row.setAttribute('draggable','true');
     row.dataset.id=item.id;
     row.style.cssText='position:relative;display:flex;align-items:center;gap:10px;padding:8px 34px 8px 10px;border-radius:8px;background:rgba(var(--color-white-rgb),.03);border:1px solid rgba(var(--color-white-rgb),.06);cursor:grab;transition:all .15s;margin-bottom:3px';
@@ -39,19 +41,50 @@ function renderSidebarCustomize(){
         <svg viewBox="0 0 24 24" width="12" height="12" fill="${item.pinned?'currentColor':'none'}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 3h6l-1 6 3 3H7l3-3-1-6Z"/></svg>
       </button>
     `;
-    // Drag events
-    row.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',item.id);row.style.opacity='.4';});
-    row.addEventListener('dragend',()=>row.style.opacity='1');
-    row.addEventListener('dragover',e=>{e.preventDefault();row.style.borderColor='rgba(var(--primary-rgb),.4)';});
-    row.addEventListener('dragleave',()=>row.style.borderColor='rgba(var(--color-white-rgb),.06)');
-    row.addEventListener('drop',e=>{
-      e.preventDefault();
-      row.style.borderColor='rgba(var(--color-white-rgb),.06)';
-      const draggedId=e.dataTransfer.getData('text/plain');
-      if(draggedId===item.id)return;
-      reorderSidebarItem(draggedId,item.id);
-    });
     container.appendChild(row);
+  });
+}
+
+function bindSidebarCustomizerDrag(container){
+  if(container.dataset.dragEventsBound==='true')return;
+  container.dataset.dragEventsBound='true';
+
+  const rowFromEvent=event=>{
+    const target=event.target instanceof Element?event.target:null;
+    const row=target?.closest?.('.sidebar-customize-row[data-id]');
+    return row&&container.contains(row)?row:null;
+  };
+
+  container.addEventListener('dragstart',event=>{
+    const row=rowFromEvent(event);
+    if(!row||!event.dataTransfer)return;
+    event.dataTransfer.setData('text/plain',row.dataset.id||'');
+    row.style.opacity='.4';
+  });
+  container.addEventListener('dragend',event=>{
+    const row=rowFromEvent(event);
+    if(row)row.style.opacity='1';
+  });
+  container.addEventListener('dragover',event=>{
+    const row=rowFromEvent(event);
+    if(!row)return;
+    event.preventDefault();
+    row.style.borderColor='rgba(var(--primary-rgb),.4)';
+  });
+  container.addEventListener('dragleave',event=>{
+    const row=rowFromEvent(event);
+    if(!row||row.contains(event.relatedTarget))return;
+    row.style.borderColor='rgba(var(--color-white-rgb),.06)';
+  });
+  container.addEventListener('drop',event=>{
+    const row=rowFromEvent(event);
+    if(!row||!event.dataTransfer)return;
+    event.preventDefault();
+    row.style.borderColor='rgba(var(--color-white-rgb),.06)';
+    const draggedId=event.dataTransfer.getData('text/plain');
+    const targetId=row.dataset.id||'';
+    if(!draggedId||draggedId===targetId)return;
+    reorderSidebarItem(draggedId,targetId);
   });
 }
 

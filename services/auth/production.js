@@ -143,7 +143,7 @@
       if(result.error){setErr(result.error.message);return}
       var relogin=await timeout(window.sb.auth.signInWithPassword({email:regEmail,password:pw}),12000,"Post-signup login").catch(function(){return null});
       if(relogin&&!relogin.error&&typeof window.onAuthSuccess==="function")await window.onAuthSuccess(relogin.data&&relogin.data.user);
-      else setErr(tr("reset_sent"),true);
+      else setErr(tr("registration_success"),true);
     }catch(e){
       setLoading(false);
       setErr(e.message||tr("connect_error"));

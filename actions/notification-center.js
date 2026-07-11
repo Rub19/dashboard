@@ -515,7 +515,7 @@
     return notify({icon:icon,type:type,title:title,body:sub,action:typeof action==="function"?{label:"Open",handler:action}:action});
   }
   function notifyPomoComplete(count){
-    notify({type:"success",icon:"timer",title:"Session "+count+" complete",body:"Take a break. You earned it.",dedupe:"pomo-"+Date.now(),action:{label:"Stats",page:"stats"}});
+    notify({type:"success",icon:"timer",title:"Session "+count+" complete",body:"Take a break. You earned it.",dedupe:"pomo-session-"+count,action:{label:"Stats",page:"stats"}});
   }
 
   window.ETHONENotifications={

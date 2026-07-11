@@ -6,7 +6,8 @@
   window.__ethoneBootSequence=true;
 
   var COMPLETE_TIMER=0;
-  var state={mode:"classic",phase:"idle",startedAt:0};
+  var FINALIZE_TIMER=0;
+  var state={mode:"classic",phase:"idle",startedAt:0,cycle:0,completedCycle:0};
 
   function read(key,fallback){
     try{var value=localStorage.getItem(key);return value==null?fallback:value}catch(e){return fallback}
@@ -91,6 +92,7 @@
       el.innerHTML="<span></span><strong></strong>";
       document.body.appendChild(el);
     }
+    el.setAttribute("aria-hidden","false");
     var label=el.querySelector("strong");
     if(label)label.textContent=text||"Preparing ETHONE";
   }
@@ -152,25 +154,35 @@
   function prepareDashboardMount(){
     state.phase="mounting";
     state.startedAt=Date.now();
+    state.cycle+=1;
     banner("Preparing your ETHONE workspace");
     document.body.classList.add("ethone-dashboard-booting");
     syncChrome({closeTransient:true});
     clearTimeout(COMPLETE_TIMER);
     COMPLETE_TIMER=setTimeout(finishDashboardMount,950);
   }
+  function finalizeDashboardMount(cycle){
+    if(cycle!==state.cycle||state.completedCycle===cycle)return;
+    state.completedCycle=cycle;
+    clearTimeout(FINALIZE_TIMER);
+    document.body.classList.remove("ethone-dashboard-booting");
+    document.body.classList.add("ethone-dashboard-mounted");
+    var bootBanner=document.getElementById("ethone-dashboard-boot-banner");
+    if(bootBanner)bootBanner.setAttribute("aria-hidden","true");
+    if(canMount("desktop")&&window.ETHONEDesktop&&typeof window.ETHONEDesktop.enable==="function"){
+      setTimeout(function(){try{window.ETHONEDesktop.enable()}catch(e){}},80);
+    }
+    try{window.dispatchEvent(new CustomEvent("ethone:boot-sequence-complete",{detail:{mode:state.mode,duration:Date.now()-state.startedAt}}))}catch(e){}
+  }
   function finishDashboardMount(){
     clearTimeout(COMPLETE_TIMER);
     syncChrome();
     state.phase="ready";
+    var cycle=state.cycle;
+    clearTimeout(FINALIZE_TIMER);
+    FINALIZE_TIMER=setTimeout(function(){finalizeDashboardMount(cycle)},120);
     requestAnimationFrame(function(){
-      setTimeout(function(){
-        document.body.classList.remove("ethone-dashboard-booting");
-        document.body.classList.add("ethone-dashboard-mounted");
-        if(canMount("desktop")&&window.ETHONEDesktop&&typeof window.ETHONEDesktop.enable==="function"){
-          setTimeout(function(){try{window.ETHONEDesktop.enable()}catch(e){}},80);
-        }
-        try{window.dispatchEvent(new CustomEvent("ethone:boot-sequence-complete",{detail:{mode:state.mode,duration:Date.now()-state.startedAt}}))}catch(e){}
-      },40);
+      setTimeout(function(){finalizeDashboardMount(cycle)},40);
     });
   }
   function setMode(mode){

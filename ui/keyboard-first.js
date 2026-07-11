@@ -120,6 +120,13 @@
     catch (error) { return null; }
   }
 
+  function surfaceVisible(element) {
+    if (!element || !element.isConnected || element.hidden || element.hasAttribute("inert")) return false;
+    if (element.getAttribute("aria-hidden") === "true") return false;
+    var style = element.style || {};
+    return style.display !== "none" && style.visibility !== "hidden" && (style.opacity === "" || Number(style.opacity) !== 0);
+  }
+
   function activeSurface(event) {
     var page = event && event.detail && event.detail.page;
     if (page) {
@@ -129,9 +136,9 @@
     var active = qs(".tab-content.active");
     if (active) return active;
     var auth = qs("#auth-screen");
-    if (auth && global.getComputedStyle(auth).display !== "none") return auth;
+    if (surfaceVisible(auth)) return auth;
     var profile = qs("#profile-screen");
-    if (profile && global.getComputedStyle(profile).display !== "none") return profile;
+    if (surfaceVisible(profile)) return profile;
     return qs("#main-content") || doc;
   }
 
@@ -161,10 +168,8 @@
     if (!element || !element.ownerDocument || !element.isConnected) return false;
     if (element.hidden || element.getAttribute("aria-hidden") === "true") return false;
     if (element.closest && element.closest("[inert],[aria-hidden='true']")) return false;
-    var style = global.getComputedStyle ? global.getComputedStyle(element) : null;
-    if (style && (style.display === "none" || style.visibility === "hidden")) return false;
-    var rect = element.getBoundingClientRect ? element.getBoundingClientRect() : null;
-    return !rect || rect.width > 0 || rect.height > 0 || element === doc.activeElement;
+    var style = element.style || {};
+    return style.display !== "none" && style.visibility !== "hidden" && (style.opacity === "" || Number(style.opacity) !== 0);
   }
 
   function textLabel(element) {
@@ -334,7 +339,7 @@
   function openShortcuts() {
     var main = qs("#main-content");
     var auth = qs("#auth-screen");
-    var appVisible = !!(main && global.getComputedStyle(main).display !== "none" && (!auth || global.getComputedStyle(auth).display === "none"));
+    var appVisible = surfaceVisible(main) && !surfaceVisible(auth);
     if (appVisible && global.ETHONEKeyboardShortcuts && typeof global.ETHONEKeyboardShortcuts.open === "function") {
       global.ETHONEKeyboardShortcuts.open();
       return true;

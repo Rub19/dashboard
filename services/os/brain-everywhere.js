@@ -70,8 +70,8 @@
   function hidden(el) {
     if (!el) return true;
     try {
-      var cs = getComputedStyle(el);
-      return el.hidden || cs.display === "none" || cs.visibility === "hidden" || cs.opacity === "0";
+      var style = el.style || {};
+      return el.hidden || el.hasAttribute("inert") || el.getAttribute("aria-hidden") === "true" || style.display === "none" || style.visibility === "hidden" || (style.opacity !== "" && Number(style.opacity) === 0);
     } catch (e) {
       return false;
     }

@@ -10,6 +10,7 @@ function setMobNav(page){
 
 function syncMobileSidebarA11y(sidebar,open){
   if(sidebar){
+    sidebar.inert=!open;
     sidebar.setAttribute('aria-hidden',open?'false':'true');
     sidebar.setAttribute('aria-expanded',open?'true':'false');
   }
@@ -78,6 +79,7 @@ function checkMobileLayout(){
   if(!usesOffCanvas){
     sidebar.classList.remove('mobile-open');
     syncMobileSidebarA11y(sidebar,false);
+    sidebar.inert=false;
     sidebar.removeAttribute('aria-hidden');
     sidebar.removeAttribute('aria-expanded');
     overlay?.classList.remove('mobile-open');

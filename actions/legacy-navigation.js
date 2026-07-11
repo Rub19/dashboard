@@ -146,12 +146,20 @@ function switchPage(page,navEl){
 })();
 
 function switchSettingsTab(tab,el){
-  document.querySelectorAll('.settings-nav-item').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.settings-nav-item').forEach(t=>{
+    t.classList.remove('active');
+    t.setAttribute('aria-selected','false');
+    t.tabIndex=-1;
+  });
   if(!el)el=document.querySelector(".settings-nav-item[data-settings-tab='"+tab+"'],.settings-nav-item[onclick*=\"'"+tab+"'\"]");
-  if(el)el.classList.add('active');
-  document.querySelectorAll('.settings-section').forEach(s=>s.classList.remove('active'));
+  if(el){el.classList.add('active');el.setAttribute('aria-selected','true');el.tabIndex=0;}
+  document.querySelectorAll('.settings-section').forEach(s=>{
+    s.classList.remove('active');
+    s.setAttribute('aria-hidden','true');
+    s.inert=true;
+  });
   const sec=document.getElementById('settings-'+tab);
-  if(sec)sec.classList.add('active');
+  if(sec){sec.classList.add('active');sec.setAttribute('aria-hidden','false');sec.inert=false;}
   const safeSettings=(label,fn)=>{try{return fn()}catch(error){console.warn('[ETHONE settings] '+label+' failed:',error);if(typeof toast==='function')toast('Parametre charge en mode degrade.','warning')}};
   if(tab==='account'&&typeof loadAccountInfo==='function')safeSettings('account',()=>loadAccountInfo());
   if(tab==='theme'&&typeof renderThemeEditor==='function')safeSettings('theme',()=>renderThemeEditor());
@@ -165,6 +173,8 @@ function switchSettingsTab(tab,el){
   if(tab==='keyboard'&&typeof renderKeyboardSettings==='function')safeSettings('keyboard',()=>renderKeyboardSettings());
   if(tab==='developer'&&typeof renderDeveloperSettings==='function')safeSettings('developer',()=>renderDeveloperSettings());
   if(tab==='experimental'&&typeof renderExperimentalSettings==='function')safeSettings('experimental',()=>renderExperimentalSettings());
+  try{window.dispatchEvent(new CustomEvent('ethone:settings-tab-change',{detail:{tab:tab,section:sec||null}}));}catch(error){}
+  if(window.ETHONEAccessibility&&typeof window.ETHONEAccessibility.refresh==='function')requestAnimationFrame(()=>window.ETHONEAccessibility.refresh(sec||document.getElementById('page-settings')));
 }
 
 // Lazy page modules and delegated UI handlers resolve settings navigation

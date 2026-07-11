@@ -72,7 +72,7 @@
       sign_in_btn:"Se connecter",or_continue_with:"ou continuer avec",username:"Identifiant",email_optional:"Email (optionnel)",
       create_account_btn:"Creer un compte",login_ph:"vous@exemple.com",pw_ph:"Mot de passe",reg_user_ph:"Choisissez un identifiant",
       reg_email_ph:"vous@exemple.com",reg_pw_ph:"Min. 6 caracteres",fill_all:"Veuillez remplir tous les champs",
-      user_pw_required:"Identifiant et mot de passe requis",pw_short:"Mot de passe trop court (6 caracteres min)",username_taken:"Cet identifiant est deja pris",
+      user_pw_required:"Identifiant et mot de passe requis",pw_short:"Mot de passe trop court (6 caracteres min)",username_taken:"Cet identifiant est deja pris",registration_success:"Compte cree. Verifiez votre email pour confirmer l'inscription.",
       wrong:"Identifiants incorrects",connect_error:"Erreur de connexion. Reessayez.",reset_need_email:"Entre ton email d'abord",
       reset_sent:"Email de reinitialisation envoye.",reset_error:"Impossible d'envoyer l'email",google_error:"Connexion Google impossible",
       github_error:"Connexion GitHub impossible",supabase_offline:"Supabase n'est pas disponible. Verifie la connexion puis recharge la page."
@@ -200,7 +200,7 @@
       var result=await withTimeout(client.auth.signUp({email:regEmail,password:pw,options:{data:{username:username}}}),12000,"Create account");
       setLoading(false);
       if(result.error){setErr(result.error.message);return}
-      setErr(tr("reset_sent"),true);
+      setErr(tr("registration_success"),true);
     }catch(e){setLoading(false);setErr(e.message||tr("connect_error"));console.error("[ETHONE auth] register failed",e)}
   }
   async function forgot(){

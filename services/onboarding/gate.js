@@ -49,6 +49,13 @@
     return true;
   }
 
+  function surfaceVisible(element) {
+    if (!element || !element.isConnected || element.hidden || element.hasAttribute("inert")) return false;
+    if (element.getAttribute("aria-hidden") === "true") return false;
+    var style = element.style || {};
+    return style.display !== "none" && style.visibility !== "hidden" && (style.opacity === "" || Number(style.opacity) !== 0);
+  }
+
   function dashboardVisible() {
     var main = document.getElementById("main-content");
     if (!main) return false;
@@ -57,10 +64,10 @@
     var auth = document.getElementById("auth-screen");
     var profileScreen = document.getElementById("profile-screen");
     var passwordScreen = document.getElementById("password-screen");
-    if (auth && getComputedStyle(auth).display !== "none") return false;
-    if (profileScreen && getComputedStyle(profileScreen).display !== "none") return false;
-    if (passwordScreen && getComputedStyle(passwordScreen).display !== "none") return false;
-    return getComputedStyle(main).display !== "none";
+    if (surfaceVisible(auth)) return false;
+    if (surfaceVisible(profileScreen)) return false;
+    if (surfaceVisible(passwordScreen)) return false;
+    return surfaceVisible(main);
   }
 
   function load(reason) {

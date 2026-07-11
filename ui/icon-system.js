@@ -277,13 +277,20 @@
     var text = (shell.textContent || "").replace(/\s+/g, " ").trim();
     var icon = iconForText(text);
     if (!icon) return false;
+    var accessibleLabel = readableLabel(shell);
 
     shell.dataset.ethoneLucideReplaced = "1";
     shell.dataset.ethoneOriginalIcon = text;
     shell.classList.add("ethone-icon-shell", "ethone-lucide-replaced");
     shell.textContent = "";
     shell.appendChild(createIconNode(icon, false));
-    if (!shell.getAttribute("aria-label")) shell.setAttribute("aria-label", readableLabel(shell));
+    var surroundingText = shell.parentElement ? (shell.parentElement.textContent || "").replace(/\s+/g, " ").trim() : "";
+    if (surroundingText) {
+      shell.removeAttribute("aria-label");
+      shell.setAttribute("aria-hidden", "true");
+    } else if (!shell.getAttribute("aria-label")) {
+      shell.setAttribute("aria-label", accessibleLabel);
+    }
     return true;
   }
 
@@ -309,7 +316,9 @@
     var icon = iconForText(leading[2]);
     if (!icon) return false;
 
-    firstText.nodeValue = value.slice(leading[0].length);
+    var remainder = value.slice(leading[0].length);
+    var isWholeWordPlaceholder = !remainder.trim() && !!TEXT_PLACEHOLDER_MAP[normalizedTextKey(leading[2])];
+    firstText.nodeValue = isWholeWordPlaceholder ? leading[2] : remainder;
     if (firstText.nodeValue.charAt(0) !== " " && firstText.nodeValue.length) {
       firstText.nodeValue = " " + firstText.nodeValue;
     }
@@ -358,21 +367,20 @@
   function renderLucide(root) {
     try {
       if (!window.lucide || window.__lucideFailed || typeof window.lucide.createIcons !== "function") return;
-      if (root && root !== document && root.querySelector && !root.querySelector("[data-lucide]")) return;
-      var now = Date.now();
-      if (now - lastLucideAt < 220) {
-        clearTimeout(lucideTimer);
-        lucideTimer = setTimeout(function () { renderLucide(root); }, 220);
-        return;
-      }
-      lastLucideAt = now;
-      window.lucide.createIcons({
-        attrs: {
-          "stroke-width": "2",
-          "aria-hidden": "true",
-          "focusable": "false"
-        }
-      });
+      if (root && root !== document && root.querySelector && !root.querySelector(":not(svg)[data-lucide]")) return;
+      clearTimeout(lucideTimer);
+      var elapsed = Date.now() - lastLucideAt;
+      lucideTimer = setTimeout(function () {
+        if (!document.querySelector(":not(svg)[data-lucide]")) return;
+        lastLucideAt = Date.now();
+        window.lucide.createIcons({
+          attrs: {
+            "stroke-width": "2",
+            "aria-hidden": "true",
+            "focusable": "false"
+          }
+        });
+      }, Math.max(24, 120 - elapsed));
     } catch (error) {}
   }
 
@@ -394,6 +402,9 @@
       scheduled = false;
       var roots = pendingRoots.length ? pendingRoots.splice(0, 24) : [document];
       if (pendingRoots.length) pendingRoots.length = 0;
+      roots = roots.filter(function (root, index, list) {
+        return list.indexOf(root) === index && !list.some(function (other) { return other !== root && other.contains && other.contains(root); });
+      });
       roots.forEach(function (root) { apply(root || document); });
     });
   }
@@ -404,7 +415,7 @@
     if (window.ETHONEDOMRuntime && typeof window.ETHONEDOMRuntime.subscribe === "function") {
       window.ETHONEDOMRuntime.subscribe("icon-system", function (batch) {
         var batchRoots = batch && Array.isArray(batch.roots) ? batch.roots : [];
-        if (batch && batch.overflow) schedule(document);
+        if (batch && batch.overflow) schedule(document.querySelector(".tab-content.active") || document.querySelector("#auth-screen") || document);
         else batchRoots.slice(0, 18).forEach(schedule);
       });
       window.__ethoneIconObserver = window.ETHONEDOMRuntime;

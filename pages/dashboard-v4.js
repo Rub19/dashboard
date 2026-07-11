@@ -204,7 +204,7 @@
     return widgetHead(tr("activity"),"","chart-no-axes-combined")+'<div class="d4-module-body"><div id="bh-insights"></div><div class="d4-insights-grid" id="d4-activity"></div></div>';
   }
   function quickActionsInnerHTML(){
-    return '<div class="d4-quick-head"><h2>'+tr("quick")+'</h2><span>'+tr("quickHint")+'</span></div><div class="d4-quick-grid">'+quick(tr("note"),"dashboard.nav.notes","notebook-pen")+quick(tr("task"),"dashboard.nav.todos","circle-check")+quick(tr("file"),"dashboard.nav.files","file-plus-2")+quick(tr("event"),"dashboard.nav.calendar","calendar-plus")+quick(tr("market"),"dashboard.nav.marketplace","store",false)+quick(tr("brain"),"dashboard.nav.ai","brain")+quick(tr("spaces"),"dashboard.nav.workspaces","layout-grid")+'</div>';
+    return '<div class="d4-quick-head"><h2>'+tr("quick")+'</h2><span>'+tr("quickHint")+'</span></div><div class="d4-quick-grid">'+quick(tr("note"),"notes.new","notebook-pen")+quick(tr("task"),"tasks.new","circle-check")+quick(tr("file"),"files.new","file-plus-2")+quick(tr("event"),"calendar.new","calendar-plus")+quick(tr("market"),"marketplace.open","store")+quick(tr("brain"),"brain.open","brain")+quick(tr("spaces"),"spaces.open","layout-grid")+'</div>';
   }
   function workspaceSwitcherHTML(){
     var svc=workspaces(),items=svc&&svc.all?svc.all():[],active=activeWorkspace();
@@ -683,7 +683,7 @@
     Actions.register("dashboard.nav.ai",{handler:navTo("ai")});
     Actions.register("dashboard.nav.marketplace",{label:tr("market"),handler:navTo("marketplace")});
     Actions.register("dashboard.nav.workspaces",{label:tr("spaces"),handler:function(){runAction("spaces.open")}});
-    Actions.register("dashboard.hero.continueFocus",{handler:function(){runAction("focus.continue")}});
+    Actions.register("dashboard.hero.continueFocus",{handler:function(){runAction("todos.open")}});
     Actions.register("dashboard.hero.askBrain",{handler:function(){runAction("brain.open")}});
     Actions.register("dashboard.brain.openNextAction",{handler:function(){
       if(lastRenderState.nextActionTarget)runAction("navigation.open",{page:lastRenderState.nextActionTarget,source:"dashboard-brain"});

@@ -113,6 +113,14 @@ function applyCustomColorVars(hex){
   r.setProperty('--border3','rgba('+rgb+',0.2)');
 }
 
+function syncActiveWorkspaceAccent(hex){
+  try{
+    const service=window.ETHONEWorkspaces;
+    const workspace=service&&typeof service.active==='function'?service.active():null;
+    if(workspace&&typeof service.update==='function')service.update(workspace.id,{accent:hex});
+  }catch(error){}
+}
+
 function applyCustomColor(hex){
   const p=typeof curP==='function'?curP():null;if(!p)return;
   document.querySelectorAll('#theme-swatches .theme-preset-card').forEach(function(s){s.classList.remove('active');});
@@ -125,6 +133,7 @@ function applyCustomColor(hex){
   p.theme.customAccent=hex;
   p.theme.preset=p.theme.preset||p.themePreset||'ethone-purple';
   if(window.ETHONEThemeEngine)window.ETHONEThemeEngine.apply(p.theme);
+  syncActiveWorkspaceAccent(hex);
   if(typeof saveStateNow==='function')saveStateNow();
   if(typeof updateBannerDisplay==='function')updateBannerDisplay();
   if(typeof toast==='function')toast((window._lang||'fr')==='fr'?'Couleur appliquee !':'Custom color applied!','success');
@@ -140,6 +149,7 @@ function pickTheme(idx){
   if(typeof saveStateNow==='function')saveStateNow();
   if(window.ETHONEThemeEngine)window.ETHONEThemeEngine.setPreset(theme.id,{save:false,toast:false});
   else applyTheme(idx);
+  syncActiveWorkspaceAccent(theme.accent);
   renderThemeSwatches();
   if(typeof updateBannerDisplay==='function')updateBannerDisplay();
   if(typeof toast==='function')toast((window._lang||'fr')==='fr'?'Theme applique !':'Theme applied!','success');

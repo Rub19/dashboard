@@ -771,6 +771,10 @@ function openCmdPalette(options) {
     input.placeholder = cmdCopy(_cmdMode === "spotlight" ? "placeholderSpotlight" : "placeholderCommand");
     input.setAttribute("aria-label", cmdCopy(_cmdMode === "spotlight" ? "spotlightLabel" : "paletteLabel"));
     input.setAttribute("aria-controls", "cmd-results");
+    input.setAttribute("role", "combobox");
+    input.setAttribute("aria-autocomplete", "list");
+    input.setAttribute("aria-haspopup", "listbox");
+    input.setAttribute("aria-expanded", "true");
     if (!input.dataset.cmdInputBound && !input.getAttribute("oninput")) {
       input.dataset.cmdInputBound = "1";
       input.addEventListener("input", onCmdInput);
@@ -801,7 +805,11 @@ function closeCmdPalette() {
   invalidateCmdCache();
   setCommandOpenState(false);
   const input = document.getElementById("cmd-input");
-  if (input) input.value = "";
+  if (input) {
+    input.value = "";
+    input.setAttribute("aria-expanded", "false");
+    input.removeAttribute("aria-activedescendant");
+  }
   if (_cmdPreviousFocus && typeof _cmdPreviousFocus.focus === "function" && document.contains(_cmdPreviousFocus)) {
     try { _cmdPreviousFocus.focus({ preventScroll: true }); } catch (e) {}
   }
@@ -992,10 +1000,10 @@ function buildPageResults() {
 
 function buildQuickActionResults() {
   return [
-    { id: "search.notes.create", icon: "Note", title: "Create note", sub: "Start a new note", kbd: "Ctrl+N", keywords: "create note new note write document" },
-    { id: "search.todos.create", icon: "Task", title: "Create task", sub: "Add a task to your list", kbd: "Ctrl+Alt+N", keywords: "create task add task new todo reminder" },
-    { id: "search.items.create", icon: "+", title: "Add file or link", sub: "File, link or folder", kbd: "Ctrl+Alt+F", keywords: "add item file link folder new create" },
-    { id: "search.calendar.create", icon: "Cal", title: "Create event", sub: "Add to calendar", kbd: "Ctrl+Alt+E", keywords: "new event add calendar create meeting schedule" },
+    { id: "search.notes.create", icon: "Note", title: "Create note", sub: "Start a new note", kbd: "Ctrl+N", keywords: "create note new note write document creer créer nouvelle note ecrire écrire document" },
+    { id: "search.todos.create", icon: "Task", title: "Create task", sub: "Add a task to your list", kbd: "Ctrl+Alt+N", keywords: "create task add task new todo reminder creer créer nouvelle tache tâche rappel" },
+    { id: "search.items.create", icon: "+", title: "Add file or link", sub: "File, link or folder", kbd: "Ctrl+Alt+F", keywords: "add item file link folder new create ajouter fichier lien dossier creer créer" },
+    { id: "search.calendar.create", icon: "Cal", title: "Create event", sub: "Add to calendar", kbd: "Ctrl+Alt+E", keywords: "new event add calendar create meeting schedule creer créer nouvel evenement événement calendrier reunion réunion" },
     { id: "search.theme.change", icon: "Theme", title: "Change theme", sub: "Open Appearance settings", keywords: "change theme appearance accent color density typography background purple" },
     { id: "search.applibrary.open", icon: "Apps", title: "Open App Library", sub: "Search, pin, hide and organize apps", kbd: "Ctrl+Shift+L", keywords: "app library apps applications ios launcher springboard pin hide folder organize" },
     { id: "search.universe.open", icon: "Orbit", title: "Open ETHONE Universe", sub: "Planet navigation for Spaces", kbd: "Ctrl+Shift+U", keywords: "universe planets spaces immersive navigation gaming dev study brain files calendar marketplace settings" },
@@ -1882,6 +1890,7 @@ function renderCmdResults() {
   if (!all.length) {
     container.innerHTML = '<div class="cmd-empty-state"><i data-lucide="search-x" aria-hidden="true"></i><strong>' + cmdEsc(cmdCopy("noResult")) + '</strong><span>' + cmdEsc(cmdCopy("emptyHelp")) + '</span></div>';
     container.removeAttribute("aria-activedescendant");
+    if (input) input.removeAttribute("aria-activedescendant");
     cmdRenderIcons(container);
     return;
   }
@@ -1917,8 +1926,13 @@ function renderCmdResults() {
   cmdRenderIcons(container);
   try { window.dispatchEvent(new CustomEvent("ethone:command-palette-rendered", { detail: { root: "cmd-results" } })); } catch (e) {}
   const active = container.querySelector(".cmd-item.selected");
-  if (active) container.setAttribute("aria-activedescendant", active.id || "");
-  else container.removeAttribute("aria-activedescendant");
+  if (active) {
+    container.setAttribute("aria-activedescendant", active.id || "");
+    if (input) input.setAttribute("aria-activedescendant", active.id || "");
+  } else {
+    container.removeAttribute("aria-activedescendant");
+    if (input) input.removeAttribute("aria-activedescendant");
+  }
   if (_cmdKeyboardNav) {
     const selected = container.querySelector(".cmd-item.selected");
     if (selected) selected.scrollIntoView({ block: "nearest" });

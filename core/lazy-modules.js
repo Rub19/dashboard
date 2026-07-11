@@ -10,6 +10,7 @@
   var loadingGroups = Object.create(null);
   var pageLoadState = Object.create(null);
   var disabledNotified = Object.create(null);
+  var pendingResources = typeof WeakMap === "function" ? new WeakMap() : null;
   var PAGE_GROUPS = {
     dashboard: ["dashboard"],
     ai: ["ai"],
@@ -136,20 +137,26 @@
   }
 
   function appendScript(template) {
-    return new Promise(function (resolve) {
+    if (!template || template.dataset.ethoneLazyLoaded === "1") return Promise.resolve();
+    if (pendingResources && pendingResources.has(template)) return pendingResources.get(template);
+    var promise = new Promise(function (resolve) {
       if (!template || template.dataset.ethoneLazyLoaded === "1") return resolve();
       var src = template.dataset.src;
       if (!src) return resolve();
       var started = Date.now();
       var moduleName = template.id || src;
       bootStatus(moduleName, "waiting", { src: src });
+      template.dataset.ethoneLazyActivating = "1";
       var script = document.createElement("script");
+      // Dynamically inserted scripts with async=false are fetched together but
+      // still execute in insertion order, preserving legacy dependencies.
       script.async = false;
       script.src = src;
       script.id = (template.id || "ethone-lazy-script") + "-loaded";
       script.dataset.ethoneLazyLoadedFrom = template.id || "";
       script.onload = function () {
         template.dataset.ethoneLazyLoaded = "1";
+        delete template.dataset.ethoneLazyActivating;
         if (window.ETHONEBootPerf && typeof window.ETHONEBootPerf.recordModule === "function") {
           window.ETHONEBootPerf.recordModule(moduleName, Date.now() - started);
         }
@@ -158,16 +165,21 @@
       };
       script.onerror = function () {
         template.dataset.ethoneLazyError = "1";
+        delete template.dataset.ethoneLazyActivating;
         bootStatus(moduleName, "failed", { src: src, duration: Date.now() - started, error: "Script load failed" });
         toast("Module indisponible: " + (template.id || src), "error");
         resolve();
       };
       document.head.appendChild(script);
     });
+    if (pendingResources) pendingResources.set(template, promise);
+    return promise;
   }
 
   function appendStyle(template) {
-    return new Promise(function (resolve) {
+    if (!template || template.dataset.ethoneLazyLoaded === "1") return Promise.resolve();
+    if (pendingResources && pendingResources.has(template)) return pendingResources.get(template);
+    var promise = new Promise(function (resolve) {
       if (!template || template.dataset.ethoneLazyLoaded === "1") return resolve();
       var href = template.dataset.href;
       if (!href) return resolve();
@@ -192,6 +204,8 @@
       // global release/design-system layers after navigation.
       template.href = href;
     });
+    if (pendingResources) pendingResources.set(template, promise);
+    return promise;
   }
 
   function loadGroup(group) {
@@ -211,13 +225,9 @@
       return Promise.resolve(true);
     }
     bootStatus("lazy:" + group, "waiting", { count: scripts.length + styles.length, scripts: scripts.length, styles: styles.length });
-    var styleChain = styles.reduce(function (promise, style) {
-      return promise.then(function () { return appendStyle(style); });
-    }, Promise.resolve());
-    loadingGroups[group] = styleChain.then(function () {
-      return scripts.reduce(function (promise, script) {
-      return promise.then(function () { return appendScript(script); });
-      }, Promise.resolve());
+    var styleBatch = Promise.all(styles.map(appendStyle));
+    loadingGroups[group] = styleBatch.then(function () {
+      return Promise.all(scripts.map(appendScript));
     }).then(function () {
       loadedGroups[group] = true;
       delete loadingGroups[group];

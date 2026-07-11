@@ -166,7 +166,9 @@
       if (c.spotify && (c.spotify.widgetUrl || c.spotify.connected || c.spotify.status === "connected")) return true;
       if (c.lastfm && (c.lastfm.username || c.lastfm.connected)) return true;
       var eq = document.getElementById("np-fallback-eq");
-      if (eq && getComputedStyle(eq).display !== "none") return true;
+      // Spotify owns this inline display flag. Reading it avoids a synchronous
+      // style/layout flush while a page is mounting.
+      if (eq && eq.style.display !== "none") return true;
     } catch (e) {}
     return false;
   }

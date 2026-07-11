@@ -80,6 +80,12 @@
     return read(OPEN_KEY,"0")==="1"?"open":"closed";
   }
   function ensureControls(){
+    handle.setAttribute("role","separator");
+    handle.setAttribute("aria-label","Redimensionner le panneau Widgets");
+    handle.setAttribute("aria-orientation","vertical");
+    handle.setAttribute("aria-valuemin",String(MIN_W));
+    handle.setAttribute("aria-valuemax",String(MAX_W));
+    handle.setAttribute("tabindex","0");
     var actions=panel.querySelector(".live-panel-header-actions");
     var collapse=document.getElementById("live-panel-retract-btn");
     if(collapse){
@@ -149,6 +155,7 @@
   function setMode(mode,options){
     mode=mode==="open"||mode==="rail"||mode==="closed"?mode:"closed";
     if(window.innerWidth<=MOBILE_BREAKPOINT&&mode==="rail")mode="closed";
+    if(mode!=="open"&&dragging)endDrag();
     var open=mode==="open";
     var rail=mode==="rail";
     if(mode!=="closed"&&document.body)document.body.classList.remove("ethone-emergency-minimal");
@@ -203,6 +210,7 @@
     raf=null;
     if(pendingW==null)return;
     applyWidth(pendingW);
+    handle.setAttribute("aria-valuenow",String(clampWidth(pendingW)));
   }
   function scheduleWidth(value){
     pendingW=clampWidth(value);
@@ -210,6 +218,7 @@
   }
   function beginDrag(event){
     if(currentMode()!=="open")return;
+    if(event.button!=null&&event.button!==0)return;
     dragging=true;
     pointerId=event.pointerId;
     startX=event.clientX;
@@ -221,10 +230,13 @@
   }
   function moveDrag(event){
     if(!dragging)return;
+    if(pointerId!=null&&event.pointerId!=null&&event.pointerId!==pointerId)return;
     scheduleWidth(startW+(startX-event.clientX));
+    event.preventDefault();
   }
-  function endDrag(){
+  function endDrag(event){
     if(!dragging)return;
+    if(event&&pointerId!=null&&event.pointerId!=null&&event.pointerId!==pointerId)return;
     dragging=false;
     if(raf!=null){cancelAnimationFrame(raf);raf=null}
     if(pendingW!=null){applyWidth(pendingW);pendingW=null}
@@ -233,20 +245,39 @@
     var width=clampWidth(panel.getBoundingClientRect().width||read(WIDTH_KEY,DEFAULT_W));
     write(WIDTH_KEY,width);
     write("lp_width",width);
+    handle.setAttribute("aria-valuenow",String(width));
     try{if(pointerId!=null)handle.releasePointerCapture(pointerId)}catch(e){}
     pointerId=null;
   }
 
   if(window.PointerEvent){
     handle.addEventListener("pointerdown",beginDrag);
-    handle.addEventListener("pointermove",moveDrag);
-    handle.addEventListener("pointerup",endDrag);
-    handle.addEventListener("pointercancel",endDrag);
+    document.addEventListener("pointermove",moveDrag,{capture:true,passive:false});
+    document.addEventListener("pointerup",endDrag,true);
+    document.addEventListener("pointercancel",endDrag,true);
+    handle.addEventListener("lostpointercapture",endDrag);
   }else{
     handle.addEventListener("mousedown",beginDrag);
     document.addEventListener("mousemove",moveDrag);
     document.addEventListener("mouseup",endDrag);
   }
+  handle.setAttribute("aria-valuenow",String(clampWidth(read(WIDTH_KEY,DEFAULT_W))));
+  handle.addEventListener("keydown",function(event){
+    if(currentMode()!=="open")return;
+    var current=clampWidth(panel.getBoundingClientRect().width||read(WIDTH_KEY,DEFAULT_W));
+    var target=current;
+    if(event.key==="ArrowLeft")target=current+(event.shiftKey?40:10);
+    else if(event.key==="ArrowRight")target=current-(event.shiftKey?40:10);
+    else if(event.key==="Home")target=MIN_W;
+    else if(event.key==="End")target=MAX_W;
+    else return;
+    event.preventDefault();
+    var width=applyWidth(target);
+    write(WIDTH_KEY,width);
+    write("lp_width",width);
+    handle.setAttribute("aria-valuenow",String(width));
+  });
+  window.addEventListener("blur",endDrag);
   handle.addEventListener("dblclick",function(event){
     event.preventDefault();
     var width=applyWidth(DEFAULT_W);
@@ -261,7 +292,8 @@
     try{new MutationObserver(syncEmptyState).observe(body,{childList:true,subtree:true,attributes:true,attributeFilter:["style","class","hidden"]})}catch(e){}
   }
   document.addEventListener("keydown",function(event){
-    if(event.key==="Escape"&&currentMode()!=="closed")setMode("closed");
+    if(event.key==="Escape"&&dragging)endDrag();
+    else if(event.key==="Escape"&&currentMode()!=="closed")setMode("closed");
   });
   window.addEventListener("resize",function(){
     var width=applyWidth(read(WIDTH_KEY,DEFAULT_W));
@@ -320,6 +352,7 @@
       width=applyWidth(width);
       write(WIDTH_KEY,width);
       write("lp_width",width);
+      handle.setAttribute("aria-valuenow",String(width));
       return width;
     },
     currentWidth:function(){return clampWidth(read(WIDTH_KEY,DEFAULT_W))},

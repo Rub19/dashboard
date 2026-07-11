@@ -91,6 +91,11 @@
   function installToastSystem(){
     if(window.__ethoneToastSystem)return;
     window.__ethoneToastSystem=true;
+    if(window.ETHONENotifications&&typeof window.ETHONENotifications.toast==="function"){
+      window.ethoneToast=window.ETHONENotifications.toast;
+      window.toast=window.ETHONENotifications.toast;
+      return;
+    }
     var active={};
     var timers=new WeakMap();
     var maxToasts=5;

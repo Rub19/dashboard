@@ -202,6 +202,11 @@
       button.hidden = !available;
       button.inert = !available;
       button.setAttribute("aria-hidden", available ? "false" : "true");
+      if (!available) {
+        button.classList.remove("active");
+        button.setAttribute("aria-selected", "false");
+        button.tabIndex = -1;
+      }
       var icon = qs(".settings-nav-icon", button);
       if (icon) icon.innerHTML = iconMarkup(META[tab].icon);
       var label = button.querySelector("span:last-child");

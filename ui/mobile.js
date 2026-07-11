@@ -8,6 +8,7 @@
   var mqMobile=window.matchMedia?window.matchMedia("(max-width: 768px)"):null;
   var mqTablet=window.matchMedia?window.matchMedia("(max-width: 1024px)"):null;
   var navReady=false;
+  var booted=false;
 
   var NAV_ITEMS=[
     {id:"dashboard",label:"Home",icon:"layout-dashboard",action:"dashboard.open",page:"dashboard"},
@@ -190,9 +191,33 @@
 
   function applyClasses(){
     if(!document.body)return;
-    document.body.classList.toggle("ethone-mobile",isMobile());
-    document.body.classList.toggle("ethone-tablet",isTablet()&&!isMobile());
-    if(isMobile()){
+    var mobile=isMobile();
+    var tablet=isTablet()&&!mobile;
+    var sidebar=qs("#main-sidebar");
+    var overlay=qs("#sidebar-overlay");
+    document.body.classList.toggle("ethone-mobile",mobile);
+    document.body.classList.toggle("ethone-tablet",tablet);
+    if(mobile||tablet){
+      var drawerOpen=!!(sidebar&&sidebar.classList.contains("mobile-open"));
+      if(typeof window.syncMobileSidebarA11y==="function")window.syncMobileSidebarA11y(sidebar,drawerOpen);
+      else if(sidebar){
+        sidebar.inert=!drawerOpen;
+        sidebar.setAttribute("aria-hidden",drawerOpen?"false":"true");
+      }
+      if(overlay)overlay.setAttribute("aria-hidden",drawerOpen?"false":"true");
+    }else{
+      if(sidebar)sidebar.classList.remove("mobile-open");
+      if(sidebar){
+        sidebar.inert=false;
+        sidebar.removeAttribute("aria-hidden");
+        sidebar.removeAttribute("aria-expanded");
+      }
+      if(overlay){
+        overlay.classList.remove("mobile-open");
+        overlay.setAttribute("aria-hidden","true");
+      }
+    }
+    if(mobile){
       ensureNav();
       enhanceTopbar();
       var active=qs(".tab-content.active[id^='page-']");
@@ -208,6 +233,8 @@
   }
 
   function boot(){
+    if(booted)return;
+    booted=true;
     installSetMobNavBridge();
     ensureNav();
     applyClasses();
@@ -246,6 +273,6 @@
     isMobile:isMobile
   };
 
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});
-  else boot();
+  if(document.body)boot();
+  else document.addEventListener("DOMContentLoaded",boot,{once:true});
 })();

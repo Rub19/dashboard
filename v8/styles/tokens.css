@@ -1,0 +1,209 @@
+:root {
+  color-scheme: dark;
+
+  --v8-canvas: #080a0d;
+  --v8-canvas-raised: #0c0f13;
+  --v8-surface-sunken: #0a0d11;
+  --v8-surface-1: #11151a;
+  --v8-surface-2: #171c22;
+  --v8-surface-3: #1d232a;
+  --v8-surface-hover: #222831;
+  --v8-surface-pressed: #282f39;
+  --v8-surface-glint: rgba(255, 255, 255, 0.025);
+  --v8-overlay: linear-gradient(180deg, rgba(5, 7, 10, 0.66), rgba(3, 5, 7, 0.84));
+  --v8-glass: rgba(17, 20, 25, 0.82);
+
+  --v8-border: rgba(236, 244, 255, 0.09);
+  --v8-border-strong: rgba(236, 244, 255, 0.16);
+  --v8-border-highlight: rgba(236, 244, 255, 0.21);
+  --v8-divider: rgba(236, 244, 255, 0.065);
+  --v8-scrollbar: rgba(236, 244, 255, 0.18);
+  --v8-scrollbar-hover: rgba(236, 244, 255, 0.28);
+
+  --v8-text: #f4f7fa;
+  --v8-text-secondary: #b6bec8;
+  --v8-muted: #7f8995;
+  --v8-inverse: #07110e;
+
+  --v8-accent: #7be5c3;
+  --v8-accent-hover: #95ecd0;
+  --v8-accent-pressed: #62cfae;
+  --v8-accent-soft: rgba(123, 229, 195, 0.12);
+  --v8-accent-line: rgba(123, 229, 195, 0.44);
+  --v8-swatch-mint: #7be5c3;
+  --v8-swatch-sky: #8bc9fa;
+  --v8-swatch-amber: #edc477;
+  --v8-swatch-violet: #b8a5ff;
+  --v8-swatch-rose: #f394b3;
+  --v8-brain: #bca9ff;
+  --v8-brain-soft: rgba(188, 169, 255, 0.13);
+  --v8-brain-line: rgba(188, 169, 255, 0.25);
+  --v8-success: #72d6a7;
+  --v8-success-glow: rgba(114, 214, 167, 0.28);
+  --v8-warning: #f0c675;
+  --v8-danger: #ff8f96;
+  --v8-danger-soft: rgba(255, 143, 150, 0.12);
+  --v8-danger-soft-hover: rgba(255, 143, 150, 0.18);
+  --v8-info: #88c5f7;
+  --v8-skeleton-highlight: rgba(255, 255, 255, 0.035);
+  --v8-header-glass: rgba(9, 11, 14, 0.92);
+  --v8-dialog-glass: rgba(17, 20, 25, 0.96);
+  --v8-mobile-glass: rgba(13, 16, 20, 0.96);
+
+  --v8-font: "Inter", "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --v8-mono: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  --v8-font-xs: 0.75rem;
+  --v8-font-sm: 0.8125rem;
+  --v8-font-md: 0.875rem;
+  --v8-font-lg: 1rem;
+  --v8-font-xl: 1.25rem;
+  --v8-font-2xl: 1.625rem;
+  --v8-font-3xl: 2.125rem;
+  --v8-line-tight: 1.2;
+  --v8-line-base: 1.5;
+  --v8-line-relaxed: 1.65;
+  --v8-weight-regular: 400;
+  --v8-weight-medium: 550;
+  --v8-weight-semibold: 650;
+  --v8-weight-bold: 700;
+
+  --v8-space-1: 0.25rem;
+  --v8-space-2: 0.5rem;
+  --v8-space-3: 0.75rem;
+  --v8-space-4: 1rem;
+  --v8-space-5: 1.25rem;
+  --v8-space-6: 1.5rem;
+  --v8-space-7: 2rem;
+  --v8-space-8: 2.5rem;
+  --v8-space-9: 3rem;
+  --v8-space-10: 4rem;
+
+  --v8-radius-xs: 3px;
+  --v8-radius-sm: 5px;
+  --v8-radius-md: 8px;
+  --v8-radius-pill: 999px;
+
+  --v8-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.24), 0 8px 24px rgba(0, 0, 0, 0.1);
+  --v8-shadow-2: 0 16px 48px rgba(0, 0, 0, 0.34), 0 2px 8px rgba(0, 0, 0, 0.18);
+  --v8-shadow-key: inset 0 1px 0 var(--v8-surface-glint), 0 10px 28px rgba(0, 0, 0, 0.22);
+  --v8-shadow-float: inset 0 1px 0 var(--v8-surface-glint), 0 28px 70px rgba(0, 0, 0, 0.36), 0 2px 8px rgba(0, 0, 0, 0.18);
+  --v8-shadow-focus: 0 0 0 3px rgba(123, 229, 195, 0.2);
+  --v8-blur: 18px;
+  --v8-blur-backdrop: 10px;
+  --v8-saturate: 118%;
+
+  --v8-motion-instant: 90ms;
+  --v8-motion-fast: 140ms;
+  --v8-motion-base: 200ms;
+  --v8-motion-slow: 240ms;
+  --v8-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --v8-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --v8-ease-press: cubic-bezier(0.3, 0, 0.2, 1);
+  --v8-ease-window: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --v8-interaction-duration: var(--v8-motion-fast);
+  --v8-interaction-hover-transform: translate3d(0, -1px, 0) scale(1.006);
+  --v8-interaction-press-transform: translate3d(0, 0, 0) scale(0.985);
+  --v8-interaction-shadow: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.22)) drop-shadow(0 0 7px color-mix(in srgb, var(--v8-accent) 7%, transparent));
+  --v8-interaction-filter: brightness(1.055) saturate(1.03) var(--v8-interaction-shadow);
+
+  --v8-icon-sm: 16px;
+  --v8-icon-md: 20px;
+  --v8-icon-lg: 24px;
+  --v8-control-sm: 32px;
+  --v8-control-md: 38px;
+  --v8-control-lg: 44px;
+
+  --v8-z-base: 0;
+  --v8-z-rail: 20;
+  --v8-z-header: 30;
+  --v8-z-panel: 50;
+  --v8-z-popover: 70;
+  --v8-z-toast: 80;
+  --v8-z-dialog: 100;
+  --v8-z-tooltip: 120;
+}
+
+:root[data-accent="sky"] {
+  --v8-accent: #8bc9fa;
+  --v8-accent-hover: #a3d6fc;
+  --v8-accent-pressed: #71b4e8;
+  --v8-accent-soft: rgba(139, 201, 250, 0.13);
+  --v8-accent-line: rgba(139, 201, 250, 0.44);
+  --v8-shadow-focus: 0 0 0 3px rgba(139, 201, 250, 0.2);
+}
+
+:root[data-accent="amber"] {
+  --v8-accent: #edc477;
+  --v8-accent-hover: #f2d18f;
+  --v8-accent-pressed: #d7ac5c;
+  --v8-accent-soft: rgba(237, 196, 119, 0.13);
+  --v8-accent-line: rgba(237, 196, 119, 0.44);
+  --v8-shadow-focus: 0 0 0 3px rgba(237, 196, 119, 0.2);
+}
+
+:root[data-accent="violet"] {
+  --v8-accent: #b8a5ff;
+  --v8-accent-hover: #c9bbff;
+  --v8-accent-pressed: #9e87ee;
+  --v8-accent-soft: rgba(184, 165, 255, 0.13);
+  --v8-accent-line: rgba(184, 165, 255, 0.44);
+  --v8-shadow-focus: 0 0 0 3px rgba(184, 165, 255, 0.2);
+}
+
+:root[data-accent="rose"] {
+  --v8-accent: #f394b3;
+  --v8-accent-hover: #f7abc4;
+  --v8-accent-pressed: #dc7899;
+  --v8-accent-soft: rgba(243, 148, 179, 0.13);
+  --v8-accent-line: rgba(243, 148, 179, 0.44);
+  --v8-shadow-focus: 0 0 0 3px rgba(243, 148, 179, 0.2);
+}
+
+:root[data-theme="graphite"] {
+  color-scheme: dark;
+  --v8-canvas: #111317;
+  --v8-canvas-raised: #15181d;
+  --v8-surface-sunken: #101216;
+  --v8-surface-1: #191d22;
+  --v8-surface-2: #20252b;
+  --v8-surface-3: #282e35;
+  --v8-surface-hover: #2d343c;
+  --v8-surface-pressed: #343c45;
+  --v8-header-glass: rgba(18, 21, 25, 0.94);
+  --v8-dialog-glass: rgba(24, 28, 33, 0.97);
+  --v8-mobile-glass: rgba(19, 22, 27, 0.97);
+  --v8-border: rgba(244, 248, 255, 0.1);
+  --v8-border-strong: rgba(244, 248, 255, 0.18);
+  --v8-text-secondary: #c2c8d0;
+  --v8-muted: #8f98a3;
+}
+
+:root[data-space="focus"] {
+  --v8-canvas: #070b10;
+  --v8-canvas-raised: #0b1118;
+  --v8-surface-sunken: #080d13;
+}
+
+:root[data-space="studio"] {
+  --v8-canvas: #0d090d;
+  --v8-canvas-raised: #130e13;
+  --v8-surface-sunken: #0e0a0f;
+}
+
+:root[data-density="compact"] {
+  --v8-control-sm: 30px;
+  --v8-control-md: 34px;
+  --v8-control-lg: 40px;
+  --v8-space-5: 1rem;
+  --v8-space-6: 1.25rem;
+  --v8-space-7: 1.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --v8-interaction-hover-transform: none;
+    --v8-interaction-press-transform: none;
+    --v8-interaction-filter: brightness(1.025);
+  }
+}

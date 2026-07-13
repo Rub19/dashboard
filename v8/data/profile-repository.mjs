@@ -1,0 +1,724 @@
+import { localeTag } from "../i18n/catalog.mjs";
+
+export const PROFILE_STORAGE_KEY = "myspace_profiles_backup";
+export const ACTIVE_PROFILE_KEY = "ethone:v8-profile-id";
+export const PROFILE_OWNER_KEY = "myspace_profiles_backup_owner";
+export const SCOPED_PROFILE_PREFIX = "ethone:v8:profiles:";
+
+const COLLECTIONS = Object.freeze({ notes: "notes", tasks: "todos", events: "events", files: "items" });
+const CONNECTION_STATUSES = new Set(["connected", "disconnected", "error", "syncing", "permission-denied", "token-expired"]);
+const ACTIVITY_CATEGORIES = new Set(["media", "social", "gaming", "development", "work", "study", "productivity", "brain", "system"]);
+const PROFILE_TYPES = new Set(["personal", "work", "development", "study", "gaming", "streaming", "creative"]);
+const PROFILE_COPY = Object.freeze({
+  personal: "Votre environnement quotidien.",
+  work: "Un espace concentré sur vos priorités.",
+  development: "Code, documentation et outils réunis.",
+  study: "Cours, planning et concentration.",
+  gaming: "Sessions, progression et communauté.",
+  streaming: "Production, direct et contenus.",
+  creative: "Idées, médias et projets créatifs."
+});
+const PROFILE_ACCENTS = Object.freeze({
+  personal: "mint",
+  work: "sky",
+  development: "sky",
+  study: "amber",
+  gaming: "violet",
+  streaming: "rose",
+  creative: "amber"
+});
+const ACCENT_VALUES = Object.freeze({
+  mint: "#34d399",
+  sky: "#38bdf8",
+  amber: "#f59e0b",
+  violet: "#8b5cf6",
+  rose: "#f472b6"
+});
+
+function text(value, fallback = "", limit = 5000) {
+  const normalized = String(value ?? "").replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, "").trim();
+  return (normalized || fallback).slice(0, limit);
+}
+
+function readJSON(storage, key, fallback) {
+  try {
+    const raw = storage?.getItem(key);
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw);
+    return parsed == null ? fallback : parsed;
+  } catch {
+    return fallback;
+  }
+}
+
+function sanitizePersistence(value, seen = new WeakSet()) {
+  if (value == null || typeof value !== "object") return value;
+  if (seen.has(value)) return null;
+  seen.add(value);
+  if (Array.isArray(value)) return value.map((entry) => sanitizePersistence(entry, seen));
+  const output = {};
+  Object.entries(value).forEach(([key, entry]) => {
+    if (/^(?:password|passcode|pin)$/i.test(key)) {
+      if (entry && typeof entry === "object" && entry.hash && entry.salt) {
+        output[key] = {
+          type: entry.type === "pin" ? "pin" : "text",
+          algorithm: text(entry.algorithm, "PBKDF2-SHA256", 32),
+          version: Number(entry.version) || 2,
+          iterations: Number(entry.iterations) || 120000,
+          salt: text(entry.salt, "", 256),
+          hash: text(entry.hash, "", 512)
+        };
+      }
+      return;
+    }
+    if (/(?:token|secret|api.?key|authorization|credential|session)/i.test(key)) return;
+    output[key] = sanitizePersistence(entry, seen);
+  });
+  return output;
+}
+
+function safeUrl(value) {
+  const raw = text(value, "", 2048);
+  if (!raw) return "";
+  try {
+    const parsed = new URL(raw);
+    return parsed.protocol === "http:" || parsed.protocol === "https:" ? parsed.href : "";
+  } catch {
+    return "";
+  }
+}
+
+function inferProfileType(profile) {
+  const explicit = text(profile?.profileType || profile?.type, "", 32).toLowerCase();
+  if (PROFILE_TYPES.has(explicit)) return explicit;
+  const name = text(profile?.name, "", 80).toLowerCase();
+  if (/gaming|jeu|valorant|steam/.test(name)) return "gaming";
+  if (/dev|code|github/.test(name)) return "development";
+  if (/study|étude|etude|school|cours/.test(name)) return "study";
+  if (/stream|twitch|obs/.test(name)) return "streaming";
+  if (/work|travail|pro/.test(name)) return "work";
+  if (/creative|créatif|creatif|design/.test(name)) return "creative";
+  return "personal";
+}
+
+function profileAccent(profile, type) {
+  const raw = text(profile?.theme?.customAccent || profile?.customAccent, "", 24).toLowerCase();
+  if (["#7c3aed", "#8b5cf6", "#9333ea", "#a78bfa"].includes(raw)) return "violet";
+  if (["#ef6f8f", "#f472b6", "#fb7185"].includes(raw)) return "rose";
+  if (["#38bdf8", "#60a5fa", "#8bc9fa"].includes(raw)) return "sky";
+  if (["#f59e0b", "#edc477", "#fbbf24"].includes(raw)) return "amber";
+  if (["#34d399", "#7be5c3", "#72d6a7"].includes(raw)) return "mint";
+  return PROFILE_ACCENTS[type] || "mint";
+}
+
+function profileAvatar(profile, name) {
+  const image = safeUrl(profile?.avatarImg);
+  if (image) return Object.freeze({ kind: "image", value: image });
+  const emoji = text(profile?.avatarEmoji, "", 8);
+  if (emoji) return Object.freeze({ kind: "symbol", value: emoji });
+  const initials = name.split(/\s+/).map((part) => part[0] || "").join("").slice(0, 2).toUpperCase() || "E";
+  return Object.freeze({ kind: "initials", value: initials });
+}
+
+function hasProfileLock(profile) {
+  const lock = profile?.password;
+  if (lock == null || lock === "") return false;
+  if (typeof lock === "object") return Object.keys(lock).length > 0;
+  return true;
+}
+
+function profileView(profile, index) {
+  const state = profile?.state && typeof profile.state === "object" ? profile.state : {};
+  const type = inferProfileType(profile);
+  const name = text(profile?.name || state.username, `Profil ${index + 1}`, 80);
+  const openTasks = (Array.isArray(state.todos) ? state.todos : []).filter((task) => task?.done !== true && task?.completed !== true).length;
+  return Object.freeze({
+    id: text(profile?.id, `profile-${index}`, 80),
+    name,
+    type,
+    description: text(profile?.description || state.bio, PROFILE_COPY[type], 180),
+    avatar: profileAvatar(profile, name),
+    accent: profileAccent(profile, type),
+    wallpaperTone: type,
+    locked: hasProfileLock(profile),
+    space: text(profile?.defaultSpace || profile?.space, type, 80),
+    flow: text(profile?.defaultFlow || profile?.flow || state.activeFlow, "Essentiel", 80),
+    lastActiveAt: text(profile?.lastActiveAt || profile?.updatedAt || state.lastActiveAt || state.updatedAt, "", 40),
+    counts: Object.freeze({
+      notes: (Array.isArray(state.notes) ? state.notes : []).length,
+      openTasks,
+      events: (Array.isArray(state.events) ? state.events : []).length,
+      files: (Array.isArray(state.items) ? state.items : []).length
+    })
+  });
+}
+
+function result(ok, status, message, data = null) {
+  return Object.freeze({ ok, status, message, data });
+}
+
+function noteView(note, index) {
+  return Object.freeze({
+    id: text(note?.id, `note-${index}`, 80),
+    title: text(note?.title || note?.name, "Note sans titre", 160),
+    content: text(note?.content || note?.body, "", 50000),
+    tags: Object.freeze((Array.isArray(note?.tags) ? note.tags : []).map((tag) => text(tag, "", 32)).filter(Boolean).slice(0, 12)),
+    pinned: note?.pinned === true,
+    createdAt: text(note?.created || note?.createdAt, "", 40),
+    updatedAt: text(note?.updated || note?.updatedAt, "", 40)
+  });
+}
+
+function taskView(task, index) {
+  return Object.freeze({
+    id: text(task?.id, `task-${index}`, 80),
+    title: text(task?.text || task?.title, "Tâche sans titre", 240),
+    done: task?.done === true || task?.completed === true,
+    priority: ["low", "normal", "high"].includes(task?.priority) ? task.priority : "normal",
+    due: text(task?.due, "", 16),
+    tag: text(task?.tag, "", 48),
+    createdAt: text(task?.createdAt, "", 40),
+    doneAt: text(task?.doneAt, "", 40)
+  });
+}
+
+function eventView(event, index) {
+  return Object.freeze({
+    id: text(event?.id, `event-${index}`, 80),
+    title: text(event?.title || event?.name, "Événement", 180),
+    date: text(event?.date || event?.start, "", 16),
+    color: text(event?.color, "accent", 32)
+  });
+}
+
+function fileView(item, index, favorites) {
+  const id = text(item?.id, `file-${index}`, 80);
+  return Object.freeze({
+    id,
+    name: text(item?.name || item?.title, "Sans titre", 180),
+    type: ["file", "doc", "link", "image", "folder", "code", "video"].includes(item?.type) ? item.type : "file",
+    url: safeUrl(item?.url || item?.link),
+    tag: text(item?.tag, "", 80),
+    date: text(item?.updatedAt || item?.createdAt || item?.date, "", 40),
+    favorite: favorites.includes(id) || item?.favorite === true
+  });
+}
+
+function activityView(entry, index) {
+  return Object.freeze({
+    id: text(entry?.id, `activity-${index}`, 80),
+    source: text(entry?.source, "ethone", 48).toLowerCase(),
+    category: ACTIVITY_CATEGORIES.has(entry?.category) ? entry.category : "system",
+    icon: text(entry?.icon, "activity", 48),
+    title: text(entry?.title, "Activite ETHONE", 180),
+    description: text(entry?.description, "", 500),
+    timestamp: text(entry?.timestamp, "", 40),
+    tone: text(entry?.tone, "default", 24)
+  });
+}
+
+function connectionView(id, connection = {}) {
+  const status = CONNECTION_STATUSES.has(connection?.status) ? connection.status : "disconnected";
+  return Object.freeze({
+    id: text(id || connection?.id, "integration", 80),
+    status,
+    setupComplete: connection?.setupComplete === true,
+    configuredAt: text(connection?.configuredAt, "", 40),
+    lastSyncAt: text(connection?.lastSyncAt, "", 40),
+    lastTestedAt: text(connection?.lastTestedAt, "", 40),
+    apiVersion: text(connection?.apiVersion, "Non connectee", 40),
+    detail: text(connection?.detail, "", 180)
+  });
+}
+
+export function createProfileRepository(options = {}) {
+  const storage = options.storage || globalThis.localStorage;
+  const requireOwner = options.requireOwner === true;
+  let ownerId = text(options.ownerId, "", 120);
+  const now = typeof options.now === "function" ? options.now : () => new Date();
+  let idSequence = 0;
+  const idFactory = typeof options.idFactory === "function"
+    ? options.idFactory
+    : () => `v8-${Date.now().toString(36)}-${(idSequence += 1).toString(36)}`;
+
+  function readProfiles() {
+    if (requireOwner && !ownerId) return [];
+    const key = ownerId ? `${SCOPED_PROFILE_PREFIX}${ownerId}` : PROFILE_STORAGE_KEY;
+    let profiles = readJSON(storage, key, null);
+    if (!Array.isArray(profiles) && ownerId) {
+      const backupOwner = text(storage?.getItem(PROFILE_OWNER_KEY), "", 120);
+      const unscoped = readJSON(storage, PROFILE_STORAGE_KEY, []);
+      const legacy = backupOwner === ownerId || (!backupOwner && Array.isArray(unscoped) && unscoped.length) ? unscoped : [];
+      profiles = Array.isArray(legacy) ? legacy : [];
+      if (profiles.length) persistRawProfiles(profiles);
+    }
+    return Array.isArray(profiles) ? profiles : [];
+  }
+
+  function persistRawProfiles(profiles) {
+    const clean = sanitizePersistence(profiles);
+    if (requireOwner && !ownerId) throw new Error("Authenticated profile owner is required.");
+    if (ownerId) {
+      storage?.setItem(`${SCOPED_PROFILE_PREFIX}${ownerId}`, JSON.stringify(clean));
+      storage?.setItem(PROFILE_OWNER_KEY, ownerId);
+    }
+    storage?.setItem(PROFILE_STORAGE_KEY, JSON.stringify(clean));
+    return clean;
+  }
+
+  function setOwner(nextOwnerId) {
+    ownerId = text(nextOwnerId, "", 120);
+    if (!ownerId) return result(false, "unavailable", "Authenticated owner is missing.");
+    const profiles = readProfiles();
+    persistRawProfiles(profiles);
+    return result(true, "completed", "User storage isolated.", { ownerId, profiles: profiles.length });
+  }
+
+  function activeProfileIndex(profiles) {
+    let requested = "";
+    try { requested = text(storage?.getItem(ACTIVE_PROFILE_KEY), "", 80); } catch {}
+    const found = requested ? profiles.findIndex((profile) => String(profile?.id) === requested) : -1;
+    return found >= 0 ? found : (profiles.length ? 0 : -1);
+  }
+
+  function snapshot() {
+    const profiles = readProfiles();
+    const index = activeProfileIndex(profiles);
+    if (index < 0) {
+      return Object.freeze({ profile: null, notes: Object.freeze([]), tasks: Object.freeze([]), events: Object.freeze([]), files: Object.freeze([]), activities: Object.freeze([]), connections: Object.freeze([]) });
+    }
+    const profile = profiles[index] || {};
+    const state = profile.state && typeof profile.state === "object" ? profile.state : {};
+    const favorites = Array.isArray(state.filesExplorer?.favorites) ? state.filesExplorer.favorites.map(String) : [];
+    return Object.freeze({
+      profile: Object.freeze({ id: text(profile.id, "local", 80), name: text(profile.name || state.username, "Rub", 80) }),
+      notes: Object.freeze((Array.isArray(state.notes) ? state.notes : []).map(noteView)),
+      tasks: Object.freeze((Array.isArray(state.todos) ? state.todos : []).map(taskView)),
+      events: Object.freeze((Array.isArray(state.events) ? state.events : []).map(eventView)),
+      files: Object.freeze((Array.isArray(state.items) ? state.items : []).map((item, itemIndex) => fileView(item, itemIndex, favorites))),
+      activities: Object.freeze((Array.isArray(state.activityFeed) ? state.activityFeed : []).map(activityView)),
+      connections: Object.freeze(Object.entries(state.connections && typeof state.connections === "object" ? state.connections : {}).map(([id, connection]) => connectionView(id, connection)))
+    });
+  }
+
+  function listProfiles() {
+    return Object.freeze(readProfiles().map(profileView));
+  }
+
+  function activeProfile() {
+    const profiles = readProfiles();
+    const index = activeProfileIndex(profiles);
+    return index >= 0 ? profileView(profiles[index], index) : null;
+  }
+
+  function selectProfile(id) {
+    const profiles = readProfiles();
+    const index = profiles.findIndex((profile) => String(profile?.id) === String(id));
+    if (index < 0) return result(false, "unavailable", "Ce profil n'est pas disponible.");
+    const view = profileView(profiles[index], index);
+    if (view.locked) return result(false, "unavailable", "Ce profil nécessite un déverrouillage.", view);
+    try {
+      storage?.setItem(ACTIVE_PROFILE_KEY, view.id);
+      return result(true, "completed", `Profil ${view.name} sélectionné.`, view);
+    } catch (error) {
+      return result(false, "failed", "Le profil n'a pas pu être sélectionné.", error);
+    }
+  }
+
+  function persistProfiles(profiles, message, data) {
+    try {
+      persistRawProfiles(profiles);
+      return result(true, "completed", message, data ?? null);
+    } catch (error) {
+      return result(false, "failed", "L'enregistrement local a échoué.", error);
+    }
+  }
+
+  function createProfile(input = {}) {
+    const profiles = readProfiles();
+    const type = PROFILE_TYPES.has(input.type) ? input.type : "personal";
+    const accent = Object.hasOwn(ACCENT_VALUES, input.accent) ? input.accent : PROFILE_ACCENTS[type];
+    const timestamp = now().toISOString();
+    const name = text(input.name, "Nouvel environnement", 80);
+    const profile = {
+      id: String(idFactory()),
+      name,
+      profileType: type,
+      description: text(input.description, PROFILE_COPY[type], 180),
+      avatarEmoji: text(input.avatar, name.slice(0, 2).toUpperCase(), 8),
+      avatarImg: null,
+      customAccent: ACCENT_VALUES[accent],
+      defaultSpace: text(input.space, type, 80),
+      defaultFlow: text(input.flow, "Essentiel", 80),
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      state: { username: name, notes: [], todos: [], events: [], items: [] }
+    };
+    profiles.push(profile);
+    return persistProfiles(profiles, `Profil ${name} créé.`, profileView(profile, profiles.length - 1));
+  }
+
+  function updateProfile(id, patch = {}) {
+    const profiles = readProfiles();
+    const index = profiles.findIndex((profile) => String(profile?.id) === String(id));
+    if (index < 0) return result(false, "unavailable", "Ce profil n'est pas disponible.");
+    const profile = profiles[index];
+    const nextType = Object.hasOwn(patch, "type") && PROFILE_TYPES.has(patch.type)
+      ? patch.type
+      : inferProfileType(profile);
+    if (Object.hasOwn(patch, "name")) {
+      profile.name = text(patch.name, profileView(profile, index).name, 80);
+      if (profile.state && typeof profile.state === "object") profile.state.username = profile.name;
+    }
+    if (Object.hasOwn(patch, "description")) profile.description = text(patch.description, PROFILE_COPY[nextType], 180);
+    if (Object.hasOwn(patch, "type")) profile.profileType = nextType;
+    if (Object.hasOwn(patch, "avatar")) {
+      profile.avatarEmoji = text(patch.avatar, profile.name?.slice(0, 2).toUpperCase() || "E", 8);
+      profile.avatarImg = null;
+    }
+    if (Object.hasOwn(patch, "accent") && Object.hasOwn(ACCENT_VALUES, patch.accent)) {
+      profile.customAccent = ACCENT_VALUES[patch.accent];
+    }
+    if (Object.hasOwn(patch, "space")) profile.defaultSpace = text(patch.space, nextType, 80);
+    if (Object.hasOwn(patch, "flow")) profile.defaultFlow = text(patch.flow, "Essentiel", 80);
+    profile.updatedAt = now().toISOString();
+    return persistProfiles(profiles, `Profil ${profileView(profile, index).name} mis à jour.`, profileView(profile, index));
+  }
+
+  function duplicateProfile(id) {
+    const profiles = readProfiles();
+    const index = profiles.findIndex((profile) => String(profile?.id) === String(id));
+    if (index < 0) return result(false, "unavailable", "Ce profil n'est pas disponible.");
+    try {
+      const duplicate = JSON.parse(JSON.stringify(profiles[index]));
+      duplicate.id = String(idFactory());
+      duplicate.name = `${text(duplicate.name, `Profil ${index + 1}`, 70)} — copie`;
+      duplicate.createdAt = now().toISOString();
+      duplicate.updatedAt = duplicate.createdAt;
+      delete duplicate.password;
+      if (duplicate.state && typeof duplicate.state === "object") duplicate.state.username = duplicate.name;
+      profiles.push(duplicate);
+      return persistProfiles(profiles, `Profil ${duplicate.name} créé.`, profileView(duplicate, profiles.length - 1));
+    } catch (error) {
+      return result(false, "failed", "Le profil n'a pas pu être dupliqué.", error);
+    }
+  }
+
+  function deleteProfile(id) {
+    const profiles = readProfiles();
+    if (profiles.length <= 1) return result(false, "unavailable", "Le dernier profil ne peut pas être supprimé.");
+    const index = profiles.findIndex((profile) => String(profile?.id) === String(id));
+    if (index < 0) return result(false, "unavailable", "Ce profil n'est pas disponible.");
+    const [removed] = profiles.splice(index, 1);
+    const activeId = text(storage?.getItem(ACTIVE_PROFILE_KEY), "", 80);
+    const nextActive = activeId === String(id)
+      ? (profiles.find((profile) => !hasProfileLock(profile)) || profiles[0])
+      : null;
+    const persisted = persistProfiles(profiles, `Profil ${profileView(removed, index).name} supprimé.`, profileView(removed, index));
+    if (!persisted.ok || !nextActive) return persisted;
+    try { storage?.setItem(ACTIVE_PROFILE_KEY, text(nextActive.id, "", 80)); } catch {}
+    return persisted;
+  }
+
+  function sanitizedExport(value, seen = new WeakSet()) {
+    if (value == null || typeof value !== "object") return value;
+    if (seen.has(value)) return null;
+    seen.add(value);
+    if (Array.isArray(value)) return value.map((entry) => sanitizedExport(entry, seen));
+    return Object.fromEntries(Object.entries(value)
+      .filter(([key]) => !/(password|token|secret|api.?key|authorization|session)/i.test(key))
+      .map(([key, entry]) => [key, sanitizedExport(entry, seen)]));
+  }
+
+  function exportProfile(id) {
+    const profiles = readProfiles();
+    const index = profiles.findIndex((profile) => String(profile?.id) === String(id));
+    if (index < 0) return result(false, "unavailable", "Ce profil n'est pas disponible.");
+    const payload = Object.freeze({
+      format: "ethone-profile",
+      version: 1,
+      exportedAt: now().toISOString(),
+      profile: sanitizedExport(profiles[index])
+    });
+    return result(true, "completed", "Export prêt.", payload);
+  }
+
+  function mutate(collection, mutation) {
+    const key = COLLECTIONS[collection];
+    if (!key) return result(false, "failed", "Collection inconnue.");
+    const profiles = readProfiles();
+    const profileIndex = activeProfileIndex(profiles);
+    if (profileIndex < 0) return result(false, "unavailable", "Aucun profil local n'est disponible.");
+    const profile = profiles[profileIndex];
+    if (!profile.state || typeof profile.state !== "object") profile.state = {};
+    if (!Array.isArray(profile.state[key])) profile.state[key] = [];
+
+    try {
+      const data = mutation(profile.state[key], profile.state);
+      persistRawProfiles(profiles);
+      return result(true, "completed", "Enregistré localement.", data ?? null);
+    } catch (error) {
+      return result(false, "failed", "L'enregistrement local a échoué.", error);
+    }
+  }
+
+  function mutateState(mutation) {
+    const profiles = readProfiles();
+    const profileIndex = activeProfileIndex(profiles);
+    if (profileIndex < 0) return result(false, "unavailable", "Aucun profil local n'est disponible.");
+    const profile = profiles[profileIndex];
+    if (!profile.state || typeof profile.state !== "object") profile.state = {};
+    try {
+      const data = mutation(profile.state);
+      persistRawProfiles(profiles);
+      return result(true, "completed", "Enregistre localement.", data ?? null);
+    } catch (error) {
+      return result(false, "failed", "L'enregistrement local a echoue.", error);
+    }
+  }
+
+  const notes = Object.freeze({
+    create(input = {}) {
+      return mutate("notes", (list) => {
+        const timestamp = now().toISOString();
+        const note = {
+          id: String(idFactory()),
+          title: text(input.title, "Note sans titre", 160),
+          content: text(input.content, "", 50000),
+          tags: [],
+          relations: [],
+          pinned: false,
+          color: "",
+          created: timestamp,
+          updated: timestamp
+        };
+        list.unshift(note);
+        return noteView(note, 0);
+      });
+    },
+    update(id, patch = {}) {
+      return mutate("notes", (list) => {
+        const note = list.find((entry) => String(entry?.id) === String(id));
+        if (!note) throw new Error("Note introuvable");
+        if (Object.hasOwn(patch, "title")) note.title = text(patch.title, "Note sans titre", 160);
+        if (Object.hasOwn(patch, "content")) note.content = text(patch.content, "", 50000);
+        note.updated = now().toISOString();
+        return noteView(note, 0);
+      });
+    },
+    remove(id) {
+      return mutate("notes", (list) => {
+        const index = list.findIndex((entry) => String(entry?.id) === String(id));
+        if (index < 0) throw new Error("Note introuvable");
+        const [removed] = list.splice(index, 1);
+        return noteView(removed, 0);
+      });
+    }
+  });
+
+  const tasks = Object.freeze({
+    create(input = {}) {
+      return mutate("tasks", (list) => {
+        const timestamp = now().toISOString();
+        const task = {
+          id: String(idFactory()),
+          text: text(input.title, "Nouvelle tâche", 240),
+          priority: ["low", "normal", "high"].includes(input.priority) ? input.priority : "normal",
+          done: false,
+          color: "",
+          due: text(input.due, "", 16),
+          tag: text(input.tag, "", 48),
+          date: new Intl.DateTimeFormat(localeTag(), { day: "2-digit", month: "short" }).format(now()),
+          createdAt: timestamp
+        };
+        list.unshift(task);
+        return taskView(task, 0);
+      });
+    },
+    toggle(id) {
+      return mutate("tasks", (list) => {
+        const task = list.find((entry) => String(entry?.id) === String(id));
+        if (!task) throw new Error("Tâche introuvable");
+        task.done = !(task.done === true || task.completed === true);
+        if (task.done) task.doneAt = now().toISOString();
+        else delete task.doneAt;
+        return taskView(task, 0);
+      });
+    },
+    remove(id) {
+      return mutate("tasks", (list) => {
+        const index = list.findIndex((entry) => String(entry?.id) === String(id));
+        if (index < 0) throw new Error("Tâche introuvable");
+        return taskView(list.splice(index, 1)[0], 0);
+      });
+    }
+  });
+
+  const events = Object.freeze({
+    create(input = {}) {
+      return mutate("events", (list) => {
+        const event = {
+          id: String(idFactory()),
+          title: text(input.title, "Événement", 180),
+          date: text(input.date, "", 16),
+          color: "accent"
+        };
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(event.date)) throw new Error("Date invalide");
+        list.push(event);
+        list.sort((left, right) => String(left?.date || "").localeCompare(String(right?.date || "")));
+        return eventView(event, 0);
+      });
+    },
+    remove(id) {
+      return mutate("events", (list) => {
+        const index = list.findIndex((entry) => String(entry?.id) === String(id));
+        if (index < 0) throw new Error("Événement introuvable");
+        return eventView(list.splice(index, 1)[0], 0);
+      });
+    }
+  });
+
+  const files = Object.freeze({
+    create(input = {}) {
+      return mutate("files", (list) => {
+        const type = ["link", "folder"].includes(input.type) ? input.type : "link";
+        const url = type === "link" ? safeUrl(input.url) : "";
+        if (type === "link" && !url) throw new Error("Lien invalide");
+        const timestamp = now().toISOString();
+        const item = {
+          id: String(idFactory()),
+          name: text(input.name, type === "folder" ? "Nouveau dossier" : "Nouveau lien", 180),
+          type,
+          url,
+          tag: text(input.tag, "", 80),
+          date: new Intl.DateTimeFormat(localeTag(), { day: "2-digit", month: "short" }).format(now()),
+          createdAt: timestamp,
+          updatedAt: timestamp
+        };
+        list.unshift(item);
+        return fileView(item, 0, []);
+      });
+    },
+    toggleFavorite(id) {
+      return mutate("files", (list, state) => {
+        const item = list.find((entry) => String(entry?.id) === String(id));
+        if (!item) throw new Error("Fichier introuvable");
+        if (!state.filesExplorer || typeof state.filesExplorer !== "object") state.filesExplorer = {};
+        if (!Array.isArray(state.filesExplorer.favorites)) state.filesExplorer.favorites = [];
+        const favorites = state.filesExplorer.favorites.map(String);
+        const itemId = String(item.id);
+        state.filesExplorer.favorites = favorites.includes(itemId)
+          ? favorites.filter((entry) => entry !== itemId)
+          : [...favorites, itemId];
+        return fileView(item, 0, state.filesExplorer.favorites);
+      });
+    },
+    remove(id) {
+      return mutate("files", (list, state) => {
+        const index = list.findIndex((entry) => String(entry?.id) === String(id));
+        if (index < 0) throw new Error("Fichier introuvable");
+        const removed = list.splice(index, 1)[0];
+        if (Array.isArray(state.filesExplorer?.favorites)) {
+          state.filesExplorer.favorites = state.filesExplorer.favorites.map(String).filter((entry) => entry !== String(id));
+        }
+        return fileView(removed, 0, []);
+      });
+    }
+  });
+
+  const activities = Object.freeze({
+    record(input = {}) {
+      return mutateState((state) => {
+        if (!Array.isArray(state.activityFeed)) state.activityFeed = [];
+        const entry = {
+          id: String(idFactory()),
+          source: text(input.source, "ethone", 48).toLowerCase(),
+          category: ACTIVITY_CATEGORIES.has(input.category) ? input.category : "system",
+          icon: text(input.icon, "activity", 48),
+          title: text(input.title, "Activite ETHONE", 180),
+          description: text(input.description, "", 500),
+          timestamp: text(input.timestamp, now().toISOString(), 40),
+          tone: text(input.tone, "default", 24)
+        };
+        state.activityFeed.unshift(entry);
+        state.activityFeed = state.activityFeed.slice(0, 200);
+        return activityView(entry, 0);
+      });
+    },
+    clear() {
+      return mutateState((state) => {
+        state.activityFeed = [];
+        return true;
+      });
+    }
+  });
+
+  const connections = Object.freeze({
+    configure(id, input = {}) {
+      return mutateState((state) => {
+        if (!state.connections || typeof state.connections !== "object") state.connections = {};
+        const integrationId = text(id, "", 80);
+        if (!integrationId) throw new Error("Integration invalide");
+        const existing = state.connections[integrationId] && typeof state.connections[integrationId] === "object" ? state.connections[integrationId] : {};
+        state.connections[integrationId] = {
+          ...existing,
+          id: integrationId,
+          status: CONNECTION_STATUSES.has(existing.status) ? existing.status : "disconnected",
+          setupComplete: true,
+          configuredAt: now().toISOString(),
+          apiVersion: text(input.apiVersion || existing.apiVersion, "En attente d'OAuth", 40),
+          detail: text(input.detail, "Configuration locale prete. Aucun secret stocke.", 180)
+        };
+        return connectionView(integrationId, state.connections[integrationId]);
+      });
+    },
+    updateStatus(id, status, patch = {}) {
+      return mutateState((state) => {
+        if (!CONNECTION_STATUSES.has(status)) throw new Error("Etat de connexion invalide");
+        if (!state.connections || typeof state.connections !== "object") state.connections = {};
+        const integrationId = text(id, "", 80);
+        const existing = state.connections[integrationId] && typeof state.connections[integrationId] === "object" ? state.connections[integrationId] : {};
+        state.connections[integrationId] = {
+          ...existing,
+          id: integrationId,
+          status,
+          setupComplete: existing.setupComplete === true,
+          lastSyncAt: text(patch.lastSyncAt || existing.lastSyncAt, "", 40),
+          lastTestedAt: text(patch.lastTestedAt || existing.lastTestedAt, "", 40),
+          apiVersion: text(patch.apiVersion || existing.apiVersion, "Non connectee", 40),
+          detail: text(patch.detail, existing.detail || "", 180)
+        };
+        return connectionView(integrationId, state.connections[integrationId]);
+      });
+    },
+    test(id) {
+      const current = snapshot().connections.find((connection) => connection.id === String(id));
+      if (!current?.setupComplete) return result(false, "unavailable", "Terminez d'abord le guide de configuration.");
+      if (current.status !== "connected") return result(false, "unavailable", "Le connecteur est prepare, mais aucun OAuth backend n'est actif.", current);
+      return this.updateStatus(id, "connected", { lastTestedAt: now().toISOString(), lastSyncAt: current.lastSyncAt, apiVersion: current.apiVersion, detail: "Etat local verifie." });
+    },
+    disconnect(id) {
+      return this.updateStatus(id, "disconnected", { detail: "Connexion locale desactivee.", apiVersion: "Non connectee" });
+    }
+  });
+
+  return Object.freeze({
+    snapshot,
+    listProfiles,
+    activeProfile,
+    selectProfile,
+    setOwner,
+    owner: () => ownerId,
+    createProfile,
+    updateProfile,
+    duplicateProfile,
+    deleteProfile,
+    exportProfile,
+    notes,
+    tasks,
+    events,
+    files,
+    activities,
+    connections
+  });
+}

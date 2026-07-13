@@ -1,0 +1,477 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import test from "node:test";
+
+import { createAuthAdapter } from "../v8/services/auth-adapter.mjs";
+import { createNetworkClient } from "../v8/services/network-client.mjs";
+import { PROFILE_STORAGE_KEY, PROFILE_OWNER_KEY, SCOPED_PROFILE_PREFIX, createProfileRepository } from "../v8/data/profile-repository.mjs";
+import { V8_ROUTES, normalizeRoute } from "../v8/core/router.mjs";
+import { createActionFacade } from "../v8/core/actions.mjs";
+import { createPresentationStore } from "../v8/core/store.mjs";
+import { COMMANDS } from "../v8/command/catalog.mjs";
+import { searchCommands } from "../v8/command/search.mjs";
+import { INTEGRATIONS } from "../v8/data/integrations.mjs";
+import { createActivityJournal } from "../v8/data/activity-journal.mjs";
+import { DOCUMENT_CONTEXT_LABELS, formatDocumentTitle, themeColorForState, titleForContext } from "../v8/core/document-metadata.mjs";
+import { createBreadcrumbModel, createStatusModel } from "../v8/ui/shell.mjs";
+import { createWindowController } from "../v8/ui/window-system.mjs";
+import { createStyleLoader } from "../v8/core/style-loader.mjs";
+
+function memoryStorage(initial = {}) {
+  const values = new Map(Object.entries(initial));
+  return {
+    getItem: (key) => values.get(key) ?? null,
+    setItem: (key, value) => values.set(key, String(value)),
+    removeItem: (key) => values.delete(key),
+    read: (key) => values.get(key) ?? null
+  };
+}
+
+test("network client deduplicates GET requests and redacts diagnostics", async () => {
+  let calls = 0;
+  const runtime = {
+    location: { href: "https://ethone.dev/", origin: "https://ethone.dev" },
+    navigator: { onLine: true },
+    setTimeout,
+    clearTimeout,
+    fetch: async () => {
+      calls += 1;
+      await new Promise((resolve) => setTimeout(resolve, 5));
+      return new Response("{}", { status: 200 });
+    }
+  };
+  const network = createNetworkClient({ runtime });
+  await Promise.all([
+    network.request("https://api.example.test/data?token=private"),
+    network.request("https://api.example.test/data?token=private")
+  ]);
+  assert.equal(calls, 1);
+  assert.equal(network.diagnostics().recent.length, 1);
+  assert.match(network.diagnostics().recent[0].url, /%5Bredacted%5D/);
+  assert.doesNotMatch(JSON.stringify(network.diagnostics()), /private/);
+});
+
+test("auth adapter owns one client and validates restored sessions", async () => {
+  const user = { id: "user-a", email: "user@example.test" };
+  const session = { user, access_token: "must-not-leak" };
+  let factoryCalls = 0;
+  let authListener = null;
+  let unsubscribeCalls = 0;
+  let channelCleanup = 0;
+  const client = {
+    auth: {
+      getSession: async () => ({ data: { session }, error: null }),
+      getUser: async () => ({ data: { user }, error: null }),
+      signOut: async () => ({ error: null }),
+      onAuthStateChange: (listener) => {
+        authListener = listener;
+        return { data: { subscription: { unsubscribe: () => { unsubscribeCalls += 1; } } } };
+      }
+    },
+    removeAllChannels: () => { channelCleanup += 1; }
+  };
+  const adapter = createAuthAdapter({ clientFactory: async () => { factoryCalls += 1; return client; } });
+  const states = [];
+  const release = adapter.subscribeState((state) => states.push(state.status));
+  await Promise.all([adapter.initialize(), adapter.initialize()]);
+  const restored = await adapter.getSession();
+  assert.equal(factoryCalls, 1);
+  assert.equal(restored.ok, true);
+  assert.equal(restored.data.session.user.id, "user-a");
+  assert.doesNotMatch(JSON.stringify(restored), /access_token|must-not-leak/);
+  authListener("TOKEN_REFRESHED", session);
+  assert.equal(adapter.status().status, "authenticated");
+  await adapter.signOut();
+  assert.equal(channelCleanup, 1);
+  assert.equal(adapter.status().status, "unauthenticated");
+  release();
+  adapter.destroy();
+  assert.equal(unsubscribeCalls, 1);
+  assert.ok(states.includes("refreshing"));
+});
+
+test("profile repository isolates owners and strips persisted secrets", () => {
+  const legacyProfiles = [{
+    id: "profile-a",
+    name: "Personnel",
+    apiKey: "secret-api-key",
+    state: { notes: [], todos: [], events: [], items: [], connections: { github: { token: "secret-token" } } }
+  }];
+  const storage = memoryStorage({
+    [PROFILE_STORAGE_KEY]: JSON.stringify(legacyProfiles),
+    [PROFILE_OWNER_KEY]: "user-a"
+  });
+  const repository = createProfileRepository({ storage, requireOwner: true, ownerId: "user-a" });
+  assert.equal(repository.listProfiles().length, 1);
+  repository.notes.create({ title: "Audit", content: "Preserved" });
+  const userAData = storage.read(`${SCOPED_PROFILE_PREFIX}user-a`);
+  assert.match(userAData, /Audit|Preserved/);
+  assert.doesNotMatch(userAData, /secret-api-key|secret-token|apiKey|token/);
+
+  repository.setOwner("user-b");
+  assert.equal(repository.listProfiles().length, 0);
+  repository.createProfile({ name: "Travail", type: "work" });
+  assert.equal(repository.listProfiles().length, 1);
+  assert.equal(repository.listProfiles()[0].name, "Travail");
+
+  repository.setOwner("user-a");
+  assert.equal(repository.listProfiles()[0].name, "Personnel");
+  assert.equal(repository.snapshot().notes[0].title, "Audit");
+});
+
+test("V8-only routes keep Activity, Spaces and Flows inside the current runtime", () => {
+  assert.ok(V8_ROUTES.includes("activity"));
+  assert.ok(V8_ROUTES.includes("connections"));
+  assert.ok(V8_ROUTES.includes("spaces"));
+  assert.ok(V8_ROUTES.includes("flows"));
+  assert.equal(normalizeRoute("dashboard"), "home");
+
+  const visited = [];
+  const actions = createActionFacade({ navigate: (route) => visited.push(route) });
+  assert.equal(actions.dispatch("v8.activity.open").ok, true);
+  assert.equal(actions.dispatch("v8.connections.open").ok, true);
+  assert.equal(actions.dispatch("v8.spaces.open").ok, true);
+  assert.equal(actions.dispatch("v8.flows.open").ok, true);
+  assert.deepEqual(visited, ["activity", "connections", "spaces", "flows"]);
+});
+
+test("global command entries resolve through the central action registry", () => {
+  const actions = createActionFacade();
+  const missing = COMMANDS.filter((command) => !actions.has(command.actionId));
+  assert.deepEqual(missing, []);
+});
+
+test("presentation state suppresses no-op renders and keeps one system surface active", () => {
+  const storage = memoryStorage();
+  const store = createPresentationStore({}, { storage });
+  let notifications = 0;
+  store.subscribe(() => { notifications += 1; });
+  store.setState({ theme: "night" });
+  assert.equal(notifications, 0);
+  store.setState({ panel: "widgets" });
+  store.setState({ missionOpen: true });
+  assert.equal(store.getState().panel, null);
+  assert.equal(store.getState().missionOpen, true);
+  store.setState({ commandOpen: true, panel: "profile", missionOpen: true });
+  assert.equal(store.getState().commandOpen, true);
+  assert.equal(store.getState().missionOpen, false);
+  assert.equal(store.getState().panel, null);
+});
+
+test("command search includes contextual user content without replacing system commands", () => {
+  const note = Object.freeze({
+    id: "content.note.1",
+    actionId: "v8.notes.open",
+    label: "Plan Product Hunt",
+    subtitle: "Checklist de lancement",
+    category: "Note",
+    icon: "notebook-pen",
+    keywords: Object.freeze(["product hunt", "lancement"]),
+    contexts: Object.freeze(["notes"]),
+    contextPriority: 88
+  });
+  const results = searchCommands("product hunt", { route: "home", additionalCommands: [note] }, 10);
+  assert.equal(results[0]?.id, note.id);
+  assert.ok(searchCommands("settings", {}, 10).some((command) => command.actionId === "v8.settings.open"));
+});
+
+test("integration registry is unique and exposes no credential fields", () => {
+  assert.ok(INTEGRATIONS.length >= 50);
+  assert.equal(new Set(INTEGRATIONS.map((integration) => integration.id)).size, INTEGRATIONS.length);
+  assert.ok(INTEGRATIONS.some((integration) => integration.id === "spotify"));
+  assert.ok(INTEGRATIONS.some((integration) => integration.id === "github"));
+  assert.doesNotMatch(JSON.stringify(INTEGRATIONS), /token|secret|password|apiKey/i);
+});
+
+test("activity journal and connection metadata remain profile-scoped and secret-free", () => {
+  const storage = memoryStorage();
+  const repository = createProfileRepository({ storage, requireOwner: true, ownerId: "activity-user" });
+  repository.createProfile({ name: "Activity QA", type: "development" });
+  const configured = repository.connections.configure("spotify", { token: "must-not-persist", apiVersion: "OAuth 2.0" });
+  assert.equal(configured.ok, true);
+  repository.activities.record({ source: "ethone", category: "system", title: "Boot", description: "Ready" });
+  const journal = createActivityJournal(repository, { now: () => new Date("2026-07-13T08:00:00.000Z") });
+  const captured = journal.capture("v8.space.focus", { ok: true });
+  assert.equal(captured.ok, true);
+  const snapshot = repository.snapshot();
+  assert.equal(snapshot.connections[0].id, "spotify");
+  assert.equal(snapshot.connections[0].setupComplete, true);
+  assert.ok(snapshot.activities.length >= 2);
+  assert.ok(journal.entries().length >= snapshot.activities.length);
+  assert.doesNotMatch(storage.read(`${SCOPED_PROFILE_PREFIX}activity-user`), /must-not-persist|token/i);
+  journal.destroy();
+});
+
+test("document metadata uses one version-free ETHONE title system", () => {
+  assert.equal(formatDocumentTitle(), "ETHONE");
+  assert.equal(titleForContext("home"), "ETHONE \u2014 Dashboard");
+  assert.equal(titleForContext("brain"), "ETHONE \u2014 Brain");
+  assert.equal(titleForContext("settings"), "ETHONE \u2014 Settings");
+  assert.equal(titleForContext("profiles"), "ETHONE \u2014 Profile Selection");
+  assert.ok(["login", "profiles", "onboarding", "home", "brain", "marketplace", "activity", "settings"].every((key) => Boolean(DOCUMENT_CONTEXT_LABELS[key])));
+  assert.doesNotMatch(Object.values(DOCUMENT_CONTEXT_LABELS).join(" "), /V\d|Dashboard V8/);
+  assert.equal(themeColorForState({ theme: "graphite", space: "personal" }), "#111317");
+  assert.equal(themeColorForState({ theme: "night", space: "personal" }), "#080a0d");
+  assert.equal(themeColorForState({ theme: "night", space: "focus" }), "#070b10");
+  assert.equal(themeColorForState({ theme: "graphite", space: "studio" }), "#0d090d");
+});
+
+test("premium breadcrumbs expose actionable route and context levels", () => {
+  const model = createBreadcrumbModel({ route: "brain", space: "focus", flow: "Deep Work", panel: "notifications", syncStatus: "online", workspace: "Rub" });
+  assert.deepEqual(model.crumbs.map((crumb) => crumb.id), ["root", "workspace", "space", "route", "panel"]);
+  assert.equal(model.crumbs.at(-1).current, true);
+  assert.equal(model.crumbs.find((crumb) => crumb.id === "root").actionId, "v8.home.open");
+  assert.equal(model.crumbs.find((crumb) => crumb.id === "workspace").actionId, "v8.spaces.open");
+  assert.equal(model.crumbs.find((crumb) => crumb.id === "route").actionId, "v8.brain.open");
+  assert.deepEqual(model.context, { workspace: "Rub", space: "Focus", flow: "Deep Work", sync: "Synchronise", syncTone: "online" });
+});
+
+test("global status model keeps network, Brain and route state coherent", () => {
+  const online = createStatusModel({ route: "brain", syncStatus: "online" });
+  assert.equal(online.network.label, "En ligne");
+  assert.equal(online.network.icon, "wifi");
+  assert.equal(online.sync.icon, "cloud");
+  assert.equal(online.brain.label, "Brain actif");
+  assert.equal(online.route.label, "Brain prêt");
+
+  const offline = createStatusModel({ route: "notes", syncStatus: "error" });
+  assert.equal(offline.network.label, "Hors ligne");
+  assert.equal(offline.network.icon, "wifi-off");
+  assert.equal(offline.sync.label, "Hors ligne");
+  assert.equal(offline.sync.tone, "error");
+});
+
+test("premium detail primitives expose coherent micro states", () => {
+  const components = fs.readFileSync(new URL("../v8/styles/components.css", import.meta.url), "utf8");
+  const shell = fs.readFileSync(new URL("../v8/styles/shell.css", import.meta.url), "utf8");
+  const toast = fs.readFileSync(new URL("../v8/ui/toast.mjs", import.meta.url), "utf8");
+  assert.match(components, /\.v8-icon-button\s*\{[\s\S]*?border-color:\s*var\(--v8-border\)/);
+  assert.match(components, /\.v8-toast\.is-timed::after/);
+  assert.match(components, /\.v8-button--primary\.is-loading::after/);
+  assert.match(shell, /\.v8-context-menu__divider\s*\{[\s\S]*?linear-gradient/);
+  assert.match(shell, /\.v8-mission-body\s*\{[\s\S]*?background:\s*var\(--v8-canvas-raised\)/);
+  assert.match(toast, /--v8-toast-duration/);
+});
+
+test("window controller coordinates focus, modal keyboard flow and animated teardown", () => {
+  const timers = [];
+  const classes = () => {
+    const values = new Set();
+    return {
+      add: (...names) => names.forEach((name) => values.add(name)),
+      remove: (...names) => names.forEach((name) => values.delete(name)),
+      contains: (name) => values.has(name)
+    };
+  };
+  const documentRef = { activeElement: null, documentElement: { dataset: {} } };
+  const focusable = (name) => {
+    const node = {
+      name,
+      hidden: false,
+      disabled: false,
+      inert: false,
+      isConnected: true,
+      getAttribute: () => null,
+      focus: () => { documentRef.activeElement = node; }
+    };
+    return node;
+  };
+  const focusableNodes = { first: null, last: null };
+  focusableNodes.first = focusable("first");
+  focusableNodes.last = focusable("last");
+  const origin = focusable("origin");
+  documentRef.activeElement = origin;
+  const listeners = new Map();
+  const surface = { classList: classes() };
+  const attributes = new Map();
+  const layer = {
+    classList: classes(),
+    dataset: {},
+    inert: false,
+    isConnected: true,
+    removed: false,
+    addEventListener: (type, listener) => listeners.set(type, listener),
+    removeEventListener: (type) => listeners.delete(type),
+    querySelector: () => surface,
+    querySelectorAll: () => [focusableNodes.first, focusableNodes.last],
+    getBoundingClientRect: () => ({ width: 640 }),
+    setAttribute: (name, value) => attributes.set(name, value),
+    removeAttribute: (name) => attributes.delete(name),
+    remove: () => { layer.removed = true; layer.isConnected = false; }
+  };
+  let escapeCalls = 0;
+  const controller = createWindowController({
+    document: documentRef,
+    runtime: {
+      queueMicrotask: (callback) => callback(),
+      setTimeout: (callback) => { timers.push(callback); return timers.length; },
+      clearTimeout: () => {}
+    },
+    onEscape: () => { escapeCalls += 1; }
+  });
+
+  assert.equal(controller.open(layer, { initialFocus: focusableNodes.first, modal: true }), true);
+  assert.equal(layer.classList.contains("v8-window-layer"), true);
+  assert.equal(surface.classList.contains("v8-window-surface"), true);
+  assert.equal(layer.classList.contains("is-open"), true);
+  assert.equal(documentRef.activeElement, focusableNodes.first);
+  assert.equal(documentRef.documentElement.dataset.windowOpen, "true");
+
+  documentRef.activeElement = focusableNodes.last;
+  let tabPrevented = false;
+  listeners.get("keydown")({ key: "Tab", shiftKey: false, preventDefault: () => { tabPrevented = true; } });
+  assert.equal(tabPrevented, true);
+  assert.equal(documentRef.activeElement, focusableNodes.first);
+  listeners.get("keydown")({ key: "Escape", preventDefault: () => {}, stopPropagation: () => {} });
+  assert.equal(escapeCalls, 1);
+
+  assert.equal(controller.close(), true);
+  assert.equal(layer.inert, true);
+  assert.equal(attributes.get("aria-hidden"), "true");
+  assert.equal(layer.classList.contains("is-open"), false);
+  assert.equal(layer.dataset.windowState, "closing");
+  assert.equal(documentRef.activeElement, origin);
+  timers.at(-1)();
+  assert.equal(layer.removed, true);
+  assert.equal("windowOpen" in documentRef.documentElement.dataset, false);
+});
+
+test("window controller can retain a reusable dialog layer after its exit transition", () => {
+  const timers = [];
+  const values = new Set();
+  const layer = {
+    classList: { add: (...names) => names.forEach((name) => values.add(name)), remove: (...names) => names.forEach((name) => values.delete(name)) },
+    dataset: {},
+    hidden: false,
+    removed: false,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    querySelector: () => ({ classList: { add: () => {} } }),
+    querySelectorAll: () => [],
+    getBoundingClientRect: () => ({ width: 480 }),
+    setAttribute: () => {},
+    removeAttribute: () => {},
+    remove: () => { layer.removed = true; }
+  };
+  const controller = createWindowController({
+    document: { activeElement: null, documentElement: { dataset: {} } },
+    runtime: { queueMicrotask: (callback) => callback(), setTimeout: (callback) => { timers.push(callback); return timers.length; }, clearTimeout: () => {} }
+  });
+  controller.open(layer, { retain: true });
+  controller.close({ restoreFocus: false });
+  timers.at(-1)();
+  assert.equal(layer.removed, false);
+  assert.equal(layer.hidden, true);
+});
+
+test("lazy application styles carry the release cache key", async () => {
+  const links = [];
+  const documentRef = {
+    querySelector: (selector) => links.find((link) => selector.includes(`\"${link.dataset.v8Style}\"`)) || null,
+    createElement: () => {
+      const listeners = new Map();
+      return {
+        dataset: {},
+        addEventListener: (type, listener) => listeners.set(type, listener),
+        dispatch: (type) => listeners.get(type)?.()
+      };
+    },
+    head: { append: (link) => { links.push(link); link.dispatch("load"); } }
+  };
+  const loader = createStyleLoader({ document: documentRef, baseUrl: "/v8/styles", release: "window-system-v8" });
+  const loaded = await loader.loadApplication();
+  assert.equal(loaded.ok, true);
+  assert.deepEqual(links.map((link) => link.href), [
+    "/v8/styles/shell.css?v=window-system-v8",
+    "/v8/styles/workspaces.css?v=window-system-v8"
+  ]);
+});
+
+test("surface replacement never restores focus behind the next window", () => {
+  const runtime = fs.readFileSync(new URL("../v8/app/app-runtime.mjs", import.meta.url), "utf8");
+  assert.match(runtime, /missionControl\.close\(\{\s*restoreFocus:\s*!next\.commandOpen\s*&&\s*!next\.panel\s*\}\)/);
+});
+
+test("global interaction system owns hover, press and reduced motion feedback", () => {
+  const html = fs.readFileSync(new URL("../index.html", import.meta.url), "utf8");
+  const tokens = fs.readFileSync(new URL("../v8/styles/tokens.css", import.meta.url), "utf8");
+  const components = fs.readFileSync(new URL("../v8/styles/components.css", import.meta.url), "utf8");
+
+  assert.match(html, /<html[^>]+data-v8-interactions/);
+  assert.match(tokens, /--v8-interaction-hover-transform:\s*translate3d\(0,\s*-1px,\s*0\)\s*scale\(1\.006\)/);
+  assert.match(tokens, /--v8-interaction-press-transform:\s*translate3d\(0,\s*0,\s*0\)\s*scale\(0\.985\)/);
+  assert.match(tokens, /--v8-interaction-shadow:/);
+  assert.match(tokens, /--v8-interaction-filter:/);
+  assert.match(components, /@media \(hover:\s*hover\) and \(pointer:\s*fine\)/);
+  assert.match(components, /html\[data-v8-interactions\][\s\S]*:hover[\s\S]*transform:\s*var\(--v8-interaction-hover-transform\)/);
+  assert.match(components, /html\[data-v8-interactions\][\s\S]*:hover[\s\S]*filter:\s*var\(--v8-interaction-filter\)/);
+  assert.match(components, /html\[data-v8-interactions\][\s\S]*:active[\s\S]*transform:\s*var\(--v8-interaction-press-transform\)/);
+  assert.match(tokens, /prefers-reduced-motion:\s*reduce[\s\S]*--v8-interaction-hover-transform:\s*none/);
+});
+
+test("interaction feedback preserves semantic states and versions every stylesheet", () => {
+  const html = fs.readFileSync(new URL("../index.html", import.meta.url), "utf8");
+  const worker = fs.readFileSync(new URL("../sw.js", import.meta.url), "utf8");
+  const activityLoader = fs.readFileSync(new URL("../v8/pages/activity-style.mjs", import.meta.url), "utf8");
+  const tokens = fs.readFileSync(new URL("../v8/styles/tokens.css", import.meta.url), "utf8");
+  const components = fs.readFileSync(new URL("../v8/styles/components.css", import.meta.url), "utf8");
+  const localStyles = ["activity.css", "entry.css", "shell.css", "workspaces.css"].map((name) => fs.readFileSync(new URL(`../v8/styles/${name}`, import.meta.url), "utf8"));
+
+  for (const name of ["tokens", "base", "components", "entry"]) {
+    assert.match(html, new RegExp(`v8/styles/${name}\\.css\\?v=empty-states-v16`));
+    assert.match(worker, new RegExp(`v8/styles/${name}\\.css\\?v=empty-states-v16`));
+  }
+  assert.match(worker, /v8\/styles\/activity\.css\?v=empty-states-v16/);
+  assert.match(activityLoader, /STYLE_RELEASE/);
+  assert.match(activityLoader, /activity\.css\?v=\$\{encodeURIComponent\(STYLE_RELEASE\)\}/);
+  assert.match(tokens, /--v8-interaction-shadow:\s*drop-shadow/);
+  assert.match(tokens, /--v8-interaction-filter:[^;]*var\(--v8-interaction-shadow\)/);
+  assert.doesNotMatch(components, /:hover[^\{]*\{[^\}]*box-shadow:/);
+  assert.match(components, /html\[data-v8-interactions\][\s\S]*:focus-visible[\s\S]*box-shadow:\s*var\(--v8-shadow-focus\)/);
+
+  const allowedHover = /html\[data-v8-interactions\]|scrollbar-thumb|v8-input:hover|v8-entry__locale:hover|autofill:hover|data-tooltip|v8-profile-card:hover \.v8-profile-card__menu|v8-command-row:hover \.v8-command-pin|v8-task-row:hover \.v8-task-delete/;
+  for (const source of [components, ...localStyles]) {
+    const selectors = [...source.matchAll(/(?:^|\})\s*([^@\{][^\{]*:hover[^\{]*)\{/gm)].map((match) => match[1].trim());
+    assert.deepEqual(selectors.filter((selector) => !allowedHover.test(selector)), []);
+  }
+});
+
+test("empty states share one accessible and responsive product primitive", () => {
+  const component = fs.readFileSync(new URL("../v8/ui/empty-state.mjs", import.meta.url), "utf8");
+  const styles = fs.readFileSync(new URL("../v8/styles/components.css", import.meta.url), "utf8");
+
+  assert.match(component, /export function emptyState/);
+  assert.match(component, /v8-empty-state__visual/);
+  assert.match(component, /v8-empty-state__actions/);
+  assert.match(component, /v8-empty-state__brain/);
+  assert.match(component, /"aria-live":\s*"polite"/);
+  assert.match(component, /role:\s*"status"/);
+  assert.match(styles, /\.v8-empty-state--compact/);
+  assert.match(styles, /\.v8-empty-state--inline/);
+  assert.match(styles, /\.v8-empty-state__brain/);
+  assert.match(styles, /@media \(prefers-reduced-motion:\s*reduce\)[\s\S]*v8-empty-state/);
+});
+
+test("all product empty views use the shared primitive with a useful action", () => {
+  const files = [
+    "command/command-center.mjs",
+    "entry/profile-selection.mjs",
+    "pages/activity.mjs",
+    "pages/calendar.mjs",
+    "pages/connections.mjs",
+    "pages/files.mjs",
+    "pages/home.mjs",
+    "pages/notes.mjs",
+    "pages/tasks.mjs"
+  ];
+  const sources = files.map((name) => fs.readFileSync(new URL(`../v8/${name}`, import.meta.url), "utf8"));
+  const legacyEmptyHooks = /v8-command-empty|v8-live-empty|v8-connections-empty|v8-daystream__empty|v8-inline-empty|v8-list-empty|v8-editor-empty|v8-task-empty|v8-files-empty|v8-files-preview__empty|v8-calendar-agenda__empty/;
+
+  for (const source of sources) {
+    assert.match(source, /import \{ emptyState \} from "\.\.\/ui\/empty-state\.mjs";/);
+    assert.match(source, /emptyState\(\{/);
+    assert.doesNotMatch(source, legacyEmptyHooks);
+  }
+  assert.match(sources.join("\n"), /brain:\s*\{/);
+  assert.match(sources.join("\n"), /actions:\s*\[/);
+});

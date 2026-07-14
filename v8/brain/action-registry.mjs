@@ -1,0 +1,80 @@
+const ROUTES = Object.freeze({ home: "v8.home.open", notes: "v8.notes.open", tasks: "v8.tasks.open", calendar: "v8.calendar.open", files: "v8.files.open", activity: "v8.activity.open", connections: "v8.connections.open", spaces: "v8.spaces.open", flows: "v8.flows.open", brain: "v8.brain.open", settings: "v8.settings.open" });
+const SPACES = Object.freeze({ personal: "v8.space.personal", focus: "v8.space.focus", studio: "v8.space.studio" });
+const FLOWS = Object.freeze({ essentiel: SPACES.personal, essential: SPACES.personal, focus: SPACES.focus, "deep-work": SPACES.focus, creation: SPACES.studio, studio: SPACES.studio });
+const DENSITIES = new Set(["spacious", "comfortable", "compact", "ultra-compact", "automatic"]);
+const THEMES = new Set(["night", "graphite"]);
+const ACCENTS = new Set(["mint", "sky", "amber", "violet", "rose"]);
+const LOCALES = new Set(["fr", "en", "es", "de"]);
+const WIDGETS = new Set(["today", "notes", "calendar", "tasks", "focus", "github", "terminal", "brain", "planning", "discord", "spotify", "sessions", "live", "clips", "projects", "files"]);
+
+const outcome = (ok, status, message, data = null) => Object.freeze({ ok, status, message, data });
+const clean = (value, fallback = "", limit = 400) => (String(value ?? "").replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim() || fallback).slice(0, limit);
+const validDate = (value) => /^\d{4}-\d{2}-\d{2}$/.test(String(value || "")) ? String(value) : "";
+const empty = () => ({});
+
+function requireId(value) { const id = clean(value, "", 80); if (!id) throw new TypeError("Identifiant requis."); return id; }
+function key(value) { return clean(value, "", 80).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
+
+export function createBrainActionRegistry(options = {}) {
+  const repository = options.repository;
+  const actions = options.actions;
+  const getPreferences = typeof options.getPreferences === "function" ? options.getPreferences : () => ({ permissions: {} });
+  const externalServices = options.externalServices || null;
+  if (!repository || !actions?.dispatch) throw new TypeError("Brain Action Registry requires repository and actions");
+  const definitions = new Map();
+
+  function add(id, title, description, permission, confirmation, parameters, validate, run) {
+    definitions.set(id, Object.freeze({ id, title, description, permission, confirmation, parameters: Object.freeze(parameters), validate, run }));
+  }
+  function profile() {
+    const value = repository.activeProfile?.();
+    if (!value?.id || !repository.updateProfile) throw new Error("Aucun profil actif.");
+    return value;
+  }
+  function widgetList(value) { return [...new Set((Array.isArray(value) ? value : []).map(String).filter((id) => WIDGETS.has(id)))].slice(0, 12); }
+  function updateWidgets(transform) { const active = profile(); return repository.updateProfile(active.id, { widgets: transform(active.environment?.widgets || []) }); }
+  function dispatch(id, context = {}) { return actions.dispatch(id, { source: "brain-action", ...context }); }
+
+  add("note.create", "Creer une note", "Ajoute une note au profil actif.", "notes", false, { title: "string", content: "string" }, (p) => ({ title: clean(p.title, "Note Brain", 160), content: clean(p.content, "", 4000) }), (p) => repository.notes.create(p));
+  add("note.update", "Modifier une note", "Met a jour une note existante.", "notes", true, { id: "id", title: "string?", content: "string?" }, (p) => { const patch = {}; if (Object.hasOwn(p, "title")) patch.title = clean(p.title, "Note sans titre", 160); if (Object.hasOwn(p, "content")) patch.content = clean(p.content, "", 4000); if (!Object.keys(patch).length) throw new TypeError("Aucune modification fournie."); return { id: requireId(p.id), patch: Object.freeze(patch) }; }, ({ id, patch }) => repository.notes.update(id, patch));
+  add("task.create", "Creer une tache", "Ajoute une priorite au profil actif.", "tasks", false, { title: "string", priority: "low|normal|high", due: "date" }, (p) => ({ title: clean(p.title, "Nouvelle tache", 240), priority: ["low", "normal", "high"].includes(p.priority) ? p.priority : "normal", due: validDate(p.due) }), (p) => repository.tasks.create(p));
+  add("task.complete", "Terminer une tache", "Marque une tache ouverte comme terminee.", "tasks", true, { id: "id" }, (p) => ({ id: requireId(p.id) }), ({ id }) => { const task = repository.snapshot?.().tasks?.find?.((entry) => String(entry.id) === id); if (!task) throw new Error("Tache introuvable."); return task.done ? outcome(true, "completed", "Tache deja terminee.", task) : repository.tasks.toggle(id); });
+  add("event.create", "Creer un evenement", "Ajoute un evenement date.", "calendar", false, { title: "string", date: "YYYY-MM-DD" }, (p) => { const date = validDate(p.date); if (!date) throw new TypeError("Date valide requise."); return { title: clean(p.title, "Evenement Brain", 180), date }; }, (p) => repository.events.create(p));
+  add("page.open", "Ouvrir une page", "Navigue vers une page ETHONE autorisee.", null, false, { route: "route" }, (p) => { if (!ROUTES[p.route]) throw new TypeError("Page non autorisee."); return { route: p.route }; }, ({ route }) => dispatch(ROUTES[route]));
+  add("space.change", "Changer de Space", "Active un environnement existant.", "settings", true, { space: "personal|focus|studio" }, (p) => { if (!SPACES[p.space]) throw new TypeError("Space non autorise."); return { space: p.space }; }, ({ space }) => dispatch(SPACES[space]));
+  add("flow.change", "Changer de Flow", "Active le Flow correspondant.", "settings", true, { flow: "flow" }, (p) => { const flow = key(p.flow); if (!FLOWS[flow]) throw new TypeError("Flow non autorise."); return { flow }; }, ({ flow }) => dispatch(FLOWS[flow]));
+  add("density.change", "Changer la densite", "Applique un mode de densite valide.", "settings", true, { density: "density" }, (p) => { const density = String(p.density || ""); if (!DENSITIES.has(density)) throw new TypeError("Densite non autorisee."); return { density }; }, ({ density }) => dispatch(`v8.density.${density}`));
+  add("setting.change", "Changer un reglage", "Modifie une apparence autorisee.", "settings", true, { setting: "theme|accent|density|language", value: "string" }, (p) => { const setting = String(p.setting || ""); const value = String(p.value || "").toLowerCase(); const allowed = setting === "theme" ? THEMES : setting === "accent" ? ACCENTS : setting === "density" ? DENSITIES : setting === "language" ? LOCALES : null; if (!allowed?.has(value)) throw new TypeError("Reglage non autorise."); return { setting, value }; }, ({ setting, value }) => dispatch(setting === "language" ? "v8.locale.set" : `v8.${setting}.${value}`, { locale: value }));
+  add("widget.open", "Ouvrir les widgets", "Ouvre le panneau Widgets.", null, false, {}, empty, () => dispatch("v8.widgets.open"));
+  add("widget.add", "Ajouter un widget", "Ajoute un widget autorise.", "settings", true, { widget: "widget" }, (p) => { const widget = String(p.widget || ""); if (!WIDGETS.has(widget)) throw new TypeError("Widget non autorise."); return { widget }; }, ({ widget }) => updateWidgets((widgets) => [...new Set([...widgets, widget])]));
+  add("widget.remove", "Retirer un widget", "Retire un widget du profil actif.", "settings", true, { widget: "widget" }, (p) => { const widget = String(p.widget || ""); if (!WIDGETS.has(widget)) throw new TypeError("Widget non autorise."); return { widget }; }, ({ widget }) => updateWidgets((widgets) => widgets.filter((id) => id !== widget)));
+  add("dashboard.organize", "Organiser le Dashboard", "Applique un ordre de widgets explicite.", "settings", true, { widgets: "widget[]" }, (p) => { const widgets = widgetList(p.widgets); if (!widgets.length) throw new TypeError("Aucun widget autorise."); return { widgets }; }, ({ widgets }) => updateWidgets(() => widgets));
+  add("focus.start", "Demarrer Focus", "Active le Space Focus.", "settings", true, {}, empty, () => dispatch(SPACES.focus));
+  add("planning.prepare", "Preparer un planning", "Cree des taches et evenements valides.", ["tasks", "calendar"], true, { tasks: "task[]", events: "event[]" }, (p) => { const tasks = (Array.isArray(p.tasks) ? p.tasks : []).slice(0, 6).map((item) => ({ title: clean(item?.title, "Priorite", 240), priority: ["low", "normal", "high"].includes(item?.priority) ? item.priority : "normal", due: validDate(item?.due) })); const events = (Array.isArray(p.events) ? p.events : []).slice(0, 6).map((item) => { const date = validDate(item?.date); if (!date) throw new TypeError("Date evenement invalide."); return { title: clean(item?.title, "Evenement", 180), date }; }); if (!tasks.length && !events.length) throw new TypeError("Planning vide."); return { tasks, events }; }, async ({ tasks, events }) => { const created = []; for (const task of tasks) created.push(await repository.tasks.create(task)); for (const event of events) created.push(await repository.events.create(event)); return outcome(true, "completed", "Planning prepare.", Object.freeze(created)); });
+  add("activity.summarize", "Resumer l'activite", "Resume les signaux recents autorises.", "activity", false, {}, empty, () => { const activity = (repository.snapshot?.().activities || []).slice(0, 20); return outcome(true, "completed", "Resume pret.", Object.freeze({ total: activity.length, sources: Object.freeze([...new Set(activity.map((item) => clean(item.source, "ethone", 48)))]), latest: Object.freeze(activity.slice(0, 5).map((item) => Object.freeze({ title: clean(item.title, "Activite", 180), source: clean(item.source, "ethone", 48), timestamp: clean(item.timestamp, "", 40) }))) })); });
+  add("automation.propose", "Proposer une automatisation", "Prepare une proposition sans l'executer.", "settings", false, { title: "string", description: "string" }, (p) => ({ title: clean(p.title, "Automatisation proposee", 120), description: clean(p.description, "Aucune execution automatique.", 400) }), (proposal) => outcome(true, "review-required", "Proposition prete.", Object.freeze({ ...proposal, executable: false })));
+  for (const [id, title] of [["connections.analyze", "Analyser les connexions"], ["diagnostic.run", "Lancer un diagnostic"]]) add(id, title, "Interroge le Worker a la demande.", "connections", false, {}, empty, () => externalServices?.diagnostic ? externalServices.diagnostic() : outcome(false, "unavailable", "Diagnostic indisponible."));
+
+  function review(id, parameters = {}) {
+    const definition = definitions.get(String(id || ""));
+    if (!definition) return outcome(false, "unavailable", "Action Brain non autorisee.");
+    const permissions = Array.isArray(definition.permission) ? definition.permission : definition.permission ? [definition.permission] : [];
+    const denied = permissions.find((permission) => getPreferences()?.permissions?.[permission] !== true);
+    if (denied) return outcome(false, "permission-denied", `Acces ${denied} desactive.`);
+    try {
+      const validated = Object.freeze(definition.validate(parameters && typeof parameters === "object" ? parameters : {}));
+      return outcome(true, definition.confirmation ? "confirmation-required" : "ready", definition.description, Object.freeze({ definition, parameters: validated }));
+    } catch (error) { return outcome(false, "invalid", clean(error?.message, "Parametres invalides.", 200), error); }
+  }
+
+  async function execute(id, parameters = {}, execution = {}) {
+    const reviewed = review(id, parameters);
+    if (!reviewed.ok || (reviewed.data.definition.confirmation && execution.confirmed !== true)) return reviewed;
+    try {
+      const response = await reviewed.data.definition.run(reviewed.data.parameters);
+      return response && typeof response === "object" && Object.hasOwn(response, "ok") ? response : outcome(true, "completed", "Action terminee.", response ?? null);
+    } catch (error) { return outcome(false, "failed", clean(error?.message, "Action Brain echouee.", 200), error); }
+  }
+
+  return Object.freeze({ review, execute, definitions: () => Object.freeze([...definitions.values()]), diagnostics: () => Object.freeze({ actions: definitions.size, arbitraryExecution: false }) });
+}

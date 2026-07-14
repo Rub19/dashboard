@@ -1,0 +1,126 @@
+# ETHONE local configuration and environment files
+.env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
+worker/.dev.vars
+worker/.dev.vars.*
+*.local.env
+
+# Local-only and private workspaces
+local-only/
+private/
+secrets/
+development-only/
+credentials/
+.agents/
+
+# Provider and platform state
+.wrangler/
+.supabase/
+supabase/.temp/
+.vercel/
+.netlify/
+
+# Credentials, private keys, certificates and secret exports
+*credentials*.json
+*credential*.json
+*service-account*.json
+client_secret*.json
+oauth-secret*.json
+secrets*.json
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.jks
+*.keystore
+*.mobileprovision
+
+# User data, authentication state and local databases
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+cookies/
+sessions/
+auth-state/
+storage-state/
+playwright/.auth/
+
+# Dependencies and generated builds
+node_modules/
+dist/
+build/
+out/
+.next/
+.nuxt/
+
+# Test, security and development artifacts
+artifacts/
+screenshots/
+captures/
+security-reports/
+playwright-report/
+test-results/
+coverage/
+*.har
+trace.zip
+
+# Logs and crash dumps
+logs/
+*.log
+*.dmp
+*.dump
+/core
+core.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Temporary files and caches
+.cache/
+cache/
+.tmp/
+.temp/
+tmp/
+temp/
+.parcel-cache/
+.turbo/
+.vite/
+.eslintcache
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Source maps and local archives
+*.map
+*.bak
+*.backup
+*.old
+*.orig
+*.zip
+*.7z
+*.rar
+*.tar
+*.tar.gz
+*.tgz
+
+# IDE and operating-system metadata
+.vscode/
+.idea/
+*.code-workspace
+.DS_Store
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/

@@ -14,6 +14,7 @@ export function createEntryCoordinator(options = {}) {
   const mounts = Object.freeze({
     booting: options.mountBoot,
     login: options.mountLogin,
+    recovery: options.mountRecovery,
     profiles: options.mountProfiles,
     home: options.mountHome
   });
@@ -24,6 +25,7 @@ export function createEntryCoordinator(options = {}) {
   let startPromise = null;
   let releaseAuth = null;
   let destroyed = false;
+  let profileRequest = 0;
 
   function transition(nextState, context = {}) {
     if (destroyed) return generation;
@@ -37,18 +39,23 @@ export function createEntryCoordinator(options = {}) {
   }
 
   function showLogin(context = {}) {
+    profileRequest += 1;
     transition("login", context);
     return currentState;
   }
 
-  function showProfiles(context = {}) {
-    options.prepareProfiles?.(context);
+  async function showProfiles(context = {}) {
+    const request = ++profileRequest;
+    let prepareResult = null;
+    try { prepareResult = await options.prepareProfiles?.(context); } catch (error) { prepareResult = { ok: false, status: "failed", message: error?.message || "Preparation impossible." }; }
+    if (destroyed || request !== profileRequest) return currentState;
     const availableProfiles = profiles.listProfiles();
-    transition("profiles", { ...context, profiles: availableProfiles });
+    transition("profiles", { ...context, profiles: availableProfiles, prepareResult });
     return currentState;
   }
 
   function enterHome(context = {}) {
+    profileRequest += 1;
     transition("home", context);
     return currentState;
   }
@@ -59,8 +66,13 @@ export function createEntryCoordinator(options = {}) {
       showLogin({ reason: "auth-signed-out" });
       return;
     }
-    if (event.type === "SIGNED_IN" && event.session?.user && currentState !== "home") {
-      showProfiles({ reason: "auth-signed-in", session: event.session });
+    if (event.type === "PASSWORD_RECOVERY" && event.session?.user) {
+      profileRequest += 1;
+      transition("recovery", { reason: "password-recovery", session: event.session });
+      return;
+    }
+    if (event.type === "SIGNED_IN" && event.session?.user && currentState !== "home" && currentState !== "recovery") {
+      void showProfiles({ reason: "auth-signed-in", session: event.session });
     }
   }
 
@@ -87,7 +99,7 @@ export function createEntryCoordinator(options = {}) {
         return currentState;
       }
       if (sessionResult.data?.session?.user) {
-        showProfiles({ reason: "session-restored", session: sessionResult.data.session });
+        await showProfiles({ reason: "session-restored", session: sessionResult.data.session });
       } else {
         showLogin({ reason: "session-missing" });
       }
@@ -108,6 +120,7 @@ export function createEntryCoordinator(options = {}) {
     if (destroyed) return false;
     destroyed = true;
     generation += 1;
+    profileRequest += 1;
     lifecycle.unmount();
     releaseAuth?.();
     releaseAuth = null;

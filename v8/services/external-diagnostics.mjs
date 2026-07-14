@@ -6,6 +6,7 @@ export function createExternalDiagnostics(options = {}) {
   const network = options.network;
   const auth = options.auth;
   const serviceWorker = options.serviceWorker;
+  const externalServices = options.externalServices;
   const config = options.config || {};
   const runtime = options.runtime || globalThis;
   if (!network) throw new TypeError("External diagnostics require a network client");
@@ -34,7 +35,9 @@ export function createExternalDiagnostics(options = {}) {
     const probes = await Promise.all([
       probe("application-origin", new URL("./", runtime.location.href).href, { method: "HEAD" }),
       probe("supabase-auth", `${String(config.supabaseUrl || "").replace(/\/$/, "")}/auth/v1/health`, { headers: { apikey: config.supabaseAnonKey || "" } }),
-      probe("cloudflare-worker", `${String(config.workerUrl || "").replace(/\/$/, "")}/health`)
+      externalServices?.health
+        ? externalServices.health().then((response) => item("ethone-worker", "ok", "Reachable", { latencyMs: response.meta?.latencyMs || 0 })).catch((error) => item("ethone-worker", "critical", network.redactMessage(error?.message)))
+        : Promise.resolve(item("ethone-worker", "warning", "Not configured"))
     ]);
     report.push(...probes);
     return Object.freeze({ generatedAt: new Date().toISOString(), report: Object.freeze(report), network: network.diagnostics() });

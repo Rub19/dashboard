@@ -16,84 +16,80 @@
   cursor: pointer;
   font-size: var(--v8-font-sm);
   font-weight: var(--v8-weight-medium);
-  line-height: 1;
+  line-height: 1.2;
   outline: none;
-  transition:
-    color var(--v8-motion-fast) var(--v8-ease-standard),
-    background-color var(--v8-motion-fast) var(--v8-ease-standard),
-    border-color var(--v8-motion-fast) var(--v8-ease-standard),
-    box-shadow var(--v8-motion-fast) var(--v8-ease-standard),
-    transform var(--v8-motion-instant) var(--v8-ease-press);
   user-select: none;
   white-space: nowrap;
 }
 
-html[data-v8-interactions] body :where(
-  button:not(:disabled):not([aria-disabled="true"]),
-  a[href],
-  [role="button"]:not([aria-disabled="true"]),
-  [role="tab"]:not([aria-disabled="true"]),
-  [role="option"]:not([aria-disabled="true"]),
-  [data-interactive]:not([aria-disabled="true"])
-) {
+html[data-v8-interactions] body :where(button:not(:disabled,[aria-disabled="true"]),a[href],[role="button"]:not([aria-disabled="true"]),[role="tab"]:not([aria-disabled="true"]),[role="option"]:not([aria-disabled="true"]),[data-interactive]:not([aria-disabled="true"])) {
   transform-origin: center;
   transition-duration: var(--v8-interaction-duration);
   transition-property: color, background-color, border-color, box-shadow, filter, opacity, transform;
-  transition-timing-function: var(--v8-ease-standard);
+  transition-timing-function: var(--v8-ease-spring);
 }
 
 @media (hover: hover) and (pointer: fine) {
-  html[data-v8-interactions] body :where(
-    button:not(:disabled):not([aria-disabled="true"]),
-    a[href],
-    [role="button"]:not([aria-disabled="true"]),
-    [role="tab"]:not([aria-disabled="true"]),
-    [role="option"]:not([aria-disabled="true"]),
-    [data-interactive]:not([aria-disabled="true"])
-  ):hover:not(:focus-visible) {
+  html[data-v8-interactions] body :where(button:not(:disabled,[aria-disabled="true"]),a[href],[role="button"]:not([aria-disabled="true"]),[role="tab"]:not([aria-disabled="true"]),[role="option"]:not([aria-disabled="true"]),[data-interactive]:not([aria-disabled="true"])):hover:not(:focus-visible) {
     filter: var(--v8-interaction-filter);
     transform: var(--v8-interaction-hover-transform);
   }
+
+  html[data-v8-interactions] body :where(button:not(:disabled),a[href],[role="button"]:not([aria-disabled="true"]),[role="tab"]:not([aria-disabled="true"]),[role="option"]:not([aria-disabled="true"]),[role="switch"]:not([aria-disabled="true"]),[role="checkbox"]:not([aria-disabled="true"]),[data-interactive]:not([aria-disabled="true"]),select) { cursor:pointer; }
+  html[data-v8-interactions] body :where(input:not([type="button"],[type="submit"],[type="checkbox"],[type="radio"],[type="range"],[type="color"]),textarea,[contenteditable="true"]) { cursor:text; }
+  html[data-v8-interactions] body :where([draggable="true"]) { cursor:grab; }
+  html[data-v8-interactions] body :where([draggable="true"]:active,.is-dragging,[aria-grabbed="true"]) { cursor:grabbing; }
+  html[data-v8-interactions] body :where(input[type="range"],.v8-range) { cursor:ew-resize; }
+  html[data-v8-interactions] body :where([aria-busy="true"],.is-loading) { cursor:progress; }
+  html[data-v8-interactions] body :where([data-tooltip]:not(button,a,[role="button"],[data-interactive])) { cursor:help; }
+  html[data-v8-interactions] body :where(:disabled,[aria-disabled="true"]) { cursor:not-allowed; }
 }
 
-html[data-v8-interactions] body :where(
-  button:not(:disabled):not([aria-disabled="true"]),
-  a[href],
-  [role="button"]:not([aria-disabled="true"]),
-  [role="tab"]:not([aria-disabled="true"]),
-  [role="option"]:not([aria-disabled="true"]),
-  [data-interactive]:not([aria-disabled="true"])
-):focus-visible {
+html[data-v8-interactions] body :where(button:not(:disabled,[aria-disabled="true"]),a[href],[role="button"]:not([aria-disabled="true"]),[role="tab"]:not([aria-disabled="true"]),[role="option"]:not([aria-disabled="true"]),[data-interactive]:not([aria-disabled="true"])):focus-visible {
   box-shadow: var(--v8-shadow-focus);
+  filter: var(--v8-interaction-focus-filter);
   outline: 1px solid var(--v8-accent);
   outline-offset: 1px;
+  transform: var(--v8-interaction-focus-transform);
 }
 
-html[data-v8-interactions] body :where(
-  button:not(:disabled):not([aria-disabled="true"]),
-  a[href],
-  [role="button"]:not([aria-disabled="true"]),
-  [role="tab"]:not([aria-disabled="true"]),
-  [role="option"]:not([aria-disabled="true"]),
-  [data-interactive]:not([aria-disabled="true"])
-):active {
-  filter: brightness(0.96) saturate(0.98);
+html[data-v8-interactions] body :where(button:not(:disabled,[aria-disabled="true"]),a[href],[role="button"]:not([aria-disabled="true"]),[role="tab"]:not([aria-disabled="true"]),[role="option"]:not([aria-disabled="true"]),[data-interactive]:not([aria-disabled="true"])):active {
+  filter: var(--v8-interaction-press-filter);
   transform: var(--v8-interaction-press-transform);
   transition-duration: var(--v8-motion-instant);
   transition-timing-function: var(--v8-ease-press);
 }
 
+html[data-v8-haptics="ready"] body [data-haptic-state="pressed"]:not(.v8-dock-app,.v8-dock-control,.v8-switch) {
+  animation: none;
+  filter: var(--v8-interaction-press-filter);
+  transform: var(--v8-haptic-press-transform);
+  transition-duration: var(--v8-motion-instant);
+  transition-timing-function: var(--v8-ease-press);
+}
+
+html[data-v8-haptics="ready"] body [data-haptic-state="released"]:not(.v8-dock-app,.v8-dock-control,.v8-switch) {
+  animation: v8-haptic-release var(--v8-haptic-release-duration) var(--v8-haptic-spring) both;
+}
+
+html[data-v8-interactions] body :where(.is-dragging,[data-drag-state="dragging"],[aria-grabbed="true"]) {
+  filter: var(--v8-interaction-drag-filter);
+}
+
 .v8-input:focus-visible {
   box-shadow: var(--v8-shadow-focus);
+  filter: var(--v8-interaction-focus-filter);
   outline: 1px solid var(--v8-accent);
   outline-offset: 1px;
+  transform: var(--v8-interaction-focus-transform);
 }
 
 .v8-button:disabled,
 .v8-icon-button:disabled,
 .v8-toolbar-button:disabled,
 .v8-button[aria-disabled="true"],
-.v8-icon-button[aria-disabled="true"] {
+.v8-icon-button[aria-disabled="true"],
+.v8-toolbar-button[aria-disabled="true"] {
   cursor: not-allowed;
   opacity: 0.42;
   pointer-events: none;
@@ -129,6 +125,7 @@ html[data-v8-interactions] body :where(
 
 .v8-button.is-loading {
   color: transparent;
+  cursor: progress;
   pointer-events: none;
 }
 
@@ -141,7 +138,7 @@ html[data-v8-interactions] body :where(
   border-radius: 50%;
   color: var(--v8-accent);
   content: "";
-  animation: v8-spin 480ms linear infinite;
+  animation: v8-spin 480ms var(--v8-physics-orbit) infinite;
 }
 
 .v8-button--primary.is-loading::after { color: var(--v8-inverse); }
@@ -173,8 +170,9 @@ html[data-v8-interactions] body :where(
 .v8-surface {
   border: 1px solid var(--v8-border);
   border-radius: var(--v8-radius-md);
-  background: var(--v8-surface-1);
-  box-shadow: var(--v8-shadow-1);
+  background: var(--v8-reflection-card), var(--v8-surface-1);
+  box-shadow: var(--v8-shadow-card-lit);
+  transition: box-shadow var(--v8-motion-base) var(--v8-physics-friction);
 }
 
 .v8-input-wrap {
@@ -203,11 +201,14 @@ html[data-v8-interactions] body :where(
   background: var(--v8-surface-sunken);
   color: var(--v8-text);
   font-size: var(--v8-font-sm);
+  line-height: 1.35;
   outline: none;
   transition:
     border-color var(--v8-motion-fast) var(--v8-ease-standard),
     background-color var(--v8-motion-fast) var(--v8-ease-standard),
-    box-shadow var(--v8-motion-fast) var(--v8-ease-standard);
+    box-shadow var(--v8-motion-fast) var(--v8-ease-standard),
+    filter var(--v8-motion-fast) var(--v8-ease-standard),
+    transform var(--v8-motion-base) var(--v8-ease-spring);
 }
 
 .v8-input-wrap > svg + .v8-input {
@@ -268,7 +269,8 @@ html[data-v8-interactions] body :where(
   z-index: var(--v8-z-tooltip);
   top: 50%;
   left: calc(100% + 10px);
-  max-width: 220px;
+  width: max-content;
+  max-width: min(220px, calc(100vw - 16px));
   padding: 7px 9px;
   border: 1px solid var(--v8-border-highlight);
   border-radius: var(--v8-radius-sm);
@@ -286,13 +288,57 @@ html[data-v8-interactions] body :where(
     opacity var(--v8-motion-fast) var(--v8-ease-out),
     transform var(--v8-motion-fast) var(--v8-ease-out);
   visibility: hidden;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 [data-tooltip]:hover::after,
 [data-tooltip]:focus-visible::after {
   opacity: 1;
   transform: translate3d(0, -50%, 0);
+  visibility: visible;
+}
+
+html[data-v8-tooltips="ready"] [data-tooltip]::after {
+  display: none;
+}
+
+.v8-tooltip {
+  --v8-tooltip-shift-x: 0;
+  --v8-tooltip-shift-y: 4px;
+  position: fixed;
+  z-index: var(--v8-z-tooltip);
+  width: max-content;
+  max-width: min(240px, calc(100vw - 16px));
+  padding: 7px 9px;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--v8-border-highlight);
+  border-radius: var(--v8-radius-sm);
+  background: var(--v8-dialog-glass);
+  box-shadow: var(--v8-shadow-2);
+  backdrop-filter: blur(var(--v8-blur)) saturate(var(--v8-saturate));
+  color: var(--v8-text);
+  font-size: var(--v8-font-xs);
+  line-height: 1.35;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(var(--v8-tooltip-shift-x), var(--v8-tooltip-shift-y), 0) scale(0.98);
+  transition:
+    opacity var(--v8-motion-fast) var(--v8-ease-out),
+    transform var(--v8-motion-fast) var(--v8-ease-out),
+    visibility 0s step-end var(--v8-motion-fast);
+  visibility: hidden;
+}
+
+.v8-tooltip[hidden] { display: none; }
+.v8-tooltip[data-placement="right"] { --v8-tooltip-shift-x: -4px; --v8-tooltip-shift-y: 0; }
+.v8-tooltip[data-placement="bottom"] { --v8-tooltip-shift-y: -4px; }
+.v8-tooltip[data-placement="left"] { --v8-tooltip-shift-x: 4px; --v8-tooltip-shift-y: 0; }
+
+.v8-tooltip.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+  transition-delay: 0s;
   visibility: visible;
 }
 
@@ -363,7 +409,7 @@ html[data-v8-interactions] body :where(
 
 .v8-empty-state__eyebrow {
   color: var(--v8-accent);
-  font-size: 10px;
+  font-size: var(--v8-font-micro);
   font-weight: var(--v8-weight-semibold);
   letter-spacing: 0;
   text-transform: uppercase;
@@ -438,6 +484,7 @@ html[data-v8-interactions] body :where(
 }
 
 .v8-skeleton {
+  position: relative;
   overflow: hidden;
   border: 1px solid var(--v8-divider);
   border-radius: var(--v8-radius-sm);
@@ -445,9 +492,9 @@ html[data-v8-interactions] body :where(
 }
 
 .v8-skeleton::after {
-  display: block;
+  position: absolute;
+  inset: 0 auto 0 0;
   width: 45%;
-  height: 100%;
   background: linear-gradient(90deg, transparent, var(--v8-skeleton-highlight), transparent);
   content: "";
   transform: translate3d(-100%, 0, 0);
@@ -455,9 +502,12 @@ html[data-v8-interactions] body :where(
 }
 
 .v8-window-layer { backdrop-filter: blur(var(--v8-blur-backdrop)) saturate(var(--v8-saturate)); }
+.v8-window-surface { box-shadow:var(--v8-shadow-window-open);transition:box-shadow var(--v8-motion-base) var(--v8-physics-friction); }
 .v8-window-layer:not(.is-open) { pointer-events: none; }
 .v8-window-layer[data-window-state="opening"],.v8-window-layer[data-window-state="closing"] { will-change: opacity, transform; }
-.v8-window-surface:focus-within { outline: 1px solid color-mix(in srgb, var(--v8-accent) 18%, transparent); outline-offset: -1px; }
+.v8-window-surface:focus-within { box-shadow:var(--v8-shadow-window-focus);outline: 1px solid color-mix(in srgb, var(--v8-accent) 18%, transparent); outline-offset: -1px; }
+.v8-window-layer.is-open .v8-window-surface,.v8-window-layer.is-open.v8-window-surface { animation: v8-window-haptic-open var(--v8-haptic-window-duration) var(--v8-haptic-spring) both; }
+.v8-window-layer[data-window-state="closing"] .v8-window-surface,.v8-window-layer[data-window-state="closing"].v8-window-surface { animation: v8-window-haptic-close var(--v8-haptic-window-duration) var(--v8-ease-out) both; }
 
 .v8-panel {
   position: fixed;
@@ -465,21 +515,23 @@ html[data-v8-interactions] body :where(
   top: 16px;
   right: 16px;
   bottom: 16px;
-  width: min(440px, calc(100vw - 32px));
+  width: min(var(--density-panel-width), calc(100vw - 32px));
   overflow: hidden;
   border: 1px solid var(--v8-border-highlight);
   border-radius: var(--v8-radius-md);
   background: var(--v8-glass);
-  box-shadow: var(--v8-shadow-float);
+  box-shadow: var(--v8-shadow-panel-rest);
   backdrop-filter: blur(var(--v8-blur)) saturate(var(--v8-saturate));
   opacity: 0;
   transform: translate3d(18px, 0, 0) scale(0.985);
   transition:
-    opacity var(--v8-motion-base) var(--v8-ease-out),
-    transform var(--v8-motion-base) var(--v8-ease-out);
+    box-shadow var(--v8-motion-base) var(--v8-physics-friction),
+    opacity var(--v8-motion-base) var(--v8-physics-momentum),
+    transform var(--v8-haptic-window-duration) var(--v8-physics-inertia);
 }
 
 .v8-panel.is-open {
+  box-shadow:var(--v8-shadow-window-open);
   opacity: 1;
   transform: translate3d(0, 0, 0) scale(1);
 }
@@ -514,7 +566,7 @@ html[data-v8-interactions] body :where(
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: var(--v8-space-3);
-  padding: var(--v8-space-3);
+  padding: max(10px, calc(var(--density-card-padding) * .55));
   border: 1px solid var(--v8-border-strong);
   border-radius: var(--v8-radius-md);
   background: var(--v8-glass);
@@ -526,6 +578,10 @@ html[data-v8-interactions] body :where(
   transition:
     opacity var(--v8-motion-base) var(--v8-ease-out),
     transform var(--v8-motion-base) var(--v8-ease-out);
+}
+
+.v8-toast--action {
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
 }
 
 .v8-toast.is-visible {
@@ -544,19 +600,25 @@ html[data-v8-interactions] body :where(
 .v8-toast--success { border-color: color-mix(in srgb, var(--v8-success) 28%, var(--v8-border)); }
 .v8-toast--warning { border-color: color-mix(in srgb, var(--v8-warning) 28%, var(--v8-border)); }
 .v8-toast--error { border-color: color-mix(in srgb, var(--v8-danger) 28%, var(--v8-border)); }
+.v8-toast--sync, .v8-toast--update, .v8-toast--brain, .v8-toast--loading { border-color: color-mix(in srgb, var(--v8-accent) 24%, var(--v8-border)); }
 
 .v8-toast.is-timed::after {
   position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  right: 8px;
+  bottom: 3px;
+  left: 8px;
   height: 2px;
+  border-radius: var(--v8-radius-pill);
   background: var(--v8-accent);
   content: "";
   transform: scaleX(1);
   transform-origin: left;
-  animation: v8-toast-progress var(--v8-toast-duration) linear forwards;
+  animation: v8-toast-progress var(--v8-toast-duration) var(--v8-physics-friction) forwards;
 }
+
+.v8-toast--success.is-timed::after { background: var(--v8-success); }
+.v8-toast--warning.is-timed::after { background: var(--v8-warning); }
+.v8-toast--error.is-timed::after { background: var(--v8-danger); }
 
 .v8-toast__message strong {
   display: block;
@@ -567,6 +629,26 @@ html[data-v8-interactions] body :where(
 
 @keyframes v8-spin {
   to { transform: rotate(360deg); }
+}
+
+@keyframes v8-haptic-release {
+  0% { transform: var(--v8-haptic-press-transform); }
+  48% { transform: var(--v8-haptic-release-overshoot); }
+  72% { transform: var(--v8-physics-recoil); }
+  100% { transform: translate3d(0,0,0) scale(1); }
+}
+
+@keyframes v8-window-haptic-open {
+  0% { opacity: 0; transform: translate3d(0,10px,0) scale(.96); }
+  62% { opacity: 1; transform: translate3d(0,-1px,0) scale(1.008); }
+  82% { opacity: 1; transform: translate3d(0,.25px,0) scale(.998); }
+  100% { opacity: 1; transform: translate3d(0,0,0) scale(1); }
+}
+
+@keyframes v8-window-haptic-close {
+  0% { opacity: 1; transform: translate3d(0,0,0) scale(1); }
+  28% { opacity: 1; transform: translate3d(0,-.5px,0) scale(1.003); }
+  100% { opacity: 0; transform: translate3d(0,5px,0) scale(.975); }
 }
 
 @keyframes v8-skeleton-pass {
@@ -592,10 +674,50 @@ html[data-v8-interactions] body :where(
   [data-tooltip]::after {
     display: none;
   }
+
+  .v8-toast > .v8-icon-button {
+    width: var(--v8-control-lg);
+    flex-basis: var(--v8-control-lg);
+  }
+}
+
+@media (pointer: coarse) {
+  .v8-button,
+  .v8-icon-button,
+  .v8-toolbar-button,
+  .v8-input,
+  [role="tab"],
+  [role="option"] {
+    min-height: 44px;
+  }
+
+  .v8-icon-button,
+  .v8-toolbar-button {
+    min-width: 44px;
+    flex-basis: 44px;
+  }
+}
+
+@media (max-width: 430px) {
+  .v8-toast--action {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .v8-toast--action > .v8-button {
+    grid-column: 2 / -1;
+    grid-row: 2;
+    width: 100%;
+  }
+
+  .v8-toast--action > .v8-icon-button {
+    grid-column: 3;
+    grid-row: 1;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .v8-button,
+  .v8-surface,
   .v8-icon-button,
   .v8-toolbar-button,
   .v8-input,
@@ -603,8 +725,17 @@ html[data-v8-interactions] body :where(
   .v8-toast,
   .v8-window-layer,
   .v8-window-surface,
+  .v8-tooltip,
   [data-tooltip]::after {
     transition-duration: 1ms;
+  }
+
+  [data-haptic-state="released"],
+  .v8-window-layer.is-open .v8-window-surface,
+  .v8-window-layer.is-open.v8-window-surface,
+  .v8-window-layer[data-window-state="closing"] .v8-window-surface,
+  .v8-window-layer[data-window-state="closing"].v8-window-surface {
+    animation: none;
   }
 
   .v8-button.is-loading::after,

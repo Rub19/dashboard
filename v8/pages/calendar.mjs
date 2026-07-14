@@ -3,6 +3,7 @@ import { emptyState } from "../ui/empty-state.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
 import { buildMonth, eventsForDate } from "./calendar-model.mjs";
 import { localeTag } from "../i18n/catalog.mjs";
+import { calendarPresenceState } from "../core/presence-engine.mjs";
 
 function weekdayLabels() {
   const formatter = new Intl.DateTimeFormat(localeTag(), { weekday: "short" });
@@ -33,16 +34,18 @@ export function mountCalendar(stage, options = {}) {
   const repository = options.repository;
   const actions = options.actions;
   const notify = typeof options.notify === "function" ? options.notify : () => {};
+  const presence = options.presence || null;
   const today = new Date();
   let year = today.getFullYear();
   let month = today.getMonth();
   let selectedDate = isoDate(today);
   let events = repository.snapshot().events.map((event) => ({ ...event }));
   let composerOpen = false;
+  let mounted = true;
   const scopedActions = [];
 
   const monthLabel = element("h2", { text: monthTitle(year, month), attributes: { translate: "no" } });
-  const eventsBadge = element("span", { className: "v8-badge", text: `${events.length} événement${events.length > 1 ? "s" : ""}` });
+  const eventsBadge = element("span", { className: "v8-badge", text: `${events.length} événement${events.length > 1 ? "s" : ""}`, dataset: { liveWidget: "metric", liveKind: "metric" } });
   const grid = element("div", { className: "v8-calendar-grid", attributes: { role: "grid", "aria-label": "Calendrier mensuel" } });
   const agenda = element("aside", { className: "v8-calendar-agenda", attributes: { "aria-label": "Agenda du jour" } });
   const page = element("section", { className: "v8-page v8-work-page", dataset: { page: "calendar" } }, [
@@ -73,13 +76,26 @@ export function mountCalendar(stage, options = {}) {
     ])
   ]);
 
-  function refreshEvents() {
+  function refreshEvents(config = {}) {
     events = repository.snapshot().events.map((event) => ({ ...event }));
-    eventsBadge.textContent = `${events.length} événement${events.length > 1 ? "s" : ""}`;
+    const calendarState = calendarPresenceState(events);
+    const repeatedApproach = presence?.state?.().calendar === "approaching" && calendarState === "approaching";
+    presence?.update?.({ calendar: calendarState });
+    if (config.signal === true && repeatedApproach) presence?.signalIcon?.("calendar");
+    const eventCount = `${events.length} événement${events.length > 1 ? "s" : ""}`;
+    if (presence) presence.transitionText(eventsBadge, eventCount, { kind: "metric" });
+    else eventsBadge.textContent = eventCount;
+  }
+
+  function eventRow(id) {
+    return [...agenda.querySelectorAll("[data-event-id]")]
+      .find((row) => row.dataset.eventId === String(id)) || null;
   }
 
   function renderGrid() {
-    monthLabel.textContent = monthTitle(year, month);
+    const nextMonth = monthTitle(year, month);
+    if (presence) presence.transitionText(monthLabel, nextMonth, { kind: "planning" });
+    else monthLabel.textContent = nextMonth;
     grid.replaceChildren();
     buildMonth(year, month, today).forEach((cell) => {
       const cellEvents = eventsForDate(events, cell.date);
@@ -128,7 +144,7 @@ export function mountCalendar(stage, options = {}) {
       }));
     } else {
       dayEvents.forEach((event) => {
-        list.append(element("article", { className: "v8-calendar-event", attributes: { role: "listitem" } }, [
+        list.append(element("article", { className: "v8-calendar-event", attributes: { role: "listitem" }, dataset: { eventId: event.id, liveWidget: "planning", liveKind: "planning" } }, [
           element("span", { className: "v8-calendar-event__signal", attributes: { "aria-hidden": "true" } }),
           element("div", {}, [element("strong", { text: event.title, attributes: { translate: "no" } }), element("small", { text: "Toute la journée" })]),
           element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": `Supprimer ${event.title}` }, dataset: { eventDelete: event.id } }, [icon("trash-2")])
@@ -175,9 +191,10 @@ export function mountCalendar(stage, options = {}) {
     year = parsed.getFullYear();
     month = parsed.getMonth();
     composerOpen = false;
-    refreshEvents();
+    refreshEvents({ signal: true });
     renderGrid();
     renderAgenda();
+    presence?.signalActivity?.(eventRow(created.data.id), "calendar", { phase: "enter" });
     notify({ id: "event-created", title: "Calendrier", message: "Événement ajouté.", type: "success", duration: 2200 });
     return created;
   }
@@ -212,12 +229,19 @@ export function mountCalendar(stage, options = {}) {
     }
     const remove = event.target.closest("[data-event-delete]");
     if (remove && page.contains(remove)) {
-      const deleted = repository.events.remove(remove.dataset.eventDelete);
+      const id = remove.dataset.eventDelete;
+      const row = eventRow(id);
+      const deleted = repository.events.remove(id);
       if (deleted.ok) {
         refreshEvents();
-        renderGrid();
-        renderAgenda();
         notify({ id: "event-deleted", title: "Calendrier", message: "Événement supprimé.", type: "info", duration: 2200 });
+        const finish = () => {
+          if (!mounted) return;
+          renderGrid();
+          renderAgenda();
+        };
+        if (presence?.signalActivity) presence.signalActivity(row, "calendar", { phase: "exit", onComplete: finish });
+        else finish();
       }
     }
   }
@@ -229,6 +253,7 @@ export function mountCalendar(stage, options = {}) {
   refreshIcons();
 
   return () => {
+    mounted = false;
     scopedActions.reverse().forEach((restore) => restore());
     page.removeEventListener("click", handleClick);
     page.remove();

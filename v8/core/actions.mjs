@@ -1,3 +1,9 @@
+import { WORKSPACES } from "../data/workspaces.mjs";
+import { DENSITY_CUSTOM_RANGES, DENSITY_MODES } from "./density-engine.mjs";
+import { patchBrainPreferences } from "../brain/preferences.mjs";
+
+const LOCALES = Object.freeze(["fr", "en", "es", "de"]);
+
 function completed(message, data = null) {
   return Object.freeze({ ok: true, status: "completed", message, data });
 }
@@ -19,8 +25,10 @@ export function createActionFacade(options = {}) {
   const setLocale = typeof options.setLocale === "function" ? options.setLocale : null;
   const getLocale = typeof options.getLocale === "function" ? options.getLocale : () => "fr";
   const onActivity = typeof options.onActivity === "function" ? options.onActivity : null;
+  const sounds = options.sounds || null;
+  const sync = options.sync || null;
+  const spotifyLive = options.spotifyLive || null;
   const handlers = new Map();
-  let syncTimer = 0;
 
   function register(id, handler) {
     if (!id || typeof handler !== "function") return false;
@@ -66,6 +74,9 @@ export function createActionFacade(options = {}) {
   register("v8.flows.open", openRoute("flows", "Flows"));
   register("v8.brain.open", openRoute("brain", "Brain"));
   register("v8.settings.open", openRoute("settings", "Reglages"));
+  register("v8.spotify.toggle", () => spotifyLive?.command
+    ? spotifyLive.command("toggle")
+    : unavailable("Le controle Spotify n'est pas disponible."));
 
   function openNewNote(context) {
     navigate("notes");
@@ -145,24 +156,37 @@ export function createActionFacade(options = {}) {
   function activateSpace(id, label, flow, accent) {
     return () => {
       setState({ space: id, flow, accent, missionOpen: false, panel: null, commandOpen: false });
-      notify({ id: `space-${id}`, title: "Space actif", message: `${label} est pret.`, type: "success" });
+      notify({ id: `space-${id}`, title: "Space actif", message: `${label} est pret.`, type: "success", sound: false });
       return completed(`Space ${label} active`, { space: id, flow, accent });
     };
   }
 
-  register("v8.space.personal", activateSpace("personal", "Personnel", "Essentiel", "mint"));
-  register("v8.space.focus", activateSpace("focus", "Focus", "Deep Work", "sky"));
-  register("v8.space.studio", activateSpace("studio", "Studio", "Creation", "rose"));
+  WORKSPACES.forEach(({ id, label, flow, accent, actionId }) => {
+    const activate = activateSpace(id, label, flow, accent);
+    register(actionId, activate);
+    register(`v8.dashboard.${id}`, (context) => {
+      const result = activate(context);
+      navigate("home");
+      return result;
+    });
+  });
 
   register("v8.sync.refresh", () => {
-    setState({ syncStatus: "syncing" });
-    if (syncTimer) globalThis.clearTimeout?.(syncTimer);
-    syncTimer = globalThis.setTimeout?.(() => {
-      syncTimer = 0;
-      setState({ syncStatus: globalThis.navigator?.onLine === false ? "error" : "online" });
-    }, 900) || 0;
-    notify({ id: "sync-refresh", title: "Cloud Sync", message: "Synchronisation locale verifiee.", type: "success" });
-    return completed("Synchronisation lancee");
+    if (!sync?.refresh) return unavailable("La synchronisation Supabase n'est pas disponible.");
+    notify({ id: "sync-refresh", title: "Supabase", message: "Verification de la synchronisation cloud.", type: "sync", duration: 0, sound: false });
+    return Promise.resolve(sync.refresh()).then((response) => {
+      notify({
+        id: "sync-refresh",
+        title: "Supabase",
+        message: response.ok ? "Donnees synchronisees avec Supabase." : response.message,
+        type: response.ok ? "success" : (response.status === "offline" ? "warning" : "error")
+      });
+      return response;
+    }).catch((error) => {
+      const response = failed("La synchronisation Supabase a echoue.", error);
+      notify({ id: "sync-refresh", title: "Supabase", message: response.message, type: "error" });
+      return response;
+    });
   });
 
   register("v8.theme.toggle", () => {
@@ -180,18 +204,126 @@ export function createActionFacade(options = {}) {
     return completed("Mode Graphite applique", { theme: "graphite" });
   });
   register("v8.density.toggle", () => {
-    const density = getState().density === "comfortable" ? "compact" : "comfortable";
+    const sequence = ["spacious", "comfortable", "compact", "ultra-compact", "automatic"];
+    const current = getState().density;
+    const density = sequence[(sequence.indexOf(current) + 1) % sequence.length];
     setState({ density });
     return completed("Densite modifiee", { density });
+  });
+  DENSITY_MODES.forEach((density) => {
+    register(`v8.density.${density}`, () => {
+      setState({ density });
+      return completed("Densite modifiee", { density });
+    });
+  });
+  register("v8.density.custom.update", (context = {}) => {
+    const key = String(context.key || "");
+    if (!Object.hasOwn(DENSITY_CUSTOM_RANGES, key)) return unavailable("Ce reglage de densite n'est pas disponible.");
+    const current = getState().densitySettings || {};
+    setState({ density: "custom", densitySettings: { ...current, custom: { ...(current.custom || {}), [key]: context.value } } });
+    return completed("Densite personnalisee mise a jour", { key, value: context.value });
+  });
+  register("v8.density.focus", () => {
+    const current = getState().densitySettings || {};
+    const focusDensity = current.focusDensity === false;
+    setState({ densitySettings: { ...current, focusDensity } });
+    return completed(focusDensity ? "Densite Focus activee" : "Densite Focus desactivee", { focusDensity });
+  });
+  register("v8.density.spaces", () => {
+    const current = getState().densitySettings || {};
+    const adaptiveBySpace = current.adaptiveBySpace === false;
+    setState({ densitySettings: { ...current, adaptiveBySpace } });
+    return completed(adaptiveBySpace ? "Presets par Space actifs" : "Presets par Space desactives", { adaptiveBySpace });
+  });
+
+  register("v8.brain.preference", (context = {}) => {
+    const path = String(context.path || "");
+    if (!/^(?:enabled|assistantName|persona|tone|detail|language|proactive|suggestionFrequency|automationLevel|notifications|sounds|silentInFocus|briefing\.(?:enabled|concise)|provider\.(?:active|model|fallback|privacy)|memory\.(?:enabled|retentionDays|categories\.[a-z-]+)|permissions\.[a-z-]+)$/.test(path)) {
+      return unavailable("Cette preference Brain n'est pas modifiable.");
+    }
+    const brainPreferences = patchBrainPreferences(getState().brainPreferences, path, context.value);
+    setState({ brainPreferences });
+    return completed("Preferences Brain mises a jour", { path, value: context.value });
+  });
+  ["concise", "balanced", "expert", "coach", "creative", "developer", "custom"].forEach((persona) => {
+    register(`v8.brain.persona.${persona}`, () => {
+      const brainPreferences = patchBrainPreferences(getState().brainPreferences, "persona", persona);
+      setState({ brainPreferences });
+      return completed("Personnalite Brain mise a jour", { persona });
+    });
+  });
+  register("v8.brain.memory.toggle", () => {
+    const enabled = getState().brainPreferences?.memory?.enabled === false;
+    setState({ brainPreferences: patchBrainPreferences(getState().brainPreferences, "memory.enabled", enabled) });
+    return completed(enabled ? "Memoire Brain activee" : "Memoire Brain desactivee", { enabled });
+  });
+  register("v8.brain.briefing.toggle", () => {
+    const enabled = getState().brainPreferences?.briefing?.enabled === false;
+    setState({ brainPreferences: patchBrainPreferences(getState().brainPreferences, "briefing.enabled", enabled) });
+    return completed(enabled ? "Briefing Brain active" : "Briefing Brain desactive", { enabled });
+  });
+  register("v8.spotlight.toggle", () => {
+    const spotlightEnabled = getState().spotlightEnabled === false;
+    setState({ spotlightEnabled });
+    return completed(spotlightEnabled ? "Spotlight active" : "Spotlight desactive", { spotlightEnabled });
+  });
+
+  register("v8.sound.toggle", () => {
+    if (!sounds?.setPreferences) return unavailable("Les sons ne sont pas disponibles dans ce contexte.");
+    const enabled = sounds.preferences().enabled === false;
+    sounds.setPreferences({ enabled });
+    if (enabled) void sounds.preview?.();
+    return completed(enabled ? "Sons actives" : "Sons desactives", { enabled });
+  });
+  register("v8.sound.silent", () => {
+    if (!sounds?.setPreferences) return unavailable("Les sons ne sont pas disponibles dans ce contexte.");
+    const silent = sounds.preferences().silent !== true;
+    sounds.setPreferences({ silent });
+    if (!silent && sounds.preferences().enabled) void sounds.preview?.();
+    return completed(silent ? "Mode Silent active" : "Mode Silent desactive", { silent });
+  });
+  register("v8.sound.spatial", () => {
+    if (!sounds?.setPreferences) return unavailable("Les sons ne sont pas disponibles dans ce contexte.");
+    const spatial = sounds.preferences().spatial === false;
+    sounds.setPreferences({ spatial });
+    if (spatial && sounds.preferences().enabled) void sounds.preview?.();
+    return completed(spatial ? "Audio spatial active" : "Audio spatial desactive", { spatial });
+  });
+  register("v8.sound.preview", () => {
+    if (!sounds?.preview) return unavailable("L'apercu sonore n'est pas disponible.");
+    void sounds.preview();
+    return completed("Apercu sonore lance");
+  });
+  register("v8.sound.volume", (context = {}) => {
+    if (!sounds?.setPreferences) return unavailable("Les sons ne sont pas disponibles dans ce contexte.");
+    const category = String(context.category || "master");
+    const value = Math.min(1, Math.max(0, Number(context.value) || 0));
+    if (category === "master") sounds.setPreferences({ master: value });
+    else sounds.setPreferences({ volumes: { [category]: value } });
+    return completed("Volume modifie", { category, value });
+  });
+  ["ethone", "minimal", "classic", "apple-inspired", "silent"].forEach((pack) => {
+    register(`v8.sound.pack.${pack}`, () => {
+      if (!sounds?.setPreferences) return unavailable("Les sons ne sont pas disponibles dans ce contexte.");
+      sounds.setPreferences({ pack });
+      if (pack !== "silent" && sounds.preferences().enabled) void sounds.preview?.(pack);
+      return completed("Pack sonore modifie", { pack });
+    });
   });
 
   register("v8.locale.cycle", () => {
     if (!setLocale) return unavailable("Le changement de langue n'est pas disponible.");
-    const locales = ["fr", "en", "es", "de"];
     const current = getLocale();
-    const locale = locales[(locales.indexOf(current) + 1) % locales.length];
+    const locale = LOCALES[(LOCALES.indexOf(current) + 1) % LOCALES.length];
     setLocale(locale);
     notify({ id: "locale-updated", title: "Langue", message: locale.toUpperCase(), type: "success" });
+    return completed("Langue modifiee", { locale });
+  });
+  register("v8.locale.set", (context = {}) => {
+    if (!setLocale) return unavailable("Le changement de langue n'est pas disponible.");
+    const locale = String(context.locale || "").toLowerCase();
+    if (!LOCALES.includes(locale)) return unavailable("Cette langue n'est pas disponible.");
+    setLocale(locale);
     return completed("Langue modifiee", { locale });
   });
 
@@ -222,21 +354,36 @@ export function createActionFacade(options = {}) {
 
     try {
       const result = handler(Object.freeze({ ...context, actionId }));
+      if (result && typeof result.then === "function") {
+        return Promise.resolve(result).then((value) => {
+          const normalized = value && typeof value === "object" ? value : completed("Action terminee", value ?? null);
+          try { sounds?.playAction?.(actionId, normalized, context); } catch {}
+          if (onActivity) {
+            try { onActivity(actionId, normalized, getState()); } catch {}
+          }
+          return normalized;
+        }).catch((error) => {
+          const response = failed("L'action n'a pas pu etre terminee.", error);
+          try { sounds?.playAction?.(actionId, response, context); } catch {}
+          notify({ id: `failed-${actionId}`, title: "Action interrompue", message: response.message, type: "error" });
+          return response;
+        });
+      }
       const normalized = result && typeof result === "object" ? result : completed("Action terminee", result ?? null);
-      if (onActivity && typeof normalized?.then !== "function") {
+      try { sounds?.playAction?.(actionId, normalized, context); } catch {}
+      if (onActivity) {
         try { onActivity(actionId, normalized, getState()); } catch {}
       }
       return normalized;
     } catch (error) {
       const result = failed("L'action n'a pas pu etre terminee.", error);
+      try { sounds?.playAction?.(actionId, result, context); } catch {}
       notify({ id: `failed-${actionId}`, title: "Action interrompue", message: result.message, type: "error" });
       return result;
     }
   }
 
   function destroy() {
-    if (syncTimer) globalThis.clearTimeout?.(syncTimer);
-    syncTimer = 0;
     handlers.clear();
   }
 

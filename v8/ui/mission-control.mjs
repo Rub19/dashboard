@@ -1,23 +1,39 @@
 import { NAVIGATION_ITEMS } from "../data/navigation.mjs";
+import { WORKSPACES, workspaceById } from "../data/workspaces.mjs";
 import { actionButton, element, icon } from "./dom.mjs";
 import { refreshIcons } from "./icons.mjs";
 import { createWindowController } from "./window-system.mjs";
 
-const SPACES = Object.freeze([
-  { id: "personal", label: "Personnel", flow: "Essentiel", icon: "user-round", actionId: "v8.space.personal", description: "Vue equilibree pour le quotidien." },
-  { id: "focus", label: "Focus", flow: "Deep Work", icon: "focus", actionId: "v8.space.focus", description: "Priorites, calme et densite utile." },
-  { id: "studio", label: "Studio", flow: "Creation", icon: "sparkles", actionId: "v8.space.studio", description: "Idees, notes et ressources creatives." }
-]);
+export function missionTargetIndex(key, index, count) {
+  if (!count) return null;
+  if (key === "Home") return 0;
+  if (key === "End") return count - 1;
+  const delta = key === "ArrowRight" || key === "ArrowDown" ? 1 : key === "ArrowLeft" || key === "ArrowUp" ? -1 : 0;
+  if (!delta) return null;
+  const start = index < 0 ? (delta > 0 ? -1 : 0) : index;
+  return ((start + delta) % count + count) % count;
+}
 
-function metric(value, label) {
-  return element("div", { className: "v8-mission-metric" }, [
-    element("strong", { text: String(value) }),
-    element("span", { text: label })
-  ]);
+function heading(title, count) {
+  return element("header", { className: "v8-mission-section__heading" }, [element("h3", { text: title }), element("span", { text: String(count) })]);
+}
+
+function missionButton(kind, item, children, active = false, className = "") {
+  const liveKind = kind === "widget" ? "widget" : kind === "brain" ? "brain" : null;
+  return element("button", {
+    className: `v8-mission-item ${className}${active ? " is-active" : ""}`,
+    attributes: { type: "button", "aria-current": active ? (kind === "window" ? "page" : "true") : null, "aria-label": item.ariaLabel || item.label },
+    dataset: { action: item.actionId, missionItem: item.id, missionKind: kind, liveWidget: liveKind, liveKind }
+  }, children);
+}
+
+function section(className, title, count, content) {
+  return element("section", { className: `v8-mission-section ${className}` }, [heading(title, count), content]);
 }
 
 export function createMissionControl(host, options = {}) {
   let layer = null;
+  const shell = host?.closest?.(".v8-shell") || null;
   const windowController = createWindowController({ onEscape: () => options.onClose?.() });
 
   function close(config = {}) {
@@ -29,100 +45,83 @@ export function createMissionControl(host, options = {}) {
   function open(context = {}) {
     if (layer) return false;
     const snapshot = options.snapshot?.() || {};
-    const notes = snapshot.notes?.length || 0;
-    const openTasks = snapshot.tasks?.filter?.((task) => !task.completed)?.length || 0;
-    const files = snapshot.files?.length || 0;
-    const events = snapshot.events?.length || 0;
-    const activeSpace = context.space || "personal";
+    const activity = options.activity?.() || snapshot.activities || [];
+    const brainActivity = activity.filter((item) => item?.category === "brain" || item?.source === "brain").slice(0, 4);
+    const activeWorkspace = workspaceById(context.space);
     const activeRoute = context.route || "home";
+    const values = {
+      notes: snapshot.notes?.length || 0,
+      tasks: snapshot.tasks?.filter?.((task) => !task.done)?.length || 0,
+      events: snapshot.events?.length || 0,
+      files: snapshot.files?.length || 0,
+      brain: brainActivity.length
+    };
 
-    const spaceGrid = element("div", { className: "v8-mission-spaces" });
-    SPACES.forEach((space) => {
-      const active = space.id === activeSpace;
-      spaceGrid.append(element("button", {
-        className: `v8-space-card${active ? " is-active" : ""}`,
-        attributes: { type: "button", "aria-current": active ? "true" : null },
-        dataset: { action: space.actionId }
-      }, [
-        element("span", { className: "v8-space-card__icon" }, [icon(space.icon)]),
-        element("span", { className: "v8-space-card__copy" }, [
-          element("small", { text: space.flow }),
-          element("strong", { text: space.label }),
-          element("span", { text: space.description })
-        ]),
-        active ? element("span", { className: "v8-space-card__active", text: "Actif" }) : icon("arrow-up-right")
-      ]));
-    });
+    const spaces = element("div", { className: "v8-mission-spaces" }, WORKSPACES.map((workspace) => missionButton("space", workspace, [
+      element("span", { className: "v8-space-card__icon" }, [icon(workspace.icon)]),
+      element("span", { className: "v8-space-card__copy" }, [element("small", { text: workspace.flow, attributes: { translate: "no" } }), element("strong", { text: workspace.label }), element("span", { text: workspace.description })]),
+      workspace.id === activeWorkspace.id ? element("span", { className: "v8-space-card__active", text: "Actif" }) : icon("arrow-up-right")
+    ], workspace.id === activeWorkspace.id, "v8-space-card")));
 
-    const appGrid = element("div", { className: "v8-mission-apps" });
-    NAVIGATION_ITEMS.forEach((item) => {
-      const active = item.id === activeRoute;
-      appGrid.append(element("button", {
-        className: `v8-window-card${active ? " is-active" : ""}`,
-        attributes: { type: "button" },
-        dataset: { action: item.actionId, route: item.id }
-      }, [
-        element("div", { className: "v8-window-card__chrome", attributes: { "aria-hidden": "true" } }, [element("span"), element("span"), element("span")]),
-        element("div", { className: "v8-window-card__preview" }, [
-          element("span", { className: "v8-window-card__icon" }, [icon(item.icon)]),
-          element("strong", { text: item.label }),
-          element("small", { text: active ? "Fenetre active" : "Ouvrir l'application" })
-        ])
-      ]));
-    });
+    const flows = element("div", { className: "v8-mission-flows" }, WORKSPACES.map((workspace) => missionButton("flow", { ...workspace, id: `flow-${workspace.id}`, ariaLabel: `Ouvrir ${workspace.flow}` }, [
+      element("span", { className: "v8-flow-card__icon" }, [icon("workflow")]),
+      element("span", { className: "v8-flow-card__copy" }, [element("small", { text: workspace.label }), element("strong", { text: workspace.flow, attributes: { translate: "no" } })]),
+      element("span", { className: "v8-flow-card__steps" }, workspace.steps.map((step) => element("i", { text: step })))
+    ], workspace.id === activeWorkspace.id, "v8-flow-card")));
 
-    const dialog = element("section", {
-      className: "v8-mission-dialog",
-      attributes: { role: "dialog", "aria-modal": "true", "aria-labelledby": "v8-mission-title" }
-    }, [
+    const windows = element("div", { className: "v8-mission-apps" }, NAVIGATION_ITEMS.map((item) => missionButton("window", item, [
+      element("div", { className: "v8-window-card__chrome", attributes: { "aria-hidden": "true" } }, [element("span"), element("span"), element("span")]),
+      element("div", { className: "v8-window-card__preview" }, [element("span", { className: "v8-window-card__icon" }, [icon(item.icon)]), element("strong", { text: item.label }), element("small", { text: item.id === activeRoute ? "Fenetre active" : "Disponible" })])
+    ], item.id === activeRoute, "v8-window-card")));
+
+    const dashboards = element("div", { className: "v8-mission-dashboards" }, WORKSPACES.map((workspace) => missionButton("dashboard", { ...workspace, id: `dashboard-${workspace.id}`, actionId: `v8.dashboard.${workspace.id}`, ariaLabel: `Dashboard ${workspace.label}` }, [
+      icon("layout-dashboard"), element("span", {}, [element("strong", { text: workspace.label }), element("small", { text: workspace.flow, attributes: { translate: "no" } })]), workspace.id === activeWorkspace.id ? icon("check") : icon("chevron-right")
+    ], workspace.id === activeWorkspace.id, "v8-dashboard-card")));
+
+    const widgets = element("div", { className: "v8-mission-widgets" }, activeWorkspace.widgets.map((widget) => missionButton("widget", widget, [
+      icon(widget.icon), element("span", {}, [element("strong", { text: widget.label }), element("small", { text: String(values[widget.countKey] || 0), dataset: { liveNumber: values[widget.countKey] || 0 } })])
+    ], false, "v8-widget-card")));
+
+    const brainItems = brainActivity.length ? brainActivity.map((entry) => missionButton("brain", { id: `brain-${entry.id}`, label: entry.title, actionId: "v8.brain.open" }, [
+      icon(entry.icon || "brain"), element("span", {}, [element("strong", { text: entry.title }), element("small", { text: entry.description || "Contexte Brain" })]), icon("arrow-up-right")
+    ], false, "v8-brain-activity")) : [missionButton("brain", { id: "brain-empty", label: "Ouvrir Brain", actionId: "v8.brain.open" }, [
+      icon("brain"), element("span", {}, [element("strong", { text: "Aucune activite recente" }), element("small", { text: "Brain attend votre prochaine demande." })]), icon("arrow-up-right")
+    ], false, "v8-brain-activity v8-brain-activity--empty")];
+
+    const dialog = element("section", { className: "v8-mission-dialog", attributes: { role: "dialog", "aria-modal": "true", "aria-labelledby": "v8-mission-title", "aria-keyshortcuts": "F2 Control+Shift+M Meta+Shift+M" } }, [
       element("header", { className: "v8-mission-header" }, [
         element("div", { className: "v8-mission-header__identity" }, [
           element("div", { className: "v8-window-controls", attributes: { "aria-hidden": "true" } }, [element("span"), element("span"), element("span")]),
-          element("div", {}, [
-            element("span", { className: "v8-eyebrow", text: "Navigation systeme" }),
-            element("h2", { id: "v8-mission-title", text: "Mission Control" }),
-            element("p", { text: `${context.flow || "Essentiel"} · ${openTasks} tache${openTasks > 1 ? "s" : ""} ouverte${openTasks > 1 ? "s" : ""}` })
-          ])
+          element("div", {}, [element("span", { className: "v8-eyebrow", text: "Navigation systeme" }), element("h2", { id: "v8-mission-title", text: "Mission Control" }), element("p", { text: `${activeWorkspace.flow} / ${NAVIGATION_ITEMS.length} fenetres / ${activeWorkspace.widgets.length} widgets`, attributes: { translate: "no" } })])
         ]),
-        element("div", { className: "v8-mission-header__actions" }, [
-          actionButton({ actionId: "v8.command.open", variant: "secondary" }, [icon("search"), element("span", { text: "Rechercher" })]),
-          actionButton({ actionId: "v8.mission.close", className: "v8-icon-button", ariaLabel: "Fermer Mission Control" }, [icon("x")])
-        ])
+        element("div", { className: "v8-mission-header__actions" }, [element("kbd", { text: "F2", attributes: { translate: "no" } }), actionButton({ actionId: "v8.command.open", variant: "secondary" }, [icon("search"), element("span", { text: "Rechercher" })]), actionButton({ actionId: "v8.mission.close", className: "v8-icon-button", ariaLabel: "Fermer Mission Control" }, [icon("x")])])
       ]),
       element("div", { className: "v8-mission-body" }, [
-        element("section", { className: "v8-mission-section" }, [
-          element("header", { className: "v8-mission-section__heading" }, [element("h3", { text: "Spaces" }), element("span", { text: "Changer d'environnement" })]),
-          spaceGrid
-        ]),
-        element("section", { className: "v8-mission-section" }, [
-          element("header", { className: "v8-mission-section__heading" }, [element("h3", { text: "Applications" }), element("span", { text: "Toutes les fenetres ETHONE" })]),
-          appGrid
-        ]),
-        element("aside", { className: "v8-mission-session" }, [
-          element("div", { className: "v8-mission-session__brain" }, [icon("brain"), element("span", {}, [element("small", { text: "Brain Session" }), element("strong", { text: "Contexte synchronise" })]), element("b", { text: "LIVE" })]),
-          element("div", { className: "v8-mission-metrics" }, [metric(notes, "Notes"), metric(openTasks, "A faire"), metric(events, "Evenements"), metric(files, "Fichiers")]),
-          element("div", { className: "v8-mission-quick" }, [
-            actionButton({ actionId: "v8.notes.new" }, [icon("file-plus-2"), element("span", { text: "Note" })]),
-            actionButton({ actionId: "v8.tasks.new" }, [icon("list-plus"), element("span", { text: "Tache" })]),
-            actionButton({ actionId: "v8.widgets.open" }, [icon("panels-top-left"), element("span", { text: "Widgets" })])
-          ])
-        ])
+        element("main", { className: "v8-mission-workspace" }, [section("v8-mission-section--spaces", "Spaces", WORKSPACES.length, spaces), section("v8-mission-section--flows", "Flows", WORKSPACES.length, flows), section("v8-mission-section--windows", "Fenetres", NAVIGATION_ITEMS.length, windows)]),
+        element("aside", { className: "v8-mission-rail" }, [section("v8-mission-section--dashboards", "Dashboards", WORKSPACES.length, dashboards), section("v8-mission-section--widgets", "Widgets ouverts", activeWorkspace.widgets.length, widgets), section("v8-mission-section--brain", "Activites Brain", brainActivity.length, element("div", { className: "v8-mission-brain" }, brainItems))])
       ])
     ]);
 
-    layer = element("div", {
-      className: "v8-mission-layer",
-      events: { click: (event) => event.target === layer && options.onClose?.() }
-    }, [dialog]);
+    dialog.addEventListener("keydown", (event) => {
+      const focused = event.target.closest?.("[data-mission-item]");
+      if ((event.key === "Enter" || event.key === " ") && focused) {
+        event.preventDefault();
+        focused.click();
+        return;
+      }
+      const items = [...dialog.querySelectorAll("[data-mission-item]")];
+      const target = missionTargetIndex(event.key, items.indexOf(document.activeElement), items.length);
+      if (target == null) return;
+      event.preventDefault();
+      items[target]?.focus({ preventScroll: true });
+    });
+    layer = element("div", { className: "v8-mission-layer", events: { click: (event) => event.target === layer && options.onClose?.() } }, [dialog]);
     host.append(layer);
     refreshIcons();
-    return windowController.open(layer, { initialFocus: () => dialog.querySelector("button"), modal: true });
+    const opened = windowController.open(layer, { initialFocus: () => dialog.querySelector(`[data-mission-kind="window"][aria-current="page"]`) || dialog.querySelector("[data-mission-item]"), modal: true, onAfterClose: () => shell?.classList.remove("is-mission-control-open") });
+    if (opened) shell?.classList.add("is-mission-control-open");
+    return opened;
   }
 
-  return Object.freeze({
-    open,
-    close,
-    isOpen: () => windowController.isOpen(),
-    destroy: () => { layer = null; windowController.destroy(); }
-  });
+  return Object.freeze({ open, close, isOpen: () => windowController.isOpen(), destroy: () => { layer = null; shell?.classList.remove("is-mission-control-open"); windowController.destroy(); } });
 }

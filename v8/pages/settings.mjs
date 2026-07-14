@@ -1,9 +1,38 @@
 import { actionButton, element, icon } from "../ui/dom.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
+import { DEFAULT_SOUND_PREFERENCES, SOUND_PACKS } from "../services/sound-manager.mjs";
+import { DENSITY_CUSTOM_RANGES, densityCssVariables, resolveDensity, sanitizeDensitySettings } from "../core/density-engine.mjs";
+import { BRAIN_MEMORY_CATEGORIES, BRAIN_PERMISSION_CATEGORIES, sanitizeBrainPreferences } from "../brain/preferences.mjs";
 
 const ACCENTS = Object.freeze(["mint", "sky", "amber", "violet", "rose"]);
-const SYNC_LABELS = Object.freeze({ online: "En ligne", offline: "Hors ligne", syncing: "Synchronisation" });
-const DENSITY_LABELS = Object.freeze({ comfortable: "Confortable", compact: "Compacte" });
+const SYNC_LABELS = Object.freeze({
+  loading: "Connexion Supabase",
+  saving: "Synchronisation",
+  saved: "Synchronise",
+  offline: "Hors ligne",
+  retrying: "Nouvelle tentative",
+  error: "Erreur",
+  expired: "Session expiree",
+  online: "Synchronise",
+  syncing: "Synchronisation"
+});
+const DENSITY_LABELS = Object.freeze({ spacious: "Spacieuse", comfortable: "Confortable", compact: "Compacte", "ultra-compact": "Ultra compacte", automatic: "Automatique", custom: "Personnalisee" });
+const DENSITY_OPTIONS = Object.freeze([
+  Object.freeze({ id: "spacious", label: "Spacieuse", icon: "maximize-2", copy: "Lecture et cibles tactiles genereuses." }),
+  Object.freeze({ id: "comfortable", label: "Confortable", icon: "panel-top", copy: "Equilibre par defaut pour le quotidien." }),
+  Object.freeze({ id: "compact", label: "Compacte", icon: "rows-3", copy: "Davantage d'information sans sacrifier la lecture." }),
+  Object.freeze({ id: "ultra-compact", label: "Ultra compacte", icon: "list-collapse", copy: "Densite maximale avec focus et cibles conserves." }),
+  Object.freeze({ id: "automatic", label: "Automatique", icon: "wand-sparkles", copy: "S'adapte a l'ecran, au zoom et au contexte." }),
+  Object.freeze({ id: "custom", label: "Personnalisee", icon: "sliders-horizontal", copy: "Reglez chaque dimension de l'interface." })
+]);
+const CUSTOM_DENSITY_LABELS = Object.freeze({ fontScale: "Taille du texte", lineHeight: "Interligne", cardPadding: "Padding des cartes", sectionGap: "Espacement des blocs", controlHeight: "Hauteur des boutons", panelWidth: "Largeur des panneaux", iconSize: "Taille des icones", rowHeight: "Densite des listes", tableRowHeight: "Densite des tableaux", widgetScale: "Taille des widgets", toolbarHeight: "Hauteur des toolbars" });
+const SOUND_VOLUME_ROWS = Object.freeze([
+  Object.freeze({ id: "master", icon: "volume-2", title: "Volume general", description: "Limiter le niveau de tout ETHONE." }),
+  Object.freeze({ id: "notifications", icon: "bell-ring", title: "Notifications", description: "Informations, succes, alertes et mises a jour." }),
+  Object.freeze({ id: "interface", icon: "mouse-pointer-2", title: "Interface", description: "Fenetres, commandes et interactions importantes." }),
+  Object.freeze({ id: "brain", icon: "brain", title: "Brain", description: "Reflexion, reponse et fin de traitement." }),
+  Object.freeze({ id: "system", icon: "audio-lines", title: "Systeme", description: "Connexion, sauvegarde, synchronisation et Spaces." })
+]);
 
 function choice(actionId, iconName, label, active) {
   return actionButton({ actionId, className: `v8-setting-choice${active ? " is-active" : ""}` }, [icon(iconName), element("span", { text: label }), active ? icon("check") : null]);
@@ -17,14 +46,136 @@ function settingRow(iconName, title, description, control) {
   ]);
 }
 
+function switchControl(actionId, label, checked, disabled = false) {
+  return element("button", {
+    className: "v8-switch",
+    attributes: { type: "button", role: "switch", "aria-label": label, "aria-checked": String(checked), disabled: disabled || null },
+    dataset: { action: actionId }
+  }, [element("span", { className: "v8-switch__track", attributes: { "aria-hidden": "true" } }, [element("span", { className: "v8-switch__thumb" })])]);
+}
+
+function soundRange(category, value, disabled) {
+  const percent = Math.round(Number(value || 0) * 100);
+  const label = category === "master" ? "Volume general" : `Volume ${category}`;
+  const range = element("input", {
+    className: "v8-range",
+    attributes: { type: "range", min: "0", max: "100", step: "1", value: String(percent), "aria-label": label, disabled: disabled || null },
+    dataset: { soundVolume: category }
+  });
+  range.style.setProperty("--v8-range-progress", `${percent}%`);
+  return element("div", { className: "v8-sound-range" }, [
+    range,
+    element("output", { text: `${percent} %`, attributes: { "aria-live": "off" }, dataset: { soundValue: category } })
+  ]);
+}
+
+function densityModeChoice(option, active) {
+  return element("button", {
+    className: `v8-density-choice${active ? " is-active" : ""}`,
+    attributes: { type: "button", "aria-pressed": String(active) },
+    dataset: { action: `v8.density.${option.id}`, densityMode: option.id }
+  }, [element("span", { className: "v8-density-choice__icon" }, [icon(option.icon)]), element("span", {}, [element("strong", { text: option.label }), element("small", { text: option.copy })]), active ? icon("check") : null]);
+}
+
+function densityCustomControl(key, value) {
+  const range = DENSITY_CUSTOM_RANGES[key];
+  const input = element("input", { className: "v8-range", attributes: { type: "range", min: String(range.min), max: String(range.max), step: String(range.step), value: String(value), "aria-label": CUSTOM_DENSITY_LABELS[key] }, dataset: { densityCustom: key } });
+  const progress = ((Number(value) - range.min) / (range.max - range.min)) * 100;
+  input.style.setProperty("--v8-range-progress", `${progress}%`);
+  return element("label", { className: "v8-density-custom-row" }, [element("span", {}, [element("strong", { text: CUSTOM_DENSITY_LABELS[key] }), element("output", { text: `${value}${range.unit}`, dataset: { densityOutput: key } })]), input]);
+}
+
+function densityPreview() {
+  return element("div", { className: "v8-density-preview", attributes: { "aria-label": "Apercu interactif de la densite" } }, [
+    element("aside", { className: "v8-density-preview__rail" }, [icon("circle-dot"), icon("house"), icon("notebook-pen"), icon("settings-2")]),
+    element("div", { className: "v8-density-preview__workspace" }, [
+      element("header", {}, [element("span", {}, [icon("panel-top"), element("strong", { text: "Apercu" })]), element("button", { attributes: { type: "button", tabindex: "-1" } }, [icon("search")])]),
+      element("article", { className: "v8-density-preview__card" }, [element("small", { text: "Dashboard" }), element("strong", { text: "Votre espace en un regard" }), element("p", { text: "Cartes, listes et commandes utilisent les memes tokens." }), element("button", { attributes: { type: "button", tabindex: "-1" } }, [icon("sparkles"), element("span", { text: "Action" })])]),
+      element("div", { className: "v8-density-preview__list" }, ["Priorite principale", "Briefing Brain", "Synchronisation Supabase"].map((label, index) => element("span", {}, [icon(index === 0 ? "circle-check-big" : index === 1 ? "brain" : "cloud"), element("b", { text: label })])))
+    ]),
+    element("aside", { className: "v8-density-preview__widget" }, [element("small", { text: "Widget" }), element("strong", { text: "09:41" }), element("span", { text: "Focus actif" })])
+  ]);
+}
+
+function brainPreferenceSwitch(path, label, checked) {
+  const control = switchControl("", label, checked);
+  delete control.dataset.action;
+  control.dataset.brainPreference = path;
+  return control;
+}
+
+function preferenceSelect(path, label, values, current) {
+  const select = element("select", { className: "v8-input", attributes: { "aria-label": label }, dataset: { brainPreferenceSelect: path } }, values.map((entry) => element("option", { text: entry.label, attributes: { value: entry.value } })));
+  select.value = current;
+  return select;
+}
+
+function downloadJson(payload, filename) {
+  const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
 export function mountSettings(stage, options = {}) {
   const state = options.state || {};
+  const sounds = options.sounds || null;
+  const externalServices = options.externalServices || null;
+  const soundSupported = sounds?.diagnostics?.().supported !== false && Boolean(sounds);
+  const spatialSupported = soundSupported && sounds?.diagnostics?.().spatialSupported !== false;
+  const initialSoundPreferences = sounds?.preferences?.() || DEFAULT_SOUND_PREFERENCES;
+  let latestState = state;
+  const initialDensitySettings = sanitizeDensitySettings(state.densitySettings);
+  const densityPreviewHost = densityPreview();
+  const densityChoices = element("div", { className: "v8-density-options", attributes: { role: "group", "aria-label": "Mode de densite" } }, DENSITY_OPTIONS.map((option) => densityModeChoice(option, state.density === option.id)));
+  const densityCustomHost = element("div", { className: "v8-density-custom", attributes: { hidden: state.density !== "custom" } }, Object.keys(DENSITY_CUSTOM_RANGES).map((key) => densityCustomControl(key, initialDensitySettings.custom[key])));
+  const densityResolved = element("span", { className: "v8-density-resolved", attributes: { "aria-live": "polite" } });
+  const brainPreferences = sanitizeBrainPreferences(state.brainPreferences);
+  const brainNameInput = element("input", { className: "v8-input", attributes: { type: "text", maxlength: "32", value: brainPreferences.assistantName, "aria-label": "Nom de l'assistant" }, dataset: { brainPreferenceInput: "assistantName" } });
+  const brainPersonaSelect = preferenceSelect("persona", "Personnalite Brain", ["concise", "balanced", "expert", "coach", "creative", "developer", "custom"].map((value) => ({ value, label: value })), brainPreferences.persona);
+  const brainDetailSelect = preferenceSelect("detail", "Niveau de detail", [{ value: "brief", label: "Concis" }, { value: "balanced", label: "Equilibre" }, { value: "detailed", label: "Detaille" }], brainPreferences.detail);
+  const brainToneSelect = preferenceSelect("tone", "Ton de Brain", [{ value: "calm", label: "Calme" }, { value: "direct", label: "Direct" }, { value: "warm", label: "Chaleureux" }, { value: "technical", label: "Technique" }, { value: "creative", label: "Creatif" }], brainPreferences.tone);
+  const brainLanguageSelect = preferenceSelect("language", "Langue de reponse", [{ value: "auto", label: "Langue de l'interface" }, { value: "fr", label: "Francais" }, { value: "en", label: "English" }, { value: "es", label: "Espanol" }, { value: "de", label: "Deutsch" }], brainPreferences.language);
+  const brainSuggestionSelect = preferenceSelect("suggestionFrequency", "Frequence des suggestions", [{ value: "off", label: "Desactivees" }, { value: "low", label: "Faible" }, { value: "balanced", label: "Equilibree" }, { value: "high", label: "Elevee" }], brainPreferences.suggestionFrequency);
+  const brainAutomationSelect = preferenceSelect("automationLevel", "Niveau d'automatisation", [{ value: "manual", label: "Manuel" }, { value: "suggest-only", label: "Suggestions uniquement" }, { value: "confirm", label: "Confirmation requise" }, { value: "trusted", label: "Actions de confiance" }], brainPreferences.automationLevel);
+  const brainProviderSelect = preferenceSelect("provider.active", "Provider Brain", [
+    { value: "context", label: "ETHONE Context" }, { value: "openai", label: "OpenAI via backend" }, { value: "anthropic", label: "Anthropic via backend" }, { value: "groq", label: "Groq via backend" }, { value: "gemini", label: "Gemini via backend" }, { value: "ollama", label: "Ollama via pont local" }, { value: "lm-studio", label: "LM Studio via pont local" }
+  ], brainPreferences.provider.active);
+  const brainRetentionSelect = preferenceSelect("memory.retentionDays", "Retention de la memoire", [{ value: "30", label: "30 jours" }, { value: "90", label: "90 jours" }, { value: "365", label: "1 an" }], String(brainPreferences.memory.retentionDays));
+  const brainModelInput = element("input", { className: "v8-input", attributes: { type: "text", maxlength: "80", value: brainPreferences.provider.model, "aria-label": "Modele Brain" }, dataset: { brainPreferenceInput: "provider.model" } });
+  const brainFallbackSelect = preferenceSelect("provider.fallback", "Provider de secours", [{ value: "context", label: "ETHONE Context" }, { value: "openai", label: "OpenAI" }, { value: "anthropic", label: "Anthropic" }, { value: "groq", label: "Groq" }, { value: "gemini", label: "Gemini" }, { value: "ollama", label: "Ollama" }, { value: "lm-studio", label: "LM Studio" }], brainPreferences.provider.fallback);
+  const brainPrivacySelect = preferenceSelect("provider.privacy", "Niveau de confidentialite", [{ value: "minimal", label: "Contexte minimal" }, { value: "full-context", label: "Contexte autorise complet" }], brainPreferences.provider.privacy);
+  const brainPermissionGrid = element("div", { className: "v8-brain-settings-permissions" }, BRAIN_PERMISSION_CATEGORIES.map((permission) => element("label", {}, [element("span", {}, [icon(brainPreferences.permissions[permission] ? "eye" : "eye-off"), element("strong", { text: permission })]), brainPreferenceSwitch(`permissions.${permission}`, `Autoriser ${permission}`, brainPreferences.permissions[permission])])));
+  const brainMemoryCategoryGrid = element("div", { className: "v8-brain-settings-permissions" }, BRAIN_MEMORY_CATEGORIES.map((category) => element("label", {}, [element("span", {}, [icon(brainPreferences.memory.categories[category] ? "bookmark-check" : "bookmark-x"), element("strong", { text: category })]), brainPreferenceSwitch(`memory.categories.${category}`, `Memoriser ${category}`, brainPreferences.memory.categories[category])])));
+  const brainMemoryStatus = element("p", { className: "v8-settings-memory-status", text: "Les memoires sont chargees uniquement a la demande.", attributes: { "aria-live": "polite" } });
+  const brainMemoryList = element("div", { className: "v8-settings-memory-list" });
+  const brainMemoryLoad = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { settingsMemoryLoad: "" } }, [icon("database"), element("span", { text: "Voir les memoires" })]);
   const accentControls = element("div", { className: "v8-accent-picker", attributes: { role: "group", "aria-label": "Couleur d'accent" } });
   ACCENTS.forEach((accent) => accentControls.append(element("button", {
     className: `v8-accent-swatch v8-accent-swatch--${accent}${state.accent === accent ? " is-active" : ""}`,
     attributes: { type: "button", "aria-label": `Accent ${accent}`, "aria-pressed": state.accent === accent ? "true" : "false" },
     dataset: { action: `v8.accent.${accent}` }
   }, [state.accent === accent ? icon("check") : null])));
+
+  const soundPackSelect = element("select", {
+    className: "v8-input v8-sound-pack-select",
+    attributes: { "aria-label": "Pack sonore", disabled: !soundSupported || null },
+    dataset: { soundPack: "" }
+  }, SOUND_PACKS.map((pack) => element("option", { text: pack.label, attributes: { value: pack.id, translate: "no" } })));
+  soundPackSelect.value = initialSoundPreferences.pack;
+  const soundPackControl = element("div", { className: "v8-sound-pack-control" }, [
+    element("div", {}, [soundPackSelect, actionButton({ actionId: "v8.sound.preview", className: "v8-icon-button", ariaLabel: "Ecouter un apercu", disabled: !soundSupported }, [icon("play")])]),
+    element("small", { text: SOUND_PACKS.find((pack) => pack.id === initialSoundPreferences.pack)?.description || "Signature douce et lumineuse.", dataset: { soundPackDescription: "" } })
+  ]);
+  const workerStatusHost = element("div", { className: "v8-system-checks", attributes: { "aria-live": "polite" } });
+  const workerError = element("p", { className: "v8-settings-diagnostic-note" });
+  const workerDiagnosticButton = element("button", {
+    className: "v8-button v8-button--secondary",
+    attributes: { type: "button", disabled: !externalServices || null },
+    dataset: { workerDiagnostic: "" }
+  }, [icon("scan-search"), element("span", { text: externalServices ? "Verifier le Worker" : "Worker indisponible" })]);
 
   const page = element("section", { className: "v8-page v8-settings-page", dataset: { page: "settings" } }, [
     element("header", { className: "v8-page-heading" }, [
@@ -38,16 +189,64 @@ export function mountSettings(stage, options = {}) {
     element("div", { className: "v8-settings-layout" }, [
       element("aside", { className: "v8-settings-nav", attributes: { "aria-label": "Sections des reglages" } }, [
         element("button", { className: "is-active", text: "Apparence", attributes: { type: "button", "aria-current": "true", "aria-controls": "v8-settings-appearance" }, dataset: { settingsSection: "v8-settings-appearance" } }),
+        element("button", { text: "Brain", attributes: { type: "button", "aria-controls": "v8-settings-brain" }, dataset: { settingsSection: "v8-settings-brain" } }),
+        element("button", { text: "Sons", attributes: { type: "button", "aria-controls": "v8-settings-sounds" }, dataset: { settingsSection: "v8-settings-sounds" } }),
         element("button", { text: "Workspace", attributes: { type: "button", "aria-controls": "v8-settings-workspace" }, dataset: { settingsSection: "v8-settings-workspace" } }),
-        element("button", { text: "Systeme", attributes: { type: "button", "aria-controls": "v8-settings-system" }, dataset: { settingsSection: "v8-settings-system" } })
+        element("button", { text: "Systeme", attributes: { type: "button", "aria-controls": "v8-settings-system" }, dataset: { settingsSection: "v8-settings-system" } }),
+        element("button", { text: "Developer", attributes: { type: "button", "aria-controls": "v8-settings-developer" }, dataset: { settingsSection: "v8-settings-developer" } })
       ]),
       element("div", { className: "v8-settings-content" }, [
         element("section", { id: "v8-settings-appearance", className: "v8-settings-section v8-surface" }, [
           element("header", {}, [element("span", { className: "v8-eyebrow", text: "Design System" }), element("h2", { text: "Apparence" }), element("p", { text: "Des reglages sobres, coherents et persistants." })]),
           settingRow("sun-moon", "Theme", "Adapter les surfaces et le contraste.", element("div", { className: "v8-segmented" }, [choice("v8.theme.night", "moon-star", "Nuit", state.theme === "night"), choice("v8.theme.graphite", "sun", "Graphite", state.theme === "graphite")])),
           settingRow("palette", "Accent", "Identifier le Space et les actions importantes.", accentControls),
-          settingRow("rows-3", "Densite", "Ajuster la quantite d'information visible.", element("div", { className: "v8-segmented" }, [choice("v8.density.toggle", "align-justify", state.density === "comfortable" ? "Confortable" : "Compacte", true)])),
+          element("div", { className: "v8-density-settings" }, [
+            element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("rows-3")]), element("div", {}, [element("strong", { text: "Density Engine" }), element("p", { text: "Une densite coherente pour chaque page, panneau, widget et resolution." })]), densityResolved]),
+            densityChoices,
+            densityCustomHost,
+            element("div", { className: "v8-density-adaptive" }, [
+              element("label", {}, [element("span", {}, [element("strong", { text: "Focus Density" }), element("small", { text: "Compacter automatiquement le Space Focus." })]), switchControl("v8.density.focus", "Activer Focus Density", initialDensitySettings.focusDensity)]),
+              element("label", {}, [element("span", {}, [element("strong", { text: "Presets par Space" }), element("small", { text: "Personnel confortable, Focus compact, Studio confortable." })]), switchControl("v8.density.spaces", "Activer les presets par Space", initialDensitySettings.adaptiveBySpace)])
+            ]),
+            densityPreviewHost
+          ]),
+          settingRow("sparkles", "Spotlight", "Reveler le Dashboard avec une transition breve au demarrage.", switchControl("v8.spotlight.toggle", "Animation Spotlight au demarrage", state.spotlightEnabled !== false)),
           settingRow("languages", "Langue", "Changer rapidement la langue de l'interface.", actionButton({ actionId: "v8.locale.cycle", variant: "secondary" }, [icon("languages"), element("span", { text: "Langue suivante" })]))
+        ]),
+        element("section", { id: "v8-settings-brain", className: "v8-settings-section v8-surface" }, [
+          element("header", {}, [element("span", { className: "v8-eyebrow", text: "Personal Brain" }), element("h2", { text: "Assistant, memoire et confidentialite" }), element("p", { text: "Un contexte minimal, des permissions explicites et aucune cle privee dans le navigateur." })]),
+          settingRow("signature", "Identite", "Choisir le nom et le style de reponse.", element("div", { className: "v8-brain-settings-controls" }, [brainPreferenceSwitch("enabled", "Activer Brain", brainPreferences.enabled), brainNameInput, brainPersonaSelect, brainDetailSelect])),
+          settingRow("message-square-more", "Comportement", "Ajuster le ton, la langue, les suggestions et le niveau d'automatisation.", element("div", { className: "v8-brain-settings-controls" }, [brainToneSelect, brainLanguageSelect, brainSuggestionSelect, brainAutomationSelect])),
+          settingRow("sparkles", "Presence", "Brain reste discret et respecte le mode Focus.", element("div", { className: "v8-brain-settings-inline" }, [brainPreferenceSwitch("proactive", "Suggestions proactives", brainPreferences.proactive), brainPreferenceSwitch("notifications", "Notifications Brain", brainPreferences.notifications), brainPreferenceSwitch("sounds", "Sons Brain", brainPreferences.sounds), brainPreferenceSwitch("silentInFocus", "Silencieux en Focus", brainPreferences.silentInFocus)])),
+          settingRow("cpu", "Provider", "Les providers cloud exigent le backend ETHONE securise.", element("div", { className: "v8-brain-settings-controls" }, [brainProviderSelect, brainModelInput, brainFallbackSelect, brainPrivacySelect])),
+          settingRow("database", "Memoire", "Preferences utiles uniquement, avec retention et RLS.", element("div", { className: "v8-brain-settings-inline" }, [brainPreferenceSwitch("memory.enabled", "Activer la memoire Brain", brainPreferences.memory.enabled), brainRetentionSelect, brainMemoryLoad])),
+          settingRow("sunrise", "Briefing quotidien", "Evenements, priorites et signaux utiles, en format concis.", element("div", { className: "v8-brain-settings-inline" }, [brainPreferenceSwitch("briefing.enabled", "Activer le briefing Brain", brainPreferences.briefing.enabled), brainPreferenceSwitch("briefing.concise", "Conserver un briefing concis", brainPreferences.briefing.concise)])),
+          element("div", { className: "v8-brain-settings-block" }, [
+            element("header", {}, [
+              element("div", {}, [element("strong", { text: "Privacy Center" }), element("p", { text: "Chaque categorie peut etre desactivee independamment." })]),
+              actionButton({ actionId: "v8.brain.open", variant: "secondary" }, [icon("brain"), element("span", { text: "Ouvrir Brain" })])
+            ]),
+            brainPermissionGrid
+          ]),
+          element("div", { className: "v8-brain-settings-block v8-brain-settings-memory" }, [
+            element("header", {}, [
+              element("div", {}, [element("strong", { text: "Memoire personnelle" }), brainMemoryStatus]),
+              element("div", {}, [
+                element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { settingsMemoryExport: "" } }, [icon("download"), element("span", { text: "Exporter" })]),
+                element("button", { className: "v8-button v8-button--danger", attributes: { type: "button" }, dataset: { settingsMemoryClear: "" } }, [icon("trash-2"), element("span", { text: "Tout effacer" })])
+              ])
+            ]),
+            brainMemoryCategoryGrid,
+            brainMemoryList
+          ])
+        ]),
+        element("section", { id: "v8-settings-sounds", className: "v8-settings-section v8-surface" }, [
+          element("header", {}, [element("span", { className: "v8-eyebrow", text: "Audio system" }), element("h2", { text: "Sons" }), element("p", { text: "Des retours courts et discrets, toujours facultatifs." })]),
+          settingRow("volume-2", "Retours sonores", soundSupported ? "Activer ou couper tout le systeme audio." : "Le son n'est pas disponible dans ce navigateur.", switchControl("v8.sound.toggle", "Activer les sons", initialSoundPreferences.enabled, !soundSupported)),
+          settingRow("volume-x", "Mode silencieux", "Couper temporairement toutes les interactions sonores.", switchControl("v8.sound.silent", "Activer le mode silencieux", initialSoundPreferences.silent, !soundSupported)),
+          settingRow("audio-waveform", "Audio spatial", spatialSupported ? "Orienter tres legerement les sons selon leur origine." : "L'audio spatial n'est pas disponible dans ce navigateur.", switchControl("v8.sound.spatial", "Activer l'audio spatial", initialSoundPreferences.spatial, !spatialSupported)),
+          settingRow("disc-3", "Pack sonore", "Choisir une identite sonore originale pour ETHONE.", soundPackControl),
+          ...SOUND_VOLUME_ROWS.map((row) => settingRow(row.icon, row.title, row.description, soundRange(row.id, row.id === "master" ? initialSoundPreferences.master : initialSoundPreferences.volumes[row.id], !soundSupported)))
         ]),
         element("section", { id: "v8-settings-workspace", className: "v8-settings-section v8-surface" }, [
           element("header", {}, [element("span", { className: "v8-eyebrow", text: "Environnements" }), element("h2", { text: "Spaces" }), element("p", { text: "Chaque Space applique son Flow et son ambiance." })]),
@@ -58,12 +257,22 @@ export function mountSettings(stage, options = {}) {
           ])
         ]),
         element("section", { id: "v8-settings-system", className: "v8-settings-section v8-surface" }, [
-          element("header", {}, [element("span", { className: "v8-eyebrow", text: "Etat" }), element("h2", { text: "Systeme local" })]),
+          element("header", {}, [element("span", { className: "v8-eyebrow", text: "Etat" }), element("h2", { text: "Systeme cloud" })]),
           element("div", { className: "v8-system-checks" }, [
-            element("span", {}, [icon("shield-check"), element("strong", { text: "Donnees" }), element("b", { text: "Protegees" })]),
-            element("span", {}, [icon("cloud"), element("strong", { text: "Synchronisation" }), element("b", { text: SYNC_LABELS[state.syncStatus] || "En ligne" })]),
+            element("span", {}, [icon("shield-check"), element("strong", { text: "Donnees" }), element("b", { text: "RLS actif" })]),
+            element("span", {}, [icon("cloud"), element("strong", { text: "Supabase" }), element("b", { text: SYNC_LABELS[state.syncStatus] || "Connexion" })]),
             element("span", {}, [icon("gauge"), element("strong", { text: "Interface" }), element("b", { text: DENSITY_LABELS[state.density] || "Confortable" })])
           ])
+        ]),
+        element("section", { id: "v8-settings-developer", className: "v8-settings-section v8-surface" }, [
+          element("header", {}, [
+            element("span", { className: "v8-eyebrow", text: "Inspector" }),
+            element("h2", { text: "Services externes" }),
+            element("p", { text: "Diagnostic explicite, sans surveillance ni requete en arriere-plan." }),
+            workerDiagnosticButton
+          ]),
+          workerStatusHost,
+          workerError
         ])
       ])
     ])
@@ -71,6 +280,120 @@ export function mountSettings(stage, options = {}) {
   stage.replaceChildren(page);
   const navButtons = [...page.querySelectorAll(".v8-settings-nav button")];
   const controller = new AbortController();
+  let workerDiagnosticRunning = false;
+
+  function workerMetric(iconName, title, value) {
+    return element("span", {}, [icon(iconName), element("strong", { text: title }), element("b", { text: value })]);
+  }
+
+  function renderWorkerStatus() {
+    const snapshot = externalServices?.diagnostics?.() || {};
+    const requests = Math.max(0, Number(snapshot.requests) || 0);
+    const successes = Math.max(0, Number(snapshot.successes) || 0);
+    const rate = requests ? `${Math.round((successes / requests) * 100)} %` : "Non mesure";
+    const services = Array.isArray(snapshot.services) ? snapshot.services : [];
+    const available = services.filter((service) => service.available).map((service) => service.id);
+    const remaining = Number.isFinite(Number(snapshot.rateLimit?.remaining)) ? String(snapshot.rateLimit.remaining) : "Non communique";
+    workerStatusHost.replaceChildren(
+      workerMetric(snapshot.workerConnected ? "shield-check" : "shield-alert", "Worker", snapshot.workerConnected ? "Connecte" : "Non verifie"),
+      workerMetric("timer", "Latence", Number.isFinite(Number(snapshot.lastLatencyMs)) ? `${Math.round(snapshot.lastLatencyMs)} ms` : "Non mesuree"),
+      workerMetric("chart-no-axes-combined", "Succes", rate),
+      workerMetric("blocks", "Services", available.length ? available.join(", ") : "Aucun confirme"),
+      workerMetric("gauge", "Rate limit", remaining),
+      workerMetric("database", "Cache", Number.isFinite(Number(snapshot.cache?.entries)) ? `${snapshot.cache.entries} entree${snapshot.cache.entries === 1 ? "" : "s"}` : "Non mesure")
+    );
+    workerError.textContent = snapshot.lastError ? `Derniere erreur : ${snapshot.lastError}` : "Aucune erreur Worker enregistree.";
+    refreshIcons();
+  }
+
+  function previewResolution(nextState = latestState, customOverride = null) {
+    const settings = sanitizeDensitySettings(nextState.densitySettings);
+    if (customOverride) return { requested: "custom", effective: "custom", reason: "preview", values: customOverride };
+    const current = options.densityEngine?.resolution?.();
+    if (current?.requested === nextState.density) return current;
+    return resolveDensity(nextState, { width: globalThis.innerWidth || 1280, height: globalThis.innerHeight || 800, zoom: globalThis.visualViewport?.scale || 1, coarsePointer: false, panelOpen: false, railExpanded: nextState.railExpanded });
+  }
+
+  function updateDensityPreview(nextState = latestState, customOverride = null) {
+    const resolution = previewResolution(nextState, customOverride);
+    Object.entries(densityCssVariables(resolution.values)).forEach(([name, value]) => densityPreviewHost.style.setProperty(name, value));
+    densityPreviewHost.dataset.previewDensity = resolution.effective;
+    densityResolved.textContent = resolution.requested === "automatic" ? `${DENSITY_LABELS[resolution.effective]} - ${resolution.reason}` : DENSITY_LABELS[resolution.effective] || "Confortable";
+  }
+
+  function updatePreferenceControls(nextState) {
+    latestState = nextState;
+    const densitySettings = sanitizeDensitySettings(nextState.densitySettings);
+    page.querySelectorAll("[data-density-mode]").forEach((button) => {
+      const active = button.dataset.densityMode === nextState.density;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+      const check = button.querySelector("[data-lucide='check']");
+      if (active && !check) button.append(icon("check"));
+      if (!active) check?.remove();
+    });
+    densityCustomHost.hidden = nextState.density !== "custom";
+    page.querySelector("[data-action='v8.density.focus']")?.setAttribute("aria-checked", String(densitySettings.focusDensity));
+    page.querySelector("[data-action='v8.density.spaces']")?.setAttribute("aria-checked", String(densitySettings.adaptiveBySpace));
+    const brainPrefs = sanitizeBrainPreferences(nextState.brainPreferences);
+    page.querySelectorAll("[data-brain-preference]").forEach((control) => {
+      const value = control.dataset.brainPreference.split(".").reduce((cursor, key) => cursor?.[key], brainPrefs);
+      control.setAttribute("aria-checked", String(value === true));
+      const stateIcon = control.closest("label")?.querySelector("[data-lucide]");
+      if (stateIcon && control.dataset.brainPreference.startsWith("permissions.")) stateIcon.dataset.lucide = value === true ? "eye" : "eye-off";
+      if (stateIcon && control.dataset.brainPreference.startsWith("memory.categories.")) stateIcon.dataset.lucide = value === true ? "bookmark-check" : "bookmark-x";
+    });
+    page.querySelectorAll("[data-brain-preference-select]").forEach((control) => {
+      const value = control.dataset.brainPreferenceSelect.split(".").reduce((cursor, key) => cursor?.[key], brainPrefs);
+      control.value = String(value);
+    });
+    page.querySelectorAll("[data-brain-preference-input]").forEach((control) => {
+      const value = control.dataset.brainPreferenceInput.split(".").reduce((cursor, key) => cursor?.[key], brainPrefs);
+      if (document.activeElement !== control) control.value = String(value ?? "");
+    });
+    updateDensityPreview(nextState);
+    refreshIcons();
+  }
+
+  let memoryBusy = false;
+  async function renderSettingsMemories() {
+    if (memoryBusy || !options.brain?.memory) return;
+    memoryBusy = true;
+    brainMemoryLoad.disabled = true;
+    brainMemoryStatus.textContent = "Chargement securise depuis Supabase...";
+    const response = await options.brain.memory.list();
+    if (controller.signal.aborted) return;
+    memoryBusy = false;
+    brainMemoryLoad.disabled = false;
+    brainMemoryStatus.textContent = response.ok ? `${response.data.length} memoire${response.data.length > 1 ? "s" : ""} active${response.data.length > 1 ? "s" : ""}.` : response.message;
+    brainMemoryList.replaceChildren(...(response.ok && response.data.length ? response.data.map((entry) => element("div", { className: "v8-settings-memory-row" }, [element("span", {}, [icon("bookmark")]), element("div", {}, [element("small", { text: entry.category }), element("strong", { text: entry.key }), element("p", { text: entry.value })]), element("div", {}, [element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Modifier cette memoire" }, dataset: { settingsMemoryEdit: entry.id, settingsMemoryValue: entry.value } }, [icon("pencil")]), element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Supprimer cette memoire" }, dataset: { settingsMemoryDelete: entry.id } }, [icon("trash-2")])])])) : [element("div", { className: "v8-settings-memory-empty" }, [icon("database"), element("p", { text: response.ok ? "Aucune memoire active." : response.message })])]));
+    refreshIcons();
+  }
+
+  renderWorkerStatus();
+  updatePreferenceControls(state);
+  const unsubscribeState = options.subscribeState?.((next) => updatePreferenceControls(next)) || (() => {});
+  const unsubscribeSounds = sounds?.subscribe?.((preferences) => {
+    const toggle = page.querySelector("[data-action='v8.sound.toggle']");
+    toggle?.setAttribute("aria-checked", String(preferences.enabled));
+    const silentToggle = page.querySelector("[data-action='v8.sound.silent']");
+    silentToggle?.setAttribute("aria-checked", String(preferences.silent));
+    const spatialToggle = page.querySelector("[data-action='v8.sound.spatial']");
+    spatialToggle?.setAttribute("aria-checked", String(preferences.spatial));
+    const pack = page.querySelector("[data-sound-pack]");
+    if (pack) pack.value = preferences.pack;
+    const description = page.querySelector("[data-sound-pack-description]");
+    if (description) description.textContent = SOUND_PACKS.find((entry) => entry.id === preferences.pack)?.description || "";
+    page.querySelectorAll("[data-sound-volume]").forEach((control) => {
+      const category = control.dataset.soundVolume;
+      const value = category === "master" ? preferences.master : preferences.volumes[category];
+      const percent = Math.round(Number(value || 0) * 100);
+      control.value = String(percent);
+      control.style.setProperty("--v8-range-progress", `${percent}%`);
+      const output = page.querySelector(`[data-sound-value="${category}"]`);
+      if (output) output.textContent = `${percent} %`;
+    });
+  }) || (() => {});
   function handleSectionNavigation(event) {
     const button = event.target.closest("[data-settings-section]");
     if (!button || !page.contains(button)) return;
@@ -79,8 +402,90 @@ export function mountSettings(stage, options = {}) {
     page.querySelector(`#${button.dataset.settingsSection}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
   page.querySelector(".v8-settings-nav")?.addEventListener("click", handleSectionNavigation, { signal: controller.signal });
+  workerDiagnosticButton.addEventListener("click", async () => {
+    if (!externalServices?.diagnostic || workerDiagnosticRunning) return;
+    workerDiagnosticRunning = true;
+    workerDiagnosticButton.disabled = true;
+    workerDiagnosticButton.setAttribute("aria-busy", "true");
+    workerDiagnosticButton.querySelector("span").textContent = "Verification";
+    try {
+      await externalServices.diagnostic();
+    } catch {}
+    if (!controller.signal.aborted) {
+      workerDiagnosticRunning = false;
+      workerDiagnosticButton.disabled = false;
+      workerDiagnosticButton.removeAttribute("aria-busy");
+      workerDiagnosticButton.querySelector("span").textContent = "Verifier le Worker";
+      renderWorkerStatus();
+    }
+  }, { signal: controller.signal });
+  page.querySelector("[data-sound-pack]")?.addEventListener("change", (event) => {
+    options.actions?.dispatch?.(`v8.sound.pack.${event.currentTarget.value}`, { source: "settings", element: event.currentTarget, event });
+  }, { signal: controller.signal });
+  page.querySelectorAll("[data-sound-volume]").forEach((control) => control.addEventListener("input", (event) => {
+    const category = event.currentTarget.dataset.soundVolume;
+    const value = Number(event.currentTarget.value) / 100;
+    const output = page.querySelector(`[data-sound-value="${category}"]`);
+    if (output) output.textContent = `${Math.round(value * 100)} %`;
+    event.currentTarget.style.setProperty("--v8-range-progress", `${Math.round(value * 100)}%`);
+    options.actions?.dispatch?.("v8.sound.volume", { source: "settings", category, value, element: event.currentTarget, event });
+  }, { signal: controller.signal }));
+  page.querySelectorAll("[data-density-custom]").forEach((control) => {
+    control.addEventListener("input", (event) => {
+      const key = event.currentTarget.dataset.densityCustom;
+      const range = DENSITY_CUSTOM_RANGES[key];
+      const value = Number(event.currentTarget.value);
+      const progress = ((value - range.min) / (range.max - range.min)) * 100;
+      event.currentTarget.style.setProperty("--v8-range-progress", `${progress}%`);
+      page.querySelector(`[data-density-output='${key}']`).textContent = `${value}${range.unit}`;
+      const custom = { ...sanitizeDensitySettings(latestState.densitySettings).custom, [key]: value };
+      updateDensityPreview({ ...latestState, density: "custom" }, custom);
+    }, { signal: controller.signal });
+    control.addEventListener("change", (event) => options.actions?.dispatch?.("v8.density.custom.update", { source: "settings", key: event.currentTarget.dataset.densityCustom, value: Number(event.currentTarget.value) }), { signal: controller.signal });
+  });
+  page.querySelectorAll("[data-brain-preference]").forEach((control) => control.addEventListener("click", (event) => {
+    const path = event.currentTarget.dataset.brainPreference;
+    const value = event.currentTarget.getAttribute("aria-checked") !== "true";
+    options.actions?.dispatch?.("v8.brain.preference", { source: "settings", path, value });
+  }, { signal: controller.signal }));
+  page.querySelectorAll("[data-brain-preference-select]").forEach((control) => control.addEventListener("change", (event) => {
+    const path = event.currentTarget.dataset.brainPreferenceSelect;
+    const value = path === "memory.retentionDays" ? Number(event.currentTarget.value) : event.currentTarget.value;
+    options.actions?.dispatch?.("v8.brain.preference", { source: "settings", path, value });
+  }, { signal: controller.signal }));
+  page.querySelectorAll("[data-brain-preference-input]").forEach((control) => control.addEventListener("change", (event) => options.actions?.dispatch?.("v8.brain.preference", { source: "settings", path: event.currentTarget.dataset.brainPreferenceInput, value: event.currentTarget.value }), { signal: controller.signal }));
+  brainMemoryLoad.addEventListener("click", () => void renderSettingsMemories(), { signal: controller.signal });
+  brainMemoryList.addEventListener("click", async (event) => {
+    const removeButton = event.target.closest("[data-settings-memory-delete]");
+    const editButton = event.target.closest("[data-settings-memory-edit]");
+    if (removeButton) {
+      if (!confirm("Supprimer cette memoire Brain ?")) return;
+      const response = await options.brain.memory.remove(removeButton.dataset.settingsMemoryDelete);
+      brainMemoryStatus.textContent = response.message;
+      if (response.ok) await renderSettingsMemories();
+    } else if (editButton) {
+      const value = prompt("Modifier la memoire", editButton.dataset.settingsMemoryValue || "");
+      if (value == null) return;
+      const response = await options.brain.memory.update(editButton.dataset.settingsMemoryEdit, { value });
+      brainMemoryStatus.textContent = response.message;
+      if (response.ok) await renderSettingsMemories();
+    }
+  }, { signal: controller.signal });
+  page.querySelector("[data-settings-memory-export]")?.addEventListener("click", async () => {
+    const response = await options.brain?.memory?.exportAll?.();
+    if (response?.ok) downloadJson(response.data, "ethone-brain-memory.json");
+    else brainMemoryStatus.textContent = response?.message || "Export indisponible.";
+  }, { signal: controller.signal });
+  page.querySelector("[data-settings-memory-clear]")?.addEventListener("click", async () => {
+    if (!confirm("Supprimer definitivement toutes les memoires Brain ?")) return;
+    const response = await options.brain?.memory?.clear?.({ confirmed: true });
+    brainMemoryStatus.textContent = response?.message || "Suppression indisponible.";
+    if (response?.ok) await renderSettingsMemories();
+  }, { signal: controller.signal });
   refreshIcons();
   return () => {
+    unsubscribeState();
+    unsubscribeSounds();
     controller.abort();
     page.remove();
   };

@@ -5,9 +5,9 @@ import { filterNotes, sortNotes, wordCount } from "./notes-model.mjs";
 import { localeTag } from "../i18n/catalog.mjs";
 
 function formatUpdated(value) {
-  if (!value) return "Note locale";
+  if (!value) return "Note recente";
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Note locale";
+  if (Number.isNaN(date.getTime())) return "Note recente";
   return new Intl.DateTimeFormat(localeTag(), { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }).format(date);
 }
 
@@ -19,12 +19,15 @@ export function mountNotes(stage, options = {}) {
   const repository = options.repository;
   const actions = options.actions;
   const notify = typeof options.notify === "function" ? options.notify : () => {};
+  const presence = options.presence || null;
+  const sync = options.sync || null;
   let notes = repository.snapshot().notes.map((note) => ({ ...note, tags: [...note.tags] }));
   let selectedId = sortNotes(notes)[0]?.id || null;
   let query = "";
   let saveTimer = null;
   let dirty = false;
   let confirmDelete = false;
+  let mounted = true;
   const scopedActions = [];
 
   const countBadge = element("span", { className: "v8-badge", text: `${notes.length} note${notes.length > 1 ? "s" : ""}` });
@@ -62,7 +65,22 @@ export function mountNotes(stage, options = {}) {
     const node = editor.querySelector("[data-note-save-status]");
     if (!node) return;
     node.dataset.status = status;
-    node.textContent = text;
+    if (presence) presence.transitionText(node, text, { kind: "signal" });
+    else node.textContent = text;
+  }
+
+  function applySyncStatus(next = sync?.status?.() || {}) {
+    const labels = {
+      loading: ["pending", "Connexion Supabase"],
+      saving: ["pending", "Synchronisation en cours"],
+      saved: ["saved", "Synchronise avec Supabase"],
+      offline: ["pending", "Hors ligne - en attente"],
+      retrying: ["pending", "Nouvelle tentative"],
+      error: ["error", "Erreur de synchronisation"],
+      expired: ["error", "Session expiree"]
+    };
+    const [status, label] = labels[next.syncStatus] || ["pending", "Synchronisation en attente"];
+    setSaveStatus(status, label);
   }
 
   function clearSaveTimer() {
@@ -84,6 +102,11 @@ export function mountNotes(stage, options = {}) {
     });
   }
 
+  function noteRow(id) {
+    return [...list.querySelectorAll("[data-note-id]")]
+      .find((row) => row.dataset.noteId === String(id)) || null;
+  }
+
   function flushSave(showFeedback = false) {
     clearSaveTimer();
     if (!dirty || !selectedId) return completed("Aucune modification");
@@ -97,8 +120,8 @@ export function mountNotes(stage, options = {}) {
     }
     dirty = false;
     updateLocalNote({ updatedAt: saved.data.updatedAt });
-    setSaveStatus("saved", "Enregistré localement");
-    if (showFeedback) notify({ id: "notes-saved", title: "Notes", message: "Note enregistrée localement.", type: "success", duration: 2400 });
+    applySyncStatus();
+    if (showFeedback) notify({ id: "notes-saved", title: "Notes", message: "Note mise en file de synchronisation Supabase.", type: "success", duration: 2400 });
     return saved;
   }
 
@@ -112,7 +135,9 @@ export function mountNotes(stage, options = {}) {
   function renderList() {
     const filtered = filterNotes(notes, query);
     list.replaceChildren();
-    countBadge.textContent = `${notes.length} note${notes.length > 1 ? "s" : ""}`;
+    const nextCount = `${notes.length} note${notes.length > 1 ? "s" : ""}`;
+    if (presence) presence.transitionText(countBadge, nextCount, { kind: "metric" });
+    else countBadge.textContent = nextCount;
     if (!filtered.length) {
       const clearSearch = query ? element("button", {
         className: "v8-button v8-button--primary",
@@ -146,7 +171,7 @@ export function mountNotes(stage, options = {}) {
       list.append(element("button", {
         className: `v8-note-row${active ? " is-active" : ""}`,
         attributes: { type: "button", role: "listitem", "aria-current": active ? "true" : null },
-        dataset: { noteId: note.id }
+        dataset: { noteId: note.id, liveWidget: "planning", liveKind: "planning" }
       }, [
         element("span", { className: "v8-note-row__marker" }, [icon(note.pinned ? "pin" : "file-text")]),
         element("span", { className: "v8-note-row__copy" }, [
@@ -202,7 +227,7 @@ export function mountNotes(stage, options = {}) {
     ]);
     editor.append(
       element("header", { className: "v8-note-toolbar" }, [
-        element("span", { className: "v8-save-status", text: "Enregistré localement", dataset: { noteSaveStatus: "", status: "saved" } }),
+        element("span", { className: "v8-save-status", text: "Synchronisation en attente", dataset: { noteSaveStatus: "", status: "pending" } }),
         element("div", {}, [
           actionButton({ actionId: "v8.notes.save", variant: "secondary" }, [icon("save"), element("span", { text: "Enregistrer" })]),
           actionButton({ actionId: "v8.notes.delete", className: "v8-icon-button", ariaLabel: "Supprimer la note" }, [icon("trash-2")])
@@ -212,7 +237,7 @@ export function mountNotes(stage, options = {}) {
       confirm,
       element("footer", { className: "v8-note-footer" }, [
         words,
-        element("span", { text: "Markdown · sauvegarde locale" }),
+        element("span", { text: "Markdown · Supabase" }),
         element("kbd", { text: "Ctrl S" })
       ])
     );
@@ -228,6 +253,7 @@ export function mountNotes(stage, options = {}) {
       words.textContent = `${count} mot${count > 1 ? "s" : ""}`;
       scheduleSave();
     });
+    applySyncStatus();
     refreshIcons();
   }
 
@@ -244,6 +270,8 @@ export function mountNotes(stage, options = {}) {
     search.value = "";
     renderList();
     renderEditor();
+    presence?.signalActivity?.(noteRow(created.data.id), "note", { phase: "enter" });
+    presence?.signalActivity?.(editor, "note", { phase: "update" });
     editor.querySelector(".v8-note-title")?.focus({ preventScroll: true });
     notify({ id: "notes-created", title: "Notes", message: "Nouvelle note créée.", type: "success", duration: 2200 });
     return created;
@@ -270,13 +298,21 @@ export function mountNotes(stage, options = {}) {
     if (!confirmDelete || !selectedId) return completed("Suppression non confirmée");
     clearSaveTimer();
     dirty = false;
-    const removed = repository.notes.remove(selectedId);
+    const removedId = selectedId;
+    const row = noteRow(removedId);
+    const removed = repository.notes.remove(removedId);
     if (!removed.ok) return removed;
     notes = repository.snapshot().notes.map((note) => ({ ...note, tags: [...note.tags] }));
     selectedId = sortNotes(notes)[0]?.id || null;
-    renderList();
-    renderEditor();
+    confirmDelete = false;
     notify({ id: "notes-deleted", title: "Notes", message: "Note supprimée.", type: "info", duration: 2400 });
+    const finish = () => {
+      if (!mounted) return;
+      renderList();
+      renderEditor();
+    };
+    if (presence?.signalActivity) presence.signalActivity(row, "note", { phase: "exit", onComplete: finish });
+    else finish();
     return removed;
   }
 
@@ -313,11 +349,14 @@ export function mountNotes(stage, options = {}) {
   stage.replaceChildren(page);
   renderList();
   renderEditor();
+  const releaseSync = sync?.subscribe?.(applySyncStatus) || (() => {});
   refreshIcons();
 
   return () => {
+    mounted = false;
     flushSave(false);
     clearSaveTimer();
+    releaseSync();
     scopedActions.reverse().forEach((restore) => restore());
     page.removeEventListener("click", handlePageClick);
     page.removeEventListener("keydown", handleKeyboard);

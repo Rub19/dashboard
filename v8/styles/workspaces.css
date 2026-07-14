@@ -1,4 +1,4 @@
-﻿.v8-work-page {
+.v8-work-page {
   display: flex;
   min-height: 100%;
   flex-direction: column;
@@ -88,7 +88,7 @@
 
 .v8-note-row:focus-visible {
   z-index: 1;
-  box-shadow: inset var(--v8-shadow-focus);
+  box-shadow: var(--v8-shadow-focus-inset);
 }
 
 .v8-note-row.is-active {
@@ -155,7 +155,7 @@
 .v8-note-row__copy time {
   margin-top: 7px;
   color: var(--v8-muted);
-  font-size: 10px;
+  font-size: var(--v8-font-micro);
 }
 
 .v8-note-editor {
@@ -574,6 +574,18 @@
   height: var(--v8-icon-sm);
 }
 
+.v8-task-check.is-complete svg,
+[role="checkbox"][aria-checked="true"] svg {
+  transform-origin: center;
+  animation: v8-haptic-check var(--v8-haptic-release-duration) var(--v8-haptic-spring) both;
+}
+
+@keyframes v8-haptic-check {
+  0% { opacity: .35; transform: scale(.55); }
+  58% { opacity: 1; transform: scale(1.16); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
 .v8-task-row__copy {
   min-width: 0;
 }
@@ -730,6 +742,13 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .v8-task-check.is-complete svg,
+  [role="checkbox"][aria-checked="true"] svg {
+    animation: none;
+  }
+}
+
 .v8-files-workspace {
   display: grid;
   min-height: 620px;
@@ -801,7 +820,7 @@
 }
 
 .v8-files-sources small {
-  font-size: 10px;
+  font-size: var(--v8-font-micro);
 }
 
 .v8-files-import-soon {
@@ -829,7 +848,7 @@
 .v8-files-import-soon span {
   margin-top: 3px;
   color: var(--v8-muted);
-  font-size: 10px;
+  font-size: var(--v8-font-micro);
   line-height: 1.45;
 }
 
@@ -1336,7 +1355,7 @@
   height: 28px;
   align-items: center;
   color: var(--v8-muted);
-  font-size: 10px;
+  font-size: var(--v8-font-micro);
   font-weight: var(--v8-weight-semibold);
   text-align: center;
   text-transform: uppercase;
@@ -1375,7 +1394,7 @@
 
 .v8-calendar-day:focus-visible {
   z-index: 1;
-  box-shadow: inset var(--v8-shadow-focus);
+  box-shadow: var(--v8-shadow-focus-inset);
 }
 
 .v8-calendar-day.is-outside {
@@ -1414,7 +1433,7 @@
 }
 
 .v8-calendar-day__events small {
-  font-size: 10px;
+  font-size: var(--v8-font-micro);
 }
 
 .v8-calendar-agenda {
@@ -1585,7 +1604,7 @@
   }
 
   .v8-calendar-weekdays span {
-    font-size: 9px;
+    font-size: var(--v8-font-micro);
   }
 
   .v8-calendar-grid {

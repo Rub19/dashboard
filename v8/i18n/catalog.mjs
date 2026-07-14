@@ -2,6 +2,97 @@
 export const SUPPORTED_LOCALES = Object.freeze(["fr", "en", "es", "de"]);
 
 const ENTRIES = {
+  "Dock ETHONE": { "fr": "Dock ETHONE", "en": "ETHONE Dock", "es": "Dock de ETHONE", "de": "ETHONE Dock" },
+  "Personnaliser le Dock": { "fr": "Personnaliser le Dock", "en": "Customize Dock", "es": "Personalizar el Dock", "de": "Dock anpassen" },
+  "Epingle": { "fr": "\u00c9pingl\u00e9", "en": "Pinned", "es": "Fijado", "de": "Angeheftet" },
+  "Masque": { "fr": "Masqu\u00e9", "en": "Hidden", "es": "Oculto", "de": "Ausgeblendet" },
+  "Retirer du Dock": { "fr": "Retirer du Dock", "en": "Remove from Dock", "es": "Quitar del Dock", "de": "Aus Dock entfernen" },
+  "Ajouter au Dock": { "fr": "Ajouter au Dock", "en": "Add to Dock", "es": "A\u00f1adir al Dock", "de": "Zum Dock hinzuf\u00fcgen" },
+  "Deplacer a gauche": { "fr": "D\u00e9placer \u00e0 gauche", "en": "Move left", "es": "Mover a la izquierda", "de": "Nach links verschieben" },
+  "Deplacer a droite": { "fr": "D\u00e9placer \u00e0 droite", "en": "Move right", "es": "Mover a la derecha", "de": "Nach rechts verschieben" },
+  "Reinitialiser": { "fr": "R\u00e9initialiser", "en": "Reset", "es": "Restablecer", "de": "Zur\u00fccksetzen" },
+  "Mission Control": { "fr": "Mission Control", "en": "Mission Control", "es": "Mission Control", "de": "Mission Control" },
+  "Navigation systeme": { "fr": "Navigation syst\u00e8me", "en": "System navigation", "es": "Navegaci\u00f3n del sistema", "de": "Systemnavigation" },
+  "Spaces": { "fr": "Spaces", "en": "Spaces", "es": "Espacios", "de": "Spaces" },
+  "Flows": { "fr": "Flows", "en": "Flows", "es": "Flujos", "de": "Flows" },
+  "Fenetres": { "fr": "Fen\u00eatres", "en": "Windows", "es": "Ventanas", "de": "Fenster" },
+  "Dashboards": { "fr": "Tableaux de bord", "en": "Dashboards", "es": "Paneles", "de": "Dashboards" },
+  "Widgets ouverts": { "fr": "Widgets ouverts", "en": "Open widgets", "es": "Widgets abiertos", "de": "Ge\u00f6ffnete Widgets" },
+  "Activites Brain": { "fr": "Activit\u00e9s Brain", "en": "Brain activity", "es": "Actividad de Brain", "de": "Brain-Aktivit\u00e4ten" },
+  "Fenetre active": { "fr": "Fen\u00eatre active", "en": "Active window", "es": "Ventana activa", "de": "Aktives Fenster" },
+  "Aucune activite recente": { "fr": "Aucune activit\u00e9 r\u00e9cente", "en": "No recent activity", "es": "Sin actividad reciente", "de": "Keine aktuelle Aktivit\u00e4t" },
+  "Brain attend votre prochaine demande.": { "fr": "Brain attend votre prochaine demande.", "en": "Brain is ready for your next request.", "es": "Brain espera tu pr\u00f3xima solicitud.", "de": "Brain wartet auf Ihre n\u00e4chste Anfrage." },
+  "Fermer Mission Control": { "fr": "Fermer Mission Control", "en": "Close Mission Control", "es": "Cerrar Mission Control", "de": "Mission Control schlie\u00dfen" },
+  "Rechercher": { "fr": "Rechercher", "en": "Search", "es": "Buscar", "de": "Suchen" },
+  "ETHONE Command HUD": { "fr": "ETHONE Command HUD", "en": "ETHONE Command HUD", "es": "ETHONE Command HUD", "de": "ETHONE Command HUD" },
+  "Rechercher ou executer une commande...": { "fr": "Rechercher ou ex\u00e9cuter une commande...", "en": "Search or run a command...", "es": "Buscar o ejecutar un comando...", "de": "Befehl suchen oder ausf\u00fchren..." },
+  "Briefing quotidien": { "fr": "Briefing quotidien", "en": "Daily briefing", "es": "Informe diario", "de": "Tagesbriefing" },
+  "Votre journee en un regard.": { "fr": "Votre journ\u00e9e en un regard.", "en": "Your day at a glance.", "es": "Tu d\u00eda de un vistazo.", "de": "Ihr Tag auf einen Blick." },
+  "Briefing Brain pret": { "fr": "Briefing Brain pr\u00eat", "en": "Brain briefing ready", "es": "Informe de Brain listo", "de": "Brain-Briefing bereit" },
+  "Meteo": { "fr": "M\u00e9t\u00e9o", "en": "Weather", "es": "Tiempo", "de": "Wetter" },
+  "Priorites": { "fr": "Priorit\u00e9s", "en": "Priorities", "es": "Prioridades", "de": "Priorit\u00e4ten" },
+  "Musique": { "fr": "Musique", "en": "Music", "es": "M\u00fasica", "de": "Musik" },
+  "Hier": { "fr": "Hier", "en": "Yesterday", "es": "Ayer", "de": "Gestern" },
+  "Source non connectee": { "fr": "Source non connect\u00e9e", "en": "Source not connected", "es": "Fuente no conectada", "de": "Quelle nicht verbunden" },
+  "Aucune donnee recente": { "fr": "Aucune donn\u00e9e r\u00e9cente", "en": "No recent data", "es": "Sin datos recientes", "de": "Keine aktuellen Daten" },
+  "Aucun evenement aujourd'hui": { "fr": "Aucun \u00e9v\u00e9nement aujourd'hui", "en": "No events today", "es": "Sin eventos hoy", "de": "Heute keine Termine" },
+  "Aucune tache prioritaire": { "fr": "Aucune t\u00e2che prioritaire", "en": "No priority tasks", "es": "Sin tareas prioritarias", "de": "Keine vorrangigen Aufgaben" },
+  "Aucune ecoute recente": { "fr": "Aucune \u00e9coute r\u00e9cente", "en": "No recent listening", "es": "Sin reproducciones recientes", "de": "Keine k\u00fcrzliche Wiedergabe" },
+  "Connecter dans Connections": { "fr": "Connecter dans Connections", "en": "Connect in Connections", "es": "Conectar en Connections", "de": "Unter Connections verbinden" },
+  "Activite synchronisee": { "fr": "Activit\u00e9 synchronis\u00e9e", "en": "Activity synced", "es": "Actividad sincronizada", "de": "Aktivit\u00e4t synchronisiert" },
+  "Historique synchronise": { "fr": "Historique synchronis\u00e9", "en": "History synced", "es": "Historial sincronizado", "de": "Verlauf synchronisiert" },
+  "evenement aujourd'hui": { "fr": "\u00e9v\u00e9nement aujourd'hui", "en": "event today", "es": "evento hoy", "de": "Termin heute" },
+  "evenements aujourd'hui": { "fr": "\u00e9v\u00e9nements aujourd'hui", "en": "events today", "es": "eventos hoy", "de": "Termine heute" },
+  "priorite ouverte": { "fr": "priorit\u00e9 ouverte", "en": "open priority", "es": "prioridad abierta", "de": "offene Priorit\u00e4t" },
+  "priorites ouvertes": { "fr": "priorit\u00e9s ouvertes", "en": "open priorities", "es": "prioridades abiertas", "de": "offene Priorit\u00e4ten" },
+  "Commencer par la priorite principale": { "fr": "Commencer par la priorit\u00e9 principale", "en": "Start with the top priority", "es": "Empieza por la prioridad principal", "de": "Mit der wichtigsten Priorit\u00e4t beginnen" },
+  "Voir la tache": { "fr": "Voir la t\u00e2che", "en": "View task", "es": "Ver tarea", "de": "Aufgabe anzeigen" },
+  "Preparer le prochain evenement": { "fr": "Pr\u00e9parer le prochain \u00e9v\u00e9nement", "en": "Prepare the next event", "es": "Preparar el pr\u00f3ximo evento", "de": "Den n\u00e4chsten Termin vorbereiten" },
+  "Voir l'agenda": { "fr": "Voir l'agenda", "en": "View calendar", "es": "Ver agenda", "de": "Kalender anzeigen" },
+  "Creer un bloc Focus": { "fr": "Cr\u00e9er un bloc Focus", "en": "Create a Focus block", "es": "Crear un bloque Focus", "de": "Einen Focus-Block erstellen" },
+  "Activer Focus": { "fr": "Activer Focus", "en": "Enable Focus", "es": "Activar Focus", "de": "Focus aktivieren" },
+  "Preserver un bloc calme": { "fr": "Pr\u00e9server un bloc calme", "en": "Protect a quiet block", "es": "Reserva un bloque tranquilo", "de": "Einen ruhigen Block sch\u00fctzen" },
+  "Protegez un moment sans interruption.": { "fr": "Prot\u00e9gez un moment sans interruption.", "en": "Protect an uninterrupted moment.", "es": "Reserva un momento sin interrupciones.", "de": "Sch\u00fctzen Sie eine ungest\u00f6rte Zeit." },
+  "action enregistree": { "fr": "action enregistr\u00e9e", "en": "recorded action", "es": "acci\u00f3n registrada", "de": "erfasste Aktion" },
+  "actions enregistrees": { "fr": "actions enregistr\u00e9es", "en": "recorded actions", "es": "acciones registradas", "de": "erfasste Aktionen" },
+  "Voir le briefing": { "fr": "Voir le briefing", "en": "View briefing", "es": "Ver informe", "de": "Briefing anzeigen" },
+  "Spotlight": { "fr": "Spotlight", "en": "Spotlight", "es": "Spotlight", "de": "Spotlight" },
+  "Reveler le Dashboard avec une transition breve au demarrage.": { "fr": "R\u00e9v\u00e9ler le Dashboard avec une transition br\u00e8ve au d\u00e9marrage.", "en": "Reveal the Dashboard with a brief startup transition.", "es": "Mostrar el Dashboard con una breve transici\u00f3n de inicio.", "de": "Das Dashboard mit einem kurzen Start\u00fcbergang einblenden." },
+  "Animation Spotlight au demarrage": { "fr": "Animation Spotlight au d\u00e9marrage", "en": "Spotlight startup animation", "es": "Animaci\u00f3n Spotlight al iniciar", "de": "Spotlight-Startanimation" },
+  "Sons": { "fr": "Sons", "en": "Sounds", "es": "Sonidos", "de": "Kl\u00e4nge" },
+  "Audio system": { "fr": "Syst\u00e8me audio", "en": "Audio system", "es": "Sistema de audio", "de": "Audiosystem" },
+  "Des retours courts et discrets, toujours facultatifs.": { "fr": "Des retours courts et discrets, toujours facultatifs.", "en": "Short, subtle feedback that always remains optional.", "es": "Respuestas breves y discretas, siempre opcionales.", "de": "Kurze, dezente R\u00fcckmeldungen, die immer optional bleiben." },
+  "Retours sonores": { "fr": "Retours sonores", "en": "Sound feedback", "es": "Respuesta sonora", "de": "Klangfeedback" },
+  "Activer ou couper tout le systeme audio.": { "fr": "Activer ou couper tout le syst\u00e8me audio.", "en": "Enable or mute the entire sound system.", "es": "Activa o silencia todo el sistema de audio.", "de": "Das gesamte Audiosystem aktivieren oder stummschalten." },
+  "Le son n'est pas disponible dans ce navigateur.": { "fr": "Le son n'est pas disponible dans ce navigateur.", "en": "Sound is not available in this browser.", "es": "El sonido no est\u00e1 disponible en este navegador.", "de": "Audio ist in diesem Browser nicht verf\u00fcgbar." },
+  "Activer les sons": { "fr": "Activer les sons", "en": "Enable sounds", "es": "Activar sonidos", "de": "Kl\u00e4nge aktivieren" },
+  "Mode silencieux": { "fr": "Mode silencieux", "en": "Silent mode", "es": "Modo silencioso", "de": "Stummmodus" },
+  "Couper temporairement toutes les interactions sonores.": { "fr": "Couper temporairement toutes les interactions sonores.", "en": "Temporarily mute all interaction sounds.", "es": "Silenciar temporalmente todos los sonidos de interacci\u00f3n.", "de": "Alle Interaktionskl\u00e4nge vor\u00fcbergehend stummschalten." },
+  "Activer le mode silencieux": { "fr": "Activer le mode silencieux", "en": "Enable silent mode", "es": "Activar el modo silencioso", "de": "Stummmodus aktivieren" },
+  "Audio spatial": { "fr": "Audio spatial", "en": "Spatial audio", "es": "Audio espacial", "de": "R\u00e4umliches Audio" },
+  "Orienter tres legerement les sons selon leur origine.": { "fr": "Orienter tr\u00e8s l\u00e9g\u00e8rement les sons selon leur origine.", "en": "Subtly position sounds according to their origin.", "es": "Orientar sutilmente los sonidos seg\u00fan su origen.", "de": "Kl\u00e4nge dezent nach ihrem Ursprung ausrichten." },
+  "L'audio spatial n'est pas disponible dans ce navigateur.": { "fr": "L'audio spatial n'est pas disponible dans ce navigateur.", "en": "Spatial audio is not available in this browser.", "es": "El audio espacial no est\u00e1 disponible en este navegador.", "de": "R\u00e4umliches Audio ist in diesem Browser nicht verf\u00fcgbar." },
+  "Activer l'audio spatial": { "fr": "Activer l'audio spatial", "en": "Enable spatial audio", "es": "Activar el audio espacial", "de": "R\u00e4umliches Audio aktivieren" },
+  "Pack sonore": { "fr": "Pack sonore", "en": "Sound pack", "es": "Paquete de sonidos", "de": "Soundpaket" },
+  "Choisir une identite sonore originale pour ETHONE.": { "fr": "Choisir une identit\u00e9 sonore originale pour ETHONE.", "en": "Choose an original sound identity for ETHONE.", "es": "Elige una identidad sonora original para ETHONE.", "de": "Eine eigenst\u00e4ndige Klangidentit\u00e4t f\u00fcr ETHONE w\u00e4hlen." },
+  "Ecouter un apercu": { "fr": "\u00c9couter un aper\u00e7u", "en": "Play preview", "es": "Escuchar vista previa", "de": "Vorschau anh\u00f6ren" },
+  "Volume general": { "fr": "Volume g\u00e9n\u00e9ral", "en": "Master volume", "es": "Volumen general", "de": "Gesamtlautst\u00e4rke" },
+  "Limiter le niveau de tout ETHONE.": { "fr": "Limiter le niveau de tout ETHONE.", "en": "Control the level of all ETHONE sounds.", "es": "Controla el nivel de todos los sonidos de ETHONE.", "de": "Die Lautst\u00e4rke aller ETHONE-Kl\u00e4nge steuern." },
+  "Informations, succes, alertes et mises a jour.": { "fr": "Informations, succ\u00e8s, alertes et mises \u00e0 jour.", "en": "Information, success, alerts and updates.", "es": "Informaci\u00f3n, confirmaciones, alertas y actualizaciones.", "de": "Informationen, Erfolge, Warnungen und Updates." },
+  "Fenetres, commandes et interactions importantes.": { "fr": "Fen\u00eatres, commandes et interactions importantes.", "en": "Windows, commands and important interactions.", "es": "Ventanas, comandos e interacciones importantes.", "de": "Fenster, Befehle und wichtige Interaktionen." },
+  "Reflexion, reponse et fin de traitement.": { "fr": "R\u00e9flexion, r\u00e9ponse et fin de traitement.", "en": "Thinking, response and completion.", "es": "Reflexi\u00f3n, respuesta y finalizaci\u00f3n.", "de": "Denken, Antworten und Abschluss." },
+  "Connexion, sauvegarde, synchronisation et Spaces.": { "fr": "Connexion, sauvegarde, synchronisation et Spaces.", "en": "Sign-in, saving, sync and Spaces.", "es": "Inicio de sesi\u00f3n, guardado, sincronizaci\u00f3n y Spaces.", "de": "Anmeldung, Speichern, Synchronisierung und Spaces." },
+  "Signature douce et lumineuse.": { "fr": "Signature douce et lumineuse.", "en": "Soft, luminous signature.", "es": "Firma suave y luminosa.", "de": "Sanfte, helle Signatur." },
+  "Retours courts et presque tactiles.": { "fr": "Retours courts et presque tactiles.", "en": "Short, almost tactile feedback.", "es": "Respuestas breves y casi t\u00e1ctiles.", "de": "Kurze, fast taktile R\u00fcckmeldungen." },
+  "Tonalite chaleureuse et familiere.": { "fr": "Tonalit\u00e9 chaleureuse et famili\u00e8re.", "en": "Warm, familiar tone.", "es": "Tono c\u00e1lido y familiar.", "de": "Warmer, vertrauter Klang." },
+  "Clarte cristalline, composition originale.": { "fr": "Clart\u00e9 cristalline, composition originale.", "en": "Crystal clarity, original composition.", "es": "Claridad cristalina, composici\u00f3n original.", "de": "Kristallklare, eigenst\u00e4ndige Komposition." },
+  "Aucun retour sonore.": { "fr": "Aucun retour sonore.", "en": "No sound feedback.", "es": "Sin respuesta sonora.", "de": "Kein Klangfeedback." },
+  "La synchronisation attend le reseau.": { "fr": "La synchronisation attend le r\u00e9seau.", "en": "Sync is waiting for the network.", "es": "La sincronizaci\u00f3n espera la conexi\u00f3n.", "de": "Die Synchronisierung wartet auf das Netzwerk." },
+  "Volume notifications": { "fr": "Volume des notifications", "en": "Notification volume", "es": "Volumen de notificaciones", "de": "Benachrichtigungslautst\u00e4rke" },
+  "Volume interface": { "fr": "Volume de l'interface", "en": "Interface volume", "es": "Volumen de la interfaz", "de": "Oberfl\u00e4chenlautst\u00e4rke" },
+  "Volume brain": { "fr": "Volume de Brain", "en": "Brain volume", "es": "Volumen de Brain", "de": "Brain-Lautst\u00e4rke" },
+  "Volume system": { "fr": "Volume du syst\u00e8me", "en": "System volume", "es": "Volumen del sistema", "de": "Systemlautst\u00e4rke" },
+  "Systeme": { "fr": "Syst\u00e8me", "en": "System", "es": "Sistema", "de": "System" },
   "Workspace": { "fr": "Workspace", "en": "Workspace", "es": "Espacio de trabajo", "de": "Arbeitsbereich" },
   "Mode": { "fr": "Mode", "en": "Mode", "es": "Modo", "de": "Modus" },
   "Synchronise": { "fr": "Synchronisé", "en": "Synced", "es": "Sincronizado", "de": "Synchronisiert" },
@@ -9,9 +100,7 @@ const ENTRIES = {
   "Hors ligne": { "fr": "Hors ligne", "en": "Offline", "es": "Sin conexión", "de": "Offline" },
   "Brain actif": { "fr": "Brain actif", "en": "Brain active", "es": "Brain activo", "de": "Brain aktiv" },
   "Brain prêt": { "fr": "Brain prêt", "en": "Brain ready", "es": "Brain listo", "de": "Brain bereit" },
-  "Sauvegarde locale": { "fr": "Sauvegarde locale", "en": "Local save", "es": "Guardado local", "de": "Lokal gespeichert" },
   "Agenda prêt": { "fr": "Agenda prêt", "en": "Calendar ready", "es": "Calendario listo", "de": "Kalender bereit" },
-  "Index local": { "fr": "Index local", "en": "Local index", "es": "Índice local", "de": "Lokaler Index" },
   "Connecteurs": { "fr": "Connecteurs", "en": "Connectors", "es": "Conectores", "de": "Konnektoren" },
   "Widgets prêts": { "fr": "Widgets prêts", "en": "Widgets ready", "es": "Widgets listos", "de": "Widgets bereit" },
   "Ajustez son identité sans toucher à ses données.": { "fr": "Ajustez son identité sans toucher à ses données.", "en": "Adjust its identity without changing its data.", "es": "Ajusta su identidad sin modificar sus datos.", "de": "Passe die Identität an, ohne die Daten zu verändern." },
@@ -540,18 +629,6 @@ const ENTRIES = {
     "es": "Datos",
     "de": "Daten"
   },
-  "Données conservées · aucune migration automatique": {
-    "fr": "Données conservées · aucune migration automatique",
-    "en": "Data retained · no automatic migration",
-    "es": "Datos retenidos · sin migración automática",
-    "de": "Daten bleiben erhalten · keine automatische Migration"
-  },
-  "Données locales disponibles": {
-    "fr": "Données locales disponibles",
-    "en": "Local data available",
-    "es": "Datos locales disponibles",
-    "de": "Lokale Daten verfügbar"
-  },
   "Dossier": {
     "fr": "Dossier",
     "en": "File",
@@ -605,12 +682,6 @@ const ENTRIES = {
     "en": "Online",
     "es": "En línea",
     "de": "Online"
-  },
-  "Enregistré localement": {
-    "fr": "Enregistré localement",
-    "en": "Saved locally",
-    "es": "Guardado localmente",
-    "de": "Lokal gespeichert"
   },
   "Enregistrer": {
     "fr": "Enregistrer",
@@ -996,18 +1067,6 @@ const ENTRIES = {
     "es": "mar",
     "de": "Di"
   },
-  "Markdown · sauvegarde locale": {
-    "fr": "Markdown · sauvegarde locale",
-    "en": "Markdown · local save",
-    "es": "Rebaja · guardado local",
-    "de": "Markdown · lokale Speicherung"
-  },
-  "Mémoire locale": {
-    "fr": "Mémoire locale",
-    "en": "Local memory",
-    "es": "memoria local",
-    "de": "Lokaler Speicher"
-  },
   "Menthe, ciel ou ambre": {
     "fr": "Menthe, ciel ou ambre",
     "en": "Mint, sky or amber",
@@ -1313,12 +1372,6 @@ const ENTRIES = {
     "en": "Profile",
     "es": "Perfil",
     "de": "Profil"
-  },
-  "Profil local détecté": {
-    "fr": "Profil local détecté",
-    "en": "Local profile detected",
-    "es": "Perfil local detectado",
-    "de": "Lokales Profil erkannt"
   },
   "Profils ETHONE": {
     "fr": "Profils ETHONE",
@@ -1753,6 +1806,60 @@ const ENTRIES = {
     "en": "List view",
     "es": "Vista de lista",
     "de": "Listenansicht"
+  },
+  "En pause": {
+    "fr": "En pause",
+    "en": "Paused",
+    "es": "En pausa",
+    "de": "Pausiert"
+  },
+  "Lecture en cours": {
+    "fr": "Lecture en cours",
+    "en": "Now playing",
+    "es": "Reproduciendo",
+    "de": "Wird abgespielt"
+  },
+  "Lecture externe": {
+    "fr": "Lecture externe",
+    "en": "External playback",
+    "es": "Reproduccion externa",
+    "de": "Externe Wiedergabe"
+  },
+  "Lecture Spotify": {
+    "fr": "Lecture Spotify",
+    "en": "Spotify playback",
+    "es": "Reproduccion de Spotify",
+    "de": "Spotify-Wiedergabe"
+  },
+  "Lecture Spotify en cours": {
+    "fr": "Lecture Spotify en cours",
+    "en": "Spotify is playing",
+    "es": "Spotify esta reproduciendo",
+    "de": "Spotify wird abgespielt"
+  },
+  "Mettre Spotify en pause": {
+    "fr": "Mettre Spotify en pause",
+    "en": "Pause Spotify",
+    "es": "Pausar Spotify",
+    "de": "Spotify pausieren"
+  },
+  "Progression Spotify": {
+    "fr": "Progression Spotify",
+    "en": "Spotify progress",
+    "es": "Progreso de Spotify",
+    "de": "Spotify-Fortschritt"
+  },
+  "Reprendre Spotify": {
+    "fr": "Reprendre Spotify",
+    "en": "Resume Spotify",
+    "es": "Reanudar Spotify",
+    "de": "Spotify fortsetzen"
+  },
+  "Spotify en pause": {
+    "fr": "Spotify en pause",
+    "en": "Spotify is paused",
+    "es": "Spotify esta en pausa",
+    "de": "Spotify ist pausiert"
   },
   "Widgets": {
     "fr": "Widgets",

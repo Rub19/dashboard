@@ -19,13 +19,15 @@ export function mountTasks(stage, options = {}) {
   const repository = options.repository;
   const actions = options.actions;
   const notify = typeof options.notify === "function" ? options.notify : () => {};
+  const presence = options.presence || null;
   let tasks = repository.snapshot().tasks.map((task) => ({ ...task }));
   let status = "all";
   let query = "";
   let composerOpen = false;
+  let mounted = true;
   const scopedActions = [];
 
-  const statsBadge = element("span", { className: "v8-badge" });
+  const statsBadge = element("span", { className: "v8-badge", dataset: { liveWidget: "metric", liveKind: "metric" } });
   const search = element("input", {
     className: "v8-input",
     attributes: { type: "search", placeholder: "Rechercher une tâche", "aria-label": "Rechercher une tâche", autocomplete: "off" }
@@ -62,9 +64,16 @@ export function mountTasks(stage, options = {}) {
     tasks = repository.snapshot().tasks.map((task) => ({ ...task }));
   }
 
+  function taskRow(id) {
+    return [...list.querySelectorAll("[data-task-id]")]
+      .find((row) => row.dataset.taskId === String(id)) || null;
+  }
+
   function updateStats() {
     const stats = taskStats(tasks);
-    statsBadge.textContent = `${stats.open} à faire`;
+    const nextValue = `${stats.open} à faire`;
+    if (presence) presence.transitionText(statsBadge, nextValue, { kind: "metric" });
+    else statsBadge.textContent = nextValue;
   }
 
   function renderComposer() {
@@ -149,7 +158,7 @@ export function mountTasks(stage, options = {}) {
       if (task.priority === "high") meta.push(element("span", { className: "v8-task-priority v8-task-priority--high" }, [icon("flame"), "Haute"]));
       if (task.tag) meta.push(element("span", { className: "v8-task-tag", text: task.tag, attributes: { translate: "no" } }));
       meta.push(element("span", { className: overdue ? "is-overdue" : "" }, [icon(overdue ? "triangle-alert" : "calendar-days"), formatDue(task.due)]));
-      list.append(element("article", { className: `v8-task-row${task.done ? " is-complete" : ""}`, attributes: { role: "listitem" } }, [
+      list.append(element("article", { className: `v8-task-row${task.done ? " is-complete" : ""}`, attributes: { role: "listitem" }, dataset: { taskId: task.id, liveWidget: "planning", liveKind: "planning" } }, [
         toggle,
         element("div", { className: "v8-task-row__copy" }, [element("strong", { text: task.title, attributes: { translate: "no" } }), element("div", { className: "v8-task-meta" }, meta)]),
         remove
@@ -190,6 +199,7 @@ export function mountTasks(stage, options = {}) {
     composerOpen = false;
     renderComposer();
     renderList();
+    presence?.signalActivity?.(taskRow(created.data.id), "task", { phase: "enter" });
     notify({ id: "task-created", title: "Tâches", message: "Tâche ajoutée.", type: "success", duration: 2200 });
     return created;
   }
@@ -216,16 +226,21 @@ export function mountTasks(stage, options = {}) {
       if (changed.ok) {
         refreshTasks();
         renderList();
+        presence?.signalActivity?.(taskRow(changed.data.id), "task", { phase: "update" });
       }
       return;
     }
     const remove = event.target.closest("[data-task-delete]");
     if (remove && page.contains(remove)) {
-      const changed = repository.tasks.remove(remove.dataset.taskDelete);
+      const id = remove.dataset.taskDelete;
+      const row = taskRow(id);
+      const changed = repository.tasks.remove(id);
       if (changed.ok) {
         refreshTasks();
-        renderList();
         notify({ id: "task-deleted", title: "Tâches", message: "Tâche supprimée.", type: "info", duration: 2200 });
+        const finish = () => { if (mounted) renderList(); };
+        if (presence?.signalActivity) presence.signalActivity(row, "task", { phase: "exit", onComplete: finish });
+        else finish();
       }
     }
   }
@@ -249,6 +264,7 @@ export function mountTasks(stage, options = {}) {
   refreshIcons();
 
   return () => {
+    mounted = false;
     scopedActions.reverse().forEach((restore) => restore());
     page.removeEventListener("click", handleClick);
     search.removeEventListener("input", handleSearch);

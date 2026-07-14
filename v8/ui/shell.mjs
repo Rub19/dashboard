@@ -1,20 +1,22 @@
-import { NAVIGATION_ITEMS, navigationItem } from "../data/navigation.mjs";
+import { navigationItem } from "../data/navigation.mjs";
+import { workspaceById } from "../data/workspaces.mjs";
 import { refreshIcons } from "./icons.mjs";
 import { navigationMarkup } from "./navigation.mjs";
+import { createDock } from "./dock.mjs";
 
 const ROUTE_META = Object.freeze({
   home: { title: "Accueil", icon: "house", status: "online", statusLabel: "Prêt" },
-  notes: { title: "Notes", icon: "notebook-pen", status: "saving", statusLabel: "Sauvegarde locale" },
+  notes: { title: "Notes", icon: "notebook-pen", status: "saving", statusLabel: "Sauvegarde cloud" },
   tasks: { title: "Tâches", icon: "circle-check-big", status: "sync", statusLabel: "Sync" },
   calendar: { title: "Calendrier", icon: "calendar-days", status: "online", statusLabel: "Agenda prêt" },
-  files: { title: "Fichiers", icon: "folder", status: "sync", statusLabel: "Index local" },
+  files: { title: "Fichiers", icon: "folder", status: "sync", statusLabel: "Index synchronise" },
   activity: { title: "Activity Hub", icon: "activity", status: "online", statusLabel: "Stable" },
   connections: { title: "Connections", icon: "plug", status: "sync", statusLabel: "Connecteurs" },
   spaces: { title: "Spaces", icon: "layout-grid", status: "online", statusLabel: "Actif" },
   flows: { title: "Flows", icon: "workflow", status: "online", statusLabel: "Prêt" },
   widgets: { title: "Widgets", icon: "panels-top-left", status: "online", statusLabel: "Widgets prêts" },
   brain: { title: "Brain", icon: "brain", status: "brain", statusLabel: "Brain prêt" },
-  settings: { title: "Réglages", icon: "settings-2", status: "online", statusLabel: "Local" }
+  settings: { title: "Réglages", icon: "settings-2", status: "online", statusLabel: "Cloud" }
 });
 
 const PANEL_META = Object.freeze({
@@ -23,17 +25,16 @@ const PANEL_META = Object.freeze({
   profile: { title: "Profil", icon: "user-round", actionId: "v8.profile.open" }
 });
 
-const SPACE_META = Object.freeze({
-  personal: { label: "Personnel", flow: "Essentiel", icon: "user-round" },
-  focus: { label: "Focus", flow: "Deep Work", icon: "focus" },
-  studio: { label: "Studio", flow: "Creation", icon: "sparkles" }
-});
-
 const SYNC_META = Object.freeze({
-  online: { label: "Synchronise", tone: "online" },
-  syncing: { label: "Synchronisation", tone: "syncing" },
-  local: { label: "Local", tone: "local" },
-  error: { label: "Hors ligne", tone: "error" }
+  loading: { label: "Connexion Supabase", tone: "syncing" },
+  saving: { label: "Synchronisation en cours", tone: "syncing" },
+  saved: { label: "Synchronise avec Supabase", tone: "online" },
+  offline: { label: "Hors ligne - changements en attente", tone: "warning" },
+  retrying: { label: "Nouvelle tentative", tone: "syncing" },
+  error: { label: "Erreur de synchronisation", tone: "error" },
+  expired: { label: "Session Supabase expiree", tone: "error" },
+  online: { label: "Synchronise avec Supabase", tone: "online" },
+  syncing: { label: "Synchronisation en cours", tone: "syncing" }
 });
 
 function escapeHtml(value) {
@@ -49,13 +50,6 @@ function routeMeta(route) {
   return ROUTE_META[route] || { title: item.label, icon: item.icon, status: "online", statusLabel: "Pret" };
 }
 
-function routeTabsMarkup(activeRoute) {
-  return NAVIGATION_ITEMS.map((item) => {
-    const active = item.id === activeRoute;
-    return `<button type="button" class="v8-route-tab${active ? " is-active" : ""}" data-action="${escapeHtml(item.actionId)}" data-route="${escapeHtml(item.id)}" aria-label="${escapeHtml(item.label)}"${active ? ' aria-current="page"' : ""}><i data-lucide="${escapeHtml(item.icon)}" aria-hidden="true"></i><span>${escapeHtml(item.label)}</span></button>`;
-  }).join("");
-}
-
 export function createBreadcrumbModel(input = {}) {
   const route = input.route || "home";
   const space = input.space || "personal";
@@ -63,7 +57,7 @@ export function createBreadcrumbModel(input = {}) {
   const meta = routeMeta(route);
   const item = navigationItem(route);
   const routeAction = route === "widgets" ? "v8.widgets.open" : item.id === route ? item.actionId : "v8.home.open";
-  const spaceMeta = SPACE_META[space] || SPACE_META.personal;
+  const spaceMeta = workspaceById(space);
   const panelMeta = PANEL_META[panel] || null;
   const crumbs = [
     { id: "root", label: "ETHONE", icon: "house", actionId: "v8.home.open" },
@@ -86,19 +80,28 @@ export function createBreadcrumbModel(input = {}) {
 }
 
 export function createStatusModel(input = {}) {
-  const meta = routeMeta(input.route || "home");
-  const sync = SYNC_META[input.syncStatus] || SYNC_META.online;
-  const offline = sync.tone === "error";
+  const sync = SYNC_META[input.syncStatus] || SYNC_META.loading;
+  const offline = input.networkStatus === "offline";
+  const saveMeta = {
+    idle: { label: "Sauvegarde prete", tone: "muted", icon: "circle" },
+    saving: { label: "Enregistrement en cours", tone: "syncing", icon: "loader-circle" },
+    saved: { label: "Enregistre", tone: "online", icon: "check" },
+    pending: { label: "Changements en attente", tone: "warning", icon: "clock-3" },
+    error: { label: "Erreur de sauvegarde", tone: "error", icon: "triangle-alert" }
+  }[input.saveStatus] || { label: "Sauvegarde prete", tone: "muted", icon: "circle" };
+  const sessionExpired = ["expired", "error"].includes(input.sessionStatus);
   return Object.freeze({
     network: Object.freeze({ label: offline ? "Hors ligne" : "En ligne", icon: offline ? "wifi-off" : "wifi", tone: offline ? "error" : "online" }),
-    sync: Object.freeze({ label: sync.label, icon: sync.tone === "syncing" ? "refresh-cw" : offline ? "cloud-off" : "cloud", tone: sync.tone }),
-    brain: Object.freeze({ label: "Brain actif", icon: "brain", tone: "brain" }),
-    route: Object.freeze({ label: meta.statusLabel, icon: meta.icon, tone: meta.status })
+    sync: Object.freeze({ label: sync.label, icon: sync.tone === "syncing" ? "refresh-cw" : (offline || sync.tone === "warning" || sync.tone === "error") ? "cloud-off" : "cloud", tone: sync.tone }),
+    save: Object.freeze(saveMeta),
+    session: Object.freeze({ label: sessionExpired ? "Session expiree" : input.sessionStatus === "checking" ? "Session verifiee" : "Session chiffree", icon: sessionExpired ? "shield-alert" : "shield-check", tone: sessionExpired ? "error" : "online" }),
+    clock: Object.freeze({ label: /^\d{2}:\d{2}$/.test(String(input.localTime || "")) ? input.localTime : "--:--", icon: "clock-3", tone: "muted", timeZone: String(input.timeZone || "UTC") }),
+    version: Object.freeze({ label: `ETHONE ${String(input.version || "8.0")}`, icon: "badge-check", tone: "muted" })
   });
 }
 
 function statusMarkup(model) {
-  return `<button type="button" class="v8-status-item" data-action="v8.sync.refresh" data-tone="${escapeHtml(model.sync.tone)}" aria-label="${escapeHtml(model.sync.label)}"><i data-lucide="${escapeHtml(model.sync.icon)}" aria-hidden="true"></i><span>${escapeHtml(model.sync.label)}</span></button><span class="v8-status-item" data-tone="${escapeHtml(model.network.tone)}"><i data-lucide="${escapeHtml(model.network.icon)}" aria-hidden="true"></i><span>${escapeHtml(model.network.label)}</span></span><button type="button" class="v8-status-item" data-action="v8.brain.open" data-tone="brain" aria-label="Ouvrir Brain"><i data-lucide="brain" aria-hidden="true"></i><span>${escapeHtml(model.brain.label)}</span></button><span class="v8-status-item v8-status-item--route" data-tone="${escapeHtml(model.route.tone)}"><i data-lucide="${escapeHtml(model.route.icon)}" aria-hidden="true"></i><span>${escapeHtml(model.route.label)}</span></span>`;
+  return `<span class="v8-status-item v8-status-item--network" data-tone="${escapeHtml(model.network.tone)}"><i data-lucide="${escapeHtml(model.network.icon)}" aria-hidden="true"></i><span>${escapeHtml(model.network.label)}</span></span><button type="button" class="v8-status-item v8-status-item--sync" data-action="v8.sync.refresh" data-tone="${escapeHtml(model.sync.tone)}" aria-label="${escapeHtml(model.sync.label)}"><i data-lucide="${escapeHtml(model.sync.icon)}" data-presence-icon="cloud" aria-hidden="true"></i><span>${escapeHtml(model.sync.label)}</span></button><span class="v8-status-item v8-status-item--save" data-tone="${escapeHtml(model.save.tone)}"><i data-lucide="${escapeHtml(model.save.icon)}" aria-hidden="true"></i><span>${escapeHtml(model.save.label)}</span></span><span class="v8-status-item v8-status-item--session" data-tone="${escapeHtml(model.session.tone)}"><i data-lucide="${escapeHtml(model.session.icon)}" aria-hidden="true"></i><span>${escapeHtml(model.session.label)}</span></span><time class="v8-status-item v8-status-item--clock" datetime="${escapeHtml(model.clock.label)}" title="${escapeHtml(model.clock.timeZone)}"><i data-lucide="${escapeHtml(model.clock.icon)}" aria-hidden="true"></i><span translate="no">${escapeHtml(model.clock.label)}</span></time><span class="v8-status-item v8-status-item--version" data-tone="muted"><i data-lucide="${escapeHtml(model.version.icon)}" aria-hidden="true"></i><span translate="no">${escapeHtml(model.version.label)}</span></span>`;
 }
 
 function breadcrumbsMarkup(model) {
@@ -133,23 +136,23 @@ export function mountShell(root, options = {}) {
             <kbd translate="no">Ctrl K</kbd>
           </button>
           <div class="v8-context-strip__tools v8-topbar__tools" aria-label="Action Bar globale">
-            <button type="button" class="v8-action-status v8-brain-status" data-action="v8.brain.open" data-tooltip="Brain Status" aria-label="Ouvrir Brain"><i data-lucide="brain" aria-hidden="true"></i><span><small>Brain</small><strong>Contextuel</strong></span><b aria-hidden="true"></b></button>
-            <button type="button" class="v8-icon-button v8-topbar-action v8-sync-action" data-action="v8.sync.refresh" data-tooltip="Cloud Sync" aria-label="Synchroniser"><i data-lucide="cloud" aria-hidden="true"></i><span class="v8-action-dot" aria-hidden="true"></span></button>
+            <button type="button" class="v8-action-status v8-brain-status" data-action="v8.brain.open" data-tooltip="Brain Status" aria-label="Ouvrir Brain"><i data-lucide="brain" data-presence-icon="brain" aria-hidden="true"></i><span><small>Brain</small><strong>Contextuel</strong></span><b aria-hidden="true"></b></button>
+            <button type="button" class="v8-icon-button v8-topbar-action v8-sync-action" data-action="v8.sync.refresh" data-tooltip="Cloud Sync" aria-label="Synchroniser"><i data-lucide="cloud" data-presence-icon="cloud" aria-hidden="true"></i><span class="v8-action-dot" aria-hidden="true"></span></button>
             <button type="button" class="v8-icon-button v8-topbar-action v8-language-action" data-action="v8.locale.cycle" data-tooltip="Changer de langue" aria-label="Changer de langue"><i data-lucide="languages" aria-hidden="true"></i></button>
             <button type="button" class="v8-icon-button v8-topbar-action v8-theme-action" data-action="v8.theme.toggle" data-tooltip="Changer de theme" aria-label="Changer de theme"><i data-lucide="moon-star" aria-hidden="true"></i></button>
             <button type="button" class="v8-icon-button v8-topbar-action v8-quick-action" data-action="v8.command.open" data-tooltip="Actions rapides" aria-label="Actions rapides"><i data-lucide="zap" aria-hidden="true"></i></button>
-            <button type="button" class="v8-icon-button v8-topbar-action v8-notification-button" data-action="v8.notifications.open" aria-label="Ouvrir les notifications" data-tooltip="Notifications"><i data-lucide="bell" aria-hidden="true"></i><span class="v8-notification-badge" aria-hidden="true">2</span></button>
+            <button type="button" class="v8-icon-button v8-topbar-action v8-notification-button" data-action="v8.notifications.open" aria-label="Ouvrir les notifications" data-tooltip="Notifications"><i data-lucide="bell" data-presence-icon="notifications" aria-hidden="true"></i><span class="v8-mail-signal" aria-hidden="true"><i data-lucide="mail" data-presence-icon="mail"></i></span><span class="v8-notification-badge" data-presence-notification-badge aria-hidden="true" hidden>0</span></button>
             <button type="button" class="v8-icon-button v8-topbar-action v8-settings-action" data-action="v8.settings.open" data-route="settings" aria-label="Ouvrir les reglages" data-tooltip="Reglages"><i data-lucide="settings-2" aria-hidden="true"></i></button>
             <button type="button" class="v8-profile-button" data-action="v8.profile.open" aria-label="Ouvrir le profil" data-tooltip="Profil"><span id="v8-profile-initial" translate="no">R</span><i data-lucide="chevron-down" aria-hidden="true"></i></button>
           </div>
         </div>
-        <nav class="v8-route-tabs" id="v8-route-tabs" aria-label="Applications ETHONE"></nav>
       </header>
       <div class="v8-stage-wrap">
         <span class="v8-signal-ribbon" aria-hidden="true"></span>
         <main id="v8-stage" class="v8-stage" tabindex="-1" aria-live="polite"></main>
       </div>
       <footer id="v8-status-bar" class="v8-status-bar" aria-label="Barre d'etat ETHONE"></footer>
+      <div id="v8-dock-host" class="v8-dock-host"></div>
       <div id="v8-panel-host"></div>
       <div id="v8-command-host"></div>
       <div id="v8-mission-host"></div>
@@ -162,7 +165,6 @@ export function mountShell(root, options = {}) {
   const stage = root.querySelector("#v8-stage");
   const breadcrumbs = root.querySelector("#v8-breadcrumb-list");
   const breadcrumbContext = root.querySelector("#v8-breadcrumb-context");
-  const routeTabs = root.querySelector("#v8-route-tabs");
   const workspaceName = root.querySelector("#v8-workspace-name");
   const profileInitial = root.querySelector("#v8-profile-initial");
   const syncAction = root.querySelector(".v8-sync-action");
@@ -172,14 +174,21 @@ export function mountShell(root, options = {}) {
   const media = globalThis.matchMedia("(max-width: 820px)");
   let activeRoute = options.initialState?.route || "home";
   let activeSpace = options.initialState?.space || "personal";
-  let activeFlow = options.initialState?.flow || SPACE_META[activeSpace]?.flow || "Essentiel";
-  let activeSync = options.initialState?.syncStatus || "online";
+  let activeFlow = options.initialState?.flow || workspaceById(activeSpace).flow;
+  let activeSync = options.initialState?.syncStatus || "loading";
+  let activeNetwork = options.initialState?.networkStatus || "online";
+  let activeSave = options.initialState?.saveStatus || "idle";
+  let activeSession = options.initialState?.sessionStatus || "checking";
+  let activeTime = options.initialState?.localTime || "--:--";
+  let activeTimeZone = options.initialState?.timeZone || "UTC";
+  let activeVersion = options.initialState?.version || "8.0";
   let railExpanded = options.initialState?.railExpanded === true;
   let navMode = media.matches ? "mobile" : "desktop";
   let transitionTimer = 0;
   let breadcrumbRenderKey = "";
   let statusRenderKey = "";
   const contextName = String(options.contextName || "Personnel").slice(0, 80);
+  const dock = createDock(root.querySelector("#v8-dock-host"), { route: activeRoute, owner: options.profileId, media: options.spotify, initialOrder: options.dockOrder, onChange: options.onDockChange });
 
   if (profileInitial) profileInitial.textContent = String(options.user?.initial || "R").slice(0, 1).toUpperCase();
 
@@ -193,24 +202,28 @@ export function mountShell(root, options = {}) {
     refreshIcons();
   }
 
-  function renderRouteTabs() {
-    routeTabs.innerHTML = routeTabsMarkup(activeRoute);
-    refreshIcons();
-  }
-
   function renderStatus() {
-    const renderKey = `${activeRoute}|${activeSync}`;
+    const renderKey = `${activeSync}|${activeNetwork}|${activeSave}|${activeSession}|${activeTime}|${activeTimeZone}|${activeVersion}`;
     if (renderKey === statusRenderKey) return;
     statusRenderKey = renderKey;
-    statusBar.innerHTML = statusMarkup(createStatusModel({ route: activeRoute, syncStatus: activeSync }));
+    statusBar.innerHTML = statusMarkup(createStatusModel({ syncStatus: activeSync, networkStatus: activeNetwork, saveStatus: activeSave, sessionStatus: activeSession, localTime: activeTime, timeZone: activeTimeZone, version: activeVersion }));
     refreshIcons();
   }
 
   function renderNavigation() {
     navMode = media.matches ? "mobile" : "desktop";
-    navHost.innerHTML = navigationMarkup(navMode, activeRoute, { expanded: railExpanded, space: activeSpace, contextName });
+    if (navMode === "mobile") navHost.replaceChildren();
+    else navHost.innerHTML = navigationMarkup(activeRoute, { expanded: railExpanded, space: activeSpace, contextName });
     shell.dataset.navigation = navMode;
     refreshIcons();
+    const viewport = navHost.querySelector(".v8-rail__apps");
+    const current = viewport?.querySelector('[aria-current="page"]');
+    if (current) {
+      const bounds = viewport.getBoundingClientRect();
+      const activeBounds = current.getBoundingClientRect();
+      if (activeBounds.top < bounds.top) viewport.scrollTop += activeBounds.top - bounds.top;
+      else if (activeBounds.bottom > bounds.bottom) viewport.scrollTop += activeBounds.bottom - bounds.bottom;
+    }
   }
 
   function update(state = {}) {
@@ -218,6 +231,12 @@ export function mountShell(root, options = {}) {
     const nextSpace = state.space || activeSpace;
     const nextFlow = state.flow || activeFlow;
     const nextSync = state.syncStatus || activeSync;
+    const nextNetwork = state.networkStatus || activeNetwork;
+    const nextSave = state.saveStatus || activeSave;
+    const nextSession = state.sessionStatus || activeSession;
+    const nextTime = state.localTime || activeTime;
+    const nextTimeZone = state.timeZone || activeTimeZone;
+    const nextVersion = state.version || activeVersion;
     const nextExpanded = state.railExpanded === true;
     const routeChanged = nextRoute !== activeRoute;
     const navigationChanged = routeChanged || nextSpace !== activeSpace || nextExpanded !== railExpanded;
@@ -225,17 +244,23 @@ export function mountShell(root, options = {}) {
     activeSpace = nextSpace;
     activeFlow = nextFlow;
     activeSync = nextSync;
+    activeNetwork = nextNetwork;
+    activeSave = nextSave;
+    activeSession = nextSession;
+    activeTime = nextTime;
+    activeTimeZone = nextTimeZone;
+    activeVersion = nextVersion;
     railExpanded = nextExpanded;
     const meta = routeMeta(activeRoute);
-    const spaceMeta = SPACE_META[activeSpace] || SPACE_META.personal;
+    const spaceMeta = workspaceById(activeSpace);
     shell.dataset.route = activeRoute;
     shell.dataset.panel = state.panel || "";
     shell.dataset.status = meta.status;
     shell.dataset.space = activeSpace;
     shell.dataset.rail = railExpanded ? "expanded" : "compact";
-    shell.dataset.sync = state.syncStatus || "online";
+    shell.dataset.sync = activeSync;
     if (workspaceName) workspaceName.textContent = spaceMeta.label;
-    if (syncAction) syncAction.dataset.status = state.syncStatus || "online";
+    if (syncAction) syncAction.dataset.status = activeSync;
     if (themeAction) themeAction.dataset.lucide = state.theme === "graphite" ? "moon-star" : "sun";
     if (themeButton) {
       const label = state.theme === "graphite" ? "Activer le theme Nuit" : "Activer le theme Graphite";
@@ -256,7 +281,7 @@ export function mountShell(root, options = {}) {
         shell.classList.remove("is-route-transitioning");
         stage.classList.remove("is-route-transitioning");
       }, 240);
-      renderRouteTabs();
+      dock.update(activeRoute);
     }
     refreshIcons();
   }
@@ -281,7 +306,6 @@ export function mountShell(root, options = {}) {
   root.addEventListener("click", handleAction);
   media.addEventListener?.("change", handleMediaChange);
   renderNavigation();
-  renderRouteTabs();
   update(options.initialState || {});
   refreshIcons();
 
@@ -293,12 +317,16 @@ export function mountShell(root, options = {}) {
     contextMenuHost: root.querySelector("#v8-context-menu-host"),
     toastRegion: root.querySelector("#v8-toast-region"),
     update,
+    updateSpotify: dock.updateMedia,
+    dockOrder: dock.order,
+    setDockOrder: dock.setOrder,
     focusStage: () => stage.focus({ preventScroll: true }),
     navigationMode: () => navMode,
     destroy: () => {
       clearTimeout(transitionTimer);
       media.removeEventListener?.("change", handleMediaChange);
       root.removeEventListener("click", handleAction);
+      dock.destroy();
       root.replaceChildren();
     }
   });

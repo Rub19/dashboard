@@ -1,19 +1,33 @@
+import { DEFAULT_DENSITY_SETTINGS, normalizeDensityMode, sanitizeDensitySettings } from "./density-engine.mjs";
+import { DEFAULT_BRAIN_PREFERENCES, sanitizeBrainPreferences } from "../brain/preferences.mjs";
+
 export const PERSISTENCE_KEY = "ethone:v8-ui-state";
 
 const THEMES = new Set(["night", "graphite"]);
-const DENSITIES = new Set(["comfortable", "compact"]);
 const ACCENTS = new Set(["mint", "sky", "amber", "violet", "rose"]);
 const SPACES = new Set(["personal", "focus", "studio"]);
-const SYNC_STATES = new Set(["online", "syncing", "local"]);
+const SYNC_STATES = new Set(["loading", "saving", "saved", "offline", "retrying", "error", "expired", "online", "syncing"]);
+const NETWORK_STATES = new Set(["online", "offline"]);
+const SAVE_STATES = new Set(["idle", "saving", "saved", "pending", "error"]);
+const SESSION_STATES = new Set(["checking", "valid", "expired", "error"]);
 
 const DEFAULT_STATE = Object.freeze({
   route: "home",
   theme: "night",
   density: "comfortable",
+  densitySettings: DEFAULT_DENSITY_SETTINGS,
+  brainPreferences: DEFAULT_BRAIN_PREFERENCES,
   accent: "mint",
   space: "personal",
   flow: "Essentiel",
-  syncStatus: "online",
+  spotlightEnabled: true,
+  syncStatus: "loading",
+  networkStatus: "online",
+  saveStatus: "idle",
+  sessionStatus: "checking",
+  localTime: "--:--",
+  timeZone: "UTC",
+  version: "8.0",
   railExpanded: false,
   missionOpen: false,
   commandOpen: false,
@@ -46,16 +60,25 @@ function normalizeState(input = {}) {
   return Object.freeze({
     route: normalizeRoute(input.route),
     theme: THEMES.has(input.theme) ? input.theme : DEFAULT_STATE.theme,
-    density: DENSITIES.has(input.density) ? input.density : DEFAULT_STATE.density,
+    density: normalizeDensityMode(input.density, DEFAULT_STATE.density),
+    densitySettings: sanitizeDensitySettings(input.densitySettings),
+    brainPreferences: sanitizeBrainPreferences(input.brainPreferences),
     accent: ACCENTS.has(input.accent) ? input.accent : DEFAULT_STATE.accent,
     space: SPACES.has(input.space) ? input.space : DEFAULT_STATE.space,
     flow: String(input.flow || DEFAULT_STATE.flow).slice(0, 48),
+    spotlightEnabled: input.spotlightEnabled !== false,
     syncStatus: SYNC_STATES.has(input.syncStatus) ? input.syncStatus : DEFAULT_STATE.syncStatus,
+    networkStatus: NETWORK_STATES.has(input.networkStatus) ? input.networkStatus : DEFAULT_STATE.networkStatus,
+    saveStatus: SAVE_STATES.has(input.saveStatus) ? input.saveStatus : DEFAULT_STATE.saveStatus,
+    sessionStatus: SESSION_STATES.has(input.sessionStatus) ? input.sessionStatus : DEFAULT_STATE.sessionStatus,
+    localTime: /^\d{2}:\d{2}$/.test(String(input.localTime || "")) ? String(input.localTime) : DEFAULT_STATE.localTime,
+    timeZone: String(input.timeZone || DEFAULT_STATE.timeZone).slice(0, 80),
+    version: String(input.version || DEFAULT_STATE.version).slice(0, 24),
     railExpanded: input.railExpanded === true,
     missionOpen,
     commandOpen,
     commandQuery: String(input.commandQuery || "").slice(0, 160),
-    commandIndex: Math.max(0, Number.parseInt(input.commandIndex, 10) || 0),
+    commandIndex: Math.min(1000, Math.max(0, Number.parseInt(input.commandIndex, 10) || 0)),
     panel,
     toast: input.toast && typeof input.toast === "object"
       ? Object.freeze({ ...input.toast })
@@ -66,9 +89,10 @@ function normalizeState(input = {}) {
 function sameValue(left, right) {
   if (Object.is(left, right)) return true;
   if (!left || !right || typeof left !== "object" || typeof right !== "object") return false;
+  if (Array.isArray(left) !== Array.isArray(right)) return false;
   const leftKeys = Object.keys(left);
   const rightKeys = Object.keys(right);
-  return leftKeys.length === rightKeys.length && leftKeys.every((key) => Object.is(left[key], right[key]));
+  return leftKeys.length === rightKeys.length && leftKeys.every((key) => Object.hasOwn(right, key) && sameValue(left[key], right[key]));
 }
 
 function statesEqual(left, right) {
@@ -77,15 +101,23 @@ function statesEqual(left, right) {
 
 function persistedSnapshot(state) {
   return {
-    version: 2,
+    version: 4,
     route: state.route,
     theme: state.theme,
     density: state.density,
+    densitySettings: state.densitySettings,
+    brainPreferences: state.brainPreferences,
     accent: state.accent,
     space: state.space,
     flow: state.flow,
+    spotlightEnabled: state.spotlightEnabled,
     railExpanded: state.railExpanded
   };
+}
+
+function cloudSnapshot(state) {
+  const { version: _cacheVersion, ...preferences } = persistedSnapshot(state);
+  return Object.freeze(preferences);
 }
 
 export function createPresentationStore(initialState = {}, options = {}) {
@@ -133,6 +165,7 @@ export function createPresentationStore(initialState = {}, options = {}) {
     setState,
     subscribe,
     persist,
+    cloudSnapshot: () => cloudSnapshot(state),
     subscriberCount: () => subscribers.size
   });
 }

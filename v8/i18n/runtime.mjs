@@ -41,7 +41,11 @@ const DYNAMIC_TEMPLATES = Object.freeze({
   providerOpening: { fr: "Ouverture de {value}.", en: "Opening {value}.", es: "Abriendo {value}.", de: "{value} wird geöffnet." },
   opened: { fr: "{value} ouvert", en: "{value} opened", es: "{value} abierto", de: "{value} geöffnet" },
   accent: { fr: "Accent {value} appliqué", en: "{value} accent applied", es: "Acento {value} aplicado", de: "Akzent {value} angewendet" },
-  added: { fr: "{value} ajouté.", en: "{value} added.", es: "{value} añadido.", de: "{value} hinzugefügt." }
+  added: { fr: "{value} ajouté.", en: "{value} added.", es: "{value} añadido.", de: "{value} hinzugefügt." },
+  dockRemove: { fr: "Retirer {value} du Dock", en: "Remove {value} from Dock", es: "Quitar {value} del Dock", de: "{value} aus dem Dock entfernen" },
+  dockAdd: { fr: "Ajouter {value} au Dock", en: "Add {value} to Dock", es: "Añadir {value} al Dock", de: "{value} zum Dock hinzufügen" },
+  dockMoveLeft: { fr: "Déplacer {value} à gauche", en: "Move {value} left", es: "Mover {value} a la izquierda", de: "{value} nach links verschieben" },
+  dockMoveRight: { fr: "Déplacer {value} à droite", en: "Move {value} right", es: "Mover {value} a la derecha", de: "{value} nach rechts verschieben" }
 });
 
 function normalizeText(value) {
@@ -83,18 +87,22 @@ function translateDynamic(source, locale) {
     return `${datedCount[1]}, ${datedCount[2]} ${labels[Number(datedCount[2]) === 1 ? 0 : 1]}`;
   }
 
-  const deleteProfile = text.match(/^Les données locales du profil\s+(.+)\s+seront supprimées de cet appareil\. Cette action est irréversible\.$/u);
+  const deleteProfile = text.match(/^Les données du profil\s+(.+)\s+seront supprimées de Supabase et du cache de cet appareil\. Cette action est irréversible\.$/u);
   if (deleteProfile) {
     const copy = {
-      fr: "Les données locales du profil {value} seront supprimées de cet appareil. Cette action est irréversible.",
-      en: "Local data for profile {value} will be deleted from this device. This action cannot be undone.",
-      es: "Los datos locales del perfil {value} se eliminarán de este dispositivo. Esta acción es irreversible.",
-      de: "Die lokalen Daten des Profils {value} werden von diesem Gerät gelöscht. Diese Aktion kann nicht rückgängig gemacht werden."
+      fr: "Les données du profil {value} seront supprimées de Supabase et du cache de cet appareil. Cette action est irréversible.",
+      en: "Profile {value} will be deleted from Supabase and this device cache. This action cannot be undone.",
+      es: "El perfil {value} se eliminará de Supabase y de la caché de este dispositivo. Esta acción es irreversible.",
+      de: "Das Profil {value} wird aus Supabase und dem Cache dieses Geräts gelöscht. Diese Aktion kann nicht rückgängig gemacht werden."
     };
     return copy[locale].replace("{value}", deleteProfile[1]);
   }
 
   const patterns = [
+    ["dockRemove", /^Retirer\s+(.+)\s+du Dock$/u],
+    ["dockAdd", /^Ajouter\s+(.+)\s+au Dock$/u],
+    ["dockMoveLeft", /^Deplacer\s+(.+)\s+a gauche$/u],
+    ["dockMoveRight", /^Deplacer\s+(.+)\s+a droite$/u],
     ["unpin", /^Retirer\s+(.+)\s+des favoris$/u],
     ["pin", /^Épingler\s+(.+)$/u],
     ["manage", /^Gérer\s+(.+)$/u],

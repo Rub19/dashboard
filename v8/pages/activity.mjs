@@ -2,6 +2,7 @@ import { integrationById } from "../data/integrations.mjs";
 import { actionButton, element, icon } from "../ui/dom.mjs";
 import { emptyState } from "../ui/empty-state.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
+import { spotifyLiveCard } from "../ui/spotify-live.mjs";
 import { prepareActivityUI } from "./activity-style.mjs";
 
 export { prepareActivityUI as prepare };
@@ -78,7 +79,7 @@ function timelineEntry(event) {
     element("time", { className: "v8-live-entry__time", text: timeLabel(event.timestamp), attributes: { datetime: event.timestamp || null } }),
     element("span", { className: "v8-live-entry__node", attributes: { "aria-hidden": "true" } }),
     element("div", { className: "v8-live-entry__card" }, [
-      element("span", { className: "v8-live-entry__icon" }, [icon(event.icon || "activity")]),
+      element("span", { className: "v8-live-entry__icon", dataset: { presenceIcon: event.source === "email" ? "mail" : null } }, [icon(event.icon || "activity")]),
       element("div", { className: "v8-live-entry__copy" }, [
         element("div", { className: "v8-live-entry__meta" }, [element("strong", { text: sourceName(event.source), attributes: { translate: "no" } }), element("span", { text: relativeLabel(event.timestamp) })]),
         element("h3", { text: event.title, attributes: { translate: "no" } }),
@@ -92,7 +93,7 @@ function timelineEntry(event) {
 function liveCard(integration, connection, latest) {
   return element("article", { className: "v8-now-card v8-surface", dataset: { integration: integration.id } }, [
     element("div", { className: "v8-now-card__top" }, [
-      element("span", { className: "v8-now-card__icon" }, [icon(integration.icon)]),
+      element("span", { className: "v8-now-card__icon", dataset: { presenceIcon: integration.id === "email" ? "mail" : null } }, [icon(integration.icon)]),
       element("span", { className: "v8-live-pill" }, [element("i", { attributes: { "aria-hidden": "true" } }), "LIVE"])
     ]),
     element("div", { className: "v8-now-card__copy" }, [
@@ -133,9 +134,12 @@ export function mountActivity(stage, options = {}) {
   const journal = options.journal;
   const actions = options.actions;
   const notify = options.notify || (() => {});
+  const spotifyLive = options.spotifyLive || null;
+  const presence = options.presence || null;
   const state = options.state || {};
   let activeFilter = "all";
   let refreshTimer = 0;
+  let spotifyPlayback = spotifyLive?.state?.() || {};
   const controller = new AbortController();
 
   const filterBar = element("div", { className: "v8-activity-filters", attributes: { role: "toolbar", "aria-label": "Filtrer l'activite" } });
@@ -204,7 +208,9 @@ export function mountActivity(stage, options = {}) {
       element("div", { className: "v8-now-card__copy" }, [element("small", { text: "ETHONE" }), element("strong", { text: `${state.flow || "Essentiel"} dans ${state.space || "personal"}` }), element("p", { text: "Le journal local reagit aux actions utiles sans tracker global." })]),
       element("footer", {}, [element("span", { text: "Actif maintenant" }), icon("check")])
     ]));
-    connected.slice(0, 3).forEach((connection) => {
+    const spotifyPlayer = spotifyLiveCard(spotifyPlayback, { variant: "activity" });
+    if (spotifyPlayer) liveGrid.append(spotifyPlayer);
+    connected.filter((connection) => connection.id !== "spotify" || !spotifyPlayer).slice(0, 3).forEach((connection) => {
       const integration = integrationById(connection.id);
       if (!integration) return;
       liveGrid.append(liveCard(integration, connection, events.find((event) => event.source === integration.id)));
@@ -259,6 +265,12 @@ export function mountActivity(stage, options = {}) {
     return completed("Flux actualise");
   });
   const releaseJournal = journal.subscribe(render);
+  const releaseSpotify = spotifyLive?.subscribe?.((playback) => {
+    spotifyPlayback = playback;
+    render();
+    const player = liveGrid.querySelector(".v8-spotify-live");
+    if (player) presence?.signalActivity?.(player, "system", { phase: "update" });
+  }, { immediate: false }) || (() => {});
   stage.replaceChildren(page);
   render();
   scheduleRefresh();
@@ -270,6 +282,7 @@ export function mountActivity(stage, options = {}) {
     refreshTimer = 0;
     releaseRefresh();
     releaseJournal();
+    releaseSpotify();
     page.remove();
   };
 }

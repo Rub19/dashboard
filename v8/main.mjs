@@ -1,21 +1,32 @@
 import { createStyleLoader } from "./core/style-loader.mjs";
 import { createEntryCoordinator } from "./entry/entry-coordinator.mjs";
 import { mountLogin } from "./entry/login.mjs";
+import { mountPasswordRecovery } from "./entry/password-recovery.mjs";
 import { mountProfileSelection } from "./entry/profile-selection.mjs";
 import { mountApplication } from "./app/app-runtime.mjs";
 import { createProfileRepository } from "./data/profile-repository.mjs";
 import { createAuthAdapter } from "./services/auth-adapter.mjs";
+import { createAuthStorage } from "./services/auth-storage.mjs";
 import { PUBLIC_AUTH_CONFIG } from "./services/public-auth-config.mjs";
 import { createNetworkClient } from "./services/network-client.mjs";
 import { createServiceWorkerManager } from "./services/service-worker.mjs";
 import { createExternalDiagnostics } from "./services/external-diagnostics.mjs";
+import { createExternalServicesClient } from "./services/external-services-client.mjs";
+import { createSoundManager } from "./services/sound-manager.mjs";
+import { createClockManager } from "./services/clock-manager.mjs";
+import { createSupabaseStateSync } from "./services/supabase-state-sync.mjs";
 import { createDocumentMetadataManager } from "./core/document-metadata.mjs";
+import { createAmbientEngine, playSpotlight, readSpotlightPreference } from "./core/experience.mjs";
+import { createPresenceEngine } from "./core/presence-engine.mjs";
 import { element } from "./ui/dom.mjs";
+import { createVisualHaptics } from "./ui/visual-haptics.mjs";
+import { createTooltipController } from "./ui/tooltip.mjs";
 import { createV8I18n } from "./i18n/runtime.mjs";
 import { currentLocale, translateSource } from "./i18n/catalog.mjs";
 
 const root = document.getElementById("ethone-v8-root");
 const metadata = createDocumentMetadataManager(document);
+document.documentElement.dataset.spotlight = readSpotlightPreference(globalThis.localStorage) ? "enabled" : "disabled";
 
 function assertV8OnlyDocument() {
   const roots = document.querySelectorAll("#ethone-v8-root");
@@ -58,11 +69,28 @@ async function boot() {
   const startedAt = performance.now();
   const repository = createProfileRepository({ requireOwner: true });
   const network = createNetworkClient({ runtime: globalThis });
+  const authStorage = createAuthStorage(globalThis);
+  const sounds = createSoundManager({ runtime: globalThis, document, storage: globalThis.localStorage });
+  const haptics = createVisualHaptics({ document, runtime: globalThis });
+  const tooltips = createTooltipController({ document, runtime: globalThis });
+  haptics.start();
+  tooltips.start();
   const styles = createStyleLoader({ document, baseUrl: "./v8/styles" });
   let application = null;
   let coordinator = null;
   let destroyed = false;
   let pendingUpdate = null;
+  let spotlightTransition = null;
+  const ambient = createAmbientEngine({
+    target: document.documentElement,
+    document,
+    runtime: globalThis,
+    soundManager: sounds,
+    getState: () => application?.getState?.() || repository.activeProfile?.() || {}
+  });
+  ambient.start();
+  const presence = createPresenceEngine({ target: document.documentElement, document, runtime: globalThis });
+  presence.start({ route: "boot", brain: "ready", sync: "idle", notifications: 0 });
   const serviceWorker = createServiceWorkerManager({
     runtime: globalThis,
     onUpdate: (update) => {
@@ -89,6 +117,8 @@ async function boot() {
     }
   });
   metadata.setLocale(i18n.locale());
+  const clock = createClockManager({ runtime: globalThis, document, locale: () => i18n.locale() });
+  clock.start();
 
   function markBootReady() {
     root.dataset.bootStatus = "ready";
@@ -101,7 +131,7 @@ async function boot() {
   async function createSupabaseClient() {
     if (globalThis.supabase?.createClient) {
       return globalThis.supabase.createClient(PUBLIC_AUTH_CONFIG.supabaseUrl, PUBLIC_AUTH_CONFIG.supabaseAnonKey, {
-        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: "pkce", storage: authStorage }
       });
     }
     const script = document.getElementById("v8-supabase-client");
@@ -112,60 +142,113 @@ async function boot() {
     });
     if (!globalThis.supabase?.createClient) throw new Error("Le client Supabase est indisponible.");
     return globalThis.supabase.createClient(PUBLIC_AUTH_CONFIG.supabaseUrl, PUBLIC_AUTH_CONFIG.supabaseAnonKey, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: "pkce", storage: authStorage }
     });
   }
 
   const auth = createAuthAdapter({
     clientFactory: createSupabaseClient,
-    network,
-    workerUrl: PUBLIC_AUTH_CONFIG.workerUrl,
     redirectUrl: new URL("./", globalThis.location.href).href,
     runtime: globalThis
   });
-  const externalDiagnostics = createExternalDiagnostics({ network, auth, serviceWorker, config: PUBLIC_AUTH_CONFIG, runtime: globalThis });
+  const externalServices = createExternalServicesClient({ network, auth, runtime: globalThis });
+  const cloudSync = createSupabaseStateSync({ runtime: globalThis, storage: globalThis.localStorage });
+  const externalDiagnostics = createExternalDiagnostics({ network, auth, serviceWorker, externalServices, config: PUBLIC_AUTH_CONFIG, runtime: globalThis });
 
   coordinator = createEntryCoordinator({
     auth,
     profiles: repository,
-    prepareProfiles: (context) => {
-      repository.setOwner(context.session?.user?.id || repository.owner());
+    prepareProfiles: async (context) => {
+      const owner = context.session?.user?.id || repository.owner();
+      repository.setOwner(owner);
+      sounds.setOwner(owner);
+      const client = await auth.getClient();
+      const syncResult = await cloudSync.start({ client, ownerId: owner, repository });
+      const cloudPreferences = cloudSync.preferences();
+      if (cloudPreferences.locale) i18n.setLocale(cloudPreferences.locale, { announce: false });
+      if (cloudPreferences.sound) sounds.setPreferences(cloudPreferences.sound);
       if (!repository.listProfiles().length) {
         const user = context.session?.user;
         repository.createProfile({ name: user?.name || user?.email?.split("@")[0] || "Mon environnement", type: "personal" });
       }
+      if (syncResult.ok && cloudSync.status().revision === 0 && repository.listProfiles().length) {
+        cloudSync.queue("cloud-bootstrap");
+        await cloudSync.flush();
+      }
+      return syncResult;
     },
     mountBoot: () => {
+      presence.update({ route: "boot", notifications: 0 });
       styles.setEntryEnabled(true);
       styles.setApplicationEnabled(false);
       return mountBootSurface();
     },
     mountLogin: (context) => {
+      presence.update({ route: "login", notifications: 0, sync: "idle" });
+      cloudSync.stop();
       repository.setOwner("");
+      sounds.setOwner("");
       styles.setEntryEnabled(true);
       styles.setApplicationEnabled(false);
       metadata.setEntry("login");
+      ambient.refresh();
       return mountLogin(root, {
         auth,
+        clockManager: clock,
         authResult: context.authResult,
         onAuthenticated: (data) => {
-          repository.setOwner(data?.user?.id || data?.session?.user?.id || "");
+          const owner = data?.user?.id || data?.session?.user?.id || "";
+          repository.setOwner(owner);
+          sounds.setOwner(owner);
+          sounds.play("auth.login");
           return coordinator.showProfiles({ reason: "login-completed", session: data?.session });
         }
       });
     },
+    mountRecovery: (context) => {
+      presence.update({ route: "recovery", notifications: 0, sync: "idle" });
+      cloudSync.stop();
+      repository.setOwner("");
+      sounds.setOwner("");
+      styles.setEntryEnabled(true);
+      styles.setApplicationEnabled(false);
+      metadata.setEntry("login");
+      return mountPasswordRecovery(root, {
+        auth,
+        onCompleted: () => {
+          const owner = context.session?.user?.id || "";
+          repository.setOwner(owner);
+          sounds.setOwner(owner);
+          coordinator.showProfiles({ reason: "password-recovery-completed", session: context.session });
+        },
+        onSignOut: () => {
+          sounds.play("auth.logout");
+          return coordinator.signOut();
+        }
+      });
+    },
     mountProfiles: (context) => {
+      presence.update({ route: "profiles", notifications: 0, sync: "idle" });
+      sounds.setOwner(context.session?.user?.id || repository.owner());
+      ambient.refresh(repository.activeProfile?.() || context.profiles?.[0] || {});
       styles.setEntryEnabled(true);
       styles.setApplicationEnabled(false);
       metadata.setEntry("profiles");
       return mountProfileSelection(root, {
         repository,
         profiles: context.profiles,
-        onSignOut: () => coordinator.signOut(),
+        clockManager: clock,
+        cloudSync,
+        presenceEngine: presence,
+        onSignOut: () => {
+          sounds.play("auth.logout");
+          return coordinator.signOut();
+        },
         onSelect: async (profile) => {
           const styleResult = await styles.loadApplication();
           if (!styleResult.ok) return styleResult;
           coordinator.enterHome({ reason: "profile-selected", profile });
+          sounds.play("profile.enter");
           return Object.freeze({ ok: true, status: "completed", message: "Environnement ouvert.", data: profile });
         }
       });
@@ -178,7 +261,20 @@ async function boot() {
         profile: context.profile || repository.activeProfile(),
         i18n,
         metadata,
+        soundManager: sounds,
+        ambientEngine: ambient,
+        presenceEngine: presence,
+        cloudSync,
+        clockManager: clock,
+        externalServices,
+        clientProvider: () => auth.getClient(),
+        ownerId: repository.owner(),
         onSignOut: () => coordinator.signOut()
+      });
+      spotlightTransition?.destroy?.();
+      spotlightTransition = playSpotlight(root, {
+        enabled: application.getState().spotlightEnabled,
+        runtime: globalThis
       });
       markBootReady();
       if (pendingUpdate) {
@@ -192,6 +288,8 @@ async function boot() {
         });
       }
       return () => {
+        spotlightTransition?.destroy?.();
+        spotlightTransition = null;
         application?.destroy();
         application = null;
       };
@@ -204,7 +302,16 @@ async function boot() {
     globalThis.removeEventListener("pagehide", handlePageHide);
     coordinator.destroy();
     serviceWorker.destroy();
+    externalServices.destroy();
+    auth.destroy();
+    cloudSync.destroy();
+    clock.destroy();
     i18n.destroy();
+    ambient.destroy();
+    presence.destroy();
+    haptics.destroy();
+    tooltips.destroy();
+    sounds.destroy();
     delete globalThis.__ETHONE_V8__;
     globalThis.__ETHONE_V8_BOOTED__ = false;
     return true;
@@ -227,9 +334,16 @@ async function boot() {
       locale: i18n.locale(),
       i18n: i18n.audit(),
       auth: auth.status(),
+      cloudSync: cloudSync.diagnostics(),
+      clock: clock.diagnostics(),
       network: network.diagnostics(),
+      externalServices: externalServices.diagnostics(),
       serviceWorker: serviceWorker.status(),
       metadata: metadata.current(),
+      sounds: sounds.diagnostics(),
+      haptics: haptics.diagnostics(),
+      tooltips: tooltips.diagnostics(),
+      presence: presence.diagnostics(),
       bootMs: Number(root.dataset.bootMs || Math.round(performance.now() - startedAt)),
       ...(application?.diagnostics?.() || {})
     }),

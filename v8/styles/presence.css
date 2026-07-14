@@ -1,0 +1,425 @@
+@property --v8-live-number-value {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+:root {
+  --v8-presence-brain-cycle: 1600ms;
+  --v8-presence-thinking-cycle: 2.4s;
+  --v8-presence-sync-cycle: 2.2s;
+  --v8-presence-notification-cycle: 900ms;
+  --v8-presence-dock-cycle: 1200ms;
+  --v8-live-duration: 260ms;
+  --v8-live-stagger: 24ms;
+}
+
+[data-live-widget] { --v8-live-index: 0; }
+[data-presence-update],
+[data-presence-activity] { will-change: transform, opacity; }
+[data-presence-phase="exit"] { pointer-events: none; }
+
+[data-live-number] {
+  --v8-live-number-value: var(--v8-live-number-to, 0);
+  position: relative;
+  font-variant-numeric: tabular-nums;
+}
+
+[data-live-number]::after {
+  position: absolute;
+  inset: 0;
+  content: none;
+}
+
+html[data-presence-engine="active"] [data-live-widget][data-presence-live="enter"] {
+  animation: v8-live-widget-enter var(--v8-live-duration) var(--v8-ease-spring) both;
+  animation-delay: calc(var(--v8-live-index) * var(--v8-live-stagger));
+}
+
+html[data-presence-engine="active"] [data-live-widget][data-presence-live="enter"][data-live-kind="media"],
+html[data-presence-engine="active"] [data-live-widget][data-presence-live="enter"][data-live-kind="music"],
+html[data-presence-engine="active"] [data-live-widget][data-presence-live="enter"][data-live-kind="weather"] {
+  animation-name: v8-live-media-enter;
+}
+
+html[data-presence-engine="active"] [data-live-widget][data-presence-live="enter"][data-live-kind="brain"] {
+  animation-name: v8-live-brain-enter;
+}
+
+html[data-presence-engine="active"] [data-live-widget][data-presence-live="enter"][data-live-kind="planning"] {
+  animation-name: v8-live-planning-enter;
+}
+
+html[data-presence-engine="active"] [data-live-number][data-presence-live="enter"]::after {
+  color: var(--v8-live-number-color, var(--v8-text));
+  content: counter(v8-live-number);
+  counter-reset: v8-live-number var(--v8-live-number-value);
+  animation: v8-live-number-count 420ms var(--v8-ease-out) both;
+  animation-delay: calc(var(--v8-live-index) * var(--v8-live-stagger));
+}
+
+html[data-presence-engine="active"] [data-live-number][data-presence-live="enter"] {
+  color: transparent;
+}
+
+.v8-entry::before,
+.v8-shell::before,
+.v8-entry__monogram,
+.v8-entry__particle,
+.v8-profile-preview__ambient,
+.v8-profile-preview__ambient span,
+.v8-continuity__monogram,
+.v8-home-ambient__wash,
+.v8-home-ambient__light,
+.v8-home-float,
+.v8-continuity::after,
+.v8-home-brain::after,
+.v8-brain-context::after,
+.v8-brain-status b,
+.v8-brain-live i,
+.v8-brain-orbit::after,
+.v8-sync-action > svg,
+.v8-sync-action .v8-action-dot,
+.v8-status-item[data-tone="syncing"] svg,
+.v8-notification-badge,
+.v8-mail-signal,
+.v8-dock-app.is-active::before,
+.v8-dock-app.is-active::after,
+.v8-spotify-live__aura,
+.v8-spotify-equalizer i,
+.v8-spotify-dock__artwork {
+  animation: none;
+  will-change: auto;
+}
+
+html[data-presence-engine="active"] .v8-entry::before,
+html[data-presence-engine="active"] .v8-shell::before {
+  animation: v8-ambient-drift var(--v8-ambient-motion-duration) var(--v8-physics-drift) infinite alternate;
+  will-change: transform, opacity;
+}
+
+html[data-presence-engine="active"] .v8-entry__monogram {
+  animation: v8-brand-breathe 42s var(--v8-physics-drift) infinite alternate;
+  will-change: transform;
+}
+
+html[data-presence-engine="active"] .v8-profile-preview__ambient span,
+html[data-presence-engine="active"] .v8-continuity__monogram {
+  animation: v8-brand-breathe 24s var(--v8-ease-standard) infinite alternate;
+  will-change: transform;
+}
+
+html[data-presence-engine="active"] .v8-entry__particle {
+  animation: v8-entry-particle-drift var(--v8-particle-duration, 48s) var(--v8-physics-drift) var(--v8-particle-delay, 0s) infinite alternate;
+  will-change: transform, opacity;
+}
+
+html[data-presence-engine="active"] .v8-profile-preview__ambient,
+html[data-presence-engine="active"] .v8-continuity::after {
+  animation: v8-surface-breathe var(--v8-breathe-duration) var(--v8-physics-drift) var(--v8-breathe-delay, -11s) infinite alternate;
+  will-change: transform, opacity;
+}
+
+html[data-presence-engine="active"] .v8-home-ambient__wash {
+  animation: v8-dashboard-wash var(--v8-ambient-motion-duration) var(--v8-physics-drift) infinite alternate;
+  will-change: transform, opacity;
+}
+
+html[data-presence-engine="active"] .v8-home-ambient__light {
+  animation: v8-dashboard-light var(--v8-ambient-motion-duration) var(--v8-physics-drift) -13s infinite alternate;
+  will-change: transform, opacity;
+}
+
+html[data-presence-engine="active"] .v8-home-float {
+  animation: v8-dashboard-float var(--v8-dashboard-float-duration, 26s) var(--v8-physics-drift) var(--v8-dashboard-float-delay, -7s) infinite alternate;
+  will-change: transform;
+}
+
+.v8-brain-orbit { position: relative; }
+.v8-brain-orbit::after {
+  position: absolute;
+  inset: 5px;
+  border: 1px solid transparent;
+  border-top-color: var(--v8-brain-line);
+  border-radius: 50%;
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+}
+
+html[data-presence-engine="active"][data-presence-brain="ready"] .v8-home-brain::after,
+html[data-presence-engine="active"][data-presence-brain="ready"] .v8-brain-context::after {
+  animation: v8-presence-brain-ready var(--v8-presence-brain-cycle) var(--v8-physics-drift) both;
+  will-change: transform, opacity;
+}
+
+html[data-presence-engine="active"][data-presence-brain="ready"] .v8-brain-status b,
+html[data-presence-engine="active"][data-presence-brain="ready"] .v8-brain-live i {
+  animation: v8-presence-signal-ready var(--v8-presence-brain-cycle) var(--v8-ease-standard) both;
+  transform-origin: center;
+  will-change: transform, opacity;
+}
+
+html[data-presence-engine="active"][data-presence-brain="thinking"] .v8-home-brain::after,
+html[data-presence-engine="active"][data-presence-brain="thinking"] .v8-brain-context::after {
+  animation: v8-presence-brain-thinking var(--v8-presence-thinking-cycle) var(--v8-physics-drift) infinite alternate;
+  will-change: transform, opacity;
+}
+
+html[data-presence-engine="active"][data-presence-brain="thinking"] .v8-brain-status > svg,
+html[data-presence-engine="active"][data-presence-brain="thinking"] .v8-brain-orbit::after {
+  animation: v8-presence-orbit var(--v8-presence-thinking-cycle) var(--v8-physics-orbit) infinite;
+  opacity: 0.72;
+  will-change: transform;
+}
+
+html[data-presence-engine="active"][data-presence-brain="thinking"] .v8-brain-status b,
+html[data-presence-engine="active"][data-presence-brain="thinking"] .v8-brain-live i {
+  animation: v8-presence-thinking-dot 1.8s var(--v8-ease-standard) infinite;
+  will-change: transform, opacity;
+}
+
+html[data-presence-engine="active"][data-presence-brain="responding"] .v8-home-brain::after,
+html[data-presence-engine="active"][data-presence-brain="responding"] .v8-brain-context::after {
+  animation: v8-presence-brain-answer 1.2s var(--v8-ease-spring) both;
+  will-change: transform, opacity;
+}
+
+html[data-presence-engine="active"][data-presence-brain="responding"] .v8-brain-status b,
+html[data-presence-engine="active"][data-presence-brain="responding"] .v8-brain-live i {
+  animation: v8-presence-answer-dot 900ms var(--v8-ease-spring) both;
+  will-change: transform, opacity;
+}
+
+html[data-presence-engine="active"][data-presence-sync="syncing"] .v8-sync-action > svg,
+html[data-presence-engine="active"][data-presence-sync="syncing"] .v8-status-item[data-tone="syncing"] svg {
+  animation: v8-presence-sync var(--v8-presence-sync-cycle) var(--v8-physics-orbit) infinite;
+  transform-origin: center;
+  will-change: transform;
+}
+
+html[data-presence-engine="active"][data-presence-sync="syncing"] .v8-sync-action .v8-action-dot {
+  animation: v8-presence-sync-dot var(--v8-presence-sync-cycle) var(--v8-ease-standard) infinite;
+  will-change: transform, opacity;
+}
+
+html[data-presence-engine="active"][data-presence-notification="important"] .v8-notification-badge {
+  animation: v8-presence-unread var(--v8-presence-notification-cycle) var(--v8-ease-standard) both;
+  transform-origin: center;
+  will-change: transform, opacity;
+}
+
+html[data-presence-engine="active"] .v8-dock-app.is-active::before {
+  animation: v8-presence-dock-glow var(--v8-presence-dock-cycle) var(--v8-ease-standard) both;
+  will-change: opacity;
+}
+
+html[data-presence-engine="active"] .v8-dock-app.is-active::after {
+  animation: v8-presence-dock-signal var(--v8-presence-dock-cycle) var(--v8-ease-standard) both;
+  transform-origin: center;
+  will-change: transform, opacity;
+}
+
+html[data-presence-engine="active"][data-presence-media="playing"] .v8-spotify-live.is-playing .v8-spotify-live__aura {
+  animation: v8-presence-media-wave 6.4s var(--v8-physics-drift) infinite alternate;
+  will-change: transform, opacity;
+}
+
+html[data-presence-engine="active"][data-presence-media="playing"] .is-playing .v8-spotify-equalizer i {
+  animation: v8-presence-media-level 920ms var(--v8-ease-standard) infinite alternate;
+  will-change: transform, opacity;
+}
+
+html[data-presence-engine="active"][data-presence-media="playing"] .is-playing .v8-spotify-equalizer i:nth-child(2) { animation-delay:-310ms; }
+html[data-presence-engine="active"][data-presence-media="playing"] .is-playing .v8-spotify-equalizer i:nth-child(3) { animation-delay:-610ms; }
+html[data-presence-engine="active"][data-presence-media="playing"] .is-playing .v8-spotify-equalizer i:nth-child(4) { animation-delay:-190ms; }
+html[data-presence-engine="active"][data-presence-media="playing"] .v8-spotify-dock.is-playing .v8-spotify-dock__artwork {
+  animation: v8-presence-media-dock 4.8s var(--v8-ease-standard) infinite;
+  will-change: transform, opacity;
+}
+
+html[data-presence-engine="active"][data-presence-mail="new"] .v8-mail-signal {
+  animation: v8-presence-mail-arrive 760ms var(--v8-ease-spring) both;
+  will-change: transform, opacity;
+}
+
+@keyframes v8-presence-brain-ready {
+  0%, 68%, 100% { opacity: 0.14; transform: translate3d(0, 0, 0) scale(1); }
+  82% { opacity: 0.2; transform: translate3d(-0.25%, 0, 0) scale(1.012); }
+}
+
+@keyframes v8-dashboard-wash {
+  from { opacity: 0.14; transform: translate3d(-1.8%, -0.35%, 0) scale(1.012); }
+  to { opacity: 0.24; transform: translate3d(1.8%, 0.35%, 0) scale(1.032); }
+}
+
+@keyframes v8-dashboard-light {
+  from { opacity: 0.18; transform: translate3d(0, -0.6%, 0) scaleY(1); }
+  to { opacity: 0.27; transform: translate3d(0, 0.6%, 0) scaleY(1.025); }
+}
+
+@keyframes v8-dashboard-float {
+  from { transform: translate3d(0, 0.35px, 0); }
+  to { transform: translate3d(0, var(--v8-dashboard-float-distance), 0); }
+}
+
+@keyframes v8-presence-signal-ready {
+  0%, 72%, 100% { opacity: 0.82; transform: scale(1); }
+  84% { opacity: 1; transform: scale(1.12); }
+}
+
+@keyframes v8-presence-brain-thinking {
+  from { opacity: 0.15; transform: translate3d(-0.4%, 0, 0) scale(1); }
+  to { opacity: 0.24; transform: translate3d(0.4%, -0.2%, 0) scale(1.016); }
+}
+
+@keyframes v8-presence-orbit { to { transform: rotate(360deg); } }
+@keyframes v8-presence-thinking-dot { 50% { opacity: 0.58; transform: scale(0.84); } }
+
+@keyframes v8-presence-brain-answer {
+  0% { opacity: 0.14; transform: scale(1); }
+  42% { opacity: 0.3; transform: scale(1.022); }
+  100% { opacity: 0.17; transform: scale(1); }
+}
+
+@keyframes v8-presence-answer-dot {
+  0%, 100% { opacity: 0.82; transform: scale(1); }
+  46% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes v8-presence-sync { to { transform: rotate(360deg); } }
+@keyframes v8-presence-sync-dot { 50% { opacity: 0.58; transform: scale(0.84); } }
+
+@keyframes v8-presence-unread {
+  0%, 74%, 100% { opacity: 0.94; transform: scale(1); }
+  84% { opacity: 1; transform: scale(1.07); }
+}
+
+@keyframes v8-presence-dock-glow {
+  0%, 76%, 100% { opacity: 0.72; }
+  86% { opacity: 0.92; }
+}
+
+@keyframes v8-presence-dock-signal {
+  0%, 76%, 100% { opacity: 0.82; transform: scale(1); }
+  86% { opacity: 1; transform: scale(1.14); }
+}
+
+@keyframes v8-presence-media-wave {
+  from { opacity:.16;transform:translate3d(-1.5%,0,0) scale(.98); }
+  to { opacity:.3;transform:translate3d(1.5%,-1%,0) scale(1.025); }
+}
+
+@keyframes v8-presence-media-level {
+  from { opacity:.56;transform:scaleY(.22); }
+  to { opacity:.92;transform:scaleY(.9); }
+}
+
+@keyframes v8-presence-media-dock {
+  0%,72%,100% { opacity:.94;transform:scale(1); }
+  84% { opacity:1;transform:scale(1.035); }
+}
+
+@keyframes v8-presence-mail-arrive {
+  0% { opacity:0;transform:translate3d(3px,2px,0) scale(.78); }
+  28%,68% { opacity:1;transform:translate3d(0,0,0) scale(1); }
+  100% { opacity:0;transform:translate3d(-1px,-1px,0) scale(.94); }
+}
+
+@keyframes v8-live-widget-enter {
+  from { opacity: 0.58; transform: translate3d(0, 5px, 0) scale(0.994); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes v8-live-media-enter {
+  from { opacity: 0.48; transform: translate3d(0, 3px, 0) scale(0.982); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes v8-live-brain-enter {
+  from { opacity: 0.46; transform: translate3d(0, 4px, 0) scale(0.988); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes v8-live-planning-enter {
+  from { opacity: 0.42; transform: translate3d(0, 7px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes v8-live-number-count {
+  from { --v8-live-number-value: 0; }
+  to { --v8-live-number-value: var(--v8-live-number-to, 0); }
+}
+
+@keyframes v8-entry-particle-drift {
+  from { opacity: 0.08; transform: translate3d(0, 0, 0) scale(0.82); }
+  to { opacity: 0.24; transform: translate3d(var(--v8-particle-x), var(--v8-particle-y), 0) scale(1.08); }
+}
+
+html[data-presence-engine="paused"] .v8-entry::before,
+html[data-presence-engine="paused"] .v8-shell::before,
+html[data-presence-engine="paused"] .v8-entry__monogram,
+html[data-presence-engine="paused"] .v8-entry__particle,
+html[data-presence-engine="paused"] .v8-profile-preview__ambient,
+html[data-presence-engine="paused"] .v8-profile-preview__ambient span,
+html[data-presence-engine="paused"] .v8-continuity__monogram,
+html[data-presence-engine="paused"] .v8-home-ambient__wash,
+html[data-presence-engine="paused"] .v8-home-ambient__light,
+html[data-presence-engine="paused"] .v8-home-float,
+html[data-presence-engine="paused"] .v8-continuity::after,
+html[data-presence-engine="paused"] .v8-home-brain::after,
+html[data-presence-engine="paused"] .v8-brain-context::after,
+html[data-presence-engine="paused"] .v8-brain-status b,
+html[data-presence-engine="paused"] .v8-brain-live i,
+html[data-presence-engine="paused"] .v8-brain-orbit::after,
+html[data-presence-engine="paused"] .v8-sync-action > svg,
+html[data-presence-engine="paused"] .v8-sync-action .v8-action-dot,
+html[data-presence-engine="paused"] .v8-notification-badge,
+html[data-presence-engine="paused"] .v8-mail-signal,
+html[data-presence-engine="paused"] .v8-dock-app.is-active::before,
+html[data-presence-engine="paused"] .v8-dock-app.is-active::after,
+html[data-presence-engine="paused"] .v8-spotify-live__aura,
+html[data-presence-engine="paused"] .v8-spotify-equalizer i,
+html[data-presence-engine="paused"] .v8-spotify-dock__artwork,
+html[data-presence-engine="paused"] [data-live-widget][data-presence-live="enter"],
+html[data-presence-engine="paused"] [data-live-number][data-presence-live="enter"]::after {
+  animation-play-state: paused;
+  will-change: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v8-entry::before,
+  .v8-shell::before,
+  .v8-entry__monogram,
+  .v8-entry__particle,
+  .v8-profile-preview__ambient,
+  .v8-profile-preview__ambient span,
+  .v8-continuity__monogram,
+  .v8-home-ambient__wash,
+  .v8-home-ambient__light,
+  .v8-home-float,
+  .v8-continuity::after,
+  .v8-home-brain::after,
+  .v8-brain-context::after,
+  .v8-brain-status b,
+  .v8-brain-live i,
+  .v8-brain-orbit::after,
+  .v8-sync-action > svg,
+  .v8-sync-action .v8-action-dot,
+  .v8-status-item[data-tone="syncing"] svg,
+  .v8-notification-badge,
+  .v8-mail-signal,
+  .v8-dock-app.is-active::before,
+  .v8-dock-app.is-active::after,
+  .v8-spotify-live__aura,
+  .v8-spotify-equalizer i,
+  .v8-spotify-dock__artwork,
+  [data-live-widget][data-presence-live="enter"],
+  [data-live-number][data-presence-live="enter"]::after {
+    animation: none;
+    transform: none;
+    will-change: auto;
+  }
+
+  [data-live-number]::after { display: none; }
+}

@@ -5,7 +5,7 @@ import test from "node:test";
 import { createAuthAdapter } from "../v8/services/auth-adapter.mjs";
 import { createNetworkClient } from "../v8/services/network-client.mjs";
 import { PROFILE_STORAGE_KEY, PROFILE_OWNER_KEY, SCOPED_PROFILE_PREFIX, createProfileRepository } from "../v8/data/profile-repository.mjs";
-import { V8_ROUTES, normalizeRoute } from "../v8/core/router.mjs";
+import { V8_ROUTES, createRouter, normalizeRoute } from "../v8/core/router.mjs";
 import { createActionFacade } from "../v8/core/actions.mjs";
 import { createPresentationStore } from "../v8/core/store.mjs";
 import { COMMANDS } from "../v8/command/catalog.mjs";
@@ -119,6 +119,31 @@ test("profile repository isolates owners and strips persisted secrets", () => {
   assert.equal(repository.snapshot().notes[0].title, "Audit");
 });
 
+test("profile environments persist allowlisted modules and expose isolated snapshots", () => {
+  const storage = memoryStorage();
+  const repository = createProfileRepository({ storage, requireOwner: true, ownerId: "environment-user", idFactory: (() => { let id = 0; return () => `environment-${++id}`; })() });
+  const first = repository.createProfile({
+    name: "Focus",
+    type: "development",
+    widgets: ["brain", "github", "invalid-widget"],
+    integrations: ["spotify", "invalid-service"],
+    ambience: "focus",
+    background: "horizon"
+  });
+  repository.notes.create({ title: "Private focus note" });
+  const second = repository.createProfile({ name: "Gaming", type: "gaming", widgets: ["discord"] });
+  repository.selectProfile(second.data.id);
+
+  const firstView = repository.listProfiles().find((profile) => profile.id === first.data.id);
+  assert.deepEqual(firstView.environment.widgets, ["brain", "github"]);
+  assert.deepEqual(firstView.environment.integrations, ["spotify"]);
+  assert.equal(firstView.environment.ambience, "focus");
+  assert.equal(firstView.environment.background, "horizon");
+  assert.equal(repository.snapshot(first.data.id).notes[0].title, "Private focus note");
+  assert.equal(repository.snapshot(second.data.id).notes.length, 0);
+  assert.doesNotMatch(storage.read(`${SCOPED_PROFILE_PREFIX}environment-user`), /invalid-widget|invalid-service/);
+});
+
 test("V8-only routes keep Activity, Spaces and Flows inside the current runtime", () => {
   assert.ok(V8_ROUTES.includes("activity"));
   assert.ok(V8_ROUTES.includes("connections"));
@@ -133,6 +158,44 @@ test("V8-only routes keep Activity, Spaces and Flows inside the current runtime"
   assert.equal(actions.dispatch("v8.spaces.open").ok, true);
   assert.equal(actions.dispatch("v8.flows.open").ok, true);
   assert.deepEqual(visited, ["activity", "connections", "spaces", "flows"]);
+});
+
+test("desktop navigation keeps the active route inside its dedicated scroll viewport", () => {
+  const shell = fs.readFileSync(new URL("../v8/ui/shell.mjs", import.meta.url), "utf8");
+  assert.match(shell, /querySelector\("\.v8-rail__apps"\)/);
+  assert.match(shell, /querySelector\('\[aria-current="page"\]'\)/);
+  assert.match(shell, /viewport\.scrollTop \+= activeBounds\.(?:top|bottom) - bounds\.(?:top|bottom)/);
+  assert.doesNotMatch(shell, /scrollIntoView/);
+});
+
+test("router canonicalizes hostile hashes and handles direct fragment changes", () => {
+  const listeners = new Map();
+  const routes = [];
+  const runtime = {
+    location: { hash: "#/../../evil?token=%3Cscript%3E" },
+    history: {
+      replaceState: (_state, _title, url) => { runtime.location.hash = url; },
+      pushState: (_state, _title, url) => { runtime.location.hash = url; }
+    },
+    addEventListener: (type, listener) => listeners.set(type, listener),
+    removeEventListener: (type, listener) => {
+      if (listeners.get(type) === listener) listeners.delete(type);
+    }
+  };
+  const router = createRouter({ runtime, onRoute: (route) => routes.push(route) });
+
+  router.start();
+  assert.equal(runtime.location.hash, "#/home");
+  assert.equal(listeners.has("hashchange"), true);
+
+  runtime.location.hash = "#/notes?redirect=javascript:alert(1)";
+  listeners.get("hashchange")();
+  assert.equal(runtime.location.hash, "#/notes");
+  assert.deepEqual(routes, ["home", "notes"]);
+
+  router.stop();
+  assert.equal(listeners.has("hashchange"), false);
+  assert.equal(listeners.has("popstate"), false);
 });
 
 test("global command entries resolve through the central action registry", () => {
@@ -223,22 +286,36 @@ test("premium breadcrumbs expose actionable route and context levels", () => {
   assert.equal(model.crumbs.find((crumb) => crumb.id === "root").actionId, "v8.home.open");
   assert.equal(model.crumbs.find((crumb) => crumb.id === "workspace").actionId, "v8.spaces.open");
   assert.equal(model.crumbs.find((crumb) => crumb.id === "route").actionId, "v8.brain.open");
-  assert.deepEqual(model.context, { workspace: "Rub", space: "Focus", flow: "Deep Work", sync: "Synchronise", syncTone: "online" });
+  assert.deepEqual(model.context, { workspace: "Rub", space: "Focus", flow: "Deep Work", sync: "Synchronise avec Supabase", syncTone: "online" });
 });
 
-test("global status model keeps network, Brain and route state coherent", () => {
-  const online = createStatusModel({ route: "brain", syncStatus: "online" });
+test("global status model reports only factual network, cloud, save, session and clock state", () => {
+  const online = createStatusModel({
+    networkStatus: "online",
+    syncStatus: "saved",
+    saveStatus: "saved",
+    sessionStatus: "authenticated",
+    localTime: "14:37",
+    timeZone: "Europe/Paris",
+    version: "8.0"
+  });
   assert.equal(online.network.label, "En ligne");
   assert.equal(online.network.icon, "wifi");
   assert.equal(online.sync.icon, "cloud");
-  assert.equal(online.brain.label, "Brain actif");
-  assert.equal(online.route.label, "Brain prêt");
+  assert.equal(online.sync.label, "Synchronise avec Supabase");
+  assert.equal(online.save.label, "Enregistre");
+  assert.equal(online.session.label, "Session chiffree");
+  assert.equal(online.clock.label, "14:37");
+  assert.equal(online.clock.timeZone, "Europe/Paris");
+  assert.equal(online.version.label, "ETHONE 8.0");
 
-  const offline = createStatusModel({ route: "notes", syncStatus: "error" });
+  const offline = createStatusModel({ networkStatus: "offline", syncStatus: "offline", saveStatus: "pending", sessionStatus: "expired" });
   assert.equal(offline.network.label, "Hors ligne");
   assert.equal(offline.network.icon, "wifi-off");
-  assert.equal(offline.sync.label, "Hors ligne");
-  assert.equal(offline.sync.tone, "error");
+  assert.equal(offline.sync.label, "Hors ligne - changements en attente");
+  assert.equal(offline.sync.tone, "warning");
+  assert.equal(offline.save.label, "Changements en attente");
+  assert.equal(offline.session.label, "Session expiree");
 });
 
 test("premium detail primitives expose coherent micro states", () => {
@@ -399,7 +476,8 @@ test("global interaction system owns hover, press and reduced motion feedback", 
 
   assert.match(html, /<html[^>]+data-v8-interactions/);
   assert.match(tokens, /--v8-interaction-hover-transform:\s*translate3d\(0,\s*-1px,\s*0\)\s*scale\(1\.006\)/);
-  assert.match(tokens, /--v8-interaction-press-transform:\s*translate3d\(0,\s*0,\s*0\)\s*scale\(0\.985\)/);
+  assert.match(tokens, /--v8-haptic-press-transform:\s*translate3d\(0,\s*1px,\s*0\)\s*scale\(\.976\)/);
+  assert.match(tokens, /--v8-interaction-press-transform:\s*var\(--v8-haptic-press-transform\)/);
   assert.match(tokens, /--v8-interaction-shadow:/);
   assert.match(tokens, /--v8-interaction-filter:/);
   assert.match(components, /@media \(hover:\s*hover\) and \(pointer:\s*fine\)/);
@@ -417,21 +495,24 @@ test("interaction feedback preserves semantic states and versions every styleshe
   const components = fs.readFileSync(new URL("../v8/styles/components.css", import.meta.url), "utf8");
   const localStyles = ["activity.css", "entry.css", "shell.css", "workspaces.css"].map((name) => fs.readFileSync(new URL(`../v8/styles/${name}`, import.meta.url), "utf8"));
 
-  for (const name of ["tokens", "base", "components", "entry"]) {
-    assert.match(html, new RegExp(`v8/styles/${name}\\.css\\?v=empty-states-v16`));
-    assert.match(worker, new RegExp(`v8/styles/${name}\\.css\\?v=empty-states-v16`));
+  for (const name of ["tokens", "base", "components", "entry", "presence"]) {
+    assert.match(html, new RegExp(`v8/styles/${name}\\.css\\?v=experience-v71`));
+    assert.match(worker, new RegExp(`v8/styles/${name}\\.css\\?v=experience-v71`));
   }
-  assert.match(worker, /v8\/styles\/activity\.css\?v=empty-states-v16/);
+  assert.match(worker, /v8\/styles\/activity\.css\?v=experience-v71/);
+  assert.match(worker, /v8\/core\/presence-engine\.mjs/);
   assert.match(activityLoader, /STYLE_RELEASE/);
   assert.match(activityLoader, /activity\.css\?v=\$\{encodeURIComponent\(STYLE_RELEASE\)\}/);
-  assert.match(tokens, /--v8-interaction-shadow:\s*drop-shadow/);
+  assert.match(tokens, /--v8-interaction-shadow:\s*var\(--v8-shadow-hover-filter\)/);
   assert.match(tokens, /--v8-interaction-filter:[^;]*var\(--v8-interaction-shadow\)/);
   assert.doesNotMatch(components, /:hover[^\{]*\{[^\}]*box-shadow:/);
   assert.match(components, /html\[data-v8-interactions\][\s\S]*:focus-visible[\s\S]*box-shadow:\s*var\(--v8-shadow-focus\)/);
 
-  const allowedHover = /html\[data-v8-interactions\]|scrollbar-thumb|v8-input:hover|v8-entry__locale:hover|autofill:hover|data-tooltip|v8-profile-card:hover \.v8-profile-card__menu|v8-command-row:hover \.v8-command-pin|v8-task-row:hover \.v8-task-delete/;
+  const allowedHover = /html\[data-v8-interactions\]|scrollbar-thumb|v8-input:hover|v8-entry__locale:hover|autofill:hover|data-tooltip|v8-profile-card:hover \.v8-profile-card__menu|v8-command-row:hover \.v8-command-pin|v8-task-row:hover \.v8-task-delete|v8-dock/;
   for (const source of [components, ...localStyles]) {
-    const selectors = [...source.matchAll(/(?:^|\})\s*([^@\{][^\{]*:hover[^\{]*)\{/gm)].map((match) => match[1].trim());
+    const selectors = [...source.matchAll(/(?:^|\})\s*([^\{]*:hover[^\{]*)\{/gm)]
+      .map((match) => match[1].trim())
+      .filter((selector) => !selector.startsWith("@"));
     assert.deepEqual(selectors.filter((selector) => !allowedHover.test(selector)), []);
   }
 });

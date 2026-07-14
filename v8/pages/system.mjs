@@ -1,11 +1,6 @@
 import { actionButton, element, icon } from "../ui/dom.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
-
-const SPACES = Object.freeze([
-  { id: "personal", label: "Personnel", flow: "Essentiel", actionId: "v8.space.personal", icon: "user-round", description: "Un environnement equilibre pour organiser le quotidien." },
-  { id: "focus", label: "Focus", flow: "Deep Work", actionId: "v8.space.focus", icon: "focus", description: "Un environnement calme pour avancer sur une priorite." },
-  { id: "studio", label: "Studio", flow: "Creation", actionId: "v8.space.studio", icon: "sparkles", description: "Un environnement souple pour connecter les idees." }
-]);
+import { WORKSPACES } from "../data/workspaces.mjs";
 
 function pageHeading(eyebrow, title, description, actions = []) {
   return element("header", { className: "v8-page-heading" }, [
@@ -17,7 +12,7 @@ function pageHeading(eyebrow, title, description, actions = []) {
 export function mountSpaces(stage, options = {}) {
   const state = options.state || {};
   const cards = element("div", { className: "v8-spaces-grid" });
-  SPACES.forEach((space) => {
+  WORKSPACES.forEach((space) => {
     const active = space.id === state.space;
     cards.append(element("button", {
       className: `v8-space-workspace${active ? " is-active" : ""}`,
@@ -41,13 +36,12 @@ export function mountSpaces(stage, options = {}) {
 export function mountFlows(stage, options = {}) {
   const state = options.state || {};
   const list = element("div", { className: "v8-flows-list" });
-  SPACES.forEach((space, index) => {
+  WORKSPACES.forEach((space, index) => {
     const active = space.id === state.space;
-    const steps = index === 0 ? ["Capturer", "Organiser", "Executer"] : index === 1 ? ["Choisir", "Concentrer", "Terminer"] : ["Explorer", "Relier", "Publier"];
     list.append(element("article", { className: `v8-flow-row v8-surface${active ? " is-active" : ""}` }, [
       element("span", { className: "v8-flow-row__number", text: `0${index + 1}` }),
       element("div", { className: "v8-flow-row__copy" }, [element("small", { text: space.label }), element("h2", { text: space.flow }), element("p", { text: space.description })]),
-      element("div", { className: "v8-flow-row__steps" }, steps.map((step, stepIndex) => element("span", {}, [element("b", { text: String(stepIndex + 1) }), step]))),
+      element("div", { className: "v8-flow-row__steps" }, space.steps.map((step, stepIndex) => element("span", {}, [element("b", { text: String(stepIndex + 1) }), step]))),
       actionButton({ actionId: space.actionId, variant: active ? "primary" : "secondary" }, [icon(active ? "check" : "play"), element("span", { text: active ? "En cours" : "Demarrer" })])
     ]));
   });

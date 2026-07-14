@@ -1,5 +1,6 @@
 import { searchCommands } from "./search.mjs";
 import { commandById } from "./catalog.mjs";
+import { workspaceById } from "../data/workspaces.mjs";
 import { element, icon } from "../ui/dom.mjs";
 import { emptyState } from "../ui/empty-state.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
@@ -19,7 +20,7 @@ const ROUTE_LABELS = Object.freeze({
   settings: "Reglages"
 });
 
-const SPACE_LABELS = Object.freeze({ personal: "Personnel", focus: "Focus", studio: "Studio" });
+export function commandHudIntent(e={}, i=0, n=0) { const k=e.key||"", m=e.ctrlKey||e.metaKey; if (m && k.toLowerCase()==="k") return {type:"close"}; if (m && k.toLowerCase()==="p") return {type:"pin"}; if (k==="Enter") return {type:"execute"}; if (k==="Home" || k==="End") return {type:"select",index:k==="Home"?0:Math.max(0,n-1)}; const d=k==="ArrowDown" || (k==="Tab" && !e.shiftKey) ? 1 : k==="ArrowUp" || (k==="Tab" && e.shiftKey) ? -1 : k==="PageDown" ? 5 : k==="PageUp" ? -5 : 0; return d ? {type:"select",index:n>0?(((i+d)%n)+n)%n:0} : null; }
 
 export function createCommandCenter(host, options = {}) {
   const history = options.history;
@@ -31,6 +32,7 @@ export function createCommandCenter(host, options = {}) {
   let results = [];
   let selectedIndex = 0;
   let context = { route: "home", space: "personal", flow: "Essentiel" };
+  const shell = host?.closest?.(".v8-shell") || null;
   const windowController = createWindowController({ onEscape: onClose });
 
   function selectedCommand() {
@@ -51,16 +53,19 @@ export function createCommandCenter(host, options = {}) {
       row.classList.toggle("is-selected", selected);
       row.setAttribute("aria-selected", selected ? "true" : "false");
     });
-    rows[selectedIndex]?.scrollIntoView({ block: "nearest" });
+    const selected = rows[selectedIndex] || null;
+    if (selected) input?.setAttribute("aria-activedescendant", selected.id);
+    else input?.removeAttribute("aria-activedescendant");
+    selected?.scrollIntoView({ block: "nearest" });
   }
 
-  function renderResults() {
+  function renderResults(preferred){
     if (!resultsNode || !input) return;
-    const pinned = history?.pinned?.() || [];
-    const recent = history?.recent?.() || [];
+    const pinned=history?.pinned?.()||[];
+    const recent=history?.recent?.()||[];
     const additionalCommands = options.additionalCommands?.(context) || [];
     results = searchCommands(input.value, { ...context, pinned, recent, additionalCommands }, 10);
-    selectedIndex = Math.min(Math.max(0, selectedIndex), Math.max(0, results.length - 1));
+    selectedIndex=preferred?Math.max(0,results.findIndex(({id})=>id===preferred)):Math.min(Math.max(0,selectedIndex),Math.max(0,results.length-1));
     resultsNode.replaceChildren();
 
     resultsNode.append(element("div", { className: "v8-command-section-label" }, [
@@ -97,6 +102,7 @@ export function createCommandCenter(host, options = {}) {
     results.forEach((command, index) => {
       const isPinned = pinned.includes(command.id);
       const result = element("button", {
+        id: `v8-command-result-${index}`,
         className: `v8-command-result${index === selectedIndex ? " is-selected" : ""}`,
         attributes: {
           type: "button",
@@ -130,7 +136,7 @@ export function createCommandCenter(host, options = {}) {
           click: (event) => {
             event.stopPropagation();
             history?.togglePin(command.id);
-            renderResults();
+            renderResults(command.id);
           }
         }
       }, [icon(isPinned ? "pin-off" : "pin")]);
@@ -145,22 +151,22 @@ export function createCommandCenter(host, options = {}) {
   }
 
   function handleKeydown(event) {
-    if (event.key === "ArrowDown") {
-      event.preventDefault();
-      selectedIndex = Math.min(results.length - 1, selectedIndex + 1);
+    const intent = commandHudIntent(event, selectedIndex, results.length);
+    if (!intent) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (intent.type === "select") {
+      selectedIndex = intent.index;
       updateSelection();
-      return;
-    }
-    if (event.key === "ArrowUp") {
-      event.preventDefault();
-      selectedIndex = Math.max(0, selectedIndex - 1);
-      updateSelection();
-      return;
-    }
-    if (event.key === "Enter") {
-      event.preventDefault();
+    } else if (intent.type === "execute") {
       execute(selectedCommand());
-      return;
+    } else if (intent.type === "pin") {
+      const selected = selectedCommand();
+      if (selected) history?.togglePin(selected.id);
+      renderResults(selected?.id);
+      input?.focus({ preventScroll: true });
+    } else if (intent.type === "close") {
+      onClose();
     }
   }
 
@@ -179,13 +185,15 @@ export function createCommandCenter(host, options = {}) {
       className: "v8-command-input",
       attributes: {
         type: "search",
-        placeholder: "Rechercher une page, un Space ou lancer une action...",
+        placeholder: "Rechercher ou executer une commande...",
         autocomplete: "off",
         spellcheck: "false",
         role: "combobox",
         "aria-expanded": "true",
         "aria-controls": "v8-command-results",
-        "aria-autocomplete": "list"
+        "aria-autocomplete": "list",
+        "aria-activedescendant": "v8-command-result-0",
+        "aria-keyshortcuts": "Control+K Meta+K"
       },
       events: { input: handleInput, keydown: handleKeydown }
     });
@@ -196,7 +204,7 @@ export function createCommandCenter(host, options = {}) {
     });
     const contextBar = element("div", { className: "v8-command-context" }, [
       element("span", {}, [icon("map-pin"), ROUTE_LABELS[context.route] || context.route]),
-      element("span", {}, [icon("layers-3"), SPACE_LABELS[context.space] || "Personnel"]),
+      element("span", {}, [icon("layers-3"), workspaceById(context.space).label]),
       element("span", {}, [icon("workflow"), context.flow]),
       element("span", { className: "v8-command-context__brain" }, [icon("brain"), "Contexte actif"])
     ]);
@@ -207,23 +215,31 @@ export function createCommandCenter(host, options = {}) {
       element("header", { className: "v8-command-search" }, [
         element("div", { className: "v8-window-controls", attributes: { "aria-hidden": "true" } }, [element("span"), element("span"), element("span")]),
         icon("search"),
-        element("h2", { id: "v8-command-title", className: "v8-visually-hidden", text: "ETHONE Command Center" }),
+        element("h2", { id: "v8-command-title", className: "v8-visually-hidden", text: "ETHONE Command HUD" }),
         input,
-        element("kbd", { text: "ESC" })
+        element("kbd", { text: "ESC", attributes: { translate: "no" } })
       ]),
       contextBar,
       resultsNode,
       element("footer", { className: "v8-command-footer" }, [
-        element("span", {}, [element("kbd", { text: "Up/Down" }), " Naviguer"]),
-        element("span", {}, [element("kbd", { text: "Enter" }), " Ouvrir"]),
-        element("span", { className: "v8-command-footer__brand" }, [icon("command"), " ETHONE Command Center"])
+        element("span", {}, [element("kbd", { text: "Up/Down", attributes: { translate: "no" } }), " Naviguer"]),
+        element("span", {}, [element("kbd", { text: "Tab", attributes: { translate: "no" } }), " Naviguer"]),
+        element("span", {}, [element("kbd", { text: "Enter", attributes: { translate: "no" } }), " Ouvrir"]),
+        element("span", {}, [element("kbd", { text: "Ctrl P", attributes: { translate: "no" } }), " Favori"]),
+        element("span", { className: "v8-command-footer__brand" }, [icon("command"), " ETHONE Command HUD"])
       ])
     ]);
     layer = element("div", { className: "v8-command-layer", events: { click: handleLayerClick } }, [dialog]);
     host.append(layer);
     renderResults();
     refreshIcons();
-    return windowController.open(layer, { initialFocus: input, modal: true });
+    const opened = windowController.open(layer, {
+      initialFocus: input,
+      modal: true,
+      onAfterClose: () => shell?.classList.remove("is-command-hud-open")
+    });
+    if (opened) shell?.classList.add("is-command-hud-open");
+    return opened;
   }
 
   function close() {
@@ -243,6 +259,7 @@ export function createCommandCenter(host, options = {}) {
       input = null;
       resultsNode = null;
       results = [];
+      shell?.classList.remove("is-command-hud-open");
       windowController.destroy();
     },
     isOpen: () => windowController.isOpen(),

@@ -1,3 +1,4 @@
+import { createDailyBriefing } from "../data/daily-briefing.mjs";
 import { element, icon } from "../ui/dom.mjs";
 import { emptyState } from "../ui/empty-state.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
@@ -6,11 +7,11 @@ import { createWindowController } from "../ui/window-system.mjs";
 const TYPE_LABELS = Object.freeze({
   personal: "Personnel",
   work: "Travail",
-  development: "Développement",
-  study: "Études",
+  development: "Developpement",
+  study: "Etudes",
   gaming: "Gaming",
   streaming: "Streaming",
-  creative: "Créatif"
+  creative: "Creatif"
 });
 
 const ACCENT_LABELS = Object.freeze({
@@ -21,35 +22,44 @@ const ACCENT_LABELS = Object.freeze({
   rose: "Rose"
 });
 
+const WIDGET_CATALOG = Object.freeze({
+  today: Object.freeze({ label: "Aujourd'hui", icon: "sun-medium" }),
+  notes: Object.freeze({ label: "Notes", icon: "notebook-pen" }),
+  calendar: Object.freeze({ label: "Calendrier", icon: "calendar-days" }),
+  tasks: Object.freeze({ label: "Taches", icon: "circle-check-big" }),
+  focus: Object.freeze({ label: "Focus", icon: "timer" }),
+  github: Object.freeze({ label: "GitHub", icon: "github" }),
+  terminal: Object.freeze({ label: "Terminal", icon: "square-terminal" }),
+  brain: Object.freeze({ label: "Brain", icon: "brain" }),
+  planning: Object.freeze({ label: "Planning", icon: "calendar-range" }),
+  discord: Object.freeze({ label: "Discord", icon: "message-circle" }),
+  spotify: Object.freeze({ label: "Spotify", icon: "audio-lines" }),
+  sessions: Object.freeze({ label: "Sessions", icon: "gamepad-2" }),
+  live: Object.freeze({ label: "Direct", icon: "radio" }),
+  clips: Object.freeze({ label: "Clips", icon: "clapperboard" }),
+  projects: Object.freeze({ label: "Projets", icon: "panels-top-left" }),
+  files: Object.freeze({ label: "Fichiers", icon: "folder" })
+});
+
 const WIDGETS_BY_TYPE = Object.freeze({
-  personal: Object.freeze(["Aujourd'hui", "Notes", "Calendrier"]),
-  work: Object.freeze(["Tâches", "Calendrier", "Focus"]),
-  development: Object.freeze(["GitHub", "Terminal", "Brain"]),
-  study: Object.freeze(["Notes", "Planning", "Focus"]),
-  gaming: Object.freeze(["Discord", "Spotify", "Sessions"]),
-  streaming: Object.freeze(["Direct", "Planning", "Clips"]),
-  creative: Object.freeze(["Projets", "Fichiers", "Brain"])
+  personal: Object.freeze(["today", "notes", "calendar"]),
+  work: Object.freeze(["tasks", "calendar", "focus"]),
+  development: Object.freeze(["github", "terminal", "brain"]),
+  study: Object.freeze(["notes", "planning", "focus"]),
+  gaming: Object.freeze(["discord", "spotify", "sessions"]),
+  streaming: Object.freeze(["live", "planning", "clips"]),
+  creative: Object.freeze(["projects", "files", "brain"])
 });
 
-const WIDGET_ICONS = Object.freeze({
-  "Aujourd'hui": "sun-medium",
-  Notes: "notebook-pen",
-  Calendrier: "calendar-days",
-  Tâches: "circle-check-big",
-  Focus: "timer",
-  GitHub: "github",
-  Terminal: "square-terminal",
-  Brain: "brain",
-  Planning: "calendar-range",
-  Discord: "message-circle",
-  Spotify: "audio-lines",
-  Sessions: "gamepad-2",
-  Direct: "radio",
-  Clips: "clapperboard",
-  Projets: "panels-top-left",
-  Fichiers: "folder"
-});
+const INTEGRATIONS = Object.freeze([
+  Object.freeze({ id: "spotify", label: "Spotify", icon: "audio-lines" }),
+  Object.freeze({ id: "discord", label: "Discord", icon: "message-circle" }),
+  Object.freeze({ id: "github", label: "GitHub", icon: "github" }),
+  Object.freeze({ id: "google-calendar", label: "Google Calendar", icon: "calendar-sync" })
+]);
 
+const AMBIENCE_LABELS = Object.freeze({ balanced: "Equilibree", focus: "Concentration", quiet: "Calme", dynamic: "Vivante" });
+const BACKGROUND_LABELS = Object.freeze({ signal: "Signal ETHONE", horizon: "Horizon", graphite: "Graphite", aurora: "Aurora" });
 const AVATAR_CHOICES = Object.freeze(["E", "R", "W", "D", "G", "S"]);
 
 const MENU_ACTIONS = Object.freeze([
@@ -57,7 +67,7 @@ const MENU_ACTIONS = Object.freeze([
   Object.freeze({ id: "edit", label: "Modifier le profil", icon: "sliders-horizontal" }),
   Object.freeze({ id: "avatar", label: "Changer l'avatar", icon: "circle-user-round" }),
   Object.freeze({ id: "space", label: "Changer le Space", icon: "panels-top-left" }),
-  Object.freeze({ id: "theme", label: "Changer le thème", icon: "palette" }),
+  Object.freeze({ id: "theme", label: "Changer le theme", icon: "palette" }),
   Object.freeze({ id: "export", label: "Exporter", icon: "download" }),
   Object.freeze({ id: "duplicate", label: "Dupliquer", icon: "copy" }),
   Object.freeze({ id: "delete", label: "Supprimer", icon: "trash-2", danger: true })
@@ -78,33 +88,108 @@ function count(value) {
   return Math.max(0, Number(value) || 0);
 }
 
-export function profilePreviewModel(profile = {}) {
+function safeArray(value) {
+  return Array.isArray(value) ? value : [];
+}
+
+export function formatEnvironmentClock(dateInput = new Date()) {
+  const date = dateInput instanceof Date && !Number.isNaN(dateInput.getTime()) ? dateInput : new Date();
+  return Object.freeze({
+    time: new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" }).format(date),
+    date: new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long" }).format(date)
+  });
+}
+
+function lastActiveLabel(value, date) {
+  const timestamp = new Date(value).getTime();
+  if (!Number.isFinite(timestamp)) return "Recemment";
+  const minutes = Math.max(0, Math.round((date.getTime() - timestamp) / 60000));
+  if (minutes < 2) return "A l'instant";
+  if (minutes < 60) return `Il y a ${minutes} min`;
+  const hours = Math.round(minutes / 60);
+  if (hours < 24) return `Il y a ${hours} h`;
+  if (hours < 48) return "Hier";
+  return new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" }).format(new Date(timestamp));
+}
+
+function latestActivity(snapshot, predicate) {
+  return safeArray(snapshot?.activities)
+    .filter(predicate)
+    .sort((left, right) => new Date(right?.timestamp || 0).getTime() - new Date(left?.timestamp || 0).getTime())[0] || null;
+}
+
+function livePreviewModel(snapshot, date) {
+  const briefing = createDailyBriefing({ snapshot, date });
+  const item = (id) => briefing.items.find((entry) => entry.id === id);
+  const connections = safeArray(snapshot?.connections);
+  const connection = (id) => connections.find((entry) => entry.id === id);
+  const brain = latestActivity(snapshot, (entry) => entry?.category === "brain" || entry?.source === "brain");
+  const discord = latestActivity(snapshot, (entry) => entry?.source === "discord");
+  const syncedConnections = connections.filter((entry) => entry.status === "connected");
+  const syncing = connections.some((entry) => entry.status === "syncing");
+  const weather = item("weather");
+  const events = item("events");
+  const music = item("music");
+  const discordConnected = connection("discord")?.status === "connected";
+  return Object.freeze({
+    cloud: Object.freeze({
+      value: syncing ? "Synchronisation" : syncedConnections.length ? "Services synchronises" : "Supabase pret",
+      state: syncing ? "syncing" : "ready"
+    }),
+    signals: Object.freeze([
+      Object.freeze({ id: "brain", label: "Brain", icon: "brain", value: brain?.title || "Contexte pret", detail: brain ? "Activite recente" : "Pret pour cet environnement", state: brain ? "ready" : "idle" }),
+      Object.freeze({ id: "weather", label: "Meteo", icon: "cloud-sun", value: weather?.value || "Source non connectee", detail: weather?.detail || "Connections", state: weather?.state || "unavailable" }),
+      Object.freeze({ id: "calendar", label: "Agenda", icon: "calendar-days", value: events?.value || "Aucun evenement", detail: events?.detail || "Aujourd'hui", state: events?.state || "empty" }),
+      Object.freeze({ id: "music", label: "Musique", icon: "audio-lines", value: music?.value || "Source non connectee", detail: music?.detail || "Spotify", state: music?.state || "unavailable" }),
+      Object.freeze({ id: "discord", label: "Discord", icon: "message-circle", value: discord?.title || (discordConnected ? "Connecte" : "Non connecte"), detail: discord ? "Activite recente" : "Presence", state: discord ? "ready" : discordConnected ? "idle" : "unavailable" })
+    ])
+  });
+}
+
+export function profilePreviewModel(profile = {}, snapshot = {}, dateInput = new Date()) {
+  const date = dateInput instanceof Date && !Number.isNaN(dateInput.getTime()) ? dateInput : new Date();
   const avatar = profile.avatar && typeof profile.avatar === "object"
     ? Object.freeze({ kind: String(profile.avatar.kind || "initials"), value: String(profile.avatar.value || "E") })
     : Object.freeze({ kind: "initials", value: "E" });
   const type = TYPE_LABELS[profile.type] ? profile.type : "personal";
   const accent = Object.hasOwn(ACCENT_LABELS, profile.accent) ? profile.accent : "mint";
+  const environment = profile.environment && typeof profile.environment === "object" ? profile.environment : {};
+  const configuredWidgets = safeArray(environment.widgets).filter((widgetId) => Object.hasOwn(WIDGET_CATALOG, widgetId));
+  const favoriteWidgets = Object.freeze((configuredWidgets.length ? configuredWidgets : WIDGETS_BY_TYPE[type]).slice(0, 6));
+  const live = livePreviewModel(snapshot, date);
   const signals = Object.freeze([
     Object.freeze({ label: "Notes", value: count(profile.counts?.notes) }),
-    Object.freeze({ label: "À faire", value: count(profile.counts?.openTasks) }),
+    Object.freeze({ label: "A faire", value: count(profile.counts?.openTasks) }),
     Object.freeze({ label: "Agenda", value: count(profile.counts?.events) }),
     Object.freeze({ label: "Fichiers", value: count(profile.counts?.files) })
   ]);
   return Object.freeze({
     id: String(profile.id || ""),
     name: String(profile.name || "Profil"),
+    type,
     typeLabel: TYPE_LABELS[type],
     description: String(profile.description || "Votre environnement ETHONE."),
     avatar,
     accent,
     tone: TYPE_LABELS[profile.wallpaperTone] ? profile.wallpaperTone : type,
     locked: profile.locked === true,
-    statusLabel: profile.locked === true ? "Protégé" : "Prêt",
-    lastActiveLabel: profile.lastActiveAt ? "Session enregistrée" : "Récemment",
-    spaceLabel: TYPE_LABELS[profile.space] || TYPE_LABELS[type],
+    statusLabel: profile.locked === true ? "Protege" : "Pret",
+    lastActiveLabel: lastActiveLabel(profile.lastActiveAt, date),
+    space: String(profile.space || type),
+    spaceLabel: TYPE_LABELS[profile.space] || String(profile.space || TYPE_LABELS[type]),
     themeLabel: ACCENT_LABELS[accent],
     flowLabel: String(profile.flow || "Essentiel"),
-    favoriteWidgets: WIDGETS_BY_TYPE[type],
+    favoriteWidgets,
+    widgetCount: favoriteWidgets.length,
+    ambienceLabel: AMBIENCE_LABELS[environment.ambience] || AMBIENCE_LABELS.balanced,
+    backgroundLabel: BACKGROUND_LABELS[environment.background] || BACKGROUND_LABELS.signal,
+    environment: Object.freeze({
+      widgets: favoriteWidgets,
+      integrations: Object.freeze(safeArray(environment.integrations).filter((id) => INTEGRATIONS.some((integration) => integration.id === id))),
+      ambience: Object.hasOwn(AMBIENCE_LABELS, environment.ambience) ? environment.ambience : "balanced",
+      background: Object.hasOwn(BACKGROUND_LABELS, environment.background) ? environment.background : "signal"
+    }),
+    live,
     signals
   });
 }
@@ -114,7 +199,7 @@ export function settleActivationResult(result, view) {
   view.surface.classList.remove("is-launching");
   view.surface.setAttribute("aria-busy", "false");
   view.enterButton.disabled = false;
-  view.status.textContent = result.message || "L'environnement n'a pas pu être ouvert.";
+  view.status.textContent = result.message || "L'environnement n'a pas pu etre ouvert.";
   return true;
 }
 
@@ -126,9 +211,9 @@ function avatarNode(avatar, className, loading = "lazy") {
 }
 
 function signalRow(signal) {
-  return element("div", { className: "v8-profile-preview__signal" }, [
+  return element("div", { className: "v8-profile-preview__signal", dataset: { liveWidget: "metric", liveKind: "metric" } }, [
     element("span", { text: signal.label }),
-    element("strong", { text: signal.value })
+    element("strong", { text: signal.value, dataset: { liveNumber: signal.value } })
   ]);
 }
 
@@ -139,10 +224,20 @@ function metaItem(iconName, label, value) {
   ]);
 }
 
-function widgetChip(name) {
-  return element("span", { className: "v8-profile-preview__widget" }, [
-    icon(WIDGET_ICONS[name] || "box"),
-    element("span", { text: name })
+function widgetChip(widgetId) {
+  const widget = WIDGET_CATALOG[widgetId] || Object.freeze({ label: widgetId, icon: "box" });
+  return element("span", { className: "v8-profile-preview__widget", dataset: { liveWidget: "widget", liveKind: "widget" } }, [icon(widget.icon), element("span", { text: widget.label })]);
+}
+
+function liveSignalNode(signal) {
+  return element("article", { className: "v8-profile-live", dataset: { state: signal.state, signal: signal.id, liveWidget: "signal", liveKind: "signal" } }, [
+    element("div", { className: "v8-profile-live__header" }, [
+      element("span", { className: "v8-profile-live__icon" }, icon(signal.icon)),
+      element("span", { text: signal.label }),
+      element("i", { attributes: { "aria-hidden": "true" } })
+    ]),
+    element("strong", { text: signal.value }),
+    element("small", { text: signal.detail })
   ]);
 }
 
@@ -154,13 +249,17 @@ export function mountProfileSelection(root, options = {}) {
   if (!root) throw new TypeError("Profile selection requires a root element");
   const repository = options.repository;
   if (!repository) throw new TypeError("Profile selection requires a repository");
+  const presence = options.presenceEngine || null;
+  const cloudSync = options.cloudSync || null;
+  const clockManager = options.clockManager || null;
+  const now = typeof options.now === "function" ? options.now : () => new Date();
   const abortController = new AbortController();
   const listenerOptions = { signal: abortController.signal };
-  let profiles = Object.freeze((options.profiles || repository.listProfiles()).map(profilePreviewModel));
+  const makeModels = (source) => Object.freeze(source.map((profile) => profilePreviewModel(profile, repository.snapshot?.(profile.id) || {}, now())));
+  let profiles = makeModels(options.profiles || repository.listProfiles());
   let selectedIndex = Math.max(0, profiles.findIndex((profile) => profile.id === repository.activeProfile()?.id));
   let cards = [];
   let destroyed = false;
-  let launchTimer = 0;
   let activation = 0;
   let menuProfileId = "";
   let menuTrigger = null;
@@ -181,6 +280,10 @@ export function mountProfileSelection(root, options = {}) {
   const previewSignals = element("div", { className: "v8-profile-preview__signals" });
   const previewMeta = element("div", { className: "v8-profile-preview__meta" });
   const previewWidgets = element("div", { className: "v8-profile-preview__widgets" });
+  const previewLive = element("div", { className: "v8-profile-preview__live-grid", attributes: { "aria-label": "Signaux en direct" } });
+  const liveTime = element("time", { className: "v8-profile-preview__time", dataset: { liveWidget: "clock", liveKind: "clock" } });
+  const liveDate = element("span", { className: "v8-profile-preview__date" });
+  const liveCloud = element("span", { className: "v8-profile-preview__cloud" });
   const miniGreeting = element("strong", { className: "v8-profile-mini__greeting" });
   const miniContext = element("span", { className: "v8-profile-mini__context" });
   const miniSignalA = element("strong");
@@ -188,47 +291,55 @@ export function mountProfileSelection(root, options = {}) {
   const enterLabel = element("span");
   const enterButton = element("button", { className: "v8-button v8-button--primary v8-profile-select__enter", attributes: { type: "button" } }, [icon("arrow-right"), enterLabel]);
 
-  const preview = element("section", { className: "v8-profile-preview", attributes: { "aria-label": "Aperçu de l'environnement" } }, [
-    element("div", { className: "v8-profile-preview__ambient", attributes: { "aria-hidden": "true" } }, [element("span", { text: "08" }), element("i"), element("i")]),
-    element("div", { className: "v8-profile-preview__header" }, [
-      element("div", { className: "v8-profile-preview__eyebrow" }, [icon("orbit"), element("span", { text: "ENVIRONNEMENT ACTIF" })]),
-      element("div", { className: "v8-profile-preview__presence" }, [previewStatus, previewLastActive])
+  const preview = element("section", { className: "v8-profile-preview", attributes: { "aria-label": "Apercu vivant de l'environnement" } }, [
+    element("div", { className: "v8-profile-preview__ambient", attributes: { "aria-hidden": "true" } }, [element("span", { text: "8" }), element("i"), element("i")]),
+    element("header", { className: "v8-profile-preview__chrome" }, [
+      element("div", { className: "v8-profile-preview__eyebrow" }, [icon("orbit"), element("span", { text: "ENVIRONNEMENT EN DIRECT" })]),
+      element("div", { className: "v8-profile-preview__clock" }, [liveTime, liveDate]),
+      element("div", { className: "v8-profile-preview__connectivity" }, [icon("cloud"), liveCloud])
     ]),
     element("div", { className: "v8-profile-preview__identity" }, [
       previewAvatarHost,
-      element("div", { className: "v8-profile-preview__copy" }, [previewType, previewName, previewDescription])
+      element("div", { className: "v8-profile-preview__copy" }, [
+        element("div", { className: "v8-profile-preview__presence" }, [previewType, previewStatus, previewLastActive]),
+        previewName,
+        previewDescription
+      ])
     ]),
     previewMeta,
-    element("div", { className: "v8-profile-preview__dashboard" }, [
+    element("div", { className: "v8-profile-preview__desktop" }, [
       element("div", { className: "v8-profile-mini", attributes: { "aria-hidden": "true" } }, [
         element("div", { className: "v8-profile-mini__rail" }, [element("span", { text: "E" }), element("i"), element("i"), element("i"), element("i")]),
         element("div", { className: "v8-profile-mini__workspace" }, [
           element("div", { className: "v8-profile-mini__top" }, [element("span", { text: "ETHONE / HOME" }), element("i")]),
           element("div", { className: "v8-profile-mini__hero" }, [miniGreeting, miniContext]),
           element("div", { className: "v8-profile-mini__grid" }, [
-            element("div", {}, [element("span", { text: "Continuité" }), miniSignalA]),
+            element("div", {}, [element("span", { text: "Continuite" }), miniSignalA]),
             element("div", {}, [element("span", { text: "Aujourd'hui" }), miniSignalB]),
             element("div", {}, [element("span", { text: "Signal" }), element("strong", { text: "Stable" })])
           ])
         ])
       ]),
-      element("div", { className: "v8-profile-preview__utility" }, [
-        element("div", { className: "v8-profile-preview__utility-title" }, [element("span", { text: "Widgets favoris" }), element("small", { text: "Préchargés" })]),
-        previewWidgets,
-        previewSignals
-      ])
+      previewLive
+    ]),
+    element("footer", { className: "v8-profile-preview__footer" }, [
+      element("div", { className: "v8-profile-preview__widget-group" }, [
+        element("div", { className: "v8-profile-preview__section-title" }, [element("span", { text: "Modules prets" }), element("small", { text: "Charges a l'ouverture" })]),
+        previewWidgets
+      ]),
+      previewSignals
     ])
   ]);
 
-  const list = element("div", { className: "v8-profile-list", attributes: { role: "listbox", "aria-label": "Profils ETHONE", "aria-orientation": "vertical" } });
-  const createButton = element("button", { className: "v8-button v8-button--secondary v8-profile-browser__create", attributes: { type: "button" } }, [icon("plus"), element("span", { text: "Créer un profil" })]);
-  const browserPanel = element("aside", { className: "v8-profile-browser", attributes: { "aria-label": "Sélecteur de profils" } }, [
+  const list = element("div", { className: "v8-profile-list", attributes: { role: "listbox", "aria-label": "Environnements ETHONE", "aria-orientation": "vertical" } });
+  const createButton = element("button", { className: "v8-button v8-button--secondary v8-profile-browser__create", attributes: { type: "button" } }, [icon("plus"), element("span", { text: "Nouvel environnement" })]);
+  const browserPanel = element("aside", { className: "v8-profile-browser", attributes: { "aria-label": "Selecteur d'environnements" } }, [
     element("div", { className: "v8-profile-browser__header" }, [
-      element("div", {}, [element("span", { className: "v8-entry__eyebrow", text: "VOS ENVIRONNEMENTS" }), element("div", { className: "v8-profile-browser__title" }, [element("h2", { text: "Choisir un profil" }), profileCount])]),
+      element("div", {}, [element("span", { className: "v8-entry__eyebrow", text: "VOS UNIVERS" }), element("div", { className: "v8-profile-browser__title" }, [element("h2", { text: "Environnements" }), profileCount])]),
       createButton
     ]),
     list,
-    element("div", { className: "v8-profile-browser__footnote" }, [icon("mouse-pointer-2"), element("span", { text: "Survolez pour prévisualiser · Double-cliquez pour ouvrir" })])
+    element("div", { className: "v8-profile-browser__footnote" }, [icon("mouse-pointer-2"), element("span", { text: "Survolez pour explorer, double-cliquez pour entrer" })])
   ]);
 
   const menu = element("div", { className: "v8-profile-menu", attributes: { role: "menu", "aria-label": "Actions du profil", hidden: true } });
@@ -244,19 +355,18 @@ export function mountProfileSelection(root, options = {}) {
 
   const dialogLayer = element("div", { className: "v8-profile-dialog-layer", attributes: { hidden: true } });
   const signOut = element("button", { className: "v8-button v8-button--outline", attributes: { type: "button" } }, [icon("log-out"), element("span", { text: "Changer de compte" })]);
-
-  const emptyCreateButton = element("button", { className: "v8-button v8-button--primary", attributes: { type: "button" } }, [icon("plus"), element("span", { text: "Créer un profil" })]);
+  const emptyCreateButton = element("button", { className: "v8-button v8-button--primary", attributes: { type: "button" } }, [icon("plus"), element("span", { text: "Creer un environnement" })]);
   const profileEmpty = emptyState({
     iconName: "user-round-plus",
     eyebrow: "Premier environnement",
-    title: "Créez votre premier univers",
-    description: "Un profil réunit votre Space, votre thème et votre contexte local.",
+    title: "Composez votre premier univers",
+    description: "Un environnement rassemble votre Space, votre rythme et les modules qui comptent.",
     actions: [emptyCreateButton],
     className: "v8-profile-empty"
   });
 
   const workspace = element("div", { className: "v8-profile-select__workspace" }, [preview, browserPanel]);
-  const surface = element("section", { className: "v8-entry v8-entry--profiles", attributes: { "aria-label": "Sélection du profil" } }, [
+  const surface = element("section", { className: "v8-entry v8-entry--profiles", attributes: { "aria-label": "Selection de l'environnement" } }, [
     element("div", { className: "v8-entry__signal-field", attributes: { "aria-hidden": "true" } }, [element("span"), element("span"), element("span")]),
     element("div", { className: "v8-entry__frame v8-profile-select__frame" }, [
       element("header", { className: "v8-entry__topbar" }, [
@@ -269,15 +379,15 @@ export function mountProfileSelection(root, options = {}) {
       ]),
       element("main", { className: "v8-profile-select__main" }, [
         element("div", { className: "v8-profile-select__intro" }, [
-          element("div", {}, [element("span", { className: "v8-entry__eyebrow", text: "CHOOSE YOUR SIGNAL" }), element("h1", { text: "Entrez dans votre environnement." })]),
-          element("p", { text: "Chaque profil restaure instantanément son Space, son Flow et son rythme." })
+          element("div", {}, [element("span", { className: "v8-entry__eyebrow", text: "ETHONE ENVIRONMENTS" }), element("h1", { text: "Quel univers ouvrez-vous ?" })]),
+          element("p", { text: "Chaque environnement restaure son Space, son Flow, ses signaux et son rythme." })
         ]),
         workspace,
         profileEmpty,
         status
       ]),
       element("footer", { className: "v8-profile-select__footer" }, [
-        element("div", { className: "v8-profile-select__hint" }, [icon("keyboard"), element("span", { text: "Flèches pour parcourir · Entrée pour ouvrir · Menu pour gérer" })]),
+        element("div", { className: "v8-profile-select__hint" }, [icon("keyboard"), element("span", { text: "Fleches pour parcourir / Entree pour ouvrir / Menu pour gerer" })]),
         enterButton
       ]),
       menu,
@@ -288,16 +398,35 @@ export function mountProfileSelection(root, options = {}) {
   root.append(surface);
 
   function profileModels() {
-    return Object.freeze(repository.listProfiles().map(profilePreviewModel));
+    return makeModels(repository.listProfiles());
+  }
+
+  function refreshClock(snapshot = null) {
+    if (destroyed) return;
+    const date = snapshot?.timestamp ? new Date(snapshot.timestamp) : now();
+    const clock = formatEnvironmentClock(date);
+    const time = snapshot?.time || clock.time;
+    if (presence) presence.transitionText(liveTime, time, { kind: "clock" });
+    else liveTime.textContent = time;
+    liveTime.dateTime = date.toISOString();
+    if (presence) presence.transitionText(liveDate, clock.date, { kind: "clock" });
+    else liveDate.textContent = clock.date;
+  }
+
+  function updateConnectivity() {
+    const profile = profiles[selectedIndex];
+    if (!profile) return;
+    const offline = globalThis.navigator?.onLine === false;
+    const syncState = cloudSync?.status?.() || {};
+    const values = { loading: "Connexion Supabase", saving: "Synchronisation", saved: "Supabase synchronise", retrying: "Nouvelle tentative", error: "Erreur Supabase", expired: "Session expiree" };
+    const nextValue = offline ? "Hors ligne" : values[syncState.syncStatus] || profile.live.cloud.value;
+    if (presence) presence.transitionText(liveCloud, nextValue, { kind: "signal" });
+    else liveCloud.textContent = nextValue;
+    liveCloud.dataset.state = offline ? "offline" : syncState.syncStatus || profile.live.cloud.state;
   }
 
   function animatePreview() {
-    if (globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches || typeof preview.animate !== "function") return;
-    preview.getAnimations().forEach((animation) => animation.cancel());
-    preview.animate([
-      { opacity: 0.78, transform: "translate3d(0, 5px, 0) scale(0.995)" },
-      { opacity: 1, transform: "translate3d(0, 0, 0) scale(1)" }
-    ], { duration: 190, easing: "cubic-bezier(0.22, 1, 0.36, 1)" });
+    presence?.transitionSurface(preview, { kind: "profile" });
   }
 
   function selectPreview(index, focusCard = false) {
@@ -306,6 +435,8 @@ export function mountProfileSelection(root, options = {}) {
     const profile = profiles[selectedIndex];
     document.documentElement.dataset.accent = profile.accent;
     surface.dataset.tone = profile.tone;
+    preview.dataset.ambience = profile.environment.ambience;
+    preview.dataset.background = profile.environment.background;
     cards.forEach((card, cardIndex) => {
       const selected = cardIndex === selectedIndex;
       card.classList.toggle("is-selected", selected);
@@ -321,18 +452,22 @@ export function mountProfileSelection(root, options = {}) {
     previewMeta.replaceChildren(
       metaItem("panels-top-left", "Space", profile.spaceLabel),
       metaItem("workflow", "Flow", profile.flowLabel),
-      metaItem("palette", "Thème", profile.themeLabel)
+      metaItem("palette", "Ambiance", profile.ambienceLabel),
+      metaItem("image", "Fond", profile.backgroundLabel)
     );
     previewWidgets.replaceChildren(...profile.favoriteWidgets.map(widgetChip));
-    previewSignals.replaceChildren(...profile.signals.slice(0, 3).map(signalRow));
+    previewSignals.replaceChildren(...profile.signals.map(signalRow));
+    previewLive.replaceChildren(...profile.live.signals.map(liveSignalNode));
     miniGreeting.textContent = `Bonjour, ${profile.name}`;
     miniContext.textContent = profile.description;
     miniSignalA.textContent = `${profile.signals[0].value} notes`;
-    miniSignalB.textContent = `${profile.signals[1].value} priorités`;
+    miniSignalB.textContent = `${profile.signals[1].value} priorites`;
     enterButton.replaceChildren(icon(profile.locked ? "lock-keyhole" : "arrow-right"), enterLabel);
-    enterLabel.textContent = profile.locked ? "Continuer avec vérification" : `Ouvrir ${profile.name}`;
-    status.textContent = profile.locked ? "Ce profil nécessite un déverrouillage." : "";
+    enterLabel.textContent = profile.locked ? "Continuer avec verification" : `Entrer dans ${profile.name}`;
+    status.textContent = profile.locked ? "Ce profil necessite un deverrouillage." : "";
+    updateConnectivity();
     animatePreview();
+    presence?.revealWidgets(preview);
     if (focusCard) cards[selectedIndex]?.focus();
     refreshIcons();
   }
@@ -340,20 +475,24 @@ export function mountProfileSelection(root, options = {}) {
   function cardNode(profile, index) {
     const menuButton = element("button", {
       className: "v8-icon-button v8-profile-card__menu",
-      attributes: { type: "button", "aria-label": `Gérer ${profile.name}`, "aria-haspopup": "menu", "aria-expanded": "false" }
+      attributes: { type: "button", "aria-label": `Gerer ${profile.name}`, "aria-haspopup": "menu", "aria-expanded": "false" }
     }, icon("ellipsis"));
     const card = element("div", {
       className: "v8-profile-card",
-      attributes: { role: "option", "aria-selected": "false", tabindex: "-1", "aria-label": `${profile.name}${profile.locked ? ", verrouillé" : ""}` },
+      attributes: { role: "option", "aria-selected": "false", tabindex: "-1", "aria-label": `${profile.name}${profile.locked ? ", verrouille" : ""}` },
       dataset: { profileId: profile.id, accent: profile.accent, tone: profile.tone }
     }, [
       element("div", { className: "v8-profile-card__avatar-wrap" }, [avatarNode(profile.avatar, "v8-profile-card__avatar")]),
       element("div", { className: "v8-profile-card__body" }, [
         element("div", { className: "v8-profile-card__headline" }, [element("strong", { text: profile.name, attributes: { translate: "no" } }), element("span", { text: profile.statusLabel })]),
-        element("span", { className: "v8-profile-card__context", text: `${profile.spaceLabel} · ${profile.themeLabel}` }),
-        element("div", { className: "v8-profile-card__widgets", attributes: { "aria-hidden": "true" } }, profile.favoriteWidgets.map((name) => icon(WIDGET_ICONS[name] || "box")))
+        element("span", { className: "v8-profile-card__context", text: `${profile.spaceLabel} / ${profile.flowLabel}` }),
+        element("div", { className: "v8-profile-card__facts" }, [
+          element("span", {}, [icon("layout-grid"), element("span", { text: `${profile.widgetCount} widgets` })]),
+          element("span", {}, [icon("brain"), element("span", { text: "Brain pret" })]),
+          element("span", {}, [icon("clock-3"), element("span", { text: profile.lastActiveLabel })])
+        ])
       ]),
-      menuButton
+      element("div", { className: "v8-profile-card__aside" }, [element("span", { className: "v8-profile-card__swatch", attributes: { "aria-label": `Theme ${profile.themeLabel}` } }), menuButton])
     ]);
     card.addEventListener("pointerenter", () => selectPreview(index), listenerOptions);
     card.addEventListener("focus", () => selectPreview(index), listenerOptions);
@@ -458,13 +597,24 @@ export function mountProfileSelection(root, options = {}) {
     closeMenu();
     let chosenAccent = profile?.accent || "mint";
     let chosenAvatar = profile?.avatar.kind === "image" ? profile.name.slice(0, 1).toUpperCase() : (profile?.avatar.value || "E");
+    let chosenWidgets = new Set(profile?.environment.widgets?.length ? profile.environment.widgets : WIDGETS_BY_TYPE[profile?.type || "personal"]);
+    const chosenIntegrations = new Set(profile?.environment.integrations || []);
+    let widgetsTouched = false;
+    let activeStep = focusTarget === "space" || focusTarget === "theme" ? 1 : 0;
     const nameInput = element("input", { className: "v8-input", attributes: { type: "text", maxlength: "80", required: true, value: profile?.name || "", placeholder: "Nom du profil", autocomplete: "off" } });
-    const descriptionInput = element("textarea", { className: "v8-input v8-profile-dialog__textarea", attributes: { maxlength: "180", rows: "3", placeholder: "Décrivez cet environnement" } }, profile?.description || "");
+    const descriptionInput = element("textarea", { className: "v8-input v8-profile-dialog__textarea", attributes: { maxlength: "180", rows: "3", placeholder: "Decrivez cet environnement" } }, profile?.description || "");
     const typeSelect = element("select", { className: "v8-input", attributes: { "aria-label": "Space principal" } }, Object.entries(TYPE_LABELS).map(([value, label]) => optionNode(value, label)));
-    typeSelect.value = profile?.tone || "personal";
+    typeSelect.value = profile?.type || "personal";
     const flowInput = element("input", { className: "v8-input", attributes: { type: "text", maxlength: "80", value: profile?.flowLabel || "Essentiel", placeholder: "Flow principal" } });
+    const ambienceSelect = element("select", { className: "v8-input", attributes: { "aria-label": "Ambiance" } }, Object.entries(AMBIENCE_LABELS).map(([value, label]) => optionNode(value, label)));
+    ambienceSelect.value = profile?.environment.ambience || "balanced";
+    const backgroundSelect = element("select", { className: "v8-input", attributes: { "aria-label": "Fond" } }, Object.entries(BACKGROUND_LABELS).map(([value, label]) => optionNode(value, label)));
+    backgroundSelect.value = profile?.environment.background || "signal";
     const avatarPicker = element("div", { className: "v8-profile-dialog__avatar-picker", attributes: { role: "radiogroup", "aria-label": "Avatar" } });
-    const accentPicker = element("div", { className: "v8-profile-dialog__accent-picker", attributes: { role: "radiogroup", "aria-label": "Thème" } });
+    const accentPicker = element("div", { className: "v8-profile-dialog__accent-picker", attributes: { role: "radiogroup", "aria-label": "Theme" } });
+    const widgetPicker = element("div", { className: "v8-profile-dialog__module-picker", attributes: { role: "group", "aria-label": "Widgets" } });
+    const integrationPicker = element("div", { className: "v8-profile-dialog__module-picker", attributes: { role: "group", "aria-label": "Integrations" } });
+    const setupSummary = element("p", { className: "v8-profile-dialog__summary" });
 
     AVATAR_CHOICES.forEach((choice) => {
       const button = element("button", { className: "v8-profile-dialog__avatar-choice", text: choice, attributes: { type: "button", role: "radio", "aria-checked": String(choice === chosenAvatar), "aria-label": `Avatar ${choice}`, tabindex: choice === chosenAvatar ? "0" : "-1" } });
@@ -490,28 +640,131 @@ export function mountProfileSelection(root, options = {}) {
       accentPicker.append(button);
     });
 
-    const cancel = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" } }, [element("span", { text: "Annuler" })]);
-    const submit = element("button", { className: "v8-button v8-button--primary", attributes: { type: "submit" } }, [icon(mode === "create" ? "plus" : "check"), element("span", { text: mode === "create" ? "Créer le profil" : "Enregistrer" })]);
-    const form = element("form", { className: "v8-profile-dialog__form" }, [
-      element("label", { className: "v8-field" }, [element("span", { className: "v8-field__label", text: "Nom" }), nameInput]),
-      element("label", { className: "v8-field" }, [element("span", { className: "v8-field__label", text: "Description" }), descriptionInput]),
-      element("div", { className: "v8-profile-dialog__row" }, [
-        element("label", { className: "v8-field" }, [element("span", { className: "v8-field__label", text: "Space principal" }), typeSelect]),
-        element("label", { className: "v8-field" }, [element("span", { className: "v8-field__label", text: "Flow principal" }), flowInput])
+    function updateModuleSummary() {
+      const summary = `${chosenWidgets.size} widgets / ${chosenIntegrations.size} integration${chosenIntegrations.size === 1 ? "" : "s"} / ${AMBIENCE_LABELS[ambienceSelect.value]}`;
+      if (presence) presence.transitionText(setupSummary, summary, { kind: "metric" });
+      else setupSummary.textContent = summary;
+    }
+
+    function syncWidgetPicker() {
+      [...widgetPicker.children].forEach((button) => button.setAttribute("aria-checked", String(chosenWidgets.has(button.dataset.choiceId))));
+      updateModuleSummary();
+    }
+
+    Object.entries(WIDGET_CATALOG).forEach(([id, widget]) => {
+      const button = element("button", { className: "v8-profile-dialog__module-choice", attributes: { type: "button", role: "checkbox", "aria-checked": String(chosenWidgets.has(id)) }, dataset: { choiceId: id } }, [icon(widget.icon), element("span", { text: widget.label }), icon("check")]);
+      button.addEventListener("click", () => {
+        widgetsTouched = true;
+        const selected = !chosenWidgets.has(id);
+        if (selected) chosenWidgets.add(id);
+        else chosenWidgets.delete(id);
+        syncWidgetPicker();
+        presence?.signalActivity?.(button, "widget", { phase: selected ? "enter" : "update" });
+      }, listenerOptions);
+      widgetPicker.append(button);
+    });
+
+    INTEGRATIONS.forEach((integration) => {
+      const button = element("button", { className: "v8-profile-dialog__module-choice", attributes: { type: "button", role: "checkbox", "aria-checked": String(chosenIntegrations.has(integration.id)) }, dataset: { choiceId: integration.id } }, [icon(integration.icon), element("span", { text: integration.label }), icon("check")]);
+      button.addEventListener("click", () => {
+        if (chosenIntegrations.has(integration.id)) chosenIntegrations.delete(integration.id);
+        else chosenIntegrations.add(integration.id);
+        button.setAttribute("aria-checked", String(chosenIntegrations.has(integration.id)));
+        updateModuleSummary();
+      }, listenerOptions);
+      integrationPicker.append(button);
+    });
+
+    typeSelect.addEventListener("change", () => {
+      if (!widgetsTouched) {
+        chosenWidgets = new Set(WIDGETS_BY_TYPE[typeSelect.value] || WIDGETS_BY_TYPE.personal);
+        syncWidgetPicker();
+      }
+    }, listenerOptions);
+    ambienceSelect.addEventListener("change", updateModuleSummary, listenerOptions);
+
+    const stepDefinitions = Object.freeze([
+      Object.freeze({ label: "Identite", icon: "circle-user-round" }),
+      Object.freeze({ label: "Univers", icon: "panels-top-left" }),
+      Object.freeze({ label: "Modules", icon: "layout-grid" })
+    ]);
+    const stepButtons = stepDefinitions.map((step, index) => element("button", { className: "v8-profile-dialog__step", attributes: { type: "button", "aria-current": index === activeStep ? "step" : "false" }, dataset: { step: String(index) } }, [element("span", { text: String(index + 1) }), icon(step.icon), element("strong", { text: step.label })]));
+    const stepper = element("nav", { className: "v8-profile-dialog__steps", attributes: { "aria-label": "Etapes de configuration" } }, stepButtons);
+
+    const pages = [
+      element("section", { className: "v8-profile-dialog__page", dataset: { wizardStep: "0" } }, [
+        element("div", { className: "v8-profile-dialog__page-heading" }, [element("span", { text: "01 / IDENTITE" }), element("h3", { text: "Donnez un visage a cet univers" }), element("p", { text: "Un nom, une intention et un repere visuel immediat." })]),
+        element("label", { className: "v8-field" }, [element("span", { className: "v8-field__label", text: "Nom" }), nameInput]),
+        element("label", { className: "v8-field" }, [element("span", { className: "v8-field__label", text: "Description" }), descriptionInput]),
+        element("fieldset", { className: "v8-profile-dialog__fieldset" }, [element("legend", { text: "Avatar" }), avatarPicker])
       ]),
-      element("fieldset", { className: "v8-profile-dialog__fieldset" }, [element("legend", { text: "Avatar" }), avatarPicker]),
-      element("fieldset", { className: "v8-profile-dialog__fieldset" }, [element("legend", { text: "Thème" }), accentPicker]),
-      element("div", { className: "v8-profile-dialog__actions" }, [cancel, submit])
+      element("section", { className: "v8-profile-dialog__page", dataset: { wizardStep: "1" } }, [
+        element("div", { className: "v8-profile-dialog__page-heading" }, [element("span", { text: "02 / UNIVERS" }), element("h3", { text: "Reglez son rythme" }), element("p", { text: "Space, Flow et ambiance composent la premiere impression." })]),
+        element("div", { className: "v8-profile-dialog__row" }, [
+          element("label", { className: "v8-field" }, [element("span", { className: "v8-field__label", text: "Space principal" }), typeSelect]),
+          element("label", { className: "v8-field" }, [element("span", { className: "v8-field__label", text: "Flow principal" }), flowInput])
+        ]),
+        element("div", { className: "v8-profile-dialog__row" }, [
+          element("label", { className: "v8-field" }, [element("span", { className: "v8-field__label", text: "Ambiance" }), ambienceSelect]),
+          element("label", { className: "v8-field" }, [element("span", { className: "v8-field__label", text: "Fond" }), backgroundSelect])
+        ]),
+        element("fieldset", { className: "v8-profile-dialog__fieldset" }, [element("legend", { text: "Couleur dominante" }), accentPicker])
+      ]),
+      element("section", { className: "v8-profile-dialog__page", dataset: { wizardStep: "2" } }, [
+        element("div", { className: "v8-profile-dialog__page-heading" }, [element("span", { text: "03 / MODULES" }), element("h3", { text: "Choisissez ce qui vous attend" }), element("p", { text: "Ces modules seront prepares sans connecter de service a votre place." })]),
+        element("fieldset", { className: "v8-profile-dialog__fieldset" }, [element("legend", { text: "Widgets" }), widgetPicker]),
+        element("fieldset", { className: "v8-profile-dialog__fieldset" }, [element("legend", { text: "Integrations a preparer" }), integrationPicker]),
+        setupSummary
+      ])
+    ];
+
+    const cancel = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" } }, [element("span", { text: "Annuler" })]);
+    const back = element("button", { className: "v8-button v8-button--ghost", attributes: { type: "button" } }, [icon("arrow-left"), element("span", { text: "Retour" })]);
+    const next = element("button", { className: "v8-button v8-button--primary", attributes: { type: "button" } }, [element("span", { text: "Continuer" }), icon("arrow-right")]);
+    const submit = element("button", { className: "v8-button v8-button--primary", attributes: { type: "submit" } }, [icon(mode === "create" ? "sparkles" : "check"), element("span", { text: mode === "create" ? "Creer l'environnement" : "Enregistrer" })]);
+    const form = element("form", { className: "v8-profile-dialog__form" }, [
+      stepper,
+      element("div", { className: "v8-profile-dialog__pages" }, pages),
+      element("div", { className: "v8-profile-dialog__actions" }, [cancel, element("span", { className: "v8-profile-dialog__action-spacer" }), back, next, submit])
     ]);
     const dialog = dialogShell(
-      mode === "create" ? "Créer un environnement" : `Modifier ${profile.name}`,
-      mode === "create" ? "Définissez son identité. Le dashboard restera vide et prêt à être construit." : "Ajustez son identité sans toucher à ses données.",
+      mode === "create" ? "Composer un environnement" : `Modifier ${profile.name}`,
+      mode === "create" ? "Trois etapes courtes, puis ETHONE est pret a prendre vie." : "Ajustez son identite et ses modules sans toucher a ses donnees.",
       form,
       element("span")
     );
+
+    function showStep(index, focus = true) {
+      activeStep = Math.min(pages.length - 1, Math.max(0, index));
+      dialog.dataset.wizardStep = String(activeStep);
+      pages.forEach((page, pageIndex) => {
+        const active = pageIndex === activeStep;
+        page.hidden = !active;
+        page.toggleAttribute("inert", !active);
+      });
+      stepButtons.forEach((button, buttonIndex) => button.setAttribute("aria-current", buttonIndex === activeStep ? "step" : "false"));
+      back.hidden = activeStep === 0;
+      next.hidden = activeStep === pages.length - 1;
+      submit.hidden = activeStep !== pages.length - 1;
+      if (focus) pages[activeStep].querySelector("input, select, button")?.focus();
+    }
+
+    stepButtons.forEach((button, index) => button.addEventListener("click", () => {
+      if (index > 0 && !nameInput.reportValidity()) return;
+      showStep(index);
+    }, listenerOptions));
     cancel.addEventListener("click", () => closeDialog(), listenerOptions);
+    back.addEventListener("click", () => showStep(activeStep - 1), listenerOptions);
+    next.addEventListener("click", () => {
+      if (activeStep === 0 && !nameInput.reportValidity()) return;
+      showStep(activeStep + 1);
+    }, listenerOptions);
     form.addEventListener("submit", (event) => {
       event.preventDefault();
+      if (activeStep < pages.length - 1) {
+        if (activeStep !== 0 || nameInput.reportValidity()) showStep(activeStep + 1);
+        return;
+      }
       submit.disabled = true;
       submit.classList.add("is-loading");
       const payload = {
@@ -521,7 +774,11 @@ export function mountProfileSelection(root, options = {}) {
         space: typeSelect.value,
         flow: flowInput.value,
         avatar: chosenAvatar,
-        accent: chosenAccent
+        accent: chosenAccent,
+        widgets: [...chosenWidgets],
+        integrations: [...chosenIntegrations],
+        ambience: ambienceSelect.value,
+        background: backgroundSelect.value
       };
       const response = mode === "create" ? repository.createProfile(payload) : repository.updateProfile(profile.id, payload);
       if (!response.ok) {
@@ -534,6 +791,9 @@ export function mountProfileSelection(root, options = {}) {
       renderProfiles(response.data.id, true);
       status.textContent = response.message;
     }, listenerOptions);
+    syncWidgetPicker();
+    updateModuleSummary();
+    showStep(activeStep, false);
     const target = focusTarget === "avatar" ? avatarPicker.querySelector('[aria-checked="true"]')
       : focusTarget === "space" ? typeSelect
         : focusTarget === "theme" ? accentPicker.querySelector('[aria-checked="true"]')
@@ -545,12 +805,12 @@ export function mountProfileSelection(root, options = {}) {
   function openDeleteConfirmation(profile) {
     closeMenu();
     const cancel = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" } }, [element("span", { text: "Annuler" })]);
-    const confirm = element("button", { className: "v8-button v8-button--danger", attributes: { type: "button" } }, [icon("trash-2"), element("span", { text: "Supprimer définitivement" })]);
+    const confirm = element("button", { className: "v8-button v8-button--danger", attributes: { type: "button" } }, [icon("trash-2"), element("span", { text: "Supprimer definitivement" })]);
     const content = element("div", { className: "v8-profile-dialog__confirm" }, [
       element("div", { className: "v8-profile-dialog__danger-icon" }, icon("triangle-alert")),
-      element("p", { text: `Les données locales du profil ${profile.name} seront supprimées de cet appareil. Cette action est irréversible.` })
+      element("p", { text: `Les donnees du profil ${profile.name} seront supprimees de Supabase et du cache de cet appareil. Cette action est irreversible.` })
     ]);
-    dialogShell("Supprimer ce profil ?", "Une confirmation est nécessaire avant toute suppression.", content, element("div", { className: "v8-profile-dialog__actions" }, [cancel, confirm]));
+    dialogShell("Supprimer ce profil ?", "Une confirmation est necessaire avant toute suppression.", content, element("div", { className: "v8-profile-dialog__actions" }, [cancel, confirm]));
     cancel.addEventListener("click", () => closeDialog(), listenerOptions);
     confirm.addEventListener("click", () => {
       const response = repository.deleteProfile(profile.id);
@@ -579,7 +839,7 @@ export function mountProfileSelection(root, options = {}) {
     anchor.click();
     anchor.remove();
     URL.revokeObjectURL(url);
-    status.textContent = "Export du profil prêt.";
+    status.textContent = "Export du profil pret.";
   }
 
   function runMenuAction(actionId) {
@@ -599,23 +859,13 @@ export function mountProfileSelection(root, options = {}) {
     } else if (actionId === "delete") openDeleteConfirmation(profile);
   }
 
-  function waitForLaunch() {
-    if (globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return Promise.resolve();
-    return new Promise((resolve) => {
-      launchTimer = globalThis.setTimeout(() => {
-        launchTimer = 0;
-        resolve();
-      }, 220);
-    });
-  }
-
   async function activate(index = selectedIndex) {
     if (!profiles.length || destroyed) return;
     const token = ++activation;
     selectPreview(index);
     const profile = profiles[selectedIndex];
     if (profile.locked) {
-      status.textContent = "Profil verrouillé : le déverrouillage sécurisé arrive bientôt. Vos données restent intactes.";
+      status.textContent = "Profil verrouille : vos donnees restent intactes.";
       return;
     }
     const selected = repository.selectProfile(profile.id);
@@ -626,13 +876,18 @@ export function mountProfileSelection(root, options = {}) {
     surface.classList.add("is-launching");
     surface.setAttribute("aria-busy", "true");
     enterButton.disabled = true;
-    await waitForLaunch();
-    if (destroyed || token !== activation) return;
     try {
-      const activationResult = await options.onSelect?.(selected.data);
+      let activationResult;
+      const reducedMotion = globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+      if (!reducedMotion && typeof document.startViewTransition === "function") {
+        const transition = document.startViewTransition(async () => { activationResult = await options.onSelect?.(selected.data); });
+        await transition.finished;
+      } else {
+        activationResult = await options.onSelect?.(selected.data);
+      }
       if (!destroyed && token === activation) settleActivationResult(activationResult, { surface, enterButton, status });
     } catch {
-      if (!destroyed && token === activation) settleActivationResult({ ok: false, message: "L'environnement n'a pas pu être ouvert." }, { surface, enterButton, status });
+      if (!destroyed && token === activation) settleActivationResult({ ok: false, message: "L'environnement n'a pas pu etre ouvert." }, { surface, enterButton, status });
     }
   }
 
@@ -675,16 +930,21 @@ export function mountProfileSelection(root, options = {}) {
       closeMenu({ restoreFocus: true });
     }
   }, listenerOptions);
+  globalThis.addEventListener?.("online", updateConnectivity, listenerOptions);
+  globalThis.addEventListener?.("offline", updateConnectivity, listenerOptions);
 
   renderProfiles(repository.activeProfile()?.id || "");
+  const releaseClock = clockManager?.subscribe?.(refreshClock) || (() => {});
+  const releaseCloudStatus = cloudSync?.subscribe?.(updateConnectivity) || (() => {});
+  if (!clockManager) refreshClock();
   queueMicrotask(() => { if (!destroyed && profiles.length) cards[selectedIndex]?.focus(); });
 
   function destroy() {
     if (destroyed) return false;
     destroyed = true;
     activation += 1;
-    if (launchTimer) globalThis.clearTimeout(launchTimer);
-    launchTimer = 0;
+    releaseClock();
+    releaseCloudStatus();
     closeMenu();
     closeDialog({ restoreFocus: false });
     dialogWindow.destroy();

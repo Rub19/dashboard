@@ -1,0 +1,35 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "raspy-fog-bf5b",
+  "main": "src/index.js",
+  "compatibility_date": "2026-07-14",
+  "workers_dev": true,
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "vars": {
+    "ENVIRONMENT": "production",
+    "WORKER_VERSION": "1.0.0",
+    "ALLOWED_ORIGINS": "https://ethone.dev",
+    "SUPABASE_AUDIENCE": "authenticated",
+    "OUTBOUND_TIMEOUT_MS": "6500"
+  },
+  "ratelimits": [
+    {
+      "name": "RATE_LIMIT_EDGE",
+      "namespace_id": "811401",
+      "simple": { "limit": 120, "period": 60 }
+    },
+    {
+      "name": "RATE_LIMIT_STANDARD",
+      "namespace_id": "811402",
+      "simple": { "limit": 60, "period": 60 }
+    },
+    {
+      "name": "RATE_LIMIT_STRICT",
+      "namespace_id": "811403",
+      "simple": { "limit": 10, "period": 60 }
+    }
+  ]
+}

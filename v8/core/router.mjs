@@ -35,6 +35,15 @@ export function createRouter(options = {}) {
     return normalizeRoute(runtime?.location?.hash || "");
   }
 
+  function canonicalizeLocation(route) {
+    const next = normalizeRoute(route);
+    const url = `#/${next}`;
+    if (runtime?.location?.hash !== url) {
+      runtime?.history?.replaceState?.({ ethoneV8Route: next }, "", url);
+    }
+    return next;
+  }
+
   function commit(route, mode = "push") {
     const next = normalizeRoute(route);
     const url = `#/${next}`;
@@ -45,8 +54,8 @@ export function createRouter(options = {}) {
     return next;
   }
 
-  function handlePopState() {
-    const next = routeFromLocation();
+  function handleLocationChange() {
+    const next = canonicalizeLocation(routeFromLocation());
     if (next === current) return;
     current = next;
     onRoute(next);
@@ -55,13 +64,15 @@ export function createRouter(options = {}) {
   function start() {
     if (started) return current;
     started = true;
-    runtime?.addEventListener?.("popstate", handlePopState);
+    runtime?.addEventListener?.("popstate", handleLocationChange);
+    runtime?.addEventListener?.("hashchange", handleLocationChange);
     return commit(routeFromLocation(), "replace");
   }
 
   function stop() {
     if (!started) return false;
-    runtime?.removeEventListener?.("popstate", handlePopState);
+    runtime?.removeEventListener?.("popstate", handleLocationChange);
+    runtime?.removeEventListener?.("hashchange", handleLocationChange);
     started = false;
     return true;
   }

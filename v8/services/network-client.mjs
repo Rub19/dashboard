@@ -1,8 +1,33 @@
-const SENSITIVE_QUERY = /^(?:access_token|refresh_token|token|api[_-]?key|key|secret|code|password|authorization)$/i;
 const RETRYABLE_STATUS = new Set([408, 425, 429]);
+const RETRYABLE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
+const DEFAULT_MAX_RESPONSE_BYTES = 1024 * 1024;
 
-function wait(runtime, delay) {
-  return new Promise((resolve) => runtime.setTimeout(resolve, delay));
+function abortError(signal) {
+  if (signal?.reason instanceof Error) return signal.reason;
+  return new DOMException("Request aborted", "AbortError");
+}
+
+function wait(runtime, delay, signal) {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(abortError(signal));
+      return;
+    }
+    let timer = 0;
+    const cleanup = () => {
+      runtime.clearTimeout(timer);
+      signal?.removeEventListener?.("abort", handleAbort);
+    };
+    const handleAbort = () => {
+      cleanup();
+      reject(abortError(signal));
+    };
+    timer = runtime.setTimeout(() => {
+      cleanup();
+      resolve();
+    }, delay);
+    signal?.addEventListener?.("abort", handleAbort, { once: true });
+  });
 }
 
 function safeMessage(value) {
@@ -16,7 +41,7 @@ function safeUrl(value, baseUrl) {
   try {
     const url = new URL(String(value || ""), baseUrl || "https://ethone.invalid/");
     [...url.searchParams.keys()].forEach((key) => {
-      if (SENSITIVE_QUERY.test(key)) url.searchParams.set(key, "[redacted]");
+      url.searchParams.set(key, "[redacted]");
     });
     url.hash = "";
     return url.href;
@@ -29,6 +54,37 @@ function retryDelay(response, attempt, baseDelay) {
   const seconds = Number(response?.headers?.get?.("retry-after"));
   if (Number.isFinite(seconds) && seconds > 0) return Math.min(15000, seconds * 1000);
   return Math.min(8000, baseDelay * (2 ** attempt));
+}
+
+async function responseTextWithinLimit(response, maxBytes) {
+  const declared = Number(response.headers?.get?.("content-length"));
+  if (Number.isFinite(declared) && declared > maxBytes) throw new Error("JSON response is too large.");
+  if (!response.body?.getReader) {
+    const buffer = await response.arrayBuffer();
+    if (buffer.byteLength > maxBytes) throw new Error("JSON response is too large.");
+    return new TextDecoder().decode(buffer);
+  }
+
+  const reader = response.body.getReader();
+  const chunks = [];
+  let total = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > maxBytes) {
+      await reader.cancel();
+      throw new Error("JSON response is too large.");
+    }
+    chunks.push(value);
+  }
+  const merged = new Uint8Array(total);
+  let offset = 0;
+  chunks.forEach((chunk) => {
+    merged.set(chunk, offset);
+    offset += chunk.byteLength;
+  });
+  return new TextDecoder().decode(merged);
 }
 
 export function createNetworkClient(options = {}) {
@@ -48,12 +104,13 @@ export function createNetworkClient(options = {}) {
     const requestOptions = { ...customOptions };
     const method = String(requestOptions.method || "GET").toUpperCase();
     const timeoutMs = Math.max(250, Number(requestOptions.timeoutMs) || 12000);
-    const retries = Math.max(0, Math.min(3, Number.isFinite(Number(requestOptions.retries)) ? Number(requestOptions.retries) : (method === "GET" ? 1 : 0)));
+    const requestedRetries = Math.max(0, Math.min(3, Number.isFinite(Number(requestOptions.retries)) ? Number(requestOptions.retries) : (RETRYABLE_METHODS.has(method) ? 1 : 0)));
+    const retries = RETRYABLE_METHODS.has(method) ? requestedRetries : 0;
     const baseDelay = Math.max(100, Number(requestOptions.backoffMs) || 450);
     const callerSignal = requestOptions.signal || null;
     const dedupe = requestOptions.dedupe !== false && method === "GET";
     const publicUrl = safeUrl(input, runtime.location?.href);
-    const dedupeKey = String(requestOptions.dedupeKey || `${method}:${publicUrl}`);
+    const dedupeKey = String(requestOptions.dedupeKey || `${method}:${String(input)}`);
     const throwHttp = requestOptions.throwHttp === true;
     delete requestOptions.timeoutMs;
     delete requestOptions.retries;
@@ -61,6 +118,7 @@ export function createNetworkClient(options = {}) {
     delete requestOptions.dedupe;
     delete requestOptions.dedupeKey;
     delete requestOptions.throwHttp;
+    delete requestOptions.signal;
     if (!requestOptions.credentials) {
       try { requestOptions.credentials = new URL(String(input), runtime.location?.href).origin === runtime.location?.origin ? "same-origin" : "omit"; }
       catch { requestOptions.credentials = "omit"; }
@@ -80,7 +138,7 @@ export function createNetworkClient(options = {}) {
           const response = await fetcher(input, { ...requestOptions, signal: controller.signal });
           const retryable = RETRYABLE_STATUS.has(response.status) || response.status >= 500;
           if (retryable && attempt < retries) {
-            await wait(runtime, retryDelay(response, attempt, baseDelay));
+            await wait(runtime, retryDelay(response, attempt, baseDelay), callerSignal);
             continue;
           }
           if (throwHttp && !response.ok) {
@@ -92,7 +150,7 @@ export function createNetworkClient(options = {}) {
           return response;
         } catch (error) {
           if (!callerSignal?.aborted && attempt < retries) {
-            await wait(runtime, baseDelay * (2 ** attempt));
+            await wait(runtime, baseDelay * (2 ** attempt), callerSignal);
             continue;
           }
           const wrapped = new Error(timedOut ? "External request timed out." : safeMessage(error?.message));
@@ -114,37 +172,37 @@ export function createNetworkClient(options = {}) {
   }
 
   async function requestJSON(input, requestOptions = {}) {
-    const response = await request(input, { ...requestOptions, throwHttp: true });
-    return response.json();
-  }
-
-  async function execute(handler, executeOptions = {}) {
-    const retries = Math.max(0, Math.min(3, Number(executeOptions.retries) || 0));
-    const timeoutMs = Math.max(250, Number(executeOptions.timeoutMs) || 12000);
-    const baseDelay = Math.max(100, Number(executeOptions.backoffMs) || 450);
-    let lastError = null;
-    for (let attempt = 0; attempt <= retries; attempt += 1) {
-      let timer = 0;
-      try {
-        const timeout = new Promise((_, reject) => {
-          timer = runtime.setTimeout(() => reject(new Error("Operation timed out.")), timeoutMs);
-        });
-        return await Promise.race([Promise.resolve().then(() => handler(attempt)), timeout]);
-      } catch (error) {
-        lastError = error;
-        if (attempt >= retries) throw error;
-        await wait(runtime, baseDelay * (2 ** attempt));
-      } finally {
-        runtime.clearTimeout(timer);
-      }
+    const maxResponseBytes = Math.max(1, Math.min(10 * 1024 * 1024, Number(requestOptions.maxResponseBytes) || DEFAULT_MAX_RESPONSE_BYTES));
+    const networkOptions = { ...requestOptions };
+    delete networkOptions.maxResponseBytes;
+    const response = await request(input, { ...networkOptions, throwHttp: false });
+    const contentType = String(response.headers?.get?.("content-type") || "").toLowerCase();
+    if (!/^application\/(?:[a-z0-9.+-]+\+)?json(?:\s*;|$)/i.test(contentType)) {
+      throw new TypeError("Invalid JSON content type.");
     }
-    throw lastError || new Error("Operation failed");
+    const source = await responseTextWithinLimit(response, maxResponseBytes);
+    let payload;
+    try {
+      payload = JSON.parse(source);
+    } catch {
+      throw new SyntaxError("Invalid JSON response.");
+    }
+    if (!response.ok) {
+      const error = new Error(safeMessage(payload?.error?.message || `HTTP ${response.status}`));
+      error.name = "NetworkHttpError";
+      error.status = response.status;
+      error.code = String(payload?.error?.code || "HTTP_ERROR").slice(0, 80);
+      error.retryable = payload?.error?.retryable === true;
+      error.requestId = String(payload?.error?.requestId || "").slice(0, 80);
+      error.retryAfter = Number(response.headers?.get?.("retry-after")) || 0;
+      throw error;
+    }
+    return payload;
   }
 
   return Object.freeze({
     request,
     requestJSON,
-    execute,
     diagnostics: () => Object.freeze({ online: runtime.navigator?.onLine !== false, pending: pending.size, recent: Object.freeze(records.slice()) }),
     redactUrl: (value) => safeUrl(value, runtime.location?.href),
     redactMessage: safeMessage

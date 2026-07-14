@@ -54,7 +54,7 @@ async function verify() {
   if (!maskIconResponse.ok || !String(maskIconResponse.headers.get("content-type") || "").includes("image/svg")) throw new Error("Safari mask icon is unavailable or has an invalid content type");
 
   const worker = await workerResponse.text();
-  if (!worker.includes("2026-07-13-empty-states-v16")) throw new Error("Service Worker release marker is stale");
+  if (!worker.includes("2026-07-14-experience-v71")) throw new Error("Service Worker release marker is stale");
   const manifest = await manifestResponse.json();
   if (manifest.id !== "./" || manifest.start_url !== "./") throw new Error("Manifest scope is invalid");
   if (!manifest.icons?.some((icon) => icon.src === "icons/ethone-icon-maskable-512.png" && icon.purpose === "maskable")) throw new Error("Manifest maskable icon is missing");

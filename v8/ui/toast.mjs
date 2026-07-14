@@ -5,11 +5,26 @@ const ICONS = Object.freeze({
   success: "check-circle-2",
   error: "circle-alert",
   warning: "triangle-alert",
-  info: "info"
+  info: "info",
+  sync: "refresh-cw",
+  update: "circle-arrow-up",
+  brain: "brain",
+  loading: "loader-circle"
 });
 
-export function createToastManager(region) {
+export function createToastManager(region, options = {}) {
   const records = new Map();
+  const sounds = options.sounds || null;
+  const presence = options.presence || null;
+
+  function importantNotice(notice, type) {
+    return notice.important === true || type === "error" || type === "warning";
+  }
+
+  function syncNotificationPresence() {
+    const count = [...records.values()].filter((record) => record.important && !record.dismissing).length;
+    presence?.update?.({ notificationsImportant: count });
+  }
 
   function clearTimers(record) {
     record.timers.forEach((timer) => globalThis.clearTimeout(timer));
@@ -21,11 +36,21 @@ export function createToastManager(region) {
     const record = records.get(id);
     if (!record) return false;
     clearTimers(record);
-    record.node.classList.remove("is-visible");
-    const timer = globalThis.setTimeout(() => {
+    record.dismissing = true;
+    syncNotificationPresence();
+    const remove = () => {
       record.node.remove();
-      records.delete(id);
-    }, 210);
+      if (records.get(id) === record) {
+        records.delete(id);
+        syncNotificationPresence();
+      }
+    };
+    if (presence?.signalActivity) {
+      presence.signalActivity(record.node, "notification", { phase: "exit", onComplete: remove });
+      return true;
+    }
+    record.node.classList.remove("is-visible");
+    const timer = globalThis.setTimeout(remove, 210);
     record.timers.add(timer);
     return true;
   }
@@ -34,8 +59,10 @@ export function createToastManager(region) {
     const record = records.get(id);
     if (!record) return false;
     clearTimers(record);
+    presence?.cancelTransition?.(record.node);
     record.node.remove();
     records.delete(id);
+    syncNotificationPresence();
     return true;
   }
 
@@ -51,11 +78,43 @@ export function createToastManager(region) {
 
   function show(notice = {}) {
     const id = String(notice.id || notice.message || "notice").slice(0, 96);
-    const existing = records.get(id);
+    let existing = records.get(id);
+    if (existing?.dismissing) {
+      removeImmediately(id);
+      existing = null;
+    }
     if (existing) {
+      const title = existing.message.querySelector("strong");
       const copy = existing.message.querySelector("span");
+      if (title) title.textContent = String(notice.title || "ETHONE");
       if (copy) copy.textContent = String(notice.message || "");
-      existing.action = notice.action?.run || existing.action;
+      if (typeof notice.action?.run === "function") {
+        let actionButton = existing.node.querySelector("[data-toast-action]");
+        if (!actionButton) {
+          actionButton = element("button", {
+            className: "v8-button v8-button--secondary",
+            attributes: { type: "button" },
+            dataset: { toastAction: id }
+          });
+          existing.node.querySelector("[data-toast-close]")?.before(actionButton);
+        }
+        actionButton.textContent = String(notice.action.label || "Ouvrir");
+        existing.node.classList.add("v8-toast--action");
+        existing.action = notice.action.run;
+      }
+      const nextType = ICONS[notice.type] ? notice.type : "info";
+      existing.important = importantNotice(notice, nextType);
+      if (nextType !== existing.type) {
+        Object.keys(ICONS).forEach((tone) => existing.node.classList.remove(`v8-toast--${tone}`));
+        existing.node.classList.add(`v8-toast--${nextType}`);
+        existing.node.querySelector(".v8-toast__icon")?.replaceChildren(icon(ICONS[nextType]));
+        existing.type = nextType;
+        sounds?.playNotification?.({ ...notice, type: nextType });
+        refreshIcons();
+      }
+      existing.node.classList.add("is-visible");
+      presence?.signalActivity?.(existing.node, "notification", { phase: "update" });
+      syncNotificationPresence();
       schedule(existing, notice.duration === 0 ? 0 : (notice.duration || 4200));
       return id;
     }
@@ -80,15 +139,17 @@ export function createToastManager(region) {
       })
       : null;
     const node = element("article", {
-      className: `v8-toast v8-toast--${type}`,
+      className: `v8-toast v8-toast--${type}${action ? " v8-toast--action" : ""}`,
       attributes: { role: type === "error" ? "alert" : "status" }
     }, [element("span", { className: "v8-toast__icon" }, [icon(ICONS[type])]), message, action, close].filter(Boolean));
-    const record = { id, node, message, action: notice.action?.run || null, timers: new Set() };
+    const record = { id, node, message, action: notice.action?.run || null, type, important: importantNotice(notice, type), timers: new Set(), dismissing: false };
     records.set(id, record);
     region.append(node);
-    node.getBoundingClientRect();
     node.classList.add("is-visible");
+    presence?.signalActivity?.(node, "notification", { phase: "enter" });
+    syncNotificationPresence();
     schedule(record, notice.duration === 0 ? 0 : (notice.duration || 4200));
+    sounds?.playNotification?.({ ...notice, type });
     refreshIcons();
     return id;
   }
@@ -114,9 +175,11 @@ export function createToastManager(region) {
       region.removeEventListener("click", handleClick);
       records.forEach((record) => {
         clearTimers(record);
+        presence?.cancelTransition?.(record.node);
         record.node.remove();
       });
       records.clear();
+      presence?.update?.({ notificationsImportant: 0 });
     }
   });
 }

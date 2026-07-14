@@ -3,8 +3,6 @@ import { emptyState } from "../ui/empty-state.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
 import { filterFiles, sortFiles } from "./files-model.mjs";
 
-const VIEW_KEY = "ethone:v8-files-view";
-
 const TYPE_ICONS = Object.freeze({
   folder: "folder",
   link: "link-2",
@@ -27,6 +25,7 @@ export function mountFiles(stage, options = {}) {
   const repository = options.repository;
   const actions = options.actions;
   const notify = typeof options.notify === "function" ? options.notify : () => {};
+  const presence = options.presence || null;
   let files = repository.snapshot().files.map((file) => ({ ...file }));
   let selectedId = files[0]?.id || null;
   let query = "";
@@ -34,8 +33,8 @@ export function mountFiles(stage, options = {}) {
   let favorites = false;
   let sort = "recent";
   let composerType = null;
-  let view = "list";
-  try { view = globalThis.localStorage?.getItem(VIEW_KEY) === "grid" ? "grid" : "list"; } catch {}
+  let view = repository.snapshot().filesView === "grid" ? "grid" : "list";
+  let mounted = true;
   const scopedActions = [];
 
   const countBadge = element("span", { className: "v8-badge" });
@@ -46,7 +45,7 @@ export function mountFiles(stage, options = {}) {
   const page = element("section", { className: "v8-page v8-work-page", dataset: { page: "files" } }, [
     element("header", { className: "v8-page-heading v8-work-heading" }, [
       element("div", { className: "v8-page-heading__copy" }, [
-        element("span", { className: "v8-eyebrow", text: "Bibliothèque locale" }),
+        element("span", { className: "v8-eyebrow", text: "Bibliothèque synchronisée" }),
         element("div", { className: "v8-title-line" }, [element("h1", { text: "Fichiers" }), countBadge]),
         element("p", { text: "Retrouvez vos ressources, puis agissez depuis un aperçu unique." })
       ]),
@@ -102,6 +101,11 @@ export function mountFiles(stage, options = {}) {
     return files.find((file) => String(file.id) === String(selectedId)) || null;
   }
 
+  function fileRow(id) {
+    return [...content.querySelectorAll("[data-file-id]")]
+      .find((row) => row.dataset.fileId === String(id)) || null;
+  }
+
   function renderSources() {
     const entries = [
       { id: "all", label: "Tous les fichiers", icon: "files", count: files.length },
@@ -118,7 +122,9 @@ export function mountFiles(stage, options = {}) {
         dataset: { filesSource: entry.id }
       }, [icon(entry.icon), element("span", { text: entry.label }), element("small", { text: entry.count })]));
     });
-    countBadge.textContent = `${files.length} élément${files.length > 1 ? "s" : ""}`;
+    const nextCount = `${files.length} élément${files.length > 1 ? "s" : ""}`;
+    if (presence) presence.transitionText(countBadge, nextCount, { kind: "metric" });
+    else countBadge.textContent = nextCount;
     refreshIcons();
   }
 
@@ -187,7 +193,7 @@ export function mountFiles(stage, options = {}) {
         collection.append(element("button", {
           className: `v8-file-item${active ? " is-active" : ""}`,
           attributes: { type: "button", role: "listitem", "aria-current": active ? "true" : null },
-          dataset: { fileId: file.id }
+          dataset: { fileId: file.id, liveWidget: "planning", liveKind: "planning" }
         }, [
           element("span", { className: "v8-file-item__icon" }, [icon(TYPE_ICONS[file.type] || "file")]),
           element("span", { className: "v8-file-item__copy" }, [element("strong", { text: file.name, attributes: { translate: "no" } }), element("small", { text: `${typeLabel(file.type)}${file.tag ? ` · ${file.tag}` : ""}`, attributes: file.tag ? { translate: "no" } : {} })]),
@@ -227,7 +233,7 @@ export function mountFiles(stage, options = {}) {
         element("div", {}, [element("dt", { text: "Ajouté" }), element("dd", { text: file.date || "Localement", attributes: file.date ? { translate: "no" } : {} })])
       ]),
       element("div", { className: "v8-files-preview__actions" }, [
-        file.url ? element("a", { className: "v8-button v8-button--primary", attributes: { href: file.url, target: "_blank", rel: "noreferrer" } }, [icon("external-link"), element("span", { text: "Ouvrir" })]) : null,
+        file.url ? element("a", { className: "v8-button v8-button--primary", attributes: { href: file.url, target: "_blank", rel: "noopener noreferrer" } }, [icon("external-link"), element("span", { text: "Ouvrir" })]) : null,
         element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { fileFavorite: file.id } }, [icon(file.favorite ? "star-off" : "star"), element("span", { text: file.favorite ? "Retirer des favoris" : "Ajouter aux favoris" })]),
         element("button", { className: "v8-button v8-button--danger", attributes: { type: "button" }, dataset: { fileDelete: file.id } }, [icon("trash-2"), element("span", { text: "Supprimer" })])
       ])
@@ -274,6 +280,8 @@ export function mountFiles(stage, options = {}) {
     refreshFiles();
     selectedId = created.data.id;
     renderAll();
+    presence?.signalActivity?.(fileRow(created.data.id), "file", { phase: "enter" });
+    presence?.signalActivity?.(preview, "file", { phase: "update" });
     notify({ id: "file-created", title: "Fichiers", message: `${typeLabel(created.data.type)} ajouté.`, type: "success", duration: 2200 });
     return created;
   }
@@ -295,7 +303,7 @@ export function mountFiles(stage, options = {}) {
     const viewControl = event.target.closest("[data-files-view]");
     if (viewControl && page.contains(viewControl)) {
       view = viewControl.dataset.filesView === "grid" ? "grid" : "list";
-      try { globalThis.localStorage?.setItem(VIEW_KEY, view); } catch {}
+      repository.files.setView(view);
       [...page.querySelectorAll("[data-files-view]")].forEach((button) => {
         const active = button.dataset.filesView === view;
         button.classList.toggle("is-active", active);
@@ -317,16 +325,22 @@ export function mountFiles(stage, options = {}) {
       if (changed.ok) {
         refreshFiles();
         renderAll();
+        presence?.signalActivity?.(fileRow(changed.data.id), "file", { phase: "update" });
       }
       return;
     }
     const remove = event.target.closest("[data-file-delete]");
     if (remove && page.contains(remove)) {
-      const changed = repository.files.remove(remove.dataset.fileDelete);
+      const id = remove.dataset.fileDelete;
+      const row = fileRow(id);
+      const changed = repository.files.remove(id);
       if (changed.ok) {
         refreshFiles();
-        renderAll();
         notify({ id: "file-deleted", title: "Fichiers", message: "Élément supprimé.", type: "info", duration: 2200 });
+        presence?.signalActivity?.(preview, "file", { phase: "exit" });
+        const finish = () => { if (mounted) renderAll(); };
+        if (presence?.signalActivity) presence.signalActivity(row, "file", { phase: "exit", onComplete: finish });
+        else finish();
       }
     }
   }
@@ -349,6 +363,7 @@ export function mountFiles(stage, options = {}) {
   refreshIcons();
 
   return () => {
+    mounted = false;
     scopedActions.reverse().forEach((restore) => restore());
     page.removeEventListener("click", handleClick);
     search.removeEventListener("input", handleSearch);

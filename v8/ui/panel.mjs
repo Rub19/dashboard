@@ -1,6 +1,7 @@
 import { actionButton, element, icon } from "./dom.mjs";
 import { refreshIcons } from "./icons.mjs";
 import { createWindowController } from "./window-system.mjs";
+import { workspaceById } from "../data/workspaces.mjs";
 
 const PANEL_COPY = Object.freeze({
   widgets: { title: "Widgets", eyebrow: "Space actif", icon: "panels-top-left" },
@@ -8,14 +9,18 @@ const PANEL_COPY = Object.freeze({
   profile: { title: "Profil", eyebrow: "Session locale", icon: "user-round" }
 });
 
-const SPACE_LABELS = Object.freeze({ personal: "Personnel", focus: "Focus", studio: "Studio" });
-
-function spaceLabel(space) {
-  return SPACE_LABELS[space] || "Personnel";
-}
+const NOTIFICATION_ITEMS = Object.freeze([
+  Object.freeze({ icon: "cloud", title: "Cloud Sync", message: "Les donnees locales sont a jour.", tone: "success" }),
+  Object.freeze({ icon: "brain", title: "Brain est contextuel", message: "Les suggestions suivent maintenant la page et le Space actifs.", tone: "brain" }),
+  Object.freeze({ icon: "sparkles", title: "Experience 1.0", message: "Le nouveau Shell et Mission Control sont disponibles.", tone: "info" })
+]);
 
 function panelMetric(iconName, value, label) {
-  return element("div", { className: "v8-panel-metric" }, [icon(iconName), element("strong", { text: String(value) }), element("span", { text: label })]);
+  return element("div", { className: "v8-panel-metric", dataset: { liveWidget: "metric", liveKind: "metric" } }, [
+    icon(iconName),
+    element("strong", { text: String(value), dataset: { liveNumber: value } }),
+    element("span", { text: label })
+  ]);
 }
 
 function notification(iconName, title, message, tone = "info") {
@@ -45,7 +50,7 @@ export function createPanelManager(host, options = {}) {
     return element("div", { className: "v8-panel__content" }, [
       element("div", { className: "v8-panel-space-summary" }, [
         element("span", { className: "v8-panel__symbol" }, [icon("layers-3")]),
-        element("div", {}, [element("small", { text: "Space" }), element("strong", { text: spaceLabel(state.space) }), element("span", { text: state.flow || "Essentiel" })])
+        element("div", {}, [element("small", { text: "Space" }), element("strong", { text: workspaceById(state.space).label }), element("span", { text: state.flow || "Essentiel" })])
       ]),
       element("div", { className: "v8-panel-metrics" }, [
         panelMetric("notebook-pen", snapshot.notes?.length || 0, "Notes"),
@@ -66,11 +71,7 @@ export function createPanelManager(host, options = {}) {
 
   function notificationsContent() {
     return element("div", { className: "v8-panel__content" }, [
-      element("div", { className: "v8-panel-notices" }, [
-        notification("cloud", "Cloud Sync", "Les donnees locales sont a jour.", "success"),
-        notification("brain", "Brain est contextuel", "Les suggestions suivent maintenant la page et le Space actifs.", "brain"),
-        notification("sparkles", "Experience 1.0", "Le nouveau Shell et Mission Control sont disponibles.", "info")
-      ]),
+      element("div", { className: "v8-panel-notices" }, NOTIFICATION_ITEMS.map((item) => notification(item.icon, item.title, item.message, item.tone))),
       actionButton({ actionId: "v8.sync.refresh", variant: "secondary" }, [icon("refresh-cw"), element("span", { text: "Verifier la synchronisation" })])
     ]);
   }
@@ -89,7 +90,7 @@ export function createPanelManager(host, options = {}) {
     return element("div", { className: "v8-panel__content" }, [
       element("div", { className: "v8-panel-profile-card" }, [
         element("span", { className: "v8-panel-profile-card__avatar", text: String(user.initial || "R") }),
-        element("div", {}, [element("strong", { text: user.name || "Rub", attributes: { translate: "no" } }), element("span", { text: `${spaceLabel(state.space)} | ${state.flow || "Essentiel"}` })]),
+        element("div", {}, [element("strong", { text: user.name || "Rub", attributes: { translate: "no" } }), element("span", { text: `${workspaceById(state.space).label} | ${state.flow || "Essentiel"}` })]),
         element("span", { className: "v8-badge v8-badge--accent", text: "En ligne" })
       ]),
       element("label", { className: "v8-panel__language" }, [element("span", { text: "Langue" }), language]),
@@ -123,5 +124,5 @@ export function createPanelManager(host, options = {}) {
     return windowController.open(panel, { initialFocus: () => panel.querySelector("button, select"), modal: false });
   }
 
-  return Object.freeze({ open, close, current: () => mountedId, destroy: () => windowController.destroy() });
+  return Object.freeze({ open, close, current: () => mountedId, notificationCount: () => NOTIFICATION_ITEMS.length, destroy: () => windowController.destroy() });
 }

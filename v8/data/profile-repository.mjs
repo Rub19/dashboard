@@ -9,6 +9,10 @@ const COLLECTIONS = Object.freeze({ notes: "notes", tasks: "todos", events: "eve
 const CONNECTION_STATUSES = new Set(["connected", "disconnected", "error", "syncing", "permission-denied", "token-expired"]);
 const ACTIVITY_CATEGORIES = new Set(["media", "social", "gaming", "development", "work", "study", "productivity", "brain", "system"]);
 const PROFILE_TYPES = new Set(["personal", "work", "development", "study", "gaming", "streaming", "creative"]);
+const ENVIRONMENT_WIDGETS = new Set(["today", "notes", "calendar", "tasks", "focus", "github", "terminal", "brain", "planning", "discord", "spotify", "sessions", "live", "clips", "projects", "files"]);
+const ENVIRONMENT_INTEGRATIONS = new Set(["spotify", "discord", "github", "google-calendar"]);
+const ENVIRONMENT_AMBIENCES = new Set(["balanced", "focus", "quiet", "dynamic"]);
+const ENVIRONMENT_BACKGROUNDS = new Set(["signal", "horizon", "graphite", "aurora"]);
 const PROFILE_COPY = Object.freeze({
   personal: "Votre environnement quotidien.",
   work: "Un espace concentré sur vos priorités.",
@@ -56,7 +60,7 @@ function sanitizePersistence(value, seen = new WeakSet()) {
   if (seen.has(value)) return null;
   seen.add(value);
   if (Array.isArray(value)) return value.map((entry) => sanitizePersistence(entry, seen));
-  const output = {};
+  const output = Object.create(null);
   Object.entries(value).forEach(([key, entry]) => {
     if (/^(?:password|passcode|pin)$/i.test(key)) {
       if (entry && typeof entry === "object" && entry.hash && entry.salt) {
@@ -75,6 +79,18 @@ function sanitizePersistence(value, seen = new WeakSet()) {
     output[key] = sanitizePersistence(entry, seen);
   });
   return output;
+}
+
+function safeIdentifier(value, limit = 80) {
+  const normalized = text(value, "", limit).toLowerCase();
+  if (!/^[a-z0-9][a-z0-9._-]{0,79}$/.test(normalized)) return "";
+  return ["__proto__", "prototype", "constructor"].includes(normalized) ? "" : normalized;
+}
+
+function safeList(value, allowed, limit = 12) {
+  return Object.freeze([...new Set((Array.isArray(value) ? value : [])
+    .map((entry) => text(entry, "", 48).toLowerCase())
+    .filter((entry) => allowed.has(entry)))].slice(0, limit));
 }
 
 function safeUrl(value) {
@@ -129,6 +145,7 @@ function hasProfileLock(profile) {
 
 function profileView(profile, index) {
   const state = profile?.state && typeof profile.state === "object" ? profile.state : {};
+  const environment = profile?.environment && typeof profile.environment === "object" ? profile.environment : {};
   const type = inferProfileType(profile);
   const name = text(profile?.name || state.username, `Profil ${index + 1}`, 80);
   const openTasks = (Array.isArray(state.todos) ? state.todos : []).filter((task) => task?.done !== true && task?.completed !== true).length;
@@ -144,6 +161,12 @@ function profileView(profile, index) {
     space: text(profile?.defaultSpace || profile?.space, type, 80),
     flow: text(profile?.defaultFlow || profile?.flow || state.activeFlow, "Essentiel", 80),
     lastActiveAt: text(profile?.lastActiveAt || profile?.updatedAt || state.lastActiveAt || state.updatedAt, "", 40),
+    environment: Object.freeze({
+      widgets: safeList(environment.widgets, ENVIRONMENT_WIDGETS),
+      integrations: safeList(environment.integrations, ENVIRONMENT_INTEGRATIONS, 4),
+      ambience: ENVIRONMENT_AMBIENCES.has(environment.ambience) ? environment.ambience : "balanced",
+      background: ENVIRONMENT_BACKGROUNDS.has(environment.background) ? environment.background : "signal"
+    }),
     counts: Object.freeze({
       notes: (Array.isArray(state.notes) ? state.notes : []).length,
       openTasks,
@@ -219,13 +242,17 @@ function activityView(entry, index) {
 
 function connectionView(id, connection = {}) {
   const status = CONNECTION_STATUSES.has(connection?.status) ? connection.status : "disconnected";
+  const responseMs = Number(connection?.responseMs);
   return Object.freeze({
     id: text(id || connection?.id, "integration", 80),
     status,
     setupComplete: connection?.setupComplete === true,
+    methodId: safeIdentifier(connection?.methodId),
+    reference: text(connection?.reference, "", 512),
     configuredAt: text(connection?.configuredAt, "", 40),
     lastSyncAt: text(connection?.lastSyncAt, "", 40),
     lastTestedAt: text(connection?.lastTestedAt, "", 40),
+    responseMs: Number.isFinite(responseMs) ? Math.min(600000, Math.max(0, Math.round(responseMs))) : null,
     apiVersion: text(connection?.apiVersion, "Non connectee", 40),
     detail: text(connection?.detail, "", 180)
   });
@@ -234,7 +261,9 @@ function connectionView(id, connection = {}) {
 export function createProfileRepository(options = {}) {
   const storage = options.storage || globalThis.localStorage;
   const requireOwner = options.requireOwner === true;
+  const persistenceListeners = new Set();
   let ownerId = text(options.ownerId, "", 120);
+  let persistenceMuted = 0;
   const now = typeof options.now === "function" ? options.now : () => new Date();
   let idSequence = 0;
   const idFactory = typeof options.idFactory === "function"
@@ -248,21 +277,35 @@ export function createProfileRepository(options = {}) {
     if (!Array.isArray(profiles) && ownerId) {
       const backupOwner = text(storage?.getItem(PROFILE_OWNER_KEY), "", 120);
       const unscoped = readJSON(storage, PROFILE_STORAGE_KEY, []);
-      const legacy = backupOwner === ownerId || (!backupOwner && Array.isArray(unscoped) && unscoped.length) ? unscoped : [];
-      profiles = Array.isArray(legacy) ? legacy : [];
-      if (profiles.length) persistRawProfiles(profiles);
+      const ownsLegacy = backupOwner === ownerId && Array.isArray(unscoped);
+      profiles = ownsLegacy ? unscoped : [];
+      if (ownsLegacy) {
+        const clean = sanitizePersistence(profiles);
+        storage?.setItem(`${SCOPED_PROFILE_PREFIX}${ownerId}`, JSON.stringify(clean));
+        const legacyActive = text(storage?.getItem(ACTIVE_PROFILE_KEY), "", 80);
+        if (legacyActive && profiles.some((profile) => String(profile?.id) === legacyActive)) {
+          storage?.setItem(`${ACTIVE_PROFILE_KEY}:${ownerId}`, legacyActive);
+        }
+        storage?.removeItem(PROFILE_STORAGE_KEY);
+        storage?.removeItem(PROFILE_OWNER_KEY);
+        storage?.removeItem(ACTIVE_PROFILE_KEY);
+      }
     }
     return Array.isArray(profiles) ? profiles : [];
   }
 
-  function persistRawProfiles(profiles) {
+  function persistRawProfiles(profiles, reason = "profiles") {
     const clean = sanitizePersistence(profiles);
     if (requireOwner && !ownerId) throw new Error("Authenticated profile owner is required.");
     if (ownerId) {
       storage?.setItem(`${SCOPED_PROFILE_PREFIX}${ownerId}`, JSON.stringify(clean));
-      storage?.setItem(PROFILE_OWNER_KEY, ownerId);
+    } else {
+      storage?.setItem(PROFILE_STORAGE_KEY, JSON.stringify(clean));
     }
-    storage?.setItem(PROFILE_STORAGE_KEY, JSON.stringify(clean));
+    if (!persistenceMuted) {
+      const event = Object.freeze({ reason: text(reason, "repository", 80), ownerId });
+      persistenceListeners.forEach((listener) => { try { listener(event); } catch {} });
+    }
     return clean;
   }
 
@@ -270,22 +313,64 @@ export function createProfileRepository(options = {}) {
     ownerId = text(nextOwnerId, "", 120);
     if (!ownerId) return result(false, "unavailable", "Authenticated owner is missing.");
     const profiles = readProfiles();
-    persistRawProfiles(profiles);
-    return result(true, "completed", "User storage isolated.", { ownerId, profiles: profiles.length });
+    persistenceMuted += 1;
+    try { persistRawProfiles(profiles, "owner"); } finally { persistenceMuted -= 1; }
+    return result(true, "completed", "Cache utilisateur isole.", { ownerId, profiles: profiles.length });
   }
 
   function activeProfileIndex(profiles) {
     let requested = "";
-    try { requested = text(storage?.getItem(ACTIVE_PROFILE_KEY), "", 80); } catch {}
+    const key = ownerId ? `${ACTIVE_PROFILE_KEY}:${ownerId}` : ACTIVE_PROFILE_KEY;
+    try { requested = text(storage?.getItem(key), "", 80); } catch {}
     const found = requested ? profiles.findIndex((profile) => String(profile?.id) === requested) : -1;
     return found >= 0 ? found : (profiles.length ? 0 : -1);
   }
 
-  function snapshot() {
-    const profiles = readProfiles();
+  function exportCloudState() {
+    const profiles = sanitizePersistence(readProfiles());
     const index = activeProfileIndex(profiles);
+    return Object.freeze({
+      version: 1,
+      profiles,
+      activeProfileId: index >= 0 ? text(profiles[index]?.id, "", 80) : ""
+    });
+  }
+
+  function hydrateCloudState(input = {}) {
+    if (requireOwner && !ownerId) return result(false, "unavailable", "Authenticated profile owner is required.");
+    const source = input && typeof input === "object" ? input : {};
+    if (!Array.isArray(source.profiles)) return result(false, "failed", "Le document Supabase est invalide.");
+    const profiles = sanitizePersistence(source.profiles);
+    const requestedActive = text(source.activeProfileId, "", 80);
+    persistenceMuted += 1;
+    try {
+      persistRawProfiles(profiles, "supabase-hydration");
+      const active = profiles.some((profile) => String(profile?.id) === requestedActive)
+        ? requestedActive
+        : text(profiles[0]?.id, "", 80);
+      const key = ownerId ? `${ACTIVE_PROFILE_KEY}:${ownerId}` : ACTIVE_PROFILE_KEY;
+      if (active) storage?.setItem(key, active);
+      else storage?.removeItem?.(key);
+    } catch (error) {
+      return result(false, "failed", "Les donnees Supabase n'ont pas pu etre appliquees.", error);
+    } finally {
+      persistenceMuted -= 1;
+    }
+    return result(true, "completed", "Donnees Supabase appliquees.", { profiles: profiles.length });
+  }
+
+  function subscribePersistence(listener) {
+    if (typeof listener !== "function") return () => false;
+    persistenceListeners.add(listener);
+    return () => persistenceListeners.delete(listener);
+  }
+
+  function snapshot(profileId = "") {
+    const profiles = readProfiles();
+    const requestedIndex = profileId ? profiles.findIndex((profile) => String(profile?.id) === String(profileId)) : -1;
+    const index = requestedIndex >= 0 ? requestedIndex : activeProfileIndex(profiles);
     if (index < 0) {
-      return Object.freeze({ profile: null, notes: Object.freeze([]), tasks: Object.freeze([]), events: Object.freeze([]), files: Object.freeze([]), activities: Object.freeze([]), connections: Object.freeze([]) });
+      return Object.freeze({ profile: null, notes: Object.freeze([]), tasks: Object.freeze([]), events: Object.freeze([]), files: Object.freeze([]), filesView: "list", activities: Object.freeze([]), connections: Object.freeze([]) });
     }
     const profile = profiles[index] || {};
     const state = profile.state && typeof profile.state === "object" ? profile.state : {};
@@ -296,6 +381,7 @@ export function createProfileRepository(options = {}) {
       tasks: Object.freeze((Array.isArray(state.todos) ? state.todos : []).map(taskView)),
       events: Object.freeze((Array.isArray(state.events) ? state.events : []).map(eventView)),
       files: Object.freeze((Array.isArray(state.items) ? state.items : []).map((item, itemIndex) => fileView(item, itemIndex, favorites))),
+      filesView: state.filesExplorer?.view === "grid" ? "grid" : "list",
       activities: Object.freeze((Array.isArray(state.activityFeed) ? state.activityFeed : []).map(activityView)),
       connections: Object.freeze(Object.entries(state.connections && typeof state.connections === "object" ? state.connections : {}).map(([id, connection]) => connectionView(id, connection)))
     });
@@ -318,7 +404,9 @@ export function createProfileRepository(options = {}) {
     const view = profileView(profiles[index], index);
     if (view.locked) return result(false, "unavailable", "Ce profil nécessite un déverrouillage.", view);
     try {
-      storage?.setItem(ACTIVE_PROFILE_KEY, view.id);
+      const key = ownerId ? `${ACTIVE_PROFILE_KEY}:${ownerId}` : ACTIVE_PROFILE_KEY;
+      storage?.setItem(key, view.id);
+      if (!persistenceMuted) persistenceListeners.forEach((listener) => { try { listener(Object.freeze({ reason: "active-profile", ownerId })); } catch {} });
       return result(true, "completed", `Profil ${view.name} sélectionné.`, view);
     } catch (error) {
       return result(false, "failed", "Le profil n'a pas pu être sélectionné.", error);
@@ -330,7 +418,7 @@ export function createProfileRepository(options = {}) {
       persistRawProfiles(profiles);
       return result(true, "completed", message, data ?? null);
     } catch (error) {
-      return result(false, "failed", "L'enregistrement local a échoué.", error);
+      return result(false, "failed", "La mise en cache a échoué.", error);
     }
   }
 
@@ -350,6 +438,12 @@ export function createProfileRepository(options = {}) {
       customAccent: ACCENT_VALUES[accent],
       defaultSpace: text(input.space, type, 80),
       defaultFlow: text(input.flow, "Essentiel", 80),
+      environment: {
+        widgets: safeList(input.widgets, ENVIRONMENT_WIDGETS),
+        integrations: safeList(input.integrations, ENVIRONMENT_INTEGRATIONS, 4),
+        ambience: ENVIRONMENT_AMBIENCES.has(input.ambience) ? input.ambience : "balanced",
+        background: ENVIRONMENT_BACKGROUNDS.has(input.background) ? input.background : "signal"
+      },
       createdAt: timestamp,
       updatedAt: timestamp,
       state: { username: name, notes: [], todos: [], events: [], items: [] }
@@ -381,6 +475,11 @@ export function createProfileRepository(options = {}) {
     }
     if (Object.hasOwn(patch, "space")) profile.defaultSpace = text(patch.space, nextType, 80);
     if (Object.hasOwn(patch, "flow")) profile.defaultFlow = text(patch.flow, "Essentiel", 80);
+    if (!profile.environment || typeof profile.environment !== "object") profile.environment = {};
+    if (Object.hasOwn(patch, "widgets")) profile.environment.widgets = safeList(patch.widgets, ENVIRONMENT_WIDGETS);
+    if (Object.hasOwn(patch, "integrations")) profile.environment.integrations = safeList(patch.integrations, ENVIRONMENT_INTEGRATIONS, 4);
+    if (Object.hasOwn(patch, "ambience") && ENVIRONMENT_AMBIENCES.has(patch.ambience)) profile.environment.ambience = patch.ambience;
+    if (Object.hasOwn(patch, "background") && ENVIRONMENT_BACKGROUNDS.has(patch.background)) profile.environment.background = patch.background;
     profile.updatedAt = now().toISOString();
     return persistProfiles(profiles, `Profil ${profileView(profile, index).name} mis à jour.`, profileView(profile, index));
   }
@@ -410,13 +509,14 @@ export function createProfileRepository(options = {}) {
     const index = profiles.findIndex((profile) => String(profile?.id) === String(id));
     if (index < 0) return result(false, "unavailable", "Ce profil n'est pas disponible.");
     const [removed] = profiles.splice(index, 1);
-    const activeId = text(storage?.getItem(ACTIVE_PROFILE_KEY), "", 80);
+    const activeKey = ownerId ? `${ACTIVE_PROFILE_KEY}:${ownerId}` : ACTIVE_PROFILE_KEY;
+    const activeId = text(storage?.getItem(activeKey), "", 80);
     const nextActive = activeId === String(id)
       ? (profiles.find((profile) => !hasProfileLock(profile)) || profiles[0])
       : null;
     const persisted = persistProfiles(profiles, `Profil ${profileView(removed, index).name} supprimé.`, profileView(removed, index));
     if (!persisted.ok || !nextActive) return persisted;
-    try { storage?.setItem(ACTIVE_PROFILE_KEY, text(nextActive.id, "", 80)); } catch {}
+    try { storage?.setItem(activeKey, text(nextActive.id, "", 80)); } catch {}
     return persisted;
   }
 
@@ -448,7 +548,7 @@ export function createProfileRepository(options = {}) {
     if (!key) return result(false, "failed", "Collection inconnue.");
     const profiles = readProfiles();
     const profileIndex = activeProfileIndex(profiles);
-    if (profileIndex < 0) return result(false, "unavailable", "Aucun profil local n'est disponible.");
+    if (profileIndex < 0) return result(false, "unavailable", "Aucun profil n'est disponible.");
     const profile = profiles[profileIndex];
     if (!profile.state || typeof profile.state !== "object") profile.state = {};
     if (!Array.isArray(profile.state[key])) profile.state[key] = [];
@@ -456,24 +556,24 @@ export function createProfileRepository(options = {}) {
     try {
       const data = mutation(profile.state[key], profile.state);
       persistRawProfiles(profiles);
-      return result(true, "completed", "Enregistré localement.", data ?? null);
+      return result(true, "completed", "Modification en attente de synchronisation.", data ?? null);
     } catch (error) {
-      return result(false, "failed", "L'enregistrement local a échoué.", error);
+      return result(false, "failed", "La mise en cache a échoué.", error);
     }
   }
 
   function mutateState(mutation) {
     const profiles = readProfiles();
     const profileIndex = activeProfileIndex(profiles);
-    if (profileIndex < 0) return result(false, "unavailable", "Aucun profil local n'est disponible.");
+    if (profileIndex < 0) return result(false, "unavailable", "Aucun profil n'est disponible.");
     const profile = profiles[profileIndex];
     if (!profile.state || typeof profile.state !== "object") profile.state = {};
     try {
       const data = mutation(profile.state);
       persistRawProfiles(profiles);
-      return result(true, "completed", "Enregistre localement.", data ?? null);
+      return result(true, "completed", "Modification en attente de synchronisation.", data ?? null);
     } catch (error) {
-      return result(false, "failed", "L'enregistrement local a echoue.", error);
+      return result(false, "failed", "La mise en cache a echoue.", error);
     }
   }
 
@@ -579,6 +679,13 @@ export function createProfileRepository(options = {}) {
   });
 
   const files = Object.freeze({
+    setView(view) {
+      return mutateState((state) => {
+        if (!state.filesExplorer || typeof state.filesExplorer !== "object") state.filesExplorer = {};
+        state.filesExplorer.view = view === "grid" ? "grid" : "list";
+        return state.filesExplorer.view;
+      });
+    },
     create(input = {}) {
       return mutate("files", (list) => {
         const type = ["link", "folder"].includes(input.type) ? input.type : "link";
@@ -656,18 +763,20 @@ export function createProfileRepository(options = {}) {
   const connections = Object.freeze({
     configure(id, input = {}) {
       return mutateState((state) => {
-        if (!state.connections || typeof state.connections !== "object") state.connections = {};
-        const integrationId = text(id, "", 80);
+        if (!state.connections || typeof state.connections !== "object" || Array.isArray(state.connections)) state.connections = {};
+        const integrationId = safeIdentifier(id);
         if (!integrationId) throw new Error("Integration invalide");
-        const existing = state.connections[integrationId] && typeof state.connections[integrationId] === "object" ? state.connections[integrationId] : {};
+        const existing = Object.hasOwn(state.connections, integrationId) && typeof state.connections[integrationId] === "object" ? state.connections[integrationId] : {};
         state.connections[integrationId] = {
           ...existing,
           id: integrationId,
           status: CONNECTION_STATUSES.has(existing.status) ? existing.status : "disconnected",
           setupComplete: true,
+          methodId: safeIdentifier(input.methodId) || safeIdentifier(existing.methodId),
+          reference: text(input.reference, existing.reference || "", 512),
           configuredAt: now().toISOString(),
           apiVersion: text(input.apiVersion || existing.apiVersion, "En attente d'OAuth", 40),
-          detail: text(input.detail, "Configuration locale prete. Aucun secret stocke.", 180)
+          detail: text(input.detail, "Configuration chiffree prete. Aucun secret stocke.", 180)
         };
         return connectionView(integrationId, state.connections[integrationId]);
       });
@@ -675,16 +784,21 @@ export function createProfileRepository(options = {}) {
     updateStatus(id, status, patch = {}) {
       return mutateState((state) => {
         if (!CONNECTION_STATUSES.has(status)) throw new Error("Etat de connexion invalide");
-        if (!state.connections || typeof state.connections !== "object") state.connections = {};
-        const integrationId = text(id, "", 80);
-        const existing = state.connections[integrationId] && typeof state.connections[integrationId] === "object" ? state.connections[integrationId] : {};
+        if (!state.connections || typeof state.connections !== "object" || Array.isArray(state.connections)) state.connections = {};
+        const integrationId = safeIdentifier(id);
+        if (!integrationId) throw new Error("Integration invalide");
+        const existing = Object.hasOwn(state.connections, integrationId) && typeof state.connections[integrationId] === "object" ? state.connections[integrationId] : {};
+        const responseMs = Number(Object.hasOwn(patch, "responseMs") ? patch.responseMs : existing.responseMs);
         state.connections[integrationId] = {
           ...existing,
           id: integrationId,
           status,
           setupComplete: existing.setupComplete === true,
+          methodId: safeIdentifier(patch.methodId) || safeIdentifier(existing.methodId),
+          reference: text(patch.reference, existing.reference || "", 512),
           lastSyncAt: text(patch.lastSyncAt || existing.lastSyncAt, "", 40),
           lastTestedAt: text(patch.lastTestedAt || existing.lastTestedAt, "", 40),
+          responseMs: Number.isFinite(responseMs) ? Math.min(600000, Math.max(0, Math.round(responseMs))) : null,
           apiVersion: text(patch.apiVersion || existing.apiVersion, "Non connectee", 40),
           detail: text(patch.detail, existing.detail || "", 180)
         };
@@ -695,15 +809,24 @@ export function createProfileRepository(options = {}) {
       const current = snapshot().connections.find((connection) => connection.id === String(id));
       if (!current?.setupComplete) return result(false, "unavailable", "Terminez d'abord le guide de configuration.");
       if (current.status !== "connected") return result(false, "unavailable", "Le connecteur est prepare, mais aucun OAuth backend n'est actif.", current);
-      return this.updateStatus(id, "connected", { lastTestedAt: now().toISOString(), lastSyncAt: current.lastSyncAt, apiVersion: current.apiVersion, detail: "Etat local verifie." });
+      return this.updateStatus(id, "connected", { lastTestedAt: now().toISOString(), lastSyncAt: current.lastSyncAt, apiVersion: current.apiVersion, detail: "Etat de connexion verifie." });
     },
     disconnect(id) {
-      return this.updateStatus(id, "disconnected", { detail: "Connexion locale desactivee.", apiVersion: "Non connectee" });
+      return mutateState((state) => {
+        const integrationId = safeIdentifier(id);
+        if (!integrationId) throw new Error("Integration invalide");
+        if (!state.connections || typeof state.connections !== "object" || Array.isArray(state.connections)) state.connections = {};
+        delete state.connections[integrationId];
+        return connectionView(integrationId, { status: "disconnected", detail: "Association supprimee." });
+      });
     }
   });
 
   return Object.freeze({
     snapshot,
+    exportCloudState,
+    hydrateCloudState,
+    subscribePersistence,
     listProfiles,
     activeProfile,
     selectProfile,

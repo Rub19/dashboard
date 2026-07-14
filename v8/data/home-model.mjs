@@ -1,5 +1,4 @@
-const PROFILE_STORAGE_KEY = "myspace_profiles_backup";
-const ACTIVE_PROFILE_KEY = "ethone:v8-profile-id";
+import { createDailyBriefing } from "./daily-briefing.mjs";
 
 function safeArray(value) {
   return Array.isArray(value) ? value : [];
@@ -8,17 +7,6 @@ function safeArray(value) {
 function safeText(value, fallback = "") {
   const text = String(value ?? "").replace(/[\u0000-\u001f\u007f]/g, " ").trim();
   return (text || fallback).slice(0, 120);
-}
-
-function safeReadJSON(storage, key, fallback) {
-  try {
-    const raw = storage?.getItem(key);
-    if (!raw) return fallback;
-    const parsed = JSON.parse(raw);
-    return parsed == null ? fallback : parsed;
-  } catch {
-    return fallback;
-  }
 }
 
 export function timeContext(date = new Date()) {
@@ -33,12 +21,6 @@ export function timeContext(date = new Date()) {
     return Object.freeze({ period: "evening", greeting: "Bonsoir", tone: "Le bon moment pour conclure sans se presser." });
   }
   return Object.freeze({ period: "night", greeting: "Encore éveillé", tone: "ETHONE reste discret pendant que vous avancez." });
-}
-
-function activeProfile(storage) {
-  const profiles = safeArray(safeReadJSON(storage, PROFILE_STORAGE_KEY, [])).slice(0, 6);
-  const requestedId = safeText(storage?.getItem?.(ACTIVE_PROFILE_KEY), "");
-  return profiles.find((profile) => String(profile?.id) === requestedId) || profiles[0] || null;
 }
 
 function noteModel(note, index) {
@@ -76,15 +58,14 @@ function isSameDay(value, date) {
 }
 
 export function createHomeModel(options = {}) {
-  const storage = options.storage || globalThis.localStorage;
   const date = options.date instanceof Date ? options.date : new Date();
-  const profile = activeProfile(storage);
-  const state = profile?.state && typeof profile.state === "object" ? profile.state : {};
-  const notes = safeArray(state.notes).map(noteModel);
-  const tasks = safeArray(state.todos).map(taskModel);
-  const events = safeArray(state.events).map(eventModel);
+  const snapshot = options.snapshot && typeof options.snapshot === "object" ? options.snapshot : {};
+  const profile = snapshot.profile && typeof snapshot.profile === "object" ? snapshot.profile : null;
+  const notes = safeArray(snapshot.notes).map(noteModel);
+  const tasks = safeArray(snapshot.tasks).map(taskModel);
+  const events = safeArray(snapshot.events).map(eventModel);
   const context = timeContext(date);
-  const userName = safeText(profile?.name || state.username, "Rub");
+  const userName = safeText(profile?.name, "Rub");
 
   const recentNotes = notes
     .slice()
@@ -109,6 +90,7 @@ export function createHomeModel(options = {}) {
     nextTasks: Object.freeze(openTasks.slice(0, 4)),
     todayEvents: Object.freeze(todayEvents.slice(0, 4)),
     recentNotes: Object.freeze(recentNotes),
+    briefing: createDailyBriefing({ snapshot, date }),
     hasProfileData: Boolean(profile)
   });
 }

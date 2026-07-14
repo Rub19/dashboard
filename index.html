@@ -6,10 +6,10 @@
   <meta name="theme-color" content="#080a0d">
   <meta name="color-scheme" content="dark">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta name="description" content="ETHONE est votre système d'exploitation personnel : un espace unifié pour organiser, créer et avancer.">
+  <meta name="description" content="ETHONE réinvente votre environnement numérique : un espace unifié pour organiser, créer et avancer.">
   <meta name="author" content="ETHONE">
   <meta name="robots" content="index, follow">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://bvgifyzhpzkbrwdjrqsg.supabase.co https://*.supabase.co wss://*.supabase.co https://raspy-fog-bf5b.rub19-mailpro.workers.dev; media-src 'self' blob: https:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://unpkg.com; script-src-attr 'none'; style-src 'self' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://i.scdn.co; connect-src 'self' https://bvgifyzhpzkbrwdjrqsg.supabase.co wss://bvgifyzhpzkbrwdjrqsg.supabase.co https://raspy-fog-bf5b.rub19-mailpro.workers.dev http://127.0.0.1:8787 http://localhost:8787; media-src 'self' blob:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; upgrade-insecure-requests">
   <meta name="application-name" content="ETHONE">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -21,7 +21,7 @@
   <meta property="og:site_name" content="ETHONE">
   <meta property="og:locale" content="fr_FR">
   <meta property="og:title" content="ETHONE">
-  <meta property="og:description" content="ETHONE est votre système d'exploitation personnel : un espace unifié pour organiser, créer et avancer.">
+  <meta property="og:description" content="ETHONE réinvente votre environnement numérique : un espace unifié pour organiser, créer et avancer.">
   <meta property="og:url" content="https://ethone.dev/">
   <meta property="og:image" content="https://ethone.dev/icons/ethone-icon-512.png">
   <meta property="og:image:width" content="512">
@@ -29,7 +29,7 @@
   <meta property="og:image:alt" content="Identité visuelle ETHONE">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="ETHONE">
-  <meta name="twitter:description" content="ETHONE est votre système d'exploitation personnel : un espace unifié pour organiser, créer et avancer.">
+  <meta name="twitter:description" content="ETHONE réinvente votre environnement numérique : un espace unifié pour organiser, créer et avancer.">
   <meta name="twitter:image" content="https://ethone.dev/icons/ethone-icon-512.png">
   <meta name="twitter:image:alt" content="Identité visuelle ETHONE">
   <title>ETHONE</title>
@@ -46,12 +46,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600;650;700&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./v8/styles/tokens.css?v=empty-states-v16">
-  <link rel="stylesheet" href="./v8/styles/base.css?v=empty-states-v16">
-  <link rel="stylesheet" href="./v8/styles/components.css?v=empty-states-v16">
-  <link rel="stylesheet" href="./v8/styles/entry.css?v=empty-states-v16" data-v8-entry-style>
-  <script id="v8-supabase-client" defer crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.1"></script>
-  <script defer src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <script src="./v8/core/density-boot.js"></script>
+  <link rel="stylesheet" href="./v8/styles/tokens.css?v=experience-v71">
+  <link rel="stylesheet" href="./v8/styles/base.css?v=experience-v71">
+  <link rel="stylesheet" href="./v8/styles/components.css?v=experience-v71">
+  <link rel="stylesheet" href="./v8/styles/entry.css?v=experience-v71" data-v8-entry-style>
+  <link rel="stylesheet" href="./v8/styles/presence.css?v=experience-v71">
+  <script id="v8-supabase-client" defer crossorigin="anonymous" integrity="sha384-fx4y4cDx8NYfissnVzdGJY3yVXWY3rn5ab5HTUjpvgT35oDiyAbjjqnLhnRmESNE" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.1"></script>
+  <script defer crossorigin="anonymous" integrity="sha384-uTYyvsSSUZeaPhb5RbKlQa0zY/WpX/QHfvg2mczXyBQOpkWPEDy9lczyp+w7SKXu" src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
 </head>
 <body>
   <div id="ethone-v8-root" aria-live="polite">

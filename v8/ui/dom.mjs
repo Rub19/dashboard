@@ -2,7 +2,6 @@ export function element(tagName, options = {}, children = []) {
   const node = document.createElement(tagName);
   if (options.className) node.className = options.className;
   if (options.text != null) node.textContent = String(options.text);
-  if (options.html != null) node.innerHTML = String(options.html);
   if (options.id) node.id = options.id;
 
   Object.entries(options.attributes || {}).forEach(([name, value]) => {

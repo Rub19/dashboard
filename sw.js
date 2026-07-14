@@ -1,4 +1,4 @@
-const ETHONE_VERSION = "2026-07-13-empty-states-v16";
+const ETHONE_VERSION = "2026-07-14-experience-v71";
 const ETHONE_CACHE = `ethone-${ETHONE_VERSION}`;
 const ETHONE_OFFLINE_URL = "./index.html";
 
@@ -23,48 +23,62 @@ const ETHONE_V8_ASSETS = [
   "./v8/command/history.mjs",
   "./v8/command/search.mjs",
   "./v8/core/actions.mjs",
+  "./v8/core/density-boot.js",
+  "./v8/core/density-engine.mjs",
+  "./v8/brain/preferences.mjs",
   "./v8/core/document-metadata.mjs",
   "./v8/core/lifecycle.mjs",
+  "./v8/core/presence-engine.mjs",
   "./v8/core/router.mjs",
   "./v8/core/store.mjs",
   "./v8/core/style-loader.mjs",
   "./v8/data/home-model.mjs",
+  "./v8/data/daily-briefing.mjs",
   "./v8/data/activity-journal.mjs",
   "./v8/data/integrations.mjs",
   "./v8/data/navigation.mjs",
+  "./v8/data/workspaces.mjs",
   "./v8/data/profile-repository.mjs",
   "./v8/entry/entry-coordinator.mjs",
   "./v8/entry/login.mjs",
+  "./v8/entry/password-recovery.mjs",
   "./v8/entry/profile-selection.mjs",
   "./v8/i18n/catalog.mjs",
   "./v8/i18n/runtime.mjs",
   "./v8/pages/calendar.mjs",
   "./v8/pages/calendar-model.mjs",
-  "./v8/pages/brain.mjs",
   "./v8/pages/activity.mjs",
   "./v8/pages/activity-style.mjs",
   "./v8/pages/connections.mjs",
+  "./v8/pages/connections-model.mjs",
   "./v8/pages/feature-fallback.mjs",
   "./v8/pages/files.mjs",
   "./v8/pages/files-model.mjs",
   "./v8/pages/home.mjs",
   "./v8/pages/notes.mjs",
   "./v8/pages/notes-model.mjs",
-  "./v8/pages/settings.mjs",
   "./v8/pages/tasks.mjs",
   "./v8/pages/tasks-model.mjs",
   "./v8/services/auth-adapter.mjs",
+  "./v8/services/auth-storage.mjs",
+  "./v8/services/clock-manager.mjs",
   "./v8/services/external-diagnostics.mjs",
+  "./v8/services/external-services-client.mjs",
+  "./v8/services/external-services-config.mjs",
   "./v8/services/network-client.mjs",
   "./v8/services/public-auth-config.mjs",
+  "./v8/services/rate-limiter.mjs",
   "./v8/services/service-worker.mjs",
-  "./v8/styles/base.css?v=empty-states-v16",
-  "./v8/styles/activity.css?v=empty-states-v16",
-  "./v8/styles/components.css?v=empty-states-v16",
-  "./v8/styles/entry.css?v=empty-states-v16",
-  "./v8/styles/shell.css?v=empty-states-v16",
-  "./v8/styles/tokens.css?v=empty-states-v16",
-  "./v8/styles/workspaces.css?v=empty-states-v16",
+  "./v8/services/spotify-live.mjs",
+  "./v8/services/supabase-state-sync.mjs",
+  "./v8/styles/base.css?v=experience-v71",
+  "./v8/styles/activity.css?v=experience-v71",
+  "./v8/styles/components.css?v=experience-v71",
+  "./v8/styles/entry.css?v=experience-v71",
+  "./v8/styles/presence.css?v=experience-v71",
+  "./v8/styles/shell.css?v=experience-v71",
+  "./v8/styles/tokens.css?v=experience-v71",
+  "./v8/styles/workspaces.css?v=experience-v71",
   "./v8/ui/dom.mjs",
   "./v8/ui/empty-state.mjs",
   "./v8/ui/icons.mjs",
@@ -73,7 +87,10 @@ const ETHONE_V8_ASSETS = [
   "./v8/ui/navigation.mjs",
   "./v8/ui/panel.mjs",
   "./v8/ui/shell.mjs",
+  "./v8/ui/spotify-live.mjs",
   "./v8/ui/toast.mjs",
+  "./v8/ui/tooltip.mjs",
+  "./v8/ui/visual-haptics.mjs",
   "./v8/ui/window-system.mjs"
 ];
 
@@ -89,13 +106,13 @@ function isRetiredDashboardRequest(pathname) {
 }
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(precache().then(() => self.skipWaiting()));
+  event.waitUntil(precache());
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((key) => key !== ETHONE_CACHE).map((key) => caches.delete(key))))
+      .then((keys) => Promise.all(keys.filter((key) => key.startsWith("ethone-") && key !== ETHONE_CACHE).map((key) => caches.delete(key))))
       .then(() => self.clients.claim())
   );
 });

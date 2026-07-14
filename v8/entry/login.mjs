@@ -3,7 +3,7 @@ import { refreshIcons } from "../ui/icons.mjs";
 
 export const LOGIN_LOCALES = Object.freeze({
   fr: Object.freeze({
-    brandLine: "Votre système personnel, prêt à s'ouvrir.",
+    brandLine: "Votre environnement numérique. Réinventé.",
     login: "Connexion",
     register: "Créer un compte",
     identifier: "E-mail ou identifiant",
@@ -13,7 +13,7 @@ export const LOGIN_LOCALES = Object.freeze({
     oauth: "ou continuer avec",
     forgot: "Mot de passe oublié ?",
     username: "Nom d'utilisateur",
-    emailOptional: "E-mail (optionnel)",
+    email: "E-mail",
     remember: "Rester connecté",
     loginSubtitle: "Reprenez exactement là où vous vous êtes arrêté.",
     registerSubtitle: "Créez votre environnement personnel en quelques secondes.",
@@ -32,13 +32,14 @@ export const LOGIN_LOCALES = Object.freeze({
     github: "Continuer avec GitHub",
     network: "Réseau",
     networkReady: "Prêt",
-    storage: "Stockage",
-    localFirst: "Local d'abord",
+    storage: "Supabase",
+    cloudReady: "Cloud disponible",
+    cloudUnavailable: "Cloud indisponible",
     local: "Heure locale",
     environment: "ENVIRONNEMENT PERSONNEL"
   }),
   en: Object.freeze({
-    brandLine: "Your personal system, ready to open.",
+    brandLine: "Your digital environment. Reimagined.",
     login: "Sign in",
     register: "Create account",
     identifier: "Email or username",
@@ -48,7 +49,7 @@ export const LOGIN_LOCALES = Object.freeze({
     oauth: "or continue with",
     forgot: "Forgot password?",
     username: "Username",
-    emailOptional: "Email (optional)",
+    email: "Email",
     remember: "Stay signed in",
     loginSubtitle: "Continue exactly where you left off.",
     registerSubtitle: "Create your personal environment in seconds.",
@@ -67,13 +68,14 @@ export const LOGIN_LOCALES = Object.freeze({
     github: "Continue with GitHub",
     network: "Network",
     networkReady: "Ready",
-    storage: "Storage",
-    localFirst: "Local first",
+    storage: "Supabase",
+    cloudReady: "Cloud available",
+    cloudUnavailable: "Cloud unavailable",
     local: "Local time",
     environment: "PERSONAL OPERATING ENVIRONMENT"
   }),
   es: Object.freeze({
-    brandLine: "Tu sistema personal, listo para abrirse.",
+    brandLine: "Tu entorno digital. Reinventado.",
     login: "Iniciar sesión",
     register: "Crear cuenta",
     identifier: "Email o usuario",
@@ -83,7 +85,7 @@ export const LOGIN_LOCALES = Object.freeze({
     oauth: "o continuar con",
     forgot: "¿Olvidaste tu contraseña?",
     username: "Usuario",
-    emailOptional: "Email (opcional)",
+    email: "Email",
     remember: "Mantener la sesión",
     loginSubtitle: "Continúa exactamente donde lo dejaste.",
     registerSubtitle: "Crea tu entorno personal en segundos.",
@@ -102,13 +104,14 @@ export const LOGIN_LOCALES = Object.freeze({
     github: "Continuar con GitHub",
     network: "Red",
     networkReady: "Lista",
-    storage: "Almacenamiento",
-    localFirst: "Primero local",
+    storage: "Supabase",
+    cloudReady: "Cloud disponible",
+    cloudUnavailable: "Cloud no disponible",
     local: "Hora local",
     environment: "ENTORNO OPERATIVO PERSONAL"
   }),
   de: Object.freeze({
-    brandLine: "Dein persönliches System, bereit zum Start.",
+    brandLine: "Deine digitale Umgebung. Neu gedacht.",
     login: "Anmelden",
     register: "Konto erstellen",
     identifier: "E-Mail oder Benutzername",
@@ -118,7 +121,7 @@ export const LOGIN_LOCALES = Object.freeze({
     oauth: "oder weiter mit",
     forgot: "Passwort vergessen?",
     username: "Benutzername",
-    emailOptional: "E-Mail (optional)",
+    email: "E-Mail",
     remember: "Angemeldet bleiben",
     loginSubtitle: "Mache genau dort weiter, wo du aufgehört hast.",
     registerSubtitle: "Erstelle deine persönliche Umgebung in Sekunden.",
@@ -137,8 +140,9 @@ export const LOGIN_LOCALES = Object.freeze({
     github: "Weiter mit GitHub",
     network: "Netzwerk",
     networkReady: "Bereit",
-    storage: "Speicher",
-    localFirst: "Lokal zuerst",
+    storage: "Supabase",
+    cloudReady: "Cloud verfugbar",
+    cloudUnavailable: "Cloud nicht verfugbar",
     local: "Ortszeit",
     environment: "PERSÖNLICHE ARBEITSUMGEBUNG"
   })
@@ -148,10 +152,10 @@ export function passwordStrength(value) {
   const password = String(value ?? "");
   if (!password) return Object.freeze({ score: 0, label: "empty" });
   let score = 0;
-  if (password.length >= 6) score += 1;
-  if (password.length >= 10) score += 1;
+  if (password.length >= 12) score += 1;
   if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score += 1;
-  if (/\d/.test(password) && /[^A-Za-z0-9]/.test(password)) score += 1;
+  if (/\d/.test(password)) score += 1;
+  if (/[^A-Za-z0-9\s]/.test(password)) score += 1;
   score = Math.min(4, score);
   const labels = ["empty", "weak", "fair", "good", "strong"];
   return Object.freeze({ score, label: labels[score] });
@@ -166,13 +170,13 @@ function storedLocale(storage) {
   }
 }
 
-function field({ id, type = "text", key, autocomplete, placeholder, bindings }) {
+function field({ id, type = "text", key, autocomplete, placeholder, bindings, required = type !== "email" }) {
   const labelText = element("span", { className: "v8-field__label" });
   bindings.push({ node: labelText, key, target: "text" });
   const input = element("input", {
     className: "v8-input v8-auth__input",
     id,
-    attributes: { type, autocomplete, placeholder, required: type !== "email" || null }
+    attributes: { type, autocomplete, placeholder, required: required || null }
   });
   return {
     input,
@@ -222,6 +226,7 @@ export function mountLogin(root, options = {}) {
   if (!root) throw new TypeError("Login requires a root element");
   const auth = options.auth;
   if (!auth) throw new TypeError("Login requires an auth adapter");
+  const clockManager = options.clockManager || null;
   const storage = options.storage || globalThis.localStorage;
   const abortController = new AbortController();
   const listenerOptions = { signal: abortController.signal };
@@ -231,6 +236,9 @@ export function mountLogin(root, options = {}) {
   let available = options.authResult?.status !== "unavailable";
   let operation = 0;
   let destroyed = false;
+  let pointerFrame = null;
+  let pointerX = 0;
+  let pointerY = 0;
 
   root.replaceChildren();
   root.dataset.entryState = "login";
@@ -289,7 +297,7 @@ export function mountLogin(root, options = {}) {
   ]);
 
   const registerUsername = field({ id: "v8-register-username", key: "username", autocomplete: "username", placeholder: "Rub", bindings });
-  const registerEmail = field({ id: "v8-register-email", type: "email", key: "emailOptional", autocomplete: "email", placeholder: "rub@example.com", bindings });
+  const registerEmail = field({ id: "v8-register-email", type: "email", key: "email", autocomplete: "email", placeholder: "rub@example.com", bindings, required: true });
   const registerPassword = passwordField({ id: "v8-register-password", autocomplete: "new-password", bindings, onToggle: togglePassword });
   const strengthLabel = element("span", { className: "v8-auth__strength-label", text: "" });
   const strength = element("div", { className: "v8-auth__strength", attributes: { role: "meter", "aria-label": "Robustesse du mot de passe", "aria-valuemin": "0", "aria-valuemax": "4", "aria-valuenow": "0" } }, [
@@ -301,7 +309,7 @@ export function mountLogin(root, options = {}) {
   const registerForm = element("form", {
     className: "v8-auth__form",
     id: "v8-register-form",
-    attributes: { "aria-labelledby": "v8-auth-tab-register", "aria-hidden": "true", novalidate: true, hidden: true }
+    attributes: { "aria-labelledby": "v8-auth-tab-register", "aria-hidden": "true", inert: "", novalidate: true }
   }, [registerUsername.node, registerEmail.node, registerPassword.node, strength, registerSubmit]);
 
   const oauthLabel = bindText(element("span"), "oauth");
@@ -313,7 +321,7 @@ export function mountLogin(root, options = {}) {
   const recovery = element("div", { className: "v8-auth__recovery", attributes: { hidden: available ? true : null } }, [retryButton, v8OnlyNotice]);
 
   const title = bindText(element("p", { className: "v8-auth__subtitle" }), "loginSubtitle");
-  const instrument = element("section", { className: "v8-auth v8-surface", attributes: { "aria-labelledby": "v8-entry-title" } }, [
+  const instrument = element("section", { className: "v8-auth v8-surface", attributes: { "aria-labelledby": "v8-entry-title" }, dataset: { authMode: "login" } }, [
     element("div", { className: "v8-auth__header" }, [
       element("div", { className: "v8-auth__status" }, [element("span", { className: "v8-auth__status-dot" }), bindText(element("span"), "ready")]),
       title
@@ -325,6 +333,7 @@ export function mountLogin(root, options = {}) {
     element("div", { className: "v8-auth__oauth" }, [googleButton, githubButton]),
     recovery
   ]);
+  const instrumentShell = element("div", { className: "v8-auth-shell" }, [instrument]);
 
   const localeSelect = element("select", { className: "v8-entry__locale", attributes: { "aria-label": "Langue de l'interface" } }, [
     element("option", { text: "Français", attributes: { value: "fr" } }),
@@ -335,18 +344,27 @@ export function mountLogin(root, options = {}) {
   localeSelect.value = locale;
 
   const networkTelemetry = telemetryItem("wifi", "Network", "Ready");
-  const storageTelemetry = telemetryItem("hard-drive", "Storage", "Local first");
+  const storageTelemetry = telemetryItem("cloud", "Supabase", "Cloud available");
   const timeTelemetry = telemetryItem("clock-3", "Local", "");
   bindings.push(
     { node: networkTelemetry.label, key: "network", target: "text" },
     { node: networkTelemetry.value, key: "networkReady", target: "text" },
     { node: storageTelemetry.label, key: "storage", target: "text" },
-    { node: storageTelemetry.value, key: "localFirst", target: "text" },
     { node: timeTelemetry.label, key: "local", target: "text" }
   );
 
   const surface = element("section", { className: "v8-entry v8-entry--login", attributes: { "aria-label": "Connexion à ETHONE" }, dataset: { i18nIgnore: "" } }, [
-    element("div", { className: "v8-entry__signal-field", attributes: { "aria-hidden": "true" } }, [element("span"), element("span"), element("span")]),
+    element("div", { className: "v8-entry__signal-field", attributes: { "aria-hidden": "true" } }, [
+      element("span"),
+      element("span"),
+      element("span"),
+      element("div", { className: "v8-entry__particles" }, [
+        element("i", { className: "v8-entry__particle" }),
+        element("i", { className: "v8-entry__particle" }),
+        element("i", { className: "v8-entry__particle" }),
+        element("i", { className: "v8-entry__particle" })
+      ])
+    ]),
     element("div", { className: "v8-entry__frame" }, [
       element("header", { className: "v8-entry__topbar" }, [
         element("div", { className: "v8-entry__brand" }, [
@@ -364,9 +382,9 @@ export function mountLogin(root, options = {}) {
           bindText(element("span", { className: "v8-entry__eyebrow" }), "environment"),
           element("h1", { className: "v8-entry__title", id: "v8-entry-title", text: "ETHONE" }),
           bindText(element("p", { className: "v8-entry__brand-line" }), "brandLine"),
-          element("span", { className: "v8-entry__monogram", text: "08", attributes: { "aria-hidden": "true" } })
+          element("span", { className: "v8-entry__monogram", text: "8", attributes: { "aria-hidden": "true" } })
         ]),
-        instrument
+        instrumentShell
       ]),
       element("footer", { className: "v8-entry__footer" }, [
         element("div", { className: "v8-entry__telemetry" }, [
@@ -380,6 +398,29 @@ export function mountLogin(root, options = {}) {
   ]);
 
   root.append(surface);
+
+  function commitPointerHalo() {
+    pointerFrame = null;
+    if (destroyed) return;
+    surface.style.setProperty("--v8-login-pointer-x", `${Math.round(pointerX)}px`);
+    surface.style.setProperty("--v8-login-pointer-y", `${Math.round(pointerY)}px`);
+  }
+
+  function handlePointerMove(event) {
+    if (!Number.isFinite(event.clientX) || !Number.isFinite(event.clientY)) return;
+    pointerX = event.clientX;
+    pointerY = event.clientY;
+    surface.dataset.pointerHalo = "ready";
+    if (pointerFrame !== null) return;
+    pointerFrame = globalThis.requestAnimationFrame(commitPointerHalo);
+  }
+
+  const finePointer = globalThis.matchMedia?.("(hover: hover) and (pointer: fine)");
+  const reducedMotion = globalThis.matchMedia?.("(prefers-reduced-motion: reduce)");
+  if (finePointer?.matches && !reducedMotion?.matches) {
+    surface.addEventListener("pointermove", handlePointerMove, { signal: abortController.signal, passive: true });
+    surface.addEventListener("pointerleave", () => { surface.dataset.pointerHalo = "idle"; }, listenerOptions);
+  }
 
   function applyCopy() {
     const copy = LOGIN_LOCALES[locale] || LOGIN_LOCALES.fr;
@@ -397,7 +438,8 @@ export function mountLogin(root, options = {}) {
     strength.setAttribute("aria-label", copy.strength);
     googleButton.setAttribute("aria-label", copy.google);
     githubButton.setAttribute("aria-label", copy.github);
-    timeTelemetry.value.textContent = new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit" }).format(new Date());
+    storageTelemetry.value.textContent = available ? copy.cloudReady : copy.cloudUnavailable;
+    timeTelemetry.value.textContent = clockManager?.snapshot?.().time || new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit" }).format(new Date());
     document.documentElement.lang = locale;
   }
 
@@ -410,8 +452,9 @@ export function mountLogin(root, options = {}) {
     registerTab.setAttribute("aria-selected", String(!loginActive));
     loginTab.tabIndex = loginActive ? 0 : -1;
     registerTab.tabIndex = loginActive ? -1 : 0;
-    loginForm.hidden = !loginActive;
-    registerForm.hidden = loginActive;
+    instrument.dataset.authMode = activeTab;
+    loginForm.toggleAttribute("inert", !loginActive);
+    registerForm.toggleAttribute("inert", loginActive);
     loginForm.setAttribute("aria-hidden", String(!loginActive));
     registerForm.setAttribute("aria-hidden", String(loginActive));
     feedback.textContent = "";
@@ -442,6 +485,8 @@ export function mountLogin(root, options = {}) {
 
   function setAvailable(next, message = "") {
     available = Boolean(next);
+    const copy = LOGIN_LOCALES[locale] || LOGIN_LOCALES.fr;
+    storageTelemetry.value.textContent = available ? copy.cloudReady : copy.cloudUnavailable;
     [loginSubmit, registerSubmit, googleButton, githubButton].forEach((control) => { control.disabled = !available; });
     recovery.hidden = available;
     if (message) showFeedback(message, available ? "success" : "error");
@@ -540,6 +585,7 @@ export function mountLogin(root, options = {}) {
   }, listenerOptions);
 
   applyCopy();
+  const releaseClock = clockManager?.subscribe?.((snapshot) => { timeTelemetry.value.textContent = snapshot.time; }) || (() => {});
   setAvailable(available, options.authResult?.message || "");
   refreshIcons();
   queueMicrotask(() => { if (!destroyed) loginIdentifier.input.focus(); });
@@ -548,6 +594,9 @@ export function mountLogin(root, options = {}) {
     if (destroyed) return false;
     destroyed = true;
     operation += 1;
+    if (pointerFrame !== null) globalThis.cancelAnimationFrame(pointerFrame);
+    pointerFrame = null;
+    releaseClock();
     abortController.abort();
     surface.remove();
     root.removeAttribute("data-entry-state");

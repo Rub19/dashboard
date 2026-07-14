@@ -1,8 +1,17 @@
+import { createRateLimiter } from "./rate-limiter.mjs";
+
 const DEFAULT_TIMEOUT_MS = 12000;
 const USERNAME_SUFFIX = "@dashboard.local";
 const OAUTH_PROVIDERS = Object.freeze({
   google: "email profile",
   github: "read:user user:email"
+});
+const ATTEMPT_POLICIES = Object.freeze({
+  signIn: Object.freeze({ limit: 5, windowMs: 60_000, blockMs: 60_000 }),
+  signUp: Object.freeze({ limit: 3, windowMs: 600_000, blockMs: 600_000 }),
+  resetPassword: Object.freeze({ limit: 3, windowMs: 900_000, blockMs: 900_000 }),
+  oauth: Object.freeze({ limit: 6, windowMs: 60_000, blockMs: 60_000 }),
+  updatePassword: Object.freeze({ limit: 5, windowMs: 300_000, blockMs: 300_000 })
 });
 
 export const AUTH_STATES = Object.freeze({
@@ -10,6 +19,7 @@ export const AUTH_STATES = Object.freeze({
   authenticated: "authenticated",
   unauthenticated: "unauthenticated",
   refreshing: "refreshing",
+  recovering: "recovering",
   signingIn: "signing-in",
   signingOut: "signing-out",
   error: "error"
@@ -31,11 +41,35 @@ function unavailable(message) {
   return result(false, "unavailable", message, null);
 }
 
+function rateLimited() {
+  return result(false, "rate-limited", "Trop de tentatives. Patientez quelques instants avant de réessayer.", null);
+}
+
 function cleanText(value, limit = 240) {
   return String(value ?? "")
     .replace(/[\u0000-\u001f\u007f]/g, "")
     .trim()
     .slice(0, limit);
+}
+
+function validEmail(value) {
+  const email = cleanText(value, 320).toLowerCase();
+  return email.length >= 5 && email.length <= 320 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+export function validateNewPassword(value) {
+  const password = String(value ?? "");
+  const valid = password.length >= 12
+    && password.length <= 128
+    && /[a-z]/.test(password)
+    && /[A-Z]/.test(password)
+    && /\d/.test(password)
+    && /[^A-Za-z0-9\s]/.test(password)
+    && !/[\u0000-\u001f\u007f]/.test(password);
+  return Object.freeze({
+    valid,
+    message: valid ? "" : "Utilisez au moins 12 caractères avec une minuscule, une majuscule, un chiffre et un symbole."
+  });
 }
 
 function sanitizeUser(user) {
@@ -71,10 +105,8 @@ function withTimeout(promise, timeoutMs) {
 export function createAuthAdapter(options = {}) {
   const runtime = options.runtime || globalThis;
   const storage = options.storage || runtime.localStorage;
-  const fetcher = options.fetch || runtime.fetch?.bind(runtime);
-  const network = options.network || null;
-  const workerUrl = cleanText(options.workerUrl, 500).replace(/\/$/, "");
-  const allowUsernameLookup = options.allowUsernameLookup === true;
+  const attemptLimiter = options.rateLimiter || createRateLimiter();
+  const ownsRateLimiter = !options.rateLimiter;
   const redirectUrl = cleanText(options.redirectUrl || runtime.location?.href?.split("#")[0], 1000);
   const timeoutMs = Math.max(10, Number(options.timeoutMs) || DEFAULT_TIMEOUT_MS);
   const listeners = new Set();
@@ -99,10 +131,17 @@ export function createAuthAdapter(options = {}) {
   function notify(type, session) {
     const event = Object.freeze({ type: cleanText(type, 80) || "UNKNOWN", session: sanitizeSession(session) });
     if (event.type === "SIGNED_OUT") publishState(AUTH_STATES.unauthenticated);
+    else if (event.type === "PASSWORD_RECOVERY" && session?.user) publishState(AUTH_STATES.recovering, { user: session.user });
     else if (event.type === "TOKEN_REFRESHED" || event.type === "SIGNED_IN") publishState(AUTH_STATES.authenticated, { user: session?.user });
     [...listeners].forEach((listener) => {
       try { listener(event); } catch {}
     });
+  }
+
+  function consumeAttempt(scope, identity, policy) {
+    const key = `${scope}:${cleanText(identity, 240).toLowerCase() || "anonymous"}`;
+    const attempt = attemptLimiter.consume(key, policy);
+    return Object.freeze({ key, ...attempt });
   }
 
   function attachProviderSubscription() {
@@ -151,9 +190,7 @@ export function createAuthAdapter(options = {}) {
     const ready = await initialize();
     if (!ready.ok) return ready;
     try {
-      const response = network?.execute
-        ? await network.execute(() => handler(client), { timeoutMs, retries: 0 })
-        : await withTimeout(handler(client), timeoutMs);
+      const response = await withTimeout(handler(client), timeoutMs);
       if (response?.error) return failed(providerMessage(response.error, fallbackMessage));
       return completed("Action terminée.", response?.data ?? null);
     } catch (error) {
@@ -181,23 +218,15 @@ export function createAuthAdapter(options = {}) {
     );
   }
 
+  async function getClient() {
+    const ready = await initialize();
+    return ready.ok ? client : null;
+  }
+
   async function resolveEmail(identifier) {
     const normalized = cleanText(identifier, 320).toLowerCase();
     if (normalized.includes("@")) return normalized;
     if (!normalized) return "";
-    if (allowUsernameLookup && fetcher && workerUrl) {
-      try {
-        const url = `${workerUrl}/supabase/username?username=${encodeURIComponent(normalized)}`;
-        const response = network?.request
-          ? await network.request(url, { timeoutMs: Math.min(timeoutMs, 5000), retries: 1, dedupeKey: `auth:username:${normalized}` })
-          : await withTimeout(fetcher(url), Math.min(timeoutMs, 5000));
-        if (response?.ok) {
-          const payload = await response.json();
-          const email = cleanText(payload?.email, 320).toLowerCase();
-          if (email.includes("@")) return email;
-        }
-      } catch {}
-    }
     return `${normalized}${USERNAME_SUFFIX}`;
   }
 
@@ -205,6 +234,8 @@ export function createAuthAdapter(options = {}) {
     const identifier = cleanText(credentials.identifier, 320);
     const password = String(credentials.password ?? "");
     if (!identifier || !password) return failed("Renseignez votre identifiant et votre mot de passe.");
+    const attempt = consumeAttempt("sign-in", identifier, ATTEMPT_POLICIES.signIn);
+    if (!attempt.allowed) return rateLimited();
     try {
       storage?.setItem?.("ethone_remember_auth", credentials.remember ? "1" : "0");
     } catch {}
@@ -215,9 +246,11 @@ export function createAuthAdapter(options = {}) {
       "Connexion impossible. Vérifiez vos identifiants."
     );
     if (!response.ok) {
-      publishState(AUTH_STATES.error, { error: new Error(response.message) });
-      return response;
+      const generic = "Connexion impossible. Vérifiez vos identifiants.";
+      publishState(AUTH_STATES.error, { error: new Error(generic) });
+      return failed(generic);
     }
+    attemptLimiter.reset(attempt.key);
     publishState(AUTH_STATES.authenticated, { user: response.data?.user || response.data?.session?.user });
     return completed("Connexion réussie.", {
       user: sanitizeUser(response.data?.user || response.data?.session?.user),
@@ -229,18 +262,24 @@ export function createAuthAdapter(options = {}) {
     const username = cleanText(account.username, 80);
     const password = String(account.password ?? "");
     const suppliedEmail = cleanText(account.email, 320).toLowerCase();
-    if (!username || !password) return failed("Renseignez un nom et un mot de passe.");
-    if (password.length < 6) return failed("Le mot de passe doit contenir au moins 6 caractères.");
-    const email = suppliedEmail || `${username.toLowerCase()}${USERNAME_SUFFIX}`;
+    if (username.length < 2 || username.length > 64) return failed("Le nom doit contenir entre 2 et 64 caractères.");
+    if (!validEmail(suppliedEmail)) return failed("Saisissez une adresse e-mail valide.");
+    const passwordCheck = validateNewPassword(password);
+    if (!passwordCheck.valid) return failed(passwordCheck.message);
+    const email = suppliedEmail;
+    const attempt = consumeAttempt("sign-up", email, ATTEMPT_POLICIES.signUp);
+    if (!attempt.allowed) return rateLimited();
     publishState(AUTH_STATES.signingIn);
     const response = await operation(
       (activeClient) => activeClient.auth.signUp({ email, password, options: { data: { username } } }),
       "Impossible de créer le compte."
     );
     if (!response.ok) {
-      publishState(AUTH_STATES.error, { error: new Error(response.message) });
-      return response;
+      const generic = "Création du compte impossible. Vérifiez vos informations ou réessayez plus tard.";
+      publishState(AUTH_STATES.error, { error: new Error(generic) });
+      return failed(generic);
     }
+    attemptLimiter.reset(attempt.key);
     publishState(response.data?.session?.user ? AUTH_STATES.authenticated : AUTH_STATES.unauthenticated, { user: response.data?.user });
     return completed("Compte créé. Vérifiez votre messagerie si une confirmation est requise.", {
       user: sanitizeUser(response.data?.user),
@@ -250,25 +289,51 @@ export function createAuthAdapter(options = {}) {
 
   async function resetPassword(emailInput) {
     const email = cleanText(emailInput, 320).toLowerCase();
-    if (!email.includes("@")) return failed("Saisissez une adresse e-mail valide.");
+    if (!validEmail(email)) return failed("Saisissez une adresse e-mail valide.");
+    const attempt = consumeAttempt("password-reset", email, ATTEMPT_POLICIES.resetPassword);
+    if (!attempt.allowed) return rateLimited();
     const response = await operation(
       (activeClient) => activeClient.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl }),
       "Impossible d'envoyer le lien de réinitialisation."
     );
-    return response.ok ? completed("Lien de réinitialisation envoyé.") : response;
+    if (!response.ok) return failed("Impossible d'envoyer le lien pour le moment. Réessayez plus tard.");
+    attemptLimiter.reset(attempt.key);
+    return completed("Si ce compte existe, un lien de réinitialisation vient d'être envoyé.");
+  }
+
+  async function updatePassword(passwordInput) {
+    const passwordCheck = validateNewPassword(passwordInput);
+    if (!passwordCheck.valid) return failed(passwordCheck.message);
+    const attempt = consumeAttempt("password-update", authState.user?.id || "session", ATTEMPT_POLICIES.updatePassword);
+    if (!attempt.allowed) return rateLimited();
+    const response = await operation(
+      (activeClient) => activeClient.auth.updateUser({ password: String(passwordInput) }),
+      "Impossible de mettre à jour le mot de passe."
+    );
+    if (!response.ok) return failed("Impossible de mettre à jour le mot de passe. Demandez un nouveau lien.");
+    attemptLimiter.reset(attempt.key);
+    publishState(AUTH_STATES.authenticated, { user: response.data?.user || authState.user });
+    return completed("Mot de passe mis à jour.", { user: sanitizeUser(response.data?.user || authState.user) });
   }
 
   async function signInWithOAuth(providerInput) {
     const provider = cleanText(providerInput, 30).toLowerCase();
     const scopes = OAUTH_PROVIDERS[provider];
     if (!scopes) return unavailable("Ce fournisseur de connexion n'est pas disponible.");
+    const attempt = consumeAttempt("oauth", provider, ATTEMPT_POLICIES.oauth);
+    if (!attempt.allowed) return rateLimited();
     publishState(AUTH_STATES.signingIn);
     const response = await operation(
       (activeClient) => activeClient.auth.signInWithOAuth({ provider, options: { redirectTo: redirectUrl, scopes } }),
       `Connexion ${provider} impossible.`
     );
-    if (!response.ok) publishState(AUTH_STATES.error, { error: new Error(response.message) });
-    return response.ok ? completed(`Ouverture de ${provider}.`, { provider }) : response;
+    if (!response.ok) {
+      const generic = `Connexion ${provider} temporairement indisponible.`;
+      publishState(AUTH_STATES.error, { error: new Error(generic) });
+      return failed(generic);
+    }
+    attemptLimiter.reset(attempt.key);
+    return completed(`Ouverture de ${provider}.`, { provider });
   }
 
   async function signOut() {
@@ -304,6 +369,7 @@ export function createAuthAdapter(options = {}) {
     stateListeners.clear();
     try { providerSubscription?.unsubscribe?.(); } catch {}
     providerSubscription = null;
+    if (ownsRateLimiter) attemptLimiter.destroy();
     clientPromise = null;
     client = null;
     return true;
@@ -311,10 +377,12 @@ export function createAuthAdapter(options = {}) {
 
   return Object.freeze({
     initialize,
+    getClient,
     getSession,
     signIn,
     signUp,
     resetPassword,
+    updatePassword,
     signInWithOAuth,
     signOut,
     subscribe,

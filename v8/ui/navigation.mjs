@@ -1,6 +1,5 @@
 import { NAVIGATION_ITEMS } from "../data/navigation.mjs";
-
-const SPACE_LABELS = Object.freeze({ personal: "Personnel", focus: "Focus", studio: "Studio" });
+import { workspaceById } from "../data/workspaces.mjs";
 
 function escapeAttribute(value) {
   return String(value)
@@ -10,32 +9,24 @@ function escapeAttribute(value) {
     .replaceAll(">", "&gt;");
 }
 
-function itemMarkup(item, activeRoute, mobile, expanded) {
+function itemMarkup(item, activeRoute, expanded) {
   const active = item.id === activeRoute;
   const current = active ? ' aria-current="page"' : "";
   const label = escapeAttribute(item.label);
-  const className = mobile ? "v8-mobile-nav__item" : "v8-rail-item";
-  const tooltip = mobile || expanded ? "" : ` data-tooltip="${label}"`;
-  return `<button type="button" class="${className}${active ? " is-active" : ""}" data-action="${item.actionId}" data-route="${item.id}"${current} aria-label="${label}"${tooltip}><i data-lucide="${item.icon}" aria-hidden="true"></i><span>${label}</span></button>`;
+  const tooltip = expanded ? "" : ` data-tooltip="${label}"`;
+  return `<button type="button" class="v8-rail-item${active ? " is-active" : ""}" data-action="${item.actionId}" data-route="${item.id}"${current} aria-label="${label}"${tooltip}><i data-lucide="${item.icon}" aria-hidden="true"></i><span>${label}</span></button>`;
 }
 
-export function navigationMarkup(mode = "desktop", activeRoute = "home", options = {}) {
-  const mobile = mode === "mobile";
+export function navigationMarkup(activeRoute = "home", options = {}) {
   const expanded = options.expanded === true;
   const activeSpace = options.space || "personal";
+  const workspace = workspaceById(activeSpace);
   const contextName = escapeAttribute(options.contextName || "Personnel");
-
-  if (mobile) {
-    const items = NAVIGATION_ITEMS.filter((item) => item.mobile);
-    const content = items.map((item) => itemMarkup(item, activeRoute, true, false)).join("");
-    const mission = '<button type="button" class="v8-mobile-nav__command" data-action="v8.mission.open" aria-label="Ouvrir Mission Control"><i data-lucide="layout-dashboard" aria-hidden="true"></i><span>Spaces</span></button>';
-    return `<nav class="v8-mobile-nav" aria-label="Navigation principale">${content}${mission}</nav>`;
-  }
 
   const favorites = NAVIGATION_ITEMS.filter((item) => ["home", "notes", "tasks"].includes(item.id));
   const applications = NAVIGATION_ITEMS.filter((item) => !["home", "notes", "tasks"].includes(item.id));
-  const favoriteMarkup = favorites.map((item) => itemMarkup(item, activeRoute, false, expanded)).join("");
-  const applicationMarkup = applications.map((item) => itemMarkup(item, activeRoute, false, expanded)).join("");
+  const favoriteMarkup = favorites.map((item) => itemMarkup(item, activeRoute, expanded)).join("");
+  const applicationMarkup = applications.map((item) => itemMarkup(item, activeRoute, expanded)).join("");
   const toggleLabel = expanded ? "Reduire la Sidebar" : "Developper la Sidebar";
   const toggleIcon = expanded ? "panel-left-close" : "panel-left-open";
 
@@ -45,8 +36,8 @@ export function navigationMarkup(mode = "desktop", activeRoute = "home", options
       <button type="button" class="v8-rail__toggle" data-action="v8.sidebar.toggle" aria-label="${toggleLabel}"${expanded ? "" : ` data-tooltip="${toggleLabel}"`}><i data-lucide="${toggleIcon}" aria-hidden="true"></i></button>
     </div>
     <button type="button" class="v8-rail-space" data-action="v8.mission.open" aria-label="Changer de Space">
-      <span class="v8-rail-space__mark" aria-hidden="true">${escapeAttribute(SPACE_LABELS[activeSpace]?.slice(0, 1) || "P")}</span>
-      <span><small>Space actif</small><strong>${escapeAttribute(SPACE_LABELS[activeSpace] || contextName)}</strong></span>
+      <span class="v8-rail-space__mark" aria-hidden="true">${escapeAttribute(workspace.label.slice(0, 1))}</span>
+      <span><small>Space actif</small><strong>${escapeAttribute(workspace.label || contextName)}</strong></span>
       <i data-lucide="chevrons-up-down" aria-hidden="true"></i>
     </button>
     <button type="button" class="v8-rail-search" data-action="v8.command.open" aria-label="Rechercher"${expanded ? "" : ' data-tooltip="Rechercher"'}><i data-lucide="search" aria-hidden="true"></i><span>Rechercher</span><kbd>Ctrl K</kbd></button>

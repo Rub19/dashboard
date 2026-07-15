@@ -265,6 +265,15 @@
   --v8-control-sm: max(32px, calc(var(--density-control-height) - 6px));
   --v8-control-md: var(--density-control-height);
   --v8-control-lg: calc(var(--density-control-height) + 6px);
+  --v8-form-radius: var(--v8-radius-md);
+  --v8-form-label-gap: var(--v8-space-2);
+  --v8-form-border: color-mix(in srgb,var(--v8-border) 58%,var(--v8-border-strong));
+  --v8-form-border-hover: color-mix(in srgb,var(--v8-border-strong) 72%,var(--v8-border-highlight));
+  --v8-form-border-focus: color-mix(in srgb,var(--v8-accent) 66%,var(--v8-border-highlight));
+  --v8-form-surface: color-mix(in srgb,var(--v8-surface-sunken) 94%,transparent);
+  --v8-form-surface-focus: color-mix(in srgb,var(--v8-surface-2) 82%,var(--v8-surface-sunken));
+  --v8-form-inset: inset 0 1px 0 color-mix(in srgb,var(--v8-text) 2.6%,transparent);
+  --v8-form-focus-ring: 0 0 0 3px color-mix(in srgb,var(--v8-accent) 17%,transparent);
   --v8-touch-target: 44px;
   --v8-mobile-status-height: 44px;
   --v8-mobile-dock-clearance: 128px;

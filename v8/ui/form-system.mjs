@@ -143,13 +143,16 @@ export function formField({ label, control, input = control, help = "", classNam
     input.setAttribute("aria-required", "true");
   }
   const labelContent = label?.nodeType ? label : element("span", { text: label });
+  const labelText = element("span", { className: "v8-form-field__label-text" }, [labelContent]);
   const requiredMark = required ? element("span", { className: "v8-form-field__required", text: "*", attributes: { "aria-hidden": "true" } }) : null;
   const classes = `v8-field v8-form-field v8-form-field--${kind} ${className}`.trim();
   let body;
   if (["checkbox", "radio"].includes(kind) && control === input) {
-    body = element("label", { className: "v8-form-choice", attributes: { for: id } }, [input, element("span", { className: "v8-field__label v8-form-field__label" }, [labelContent, requiredMark])]);
+    body = element("label", { className: "v8-form-choice", attributes: { for: id } }, [input, element("span", { className: "v8-field__label v8-form-field__label" }, [labelText, requiredMark])]);
   } else {
-    body = [element("label", { className: "v8-field__label v8-form-field__label", attributes: { for: id } }, [labelContent, requiredMark]), control];
+    const fieldLabel = element("label", { className: "v8-field__label v8-form-field__label", attributes: { for: id } }, [labelText, requiredMark]);
+    const controlFrame = element("span", { className: "v8-form-field__control", dataset: { controlKind: kind } }, [control]);
+    body = [fieldLabel, controlFrame];
   }
   const root = element("div", { className: classes, dataset: { help, formField: "", controlKind: kind, counter: counter === false ? "off" : null } }, body);
   initializeControl(input);
@@ -220,6 +223,7 @@ export function setFieldState(control, state = "default", message = "") {
 export function clearFieldState(control) {
   if (!control) return;
   delete control.dataset.touched;
+  delete control.dataset.formEngaged;
   setFieldState(control, inferredState(control));
   updateFilled(control);
 }
@@ -277,15 +281,23 @@ export function enhanceForm(form, { signal } = {}) {
   const options = { signal: controller.signal };
   if (form.tagName === "FORM") form.noValidate = true;
   prepareFormControls(form);
+  const markEngaged = (event) => {
+    const control = event.target.closest?.(MANAGED_SELECTOR);
+    if (control && form.contains(control)) control.dataset.formEngaged = "true";
+  };
+  form.addEventListener("pointerdown", markEngaged, options);
+  form.addEventListener("keydown", markEngaged, options);
   form.addEventListener("input", (event) => {
     const control = event.target.closest?.(MANAGED_SELECTOR);
     if (!control || !form.contains(control)) return;
+    control.dataset.formEngaged = "true";
     updateFilled(control);
     if (control.dataset.touched === "true") validateControl(control, { force: true });
   }, options);
   form.addEventListener("change", (event) => {
     const control = event.target.closest?.(MANAGED_SELECTOR);
     if (!control || !form.contains(control)) return;
+    control.dataset.formEngaged = "true";
     updateFilled(control);
     if (validationCandidate(control)) validateControl(control, { force: true });
     else {
@@ -295,7 +307,9 @@ export function enhanceForm(form, { signal } = {}) {
   }, options);
   form.addEventListener("focusout", (event) => {
     const control = event.target.closest?.(VALIDATABLE_SELECTOR);
-    if (control && form.contains(control) && validationCandidate(control)) validateControl(control, { force: true });
+    if (!control || !form.contains(control) || !validationCandidate(control)) return;
+    if (control.dataset.formEngaged === "true" || control.dataset.touched === "true" || hasValue(control)) validateControl(control, { force: true });
+    else clearFieldState(control);
   }, options);
   form.addEventListener("click", (event) => {
     const control = event.target.closest?.("button[role='switch']");

@@ -57,6 +57,8 @@ test("form system centralizes every control state, validation and submission gua
   for (const kind of ["checkbox", "radio", "range", "file", "switch", "textarea", "select"]) assert.match(source, new RegExp(`"${kind}"`));
   assert.match(source, /const pendingForms = new WeakSet\(\)/);
   assert.match(source, /event\.stopImmediatePropagation\(\)/);
+  assert.match(source, /control\.dataset\.formEngaged = "true"/);
+  assert.match(source, /control\.dataset\.formEngaged === "true" \|\| control\.dataset\.touched === "true" \|\| hasValue\(control\)/);
   assert.match(source, /form\.setAttribute\("aria-busy", "true"\)/);
   assert.match(source, /button\.setAttribute\("aria-busy", "true"\)/);
   assert.match(source, /button\.classList\.add\("is-loading"\)/);
@@ -77,6 +79,13 @@ test("form system centralizes every control state, validation and submission gua
   assert.match(styles, /\.v8-file-input::file-selector-button/);
   assert.match(styles, /\.v8-radio:checked/);
   assert.match(styles, /\.v8-form-password__toggle/);
+  assert.match(source, /className: "v8-form-field__control"/);
+  assert.match(source, /body = \[fieldLabel, controlFrame\]/);
+  assert.match(styles, /\.v8-form-field__control\s*\{[\s\S]*border:\s*1px solid var\(--v8-form-border\)/);
+  assert.match(styles, /\.v8-form-field > \.v8-form-field__label\s*\{[\s\S]*margin:\s*0 0 var\(--v8-form-label-gap\)/);
+  assert.match(styles, /\.v8-form-field__control \.v8-input\s*\{[\s\S]*border:\s*0/);
+  assert.match(styles, /\.v8-form-field:focus-within \.v8-form-field__control\s*\{[\s\S]*var\(--v8-form-focus-ring\)/);
+  assert.doesNotMatch(styles, /\.v8-form-field\[data-field-state="invalid"\] \.v8-input[^\n]*border-width:\s*2px/);
 });
 
 test("all major product forms use the shared field, status and submission contracts", () => {

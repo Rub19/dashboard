@@ -56,7 +56,16 @@ test("errors use semantic alerts and a non-color marker", () => {
   assert.match(components, /data-tone="error"\][^:]*:not\(:empty\)::before[\s\S]*content:\s*"!"/);
   assert.match(forms, /setAttribute\("role",\s*tone === "error" \? "alert" : "status"\)/);
   assert.match(forms, /setAttribute\("role",\s*normalized === "error" \? "alert" : "status"\)/);
-  assert.match(components, /data-field-state="invalid"[^}]*border-width:\s*2px/);
+  assert.match(
+    components,
+    /data-field-state="invalid"[^}]*box-shadow:[^}]*0 0 0 3px/,
+    "Invalid fields need a non-color focus ring without changing their border geometry",
+  );
+  assert.match(
+    components,
+    /\.v8-input\[data-field-state="invalid"\][^}]*border-width:\s*1px[^}]*0 0 0 3px/,
+    "Standalone invalid inputs must keep a stable one-pixel border and a visible ring",
+  );
 });
 
 test("zoom reflow keeps dense navigation visible instead of clipping it", () => {

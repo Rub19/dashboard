@@ -438,7 +438,7 @@ test("Login polish keeps the auth flow keyboard-safe and motion-bounded", () => 
   assert.match(entry, /\.v8-auth::after[\s\S]*linear-gradient/);
   assert.match(entry, /\.v8-auth__tabs::before[\s\S]*transition:\s*transform/);
   assert.match(entry, /\.v8-auth__form\[aria-hidden="true"\][\s\S]*opacity:\s*0[\s\S]*visibility:\s*hidden/);
-  assert.match(entry, /\.v8-entry--login \.v8-auth__input:focus-visible[\s\S]*var\(--v8-login-ring\)/);
+  assert.match(entry, /\.v8-entry--login \.v8-form-field:focus-within \.v8-form-field__control[\s\S]*var\(--v8-login-ring\)/);
   assert.match(entry, /prefers-reduced-motion:\s*reduce[\s\S]*\.v8-auth__form/);
   const authHalo = entry.match(/\.v8-auth-shell::before\s*\{[^}]*\}/s)?.[0] || "";
   assert.match(authHalo, /filter:\s*blur\(30px\)/);

@@ -289,4 +289,596 @@ test("Ambient Engine interpolates time, Focus and sound without a render loop", 
   assert.ok(gaming.soundTone >= day.soundTone);
   assert.ok(experience.millisecondsUntilAmbientRefresh(new Date(2026, 6, 14, 10, 2, 0, 0)) <= experience.AMBIENT_REFRESH_MS);
 
-  const source = fs.readFileSync(new URL("../v8/core/experience.ïÎö¶‰žËkºwµçA¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐ•¹¥¹”€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½½É”½ÁÉ•Í•¹”µ•¹¥¹”¹µ©Ìˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐÍ¡•±°€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½Õ¤½Í¡•±°¹µ©Ìˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐ‘½¬€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½Õ¤½‘½¬¹µ©Ìˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐ…±•¹‘…È€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½Á…•Ì½…±•¹‘…È¹µ©Ìˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐ…Ñ¥Ù¥Ñä€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½Á…•Ì½…Ñ¥Ù¥Ñä¹µ©Ìˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐ½¹¹•Ñ¥½¹Ì€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½Á…•Ì½½¹¹•Ñ¥½¹Ì¹µ©Ìˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐÑ½…ÍÐ€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½Õ¤½Ñ½…ÍÐ¹µ©Ìˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì((€™½È€¡½¹ÍÐ­¥¹½˜l‰‰É…¥¸ˆ°€‰±½Õˆ°€‰¹½Ñ¥™¥…Ñ¥½¹Ìˆ°€‰µ…¥°‰t¤ì(€€€…ÍÍ•ÉÐ¹µ…Ñ ¡mÍ¡•±°°‘½¬°…Ñ¥Ù¥Ñä°½¹¹•Ñ¥½¹Ít¹©½¥¸ ‰q¸ˆ¤°¹•ÜI•áÀ¡‘…Ñ„µÁÉ•Í•¹”µ¥½¸õlˆt‘í­¥¹‘õlˆu€¤¤ì(€ô(€…ÍÍ•ÉÐ¹µ…Ñ ¡‘½¬°€½ql‰‰É…¥¸ˆ°€‰…±•¹‘…È‰qup¹¥¹±Õ‘•Íp¡¥Ñ•µp¹¥‘p¤¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡‘½¬°€½ÁÉ•Í•¹•%½¸¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡•¹¥¹”°€½•Ñ¡½¹”éµ…¥°µÉ••¥Ù•¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡•¹¥¹”°€½¹½Ñ¥™¥…Ñ¥½¹Í%µÁ½ÉÑ…¹Ð¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡…±•¹‘…È°€½…±•¹‘…ÉAÉ•Í•¹•MÑ…Ñ”¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Ñ½…ÍÐ°€½ÑåÁ”€ôôô€‰•ÉÉ½ÈˆqñqðÑåÁ”€ôôô€‰Ý…É¹¥¹œˆ¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡ÁÉ•Í•¹”°€½‘…Ñ„µÁÉ•Í•¹”µÍå¹Œô‰Íå¹¥¹œ‰mqÍqMt©ØàµÁÉ•Í•¹”µÍå¹mxít©¥¹™¥¹¥Ñ”¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡ÁÉ•Í•¹”°€½‘…Ñ„µÁÉ•Í•¹”µµ•‘¥„ô‰Á±…å¥¹œ‰mqÍqMt©ØàµÁÉ•Í•¹”µµ•‘¥„µ±•Ù•±mxít©¥¹™¥¹¥Ñ”¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡ÁÉ•Í•¹”°€½‘…Ñ„µÁÉ•Í•¹”µµ…¥°ô‰¹•Ü‰mqÍqMt©ØàµÁÉ•Í•¹”µµ…¥°µ…ÉÉ¥Ù•mxít©‰½Ñ ¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡ÁÉ•Í•¹”°€½ÁÉ•™•ÉÌµÉ•‘Õ•µµ½Ñ¥½¸éqÌ©É•‘Õ•mqÍqMt©p¹Øàµµ…¥°µÍ¥¹…±mqÍqMt©…¹¥µ…Ñ¥½¸éqÌ©¹½¹”¼¤ì(€…ÍÍ•ÉÐ¹‘½•Í9½Ñ5…Ñ ¡•¹¥¹”°€½Í•Ñ%¹Ñ•ÉÙ…±ñÉ•ÅÕ•ÍÑ¹¥µ…Ñ¥½¹É…µ”¼¤ì)ô¤ì()Ñ•ÍÐ ‰1¥Ù”]¥‘•Ðµ½Ñ¥½¸¥ÌÍ•µ…¹Ñ¥Œ•¹ÑÉ…±¥é•‰½Õ¹‘•…¹É•‘Õ•µµ½Ñ¥½¸Í…™”ˆ°€ ¤€ôøì(€½¹ÍÐÁÉ•Í•¹”€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½ÍÑå±•Ì½ÁÉ•Í•¹”¹ÍÌˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐ•¹¥¹”€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½½É”½ÁÉ•Í•¹”µ•¹¥¹”¹µ©Ìˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐ…ÁÀ€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½…ÁÀ½…ÁÀµÉÕ¹Ñ¥µ”¹µ©Ìˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐµ…¥¸€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½µ…¥¸¹µ©Ìˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐÁÉ½™¥±•Ì€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½•¹ÑÉä½ÁÉ½™¥±”µÍ•±•Ñ¥½¸¹µ©Ìˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐÍ½ÕÉ•Ì€ôl(€€€€ˆ¸¸½Øà½Á…•Ì½¡½µ”¹µ©Ìˆ°(€€€€ˆ¸¸½Øà½Á…•Ì½Ñ…Í­Ì¹µ©Ìˆ°(€€€€ˆ¸¸½Øà½Á…•Ì½…±•¹‘…È¹µ©Ìˆ°(€€€€ˆ¸¸½Øà½Á…•Ì½‰É…¥¸¹µ©Ìˆ°(€€€€ˆ¸¸½Øà½Õ¤½Á…¹•°¹µ©Ìˆ°(€€€€ˆ¸¸½Øà½Õ¤½µ¥ÍÍ¥½¸µ½¹ÑÉ½°¹µ©Ìˆ(€t¹µ…À ¡Á…Ñ ¤€ôø™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0¡Á…Ñ °¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤¤¹©½¥¸ ‰q¸ˆ¤ì((€™½È€¡½¹ÍÐ­¥¹½˜l‰‰É…¥¸ˆ°€‰±½¬ˆ°€‰µ•ÑÉ¥Œˆ°€‰Á±…¹¹¥¹œˆ°€‰Í¥¹…°ˆ°€‰Ý¥‘•Ð‰t¤ì(€€€…ÍÍ•ÉÐ¹µ…Ñ ¡mÁÉ½™¥±•Ì°Í½ÕÉ•Ít¹©½¥¸ ‰q¸ˆ¤°¹•ÜI•áÀ¡±¥Ù•-¥¹éqqÌ¨ˆ‘í­¥¹‘ô‰€¤¤ì(€ô(€…ÍÍ•ÉÐ¹µ…Ñ ¡ÁÉ½™¥±•Ì°€½ÁÉ•Í•¹•p¹ÑÉ…¹Í¥Ñ¥½¹Q•áÑp¡±¥Ù•Q¥µ”±myõt©­¥¹éqÌ¨‰±½¬ˆ¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡ÁÉ½™¥±•Ì°€½ÁÉ•Í•¹•pýp¹ÑÉ…¹Í¥Ñ¥½¹MÕÉ™…•p¡ÁÉ•Ù¥•Ü±qÌ©qíqÌ©­¥¹éqÌ¨‰ÁÉ½™¥±”ˆ¼¤ì(€…ÍÍ•ÉÐ¹‘½•Í9½Ñ5…Ñ ¡ÁÉ½™¥±•Ì°€½p¹…¹¥µ…Ñ•p ¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡…ÁÀ°€½™Õ¹Ñ¥½¸™¥¹¥Í¡I½ÕÑ•5½Õ¹ÑmqÍqMt©ÁÉ•Í•¹•p¹É•Ù•…±]¥‘•ÑÍp¡Í¡•±±p¹ÍÑ…•p¤¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡…ÁÀ°€½ÁÉ•Í•¹•p¹É•Ù•…±]¥‘•ÑÍp¡Í¡•±±p¹Á…¹•±!½ÍÑp¤¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡…ÁÀ°€½ÁÉ•Í•¹•p¹É•Ù•…±]¥‘•ÑÍp¡Í¡•±±p¹µ¥ÍÍ¥½¹!½ÍÑp¤¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡µ…¥¸°€½ÁÉ•Í•¹•¹¥¹”éqÌ©ÁÉ•Í•¹”¼¤ì(€…ÍÍ•ÉÐ¹‘½•Í9½Ñ5…Ñ ¡•¹¥¹”°€½5ÕÑ…Ñ¥½¹=‰Í•ÉÙ•ÉñI•Í¥é•=‰Í•ÉÙ•Éñ%¹Ñ•ÉÍ•Ñ¥½¹=‰Í•ÉÙ•ÉñÍ•Ñ%¹Ñ•ÉÙ…±ñÉ•ÅÕ•ÍÑ¹¥µ…Ñ¥½¹É…µ”¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡•¹¥¹”°€½‘ÕÉ…Ñ¥½¸éqÌ©5…Ñ¡p¹µ¥¹p¡½¹™¥p¹µ…áÕÉ…Ñ¥½¹qÌ©qñqñqÌ¨ÐÈÀ¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡•¹¥¹”°€½5…Ñ¡p¹µ¥¹p Ü±qÌ©É•Ù•…±•‘p¤¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡ÁÉ•Í•¹”°€½ÁÉ½Á•ÉÑä€´µØàµ±¥Ù”µ¹Õµ‰•ÈµÙ…±Õ”¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡ÁÉ•Í•¹”°€¼´µØàµ±¥Ù”µÍÑ…•ÈéqÌ¨ÈÑµÌ¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡ÁÉ•Í•¹”°€½­•å™É…µ•ÌØàµ±¥Ù”´ üéÝ¥‘•Ññµ•‘¥…ñ‰É…¥¹ñÁ±…¹¹¥¹œ¤µ•¹Ñ•È¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡ÁÉ•Í•¹”°€½­•å™É…µ•ÌØàµ±¥Ù”µ¹Õµ‰•Èµ½Õ¹Ð¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡ÁÉ•Í•¹”°€½ÁÉ•™•ÉÌµÉ•‘Õ•µµ½Ñ¥½¸éqÌ©É•‘Õ•mqÍqMt©qm‘…Ñ„µ±¥Ù”µ¹Õµ‰•ÉqumqÍqMt©‘¥ÍÁ±…äéqÌ©¹½¹”¼¤ì)ô¤ì()Ñ•ÍÐ ‰Mµ…ÉÐÑ¥Ù¥Ñä™••‘‰…¬¥Ì•¹ÑÉ…±¥é•…¹…ÑÑ…¡•Ñ¼ÍÕ•ÍÍ™Õ°ÍåÍÑ•´¡…¹•Ìˆ°€ ¤€ôøì(€½¹ÍÐ•¹¥¹”€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½½É”½ÁÉ•Í•¹”µ•¹¥¹”¹µ©Ìˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐÁÉ•Í•¹”€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½ÍÑå±•Ì½ÁÉ•Í•¹”¹ÍÌˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐÑ½…ÍÐ€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½Õ¤½Ñ½…ÍÐ¹µ©Ìˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐ…ÁÀ€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½…ÁÀ½…ÁÀµÉÕ¹Ñ¥µ”¹µ©Ìˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐÁÉ½™¥±•Ì€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½•¹ÑÉä½ÁÉ½™¥±”µÍ•±•Ñ¥½¸¹µ©Ìˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐÑ…Í­Ì€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½Á…•Ì½Ñ…Í­Ì¹µ©Ìˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐ¹½Ñ•Ì€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½Á…•Ì½¹½Ñ•Ì¹µ©Ìˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐ…±•¹‘…È€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½Á…•Ì½…±•¹‘…È¹µ©Ìˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐ™¥±•Ì€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½Á…•Ì½™¥±•Ì¹µ©Ìˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì((€…ÍÍ•ÉÐ¹µ…Ñ ¡•¹¥¹”°€½™Õ¹Ñ¥½¸Í¥¹…±Ñ¥Ù¥Ñä¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡•¹¥¹”°€½Q%Y%Qe}A!ML€ô¹•ÜM•Ñp¡ql‰•¹Ñ•Èˆ°€‰ÕÁ‘…Ñ”ˆ°€‰•á¥Ð‰qup¤¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡•¹¥¹”°€½µ…áÕÉ…Ñ¥½¸éqÌ¨ÈÔÀ¼¤ì(€…ÍÍ•ÉÐ¹‘½•Í9½Ñ5…Ñ ¡•¹¥¹”°€½5ÕÑ…Ñ¥½¹=‰Í•ÉÙ•ÉñI•Í¥é•=‰Í•ÉÙ•Éñ%¹Ñ•ÉÍ•Ñ¥½¹=‰Í•ÉÙ•ÉñÍ•Ñ%¹Ñ•ÉÙ…±ñÉ•ÅÕ•ÍÑ¹¥µ…Ñ¥½¹É…µ”¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡ÁÉ•Í•¹”°€½qm‘…Ñ„µÁÉ•Í•¹”µ…Ñ¥Ù¥Ñåqumyõt©Ý¥±°µ¡…¹”éqÌ©ÑÉ…¹Í™½É´°½Á…¥Ñä¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡…ÁÀ°€½É•…Ñ•Q½…ÍÑ5…¹…•Ép¡Í¡•±±p¹Ñ½…ÍÑI•¥½¸°qìÍ½Õ¹‘Ì°ÁÉ•Í•¹”qõp¤¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Ñ½…ÍÐ°€½Í¥¹…±Ñ¥Ù¥Ñåpýp¹p¡¹½‘”°€‰¹½Ñ¥™¥…Ñ¥½¸ˆ°qìÁ¡…Í”è€‰•¹Ñ•Èˆqõp¤¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Ñ½…ÍÐ°€½Í¥¹…±Ñ¥Ù¥Ñåp¡É•½É‘p¹¹½‘”°€‰¹½Ñ¥™¥…Ñ¥½¸ˆ°qìÁ¡…Í”è€‰•á¥Ðˆ°½¹½µÁ±•Ñ”èÉ•µ½Ù”qõp¤¼¤ì(€™½È€¡½¹ÍÐmÍ½ÕÉ”°­¥¹‘t½˜mmÑ…Í­Ì°€‰Ñ…Í¬‰t°m¹½Ñ•Ì°€‰¹½Ñ”‰t°m…±•¹‘…È°€‰…±•¹‘…È‰t°m™¥±•Ì°€‰™¥±”‰t°mÁÉ½™¥±•Ì°€‰Ý¥‘•Ð‰ut¤ì(€€€…ÍÍ•ÉÐ¹µ…Ñ ¡Í½ÕÉ”°¹•ÜI•áÀ¡Í¥¹…±Ñ¥Ù¥Ñåmyqq¹t¨ˆ‘í­¥¹‘ô‰€¤¤ì(€€€…ÍÍ•ÉÐ¹‘½•Í9½Ñ5…Ñ ¡Í½ÕÉ”°€½p¹…¹¥µ…Ñ•p ¼¤ì(€ô(€…ÍÍ•ÉÐ¹‘½•Í9½Ñ5…Ñ ¡Ñ…Í­Ì°€½É•Ù•…±]¥‘•ÑÍp¡±¥ÍÑp¤¼¤ì(€…ÍÍ•ÉÐ¹‘½•Í9½Ñ5…Ñ ¡…±•¹‘…È°€½É•Ù•…±]¥‘•ÑÍp¡…•¹‘…p¤¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡…ÁÀ°€½Íå¹MÑ…ÑÕÌéqÌ©¹•áÑp¹Íå¹MÑ…ÑÕÌ¼¤ì)ô¤ì()Ñ•ÍÐ ‰QåÁ½É…Á¡äÑ½­•¹Ì­••ÀÁÉ¥µ…Éä…¹Í•½¹‘…Éä½¹Ñ•¹ÐÉ•…‘…‰±”ˆ°€ ¤€ôøì(€½¹ÍÐÑ½­•¹Ì€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½ÍÑå±•Ì½Ñ½­•¹Ì¹ÍÌˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐ‰…Í”€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½ÍÑå±•Ì½‰…Í”¹ÍÌˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐ•¹ÑÉä€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½ÍÑå±•Ì½•¹ÑÉä¹ÍÌˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐÍ¡•±°€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½ÍÑå±•Ì½Í¡•±°¹ÍÌˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐÍÑå±•Ì€ômÑ½­•¹Ì°‰…Í”°•¹ÑÉä°Í¡•±±t¹©½¥¸ ‰q¸ˆ¤ì((€…ÍÍ•ÉÐ¹µ…Ñ ¡Ñ½­•¹Ì°€¼´µØàµÑ•áÐµÍ•½¹‘…ÉäéqÌ¨ŒÑØ¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Ñ½­•¹Ì°€¼´µØàµµÕÑ•éqÌ¨ŒäÈå‘…„¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Ñ½­•¹Ì°€¼´µØàµÑåÁ”µ…ÁÑ¥½¸éqÌ©±…µÁp Áp¸ÜÕÉ•´±mxít¬´µ‘•¹Í¥Ñäµ™½¹ÐµÍ…±”¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Ñ½­•¹Ì°€¼´µØàµÑåÁ”µ±…‰•°éqÌ©±…µÁp Áp¸àÄÈÕÉ•´±mxít¬´µ‘•¹Í¥Ñäµ™½¹ÐµÍ…±”¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Ñ½­•¹Ì°€¼´µØàµÑåÁ”µ‰½‘äéqÌ©±…µÁp Áp¸äÌÜÕÉ•´±mxít¬´µ‘•¹Í¥Ñäµ™½¹ÐµÍ…±”¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Ñ½­•¹Ì°€¼´µØàµ™½¹Ðµµ¥É¼éqÌ©Ù…Ép ´µØàµÑåÁ”µ…ÁÑ¥½¹p¤¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Ñ½­•¹Ì°€¼´µØàµ™½¹ÐµáÌéqÌ©Ù…Ép ´µØàµÑåÁ”µ±…‰•±p¤¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Ñ½­•¹Ì°€¼´µØàµ±¥¹”µ‰…Í”éqÌ©Ù…Ép ´µ‘•¹Í¥Ñäµ±¥¹”µ¡•¥¡Ñp¤¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Ñ½­•¹Ì°€¼´µØàµ±¥¹”µÉ•±…á•éqÌ¨Åp¸Ü¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡‰…Í”°€½™½¹Ðµ­•É¹¥¹œéqÌ©¹½Éµ…°¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡‰…Í”°€½™½¹ÐµÍå¹Ñ¡•Í¥ÌéqÌ©¹½¹”¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡•¹ÑÉä°€½p¹Øàµ•¹ÑÉå}}‰É…¹µ±¥¹•qÌ©qímyõt©™½¹ÐµÝ•¥¡ÐéqÌ©Ù…Ép ´µØàµÝ•¥¡Ðµµ•‘¥Õµp¥myõt©Ñ•áÐµÝÉ…ÀéqÌ©‰…±…¹”½Ì¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Í¡•±°°€½p¹ØàµÁ…”µ¡•…‘¥¹œ ÅqÌ©qímyõt©™½¹ÐµÝ•¥¡ÐéqÌ©Ù…Ép ´µØàµÝ•¥¡Ðµ‰½±‘p¤½Ì¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Í¡•±°°€½p¹Øàµ‰É•…‘ÉÕµˆµ½¹Ñ•áÑ}}¥Ñ•µqÌ©qímyõt©™½¹ÐµÍ¥é”éqÌ©Ù…Ép ´µØàµ™½¹Ðµµ¥É½p¤½Ì¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Í¡•±°°€½p¹ØàµÍÑ…ÑÕÌµ‰…ÉqÌ©qímyõt©™½¹ÐµÍ¥é”éqÌ©Ù…Ép ´µØàµ™½¹Ðµµ¥É½p¤½Ì¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Í¡•±°°€½µ•‘¥„p¡µ…àµÝ¥‘Ñ éqÌ¨ÄÔÀÁÁáp¤…¹p¡µ¥¸µÝ¥‘Ñ éqÌ¨äàÅÁáp¥mqÍqMt©p¹Øàµ‰É•…‘ÉÕµ‰Ìp¹Øàµ‰É•…‘ÉÕµˆµÍÑ•À´µÝ½É­ÍÁ…”¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Í¡•±°°€½µ•‘¥„p¡µ…àµÝ¥‘Ñ éqÌ¨àÈÁÁáp¥mqÍqMt©p¹Øàµ‰É•…‘ÉÕµ‰Ìp¹Øàµ‰É•…‘ÉÕµˆµÍÑ•ÁqÌ©qíqÌ©‘¥ÍÁ±…äéqÌ©¹½¹”¼¤ì(€…ÍÍ•ÉÐ¹‘½•Í9½Ñ5…Ñ ¡ÍÑå±•Ì°€½±•ÑÑ•ÈµÍÁ…¥¹œéqÌ¨ ü„À üèíñqÌ¤¥l´¹q‘t¬ üé•µñÉ•µñÁà¤¼¤ì)ô¤ì()Ñ•ÍÐ ‰±½‰…°±¥¡Ñ¥¹œÕÍ•Ì±…å•É•ÍÑ…Ñ¥Œ±¥¡ÐÝ¥Ñ¡½ÕÐÉÕ¹Ñ¥µ”…¹¥µ…Ñ¥½¸ˆ°€ ¤€ôøì(€½¹ÍÐÑ½­•¹Ì€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½ÍÑå±•Ì½Ñ½­•¹Ì¹ÍÌˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐ½µÁ½¹•¹ÑÌ€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½ÍÑå±•Ì½½µÁ½¹•¹ÑÌ¹ÍÌˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐ•¹ÑÉä€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½ÍÑå±•Ì½•¹ÑÉä¹ÍÌˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐÍ¡•±°€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½ÍÑå±•Ì½Í¡•±°¹ÍÌˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì((€™½È€¡½¹ÍÐÑ½­•¸½˜l‰ÍÕÉ™…”ˆ°€‰¡•É¼ˆ°€‰‰É…¹ˆ°€‰‰É…¥¸ˆ°€‰Ý¥¹‘½Ü‰t¤ì(€€€…ÍÍ•ÉÐ¹µ…Ñ ¡Ñ½­•¹Ì°¹•ÜI•áÀ¡€´µØàµ±¥¡Ð´‘íÑ½­•¹ôé€¤¤ì(€ô(€™½È€¡½¹ÍÐ±•Ù•°½˜l‰…Éˆ°€‰¡•É¼ˆ°€‰‰É…¥¸ˆ°€‰µ½‘…°ˆ°€‰¡•…‘•È‰t¤ì(€€€…ÍÍ•ÉÐ¹µ…Ñ ¡Ñ½­•¹Ì°¹•ÜI•áÀ¡€´µØàµÍ¡…‘½Ü´‘í±•Ù•±ôµ±¥Ðé€¤¤ì(€ô(€…ÍÍ•ÉÐ¹µ…Ñ ¡½µÁ½¹•¹ÑÌ°€½p¹ØàµÍÕÉ™…•qÌ©qímyõt©Ù…Ép ´µØàµÉ•™±•Ñ¥½¸µ…É‘p¥myõt©Ù…Ép ´µØàµÍ¡…‘½Üµ…Éµ±¥Ñp¤½Ì¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡½µÁ½¹•¹ÑÌ°€½p¹ØàµÁ…¹•±qÌ©qímyõt©Ù…Ép ´µØàµÍ¡…‘½ÜµÁ…¹•°µÉ•ÍÑp¤½Ì¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡•¹ÑÉä°€½p¹Øàµ•¹ÑÉå}}¥¹ÑÉ¼èé‰•™½É•qÌ©qímyõt©É…‘¥…°µÉ…‘¥•¹Ñp¡•±±¥ÁÍ”±Ù…Ép ´µØàµ±¥¡Ðµ‰É…¹‘p¤½Ì¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡•¹ÑÉä°€½p¹ØàµÁÉ½™¥±”µÁÉ•Ù¥•ÝqÌ©qímyõt©Ù…Ép ´µØàµÉ•™±•Ñ¥½¸µ¡•É½p¥myõt©Ù…Ép ´µØàµÍ¡…‘½Üµ¡•É¼µ±¥Ñp¤½Ì¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Í¡•±°°€½p¹Øàµ½¹Ñ•áÐµÍÑÉ¥ÁqÌ©qímyõt©Ù…Ép ´µØàµÍ¡…‘½Üµ¡•…‘•Èµ±¥Ñp¤½Ì¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Í¡•±°°€½p¹Øàµ½¹Ñ¥¹Õ¥ÑåqÌ©qímyõt©Ù…Ép ´µØàµÍ¡…‘½Üµ¡•É¼µ±¥Ñp¤½Ì¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Í¡•±°°€½p¹Øàµ¡½µ”µ‰É…¥¹qÌ©qímyõt©Ù…Ép ´µØàµÍ¡…‘½Üµ‰É…¥¸µ±¥Ñp¤½Ì¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Í¡•±°°€½p¹Øàµ½µµ…¹µ‘¥…±½qÌ©qímyõt©Ù…Ép ´µØàµÍ¡…‘½ÜµÝ¥¹‘½Üµ½Á•¹p¤½Ì¤ì((€½¹ÍÐÍÑ…Ñ¥1¥¡ÑÌ€ôl(€€€•¹ÑÉä¹µ…Ñ  ½p¹Øàµ•¹ÑÉå}}¥¹ÑÉ¼èé‰•™½É•qÌ©qímyõt©qô½Ì¤ü¹lÁtñð€ˆˆ°(€€€Í¡•±°¹µ…Ñ  ½p¹Øàµ½¹Ñ¥¹Õ¥ÑåqÌ©qímyõt©qô½Ì¤ü¹lÁtñð€ˆˆ°(€€€Í¡•±°¹µ…Ñ  ½p¹Øàµ¡½µ”µ‰É…¥¹qÌ©qímyõt©qô½Ì¤ü¹lÁtñð€ˆˆ(€t¹©½¥¸ ‰q¸ˆ¤ì(€…ÍÍ•ÉÐ¹‘½•Í9½Ñ5…Ñ ¡ÍÑ…Ñ¥1¥¡ÑÌ°€½…¹¥µ…Ñ¥½¸éñ™¥±Ñ•Èéñ‰…­‘É½Àµ™¥±Ñ•Èè¼¤ì)ô¤ì()Ñ•ÍÐ ‰å¹…µ¥ŒÍ¡…‘½ÝÌÍ¡…É”½¹”•±•Ù…Ñ¥½¸…¹¥¹Ñ•É…Ñ¥½¸½¹ÑÉ…Ðˆ°€ ¤€ôøì(€½¹ÍÐÑ½­•¹Ì€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½ÍÑå±•Ì½Ñ½­•¹Ì¹ÍÌˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐ½µÁ½¹•¹ÑÌ€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½ÍÑå±•Ì½½µÁ½¹•¹ÑÌ¹ÍÌˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐ•¹ÑÉä€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½ÍÑå±•Ì½•¹ÑÉä¹ÍÌˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐÍ¡•±°€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½ÍÑå±•Ì½Í¡•±°¹ÍÌˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì((€™½È€¡±•Ð±•Ù•°€ô€Àì±•Ù•°€ðô€Ôì±•Ù•°€¬ô€Ä¤…ÍÍ•ÉÐ¹µ…Ñ ¡Ñ½­•¹Ì°¹•ÜI•áÀ¡€´µØàµÍ¡…‘½Üµ¡•¥¡Ð´‘í±•Ù•±ôé€¤¤ì(€™½È€¡½¹ÍÐÍÑ…Ñ”½˜l‰¡½Ù•Èµ™¥±Ñ•Èˆ°€‰™½ÕÌµ™¥±Ñ•Èˆ°€‰ÁÉ•ÍÌµ™¥±Ñ•Èˆ°€‰‘É…œµ™¥±Ñ•Èˆ°€‰Á…¹•°µÉ•ÍÐˆ°€‰Ý¥¹‘½Üµ½Á•¸ˆ°€‰µ½‘…°µ½Á•¸ˆ°€‰Ý¥¹‘½Üµ™½ÕÌ‰t¤ì(€€€…ÍÍ•ÉÐ¹µ…Ñ ¡Ñ½­•¹Ì°¹•ÜI•áÀ¡€´µØàµÍ¡…‘½Ü´‘íÍÑ…Ñ•ôé€¤¤ì(€ô(€…ÍÍ•ÉÐ¹µ…Ñ ¡Ñ½­•¹Ì°€¼´µØàµ¥¹Ñ•É…Ñ¥½¸µÍ¡…‘½ÜéÙ…Ép ´µØàµÍ¡…‘½Üµ¡½Ù•Èµ™¥±Ñ•Ép¤¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡½µÁ½¹•¹ÑÌ°€¼éÝ¡•É•p¡p¹¥Ìµ‘É…¥¹œ±qm‘…Ñ„µ‘É…œµÍÑ…Ñ”ô‰‘É…¥¹œ‰qt±qm…É¥„µÉ…‰‰•ô‰ÑÉÕ”‰qup¥myõt©Ù…Ép ´µØàµ¥¹Ñ•É…Ñ¥½¸µ‘É…œµ™¥±Ñ•Ép¤½Ì¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡½µÁ½¹•¹ÑÌ°€½p¹ØàµÝ¥¹‘½ÜµÍÕÉ™…”é™½ÕÌµÝ¥Ñ¡¥¹myõt©Ù…Ép ´µØàµÍ¡…‘½ÜµÝ¥¹‘½Üµ™½ÕÍp¤½Ì¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡½µÁ½¹•¹ÑÌ°€½p¹ØàµÁ…¹•±p¹¥Ìµ½Á•¹myõt©Ù…Ép ´µØàµÍ¡…‘½ÜµÝ¥¹‘½Üµ½Á•¹p¤½Ì¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡•¹ÑÉä°€½p¹ØàµÁÉ½™¥±”µ‘¥…±½œµ±…å•Ép¹¥Ìµ½Á•¸p¹ØàµÁÉ½™¥±”µ‘¥…±½myõt©Ù…Ép ´µØàµÍ¡…‘½Üµµ½‘…°µ½Á•¹p¤½Ì¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Í¡•±°°€½p¹Øàµ½µµ…¹µ±…å•Ép¹¥Ìµ½Á•¸p¹Øàµ½µµ…¹µ‘¥…±½myõt©Ù…Ép ´µØàµÍ¡…‘½Üµµ½‘…°µ½Á•¹p¤½Ì¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Í¡•±°°€½p¹Øàµµ¥ÍÍ¥½¸µ±…å•Ép¹¥Ìµ½Á•¸p¹Øàµµ¥ÍÍ¥½¸µ‘¥…±½myõt©Ù…Ép ´µØàµÍ¡…‘½Üµµ½‘…°µ½Á•¹p¤½Ì¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Í¡•±°°€½p¹Øàµ‘½¬µ…ÁÁp¹¥Ìµ‘É…¥¹œp¹Øàµ‘½¬µ…ÁÁ}}Á±…Ñ•myõt©Ù…Ép ´µØàµÍ¡…‘½Üµ¡•¥¡Ð´Ñp¤½Ì¤ì(€…ÍÍ•ÉÐ¹‘½•Í9½Ñ5…Ñ ¡½µÁ½¹•¹ÑÌ°€¼é¡½Ù•Émyqít©qímyqõt©‰½àµÍ¡…‘½Üè¼¤ì)ô¤ì()Ñ•ÍÐ ‰AÉ•µ¥Õ´ÕÉÍ½È•áÁ•É¥•¹”•áÁ½Í•ÌÍ•µ…¹Ñ¥Œ¥¹Ñ•¹ÐÝ¥Ñ¡½ÕÐÁ½¥¹Ñ•ÈÑÉ…­¥¹œˆ°€ ¤€ôøì(€½¹ÍÐ½µÁ½¹•¹ÑÌ€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½ÍÑå±•Ì½½µÁ½¹•¹ÑÌ¹ÍÌˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐ¡…ÁÑ¥Ì€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½Õ¤½Ù¥ÍÕ…°µ¡…ÁÑ¥Ì¹µ©Ìˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐÕÉÍ½É	±½¬€ô½µÁ½¹•¹ÑÌ¹µ…Ñ  ½µ•‘¥„p¡¡½Ù•Èè¡½Ù•Ép¤…¹p¡Á½¥¹Ñ•Èè™¥¹•p¥qÌ©qímqÍqMt¨ýq¹qô¼¤ü¹lÁtñð€ˆˆì((€™½È€¡½¹ÍÐ¥¹Ñ•¹Ð½˜l‰Á½¥¹Ñ•Èˆ°€‰Ñ•áÐˆ°€‰É…ˆˆ°€‰É…‰‰¥¹œˆ°€‰•ÜµÉ•Í¥é”ˆ°€‰ÁÉ½É•ÍÌˆ°€‰¡•±Àˆ°€‰¹½Ðµ…±±½Ý•‰t¤ì(€€€…ÍÍ•ÉÐ¹µ…Ñ ¡ÕÉÍ½É	±½¬°¹•ÜI•áÀ¡ÕÉÍ½Èè‘í¥¹Ñ•¹Ñõ€¤¤ì(€ô(€…ÍÍ•ÉÐ¹µ…Ñ ¡ÕÉÍ½É	±½¬°€¼é¡½Ù•Èé¹½Ñp é™½ÕÌµÙ¥Í¥‰±•p¥myõt©Ù…Ép ´µØàµ¥¹Ñ•É…Ñ¥½¸µ™¥±Ñ•Ép¥myõt©Ù…Ép ´µØàµ¥¹Ñ•É…Ñ¥½¸µ¡½Ù•ÈµÑÉ…¹Í™½Éµp¤½Ì¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡ÕÉÍ½É	±½¬°€½qm‘É……‰±”ô‰ÑÉÕ”‰qt¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡ÕÉÍ½É	±½¬°€½qm…É¥„µ‰ÕÍäô‰ÑÉÕ”‰qt¼¤ì(€…ÍÍ•ÉÐ¹‘½•Í9½Ñ5…Ñ ¡½µÁ½¹•¹ÑÌ°€½ÕÉÍ½ÈéqÌ©ÕÉ±p ¼¤ì(€…ÍÍ•ÉÐ¹‘½•Í9½Ñ5…Ñ ¡¡…ÁÑ¥Ì°€½Á½¥¹Ñ•Éµ½Ù•ñµ½ÕÍ•µ½Ù•ñÉ•ÅÕ•ÍÑ¹¥µ…Ñ¥½¹É…µ”¼¤ì)ô¤ì()Ñ•ÍÐ ‰5½Ñ¥½¸Á½±¥Í Í¡…É•Ì½¹”¡½Ù•È™½ÕÌ…¹ÁÉ•ÍÌ½¹ÑÉ…Ðˆ°€ ¤€ôøì(€½¹ÍÐÑ½­•¹Ì€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½ÍÑå±•Ì½Ñ½­•¹Ì¹ÍÌˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐ½µÁ½¹•¹ÑÌ€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½ÍÑå±•Ì½½µÁ½¹•¹ÑÌ¹ÍÌˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐ•¹ÑÉä€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½ÍÑå±•Ì½•¹ÑÉä¹ÍÌˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐ‰…Í”€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½ÍÑå±•Ì½‰…Í”¹ÍÌˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐÍ¡•±°€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½ÍÑå±•Ì½Í¡•±°¹ÍÌˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐÁÉ•Í•¹”€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½ÍÑå±•Ì½ÁÉ•Í•¹”¹ÍÌˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐÁÉ•Í•¹•¹¥¹”€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½½É”½ÁÉ•Í•¹”µ•¹¥¹”¹µ©Ìˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì(€½¹ÍÐÁÉ½™¥±•Ì€ô™Ì¹É•…‘¥±•Må¹Œ¡¹•ÜUI0 ˆ¸¸½Øà½•¹ÑÉä½ÁÉ½™¥±”µÍ•±•Ñ¥½¸¹µ©Ìˆ°¥µÁ½ÉÐ¹µ•Ñ„¹ÕÉ°¤°€‰ÕÑ˜àˆ¤ì((€…ÍÍ•ÉÐ¹µ…Ñ ¡Ñ½­•¹Ì°€¼´µØàµÁ¡åÍ¥ÌµÍÁÉ¥¹œéqÌ©Õ‰¥Œµ‰•é¥•È¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Ñ½­•¹Ì°€¼´µØàµ•…Í”µÍÁÉ¥¹œéqÌ©Ù…Ép ´µØàµÁ¡åÍ¥ÌµÍÁÉ¥¹p¤¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Ñ½­•¹Ì°€¼´µØàµÁ¡åÍ¥Ì´ üé¥µÁÕ±Í•ñ™É¥Ñ¥½¹ñµ½µ•¹ÑÕµñ¥¹•ÉÑ¥…ñ‘É¥™Ññ½É‰¥Ð¤è¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Ñ½­•¹Ì°€¼´µØàµ¥¹Ñ•É…Ñ¥½¸µ™½ÕÌµÑÉ…¹Í™½É´éqÌ©ÑÉ…¹Í±…Ñ”Í¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Ñ½­•¹Ì°€¼´µØàµ¥¹Ñ•É…Ñ¥½¸µÍ¡…‘½ÜéqÌ©Ù…Ép ´µØàµÍ¡…‘½Üµ¡½Ù•Èµ™¥±Ñ•Ép¤¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡½µÁ½¹•¹ÑÌ°€½ÑÉ…¹Í¥Ñ¥½¸µ‘ÕÉ…Ñ¥½¸éqÌ©Ù…Ép ´µØàµ¥¹Ñ•É…Ñ¥½¸µ‘ÕÉ…Ñ¥½¹p¤¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡½µÁ½¹•¹ÑÌ°€½ÑÉ…¹Í¥Ñ¥½¸µÑ¥µ¥¹œµ™Õ¹Ñ¥½¸éqÌ©Ù…Ép ´µØàµ•…Í”µÍÁÉ¥¹p¤¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡½µÁ½¹•¹ÑÌ°€¼é™½ÕÌµÙ¥Í¥‰±•qÌ©qímyõt©Ù…Ép ´µØàµ¥¹Ñ•É…Ñ¥½¸µ™½ÕÌµ™¥±Ñ•Ép¥myõt©Ù…Ép ´µØàµ¥¹Ñ•É…Ñ¥½¸µ™½ÕÌµÑÉ…¹Í™½Éµp¤½Ì¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡½µÁ½¹•¹ÑÌ°€¼é…Ñ¥Ù•qÌ©qímyõt©Ù…Ép ´µØàµ¥¹Ñ•É…Ñ¥½¸µÁÉ•ÍÌµÑÉ…¹Í™½Éµp¥myõt©Ù…Ép ´µØàµ•…Í”µÁÉ•ÍÍp¤½Ì¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Í¡•±°°€½p¹Øàµ‘½¬µ¡½ÍÑqÌ©qímyõt©ÑÉ…¹Í¥Ñ¥½¸éqÌ©ÑÉ…¹Í™½Éµmxít©Ù…Ép ´µØàµ•…Í”µÍÁÉ¥¹p¤½Ì¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡½µÁ½¹•¹ÑÌ°€½p¹ØàµÁ…¹•±qÌ©qímyõt©Ù…Ép ´µØàµÁ¡åÍ¥Ìµµ½µ•¹ÑÕµp¥myõt©Ù…Ép ´µØàµÁ¡åÍ¥Ìµ¥¹•ÉÑ¥…p¤½Ì¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡ÁÉ•Í•¹•¹¥¹”°€½•…Í¥¹œéqÌ©MÑÉ¥¹p¡½¹™¥p¹•…Í¥¹qÌ©qñqñqÌ©µ½Ñ¥½¹p¹•…Í¥¹qÌ©qñqñqÌ¨‰Õ‰¥Œµ‰•é¥•È¼¤ì(€…ÍÍ•ÉÐ¹‘½•Í9½Ñ5…Ñ ¡ÁÉ½™¥±•Ì°€½p¹…¹¥µ…Ñ•p ¼¤ì(€…ÍÍ•ÉÐ¹‘½•Í9½Ñ5…Ñ ¡m‰…Í”°½µÁ½¹•¹ÑÌ°•¹ÑÉä°Í¡•±°°ÁÉ•Í•¹•t¹©½¥¸ ‰q¸ˆ¤¹µ…Ñ  ½…¹¥µ…Ñ¥½¸émxít¬½œ¤ü¹©½¥¸ ‰q¸ˆ¤ñð€ˆˆ°€½q‰±¥¹•…Éqˆ¼¤ì(€…ÍÍ•ÉÐ¹‘½•Í9½Ñ5…Ñ ¡Í¡•±°°€½ÑÉ…¹Í¥Ñ¥½¸éqÌ©±•™Ð¼¤ì(€…ÍÍ•ÉÐ¹‘½•Í9½Ñ5…Ñ ¡Í¡•±°°€½ÑÉ…¹Í™½ÉµqÌ¬ÈÈÁµÌ¼¤ì(€…ÍÍ•ÉÐ¹‘½•Í9½Ñ5…Ñ ¡•¹ÑÉä°€½p¹Øàµ•¹ÑÉä´µ±½¥¸p¹Øàµ‰ÕÑÑ½¹qÌ©qímyõt©ÑÉ…¹Í¥Ñ¥½¸µÑ¥µ¥¹œµ™Õ¹Ñ¥½¸¼¤ì(€…ÍÍ•ÉÐ¹µ…Ñ ¡Ñ½­•¹Ì°€½ÁÉ•™•ÉÌµÉ•‘Õ•µµ½Ñ¥½¸éqÌ©É•‘Õ•mqÍqMt¨´µØàµ¥¹Ñ•É…Ñ¥½¸µ™½ÕÌµÑÉ…¹Í™½É´éqÌ©¹½¹”¼¤ì)ô¤ì(
+  const source = fs.readFileSync(new URL("../v8/core/experience.mjs", import.meta.url), "utf8");
+  assert.doesNotMatch(source, /setInterval|requestAnimationFrame[^?]/);
+});
+
+test("Ambient Engine owns one low-frequency timer and cleans it up", async () => {
+  const experience = await loadExperience();
+  const listeners = new Map();
+  const scheduled = new Map();
+  const cleared = [];
+  const soundProfiles = [];
+  const adaptiveProfiles = [];
+  let timerId = 0;
+  const document = {
+    visibilityState: "visible",
+    documentElement: { dataset: {}, style: { setProperty() {}, getPropertyValue: () => "" } },
+    addEventListener: (type, listener) => listeners.set(type, listener),
+    removeEventListener: (type, listener) => { if (listeners.get(type) === listener) listeners.delete(type); }
+  };
+  const runtime = {
+    document,
+    setTimeout: (callback, delay) => { const id = ++timerId; scheduled.set(id, { callback, delay }); return id; },
+    clearTimeout: (id) => { cleared.push(id); scheduled.delete(id); }
+  };
+  const engine = experience.createAmbientEngine({
+    runtime,
+    document,
+    target: document.documentElement,
+    soundManager: {
+      setAmbientProfile: (profile) => soundProfiles.push(profile),
+      setAdaptiveProfile: (profile) => adaptiveProfiles.push(profile)
+    }
+  });
+  const profile = engine.start({ theme: "night", space: "focus", flow: "Deep Work" }, { date: new Date(2026, 6, 14, 10, 0, 0, 0) });
+
+  assert.equal(profile.focus, true);
+  assert.equal(listeners.size, 1);
+  assert.equal(scheduled.size, 1);
+  assert.ok([...scheduled.values()][0].delay <= experience.AMBIENT_REFRESH_MS);
+  assert.equal(soundProfiles.at(-1).gain, profile.soundGain);
+  assert.deepEqual(adaptiveProfiles.at(-1), { tone: profile.soundTone, context: profile.context, theme: "night" });
+  assert.equal(engine.diagnostics().scheduled, true);
+  assert.equal(engine.destroy(), true);
+  assert.equal(scheduled.size, 0);
+  assert.equal(listeners.size, 0);
+  assert.ok(cleared.length >= 1);
+  assert.deepEqual(soundProfiles.at(-1), { gain: 1, rate: 1 });
+  assert.deepEqual(adaptiveProfiles.at(-1), { tone: 0, context: "neutral", theme: "graphite" });
+});
+
+test("Spotlight never runs when disabled or reduced motion is requested", async () => {
+  const experience = await loadExperience();
+  assert.ok(experience, "experience module must exist");
+  assert.equal(experience.shouldRunSpotlight({ enabled: true, reducedMotion: false }), true);
+  assert.equal(experience.shouldRunSpotlight({ enabled: false, reducedMotion: false }), false);
+  assert.equal(experience.shouldRunSpotlight({ enabled: true, reducedMotion: true }), false);
+  assert.equal(experience.SPOTLIGHT_DURATION_MS, 420);
+});
+
+test("startup reads the persisted Spotlight preference fail-open", async () => {
+  const experience = await loadExperience();
+  assert.ok(experience, "experience module must exist");
+  assert.equal(experience.readSpotlightPreference(memoryStorage({
+    "ethone:v8-ui-state": JSON.stringify({ spotlightEnabled: false })
+  })), false);
+  assert.equal(experience.readSpotlightPreference(memoryStorage({
+    "ethone:v8-ui-state": JSON.stringify({ spotlightEnabled: true })
+  })), true);
+  assert.equal(experience.readSpotlightPreference(memoryStorage({
+    "ethone:v8-ui-state": "not-json"
+  })), true);
+});
+
+test("presentation state persists the Spotlight preference", () => {
+  const storage = memoryStorage();
+  const store = createPresentationStore({}, { storage });
+  assert.equal(store.getState().spotlightEnabled, true);
+  store.setState({ spotlightEnabled: false });
+  assert.equal(store.getState().spotlightEnabled, false);
+
+  const restored = createPresentationStore({}, { storage });
+  assert.equal(restored.getState().spotlightEnabled, false);
+});
+
+test("central actions toggle Spotlight without touching unrelated state", () => {
+  let state = { spotlightEnabled: true, theme: "night" };
+  const actions = createActionFacade({
+    getState: () => state,
+    setState: (patch) => { state = { ...state, ...patch }; }
+  });
+  const result = actions.dispatch("v8.spotlight.toggle");
+  assert.equal(result.ok, true);
+  assert.equal(state.spotlightEnabled, false);
+  assert.equal(state.theme, "night");
+  actions.destroy();
+});
+
+test("central actions toggle persistent Silent mode and preview only when sound returns", () => {
+  let preferences = { enabled: true, silent: false };
+  let previews = 0;
+  const actions = createActionFacade({
+    sounds: {
+      preferences: () => preferences,
+      setPreferences: (patch) => { preferences = { ...preferences, ...patch }; },
+      preview: () => { previews += 1; },
+      playAction() {}
+    }
+  });
+  const muted = actions.dispatch("v8.sound.silent");
+  assert.equal(muted.ok, true);
+  assert.equal(preferences.silent, true);
+  assert.equal(previews, 0);
+  const audible = actions.dispatch("v8.sound.silent");
+  assert.equal(audible.ok, true);
+  assert.equal(preferences.silent, false);
+  assert.equal(previews, 1);
+  actions.destroy();
+});
+
+test("Spotlight CSS is GPU-only, bounded and reduced-motion safe", () => {
+  const base = fs.readFileSync(new URL("../v8/styles/base.css", import.meta.url), "utf8");
+  const main = fs.readFileSync(new URL("../v8/main.mjs", import.meta.url), "utf8");
+  const profiles = fs.readFileSync(new URL("../v8/entry/profile-selection.mjs", import.meta.url), "utf8");
+  assert.match(base, /\.v8-spotlight/);
+  assert.match(base, /420ms/);
+  assert.match(base, /\.v8-spotlight[\s\S]*transform[\s\S]*opacity/);
+  assert.doesNotMatch(base.match(/\.v8-spotlight[\s\S]*?(?=\n\.[a-z]|@media|$)/)?.[0] || "", /(?:width|height|top|left)\s*:/);
+  assert.match(base, /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.v8-spotlight/);
+  assert.match(main, /playSpotlight/);
+  assert.doesNotMatch(profiles, /waitForLaunch|launchTimer/);
+});
+
+test("Login polish keeps the auth flow keyboard-safe and motion-bounded", () => {
+  const login = fs.readFileSync(new URL("../v8/entry/login.mjs", import.meta.url), "utf8");
+  const entry = fs.readFileSync(new URL("../v8/styles/entry.css", import.meta.url), "utf8");
+  assert.match(login, /className: "v8-auth-shell"/);
+  assert.match(login, /dataset: \{ authMode: "login" \}/);
+  assert.match(login, /toggleAttribute\("inert", !loginActive\)/);
+  assert.match(login, /toggleAttribute\("inert", loginActive\)/);
+  assert.doesNotMatch(login, /register-form"[\s\S]{0,160}hidden: true/);
+  assert.match(entry, /\.v8-auth-shell::before[\s\S]*radial-gradient/);
+  assert.match(entry, /\.v8-auth::after[\s\S]*linear-gradient/);
+  assert.match(entry, /\.v8-auth__tabs::before[\s\S]*transition:\s*transform/);
+  assert.match(entry, /\.v8-auth__form\[aria-hidden="true"\][\s\S]*opacity:\s*0[\s\S]*visibility:\s*hidden/);
+  assert.match(entry, /\.v8-entry--login \.v8-auth__input:focus-visible[\s\S]*var\(--v8-login-ring\)/);
+  assert.match(entry, /prefers-reduced-motion:\s*reduce[\s\S]*\.v8-auth__form/);
+  assert.match(entry, /\.v8-auth-shell::before[\s\S]*filter:\s*blur\(30px\)[\s\S]*scale\(1\.12\)/);
+  assert.match(entry, /\.v8-auth\s*\{[^}]*inset 0 0 32px[^}]*backdrop-filter:/s);
+  assert.match(entry, /\.v8-entry--login \.v8-auth__submit\.v8-button--primary[\s\S]*var\(--v8-login-primary\)/);
+  assert.match(entry, /\.v8-auth__oauth-button svg\s*\{[^}]*width:\s*19px[^}]*stroke-width:\s*1\.85/s);
+  assert.match(entry, /\.v8-auth__form\s*\{[^}]*transition:\s*opacity[^}]*transform/s);
+  assert.match(entry, /data-auth-mode="login"[^}]*#v8-register-form[^}]*translate3d\(14px/);
+  assert.match(entry, /data-auth-mode="register"[^}]*#v8-login-form[^}]*translate3d\(-14px/);
+  assert.doesNotMatch(entry.match(/\.v8-auth-shell::before\s*\{[^}]*\}/s)?.[0] || "", /animation:/);
+  assert.doesNotMatch(entry.match(/\.v8-auth-shell::before\s*\{[^}]*\}/s)?.[0] || "", /inset:\s*-/);
+});
+
+test("profile selection exposes an honest live environment preview", () => {
+  const date = new Date("2026-07-14T09:05:00.000Z");
+  const model = profilePreviewModel({
+    id: "profile-live",
+    name: "Focus",
+    type: "development",
+    space: "development",
+    flow: "Deep Work",
+    accent: "sky",
+    lastActiveAt: "2026-07-14T08:45:00.000Z",
+    counts: { notes: 4, openTasks: 2, events: 1, files: 7 },
+    environment: { widgets: ["brain", "github", "notes"], integrations: ["spotify", "discord"], ambience: "focus", background: "horizon" }
+  }, {
+    profile: { id: "profile-live" },
+    notes: [],
+    tasks: [],
+    events: [{ title: "Product review", date: "2026-07-14" }],
+    connections: [{ id: "spotify", status: "connected" }, { id: "discord", status: "connected" }],
+    activities: [
+      { source: "weather", category: "system", title: "18 C, ciel clair", timestamp: date.toISOString() },
+      { source: "brain", category: "brain", title: "Contexte analyse", timestamp: date.toISOString() },
+      { source: "spotify", category: "media", title: "Tycho - Awake", timestamp: date.toISOString() }
+    ]
+  }, date);
+
+  assert.deepEqual(model.favoriteWidgets, ["brain", "github", "notes"]);
+  assert.equal(model.ambienceLabel, "Concentration");
+  assert.equal(model.backgroundLabel, "Horizon");
+  assert.equal(model.live.signals.find((signal) => signal.id === "weather")?.value, "18 C, ciel clair");
+  assert.equal(model.live.signals.find((signal) => signal.id === "music")?.value, "Tycho - Awake");
+  assert.equal(model.live.signals.find((signal) => signal.id === "discord")?.value, "Connecte");
+
+  const disconnected = profilePreviewModel({ id: "local", name: "Local" }, { profile: { id: "local" } }, date);
+  assert.equal(disconnected.live.signals.find((signal) => signal.id === "weather")?.value, "Source non connectee");
+  assert.equal(disconnected.live.signals.find((signal) => signal.id === "music")?.value, "Source non connectee");
+  assert.doesNotMatch(JSON.stringify(disconnected.live), /soleil|22 C|playlist/i);
+  assert.match(formatEnvironmentClock(date).time, /^\d{2}:\d{2}$/);
+});
+
+test("environment selection keeps its live runtime bounded and wizard accessible", () => {
+  const profiles = fs.readFileSync(new URL("../v8/entry/profile-selection.mjs", import.meta.url), "utf8");
+  const entry = fs.readFileSync(new URL("../v8/styles/entry.css", import.meta.url), "utf8");
+  assert.match(profiles, /repository\.snapshot\?\.\(profile\.id\)/);
+  assert.match(profiles, /createDailyBriefing/);
+  assert.match(profiles, /clockManager\?\.subscribe\?\.\(refreshClock\)/);
+  assert.match(profiles, /releaseClock\(\)/);
+  assert.doesNotMatch(profiles, /setInterval|requestAnimationFrame/);
+  assert.match(profiles, /document\.startViewTransition/);
+  assert.match(profiles, /aria-current.*step/);
+  assert.match(profiles, /role: "checkbox"/);
+  assert.match(profiles, /page\.toggleAttribute\("inert", !active\)/);
+  assert.match(entry, /\.v8-profile-preview__live-grid/);
+  assert.match(entry, /::view-transition-old\(root\)/);
+  assert.match(entry, /prefers-reduced-motion:\s*reduce[\s\S]*::view-transition-new\(root\)/);
+});
+
+test("context colors keep a fixed violet brand and subtle secondary accents", () => {
+  const tokens = fs.readFileSync(new URL("../v8/styles/tokens.css", import.meta.url), "utf8");
+  const shell = fs.readFileSync(new URL("../v8/styles/shell.css", import.meta.url), "utf8");
+  for (const context of ["gaming", "dev", "study", "focus", "night"]) {
+    assert.match(tokens, new RegExp(`:root\\[data-context="${context}"\\]`));
+  }
+  assert.match(tokens, /--v8-brand:\s*#[0-9a-f]{6}/i);
+  assert.match(tokens, /--v8-context-accent:/);
+  assert.match(tokens, /--v8-ambient-accent:[^;]*var\(--v8-accent\)[^;]*var\(--v8-context-accent\)/);
+  assert.match(tokens, /color-mix\(in srgb, var\(--v8-canvas\) 98%, var\(--v8-ambient-accent\)\)/);
+  assert.match(shell, /\.v8-topbar__workspace-mark\s*\{[^}]*var\(--v8-context-soft\)[^}]*var\(--v8-context-accent\)/s);
+  assert.match(shell, /\.v8-rail-space__mark\s*\{[^}]*var\(--v8-context-soft\)[^}]*var\(--v8-context-accent\)/s);
+  assert.match(shell, /\.v8-switch\s*\{[^}]*height:\s*44px/s);
+});
+
+test("Ambient UI composes theme, Space and Flow through one low-frequency engine", () => {
+  const tokens = fs.readFileSync(new URL("../v8/styles/tokens.css", import.meta.url), "utf8");
+  const base = fs.readFileSync(new URL("../v8/styles/base.css", import.meta.url), "utf8");
+  const shell = fs.readFileSync(new URL("../v8/styles/shell.css", import.meta.url), "utf8");
+  const runtime = fs.readFileSync(new URL("../v8/app/app-runtime.mjs", import.meta.url), "utf8");
+  const main = fs.readFileSync(new URL("../v8/main.mjs", import.meta.url), "utf8");
+  for (const phase of ["morning", "afternoon", "evening", "night"]) {
+    assert.match(tokens, new RegExp(`:root\\[data-ambient="${phase}"\\]`));
+  }
+  assert.match(tokens, /:root\[data-theme="graphite"\][\s\S]*--v8-ambient-theme-wash:/);
+  assert.match(tokens, /:root\[data-space="focus"\][\s\S]*--v8-ambient-space-wash:/);
+  assert.match(tokens, /:root\[data-space="studio"\][\s\S]*--v8-ambient-space-wash:/);
+  assert.match(shell, /\.v8-shell\s*\{[^}]*--v8-ambient-phase-light[^}]*--v8-ambient-theme-wash[^}]*--v8-ambient-space-wash[^}]*--v8-ambient-phase-shadow/s);
+  assert.match(shell, /box-shadow:[^;]*--v8-ambient-context-glow/);
+  assert.doesNotMatch(shell.match(/\.v8-shell\s*\{[^}]*\}/s)?.[0] || "", /animation:/);
+  assert.match(tokens, /@property --v8-ambient-motion-duration/);
+  assert.match(base, /--v8-ambient-phase-light var\(--v8-ambient-transition\)/);
+  assert.match(runtime, /createAmbientEngine/);
+  assert.match(runtime, /ambient\.refresh\(next\)/);
+  assert.match(runtime, /ambientPhase/);
+  assert.doesNotMatch(runtime, /ambientTimer|setInterval|requestAnimationFrame/);
+  assert.match(main, /createAmbientEngine/);
+  assert.match(main, /ambientEngine:\s*ambient/);
+});
+
+test("Breathing UI animates only decorative layers on the compositor", () => {
+  const tokens = fs.readFileSync(new URL("../v8/styles/tokens.css", import.meta.url), "utf8");
+  const base = fs.readFileSync(new URL("../v8/styles/base.css", import.meta.url), "utf8");
+  const entry = fs.readFileSync(new URL("../v8/styles/entry.css", import.meta.url), "utf8");
+  const shell = fs.readFileSync(new URL("../v8/styles/shell.css", import.meta.url), "utf8");
+  const presence = fs.readFileSync(new URL("../v8/styles/presence.css", import.meta.url), "utf8");
+  const keyframes = base.match(/@keyframes v8-surface-breathe\s*\{[\s\S]*?\n\}/)?.[0] || "";
+  assert.match(tokens, /--v8-breathe-duration:\s*26s/);
+  assert.match(keyframes, /opacity:[^;]+;[^}]*transform:/);
+  assert.doesNotMatch(keyframes, /filter|background|box-shadow|(?:width|height|top|left):/);
+  assert.match(shell, /\.v8-continuity::after,\.v8-home-brain::after,\.v8-brain-context::after/);
+  assert.doesNotMatch(entry, /\.v8-profile-preview__ambient[\s\S]{0,180}animation:\s*v8-surface-breathe/);
+  assert.match(presence, /data-presence-engine="active"[\s\S]*\.v8-profile-preview__ambient[\s\S]*animation:\s*v8-surface-breathe/);
+  assert.match(presence, /prefers-reduced-motion:\s*reduce[\s\S]*\.v8-brain-context::after/);
+});
+
+test("Ambient Dashboard uses quiet compositor layers without a runtime loop", () => {
+  const home = fs.readFileSync(new URL("../v8/pages/home.mjs", import.meta.url), "utf8");
+  const shell = fs.readFileSync(new URL("../v8/styles/shell.css", import.meta.url), "utf8");
+  const presence = fs.readFileSync(new URL("../v8/styles/presence.css", import.meta.url), "utf8");
+  const keyframes = ["wash", "light", "float"].map((name) => presence.match(new RegExp(`@keyframes v8-dashboard-${name}\\s*\\{[\\s\\S]*?\\n\\}`))?.[0] || "").join("\n");
+
+  assert.match(home, /v8-home-ambient__wash/);
+  assert.match(home, /v8-home-ambient__light/);
+  assert.match(home, /v8-home-float--hero/);
+  assert.match(home, /v8-home-float--timeline/);
+  assert.match(shell, /\.v8-home-ambient__wash,[\s\S]*animation:\s*none/);
+  assert.match(shell, /\.v8-home-float\s*\{[^}]*animation:\s*none[^}]*will-change:\s*auto/s);
+  assert.match(shell, /\.v8-daystream\s*\{[^}]*box-shadow:\s*var\(--v8-shadow-card-lit\)/s);
+  assert.match(presence, /data-presence-engine="active"\] \.v8-home-ambient__wash[\s\S]*v8-dashboard-wash/);
+  assert.match(presence, /data-presence-engine="active"\] \.v8-home-float[\s\S]*v8-dashboard-float/);
+  assert.match(presence, /data-presence-engine="paused"\] \.v8-home-ambient__wash[\s\S]*animation-play-state:\s*paused/);
+  assert.match(presence, /prefers-reduced-motion:\s*reduce[\s\S]*\.v8-home-float[\s\S]*animation:\s*none/);
+  assert.match(keyframes, /transform:/);
+  assert.match(keyframes, /opacity:/);
+  assert.doesNotMatch(keyframes, /box-shadow|filter|background|(?:width|height|top|right|bottom|left|margin|padding):/);
+  assert.doesNotMatch(home, /setInterval|requestAnimationFrame|MutationObserver|ResizeObserver/);
+});
+
+test("Premium background drifts on the compositor and fades decorative signals", () => {
+  const base = fs.readFileSync(new URL("../v8/styles/base.css", import.meta.url), "utf8");
+  const entry = fs.readFileSync(new URL("../v8/styles/entry.css", import.meta.url), "utf8");
+  const presence = fs.readFileSync(new URL("../v8/styles/presence.css", import.meta.url), "utf8");
+  const login = fs.readFileSync(new URL("../v8/entry/login.mjs", import.meta.url), "utf8");
+  const drift = base.match(/@keyframes v8-ambient-drift\s*\{[\s\S]*?\n\}/)?.[0] || "";
+  assert.match(base, /\.v8-entry::before,[\s\S]*\.v8-shell::before[\s\S]*animation:\s*none/);
+  assert.match(presence, /data-presence-engine="active"[\s\S]*\.v8-shell::before[\s\S]*animation:\s*v8-ambient-drift var\(--v8-ambient-motion-duration\)/);
+  assert.match(drift, /transform:/);
+  assert.match(drift, /opacity:/);
+  assert.doesNotMatch(drift, /background|filter|inset|width|height/);
+  assert.match(drift, /--v8-ambient-opacity-(?:min|max)/);
+  assert.match(presence, /prefers-reduced-motion:\s*reduce[\s\S]*\.v8-shell::before[\s\S]*animation:\s*none/);
+  assert.match(entry, /\.v8-entry__signal-field span\s*\{[\s\S]*linear-gradient\(90deg,\s*transparent[\s\S]*transparent\)/);
+  assert.match(entry, /\.v8-entry__signal-field span\s*\{[^}]*width:\s*170vmax/s);
+  assert.equal((login.match(/className: "v8-entry__particle"/g) || []).length, 4);
+  assert.match(presence, /data-presence-engine="active"\] \.v8-entry__particle[\s\S]*v8-entry-particle-drift/);
+  const particles = presence.match(/@keyframes v8-entry-particle-drift\s*\{[\s\S]*?\n\}/)?.[0] || "";
+  assert.match(particles, /transform:/);
+  assert.match(particles, /opacity:/);
+  assert.doesNotMatch(particles, /filter|background|box-shadow|(?:width|height|top|left):/);
+  assert.match(login, /requestAnimationFrame/);
+  assert.match(login, /addEventListener\("pointermove"[^\n]*signal:\s*abortController\.signal[^\n]*passive:\s*true/);
+  assert.match(login, /cancelAnimationFrame/);
+  assert.doesNotMatch(login, /getBoundingClientRect|setInterval/);
+  assert.match(entry, /\.v8-entry__title\s*\{[^}]*text-shadow:/s);
+  assert.match(base, /\.v8-entry__monogram,\.v8-profile-preview__ambient span,\.v8-continuity__monogram\s*\{[^}]*text-shadow:/s);
+});
+
+test("Brand identity uses one localized slogan and a compositor-only 8 signature", () => {
+  const base = fs.readFileSync(new URL("../v8/styles/base.css", import.meta.url), "utf8");
+  const presence = fs.readFileSync(new URL("../v8/styles/presence.css", import.meta.url), "utf8");
+  const entry = fs.readFileSync(new URL("../v8/styles/entry.css", import.meta.url), "utf8");
+  const login = fs.readFileSync(new URL("../v8/entry/login.mjs", import.meta.url), "utf8");
+  const profiles = fs.readFileSync(new URL("../v8/entry/profile-selection.mjs", import.meta.url), "utf8");
+  const home = fs.readFileSync(new URL("../v8/pages/home.mjs", import.meta.url), "utf8");
+  const breathe = base.match(/@keyframes v8-brand-breathe\s*\{[^}]*\}\s*to\s*\{[^}]*\}\s*\}/s)?.[0] || "";
+
+  for (const slogan of [
+    "Votre environnement numÃ©rique. RÃ©inventÃ©.",
+    "Your digital environment. Reimagined.",
+    "Tu entorno digital. Reinventado.",
+    "Deine digitale Umgebung. Neu gedacht."
+  ]) assert.match(login, new RegExp(slogan.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+
+  for (const source of [login, profiles, home]) {
+    assert.match(source, /text: "8"/);
+    assert.doesNotMatch(source, /text: "08"/);
+  }
+  assert.match(base, /\.v8-entry__monogram,\.v8-profile-preview__ambient span,\.v8-continuity__monogram\s*\{[^}]*text-shadow:[^}]*animation:none/s);
+  assert.match(presence, /data-presence-engine="active"[\s\S]*\.v8-continuity__monogram\s*\{[^}]*animation:\s*v8-brand-breathe 24s/s);
+  assert.match(presence, /data-presence-engine="active"\] \.v8-entry__monogram\s*\{[^}]*v8-brand-breathe 42s/s);
+  assert.match(entry, /\.v8-entry--login \.v8-entry__monogram\s*\{[^}]*linear-gradient[^}]*filter:blur\(\.22px\)/s);
+  assert.match(entry, /\.v8-entry__monogram\s*\{\s*display:none/);
+  assert.match(entry, /@media \(min-width:\s*900px\)[\s\S]*\.v8-entry--login \.v8-entry__monogram\s*\{[^}]*display:block/);
+  assert.match(breathe, /transform:scale/);
+  assert.doesNotMatch(breathe, /filter|background|width|height|top|left/);
+  assert.match(presence, /prefers-reduced-motion:\s*reduce[\s\S]*\.v8-continuity__monogram[\s\S]*animation:\s*none/);
+});
+
+test("Presence Engine centrally owns Brain Sync notification and Dock life", () => {
+  const presence = fs.readFileSync(new URL("../v8/styles/presence.css", import.meta.url), "utf8");
+  const engine = fs.readFileSync(new URL("../v8/core/presence-engine.mjs", import.meta.url), "utf8");
+  const base = fs.readFileSync(new URL("../v8/styles/base.css", import.meta.url), "utf8");
+  const entry = fs.readFileSync(new URL("../v8/styles/entry.css", import.meta.url), "utf8");
+  const shell = fs.readFileSync(new URL("../v8/styles/shell.css", import.meta.url), "utf8");
+  const components = fs.readFileSync(new URL("../v8/styles/components.css", import.meta.url), "utf8");
+  const main = fs.readFileSync(new URL("../v8/main.mjs", import.meta.url), "utf8");
+  const app = fs.readFileSync(new URL("../v8/app/app-runtime.mjs", import.meta.url), "utf8");
+
+  for (const state of ["ready", "thinking", "responding"]) {
+    assert.match(presence, new RegExp(`data-presence-brain="${state}"`));
+  }
+  assert.match(presence, /data-presence-sync="syncing"[\s\S]*v8-presence-sync/);
+  assert.match(presence, /data-presence-notification="important"[\s\S]*v8-presence-unread/);
+  assert.match(presence, /\.v8-dock-app\.is-active::after[\s\S]*v8-presence-dock-signal/);
+  assert.match(presence, /--v8-presence-brain-cycle:\s*1600ms/);
+  assert.match(presence, /--v8-presence-notification-cycle:\s*900ms/);
+  assert.match(presence, /--v8-presence-dock-cycle:\s*1200ms/);
+  const finiteIconAnimations = presence.split("\n").filter((line) => /animation:\s*v8-presence-(?:brain-ready|signal-ready|unread|dock-glow|dock-signal|mail-arrive)/.test(line));
+  assert.ok(finiteIconAnimations.length >= 6);
+  finiteIconAnimations.forEach((line) => assert.doesNotMatch(line, /infinite|alternate/));
+  assert.match(presence, /data-presence-engine="paused"[\s\S]*animation-play-state:\s*paused/);
+  assert.match(presence, /prefers-reduced-motion:\s*reduce[\s\S]*animation:\s*none/);
+  assert.doesNotMatch(engine, /setInterval|requestAnimationFrame/);
+  assert.doesNotMatch([base, entry, shell].join("\n"), /animation:[^;]*(?:infinite|alternate)/);
+  assert.match(components, /animation:\s*v8-spin[^;]*infinite/);
+  assert.match(main, /createPresenceEngine/);
+  assert.match(main, /presenceEngine:\s*presence/);
+  assert.match(app, /presence\.update\(\{[\s\S]*syncStatus/);
+});
+
+test("Dynamic icons are semantic conditional finite and centrally wired", () => {
+  const presence = fs.readFileSync(new URL("../v8/styles/presence.css", import.meta.url), "utf8");
+  const engine = fs.readFileSync(new URL("../v8/core/presence-engine.mjs", import.meta.url), "utf8");
+  const shell = fs.readFileSync(new URL("../v8/ui/shell.mjs", import.meta.url), "utf8");
+  const dock = fs.readFileSync(new URL("../v8/ui/dock.mjs", import.meta.url), "utf8");
+  const calendar = fs.readFileSync(new URL("../v8/pages/calendar.mjs", import.meta.url), "utf8");
+  const activity = fs.readFileSync(new URL("../v8/pages/activity.mjs", import.meta.url), "utf8");
+  const connections = fs.readFileSync(new URL("../v8/pages/connections.mjs", import.meta.url), "utf8");
+  const toast = fs.readFileSync(new URL("../v8/ui/toast.mjs", import.meta.url), "utf8");
+
+  for (const kind of ["brain", "cloud", "notifications", "mail"]) {
+    assert.match([shell, dock, activity, connections].join("\n"), new RegExp(`data-presence-icon=["']${kind}["']`));
+  }
+  assert.match(dock, /\["brain", "calendar"\]\.includes\(item\.id\)/);
+  assert.match(dock, /presenceIcon/);
+  assert.match(engine, /ethone:mail-received/);
+  assert.match(engine, /notificationsImportant/);
+  assert.match(calendar, /calendarPresenceState/);
+  assert.match(toast, /type === "error" \|\| type === "warning"/);
+  assert.match(presence, /data-presence-sync="syncing"[\s\S]*v8-presence-sync[^;]*infinite/);
+  assert.match(presence, /data-presence-media="playing"[\s\S]*v8-presence-media-level[^;]*infinite/);
+  assert.match(presence, /data-presence-mail="new"[\s\S]*v8-presence-mail-arrive[^;]*both/);
+  assert.match(presence, /prefers-reduced-motion:\s*reduce[\s\S]*\.v8-mail-signal[\s\S]*animation:\s*none/);
+  assert.doesNotMatch(engine, /setInterval|requestAnimationFrame/);
+});
+
+test("Live Widget motion is semantic centralized bounded and reduced-motion safe", () => {
+  const presence = fs.readFileSync(new URL("../v8/styles/presence.css", import.meta.url), "utf8");
+  const engine = fs.readFileSync(new URL("../v8/core/presence-engine.mjs", import.meta.url), "utf8");
+  const app = fs.readFileSync(new URL("../v8/app/app-runtime.mjs", import.meta.url), "utf8");
+  const main = fs.readFileSync(new URL("../v8/main.mjs", import.meta.url), "utf8");
+  const profiles = fs.readFileSync(new URL("../v8/entry/profile-selection.mjs", import.meta.url), "utf8");
+  const sources = [
+    "../v8/pages/home.mjs",
+    "../v8/pages/tasks.mjs",
+    "../v8/pages/calendar.mjs",
+    "../v8/pages/brain.mjs",
+    "../v8/ui/panel.mjs",
+    "../v8/ui/mission-control.mjs"
+  ].map((path) => fs.readFileSync(new URL(path, import.meta.url), "utf8")).join("\n");
+
+  for (const kind of ["brain", "clock", "metric", "planning", "signal", "widget"]) {
+    assert.match([profiles, sources].join("\n"), new RegExp(`liveKind:\\s*"${kind}"`));
+  }
+  assert.match(profiles, /presence\.transitionText\(liveTime,[^}]*kind:\s*"clock"/);
+  assert.match(profiles, /presence\?\.transitionSurface\(preview,\s*\{\s*kind:\s*"profile"/);
+  assert.doesNotMatch(profiles, /\.animate\(/);
+  assert.match(app, /function finishRouteMount[\s\S]*presence\.revealWidgets\(shell\.stage\)/);
+  assert.match(app, /presence\.revealWidgets\(shell\.panelHost\)/);
+  assert.match(app, /presence\.revealWidgets\(shell\.missionHost\)/);
+  assert.match(main, /presenceEngine:\s*presence/);
+  assert.doesNotMatch(engine, /MutationObserver|ResizeObserver|IntersectionObserver|setInterval|requestAnimationFrame/);
+  assert.match(engine, /duration:\s*Math\.min\(config\.maxDuration\s*\|\|\s*420/);
+  assert.match(engine, /Math\.min\(7,\s*revealed\)/);
+  assert.match(presence, /@property --v8-live-number-value/);
+  assert.match(presence, /--v8-live-stagger:\s*24ms/);
+  assert.match(presence, /@keyframes v8-live-(?:widget|media|brain|planning)-enter/);
+  assert.match(presence, /@keyframes v8-live-number-count/);
+  assert.match(presence, /prefers-reduced-motion:\s*reduce[\s\S]*\[data-live-number\][\s\S]*display:\s*none/);
+});
+
+test("Smart Activity feedback is centralized and attached to successful system changes", () => {
+  const engine = fs.readFileSync(new URL("../v8/core/presence-engine.mjs", import.meta.url), "utf8");
+  const presence = fs.readFileSync(new URL("../v8/styles/presence.css", import.meta.url), "utf8");
+  const toast = fs.readFileSync(new URL("../v8/ui/toast.mjs", import.meta.url), "utf8");
+  const app = fs.readFileSync(new URL("../v8/app/app-runtime.mjs", import.meta.url), "utf8");
+  const profiles = fs.readFileSync(new URL("../v8/entry/profile-selection.mjs", import.meta.url), "utf8");
+  const tasks = fs.readFileSync(new URL("../v8/pages/tasks.mjs", import.meta.url), "utf8");
+  const notes = fs.readFileSync(new URL("../v8/pages/notes.mjs", import.meta.url), "utf8");
+  const calendar = fs.readFileSync(new URL("../v8/pages/calendar.mjs", import.meta.url), "utf8");
+  const files = fs.readFileSync(new URL("../v8/pages/files.mjs", import.meta.url), "utf8");
+
+  assert.match(engine, /function signalActivity/);
+  assert.match(engine, /ACTIVITY_PHASES = new Set\(\["enter", "update", "exit"\]\)/);
+  assert.match(engine, /maxDuration:\s*250/);
+  assert.doesNotMatch(engine, /MutationObserver|ResizeObserver|IntersectionObserver|setInterval|requestAnimationFrame/);
+  assert.match(presence, /\[data-presence-activity\][^}]*will-change:\s*transform, opacity/);
+  assert.match(app, /createToastManager\(shell\.toastRegion, \{ sounds, presence \}\)/);
+  assert.match(toast, /signalActivity\?\.\(node, "notification", \{ phase: "enter" \}\)/);
+  assert.match(toast, /signalActivity\(record\.node, "notification", \{ phase: "exit", onComplete: remove \}\)/);
+  for (const [source, kind] of [[tasks, "task"], [notes, "note"], [calendar, "calendar"], [files, "file"], [profiles, "widget"]]) {
+    assert.match(source, new RegExp(`signalActivity[^\\n]*"${kind}"`));
+    assert.doesNotMatch(source, /\.animate\(/);
+  }
+  assert.doesNotMatch(tasks, /revealWidgets\(list\)/);
+  assert.doesNotMatch(calendar, /revealWidgets\(agenda\)/);
+  assert.match(app, /syncStatus:\s*next\.syncStatus/);
+});
+
+test("Typography tokens keep primary and secondary content readable", () => {
+  const tokens = fs.readFileSync(new URL("../v8/styles/tokens.css", import.meta.url), "utf8");
+  const base = fs.readFileSync(new URL("../v8/styles/base.css", import.meta.url), "utf8");
+  const entry = fs.readFileSync(new URL("../v8/styles/entry.css", import.meta.url), "utf8");
+  const shell = fs.readFileSync(new URL("../v8/styles/shell.css", import.meta.url), "utf8");
+  const styles = [tokens, base, entry, shell].join("\n");
+
+  assert.match(tokens, /--v8-text-secondary:\s*#c4ccd6/);
+  assert.match(tokens, /--v8-muted:\s*#929daa/);
+  assert.match(tokens, /--v8-type-caption:\s*clamp\(0\.75rem,[^;]+--density-font-scale/);
+  assert.match(tokens, /--v8-type-label:\s*clamp\(0\.8125rem,[^;]+--density-font-scale/);
+  assert.match(tokens, /--v8-type-body:\s*clamp\(0\.9375rem,[^;]+--density-font-scale/);
+  assert.match(tokens, /--v8-font-micro:\s*var\(--v8-type-caption\)/);
+  assert.match(tokens, /--v8-font-xs:\s*var\(--v8-type-label\)/);
+  assert.match(tokens, /--v8-line-base:\s*var\(--density-line-height\)/);
+  assert.match(tokens, /--v8-line-relaxed:\s*1\.7/);
+  assert.match(base, /font-kerning:\s*normal/);
+  assert.match(base, /font-synthesis:\s*none/);
+  assert.match(entry, /\.v8-entry__brand-line\s*\{[^}]*font-weight:\s*var\(--v8-weight-medium\)[^}]*text-wrap:\s*balance/s);
+  assert.match(shell, /\.v8-page-heading h1\s*\{[^}]*font-weight:\s*var\(--v8-weight-bold\)/s);
+  assert.match(shell, /\.v8-breadcrumb-context__item\s*\{[^}]*font-size:\s*var\(--v8-font-micro\)/s);
+  assert.match(shell, /\.v8-status-bar\s*\{[^}]*font-size:\s*var\(--v8-font-micro\)/s);
+  assert.match(shell, /@media \(max-width:\s*1500px\) and \(min-width:\s*981px\)[\s\S]*\.v8-breadcrumbs \.v8-breadcrumb-step--workspace/);
+  assert.match(shell, /@media \(max-width:\s*820px\)[\s\S]*\.v8-breadcrumbs \.v8-breadcrumb-step\s*\{\s*display:\s*none/);
+  assert.doesNotMatch(styles, /letter-spacing:\s*(?!0(?:;|\s))[-.\d]+(?:em|rem|px)/);
+});
+
+test("Global lighting uses layered static light without runtime animation", () => {
+  const tokens = fs.readFileSync(new URL("../v8/styles/tokens.css", import.meta.url), "utf8");
+  const components = fs.readFileSync(new URL("../v8/styles/components.css", import.meta.url), "utf8");
+  const entry = fs.readFileSync(new URL("../v8/styles/entry.css", import.meta.url), "utf8");
+  const shell = fs.readFileSync(new URL("../v8/styles/shell.css", import.meta.url), "utf8");
+
+  for (const token of ["surface", "hero", "brand", "brain", "window"]) {
+    assert.match(tokens, new RegExp(`--v8-light-${token}:`));
+  }
+  for (const level of ["card", "hero", "brain", "modal", "header"]) {
+    assert.match(tokens, new RegExp(`--v8-shadow-${level}-lit:`));
+  }
+  assert.match(components, /\.v8-surface\s*\{[^}]*var\(--v8-reflection-card\)[^}]*var\(--v8-shadow-card-lit\)/s);
+  assert.match(components, /\.v8-panel\s*\{[^}]*var\(--v8-shadow-panel-rest\)/s);
+  assert.match(entry, /\.v8-entry__intro::before\s*\{[^}]*radial-gradient\(ellipse,var\(--v8-light-brand\)/s);
+  assert.match(entry, /\.v8-profile-preview\s*\{[^}]*var\(--v8-reflection-hero\)[^}]*var\(--v8-shadow-hero-lit\)/s);
+  assert.match(shell, /\.v8-context-strip\s*\{[^}]*var\(--v8-shadow-header-lit\)/s);
+  assert.match(shell, /\.v8-continuity\s*\{[^}]*var\(--v8-shadow-hero-lit\)/s);
+  assert.match(shell, /\.v8-home-brain\s*\{[^}]*var\(--v8-shadow-brain-lit\)/s);
+  assert.match(shell, /\.v8-command-dialog\s*\{[^}]*var\(--v8-shadow-window-open\)/s);
+
+  const staticLights = [
+    entry.match(/\.v8-entry__intro::before\s*\{[^}]*\}/s)?.[0] || "",
+    shell.match(/\.v8-continuity\s*\{[^}]*\}/s)?.[0] || "",
+    shell.match(/\.v8-home-brain\s*\{[^}]*\}/s)?.[0] || ""
+  ].join("\n");
+  assert.doesNotMatch(staticLights, /animation:|filter:|backdrop-filter:/);
+});
+
+test("Dynamic shadows share one elevation and interaction contract", () => {
+  const tokens = fs.readFileSync(new URL("../v8/styles/tokens.css", import.meta.url), "utf8");
+  const components = fs.readFileSync(new URL("../v8/styles/components.css", import.meta.url), "utf8");
+  const entry = fs.readFileSync(new URL("../v8/styles/entry.css", import.meta.url), "utf8");
+  const shell = fs.readFileSync(new URL("../v8/styles/shell.css", import.meta.url), "utf8");
+
+  for (let level = 0; level <= 5; level += 1) assert.match(tokens, new RegExp(`--v8-shadow-height-${level}:`));
+  for (const state of ["hover-filter", "focus-filter", "press-filter", "drag-filter", "panel-rest", "window-open", "modal-open", "window-focus"]) {
+    assert.match(tokens, new RegExp(`--v8-shadow-${state}:`));
+  }
+  assert.match(tokens, /--v8-interaction-shadow:var\(--v8-shadow-hover-filter\)/);
+  assert.match(components, /:where\(\.is-dragging,\[data-drag-state="dragging"\],\[aria-grabbed="true"\]\)[^}]*var\(--v8-interaction-drag-filter\)/s);
+  assert.match(components, /\.v8-window-surface:focus-within[^}]*var\(--v8-shadow-window-focus\)/s);
+  assert.match(components, /\.v8-panel\.is-open[^}]*var\(--v8-shadow-window-open\)/s);
+  assert.match(entry, /\.v8-profile-dialog-layer\.is-open \.v8-profile-dialog[^}]*var\(--v8-shadow-modal-open\)/s);
+  assert.match(shell, /\.v8-command-layer\.is-open \.v8-command-dialog[^}]*var\(--v8-shadow-modal-open\)/s);
+  assert.match(shell, /\.v8-mission-layer\.is-open \.v8-mission-dialog[^}]*var\(--v8-shadow-modal-open\)/s);
+  assert.match(shell, /\.v8-dock-app\.is-dragging \.v8-dock-app__plate[^}]*var\(--v8-shadow-height-4\)/s);
+  assert.doesNotMatch(components, /:hover[^\{]*\{[^\}]*box-shadow:/);
+});
+
+test("Premium cursor experience exposes semantic intent without pointer tracking", () => {
+  const components = fs.readFileSync(new URL("../v8/styles/components.css", import.meta.url), "utf8");
+  const haptics = fs.readFileSync(new URL("../v8/ui/visual-haptics.mjs", import.meta.url), "utf8");
+  const cursorBlock = components.match(/@media \(hover: hover\) and \(pointer: fine\)\s*\{[\s\S]*?\n\}/)?.[0] || "";
+
+  for (const intent of ["pointer", "text", "grab", "grabbing", "ew-resize", "progress", "help", "not-allowed"]) {
+    assert.match(cursorBlock, new RegExp(`cursor:${intent}`));
+  }
+  assert.match(cursorBlock, /:hover:not\(:focus-visible\)[^}]*var\(--v8-interaction-filter\)[^}]*var\(--v8-interaction-hover-transform\)/s);
+  assert.match(cursorBlock, /\[draggable="true"\]/);
+  assert.match(cursorBlock, /\[aria-busy="true"\]/);
+  assert.doesNotMatch(components, /cursor:\s*url\(/);
+  assert.doesNotMatch(haptics, /pointermove|mousemove|requestAnimationFrame/);
+});
+
+test("Motion polish shares one hover focus and press contract", () => {
+  const tokens = fs.readFileSync(new URL("../v8/styles/tokens.css", import.meta.url), "utf8");
+  const components = fs.readFileSync(new URL("../v8/styles/components.css", import.meta.url), "utf8");
+  const entry = fs.readFileSync(new URL("../v8/styles/entry.css", import.meta.url), "utf8");
+  const base = fs.readFileSync(new URL("../v8/styles/base.css", import.meta.url), "utf8");
+  const shell = fs.readFileSync(new URL("../v8/styles/shell.css", import.meta.url), "utf8");
+  const presence = fs.readFileSync(new URL("../v8/styles/presence.css", import.meta.url), "utf8");
+  const presenceEngine = fs.readFileSync(new URL("../v8/core/presence-engine.mjs", import.meta.url), "utf8");
+  const profiles = fs.readFileSync(new URL("../v8/entry/profile-selection.mjs", import.meta.url), "utf8");
+
+  assert.match(tokens, /--v8-physics-spring:\s*cubic-bezier/);
+  assert.match(tokens, /--v8-ease-spring:\s*var\(--v8-physics-spring\)/);
+  assert.match(tokens, /--v8-physics-(?:impulse|friction|momentum|inertia|drift|orbit):/);
+  assert.match(tokens, /--v8-interaction-focus-transform:\s*translate3d/);
+  assert.match(tokens, /--v8-interaction-shadow:\s*var\(--v8-shadow-hover-filter\)/);
+  assert.match(components, /transition-duration:\s*var\(--v8-interaction-duration\)/);
+  assert.match(components, /transition-timing-function:\s*var\(--v8-ease-spring\)/);
+  assert.match(components, /:focus-visible\s*\{[^}]*var\(--v8-interaction-focus-filter\)[^}]*var\(--v8-interaction-focus-transform\)/s);
+  assert.match(components, /:active\s*\{[^}]*var\(--v8-interaction-press-transform\)[^}]*var\(--v8-ease-press\)/s);
+  assert.match(shell, /\.v8-dock-host\s*\{[^}]*transition:\s*transform[^;]*var\(--v8-ease-spring\)/s);
+  assert.match(components, /\.v8-panel\s*\{[^}]*var\(--v8-physics-momentum\)[^}]*var\(--v8-physics-inertia\)/s);
+  assert.match(presenceEngine, /easing:\s*String\(config\.easing\s*\|\|\s*motion\.easing\s*\|\|\s*"cubic-bezier/);
+  assert.doesNotMatch(profiles, /\.animate\(/);
+  assert.doesNotMatch([base, components, entry, shell, presence].join("\n").match(/animation:[^;]+/g)?.join("\n") || "", /\blinear\b/);
+  assert.doesNotMatch(shell, /transition:\s*left/);
+  assert.doesNotMatch(shell, /transform\s+220ms/);
+  assert.doesNotMatch(entry, /\.v8-entry--login \.v8-button\s*\{[^}]*transition-timing-function/);
+  assert.match(tokens, /prefers-reduced-motion:\s*reduce[\s\S]*--v8-interaction-focus-transform:\s*none/);
+});

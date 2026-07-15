@@ -282,4 +282,710 @@ export function mountProfileSelection(root, options = {}) {
   const previewDescription = element("p", { className: "v8-profile-preview__description" });
   const previewStatus = element("span", { className: "v8-profile-preview__status" });
   const previewLastActive = element("span", { className: "v8-profile-preview__last-active" });
-  const previewSignals = elemómz¶‰žËkºwµç@€¥˜€ …Ý¥‘•ÑÍQ½Õ¡•¤ì(€€€€€€€¡½Í•¹]¥‘•ÑÌ€ô¹•ÜM•Ð¡]%QM}	e}QeAmÑåÁ•M•±•Ð¹Ù…±Õ•tñð]%QM}	e}QeA¹Á•ÉÍ½¹…°¤ì(€€€€€€€Íå¹]¥‘•ÑA¥­•È ¤ì(€€€€€ô(€€€ô°±¥ÍÑ•¹•É=ÁÑ¥½¹Ì¤ì(€€€…µ‰¥•¹•M•±•Ð¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¡…¹”ˆ°ÕÁ‘…Ñ•5½‘Õ±•MÕµµ…Éä°±¥ÍÑ•¹•É=ÁÑ¥½¹Ì¤ì((€€€½¹ÍÐÍÑ•Á•™¥¹¥Ñ¥½¹Ì€ô=‰©•Ð¹™É••é”¡l(€€€€€=‰©•Ð¹™É••é”¡ì±…‰•°è€‰%‘•¹Ñ¥Ñ”ˆ°¥½¸è€‰¥É±”µÕÍ•ÈµÉ½Õ¹ˆô¤°(€€€€€=‰©•Ð¹™É••é”¡ì±…‰•°è€‰U¹¥Ù•ÉÌˆ°¥½¸è€‰Á…¹•±ÌµÑ½Àµ±•™Ðˆô¤°(€€€€€=‰©•Ð¹™É••é”¡ì±…‰•°è€‰5½‘Õ±•Ìˆ°¥½¸è€‰±…å½ÕÐµÉ¥ˆô¤(€€€t¤ì(€€€½¹ÍÐÍÑ•Á	ÕÑÑ½¹Ì€ôÍÑ•Á•™¥¹¥Ñ¥½¹Ì¹µ…À ¡ÍÑ•À°¥¹‘•à¤€ôø•±•µ•¹Ð ‰‰ÕÑÑ½¸ˆ°ì±…ÍÍ9…µ”è€‰ØàµÁÉ½™¥±”µ‘¥…±½}}ÍÑ•Àˆ°…ÑÑÉ¥‰ÕÑ•ÌèìÑåÁ”è€‰‰ÕÑÑ½¸ˆ°€‰…É¥„µÕÉÉ•¹Ðˆè¥¹‘•à€ôôô…Ñ¥Ù•MÑ•À€ü€‰ÍÑ•Àˆ€è€‰™…±Í”ˆô°‘…Ñ…Í•ÐèìÍÑ•ÀèMÑÉ¥¹œ¡¥¹‘•à¤ôô°m•±•µ•¹Ð ‰ÍÁ…¸ˆ°ìÑ•áÐèMÑÉ¥¹œ¡¥¹‘•à€¬€Ä¤ô¤°¥½¸¡ÍÑ•À¹¥½¸¤°•±•µ•¹Ð ‰ÍÑÉ½¹œˆ°ìÑ•áÐèÍÑ•À¹±…‰•°ô¥t¤¤ì(€€€½¹ÍÐÍÑ•ÁÁ•È€ô•±•µ•¹Ð ‰¹…Øˆ°ì±…ÍÍ9…µ”è€‰ØàµÁÉ½™¥±”µ‘¥…±½}}ÍÑ•ÁÌˆ°…ÑÑÉ¥‰ÕÑ•Ìèì€‰…É¥„µ±…‰•°ˆè€‰Ñ…Á•Ì‘”½¹™¥ÕÉ…Ñ¥½¸ˆôô°ÍÑ•Á	ÕÑÑ½¹Ì¤ì((€€€½¹ÍÐÁ…•Ì€ôl(€€€€€•±•µ•¹Ð ‰Í•Ñ¥½¸ˆ°ì±…ÍÍ9…µ”è€‰ØàµÁÉ½™¥±”µ‘¥…±½}}Á…”ˆ°‘…Ñ…Í•ÐèìÝ¥é…É‘MÑ•Àè€ˆÀˆôô°l(€€€€€€€•±•µ•¹Ð ‰‘¥Øˆ°ì±…ÍÍ9…µ”è€‰ØàµÁÉ½™¥±”µ‘¥…±½}}Á…”µ¡•…‘¥¹œˆô°m•±•µ•¹Ð ‰ÍÁ…¸ˆ°ìÑ•áÐè€ˆÀÄ€¼%9Q%Qˆô¤°•±•µ•¹Ð ‰ Ìˆ°ìÑ•áÐè€‰½¹¹•èÕ¸Ù¥Í…”„•ÐÕ¹¥Ù•ÉÌˆô¤°•±•µ•¹Ð ‰Àˆ°ìÑ•áÐè€‰U¸¹½´°Õ¹”¥¹Ñ•¹Ñ¥½¸•ÐÕ¸É•Á•É”Ù¥ÍÕ•°¥µµ•‘¥…Ð¸ˆô¥t¤°(€€€€€€€™½Éµ¥•±¡ì±…‰•°è€‰9½´ˆ°½¹ÑÉ½°è¹…µ•%¹ÁÕÐ°É•ÅÕ¥É•èÑÉÕ”°¡•±Àè€ˆàÀ…É…Ñ•É•Ìµ…á¥µÕ´ˆô¤°(€€€€€€€™½Éµ¥•±¡ì±…‰•°è€‰•ÍÉ¥ÁÑ¥½¸ˆ°½¹ÑÉ½°è‘•ÍÉ¥ÁÑ¥½¹%¹ÁÕÐ°¡•±Àè€ˆÄàÀ…É…Ñ•É•Ìµ…á¥µÕ´ˆô¤°(€€€€€€€•±•µ•¹Ð ‰™¥•±‘Í•Ðˆ°ì±…ÍÍ9…µ”è€‰ØàµÁÉ½™¥±”µ‘¥…±½}}™¥•±‘Í•Ðˆô°m•±•µ•¹Ð ‰±••¹ˆ°ìÑ•áÐè€‰Ù…Ñ…Èˆô¤°…Ù…Ñ…ÉA¥­•Ét¤(€€€€€t¤°(€€€€€•±•µ•¹Ð ‰Í•Ñ¥½¸ˆ°ì±…ÍÍ9…µ”è€‰ØàµÁÉ½™¥±”µ‘¥…±½}}Á…”ˆ°‘…Ñ…Í•ÐèìÝ¥é…É‘MÑ•Àè€ˆÄˆôô°l(€€€€€€€•±•µ•¹Ð ‰‘¥Øˆ°ì±…ÍÍ9…µ”è€‰ØàµÁÉ½™¥±”µ‘¥…±½}}Á…”µ¡•…‘¥¹œˆô°m•±•µ•¹Ð ‰ÍÁ…¸ˆ°ìÑ•áÐè€ˆÀÈ€¼U9%YILˆô¤°•±•µ•¹Ð ‰ Ìˆ°ìÑ•áÐè€‰I•±•èÍ½¸ÉåÑ¡µ”ˆô¤°•±•µ•¹Ð ‰Àˆ°ìÑ•áÐè€‰MÁ…”°±½Ü•Ð…µ‰¥…¹”½µÁ½Í•¹Ð±„ÁÉ•µ¥•É”¥µÁÉ•ÍÍ¥½¸¸ˆô¥t¤°(€€€€€€€•±•µ•¹Ð ‰‘¥Øˆ°ì±…ÍÍ9…µ”è€‰ØàµÁÉ½™¥±”µ‘¥…±½}}É½Üˆô°l(€€€€€€€€€™½Éµ¥•±¡ì±…‰•°è€‰MÁ…”ÁÉ¥¹¥Á…°ˆ°½¹ÑÉ½°èÑåÁ•M•±•Ð°¡•±Àè€‰¹Ù¥É½¹¹•µ•¹Ð¡…É”„°½ÕÙ•ÉÑÕÉ”ˆô¤°(€€€€€€€€€™½Éµ¥•±¡ì±…‰•°è€‰±½ÜÁÉ¥¹¥Á…°ˆ°½¹ÑÉ½°è™±½Ý%¹ÁÕÐ°¡•±Àè€ˆàÀ…É…Ñ•É•Ìµ…á¥µÕ´ˆô¤(€€€€€€€t¤°(€€€€€€€•±•µ•¹Ð ‰‘¥Øˆ°ì±…ÍÍ9…µ”è€‰ØàµÁÉ½™¥±”µ‘¥…±½}}É½Üˆô°l(€€€€€€€€€™½Éµ¥•±¡ì±…‰•°è€‰µ‰¥…¹”ˆ°½¹ÑÉ½°è…µ‰¥•¹•M•±•Ð°¡•±Àè€‰IåÑ¡µ”Ù¥ÍÕ•°‘”°•¹Ù¥É½¹¹•µ•¹Ðˆô¤°(€€€€€€€€€™½Éµ¥•±¡ì±…‰•°è€‰½¹ˆ°½¹ÑÉ½°è‰…­É½Õ¹‘M•±•Ð°¡•±Àè€‰½¹…ÁÁ±¥ÅÕ”…Ô…Í¡‰½…Éˆô¤(€€€€€€€t¤°(€€€€€€€•±•µ•¹Ð ‰™¥•±‘Í•Ðˆ°ì±…ÍÍ9…µ”è€‰ØàµÁÉ½™¥±”µ‘¥…±½}}™¥•±‘Í•Ðˆô°m•±•µ•¹Ð ‰±••¹ˆ°ìÑ•áÐè€‰½Õ±•ÕÈ‘½µ¥¹…¹Ñ”ˆô¤°…•¹ÑA¥­•Ét¤(€€€€€t¤°(€€€€€•±•µ•¹Ð ‰Í•Ñ¥½¸ˆ°ì±…ÍÍ9…µ”è€‰ØàµÁÉ½™¥±”µ‘¥…±½}}Á…”ˆ°‘…Ñ…Í•ÐèìÝ¥é…É‘MÑ•Àè€ˆÈˆôô°l(€€€€€€€•±•µ•¹Ð ‰‘¥Øˆ°ì±…ÍÍ9…µ”è€‰ØàµÁÉ½™¥±”µ‘¥…±½}}Á…”µ¡•…‘¥¹œˆô°m•±•µ•¹Ð ‰ÍÁ…¸ˆ°ìÑ•áÐè€ˆÀÌ€¼5=U1Lˆô¤°•±•µ•¹Ð ‰ Ìˆ°ìÑ•áÐè€‰¡½¥Í¥ÍÍ•è”ÅÕ¤Ù½ÕÌ…ÑÑ•¹ˆô¤°•±•µ•¹Ð ‰Àˆ°ìÑ•áÐè€‰•Ìµ½‘Õ±•ÌÍ•É½¹ÐÁÉ•Á…É•ÌÍ…¹Ì½¹¹•Ñ•È‘”Í•ÉÙ¥”„Ù½ÑÉ”Á±…”¸ˆô¥t¤°(€€€€€€€•±•µ•¹Ð ‰™¥•±‘Í•Ðˆ°ì±…ÍÍ9…µ”è€‰ØàµÁÉ½™¥±”µ‘¥…±½}}™¥•±‘Í•Ðˆô°m•±•µ•¹Ð ‰±••¹ˆ°ìÑ•áÐè€‰]¥‘•ÑÌˆô¤°Ý¥‘•ÑA¥­•Ét¤°(€€€€€€€•±•µ•¹Ð ‰™¥•±‘Í•Ðˆ°ì±…ÍÍ9…µ”è€‰ØàµÁÉ½™¥±”µ‘¥…±½}}™¥•±‘Í•Ðˆô°m•±•µ•¹Ð ‰±••¹ˆ°ìÑ•áÐè€‰%¹Ñ•É…Ñ¥½¹Ì„ÁÉ•Á…É•Èˆô¤°¥¹Ñ•É…Ñ¥½¹A¥­•Ét¤°(€€€€€€€Í•ÑÕÁMÕµµ…Éä(€€€€€t¤(€€€tì((€€€½¹ÍÐ…¹•°€ô•±•µ•¹Ð ‰‰ÕÑÑ½¸ˆ°ì±…ÍÍ9…µ”è€‰Øàµ‰ÕÑÑ½¸Øàµ‰ÕÑÑ½¸´µÍ•½¹‘…Éäˆ°…ÑÑÉ¥‰ÕÑ•ÌèìÑåÁ”è€‰‰ÕÑÑ½¸ˆôô°m•±•µ•¹Ð ‰ÍÁ…¸ˆ°ìÑ•áÐè€‰¹¹Õ±•Èˆô¥t¤ì(€€€½¹ÍÐ‰…¬€ô•±•µ•¹Ð ‰‰ÕÑÑ½¸ˆ°ì±…ÍÍ9…µ”è€‰Øàµ‰ÕÑÑ½¸Øàµ‰ÕÑÑ½¸´µ¡½ÍÐˆ°…ÑÑÉ¥‰ÕÑ•ÌèìÑåÁ”è€‰‰ÕÑÑ½¸ˆôô°m¥½¸ ‰…ÉÉ½Üµ±•™Ðˆ¤°•±•µ•¹Ð ‰ÍÁ…¸ˆ°ìÑ•áÐè€‰I•Ñ½ÕÈˆô¥t¤ì(€€€½¹ÍÐ¹•áÐ€ô•±•µ•¹Ð ‰‰ÕÑÑ½¸ˆ°ì±…ÍÍ9…µ”è€‰Øàµ‰ÕÑÑ½¸Øàµ‰ÕÑÑ½¸´µÁÉ¥µ…Éäˆ°…ÑÑÉ¥‰ÕÑ•ÌèìÑåÁ”è€‰‰ÕÑÑ½¸ˆôô°m•±•µ•¹Ð ‰ÍÁ…¸ˆ°ìÑ•áÐè€‰½¹Ñ¥¹Õ•Èˆô¤°¥½¸ ‰…ÉÉ½ÜµÉ¥¡Ðˆ¥t¤ì(€€€½¹ÍÐÍÕ‰µ¥Ð€ô•±•µ•¹Ð ‰‰ÕÑÑ½¸ˆ°ì±…ÍÍ9…µ”è€‰Øàµ‰ÕÑÑ½¸Øàµ‰ÕÑÑ½¸´µÁÉ¥µ…Éäˆ°…ÑÑÉ¥‰ÕÑ•ÌèìÑåÁ”è€‰ÍÕ‰µ¥Ðˆôô°m¥½¸¡µ½‘”€ôôô€‰É•…Ñ”ˆ€ü€‰ÍÁ…É­±•Ìˆ€è€‰¡•¬ˆ¤°•±•µ•¹Ð ‰ÍÁ…¸ˆ°ìÑ•áÐèµ½‘”€ôôô€‰É•…Ñ”ˆ€ü€‰É••È°•¹Ù¥É½¹¹•µ•¹Ðˆ€è€‰¹É•¥ÍÑÉ•Èˆô¥t¤ì(€€€½¹ÍÐ™½É´€ô•±•µ•¹Ð ‰™½É´ˆ°ì±…ÍÍ9…µ”è€‰ØàµÁÉ½™¥±”µ‘¥…±½}}™½É´ˆô°l(€€€€€ÍÑ•ÁÁ•È°(€€€€€•±•µ•¹Ð ‰‘¥Øˆ°ì±…ÍÍ9…µ”è€‰ØàµÁÉ½™¥±”µ‘¥…±½}}Á…•Ìˆô°Á…•Ì¤°(€€€€€•±•µ•¹Ð ‰‘¥Øˆ°ì±…ÍÍ9…µ”è€‰ØàµÁÉ½™¥±”µ‘¥…±½}}…Ñ¥½¹Ìˆô°m…¹•°°•±•µ•¹Ð ‰ÍÁ…¸ˆ°ì±…ÍÍ9…µ”è€‰ØàµÁÉ½™¥±”µ‘¥…±½}}…Ñ¥½¸µÍÁ…•Èˆô¤°‰…¬°¹•áÐ°ÍÕ‰µ¥Ñt¤(€€€t¤ì(€€€É•±•…Í•¥…±½½É´ ¤ì(€€€É•±•…Í•¥…±½½É´€ô•¹¡…¹•½É´¡™½É´¤ì(€€€½¹ÍÐ‘¥…±½œ€ô‘¥…±½M¡•±° (€€€€€µ½‘”€ôôô€‰É•…Ñ”ˆ€ü€‰½µÁ½Í•ÈÕ¸•¹Ù¥É½¹¹•µ•¹Ðˆ€è5½‘¥™¥•È€‘íÁÉ½™¥±”¹¹…µ•õ€°(€€€€€µ½‘”€ôôô€‰É•…Ñ”ˆ€ü€‰QÉ½¥Ì•Ñ…Á•Ì½ÕÉÑ•Ì°ÁÕ¥ÌQ!=9•ÍÐÁÉ•Ð„ÁÉ•¹‘É”Ù¥”¸ˆ€è€‰©ÕÍÑ•èÍ½¸¥‘•¹Ñ¥Ñ”•ÐÍ•Ìµ½‘Õ±•ÌÍ…¹ÌÑ½Õ¡•È„Í•Ì‘½¹¹••Ì¸ˆ°(€€€€€™½É´°(€€€€€•±•µ•¹Ð ‰ÍÁ…¸ˆ¤(€€€€¤ì((€€€™Õ¹Ñ¥½¸Í¡½ÝMÑ•À¡¥¹‘•à°™½ÕÌ€ôÑÉÕ”¤ì(€€€€€…Ñ¥Ù•MÑ•À€ô5…Ñ ¹µ¥¸¡Á…•Ì¹±•¹Ñ €´€Ä°5…Ñ ¹µ…à À°¥¹‘•à¤¤ì(€€€€€‘¥…±½œ¹‘…Ñ…Í•Ð¹Ý¥é…É‘MÑ•À€ôMÑÉ¥¹œ¡…Ñ¥Ù•MÑ•À¤ì(€€€€€Á…•Ì¹™½É…  ¡Á…”°Á…•%¹‘•à¤€ôøì(€€€€€€€½¹ÍÐ…Ñ¥Ù”€ôÁ…•%¹‘•à€ôôô…Ñ¥Ù•MÑ•Àì(€€€€€€€Á…”¹¡¥‘‘•¸€ô€……Ñ¥Ù”ì(€€€€€€€Á…”¹Ñ½±•ÑÑÉ¥‰ÕÑ” ‰¥¹•ÉÐˆ°€……Ñ¥Ù”¤ì(€€€€€ô¤ì(€€€€€ÍÑ•Á	ÕÑÑ½¹Ì¹™½É…  ¡‰ÕÑÑ½¸°‰ÕÑÑ½¹%¹‘•à¤€ôø‰ÕÑÑ½¸¹Í•ÑÑÑÉ¥‰ÕÑ” ‰…É¥„µÕÉÉ•¹Ðˆ°‰ÕÑÑ½¹%¹‘•à€ôôô…Ñ¥Ù•MÑ•À€ü€‰ÍÑ•Àˆ€è€‰™…±Í”ˆ¤¤ì(€€€€€‰…¬¹¡¥‘‘•¸€ô…Ñ¥Ù•MÑ•À€ôôô€Àì(€€€€€¹•áÐ¹¡¥‘‘•¸€ô…Ñ¥Ù•MÑ•À€ôôôÁ…•Ì¹±•¹Ñ €´€Äì(€€€€€ÍÕ‰µ¥Ð¹¡¥‘‘•¸€ô…Ñ¥Ù•MÑ•À€„ôôÁ…•Ì¹±•¹Ñ €´€Äì(€€€€€¥˜€¡™½ÕÌ¤Á…•Ím…Ñ¥Ù•MÑ•Át¹ÅÕ•ÉåM•±•Ñ½È ‰¥¹ÁÕÐ°Í•±•Ð°‰ÕÑÑ½¸ˆ¤ü¹™½ÕÌ ¤ì(€€€ô((€€€ÍÑ•Á	ÕÑÑ½¹Ì¹™½É…  ¡‰ÕÑÑ½¸°¥¹‘•à¤€ôø‰ÕÑÑ½¸¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøì(€€€€€¥˜€¡¥¹‘•à€ø€À€˜˜€…Ù…±¥‘…Ñ•½¹ÑÉ½°¡¹…µ•%¹ÁÕÐ°ì™½É”èÑÉÕ”°™½ÕÌèÑÉÕ”ô¤¤É•ÑÕÉ¸ì(€€€€€Í¡½ÝMÑ•À¡¥¹‘•à¤ì(€€€ô°±¥ÍÑ•¹•É=ÁÑ¥½¹Ì¤¤ì(€€€…¹•°¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôø±½Í•¥…±½œ ¤°±¥ÍÑ•¹•É=ÁÑ¥½¹Ì¤ì(€€€‰…¬¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøÍ¡½ÝMÑ•À¡…Ñ¥Ù•MÑ•À€´€Ä¤°±¥ÍÑ•¹•É=ÁÑ¥½¹Ì¤ì(€€€¹•áÐ¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøì(€€€€€¥˜€¡…Ñ¥Ù•MÑ•À€ôôô€À€˜˜€…Ù…±¥‘…Ñ•½¹ÑÉ½°¡¹…µ•%¹ÁÕÐ°ì™½É”èÑÉÕ”°™½ÕÌèÑÉÕ”ô¤¤É•ÑÕÉ¸ì(€€€€€Í¡½ÝMÑ•À¡…Ñ¥Ù•MÑ•À€¬€Ä¤ì(€€€ô°±¥ÍÑ•¹•É=ÁÑ¥½¹Ì¤ì(€€€™½É´¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰ÍÕ‰µ¥Ðˆ°…Íå¹Œ€¡•Ù•¹Ð¤€ôøì(€€€€€•Ù•¹Ð¹ÁÉ•Ù•¹Ñ•™…Õ±Ð ¤ì(€€€€€¥˜€¡…Ñ¥Ù•MÑ•À€ðÁ…•Ì¹±•¹Ñ €´€Ä¤ì(€€€€€€€¥˜€¡…Ñ¥Ù•MÑ•À€„ôô€ÀñðÙ…±¥‘…Ñ•½¹ÑÉ½°¡¹…µ•%¹ÁÕÐ°ì™½É”èÑÉÕ”°™½ÕÌèÑÉÕ”ô¤¤Í¡½ÝMÑ•À¡…Ñ¥Ù•MÑ•À€¬€Ä¤ì(€€€€€€€É•ÑÕÉ¸ì(€€€€€ô(€€€€€½¹ÍÐÁ…å±½…€ôì(€€€€€€€¹…µ”è¹…µ•%¹ÁÕÐ¹Ù…±Õ”°(€€€€€€€‘•ÍÉ¥ÁÑ¥½¸è‘•ÍÉ¥ÁÑ¥½¹%¹ÁÕÐ¹Ù…±Õ”°(€€€€€€€ÑåÁ”èÑåÁ•M•±•Ð¹Ù…±Õ”°(€€€€€€€ÍÁ…”èÑåÁ•M•±•Ð¹Ù…±Õ”°(€€€€€€€™±½Üè™±½Ý%¹ÁÕÐ¹Ù…±Õ”°(€€€€€€€…Ù…Ñ…Èè¡½Í•¹Ù…Ñ…È°(€€€€€€€…•¹Ðè¡½Í•¹•¹Ð°(€€€€€€€Ý¥‘•ÑÌèl¸¸¹¡½Í•¹]¥‘•ÑÍt°(€€€€€€€¥¹Ñ•É…Ñ¥½¹Ìèl¸¸¹¡½Í•¹%¹Ñ•É…Ñ¥½¹Ít°(€€€€€€€…µ‰¥•¹”è…µ‰¥•¹•M•±•Ð¹Ù…±Õ”°(€€€€€€€‰…­É½Õ¹è‰…­É½Õ¹‘M•±•Ð¹Ù…±Õ”(€€€€€ôì(€€€€€½¹ÍÐÍÕ‰µ¥ÍÍ¥½¸€ô…Ý…¥ÐÉÕ¹½ÉµMÕ‰µ¥ÍÍ¥½¸¡ì(€€€€€€€™½É´°(€€€€€€€ÍÕ‰µ¥Ð°(€€€€€€€ÍÑ…ÑÕÌ°(€€€€€€€µ•ÍÍ…•Ìèì±½…‘¥¹œèµ½‘”€ôôô€‰É•…Ñ”ˆ€ü€‰É•…Ñ¥½¸‘”°•¹Ù¥É½¹¹•µ•¹Ð¸¸¸ˆ€è€‰¹É•¥ÍÑÉ•µ•¹Ð‘ÔÁÉ½™¥°¸¸¸ˆô°(€€€€€€€Ñ…Í¬è€ ¤€ôøµ½‘”€ôôô€‰É•…Ñ”ˆ€üÉ•Á½Í¥Ñ½Éä¹É•…Ñ•AÉ½™¥±”¡Á…å±½…¤€èÉ•Á½Í¥Ñ½Éä¹ÕÁ‘…Ñ•AÉ½™¥±”¡ÁÉ½™¥±”¹¥°Á…å±½…¤(€€€€€ô¤ì(€€€€€¥˜€ …ÍÕ‰µ¥ÍÍ¥½¸¹…•ÁÑ•¤É•ÑÕÉ¸ì(€€€€€½¹ÍÐÉ•ÍÁ½¹Í”€ôÍÕ‰µ¥ÍÍ¥½¸¹Ù…±Õ”ì(€€€€€¥˜€¡ÍÕ‰µ¥ÍÍ¥½¸¹•ÉÉ½Èñð€…É•ÍÁ½¹Í”ü¹½¬¤ì(€€€€€€€¥˜€¡É•ÍÁ½¹Í”ü¹µ•ÍÍ…”¤Í•Ñ¥•±‘MÑ…Ñ”¡¹…µ•%¹ÁÕÐ°€‰¥¹Ù…±¥ˆ°É•ÍÁ½¹Í”¹µ•ÍÍ…”¤ì(€€€€€€€É•ÑÕÉ¸ì(€€€€€ô(€€€€€±½Í•¥…±½œ¡ìÉ•ÍÑ½É•½ÕÌè™…±Í”ô¤ì(€€€€€É•¹‘•ÉAÉ½™¥±•Ì¡É•ÍÁ½¹Í”¹‘…Ñ„¹¥°ÑÉÕ”¤ì(€€€€€ÍÑ…ÑÕÌ¹Ñ•áÑ½¹Ñ•¹Ð€ôÉ•ÍÁ½¹Í”¹µ•ÍÍ…”ì(€€€ô°±¥ÍÑ•¹•É=ÁÑ¥½¹Ì¤ì(€€€Íå¹]¥‘•ÑA¥­•È ¤ì(€€€ÕÁ‘…Ñ•5½‘Õ±•MÕµµ…Éä ¤ì(€€€Í¡½ÝMÑ•À¡…Ñ¥Ù•MÑ•À°™…±Í”¤ì(€€€½¹ÍÐÑ…É•Ð€ô™½ÕÍQ…É•Ð€ôôô€‰…Ù…Ñ…Èˆ€ü…Ù…Ñ…ÉA¥­•È¹ÅÕ•ÉåM•±•Ñ½È m…É¥„µ¡•­•ô‰ÑÉÕ”‰tœ¤(€€€€€€è™½ÕÍQ…É•Ð€ôôô€‰ÍÁ…”ˆ€üÑåÁ•M•±•Ð(€€€€€€€€è™½ÕÍQ…É•Ð€ôôô€‰Ñ¡•µ”ˆ€ü…•¹ÑA¥­•È¹ÅÕ•ÉåM•±•Ñ½È m…É¥„µ¡•­•ô‰ÑÉÕ”‰tœ¤(€€€€€€€€€€è¹…µ•%¹ÁÕÐì(€€€ÅÕ•Õ•5¥É½Ñ…Í¬  ¤€ôøÑ…É•Ðü¹™½ÕÌ ¤¤ì(€€€É•ÑÕÉ¸‘¥…±½œì(€ô((€™Õ¹Ñ¥½¸½Á•¹•±•Ñ•½¹™¥Éµ…Ñ¥½¸¡ÁÉ½™¥±”¤ì(€€€±½Í•5•¹Ô ¤ì(€€€½¹ÍÐ…¹•°€ô•±•µ•¹Ð ‰‰ÕÑÑ½¸ˆ°ì±…ÍÍ9…µ”è€‰Øàµ‰ÕÑÑ½¸Øàµ‰ÕÑÑ½¸´µÍ•½¹‘…Éäˆ°…ÑÑÉ¥‰ÕÑ•ÌèìÑåÁ”è€‰‰ÕÑÑ½¸ˆôô°m•±•µ•¹Ð ‰ÍÁ…¸ˆ°ìÑ•áÐè€‰¹¹Õ±•Èˆô¥t¤ì(€€€½¹ÍÐ½¹™¥É´€ô•±•µ•¹Ð ‰‰ÕÑÑ½¸ˆ°ì±…ÍÍ9…µ”è€‰Øàµ‰ÕÑÑ½¸Øàµ‰ÕÑÑ½¸´µ‘…¹•Èˆ°…ÑÑÉ¥‰ÕÑ•ÌèìÑåÁ”è€‰‰ÕÑÑ½¸ˆôô°m¥½¸ ‰ÑÉ…Í ´Èˆ¤°•±•µ•¹Ð ‰ÍÁ…¸ˆ°ìÑ•áÐè€‰MÕÁÁÉ¥µ•È‘•™¥¹¥Ñ¥Ù•µ•¹Ðˆô¥t¤ì(€€€½¹ÍÐ½¹Ñ•¹Ð€ô•±•µ•¹Ð ‰‘¥Øˆ°ì±…ÍÍ9…µ”è€‰ØàµÁÉ½™¥±”µ‘¥…±½}}½¹™¥É´ˆô°l(€€€€€•±•µ•¹Ð ‰‘¥Øˆ°ì±…ÍÍ9…µ”è€‰ØàµÁÉ½™¥±”µ‘¥…±½}}‘…¹•Èµ¥½¸ˆô°¥½¸ ‰ÑÉ¥…¹±”µ…±•ÉÐˆ¤¤°(€€€€€•±•µ•¹Ð ‰Àˆ°ìÑ•áÐè1•Ì‘½¹¹••Ì‘ÔÁÉ½™¥°€‘íÁÉ½™¥±”¹¹…µ•ôÍ•É½¹ÐÍÕÁÁÉ¥µ••Ì‘”MÕÁ…‰…Í”•Ð‘Ô…¡”‘”•Ð…ÁÁ…É•¥°¸•ÑÑ”…Ñ¥½¸•ÍÐ¥ÉÉ•Ù•ÉÍ¥‰±”¹€ô¤(€€€t¤ì(€€€‘¥…±½M¡•±° ‰MÕÁÁÉ¥µ•È”ÁÉ½™¥°€üˆ°€‰U¹”½¹™¥Éµ…Ñ¥½¸•ÍÐ¹••ÍÍ…¥É”…Ù…¹ÐÑ½ÕÑ”ÍÕÁÁÉ•ÍÍ¥½¸¸ˆ°½¹Ñ•¹Ð°•±•µ•¹Ð ‰‘¥Øˆ°ì±…ÍÍ9…µ”è€‰ØàµÁÉ½™¥±”µ‘¥…±½}}…Ñ¥½¹Ìˆô°m…¹•°°½¹™¥Éµt¤¤ì(€€€…¹•°¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôø±½Í•¥…±½œ ¤°±¥ÍÑ•¹•É=ÁÑ¥½¹Ì¤ì(€€€½¹™¥É´¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøì(€€€€€½¹ÍÐÉ•ÍÁ½¹Í”€ôÉ•Á½Í¥Ñ½Éä¹‘•±•Ñ•AÉ½™¥±”¡ÁÉ½™¥±”¹¥¤ì(€€€€€¥˜€ …É•ÍÁ½¹Í”¹½¬¤ì(€€€€€€€ÍÑ…ÑÕÌ¹Ñ•áÑ½¹Ñ•¹Ð€ôÉ•ÍÁ½¹Í”¹µ•ÍÍ…”ì(€€€€€€€±½Í•¥…±½œ ¤ì(€€€€€€€É•ÑÕÉ¸ì(€€€€€ô(€€€€€±½Í•¥…±½œ¡ìÉ•ÍÑ½É•½ÕÌè™…±Í”ô¤ì(€€€€€É•¹‘•ÉAÉ½™¥±•Ì¡É•Á½Í¥Ñ½Éä¹…Ñ¥Ù•AÉ½™¥±” ¤ü¹¥ñð€ˆˆ°ÑÉÕ”¤ì(€€€€€ÍÑ…ÑÕÌ¹Ñ•áÑ½¹Ñ•¹Ð€ôÉ•ÍÁ½¹Í”¹µ•ÍÍ…”ì(€€€ô°±¥ÍÑ•¹•É=ÁÑ¥½¹Ì¤ì(€€€ÅÕ•Õ•5¥É½Ñ…Í¬  ¤€ôø…¹•°¹™½ÕÌ ¤¤ì(€ô((€™Õ¹Ñ¥½¸‘½Ý¹±½…‘áÁ½ÉÐ¡ÁÉ½™¥±”¤ì(€€€½¹ÍÐÉ•ÍÁ½¹Í”€ôÉ•Á½Í¥Ñ½Éä¹•áÁ½ÉÑAÉ½™¥±”¡ÁÉ½™¥±”¹¥¤ì(€€€¥˜€ …É•ÍÁ½¹Í”¹½¬¤ì(€€€€€ÍÑ…ÑÕÌ¹Ñ•áÑ½¹Ñ•¹Ð€ôÉ•ÍÁ½¹Í”¹µ•ÍÍ…”ì(€€€€€É•ÑÕÉ¸ì(€€€ô(€€€½¹ÍÐ‰±½ˆ€ô¹•Ü	±½ˆ¡m)M=8¹ÍÑÉ¥¹¥™ä¡É•ÍÁ½¹Í”¹‘…Ñ„°¹Õ±°°€È¥t°ìÑåÁ”è€‰…ÁÁ±¥…Ñ¥½¸½©Í½¸ˆô¤ì(€€€½¹ÍÐÕÉ°€ôUI0¹É•…Ñ•=‰©•ÑUI0¡‰±½ˆ¤ì(€€€½¹ÍÐ…¹¡½È€ô•±•µ•¹Ð ‰„ˆ°ì…ÑÑÉ¥‰ÕÑ•Ìèì¡É•˜èÕÉ°°‘½Ý¹±½…è•Ñ¡½¹”´‘íÁÉ½™¥±”¹¹…µ”¹Ñ½1½Ý•É…Í” ¤¹É•Á±…” ½my„µèÀ´åt¬½œ°€ˆ´ˆ¤ñð€‰ÁÉ½™¥°‰ô¹©Í½¹€ôô¤ì(€€€‘½Õµ•¹Ð¹‰½‘ä¹…ÁÁ•¹¡…¹¡½È¤ì(€€€…¹¡½È¹±¥¬ ¤ì(€€€…¹¡½È¹É•µ½Ù” ¤ì(€€€UI0¹É•Ù½­•=‰©•ÑUI0¡ÕÉ°¤ì(€€€ÍÑ…ÑÕÌ¹Ñ•áÑ½¹Ñ•¹Ð€ô€‰áÁ½ÉÐ‘ÔÁÉ½™¥°ÁÉ•Ð¸ˆì(€ô((€™Õ¹Ñ¥½¸ÉÕ¹5•¹ÕÑ¥½¸¡…Ñ¥½¹%¤ì(€€€½¹ÍÐÁÉ½™¥±”€ôÁÉ½™¥±•Ì¹™¥¹ ¡•¹ÑÉä¤€ôø•¹ÑÉä¹¥€ôôôµ•¹ÕAÉ½™¥±•%¤ì(€€€¥˜€ …ÁÉ½™¥±”¤É•ÑÕÉ¸ì(€€€¥˜€¡…Ñ¥½¹%€ôôô€‰É•¹…µ”ˆ¤½Á•¹‘¥Ñ½È ‰•‘¥Ðˆ°ÁÉ½™¥±”°€‰¹…µ”ˆ¤ì(€€€•±Í”¥˜€¡…Ñ¥½¹%€ôôô€‰•‘¥Ðˆ¤½Á•¹‘¥Ñ½È ‰•‘¥Ðˆ°ÁÉ½™¥±”°€‰¹…µ”ˆ¤ì(€€€•±Í”¥˜€¡…Ñ¥½¹%€ôôô€‰…Ù…Ñ…Èˆ¤½Á•¹‘¥Ñ½È ‰•‘¥Ðˆ°ÁÉ½™¥±”°€‰…Ù…Ñ…Èˆ¤ì(€€€•±Í”¥˜€¡…Ñ¥½¹%€ôôô€‰ÍÁ…”ˆ¤½Á•¹‘¥Ñ½È ‰•‘¥Ðˆ°ÁÉ½™¥±”°€‰ÍÁ…”ˆ¤ì(€€€•±Í”¥˜€¡…Ñ¥½¹%€ôôô€‰Ñ¡•µ”ˆ¤½Á•¹‘¥Ñ½È ‰•‘¥Ðˆ°ÁÉ½™¥±”°€‰Ñ¡•µ”ˆ¤ì(€€€•±Í”¥˜€¡…Ñ¥½¹%€ôôô€‰•áÁ½ÉÐˆ¤ì±½Í•5•¹Ô ¤ì‘½Ý¹±½…‘áÁ½ÉÐ¡ÁÉ½™¥±”¤ìô(€€€•±Í”¥˜€¡…Ñ¥½¹%€ôôô€‰‘ÕÁ±¥…Ñ”ˆ¤ì(€€€€€±½Í•5•¹Ô ¤ì(€€€€€½¹ÍÐÉ•ÍÁ½¹Í”€ôÉ•Á½Í¥Ñ½Éä¹‘ÕÁ±¥…Ñ•AÉ½™¥±”¡ÁÉ½™¥±”¹¥¤ì(€€€€€¥˜€¡É•ÍÁ½¹Í”¹½¬¤É•¹‘•ÉAÉ½™¥±•Ì¡É•ÍÁ½¹Í”¹‘…Ñ„¹¥°ÑÉÕ”¤ì(€€€€€ÍÑ…ÑÕÌ¹Ñ•áÑ½¹Ñ•¹Ð€ôÉ•ÍÁ½¹Í”¹µ•ÍÍ…”ì(€€€ô•±Í”¥˜€¡…Ñ¥½¹%€ôôô€‰‘•±•Ñ”ˆ¤½Á•¹•±•Ñ•½¹™¥Éµ…Ñ¥½¸¡ÁÉ½™¥±”¤ì(€ô((€…Íå¹Œ™Õ¹Ñ¥½¸…Ñ¥Ù…Ñ”¡¥¹‘•à€ôÍ•±•Ñ•‘%¹‘•à¤ì(€€€¥˜€ …ÁÉ½™¥±•Ì¹±•¹Ñ ñð‘•ÍÑÉ½å•¤É•ÑÕÉ¸ì(€€€½¹ÍÐÑ½­•¸€ô€¬­…Ñ¥Ù…Ñ¥½¸ì(€€€Í•±•ÑAÉ•Ù¥•Ü¡¥¹‘•à¤ì(€€€½¹ÍÐÁÉ½™¥±”€ôÁÉ½™¥±•ÍmÍ•±•Ñ•‘%¹‘•átì(€€€¥˜€¡ÁÉ½™¥±”¹±½­•¤ì(€€€€€ÍÑ…ÑÕÌ¹Ñ•áÑ½¹Ñ•¹Ð€ô€‰AÉ½™¥°Ù•ÉÉ½Õ¥±±”€èÙ½Ì‘½¹¹••ÌÉ•ÍÑ•¹Ð¥¹Ñ…Ñ•Ì¸ˆì(€€€€€É•ÑÕÉ¸ì(€€€ô(€€€½¹ÍÐÍ•±•Ñ•€ôÉ•Á½Í¥Ñ½Éä¹Í•±•ÑAÉ½™¥±”¡ÁÉ½™¥±”¹¥¤ì(€€€¥˜€ …Í•±•Ñ•¹½¬¤ì(€€€€€ÍÑ…ÑÕÌ¹Ñ•áÑ½¹Ñ•¹Ð€ôÍ•±•Ñ•¹µ•ÍÍ…”ì(€€€€€É•ÑÕÉ¸ì(€€€ô(€€€ÍÕÉ™…”¹±…ÍÍ1¥ÍÐ¹…‘ ‰¥Ìµ±…Õ¹¡¥¹œˆ¤ì(€€€ÍÕÉ™…”¹Í•ÑÑÑÉ¥‰ÕÑ” ‰…É¥„µ‰ÕÍäˆ°€‰ÑÉÕ”ˆ¤ì(€€€•¹Ñ•É	ÕÑÑ½¸¹‘¥Í…‰±•€ôÑÉÕ”ì(€€€ÑÉäì(€€€€€±•Ð…Ñ¥Ù…Ñ¥½¹I•ÍÕ±Ðì(€€€€€½¹ÍÐÉ•‘Õ•‘5½Ñ¥½¸€ô±½‰…±Q¡¥Ì¹µ…Ñ¡5•‘¥„ü¸ ˆ¡ÁÉ•™•ÉÌµÉ•‘Õ•µµ½Ñ¥½¸èÉ•‘Õ”¤ˆ¤¹µ…Ñ¡•Ìì(€€€€€¥˜€ …É•‘Õ•‘5½Ñ¥½¸€˜˜ÑåÁ•½˜‘½Õµ•¹Ð¹ÍÑ…ÉÑY¥•ÝQÉ…¹Í¥Ñ¥½¸€ôôô€‰™Õ¹Ñ¥½¸ˆ¤ì(€€€€€€€½¹ÍÐÑÉ…¹Í¥Ñ¥½¸€ô‘½Õµ•¹Ð¹ÍÑ…ÉÑY¥•ÝQÉ…¹Í¥Ñ¥½¸¡…Íå¹Œ€ ¤€ôøì…Ñ¥Ù…Ñ¥½¹I•ÍÕ±Ð€ô…Ý…¥Ð½ÁÑ¥½¹Ì¹½¹M•±•Ðü¸¡Í•±•Ñ•¹‘…Ñ„¤ìô¤ì(€€€€€€€…Ý…¥ÐÑÉ…¹Í¥Ñ¥½¸¹™¥¹¥Í¡•ì(€€€€€ô•±Í”ì(€€€€€€€…Ñ¥Ù…Ñ¥½¹I•ÍÕ±Ð€ô…Ý…¥Ð½ÁÑ¥½¹Ì¹½¹M•±•Ðü¸¡Í•±•Ñ•¹‘…Ñ„¤ì(€€€€€ô(€€€€€¥˜€ …‘•ÍÑÉ½å•€˜˜Ñ½­•¸€ôôô…Ñ¥Ù…Ñ¥½¸¤Í•ÑÑ±•Ñ¥Ù…Ñ¥½¹I•ÍÕ±Ð¡…Ñ¥Ù…Ñ¥½¹I•ÍÕ±Ð°ìÍÕÉ™…”°•¹Ñ•É	ÕÑÑ½¸°ÍÑ…ÑÕÌô¤ì(€€€ô…Ñ ì(€€€€€¥˜€ …‘•ÍÑÉ½å•€˜˜Ñ½­•¸€ôôô…Ñ¥Ù…Ñ¥½¸¤Í•ÑÑ±•Ñ¥Ù…Ñ¥½¹I•ÍÕ±Ð¡ì½¬è™…±Í”°µ•ÍÍ…”è€‰0•¹Ù¥É½¹¹•µ•¹Ð¸„Á…ÌÁÔ•ÑÉ”½ÕÙ•ÉÐ¸ˆô°ìÍÕÉ™…”°•¹Ñ•É	ÕÑÑ½¸°ÍÑ…ÑÕÌô¤ì(€€€ô(€ô((€±¥ÍÐ¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰­•å‘½Ý¸ˆ°€¡•Ù•¹Ð¤€ôøì(€€€¥˜€¡l‰ÉÉ½Ý1•™Ðˆ°€‰ÉÉ½ÝI¥¡Ðˆ°€‰ÉÉ½ÝUÀˆ°€‰ÉÉ½Ý½Ý¸ˆ°€‰!½µ”ˆ°€‰¹‰t¹¥¹±Õ‘•Ì¡•Ù•¹Ð¹­•ä¤¤ì(€€€€€•Ù•¹Ð¹ÁÉ•Ù•¹Ñ•™…Õ±Ð ¤ì(€€€€€Í•±•ÑAÉ•Ù¥•Ü¡¹•áÑAÉ½™¥±•%¹‘•à¡ÁÉ½™¥±•Ì¹±•¹Ñ °Í•±•Ñ•‘%¹‘•à°•Ù•¹Ð¹­•ä¤°ÑÉÕ”¤ì(€€€€€É•ÑÕÉ¸ì(€€€ô(€€€¥˜€¡•Ù•¹Ð¹­•ä€ôôô€‰¹Ñ•Èˆ¤ì(€€€€€•Ù•¹Ð¹ÁÉ•Ù•¹Ñ•™…Õ±Ð ¤ì(€€€€€…Ñ¥Ù…Ñ”¡Í•±•Ñ•‘%¹‘•à¤ì(€€€ô(€€€¥˜€¡•Ù•¹Ð¹­•ä€ôôô€ˆ€ˆ¤ì(€€€€€•Ù•¹Ð¹ÁÉ•Ù•¹Ñ•™…Õ±Ð ¤ì(€€€€€Í•±•ÑAÉ•Ù¥•Ü¡Í•±•Ñ•‘%¹‘•à°ÑÉÕ”¤ì(€€€ô(€ô°±¥ÍÑ•¹•É=ÁÑ¥½¹Ì¤ì(€•¹Ñ•É	ÕÑÑ½¸¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôø…Ñ¥Ù…Ñ”¡Í•±•Ñ•‘%¹‘•à¤°±¥ÍÑ•¹•É=ÁÑ¥½¹Ì¤ì(€É•…Ñ•	ÕÑÑ½¸¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôø½Á•¹‘¥Ñ½È ‰É•…Ñ”ˆ¤°±¥ÍÑ•¹•É=ÁÑ¥½¹Ì¤ì(€•µÁÑåÉ•…Ñ•	ÕÑÑ½¸¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôø½Á•¹‘¥Ñ½È ‰É•…Ñ”ˆ¤°±¥ÍÑ•¹•É=ÁÑ¥½¹Ì¤ì(€µ•¹Õ	ÕÑÑ½¹Ì¹™½É…  ¡‰ÕÑÑ½¸¤€ôø‰ÕÑÑ½¸¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøÉÕ¹5•¹ÕÑ¥½¸¡‰ÕÑÑ½¸¹‘…Ñ…Í•Ð¹ÁÉ½™¥±•Ñ¥½¸¤°±¥ÍÑ•¹•É=ÁÑ¥½¹Ì¤¤ì(€Í¥¹=ÕÐ¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°…Íå¹Œ€ ¤€ôøì(€€€Í¥¹=ÕÐ¹±…ÍÍ1¥ÍÐ¹…‘ ‰¥Ìµ±½…‘¥¹œˆ¤ì(€€€Í¥¹=ÕÐ¹‘¥Í…‰±•€ôÑÉÕ”ì(€€€½¹ÍÐÉ•ÍÁ½¹Í”€ô…Ý…¥Ð½ÁÑ¥½¹Ì¹½¹M¥¹=ÕÐü¸ ¤ì(€€€¥˜€ …‘•ÍÑÉ½å•€˜˜É•ÍÁ½¹Í”€˜˜€…É•ÍÁ½¹Í”¹½¬¤ì(€€€€€Í¥¹=ÕÐ¹±…ÍÍ1¥ÍÐ¹É•µ½Ù” ‰¥Ìµ±½…‘¥¹œˆ¤ì(€€€€€Í¥¹=ÕÐ¹‘¥Í…‰±•€ô™…±Í”ì(€€€€€ÍÑ…ÑÕÌ¹Ñ•áÑ½¹Ñ•¹Ð€ôÉ•ÍÁ½¹Í”¹µ•ÍÍ…”ì(€€€ô(€ô°±¥ÍÑ•¹•É=ÁÑ¥½¹Ì¤ì(€±½‰…±Q¡¥Ì¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•Èü¸ ‰½¹±¥¹”ˆ°ÕÁ‘…Ñ•½¹¹•Ñ¥Ù¥Ñä°±¥ÍÑ•¹•É=ÁÑ¥½¹Ì¤ì(€±½‰…±Q¡¥Ì¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•Èü¸ ‰½™™±¥¹”ˆ°ÕÁ‘…Ñ•½¹¹•Ñ¥Ù¥Ñä°±¥ÍÑ•¹•É=ÁÑ¥½¹Ì¤ì((€É•¹‘•ÉAÉ½™¥±•Ì¡É•Á½Í¥Ñ½Éä¹…Ñ¥Ù•AÉ½™¥±” ¤ü¹¥ñð€ˆˆ¤ì(€½¹ÍÐÉ•±•…Í•±½¬€ô±½­5…¹…•Èü¹ÍÕ‰ÍÉ¥‰”ü¸¡É•™É•Í¡±½¬¤ñð€  ¤€ôøíô¤ì(€½¹ÍÐÉ•±•…Í•±½Õ‘MÑ…ÑÕÌ€ô±½Õ‘Må¹Œü¹ÍÕ‰ÍÉ¥‰”ü¸¡ÕÁ‘…Ñ•½¹¹•Ñ¥Ù¥Ñä¤ñð€  ¤€ôøíô¤ì(€¥˜€ …±½­5…¹…•È¤É•™É•Í¡±½¬ ¤ì(€ÅÕ•Õ•5¥É½Ñ…Í¬  ¤€ôøì¥˜€ …‘•ÍÑÉ½å•€˜˜ÁÉ½™¥±•Ì¹±•¹Ñ ¤…É‘ÍmÍ•±•Ñ•‘%¹‘•átü¹™½ÕÌ ¤ìô¤ì((€™Õ¹Ñ¥½¸‘•ÍÑÉ½ä ¤ì(€€€¥˜€¡‘•ÍÑÉ½å•¤É•ÑÕÉ¸™…±Í”ì(€€€‘•ÍÑÉ½å•€ôÑÉÕ”ì(€€€…Ñ¥Ù…Ñ¥½¸€¬ô€Äì(€€€É•±•…Í•±½¬ ¤ì(€€€É•±•…Í•±½Õ‘MÑ…ÑÕÌ ¤ì(€€€±½Í•5•¹Ô ¤ì(€€€±½Í•¥…±½œ¡ìÉ•ÍÑ½É•½ÕÌè™…±Í”ô¤ì(€€€‘¥…±½]¥¹‘½Ü¹‘•ÍÑÉ½ä ¤ì(€€€…‰½ÉÑ½¹ÑÉ½±±•È¹…‰½ÉÐ ¤ì(€€€ÍÕÉ™…”¹É•µ½Ù” ¤ì(€€€É½½Ð¹É•µ½Ù•ÑÑÉ¥‰ÕÑ” ‰‘…Ñ„µ•¹ÑÉäµÍÑ…Ñ”ˆ¤ì(€€€¥˜€¡‘½Õµ•¹Ð¹‘½Õµ•¹Ñ±•µ•¹Ð¹‘…Ñ…Í•Ð¹•¹ÑÉä€ôôô€‰ÁÉ½™¥±•Ìˆ¤‘•±•Ñ”‘½Õµ•¹Ð¹‘½Õµ•¹Ñ±•µ•¹Ð¹‘…Ñ…Í•Ð¹•¹ÑÉäì(€€€É•ÑÕÉ¸ÑÉÕ”ì(€ô((€É•ÑÕÉ¸=‰©•Ð¹™É••é”¡ì(€€€‘•ÍÑÉ½ä°(€€€™½ÕÌè€ ¤€ôøÁÉ½™¥±•Ì¹±•¹Ñ €˜˜…É‘ÍmÍ•±•Ñ•‘%¹‘•átü¹™½ÕÌ ¤°(€€€Í•±•Ñ•‘%è€ ¤€ôøÁÉ½™¥±•ÍmÍ•±•Ñ•‘%¹‘•átü¹¥ñð¹Õ±°(€ô¤ì)ô(
+  const previewSignals = element("div", { className: "v8-profile-preview__signals" });
+  const previewMeta = element("div", { className: "v8-profile-preview__meta" });
+  const previewWidgets = element("div", { className: "v8-profile-preview__widgets" });
+  const previewLive = element("div", { className: "v8-profile-preview__live-grid", attributes: { "aria-label": "Signaux en direct" } });
+  const liveTime = element("time", { className: "v8-profile-preview__time", dataset: { liveWidget: "clock", liveKind: "clock" } });
+  const liveDate = element("span", { className: "v8-profile-preview__date" });
+  const liveCloud = element("span", { className: "v8-profile-preview__cloud" });
+  const miniGreeting = element("strong", { className: "v8-profile-mini__greeting" });
+  const miniContext = element("span", { className: "v8-profile-mini__context" });
+  const miniSignalA = element("strong");
+  const miniSignalB = element("strong");
+  const enterLabel = element("span");
+  const enterButton = element("button", { className: "v8-button v8-button--primary v8-profile-select__enter", attributes: { type: "button" } }, [icon("arrow-right"), enterLabel]);
+
+  const preview = element("section", { className: "v8-profile-preview", attributes: { "aria-label": "Apercu vivant de l'environnement" } }, [
+    element("div", { className: "v8-profile-preview__ambient", attributes: { "aria-hidden": "true" } }, [element("span", { text: "8" }), element("i"), element("i")]),
+    element("header", { className: "v8-profile-preview__chrome" }, [
+      element("div", { className: "v8-profile-preview__eyebrow" }, [icon("orbit"), element("span", { text: "ENVIRONNEMENT EN DIRECT" })]),
+      element("div", { className: "v8-profile-preview__clock" }, [liveTime, liveDate]),
+      element("div", { className: "v8-profile-preview__connectivity" }, [icon("cloud"), liveCloud])
+    ]),
+    element("div", { className: "v8-profile-preview__identity" }, [
+      previewAvatarHost,
+      element("div", { className: "v8-profile-preview__copy" }, [
+        element("div", { className: "v8-profile-preview__presence" }, [previewType, previewStatus, previewLastActive]),
+        previewName,
+        previewDescription
+      ])
+    ]),
+    previewMeta,
+    element("div", { className: "v8-profile-preview__desktop" }, [
+      element("div", { className: "v8-profile-mini", attributes: { "aria-hidden": "true" } }, [
+        element("div", { className: "v8-profile-mini__rail" }, [element("span", { text: "E" }), element("i"), element("i"), element("i"), element("i")]),
+        element("div", { className: "v8-profile-mini__workspace" }, [
+          element("div", { className: "v8-profile-mini__top" }, [element("span", { text: "ETHONE / HOME" }), element("i")]),
+          element("div", { className: "v8-profile-mini__hero" }, [miniGreeting, miniContext]),
+          element("div", { className: "v8-profile-mini__grid" }, [
+            element("div", {}, [element("span", { text: "Continuite" }), miniSignalA]),
+            element("div", {}, [element("span", { text: "Aujourd'hui" }), miniSignalB]),
+            element("div", {}, [element("span", { text: "Signal" }), element("strong", { text: "Stable" })])
+          ])
+        ])
+      ]),
+      previewLive
+    ]),
+    element("footer", { className: "v8-profile-preview__footer" }, [
+      element("div", { className: "v8-profile-preview__widget-group" }, [
+        element("div", { className: "v8-profile-preview__section-title" }, [element("span", { text: "Modules prets" }), element("small", { text: "Charges a l'ouverture" })]),
+        previewWidgets
+      ]),
+      previewSignals
+    ])
+  ]);
+
+  const list = element("div", { className: "v8-profile-list", attributes: { role: "listbox", "aria-label": "Environnements ETHONE", "aria-orientation": "vertical" } });
+  const createButton = element("button", { className: "v8-button v8-button--secondary v8-profile-browser__create", attributes: { type: "button" } }, [icon("plus"), element("span", { text: "Nouvel environnement" })]);
+  const browserPanel = element("aside", { className: "v8-profile-browser", attributes: { "aria-label": "Selecteur d'environnements" } }, [
+    element("div", { className: "v8-profile-browser__header" }, [
+      element("div", {}, [element("span", { className: "v8-entry__eyebrow", text: "VOS UNIVERS" }), element("div", { className: "v8-profile-browser__title" }, [element("h2", { text: "Environnements" }), profileCount])]),
+      createButton
+    ]),
+    list,
+    element("div", { className: "v8-profile-browser__footnote" }, [icon("mouse-pointer-2"), element("span", { text: "Survolez pour explorer, double-cliquez pour entrer" })])
+  ]);
+
+  const menu = element("div", { className: "v8-profile-menu", attributes: { role: "menu", "aria-label": "Actions du profil", hidden: true } });
+  const menuButtons = MENU_ACTIONS.map((action) => {
+    const button = element("button", {
+      className: `v8-profile-menu__item${action.danger ? " is-danger" : ""}`,
+      attributes: { type: "button", role: "menuitem" },
+      dataset: { profileAction: action.id }
+    }, [icon(action.icon), element("span", { text: action.label })]);
+    menu.append(button);
+    return button;
+  });
+
+  const dialogLayer = element("div", { className: "v8-profile-dialog-layer", attributes: { hidden: true } });
+  const signOut = element("button", { className: "v8-button v8-button--outline", attributes: { type: "button" } }, [icon("log-out"), element("span", { text: "Changer de compte" })]);
+  const emptyCreateButton = element("button", { className: "v8-button v8-button--primary", attributes: { type: "button" } }, [icon("plus"), element("span", { text: "Creer un environnement" })]);
+  const profileEmpty = emptyState({
+    iconName: "user-round-plus",
+    eyebrow: "Premier environnement",
+    title: "Composez votre premier univers",
+    description: "Un environnement rassemble votre Space, votre rythme et les modules qui comptent.",
+    actions: [emptyCreateButton],
+    className: "v8-profile-empty"
+  });
+
+  const workspace = element("div", { className: "v8-profile-select__workspace" }, [preview, browserPanel]);
+  const surface = element("section", { className: "v8-entry v8-entry--profiles", attributes: { "aria-label": "Selection de l'environnement" } }, [
+    element("div", { className: "v8-entry__signal-field", attributes: { "aria-hidden": "true" } }, [element("span"), element("span"), element("span")]),
+    element("div", { className: "v8-entry__frame v8-profile-select__frame" }, [
+      element("header", { className: "v8-entry__topbar" }, [
+        element("div", { className: "v8-entry__brand" }, [
+          element("span", { className: "v8-entry__mark", text: "E", attributes: { "aria-hidden": "true" } }),
+          element("span", { className: "v8-entry__wordmark", text: "ETHONE" }),
+          element("span", { className: "v8-badge", text: "ENVIRONMENTS" })
+        ]),
+        signOut
+      ]),
+      element("main", { className: "v8-profile-select__main" }, [
+        element("div", { className: "v8-profile-select__intro" }, [
+          element("div", {}, [element("span", { className: "v8-entry__eyebrow", text: "ETHONE ENVIRONMENTS" }), element("h1", { text: "Quel univers ouvrez-vous ?" })]),
+          element("p", { text: "Chaque environnement restaure son Space, son Flow, ses signaux et son rythme." })
+        ]),
+        workspace,
+        profileEmpty,
+        status
+      ]),
+      element("footer", { className: "v8-profile-select__footer" }, [
+        element("div", { className: "v8-profile-select__hint" }, [icon("keyboard"), element("span", { text: "Fleches pour parcourir / Entree pour ouvrir / Menu pour gerer" })]),
+        enterButton
+      ]),
+      menu,
+      dialogLayer
+    ])
+  ]);
+
+  root.append(surface);
+
+  function profileModels() {
+    return makeModels(repository.listProfiles());
+  }
+
+  function refreshClock(snapshot = null) {
+    if (destroyed) return;
+    const date = snapshot?.timestamp ? new Date(snapshot.timestamp) : now();
+    const clock = formatEnvironmentClock(date);
+    const time = snapshot?.time || clock.time;
+    if (presence) presence.transitionText(liveTime, time, { kind: "clock" });
+    else liveTime.textContent = time;
+    liveTime.dateTime = date.toISOString();
+    if (presence) presence.transitionText(liveDate, clock.date, { kind: "clock" });
+    else liveDate.textContent = clock.date;
+  }
+
+  function updateConnectivity() {
+    const profile = profiles[selectedIndex];
+    if (!profile) return;
+    const offline = globalThis.navigator?.onLine === false;
+    const syncState = cloudSync?.status?.() || {};
+    const values = { loading: "Connexion Supabase", saving: "Synchronisation", saved: "Supabase synchronise", retrying: "Nouvelle tentative", error: "Erreur Supabase", expired: "Session expiree" };
+    const nextValue = offline ? "Hors ligne" : values[syncState.syncStatus] || profile.live.cloud.value;
+    if (presence) presence.transitionText(liveCloud, nextValue, { kind: "signal" });
+    else liveCloud.textContent = nextValue;
+    liveCloud.dataset.state = offline ? "offline" : syncState.syncStatus || profile.live.cloud.state;
+  }
+
+  function animatePreview() {
+    presence?.transitionSurface(preview, { kind: "profile" });
+  }
+
+  function selectPreview(index, focusCard = false) {
+    if (!profiles.length || destroyed) return;
+    selectedIndex = Math.min(profiles.length - 1, Math.max(0, index));
+    const profile = profiles[selectedIndex];
+    document.documentElement.dataset.accent = profile.accent;
+    surface.dataset.tone = profile.tone;
+    preview.dataset.ambience = profile.environment.ambience;
+    preview.dataset.background = profile.environment.background;
+    cards.forEach((card, cardIndex) => {
+      const selected = cardIndex === selectedIndex;
+      card.classList.toggle("is-selected", selected);
+      card.setAttribute("aria-selected", String(selected));
+      card.tabIndex = selected ? 0 : -1;
+    });
+    previewAvatarHost.replaceChildren(avatarNode(profile.avatar, "v8-profile-preview__avatar-content", "eager"));
+    previewType.textContent = profile.typeLabel;
+    previewName.textContent = profile.name;
+    previewDescription.textContent = profile.description;
+    previewStatus.textContent = profile.statusLabel;
+    previewLastActive.textContent = profile.lastActiveLabel;
+    previewMeta.replaceChildren(
+      metaItem("panels-top-left", "Space", profile.spaceLabel),
+      metaItem("workflow", "Flow", profile.flowLabel),
+      metaItem("palette", "Ambiance", profile.ambienceLabel),
+      metaItem("image", "Fond", profile.backgroundLabel)
+    );
+    previewWidgets.replaceChildren(...profile.favoriteWidgets.map(widgetChip));
+    previewSignals.replaceChildren(...profile.signals.map(signalRow));
+    previewLive.replaceChildren(...profile.live.signals.map(liveSignalNode));
+    miniGreeting.textContent = `Bonjour, ${profile.name}`;
+    miniContext.textContent = profile.description;
+    miniSignalA.textContent = `${profile.signals[0].value} notes`;
+    miniSignalB.textContent = `${profile.signals[1].value} priorites`;
+    enterButton.replaceChildren(icon(profile.locked ? "lock-keyhole" : "arrow-right"), enterLabel);
+    enterLabel.textContent = profile.locked ? "Continuer avec verification" : `Entrer dans ${profile.name}`;
+    status.textContent = profile.locked ? "Ce profil necessite un deverrouillage." : "";
+    updateConnectivity();
+    animatePreview();
+    presence?.revealWidgets(preview);
+    if (focusCard) cards[selectedIndex]?.focus();
+    refreshIcons();
+  }
+
+  function cardNode(profile, index) {
+    const menuButton = element("button", {
+      className: "v8-icon-button v8-profile-card__menu",
+      attributes: { type: "button", "aria-label": `Gerer ${profile.name}`, "aria-haspopup": "menu", "aria-expanded": "false" }
+    }, icon("ellipsis"));
+    const card = element("div", {
+      className: "v8-profile-card",
+      attributes: { role: "option", "aria-selected": "false", tabindex: "-1", "aria-label": `${profile.name}${profile.locked ? ", verrouille" : ""}` },
+      dataset: { profileId: profile.id, accent: profile.accent, tone: profile.tone }
+    }, [
+      element("div", { className: "v8-profile-card__avatar-wrap" }, [avatarNode(profile.avatar, "v8-profile-card__avatar")]),
+      element("div", { className: "v8-profile-card__body" }, [
+        element("div", { className: "v8-profile-card__headline" }, [element("strong", { text: profile.name, attributes: { translate: "no" } }), element("span", { text: profile.statusLabel })]),
+        element("span", { className: "v8-profile-card__context", text: `${profile.spaceLabel} / ${profile.flowLabel}` }),
+        element("div", { className: "v8-profile-card__facts" }, [
+          element("span", {}, [icon("layout-grid"), element("span", { text: `${profile.widgetCount} widgets` })]),
+          element("span", {}, [icon("brain"), element("span", { text: "Brain pret" })]),
+          element("span", {}, [icon("clock-3"), element("span", { text: profile.lastActiveLabel })])
+        ])
+      ]),
+      element("div", { className: "v8-profile-card__aside" }, [element("span", { className: "v8-profile-card__swatch", attributes: { "aria-label": `Theme ${profile.themeLabel}` } }), menuButton])
+    ]);
+    card.addEventListener("pointerenter", () => selectPreview(index), listenerOptions);
+    card.addEventListener("focus", () => selectPreview(index), listenerOptions);
+    card.addEventListener("click", (event) => {
+      if (event.target.closest("button")) return;
+      selectPreview(index, true);
+    }, listenerOptions);
+    card.addEventListener("dblclick", (event) => {
+      if (event.target.closest("button")) return;
+      activate(index);
+    }, listenerOptions);
+    card.addEventListener("contextmenu", (event) => {
+      event.preventDefault();
+      selectPreview(index);
+      openMenu(profile.id, menuButton, { x: event.clientX, y: event.clientY });
+    }, listenerOptions);
+    menuButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      selectPreview(index);
+      openMenu(profile.id, menuButton);
+    }, listenerOptions);
+    return card;
+  }
+
+  function renderProfiles(preferredId = "", focusSelected = false) {
+    profiles = profileModels();
+    const fallbackId = profiles[selectedIndex]?.id || repository.activeProfile()?.id || "";
+    const nextIndex = profiles.findIndex((profile) => profile.id === (preferredId || fallbackId));
+    selectedIndex = nextIndex >= 0 ? nextIndex : 0;
+    cards = profiles.map(cardNode);
+    list.replaceChildren(...cards);
+    profileCount.textContent = String(profiles.length).padStart(2, "0");
+    workspace.hidden = profiles.length === 0;
+    profileEmpty.hidden = profiles.length > 0;
+    enterButton.hidden = profiles.length === 0;
+    if (profiles.length) selectPreview(selectedIndex, focusSelected);
+    refreshIcons();
+  }
+
+  function closeMenu({ restoreFocus = false } = {}) {
+    if (menu.hidden) return;
+    menuRegistration?.release?.({ restoreFocus });
+    menuRegistration = null;
+    menu.hidden = true;
+    menu.style.removeProperty("left");
+    menu.style.removeProperty("top");
+    menu.style.removeProperty("max-height");
+    delete menu.dataset.placement;
+    menuTrigger?.setAttribute("aria-expanded", "false");
+    if (restoreFocus) menuTrigger?.focus();
+    menuTrigger = null;
+    menuProfileId = "";
+  }
+
+  function openMenu(profileId, trigger, point = null) {
+    closeMenu();
+    menuProfileId = profileId;
+    menuTrigger = trigger;
+    trigger.setAttribute("aria-expanded", "true");
+    menuButtons.find((button) => button.dataset.profileAction === "delete").disabled = profiles.length <= 1;
+    menu.hidden = false;
+    const anchor = trigger.getBoundingClientRect();
+    const menuRect = menu.getBoundingClientRect();
+    const position = computeFloatingPosition({
+      anchor,
+      point: point ? { x: point.x - menuRect.width, y: point.y } : null,
+      floating: menuRect,
+      viewport: { width: globalThis.innerWidth, height: globalThis.innerHeight },
+      preferred: "bottom-end"
+    });
+    menu.dataset.placement = position.placement;
+    menu.style.left = `${position.x}px`;
+    menu.style.top = `${position.y}px`;
+    menu.style.maxHeight = `${position.maxHeight}px`;
+    menuRegistration = layerManager.register({
+      element: menu,
+      boundary: menu,
+      anchor: trigger,
+      returnFocus: trigger,
+      kind: "popover",
+      closeOnEscape: true,
+      closeOnOutside: true,
+      closeOnScroll: true,
+      closeOnResize: true,
+      closeOnTab: true,
+      rovingSelector: "button:not([disabled])",
+      onDismiss: (reason) => closeMenu({ restoreFocus: reason === "escape" || reason === "tab" })
+    });
+    refreshIcons();
+    menuButtons[0]?.focus();
+  }
+
+  function closeDialog({ restoreFocus = true } = {}) {
+    if (dialogLayer.hidden || !dialogWindow.isOpen()) return;
+    releaseDialogForm();
+    releaseDialogForm = () => {};
+    surface.classList.remove("has-profile-dialog");
+    dialogWindow.close({ restoreFocus });
+  }
+
+  function dialogShell(title, description, content, actions) {
+    const closeButton = element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Fermer" } }, icon("x"));
+    const dialog = element("section", { className: "v8-profile-dialog", attributes: { role: "dialog", "aria-modal": "true", "aria-labelledby": "v8-profile-dialog-title" } }, [
+      element("header", { className: "v8-profile-dialog__header" }, [
+        element("div", { className: "v8-profile-dialog__identity" }, [
+          element("div", { className: "v8-window-controls", attributes: { "aria-hidden": "true" } }, [element("span"), element("span"), element("span")]),
+          element("div", {}, [element("span", { className: "v8-entry__eyebrow", text: "ENVIRONNEMENT ETHONE" }), element("h2", { id: "v8-profile-dialog-title", text: title }), element("p", { text: description })])
+        ]),
+        closeButton
+      ]),
+      content,
+      actions
+    ]);
+    closeButton.addEventListener("click", () => closeDialog(), listenerOptions);
+    dialogLayer.replaceChildren(dialog);
+    dialogLayer.hidden = false;
+    surface.classList.add("has-profile-dialog");
+    refreshIcons();
+    dialogWindow.open(dialogLayer, {
+      initialFocus: closeButton,
+      modal: true,
+      retain: true,
+      onAfterClose: () => dialogLayer.replaceChildren()
+    });
+    return dialog;
+  }
+
+  function openEditor(mode, profile = null, focusTarget = "name") {
+    closeMenu();
+    let chosenAccent = profile?.accent || "mint";
+    let chosenAvatar = profile?.avatar.kind === "image" ? profile.name.slice(0, 1).toUpperCase() : (profile?.avatar.value || "E");
+    let chosenWidgets = new Set(profile?.environment.widgets?.length ? profile.environment.widgets : WIDGETS_BY_TYPE[profile?.type || "personal"]);
+    const chosenIntegrations = new Set(profile?.environment.integrations || []);
+    let widgetsTouched = false;
+    let activeStep = focusTarget === "space" || focusTarget === "theme" ? 1 : 0;
+    const nameInput = element("input", { className: "v8-input", attributes: { type: "text", maxlength: "80", required: true, value: profile?.name || "", placeholder: "Nom du profil", autocomplete: "off" } });
+    const descriptionInput = element("textarea", { className: "v8-input v8-profile-dialog__textarea", attributes: { maxlength: "180", rows: "3", placeholder: "Decrivez cet environnement" } }, profile?.description || "");
+    const typeSelect = element("select", { className: "v8-input", attributes: { "aria-label": "Space principal" } }, Object.entries(TYPE_LABELS).map(([value, label]) => optionNode(value, label)));
+    typeSelect.value = profile?.type || "personal";
+    const flowInput = element("input", { className: "v8-input", attributes: { type: "text", maxlength: "80", value: profile?.flowLabel || "Essentiel", placeholder: "Flow principal" } });
+    const ambienceSelect = element("select", { className: "v8-input", attributes: { "aria-label": "Ambiance" } }, Object.entries(AMBIENCE_LABELS).map(([value, label]) => optionNode(value, label)));
+    ambienceSelect.value = profile?.environment.ambience || "balanced";
+    const backgroundSelect = element("select", { className: "v8-input", attributes: { "aria-label": "Fond" } }, Object.entries(BACKGROUND_LABELS).map(([value, label]) => optionNode(value, label)));
+    backgroundSelect.value = profile?.environment.background || "signal";
+    const avatarPicker = element("div", { className: "v8-profile-dialog__avatar-picker", attributes: { role: "radiogroup", "aria-label": "Avatar" } });
+    const accentPicker = element("div", { className: "v8-profile-dialog__accent-picker", attributes: { role: "radiogroup", "aria-label": "Theme" } });
+    const widgetPicker = element("div", { className: "v8-profile-dialog__module-picker", attributes: { role: "group", "aria-label": "Widgets" } });
+    const integrationPicker = element("div", { className: "v8-profile-dialog__module-picker", attributes: { role: "group", "aria-label": "Integrations" } });
+    const setupSummary = element("p", { className: "v8-profile-dialog__summary" });
+
+    AVATAR_CHOICES.forEach((choice) => {
+      const button = element("button", { className: "v8-profile-dialog__avatar-choice", text: choice, attributes: { type: "button", role: "radio", "aria-checked": String(choice === chosenAvatar), "aria-label": `Avatar ${choice}`, tabindex: choice === chosenAvatar ? "0" : "-1" } });
+      button.addEventListener("click", () => {
+        chosenAvatar = choice;
+        [...avatarPicker.children].forEach((node) => {
+          node.setAttribute("aria-checked", String(node === button));
+          node.tabIndex = node === button ? 0 : -1;
+        });
+      }, listenerOptions);
+      avatarPicker.append(button);
+    });
+
+    Object.entries(ACCENT_LABELS).forEach(([accent, label]) => {
+      const button = element("button", { className: "v8-profile-dialog__accent-choice", attributes: { type: "button", role: "radio", "aria-checked": String(accent === chosenAccent), "aria-label": label, tabindex: accent === chosenAccent ? "0" : "-1" }, dataset: { accent } }, [element("span"), element("small", { text: label })]);
+      button.addEventListener("click", () => {
+        chosenAccent = accent;
+        [...accentPicker.children].forEach((node) => {
+          node.setAttribute("aria-checked", String(node === button));
+          node.tabIndex = node === button ? 0 : -1;
+        });
+      }, listenerOptions);
+      accentPicker.append(button);
+    });
+
+    function updateModuleSummary() {
+      const summary = `${chosenWidgets.size} widgets / ${chosenIntegrations.size} integration${chosenIntegrations.size === 1 ? "" : "s"} / ${AMBIENCE_LABELS[ambienceSelect.value]}`;
+      if (presence) presence.transitionText(setupSummary, summary, { kind: "metric" });
+      else setupSummary.textContent = summary;
+    }
+
+    function syncWidgetPicker() {
+      [...widgetPicker.children].forEach((button) => button.setAttribute("aria-checked", String(chosenWidgets.has(button.dataset.choiceId))));
+      updateModuleSummary();
+    }
+
+    Object.entries(WIDGET_CATALOG).forEach(([id, widget]) => {
+      const button = element("button", { className: "v8-profile-dialog__module-choice", attributes: { type: "button", role: "checkbox", "aria-checked": String(chosenWidgets.has(id)) }, dataset: { choiceId: id } }, [icon(widget.icon), element("span", { text: widget.label }), icon("check")]);
+      button.addEventListener("click", () => {
+        widgetsTouched = true;
+        const selected = !chosenWidgets.has(id);
+        if (selected) chosenWidgets.add(id);
+        else chosenWidgets.delete(id);
+        syncWidgetPicker();
+        presence?.signalActivity?.(button, "widget", { phase: selected ? "enter" : "update" });
+      }, listenerOptions);
+      widgetPicker.append(button);
+    });
+
+    INTEGRATIONS.forEach((integration) => {
+      const button = element("button", { className: "v8-profile-dialog__module-choice", attributes: { type: "button", role: "checkbox", "aria-checked": String(chosenIntegrations.has(integration.id)) }, dataset: { choiceId: integration.id } }, [icon(integration.icon), element("span", { text: integration.label }), icon("check")]);
+      button.addEventListener("click", () => {
+        if (chosenIntegrations.has(integration.id)) chosenIntegrations.delete(integration.id);
+        else chosenIntegrations.add(integration.id);
+        button.setAttribute("aria-checked", String(chosenIntegrations.has(integration.id)));
+        updateModuleSummary();
+      }, listenerOptions);
+      integrationPicker.append(button);
+    });
+
+    typeSelect.addEventListener("change", () => {
+      if (!widgetsTouched) {
+        chosenWidgets = new Set(WIDGETS_BY_TYPE[typeSelect.value] || WIDGETS_BY_TYPE.personal);
+        syncWidgetPicker();
+      }
+    }, listenerOptions);
+    ambienceSelect.addEventListener("change", updateModuleSummary, listenerOptions);
+
+    const stepDefinitions = Object.freeze([
+      Object.freeze({ label: "Identite", icon: "circle-user-round" }),
+      Object.freeze({ label: "Univers", icon: "panels-top-left" }),
+      Object.freeze({ label: "Modules", icon: "layout-grid" })
+    ]);
+    const stepButtons = stepDefinitions.map((step, index) => element("button", { className: "v8-profile-dialog__step", attributes: { type: "button", "aria-current": index === activeStep ? "step" : "false" }, dataset: { step: String(index) } }, [element("span", { text: String(index + 1) }), icon(step.icon), element("strong", { text: step.label })]));
+    const stepper = element("nav", { className: "v8-profile-dialog__steps", attributes: { "aria-label": "Etapes de configuration" } }, stepButtons);
+
+    const pages = [
+      element("section", { className: "v8-profile-dialog__page", dataset: { wizardStep: "0" } }, [
+        element("div", { className: "v8-profile-dialog__page-heading" }, [element("span", { text: "01 / IDENTITE" }), element("h3", { text: "Donnez un visage a cet univers" }), element("p", { text: "Un nom, une intention et un repere visuel immediat." })]),
+        formField({ label: "Nom", control: nameInput, required: true, help: "80 caracteres maximum" }),
+        formField({ label: "Description", control: descriptionInput, help: "180 caracteres maximum" }),
+        element("fieldset", { className: "v8-profile-dialog__fieldset" }, [element("legend", { text: "Avatar" }), avatarPicker])
+      ]),
+      element("section", { className: "v8-profile-dialog__page", dataset: { wizardStep: "1" } }, [
+        element("div", { className: "v8-profile-dialog__page-heading" }, [element("span", { text: "02 / UNIVERS" }), element("h3", { text: "Reglez son rythme" }), element("p", { text: "Space, Flow et ambiance composent la premiere impression." })]),
+        element("div", { className: "v8-profile-dialog__row" }, [
+          formField({ label: "Space principal", control: typeSelect, help: "Environnement charge a l'ouverture" }),
+          formField({ label: "Flow principal", control: flowInput, help: "80 caracteres maximum" })
+        ]),
+        element("div", { className: "v8-profile-dialog__row" }, [
+          formField({ label: "Ambiance", control: ambienceSelect, help: "Rythme visuel de l'environnement" }),
+          formField({ label: "Fond", control: backgroundSelect, help: "Fond applique au Dashboard" })
+        ]),
+        element("fieldset", { className: "v8-profile-dialog__fieldset" }, [element("legend", { text: "Couleur dominante" }), accentPicker])
+      ]),
+      element("section", { className: "v8-profile-dialog__page", dataset: { wizardStep: "2" } }, [
+        element("div", { className: "v8-profile-dialog__page-heading" }, [element("span", { text: "03 / MODULES" }), element("h3", { text: "Choisissez ce qui vous attend" }), element("p", { text: "Ces modules seront prepares sans connecter de service a votre place." })]),
+        element("fieldset", { className: "v8-profile-dialog__fieldset" }, [element("legend", { text: "Widgets" }), widgetPicker]),
+        element("fieldset", { className: "v8-profile-dialog__fieldset" }, [element("legend", { text: "Integrations a preparer" }), integrationPicker]),
+        setupSummary
+      ])
+    ];
+
+    const cancel = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" } }, [element("span", { text: "Annuler" })]);
+    const back = element("button", { className: "v8-button v8-button--ghost", attributes: { type: "button" } }, [icon("arrow-left"), element("span", { text: "Retour" })]);
+    const next = element("button", { className: "v8-button v8-button--primary", attributes: { type: "button" } }, [element("span", { text: "Continuer" }), icon("arrow-right")]);
+    const submit = element("button", { className: "v8-button v8-button--primary", attributes: { type: "submit" } }, [icon(mode === "create" ? "sparkles" : "check"), element("span", { text: mode === "create" ? "Creer l'environnement" : "Enregistrer" })]);
+    const form = element("form", { className: "v8-profile-dialog__form" }, [
+      stepper,
+      element("div", { className: "v8-profile-dialog__pages" }, pages),
+      element("div", { className: "v8-profile-dialog__actions" }, [cancel, element("span", { className: "v8-profile-dialog__action-spacer" }), back, next, submit])
+    ]);
+    releaseDialogForm();
+    releaseDialogForm = enhanceForm(form);
+    const dialog = dialogShell(
+      mode === "create" ? "Composer un environnement" : `Modifier ${profile.name}`,
+      mode === "create" ? "Trois etapes courtes, puis ETHONE est pret a prendre vie." : "Ajustez son identite et ses modules sans toucher a ses donnees.",
+      form,
+      element("span")
+    );
+
+    function showStep(index, focus = true) {
+      activeStep = Math.min(pages.length - 1, Math.max(0, index));
+      dialog.dataset.wizardStep = String(activeStep);
+      pages.forEach((page, pageIndex) => {
+        const active = pageIndex === activeStep;
+        page.hidden = !active;
+        page.toggleAttribute("inert", !active);
+      });
+      stepButtons.forEach((button, buttonIndex) => button.setAttribute("aria-current", buttonIndex === activeStep ? "step" : "false"));
+      back.hidden = activeStep === 0;
+      next.hidden = activeStep === pages.length - 1;
+      submit.hidden = activeStep !== pages.length - 1;
+      if (focus) pages[activeStep].querySelector("input, select, button")?.focus();
+    }
+
+    stepButtons.forEach((button, index) => button.addEventListener("click", () => {
+      if (index > 0 && !validateControl(nameInput, { force: true, focus: true })) return;
+      showStep(index);
+    }, listenerOptions));
+    cancel.addEventListener("click", () => closeDialog(), listenerOptions);
+    back.addEventListener("click", () => showStep(activeStep - 1), listenerOptions);
+    next.addEventListener("click", () => {
+      if (activeStep === 0 && !validateControl(nameInput, { force: true, focus: true })) return;
+      showStep(activeStep + 1);
+    }, listenerOptions);
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (activeStep < pages.length - 1) {
+        if (activeStep !== 0 || validateControl(nameInput, { force: true, focus: true })) showStep(activeStep + 1);
+        return;
+      }
+      const payload = {
+        name: nameInput.value,
+        description: descriptionInput.value,
+        type: typeSelect.value,
+        space: typeSelect.value,
+        flow: flowInput.value,
+        avatar: chosenAvatar,
+        accent: chosenAccent,
+        widgets: [...chosenWidgets],
+        integrations: [...chosenIntegrations],
+        ambience: ambienceSelect.value,
+        background: backgroundSelect.value
+      };
+      const submission = await runFormSubmission({
+        form,
+        submit,
+        status,
+        messages: { loading: mode === "create" ? "Creation de l'environnement..." : "Enregistrement du profil..." },
+        task: () => mode === "create" ? repository.createProfile(payload) : repository.updateProfile(profile.id, payload)
+      });
+      if (!submission.accepted) return;
+      const response = submission.value;
+      if (submission.error || !response?.ok) {
+        if (response?.message) setFieldState(nameInput, "invalid", response.message);
+        return;
+      }
+      closeDialog({ restoreFocus: false });
+      renderProfiles(response.data.id, true);
+      status.textContent = response.message;
+    }, listenerOptions);
+    syncWidgetPicker();
+    updateModuleSummary();
+    showStep(activeStep, false);
+    const target = focusTarget === "avatar" ? avatarPicker.querySelector('[aria-checked="true"]')
+      : focusTarget === "space" ? typeSelect
+        : focusTarget === "theme" ? accentPicker.querySelector('[aria-checked="true"]')
+          : nameInput;
+    queueMicrotask(() => target?.focus());
+    return dialog;
+  }
+
+  function openDeleteConfirmation(profile) {
+    closeMenu();
+    const cancel = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" } }, [element("span", { text: "Annuler" })]);
+    const confirm = element("button", { className: "v8-button v8-button--danger", attributes: { type: "button" } }, [icon("trash-2"), element("span", { text: "Supprimer definitivement" })]);
+    const content = element("div", { className: "v8-profile-dialog__confirm" }, [
+      element("div", { className: "v8-profile-dialog__danger-icon" }, icon("triangle-alert")),
+      element("p", { text: `Les donnees du profil ${profile.name} seront supprimees de Supabase et du cache de cet appareil. Cette action est irreversible.` })
+    ]);
+    dialogShell("Supprimer ce profil ?", "Une confirmation est necessaire avant toute suppression.", content, element("div", { className: "v8-profile-dialog__actions" }, [cancel, confirm]));
+    cancel.addEventListener("click", () => closeDialog(), listenerOptions);
+    confirm.addEventListener("click", () => {
+      const response = repository.deleteProfile(profile.id);
+      if (!response.ok) {
+        status.textContent = response.message;
+        closeDialog();
+        return;
+      }
+      closeDialog({ restoreFocus: false });
+      renderProfiles(repository.activeProfile()?.id || "", true);
+      status.textContent = response.message;
+    }, listenerOptions);
+    queueMicrotask(() => cancel.focus());
+  }
+
+  function downloadExport(profile) {
+    const response = repository.exportProfile(profile.id);
+    if (!response.ok) {
+      status.textContent = response.message;
+      return;
+    }
+    const blob = new Blob([JSON.stringify(response.data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const anchor = element("a", { attributes: { href: url, download: `ethone-${profile.name.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "profil"}.json` } });
+    document.body.append(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+    status.textContent = "Export du profil pret.";
+  }
+
+  function runMenuAction(actionId) {
+    const profile = profiles.find((entry) => entry.id === menuProfileId);
+    if (!profile) return;
+    if (actionId === "rename") openEditor("edit", profile, "name");
+    else if (actionId === "edit") openEditor("edit", profile, "name");
+    else if (actionId === "avatar") openEditor("edit", profile, "avatar");
+    else if (actionId === "space") openEditor("edit", profile, "space");
+    else if (actionId === "theme") openEditor("edit", profile, "theme");
+    else if (actionId === "export") { closeMenu(); downloadExport(profile); }
+    else if (actionId === "duplicate") {
+      closeMenu();
+      const response = repository.duplicateProfile(profile.id);
+      if (response.ok) renderProfiles(response.data.id, true);
+      status.textContent = response.message;
+    } else if (actionId === "delete") openDeleteConfirmation(profile);
+  }
+
+  async function activate(index = selectedIndex) {
+    if (!profiles.length || destroyed) return;
+    const token = ++activation;
+    selectPreview(index);
+    const profile = profiles[selectedIndex];
+    if (profile.locked) {
+      status.textContent = "Profil verrouille : vos donnees restent intactes.";
+      return;
+    }
+    const selected = repository.selectProfile(profile.id);
+    if (!selected.ok) {
+      status.textContent = selected.message;
+      return;
+    }
+    surface.classList.add("is-launching");
+    surface.setAttribute("aria-busy", "true");
+    enterButton.disabled = true;
+    try {
+      let activationResult;
+      const reducedMotion = globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+      if (!reducedMotion && typeof document.startViewTransition === "function") {
+        const transition = document.startViewTransition(async () => { activationResult = await options.onSelect?.(selected.data); });
+        await transition.finished;
+      } else {
+        activationResult = await options.onSelect?.(selected.data);
+      }
+      if (!destroyed && token === activation) settleActivationResult(activationResult, { surface, enterButton, status });
+    } catch {
+      if (!destroyed && token === activation) settleActivationResult({ ok: false, message: "L'environnement n'a pas pu etre ouvert." }, { surface, enterButton, status });
+    }
+  }
+
+  list.addEventListener("keydown", (event) => {
+    if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) {
+      event.preventDefault();
+      selectPreview(nextProfileIndex(profiles.length, selectedIndex, event.key), true);
+      return;
+    }
+    if (event.key === "Enter") {
+      event.preventDefault();
+      activate(selectedIndex);
+    }
+    if (event.key === " ") {
+      event.preventDefault();
+      selectPreview(selectedIndex, true);
+    }
+  }, listenerOptions);
+  enterButton.addEventListener("click", () => activate(selectedIndex), listenerOptions);
+  createButton.addEventListener("click", () => openEditor("create"), listenerOptions);
+  emptyCreateButton.addEventListener("click", () => openEditor("create"), listenerOptions);
+  menuButtons.forEach((button) => button.addEventListener("click", () => runMenuAction(button.dataset.profileAction), listenerOptions));
+  signOut.addEventListener("click", async () => {
+    signOut.classList.add("is-loading");
+    signOut.disabled = true;
+    const response = await options.onSignOut?.();
+    if (!destroyed && response && !response.ok) {
+      signOut.classList.remove("is-loading");
+      signOut.disabled = false;
+      status.textContent = response.message;
+    }
+  }, listenerOptions);
+  globalThis.addEventListener?.("online", updateConnectivity, listenerOptions);
+  globalThis.addEventListener?.("offline", updateConnectivity, listenerOptions);
+
+  renderProfiles(repository.activeProfile()?.id || "");
+  const releaseClock = clockManager?.subscribe?.(refreshClock) || (() => {});
+  const releaseCloudStatus = cloudSync?.subscribe?.(updateConnectivity) || (() => {});
+  if (!clockManager) refreshClock();
+  queueMicrotask(() => { if (!destroyed && profiles.length) cards[selectedIndex]?.focus(); });
+
+  function destroy() {
+    if (destroyed) return false;
+    destroyed = true;
+    activation += 1;
+    releaseClock();
+    releaseCloudStatus();
+    closeMenu();
+    closeDialog({ restoreFocus: false });
+    dialogWindow.destroy();
+    abortController.abort();
+    surface.remove();
+    root.removeAttribute("data-entry-state");
+    if (document.documentElement.dataset.entry === "profiles") delete document.documentElement.dataset.entry;
+    return true;
+  }
+
+  return Object.freeze({
+    destroy,
+    focus: () => profiles.length && cards[selectedIndex]?.focus(),
+    selectedId: () => profiles[selectedIndex]?.id || null
+  });
+}

@@ -268,4 +268,529 @@ export function mountConnections(stage, options = {}) {
         categoryBar,
         grid,
         loadMoreHost
-      ])çÝ4¶‰žËkºwµçAìÑ•áÐè€‰A½ÕÉÅÕ½¤±„½¹¹•á¥½¸É•ÍÑ”ÁÉ•Á…É•”€üˆô¤°•±•µ•¹Ð ‰Àˆ°ìÑ•áÐè€‰U¹”É½ÕÑ”]½É­•È‘¥ÍÁ½¹¥‰±”½¹™¥Éµ”±”‰…­•¹°Á…ÌÕ¹”…ÕÑ½É¥Í…Ñ¥½¸™½ÕÉ¹¥ÍÍ•ÕÈ¹¤Õ¹”Í•ÍÍ¥½¸‘¥ÍÑ…¹Ñ”¸ˆô¥t¤°(€€€€€€€•±•µ•¹Ð ‰‘•Ñ…¥±Ìˆ°íô°m•±•µ•¹Ð ‰ÍÕµµ…Éäˆ°ìÑ•áÐè€‰EÕ”™…¥É”…ÁÉ•ÌÕ¹”•áÁ¥É…Ñ¥½¸€üˆô¤°•±•µ•¹Ð ‰Àˆ°ìÑ•áÐè€‰I•±…¹•è±”½¹Í•¹Ñ•µ•¹Ð‘•ÁÕ¥ÌÙ½ÑÉ”‰…­•¹ÁÕ¥ÌÙ•É¥™¥•è±•ÌÁ•Éµ¥ÍÍ¥½¹Ìµ¥¹¥µ…±•Ì¸ˆô¥t¤°(€€€€€€€•±•µ•¹Ð ‰‘•Ñ…¥±Ìˆ°íô°m•±•µ•¹Ð ‰ÍÕµµ…Éäˆ°ìÑ•áÐè€‰=ÔÍ½¹ÐÍÑ½­••Ì±•Ì‘½¹¹••ÌÍ•¹Í¥‰±•Ì€üˆô¤°•±•µ•¹Ð ‰Àˆ°ìÑ•áÐè€‰…¹Ì±•ÌÍ•É•ÑÌ±½Õ‘™±…É”Õ¹¥ÅÕ•µ•¹Ð¸1”¹…Ù¥…Ñ•ÕÈ¹”É•½¥Ð¹¤±”™½ÕÉ¹¥ÍÍ•ÕÈ°¹¤Í•É•ÐMÕÁ…‰…Í”Í•ÉÙ•ÕÈ¸ˆô¥t¤(€€€€€t¤°(€€€€€½™™¥¥…±I•Í½ÕÉ•Ì¡¥¹Ñ•É…Ñ¥½¸¤¹±•¹Ñ €ü•±•µ•¹Ð ‰‘¥Øˆ°ì±…ÍÍ9…µ”è€‰Øàµ½¹¹•Ñ¥½¸µÉ•Í½ÕÉ•ÌØàµ½¹¹•Ñ¥½¸µÉ•Í½ÕÉ•Ì´µ½µÁ…Ðˆô°½™™¥¥…±I•Í½ÕÉ•Ì¡¥¹Ñ•É…Ñ¥½¸¤¹µ…À ¡É•Í½ÕÉ”¤€ôø½™™¥¥…±1¥¹¬¡É•Í½ÕÉ”¤¤¤€è¹Õ±°(€€€t¤ì(€ô((€™Õ¹Ñ¥½¸É•¹‘•É%¹ÍÁ•Ñ½È ¤ì(€€€½¹ÍÐ¥¹Ñ•É…Ñ¥½¸€ô¥¹Ñ•É…Ñ¥½¹	å%¡Í•±•Ñ•‘%¤ñð%9QIQ%=9MlÁtì(€€€¥˜€ …¥¹Ñ•É…Ñ¥½¸¤É•ÑÕÉ¸ì(€€€Í•±•Ñ•‘%€ô¥¹Ñ•É…Ñ¥½¸¹¥ì(€€€½¹ÍÐ½¹¹•Ñ¥½¸€ô½¹¹•Ñ¥½¹5…À ¤¹•Ð¡¥¹Ñ•É…Ñ¥½¸¹¥¤ì(€€€½¹ÍÐµ•Ñ¡½€ôÍ•±•Ñ•‘5•Ñ¡½¡¥¹Ñ•É…Ñ¥½¸°½¹¹•Ñ¥½¸¤ì(€€€½¹ÍÐÑ…‰½¹Ñ•¹Ð€ô¥¹ÍÁ•Ñ½ÉQ…ˆ€ôôô€‰µ•Ñ¡½‘Ìˆ(€€€€€€üµ•Ñ¡½‘ÍA…¹•°¡¥¹Ñ•É…Ñ¥½¸°½¹¹•Ñ¥½¸°µ•Ñ¡½¤(€€€€€€è¥¹ÍÁ•Ñ½ÉQ…ˆ€ôôô€‰Í•ÑÕÀˆ(€€€€€€€€üÍ•ÑÕÁA…¹•°¡¥¹Ñ•É…Ñ¥½¸°½¹¹•Ñ¥½¸°µ•Ñ¡½¤(€€€€€€€€è¥¹ÍÁ•Ñ½ÉQ…ˆ€ôôô€‰‘¥…¹½ÍÑ¥Ìˆ(€€€€€€€€€€ü‘¥…¹½ÍÑ¥ÍA…¹•°¡¥¹Ñ•É…Ñ¥½¸°½¹¹•Ñ¥½¸°µ•Ñ¡½¤(€€€€€€€€€€è½Ù•ÉÙ¥•ÝA…¹•°¡¥¹Ñ•É…Ñ¥½¸°½¹¹•Ñ¥½¸°µ•Ñ¡½¤ì(€€€¥¹ÍÁ•Ñ½É!½ÍÐ¹É•Á±…•¡¥±‘É•¸ (€€€€€•±•µ•¹Ð ‰¡•…‘•Èˆ°ì±…ÍÍ9…µ”è€‰Øàµ½¹¹•Ñ¥½¸µ¥¹ÍÁ•Ñ½É}}¡•…‘•Èˆô°l(€€€€€€€•±•µ•¹Ð ‰ÍÁ…¸ˆ°ì±…ÍÍ9…µ”èØàµ½¹¹•Ñ¥½¸µ…É‘}}¥½¸Øàµ½¹¹•Ñ¥½¸µ…É‘}}¥½¸´´‘í¥¹Ñ•É…Ñ¥½¸¹…Ñ•½Éåõ€ô°m¥½¸¡¥¹Ñ•É…Ñ¥½¸¹¥½¸¥t¤°(€€€€€€€•±•µ•¹Ð ‰‘¥Øˆ°íô°m•±•µ•¹Ð ‰Íµ…±°ˆ°ìÑ•áÐè¥¹Ñ•É…Ñ¥½¹…Ñ•½Éä¡¥¹Ñ•É…Ñ¥½¸¹…Ñ•½Éä¤¹±…‰•°ô¤°•±•µ•¹Ð ‰ Èˆ°ìÑ•áÐè¥¹Ñ•É…Ñ¥½¸¹¹…µ”°…ÑÑÉ¥‰ÕÑ•ÌèìÑÉ…¹Í±…Ñ”è€‰¹¼ˆ°Ñ…‰¥¹‘•àè€ˆ´Äˆôô¥t¤°(€€€€€€€ÍÑ…Ñ•	…‘”¡¥¹Ñ•É…Ñ¥½¸°½¹¹•Ñ¥½¸¤(€€€€€t¤°(€€€€€•±•µ•¹Ð ‰‘¥Øˆ°ì±…ÍÍ9…µ”è€‰Øàµ½¹¹•Ñ¥½¸µÑ…‰Ìˆ°…ÑÑÉ¥‰ÕÑ•ÌèìÉ½±”è€‰Ñ…‰±¥ÍÐˆ°€‰…É¥„µ±…‰•°ˆè•Ñ…¥±Ì€‘í¥¹Ñ•É…Ñ¥½¸¹¹…µ•õ€ôô°%9MAQ=I}Q	L¹µ…À¡Ñ…‰	ÕÑÑ½¸¤¤°(€€€€€Ñ…‰½¹Ñ•¹Ð(€€€€¤ì(€ô((€™Õ¹Ñ¥½¸É•¹‘•É±° ¤ì(€€€É•¹‘•É5•ÑÉ¥Ì ¤ì(€€€É•¹‘•É=ÁÁ½ÉÑÕ¹¥Ñ¥•Ì ¤ì(€€€É•¹‘•É…Ñ…±½œ ¤ì(€€€É•¹‘•É%¹ÍÁ•Ñ½È ¤ì(€€€É•™É•Í¡%½¹Ì ¤ì(€ô((€™Õ¹Ñ¥½¸Í•±•Ñ¹‘I•¹‘•È¡¥°Ñ…ˆ€ô€‰½Ù•ÉÙ¥•Üˆ°ÍÉ½±°€ô™…±Í”¤ì(€€€¥˜€ …¥¹Ñ•É…Ñ¥½¹	å%¡¥¤¤É•ÑÕÉ¸™…±Í”ì(€€€Í•±•Ñ•‘%€ô¥ì(€€€¥¹ÍÁ•Ñ½ÉQ…ˆ€ôÑ…ˆì(€€€É•¹‘•É…Ñ…±½œ ¤ì(€€€É•¹‘•É%¹ÍÁ•Ñ½È ¤ì(€€€É•™É•Í¡%½¹Ì ¤ì(€€€¥˜€¡ÍÉ½±°€˜˜±½‰…±Q¡¥Ì¹µ…Ñ¡5•‘¥„ü¸ ˆ¡µ…àµÝ¥‘Ñ è€äàÁÁà¤ˆ¤ü¹µ…Ñ¡•Ì¤¥¹ÍÁ•Ñ½É!½ÍÐ¹ÍÉ½±±%¹Ñ½Y¥•Ü¡ì‰•¡…Ù¥½Èè€‰Íµ½½Ñ ˆ°‰±½¬è€‰ÍÑ…ÉÐˆô¤ì(€€€É•ÑÕÉ¸ÑÉÕ”ì(€ô((€™Õ¹Ñ¥½¸±½…±¥…¹½ÍÑ¥Œ¡¥¤ì(€€€½¹ÍÐ¥¹Ñ•É…Ñ¥½¸€ô¥¹Ñ•É…Ñ¥½¹	å%¡¥¤ì(€€€¥˜€ …¥¹Ñ•É…Ñ¥½¸¤É•ÑÕÉ¸¹Õ±°ì(€€€½¹ÍÐ½¹¹•Ñ¥½¸€ô½¹¹•Ñ¥½¹5…À ¤¹•Ð¡¥¤ì(€€€½¹ÍÐµ•Ñ¡½€ôÍ•±•Ñ•‘5•Ñ¡½¡¥¹Ñ•É…Ñ¥½¸°½¹¹•Ñ¥½¸¤ì(€€€É•ÑÕÉ¸=‰©•Ð¹™É••é”¡ì(€€€€€¥¹Ñ•É…Ñ¥½¸°(€€€€€µ•Ñ¡½°(€€€€€É•Á½ÉÐèÉÕ¹½¹¹•Ñ¥½¹¥…¹½ÍÑ¥Ì¡¥¹Ñ•É…Ñ¥½¸°½¹¹•Ñ¥½¸°µ•Ñ¡½°ì½¹±¥¹”è±½‰…±Q¡¥Ì¹¹…Ù¥…Ñ½Èü¹½¹1¥¹”€„ôô™…±Í”ô¤°(€€€€€Í•ÉÙ¥”èÝ½É­•ÉM•ÉÙ¥•½É½¹¹•Ñ¥½¸¡¥°µ•Ñ¡½ü¹¥¤(€€€ô¤ì(€ô((€…Íå¹Œ™Õ¹Ñ¥½¸ÉÕ¹¥…¹½ÍÑ¥Œ¡¥¤ì(€€€½¹ÍÐ±½…°€ô±½…±¥…¹½ÍÑ¥Œ¡¥¤ì(€€€¥˜€ …±½…°¤É•ÑÕÉ¸¹Õ±°ì(€€€±•ÐÉ•ÍÁ½¹Í”€ô¹Õ±°ì(€€€±•Ð•ÉÉ½È€ô¹Õ±°ì(€€€¥˜€¡±½…°¹Í•ÉÙ¥”€˜˜•áÑ•É¹…±M•ÉÙ¥•Ìü¹‘¥…¹½ÍÑ¥Œ¤ì(€€€€€ÑÉäì(€€€€€€€É•ÍÁ½¹Í”€ô…Ý…¥Ð•áÑ•É¹…±M•ÉÙ¥•Ì¹‘¥…¹½ÍÑ¥Œ¡±½…°¹Í•ÉÙ¥”¤ì(€€€€€ô…Ñ €¡™…¥±ÕÉ”¤ì(€€€€€€€•ÉÉ½È€ô™…¥±ÕÉ”ì(€€€€€ô(€€€ô(€€€½¹ÍÐÉ•Á½ÉÐ€ôµ•É•]½É­•É¥…¹½ÍÑ¥Œ¡±½…°¹É•Á½ÉÐ°ìÍ•ÉÙ¥”è±½…°¹Í•ÉÙ¥”°É•ÍÁ½¹Í”°•ÉÉ½Èô¤ì(€€€‘¥…¹½ÍÑ¥Ì¹Í•Ð¡¥°É•Á½ÉÐ¤ì(€€€É•ÑÕÉ¸É•Á½ÉÐì(€ô((€É•±•…Í•Ì¹ÁÕÍ ¡…Ñ¥½¹Ì¹Í½Á” ‰Øà¹½¹¹•Ñ¥½¹Ì¹½¹™¥ÕÉ”ˆ°€¡½¹Ñ•áÐ¤€ôøì(€€€½¹ÍÐ¥€ô½¹Ñ•áÐ¹•±•µ•¹Ðü¹‘…Ñ…Í•Ð¹¥¹Ñ•É…Ñ¥½¸ì(€€€Í•±•Ñ¹‘I•¹‘•È¡¥°€‰Í•ÑÕÀˆ°ÑÉÕ”¤ì(€€€É•ÑÕÉ¸½µÁ±•Ñ• ‰ÍÍ¥ÍÑ…¹Ð½ÕÙ•ÉÐˆ°ì¥¹Ñ•É…Ñ¥½¸è¥ô¤ì(€ô¤¤ì(€É•±•…Í•Ì¹ÁÕÍ ¡…Ñ¥½¹Ì¹Í½Á” ‰Øà¹½¹¹•Ñ¥½¹Ì¹µ•Ñ¡½¹½Á•¸ˆ°€¡½¹Ñ•áÐ¤€ôøì(€€€½¹ÍÐ¥€ô½¹Ñ•áÐ¹•±•µ•¹Ðü¹‘…Ñ…Í•Ð¹¥¹Ñ•É…Ñ¥½¸ì(€€€Í•±•Ñ¹‘I•¹‘•È¡¥°€‰µ•Ñ¡½‘Ìˆ°ÑÉÕ”¤ì(€€€É•ÑÕÉ¸½µÁ±•Ñ• ‰5•Ñ¡½‘•Ì½ÕÙ•ÉÑ•Ìˆ°ì¥¹Ñ•É…Ñ¥½¸è¥ô¤ì(€ô¤¤ì(€É•±•…Í•Ì¹ÁÕÍ ¡…Ñ¥½¹Ì¹Í½Á” ‰Øà¹½¹¹•Ñ¥½¹Ì¹Ñ…ˆˆ°€¡½¹Ñ•áÐ¤€ôøì(€€€½¹ÍÐ¥€ô½¹Ñ•áÐ¹•±•µ•¹Ðü¹‘…Ñ…Í•Ð¹¥¹Ñ•É…Ñ¥½¸ñðÍ•±•Ñ•‘%ì(€€€½¹ÍÐÑ…ˆ€ô%9MAQ=I}Q	L¹Í½µ” ¡•¹ÑÉä¤€ôø•¹ÑÉä¹¥€ôôô½¹Ñ•áÐ¹•±•µ•¹Ðü¹‘…Ñ…Í•Ð¹Ñ…ˆ¤€ü½¹Ñ•áÐ¹•±•µ•¹Ð¹‘…Ñ…Í•Ð¹Ñ…ˆ€è€‰½Ù•ÉÙ¥•Üˆì(€€€Í•±•Ñ¹‘I•¹‘•È¡¥°Ñ…ˆ¤ì(€€€É•ÑÕÉ¸½µÁ±•Ñ• ‰YÕ”µ¥Í”„©½ÕÈˆ°ì¥¹Ñ•É…Ñ¥½¸è¥°Ñ…ˆô¤ì(€ô¤¤ì(€É•±•…Í•Ì¹ÁÕÍ ¡…Ñ¥½¹Ì¹Í½Á” ‰Øà¹½¹¹•Ñ¥½¹Ì¹µ•Ñ¡½¹Í•±•Ðˆ°€¡½¹Ñ•áÐ¤€ôøì(€€€½¹ÍÐ¥€ô½¹Ñ•áÐ¹•±•µ•¹Ðü¹‘…Ñ…Í•Ð¹¥¹Ñ•É…Ñ¥½¸ì(€€€½¹ÍÐµ•Ñ¡½‘%€ô½¹Ñ•áÐ¹•±•µ•¹Ðü¹‘…Ñ…Í•Ð¹µ•Ñ¡½ì(€€€½¹ÍÐ¥¹Ñ•É…Ñ¥½¸€ô¥¹Ñ•É…Ñ¥½¹	å%¡¥¤ì(€€€¥˜€ …½¹¹•Ñ¥½¹5•Ñ¡½‘Ì¡¥¹Ñ•É…Ñ¥½¸¤¹Í½µ” ¡•¹ÑÉä¤€ôø•¹ÑÉä¹¥€ôôôµ•Ñ¡½‘%¤¤É•ÑÕÉ¸Õ¹…Ù…¥±…‰±” ‰•ÑÑ”µ•Ñ¡½‘”¸•ÍÐÁ…Ì‘¥ÍÁ½¹¥‰±”¸ˆ¤ì(€€€Í•±•Ñ•‘5•Ñ¡½‘Ì¹Í•Ð¡¥°µ•Ñ¡½‘%¤ì(€€€½¹ÍÐµ•Ñ¡½€ô½¹¹•Ñ¥½¹5•Ñ¡½¡¥¹Ñ•É…Ñ¥½¸°µ•Ñ¡½‘%¤ì(€€€½¹ÍÐ½¹¹•Ñ¥½¸€ô½¹¹•Ñ¥½¹5…À ¤¹•Ð¡¥¤ì(€€€¥˜€ …‘É…™ÑI•™•É•¹•Ì¹¡…Ì¡¥¤¤‘É…™ÑI•™•É•¹•Ì¹Í•Ð¡¥°½¹¹•Ñ¥½¸ü¹É•™•É•¹”ñðµ•Ñ¡½ü¹•¹‘Á½¥¹Ðñð€ˆˆ¤ì(€€€É•¹‘•É…Ñ…±½œ ¤ì(€€€É•¹‘•É%¹ÍÁ•Ñ½È ¤ì(€€€É•™É•Í¡%½¹Ì ¤ì(€€€É•ÑÕÉ¸½µÁ±•Ñ• ‰5•Ñ¡½‘”Í•±•Ñ¥½¹¹•”ˆ°ì¥¹Ñ•É…Ñ¥½¸è¥°µ•Ñ¡½èµ•Ñ¡½‘%ô¤ì(€ô¤¤ì(€É•±•…Í•Ì¹ÁÕÍ ¡…Ñ¥½¹Ì¹Í½Á” ‰Øà¹½¹¹•Ñ¥½¹Ì¹Í•ÑÕÀ¹½µÁ±•Ñ”ˆ°€¡½¹Ñ•áÐ¤€ôøì(€€€½¹ÍÐ¥€ô½¹Ñ•áÐ¹•±•µ•¹Ðü¹‘…Ñ…Í•Ð¹¥¹Ñ•É…Ñ¥½¸ñðÍ•±•Ñ•‘%ì(€€€½¹ÍÐ¥¹Ñ•É…Ñ¥½¸€ô¥¹Ñ•É…Ñ¥½¹	å%¡¥¤ì(€€€½¹ÍÐ½¹¹•Ñ¥½¸€ô½¹¹•Ñ¥½¹5…À ¤¹•Ð¡¥¤ì(€€€½¹ÍÐµ•Ñ¡½€ôÍ•±•Ñ•‘5•Ñ¡½¡¥¹Ñ•É…Ñ¥½¸°½¹¹•Ñ¥½¸¤ì(€€€½¹ÍÐ…Ù…¥±…‰¥±¥Ñä€ôµ•Ñ¡½‘Ù…¥±…‰¥±¥Ñä¡µ•Ñ¡½°½¹¹•Ñ¥½¹1¥ÍÐ ¤¤ì(€€€¥˜€ ……Ù…¥±…‰¥±¥Ñä¹ÕÍ…‰±”¤ì(€€€€€¹½Ñ¥™ä¡ì¥è½¹¹•Ñ¥½¸µ‰±½­•´‘í¥‘õ€°Ñ¥Ñ±”è¥¹Ñ•É…Ñ¥½¸ü¹¹…µ”ñð€‰½¹¹•Ñ¥½¸ˆ°µ•ÍÍ…”è…Ù…¥±…‰¥±¥Ñä¹É•…Í½¸°ÑåÁ”è€‰Ý…É¹¥¹œˆô¤ì(€€€€€É•ÑÕÉ¸Õ¹…Ù…¥±…‰±”¡…Ù…¥±…‰¥±¥Ñä¹É•…Í½¸¤ì(€€€ô(€€€½¹ÍÐÉ•™•É•¹”€ôÙ…±¥‘…Ñ•I•™•É•¹”¡µ•Ñ¡½°‘É…™ÑI•™•É•¹•Ì¹•Ð¡¥¤€üü½¹¹•Ñ¥½¸ü¹É•™•É•¹”€üüµ•Ñ¡½ü¹•¹‘Á½¥¹Ð€üü€ˆˆ¤ì(€€€¥˜€ …É•™•É•¹”¹½¬¤ì(€€€€€½¹ÍÐÉ•™•É•¹•%¹ÁÕÐ€ô¥¹ÍÁ•Ñ½É!½ÍÐ¹ÅÕ•ÉåM•±•Ñ½È ‰m‘…Ñ„µ½¹¹•Ñ¥½¸µÉ•™•É•¹•tˆ¤ì(€€€€€É•™•É•¹•%¹ÁÕÐü¹Í•ÑÕÍÑ½µY…±¥‘¥Ñäü¸¡É•™•É•¹”¹µ•ÍÍ…”¤ì(€€€€€Í•Ñ¥•±‘MÑ…Ñ”¡É•™•É•¹•%¹ÁÕÐ°€‰¥¹Ù…±¥ˆ°É•™•É•¹”¹µ•ÍÍ…”¤ì(€€€€€¹½Ñ¥™ä¡ì¥è½¹¹•Ñ¥½¸µÉ•™•É•¹”´‘í¥‘õ€°Ñ¥Ñ±”è€‰½¹™¥ÕÉ…Ñ¥½¸¥¹½µÁ±•Ñ”ˆ°µ•ÍÍ…”èÉ•™•É•¹”¹µ•ÍÍ…”°ÑåÁ”è€‰Ý…É¹¥¹œˆô¤ì(€€€€€É•™•É•¹•%¹ÁÕÐü¹™½ÕÌ ¤ì(€€€€€É•ÑÕÉ¸Õ¹…Ù…¥±…‰±”¡É•™•É•¹”¹µ•ÍÍ…”¤ì(€€€ô(€€€½¹ÍÐ‰…­•¹‘I•ÅÕ¥É•€ôµ•Ñ¡½ü¹…Ù…¥±…‰¥±¥Ñä€ôôô€‰‰…­•¹ˆì(€€€½¹ÍÐÉ•ÍÕ±Ð€ôÉ•Á½Í¥Ñ½Éä¹½¹¹•Ñ¥½¹Ì¹½¹™¥ÕÉ”¡¥°ì(€€€€€µ•Ñ¡½‘%èµ•Ñ¡½ü¹¥°(€€€€€É•™•É•¹”èÉ•™•É•¹”¹Ù…±Õ”°(€€€€€…Á¥Y•ÉÍ¥½¸èµ•Ñ¡½ü¹…Á¥Y•ÉÍ¥½¸ñð€‰¸…ÑÑ•¹Ñ”ˆ°(€€€€€‘•Ñ…¥°è‰…­•¹‘I•ÅÕ¥É•€ü€‰AÉ•Á…É…Ñ¥½¸±½…±”Ñ•Éµ¥¹•”¸	…­•¹Í•ÕÉ¥Í”É•ÅÕ¥Ì¸ˆ€è€‰M½ÕÉ”ÁÉ•Á…É•”¸½¹¹•Ñ•ÕÈÉÕ¹Ñ¥µ”É•ÅÕ¥Ì¸ˆ(€€€ô¤ì(€€€¥˜€¡¥€ôôô€‰ÍÁ½Ñ¥™äˆ¤ÍÁ½Ñ¥™å1¥Ù”ü¹É•™É•Í ü¸ ¤ì(€€€¥˜€¡É•ÍÕ±Ð¹½¬¤ì(€€€€€Í•±•Ñ•‘5•Ñ¡½‘Ì¹Í•Ð¡¥°µ•Ñ¡½ü¹¥ñð€ˆˆ¤ì(€€€€€©½ÕÉ¹…°ü¹É•½Éü¸¡ìÍ½ÕÉ”è¥°…Ñ•½Éäè¥¹Ñ•É…Ñ¥½¸ü¹…Ñ•½Éäñð€‰ÍåÍÑ•´ˆ°¥½¸è¥¹Ñ•É…Ñ¥½¸ü¹¥½¸ñð€‰Á±Õœˆ°Ñ¥Ñ±”è€‘í¥¹Ñ•É…Ñ¥½¸ü¹¹…µ”ñð€‰%¹Ñ•É…Ñ¥½¸‰ôÁÉ•Á…É••€°‘•ÍÉ¥ÁÑ¥½¸è‰…­•¹‘I•ÅÕ¥É•€ü€‰1”‰…­•¹Í•ÕÉ¥Í”É•ÍÑ”É•ÅÕ¥Ì…Ù…¹ÐÑ½ÕÑ”Íå¹¡É½¹¥Í…Ñ¥½¸¸ˆ€è5•Ñ¡½‘”€‘íµ•Ñ¡½ü¹±…‰•°ñð€‰±½…±”‰ôÁÉ•Á…É•”¹€°Ñ¥µ•ÍÑ…µÀè¹•Ü…Ñ” ¤¹Ñ½%M=MÑÉ¥¹œ ¤°Ñ½¹”è€‰ÍÕ•ÍÌˆô¤ì(€€€€€¹½Ñ¥™ä¡ì¥è½¹¹•Ñ¥½¸µÉ•…‘ä´‘í¥‘õ€°Ñ¥Ñ±”è¥¹Ñ•É…Ñ¥½¸ü¹¹…µ”ñð€‰½¹¹•Ñ¥½¸ˆ°µ•ÍÍ…”è‰…­•¹‘I•ÅÕ¥É•€ü€‰AÉ•Á…É…Ñ¥½¸Ù…±¥‘•”¸	…­•¹Í•ÕÉ¥Í”É•ÅÕ¥ÌÁ½ÕÈ½¹¹•Ñ•È±”½µÁÑ”¸ˆ€è€‰AÉ•Á…É…Ñ¥½¸±½…±”Ù…±¥‘•”¸ˆ°ÑåÁ”è€‰ÍÕ•ÍÌˆô¤ì(€€€€€¥¹ÍÁ•Ñ½ÉQ…ˆ€ô€‰½Ù•ÉÙ¥•Üˆì(€€€€€É•¹‘•É±° ¤ì(€€€ô(€€€É•ÑÕÉ¸É•ÍÕ±Ðì(€ô¤¤ì(€É•±•…Í•Ì¹ÁÕÍ ¡…Ñ¥½¹Ì¹Í½Á” ‰Øà¹½¹¹•Ñ¥½¹Ì¹Ñ•ÍÐˆ°…Íå¹Œ€¡½¹Ñ•áÐ¤€ôøì(€€€½¹ÍÐ¥€ô½¹Ñ•áÐ¹•±•µ•¹Ðü¹‘…Ñ…Í•Ð¹¥¹Ñ•É…Ñ¥½¸ñðÍ•±•Ñ•‘%ì(€€€½¹ÍÐ¥¹Ñ•É…Ñ¥½¸€ô¥¹Ñ•É…Ñ¥½¹	å%¡¥¤ì(€€€¥˜€ …¥¹Ñ•É…Ñ¥½¸¤É•ÑÕÉ¸Õ¹…Ù…¥±…‰±” ‰•ÑÑ”¥¹Ñ•É…Ñ¥½¸¸•á¥ÍÑ”Á…Ì¸ˆ¤ì(€€€¥˜€¡Á•¹‘¥¹¥…¹½ÍÑ¥Ì¹¡…Ì¡¥¤¤É•ÑÕÉ¸Õ¹…Ù…¥±…‰±” ‰U¸‘¥…¹½ÍÑ¥Œ•ÍÐ‘•©„•¸½ÕÉÌ¸ˆ¤ì(€€€Á•¹‘¥¹¥…¹½ÍÑ¥Ì¹…‘¡¥¤ì(€€€Í•±•Ñ¹‘I•¹‘•È¡¥°€‰‘¥…¹½ÍÑ¥Ìˆ°ÑÉÕ”¤ì(€€€±•ÐÉ•Á½ÉÐì(€€€ÑÉäì(€€€€€É•Á½ÉÐ€ô…Ý…¥ÐÉÕ¹¥…¹½ÍÑ¥Œ¡¥¤ì(€€€ô™¥¹…±±äì(€€€€€Á•¹‘¥¹¥…¹½ÍÑ¥Ì¹‘•±•Ñ”¡¥¤ì(€€€ô(€€€¥˜€¡½¹ÑÉ½±±•È¹Í¥¹…°¹…‰½ÉÑ•¤É•ÑÕÉ¸Õ¹…Ù…¥±…‰±” ‰1”‘¥…¹½ÍÑ¥Œ„•Ñ”¥¹Ñ•ÉÉ½µÁÔ¸ˆ¤ì(€€€Í•±•Ñ¹‘I•¹‘•È¡¥°€‰‘¥…¹½ÍÑ¥Ìˆ°™…±Í”¤ì(€€€¹½Ñ¥™ä¡ì¥è½¹¹•Ñ¥½¸µÑ•ÍÐ´‘í¥‘õ€°Ñ¥Ñ±”è¥…¹½ÍÑ¥Œ€‘í¥¹Ñ•É…Ñ¥½¸¹¹…µ•õ€°µ•ÍÍ…”èÉ•Á½ÉÐü¹™…¥±•€ü€‰U¸‰±½…”„•Ñ”‘•Ñ•Ñ”¸ˆ€èÉ•Á½ÉÐü¹Ý…É¹¥¹Ì€ü€‰1„½¹™¥ÕÉ…Ñ¥½¸‘•µ…¹‘”Ù½ÑÉ”…ÑÑ•¹Ñ¥½¸¸ˆ€è€‰1•Ì½¹ÑÉ½±•Ì‘¥ÍÁ½¹¥‰±•ÌÍ½¹ÐÙ…±¥‘•Ì¸ˆ°ÑåÁ”èÉ•Á½ÉÐü¹™…¥±•€ü€‰•ÉÉ½Èˆ€èÉ•Á½ÉÐü¹Ý…É¹¥¹Ì€ü€‰Ý…É¹¥¹œˆ€è€‰ÍÕ•ÍÌˆô¤ì(€€€É•ÑÕÉ¸½µÁ±•Ñ• ‰¥…¹½ÍÑ¥ŒÑ•Éµ¥¹”ˆ°É•Á½ÉÐ¤ì(€ô¤¤ì(€É•±•…Í•Ì¹ÁÕÍ ¡…Ñ¥½¹Ì¹Í½Á” ‰Øà¹½¹¹•Ñ¥½¹Ì¹‘¥…¹½Í”µ…±°ˆ°…Íå¹Œ€ ¤€ôøì(€€€¥˜€¡±½‰…±¥…¹½ÍÑ¥A•¹‘¥¹œ¤É•ÑÕÉ¸Õ¹…Ù…¥±…‰±” ‰1”‘¥…¹½ÍÑ¥Œ±½‰…°•ÍÐ‘•©„•¸½ÕÉÌ¸ˆ¤ì(€€€±½‰…±¥…¹½ÍÑ¥A•¹‘¥¹œ€ôÑÉÕ”ì(€€€ÑÉäì(€€€€€½¹ÍÐµ…À€ô½¹¹•Ñ¥½¹5…À ¤ì(€€€€€½¹ÍÐ½¹™¥ÕÉ•€ô%9QIQ%=9L¹™¥±Ñ•È ¡¥¹Ñ•É…Ñ¥½¸¤€ôøµ…À¹¡…Ì¡¥¹Ñ•É…Ñ¥½¸¹¥¤¤ì(€€€€€½¹ÍÐÑ…É•ÑÌ€ô½¹™¥ÕÉ•¹±•¹Ñ €ü½¹™¥ÕÉ•€èm¥¹Ñ•É…Ñ¥½¹	å%¡Í•±•Ñ•‘%¥t¹™¥±Ñ•È¡	½½±•…¸¤ì(€€€€€±•ÐÉ•ÍÁ½¹Í”€ô¹Õ±°ì(€€€€€±•Ð•ÉÉ½È€ô¹Õ±°ì(€€€€€ÑÉäì(€€€€€€€¥˜€¡•áÑ•É¹…±M•ÉÙ¥•Ìü¹‘¥…¹½ÍÑ¥Œ¤É•ÍÁ½¹Í”€ô…Ý…¥Ð•áÑ•É¹…±M•ÉÙ¥•Ì¹‘¥…¹½ÍÑ¥Œ ¤ì(€€€€€ô…Ñ €¡™…¥±ÕÉ”¤ì(€€€€€€€•ÉÉ½È€ô™…¥±ÕÉ”ì(€€€€€ô(€€€€€½¹ÍÐÉ•Á½ÉÑÌ€ôÑ…É•ÑÌ¹µ…À ¡¥¹Ñ•É…Ñ¥½¸¤€ôøì(€€€€€€€½¹ÍÐ±½…°€ô±½…±¥…¹½ÍÑ¥Œ¡¥¹Ñ•É…Ñ¥½¸¹¥¤ì(€€€€€€€¥˜€ …±½…°¤É•ÑÕÉ¸¹Õ±°ì(€€€€€€€½¹ÍÐÉ•Á½ÉÐ€ôµ•É•]½É­•É¥…¹½ÍÑ¥Œ¡±½…°¹É•Á½ÉÐ°ìÍ•ÉÙ¥”è±½…°¹Í•ÉÙ¥”°É•ÍÁ½¹Í”°•ÉÉ½Èè±½…°¹Í•ÉÙ¥”€ü•ÉÉ½È€è¹Õ±°ô¤ì(€€€€€€€‘¥…¹½ÍÑ¥Ì¹Í•Ð¡¥¹Ñ•É…Ñ¥½¸¹¥°É•Á½ÉÐ¤ì(€€€€€€€É•ÑÕÉ¸É•Á½ÉÐì(€€€€€ô¤¹™¥±Ñ•È¡	½½±•…¸¤ì(€€€€€¥˜€¡½¹ÑÉ½±±•È¹Í¥¹…°¹…‰½ÉÑ•¤É•ÑÕÉ¸Õ¹…Ù…¥±…‰±” ‰1”‘¥…¹½ÍÑ¥Œ„•Ñ”¥¹Ñ•ÉÉ½µÁÔ¸ˆ¤ì(€€€€€±½‰…±¥…¹½ÍÑ¥Œ€ô=‰©•Ð¹™É••é”¡ì(€€€€€€€Ñ•ÍÑ•èÉ•Á½ÉÑÌ¹±•¹Ñ °(€€€€€€€™…¥±•èÉ•Á½ÉÑÌ¹É•‘Õ” ¡ÍÕ´°É•Á½ÉÐ¤€ôøÍÕ´€¬É•Á½ÉÐ¹™…¥±•°€À¤°(€€€€€€€Ý…É¹¥¹ÌèÉ•Á½ÉÑÌ¹É•‘Õ” ¡ÍÕ´°É•Á½ÉÐ¤€ôøÍÕ´€¬É•Á½ÉÐ¹Ý…É¹¥¹Ì°€À¤°(€€€€€€€Ý½É­•ÉY•É¥™¥•èÉ•Á½ÉÑÌ¹™¥±Ñ•È ¡É•Á½ÉÐ¤€ôøÉ•Á½ÉÐ¹Ý½É­•ÉY•É¥™¥•¤¹±•¹Ñ °(€€€€€€€É…¹Ðè¹•Ü…Ñ” ¤¹Ñ½%M=MÑÉ¥¹œ ¤(€€€€€ô¤ì(€€€€€É•¹‘•É5•ÑÉ¥Ì ¤ì(€€€€€É•¹‘•É%¹ÍÁ•Ñ½È ¤ì(€€€€€É•™É•Í¡%½¹Ì ¤ì(€€€€€¹½Ñ¥™ä¡ì¥è€‰½¹¹•Ñ¥½¹Ìµ‘¥…¹½ÍÑ¥Œµ…±°ˆ°Ñ¥Ñ±”è€‰½¹¹•Ñ¥½¹Ì!Õˆˆ°µ•ÍÍ…”è€‘í±½‰…±¥…¹½ÍÑ¥Œ¹Ñ•ÍÑ•‘ô½¹¹•á¥½¸‘í±½‰…±¥…¹½ÍÑ¥Œ¹Ñ•ÍÑ•€ø€Ä€ü€‰Ìˆ€è€ˆ‰ôÙ•É¥™¥•”‘í±½‰…±¥…¹½ÍÑ¥Œ¹Ñ•ÍÑ•€ø€Ä€ü€‰Ìˆ€è€ˆ‰ô°€‘í±½‰…±¥…¹½ÍÑ¥Œ¹Ý½É­•ÉY•É¥™¥•‘ôÙ¥„]½É­•È¹€°ÑåÁ”è±½‰…±¥…¹½ÍÑ¥Œ¹™…¥±•€ü€‰•ÉÉ½Èˆ€è±½‰…±¥…¹½ÍÑ¥Œ¹Ý…É¹¥¹Ì€ü€‰Ý…É¹¥¹œˆ€è€‰ÍÕ•ÍÌˆô¤ì(€€€€€É•ÑÕÉ¸½µÁ±•Ñ• ‰¥…¹½ÍÑ¥Œ±½‰…°Ñ•Éµ¥¹”ˆ°±½‰…±¥…¹½ÍÑ¥Œ¤ì(€€€ô™¥¹…±±äì(€€€€€±½‰…±¥…¹½ÍÑ¥A•¹‘¥¹œ€ô™…±Í”ì(€€€ô(€ô¤¤ì(€É•±•…Í•Ì¹ÁÕÍ ¡…Ñ¥½¹Ì¹Í½Á” ‰Øà¹½¹¹•Ñ¥½¹Ì¹‘¥Í½¹¹•Ðˆ°€¡½¹Ñ•áÐ¤€ôøì(€€€½¹ÍÐ¥€ô½¹Ñ•áÐ¹•±•µ•¹Ðü¹‘…Ñ…Í•Ð¹¥¹Ñ•É…Ñ¥½¸ì(€€€½¹ÍÐ¥¹Ñ•É…Ñ¥½¸€ô¥¹Ñ•É…Ñ¥½¹	å%¡¥¤ì(€€€½¹ÍÐÉ•ÍÕ±Ð€ôÉ•Á½Í¥Ñ½Éä¹½¹¹•Ñ¥½¹Ì¹‘¥Í½¹¹•Ð¡¥¤ì(€€€¥˜€¡¥€ôôô€‰ÍÁ½Ñ¥™äˆ¤ÍÁ½Ñ¥™å1¥Ù”ü¹É•™É•Í ü¸ ¤ì(€€€¥˜€¡É•ÍÕ±Ð¹½¬¤ì(€€€€€Í•±•Ñ•‘5•Ñ¡½‘Ì¹‘•±•Ñ”¡¥¤ì(€€€€€‘É…™ÑI•™•É•¹•Ì¹‘•±•Ñ”¡¥¤ì(€€€€€‘¥…¹½ÍÑ¥Ì¹‘•±•Ñ”¡¥¤ì(€€€€€©½ÕÉ¹…°ü¹É•½Éü¸¡ìÍ½ÕÉ”è¥°…Ñ•½Éäè¥¹Ñ•É…Ñ¥½¸ü¹…Ñ•½Éäñð€‰ÍåÍÑ•´ˆ°¥½¸è€‰Õ¹Á±Õœˆ°Ñ¥Ñ±”è€‘í¥¹Ñ•É…Ñ¥½¸ü¹¹…µ”ñð€‰%¹Ñ•É…Ñ¥½¸‰ôÉ•Ñ¥É••€°‘•ÍÉ¥ÁÑ¥½¸è€‰0…ÍÍ½¥…Ñ¥½¸„•Ñ”ÍÕÁÁÉ¥µ•”¸0…•Ì™½ÕÉ¹¥ÍÍ•ÕÈÁ•ÕÐ•ÑÉ”É•Ù½ÅÕ”Í•Á…É•µ•¹Ð¸ˆ°Ñ¥µ•ÍÑ…µÀè¹•Ü…Ñ” ¤¹Ñ½%M=MÑÉ¥¹œ ¤°Ñ½¹”è€‰Ý…É¹¥¹œˆô¤ì(€€€€€¹½Ñ¥™ä¡ì¥è½¹¹•Ñ¥½¸µ½™˜´‘í¥‘õ€°Ñ¥Ñ±”è¥¹Ñ•É…Ñ¥½¸ü¹¹…µ”ñð€‰½¹¹•Ñ¥½¸ˆ°µ•ÍÍ…”è€‰ÍÍ½¥…Ñ¥½¸ÍÕÁÁÉ¥µ•”¸Y•É¥™¥•è…ÕÍÍ¤±•Ì…•Ì¡•è±”™½ÕÉ¹¥ÍÍ•ÕÈ¸ˆ°ÑåÁ”è€‰¥¹™¼ˆô¤ì(€€€€€É•¹‘•É±° ¤ì(€€€ô(€€€É•ÑÕÉ¸É•ÍÕ±Ðì(€ô¤¤ì(€É•±•…Í•Ì¹ÁÕÍ ¡…Ñ¥½¹Ì¹Í½Á” ‰Øà¹½¹¹•Ñ¥½¹Ì¹½ÁÁ½ÉÑÕ¹¥Ñä¹…ÁÁ±äˆ°€¡½¹Ñ•áÐ¤€ôøì(€€€½¹ÍÐ¥€ô½¹Ñ•áÐ¹•±•µ•¹Ðü¹‘…Ñ…Í•Ð¹¥¹Ñ•É…Ñ¥½¸ì(€€€½¹ÍÐµ•Ñ¡½‘%€ô½¹Ñ•áÐ¹•±•µ•¹Ðü¹‘…Ñ…Í•Ð¹µ•Ñ¡½ì(€€€Í•±•Ñ•‘5•Ñ¡½‘Ì¹Í•Ð¡¥°µ•Ñ¡½‘%¤ì(€€€Í•±•Ñ¹‘I•¹‘•È¡¥°€‰Í•ÑÕÀˆ°ÑÉÕ”¤ì(€€€É•ÑÕÉ¸½µÁ±•Ñ• ‰5•Ñ¡½‘”‘•Ñ•Ñ•”Í•±•Ñ¥½¹¹•”ˆ°ì¥¹Ñ•É…Ñ¥½¸è¥°µ•Ñ¡½èµ•Ñ¡½‘%ô¤ì(€ô¤¤ì(€É•±•…Í•Ì¹ÁÕÍ ¡…Ñ¥½¹Ì¹Í½Á” ‰Øà¹½¹¹•Ñ¥½¹Ì¹½Áäˆ°…Íå¹Œ€¡½¹Ñ•áÐ¤€ôøì(€€€½¹ÍÐ½Á¥•€ô…Ý…¥Ð½ÁåQ•áÐ¡½¹Ñ•áÐ¹•±•µ•¹Ðü¹‘…Ñ…Í•Ð¹Ù…±Õ”¤ì(€€€¹½Ñ¥™ä¡ì¥è½¹¹•Ñ¥½¸µ½Áä´‘í½¹Ñ•áÐ¹•±•µ•¹Ðü¹‘…Ñ…Í•Ð¹¥¹Ñ•É…Ñ¥½¸ñð€‰Ù…±Õ”‰õ€°Ñ¥Ñ±”è½Á¥•€ü€‰½Á¥”ˆ€è€‰½Á¥”¥µÁ½ÍÍ¥‰±”ˆ°µ•ÍÍ…”è½Á¥•€ü€‰1„Ù…±•ÕÈÁÕ‰±¥ÅÕ”„•Ñ”½Á¥•”¸ˆ€è€‰1”ÁÉ•ÍÍ”µÁ…Á¥•ÉÌ¸•ÍÐÁ…Ì…•ÍÍ¥‰±”¸ˆ°ÑåÁ”è½Á¥•€ü€‰ÍÕ•ÍÌˆ€è€‰Ý…É¹¥¹œˆô¤ì(€€€É•ÑÕÉ¸½Á¥•€ü½µÁ±•Ñ• ‰Y…±•ÕÈ½Á¥•”ˆ¤€èÕ¹…Ù…¥±…‰±” ‰1”ÁÉ•ÍÍ”µÁ…Á¥•ÉÌ¸•ÍÐÁ…Ì…•ÍÍ¥‰±”¸ˆ¤ì(€ô¤¤ì(€É•±•…Í•Ì¹ÁÕÍ ¡…Ñ¥½¹Ì¹Í½Á” ‰Øà¹½¹¹•Ñ¥½¹Ì¹‘¥…¹½ÍÑ¥Œ¹½Áäˆ°…Íå¹Œ€¡½¹Ñ•áÐ¤€ôøì(€€€½¹ÍÐ¥€ô½¹Ñ•áÐ¹•±•µ•¹Ðü¹‘…Ñ…Í•Ð¹¥¹Ñ•É…Ñ¥½¸ñðÍ•±•Ñ•‘%ì(€€€½¹ÍÐ¥¹Ñ•É…Ñ¥½¸€ô¥¹Ñ•É…Ñ¥½¹	å%¡¥¤ì(€€€½¹ÍÐÉ•Á½ÉÐ€ô‘¥…¹½ÍÑ¥Ì¹•Ð¡¥¤ì(€€€¥˜€ …É•Á½ÉÐ¤É•ÑÕÉ¸Õ¹…Ù…¥±…‰±” ‰1…¹•è…‰½É±”‘¥…¹½ÍÑ¥Œ¸ˆ¤ì(€€€½¹ÍÐÁ…å±½…€ô)M=8¹ÍÑÉ¥¹¥™ä¡ìÁÉ½‘ÕÐè€‰Q!=9ˆ°¥¹Ñ•É…Ñ¥½¸è¥¹Ñ•É…Ñ¥½¸ü¹¹…µ”ñð¥°µ•Ñ¡½èÍ•±•Ñ•‘5•Ñ¡½‘Ì¹•Ð¡¥¤ñð½¹¹•Ñ¥½¹5…À ¤¹•Ð¡¥¤ü¹µ•Ñ¡½‘%ñð€‰É•½µµ•¹‘•ˆ°É•Á½ÉÐô°¹Õ±°°€È¤ì(€€€½¹ÍÐ½Á¥•€ô…Ý…¥Ð½ÁåQ•áÐ¡Á…å±½…¤ì(€€€¹½Ñ¥™ä¡ì¥è½¹¹•Ñ¥½¸µÉ•Á½ÉÐ´‘í¥‘õ€°Ñ¥Ñ±”è½Á¥•€ü€‰I…ÁÁ½ÉÐ½Á¥”ˆ€è€‰½Á¥”¥µÁ½ÍÍ¥‰±”ˆ°µ•ÍÍ…”è½Á¥•€ü€‰1”É…ÁÁ½ÉÐ¹”½¹Ñ¥•¹Ð…ÕÕ¹”‘½¹¹•”Í•¹Í¥‰±”¸ˆ€è€‰1”ÁÉ•ÍÍ”µÁ…Á¥•ÉÌ¸•ÍÐÁ…Ì…•ÍÍ¥‰±”¸ˆ°ÑåÁ”è½Á¥•€ü€‰ÍÕ•ÍÌˆ€è€‰Ý…É¹¥¹œˆô¤ì(€€€É•ÑÕÉ¸½Á¥•€ü½µÁ±•Ñ• ‰I…ÁÁ½ÉÐ½Á¥”ˆ¤€èÕ¹…Ù…¥±…‰±” ‰1”ÁÉ•ÍÍ”µÁ…Á¥•ÉÌ¸•ÍÐÁ…Ì…•ÍÍ¥‰±”¸ˆ¤ì(€ô¤¤ì((€Í•…É ¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¥¹ÁÕÐˆ°€ ¤€ôøì(€€€ÅÕ•Éä€ôÍ•…É ¹Ù…±Õ”ì(€€€Ù¥Í¥‰±•1¥µ¥Ð€ô=99Q%=9}A}M%iì(€€€É•¹‘•É…Ñ…±½œ ¤ì(€€€É•™É•Í¡%½¹Ì ¤ì(€ô°ìÍ¥¹…°è½¹ÑÉ½±±•È¹Í¥¹…°ô¤ì(€ÍÑ…ÑÕÍ¥±Ñ•È¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¡…¹”ˆ°€ ¤€ôøì(€€€ÍÑ…ÑÕÌ€ôÍÑ…ÑÕÍ¥±Ñ•È¹Ù…±Õ”ñð€‰…±°ˆì(€€€Ù¥Í¥‰±•1¥µ¥Ð€ô=99Q%=9}A}M%iì(€€€É•¹‘•É…Ñ…±½œ ¤ì(€€€É•™É•Í¡%½¹Ì ¤ì(€ô°ìÍ¥¹…°è½¹ÑÉ½±±•È¹Í¥¹…°ô¤ì(€Í½ÉÑM•±•Ð¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¡…¹”ˆ°€ ¤€ôøì(€€€½É‘•È€ôÍ½ÉÑM•±•Ð¹Ù…±Õ”ì(€€€Ù¥Í¥‰±•1¥µ¥Ð€ô=99Q%=9}A}M%iì(€€€É•¹‘•É…Ñ…±½œ ¤ì(€€€É•™É•Í¡%½¹Ì ¤ì(€ô°ìÍ¥¹…°è½¹ÑÉ½±±•È¹Í¥¹…°ô¤ì(€…Ñ•½Éå	…È¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€¡•Ù•¹Ð¤€ôøì(€€€½¹ÍÐ‰ÕÑÑ½¸€ô•Ù•¹Ð¹Ñ…É•Ð¹±½Í•ÍÐ ‰m‘…Ñ„µ½¹¹•Ñ¥½¸µ…Ñ•½Éåtˆ¤ì(€€€¥˜€ …‰ÕÑÑ½¸¤É•ÑÕÉ¸ì(€€€…Ñ•½Éä€ô‰ÕÑÑ½¸¹‘…Ñ…Í•Ð¹½¹¹•Ñ¥½¹…Ñ•½Éäñð€‰…±°ˆì(€€€Ù¥Í¥‰±•1¥µ¥Ð€ô=99Q%=9}A}M%iì(€€€É•¹‘•É…Ñ…±½œ ¤ì(€€€É•™É•Í¡%½¹Ì ¤ì(€ô°ìÍ¥¹…°è½¹ÑÉ½±±•È¹Í¥¹…°ô¤ì((€ÍÑ…”¹É•Á±…•¡¥±‘É•¸¡Á…”¤ì(€É•¹‘•É±° ¤ì(€½¹ÍÐÉ•±•…Í••¹Í¥Ñä€ô½ÁÑ¥½¹Ì¹ÍÕ‰ÍÉ¥‰•MÑ…Ñ”ü¸ ¡¹•áÐ¤€ôøÕÁ‘…Ñ•½±±•Ñ¥½¹•¹Í¥Ñå½¹ÑÉ½°¡‘•¹Í¥Ñå½¹ÑÉ½°°¹•áÐ¤¤ñð€  ¤€ôøíô¤ì(€É•ÑÕÉ¸€ ¤€ôøì(€€€½¹ÑÉ½±±•È¹…‰½ÉÐ ¤ì(€€€É•±•…Í•Ì¹É•Ù•ÉÍ” ¤¹™½É…  ¡É•±•…Í”¤€ôøÉ•±•…Í” ¤¤ì(€€€É•±•…Í••¹Í¥Ñä ¤ì(€€€‘¥…¹½ÍÑ¥Ì¹±•…È ¤ì(€€€Á•¹‘¥¹¥…¹½ÍÑ¥Ì¹±•…È ¤ì(€€€Í•±•Ñ•‘5•Ñ¡½‘Ì¹±•…È ¤ì(€€€‘É…™ÑI•™•É•¹•Ì¹±•…È ¤ì(€€€Á…”¹É•µ½Ù” ¤ì(€ôì)ô(
+      ]),
+      inspectorHost
+    ]),
+    element("footer", { className: "v8-connections-security" }, [
+      icon("shield-check"),
+      element("div", {}, [element("strong", { text: "Architecture zero secret dans l'interface" }), element("p", { text: "Les routes migrees passent par ETHONE Worker avec votre session Supabase. Les secrets fournisseur restent exclusivement cote serveur." })])
+    ])
+  ]);
+
+  function connectionList() {
+    return repository.snapshot().connections || [];
+  }
+
+  function connectionMap() {
+    return new Map(connectionList().map((connection) => [connection.id, connection]));
+  }
+
+  function selectedMethod(integration, connection) {
+    return connectionMethod(integration, selectedMethods.get(integration.id) || connection?.methodId);
+  }
+
+  function renderMetrics() {
+    const values = connectionMetrics(INTEGRATIONS, connectionList());
+    metricsHost.replaceChildren(
+      metric("Connectees", values.connected, "circle-check-big", "success"),
+      metric("Preparees", values.prepared, "shield-check", "warning"),
+      metric("Disponibles", values.available, "blocks", "info"),
+      metric("A verifier", values.attention, "triangle-alert", "danger")
+    );
+    diagnosticState.replaceChildren(
+      element("span", { className: `v8-connections-health__icon${globalDiagnostic?.failed ? " is-critical" : ""}` }, [icon(globalDiagnostic?.failed ? "shield-alert" : globalDiagnostic ? "shield-check" : "scan-search")]),
+      element("div", {}, [
+        element("strong", { text: globalDiagnostic ? `${globalDiagnostic.tested} connexion${globalDiagnostic.tested > 1 ? "s" : ""} verifiee${globalDiagnostic.tested > 1 ? "s" : ""}` : "Diagnostic pret" }),
+        element("small", { text: globalDiagnostic ? `${globalDiagnostic.failed} blocage, ${globalDiagnostic.warnings} avertissement` : "Aucune requete distante n'est lancee sans votre action." })
+      ])
+    );
+  }
+
+  function renderOpportunities() {
+    const opportunities = detectConnectionOpportunities(connectionList());
+    opportunityHost.hidden = opportunities.length === 0;
+    opportunityHost.replaceChildren(...opportunities.slice(0, 2).map((entry) => element("article", { className: "v8-connection-opportunity v8-surface" }, [
+      element("span", { className: "v8-connection-opportunity__icon" }, [icon("sparkles")]),
+      element("div", {}, [element("small", { text: `Detecte via ${entry.source?.name || "connexion"}` }), element("strong", { text: entry.title }), element("p", { text: entry.description })]),
+      connectionAction("v8.connections.opportunity.apply", entry.targetId, "secondary", [icon("arrow-right"), element("span", { text: "Configurer" })], { method: entry.methodId })
+    ])));
+  }
+
+  function renderCatalog() {
+    const connections = connectionList();
+    const map = new Map(connections.map((connection) => [connection.id, connection]));
+    const visible = sortConnectionCatalog(filterConnectionCatalog(INTEGRATIONS, { category, status, query, connections }), order, connections);
+    const displayed = visible.slice(0, visibleLimit);
+    grid.replaceChildren(...displayed.map((integration) => connectionCard(integration, map.get(integration.id), selectedId)));
+    loadMoreHost.replaceChildren();
+    if (displayed.length < visible.length) {
+      loadMoreHost.append(element("button", {
+        className: "v8-button v8-button--secondary",
+        attributes: { type: "button", "aria-label": "Afficher plus" },
+        events: { click: () => {
+          visibleLimit += CONNECTION_PAGE_SIZE;
+          renderCatalog();
+          refreshIcons();
+        } }
+      }, [icon("chevrons-down"), element("span", { text: "Afficher plus" })]));
+    }
+    if (!visible.length) {
+      const reset = element("button", {
+        className: "v8-button v8-button--primary",
+        text: "Reinitialiser les filtres",
+        attributes: { type: "button" },
+        events: { click: () => {
+          query = "";
+          category = "all";
+          status = "all";
+          visibleLimit = CONNECTION_PAGE_SIZE;
+          search.value = "";
+          statusFilter.value = "all";
+          renderCatalog();
+          refreshIcons();
+          search.focus({ preventScroll: true });
+        } }
+      });
+      grid.append(emptyState({ kind: "no-results", iconName: "search-x", eyebrow: "Catalogue", title: "Aucune integration trouvee", description: "Essayez un autre service, statut ou categorie.", actions: [reset], className: "v8-empty-state--wide" }));
+    }
+    resultCount.textContent = `${displayed.length} / ${visible.length}`;
+    categoryBar.querySelectorAll("[data-connection-category]").forEach((button) => {
+      const active = button.dataset.connectionCategory === category;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+  }
+
+  function tabButton(entry) {
+    const button = connectionAction("v8.connections.tab", selectedId, null, [icon(entry.icon), element("span", { text: entry.label })], { tab: entry.id, className: `v8-connection-tab${inspectorTab === entry.id ? " is-active" : ""}` });
+    button.setAttribute("role", "tab");
+    button.setAttribute("aria-selected", inspectorTab === entry.id ? "true" : "false");
+    return button;
+  }
+
+  function overviewPanel(integration, connection, method) {
+    const summary = connectionSummary(integration, connection);
+    const resources = officialResources(integration);
+    const report = diagnostics.get(integration.id);
+    return element("div", { className: "v8-connection-inspector-panel", attributes: { role: "tabpanel" } }, [
+      element("section", { className: "v8-connection-method-hero" }, [
+        element("div", { className: "v8-connection-method-hero__top" }, [
+          badge(method?.recommended ? "Methode recommandee" : "Methode selectionnee", "accent"),
+          report?.workerVerified ? badge("Securise par ETHONE Worker", "accent") : null,
+          element("span", { text: summary.quality })
+        ]),
+        element("h3", { text: method?.label || "Methode indisponible" }),
+        element("p", { text: method?.summary || "Aucune methode compatible n'est proposee." }),
+        element("div", { className: "v8-connection-badge-row" }, (method?.badges || []).map((label) => badge(label)))
+      ]),
+      element("section", { className: "v8-connection-detail-grid" }, [
+        element("div", {}, [icon("activity"), element("span", {}, [element("small", { text: "Activity Hub" }), element("strong", { text: integration.liveSignal })])]),
+        element("div", {}, [icon("clock-3"), element("span", {}, [element("small", { text: "Derniere sync" }), element("strong", { text: summary.lastSync })])]),
+        element("div", {}, [icon("gauge"), element("span", {}, [element("small", { text: "Reponse" }), element("strong", { text: summary.response })])]),
+        element("div", {}, [icon("braces"), element("span", {}, [element("small", { text: "Version" }), element("strong", { text: summary.apiVersion })])])
+      ]),
+      element("section", { className: "v8-connection-list-section" }, [
+        element("header", {}, [element("h3", { text: "Ce que la methode apporte" }), element("span", { text: `${method?.capabilities?.length || 0} capacites` })]),
+        element("ul", {}, (method?.capabilities || []).map((entry) => element("li", {}, [icon("check"), element("span", { text: entry })])))
+      ]),
+      element("section", { className: "v8-connection-list-section" }, [
+        element("header", {}, [element("h3", { text: "Permissions lisibles" }), icon("shield-check")]),
+        element("ul", {}, (method?.permissions || []).map((entry) => element("li", {}, [icon("dot"), element("span", { text: entry })])))
+      ]),
+      resources.length ? element("section", { className: "v8-connection-resources" }, [element("h3", { text: "Ressources officielles" }), ...resources.map((resource) => officialLink(resource))]) : null,
+      element("footer", { className: "v8-connection-inspector-actions" }, [
+        connectionAction("v8.connections.configure", integration.id, "primary", [icon("list-checks"), element("span", { text: connection?.setupComplete ? "Revoir la configuration" : "Commencer" })]),
+        connectionAction("v8.connections.method.open", integration.id, "secondary", [icon("waypoints"), element("span", { text: "Changer de methode" })])
+      ])
+    ]);
+  }
+
+  function methodsPanel(integration, connection, method) {
+    const methods = connectionMethods(integration);
+    const connections = connectionList();
+    return element("div", { className: "v8-connection-inspector-panel", attributes: { role: "tabpanel" } }, [
+      element("div", { className: "v8-connection-panel-intro" }, [element("h3", { text: "Choisissez le niveau d'integration" }), element("p", { text: "La methode recommandee privilegie la fiabilite, les permissions minimales et la reversibilite." })]),
+      element("div", { className: "v8-connection-methods", attributes: { role: "radiogroup", "aria-label": `Methodes ${integration.name}` } }, methods.map((entry) => {
+        const availability = methodAvailability(entry, connections);
+        const active = entry.id === method?.id;
+        return element("button", {
+          className: `v8-connection-method${active ? " is-selected" : ""}`,
+          attributes: { type: "button", role: "radio", "aria-checked": active ? "true" : "false" },
+          dataset: { action: "v8.connections.method.select", integration: integration.id, method: entry.id }
+        }, [
+          element("span", { className: "v8-connection-method__select" }, [icon(active ? "circle-check-big" : "circle")]),
+          element("div", { className: "v8-connection-method__copy" }, [
+            element("div", { className: "v8-connection-method__heading" }, [element("strong", { text: entry.label }), entry.recommended ? badge("Recommande", "accent") : null, badge(availability.label, availability.usable ? "default" : "warning")]),
+            element("p", { text: entry.summary }),
+            element("div", { className: "v8-connection-badge-row" }, entry.badges.slice(0, 4).map((label) => badge(label))),
+            !availability.usable ? element("small", { className: "v8-connection-method__reason", text: availability.reason }) : null
+          ]),
+          icon("chevron-right")
+        ]);
+      })),
+      element("footer", { className: "v8-connection-inspector-actions" }, [
+        connectionAction("v8.connections.tab", integration.id, "primary", [element("span", { text: "Continuer avec cette methode" }), icon("arrow-right")], { tab: "setup" })
+      ])
+    ]);
+  }
+
+  function setupPanel(integration, connection, method) {
+    const steps = setupGuide(integration, method?.id);
+    const availability = methodAvailability(method, connectionList());
+    const configuredMethod = connection?.setupComplete && connection.methodId === method?.id;
+    const report = diagnostics.get(integration.id);
+    const referenceValue = draftReferences.has(integration.id) ? draftReferences.get(integration.id) : connection?.reference || method?.endpoint || "";
+    let referenceField = null;
+    if (method?.field) {
+      const input = element("input", {
+        className: "v8-input",
+        attributes: { type: method.field.type === "url" ? "url" : "text", value: referenceValue, placeholder: method.field.placeholder, autocomplete: "off", spellcheck: "false", required: method.field.required || null, "aria-label": method.field.label },
+        dataset: { connectionReference: integration.id }
+      });
+      input.addEventListener("input", () => { input.setCustomValidity(""); draftReferences.set(integration.id, input.value); }, { signal: controller.signal });
+      referenceField = formField({
+        label: method.field.label,
+        control: element("div", { className: "v8-connection-reference__control" }, [input, referenceValue ? connectionAction("v8.connections.copy", integration.id, "secondary", [icon("copy")], { className: "v8-icon-button", ariaLabel: "Copier la valeur", value: referenceValue, tooltip: "Copier" }) : null]),
+        input,
+        required: method.field.required,
+        help: method.availability === "local" ? "Boucle locale uniquement" : "Ne collez jamais une adresse privee ou signee",
+        className: "v8-connection-reference"
+      });
+    }
+    return element("div", { className: "v8-connection-inspector-panel", attributes: { role: "tabpanel" } }, [
+      element("div", { className: "v8-connection-panel-intro" }, [element("h3", { text: `Configurer ${method?.label || integration.name}` }), element("p", { text: availability.usable ? "Suivez les etapes dans l'ordre. ETHONE ne validera que ce qu'il peut reellement verifier." : availability.reason })]),
+      referenceField,
+      element("ol", { className: "v8-connection-steps" }, steps.map((step, index) => {
+        const done = configuredMethod && step.status !== "blocked";
+        return element("li", { className: `${done ? "is-done" : ""}${step.status === "blocked" ? " is-blocked" : ""}` }, [
+          element("span", { className: "v8-connection-step-index" }, [icon(done ? "check" : step.status === "blocked" ? "lock-keyhole" : "circle"), element("small", { text: String(index + 1) })]),
+          element("div", { className: "v8-connection-step-copy" }, [element("strong", { text: step.title }), element("p", { text: step.description }), step.copyValue ? element("code", { text: step.copyValue }) : null]),
+          element("div", { className: "v8-connection-step-actions" }, [
+            step.resource ? officialLink(step.resource, true) : null,
+            step.copyValue ? connectionAction("v8.connections.copy", integration.id, "secondary", [icon("copy"), element("span", { text: "Copier" })], { value: step.copyValue }) : null
+          ])
+        ]);
+      })),
+      element("div", { className: "v8-connection-setup__notice" }, [icon("shield-check"), element("div", {}, [
+        element("strong", { text: report?.workerVerified ? "Securise par ETHONE Worker" : "Frontend sans donnee sensible" }),
+        element("p", { text: report?.workerVerified ? "Le Worker authentifie a confirme cette route. Aucun secret fournisseur n'est transmis au navigateur." : "Les permissions sont expliquees ici. Les echanges privilegies restent obligatoirement cote serveur." })
+      ])]),
+      element("footer", { className: "v8-connection-inspector-actions" }, [
+        connectionAction("v8.connections.setup.complete", integration.id, "primary", [icon(configuredMethod ? "rotate-cw" : "shield-check"), element("span", { text: configuredMethod ? "Revalider" : "Verifier ma configuration" })], { method: method?.id, disabled: !availability.usable }),
+        connectionAction("v8.connections.test", integration.id, "secondary", [icon("stethoscope"), element("span", { text: "Diagnostic" })])
+      ])
+    ]);
+  }
+
+  function diagnosticsPanel(integration, connection, method) {
+    const report = diagnostics.get(integration.id);
+    const loading = pendingDiagnostics.has(integration.id);
+    return element("div", { className: "v8-connection-inspector-panel", attributes: { role: "tabpanel" } }, [
+      element("div", { className: "v8-connection-panel-intro v8-connection-panel-intro--action" }, [
+        element("div", {}, [element("h3", { text: "Diagnostic transparent" }), element("p", { text: "Le test combine les controles locaux avec une route Worker authentifiee lorsqu'elle existe." })]),
+        connectionAction("v8.connections.test", integration.id, "primary", [icon(loading ? "loader-circle" : "scan-search"), element("span", { text: loading ? "Verification" : report ? "Relancer" : "Lancer" })], { disabled: loading })
+      ]),
+      report ? element("div", { className: "v8-connection-diagnostic-summary" }, [
+        element("span", { className: `v8-connection-diagnostic-summary__icon is-${report.status}` }, [icon(report.failed ? "shield-alert" : report.warnings ? "shield" : "shield-check")]),
+        element("div", {}, [
+          element("strong", { text: report.failed ? "Configuration bloquee" : report.warnings ? "Preparation incomplete" : report.status === "healthy" ? "Connexion saine" : "Preparation correcte" }),
+          element("small", { text: `${report.failed} blocage, ${report.warnings} avertissement` }),
+          report.workerVerified ? badge("Securise par ETHONE Worker", "accent") : null
+        ]),
+        connectionAction("v8.connections.diagnostic.copy", integration.id, "secondary", [icon("copy")], { className: "v8-icon-button", ariaLabel: "Copier le rapport", tooltip: "Copier le rapport" })
+      ]) : statusState(loading ? "loading" : "empty", {
+        iconName: loading ? "loader-circle" : "stethoscope",
+        eyebrow: "Diagnostic transparent",
+        title: loading ? "Diagnostic en cours" : "Aucun diagnostic execute",
+        description: loading ? "Verification de la route Worker sans appel fournisseur inutile." : "Le test ne lance aucun flux OAuth et ne revele aucune donnee sensible.",
+        compact: true,
+        className: "v8-connection-diagnostic-state"
+      }),
+      report ? element("ul", { className: "v8-connection-diagnostic-list" }, report.checks.map((check) => {
+        const meta = DIAGNOSTIC_META[check.status] || DIAGNOSTIC_META.idle;
+        return element("li", { className: `is-${meta.tone}` }, [element("span", {}, [icon(meta.icon)]), element("div", {}, [element("strong", { text: check.label }), element("p", { text: check.detail })]), element("small", { text: meta.label })]);
+      })) : null,
+      element("section", { className: "v8-connection-help" }, [
+        element("h3", { text: "Problemes frequents" }),
+        element("details", {}, [element("summary", { text: "Pourquoi la connexion reste preparee ?" }), element("p", { text: "Une route Worker disponible confirme le backend, pas une autorisation fournisseur ni une session distante." })]),
+        element("details", {}, [element("summary", { text: "Que faire apres une expiration ?" }), element("p", { text: "Relancez le consentement depuis votre backend puis verifiez les permissions minimales." })]),
+        element("details", {}, [element("summary", { text: "Ou sont stockees les donnees sensibles ?" }), element("p", { text: "Dans les secrets Cloudflare uniquement. Le navigateur ne recoit ni cle fournisseur, ni secret Supabase serveur." })])
+      ]),
+      officialResources(integration).length ? element("div", { className: "v8-connection-resources v8-connection-resources--compact" }, officialResources(integration).map((resource) => officialLink(resource))) : null
+    ]);
+  }
+
+  function renderInspector() {
+    const integration = integrationById(selectedId) || INTEGRATIONS[0];
+    if (!integration) return;
+    selectedId = integration.id;
+    const connection = connectionMap().get(integration.id);
+    const method = selectedMethod(integration, connection);
+    const tabContent = inspectorTab === "methods"
+      ? methodsPanel(integration, connection, method)
+      : inspectorTab === "setup"
+        ? setupPanel(integration, connection, method)
+        : inspectorTab === "diagnostics"
+          ? diagnosticsPanel(integration, connection, method)
+          : overviewPanel(integration, connection, method);
+    inspectorHost.replaceChildren(
+      element("header", { className: "v8-connection-inspector__header" }, [
+        element("span", { className: `v8-connection-card__icon v8-connection-card__icon--${integration.category}` }, [icon(integration.icon)]),
+        element("div", {}, [element("small", { text: integrationCategory(integration.category).label }), element("h2", { text: integration.name, attributes: { translate: "no", tabindex: "-1" } })]),
+        stateBadge(integration, connection)
+      ]),
+      element("div", { className: "v8-connection-tabs", attributes: { role: "tablist", "aria-label": `Details ${integration.name}` } }, INSPECTOR_TABS.map(tabButton)),
+      tabContent
+    );
+  }
+
+  function renderAll() {
+    renderMetrics();
+    renderOpportunities();
+    renderCatalog();
+    renderInspector();
+    refreshIcons();
+  }
+
+  function selectAndRender(id, tab = "overview", scroll = false) {
+    if (!integrationById(id)) return false;
+    selectedId = id;
+    inspectorTab = tab;
+    renderCatalog();
+    renderInspector();
+    refreshIcons();
+    if (scroll && globalThis.matchMedia?.("(max-width: 980px)")?.matches) inspectorHost.scrollIntoView({ behavior: "smooth", block: "start" });
+    return true;
+  }
+
+  function localDiagnostic(id) {
+    const integration = integrationById(id);
+    if (!integration) return null;
+    const connection = connectionMap().get(id);
+    const method = selectedMethod(integration, connection);
+    return Object.freeze({
+      integration,
+      method,
+      report: runConnectionDiagnostics(integration, connection, method, { online: globalThis.navigator?.onLine !== false }),
+      service: workerServiceForConnection(id, method?.id)
+    });
+  }
+
+  async function runDiagnostic(id) {
+    const local = localDiagnostic(id);
+    if (!local) return null;
+    let response = null;
+    let error = null;
+    if (local.service && externalServices?.diagnostic) {
+      try {
+        response = await externalServices.diagnostic(local.service);
+      } catch (failure) {
+        error = failure;
+      }
+    }
+    const report = mergeWorkerDiagnostic(local.report, { service: local.service, response, error });
+    diagnostics.set(id, report);
+    return report;
+  }
+
+  releases.push(actions.scope("v8.connections.configure", (context) => {
+    const id = context.element?.dataset.integration;
+    selectAndRender(id, "setup", true);
+    return completed("Assistant ouvert", { integration: id });
+  }));
+  releases.push(actions.scope("v8.connections.method.open", (context) => {
+    const id = context.element?.dataset.integration;
+    selectAndRender(id, "methods", true);
+    return completed("Methodes ouvertes", { integration: id });
+  }));
+  releases.push(actions.scope("v8.connections.tab", (context) => {
+    const id = context.element?.dataset.integration || selectedId;
+    const tab = INSPECTOR_TABS.some((entry) => entry.id === context.element?.dataset.tab) ? context.element.dataset.tab : "overview";
+    selectAndRender(id, tab);
+    return completed("Vue mise a jour", { integration: id, tab });
+  }));
+  releases.push(actions.scope("v8.connections.method.select", (context) => {
+    const id = context.element?.dataset.integration;
+    const methodId = context.element?.dataset.method;
+    const integration = integrationById(id);
+    if (!connectionMethods(integration).some((entry) => entry.id === methodId)) return unavailable("Cette methode n'est pas disponible.");
+    selectedMethods.set(id, methodId);
+    const method = connectionMethod(integration, methodId);
+    const connection = connectionMap().get(id);
+    if (!draftReferences.has(id)) draftReferences.set(id, connection?.reference || method?.endpoint || "");
+    renderCatalog();
+    renderInspector();
+    refreshIcons();
+    return completed("Methode selectionnee", { integration: id, method: methodId });
+  }));
+  releases.push(actions.scope("v8.connections.setup.complete", (context) => {
+    const id = context.element?.dataset.integration || selectedId;
+    const integration = integrationById(id);
+    const connection = connectionMap().get(id);
+    const method = selectedMethod(integration, connection);
+    const availability = methodAvailability(method, connectionList());
+    if (!availability.usable) {
+      notify({ id: `connection-blocked-${id}`, title: integration?.name || "Connection", message: availability.reason, type: "warning" });
+      return unavailable(availability.reason);
+    }
+    const reference = validateReference(method, draftReferences.get(id) ?? connection?.reference ?? method?.endpoint ?? "");
+    if (!reference.ok) {
+      const referenceInput = inspectorHost.querySelector("[data-connection-reference]");
+      referenceInput?.setCustomValidity?.(reference.message);
+      setFieldState(referenceInput, "invalid", reference.message);
+      notify({ id: `connection-reference-${id}`, title: "Configuration incomplete", message: reference.message, type: "warning" });
+      referenceInput?.focus();
+      return unavailable(reference.message);
+    }
+    const backendRequired = method?.availability === "backend";
+    const result = repository.connections.configure(id, {
+      methodId: method?.id,
+      reference: reference.value,
+      apiVersion: method?.apiVersion || "En attente",
+      detail: backendRequired ? "Preparation locale terminee. Backend securise requis." : "Source preparee. Connecteur runtime requis."
+    });
+    if (id === "spotify") spotifyLive?.refresh?.();
+    if (result.ok) {
+      selectedMethods.set(id, method?.id || "");
+      journal?.record?.({ source: id, category: integration?.category || "system", icon: integration?.icon || "plug", title: `${integration?.name || "Integration"} preparee`, description: backendRequired ? "Le backend securise reste requis avant toute synchronisation." : `Methode ${method?.label || "locale"} preparee.`, timestamp: new Date().toISOString(), tone: "success" });
+      notify({ id: `connection-ready-${id}`, title: integration?.name || "Connection", message: backendRequired ? "Preparation validee. Backend securise requis pour connecter le compte." : "Preparation locale validee.", type: "success" });
+      inspectorTab = "overview";
+      renderAll();
+    }
+    return result;
+  }));
+  releases.push(actions.scope("v8.connections.test", async (context) => {
+    const id = context.element?.dataset.integration || selectedId;
+    const integration = integrationById(id);
+    if (!integration) return unavailable("Cette integration n'existe pas.");
+    if (pendingDiagnostics.has(id)) return unavailable("Un diagnostic est deja en cours.");
+    pendingDiagnostics.add(id);
+    selectAndRender(id, "diagnostics", true);
+    let report;
+    try {
+      report = await runDiagnostic(id);
+    } finally {
+      pendingDiagnostics.delete(id);
+    }
+    if (controller.signal.aborted) return unavailable("Le diagnostic a ete interrompu.");
+    selectAndRender(id, "diagnostics", false);
+    notify({ id: `connection-test-${id}`, title: `Diagnostic ${integration.name}`, message: report?.failed ? "Un blocage a ete detecte." : report?.warnings ? "La configuration demande votre attention." : "Les controles disponibles sont valides.", type: report?.failed ? "error" : report?.warnings ? "warning" : "success" });
+    return completed("Diagnostic termine", report);
+  }));
+  releases.push(actions.scope("v8.connections.diagnose-all", async () => {
+    if (globalDiagnosticPending) return unavailable("Le diagnostic global est deja en cours.");
+    globalDiagnosticPending = true;
+    try {
+      const map = connectionMap();
+      const configured = INTEGRATIONS.filter((integration) => map.has(integration.id));
+      const targets = configured.length ? configured : [integrationById(selectedId)].filter(Boolean);
+      let response = null;
+      let error = null;
+      try {
+        if (externalServices?.diagnostic) response = await externalServices.diagnostic();
+      } catch (failure) {
+        error = failure;
+      }
+      const reports = targets.map((integration) => {
+        const local = localDiagnostic(integration.id);
+        if (!local) return null;
+        const report = mergeWorkerDiagnostic(local.report, { service: local.service, response, error: local.service ? error : null });
+        diagnostics.set(integration.id, report);
+        return report;
+      }).filter(Boolean);
+      if (controller.signal.aborted) return unavailable("Le diagnostic a ete interrompu.");
+      globalDiagnostic = Object.freeze({
+        tested: reports.length,
+        failed: reports.reduce((sum, report) => sum + report.failed, 0),
+        warnings: reports.reduce((sum, report) => sum + report.warnings, 0),
+        workerVerified: reports.filter((report) => report.workerVerified).length,
+        ranAt: new Date().toISOString()
+      });
+      renderMetrics();
+      renderInspector();
+      refreshIcons();
+      notify({ id: "connections-diagnostic-all", title: "Connections Hub", message: `${globalDiagnostic.tested} connexion${globalDiagnostic.tested > 1 ? "s" : ""} verifiee${globalDiagnostic.tested > 1 ? "s" : ""}, ${globalDiagnostic.workerVerified} via Worker.`, type: globalDiagnostic.failed ? "error" : globalDiagnostic.warnings ? "warning" : "success" });
+      return completed("Diagnostic global termine", globalDiagnostic);
+    } finally {
+      globalDiagnosticPending = false;
+    }
+  }));
+  releases.push(actions.scope("v8.connections.disconnect", (context) => {
+    const id = context.element?.dataset.integration;
+    const integration = integrationById(id);
+    const result = repository.connections.disconnect(id);
+    if (id === "spotify") spotifyLive?.refresh?.();
+    if (result.ok) {
+      selectedMethods.delete(id);
+      draftReferences.delete(id);
+      diagnostics.delete(id);
+      journal?.record?.({ source: id, category: integration?.category || "system", icon: "unplug", title: `${integration?.name || "Integration"} retiree`, description: "L'association a ete supprimee. L'acces fournisseur peut etre revoque separement.", timestamp: new Date().toISOString(), tone: "warning" });
+      notify({ id: `connection-off-${id}`, title: integration?.name || "Connection", message: "Association supprimee. Verifiez aussi les acces chez le fournisseur.", type: "info" });
+      renderAll();
+    }
+    return result;
+  }));
+  releases.push(actions.scope("v8.connections.opportunity.apply", (context) => {
+    const id = context.element?.dataset.integration;
+    const methodId = context.element?.dataset.method;
+    selectedMethods.set(id, methodId);
+    selectAndRender(id, "setup", true);
+    return completed("Methode detectee selectionnee", { integration: id, method: methodId });
+  }));
+  releases.push(actions.scope("v8.connections.copy", async (context) => {
+    const copied = await copyText(context.element?.dataset.value);
+    notify({ id: `connection-copy-${context.element?.dataset.integration || "value"}`, title: copied ? "Copie" : "Copie impossible", message: copied ? "La valeur publique a ete copiee." : "Le presse-papiers n'est pas accessible.", type: copied ? "success" : "warning" });
+    return copied ? completed("Valeur copiee") : unavailable("Le presse-papiers n'est pas accessible.");
+  }));
+  releases.push(actions.scope("v8.connections.diagnostic.copy", async (context) => {
+    const id = context.element?.dataset.integration || selectedId;
+    const integration = integrationById(id);
+    const report = diagnostics.get(id);
+    if (!report) return unavailable("Lancez d'abord le diagnostic.");
+    const payload = JSON.stringify({ product: "ETHONE", integration: integration?.name || id, method: selectedMethods.get(id) || connectionMap().get(id)?.methodId || "recommended", report }, null, 2);
+    const copied = await copyText(payload);
+    notify({ id: `connection-report-${id}`, title: copied ? "Rapport copie" : "Copie impossible", message: copied ? "Le rapport ne contient aucune donnee sensible." : "Le presse-papiers n'est pas accessible.", type: copied ? "success" : "warning" });
+    return copied ? completed("Rapport copie") : unavailable("Le presse-papiers n'est pas accessible.");
+  }));
+
+  search.addEventListener("input", () => {
+    query = search.value;
+    visibleLimit = CONNECTION_PAGE_SIZE;
+    renderCatalog();
+    refreshIcons();
+  }, { signal: controller.signal });
+  statusFilter.addEventListener("change", () => {
+    status = statusFilter.value || "all";
+    visibleLimit = CONNECTION_PAGE_SIZE;
+    renderCatalog();
+    refreshIcons();
+  }, { signal: controller.signal });
+  sortSelect.addEventListener("change", () => {
+    order = sortSelect.value;
+    visibleLimit = CONNECTION_PAGE_SIZE;
+    renderCatalog();
+    refreshIcons();
+  }, { signal: controller.signal });
+  categoryBar.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-connection-category]");
+    if (!button) return;
+    category = button.dataset.connectionCategory || "all";
+    visibleLimit = CONNECTION_PAGE_SIZE;
+    renderCatalog();
+    refreshIcons();
+  }, { signal: controller.signal });
+
+  stage.replaceChildren(page);
+  renderAll();
+  const releaseDensity = options.subscribeState?.((next) => updateCollectionDensityControl(densityControl, next)) || (() => {});
+  return () => {
+    controller.abort();
+    releases.reverse().forEach((release) => release());
+    releaseDensity();
+    diagnostics.clear();
+    pendingDiagnostics.clear();
+    selectedMethods.clear();
+    draftReferences.clear();
+    page.remove();
+  };
+}

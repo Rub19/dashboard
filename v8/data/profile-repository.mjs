@@ -341,4 +341,554 @@ export function createProfileRepository(options = {}) {
     const source = input && typeof input === "object" ? input : {};
     if (!Array.isArray(source.profiles)) return result(false, "failed", "Le document Supabase est invalide.");
     const profiles = sanitizePersistence(source.profiles);
-    const requestedActive = text(source.actß®·¶‰žËkºwµç@‰ÕÕ¸ÁÉ½™¥°¸•ÍÐ‘¥ÍÁ½¹¥‰±”¸ˆ¤ì(€€€½¹ÍÐÁÉ½™¥±”€ôÁÉ½™¥±•ÍmÁÉ½™¥±•%¹‘•átì(€€€¥˜€ …ÁÉ½™¥±”¹ÍÑ…Ñ”ñðÑåÁ•½˜ÁÉ½™¥±”¹ÍÑ…Ñ”€„ôô€‰½‰©•Ðˆ¤ÁÉ½™¥±”¹ÍÑ…Ñ”€ôíôì(€€€¥˜€ …ÉÉ…ä¹¥ÍÉÉ…ä¡ÁÉ½™¥±”¹ÍÑ…Ñ•m­•åt¤¤ÁÉ½™¥±”¹ÍÑ…Ñ•m­•åt€ômtì((€€€ÑÉäì(€€€€€½¹ÍÐ‘…Ñ„€ôµÕÑ…Ñ¥½¸¡ÁÉ½™¥±”¹ÍÑ…Ñ•m­•åt°ÁÉ½™¥±”¹ÍÑ…Ñ”¤ì(€€€€€Á•ÉÍ¥ÍÑI…ÝAÉ½™¥±•Ì¡ÁÉ½™¥±•Ì¤ì(€€€€€É•ÑÕÉ¸É•ÍÕ±Ð¡ÑÉÕ”°€‰½µÁ±•Ñ•ˆ°€‰5½‘¥™¥…Ñ¥½¸•¸…ÑÑ•¹Ñ”‘”Íå¹¡É½¹¥Í…Ñ¥½¸¸ˆ°‘…Ñ„€üü¹Õ±°¤ì(€€€ô…Ñ €¡•ÉÉ½È¤ì(€€€€€É•ÑÕÉ¸É•ÍÕ±Ð¡™…±Í”°€‰™…¥±•ˆ°€‰1„µ¥Í”•¸…¡”„ƒ¥¡½×¤¸ˆ°•ÉÉ½È¤ì(€€€ô(€ô((€™Õ¹Ñ¥½¸µÕÑ…Ñ•MÑ…Ñ”¡µÕÑ…Ñ¥½¸¤ì(€€€½¹ÍÐÁÉ½™¥±•Ì€ôÉ•…‘AÉ½™¥±•Ì ¤ì(€€€½¹ÍÐÁÉ½™¥±•%¹‘•à€ô…Ñ¥Ù•AÉ½™¥±•%¹‘•à¡ÁÉ½™¥±•Ì¤ì(€€€¥˜€¡ÁÉ½™¥±•%¹‘•à€ð€À¤É•ÑÕÉ¸É•ÍÕ±Ð¡™…±Í”°€‰Õ¹…Ù…¥±…‰±”ˆ°€‰ÕÕ¸ÁÉ½™¥°¸•ÍÐ‘¥ÍÁ½¹¥‰±”¸ˆ¤ì(€€€½¹ÍÐÁÉ½™¥±”€ôÁÉ½™¥±•ÍmÁÉ½™¥±•%¹‘•átì(€€€¥˜€ …ÁÉ½™¥±”¹ÍÑ…Ñ”ñðÑåÁ•½˜ÁÉ½™¥±”¹ÍÑ…Ñ”€„ôô€‰½‰©•Ðˆ¤ÁÉ½™¥±”¹ÍÑ…Ñ”€ôíôì(€€€ÑÉäì(€€€€€½¹ÍÐ‘…Ñ„€ôµÕÑ…Ñ¥½¸¡ÁÉ½™¥±”¹ÍÑ…Ñ”¤ì(€€€€€Á•ÉÍ¥ÍÑI…ÝAÉ½™¥±•Ì¡ÁÉ½™¥±•Ì¤ì(€€€€€É•ÑÕÉ¸É•ÍÕ±Ð¡ÑÉÕ”°€‰½µÁ±•Ñ•ˆ°€‰5½‘¥™¥…Ñ¥½¸•¸…ÑÑ•¹Ñ”‘”Íå¹¡É½¹¥Í…Ñ¥½¸¸ˆ°‘…Ñ„€üü¹Õ±°¤ì(€€€ô…Ñ €¡•ÉÉ½È¤ì(€€€€€É•ÑÕÉ¸É•ÍÕ±Ð¡™…±Í”°€‰™…¥±•ˆ°€‰1„µ¥Í”•¸…¡”„•¡½Õ”¸ˆ°•ÉÉ½È¤ì(€€€ô(€ô((€½¹ÍÐ¹½Ñ•Ì€ô=‰©•Ð¹™É••é”¡ì(€€€É•…Ñ”¡¥¹ÁÕÐ€ôíô¤ì(€€€€€É•ÑÕÉ¸µÕÑ…Ñ” ‰¹½Ñ•Ìˆ°€¡±¥ÍÐ¤€ôøì(€€€€€€€½¹ÍÐÑ¥µ•ÍÑ…µÀ€ô¹½Ü ¤¹Ñ½%M=MÑÉ¥¹œ ¤ì(€€€€€€€½¹ÍÐ¹½Ñ”€ôì(€€€€€€€€€¥èMÑÉ¥¹œ¡¥‘…Ñ½Éä ¤¤°(€€€€€€€€€Ñ¥Ñ±”èÑ•áÐ¡¥¹ÁÕÐ¹Ñ¥Ñ±”°€‰9½Ñ”Í…¹ÌÑ¥ÑÉ”ˆ°€ÄØÀ¤°(€€€€€€€€€½¹Ñ•¹ÐèÑ•áÐ¡¥¹ÁÕÐ¹½¹Ñ•¹Ð°€ˆˆ°€ÔÀÀÀÀ¤°(€€€€€€€€€Ñ…Ìèmt°(€€€€€€€€€É•±…Ñ¥½¹Ìèmt°(€€€€€€€€€Á¥¹¹•è™…±Í”°(€€€€€€€€€½±½Èè€ˆˆ°(€€€€€€€€€É•…Ñ•èÑ¥µ•ÍÑ…µÀ°(€€€€€€€€€ÕÁ‘…Ñ•èÑ¥µ•ÍÑ…µÀ(€€€€€€€ôì(€€€€€€€±¥ÍÐ¹Õ¹Í¡¥™Ð¡¹½Ñ”¤ì(€€€€€€€É•ÑÕÉ¸¹½Ñ•Y¥•Ü¡¹½Ñ”°€À¤ì(€€€€€ô¤ì(€€€ô°(€€€ÕÁ‘…Ñ”¡¥°Á…Ñ €ôíô¤ì(€€€€€É•ÑÕÉ¸µÕÑ…Ñ” ‰¹½Ñ•Ìˆ°€¡±¥ÍÐ¤€ôøì(€€€€€€€½¹ÍÐ¹½Ñ”€ô±¥ÍÐ¹™¥¹ ¡•¹ÑÉä¤€ôøMÑÉ¥¹œ¡•¹ÑÉäü¹¥¤€ôôôMÑÉ¥¹œ¡¥¤¤ì(€€€€€€€¥˜€ …¹½Ñ”¤Ñ¡É½Ü¹•ÜÉÉ½È ‰9½Ñ”¥¹ÑÉ½ÕÙ…‰±”ˆ¤ì(€€€€€€€¥˜€¡=‰©•Ð¹¡…Í=Ý¸¡Á…Ñ °€‰Ñ¥Ñ±”ˆ¤¤¹½Ñ”¹Ñ¥Ñ±”€ôÑ•áÐ¡Á…Ñ ¹Ñ¥Ñ±”°€‰9½Ñ”Í…¹ÌÑ¥ÑÉ”ˆ°€ÄØÀ¤ì(€€€€€€€¥˜€¡=‰©•Ð¹¡…Í=Ý¸¡Á…Ñ °€‰½¹Ñ•¹Ðˆ¤¤¹½Ñ”¹½¹Ñ•¹Ð€ôÑ•áÐ¡Á…Ñ ¹½¹Ñ•¹Ð°€ˆˆ°€ÔÀÀÀÀ¤ì(€€€€€€€¹½Ñ”¹ÕÁ‘…Ñ•€ô¹½Ü ¤¹Ñ½%M=MÑÉ¥¹œ ¤ì(€€€€€€€É•ÑÕÉ¸¹½Ñ•Y¥•Ü¡¹½Ñ”°€À¤ì(€€€€€ô¤ì(€€€ô°(€€€É•µ½Ù”¡¥¤ì(€€€€€É•ÑÕÉ¸µÕÑ…Ñ” ‰¹½Ñ•Ìˆ°€¡±¥ÍÐ¤€ôøì(€€€€€€€½¹ÍÐ¥¹‘•à€ô±¥ÍÐ¹™¥¹‘%¹‘•à ¡•¹ÑÉä¤€ôøMÑÉ¥¹œ¡•¹ÑÉäü¹¥¤€ôôôMÑÉ¥¹œ¡¥¤¤ì(€€€€€€€¥˜€¡¥¹‘•à€ð€À¤Ñ¡É½Ü¹•ÜÉÉ½È ‰9½Ñ”¥¹ÑÉ½ÕÙ…‰±”ˆ¤ì(€€€€€€€½¹ÍÐmÉ•µ½Ù•‘t€ô±¥ÍÐ¹ÍÁ±¥”¡¥¹‘•à°€Ä¤ì(€€€€€€€É•ÑÕÉ¸¹½Ñ•Y¥•Ü¡É•µ½Ù•°€À¤ì(€€€€€ô¤ì(€€€ô(€ô¤ì((€½¹ÍÐÑ…Í­Ì€ô=‰©•Ð¹™É••é”¡ì(€€€É•…Ñ”¡¥¹ÁÕÐ€ôíô¤ì(€€€€€É•ÑÕÉ¸µÕÑ…Ñ” ‰Ñ…Í­Ìˆ°€¡±¥ÍÐ¤€ôøì(€€€€€€€½¹ÍÐÑ¥µ•ÍÑ…µÀ€ô¹½Ü ¤¹Ñ½%M=MÑÉ¥¹œ ¤ì(€€€€€€€½¹ÍÐÑ…Í¬€ôì(€€€€€€€€€¥èMÑÉ¥¹œ¡¥‘…Ñ½Éä ¤¤°(€€€€€€€€€Ñ•áÐèÑ•áÐ¡¥¹ÁÕÐ¹Ñ¥Ñ±”°€‰9½ÕÙ•±±”Ó‰¡”ˆ°€ÈÐÀ¤°(€€€€€€€€€ÁÉ¥½É¥Ñäèl‰±½Üˆ°€‰¹½Éµ…°ˆ°€‰¡¥ ‰t¹¥¹±Õ‘•Ì¡¥¹ÁÕÐ¹ÁÉ¥½É¥Ñä¤€ü¥¹ÁÕÐ¹ÁÉ¥½É¥Ñä€è€‰¹½Éµ…°ˆ°(€€€€€€€€€‘½¹”è™…±Í”°(€€€€€€€€€½±½Èè€ˆˆ°(€€€€€€€€€‘Õ”èÑ•áÐ¡¥¹ÁÕÐ¹‘Õ”°€ˆˆ°€ÄØ¤°(€€€€€€€€€Ñ…œèÑ•áÐ¡¥¹ÁÕÐ¹Ñ…œ°€ˆˆ°€Ðà¤°(€€€€€€€€€‘…Ñ”è¹•Ü%¹Ñ°¹…Ñ•Q¥µ•½Éµ…Ð¡±½…±•Q…œ ¤°ì‘…äè€ˆÈµ‘¥¥Ðˆ°µ½¹Ñ è€‰Í¡½ÉÐˆô¤¹™½Éµ…Ð¡¹½Ü ¤¤°(€€€€€€€€€É•…Ñ•‘ÐèÑ¥µ•ÍÑ…µÀ(€€€€€€€ôì(€€€€€€€±¥ÍÐ¹Õ¹Í¡¥™Ð¡Ñ…Í¬¤ì(€€€€€€€É•ÑÕÉ¸Ñ…Í­Y¥•Ü¡Ñ…Í¬°€À¤ì(€€€€€ô¤ì(€€€ô°(€€€Ñ½±”¡¥¤ì(€€€€€É•ÑÕÉ¸µÕÑ…Ñ” ‰Ñ…Í­Ìˆ°€¡±¥ÍÐ¤€ôøì(€€€€€€€½¹ÍÐÑ…Í¬€ô±¥ÍÐ¹™¥¹ ¡•¹ÑÉä¤€ôøMÑÉ¥¹œ¡•¹ÑÉäü¹¥¤€ôôôMÑÉ¥¹œ¡¥¤¤ì(€€€€€€€¥˜€ …Ñ…Í¬¤Ñ¡É½Ü¹•ÜÉÉ½È ‰S‰¡”¥¹ÑÉ½ÕÙ…‰±”ˆ¤ì(€€€€€€€Ñ…Í¬¹‘½¹”€ô€„¡Ñ…Í¬¹‘½¹”€ôôôÑÉÕ”ñðÑ…Í¬¹½µÁ±•Ñ•€ôôôÑÉÕ”¤ì(€€€€€€€¥˜€¡Ñ…Í¬¹‘½¹”¤Ñ…Í¬¹‘½¹•Ð€ô¹½Ü ¤¹Ñ½%M=MÑÉ¥¹œ ¤ì(€€€€€€€•±Í”‘•±•Ñ”Ñ…Í¬¹‘½¹•Ðì(€€€€€€€É•ÑÕÉ¸Ñ…Í­Y¥•Ü¡Ñ…Í¬°€À¤ì(€€€€€ô¤ì(€€€ô°(€€€Í•Ñ½¹”¡¥‘Ì€ômt°‘½¹”€ôÑÉÕ”¤ì(€€€€€½¹ÍÐÉ•ÅÕ•ÍÑ•€ô¹•ÜM•Ð ¡ÉÉ…ä¹¥ÍÉÉ…ä¡¥‘Ì¤€ü¥‘Ì€èmt¤¹µ…À¡MÑÉ¥¹œ¤¤ì(€€€€€É•ÑÕÉ¸µÕÑ…Ñ” ‰Ñ…Í­Ìˆ°€¡±¥ÍÐ¤€ôøì(€€€€€€€½¹ÍÐÑ¥µ•ÍÑ…µÀ€ô¹½Ü ¤¹Ñ½%M=MÑÉ¥¹œ ¤ì(€€€€€€€½¹ÍÐ¡…¹•€ômtì(€€€€€€€±¥ÍÐ¹™½É…  ¡Ñ…Í¬°¥¹‘•à¤€ôøì(€€€€€€€€€¥˜€ …É•ÅÕ•ÍÑ•¹¡…Ì¡MÑÉ¥¹œ¡Ñ…Í¬ü¹¥¤¤¤É•ÑÕÉ¸ì(€€€€€€€€€Ñ…Í¬¹‘½¹”€ô‘½¹”€ôôôÑÉÕ”ì(€€€€€€€€€¥˜€¡Ñ…Í¬¹‘½¹”¤Ñ…Í¬¹‘½¹•Ð€ôÑ¥µ•ÍÑ…µÀì(€€€€€€€€€•±Í”‘•±•Ñ”Ñ…Í¬¹‘½¹•Ðì(€€€€€€€€€¡…¹•¹ÁÕÍ ¡Ñ…Í­Y¥•Ü¡Ñ…Í¬°¥¹‘•à¤¤ì(€€€€€€€ô¤ì(€€€€€€€É•ÑÕÉ¸=‰©•Ð¹™É••é”¡¡…¹•¤ì(€€€€€ô¤ì(€€€ô°(€€€É•µ½Ù•5…¹ä¡¥‘Ì€ômt¤ì(€€€€€½¹ÍÐÉ•ÅÕ•ÍÑ•€ô¹•ÜM•Ð ¡ÉÉ…ä¹¥ÍÉÉ…ä¡¥‘Ì¤€ü¥‘Ì€èmt¤¹µ…À¡MÑÉ¥¹œ¤¤ì(€€€€€É•ÑÕÉ¸µÕÑ…Ñ” ‰Ñ…Í­Ìˆ°€¡±¥ÍÐ¤€ôøì(€€€€€€€½¹ÍÐÉ•µ½Ù•€ô±¥ÍÐ¹™¥±Ñ•È ¡Ñ…Í¬¤€ôøÉ•ÅÕ•ÍÑ•¹¡…Ì¡MÑÉ¥¹œ¡Ñ…Í¬ü¹¥¤¤¤¹µ…À¡Ñ…Í­Y¥•Ü¤ì(€€€€€€€™½È€¡±•Ð¥¹‘•à€ô±¥ÍÐ¹±•¹Ñ €´€Äì¥¹‘•à€øô€Àì¥¹‘•à€´ô€Ä¤ì(€€€€€€€€€¥˜€¡É•ÅÕ•ÍÑ•¹¡…Ì¡MÑÉ¥¹œ¡±¥ÍÑm¥¹‘•átü¹¥¤¤¤±¥ÍÐ¹ÍÁ±¥”¡¥¹‘•à°€Ä¤ì(€€€€€€€ô(€€€€€€€É•ÑÕÉ¸=‰©•Ð¹™É••é”¡É•µ½Ù•¤ì(€€€€€ô¤ì(€€€ô°(€€€É•µ½Ù”¡¥¤ì(€€€€€É•ÑÕÉ¸µÕÑ…Ñ” ‰Ñ…Í­Ìˆ°€¡±¥ÍÐ¤€ôøì(€€€€€€€½¹ÍÐ¥¹‘•à€ô±¥ÍÐ¹™¥¹‘%¹‘•à ¡•¹ÑÉä¤€ôøMÑÉ¥¹œ¡•¹ÑÉäü¹¥¤€ôôôMÑÉ¥¹œ¡¥¤¤ì(€€€€€€€¥˜€¡¥¹‘•à€ð€À¤Ñ¡É½Ü¹•ÜÉÉ½È ‰S‰¡”¥¹ÑÉ½ÕÙ…‰±”ˆ¤ì(€€€€€€€É•ÑÕÉ¸Ñ…Í­Y¥•Ü¡±¥ÍÐ¹ÍÁ±¥”¡¥¹‘•à°€Ä¥lÁt°€À¤ì(€€€€€ô¤ì(€€€ô(€ô¤ì((€½¹ÍÐ•Ù•¹ÑÌ€ô=‰©•Ð¹™É••é”¡ì(€€€É•…Ñ”¡¥¹ÁÕÐ€ôíô¤ì(€€€€€É•ÑÕÉ¸µÕÑ…Ñ” ‰•Ù•¹ÑÌˆ°€¡±¥ÍÐ¤€ôøì(€€€€€€€½¹ÍÐ•Ù•¹Ð€ôì(€€€€€€€€€¥èMÑÉ¥¹œ¡¥‘…Ñ½Éä ¤¤°(€€€€€€€€€Ñ¥Ñ±”èÑ•áÐ¡¥¹ÁÕÐ¹Ñ¥Ñ±”°€‹%Û¥¹•µ•¹Ðˆ°€ÄàÀ¤°(€€€€€€€€€‘…Ñ”èÑ•áÐ¡¥¹ÁÕÐ¹‘…Ñ”°€ˆˆ°€ÄØ¤°(€€€€€€€€€½±½Èè€‰…•¹Ðˆ(€€€€€€€ôì(€€€€€€€¥˜€ „½yq‘ìÑôµq‘ìÉôµq‘ìÉô¼¹Ñ•ÍÐ¡•Ù•¹Ð¹‘…Ñ”¤¤Ñ¡É½Ü¹•ÜÉÉ½È ‰…Ñ”¥¹Ù…±¥‘”ˆ¤ì(€€€€€€€±¥ÍÐ¹ÁÕÍ ¡•Ù•¹Ð¤ì(€€€€€€€±¥ÍÐ¹Í½ÉÐ ¡±•™Ð°É¥¡Ð¤€ôøMÑÉ¥¹œ¡±•™Ðü¹‘…Ñ”ñð€ˆˆ¤¹±½…±•½µÁ…É”¡MÑÉ¥¹œ¡É¥¡Ðü¹‘…Ñ”ñð€ˆˆ¤¤¤ì(€€€€€€€É•ÑÕÉ¸•Ù•¹ÑY¥•Ü¡•Ù•¹Ð°€À¤ì(€€€€€ô¤ì(€€€ô°(€€€É•µ½Ù”¡¥¤ì(€€€€€É•ÑÕÉ¸µÕÑ…Ñ” ‰•Ù•¹ÑÌˆ°€¡±¥ÍÐ¤€ôøì(€€€€€€€½¹ÍÐ¥¹‘•à€ô±¥ÍÐ¹™¥¹‘%¹‘•à ¡•¹ÑÉä¤€ôøMÑÉ¥¹œ¡•¹ÑÉäü¹¥¤€ôôôMÑÉ¥¹œ¡¥¤¤ì(€€€€€€€¥˜€¡¥¹‘•à€ð€À¤Ñ¡É½Ü¹•ÜÉÉ½È ‹%Û¥¹•µ•¹Ð¥¹ÑÉ½ÕÙ…‰±”ˆ¤ì(€€€€€€€É•ÑÕÉ¸•Ù•¹ÑY¥•Ü¡±¥ÍÐ¹ÍÁ±¥”¡¥¹‘•à°€Ä¥lÁt°€À¤ì(€€€€€ô¤ì(€€€ô(€ô¤ì((€½¹ÍÐ™¥±•Ì€ô=‰©•Ð¹™É••é”¡ì(€€€Í•ÑY¥•Ü¡Ù¥•Ü¤ì(€€€€€É•ÑÕÉ¸µÕÑ…Ñ•MÑ…Ñ” ¡ÍÑ…Ñ”¤€ôøì(€€€€€€€¥˜€ …ÍÑ…Ñ”¹™¥±•ÍáÁ±½É•ÈñðÑåÁ•½˜ÍÑ…Ñ”¹™¥±•ÍáÁ±½É•È€„ôô€‰½‰©•Ðˆ¤ÍÑ…Ñ”¹™¥±•ÍáÁ±½É•È€ôíôì(€€€€€€€ÍÑ…Ñ”¹™¥±•ÍáÁ±½É•È¹Ù¥•Ü€ôÙ¥•Ü€ôôô€‰É¥ˆ€ü€‰É¥ˆ€è€‰±¥ÍÐˆì(€€€€€€€É•ÑÕÉ¸ÍÑ…Ñ”¹™¥±•ÍáÁ±½É•È¹Ù¥•Üì(€€€€€ô¤ì(€€€ô°(€€€É•…Ñ”¡¥¹ÁÕÐ€ôíô¤ì(€€€€€É•ÑÕÉ¸µÕÑ…Ñ” ‰™¥±•Ìˆ°€¡±¥ÍÐ¤€ôøì(€€€€€€€½¹ÍÐÑåÁ”€ôl‰±¥¹¬ˆ°€‰™½±‘•È‰t¹¥¹±Õ‘•Ì¡¥¹ÁÕÐ¹ÑåÁ”¤€ü¥¹ÁÕÐ¹ÑåÁ”€è€‰±¥¹¬ˆì(€€€€€€€½¹ÍÐÕÉ°€ôÑåÁ”€ôôô€‰±¥¹¬ˆ€üÍ…™•UÉ°¡¥¹ÁÕÐ¹ÕÉ°¤€è€ˆˆì(€€€€€€€¥˜€¡ÑåÁ”€ôôô€‰±¥¹¬ˆ€˜˜€…ÕÉ°¤Ñ¡É½Ü¹•ÜÉÉ½È ‰1¥•¸¥¹Ù…±¥‘”ˆ¤ì(€€€€€€€½¹ÍÐÑ¥µ•ÍÑ…µÀ€ô¹½Ü ¤¹Ñ½%M=MÑÉ¥¹œ ¤ì(€€€€€€€½¹ÍÐ¥Ñ•´€ôì(€€€€€€€€€¥èMÑÉ¥¹œ¡¥‘…Ñ½Éä ¤¤°(€€€€€€€€€¹…µ”èÑ•áÐ¡¥¹ÁÕÐ¹¹…µ”°ÑåÁ”€ôôô€‰™½±‘•Èˆ€ü€‰9½ÕÙ•…Ô‘½ÍÍ¥•Èˆ€è€‰9½ÕÙ•…Ô±¥•¸ˆ°€ÄàÀ¤°(€€€€€€€€€ÑåÁ”°(€€€€€€€€€ÕÉ°°(€€€€€€€€€Ñ…œèÑ•áÐ¡¥¹ÁÕÐ¹Ñ…œ°€ˆˆ°€àÀ¤°(€€€€€€€€€‘…Ñ”è¹•Ü%¹Ñ°¹…Ñ•Q¥µ•½Éµ…Ð¡±½…±•Q…œ ¤°ì‘…äè€ˆÈµ‘¥¥Ðˆ°µ½¹Ñ è€‰Í¡½ÉÐˆô¤¹™½Éµ…Ð¡¹½Ü ¤¤°(€€€€€€€€€É•…Ñ•‘ÐèÑ¥µ•ÍÑ…µÀ°(€€€€€€€€€ÕÁ‘…Ñ•‘ÐèÑ¥µ•ÍÑ…µÀ(€€€€€€€ôì(€€€€€€€±¥ÍÐ¹Õ¹Í¡¥™Ð¡¥Ñ•´¤ì(€€€€€€€É•ÑÕÉ¸™¥±•Y¥•Ü¡¥Ñ•´°€À°mt¤ì(€€€€€ô¤ì(€€€ô°(€€€Ñ½±•…Ù½É¥Ñ”¡¥¤ì(€€€€€É•ÑÕÉ¸µÕÑ…Ñ” ‰™¥±•Ìˆ°€¡±¥ÍÐ°ÍÑ…Ñ”¤€ôøì(€€€€€€€½¹ÍÐ¥Ñ•´€ô±¥ÍÐ¹™¥¹ ¡•¹ÑÉä¤€ôøMÑÉ¥¹œ¡•¹ÑÉäü¹¥¤€ôôôMÑÉ¥¹œ¡¥¤¤ì(€€€€€€€¥˜€ …¥Ñ•´¤Ñ¡É½Ü¹•ÜÉÉ½È ‰¥¡¥•È¥¹ÑÉ½ÕÙ…‰±”ˆ¤ì(€€€€€€€¥˜€ …ÍÑ…Ñ”¹™¥±•ÍáÁ±½É•ÈñðÑåÁ•½˜ÍÑ…Ñ”¹™¥±•ÍáÁ±½É•È€„ôô€‰½‰©•Ðˆ¤ÍÑ…Ñ”¹™¥±•ÍáÁ±½É•È€ôíôì(€€€€€€€¥˜€ …ÉÉ…ä¹¥ÍÉÉ…ä¡ÍÑ…Ñ”¹™¥±•ÍáÁ±½É•È¹™…Ù½É¥Ñ•Ì¤¤ÍÑ…Ñ”¹™¥±•ÍáÁ±½É•È¹™…Ù½É¥Ñ•Ì€ômtì(€€€€€€€½¹ÍÐ™…Ù½É¥Ñ•Ì€ôÍÑ…Ñ”¹™¥±•ÍáÁ±½É•È¹™…Ù½É¥Ñ•Ì¹µ…À¡MÑÉ¥¹œ¤ì(€€€€€€€½¹ÍÐ¥Ñ•µ%€ôMÑÉ¥¹œ¡¥Ñ•´¹¥¤ì(€€€€€€€ÍÑ…Ñ”¹™¥±•ÍáÁ±½É•È¹™…Ù½É¥Ñ•Ì€ô™…Ù½É¥Ñ•Ì¹¥¹±Õ‘•Ì¡¥Ñ•µ%¤(€€€€€€€€€€ü™…Ù½É¥Ñ•Ì¹™¥±Ñ•È ¡•¹ÑÉä¤€ôø•¹ÑÉä€„ôô¥Ñ•µ%¤(€€€€€€€€€€èl¸¸¹™…Ù½É¥Ñ•Ì°¥Ñ•µ%‘tì(€€€€€€€É•ÑÕÉ¸™¥±•Y¥•Ü¡¥Ñ•´°€À°ÍÑ…Ñ”¹™¥±•ÍáÁ±½É•È¹™…Ù½É¥Ñ•Ì¤ì(€€€€€ô¤ì(€€€ô°(€€€Í•Ñ…Ù½É¥Ñ”¡¥‘Ì€ômt°™…Ù½É¥Ñ”€ôÑÉÕ”¤ì(€€€€€½¹ÍÐÉ•ÅÕ•ÍÑ•€ô¹•ÜM•Ð ¡ÉÉ…ä¹¥ÍÉÉ…ä¡¥‘Ì¤€ü¥‘Ì€èmt¤¹µ…À¡MÑÉ¥¹œ¤¤ì(€€€€€É•ÑÕÉ¸µÕÑ…Ñ” ‰™¥±•Ìˆ°€¡±¥ÍÐ°ÍÑ…Ñ”¤€ôøì(€€€€€€€¥˜€ …ÍÑ…Ñ”¹™¥±•ÍáÁ±½É•ÈñðÑåÁ•½˜ÍÑ…Ñ”¹™¥±•ÍáÁ±½É•È€„ôô€‰½‰©•Ðˆ¤ÍÑ…Ñ”¹™¥±•ÍáÁ±½É•È€ôíôì(€€€€€€€½¹ÍÐÕÉÉ•¹Ð€ô¹•ÜM•Ð ¡ÉÉ…ä¹¥ÍÉÉ…ä¡ÍÑ…Ñ”¹™¥±•ÍáÁ±½É•È¹™…Ù½É¥Ñ•Ì¤€üÍÑ…Ñ”¹™¥±•ÍáÁ±½É•È¹™…Ù½É¥Ñ•Ì€èmt¤¹µ…À¡MÑÉ¥¹œ¤¤ì(€€€€€€€É•ÅÕ•ÍÑ•¹™½É…  ¡¥¤€ôø™…Ù½É¥Ñ”€ôôôÑÉÕ”€üÕÉÉ•¹Ð¹…‘¡¥¤€èÕÉÉ•¹Ð¹‘•±•Ñ”¡¥¤¤ì(€€€€€€€ÍÑ…Ñ”¹™¥±•ÍáÁ±½É•È¹™…Ù½É¥Ñ•Ì€ôl¸¸¹ÕÉÉ•¹Ñtì(€€€€€€€É•ÑÕÉ¸=‰©•Ð¹™É••é”¡±¥ÍÐ¹™¥±Ñ•È ¡¥Ñ•´¤€ôøÉ•ÅÕ•ÍÑ•¹¡…Ì¡MÑÉ¥¹œ¡¥Ñ•´ü¹¥¤¤¤¹µ…À ¡¥Ñ•´°¥¹‘•à¤€ôø™¥±•Y¥•Ü¡¥Ñ•´°¥¹‘•à°ÍÑ…Ñ”¹™¥±•ÍáÁ±½É•È¹™…Ù½É¥Ñ•Ì¤¤¤ì(€€€€€ô¤ì(€€€ô°(€€€É•µ½Ù•5…¹ä¡¥‘Ì€ômt¤ì(€€€€€½¹ÍÐÉ•ÅÕ•ÍÑ•€ô¹•ÜM•Ð ¡ÉÉ…ä¹¥ÍÉÉ…ä¡¥‘Ì¤€ü¥‘Ì€èmt¤¹µ…À¡MÑÉ¥¹œ¤¤ì(€€€€€É•ÑÕÉ¸µÕÑ…Ñ” ‰™¥±•Ìˆ°€¡±¥ÍÐ°ÍÑ…Ñ”¤€ôøì(€€€€€€€½¹ÍÐ™…Ù½É¥Ñ•Ì€ôÉÉ…ä¹¥ÍÉÉ…ä¡ÍÑ…Ñ”¹™¥±•ÍáÁ±½É•Èü¹™…Ù½É¥Ñ•Ì¤€üÍÑ…Ñ”¹™¥±•ÍáÁ±½É•È¹™…Ù½É¥Ñ•Ì¹µ…À¡MÑÉ¥¹œ¤€èmtì(€€€€€€€½¹ÍÐÉ•µ½Ù•€ô±¥ÍÐ¹™¥±Ñ•È ¡¥Ñ•´¤€ôøÉ•ÅÕ•ÍÑ•¹¡…Ì¡MÑÉ¥¹œ¡¥Ñ•´ü¹¥¤¤¤¹µ…À ¡¥Ñ•´°¥¹‘•à¤€ôø™¥±•Y¥•Ü¡¥Ñ•´°¥¹‘•à°™…Ù½É¥Ñ•Ì¤¤ì(€€€€€€€™½È€¡±•Ð¥¹‘•à€ô±¥ÍÐ¹±•¹Ñ €´€Äì¥¹‘•à€øô€Àì¥¹‘•à€´ô€Ä¤ì(€€€€€€€€€¥˜€¡É•ÅÕ•ÍÑ•¹¡…Ì¡MÑÉ¥¹œ¡±¥ÍÑm¥¹‘•átü¹¥¤¤¤±¥ÍÐ¹ÍÁ±¥”¡¥¹‘•à°€Ä¤ì(€€€€€€€ô(€€€€€€€¥˜€¡ÉÉ…ä¹¥ÍÉÉ…ä¡ÍÑ…Ñ”¹™¥±•ÍáÁ±½É•Èü¹™…Ù½É¥Ñ•Ì¤¤ÍÑ…Ñ”¹™¥±•ÍáÁ±½É•È¹™…Ù½É¥Ñ•Ì€ô™…Ù½É¥Ñ•Ì¹™¥±Ñ•È ¡¥¤€ôø€…É•ÅÕ•ÍÑ•¹¡…Ì¡¥¤¤ì(€€€€€€€É•ÑÕÉ¸=‰©•Ð¹™É••é”¡É•µ½Ù•¤ì(€€€€€ô¤ì(€€€ô°(€€€É•µ½Ù”¡¥¤ì(€€€€€É•ÑÕÉ¸µÕÑ…Ñ” ‰™¥±•Ìˆ°€¡±¥ÍÐ°ÍÑ…Ñ”¤€ôøì(€€€€€€€½¹ÍÐ¥¹‘•à€ô±¥ÍÐ¹™¥¹‘%¹‘•à ¡•¹ÑÉä¤€ôøMÑÉ¥¹œ¡•¹ÑÉäü¹¥¤€ôôôMÑÉ¥¹œ¡¥¤¤ì(€€€€€€€¥˜€¡¥¹‘•à€ð€À¤Ñ¡É½Ü¹•ÜÉÉ½È ‰¥¡¥•È¥¹ÑÉ½ÕÙ…‰±”ˆ¤ì(€€€€€€€½¹ÍÐÉ•µ½Ù•€ô±¥ÍÐ¹ÍÁ±¥”¡¥¹‘•à°€Ä¥lÁtì(€€€€€€€¥˜€¡ÉÉ…ä¹¥ÍÉÉ…ä¡ÍÑ…Ñ”¹™¥±•ÍáÁ±½É•Èü¹™…Ù½É¥Ñ•Ì¤¤ì(€€€€€€€€€ÍÑ…Ñ”¹™¥±•ÍáÁ±½É•È¹™…Ù½É¥Ñ•Ì€ôÍÑ…Ñ”¹™¥±•ÍáÁ±½É•È¹™…Ù½É¥Ñ•Ì¹µ…À¡MÑÉ¥¹œ¤¹™¥±Ñ•È ¡•¹ÑÉä¤€ôø•¹ÑÉä€„ôôMÑÉ¥¹œ¡¥¤¤ì(€€€€€€€ô(€€€€€€€É•ÑÕÉ¸™¥±•Y¥•Ü¡É•µ½Ù•°€À°mt¤ì(€€€€€ô¤ì(€€€ô(€ô¤ì((€½¹ÍÐ…Ñ¥Ù¥Ñ¥•Ì€ô=‰©•Ð¹™É••é”¡ì(€€€É•½É¡¥¹ÁÕÐ€ôíô¤ì(€€€€€É•ÑÕÉ¸µÕÑ…Ñ•MÑ…Ñ” ¡ÍÑ…Ñ”¤€ôøì(€€€€€€€¥˜€ …ÉÉ…ä¹¥ÍÉÉ…ä¡ÍÑ…Ñ”¹…Ñ¥Ù¥Ñå••¤¤ÍÑ…Ñ”¹…Ñ¥Ù¥Ñå••€ômtì(€€€€€€€½¹ÍÐ•¹ÑÉä€ôì(€€€€€€€€€¥èMÑÉ¥¹œ¡¥‘…Ñ½Éä ¤¤°(€€€€€€€€€Í½ÕÉ”èÑ•áÐ¡¥¹ÁÕÐ¹Í½ÕÉ”°€‰•Ñ¡½¹”ˆ°€Ðà¤¹Ñ½1½Ý•É…Í” ¤°(€€€€€€€€€…Ñ•½ÉäèQ%Y%Qe}Q=I%L¹¡…Ì¡¥¹ÁÕÐ¹…Ñ•½Éä¤€ü¥¹ÁÕÐ¹…Ñ•½Éä€è€‰ÍåÍÑ•´ˆ°(€€€€€€€€€¥½¸èÑ•áÐ¡¥¹ÁÕÐ¹¥½¸°€‰…Ñ¥Ù¥Ñäˆ°€Ðà¤°(€€€€€€€€€Ñ¥Ñ±”èÑ•áÐ¡¥¹ÁÕÐ¹Ñ¥Ñ±”°€‰Ñ¥Ù¥Ñ”Q!=9ˆ°€ÄàÀ¤°(€€€€€€€€€‘•ÍÉ¥ÁÑ¥½¸èÑ•áÐ¡¥¹ÁÕÐ¹‘•ÍÉ¥ÁÑ¥½¸°€ˆˆ°€ÔÀÀ¤°(€€€€€€€€€Ñ¥µ•ÍÑ…µÀèÑ•áÐ¡¥¹ÁÕÐ¹Ñ¥µ•ÍÑ…µÀ°¹½Ü ¤¹Ñ½%M=MÑÉ¥¹œ ¤°€ÐÀ¤°(€€€€€€€€€Ñ½¹”èÑ•áÐ¡¥¹ÁÕÐ¹Ñ½¹”°€‰‘•™…Õ±Ðˆ°€ÈÐ¤(€€€€€€€ôì(€€€€€€€ÍÑ…Ñ”¹…Ñ¥Ù¥Ñå••¹Õ¹Í¡¥™Ð¡•¹ÑÉä¤ì(€€€€€€€ÍÑ…Ñ”¹…Ñ¥Ù¥Ñå••€ôÍÑ…Ñ”¹…Ñ¥Ù¥Ñå••¹Í±¥” À°€ÈÀÀ¤ì(€€€€€€€É•ÑÕÉ¸…Ñ¥Ù¥ÑåY¥•Ü¡•¹ÑÉä°€À¤ì(€€€€€ô¤ì(€€€ô°(€€€±•…È ¤ì(€€€€€É•ÑÕÉ¸µÕÑ…Ñ•MÑ…Ñ” ¡ÍÑ…Ñ”¤€ôøì(€€€€€€€ÍÑ…Ñ”¹…Ñ¥Ù¥Ñå••€ômtì(€€€€€€€É•ÑÕÉ¸ÑÉÕ”ì(€€€€€ô¤ì(€€€ô(€ô¤ì((€½¹ÍÐ½¹¹•Ñ¥½¹Ì€ô=‰©•Ð¹™É••é”¡ì(€€€½¹™¥ÕÉ”¡¥°¥¹ÁÕÐ€ôíô¤ì(€€€€€É•ÑÕÉ¸µÕÑ…Ñ•MÑ…Ñ” ¡ÍÑ…Ñ”¤€ôøì(€€€€€€€¥˜€ …ÍÑ…Ñ”¹½¹¹•Ñ¥½¹ÌñðÑåÁ•½˜ÍÑ…Ñ”¹½¹¹•Ñ¥½¹Ì€„ôô€‰½‰©•ÐˆñðÉÉ…ä¹¥ÍÉÉ…ä¡ÍÑ…Ñ”¹½¹¹•Ñ¥½¹Ì¤¤ÍÑ…Ñ”¹½¹¹•Ñ¥½¹Ì€ôíôì(€€€€€€€½¹ÍÐ¥¹Ñ•É…Ñ¥½¹%€ôÍ…™•%‘•¹Ñ¥™¥•È¡¥¤ì(€€€€€€€¥˜€ …¥¹Ñ•É…Ñ¥½¹%¤Ñ¡É½Ü¹•ÜÉÉ½È ‰%¹Ñ•É…Ñ¥½¸¥¹Ù…±¥‘”ˆ¤ì(€€€€€€€½¹ÍÐ•á¥ÍÑ¥¹œ€ô=‰©•Ð¹¡…Í=Ý¸¡ÍÑ…Ñ”¹½¹¹•Ñ¥½¹Ì°¥¹Ñ•É…Ñ¥½¹%¤€˜˜ÑåÁ•½˜ÍÑ…Ñ”¹½¹¹•Ñ¥½¹Ím¥¹Ñ•É…Ñ¥½¹%‘t€ôôô€‰½‰©•Ðˆ€üÍÑ…Ñ”¹½¹¹•Ñ¥½¹Ím¥¹Ñ•É…Ñ¥½¹%‘t€èíôì(€€€€€€€ÍÑ…Ñ”¹½¹¹•Ñ¥½¹Ím¥¹Ñ•É…Ñ¥½¹%‘t€ôì(€€€€€€€€€€¸¸¹•á¥ÍÑ¥¹œ°(€€€€€€€€€¥è¥¹Ñ•É…Ñ¥½¹%°(€€€€€€€€€ÍÑ…ÑÕÌè=99Q%=9}MQQUML¹¡…Ì¡•á¥ÍÑ¥¹œ¹ÍÑ…ÑÕÌ¤€ü•á¥ÍÑ¥¹œ¹ÍÑ…ÑÕÌ€è€‰‘¥Í½¹¹•Ñ•ˆ°(€€€€€€€€€Í•ÑÕÁ½µÁ±•Ñ”èÑÉÕ”°(€€€€€€€€€µ•Ñ¡½‘%èÍ…™•%‘•¹Ñ¥™¥•È¡¥¹ÁÕÐ¹µ•Ñ¡½‘%¤ñðÍ…™•%‘•¹Ñ¥™¥•È¡•á¥ÍÑ¥¹œ¹µ•Ñ¡½‘%¤°(€€€€€€€€€É•™•É•¹”èÑ•áÐ¡¥¹ÁÕÐ¹É•™•É•¹”°•á¥ÍÑ¥¹œ¹É•™•É•¹”ñð€ˆˆ°€ÔÄÈ¤°(€€€€€€€€€½¹™¥ÕÉ•‘Ðè¹½Ü ¤¹Ñ½%M=MÑÉ¥¹œ ¤°(€€€€€€€€€…Á¥Y•ÉÍ¥½¸èÑ•áÐ¡¥¹ÁÕÐ¹…Á¥Y•ÉÍ¥½¸ñð•á¥ÍÑ¥¹œ¹…Á¥Y•ÉÍ¥½¸°€‰¸…ÑÑ•¹Ñ”=ÕÑ ˆ°€ÐÀ¤°(€€€€€€€€€‘•Ñ…¥°èÑ•áÐ¡¥¹ÁÕÐ¹‘•Ñ…¥°°€‰½¹™¥ÕÉ…Ñ¥½¸¡¥™™É•”ÁÉ•Ñ”¸ÕÕ¸Í•É•ÐÍÑ½­”¸ˆ°€ÄàÀ¤(€€€€€€€ôì(€€€€€€€É•ÑÕÉ¸½¹¹•Ñ¥½¹Y¥•Ü¡¥¹Ñ•É…Ñ¥½¹%°ÍÑ…Ñ”¹½¹¹•Ñ¥½¹Ím¥¹Ñ•É…Ñ¥½¹%‘t¤ì(€€€€€ô¤ì(€€€ô°(€€€ÕÁ‘…Ñ•MÑ…ÑÕÌ¡¥°ÍÑ…ÑÕÌ°Á…Ñ €ôíô¤ì(€€€€€É•ÑÕÉ¸µÕÑ…Ñ•MÑ…Ñ” ¡ÍÑ…Ñ”¤€ôøì(€€€€€€€¥˜€ …=99Q%=9}MQQUML¹¡…Ì¡ÍÑ…ÑÕÌ¤¤Ñ¡É½Ü¹•ÜÉÉ½È ‰Ñ…Ð‘”½¹¹•á¥½¸¥¹Ù…±¥‘”ˆ¤ì(€€€€€€€¥˜€ …ÍÑ…Ñ”¹½¹¹•Ñ¥½¹ÌñðÑåÁ•½˜ÍÑ…Ñ”¹½¹¹•Ñ¥½¹Ì€„ôô€‰½‰©•ÐˆñðÉÉ…ä¹¥ÍÉÉ…ä¡ÍÑ…Ñ”¹½¹¹•Ñ¥½¹Ì¤¤ÍÑ…Ñ”¹½¹¹•Ñ¥½¹Ì€ôíôì(€€€€€€€½¹ÍÐ¥¹Ñ•É…Ñ¥½¹%€ôÍ…™•%‘•¹Ñ¥™¥•È¡¥¤ì(€€€€€€€¥˜€ …¥¹Ñ•É…Ñ¥½¹%¤Ñ¡É½Ü¹•ÜÉÉ½È ‰%¹Ñ•É…Ñ¥½¸¥¹Ù…±¥‘”ˆ¤ì(€€€€€€€½¹ÍÐ•á¥ÍÑ¥¹œ€ô=‰©•Ð¹¡…Í=Ý¸¡ÍÑ…Ñ”¹½¹¹•Ñ¥½¹Ì°¥¹Ñ•É…Ñ¥½¹%¤€˜˜ÑåÁ•½˜ÍÑ…Ñ”¹½¹¹•Ñ¥½¹Ím¥¹Ñ•É…Ñ¥½¹%‘t€ôôô€‰½‰©•Ðˆ€üÍÑ…Ñ”¹½¹¹•Ñ¥½¹Ím¥¹Ñ•É…Ñ¥½¹%‘t€èíôì(€€€€€€€½¹ÍÐÉ•ÍÁ½¹Í•5Ì€ô9Õµ‰•È¡=‰©•Ð¹¡…Í=Ý¸¡Á…Ñ °€‰É•ÍÁ½¹Í•5Ìˆ¤€üÁ…Ñ ¹É•ÍÁ½¹Í•5Ì€è•á¥ÍÑ¥¹œ¹É•ÍÁ½¹Í•5Ì¤ì(€€€€€€€ÍÑ…Ñ”¹½¹¹•Ñ¥½¹Ím¥¹Ñ•É…Ñ¥½¹%‘t€ôì(€€€€€€€€€€¸¸¹•á¥ÍÑ¥¹œ°(€€€€€€€€€¥è¥¹Ñ•É…Ñ¥½¹%°(€€€€€€€€€ÍÑ…ÑÕÌ°(€€€€€€€€€Í•ÑÕÁ½µÁ±•Ñ”è•á¥ÍÑ¥¹œ¹Í•ÑÕÁ½µÁ±•Ñ”€ôôôÑÉÕ”°(€€€€€€€€€µ•Ñ¡½‘%èÍ…™•%‘•¹Ñ¥™¥•È¡Á…Ñ ¹µ•Ñ¡½‘%¤ñðÍ…™•%‘•¹Ñ¥™¥•È¡•á¥ÍÑ¥¹œ¹µ•Ñ¡½‘%¤°(€€€€€€€€€É•™•É•¹”èÑ•áÐ¡Á…Ñ ¹É•™•É•¹”°•á¥ÍÑ¥¹œ¹É•™•É•¹”ñð€ˆˆ°€ÔÄÈ¤°(€€€€€€€€€±…ÍÑMå¹ÐèÑ•áÐ¡Á…Ñ ¹±…ÍÑMå¹Ðñð•á¥ÍÑ¥¹œ¹±…ÍÑMå¹Ð°€ˆˆ°€ÐÀ¤°(€€€€€€€€€±…ÍÑQ•ÍÑ•‘ÐèÑ•áÐ¡Á…Ñ ¹±…ÍÑQ•ÍÑ•‘Ðñð•á¥ÍÑ¥¹œ¹±…ÍÑQ•ÍÑ•‘Ð°€ˆˆ°€ÐÀ¤°(€€€€€€€€€É•ÍÁ½¹Í•5Ìè9Õµ‰•È¹¥Í¥¹¥Ñ”¡É•ÍÁ½¹Í•5Ì¤€ü5…Ñ ¹µ¥¸ ØÀÀÀÀÀ°5…Ñ ¹µ…à À°5…Ñ ¹É½Õ¹¡É•ÍÁ½¹Í•5Ì¤¤¤€è¹Õ±°°(€€€€€€€€€…Á¥Y•ÉÍ¥½¸èÑ•áÐ¡Á…Ñ ¹…Á¥Y•ÉÍ¥½¸ñð•á¥ÍÑ¥¹œ¹…Á¥Y•ÉÍ¥½¸°€‰9½¸½¹¹•Ñ•”ˆ°€ÐÀ¤°(€€€€€€€€€‘•Ñ…¥°èÑ•áÐ¡Á…Ñ ¹‘•Ñ…¥°°•á¥ÍÑ¥¹œ¹‘•Ñ…¥°ñð€ˆˆ°€ÄàÀ¤(€€€€€€€ôì(€€€€€€€É•ÑÕÉ¸½¹¹•Ñ¥½¹Y¥•Ü¡¥¹Ñ•É…Ñ¥½¹%°ÍÑ…Ñ”¹½¹¹•Ñ¥½¹Ím¥¹Ñ•É…Ñ¥½¹%‘t¤ì(€€€€€ô¤ì(€€€ô°(€€€Ñ•ÍÐ¡¥¤ì(€€€€€½¹ÍÐÕÉÉ•¹Ð€ôÍ¹…ÁÍ¡½Ð ¤¹½¹¹•Ñ¥½¹Ì¹™¥¹ ¡½¹¹•Ñ¥½¸¤€ôø½¹¹•Ñ¥½¸¹¥€ôôôMÑÉ¥¹œ¡¥¤¤ì(€€€€€¥˜€ …ÕÉÉ•¹Ðü¹Í•ÑÕÁ½µÁ±•Ñ”¤É•ÑÕÉ¸É•ÍÕ±Ð¡™…±Í”°€‰Õ¹…Ù…¥±…‰±”ˆ°€‰Q•Éµ¥¹•è…‰½É±”Õ¥‘”‘”½¹™¥ÕÉ…Ñ¥½¸¸ˆ¤ì(€€€€€¥˜€¡ÕÉÉ•¹Ð¹ÍÑ…ÑÕÌ€„ôô€‰½¹¹•Ñ•ˆ¤É•ÑÕÉ¸É•ÍÕ±Ð¡™…±Í”°€‰Õ¹…Ù…¥±…‰±”ˆ°€‰1”½¹¹•Ñ•ÕÈ•ÍÐÁÉ•Á…É”°µ…¥Ì…ÕÕ¸=ÕÑ ‰…­•¹¸•ÍÐ…Ñ¥˜¸ˆ°ÕÉÉ•¹Ð¤ì(€€€€€É•ÑÕÉ¸Ñ¡¥Ì¹ÕÁ‘…Ñ•MÑ…ÑÕÌ¡¥°€‰½¹¹•Ñ•ˆ°ì±…ÍÑQ•ÍÑ•‘Ðè¹½Ü ¤¹Ñ½%M=MÑÉ¥¹œ ¤°±…ÍÑMå¹ÐèÕÉÉ•¹Ð¹±…ÍÑMå¹Ð°…Á¥Y•ÉÍ¥½¸èÕÉÉ•¹Ð¹…Á¥Y•ÉÍ¥½¸°‘•Ñ…¥°è€‰Ñ…Ð‘”½¹¹•á¥½¸Ù•É¥™¥”¸ˆô¤ì(€€€ô°(€€€‘¥Í½¹¹•Ð¡¥¤ì(€€€€€É•ÑÕÉ¸µÕÑ…Ñ•MÑ…Ñ” ¡ÍÑ…Ñ”¤€ôøì(€€€€€€€½¹ÍÐ¥¹Ñ•É…Ñ¥½¹%€ôÍ…™•%‘•¹Ñ¥™¥•È¡¥¤ì(€€€€€€€¥˜€ …¥¹Ñ•É…Ñ¥½¹%¤Ñ¡É½Ü¹•ÜÉÉ½È ‰%¹Ñ•É…Ñ¥½¸¥¹Ù…±¥‘”ˆ¤ì(€€€€€€€¥˜€ …ÍÑ…Ñ”¹½¹¹•Ñ¥½¹ÌñðÑåÁ•½˜ÍÑ…Ñ”¹½¹¹•Ñ¥½¹Ì€„ôô€‰½‰©•ÐˆñðÉÉ…ä¹¥ÍÉÉ…ä¡ÍÑ…Ñ”¹½¹¹•Ñ¥½¹Ì¤¤ÍÑ…Ñ”¹½¹¹•Ñ¥½¹Ì€ôíôì(€€€€€€€‘•±•Ñ”ÍÑ…Ñ”¹½¹¹•Ñ¥½¹Ím¥¹Ñ•É…Ñ¥½¹%‘tì(€€€€€€€É•ÑÕÉ¸½¹¹•Ñ¥½¹Y¥•Ü¡¥¹Ñ•É…Ñ¥½¹%°ìÍÑ…ÑÕÌè€‰‘¥Í½¹¹•Ñ•ˆ°‘•Ñ…¥°è€‰ÍÍ½¥…Ñ¥½¸ÍÕÁÁÉ¥µ•”¸ˆô¤ì(€€€€€ô¤ì(€€€ô(€ô¤ì((€É•ÑÕÉ¸=‰©•Ð¹™É••é”¡ì(€€€Í¹…ÁÍ¡½Ð°(€€€•áÁ½ÉÑ±½Õ‘MÑ…Ñ”°(€€€¡å‘É…Ñ•±½Õ‘MÑ…Ñ”°(€€€ÍÕ‰ÍÉ¥‰•A•ÉÍ¥ÍÑ•¹”°(€€€±¥ÍÑAÉ½™¥±•Ì°(€€€…Ñ¥Ù•AÉ½™¥±”°(€€€Í•±•ÑAÉ½™¥±”°(€€€Í•Ñ=Ý¹•È°(€€€½Ý¹•Èè€ ¤€ôø½Ý¹•É%°(€€€É•…Ñ•AÉ½™¥±”°(€€€ÕÁ‘…Ñ•AÉ½™¥±”°(€€€‘ÕÁ±¥…Ñ•AÉ½™¥±”°(€€€‘•±•Ñ•AÉ½™¥±”°(€€€•áÁ½ÉÑAÉ½™¥±”°(€€€¹½Ñ•Ì°(€€€Ñ…Í­Ì°(€€€•Ù•¹ÑÌ°(€€€™¥±•Ì°(€€€…Ñ¥Ù¥Ñ¥•Ì°(€€€½¹¹•Ñ¥½¹Ì(€ô¤ì)ô(
+    const requestedActive = text(source.activeProfileId, "", 80);
+    persistenceMuted += 1;
+    try {
+      persistRawProfiles(profiles, "supabase-hydration");
+      const active = profiles.some((profile) => String(profile?.id) === requestedActive)
+        ? requestedActive
+        : text(profiles[0]?.id, "", 80);
+      const key = ownerId ? `${ACTIVE_PROFILE_KEY}:${ownerId}` : ACTIVE_PROFILE_KEY;
+      if (active) storage?.setItem(key, active);
+      else storage?.removeItem?.(key);
+    } catch (error) {
+      return result(false, "failed", "Les donnees Supabase n'ont pas pu etre appliquees.", error);
+    } finally {
+      persistenceMuted -= 1;
+    }
+    return result(true, "completed", "Donnees Supabase appliquees.", { profiles: profiles.length });
+  }
+
+  function subscribePersistence(listener) {
+    if (typeof listener !== "function") return () => false;
+    persistenceListeners.add(listener);
+    return () => persistenceListeners.delete(listener);
+  }
+
+  function snapshot(profileId = "") {
+    const profiles = readProfiles();
+    const requestedIndex = profileId ? profiles.findIndex((profile) => String(profile?.id) === String(profileId)) : -1;
+    const index = requestedIndex >= 0 ? requestedIndex : activeProfileIndex(profiles);
+    if (index < 0) {
+      return Object.freeze({ profile: null, notes: Object.freeze([]), tasks: Object.freeze([]), events: Object.freeze([]), files: Object.freeze([]), filesView: "list", activities: Object.freeze([]), connections: Object.freeze([]) });
+    }
+    const profile = profiles[index] || {};
+    const state = profile.state && typeof profile.state === "object" ? profile.state : {};
+    const favorites = Array.isArray(state.filesExplorer?.favorites) ? state.filesExplorer.favorites.map(String) : [];
+    return Object.freeze({
+      profile: Object.freeze({ id: text(profile.id, "local", 80), name: text(profile.name || state.username, "Rub", 80) }),
+      notes: Object.freeze((Array.isArray(state.notes) ? state.notes : []).map(noteView)),
+      tasks: Object.freeze((Array.isArray(state.todos) ? state.todos : []).map(taskView)),
+      events: Object.freeze((Array.isArray(state.events) ? state.events : []).map(eventView)),
+      files: Object.freeze((Array.isArray(state.items) ? state.items : []).map((item, itemIndex) => fileView(item, itemIndex, favorites))),
+      filesView: state.filesExplorer?.view === "grid" ? "grid" : "list",
+      activities: Object.freeze((Array.isArray(state.activityFeed) ? state.activityFeed : []).map(activityView)),
+      connections: Object.freeze(Object.entries(state.connections && typeof state.connections === "object" ? state.connections : {}).map(([id, connection]) => connectionView(id, connection)))
+    });
+  }
+
+  function listProfiles() {
+    return Object.freeze(readProfiles().map(profileView));
+  }
+
+  function activeProfile() {
+    const profiles = readProfiles();
+    const index = activeProfileIndex(profiles);
+    return index >= 0 ? profileView(profiles[index], index) : null;
+  }
+
+  function selectProfile(id) {
+    const profiles = readProfiles();
+    const index = profiles.findIndex((profile) => String(profile?.id) === String(id));
+    if (index < 0) return result(false, "unavailable", "Ce profil n'est pas disponible.");
+    const view = profileView(profiles[index], index);
+    if (view.locked) return result(false, "unavailable", "Ce profil nÃ©cessite un dÃ©verrouillage.", view);
+    try {
+      const key = ownerId ? `${ACTIVE_PROFILE_KEY}:${ownerId}` : ACTIVE_PROFILE_KEY;
+      storage?.setItem(key, view.id);
+      if (!persistenceMuted) persistenceListeners.forEach((listener) => { try { listener(Object.freeze({ reason: "active-profile", ownerId })); } catch {} });
+      return result(true, "completed", `Profil ${view.name} sÃ©lectionnÃ©.`, view);
+    } catch (error) {
+      return result(false, "failed", "Le profil n'a pas pu Ãªtre sÃ©lectionnÃ©.", error);
+    }
+  }
+
+  function persistProfiles(profiles, message, data) {
+    try {
+      persistRawProfiles(profiles);
+      return result(true, "completed", message, data ?? null);
+    } catch (error) {
+      return result(false, "failed", "La mise en cache a Ã©chouÃ©.", error);
+    }
+  }
+
+  function createProfile(input = {}) {
+    const profiles = readProfiles();
+    const type = PROFILE_TYPES.has(input.type) ? input.type : "personal";
+    const accent = Object.hasOwn(ACCENT_VALUES, input.accent) ? input.accent : PROFILE_ACCENTS[type];
+    const timestamp = now().toISOString();
+    const name = text(input.name, "Nouvel environnement", 80);
+    const profile = {
+      id: String(idFactory()),
+      name,
+      profileType: type,
+      description: text(input.description, PROFILE_COPY[type], 180),
+      avatarEmoji: text(input.avatar, name.slice(0, 2).toUpperCase(), 8),
+      avatarImg: null,
+      customAccent: ACCENT_VALUES[accent],
+      defaultSpace: text(input.space, type, 80),
+      defaultFlow: text(input.flow, "Essentiel", 80),
+      environment: {
+        widgets: safeList(input.widgets, ENVIRONMENT_WIDGETS),
+        integrations: safeList(input.integrations, ENVIRONMENT_INTEGRATIONS, 4),
+        ambience: ENVIRONMENT_AMBIENCES.has(input.ambience) ? input.ambience : "balanced",
+        background: ENVIRONMENT_BACKGROUNDS.has(input.background) ? input.background : "signal"
+      },
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      state: { username: name, notes: [], todos: [], events: [], items: [] }
+    };
+    profiles.push(profile);
+    return persistProfiles(profiles, `Profil ${name} crÃ©Ã©.`, profileView(profile, profiles.length - 1));
+  }
+
+  function updateProfile(id, patch = {}) {
+    const profiles = readProfiles();
+    const index = profiles.findIndex((profile) => String(profile?.id) === String(id));
+    if (index < 0) return result(false, "unavailable", "Ce profil n'est pas disponible.");
+    const profile = profiles[index];
+    const nextType = Object.hasOwn(patch, "type") && PROFILE_TYPES.has(patch.type)
+      ? patch.type
+      : inferProfileType(profile);
+    if (Object.hasOwn(patch, "name")) {
+      profile.name = text(patch.name, profileView(profile, index).name, 80);
+      if (profile.state && typeof profile.state === "object") profile.state.username = profile.name;
+    }
+    if (Object.hasOwn(patch, "description")) profile.description = text(patch.description, PROFILE_COPY[nextType], 180);
+    if (Object.hasOwn(patch, "type")) profile.profileType = nextType;
+    if (Object.hasOwn(patch, "avatar")) {
+      profile.avatarEmoji = text(patch.avatar, profile.name?.slice(0, 2).toUpperCase() || "E", 8);
+      profile.avatarImg = null;
+    }
+    if (Object.hasOwn(patch, "accent") && Object.hasOwn(ACCENT_VALUES, patch.accent)) {
+      profile.customAccent = ACCENT_VALUES[patch.accent];
+    }
+    if (Object.hasOwn(patch, "space")) profile.defaultSpace = text(patch.space, nextType, 80);
+    if (Object.hasOwn(patch, "flow")) profile.defaultFlow = text(patch.flow, "Essentiel", 80);
+    if (!profile.environment || typeof profile.environment !== "object") profile.environment = {};
+    if (Object.hasOwn(patch, "widgets")) profile.environment.widgets = safeList(patch.widgets, ENVIRONMENT_WIDGETS);
+    if (Object.hasOwn(patch, "integrations")) profile.environment.integrations = safeList(patch.integrations, ENVIRONMENT_INTEGRATIONS, 4);
+    if (Object.hasOwn(patch, "ambience") && ENVIRONMENT_AMBIENCES.has(patch.ambience)) profile.environment.ambience = patch.ambience;
+    if (Object.hasOwn(patch, "background") && ENVIRONMENT_BACKGROUNDS.has(patch.background)) profile.environment.background = patch.background;
+    profile.updatedAt = now().toISOString();
+    return persistProfiles(profiles, `Profil ${profileView(profile, index).name} mis Ã  jour.`, profileView(profile, index));
+  }
+
+  function duplicateProfile(id) {
+    const profiles = readProfiles();
+    const index = profiles.findIndex((profile) => String(profile?.id) === String(id));
+    if (index < 0) return result(false, "unavailable", "Ce profil n'est pas disponible.");
+    try {
+      const duplicate = JSON.parse(JSON.stringify(profiles[index]));
+      duplicate.id = String(idFactory());
+      duplicate.name = `${text(duplicate.name, `Profil ${index + 1}`, 70)} â€” copie`;
+      duplicate.createdAt = now().toISOString();
+      duplicate.updatedAt = duplicate.createdAt;
+      delete duplicate.password;
+      if (duplicate.state && typeof duplicate.state === "object") duplicate.state.username = duplicate.name;
+      profiles.push(duplicate);
+      return persistProfiles(profiles, `Profil ${duplicate.name} crÃ©Ã©.`, profileView(duplicate, profiles.length - 1));
+    } catch (error) {
+      return result(false, "failed", "Le profil n'a pas pu Ãªtre dupliquÃ©.", error);
+    }
+  }
+
+  function deleteProfile(id) {
+    const profiles = readProfiles();
+    if (profiles.length <= 1) return result(false, "unavailable", "Le dernier profil ne peut pas Ãªtre supprimÃ©.");
+    const index = profiles.findIndex((profile) => String(profile?.id) === String(id));
+    if (index < 0) return result(false, "unavailable", "Ce profil n'est pas disponible.");
+    const [removed] = profiles.splice(index, 1);
+    const activeKey = ownerId ? `${ACTIVE_PROFILE_KEY}:${ownerId}` : ACTIVE_PROFILE_KEY;
+    const activeId = text(storage?.getItem(activeKey), "", 80);
+    const nextActive = activeId === String(id)
+      ? (profiles.find((profile) => !hasProfileLock(profile)) || profiles[0])
+      : null;
+    const persisted = persistProfiles(profiles, `Profil ${profileView(removed, index).name} supprimÃ©.`, profileView(removed, index));
+    if (!persisted.ok || !nextActive) return persisted;
+    try { storage?.setItem(activeKey, text(nextActive.id, "", 80)); } catch {}
+    return persisted;
+  }
+
+  function sanitizedExport(value, seen = new WeakSet()) {
+    if (value == null || typeof value !== "object") return value;
+    if (seen.has(value)) return null;
+    seen.add(value);
+    if (Array.isArray(value)) return value.map((entry) => sanitizedExport(entry, seen));
+    return Object.fromEntries(Object.entries(value)
+      .filter(([key]) => !/(password|token|secret|api.?key|authorization|session)/i.test(key))
+      .map(([key, entry]) => [key, sanitizedExport(entry, seen)]));
+  }
+
+  function exportProfile(id) {
+    const profiles = readProfiles();
+    const index = profiles.findIndex((profile) => String(profile?.id) === String(id));
+    if (index < 0) return result(false, "unavailable", "Ce profil n'est pas disponible.");
+    const payload = Object.freeze({
+      format: "ethone-profile",
+      version: 1,
+      exportedAt: now().toISOString(),
+      profile: sanitizedExport(profiles[index])
+    });
+    return result(true, "completed", "Export prÃªt.", payload);
+  }
+
+  function mutate(collection, mutation) {
+    const key = COLLECTIONS[collection];
+    if (!key) return result(false, "failed", "Collection inconnue.");
+    const profiles = readProfiles();
+    const profileIndex = activeProfileIndex(profiles);
+    if (profileIndex < 0) return result(false, "unavailable", "Aucun profil n'est disponible.");
+    const profile = profiles[profileIndex];
+    if (!profile.state || typeof profile.state !== "object") profile.state = {};
+    if (!Array.isArray(profile.state[key])) profile.state[key] = [];
+
+    try {
+      const data = mutation(profile.state[key], profile.state);
+      persistRawProfiles(profiles);
+      return result(true, "completed", "Modification en attente de synchronisation.", data ?? null);
+    } catch (error) {
+      return result(false, "failed", "La mise en cache a Ã©chouÃ©.", error);
+    }
+  }
+
+  function mutateState(mutation) {
+    const profiles = readProfiles();
+    const profileIndex = activeProfileIndex(profiles);
+    if (profileIndex < 0) return result(false, "unavailable", "Aucun profil n'est disponible.");
+    const profile = profiles[profileIndex];
+    if (!profile.state || typeof profile.state !== "object") profile.state = {};
+    try {
+      const data = mutation(profile.state);
+      persistRawProfiles(profiles);
+      return result(true, "completed", "Modification en attente de synchronisation.", data ?? null);
+    } catch (error) {
+      return result(false, "failed", "La mise en cache a echoue.", error);
+    }
+  }
+
+  const notes = Object.freeze({
+    create(input = {}) {
+      return mutate("notes", (list) => {
+        const timestamp = now().toISOString();
+        const note = {
+          id: String(idFactory()),
+          title: text(input.title, "Note sans titre", 160),
+          content: text(input.content, "", 50000),
+          tags: [],
+          relations: [],
+          pinned: false,
+          color: "",
+          created: timestamp,
+          updated: timestamp
+        };
+        list.unshift(note);
+        return noteView(note, 0);
+      });
+    },
+    update(id, patch = {}) {
+      return mutate("notes", (list) => {
+        const note = list.find((entry) => String(entry?.id) === String(id));
+        if (!note) throw new Error("Note introuvable");
+        if (Object.hasOwn(patch, "title")) note.title = text(patch.title, "Note sans titre", 160);
+        if (Object.hasOwn(patch, "content")) note.content = text(patch.content, "", 50000);
+        note.updated = now().toISOString();
+        return noteView(note, 0);
+      });
+    },
+    remove(id) {
+      return mutate("notes", (list) => {
+        const index = list.findIndex((entry) => String(entry?.id) === String(id));
+        if (index < 0) throw new Error("Note introuvable");
+        const [removed] = list.splice(index, 1);
+        return noteView(removed, 0);
+      });
+    }
+  });
+
+  const tasks = Object.freeze({
+    create(input = {}) {
+      return mutate("tasks", (list) => {
+        const timestamp = now().toISOString();
+        const task = {
+          id: String(idFactory()),
+          text: text(input.title, "Nouvelle tÃ¢che", 240),
+          priority: ["low", "normal", "high"].includes(input.priority) ? input.priority : "normal",
+          done: false,
+          color: "",
+          due: text(input.due, "", 16),
+          tag: text(input.tag, "", 48),
+          date: new Intl.DateTimeFormat(localeTag(), { day: "2-digit", month: "short" }).format(now()),
+          createdAt: timestamp
+        };
+        list.unshift(task);
+        return taskView(task, 0);
+      });
+    },
+    toggle(id) {
+      return mutate("tasks", (list) => {
+        const task = list.find((entry) => String(entry?.id) === String(id));
+        if (!task) throw new Error("TÃ¢che introuvable");
+        task.done = !(task.done === true || task.completed === true);
+        if (task.done) task.doneAt = now().toISOString();
+        else delete task.doneAt;
+        return taskView(task, 0);
+      });
+    },
+    setDone(ids = [], done = true) {
+      const requested = new Set((Array.isArray(ids) ? ids : []).map(String));
+      return mutate("tasks", (list) => {
+        const timestamp = now().toISOString();
+        const changed = [];
+        list.forEach((task, index) => {
+          if (!requested.has(String(task?.id))) return;
+          task.done = done === true;
+          if (task.done) task.doneAt = timestamp;
+          else delete task.doneAt;
+          changed.push(taskView(task, index));
+        });
+        return Object.freeze(changed);
+      });
+    },
+    removeMany(ids = []) {
+      const requested = new Set((Array.isArray(ids) ? ids : []).map(String));
+      return mutate("tasks", (list) => {
+        const removed = list.filter((task) => requested.has(String(task?.id))).map(taskView);
+        for (let index = list.length - 1; index >= 0; index -= 1) {
+          if (requested.has(String(list[index]?.id))) list.splice(index, 1);
+        }
+        return Object.freeze(removed);
+      });
+    },
+    remove(id) {
+      return mutate("tasks", (list) => {
+        const index = list.findIndex((entry) => String(entry?.id) === String(id));
+        if (index < 0) throw new Error("TÃ¢che introuvable");
+        return taskView(list.splice(index, 1)[0], 0);
+      });
+    }
+  });
+
+  const events = Object.freeze({
+    create(input = {}) {
+      return mutate("events", (list) => {
+        const event = {
+          id: String(idFactory()),
+          title: text(input.title, "Ã‰vÃ©nement", 180),
+          date: text(input.date, "", 16),
+          color: "accent"
+        };
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(event.date)) throw new Error("Date invalide");
+        list.push(event);
+        list.sort((left, right) => String(left?.date || "").localeCompare(String(right?.date || "")));
+        return eventView(event, 0);
+      });
+    },
+    remove(id) {
+      return mutate("events", (list) => {
+        const index = list.findIndex((entry) => String(entry?.id) === String(id));
+        if (index < 0) throw new Error("Ã‰vÃ©nement introuvable");
+        return eventView(list.splice(index, 1)[0], 0);
+      });
+    }
+  });
+
+  const files = Object.freeze({
+    setView(view) {
+      return mutateState((state) => {
+        if (!state.filesExplorer || typeof state.filesExplorer !== "object") state.filesExplorer = {};
+        state.filesExplorer.view = view === "grid" ? "grid" : "list";
+        return state.filesExplorer.view;
+      });
+    },
+    create(input = {}) {
+      return mutate("files", (list) => {
+        const type = ["link", "folder"].includes(input.type) ? input.type : "link";
+        const url = type === "link" ? safeUrl(input.url) : "";
+        if (type === "link" && !url) throw new Error("Lien invalide");
+        const timestamp = now().toISOString();
+        const item = {
+          id: String(idFactory()),
+          name: text(input.name, type === "folder" ? "Nouveau dossier" : "Nouveau lien", 180),
+          type,
+          url,
+          tag: text(input.tag, "", 80),
+          date: new Intl.DateTimeFormat(localeTag(), { day: "2-digit", month: "short" }).format(now()),
+          createdAt: timestamp,
+          updatedAt: timestamp
+        };
+        list.unshift(item);
+        return fileView(item, 0, []);
+      });
+    },
+    toggleFavorite(id) {
+      return mutate("files", (list, state) => {
+        const item = list.find((entry) => String(entry?.id) === String(id));
+        if (!item) throw new Error("Fichier introuvable");
+        if (!state.filesExplorer || typeof state.filesExplorer !== "object") state.filesExplorer = {};
+        if (!Array.isArray(state.filesExplorer.favorites)) state.filesExplorer.favorites = [];
+        const favorites = state.filesExplorer.favorites.map(String);
+        const itemId = String(item.id);
+        state.filesExplorer.favorites = favorites.includes(itemId)
+          ? favorites.filter((entry) => entry !== itemId)
+          : [...favorites, itemId];
+        return fileView(item, 0, state.filesExplorer.favorites);
+      });
+    },
+    setFavorite(ids = [], favorite = true) {
+      const requested = new Set((Array.isArray(ids) ? ids : []).map(String));
+      return mutate("files", (list, state) => {
+        if (!state.filesExplorer || typeof state.filesExplorer !== "object") state.filesExplorer = {};
+        const current = new Set((Array.isArray(state.filesExplorer.favorites) ? state.filesExplorer.favorites : []).map(String));
+        requested.forEach((id) => favorite === true ? current.add(id) : current.delete(id));
+        state.filesExplorer.favorites = [...current];
+        return Object.freeze(list.filter((item) => requested.has(String(item?.id))).map((item, index) => fileView(item, index, state.filesExplorer.favorites)));
+      });
+    },
+    removeMany(ids = []) {
+      const requested = new Set((Array.isArray(ids) ? ids : []).map(String));
+      return mutate("files", (list, state) => {
+        const favorites = Array.isArray(state.filesExplorer?.favorites) ? state.filesExplorer.favorites.map(String) : [];
+        const removed = list.filter((item) => requested.has(String(item?.id))).map((item, index) => fileView(item, index, favorites));
+        for (let index = list.length - 1; index >= 0; index -= 1) {
+          if (requested.has(String(list[index]?.id))) list.splice(index, 1);
+        }
+        if (Array.isArray(state.filesExplorer?.favorites)) state.filesExplorer.favorites = favorites.filter((id) => !requested.has(id));
+        return Object.freeze(removed);
+      });
+    },
+    remove(id) {
+      return mutate("files", (list, state) => {
+        const index = list.findIndex((entry) => String(entry?.id) === String(id));
+        if (index < 0) throw new Error("Fichier introuvable");
+        const removed = list.splice(index, 1)[0];
+        if (Array.isArray(state.filesExplorer?.favorites)) {
+          state.filesExplorer.favorites = state.filesExplorer.favorites.map(String).filter((entry) => entry !== String(id));
+        }
+        return fileView(removed, 0, []);
+      });
+    }
+  });
+
+  const activities = Object.freeze({
+    record(input = {}) {
+      return mutateState((state) => {
+        if (!Array.isArray(state.activityFeed)) state.activityFeed = [];
+        const entry = {
+          id: String(idFactory()),
+          source: text(input.source, "ethone", 48).toLowerCase(),
+          category: ACTIVITY_CATEGORIES.has(input.category) ? input.category : "system",
+          icon: text(input.icon, "activity", 48),
+          title: text(input.title, "Activite ETHONE", 180),
+          description: text(input.description, "", 500),
+          timestamp: text(input.timestamp, now().toISOString(), 40),
+          tone: text(input.tone, "default", 24)
+        };
+        state.activityFeed.unshift(entry);
+        state.activityFeed = state.activityFeed.slice(0, 200);
+        return activityView(entry, 0);
+      });
+    },
+    clear() {
+      return mutateState((state) => {
+        state.activityFeed = [];
+        return true;
+      });
+    }
+  });
+
+  const connections = Object.freeze({
+    configure(id, input = {}) {
+      return mutateState((state) => {
+        if (!state.connections || typeof state.connections !== "object" || Array.isArray(state.connections)) state.connections = {};
+        const integrationId = safeIdentifier(id);
+        if (!integrationId) throw new Error("Integration invalide");
+        const existing = Object.hasOwn(state.connections, integrationId) && typeof state.connections[integrationId] === "object" ? state.connections[integrationId] : {};
+        state.connections[integrationId] = {
+          ...existing,
+          id: integrationId,
+          status: CONNECTION_STATUSES.has(existing.status) ? existing.status : "disconnected",
+          setupComplete: true,
+          methodId: safeIdentifier(input.methodId) || safeIdentifier(existing.methodId),
+          reference: text(input.reference, existing.reference || "", 512),
+          configuredAt: now().toISOString(),
+          apiVersion: text(input.apiVersion || existing.apiVersion, "En attente d'OAuth", 40),
+          detail: text(input.detail, "Configuration chiffree prete. Aucun secret stocke.", 180)
+        };
+        return connectionView(integrationId, state.connections[integrationId]);
+      });
+    },
+    updateStatus(id, status, patch = {}) {
+      return mutateState((state) => {
+        if (!CONNECTION_STATUSES.has(status)) throw new Error("Etat de connexion invalide");
+        if (!state.connections || typeof state.connections !== "object" || Array.isArray(state.connections)) state.connections = {};
+        const integrationId = safeIdentifier(id);
+        if (!integrationId) throw new Error("Integration invalide");
+        const existing = Object.hasOwn(state.connections, integrationId) && typeof state.connections[integrationId] === "object" ? state.connections[integrationId] : {};
+        const responseMs = Number(Object.hasOwn(patch, "responseMs") ? patch.responseMs : existing.responseMs);
+        state.connections[integrationId] = {
+          ...existing,
+          id: integrationId,
+          status,
+          setupComplete: existing.setupComplete === true,
+          methodId: safeIdentifier(patch.methodId) || safeIdentifier(existing.methodId),
+          reference: text(patch.reference, existing.reference || "", 512),
+          lastSyncAt: text(patch.lastSyncAt || existing.lastSyncAt, "", 40),
+          lastTestedAt: text(patch.lastTestedAt || existing.lastTestedAt, "", 40),
+          responseMs: Number.isFinite(responseMs) ? Math.min(600000, Math.max(0, Math.round(responseMs))) : null,
+          apiVersion: text(patch.apiVersion || existing.apiVersion, "Non connectee", 40),
+          detail: text(patch.detail, existing.detail || "", 180)
+        };
+        return connectionView(integrationId, state.connections[integrationId]);
+      });
+    },
+    test(id) {
+      const current = snapshot().connections.find((connection) => connection.id === String(id));
+      if (!current?.setupComplete) return result(false, "unavailable", "Terminez d'abord le guide de configuration.");
+      if (current.status !== "connected") return result(false, "unavailable", "Le connecteur est prepare, mais aucun OAuth backend n'est actif.", current);
+      return this.updateStatus(id, "connected", { lastTestedAt: now().toISOString(), lastSyncAt: current.lastSyncAt, apiVersion: current.apiVersion, detail: "Etat de connexion verifie." });
+    },
+    disconnect(id) {
+      return mutateState((state) => {
+        const integrationId = safeIdentifier(id);
+        if (!integrationId) throw new Error("Integration invalide");
+        if (!state.connections || typeof state.connections !== "object" || Array.isArray(state.connections)) state.connections = {};
+        delete state.connections[integrationId];
+        return connectionView(integrationId, { status: "disconnected", detail: "Association supprimee." });
+      });
+    }
+  });
+
+  return Object.freeze({
+    snapshot,
+    exportCloudState,
+    hydrateCloudState,
+    subscribePersistence,
+    listProfiles,
+    activeProfile,
+    selectProfile,
+    setOwner,
+    owner: () => ownerId,
+    createProfile,
+    updateProfile,
+    duplicateProfile,
+    deleteProfile,
+    exportProfile,
+    notes,
+    tasks,
+    events,
+    files,
+    activities,
+    connections
+  });
+}

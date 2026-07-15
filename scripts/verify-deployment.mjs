@@ -1,6 +1,14 @@
+import { readFileSync } from "node:fs";
+
 const target = process.argv[2];
 const attempts = Math.max(1, Number(process.argv[3] || 8));
 const delayMs = Math.max(250, Number(process.argv[4] || 5000));
+
+const localWorker = readFileSync(new URL("../sw.js", import.meta.url), "utf8");
+const expectedWorkerVersion = localWorker.match(/const ETHONE_VERSION = "([^"]+)"/)?.[1] || "";
+if (!/^\d{4}-\d{2}-\d{2}-experience-v\d+$/.test(expectedWorkerVersion)) {
+  throw new Error("Local Service Worker release marker is missing or invalid");
+}
 
 if (!target) {
   console.error("Usage: node scripts/verify-deployment.mjs <url> [attempts] [delayMs]");
@@ -54,7 +62,7 @@ async function verify() {
   if (!maskIconResponse.ok || !String(maskIconResponse.headers.get("content-type") || "").includes("image/svg")) throw new Error("Safari mask icon is unavailable or has an invalid content type");
 
   const worker = await workerResponse.text();
-  if (!worker.includes("2026-07-14-experience-v96")) throw new Error("Service Worker release marker is stale");
+  if (!worker.includes(`const ETHONE_VERSION = "${expectedWorkerVersion}"`)) throw new Error("Service Worker release marker is stale");
   const manifest = await manifestResponse.json();
   if (manifest.id !== "./" || manifest.start_url !== "./") throw new Error("Manifest scope is invalid");
   if (!manifest.icons?.some((icon) => icon.src === "icons/ethone-icon-maskable-512.png" && icon.purpose === "maskable")) throw new Error("Manifest maskable icon is missing");

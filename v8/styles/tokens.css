@@ -258,6 +258,7 @@
   --v8-interaction-press-filter:brightness(.96) saturate(.98) var(--v8-shadow-press-filter);
   --v8-interaction-drag-filter:brightness(1.04) saturate(1.03) var(--v8-shadow-drag-filter);
 
+  --v8-icon-xs: max(14px, calc(var(--density-icon-size) - 6px));
   --v8-icon-sm: max(16px, calc(var(--density-icon-size) - 4px));
   --v8-icon-md: var(--density-icon-size);
   --v8-icon-lg: calc(var(--density-icon-size) + 4px);

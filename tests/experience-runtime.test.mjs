@@ -423,26 +423,44 @@ test("Spotlight CSS is GPU-only, bounded and reduced-motion safe", () => {
 test("Login polish keeps the auth flow keyboard-safe and motion-bounded", () => {
   const login = fs.readFileSync(new URL("../v8/entry/login.mjs", import.meta.url), "utf8");
   const entry = fs.readFileSync(new URL("../v8/styles/entry.css", import.meta.url), "utf8");
+  const components = fs.readFileSync(new URL("../v8/styles/components.css", import.meta.url), "utf8");
   assert.match(login, /className: "v8-auth-shell"/);
   assert.match(login, /dataset: \{ authMode: "login" \}/);
   assert.match(login, /toggleAttribute\("inert", !loginActive\)/);
   assert.match(login, /toggleAttribute\("inert", loginActive\)/);
   assert.doesNotMatch(login, /register-form"[\s\S]{0,160}hidden: true/);
+  assert.match(login, /className: "v8-auth__label-text"/);
+  assert.match(login, /rememberDetail: "Uniquement sur cet appareil"/);
+  assert.match(login, /className: "v8-entry__capabilities"/);
+  assert.match(login, /capability\("brain", "brain"\)/);
+  assert.match(login, /capability\("workflow", "flows"\)/);
   assert.match(entry, /\.v8-auth-shell::before[\s\S]*radial-gradient/);
   assert.match(entry, /\.v8-auth::after[\s\S]*linear-gradient/);
   assert.match(entry, /\.v8-auth__tabs::before[\s\S]*transition:\s*transform/);
   assert.match(entry, /\.v8-auth__form\[aria-hidden="true"\][\s\S]*opacity:\s*0[\s\S]*visibility:\s*hidden/);
   assert.match(entry, /\.v8-entry--login \.v8-auth__input:focus-visible[\s\S]*var\(--v8-login-ring\)/);
   assert.match(entry, /prefers-reduced-motion:\s*reduce[\s\S]*\.v8-auth__form/);
-  assert.match(entry, /\.v8-auth-shell::before[\s\S]*filter:\s*blur\(30px\)[\s\S]*scale\(1\.12\)/);
+  const authHalo = entry.match(/\.v8-auth-shell::before\s*\{[^}]*\}/s)?.[0] || "";
+  assert.match(authHalo, /filter:\s*blur\(30px\)/);
+  assert.doesNotMatch(authHalo, /transform:/);
   assert.match(entry, /\.v8-auth\s*\{[^}]*inset 0 0 32px[^}]*backdrop-filter:/s);
   assert.match(entry, /\.v8-entry--login \.v8-auth__submit\.v8-button--primary[\s\S]*var\(--v8-login-primary\)/);
-  assert.match(entry, /\.v8-auth__oauth-button svg\s*\{[^}]*width:\s*19px[^}]*stroke-width:\s*1\.85/s);
+  assert.match(entry, /\.v8-auth__oauth-button svg\s*\{[^}]*width:\s*20px[^}]*stroke-width:\s*1\.85/s);
   assert.match(entry, /\.v8-auth__form\s*\{[^}]*transition:\s*opacity[^}]*transform/s);
+  assert.match(entry, /\.v8-auth__form\[aria-hidden="true"\]\s*\{[^}]*position:\s*absolute[^}]*visibility:\s*hidden/s);
+  assert.match(entry, /data-auth-mode="register"[^}]*\.v8-auth__forms\s*\{[^}]*min-height:\s*436px/s);
   assert.match(entry, /data-auth-mode="login"[^}]*#v8-register-form[^}]*translate3d\(14px/);
   assert.match(entry, /data-auth-mode="register"[^}]*#v8-login-form[^}]*translate3d\(-14px/);
-  assert.doesNotMatch(entry.match(/\.v8-auth-shell::before\s*\{[^}]*\}/s)?.[0] || "", /animation:/);
-  assert.doesNotMatch(entry.match(/\.v8-auth-shell::before\s*\{[^}]*\}/s)?.[0] || "", /inset:\s*-/);
+  assert.match(entry, /\.v8-auth__remember-control\s*\{[^}]*width:\s*20px[^}]*border-radius:\s*6px/s);
+  assert.match(entry, /aria-busy="true"[^}]*\.v8-auth__remember-control::after[^}]*v8-spin/s);
+  assert.match(entry, /\.v8-entry__capability\s*\{[^}]*min-height:\s*40px[^}]*background:/s);
+  assert.match(entry, /\.v8-entry\s*\{[^}]*overflow:\s*hidden;[^}]*overflow:\s*clip;/s);
+  assert.match(entry, /input:not\(\[type="hidden"\]\):not\(\[type="checkbox"\]\):not\(\[type="radio"\]\)/);
+  assert.match(components, /input:not\(\[type="hidden"\]\):not\(\[type="checkbox"\]\):not\(\[type="radio"\]\)/);
+  assert.match(components, /\.v8-form-choice\s*\{\s*min-height:\s*var\(--v8-touch-target\)/);
+  assert.match(entry, /max-width:\s*420px[\s\S]*\.v8-entry__preview\s*\{\s*display:\s*none/);
+  assert.doesNotMatch(authHalo, /animation:/);
+  assert.doesNotMatch(authHalo, /inset:\s*-/);
 });
 
 test("profile selection exposes an honest live environment preview", () => {

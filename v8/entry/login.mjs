@@ -19,6 +19,7 @@ export const LOGIN_LOCALES = Object.freeze({
     username: "Nom d'utilisateur",
     email: "E-mail",
     remember: "Rester connecté",
+    rememberDetail: "Uniquement sur cet appareil",
     loginSubtitle: "Reprenez exactement là où vous vous êtes arrêté.",
     registerSubtitle: "Créez votre environnement personnel en quelques secondes.",
     privacy: "Session chiffrée",
@@ -34,6 +35,10 @@ export const LOGIN_LOCALES = Object.freeze({
     language: "Langue de l'interface",
     authTabs: "Authentification",
     strength: "Robustesse du mot de passe",
+    strengthWeak: "Faible",
+    strengthFair: "Moyen",
+    strengthGood: "Bon",
+    strengthStrong: "Fort",
     google: "Continuer avec Google",
     github: "Continuer avec GitHub",
     network: "Réseau",
@@ -42,7 +47,14 @@ export const LOGIN_LOCALES = Object.freeze({
     cloudReady: "Cloud disponible",
     cloudUnavailable: "Cloud indisponible",
     local: "Heure locale",
-    environment: "ENVIRONNEMENT PERSONNEL"
+    environment: "ENVIRONNEMENT PERSONNEL",
+    capabilities: "Les fondamentaux d'ETHONE",
+    brain: "Brain",
+    spaces: "Spaces",
+    flows: "Flows",
+    cloudSync: "Sync cloud",
+    security: "Sécurité",
+    widgets: "Widgets"
   }),
   en: Object.freeze({
     brandLine: "Your digital environment. Reimagined.",
@@ -59,6 +71,7 @@ export const LOGIN_LOCALES = Object.freeze({
     username: "Username",
     email: "Email",
     remember: "Stay signed in",
+    rememberDetail: "Only on this device",
     loginSubtitle: "Continue exactly where you left off.",
     registerSubtitle: "Create your personal environment in seconds.",
     privacy: "Encrypted session",
@@ -74,6 +87,10 @@ export const LOGIN_LOCALES = Object.freeze({
     language: "Interface language",
     authTabs: "Authentication",
     strength: "Password strength",
+    strengthWeak: "Weak",
+    strengthFair: "Fair",
+    strengthGood: "Good",
+    strengthStrong: "Strong",
     google: "Continue with Google",
     github: "Continue with GitHub",
     network: "Network",
@@ -82,7 +99,14 @@ export const LOGIN_LOCALES = Object.freeze({
     cloudReady: "Cloud available",
     cloudUnavailable: "Cloud unavailable",
     local: "Local time",
-    environment: "PERSONAL OPERATING ENVIRONMENT"
+    environment: "PERSONAL OPERATING ENVIRONMENT",
+    capabilities: "ETHONE essentials",
+    brain: "Brain",
+    spaces: "Spaces",
+    flows: "Flows",
+    cloudSync: "Cloud sync",
+    security: "Security",
+    widgets: "Widgets"
   }),
   es: Object.freeze({
     brandLine: "Tu entorno digital. Reinventado.",
@@ -99,6 +123,7 @@ export const LOGIN_LOCALES = Object.freeze({
     username: "Usuario",
     email: "Email",
     remember: "Mantener la sesión",
+    rememberDetail: "Solo en este dispositivo",
     loginSubtitle: "Continúa exactamente donde lo dejaste.",
     registerSubtitle: "Crea tu entorno personal en segundos.",
     privacy: "Sesión cifrada",
@@ -114,6 +139,10 @@ export const LOGIN_LOCALES = Object.freeze({
     language: "Idioma de la interfaz",
     authTabs: "Autenticación",
     strength: "Seguridad de la contraseña",
+    strengthWeak: "Débil",
+    strengthFair: "Media",
+    strengthGood: "Buena",
+    strengthStrong: "Fuerte",
     google: "Continuar con Google",
     github: "Continuar con GitHub",
     network: "Red",
@@ -122,7 +151,14 @@ export const LOGIN_LOCALES = Object.freeze({
     cloudReady: "Cloud disponible",
     cloudUnavailable: "Cloud no disponible",
     local: "Hora local",
-    environment: "ENTORNO OPERATIVO PERSONAL"
+    environment: "ENTORNO OPERATIVO PERSONAL",
+    capabilities: "Esenciales de ETHONE",
+    brain: "Brain",
+    spaces: "Spaces",
+    flows: "Flows",
+    cloudSync: "Sincronización",
+    security: "Seguridad",
+    widgets: "Widgets"
   }),
   de: Object.freeze({
     brandLine: "Deine digitale Umgebung. Neu gedacht.",
@@ -139,6 +175,7 @@ export const LOGIN_LOCALES = Object.freeze({
     username: "Benutzername",
     email: "E-Mail",
     remember: "Angemeldet bleiben",
+    rememberDetail: "Nur auf diesem Gerät",
     loginSubtitle: "Mache genau dort weiter, wo du aufgehört hast.",
     registerSubtitle: "Erstelle deine persönliche Umgebung in Sekunden.",
     privacy: "Verschlüsselte Sitzung",
@@ -154,6 +191,10 @@ export const LOGIN_LOCALES = Object.freeze({
     language: "Sprache der Oberfläche",
     authTabs: "Authentifizierung",
     strength: "Passwortstärke",
+    strengthWeak: "Schwach",
+    strengthFair: "Mittel",
+    strengthGood: "Gut",
+    strengthStrong: "Stark",
     google: "Weiter mit Google",
     github: "Weiter mit GitHub",
     network: "Netzwerk",
@@ -162,7 +203,14 @@ export const LOGIN_LOCALES = Object.freeze({
     cloudReady: "Cloud verfugbar",
     cloudUnavailable: "Cloud nicht verfugbar",
     local: "Ortszeit",
-    environment: "PERSÖNLICHE ARBEITSUMGEBUNG"
+    environment: "PERSÖNLICHE ARBEITSUMGEBUNG",
+    capabilities: "ETHONE Grundlagen",
+    brain: "Brain",
+    spaces: "Spaces",
+    flows: "Flows",
+    cloudSync: "Cloud-Sync",
+    security: "Sicherheit",
+    widgets: "Widgets"
   })
 });
 
@@ -189,7 +237,7 @@ function storedLocale(storage) {
 }
 
 function field({ id, type = "text", key, autocomplete, placeholder, bindings, required = type !== "email" }) {
-  const labelText = element("span", { className: "v8-field__label" });
+  const labelText = element("span", { className: "v8-auth__label-text" });
   bindings.push({ node: labelText, key, target: "text" });
   const input = element("input", {
     className: "v8-input v8-auth__input",
@@ -203,7 +251,7 @@ function field({ id, type = "text", key, autocomplete, placeholder, bindings, re
 }
 
 function passwordField({ id, autocomplete, bindings, signal }) {
-  const labelText = element("span", { className: "v8-field__label" });
+  const labelText = element("span", { className: "v8-auth__label-text" });
   bindings.push({ node: labelText, key: "password", target: "text" });
   const input = element("input", {
     className: "v8-input v8-auth__input",
@@ -291,9 +339,13 @@ export function mountLogin(root, options = {}) {
     bindings
   });
   const loginPassword = passwordField({ id: "v8-login-password", autocomplete: "current-password", bindings, signal: abortController.signal });
-  const rememberInput = element("input", { className: "v8-checkbox", attributes: { type: "checkbox", id: "v8-auth-remember" } });
+  const rememberInput = element("input", {
+    className: "v8-checkbox v8-auth__remember-control",
+    attributes: { type: "checkbox", id: "v8-auth-remember", "aria-describedby": "v8-auth-remember-detail" }
+  });
   try { rememberInput.checked = storage?.getItem("ethone_remember_auth") !== "0"; } catch { rememberInput.checked = true; }
-  const rememberText = bindText(element("span"), "remember");
+  const rememberText = bindText(element("span", { className: "v8-auth__remember-title" }), "remember");
+  const rememberDetail = bindText(element("small", { className: "v8-auth__remember-detail", id: "v8-auth-remember-detail" }), "rememberDetail");
   const forgotButton = element("button", { className: "v8-auth__text-action", attributes: { type: "button" } });
   bindText(forgotButton, "forgot");
   const loginSubmit = element("button", { className: "v8-button v8-button--primary v8-auth__submit", attributes: { type: "submit" } }, [
@@ -307,7 +359,10 @@ export function mountLogin(root, options = {}) {
     loginIdentifier.node,
     loginPassword.node,
     element("div", { className: "v8-auth__form-row" }, [
-      element("label", { className: "v8-auth__remember", attributes: { for: "v8-auth-remember" } }, [rememberInput, rememberText]),
+      element("label", { className: "v8-auth__remember", attributes: { for: "v8-auth-remember" } }, [
+        rememberInput,
+        element("span", { className: "v8-auth__remember-copy" }, [rememberText, rememberDetail])
+      ]),
       forgotButton
     ]),
     loginSubmit
@@ -386,6 +441,23 @@ export function mountLogin(root, options = {}) {
     { node: timeTelemetry.label, key: "local", target: "text" }
   );
 
+  function capability(iconName, key) {
+    return element("li", { className: "v8-entry__capability" }, [
+      element("span", { className: "v8-entry__capability-icon", attributes: { "aria-hidden": "true" } }, [icon(iconName)]),
+      bindText(element("span", { className: "v8-entry__capability-label" }), key)
+    ]);
+  }
+
+  const capabilities = element("ul", { className: "v8-entry__capabilities" }, [
+    capability("brain", "brain"),
+    capability("layers-3", "spaces"),
+    capability("workflow", "flows"),
+    capability("cloud", "cloudSync"),
+    capability("shield-check", "security"),
+    capability("layout-grid", "widgets")
+  ]);
+  bindings.push({ node: capabilities, key: "capabilities", target: "aria-label" });
+
   const surface = element("section", { className: "v8-entry v8-entry--login", attributes: { "aria-label": "Connexion à ETHONE" }, dataset: { i18nIgnore: "" } }, [
     element("div", { className: "v8-entry__signal-field", attributes: { "aria-hidden": "true" } }, [
       element("span"),
@@ -415,6 +487,7 @@ export function mountLogin(root, options = {}) {
           bindText(element("span", { className: "v8-entry__eyebrow" }), "environment"),
           element("h1", { className: "v8-entry__title", id: "v8-entry-title", text: "ETHONE" }),
           bindText(element("p", { className: "v8-entry__brand-line" }), "brandLine"),
+          capabilities,
           element("span", { className: "v8-entry__monogram", text: "8", attributes: { "aria-hidden": "true" } })
         ]),
         instrumentShell
@@ -469,12 +542,22 @@ export function mountLogin(root, options = {}) {
     localeSelect.setAttribute("aria-label", copy.language);
     tabs.setAttribute("aria-label", copy.authTabs);
     strength.setAttribute("aria-label", copy.strength);
+    updatePasswordStrength();
     googleButton.setAttribute("aria-label", copy.google);
     githubButton.setAttribute("aria-label", copy.github);
     storageTelemetry.value.textContent = available ? copy.cloudReady : copy.cloudUnavailable;
     recoveryDescription.textContent = copy.authUnavailableDescription;
     timeTelemetry.value.textContent = clockManager?.snapshot?.().time || new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit" }).format(new Date());
     document.documentElement.lang = locale;
+  }
+
+  function updatePasswordStrength() {
+    const next = passwordStrength(registerPassword.input.value);
+    const copy = LOGIN_LOCALES[locale] || LOGIN_LOCALES.fr;
+    const labelKey = { weak: "strengthWeak", fair: "strengthFair", good: "strengthGood", strong: "strengthStrong" }[next.label];
+    strength.dataset.score = String(next.score);
+    strength.setAttribute("aria-valuenow", String(next.score));
+    strengthLabel.textContent = labelKey ? copy[labelKey] : "";
   }
 
   function setTab(tab, focus = false) {
@@ -507,7 +590,7 @@ export function mountLogin(root, options = {}) {
     available = Boolean(next);
     const copy = LOGIN_LOCALES[locale] || LOGIN_LOCALES.fr;
     storageTelemetry.value.textContent = available ? copy.cloudReady : copy.cloudUnavailable;
-    [loginSubmit, registerSubmit, googleButton, githubButton].forEach((control) => { control.disabled = !available; });
+    [loginSubmit, registerSubmit, googleButton, githubButton, rememberInput].forEach((control) => { control.disabled = !available; });
     recovery.hidden = available;
     if (!available) {
       recoveryDescription.textContent = copy.authUnavailableDescription;
@@ -615,10 +698,7 @@ export function mountLogin(root, options = {}) {
     globalThis.dispatchEvent?.(new CustomEvent("ethone:language-changed", { detail: { language: locale } }));
   }, listenerOptions);
   registerPassword.input.addEventListener("input", () => {
-    const next = passwordStrength(registerPassword.input.value);
-    strength.dataset.score = String(next.score);
-    strength.setAttribute("aria-valuenow", String(next.score));
-    strengthLabel.textContent = next.label === "empty" ? "" : next.label;
+    updatePasswordStrength();
   }, listenerOptions);
 
   applyCopy();

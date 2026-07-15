@@ -1056,9 +1056,11 @@ html[data-v8-interactions] .v8-row-menu > button:hover,
 @keyframes v8-toast-progress { to { transform: scaleX(0); } }
 
 @media (max-width: 820px) {
-  :where(button, [role="button"], [role="tab"], [role="option"], [role="menuitem"], input:not([type="hidden"]), select, textarea) {
+  :where(button, [role="button"], [role="tab"], [role="option"], [role="menuitem"], input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select, textarea) {
     min-height: var(--v8-touch-target);
   }
+
+  .v8-form-choice { min-height: var(--v8-touch-target); }
 
   .v8-button,
   .v8-icon-button,

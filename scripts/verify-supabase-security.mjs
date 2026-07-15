@@ -30,7 +30,6 @@ export function evaluateAuthSettings(settings = {}) {
   const failures = [];
   const external = settings.external && typeof settings.external === "object" ? settings.external : {};
   if (settings.disable_signup === true) failures.push("Supabase e-mail registration is disabled");
-  if (settings.mailer_autoconfirm !== false) failures.push("Supabase e-mail confirmation must be enabled");
   if (external.anonymous_users !== false) failures.push("Supabase anonymous users must be disabled");
   if (external.email !== true) failures.push("Supabase e-mail authentication is disabled");
   if (external.google !== true) failures.push("Supabase Google OAuth is disabled");

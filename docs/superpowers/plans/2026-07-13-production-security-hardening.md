@@ -159,7 +159,7 @@ Preserve the explicit owner policies from migration `0001`; all unknown public t
 
 - [ ] **Step 3: Add the live Supabase preflight**
 
-Verify auth health, Google/GitHub provider availability, anonymous-user disablement and e-mail confirmation. Fail when `mailer_autoconfirm` is enabled.
+Verify auth health, Google/GitHub provider availability and anonymous-user disablement. E-mail confirmation is an explicit product choice and is not a deployment gate; ETHONE supports immediate signup when `mailer_autoconfirm` is enabled.
 
 - [ ] **Step 4: Define optional two-user RLS verification**
 
@@ -242,4 +242,3 @@ Test login failure/success, invalid hash normalization, refresh, logout, offline
 - [ ] **Step 4: Produce the risk report**
 
 List critical, medium and low findings; separate corrected code risks from external configuration blockers; include every modified file and only evidence-backed recommendations.
-

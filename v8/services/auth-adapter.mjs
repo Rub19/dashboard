@@ -281,7 +281,7 @@ export function createAuthAdapter(options = {}) {
     }
     attemptLimiter.reset(attempt.key);
     publishState(response.data?.session?.user ? AUTH_STATES.authenticated : AUTH_STATES.unauthenticated, { user: response.data?.user });
-    return completed("Compte créé. Vérifiez votre messagerie si une confirmation est requise.", {
+    return completed("Compte créé. Votre environnement est prêt.", {
       user: sanitizeUser(response.data?.user),
       session: sanitizeSession(response.data?.session)
     });

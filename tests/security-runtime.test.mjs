@@ -233,7 +233,7 @@ test("verified recovery has a dedicated surface wired to password update", () =>
   assert.match(main, /mountRecovery:/);
 });
 
-test("registration requires a verified e-mail and communicates the strong password policy", () => {
+test("registration requires a valid e-mail and communicates the strong password policy", () => {
   const login = read("v8/entry/login.mjs");
   assert.doesNotMatch(login, /emailOptional|E-mail \(optionnel\)|Email \(optional\)|Email \(opcional\)|E-Mail \(optional\)/);
   assert.match(login, /registerEmail\s*=\s*field\(\{[^}]*required:\s*true/);
@@ -361,22 +361,28 @@ test("network client never retries non-idempotent methods and redacts all query 
   assert.match(diagnostics, /redacted/);
 });
 
-test("Supabase preflight fails closed on unsafe auth settings and is part of CI", async () => {
+test("Supabase preflight accepts immediate signup and fails closed on unsafe auth settings", async () => {
   const relative = "scripts/verify-supabase-security.mjs";
   assert.equal(fs.existsSync(path.join(root, relative)), true);
   const { evaluateAuthSettings } = await import("../scripts/verify-supabase-security.mjs");
-  const unsafe = evaluateAuthSettings({
+  const immediateSignup = evaluateAuthSettings({
     disable_signup: false,
     mailer_autoconfirm: true,
     external: { email: true, google: true, github: true, anonymous_users: false }
   });
-  assert.ok(unsafe.some((failure) => /confirmation/i.test(failure)));
-  const safe = evaluateAuthSettings({
+  assert.deepEqual(immediateSignup, []);
+  const confirmationEnabled = evaluateAuthSettings({
     disable_signup: false,
     mailer_autoconfirm: false,
     external: { email: true, google: true, github: true, anonymous_users: false }
   });
-  assert.deepEqual(safe, []);
+  assert.deepEqual(confirmationEnabled, []);
+  const unsafe = evaluateAuthSettings({
+    disable_signup: false,
+    mailer_autoconfirm: true,
+    external: { email: true, google: true, github: true, anonymous_users: true }
+  });
+  assert.ok(unsafe.some((failure) => /anonymous users/i.test(failure)));
   const source = read(relative);
   assert.match(source, /dashboard_data/);
   assert.match(source, /profiles/);

@@ -536,6 +536,7 @@ test("interaction feedback preserves semantic states and versions every styleshe
 
 test("production validation follows the active release without a stale hardcoded version", () => {
   const validator = fs.readFileSync(new URL("../scripts/validate-production.mjs", import.meta.url), "utf8");
+  const deploymentVerifier = fs.readFileSync(new URL("../scripts/verify-deployment.mjs", import.meta.url), "utf8");
   const worker = fs.readFileSync(new URL("../sw.js", import.meta.url), "utf8");
   const release = worker.match(/const ETHONE_VERSION = "([^"]+)"/)?.[1] || "";
   const releaseToken = release.match(/experience-v\d+$/)?.[0] || "";
@@ -546,6 +547,9 @@ test("production validation follows the active release without a stale hardcoded
   assert.match(validator, /index\.includes\(serviceWorkerReleaseToken\)/);
   assert.match(validator, /notFound\.includes\(serviceWorkerReleaseToken\)/);
   assert.doesNotMatch(validator, /assert\(\/experience-v\d+\//);
+  assert.match(deploymentVerifier, /readFileSync\(new URL\("\.\.\/sw\.js", import\.meta\.url\)/);
+  assert.match(deploymentVerifier, /expectedWorkerVersion/);
+  assert.doesNotMatch(deploymentVerifier, /worker\.includes\("\d{4}-\d{2}-\d{2}-experience-v\d+"\)/);
 });
 
 test("empty states share one accessible and responsive product primitive", () => {

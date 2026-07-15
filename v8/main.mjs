@@ -19,7 +19,10 @@ import { createDocumentMetadataManager } from "./core/document-metadata.mjs";
 import { createAmbientEngine, playSpotlight, readSpotlightPreference } from "./core/experience.mjs";
 import { createPresenceEngine } from "./core/presence-engine.mjs";
 import { element } from "./ui/dom.mjs";
+import { statusState } from "./ui/empty-state.mjs";
 import { createVisualHaptics } from "./ui/visual-haptics.mjs";
+import { createNativeBehavior } from "./ui/native-behavior.mjs";
+import { createTouchInteractionManager } from "./ui/touch-interactions.mjs";
 import { createTooltipController } from "./ui/tooltip.mjs";
 import { createV8I18n } from "./i18n/runtime.mjs";
 import { currentLocale, translateSource } from "./i18n/catalog.mjs";
@@ -43,10 +46,15 @@ function renderFatalError(error) {
   if (!root) return;
   metadata.setEntry("error");
   const locale = currentLocale();
-  const title = element("h1", { text: translateSource("ETHONE n'a pas pu démarrer.", locale) });
-  const message = element("p", { text: translateSource("L'interface principale est indisponible. Vos données n'ont pas été modifiées.", locale) });
   const link = element("a", { className: "v8-button v8-button--primary", text: translateSource("Recharger ETHONE", locale), attributes: { href: "./index.html" } });
-  root.replaceChildren(element("main", { className: "v8-fatal-error" }, [title, message, link]));
+  root.replaceChildren(statusState("error", {
+    tagName: "main",
+    headingTag: "h1",
+    title: translateSource("ETHONE n'a pas pu démarrer.", locale),
+    description: translateSource("L'interface principale est indisponible. Vos données n'ont pas été modifiées.", locale),
+    actions: [link],
+    className: "v8-fatal-error"
+  }));
   root.dataset.bootStatus = "failed";
   root.dataset.bootError = error?.name || "Error";
 }
@@ -72,8 +80,12 @@ async function boot() {
   const authStorage = createAuthStorage(globalThis);
   const sounds = createSoundManager({ runtime: globalThis, document, storage: globalThis.localStorage });
   const haptics = createVisualHaptics({ document, runtime: globalThis });
+  const nativeBehavior = createNativeBehavior({ document, runtime: globalThis });
+  const touchInteractions = createTouchInteractionManager({ document, runtime: globalThis });
   const tooltips = createTooltipController({ document, runtime: globalThis });
   haptics.start();
+  nativeBehavior.start();
+  touchInteractions.start();
   tooltips.start();
   const styles = createStyleLoader({ document, baseUrl: "./v8/styles" });
   let application = null;
@@ -137,8 +149,26 @@ async function boot() {
     const script = document.getElementById("v8-supabase-client");
     if (!script) throw new Error("Le client Supabase n'est pas chargé.");
     await new Promise((resolve, reject) => {
-      script.addEventListener("load", resolve, { once: true });
-      script.addEventListener("error", () => reject(new Error("Le client Supabase est indisponible.")), { once: true });
+      let settled = false;
+      let timeout = 0;
+      const finish = (error = null) => {
+        if (settled) return;
+        settled = true;
+        globalThis.clearTimeout(timeout);
+        script.removeEventListener("load", handleLoad);
+        script.removeEventListener("error", handleError);
+        if (error) reject(error);
+        else resolve();
+      };
+      const handleLoad = () => finish();
+      const handleError = () => finish(new Error("Le client Supabase est indisponible."));
+      script.addEventListener("load", handleLoad, { once: true });
+      script.addEventListener("error", handleError, { once: true });
+      timeout = globalThis.setTimeout(() => {
+        finish(globalThis.supabase?.createClient ? null : new Error("Le chargement du client Supabase a expiré."));
+      }, 8000);
+      // The deferred CDN script can finish between the first guard and listener setup.
+      if (globalThis.supabase?.createClient) finish();
     });
     if (!globalThis.supabase?.createClient) throw new Error("Le client Supabase est indisponible.");
     return globalThis.supabase.createClient(PUBLIC_AUTH_CONFIG.supabaseUrl, PUBLIC_AUTH_CONFIG.supabaseAnonKey, {
@@ -310,6 +340,8 @@ async function boot() {
     ambient.destroy();
     presence.destroy();
     haptics.destroy();
+    nativeBehavior.destroy();
+    touchInteractions.destroy();
     tooltips.destroy();
     sounds.destroy();
     delete globalThis.__ETHONE_V8__;
@@ -342,6 +374,8 @@ async function boot() {
       metadata: metadata.current(),
       sounds: sounds.diagnostics(),
       haptics: haptics.diagnostics(),
+      nativeBehavior: nativeBehavior.diagnostics(),
+      touchInteractions: touchInteractions.diagnostics(),
       tooltips: tooltips.diagnostics(),
       presence: presence.diagnostics(),
       bootMs: Number(root.dataset.bootMs || Math.round(performance.now() - startedAt)),

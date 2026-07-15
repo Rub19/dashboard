@@ -3,10 +3,13 @@
 .v8-live-state { height: var(--v8-control-md); padding: 0 11px; border: 1px solid color-mix(in srgb,var(--v8-success) 26%,transparent); border-radius: var(--v8-radius-pill); background: color-mix(in srgb,var(--v8-success) 8%,transparent); color: var(--v8-success); font-size: var(--v8-font-xs); }
 .v8-live-state i,.v8-live-pill i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 10px currentColor; }
 .v8-section-note,.v8-section-count { color: var(--v8-muted); font-size: var(--v8-font-xs); }
-.v8-now-section { margin-bottom: var(--v8-space-7); }
-.v8-now-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: var(--v8-space-3); }
-.v8-now-card { display: grid; min-width: 0; min-height: 190px; grid-template-rows: auto minmax(0,1fr) auto; padding: var(--v8-space-4); overflow: hidden; box-shadow: var(--v8-shadow-key); }
+.v8-now-section { margin-bottom: var(--v8-layout-major-gap); }
+.v8-now-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: var(--v8-layout-cluster-gap); }
+.v8-now-card { display: grid; min-width: 0; min-height: 190px; grid-template-rows: auto minmax(0,1fr) auto; padding: var(--v8-layout-card-padding); overflow: hidden; box-shadow: var(--v8-shadow-key); }
 .v8-now-card--system { border-color: var(--v8-accent-line); background: linear-gradient(145deg,color-mix(in srgb,var(--v8-accent-soft) 50%,var(--v8-surface-1)),var(--v8-surface-1)); }
+.v8-now-card--solo { min-height: 154px; grid-column: 1 / -1; grid-template-columns: auto minmax(0,1fr) auto; grid-template-rows: minmax(0,1fr); align-items: center; gap: var(--v8-layout-card-padding); }
+.v8-now-card--solo .v8-now-card__copy { padding: 0; }
+.v8-now-card--solo footer { min-width: 140px; justify-content: flex-end; gap: var(--v8-space-2); padding-top: 0; border-top: 0; }
 .v8-now-card__top,.v8-now-card footer,.v8-connection-card__header,.v8-connection-card__actions,.v8-connection-setup__header,.v8-connection-setup__actions,.v8-connections-toolbar { display: flex; align-items: center; }
 .v8-now-card__top,.v8-now-card footer { justify-content: space-between; }
 .v8-now-card__icon,.v8-connection-card__icon { display: grid; width: 38px; height: 38px; flex: 0 0 auto; place-items: center; border-radius: var(--v8-radius-md); background: var(--v8-surface-2); color: var(--v8-text-secondary); }
@@ -18,15 +21,13 @@
 .v8-now-card__copy p { display: -webkit-box; margin-top: 6px; overflow: hidden; color: var(--v8-muted); font-size: var(--v8-font-xs); line-height: var(--v8-line-base); -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 .v8-now-card footer { padding-top: var(--v8-space-3); border-top: 1px solid var(--v8-divider); color: var(--v8-muted); font-size: var(--v8-font-micro); }
 .v8-now-card footer svg { width: 14px; height: 14px; }
-.v8-now-connect { display: grid; min-height: 190px; grid-template-columns: auto minmax(0,1fr); align-content: center; gap: var(--v8-space-3); padding: var(--v8-space-4); border-style: dashed; box-shadow: none; }
-.v8-now-connect>span { display: grid; width: 38px; height: 38px; place-items: center; border-radius: var(--v8-radius-md); background: var(--v8-surface-2); color: var(--v8-muted); }
-.v8-now-connect strong { font-size: var(--v8-font-sm); }
-.v8-now-connect p { margin-top: 4px; color: var(--v8-muted); font-size: var(--v8-font-xs); line-height: var(--v8-line-base); }
-.v8-now-connect .v8-button { grid-column: 1/-1; width: 100%; }
-.v8-activity-workspace { display: grid; grid-template-columns: minmax(0,1fr) 310px; gap: var(--v8-space-6); }
+.v8-activity-workspace { display: grid; grid-template-columns: minmax(0,1fr) var(--v8-layout-panel-width); gap: var(--v8-layout-column-gap); }
 .v8-activity-stream { min-width: 0; }
 .v8-activity-stream__header { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--v8-space-4); }
 .v8-activity-stream__header h2,.v8-now-section h2 { font-size: var(--v8-font-xl); }
+.v8-activity-tools-bar { position: sticky; z-index: 4; top: 0; display: flex; align-items: center; justify-content: space-between; gap: var(--v8-space-3); margin-top: var(--v8-space-3); padding: var(--v8-space-2); border: 1px solid var(--v8-border); border-radius: var(--v8-radius-md); background: color-mix(in srgb,var(--v8-canvas-raised) 88%,transparent); box-shadow: var(--v8-shadow-1); backdrop-filter: blur(var(--v8-blur)) saturate(var(--v8-saturate)); }
+.v8-activity-search { min-width: 190px; flex: 1; }
+.v8-activity-sort { width: 132px; min-width: 132px; }
 .v8-activity-filters,.v8-connection-categories { display: flex; gap: 6px; margin: var(--v8-space-4) 0; overflow-x: auto; scrollbar-width: none; }
 .v8-activity-filters::-webkit-scrollbar,.v8-connection-categories::-webkit-scrollbar { display: none; }
 .v8-filter-chip { display: inline-flex; min-width: max-content; height: 32px; align-items: center; gap: 6px; padding: 0 11px; border: 1px solid var(--v8-border); border-radius: var(--v8-radius-pill); background: transparent; color: var(--v8-muted); cursor: pointer; font-size: var(--v8-font-xs); outline: none; transition: color var(--v8-motion-fast) var(--v8-ease-standard),background-color var(--v8-motion-fast) var(--v8-ease-standard),border-color var(--v8-motion-fast) var(--v8-ease-standard); }
@@ -36,13 +37,15 @@
 .v8-live-timeline { position: relative; display: grid; gap: 2px; min-height: 280px; }
 .v8-live-timeline::before { position: absolute; top: 18px; bottom: 18px; left: 72px; width: 1px; background: var(--v8-divider); content: ""; }
 .v8-live-timeline:has(.v8-empty-state)::before { display: none; }
-.v8-live-entry { position: relative; display: grid; grid-template-columns: 58px 28px minmax(0,1fr); align-items: start; }
+.v8-live-entry { position: relative; display: grid; grid-template-columns: 58px 28px minmax(0,1fr); align-items: start; outline: none; }
 .v8-live-entry__time { padding-top: 18px; color: var(--v8-muted); font-family: var(--v8-mono); font-size: var(--v8-font-micro); text-align: right; }
 .v8-live-entry__node { z-index: 1; width: 9px; height: 9px; margin: 21px auto 0; border: 2px solid var(--v8-canvas); border-radius: 50%; background: var(--v8-muted); box-shadow: 0 0 0 1px var(--v8-divider); }
 .v8-live-entry--success .v8-live-entry__node { background: var(--v8-success); }
 .v8-live-entry--note .v8-live-entry__node { background: var(--v8-brain); }
 .v8-live-entry--file .v8-live-entry__node { background: var(--v8-accent); }
-.v8-live-entry__card { display: grid; min-width: 0; grid-template-columns: auto minmax(0,1fr) auto; gap: var(--v8-space-3); margin-bottom: var(--v8-space-2); padding: var(--v8-space-3) var(--v8-space-4); border: 1px solid var(--v8-border); border-radius: var(--v8-radius-md); background: var(--v8-surface-1); }
+.v8-live-entry__card { display: grid; min-width: 0; min-height: calc(var(--density-table-row-height) + 18px); grid-template-columns: auto minmax(0,1fr) auto; gap: var(--v8-space-3); margin-bottom: var(--v8-space-2); padding: var(--v8-space-3) var(--v8-space-4); border: 1px solid var(--v8-border); border-radius: var(--v8-radius-md); background: var(--v8-surface-1); transition: background-color var(--v8-motion-fast) var(--v8-ease-standard),border-color var(--v8-motion-fast) var(--v8-ease-standard),box-shadow var(--v8-motion-fast) var(--v8-ease-standard),transform var(--v8-motion-fast) var(--v8-ease-standard); }
+html[data-v8-interactions] .v8-live-entry:hover .v8-live-entry__card { border-color: var(--v8-border-strong); background: var(--v8-surface-2); box-shadow: var(--v8-shadow-hover-filter); transform: translate3d(0,-1px,0); }
+.v8-live-entry:focus-visible .v8-live-entry__card { box-shadow: var(--v8-shadow-focus); }
 .v8-live-entry__icon { display: grid; width: 34px; height: 34px; place-items: center; border-radius: var(--v8-radius-md); background: var(--v8-surface-2); color: var(--v8-text-secondary); }
 .v8-live-entry__icon svg { width: var(--v8-icon-sm); height: var(--v8-icon-sm); }
 .v8-live-entry__copy { min-width: 0; }
@@ -53,7 +56,7 @@
 .v8-live-entry p { margin-top: 3px; color: var(--v8-muted); font-size: var(--v8-font-xs); line-height: var(--v8-line-base); }
 .v8-live-entry__category { align-self: start; padding: 4px 7px; border-radius: var(--v8-radius-pill); background: var(--v8-surface-2); color: var(--v8-muted); font-size: var(--v8-font-micro); text-transform: capitalize; }
 .v8-activity-intelligence { display: grid; align-self: start; gap: var(--v8-space-3); position: sticky; top: var(--v8-space-4); }
-.v8-activity-overview,.v8-activity-brain { padding: var(--v8-space-5); }
+.v8-activity-overview,.v8-activity-brain { padding: var(--v8-layout-card-padding); }
 .v8-activity-overview h2 { font-size: var(--v8-font-xl); }
 .v8-activity-kpis { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1px; margin: var(--v8-space-4) 0; overflow: hidden; border: 1px solid var(--v8-divider); border-radius: var(--v8-radius-md); background: var(--v8-divider); }
 .v8-activity-kpis span { display: grid; min-height: 72px; place-items: center; align-content: center; background: var(--v8-surface-sunken); }
@@ -72,8 +75,8 @@
 .v8-activity-privacy strong,.v8-connections-security strong,.v8-connection-setup__notice strong { font-size: var(--v8-font-xs); }
 .v8-activity-privacy p,.v8-connections-security p,.v8-connection-setup__notice p { margin-top: 3px; color: var(--v8-muted); font-size: var(--v8-font-micro); line-height: var(--v8-line-base); }
 .v8-connections-page { max-width: 1640px; }
-.v8-connections-heading { margin-bottom: var(--v8-space-5); }
-.v8-connections-overview { display: grid; grid-template-columns: minmax(0,1fr) 280px; gap: var(--v8-space-3); margin-bottom: var(--v8-space-5); }
+.v8-connections-heading { margin-bottom: var(--v8-layout-section-gap); }
+.v8-connections-overview { display: grid; grid-template-columns: minmax(0,1fr) var(--v8-layout-panel-compact); gap: var(--v8-layout-cluster-gap); margin-bottom: var(--v8-layout-section-gap); }
 .v8-connections-metrics { display: grid; min-width: 0; grid-template-columns: repeat(4,minmax(0,1fr)); overflow: hidden; border: 1px solid var(--v8-border); border-radius: var(--v8-radius-md); background: var(--v8-divider); gap: 1px; }
 .v8-connections-metric { display: flex; min-width: 0; min-height: 76px; align-items: center; gap: var(--v8-space-3); padding: var(--v8-space-3) var(--v8-space-4); background: var(--v8-surface-sunken); }
 .v8-connections-metric>span { display: grid; width: 32px; height: 32px; flex: 0 0 32px; place-items: center; border-radius: var(--v8-radius-sm); background: var(--v8-surface-2); color: var(--v8-muted); }
@@ -91,166 +94,14 @@
 .v8-connections-health strong,.v8-connections-health small { display: block; }
 .v8-connections-health strong { font-size: var(--v8-font-xs); }
 .v8-connections-health small { margin-top: 4px; color: var(--v8-muted); font-size: var(--v8-font-micro); line-height: var(--v8-line-base); }
-.v8-connection-opportunities { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: var(--v8-space-3); margin-bottom: var(--v8-space-5); }
+.v8-connection-opportunities { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: var(--v8-layout-cluster-gap); margin-bottom: var(--v8-layout-section-gap); }
 .v8-connection-opportunities[hidden] { display: none; }
-.v8-connection-opportunity { display: grid; min-width: 0; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: var(--v8-space-3); padding: var(--v8-space-4); border-color: var(--v8-brain-line); background: linear-gradient(135deg,var(--v8-brain-soft),var(--v8-surface-1) 56%); }
+.v8-connection-opportunity { display: grid; min-width: 0; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: var(--v8-layout-cluster-gap); padding: var(--v8-layout-card-padding); border-color: var(--v8-brain-line); background: linear-gradient(135deg,var(--v8-brain-soft),var(--v8-surface-1) 56%); }
 .v8-connection-opportunity__icon { display: grid; width: 38px; height: 38px; place-items: center; border-radius: var(--v8-radius-md); background: var(--v8-brain-soft); color: var(--v8-brain); }
 .v8-connection-opportunity small,.v8-connection-opportunity strong,.v8-connection-opportunity p { display: block; }
 .v8-connection-opportunity small { color: var(--v8-brain); font-size: var(--v8-font-micro); }
 .v8-connection-opportunity strong { margin-top: 2px; font-size: var(--v8-font-sm); }
 .v8-connection-opportunity p { margin-top: 3px; color: var(--v8-muted); font-size: var(--v8-font-xs); line-height: var(--v8-line-base); }
-.v8-connections-workspace { display: grid; grid-template-columns: minmax(0,1fr) 390px; align-items: start; gap: var(--v8-space-5); }
+.v8-connections-workspace { display: grid; grid-template-columns: minmax(0,1fr) var(--v8-layout-inspector-width); align-items: start; gap: var(--v8-layout-column-gap); }
 .v8-connections-catalog { min-width: 0; }
-.v8-connections-toolbar { justify-content: space-between; gap: var(--v8-space-3); }
-.v8-connections-search { min-width: 220px; flex: 1; }
-.v8-connections-status-filter { width: 158px; flex: 0 0 158px; }
-.v8-connections-toolbar .v8-section-count { min-width: 54px; text-align: right; }
-.v8-connection-categories { margin: var(--v8-space-3) 0 var(--v8-space-4); }
-.v8-connections-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: var(--v8-space-3); }
-.v8-connection-card { display: grid; min-width: 0; min-height: 342px; grid-template-rows: auto auto minmax(46px,1fr) auto auto auto; padding: var(--v8-space-4); box-shadow: var(--v8-shadow-key); }
-.v8-connection-card.is-selected { border-color: var(--v8-accent-line); box-shadow: var(--v8-shadow-card-lit),0 0 0 1px var(--v8-accent-soft); }
-.v8-connection-card__header { gap: var(--v8-space-3); }
-.v8-connection-card__identity { min-width: 0; flex: 1; }
-.v8-connection-card__identity h3 { overflow: hidden; font-size: var(--v8-font-sm); text-overflow: ellipsis; white-space: nowrap; }
-.v8-connection-card__identity>span { display: block; margin-top: 2px; color: var(--v8-muted); font-size: var(--v8-font-micro); }
-.v8-connection-card__icon--media { color: var(--v8-info); }
-.v8-connection-card__icon--social { color: var(--v8-brain); }
-.v8-connection-card__icon--gaming { color: var(--v8-warning); }
-.v8-connection-card__icon--productivity { color: var(--v8-success); }
-.v8-connection-card__icon--development { color: var(--v8-accent); }
-.v8-connection-card__icon--health { color: var(--v8-danger); }
-.v8-connection-card__icon--ai { color: var(--v8-brain); }
-.v8-connection-status { min-width: max-content; padding: 4px 7px; border-radius: var(--v8-radius-pill); background: var(--v8-surface-2); color: var(--v8-muted); font-size: var(--v8-font-micro); }
-.v8-connection-status svg { width: 12px; height: 12px; }
-.v8-connection-status--success { background: color-mix(in srgb,var(--v8-success) 10%,transparent); color: var(--v8-success); }
-.v8-connection-status--danger { background: var(--v8-danger-soft); color: var(--v8-danger); }
-.v8-connection-status--warning { background: color-mix(in srgb,var(--v8-warning) 9%,transparent); color: var(--v8-warning); }
-.v8-connection-status--info { background: color-mix(in srgb,var(--v8-info) 9%,transparent); color: var(--v8-info); }
-.v8-connection-card__badges,.v8-connection-badge-row { display: flex; min-width: 0; flex-wrap: wrap; gap: 5px; }
-.v8-connection-card__badges { min-height: 23px; margin-top: var(--v8-space-3); }
-.v8-connection-badge { display: inline-flex; min-height: 21px; align-items: center; padding: 2px 7px; border: 1px solid var(--v8-divider); border-radius: var(--v8-radius-pill); background: var(--v8-surface-sunken); color: var(--v8-muted); font-size: var(--v8-font-micro); line-height: 1.2; }
-.v8-connection-badge--accent { border-color: var(--v8-accent-line); background: var(--v8-accent-soft); color: var(--v8-accent); }
-.v8-connection-badge--warning { color: var(--v8-warning); }
-.v8-connection-card__description { align-self: center; margin: var(--v8-space-3) 0; color: var(--v8-text-secondary); font-size: var(--v8-font-xs); line-height: var(--v8-line-relaxed); }
-.v8-connection-card__meta { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1px; overflow: hidden; border: 1px solid var(--v8-divider); border-radius: var(--v8-radius-sm); background: var(--v8-divider); }
-.v8-connection-card__meta div { min-width: 0; padding: 8px 10px; background: var(--v8-surface-sunken); }
-.v8-connection-card__meta dt { color: var(--v8-muted); font-size: var(--v8-font-micro); }
-.v8-connection-card__meta dd { margin-top: 3px; overflow: hidden; color: var(--v8-text-secondary); font-size: var(--v8-font-micro); text-overflow: ellipsis; white-space: nowrap; }
-.v8-connection-card__signal { display: flex; min-width: 0; align-items: center; gap: 7px; padding: var(--v8-space-3) 0; color: var(--v8-muted); font-size: var(--v8-font-micro); }
-.v8-connection-card__signal svg { width: 13px; height: 13px; color: var(--v8-success); }
-.v8-connection-card__signal span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.v8-connection-card__signal small { margin-left: auto; overflow: hidden; color: var(--v8-muted); text-overflow: ellipsis; white-space: nowrap; }
-.v8-connection-card__actions { gap: 6px; padding-top: var(--v8-space-3); border-top: 1px solid var(--v8-divider); }
-.v8-connection-card__actions>.v8-button:not(.v8-icon-button) { min-width: 0; flex: 1; padding: 0 10px; }
-.v8-connections-inspector { position: sticky; top: var(--v8-space-4); min-width: 0; padding: var(--v8-space-4); box-shadow: var(--v8-shadow-window-open); }
-.v8-connection-inspector__header { display: flex; min-width: 0; align-items: center; gap: var(--v8-space-3); }
-.v8-connection-inspector__header>div { min-width: 0; flex: 1; }
-.v8-connection-inspector__header small { color: var(--v8-muted); font-size: var(--v8-font-micro); }
-.v8-connection-inspector__header h2 { margin-top: 2px; overflow: hidden; font-size: var(--v8-font-lg); text-overflow: ellipsis; white-space: nowrap; }
-.v8-connection-tabs { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 3px; margin: var(--v8-space-4) 0; padding: 3px; border: 1px solid var(--v8-divider); border-radius: var(--v8-radius-sm); background: var(--v8-surface-sunken); }
-.v8-connection-tab { display: inline-flex; min-width: 0; height: 34px; align-items: center; justify-content: center; gap: 5px; padding: 0 5px; border: 0; border-radius: 5px; background: transparent; color: var(--v8-muted); cursor: pointer; font-size: var(--v8-font-micro); }
-.v8-connection-tab svg { width: 13px; height: 13px; flex: 0 0 auto; }
-.v8-connection-tab span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.v8-connection-tab.is-active { background: var(--v8-surface-2); box-shadow: inset 0 1px 0 var(--v8-surface-glint),var(--v8-shadow-key); color: var(--v8-text); }
-.v8-connection-inspector-panel { display: grid; gap: var(--v8-space-4); min-width: 0; animation: v8-page-enter var(--v8-motion-base) var(--v8-ease-standard) both; }
-.v8-connection-method-hero { padding: var(--v8-space-4); border-radius: var(--v8-radius-md); background: linear-gradient(145deg,var(--v8-accent-soft),transparent 60%),var(--v8-surface-sunken); }
-.v8-connection-method-hero__top { display: flex; align-items: center; justify-content: space-between; gap: var(--v8-space-2); }
-.v8-connection-method-hero__top>span:last-child { color: var(--v8-muted); font-size: var(--v8-font-micro); }
-.v8-connection-method-hero h3 { margin-top: var(--v8-space-3); font-size: var(--v8-font-lg); }
-.v8-connection-method-hero p,.v8-connection-panel-intro p { margin-top: 5px; color: var(--v8-muted); font-size: var(--v8-font-xs); line-height: var(--v8-line-relaxed); }
-.v8-connection-method-hero .v8-connection-badge-row { margin-top: var(--v8-space-3); }
-.v8-connection-detail-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1px; overflow: hidden; border: 1px solid var(--v8-divider); border-radius: var(--v8-radius-md); background: var(--v8-divider); }
-.v8-connection-detail-grid>div { display: grid; min-width: 0; min-height: 62px; grid-template-columns: auto minmax(0,1fr); align-items: center; gap: 9px; padding: 10px; background: var(--v8-surface-sunken); }
-.v8-connection-detail-grid>div>svg { width: 14px; height: 14px; color: var(--v8-muted); }
-.v8-connection-detail-grid small,.v8-connection-detail-grid strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.v8-connection-detail-grid small { color: var(--v8-muted); font-size: var(--v8-font-micro); }
-.v8-connection-detail-grid strong { margin-top: 2px; font-size: var(--v8-font-xs); }
-.v8-connection-list-section>header { display: flex; align-items: center; justify-content: space-between; gap: var(--v8-space-2); margin-bottom: var(--v8-space-2); }
-.v8-connection-list-section h3,.v8-connection-resources h3,.v8-connection-help h3 { font-size: var(--v8-font-xs); }
-.v8-connection-list-section>header>span,.v8-connection-list-section>header>svg { color: var(--v8-muted); font-size: var(--v8-font-micro); }
-.v8-connection-list-section>header>svg { width: 14px; height: 14px; }
-.v8-connection-list-section ul { display: grid; gap: 6px; list-style: none; }
-.v8-connection-list-section li { display: flex; align-items: center; gap: 8px; color: var(--v8-text-secondary); font-size: var(--v8-font-xs); }
-.v8-connection-list-section li svg { width: 13px; height: 13px; flex: 0 0 auto; color: var(--v8-success); }
-.v8-connection-resources { display: grid; gap: 6px; }
-.v8-resource-link { display: grid; min-width: 0; min-height: 44px; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 9px; padding: 7px 10px; border: 1px solid var(--v8-divider); border-radius: var(--v8-radius-sm); background: var(--v8-surface-sunken); color: var(--v8-text-secondary); text-decoration: none; }
-.v8-resource-link>svg { width: 14px; height: 14px; color: var(--v8-muted); }
-.v8-resource-link strong,.v8-resource-link small { display: block; }
-.v8-resource-link strong { font-size: var(--v8-font-xs); }
-.v8-resource-link small { margin-top: 2px; color: var(--v8-muted); font-size: var(--v8-font-micro); }
-.v8-resource-link--compact { display: inline-flex; width: max-content; max-width: 100%; min-height: 32px; padding: 5px 8px; font-size: var(--v8-font-micro); }
-.v8-resource-link--compact strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.v8-connection-inspector-actions { display: flex; align-items: center; gap: var(--v8-space-2); padding-top: var(--v8-space-3); border-top: 1px solid var(--v8-divider); }
-.v8-connection-inspector-actions>.v8-button { min-width: 0; flex: 1; }
-.v8-connection-panel-intro h3 { font-size: var(--v8-font-sm); }
-.v8-connection-panel-intro--action { display: flex; align-items: center; justify-content: space-between; gap: var(--v8-space-3); }
-.v8-connection-panel-intro--action>div { min-width: 0; }
-.v8-connection-methods { display: grid; gap: 7px; }
-.v8-connection-method { display: grid; width: 100%; min-width: 0; grid-template-columns: auto minmax(0,1fr) auto; align-items: start; gap: 9px; padding: var(--v8-space-3); border: 1px solid var(--v8-divider); border-radius: var(--v8-radius-md); background: var(--v8-surface-sunken); color: var(--v8-text-secondary); cursor: pointer; text-align: left; }
-.v8-connection-method.is-selected { border-color: var(--v8-accent-line); background: linear-gradient(135deg,var(--v8-accent-soft),var(--v8-surface-sunken) 70%); }
-.v8-connection-method__select { display: grid; width: 22px; height: 22px; place-items: center; color: var(--v8-muted); }
-.v8-connection-method.is-selected .v8-connection-method__select { color: var(--v8-accent); }
-.v8-connection-method__select svg,.v8-connection-method>svg { width: 15px; height: 15px; }
-.v8-connection-method__copy { min-width: 0; }
-.v8-connection-method__heading { display: flex; min-width: 0; flex-wrap: wrap; align-items: center; gap: 5px; }
-.v8-connection-method__heading>strong { margin-right: auto; color: var(--v8-text); font-size: var(--v8-font-xs); }
-.v8-connection-method__copy>p { margin-top: 5px; color: var(--v8-muted); font-size: var(--v8-font-micro); line-height: var(--v8-line-base); }
-.v8-connection-method__copy .v8-connection-badge-row { margin-top: 8px; }
-.v8-connection-method__reason { display: block; margin-top: 7px; color: var(--v8-warning); font-size: var(--v8-font-micro); line-height: var(--v8-line-base); }
-.v8-connection-reference { display: grid; gap: 8px; }
-.v8-connection-reference>span { display: flex; align-items: center; justify-content: space-between; gap: var(--v8-space-2); }
-.v8-connection-reference strong { font-size: var(--v8-font-xs); }
-.v8-connection-reference small { color: var(--v8-muted); font-size: var(--v8-font-micro); text-align: right; }
-.v8-connection-reference__control { display: flex; gap: 6px; }
-.v8-connection-reference__control .v8-input { min-width: 0; }
-.v8-connection-steps { display: grid; gap: 7px; list-style: none; }
-.v8-connection-steps li { display: grid; min-width: 0; grid-template-columns: auto minmax(0,1fr); gap: 10px; padding: var(--v8-space-3); border-left: 1px solid var(--v8-divider); background: linear-gradient(90deg,var(--v8-surface-sunken),transparent); }
-.v8-connection-steps li.is-done { border-left-color: var(--v8-success); }
-.v8-connection-steps li.is-blocked { border-left-color: var(--v8-warning); }
-.v8-connection-step-index { position: relative; display: grid; width: 24px; height: 24px; place-items: center; color: var(--v8-muted); }
-.v8-connection-step-index svg { width: 17px; height: 17px; }
-.v8-connection-step-index small { position: absolute; font-family: var(--v8-mono); font-size: var(--v8-font-micro); transform: scale(.78); }
-.v8-connection-steps .is-done .v8-connection-step-index { color: var(--v8-success); }
-.v8-connection-steps .is-done .v8-connection-step-index small,.v8-connection-steps .is-blocked .v8-connection-step-index small { display: none; }
-.v8-connection-steps .is-blocked .v8-connection-step-index { color: var(--v8-warning); }
-.v8-connection-step-copy { min-width: 0; }
-.v8-connection-step-copy>strong { display: block; font-size: var(--v8-font-xs); line-height: var(--v8-line-base); }
-.v8-connection-step-copy>p { margin-top: 4px; color: var(--v8-muted); font-size: var(--v8-font-micro); line-height: var(--v8-line-base); }
-.v8-connection-step-copy>code { display: block; margin-top: 7px; overflow: hidden; padding: 6px 8px; border-radius: 5px; background: var(--v8-canvas); color: var(--v8-text-secondary); font-family: var(--v8-mono); font-size: var(--v8-font-micro); text-overflow: ellipsis; white-space: nowrap; }
-.v8-connection-step-actions { display: flex; grid-column: 2; flex-wrap: wrap; gap: 6px; }
-.v8-connection-step-actions>.v8-button { height: 32px; padding: 0 9px; font-size: var(--v8-font-micro); }
-.v8-connection-setup__notice { padding: var(--v8-space-3); }
-.v8-connection-diagnostic-summary { display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: var(--v8-space-3); padding: var(--v8-space-3); border-radius: var(--v8-radius-md); background: var(--v8-surface-sunken); }
-.v8-connection-diagnostic-summary__icon { display: grid; width: 36px; height: 36px; place-items: center; border-radius: var(--v8-radius-sm); background: var(--v8-surface-2); color: var(--v8-muted); }
-.v8-connection-diagnostic-summary__icon.is-critical { color: var(--v8-danger); }
-.v8-connection-diagnostic-summary__icon.is-warning { color: var(--v8-warning); }
-.v8-connection-diagnostic-summary__icon.is-healthy,.v8-connection-diagnostic-summary__icon.is-ready { color: var(--v8-success); }
-.v8-connection-diagnostic-summary strong,.v8-connection-diagnostic-summary small { display: block; }
-.v8-connection-diagnostic-summary strong { font-size: var(--v8-font-xs); }
-.v8-connection-diagnostic-summary small { margin-top: 3px; color: var(--v8-muted); font-size: var(--v8-font-micro); }
-.v8-connection-diagnostic-empty { display: grid; min-height: 150px; place-items: center; align-content: center; padding: var(--v8-space-5); color: var(--v8-muted); text-align: center; }
-.v8-connection-diagnostic-empty>svg { width: 28px; height: 28px; }
-.v8-connection-diagnostic-empty strong { margin-top: 10px; color: var(--v8-text-secondary); font-size: var(--v8-font-sm); }
-.v8-connection-diagnostic-empty p { max-width: 260px; margin-top: 5px; font-size: var(--v8-font-xs); line-height: var(--v8-line-base); }
-.v8-connection-diagnostic-list { display: grid; gap: 1px; overflow: hidden; border: 1px solid var(--v8-divider); border-radius: var(--v8-radius-md); background: var(--v8-divider); list-style: none; }
-.v8-connection-diagnostic-list li { display: grid; min-width: 0; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 9px; padding: 9px 10px; background: var(--v8-surface-sunken); }
-.v8-connection-diagnostic-list li>span { display: grid; width: 24px; height: 24px; place-items: center; color: var(--v8-muted); }
-.v8-connection-diagnostic-list li>span svg { width: 15px; height: 15px; }
-.v8-connection-diagnostic-list li.is-success>span { color: var(--v8-success); }
-.v8-connection-diagnostic-list li.is-warning>span { color: var(--v8-warning); }
-.v8-connection-diagnostic-list li.is-danger>span { color: var(--v8-danger); }
-.v8-connection-diagnostic-list strong { display: block; font-size: var(--v8-font-xs); }
-.v8-connection-diagnostic-list p { margin-top: 2px; color: var(--v8-muted); font-size: var(--v8-font-micro); line-height: var(--v8-line-base); }
-.v8-connection-diagnostic-list li>small { color: var(--v8-muted); font-size: var(--v8-font-micro); }
-.v8-connection-help { display: grid; gap: 1px; overflow: hidden; border: 1px solid var(--v8-divider); border-radius: var(--v8-radius-md); background: var(--v8-divider); }
-.v8-connection-help>h3 { padding: 10px; background: var(--v8-surface-sunken); }
-.v8-connection-help details { background: var(--v8-surface-sunken); }
-.v8-connection-help summary { padding: 10px; color: var(--v8-text-secondary); cursor: pointer; font-size: var(--v8-font-xs); }
-.v8-connection-help details p { padding: 0 10px 10px; color: var(--v8-muted); font-size: var(--v8-font-micro); line-height: var(--v8-line-relaxed); }
-.v8-connection-resources--compact { grid-template-columns: repeat(2,minmax(0,1fr)); }
-.v8-connections-security { margin-top: var(--v8-space-6); }
-@media (max-width:1320px){.v8-now-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.v8-connections-workspace{grid-template-columns:minmax(0,1fr)360px}.v8-connections-grid{grid-template-columns:minmax(0,1fr)}}
-@media (max-width:980px){.v8-connections-overview{grid-template-columns:minmax(0,1fr)}.v8-connections-workspace{grid-template-columns:minmax(0,1fr)}.v8-connections-inspector{position:static;order:-1}.v8-connections-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.v8-activity-workspace{grid-template-columns:minmax(0,1fr)}.v8-activity-intelligence{position:static;grid-template-columns:repeat(2,minmax(0,1fr))}.v8-activity-privacy{grid-column:1/-1}}
-@media (max-width:760px){.v8-connections-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.v8-connection-opportunities,.v8-connections-grid{grid-template-columns:minmax(0,1fr)}.v8-connections-toolbar{flex-wrap:wrap}.v8-connections-search{flex:1 1 100%}.v8-connections-status-filter{flex:1}.v8-connection-card{min-height:330px}}
-@media (max-width:620px){.v8-now-grid,.v8-activity-intelligence{grid-template-columns:minmax(0,1fr)}.v8-activity-filters,.v8-connection-categories{flex-wrap:nowrap;overflow-x:auto}.v8-live-entry{grid-template-columns:42px 20px minmax(0,1fr)}.v8-live-timeline::before{left:51px}.v8-live-entry__time{font-size:var(--v8-font-micro)}.v8-live-entry__card{grid-template-columns:auto minmax(0,1fr);padding:var(--v8-space-3)}.v8-live-entry__category{display:none}.v8-connection-opportunity{grid-template-columns:auto minmax(0,1fr)}.v8-connection-opportunity .v8-button{grid-column:1/-1;width:100%}.v8-connections-inspector{padding:var(--v8-space-3)}.v8-connection-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.v8-connection-tab{justify-content:flex-start;padding:0 9px}.v8-connection-reference>span{align-items:flex-start;flex-direction:column}.v8-connection-reference small{text-align:left}.v8-connection-panel-intro--action{align-items:stretch;flex-direction:column}.v8-connection-panel-intro--action .v8-button{width:100%}.v8-connection-inspector-actions{align-items:stretch;flex-direction:column}.v8-connection-inspector-actions>.v8-button{width:100%;flex:none}.v8-connection-resources--compact{grid-template-columns:minmax(0,1fr)}.v8-section-note{display:none}}
-@media (prefers-reduced-motion:reduce){.v8-filter-chip,.v8-live-entry__card{transition-duration:1ms}.v8-connection-inspector-panel{animation:none}}
+.v8-connections-toolbar { position: sticky; z-index: 4; top: 0; justify-content: space-between; gap: var(--v8-space-3); padding: var(--v8-space-2); border: 1px solid var(--v8-border); border-radius: var(--v8-radius-md); background: color-mix(in srgb,var(--v8-canvas-raised) 88%,transparent); box-shadow: Ûnบถหkบwต็l…ภ่ู…ศ ดตุเตอม…”ดะค์ตฅธตÝฅ‘ั ่€ภ์…นฅต…ัฅฝธ่ุเตม…”ต•นั•ศู…ศ ดตุเตตฝัฅฝธต…อ”คู…ศ ดตุเต•…อ”ตอั…น‘…ษคฝั ์๔(นุเตฝนน•ัฅฝธตต•ักฝตก•ษผ์ม…‘‘ฅน่ู…ศ ดตุเตอม…”ดะค์ฝษ‘•ศตษ…‘ฅีฬ่ู…ศ ดตุเตษ…‘ฅีฬตตค์…ญษฝีน่ฑฅน•…ศตษ…‘ฅ•นะ ฤะี‘•ฑู…ศ ดตุเต…•นะตอฝะคฑัษ…นอม…ษ•นะ€ุภ”คฑู…ศ ดตุเตอีษ…”ตอีนญ•ธค์๔(นุเตฝนน•ัฅฝธตต•ักฝตก•ษฝ}}ัฝภ์‘ฅอมฑ…ไ่ฑ•เ์…ฑฅธตฅั•ตฬ่•นั•ศ์ฉีอัฅไตฝนั•นะ่อม…”ต•ัÝ••ธ์…ภ่ู…ศ ดตุเตอม…”ดศค์๔(นุเตฝนน•ัฅฝธตต•ักฝตก•ษฝ}}ัฝภ๙อม…ธ้ฑ…อะตกฅฑ์ฝฑฝศ่ู…ศ ดตุเตตีั•ค์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตตฅษผค์๔(นุเตฝนน•ัฅฝธตต•ักฝตก•ษผ ฬ์ต…ษฅธตัฝภ่ู…ศ ดตุเตอม…”ดฬค์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตฑค์๔(นุเตฝนน•ัฅฝธตต•ักฝตก•ษผภฐนุเตฝนน•ัฅฝธตม…น•ฐตฅนัษผภ์ต…ษฅธตัฝภ่€ีมเ์ฝฑฝศ่ู…ศ ดตุเตตีั•ค์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตแฬค์ฑฅน”ตก•ฅกะ่ู…ศ ดตุเตฑฅน”ตษ•ฑ…แ•ค์๔(นุเตฝนน•ัฅฝธตต•ักฝตก•ษผ€นุเตฝนน•ัฅฝธต…‘”ตษฝÜ์ต…ษฅธตัฝภ่ู…ศ ดตุเตอม…”ดฬค์๔(นุเตฝนน•ัฅฝธต‘•ั…ฅฐตษฅ์‘ฅอมฑ…ไ่ษฅ์ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่ษ•ม•…ะ ศฑตฅนต…เ ภฐลศคค์…ภ่€ลมเ์ฝู•ษฑฝÜ่กฅ‘‘•ธ์ฝษ‘•ศ่€ลมเอฝฑฅู…ศ ดตุเต‘ฅูฅ‘•ศค์ฝษ‘•ศตษ…‘ฅีฬ่ู…ศ ดตุเตษ…‘ฅีฬตตค์…ญษฝีน่ู…ศ ดตุเต‘ฅูฅ‘•ศค์๔(นุเตฝนน•ัฅฝธต‘•ั…ฅฐตษฅ๙‘ฅุ์‘ฅอมฑ…ไ่ษฅ์ตฅธตÝฅ‘ั ่€ภ์ตฅธตก•ฅกะ่€ุษมเ์ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่…ีัผตฅนต…เ ภฐลศค์…ฑฅธตฅั•ตฬ่•นั•ศ์…ภ่€ๅมเ์ม…‘‘ฅน่€ฤมมเ์…ญษฝีน่ู…ศ ดตุเตอีษ…”ตอีนญ•ธค์๔(นุเตฝนน•ัฅฝธต‘•ั…ฅฐตษฅ๙‘ฅุ๙อู์Ýฅ‘ั ่€ฤัมเ์ก•ฅกะ่€ฤัมเ์ฝฑฝศ่ู…ศ ดตุเตตีั•ค์๔(นุเตฝนน•ัฅฝธต‘•ั…ฅฐตษฅอต…ฑฐฐนุเตฝนน•ัฅฝธต‘•ั…ฅฐตษฅอัษฝน์‘ฅอมฑ…ไ่ฑฝฌ์ฝู•ษฑฝÜ่กฅ‘‘•ธ์ั•แะตฝู•ษฑฝÜ่•ฑฑฅมอฅฬ์Ýกฅั”ตอม…”่นฝÝษ…ภ์๔(นุเตฝนน•ัฅฝธต‘•ั…ฅฐตษฅอต…ฑฐ์ฝฑฝศ่ู…ศ ดตุเตตีั•ค์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตตฅษผค์๔(นุเตฝนน•ัฅฝธต‘•ั…ฅฐตษฅอัษฝน์ต…ษฅธตัฝภ่€ษมเ์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตแฬค์๔(นุเตฝนน•ัฅฝธตฑฅอะตอ•ัฅฝธ๙ก•…‘•ศ์‘ฅอมฑ…ไ่ฑ•เ์…ฑฅธตฅั•ตฬ่•นั•ศ์ฉีอัฅไตฝนั•นะ่อม…”ต•ัÝ••ธ์…ภ่ู…ศ ดตุเตอม…”ดศค์ต…ษฅธตฝััฝด่ู…ศ ดตุเตอม…”ดศค์๔(นุเตฝนน•ัฅฝธตฑฅอะตอ•ัฅฝธ ฬฐนุเตฝนน•ัฅฝธตษ•อฝีษ•ฬ ฬฐนุเตฝนน•ัฅฝธตก•ฑภ ฬ์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตแฬค์๔(นุเตฝนน•ัฅฝธตฑฅอะตอ•ัฅฝธ๙ก•…‘•ศ๙อม…ธฐนุเตฝนน•ัฅฝธตฑฅอะตอ•ัฅฝธ๙ก•…‘•ศ๙อู์ฝฑฝศ่ู…ศ ดตุเตตีั•ค์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตตฅษผค์๔(นุเตฝนน•ัฅฝธตฑฅอะตอ•ัฅฝธ๙ก•…‘•ศ๙อู์Ýฅ‘ั ่€ฤัมเ์ก•ฅกะ่€ฤัมเ์๔(นุเตฝนน•ัฅฝธตฑฅอะตอ•ัฅฝธีฐ์‘ฅอมฑ…ไ่ษฅ์…ภ่€ูมเ์ฑฅอะตอัๅฑ”่นฝน”์๔(นุเตฝนน•ัฅฝธตฑฅอะตอ•ัฅฝธฑค์‘ฅอมฑ…ไ่ฑ•เ์…ฑฅธตฅั•ตฬ่•นั•ศ์…ภ่€แมเ์ฝฑฝศ่ู…ศ ดตุเตั•แะตอ•ฝน‘…ษไค์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตแฬค์๔(นุเตฝนน•ัฅฝธตฑฅอะตอ•ัฅฝธฑคอู์Ýฅ‘ั ่€ฤอมเ์ก•ฅกะ่€ฤอมเ์ฑ•เ่€ภ€ภ…ีัผ์ฝฑฝศ่ู…ศ ดตุเตอี•อฬค์๔(นุเตฝนน•ัฅฝธตษ•อฝีษ•ฬ์‘ฅอมฑ…ไ่ษฅ์…ภ่€ูมเ์๔(นุเตษ•อฝีษ”ตฑฅนฌ์‘ฅอมฑ…ไ่ษฅ์ตฅธตÝฅ‘ั ่€ภ์ตฅธตก•ฅกะ่€ะัมเ์ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่…ีัผตฅนต…เ ภฐลศค…ีัผ์…ฑฅธตฅั•ตฬ่•นั•ศ์…ภ่€ๅมเ์ม…‘‘ฅน่€Ýมเ€ฤมมเ์ฝษ‘•ศ่€ลมเอฝฑฅู…ศ ดตุเต‘ฅูฅ‘•ศค์ฝษ‘•ศตษ…‘ฅีฬ่ู…ศ ดตุเตษ…‘ฅีฬตอดค์…ญษฝีน่ู…ศ ดตุเตอีษ…”ตอีนญ•ธค์ฝฑฝศ่ู…ศ ดตุเตั•แะตอ•ฝน‘…ษไค์ั•แะต‘•ฝษ…ัฅฝธ่นฝน”์๔(นุเตษ•อฝีษ”ตฑฅนฌ๙อู์Ýฅ‘ั ่€ฤัมเ์ก•ฅกะ่€ฤัมเ์ฝฑฝศ่ู…ศ ดตุเตตีั•ค์๔(นุเตษ•อฝีษ”ตฑฅนฌอัษฝนฐนุเตษ•อฝีษ”ตฑฅนฌอต…ฑฐ์‘ฅอมฑ…ไ่ฑฝฌ์๔(นุเตษ•อฝีษ”ตฑฅนฌอัษฝน์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตแฬค์๔(นุเตษ•อฝีษ”ตฑฅนฌอต…ฑฐ์ต…ษฅธตัฝภ่€ษมเ์ฝฑฝศ่ู…ศ ดตุเตตีั•ค์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตตฅษผค์๔(นุเตษ•อฝีษ”ตฑฅนฌดตฝตม…ะ์‘ฅอมฑ…ไ่ฅนฑฅน”ตฑ•เ์Ýฅ‘ั ่ต…เตฝนั•นะ์ต…เตÝฅ‘ั ่€ฤภภ”์ตฅธตก•ฅกะ่€ฬษมเ์ม…‘‘ฅน่€ีมเ€แมเ์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตตฅษผค์๔(นุเตษ•อฝีษ”ตฑฅนฌดตฝตม…ะอัษฝน์ฝู•ษฑฝÜ่กฅ‘‘•ธ์ั•แะตฝู•ษฑฝÜ่•ฑฑฅมอฅฬ์Ýกฅั”ตอม…”่นฝÝษ…ภ์๔(นุเตฝนน•ัฅฝธตฅนอม•ัฝศต…ัฅฝนฬ์‘ฅอมฑ…ไ่ฑ•เ์…ฑฅธตฅั•ตฬ่•นั•ศ์…ภ่ู…ศ ดตุเตอม…”ดศค์ม…‘‘ฅนตัฝภ่ู…ศ ดตุเตอม…”ดฬค์ฝษ‘•ศตัฝภ่€ลมเอฝฑฅู…ศ ดตุเต‘ฅูฅ‘•ศค์๔(นุเตฝนน•ัฅฝธตฅนอม•ัฝศต…ัฅฝนฬ๘นุเตีััฝธ์ตฅธตÝฅ‘ั ่€ภ์ฑ•เ่€ฤ์๔(นุเตฝนน•ัฅฝธตม…น•ฐตฅนัษผ ฬ์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตอดค์๔(นุเตฝนน•ัฅฝธตม…น•ฐตฅนัษผดต…ัฅฝธ์‘ฅอมฑ…ไ่ฑ•เ์…ฑฅธตฅั•ตฬ่•นั•ศ์ฉีอัฅไตฝนั•นะ่อม…”ต•ัÝ••ธ์…ภ่ู…ศ ดตุเตอม…”ดฬค์๔(นุเตฝนน•ัฅฝธตม…น•ฐตฅนัษผดต…ัฅฝธ๙‘ฅุ์ตฅธตÝฅ‘ั ่€ภ์๔(นุเตฝนน•ัฅฝธตต•ักฝ‘ฬ์‘ฅอมฑ…ไ่ษฅ์…ภ่€Ýมเ์๔(นุเตฝนน•ัฅฝธตต•ักฝ์‘ฅอมฑ…ไ่ษฅ์Ýฅ‘ั ่€ฤภภ”์ตฅธตÝฅ‘ั ่€ภ์ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่…ีัผตฅนต…เ ภฐลศค…ีัผ์…ฑฅธตฅั•ตฬ่อั…ษะ์…ภ่€ๅมเ์ม…‘‘ฅน่ู…ศ ดตุเตอม…”ดฬค์ฝษ‘•ศ่€ลมเอฝฑฅู…ศ ดตุเต‘ฅูฅ‘•ศค์ฝษ‘•ศตษ…‘ฅีฬ่ู…ศ ดตุเตษ…‘ฅีฬตตค์…ญษฝีน่ู…ศ ดตุเตอีษ…”ตอีนญ•ธค์ฝฑฝศ่ู…ศ ดตุเตั•แะตอ•ฝน‘…ษไค์ีษอฝศ่มฝฅนั•ศ์ั•แะต…ฑฅธ่ฑ•ะ์๔(นุเตฝนน•ัฅฝธตต•ักฝนฅฬตอ•ฑ•ั•์ฝษ‘•ศตฝฑฝศ่ู…ศ ดตุเต…•นะตฑฅน”ค์…ญษฝีน่ฑฅน•…ศตษ…‘ฅ•นะ ฤฬี‘•ฑู…ศ ดตุเต…•นะตอฝะคฑู…ศ ดตุเตอีษ…”ตอีนญ•ธค€Üภ”ค์๔(นุเตฝนน•ัฅฝธตต•ักฝ‘}}อ•ฑ•ะ์‘ฅอมฑ…ไ่ษฅ์Ýฅ‘ั ่€ศษมเ์ก•ฅกะ่€ศษมเ์มฑ…”ตฅั•ตฬ่•นั•ศ์ฝฑฝศ่ู…ศ ดตุเตตีั•ค์๔(นุเตฝนน•ัฅฝธตต•ักฝนฅฬตอ•ฑ•ั•€นุเตฝนน•ัฅฝธตต•ักฝ‘}}อ•ฑ•ะ์ฝฑฝศ่ู…ศ ดตุเต…•นะค์๔(นุเตฝนน•ัฅฝธตต•ักฝ‘}}อ•ฑ•ะอูฐนุเตฝนน•ัฅฝธตต•ักฝ๙อู์Ýฅ‘ั ่€ฤีมเ์ก•ฅกะ่€ฤีมเ์๔(นุเตฝนน•ัฅฝธตต•ักฝ‘}}ฝมไ์ตฅธตÝฅ‘ั ่€ภ์๔(นุเตฝนน•ัฅฝธตต•ักฝ‘}}ก•…‘ฅน์‘ฅอมฑ…ไ่ฑ•เ์ตฅธตÝฅ‘ั ่€ภ์ฑ•เตÝษ…ภ่Ýษ…ภ์…ฑฅธตฅั•ตฬ่•นั•ศ์…ภ่€ีมเ์๔(นุเตฝนน•ัฅฝธตต•ักฝ‘}}ก•…‘ฅน๙อัษฝน์ต…ษฅธตษฅกะ่…ีัผ์ฝฑฝศ่ู…ศ ดตุเตั•แะค์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตแฬค์๔(นุเตฝนน•ัฅฝธตต•ักฝ‘}}ฝมไ๙ภ์ต…ษฅธตัฝภ่€ีมเ์ฝฑฝศ่ู…ศ ดตุเตตีั•ค์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตตฅษผค์ฑฅน”ตก•ฅกะ่ู…ศ ดตุเตฑฅน”ต…อ”ค์๔(นุเตฝนน•ัฅฝธตต•ักฝ‘}}ฝมไ€นุเตฝนน•ัฅฝธต…‘”ตษฝÜ์ต…ษฅธตัฝภ่€แมเ์๔(นุเตฝนน•ัฅฝธตต•ักฝ‘}}ษ•…อฝธ์‘ฅอมฑ…ไ่ฑฝฌ์ต…ษฅธตัฝภ่€Ýมเ์ฝฑฝศ่ู…ศ ดตุเตÝ…ษนฅนค์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตตฅษผค์ฑฅน”ตก•ฅกะ่ู…ศ ดตุเตฑฅน”ต…อ”ค์๔(นุเตฝนน•ัฅฝธตษ••ษ•น”์‘ฅอมฑ…ไ่ษฅ์…ภ่€แมเ์๔(นุเตฝนน•ัฅฝธตษ••ษ•น”๘นุเตฝษดตฅ•ฑ‘}}ฑ…•ฐ์‘ฅอมฑ…ไ่ฑ•เ์…ฑฅธตฅั•ตฬ่•นั•ศ์ฉีอัฅไตฝนั•นะ่อม…”ต•ัÝ••ธ์…ภ่ู…ศ ดตุเตอม…”ดศค์๔(นุเตฝนน•ัฅฝธตษ••ษ•น”อัษฝน์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตแฬค์๔(นุเตฝนน•ัฅฝธตษ••ษ•น”อต…ฑฐ์ฝฑฝศ่ู…ศ ดตุเตตีั•ค์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตตฅษผค์ั•แะต…ฑฅธ่ษฅกะ์๔(นุเตฝนน•ัฅฝธตษ••ษ•น•}}ฝนัษฝฐ์‘ฅอมฑ…ไ่ฑ•เ์…ภ่€ูมเ์๔(นุเตฝนน•ัฅฝธตษ••ษ•น•}}ฝนัษฝฐ€นุเตฅนมีะ์ตฅธตÝฅ‘ั ่€ภ์๔(นุเตฝนน•ัฅฝธตอั•มฬ์‘ฅอมฑ…ไ่ษฅ์…ภ่€Ýมเ์ฑฅอะตอัๅฑ”่นฝน”์๔(นุเตฝนน•ัฅฝธตอั•มฬฑค์‘ฅอมฑ…ไ่ษฅ์ตฅธตÝฅ‘ั ่€ภ์ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่…ีัผตฅนต…เ ภฐลศค์…ภ่€ฤมมเ์ม…‘‘ฅน่ู…ศ ดตุเตอม…”ดฬค์ฝษ‘•ศตฑ•ะ่€ลมเอฝฑฅู…ศ ดตุเต‘ฅูฅ‘•ศค์…ญษฝีน่ฑฅน•…ศตษ…‘ฅ•นะ ไม‘•ฑู…ศ ดตุเตอีษ…”ตอีนญ•ธคฑัษ…นอม…ษ•นะค์๔(นุเตฝนน•ัฅฝธตอั•มฬฑคนฅฬต‘ฝน”์ฝษ‘•ศตฑ•ะตฝฑฝศ่ู…ศ ดตุเตอี•อฬค์๔(นุเตฝนน•ัฅฝธตอั•มฬฑคนฅฬตฑฝญ•์ฝษ‘•ศตฑ•ะตฝฑฝศ่ู…ศ ดตุเตÝ…ษนฅนค์๔(นุเตฝนน•ัฅฝธตอั•ภตฅน‘•เ์มฝอฅัฅฝธ่ษ•ฑ…ัฅู”์‘ฅอมฑ…ไ่ษฅ์Ýฅ‘ั ่€ศัมเ์ก•ฅกะ่€ศัมเ์มฑ…”ตฅั•ตฬ่•นั•ศ์ฝฑฝศ่ู…ศ ดตุเตตีั•ค์๔(นุเตฝนน•ัฅฝธตอั•ภตฅน‘•เอู์Ýฅ‘ั ่€ฤÝมเ์ก•ฅกะ่€ฤÝมเ์๔(นุเตฝนน•ัฅฝธตอั•ภตฅน‘•เอต…ฑฐ์มฝอฅัฅฝธ่…อฝฑีั”์ฝนะต…ตฅฑไ่ู…ศ ดตุเตตฝนผค์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตตฅษผค์ัษ…นอฝษด่อ…ฑ” ธÜเค์๔(นุเตฝนน•ัฅฝธตอั•มฬ€นฅฬต‘ฝน”€นุเตฝนน•ัฅฝธตอั•ภตฅน‘•เ์ฝฑฝศ่ู…ศ ดตุเตอี•อฬค์๔(นุเตฝนน•ัฅฝธตอั•มฬ€นฅฬต‘ฝน”€นุเตฝนน•ัฅฝธตอั•ภตฅน‘•เอต…ฑฐฐนุเตฝนน•ัฅฝธตอั•มฬ€นฅฬตฑฝญ•€นุเตฝนน•ัฅฝธตอั•ภตฅน‘•เอต…ฑฐ์‘ฅอมฑ…ไ่นฝน”์๔(นุเตฝนน•ัฅฝธตอั•มฬ€นฅฬตฑฝญ•€นุเตฝนน•ัฅฝธตอั•ภตฅน‘•เ์ฝฑฝศ่ู…ศ ดตุเตÝ…ษนฅนค์๔(นุเตฝนน•ัฅฝธตอั•ภตฝมไ์ตฅธตÝฅ‘ั ่€ภ์๔(นุเตฝนน•ัฅฝธตอั•ภตฝมไ๙อัษฝน์‘ฅอมฑ…ไ่ฑฝฌ์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตแฬค์ฑฅน”ตก•ฅกะ่ู…ศ ดตุเตฑฅน”ต…อ”ค์๔(นุเตฝนน•ัฅฝธตอั•ภตฝมไ๙ภ์ต…ษฅธตัฝภ่€ัมเ์ฝฑฝศ่ู…ศ ดตุเตตีั•ค์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตตฅษผค์ฑฅน”ตก•ฅกะ่ู…ศ ดตุเตฑฅน”ต…อ”ค์๔(นุเตฝนน•ัฅฝธตอั•ภตฝมไ๙ฝ‘”์‘ฅอมฑ…ไ่ฑฝฌ์ต…ษฅธตัฝภ่€Ýมเ์ฝู•ษฑฝÜ่กฅ‘‘•ธ์ม…‘‘ฅน่€ูมเ€แมเ์ฝษ‘•ศตษ…‘ฅีฬ่ู…ศ ดตุเตษ…‘ฅีฬตอดค์…ญษฝีน่ู…ศ ดตุเต…นู…ฬค์ฝฑฝศ่ู…ศ ดตุเตั•แะตอ•ฝน‘…ษไค์ฝนะต…ตฅฑไ่ู…ศ ดตุเตตฝนผค์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตตฅษผค์ั•แะตฝู•ษฑฝÜ่•ฑฑฅมอฅฬ์Ýกฅั”ตอม…”่นฝÝษ…ภ์๔(นุเตฝนน•ัฅฝธตอั•ภต…ัฅฝนฬ์‘ฅอมฑ…ไ่ฑ•เ์ษฅตฝฑีตธ่€ศ์ฑ•เตÝษ…ภ่Ýษ…ภ์…ภ่€ูมเ์๔(นุเตฝนน•ัฅฝธตอั•ภต…ัฅฝนฬ๘นุเตีััฝธ์ก•ฅกะ่€ฬษมเ์ม…‘‘ฅน่€ภ€ๅมเ์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตตฅษผค์๔(นุเตฝนน•ัฅฝธตอ•ัีม}}นฝัฅ”์ม…‘‘ฅน่ู…ศ ดตุเตอม…”ดฬค์๔(นุเตฝนน•ัฅฝธต‘ฅ…นฝอัฅตอีตต…ษไ์‘ฅอมฑ…ไ่ษฅ์ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่…ีัผตฅนต…เ ภฐลศค…ีัผ์…ฑฅธตฅั•ตฬ่•นั•ศ์…ภ่ู…ศ ดตุเตอม…”ดฬค์ม…‘‘ฅน่ู…ศ ดตุเตอม…”ดฬค์ฝษ‘•ศตษ…‘ฅีฬ่ู…ศ ดตุเตษ…‘ฅีฬตตค์…ญษฝีน่ู…ศ ดตุเตอีษ…”ตอีนญ•ธค์๔(นุเตฝนน•ัฅฝธต‘ฅ…นฝอัฅตอีตต…ษๅ}}ฅฝธ์‘ฅอมฑ…ไ่ษฅ์Ýฅ‘ั ่€ฬูมเ์ก•ฅกะ่€ฬูมเ์มฑ…”ตฅั•ตฬ่•นั•ศ์ฝษ‘•ศตษ…‘ฅีฬ่ู…ศ ดตุเตษ…‘ฅีฬตอดค์…ญษฝีน่ู…ศ ดตุเตอีษ…”ดศค์ฝฑฝศ่ู…ศ ดตุเตตีั•ค์๔(นุเตฝนน•ัฅฝธต‘ฅ…นฝอัฅตอีตต…ษๅ}}ฅฝธนฅฬตษฅัฅ…ฐ์ฝฑฝศ่ู…ศ ดตุเต‘…น•ศค์๔(นุเตฝนน•ัฅฝธต‘ฅ…นฝอัฅตอีตต…ษๅ}}ฅฝธนฅฬตÝ…ษนฅน์ฝฑฝศ่ู…ศ ดตุเตÝ…ษนฅนค์๔(นุเตฝนน•ัฅฝธต‘ฅ…นฝอัฅตอีตต…ษๅ}}ฅฝธนฅฬตก•…ฑักไฐนุเตฝนน•ัฅฝธต‘ฅ…นฝอัฅตอีตต…ษๅ}}ฅฝธนฅฬตษ•…‘ไ์ฝฑฝศ่ู…ศ ดตุเตอี•อฬค์๔(นุเตฝนน•ัฅฝธต‘ฅ…นฝอัฅตอีตต…ษไอัษฝนฐนุเตฝนน•ัฅฝธต‘ฅ…นฝอัฅตอีตต…ษไอต…ฑฐ์‘ฅอมฑ…ไ่ฑฝฌ์๔(นุเตฝนน•ัฅฝธต‘ฅ…นฝอัฅตอีตต…ษไอัษฝน์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตแฬค์๔(นุเตฝนน•ัฅฝธต‘ฅ…นฝอัฅตอีตต…ษไอต…ฑฐ์ต…ษฅธตัฝภ่€อมเ์ฝฑฝศ่ู…ศ ดตุเตตีั•ค์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตตฅษผค์๔(นุเตฝนน•ัฅฝธต‘ฅ…นฝอัฅตฑฅอะ์‘ฅอมฑ…ไ่ษฅ์…ภ่€ลมเ์ฝู•ษฑฝÜ่กฅ‘‘•ธ์ฝษ‘•ศ่€ลมเอฝฑฅู…ศ ดตุเต‘ฅูฅ‘•ศค์ฝษ‘•ศตษ…‘ฅีฬ่ู…ศ ดตุเตษ…‘ฅีฬตตค์…ญษฝีน่ู…ศ ดตุเต‘ฅูฅ‘•ศค์ฑฅอะตอัๅฑ”่นฝน”์๔(นุเตฝนน•ัฅฝธต‘ฅ…นฝอัฅตฑฅอะฑค์‘ฅอมฑ…ไ่ษฅ์ตฅธตÝฅ‘ั ่€ภ์ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่…ีัผตฅนต…เ ภฐลศค…ีัผ์…ฑฅธตฅั•ตฬ่•นั•ศ์…ภ่€ๅมเ์ม…‘‘ฅน่€ๅมเ€ฤมมเ์…ญษฝีน่ู…ศ ดตุเตอีษ…”ตอีนญ•ธค์๔(นุเตฝนน•ัฅฝธต‘ฅ…นฝอัฅตฑฅอะฑค๙อม…ธ์‘ฅอมฑ…ไ่ษฅ์Ýฅ‘ั ่€ศัมเ์ก•ฅกะ่€ศัมเ์มฑ…”ตฅั•ตฬ่•นั•ศ์ฝฑฝศ่ู…ศ ดตุเตตีั•ค์๔(นุเตฝนน•ัฅฝธต‘ฅ…นฝอัฅตฑฅอะฑค๙อม…ธอู์Ýฅ‘ั ่€ฤีมเ์ก•ฅกะ่€ฤีมเ์๔(นุเตฝนน•ัฅฝธต‘ฅ…นฝอัฅตฑฅอะฑคนฅฬตอี•อฬ๙อม…ธ์ฝฑฝศ่ู…ศ ดตุเตอี•อฬค์๔(นุเตฝนน•ัฅฝธต‘ฅ…นฝอัฅตฑฅอะฑคนฅฬตÝ…ษนฅน๙อม…ธ์ฝฑฝศ่ู…ศ ดตุเตÝ…ษนฅนค์๔(นุเตฝนน•ัฅฝธต‘ฅ…นฝอัฅตฑฅอะฑคนฅฬต‘…น•ศ๙อม…ธ์ฝฑฝศ่ู…ศ ดตุเต‘…น•ศค์๔(นุเตฝนน•ัฅฝธต‘ฅ…นฝอัฅตฑฅอะอัษฝน์‘ฅอมฑ…ไ่ฑฝฌ์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตแฬค์๔(นุเตฝนน•ัฅฝธต‘ฅ…นฝอัฅตฑฅอะภ์ต…ษฅธตัฝภ่€ษมเ์ฝฑฝศ่ู…ศ ดตุเตตีั•ค์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตตฅษผค์ฑฅน”ตก•ฅกะ่ู…ศ ดตุเตฑฅน”ต…อ”ค์๔(นุเตฝนน•ัฅฝธต‘ฅ…นฝอัฅตฑฅอะฑค๙อต…ฑฐ์ฝฑฝศ่ู…ศ ดตุเตตีั•ค์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตตฅษผค์๔(นุเตฝนน•ัฅฝธตก•ฑภ์‘ฅอมฑ…ไ่ษฅ์…ภ่€ลมเ์ฝู•ษฑฝÜ่กฅ‘‘•ธ์ฝษ‘•ศ่€ลมเอฝฑฅู…ศ ดตุเต‘ฅูฅ‘•ศค์ฝษ‘•ศตษ…‘ฅีฬ่ู…ศ ดตุเตษ…‘ฅีฬตตค์…ญษฝีน่ู…ศ ดตุเต‘ฅูฅ‘•ศค์๔(นุเตฝนน•ัฅฝธตก•ฑภ๙ ฬ์ม…‘‘ฅน่€ฤมมเ์…ญษฝีน่ู…ศ ดตุเตอีษ…”ตอีนญ•ธค์๔(นุเตฝนน•ัฅฝธตก•ฑภ‘•ั…ฅฑฬ์…ญษฝีน่ู…ศ ดตุเตอีษ…”ตอีนญ•ธค์๔(นุเตฝนน•ัฅฝธตก•ฑภอีตต…ษไ์ม…‘‘ฅน่€ฤมมเ์ฝฑฝศ่ู…ศ ดตุเตั•แะตอ•ฝน‘…ษไค์ีษอฝศ่มฝฅนั•ศ์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตแฬค์๔(นุเตฝนน•ัฅฝธตก•ฑภ‘•ั…ฅฑฬภ์ม…‘‘ฅน่€ภ€ฤมมเ€ฤมมเ์ฝฑฝศ่ู…ศ ดตุเตตีั•ค์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตตฅษผค์ฑฅน”ตก•ฅกะ่ู…ศ ดตุเตฑฅน”ตษ•ฑ…แ•ค์๔(นุเตฝนน•ัฅฝธตษ•อฝีษ•ฬดตฝตม…ะ์ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่ษ•ม•…ะ ศฑตฅนต…เ ภฐลศคค์๔(นุเตฝนน•ัฅฝนฬตอ•ีษฅัไ์ต…ษฅธตัฝภ่ู…ศ ดตุเตฑ…ๅฝีะตอ•ัฅฝธต…ภค์๔)ต•‘ฅ€กต…เตÝฅ‘ั ่ฤฬศมมเฅ์นุเตนฝÜตษฅ‘ํษฅตั•ตมฑ…ั”ตฝฑีตนฬ้ษ•ม•…ะ ศฑตฅนต…เ ภฐลศคฅ๔นุเตฝนน•ัฅฝนฬตÝฝษญอม…•ํษฅตั•ตมฑ…ั”ตฝฑีตนฬ้ตฅนต…เ ภฐลศคู…ศ ดตุเตฑ…ๅฝีะตฅนอม•ัฝศตÝฅ‘ั ฅ๔นุเตฝนน•ัฅฝนฬตษฅ‘ํษฅตั•ตมฑ…ั”ตฝฑีตนฬ้ตฅนต…เ ภฐลศฅ๕๔)ต•‘ฅ€กต…เตÝฅ‘ั ่ไเมมเฅ์นุเตฝนน•ัฅฝนฬตฝู•ษูฅ•Ýํษฅตั•ตมฑ…ั”ตฝฑีตนฬ้ตฅนต…เ ภฐลศฅ๔นุเตฝนน•ัฅฝนฬตÝฝษญอม…•ํษฅตั•ตมฑ…ั”ตฝฑีตนฬ้ตฅนต…เ ภฐลศฅ๔นุเตฝนน•ัฅฝนฬตฅนอม•ัฝษํมฝอฅัฅฝธ้อั…ัฅํต…เตก•ฅกะ้นฝน”ํฝษ‘•ศ่ดฤํฝู•ษฑฝÜู้ฅอฅฑ”ํอษฝฑฑ…ศตีัั•ศ้…ีัฝ๔นุเตฝนน•ัฅฝนฬตษฅ‘ํษฅตั•ตมฑ…ั”ตฝฑีตนฬ้ษ•ม•…ะ ศฑตฅนต…เ ภฐลศคฅ๔นุเต…ัฅูฅัไตÝฝษญอม…•ํษฅตั•ตมฑ…ั”ตฝฑีตนฬ้ตฅนต…เ ภฐลศฅ๔นุเต…ัฅูฅัไตฅนั•ฑฑฅ•น•ํมฝอฅัฅฝธ้อั…ัฅํษฅตั•ตมฑ…ั”ตฝฑีตนฬ้ษ•ม•…ะ ศฑตฅนต…เ ภฐลศคฅ๔นุเต…ัฅูฅัไตมษฅู…ๅํษฅตฝฑีตธ่ฤผดล๕๔)ต•‘ฅ€กต…เตÝฅ‘ั ่เศมมเฅ์นุเตฝนน•ัฅฝนฬตต•ัษฅอํษฅตั•ตมฑ…ั”ตฝฑีตนฬ้ษ•ม•…ะ ศฑตฅนต…เ ภฐลศคฅ๔นุเตฝนน•ัฅฝธตฝมมฝษัีนฅัฅ•ฬฐนุเตฝนน•ัฅฝนฬตษฅ‘ํษฅตั•ตมฑ…ั”ตฝฑีตนฬ้ตฅนต…เ ภฐลศฅ๔นุเตฝนน•ัฅฝนฬตัฝฝฑ…ษํมฝอฅัฅฝธ้อั…ัฅํฑ•เตÝษ…ภ้Ýษ…ม๔นุเตฝนน•ัฅฝนฬตอ•…ษกํฑ•เ่ฤ€ฤ€ฤภภ•๔นุเตฝนน•ัฅฝนฬตอั…ัีฬตฅฑั•ศฐนุเตฝนน•ัฅฝนฬตอฝษัํตฅธตÝฅ‘ั ่ภํฑ•เ่ล๔นุเตฝนน•ัฅฝธต…ษ‘ํตฅธตก•ฅกะ่ฬฬมมแ๔นุเตฝนน•ัฅฝธต…ษ‘}}…ัฅฝนฬ๘นุเตฅฝธตีััฝนํฝม…ฅัไ่ล๔นุเต…ัฅูฅัไตัฝฝฑฬต…ษํมฝอฅัฅฝธ้อั…ัฅํ…ฑฅธตฅั•ตฬ้อัษ•ั ํฑ•เต‘ฅษ•ัฅฝธ้ฝฑีตน๔นุเต…ัฅูฅัไตอ•…ษ ฐนุเต…ัฅูฅัไตอฝษัํÝฅ‘ั ่ฤภภ”ํตฅธตÝฅ‘ั ่ม๔นุเต…ัฅูฅัไตัฝฝฑฬต…ศ€นุเตฝฑฑ•ัฅฝธตัฝฝฑอํฉีอัฅไตฝนั•นะ้อม…”ต•ัÝ••น๕๔)ต•‘ฅ€กมฝฅนั•ศ้ฝ…ษอ”ฅ์นุเตฝนน•ัฅฝธต…ษ‘}}…ัฅฝนฬ๘นุเตฅฝธตีััฝนํฝม…ฅัไ่ล๕๔)ต•‘ฅ€กต…เตÝฅ‘ั ุ่ศมมเฅ์นุเตนฝÜตษฅฐนุเต…ัฅูฅัไตฅนั•ฑฑฅ•น•ํษฅตั•ตมฑ…ั”ตฝฑีตนฬ้ตฅนต…เ ภฐลศฅ๔นุเตนฝÜต…ษดตอฝฑฝํตฅธตก•ฅกะ่ฤไมมเํษฅตั•ตมฑ…ั”ตฝฑีตนฬ้ตฅนต…เ ภฐลศคํษฅตั•ตมฑ…ั”ตษฝÝฬ้…ีัผตฅนต…เ ภฐลศค…ีัผํ…ฑฅธตฅั•ตฬ้อัษ•ั ํ…ภ่ม๔นุเตนฝÜต…ษดตอฝฑผ€นุเตนฝÜต…ษ‘}}ฝมๅํม…‘‘ฅนู้…ศ ดตุเตอม…”ดะค€ม๔นุเตนฝÜต…ษดตอฝฑผฝฝั•ษํตฅธตÝฅ‘ั ่ภํฉีอัฅไตฝนั•นะ้อม…”ต•ัÝ••ธํม…‘‘ฅนตัฝภู้…ศ ดตุเตอม…”ดฬคํฝษ‘•ศตัฝภ่ลมเอฝฑฅู…ศ ดตุเต‘ฅูฅ‘•ศฅ๔นุเต…ัฅูฅัไตฅฑั•ษฬฐนุเตฝนน•ัฅฝธต…ั•ฝษฅ•อํฑ•เตÝษ…ภ้นฝÝษ…ภํฝู•ษฑฝÜตเ้…ีัฝ๔นุเตฑฅู”ต•นัษๅํษฅตั•ตมฑ…ั”ตฝฑีตนฬ่ะษมเ€ศมมเตฅนต…เ ภฐลศฅ๔นุเตฑฅู”ตัฅต•ฑฅน”่้•ฝษ•ํฑ•ะ่ิลมแ๔นุเตฑฅู”ต•นัษๅ}}ัฅต•ํฝนะตอฅ้”ู้…ศ ดตุเตฝนะตตฅษผฅ๔นุเตฑฅู”ต•นัษๅ}}…ษ‘ํษฅตั•ตมฑ…ั”ตฝฑีตนฬ้…ีัผตฅนต…เ ภฐลศคํม…‘‘ฅนู้…ศ ดตุเตอม…”ดฬฅ๔นุเตฑฅู”ต•นัษๅ}}…ั•ฝษๅํ‘ฅอมฑ…ไ้นฝน•๔นุเตฝนน•ัฅฝธตฝมมฝษัีนฅัๅํษฅตั•ตมฑ…ั”ตฝฑีตนฬ้…ีัผตฅนต…เ ภฐลศฅ๔นุเตฝนน•ัฅฝธตฝมมฝษัีนฅัไ€นุเตีััฝนํษฅตฝฑีตธ่ฤผดฤํÝฅ‘ั ่ฤภภ•๔นุเตฝนน•ัฅฝนฬตฅนอม•ัฝษํม…‘‘ฅนู้…ศ ดตุเตอม…”ดฬฅ๔นุเตฝนน•ัฅฝธตั…อํษฅตั•ตมฑ…ั”ตฝฑีตนฬ้ษ•ม•…ะ ศฑตฅนต…เ ภฐลศคฅ๔นุเตฝนน•ัฅฝธตั…ํฉีอัฅไตฝนั•นะ้ฑ•เตอั…ษะํม…‘‘ฅน่ภ€ๅมแ๔นุเตฝนน•ัฅฝธตษ••ษ•น”๙อม…นํ…ฑฅธตฅั•ตฬ้ฑ•เตอั…ษะํฑ•เต‘ฅษ•ัฅฝธ้ฝฑีตน๔นุเตฝนน•ัฅฝธตษ••ษ•น”อต…ฑฑํั•แะต…ฑฅธ้ฑ•ั๔นุเตฝนน•ัฅฝธตม…น•ฐตฅนัษผดต…ัฅฝนํ…ฑฅธตฅั•ตฬ้อัษ•ั ํฑ•เต‘ฅษ•ัฅฝธ้ฝฑีตน๔นุเตฝนน•ัฅฝธตม…น•ฐตฅนัษผดต…ัฅฝธ€นุเตีััฝนํÝฅ‘ั ่ฤภภ•๔นุเตฝนน•ัฅฝธตฅนอม•ัฝศต…ัฅฝนอํ…ฑฅธตฅั•ตฬ้อัษ•ั ํฑ•เต‘ฅษ•ัฅฝธ้ฝฑีตน๔นุเตฝนน•ัฅฝธตฅนอม•ัฝศต…ัฅฝนฬ๘นุเตีััฝนํÝฅ‘ั ่ฤภภ”ํฑ•เ้นฝน•๔นุเตฝนน•ัฅฝธตษ•อฝีษ•ฬดตฝตม…ัํษฅตั•ตมฑ…ั”ตฝฑีตนฬ้ตฅนต…เ ภฐลศฅ๔นุเตอ•ัฅฝธตนฝั•ํ‘ฅอมฑ…ไ้นฝน•๕๔)ต•‘ฅ€กต…เตÝฅ‘ั ุ่ศมมเฅ์นุเตฝนน•ัฅฝนฬตอั…ัีฬตฅฑั•ศฐนุเตฝนน•ัฅฝนฬตอฝษัํÝฅ‘ั ้…ีัผํฑ•เ่ฤ€ฤ…ฑ ิภ”€ด€ูมเฅ๔นุเตฝนน•ัฅฝนฬตัฝฝฑ…ศ€นุเตฝฑฑ•ัฅฝธต‘•นอฅัๅํฝษ‘•ศ่ั๔นุเตฝนน•ัฅฝนฬตัฝฝฑ…ศ€นุเตอ•ัฅฝธตฝีนัํฝษ‘•ศ่ิํต…ษฅธตฑ•ะ้…ีัฝ๕๔)ต•‘ฅ€กต…เตÝฅ‘ั ่เศมมเฅ์นุเต…ัฅูฅัไตฅฑั•ษฬฐนุเตฝนน•ัฅฝธต…ั•ฝษฅ•อํฑ•เตÝษ…ภ้Ýษ…ภํฝู•ษฑฝÜู้ฅอฅฑ•๕๔)ต•‘ฅ€กต…เตÝฅ‘ั ่เศมมเฅ์นุเตฅฑั•ศตกฅมํตฅธตก•ฅกะู้…ศ ดตุเตัฝี ตั…ษ•ะคํม…‘‘ฅนตฅนฑฅน”่ฤัมแ๔นุเตฝนน•ัฅฝธตอั•ภต…ัฅฝนฬ๘นุเตีััฝธฐนุเตษ•อฝีษ”ตฑฅนฌดตฝตม…ัํตฅธตก•ฅกะู้…ศ ดตุเตัฝี ตั…ษ•ะฅ๔นุเตฑฅู”ต•นัษๅ}}…ษ€นุเตษฝÜต…ัฅฝนฬฐนุเตฝนน•ัฅฝธต…ษ‘}}…ัฅฝนอํฝม…ฅัไ่ล๕๔)ต•‘ฅ€กตฅธตÝฅ‘ั ่เศลมเค…น€กต…เตÝฅ‘ั ่ฤฤภมมเฅ์นุเต…ัฅูฅัไตฅฑั•ษฬฐนุเตฝนน•ัฅฝธต…ั•ฝษฅ•อํฑ•เตÝษ…ภ้Ýษ…ภํฝู•ษฑฝÜู้ฅอฅฑ•๕๔)ต•‘ฅ€กมษ••ษฬตษ•‘ี•ตตฝัฅฝธ้ษ•‘ี”ฅ์นุเตฅฑั•ศตกฅภฐนุเตฑฅู”ต•นัษๅ}}…ษ‘ํัษ…นอฅัฅฝธต‘ีษ…ัฅฝธ่ลตอ๔นุเตฝนน•ัฅฝธตฅนอม•ัฝศตม…น•ฑํ…นฅต…ัฅฝธ้นฝน•๕๔(

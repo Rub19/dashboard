@@ -1,18 +1,21 @@
 import { element, icon } from "../ui/dom.mjs";
+import { enhanceForm, formField, passwordControl, runFormSubmission, setFieldState } from "../ui/form-system.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
 
-function passwordInput(id, label) {
+function passwordInput(id, label, signal) {
   const input = element("input", {
     className: "v8-input v8-auth__input",
     id,
     attributes: { type: "password", autocomplete: "new-password", required: true, minlength: "12", maxlength: "128" }
   });
+  const password = passwordControl(input, {
+    className: "v8-auth__password",
+    buttonClassName: "v8-auth__password-toggle",
+    signal
+  });
   return Object.freeze({
     input,
-    node: element("label", { className: "v8-field", attributes: { for: id } }, [
-      element("span", { className: "v8-field__label", text: label }),
-      input
-    ])
+    node: formField({ label, control: password.node, input, required: true, help: "12 caractères minimum" })
   });
 }
 
@@ -21,8 +24,8 @@ export function mountPasswordRecovery(root, options = {}) {
   const auth = options.auth;
   if (!auth?.updatePassword) throw new TypeError("Password recovery requires the auth adapter");
   const abortController = new AbortController();
-  const first = passwordInput("v8-recovery-password", "Nouveau mot de passe");
-  const confirmation = passwordInput("v8-recovery-confirmation", "Confirmer le mot de passe");
+  const first = passwordInput("v8-recovery-password", "Nouveau mot de passe", abortController.signal);
+  const confirmation = passwordInput("v8-recovery-confirmation", "Confirmer le mot de passe", abortController.signal);
   const feedback = element("div", { className: "v8-auth__feedback", attributes: { role: "status", "aria-live": "polite", "aria-atomic": "true" } });
   const submit = element("button", { className: "v8-button v8-button--primary v8-auth__submit", attributes: { type: "submit" } }, [
     icon("shield-check"),
@@ -37,6 +40,7 @@ export function mountPasswordRecovery(root, options = {}) {
     submit,
     signOut
   ]);
+  enhanceForm(form, { signal: abortController.signal });
   const panel = element("section", { className: "v8-auth v8-auth--recovery v8-surface", attributes: { "aria-labelledby": "v8-recovery-title" } }, [
     element("div", { className: "v8-auth__header" }, [
       element("div", { className: "v8-auth__status" }, [element("span", { className: "v8-auth__status-dot" }), element("span", { text: "Lien vérifié" })]),
@@ -82,19 +86,23 @@ export function mountPasswordRecovery(root, options = {}) {
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (first.input.value !== confirmation.input.value) {
+      setFieldState(confirmation.input, "invalid", "Les deux mots de passe ne correspondent pas.");
       showFeedback("Les deux mots de passe ne correspondent pas.");
       confirmation.input.focus();
       return;
     }
-    submit.disabled = true;
-    form.setAttribute("aria-busy", "true");
     showFeedback("");
-    const response = await auth.updatePassword(first.input.value);
-    form.setAttribute("aria-busy", "false");
+    const submission = await runFormSubmission({ form, submit, status: feedback, messages: { loading: "Mise à jour sécurisée..." }, task: () => auth.updatePassword(first.input.value) });
+    if (!submission.accepted) return;
+    const response = submission.value;
+    if (submission.error || !response) {
+      showFeedback("La mise a jour est momentanement indisponible.");
+      return;
+    }
     if (!response.ok) {
-      submit.disabled = false;
       first.input.value = "";
       confirmation.input.value = "";
+      setFieldState(first.input, "invalid", response.message);
       showFeedback(response.message);
       first.input.focus();
       return;

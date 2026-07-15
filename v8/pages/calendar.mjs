@@ -1,5 +1,6 @@
 import { actionButton, element, icon } from "../ui/dom.mjs";
 import { emptyState } from "../ui/empty-state.mjs";
+import { formField, runFormSubmission, validateControl } from "../ui/form-system.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
 import { buildMonth, eventsForDate } from "./calendar-model.mjs";
 import { localeTag } from "../i18n/catalog.mjs";
@@ -125,9 +126,9 @@ export function mountCalendar(stage, options = {}) {
       const date = element("input", { className: "v8-input", attributes: { type: "date", value: selectedDate, "aria-label": "Date de l'événement", required: "" }, dataset: { eventField: "date" } });
       date.value = selectedDate;
       composer.hidden = false;
-      composer.append(title, date, element("div", {}, [
+      composer.append(formField({ label: "Événement", control: title, required: true }), formField({ label: "Date", control: date, required: true }), element("div", {}, [
         actionButton({ actionId: "v8.calendar.new.cancel" }, [element("span", { text: "Annuler" })]),
-        actionButton({ actionId: "v8.calendar.create", variant: "primary" }, [icon("plus"), element("span", { text: "Ajouter" })])
+        element("button", { className: "v8-button v8-button--primary", attributes: { type: "submit" } }, [icon("plus"), element("span", { text: "Ajouter" })])
       ]));
       title.focus({ preventScroll: true });
     }
@@ -156,9 +157,9 @@ export function mountCalendar(stage, options = {}) {
       composer,
       list
     );
-    composer.addEventListener("submit", (event) => {
+    composer.addEventListener("submit", async (event) => {
       event.preventDefault();
-      createEvent();
+      await runFormSubmission({ form: composer, submit: composer.querySelector("[type='submit']"), messages: { loading: "Ajout de l'evenement..." }, task: createEvent });
     }, { once: true });
     refreshIcons();
   }
@@ -179,8 +180,7 @@ export function mountCalendar(stage, options = {}) {
   function createEvent() {
     const title = agenda.querySelector("[data-event-field='title']");
     const date = agenda.querySelector("[data-event-field='date']");
-    if (!title?.value.trim()) {
-      title?.focus({ preventScroll: true });
+    if (!title?.value.trim() || !validateControl(title, { force: true, focus: true })) {
       notify({ id: "calendar-title-required", title: "Calendrier", message: "Ajoutez un titre à l'événement.", type: "warning" });
       return { ok: false, status: "failed", message: "Titre requis" };
     }

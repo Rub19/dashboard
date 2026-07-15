@@ -46,6 +46,15 @@ function safeParse(value) {
   }
 }
 
+function migratePersistedSnapshot(input) {
+  const snapshot = input && typeof input === "object" ? { ...input } : {};
+  if (!Object.hasOwn(snapshot, "schemaVersion") && Number.isInteger(snapshot.version)) {
+    snapshot.schemaVersion = snapshot.version;
+    delete snapshot.version;
+  }
+  return snapshot;
+}
+
 function normalizeRoute(route) {
   const value = String(route || "home").trim().toLowerCase();
   return /^[a-z0-9-]{1,32}$/.test(value) ? value : "home";
@@ -101,7 +110,7 @@ function statesEqual(left, right) {
 
 function persistedSnapshot(state) {
   return {
-    version: 4,
+    schemaVersion: 5,
     route: state.route,
     theme: state.theme,
     density: state.density,
@@ -116,7 +125,7 @@ function persistedSnapshot(state) {
 }
 
 function cloudSnapshot(state) {
-  const { version: _cacheVersion, ...preferences } = persistedSnapshot(state);
+  const { schemaVersion: _schemaVersion, ...preferences } = persistedSnapshot(state);
   return Object.freeze(preferences);
 }
 
@@ -126,7 +135,7 @@ export function createPresentationStore(initialState = {}, options = {}) {
 
   try {
     const raw = storage?.getItem(PERSISTENCE_KEY);
-    persisted = raw ? safeParse(raw) : {};
+    persisted = raw ? migratePersistedSnapshot(safeParse(raw)) : {};
   } catch {
     persisted = {};
   }

@@ -1,4 +1,4 @@
-const ETHONE_VERSION = "2026-07-14-experience-v71";
+const ETHONE_VERSION = "2026-07-15-experience-v107";
 const ETHONE_CACHE = `ethone-${ETHONE_VERSION}`;
 const ETHONE_OFFLINE_URL = "./index.html";
 
@@ -25,9 +25,17 @@ const ETHONE_V8_ASSETS = [
   "./v8/core/actions.mjs",
   "./v8/core/density-boot.js",
   "./v8/core/density-engine.mjs",
+  "./v8/core/experience.mjs",
+  "./v8/brain/action-registry.mjs",
+  "./v8/brain/context-engine.mjs",
+  "./v8/brain/controller.mjs",
+  "./v8/brain/memory-repository.mjs",
   "./v8/brain/preferences.mjs",
+  "./v8/brain/provider-manager.mjs",
+  "./v8/brain/runtime.mjs",
   "./v8/core/document-metadata.mjs",
   "./v8/core/lifecycle.mjs",
+  "./v8/core/navigation-session.mjs",
   "./v8/core/presence-engine.mjs",
   "./v8/core/router.mjs",
   "./v8/core/store.mjs",
@@ -45,6 +53,7 @@ const ETHONE_V8_ASSETS = [
   "./v8/entry/profile-selection.mjs",
   "./v8/i18n/catalog.mjs",
   "./v8/i18n/runtime.mjs",
+  "./v8/pages/brain.mjs",
   "./v8/pages/calendar.mjs",
   "./v8/pages/calendar-model.mjs",
   "./v8/pages/activity.mjs",
@@ -57,6 +66,8 @@ const ETHONE_V8_ASSETS = [
   "./v8/pages/home.mjs",
   "./v8/pages/notes.mjs",
   "./v8/pages/notes-model.mjs",
+  "./v8/pages/settings.mjs",
+  "./v8/pages/system.mjs",
   "./v8/pages/tasks.mjs",
   "./v8/pages/tasks-model.mjs",
   "./v8/services/auth-adapter.mjs",
@@ -69,27 +80,34 @@ const ETHONE_V8_ASSETS = [
   "./v8/services/public-auth-config.mjs",
   "./v8/services/rate-limiter.mjs",
   "./v8/services/service-worker.mjs",
+  "./v8/services/sound-manager.mjs",
   "./v8/services/spotify-live.mjs",
   "./v8/services/supabase-state-sync.mjs",
-  "./v8/styles/base.css?v=experience-v71",
-  "./v8/styles/activity.css?v=experience-v71",
-  "./v8/styles/components.css?v=experience-v71",
-  "./v8/styles/entry.css?v=experience-v71",
-  "./v8/styles/presence.css?v=experience-v71",
-  "./v8/styles/shell.css?v=experience-v71",
-  "./v8/styles/tokens.css?v=experience-v71",
-  "./v8/styles/workspaces.css?v=experience-v71",
+  "./v8/styles/base.css?v=experience-v107",
+  "./v8/styles/activity.css?v=experience-v107",
+  "./v8/styles/components.css?v=experience-v107",
+  "./v8/styles/entry.css?v=experience-v107",
+  "./v8/styles/presence.css?v=experience-v107",
+  "./v8/styles/shell.css?v=experience-v107",
+  "./v8/styles/tokens.css?v=experience-v107",
+  "./v8/styles/workspaces.css?v=experience-v107",
   "./v8/ui/dom.mjs",
   "./v8/ui/empty-state.mjs",
+  "./v8/ui/form-system.mjs",
   "./v8/ui/icons.mjs",
   "./v8/ui/context-menu.mjs",
+  "./v8/ui/dense-content.mjs",
+  "./v8/ui/dock.mjs",
+  "./v8/ui/layer-manager.mjs",
   "./v8/ui/mission-control.mjs",
+  "./v8/ui/native-behavior.mjs",
   "./v8/ui/navigation.mjs",
   "./v8/ui/panel.mjs",
   "./v8/ui/shell.mjs",
   "./v8/ui/spotify-live.mjs",
   "./v8/ui/toast.mjs",
   "./v8/ui/tooltip.mjs",
+  "./v8/ui/touch-interactions.mjs",
   "./v8/ui/visual-haptics.mjs",
   "./v8/ui/window-system.mjs"
 ];
@@ -190,7 +208,7 @@ async function cacheFirst(request) {
   const cache = await caches.open(ETHONE_CACHE);
   const cached = await cache.match(request);
   if (cached) return cached;
-  const fresh = await fetch(request);
+  const fresh = await fetch(new Request(request, { cache: "no-store" }));
   if (fresh?.ok) await cache.put(request, fresh.clone());
   return fresh;
 }

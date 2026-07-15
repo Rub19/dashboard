@@ -1,6 +1,7 @@
 import { NAVIGATION_ITEMS } from "../data/navigation.mjs";
 import { WORKSPACES, workspaceById } from "../data/workspaces.mjs";
 import { actionButton, element, icon } from "./dom.mjs";
+import { statusState } from "./empty-state.mjs";
 import { refreshIcons } from "./icons.mjs";
 import { createWindowController } from "./window-system.mjs";
 
@@ -84,9 +85,15 @@ export function createMissionControl(host, options = {}) {
 
     const brainItems = brainActivity.length ? brainActivity.map((entry) => missionButton("brain", { id: `brain-${entry.id}`, label: entry.title, actionId: "v8.brain.open" }, [
       icon(entry.icon || "brain"), element("span", {}, [element("strong", { text: entry.title }), element("small", { text: entry.description || "Contexte Brain" })]), icon("arrow-up-right")
-    ], false, "v8-brain-activity")) : [missionButton("brain", { id: "brain-empty", label: "Ouvrir Brain", actionId: "v8.brain.open" }, [
-      icon("brain"), element("span", {}, [element("strong", { text: "Aucune activite recente" }), element("small", { text: "Brain attend votre prochaine demande." })]), icon("arrow-up-right")
-    ], false, "v8-brain-activity v8-brain-activity--empty")];
+    ], false, "v8-brain-activity")) : [statusState("empty", {
+      iconName: "brain",
+      eyebrow: "Activite Brain",
+      title: "Aucune activite recente",
+      description: "Brain attend votre prochaine demande.",
+      actions: [actionButton({ actionId: "v8.brain.open", variant: "secondary" }, [icon("brain"), element("span", { text: "Ouvrir Brain" })])],
+      compact: true,
+      className: "v8-mission-empty"
+    })];
 
     const dialog = element("section", { className: "v8-mission-dialog", attributes: { role: "dialog", "aria-modal": "true", "aria-labelledby": "v8-mission-title", "aria-keyshortcuts": "F2 Control+Shift+M Meta+Shift+M" } }, [
       element("header", { className: "v8-mission-header" }, [
@@ -115,7 +122,7 @@ export function createMissionControl(host, options = {}) {
       event.preventDefault();
       items[target]?.focus({ preventScroll: true });
     });
-    layer = element("div", { className: "v8-mission-layer", events: { click: (event) => event.target === layer && options.onClose?.() } }, [dialog]);
+    layer = element("div", { className: "v8-mission-layer" }, [dialog]);
     host.append(layer);
     refreshIcons();
     const opened = windowController.open(layer, { initialFocus: () => dialog.querySelector(`[data-mission-kind="window"][aria-current="page"]`) || dialog.querySelector("[data-mission-item]"), modal: true, onAfterClose: () => shell?.classList.remove("is-mission-control-open") });

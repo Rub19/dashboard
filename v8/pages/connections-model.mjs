@@ -55,6 +55,18 @@ export function filterConnectionCatalog(integrations, options = {}) {
   }));
 }
 
+export function sortConnectionCatalog(integrations = [], order = "recommended", connections = []) {
+  const map = connectionsById(connections);
+  const stateRank = Object.freeze({ connected: 0, syncing: 1, attention: 2, prepared: 3, available: 4, limited: 5 });
+  return Object.freeze((Array.isArray(integrations) ? integrations : []).slice().sort((left, right) => {
+    if (order === "name") return String(left.name || "").localeCompare(String(right.name || ""), "fr", { sensitivity: "base" });
+    if (order === "category") return String(left.category || "").localeCompare(String(right.category || "")) || String(left.name || "").localeCompare(String(right.name || ""));
+    const leftState = connectionState(left, map.get(left.id));
+    const rightState = connectionState(right, map.get(right.id));
+    return (stateRank[leftState] ?? 9) - (stateRank[rightState] ?? 9) || String(left.name || "").localeCompare(String(right.name || ""));
+  }));
+}
+
 export function connectionMetrics(integrations, connections = []) {
   const map = connectionsById(connections);
   const states = (Array.isArray(integrations) ? integrations : []).map((integration) => connectionState(integration, map.get(integration.id)));

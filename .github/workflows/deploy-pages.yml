@@ -1,0 +1,80 @@
+name: Deploy ETHONE to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    permissions:
+      contents: read
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - name: Block private or local upload content
+        run: node ./scripts/precommit-upload-check.mjs --all
+      - name: Run release gate
+        shell: powershell
+        run: ./scripts/run-production-gate.ps1 -NodeExe (Get-Command node).Source
+      - name: Verify Supabase production boundary
+        run: node ./scripts/verify-supabase-security.mjs
+        env:
+          ETHONE_ENFORCE_RLS_QA: ${{ vars.ETHONE_ENFORCE_RLS_QA }}
+          ETHONE_RLS_USER_A_EMAIL: ${{ secrets.ETHONE_RLS_USER_A_EMAIL }}
+          ETHONE_RLS_USER_A_PASSWORD: ${{ secrets.ETHONE_RLS_USER_A_PASSWORD }}
+          ETHONE_RLS_USER_B_EMAIL: ${{ secrets.ETHONE_RLS_USER_B_EMAIL }}
+          ETHONE_RLS_USER_B_PASSWORD: ${{ secrets.ETHONE_RLS_USER_B_PASSWORD }}
+          ETHONE_RLS_TABLES: ${{ vars.ETHONE_RLS_TABLES }}
+      - name: Verify canonical security headers
+        run: node ./scripts/verify-security-headers.mjs https://ethone.dev/
+
+  deploy:
+    needs: validate
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
+      - name: Configure Pages
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - name: Prepare V8-only artifact
+        run: node ./scripts/prepare-pages-artifact.mjs
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+        with:
+          path: dist
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+      - name: Verify deployed artifact
+        run: node ./scripts/verify-deployment.mjs "${{ steps.deployment.outputs.page_url }}" 12 5000
+      - name: Verify canonical domain
+        run: node ./scripts/verify-deployment.mjs "https://ethone.dev/" 12 5000
+      - name: Verify canonical security headers
+        run: node ./scripts/verify-security-headers.mjs "https://ethone.dev/"

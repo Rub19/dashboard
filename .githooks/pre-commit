@@ -1,0 +1,7 @@
+#!/bin/sh
+set -eu
+
+NODE_BIN="${ETHONE_NODE_BIN:-node}"
+"$NODE_BIN" ./scripts/precommit-upload-check.mjs
+"$NODE_BIN" ./scripts/audit-security.mjs
+

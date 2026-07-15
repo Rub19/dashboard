@@ -46,19 +46,25 @@ export function createRouter(options = {}) {
 
   function commit(route, mode = "push") {
     const next = normalizeRoute(route);
+    const previous = current;
     const url = `#/${next}`;
     if (mode === "replace") runtime?.history?.replaceState?.({ ethoneV8Route: next }, "", url);
     else runtime?.history?.pushState?.({ ethoneV8Route: next }, "", url);
     current = next;
-    onRoute(next);
+    onRoute(next, Object.freeze({ type: mode, previous, state: runtime?.history?.state || null }));
     return next;
   }
 
-  function handleLocationChange() {
+  function handleLocationChange(event = {}) {
     const next = canonicalizeLocation(routeFromLocation());
     if (next === current) return;
+    const previous = current;
     current = next;
-    onRoute(next);
+    onRoute(next, Object.freeze({
+      type: event.type === "popstate" ? "history" : "hash",
+      previous,
+      state: event.state || runtime?.history?.state || null
+    }));
   }
 
   function start() {

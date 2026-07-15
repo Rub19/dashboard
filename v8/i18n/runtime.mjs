@@ -18,6 +18,7 @@ const COUNT_LABELS = Object.freeze({
   événement: { fr: ["événement", "événements"], en: ["event", "events"], es: ["evento", "eventos"], de: ["Ereignis", "Ereignisse"] },
   mot: { fr: ["mot", "mots"], en: ["word", "words"], es: ["palabra", "palabras"], de: ["Wort", "Wörter"] },
   commande: { fr: ["commande", "commandes"], en: ["command", "commands"], es: ["comando", "comandos"], de: ["Befehl", "Befehle"] },
+  signal: { fr: ["signal", "signaux"], en: ["signal", "signals"], es: ["señal", "señales"], de: ["Signal", "Signale"] },
   élément: { fr: ["élément", "éléments"], en: ["item", "items"], es: ["elemento", "elementos"], de: ["Element", "Elemente"] }
 });
 
@@ -45,7 +46,11 @@ const DYNAMIC_TEMPLATES = Object.freeze({
   dockRemove: { fr: "Retirer {value} du Dock", en: "Remove {value} from Dock", es: "Quitar {value} del Dock", de: "{value} aus dem Dock entfernen" },
   dockAdd: { fr: "Ajouter {value} au Dock", en: "Add {value} to Dock", es: "Añadir {value} al Dock", de: "{value} zum Dock hinzufügen" },
   dockMoveLeft: { fr: "Déplacer {value} à gauche", en: "Move {value} left", es: "Mover {value} a la izquierda", de: "{value} nach links verschieben" },
-  dockMoveRight: { fr: "Déplacer {value} à droite", en: "Move {value} right", es: "Mover {value} a la derecha", de: "{value} nach rechts verschieben" }
+  dockMoveRight: { fr: "Déplacer {value} à droite", en: "Move {value} right", es: "Mover {value} a la derecha", de: "{value} nach rechts verschieben" },
+  select: { fr: "Sélectionner {value}", en: "Select {value}", es: "Seleccionar {value}", de: "{value} auswählen" },
+  actionsFor: { fr: "Actions pour {value}", en: "Actions for {value}", es: "Acciones para {value}", de: "Aktionen für {value}" },
+  authorize: { fr: "Autoriser {value}", en: "Allow {value}", es: "Permitir {value}", de: "{value} erlauben" },
+  remember: { fr: "Mémoriser {value}", en: "Remember {value}", es: "Recordar {value}", de: "{value} merken" }
 });
 
 function normalizeText(value) {
@@ -61,10 +66,10 @@ function translateDynamic(source, locale) {
   const text = normalizeText(source);
   if (!text) return null;
 
-  const count = text.match(/^(\d+)\s+(note|notes|priorité|priorités|événement|événements|mot|mots|commande|commandes|élément|éléments)$/iu);
+  const count = text.match(/^(\d+)\s+(note|notes|priorité|priorités|événement|événements|mot|mots|commande|commandes|signal|signaux|élément|éléments)$/iu);
   if (count) {
     const amount = Number(count[1]);
-    const key = count[2].toLocaleLowerCase("fr-FR").replace(/s$/u, "");
+    const key = count[2].toLocaleLowerCase("fr-FR").replace(/signaux$/u, "signal").replace(/s$/u, "");
     const labels = COUNT_LABELS[key]?.[locale];
     if (labels) return `${amount} ${labels[amount === 1 ? 0 : 1]}`;
   }
@@ -87,6 +92,17 @@ function translateDynamic(source, locale) {
     return `${datedCount[1]}, ${datedCount[2]} ${labels[Number(datedCount[2]) === 1 ? 0 : 1]}`;
   }
 
+  const brainProfile = text.match(/^Profil\s+(.+),\s+reponses\s+(.+),\s+automatisation\s+(.+)\.$/u);
+  if (brainProfile) {
+    const labels = {
+      fr: ["Profil", "réponses", "automatisation"],
+      en: ["Profile", "responses", "automation"],
+      es: ["Perfil", "respuestas", "automatización"],
+      de: ["Profil", "Antworten", "Automatisierung"]
+    }[locale];
+    return `${labels[0]} ${translateSource(brainProfile[1], locale)}, ${labels[1]} ${translateSource(brainProfile[2], locale)}, ${labels[2]} ${translateSource(brainProfile[3], locale)}.`;
+  }
+
   const deleteProfile = text.match(/^Les données du profil\s+(.+)\s+seront supprimées de Supabase et du cache de cet appareil\. Cette action est irréversible\.$/u);
   if (deleteProfile) {
     const copy = {
@@ -103,8 +119,12 @@ function translateDynamic(source, locale) {
     ["dockAdd", /^Ajouter\s+(.+)\s+au Dock$/u],
     ["dockMoveLeft", /^Deplacer\s+(.+)\s+a gauche$/u],
     ["dockMoveRight", /^Deplacer\s+(.+)\s+a droite$/u],
+    ["select", /^(?:Selectionner|Sélectionner)\s+(.+)$/u],
+    ["actionsFor", /^Actions pour\s+(.+)$/u],
+    ["authorize", /^Autoriser\s+(.+)$/u],
+    ["remember", /^Memoriser\s+(.+)$/u],
     ["unpin", /^Retirer\s+(.+)\s+des favoris$/u],
-    ["pin", /^Épingler\s+(.+)$/u],
+    ["pin", /^(?:Epingler|Épingler)\s+(.+)$/u],
     ["manage", /^Gérer\s+(.+)$/u],
     ["delete", /^Supprimer\s+(.+)$/u],
     ["complete", /^Terminer\s+(.+)$/u],

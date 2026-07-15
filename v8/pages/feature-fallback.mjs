@@ -1,15 +1,19 @@
 import { actionButton, element, icon } from "../ui/dom.mjs";
+import { statusState } from "../ui/empty-state.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
 
 const FEATURES = Object.freeze({
-  widgets: { title: "Widgets", icon: "panels-top-left", description: "Un seul moteur de widgets remplacera les anciens panneaux. Les widgets cachés ne seront plus montés." },
-  applications: { title: "Applications", icon: "blocks", description: "Les anciennes applications sont retirées du runtime. Les capacités utiles reviendront comme modules natifs ETHONE." }
+  widgets: { title: "Widgets", icon: "panels-top-left", description: "Un seul moteur de widgets remplacera les anciens panneaux. Les widgets caches ne seront plus montes." },
+  applications: { title: "Applications", icon: "blocks", description: "Les anciennes applications sont retirees du runtime. Les capacites utiles reviendront comme modules natifs ETHONE." }
 });
 
-export function mountFeatureFallback(stage, route) {
+export function mountFeatureFallback(stage, route, options = {}) {
   const feature = FEATURES[route] || FEATURES.applications;
-  const secondaryAction = route === "widgets"
-      ? actionButton({ actionId: "v8.widgets.open", variant: "secondary" }, [icon("panel-right-open"), element("span", { text: "Aperçu du panneau" })])
+  const unavailable = options.kind === "error";
+  const secondaryAction = unavailable && typeof options.onRetry === "function"
+    ? element("button", { className: "v8-button v8-button--primary", attributes: { type: "button" }, events: { click: options.onRetry } }, [icon("refresh-cw"), element("span", { text: "Reessayer" })])
+    : route === "widgets"
+      ? actionButton({ actionId: "v8.widgets.open", variant: "secondary" }, [icon("panel-right-open"), element("span", { text: "Apercu du panneau" })])
       : actionButton({ actionId: "v8.command.open", variant: "secondary" }, [icon("command"), element("span", { text: "Command Center" })]);
 
   const page = element("section", { className: "v8-page v8-feature-page", dataset: { page: route } }, [
@@ -17,18 +21,16 @@ export function mountFeatureFallback(stage, route) {
       element("div", { className: "v8-page-heading__copy" }, [
         element("span", { className: "v8-eyebrow", text: "Application essentielle" }),
         element("h1", { text: feature.title }),
-        element("p", { text: "Une surface dédiée, sans chrome inutile." })
+        element("p", { text: "Une surface dediee, sans chrome inutile." })
       ])
     ]),
-    element("section", { className: "v8-migration-surface" }, [
-      element("div", { className: "v8-migration-surface__signal", attributes: { "aria-hidden": "true" } }),
-      element("div", { className: "v8-migration-surface__icon" }, [icon(feature.icon)]),
-      element("span", { className: "v8-badge v8-badge--accent", text: "Coming Soon" }),
-      element("h2", { text: `${feature.title} rejoint ETHONE.` }),
-      element("p", { text: feature.description }),
-      element("div", { className: "v8-migration-surface__actions" }, [secondaryAction]),
-      element("div", { className: "v8-migration-surface__guarantee" }, [icon("shield-check"), element("span", { text: "Données conservées · aucun ancien runtime chargé" })])
-    ])
+    statusState(unavailable ? "error" : "coming-soon", {
+      iconName: unavailable ? "triangle-alert" : feature.icon,
+      title: unavailable ? `${feature.title} n'a pas pu etre charge` : `${feature.title} rejoint ETHONE`,
+      description: unavailable ? "Le module est momentanement indisponible. Vos donnees restent intactes." : feature.description,
+      actions: [secondaryAction],
+      className: "v8-empty-state--wide"
+    })
   ]);
   stage.replaceChildren(page);
   refreshIcons();

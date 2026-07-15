@@ -90,6 +90,14 @@ test("auth adapter owns one client and validates restored sessions", async () =>
   assert.ok(states.includes("refreshing"));
 });
 
+test("Supabase bootstrap closes the deferred-script race and stays time bounded", () => {
+  const source = fs.readFileSync(new URL("../v8/main.mjs", import.meta.url), "utf8");
+  assert.match(source, /script\.addEventListener\("load",\s*handleLoad/);
+  assert.match(source, /if \(globalThis\.supabase\?\.createClient\) finish\(\)/);
+  assert.match(source, /Le chargement du client Supabase a expir/);
+  assert.match(source, /script\.removeEventListener\("load",\s*handleLoad\)/);
+});
+
 test("profile repository isolates owners and strips persisted secrets", () => {
   const legacyProfiles = [{
     id: "profile-a",
@@ -243,6 +251,7 @@ test("integration registry is unique and exposes no credential fields", () => {
   assert.equal(new Set(INTEGRATIONS.map((integration) => integration.id)).size, INTEGRATIONS.length);
   assert.ok(INTEGRATIONS.some((integration) => integration.id === "spotify"));
   assert.ok(INTEGRATIONS.some((integration) => integration.id === "github"));
+  assert.doesNotMatch(JSON.stringify(INTEGRATIONS), /messages-circle|badge-e/);
   assert.doesNotMatch(JSON.stringify(INTEGRATIONS), /token|secret|password|apiKey/i);
 });
 
@@ -358,7 +367,6 @@ test("window controller coordinates focus, modal keyboard flow and animated tear
   focusableNodes.last = focusable("last");
   const origin = focusable("origin");
   documentRef.activeElement = origin;
-  const listeners = new Map();
   const surface = { classList: classes() };
   const attributes = new Map();
   const layer = {
@@ -367,8 +375,6 @@ test("window controller coordinates focus, modal keyboard flow and animated tear
     inert: false,
     isConnected: true,
     removed: false,
-    addEventListener: (type, listener) => listeners.set(type, listener),
-    removeEventListener: (type) => listeners.delete(type),
     querySelector: () => surface,
     querySelectorAll: () => [focusableNodes.first, focusableNodes.last],
     getBoundingClientRect: () => ({ width: 640 }),
@@ -377,8 +383,21 @@ test("window controller coordinates focus, modal keyboard flow and animated tear
     remove: () => { layer.removed = true; layer.isConnected = false; }
   };
   let escapeCalls = 0;
+  let registered = null;
+  const layerManager = {
+    register(config) {
+      registered = config;
+      const returnFocus = documentRef.activeElement;
+      return {
+        release(releaseConfig = {}) {
+          if (releaseConfig.restoreFocus !== false) returnFocus?.focus?.();
+        }
+      };
+    }
+  };
   const controller = createWindowController({
     document: documentRef,
+    layerManager,
     runtime: {
       queueMicrotask: (callback) => callback(),
       setTimeout: (callback) => { timers.push(callback); return timers.length; },
@@ -392,14 +411,10 @@ test("window controller coordinates focus, modal keyboard flow and animated tear
   assert.equal(surface.classList.contains("v8-window-surface"), true);
   assert.equal(layer.classList.contains("is-open"), true);
   assert.equal(documentRef.activeElement, focusableNodes.first);
-  assert.equal(documentRef.documentElement.dataset.windowOpen, "true");
-
-  documentRef.activeElement = focusableNodes.last;
-  let tabPrevented = false;
-  listeners.get("keydown")({ key: "Tab", shiftKey: false, preventDefault: () => { tabPrevented = true; } });
-  assert.equal(tabPrevented, true);
-  assert.equal(documentRef.activeElement, focusableNodes.first);
-  listeners.get("keydown")({ key: "Escape", preventDefault: () => {}, stopPropagation: () => {} });
+  assert.equal(registered.modal, true);
+  assert.equal(registered.trapFocus, true);
+  assert.equal(registered.closeOnOutside, true);
+  registered.onDismiss("escape");
   assert.equal(escapeCalls, 1);
 
   assert.equal(controller.close(), true);
@@ -410,7 +425,6 @@ test("window controller coordinates focus, modal keyboard flow and animated tear
   assert.equal(documentRef.activeElement, origin);
   timers.at(-1)();
   assert.equal(layer.removed, true);
-  assert.equal("windowOpen" in documentRef.documentElement.dataset, false);
 });
 
 test("window controller can retain a reusable dialog layer after its exit transition", () => {
@@ -496,10 +510,13 @@ test("interaction feedback preserves semantic states and versions every styleshe
   const localStyles = ["activity.css", "entry.css", "shell.css", "workspaces.css"].map((name) => fs.readFileSync(new URL(`../v8/styles/${name}`, import.meta.url), "utf8"));
 
   for (const name of ["tokens", "base", "components", "entry", "presence"]) {
-    assert.match(html, new RegExp(`v8/styles/${name}\\.css\\?v=experience-v71`));
-    assert.match(worker, new RegExp(`v8/styles/${name}\\.css\\?v=experience-v71`));
+    assert.match(html, new RegExp(`v8/styles/${name}\\.css\\?v=experience-v107`));
+    assert.match(worker, new RegExp(`v8/styles/${name}\\.css\\?v=experience-v107`));
   }
-  assert.match(worker, /v8\/styles\/activity\.css\?v=experience-v71/);
+  assert.match(worker, /v8\/styles\/activity\.css\?v=experience-v107/);
+  for (const module of ["layer-manager", "dense-content", "dock"]) {
+    assert.match(worker, new RegExp(`v8/ui/${module}\\.mjs`));
+  }
   assert.match(worker, /v8\/core\/presence-engine\.mjs/);
   assert.match(activityLoader, /STYLE_RELEASE/);
   assert.match(activityLoader, /activity\.css\?v=\$\{encodeURIComponent\(STYLE_RELEASE\)\}/);
@@ -517,11 +534,28 @@ test("interaction feedback preserves semantic states and versions every styleshe
   }
 });
 
+test("production validation follows the active release without a stale hardcoded version", () => {
+  const validator = fs.readFileSync(new URL("../scripts/validate-production.mjs", import.meta.url), "utf8");
+  const worker = fs.readFileSync(new URL("../sw.js", import.meta.url), "utf8");
+  const release = worker.match(/const ETHONE_VERSION = "([^"]+)"/)?.[1] || "";
+  const releaseToken = release.match(/experience-v\d+$/)?.[0] || "";
+
+  assert.match(release, /^\d{4}-\d{2}-\d{2}-experience-v\d+$/);
+  assert.ok(releaseToken);
+  assert.match(validator, /serviceWorkerReleaseToken/);
+  assert.match(validator, /index\.includes\(serviceWorkerReleaseToken\)/);
+  assert.match(validator, /notFound\.includes\(serviceWorkerReleaseToken\)/);
+  assert.doesNotMatch(validator, /assert\(\/experience-v\d+\//);
+});
+
 test("empty states share one accessible and responsive product primitive", () => {
   const component = fs.readFileSync(new URL("../v8/ui/empty-state.mjs", import.meta.url), "utf8");
   const styles = fs.readFileSync(new URL("../v8/styles/components.css", import.meta.url), "utf8");
 
   assert.match(component, /export function emptyState/);
+  assert.match(component, /export function statusState/);
+  assert.match(component, /export function skeletonState/);
+  for (const kind of ["loading", "error", "offline", "denied", "expired", "integration", "coming-soon", "syncing", "no-results"]) assert.match(component, new RegExp(`(?:"${kind}"|${kind}):`));
   assert.match(component, /v8-empty-state__visual/);
   assert.match(component, /v8-empty-state__actions/);
   assert.match(component, /v8-empty-state__brain/);
@@ -549,10 +583,28 @@ test("all product empty views use the shared primitive with a useful action", ()
   const legacyEmptyHooks = /v8-command-empty|v8-live-empty|v8-connections-empty|v8-daystream__empty|v8-inline-empty|v8-list-empty|v8-editor-empty|v8-task-empty|v8-files-empty|v8-files-preview__empty|v8-calendar-agenda__empty/;
 
   for (const source of sources) {
-    assert.match(source, /import \{ emptyState \} from "\.\.\/ui\/empty-state\.mjs";/);
+    assert.match(source, /import \{[^}]*emptyState[^}]*\} from "\.\.\/ui\/empty-state\.mjs";/);
     assert.match(source, /emptyState\(\{/);
     assert.doesNotMatch(source, legacyEmptyHooks);
   }
   assert.match(sources.join("\n"), /brain:\s*\{/);
   assert.match(sources.join("\n"), /actions:\s*\[/);
+});
+
+test("service worker precaches every V8 runtime module and bypasses stale HTTP cache on misses", () => {
+  const worker = fs.readFileSync(new URL("../sw.js", import.meta.url), "utf8");
+  const modules = [];
+  const walk = (directory, prefix) => {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      const relative = `${prefix}/${entry.name}`;
+      if (entry.isDirectory()) walk(new URL(`${entry.name}/`, directory), relative);
+      else if (/\.(?:mjs|js)$/u.test(entry.name)) modules.push(relative);
+    }
+  };
+  walk(new URL("../v8/", import.meta.url), "v8");
+
+  for (const module of modules) {
+    assert.ok(worker.includes(`"./${module}"`), `${module} is missing from the offline release`);
+  }
+  assert.match(worker, /async function cacheFirst[\s\S]*fetch\(new Request\(request,\s*\{\s*cache:\s*"no-store"\s*\}\)\)/);
 });

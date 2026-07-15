@@ -1,5 +1,6 @@
 import { element, icon } from "./dom.mjs";
 import { refreshIcons } from "./icons.mjs";
+import { getLayerManager } from "./layer-manager.mjs";
 
 const ICONS = Object.freeze({
   success: "check-circle-2",
@@ -13,9 +14,29 @@ const ICONS = Object.freeze({
 });
 
 export function createToastManager(region, options = {}) {
+  const documentRef = region.ownerDocument || globalThis.document;
+  const runtime = documentRef?.defaultView || globalThis;
+  const layerManager = getLayerManager({ document: documentRef, runtime });
   const records = new Map();
   const sounds = options.sounds || null;
   const presence = options.presence || null;
+  let layerRegistration = null;
+
+  function ensureLayer() {
+    if (layerRegistration) return;
+    layerRegistration = layerManager.register({
+      element: region,
+      boundary: region,
+      kind: "toast",
+      closeOnEscape: false
+    });
+  }
+
+  function releaseLayerIfEmpty() {
+    if (records.size || !layerRegistration) return;
+    layerRegistration.release({ restoreFocus: false });
+    layerRegistration = null;
+  }
 
   function importantNotice(notice, type) {
     return notice.important === true || type === "error" || type === "warning";
@@ -43,6 +64,7 @@ export function createToastManager(region, options = {}) {
       if (records.get(id) === record) {
         records.delete(id);
         syncNotificationPresence();
+        releaseLayerIfEmpty();
       }
     };
     if (presence?.signalActivity) {
@@ -63,6 +85,7 @@ export function createToastManager(region, options = {}) {
     record.node.remove();
     records.delete(id);
     syncNotificationPresence();
+    releaseLayerIfEmpty();
     return true;
   }
 
@@ -116,6 +139,7 @@ export function createToastManager(region, options = {}) {
       presence?.signalActivity?.(existing.node, "notification", { phase: "update" });
       syncNotificationPresence();
       schedule(existing, notice.duration === 0 ? 0 : (notice.duration || 4200));
+      ensureLayer();
       return id;
     }
 
@@ -144,6 +168,7 @@ export function createToastManager(region, options = {}) {
     }, [element("span", { className: "v8-toast__icon" }, [icon(ICONS[type])]), message, action, close].filter(Boolean));
     const record = { id, node, message, action: notice.action?.run || null, type, important: importantNotice(notice, type), timers: new Set(), dismissing: false };
     records.set(id, record);
+    ensureLayer();
     region.append(node);
     node.classList.add("is-visible");
     presence?.signalActivity?.(node, "notification", { phase: "enter" });
@@ -179,6 +204,8 @@ export function createToastManager(region, options = {}) {
         record.node.remove();
       });
       records.clear();
+      layerRegistration?.release?.({ restoreFocus: false });
+      layerRegistration = null;
       presence?.update?.({ notificationsImportant: 0 });
     }
   });

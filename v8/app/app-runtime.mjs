@@ -3,6 +3,7 @@ import { createPresentationStore } from "../core/store.mjs";
 import { createRouter } from "../core/router.mjs";
 import { createActionFacade } from "../core/actions.mjs";
 import { createDensityEngine } from "../core/density-engine.mjs";
+import { createNavigationSession } from "../core/navigation-session.mjs";
 import { createCommandHistory } from "../command/history.mjs";
 import { createCommandCenter } from "../command/command-center.mjs";
 import { createHomeModel } from "../data/home-model.mjs";
@@ -17,7 +18,10 @@ import { createPanelManager } from "../ui/panel.mjs";
 import { createToastManager } from "../ui/toast.mjs";
 import { createMissionControl } from "../ui/mission-control.mjs";
 import { createContextMenu } from "../ui/context-menu.mjs";
+import { shouldPreserveBrowserContextMenu } from "../ui/native-behavior.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
+import { skeletonState } from "../ui/empty-state.mjs";
+import { enhanceForm, prepareFormControls } from "../ui/form-system.mjs";
 import { mountHome } from "../pages/home.mjs";
 import { mountNotes } from "../pages/notes.mjs";
 import { mountTasks } from "../pages/tasks.mjs";
@@ -38,6 +42,7 @@ export function mountApplication(root, options = {}) {
   if (!repository) throw new TypeError("Application runtime requires a profile repository");
 
   const startedAt = performance.now();
+  const releaseFormSystem = enhanceForm(root);
   const initialSync = cloudSync?.status?.() || {};
   const initialClock = clockManager?.snapshot?.() || {};
   const store = createPresentationStore({
@@ -75,9 +80,12 @@ export function mountApplication(root, options = {}) {
   let shell = null;
   let destroyed = false;
   let routeRequest = 0;
+  let mountedRoute = "";
   let brainRuntime = null;
   let brainRuntimePromise = null;
   let applyingCloudPreferences = false;
+  let navigationSession = null;
+  let pendingRouteNavigation = null;
   let cloudPreferencesKey = JSON.stringify(store.cloudSnapshot());
   let densityStateKey = JSON.stringify({ density: store.getState().density, settings: store.getState().densitySettings, space: store.getState().space, flow: store.getState().flow, panel: store.getState().panel, rail: store.getState().railExpanded });
 
@@ -143,6 +151,11 @@ export function mountApplication(root, options = {}) {
     onDockChange: () => cloudSync?.queue?.("dock-layout"),
     onAction: (actionId, context) => actions?.dispatch(actionId, context)
   });
+  navigationSession = createNavigationSession({
+    runtime: globalThis,
+    stage: shell.stage,
+    scope: options.profile?.id || options.ownerId || "default"
+  });
   const releaseSpotify = spotifyLive.subscribe?.((playback) => {
     presence.update({ media: playback.playing ? "playing" : playback.available ? "paused" : "idle" });
     shell.updateSpotify(playback);
@@ -198,31 +211,22 @@ export function mountApplication(root, options = {}) {
   });
   const contextMenu = createContextMenu(shell.contextMenuHost);
 
-  function finishRouteMount(route, focus) {
+  function finishRouteMount(route, focus, settled = true) {
+    prepareFormControls(shell.stage);
     i18n?.apply?.(shell.stage);
     presence.revealWidgets(shell.stage);
     metadata.setRoute(route);
+    if (settled && pendingRouteNavigation?.route === route) {
+      const navigation = pendingRouteNavigation;
+      pendingRouteNavigation = null;
+      navigationSession.restore(route, { reset: navigation.type === "push" || navigation.type === "hash" });
+    }
     if (focus) shell.focusStage();
   }
 
   function showRouteLoader(route) {
-    const skeleton = () => {
-      const node = document.createElement("span");
-      node.className = "v8-skeleton";
-      return node;
-    };
-    const header = document.createElement("div");
-    header.className = "v8-lazy-page__header";
-    header.append(skeleton(), skeleton());
-    const grid = document.createElement("div");
-    grid.className = "v8-lazy-page__grid";
-    grid.append(skeleton(), skeleton(), skeleton());
-    const page = document.createElement("section");
-    page.className = "v8-page v8-lazy-page";
-    page.dataset.page = route;
-    page.setAttribute("aria-busy", "true");
-    page.append(header, grid);
-    shell.stage.replaceChildren(page);
+    const layouts={activity:"activity",connections:"connections",brain:"brain",settings:"settings"};
+    shell.stage.replaceChildren(skeletonState({ layout: layouts[route] || "page", count: 3, label: `Chargement de ${route}`, className: "v8-page v8-lazy-page", page: route }));
   }
 
   function ensureBrainRuntime() {
@@ -255,14 +259,14 @@ export function mountApplication(root, options = {}) {
     const loader = loaders[route];
     lifecycle.unmount();
     showRouteLoader(route);
-    finishRouteMount(route, focus);
+    finishRouteMount(route, focus, false);
     Promise.all([loader(), ["brain", "settings"].includes(route) ? ensureBrainRuntime() : Promise.resolve(null)])
       .then(async ([module, brain]) => {
         await module.prepare?.();
         if (destroyed || requestId !== routeRequest || router?.current() !== route) return;
         lifecycle.mount(route, () => {
-          if (route === "activity") return module.mountActivity(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), spotifyLive, presence, notify: (notice) => toasts.show(notice) });
-          if (route === "connections") return module.mountConnections(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), spotifyLive, externalServices, notify: (notice) => toasts.show(notice) });
+          if (route === "activity") return module.mountActivity(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, presence, notify: (notice) => toasts.show(notice) });
+          if (route === "connections") return module.mountConnections(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, externalServices, notify: (notice) => toasts.show(notice) });
           if (route === "brain") return module.mountBrain(shell.stage, { repository, actions, state: store.getState(), presence, brain, notify: (notice) => toasts.show(notice) });
           return module.mountSettings(shell.stage, { repository, actions, state: store.getState(), sounds, externalServices, densityEngine, subscribeState: store.subscribe, brain, notify: (notice) => toasts.show(notice) });
         });
@@ -270,14 +274,23 @@ export function mountApplication(root, options = {}) {
       })
       .catch(() => {
         if (destroyed || requestId !== routeRequest || router?.current() !== route) return;
-        lifecycle.mount(route, () => mountFeatureFallback(shell.stage, route));
+        lifecycle.mount(route, () => mountFeatureFallback(shell.stage, route, {
+          kind: "error",
+          onRetry: () => mountLazyRoute(route, true, ++routeRequest)
+        }));
         finishRouteMount(route, focus);
         toasts.show({ id: `lazy-${route}`, title: route === "activity" ? "Activity Hub" : route === "connections" ? "Connections" : route === "settings" ? "Reglages" : "Brain", message: "Le module n'a pas pu etre charge.", type: "error" });
       });
   }
 
-  function mountRoute(route, focus = true) {
+  function mountRoute(route, focus = true, navigation = null) {
     const requestId = ++routeRequest;
+    if (mountedRoute !== route) {
+      if (mountedRoute) navigationSession.capture(mountedRoute);
+      mountedRoute = route;
+      pendingRouteNavigation = Object.freeze({ route, type: navigation?.type || "refresh" });
+      shell.stage.scrollTo({ top: 0, behavior: "auto" });
+    }
     shell.update({ ...store.getState(), route });
     if (["activity", "connections", "brain", "settings"].includes(route)) {
       mountLazyRoute(route, focus, requestId);
@@ -285,10 +298,10 @@ export function mountApplication(root, options = {}) {
     }
     lifecycle.mount(route, () => {
       if (route === "home") return mountHome(shell.stage, createHomeModel({ snapshot: repository.snapshot() }), { ...store.getState(), spotifyLive, presence, sync: cloudSync });
-      if (route === "notes") return mountNotes(shell.stage, { repository, actions, presence, sync: cloudSync, notify: (notice) => toasts.show(notice) });
-      if (route === "tasks") return mountTasks(shell.stage, { repository, actions, presence, notify: (notice) => toasts.show(notice) });
+      if (route === "notes") return mountNotes(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, presence, sync: cloudSync, notify: (notice) => toasts.show(notice) });
+      if (route === "tasks") return mountTasks(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, presence, notify: (notice) => toasts.show(notice) });
       if (route === "calendar") return mountCalendar(shell.stage, { repository, actions, presence, notify: (notice) => toasts.show(notice) });
-      if (route === "files") return mountFiles(shell.stage, { repository, actions, presence, notify: (notice) => toasts.show(notice) });
+      if (route === "files") return mountFiles(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, presence, notify: (notice) => toasts.show(notice) });
       if (route === "spaces") return mountSpaces(shell.stage, { repository, actions, state: store.getState() });
       if (route === "flows") return mountFlows(shell.stage, { repository, actions, state: store.getState() });
       return mountFeatureFallback(shell.stage, route);
@@ -298,10 +311,10 @@ export function mountApplication(root, options = {}) {
 
   router = createRouter({
     runtime: globalThis,
-    onRoute: (route) => {
+    onRoute: (route, navigation) => {
       if (store.getState().route !== route) store.setState({ route });
       activityJournal.captureRoute(route);
-      mountRoute(route, root.dataset.bootStatus === "ready");
+      mountRoute(route, root.dataset.bootStatus === "ready", navigation);
     }
   });
 
@@ -379,6 +392,11 @@ export function mountApplication(root, options = {}) {
   });
 
   function handleGlobalKeydown(event) {
+    if ((event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === "s") {
+      event.preventDefault();
+      actions.dispatch("v8.sync.refresh", { source: "keyboard" });
+      return;
+    }
     if (event.key === "F2") {
       event.preventDefault();
       actions.dispatch(store.getState().missionOpen ? "v8.mission.close" : "v8.mission.open", { source: "keyboard" });
@@ -417,14 +435,11 @@ export function mountApplication(root, options = {}) {
   }
 
   function handleContextMenu(event) {
-    if (!shell.stage.contains(event.target)) return;
-    if (event.target?.closest?.("input, textarea, select, [contenteditable='true']")) return;
+    if (event.defaultPrevented || !shell.stage.contains(event.target)) return;
+    const selection = globalThis.getSelection?.()?.toString?.() || "";
+    if (shouldPreserveBrowserContextMenu(event.target, { selection, shiftKey: event.shiftKey })) return;
     event.preventDefault();
-    contextMenu.open(event.clientX, event.clientY);
-  }
-
-  function handlePointerDown(event) {
-    if (!shell.contextMenuHost.contains(event.target)) contextMenu.close();
+    contextMenu.open(event.clientX, event.clientY, { anchor: event.target });
   }
 
   function handleVisibilityRefresh() {
@@ -432,7 +447,6 @@ export function mountApplication(root, options = {}) {
   }
 
   document.addEventListener("keydown", handleGlobalKeydown);
-  document.addEventListener("pointerdown", handlePointerDown);
   document.addEventListener("visibilitychange", handleVisibilityRefresh);
   shell.stage.addEventListener("contextmenu", handleContextMenu);
   const persistedRoute = store.getState().route;
@@ -461,7 +475,6 @@ export function mountApplication(root, options = {}) {
     destroyed = true;
     routeRequest += 1;
     document.removeEventListener("keydown", handleGlobalKeydown);
-    document.removeEventListener("pointerdown", handlePointerDown);
     document.removeEventListener("visibilitychange", handleVisibilityRefresh);
     shell.stage.removeEventListener("contextmenu", handleContextMenu);
     if (ownsAmbientEngine) ambient.destroy();
@@ -478,6 +491,7 @@ export function mountApplication(root, options = {}) {
     unsubscribe();
     actions.destroy?.();
     router.stop();
+    navigationSession.destroy(mountedRoute);
     commandCenter.destroy();
     missionControl.destroy();
     contextMenu.destroy();
@@ -485,6 +499,7 @@ export function mountApplication(root, options = {}) {
     toasts.destroy();
     activityJournal.destroy();
     lifecycle.unmount();
+    releaseFormSystem();
     shell.destroy();
     return true;
   }
@@ -516,6 +531,7 @@ export function mountApplication(root, options = {}) {
       soundSystem: sounds?.diagnostics?.() || null,
       cloudSync: cloudSync?.diagnostics?.() || null,
       clock: clockManager?.diagnostics?.() || null,
+      navigationSession: navigationSession.diagnostics(),
       externalServices: externalServices?.diagnostics?.() || null,
       densityEngine: densityEngine.diagnostics(),
       brain: brainRuntime ? Object.freeze({ loaded: true, ...brainRuntime.diagnostics() }) : Object.freeze({ loaded: false })

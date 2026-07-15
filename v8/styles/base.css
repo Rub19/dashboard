@@ -31,8 +31,10 @@ html {
     --v8-ambient-accent-mix var(--v8-ambient-transition) var(--v8-ease-standard),
     --v8-ambient-motion-duration var(--v8-ambient-transition) var(--v8-ease-standard);
   -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
   scrollbar-color: var(--v8-scrollbar) transparent;
   scrollbar-width: thin;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -42,9 +44,14 @@ body {
   overflow: hidden;
   background: var(--v8-context-canvas);
   color: var(--v8-text);
-  font-size: var(--v8-font-md);
+  font-size: var(--v8-type-body);
   line-height: var(--v8-line-base);
   transition: background-color var(--v8-motion-slow) var(--v8-ease-standard), color var(--v8-motion-fast) var(--v8-ease-standard);
+}
+
+small {
+  font-size: var(--v8-type-caption);
+  line-height: var(--v8-leading-caption);
 }
 
 .v8-entry::before,
@@ -87,13 +94,22 @@ button,
 input,
 textarea,
 select {
+  margin: 0;
   color: inherit;
   font: inherit;
   letter-spacing: 0;
 }
 
+button {
+  appearance: none;
+  -webkit-appearance: none;
+}
+
 button,
-[role="button"] {
+[role="button"],
+[role="tab"],
+[role="menuitem"],
+[role="option"] {
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -112,6 +128,56 @@ svg {
   max-width: 100%;
 }
 
+:where(img, svg):not([draggable="true"], [data-native-drag="allow"]) {
+  user-select: none;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+}
+
+:where(
+  button,
+  label,
+  [role="button"],
+  [role="tab"],
+  [role="menuitem"],
+  [role="option"],
+  [role="switch"],
+  [role="checkbox"],
+  [role="radio"],
+  .v8-topbar,
+  .v8-rail,
+  .v8-status-bar,
+  .v8-floating-dock,
+  .v8-breadcrumbs,
+  .v8-toolbar,
+  .v8-panel__header,
+  .v8-context-menu,
+  .v8-toast
+) {
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+}
+
+:where(input, textarea, select, [contenteditable="true"], [data-native-selection="allow"]) {
+  user-select: text;
+  -webkit-touch-callout: default;
+  -webkit-user-select: text;
+}
+
+:where(button, a[href], input, textarea, select, [tabindex]:not([tabindex="-1"])):focus:not(:focus-visible) {
+  outline: none;
+}
+
+:where(button, a[href], input, textarea, select, [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 2px solid var(--v8-accent);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :where(label[for], summary) { cursor: pointer; }
+}
+
 .lucide {
   shape-rendering: geometricPrecision;
 }
@@ -120,12 +186,36 @@ h1,
 h2,
 h3 {
   margin: 0;
+  hyphens: none;
+  overflow-wrap: normal;
   text-wrap: balance;
+  word-break: normal;
 }
+
+h1 { font-size: var(--v8-type-h1); line-height: var(--v8-leading-heading); }
+h2 { font-size: var(--v8-type-h2); line-height: var(--v8-leading-heading); }
+h3 { font-size: var(--v8-type-h3); line-height: var(--v8-leading-card); }
+
+label,
+.v8-type-label { font-size: var(--v8-type-label); }
+
+.v8-type-hero { max-inline-size: var(--v8-measure-hero); font-size: var(--v8-type-hero); line-height: var(--v8-leading-hero); }
+.v8-type-h1 { font-size: var(--v8-type-h1); line-height: var(--v8-leading-heading); }
+.v8-type-h2 { font-size: var(--v8-type-h2); line-height: var(--v8-leading-heading); }
+.v8-type-h3 { font-size: var(--v8-type-h3); line-height: var(--v8-leading-card); }
+.v8-card-title { font-size: var(--v8-type-card-title); line-height: var(--v8-leading-card); }
+.v8-type-body { font-size: var(--v8-type-body); line-height: var(--v8-line-base); }
+.v8-type-caption { font-size: var(--v8-type-caption); line-height: var(--v8-leading-caption); }
+.v8-measure-compact { max-inline-size: var(--v8-measure-compact); }
+.v8-measure-copy { max-inline-size: var(--v8-measure-copy); }
+.v8-measure-longform { max-inline-size: var(--v8-measure-longform); }
 
 p {
   margin: 0;
+  hyphens: none;
+  overflow-wrap: break-word;
   text-wrap: pretty;
+  word-break: normal;
 }
 
 ::selection {
@@ -170,6 +260,13 @@ p {
   clip: rect(0, 0, 0, 0) !important;
   white-space: nowrap !important;
   border: 0 !important;
+}
+
+@media (forced-colors: active) {
+  :where(button, a[href], input, textarea, select, [tabindex]:not([tabindex="-1"])):focus-visible {
+    outline: 2px solid Highlight !important;
+    outline-offset: 2px !important;
+  }
 }
 
 .v8-boot {

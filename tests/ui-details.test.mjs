@@ -73,6 +73,6 @@ test("global detail primitives are bounded, accessible, and low cost", () => {
   assert.match(shell, /\.v8-command-results[^{]*\{[^}]*scrollbar-gutter:\s*stable/);
   assert.match(shell, /\.v8-mission-dialog[^{]*\{[^}]*100dvh/);
   assert.doesNotMatch(shell, /\.v8-mission-dialog[^{]*\{[^}]*100vh/);
-  assert.match(shell, /@media \(max-width: 1180px\)[\s\S]*\.v8-lazy-page__grid[\s\S]*repeat\(2/);
-  assert.match(shell, /@media \(max-width: 820px\)[\s\S]*\.v8-lazy-page__grid[\s\S]*minmax\(0, 1fr\)/);
+  assert.match(components, /@media \(max-width: 900px\)[\s\S]*\.v8-state-skeleton__grid[\s\S]*repeat\(2/);
+  assert.match(components, /@media \(max-width: 620px\)[\s\S]*\.v8-state-skeleton__grid[\s\S]*minmax\(0, 1fr\)/);
 });

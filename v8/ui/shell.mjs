@@ -130,14 +130,14 @@ export function mountShell(root, options = {}) {
             </button>
             <nav class="v8-breadcrumbs" aria-label="Fil d'Ariane"><ol id="v8-breadcrumb-list"></ol><div class="v8-breadcrumb-context" id="v8-breadcrumb-context" aria-label="Contexte actif"></div></nav>
           </div>
-          <button type="button" class="v8-command-launcher" data-action="v8.command.open" aria-label="Ouvrir le Command Center">
+          <button type="button" class="v8-command-launcher" data-action="v8.command.open" aria-label="Ouvrir le Command Center pour rechercher, ouvrir ou lancer une action">
             <i data-lucide="search" aria-hidden="true"></i>
-            <span>Rechercher, ouvrir une app ou lancer une action</span>
+            <span>Rechercher ou agir</span>
             <kbd translate="no">Ctrl K</kbd>
           </button>
           <div class="v8-context-strip__tools v8-topbar__tools" aria-label="Action Bar globale">
             <button type="button" class="v8-action-status v8-brain-status" data-action="v8.brain.open" data-tooltip="Brain Status" aria-label="Ouvrir Brain"><i data-lucide="brain" data-presence-icon="brain" aria-hidden="true"></i><span><small>Brain</small><strong>Contextuel</strong></span><b aria-hidden="true"></b></button>
-            <button type="button" class="v8-icon-button v8-topbar-action v8-sync-action" data-action="v8.sync.refresh" data-tooltip="Cloud Sync" aria-label="Synchroniser"><i data-lucide="cloud" data-presence-icon="cloud" aria-hidden="true"></i><span class="v8-action-dot" aria-hidden="true"></span></button>
+            <button type="button" class="v8-icon-button v8-topbar-action v8-sync-action" data-action="v8.sync.refresh" data-tooltip="Cloud Sync" aria-label="Synchroniser" aria-keyshortcuts="Control+S Meta+S"><i data-lucide="cloud" data-presence-icon="cloud" aria-hidden="true"></i><span class="v8-action-dot" aria-hidden="true"></span></button>
             <button type="button" class="v8-icon-button v8-topbar-action v8-language-action" data-action="v8.locale.cycle" data-tooltip="Changer de langue" aria-label="Changer de langue"><i data-lucide="languages" aria-hidden="true"></i></button>
             <button type="button" class="v8-icon-button v8-topbar-action v8-theme-action" data-action="v8.theme.toggle" data-tooltip="Changer de theme" aria-label="Changer de theme"><i data-lucide="moon-star" aria-hidden="true"></i></button>
             <button type="button" class="v8-icon-button v8-topbar-action v8-quick-action" data-action="v8.command.open" data-tooltip="Actions rapides" aria-label="Actions rapides"><i data-lucide="zap" aria-hidden="true"></i></button>

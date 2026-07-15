@@ -1,4 +1,6 @@
 import { element, icon } from "../ui/dom.mjs";
+import { statusState } from "../ui/empty-state.mjs";
+import { clearFieldState, enhanceForm, formField as createFormField, passwordControl, runFormSubmission, setFieldState } from "../ui/form-system.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
 
 export const LOGIN_LOCALES = Object.freeze({
@@ -10,6 +12,8 @@ export const LOGIN_LOCALES = Object.freeze({
     password: "Mot de passe",
     continue: "Entrer dans ETHONE",
     create: "Créer mon espace",
+    loginLoading: "Connexion sécurisée...",
+    registerLoading: "Création de votre espace...",
     oauth: "ou continuer avec",
     forgot: "Mot de passe oublié ?",
     username: "Nom d'utilisateur",
@@ -23,7 +27,9 @@ export const LOGIN_LOCALES = Object.freeze({
     showPassword: "Afficher le mot de passe",
     hidePassword: "Masquer le mot de passe",
     retry: "Réessayer",
-    v8Only: "Runtime unifié",
+    authUnavailableEyebrow: "Connexion protégée",
+    authUnavailableTitle: "Supabase est indisponible",
+    authUnavailableDescription: "Vérifiez votre connexion, puis réessayez.",
     screen: "Connexion à ETHONE",
     language: "Langue de l'interface",
     authTabs: "Authentification",
@@ -46,6 +52,8 @@ export const LOGIN_LOCALES = Object.freeze({
     password: "Password",
     continue: "Enter ETHONE",
     create: "Create my space",
+    loginLoading: "Signing in securely...",
+    registerLoading: "Creating your space...",
     oauth: "or continue with",
     forgot: "Forgot password?",
     username: "Username",
@@ -59,7 +67,9 @@ export const LOGIN_LOCALES = Object.freeze({
     showPassword: "Show password",
     hidePassword: "Hide password",
     retry: "Try again",
-    v8Only: "Unified runtime",
+    authUnavailableEyebrow: "Protected connection",
+    authUnavailableTitle: "Supabase is unavailable",
+    authUnavailableDescription: "Check your connection, then try again.",
     screen: "Sign in to ETHONE",
     language: "Interface language",
     authTabs: "Authentication",
@@ -82,6 +92,8 @@ export const LOGIN_LOCALES = Object.freeze({
     password: "Contraseña",
     continue: "Entrar en ETHONE",
     create: "Crear mi espacio",
+    loginLoading: "Iniciando sesión de forma segura...",
+    registerLoading: "Creando tu espacio...",
     oauth: "o continuar con",
     forgot: "¿Olvidaste tu contraseña?",
     username: "Usuario",
@@ -95,7 +107,9 @@ export const LOGIN_LOCALES = Object.freeze({
     showPassword: "Mostrar contraseña",
     hidePassword: "Ocultar contraseña",
     retry: "Reintentar",
-    v8Only: "Runtime unificado",
+    authUnavailableEyebrow: "Conexión protegida",
+    authUnavailableTitle: "Supabase no está disponible",
+    authUnavailableDescription: "Comprueba tu conexión y vuelve a intentarlo.",
     screen: "Iniciar sesión en ETHONE",
     language: "Idioma de la interfaz",
     authTabs: "Autenticación",
@@ -118,6 +132,8 @@ export const LOGIN_LOCALES = Object.freeze({
     password: "Passwort",
     continue: "ETHONE öffnen",
     create: "Meinen Space erstellen",
+    loginLoading: "Sichere Anmeldung...",
+    registerLoading: "Dein Space wird erstellt...",
     oauth: "oder weiter mit",
     forgot: "Passwort vergessen?",
     username: "Benutzername",
@@ -131,7 +147,9 @@ export const LOGIN_LOCALES = Object.freeze({
     showPassword: "Passwort anzeigen",
     hidePassword: "Passwort ausblenden",
     retry: "Erneut versuchen",
-    v8Only: "Einheitliche Runtime",
+    authUnavailableEyebrow: "Geschützte Verbindung",
+    authUnavailableTitle: "Supabase ist nicht verfügbar",
+    authUnavailableDescription: "Prüfe die Verbindung und versuche es erneut.",
     screen: "Bei ETHONE anmelden",
     language: "Sprache der Oberfläche",
     authTabs: "Authentifizierung",
@@ -180,31 +198,30 @@ function field({ id, type = "text", key, autocomplete, placeholder, bindings, re
   });
   return {
     input,
-    node: element("label", { className: "v8-field", attributes: { for: id } }, [labelText, input])
+    node: createFormField({ label: labelText, control: input, required })
   };
 }
 
-function passwordField({ id, autocomplete, bindings, onToggle }) {
+function passwordField({ id, autocomplete, bindings, signal }) {
   const labelText = element("span", { className: "v8-field__label" });
   bindings.push({ node: labelText, key: "password", target: "text" });
   const input = element("input", {
     className: "v8-input v8-auth__input",
     id,
-    attributes: { type: "password", autocomplete, required: true }
+    attributes: { type: "password", autocomplete, required: true, minlength: autocomplete === "new-password" ? "12" : null, maxlength: "128" }
   });
-  const toggle = element("button", {
-    className: "v8-icon-button v8-auth__password-toggle",
-    attributes: { type: "button", "aria-label": LOGIN_LOCALES.fr.showPassword, "aria-pressed": "false" },
-    events: { click: () => onToggle(input, toggle) }
-  }, icon("eye"));
-  bindings.push({ node: toggle, key: "showPassword", target: "aria-label" });
+  const password = passwordControl(input, {
+    className: "v8-auth__password",
+    buttonClassName: "v8-auth__password-toggle",
+    showLabel: LOGIN_LOCALES.fr.showPassword,
+    hideLabel: LOGIN_LOCALES.fr.hidePassword,
+    signal
+  });
   return {
     input,
-    toggle,
-    node: element("label", { className: "v8-field", attributes: { for: id } }, [
-      labelText,
-      element("span", { className: "v8-auth__password" }, [input, toggle])
-    ])
+    toggle: password.toggle,
+    password,
+    node: createFormField({ label: labelText, control: password.node, input, required: true, counter: false })
   };
 }
 
@@ -273,8 +290,8 @@ export function mountLogin(root, options = {}) {
     placeholder: "rub@example.com",
     bindings
   });
-  const loginPassword = passwordField({ id: "v8-login-password", autocomplete: "current-password", bindings, onToggle: togglePassword });
-  const rememberInput = element("input", { attributes: { type: "checkbox", id: "v8-auth-remember" } });
+  const loginPassword = passwordField({ id: "v8-login-password", autocomplete: "current-password", bindings, signal: abortController.signal });
+  const rememberInput = element("input", { className: "v8-checkbox", attributes: { type: "checkbox", id: "v8-auth-remember" } });
   try { rememberInput.checked = storage?.getItem("ethone_remember_auth") !== "0"; } catch { rememberInput.checked = true; }
   const rememberText = bindText(element("span"), "remember");
   const forgotButton = element("button", { className: "v8-auth__text-action", attributes: { type: "button" } });
@@ -298,7 +315,7 @@ export function mountLogin(root, options = {}) {
 
   const registerUsername = field({ id: "v8-register-username", key: "username", autocomplete: "username", placeholder: "Rub", bindings });
   const registerEmail = field({ id: "v8-register-email", type: "email", key: "email", autocomplete: "email", placeholder: "rub@example.com", bindings, required: true });
-  const registerPassword = passwordField({ id: "v8-register-password", autocomplete: "new-password", bindings, onToggle: togglePassword });
+  const registerPassword = passwordField({ id: "v8-register-password", autocomplete: "new-password", bindings, signal: abortController.signal });
   const strengthLabel = element("span", { className: "v8-auth__strength-label", text: "" });
   const strength = element("div", { className: "v8-auth__strength", attributes: { role: "meter", "aria-label": "Robustesse du mot de passe", "aria-valuemin": "0", "aria-valuemax": "4", "aria-valuenow": "0" } }, [
     element("span"), element("span"), element("span"), element("span"), strengthLabel
@@ -311,14 +328,30 @@ export function mountLogin(root, options = {}) {
     id: "v8-register-form",
     attributes: { "aria-labelledby": "v8-auth-tab-register", "aria-hidden": "true", inert: "", novalidate: true }
   }, [registerUsername.node, registerEmail.node, registerPassword.node, strength, registerSubmit]);
+  enhanceForm(loginForm, { signal: abortController.signal });
+  enhanceForm(registerForm, { signal: abortController.signal });
 
   const oauthLabel = bindText(element("span"), "oauth");
   const googleButton = element("button", { className: "v8-button v8-button--secondary v8-auth__oauth-button", attributes: { type: "button", "aria-label": "Continuer avec Google" } }, [icon("chrome"), element("span", { text: "Google" })]);
   const githubButton = element("button", { className: "v8-button v8-button--secondary v8-auth__oauth-button", attributes: { type: "button", "aria-label": "Continuer avec GitHub" } }, [icon("github"), element("span", { text: "GitHub" })]);
 
-  const retryButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" } }, [icon("refresh-cw"), bindText(element("span"), "retry")]);
-  const v8OnlyNotice = element("span", { className: "v8-badge v8-badge--accent" }, [bindText(element("span"), "v8Only")]);
-  const recovery = element("div", { className: "v8-auth__recovery", attributes: { hidden: available ? true : null } }, [retryButton, v8OnlyNotice]);
+  const retryButton = element("button", { className: "v8-button v8-button--primary", attributes: { type: "button" } }, [icon("refresh-cw"), bindText(element("span"), "retry")]);
+  const initialRecoveryCopy = LOGIN_LOCALES[locale] || LOGIN_LOCALES.fr;
+  const recovery = statusState(globalThis.navigator?.onLine === false ? "offline" : "error", {
+    eyebrow: initialRecoveryCopy.authUnavailableEyebrow,
+    title: initialRecoveryCopy.authUnavailableTitle,
+    description: initialRecoveryCopy.authUnavailableDescription,
+    actions: [retryButton],
+    inline: true,
+    className: "v8-auth__recovery"
+  });
+  recovery.hidden = available;
+  const recoveryDescription = recovery.querySelector(".v8-empty-state__copy p");
+  bindings.push(
+    { node: recovery.querySelector(".v8-empty-state__eyebrow"), key: "authUnavailableEyebrow", target: "text" },
+    { node: recovery.querySelector("h2"), key: "authUnavailableTitle", target: "text" },
+    { node: recovery, key: "authUnavailableTitle", target: "aria-label" }
+  );
 
   const title = bindText(element("p", { className: "v8-auth__subtitle" }), "loginSubtitle");
   const instrument = element("section", { className: "v8-auth v8-surface", attributes: { "aria-labelledby": "v8-entry-title" }, dataset: { authMode: "login" } }, [
@@ -430,8 +463,8 @@ export function mountLogin(root, options = {}) {
       else node.textContent = copy[key];
     });
     title.textContent = activeTab === "login" ? copy.loginSubtitle : copy.registerSubtitle;
-    loginPassword.toggle.setAttribute("aria-label", loginPassword.input.type === "password" ? copy.showPassword : copy.hidePassword);
-    registerPassword.toggle.setAttribute("aria-label", registerPassword.input.type === "password" ? copy.showPassword : copy.hidePassword);
+    loginPassword.password.setLabels(copy.showPassword, copy.hidePassword);
+    registerPassword.password.setLabels(copy.showPassword, copy.hidePassword);
     surface.setAttribute("aria-label", copy.screen);
     localeSelect.setAttribute("aria-label", copy.language);
     tabs.setAttribute("aria-label", copy.authTabs);
@@ -439,6 +472,7 @@ export function mountLogin(root, options = {}) {
     googleButton.setAttribute("aria-label", copy.google);
     githubButton.setAttribute("aria-label", copy.github);
     storageTelemetry.value.textContent = available ? copy.cloudReady : copy.cloudUnavailable;
+    recoveryDescription.textContent = copy.authUnavailableDescription;
     timeTelemetry.value.textContent = clockManager?.snapshot?.().time || new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit" }).format(new Date());
     document.documentElement.lang = locale;
   }
@@ -459,28 +493,14 @@ export function mountLogin(root, options = {}) {
     registerForm.setAttribute("aria-hidden", String(loginActive));
     feedback.textContent = "";
     feedback.dataset.type = "";
+    [loginIdentifier.input, loginPassword.input, registerUsername.input, registerEmail.input, registerPassword.input].forEach(clearFieldState);
     applyCopy();
     if (focus) (loginActive ? loginIdentifier.input : registerUsername.input).focus();
-  }
-
-  function togglePassword(input, button) {
-    const reveal = input.type === "password";
-    input.type = reveal ? "text" : "password";
-    button.setAttribute("aria-pressed", String(reveal));
-    button.replaceChildren(icon(reveal ? "eye-off" : "eye"));
-    applyCopy();
-    refreshIcons();
   }
 
   function showFeedback(message, type = "error") {
     feedback.textContent = message || "";
     feedback.dataset.type = message ? type : "";
-  }
-
-  function setBusy(form, submit, busy) {
-    form.setAttribute("aria-busy", String(busy));
-    submit.disabled = busy || !available;
-    submit.classList.toggle("is-loading", busy);
   }
 
   function setAvailable(next, message = "") {
@@ -489,24 +509,34 @@ export function mountLogin(root, options = {}) {
     storageTelemetry.value.textContent = available ? copy.cloudReady : copy.cloudUnavailable;
     [loginSubmit, registerSubmit, googleButton, githubButton].forEach((control) => { control.disabled = !available; });
     recovery.hidden = available;
-    if (message) showFeedback(message, available ? "success" : "error");
+    if (!available) {
+      recoveryDescription.textContent = copy.authUnavailableDescription;
+      showFeedback("");
+    } else if (message) showFeedback(message, "success");
   }
 
   async function submitLogin(event) {
     event.preventDefault();
     if (!available) return;
     const token = ++operation;
-    setBusy(loginForm, loginSubmit, true);
     showFeedback("");
-    const response = await auth.signIn({
-      identifier: loginIdentifier.input.value,
-      password: loginPassword.input.value,
-      remember: rememberInput.checked
+    const submission = await runFormSubmission({
+      form: loginForm,
+      submit: loginSubmit,
+      status: feedback,
+      messages: { loading: (LOGIN_LOCALES[locale] || LOGIN_LOCALES.fr).loginLoading },
+      task: () => auth.signIn({ identifier: loginIdentifier.input.value, password: loginPassword.input.value, remember: rememberInput.checked })
     });
+    if (!submission.accepted) return;
     if (destroyed || token !== operation) return;
-    setBusy(loginForm, loginSubmit, false);
+    const response = submission.value;
+    if (submission.error || !response) {
+      showFeedback("Connexion momentanement indisponible. Reessayez.", "error");
+      return;
+    }
     if (!response.ok) {
       loginPassword.input.value = "";
+      setFieldState(loginPassword.input, "invalid", response.message);
       showFeedback(response.message, "error");
       loginPassword.input.focus();
       return;
@@ -519,16 +549,23 @@ export function mountLogin(root, options = {}) {
     event.preventDefault();
     if (!available) return;
     const token = ++operation;
-    setBusy(registerForm, registerSubmit, true);
     showFeedback("");
-    const response = await auth.signUp({
-      username: registerUsername.input.value,
-      email: registerEmail.input.value,
-      password: registerPassword.input.value
+    const submission = await runFormSubmission({
+      form: registerForm,
+      submit: registerSubmit,
+      status: feedback,
+      messages: { loading: (LOGIN_LOCALES[locale] || LOGIN_LOCALES.fr).registerLoading },
+      task: () => auth.signUp({ username: registerUsername.input.value, email: registerEmail.input.value, password: registerPassword.input.value })
     });
+    if (!submission.accepted) return;
     if (destroyed || token !== operation) return;
-    setBusy(registerForm, registerSubmit, false);
+    const response = submission.value;
+    if (submission.error || !response) {
+      showFeedback("Creation de compte momentanement indisponible. Reessayez.", "error");
+      return;
+    }
     if (!response.ok) {
+      setFieldState(registerPassword.input, "invalid", response.message);
       showFeedback(response.message, "error");
       registerPassword.input.focus();
       return;

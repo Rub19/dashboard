@@ -32,11 +32,16 @@ test("Dock exposes persistent mouse and keyboard personalization", () => {
   const runtime = read("v8/app/app-runtime.mjs");
   const i18n = read("v8/i18n/runtime.mjs");
   assert.match(source, /ethone:v8-dock:/);
-  assert.match(source, /draggable:\s*"true"/);
+  assert.match(source, /draggable:\s*touchMode\s*\?\s*null\s*:\s*"true"/);
   assert.match(source, /editorControl\("toggle"/);
   assert.match(source, /editorControl\("left"/);
-  assert.match(source, /event\.key === "Escape"/);
+  assert.match(source, /getLayerManager/);
+  assert.match(source, /closeOnEscape:\s*true/);
+  assert.match(source, /closeOnOutside:\s*true/);
   assert.match(source, /\["Enter", " "\]\.includes\(event\.key\)[\s\S]*current\.click\(\)/);
+  assert.match(source, /compactPinnedItems/);
+  assert.match(source, /Appui long sur une app du Dock/);
+  assert.match(source, /data-dock-command="toggle"/);
   assert.match(shell, /id="v8-dock-host"/);
   assert.doesNotMatch(shell, /v8-route-tabs/);
   assert.match(runtime, /profileId:\s*options\.profile\?\.id/);
@@ -57,5 +62,7 @@ test("Dock visual system floats, magnifies and respects reduced motion", () => {
   assert.match(entrance, /transform:/);
   assert.doesNotMatch(entrance, /(?:width|height|top|left|margin|padding|filter)\s*:/);
   assert.match(styles, /prefers-reduced-motion[\s\S]*\.v8-dock-app/);
-  assert.match(styles, /padding:[^;]*84px[^;]*safe-area-inset-bottom/);
+  assert.match(styles, /padding:[^;]*v8-mobile-dock-clearance[^;]*safe-area-inset-bottom/);
+  assert.match(styles, /\.v8-dock-launcher\s*\{/);
+  assert.match(styles, /\.v8-dock-apps\s*\{[^}]*overflow:\s*visible/s);
 });

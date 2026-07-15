@@ -1,3 +1,5 @@
+import { fitLayerPoint, getLayerManager } from "./layer-manager.mjs";
+
 const TOOLTIP_TARGET = "[data-tooltip]";
 const PLACEMENTS = Object.freeze(["top", "right", "bottom", "left"]);
 
@@ -32,16 +34,14 @@ export function computeTooltipPosition(options = {}) {
       break;
     }
   }
-  return Object.freeze({
-    placement,
-    x: Math.round(Math.min(Math.max(point.x, margin), Math.max(margin, width - tip.width - margin))),
-    y: Math.round(Math.min(Math.max(point.y, margin), Math.max(margin, height - tip.height - margin)))
-  });
+  const fitted = fitLayerPoint({ ...point, floating: tip, viewport: { width, height }, margin });
+  return Object.freeze({ placement, x: fitted.x, y: fitted.y });
 }
 
 export function createTooltipController(options = {}) {
   const documentRef = options.document || globalThis.document;
   const runtime = options.runtime || globalThis;
+  const layerManager = getLayerManager({ document: documentRef, runtime });
   const delay = Math.max(0, Number(options.delay) || 140);
   let started = false;
   let node = null;
@@ -51,6 +51,7 @@ export function createTooltipController(options = {}) {
   let showTimer = null;
   let hideTimer = null;
   let shown = 0;
+  let layerRegistration = null;
 
   function clearTimer(name) {
     const timer = name === "show" ? showTimer : hideTimer;
@@ -65,6 +66,7 @@ export function createTooltipController(options = {}) {
     node = documentRef.createElement("div");
     node.id = "v8-global-tooltip";
     node.className = "v8-tooltip";
+    node.dataset.v8Layer = "tooltip";
     node.setAttribute("role", "tooltip");
     node.hidden = true;
     (documentRef.body || documentRef.documentElement).append(node);
@@ -91,6 +93,8 @@ export function createTooltipController(options = {}) {
     if (!target && !node) return false;
     restoreDescription();
     target = null;
+    layerRegistration?.release?.({ restoreFocus: false });
+    layerRegistration = null;
     node?.classList?.remove("is-visible");
     clearTimer("hide");
     const finish = () => {
@@ -131,6 +135,17 @@ export function createTooltipController(options = {}) {
     tooltip.dataset.placement = position.placement;
     tooltip.style.left = `${position.x}px`;
     tooltip.style.top = `${position.y}px`;
+    layerRegistration = layerManager.register({
+      element: tooltip,
+      boundary: tooltip,
+      anchor: element,
+      returnFocus: element,
+      kind: "tooltip",
+      closeOnEscape: true,
+      closeOnScroll: true,
+      closeOnResize: true,
+      onDismiss: () => hide(true)
+    });
     tooltip.getBoundingClientRect();
     tooltip.classList.add("is-visible");
     shown += 1;
@@ -165,9 +180,6 @@ export function createTooltipController(options = {}) {
     const element = tooltipTarget(event);
     if (element && !element.contains?.(event.relatedTarget)) hide();
   }
-  function handleKeydown(event) { if (event.key === "Escape") hide(true); }
-  function handleViewportChange() { hide(true); }
-
   function start() {
     if (started || !documentRef?.addEventListener) return false;
     started = true;
@@ -175,9 +187,6 @@ export function createTooltipController(options = {}) {
     documentRef.addEventListener("pointerout", handlePointerOut);
     documentRef.addEventListener("focusin", handleFocusIn);
     documentRef.addEventListener("focusout", handleFocusOut);
-    documentRef.addEventListener("keydown", handleKeydown);
-    documentRef.addEventListener("scroll", handleViewportChange, true);
-    runtime.addEventListener?.("resize", handleViewportChange);
     if (documentRef.documentElement?.dataset) documentRef.documentElement.dataset.v8Tooltips = "ready";
     return true;
   }
@@ -189,9 +198,6 @@ export function createTooltipController(options = {}) {
     documentRef.removeEventListener?.("pointerout", handlePointerOut);
     documentRef.removeEventListener?.("focusin", handleFocusIn);
     documentRef.removeEventListener?.("focusout", handleFocusOut);
-    documentRef.removeEventListener?.("keydown", handleKeydown);
-    documentRef.removeEventListener?.("scroll", handleViewportChange, true);
-    runtime.removeEventListener?.("resize", handleViewportChange);
     hide(true);
     node?.remove?.();
     node = null;
@@ -203,6 +209,6 @@ export function createTooltipController(options = {}) {
     start,
     hide,
     destroy,
-    diagnostics: () => Object.freeze({ started, visible: Boolean(target), shown, listeners: started ? 7 : 0, timers: Number(showTimer !== null) + Number(hideTimer !== null) })
+    diagnostics: () => Object.freeze({ started, visible: Boolean(target), shown, listeners: started ? 4 : 0, timers: Number(showTimer !== null) + Number(hideTimer !== null) })
   });
 }

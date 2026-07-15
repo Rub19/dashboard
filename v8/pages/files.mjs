@@ -1,5 +1,14 @@
 import { actionButton, element, icon } from "../ui/dom.mjs";
-import { emptyState } from "../ui/empty-state.mjs";
+import {
+  bulkActionBar,
+  collectionDensityControl,
+  createRowMenuController,
+  createSelectionState,
+  selectionControl,
+  updateCollectionDensityControl
+} from "../ui/dense-content.mjs";
+import { emptyState, statusState } from "../ui/empty-state.mjs";
+import { formField, runFormSubmission, validateForm } from "../ui/form-system.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
 import { filterFiles, sortFiles } from "./files-model.mjs";
 
@@ -34,14 +43,19 @@ export function mountFiles(stage, options = {}) {
   let sort = "recent";
   let composerType = null;
   let view = repository.snapshot().filesView === "grid" ? "grid" : "list";
+  let bulkDeleteArmed = false;
   let mounted = true;
   const scopedActions = [];
+  const selection = createSelectionState();
+  const rowMenu = createRowMenuController();
 
   const countBadge = element("span", { className: "v8-badge" });
   const search = element("input", { className: "v8-input", attributes: { type: "search", placeholder: "Rechercher dans Fichiers", "aria-label": "Rechercher dans Fichiers", autocomplete: "off" } });
   const sources = element("div", { className: "v8-files-sources", attributes: { role: "group", "aria-label": "Sources" } });
   const content = element("div", { className: "v8-files-content" });
   const preview = element("aside", { className: "v8-files-preview", attributes: { "aria-label": "Aperçu du fichier" } });
+  const densityControl = collectionDensityControl(options.state?.density || document.documentElement.dataset.density || "automatic");
+  const bulkHost = element("div", { className: "v8-bulk-host" });
   const page = element("section", { className: "v8-page v8-work-page", dataset: { page: "files" } }, [
     element("header", { className: "v8-page-heading v8-work-heading" }, [
       element("div", { className: "v8-page-heading__copy" }, [
@@ -58,12 +72,17 @@ export function mountFiles(stage, options = {}) {
       element("aside", { className: "v8-files-sidebar" }, [
         element("span", { className: "v8-eyebrow", text: "Bibliothèque" }),
         sources,
-        element("div", { className: "v8-files-import-soon" }, [
-          icon("upload-cloud"),
-          element("strong", { text: "Import de fichiers" }),
-          element("span", { text: "Coming Soon dans ETHONE" }),
-          element("span", { className: "v8-badge v8-badge--accent", text: "Données préservées" })
-        ])
+        statusState("coming-soon", {
+          tagName: "div",
+          headingTag: "h3",
+          iconName: "upload-cloud",
+          eyebrow: "Import direct",
+          title: "Bientôt disponible",
+          description: "Ajoutez un lien dès maintenant; vos ressources restent préservées.",
+          actions: [actionButton({ actionId: "v8.files.new-link", variant: "secondary" }, [icon("link-2"), element("span", { text: "Ajouter un lien" })])],
+          compact: true,
+          className: "v8-files-import-soon"
+        })
       ]),
       element("div", { className: "v8-files-main" }, [
         element("header", { className: "v8-files-toolbar" }, [
@@ -74,12 +93,14 @@ export function mountFiles(stage, options = {}) {
               element("option", { text: "Nom", attributes: { value: "name" } }),
               element("option", { text: "Type", attributes: { value: "type" } })
             ]),
+            densityControl,
             element("div", { className: "v8-view-switch", attributes: { role: "group", "aria-label": "Affichage" } }, [
               element("button", { className: view === "list" ? "is-active" : "", attributes: { type: "button", "aria-label": "Vue liste", "aria-pressed": view === "list" ? "true" : "false" }, dataset: { filesView: "list" } }, [icon("list")]),
               element("button", { className: view === "grid" ? "is-active" : "", attributes: { type: "button", "aria-label": "Vue grille", "aria-pressed": view === "grid" ? "true" : "false" }, dataset: { filesView: "grid" } }, [icon("grid-2x2")])
             ])
           ])
         ]),
+        bulkHost,
         content
       ]),
       preview
@@ -90,6 +111,7 @@ export function mountFiles(stage, options = {}) {
 
   function refreshFiles() {
     files = repository.snapshot().files.map((file) => ({ ...file }));
+    selection.prune(files.map((file) => file.id));
     if (!files.some((file) => String(file.id) === String(selectedId))) selectedId = files[0]?.id || null;
   }
 
@@ -102,8 +124,33 @@ export function mountFiles(stage, options = {}) {
   }
 
   function fileRow(id) {
-    return [...content.querySelectorAll("[data-file-id]")]
-      .find((row) => row.dataset.fileId === String(id)) || null;
+    return [...content.querySelectorAll("[data-file-entry]")]
+      .find((row) => row.dataset.fileEntry === String(id)) || null;
+  }
+
+  function renderBulk(filtered = visibleFiles()) {
+    const selectedCount = selection.size();
+    bulkHost.replaceChildren(bulkActionBar({
+      count: selectedCount,
+      selection,
+      visibleIds: filtered.map((file) => file.id),
+      onToggleAll: (checked) => {
+        filtered.forEach((file) => selection.toggle(file.id, checked));
+        bulkDeleteArmed = false;
+        renderContent();
+      },
+      onClear: () => {
+        selection.clear();
+        bulkDeleteArmed = false;
+        renderContent();
+      },
+      actions: [
+        { label: "Favoris", icon: "star", onSelect: () => updateSelectedFavorites(true) },
+        { label: "Retirer", icon: "star-off", onSelect: () => updateSelectedFavorites(false) },
+        { label: bulkDeleteArmed ? "Confirmer" : "Supprimer", icon: "trash-2", tone: "danger", onSelect: removeSelectedFiles }
+      ]
+    }));
+    refreshIcons();
   }
 
   function renderSources() {
@@ -132,21 +179,22 @@ export function mountFiles(stage, options = {}) {
     const filtered = visibleFiles();
     content.replaceChildren();
     content.dataset.view = view;
+    renderBulk(filtered);
 
     if (composerType) {
       const name = element("input", { className: "v8-input", attributes: { type: "text", placeholder: composerType === "folder" ? "Nom du dossier" : "Nom du lien", "aria-label": "Nom de l'élément", maxlength: "180", required: "", autocomplete: "off" }, dataset: { fileField: "name" } });
       const url = element("input", { className: "v8-input", attributes: { type: "url", placeholder: "https://", "aria-label": "Adresse du lien", required: composerType === "link" ? "" : null, autocomplete: "url" }, dataset: { fileField: "url" } });
       const tag = element("input", { className: "v8-input", attributes: { type: "text", placeholder: "Tag", "aria-label": "Tag du fichier", maxlength: "80", autocomplete: "off" }, dataset: { fileField: "tag" } });
       const form = element("form", { className: "v8-files-composer", attributes: { "aria-label": composerType === "folder" ? "Nouveau dossier" : "Nouveau lien" } }, [
-        name,
-        composerType === "link" ? url : null,
-        tag,
+        formField({ label: "Nom", control: name, required: true }),
+        composerType === "link" ? formField({ label: "Adresse", control: url, required: true }) : null,
+        formField({ label: "Tag", control: tag }),
         element("div", {}, [
           actionButton({ actionId: "v8.files.new.cancel" }, [element("span", { text: "Annuler" })]),
-          actionButton({ actionId: "v8.files.create", variant: "primary" }, [icon("plus"), element("span", { text: "Ajouter" })])
+          element("button", { className: "v8-button v8-button--primary", attributes: { type: "submit" } }, [icon("plus"), element("span", { text: "Ajouter" })])
         ])
       ]);
-      form.addEventListener("submit", (event) => { event.preventDefault(); createFile(); }, { once: true });
+      form.addEventListener("submit", async (event) => { event.preventDefault(); await runFormSubmission({ form, submit: form.querySelector("[type='submit']"), messages: { loading: "Ajout en cours..." }, task: createFile }); }, { once: true });
       content.append(form);
       name.focus({ preventScroll: true });
     }
@@ -170,6 +218,7 @@ export function mountFiles(stage, options = {}) {
         }
       }) : null;
       collection.append(emptyState({
+        kind: hasFilters ? "no-results" : "empty",
         iconName: hasFilters ? "search-x" : "folder-open",
         eyebrow: hasFilters ? "Recherche terminée" : "Bibliothèque prête",
         title: hasFilters ? "Aucun résultat" : "Votre bibliothèque vous attend",
@@ -190,15 +239,30 @@ export function mountFiles(stage, options = {}) {
     } else {
       filtered.forEach((file) => {
         const active = String(file.id) === String(selectedId);
-        collection.append(element("button", {
+        const selected = selection.has(file.id);
+        const main = element("button", {
           className: `v8-file-item${active ? " is-active" : ""}`,
-          attributes: { type: "button", role: "listitem", "aria-current": active ? "true" : null },
+          attributes: { type: "button", "aria-current": active ? "true" : null },
           dataset: { fileId: file.id, liveWidget: "planning", liveKind: "planning" }
         }, [
           element("span", { className: "v8-file-item__icon" }, [icon(TYPE_ICONS[file.type] || "file")]),
           element("span", { className: "v8-file-item__copy" }, [element("strong", { text: file.name, attributes: { translate: "no" } }), element("small", { text: `${typeLabel(file.type)}${file.tag ? ` · ${file.tag}` : ""}`, attributes: file.tag ? { translate: "no" } : {} })]),
           file.favorite ? element("span", { className: "v8-file-item__favorite", attributes: { "aria-label": "Favori" } }, [icon("star")]) : null,
           element("time", { text: file.date || "Local", attributes: file.date ? { translate: "no" } : {} })
+        ]);
+        const menu = element("button", {
+          className: "v8-icon-button v8-file-menu",
+          attributes: { type: "button", "aria-label": `Actions pour ${file.name}`, "aria-haspopup": "menu", "aria-expanded": "false" },
+          dataset: { fileMenu: file.id }
+        }, [icon("more-horizontal")]);
+        collection.append(element("article", {
+          className: `v8-file-entry${selected ? " is-selected" : ""}`,
+          attributes: { role: "listitem", "aria-selected": selected ? "true" : "false" },
+          dataset: { fileEntry: file.id }
+        }, [
+          selectionControl({ id: file.id, checked: selected, label: `Sélectionner ${file.name}` }),
+          main,
+          element("div", { className: "v8-row-actions" }, [menu])
         ]));
       });
     }
@@ -261,8 +325,8 @@ export function mountFiles(stage, options = {}) {
 
   function createFile() {
     const name = content.querySelector("[data-file-field='name']");
-    if (!name?.value.trim()) {
-      name?.focus({ preventScroll: true });
+    const form = content.querySelector(".v8-files-composer");
+    if (!name?.value.trim() || (form && !validateForm(form))) {
       notify({ id: "file-name-required", title: "Fichiers", message: "Ajoutez un nom avant de continuer.", type: "warning" });
       return { ok: false, status: "failed", message: "Nom requis" };
     }
@@ -284,6 +348,78 @@ export function mountFiles(stage, options = {}) {
     presence?.signalActivity?.(preview, "file", { phase: "update" });
     notify({ id: "file-created", title: "Fichiers", message: `${typeLabel(created.data.type)} ajouté.`, type: "success", duration: 2200 });
     return created;
+  }
+
+  function toggleFileSelection(id) {
+    selection.toggle(id);
+    bulkDeleteArmed = false;
+    renderContent();
+    fileRow(id)?.querySelector("[data-collection-select]")?.focus?.({ preventScroll: true });
+  }
+
+  function toggleFavorite(id) {
+    const changed = repository.files.toggleFavorite(id);
+    if (!changed.ok) return changed;
+    refreshFiles();
+    renderAll();
+    presence?.signalActivity?.(fileRow(changed.data.id), "file", { phase: "update" });
+    return changed;
+  }
+
+  function updateSelectedFavorites(favorite) {
+    const ids = selection.values();
+    if (!ids.length) return completed("Aucun fichier sélectionné");
+    const changed = repository.files.setFavorite(ids, favorite);
+    if (!changed.ok) return changed;
+    selection.clear();
+    bulkDeleteArmed = false;
+    refreshFiles();
+    renderAll();
+    notify({ id: favorite ? "files-bulk-favorite" : "files-bulk-unfavorite", title: "Fichiers", message: `${ids.length} élément${ids.length > 1 ? "s" : ""} mis à jour.`, type: "success", duration: 2400 });
+    return changed;
+  }
+
+  function removeSelectedFiles() {
+    const ids = selection.values();
+    if (!ids.length) return completed("Aucun fichier sélectionné");
+    if (!bulkDeleteArmed) {
+      bulkDeleteArmed = true;
+      renderBulk();
+      return completed("Confirmation requise");
+    }
+    const changed = repository.files.removeMany(ids);
+    if (!changed.ok) return changed;
+    selection.clear();
+    bulkDeleteArmed = false;
+    refreshFiles();
+    renderAll();
+    notify({ id: "files-bulk-deleted", title: "Fichiers", message: `${ids.length} élément${ids.length > 1 ? "s supprimés" : " supprimé"}.`, type: "info", duration: 2400 });
+    return changed;
+  }
+
+  function removeFile(id) {
+    const row = fileRow(id);
+    const changed = repository.files.remove(id);
+    if (!changed.ok) return changed;
+    selection.toggle(id, false);
+    refreshFiles();
+    notify({ id: "file-deleted", title: "Fichiers", message: "Élément supprimé.", type: "info", duration: 2200 });
+    presence?.signalActivity?.(preview, "file", { phase: "exit" });
+    const finish = () => { if (mounted) renderAll(); };
+    if (presence?.signalActivity) presence.signalActivity(row, "file", { phase: "exit", onComplete: finish });
+    else finish();
+    return changed;
+  }
+
+  function openFileMenu(id, anchor, point = null) {
+    const file = files.find((entry) => String(entry.id) === String(id));
+    if (!file) return false;
+    return rowMenu.open(anchor, [
+      { label: file.favorite ? "Retirer des favoris" : "Ajouter aux favoris", icon: file.favorite ? "star-off" : "star", onSelect: () => toggleFavorite(id) },
+      { label: selection.has(id) ? "Retirer de la sélection" : "Ajouter à la sélection", icon: selection.has(id) ? "square-minus" : "square-check-big", onSelect: () => toggleFileSelection(id) },
+      { separator: true },
+      { label: "Supprimer", icon: "trash-2", tone: "danger", onSelect: () => removeFile(id) }
+    ], { label: `Actions pour ${file.name}`, point });
   }
 
   scopedActions.push(actions.scope("v8.files.new-link", () => openComposer("link")));
@@ -312,6 +448,16 @@ export function mountFiles(stage, options = {}) {
       renderContent();
       return;
     }
+    const select = event.target.closest("[data-collection-select]");
+    if (select && content.contains(select)) {
+      toggleFileSelection(select.dataset.collectionSelect);
+      return;
+    }
+    const menu = event.target.closest("[data-file-menu]");
+    if (menu && page.contains(menu)) {
+      openFileMenu(menu.dataset.fileMenu, menu);
+      return;
+    }
     const item = event.target.closest("[data-file-id]");
     if (item && page.contains(item)) {
       selectedId = item.dataset.fileId;
@@ -321,28 +467,29 @@ export function mountFiles(stage, options = {}) {
     }
     const favorite = event.target.closest("[data-file-favorite]");
     if (favorite && page.contains(favorite)) {
-      const changed = repository.files.toggleFavorite(favorite.dataset.fileFavorite);
-      if (changed.ok) {
-        refreshFiles();
-        renderAll();
-        presence?.signalActivity?.(fileRow(changed.data.id), "file", { phase: "update" });
-      }
+      toggleFavorite(favorite.dataset.fileFavorite);
       return;
     }
     const remove = event.target.closest("[data-file-delete]");
     if (remove && page.contains(remove)) {
-      const id = remove.dataset.fileDelete;
-      const row = fileRow(id);
-      const changed = repository.files.remove(id);
-      if (changed.ok) {
-        refreshFiles();
-        notify({ id: "file-deleted", title: "Fichiers", message: "Élément supprimé.", type: "info", duration: 2200 });
-        presence?.signalActivity?.(preview, "file", { phase: "exit" });
-        const finish = () => { if (mounted) renderAll(); };
-        if (presence?.signalActivity) presence.signalActivity(row, "file", { phase: "exit", onComplete: finish });
-        else finish();
-      }
+      removeFile(remove.dataset.fileDelete);
     }
+  }
+
+  function handleContextMenu(event) {
+    const row = event.target.closest("[data-file-entry]");
+    if (!row || !content.contains(row)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    openFileMenu(row.dataset.fileEntry, row, { x: event.clientX, y: event.clientY });
+  }
+
+  function handleKeyboard(event) {
+    if (!(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== "a" || !content.contains(event.target)) return;
+    event.preventDefault();
+    visibleFiles().forEach((file) => selection.toggle(file.id, true));
+    bulkDeleteArmed = false;
+    renderContent();
   }
 
   function handleSearch() {
@@ -356,16 +503,23 @@ export function mountFiles(stage, options = {}) {
   }
 
   page.addEventListener("click", handleClick);
+  page.addEventListener("contextmenu", handleContextMenu);
+  page.addEventListener("keydown", handleKeyboard);
   search.addEventListener("input", handleSearch);
   sortSelect.addEventListener("change", handleSort);
   stage.replaceChildren(page);
   renderAll();
+  const releaseDensity = options.subscribeState?.((next) => updateCollectionDensityControl(densityControl, next)) || (() => {});
   refreshIcons();
 
   return () => {
     mounted = false;
+    rowMenu.destroy();
+    releaseDensity();
     scopedActions.reverse().forEach((restore) => restore());
     page.removeEventListener("click", handleClick);
+    page.removeEventListener("contextmenu", handleContextMenu);
+    page.removeEventListener("keydown", handleKeyboard);
     search.removeEventListener("input", handleSearch);
     sortSelect.removeEventListener("change", handleSort);
     page.remove();

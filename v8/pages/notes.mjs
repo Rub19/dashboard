@@ -1,4 +1,5 @@
 import { actionButton, element, icon } from "../ui/dom.mjs";
+import { collectionDensityControl, updateCollectionDensityControl } from "../ui/dense-content.mjs";
 import { emptyState } from "../ui/empty-state.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
 import { filterNotes, sortNotes, wordCount } from "./notes-model.mjs";
@@ -22,6 +23,7 @@ export function mountNotes(stage, options = {}) {
   const presence = options.presence || null;
   const sync = options.sync || null;
   let notes = repository.snapshot().notes.map((note) => ({ ...note, tags: [...note.tags] }));
+  let order = "recent";
   let selectedId = sortNotes(notes)[0]?.id || null;
   let query = "";
   let saveTimer = null;
@@ -36,6 +38,12 @@ export function mountNotes(stage, options = {}) {
     className: "v8-input",
     attributes: { type: "search", placeholder: "Rechercher dans les notes", "aria-label": "Rechercher dans les notes", autocomplete: "off" }
   });
+  const sortSelect = element("select", { className: "v8-input v8-notes-sort", attributes: { "aria-label": "Trier les notes" } }, [
+    element("option", { text: "Récentes", attributes: { value: "recent" } }),
+    element("option", { text: "Nom", attributes: { value: "title" } }),
+    element("option", { text: "Plus anciennes", attributes: { value: "oldest" } })
+  ]);
+  const densityControl = collectionDensityControl(options.state?.density || document.documentElement.dataset.density || "automatic");
   const editor = element("section", { className: "v8-note-editor", attributes: { "aria-label": "Éditeur de note" } });
   const page = element("section", { className: "v8-page v8-work-page", dataset: { page: "notes" } }, [
     element("header", { className: "v8-page-heading v8-work-heading" }, [
@@ -50,7 +58,10 @@ export function mountNotes(stage, options = {}) {
     ]),
     element("div", { className: "v8-work-surface v8-notes-workspace" }, [
       element("aside", { className: "v8-notes-index" }, [
-        element("div", { className: "v8-notes-search v8-input-wrap" }, [icon("search"), search]),
+        element("div", { className: "v8-notes-search" }, [
+          element("div", { className: "v8-input-wrap" }, [icon("search"), search]),
+          element("div", { className: "v8-collection-tools" }, [sortSelect, densityControl])
+        ]),
         list
       ]),
       editor
@@ -133,7 +144,7 @@ export function mountNotes(stage, options = {}) {
   }
 
   function renderList() {
-    const filtered = filterNotes(notes, query);
+    const filtered = filterNotes(notes, query, order);
     list.replaceChildren();
     const nextCount = `${notes.length} note${notes.length > 1 ? "s" : ""}`;
     if (presence) presence.transitionText(countBadge, nextCount, { kind: "metric" });
@@ -153,6 +164,7 @@ export function mountNotes(stage, options = {}) {
         }
       }) : null;
       list.append(emptyState({
+        kind: query ? "no-results" : "empty",
         iconName: query ? "search-x" : "notebook-tabs",
         eyebrow: query ? "Recherche terminée" : "Espace d'écriture",
         title: query ? "Aucun résultat" : "Aucune note pour le moment",
@@ -336,6 +348,11 @@ export function mountNotes(stage, options = {}) {
     renderList();
   }
 
+  function handleSort() {
+    order = sortSelect.value;
+    renderList();
+  }
+
   function handleKeyboard(event) {
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
       event.preventDefault();
@@ -346,10 +363,12 @@ export function mountNotes(stage, options = {}) {
   page.addEventListener("click", handlePageClick);
   page.addEventListener("keydown", handleKeyboard);
   search.addEventListener("input", handleSearch);
+  sortSelect.addEventListener("change", handleSort);
   stage.replaceChildren(page);
   renderList();
   renderEditor();
   const releaseSync = sync?.subscribe?.(applySyncStatus) || (() => {});
+  const releaseDensity = options.subscribeState?.((next) => updateCollectionDensityControl(densityControl, next)) || (() => {});
   refreshIcons();
 
   return () => {
@@ -357,10 +376,12 @@ export function mountNotes(stage, options = {}) {
     flushSave(false);
     clearSaveTimer();
     releaseSync();
+    releaseDensity();
     scopedActions.reverse().forEach((restore) => restore());
     page.removeEventListener("click", handlePageClick);
     page.removeEventListener("keydown", handleKeyboard);
     search.removeEventListener("input", handleSearch);
+    sortSelect.removeEventListener("change", handleSort);
     page.remove();
   };
 }

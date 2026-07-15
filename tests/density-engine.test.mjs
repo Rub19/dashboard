@@ -102,11 +102,26 @@ test("density and Brain preferences persist locally as cache and in the cloud sn
   const store = createPresentationStore({}, { storage });
   store.setState({ density: "ultra-compact", densitySettings: { focusDensity: false }, brainPreferences: { persona: "developer", memory: { retentionDays: 365 } } });
   const persisted = JSON.parse(storage.read(PERSISTENCE_KEY));
-  assert.equal(persisted.version, 4);
+  assert.equal(persisted.schemaVersion, 5);
+  assert.equal(Object.hasOwn(persisted, "version"), false);
   assert.equal(persisted.density, "ultra-compact");
   assert.equal(persisted.densitySettings.focusDensity, false);
   assert.equal(persisted.brainPreferences.persona, "developer");
   assert.equal(store.cloudSnapshot().brainPreferences.memory.retentionDays, 365);
+});
+
+test("legacy cache schema never replaces the visible ETHONE product version", () => {
+  const storage = memoryStorage();
+  storage.setItem(PERSISTENCE_KEY, JSON.stringify({ version: 4, theme: "graphite", space: "focus" }));
+  const store = createPresentationStore({}, { storage });
+
+  assert.equal(store.getState().version, "8.0");
+  assert.equal(store.getState().theme, "graphite");
+  assert.equal(store.getState().space, "focus");
+  store.persist();
+  const migrated = JSON.parse(storage.read(PERSISTENCE_KEY));
+  assert.equal(migrated.schemaVersion, 5);
+  assert.equal(Object.hasOwn(migrated, "version"), false);
 });
 
 test("custom density mode and slider updates have separate working actions", () => {

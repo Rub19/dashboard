@@ -29,7 +29,7 @@
 .v8-notes-workspace {
   display: grid;
   height: max(540px, calc(100dvh - 210px));
-  grid-template-columns: minmax(250px, 310px) minmax(0, 1fr);
+  grid-template-columns: var(--v8-layout-panel-width) minmax(0, 1fr);
 }
 
 .v8-notes-index {
@@ -42,7 +42,9 @@
 }
 
 .v8-notes-search {
+  display: grid;
   flex: 0 0 auto;
+  gap: var(--v8-space-2);
   padding: var(--v8-space-3);
   border-bottom: 1px solid var(--v8-divider);
 }
@@ -51,9 +53,8 @@
   background: var(--v8-surface-1);
 }
 
-.v8-notes-search > svg {
-  left: 24px;
-}
+.v8-notes-search .v8-collection-tools { justify-content: space-between; }
+.v8-notes-sort { width: min(156px, 100%); }
 
 .v8-notes-list {
   min-height: 0;
@@ -69,7 +70,7 @@
   display: grid;
   width: 100%;
   min-width: 0;
-  min-height: 88px;
+  min-height: calc(var(--density-row-height) + 32px);
   grid-template-columns: 32px minmax(0, 1fr);
   align-items: start;
   gap: var(--v8-space-3);
@@ -166,13 +167,16 @@
   background: var(--v8-surface-1);
 }
 
-.v8-note-toolbar {
+.v8-note-toolbar,
+.v8-work-toolbar,
+.v8-files-toolbar,
+.v8-calendar-toolbar {
   display: flex;
-  min-height: 58px;
+  min-height: var(--v8-layout-toolbar-height);
   align-items: center;
   justify-content: space-between;
-  gap: var(--v8-space-4);
-  padding: var(--v8-space-2) var(--v8-space-4);
+  gap: var(--v8-layout-toolbar-gap);
+  padding: var(--v8-layout-toolbar-padding-block) var(--v8-layout-toolbar-padding-inline);
   border-bottom: 1px solid var(--v8-divider);
   background: var(--v8-canvas-raised);
   box-shadow: inset 0 1px 0 var(--v8-surface-glint);
@@ -225,14 +229,16 @@
 
 .v8-note-title {
   width: 100%;
+  max-inline-size: var(--v8-measure-longform);
   min-width: 0;
+  align-self: center;
   padding: 0;
   border: 0;
   background: transparent;
   color: var(--v8-text);
-  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-size: var(--v8-type-h1);
   font-weight: var(--v8-weight-semibold);
-  line-height: var(--v8-line-tight);
+  line-height: var(--v8-leading-heading);
   outline: none;
 }
 
@@ -243,7 +249,9 @@
 
 .v8-note-content {
   width: 100%;
+  max-inline-size: var(--v8-measure-longform);
   min-height: 320px;
+  align-self: center;
   flex: 1;
   margin-top: var(--v8-space-5);
   padding: 0 0 var(--v8-space-7);
@@ -252,7 +260,7 @@
   background: transparent;
   color: var(--v8-text-secondary);
   font-family: var(--v8-font);
-  font-size: 0.95rem;
+  font-size: var(--v8-type-body);
   line-height: 1.75;
   outline: none;
 }
@@ -312,7 +320,7 @@
 
 @media (max-width: 1020px) {
   .v8-notes-workspace {
-    grid-template-columns: minmax(230px, 270px) minmax(0, 1fr);
+    grid-template-columns: var(--v8-layout-panel-compact) minmax(0, 1fr);
   }
 
   .v8-note-document {
@@ -326,16 +334,19 @@
     height: auto;
     min-height: 0;
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(190px, 240px) minmax(580px, auto);
+    grid-template-rows: auto minmax(580px, auto);
     overflow: visible;
   }
 
   .v8-notes-index {
+    min-height: auto;
     border-right: 0;
     border-bottom: 1px solid var(--v8-divider);
   }
 
   .v8-notes-list {
+    flex: none;
+    overflow: visible;
     scrollbar-gutter: auto;
   }
 
@@ -401,7 +412,7 @@
 
 @media (max-width: 560px) {
   .v8-notes-workspace {
-    grid-template-rows: minmax(290px, auto) minmax(580px, auto);
+    grid-template-rows: auto minmax(580px, auto);
   }
 
   .v8-notes-list > .v8-empty-state {
@@ -426,20 +437,16 @@
 }
 
 .v8-work-toolbar {
-  display: flex;
-  min-height: 58px;
   flex: 0 0 auto;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--v8-space-4);
-  padding: var(--v8-space-2) var(--v8-space-4);
-  border-bottom: 1px solid var(--v8-divider);
-  background: var(--v8-canvas-raised);
-  box-shadow: inset 0 1px 0 var(--v8-surface-glint);
 }
 
 .v8-work-search {
   width: min(340px, 100%);
+}
+
+.v8-collection-sort {
+  width: 142px;
+  min-width: 142px;
 }
 
 .v8-segmented {
@@ -481,7 +488,7 @@
 
 .v8-task-composer {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--v8-space-3);
   padding: var(--v8-space-3) var(--v8-space-4);
   border-bottom: 1px solid var(--v8-border);
@@ -504,6 +511,7 @@
   display: flex;
   align-items: center;
   gap: var(--v8-space-2);
+  padding-top: 22px;
 }
 
 .v8-task-stream {
@@ -524,16 +532,27 @@
 .v8-task-row {
   display: grid;
   min-width: 0;
-  min-height: 68px;
-  grid-template-columns: 36px minmax(0, 1fr) 38px;
+  min-height: calc(var(--density-table-row-height) + 12px);
+  grid-template-columns: 30px 36px minmax(0, 1fr) 72px;
   align-items: center;
-  gap: var(--v8-space-3);
-  padding: 9px var(--v8-space-2);
+  gap: var(--v8-space-2);
+  padding: max(6px, calc((var(--density-table-row-height) - 32px) / 2)) var(--v8-space-2);
   border-bottom: 1px solid var(--v8-divider);
+  border-radius: var(--v8-radius-sm);
+  outline: none;
   transition:
     background-color var(--v8-motion-fast) var(--v8-ease-standard),
+    box-shadow var(--v8-motion-fast) var(--v8-ease-standard),
     opacity var(--v8-motion-fast) var(--v8-ease-standard);
 }
+
+html[data-v8-interactions] .v8-task-row:hover { background: var(--v8-surface-sunken); }
+.v8-task-row:focus-visible { box-shadow: var(--v8-shadow-focus-inset); }
+.v8-task-row.is-selected { background: var(--v8-accent-soft); box-shadow: inset 2px 0 0 var(--v8-accent); }
+.v8-task-row > .v8-selection-control { opacity: .58; }
+html[data-v8-interactions] .v8-task-row:hover > .v8-selection-control,
+.v8-task-row:focus-within > .v8-selection-control,
+.v8-task-row.is-selected > .v8-selection-control { opacity: 1; }
 
 .v8-task-row.is-complete {
   opacity: 0.6;
@@ -647,978 +666,9 @@
   opacity: 1;
 }
 
+.v8-task-menu { color: var(--v8-muted); }
+
 @media (max-width: 1100px) {
   .v8-task-composer {
     align-items: stretch;
-    flex-direction: column;
-  }
-
-  .v8-task-composer__fields {
-    width: 100%;
-    grid-template-columns: minmax(180px, 1fr) repeat(3, minmax(120px, 0.4fr));
-  }
-
-  .v8-task-composer__actions {
-    justify-content: flex-end;
-  }
-}
-
-@media (max-width: 820px) {
-  .v8-tasks-workspace {
-    min-height: 620px;
-    overflow: visible;
-  }
-
-  .v8-work-toolbar {
-    align-items: center;
-    flex-direction: row;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-  }
-
-  .v8-work-toolbar::-webkit-scrollbar,
-  .v8-files-toolbar::-webkit-scrollbar {
-    display: none;
-  }
-
-  .v8-work-search {
-    width: auto;
-    flex: 0 0 min(220px, 48vw);
-  }
-
-  .v8-segmented {
-    width: auto;
-    flex: 0 0 auto;
-  }
-
-  .v8-segmented button {
-    min-width: 72px;
-    min-height: 30px;
-  }
-
-  .v8-task-composer__fields {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  }
-
-  .v8-task-composer__fields > :first-child {
-    grid-column: 1 / -1;
-  }
-
-  .v8-task-stream {
-    overflow: visible;
-  }
-
-  .v8-task-list {
-    padding: var(--v8-space-3);
-  }
-
-  .v8-task-delete {
-    opacity: 1;
-  }
-}
-
-@media (max-width: 480px) {
-  .v8-task-composer__fields {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .v8-task-composer__fields > :first-child {
-    grid-column: auto;
-  }
-
-  .v8-task-composer__actions .v8-button {
-    flex: 1;
-  }
-
-  .v8-task-meta {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 3px;
-  }
-
-  .v8-task-row {
-    align-items: start;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .v8-task-check.is-complete svg,
-  [role="checkbox"][aria-checked="true"] svg {
-    animation: none;
-  }
-}
-
-.v8-files-workspace {
-  display: grid;
-  min-height: 620px;
-  grid-template-columns: 190px minmax(0, 1fr) minmax(250px, 300px);
-}
-
-.v8-files-sidebar {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  padding: var(--v8-space-4) var(--v8-space-3);
-  border-right: 1px solid var(--v8-divider);
-  background: var(--v8-canvas-raised);
-}
-
-.v8-files-sidebar > .v8-eyebrow {
-  margin: 0 var(--v8-space-2) var(--v8-space-2);
-}
-
-.v8-files-sources {
-  display: grid;
-  gap: 3px;
-}
-
-.v8-files-sources button {
-  display: grid;
-  width: 100%;
-  min-width: 0;
-  height: 38px;
-  grid-template-columns: 20px minmax(0, 1fr) auto;
-  align-items: center;
-  gap: var(--v8-space-2);
-  padding: 0 var(--v8-space-2);
-  border-radius: var(--v8-radius-sm);
-  background: transparent;
-  color: var(--v8-muted);
-  cursor: pointer;
-  outline: none;
-  text-align: left;
-  transition:
-    background-color var(--v8-motion-fast) var(--v8-ease-standard),
-    color var(--v8-motion-fast) var(--v8-ease-standard),
-    box-shadow var(--v8-motion-fast) var(--v8-ease-standard);
-}
-
-.v8-files-sources button.is-active {
-  background: var(--v8-surface-2);
-  color: var(--v8-text-secondary);
-}
-
-.v8-files-sources button.is-active {
-  color: var(--v8-accent);
-}
-
-.v8-files-sources button:focus-visible {
-  box-shadow: var(--v8-shadow-focus);
-}
-
-.v8-files-sources svg {
-  width: var(--v8-icon-sm);
-  height: var(--v8-icon-sm);
-}
-
-.v8-files-sources span {
-  overflow: hidden;
-  font-size: var(--v8-font-sm);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.v8-files-sources small {
-  font-size: var(--v8-font-micro);
-}
-
-.v8-files-import-soon {
-  display: grid;
-  margin-top: auto;
-  padding: var(--v8-space-3);
-  border: 1px solid var(--v8-border);
-  border-radius: var(--v8-radius-md);
-  background: var(--v8-surface-1);
-}
-
-.v8-files-import-soon > svg {
-  width: var(--v8-icon-md);
-  height: var(--v8-icon-md);
-  margin-bottom: var(--v8-space-3);
-  color: var(--v8-muted);
-}
-
-.v8-files-import-soon strong {
-  color: var(--v8-text-secondary);
-  font-size: var(--v8-font-xs);
-  font-weight: var(--v8-weight-medium);
-}
-
-.v8-files-import-soon span {
-  margin-top: 3px;
-  color: var(--v8-muted);
-  font-size: var(--v8-font-micro);
-  line-height: 1.45;
-}
-
-.v8-files-import-soon a {
-  margin-top: var(--v8-space-3);
-  color: var(--v8-accent);
-  font-size: var(--v8-font-xs);
-}
-
-.v8-files-main {
-  display: flex;
-  min-width: 0;
-  min-height: 0;
-  flex-direction: column;
-}
-
-.v8-files-toolbar {
-  display: flex;
-  min-height: 58px;
-  flex: 0 0 auto;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--v8-space-3);
-  padding: var(--v8-space-2) var(--v8-space-4);
-  border-bottom: 1px solid var(--v8-divider);
-  background: var(--v8-canvas-raised);
-  box-shadow: inset 0 1px 0 var(--v8-surface-glint);
-}
-
-.v8-files-search {
-  width: min(360px, 100%);
-}
-
-.v8-files-toolbar__tools,
-.v8-view-switch {
-  display: flex;
-  align-items: center;
-  gap: var(--v8-space-1);
-}
-
-.v8-files-toolbar__tools > .v8-input {
-  width: 110px;
-}
-
-.v8-view-switch {
-  padding: 3px;
-  border: 1px solid var(--v8-border);
-  border-radius: var(--v8-radius-md);
-  background: var(--v8-surface-1);
-}
-
-.v8-view-switch button {
-  display: grid;
-  width: 30px;
-  height: 30px;
-  place-items: center;
-  border-radius: var(--v8-radius-sm);
-  background: transparent;
-  color: var(--v8-muted);
-  cursor: pointer;
-  outline: none;
-}
-
-.v8-view-switch button.is-active {
-  background: var(--v8-surface-3);
-  color: var(--v8-text);
-}
-
-.v8-view-switch button:focus-visible {
-  box-shadow: var(--v8-shadow-focus);
-}
-
-.v8-view-switch svg {
-  width: var(--v8-icon-sm);
-  height: var(--v8-icon-sm);
-}
-
-.v8-files-content {
-  min-height: 0;
-  flex: 1;
-  padding: var(--v8-space-3);
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-}
-
-.v8-files-composer {
-  display: grid;
-  grid-template-columns: minmax(160px, 1fr) minmax(180px, 1.2fr) minmax(100px, 0.55fr) auto;
-  gap: var(--v8-space-2);
-  margin-bottom: var(--v8-space-3);
-  padding: var(--v8-space-3);
-  border: 1px solid var(--v8-accent-line);
-  border-radius: var(--v8-radius-md);
-  background: var(--v8-accent-soft);
-}
-
-.v8-files-composer > div {
-  display: flex;
-  gap: var(--v8-space-2);
-}
-
-.v8-files-collection {
-  min-height: 100%;
-}
-
-.v8-files-collection--list {
-  display: grid;
-  align-content: start;
-}
-
-.v8-file-item {
-  min-width: 0;
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--v8-text-secondary);
-  cursor: pointer;
-  outline: none;
-  text-align: left;
-  transition:
-    background-color var(--v8-motion-fast) var(--v8-ease-standard),
-    border-color var(--v8-motion-fast) var(--v8-ease-standard),
-    box-shadow var(--v8-motion-fast) var(--v8-ease-standard),
-    transform var(--v8-motion-instant) var(--v8-ease-press);
-}
-
-.v8-files-collection--list .v8-file-item {
-  display: grid;
-  min-height: 58px;
-  grid-template-columns: 36px minmax(0, 1fr) 24px minmax(70px, auto);
-  align-items: center;
-  gap: var(--v8-space-3);
-  padding: 8px var(--v8-space-3);
-  border-bottom-color: var(--v8-divider);
-}
-
-.v8-file-item.is-active {
-  border-color: var(--v8-border);
-  background: var(--v8-surface-2);
-}
-
-.v8-file-item.is-active {
-  box-shadow: inset 2px 0 0 var(--v8-accent);
-}
-
-.v8-file-item:focus-visible {
-  box-shadow: var(--v8-shadow-focus);
-}
-
-.v8-file-item__icon {
-  display: grid;
-  width: 36px;
-  height: 36px;
-  place-items: center;
-  border: 1px solid var(--v8-border);
-  border-radius: var(--v8-radius-sm);
-  background: var(--v8-surface-1);
-  color: var(--v8-muted);
-}
-
-.v8-file-item.is-active .v8-file-item__icon {
-  border-color: var(--v8-accent-line);
-  background: var(--v8-accent-soft);
-  color: var(--v8-accent);
-}
-
-.v8-file-item__icon svg {
-  width: var(--v8-icon-md);
-  height: var(--v8-icon-md);
-}
-
-.v8-file-item__copy,
-.v8-file-item__copy strong,
-.v8-file-item__copy small {
-  display: block;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.v8-file-item__copy strong {
-  color: inherit;
-  font-size: var(--v8-font-sm);
-  font-weight: var(--v8-weight-medium);
-}
-
-.v8-file-item__copy small,
-.v8-file-item time {
-  color: var(--v8-muted);
-  font-size: var(--v8-font-xs);
-}
-
-.v8-file-item__favorite {
-  color: var(--v8-warning);
-}
-
-.v8-file-item__favorite svg {
-  width: var(--v8-icon-sm);
-  height: var(--v8-icon-sm);
-}
-
-.v8-files-collection--grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  align-content: start;
-  gap: var(--v8-space-3);
-}
-
-.v8-files-collection--grid .v8-file-item {
-  display: grid;
-  min-height: 150px;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-rows: 54px minmax(0, 1fr) auto;
-  gap: var(--v8-space-2);
-  padding: var(--v8-space-3);
-  border-color: var(--v8-border);
-  border-radius: var(--v8-radius-md);
-  background: var(--v8-canvas-raised);
-}
-
-.v8-files-collection--grid .v8-file-item__icon {
-  width: 50px;
-  height: 50px;
-}
-
-.v8-files-collection--grid .v8-file-item__copy {
-  grid-column: 1 / -1;
-}
-
-.v8-files-collection--grid .v8-file-item time {
-  grid-column: 1 / -1;
-}
-
-.v8-files-preview {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  align-items: center;
-  padding: var(--v8-space-5);
-  border-left: 1px solid var(--v8-divider);
-  background: var(--v8-canvas-raised);
-  text-align: center;
-}
-
-.v8-files-preview__header {
-  display: flex;
-  width: 100%;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-
-.v8-files-preview__symbol {
-  display: grid;
-  width: 72px;
-  height: 72px;
-  margin-top: var(--v8-space-7);
-  place-items: center;
-  border: 1px solid var(--v8-accent-line);
-  border-radius: var(--v8-radius-md);
-  background: var(--v8-accent-soft);
-  color: var(--v8-accent);
-}
-
-.v8-files-preview__symbol svg {
-  width: 34px;
-  height: 34px;
-}
-
-.v8-files-preview h2 {
-  max-width: 100%;
-  margin-top: var(--v8-space-4);
-  overflow-wrap: anywhere;
-  font-size: var(--v8-font-lg);
-  font-weight: var(--v8-weight-semibold);
-}
-
-.v8-files-preview > p {
-  max-width: 100%;
-  margin-top: var(--v8-space-2);
-  overflow-wrap: anywhere;
-  color: var(--v8-muted);
-  font-size: var(--v8-font-xs);
-  line-height: var(--v8-line-relaxed);
-}
-
-.v8-files-metadata {
-  width: 100%;
-  margin: var(--v8-space-6) 0 0;
-  border-top: 1px solid var(--v8-divider);
-}
-
-.v8-files-metadata > div {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--v8-space-3);
-  min-height: 38px;
-  border-bottom: 1px solid var(--v8-divider);
-  font-size: var(--v8-font-xs);
-}
-
-.v8-files-metadata dt { color: var(--v8-muted); }
-.v8-files-metadata dd { margin: 0; color: var(--v8-text-secondary); }
-
-.v8-files-preview__actions {
-  display: grid;
-  width: 100%;
-  gap: var(--v8-space-2);
-  margin-top: auto;
-  padding-top: var(--v8-space-6);
-}
-
-.v8-files-preview__actions .v8-button {
-  width: 100%;
-}
-
-.v8-files-preview > .v8-empty-state { width: 100%; flex: 1; }
-
-@media (max-width: 1180px) {
-  .v8-files-workspace {
-    grid-template-columns: 170px minmax(0, 1fr);
-  }
-
-  .v8-files-preview {
-    grid-column: 1 / -1;
-    min-height: 260px;
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) minmax(210px, 0.5fr);
-    align-items: center;
-    gap: var(--v8-space-5);
-    border-top: 1px solid var(--v8-divider);
-    border-left: 0;
-    text-align: left;
-  }
-
-  .v8-files-preview > .v8-empty-state { grid-column: 1 / -1; }
-
-  .v8-files-preview__header {
-    display: none;
-  }
-
-  .v8-files-preview__symbol {
-    margin: 0;
-  }
-
-  .v8-files-metadata,
-  .v8-files-preview__actions {
-    margin: 0;
-    padding: 0;
-  }
-
-  .v8-files-preview > h2,
-  .v8-files-preview > p {
-    grid-column: 2;
-  }
-}
-
-@media (max-width: 820px) {
-  .v8-files-workspace {
-    min-height: 0;
-    grid-template-columns: minmax(0, 1fr);
-    overflow: visible;
-  }
-
-  .v8-files-sidebar {
-    border-right: 0;
-    border-bottom: 1px solid var(--v8-divider);
-  }
-
-  .v8-files-sources {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    overflow: visible;
-  }
-
-  .v8-files-sources button {
-    width: 100%;
-    min-width: 0;
-    height: 44px;
-  }
-
-  .v8-files-import-soon {
-    display: none;
-  }
-
-  .v8-files-toolbar {
-    align-items: center;
-    flex-direction: row;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-  }
-
-  .v8-files-search {
-    width: auto;
-    min-width: 128px;
-    flex: 1 1 150px;
-  }
-
-  .v8-files-toolbar__tools {
-    flex: 0 0 auto;
-    justify-content: flex-end;
-  }
-
-  .v8-files-toolbar__tools > .v8-input {
-    width: 92px;
-  }
-
-  .v8-view-switch button {
-    width: 36px;
-    height: 36px;
-  }
-
-  .v8-files-content {
-    min-height: 420px;
-    overflow: visible;
-  }
-
-  .v8-files-composer {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .v8-files-composer > div .v8-button {
-    flex: 1;
-  }
-
-  .v8-files-preview {
-    min-height: 380px;
-    display: flex;
-    border-top: 1px solid var(--v8-divider);
-    text-align: center;
-  }
-
-  .v8-files-preview__symbol {
-    margin-top: var(--v8-space-4);
-  }
-
-  .v8-files-preview__actions {
-    margin-top: var(--v8-space-5);
-  }
-}
-
-@media (max-width: 520px) {
-  .v8-files-collection--list .v8-file-item {
-    grid-template-columns: 36px minmax(0, 1fr) 20px;
-  }
-
-  .v8-files-collection--list .v8-file-item time {
-    display: none;
-  }
-
-  .v8-files-collection--grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-.v8-calendar-workspace {
-  display: grid;
-  min-height: 620px;
-  grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
-}
-
-.v8-calendar-main {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  padding: var(--v8-space-4);
-  border-right: 1px solid var(--v8-divider);
-}
-
-.v8-calendar-toolbar {
-  display: flex;
-  min-height: 58px;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--v8-space-4);
-  margin: calc(var(--v8-space-4) * -1) calc(var(--v8-space-4) * -1) var(--v8-space-4);
-  padding: var(--v8-space-2) var(--v8-space-4);
-  border-bottom: 1px solid var(--v8-divider);
-  background: var(--v8-canvas-raised);
-  box-shadow: inset 0 1px 0 var(--v8-surface-glint);
-}
-
-.v8-calendar-toolbar h2 {
-  font-size: var(--v8-font-xl);
-  font-weight: var(--v8-weight-semibold);
-  text-transform: capitalize;
-}
-
-.v8-calendar-toolbar > div {
-  display: flex;
-  align-items: center;
-  gap: var(--v8-space-1);
-}
-
-.v8-calendar-weekdays,
-.v8-calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-}
-
-.v8-calendar-weekdays {
-  height: 28px;
-  align-items: center;
-  color: var(--v8-muted);
-  font-size: var(--v8-font-micro);
-  font-weight: var(--v8-weight-semibold);
-  text-align: center;
-  text-transform: uppercase;
-}
-
-.v8-calendar-grid {
-  min-height: 500px;
-  flex: 1;
-  grid-template-rows: repeat(6, minmax(72px, 1fr));
-  overflow: hidden;
-  border-top: 1px solid var(--v8-divider);
-  border-left: 1px solid var(--v8-divider);
-  border-radius: var(--v8-radius-sm);
-}
-
-.v8-calendar-day {
-  position: relative;
-  display: flex;
-  min-width: 0;
-  min-height: 0;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: 9px;
-  border-right: 1px solid var(--v8-divider);
-  border-bottom: 1px solid var(--v8-divider);
-  background: transparent;
-  color: var(--v8-text-secondary);
-  cursor: pointer;
-  outline: none;
-  transition:
-    background-color var(--v8-motion-fast) var(--v8-ease-standard),
-    box-shadow var(--v8-motion-fast) var(--v8-ease-standard),
-    color var(--v8-motion-fast) var(--v8-ease-standard);
-}
-
-.v8-calendar-day:focus-visible {
-  z-index: 1;
-  box-shadow: var(--v8-shadow-focus-inset);
-}
-
-.v8-calendar-day.is-outside {
-  color: var(--v8-muted);
-  opacity: 0.48;
-}
-
-.v8-calendar-day.is-today > span:first-child {
-  display: grid;
-  width: 25px;
-  height: 25px;
-  place-items: center;
-  border-radius: var(--v8-radius-sm);
-  background: var(--v8-accent-soft);
-  color: var(--v8-accent);
-  font-weight: var(--v8-weight-semibold);
-}
-
-.v8-calendar-day.is-selected {
-  box-shadow: inset 0 0 0 1px var(--v8-accent-line);
-  background: var(--v8-accent-soft);
-}
-
-.v8-calendar-day__events {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  color: var(--v8-accent);
-}
-
-.v8-calendar-day__events i {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--v8-accent);
-}
-
-.v8-calendar-day__events small {
-  font-size: var(--v8-font-micro);
-}
-
-.v8-calendar-agenda {
-  display: flex;
-  min-width: 0;
-  min-height: 0;
-  flex-direction: column;
-  background: var(--v8-canvas-raised);
-}
-
-.v8-calendar-agenda__header {
-  padding: var(--v8-space-5);
-  border-bottom: 1px solid var(--v8-divider);
-}
-
-.v8-calendar-agenda__header .v8-eyebrow {
-  margin-bottom: 5px;
-}
-
-.v8-calendar-agenda__header h2 {
-  font-size: var(--v8-font-lg);
-  font-weight: var(--v8-weight-semibold);
-  line-height: 1.4;
-  text-transform: capitalize;
-}
-
-.v8-calendar-agenda__header > span:last-child {
-  display: block;
-  margin-top: 5px;
-  color: var(--v8-muted);
-  font-size: var(--v8-font-xs);
-}
-
-.v8-calendar-composer {
-  display: grid;
-  gap: var(--v8-space-2);
-  padding: var(--v8-space-4);
-  border-bottom: 1px solid var(--v8-border);
-  background: var(--v8-accent-soft);
-}
-
-.v8-calendar-composer[hidden] {
-  display: none;
-}
-
-.v8-calendar-composer > div {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--v8-space-2);
-}
-
-.v8-calendar-agenda__list {
-  min-height: 0;
-  flex: 1;
-  padding: var(--v8-space-3) var(--v8-space-4);
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-}
-
-.v8-calendar-event {
-  display: grid;
-  min-width: 0;
-  min-height: 64px;
-  grid-template-columns: 3px minmax(0, 1fr) 38px;
-  align-items: center;
-  gap: var(--v8-space-3);
-  border-bottom: 1px solid var(--v8-divider);
-}
-
-.v8-calendar-event__signal {
-  width: 3px;
-  height: 30px;
-  border-radius: var(--v8-radius-pill);
-  background: var(--v8-accent);
-}
-
-.v8-calendar-event > div {
-  min-width: 0;
-}
-
-.v8-calendar-event strong,
-.v8-calendar-event small {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.v8-calendar-event strong {
-  color: var(--v8-text-secondary);
-  font-size: var(--v8-font-sm);
-  font-weight: var(--v8-weight-medium);
-}
-
-.v8-calendar-event small {
-  margin-top: 3px;
-  color: var(--v8-muted);
-  font-size: var(--v8-font-xs);
-}
-
-@media (max-width: 1060px) {
-  .v8-calendar-workspace {
-    grid-template-columns: minmax(0, 1fr) minmax(240px, 290px);
-  }
-
-  .v8-calendar-day {
-    padding: 7px;
-  }
-}
-
-@media (max-width: 820px) {
-  .v8-calendar-workspace {
-    min-height: 0;
-    grid-template-columns: minmax(0, 1fr);
-    overflow: visible;
-  }
-
-  .v8-calendar-main {
-    padding: var(--v8-space-3);
-    border-right: 0;
-    border-bottom: 1px solid var(--v8-divider);
-  }
-
-  .v8-calendar-toolbar {
-    margin: calc(var(--v8-space-3) * -1) calc(var(--v8-space-3) * -1) var(--v8-space-3);
-    padding-right: var(--v8-space-3);
-    padding-left: var(--v8-space-3);
-  }
-
-  .v8-calendar-grid {
-    min-height: 440px;
-    grid-template-rows: repeat(6, minmax(64px, 1fr));
-  }
-
-  .v8-calendar-agenda {
-    min-height: 360px;
-  }
-
-  .v8-calendar-agenda__list {
-    overflow: visible;
-  }
-}
-
-@media (max-width: 480px) {
-  .v8-calendar-toolbar {
-    align-items: center;
-    flex-direction: row;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-  }
-
-  .v8-calendar-toolbar > div {
-    width: auto;
-    flex: 0 0 auto;
-    justify-content: flex-end;
-  }
-
-  .v8-calendar-toolbar > div .v8-button {
-    flex: 0 0 auto;
-  }
-
-  .v8-calendar-toolbar h2 {
-    flex: 0 0 auto;
-    font-size: var(--v8-font-lg);
-    white-space: nowrap;
-  }
-
-  .v8-calendar-weekdays span {
-    font-size: var(--v8-font-micro);
-  }
-
-  .v8-calendar-grid {
-    min-height: 390px;
-    grid-template-rows: repeat(6, minmax(56px, 1fr));
-  }
-
-  .v8-calendar-day {
-    padding: 5px;
-    font-size: var(--v8-font-xs);
-  }
-
-  .v8-calendar-day.is-today > span:first-child {
-    width: 22px;
-    height: 22px;
-  }
-}
+    flex-direction: coluÛvถหkบwต็`ตอก…‘ฝÜู…ศ ดตุเตตฝัฅฝธต…อะคู…ศ ดตุเต•…อ”ตอั…น‘…ษคฐ(€€€ัษ…นอฝษดู…ศ ดตุเตตฝัฅฝธตฅนอั…นะคู…ศ ดตุเต•…อ”ตมษ•อฬค์)๔((นุเตฅฑ•ฬตฝฑฑ•ัฅฝธดตฑฅอะ€นุเตฅฑ”ตฅั•ด์(€‘ฅอมฑ…ไ่ษฅ์(€Ýฅ‘ั ่€ฤภภ”์(€ตฅธตก•ฅกะ่…ฑกู…ศ ดต‘•นอฅัไตั…ฑ”ตษฝÜตก•ฅกะค€ฌ€ฤมมเค์(€ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่€ฬูมเตฅนต…เ ภฐ€ลศค€ศัมเตฅนต…เ Üมมเฐ…ีัผค์(€…ฑฅธตฅั•ตฬ่•นั•ศ์(€…ภ่ู…ศ ดตุเตอม…”ดฬค์(€ม…‘‘ฅน่€แมเู…ศ ดตุเตอม…”ดฬค์(€ฝษ‘•ศตฝััฝดตฝฑฝศ่ัษ…นอม…ษ•นะ์)๔((นุเตฅฑ•ฬตฝฑฑ•ัฅฝธดตฑฅอะ€นุเตฅฑ”ต•นัษไ€๘€นุเตอ•ฑ•ัฅฝธตฝนัษฝฐ์ต…ษฅธตฑ•ะ่€ษมเ์ฝม…ฅัไ่€ธิเ์๔)กัตฑm‘…ัตุเตฅนั•ษ…ัฅฝนอt€นุเตฅฑ”ต•นัษไ้กฝู•ศ€๘€นุเตอ•ฑ•ัฅฝธตฝนัษฝฐฐ(นุเตฅฑ”ต•นัษไ้ฝีฬตÝฅักฅธ€๘€นุเตอ•ฑ•ัฅฝธตฝนัษฝฐฐ(นุเตฅฑ”ต•นัษไนฅฬตอ•ฑ•ั•€๘€นุเตอ•ฑ•ัฅฝธตฝนัษฝฐ์ฝม…ฅัไ่€ฤ์๔)กัตฑm‘…ัตุเตฅนั•ษ…ัฅฝนอt€นุเตฅฑ”ต•นัษไ้กฝู•ศ€นุเตษฝÜต…ัฅฝนฬฐ(นุเตฅฑ”ต•นัษไ้ฝีฬตÝฅักฅธ€นุเตษฝÜต…ัฅฝนฬ์ฝม…ฅัไ่€ฤ์๔(นุเตฅฑ”ต•นัษไนฅฬตอ•ฑ•ั•€นุเตฅฑ”ตฅั•ด์…ญษฝีน่ู…ศ ดตุเต…•นะตอฝะค์ฝเตอก…‘ฝÜ่ฅนอ•ะ€ษมเ€ภ€ภู…ศ ดตุเต…•นะค์๔((นุเตฅฑ”ตฅั•ดนฅฬต…ัฅู”์(€ฝษ‘•ศตฝฑฝศ่ู…ศ ดตุเตฝษ‘•ศค์(€…ญษฝีน่ู…ศ ดตุเตอีษ…”ดศค์)๔((นุเตฅฑ”ตฅั•ดนฅฬต…ัฅู”์(€ฝเตอก…‘ฝÜ่ฅนอ•ะ€ษมเ€ภ€ภู…ศ ดตุเต…•นะค์)๔((นุเตฅฑ”ตฅั•ด้ฝีฬตูฅอฅฑ”์(€ฝเตอก…‘ฝÜ่ู…ศ ดตุเตอก…‘ฝÜตฝีฬค์)๔((นุเตฅฑ”ตฅั•ต}}ฅฝธ์(€‘ฅอมฑ…ไ่ษฅ์(€Ýฅ‘ั ่€ฬูมเ์(€ก•ฅกะ่€ฬูมเ์(€มฑ…”ตฅั•ตฬ่•นั•ศ์(€ฝษ‘•ศ่€ลมเอฝฑฅู…ศ ดตุเตฝษ‘•ศค์(€ฝษ‘•ศตษ…‘ฅีฬ่ู…ศ ดตุเตษ…‘ฅีฬตอดค์(€…ญษฝีน่ู…ศ ดตุเตอีษ…”ดฤค์(€ฝฑฝศ่ู…ศ ดตุเตตีั•ค์)๔((นุเตฅฑ”ตฅั•ดนฅฬต…ัฅู”€นุเตฅฑ”ตฅั•ต}}ฅฝธ์(€ฝษ‘•ศตฝฑฝศ่ู…ศ ดตุเต…•นะตฑฅน”ค์(€…ญษฝีน่ู…ศ ดตุเต…•นะตอฝะค์(€ฝฑฝศ่ู…ศ ดตุเต…•นะค์)๔((นุเตฅฑ”ตฅั•ต}}ฅฝธอู์(€Ýฅ‘ั ่ู…ศ ดตุเตฅฝธตตค์(€ก•ฅกะ่ู…ศ ดตุเตฅฝธตตค์)๔((นุเตฅฑ”ตฅั•ต}}ฝมไฐ(นุเตฅฑ”ตฅั•ต}}ฝมไอัษฝนฐ(นุเตฅฑ”ตฅั•ต}}ฝมไอต…ฑฐ์(€‘ฅอมฑ…ไ่ฑฝฌ์(€ตฅธตÝฅ‘ั ่€ภ์(€ฝู•ษฑฝÜ่กฅ‘‘•ธ์(€ั•แะตฝู•ษฑฝÜ่•ฑฑฅมอฅฬ์(€Ýกฅั”ตอม…”่นฝÝษ…ภ์)๔((นุเตฅฑ”ตฅั•ต}}ฝมไอัษฝน์(€ฝฑฝศ่ฅนก•ษฅะ์(€ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตอดค์(€ฝนะตÝ•ฅกะ่ู…ศ ดตุเตÝ•ฅกะตต•‘ฅีดค์)๔((นุเตฅฑ”ตฅั•ต}}ฝมไอต…ฑฐฐ(นุเตฅฑ”ตฅั•ดัฅต”์(€ฝฑฝศ่ู…ศ ดตุเตตีั•ค์(€ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตแฬค์)๔((นุเตฅฑ”ตฅั•ต}}…ูฝษฅั”์(€ฝฑฝศ่ู…ศ ดตุเตÝ…ษนฅนค์)๔((นุเตฅฑ”ตฅั•ต}}…ูฝษฅั”อู์(€Ýฅ‘ั ่ู…ศ ดตุเตฅฝธตอดค์(€ก•ฅกะ่ู…ศ ดตุเตฅฝธตอดค์)๔((นุเตฅฑ•ฬตฝฑฑ•ัฅฝธดตษฅ์(€‘ฅอมฑ…ไ่ษฅ์(€ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่ษ•ม•…ะก…ีัผตฅฑฐฐตฅนต…เ ฤิมมเฐ€ลศคค์(€…ฑฅธตฝนั•นะ่อั…ษะ์(€…ภ่ู…ศ ดตุเตอม…”ดฬค์)๔((นุเตฅฑ•ฬตฝฑฑ•ัฅฝธดตษฅ€นุเตฅฑ”ตฅั•ด์(€‘ฅอมฑ…ไ่ษฅ์(€ตฅธตก•ฅกะ่€ฤิมมเ์(€ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่ตฅนต…เ ภฐ€ลศค…ีัผ์(€ษฅตั•ตมฑ…ั”ตษฝÝฬ่€ิัมเตฅนต…เ ภฐ€ลศค…ีัผ์(€…ภ่ู…ศ ดตุเตอม…”ดศค์(€ม…‘‘ฅน่ู…ศ ดตุเตอม…”ดฬค์(€ฝษ‘•ศตฝฑฝศ่ู…ศ ดตุเตฝษ‘•ศค์(€ฝษ‘•ศตษ…‘ฅีฬ่ู…ศ ดตุเตษ…‘ฅีฬตตค์(€…ญษฝีน่ู…ศ ดตุเต…นู…ฬตษ…ฅอ•ค์)๔((นุเตฅฑ•ฬตฝฑฑ•ัฅฝธดตษฅ€นุเตฅฑ”ต•นัษไ์(€ตฅธตก•ฅกะ่€ฤิมมเ์)๔((นุเตฅฑ•ฬตฝฑฑ•ัฅฝธดตษฅ€นุเตฅฑ”ตฅั•ด์ก•ฅกะ่€ฤภภ”์๔(นุเตฅฑ•ฬตฝฑฑ•ัฅฝธดตษฅ€นุเตฅฑ”ต•นัษไ€๘€นุเตอ•ฑ•ัฅฝธตฝนัษฝฐ์มฝอฅัฅฝธ่…อฝฑีั”์่ตฅน‘•เ่€ศ์ัฝภ่€ๅมเ์ษฅกะ่€ๅมเ์…ญษฝีน่ู…ศ ดตุเตอีษ…”ดฤค์๔(นุเตฅฑ•ฬตฝฑฑ•ัฅฝธดตษฅ€นุเตฅฑ”ต•นัษไ€๘€นุเตษฝÜต…ัฅฝนฬ์มฝอฅัฅฝธ่…อฝฑีั”์่ตฅน‘•เ่€ศ์ษฅกะ่€แมเ์ฝััฝด่€แมเ์๔(นุเตฅฑ•ฬตฝฑฑ•ัฅฝธดตษฅ€นุเตฅฑ”ตฅั•ดัฅต”์ม…‘‘ฅนตษฅกะ่€ฬูมเ์๔((นุเตฅฑ•ฬตฝฑฑ•ัฅฝธดตษฅ€นุเตฅฑ”ตฅั•ต}}ฅฝธ์(€Ýฅ‘ั ่€ิมมเ์(€ก•ฅกะ่€ิมมเ์)๔((นุเตฅฑ•ฬตฝฑฑ•ัฅฝธดตษฅ€นุเตฅฑ”ตฅั•ต}}ฝมไ์(€ษฅตฝฑีตธ่€ฤ€ผ€ดฤ์)๔((นุเตฅฑ•ฬตฝฑฑ•ัฅฝธดตษฅ€นุเตฅฑ”ตฅั•ดัฅต”์(€ษฅตฝฑีตธ่€ฤ€ผ€ดฤ์)๔((นุเตฅฑ•ฬตมษ•ูฅ•Ü์(€‘ฅอมฑ…ไ่ฑ•เ์(€ตฅธตÝฅ‘ั ่€ภ์(€ฑ•เต‘ฅษ•ัฅฝธ่ฝฑีตธ์(€…ฑฅธตฅั•ตฬ่•นั•ศ์(€ม…‘‘ฅน่ู…ศ ดตุเตอม…”ดิค์(€ฝษ‘•ศตฑ•ะ่€ลมเอฝฑฅู…ศ ดตุเต‘ฅูฅ‘•ศค์(€…ญษฝีน่ู…ศ ดตุเต…นู…ฬตษ…ฅอ•ค์(€ั•แะต…ฑฅธ่•นั•ศ์)๔((นุเตฅฑ•ฬตมษ•ูฅ•Ý}}ก•…‘•ศ์(€‘ฅอมฑ…ไ่ฑ•เ์(€Ýฅ‘ั ่€ฤภภ”์(€…ฑฅธตฅั•ตฬ่ฑ•เตอั…ษะ์(€ฉีอัฅไตฝนั•นะ่อม…”ต•ัÝ••ธ์)๔((นุเตฅฑ•ฬตมษ•ูฅ•Ý}}อๅตฝฐ์(€‘ฅอมฑ…ไ่ษฅ์(€Ýฅ‘ั ่€Üษมเ์(€ก•ฅกะ่€Üษมเ์(€ต…ษฅธตัฝภ่ู…ศ ดตุเตอม…”ดÜค์(€มฑ…”ตฅั•ตฬ่•นั•ศ์(€ฝษ‘•ศ่€ลมเอฝฑฅู…ศ ดตุเต…•นะตฑฅน”ค์(€ฝษ‘•ศตษ…‘ฅีฬ่ู…ศ ดตุเตษ…‘ฅีฬตตค์(€…ญษฝีน่ู…ศ ดตุเต…•นะตอฝะค์(€ฝฑฝศ่ู…ศ ดตุเต…•นะค์)๔((นุเตฅฑ•ฬตมษ•ูฅ•Ý}}อๅตฝฐอู์(€Ýฅ‘ั ่€ฬัมเ์(€ก•ฅกะ่€ฬัมเ์)๔((นุเตฅฑ•ฬตมษ•ูฅ•Ü ศ์(€ต…เตÝฅ‘ั ่€ฤภภ”์(€ต…ษฅธตัฝภ่ู…ศ ดตุเตอม…”ดะค์(€ฝู•ษฑฝÜตÝษ…ภ่…นๅÝก•ษ”์(€ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตฑค์(€ฝนะตÝ•ฅกะ่ู…ศ ดตุเตÝ•ฅกะตอ•ตฅฝฑค์)๔((นุเตฅฑ•ฬตมษ•ูฅ•Ü€๘ภ์(€ต…เตÝฅ‘ั ่€ฤภภ”์(€ต…ษฅธตัฝภ่ู…ศ ดตุเตอม…”ดศค์(€ฝู•ษฑฝÜตÝษ…ภ่…นๅÝก•ษ”์(€ฝฑฝศ่ู…ศ ดตุเตตีั•ค์(€ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตแฬค์(€ฑฅน”ตก•ฅกะ่ู…ศ ดตุเตฑฅน”ตษ•ฑ…แ•ค์)๔((นุเตฅฑ•ฬตต•ั…‘…ั์(€Ýฅ‘ั ่€ฤภภ”์(€ต…ษฅธ่ู…ศ ดตุเตอม…”ดุค€ภ€ภ์(€ฝษ‘•ศตัฝภ่€ลมเอฝฑฅู…ศ ดตุเต‘ฅูฅ‘•ศค์)๔((นุเตฅฑ•ฬตต•ั…‘…ั€๘‘ฅุ์(€‘ฅอมฑ…ไ่ฑ•เ์(€…ฑฅธตฅั•ตฬ่•นั•ศ์(€ฉีอัฅไตฝนั•นะ่อม…”ต•ัÝ••ธ์(€…ภ่ู…ศ ดตุเตอม…”ดฬค์(€ตฅธตก•ฅกะ่€ฬแมเ์(€ฝษ‘•ศตฝััฝด่€ลมเอฝฑฅู…ศ ดตุเต‘ฅูฅ‘•ศค์(€ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตแฬค์)๔((นุเตฅฑ•ฬตต•ั…‘…ั‘ะ์ฝฑฝศ่ู…ศ ดตุเตตีั•ค์๔(นุเตฅฑ•ฬตต•ั…‘…ั‘์ต…ษฅธ่€ภ์ฝฑฝศ่ู…ศ ดตุเตั•แะตอ•ฝน‘…ษไค์๔((นุเตฅฑ•ฬตมษ•ูฅ•Ý}}…ัฅฝนฬ์(€‘ฅอมฑ…ไ่ษฅ์(€Ýฅ‘ั ่€ฤภภ”์(€…ภ่ู…ศ ดตุเตอม…”ดศค์(€ต…ษฅธตัฝภ่…ีัผ์(€ม…‘‘ฅนตัฝภ่ู…ศ ดตุเตอม…”ดุค์)๔((นุเตฅฑ•ฬตมษ•ูฅ•Ý}}…ัฅฝนฬ€นุเตีััฝธ์(€Ýฅ‘ั ่€ฤภภ”์)๔((นุเตฅฑ•ฬตมษ•ูฅ•Ü€๘€นุเต•ตมัไตอั…ั”์Ýฅ‘ั ่€ฤภภ”์ฑ•เ่€ฤ์๔()ต•‘ฅ€กต…เตÝฅ‘ั ่€ฤฤเมมเค์(€€นุเตฅฑ•ฬตÝฝษญอม…”์(€€€ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่ู…ศ ดตุเตฑ…ๅฝีะตษ…ฅฐตฝตม…ะคตฅนต…เ ภฐ€ลศค์(€๔((€€นุเตฅฑ•ฬตมษ•ูฅ•Ü์(€€€ษฅตฝฑีตธ่€ฤ€ผ€ดฤ์(€€€ตฅธตก•ฅกะ่€ศุมมเ์(€€€‘ฅอมฑ…ไ่ษฅ์(€€€ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่…ีัผตฅนต…เ ภฐ€ลศคตฅนต…เ ศฤมมเฐ€ภธีศค์(€€€…ฑฅธตฅั•ตฬ่•นั•ศ์(€€€…ภ่ู…ศ ดตุเตอม…”ดิค์(€€€ฝษ‘•ศตัฝภ่€ลมเอฝฑฅู…ศ ดตุเต‘ฅูฅ‘•ศค์(€€€ฝษ‘•ศตฑ•ะ่€ภ์(€€€ั•แะต…ฑฅธ่ฑ•ะ์(€๔((€€นุเตฅฑ•ฬตมษ•ูฅ•Ü€๘€นุเต•ตมัไตอั…ั”์ษฅตฝฑีตธ่€ฤ€ผ€ดฤ์๔((€€นุเตฅฑ•ฬตมษ•ูฅ•Ý}}ก•…‘•ศ์(€€€‘ฅอมฑ…ไ่นฝน”์(€๔((€€นุเตฅฑ•ฬตมษ•ูฅ•Ý}}อๅตฝฐ์(€€€ต…ษฅธ่€ภ์(€๔((€€นุเตฅฑ•ฬตต•ั…‘…ัฐ(€€นุเตฅฑ•ฬตมษ•ูฅ•Ý}}…ัฅฝนฬ์(€€€ต…ษฅธ่€ภ์(€€€ม…‘‘ฅน่€ภ์(€๔((€€นุเตฅฑ•ฬตมษ•ูฅ•Ü€๘ ศฐ(€€นุเตฅฑ•ฬตมษ•ูฅ•Ü€๘ภ์(€€€ษฅตฝฑีตธ่€ศ์(€๔)๔()ต•‘ฅ€กต…เตÝฅ‘ั ่€เศมมเค์(€€นุเตฅฑ•ฬตÝฝษญอม…”์(€€€ตฅธตก•ฅกะ่€ภ์(€€€ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่ตฅนต…เ ภฐ€ลศค์(€€€ฝู•ษฑฝÜ่ูฅอฅฑ”์(€๔((€€นุเตฅฑ•ฬตอฅ‘•…ศ์(€€€ฝษ‘•ศตษฅกะ่€ภ์(€€€ฝษ‘•ศตฝััฝด่€ลมเอฝฑฅู…ศ ดตุเต‘ฅูฅ‘•ศค์(€๔((€€นุเตฅฑ•ฬตอฝีษ•ฬ์(€€€‘ฅอมฑ…ไ่ษฅ์(€€€ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่ษ•ม•…ะ ศฐตฅนต…เ ภฐ€ลศคค์(€€€ฝู•ษฑฝÜ่ูฅอฅฑ”์(€๔((€€นุเตฅฑ•ฬตอฝีษ•ฬีััฝธ์(€€€Ýฅ‘ั ่€ฤภภ”์(€€€ตฅธตÝฅ‘ั ่€ภ์(€€€ก•ฅกะ่€ะัมเ์(€๔((€€นุเตฅฑ•ฬตฅตมฝษะตอฝฝธ์(€€€‘ฅอมฑ…ไ่นฝน”์(€๔((€€นุเตฅฑ•ฬตัฝฝฑ…ศ์(€€€‘ฅอมฑ…ไ้ษฅ์(€€€ษฅตั•ตมฑ…ั”ตฝฑีตนฬ้ตฅนต…เ ภฐลศค…ีัผ์(€€€…ฑฅธตฅั•ตฬ่•นั•ศ์(€€€ฝู•ษฑฝÜ่ูฅอฅฑ”์(€๔((€€นุเตฅฑ•ฬตอ•…ษ ์(€€€Ýฅ‘ั ่€ฤภภ”์(€€€ตฅธตÝฅ‘ั ่€ภ์(€€€ษฅตฝฑีตธ่ฤผดฤ์(€๔((€€นุเตฅฑ•ฬตัฝฝฑ…ษ}}ัฝฝฑฬ์(€€€Ýฅ‘ั ่ฤภภ”์(€€€ษฅตฝฑีตธ่ฤผดฤ์(€€€ฉีอัฅไตฝนั•นะ่ฑ•เต•น์(€๔((€€นุเตฅฑ•ฬตัฝฝฑ…ษ}}ัฝฝฑฬ€๘€นุเตฅนมีะ์(€€€Ýฅ‘ั ่€ไษมเ์(€๔((€€นุเตูฅ•ÜตอÝฅั ีััฝธ์(€€€Ýฅ‘ั ่ู…ศ ดตุเตัฝี ตั…ษ•ะค์(€€€ก•ฅกะ่ู…ศ ดตุเตัฝี ตั…ษ•ะค์(€๔((€€นุเตฅฑ•ฬตฝนั•นะ์(€€€ตฅธตก•ฅกะ่€ะศมมเ์(€€€ฝู•ษฑฝÜ่ูฅอฅฑ”์(€๔((€€นุเตฅฑ•ฬตฝฑฑ•ัฅฝธดตฑฅอะ€นุเตฅฑ”ต•นัษไ์ษฅตั•ตมฑ…ั”ตฝฑีตนฬู้…ศ ดตุเตัฝี ตั…ษ•ะคตฅนต…เ ภฐลศคู…ศ ดตุเตัฝี ตั…ษ•ะค์๔(€€นุเตฅฑ”ต•นัษไ€๘€นุเตอ•ฑ•ัฅฝธตฝนัษฝฐ์Ýฅ‘ั ู้…ศ ดตุเตัฝี ตั…ษ•ะคํก•ฅกะู้…ศ ดตุเตัฝี ตั…ษ•ะค์๔(€€นุเตฅฑ”ต•นัษไ€นุเตษฝÜต…ัฅฝนฬ์ฝม…ฅัไ่ฤ์๔((€€นุเตฅฑ•ฬตฝตมฝอ•ศ์(€€€ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่ตฅนต…เ ภฐ€ลศค์(€๔((€€นุเตฅฑ•ฬตฝตมฝอ•ศ€๘‘ฅุ์ม…‘‘ฅนตัฝภ่€ภ์๔((€€นุเตฅฑ•ฬตฝตมฝอ•ศ€๘‘ฅุ€นุเตีััฝธ์(€€€ฑ•เ่€ฤ์(€๔((€€นุเตฅฑ•ฬตมษ•ูฅ•Ü์(€€€ตฅธตก•ฅกะ่€ฬเมมเ์(€€€‘ฅอมฑ…ไ่ฑ•เ์(€€€ฝษ‘•ศตัฝภ่€ลมเอฝฑฅู…ศ ดตุเต‘ฅูฅ‘•ศค์(€€€ั•แะต…ฑฅธ่•นั•ศ์(€๔((€€นุเตฅฑ•ฬตมษ•ูฅ•Ý}}อๅตฝฐ์(€€€ต…ษฅธตัฝภ่ู…ศ ดตุเตอม…”ดะค์(€๔((€€นุเตฅฑ•ฬตมษ•ูฅ•Ý}}…ัฅฝนฬ์(€€€ต…ษฅธตัฝภ่ู…ศ ดตุเตอม…”ดิค์(€๔)๔()ต•‘ฅ€กต…เตÝฅ‘ั ่€ิศมมเค์(€€นุเตฅฑ•ฬตฝฑฑ•ัฅฝธดตฑฅอะ€นุเตฅฑ”ตฅั•ด์(€€€ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่€ฬูมเตฅนต…เ ภฐ€ลศค€ศัมเ์(€๔((€€นุเตฅฑ•ฬตฝฑฑ•ัฅฝธดตฑฅอะ€นุเตฅฑ”ตฅั•ดัฅต”์(€€€‘ฅอมฑ…ไ่นฝน”์(€๔((€€นุเตฅฑ•ฬตฝฑฑ•ัฅฝธดตษฅ์(€€€ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่ษ•ม•…ะ ศฐตฅนต…เ ภฐ€ลศคค์(€๔)๔()ต•‘ฅ€กต…เตÝฅ‘ั ่€ะเมมเค์(€€นุเตฅฑ•ฬตัฝฝฑ…ษ}}ัฝฝฑฬ์(€€€‘ฅอมฑ…ไ่ษฅ์(€€€ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่ตฅนต…เ เแมเฐ€ลศค…ีัผ์(€๔((€€นุเตฅฑ•ฬตัฝฝฑ…ษ}}ัฝฝฑฬ€๘€นุเตฅนมีะ์(€€€Ýฅ‘ั ่€ฤภภ”์(€๔((€€นุเตฅฑ•ฬตัฝฝฑ…ษ}}ัฝฝฑฬ€๘€นุเตฝฑฑ•ัฅฝธต‘•นอฅัไ์(€€€ษฅตฝฑีตธ่€ฤ€ผ€ดฤ์(€€€ษฅตษฝÜ่€ศ์(€€€ฉีอัฅไตอ•ฑ่อั…ษะ์(€๔)๔((นุเต…ฑ•น‘…ศตÝฝษญอม…”์(€‘ฅอมฑ…ไ่ษฅ์(€ตฅธตก•ฅกะ่€ุศมมเ์(€ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่ตฅนต…เ ภฐ€ลศคู…ศ ดตุเตฑ…ๅฝีะตม…น•ฐตÝฅ‘ั ค์)๔((นุเต…ฑ•น‘…ศตต…ฅธ์(€‘ฅอมฑ…ไ่ฑ•เ์(€ตฅธตÝฅ‘ั ่€ภ์(€ฑ•เต‘ฅษ•ัฅฝธ่ฝฑีตธ์(€ม…‘‘ฅน่ู…ศ ดตุเตอม…”ดะค์(€ฝษ‘•ศตษฅกะ่€ลมเอฝฑฅู…ศ ดตุเต‘ฅูฅ‘•ศค์)๔((นุเต…ฑ•น‘…ศตัฝฝฑ…ศ์(€ต…ษฅธ่…ฑกู…ศ ดตุเตอม…”ดะค€จ€ดฤค…ฑกู…ศ ดตุเตอม…”ดะค€จ€ดฤคู…ศ ดตุเตอม…”ดะค์)๔((นุเต…ฑ•น‘…ศตัฝฝฑ…ศ ศ์(€ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตแฐค์(€ฝนะตÝ•ฅกะ่ู…ศ ดตุเตÝ•ฅกะตอ•ตฅฝฑค์(€ั•แะตัษ…นอฝษด่…มฅั…ฑฅ้”์)๔((นุเต…ฑ•น‘…ศตัฝฝฑ…ศ€๘‘ฅุ์(€‘ฅอมฑ…ไ่ฑ•เ์(€…ฑฅธตฅั•ตฬ่•นั•ศ์(€…ภ่ู…ศ ดตุเตอม…”ดฤค์)๔((นุเต…ฑ•น‘…ศตÝ••ญ‘…ๅฬฐ(นุเต…ฑ•น‘…ศตษฅ์(€‘ฅอมฑ…ไ่ษฅ์(€ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่ษ•ม•…ะ Üฐตฅนต…เ ภฐ€ลศคค์)๔((นุเต…ฑ•น‘…ศตÝ••ญ‘…ๅฬ์(€ก•ฅกะ่€ศแมเ์(€…ฑฅธตฅั•ตฬ่•นั•ศ์(€ฝฑฝศ่ู…ศ ดตุเตตีั•ค์(€ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตตฅษผค์(€ฝนะตÝ•ฅกะ่ู…ศ ดตุเตÝ•ฅกะตอ•ตฅฝฑค์(€ั•แะต…ฑฅธ่•นั•ศ์(€ั•แะตัษ…นอฝษด่ีมม•ษ…อ”์)๔((นุเต…ฑ•น‘…ศตษฅ์(€ตฅธตก•ฅกะ่€ิภมมเ์(€ฑ•เ่€ฤ์(€ษฅตั•ตมฑ…ั”ตษฝÝฬ่ษ•ม•…ะ ุฐตฅนต…เ Üษมเฐ€ลศคค์(€ฝู•ษฑฝÜ่กฅ‘‘•ธ์(€ฝษ‘•ศตัฝภ่€ลมเอฝฑฅู…ศ ดตุเต‘ฅูฅ‘•ศค์(€ฝษ‘•ศตฑ•ะ่€ลมเอฝฑฅู…ศ ดตุเต‘ฅูฅ‘•ศค์(€ฝษ‘•ศตษ…‘ฅีฬ่ู…ศ ดตุเตษ…‘ฅีฬตอดค์)๔((นุเต…ฑ•น‘…ศต‘…ไ์(€มฝอฅัฅฝธ่ษ•ฑ…ัฅู”์(€‘ฅอมฑ…ไ่ฑ•เ์(€ตฅธตÝฅ‘ั ่€ภ์(€ตฅธตก•ฅกะ่€ภ์(€ฑ•เต‘ฅษ•ัฅฝธ่ฝฑีตธ์(€…ฑฅธตฅั•ตฬ่ฑ•เตอั…ษะ์(€ฉีอัฅไตฝนั•นะ่อม…”ต•ัÝ••ธ์(€ม…‘‘ฅน่€ๅมเ์(€ฝษ‘•ศตษฅกะ่€ลมเอฝฑฅู…ศ ดตุเต‘ฅูฅ‘•ศค์(€ฝษ‘•ศตฝััฝด่€ลมเอฝฑฅู…ศ ดตุเต‘ฅูฅ‘•ศค์(€…ญษฝีน่ัษ…นอม…ษ•นะ์(€ฝฑฝศ่ู…ศ ดตุเตั•แะตอ•ฝน‘…ษไค์(€ีษอฝศ่มฝฅนั•ศ์(€ฝีัฑฅน”่นฝน”์(€ัษ…นอฅัฅฝธ่(€€€…ญษฝีนตฝฑฝศู…ศ ดตุเตตฝัฅฝธต…อะคู…ศ ดตุเต•…อ”ตอั…น‘…ษคฐ(€€€ฝเตอก…‘ฝÜู…ศ ดตุเตตฝัฅฝธต…อะคู…ศ ดตุเต•…อ”ตอั…น‘…ษคฐ(€€€ฝฑฝศู…ศ ดตุเตตฝัฅฝธต…อะคู…ศ ดตุเต•…อ”ตอั…น‘…ษค์)๔((นุเต…ฑ•น‘…ศต‘…ไ้ฝีฬตูฅอฅฑ”์(€่ตฅน‘•เ่€ฤ์(€ฝเตอก…‘ฝÜ่ู…ศ ดตุเตอก…‘ฝÜตฝีฬตฅนอ•ะค์)๔((นุเต…ฑ•น‘…ศต‘…ไนฅฬตฝีัอฅ‘”์(€ฝฑฝศ่ู…ศ ดตุเตตีั•ค์(€ฝม…ฅัไ่€ภธะเ์)๔((นุเต…ฑ•น‘…ศต‘…ไนฅฬตัฝ‘…ไ€๘อม…ธ้ฅษอะตกฅฑ์(€‘ฅอมฑ…ไ่ษฅ์(€Ýฅ‘ั ่€ศีมเ์(€ก•ฅกะ่€ศีมเ์(€มฑ…”ตฅั•ตฬ่•นั•ศ์(€ฝษ‘•ศตษ…‘ฅีฬ่ู…ศ ดตุเตษ…‘ฅีฬตอดค์(€…ญษฝีน่ู…ศ ดตุเต…•นะตอฝะค์(€ฝฑฝศ่ู…ศ ดตุเต…•นะค์(€ฝนะตÝ•ฅกะ่ู…ศ ดตุเตÝ•ฅกะตอ•ตฅฝฑค์)๔((นุเต…ฑ•น‘…ศต‘…ไนฅฬตอ•ฑ•ั•์(€ฝเตอก…‘ฝÜ่ฅนอ•ะ€ภ€ภ€ภ€ลมเู…ศ ดตุเต…•นะตฑฅน”ค์(€…ญษฝีน่ู…ศ ดตุเต…•นะตอฝะค์)๔((นุเต…ฑ•น‘…ศต‘…ๅ}}•ู•นัฬ์(€‘ฅอมฑ…ไ่ฅนฑฅน”ตฑ•เ์(€…ฑฅธตฅั•ตฬ่•นั•ศ์(€…ภ่€ีมเ์(€ฝฑฝศ่ู…ศ ดตุเต…•นะค์)๔((นุเต…ฑ•น‘…ศต‘…ๅ}}•ู•นัฬค์(€Ýฅ‘ั ่€ูมเ์(€ก•ฅกะ่€ูมเ์(€ฝษ‘•ศตษ…‘ฅีฬ่€ิภ”์(€…ญษฝีน่ู…ศ ดตุเต…•นะค์)๔((นุเต…ฑ•น‘…ศต‘…ๅ}}•ู•นัฬอต…ฑฐ์(€ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตตฅษผค์)๔((นุเต…ฑ•น‘…ศต…•น‘์(€‘ฅอมฑ…ไ่ฑ•เ์(€ตฅธตÝฅ‘ั ่€ภ์(€ตฅธตก•ฅกะ่€ภ์(€ฑ•เต‘ฅษ•ัฅฝธ่ฝฑีตธ์(€…ญษฝีน่ู…ศ ดตุเต…นู…ฬตษ…ฅอ•ค์)๔((นุเต…ฑ•น‘…ศต…•น‘…}}ก•…‘•ศ์(€ม…‘‘ฅน่ู…ศ ดตุเตอม…”ดิค์(€ฝษ‘•ศตฝััฝด่€ลมเอฝฑฅู…ศ ดตุเต‘ฅูฅ‘•ศค์)๔((นุเต…ฑ•น‘…ศต…•น‘…}}ก•…‘•ศ€นุเต•ๅ•ษฝÜ์(€ต…ษฅธตฝััฝด่€ีมเ์)๔((นุเต…ฑ•น‘…ศต…•น‘…}}ก•…‘•ศ ศ์(€ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตฑค์(€ฝนะตÝ•ฅกะ่ู…ศ ดตุเตÝ•ฅกะตอ•ตฅฝฑค์(€ฑฅน”ตก•ฅกะ่€ฤธะ์(€ั•แะตัษ…นอฝษด่…มฅั…ฑฅ้”์)๔((นุเต…ฑ•น‘…ศต…•น‘…}}ก•…‘•ศ€๘อม…ธ้ฑ…อะตกฅฑ์(€‘ฅอมฑ…ไ่ฑฝฌ์(€ต…ษฅธตัฝภ่€ีมเ์(€ฝฑฝศ่ู…ศ ดตุเตตีั•ค์(€ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตแฬค์)๔((นุเต…ฑ•น‘…ศตฝตมฝอ•ศ์(€‘ฅอมฑ…ไ่ษฅ์(€…ภ่ู…ศ ดตุเตอม…”ดศค์(€ม…‘‘ฅน่ู…ศ ดตุเตอม…”ดะค์(€ฝษ‘•ศตฝััฝด่€ลมเอฝฑฅู…ศ ดตุเตฝษ‘•ศค์(€…ญษฝีน่ู…ศ ดตุเต…•นะตอฝะค์)๔((นุเต…ฑ•น‘…ศตฝตมฝอ•ษmกฅ‘‘•นt์(€‘ฅอมฑ…ไ่นฝน”์)๔((นุเต…ฑ•น‘…ศตฝตมฝอ•ศ€๘‘ฅุ์(€‘ฅอมฑ…ไ่ฑ•เ์(€ฉีอัฅไตฝนั•นะ่ฑ•เต•น์(€…ภ่ู…ศ ดตุเตอม…”ดศค์)๔((นุเต…ฑ•น‘…ศต…•น‘…}}ฑฅอะ์(€ตฅธตก•ฅกะ่€ภ์(€ฑ•เ่€ฤ์(€ม…‘‘ฅน่ู…ศ ดตุเตอม…”ดฬคู…ศ ดตุเตอม…”ดะค์(€ฝู•ษฑฝÜตเ่กฅ‘‘•ธ์(€ฝู•ษฑฝÜตไ่…ีัผ์(€ฝู•ษอษฝฑฐต•ก…ูฅฝศ่ฝนั…ฅธ์)๔((นุเต…ฑ•น‘…ศต•ู•นะ์(€‘ฅอมฑ…ไ่ษฅ์(€ตฅธตÝฅ‘ั ่€ภ์(€ตฅธตก•ฅกะ่€ุัมเ์(€ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่€อมเตฅนต…เ ภฐ€ลศค€ฬแมเ์(€…ฑฅธตฅั•ตฬ่•นั•ศ์(€…ภ่ู…ศ ดตุเตอม…”ดฬค์(€ฝษ‘•ศตฝััฝด่€ลมเอฝฑฅู…ศ ดตุเต‘ฅูฅ‘•ศค์)๔((นุเต…ฑ•น‘…ศต•ู•นั}}อฅน…ฐ์(€Ýฅ‘ั ่€อมเ์(€ก•ฅกะ่€ฬมมเ์(€ฝษ‘•ศตษ…‘ฅีฬ่ู…ศ ดตุเตษ…‘ฅีฬตมฅฑฐค์(€…ญษฝีน่ู…ศ ดตุเต…•นะค์)๔((นุเต…ฑ•น‘…ศต•ู•นะ€๘‘ฅุ์(€ตฅธตÝฅ‘ั ่€ภ์)๔((นุเต…ฑ•น‘…ศต•ู•นะอัษฝนฐ(นุเต…ฑ•น‘…ศต•ู•นะอต…ฑฐ์(€‘ฅอมฑ…ไ่ฑฝฌ์(€ฝู•ษฑฝÜ่กฅ‘‘•ธ์(€ั•แะตฝู•ษฑฝÜ่•ฑฑฅมอฅฬ์(€Ýกฅั”ตอม…”่นฝÝษ…ภ์)๔((นุเต…ฑ•น‘…ศต•ู•นะอัษฝน์(€ฝฑฝศ่ู…ศ ดตุเตั•แะตอ•ฝน‘…ษไค์(€ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตอดค์(€ฝนะตÝ•ฅกะ่ู…ศ ดตุเตÝ•ฅกะตต•‘ฅีดค์)๔((นุเต…ฑ•น‘…ศต•ู•นะอต…ฑฐ์(€ต…ษฅธตัฝภ่€อมเ์(€ฝฑฝศ่ู…ศ ดตุเตตีั•ค์(€ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตแฬค์)๔()ต•‘ฅ€กต…เตÝฅ‘ั ่€ฤภุมมเค์(€€นุเต…ฑ•น‘…ศตÝฝษญอม…”์(€€€ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่ตฅนต…เ ภฐ€ลศคู…ศ ดตุเตฑ…ๅฝีะตม…น•ฐตฝตม…ะค์(€๔((€€นุเต…ฑ•น‘…ศต‘…ไ์(€€€ม…‘‘ฅน่€Ýมเ์(€๔)๔()ต•‘ฅ€กต…เตÝฅ‘ั ่€เศมมเค์(€€นุเต…ฑ•น‘…ศตÝฝษญอม…”์(€€€ตฅธตก•ฅกะ่€ภ์(€€€ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่ตฅนต…เ ภฐ€ลศค์(€€€ฝู•ษฑฝÜ่ูฅอฅฑ”์(€๔((€€นุเต…ฑ•น‘…ศตต…ฅธ์(€€€ม…‘‘ฅน่ู…ศ ดตุเตอม…”ดฬค์(€€€ฝษ‘•ศตษฅกะ่€ภ์(€€€ฝษ‘•ศตฝััฝด่€ลมเอฝฑฅู…ศ ดตุเต‘ฅูฅ‘•ศค์(€๔((€€นุเต…ฑ•น‘…ศตัฝฝฑ…ศ์(€€€ต…ษฅธ่…ฑกู…ศ ดตุเตอม…”ดฬค€จ€ดฤค…ฑกู…ศ ดตุเตอม…”ดฬค€จ€ดฤคู…ศ ดตุเตอม…”ดฬค์(€€€ม…‘‘ฅนตษฅกะ่ู…ศ ดตุเตอม…”ดฬค์(€€€ม…‘‘ฅนตฑ•ะ่ู…ศ ดตุเตอม…”ดฬค์(€๔((€€นุเต…ฑ•น‘…ศตษฅ์(€€€ตฅธตก•ฅกะ่€ะะมมเ์(€€€ษฅตั•ตมฑ…ั”ตษฝÝฬ่ษ•ม•…ะ ุฐตฅนต…เ ุัมเฐ€ลศคค์(€๔((€€นุเต…ฑ•น‘…ศต…•น‘์(€€€ตฅธตก•ฅกะ่€ฬุมมเ์(€๔((€€นุเต…ฑ•น‘…ศต…•น‘…}}ฑฅอะ์(€€€ฝู•ษฑฝÜ่ูฅอฅฑ”์(€๔)๔()ต•‘ฅ€กต…เตÝฅ‘ั ่€ะเมมเค์(€€นุเต…ฑ•น‘…ศตัฝฝฑ…ศ์(€€€‘ฅอมฑ…ไ้ษฅ์(€€€ษฅตั•ตมฑ…ั”ตฝฑีตนฬ้ตฅนต…เ ภฐลศค…ีัผ์(€€€…ฑฅธตฅั•ตฬ่•นั•ศ์(€€€ฝู•ษฑฝÜ่ูฅอฅฑ”์(€๔((€€นุเต…ฑ•น‘…ศตัฝฝฑ…ศ€๘‘ฅุ์(€€€Ýฅ‘ั ่…ีัผ์(€€€ฑ•เ่€ภ€ภ…ีัผ์(€€€ฉีอัฅไตฝนั•นะ่ฑ•เต•น์(€๔((€€นุเต…ฑ•น‘…ศตัฝฝฑ…ศ€๘‘ฅุ€นุเตีััฝธ์(€€€ฑ•เ่€ภ€ภ…ีัผ์(€๔((€€นุเต…ฑ•น‘…ศตัฝฝฑ…ศ ศ์(€€€ฑ•เ่€ภ€ภ…ีัผ์(€€€ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตฑค์(€€€Ýกฅั”ตอม…”่นฝÝษ…ภ์(€๔((€€นุเต…ฑ•น‘…ศตÝ••ญ‘…ๅฬอม…ธ์(€€€ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตตฅษผค์(€๔((€€นุเต…ฑ•น‘…ศตษฅ์(€€€ตฅธตก•ฅกะ่€ฬไมมเ์(€€€ษฅตั•ตมฑ…ั”ตษฝÝฬ่ษ•ม•…ะ ุฐตฅนต…เ ิูมเฐ€ลศคค์(€๔((€€นุเต…ฑ•น‘…ศต‘…ไ์(€€€ม…‘‘ฅน่€ีมเ์(€€€ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตแฬค์(€๔((€€นุเต…ฑ•น‘…ศต‘…ไนฅฬตัฝ‘…ไ€๘อม…ธ้ฅษอะตกฅฑ์(€€€Ýฅ‘ั ่€ศษมเ์(€€€ก•ฅกะ่€ศษมเ์(€๔)๔()ต•‘ฅ€กต…เตÝฅ‘ั ่€ฬเมมเค์(€€นุเต…ฑ•น‘…ศตต…ฅธ์(€€€ม…‘‘ฅนตษฅกะ่€แมเ์(€€€ม…‘‘ฅนตฑ•ะ่€แมเ์(€๔((€€นุเต…ฑ•น‘…ศตัฝฝฑ…ศ์(€€€ต…ษฅธตษฅกะ่€ดแมเ์(€€€ต…ษฅธตฑ•ะ่€ดแมเ์(€€€ม…‘‘ฅนตษฅกะ่€แมเ์(€€€ม…‘‘ฅนตฑ•ะ่€แมเ์(€๔)๔(

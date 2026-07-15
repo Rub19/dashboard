@@ -88,6 +88,7 @@ export function createCommandCenter(host, options = {}) {
         }
       });
       resultsNode.append(emptyState({
+        kind: "no-results",
         iconName: "search-x",
         eyebrow: "Recherche universelle",
         title: "Aucun résultat",
@@ -170,10 +171,6 @@ export function createCommandCenter(host, options = {}) {
     }
   }
 
-  function handleLayerClick(event) {
-    if (event.target === layer) onClose();
-  }
-
   function open(currentContext = {}) {
     if (layer) {
       input?.focus({ preventScroll: true });
@@ -229,7 +226,7 @@ export function createCommandCenter(host, options = {}) {
         element("span", { className: "v8-command-footer__brand" }, [icon("command"), " ETHONE Command HUD"])
       ])
     ]);
-    layer = element("div", { className: "v8-command-layer", events: { click: handleLayerClick } }, [dialog]);
+    layer = element("div", { className: "v8-command-layer" }, [dialog]);
     host.append(layer);
     renderResults();
     refreshIcons();

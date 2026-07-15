@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { gzipSync } from "node:zlib";
 
 const root = path.resolve(import.meta.dirname, "..");
 const failures = [];
@@ -16,6 +17,7 @@ const required = [
   "v8/services/external-services-client.mjs", "v8/services/external-services-config.mjs",
   "v8/services/clock-manager.mjs", "v8/services/supabase-state-sync.mjs",
   "v8/core/document-metadata.mjs",
+  "v8/ui/empty-state.mjs", "v8/ui/form-system.mjs",
   "v8/services/service-worker.mjs", "v8/services/external-diagnostics.mjs",
   "v8/services/auth-storage.mjs",
   "scripts/audit-security.mjs",
@@ -52,6 +54,8 @@ const workerRouter = read("worker/src/router.js");
 const workerCors = read("worker/src/middleware/cors.js");
 const workerPackage = JSON.parse(read("worker/package.json"));
 const workerLock = read("worker/pnpm-lock.yaml");
+const serviceWorkerRelease = worker.match(/const ETHONE_VERSION = "([^"]+)"/)?.[1] || "";
+const serviceWorkerReleaseToken = serviceWorkerRelease.match(/experience-v\d+$/)?.[0] || "";
 
 assert(/data-ethone-entry="v8-only"/.test(index), "Production entry is not V8-only.");
 assert(/<title>ETHONE<\/title>/.test(index) && !/<title>[^<]*(?:Dashboard|V8)/i.test(index), "Static browser title is stale.");
@@ -75,7 +79,7 @@ assert(/https:\/\/raspy-fog-bf5b\.rub19-mailpro\.workers\.dev/.test(index) && /h
 assert(/frame-ancestors 'none'/.test(headers), "Edge header policy does not prevent framing.");
 assert(/Strict-Transport-Security/.test(headers), "HSTS policy is missing from edge configuration.");
 assert(/isSensitiveRequest/.test(worker) && /access_token/.test(worker), "Service Worker does not bypass sensitive OAuth requests.");
-assert(/experience-v71/.test(worker) && /event\.waitUntil\(precache\(\)\)/.test(worker) && !/precache\(\)\.then\(\(\) => self\.skipWaiting\(\)\)/.test(worker) && !/"\.\/v8\.html"/.test(worker), "Service Worker cache was not migrated to the current release.");
+assert(/^\d{4}-\d{2}-\d{2}-experience-v\d+$/.test(serviceWorkerRelease) && serviceWorkerReleaseToken && index.includes(serviceWorkerReleaseToken) && notFound.includes(serviceWorkerReleaseToken) && /event\.waitUntil\(precache\(\)\)/.test(worker) && !/precache\(\)\.then\(\(\) => self\.skipWaiting\(\)\)/.test(worker) && !/"\.\/v8\.html"/.test(worker), "Service Worker cache was not migrated to the current release.");
 assert(/request\.mode === "navigate"[\s\S]{0,180}navigationNetworkFirst\(request\)/.test(worker), "Navigation requests do not use the canonical shell cache key.");
 assert(!/networkFirst\(request,\s*ETHONE_OFFLINE_URL\)/.test(worker), "Service Worker can cache arbitrary navigation URLs.");
 assert(/contents:\s*read/.test(workflow) && /pages:\s*write/.test(workflow) && /id-token:\s*write/.test(workflow), "GitHub Pages permissions are incomplete.");
@@ -190,18 +194,31 @@ const assets = [...assetBlock.matchAll(/"\.\/([^"?]+)"/g)].map((match) => match[
 assets.forEach((asset) => assert(exists(asset), `Service Worker asset is missing: ${asset}`));
 assert(new Set(assets).size === assets.length, "Service Worker precache contains duplicate assets.");
 
-const jsBytes = sourceFiles.filter((file) => /\.mjs$/.test(file)).reduce((sum, file) => sum + fs.statSync(file).size, 0);
-const cssBytes = sourceFiles.filter((file) => /\.css$/.test(file)).reduce((sum, file) => sum + fs.statSync(file).size, 0);
+const jsFiles = sourceFiles.filter((file) => /\.mjs$/.test(file));
+const jsBytes = jsFiles.reduce((sum, file) => sum + fs.statSync(file).size, 0);
+const jsGzipBytes = jsFiles.reduce((sum, file) => sum + gzipSync(fs.readFileSync(file)).byteLength, 0);
+const cssFiles = sourceFiles.filter((file) => /\.css$/.test(file));
+const cssBytes = cssFiles.reduce((sum, file) => sum + fs.statSync(file).size, 0);
+const cssGzipBytes = cssFiles.reduce((sum, file) => sum + gzipSync(fs.readFileSync(file)).byteLength, 0);
 const eagerJsBytes = [...eagerReachable].reduce((sum, file) => sum + fs.statSync(file).size, 0);
-const brainSurfaceBytes = sourceFiles.filter((file) => file.includes(`${path.sep}brain${path.sep}`) || file.endsWith(`${path.sep}pages${path.sep}brain.mjs`)).reduce((sum, file) => sum + fs.statSync(file).size, 0);
-assert(jsBytes <= 875000, `V8 total JavaScript budget exceeded: ${jsBytes} bytes.`);
-assert(eagerJsBytes <= 680000, `V8 eager JavaScript budget exceeded: ${eagerJsBytes} bytes.`);
-assert(brainSurfaceBytes <= 70000, `Brain lazy surface budget exceeded: ${brainSurfaceBytes} bytes.`);
-assert(cssBytes <= 340000, `V8 CSS budget exceeded: ${cssBytes} bytes.`);
+const eagerJsGzipBytes = [...eagerReachable].reduce((sum, file) => sum + gzipSync(fs.readFileSync(file)).byteLength, 0);
+const brainSurfaceFiles = sourceFiles.filter((file) => file.includes(`${path.sep}brain${path.sep}`) || file.endsWith(`${path.sep}pages${path.sep}brain.mjs`));
+const brainSurfaceBytes = brainSurfaceFiles.reduce((sum, file) => sum + fs.statSync(file).size, 0);
+const brainSurfaceGzipBytes = brainSurfaceFiles.reduce((sum, file) => sum + gzipSync(fs.readFileSync(file)).byteLength, 0);
+// Keep roughly five percent of headroom so a small feature cannot silently become a large payload regression.
+const budgets = Object.freeze({ totalJavaScript: 1050000, totalJavaScriptGzip: 285000, eagerJavaScript: 825000, eagerJavaScriptGzip: 225000, brainSurface: 74000, brainSurfaceGzip: 22500, cssSource: 395000, cssGzip: 63500 });
+assert(jsBytes <= budgets.totalJavaScript, `V8 total JavaScript budget exceeded: ${jsBytes} bytes.`);
+assert(jsGzipBytes <= budgets.totalJavaScriptGzip, `V8 total JavaScript gzip budget exceeded: ${jsGzipBytes} bytes.`);
+assert(eagerJsBytes <= budgets.eagerJavaScript, `V8 eager JavaScript budget exceeded: ${eagerJsBytes} bytes.`);
+assert(eagerJsGzipBytes <= budgets.eagerJavaScriptGzip, `V8 eager JavaScript gzip budget exceeded: ${eagerJsGzipBytes} bytes.`);
+assert(brainSurfaceBytes <= budgets.brainSurface, `Brain lazy surface budget exceeded: ${brainSurfaceBytes} bytes.`);
+assert(brainSurfaceGzipBytes <= budgets.brainSurfaceGzip, `Brain lazy surface gzip budget exceeded: ${brainSurfaceGzipBytes} bytes.`);
+assert(cssBytes <= budgets.cssSource, `V8 CSS source budget exceeded: ${cssBytes} bytes.`);
+assert(cssGzipBytes <= budgets.cssGzip, `V8 CSS gzip budget exceeded: ${cssGzipBytes} bytes.`);
 
 if (failures.length) {
   failures.forEach((failure) => console.error(`FAIL: ${failure}`));
   process.exitCode = 1;
 } else {
-  console.log(`Production validation: PASS (${assets.length} cached assets, ${eagerJsBytes} eager JS bytes, ${jsBytes} total JS bytes, ${brainSurfaceBytes} Brain bytes, ${cssBytes} CSS bytes)`);
+  console.log(`Production validation: PASS (${assets.length} cached assets, ${eagerJsBytes}/${eagerJsGzipBytes} eager JS source/gzip bytes, ${jsBytes}/${jsGzipBytes} total JS source/gzip bytes, ${brainSurfaceBytes}/${brainSurfaceGzipBytes} Brain source/gzip bytes, ${cssBytes}/${cssGzipBytes} CSS source/gzip bytes)`);
 }

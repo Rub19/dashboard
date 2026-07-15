@@ -6,6 +6,14 @@ const AUTOMATION_LEVELS = new Set(["manual", "suggest-only", "confirm", "trusted
 const PROVIDERS = new Set(["context", "openai", "anthropic", "groq", "gemini", "ollama", "lm-studio"]);
 const RETENTION_DAYS = new Set([30, 90, 365]);
 
+const PREFERENCE_LABELS = Object.freeze({
+  persona: Object.freeze({ concise: "Concis", balanced: "Equilibre", expert: "Expert", coach: "Coach", creative: "Creatif", developer: "Developpeur", custom: "Personnalise" }),
+  detail: Object.freeze({ brief: "concises", balanced: "equilibrees", detailed: "detaillees" }),
+  detailOption: Object.freeze({ brief: "Concis", balanced: "Equilibre", detailed: "Detaille" }),
+  automationLevel: Object.freeze({ manual: "manuelle", "suggest-only": "sur suggestion", confirm: "avec confirmation", trusted: "de confiance" }),
+  automationOption: Object.freeze({ manual: "Manuel", "suggest-only": "Suggestions uniquement", confirm: "Confirmation requise", trusted: "Actions de confiance" })
+});
+
 export const BRAIN_PERMISSION_CATEGORIES = Object.freeze([
   "notes", "tasks", "calendar", "connections", "gaming", "activity", "files", "profile", "settings"
 ]);
@@ -46,6 +54,10 @@ export const DEFAULT_BRAIN_PREFERENCES = Object.freeze({
     settings: true
   })
 });
+
+export function brainPreferenceLabel(group, value) {
+  return PREFERENCE_LABELS[group]?.[value] || String(value || "");
+}
 
 function safeText(value, fallback, limit) {
   const clean = String(value ?? "").replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim();

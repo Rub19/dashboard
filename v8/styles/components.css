@@ -10,7 +10,7 @@
   gap: var(--v8-space-2);
   padding: 0 var(--v8-space-4);
   border: 1px solid transparent;
-  border-radius: var(--v8-radius-sm);
+  border-radius: var(--v8-radius-md);
   background: transparent;
   color: var(--v8-text-secondary);
   cursor: pointer;
@@ -48,8 +48,8 @@ html[data-v8-interactions] body :where(button:not(:disabled,[aria-disabled="true
 html[data-v8-interactions] body :where(button:not(:disabled,[aria-disabled="true"]),a[href],[role="button"]:not([aria-disabled="true"]),[role="tab"]:not([aria-disabled="true"]),[role="option"]:not([aria-disabled="true"]),[data-interactive]:not([aria-disabled="true"])):focus-visible {
   box-shadow: var(--v8-shadow-focus);
   filter: var(--v8-interaction-focus-filter);
-  outline: 1px solid var(--v8-accent);
-  outline-offset: 1px;
+  outline: 2px solid var(--v8-accent);
+  outline-offset: 2px;
   transform: var(--v8-interaction-focus-transform);
 }
 
@@ -79,8 +79,8 @@ html[data-v8-interactions] body :where(.is-dragging,[data-drag-state="dragging"]
 .v8-input:focus-visible {
   box-shadow: var(--v8-shadow-focus);
   filter: var(--v8-interaction-focus-filter);
-  outline: 1px solid var(--v8-accent);
-  outline-offset: 1px;
+  outline: 2px solid var(--v8-accent);
+  outline-offset: 2px;
   transform: var(--v8-interaction-focus-transform);
 }
 
@@ -91,7 +91,10 @@ html[data-v8-interactions] body :where(.is-dragging,[data-drag-state="dragging"]
 .v8-icon-button[aria-disabled="true"],
 .v8-toolbar-button[aria-disabled="true"] {
   cursor: not-allowed;
-  opacity: 0.42;
+  border-color: var(--v8-border);
+  background: var(--v8-surface-sunken);
+  color: var(--v8-muted);
+  opacity: 0.72;
   pointer-events: none;
   transform: none;
 }
@@ -217,7 +220,7 @@ html[data-v8-interactions] body :where(.is-dragging,[data-drag-state="dragging"]
 
 .v8-input::placeholder {
   color: var(--v8-muted);
-  opacity: 0.86;
+  opacity: 1;
 }
 
 .v8-input:hover {
@@ -227,520 +230,126 @@ html[data-v8-interactions] body :where(.is-dragging,[data-drag-state="dragging"]
 .v8-input:focus {
   border-color: var(--v8-accent-line);
   background: var(--v8-surface-2);
+  box-shadow: var(--v8-shadow-focus);
 }
 
-.v8-badge {
-  display: inline-flex;
-  max-width: 100%;
-  min-height: 23px;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 0 9px;
-  border: 1px solid var(--v8-border);
-  border-radius: var(--v8-radius-pill);
-  background: var(--v8-surface-2);
-  box-shadow: inset 0 1px 0 var(--v8-surface-glint);
-  color: var(--v8-text-secondary);
-  font-size: var(--v8-font-xs);
-  font-weight: var(--v8-weight-medium);
-  line-height: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  transition:
-    background-color var(--v8-motion-fast) var(--v8-ease-standard),
-    border-color var(--v8-motion-fast) var(--v8-ease-standard),
-    color var(--v8-motion-fast) var(--v8-ease-standard);
-}
+.v8-input[type="date"] { color-scheme: dark; }
+.v8-input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; opacity: .72; transition: opacity var(--v8-motion-fast) var(--v8-ease-standard), transform var(--v8-motion-fast) var(--v8-ease-standard); }
+.v8-input:hover::-webkit-calendar-picker-indicator { opacity: 1; transform: scale(1.05); }
+.v8-file-input { height: auto; min-height: var(--v8-control-md); padding: 5px; }
+.v8-file-input::file-selector-button { min-height: 32px; margin-right: var(--v8-space-2); padding: 0 var(--v8-space-3); border: 1px solid var(--v8-border); border-radius: var(--v8-radius-xs); background: var(--v8-surface-2); color: var(--v8-text); font: inherit; cursor: pointer; transition: background-color var(--v8-motion-fast) var(--v8-ease-standard), border-color var(--v8-motion-fast) var(--v8-ease-standard), transform var(--v8-motion-fast) var(--v8-ease-press); }
+html[data-v8-interactions] .v8-file-input::file-selector-button:hover { border-color: var(--v8-border-strong); background: var(--v8-surface-3); transform: translate3d(0,-1px,0); }
+.v8-file-input::file-selector-button:active { transform: scale(.97); }
+.v8-form-password { position: relative; display: block; min-width: 0; }
+.v8-form-password .v8-input { padding-right: 48px; }
+.v8-form-password__toggle { position: absolute; top: 3px; right: 3px; width: 38px; height: 38px; }
 
-.v8-badge--accent {
-  border-color: var(--v8-accent-line);
-  background: var(--v8-accent-soft);
-  color: var(--v8-accent);
-}
-
-[data-tooltip] {
-  position: relative;
-}
-
-[data-tooltip]::after {
-  position: absolute;
-  z-index: var(--v8-z-tooltip);
-  top: 50%;
-  left: calc(100% + 10px);
-  width: max-content;
-  max-width: min(220px, calc(100vw - 16px));
-  padding: 7px 9px;
-  border: 1px solid var(--v8-border-highlight);
-  border-radius: var(--v8-radius-sm);
-  background: var(--v8-dialog-glass);
-  box-shadow: var(--v8-shadow-2);
-  backdrop-filter: blur(var(--v8-blur)) saturate(var(--v8-saturate));
-  color: var(--v8-text);
-  content: attr(data-tooltip);
-  font-size: var(--v8-font-xs);
-  line-height: 1.25;
-  opacity: 0;
-  pointer-events: none;
-  transform: translate3d(-4px, -50%, 0);
-  transition:
-    opacity var(--v8-motion-fast) var(--v8-ease-out),
-    transform var(--v8-motion-fast) var(--v8-ease-out);
-  visibility: hidden;
-  overflow-wrap: anywhere;
-  white-space: normal;
-}
-
-[data-tooltip]:hover::after,
-[data-tooltip]:focus-visible::after {
-  opacity: 1;
-  transform: translate3d(0, -50%, 0);
-  visibility: visible;
-}
-
-html[data-v8-tooltips="ready"] [data-tooltip]::after {
-  display: none;
-}
-
-.v8-tooltip {
-  --v8-tooltip-shift-x: 0;
-  --v8-tooltip-shift-y: 4px;
-  position: fixed;
-  z-index: var(--v8-z-tooltip);
-  width: max-content;
-  max-width: min(240px, calc(100vw - 16px));
-  padding: 7px 9px;
-  overflow-wrap: anywhere;
-  border: 1px solid var(--v8-border-highlight);
-  border-radius: var(--v8-radius-sm);
-  background: var(--v8-dialog-glass);
-  box-shadow: var(--v8-shadow-2);
-  backdrop-filter: blur(var(--v8-blur)) saturate(var(--v8-saturate));
-  color: var(--v8-text);
-  font-size: var(--v8-font-xs);
-  line-height: 1.35;
-  opacity: 0;
-  pointer-events: none;
-  transform: translate3d(var(--v8-tooltip-shift-x), var(--v8-tooltip-shift-y), 0) scale(0.98);
-  transition:
-    opacity var(--v8-motion-fast) var(--v8-ease-out),
-    transform var(--v8-motion-fast) var(--v8-ease-out),
-    visibility 0s step-end var(--v8-motion-fast);
-  visibility: hidden;
-}
-
-.v8-tooltip[hidden] { display: none; }
-.v8-tooltip[data-placement="right"] { --v8-tooltip-shift-x: -4px; --v8-tooltip-shift-y: 0; }
-.v8-tooltip[data-placement="bottom"] { --v8-tooltip-shift-y: -4px; }
-.v8-tooltip[data-placement="left"] { --v8-tooltip-shift-x: 4px; --v8-tooltip-shift-y: 0; }
-
-.v8-tooltip.is-visible {
-  opacity: 1;
-  transform: translate3d(0, 0, 0) scale(1);
-  transition-delay: 0s;
-  visibility: visible;
-}
-
-.v8-empty-state {
-  position: relative;
+.v8-form-field {
   display: grid;
   min-width: 0;
-  min-height: 260px;
-  place-items: center;
-  align-content: center;
-  gap: var(--v8-space-4);
-  padding: clamp(var(--v8-space-6), 4vw, var(--v8-space-9));
-  overflow: hidden;
-  border: 1px solid var(--v8-divider);
-  border-radius: var(--v8-radius-md);
-  background: color-mix(in srgb, var(--v8-surface-1) 78%, transparent);
-  box-shadow: inset 0 1px 0 var(--v8-surface-glint);
-  text-align: center;
-  animation: v8-empty-state-enter var(--v8-motion-base) var(--v8-ease-out) both;
+  align-content: start;
+  gap: 6px;
 }
 
-.v8-empty-state__visual {
-  position: relative;
+.v8-form-field__label {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 4px;
+}
+
+.v8-form-field__required { color: var(--v8-danger); }
+
+.v8-form-field__meta {
   display: grid;
-  width: 76px;
-  height: 76px;
-  place-items: center;
-  isolation: isolate;
-}
-
-.v8-empty-state__frame {
-  position: absolute;
-  border: 1px solid var(--v8-border);
-  border-radius: var(--v8-radius-md);
-  background: var(--v8-surface-1);
-}
-
-.v8-empty-state__frame--back { inset: 7px; transform: rotate(9deg); }
-.v8-empty-state__frame--front { inset: 13px; border-color: var(--v8-accent-line); transform: rotate(-5deg); }
-
-.v8-empty-state__glyph {
-  z-index: 1;
-  display: grid;
-  width: 38px;
-  height: 38px;
-  place-items: center;
-  border: 1px solid var(--v8-border-strong);
-  border-radius: var(--v8-radius-md);
-  background: var(--v8-surface-2);
-  color: var(--v8-accent);
-}
-
-.v8-empty-state__glyph svg { width: var(--v8-icon-md); height: var(--v8-icon-md); stroke-width: 1.8; }
-
-.v8-empty-state__node {
-  position: absolute;
-  z-index: 2;
-  width: 6px;
-  height: 6px;
-  border: 1px solid var(--v8-accent-line);
-  border-radius: 2px;
-  background: var(--v8-canvas);
-}
-
-.v8-empty-state__node--first { top: 7px; right: 13px; }
-.v8-empty-state__node--second { bottom: 11px; left: 9px; }
-.v8-empty-state__copy { display: grid; max-width: 460px; gap: 5px; }
-
-.v8-empty-state__eyebrow {
-  color: var(--v8-accent);
+  height: 32px;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--v8-space-2);
+  color: var(--v8-muted);
   font-size: var(--v8-font-micro);
-  font-weight: var(--v8-weight-semibold);
-  letter-spacing: 0;
-  text-transform: uppercase;
+  line-height: 16px;
 }
 
-.v8-empty-state h2 {
-  font-size: var(--v8-font-lg);
-  font-weight: var(--v8-weight-semibold);
-  line-height: var(--v8-line-tight);
-}
-
-.v8-empty-state p {
-  color: var(--v8-text-secondary);
-  font-size: var(--v8-font-sm);
-  line-height: var(--v8-line-relaxed);
-}
-
-.v8-empty-state__actions { display: flex; max-width: 100%; flex-wrap: wrap; justify-content: center; gap: var(--v8-space-2); }
-
-.v8-empty-state__brain {
-  display: grid;
-  width: min(100%, 540px);
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: var(--v8-space-3);
-  padding: var(--v8-space-3);
-  border: 1px solid var(--v8-brain-line);
-  border-radius: var(--v8-radius-md);
-  background: var(--v8-brain-soft);
-  text-align: left;
-}
-
-.v8-empty-state__brain-icon { display: grid; width: 34px; height: 34px; place-items: center; border-radius: var(--v8-radius-sm); background: var(--v8-surface-2); color: var(--v8-brain); }
-.v8-empty-state__brain-icon svg { width: var(--v8-icon-sm); height: var(--v8-icon-sm); }
-.v8-empty-state__brain-copy { min-width: 0; }
-.v8-empty-state__brain-copy strong { font-size: var(--v8-font-xs); font-weight: var(--v8-weight-semibold); }
-.v8-empty-state__brain-copy p { margin-top: 2px; font-size: var(--v8-font-xs); line-height: var(--v8-line-base); }
-.v8-empty-state__brain .v8-button { flex: none; }
-
-.v8-empty-state--compact { min-height: 190px; gap: var(--v8-space-3); padding: var(--v8-space-5); }
-.v8-empty-state--compact .v8-empty-state__visual { width: 58px; height: 58px; }
-.v8-empty-state--compact .v8-empty-state__frame--back { inset: 6px; }
-.v8-empty-state--compact .v8-empty-state__frame--front { inset: 10px; }
-.v8-empty-state--compact .v8-empty-state__glyph { width: 32px; height: 32px; }
-.v8-empty-state--compact .v8-empty-state__glyph svg { width: var(--v8-icon-sm); height: var(--v8-icon-sm); }
-.v8-empty-state--compact .v8-empty-state__node { width: 5px; height: 5px; }
-.v8-empty-state--inline { min-height: 112px; grid-template-columns: auto minmax(0, 1fr) auto; justify-items: start; padding: var(--v8-space-4); text-align: left; }
-.v8-empty-state--inline .v8-empty-state__visual { width: 52px; height: 52px; }
-.v8-empty-state--inline .v8-empty-state__copy { justify-items: start; }
-.v8-empty-state--inline .v8-empty-state__actions { justify-content: flex-end; }
-.v8-empty-state--inline .v8-empty-state__brain { grid-column: 1 / -1; }
-.v8-empty-state--fill { min-height: 100%; }
-.v8-empty-state--wide { width: 100%; grid-column: 1 / -1; }
-
-@keyframes v8-empty-state-enter {
-  from { opacity: 0; transform: translate3d(0, 6px, 0) scale(0.995); }
-  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
-}
-
-@media (max-width: 560px) {
-  .v8-empty-state { min-height: 230px; padding: var(--v8-space-5); }
-  .v8-empty-state--inline { grid-template-columns: auto minmax(0, 1fr); }
-  .v8-empty-state--inline .v8-empty-state__actions { grid-column: 1 / -1; justify-content: stretch; }
-  .v8-empty-state__actions .v8-button,
-  .v8-empty-state__brain .v8-button { width: 100%; }
-  .v8-empty-state__brain { grid-template-columns: auto minmax(0, 1fr); }
-  .v8-empty-state__brain .v8-button { grid-column: 1 / -1; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .v8-empty-state { animation-duration: 1ms; }
-}
-
-.v8-skeleton {
-  position: relative;
-  overflow: hidden;
-  border: 1px solid var(--v8-divider);
-  border-radius: var(--v8-radius-sm);
-  background: color-mix(in srgb, var(--v8-surface-2) 88%, var(--v8-canvas));
-}
-
-.v8-skeleton::after {
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 45%;
-  background: linear-gradient(90deg, transparent, var(--v8-skeleton-highlight), transparent);
-  content: "";
-  transform: translate3d(-100%, 0, 0);
-  animation: v8-skeleton-pass 900ms var(--v8-ease-out) 2;
-}
-
-.v8-window-layer { backdrop-filter: blur(var(--v8-blur-backdrop)) saturate(var(--v8-saturate)); }
-.v8-window-surface { box-shadow:var(--v8-shadow-window-open);transition:box-shadow var(--v8-motion-base) var(--v8-physics-friction); }
-.v8-window-layer:not(.is-open) { pointer-events: none; }
-.v8-window-layer[data-window-state="opening"],.v8-window-layer[data-window-state="closing"] { will-change: opacity, transform; }
-.v8-window-surface:focus-within { box-shadow:var(--v8-shadow-window-focus);outline: 1px solid color-mix(in srgb, var(--v8-accent) 18%, transparent); outline-offset: -1px; }
-.v8-window-layer.is-open .v8-window-surface,.v8-window-layer.is-open.v8-window-surface { animation: v8-window-haptic-open var(--v8-haptic-window-duration) var(--v8-haptic-spring) both; }
-.v8-window-layer[data-window-state="closing"] .v8-window-surface,.v8-window-layer[data-window-state="closing"].v8-window-surface { animation: v8-window-haptic-close var(--v8-haptic-window-duration) var(--v8-ease-out) both; }
-
-.v8-panel {
-  position: fixed;
-  z-index: var(--v8-z-panel);
-  top: 16px;
-  right: 16px;
-  bottom: 16px;
-  width: min(var(--density-panel-width), calc(100vw - 32px));
-  overflow: hidden;
-  border: 1px solid var(--v8-border-highlight);
-  border-radius: var(--v8-radius-md);
-  background: var(--v8-glass);
-  box-shadow: var(--v8-shadow-panel-rest);
-  backdrop-filter: blur(var(--v8-blur)) saturate(var(--v8-saturate));
-  opacity: 0;
-  transform: translate3d(18px, 0, 0) scale(0.985);
-  transition:
-    box-shadow var(--v8-motion-base) var(--v8-physics-friction),
-    opacity var(--v8-motion-base) var(--v8-physics-momentum),
-    transform var(--v8-haptic-window-duration) var(--v8-physics-inertia);
-}
-
-.v8-panel.is-open {
-  box-shadow:var(--v8-shadow-window-open);
-  opacity: 1;
-  transform: translate3d(0, 0, 0) scale(1);
-}
-
-.v8-panel__language {
-  display: grid;
-  width: 100%;
-  gap: var(--v8-space-2);
-  color: var(--v8-text-secondary);
-  font-size: var(--v8-font-sm);
-  text-align: left;
-}
-
-.v8-panel__language .v8-input {
-  width: 100%;
-}
-
-.v8-toast-region {
-  position: fixed;
-  z-index: var(--v8-z-toast);
-  right: max(16px, env(safe-area-inset-right));
-  bottom: max(16px, env(safe-area-inset-bottom));
-  display: grid;
-  width: min(360px, calc(100vw - 32px));
-  gap: var(--v8-space-2);
-  pointer-events: none;
-}
-
-.v8-toast {
-  position: relative;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: var(--v8-space-3);
-  padding: max(10px, calc(var(--density-card-padding) * .55));
-  border: 1px solid var(--v8-border-strong);
-  border-radius: var(--v8-radius-md);
-  background: var(--v8-glass);
-  box-shadow: var(--v8-shadow-2);
-  backdrop-filter: blur(var(--v8-blur)) saturate(var(--v8-saturate));
-  opacity: 0;
-  pointer-events: auto;
-  transform: translate3d(0, 8px, 0);
-  transition:
-    opacity var(--v8-motion-base) var(--v8-ease-out),
-    transform var(--v8-motion-base) var(--v8-ease-out);
-}
-
-.v8-toast--action {
-  grid-template-columns: auto minmax(0, 1fr) auto auto;
-}
-
-.v8-toast.is-visible {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
-}
-
-.v8-toast__message {
+.v8-form-field__message {
+  display: -webkit-box;
   min-width: 0;
-  overflow-wrap: anywhere;
-  color: var(--v8-text-secondary);
-  font-size: var(--v8-font-sm);
+  overflow: hidden;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
-.v8-toast > .v8-icon-button { width: 32px; height: 32px; flex-basis: 32px; }
-.v8-toast--success { border-color: color-mix(in srgb, var(--v8-success) 28%, var(--v8-border)); }
-.v8-toast--warning { border-color: color-mix(in srgb, var(--v8-warning) 28%, var(--v8-border)); }
-.v8-toast--error { border-color: color-mix(in srgb, var(--v8-danger) 28%, var(--v8-border)); }
-.v8-toast--sync, .v8-toast--update, .v8-toast--brain, .v8-toast--loading { border-color: color-mix(in srgb, var(--v8-accent) 24%, var(--v8-border)); }
-
-.v8-toast.is-timed::after {
-  position: absolute;
-  right: 8px;
-  bottom: 3px;
-  left: 8px;
-  height: 2px;
-  border-radius: var(--v8-radius-pill);
-  background: var(--v8-accent);
-  content: "";
-  transform: scaleX(1);
-  transform-origin: left;
-  animation: v8-toast-progress var(--v8-toast-duration) var(--v8-physics-friction) forwards;
+.v8-form-field__message[data-tone="error"] { color: var(--v8-danger); font-weight: var(--v8-weight-medium); }
+.v8-form-field__message[data-tone="success"] { color: var(--v8-success); }
+.v8-form-field__message[data-tone="loading"] { color: var(--v8-info); }
+.v8-form-field__message[data-tone="error"]:not(:empty)::before,
+.v8-auth__feedback[data-type="error"]:not(:empty)::before {
+  display: inline-grid;
+  width: 16px;
+  height: 16px;
+  margin-right: 5px;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  content: "!";
+  font-size: var(--v8-font-micro);
+  font-weight: var(--v8-weight-bold);
+  line-height: 1;
+  vertical-align: -1px;
 }
-
-.v8-toast--success.is-timed::after { background: var(--v8-success); }
-.v8-toast--warning.is-timed::after { background: var(--v8-warning); }
-.v8-toast--error.is-timed::after { background: var(--v8-danger); }
-
-.v8-toast__message strong {
-  display: block;
-  margin-bottom: 2px;
-  color: var(--v8-text);
-  font-weight: var(--v8-weight-medium);
+.v8-form-field__message[data-tone="success"]:not(:empty)::before,
+.v8-auth__feedback[data-type="success"]:not(:empty)::before {
+  margin-right: 5px;
+  content: "OK";
+  font-size: var(--v8-font-micro);
+  font-weight: var(--v8-weight-bold);
 }
+.v8-form-field__counter { font-variant-numeric: tabular-nums; }
+.v8-form-field[data-field-state="invalid"] .v8-input,
+.v8-input[data-field-state="invalid"] { border-width: 2px; border-color: color-mix(in srgb, var(--v8-danger) 78%, var(--v8-border)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--v8-danger) 18%, transparent); }
+.v8-form-field[data-field-state="valid"] .v8-input:not(:focus),
+.v8-input[data-field-state="valid"]:not(:focus) { border-color: color-mix(in srgb, var(--v8-success) 42%, var(--v8-border)); }
+.v8-form-field[data-field-state="loading"] .v8-input,
+.v8-input[data-field-state="loading"] { cursor: progress; filter: saturate(.72); }
+.v8-input:read-only { border-color: var(--v8-divider); background: var(--v8-surface-sunken); color: var(--v8-text-secondary); cursor: default; }
+.v8-input:disabled { border-color: var(--v8-border); background: color-mix(in srgb, var(--v8-surface-sunken) 86%, var(--v8-surface-2)); color: var(--v8-muted); cursor: not-allowed; opacity: 1; }
+.v8-form-field.is-filled .v8-form-field__label { color: var(--v8-text); }
+.v8-form-field:focus-within .v8-form-field__label { color: var(--v8-accent); }
+.v8-form-field:focus-within .v8-form-field__counter { color: var(--v8-text-secondary); }
+.v8-form-field[data-field-state="disabled"] { opacity: 1; }
+.v8-form-field[data-field-state="disabled"] .v8-form-field__label { color: var(--v8-muted); }
+.v8-form-choice { display: inline-flex; min-height: var(--v8-control-sm); align-items: center; gap: var(--v8-space-2); cursor: pointer; }
+.v8-form-choice .v8-form-field__label { color: var(--v8-text); }
 
-@keyframes v8-spin {
-  to { transform: rotate(360deg); }
+.v8-checkbox {
+  position: relative;
+  display: grid;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  margin: 0;
+  appearance: none;
+  place-items: center;
+  border: 1px solid var(--v8-border-strong);
+  border-radius: var(--v8-radius-sm);
+  background: var(--v8-surface-sunken);
+  color: var(--v8-inverse);
+  cursor: pointer;
+  outline: none;
+  transition: background-color var(--v8-motion-fast) var(--v8-ease-standard), border-color var(--v8-motion-fast) var(--v8-ease-standard), box-shadow var(--v8-motion-fast) var(--v8-ease-standard), transform var(--v8-motion-base) var(--v8-ease-spring);
 }
+.v8-checkbox::after { width: 7px; height: 4px; border: solid currentColor; border-width: 0 0 2px 2px; content: ""; opacity: 0; transform: translate3d(0, -1px, 0) rotate(-45deg) scale(0.65); transition: opacity var(--v8-motion-fast) var(--v8-ease-out), transform var(--v8-motion-base) var(--v8-ease-spring); }
+.v8-checkbox:checked { border-color: var(--v8-accent); background: var(--v8-accent); }
+.v8-checkbox:checked::after { opacity: 1; transform: translate3d(0, -1px, 0) rotate(-45deg) scale(1); }
+html[data-v8-interactions] .v8-checkbox:hover { border-color: var(--v8-accent-line); transform: translate3d(0, -1px, 0); }
+.v8-checkbox:active { transform: scale(0.92); }
+.v8-checkbox:focus-visible { box-shadow: var(--v8-shadow-focus); outline: 2px solid var(--v8-accent); outline-offset: 2px; }
+.v8-checkbox:disabled { cursor: not-allowed; opacity: 0.72; }
 
-@keyframes v8-haptic-release {
-  0% { transform: var(--v8-haptic-press-transform); }
-  48% { transform: var(--v8-haptic-release-overshoot); }
-  72% { transform: var(--v8-physics-recoil); }
-  100% { transform: translate3d(0,0,0) scale(1); }
-}
-
-@keyframes v8-window-haptic-open {
-  0% { opacity: 0; transform: translate3d(0,10px,0) scale(.96); }
-  62% { opacity: 1; transform: translate3d(0,-1px,0) scale(1.008); }
-  82% { opacity: 1; transform: translate3d(0,.25px,0) scale(.998); }
-  100% { opacity: 1; transform: translate3d(0,0,0) scale(1); }
-}
-
-@keyframes v8-window-haptic-close {
-  0% { opacity: 1; transform: translate3d(0,0,0) scale(1); }
-  28% { opacity: 1; transform: translate3d(0,-.5px,0) scale(1.003); }
-  100% { opacity: 0; transform: translate3d(0,5px,0) scale(.975); }
-}
-
-@keyframes v8-skeleton-pass {
-  to { transform: translate3d(320%, 0, 0); }
-}
-
-@keyframes v8-toast-progress { to { transform: scaleX(0); } }
-
-@media (max-width: 820px) {
-  .v8-button,
-  .v8-icon-button,
-  .v8-toolbar-button,
-  .v8-input {
-    min-height: var(--v8-control-lg);
-  }
-
-  .v8-icon-button,
-  .v8-toolbar-button {
-    width: var(--v8-control-lg);
-    flex-basis: var(--v8-control-lg);
-  }
-
-  [data-tooltip]::after {
-    display: none;
-  }
-
-  .v8-toast > .v8-icon-button {
-    width: var(--v8-control-lg);
-    flex-basis: var(--v8-control-lg);
-  }
-}
-
-@media (pointer: coarse) {
-  .v8-button,
-  .v8-icon-button,
-  .v8-toolbar-button,
-  .v8-input,
-  [role="tab"],
-  [role="option"] {
-    min-height: 44px;
-  }
-
-  .v8-icon-button,
-  .v8-toolbar-button {
-    min-width: 44px;
-    flex-basis: 44px;
-  }
-}
-
-@media (max-width: 430px) {
-  .v8-toast--action {
-    grid-template-columns: auto minmax(0, 1fr) auto;
-  }
-
-  .v8-toast--action > .v8-button {
-    grid-column: 2 / -1;
-    grid-row: 2;
-    width: 100%;
-  }
-
-  .v8-toast--action > .v8-icon-button {
-    grid-column: 3;
-    grid-row: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .v8-button,
-  .v8-surface,
-  .v8-icon-button,
-  .v8-toolbar-button,
-  .v8-input,
-  .v8-panel,
-  .v8-toast,
-  .v8-window-layer,
-  .v8-window-surface,
-  .v8-tooltip,
-  [data-tooltip]::after {
-    transition-duration: 1ms;
-  }
-
-  [data-haptic-state="released"],
-  .v8-window-layer.is-open .v8-window-surface,
-  .v8-window-layer.is-open.v8-window-surface,
-  .v8-window-layer[data-window-state="closing"] .v8-window-surface,
-  .v8-window-layer[data-window-state="closing"].v8-window-surface {
-    animation: none;
-  }
-
-  .v8-button.is-loading::after,
-  .v8-skeleton::after,
-  .v8-toast.is-timed::after {
-    animation: none;
-  }
-}
+.v8-radio { position: relative; display: grid; width: 18px; height: 18px; flex: 0 0 auto; margin: 0; appearance: none; place-items: center; border: 1px solid var(--v8-border-strong); border-radius: 50%; background: var(--v8-surface-sunken); cursor: pointer; outline: none; transition: background-color var(--v8-motion-fast) var(--v8-ease-standard), border-color var(--v8-motion-fast) var(--v8-ease-standard), box-shadow var(--v8-motion-fast) var(--v8-ease-standard), transform var(--v8-motion-base) var(--v8-ease-spring); }
+.v8-radio::after { width: 8px; height: 8px; border-radius: 50%; background: var(--v8-inverse); content: ""; opacity: 0; transform: scale(.55); transition: opacity var(--v8-motion-fast) var(--v8-ease-out), transform var(--v8-motion-base) var(--v8-ease-spring); }
+.v8-radio:checked { border-color: var(--v8-accent); background: var(--v8-accent); }
+.v8-radio:checked::after { opacity: 1; transform: scale(1); }
+html[data-v8-interactions] .v8-radio:h็nปถหkบwต็}}ฑฅู”ฐ€นุเตอั…ั”ตอญ•ฑ•ัฝน}}…ั…ฑฝฐ€นุเตอั…ั”ตอญ•ฑ•ัฝน}}ต•ัษฅฬค์ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่ษ•ม•…ะ ศฐตฅนต…เ ภฐ€ลศคค์๔(€€นุเตอั…ั”ตอญ•ฑ•ัฝน}}อ•ััฅนฬตน…ุ์ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่ษ•ม•…ะ ฬฐตฅนต…เ ภฐ€ลศคค์๔)๔()ต•‘ฅ€กต…เตÝฅ‘ั ่€ุศมมเค์(€€นุเตอั…ั”ตอญ•ฑ•ัฝธ์ตฅธตก•ฅกะ่€ฬุมมเ์๔(€€นุเตอั…ั”ตอญ•ฑ•ัฝน}}ษฅ์ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่ตฅนต…เ ภฐ€ลศค์๔(€€นุเตอั…ั”ตอญ•ฑ•ัฝน}}ษฅ€นฅฬต…ษ์ตฅธตก•ฅกะ่€ฤเมมเ์๔(€€้ฅฬ นุเตอั…ั”ตอญ•ฑ•ัฝน}}ฑฅู”ฐ€นุเตอั…ั”ตอญ•ฑ•ัฝน}}…ั…ฑฝฐ€นุเตอั…ั”ตอญ•ฑ•ัฝน}}อ•ััฅนฬตน…ุค์ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่ตฅนต…เ ภฐ€ลศค์๔(€€นุเตอั…ั”ตอญ•ฑ•ัฝน}}ั…ฬ์ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่ษ•ม•…ะ ฬฐตฅนต…เ ภฐ€ลศคค์๔(€€นุเตอั…ั”ตอญ•ฑ•ัฝน}}ฑฅู”€นฅฬตฑฅู”์ก•ฅกะ่€ฤิมมเ์๔)๔((้ษฝฝะm‘…ัตุเตฑ…ๅ•ษt์่ตฅน‘•เ่ู…ศ ดตุเตฑ…ๅ•ศตอั…ฌฐ…ฑกู…ศ ดตุเตฑ…ๅ•ศต…อ”ฐู…ศ ดตุเต่ตมฝมฝู•ศคค€ฌู…ศ ดตุเตฑ…ๅ•ศตฝษ‘•ศฐ€ภคคค์๔)m‘…ัตุเตฑ…ๅ•ศ๔ม…น•ฐt์€ดตุเตฑ…ๅ•ศต…อ”่ู…ศ ดตุเต่ตม…น•ฐค์๔)m‘…ัตุเตฑ…ๅ•ศ๔มฝมฝู•ศt์€ดตุเตฑ…ๅ•ศต…อ”่ู…ศ ดตุเต่ตมฝมฝู•ศค์๔)m‘…ัตุเตฑ…ๅ•ศ๔ัฝ…อะt์€ดตุเตฑ…ๅ•ศต…อ”่ู…ศ ดตุเต่ตัฝ…อะค์๔)m‘…ัตุเตฑ…ๅ•ศ๔‘ฅ…ฑฝt์€ดตุเตฑ…ๅ•ศต…อ”่ู…ศ ดตุเต่ต‘ฅ…ฑฝค์๔)m‘…ัตุเตฑ…ๅ•ศ๔ัฝฝฑัฅภt์€ดตุเตฑ…ๅ•ศต…อ”่ู…ศ ดตุเต่ตัฝฝฑัฅภค์๔()m‘…ัตุเตฑ…ๅ•ศ๔มฝมฝู•ศt์(€ฝู•ษอษฝฑฐต•ก…ูฅฝศ่ฝนั…ฅธ์(€…นฅต…ัฅฝธ่ุเตฑ…ๅ•ศตมฝมฝู•ศตฅธู…ศ ดตุเตตฝัฅฝธต…อะคู…ศ ดตุเต•…อ”ตÝฅน‘ฝÜคฝั ์)๔((้ฅฬ นุเตษฝÜตต•นิฐ€นุเตฝนั•แะตต•นิฐ€นุเตมษฝฅฑ”ตต•นิค์(€ต…เตก•ฅกะ่ตฅธ ะศมมเฐ…ฑ ฤภม‘ู €ด€ฤูมเคค์(€ฝู•ษฑฝÜตเ่กฅ‘‘•ธ์(€ฝู•ษฑฝÜตไ่…ีัผ์(€ฝู•ษอษฝฑฐต•ก…ูฅฝศ่ฝนั…ฅธ์(€อษฝฑฑ…ศตีัั•ศ่อั…ฑ”์)๔((้Ýก•ษ” นุเตฝตต…นตฑ…ๅ•ศฐ€นุเตตฅออฅฝธตฑ…ๅ•ศฐ€นุเตมษฝฅฑ”ต‘ฅ…ฑฝตฑ…ๅ•ศค์ฝู•ษอษฝฑฐต•ก…ูฅฝศ่ฝนั…ฅธ์๔()ญ•ๅษ…ต•ฬุเตฑ…ๅ•ศตมฝมฝู•ศตฅธ์(€ษฝด์ฝม…ฅัไ่€ภ์ัษ…นอฝษด่ัษ…นอฑ…ั”อ ภฐ€ดัมเฐ€ภคอ…ฑ” ธไเค์๔(€ัผ์ฝม…ฅัไ่€ฤ์ัษ…นอฝษด่ัษ…นอฑ…ั”อ ภฐ€ภฐ€ภคอ…ฑ” ฤค์๔)๔((นุเตÝฅน‘ฝÜตฑ…ๅ•ศ์…ญ‘ษฝภตฅฑั•ศ่ฑีศกู…ศ ดตุเตฑีศต…ญ‘ษฝภคคอ…ัีษ…ั”กู…ศ ดตุเตอ…ัีษ…ั”คค์๔(นุเตÝฅน‘ฝÜตอีษ…”์ฝเตอก…‘ฝÜู้…ศ ดตุเตอก…‘ฝÜตÝฅน‘ฝÜตฝม•ธคํัษ…นอฅัฅฝธ้ฝเตอก…‘ฝÜู…ศ ดตุเตตฝัฅฝธต…อ”คู…ศ ดตุเตมกๅอฅฬตษฅัฅฝธค์๔(นุเตÝฅน‘ฝÜตฑ…ๅ•ศ้นฝะ นฅฬตฝม•ธคฐ(นุเตÝฅน‘ฝÜตฑ…ๅ•ษmฅน•ษัtฐ(นุเตÝฅน‘ฝÜตฑ…ๅ•ษm…ษฅตกฅ‘‘•ธ๔ัษี”t์มฝฅนั•ศต•ู•นัฬ่นฝน”€…ฅตมฝษั…นะ์๔(นุเตÝฅน‘ฝÜตฑ…ๅ•ษm‘…ัตÝฅน‘ฝÜตอั…ั”๔ฝม•นฅนtฐนุเตÝฅน‘ฝÜตฑ…ๅ•ษm‘…ัตÝฅน‘ฝÜตอั…ั”๔ฑฝอฅนt์Ýฅฑฐตก…น”่ฝม…ฅัไฐัษ…นอฝษด์๔(นุเตÝฅน‘ฝÜตอีษ…”้ฝีฬตÝฅักฅธ์ฝเตอก…‘ฝÜู้…ศ ดตุเตอก…‘ฝÜตÝฅน‘ฝÜตฝีฬคํฝีัฑฅน”่€ลมเอฝฑฅฝฑฝศตตฅเกฅธอษฐู…ศ ดตุเต…•นะค€ฤเ”ฐัษ…นอม…ษ•นะค์ฝีัฑฅน”ตฝอ•ะ่€ดลมเ์๔(นุเตÝฅน‘ฝÜตฑ…ๅ•ศนฅฬตฝม•ธ€นุเตÝฅน‘ฝÜตอีษ…”ฐนุเตÝฅน‘ฝÜตฑ…ๅ•ศนฅฬตฝม•ธนุเตÝฅน‘ฝÜตอีษ…”์…นฅต…ัฅฝธ่ุเตÝฅน‘ฝÜตก…มัฅตฝม•ธู…ศ ดตุเตก…มัฅตÝฅน‘ฝÜต‘ีษ…ัฅฝธคู…ศ ดตุเตก…มัฅตอมษฅนคฝั ์๔(นุเตÝฅน‘ฝÜตฑ…ๅ•ษm‘…ัตÝฅน‘ฝÜตอั…ั”๔ฑฝอฅนt€นุเตÝฅน‘ฝÜตอีษ…”ฐนุเตÝฅน‘ฝÜตฑ…ๅ•ษm‘…ัตÝฅน‘ฝÜตอั…ั”๔ฑฝอฅนtนุเตÝฅน‘ฝÜตอีษ…”์…นฅต…ัฅฝธ่ุเตÝฅน‘ฝÜตก…มัฅตฑฝอ”ู…ศ ดตุเตก…มัฅตÝฅน‘ฝÜต‘ีษ…ัฅฝธคู…ศ ดตุเต•…อ”ตฝีะคฝั ์๔((นุเตม…น•ฐ์(€มฝอฅัฅฝธ่ฅแ•์(€่ตฅน‘•เ่ู…ศ ดตุเต่ตม…น•ฐค์(€ัฝภ่€ฤูมเ์(€ษฅกะ่€ฤูมเ์(€ฝััฝด่€ฤูมเ์(€Ýฅ‘ั ่ตฅธกู…ศ ดต‘•นอฅัไตม…น•ฐตÝฅ‘ั คฐ…ฑ ฤภมูÜ€ด€ฬษมเคค์(€ฝู•ษฑฝÜ่กฅ‘‘•ธ์(€ฝษ‘•ศ่€ลมเอฝฑฅู…ศ ดตุเตฝษ‘•ศตกฅกฑฅกะค์(€ฝษ‘•ศตษ…‘ฅีฬ่ู…ศ ดตุเตษ…‘ฅีฬตตค์(€…ญษฝีน่ู…ศ ดตุเตฑ…อฬค์(€ฝเตอก…‘ฝÜ่ู…ศ ดตุเตอก…‘ฝÜตม…น•ฐตษ•อะค์(€…ญ‘ษฝภตฅฑั•ศ่ฑีศกู…ศ ดตุเตฑีศคคอ…ัีษ…ั”กู…ศ ดตุเตอ…ัีษ…ั”คค์(€ฝม…ฅัไ่€ภ์(€ัษ…นอฝษด่ัษ…นอฑ…ั”อ ฤแมเฐ€ภฐ€ภคอ…ฑ” ภธไเิค์(€ัษ…นอฅัฅฝธ่(€€€ฝเตอก…‘ฝÜู…ศ ดตุเตตฝัฅฝธต…อ”คู…ศ ดตุเตมกๅอฅฬตษฅัฅฝธคฐ(€€€ฝม…ฅัไู…ศ ดตุเตตฝัฅฝธต…อ”คู…ศ ดตุเตมกๅอฅฬตตฝต•นัีดคฐ(€€€ัษ…นอฝษดู…ศ ดตุเตก…มัฅตÝฅน‘ฝÜต‘ีษ…ัฅฝธคู…ศ ดตุเตมกๅอฅฬตฅน•ษัฅค์)๔((นุเตม…น•ฐนฅฬตฝม•ธ์(€ฝเตอก…‘ฝÜู้…ศ ดตุเตอก…‘ฝÜตÝฅน‘ฝÜตฝม•ธค์(€ฝม…ฅัไ่€ฤ์(€ัษ…นอฝษด่ัษ…นอฑ…ั”อ ภฐ€ภฐ€ภคอ…ฑ” ฤค์)๔((นุเตม…น•ฑ}}ฑ…นี…”์(€‘ฅอมฑ…ไ่ษฅ์(€Ýฅ‘ั ่€ฤภภ”์(€…ภ่ู…ศ ดตุเตอม…”ดศค์(€ฝฑฝศ่ู…ศ ดตุเตั•แะตอ•ฝน‘…ษไค์(€ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตอดค์(€ั•แะต…ฑฅธ่ฑ•ะ์)๔((นุเตม…น•ฑ}}ฑ…นี…”€นุเตฅนมีะ์(€Ýฅ‘ั ่€ฤภภ”์)๔((นุเตัฝ…อะตษ•ฅฝธ์(€มฝอฅัฅฝธ่ฅแ•์(€่ตฅน‘•เ่ู…ศ ดตุเต่ตัฝ…อะค์(€ษฅกะ่ต…เ ฤูมเฐ•นุกอ…”ต…ษ•ตฅนอ•ะตษฅกะคค์(€ฝััฝด่ต…เ ฤูมเฐ•นุกอ…”ต…ษ•ตฅนอ•ะตฝััฝดคค์(€‘ฅอมฑ…ไ่ษฅ์(€Ýฅ‘ั ่ตฅธ ฬุมมเฐ…ฑ ฤภมูÜ€ด€ฬษมเคค์(€…ภ่ู…ศ ดตุเตอม…”ดศค์(€มฝฅนั•ศต•ู•นัฬ่นฝน”์)๔((นุเตัฝ…อะ์(€มฝอฅัฅฝธ่ษ•ฑ…ัฅู”์(€‘ฅอมฑ…ไ่ษฅ์(€ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่…ีัผตฅนต…เ ภฐ€ลศค…ีัผ์(€…ฑฅธตฅั•ตฬ่•นั•ศ์(€…ภ่ู…ศ ดตุเตอม…”ดฬค์(€ม…‘‘ฅน่ต…เ ฤมมเฐ…ฑกู…ศ ดต‘•นอฅัไต…ษตม…‘‘ฅนค€จ€ธิิคค์(€ฝษ‘•ศ่€ลมเอฝฑฅู…ศ ดตุเตฝษ‘•ศตอัษฝนค์(€ฝษ‘•ศตษ…‘ฅีฬ่ู…ศ ดตุเตษ…‘ฅีฬตตค์(€…ญษฝีน่ู…ศ ดตุเตฑ…อฬค์(€ฝเตอก…‘ฝÜ่ู…ศ ดตุเตอก…‘ฝÜดศค์(€…ญ‘ษฝภตฅฑั•ศ่ฑีศกู…ศ ดตุเตฑีศคคอ…ัีษ…ั”กู…ศ ดตุเตอ…ัีษ…ั”คค์(€ฝม…ฅัไ่€ภ์(€มฝฅนั•ศต•ู•นัฬ่…ีัผ์(€ัษ…นอฝษด่ัษ…นอฑ…ั”อ ภฐ€แมเฐ€ภค์(€ัษ…นอฅัฅฝธ่(€€€ฝม…ฅัไู…ศ ดตุเตตฝัฅฝธต…อ”คู…ศ ดตุเต•…อ”ตฝีะคฐ(€€€ัษ…นอฝษดู…ศ ดตุเตตฝัฅฝธต…อ”คู…ศ ดตุเต•…อ”ตฝีะค์)๔((นุเตัฝ…อะดต…ัฅฝธ์(€ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่…ีัผตฅนต…เ ภฐ€ลศค…ีัผ…ีัผ์)๔((นุเตัฝ…อะนฅฬตูฅอฅฑ”์(€ฝม…ฅัไ่€ฤ์(€ัษ…นอฝษด่ัษ…นอฑ…ั”อ ภฐ€ภฐ€ภค์)๔((นุเตัฝ…อั}}ต•ออ…”์(€ตฅธตÝฅ‘ั ่€ภ์(€ฝู•ษฑฝÜตÝษ…ภ่…นๅÝก•ษ”์(€ฝฑฝศ่ู…ศ ดตุเตั•แะตอ•ฝน‘…ษไค์(€ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตอดค์)๔((นุเตัฝ…อะ€๘€นุเตฅฝธตีััฝธ์Ýฅ‘ั ่€ฬษมเ์ก•ฅกะ่€ฬษมเ์ฑ•เต…อฅฬ่€ฬษมเ์๔(นุเตัฝ…อะดตอี•อฬ์ฝษ‘•ศตฝฑฝศ่ฝฑฝศตตฅเกฅธอษฐู…ศ ดตุเตอี•อฬค€ศเ”ฐู…ศ ดตุเตฝษ‘•ศคค์๔(นุเตัฝ…อะดตÝ…ษนฅน์ฝษ‘•ศตฝฑฝศ่ฝฑฝศตตฅเกฅธอษฐู…ศ ดตุเตÝ…ษนฅนค€ศเ”ฐู…ศ ดตุเตฝษ‘•ศคค์๔(นุเตัฝ…อะดต•ษษฝศ์ฝษ‘•ศตฝฑฝศ่ฝฑฝศตตฅเกฅธอษฐู…ศ ดตุเต‘…น•ศค€ศเ”ฐู…ศ ดตุเตฝษ‘•ศคค์๔(นุเตัฝ…อะดตอๅนฐ€นุเตัฝ…อะดตีม‘…ั”ฐ€นุเตัฝ…อะดตษ…ฅธฐ€นุเตัฝ…อะดตฑฝ…‘ฅน์ฝษ‘•ศตฝฑฝศ่ฝฑฝศตตฅเกฅธอษฐู…ศ ดตุเต…•นะค€ศะ”ฐู…ศ ดตุเตฝษ‘•ศคค์๔((นุเตัฝ…อะนฅฬตัฅต•่้…ั•ศ์(€มฝอฅัฅฝธ่…อฝฑีั”์(€ษฅกะ่€แมเ์(€ฝััฝด่€อมเ์(€ฑ•ะ่€แมเ์(€ก•ฅกะ่€ษมเ์(€ฝษ‘•ศตษ…‘ฅีฬ่ู…ศ ดตุเตษ…‘ฅีฬตมฅฑฐค์(€…ญษฝีน่ู…ศ ดตุเต…•นะค์(€ฝนั•นะ่€์(€ัษ…นอฝษด่อ…ฑ•` ฤค์(€ัษ…นอฝษดตฝษฅฅธ่ฑ•ะ์(€…นฅต…ัฅฝธ่ุเตัฝ…อะตมษฝษ•อฬู…ศ ดตุเตัฝ…อะต‘ีษ…ัฅฝธคู…ศ ดตุเตมกๅอฅฬตษฅัฅฝธคฝษÝ…ษ‘ฬ์)๔((นุเตัฝ…อะดตอี•อฬนฅฬตัฅต•่้…ั•ศ์…ญษฝีน่ู…ศ ดตุเตอี•อฬค์๔(นุเตัฝ…อะดตÝ…ษนฅนนฅฬตัฅต•่้…ั•ศ์…ญษฝีน่ู…ศ ดตุเตÝ…ษนฅนค์๔(นุเตัฝ…อะดต•ษษฝศนฅฬตัฅต•่้…ั•ศ์…ญษฝีน่ู…ศ ดตุเต‘…น•ศค์๔((นุเตัฝ…อั}}ต•ออ…”อัษฝน์(€‘ฅอมฑ…ไ่ฑฝฌ์(€ต…ษฅธตฝััฝด่€ษมเ์(€ฝฑฝศ่ู…ศ ดตุเตั•แะค์(€ฝนะตÝ•ฅกะ่ู…ศ ดตุเตÝ•ฅกะตต•‘ฅีดค์)๔((ผจMก…ษ•‘•นอ”ตฝนั•นะฝนัษฝฑฬญ••ภฑฅอัฬฐ••‘ฬ…น…ั…ฑฝี•ฬฝธฝน”ฅนั•ษ…ัฅฝธตฝ‘•ฐธ€จผ(นุเตฝฑฑ•ัฅฝธตัฝฝฑฬ์(€‘ฅอมฑ…ไ่ฑ•เ์(€ตฅธตÝฅ‘ั ่€ภ์(€…ฑฅธตฅั•ตฬ่•นั•ศ์(€…ภ่ู…ศ ดตุเตอม…”ดศค์)๔((นุเตฝฑฑ•ัฅฝธต‘•นอฅัไ์(€‘ฅอมฑ…ไ่ฅนฑฅน”ตษฅ์(€ฑ•เ่€ภ€ภ…ีัผ์(€ษฅต…ีัผตฝฑีตนฬ่€ฬษมเ์(€ษฅต…ีัผตฑฝÜ่ฝฑีตธ์(€…ภ่€ษมเ์(€ม…‘‘ฅน่€ษมเ์(€ฝษ‘•ศ่€ลมเอฝฑฅู…ศ ดตุเตฝษ‘•ศค์(€ฝษ‘•ศตษ…‘ฅีฬ่ู…ศ ดตุเตษ…‘ฅีฬตอดค์(€…ญษฝีน่ู…ศ ดตุเตอีษ…”ตอีนญ•ธค์)๔((นุเตฝฑฑ•ัฅฝธต‘•นอฅัไ€๘ีััฝธฐ(นุเตอ•ฑ•ัฅฝธตฝนัษฝฐ์(€‘ฅอมฑ…ไ่ษฅ์(€Ýฅ‘ั ่€ศแมเ์(€ก•ฅกะ่€ศแมเ์(€ตฅธตÝฅ‘ั ่€ศแมเ์(€ฑ•เ่€ภ€ภ€ศแมเ์(€มฑ…”ตฅั•ตฬ่•นั•ศ์(€ฝษ‘•ศ่€ลมเอฝฑฅัษ…นอม…ษ•นะ์(€ฝษ‘•ศตษ…‘ฅีฬ่…ฑกู…ศ ดตุเตษ…‘ฅีฬตอดค€ด€ษมเค์(€…ญษฝีน่ัษ…นอม…ษ•นะ์(€ฝฑฝศ่ู…ศ ดตุเตตีั•ค์(€ีษอฝศ่มฝฅนั•ศ์(€ฝีัฑฅน”่นฝน”์(€ัษ…นอฅัฅฝธ่(€€€…ญษฝีนตฝฑฝศู…ศ ดตุเตตฝัฅฝธต…อะคู…ศ ดตุเต•…อ”ตอั…น‘…ษคฐ(€€€ฝษ‘•ศตฝฑฝศู…ศ ดตุเตตฝัฅฝธต…อะคู…ศ ดตุเต•…อ”ตอั…น‘…ษคฐ(€€€ฝเตอก…‘ฝÜู…ศ ดตุเตตฝัฅฝธต…อะคู…ศ ดตุเต•…อ”ตอั…น‘…ษคฐ(€€€ฝฑฝศู…ศ ดตุเตตฝัฅฝธต…อะคู…ศ ดตุเต•…อ”ตอั…น‘…ษคฐ(€€€ัษ…นอฝษดู…ศ ดตุเตตฝัฅฝธตฅนอั…นะคู…ศ ดตุเต•…อ”ตมษ•อฬค์)๔()กัตฑm‘…ัตุเตฅนั•ษ…ัฅฝนอt€นุเตฝฑฑ•ัฅฝธต‘•นอฅัไ€๘ีััฝธ้กฝู•ศฐ)กัตฑm‘…ัตุเตฅนั•ษ…ัฅฝนอt€นุเตอ•ฑ•ัฅฝธตฝนัษฝฐ้กฝู•ศ์(€ฝษ‘•ศตฝฑฝศ่ู…ศ ดตุเตฝษ‘•ศค์(€…ญษฝีน่ู…ศ ดตุเตอีษ…”ดศค์(€ฝฑฝศ่ู…ศ ดตุเตั•แะตอ•ฝน‘…ษไค์)๔((นุเตฝฑฑ•ัฅฝธต‘•นอฅัไ€๘ีััฝธ้ฝีฬตูฅอฅฑ”ฐ(นุเตอ•ฑ•ัฅฝธตฝนัษฝฐ้ฝีฬตูฅอฅฑ”์(€ฝเตอก…‘ฝÜ่ู…ศ ดตุเตอก…‘ฝÜตฝีฬค์)๔((นุเตฝฑฑ•ัฅฝธต‘•นอฅัไ€๘ีััฝธนฅฬต…ัฅู”ฐ(นุเตอ•ฑ•ัฅฝธตฝนัษฝฐนฅฬตอ•ฑ•ั•์(€ฝษ‘•ศตฝฑฝศ่ู…ศ ดตุเต…•นะตฑฅน”ค์(€…ญษฝีน่ู…ศ ดตุเต…•นะตอฝะค์(€ฝเตอก…‘ฝÜ่ฅนอ•ะ€ภ€ลมเ€ภู…ศ ดตุเตอีษ…”ตฑฅนะค์(€ฝฑฝศ่ู…ศ ดตุเต…•นะค์)๔((นุเตฝฑฑ•ัฅฝธต‘•นอฅัไอูฐ(นุเตอ•ฑ•ัฅฝธตฝนัษฝฐอู์(€Ýฅ‘ั ่€ฤัมเ์(€ก•ฅกะ่€ฤัมเ์(€อัษฝญ”ตÝฅ‘ั ่€ฤธเ์)๔((นุเตีฑฌต…ศ์(€‘ฅอมฑ…ไ่ฑ•เ์(€ตฅธตก•ฅกะ่€ะูมเ์(€…ฑฅธตฅั•ตฬ่•นั•ศ์(€…ภ่ู…ศ ดตุเตอม…”ดศค์(€ม…‘‘ฅน่€Ýมเู…ศ ดตุเตอม…”ดะค์(€ฝษ‘•ศตฝััฝด่€ลมเอฝฑฅู…ศ ดตุเต…•นะตฑฅน”ค์(€…ญษฝีน่ฝฑฝศตตฅเกฅธอษฐู…ศ ดตุเต…•นะตอฝะค€ุศ”ฐู…ศ ดตุเต…นู…ฬตษ…ฅอ•คค์(€ฝเตอก…‘ฝÜ่ฅนอ•ะ€ภ€ลมเ€ภู…ศ ดตุเตอีษ…”ตฑฅนะค์)๔((นุเตีฑฌต…ษmกฅ‘‘•นt์‘ฅอมฑ…ไ่นฝน”์๔(นุเตีฑฌต…ศ€๘อัษฝน์ฝฑฝศ่ู…ศ ดตุเตั•แะตอ•ฝน‘…ษไค์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตแฬค์ฝนะตÝ•ฅกะ่ู…ศ ดตุเตÝ•ฅกะตอ•ตฅฝฑค์Ýกฅั”ตอม…”่นฝÝษ…ภ์๔(นุเตีฑฌต…ษ}}อม…•ศ์ตฅธตÝฅ‘ั ่ู…ศ ดตุเตอม…”ดศค์ฑ•เ่€ฤ์๔(นุเตีฑฌต…ศ€นุเตีััฝธ์ตฅธตก•ฅกะ่€ฬษมเ์ม…‘‘ฅนตฅนฑฅน”่€ฤมมเ์๔(นุเตีฑฌต…ศ€นุเตฅฝธตีััฝธ์Ýฅ‘ั ่€ฬษมเ์ก•ฅกะ่€ฬษมเ์ฑ•เต…อฅฬ่€ฬษมเ์๔((นุเตษฝÜต…ัฅฝนฬ์(€‘ฅอมฑ…ไ่ฑ•เ์(€…ฑฅธตฅั•ตฬ่•นั•ศ์(€ฉีอัฅไตฝนั•นะ่ฑ•เต•น์(€…ภ่€ษมเ์(€ฝม…ฅัไ่€ภ์(€ัษ…นอฅัฅฝธ่ฝม…ฅัไู…ศ ดตุเตตฝัฅฝธต…อะคู…ศ ดตุเต•…อ”ตอั…น‘…ษค์)๔()กัตฑm‘…ัตุเตฅนั•ษ…ัฅฝนอt€้Ýก•ษ” นุเตั…อฌตษฝÜฐนุเตฅฑ”ตฅั•ดฐนุเตม…น•ฐตนฝัฅ”ฐนุเตฑฅู”ต•นัษๅ}}…ษฐนุเตฝนน•ัฅฝธต…ษค้กฝู•ศ€นุเตษฝÜต…ัฅฝนฬฐ(้Ýก•ษ” นุเตั…อฌตษฝÜฐนุเตฅฑ”ตฅั•ดฐนุเตม…น•ฐตนฝัฅ”ฐนุเตฑฅู”ต•นัษๅ}}…ษฐนุเตฝนน•ัฅฝธต…ษค้ฝีฬตÝฅักฅธ€นุเตษฝÜต…ัฅฝนฬฐ(นุเตษฝÜต…ัฅฝนฬ้ก…ฬกm…ษฅต•แม…น‘•๔ัษี”tค์ฝม…ฅัไ่€ฤ์๔((นุเตษฝÜตต•นิ์(€มฝอฅัฅฝธ่ฅแ•์(€่ตฅน‘•เ่ู…ศ ดตุเต่ตมฝมฝู•ศค์(€‘ฅอมฑ…ไ่ษฅ์(€Ýฅ‘ั ่ตฅธ ศฬมมเฐ…ฑ ฤภมูÜ€ด€ฤูมเคค์(€…ภ่€ษมเ์(€ม…‘‘ฅน่€ูมเ์(€ฝู•ษฑฝÜตเ่กฅ‘‘•ธ์(€ฝู•ษฑฝÜตไ่…ีัผ์(€ฝษ‘•ศ่€ลมเอฝฑฅู…ศ ดตุเตฝษ‘•ศตกฅกฑฅกะค์(€ฝษ‘•ศตษ…‘ฅีฬ่ู…ศ ดตุเตษ…‘ฅีฬตตค์(€…ญษฝีน่ู…ศ ดตุเต‘ฅ…ฑฝตฑ…อฬค์(€ฝเตอก…‘ฝÜ่ู…ศ ดตุเตอก…‘ฝÜตตฝ‘…ฐตฝม•ธค์(€…ญ‘ษฝภตฅฑั•ศ่ฑีศกู…ศ ดตุเตฑีศคคอ…ัีษ…ั”กู…ศ ดตุเตอ…ัีษ…ั”คค์(€ัษ…นอฝษดตฝษฅฅธ่ัฝภษฅกะ์)๔((นุเตษฝÜตต•นิ€๘ีััฝธ์(€‘ฅอมฑ…ไ่ษฅ์(€Ýฅ‘ั ่€ฤภภ”์(€ตฅธตก•ฅกะ่€ฬูมเ์(€ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่€ศัมเตฅนต…เ ภฐ€ลศค…ีัผ์(€…ฑฅธตฅั•ตฬ่•นั•ศ์(€…ภ่ู…ศ ดตุเตอม…”ดศค์(€ม…‘‘ฅน่€ภ€ๅมเ์(€ฝษ‘•ศตษ…‘ฅีฬ่ู…ศ ดตุเตษ…‘ฅีฬตอดค์(€…ญษฝีน่ัษ…นอม…ษ•นะ์(€ฝฑฝศ่ู…ศ ดตุเตั•แะตอ•ฝน‘…ษไค์(€ีษอฝศ่มฝฅนั•ศ์(€ฝีัฑฅน”่นฝน”์(€ั•แะต…ฑฅธ่ฑ•ะ์)๔()กัตฑm‘…ัตุเตฅนั•ษ…ัฅฝนอt€นุเตษฝÜตต•นิ€๘ีััฝธ้กฝู•ศฐ(นุเตษฝÜตต•นิ€๘ีััฝธ้ฝีฬตูฅอฅฑ”์…ญษฝีน่ู…ศ ดตุเตอีษ…”ดศค์ฝฑฝศ่ู…ศ ดตุเตั•แะค์๔(นุเตษฝÜตต•นิ€๘ีััฝธนฅฬต‘…น•ศ์ฝฑฝศ่ู…ศ ดตุเต‘…น•ศค์๔(นุเตษฝÜตต•นิ€๘ีััฝธ้‘ฅอ…ฑ•์ีษอฝศ่นฝะต…ฑฑฝÝ•์ฝม…ฅัไ่€ธÜศ์๔(นุเตษฝÜตต•นิ€๘ีััฝธอู์Ýฅ‘ั ่ู…ศ ดตุเตฅฝธตอดค์ก•ฅกะ่ู…ศ ดตุเตฅฝธตอดค์๔(นุเตษฝÜตต•นิ€๘ีััฝธญ์ฝฑฝศ่ู…ศ ดตุเตตีั•ค์ฝนะตอฅ้”่ู…ศ ดตุเตฝนะตตฅษผค์๔(นุเตษฝÜตต•นี}}อ•ม…ษ…ัฝศ์ก•ฅกะ่€ลมเ์ต…ษฅธ่€ัมเ€ูมเ์ฝษ‘•ศ่€ภ์…ญษฝีน่ู…ศ ดตุเต‘ฅูฅ‘•ศค์๔()ญ•ๅษ…ต•ฬุเตอมฅธ์(€ัผ์ัษ…นอฝษด่ษฝั…ั” ฬุม‘•ค์๔)๔()ญ•ๅษ…ต•ฬุเตก…มัฅตษ•ฑ•…อ”์(€€ภ”์ัษ…นอฝษด่ู…ศ ดตุเตก…มัฅตมษ•อฬตัษ…นอฝษดค์๔(€€ะเ”์ัษ…นอฝษด่ู…ศ ดตุเตก…มัฅตษ•ฑ•…อ”ตฝู•ษอกฝฝะค์๔(€€Üศ”์ัษ…นอฝษด่ู…ศ ดตุเตมกๅอฅฬตษ•ฝฅฐค์๔(€€ฤภภ”์ัษ…นอฝษด่ัษ…นอฑ…ั”อ ภฐภฐภคอ…ฑ” ฤค์๔)๔()ญ•ๅษ…ต•ฬุเตÝฅน‘ฝÜตก…มัฅตฝม•ธ์(€€ภ”์ฝม…ฅัไ่€ภ์ัษ…นอฝษด่ัษ…นอฑ…ั”อ ภฐฤมมเฐภคอ…ฑ” ธไุค์๔(€€ุศ”์ฝม…ฅัไ่€ฤ์ัษ…นอฝษด่ัษ…นอฑ…ั”อ ภฐดลมเฐภคอ…ฑ” ฤธภภเค์๔(€€เศ”์ฝม…ฅัไ่€ฤ์ัษ…นอฝษด่ัษ…นอฑ…ั”อ ภฐธศีมเฐภคอ…ฑ” ธไไเค์๔(€€ฤภภ”์ฝม…ฅัไ่€ฤ์ัษ…นอฝษด่ัษ…นอฑ…ั”อ ภฐภฐภคอ…ฑ” ฤค์๔)๔()ญ•ๅษ…ต•ฬุเตÝฅน‘ฝÜตก…มัฅตฑฝอ”์(€€ภ”์ฝม…ฅัไ่€ฤ์ัษ…นอฝษด่ัษ…นอฑ…ั”อ ภฐภฐภคอ…ฑ” ฤค์๔(€€ศเ”์ฝม…ฅัไ่€ฤ์ัษ…นอฝษด่ัษ…นอฑ…ั”อ ภฐดธีมเฐภคอ…ฑ” ฤธภภฬค์๔(€€ฤภภ”์ฝม…ฅัไ่€ภ์ัษ…นอฝษด่ัษ…นอฑ…ั”อ ภฐีมเฐภคอ…ฑ” ธไÜิค์๔)๔()ญ•ๅษ…ต•ฬุเตอญ•ฑ•ัฝธตม…อฬ์(€ัผ์ัษ…นอฝษด่ัษ…นอฑ…ั”อ ฬศภ”ฐ€ภฐ€ภค์๔)๔()ญ•ๅษ…ต•ฬุเตัฝ…อะตมษฝษ•อฬ์ัผ์ัษ…นอฝษด่อ…ฑ•` ภค์๔๔()ต•‘ฅ€กต…เตÝฅ‘ั ่€เศมมเค์(€€้Ýก•ษ”กีััฝธฐmษฝฑ”๔ีััฝธtฐmษฝฑ”๔ั…tฐmษฝฑ”๔ฝมัฅฝธtฐmษฝฑ”๔ต•นีฅั•ดtฐฅนมีะ้นฝะกmัๅม”๔กฅ‘‘•ธtคฐอ•ฑ•ะฐั•แั…ษ•ค์(€€€ตฅธตก•ฅกะ่ู…ศ ดตุเตัฝี ตั…ษ•ะค์(€๔((€€นุเตีััฝธฐ(€€นุเตฅฝธตีััฝธฐ(€€นุเตัฝฝฑ…ศตีััฝธฐ(€€นุเตฅนมีะ์(€€€ตฅธตก•ฅกะ่ู…ศ ดตุเตฝนัษฝฐตฑค์(€๔((€€นุเตฅฝธตีััฝธฐ(€€นุเตัฝฝฑ…ศตีััฝธ์(€€€Ýฅ‘ั ่ู…ศ ดตุเตฝนัษฝฐตฑค์(€€€ฑ•เต…อฅฬ่ู…ศ ดตุเตฝนัษฝฐตฑค์(€๔((€m‘…ัตัฝฝฑัฅมt่้…ั•ศ์(€€€‘ฅอมฑ…ไ่นฝน”์(€๔((€€นุเตัฝ…อะ€๘€นุเตฅฝธตีััฝธ์(€€€Ýฅ‘ั ่ู…ศ ดตุเตฝนัษฝฐตฑค์(€€€ฑ•เต…อฅฬ่ู…ศ ดตุเตฝนัษฝฐตฑค์(€๔((€€้Ýก•ษ” นุเตฅฝธตีััฝธฐ€นุเตัฝฝฑ…ศตีััฝธฐ€นุเตอ•ฑ•ัฅฝธตฝนัษฝฐฐ€นุเตฝฑฑ•ัฅฝธต‘•นอฅัไ€๘ีััฝธฐ€นุเตูฅ•ÜตอÝฅั €๘ีััฝธค์(€€€Ýฅ‘ั ่ู…ศ ดตุเตัฝี ตั…ษ•ะค์(€€€ตฅธตÝฅ‘ั ่ู…ศ ดตุเตัฝี ตั…ษ•ะค์(€€€ก•ฅกะ่ู…ศ ดตุเตัฝี ตั…ษ•ะค์(€€€ฑ•เต…อฅฬ่ู…ศ ดตุเตัฝี ตั…ษ•ะค์(€๔((€€นุเตฝฑฑ•ัฅฝธต‘•นอฅัไ์(€€€ษฅต…ีัผตฝฑีตนฬ่ู…ศ ดตุเตัฝี ตั…ษ•ะค์(€๔((€€นุเตฝฑฑ•ัฅฝธต‘•นอฅัไ€๘ีััฝธฐ(€€นุเตอ•ฑ•ัฅฝธตฝนัษฝฐ์(€€€Ýฅ‘ั ่ู…ศ ดตุเตัฝี ตั…ษ•ะค์(€€€ตฅธตÝฅ‘ั ่ู…ศ ดตุเตัฝี ตั…ษ•ะค์(€€€ก•ฅกะ่ู…ศ ดตุเตัฝี ตั…ษ•ะค์(€€€ฑ•เต…อฅฬ่ู…ศ ดตุเตัฝี ตั…ษ•ะค์(€๔((€€นุเตษฝÜตต•นิ€๘ีััฝธฐ(€€นุเตีฑฌต…ศ€นุเตีััฝธฐ(€€นุเตีฑฌต…ศ€นุเตฅฝธตีััฝธ์(€€€ตฅธตก•ฅกะ่ู…ศ ดตุเตัฝี ตั…ษ•ะค์(€๔((€€นุเตษฝÜต…ัฅฝนฬฐ(€กัตฑm‘…ัตัฝี ตีค๔…ัฅู”t€นุเตษฝÜต…ัฅฝนฬ์(€€€ฝม…ฅัไ่€ฤ์(€๔((€€้Ýก•ษ”กฅนมีะฐั•แั…ษ•ฐอ•ฑ•ะฐmฝนั•นั•‘ฅั…ฑ”๔ัษี”tค์(€€€อษฝฑฐตต…ษฅธตฑฝฌ่€Üูมเ์(€๔((€€้Ýก•ษ”กีััฝธฐmษฝฑ”๔ีััฝธtฐmษฝฑ”๔ั…tฐmษฝฑ”๔ฝมัฅฝธtฐmษฝฑ”๔ต•นีฅั•ดtฐฅนมีะฐอ•ฑ•ะฐั•แั…ษ•ค์(€€€ัฝี ต…ัฅฝธ่ต…นฅมีฑ…ัฅฝธ์(€€€€ตÝ•ญฅะตั…ภตกฅกฑฅกะตฝฑฝศ่ัษ…นอม…ษ•นะ์(€๔((€€้Ýก•ษ”กm‘…ัตั…อฌตฅ‘tฐm‘…ัตฅฑ”ต•นัษๅtฐm‘…ัตมษฝฅฑ”ตฅ‘tค์(€€€ัฝี ต…ัฅฝธ่ม…ธตไ์(€๔((€€้Ýก•ษ”กm‘…ัตั…อฌตฅ‘tฐm‘…ัตฅฑ”ต•นัษๅtฐm‘…ัตมษฝฅฑ”ตฅ‘tฅm‘…ัตัฝี ตกฝฑ๔ม•น‘ฅนt์(€€€ฝษ‘•ศตฝฑฝศ่ู…ศ ดตุเต…•นะตฑฅน”ค์(€€€…ญษฝีน่ู…ศ ดตุเต…•นะตอฝะค์(€€€ัษ…นอฝษด่ัษ…นอฑ…ั”อ ภฐ€ลมเฐ€ภคอ…ฑ” ธไไศค์(€๔)๔()ต•‘ฅ€กมฝฅนั•ศ่ฝ…ษอ”ค์(€€นุเตีััฝธฐ(€€นุเตฅฝธตีััฝธฐ(€€นุเตัฝฝฑ…ศตีััฝธฐ(€€นุเตฅนมีะฐ(€mษฝฑ”๔ั…tฐ(€mษฝฑ”๔ฝมัฅฝธt์(€€€ตฅธตก•ฅกะ่€ะัมเ์(€๔((€€นุเตฅฝธตีััฝธฐ(€€นุเตัฝฝฑ…ศตีััฝธ์(€€€ตฅธตÝฅ‘ั ่€ะัมเ์(€€€ฑ•เต…อฅฬ่€ะัมเ์(€๔)๔()ต•‘ฅ€กต…เตÝฅ‘ั ่€ะฬมมเค์(€€นุเตัฝ…อะดต…ัฅฝธ์(€€€ษฅตั•ตมฑ…ั”ตฝฑีตนฬ่…ีัผตฅนต…เ ภฐ€ลศค…ีัผ์(€๔((€€นุเตัฝ…อะดต…ัฅฝธ€๘€นุเตีััฝธ์(€€€ษฅตฝฑีตธ่€ศ€ผ€ดฤ์(€€€ษฅตษฝÜ่€ศ์(€€€Ýฅ‘ั ่€ฤภภ”์(€๔((€€นุเตัฝ…อะดต…ัฅฝธ€๘€นุเตฅฝธตีััฝธ์(€€€ษฅตฝฑีตธ่€ฬ์(€€€ษฅตษฝÜ่€ฤ์(€๔)๔()ต•‘ฅ€กมษ••ษฬตษ•‘ี•ตตฝัฅฝธ่ษ•‘ี”ค์(€€นุเตีััฝธฐ(€€นุเตอีษ…”ฐ(€€นุเตฅฝธตีััฝธฐ(€€นุเตัฝฝฑ…ศตีััฝธฐ(€€นุเตฅนมีะฐ(€€นุเตม…น•ฐฐ(€€นุเตัฝ…อะฐ(€€นุเตÝฅน‘ฝÜตฑ…ๅ•ศฐ(€€นุเตÝฅน‘ฝÜตอีษ…”ฐ(€€นุเตัฝฝฑัฅภฐ(€m‘…ัตัฝฝฑัฅมt่้…ั•ศ์(€€€ัษ…นอฅัฅฝธต‘ีษ…ัฅฝธ่€ลตฬ์(€๔((€m‘…ัตก…มัฅตอั…ั”๔ษ•ฑ•…อ•tฐ(€m‘…ัตุเตฑ…ๅ•ศ๔มฝมฝู•ศtฐ(€€นุเตÝฅน‘ฝÜตฑ…ๅ•ศนฅฬตฝม•ธ€นุเตÝฅน‘ฝÜตอีษ…”ฐ(€€นุเตÝฅน‘ฝÜตฑ…ๅ•ศนฅฬตฝม•ธนุเตÝฅน‘ฝÜตอีษ…”ฐ(€€นุเตÝฅน‘ฝÜตฑ…ๅ•ษm‘…ัตÝฅน‘ฝÜตอั…ั”๔ฑฝอฅนt€นุเตÝฅน‘ฝÜตอีษ…”ฐ(€€นุเตÝฅน‘ฝÜตฑ…ๅ•ษm‘…ัตÝฅน‘ฝÜตอั…ั”๔ฑฝอฅนtนุเตÝฅน‘ฝÜตอีษ…”์(€€€…นฅต…ัฅฝธ่นฝน”์(€๔((€€นุเตีััฝธนฅฬตฑฝ…‘ฅน่้…ั•ศฐ(€€นุเตอญ•ฑ•ัฝธ่้…ั•ศฐ(€€นุเตัฝ…อะนฅฬตัฅต•่้…ั•ศ์(€€€…นฅต…ัฅฝธ่นฝน”์(€๔)๔

@@ -1,10 +1,14 @@
 import { actionButton, element, icon } from "../ui/dom.mjs";
+import { statusState } from "../ui/empty-state.mjs";
+import { prepareFormControls, setFieldState, setFormStatus } from "../ui/form-system.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
 import { DEFAULT_SOUND_PREFERENCES, SOUND_PACKS } from "../services/sound-manager.mjs";
 import { DENSITY_CUSTOM_RANGES, densityCssVariables, resolveDensity, sanitizeDensitySettings } from "../core/density-engine.mjs";
-import { BRAIN_MEMORY_CATEGORIES, BRAIN_PERMISSION_CATEGORIES, sanitizeBrainPreferences } from "../brain/preferences.mjs";
+import { BRAIN_MEMORY_CATEGORIES, BRAIN_PERMISSION_CATEGORIES, brainPreferenceLabel, sanitizeBrainPreferences } from "../brain/preferences.mjs";
 
 const ACCENTS = Object.freeze(["mint", "sky", "amber", "violet", "rose"]);
+const BRAIN_PERMISSION_LABELS = Object.freeze({ notes: "Notes", tasks: "Taches", calendar: "Calendrier", connections: "Connexions", gaming: "Gaming", activity: "Activite", files: "Fichiers", profile: "Profil", settings: "Reglages" });
+const BRAIN_MEMORY_LABELS = Object.freeze({ interface: "Interface", habits: "Habitudes", widgets: "Widgets", schedules: "Plannings", "task-types": "Types de taches", spaces: "Spaces", flows: "Flows", "response-style": "Style de reponse", goals: "Objectifs" });
 const SYNC_LABELS = Object.freeze({
   loading: "Connexion Supabase",
   saving: "Synchronisation",
@@ -33,15 +37,26 @@ const SOUND_VOLUME_ROWS = Object.freeze([
   Object.freeze({ id: "brain", icon: "brain", title: "Brain", description: "Reflexion, reponse et fin de traitement." }),
   Object.freeze({ id: "system", icon: "audio-lines", title: "Systeme", description: "Connexion, sauvegarde, synchronisation et Spaces." })
 ]);
+let settingRowSequence = 0;
 
 function choice(actionId, iconName, label, active) {
   return actionButton({ actionId, className: `v8-setting-choice${active ? " is-active" : ""}` }, [icon(iconName), element("span", { text: label }), active ? icon("check") : null]);
 }
 
 function settingRow(iconName, title, description, control) {
-  return element("div", { className: "v8-setting-row" }, [
+  const rowId = `v8-setting-row-${++settingRowSequence}`;
+  const titleId = `${rowId}-title`;
+  const descriptionId = `${rowId}-description`;
+  const controls = control.matches?.("input, textarea, select, button[role='switch']") ? [control] : [...control.querySelectorAll?.("input, textarea, select, button[role='switch']") || []];
+  controls.forEach((entry) => {
+    if (!entry.hasAttribute("aria-label") && !entry.hasAttribute("aria-labelledby")) entry.setAttribute("aria-labelledby", titleId);
+    const describedBy = new Set(String(entry.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean));
+    describedBy.add(descriptionId);
+    entry.setAttribute("aria-describedby", [...describedBy].join(" "));
+  });
+  return element("div", { className: "v8-setting-row", id: rowId }, [
     element("span", { className: "v8-setting-row__icon" }, [icon(iconName)]),
-    element("div", { className: "v8-setting-row__copy" }, [element("strong", { text: title }), element("p", { text: description })]),
+    element("div", { className: "v8-setting-row__copy" }, [element("strong", { id: titleId, text: title }), element("p", { id: descriptionId, text: description })]),
     element("div", { className: "v8-setting-row__control" }, [control])
   ]);
 }
@@ -89,8 +104,8 @@ function densityPreview() {
   return element("div", { className: "v8-density-preview", attributes: { "aria-label": "Apercu interactif de la densite" } }, [
     element("aside", { className: "v8-density-preview__rail" }, [icon("circle-dot"), icon("house"), icon("notebook-pen"), icon("settings-2")]),
     element("div", { className: "v8-density-preview__workspace" }, [
-      element("header", {}, [element("span", {}, [icon("panel-top"), element("strong", { text: "Apercu" })]), element("button", { attributes: { type: "button", tabindex: "-1" } }, [icon("search")])]),
-      element("article", { className: "v8-density-preview__card" }, [element("small", { text: "Dashboard" }), element("strong", { text: "Votre espace en un regard" }), element("p", { text: "Cartes, listes et commandes utilisent les memes tokens." }), element("button", { attributes: { type: "button", tabindex: "-1" } }, [icon("sparkles"), element("span", { text: "Action" })])]),
+      element("header", {}, [element("span", {}, [icon("panel-top"), element("strong", { text: "Apercu" })]), element("span", { className: "v8-density-preview__demo-control", attributes: { "aria-hidden": "true" } }, [icon("search")])]),
+      element("article", { className: "v8-density-preview__card" }, [element("small", { text: "Dashboard" }), element("strong", { text: "Votre espace en un regard" }), element("p", { text: "Cartes, listes et commandes utilisent les memes tokens." }), element("span", { className: "v8-density-preview__demo-control", attributes: { "aria-hidden": "true" } }, [icon("sparkles"), element("span", { text: "Action" })])]),
       element("div", { className: "v8-density-preview__list" }, ["Priorite principale", "Briefing Brain", "Synchronisation Supabase"].map((label, index) => element("span", {}, [icon(index === 0 ? "circle-check-big" : index === 1 ? "brain" : "cloud"), element("b", { text: label })])))
     ]),
     element("aside", { className: "v8-density-preview__widget" }, [element("small", { text: "Widget" }), element("strong", { text: "09:41" }), element("span", { text: "Focus actif" })])
@@ -134,12 +149,12 @@ export function mountSettings(stage, options = {}) {
   const densityResolved = element("span", { className: "v8-density-resolved", attributes: { "aria-live": "polite" } });
   const brainPreferences = sanitizeBrainPreferences(state.brainPreferences);
   const brainNameInput = element("input", { className: "v8-input", attributes: { type: "text", maxlength: "32", value: brainPreferences.assistantName, "aria-label": "Nom de l'assistant" }, dataset: { brainPreferenceInput: "assistantName" } });
-  const brainPersonaSelect = preferenceSelect("persona", "Personnalite Brain", ["concise", "balanced", "expert", "coach", "creative", "developer", "custom"].map((value) => ({ value, label: value })), brainPreferences.persona);
-  const brainDetailSelect = preferenceSelect("detail", "Niveau de detail", [{ value: "brief", label: "Concis" }, { value: "balanced", label: "Equilibre" }, { value: "detailed", label: "Detaille" }], brainPreferences.detail);
+  const brainPersonaSelect = preferenceSelect("persona", "Personnalite Brain", ["concise", "balanced", "expert", "coach", "creative", "developer", "custom"].map((value) => ({ value, label: brainPreferenceLabel("persona", value) })), brainPreferences.persona);
+  const brainDetailSelect = preferenceSelect("detail", "Niveau de detail", ["brief", "balanced", "detailed"].map((value) => ({ value, label: brainPreferenceLabel("detailOption", value) })), brainPreferences.detail);
   const brainToneSelect = preferenceSelect("tone", "Ton de Brain", [{ value: "calm", label: "Calme" }, { value: "direct", label: "Direct" }, { value: "warm", label: "Chaleureux" }, { value: "technical", label: "Technique" }, { value: "creative", label: "Creatif" }], brainPreferences.tone);
   const brainLanguageSelect = preferenceSelect("language", "Langue de reponse", [{ value: "auto", label: "Langue de l'interface" }, { value: "fr", label: "Francais" }, { value: "en", label: "English" }, { value: "es", label: "Espanol" }, { value: "de", label: "Deutsch" }], brainPreferences.language);
   const brainSuggestionSelect = preferenceSelect("suggestionFrequency", "Frequence des suggestions", [{ value: "off", label: "Desactivees" }, { value: "low", label: "Faible" }, { value: "balanced", label: "Equilibree" }, { value: "high", label: "Elevee" }], brainPreferences.suggestionFrequency);
-  const brainAutomationSelect = preferenceSelect("automationLevel", "Niveau d'automatisation", [{ value: "manual", label: "Manuel" }, { value: "suggest-only", label: "Suggestions uniquement" }, { value: "confirm", label: "Confirmation requise" }, { value: "trusted", label: "Actions de confiance" }], brainPreferences.automationLevel);
+  const brainAutomationSelect = preferenceSelect("automationLevel", "Niveau d'automatisation", ["manual", "suggest-only", "confirm", "trusted"].map((value) => ({ value, label: brainPreferenceLabel("automationOption", value) })), brainPreferences.automationLevel);
   const brainProviderSelect = preferenceSelect("provider.active", "Provider Brain", [
     { value: "context", label: "ETHONE Context" }, { value: "openai", label: "OpenAI via backend" }, { value: "anthropic", label: "Anthropic via backend" }, { value: "groq", label: "Groq via backend" }, { value: "gemini", label: "Gemini via backend" }, { value: "ollama", label: "Ollama via pont local" }, { value: "lm-studio", label: "LM Studio via pont local" }
   ], brainPreferences.provider.active);
@@ -147,346 +162,6 @@ export function mountSettings(stage, options = {}) {
   const brainModelInput = element("input", { className: "v8-input", attributes: { type: "text", maxlength: "80", value: brainPreferences.provider.model, "aria-label": "Modele Brain" }, dataset: { brainPreferenceInput: "provider.model" } });
   const brainFallbackSelect = preferenceSelect("provider.fallback", "Provider de secours", [{ value: "context", label: "ETHONE Context" }, { value: "openai", label: "OpenAI" }, { value: "anthropic", label: "Anthropic" }, { value: "groq", label: "Groq" }, { value: "gemini", label: "Gemini" }, { value: "ollama", label: "Ollama" }, { value: "lm-studio", label: "LM Studio" }], brainPreferences.provider.fallback);
   const brainPrivacySelect = preferenceSelect("provider.privacy", "Niveau de confidentialite", [{ value: "minimal", label: "Contexte minimal" }, { value: "full-context", label: "Contexte autorise complet" }], brainPreferences.provider.privacy);
-  const brainPermissionGrid = element("div", { className: "v8-brain-settings-permissions" }, BRAIN_PERMISSION_CATEGORIES.map((permission) => element("label", {}, [element("span", {}, [icon(brainPreferences.permissions[permission] ? "eye" : "eye-off"), element("strong", { text: permission })]), brainPreferenceSwitch(`permissions.${permission}`, `Autoriser ${permission}`, brainPreferences.permissions[permission])])));
-  const brainMemoryCategoryGrid = element("div", { className: "v8-brain-settings-permissions" }, BRAIN_MEMORY_CATEGORIES.map((category) => element("label", {}, [element("span", {}, [icon(brainPreferences.memory.categories[category] ? "bookmark-check" : "bookmark-x"), element("strong", { text: category })]), brainPreferenceSwitch(`memory.categories.${category}`, `Memoriser ${category}`, brainPreferences.memory.categories[category])])));
-  const brainMemoryStatus = element("p", { className: "v8-settings-memory-status", text: "Les memoires sont chargees uniquement a la demande.", attributes: { "aria-live": "polite" } });
-  const brainMemoryList = element("div", { className: "v8-settings-memory-list" });
-  const brainMemoryLoad = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { settingsMemoryLoad: "" } }, [icon("database"), element("span", { text: "Voir les memoires" })]);
-  const accentControls = element("div", { className: "v8-accent-picker", attributes: { role: "group", "aria-label": "Couleur d'accent" } });
-  ACCENTS.forEach((accent) => accentControls.append(element("button", {
-    className: `v8-accent-swatch v8-accent-swatch--${accent}${state.accent === accent ? " is-active" : ""}`,
-    attributes: { type: "button", "aria-label": `Accent ${accent}`, "aria-pressed": state.accent === accent ? "true" : "false" },
-    dataset: { action: `v8.accent.${accent}` }
-  }, [state.accent === accent ? icon("check") : null])));
-
-  const soundPackSelect = element("select", {
-    className: "v8-input v8-sound-pack-select",
-    attributes: { "aria-label": "Pack sonore", disabled: !soundSupported || null },
-    dataset: { soundPack: "" }
-  }, SOUND_PACKS.map((pack) => element("option", { text: pack.label, attributes: { value: pack.id, translate: "no" } })));
-  soundPackSelect.value = initialSoundPreferences.pack;
-  const soundPackControl = element("div", { className: "v8-sound-pack-control" }, [
-    element("div", {}, [soundPackSelect, actionButton({ actionId: "v8.sound.preview", className: "v8-icon-button", ariaLabel: "Ecouter un apercu", disabled: !soundSupported }, [icon("play")])]),
-    element("small", { text: SOUND_PACKS.find((pack) => pack.id === initialSoundPreferences.pack)?.description || "Signature douce et lumineuse.", dataset: { soundPackDescription: "" } })
-  ]);
-  const workerStatusHost = element("div", { className: "v8-system-checks", attributes: { "aria-live": "polite" } });
-  const workerError = element("p", { className: "v8-settings-diagnostic-note" });
-  const workerDiagnosticButton = element("button", {
-    className: "v8-button v8-button--secondary",
-    attributes: { type: "button", disabled: !externalServices || null },
-    dataset: { workerDiagnostic: "" }
-  }, [icon("scan-search"), element("span", { text: externalServices ? "Verifier le Worker" : "Worker indisponible" })]);
-
-  const page = element("section", { className: "v8-page v8-settings-page", dataset: { page: "settings" } }, [
-    element("header", { className: "v8-page-heading" }, [
-      element("div", { className: "v8-page-heading__copy" }, [
-        element("span", { className: "v8-eyebrow", text: "Systeme" }),
-        element("h1", { text: "Reglages" }),
-        element("p", { text: "Une seule source de verite pour l'apparence et le comportement d'ETHONE." })
-      ]),
-      element("div", { className: "v8-page-heading__actions" }, [actionButton({ actionId: "v8.profile.open", variant: "secondary" }, [icon("user-round"), element("span", { text: "Profil" })])])
-    ]),
-    element("div", { className: "v8-settings-layout" }, [
-      element("aside", { className: "v8-settings-nav", attributes: { "aria-label": "Sections des reglages" } }, [
-        element("button", { className: "is-active", text: "Apparence", attributes: { type: "button", "aria-current": "true", "aria-controls": "v8-settings-appearance" }, dataset: { settingsSection: "v8-settings-appearance" } }),
-        element("button", { text: "Brain", attributes: { type: "button", "aria-controls": "v8-settings-brain" }, dataset: { settingsSection: "v8-settings-brain" } }),
-        element("button", { text: "Sons", attributes: { type: "button", "aria-controls": "v8-settings-sounds" }, dataset: { settingsSection: "v8-settings-sounds" } }),
-        element("button", { text: "Workspace", attributes: { type: "button", "aria-controls": "v8-settings-workspace" }, dataset: { settingsSection: "v8-settings-workspace" } }),
-        element("button", { text: "Systeme", attributes: { type: "button", "aria-controls": "v8-settings-system" }, dataset: { settingsSection: "v8-settings-system" } }),
-        element("button", { text: "Developer", attributes: { type: "button", "aria-controls": "v8-settings-developer" }, dataset: { settingsSection: "v8-settings-developer" } })
-      ]),
-      element("div", { className: "v8-settings-content" }, [
-        element("section", { id: "v8-settings-appearance", className: "v8-settings-section v8-surface" }, [
-          element("header", {}, [element("span", { className: "v8-eyebrow", text: "Design System" }), element("h2", { text: "Apparence" }), element("p", { text: "Des reglages sobres, coherents et persistants." })]),
-          settingRow("sun-moon", "Theme", "Adapter les surfaces et le contraste.", element("div", { className: "v8-segmented" }, [choice("v8.theme.night", "moon-star", "Nuit", state.theme === "night"), choice("v8.theme.graphite", "sun", "Graphite", state.theme === "graphite")])),
-          settingRow("palette", "Accent", "Identifier le Space et les actions importantes.", accentControls),
-          element("div", { className: "v8-density-settings" }, [
-            element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("rows-3")]), element("div", {}, [element("strong", { text: "Density Engine" }), element("p", { text: "Une densite coherente pour chaque page, panneau, widget et resolution." })]), densityResolved]),
-            densityChoices,
-            densityCustomHost,
-            element("div", { className: "v8-density-adaptive" }, [
-              element("label", {}, [element("span", {}, [element("strong", { text: "Focus Density" }), element("small", { text: "Compacter automatiquement le Space Focus." })]), switchControl("v8.density.focus", "Activer Focus Density", initialDensitySettings.focusDensity)]),
-              element("label", {}, [element("span", {}, [element("strong", { text: "Presets par Space" }), element("small", { text: "Personnel confortable, Focus compact, Studio confortable." })]), switchControl("v8.density.spaces", "Activer les presets par Space", initialDensitySettings.adaptiveBySpace)])
-            ]),
-            densityPreviewHost
-          ]),
-          settingRow("sparkles", "Spotlight", "Reveler le Dashboard avec une transition breve au demarrage.", switchControl("v8.spotlight.toggle", "Animation Spotlight au demarrage", state.spotlightEnabled !== false)),
-          settingRow("languages", "Langue", "Changer rapidement la langue de l'interface.", actionButton({ actionId: "v8.locale.cycle", variant: "secondary" }, [icon("languages"), element("span", { text: "Langue suivante" })]))
-        ]),
-        element("section", { id: "v8-settings-brain", className: "v8-settings-section v8-surface" }, [
-          element("header", {}, [element("span", { className: "v8-eyebrow", text: "Personal Brain" }), element("h2", { text: "Assistant, memoire et confidentialite" }), element("p", { text: "Un contexte minimal, des permissions explicites et aucune cle privee dans le navigateur." })]),
-          settingRow("signature", "Identite", "Choisir le nom et le style de reponse.", element("div", { className: "v8-brain-settings-controls" }, [brainPreferenceSwitch("enabled", "Activer Brain", brainPreferences.enabled), brainNameInput, brainPersonaSelect, brainDetailSelect])),
-          settingRow("message-square-more", "Comportement", "Ajuster le ton, la langue, les suggestions et le niveau d'automatisation.", element("div", { className: "v8-brain-settings-controls" }, [brainToneSelect, brainLanguageSelect, brainSuggestionSelect, brainAutomationSelect])),
-          settingRow("sparkles", "Presence", "Brain reste discret et respecte le mode Focus.", element("div", { className: "v8-brain-settings-inline" }, [brainPreferenceSwitch("proactive", "Suggestions proactives", brainPreferences.proactive), brainPreferenceSwitch("notifications", "Notifications Brain", brainPreferences.notifications), brainPreferenceSwitch("sounds", "Sons Brain", brainPreferences.sounds), brainPreferenceSwitch("silentInFocus", "Silencieux en Focus", brainPreferences.silentInFocus)])),
-          settingRow("cpu", "Provider", "Les providers cloud exigent le backend ETHONE securise.", element("div", { className: "v8-brain-settings-controls" }, [brainProviderSelect, brainModelInput, brainFallbackSelect, brainPrivacySelect])),
-          settingRow("database", "Memoire", "Preferences utiles uniquement, avec retention et RLS.", element("div", { className: "v8-brain-settings-inline" }, [brainPreferenceSwitch("memory.enabled", "Activer la memoire Brain", brainPreferences.memory.enabled), brainRetentionSelect, brainMemoryLoad])),
-          settingRow("sunrise", "Briefing quotidien", "Evenements, priorites et signaux utiles, en format concis.", element("div", { className: "v8-brain-settings-inline" }, [brainPreferenceSwitch("briefing.enabled", "Activer le briefing Brain", brainPreferences.briefing.enabled), brainPreferenceSwitch("briefing.concise", "Conserver un briefing concis", brainPreferences.briefing.concise)])),
-          element("div", { className: "v8-brain-settings-block" }, [
-            element("header", {}, [
-              element("div", {}, [element("strong", { text: "Privacy Center" }), element("p", { text: "Chaque categorie peut etre desactivee independamment." })]),
-              actionButton({ actionId: "v8.brain.open", variant: "secondary" }, [icon("brain"), element("span", { text: "Ouvrir Brain" })])
-            ]),
-            brainPermissionGrid
-          ]),
-          element("div", { className: "v8-brain-settings-block v8-brain-settings-memory" }, [
-            element("header", {}, [
-              element("div", {}, [element("strong", { text: "Memoire personnelle" }), brainMemoryStatus]),
-              element("div", {}, [
-                element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { settingsMemoryExport: "" } }, [icon("download"), element("span", { text: "Exporter" })]),
-                element("button", { className: "v8-button v8-button--danger", attributes: { type: "button" }, dataset: { settingsMemoryClear: "" } }, [icon("trash-2"), element("span", { text: "Tout effacer" })])
-              ])
-            ]),
-            brainMemoryCategoryGrid,
-            brainMemoryList
-          ])
-        ]),
-        element("section", { id: "v8-settings-sounds", className: "v8-settings-section v8-surface" }, [
-          element("header", {}, [element("span", { className: "v8-eyebrow", text: "Audio system" }), element("h2", { text: "Sons" }), element("p", { text: "Des retours courts et discrets, toujours facultatifs." })]),
-          settingRow("volume-2", "Retours sonores", soundSupported ? "Activer ou couper tout le systeme audio." : "Le son n'est pas disponible dans ce navigateur.", switchControl("v8.sound.toggle", "Activer les sons", initialSoundPreferences.enabled, !soundSupported)),
-          settingRow("volume-x", "Mode silencieux", "Couper temporairement toutes les interactions sonores.", switchControl("v8.sound.silent", "Activer le mode silencieux", initialSoundPreferences.silent, !soundSupported)),
-          settingRow("audio-waveform", "Audio spatial", spatialSupported ? "Orienter tres legerement les sons selon leur origine." : "L'audio spatial n'est pas disponible dans ce navigateur.", switchControl("v8.sound.spatial", "Activer l'audio spatial", initialSoundPreferences.spatial, !spatialSupported)),
-          settingRow("disc-3", "Pack sonore", "Choisir une identite sonore originale pour ETHONE.", soundPackControl),
-          ...SOUND_VOLUME_ROWS.map((row) => settingRow(row.icon, row.title, row.description, soundRange(row.id, row.id === "master" ? initialSoundPreferences.master : initialSoundPreferences.volumes[row.id], !soundSupported)))
-        ]),
-        element("section", { id: "v8-settings-workspace", className: "v8-settings-section v8-surface" }, [
-          element("header", {}, [element("span", { className: "v8-eyebrow", text: "Environnements" }), element("h2", { text: "Spaces" }), element("p", { text: "Chaque Space applique son Flow et son ambiance." })]),
-          element("div", { className: "v8-settings-spaces" }, [
-            choice("v8.space.personal", "user-round", "Personnel", state.space === "personal"),
-            choice("v8.space.focus", "focus", "Focus", state.space === "focus"),
-            choice("v8.space.studio", "sparkles", "Studio", state.space === "studio")
-          ])
-        ]),
-        element("section", { id: "v8-settings-system", className: "v8-settings-section v8-surface" }, [
-          element("header", {}, [element("span", { className: "v8-eyebrow", text: "Etat" }), element("h2", { text: "Systeme cloud" })]),
-          element("div", { className: "v8-system-checks" }, [
-            element("span", {}, [icon("shield-check"), element("strong", { text: "Donnees" }), element("b", { text: "RLS actif" })]),
-            element("span", {}, [icon("cloud"), element("strong", { text: "Supabase" }), element("b", { text: SYNC_LABELS[state.syncStatus] || "Connexion" })]),
-            element("span", {}, [icon("gauge"), element("strong", { text: "Interface" }), element("b", { text: DENSITY_LABELS[state.density] || "Confortable" })])
-          ])
-        ]),
-        element("section", { id: "v8-settings-developer", className: "v8-settings-section v8-surface" }, [
-          element("header", {}, [
-            element("span", { className: "v8-eyebrow", text: "Inspector" }),
-            element("h2", { text: "Services externes" }),
-            element("p", { text: "Diagnostic explicite, sans surveillance ni requete en arriere-plan." }),
-            workerDiagnosticButton
-          ]),
-          workerStatusHost,
-          workerError
-        ])
-      ])
-    ])
-  ]);
-  stage.replaceChildren(page);
-  const navButtons = [...page.querySelectorAll(".v8-settings-nav button")];
-  const controller = new AbortController();
-  let workerDiagnosticRunning = false;
-
-  function workerMetric(iconName, title, value) {
-    return element("span", {}, [icon(iconName), element("strong", { text: title }), element("b", { text: value })]);
-  }
-
-  function renderWorkerStatus() {
-    const snapshot = externalServices?.diagnostics?.() || {};
-    const requests = Math.max(0, Number(snapshot.requests) || 0);
-    const successes = Math.max(0, Number(snapshot.successes) || 0);
-    const rate = requests ? `${Math.round((successes / requests) * 100)} %` : "Non mesure";
-    const services = Array.isArray(snapshot.services) ? snapshot.services : [];
-    const available = services.filter((service) => service.available).map((service) => service.id);
-    const remaining = Number.isFinite(Number(snapshot.rateLimit?.remaining)) ? String(snapshot.rateLimit.remaining) : "Non communique";
-    workerStatusHost.replaceChildren(
-      workerMetric(snapshot.workerConnected ? "shield-check" : "shield-alert", "Worker", snapshot.workerConnected ? "Connecte" : "Non verifie"),
-      workerMetric("timer", "Latence", Number.isFinite(Number(snapshot.lastLatencyMs)) ? `${Math.round(snapshot.lastLatencyMs)} ms` : "Non mesuree"),
-      workerMetric("chart-no-axes-combined", "Succes", rate),
-      workerMetric("blocks", "Services", available.length ? available.join(", ") : "Aucun confirme"),
-      workerMetric("gauge", "Rate limit", remaining),
-      workerMetric("database", "Cache", Number.isFinite(Number(snapshot.cache?.entries)) ? `${snapshot.cache.entries} entree${snapshot.cache.entries === 1 ? "" : "s"}` : "Non mesure")
-    );
-    workerError.textContent = snapshot.lastError ? `Derniere erreur : ${snapshot.lastError}` : "Aucune erreur Worker enregistree.";
-    refreshIcons();
-  }
-
-  function previewResolution(nextState = latestState, customOverride = null) {
-    const settings = sanitizeDensitySettings(nextState.densitySettings);
-    if (customOverride) return { requested: "custom", effective: "custom", reason: "preview", values: customOverride };
-    const current = options.densityEngine?.resolution?.();
-    if (current?.requested === nextState.density) return current;
-    return resolveDensity(nextState, { width: globalThis.innerWidth || 1280, height: globalThis.innerHeight || 800, zoom: globalThis.visualViewport?.scale || 1, coarsePointer: false, panelOpen: false, railExpanded: nextState.railExpanded });
-  }
-
-  function updateDensityPreview(nextState = latestState, customOverride = null) {
-    const resolution = previewResolution(nextState, customOverride);
-    Object.entries(densityCssVariables(resolution.values)).forEach(([name, value]) => densityPreviewHost.style.setProperty(name, value));
-    densityPreviewHost.dataset.previewDensity = resolution.effective;
-    densityResolved.textContent = resolution.requested === "automatic" ? `${DENSITY_LABELS[resolution.effective]} - ${resolution.reason}` : DENSITY_LABELS[resolution.effective] || "Confortable";
-  }
-
-  function updatePreferenceControls(nextState) {
-    latestState = nextState;
-    const densitySettings = sanitizeDensitySettings(nextState.densitySettings);
-    page.querySelectorAll("[data-density-mode]").forEach((button) => {
-      const active = button.dataset.densityMode === nextState.density;
-      button.classList.toggle("is-active", active);
-      button.setAttribute("aria-pressed", String(active));
-      const check = button.querySelector("[data-lucide='check']");
-      if (active && !check) button.append(icon("check"));
-      if (!active) check?.remove();
-    });
-    densityCustomHost.hidden = nextState.density !== "custom";
-    page.querySelector("[data-action='v8.density.focus']")?.setAttribute("aria-checked", String(densitySettings.focusDensity));
-    page.querySelector("[data-action='v8.density.spaces']")?.setAttribute("aria-checked", String(densitySettings.adaptiveBySpace));
-    const brainPrefs = sanitizeBrainPreferences(nextState.brainPreferences);
-    page.querySelectorAll("[data-brain-preference]").forEach((control) => {
-      const value = control.dataset.brainPreference.split(".").reduce((cursor, key) => cursor?.[key], brainPrefs);
-      control.setAttribute("aria-checked", String(value === true));
-      const stateIcon = control.closest("label")?.querySelector("[data-lucide]");
-      if (stateIcon && control.dataset.brainPreference.startsWith("permissions.")) stateIcon.dataset.lucide = value === true ? "eye" : "eye-off";
-      if (stateIcon && control.dataset.brainPreference.startsWith("memory.categories.")) stateIcon.dataset.lucide = value === true ? "bookmark-check" : "bookmark-x";
-    });
-    page.querySelectorAll("[data-brain-preference-select]").forEach((control) => {
-      const value = control.dataset.brainPreferenceSelect.split(".").reduce((cursor, key) => cursor?.[key], brainPrefs);
-      control.value = String(value);
-    });
-    page.querySelectorAll("[data-brain-preference-input]").forEach((control) => {
-      const value = control.dataset.brainPreferenceInput.split(".").reduce((cursor, key) => cursor?.[key], brainPrefs);
-      if (document.activeElement !== control) control.value = String(value ?? "");
-    });
-    updateDensityPreview(nextState);
-    refreshIcons();
-  }
-
-  let memoryBusy = false;
-  async function renderSettingsMemories() {
-    if (memoryBusy || !options.brain?.memory) return;
-    memoryBusy = true;
-    brainMemoryLoad.disabled = true;
-    brainMemoryStatus.textContent = "Chargement securise depuis Supabase...";
-    const response = await options.brain.memory.list();
-    if (controller.signal.aborted) return;
-    memoryBusy = false;
-    brainMemoryLoad.disabled = false;
-    brainMemoryStatus.textContent = response.ok ? `${response.data.length} memoire${response.data.length > 1 ? "s" : ""} active${response.data.length > 1 ? "s" : ""}.` : response.message;
-    brainMemoryList.replaceChildren(...(response.ok && response.data.length ? response.data.map((entry) => element("div", { className: "v8-settings-memory-row" }, [element("span", {}, [icon("bookmark")]), element("div", {}, [element("small", { text: entry.category }), element("strong", { text: entry.key }), element("p", { text: entry.value })]), element("div", {}, [element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Modifier cette memoire" }, dataset: { settingsMemoryEdit: entry.id, settingsMemoryValue: entry.value } }, [icon("pencil")]), element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Supprimer cette memoire" }, dataset: { settingsMemoryDelete: entry.id } }, [icon("trash-2")])])])) : [element("div", { className: "v8-settings-memory-empty" }, [icon("database"), element("p", { text: response.ok ? "Aucune memoire active." : response.message })])]));
-    refreshIcons();
-  }
-
-  renderWorkerStatus();
-  updatePreferenceControls(state);
-  const unsubscribeState = options.subscribeState?.((next) => updatePreferenceControls(next)) || (() => {});
-  const unsubscribeSounds = sounds?.subscribe?.((preferences) => {
-    const toggle = page.querySelector("[data-action='v8.sound.toggle']");
-    toggle?.setAttribute("aria-checked", String(preferences.enabled));
-    const silentToggle = page.querySelector("[data-action='v8.sound.silent']");
-    silentToggle?.setAttribute("aria-checked", String(preferences.silent));
-    const spatialToggle = page.querySelector("[data-action='v8.sound.spatial']");
-    spatialToggle?.setAttribute("aria-checked", String(preferences.spatial));
-    const pack = page.querySelector("[data-sound-pack]");
-    if (pack) pack.value = preferences.pack;
-    const description = page.querySelector("[data-sound-pack-description]");
-    if (description) description.textContent = SOUND_PACKS.find((entry) => entry.id === preferences.pack)?.description || "";
-    page.querySelectorAll("[data-sound-volume]").forEach((control) => {
-      const category = control.dataset.soundVolume;
-      const value = category === "master" ? preferences.master : preferences.volumes[category];
-      const percent = Math.round(Number(value || 0) * 100);
-      control.value = String(percent);
-      control.style.setProperty("--v8-range-progress", `${percent}%`);
-      const output = page.querySelector(`[data-sound-value="${category}"]`);
-      if (output) output.textContent = `${percent} %`;
-    });
-  }) || (() => {});
-  function handleSectionNavigation(event) {
-    const button = event.target.closest("[data-settings-section]");
-    if (!button || !page.contains(button)) return;
-    navButtons.forEach((entry) => entry.classList.toggle("is-active", entry === button));
-    navButtons.forEach((entry) => entry.setAttribute("aria-current", entry === button ? "true" : "false"));
-    page.querySelector(`#${button.dataset.settingsSection}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-  page.querySelector(".v8-settings-nav")?.addEventListener("click", handleSectionNavigation, { signal: controller.signal });
-  workerDiagnosticButton.addEventListener("click", async () => {
-    if (!externalServices?.diagnostic || workerDiagnosticRunning) return;
-    workerDiagnosticRunning = true;
-    workerDiagnosticButton.disabled = true;
-    workerDiagnosticButton.setAttribute("aria-busy", "true");
-    workerDiagnosticButton.querySelector("span").textContent = "Verification";
-    try {
-      await externalServices.diagnostic();
-    } catch {}
-    if (!controller.signal.aborted) {
-      workerDiagnosticRunning = false;
-      workerDiagnosticButton.disabled = false;
-      workerDiagnosticButton.removeAttribute("aria-busy");
-      workerDiagnosticButton.querySelector("span").textContent = "Verifier le Worker";
-      renderWorkerStatus();
-    }
-  }, { signal: controller.signal });
-  page.querySelector("[data-sound-pack]")?.addEventListener("change", (event) => {
-    options.actions?.dispatch?.(`v8.sound.pack.${event.currentTarget.value}`, { source: "settings", element: event.currentTarget, event });
-  }, { signal: controller.signal });
-  page.querySelectorAll("[data-sound-volume]").forEach((control) => control.addEventListener("input", (event) => {
-    const category = event.currentTarget.dataset.soundVolume;
-    const value = Number(event.currentTarget.value) / 100;
-    const output = page.querySelector(`[data-sound-value="${category}"]`);
-    if (output) output.textContent = `${Math.round(value * 100)} %`;
-    event.currentTarget.style.setProperty("--v8-range-progress", `${Math.round(value * 100)}%`);
-    options.actions?.dispatch?.("v8.sound.volume", { source: "settings", category, value, element: event.currentTarget, event });
-  }, { signal: controller.signal }));
-  page.querySelectorAll("[data-density-custom]").forEach((control) => {
-    control.addEventListener("input", (event) => {
-      const key = event.currentTarget.dataset.densityCustom;
-      const range = DENSITY_CUSTOM_RANGES[key];
-      const value = Number(event.currentTarget.value);
-      const progress = ((value - range.min) / (range.max - range.min)) * 100;
-      event.currentTarget.style.setProperty("--v8-range-progress", `${progress}%`);
-      page.querySelector(`[data-density-output='${key}']`).textContent = `${value}${range.unit}`;
-      const custom = { ...sanitizeDensitySettings(latestState.densitySettings).custom, [key]: value };
-      updateDensityPreview({ ...latestState, density: "custom" }, custom);
-    }, { signal: controller.signal });
-    control.addEventListener("change", (event) => options.actions?.dispatch?.("v8.density.custom.update", { source: "settings", key: event.currentTarget.dataset.densityCustom, value: Number(event.currentTarget.value) }), { signal: controller.signal });
-  });
-  page.querySelectorAll("[data-brain-preference]").forEach((control) => control.addEventListener("click", (event) => {
-    const path = event.currentTarget.dataset.brainPreference;
-    const value = event.currentTarget.getAttribute("aria-checked") !== "true";
-    options.actions?.dispatch?.("v8.brain.preference", { source: "settings", path, value });
-  }, { signal: controller.signal }));
-  page.querySelectorAll("[data-brain-preference-select]").forEach((control) => control.addEventListener("change", (event) => {
-    const path = event.currentTarget.dataset.brainPreferenceSelect;
-    const value = path === "memory.retentionDays" ? Number(event.currentTarget.value) : event.currentTarget.value;
-    options.actions?.dispatch?.("v8.brain.preference", { source: "settings", path, value });
-  }, { signal: controller.signal }));
-  page.querySelectorAll("[data-brain-preference-input]").forEach((control) => control.addEventListener("change", (event) => options.actions?.dispatch?.("v8.brain.preference", { source: "settings", path: event.currentTarget.dataset.brainPreferenceInput, value: event.currentTarget.value }), { signal: controller.signal }));
-  brainMemoryLoad.addEventListener("click", () => void renderSettingsMemories(), { signal: controller.signal });
-  brainMemoryList.addEventListener("click", async (event) => {
-    const removeButton = event.target.closest("[data-settings-memory-delete]");
-    const editButton = event.target.closest("[data-settings-memory-edit]");
-    if (removeButton) {
-      if (!confirm("Supprimer cette memoire Brain ?")) return;
-      const response = await options.brain.memory.remove(removeButton.dataset.settingsMemoryDelete);
-      brainMemoryStatus.textContent = response.message;
-      if (response.ok) await renderSettingsMemories();
-    } else if (editButton) {
-      const value = prompt("Modifier la memoire", editButton.dataset.settingsMemoryValue || "");
-      if (value == null) return;
-      const response = await options.brain.memory.update(editButton.dataset.settingsMemoryEdit, { value });
-      brainMemoryStatus.textContent = response.message;
-      if (response.ok) await renderSettingsMemories();
-    }
-  }, { signal: controller.signal });
-  page.querySelector("[data-settings-memory-export]")?.addEventListener("click", async () => {
-    const response = await options.brain?.memory?.exportAll?.();
-    if (response?.ok) downloadJson(response.data, "ethone-brain-memory.json");
-    else brainMemoryStatus.textContent = response?.message || "Export indisponible.";
-  }, { signal: controller.signal });
-  page.querySelector("[data-settings-memory-clear]")?.addEventListener("click", async () => {
-    if (!confirm("Supprimer definitivement toutes les memoires Brain ?")) return;
-    const response = await options.brain?.memory?.clear?.({ confirmed: true });
-    brainMemoryStatus.textContent = response?.message || "Suppression indisponible.";
-    if (response?.ok) await renderSettingsMemories();
-  }, { signal: controller.signal });
-  refreshIcons();
-  return () => {
-    unsubscribeState();
-    unsubscribeSounds();
-    controller.abort();
-    page.remove();
-  };
-}
+  const brainPermissionGrid = element("div", { className: "v8-brain-settings-permissions" }, BRAIN_PERMISSION_CATEGORIES.map((permission) => {
+    const label = BRAIN_PERMISSION_LABELS[permission] || permission;
+    return element("label", {}, [element("span", {}, [icon(brainPreç­9¶‰žËkºwµç@€€É•™É•Í¡%½¹Ì ¤ì(€ô((€™Õ¹Ñ¥½¸ÁÉ•Ù¥•ÝI•Í½±ÕÑ¥½¸¡¹•áÑMÑ…Ñ”€ô±…Ñ•ÍÑMÑ…Ñ”°ÕÍÑ½µ=Ù•ÉÉ¥‘”€ô¹Õ±°¤ì(€€€½¹ÍÐÍ•ÑÑ¥¹Ì€ôÍ…¹¥Ñ¥é••¹Í¥ÑåM•ÑÑ¥¹Ì¡¹•áÑMÑ…Ñ”¹‘•¹Í¥ÑåM•ÑÑ¥¹Ì¤ì(€€€¥˜€¡ÕÍÑ½µ=Ù•ÉÉ¥‘”¤É•ÑÕÉ¸ìÉ•ÅÕ•ÍÑ•è€‰ÕÍÑ½´ˆ°•™™•Ñ¥Ù”è€‰ÕÍÑ½´ˆ°É•…Í½¸è€‰ÁÉ•Ù¥•Üˆ°Ù…±Õ•ÌèÕÍÑ½µ=Ù•ÉÉ¥‘”ôì(€€€½¹ÍÐÕÉÉ•¹Ð€ô½ÁÑ¥½¹Ì¹‘•¹Í¥Ñå¹¥¹”ü¹É•Í½±ÕÑ¥½¸ü¸ ¤ì(€€€¥˜€¡ÕÉÉ•¹Ðü¹É•ÅÕ•ÍÑ•€ôôô¹•áÑMÑ…Ñ”¹‘•¹Í¥Ñä¤É•ÑÕÉ¸ÕÉÉ•¹Ðì(€€€É•ÑÕÉ¸É•Í½±Ù••¹Í¥Ñä¡¹•áÑMÑ…Ñ”°ìÝ¥‘Ñ è±½‰…±Q¡¥Ì¹¥¹¹•É]¥‘Ñ ñð€ÄÈàÀ°¡•¥¡Ðè±½‰…±Q¡¥Ì¹¥¹¹•É!•¥¡Ðñð€àÀÀ°é½½´è±½‰…±Q¡¥Ì¹Ù¥ÍÕ…±Y¥•ÝÁ½ÉÐü¹Í…±”ñð€Ä°½…ÉÍ•A½¥¹Ñ•Èè™…±Í”°Á…¹•±=Á•¸è™…±Í”°É…¥±áÁ…¹‘•è¹•áÑMÑ…Ñ”¹É…¥±áÁ…¹‘•ô¤ì(€ô((€™Õ¹Ñ¥½¸ÕÁ‘…Ñ••¹Í¥ÑåAÉ•Ù¥•Ü¡¹•áÑMÑ…Ñ”€ô±…Ñ•ÍÑMÑ…Ñ”°ÕÍÑ½µ=Ù•ÉÉ¥‘”€ô¹Õ±°¤ì(€€€½¹ÍÐÉ•Í½±ÕÑ¥½¸€ôÁÉ•Ù¥•ÝI•Í½±ÕÑ¥½¸¡¹•áÑMÑ…Ñ”°ÕÍÑ½µ=Ù•ÉÉ¥‘”¤ì(€€€=‰©•Ð¹•¹ÑÉ¥•Ì¡‘•¹Í¥ÑåÍÍY…É¥…‰±•Ì¡É•Í½±ÕÑ¥½¸¹Ù…±Õ•Ì¤¤¹™½É…  ¡m¹…µ”°Ù…±Õ•t¤€ôø‘•¹Í¥ÑåAÉ•Ù¥•Ý!½ÍÐ¹ÍÑå±”¹Í•ÑAÉ½Á•ÉÑä¡¹…µ”°Ù…±Õ”¤¤ì(€€€‘•¹Í¥ÑåAÉ•Ù¥•Ý!½ÍÐ¹‘…Ñ…Í•Ð¹ÁÉ•Ù¥•Ý•¹Í¥Ñä€ôÉ•Í½±ÕÑ¥½¸¹•™™•Ñ¥Ù”ì(€€€‘•¹Í¥ÑåI•Í½±Ù•¹Ñ•áÑ½¹Ñ•¹Ð€ôÉ•Í½±ÕÑ¥½¸¹É•ÅÕ•ÍÑ•€ôôô€‰…ÕÑ½µ…Ñ¥Œˆ€ü€‘í9M%Qe}1	1MmÉ•Í½±ÕÑ¥½¸¹•™™•Ñ¥Ù•uô€´€‘íÉ•Í½±ÕÑ¥½¸¹É•…Í½¹õ€€è9M%Qe}1	1MmÉ•Í½±ÕÑ¥½¸¹•™™•Ñ¥Ù•tñð€‰½¹™½ÉÑ…‰±”ˆì(€ô((€™Õ¹Ñ¥½¸ÕÁ‘…Ñ•AÉ•™•É•¹•½¹ÑÉ½±Ì¡¹•áÑMÑ…Ñ”¤ì(€€€±…Ñ•ÍÑMÑ…Ñ”€ô¹•áÑMÑ…Ñ”ì(€€€½¹ÍÐÍ…Ù•MÑ…Ñ”€ô¹•áÑMÑ…Ñ”¹Í…Ù•MÑ…ÑÕÌñð€¡¹•áÑMÑ…Ñ”¹¹•ÑÝ½É­MÑ…ÑÕÌ€ôôô€‰½™™±¥¹”ˆ€ü€‰½™™±¥¹”ˆ€è€‰Í…Ù•ˆ¤ì(€€€¥˜€¡Í…Ù•MÑ…Ñ”€ôôô€‰Í…Ù¥¹œˆñðÍ…Ù•MÑ…Ñ”€ôôô€‰Íå¹¥¹œˆ¤Í•Ñ½ÉµMÑ…ÑÕÌ¡Í•ÑÑ¥¹ÍM…Ù•MÑ…ÑÕÌ°€‰±½…‘¥¹œˆ°€‰¹É•¥ÍÑÉ•µ•¹Ð¸¸¸ˆ¤ì(€€€•±Í”¥˜€¡Í…Ù•MÑ…Ñ”€ôôô€‰•ÉÉ½Èˆ¤Í•Ñ½ÉµMÑ…ÑÕÌ¡Í•ÑÑ¥¹ÍM…Ù•MÑ…ÑÕÌ°€‰•ÉÉ½Èˆ°€‰ÉÉ•ÕÈ‘”Í…ÕÙ•…É‘”ˆ¤ì(€€€•±Í”¥˜€¡Í…Ù•MÑ…Ñ”€ôôô€‰½™™±¥¹”ˆ¤Í•Ñ½ÉµMÑ…ÑÕÌ¡Í•ÑÑ¥¹ÍM…Ù•MÑ…ÑÕÌ°€‰•ÉÉ½Èˆ°€‰!½ÉÌ±¥¹”€´•¸…ÑÑ•¹Ñ”ˆ¤ì(€€€•±Í”Í•Ñ½ÉµMÑ…ÑÕÌ¡Í•ÑÑ¥¹ÍM…Ù•MÑ…ÑÕÌ°€‰Í…Ù•ˆ°€‰¹É•¥ÍÑÉ”ˆ¤ì(€€€½¹ÍÐ‘•¹Í¥ÑåM•ÑÑ¥¹Ì€ôÍ…¹¥Ñ¥é••¹Í¥ÑåM•ÑÑ¥¹Ì¡¹•áÑMÑ…Ñ”¹‘•¹Í¥ÑåM•ÑÑ¥¹Ì¤ì(€€€Á…”¹ÅÕ•ÉåM•±•Ñ½É±° ‰m‘…Ñ„µ‘•¹Í¥Ñäµµ½‘•tˆ¤¹™½É…  ¡‰ÕÑÑ½¸¤€ôøì(€€€€€½¹ÍÐ…Ñ¥Ù”€ô‰ÕÑÑ½¸¹‘…Ñ…Í•Ð¹‘•¹Í¥Ñå5½‘”€ôôô¹•áÑMÑ…Ñ”¹‘•¹Í¥Ñäì(€€€€€‰ÕÑÑ½¸¹±…ÍÍ1¥ÍÐ¹Ñ½±” ‰¥Ìµ…Ñ¥Ù”ˆ°…Ñ¥Ù”¤ì(€€€€€‰ÕÑÑ½¸¹Í•ÑÑÑÉ¥‰ÕÑ” ‰…É¥„µÁÉ•ÍÍ•ˆ°MÑÉ¥¹œ¡…Ñ¥Ù”¤¤ì(€€€€€½¹ÍÐ¡•¬€ô‰ÕÑÑ½¸¹ÅÕ•ÉåM•±•Ñ½È ‰m‘…Ñ„µ±Õ¥‘”ô¡•¬tˆ¤ì(€€€€€¥˜€¡…Ñ¥Ù”€˜˜€…¡•¬¤‰ÕÑÑ½¸¹…ÁÁ•¹¡¥½¸ ‰¡•¬ˆ¤¤ì(€€€€€¥˜€ ……Ñ¥Ù”¤¡•¬ü¹É•µ½Ù” ¤ì(€€€ô¤ì(€€€‘•¹Í¥ÑåÕÍÑ½µ!½ÍÐ¹¡¥‘‘•¸€ô¹•áÑMÑ…Ñ”¹‘•¹Í¥Ñä€„ôô€‰ÕÍÑ½´ˆì(€€€Á…”¹ÅÕ•ÉåM•±•Ñ½È ‰m‘…Ñ„µ…Ñ¥½¸ôØà¹‘•¹Í¥Ñä¹™½ÕÌtˆ¤ü¹Í•ÑÑÑÉ¥‰ÕÑ” ‰…É¥„µ¡•­•ˆ°MÑÉ¥¹œ¡‘•¹Í¥ÑåM•ÑÑ¥¹Ì¹™½ÕÍ•¹Í¥Ñä¤¤ì(€€€Á…”¹ÅÕ•ÉåM•±•Ñ½È ‰m‘…Ñ„µ…Ñ¥½¸ôØà¹‘•¹Í¥Ñä¹ÍÁ…•Ìtˆ¤ü¹Í•ÑÑÑÉ¥‰ÕÑ” ‰…É¥„µ¡•­•ˆ°MÑÉ¥¹œ¡‘•¹Í¥ÑåM•ÑÑ¥¹Ì¹…‘…ÁÑ¥Ù•	åMÁ…”¤¤ì(€€€½¹ÍÐ‰É…¥¹AÉ•™Ì€ôÍ…¹¥Ñ¥é•	É…¥¹AÉ•™•É•¹•Ì¡¹•áÑMÑ…Ñ”¹‰É…¥¹AÉ•™•É•¹•Ì¤ì(€€€Á…”¹ÅÕ•ÉåM•±•Ñ½É±° ‰m‘…Ñ„µ‰É…¥¸µÁÉ•™•É•¹•tˆ¤¹™½É…  ¡½¹ÑÉ½°¤€ôøì(€€€€€½¹ÍÐÙ…±Õ”€ô½¹ÑÉ½°¹‘…Ñ…Í•Ð¹‰É…¥¹AÉ•™•É•¹”¹ÍÁ±¥Ð ˆ¸ˆ¤¹É•‘Õ” ¡ÕÉÍ½È°­•ä¤€ôøÕÉÍ½Èü¹m­•åt°‰É…¥¹AÉ•™Ì¤ì(€€€€€½¹ÑÉ½°¹Í•ÑÑÑÉ¥‰ÕÑ” ‰…É¥„µ¡•­•ˆ°MÑÉ¥¹œ¡Ù…±Õ”€ôôôÑÉÕ”¤¤ì(€€€€€½¹ÍÐÍÑ…Ñ•%½¸€ô½¹ÑÉ½°¹±½Í•ÍÐ ‰±…‰•°ˆ¤ü¹ÅÕ•ÉåM•±•Ñ½È ‰m‘…Ñ„µ±Õ¥‘•tˆ¤ì(€€€€€¥˜€¡ÍÑ…Ñ•%½¸€˜˜½¹ÑÉ½°¹‘…Ñ…Í•Ð¹‰É…¥¹AÉ•™•É•¹”¹ÍÑ…ÉÑÍ]¥Ñ  ‰Á•Éµ¥ÍÍ¥½¹Ì¸ˆ¤¤ÍÑ…Ñ•%½¸¹‘…Ñ…Í•Ð¹±Õ¥‘”€ôÙ…±Õ”€ôôôÑÉÕ”€ü€‰•å”ˆ€è€‰•å”µ½™˜ˆì(€€€€€¥˜€¡ÍÑ…Ñ•%½¸€˜˜½¹ÑÉ½°¹‘…Ñ…Í•Ð¹‰É…¥¹AÉ•™•É•¹”¹ÍÑ…ÉÑÍ]¥Ñ  ‰µ•µ½Éä¹…Ñ•½É¥•Ì¸ˆ¤¤ÍÑ…Ñ•%½¸¹‘…Ñ…Í•Ð¹±Õ¥‘”€ôÙ…±Õ”€ôôôÑÉÕ”€ü€‰‰½½­µ…É¬µ¡•¬ˆ€è€‰‰½½­µ…É¬µàˆì(€€€ô¤ì(€€€Á…”¹ÅÕ•ÉåM•±•Ñ½É±° ‰m‘…Ñ„µ‰É…¥¸µÁÉ•™•É•¹”µÍ•±•Ñtˆ¤¹™½É…  ¡½¹ÑÉ½°¤€ôøì(€€€€€½¹ÍÐÙ…±Õ”€ô½¹ÑÉ½°¹‘…Ñ…Í•Ð¹‰É…¥¹AÉ•™•É•¹•M•±•Ð¹ÍÁ±¥Ð ˆ¸ˆ¤¹É•‘Õ” ¡ÕÉÍ½È°­•ä¤€ôøÕÉÍ½Èü¹m­•åt°‰É…¥¹AÉ•™Ì¤ì(€€€€€½¹ÑÉ½°¹Ù…±Õ”€ôMÑÉ¥¹œ¡Ù…±Õ”¤ì(€€€ô¤ì(€€€Á…”¹ÅÕ•ÉåM•±•Ñ½É±° ‰m‘…Ñ„µ‰É…¥¸µÁÉ•™•É•¹”µ¥¹ÁÕÑtˆ¤¹™½É…  ¡½¹ÑÉ½°¤€ôøì(€€€€€½¹ÍÐÙ…±Õ”€ô½¹ÑÉ½°¹‘…Ñ…Í•Ð¹‰É…¥¹AÉ•™•É•¹•%¹ÁÕÐ¹ÍÁ±¥Ð ˆ¸ˆ¤¹É•‘Õ” ¡ÕÉÍ½È°­•ä¤€ôøÕÉÍ½Èü¹m­•åt°‰É…¥¹AÉ•™Ì¤ì(€€€€€¥˜€¡‘½Õµ•¹Ð¹…Ñ¥Ù•±•µ•¹Ð€„ôô½¹ÑÉ½°¤½¹ÑÉ½°¹Ù…±Õ”€ôMÑÉ¥¹œ¡Ù…±Õ”€üü€ˆˆ¤ì(€€€ô¤ì(€€€ÕÁ‘…Ñ••¹Í¥ÑåAÉ•Ù¥•Ü¡¹•áÑMÑ…Ñ”¤ì(€€€É•™É•Í¡%½¹Ì ¤ì(€ô((€±•Ðµ•µ½Éå	ÕÍä€ô™…±Í”ì(€…Íå¹Œ™Õ¹Ñ¥½¸É•¹‘•ÉM•ÑÑ¥¹Í5•µ½É¥•Ì ¤ì(€€€¥˜€¡µ•µ½Éå	ÕÍäñð€…½ÁÑ¥½¹Ì¹‰É…¥¸ü¹µ•µ½Éä¤É•ÑÕÉ¸ì(€€€µ•µ½Éå	ÕÍä€ôÑÉÕ”ì(€€€‰É…¥¹5•µ½Éå1½…¹‘¥Í…‰±•€ôÑÉÕ”ì(€€€‰É…¥¹5•µ½ÉåMÑ…ÑÕÌ¹Ñ•áÑ½¹Ñ•¹Ð€ô€‰¡…É•µ•¹ÐÍ•ÕÉ¥Í”‘•ÁÕ¥ÌMÕÁ…‰…Í”¸¸¸ˆì(€€€‰É…¥¹5•µ½Éå1¥ÍÐ¹É•Á±…•¡¥±‘É•¸¡ÍÑ…ÑÕÍMÑ…Ñ” ‰±½…‘¥¹œˆ°ì(€€€€€Ñ¥Ñ±”è€‰¡…É•µ•¹Ð‘•Ìµ•µ½¥É•Ìˆ°(€€€€€‘•ÍÉ¥ÁÑ¥½¸è€‰1•ÑÕÉ”Í•ÕÉ¥Í•”‘•ÁÕ¥ÌMÕÁ…‰…Í”¸ˆ°(€€€€€½µÁ…ÐèÑÉÕ”°(€€€€€¥¹±¥¹”èÑÉÕ”(€€€ô¤¤ì(€€€É•™É•Í¡%½¹Ì ¤ì(€€€½¹ÍÐÉ•ÍÁ½¹Í”€ô…Ý…¥Ð½ÁÑ¥½¹Ì¹‰É…¥¸¹µ•µ½Éä¹±¥ÍÐ ¤ì(€€€¥˜€¡½¹ÑÉ½±±•È¹Í¥¹…°¹…‰½ÉÑ•¤É•ÑÕÉ¸ì(€€€µ•µ½Éå	ÕÍä€ô™…±Í”ì(€€€‰É…¥¹5•µ½Éå1½…¹‘¥Í…‰±•€ô™…±Í”ì(€€€‰É…¥¹5•µ½ÉåMÑ…ÑÕÌ¹Ñ•áÑ½¹Ñ•¹Ð€ôÉ•ÍÁ½¹Í”¹½¬€ü€‘íÉ•ÍÁ½¹Í”¹‘…Ñ„¹±•¹Ñ¡ôµ•µ½¥É”‘íÉ•ÍÁ½¹Í”¹‘…Ñ„¹±•¹Ñ €ø€Ä€ü€‰Ìˆ€è€ˆ‰ô…Ñ¥Ù”‘íÉ•ÍÁ½¹Í”¹‘…Ñ„¹±•¹Ñ €ø€Ä€ü€‰Ìˆ€è€ˆ‰ô¹€€èÉ•ÍÁ½¹Í”¹µ•ÍÍ…”ì(€€€‰É…¥¹5•µ½Éå1¥ÍÐ¹É•Á±…•¡¥±‘É•¸ ¸¸¸¡É•ÍÁ½¹Í”¹½¬€˜˜É•ÍÁ½¹Í”¹‘…Ñ„¹±•¹Ñ €üÉ•ÍÁ½¹Í”¹‘…Ñ„¹µ…À ¡•¹ÑÉä¤€ôø•±•µ•¹Ð ‰‘¥Øˆ°ì±…ÍÍ9…µ”è€‰ØàµÍ•ÑÑ¥¹Ìµµ•µ½ÉäµÉ½Üˆô°m•±•µ•¹Ð ‰ÍÁ…¸ˆ°íô°m¥½¸ ‰‰½½­µ…É¬ˆ¥t¤°•±•µ•¹Ð ‰‘¥Øˆ°íô°m•±•µ•¹Ð ‰Íµ…±°ˆ°ìÑ•áÐè•¹ÑÉä¹…Ñ•½Éäô¤°•±•µ•¹Ð ‰ÍÑÉ½¹œˆ°ìÑ•áÐè•¹ÑÉä¹­•äô¤°•±•µ•¹Ð ‰Àˆ°ìÑ•áÐè•¹ÑÉä¹Ù…±Õ”ô¥t¤°•±•µ•¹Ð ‰‘¥Øˆ°íô°m•±•µ•¹Ð ‰‰ÕÑÑ½¸ˆ°ì±…ÍÍ9…µ”è€‰Øàµ¥½¸µ‰ÕÑÑ½¸ˆ°…ÑÑÉ¥‰ÕÑ•ÌèìÑåÁ”è€‰‰ÕÑÑ½¸ˆ°€‰…É¥„µ±…‰•°ˆè€‰5½‘¥™¥•È•ÑÑ”µ•µ½¥É”ˆô°‘…Ñ…Í•ÐèìÍ•ÑÑ¥¹Í5•µ½Éå‘¥Ðè•¹ÑÉä¹¥°Í•ÑÑ¥¹Í5•µ½ÉåY…±Õ”è•¹ÑÉä¹Ù…±Õ”ôô°m¥½¸ ‰Á•¹¥°ˆ¥t¤°•±•µ•¹Ð ‰‰ÕÑÑ½¸ˆ°ì±…ÍÍ9…µ”è€‰Øàµ¥½¸µ‰ÕÑÑ½¸ˆ°…ÑÑÉ¥‰ÕÑ•ÌèìÑåÁ”è€‰‰ÕÑÑ½¸ˆ°€‰…É¥„µ±…‰•°ˆè€‰MÕÁÁÉ¥µ•È•ÑÑ”µ•µ½¥É”ˆô°‘…Ñ…Í•ÐèìÍ•ÑÑ¥¹Í5•µ½Éå•±•Ñ”è•¹ÑÉä¹¥ôô°m¥½¸ ‰ÑÉ…Í ´Èˆ¥t¥t¥t¤¤€èmÍÑ…ÑÕÍMÑ…Ñ”¡É•ÍÁ½¹Í”¹½¬€ü€‰•µÁÑäˆ€è€‰•ÉÉ½Èˆ°ì(€€€€€¥½¹9…µ”è€‰‘…Ñ…‰…Í”ˆ°(€€€€€•å•‰É½Üè€‰5•µ½¥É”	É…¥¸ˆ°(€€€€€Ñ¥Ñ±”èÉ•ÍÁ½¹Í”¹½¬€ü€‰ÕÕ¹”µ•µ½¥É”…Ñ¥Ù”ˆ€è€‰5•µ½¥É•Ì¥¹‘¥ÍÁ½¹¥‰±•Ìˆ°(€€€€€‘•ÍÉ¥ÁÑ¥½¸èÉ•ÍÁ½¹Í”¹½¬€ü€‰1•ÌÁÉ•™•É•¹•Ì…©½ÕÑ••ÌÙ½±½¹Ñ…¥É•µ•¹Ð…ÁÁ…É…¥ÑÉ½¹Ð¥¤¸ˆ€èÉ•ÍÁ½¹Í”¹µ•ÍÍ…”°(€€€€€…Ñ¥½¹ÌèÉ•ÍÁ½¹Í”¹½¬€ümt€èm•±•µ•¹Ð ‰‰ÕÑÑ½¸ˆ°ì±…ÍÍ9…µ”è€‰Øàµ‰ÕÑÑ½¸Øàµ‰ÕÑÑ½¸´µÍ•½¹‘…Éäˆ°…ÑÑÉ¥‰ÕÑ•ÌèìÑåÁ”è€‰‰ÕÑÑ½¸ˆô°•Ù•¹ÑÌèì±¥¬è€ ¤€ôøÙ½¥É•¹‘•ÉM•ÑÑ¥¹Í5•µ½É¥•Ì ¤ôô°m¥½¸ ‰É•™É•Í µÜˆ¤°•±•µ•¹Ð ‰ÍÁ…¸ˆ°ìÑ•áÐè€‰I••ÍÍ…å•Èˆô¥t¥t°(€€€€€½µÁ…ÐèÑÉÕ”°(€€€€€¥¹±¥¹”èÑÉÕ”(€€€ô¥t¤¤ì(€€€É•™É•Í¡%½¹Ì ¤ì(€ô((€É•¹‘•É]½É­•ÉMÑ…ÑÕÌ ¤ì(€ÕÁ‘…Ñ•AÉ•™•É•¹•½¹ÑÉ½±Ì¡ÍÑ…Ñ”¤ì(€½¹ÍÐÕ¹ÍÕ‰ÍÉ¥‰•MÑ…Ñ”€ô½ÁÑ¥½¹Ì¹ÍÕ‰ÍÉ¥‰•MÑ…Ñ”ü¸ ¡¹•áÐ¤€ôøÕÁ‘…Ñ•AÉ•™•É•¹•½¹ÑÉ½±Ì¡¹•áÐ¤¤ñð€  ¤€ôøíô¤ì(€½¹ÍÐÕ¹ÍÕ‰ÍÉ¥‰•M½Õ¹‘Ì€ôÍ½Õ¹‘Ìü¹ÍÕ‰ÍÉ¥‰”ü¸ ¡ÁÉ•™•É•¹•Ì¤€ôøì(€€€½¹ÍÐÑ½±”€ôÁ…”¹ÅÕ•ÉåM•±•Ñ½È ‰m‘…Ñ„µ…Ñ¥½¸ôØà¹Í½Õ¹¹Ñ½±”tˆ¤ì(€€€Ñ½±”ü¹Í•ÑÑÑÉ¥‰ÕÑ” ‰…É¥„µ¡•­•ˆ°MÑÉ¥¹œ¡ÁÉ•™•É•¹•Ì¹•¹…‰±•¤¤ì(€€€½¹ÍÐÍ¥±•¹ÑQ½±”€ôÁ…”¹ÅÕ•ÉåM•±•Ñ½È ‰m‘…Ñ„µ…Ñ¥½¸ôØà¹Í½Õ¹¹Í¥±•¹Ðtˆ¤ì(€€€Í¥±•¹ÑQ½±”ü¹Í•ÑÑÑÉ¥‰ÕÑ” ‰…É¥„µ¡•­•ˆ°MÑÉ¥¹œ¡ÁÉ•™•É•¹•Ì¹Í¥±•¹Ð¤¤ì(€€€½¹ÍÐÍÁ…Ñ¥…±Q½±”€ôÁ…”¹ÅÕ•ÉåM•±•Ñ½È ‰m‘…Ñ„µ…Ñ¥½¸ôØà¹Í½Õ¹¹ÍÁ…Ñ¥…°tˆ¤ì(€€€ÍÁ…Ñ¥…±Q½±”ü¹Í•ÑÑÑÉ¥‰ÕÑ” ‰…É¥„µ¡•­•ˆ°MÑÉ¥¹œ¡ÁÉ•™•É•¹•Ì¹ÍÁ…Ñ¥…°¤¤ì(€€€½¹ÍÐÁ…¬€ôÁ…”¹ÅÕ•ÉåM•±•Ñ½È ‰m‘…Ñ„µÍ½Õ¹µÁ…­tˆ¤ì(€€€¥˜€¡Á…¬¤Á…¬¹Ù…±Õ”€ôÁÉ•™•É•¹•Ì¹Á…¬ì(€€€½¹ÍÐ‘•ÍÉ¥ÁÑ¥½¸€ôÁ…”¹ÅÕ•ÉåM•±•Ñ½È ‰m‘…Ñ„µÍ½Õ¹µÁ…¬µ‘•ÍÉ¥ÁÑ¥½¹tˆ¤ì(€€€¥˜€¡‘•ÍÉ¥ÁÑ¥½¸¤‘•ÍÉ¥ÁÑ¥½¸¹Ñ•áÑ½¹Ñ•¹Ð€ôM=U9}A-L¹™¥¹ ¡•¹ÑÉä¤€ôø•¹ÑÉä¹¥€ôôôÁÉ•™•É•¹•Ì¹Á…¬¤ü¹‘•ÍÉ¥ÁÑ¥½¸ñð€ˆˆì(€€€Á…”¹ÅÕ•ÉåM•±•Ñ½É±° ‰m‘…Ñ„µÍ½Õ¹µÙ½±Õµ•tˆ¤¹™½É…  ¡½¹ÑÉ½°¤€ôøì(€€€€€½¹ÍÐ…Ñ•½Éä€ô½¹ÑÉ½°¹‘…Ñ…Í•Ð¹Í½Õ¹‘Y½±Õµ”ì(€€€€€½¹ÍÐÙ…±Õ”€ô…Ñ•½Éä€ôôô€‰µ…ÍÑ•Èˆ€üÁÉ•™•É•¹•Ì¹µ…ÍÑ•È€èÁÉ•™•É•¹•Ì¹Ù½±Õµ•Ím…Ñ•½Éåtì(€€€€€½¹ÍÐÁ•É•¹Ð€ô5…Ñ ¹É½Õ¹¡9Õµ‰•È¡Ù…±Õ”ñð€À¤€¨€ÄÀÀ¤ì(€€€€€½¹ÑÉ½°¹Ù…±Õ”€ôMÑÉ¥¹œ¡Á•É•¹Ð¤ì(€€€€€½¹ÑÉ½°¹ÍÑå±”¹Í•ÑAÉ½Á•ÉÑä ˆ´µØàµÉ…¹”µÁÉ½É•ÍÌˆ°€‘íÁ•É•¹Ñô•€¤ì(€€€€€½¹ÍÐ½ÕÑÁÕÐ€ôÁ…”¹ÅÕ•ÉåM•±•Ñ½È¡m‘…Ñ„µÍ½Õ¹µÙ…±Õ”ôˆ‘í…Ñ•½Éåô‰u€¤ì(€€€€€¥˜€¡½ÕÑÁÕÐ¤½ÕÑÁÕÐ¹Ñ•áÑ½¹Ñ•¹Ð€ô€‘íÁ•É•¹Ñô€•€ì(€€€ô¤ì(€ô¤ñð€  ¤€ôøíô¤ì(€™Õ¹Ñ¥½¸½µµ¥ÑM•ÑÑ¥¹œ¡½¹ÑÉ½°°…Ñ¥½¹%°½¹Ñ•áÐ¤ì(€€€Í•Ñ¥•±‘MÑ…Ñ”¡½¹ÑÉ½°°€‰±½…‘¥¹œˆ°€‰¹É•¥ÍÑÉ•µ•¹Ð¸¸¸ˆ¤ì(€€€Í•Ñ½ÉµMÑ…ÑÕÌ¡Í•ÑÑ¥¹ÍM…Ù•MÑ…ÑÕÌ°€‰±½…‘¥¹œˆ°€‰¹É•¥ÍÑÉ•µ•¹Ð¸¸¸ˆ¤ì(€€€½¹ÍÐÍ•ÑÑ±”€ô€¡É•ÍÕ±Ð¤€ôøì(€€€€€¥˜€¡É•ÍÕ±Ðü¹½¬€ôôô™…±Í”¤ì(€€€€€€€Í•Ñ¥•±‘MÑ…Ñ”¡½¹ÑÉ½°°€‰¥¹Ù…±¥ˆ°É•ÍÕ±Ð¹µ•ÍÍ…”¤ì(€€€€€€€Í•Ñ½ÉµMÑ…ÑÕÌ¡Í•ÑÑ¥¹ÍM…Ù•MÑ…ÑÕÌ°€‰•ÉÉ½Èˆ°É•ÍÕ±Ð¹µ•ÍÍ…”ñð€‰ÉÉ•ÕÈ‘”Í…ÕÙ•…É‘”ˆ¤ì(€€€€€ô•±Í”ì(€€€€€€€Í•Ñ¥•±‘MÑ…Ñ”¡½¹ÑÉ½°°€‰Ù…±¥ˆ°€‰¹É•¥ÍÑÉ”ˆ¤ì(€€€€€€€Í•Ñ½ÉµMÑ…ÑÕÌ¡Í•ÑÑ¥¹ÍM…Ù•MÑ…ÑÕÌ°€‰Í…Ù•ˆ°É•ÍÕ±Ðü¹µ•ÍÍ…”ñð€‰¹É•¥ÍÑÉ”ˆ¤ì(€€€€€ô(€€€€€É•ÑÕÉ¸É•ÍÕ±Ðì(€€€ôì(€€€½¹ÍÐÉ•ÍÕ±Ð€ô½ÁÑ¥½¹Ì¹…Ñ¥½¹Ìü¹‘¥ÍÁ…Ñ ü¸¡…Ñ¥½¹%°½¹Ñ•áÐ¤ì(€€€É•ÑÕÉ¸É•ÍÕ±Ðü¹Ñ¡•¸€üÉ•ÍÕ±Ð¹Ñ¡•¸¡Í•ÑÑ±”¤€èÍ•ÑÑ±”¡É•ÍÕ±Ð¤ì(€ô(€™Õ¹Ñ¥½¸¡…¹‘±•M•Ñ¥½¹9…Ù¥…Ñ¥½¸¡•Ù•¹Ð¤ì(€€€½¹ÍÐ‰ÕÑÑ½¸€ô•Ù•¹Ð¹Ñ…É•Ð¹±½Í•ÍÐ ‰m‘…Ñ„µÍ•ÑÑ¥¹ÌµÍ•Ñ¥½¹tˆ¤ì(€€€¥˜€ …‰ÕÑÑ½¸ñð€…Á…”¹½¹Ñ…¥¹Ì¡‰ÕÑÑ½¸¤¤É•ÑÕÉ¸ì(€€€¹…Ù	ÕÑÑ½¹Ì¹™½É…  ¡•¹ÑÉä¤€ôø•¹ÑÉä¹±…ÍÍ1¥ÍÐ¹Ñ½±” ‰¥Ìµ…Ñ¥Ù”ˆ°•¹ÑÉä€ôôô‰ÕÑÑ½¸¤¤ì(€€€¹…Ù	ÕÑÑ½¹Ì¹™½É…  ¡•¹ÑÉä¤€ôø•¹ÑÉä¹Í•ÑÑÑÉ¥‰ÕÑ” ‰…É¥„µÕÉÉ•¹Ðˆ°•¹ÑÉä€ôôô‰ÕÑÑ½¸€ü€‰ÑÉÕ”ˆ€è€‰™…±Í”ˆ¤¤ì(€€€Á…”¹ÅÕ•ÉåM•±•Ñ½È¡€Œ‘í‰ÕÑÑ½¸¹‘…Ñ…Í•Ð¹Í•ÑÑ¥¹ÍM•Ñ¥½¹õ€¤ü¹ÍÉ½±±%¹Ñ½Y¥•Ü¡ì‰•¡…Ù¥½Èè€‰Íµ½½Ñ ˆ°‰±½¬è€‰ÍÑ…ÉÐˆô¤ì(€ô(€Á…”¹ÅÕ•ÉåM•±•Ñ½È ˆ¹ØàµÍ•ÑÑ¥¹Ìµ¹…Øˆ¤ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°¡…¹‘±•M•Ñ¥½¹9…Ù¥…Ñ¥½¸°ìÍ¥¹…°è½¹ÑÉ½±±•È¹Í¥¹…°ô¤ì(€Ý½É­•É¥…¹½ÍÑ¥	ÕÑÑ½¸¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°…Íå¹Œ€ ¤€ôøì(€€€¥˜€ …•áÑ•É¹…±M•ÉÙ¥•Ìü¹‘¥…¹½ÍÑ¥ŒñðÝ½É­•É¥…¹½ÍÑ¥IÕ¹¹¥¹œ¤É•ÑÕÉ¸ì(€€€Ý½É­•É¥…¹½ÍÑ¥IÕ¹¹¥¹œ€ôÑÉÕ”ì(€€€Ý½É­•É¥…¹½ÍÑ¥	ÕÑÑ½¸¹‘¥Í…‰±•€ôÑÉÕ”ì(€€€Ý½É­•É¥…¹½ÍÑ¥	ÕÑÑ½¸¹Í•ÑÑÑÉ¥‰ÕÑ” ‰…É¥„µ‰ÕÍäˆ°€‰ÑÉÕ”ˆ¤ì(€€€Ý½É­•É¥…¹½ÍÑ¥	ÕÑÑ½¸¹ÅÕ•ÉåM•±•Ñ½È ‰ÍÁ…¸ˆ¤¹Ñ•áÑ½¹Ñ•¹Ð€ô€‰Y•É¥™¥…Ñ¥½¸ˆì(€€€ÑÉäì(€€€€€…Ý…¥Ð•áÑ•É¹…±M•ÉÙ¥•Ì¹‘¥…¹½ÍÑ¥Œ ¤ì(€€€ô…Ñ íô(€€€¥˜€ …½¹ÑÉ½±±•È¹Í¥¹…°¹…‰½ÉÑ•¤ì(€€€€€Ý½É­•É¥…¹½ÍÑ¥IÕ¹¹¥¹œ€ô™…±Í”ì(€€€€€Ý½É­•É¥…¹½ÍÑ¥	ÕÑÑ½¸¹‘¥Í…‰±•€ô™…±Í”ì(€€€€€Ý½É­•É¥…¹½ÍÑ¥	ÕÑÑ½¸¹É•µ½Ù•ÑÑÉ¥‰ÕÑ” ‰…É¥„µ‰ÕÍäˆ¤ì(€€€€€Ý½É­•É¥…¹½ÍÑ¥	ÕÑÑ½¸¹ÅÕ•ÉåM•±•Ñ½È ‰ÍÁ…¸ˆ¤¹Ñ•áÑ½¹Ñ•¹Ð€ô€‰Y•É¥™¥•È±”]½É­•Èˆì(€€€€€É•¹‘•É]½É­•ÉMÑ…ÑÕÌ ¤ì(€€€ô(€ô°ìÍ¥¹…°è½¹ÑÉ½±±•È¹Í¥¹…°ô¤ì(€Á…”¹ÅÕ•ÉåM•±•Ñ½È ‰m‘…Ñ„µÍ½Õ¹µÁ…­tˆ¤ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¡…¹”ˆ°€¡•Ù•¹Ð¤€ôøì(€€€½µµ¥ÑM•ÑÑ¥¹œ¡•Ù•¹Ð¹ÕÉÉ•¹ÑQ…É•Ð°Øà¹Í½Õ¹¹Á…¬¸‘í•Ù•¹Ð¹ÕÉÉ•¹ÑQ…É•Ð¹Ù…±Õ•õ€°ìÍ½ÕÉ”è€‰Í•ÑÑ¥¹Ìˆ°•±•µ•¹Ðè•Ù•¹Ð¹ÕÉÉ•¹ÑQ…É•Ð°•Ù•¹Ðô¤ì(€ô°ìÍ¥¹…°è½¹ÑÉ½±±•È¹Í¥¹…°ô¤ì(€Á…”¹ÅÕ•ÉåM•±•Ñ½É±° ‰m‘…Ñ„µÍ½Õ¹µÙ½±Õµ•tˆ¤¹™½É…  ¡½¹ÑÉ½°¤€ôø½¹ÑÉ½°¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¥¹ÁÕÐˆ°€¡•Ù•¹Ð¤€ôøì(€€€½¹ÍÐ…Ñ•½Éä€ô•Ù•¹Ð¹ÕÉÉ•¹ÑQ…É•Ð¹‘…Ñ…Í•Ð¹Í½Õ¹‘Y½±Õµ”ì(€€€½¹ÍÐÙ…±Õ”€ô9Õµ‰•È¡•Ù•¹Ð¹ÕÉÉ•¹ÑQ…É•Ð¹Ù…±Õ”¤€¼€ÄÀÀì(€€€½¹ÍÐ½ÕÑÁÕÐ€ôÁ…”¹ÅÕ•ÉåM•±•Ñ½È¡m‘…Ñ„µÍ½Õ¹µÙ…±Õ”ôˆ‘í…Ñ•½Éåô‰u€¤ì(€€€¥˜€¡½ÕÑÁÕÐ¤½ÕÑÁÕÐ¹Ñ•áÑ½¹Ñ•¹Ð€ô€‘í5…Ñ ¹É½Õ¹¡Ù…±Õ”€¨€ÄÀÀ¥ô€•€ì(€€€•Ù•¹Ð¹ÕÉÉ•¹ÑQ…É•Ð¹ÍÑå±”¹Í•ÑAÉ½Á•ÉÑä ˆ´µØàµÉ…¹”µÁÉ½É•ÍÌˆ°€‘í5…Ñ ¹É½Õ¹¡Ù…±Õ”€¨€ÄÀÀ¥ô•€¤ì(€€€½ÁÑ¥½¹Ì¹…Ñ¥½¹Ìü¹‘¥ÍÁ…Ñ ü¸ ‰Øà¹Í½Õ¹¹Ù½±Õµ”ˆ°ìÍ½ÕÉ”è€‰Í•ÑÑ¥¹Ìˆ°…Ñ•½Éä°Ù…±Õ”°•±•µ•¹Ðè•Ù•¹Ð¹ÕÉÉ•¹ÑQ…É•Ð°•Ù•¹Ðô¤ì(€ô°ìÍ¥¹…°è½¹ÑÉ½±±•È¹Í¥¹…°ô¤¤ì(€Á…”¹ÅÕ•ÉåM•±•Ñ½É±° ‰m‘…Ñ„µ‘•¹Í¥ÑäµÕÍÑ½µtˆ¤¹™½É…  ¡½¹ÑÉ½°¤€ôøì(€€€½¹ÑÉ½°¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¥¹ÁÕÐˆ°€¡•Ù•¹Ð¤€ôøì(€€€€€½¹ÍÐ­•ä€ô•Ù•¹Ð¹ÕÉÉ•¹ÑQ…É•Ð¹‘…Ñ…Í•Ð¹‘•¹Í¥ÑåÕÍÑ½´ì(€€€€€½¹ÍÐÉ…¹”€ô9M%Qe}UMQ=5}I9Mm­•åtì(€€€€€½¹ÍÐÙ…±Õ”€ô9Õµ‰•È¡•Ù•¹Ð¹ÕÉÉ•¹ÑQ…É•Ð¹Ù…±Õ”¤ì(€€€€€½¹ÍÐÁÉ½É•ÍÌ€ô€ ¡Ù…±Õ”€´É…¹”¹µ¥¸¤€¼€¡É…¹”¹µ…à€´É…¹”¹µ¥¸¤¤€¨€ÄÀÀì(€€€€€•Ù•¹Ð¹ÕÉÉ•¹ÑQ…É•Ð¹ÍÑå±”¹Í•ÑAÉ½Á•ÉÑä ˆ´µØàµÉ…¹”µÁÉ½É•ÍÌˆ°€‘íÁÉ½É•ÍÍô•€¤ì(€€€€€Á…”¹ÅÕ•ÉåM•±•Ñ½È¡m‘…Ñ„µ‘•¹Í¥Ñäµ½ÕÑÁÕÐôœ‘í­•åôu€¤¹Ñ•áÑ½¹Ñ•¹Ð€ô€‘íÙ…±Õ•ô‘íÉ…¹”¹Õ¹¥Ñõ€ì(€€€€€½¹ÍÐÕÍÑ½´€ôì€¸¸¹Í…¹¥Ñ¥é••¹Í¥ÑåM•ÑÑ¥¹Ì¡±…Ñ•ÍÑMÑ…Ñ”¹‘•¹Í¥ÑåM•ÑÑ¥¹Ì¤¹ÕÍÑ½´°m­•åtèÙ…±Õ”ôì(€€€€€ÕÁ‘…Ñ••¹Í¥ÑåAÉ•Ù¥•Ü¡ì€¸¸¹±…Ñ•ÍÑMÑ…Ñ”°‘•¹Í¥Ñäè€‰ÕÍÑ½´ˆô°ÕÍÑ½´¤ì(€€€ô°ìÍ¥¹…°è½¹ÑÉ½±±•È¹Í¥¹…°ô¤ì(€€€½¹ÑÉ½°¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¡…¹”ˆ°€¡•Ù•¹Ð¤€ôø½µµ¥ÑM•ÑÑ¥¹œ¡•Ù•¹Ð¹ÕÉÉ•¹ÑQ…É•Ð°€‰Øà¹‘•¹Í¥Ñä¹ÕÍÑ½´¹ÕÁ‘…Ñ”ˆ°ìÍ½ÕÉ”è€‰Í•ÑÑ¥¹Ìˆ°­•äè•Ù•¹Ð¹ÕÉÉ•¹ÑQ…É•Ð¹‘…Ñ…Í•Ð¹‘•¹Í¥ÑåÕÍÑ½´°Ù…±Õ”è9Õµ‰•È¡•Ù•¹Ð¹ÕÉÉ•¹ÑQ…É•Ð¹Ù…±Õ”¤ô¤°ìÍ¥¹…°è½¹ÑÉ½±±•È¹Í¥¹…°ô¤ì(€ô¤ì(€Á…”¹ÅÕ•ÉåM•±•Ñ½É±° ‰m‘…Ñ„µ‰É…¥¸µÁÉ•™•É•¹•tˆ¤¹™½É…  ¡½¹ÑÉ½°¤€ôø½¹ÑÉ½°¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€¡•Ù•¹Ð¤€ôøì(€€€½¹ÍÐÁ…Ñ €ô•Ù•¹Ð¹ÕÉÉ•¹ÑQ…É•Ð¹‘…Ñ…Í•Ð¹‰É…¥¹AÉ•™•É•¹”ì(€€€½¹ÍÐÙ…±Õ”€ô•Ù•¹Ð¹ÕÉÉ•¹ÑQ…É•Ð¹•ÑÑÑÉ¥‰ÕÑ” ‰…É¥„µ¡•­•ˆ¤€„ôô€‰ÑÉÕ”ˆì(€€€½µµ¥ÑM•ÑÑ¥¹œ¡•Ù•¹Ð¹ÕÉÉ•¹ÑQ…É•Ð°€‰Øà¹‰É…¥¸¹ÁÉ•™•É•¹”ˆ°ìÍ½ÕÉ”è€‰Í•ÑÑ¥¹Ìˆ°Á…Ñ °Ù…±Õ”ô¤ì(€ô°ìÍ¥¹…°è½¹ÑÉ½±±•È¹Í¥¹…°ô¤¤ì(€Á…”¹ÅÕ•ÉåM•±•Ñ½É±° ‰m‘…Ñ„µ‰É…¥¸µÁÉ•™•É•¹”µÍ•±•Ñtˆ¤¹™½É…  ¡½¹ÑÉ½°¤€ôø½¹ÑÉ½°¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¡…¹”ˆ°€¡•Ù•¹Ð¤€ôøì(€€€½¹ÍÐÁ…Ñ €ô•Ù•¹Ð¹ÕÉÉ•¹ÑQ…É•Ð¹‘…Ñ…Í•Ð¹‰É…¥¹AÉ•™•É•¹•M•±•Ðì(€€€½¹ÍÐÙ…±Õ”€ôÁ…Ñ €ôôô€‰µ•µ½Éä¹É•Ñ•¹Ñ¥½¹…åÌˆ€ü9Õµ‰•È¡•Ù•¹Ð¹ÕÉÉ•¹ÑQ…É•Ð¹Ù…±Õ”¤€è•Ù•¹Ð¹ÕÉÉ•¹ÑQ…É•Ð¹Ù…±Õ”ì(€€€½µµ¥ÑM•ÑÑ¥¹œ¡•Ù•¹Ð¹ÕÉÉ•¹ÑQ…É•Ð°€‰Øà¹‰É…¥¸¹ÁÉ•™•É•¹”ˆ°ìÍ½ÕÉ”è€‰Í•ÑÑ¥¹Ìˆ°Á…Ñ °Ù…±Õ”ô¤ì(€ô°ìÍ¥¹…°è½¹ÑÉ½±±•È¹Í¥¹…°ô¤¤ì(€Á…”¹ÅÕ•ÉåM•±•Ñ½É±° ‰m‘…Ñ„µ‰É…¥¸µÁÉ•™•É•¹”µ¥¹ÁÕÑtˆ¤¹™½É…  ¡½¹ÑÉ½°¤€ôø½¹ÑÉ½°¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¡…¹”ˆ°€¡•Ù•¹Ð¤€ôø½µµ¥ÑM•ÑÑ¥¹œ¡•Ù•¹Ð¹ÕÉÉ•¹ÑQ…É•Ð°€‰Øà¹‰É…¥¸¹ÁÉ•™•É•¹”ˆ°ìÍ½ÕÉ”è€‰Í•ÑÑ¥¹Ìˆ°Á…Ñ è•Ù•¹Ð¹ÕÉÉ•¹ÑQ…É•Ð¹‘…Ñ…Í•Ð¹‰É…¥¹AÉ•™•É•¹•%¹ÁÕÐ°Ù…±Õ”è•Ù•¹Ð¹ÕÉÉ•¹ÑQ…É•Ð¹Ù…±Õ”ô¤°ìÍ¥¹…°è½¹ÑÉ½±±•È¹Í¥¹…°ô¤¤ì(€‰É…¥¹5•µ½Éå1½…¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøÙ½¥É•¹‘•ÉM•ÑÑ¥¹Í5•µ½É¥•Ì ¤°ìÍ¥¹…°è½¹ÑÉ½±±•È¹Í¥¹…°ô¤ì(€‰É…¥¹5•µ½Éå1¥ÍÐ¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°…Íå¹Œ€¡•Ù•¹Ð¤€ôøì(€€€½¹ÍÐÉ•µ½Ù•	ÕÑÑ½¸€ô•Ù•¹Ð¹Ñ…É•Ð¹±½Í•ÍÐ ‰m‘…Ñ„µÍ•ÑÑ¥¹Ìµµ•µ½Éäµ‘•±•Ñ•tˆ¤ì(€€€½¹ÍÐ•‘¥Ñ	ÕÑÑ½¸€ô•Ù•¹Ð¹Ñ…É•Ð¹±½Í•ÍÐ ‰m‘…Ñ„µÍ•ÑÑ¥¹Ìµµ•µ½Éäµ•‘¥Ñtˆ¤ì(€€€¥˜€¡É•µ½Ù•	ÕÑÑ½¸¤ì(€€€€€¥˜€ …½¹™¥É´ ‰MÕÁÁÉ¥µ•È•ÑÑ”µ•µ½¥É”	É…¥¸€üˆ¤¤É•ÑÕÉ¸ì(€€€€€½¹ÍÐÉ•ÍÁ½¹Í”€ô…Ý…¥Ð½ÁÑ¥½¹Ì¹‰É…¥¸¹µ•µ½Éä¹É•µ½Ù”¡É•µ½Ù•	ÕÑÑ½¸¹‘…Ñ…Í•Ð¹Í•ÑÑ¥¹Í5•µ½Éå•±•Ñ”¤ì(€€€€€‰É…¥¹5•µ½ÉåMÑ…ÑÕÌ¹Ñ•áÑ½¹Ñ•¹Ð€ôÉ•ÍÁ½¹Í”¹µ•ÍÍ…”ì(€€€€€¥˜€¡É•ÍÁ½¹Í”¹½¬¤…Ý…¥ÐÉ•¹‘•ÉM•ÑÑ¥¹Í5•µ½É¥•Ì ¤ì(€€€ô•±Í”¥˜€¡•‘¥Ñ	ÕÑÑ½¸¤ì(€€€€€½¹ÍÐÙ…±Õ”€ôÁÉ½µÁÐ ‰5½‘¥™¥•È±„µ•µ½¥É”ˆ°•‘¥Ñ	ÕÑÑ½¸¹‘…Ñ…Í•Ð¹Í•ÑÑ¥¹Í5•µ½ÉåY…±Õ”ñð€ˆˆ¤ì(€€€€€¥˜€¡Ù…±Õ”€ôô¹Õ±°¤É•ÑÕÉ¸ì(€€€€€½¹ÍÐÉ•ÍÁ½¹Í”€ô…Ý…¥Ð½ÁÑ¥½¹Ì¹‰É…¥¸¹µ•µ½Éä¹ÕÁ‘…Ñ”¡•‘¥Ñ	ÕÑÑ½¸¹‘…Ñ…Í•Ð¹Í•ÑÑ¥¹Í5•µ½Éå‘¥Ð°ìÙ…±Õ”ô¤ì(€€€€€‰É…¥¹5•µ½ÉåMÑ…ÑÕÌ¹Ñ•áÑ½¹Ñ•¹Ð€ôÉ•ÍÁ½¹Í”¹µ•ÍÍ…”ì(€€€€€¥˜€¡É•ÍÁ½¹Í”¹½¬¤…Ý…¥ÐÉ•¹‘•ÉM•ÑÑ¥¹Í5•µ½É¥•Ì ¤ì(€€€ô(€ô°ìÍ¥¹…°è½¹ÑÉ½±±•È¹Í¥¹…°ô¤ì(€Á…”¹ÅÕ•ÉåM•±•Ñ½È ‰m‘…Ñ„µÍ•ÑÑ¥¹Ìµµ•µ½Éäµ•áÁ½ÉÑtˆ¤ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°…Íå¹Œ€ ¤€ôøì(€€€½¹ÍÐÉ•ÍÁ½¹Í”€ô…Ý…¥Ð½ÁÑ¥½¹Ì¹‰É…¥¸ü¹µ•µ½Éäü¹•áÁ½ÉÑ±°ü¸ ¤ì(€€€¥˜€¡É•ÍÁ½¹Í”ü¹½¬¤‘½Ý¹±½…‘)Í½¸¡É•ÍÁ½¹Í”¹‘…Ñ„°€‰•Ñ¡½¹”µ‰É…¥¸µµ•µ½Éä¹©Í½¸ˆ¤ì(€€€•±Í”‰É…¥¹5•µ½ÉåMÑ…ÑÕÌ¹Ñ•áÑ½¹Ñ•¹Ð€ôÉ•ÍÁ½¹Í”ü¹µ•ÍÍ…”ñð€‰áÁ½ÉÐ¥¹‘¥ÍÁ½¹¥‰±”¸ˆì(€ô°ìÍ¥¹…°è½¹ÑÉ½±±•È¹Í¥¹…°ô¤ì(€Á…”¹ÅÕ•ÉåM•±•Ñ½È ‰m‘…Ñ„µÍ•ÑÑ¥¹Ìµµ•µ½Éäµ±•…Étˆ¤ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°…Íå¹Œ€ ¤€ôøì(€€€¥˜€ …½¹™¥É´ ‰MÕÁÁÉ¥µ•È‘•™¥¹¥Ñ¥Ù•µ•¹ÐÑ½ÕÑ•Ì±•Ìµ•µ½¥É•Ì	É…¥¸€üˆ¤¤É•ÑÕÉ¸ì(€€€½¹ÍÐÉ•ÍÁ½¹Í”€ô…Ý…¥Ð½ÁÑ¥½¹Ì¹‰É…¥¸ü¹µ•µ½Éäü¹±•…Èü¸¡ì½¹™¥Éµ•èÑÉÕ”ô¤ì(€€€‰É…¥¹5•µ½ÉåMÑ…ÑÕÌ¹Ñ•áÑ½¹Ñ•¹Ð€ôÉ•ÍÁ½¹Í”ü¹µ•ÍÍ…”ñð€‰MÕÁÁÉ•ÍÍ¥½¸¥¹‘¥ÍÁ½¹¥‰±”¸ˆì(€€€¥˜€¡É•ÍÁ½¹Í”ü¹½¬¤…Ý…¥ÐÉ•¹‘•ÉM•ÑÑ¥¹Í5•µ½É¥•Ì ¤ì(€ô°ìÍ¥¹…°è½¹ÑÉ½±±•È¹Í¥¹…°ô¤ì(€É•™É•Í¡%½¹Ì ¤ì(€É•ÑÕÉ¸€ ¤€ôøì(€€€Õ¹ÍÕ‰ÍÉ¥‰•MÑ…Ñ” ¤ì(€€€Õ¹ÍÕ‰ÍÉ¥‰•M½Õ¹‘Ì ¤ì(€€€½¹ÑÉ½±±•È¹…‰½ÉÐ ¤ì(€€€Á…”¹É•µ½Ù” ¤ì(€ôì)ô(

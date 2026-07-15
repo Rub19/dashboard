@@ -1,6 +1,7 @@
 import { integrationById } from "../data/integrations.mjs";
 import { actionButton, element, icon } from "../ui/dom.mjs";
-import { emptyState } from "../ui/empty-state.mjs";
+import { collectionDensityControl, updateCollectionDensityControl } from "../ui/dense-content.mjs";
+import { emptyState, statusState } from "../ui/empty-state.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
 import { spotifyLiveCard } from "../ui/spotify-live.mjs";
 import { prepareActivityUI } from "./activity-style.mjs";
@@ -74,8 +75,23 @@ function eventMatches(event, filter) {
   return event.category === filter;
 }
 
+function eventMatchesQuery(event, query) {
+  const normalized = String(query || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
+  if (!normalized) return true;
+  return [event.title, event.description, sourceName(event.source), event.category]
+    .some((value) => String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().includes(normalized));
+}
+
+function sortEvents(events, order) {
+  return events.slice().sort((left, right) => {
+    if (order === "oldest") return String(left.timestamp || "").localeCompare(String(right.timestamp || ""));
+    if (order === "source") return sourceName(left.source).localeCompare(sourceName(right.source), "fr", { sensitivity: "base" }) || String(right.timestamp || "").localeCompare(String(left.timestamp || ""));
+    return String(right.timestamp || "").localeCompare(String(left.timestamp || ""));
+  });
+}
+
 function timelineEntry(event) {
-  return element("article", { className: `v8-live-entry v8-live-entry--${event.tone || "default"}` }, [
+  return element("article", { className: `v8-live-entry v8-live-entry--${event.tone || "default"}`, attributes: { tabindex: "0" } }, [
     element("time", { className: "v8-live-entry__time", text: timeLabel(event.timestamp), attributes: { datetime: event.timestamp || null } }),
     element("span", { className: "v8-live-entry__node", attributes: { "aria-hidden": "true" } }),
     element("div", { className: "v8-live-entry__card" }, [
@@ -115,6 +131,7 @@ function emptyFeed(onReset) {
     })
     : actionButton({ actionId: "v8.connections.open", variant: "primary" }, [icon("plug"), element("span", { text: "Ajouter une source" })]);
   return emptyState({
+    kind: onReset ? "no-results" : "empty",
     iconName: "activity",
     eyebrow: "Chronologie prête",
     title: "Aucun signal dans ce filtre",
@@ -138,6 +155,8 @@ export function mountActivity(stage, options = {}) {
   const presence = options.presence || null;
   const state = options.state || {};
   let activeFilter = "all";
+  let query = "";
+  let order = "recent";
   let refreshTimer = 0;
   let spotifyPlayback = spotifyLive?.state?.() || {};
   const controller = new AbortController();
@@ -146,6 +165,13 @@ export function mountActivity(stage, options = {}) {
   const liveGrid = element("div", { className: "v8-now-grid" });
   const timeline = element("div", { className: "v8-live-timeline", attributes: { role: "feed", "aria-label": "Flux d'activite" } });
   const countLabel = element("span", { className: "v8-section-count" });
+  const search = element("input", { className: "v8-input", attributes: { type: "search", placeholder: "Rechercher dans l'activité", "aria-label": "Rechercher dans l'activité", autocomplete: "off" } });
+  const sortSelect = element("select", { className: "v8-input v8-activity-sort", attributes: { "aria-label": "Trier l'activité" } }, [
+    element("option", { text: "Plus récent", attributes: { value: "recent" } }),
+    element("option", { text: "Plus ancien", attributes: { value: "oldest" } }),
+    element("option", { text: "Source", attributes: { value: "source" } })
+  ]);
+  const densityControl = collectionDensityControl(options.state?.density || document.documentElement.dataset.density || "automatic");
   const connectionMetric = element("strong");
   const signalMetric = element("strong");
   const brainCopy = element("p");
@@ -173,6 +199,10 @@ export function mountActivity(stage, options = {}) {
     element("div", { className: "v8-activity-workspace" }, [
       element("section", { className: "v8-activity-stream" }, [
         element("header", { className: "v8-activity-stream__header" }, [element("div", {}, [element("span", { className: "v8-eyebrow", text: "Chronologie" }), element("h2", { text: "Votre journee" })]), countLabel]),
+        element("div", { className: "v8-activity-tools-bar" }, [
+          element("div", { className: "v8-input-wrap v8-activity-search" }, [icon("search"), search]),
+          element("div", { className: "v8-collection-tools" }, [sortSelect, densityControl])
+        ]),
         filterBar,
         timeline
       ]),
@@ -199,15 +229,16 @@ export function mountActivity(stage, options = {}) {
   function render() {
     const snapshot = repository.snapshot();
     const events = journal.entries();
-    const filtered = events.filter((event) => eventMatches(event, activeFilter));
+    const filtered = sortEvents(events.filter((event) => eventMatches(event, activeFilter) && eventMatchesQuery(event, query)), order);
     const connections = snapshot.connections || [];
     const connected = connections.filter((connection) => connection.status === "connected");
 
-    liveGrid.replaceChildren(element("article", { className: "v8-now-card v8-now-card--system v8-surface" }, [
+    const systemCard = element("article", { className: "v8-now-card v8-now-card--system v8-surface" }, [
       element("div", { className: "v8-now-card__top" }, [element("span", { className: "v8-now-card__icon" }, [icon("orbit")]), element("span", { className: "v8-live-pill" }, [element("i", { attributes: { "aria-hidden": "true" } }), "LOCAL"])]),
       element("div", { className: "v8-now-card__copy" }, [element("small", { text: "ETHONE" }), element("strong", { text: `${state.flow || "Essentiel"} dans ${state.space || "personal"}` }), element("p", { text: "Le journal local reagit aux actions utiles sans tracker global." })]),
       element("footer", {}, [element("span", { text: "Actif maintenant" }), icon("check")])
-    ]));
+    ]);
+    liveGrid.replaceChildren(systemCard);
     const spotifyPlayer = spotifyLiveCard(spotifyPlayback, { variant: "activity" });
     if (spotifyPlayer) liveGrid.append(spotifyPlayer);
     connected.filter((connection) => connection.id !== "spotify" || !spotifyPlayer).slice(0, 3).forEach((connection) => {
@@ -215,10 +246,19 @@ export function mountActivity(stage, options = {}) {
       if (!integration) return;
       liveGrid.append(liveCard(integration, connection, events.find((event) => event.source === integration.id)));
     });
-    if (!connected.length) liveGrid.append(element("article", { className: "v8-now-connect v8-surface" }, [element("span", {}, [icon("plug")]), element("div", {}, [element("strong", { text: "Aucune source distante active" }), element("p", { text: "Configurez un service pour enrichir le Live Feed sans donnees fictives." })]), actionButton({ actionId: "v8.connections.open", variant: "secondary" }, [element("span", { text: "Configurer" }), icon("arrow-up-right")])]));
+    systemCard.classList.toggle("v8-now-card--solo", liveGrid.children.length === 1);
+    if (!connected.length) liveGrid.append(statusState("integration", {
+      title: "Aucune source distante active",
+      description: "Configurez un service pour enrichir le Live Feed sans donnees fictives.",
+      actions: [actionButton({ actionId: "v8.connections.open", variant: "secondary" }, [element("span", { text: "Configurer" }), icon("arrow-up-right")])],
+      compact: true,
+      className: "v8-empty-state--wide"
+    }));
 
-    timeline.replaceChildren(...(filtered.length ? filtered.map(timelineEntry) : [emptyFeed(activeFilter === "all" ? null : () => {
+    timeline.replaceChildren(...(filtered.length ? filtered.map(timelineEntry) : [emptyFeed(activeFilter === "all" && !query ? null : () => {
       activeFilter = "all";
+      query = "";
+      search.value = "";
       render();
     })]));
     filterBar.querySelectorAll("[data-activity-filter]").forEach((button) => {
@@ -226,7 +266,7 @@ export function mountActivity(stage, options = {}) {
       button.classList.toggle("is-active", active);
       button.setAttribute("aria-pressed", active ? "true" : "false");
     });
-    countLabel.textContent = `${filtered.length} signal${filtered.length > 1 ? "s" : ""}`;
+    countLabel.textContent = `${filtered.length} ${filtered.length > 1 ? "signaux" : "signal"}`;
     connectionMetric.textContent = String(connected.length);
     signalMetric.textContent = String(events.length);
     const openTasks = (snapshot.tasks || []).filter((task) => !task.done).length;
@@ -252,6 +292,14 @@ export function mountActivity(stage, options = {}) {
     activeFilter = button.dataset.activityFilter || "all";
     render();
   }, { signal: controller.signal });
+  search.addEventListener("input", () => {
+    query = search.value;
+    render();
+  }, { signal: controller.signal });
+  sortSelect.addEventListener("change", () => {
+    order = sortSelect.value;
+    render();
+  }, { signal: controller.signal });
   document.addEventListener("visibilitychange", () => {
     if (document.hidden && refreshTimer) {
       globalThis.clearTimeout(refreshTimer);
@@ -273,6 +321,7 @@ export function mountActivity(stage, options = {}) {
   }, { immediate: false }) || (() => {});
   stage.replaceChildren(page);
   render();
+  const releaseDensity = options.subscribeState?.((next) => updateCollectionDensityControl(densityControl, next)) || (() => {});
   scheduleRefresh();
   refreshIcons();
 
@@ -283,6 +332,7 @@ export function mountActivity(stage, options = {}) {
     releaseRefresh();
     releaseJournal();
     releaseSpotify();
+    releaseDensity();
     page.remove();
   };
 }

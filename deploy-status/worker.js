@@ -1,5 +1,10 @@
 const REPO = "Rub19/dashboard";
 const WORKFLOW = "deploy-pages.yml";
+const CACHE_TTL_MS = 90000;
+
+let cached = null;
+let cachedAt = 0;
+let pending = null;
 
 function jsonResponse(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -8,7 +13,7 @@ function jsonResponse(data, status = 200) {
   });
 }
 
-async function loadStatus() {
+async function fetchStatus() {
   const headers = { "user-agent": "ethone-deploy-status", accept: "application/vnd.github+json" };
   const [commitResponse, runsResponse] = await Promise.all([
     fetch(`https://api.github.com/repos/${REPO}/commits/main`, { headers }),
@@ -36,16 +41,37 @@ async function loadStatus() {
   };
 }
 
+// Every browser refresh (auto or manual) hits this Worker, but GitHub's
+// unauthenticated API allows only 60 requests/hour total. Cache the result
+// so repeated page loads within CACHE_TTL_MS reuse one upstream call.
+async function loadStatus() {
+  const now = Date.now();
+  if (cached && now - cachedAt < CACHE_TTL_MS) return cached;
+  if (pending) return pending;
+  pending = fetchStatus().then((result) => {
+    if (result) {
+      cached = result;
+      cachedAt = Date.now();
+    }
+    pending = null;
+    return result;
+  }).catch((error) => {
+    pending = null;
+    throw error;
+  });
+  return pending;
+}
+
 export default {
   async fetch(request) {
     const url = new URL(request.url);
     if (url.pathname !== "/api/status") return new Response("Not found", { status: 404 });
     try {
       const status = await loadStatus();
-      if (!status) return jsonResponse({ error: "GitHub indisponible pour le moment." }, 502);
+      if (!status) return jsonResponse(cached || { error: "GitHub indisponible pour le moment." }, cached ? 200 : 502);
       return jsonResponse(status);
     } catch {
-      return jsonResponse({ error: "Erreur serveur." }, 500);
+      return jsonResponse(cached || { error: "Erreur serveur." }, cached ? 200 : 500);
     }
   }
 };

@@ -1,5 +1,0 @@
-
- ⛅️ wrangler 4.110.0 (update available 4.114.0)
-───────────────────────────────────────────────
-⎔ Starting local server...
-[wrangler:info] Ready on http://127.0.0.1:8799

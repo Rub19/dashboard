@@ -70,4 +70,4 @@ async function refreshAll() {
 
 document.getElementById("refresh-btn").addEventListener("click", refreshAll);
 refreshAll();
-setInterval(refreshAll, 60000);
+setInterval(refreshAll, 300000);

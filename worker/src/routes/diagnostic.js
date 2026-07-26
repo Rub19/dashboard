@@ -50,6 +50,6 @@ export async function diagnosticRoute({ env, url }) {
     }),
     cache: cacheDiagnostics(),
     outbound: externalRequestDiagnostics(),
-    twitch: twitchDiagnostics()
+    twitch: twitchDiagnostics(env)
   }, { source: "ethone-worker", cached: false });
 }

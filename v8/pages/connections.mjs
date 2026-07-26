@@ -8,11 +8,14 @@ import {
   officialResources,
   setupGuide
 } from "../data/integrations.mjs";
+import { brandIconMarkup } from "../data/brand-icons.mjs";
+import { listConfiguredProviders, removeProviderCredential, saveProviderCredential } from "../services/provider-credentials.mjs";
 import { actionButton, element, icon } from "../ui/dom.mjs";
 import { collectionDensityControl, updateCollectionDensityControl } from "../ui/dense-content.mjs";
 import { emptyState, statusState } from "../ui/empty-state.mjs";
 import { formField, setFieldState } from "../ui/form-system.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
+import { createSelect } from "../ui/select.mjs";
 import {
   connectionMetrics,
   connectionState,
@@ -78,6 +81,14 @@ function stateBadge(integration, connection) {
   return element("span", { className: `v8-connection-status v8-connection-status--${meta.tone}` }, [icon(meta.icon), element("span", { text: meta.label })]);
 }
 
+function integrationIcon(integration) {
+  const markup = brandIconMarkup(integration.id);
+  if (!markup) return icon(integration.icon);
+  const wrapper = document.createElement("span");
+  wrapper.innerHTML = markup;
+  return wrapper.firstElementChild;
+}
+
 function badge(label, tone = "default") {
   return element("span", { className: `v8-connection-badge v8-connection-badge--${tone}`, text: label });
 }
@@ -113,7 +124,7 @@ function connectionCard(integration, connection, selectedId) {
     attributes: { "aria-label": `${integration.name}, ${STATE_META[summary.state]?.label || summary.state}` }
   }, [
     element("header", { className: "v8-connection-card__header" }, [
-      element("span", { className: `v8-connection-card__icon v8-connection-card__icon--${integration.category}`, dataset: { presenceIcon: integration.id === "email" ? "mail" : null } }, [icon(integration.icon)]),
+      element("span", { className: `v8-connection-card__icon v8-connection-card__icon--${integration.category}`, dataset: { presenceIcon: integration.id === "email" ? "mail" : null } }, [integrationIcon(integration)]),
       element("div", { className: "v8-connection-card__identity" }, [element("h3", { text: integration.name, attributes: { translate: "no" } }), element("span", { text: category.label })]),
       stateBadge(integration, connection)
     ]),
@@ -190,10 +201,15 @@ export function mountConnections(stage, options = {}) {
   const notify = options.notify || (() => {});
   const spotifyLive = options.spotifyLive || null;
   const externalServices = options.externalServices || null;
+  const clientProvider = typeof options.clientProvider === "function" ? options.clientProvider : null;
+  const ownerId = options.ownerId || "";
   const controller = new AbortController();
   const releases = [];
   const selectedMethods = new Map();
   const draftReferences = new Map();
+  const credentialDrafts = new Map();
+  const credentialStatus = new Map();
+  const credentialPending = new Set();
   const diagnostics = new Map();
   const pendingDiagnostics = new Set();
   let category = "all";
@@ -213,7 +229,7 @@ export function mountConnections(stage, options = {}) {
   let selectedId = initialConnections.find((connection) => connection.status === "connected")?.id || "spotify";
 
   const search = element("input", { className: "v8-input", attributes: { type: "search", placeholder: "Spotify, GitHub, Calendar...", "aria-label": "Rechercher une integration", autocomplete: "off" } });
-  const statusFilter = element("select", { className: "v8-input v8-connections-status-filter", attributes: { "aria-label": "Filtrer par statut" } }, [
+  const statusFilter = createSelect({ className: "v8-input v8-connections-status-filter", attributes: { "aria-label": "Filtrer par statut" } }, [
     element("option", { text: "Tous les statuts", attributes: { value: "all" } }),
     element("option", { text: "Connectes", attributes: { value: "connected" } }),
     element("option", { text: "Prepares", attributes: { value: "prepared" } }),
@@ -221,7 +237,7 @@ export function mountConnections(stage, options = {}) {
     element("option", { text: "A verifier", attributes: { value: "attention" } }),
     element("option", { text: "Acces limite", attributes: { value: "limited" } })
   ]);
-  const sortSelect = element("select", { className: "v8-input v8-connections-sort", attributes: { "aria-label": "Trier les intégrations" } }, [
+  const sortSelect = createSelect({ className: "v8-input v8-connections-sort", attributes: { "aria-label": "Trier les intégrations" } }, [
     element("option", { text: "Recommandées", attributes: { value: "recommended" } }),
     element("option", { text: "Nom", attributes: { value: "name" } }),
     element("option", { text: "Catégorie", attributes: { value: "category" } })
@@ -420,17 +436,107 @@ export function mountConnections(stage, options = {}) {
         }, [
           element("span", { className: "v8-connection-method__select" }, [icon(active ? "circle-check-big" : "circle")]),
           element("div", { className: "v8-connection-method__copy" }, [
-            element("div", { className: "v8-connection-method__heading" }, [element("strong", { text: entry.label }), entry.recommended ? badge("Recommande", "accent") : null, badge(availability.label, availability.usable ? "default" : "warning")]),
+            element("div", { className: "v8-connection-method__heading" }, [element("strong", { text: entry.label })]),
             element("p", { text: entry.summary }),
-            element("div", { className: "v8-connection-badge-row" }, entry.badges.slice(0, 4).map((label) => badge(label))),
+            element("div", { className: "v8-connection-badge-row" }, [
+              entry.recommended ? badge("Recommande", "accent") : null,
+              badge(availability.label, availability.usable ? "default" : "warning"),
+              ...entry.badges.slice(0, 3).map((label) => badge(label))
+            ].filter(Boolean)),
             !availability.usable ? element("small", { className: "v8-connection-method__reason", text: availability.reason }) : null
           ]),
           icon("chevron-right")
         ]);
       })),
       element("footer", { className: "v8-connection-inspector-actions" }, [
-        connectionAction("v8.connections.tab", integration.id, "primary", [element("span", { text: "Continuer avec cette methode" }), icon("arrow-right")], { tab: "setup" })
+        connectionAction("v8.connections.tab", integration.id, "primary", [element("span", { text: "Continuer" }), icon("arrow-right")], { tab: "setup" })
       ])
+    ]);
+  }
+
+  async function loadCredentialStatus() {
+    if (!clientProvider || !ownerId) return;
+    const client = await clientProvider().catch(() => null);
+    if (!client) return;
+    const map = await listConfiguredProviders({ client, ownerId });
+    credentialStatus.clear();
+    Object.entries(map).forEach(([provider, meta]) => credentialStatus.set(provider, meta));
+    renderInspector();
+  }
+
+  function credentialSection(integration, method) {
+    if (!method?.credential) return null;
+    const { provider, fields } = method.credential;
+    const configured = credentialStatus.has(provider);
+    const pending = credentialPending.has(provider);
+    const draft = credentialDrafts.get(integration.id) || {};
+    const inputs = fields.map((field) => {
+      const input = element("input", {
+        className: "v8-input",
+        attributes: {
+          type: /secret|key/i.test(field.key) ? "password" : "text",
+          placeholder: field.placeholder || "",
+          value: draft[field.key] || "",
+          autocomplete: "off",
+          spellcheck: "false",
+          "aria-label": field.label
+        }
+      });
+      input.addEventListener("input", () => {
+        credentialDrafts.set(integration.id, { ...(credentialDrafts.get(integration.id) || {}), [field.key]: input.value });
+      }, { signal: controller.signal });
+      return formField({ label: field.label, control: input, input, className: "v8-connection-credential__field" });
+    });
+    const saveButton = element("button", {
+      className: "v8-button v8-button--primary",
+      attributes: { type: "button", disabled: pending || null }
+    }, [icon(pending ? "loader-circle" : "key-round"), element("span", { text: configured ? "Mettre a jour" : "Enregistrer ma cle" })]);
+    saveButton.addEventListener("click", async () => {
+      if (!clientProvider || !ownerId) {
+        notify({ id: `credential-${provider}`, title: "Non disponible", message: "Connectez-vous pour enregistrer votre propre cle.", type: "error" });
+        return;
+      }
+      credentialPending.add(provider);
+      renderInspector();
+      const client = await clientProvider().catch(() => null);
+      const outcome = client
+        ? await saveProviderCredential({ client, ownerId, provider, fields, values: credentialDrafts.get(integration.id) || {} })
+        : { ok: false, message: "Le service Supabase n'est pas disponible." };
+      credentialPending.delete(provider);
+      if (outcome.ok) {
+        credentialDrafts.delete(integration.id);
+        credentialStatus.set(provider, { updatedAt: new Date().toISOString() });
+      }
+      notify({ id: `credential-${provider}`, title: outcome.ok ? "Cle personnelle enregistree" : "Enregistrement impossible", message: outcome.message, type: outcome.ok ? "success" : "error" });
+      renderInspector();
+    }, { signal: controller.signal });
+    const removeButton = configured ? element("button", {
+      className: "v8-button v8-button--secondary",
+      attributes: { type: "button", disabled: pending || null }
+    }, [icon("trash-2"), element("span", { text: "Retirer" })]) : null;
+    removeButton?.addEventListener("click", async () => {
+      if (!clientProvider || !ownerId) return;
+      credentialPending.add(provider);
+      renderInspector();
+      const client = await clientProvider().catch(() => null);
+      const outcome = client
+        ? await removeProviderCredential({ client, ownerId, provider })
+        : { ok: false, message: "Le service Supabase n'est pas disponible." };
+      credentialPending.delete(provider);
+      if (outcome.ok) credentialStatus.delete(provider);
+      notify({ id: `credential-${provider}`, title: outcome.ok ? "Cle personnelle retiree" : "Suppression impossible", message: outcome.message, type: outcome.ok ? "success" : "error" });
+      renderInspector();
+    }, { signal: controller.signal });
+    return element("section", { className: "v8-connection-credential" }, [
+      element("header", {}, [
+        element("div", {}, [
+          element("h3", { text: "Votre propre cle" }),
+          element("p", { text: configured ? "Cle personnelle active : ETHONE l'utilise a votre place de la cle partagee." : "Optionnel : utilisez votre propre quota au lieu de la cle partagee d'ETHONE." })
+        ]),
+        configured ? badge("Cle personnelle active", "accent") : badge("Cle partagee utilisee", "default")
+      ]),
+      ...inputs,
+      element("div", { className: "v8-connection-credential__actions" }, [saveButton, removeButton].filter(Boolean))
     ]);
   }
 
@@ -471,12 +577,13 @@ export function mountConnections(stage, options = {}) {
           ])
         ]);
       })),
+      credentialSection(integration, method),
       element("div", { className: "v8-connection-setup__notice" }, [icon("shield-check"), element("div", {}, [
         element("strong", { text: report?.workerVerified ? "Securise par ETHONE Worker" : "Frontend sans donnee sensible" }),
         element("p", { text: report?.workerVerified ? "Le Worker authentifie a confirme cette route. Aucun secret fournisseur n'est transmis au navigateur." : "Les permissions sont expliquees ici. Les echanges privilegies restent obligatoirement cote serveur." })
       ])]),
       element("footer", { className: "v8-connection-inspector-actions" }, [
-        connectionAction("v8.connections.setup.complete", integration.id, "primary", [icon(configuredMethod ? "rotate-cw" : "shield-check"), element("span", { text: configuredMethod ? "Revalider" : "Verifier ma configuration" })], { method: method?.id, disabled: !availability.usable }),
+        connectionAction("v8.connections.setup.complete", integration.id, "primary", [icon(configuredMethod ? "rotate-cw" : "shield-check"), element("span", { text: configuredMethod ? "Revalider" : "Verifier" })], { method: method?.id, disabled: !availability.usable }),
         connectionAction("v8.connections.test", integration.id, "secondary", [icon("stethoscope"), element("span", { text: "Diagnostic" })])
       ])
     ]);
@@ -535,7 +642,7 @@ export function mountConnections(stage, options = {}) {
           : overviewPanel(integration, connection, method);
     inspectorHost.replaceChildren(
       element("header", { className: "v8-connection-inspector__header" }, [
-        element("span", { className: `v8-connection-card__icon v8-connection-card__icon--${integration.category}` }, [icon(integration.icon)]),
+        element("span", { className: `v8-connection-card__icon v8-connection-card__icon--${integration.category}` }, [integrationIcon(integration)]),
         element("div", {}, [element("small", { text: integrationCategory(integration.category).label }), element("h2", { text: integration.name, attributes: { translate: "no", tabindex: "-1" } })]),
         stateBadge(integration, connection)
       ]),
@@ -673,8 +780,21 @@ export function mountConnections(stage, options = {}) {
       pendingDiagnostics.delete(id);
     }
     if (controller.signal.aborted) return unavailable("Le diagnostic a ete interrompu.");
+    if (report?.workerAvailable) {
+      const nowIso = new Date().toISOString();
+      repository.connections.updateStatus(id, "connected", {
+        responseMs: report.workerLatencyMs,
+        apiVersion: connectionMethod(integration, connectionMap().get(id)?.methodId)?.apiVersion,
+        lastSyncAt: nowIso,
+        lastTestedAt: nowIso,
+        detail: "Connexion confirmee par le diagnostic ETHONE."
+      });
+      if (id === "spotify") spotifyLive?.refresh?.();
+      renderMetrics();
+      renderOpportunities();
+    }
     selectAndRender(id, "diagnostics", false);
-    notify({ id: `connection-test-${id}`, title: `Diagnostic ${integration.name}`, message: report?.failed ? "Un blocage a ete detecte." : report?.warnings ? "La configuration demande votre attention." : "Les controles disponibles sont valides.", type: report?.failed ? "error" : report?.warnings ? "warning" : "success" });
+    notify({ id: `connection-test-${id}`, title: `Diagnostic ${integration.name}`, message: report?.failed ? "Un blocage a ete detecte." : report?.workerAvailable ? "Connexion confirmee et activee." : report?.warnings ? "La configuration demande votre attention." : "Les controles disponibles sont valides.", type: report?.failed ? "error" : report?.warnings ? "warning" : "success" });
     return completed("Diagnostic termine", report);
   }));
   releases.push(actions.scope("v8.connections.diagnose-all", async () => {
@@ -691,14 +811,27 @@ export function mountConnections(stage, options = {}) {
       } catch (failure) {
         error = failure;
       }
-      const reports = targets.map((integration) => {
+      const entries = targets.map((integration) => {
         const local = localDiagnostic(integration.id);
         if (!local) return null;
         const report = mergeWorkerDiagnostic(local.report, { service: local.service, response, error: local.service ? error : null });
         diagnostics.set(integration.id, report);
-        return report;
+        return { integration, report };
       }).filter(Boolean);
+      const reports = entries.map((entry) => entry.report);
       if (controller.signal.aborted) return unavailable("Le diagnostic a ete interrompu.");
+      const nowIso = new Date().toISOString();
+      entries.forEach(({ integration, report }) => {
+        if (!report.workerAvailable) return;
+        repository.connections.updateStatus(integration.id, "connected", {
+          responseMs: report.workerLatencyMs,
+          apiVersion: connectionMethod(integration, map.get(integration.id)?.methodId)?.apiVersion,
+          lastSyncAt: nowIso,
+          lastTestedAt: nowIso,
+          detail: "Connexion confirmee par le diagnostic ETHONE."
+        });
+        if (integration.id === "spotify") spotifyLive?.refresh?.();
+      });
       globalDiagnostic = Object.freeze({
         tested: reports.length,
         failed: reports.reduce((sum, report) => sum + report.failed, 0),
@@ -707,6 +840,8 @@ export function mountConnections(stage, options = {}) {
         ranAt: new Date().toISOString()
       });
       renderMetrics();
+      renderCatalog();
+      renderOpportunities();
       renderInspector();
       refreshIcons();
       notify({ id: "connections-diagnostic-all", title: "Connections Hub", message: `${globalDiagnostic.tested} connexion${globalDiagnostic.tested > 1 ? "s" : ""} verifiee${globalDiagnostic.tested > 1 ? "s" : ""}, ${globalDiagnostic.workerVerified} via Worker.`, type: globalDiagnostic.failed ? "error" : globalDiagnostic.warnings ? "warning" : "success" });
@@ -782,6 +917,7 @@ export function mountConnections(stage, options = {}) {
 
   stage.replaceChildren(page);
   renderAll();
+  loadCredentialStatus();
   const releaseDensity = options.subscribeState?.((next) => updateCollectionDensityControl(densityControl, next)) || (() => {});
   return () => {
     controller.abort();
@@ -791,6 +927,9 @@ export function mountConnections(stage, options = {}) {
     pendingDiagnostics.clear();
     selectedMethods.clear();
     draftReferences.clear();
+    credentialDrafts.clear();
+    credentialStatus.clear();
+    credentialPending.clear();
     page.remove();
   };
 }

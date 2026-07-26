@@ -136,6 +136,11 @@ function profileAvatar(profile, name) {
   return Object.freeze({ kind: "initials", value: initials });
 }
 
+function profileBanner(profile) {
+  const image = safeUrl(profile?.bannerImg);
+  return image || null;
+}
+
 function hasProfileLock(profile) {
   const lock = profile?.password;
   if (lock == null || lock === "") return false;
@@ -155,6 +160,7 @@ function profileView(profile, index) {
     type,
     description: text(profile?.description || state.bio, PROFILE_COPY[type], 180),
     avatar: profileAvatar(profile, name),
+    banner: profileBanner(profile),
     accent: profileAccent(profile, type),
     wallpaperTone: type,
     locked: hasProfileLock(profile),
@@ -375,8 +381,14 @@ export function createProfileRepository(options = {}) {
     const profile = profiles[index] || {};
     const state = profile.state && typeof profile.state === "object" ? profile.state : {};
     const favorites = Array.isArray(state.filesExplorer?.favorites) ? state.filesExplorer.favorites.map(String) : [];
+    const profileName = text(profile.name || state.username, "Rub", 80);
     return Object.freeze({
-      profile: Object.freeze({ id: text(profile.id, "local", 80), name: text(profile.name || state.username, "Rub", 80) }),
+      profile: Object.freeze({
+        id: text(profile.id, "local", 80),
+        name: profileName,
+        avatar: profileAvatar(profile, profileName),
+        banner: profileBanner(profile)
+      }),
       notes: Object.freeze((Array.isArray(state.notes) ? state.notes : []).map(noteView)),
       tasks: Object.freeze((Array.isArray(state.todos) ? state.todos : []).map(taskView)),
       events: Object.freeze((Array.isArray(state.events) ? state.events : []).map(eventView)),
@@ -434,7 +446,8 @@ export function createProfileRepository(options = {}) {
       profileType: type,
       description: text(input.description, PROFILE_COPY[type], 180),
       avatarEmoji: text(input.avatar, name.slice(0, 2).toUpperCase(), 8),
-      avatarImg: null,
+      avatarImg: safeUrl(input.avatarImg) || null,
+      bannerImg: safeUrl(input.bannerImg) || null,
       customAccent: ACCENT_VALUES[accent],
       defaultSpace: text(input.space, type, 80),
       defaultFlow: text(input.flow, "Essentiel", 80),
@@ -470,6 +483,8 @@ export function createProfileRepository(options = {}) {
       profile.avatarEmoji = text(patch.avatar, profile.name?.slice(0, 2).toUpperCase() || "E", 8);
       profile.avatarImg = null;
     }
+    if (Object.hasOwn(patch, "avatarImg")) profile.avatarImg = safeUrl(patch.avatarImg) || null;
+    if (Object.hasOwn(patch, "bannerImg")) profile.bannerImg = safeUrl(patch.bannerImg) || null;
     if (Object.hasOwn(patch, "accent") && Object.hasOwn(ACCENT_VALUES, patch.accent)) {
       profile.customAccent = ACCENT_VALUES[patch.accent];
     }

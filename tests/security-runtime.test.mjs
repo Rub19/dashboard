@@ -35,7 +35,7 @@ test("browser CSP is exact-origin and blocks script attributes", () => {
     "http://127.0.0.1:8787",
     "http://localhost:8787"
   ]);
-  assert.equal(policy.match(/img-src\s+([^;]+)/)?.[1], "'self' data: blob: https://i.scdn.co");
+  assert.equal(policy.match(/img-src\s+([^;]+)/)?.[1], "'self' data: blob: https://i.scdn.co https://bvgifyzhpzkbrwdjrqsg.supabase.co");
   assert.doesNotMatch(policy, /https:\/\/\*\.(?:supabase\.co|workers\.dev)|media-src[^;]*https:/);
 });
 

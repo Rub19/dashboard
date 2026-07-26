@@ -117,6 +117,9 @@ export function methodAvailability(method, connections = []) {
       return Object.freeze({ usable: false, label: "Prerequis", reason: `Connectez d'abord ${source?.name || method.dependency}.` });
     }
   }
+  if (method.availability === "backend" && !method.live) {
+    return Object.freeze({ usable: false, label: "Bientot disponible", reason: "Le backend ETHONE ne prend pas encore en charge cette methode. Rien a configurer pour l'instant." });
+  }
   const labels = { backend: "Backend requis", local: "Local", public: "Disponible", bridge: "Via connexion", restricted: "Acces limite", limited: "Indisponible" };
   return Object.freeze({ usable: true, label: labels[method.availability] || "Disponible", reason: "" });
 }

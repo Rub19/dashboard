@@ -4,6 +4,7 @@ import { collectionDensityControl, updateCollectionDensityControl } from "../ui/
 import { emptyState, statusState } from "../ui/empty-state.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
 import { spotifyLiveCard } from "../ui/spotify-live.mjs";
+import { createSelect } from "../ui/select.mjs";
 import { prepareActivityUI } from "./activity-style.mjs";
 
 export { prepareActivityUI as prepare };
@@ -166,7 +167,7 @@ export function mountActivity(stage, options = {}) {
   const timeline = element("div", { className: "v8-live-timeline", attributes: { role: "feed", "aria-label": "Flux d'activite" } });
   const countLabel = element("span", { className: "v8-section-count" });
   const search = element("input", { className: "v8-input", attributes: { type: "search", placeholder: "Rechercher dans l'activité", "aria-label": "Rechercher dans l'activité", autocomplete: "off" } });
-  const sortSelect = element("select", { className: "v8-input v8-activity-sort", attributes: { "aria-label": "Trier l'activité" } }, [
+  const sortSelect = createSelect({ className: "v8-input v8-activity-sort", attributes: { "aria-label": "Trier l'activité" } }, [
     element("option", { text: "Plus récent", attributes: { value: "recent" } }),
     element("option", { text: "Plus ancien", attributes: { value: "oldest" } }),
     element("option", { text: "Source", attributes: { value: "source" } })

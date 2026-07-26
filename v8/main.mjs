@@ -3,7 +3,6 @@ import { createEntryCoordinator } from "./entry/entry-coordinator.mjs";
 import { mountLogin } from "./entry/login.mjs";
 import { mountPasswordRecovery } from "./entry/password-recovery.mjs";
 import { mountProfileSelection } from "./entry/profile-selection.mjs";
-import { mountApplication } from "./app/app-runtime.mjs";
 import { createProfileRepository } from "./data/profile-repository.mjs";
 import { createAuthAdapter } from "./services/auth-adapter.mjs";
 import { createAuthStorage } from "./services/auth-storage.mjs";
@@ -26,6 +25,18 @@ import { createTouchInteractionManager } from "./ui/touch-interactions.mjs";
 import { createTooltipController } from "./ui/tooltip.mjs";
 import { createV8I18n } from "./i18n/runtime.mjs";
 import { currentLocale, translateSource } from "./i18n/catalog.mjs";
+
+let appRuntimePromise = null;
+let appRuntimeExports = null;
+function loadAppRuntime() {
+  if (!appRuntimePromise) {
+    appRuntimePromise = import("./app/app-runtime.mjs").then((module) => {
+      appRuntimeExports = module;
+      return module;
+    });
+  }
+  return appRuntimePromise;
+}
 
 const root = document.getElementById("ethone-v8-root");
 const metadata = createDocumentMetadataManager(document);
@@ -264,6 +275,22 @@ async function boot() {
       styles.setEntryEnabled(true);
       styles.setApplicationEnabled(false);
       metadata.setEntry("profiles");
+      loadAppRuntime();
+
+      async function selectProfile(profile) {
+        const [styleResult] = await Promise.all([styles.loadApplication(), loadAppRuntime()]);
+        if (!styleResult.ok) return styleResult;
+        coordinator.enterHome({ reason: "profile-selected", profile });
+        sounds.play("profile.enter");
+        return Object.freeze({ ok: true, status: "completed", message: "Environnement ouvert.", data: profile });
+      }
+
+      const onlyProfile = context.profiles?.length === 1 && !context.profiles[0].locked ? context.profiles[0] : null;
+      if (onlyProfile) {
+        selectProfile(onlyProfile);
+        return mountBootSurface();
+      }
+
       return mountProfileSelection(root, {
         repository,
         profiles: context.profiles,
@@ -274,19 +301,13 @@ async function boot() {
           sounds.play("auth.logout");
           return coordinator.signOut();
         },
-        onSelect: async (profile) => {
-          const styleResult = await styles.loadApplication();
-          if (!styleResult.ok) return styleResult;
-          coordinator.enterHome({ reason: "profile-selected", profile });
-          sounds.play("profile.enter");
-          return Object.freeze({ ok: true, status: "completed", message: "Environnement ouvert.", data: profile });
-        }
+        onSelect: selectProfile
       });
     },
     mountHome: (context) => {
       styles.setEntryEnabled(false);
       styles.setApplicationEnabled(true);
-      application = mountApplication(root, {
+      application = appRuntimeExports.mountApplication(root, {
         repository,
         profile: context.profile || repository.activeProfile(),
         i18n,

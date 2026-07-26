@@ -80,7 +80,9 @@ export function createHomeModel(options = {}) {
     user: Object.freeze({
       id: safeText(profile?.id, "local"),
       name: userName,
-      initial: userName.slice(0, 1).toUpperCase()
+      initial: userName.slice(0, 1).toUpperCase(),
+      avatar: profile?.avatar && typeof profile.avatar === "object" ? profile.avatar : null,
+      banner: typeof profile?.banner === "string" ? profile.banner : null
     }),
     summary: Object.freeze({
       openTasks: openTasks.length,

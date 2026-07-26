@@ -59,7 +59,10 @@ export function providerFetch(counter = { calls: 0 }) {
       return json({ toptracks: { track: [{ name: "Top Track", artist: { name: "Artist" }, playcount: "15" }] } });
     }
     if (url.hostname === "api.lanyard.rest") return json({ success: true, data: { discord_status: "online", listening_to_spotify: true, discord_user: { id: "123456789012345678", username: "ethone" }, activities: [], spotify: { track_id: "track", song: "Song", artist: "Artist", album: "Album", album_art_url: "https://i.scdn.co/image/test", timestamps: { start: 100, end: 200 } } } });
-    if (url.hostname === "project-ref.supabase.co") return json([{ public_id: "public-profile", username: "ethone", display_name: "ETHONE", avatar_url: "https://project-ref.supabase.co/storage/avatar.png", email: "must-not-leak@example.test", private_note: "must-not-leak" }]);
+    if (url.hostname === "project-ref.supabase.co") {
+      if (url.pathname === "/rest/v1/rpc/get_provider_credential") return json(null);
+      return json([{ public_id: "public-profile", username: "ethone", display_name: "ETHONE", avatar_url: "https://project-ref.supabase.co/storage/avatar.png", email: "must-not-leak@example.test", private_note: "must-not-leak" }]);
+    }
     throw new Error("Unexpected test destination");
   };
 }

@@ -4,8 +4,8 @@ import { safeNumber, safePublicUrl, safeText } from "../utils/normalize.js";
 
 const ORIGIN = "https://api.henrikdev.xyz";
 
-async function henrikRequest(env, path, dedupeKey) {
-  const apiKey = requireSecret(env, "HENRIK_API_KEY");
+async function henrikRequest(env, path, dedupeKey, apiKeyOverride) {
+  const apiKey = apiKeyOverride || requireSecret(env, "HENRIK_API_KEY");
   return requestExternal(new URL(path, ORIGIN), {
     env,
     expectedOrigin: ORIGIN,
@@ -16,8 +16,8 @@ async function henrikRequest(env, path, dedupeKey) {
   });
 }
 
-export async function getValorantAccount(env, name, tag) {
-  const response = await henrikRequest(env, `/valorant/v2/account/${encodeURIComponent(name)}/${encodeURIComponent(tag)}`, `account:${name.toLowerCase()}:${tag.toLowerCase()}`);
+export async function getValorantAccount(env, name, tag, apiKeyOverride) {
+  const response = await henrikRequest(env, `/valorant/v2/account/${encodeURIComponent(name)}/${encodeURIComponent(tag)}`, `account:${name.toLowerCase()}:${tag.toLowerCase()}`, apiKeyOverride);
   const value = response.data?.data || {};
   return Object.freeze({
     puuid: safeText(value.puuid, 80),
@@ -30,8 +30,8 @@ export async function getValorantAccount(env, name, tag) {
   });
 }
 
-export async function getValorantStatus(env, region) {
-  const response = await henrikRequest(env, `/valorant/v1/status/${encodeURIComponent(region)}`, `status:${region}`);
+export async function getValorantStatus(env, region, apiKeyOverride) {
+  const response = await henrikRequest(env, `/valorant/v1/status/${encodeURIComponent(region)}`, `status:${region}`, apiKeyOverride);
   const value = response.data || {};
   return Object.freeze({
     region: safeText(value.region || region, 12),

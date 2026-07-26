@@ -66,8 +66,8 @@ test("daily briefing reports unavailable providers instead of inventing data", (
 
   for (const id of ["weather", "music", "github"]) {
     const item = briefing.items.find((entry) => entry.id === id);
-    assert.equal(item.value, "Source non connectee");
-    assert.equal(item.detail, "Connecter dans Connections");
+    assert.equal(item.value, "Non connectee");
+    assert.equal(item.detail, "Configurer");
     assert.equal(item.userContent, false);
   }
   assert.equal(briefing.items.find((item) => item.id === "events").value, "Aucun evenement aujourd'hui");
@@ -108,12 +108,13 @@ test("daily briefing fixed copy is translated in every supported locale", () => 
     "Priorites",
     "Musique",
     "Hier",
-    "Source non connectee",
-    "Aucune donnee recente",
+    "Non connectee",
+    "Aucune activite",
     "Aucun evenement aujourd'hui",
     "Aucune tache prioritaire",
-    "Aucune ecoute recente",
-    "Connecter dans Connections",
+    "Aucune ecoute",
+    "Configurer",
+    "Synchronise",
     "Commencer par la priorite principale",
     "Preparer le prochain evenement",
     "Creer un bloc Focus",

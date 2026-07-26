@@ -3,6 +3,8 @@ import { statusState } from "../ui/empty-state.mjs";
 import { prepareFormControls, setFieldState, setFormStatus } from "../ui/form-system.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
 import { DEFAULT_SOUND_PREFERENCES, SOUND_PACKS } from "../services/sound-manager.mjs";
+import { uploadProfileMedia, validateMediaFile } from "../services/media-upload.mjs";
+import { createSelect } from "../ui/select.mjs";
 import { DENSITY_CUSTOM_RANGES, densityCssVariables, resolveDensity, sanitizeDensitySettings } from "../core/density-engine.mjs";
 import { BRAIN_MEMORY_CATEGORIES, BRAIN_PERMISSION_CATEGORIES, brainPreferenceLabel, sanitizeBrainPreferences } from "../brain/preferences.mjs";
 
@@ -120,9 +122,17 @@ function brainPreferenceSwitch(path, label, checked) {
 }
 
 function preferenceSelect(path, label, values, current) {
-  const select = element("select", { className: "v8-input", attributes: { "aria-label": label }, dataset: { brainPreferenceSelect: path } }, values.map((entry) => element("option", { text: entry.label, attributes: { value: entry.value } })));
+  const select = createSelect({ className: "v8-input", attributes: { "aria-label": label }, dataset: { brainPreferenceSelect: path } }, values.map((entry) => element("option", { text: entry.label, attributes: { value: entry.value } })));
   select.value = current;
   return select;
+}
+
+function profileAvatarPreviewNode(avatar, fallback) {
+  if (avatar && avatar.kind === "image" && avatar.value) {
+    return element("img", { className: "v8-profile-media-preview__image", attributes: { src: avatar.value, alt: "", loading: "lazy", referrerpolicy: "no-referrer" } });
+  }
+  const glyph = avatar && (avatar.kind === "symbol" || avatar.kind === "initials") ? avatar.value : fallback;
+  return element("span", { className: "v8-profile-media-preview__glyph", text: String(glyph || "E") });
 }
 
 function downloadJson(payload, filename) {
@@ -181,7 +191,7 @@ export function mountSettings(stage, options = {}) {
     dataset: { action: `v8.accent.${accent}` }
   }, [state.accent === accent ? icon("check") : null])));
 
-  const soundPackSelect = element("select", {
+  const soundPackSelect = createSelect({
     className: "v8-input v8-sound-pack-select",
     attributes: { "aria-label": "Pack sonore", disabled: !soundSupported || null },
     dataset: { soundPack: "" }
@@ -199,6 +209,16 @@ export function mountSettings(stage, options = {}) {
     dataset: { workerDiagnostic: "" }
   }, [icon("scan-search"), element("span", { text: externalServices ? "Verifier le Worker" : "Worker indisponible" })]);
 
+  const profile = options.profile || null;
+  const canUploadMedia = Boolean(options.clientProvider && options.ownerId && profile?.id);
+  const avatarPreviewHost = element("div", { className: "v8-profile-media-preview v8-profile-media-preview--avatar" }, [profileAvatarPreviewNode(profile?.avatar, (profile?.name || "E").slice(0, 1).toUpperCase())]);
+  const bannerPreviewHost = element("div", { className: `v8-profile-media-preview v8-profile-media-preview--banner${profile?.banner ? "" : " is-empty"}` });
+  if (profile?.banner) bannerPreviewHost.style.backgroundImage = `url("${profile.banner}")`;
+  const avatarFileInput = element("input", { attributes: { type: "file", accept: "image/png,image/jpeg,image/webp", "aria-label": "Choisir une photo de profil", disabled: !canUploadMedia || null }, dataset: { profileMediaInput: "avatar" } });
+  const bannerFileInput = element("input", { attributes: { type: "file", accept: "image/png,image/jpeg,image/webp", "aria-label": "Choisir une banniere", disabled: !canUploadMedia || null }, dataset: { profileMediaInput: "banner" } });
+  const avatarMediaStatus = element("p", { className: "v8-settings-diagnostic-note", text: canUploadMedia ? "PNG, JPEG ou WebP, 5 Mo maximum." : "Disponible une fois connecte.", attributes: { "aria-live": "polite" } });
+  const bannerMediaStatus = element("p", { className: "v8-settings-diagnostic-note", text: canUploadMedia ? "Format large recommande, 5 Mo maximum." : "Disponible une fois connecte.", attributes: { "aria-live": "polite" } });
+
   const page = element("section", { className: "v8-page v8-settings-page", dataset: { page: "settings" } }, [
     element("header", { className: "v8-page-heading" }, [
       element("div", { className: "v8-page-heading__copy" }, [
@@ -210,7 +230,8 @@ export function mountSettings(stage, options = {}) {
     ]),
     element("div", { className: "v8-settings-layout" }, [
       element("aside", { className: "v8-settings-nav", attributes: { "aria-label": "Sections des reglages" } }, [
-        element("button", { className: "is-active", text: "Apparence", attributes: { type: "button", "aria-current": "true", "aria-controls": "v8-settings-appearance" }, dataset: { settingsSection: "v8-settings-appearance" } }),
+        element("button", { className: "is-active", text: "Profil", attributes: { type: "button", "aria-current": "true", "aria-controls": "v8-settings-profile" }, dataset: { settingsSection: "v8-settings-profile" } }),
+        element("button", { text: "Apparence", attributes: { type: "button", "aria-controls": "v8-settings-appearance" }, dataset: { settingsSection: "v8-settings-appearance" } }),
         element("button", { text: "Brain", attributes: { type: "button", "aria-controls": "v8-settings-brain" }, dataset: { settingsSection: "v8-settings-brain" } }),
         element("button", { text: "Sons", attributes: { type: "button", "aria-controls": "v8-settings-sounds" }, dataset: { settingsSection: "v8-settings-sounds" } }),
         element("button", { text: "Workspace", attributes: { type: "button", "aria-controls": "v8-settings-workspace" }, dataset: { settingsSection: "v8-settings-workspace" } }),
@@ -218,6 +239,25 @@ export function mountSettings(stage, options = {}) {
         element("button", { text: "Developer", attributes: { type: "button", "aria-controls": "v8-settings-developer" }, dataset: { settingsSection: "v8-settings-developer" } })
       ]),
       element("div", { className: "v8-settings-content" }, [
+        element("section", { id: "v8-settings-profile", className: "v8-settings-section v8-surface" }, [
+          element("header", {}, [element("span", { className: "v8-eyebrow", text: "Identite" }), element("h2", { text: "Profil" }), element("p", { text: "Votre photo et votre banniere, visibles dans tout ETHONE." })]),
+          element("div", { className: "v8-profile-media-row" }, [
+            avatarPreviewHost,
+            element("div", { className: "v8-profile-media-row__controls" }, [
+              element("strong", { text: "Photo de profil" }),
+              avatarFileInput,
+              avatarMediaStatus
+            ])
+          ]),
+          element("div", { className: "v8-profile-media-row" }, [
+            bannerPreviewHost,
+            element("div", { className: "v8-profile-media-row__controls" }, [
+              element("strong", { text: "Banniere" }),
+              bannerFileInput,
+              bannerMediaStatus
+            ])
+          ])
+        ]),
         element("section", { id: "v8-settings-appearance", className: "v8-settings-section v8-surface" }, [
           element("header", {}, [element("span", { className: "v8-eyebrow", text: "Design System" }), element("h2", { text: "Apparence" }), element("p", { text: "Des reglages sobres, coherents et persistants." })]),
           settingRow("sun-moon", "Theme", "Adapter les surfaces et le contraste.", element("div", { className: "v8-segmented" }, [choice("v8.theme.night", "moon-star", "Nuit", state.theme === "night"), choice("v8.theme.graphite", "sun", "Graphite", state.theme === "graphite")])),
@@ -478,6 +518,46 @@ export function mountSettings(stage, options = {}) {
       renderWorkerStatus();
     }
   }, { signal: controller.signal });
+  async function handleProfileMediaChange(kind, input, statusEl) {
+    const file = input.files?.[0] || null;
+    if (!file) return;
+    const validation = validateMediaFile(file);
+    if (!validation.ok) {
+      statusEl.textContent = validation.message;
+      input.value = "";
+      return;
+    }
+    statusEl.textContent = "Envoi en cours...";
+    input.disabled = true;
+    try {
+      const client = await options.clientProvider?.();
+      const upload = await uploadProfileMedia({ file, kind, ownerId: options.ownerId, client });
+      if (!upload.ok) {
+        statusEl.textContent = upload.message;
+        options.notify?.({ id: `profile-media-${kind}-error`, title: "Televersement impossible", message: upload.message, type: "error" });
+        return;
+      }
+      const patch = kind === "banner" ? { bannerImg: upload.data.url } : { avatarImg: upload.data.url };
+      const patched = options.repository?.updateProfile?.(profile?.id, patch);
+      if (!patched?.ok) {
+        statusEl.textContent = patched?.message || "Enregistrement impossible.";
+        return;
+      }
+      if (kind === "banner") {
+        bannerPreviewHost.style.backgroundImage = `url("${upload.data.url}")`;
+        bannerPreviewHost.classList.remove("is-empty");
+      } else {
+        avatarPreviewHost.replaceChildren(profileAvatarPreviewNode({ kind: "image", value: upload.data.url }, "E"));
+        options.onProfileMediaUpdated?.("avatar", upload.data.url);
+      }
+      statusEl.textContent = kind === "banner" ? "Banniere mise a jour." : "Photo mise a jour.";
+    } finally {
+      input.disabled = false;
+      input.value = "";
+    }
+  }
+  avatarFileInput.addEventListener("change", () => void handleProfileMediaChange("avatar", avatarFileInput, avatarMediaStatus), { signal: controller.signal });
+  bannerFileInput.addEventListener("change", () => void handleProfileMediaChange("banner", bannerFileInput, bannerMediaStatus), { signal: controller.signal });
   page.querySelector("[data-sound-pack]")?.addEventListener("change", (event) => {
     commitSetting(event.currentTarget, `v8.sound.pack.${event.currentTarget.value}`, { source: "settings", element: event.currentTarget, event });
   }, { signal: controller.signal });

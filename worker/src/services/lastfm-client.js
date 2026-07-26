@@ -6,7 +6,7 @@ const ORIGIN = "https://ws.audioscrobbler.com";
 const PERIODS = Object.freeze(["overall", "7day", "1month", "3month", "6month", "12month"]);
 
 async function lastFmRequest(env, method, username, options = {}) {
-  const apiKey = requireSecret(env, "LASTFM_API_KEY");
+  const apiKey = options.apiKeyOverride || requireSecret(env, "LASTFM_API_KEY");
   const url = new URL("/2.0/", ORIGIN);
   url.searchParams.set("method", method);
   url.searchParams.set("user", username);
@@ -42,18 +42,18 @@ function track(value = {}) {
   });
 }
 
-export async function getRecentTracks(env, username, limit = 20) {
-  const response = await lastFmRequest(env, "user.getrecenttracks", username, { limit });
+export async function getRecentTracks(env, username, limit = 20, apiKeyOverride) {
+  const response = await lastFmRequest(env, "user.getrecenttracks", username, { limit, apiKeyOverride });
   return Object.freeze((response.data?.recenttracks?.track || []).slice(0, limit).map(track));
 }
 
-export async function getTopTracks(env, username, period = "7day", limit = 20) {
-  const response = await lastFmRequest(env, "user.gettoptracks", username, { period, limit });
+export async function getTopTracks(env, username, period = "7day", limit = 20, apiKeyOverride) {
+  const response = await lastFmRequest(env, "user.gettoptracks", username, { period, limit, apiKeyOverride });
   return Object.freeze((response.data?.toptracks?.track || []).slice(0, limit).map(track));
 }
 
-export async function getTopArtists(env, username, period = "7day", limit = 20) {
-  const response = await lastFmRequest(env, "user.gettopartists", username, { period, limit });
+export async function getTopArtists(env, username, period = "7day", limit = 20, apiKeyOverride) {
+  const response = await lastFmRequest(env, "user.gettopartists", username, { period, limit, apiKeyOverride });
   return Object.freeze((response.data?.topartists?.artist || []).slice(0, limit).map((value) => Object.freeze({
     name: safeText(value.name, 160),
     playCount: safeNumber(value.playcount, 0, 1000000000),

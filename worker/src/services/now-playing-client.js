@@ -1,7 +1,7 @@
 import { getLanyardPresence } from "./lanyard-client.js";
 import { getRecentTracks } from "./lastfm-client.js";
 
-export async function getNowPlaying(env, source, identity) {
+export async function getNowPlaying(env, source, identity, apiKeyOverride) {
   if (source === "lanyard") {
     const presence = await getLanyardPresence(env, identity);
     return Object.freeze({
@@ -11,7 +11,7 @@ export async function getNowPlaying(env, source, identity) {
       availability: presence.spotify ? "public-presence" : presence.status === "offline" ? "offline" : "hidden"
     });
   }
-  const tracks = await getRecentTracks(env, identity, 1);
+  const tracks = await getRecentTracks(env, identity, 1, apiKeyOverride);
   const track = tracks[0] || null;
   return Object.freeze({
     source: "lastfm",

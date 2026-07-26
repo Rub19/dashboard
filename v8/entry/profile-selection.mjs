@@ -5,6 +5,7 @@ import { enhanceForm, formField, runFormSubmission, setFieldState, validateContr
 import { refreshIcons } from "../ui/icons.mjs";
 import { computeFloatingPosition, getLayerManager } from "../ui/layer-manager.mjs";
 import { createWindowController } from "../ui/window-system.mjs";
+import { createSelect } from "../ui/select.mjs";
 
 const TYPE_LABELS = Object.freeze({
   personal: "Personnel",
@@ -140,9 +141,9 @@ function livePreviewModel(snapshot, date) {
     }),
     signals: Object.freeze([
       Object.freeze({ id: "brain", label: "Brain", icon: "brain", value: brain?.title || "Contexte pret", detail: brain ? "Activite recente" : "Pret pour cet environnement", state: brain ? "ready" : "idle" }),
-      Object.freeze({ id: "weather", label: "Meteo", icon: "cloud-sun", value: weather?.value || "Source non connectee", detail: weather?.detail || "Connections", state: weather?.state || "unavailable" }),
+      Object.freeze({ id: "weather", label: "Meteo", icon: "cloud-sun", value: weather?.value || "Non connectee", detail: weather?.detail || "Configurer", state: weather?.state || "unavailable" }),
       Object.freeze({ id: "calendar", label: "Agenda", icon: "calendar-days", value: events?.value || "Aucun evenement", detail: events?.detail || "Aujourd'hui", state: events?.state || "empty" }),
-      Object.freeze({ id: "music", label: "Musique", icon: "audio-lines", value: music?.value || "Source non connectee", detail: music?.detail || "Spotify", state: music?.state || "unavailable" }),
+      Object.freeze({ id: "music", label: "Musique", icon: "audio-lines", value: music?.value || "Non connectee", detail: music?.detail || "Spotify", state: music?.state || "unavailable" }),
       Object.freeze({ id: "discord", label: "Discord", icon: "message-circle", value: discord?.title || (discordConnected ? "Connecte" : "Non connecte"), detail: discord ? "Activite recente" : "Presence", state: discord ? "ready" : discordConnected ? "idle" : "unavailable" })
     ])
   });
@@ -289,10 +290,6 @@ export function mountProfileSelection(root, options = {}) {
   const liveTime = element("time", { className: "v8-profile-preview__time", dataset: { liveWidget: "clock", liveKind: "clock" } });
   const liveDate = element("span", { className: "v8-profile-preview__date" });
   const liveCloud = element("span", { className: "v8-profile-preview__cloud" });
-  const miniGreeting = element("strong", { className: "v8-profile-mini__greeting" });
-  const miniContext = element("span", { className: "v8-profile-mini__context" });
-  const miniSignalA = element("strong");
-  const miniSignalB = element("strong");
   const enterLabel = element("span");
   const enterButton = element("button", { className: "v8-button v8-button--primary v8-profile-select__enter", attributes: { type: "button" } }, [icon("arrow-right"), enterLabel]);
 
@@ -312,21 +309,7 @@ export function mountProfileSelection(root, options = {}) {
       ])
     ]),
     previewMeta,
-    element("div", { className: "v8-profile-preview__desktop" }, [
-      element("div", { className: "v8-profile-mini", attributes: { "aria-hidden": "true" } }, [
-        element("div", { className: "v8-profile-mini__rail" }, [element("span", { text: "E" }), element("i"), element("i"), element("i"), element("i")]),
-        element("div", { className: "v8-profile-mini__workspace" }, [
-          element("div", { className: "v8-profile-mini__top" }, [element("span", { text: "ETHONE / HOME" }), element("i")]),
-          element("div", { className: "v8-profile-mini__hero" }, [miniGreeting, miniContext]),
-          element("div", { className: "v8-profile-mini__grid" }, [
-            element("div", {}, [element("span", { text: "Continuite" }), miniSignalA]),
-            element("div", {}, [element("span", { text: "Aujourd'hui" }), miniSignalB]),
-            element("div", {}, [element("span", { text: "Signal" }), element("strong", { text: "Stable" })])
-          ])
-        ])
-      ]),
-      previewLive
-    ]),
+    previewLive,
     element("footer", { className: "v8-profile-preview__footer" }, [
       element("div", { className: "v8-profile-preview__widget-group" }, [
         element("div", { className: "v8-profile-preview__section-title" }, [element("span", { text: "Modules prets" }), element("small", { text: "Charges a l'ouverture" })]),
@@ -463,10 +446,6 @@ export function mountProfileSelection(root, options = {}) {
     previewWidgets.replaceChildren(...profile.favoriteWidgets.map(widgetChip));
     previewSignals.replaceChildren(...profile.signals.map(signalRow));
     previewLive.replaceChildren(...profile.live.signals.map(liveSignalNode));
-    miniGreeting.textContent = `Bonjour, ${profile.name}`;
-    miniContext.textContent = profile.description;
-    miniSignalA.textContent = `${profile.signals[0].value} notes`;
-    miniSignalB.textContent = `${profile.signals[1].value} priorites`;
     enterButton.replaceChildren(icon(profile.locked ? "lock-keyhole" : "arrow-right"), enterLabel);
     enterLabel.textContent = profile.locked ? "Continuer avec verification" : `Entrer dans ${profile.name}`;
     status.textContent = profile.locked ? "Ce profil necessite un deverrouillage." : "";
@@ -635,12 +614,12 @@ export function mountProfileSelection(root, options = {}) {
     let activeStep = focusTarget === "space" || focusTarget === "theme" ? 1 : 0;
     const nameInput = element("input", { className: "v8-input", attributes: { type: "text", maxlength: "80", required: true, value: profile?.name || "", placeholder: "Nom du profil", autocomplete: "off" } });
     const descriptionInput = element("textarea", { className: "v8-input v8-profile-dialog__textarea", attributes: { maxlength: "180", rows: "3", placeholder: "Decrivez cet environnement" } }, profile?.description || "");
-    const typeSelect = element("select", { className: "v8-input", attributes: { "aria-label": "Space principal" } }, Object.entries(TYPE_LABELS).map(([value, label]) => optionNode(value, label)));
+    const typeSelect = createSelect({ className: "v8-input", attributes: { "aria-label": "Space principal" } }, Object.entries(TYPE_LABELS).map(([value, label]) => optionNode(value, label)));
     typeSelect.value = profile?.type || "personal";
     const flowInput = element("input", { className: "v8-input", attributes: { type: "text", maxlength: "80", value: profile?.flowLabel || "Essentiel", placeholder: "Flow principal" } });
-    const ambienceSelect = element("select", { className: "v8-input", attributes: { "aria-label": "Ambiance" } }, Object.entries(AMBIENCE_LABELS).map(([value, label]) => optionNode(value, label)));
+    const ambienceSelect = createSelect({ className: "v8-input", attributes: { "aria-label": "Ambiance" } }, Object.entries(AMBIENCE_LABELS).map(([value, label]) => optionNode(value, label)));
     ambienceSelect.value = profile?.environment.ambience || "balanced";
-    const backgroundSelect = element("select", { className: "v8-input", attributes: { "aria-label": "Fond" } }, Object.entries(BACKGROUND_LABELS).map(([value, label]) => optionNode(value, label)));
+    const backgroundSelect = createSelect({ className: "v8-input", attributes: { "aria-label": "Fond" } }, Object.entries(BACKGROUND_LABELS).map(([value, label]) => optionNode(value, label)));
     backgroundSelect.value = profile?.environment.background || "signal";
     const avatarPicker = element("div", { className: "v8-profile-dialog__avatar-picker", attributes: { role: "radiogroup", "aria-label": "Avatar" } });
     const accentPicker = element("div", { className: "v8-profile-dialog__accent-picker", attributes: { role: "radiogroup", "aria-label": "Theme" } });

@@ -3,6 +3,7 @@ import { bulkActionBar, createRowMenuController, createSelectionState, selection
 import { emptyState } from "./empty-state.mjs";
 import { refreshIcons } from "./icons.mjs";
 import { createWindowController } from "./window-system.mjs";
+import { createSelect } from "./select.mjs";
 import { workspaceById } from "../data/workspaces.mjs";
 
 const PANEL_COPY = Object.freeze({
@@ -95,7 +96,7 @@ export function createPanelManager(host, options = {}) {
   function notificationsContent() {
     const search = element("input", { className: "v8-input", attributes: { type: "search", placeholder: "Rechercher", "aria-label": "Rechercher dans les notifications", autocomplete: "off" } });
     search.value = notificationQuery;
-    const filter = element("select", { className: "v8-input", attributes: { "aria-label": "Filtrer les notifications" } }, [
+    const filter = createSelect({ className: "v8-input", attributes: { "aria-label": "Filtrer les notifications" } }, [
       element("option", { text: "Toutes", attributes: { value: "all" } }),
       element("option", { text: "Non lues", attributes: { value: "unread" } }),
       element("option", { text: "Système", attributes: { value: "system" } }),
@@ -222,10 +223,19 @@ export function createPanelManager(host, options = {}) {
     return content;
   }
 
+  function profileAvatarNode(user) {
+    const avatar = user?.avatar;
+    if (avatar && avatar.kind === "image" && avatar.value) {
+      return element("img", { className: "v8-panel-profile-card__avatar", attributes: { src: avatar.value, alt: "", loading: "lazy", referrerpolicy: "no-referrer" } });
+    }
+    const glyph = avatar && (avatar.kind === "symbol" || avatar.kind === "initials") ? avatar.value : (user?.initial || "R");
+    return element("span", { className: "v8-panel-profile-card__avatar", text: String(glyph) });
+  }
+
   function profileContent() {
     const state = options.getState?.() || {};
     const user = options.user || {};
-    const language = element("select", { className: "v8-input", attributes: { "aria-label": "Langue de l'interface" } }, [
+    const language = createSelect({ className: "v8-input", attributes: { "aria-label": "Langue de l'interface" } }, [
       element("option", { text: "Francais", attributes: { value: "fr", translate: "no" } }),
       element("option", { text: "English", attributes: { value: "en", translate: "no" } }),
       element("option", { text: "Espanol", attributes: { value: "es", translate: "no" } }),
@@ -235,7 +245,7 @@ export function createPanelManager(host, options = {}) {
     language.addEventListener("change", () => options.onLocaleChange?.(language.value));
     return element("div", { className: "v8-panel__content" }, [
       element("div", { className: "v8-panel-profile-card" }, [
-        element("span", { className: "v8-panel-profile-card__avatar", text: String(user.initial || "R") }),
+        profileAvatarNode(user),
         element("div", {}, [element("strong", { text: user.name || "Rub", attributes: { translate: "no" } }), element("span", { text: `${workspaceById(state.space).label} | ${state.flow || "Essentiel"}` })]),
         element("span", { className: "v8-badge v8-badge--accent", text: "En ligne" })
       ]),

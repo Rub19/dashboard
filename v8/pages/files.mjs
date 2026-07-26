@@ -10,6 +10,7 @@ import {
 import { emptyState, statusState } from "../ui/empty-state.mjs";
 import { formField, runFormSubmission, validateForm } from "../ui/form-system.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
+import { createSelect } from "../ui/select.mjs";
 import { filterFiles, sortFiles } from "./files-model.mjs";
 
 const TYPE_ICONS = Object.freeze({
@@ -88,7 +89,7 @@ export function mountFiles(stage, options = {}) {
         element("header", { className: "v8-files-toolbar" }, [
           element("div", { className: "v8-input-wrap v8-files-search" }, [icon("search"), search]),
           element("div", { className: "v8-files-toolbar__tools" }, [
-            element("select", { className: "v8-input", attributes: { "aria-label": "Trier les fichiers" } }, [
+            createSelect({ className: "v8-input", attributes: { "aria-label": "Trier les fichiers" } }, [
               element("option", { text: "Récents", attributes: { value: "recent" } }),
               element("option", { text: "Nom", attributes: { value: "name" } }),
               element("option", { text: "Type", attributes: { value: "type" } })

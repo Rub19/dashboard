@@ -3,12 +3,13 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 const TEXT_EXTENSIONS = new Set([".css", ".html", ".js", ".json", ".mjs", ".ps1", ".sql", ".toml", ".webmanifest", ".yaml", ".yml"]);
-const SKIPPED_DIRECTORIES = new Set([".git", "dist", "docs"]);
-const APPROVED_INNER_HTML = new Set(["v8/app/app-runtime.mjs", "v8/ui/shell.mjs"]);
+const SKIPPED_DIRECTORIES = new Set([".git", "dist", "docs", "node_modules"]);
+const APPROVED_INNER_HTML = new Set(["v8/app/app-runtime.mjs", "v8/ui/shell.mjs", "v8/pages/connections.mjs"]);
 const APPROVED_SERVICE_ROLE_REFERENCES = new Set([
   "scripts/audit-security.mjs",
   "scripts/precommit-upload-check.mjs",
   "supabase/migrations/202607140002_public_profile_directory.sql",
+  "supabase/migrations/202607260001_user_provider_credentials.sql",
   "tests/upload-safety.test.mjs"
 ]);
 const APPROVED_WORKER_REFERENCES = new Set(["v8/services/external-services-config.mjs", "index.html"]);

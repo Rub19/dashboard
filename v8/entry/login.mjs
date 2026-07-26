@@ -2,6 +2,7 @@ import { element, icon } from "../ui/dom.mjs";
 import { statusState } from "../ui/empty-state.mjs";
 import { clearFieldState, enhanceForm, formField as createFormField, passwordControl, runFormSubmission, setFieldState } from "../ui/form-system.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
+import { createSelect } from "../ui/select.mjs";
 
 export const LOGIN_LOCALES = Object.freeze({
   fr: Object.freeze({
@@ -423,7 +424,7 @@ export function mountLogin(root, options = {}) {
   ]);
   const instrumentShell = element("div", { className: "v8-auth-shell" }, [instrument]);
 
-  const localeSelect = element("select", { className: "v8-entry__locale", attributes: { "aria-label": "Langue de l'interface" } }, [
+  const localeSelect = createSelect({ className: "v8-entry__locale", attributes: { "aria-label": "Langue de l'interface" } }, [
     element("option", { text: "Français", attributes: { value: "fr" } }),
     element("option", { text: "English", attributes: { value: "en" } }),
     element("option", { text: "Español", attributes: { value: "es" } }),

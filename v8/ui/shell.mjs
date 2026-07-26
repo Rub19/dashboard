@@ -1,7 +1,9 @@
 import { navigationItem } from "../data/navigation.mjs";
 import { workspaceById } from "../data/workspaces.mjs";
 import { refreshIcons } from "./icons.mjs";
-import { navigationMarkup } from "./navigation.mjs";
+import { avatarMarkup, navigationMarkup } from "./navigation.mjs";
+
+const TOPBAR_BRAND_SVG = `<svg viewBox="0 0 64 64" role="img" aria-label="ETHONE"><defs><linearGradient id="v8-topbar-brand-surface" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14191f"/><stop offset="1" stop-color="#080a0d"/></linearGradient><linearGradient id="v8-topbar-brand-signal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7be5c3"/><stop offset="1" stop-color="#8bc9fa"/></linearGradient></defs><rect x="1.25" y="1.25" width="61.5" height="61.5" rx="15.25" fill="url(#v8-topbar-brand-signal)"/><rect x="4.15" y="4.15" width="55.7" height="55.7" rx="12.6" fill="url(#v8-topbar-brand-surface)"/><path d="M19 18v28m0-28h26M19 32h20.5M19 46h26" fill="none" stroke="#f4f7fa" stroke-width="6.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 import { createDock } from "./dock.mjs";
 
 const ROUTE_META = Object.freeze({
@@ -122,7 +124,7 @@ export function mountShell(root, options = {}) {
         <div class="v8-topbar__main">
           <div class="v8-topbar__identity">
             <button type="button" class="v8-topbar__workspace" data-action="v8.mission.open" aria-label="Ouvrir Mission Control" data-tooltip="Mission Control">
-              <span class="v8-topbar__workspace-mark" aria-hidden="true">E</span>
+              <span class="v8-topbar__workspace-mark" aria-hidden="true">${TOPBAR_BRAND_SVG}</span>
               <span class="v8-topbar__workspace-copy">
                 <span translate="no">ETHONE</span>
                 <strong id="v8-workspace-name" translate="no">Personnel</strong>
@@ -143,7 +145,7 @@ export function mountShell(root, options = {}) {
             <button type="button" class="v8-icon-button v8-topbar-action v8-quick-action" data-action="v8.command.open" data-tooltip="Actions rapides" aria-label="Actions rapides"><i data-lucide="zap" aria-hidden="true"></i></button>
             <button type="button" class="v8-icon-button v8-topbar-action v8-notification-button" data-action="v8.notifications.open" aria-label="Ouvrir les notifications" data-tooltip="Notifications"><i data-lucide="bell" data-presence-icon="notifications" aria-hidden="true"></i><span class="v8-mail-signal" aria-hidden="true"><i data-lucide="mail" data-presence-icon="mail"></i></span><span class="v8-notification-badge" data-presence-notification-badge aria-hidden="true" hidden>0</span></button>
             <button type="button" class="v8-icon-button v8-topbar-action v8-settings-action" data-action="v8.settings.open" data-route="settings" aria-label="Ouvrir les reglages" data-tooltip="Reglages"><i data-lucide="settings-2" aria-hidden="true"></i></button>
-            <button type="button" class="v8-profile-button" data-action="v8.profile.open" aria-label="Ouvrir le profil" data-tooltip="Profil"><span id="v8-profile-initial" translate="no">R</span><i data-lucide="chevron-down" aria-hidden="true"></i></button>
+            <button type="button" class="v8-profile-button" data-action="v8.profile.open" aria-label="Ouvrir le profil" data-tooltip="Profil"><span id="v8-profile-mark" class="v8-profile-button__mark" translate="no" aria-hidden="true"></span><i data-lucide="chevron-down" aria-hidden="true"></i></button>
           </div>
         </div>
       </header>
@@ -166,7 +168,7 @@ export function mountShell(root, options = {}) {
   const breadcrumbs = root.querySelector("#v8-breadcrumb-list");
   const breadcrumbContext = root.querySelector("#v8-breadcrumb-context");
   const workspaceName = root.querySelector("#v8-workspace-name");
-  const profileInitial = root.querySelector("#v8-profile-initial");
+  const profileMark = root.querySelector("#v8-profile-mark");
   const syncAction = root.querySelector(".v8-sync-action");
   const themeAction = root.querySelector(".v8-theme-action i");
   const themeButton = root.querySelector(".v8-theme-action");
@@ -189,8 +191,20 @@ export function mountShell(root, options = {}) {
   let statusRenderKey = "";
   const contextName = String(options.contextName || "Personnel").slice(0, 80);
   const dock = createDock(root.querySelector("#v8-dock-host"), { route: activeRoute, owner: options.profileId, media: options.spotify, initialOrder: options.dockOrder, onChange: options.onDockChange });
+  let activeUser = options.user || null;
 
-  if (profileInitial) profileInitial.textContent = String(options.user?.initial || "R").slice(0, 1).toUpperCase();
+  function renderProfileMark() {
+    if (profileMark) profileMark.innerHTML = avatarMarkup(activeUser?.avatar, String(activeUser?.initial || "R").slice(0, 1).toUpperCase());
+    refreshIcons();
+  }
+
+  function updateUser(user) {
+    activeUser = user || null;
+    renderProfileMark();
+    renderNavigation();
+  }
+
+  renderProfileMark();
 
   function renderBreadcrumbs(panel = null) {
     const renderKey = `${activeRoute}|${activeSpace}|${activeFlow}|${panel || ""}|${activeSync}|${contextName}`;
@@ -213,7 +227,7 @@ export function mountShell(root, options = {}) {
   function renderNavigation() {
     navMode = media.matches ? "mobile" : "desktop";
     if (navMode === "mobile") navHost.replaceChildren();
-    else navHost.innerHTML = navigationMarkup(activeRoute, { expanded: railExpanded, space: activeSpace, contextName });
+    else navHost.innerHTML = navigationMarkup(activeRoute, { expanded: railExpanded, space: activeSpace, contextName, avatar: activeUser?.avatar });
     shell.dataset.navigation = navMode;
     refreshIcons();
     const viewport = navHost.querySelector(".v8-rail__apps");
@@ -317,6 +331,7 @@ export function mountShell(root, options = {}) {
     contextMenuHost: root.querySelector("#v8-context-menu-host"),
     toastRegion: root.querySelector("#v8-toast-region"),
     update,
+    updateUser,
     updateSpotify: dock.updateMedia,
     dockOrder: dock.order,
     setDockOrder: dock.setOrder,

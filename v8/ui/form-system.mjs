@@ -1,7 +1,7 @@
 import { element, icon } from "./dom.mjs";
 import { refreshIcons } from "./icons.mjs";
 
-const MANAGED_SELECTOR = "input:not([type='hidden']), textarea, select, button[role='switch']";
+const MANAGED_SELECTOR = "input:not([type='hidden']), textarea, select, button[role='switch'], [data-v8-kind='select']";
 const VALIDATABLE_SELECTOR = "input:not([type='hidden']):not([type='button']):not([type='submit']):not([type='reset']), textarea, select";
 const controllers = new WeakMap();
 const pendingForms = new WeakSet();
@@ -12,6 +12,7 @@ function fieldRoot(control) {
 }
 
 function controlKind(control) {
+  if (control?.dataset?.v8Kind === "select") return "select";
   if (control?.matches?.("button[role='switch']")) return "switch";
   if (control?.tagName === "TEXTAREA") return "textarea";
   if (control?.tagName === "SELECT") return "select";

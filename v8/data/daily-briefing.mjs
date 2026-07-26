@@ -49,7 +49,7 @@ function hasConnection(connections, sources) {
   return safeArray(connections).some((connection) => allowed.has(String(connection?.id || "").toLowerCase()) && connection?.status === "connected");
 }
 
-function providerSignal({ id, label, icon, actionId, activity, connected, emptyValue = "Aucune donnee recente" }) {
+function providerSignal({ id, label, icon, actionId, activity, connected, emptyValue = "Aucune activite" }) {
   if (activity) {
     return Object.freeze({
       id,
@@ -57,7 +57,7 @@ function providerSignal({ id, label, icon, actionId, activity, connected, emptyV
       icon,
       actionId,
       value: safeText(activity.title, emptyValue),
-      detail: "Activite synchronisee",
+      detail: "Synchronise",
       userContent: true,
       state: "ready"
     });
@@ -67,8 +67,8 @@ function providerSignal({ id, label, icon, actionId, activity, connected, emptyV
     label,
     icon,
     actionId,
-    value: connected ? emptyValue : "Source non connectee",
-    detail: connected ? "Historique synchronise" : "Connecter dans Connections",
+    value: connected ? emptyValue : "Non connectee",
+    detail: connected ? "Synchronise" : "Configurer",
     userContent: false,
     state: connected ? "empty" : "unavailable"
   });
@@ -145,7 +145,7 @@ export function createDailyBriefing(options = {}) {
     providerSignal({ id: "weather", label: "Meteo", icon: "cloud-sun", actionId: "v8.connections.open", activity: weather, connected: hasConnection(connections, ["weather"]) }),
     eventSignal,
     taskSignal,
-    providerSignal({ id: "music", label: "Musique", icon: "audio-lines", actionId: "v8.connections.open", activity: music, connected: hasConnection(connections, MUSIC_SOURCES), emptyValue: "Aucune ecoute recente" }),
+    providerSignal({ id: "music", label: "Musique", icon: "audio-lines", actionId: "v8.connections.open", activity: music, connected: hasConnection(connections, MUSIC_SOURCES), emptyValue: "Aucune ecoute" }),
     providerSignal({ id: "github", label: "GitHub", icon: "github", actionId: "v8.connections.open", activity: github, connected: hasConnection(connections, ["github"]) }),
     Object.freeze({
       id: "yesterday",

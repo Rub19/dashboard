@@ -91,24 +91,27 @@ function method(input) {
     dependency: input.dependency || "",
     endpoint: input.endpoint || "",
     field: input.field ? Object.freeze({ ...input.field }) : null,
-    disabled: input.disabled === true
+    disabled: input.disabled === true,
+    guideKind: input.guideKind || null,
+    live: input.live === true,
+    credential: input.credential ? Object.freeze({ provider: input.credential.provider, fields: Object.freeze([...input.credential.fields]) }) : null
   });
 }
 
 const METHOD_PRESETS = Object.freeze({
   oauth: Object.freeze([
-    method({ id: "oauth-secure", label: "OAuth securise", summary: "Autorisation officielle avec permissions minimales et echange cote serveur.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "OAuth 2.0", badges: ["Recommande", "OAuth", "Cloud"], capabilities: ["Synchronisation autorisee", "Actualisation automatique", "Activity Hub"], permissions: ["Identite de compte", "Donnees selectionnees", "Acces revocable"] }),
+    method({ id: "oauth-secure", label: "OAuth securise", summary: "Autorisation officielle avec permissions minimales et echange cote serveur.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "OAuth 2.0", badges: ["OAuth", "Cloud"], capabilities: ["Synchronisation autorisee", "Actualisation automatique", "Activity Hub"], permissions: ["Identite de compte", "Donnees selectionnees", "Acces revocable"] }),
     method({ id: "public-readonly", label: "Lecture publique", summary: "Utilise uniquement les donnees rendues publiques par le compte.", availability: "public", quality: "Essentielle", badges: ["Simple", "Lecture seule", "Sans secret"], capabilities: ["Profil public", "Donnees publiques"], permissions: ["Aucune permission privee"], field: { type: "url", label: "Adresse publique", placeholder: "https://...", required: true } })
   ]),
   api: Object.freeze([
-    method({ id: "server-connector", label: "Connecteur serveur", summary: "Les appels et donnees sensibles restent dans un relais ETHONE securise.", availability: "backend", recommended: true, quality: "Complete", badges: ["Recommande", "Cloud"], capabilities: ["Synchronisation planifiee", "Activity Hub", "Diagnostic serveur"], permissions: ["Acces limite au service", "Acces revocable"] }),
+    method({ id: "server-connector", label: "Connecteur serveur", summary: "Les appels et donnees sensibles restent dans un relais ETHONE securise.", availability: "backend", recommended: true, quality: "Complete", badges: ["Cloud"], capabilities: ["Synchronisation planifiee", "Activity Hub", "Diagnostic serveur"], permissions: ["Acces limite au service", "Acces revocable"] }),
     method({ id: "public-readonly", label: "Lecture publique", summary: "Fonctions publiques uniquement, sans controles ni donnees privees.", availability: "public", quality: "Essentielle", badges: ["Simple", "Lecture seule", "Sans secret"], capabilities: ["Donnees publiques"], permissions: ["Aucune permission privee"], field: { type: "url", label: "Adresse publique", placeholder: "https://...", required: true } })
   ]),
   local: Object.freeze([
-    method({ id: "local-bridge", label: "Bridge local", summary: "Connexion sur votre machine, sans exposer le service sur Internet.", availability: "local", recommended: true, quality: "Locale", badges: ["Recommande", "Local", "Temps reel"], capabilities: ["Etat local", "Mises a jour directes", "Activity Hub"], permissions: ["Acces local explicite"], field: { type: "url", label: "Adresse locale", placeholder: "http://127.0.0.1:...", required: true } })
+    method({ id: "local-bridge", label: "Bridge local", summary: "Connexion sur votre machine, sans exposer le service sur Internet.", availability: "local", recommended: true, quality: "Locale", badges: ["Local", "Temps reel"], capabilities: ["Etat local", "Mises a jour directes", "Activity Hub"], permissions: ["Acces local explicite"], field: { type: "url", label: "Adresse locale", placeholder: "http://127.0.0.1:...", required: true } })
   ]),
   feed: Object.freeze([
-    method({ id: "public-feed", label: "Flux public", summary: "Lecture d'une URL de flux publique avec validation avant activation.", availability: "public", recommended: true, quality: "Lecture seule", apiVersion: "RSS / Atom", badges: ["Recommande", "Simple", "Lecture seule", "Sans secret"], capabilities: ["Nouveaux articles", "Historique recent", "Activity Hub"], permissions: ["Lecture du flux indique"], field: { type: "url", label: "Adresse RSS ou Atom", placeholder: "https://example.com/feed.xml", required: true } })
+    method({ id: "public-feed", label: "Flux public", summary: "Lecture d'une URL de flux publique avec validation avant activation.", availability: "public", recommended: true, quality: "Lecture seule", apiVersion: "RSS / Atom", badges: ["Simple", "Lecture seule", "Sans secret"], capabilities: ["Nouveaux articles", "Historique recent", "Activity Hub"], permissions: ["Lecture du flux indique"], field: { type: "url", label: "Adresse RSS ou Atom", placeholder: "https://example.com/feed.xml", required: true } })
   ]),
   restricted: Object.freeze([
     method({ id: "approved-access", label: "Acces approuve", summary: "Cette integration depend d'une offre, d'un partenariat ou d'une validation du fournisseur.", availability: "restricted", recommended: true, quality: "Sous conditions", badges: ["Acces limite", "Cloud"], capabilities: ["Selon autorisation du fournisseur"], permissions: ["Definies lors de l'approbation"], disabled: true })
@@ -120,38 +123,80 @@ const METHOD_PRESETS = Object.freeze({
 
 const SPECIAL_METHODS = Object.freeze({
   spotify: Object.freeze([
-    method({ id: "oauth-pkce", label: "Spotify OAuth", summary: "Lecture actuelle, bibliotheque, playlists et appareils via l'API officielle.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "Spotify Web API", badges: ["Recommande", "OAuth", "Temps reel", "Cloud"], capabilities: ["Lecture actuelle", "Historique autorise", "Playlists", "Appareils", "Controle de lecture"], permissions: ["Profil", "Etat de lecture", "Bibliotheque selectionnee"] }),
-    method({ id: "discord-lanyard", label: "Discord + Lanyard", summary: "Presence Spotify publique exposee par Discord, sans controle de lecture.", availability: "bridge", quality: "Temps reel", apiVersion: "Lanyard", badges: ["Simple", "Via Discord", "Via Lanyard", "Lecture seule"], capabilities: ["Morceau actuel", "Artiste", "Album", "Pochette", "Progression"], permissions: ["Presence Discord publique"], dependency: "discord", field: { type: "text", label: "Identifiant Discord public", placeholder: "123456789012345678", required: true } }),
-    method({ id: "lastfm-history", label: "Last.fm", summary: "Historique musical et statistiques a partir des scrobbles Last.fm.", availability: "bridge", quality: "Historique", apiVersion: "Last.fm API", badges: ["Via Last.fm", "Lecture seule", "Cloud"], capabilities: ["Historique", "Top artistes", "Top morceaux", "Statistiques"], permissions: ["Profil Last.fm public ou autorise"], dependency: "lastfm", field: { type: "text", label: "Nom d'utilisateur Last.fm", placeholder: "Votre profil public", required: true } }),
+    method({ id: "oauth-pkce", label: "Spotify OAuth", summary: "Lecture actuelle, bibliotheque, playlists et appareils via l'API officielle.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "Spotify Web API", badges: ["OAuth", "Temps reel", "Cloud"], capabilities: ["Lecture actuelle", "Historique autorise", "Playlists", "Appareils", "Controle de lecture"], permissions: ["Profil", "Etat de lecture", "Bibliotheque selectionnee"] }),
+    method({ id: "discord-lanyard", label: "Discord + Lanyard", summary: "Presence Spotify publique exposee par Discord, sans controle de lecture.", availability: "bridge", quality: "Temps reel", apiVersion: "Lanyard", live: true, badges: ["Simple", "Via Discord", "Via Lanyard", "Lecture seule"], capabilities: ["Morceau actuel", "Artiste", "Album", "Pochette", "Progression"], permissions: ["Presence Discord publique"], dependency: "discord", field: { type: "text", label: "Identifiant Discord public", placeholder: "123456789012345678", required: true } }),
+    method({ id: "lastfm-history", label: "Last.fm", summary: "Historique musical et statistiques a partir des scrobbles Last.fm.", availability: "bridge", quality: "Historique", apiVersion: "Last.fm API", live: true, badges: ["Via Last.fm", "Lecture seule", "Cloud"], capabilities: ["Historique", "Top artistes", "Top morceaux", "Statistiques"], permissions: ["Profil Last.fm public ou autorise"], dependency: "lastfm", field: { type: "text", label: "Nom d'utilisateur Last.fm", placeholder: "Votre profil public", required: true } }),
     method({ id: "public-profile", label: "Profil public", summary: "Apercu limite a une URL de profil ou de playlist publique.", availability: "public", quality: "Essentielle", badges: ["Simple", "Sans secret", "Lecture seule"], capabilities: ["Profil public", "Playlist publique"], permissions: ["Aucune permission privee"], field: { type: "url", label: "Profil ou playlist publique", placeholder: "https://open.spotify.com/...", required: true } })
   ]),
   discord: Object.freeze([
-    method({ id: "oauth-secure", label: "Discord OAuth", summary: "Identite et ressources autorisees via le flux officiel cote serveur.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "Discord OAuth2", badges: ["Recommande", "OAuth", "Cloud"], capabilities: ["Profil", "Serveurs autorises", "Activity Hub"], permissions: ["Identify", "Guilds selon besoin"] }),
-    method({ id: "lanyard-presence", label: "Lanyard Presence", summary: "Presence Discord publique en lecture seule et mise a jour en direct.", availability: "public", quality: "Temps reel", apiVersion: "Lanyard", badges: ["Simple", "Via Lanyard", "Temps reel", "Lecture seule"], capabilities: ["Statut", "Activite", "Spotify expose"], permissions: ["Identifiant Discord public"], field: { type: "text", label: "Identifiant Discord public", placeholder: "123456789012345678", required: true } })
+    method({ id: "lanyard-presence", label: "Presence publique", summary: "Statut et activite Discord en lecture seule, juste avec votre identifiant.", availability: "public", recommended: true, quality: "Temps reel", apiVersion: "Lanyard", live: true, badges: ["Simple", "Temps reel", "Lecture seule"], capabilities: ["Statut", "Activite", "Spotify expose"], permissions: ["Identifiant Discord public"], field: { type: "text", label: "Identifiant Discord", placeholder: "123456789012345678", required: true } }),
+    method({ id: "oauth-secure", label: "Discord OAuth", summary: "Pour lister vos serveurs autorises en plus de la presence. Necessite le backend ETHONE.", availability: "backend", quality: "Complete", apiVersion: "Discord OAuth2", badges: ["OAuth", "Cloud"], capabilities: ["Profil", "Serveurs autorises", "Activity Hub"], permissions: ["Identify", "Guilds selon besoin"] })
+  ]),
+  minecraft: Object.freeze([
+    method({ id: "public-profile", label: "Profil public", summary: "Recupere votre pseudo, identifiant et skin via l'API publique Mojang. Aucun compte Microsoft requis.", availability: "public", recommended: true, quality: "Essentielle", apiVersion: "Mojang API", badges: ["Simple", "Sans secret", "Lecture seule"], capabilities: ["Pseudo verifie", "Skin actuel"], permissions: ["Aucune permission privee"], field: { type: "text", label: "Pseudo Minecraft", placeholder: "Notch", required: true } })
+  ]),
+  twitch: Object.freeze([
+    method({ id: "public-profile", label: "Chaine publique", summary: "Statut Live et derniers streams via l'API Twitch publique, juste avec votre pseudo.", availability: "public", recommended: true, quality: "Essentielle", apiVersion: "Twitch Helix", live: true, badges: ["Simple", "Lecture seule"], capabilities: ["Statut Live", "Derniers streams"], permissions: ["Aucune permission privee"], field: { type: "text", label: "Pseudo Twitch", placeholder: "votre_pseudo", required: true }, credential: { provider: "twitch", fields: [{ key: "clientId", label: "Client ID Twitch", placeholder: "abcdef123456..." }, { key: "clientSecret", label: "Client Secret Twitch", placeholder: "•••••••••••••" }] } }),
+    method({ id: "oauth-secure", label: "Twitch OAuth", summary: "Pour les abonnements et donnees privees. Necessite le backend ETHONE.", availability: "backend", quality: "Standard", apiVersion: "Twitch OAuth", badges: ["OAuth", "Cloud"], capabilities: ["Chaines", "Activite", "Abonnements"], permissions: ["Scopes OAuth selectionnes"] })
+  ]),
+  reddit: Object.freeze([
+    method({ id: "public-profile", label: "Profil public", summary: "Publications et commentaires publics via l'API Reddit, juste avec votre nom d'utilisateur.", availability: "public", recommended: true, quality: "Essentielle", apiVersion: "Reddit API", badges: ["Simple", "Lecture seule"], capabilities: ["Publications publiques", "Commentaires publics"], permissions: ["Aucune permission privee"], field: { type: "text", label: "Nom d'utilisateur Reddit", placeholder: "votre_pseudo", required: true } }),
+    method({ id: "oauth-secure", label: "Reddit OAuth", summary: "Pour les communautes privees et l'activite complete. Necessite le backend ETHONE.", availability: "backend", quality: "Standard", apiVersion: "Reddit OAuth2", badges: ["OAuth", "Cloud"], capabilities: ["Communautes", "Activite"], permissions: ["Scopes OAuth selectionnes"] })
+  ]),
+  bluesky: Object.freeze([
+    method({ id: "public-profile", label: "Profil public", summary: "Publications publiques via le protocole AT, juste avec votre identifiant.", availability: "public", recommended: true, quality: "Essentielle", apiVersion: "AT Protocol", badges: ["Simple", "Sans secret", "Lecture seule"], capabilities: ["Publications publiques"], permissions: ["Aucune permission privee"], field: { type: "text", label: "Identifiant Bluesky", placeholder: "vous.bsky.social", required: true } })
+  ]),
+  youtube: Object.freeze([
+    method({ id: "public-channel", label: "Chaine publique", summary: "Dernieres videos et activite publique de la chaine, juste avec son identifiant.", availability: "public", recommended: true, quality: "Essentielle", apiVersion: "YouTube Data API", badges: ["Simple", "Lecture seule"], capabilities: ["Dernieres videos", "Activite publique"], permissions: ["Aucune permission privee"], field: { type: "text", label: "Chaine YouTube", placeholder: "@votre-chaine", required: true } }),
+    method({ id: "oauth-secure", label: "Google OAuth", summary: "Pour les abonnements et donnees privees. Necessite le backend ETHONE.", availability: "backend", quality: "Standard", apiVersion: "Google OAuth", badges: ["OAuth", "Cloud"], capabilities: ["Videos", "Chaines", "Activite"], permissions: ["Scopes OAuth selectionnes"] })
+  ]),
+  lastfm: Object.freeze([
+    method({ id: "public-profile", label: "Profil public", summary: "Scrobbles et historique musical via l'API Last.fm, juste avec votre nom d'utilisateur.", availability: "public", recommended: true, quality: "Essentielle", apiVersion: "Last.fm API", live: true, badges: ["Simple", "Sans secret", "Lecture seule"], capabilities: ["Scrobbles", "Historique musical"], permissions: ["Aucune permission privee"], field: { type: "text", label: "Nom d'utilisateur Last.fm", placeholder: "votre_pseudo", required: true }, credential: { provider: "lastfm", fields: [{ key: "apiKey", label: "Cle API Last.fm", placeholder: "0123456789abcdef0123456789abcdef" }] } })
+  ]),
+  weather: Object.freeze([
+    method({ id: "public-location", label: "Lieu public", summary: "Conditions et previsions via Open-Meteo, une API meteo publique et gratuite.", availability: "public", recommended: true, quality: "Essentielle", apiVersion: "Open-Meteo", badges: ["Simple", "Sans secret", "Lecture seule"], capabilities: ["Conditions actuelles", "Previsions"], permissions: ["Aucune permission privee"], field: { type: "text", label: "Ville", placeholder: "Paris, France", required: true } })
+  ]),
+  riot: Object.freeze([
+    method({ id: "server-connector", label: "Riot API", summary: "Valorant, League of Legends et TFT via une cle API HenrikDev conservee cote Worker.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "HenrikDev API", guideKind: "apikey", live: true, badges: ["Cloud"], capabilities: ["Parties recentes", "Rangs", "Statistiques"], permissions: ["Donnees exposees par Riot"], field: { type: "text", label: "Riot ID (Nom#Tag)", placeholder: "Pseudo#EUW", required: true }, credential: { provider: "henrik", fields: [{ key: "apiKey", label: "Cle API HenrikDev", placeholder: "HDEV-..." }] } })
+  ]),
+  "tracker-gg": Object.freeze([
+    method({ id: "server-connector", label: "Tracker.gg API", summary: "Rangs et matchs Apex Legends via une cle API Tracker.gg conservee cote Worker.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "Tracker.gg API", guideKind: "apikey", live: true, badges: ["Cloud"], capabilities: ["Rangs", "Matchs recents", "Statistiques"], permissions: ["Donnees exposees par Tracker.gg"], field: { type: "text", label: "Identifiant (Origin, PSN, Xbox)", placeholder: "VotrePseudo", required: true }, credential: { provider: "tracker", fields: [{ key: "apiKey", label: "Cle API Tracker.gg", placeholder: "TRN-..." }] } })
+  ]),
+  openai: Object.freeze([
+    method({ id: "server-connector", label: "Cle API OpenAI", summary: "Executions via une cle API conservee uniquement cote Worker ETHONE.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "OpenAI API", guideKind: "apikey", badges: ["Cloud"], capabilities: ["Executions", "Historique d'usage"], permissions: ["Cle limitee au Worker ETHONE"] })
+  ]),
+  anthropic: Object.freeze([
+    method({ id: "server-connector", label: "Cle API Anthropic", summary: "Executions via une cle API conservee uniquement cote Worker ETHONE.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "Anthropic API", guideKind: "apikey", badges: ["Cloud"], capabilities: ["Executions", "Historique d'usage"], permissions: ["Cle limitee au Worker ETHONE"] })
+  ]),
+  gemini: Object.freeze([
+    method({ id: "server-connector", label: "Cle API Gemini", summary: "Executions via une cle API conservee uniquement cote Worker ETHONE.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "Gemini API", guideKind: "apikey", badges: ["Cloud"], capabilities: ["Executions", "Historique d'usage"], permissions: ["Cle limitee au Worker ETHONE"] })
+  ]),
+  groq: Object.freeze([
+    method({ id: "server-connector", label: "Cle API Groq", summary: "Executions via une cle API conservee uniquement cote Worker ETHONE.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "Groq API", guideKind: "apikey", badges: ["Cloud"], capabilities: ["Executions", "Historique d'usage"], permissions: ["Cle limitee au Worker ETHONE"] })
   ]),
   github: Object.freeze([
-    method({ id: "github-app", label: "GitHub App", summary: "Permissions fines, installation revocable et acces limite aux depots choisis.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "GitHub App API", badges: ["Recommande", "Cloud", "Temps reel"], capabilities: ["Commits", "Pull Requests", "Issues", "Webhooks"], permissions: ["Depots selectionnes", "Metadonnees", "Lecture ou ecriture explicite"] }),
+    method({ id: "github-app", label: "GitHub App", summary: "Permissions fines, installation revocable et acces limite aux depots choisis.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "GitHub App API", badges: ["Cloud", "Temps reel"], capabilities: ["Commits", "Pull Requests", "Issues", "Webhooks"], permissions: ["Depots selectionnes", "Metadonnees", "Lecture ou ecriture explicite"] }),
     method({ id: "oauth-secure", label: "GitHub OAuth App", summary: "Connexion OAuth classique pour les profils et actions autorisees.", availability: "backend", quality: "Standard", apiVersion: "GitHub OAuth", badges: ["OAuth", "Cloud"], capabilities: ["Profil", "Depots autorises", "Activity Hub"], permissions: ["Scopes OAuth selectionnes"] }),
     method({ id: "public-profile", label: "Profil public", summary: "Contributions et depots publics, sans acces prive.", availability: "public", quality: "Lecture seule", badges: ["Simple", "Sans secret", "Lecture seule"], capabilities: ["Profil public", "Depots publics", "Contributions"], permissions: ["Aucune permission privee"], field: { type: "url", label: "Profil GitHub public", placeholder: "https://github.com/utilisateur", required: true } })
   ]),
   "google-calendar": Object.freeze([
-    method({ id: "oauth-secure", label: "Google OAuth", summary: "Calendriers autorises avec scopes minimaux et synchronisation cote serveur.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "Google Calendar API", badges: ["Recommande", "OAuth", "Cloud"], capabilities: ["Evenements", "Calendriers choisis", "Rappels", "Activity Hub"], permissions: ["Lecture agenda", "Ecriture optionnelle"] }),
+    method({ id: "oauth-secure", label: "Google OAuth", summary: "Calendriers autorises avec scopes minimaux et synchronisation cote serveur.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "Google Calendar API", badges: ["OAuth", "Cloud"], capabilities: ["Evenements", "Calendriers choisis", "Rappels", "Activity Hub"], permissions: ["Lecture agenda", "Ecriture optionnelle"] }),
     method({ id: "ics-readonly", label: "Calendrier ICS", summary: "Abonnement a une adresse ICS partagee, strictement en lecture seule.", availability: "public", quality: "Lecture seule", apiVersion: "iCalendar", badges: ["Simple", "Sans secret", "Lecture seule"], capabilities: ["Evenements publies", "Actualisation periodique"], permissions: ["Lecture de l'agenda partage"], field: { type: "url", label: "Adresse ICS partagee", placeholder: "https://.../calendar.ics", required: true } })
   ]),
   notion: Object.freeze([
-    method({ id: "public-oauth", label: "Connexion publique", summary: "OAuth Notion pour choisir les pages partagees avec ETHONE.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "Notion API", badges: ["Recommande", "OAuth", "Cloud"], capabilities: ["Pages partagees", "Bases partagees", "Activity Hub"], permissions: ["Contenu explicitement partage"] }),
+    method({ id: "public-oauth", label: "Connexion publique", summary: "OAuth Notion pour choisir les pages partagees avec ETHONE.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "Notion API", badges: ["OAuth", "Cloud"], capabilities: ["Pages partagees", "Bases partagees", "Activity Hub"], permissions: ["Contenu explicitement partage"] }),
     method({ id: "internal-backend", label: "Connexion interne", summary: "Pour un seul workspace, avec identifiants conserves uniquement cote serveur.", availability: "backend", quality: "Workspace", apiVersion: "Notion API", badges: ["Cloud", "Workspace"], capabilities: ["Pages partagees", "Bases partagees"], permissions: ["Contenu explicitement partage"] })
   ]),
   steam: Object.freeze([
-    method({ id: "public-profile", label: "Profil public", summary: "Jeux et activite visibles selon les reglages de confidentialite Steam.", availability: "public", recommended: true, quality: "Lecture seule", apiVersion: "Steam Community", badges: ["Recommande", "Simple", "Lecture seule"], capabilities: ["Jeu actuel", "Bibliotheque publique", "Temps de jeu public"], permissions: ["Profil Steam public"], field: { type: "url", label: "Profil Steam public", placeholder: "https://steamcommunity.com/id/...", required: true } }),
-    method({ id: "server-connector", label: "Steam Web API", summary: "Enrichissement via un relais serveur et l'API officielle.", availability: "backend", quality: "Complete", apiVersion: "Steam Web API", badges: ["Cloud"], capabilities: ["Profil", "Jeux", "Statistiques disponibles"], permissions: ["Donnees exposees par Steam"] })
+    method({ id: "public-profile", label: "Profil public", summary: "Jeux et activite visibles selon les reglages de confidentialite Steam.", availability: "public", recommended: true, quality: "Lecture seule", apiVersion: "Steam Community", live: true, badges: ["Simple", "Lecture seule"], capabilities: ["Jeu actuel", "Bibliotheque publique", "Temps de jeu public"], permissions: ["Profil Steam public"], field: { type: "url", label: "Profil Steam public", placeholder: "https://steamcommunity.com/id/...", required: true } }),
+    method({ id: "server-connector", label: "Steam Web API", summary: "Enrichissement via un relais serveur et l'API officielle.", availability: "backend", quality: "Complete", apiVersion: "Steam Web API", guideKind: "apikey", live: true, badges: ["Cloud"], capabilities: ["Profil", "Jeux", "Statistiques disponibles"], permissions: ["Donnees exposees par Steam"], credential: { provider: "steam", fields: [{ key: "apiKey", label: "Cle API Steam Web API", placeholder: "0123456789ABCDEF0123456789ABCDEF" }] } })
   ]),
   email: Object.freeze([
-    method({ id: "provider-oauth", label: "OAuth fournisseur", summary: "Connexion recommandee pour Gmail, Outlook et fournisseurs compatibles.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "OAuth 2.0", badges: ["Recommande", "OAuth", "Cloud"], capabilities: ["Nouveaux messages", "Priorites", "Activity Hub"], permissions: ["Lecture des messages selectionnes"] }),
+    method({ id: "provider-oauth", label: "OAuth fournisseur", summary: "Connexion recommandee pour Gmail, Outlook et fournisseurs compatibles.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "OAuth 2.0", badges: ["OAuth", "Cloud"], capabilities: ["Nouveaux messages", "Priorites", "Activity Hub"], permissions: ["Lecture des messages selectionnes"] }),
     method({ id: "imap-backend", label: "IMAP via backend", summary: "Compatibilite etendue avec traitement exclusivement cote serveur.", availability: "backend", quality: "Compatible", apiVersion: "IMAP", badges: ["Cloud"], capabilities: ["Boite de reception", "Dossiers"], permissions: ["Lecture limitee aux dossiers choisis"] })
   ]),
-  "lm-studio": Object.freeze([method({ id: "local-openai", label: "Serveur local compatible", summary: "Connexion directe au serveur local compatible OpenAI de LM Studio.", availability: "local", recommended: true, quality: "Locale", apiVersion: "OpenAI compatible", endpoint: "http://127.0.0.1:1234/v1", badges: ["Recommande", "Local", "Sans secret"], capabilities: ["Modeles locaux", "Executions locales"], permissions: ["Acces boucle locale"], field: { type: "url", label: "Adresse locale LM Studio", placeholder: "http://127.0.0.1:1234/v1", required: true } })]),
-  ollama: Object.freeze([method({ id: "local-http", label: "API locale Ollama", summary: "Connexion a Ollama sur la boucle locale, sans exposition Internet.", availability: "local", recommended: true, quality: "Locale", apiVersion: "Ollama API", endpoint: "http://127.0.0.1:11434", badges: ["Recommande", "Local", "Sans secret"], capabilities: ["Modeles locaux", "Executions locales"], permissions: ["Acces boucle locale"], field: { type: "url", label: "Adresse locale Ollama", placeholder: "http://127.0.0.1:11434", required: true } })])
+  "lm-studio": Object.freeze([method({ id: "local-openai", label: "Serveur local compatible", summary: "Connexion directe au serveur local compatible OpenAI de LM Studio.", availability: "local", recommended: true, quality: "Locale", apiVersion: "OpenAI compatible", endpoint: "http://127.0.0.1:1234/v1", badges: ["Local", "Sans secret"], capabilities: ["Modeles locaux", "Executions locales"], permissions: ["Acces boucle locale"], field: { type: "url", label: "Adresse locale LM Studio", placeholder: "http://127.0.0.1:1234/v1", required: true } })]),
+  ollama: Object.freeze([method({ id: "local-http", label: "API locale Ollama", summary: "Connexion a Ollama sur la boucle locale, sans exposition Internet.", availability: "local", recommended: true, quality: "Locale", apiVersion: "Ollama API", endpoint: "http://127.0.0.1:11434", badges: ["Local", "Sans secret"], capabilities: ["Modeles locaux", "Executions locales"], permissions: ["Acces boucle locale"], field: { type: "url", label: "Adresse locale Ollama", placeholder: "http://127.0.0.1:11434", required: true } })])
 });
 
 const OFFICIAL_HOME = Object.freeze({
@@ -220,6 +265,260 @@ function guideStep(id, title, description, extra = {}) {
   return Object.freeze({ id, title, description, resource: extra.resource || null, copyValue: extra.copyValue || "", status: extra.status || "todo" });
 }
 
+const REDIRECT_NOTE = "En attendant que le callback OAuth d'ETHONE soit branche, utilisez https://ethone.dev/ comme valeur temporaire : vous pourrez la corriger plus tard sans recreer l'application.";
+
+const SPECIAL_GUIDES = Object.freeze({
+  spotify: Object.freeze({
+    "oauth-pkce": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir le Dashboard Spotify for Developers", "Connectez-vous avec votre compte Spotify puis cliquez sur \"Create app\".", { resource }),
+      guideStep("app", "Nommer l'application", "Nom libre (ex : \"ETHONE\"), description libre. Cochez \"Web API\" dans les API utilisees."),
+      guideStep("redirect", "Ajouter la Redirect URI", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
+      guideStep("scopes", "Scopes a demander", "user-read-currently-playing, user-read-playback-state, user-read-recently-played, playlist-read-private", { copyValue: "user-read-currently-playing user-read-playback-state user-read-recently-played playlist-read-private" }),
+      guideStep("keys", "Copier Client ID et Client Secret", "Dans Settings de l'application, copiez les deux valeurs. Le Client Secret ne s'affiche qu'une fois.")
+    ])
+  }),
+  discord: Object.freeze({
+    "oauth-secure": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir le Discord Developer Portal", "Connectez-vous puis cliquez sur \"New Application\".", { resource }),
+      guideStep("app", "Nommer l'application", "Nom libre (ex : \"ETHONE\"). Dans l'onglet OAuth2, notez le Client ID."),
+      guideStep("redirect", "Ajouter la Redirect URI", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
+      guideStep("scopes", "Scopes a demander", "identify (profil) et guilds (liste des serveurs, uniquement si vous voulez les afficher).", { copyValue: "identify guilds" }),
+      guideStep("secret", "Copier le Client Secret", "Dans l'onglet OAuth2, section Client Secret, cliquez \"Reset Secret\" puis copiez la valeur affichee.")
+    ])
+  }),
+  twitch: Object.freeze({
+    "oauth-secure": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir la Twitch Developer Console", "Connectez-vous puis \"Register Your Application\".", { resource }),
+      guideStep("app", "Nommer l'application", "Nom libre, categorie \"Application Integration\", client type \"Confidential\"."),
+      guideStep("redirect", "Ajouter la Redirect URI", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
+      guideStep("scopes", "Scopes a demander", "user:read:subscriptions et user:read:follows selon ce que vous voulez afficher.", { copyValue: "user:read:subscriptions user:read:follows" }),
+      guideStep("keys", "Copier Client ID et Client Secret", "Le Client ID est visible directement. Cliquez \"New Secret\" pour generer le Client Secret.")
+    ]),
+    "public-profile": (resource) => Object.freeze([
+      guideStep("info", "Cle optionnelle", "Votre pseudo suffit pour tester avec la cle partagee d'ETHONE. Creez votre propre application Twitch si vous voulez votre propre quota, independant des autres utilisateurs.", { resource }),
+      guideStep("docs", "Ouvrir la Twitch Developer Console", "Connectez-vous puis \"Register Your Application\"."),
+      guideStep("app", "Nommer l'application", "Nom libre, categorie \"Application Integration\", client type \"Confidential\". Aucune Redirect URI reelle n'est utilisee pour cette methode."),
+      guideStep("keys", "Copier Client ID et Client Secret", "Le Client ID est visible directement. Cliquez \"New Secret\" pour generer le Client Secret."),
+      guideStep("paste", "Coller vos identifiants dans ETHONE", "Utilisez le champ \"Votre propre cle\" ci-dessous. Ils sont stockes dans votre compte Supabase, visibles et modifiables seulement par vous.")
+    ])
+  }),
+  reddit: Object.freeze({
+    "oauth-secure": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir les Reddit App Preferences", "Connectez-vous puis \"create another app...\" en bas de page.", { resource }),
+      guideStep("app", "Configurer le type d'application", "Choisissez \"web app\" (pas \"script\" ni \"installed app\")."),
+      guideStep("redirect", "Ajouter la Redirect URI", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
+      guideStep("scopes", "Scopes a demander", "identity (profil), history (activite), mysubreddits (communautes).", { copyValue: "identity history mysubreddits" }),
+      guideStep("keys", "Copier l'identifiant et le secret", "L'identifiant apparait sous le nom de l'app, le secret est affiche a droite.")
+    ])
+  }),
+  youtube: Object.freeze({
+    "oauth-secure": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir Google Cloud Console", "Creez un projet (ou reutilisez-en un), puis activez \"YouTube Data API v3\" dans la bibliotheque d'API.", { resource }),
+      guideStep("consent", "Configurer l'ecran de consentement OAuth", "Type \"External\", renseignez le nom de l'app. Statut \"Testing\" suffit tant que ce n'est utilise que par vous."),
+      guideStep("app", "Creer un identifiant OAuth", "Credentials > Create Credentials > OAuth client ID > type \"Web application\"."),
+      guideStep("redirect", "Ajouter la Redirect URI", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
+      guideStep("scopes", "Scope a demander", "https://www.googleapis.com/auth/youtube.readonly", { copyValue: "https://www.googleapis.com/auth/youtube.readonly" })
+    ])
+  }),
+  "google-calendar": Object.freeze({
+    "oauth-secure": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir Google Cloud Console", "Creez un projet (ou reutilisez-en un), puis activez \"Google Calendar API\" dans la bibliotheque d'API.", { resource }),
+      guideStep("consent", "Configurer l'ecran de consentement OAuth", "Type \"External\", renseignez le nom de l'app. Statut \"Testing\" suffit tant que ce n'est utilise que par vous."),
+      guideStep("app", "Creer un identifiant OAuth", "Credentials > Create Credentials > OAuth client ID > type \"Web application\"."),
+      guideStep("redirect", "Ajouter la Redirect URI", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
+      guideStep("scopes", "Scope a demander", "https://www.googleapis.com/auth/calendar.readonly", { copyValue: "https://www.googleapis.com/auth/calendar.readonly" })
+    ])
+  }),
+  email: Object.freeze({
+    "provider-oauth": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir Google Cloud Console", "Creez un projet (ou reutilisez-en un), puis activez \"Gmail API\" dans la bibliotheque d'API. Pour Outlook, utilisez plutot le portail Azure App registrations.", { resource }),
+      guideStep("consent", "Configurer l'ecran de consentement OAuth", "Type \"External\", renseignez le nom de l'app."),
+      guideStep("app", "Creer un identifiant OAuth", "Credentials > Create Credentials > OAuth client ID > type \"Web application\"."),
+      guideStep("redirect", "Ajouter la Redirect URI", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
+      guideStep("scopes", "Scope a demander", "https://www.googleapis.com/auth/gmail.readonly", { copyValue: "https://www.googleapis.com/auth/gmail.readonly" })
+    ])
+  }),
+  github: Object.freeze({
+    "github-app": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir les parametres developpeur GitHub", "Settings > Developer settings > GitHub Apps > \"New GitHub App\".", { resource }),
+      guideStep("app", "Configurer l'application", "Nom libre, Homepage URL: https://ethone.dev, decochez Webhook si vous ne voulez pas d'evenements en temps reel."),
+      guideStep("redirect", "Ajouter la Callback URL", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
+      guideStep("permissions", "Permissions du depot", "Contents: Read-only, Metadata: Read-only, Pull requests: Read-only, Issues: Read-only."),
+      guideStep("install", "Installer l'application", "Une fois creee, installez-la sur les depots que vous voulez suivre, puis notez l'App ID et generez une cle privee (.pem).")
+    ]),
+    "oauth-secure": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir les parametres developpeur GitHub", "Settings > Developer settings > OAuth Apps > \"New OAuth App\".", { resource }),
+      guideStep("app", "Configurer l'application", "Nom libre, Homepage URL: https://ethone.dev."),
+      guideStep("redirect", "Ajouter l'Authorization callback URL", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
+      guideStep("scopes", "Scopes a demander", "read:user (profil) et public_repo (ou repo pour les depots prives).", { copyValue: "read:user public_repo" }),
+      guideStep("keys", "Copier Client ID et Client Secret", "Le Client ID est visible directement. Cliquez \"Generate a new client secret\".")
+    ])
+  }),
+  notion: Object.freeze({
+    "public-oauth": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir My Integrations sur Notion", "Connectez-vous puis \"New integration\".", { resource }),
+      guideStep("app", "Configurer l'integration", "Type \"Public\" (necessaire pour un flux OAuth), nom libre, associez un workspace."),
+      guideStep("redirect", "Ajouter la Redirect URI", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
+      guideStep("permissions", "Capacites a demander", "Read content uniquement. Ne cochez pas Insert/Update sauf besoin reel."),
+      guideStep("keys", "Copier OAuth client ID et secret", "Disponibles dans l'onglet \"Distribution\" de l'integration une fois publiee.")
+    ]),
+    "internal-backend": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir My Integrations sur Notion", "Connectez-vous puis \"New integration\".", { resource }),
+      guideStep("app", "Configurer l'integration", "Type \"Internal\" (pas de flux OAuth, un seul workspace), nom libre."),
+      guideStep("permissions", "Capacites a demander", "Read content uniquement."),
+      guideStep("keys", "Copier le jeton d'integration interne", "Affiche une seule fois dans l'onglet \"Secrets\"."),
+      guideStep("share", "Partager les pages", "Dans Notion, ouvrez chaque page a suivre > \"...\" > Connections > ajoutez votre integration.")
+    ])
+  }),
+  "google-drive": Object.freeze({
+    "oauth-secure": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir Google Cloud Console", "Creez un projet (ou reutilisez-en un), puis activez \"Google Drive API\" dans la bibliotheque d'API.", { resource }),
+      guideStep("consent", "Configurer l'ecran de consentement OAuth", "Type \"External\", renseignez le nom de l'app. Statut \"Testing\" suffit tant que ce n'est utilise que par vous."),
+      guideStep("app", "Creer un identifiant OAuth", "Credentials > Create Credentials > OAuth client ID > type \"Web application\"."),
+      guideStep("redirect", "Ajouter la Redirect URI", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
+      guideStep("scopes", "Scope a demander", "https://www.googleapis.com/auth/drive.readonly", { copyValue: "https://www.googleapis.com/auth/drive.readonly" })
+    ])
+  }),
+  "google-docs": Object.freeze({
+    "oauth-secure": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir Google Cloud Console", "Creez un projet (ou reutilisez-en un), puis activez \"Google Docs API\" dans la bibliotheque d'API.", { resource }),
+      guideStep("consent", "Configurer l'ecran de consentement OAuth", "Type \"External\", renseignez le nom de l'app. Statut \"Testing\" suffit tant que ce n'est utilise que par vous."),
+      guideStep("app", "Creer un identifiant OAuth", "Credentials > Create Credentials > OAuth client ID > type \"Web application\"."),
+      guideStep("redirect", "Ajouter la Redirect URI", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
+      guideStep("scopes", "Scopes a demander", "https://www.googleapis.com/auth/documents.readonly et https://www.googleapis.com/auth/drive.metadata.readonly (pour lister les documents recents).", { copyValue: "https://www.googleapis.com/auth/documents.readonly https://www.googleapis.com/auth/drive.metadata.readonly" })
+    ])
+  }),
+  "google-tasks": Object.freeze({
+    "oauth-secure": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir Google Cloud Console", "Creez un projet (ou reutilisez-en un), puis activez \"Google Tasks API\" dans la bibliotheque d'API.", { resource }),
+      guideStep("consent", "Configurer l'ecran de consentement OAuth", "Type \"External\", renseignez le nom de l'app. Statut \"Testing\" suffit tant que ce n'est utilise que par vous."),
+      guideStep("app", "Creer un identifiant OAuth", "Credentials > Create Credentials > OAuth client ID > type \"Web application\"."),
+      guideStep("redirect", "Ajouter la Redirect URI", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
+      guideStep("scopes", "Scope a demander", "https://www.googleapis.com/auth/tasks.readonly", { copyValue: "https://www.googleapis.com/auth/tasks.readonly" })
+    ])
+  }),
+  "google-photos": Object.freeze({
+    "oauth-secure": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir Google Cloud Console", "Creez un projet (ou reutilisez-en un), puis activez \"Photos Library API\" dans la bibliotheque d'API.", { resource }),
+      guideStep("consent", "Configurer l'ecran de consentement OAuth", "Type \"External\", renseignez le nom de l'app. Statut \"Testing\" suffit tant que ce n'est utilise que par vous."),
+      guideStep("app", "Creer un identifiant OAuth", "Credentials > Create Credentials > OAuth client ID > type \"Web application\"."),
+      guideStep("redirect", "Ajouter la Redirect URI", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
+      guideStep("scopes", "Scope a demander", "https://www.googleapis.com/auth/photoslibrary.readonly", { copyValue: "https://www.googleapis.com/auth/photoslibrary.readonly" })
+    ])
+  }),
+  "apple-music": Object.freeze({
+    "oauth-secure": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir Apple Developer", "Necessite un compte Apple Developer Program payant (99$/an). Rendez-vous dans Certificates, Identifiers & Profiles.", { resource }),
+      guideStep("identifier", "Creer un MusicKit Identifier", "Identifiers > + > MusicKit, associez-le a votre compte."),
+      guideStep("key", "Generer une cle privee MusicKit", "Keys > + > cochez MusicKit > telechargez le fichier .p8 (une seule fois, a conserver precieusement)."),
+      guideStep("token", "Fonctionnement different d'un OAuth classique", "Apple Music ne redirige pas vers ETHONE : le Worker doit generer un jeton developpeur signe (JWT) avec cette cle, puis votre navigateur autorise l'acces via MusicKit JS.", { status: "blocked" }),
+      guideStep("verify", "Pas de Redirect URI a configurer", "Cette methode ne suit pas le schema OAuth habituel, il n'y a rien d'autre a renseigner cote Apple pour l'instant.")
+    ])
+  }),
+  "youtube-music": Object.freeze({
+    "oauth-secure": (resource) => Object.freeze([
+      guideStep("unavailable", "Pas d'API officielle pour YouTube Music", "Google ne propose pas d'API publique et documentee pour la lecture en cours sur YouTube Music, contrairement a YouTube (videos) ou Spotify.", { resource, status: "blocked" }),
+      guideStep("alternative", "Alternative", "Utilisez YouTube (chaine publique) si vous voulez suivre une activite YouTube, ou Last.fm si vous scrobblez deja votre ecoute.", { status: "blocked" })
+    ])
+  }),
+  todoist: Object.freeze({
+    "oauth-secure": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir la Todoist App Console", "Connectez-vous puis \"Create a new app\".", { resource }),
+      guideStep("app", "Nommer l'application", "Nom libre, description libre."),
+      guideStep("redirect", "Ajouter l'OAuth redirect URL", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
+      guideStep("scopes", "Scope a demander", "data:read (lecture seule des taches et projets).", { copyValue: "data:read" }),
+      guideStep("keys", "Copier Client ID et Client Secret", "Visibles directement dans les parametres de l'app.")
+    ])
+  }),
+  linear: Object.freeze({
+    "oauth-secure": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir les parametres API Linear", "Settings > API > OAuth Applications > \"Create new\".", { resource }),
+      guideStep("app", "Nommer l'application", "Nom libre, icone facultative."),
+      guideStep("redirect", "Ajouter la Redirect URI", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
+      guideStep("scopes", "Scope a demander", "read (lecture seule des issues, projets et cycles).", { copyValue: "read" }),
+      guideStep("keys", "Copier Client ID et Client Secret", "Visibles directement dans les parametres de l'app.")
+    ])
+  }),
+  clickup: Object.freeze({
+    "oauth-secure": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir les parametres d'application ClickUp", "Depuis votre Workspace : Settings > Apps > \"App name\" en bas de page.", { resource }),
+      guideStep("app", "Nommer l'application", "Nom libre. ClickUp n'utilise pas de scopes granulaires : l'acces correspond a ce que votre propre compte peut voir."),
+      guideStep("redirect", "Ajouter le Redirect URL", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
+      guideStep("keys", "Copier Client ID et Client Secret", "Visibles directement une fois l'application creee.")
+    ])
+  }),
+  jira: Object.freeze({
+    "oauth-secure": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir la console developpeur Atlassian", "Connectez-vous puis \"Create\" > \"OAuth 2.0 integration\".", { resource }),
+      guideStep("app", "Nommer l'application", "Nom libre. Dans Permissions, ajoutez l'API Jira platform REST."),
+      guideStep("redirect", "Ajouter la Callback URL", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
+      guideStep("scopes", "Scopes a demander", "read:jira-work (issues et projets en lecture seule).", { copyValue: "read:jira-work" }),
+      guideStep("keys", "Copier Client ID et Client Secret", "Dans l'onglet Settings de l'integration.")
+    ])
+  }),
+  gitlab: Object.freeze({
+    "oauth-secure": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir les applications GitLab", "Depuis votre profil : Edit profile > Applications > \"Add new application\".", { resource }),
+      guideStep("app", "Nommer l'application", "Nom libre."),
+      guideStep("redirect", "Ajouter la Redirect URI", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
+      guideStep("scopes", "Scopes a demander", "read_api (lecture seule via l'API) ou read_user pour juste le profil.", { copyValue: "read_api" }),
+      guideStep("keys", "Copier Application ID et Secret", "Affiches une seule fois juste apres la creation.")
+    ])
+  }),
+  fitbit: Object.freeze({
+    "oauth-secure": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir la Fitbit Developer Console", "Connectez-vous puis \"Register An App\".", { resource }),
+      guideStep("app", "Configurer l'application", "OAuth 2.0 Application Type: \"Server\", nom libre."),
+      guideStep("redirect", "Ajouter la Redirect URL", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
+      guideStep("scopes", "Scopes a demander", "activity, heartrate et profile selon les indicateurs voulus.", { copyValue: "activity heartrate profile" }),
+      guideStep("keys", "Copier OAuth 2.0 Client ID et Client Secret", "Visibles directement dans les parametres de l'app.")
+    ])
+  }),
+  "battle-net": Object.freeze({
+    "oauth-secure": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir le Battle.net Developer Portal", "Connectez-vous avec votre compte Battle.net puis \"Create Client\".", { resource }),
+      guideStep("app", "Configurer le client", "Redirect URIs, Service URL: https://ethone.dev, cochez uniquement les jeux que vous voulez suivre (WoW, Diablo, Starcraft...)."),
+      guideStep("redirect", "Ajouter la Redirect URI", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
+      guideStep("scopes", "Scope a demander", "wow.profile (World of Warcraft) et/ou sc2.profile, d3.profile selon le jeu.", { copyValue: "wow.profile" }),
+      guideStep("keys", "Copier Client ID et Client Secret", "Visibles dans le tableau de bord une fois le client cree et approuve.")
+    ])
+  }),
+  lastfm: Object.freeze({
+    "public-profile": (resource) => Object.freeze([
+      guideStep("info", "Cle optionnelle", "Votre nom d'utilisateur suffit pour tester avec la cle partagee d'ETHONE. Creez votre propre cle si vous voulez votre propre quota, independant des autres utilisateurs.", { resource }),
+      guideStep("docs", "Ouvrir Last.fm API Accounts", "Connectez-vous puis \"Create API account\"."),
+      guideStep("key", "Generer votre cle", "Nom d'application libre, aucune URL de callback necessaire pour cette methode."),
+      guideStep("paste", "Coller votre cle dans ETHONE", "Utilisez le champ \"Votre propre cle\" ci-dessous. Elle est stockee dans votre compte Supabase, visible et modifiable seulement par vous.")
+    ])
+  }),
+  steam: Object.freeze({
+    "server-connector": (resource) => Object.freeze([
+      guideStep("info", "Cle optionnelle", "La methode \"Profil public\" fonctionne deja sans cle. Cette methode enrichit vos donnees via l'API officielle Steam et fonctionne avec la cle partagee d'ETHONE, ou la votre pour un quota independant.", { resource }),
+      guideStep("docs", "Ouvrir la page des cles Steam Web API", "Connectez-vous avec votre compte Steam."),
+      guideStep("key", "Generer votre cle", "Renseignez un nom de domaine (ethone.dev convient) et validez pour obtenir votre cle personnelle."),
+      guideStep("paste", "Coller votre cle dans ETHONE", "Utilisez le champ \"Votre propre cle\" ci-dessous. Elle est stockee dans votre compte Supabase, visible et modifiable seulement par vous.")
+    ])
+  }),
+  riot: Object.freeze({
+    "server-connector": (resource) => Object.freeze([
+      guideStep("info", "Approbation manuelle requise", "HenrikDev (le relais utilise pour l'API Riot) valide chaque demande individuellement via son serveur Discord. En attendant, la cle partagee d'ETHONE reste utilisee.", { resource, status: "blocked" }),
+      guideStep("docs", "Rejoindre le serveur Discord HenrikDev", "Suivez les instructions du canal dedie a l'obtention d'une cle pour demander la votre."),
+      guideStep("paste", "Coller votre cle dans ETHONE", "Une fois approuvee, utilisez le champ \"Votre propre cle\" ci-dessous. Elle est stockee dans votre compte Supabase, visible et modifiable seulement par vous.")
+    ])
+  }),
+  "tracker-gg": Object.freeze({
+    "server-connector": (resource) => Object.freeze([
+      guideStep("info", "Approbation manuelle requise", "Tracker.gg valide chaque demande d'acces API individuellement. En attendant, la cle partagee d'ETHONE reste utilisee.", { resource, status: "blocked" }),
+      guideStep("docs", "Ouvrir Tracker.gg Developers", "Connectez-vous puis demandez un acces API pour votre propre usage."),
+      guideStep("paste", "Coller votre cle dans ETHONE", "Une fois approuvee, utilisez le champ \"Votre propre cle\" ci-dessous. Elle est stockee dans votre compte Supabase, visible et modifiable seulement par vous.")
+    ])
+  })
+});
+
+function specialGuideFor(integrationId, methodId) {
+  return SPECIAL_GUIDES[integrationId]?.[methodId] || null;
+}
+
 export function setupGuide(integrationOrId, methodId) {
   const integration = typeof integrationOrId === "string" ? integrationById(integrationOrId) : integrationOrId;
   if (!integration) return Object.freeze([]);
@@ -234,12 +533,24 @@ export function setupGuide(integrationOrId, methodId) {
     ]);
   }
 
+  const special = specialGuideFor(integration.id, selected.id);
+  if (special) return special(primaryResource);
+
   if (selected.availability === "local") {
     return Object.freeze([
       guideStep("service", `Demarrer ${integration.name}`, "Activez le service uniquement sur votre machine et consultez sa documentation officielle.", { resource: primaryResource }),
       guideStep("endpoint", "Verifier l'adresse locale", "L'adresse proposee reste sur la boucle locale et ne contient aucune donnee sensible.", { copyValue: selected.endpoint }),
       guideStep("permissions", "Limiter l'acces", "Autorisez uniquement les fonctions indispensables a ETHONE."),
       guideStep("verify", "Verifier la preparation", "Le diagnostic ETHONE controle le navigateur, la methode et la configuration locale.")
+    ]);
+  }
+
+  if (selected.guideKind === "apikey") {
+    return Object.freeze([
+      guideStep("docs", "Lire la documentation", `Consultez la documentation officielle de ${integration.name} pour generer une cle API.`, { resource: primaryResource }),
+      guideStep("key", "Generer une cle API dediee", "Creez une cle reservee a ETHONE, avec le perimetre le plus restreint possible."),
+      guideStep("backend", "Enregistrer la cle cote Worker", "La cle reste dans le Worker ETHONE et n'est jamais visible dans le navigateur."),
+      guideStep("verify", "Verifier la preparation", "ETHONE valide la configuration locale. Le test distant necessite que la cle soit enregistree cote Worker.")
     ]);
   }
 

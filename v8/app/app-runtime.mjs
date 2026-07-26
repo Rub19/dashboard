@@ -163,14 +163,21 @@ export function mountApplication(root, options = {}) {
   presence.signalIcon?.("brain");
   if (initialCalendar === "approaching") presence.signalIcon?.("calendar");
   const toasts = createToastManager(shell.toastRegion, { sounds, presence });
-  const panels = createPanelManager(shell.panelHost, {
+  const panelOptions = {
     user: initialModel.user,
     snapshot: () => repository.snapshot(),
     getState: () => store.getState(),
     currentLocale: () => i18n?.locale?.() || "fr",
     onLocaleChange: (locale) => i18n?.setLocale?.(locale),
     onClose: () => actions?.dispatch("v8.panel.close", { source: "keyboard" })
-  });
+  };
+  const panels = createPanelManager(shell.panelHost, panelOptions);
+  function applyProfileMediaUpdate(kind, url) {
+    if (kind !== "avatar") return;
+    const nextUser = Object.freeze({ ...panelOptions.user, avatar: Object.freeze({ kind: "image", value: url }) });
+    panelOptions.user = nextUser;
+    shell.updateUser(nextUser);
+  }
   let unreadNotifications = panels.notificationCount();
   presence.update({ notifications: unreadNotifications });
   const commandCenter = createCommandCenter(shell.commandHost, {
@@ -266,9 +273,9 @@ export function mountApplication(root, options = {}) {
         if (destroyed || requestId !== routeRequest || router?.current() !== route) return;
         lifecycle.mount(route, () => {
           if (route === "activity") return module.mountActivity(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, presence, notify: (notice) => toasts.show(notice) });
-          if (route === "connections") return module.mountConnections(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, externalServices, notify: (notice) => toasts.show(notice) });
+          if (route === "connections") return module.mountConnections(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, externalServices, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.() });
           if (route === "brain") return module.mountBrain(shell.stage, { repository, actions, state: store.getState(), presence, brain, notify: (notice) => toasts.show(notice) });
-          return module.mountSettings(shell.stage, { repository, actions, state: store.getState(), sounds, externalServices, densityEngine, subscribeState: store.subscribe, brain, notify: (notice) => toasts.show(notice) });
+          return module.mountSettings(shell.stage, { repository, actions, state: store.getState(), sounds, externalServices, densityEngine, subscribeState: store.subscribe, brain, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.(), profile: options.profile || repository.activeProfile?.(), onProfileMediaUpdated: applyProfileMediaUpdate });
         });
         finishRouteMount(route, focus);
       })

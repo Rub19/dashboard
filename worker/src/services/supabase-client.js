@@ -23,6 +23,28 @@ function serviceHeaders(secret) {
   return headers;
 }
 
+export async function getUserProviderCredential(env, userId, provider) {
+  const origin = projectOrigin(env);
+  if (!origin || !userId) return null;
+  try {
+    const secret = requireSecret(env, "SUPABASE_SECRET_KEY");
+    const response = await requestExternal(new URL("/rest/v1/rpc/get_provider_credential", origin), {
+      env,
+      expectedOrigin: origin,
+      service: "supabase",
+      dedupeKey: `credential:${userId}:${provider}`,
+      method: "POST",
+      headers: serviceHeaders(secret),
+      body: JSON.stringify({ requested_user_id: userId, requested_provider: provider }),
+      retries: 0,
+      maxBytes: 4096
+    });
+    return response.data && typeof response.data === "object" ? response.data : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function findPublicProfile(env, username) {
   const origin = projectOrigin(env);
   const secret = requireSecret(env, "SUPABASE_SECRET_KEY");

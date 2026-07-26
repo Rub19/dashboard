@@ -176,7 +176,11 @@ test("external timeout and non-JSON responses are normalized", async () => {
 
 test("temporary provider failures are bounded and retryable", async () => {
   let calls = 0;
-  const response = await invoke("/api/steam/player?steamId=76561198000000000", { env: testEnv({ __TEST_FETCH__: async () => { calls += 1; return json({ error: "down" }, { status: 503 }); } }) });
+  const env = testEnv({ __TEST_FETCH__: async (input) => {
+    if (new URL(String(input)).hostname === "api.steampowered.com") calls += 1;
+    return json({ error: "down" }, { status: 503 });
+  } });
+  const response = await invoke("/api/steam/player?steamId=76561198000000000", { env });
   assert.equal(response.status, 503);
   assert.equal((await payload(response)).error.retryable, true);
   assert.equal(calls, 2);
@@ -189,11 +193,53 @@ test("public provider cache deduplicates without caching private Supabase data",
   const second = await invoke("/api/steam/player?steamId=76561198000000000", { env });
   assert.equal((await payload(first)).meta.cached, false);
   assert.equal((await payload(second)).meta.cached, true);
-  assert.equal(counter.calls, 1);
+  assert.equal(counter.calls, 2);
 
   await invoke("/api/supabase/public-profile?username=ethone", { env });
   await invoke("/api/supabase/public-profile?username=ethone", { env });
-  assert.equal(counter.calls, 3);
+  assert.equal(counter.calls, 4);
+});
+
+test("a user's own provider credential overrides the shared Worker secret", async () => {
+  const captured = [];
+  const env = testEnv({ __TEST_FETCH__: async (input, init) => {
+    const url = new URL(String(input));
+    captured.push(url);
+    if (url.pathname === "/rest/v1/rpc/get_provider_credential") return json({ apiKey: "personal-steam-key-1234" });
+    if (url.hostname === "api.steampowered.com") {
+      assert.equal(url.searchParams.get("key"), "personal-steam-key-1234");
+      return json({ response: { players: [{ steamid: "76561198000000000", personaname: "Owner" }] } });
+    }
+    throw new Error("Unexpected test destination");
+  } });
+  const response = await invoke("/api/steam/player?steamId=76561198000000000", { env });
+  assert.equal(response.status, 200);
+  assert.equal((await payload(response)).data.displayName, "Owner");
+});
+
+test("Twitch app tokens are cached per client credential set, not globally", async () => {
+  const tokenRequests = [];
+  const env = testEnv({ __TEST_FETCH__: async (input, init) => {
+    const url = new URL(String(input));
+    if (url.pathname === "/rest/v1/rpc/get_provider_credential") {
+      return json({ clientId: "owner-client-id", clientSecret: "owner-client-secret-value" });
+    }
+    if (url.hostname === "id.twitch.tv") {
+      tokenRequests.push(new URLSearchParams(init.body).get("client_id"));
+      return json({ access_token: `token-for-${tokenRequests.at(-1)}`, expires_in: 3600 });
+    }
+    if (url.hostname === "api.twitch.tv") {
+      assert.equal(init.headers["Client-Id"], "owner-client-id");
+      assert.equal(init.headers.Authorization, "Bearer token-for-owner-client-id");
+      return url.pathname === "/helix/users"
+        ? json({ data: [{ id: "1", login: "ethoneqa", display_name: "Owner", profile_image_url: "https://static-cdn.jtvnw.net/a.png" }] })
+        : json({ data: [] });
+    }
+    throw new Error("Unexpected test destination");
+  } });
+  const response = await invoke("/api/twitch/channel?login=ethoneqa", { env });
+  assert.equal(response.status, 200);
+  assert.equal(tokenRequests.length, 1);
 });
 
 test("Supabase lookup strips private fields and logs never contain credentials", async () => {

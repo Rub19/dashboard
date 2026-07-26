@@ -4,8 +4,8 @@ import { safeIsoSeconds, safeNumber, safePublicUrl, safeText } from "../utils/no
 
 const ORIGIN = "https://api.steampowered.com";
 
-async function steamRequest(env, path, params, dedupeKey) {
-  const key = requireSecret(env, "STEAM_API_KEY");
+async function steamRequest(env, path, params, dedupeKey, apiKeyOverride) {
+  const key = apiKeyOverride || requireSecret(env, "STEAM_API_KEY");
   const url = new URL(path, ORIGIN);
   url.searchParams.set("key", key);
   Object.entries(params).forEach(([name, value]) => url.searchParams.set(name, String(value)));
@@ -30,8 +30,8 @@ function game(value = {}) {
   });
 }
 
-export async function getSteamPlayer(env, steamId) {
-  const response = await steamRequest(env, "/ISteamUser/GetPlayerSummaries/v0002/", { steamids: steamId, format: "json" }, `player:${steamId}`);
+export async function getSteamPlayer(env, steamId, apiKeyOverride) {
+  const response = await steamRequest(env, "/ISteamUser/GetPlayerSummaries/v0002/", { steamids: steamId, format: "json" }, `player:${steamId}`, apiKeyOverride);
   const value = response.data?.response?.players?.[0];
   if (!value) return null;
   return Object.freeze({
@@ -46,18 +46,18 @@ export async function getSteamPlayer(env, steamId) {
   });
 }
 
-export async function getSteamRecentGames(env, steamId, count) {
-  const response = await steamRequest(env, "/IPlayerService/GetRecentlyPlayedGames/v0001/", { steamid: steamId, count, format: "json" }, `recent:${steamId}:${count}`);
+export async function getSteamRecentGames(env, steamId, count, apiKeyOverride) {
+  const response = await steamRequest(env, "/IPlayerService/GetRecentlyPlayedGames/v0001/", { steamid: steamId, count, format: "json" }, `recent:${steamId}:${count}`, apiKeyOverride);
   return Object.freeze((response.data?.response?.games || []).slice(0, count).map(game));
 }
 
-export async function getSteamOwnedGames(env, steamId, limit) {
-  const response = await steamRequest(env, "/IPlayerService/GetOwnedGames/v0001/", { steamid: steamId, include_appinfo: 1, include_played_free_games: 1, format: "json" }, `owned:${steamId}`);
+export async function getSteamOwnedGames(env, steamId, limit, apiKeyOverride) {
+  const response = await steamRequest(env, "/IPlayerService/GetOwnedGames/v0001/", { steamid: steamId, include_appinfo: 1, include_played_free_games: 1, format: "json" }, `owned:${steamId}`, apiKeyOverride);
   return Object.freeze((response.data?.response?.games || []).slice(0, limit).map(game));
 }
 
-export async function getSteamAchievements(env, steamId, appId) {
-  const response = await steamRequest(env, "/ISteamUserStats/GetPlayerAchievements/v0001/", { steamid: steamId, appid: appId, l: "en", format: "json" }, `achievements:${steamId}:${appId}`);
+export async function getSteamAchievements(env, steamId, appId, apiKeyOverride) {
+  const response = await steamRequest(env, "/ISteamUserStats/GetPlayerAchievements/v0001/", { steamid: steamId, appid: appId, l: "en", format: "json" }, `achievements:${steamId}:${appId}`, apiKeyOverride);
   return Object.freeze((response.data?.playerstats?.achievements || []).slice(0, 500).map((value) => Object.freeze({
     apiName: safeText(value.apiname, 128),
     achieved: value.achieved === 1,

@@ -4,8 +4,8 @@ import { safePublicUrl, safeStats, safeText } from "../utils/normalize.js";
 
 const ORIGIN = "https://public-api.tracker.gg";
 
-export async function getTrackerApexProfile(env, platform, identifier) {
-  const apiKey = requireSecret(env, "TRACKER_API_KEY");
+export async function getTrackerApexProfile(env, platform, identifier, apiKeyOverride) {
+  const apiKey = apiKeyOverride || requireSecret(env, "TRACKER_API_KEY");
   const path = `/v2/apex/standard/profile/${encodeURIComponent(platform)}/${encodeURIComponent(identifier)}`;
   const response = await requestExternal(new URL(path, ORIGIN), {
     env,

@@ -4,6 +4,7 @@ import { clearFieldState, formField, runFormSubmission, setFieldState } from "..
 import { refreshIcons } from "../ui/icons.mjs";
 import { workspaceById } from "../data/workspaces.mjs";
 import { brainPreferenceLabel } from "../brain/preferences.mjs";
+import { createSelect } from "../ui/select.mjs";
 
 const TABS = Object.freeze([
   Object.freeze({ id: "chat", label: "Chat", icon: "message-circle" }),
@@ -106,7 +107,7 @@ export function mountBrain(stage, options = {}) {
     ])
   ]);
 
-  const memoryCategory = element("select", { className: "v8-input", attributes: { "aria-label": "Categorie de memoire" } }, ["interface", "habits", "widgets", "schedules", "task-types", "spaces", "flows", "response-style", "goals"].map((value) => element("option", { text: value, attributes: { value } })));
+  const memoryCategory = createSelect({ className: "v8-input", attributes: { "aria-label": "Categorie de memoire" } }, ["interface", "habits", "widgets", "schedules", "task-types", "spaces", "flows", "response-style", "goals"].map((value) => element("option", { text: value, attributes: { value } })));
   const memoryKey = element("input", { className: "v8-input", attributes: { type: "text", maxlength: "80", required: true, placeholder: "Nom de la preference", "aria-label": "Nom de la memoire" } });
   const memoryValue = element("input", { className: "v8-input", attributes: { type: "text", maxlength: "400", required: true, placeholder: "Information utile, jamais un secret", "aria-label": "Valeur de la memoire" } });
   const memorySubmit = element("button", { className: "v8-button v8-button--primary", attributes: { type: "submit" } }, [icon("plus"), element("span", { text: "Ajouter" })]);

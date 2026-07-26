@@ -3,6 +3,7 @@ import { collectionDensityControl, updateCollectionDensityControl } from "../ui/
 import { emptyState } from "../ui/empty-state.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
 import { filterNotes, sortNotes, wordCount } from "./notes-model.mjs";
+import { createSelect } from "../ui/select.mjs";
 import { localeTag } from "../i18n/catalog.mjs";
 
 function formatUpdated(value) {
@@ -38,7 +39,7 @@ export function mountNotes(stage, options = {}) {
     className: "v8-input",
     attributes: { type: "search", placeholder: "Rechercher dans les notes", "aria-label": "Rechercher dans les notes", autocomplete: "off" }
   });
-  const sortSelect = element("select", { className: "v8-input v8-notes-sort", attributes: { "aria-label": "Trier les notes" } }, [
+  const sortSelect = createSelect({ className: "v8-input v8-notes-sort", attributes: { "aria-label": "Trier les notes" } }, [
     element("option", { text: "Récentes", attributes: { value: "recent" } }),
     element("option", { text: "Nom", attributes: { value: "title" } }),
     element("option", { text: "Plus anciennes", attributes: { value: "oldest" } })

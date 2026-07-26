@@ -11,6 +11,7 @@ import { emptyState } from "../ui/empty-state.mjs";
 import { formField, runFormSubmission, validateControl } from "../ui/form-system.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
 import { filterTasks, sortTasks, taskStats } from "./tasks-model.mjs";
+import { createSelect } from "../ui/select.mjs";
 import { localeTag } from "../i18n/catalog.mjs";
 
 function completed(message, data = null) {
@@ -50,7 +51,7 @@ export function mountTasks(stage, options = {}) {
     element("button", { text: "À faire", attributes: { type: "button", "aria-pressed": "false" }, dataset: { taskStatus: "open" } }),
     element("button", { text: "Terminées", attributes: { type: "button", "aria-pressed": "false" }, dataset: { taskStatus: "completed" } })
   ]);
-  const sortSelect = element("select", { className: "v8-input v8-collection-sort", attributes: { "aria-label": "Trier les tâches" } }, [
+  const sortSelect = createSelect({ className: "v8-input v8-collection-sort", attributes: { "aria-label": "Trier les tâches" } }, [
     element("option", { text: "Priorité", attributes: { value: "priority" } }),
     element("option", { text: "Échéance", attributes: { value: "due" } }),
     element("option", { text: "Récentes", attributes: { value: "recent" } }),
@@ -134,7 +135,7 @@ export function mountTasks(stage, options = {}) {
     composer.hidden = !composerOpen;
     if (!composerOpen) return;
     const title = element("input", { className: "v8-input", attributes: { type: "text", placeholder: "Que faut-il accomplir ?", "aria-label": "Titre de la tâche", required: "", maxlength: "240", autocomplete: "off" } });
-    const priority = element("select", { className: "v8-input", attributes: { "aria-label": "Priorité" } }, [
+    const priority = createSelect({ className: "v8-input", attributes: { "aria-label": "Priorité" } }, [
       element("option", { text: "Priorité normale", attributes: { value: "normal" } }),
       element("option", { text: "Priorité haute", attributes: { value: "high" } }),
       element("option", { text: "Priorité basse", attributes: { value: "low" } })

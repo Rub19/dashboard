@@ -1,6 +1,9 @@
 const REPO = "Rub19/dashboard";
 const WORKFLOW = "deploy-pages.yml";
+const SITE_URL = "https://ethone.dev/";
+const WORKER_HEALTH_URL = "https://raspy-fog-bf5b.rub19-mailpro.workers.dev/health";
 const CACHE_TTL_MS = 90000;
+const HEALTH_TIMEOUT_MS = 5000;
 
 let cached = null;
 let cachedAt = 0;
@@ -13,31 +16,50 @@ function jsonResponse(data, status = 200) {
   });
 }
 
+async function checkUp(url, verify) {
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), HEALTH_TIMEOUT_MS);
+    const response = await fetch(url, { signal: controller.signal }).finally(() => clearTimeout(timer));
+    if (!response.ok) return false;
+    if (!verify) return true;
+    return verify(await response.json());
+  } catch {
+    return false;
+  }
+}
+
 async function fetchStatus() {
   const headers = { "user-agent": "ethone-deploy-status", accept: "application/vnd.github+json" };
-  const [commitResponse, runsResponse] = await Promise.all([
-    fetch(`https://api.github.com/repos/${REPO}/commits/main`, { headers }),
-    fetch(`https://api.github.com/repos/${REPO}/actions/workflows/${WORKFLOW}/runs?per_page=1`, { headers })
+  const [commitsResponse, runsResponse, siteUp, workerUp] = await Promise.all([
+    fetch(`https://api.github.com/repos/${REPO}/commits?sha=main&per_page=5`, { headers }),
+    fetch(`https://api.github.com/repos/${REPO}/actions/workflows/${WORKFLOW}/runs?per_page=1`, { headers }),
+    checkUp(SITE_URL),
+    checkUp(WORKER_HEALTH_URL, (body) => body?.ok === true && body?.data?.status === "ok")
   ]);
-  if (!commitResponse.ok || !runsResponse.ok) return null;
-  const commit = await commitResponse.json();
+  if (!commitsResponse.ok || !runsResponse.ok) return null;
+  const commits = await commitsResponse.json();
   const runsData = await runsResponse.json();
   const run = runsData.workflow_runs?.[0] || null;
   return {
-    commit: {
+    commits: (Array.isArray(commits) ? commits : []).slice(0, 5).map((commit) => ({
       sha: String(commit.sha || ""),
       message: String(commit.commit?.message || "").split("\n")[0],
       author: commit.commit?.author?.name || commit.author?.login || "Inconnu",
       date: commit.commit?.author?.date || null,
       url: commit.html_url || ""
-    },
+    })),
     deploy: run ? {
       status: run.status,
       conclusion: run.conclusion,
       title: run.display_title || run.name || "Deploy",
       url: run.html_url,
       updatedAt: run.updated_at || run.run_started_at
-    } : null
+    } : null,
+    health: {
+      site: siteUp,
+      worker: workerUp
+    }
   };
 }
 

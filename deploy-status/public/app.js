@@ -13,13 +13,13 @@ function badge(label, tone) {
   return '<span class="badge is-' + tone + '">' + label + "</span>";
 }
 
-function renderCommit(commit) {
+function renderCommits(commits) {
   const host = document.getElementById("commit-body");
-  if (!commit) {
-    host.innerHTML = '<p class="empty">Commit indisponible.</p>';
+  if (!commits || !commits.length) {
+    host.innerHTML = '<p class="empty">Aucun commit trouve.</p>';
     return;
   }
-  host.innerHTML =
+  host.innerHTML = commits.map((commit) =>
     '<div class="row">' +
       '<div>' +
         '<p class="title">' + commit.message + "</p>" +
@@ -28,7 +28,19 @@ function renderCommit(commit) {
           " &middot; " + commit.author + (commit.date ? " &middot; " + timeAgo(commit.date) : "") +
         "</p>" +
       "</div>" +
-    "</div>";
+    "</div>"
+  ).join("");
+}
+
+function renderHealth(health) {
+  const host = document.getElementById("health-body");
+  if (!health) {
+    host.innerHTML = '<p class="empty">Verification indisponible.</p>';
+    return;
+  }
+  const item = (label, up) => badge(label, up ? "success" : "danger");
+  host.innerHTML =
+    '<div class="row">' + item("ethone.dev", health.site) + item("ETHONE Worker", health.worker) + "</div>";
 }
 
 function renderDeploy(run) {
@@ -58,10 +70,12 @@ async function refreshAll() {
     const response = await fetch("/api/status", { headers: { accept: "application/json" } });
     if (!response.ok) throw new Error("Statut indisponible (" + response.status + ").");
     const data = await response.json();
-    renderCommit(data.commit);
+    renderHealth(data.health);
+    renderCommits(data.commits);
     renderDeploy(data.deploy);
     document.getElementById("updated-at").textContent = "Actualise " + timeAgo(new Date().toISOString());
   } catch (error) {
+    document.getElementById("health-body").innerHTML = '<p class="empty">' + error.message + "</p>";
     document.getElementById("commit-body").innerHTML = '<p class="empty">' + error.message + "</p>";
     document.getElementById("deploy-body").innerHTML = '<p class="empty">' + error.message + "</p>";
   }

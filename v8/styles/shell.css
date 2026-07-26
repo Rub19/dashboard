@@ -1011,6 +1011,16 @@ button.v8-status-item:focus-visible { box-shadow: var(--v8-shadow-focus); outlin
   margin-bottom: 4px;
 }
 
+.v8-section-heading .v8-button {
+  flex-shrink: 0;
+}
+
+.v8-section-heading .v8-button > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .v8-section-heading h2 {
   color: var(--v8-text);
   font-size: var(--v8-type-card-title);
@@ -2371,7 +2381,7 @@ html[data-v8-interactions] .v8-panel-notice:hover > .v8-selection-control,.v8-pa
 .v8-continuity::after,.v8-home-brain::after,.v8-brain-context::after { --v8-breathe-opacity-min:.12;--v8-breathe-opacity-max:.22;position:absolute;z-index:0;inset:-14%;background:radial-gradient(ellipse at 76% 18%,color-mix(in srgb,var(--v8-breathe-color) 15%,transparent),transparent 43%),linear-gradient(125deg,transparent 30%,color-mix(in srgb,var(--v8-breathe-color) 3%,transparent) 50%,transparent 70%);content:"";pointer-events:none;animation:none;will-change:auto; }
 .v8-continuity > :not([aria-hidden="true"]),.v8-home-brain > :not([aria-hidden="true"]),.v8-brain-context > :not([aria-hidden="true"]) { position:relative;z-index:1; }
 
-.v8-home-spotify-host,.v8-home-discord-host,.v8-home-weather-host { margin-top:var(--v8-space-6); }
+.v8-home-spotify-host,.v8-home-discord-host,.v8-home-weather-host,.v8-home-minecraft-host { margin-top:var(--v8-space-6); }
 .v8-spotify-live { position:relative;isolation:isolate;display:grid;min-width:0;grid-template-columns:72px minmax(0,1fr) auto;align-items:center;gap:var(--v8-space-4);overflow:hidden;padding:var(--v8-space-4);border-color:color-mix(in srgb,var(--v8-success) 26%,var(--v8-border));background:var(--v8-reflection-card),color-mix(in srgb,var(--v8-success) 4%,var(--v8-surface-1));box-shadow:var(--v8-shadow-card-lit); }
 .v8-spotify-live > :not(.v8-spotify-live__aura) { position:relative;z-index:1; }
 .v8-spotify-live__aura { position:absolute;z-index:0;inset:-45% -10%;background:radial-gradient(ellipse at 25% 50%,color-mix(in srgb,var(--v8-success) 15%,transparent),transparent 48%);opacity:.18;pointer-events:none; }
@@ -2409,6 +2419,13 @@ html[data-v8-interactions] .v8-panel-notice:hover > .v8-selection-control,.v8-pa
 .v8-weather-live__meta { display:flex;align-items:center;gap:6px;color:#5aa9e6; }.v8-weather-live__meta svg { width:14px;height:14px; }.v8-weather-live__meta small { font-size:var(--v8-font-micro);font-weight:var(--v8-weight-semibold);text-transform:uppercase; }
 .v8-weather-forecast { display:flex;gap:10px; }.v8-weather-forecast span { display:grid;justify-items:center;gap:2px; }.v8-weather-forecast small { color:var(--v8-muted);font-size:var(--v8-font-micro); }.v8-weather-forecast b { font-size:var(--v8-font-xs); }
 @media (max-width:620px) { .v8-weather-live { grid-template-columns:44px minmax(0,1fr);gap:var(--v8-space-3); }.v8-weather-forecast { display:none; } }
+
+.v8-minecraft-live { position:relative;display:grid;min-width:0;grid-template-columns:44px minmax(0,1fr);align-items:center;gap:var(--v8-space-4);padding:var(--v8-space-4);border-color:color-mix(in srgb,#5f9c50 26%,var(--v8-border));background:var(--v8-reflection-card),color-mix(in srgb,#5f9c50 4%,var(--v8-surface-1));box-shadow:var(--v8-shadow-card-lit); }
+.v8-minecraft-avatar { display:grid;width:44px;height:44px;overflow:hidden;place-items:center;border:1px solid var(--v8-border-highlight);border-radius:var(--v8-radius-md);background:var(--v8-surface-2);color:#5f9c50; }
+.v8-minecraft-avatar.is-fallback svg { width:24px;height:24px; }
+.v8-minecraft-avatar__head { display:block;width:44px;height:44px;background-repeat:no-repeat;background-size:352px 352px;background-position:-44px -44px;image-rendering:pixelated; }
+.v8-minecraft-live__body { display:grid;min-width:0;gap:3px; }.v8-minecraft-live__body > strong { overflow:hidden;color:var(--v8-text);font-size:var(--v8-font-md);text-overflow:ellipsis;white-space:nowrap; }.v8-minecraft-live__body > p { overflow:hidden;color:var(--v8-text-secondary);font-size:var(--v8-font-xs);text-overflow:ellipsis;white-space:nowrap; }
+.v8-minecraft-live__meta { display:flex;align-items:center;gap:6px;color:#5f9c50; }.v8-minecraft-live__meta svg { width:14px;height:14px; }.v8-minecraft-live__meta small { font-size:var(--v8-font-micro);font-weight:var(--v8-weight-semibold);text-transform:uppercase; }
 .v8-brain-context__identity { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--v8-space-4); }
 .v8-brain-orbit { display: grid; width: 64px; height: 64px; place-items: center; border: 1px solid var(--v8-brain-line); border-radius: 50%; background: var(--v8-brain-soft); color: var(--v8-brain); box-shadow: 0 0 36px var(--v8-light-brain); }
 .v8-brain-orbit svg { width: 28px; height: 28px; }

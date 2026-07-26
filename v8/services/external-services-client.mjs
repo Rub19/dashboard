@@ -17,6 +17,7 @@ const OPERATIONS = Object.freeze({
   lanyardPresence: Object.freeze({ path: "/api/lanyard/presence", auth: true, params: ["userId"] }),
   nowPlaying: Object.freeze({ path: "/api/now-playing", auth: true, params: ["source", "username", "userId"] }),
   weatherForecast: Object.freeze({ path: "/api/weather", auth: true, params: ["city"] }),
+  minecraftProfile: Object.freeze({ path: "/api/minecraft/profile", auth: true, params: ["username"] }),
   publicProfile: Object.freeze({ path: "/api/supabase/public-profile", auth: true, params: ["username"] })
 });
 
@@ -173,6 +174,7 @@ export function createExternalServicesClient(options = {}) {
     lanyard: Object.freeze({ presence: (userId) => execute("lanyardPresence", { userId }) }),
     nowPlaying: (source, identity) => execute("nowPlaying", source === "lanyard" ? { source, userId: identity } : { source, username: identity }),
     weather: Object.freeze({ forecast: (city) => execute("weatherForecast", { city }) }),
+    minecraft: Object.freeze({ profile: (username) => execute("minecraftProfile", { username }) }),
     publicProfile: (username) => execute("publicProfile", { username }),
     diagnostics: () => Object.freeze({ ...status, activeRequests: activeControllers.size, environment: config.environment, baseUrl: network.redactUrl?.(baseUrl) || baseUrl }),
     destroy

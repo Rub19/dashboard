@@ -3,6 +3,7 @@ import { healthRoute } from "./routes/health.js";
 import { henrikRoute } from "./routes/henrik.js";
 import { lanyardRoute } from "./routes/lanyard.js";
 import { lastFmRoute } from "./routes/lastfm.js";
+import { minecraftRoute } from "./routes/minecraft.js";
 import { nowPlayingRoute } from "./routes/nowplaying.js";
 import { steamRoute } from "./routes/steam.js";
 import { supabaseRoute } from "./routes/supabase.js";
@@ -40,7 +41,8 @@ export const ROUTES = Object.freeze([
   route("lanyard.presence", "/api/lanyard/presence", lanyardRoute, { service: "lanyard" }),
   route("now-playing", "/api/now-playing", nowPlayingRoute, { service: "nowplaying" }),
   route("supabase.public-profile", "/api/supabase/public-profile", supabaseRoute, { service: "supabase", rateLimit: "strict" }),
-  route("weather.forecast", "/api/weather", weatherRoute, { service: "weather" })
+  route("weather.forecast", "/api/weather", weatherRoute, { service: "weather" }),
+  route("minecraft.profile", "/api/minecraft/profile", minecraftRoute, { service: "minecraft" })
 ]);
 
 function normalizedPath(pathname) {

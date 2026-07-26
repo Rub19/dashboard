@@ -4,6 +4,7 @@ import { refreshIcons } from "../ui/icons.mjs";
 import { spotifyLiveCard } from "../ui/spotify-live.mjs";
 import { discordLiveCard } from "../ui/discord-live.mjs";
 import { weatherLiveCard } from "../ui/weather-live.mjs";
+import { minecraftLiveCard } from "../ui/minecraft-live.mjs";
 import { localeTag } from "../i18n/catalog.mjs";
 
 function formattedDate(isoDate) {
@@ -56,6 +57,7 @@ export function mountHome(stage, model, options = {}) {
   const spotifyLive = options.spotifyLive || null;
   const discordLive = options.discordLive || null;
   const weatherLive = options.weatherLive || null;
+  const minecraftLive = options.minecraftLive || null;
   const presence = options.presence || null;
   const briefingEnabled = options.brainPreferences?.enabled !== false && options.brainPreferences?.briefing?.enabled !== false;
   const continuation = model.nextTasks[0]
@@ -181,6 +183,7 @@ export function mountHome(stage, model, options = {}) {
   const spotifyHost = element("section", { className: "v8-home-spotify-host", attributes: { "aria-label": "Spotify Live", hidden: true } });
   const discordHost = element("section", { className: "v8-home-discord-host", attributes: { "aria-label": "Presence Discord", hidden: true } });
   const weatherHost = element("section", { className: "v8-home-weather-host", attributes: { "aria-label": "Meteo", hidden: true } });
+  const minecraftHost = element("section", { className: "v8-home-minecraft-host", attributes: { "aria-label": "Profil Minecraft", hidden: true } });
 
   function renderSpotify(playback, animate = false) {
     const player = spotifyLiveCard(playback, { variant: "home" });
@@ -202,6 +205,14 @@ export function mountHome(stage, model, options = {}) {
     const card = weatherLiveCard(weatherState, { variant: "home" });
     weatherHost.replaceChildren(...(card ? [card] : []));
     weatherHost.hidden = !card;
+    if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
+    refreshIcons();
+  }
+
+  function renderMinecraft(minecraftState, animate = false) {
+    const card = minecraftLiveCard(minecraftState, { variant: "home" });
+    minecraftHost.replaceChildren(...(card ? [card] : []));
+    minecraftHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     refreshIcons();
   }

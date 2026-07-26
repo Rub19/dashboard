@@ -200,6 +200,8 @@ html[data-v8-interactions] .v8-connection-card:hover .v8-connection-card__action
 .v8-connection-panel-intro h3 { font-size: var(--v8-font-sm); }
 .v8-connection-panel-intro--action { display: flex; align-items: center; justify-content: space-between; gap: var(--v8-space-3); }
 .v8-connection-panel-intro--action>div { min-width: 0; }
+.v8-connection-panel-intro--action .v8-button { flex-shrink: 0; }
+.v8-connection-panel-intro--action .v8-button>span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .v8-connection-methods { display: grid; gap: 7px; }
 .v8-connection-method { display: grid; width: 100%; min-width: 0; grid-template-columns: auto minmax(0,1fr) auto; align-items: start; gap: 9px; padding: var(--v8-space-3); border: 1px solid var(--v8-divider); border-radius: var(--v8-radius-md); background: var(--v8-surface-sunken); color: var(--v8-text-secondary); cursor: pointer; text-align: left; }
 .v8-connection-method.is-selected { border-color: var(--v8-accent-line); background: linear-gradient(135deg,var(--v8-accent-soft),var(--v8-surface-sunken) 70%); }

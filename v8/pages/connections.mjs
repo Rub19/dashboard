@@ -202,10 +202,12 @@ export function mountConnections(stage, options = {}) {
   const spotifyLive = options.spotifyLive || null;
   const discordLive = options.discordLive || null;
   const weatherLive = options.weatherLive || null;
+  const minecraftLive = options.minecraftLive || null;
   function refreshLiveBridges(id) {
     if (id === "spotify") spotifyLive?.refresh?.();
     if (id === "discord") discordLive?.refresh?.();
     if (id === "weather") weatherLive?.refresh?.();
+    if (id === "minecraft") minecraftLive?.refresh?.();
   }
   const externalServices = options.externalServices || null;
   const clientProvider = typeof options.clientProvider === "function" ? options.clientProvider : null;

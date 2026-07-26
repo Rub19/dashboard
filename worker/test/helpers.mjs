@@ -61,6 +61,8 @@ export function providerFetch(counter = { calls: 0 }) {
     if (url.hostname === "api.lanyard.rest") return json({ success: true, data: { discord_status: "online", listening_to_spotify: true, discord_user: { id: "123456789012345678", username: "ethone" }, activities: [], spotify: { track_id: "track", song: "Song", artist: "Artist", album: "Album", album_art_url: "https://i.scdn.co/image/test", timestamps: { start: 100, end: 200 } } } });
     if (url.hostname === "geocoding-api.open-meteo.com") return json({ results: [{ name: "Paris", country: "France", latitude: 48.85, longitude: 2.35 }] });
     if (url.hostname === "api.open-meteo.com") return json({ current: { temperature_2m: 21.4, weather_code: 2, wind_speed_10m: 12.3, relative_humidity_2m: 55, is_day: 1 }, daily: { time: ["2026-07-26", "2026-07-27", "2026-07-28"], temperature_2m_max: [24, 23, 22], temperature_2m_min: [16, 15, 14] } });
+    if (url.hostname === "api.mojang.com") return json({ id: "069a79f444e94726a5befca90e38aaf5", name: "Notch" });
+    if (url.hostname === "sessionserver.mojang.com") return json({ id: "069a79f444e94726a5befca90e38aaf5", name: "Notch", properties: [{ name: "textures", value: Buffer.from(JSON.stringify({ textures: { SKIN: { url: "http://textures.minecraft.net/texture/test" } } })).toString("base64") }] });
     if (url.hostname === "project-ref.supabase.co") {
       if (url.pathname === "/rest/v1/rpc/get_provider_credential") return json(null);
       return json([{ public_id: "public-profile", username: "ethone", display_name: "ETHONE", avatar_url: "https://project-ref.supabase.co/storage/avatar.png", email: "must-not-leak@example.test", private_note: "must-not-leak" }]);

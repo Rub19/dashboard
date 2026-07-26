@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ETHONE — Statut de deploiement</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<style>
+  :root {
+    --bg: #0b0d10;
+    --surface: #14171c;
+    --surface-2: #1b1f26;
+    --divider: #262b33;
+    --text: #eef1f5;
+    --muted: #8a93a1;
+    --success: #35d488;
+    --danger: #ef5a6f;
+    --warning: #f0b429;
+    --accent: #6ea8fe;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding: 20px 16px 60px;
+  }
+  main { max-width: 640px; margin: 0 auto; display: grid; gap: 16px; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  header h1 { font-size: 18px; margin: 0; }
+  header p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+  .refresh {
+    border: 1px solid var(--divider);
+    background: var(--surface-2);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 9px 14px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .refresh:active { transform: scale(0.97); }
+  .refresh[disabled] { opacity: 0.6; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--divider);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .card h2 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin: 0 0 10px;
+  }
+  .row { display: flex; align-items: flex-start; gap: 10px; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .badge.is-success { color: var(--success); background: rgba(53,212,136,0.12); }
+  .badge.is-danger { color: var(--danger); background: rgba(239,90,111,0.12); }
+  .badge.is-warning { color: var(--warning); background: rgba(240,180,41,0.12); }
+  .badge.is-muted { color: var(--muted); background: rgba(138,147,161,0.12); }
+  .title { font-size: 15px; font-weight: 600; margin: 0 0 4px; word-break: break-word; }
+  .meta { color: var(--muted); font-size: 13px; }
+  .sha {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: var(--surface-2);
+    border-radius: 6px;
+    padding: 1px 6px;
+    font-size: 12px;
+    color: var(--accent);
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .stack { display: grid; gap: 12px; }
+  .empty { color: var(--muted); font-size: 13px; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 8px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1>Statut de deploiement ETHONE</h1>
+      <p id="repo-link">Rub19/dashboard</p>
+    </div>
+    <button class="refresh" id="refresh-btn" type="button">Actualiser</button>
+  </header>
+
+  <section class="card">
+    <h2>Dernier commit sur main</h2>
+    <div id="commit-body" class="stack"><p class="empty">Chargement...</p></div>
+  </section>
+
+  <section class="card">
+    <h2>Dernier deploiement (GitHub Pages)</h2>
+    <div id="deploy-body" class="stack"><p class="empty">Chargement...</p></div>
+  </section>
+
+  <footer id="updated-at"></footer>
+</main>
+
+<script>
+  const REPO = "Rub19/dashboard";
+  const WORKFLOW = "deploy-pages.yml";
+  const API = "https://api.github.com/repos/" + REPO;
+
+  document.getElementById("repo-link").innerHTML =
+    '<a href="https://github.com/' + REPO + '" target="_blank" rel="noopener noreferrer">' + REPO + "</a>";
+
+  function timeAgo(iso) {
+    const diff = Math.max(0, Date.now() - new Date(iso).getTime());
+    const minutes = Math.floor(diff / 60000);
+    if (minutes < 1) return "a l'instant";
+    if (minutes < 60) return "il y a " + minutes + " min";
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return "il y a " + hours + " h";
+    const days = Math.floor(hours / 24);
+    return "il y a " + days + " j";
+  }
+
+  function badge(label, tone) {
+    return '<span class="badge is-' + tone + '">' + label + "</span>";
+  }
+
+  async function fetchJson(url) {
+    const response = await fetch(url, { headers: { accept: "application/vnd.github+json" } });
+    if (response.status === 403) throw new Error("Limite d'appels GitHub atteinte, reessayez dans un instant.");
+    if (!response.ok) throw new Error("Reponse GitHub inattendue (" + response.status + ").");
+    return response.json();
+  }
+
+  async function loadCommit() {
+    const host = document.getElementById("commit-body");
+    try {
+      const commit = await fetchJson(API + "/commits/main");
+      const message = (commit.commit?.message || "").split("\n")[0];
+      const sha = (commit.sha || "").slice(0, 7);
+      const author = commit.commit?.author?.name || commit.author?.login || "Inconnu";
+      const date = commit.commit?.author?.date;
+      host.innerHTML =
+        '<div class="row">' +
+          '<div>' +
+            '<p class="title">' + message + "</p>" +
+            '<p class="meta">' +
+              '<a class="sha" href="' + (commit.html_url || "#") + '" target="_blank" rel="noopener noreferrer">' + sha + "</a>" +
+              " &middot; " + author + (date ? " &middot; " + timeAgo(date) : "") +
+            "</p>" +
+          "</div>" +
+        "</div>";
+    } catch (error) {
+      host.innerHTML = '<p class="empty">' + error.message + "</p>";
+    }
+  }
+
+  async function loadDeploy() {
+    const host = document.getElementById("deploy-body");
+    try {
+      const data = await fetchJson(API + "/actions/workflows/" + WORKFLOW + "/runs?per_page=1");
+      const run = data.workflow_runs?.[0];
+      if (!run) {
+        host.innerHTML = '<p class="empty">Aucun deploiement trouve.</p>';
+        return;
+      }
+      const inProgress = run.status !== "completed";
+      const success = run.conclusion === "success";
+      const tone = inProgress ? "warning" : success ? "success" : "danger";
+      const label = inProgress ? "En cours" : success ? "Reussi" : "Echec";
+      host.innerHTML =
+        '<div class="row">' +
+          badge(label, tone) +
+          '<div>' +
+            '<p class="title"><a href="' + run.html_url + '" target="_blank" rel="noopener noreferrer">' + (run.display_title || run.name || "Deploy") + "</a></p>" +
+            '<p class="meta">' + timeAgo(run.updated_at || run.run_started_at) + "</p>" +
+          "</div>" +
+        "</div>";
+    } catch (error) {
+      host.innerHTML = '<p class="empty">' + error.message + "</p>";
+    }
+  }
+
+  async function refreshAll() {
+    const button = document.getElementById("refresh-btn");
+    button.disabled = true;
+    await Promise.all([loadCommit(), loadDeploy()]);
+    document.getElementById("updated-at").textContent = "Actualise " + timeAgo(new Date().toISOString());
+    button.disabled = false;
+  }
+
+  document.getElementById("refresh-btn").addEventListener("click", refreshAll);
+  refreshAll();
+  setInterval(refreshAll, 60000);
+</script>
+</body>
+</html>

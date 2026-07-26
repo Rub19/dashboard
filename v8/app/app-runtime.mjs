@@ -173,10 +173,16 @@ export function mountApplication(root, options = {}) {
   };
   const panels = createPanelManager(shell.panelHost, panelOptions);
   function applyProfileMediaUpdate(kind, url) {
-    if (kind !== "avatar") return;
-    const nextUser = Object.freeze({ ...panelOptions.user, avatar: Object.freeze({ kind: "image", value: url }) });
-    panelOptions.user = nextUser;
-    shell.updateUser(nextUser);
+    if (kind === "avatar") {
+      const nextUser = Object.freeze({ ...panelOptions.user, avatar: Object.freeze({ kind: "image", value: url }) });
+      panelOptions.user = nextUser;
+      shell.updateUser(nextUser);
+      return;
+    }
+    if (kind === "name") {
+      panelOptions.user = Object.freeze({ ...panelOptions.user, name: url });
+      return;
+    }
   }
   let unreadNotifications = panels.notificationCount();
   presence.update({ notifications: unreadNotifications });

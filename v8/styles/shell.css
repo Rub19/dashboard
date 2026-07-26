@@ -2423,6 +2423,9 @@ html[data-v8-interactions] .v8-panel-notice:hover > .v8-selection-control,.v8-pa
 .v8-settings-section > header p { margin-top: 5px; color: var(--v8-muted); font-size: var(--v8-font-xs); }
 .v8-setting-row { display: grid; min-height: calc(var(--density-row-height) + 24px); grid-template-columns: auto minmax(0, 1fr) minmax(240px, auto); align-items: center; gap: var(--v8-space-4); padding: calc(var(--density-card-padding) * .7) var(--density-card-padding); border-top: 1px solid var(--v8-divider); }
 .v8-settings-section > header + .v8-setting-row { border-top: 0; }
+.v8-profile-name-control { display: flex; flex-wrap: wrap; align-items: center; gap: var(--v8-space-2); min-width: 0; }
+.v8-profile-name-control .v8-input { flex: 1 1 200px; min-width: 0; }
+.v8-profile-name-control .v8-settings-diagnostic-note { flex: 1 0 100%; padding: 0; border-top: none; }
 .v8-profile-media-row { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--v8-space-4); padding: calc(var(--density-card-padding) * .7) var(--density-card-padding); border-top: 1px solid var(--v8-divider); }
 .v8-profile-media-row__controls { display: grid; gap: 8px; min-width: 0; }
 .v8-profile-media-row__controls strong { font-size: var(--v8-font-sm); }

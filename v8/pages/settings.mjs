@@ -211,6 +211,9 @@ export function mountSettings(stage, options = {}) {
 
   const profile = options.profile || null;
   const canUploadMedia = Boolean(options.clientProvider && options.ownerId && profile?.id);
+  const nameInput = element("input", { className: "v8-input", attributes: { type: "text", value: profile?.name || "", maxlength: "80", placeholder: "Nom du profil", "aria-label": "Nom du profil", disabled: !profile?.id || null } });
+  const nameStatus = element("p", { className: "v8-settings-diagnostic-note", attributes: { "aria-live": "polite" } });
+  const nameSaveButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button", disabled: !profile?.id || null } }, [icon("check"), element("span", { text: "Enregistrer" })]);
   const avatarPreviewHost = element("div", { className: "v8-profile-media-preview v8-profile-media-preview--avatar" }, [profileAvatarPreviewNode(profile?.avatar, (profile?.name || "E").slice(0, 1).toUpperCase())]);
   const bannerPreviewHost = element("div", { className: `v8-profile-media-preview v8-profile-media-preview--banner${profile?.banner ? "" : " is-empty"}` });
   if (profile?.banner) bannerPreviewHost.style.backgroundImage = `url("${profile.banner}")`;
@@ -240,7 +243,8 @@ export function mountSettings(stage, options = {}) {
       ]),
       element("div", { className: "v8-settings-content" }, [
         element("section", { id: "v8-settings-profile", className: "v8-settings-section v8-surface" }, [
-          element("header", {}, [element("span", { className: "v8-eyebrow", text: "Identite" }), element("h2", { text: "Profil" }), element("p", { text: "Votre photo et votre banniere, visibles dans tout ETHONE." })]),
+          element("header", {}, [element("span", { className: "v8-eyebrow", text: "Identite" }), element("h2", { text: "Profil" }), element("p", { text: "Votre nom, votre photo et votre banniere, visibles dans tout ETHONE." })]),
+          settingRow("user-round", "Nom du profil", "Affiche dans ETHONE et pour les autres profils de ce compte.", element("div", { className: "v8-profile-name-control" }, [nameInput, nameSaveButton, nameStatus])),
           element("div", { className: "v8-profile-media-row" }, [
             avatarPreviewHost,
             element("div", { className: "v8-profile-media-row__controls" }, [
@@ -558,6 +562,27 @@ export function mountSettings(stage, options = {}) {
   }
   avatarFileInput.addEventListener("change", () => void handleProfileMediaChange("avatar", avatarFileInput, avatarMediaStatus), { signal: controller.signal });
   bannerFileInput.addEventListener("change", () => void handleProfileMediaChange("banner", bannerFileInput, bannerMediaStatus), { signal: controller.signal });
+  function saveProfileName() {
+    const nextName = nameInput.value.trim();
+    if (!profile?.id) return;
+    if (!nextName) {
+      nameStatus.textContent = "Le nom ne peut pas etre vide.";
+      return;
+    }
+    const patched = options.repository?.updateProfile?.(profile.id, { name: nextName });
+    if (!patched?.ok) {
+      nameStatus.textContent = patched?.message || "Enregistrement impossible.";
+      return;
+    }
+    nameInput.value = nextName;
+    nameStatus.textContent = "Nom mis a jour.";
+    options.onProfileMediaUpdated?.("name", nextName);
+  }
+  nameSaveButton.addEventListener("click", saveProfileName, { signal: controller.signal });
+  nameInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") { event.preventDefault(); saveProfileName(); }
+  }, { signal: controller.signal });
+  nameInput.addEventListener("input", () => { nameStatus.textContent = ""; }, { signal: controller.signal });
   page.querySelector("[data-sound-pack]")?.addEventListener("change", (event) => {
     commitSetting(event.currentTarget, `v8.sound.pack.${event.currentTarget.value}`, { source: "settings", element: event.currentTarget, event });
   }, { signal: controller.signal });

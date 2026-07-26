@@ -63,7 +63,7 @@ async function fetchJwks(env, force = false) {
     const response = await fetcher(env)(endpoint, {
       method: "GET",
       headers: { accept: "application/json" },
-      redirect: "error",
+      redirect: "manual",
       signal: controller.signal
     });
     if (!response.ok || !String(response.headers.get("content-type") || "").toLowerCase().includes("application/json")) {

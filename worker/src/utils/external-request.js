@@ -100,7 +100,7 @@ export function requestExternal(input, options = {}) {
           method,
           headers: { accept: "application/json", ...(options.headers || {}) },
           body: options.body,
-          redirect: "error",
+          redirect: "manual",
           signal: controller.signal
         });
         const retryable = RETRYABLE.has(response.status) || response.status >= 500;

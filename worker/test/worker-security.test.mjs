@@ -290,3 +290,21 @@ test("Worker sources contain no committed private credential", () => {
   const source = files.map((file) => fs.readFileSync(file, "utf8")).join("\n");
   assert.doesNotMatch(source, /(?:ghp_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9_-]{20,}|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----)/);
 });
+
+test("fetch() never requests the unsupported redirect:\"error\" mode", () => {
+  // Cloudflare Workers only implements redirect "follow" or "manual" on fetch();
+  // "error" throws a TypeError at the edge even though it is valid in browsers
+  // and Node, so the local __TEST_FETCH__ mock never catches this class of bug.
+  const root = path.resolve(import.meta.dirname, "..", "src");
+  const files = [];
+  const walk = (directory) => fs.readdirSync(directory, { withFileTypes: true }).forEach((entry) => {
+    const absolute = path.join(directory, entry.name);
+    if (entry.isDirectory()) walk(absolute);
+    else if (/\.(?:js|mjs)$/.test(entry.name)) files.push(absolute);
+  });
+  walk(root);
+  files.forEach((file) => {
+    const source = fs.readFileSync(file, "utf8");
+    assert.doesNotMatch(source, /redirect:\s*["']error["']/, `${path.relative(root, file)} uses the unsupported redirect: "error" fetch option`);
+  });
+});

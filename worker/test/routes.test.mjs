@@ -25,6 +25,7 @@ const ROUTE_CASES = Object.freeze([
   ["Now playing Last.fm", "/api/now-playing?source=lastfm&username=ethone", (data) => data.source === "lastfm" && data.playing === true],
   ["Now playing Lanyard", "/api/now-playing?source=lanyard&userId=123456789012345678", (data) => data.source === "lanyard" && data.playing === true],
   ["Supabase public profile", "/api/supabase/public-profile?username=ethone", (data) => data.username === "ethone"],
+  ["Weather forecast", "/api/weather?city=Paris", (data) => data.city === "Paris" && data.temperature === 21.4],
   ["Authenticated diagnostic", "/api/diagnostic", (data) => data.worker === "connected"]
 ]);
 

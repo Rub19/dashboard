@@ -12,6 +12,7 @@ const REQUIREMENTS = Object.freeze({
   lastfm: Object.freeze(["LASTFM_API_KEY"]),
   lanyard: Object.freeze([]),
   nowplaying: Object.freeze([]),
+  weather: Object.freeze([]),
   supabase: Object.freeze(["SUPABASE_URL", "SUPABASE_SECRET_KEY"])
 });
 

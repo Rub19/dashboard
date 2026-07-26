@@ -10,7 +10,7 @@ import {
 } from "../data/integrations.mjs";
 import { brandIconMarkup } from "../data/brand-icons.mjs";
 import { listConfiguredProviders, removeProviderCredential, saveProviderCredential } from "../services/provider-credentials.mjs";
-import { actionButton, element, icon } from "../ui/dom.mjs";
+import { actionButton, debounce, element, icon } from "../ui/dom.mjs";
 import { collectionDensityControl, updateCollectionDensityControl } from "../ui/dense-content.mjs";
 import { emptyState, statusState } from "../ui/empty-state.mjs";
 import { formField, setFieldState } from "../ui/form-system.mjs";
@@ -200,6 +200,13 @@ export function mountConnections(stage, options = {}) {
   const journal = options.journal;
   const notify = options.notify || (() => {});
   const spotifyLive = options.spotifyLive || null;
+  const discordLive = options.discordLive || null;
+  const weatherLive = options.weatherLive || null;
+  function refreshLiveBridges(id) {
+    if (id === "spotify") spotifyLive?.refresh?.();
+    if (id === "discord") discordLive?.refresh?.();
+    if (id === "weather") weatherLive?.refresh?.();
+  }
   const externalServices = options.externalServices || null;
   const clientProvider = typeof options.clientProvider === "function" ? options.clientProvider : null;
   const ownerId = options.ownerId || "";
@@ -756,7 +763,7 @@ export function mountConnections(stage, options = {}) {
       apiVersion: method?.apiVersion || "En attente",
       detail: backendRequired ? "Preparation locale terminee. Backend securise requis." : "Source preparee. Connecteur runtime requis."
     });
-    if (id === "spotify") spotifyLive?.refresh?.();
+    refreshLiveBridges(id);
     if (result.ok) {
       selectedMethods.set(id, method?.id || "");
       journal?.record?.({ source: id, category: integration?.category || "system", icon: integration?.icon || "plug", title: `${integration?.name || "Integration"} preparee`, description: backendRequired ? "Le backend securise reste requis avant toute synchronisation." : `Methode ${method?.label || "locale"} preparee.`, timestamp: new Date().toISOString(), tone: "success" });
@@ -789,7 +796,7 @@ export function mountConnections(stage, options = {}) {
         lastTestedAt: nowIso,
         detail: "Connexion confirmee par le diagnostic ETHONE."
       });
-      if (id === "spotify") spotifyLive?.refresh?.();
+      refreshLiveBridges(id);
       renderMetrics();
       renderOpportunities();
     }
@@ -830,7 +837,7 @@ export function mountConnections(stage, options = {}) {
           lastTestedAt: nowIso,
           detail: "Connexion confirmee par le diagnostic ETHONE."
         });
-        if (integration.id === "spotify") spotifyLive?.refresh?.();
+        refreshLiveBridges(integration.id);
       });
       globalDiagnostic = Object.freeze({
         tested: reports.length,
@@ -854,7 +861,7 @@ export function mountConnections(stage, options = {}) {
     const id = context.element?.dataset.integration;
     const integration = integrationById(id);
     const result = repository.connections.disconnect(id);
-    if (id === "spotify") spotifyLive?.refresh?.();
+    refreshLiveBridges(id);
     if (result.ok) {
       selectedMethods.delete(id);
       draftReferences.delete(id);
@@ -888,11 +895,14 @@ export function mountConnections(stage, options = {}) {
     return copied ? completed("Rapport copie") : unavailable("Le presse-papiers n'est pas accessible.");
   }));
 
+  const renderSearchResults = debounce(() => {
+    renderCatalog();
+    refreshIcons();
+  }, 120);
   search.addEventListener("input", () => {
     query = search.value;
     visibleLimit = CONNECTION_PAGE_SIZE;
-    renderCatalog();
-    refreshIcons();
+    renderSearchResults();
   }, { signal: controller.signal });
   statusFilter.addEventListener("change", () => {
     status = statusFilter.value || "all";

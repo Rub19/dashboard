@@ -1,9 +1,11 @@
 import { integrationById } from "../data/integrations.mjs";
-import { actionButton, element, icon } from "../ui/dom.mjs";
+import { actionButton, debounce, element, icon } from "../ui/dom.mjs";
 import { collectionDensityControl, updateCollectionDensityControl } from "../ui/dense-content.mjs";
 import { emptyState, statusState } from "../ui/empty-state.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
 import { spotifyLiveCard } from "../ui/spotify-live.mjs";
+import { discordLiveCard } from "../ui/discord-live.mjs";
+import { weatherLiveCard } from "../ui/weather-live.mjs";
 import { createSelect } from "../ui/select.mjs";
 import { prepareActivityUI } from "./activity-style.mjs";
 
@@ -25,6 +27,40 @@ const FILTERS = Object.freeze([
 
 function completed(message, data = null) {
   return Object.freeze({ ok: true, status: "completed", message, data });
+}
+
+const LIVE_CARD_META = Object.freeze({
+  system: Object.freeze({ label: "Systeme ETHONE", icon: "orbit" }),
+  spotify: Object.freeze({ label: "Spotify", icon: "music-2" }),
+  discord: Object.freeze({ label: "Discord", icon: "messages-square" }),
+  weather: Object.freeze({ label: "Meteo", icon: "cloud-sun" })
+});
+const DEFAULT_LIVE_LAYOUT = Object.freeze({ order: Object.freeze(["system", "spotify", "discord", "weather"]), hidden: Object.freeze([]) });
+
+function moveButton(id, direction, disabled, label) {
+  const button = actionButton({ actionId: "v8.activity.live.move", className: "v8-icon-button", ariaLabel: label, disabled }, [icon(direction === "up" ? "chevron-up" : "chevron-down")]);
+  button.dataset.liveCard = id;
+  button.dataset.direction = direction;
+  return button;
+}
+
+function visibilityButton(id, hidden) {
+  const meta = LIVE_CARD_META[id];
+  const button = actionButton({ actionId: "v8.activity.live.toggle", className: "v8-icon-button", ariaLabel: hidden ? `Afficher ${meta.label}` : `Masquer ${meta.label}` }, [icon(hidden ? "eye-off" : "eye")]);
+  button.dataset.liveCard = id;
+  return button;
+}
+
+function customizeRow(id, index, total, hidden) {
+  const meta = LIVE_CARD_META[id];
+  return element("div", { className: `v8-now-customize-row${hidden ? " is-hidden" : ""}` }, [
+    element("span", { className: "v8-now-customize-row__label" }, [icon(meta.icon), element("span", { text: meta.label })]),
+    element("div", { className: "v8-now-customize-row__actions" }, [
+      moveButton(id, "up", index === 0, `Monter ${meta.label}`),
+      moveButton(id, "down", index === total - 1, `Descendre ${meta.label}`),
+      visibilityButton(id, hidden)
+    ])
+  ]);
 }
 
 function sameDay(value, date = new Date()) {
@@ -153,17 +189,25 @@ export function mountActivity(stage, options = {}) {
   const actions = options.actions;
   const notify = options.notify || (() => {});
   const spotifyLive = options.spotifyLive || null;
+  const discordLive = options.discordLive || null;
+  const weatherLive = options.weatherLive || null;
   const presence = options.presence || null;
   const state = options.state || {};
   let activeFilter = "all";
   let query = "";
   let order = "recent";
   let refreshTimer = 0;
+  let liveLayout = state.activityLiveLayout || DEFAULT_LIVE_LAYOUT;
+  let customizeOpen = false;
   let spotifyPlayback = spotifyLive?.state?.() || {};
+  let discordPresence = discordLive?.state?.() || {};
+  let weatherPresence = weatherLive?.state?.() || {};
   const controller = new AbortController();
 
   const filterBar = element("div", { className: "v8-activity-filters", attributes: { role: "toolbar", "aria-label": "Filtrer l'activite" } });
   const liveGrid = element("div", { className: "v8-now-grid" });
+  const customizeHost = element("div", { className: "v8-now-customize", attributes: { hidden: true } });
+  const customizeToggle = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button", "aria-expanded": "false" } }, [icon("sliders-horizontal"), element("span", { text: "Personnaliser" })]);
   const timeline = element("div", { className: "v8-live-timeline", attributes: { role: "feed", "aria-label": "Flux d'activite" } });
   const countLabel = element("span", { className: "v8-section-count" });
   const search = element("input", { className: "v8-input", attributes: { type: "search", placeholder: "Rechercher dans l'activité", "aria-label": "Rechercher dans l'activité", autocomplete: "off" } });
@@ -194,7 +238,8 @@ export function mountActivity(stage, options = {}) {
       ])
     ]),
     element("section", { className: "v8-now-section" }, [
-      element("header", { className: "v8-section-heading" }, [element("div", {}, [element("span", { className: "v8-eyebrow", text: "En direct" }), element("h2", { text: "Live now" })]), element("span", { className: "v8-section-note", text: "Uniquement les sources reellement connectees" })]),
+      element("header", { className: "v8-section-heading" }, [element("div", {}, [element("span", { className: "v8-eyebrow", text: "En direct" }), element("h2", { text: "Live now" })]), customizeToggle]),
+      customizeHost,
       liveGrid
     ]),
     element("div", { className: "v8-activity-workspace" }, [
@@ -227,6 +272,14 @@ export function mountActivity(stage, options = {}) {
     ])
   ]);
 
+  function renderCustomizePanel() {
+    customizeHost.hidden = !customizeOpen;
+    customizeToggle.setAttribute("aria-expanded", String(customizeOpen));
+    if (!customizeOpen) return;
+    customizeHost.replaceChildren(...liveLayout.order.map((id, index) => customizeRow(id, index, liveLayout.order.length, liveLayout.hidden.includes(id))));
+    refreshIcons();
+  }
+
   function render() {
     const snapshot = repository.snapshot();
     const events = journal.entries();
@@ -239,15 +292,23 @@ export function mountActivity(stage, options = {}) {
       element("div", { className: "v8-now-card__copy" }, [element("small", { text: "ETHONE" }), element("strong", { text: `${state.flow || "Essentiel"} dans ${state.space || "personal"}` }), element("p", { text: "Le journal local reagit aux actions utiles sans tracker global." })]),
       element("footer", {}, [element("span", { text: "Actif maintenant" }), icon("check")])
     ]);
-    liveGrid.replaceChildren(systemCard);
     const spotifyPlayer = spotifyLiveCard(spotifyPlayback, { variant: "activity" });
-    if (spotifyPlayer) liveGrid.append(spotifyPlayer);
-    connected.filter((connection) => connection.id !== "spotify" || !spotifyPlayer).slice(0, 3).forEach((connection) => {
+    const discordCard = discordLiveCard(discordPresence, { variant: "activity" });
+    const weatherCard = weatherLiveCard(weatherPresence, { variant: "activity" });
+    const knownCards = { system: systemCard, spotify: spotifyPlayer, discord: discordCard, weather: weatherCard };
+    liveGrid.replaceChildren();
+    liveLayout.order.forEach((id) => {
+      if (liveLayout.hidden.includes(id)) return;
+      const card = knownCards[id];
+      if (card) liveGrid.append(card);
+    });
+    connected.filter((connection) => !Object.hasOwn(knownCards, connection.id)).slice(0, 3).forEach((connection) => {
       const integration = integrationById(connection.id);
       if (!integration) return;
       liveGrid.append(liveCard(integration, connection, events.find((event) => event.source === integration.id)));
     });
     systemCard.classList.toggle("v8-now-card--solo", liveGrid.children.length === 1);
+    renderCustomizePanel();
     if (!connected.length) liveGrid.append(statusState("integration", {
       title: "Aucune source distante active",
       description: "Configurez un service pour enrichir le Live Feed sans donnees fictives.",
@@ -287,15 +348,20 @@ export function mountActivity(stage, options = {}) {
     }, 30000);
   }
 
+  customizeToggle.addEventListener("click", () => {
+    customizeOpen = !customizeOpen;
+    renderCustomizePanel();
+  }, { signal: controller.signal });
   filterBar.addEventListener("click", (event) => {
     const button = event.target.closest("[data-activity-filter]");
     if (!button) return;
     activeFilter = button.dataset.activityFilter || "all";
     render();
   }, { signal: controller.signal });
+  const renderSearchResults = debounce(render, 120);
   search.addEventListener("input", () => {
     query = search.value;
-    render();
+    renderSearchResults();
   }, { signal: controller.signal });
   sortSelect.addEventListener("change", () => {
     order = sortSelect.value;
@@ -320,9 +386,26 @@ export function mountActivity(stage, options = {}) {
     const player = liveGrid.querySelector(".v8-spotify-live");
     if (player) presence?.signalActivity?.(player, "system", { phase: "update" });
   }, { immediate: false }) || (() => {});
+  const releaseDiscord = discordLive?.subscribe?.((presenceState) => {
+    discordPresence = presenceState;
+    render();
+    const card = liveGrid.querySelector(".v8-discord-live");
+    if (card) presence?.signalActivity?.(card, "system", { phase: "update" });
+  }, { immediate: false }) || (() => {});
+  const releaseWeather = weatherLive?.subscribe?.((weatherState) => {
+    weatherPresence = weatherState;
+    render();
+    const card = liveGrid.querySelector(".v8-weather-live");
+    if (card) presence?.signalActivity?.(card, "system", { phase: "update" });
+  }, { immediate: false }) || (() => {});
   stage.replaceChildren(page);
   render();
   const releaseDensity = options.subscribeState?.((next) => updateCollectionDensityControl(densityControl, next)) || (() => {});
+  const releaseLiveLayout = options.subscribeState?.((next) => {
+    if (next.activityLiveLayout === liveLayout) return;
+    liveLayout = next.activityLiveLayout || DEFAULT_LIVE_LAYOUT;
+    render();
+  }) || (() => {});
   scheduleRefresh();
   refreshIcons();
 
@@ -333,7 +416,10 @@ export function mountActivity(stage, options = {}) {
     releaseRefresh();
     releaseJournal();
     releaseSpotify();
+    releaseDiscord();
+    releaseWeather();
     releaseDensity();
+    releaseLiveLayout();
     page.remove();
   };
 }

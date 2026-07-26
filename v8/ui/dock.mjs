@@ -316,7 +316,7 @@ export function createDock(host, options = {}) {
   host.addEventListener("drop", handleDrop);
   host.addEventListener("dragend", handleDragEnd);
   host.addEventListener("pointerdown", handlePointerDown);
-  host.addEventListener("pointermove", handlePointerMove);
+  host.addEventListener("pointermove", handlePointerMove, { passive: true });
   host.addEventListener("pointerup", handlePointerEnd);
   host.addEventListener("pointercancel", handlePointerEnd);
   touchMedia.addEventListener?.("change", handleMediaChange);

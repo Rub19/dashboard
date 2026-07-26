@@ -205,7 +205,7 @@ function createLayerManager(options = {}) {
       const signal = listeners.signal;
       documentRef.addEventListener("keydown", handleKeydown, { capture: true, signal });
       documentRef.addEventListener("pointerdown", handlePointerdown, { capture: true, signal });
-      documentRef.addEventListener("scroll", handleScroll, { capture: true, signal });
+      documentRef.addEventListener("scroll", handleScroll, { capture: true, passive: true, signal });
       runtime.addEventListener?.("resize", handleResize, { signal });
     } else if (!entries.length && listeners) {
       listeners.abort();

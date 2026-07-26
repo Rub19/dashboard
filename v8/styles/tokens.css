@@ -219,8 +219,8 @@
   --v8-shadow-window-focus:var(--v8-shadow-height-5),0 0 0 1px var(--v8-accent-line),0 0 92px -34px var(--v8-light-window);
   --v8-shadow-modal-lit:var(--v8-shadow-modal-open);
   --v8-shadow-header-lit: inset 0 -1px 0 var(--v8-surface-glint),0 12px 40px rgba(0,0,0,.18),0 12px 48px -34px var(--v8-light-hero);
-  --v8-blur: 18px;
-  --v8-blur-backdrop: 10px;
+  --v8-blur: 13px;
+  --v8-blur-backdrop: 8px;
   --v8-saturate: 118%;
 
   --v8-motion-instant: 90ms;
@@ -286,6 +286,12 @@
   --v8-z-toast: 80;
   --v8-z-dialog: 100;
   --v8-z-tooltip: 120;
+}
+
+html[data-interface-blur="disabled"] {
+  --v8-blur: 0px;
+  --v8-blur-backdrop: 0px;
+  --v8-saturate: 100%;
 }
 
 :root[data-context="gaming"] {

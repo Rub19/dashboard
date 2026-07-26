@@ -40,7 +40,8 @@ export const PATTERNS = Object.freeze({
   discordId: /^\d{17,20}$/,
   playerName: /^[\p{L}\p{N} _.-]{1,32}$/u,
   playerTag: /^[A-Za-z0-9]{2,8}$/,
-  trackerIdentifier: /^[A-Za-z0-9 _#.-]{2,64}$/
+  trackerIdentifier: /^[A-Za-z0-9 _#.-]{2,64}$/,
+  cityQuery: /^[\p{L}\p{N} ,.'-]{2,80}$/u
 });
 
 export function requireSecret(env, name) {

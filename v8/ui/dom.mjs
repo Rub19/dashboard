@@ -1,3 +1,24 @@
+export function debounce(fn, wait = 150) {
+  let timer = null;
+  return function debounced(...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), wait);
+  };
+}
+
+export function throttleFrame(fn) {
+  let frame = null;
+  let pendingArgs = null;
+  return function throttled(...args) {
+    pendingArgs = args;
+    if (frame != null) return;
+    frame = requestAnimationFrame(() => {
+      frame = null;
+      fn.apply(this, pendingArgs);
+    });
+  };
+}
+
 export function element(tagName, options = {}, children = []) {
   const node = document.createElement(tagName);
   if (options.className) node.className = options.className;

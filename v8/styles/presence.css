@@ -423,3 +423,22 @@ html[data-presence-engine="paused"] [data-live-number][data-presence-live="enter
 
   [data-live-number]::after { display: none; }
 }
+
+html[data-ambient-motion="disabled"] .v8-entry::before,
+html[data-ambient-motion="disabled"] .v8-shell::before,
+html[data-ambient-motion="disabled"] .v8-entry__monogram,
+html[data-ambient-motion="disabled"] .v8-entry__particle,
+html[data-ambient-motion="disabled"] .v8-profile-preview__ambient,
+html[data-ambient-motion="disabled"] .v8-profile-preview__ambient span,
+html[data-ambient-motion="disabled"] .v8-continuity__monogram,
+html[data-ambient-motion="disabled"] .v8-home-ambient__wash,
+html[data-ambient-motion="disabled"] .v8-home-ambient__light,
+html[data-ambient-motion="disabled"] .v8-home-float,
+html[data-ambient-motion="disabled"] .v8-continuity::after,
+html[data-ambient-motion="disabled"] .v8-home-brain::after,
+html[data-ambient-motion="disabled"] .v8-brain-context::after,
+html[data-ambient-motion="disabled"] .v8-brain-orbit::after {
+  animation: none;
+  transform: none;
+  will-change: auto;
+}

@@ -1,4 +1,4 @@
-import { actionButton, element, icon } from "../ui/dom.mjs";
+import { actionButton, debounce, element, icon } from "../ui/dom.mjs";
 import { collectionDensityControl, updateCollectionDensityControl } from "../ui/dense-content.mjs";
 import { emptyState } from "../ui/empty-state.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
@@ -344,9 +344,11 @@ export function mountNotes(stage, options = {}) {
     renderEditor();
   }
 
+  const renderSearchResults = debounce(renderList, 120);
+
   function handleSearch() {
     query = search.value;
-    renderList();
+    renderSearchResults();
   }
 
   function handleSort() {

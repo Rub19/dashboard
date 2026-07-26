@@ -13,6 +13,8 @@ import { createDocumentMetadataManager, themeColorForState } from "../core/docum
 import { createAmbientEngine } from "../core/experience.mjs";
 import { calendarPresenceState, createPresenceEngine } from "../core/presence-engine.mjs";
 import { createSpotifyLive } from "../services/spotify-live.mjs";
+import { createDiscordLive } from "../services/discord-live.mjs";
+import { createWeatherLive } from "../services/weather-live.mjs";
 import { mountShell } from "../ui/shell.mjs";
 import { createPanelManager } from "../ui/panel.mjs";
 import { createToastManager } from "../ui/toast.mjs";
@@ -75,6 +77,20 @@ export function mountApplication(root, options = {}) {
     runtime: globalThis,
     isConnected: () => repository.snapshot().connections.some((connection) => connection.id === "spotify" && connection.status === "connected")
   });
+  const ownsDiscordLive = !options.discordLive;
+  const discordLive = options.discordLive || createDiscordLive({
+    runtime: globalThis,
+    externalServices,
+    isConnected: () => repository.snapshot().connections.some((connection) => connection.id === "discord" && connection.status === "connected"),
+    getUserId: () => repository.snapshot().connections.find((connection) => connection.id === "discord")?.reference || ""
+  });
+  const ownsWeatherLive = !options.weatherLive;
+  const weatherLive = options.weatherLive || createWeatherLive({
+    runtime: globalThis,
+    externalServices,
+    isConnected: () => repository.snapshot().connections.some((connection) => connection.id === "weather" && connection.status === "connected"),
+    getCity: () => repository.snapshot().connections.find((connection) => connection.id === "weather")?.reference || ""
+  });
   let actions = null;
   let router = null;
   let shell = null;
@@ -128,11 +144,17 @@ export function mountApplication(root, options = {}) {
   document.documentElement.dataset.theme = store.getState().theme;
   document.documentElement.dataset.space = store.getState().space;
   document.documentElement.dataset.spotlight = store.getState().spotlightEnabled === false ? "disabled" : "enabled";
+  document.documentElement.dataset.ambientMotion = store.getState().ambientEffectsEnabled === false ? "disabled" : "enabled";
+  document.documentElement.dataset.interfaceBlur = store.getState().interfaceBlurEnabled === false ? "disabled" : "enabled";
   densityEngine.start(store.getState());
   if (ownsAmbientEngine) ambient.start(store.getState());
   else ambient.refresh(store.getState());
   if (ownsSpotifyLive) spotifyLive.start();
   else spotifyLive.refresh?.();
+  if (ownsDiscordLive) discordLive.start();
+  else discordLive.refresh?.();
+  if (ownsWeatherLive) weatherLive.start();
+  else weatherLive.refresh?.();
   const initialSpotify = spotifyLive.state?.() || {};
   const initialMedia = initialSpotify.playing ? "playing" : initialSpotify.available ? "paused" : "idle";
   const initialCalendar = calendarPresenceState(repository.snapshot().events);
@@ -159,6 +181,21 @@ export function mountApplication(root, options = {}) {
   const releaseSpotify = spotifyLive.subscribe?.((playback) => {
     presence.update({ media: playback.playing ? "playing" : playback.available ? "paused" : "idle" });
     shell.updateSpotify(playback);
+  }, { immediate: false }) || (() => {});
+  const releaseDiscordSpotifyBridge = discordLive.subscribe?.((presenceState) => {
+    const spotifyConnection = repository.snapshot().connections.find((connection) => connection.id === "spotify");
+    if (spotifyConnection?.methodId !== "discord-lanyard" || spotifyConnection.status !== "connected") return;
+    const track = presenceState.spotify;
+    spotifyLive.publish?.(track?.available ? {
+      title: track.title,
+      artist: track.artist,
+      album: track.album,
+      artwork: track.artwork,
+      is_playing: track.playing,
+      progress_ms: track.progressMs,
+      duration_ms: track.durationMs,
+      id: track.trackId
+    } : { track: null });
   }, { immediate: false }) || (() => {});
   presence.signalIcon?.("brain");
   if (initialCalendar === "approaching") presence.signalIcon?.("calendar");
@@ -278,8 +315,8 @@ export function mountApplication(root, options = {}) {
         await module.prepare?.();
         if (destroyed || requestId !== routeRequest || router?.current() !== route) return;
         lifecycle.mount(route, () => {
-          if (route === "activity") return module.mountActivity(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, presence, notify: (notice) => toasts.show(notice) });
-          if (route === "connections") return module.mountConnections(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, externalServices, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.() });
+          if (route === "activity") return module.mountActivity(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, discordLive, weatherLive, presence, notify: (notice) => toasts.show(notice) });
+          if (route === "connections") return module.mountConnections(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, discordLive, weatherLive, externalServices, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.() });
           if (route === "brain") return module.mountBrain(shell.stage, { repository, actions, state: store.getState(), presence, brain, notify: (notice) => toasts.show(notice) });
           return module.mountSettings(shell.stage, { repository, actions, state: store.getState(), sounds, externalServices, densityEngine, subscribeState: store.subscribe, brain, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.(), profile: options.profile || repository.activeProfile?.(), onProfileMediaUpdated: applyProfileMediaUpdate });
         });
@@ -310,7 +347,7 @@ export function mountApplication(root, options = {}) {
       return;
     }
     lifecycle.mount(route, () => {
-      if (route === "home") return mountHome(shell.stage, createHomeModel({ snapshot: repository.snapshot() }), { ...store.getState(), spotifyLive, presence, sync: cloudSync });
+      if (route === "home") return mountHome(shell.stage, createHomeModel({ snapshot: repository.snapshot() }), { ...store.getState(), spotifyLive, discordLive, weatherLive, presence, sync: cloudSync });
       if (route === "notes") return mountNotes(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, presence, sync: cloudSync, notify: (notice) => toasts.show(notice) });
       if (route === "tasks") return mountTasks(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, presence, notify: (notice) => toasts.show(notice) });
       if (route === "calendar") return mountCalendar(shell.stage, { repository, actions, presence, notify: (notice) => toasts.show(notice) });
@@ -364,6 +401,8 @@ export function mountApplication(root, options = {}) {
     if (next.theme !== previous.theme) document.documentElement.dataset.theme = next.theme;
     if (next.space !== previous.space) document.documentElement.dataset.space = next.space;
     if (next.spotlightEnabled !== previous.spotlightEnabled) document.documentElement.dataset.spotlight = next.spotlightEnabled ? "enabled" : "disabled";
+    if (next.ambientEffectsEnabled !== previous.ambientEffectsEnabled) document.documentElement.dataset.ambientMotion = next.ambientEffectsEnabled ? "enabled" : "disabled";
+    if (next.interfaceBlurEnabled !== previous.interfaceBlurEnabled) document.documentElement.dataset.interfaceBlur = next.interfaceBlurEnabled ? "enabled" : "disabled";
     if (next.flow !== previous.flow || next.space !== previous.space || next.theme !== previous.theme) ambient.refresh(next);
     if (next.theme !== previous.theme || next.space !== previous.space) metadata.setThemeColor(themeColorForState(next));
     shell.update(next);
@@ -397,7 +436,9 @@ export function mountApplication(root, options = {}) {
       next.theme !== previous.theme ||
       next.accent !== previous.accent ||
       next.space !== previous.space ||
-      next.spotlightEnabled !== previous.spotlightEnabled
+      next.spotlightEnabled !== previous.spotlightEnabled ||
+      next.ambientEffectsEnabled !== previous.ambientEffectsEnabled ||
+      next.interfaceBlurEnabled !== previous.interfaceBlurEnabled
     );
     if (settingsChanged) mountRoute("settings", false);
     if (next.space !== previous.space && ["home", "brain", "spaces", "flows"].includes(next.route)) mountRoute(next.route, false);
@@ -492,11 +533,14 @@ export function mountApplication(root, options = {}) {
     shell.stage.removeEventListener("contextmenu", handleContextMenu);
     if (ownsAmbientEngine) ambient.destroy();
     releaseSpotify();
+    releaseDiscordSpotifyBridge();
     releaseClock();
     releaseSoundPreferences();
     releaseCloudStatus();
     releaseCloudBinding();
     if (ownsSpotifyLive) spotifyLive.destroy();
+    if (ownsDiscordLive) discordLive.destroy();
+    if (ownsWeatherLive) weatherLive.destroy();
     if (ownsPresenceEngine) presence.destroy();
     densityEngine.destroy();
     brainRuntime?.destroy?.();

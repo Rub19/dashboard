@@ -212,14 +212,6 @@ export function resolveAmbientProfile(state = {}, options = {}) {
   });
 }
 
-export function applyVisualContext(target, state = {}, options = {}) {
-  if (!target?.dataset) return "neutral";
-  const date = options.date instanceof Date ? options.date : new Date();
-  const context = resolveVisualContext({ ...state, hour: date.getHours() });
-  if (target.dataset.context !== context) target.dataset.context = context;
-  return context;
-}
-
 export function applyAmbientUI(target, state = {}, options = {}) {
   if (!target?.dataset) return resolveAmbientProfile(state, options);
   const profile = resolveAmbientProfile(state, options);

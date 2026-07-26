@@ -12,7 +12,8 @@ const WORKER_SERVICES = Object.freeze({
   "tracker-gg": "tracker",
   riot: "henrik",
   twitch: "twitch",
-  lastfm: "lastfm"
+  lastfm: "lastfm",
+  weather: "weather"
 });
 
 function normalized(value) {

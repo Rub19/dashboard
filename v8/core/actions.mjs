@@ -267,6 +267,35 @@ export function createActionFacade(options = {}) {
     setState({ spotlightEnabled });
     return completed(spotlightEnabled ? "Spotlight active" : "Spotlight desactive", { spotlightEnabled });
   });
+  register("v8.motion.ambient.toggle", () => {
+    const ambientEffectsEnabled = getState().ambientEffectsEnabled === false;
+    setState({ ambientEffectsEnabled });
+    return completed(ambientEffectsEnabled ? "Effets d'ambiance actives" : "Effets d'ambiance desactives", { ambientEffectsEnabled });
+  });
+  register("v8.motion.blur.toggle", () => {
+    const interfaceBlurEnabled = getState().interfaceBlurEnabled === false;
+    setState({ interfaceBlurEnabled });
+    return completed(interfaceBlurEnabled ? "Flou d'interface active" : "Flou d'interface desactive", { interfaceBlurEnabled });
+  });
+  register("v8.activity.live.toggle", (context = {}) => {
+    const id = String(context.id || context.element?.dataset.liveCard || "");
+    const current = getState().activityLiveLayout;
+    const hidden = current.hidden.includes(id) ? current.hidden.filter((entry) => entry !== id) : [...current.hidden, id];
+    setState({ activityLiveLayout: { ...current, hidden } });
+    return completed(hidden.includes(id) ? "Carte masquee" : "Carte affichee", { id, hidden: hidden.includes(id) });
+  });
+  register("v8.activity.live.move", (context = {}) => {
+    const id = String(context.id || context.element?.dataset.liveCard || "");
+    const direction = (context.direction || context.element?.dataset.direction) === "up" ? -1 : 1;
+    const current = getState().activityLiveLayout;
+    const order = [...current.order];
+    const index = order.indexOf(id);
+    const target = index + direction;
+    if (index < 0 || target < 0 || target >= order.length) return unavailable("Deplacement impossible.");
+    [order[index], order[target]] = [order[target], order[index]];
+    setState({ activityLiveLayout: { ...current, order } });
+    return completed("Ordre mis a jour", { order });
+  });
 
   register("v8.sound.toggle", () => {
     if (!sounds?.setPreferences) return unavailable("Les sons ne sont pas disponibles dans ce contexte.");

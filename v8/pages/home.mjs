@@ -2,6 +2,8 @@ import { actionButton, element, icon } from "../ui/dom.mjs";
 import { emptyState } from "../ui/empty-state.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
 import { spotifyLiveCard } from "../ui/spotify-live.mjs";
+import { discordLiveCard } from "../ui/discord-live.mjs";
+import { weatherLiveCard } from "../ui/weather-live.mjs";
 import { localeTag } from "../i18n/catalog.mjs";
 
 function formattedDate(isoDate) {
@@ -52,6 +54,8 @@ function briefingSignal(item) {
 
 export function mountHome(stage, model, options = {}) {
   const spotifyLive = options.spotifyLive || null;
+  const discordLive = options.discordLive || null;
+  const weatherLive = options.weatherLive || null;
   const presence = options.presence || null;
   const briefingEnabled = options.brainPreferences?.enabled !== false && options.brainPreferences?.briefing?.enabled !== false;
   const continuation = model.nextTasks[0]
@@ -175,12 +179,30 @@ export function mountHome(stage, model, options = {}) {
   ]);
 
   const spotifyHost = element("section", { className: "v8-home-spotify-host", attributes: { "aria-label": "Spotify Live", hidden: true } });
+  const discordHost = element("section", { className: "v8-home-discord-host", attributes: { "aria-label": "Presence Discord", hidden: true } });
+  const weatherHost = element("section", { className: "v8-home-weather-host", attributes: { "aria-label": "Meteo", hidden: true } });
 
   function renderSpotify(playback, animate = false) {
     const player = spotifyLiveCard(playback, { variant: "home" });
     spotifyHost.replaceChildren(...(player ? [player] : []));
     spotifyHost.hidden = !player;
     if (player && animate) presence?.signalActivity?.(player, "system", { phase: "update" });
+    refreshIcons();
+  }
+
+  function renderDiscord(presenceState, animate = false) {
+    const card = discordLiveCard(presenceState, { variant: "home" });
+    discordHost.replaceChildren(...(card ? [card] : []));
+    discordHost.hidden = !card;
+    if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
+    refreshIcons();
+  }
+
+  function renderWeather(weatherState, animate = false) {
+    const card = weatherLiveCard(weatherState, { variant: "home" });
+    weatherHost.replaceChildren(...(card ? [card] : []));
+    weatherHost.hidden = !card;
+    if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     refreshIcons();
   }
 
@@ -203,17 +225,25 @@ export function mountHome(stage, model, options = {}) {
     heading,
     element("div", { className: "v8-home-primary" }, [continuity, daystream]),
     spotifyHost,
+    discordHost,
+    weatherHost,
     briefingEnabled ? brainStrip : null,
     element("div", { className: "v8-home-secondary" }, [recent, signals])
   ]);
   stage.replaceChildren(page);
   renderSystemStatus();
   renderSpotify(spotifyLive?.state?.() || {});
+  renderDiscord(discordLive?.state?.() || {});
+  renderWeather(weatherLive?.state?.() || {});
   const releaseSpotify = spotifyLive?.subscribe?.((playback) => renderSpotify(playback, true), { immediate: false }) || (() => {});
+  const releaseDiscord = discordLive?.subscribe?.((presenceState) => renderDiscord(presenceState, true), { immediate: false }) || (() => {});
+  const releaseWeather = weatherLive?.subscribe?.((weatherState) => renderWeather(weatherState, true), { immediate: false }) || (() => {});
   const releaseSync = options.sync?.subscribe?.(renderSystemStatus) || (() => {});
   refreshIcons();
   return () => {
     releaseSpotify();
+    releaseDiscord();
+    releaseWeather();
     releaseSync();
     page.remove();
   };

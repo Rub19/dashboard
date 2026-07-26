@@ -5,6 +5,12 @@
 .v8-section-note,.v8-section-count { color: var(--v8-muted); font-size: var(--v8-font-xs); }
 .v8-now-section { margin-bottom: var(--v8-layout-major-gap); }
 .v8-now-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: var(--v8-layout-cluster-gap); }
+.v8-now-customize { display: grid; gap: 2px; margin-bottom: var(--v8-space-3); padding: 6px; border: 1px solid var(--v8-border); border-radius: var(--v8-radius-md); background: var(--v8-surface-sunken); }
+.v8-now-customize-row { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: var(--v8-space-3); padding: 6px 8px; border-radius: var(--v8-radius-sm); }
+.v8-now-customize-row.is-hidden { opacity: .5; }
+.v8-now-customize-row__label { display: flex; min-width: 0; align-items: center; gap: 8px; overflow: hidden; }
+.v8-now-customize-row__label span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--v8-font-xs); }
+.v8-now-customize-row__actions { display: flex; flex: 0 0 auto; align-items: center; gap: 2px; }
 .v8-now-card { display: grid; min-width: 0; min-height: 190px; grid-template-rows: auto minmax(0,1fr) auto; padding: var(--v8-layout-card-padding); overflow: hidden; box-shadow: var(--v8-shadow-key); }
 .v8-now-card--system { border-color: var(--v8-accent-line); background: linear-gradient(145deg,color-mix(in srgb,var(--v8-accent-soft) 50%,var(--v8-surface-1)),var(--v8-surface-1)); }
 .v8-now-card--solo { min-height: 154px; grid-column: 1 / -1; grid-template-columns: auto minmax(0,1fr) auto; grid-template-rows: minmax(0,1fr); align-items: center; gap: var(--v8-layout-card-padding); }
@@ -190,6 +196,7 @@ html[data-v8-interactions] .v8-connection-card:hover .v8-connection-card__action
 .v8-resource-link--compact strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .v8-connection-inspector-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--v8-space-2); padding-top: var(--v8-space-3); border-top: 1px solid var(--v8-divider); }
 .v8-connection-inspector-actions>.v8-button { min-width: 0; flex: 1 1 140px; }
+.v8-connection-inspector-actions>.v8-button>span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .v8-connection-panel-intro h3 { font-size: var(--v8-font-sm); }
 .v8-connection-panel-intro--action { display: flex; align-items: center; justify-content: space-between; gap: var(--v8-space-3); }
 .v8-connection-panel-intro--action>div { min-width: 0; }

@@ -3,6 +3,18 @@ import { DEFAULT_BRAIN_PREFERENCES, sanitizeBrainPreferences } from "../brain/pr
 
 export const PERSISTENCE_KEY = "ethone:v8-ui-state";
 
+export const LIVE_CARD_IDS = Object.freeze(["system", "spotify", "discord", "weather"]);
+const LIVE_CARD_ID_SET = new Set(LIVE_CARD_IDS);
+
+export function sanitizeActivityLiveLayout(input) {
+  const source = input && typeof input === "object" ? input : {};
+  const requestedOrder = Array.isArray(source.order) ? source.order.filter((id) => LIVE_CARD_ID_SET.has(id)) : [];
+  const order = [...new Set(requestedOrder)];
+  LIVE_CARD_IDS.forEach((id) => { if (!order.includes(id)) order.push(id); });
+  const hidden = Array.isArray(source.hidden) ? [...new Set(source.hidden.filter((id) => LIVE_CARD_ID_SET.has(id)))] : [];
+  return Object.freeze({ order: Object.freeze(order), hidden: Object.freeze(hidden) });
+}
+
 const THEMES = new Set(["night", "graphite"]);
 const ACCENTS = new Set(["mint", "sky", "amber", "violet", "rose"]);
 const SPACES = new Set(["personal", "focus", "studio"]);
@@ -21,6 +33,9 @@ const DEFAULT_STATE = Object.freeze({
   space: "personal",
   flow: "Essentiel",
   spotlightEnabled: true,
+  ambientEffectsEnabled: true,
+  interfaceBlurEnabled: true,
+  activityLiveLayout: sanitizeActivityLiveLayout(null),
   syncStatus: "loading",
   networkStatus: "online",
   saveStatus: "idle",
@@ -76,6 +91,9 @@ function normalizeState(input = {}) {
     space: SPACES.has(input.space) ? input.space : DEFAULT_STATE.space,
     flow: String(input.flow || DEFAULT_STATE.flow).slice(0, 48),
     spotlightEnabled: input.spotlightEnabled !== false,
+    ambientEffectsEnabled: input.ambientEffectsEnabled !== false,
+    interfaceBlurEnabled: input.interfaceBlurEnabled !== false,
+    activityLiveLayout: sanitizeActivityLiveLayout(input.activityLiveLayout),
     syncStatus: SYNC_STATES.has(input.syncStatus) ? input.syncStatus : DEFAULT_STATE.syncStatus,
     networkStatus: NETWORK_STATES.has(input.networkStatus) ? input.networkStatus : DEFAULT_STATE.networkStatus,
     saveStatus: SAVE_STATES.has(input.saveStatus) ? input.saveStatus : DEFAULT_STATE.saveStatus,
@@ -120,6 +138,9 @@ function persistedSnapshot(state) {
     space: state.space,
     flow: state.flow,
     spotlightEnabled: state.spotlightEnabled,
+    ambientEffectsEnabled: state.ambientEffectsEnabled,
+    interfaceBlurEnabled: state.interfaceBlurEnabled,
+    activityLiveLayout: state.activityLiveLayout,
     railExpanded: state.railExpanded
   };
 }

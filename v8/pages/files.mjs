@@ -1,4 +1,4 @@
-import { actionButton, element, icon } from "../ui/dom.mjs";
+import { actionButton, debounce, element, icon } from "../ui/dom.mjs";
 import {
   bulkActionBar,
   collectionDensityControl,
@@ -493,9 +493,11 @@ export function mountFiles(stage, options = {}) {
     renderContent();
   }
 
+  const renderSearchResults = debounce(renderContent, 120);
+
   function handleSearch() {
     query = search.value;
-    renderContent();
+    renderSearchResults();
   }
 
   function handleSort() {

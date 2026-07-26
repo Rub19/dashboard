@@ -8,6 +8,7 @@ import { steamRoute } from "./routes/steam.js";
 import { supabaseRoute } from "./routes/supabase.js";
 import { trackerRoute } from "./routes/tracker.js";
 import { twitchRoute } from "./routes/twitch.js";
+import { weatherRoute } from "./routes/weather.js";
 
 function route(id, path, handler, options = {}) {
   return Object.freeze({
@@ -38,7 +39,8 @@ export const ROUTES = Object.freeze([
   route("lastfm.top-tracks", "/api/lastfm/top-tracks", lastFmRoute, { service: "lastfm", action: "top-tracks" }),
   route("lanyard.presence", "/api/lanyard/presence", lanyardRoute, { service: "lanyard" }),
   route("now-playing", "/api/now-playing", nowPlayingRoute, { service: "nowplaying" }),
-  route("supabase.public-profile", "/api/supabase/public-profile", supabaseRoute, { service: "supabase", rateLimit: "strict" })
+  route("supabase.public-profile", "/api/supabase/public-profile", supabaseRoute, { service: "supabase", rateLimit: "strict" }),
+  route("weather.forecast", "/api/weather", weatherRoute, { service: "weather" })
 ]);
 
 function normalizedPath(pathname) {

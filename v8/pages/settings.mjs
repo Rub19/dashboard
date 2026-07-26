@@ -1,4 +1,4 @@
-import { actionButton, element, icon } from "../ui/dom.mjs";
+import { actionButton, element, icon, throttleFrame } from "../ui/dom.mjs";
 import { statusState } from "../ui/empty-state.mjs";
 import { prepareFormControls, setFieldState, setFormStatus } from "../ui/form-system.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
@@ -277,7 +277,12 @@ export function mountSettings(stage, options = {}) {
             densityPreviewHost
           ]),
           settingRow("sparkles", "Spotlight", "Reveler le Dashboard avec une transition breve au demarrage.", switchControl("v8.spotlight.toggle", "Animation Spotlight au demarrage", state.spotlightEnabled !== false)),
-          settingRow("languages", "Langue", "Changer rapidement la langue de l'interface.", actionButton({ actionId: "v8.locale.cycle", variant: "secondary" }, [icon("languages"), element("span", { text: "Langue suivante" })]))
+          settingRow("languages", "Langue", "Changer rapidement la langue de l'interface.", actionButton({ actionId: "v8.locale.cycle", variant: "secondary" }, [icon("languages"), element("span", { text: "Langue suivante" })])),
+          element("div", { className: "v8-density-settings" }, [
+            element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("gauge")]), element("div", {}, [element("strong", { text: "Performance" }), element("p", { text: "Reduire les effets visuels pour gagner en fluidite sur les appareils moins puissants." })])]),
+            settingRow("sparkle", "Effets d'ambiance", "Halos et particules animes en arriere-plan. Les desactiver allege le rendu en continu.", switchControl("v8.motion.ambient.toggle", "Activer les effets d'ambiance", state.ambientEffectsEnabled !== false)),
+            settingRow("blend", "Flou d'interface", "Effet de verre depoli sur le dock, les fenetres et menus. Le desactiver ameliore la fluidite du defilement.", switchControl("v8.motion.blur.toggle", "Activer le flou d'interface", state.interfaceBlurEnabled !== false))
+          ])
         ]),
         element("section", { id: "v8-settings-brain", className: "v8-settings-section v8-surface" }, [
           element("header", {}, [element("span", { className: "v8-eyebrow", text: "Personal Brain" }), element("h2", { text: "Assistant, memoire et confidentialite" }), element("p", { text: "Un contexte minimal, des permissions explicites et aucune cle privee dans le navigateur." })]),
@@ -586,13 +591,16 @@ export function mountSettings(stage, options = {}) {
   page.querySelector("[data-sound-pack]")?.addEventListener("change", (event) => {
     commitSetting(event.currentTarget, `v8.sound.pack.${event.currentTarget.value}`, { source: "settings", element: event.currentTarget, event });
   }, { signal: controller.signal });
+  const dispatchVolume = throttleFrame((category, value, element, event) => {
+    options.actions?.dispatch?.("v8.sound.volume", { source: "settings", category, value, element, event });
+  });
   page.querySelectorAll("[data-sound-volume]").forEach((control) => control.addEventListener("input", (event) => {
     const category = event.currentTarget.dataset.soundVolume;
     const value = Number(event.currentTarget.value) / 100;
     const output = page.querySelector(`[data-sound-value="${category}"]`);
     if (output) output.textContent = `${Math.round(value * 100)} %`;
     event.currentTarget.style.setProperty("--v8-range-progress", `${Math.round(value * 100)}%`);
-    options.actions?.dispatch?.("v8.sound.volume", { source: "settings", category, value, element: event.currentTarget, event });
+    dispatchVolume(category, value, event.currentTarget, event);
   }, { signal: controller.signal }));
   page.querySelectorAll("[data-density-custom]").forEach((control) => {
     control.addEventListener("input", (event) => {

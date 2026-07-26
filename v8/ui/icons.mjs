@@ -1,6 +1,7 @@
 export function refreshIcons() {
   const api = globalThis.lucide;
   if (!api || typeof api.createIcons !== "function") return false;
+  if (!globalThis.document?.querySelector?.("i[data-lucide]")) return false;
   try {
     api.createIcons({
       attrs: {

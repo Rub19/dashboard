@@ -2451,6 +2451,12 @@ html[data-v8-interactions] .v8-panel-notice:hover > .v8-selection-control,.v8-pa
 .v8-github-live--activity { min-height:120px; }
 @media (max-width:540px) { .v8-github-live { grid-template-columns:46px minmax(0,1fr) auto;gap:var(--v8-space-3);padding:var(--v8-space-3); }.v8-github-avatar { width:46px;height:46px; } }
 
+.v8-google-calendar-live { position:relative;display:grid;min-width:0;grid-template-columns:44px minmax(0,1fr);align-items:center;gap:var(--v8-space-4);padding:var(--v8-space-4);border-color:color-mix(in srgb,#1a73e8 26%,var(--v8-border));background:var(--v8-reflection-card),color-mix(in srgb,#1a73e8 4%,var(--v8-surface-1));box-shadow:var(--v8-shadow-card-lit); }
+.v8-google-calendar-icon { display:grid;width:44px;height:44px;place-items:center;color:#1a73e8; }
+.v8-google-calendar-icon svg { width:26px;height:26px; }
+.v8-google-calendar-live__body { display:grid;min-width:0;gap:3px; }.v8-google-calendar-live__body > strong { overflow:hidden;color:var(--v8-text);font-size:var(--v8-font-md);text-overflow:ellipsis;white-space:nowrap; }.v8-google-calendar-live__body > p { overflow:hidden;color:var(--v8-text-secondary);font-size:var(--v8-font-xs);text-overflow:ellipsis;white-space:nowrap; }
+.v8-google-calendar-live__meta { display:flex;min-width:0;align-items:center;gap:6px;margin-bottom:2px;color:#1a73e8; }.v8-google-calendar-live__meta svg { flex:0 0 auto;width:14px;height:14px; }.v8-google-calendar-live__meta small { overflow:hidden;font-size:var(--v8-font-micro);font-weight:var(--v8-weight-semibold);text-overflow:ellipsis;text-transform:uppercase;white-space:nowrap; }
+
 .v8-brain-context__identity { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--v8-space-4); }
 .v8-brain-orbit { display: grid; width: 64px; height: 64px; place-items: center; border: 1px solid var(--v8-brain-line); border-radius: 50%; background: var(--v8-brain-soft); color: var(--v8-brain); box-shadow: 0 0 36px var(--v8-light-brain); }
 .v8-brain-orbit svg { width: 28px; height: 28px; }

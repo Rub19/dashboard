@@ -180,7 +180,7 @@ const SPECIAL_METHODS = Object.freeze({
     method({ id: "public-profile", label: "Profil public", summary: "Contributions et depots publics, sans acces prive.", availability: "public", quality: "Lecture seule", badges: ["Simple", "Sans secret", "Lecture seule"], capabilities: ["Profil public", "Depots publics", "Contributions"], permissions: ["Aucune permission privee"], field: { type: "url", label: "Profil GitHub public", placeholder: "https://github.com/utilisateur", required: true } })
   ]),
   "google-calendar": Object.freeze([
-    method({ id: "oauth-secure", label: "Google OAuth", summary: "Calendriers autorises avec scopes minimaux et synchronisation cote serveur.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "Google Calendar API", badges: ["OAuth", "Cloud"], capabilities: ["Evenements", "Calendriers choisis", "Rappels", "Activity Hub"], permissions: ["Lecture agenda", "Ecriture optionnelle"] }),
+    method({ id: "oauth-secure", label: "Google OAuth", summary: "Prochains evenements de votre agenda principal, en lecture seule.", availability: "backend", recommended: true, live: true, quality: "Temps reel", apiVersion: "Google Calendar API", badges: ["OAuth", "Temps reel", "Cloud"], capabilities: ["Prochain evenement", "Agenda principal"], permissions: ["Lecture agenda (calendar.readonly)"], field: { type: "text", label: "Client ID Google OAuth", placeholder: "0123456789-abc.apps.googleusercontent.com", required: true } }),
     method({ id: "ics-readonly", label: "Calendrier ICS", summary: "Abonnement a une adresse ICS partagee, strictement en lecture seule.", availability: "public", quality: "Lecture seule", apiVersion: "iCalendar", badges: ["Simple", "Sans secret", "Lecture seule"], capabilities: ["Evenements publies", "Actualisation periodique"], permissions: ["Lecture de l'agenda partage"], field: { type: "url", label: "Adresse ICS partagee", placeholder: "https://.../calendar.ics", required: true } })
   ]),
   notion: Object.freeze([
@@ -217,8 +217,8 @@ const SPECIAL_RESOURCES = Object.freeze({
     { label: "Parametres developpeur", url: "https://github.com/settings/developers", kind: "Console" }
   ]),
   "google-calendar": Object.freeze([
-    { label: "Scopes Calendar", url: "https://developers.google.com/workspace/calendar/api/auth", kind: "Documentation" },
-    { label: "Google Cloud Console", url: "https://console.cloud.google.com/apis/library/calendar-json.googleapis.com", kind: "Console" }
+    { label: "Creer des identifiants OAuth", url: "https://console.cloud.google.com/apis/credentials", kind: "Guide" },
+    { label: "Activer l'API Calendar", url: "https://console.cloud.google.com/apis/library/calendar-json.googleapis.com", kind: "Console" }
   ]),
   notion: Object.freeze([
     { label: "Guide d'autorisation", url: "https://developers.notion.com/guides/get-started/authorization", kind: "Documentation" },
@@ -324,10 +324,15 @@ const SPECIAL_GUIDES = Object.freeze({
   "google-calendar": Object.freeze({
     "oauth-secure": (resource) => Object.freeze([
       guideStep("docs", "Ouvrir Google Cloud Console", "Creez un projet (ou reutilisez-en un), puis activez \"Google Calendar API\" dans la bibliotheque d'API.", { resource }),
-      guideStep("consent", "Configurer l'ecran de consentement OAuth", "Type \"External\", renseignez le nom de l'app. Statut \"Testing\" suffit tant que ce n'est utilise que par vous."),
+      guideStep("consent", "Configurer l'ecran de consentement OAuth", "Type \"External\", renseignez le nom de l'app. Statut \"Testing\" suffit tant que ce n'est utilise que par vous et vos invites."),
       guideStep("app", "Creer un identifiant OAuth", "Credentials > Create Credentials > OAuth client ID > type \"Web application\"."),
-      guideStep("redirect", "Ajouter la Redirect URI", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
-      guideStep("scopes", "Scope a demander", "https://www.googleapis.com/auth/calendar.readonly", { copyValue: "https://www.googleapis.com/auth/calendar.readonly" })
+      guideStep("redirect", "Ajouter l'URI de redirection autorisee", "Cette valeur exacte, sans rien ajouter derriere.", { copyValue: "https://ethone.dev/" }),
+      guideStep("scopes", "Scope a demander", "https://www.googleapis.com/auth/calendar.readonly", { copyValue: "https://www.googleapis.com/auth/calendar.readonly" }),
+      guideStep("id", "Copier le Client ID", "Affiche apres la creation de l'identifiant OAuth."),
+      guideStep("paste", "Coller le Client ID ci-dessous", "Utilisez le champ \"Client ID Google OAuth\". Ce n'est pas une donnee secrete."),
+      guideStep("secret", "Copier le Client Secret", "Affiche a cote du Client ID lors de la creation."),
+      guideStep("wrangler", "Transmettre le Client Secret a ETHONE", "Contrairement au Client ID, le Client Secret ne se colle jamais dans le navigateur : il doit etre enregistre comme secret Worker (GOOGLE_CLIENT_SECRET) via wrangler."),
+      guideStep("connect", "Se connecter avec Google", "Une fois le Client ID enregistre et le secret Worker configure, cliquez \"Se connecter avec Google\" pour autoriser ETHONE depuis le site officiel Google.")
     ])
   }),
   email: Object.freeze({

@@ -19,6 +19,7 @@ import { createMinecraftLive } from "../services/minecraft-live.mjs";
 import { createSteamLive } from "../services/steam-live.mjs";
 import { createSpotifyOAuthLive } from "../services/spotify-oauth-live.mjs";
 import { createGithubLive } from "../services/github-live.mjs";
+import { createGoogleCalendarLive } from "../services/google-calendar-live.mjs";
 import { clearPendingOAuthAuthorize, consumeOAuthCallback, readPendingOAuthAuthorize } from "../services/oauth-callback.mjs";
 import { mountShell } from "../ui/shell.mjs";
 import { createPanelManager } from "../ui/panel.mjs";
@@ -124,6 +125,13 @@ export function mountApplication(root, options = {}) {
     externalServices,
     isConnected: () => repository.snapshot().connections.some((connection) => connection.id === "github" && connection.methodId === "oauth-secure" && connection.status === "connected")
   });
+  const ownsGoogleCalendarLive = !options.googleCalendarLive;
+  const googleCalendarLive = options.googleCalendarLive || createGoogleCalendarLive({
+    runtime: globalThis,
+    externalServices,
+    isConnected: () => repository.snapshot().connections.some((connection) => connection.id === "google-calendar" && connection.methodId === "oauth-secure" && connection.status === "connected"),
+    getClientId: () => repository.snapshot().connections.find((connection) => connection.id === "google-calendar")?.reference || ""
+  });
   let actions = null;
   let router = null;
   let shell = null;
@@ -196,6 +204,8 @@ export function mountApplication(root, options = {}) {
   else spotifyOAuthLive.refresh?.();
   if (ownsGithubLive) githubLive.start();
   else githubLive.refresh?.();
+  if (ownsGoogleCalendarLive) googleCalendarLive.start();
+  else googleCalendarLive.refresh?.();
   const initialSpotify = spotifyLive.state?.() || {};
   const initialMedia = initialSpotify.playing ? "playing" : initialSpotify.available ? "paused" : "idle";
   const initialCalendar = calendarPresenceState(repository.snapshot().events);
@@ -246,7 +256,7 @@ export function mountApplication(root, options = {}) {
     const pendingOAuth = readPendingOAuthAuthorize(globalThis);
     clearPendingOAuthAuthorize(globalThis);
     const provider = pendingOAuth?.provider;
-    const providerLabel = provider === "github" ? "GitHub" : "Spotify";
+    const providerLabel = provider === "github" ? "GitHub" : provider === "google-calendar" ? "Google" : "Spotify";
     if (oauthCallback.error) {
       toasts.show({ id: `oauth-error-${provider || "unknown"}`, title: providerLabel, message: `Connexion ${providerLabel} annulee ou refusee.`, type: "warning" });
     } else if (!pendingOAuth || pendingOAuth.state !== oauthCallback.state || !pendingOAuth.clientId) {
@@ -280,6 +290,21 @@ export function mountApplication(root, options = {}) {
         })
         .catch(() => {
           toasts.show({ id: "github-oauth-error", title: "GitHub", message: "Echec de la connexion GitHub. Reessayez.", type: "error" });
+        });
+    } else if (oauthCallback.code && provider === "google-calendar") {
+      externalServices?.googleCalendarOAuth?.exchange(oauthCallback.code, pendingOAuth.clientId)
+        .then(() => {
+          repository.connections.updateStatus("google-calendar", "connected", {
+            apiVersion: "Google Calendar API",
+            lastSyncAt: new Date().toISOString(),
+            lastTestedAt: new Date().toISOString(),
+            detail: "Compte Google connecte via OAuth."
+          });
+          googleCalendarLive.refresh?.();
+          toasts.show({ id: "google-calendar-oauth-success", title: "Google", message: "Google Calendar connecte avec succes.", type: "success" });
+        })
+        .catch(() => {
+          toasts.show({ id: "google-calendar-oauth-error", title: "Google", message: "Echec de la connexion Google. Reessayez.", type: "error" });
         });
     }
   }
@@ -398,8 +423,8 @@ export function mountApplication(root, options = {}) {
         await module.prepare?.();
         if (destroyed || requestId !== routeRequest || router?.current() !== route) return;
         lifecycle.mount(route, () => {
-          if (route === "activity") return module.mountActivity(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, presence, notify: (notice) => toasts.show(notice) });
-          if (route === "connections") return module.mountConnections(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, spotifyOAuthLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, externalServices, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.() });
+          if (route === "activity") return module.mountActivity(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, presence, notify: (notice) => toasts.show(notice) });
+          if (route === "connections") return module.mountConnections(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, spotifyOAuthLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, externalServices, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.() });
           if (route === "brain") return module.mountBrain(shell.stage, { repository, actions, state: store.getState(), presence, brain, notify: (notice) => toasts.show(notice) });
           return module.mountSettings(shell.stage, { repository, actions, state: store.getState(), sounds, externalServices, densityEngine, subscribeState: store.subscribe, brain, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.(), profile: options.profile || repository.activeProfile?.(), onProfileMediaUpdated: applyProfileMediaUpdate });
         });
@@ -430,7 +455,7 @@ export function mountApplication(root, options = {}) {
       return;
     }
     lifecycle.mount(route, () => {
-      if (route === "home") return mountHome(shell.stage, createHomeModel({ snapshot: repository.snapshot() }), { ...store.getState(), spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, presence, sync: cloudSync });
+      if (route === "home") return mountHome(shell.stage, createHomeModel({ snapshot: repository.snapshot() }), { ...store.getState(), spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, presence, sync: cloudSync });
       if (route === "notes") return mountNotes(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, presence, sync: cloudSync, notify: (notice) => toasts.show(notice) });
       if (route === "tasks") return mountTasks(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, presence, notify: (notice) => toasts.show(notice) });
       if (route === "calendar") return mountCalendar(shell.stage, { repository, actions, presence, notify: (notice) => toasts.show(notice) });
@@ -628,6 +653,7 @@ export function mountApplication(root, options = {}) {
     if (ownsSteamLive) steamLive.destroy();
     if (ownsSpotifyOAuthLive) spotifyOAuthLive.destroy();
     if (ownsGithubLive) githubLive.destroy();
+    if (ownsGoogleCalendarLive) googleCalendarLive.destroy();
     if (ownsPresenceEngine) presence.destroy();
     densityEngine.destroy();
     brainRuntime?.destroy?.();
@@ -670,6 +696,7 @@ export function mountApplication(root, options = {}) {
       presenceEngine: presence.diagnostics?.() || null,
       spotifyLive: spotifyLive.diagnostics?.() || null,
       githubLive: githubLive.diagnostics?.() || null,
+      googleCalendarLive: googleCalendarLive.diagnostics?.() || null,
       documentTitle: document.title,
       documentContext: metadata.current(),
       activitySubscribers: activityJournal.subscriberCount(),

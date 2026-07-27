@@ -9,6 +9,7 @@ import { weatherLiveCard } from "../ui/weather-live.mjs";
 import { minecraftLiveCard } from "../ui/minecraft-live.mjs";
 import { steamLiveCard } from "../ui/steam-live.mjs";
 import { githubLiveCard } from "../ui/github-live.mjs";
+import { googleCalendarLiveCard } from "../ui/google-calendar-live.mjs";
 import { createSelect } from "../ui/select.mjs";
 import { prepareActivityUI } from "./activity-style.mjs";
 
@@ -39,9 +40,10 @@ const LIVE_CARD_META = Object.freeze({
   weather: Object.freeze({ label: "Meteo", icon: "cloud-sun" }),
   minecraft: Object.freeze({ label: "Minecraft", icon: "box" }),
   steam: Object.freeze({ label: "Steam", icon: "gamepad-2" }),
-  github: Object.freeze({ label: "GitHub", icon: "github" })
+  github: Object.freeze({ label: "GitHub", icon: "github" }),
+  "google-calendar": Object.freeze({ label: "Google Calendar", icon: "calendar-days" })
 });
-const DEFAULT_LIVE_LAYOUT = Object.freeze({ order: Object.freeze(["system", "spotify", "discord", "weather", "minecraft", "steam", "github"]), hidden: Object.freeze([]) });
+const DEFAULT_LIVE_LAYOUT = Object.freeze({ order: Object.freeze(["system", "spotify", "discord", "weather", "minecraft", "steam", "github", "google-calendar"]), hidden: Object.freeze([]) });
 
 function moveButton(id, direction, disabled, label) {
   const button = actionButton({ actionId: "v8.activity.live.move", className: "v8-icon-button", ariaLabel: label, disabled }, [icon(direction === "up" ? "chevron-up" : "chevron-down")]);
@@ -200,6 +202,7 @@ export function mountActivity(stage, options = {}) {
   const minecraftLive = options.minecraftLive || null;
   const steamLive = options.steamLive || null;
   const githubLive = options.githubLive || null;
+  const googleCalendarLive = options.googleCalendarLive || null;
   const presence = options.presence || null;
   const state = options.state || {};
   let activeFilter = "all";
@@ -214,6 +217,7 @@ export function mountActivity(stage, options = {}) {
   let minecraftPresence = minecraftLive?.state?.() || {};
   let steamPresence = steamLive?.state?.() || {};
   let githubPresence = githubLive?.state?.() || {};
+  let googleCalendarPresence = googleCalendarLive?.state?.() || {};
   const controller = new AbortController();
 
   const filterBar = element("div", { className: "v8-activity-filters", attributes: { role: "toolbar", "aria-label": "Filtrer l'activite" } });
@@ -310,7 +314,8 @@ export function mountActivity(stage, options = {}) {
     const minecraftCard = minecraftLiveCard(minecraftPresence, { variant: "activity" });
     const steamCard = steamLiveCard(steamPresence, { variant: "activity" });
     const githubCard = githubLiveCard(githubPresence, { variant: "activity" });
-    const knownCards = { system: systemCard, spotify: spotifyPlayer, discord: discordCard, weather: weatherCard, minecraft: minecraftCard, steam: steamCard, github: githubCard };
+    const googleCalendarCard = googleCalendarLiveCard(googleCalendarPresence, { variant: "activity" });
+    const knownCards = { system: systemCard, spotify: spotifyPlayer, discord: discordCard, weather: weatherCard, minecraft: minecraftCard, steam: steamCard, github: githubCard, "google-calendar": googleCalendarCard };
     liveGrid.replaceChildren();
     liveLayout.order.forEach((id) => {
       if (liveLayout.hidden.includes(id)) return;
@@ -431,6 +436,12 @@ export function mountActivity(stage, options = {}) {
     const card = liveGrid.querySelector(".v8-github-live");
     if (card) presence?.signalActivity?.(card, "system", { phase: "update" });
   }, { immediate: false }) || (() => {});
+  const releaseGoogleCalendar = googleCalendarLive?.subscribe?.((googleCalendarState) => {
+    googleCalendarPresence = googleCalendarState;
+    render();
+    const card = liveGrid.querySelector(".v8-google-calendar-live");
+    if (card) presence?.signalActivity?.(card, "system", { phase: "update" });
+  }, { immediate: false }) || (() => {});
   stage.replaceChildren(page);
   render();
   const releaseDensity = options.subscribeState?.((next) => updateCollectionDensityControl(densityControl, next)) || (() => {});
@@ -454,6 +465,7 @@ export function mountActivity(stage, options = {}) {
     releaseMinecraft();
     releaseSteam();
     releaseGithub();
+    releaseGoogleCalendar();
     releaseDensity();
     releaseLiveLayout();
     page.remove();

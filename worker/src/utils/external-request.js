@@ -109,6 +109,10 @@ export function requestExternal(input, options = {}) {
           await wait(retryDelay(response, attempt));
           continue;
         }
+        if (response.status === 204) {
+          if (!response.ok) throw providerError(response);
+          return Object.freeze({ data: null, attempts: attempt + 1, status: response.status });
+        }
         const data = await readJson(response, Math.max(1024, Math.min(2 * 1024 * 1024, Number(options.maxBytes) || 1024 * 1024)));
         if (!response.ok) throw providerError(response);
         return Object.freeze({ data, attempts: attempt + 1, status: response.status });

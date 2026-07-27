@@ -14,6 +14,7 @@ const REQUIREMENTS = Object.freeze({
   nowplaying: Object.freeze([]),
   weather: Object.freeze([]),
   minecraft: Object.freeze([]),
+  spotify: Object.freeze([]),
   supabase: Object.freeze(["SUPABASE_URL", "SUPABASE_SECRET_KEY"])
 });
 

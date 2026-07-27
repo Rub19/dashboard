@@ -4,6 +4,7 @@ import { henrikRoute } from "./routes/henrik.js";
 import { lanyardRoute } from "./routes/lanyard.js";
 import { lastFmRoute } from "./routes/lastfm.js";
 import { minecraftRoute } from "./routes/minecraft.js";
+import { spotifyNowPlayingRoute, spotifyOAuthDisconnectRoute, spotifyOAuthExchangeRoute } from "./routes/spotify-oauth.js";
 import { nowPlayingRoute } from "./routes/nowplaying.js";
 import { steamRoute } from "./routes/steam.js";
 import { supabaseRoute } from "./routes/supabase.js";
@@ -42,7 +43,10 @@ export const ROUTES = Object.freeze([
   route("now-playing", "/api/now-playing", nowPlayingRoute, { service: "nowplaying" }),
   route("supabase.public-profile", "/api/supabase/public-profile", supabaseRoute, { service: "supabase", rateLimit: "strict" }),
   route("weather.forecast", "/api/weather", weatherRoute, { service: "weather" }),
-  route("minecraft.profile", "/api/minecraft/profile", minecraftRoute, { service: "minecraft" })
+  route("minecraft.profile", "/api/minecraft/profile", minecraftRoute, { service: "minecraft" }),
+  route("spotify.oauth.exchange", "/api/spotify/oauth/exchange", spotifyOAuthExchangeRoute, { method: "POST", service: "spotify", rateLimit: "strict" }),
+  route("spotify.now-playing", "/api/spotify/now-playing", spotifyNowPlayingRoute, { service: "spotify" }),
+  route("spotify.oauth.disconnect", "/api/spotify/oauth/disconnect", spotifyOAuthDisconnectRoute, { method: "POST", service: "spotify", rateLimit: "strict" })
 ]);
 
 function normalizedPath(pathname) {

@@ -99,7 +99,7 @@ test("external service configuration is centralized and rejects insecure product
 test("Connections only claims Worker security after an authenticated diagnostic response", () => {
   const local = Object.freeze({ status: "ready", checks: Object.freeze([]), failed: 0, warnings: 0, ranAt: "2026-07-14T00:00:00.000Z" });
   assert.equal(workerServiceForConnection("steam", "server-connector"), "steam");
-  assert.equal(workerServiceForConnection("spotify", "oauth-pkce"), "");
+  assert.equal(workerServiceForConnection("spotify", "oauth-pkce"), "spotify");
   assert.equal(workerServiceForConnection("spotify", "discord-lanyard"), "lanyard");
 
   const unverified = mergeWorkerDiagnostic(local, { service: "steam", response: { ok: true, data: { services: [{ id: "steam", available: true, routeEnabled: true }] }, meta: {} } });

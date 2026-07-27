@@ -18,6 +18,9 @@ const OPERATIONS = Object.freeze({
   nowPlaying: Object.freeze({ path: "/api/now-playing", auth: true, params: ["source", "username", "userId"] }),
   weatherForecast: Object.freeze({ path: "/api/weather", auth: true, params: ["city"] }),
   minecraftProfile: Object.freeze({ path: "/api/minecraft/profile", auth: true, params: ["username"] }),
+  spotifyOAuthExchange: Object.freeze({ path: "/api/spotify/oauth/exchange", method: "POST", auth: true, params: ["code", "codeVerifier", "clientId"] }),
+  spotifyNowPlaying: Object.freeze({ path: "/api/spotify/now-playing", auth: true, params: ["clientId"] }),
+  spotifyOAuthDisconnect: Object.freeze({ path: "/api/spotify/oauth/disconnect", method: "POST", auth: true, params: [] }),
   publicProfile: Object.freeze({ path: "/api/supabase/public-profile", auth: true, params: ["username"] })
 });
 
@@ -84,25 +87,36 @@ export function createExternalServicesClient(options = {}) {
     if (destroyed) throw clientError("CLIENT_DESTROYED", "Le client des integrations est ferme.");
     const operation = OPERATIONS[operationName];
     if (!operation) throw clientError("OPERATION_NOT_ALLOWED", "Cette operation externe n'est pas autorisee.", { status: 400 });
+    const method = operation.method === "POST" ? "POST" : "GET";
     const url = new URL(operation.path, `${baseUrl}/`);
-    operation.params.forEach((name) => {
-      const value = values?.[name];
-      if (value !== undefined && value !== null && String(value).trim()) url.searchParams.set(name, String(value).trim());
-    });
+    let body;
+    if (method === "GET") {
+      operation.params.forEach((name) => {
+        const value = values?.[name];
+        if (value !== undefined && value !== null && String(value).trim()) url.searchParams.set(name, String(value).trim());
+      });
+    } else {
+      body = JSON.stringify(Object.fromEntries(operation.params
+        .map((name) => [name, values?.[name]])
+        .filter(([, value]) => value !== undefined && value !== null && String(value).trim())));
+    }
     const controller = new AbortController();
     activeControllers.add(controller);
     const startedAt = Date.now();
     publish({ requests: status.requests + 1, lastError: "" });
     try {
       const headers = new Headers({ accept: "application/json", "x-request-id": runtime.crypto?.randomUUID?.() || `${Date.now()}-ethone` });
+      if (method === "POST") headers.set("content-type", "application/json");
       if (operation.auth) headers.set("authorization", `Bearer ${await accessToken()}`);
       if (destroyed || controller.signal.aborted) throw clientError("CLIENT_DESTROYED", "Le client des integrations est ferme.");
       const payload = await network.requestJSON(url.href, {
+        method,
+        body,
         headers,
         signal: controller.signal,
         timeoutMs: requestOptions.timeoutMs || 8000,
-        retries: requestOptions.retries ?? 1,
-        dedupeKey: `ethone-worker:${operationName}:${url.search}`,
+        retries: requestOptions.retries ?? (method === "GET" ? 1 : 0),
+        dedupeKey: `ethone-worker:${operationName}:${method === "GET" ? url.search : body}`,
         maxResponseBytes: 1024 * 1024
       });
       if (!payload || payload.ok !== true || typeof payload.meta !== "object") {
@@ -175,6 +189,11 @@ export function createExternalServicesClient(options = {}) {
     nowPlaying: (source, identity) => execute("nowPlaying", source === "lanyard" ? { source, userId: identity } : { source, username: identity }),
     weather: Object.freeze({ forecast: (city) => execute("weatherForecast", { city }) }),
     minecraft: Object.freeze({ profile: (username) => execute("minecraftProfile", { username }) }),
+    spotifyOAuth: Object.freeze({
+      exchange: (code, codeVerifier, clientId) => execute("spotifyOAuthExchange", { code, codeVerifier, clientId }),
+      nowPlaying: (clientId) => execute("spotifyNowPlaying", { clientId }),
+      disconnect: () => execute("spotifyOAuthDisconnect", {})
+    }),
     publicProfile: (username) => execute("publicProfile", { username }),
     diagnostics: () => Object.freeze({ ...status, activeRequests: activeControllers.size, environment: config.environment, baseUrl: network.redactUrl?.(baseUrl) || baseUrl }),
     destroy

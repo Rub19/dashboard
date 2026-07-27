@@ -17,6 +17,8 @@ import { createDiscordLive } from "../services/discord-live.mjs";
 import { createWeatherLive } from "../services/weather-live.mjs";
 import { createMinecraftLive } from "../services/minecraft-live.mjs";
 import { createSteamLive } from "../services/steam-live.mjs";
+import { createSpotifyOAuthLive } from "../services/spotify-oauth-live.mjs";
+import { clearPendingSpotifyAuthorize, consumeSpotifyCallback, readPendingSpotifyAuthorize } from "../services/spotify-oauth.mjs";
 import { mountShell } from "../ui/shell.mjs";
 import { createPanelManager } from "../ui/panel.mjs";
 import { createToastManager } from "../ui/toast.mjs";

@@ -10,6 +10,7 @@ const APPROVED_SERVICE_ROLE_REFERENCES = new Set([
   "scripts/precommit-upload-check.mjs",
   "supabase/migrations/202607140002_public_profile_directory.sql",
   "supabase/migrations/202607260001_user_provider_credentials.sql",
+  "supabase/migrations/202607270001_user_oauth_tokens.sql",
   "tests/upload-safety.test.mjs"
 ]);
 const APPROVED_WORKER_REFERENCES = new Set(["v8/services/external-services-config.mjs", "index.html"]);

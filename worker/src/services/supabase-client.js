@@ -45,6 +45,72 @@ export async function getUserProviderCredential(env, userId, provider) {
   }
 }
 
+export async function getOAuthToken(env, userId, provider) {
+  const origin = projectOrigin(env);
+  if (!origin || !userId) return null;
+  const secret = requireSecret(env, "SUPABASE_SECRET_KEY");
+  const response = await requestExternal(new URL("/rest/v1/rpc/get_oauth_token", origin), {
+    env,
+    expectedOrigin: origin,
+    service: "supabase",
+    dedupeKey: `oauth-token:${userId}:${provider}`,
+    method: "POST",
+    headers: serviceHeaders(secret),
+    body: JSON.stringify({ requested_user_id: userId, requested_provider: provider }),
+    retries: 0,
+    maxBytes: 8192
+  });
+  const row = Array.isArray(response.data) ? response.data[0] : response.data;
+  if (!row) return null;
+  return Object.freeze({
+    accessToken: safeText(row.access_token, 4000),
+    refreshToken: safeText(row.refresh_token, 4000),
+    scope: safeText(row.scope, 500),
+    expiresAt: safeText(row.expires_at, 40)
+  });
+}
+
+export async function setOAuthToken(env, userId, provider, token) {
+  const origin = projectOrigin(env);
+  if (!origin || !userId) return false;
+  const secret = requireSecret(env, "SUPABASE_SECRET_KEY");
+  await requestExternal(new URL("/rest/v1/rpc/set_oauth_token", origin), {
+    env,
+    expectedOrigin: origin,
+    service: "supabase",
+    method: "POST",
+    headers: serviceHeaders(secret),
+    body: JSON.stringify({
+      requested_user_id: userId,
+      requested_provider: provider,
+      next_access_token: token.accessToken,
+      next_refresh_token: token.refreshToken,
+      next_scope: token.scope || "",
+      next_expires_at: token.expiresAt
+    }),
+    retries: 0,
+    maxBytes: 4096
+  });
+  return true;
+}
+
+export async function deleteOAuthToken(env, userId, provider) {
+  const origin = projectOrigin(env);
+  if (!origin || !userId) return false;
+  const secret = requireSecret(env, "SUPABASE_SECRET_KEY");
+  await requestExternal(new URL("/rest/v1/rpc/delete_oauth_token", origin), {
+    env,
+    expectedOrigin: origin,
+    service: "supabase",
+    method: "POST",
+    headers: serviceHeaders(secret),
+    body: JSON.stringify({ requested_user_id: userId, requested_provider: provider }),
+    retries: 0,
+    maxBytes: 4096
+  });
+  return true;
+}
+
 export async function findPublicProfile(env, username) {
   const origin = projectOrigin(env);
   const secret = requireSecret(env, "SUPABASE_SECRET_KEY");

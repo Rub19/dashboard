@@ -1,7 +1,7 @@
 import { httpError } from "./errors.js";
 import { emptyResponse } from "../utils/response.js";
 
-const METHODS = Object.freeze(["GET", "OPTIONS"]);
+const METHODS = Object.freeze(["GET", "POST", "OPTIONS"]);
 const HEADERS = Object.freeze(["authorization", "content-type", "if-none-match", "x-request-id"]);
 
 function configuredOrigins(env) {

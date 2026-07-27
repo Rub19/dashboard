@@ -43,7 +43,8 @@ export const PATTERNS = Object.freeze({
   playerTag: /^[A-Za-z0-9]{2,8}$/,
   trackerIdentifier: /^[A-Za-z0-9 _#.-]{2,64}$/,
   cityQuery: /^[\p{L}\p{N} ,.'-]{2,80}$/u,
-  minecraftUsername: /^[A-Za-z0-9_]{3,16}$/
+  minecraftUsername: /^[A-Za-z0-9_]{3,16}$/,
+  spotifyClientId: /^[A-Za-z0-9]{10,64}$/
 });
 
 export function requireSecret(env, name) {

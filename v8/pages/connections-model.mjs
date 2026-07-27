@@ -170,6 +170,7 @@ export function workerServiceForConnection(integrationId, methodId = "") {
   if (id === "discord" && method === "lanyard-presence") return "lanyard";
   if (id === "spotify" && method === "discord-lanyard") return "lanyard";
   if (id === "spotify" && method === "lastfm-history") return "lastfm";
+  if (id === "spotify" && method === "oauth-pkce") return "spotify";
   return WORKER_SERVICES[id] || "";
 }
 

@@ -16,6 +16,7 @@ import { emptyState, statusState } from "../ui/empty-state.mjs";
 import { formField, setFieldState } from "../ui/form-system.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
 import { createSelect } from "../ui/select.mjs";
+import { beginSpotifyAuthorize } from "../services/spotify-oauth.mjs";
 import {
   connectionMetrics,
   connectionState,
@@ -204,8 +205,12 @@ export function mountConnections(stage, options = {}) {
   const weatherLive = options.weatherLive || null;
   const minecraftLive = options.minecraftLive || null;
   const steamLive = options.steamLive || null;
+  const spotifyOAuthLive = options.spotifyOAuthLive || null;
   function refreshLiveBridges(id) {
-    if (id === "spotify") spotifyLive?.refresh?.();
+    if (id === "spotify") {
+      spotifyLive?.refresh?.();
+      spotifyOAuthLive?.refresh?.();
+    }
     if (id === "discord") discordLive?.refresh?.();
     if (id === "weather") weatherLive?.refresh?.();
     if (id === "minecraft") minecraftLive?.refresh?.();
@@ -594,7 +599,8 @@ export function mountConnections(stage, options = {}) {
         element("p", { text: report?.workerVerified ? "Le Worker authentifie a confirme cette route. Aucun secret fournisseur n'est transmis au navigateur." : "Les permissions sont expliquees ici. Les echanges privilegies restent obligatoirement cote serveur." })
       ])]),
       element("footer", { className: "v8-connection-inspector-actions" }, [
-        connectionAction("v8.connections.setup.complete", integration.id, "primary", [icon(configuredMethod ? "rotate-cw" : "shield-check"), element("span", { text: configuredMethod ? "Revalider" : "Verifier" })], { method: method?.id, disabled: !availability.usable }),
+        integration.id === "spotify" && method?.id === "oauth-pkce" ? connectionAction("v8.connections.spotify.connect", integration.id, "primary", [icon("music"), element("span", { text: "Se connecter avec Spotify" })], { disabled: !availability.usable || !referenceValue.trim() }) : null,
+        connectionAction("v8.connections.setup.complete", integration.id, integration.id === "spotify" && method?.id === "oauth-pkce" ? "secondary" : "primary", [icon(configuredMethod ? "rotate-cw" : "shield-check"), element("span", { text: configuredMethod ? "Revalider" : "Verifier" })], { method: method?.id, disabled: !availability.usable }),
         connectionAction("v8.connections.test", integration.id, "secondary", [icon("stethoscope"), element("span", { text: "Diagnostic" })])
       ])
     ]);
@@ -776,6 +782,39 @@ export function mountConnections(stage, options = {}) {
       renderAll();
     }
     return result;
+  }));
+  releases.push(actions.scope("v8.connections.spotify.connect", async (context) => {
+    const id = context.element?.dataset.integration || selectedId;
+    const integration = integrationById(id);
+    const connection = connectionMap().get(id);
+    const method = selectedMethod(integration, connection);
+    if (id !== "spotify" || method?.id !== "oauth-pkce") return unavailable("Methode indisponible.");
+    const availability = methodAvailability(method, connectionList());
+    if (!availability.usable) {
+      notify({ id: `connection-blocked-${id}`, title: integration?.name || "Connection", message: availability.reason, type: "warning" });
+      return unavailable(availability.reason);
+    }
+    const reference = validateReference(method, draftReferences.get(id) ?? connection?.reference ?? "");
+    if (!reference.ok) {
+      const referenceInput = inspectorHost.querySelector("[data-connection-reference]");
+      referenceInput?.setCustomValidity?.(reference.message);
+      setFieldState(referenceInput, "invalid", reference.message);
+      notify({ id: `connection-reference-${id}`, title: "Configuration incomplete", message: reference.message, type: "warning" });
+      referenceInput?.focus();
+      return unavailable(reference.message);
+    }
+    repository.connections.configure(id, {
+      methodId: method.id,
+      reference: reference.value,
+      apiVersion: method.apiVersion || "En attente",
+      detail: "Redirection vers Spotify en cours."
+    });
+    const started = await beginSpotifyAuthorize(reference.value, globalThis);
+    if (!started) {
+      notify({ id: `connection-oauth-${id}`, title: integration?.name || "Spotify", message: "Impossible de demarrer la connexion Spotify sur cet appareil.", type: "error" });
+      return unavailable("sessionStorage indisponible");
+    }
+    return completed("Redirection vers Spotify", { integration: id });
   }));
   releases.push(actions.scope("v8.connections.test", async (context) => {
     const id = context.element?.dataset.integration || selectedId;

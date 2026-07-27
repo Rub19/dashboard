@@ -81,6 +81,14 @@ export function mountApplication(root, options = {}) {
     runtime: globalThis,
     isConnected: () => repository.snapshot().connections.some((connection) => connection.id === "spotify" && connection.status === "connected")
   });
+  const ownsSpotifyOAuthLive = !options.spotifyOAuthLive;
+  const spotifyOAuthLive = options.spotifyOAuthLive || createSpotifyOAuthLive({
+    runtime: globalThis,
+    externalServices,
+    isConnected: () => repository.snapshot().connections.some((connection) => connection.id === "spotify" && connection.methodId === "oauth-pkce" && connection.status === "connected"),
+    getClientId: () => repository.snapshot().connections.find((connection) => connection.id === "spotify")?.reference || "",
+    onTrack: (track) => spotifyLive.publish?.(track)
+  });
   const ownsDiscordLive = !options.discordLive;
   const discordLive = options.discordLive || createDiscordLive({
     runtime: globalThis,
@@ -177,6 +185,8 @@ export function mountApplication(root, options = {}) {
   else minecraftLive.refresh?.();
   if (ownsSteamLive) steamLive.start();
   else steamLive.refresh?.();
+  if (ownsSpotifyOAuthLive) spotifyOAuthLive.start();
+  else spotifyOAuthLive.refresh?.();
   const initialSpotify = spotifyLive.state?.() || {};
   const initialMedia = initialSpotify.playing ? "playing" : initialSpotify.available ? "paused" : "idle";
   const initialCalendar = calendarPresenceState(repository.snapshot().events);
@@ -222,6 +232,31 @@ export function mountApplication(root, options = {}) {
   presence.signalIcon?.("brain");
   if (initialCalendar === "approaching") presence.signalIcon?.("calendar");
   const toasts = createToastManager(shell.toastRegion, { sounds, presence });
+  const spotifyCallback = consumeSpotifyCallback(globalThis);
+  if (spotifyCallback) {
+    const pendingSpotifyAuthorize = readPendingSpotifyAuthorize(globalThis);
+    clearPendingSpotifyAuthorize(globalThis);
+    if (spotifyCallback.error) {
+      toasts.show({ id: "spotify-oauth-error", title: "Spotify", message: "Connexion Spotify annulee ou refusee.", type: "warning" });
+    } else if (!pendingSpotifyAuthorize || pendingSpotifyAuthorize.state !== spotifyCallback.state || !pendingSpotifyAuthorize.verifier || !pendingSpotifyAuthorize.clientId) {
+      toasts.show({ id: "spotify-oauth-error", title: "Spotify", message: "La demande de connexion Spotify a expire. Reessayez.", type: "error" });
+    } else if (spotifyCallback.code) {
+      externalServices?.spotifyOAuth?.exchange(spotifyCallback.code, pendingSpotifyAuthorize.verifier, pendingSpotifyAuthorize.clientId)
+        .then(() => {
+          repository.connections.updateStatus("spotify", "connected", {
+            apiVersion: "OAuth PKCE",
+            lastSyncAt: new Date().toISOString(),
+            lastTestedAt: new Date().toISOString(),
+            detail: "Compte Spotify connecte via OAuth."
+          });
+          spotifyOAuthLive.refresh?.();
+          toasts.show({ id: "spotify-oauth-success", title: "Spotify", message: "Compte Spotify connecte avec succes.", type: "success" });
+        })
+        .catch(() => {
+          toasts.show({ id: "spotify-oauth-error", title: "Spotify", message: "Echec de la connexion Spotify. Reessayez.", type: "error" });
+        });
+    }
+  }
   const panelOptions = {
     user: initialModel.user,
     snapshot: () => repository.snapshot(),
@@ -338,7 +373,7 @@ export function mountApplication(root, options = {}) {
         if (destroyed || requestId !== routeRequest || router?.current() !== route) return;
         lifecycle.mount(route, () => {
           if (route === "activity") return module.mountActivity(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, presence, notify: (notice) => toasts.show(notice) });
-          if (route === "connections") return module.mountConnections(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, externalServices, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.() });
+          if (route === "connections") return module.mountConnections(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, spotifyOAuthLive, discordLive, weatherLive, minecraftLive, steamLive, externalServices, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.() });
           if (route === "brain") return module.mountBrain(shell.stage, { repository, actions, state: store.getState(), presence, brain, notify: (notice) => toasts.show(notice) });
           return module.mountSettings(shell.stage, { repository, actions, state: store.getState(), sounds, externalServices, densityEngine, subscribeState: store.subscribe, brain, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.(), profile: options.profile || repository.activeProfile?.(), onProfileMediaUpdated: applyProfileMediaUpdate });
         });
@@ -565,6 +600,7 @@ export function mountApplication(root, options = {}) {
     if (ownsWeatherLive) weatherLive.destroy();
     if (ownsMinecraftLive) minecraftLive.destroy();
     if (ownsSteamLive) steamLive.destroy();
+    if (ownsSpotifyOAuthLive) spotifyOAuthLive.destroy();
     if (ownsPresenceEngine) presence.destroy();
     densityEngine.destroy();
     brainRuntime?.destroy?.();

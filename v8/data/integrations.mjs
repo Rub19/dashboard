@@ -512,6 +512,20 @@ const SPECIAL_GUIDES = Object.freeze({
       guideStep("docs", "Ouvrir Tracker.gg Developers", "Connectez-vous puis demandez un acces API pour votre propre usage."),
       guideStep("paste", "Coller votre cle dans ETHONE", "Une fois approuvee, utilisez le champ \"Votre propre cle\" ci-dessous. Elle est stockee dans votre compte Supabase, visible et modifiable seulement par vous.")
     ])
+  }),
+  weather: Object.freeze({
+    "public-location": () => Object.freeze([
+      guideStep("info", "Aucun compte necessaire", "Open-Meteo est une API meteo publique et gratuite, sans cle ni inscription."),
+      guideStep("city", "Renseigner votre ville", "Tapez le nom de votre ville dans le champ ci-dessous, idealement avec le pays pour eviter toute ambiguite (ex : \"Paris, France\").", { copyValue: "Paris, France" }),
+      guideStep("verify", "Verifier la preparation", "ETHONE recupere les coordonnees de la ville puis les conditions actuelles et les previsions.")
+    ])
+  }),
+  minecraft: Object.freeze({
+    "public-profile": () => Object.freeze([
+      guideStep("info", "Aucun compte Microsoft necessaire", "Cette methode utilise l'API publique Mojang, en lecture seule, sans authentification Xbox Live."),
+      guideStep("username", "Renseigner votre pseudo Minecraft", "Tapez votre pseudo exact (sensible a la casse) dans le champ ci-dessous.", { copyValue: "Notch" }),
+      guideStep("verify", "Verifier la preparation", "ETHONE retrouve votre identifiant unique (UUID) et votre skin actuel via l'API Mojang.")
+    ])
   })
 });
 

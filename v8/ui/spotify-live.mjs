@@ -29,8 +29,8 @@ function playbackControl(playback) {
   if (!playback.controllable) {
     return element("span", {
       className: "v8-spotify-external-state",
-      attributes: { "aria-label": playback.playing ? "Lecture Spotify en cours" : "Spotify en pause" }
-    }, [icon(playback.playing ? "radio" : "pause"), element("span", { text: "Lecture externe" })]);
+      attributes: { "aria-label": playback.playing ? "Lecture Spotify en cours (lecture externe)" : "Spotify en pause (lecture externe)" }
+    }, [icon(playback.playing ? "radio" : "pause")]);
   }
   return actionButton({
     actionId: "v8.spotify.toggle",
@@ -42,10 +42,27 @@ function playbackControl(playback) {
 export function spotifyLiveCard(playback = {}, options = {}) {
   if (playback.available !== true) return null;
   const variant = ["home", "activity"].includes(options.variant) ? options.variant : "home";
-  const progress = Math.min(1, Math.max(0, Number(playback.progress) || 0));
+  const durationMs = Math.max(0, Number(playback.durationMs) || 0);
+  const anchorProgressMs = durationMs ? Math.min(durationMs, Math.max(0, Number(playback.progressMs) || 0)) : Math.max(0, Number(playback.progressMs) || 0);
+  const anchorAt = Date.now();
+
   const progressBar = element("span", { className: "v8-spotify-progress__value", attributes: { "aria-hidden": "true" } });
-  progressBar.style.transform = `scaleX(${progress})`;
-  return element(options.tagName || "article", {
+  const progressTrack = element("span", {
+    className: "v8-spotify-progress__track",
+    attributes: { role: "progressbar", "aria-label": "Progression Spotify", "aria-valuemin": "0", "aria-valuemax": "100", "aria-valuenow": "0" }
+  }, [progressBar]);
+  const elapsedTime = element("time", { text: formatTime(anchorProgressMs) });
+  const totalTime = durationMs ? element("time", { text: formatTime(durationMs) }) : null;
+
+  function paint(progressMs) {
+    const ratio = durationMs ? Math.min(1, progressMs / durationMs) : 0;
+    progressBar.style.transform = `scaleX(${ratio})`;
+    progressTrack.setAttribute("aria-valuenow", String(Math.round(ratio * 100)));
+    elapsedTime.textContent = formatTime(progressMs);
+  }
+  paint(anchorProgressMs);
+
+  const card = element(options.tagName || "article", {
     className: `v8-spotify-live v8-spotify-live--${variant} v8-surface ${playback.playing ? "is-playing" : "is-paused"}`,
     attributes: { "aria-label": "Lecture Spotify" },
     dataset: { liveWidget: "media", liveKind: "media", spotifyPlayback: playback.playing ? "playing" : "paused" }
@@ -60,18 +77,24 @@ export function spotifyLiveCard(playback = {}, options = {}) {
       element("strong", { text: playback.title, attributes: { translate: "no" } }),
       element("p", { text: playback.album ? `${playback.artist} - ${playback.album}` : playback.artist, attributes: { translate: "no" } }),
       element("div", { className: "v8-spotify-progress" }, [
-        element("span", {
-          className: "v8-spotify-progress__track",
-          attributes: { role: "progressbar", "aria-label": "Progression Spotify", "aria-valuemin": "0", "aria-valuemax": "100", "aria-valuenow": String(Math.round(progress * 100)) }
-        }, [progressBar]),
-        element("span", { className: "v8-spotify-progress__time", attributes: { "aria-hidden": "true" } }, [
-          element("time", { text: formatTime(playback.progressMs) }),
-          element("time", { text: formatTime(playback.durationMs) })
-        ])
+        durationMs ? progressTrack : null,
+        element("span", { className: "v8-spotify-progress__time", attributes: { "aria-hidden": "true" } }, [elapsedTime, totalTime])
       ])
     ]),
     playbackControl(playback)
   ]);
+
+  if (playback.playing) {
+    const timer = globalThis.setInterval?.(() => {
+      if (!card.isConnected) { globalThis.clearInterval?.(timer); return; }
+      const elapsed = Math.max(0, Date.now() - anchorAt);
+      const nextProgress = durationMs ? Math.min(durationMs, anchorProgressMs + elapsed) : anchorProgressMs + elapsed;
+      paint(nextProgress);
+      if (durationMs && nextProgress >= durationMs) globalThis.clearInterval?.(timer);
+    }, 1000);
+  }
+
+  return card;
 }
 
 export function spotifyDockIndicator(playback = {}) {

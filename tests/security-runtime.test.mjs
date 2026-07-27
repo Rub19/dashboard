@@ -39,6 +39,14 @@ test("browser CSP is exact-origin and blocks script attributes", () => {
   assert.doesNotMatch(policy, /https:\/\/\*\.(?:supabase\.co|workers\.dev)|media-src[^;]*https:/);
 });
 
+test("the deployed HTTP CSP header allows the same external image hosts as the document meta policy", () => {
+  const html = read("index.html");
+  const headers = read("_headers");
+  const metaPolicy = html.match(/http-equiv="Content-Security-Policy"\s+content="([^"]+)"/)?.[1] || "";
+  const headerPolicy = headers.match(/Content-Security-Policy:\s*([^\n]+)/)?.[1] || "";
+  assert.equal(headerPolicy.match(/img-src\s+([^;]+)/)?.[1], metaPolicy.match(/img-src\s+([^;]+)/)?.[1]);
+});
+
 test("GitHub Actions use immutable SHAs and job-scoped permissions", () => {
   const workflow = read(".github/workflows/deploy-pages.yml");
   const actionRefs = [...workflow.matchAll(/uses:\s*[^\s@]+@([^\s#]+)/g)].map((match) => match[1]);
@@ -407,7 +415,7 @@ test("service worker waits for explicit activation and only removes ETHONE cache
   assert.match(worker, /v8\/services\/auth-storage\.mjs/);
   assert.match(worker, /v8\/services\/rate-limiter\.mjs/);
   assert.match(worker, /v8\/entry\/password-recovery\.mjs/);
-  assert.match(worker, /2026-07-27-experience-v121/);
+  assert.match(worker, /2026-07-27-experience-v122/);
 });
 
 test("canonical edge verifier enforces headers, anti-framing and no-store caching", async () => {

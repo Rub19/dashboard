@@ -2400,10 +2400,11 @@ html[data-v8-interactions] .v8-panel-notice:hover > .v8-selection-control,.v8-pa
 @media (max-width:540px) { .v8-spotify-live { grid-template-columns:50px minmax(0,1fr) auto;gap:var(--v8-space-3);padding:var(--v8-space-3); }.v8-spotify-artwork,.v8-spotify-live--activity .v8-spotify-artwork { width:50px;height:50px; }.v8-spotify-external-state span { display:none; } }
 
 .v8-discord-live { position:relative;display:grid;min-width:0;grid-template-columns:56px minmax(0,1fr);align-items:center;gap:var(--v8-space-4);padding:var(--v8-space-4);border-color:color-mix(in srgb,#5865f2 26%,var(--v8-border));background:var(--v8-reflection-card),color-mix(in srgb,#5865f2 4%,var(--v8-surface-1));box-shadow:var(--v8-shadow-card-lit); }
-.v8-discord-avatar { position:relative;display:grid;width:56px;height:56px;overflow:hidden;place-items:center;border:1px solid var(--v8-border-highlight);border-radius:50%;background:var(--v8-surface-2);box-shadow:var(--v8-shadow-height-2);color:#5865f2; }
-.v8-discord-avatar img { width:100%;height:100%;object-fit:cover; }
-.v8-discord-avatar.is-fallback svg { width:24px;height:24px; }
-.v8-discord-status-dot { position:absolute;top:10px;left:58px;width:12px;height:12px;border:2px solid var(--v8-surface-1);border-radius:50%;background:var(--v8-muted); }
+.v8-discord-avatar { position:relative;display:block;width:56px;height:56px;flex:0 0 56px; }
+.v8-discord-avatar__image { display:grid;width:56px;height:56px;overflow:hidden;place-items:center;border:1px solid var(--v8-border-highlight);border-radius:50%;background:var(--v8-surface-2);box-shadow:var(--v8-shadow-height-2);color:#5865f2; }
+.v8-discord-avatar__image img { width:100%;height:100%;object-fit:cover; }
+.v8-discord-avatar__image.is-fallback svg { width:24px;height:24px; }
+.v8-discord-status-dot { position:absolute;right:-2px;bottom:-2px;width:14px;height:14px;border:2px solid var(--v8-surface-1);border-radius:50%;background:var(--v8-muted); }
 .v8-discord-status-dot.is-online { background:var(--v8-success); }
 .v8-discord-status-dot.is-idle { background:var(--v8-warning); }
 .v8-discord-status-dot.is-dnd { background:var(--v8-danger); }

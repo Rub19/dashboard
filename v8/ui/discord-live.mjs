@@ -3,10 +3,13 @@ import { element, icon } from "./dom.mjs";
 const STATUS_LABELS = Object.freeze({ online: "En ligne", idle: "Absent", dnd: "Ne pas deranger", offline: "Hors ligne" });
 
 function avatar(presence) {
-  if (!presence.avatarUrl) return element("span", { className: "v8-discord-avatar is-fallback" }, [icon("messages-square")]);
-  return element("span", { className: "v8-discord-avatar" }, [element("img", {
-    attributes: { src: presence.avatarUrl, alt: "", loading: "lazy", decoding: "async", referrerpolicy: "no-referrer" }
-  })]);
+  const inner = presence.avatarUrl
+    ? element("span", { className: "v8-discord-avatar__image" }, [element("img", {
+      attributes: { src: presence.avatarUrl, alt: "", loading: "lazy", decoding: "async", referrerpolicy: "no-referrer" }
+    })])
+    : element("span", { className: "v8-discord-avatar__image is-fallback" }, [icon("messages-square")]);
+  const statusDot = element("span", { className: `v8-discord-status-dot is-${presence.status}`, attributes: { "aria-hidden": "true" } });
+  return element("span", { className: "v8-discord-avatar" }, [inner, statusDot]);
 }
 
 export function discordLiveCard(presence = {}, options = {}) {
@@ -22,7 +25,6 @@ export function discordLiveCard(presence = {}, options = {}) {
     attributes: { "aria-label": "Presence Discord" },
     dataset: { liveWidget: "media", liveKind: "profile" }
   }, [
-    element("span", { className: `v8-discord-status-dot is-${presence.status}`, attributes: { "aria-hidden": "true" } }),
     avatar(presence),
     element("div", { className: "v8-discord-live__body" }, [
       element("div", { className: "v8-discord-live__meta" }, [

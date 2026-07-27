@@ -7,7 +7,7 @@ import { createNetworkClient } from "../v8/services/network-client.mjs";
 import { PROFILE_STORAGE_KEY, PROFILE_OWNER_KEY, SCOPED_PROFILE_PREFIX, createProfileRepository } from "../v8/data/profile-repository.mjs";
 import { V8_ROUTES, createRouter, normalizeRoute } from "../v8/core/router.mjs";
 import { createActionFacade } from "../v8/core/actions.mjs";
-import { createPresentationStore } from "../v8/core/store.mjs";
+import { createPresentationStore, LIVE_CARD_IDS, sanitizeActivityLiveLayout } from "../v8/core/store.mjs";
 import { COMMANDS } from "../v8/command/catalog.mjs";
 import { searchCommands } from "../v8/command/search.mjs";
 import { INTEGRATIONS } from "../v8/data/integrations.mjs";
@@ -227,6 +227,17 @@ test("presentation state suppresses no-op renders and keeps one system surface a
   assert.equal(store.getState().commandOpen, true);
   assert.equal(store.getState().missionOpen, false);
   assert.equal(store.getState().panel, null);
+});
+
+test("a legacy persisted Live Now layout is backfilled with newly added live cards", () => {
+  const legacy = Object.freeze({ order: Object.freeze(["system", "spotify", "discord", "weather", "minecraft", "steam"]), hidden: Object.freeze([]) });
+  const sanitized = sanitizeActivityLiveLayout(legacy);
+  assert.deepEqual([...sanitized.order].sort(), [...LIVE_CARD_IDS].sort());
+  assert.ok(sanitized.order.includes("github"));
+
+  const storage = memoryStorage();
+  const store = createPresentationStore({ activityLiveLayout: legacy }, { storage });
+  assert.ok(store.getState().activityLiveLayout.order.includes("github"));
 });
 
 test("command search includes contextual user content without replacing system commands", () => {

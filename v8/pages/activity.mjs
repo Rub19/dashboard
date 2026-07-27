@@ -6,6 +6,7 @@ import { refreshIcons } from "../ui/icons.mjs";
 import { spotifyLiveCard } from "../ui/spotify-live.mjs";
 import { discordLiveCard } from "../ui/discord-live.mjs";
 import { weatherLiveCard } from "../ui/weather-live.mjs";
+import { minecraftLiveCard } from "../ui/minecraft-live.mjs";
 import { createSelect } from "../ui/select.mjs";
 import { prepareActivityUI } from "./activity-style.mjs";
 
@@ -33,9 +34,10 @@ const LIVE_CARD_META = Object.freeze({
   system: Object.freeze({ label: "Systeme ETHONE", icon: "orbit" }),
   spotify: Object.freeze({ label: "Spotify", icon: "music-2" }),
   discord: Object.freeze({ label: "Discord", icon: "messages-square" }),
-  weather: Object.freeze({ label: "Meteo", icon: "cloud-sun" })
+  weather: Object.freeze({ label: "Meteo", icon: "cloud-sun" }),
+  minecraft: Object.freeze({ label: "Minecraft", icon: "box" })
 });
-const DEFAULT_LIVE_LAYOUT = Object.freeze({ order: Object.freeze(["system", "spotify", "discord", "weather"]), hidden: Object.freeze([]) });
+const DEFAULT_LIVE_LAYOUT = Object.freeze({ order: Object.freeze(["system", "spotify", "discord", "weather", "minecraft"]), hidden: Object.freeze([]) });
 
 function moveButton(id, direction, disabled, label) {
   const button = actionButton({ actionId: "v8.activity.live.move", className: "v8-icon-button", ariaLabel: label, disabled }, [icon(direction === "up" ? "chevron-up" : "chevron-down")]);
@@ -191,6 +193,7 @@ export function mountActivity(stage, options = {}) {
   const spotifyLive = options.spotifyLive || null;
   const discordLive = options.discordLive || null;
   const weatherLive = options.weatherLive || null;
+  const minecraftLive = options.minecraftLive || null;
   const presence = options.presence || null;
   const state = options.state || {};
   let activeFilter = "all";
@@ -202,6 +205,7 @@ export function mountActivity(stage, options = {}) {
   let spotifyPlayback = spotifyLive?.state?.() || {};
   let discordPresence = discordLive?.state?.() || {};
   let weatherPresence = weatherLive?.state?.() || {};
+  let minecraftPresence = minecraftLive?.state?.() || {};
   const controller = new AbortController();
 
   const filterBar = element("div", { className: "v8-activity-filters", attributes: { role: "toolbar", "aria-label": "Filtrer l'activite" } });
@@ -295,7 +299,8 @@ export function mountActivity(stage, options = {}) {
     const spotifyPlayer = spotifyLiveCard(spotifyPlayback, { variant: "activity" });
     const discordCard = discordLiveCard(discordPresence, { variant: "activity" });
     const weatherCard = weatherLiveCard(weatherPresence, { variant: "activity" });
-    const knownCards = { system: systemCard, spotify: spotifyPlayer, discord: discordCard, weather: weatherCard };
+    const minecraftCard = minecraftLiveCard(minecraftPresence, { variant: "activity" });
+    const knownCards = { system: systemCard, spotify: spotifyPlayer, discord: discordCard, weather: weatherCard, minecraft: minecraftCard };
     liveGrid.replaceChildren();
     liveLayout.order.forEach((id) => {
       if (liveLayout.hidden.includes(id)) return;
@@ -398,6 +403,12 @@ export function mountActivity(stage, options = {}) {
     const card = liveGrid.querySelector(".v8-weather-live");
     if (card) presence?.signalActivity?.(card, "system", { phase: "update" });
   }, { immediate: false }) || (() => {});
+  const releaseMinecraft = minecraftLive?.subscribe?.((minecraftState) => {
+    minecraftPresence = minecraftState;
+    render();
+    const card = liveGrid.querySelector(".v8-minecraft-live");
+    if (card) presence?.signalActivity?.(card, "system", { phase: "update" });
+  }, { immediate: false }) || (() => {});
   stage.replaceChildren(page);
   render();
   const releaseDensity = options.subscribeState?.((next) => updateCollectionDensityControl(densityControl, next)) || (() => {});
@@ -418,6 +429,7 @@ export function mountActivity(stage, options = {}) {
     releaseSpotify();
     releaseDiscord();
     releaseWeather();
+    releaseMinecraft();
     releaseDensity();
     releaseLiveLayout();
     page.remove();

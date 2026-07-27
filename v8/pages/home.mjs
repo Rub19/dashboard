@@ -238,6 +238,7 @@ export function mountHome(stage, model, options = {}) {
     spotifyHost,
     discordHost,
     weatherHost,
+    minecraftHost,
     briefingEnabled ? brainStrip : null,
     element("div", { className: "v8-home-secondary" }, [recent, signals])
   ]);
@@ -246,15 +247,18 @@ export function mountHome(stage, model, options = {}) {
   renderSpotify(spotifyLive?.state?.() || {});
   renderDiscord(discordLive?.state?.() || {});
   renderWeather(weatherLive?.state?.() || {});
+  renderMinecraft(minecraftLive?.state?.() || {});
   const releaseSpotify = spotifyLive?.subscribe?.((playback) => renderSpotify(playback, true), { immediate: false }) || (() => {});
   const releaseDiscord = discordLive?.subscribe?.((presenceState) => renderDiscord(presenceState, true), { immediate: false }) || (() => {});
   const releaseWeather = weatherLive?.subscribe?.((weatherState) => renderWeather(weatherState, true), { immediate: false }) || (() => {});
+  const releaseMinecraft = minecraftLive?.subscribe?.((minecraftState) => renderMinecraft(minecraftState, true), { immediate: false }) || (() => {});
   const releaseSync = options.sync?.subscribe?.(renderSystemStatus) || (() => {});
   refreshIcons();
   return () => {
     releaseSpotify();
     releaseDiscord();
     releaseWeather();
+    releaseMinecraft();
     releaseSync();
     page.remove();
   };

@@ -213,8 +213,8 @@ const SPECIAL_RESOURCES = Object.freeze({
     { label: "Applications Discord", url: "https://discord.com/developers/applications", kind: "Console" }
   ]),
   github: Object.freeze([
-    { label: "Creer une GitHub App", url: "https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app", kind: "Guide" },
-    { label: "Parametres developpeur", url: "https://github.com/settings/apps", kind: "Console" }
+    { label: "Creer une OAuth App GitHub", url: "https://github.com/settings/applications/new", kind: "Guide" },
+    { label: "Parametres developpeur", url: "https://github.com/settings/developers", kind: "Console" }
   ]),
   "google-calendar": Object.freeze([
     { label: "Scopes Calendar", url: "https://developers.google.com/workspace/calendar/api/auth", kind: "Documentation" },
@@ -350,9 +350,12 @@ const SPECIAL_GUIDES = Object.freeze({
     "oauth-secure": (resource) => Object.freeze([
       guideStep("docs", "Ouvrir les parametres developpeur GitHub", "Settings > Developer settings > OAuth Apps > \"New OAuth App\".", { resource }),
       guideStep("app", "Configurer l'application", "Nom libre, Homepage URL: https://ethone.dev."),
-      guideStep("redirect", "Ajouter l'Authorization callback URL", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
-      guideStep("scopes", "Scopes a demander", "read:user (profil) et public_repo (ou repo pour les depots prives).", { copyValue: "read:user public_repo" }),
-      guideStep("keys", "Copier Client ID et Client Secret", "Le Client ID est visible directement. Cliquez \"Generate a new client secret\".")
+      guideStep("redirect", "Ajouter l'Authorization callback URL", "Cette valeur exacte, sans rien ajouter derriere.", { copyValue: "https://ethone.dev/" }),
+      guideStep("id", "Copier le Client ID", "Visible directement apres la creation de l'application."),
+      guideStep("paste", "Coller le Client ID ci-dessous", "Utilisez le champ \"Client ID GitHub OAuth App\". Ce n'est pas une donnee secrete."),
+      guideStep("secret", "Generer le Client Secret", "Cliquez \"Generate a new client secret\" et copiez la valeur affichee une seule fois."),
+      guideStep("wrangler", "Transmettre le Client Secret a ETHONE", "Contrairement au Client ID, le Client Secret ne se colle jamais dans le navigateur : il doit etre enregistre comme secret Worker (GITHUB_CLIENT_SECRET) via wrangler."),
+      guideStep("connect", "Se connecter avec GitHub", "Une fois le Client ID enregistre et le secret Worker configure, cliquez \"Se connecter avec GitHub\" pour autoriser ETHONE depuis le site officiel GitHub.")
     ])
   }),
   notion: Object.freeze({

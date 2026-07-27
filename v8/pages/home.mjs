@@ -6,6 +6,7 @@ import { discordLiveCard } from "../ui/discord-live.mjs";
 import { weatherLiveCard } from "../ui/weather-live.mjs";
 import { minecraftLiveCard } from "../ui/minecraft-live.mjs";
 import { steamLiveCard } from "../ui/steam-live.mjs";
+import { githubLiveCard } from "../ui/github-live.mjs";
 import { localeTag } from "../i18n/catalog.mjs";
 
 function formattedDate(isoDate) {
@@ -60,6 +61,7 @@ export function mountHome(stage, model, options = {}) {
   const weatherLive = options.weatherLive || null;
   const minecraftLive = options.minecraftLive || null;
   const steamLive = options.steamLive || null;
+  const githubLive = options.githubLive || null;
   const presence = options.presence || null;
   const briefingEnabled = options.brainPreferences?.enabled !== false && options.brainPreferences?.briefing?.enabled !== false;
   const continuation = model.nextTasks[0]
@@ -187,6 +189,7 @@ export function mountHome(stage, model, options = {}) {
   const weatherHost = element("section", { className: "v8-home-weather-host", attributes: { "aria-label": "Meteo", hidden: true } });
   const minecraftHost = element("section", { className: "v8-home-minecraft-host", attributes: { "aria-label": "Profil Minecraft", hidden: true } });
   const steamHost = element("section", { className: "v8-home-steam-host", attributes: { "aria-label": "Presence Steam", hidden: true } });
+  const githubHost = element("section", { className: "v8-home-github-host", attributes: { "aria-label": "Profil GitHub", hidden: true } });
 
   function renderSpotify(playback, animate = false) {
     const player = spotifyLiveCard(playback, { variant: "home" });
@@ -228,6 +231,14 @@ export function mountHome(stage, model, options = {}) {
     refreshIcons();
   }
 
+  function renderGithub(githubState, animate = false) {
+    const card = githubLiveCard(githubState, { variant: "home" });
+    githubHost.replaceChildren(...(card ? [card] : []));
+    githubHost.hidden = !card;
+    if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
+    refreshIcons();
+  }
+
   function renderSystemStatus(status = options.sync?.status?.() || options) {
     const labels = { loading: "Connexion", saving: "Synchronisation", saved: "Synchronise", offline: "En attente", retrying: "Nouvelle tentative", error: "Erreur", expired: "Session expiree" };
     cloudDetail.textContent = status.syncStatus === "saved" ? "Source principale Supabase" : "Etat Supabase en temps reel";
@@ -251,6 +262,7 @@ export function mountHome(stage, model, options = {}) {
     weatherHost,
     minecraftHost,
     steamHost,
+    githubHost,
     briefingEnabled ? brainStrip : null,
     element("div", { className: "v8-home-secondary" }, [recent, signals])
   ]);
@@ -261,11 +273,13 @@ export function mountHome(stage, model, options = {}) {
   renderWeather(weatherLive?.state?.() || {});
   renderMinecraft(minecraftLive?.state?.() || {});
   renderSteam(steamLive?.state?.() || {});
+  renderGithub(githubLive?.state?.() || {});
   const releaseSpotify = spotifyLive?.subscribe?.((playback) => renderSpotify(playback, true), { immediate: false }) || (() => {});
   const releaseDiscord = discordLive?.subscribe?.((presenceState) => renderDiscord(presenceState, true), { immediate: false }) || (() => {});
   const releaseWeather = weatherLive?.subscribe?.((weatherState) => renderWeather(weatherState, true), { immediate: false }) || (() => {});
   const releaseMinecraft = minecraftLive?.subscribe?.((minecraftState) => renderMinecraft(minecraftState, true), { immediate: false }) || (() => {});
   const releaseSteam = steamLive?.subscribe?.((steamState) => renderSteam(steamState, true), { immediate: false }) || (() => {});
+  const releaseGithub = githubLive?.subscribe?.((githubState) => renderGithub(githubState, true), { immediate: false }) || (() => {});
   const releaseSync = options.sync?.subscribe?.(renderSystemStatus) || (() => {});
   refreshIcons();
   return () => {
@@ -274,6 +288,7 @@ export function mountHome(stage, model, options = {}) {
     releaseWeather();
     releaseMinecraft();
     releaseSteam();
+    releaseGithub();
     releaseSync();
     page.remove();
   };

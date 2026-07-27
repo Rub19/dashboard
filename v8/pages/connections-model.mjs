@@ -14,7 +14,8 @@ const WORKER_SERVICES = Object.freeze({
   twitch: "twitch",
   lastfm: "lastfm",
   weather: "weather",
-  minecraft: "minecraft"
+  minecraft: "minecraft",
+  github: "github"
 });
 
 function normalized(value) {

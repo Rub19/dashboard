@@ -21,6 +21,9 @@ const OPERATIONS = Object.freeze({
   spotifyOAuthExchange: Object.freeze({ path: "/api/spotify/oauth/exchange", method: "POST", auth: true, params: ["code", "codeVerifier", "clientId"] }),
   spotifyNowPlaying: Object.freeze({ path: "/api/spotify/now-playing", auth: true, params: ["clientId"] }),
   spotifyOAuthDisconnect: Object.freeze({ path: "/api/spotify/oauth/disconnect", method: "POST", auth: true, params: [] }),
+  githubOAuthExchange: Object.freeze({ path: "/api/github/oauth/exchange", method: "POST", auth: true, params: ["code", "clientId"] }),
+  githubProfile: Object.freeze({ path: "/api/github/profile", auth: true, params: [] }),
+  githubOAuthDisconnect: Object.freeze({ path: "/api/github/oauth/disconnect", method: "POST", auth: true, params: [] }),
   publicProfile: Object.freeze({ path: "/api/supabase/public-profile", auth: true, params: ["username"] })
 });
 
@@ -193,6 +196,11 @@ export function createExternalServicesClient(options = {}) {
       exchange: (code, codeVerifier, clientId) => execute("spotifyOAuthExchange", { code, codeVerifier, clientId }),
       nowPlaying: (clientId) => execute("spotifyNowPlaying", { clientId }),
       disconnect: () => execute("spotifyOAuthDisconnect", {})
+    }),
+    githubOAuth: Object.freeze({
+      exchange: (code, clientId) => execute("githubOAuthExchange", { code, clientId }),
+      profile: () => execute("githubProfile", {}),
+      disconnect: () => execute("githubOAuthDisconnect", {})
     }),
     publicProfile: (username) => execute("publicProfile", { username }),
     diagnostics: () => Object.freeze({ ...status, activeRequests: activeControllers.size, environment: config.environment, baseUrl: network.redactUrl?.(baseUrl) || baseUrl }),

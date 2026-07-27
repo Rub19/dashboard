@@ -1,4 +1,5 @@
 import { diagnosticRoute } from "./routes/diagnostic.js";
+import { githubOAuthDisconnectRoute, githubOAuthExchangeRoute, githubProfileRoute } from "./routes/github-oauth.js";
 import { healthRoute } from "./routes/health.js";
 import { henrikRoute } from "./routes/henrik.js";
 import { lanyardRoute } from "./routes/lanyard.js";
@@ -46,7 +47,10 @@ export const ROUTES = Object.freeze([
   route("minecraft.profile", "/api/minecraft/profile", minecraftRoute, { service: "minecraft" }),
   route("spotify.oauth.exchange", "/api/spotify/oauth/exchange", spotifyOAuthExchangeRoute, { method: "POST", service: "spotify", rateLimit: "strict" }),
   route("spotify.now-playing", "/api/spotify/now-playing", spotifyNowPlayingRoute, { service: "spotify" }),
-  route("spotify.oauth.disconnect", "/api/spotify/oauth/disconnect", spotifyOAuthDisconnectRoute, { method: "POST", service: "spotify", rateLimit: "strict" })
+  route("spotify.oauth.disconnect", "/api/spotify/oauth/disconnect", spotifyOAuthDisconnectRoute, { method: "POST", service: "spotify", rateLimit: "strict" }),
+  route("github.oauth.exchange", "/api/github/oauth/exchange", githubOAuthExchangeRoute, { method: "POST", service: "github", rateLimit: "strict" }),
+  route("github.profile", "/api/github/profile", githubProfileRoute, { service: "github" }),
+  route("github.oauth.disconnect", "/api/github/oauth/disconnect", githubOAuthDisconnectRoute, { method: "POST", service: "github", rateLimit: "strict" })
 ]);
 
 function normalizedPath(pathname) {

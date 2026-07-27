@@ -1,5 +1,6 @@
 import { diagnosticRoute } from "./routes/diagnostic.js";
 import { githubOAuthDisconnectRoute, githubOAuthExchangeRoute, githubProfileRoute } from "./routes/github-oauth.js";
+import { googleCalendarEventsRoute, googleCalendarOAuthDisconnectRoute, googleCalendarOAuthExchangeRoute } from "./routes/google-calendar-oauth.js";
 import { healthRoute } from "./routes/health.js";
 import { henrikRoute } from "./routes/henrik.js";
 import { lanyardRoute } from "./routes/lanyard.js";
@@ -50,7 +51,10 @@ export const ROUTES = Object.freeze([
   route("spotify.oauth.disconnect", "/api/spotify/oauth/disconnect", spotifyOAuthDisconnectRoute, { method: "POST", service: "spotify", rateLimit: "strict" }),
   route("github.oauth.exchange", "/api/github/oauth/exchange", githubOAuthExchangeRoute, { method: "POST", service: "github", rateLimit: "strict" }),
   route("github.profile", "/api/github/profile", githubProfileRoute, { service: "github" }),
-  route("github.oauth.disconnect", "/api/github/oauth/disconnect", githubOAuthDisconnectRoute, { method: "POST", service: "github", rateLimit: "strict" })
+  route("github.oauth.disconnect", "/api/github/oauth/disconnect", githubOAuthDisconnectRoute, { method: "POST", service: "github", rateLimit: "strict" }),
+  route("google-calendar.oauth.exchange", "/api/google-calendar/oauth/exchange", googleCalendarOAuthExchangeRoute, { method: "POST", service: "google-calendar", rateLimit: "strict" }),
+  route("google-calendar.events", "/api/google-calendar/events", googleCalendarEventsRoute, { service: "google-calendar" }),
+  route("google-calendar.oauth.disconnect", "/api/google-calendar/oauth/disconnect", googleCalendarOAuthDisconnectRoute, { method: "POST", service: "google-calendar", rateLimit: "strict" })
 ]);
 
 function normalizedPath(pathname) {

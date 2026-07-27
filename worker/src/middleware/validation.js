@@ -45,7 +45,8 @@ export const PATTERNS = Object.freeze({
   cityQuery: /^[\p{L}\p{N} ,.'-]{2,80}$/u,
   minecraftUsername: /^[A-Za-z0-9_]{3,16}$/,
   spotifyClientId: /^[A-Za-z0-9]{10,64}$/,
-  githubClientId: /^[A-Za-z0-9._-]{10,64}$/
+  githubClientId: /^[A-Za-z0-9._-]{10,64}$/,
+  googleClientId: /^[A-Za-z0-9-]{10,100}\.apps\.googleusercontent\.com$/
 });
 
 export function requireSecret(env, name) {

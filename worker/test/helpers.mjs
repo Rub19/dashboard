@@ -37,6 +37,7 @@ export function providerFetch(counter = { calls: 0 }) {
     counter.calls += 1;
     const url = new URL(String(input));
     if (url.hostname === "api.steampowered.com") {
+      if (url.pathname.includes("ResolveVanityURL")) return json({ response: { success: 1, steamid: "76561198000000000" } });
       if (url.pathname.includes("GetPlayerSummaries")) return json({ response: { players: [{ steamid: "76561198000000000", personaname: "ETHONE QA", profileurl: "https://steamcommunity.com/id/ethoneqa/", avatarfull: "https://avatars.steamstatic.com/avatar.jpg", personastate: 1 }] } });
       if (url.pathname.includes("GetRecentlyPlayedGames")) return json({ response: { games: [{ appid: 10, name: "Recent", playtime_forever: 120 }] } });
       if (url.pathname.includes("GetOwnedGames")) return json({ response: { games: [{ appid: 20, name: "Owned", playtime_forever: 600 }] } });

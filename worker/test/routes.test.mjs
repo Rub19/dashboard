@@ -11,6 +11,8 @@ beforeEach(() => {
 
 const ROUTE_CASES = Object.freeze([
   ["Steam player", "/api/steam/player?steamId=76561198000000000", (data) => data.displayName === "ETHONE QA"],
+  ["Steam player via vanity name", "/api/steam/player?steamId=ethoneqa", (data) => data.displayName === "ETHONE QA"],
+  ["Steam player via profile URL", "/api/steam/player?steamId=https://steamcommunity.com/id/ethoneqa/", (data) => data.displayName === "ETHONE QA"],
   ["Steam recent", "/api/steam/recent-games?steamId=76561198000000000&count=5", (data) => data[0].name === "Recent"],
   ["Steam owned", "/api/steam/owned-games?steamId=76561198000000000&limit=5", (data) => data[0].name === "Owned"],
   ["Steam achievements", "/api/steam/achievements?steamId=76561198000000000&appId=10", (data) => data[0].achieved === true],

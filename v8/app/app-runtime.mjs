@@ -16,6 +16,7 @@ import { createSpotifyLive } from "../services/spotify-live.mjs";
 import { createDiscordLive } from "../services/discord-live.mjs";
 import { createWeatherLive } from "../services/weather-live.mjs";
 import { createMinecraftLive } from "../services/minecraft-live.mjs";
+import { createSteamLive } from "../services/steam-live.mjs";
 import { mountShell } from "../ui/shell.mjs";
 import { createPanelManager } from "../ui/panel.mjs";
 import { createToastManager } from "../ui/toast.mjs";
@@ -99,6 +100,13 @@ export function mountApplication(root, options = {}) {
     isConnected: () => repository.snapshot().connections.some((connection) => connection.id === "minecraft" && connection.status === "connected"),
     getUsername: () => repository.snapshot().connections.find((connection) => connection.id === "minecraft")?.reference || ""
   });
+  const ownsSteamLive = !options.steamLive;
+  const steamLive = options.steamLive || createSteamLive({
+    runtime: globalThis,
+    externalServices,
+    isConnected: () => repository.snapshot().connections.some((connection) => connection.id === "steam" && connection.status === "connected"),
+    getSteamId: () => repository.snapshot().connections.find((connection) => connection.id === "steam")?.reference || ""
+  });
   let actions = null;
   let router = null;
   let shell = null;
@@ -165,6 +173,8 @@ export function mountApplication(root, options = {}) {
   else weatherLive.refresh?.();
   if (ownsMinecraftLive) minecraftLive.start();
   else minecraftLive.refresh?.();
+  if (ownsSteamLive) steamLive.start();
+  else steamLive.refresh?.();
   const initialSpotify = spotifyLive.state?.() || {};
   const initialMedia = initialSpotify.playing ? "playing" : initialSpotify.available ? "paused" : "idle";
   const initialCalendar = calendarPresenceState(repository.snapshot().events);
@@ -325,8 +335,8 @@ export function mountApplication(root, options = {}) {
         await module.prepare?.();
         if (destroyed || requestId !== routeRequest || router?.current() !== route) return;
         lifecycle.mount(route, () => {
-          if (route === "activity") return module.mountActivity(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, discordLive, weatherLive, minecraftLive, presence, notify: (notice) => toasts.show(notice) });
-          if (route === "connections") return module.mountConnections(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, discordLive, weatherLive, minecraftLive, externalServices, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.() });
+          if (route === "activity") return module.mountActivity(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, presence, notify: (notice) => toasts.show(notice) });
+          if (route === "connections") return module.mountConnections(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, externalServices, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.() });
           if (route === "brain") return module.mountBrain(shell.stage, { repository, actions, state: store.getState(), presence, brain, notify: (notice) => toasts.show(notice) });
           return module.mountSettings(shell.stage, { repository, actions, state: store.getState(), sounds, externalServices, densityEngine, subscribeState: store.subscribe, brain, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.(), profile: options.profile || repository.activeProfile?.(), onProfileMediaUpdated: applyProfileMediaUpdate });
         });
@@ -357,7 +367,7 @@ export function mountApplication(root, options = {}) {
       return;
     }
     lifecycle.mount(route, () => {
-      if (route === "home") return mountHome(shell.stage, createHomeModel({ snapshot: repository.snapshot() }), { ...store.getState(), spotifyLive, discordLive, weatherLive, minecraftLive, presence, sync: cloudSync });
+      if (route === "home") return mountHome(shell.stage, createHomeModel({ snapshot: repository.snapshot() }), { ...store.getState(), spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, presence, sync: cloudSync });
       if (route === "notes") return mountNotes(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, presence, sync: cloudSync, notify: (notice) => toasts.show(notice) });
       if (route === "tasks") return mountTasks(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, presence, notify: (notice) => toasts.show(notice) });
       if (route === "calendar") return mountCalendar(shell.stage, { repository, actions, presence, notify: (notice) => toasts.show(notice) });
@@ -552,6 +562,7 @@ export function mountApplication(root, options = {}) {
     if (ownsDiscordLive) discordLive.destroy();
     if (ownsWeatherLive) weatherLive.destroy();
     if (ownsMinecraftLive) minecraftLive.destroy();
+    if (ownsSteamLive) steamLive.destroy();
     if (ownsPresenceEngine) presence.destroy();
     densityEngine.destroy();
     brainRuntime?.destroy?.();

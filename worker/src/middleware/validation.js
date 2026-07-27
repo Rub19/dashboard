@@ -35,6 +35,7 @@ export function queryInteger(url, key, options = {}) {
 
 export const PATTERNS = Object.freeze({
   steamId: /^\d{17}$/,
+  steamIdentifier: /^(?:\d{17}|[A-Za-z0-9_-]{2,32}|https:\/\/steamcommunity\.com\/(?:id|profiles)\/[A-Za-z0-9_-]{2,64}\/?)$/,
   username: /^[A-Za-z0-9_.-]{2,32}$/,
   twitchLogin: /^[a-zA-Z0-9_]{3,25}$/,
   discordId: /^\d{17,20}$/,

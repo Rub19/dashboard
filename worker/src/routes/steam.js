@@ -1,7 +1,7 @@
 import { assertAllowedQuery, PATTERNS, queryInteger, queryText } from "../middleware/validation.js";
 import { cachedLoad } from "../utils/cache.js";
 import { routeResult } from "../utils/response.js";
-import { getSteamAchievements, getSteamOwnedGames, getSteamPlayer, getSteamRecentGames } from "../services/steam-client.js";
+import { getSteamAchievements, getSteamOwnedGames, getSteamPlayer, getSteamRecentGames, resolveSteamId } from "../services/steam-client.js";
 import { getUserProviderCredential } from "../services/supabase-client.js";
 
 async function ownKey(env, auth) {
@@ -14,7 +14,8 @@ export async function steamRoute({ env, url, route, auth }) {
   const action = route.action;
   const allowed = action === "achievements" ? ["steamId", "appId"] : action === "owned-games" ? ["steamId", "limit"] : action === "recent-games" ? ["steamId", "count"] : ["steamId"];
   assertAllowedQuery(url, allowed);
-  const steamId = queryText(url, "steamId", { pattern: PATTERNS.steamId, min: 17, max: 17 });
+  const rawIdentifier = queryText(url, "steamId", { pattern: PATTERNS.steamIdentifier, min: 2, max: 100 });
+  const steamId = await cachedLoad(`steam:resolve:${rawIdentifier.toLowerCase()}`, 86400, () => resolveSteamId(env, rawIdentifier, () => ownKey(env, auth))).then((result) => result.data);
   let key;
   let ttl;
   let loader;

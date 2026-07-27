@@ -1,8 +1,10 @@
+import { httpError } from "../middleware/errors.js";
 import { requireSecret } from "../middleware/validation.js";
 import { requestExternal } from "../utils/external-request.js";
 import { safeIsoSeconds, safeNumber, safePublicUrl, safeText } from "../utils/normalize.js";
 
 const ORIGIN = "https://api.steampowered.com";
+const PROFILE_URL_RE = /^https:\/\/steamcommunity\.com\/(id|profiles)\/([A-Za-z0-9_-]{2,64})\/?$/;
 
 async function steamRequest(env, path, params, dedupeKey, apiKeyOverride) {
   const key = apiKeyOverride || requireSecret(env, "STEAM_API_KEY");
@@ -16,6 +18,19 @@ async function steamRequest(env, path, params, dedupeKey, apiKeyOverride) {
     dedupeKey,
     retries: 1
   });
+}
+
+export async function resolveSteamId(env, identifier, getApiKeyOverride) {
+  if (/^\d{17}$/.test(identifier)) return identifier;
+  const match = PROFILE_URL_RE.exec(identifier);
+  const kind = match ? match[1] : "id";
+  const vanity = match ? match[2] : identifier;
+  if (kind === "profiles" && /^\d{17}$/.test(vanity)) return vanity;
+  const apiKeyOverride = typeof getApiKeyOverride === "function" ? await getApiKeyOverride() : getApiKeyOverride;
+  const response = await steamRequest(env, "/ISteamUser/ResolveVanityURL/v0001/", { vanityurl: vanity, format: "json" }, `vanity:${vanity.toLowerCase()}`, apiKeyOverride);
+  const resolved = response.data?.response;
+  if (resolved?.success !== 1 || !/^\d{17}$/.test(String(resolved.steamid || ""))) throw httpError("PROVIDER_NOT_FOUND", 404);
+  return String(resolved.steamid);
 }
 
 function game(value = {}) {

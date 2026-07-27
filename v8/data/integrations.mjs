@@ -184,7 +184,7 @@ const SPECIAL_METHODS = Object.freeze({
     method({ id: "ics-readonly", label: "Calendrier ICS", summary: "Abonnement a une adresse ICS partagee, strictement en lecture seule.", availability: "public", quality: "Lecture seule", apiVersion: "iCalendar", badges: ["Simple", "Sans secret", "Lecture seule"], capabilities: ["Evenements publies", "Actualisation periodique"], permissions: ["Lecture de l'agenda partage"], field: { type: "url", label: "Adresse ICS partagee", placeholder: "https://.../calendar.ics", required: true } })
   ]),
   notion: Object.freeze([
-    method({ id: "public-oauth", label: "Connexion publique", summary: "OAuth Notion pour choisir les pages partagees avec ETHONE.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "Notion API", badges: ["OAuth", "Cloud"], capabilities: ["Pages partagees", "Bases partagees", "Activity Hub"], permissions: ["Contenu explicitement partage"] }),
+    method({ id: "public-oauth", label: "Connexion publique", summary: "Derniere page ou base modifiee parmi celles partagees avec ETHONE.", availability: "backend", recommended: true, live: true, quality: "Temps reel", apiVersion: "Notion API", badges: ["OAuth", "Temps reel", "Cloud"], capabilities: ["Derniere page modifiee", "Contenu partage"], permissions: ["Contenu explicitement partage (Read content)"], field: { type: "text", label: "Client ID Notion", placeholder: "01234567-89ab-cdef-0123-456789abcdef", required: true } }),
     method({ id: "internal-backend", label: "Connexion interne", summary: "Pour un seul workspace, avec identifiants conserves uniquement cote serveur.", availability: "backend", quality: "Workspace", apiVersion: "Notion API", badges: ["Cloud", "Workspace"], capabilities: ["Pages partagees", "Bases partagees"], permissions: ["Contenu explicitement partage"] })
   ]),
   steam: Object.freeze([
@@ -367,9 +367,13 @@ const SPECIAL_GUIDES = Object.freeze({
     "public-oauth": (resource) => Object.freeze([
       guideStep("docs", "Ouvrir My Integrations sur Notion", "Connectez-vous puis \"New integration\".", { resource }),
       guideStep("app", "Configurer l'integration", "Type \"Public\" (necessaire pour un flux OAuth), nom libre, associez un workspace."),
-      guideStep("redirect", "Ajouter la Redirect URI", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
+      guideStep("redirect", "Ajouter la Redirect URI", "Cette valeur exacte, sans rien ajouter derriere.", { copyValue: "https://ethone.dev/" }),
       guideStep("permissions", "Capacites a demander", "Read content uniquement. Ne cochez pas Insert/Update sauf besoin reel."),
-      guideStep("keys", "Copier OAuth client ID et secret", "Disponibles dans l'onglet \"Distribution\" de l'integration une fois publiee.")
+      guideStep("id", "Copier le Client ID (OAuth client ID)", "Disponible dans l'onglet \"Distribution\" de l'integration une fois publiee."),
+      guideStep("paste", "Coller le Client ID ci-dessous", "Utilisez le champ \"Client ID Notion\". Ce n'est pas une donnee secrete."),
+      guideStep("secret", "Copier le Client Secret", "Affiche a cote du Client ID dans le meme onglet \"Distribution\"."),
+      guideStep("wrangler", "Transmettre le Client Secret a ETHONE", "Contrairement au Client ID, le Client Secret ne se colle jamais dans le navigateur : il doit etre enregistre comme secret Worker (NOTION_CLIENT_SECRET) via wrangler."),
+      guideStep("connect", "Se connecter avec Notion", "Une fois le Client ID enregistre et le secret Worker configure, cliquez \"Se connecter avec Notion\" puis choisissez les pages a partager avec ETHONE.")
     ]),
     "internal-backend": (resource) => Object.freeze([
       guideStep("docs", "Ouvrir My Integrations sur Notion", "Connectez-vous puis \"New integration\".", { resource }),

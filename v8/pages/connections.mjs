@@ -19,6 +19,7 @@ import { createSelect } from "../ui/select.mjs";
 import { beginSpotifyAuthorize } from "../services/spotify-oauth.mjs";
 import { beginGithubAuthorize } from "../services/github-oauth.mjs";
 import { beginGoogleCalendarAuthorize } from "../services/google-calendar-oauth.mjs";
+import { beginNotionAuthorize } from "../services/notion-oauth.mjs";
 import {
   connectionMetrics,
   connectionState,
@@ -71,7 +72,8 @@ function unavailable(message, data = null) {
 const OAUTH_CONNECT_ACTIONS = Object.freeze({
   "spotify:oauth-pkce": Object.freeze({ actionId: "v8.connections.spotify.connect", icon: "music", label: "Se connecter avec Spotify" }),
   "github:oauth-secure": Object.freeze({ actionId: "v8.connections.github.connect", icon: "github", label: "Se connecter avec GitHub" }),
-  "google-calendar:oauth-secure": Object.freeze({ actionId: "v8.connections.google-calendar.connect", icon: "calendar-days", label: "Se connecter avec Google" })
+  "google-calendar:oauth-secure": Object.freeze({ actionId: "v8.connections.google-calendar.connect", icon: "calendar-days", label: "Se connecter avec Google" }),
+  "notion:public-oauth": Object.freeze({ actionId: "v8.connections.notion.connect", icon: "notebook-tabs", label: "Se connecter avec Notion" })
 });
 
 function connectionAction(actionId, integrationId, variant, children, options = {}) {
@@ -216,6 +218,7 @@ export function mountConnections(stage, options = {}) {
   const spotifyOAuthLive = options.spotifyOAuthLive || null;
   const githubLive = options.githubLive || null;
   const googleCalendarLive = options.googleCalendarLive || null;
+  const notionLive = options.notionLive || null;
   function refreshLiveBridges(id) {
     if (id === "spotify") {
       spotifyLive?.refresh?.();
@@ -227,6 +230,7 @@ export function mountConnections(stage, options = {}) {
     if (id === "steam") steamLive?.refresh?.();
     if (id === "google-calendar") googleCalendarLive?.refresh?.();
     if (id === "github") githubLive?.refresh?.();
+    if (id === "notion") notionLive?.refresh?.();
   }
   const externalServices = options.externalServices || null;
   const clientProvider = typeof options.clientProvider === "function" ? options.clientProvider : null;
@@ -894,6 +898,39 @@ export function mountConnections(stage, options = {}) {
       return unavailable("sessionStorage indisponible");
     }
     return completed("Redirection vers Google", { integration: id });
+  }));
+  releases.push(actions.scope("v8.connections.notion.connect", async (context) => {
+    const id = context.element?.dataset.integration || selectedId;
+    const integration = integrationById(id);
+    const connection = connectionMap().get(id);
+    const method = selectedMethod(integration, connection);
+    if (id !== "notion" || method?.id !== "public-oauth") return unavailable("Methode indisponible.");
+    const availability = methodAvailability(method, connectionList());
+    if (!availability.usable) {
+      notify({ id: `connection-blocked-${id}`, title: integration?.name || "Connection", message: availability.reason, type: "warning" });
+      return unavailable(availability.reason);
+    }
+    const reference = validateReference(method, draftReferences.get(id) ?? connection?.reference ?? "");
+    if (!reference.ok) {
+      const referenceInput = inspectorHost.querySelector("[data-connection-reference]");
+      referenceInput?.setCustomValidity?.(reference.message);
+      setFieldState(referenceInput, "invalid", reference.message);
+      notify({ id: `connection-reference-${id}`, title: "Configuration incomplete", message: reference.message, type: "warning" });
+      referenceInput?.focus();
+      return unavailable(reference.message);
+    }
+    repository.connections.configure(id, {
+      methodId: method.id,
+      reference: reference.value,
+      apiVersion: method.apiVersion || "En attente",
+      detail: "Redirection vers Notion en cours."
+    });
+    const started = await beginNotionAuthorize(reference.value, globalThis);
+    if (!started) {
+      notify({ id: `connection-oauth-${id}`, title: integration?.name || "Notion", message: "Impossible de demarrer la connexion Notion sur cet appareil.", type: "error" });
+      return unavailable("sessionStorage indisponible");
+    }
+    return completed("Redirection vers Notion", { integration: id });
   }));
   releases.push(actions.scope("v8.connections.test", async (context) => {
     const id = context.element?.dataset.integration || selectedId;

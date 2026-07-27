@@ -16,7 +16,8 @@ const WORKER_SERVICES = Object.freeze({
   weather: "weather",
   minecraft: "minecraft",
   github: "github",
-  "google-calendar": "google-calendar"
+  "google-calendar": "google-calendar",
+  notion: "notion"
 });
 
 function normalized(value) {

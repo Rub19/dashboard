@@ -27,6 +27,9 @@ const OPERATIONS = Object.freeze({
   googleCalendarOAuthExchange: Object.freeze({ path: "/api/google-calendar/oauth/exchange", method: "POST", auth: true, params: ["code", "clientId"] }),
   googleCalendarEvents: Object.freeze({ path: "/api/google-calendar/events", auth: true, params: ["clientId"] }),
   googleCalendarOAuthDisconnect: Object.freeze({ path: "/api/google-calendar/oauth/disconnect", method: "POST", auth: true, params: [] }),
+  notionOAuthExchange: Object.freeze({ path: "/api/notion/oauth/exchange", method: "POST", auth: true, params: ["code", "clientId"] }),
+  notionPages: Object.freeze({ path: "/api/notion/pages", auth: true, params: [] }),
+  notionOAuthDisconnect: Object.freeze({ path: "/api/notion/oauth/disconnect", method: "POST", auth: true, params: [] }),
   publicProfile: Object.freeze({ path: "/api/supabase/public-profile", auth: true, params: ["username"] })
 });
 
@@ -209,6 +212,11 @@ export function createExternalServicesClient(options = {}) {
       exchange: (code, clientId) => execute("googleCalendarOAuthExchange", { code, clientId }),
       events: (clientId) => execute("googleCalendarEvents", { clientId }),
       disconnect: () => execute("googleCalendarOAuthDisconnect", {})
+    }),
+    notionOAuth: Object.freeze({
+      exchange: (code, clientId) => execute("notionOAuthExchange", { code, clientId }),
+      pages: () => execute("notionPages", {}),
+      disconnect: () => execute("notionOAuthDisconnect", {})
     }),
     publicProfile: (username) => execute("publicProfile", { username }),
     diagnostics: () => Object.freeze({ ...status, activeRequests: activeControllers.size, environment: config.environment, baseUrl: network.redactUrl?.(baseUrl) || baseUrl }),

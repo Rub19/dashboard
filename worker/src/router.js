@@ -6,6 +6,7 @@ import { henrikRoute } from "./routes/henrik.js";
 import { lanyardRoute } from "./routes/lanyard.js";
 import { lastFmRoute } from "./routes/lastfm.js";
 import { minecraftRoute } from "./routes/minecraft.js";
+import { notionOAuthDisconnectRoute, notionOAuthExchangeRoute, notionPagesRoute } from "./routes/notion-oauth.js";
 import { spotifyNowPlayingRoute, spotifyOAuthDisconnectRoute, spotifyOAuthExchangeRoute } from "./routes/spotify-oauth.js";
 import { nowPlayingRoute } from "./routes/nowplaying.js";
 import { steamRoute } from "./routes/steam.js";
@@ -54,7 +55,10 @@ export const ROUTES = Object.freeze([
   route("github.oauth.disconnect", "/api/github/oauth/disconnect", githubOAuthDisconnectRoute, { method: "POST", service: "github", rateLimit: "strict" }),
   route("google-calendar.oauth.exchange", "/api/google-calendar/oauth/exchange", googleCalendarOAuthExchangeRoute, { method: "POST", service: "google-calendar", rateLimit: "strict" }),
   route("google-calendar.events", "/api/google-calendar/events", googleCalendarEventsRoute, { service: "google-calendar" }),
-  route("google-calendar.oauth.disconnect", "/api/google-calendar/oauth/disconnect", googleCalendarOAuthDisconnectRoute, { method: "POST", service: "google-calendar", rateLimit: "strict" })
+  route("google-calendar.oauth.disconnect", "/api/google-calendar/oauth/disconnect", googleCalendarOAuthDisconnectRoute, { method: "POST", service: "google-calendar", rateLimit: "strict" }),
+  route("notion.oauth.exchange", "/api/notion/oauth/exchange", notionOAuthExchangeRoute, { method: "POST", service: "notion", rateLimit: "strict" }),
+  route("notion.pages", "/api/notion/pages", notionPagesRoute, { service: "notion" }),
+  route("notion.oauth.disconnect", "/api/notion/oauth/disconnect", notionOAuthDisconnectRoute, { method: "POST", service: "notion", rateLimit: "strict" })
 ]);
 
 function normalizedPath(pathname) {

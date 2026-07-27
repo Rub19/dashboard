@@ -46,7 +46,8 @@ export const PATTERNS = Object.freeze({
   minecraftUsername: /^[A-Za-z0-9_]{3,16}$/,
   spotifyClientId: /^[A-Za-z0-9]{10,64}$/,
   githubClientId: /^[A-Za-z0-9._-]{10,64}$/,
-  googleClientId: /^[A-Za-z0-9-]{10,100}\.apps\.googleusercontent\.com$/
+  googleClientId: /^[A-Za-z0-9-]{10,100}\.apps\.googleusercontent\.com$/,
+  notionClientId: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 });
 
 export function requireSecret(env, name) {

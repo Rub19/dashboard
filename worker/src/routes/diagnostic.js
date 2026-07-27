@@ -17,6 +17,7 @@ const REQUIREMENTS = Object.freeze({
   spotify: Object.freeze([]),
   github: Object.freeze(["GITHUB_CLIENT_SECRET"]),
   "google-calendar": Object.freeze(["GOOGLE_CLIENT_SECRET"]),
+  notion: Object.freeze(["NOTION_CLIENT_SECRET"]),
   supabase: Object.freeze(["SUPABASE_URL", "SUPABASE_SECRET_KEY"])
 });
 

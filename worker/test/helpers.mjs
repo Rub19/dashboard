@@ -93,6 +93,7 @@ export function testEnv(overrides = {}) {
     LASTFM_API_KEY: "f".repeat(24),
     GITHUB_CLIENT_SECRET: "g".repeat(32),
     GOOGLE_CLIENT_SECRET: "h".repeat(32),
+    NOTION_CLIENT_SECRET: "i".repeat(32),
     OUTBOUND_TIMEOUT_MS: "100",
     RATE_LIMIT_EDGE: limiter(),
     RATE_LIMIT_STANDARD: limiter(),

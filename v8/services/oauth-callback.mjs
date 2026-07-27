@@ -36,9 +36,9 @@ export async function beginOAuthAuthorize(options = {}, runtime = globalThis) {
   url.searchParams.set("client_id", clientId);
   url.searchParams.set("redirect_uri", new URL("./", runtime.location.href).href);
   url.searchParams.set("state", state);
+  url.searchParams.set("response_type", "code");
   if (scope) url.searchParams.set("scope", scope);
   if (pkce) {
-    url.searchParams.set("response_type", "code");
     url.searchParams.set("code_challenge_method", "S256");
     url.searchParams.set("code_challenge", challenge);
   }

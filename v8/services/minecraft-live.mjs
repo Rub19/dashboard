@@ -1,3 +1,5 @@
+import { bindVisibilityRefresh } from "./live-poll.mjs";
+
 const USERNAME_PATTERN = /^[A-Za-z0-9_]{3,16}$/;
 
 function safeText(value, fallback = "", limit = 40) {
@@ -42,6 +44,7 @@ export function createMinecraftLive(options = {}) {
   let started = false;
   let destroyed = false;
   let inflight = null;
+  let releaseVisibility = null;
 
   function publish(next) {
     if (JSON.stringify(next) === JSON.stringify(state)) return state;
@@ -83,6 +86,7 @@ export function createMinecraftLive(options = {}) {
     if (destroyed || started) return false;
     started = true;
     poll().finally(schedule);
+    releaseVisibility = bindVisibilityRefresh(runtime, poll, { minGapMs: 60000 });
     return true;
   }
 
@@ -100,6 +104,8 @@ export function createMinecraftLive(options = {}) {
     destroyed = true;
     if (timer) runtime.clearTimeout?.(timer);
     timer = 0;
+    releaseVisibility?.();
+    releaseVisibility = null;
     subscribers.clear();
     return true;
   }

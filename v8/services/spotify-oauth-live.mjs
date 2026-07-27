@@ -1,3 +1,5 @@
+import { bindVisibilityRefresh } from "./live-poll.mjs";
+
 function safeText(value, fallback = "", limit = 200) {
   const normalized = String(value ?? "").replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim();
   return (normalized || fallback).slice(0, limit);
@@ -9,11 +11,12 @@ export function createSpotifyOAuthLive(options = {}) {
   const getClientId = typeof options.getClientId === "function" ? options.getClientId : () => "";
   const isConnected = typeof options.isConnected === "function" ? options.isConnected : () => false;
   const onTrack = typeof options.onTrack === "function" ? options.onTrack : () => {};
-  const pollIntervalMs = Math.max(15000, Number(options.pollIntervalMs) || 20000);
+  const pollIntervalMs = Math.max(12000, Number(options.pollIntervalMs) || 15000);
   let timer = 0;
   let started = false;
   let destroyed = false;
   let inflight = null;
+  let releaseVisibility = null;
 
   async function poll() {
     if (destroyed) return;
@@ -53,6 +56,7 @@ export function createSpotifyOAuthLive(options = {}) {
     if (destroyed || started) return false;
     started = true;
     poll().finally(schedule);
+    releaseVisibility = bindVisibilityRefresh(runtime, poll);
     return true;
   }
 
@@ -61,6 +65,8 @@ export function createSpotifyOAuthLive(options = {}) {
     destroyed = true;
     if (timer) runtime.clearTimeout?.(timer);
     timer = 0;
+    releaseVisibility?.();
+    releaseVisibility = null;
     return true;
   }
 

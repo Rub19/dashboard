@@ -1,3 +1,5 @@
+import { bindVisibilityRefresh } from "./live-poll.mjs";
+
 const STATUS_BY_STATE = Object.freeze({
   0: "offline",
   1: "online",
@@ -54,6 +56,7 @@ export function createSteamLive(options = {}) {
   let started = false;
   let destroyed = false;
   let inflight = null;
+  let releaseVisibility = null;
 
   function publish(next) {
     if (JSON.stringify(next) === JSON.stringify(state)) return state;
@@ -95,6 +98,7 @@ export function createSteamLive(options = {}) {
     if (destroyed || started) return false;
     started = true;
     poll().finally(schedule);
+    releaseVisibility = bindVisibilityRefresh(runtime, poll, { minGapMs: 20000 });
     return true;
   }
 
@@ -112,6 +116,8 @@ export function createSteamLive(options = {}) {
     destroyed = true;
     if (timer) runtime.clearTimeout?.(timer);
     timer = 0;
+    releaseVisibility?.();
+    releaseVisibility = null;
     subscribers.clear();
     return true;
   }

@@ -1,3 +1,5 @@
+import { bindVisibilityRefresh } from "./live-poll.mjs";
+
 function safeText(value, fallback = "", limit = 80) {
   const normalized = String(value ?? "").replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim();
   return (normalized || fallback).slice(0, limit);
@@ -47,6 +49,7 @@ export function createWeatherLive(options = {}) {
   let started = false;
   let destroyed = false;
   let inflight = null;
+  let releaseVisibility = null;
 
   function publish(next) {
     if (JSON.stringify(next) === JSON.stringify(state)) return state;
@@ -88,6 +91,7 @@ export function createWeatherLive(options = {}) {
     if (destroyed || started) return false;
     started = true;
     poll().finally(schedule);
+    releaseVisibility = bindVisibilityRefresh(runtime, poll, { minGapMs: 60000 });
     return true;
   }
 
@@ -105,6 +109,8 @@ export function createWeatherLive(options = {}) {
     destroyed = true;
     if (timer) runtime.clearTimeout?.(timer);
     timer = 0;
+    releaseVisibility?.();
+    releaseVisibility = null;
     subscribers.clear();
     return true;
   }

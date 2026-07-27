@@ -1,3 +1,5 @@
+import { bindVisibilityRefresh } from "./live-poll.mjs";
+
 const STATUSES = new Set(["online", "idle", "dnd", "offline"]);
 const AVATAR_HOSTS = new Set(["cdn.discordapp.com"]);
 const ARTWORK_HOSTS = new Set(["i.scdn.co"]);
@@ -80,6 +82,7 @@ export function createDiscordLive(options = {}) {
   let started = false;
   let destroyed = false;
   let inflight = null;
+  let releaseVisibility = null;
 
   function publish(next) {
     if (JSON.stringify(next) === JSON.stringify(state)) return state;
@@ -121,6 +124,7 @@ export function createDiscordLive(options = {}) {
     if (destroyed || started) return false;
     started = true;
     poll().finally(schedule);
+    releaseVisibility = bindVisibilityRefresh(runtime, poll);
     return true;
   }
 
@@ -138,6 +142,8 @@ export function createDiscordLive(options = {}) {
     destroyed = true;
     if (timer) runtime.clearTimeout?.(timer);
     timer = 0;
+    releaseVisibility?.();
+    releaseVisibility = null;
     subscribers.clear();
     return true;
   }

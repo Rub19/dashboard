@@ -175,16 +175,16 @@ const SPECIAL_METHODS = Object.freeze({
     method({ id: "server-connector", label: "Cle API Groq", summary: "Executions via une cle API conservee uniquement cote Worker ETHONE.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "Groq API", guideKind: "apikey", badges: ["Cloud"], capabilities: ["Executions", "Historique d'usage"], permissions: ["Cle limitee au Worker ETHONE"] })
   ]),
   github: Object.freeze([
-    method({ id: "oauth-secure", label: "GitHub OAuth App", summary: "Connexion OAuth avec votre propre application, pour le profil et l'activite publique recente.", availability: "backend", recommended: true, live: true, quality: "Temps reel", apiVersion: "GitHub OAuth", badges: ["OAuth", "Temps reel", "Cloud"], capabilities: ["Profil", "Depots publics", "Activite recente"], permissions: ["Lecture du profil (read:user)"], field: { type: "text", label: "Client ID GitHub OAuth App", placeholder: "Iv1.0123456789abcdef", required: true } }),
+    method({ id: "oauth-secure", label: "GitHub OAuth App", summary: "Connexion via l'application ETHONE, pour le profil et l'activite publique recente.", availability: "backend", recommended: true, live: true, quality: "Temps reel", apiVersion: "GitHub OAuth", badges: ["OAuth", "Temps reel", "Cloud"], capabilities: ["Profil", "Depots publics", "Activite recente"], permissions: ["Lecture du profil (read:user)"] }),
     method({ id: "github-app", label: "GitHub App", summary: "Permissions fines, installation revocable et acces limite aux depots choisis.", availability: "backend", quality: "Complete", apiVersion: "GitHub App API", badges: ["Cloud", "Temps reel"], capabilities: ["Commits", "Pull Requests", "Issues", "Webhooks"], permissions: ["Depots selectionnes", "Metadonnees", "Lecture ou ecriture explicite"] }),
     method({ id: "public-profile", label: "Profil public", summary: "Contributions et depots publics, sans acces prive.", availability: "public", quality: "Lecture seule", badges: ["Simple", "Sans secret", "Lecture seule"], capabilities: ["Profil public", "Depots publics", "Contributions"], permissions: ["Aucune permission privee"], field: { type: "url", label: "Profil GitHub public", placeholder: "https://github.com/utilisateur", required: true } })
   ]),
   "google-calendar": Object.freeze([
-    method({ id: "oauth-secure", label: "Google OAuth", summary: "Prochains evenements de votre agenda principal, en lecture seule.", availability: "backend", recommended: true, live: true, quality: "Temps reel", apiVersion: "Google Calendar API", badges: ["OAuth", "Temps reel", "Cloud"], capabilities: ["Prochain evenement", "Agenda principal"], permissions: ["Lecture agenda (calendar.readonly)"], field: { type: "text", label: "Client ID Google OAuth", placeholder: "0123456789-abc.apps.googleusercontent.com", required: true } }),
+    method({ id: "oauth-secure", label: "Google OAuth", summary: "Connexion via l'application ETHONE, pour les prochains evenements de votre agenda principal.", availability: "backend", recommended: true, live: true, quality: "Temps reel", apiVersion: "Google Calendar API", badges: ["OAuth", "Temps reel", "Cloud"], capabilities: ["Prochain evenement", "Agenda principal"], permissions: ["Lecture agenda (calendar.readonly)"] }),
     method({ id: "ics-readonly", label: "Calendrier ICS", summary: "Abonnement a une adresse ICS partagee, strictement en lecture seule.", availability: "public", quality: "Lecture seule", apiVersion: "iCalendar", badges: ["Simple", "Sans secret", "Lecture seule"], capabilities: ["Evenements publies", "Actualisation periodique"], permissions: ["Lecture de l'agenda partage"], field: { type: "url", label: "Adresse ICS partagee", placeholder: "https://.../calendar.ics", required: true } })
   ]),
   notion: Object.freeze([
-    method({ id: "public-oauth", label: "Connexion publique", summary: "Derniere page ou base modifiee parmi celles partagees avec ETHONE.", availability: "backend", recommended: true, live: true, quality: "Temps reel", apiVersion: "Notion API", badges: ["OAuth", "Temps reel", "Cloud"], capabilities: ["Derniere page modifiee", "Contenu partage"], permissions: ["Contenu explicitement partage (Read content)"], field: { type: "text", label: "Client ID Notion", placeholder: "01234567-89ab-cdef-0123-456789abcdef", required: true } }),
+    method({ id: "public-oauth", label: "Connexion publique", summary: "Connexion via l'application ETHONE. Derniere page ou base modifiee parmi celles partagees.", availability: "backend", recommended: true, live: true, quality: "Temps reel", apiVersion: "Notion API", badges: ["OAuth", "Temps reel", "Cloud"], capabilities: ["Derniere page modifiee", "Contenu partage"], permissions: ["Contenu explicitement partage (Read content)"] }),
     method({ id: "internal-backend", label: "Connexion interne", summary: "Pour un seul workspace, avec identifiants conserves uniquement cote serveur.", availability: "backend", quality: "Workspace", apiVersion: "Notion API", badges: ["Cloud", "Workspace"], capabilities: ["Pages partagees", "Bases partagees"], permissions: ["Contenu explicitement partage"] })
   ]),
   steam: Object.freeze([
@@ -328,11 +328,9 @@ const SPECIAL_GUIDES = Object.freeze({
       guideStep("app", "Creer un identifiant OAuth", "Credentials > Create Credentials > OAuth client ID > type \"Web application\"."),
       guideStep("redirect", "Ajouter l'URI de redirection autorisee", "Cette valeur exacte, sans rien ajouter derriere.", { copyValue: "https://ethone.dev/" }),
       guideStep("scopes", "Scope a demander", "https://www.googleapis.com/auth/calendar.readonly", { copyValue: "https://www.googleapis.com/auth/calendar.readonly" }),
-      guideStep("id", "Copier le Client ID", "Affiche apres la creation de l'identifiant OAuth."),
-      guideStep("paste", "Coller le Client ID ci-dessous", "Utilisez le champ \"Client ID Google OAuth\". Ce n'est pas une donnee secrete."),
-      guideStep("secret", "Copier le Client Secret", "Affiche a cote du Client ID lors de la creation."),
-      guideStep("wrangler", "Transmettre le Client Secret a ETHONE", "Contrairement au Client ID, le Client Secret ne se colle jamais dans le navigateur : il doit etre enregistre comme secret Worker (GOOGLE_CLIENT_SECRET) via wrangler."),
-      guideStep("connect", "Se connecter avec Google", "Une fois le Client ID enregistre et le secret Worker configure, cliquez \"Se connecter avec Google\" pour autoriser ETHONE depuis le site officiel Google.")
+      guideStep("id", "Copier le Client ID et le Client Secret", "Affiches apres la creation de l'identifiant OAuth."),
+      guideStep("wrangler", "Client Secret conserve cote Worker", "Le Client ID est deja configure dans ETHONE. Le Client Secret ne se colle jamais dans le navigateur : il reste enregistre comme secret Worker (GOOGLE_CLIENT_SECRET)."),
+      guideStep("connect", "Se connecter avec Google", "L'application ETHONE est prete : cliquez \"Se connecter avec Google\" pour autoriser votre propre compte.")
     ])
   }),
   email: Object.freeze({
@@ -357,10 +355,9 @@ const SPECIAL_GUIDES = Object.freeze({
       guideStep("app", "Configurer l'application", "Nom libre, Homepage URL: https://ethone.dev."),
       guideStep("redirect", "Ajouter l'Authorization callback URL", "Cette valeur exacte, sans rien ajouter derriere.", { copyValue: "https://ethone.dev/" }),
       guideStep("id", "Copier le Client ID", "Visible directement apres la creation de l'application."),
-      guideStep("paste", "Coller le Client ID ci-dessous", "Utilisez le champ \"Client ID GitHub OAuth App\". Ce n'est pas une donnee secrete."),
       guideStep("secret", "Generer le Client Secret", "Cliquez \"Generate a new client secret\" et copiez la valeur affichee une seule fois."),
-      guideStep("wrangler", "Transmettre le Client Secret a ETHONE", "Contrairement au Client ID, le Client Secret ne se colle jamais dans le navigateur : il doit etre enregistre comme secret Worker (GITHUB_CLIENT_SECRET) via wrangler."),
-      guideStep("connect", "Se connecter avec GitHub", "Une fois le Client ID enregistre et le secret Worker configure, cliquez \"Se connecter avec GitHub\" pour autoriser ETHONE depuis le site officiel GitHub.")
+      guideStep("wrangler", "Client Secret conserve cote Worker", "Le Client ID est deja configure dans ETHONE. Le Client Secret ne se colle jamais dans le navigateur : il reste enregistre comme secret Worker (GITHUB_CLIENT_SECRET)."),
+      guideStep("connect", "Se connecter avec GitHub", "L'application ETHONE est prete : cliquez \"Se connecter avec GitHub\" pour autoriser votre propre compte.")
     ])
   }),
   notion: Object.freeze({
@@ -370,10 +367,9 @@ const SPECIAL_GUIDES = Object.freeze({
       guideStep("redirect", "Ajouter la Redirect URI", "Cette valeur exacte, sans rien ajouter derriere.", { copyValue: "https://ethone.dev/" }),
       guideStep("permissions", "Capacites a demander", "Read content uniquement. Ne cochez pas Insert/Update sauf besoin reel."),
       guideStep("id", "Copier le Client ID (OAuth client ID)", "Disponible dans l'onglet \"Distribution\" de l'integration une fois publiee."),
-      guideStep("paste", "Coller le Client ID ci-dessous", "Utilisez le champ \"Client ID Notion\". Ce n'est pas une donnee secrete."),
       guideStep("secret", "Copier le Client Secret", "Affiche a cote du Client ID dans le meme onglet \"Distribution\"."),
-      guideStep("wrangler", "Transmettre le Client Secret a ETHONE", "Contrairement au Client ID, le Client Secret ne se colle jamais dans le navigateur : il doit etre enregistre comme secret Worker (NOTION_CLIENT_SECRET) via wrangler."),
-      guideStep("connect", "Se connecter avec Notion", "Une fois le Client ID enregistre et le secret Worker configure, cliquez \"Se connecter avec Notion\" puis choisissez les pages a partager avec ETHONE.")
+      guideStep("wrangler", "Client Secret conserve cote Worker", "Le Client ID est deja configure dans ETHONE. Le Client Secret ne se colle jamais dans le navigateur : il reste enregistre comme secret Worker (NOTION_CLIENT_SECRET)."),
+      guideStep("connect", "Se connecter avec Notion", "L'application ETHONE est prete : cliquez \"Se connecter avec Notion\" puis choisissez les pages a partager avec votre compte.")
     ]),
     "internal-backend": (resource) => Object.freeze([
       guideStep("docs", "Ouvrir My Integrations sur Notion", "Connectez-vous puis \"New integration\".", { resource }),

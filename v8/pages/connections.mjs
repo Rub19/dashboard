@@ -20,6 +20,7 @@ import { beginSpotifyAuthorize } from "../services/spotify-oauth.mjs";
 import { beginGithubAuthorize } from "../services/github-oauth.mjs";
 import { beginGoogleCalendarAuthorize } from "../services/google-calendar-oauth.mjs";
 import { beginNotionAuthorize } from "../services/notion-oauth.mjs";
+import { OAUTH_APP_CLIENT_IDS } from "../data/oauth-app-config.mjs";
 import {
   connectionMetrics,
   connectionState,
@@ -616,8 +617,8 @@ export function mountConnections(stage, options = {}) {
         element("p", { text: report?.workerVerified ? "Le Worker authentifie a confirme cette route. Aucun secret fournisseur n'est transmis au navigateur." : "Les permissions sont expliquees ici. Les echanges privilegies restent obligatoirement cote serveur." })
       ])]),
       element("footer", { className: "v8-connection-inspector-actions" }, [
-        oauthConnect ? connectionAction(oauthConnect.actionId, integration.id, "primary", [icon(oauthConnect.icon), element("span", { text: oauthConnect.label })], { disabled: !availability.usable || !referenceValue.trim() }) : null,
-        connectionAction("v8.connections.setup.complete", integration.id, oauthConnect ? "secondary" : "primary", [icon(configuredMethod ? "rotate-cw" : "shield-check"), element("span", { text: configuredMethod ? "Revalider" : "Verifier" })], { method: method?.id, disabled: !availability.usable }),
+        oauthConnect ? connectionAction(oauthConnect.actionId, integration.id, "primary", [icon(oauthConnect.icon), element("span", { text: oauthConnect.label })], { disabled: !availability.usable || (method?.field && !referenceValue.trim()) }) : null,
+        oauthConnect && !method?.field ? null : connectionAction("v8.connections.setup.complete", integration.id, oauthConnect ? "secondary" : "primary", [icon(configuredMethod ? "rotate-cw" : "shield-check"), element("span", { text: configuredMethod ? "Revalider" : "Verifier" })], { method: method?.id, disabled: !availability.usable }),
         connectionAction("v8.connections.test", integration.id, "secondary", [icon("stethoscope"), element("span", { text: "Diagnostic" })])
       ])
     ]);
@@ -844,22 +845,14 @@ export function mountConnections(stage, options = {}) {
       notify({ id: `connection-blocked-${id}`, title: integration?.name || "Connection", message: availability.reason, type: "warning" });
       return unavailable(availability.reason);
     }
-    const reference = validateReference(method, draftReferences.get(id) ?? connection?.reference ?? "");
-    if (!reference.ok) {
-      const referenceInput = inspectorHost.querySelector("[data-connection-reference]");
-      referenceInput?.setCustomValidity?.(reference.message);
-      setFieldState(referenceInput, "invalid", reference.message);
-      notify({ id: `connection-reference-${id}`, title: "Configuration incomplete", message: reference.message, type: "warning" });
-      referenceInput?.focus();
-      return unavailable(reference.message);
-    }
+    const clientId = OAUTH_APP_CLIENT_IDS.github;
     repository.connections.configure(id, {
       methodId: method.id,
-      reference: reference.value,
+      reference: clientId,
       apiVersion: method.apiVersion || "En attente",
       detail: "Redirection vers GitHub en cours."
     });
-    const started = await beginGithubAuthorize(reference.value, globalThis);
+    const started = await beginGithubAuthorize(clientId, globalThis);
     if (!started) {
       notify({ id: `connection-oauth-${id}`, title: integration?.name || "GitHub", message: "Impossible de demarrer la connexion GitHub sur cet appareil.", type: "error" });
       return unavailable("sessionStorage indisponible");
@@ -877,22 +870,14 @@ export function mountConnections(stage, options = {}) {
       notify({ id: `connection-blocked-${id}`, title: integration?.name || "Connection", message: availability.reason, type: "warning" });
       return unavailable(availability.reason);
     }
-    const reference = validateReference(method, draftReferences.get(id) ?? connection?.reference ?? "");
-    if (!reference.ok) {
-      const referenceInput = inspectorHost.querySelector("[data-connection-reference]");
-      referenceInput?.setCustomValidity?.(reference.message);
-      setFieldState(referenceInput, "invalid", reference.message);
-      notify({ id: `connection-reference-${id}`, title: "Configuration incomplete", message: reference.message, type: "warning" });
-      referenceInput?.focus();
-      return unavailable(reference.message);
-    }
+    const clientId = OAUTH_APP_CLIENT_IDS["google-calendar"];
     repository.connections.configure(id, {
       methodId: method.id,
-      reference: reference.value,
+      reference: clientId,
       apiVersion: method.apiVersion || "En attente",
       detail: "Redirection vers Google en cours."
     });
-    const started = await beginGoogleCalendarAuthorize(reference.value, globalThis);
+    const started = await beginGoogleCalendarAuthorize(clientId, globalThis);
     if (!started) {
       notify({ id: `connection-oauth-${id}`, title: integration?.name || "Google", message: "Impossible de demarrer la connexion Google sur cet appareil.", type: "error" });
       return unavailable("sessionStorage indisponible");
@@ -910,22 +895,14 @@ export function mountConnections(stage, options = {}) {
       notify({ id: `connection-blocked-${id}`, title: integration?.name || "Connection", message: availability.reason, type: "warning" });
       return unavailable(availability.reason);
     }
-    const reference = validateReference(method, draftReferences.get(id) ?? connection?.reference ?? "");
-    if (!reference.ok) {
-      const referenceInput = inspectorHost.querySelector("[data-connection-reference]");
-      referenceInput?.setCustomValidity?.(reference.message);
-      setFieldState(referenceInput, "invalid", reference.message);
-      notify({ id: `connection-reference-${id}`, title: "Configuration incomplete", message: reference.message, type: "warning" });
-      referenceInput?.focus();
-      return unavailable(reference.message);
-    }
+    const clientId = OAUTH_APP_CLIENT_IDS.notion;
     repository.connections.configure(id, {
       methodId: method.id,
-      reference: reference.value,
+      reference: clientId,
       apiVersion: method.apiVersion || "En attente",
       detail: "Redirection vers Notion en cours."
     });
-    const started = await beginNotionAuthorize(reference.value, globalThis);
+    const started = await beginNotionAuthorize(clientId, globalThis);
     if (!started) {
       notify({ id: `connection-oauth-${id}`, title: integration?.name || "Notion", message: "Impossible de demarrer la connexion Notion sur cet appareil.", type: "error" });
       return unavailable("sessionStorage indisponible");

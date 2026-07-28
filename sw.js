@@ -1,4 +1,4 @@
-const ETHONE_VERSION = "2026-07-28-experience-v126";
+const ETHONE_VERSION = "2026-07-28-experience-v127";
 const ETHONE_CACHE = `ethone-${ETHONE_VERSION}`;
 const ETHONE_OFFLINE_URL = "./index.html";
 
@@ -45,6 +45,7 @@ const ETHONE_V8_ASSETS = [
   "./v8/data/activity-journal.mjs",
   "./v8/data/brand-icons.mjs",
   "./v8/data/integrations.mjs",
+  "./v8/data/oauth-app-config.mjs",
   "./v8/data/navigation.mjs",
   "./v8/data/workspaces.mjs",
   "./v8/data/profile-repository.mjs",
@@ -100,14 +101,14 @@ const ETHONE_V8_ASSETS = [
   "./v8/services/weather-live.mjs",
   "./v8/services/steam-live.mjs",
   "./v8/services/minecraft-live.mjs",
-  "./v8/styles/base.css?v=experience-v126",
-  "./v8/styles/activity.css?v=experience-v126",
-  "./v8/styles/components.css?v=experience-v126",
-  "./v8/styles/entry.css?v=experience-v126",
-  "./v8/styles/presence.css?v=experience-v126",
-  "./v8/styles/shell.css?v=experience-v126",
-  "./v8/styles/tokens.css?v=experience-v126",
-  "./v8/styles/workspaces.css?v=experience-v126",
+  "./v8/styles/base.css?v=experience-v127",
+  "./v8/styles/activity.css?v=experience-v127",
+  "./v8/styles/components.css?v=experience-v127",
+  "./v8/styles/entry.css?v=experience-v127",
+  "./v8/styles/presence.css?v=experience-v127",
+  "./v8/styles/shell.css?v=experience-v127",
+  "./v8/styles/tokens.css?v=experience-v127",
+  "./v8/styles/workspaces.css?v=experience-v127",
   "./v8/ui/discord-live.mjs",
   "./v8/ui/weather-live.mjs",
   "./v8/ui/steam-live.mjs",

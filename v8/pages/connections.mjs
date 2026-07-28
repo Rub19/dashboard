@@ -814,22 +814,14 @@ export function mountConnections(stage, options = {}) {
       notify({ id: `connection-blocked-${id}`, title: integration?.name || "Connection", message: availability.reason, type: "warning" });
       return unavailable(availability.reason);
     }
-    const reference = validateReference(method, draftReferences.get(id) ?? connection?.reference ?? "");
-    if (!reference.ok) {
-      const referenceInput = inspectorHost.querySelector("[data-connection-reference]");
-      referenceInput?.setCustomValidity?.(reference.message);
-      setFieldState(referenceInput, "invalid", reference.message);
-      notify({ id: `connection-reference-${id}`, title: "Configuration incomplete", message: reference.message, type: "warning" });
-      referenceInput?.focus();
-      return unavailable(reference.message);
-    }
+    const clientId = OAUTH_APP_CLIENT_IDS.spotify;
     repository.connections.configure(id, {
       methodId: method.id,
-      reference: reference.value,
+      reference: clientId,
       apiVersion: method.apiVersion || "En attente",
       detail: "Redirection vers Spotify en cours."
     });
-    const started = await beginSpotifyAuthorize(reference.value, globalThis);
+    const started = await beginSpotifyAuthorize(clientId, globalThis);
     if (!started) {
       notify({ id: `connection-oauth-${id}`, title: integration?.name || "Spotify", message: "Impossible de demarrer la connexion Spotify sur cet appareil.", type: "error" });
       return unavailable("sessionStorage indisponible");

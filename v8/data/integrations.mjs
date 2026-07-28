@@ -123,7 +123,7 @@ const METHOD_PRESETS = Object.freeze({
 
 const SPECIAL_METHODS = Object.freeze({
   spotify: Object.freeze([
-    method({ id: "oauth-pkce", label: "Spotify OAuth", summary: "Lecture actuelle via l'API officielle Spotify, avec votre propre application.", availability: "backend", recommended: true, live: true, quality: "Temps reel", apiVersion: "Spotify Web API (PKCE)", badges: ["OAuth", "Temps reel", "Cloud"], capabilities: ["Lecture actuelle", "Controle de lecture"], permissions: ["Etat de lecture Spotify"], field: { type: "text", label: "Client ID Spotify", placeholder: "0123456789abcdef0123456789abcdef", required: true } }),
+    method({ id: "oauth-pkce", label: "Spotify OAuth", summary: "Connexion via l'application ETHONE, pour la lecture actuelle via l'API officielle Spotify.", availability: "backend", recommended: true, live: true, quality: "Temps reel", apiVersion: "Spotify Web API (PKCE)", badges: ["OAuth", "Temps reel", "Cloud"], capabilities: ["Lecture actuelle", "Controle de lecture"], permissions: ["Etat de lecture Spotify"] }),
     method({ id: "discord-lanyard", label: "Discord + Lanyard", summary: "Presence Spotify publique exposee par Discord, sans controle de lecture.", availability: "bridge", quality: "Temps reel", apiVersion: "Lanyard", live: true, badges: ["Simple", "Via Discord", "Via Lanyard", "Lecture seule"], capabilities: ["Morceau actuel", "Artiste", "Album", "Pochette", "Progression"], permissions: ["Presence Discord publique"], dependency: "discord", field: { type: "text", label: "Identifiant Discord public", placeholder: "123456789012345678", required: true } }),
     method({ id: "lastfm-history", label: "Last.fm", summary: "Historique musical et statistiques a partir des scrobbles Last.fm.", availability: "bridge", quality: "Historique", apiVersion: "Last.fm API", live: true, badges: ["Via Last.fm", "Lecture seule", "Cloud"], capabilities: ["Historique", "Top artistes", "Top morceaux", "Statistiques"], permissions: ["Profil Last.fm public ou autorise"], dependency: "lastfm", field: { type: "text", label: "Nom d'utilisateur Last.fm", placeholder: "Votre profil public", required: true } }),
     method({ id: "public-profile", label: "Profil public", summary: "Apercu limite a une URL de profil ou de playlist publique.", availability: "public", quality: "Essentielle", badges: ["Simple", "Sans secret", "Lecture seule"], capabilities: ["Profil public", "Playlist publique"], permissions: ["Aucune permission privee"], field: { type: "url", label: "Profil ou playlist publique", placeholder: "https://open.spotify.com/...", required: true } })
@@ -281,8 +281,8 @@ const SPECIAL_GUIDES = Object.freeze({
       guideStep("app", "Nommer l'application", "Nom libre (ex : \"ETHONE\"), description libre. Cochez \"Web API\" dans les API utilisees."),
       guideStep("redirect", "Ajouter la Redirect URI", "Cette valeur exacte, sans rien ajouter derriere.", { copyValue: "https://ethone.dev/" }),
       guideStep("id", "Copier le Client ID", "Visible directement dans Settings. Aucun Client Secret n'est necessaire : ETHONE utilise le flux PKCE, concu pour ne jamais exposer de secret."),
-      guideStep("paste", "Coller le Client ID ci-dessous", "Utilisez le champ \"Client ID Spotify\". Ce n'est pas une donnee secrete."),
-      guideStep("connect", "Se connecter avec Spotify", "Une fois le Client ID enregistre, cliquez \"Se connecter avec Spotify\" pour autoriser ETHONE depuis le site officiel Spotify.")
+      guideStep("users", "Ajouter les utilisateurs autorises", "Tant que l'app reste en mode \"Development\", ajoutez chaque compte Spotify (le votre et vos invites) dans Settings > User Management."),
+      guideStep("connect", "Se connecter avec Spotify", "L'application ETHONE est prete : cliquez \"Se connecter avec Spotify\" pour autoriser votre propre compte.")
     ])
   }),
   discord: Object.freeze({

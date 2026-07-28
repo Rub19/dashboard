@@ -31,6 +31,7 @@ test("browser CSP is exact-origin and blocks script attributes", () => {
     "'self'",
     "https://bvgifyzhpzkbrwdjrqsg.supabase.co",
     "wss://bvgifyzhpzkbrwdjrqsg.supabase.co",
+    "wss://api.lanyard.rest",
     "https://raspy-fog-bf5b.rub19-mailpro.workers.dev",
     "http://127.0.0.1:8787",
     "http://localhost:8787"
@@ -415,7 +416,7 @@ test("service worker waits for explicit activation and only removes ETHONE cache
   assert.match(worker, /v8\/services\/auth-storage\.mjs/);
   assert.match(worker, /v8\/services\/rate-limiter\.mjs/);
   assert.match(worker, /v8\/entry\/password-recovery\.mjs/);
-  assert.match(worker, /2026-07-28-experience-v128/);
+  assert.match(worker, /2026-07-28-experience-v129/);
 });
 
 test("canonical edge verifier enforces headers, anti-framing and no-store caching", async () => {

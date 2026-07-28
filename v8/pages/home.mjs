@@ -10,6 +10,8 @@ import { githubLiveCard } from "../ui/github-live.mjs";
 import { googleCalendarLiveCard } from "../ui/google-calendar-live.mjs";
 import { notionLiveCard } from "../ui/notion-live.mjs";
 import { todoistLiveCard } from "../ui/todoist-live.mjs";
+import { valorantLiveCard } from "../ui/valorant-live.mjs";
+import { lolLiveCard } from "../ui/lol-live.mjs";
 import { localeTag } from "../i18n/catalog.mjs";
 
 function formattedDate(isoDate) {
@@ -68,6 +70,8 @@ export function mountHome(stage, model, options = {}) {
   const googleCalendarLive = options.googleCalendarLive || null;
   const notionLive = options.notionLive || null;
   const todoistLive = options.todoistLive || null;
+  const valorantLive = options.valorantLive || null;
+  const lolLive = options.lolLive || null;
   const presence = options.presence || null;
   const briefingEnabled = options.brainPreferences?.enabled !== false && options.brainPreferences?.briefing?.enabled !== false;
   const continuation = model.nextTasks[0]
@@ -199,6 +203,8 @@ export function mountHome(stage, model, options = {}) {
   const googleCalendarHost = element("section", { className: "v8-home-google-calendar-host", attributes: { "aria-label": "Google Calendar", hidden: true } });
   const notionHost = element("section", { className: "v8-home-notion-host", attributes: { "aria-label": "Notion", hidden: true } });
   const todoistHost = element("section", { className: "v8-home-todoist-host", attributes: { "aria-label": "Todoist", hidden: true } });
+  const valorantHost = element("section", { className: "v8-home-valorant-host", attributes: { "aria-label": "Valorant", hidden: true } });
+  const lolHost = element("section", { className: "v8-home-lol-host", attributes: { "aria-label": "League of Legends", hidden: true } });
 
   function renderSpotify(playback, animate = false) {
     const player = spotifyLiveCard(playback, { variant: "home" });
@@ -272,6 +278,22 @@ export function mountHome(stage, model, options = {}) {
     refreshIcons();
   }
 
+  function renderValorant(valorantState, animate = false) {
+    const card = valorantLiveCard(valorantState, { variant: "home" });
+    valorantHost.replaceChildren(...(card ? [card] : []));
+    valorantHost.hidden = !card;
+    if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
+    refreshIcons();
+  }
+
+  function renderLol(lolState, animate = false) {
+    const card = lolLiveCard(lolState, { variant: "home" });
+    lolHost.replaceChildren(...(card ? [card] : []));
+    lolHost.hidden = !card;
+    if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
+    refreshIcons();
+  }
+
   function renderSystemStatus(status = options.sync?.status?.() || options) {
     const labels = { loading: "Connexion", saving: "Synchronisation", saved: "Synchronise", offline: "En attente", retrying: "Nouvelle tentative", error: "Erreur", expired: "Session expiree" };
     cloudDetail.textContent = status.syncStatus === "saved" ? "Source principale Supabase" : "Etat Supabase en temps reel";
@@ -299,6 +321,8 @@ export function mountHome(stage, model, options = {}) {
     googleCalendarHost,
     notionHost,
     todoistHost,
+    valorantHost,
+    lolHost,
     briefingEnabled ? brainStrip : null,
     element("div", { className: "v8-home-secondary" }, [recent, signals])
   ]);
@@ -313,6 +337,8 @@ export function mountHome(stage, model, options = {}) {
   renderGoogleCalendar(googleCalendarLive?.state?.() || {});
   renderNotion(notionLive?.state?.() || {});
   renderTodoist(todoistLive?.state?.() || {});
+  renderValorant(valorantLive?.state?.() || {});
+  renderLol(lolLive?.state?.() || {});
   const releaseSpotify = spotifyLive?.subscribe?.((playback) => renderSpotify(playback, true), { immediate: false }) || (() => {});
   const releaseDiscord = discordLive?.subscribe?.((presenceState) => renderDiscord(presenceState, true), { immediate: false }) || (() => {});
   const releaseWeather = weatherLive?.subscribe?.((weatherState) => renderWeather(weatherState, true), { immediate: false }) || (() => {});
@@ -322,6 +348,8 @@ export function mountHome(stage, model, options = {}) {
   const releaseGoogleCalendar = googleCalendarLive?.subscribe?.((googleCalendarState) => renderGoogleCalendar(googleCalendarState, true), { immediate: false }) || (() => {});
   const releaseNotion = notionLive?.subscribe?.((notionState) => renderNotion(notionState, true), { immediate: false }) || (() => {});
   const releaseTodoist = todoistLive?.subscribe?.((todoistState) => renderTodoist(todoistState, true), { immediate: false }) || (() => {});
+  const releaseValorant = valorantLive?.subscribe?.((valorantState) => renderValorant(valorantState, true), { immediate: false }) || (() => {});
+  const releaseLol = lolLive?.subscribe?.((lolState) => renderLol(lolState, true), { immediate: false }) || (() => {});
   const releaseSync = options.sync?.subscribe?.(renderSystemStatus) || (() => {});
   refreshIcons();
   return () => {
@@ -334,6 +362,8 @@ export function mountHome(stage, model, options = {}) {
     releaseGoogleCalendar();
     releaseNotion();
     releaseTodoist();
+    releaseValorant();
+    releaseLol();
     releaseSync();
     page.remove();
   };

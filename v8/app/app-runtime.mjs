@@ -22,6 +22,8 @@ import { createGithubLive } from "../services/github-live.mjs";
 import { createGoogleCalendarLive } from "../services/google-calendar-live.mjs";
 import { createNotionLive } from "../services/notion-live.mjs";
 import { createTodoistLive } from "../services/todoist-live.mjs";
+import { createValorantLive } from "../services/valorant-live.mjs";
+import { createLeagueLive } from "../services/lol-live.mjs";
 import { clearPendingOAuthAuthorize, consumeOAuthCallback, readPendingOAuthAuthorize } from "../services/oauth-callback.mjs";
 import { mountShell } from "../ui/shell.mjs";
 import { createPanelManager } from "../ui/panel.mjs";
@@ -146,6 +148,20 @@ export function mountApplication(root, options = {}) {
     externalServices,
     isConnected: () => repository.snapshot().connections.some((connection) => connection.id === "todoist" && connection.methodId === "oauth-secure" && connection.status === "connected")
   });
+  const ownsValorantLive = !options.valorantLive;
+  const valorantLive = options.valorantLive || createValorantLive({
+    runtime: globalThis,
+    externalServices,
+    isConnected: () => repository.snapshot().connections.some((connection) => connection.id === "riot" && connection.status === "connected"),
+    getRiotId: () => repository.snapshot().connections.find((connection) => connection.id === "riot")?.reference || ""
+  });
+  const ownsLolLive = !options.lolLive;
+  const lolLive = options.lolLive || createLeagueLive({
+    runtime: globalThis,
+    externalServices,
+    isConnected: () => repository.snapshot().connections.some((connection) => connection.id === "riot" && connection.status === "connected"),
+    getRiotId: () => repository.snapshot().connections.find((connection) => connection.id === "riot")?.reference || ""
+  });
   let actions = null;
   let router = null;
   let shell = null;
@@ -224,6 +240,10 @@ export function mountApplication(root, options = {}) {
   else notionLive.refresh?.();
   if (ownsTodoistLive) todoistLive.start();
   else todoistLive.refresh?.();
+  if (ownsValorantLive) valorantLive.start();
+  else valorantLive.refresh?.();
+  if (ownsLolLive) lolLive.start();
+  else lolLive.refresh?.();
   const initialSpotify = spotifyLive.state?.() || {};
   const initialMedia = initialSpotify.playing ? "playing" : initialSpotify.available ? "paused" : "idle";
   const initialCalendar = calendarPresenceState(repository.snapshot().events);
@@ -471,8 +491,8 @@ export function mountApplication(root, options = {}) {
         await module.prepare?.();
         if (destroyed || requestId !== routeRequest || router?.current() !== route) return;
         lifecycle.mount(route, () => {
-          if (route === "activity") return module.mountActivity(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, presence, notify: (notice) => toasts.show(notice) });
-          if (route === "connections") return module.mountConnections(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, spotifyOAuthLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, externalServices, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.() });
+          if (route === "activity") return module.mountActivity(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, presence, notify: (notice) => toasts.show(notice) });
+          if (route === "connections") return module.mountConnections(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, spotifyOAuthLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, externalServices, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.() });
           if (route === "brain") return module.mountBrain(shell.stage, { repository, actions, state: store.getState(), presence, brain, notify: (notice) => toasts.show(notice) });
           return module.mountSettings(shell.stage, { repository, actions, state: store.getState(), sounds, externalServices, densityEngine, subscribeState: store.subscribe, brain, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.(), profile: options.profile || repository.activeProfile?.(), onProfileMediaUpdated: applyProfileMediaUpdate });
         });
@@ -503,7 +523,7 @@ export function mountApplication(root, options = {}) {
       return;
     }
     lifecycle.mount(route, () => {
-      if (route === "home") return mountHome(shell.stage, createHomeModel({ snapshot: repository.snapshot() }), { ...store.getState(), spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, presence, sync: cloudSync });
+      if (route === "home") return mountHome(shell.stage, createHomeModel({ snapshot: repository.snapshot() }), { ...store.getState(), spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, presence, sync: cloudSync });
       if (route === "notes") return mountNotes(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, presence, sync: cloudSync, notify: (notice) => toasts.show(notice) });
       if (route === "tasks") return mountTasks(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, presence, notify: (notice) => toasts.show(notice) });
       if (route === "calendar") return mountCalendar(shell.stage, { repository, actions, presence, notify: (notice) => toasts.show(notice) });
@@ -704,6 +724,8 @@ export function mountApplication(root, options = {}) {
     if (ownsGoogleCalendarLive) googleCalendarLive.destroy();
     if (ownsNotionLive) notionLive.destroy();
     if (ownsTodoistLive) todoistLive.destroy();
+    if (ownsValorantLive) valorantLive.destroy();
+    if (ownsLolLive) lolLive.destroy();
     if (ownsPresenceEngine) presence.destroy();
     densityEngine.destroy();
     brainRuntime?.destroy?.();
@@ -749,6 +771,8 @@ export function mountApplication(root, options = {}) {
       googleCalendarLive: googleCalendarLive.diagnostics?.() || null,
       notionLive: notionLive.diagnostics?.() || null,
       todoistLive: todoistLive.diagnostics?.() || null,
+      valorantLive: valorantLive.diagnostics?.() || null,
+      lolLive: lolLive.diagnostics?.() || null,
       documentTitle: document.title,
       documentContext: metadata.current(),
       activitySubscribers: activityJournal.subscriberCount(),

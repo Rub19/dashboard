@@ -1,8 +1,11 @@
 import { assertAllowedQuery, PATTERNS, queryText } from "../middleware/validation.js";
-import { getValorantAccount, getValorantStatus } from "../services/henrik-client.js";
+import { getValorantAccount, getValorantMatches, getValorantRank, getValorantStatus } from "../services/henrik-client.js";
 import { getUserProviderCredential } from "../services/supabase-client.js";
 import { cachedLoad } from "../utils/cache.js";
 import { routeResult } from "../utils/response.js";
+
+const VALORANT_REGIONS = ["eu", "na", "latam", "br", "ap", "kr"];
+const DEFAULT_REGION = "eu";
 
 async function ownKey(env, auth) {
   if (!auth?.userId) return null;
@@ -13,8 +16,24 @@ async function ownKey(env, auth) {
 export async function henrikRoute({ env, url, route, auth }) {
   if (route.action === "status") {
     assertAllowedQuery(url, ["region"]);
-    const region = queryText(url, "region", { values: ["eu", "na", "latam", "br", "ap", "kr"], max: 8 });
+    const region = queryText(url, "region", { values: VALORANT_REGIONS, max: 8 });
     const result = await cachedLoad(`henrik:status:${region}`, 60, async () => getValorantStatus(env, region, await ownKey(env, auth)));
+    return routeResult(result.data, { source: "henrik", cached: result.cached });
+  }
+  if (route.action === "rank") {
+    assertAllowedQuery(url, ["name", "tag", "region"]);
+    const name = queryText(url, "name", { pattern: PATTERNS.playerName, max: 32 });
+    const tag = queryText(url, "tag", { pattern: PATTERNS.playerTag, max: 8 });
+    const region = queryText(url, "region", { values: VALORANT_REGIONS, required: false, fallback: DEFAULT_REGION });
+    const result = await cachedLoad(`henrik:rank:${region}:${name.toLowerCase()}:${tag.toLowerCase()}`, 300, async () => getValorantRank(env, region, name, tag, await ownKey(env, auth)));
+    return routeResult(result.data, { source: "henrik", cached: result.cached });
+  }
+  if (route.action === "matches") {
+    assertAllowedQuery(url, ["name", "tag", "region"]);
+    const name = queryText(url, "name", { pattern: PATTERNS.playerName, max: 32 });
+    const tag = queryText(url, "tag", { pattern: PATTERNS.playerTag, max: 8 });
+    const region = queryText(url, "region", { values: VALORANT_REGIONS, required: false, fallback: DEFAULT_REGION });
+    const result = await cachedLoad(`henrik:matches:${region}:${name.toLowerCase()}:${tag.toLowerCase()}`, 180, async () => getValorantMatches(env, region, name, tag, await ownKey(env, auth)));
     return routeResult(result.data, { source: "henrik", cached: result.cached });
   }
   assertAllowedQuery(url, ["name", "tag"]);

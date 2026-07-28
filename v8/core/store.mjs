@@ -3,7 +3,7 @@ import { DEFAULT_BRAIN_PREFERENCES, sanitizeBrainPreferences } from "../brain/pr
 
 export const PERSISTENCE_KEY = "ethone:v8-ui-state";
 
-export const LIVE_CARD_IDS = Object.freeze(["system", "spotify", "discord", "weather", "minecraft", "steam", "github", "google-calendar", "notion", "todoist"]);
+export const LIVE_CARD_IDS = Object.freeze(["system", "spotify", "discord", "weather", "minecraft", "steam", "github", "google-calendar", "notion", "todoist", "valorant", "lol"]);
 const LIVE_CARD_ID_SET = new Set(LIVE_CARD_IDS);
 
 export function sanitizeActivityLiveLayout(input) {

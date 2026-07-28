@@ -9,6 +9,7 @@ import { minecraftRoute } from "./routes/minecraft.js";
 import { notionOAuthDisconnectRoute, notionOAuthExchangeRoute, notionPagesRoute } from "./routes/notion-oauth.js";
 import { spotifyNowPlayingRoute, spotifyOAuthDisconnectRoute, spotifyOAuthExchangeRoute } from "./routes/spotify-oauth.js";
 import { nowPlayingRoute } from "./routes/nowplaying.js";
+import { riotLolRoute } from "./routes/riot-lol.js";
 import { steamRoute } from "./routes/steam.js";
 import { supabaseRoute } from "./routes/supabase.js";
 import { todoistOAuthDisconnectRoute, todoistOAuthExchangeRoute, todoistTasksRoute } from "./routes/todoist-oauth.js";
@@ -39,6 +40,11 @@ export const ROUTES = Object.freeze([
   route("tracker.apex-profile", "/api/tracker/apex-profile", trackerRoute, { service: "tracker" }),
   route("henrik.account", "/api/henrik/account", henrikRoute, { service: "henrik", action: "account" }),
   route("henrik.status", "/api/henrik/status", henrikRoute, { service: "henrik", action: "status" }),
+  route("henrik.rank", "/api/henrik/rank", henrikRoute, { service: "henrik", action: "rank" }),
+  route("henrik.matches", "/api/henrik/matches", henrikRoute, { service: "henrik", action: "matches" }),
+  route("riot-lol.account", "/api/riot-lol/account", riotLolRoute, { service: "riot-lol", action: "account" }),
+  route("riot-lol.rank", "/api/riot-lol/rank", riotLolRoute, { service: "riot-lol", action: "rank" }),
+  route("riot-lol.matches", "/api/riot-lol/matches", riotLolRoute, { service: "riot-lol", action: "matches" }),
   route("twitch.channel", "/api/twitch/channel", twitchRoute, { service: "twitch" }),
   route("lastfm.recent-tracks", "/api/lastfm/recent-tracks", lastFmRoute, { service: "lastfm", action: "recent-tracks" }),
   route("lastfm.top-artists", "/api/lastfm/top-artists", lastFmRoute, { service: "lastfm", action: "top-artists" }),

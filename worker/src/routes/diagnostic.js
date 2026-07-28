@@ -8,6 +8,7 @@ const REQUIREMENTS = Object.freeze({
   steam: Object.freeze(["STEAM_API_KEY"]),
   tracker: Object.freeze(["TRACKER_API_KEY"]),
   henrik: Object.freeze(["HENRIK_API_KEY"]),
+  "riot-lol": Object.freeze(["RIOT_API_KEY"]),
   twitch: Object.freeze(["TWITCH_CLIENT_ID", "TWITCH_CLIENT_SECRET"]),
   lastfm: Object.freeze(["LASTFM_API_KEY"]),
   lanyard: Object.freeze([]),

@@ -12,6 +12,8 @@ import { githubLiveCard } from "../ui/github-live.mjs";
 import { googleCalendarLiveCard } from "../ui/google-calendar-live.mjs";
 import { notionLiveCard } from "../ui/notion-live.mjs";
 import { todoistLiveCard } from "../ui/todoist-live.mjs";
+import { valorantLiveCard } from "../ui/valorant-live.mjs";
+import { lolLiveCard } from "../ui/lol-live.mjs";
 import { createSelect } from "../ui/select.mjs";
 import { prepareActivityUI } from "./activity-style.mjs";
 
@@ -45,9 +47,11 @@ const LIVE_CARD_META = Object.freeze({
   github: Object.freeze({ label: "GitHub", icon: "github" }),
   "google-calendar": Object.freeze({ label: "Google Calendar", icon: "calendar-days" }),
   notion: Object.freeze({ label: "Notion", icon: "notebook-tabs" }),
-  todoist: Object.freeze({ label: "Todoist", icon: "circle-check-big" })
+  todoist: Object.freeze({ label: "Todoist", icon: "circle-check-big" }),
+  valorant: Object.freeze({ label: "Valorant", icon: "swords" }),
+  lol: Object.freeze({ label: "League of Legends", icon: "swords" })
 });
-const DEFAULT_LIVE_LAYOUT = Object.freeze({ order: Object.freeze(["system", "spotify", "discord", "weather", "minecraft", "steam", "github", "google-calendar", "notion", "todoist"]), hidden: Object.freeze([]) });
+const DEFAULT_LIVE_LAYOUT = Object.freeze({ order: Object.freeze(["system", "spotify", "discord", "weather", "minecraft", "steam", "github", "google-calendar", "notion", "todoist", "valorant", "lol"]), hidden: Object.freeze([]) });
 
 function moveButton(id, direction, disabled, label) {
   const button = actionButton({ actionId: "v8.activity.live.move", className: "v8-icon-button", ariaLabel: label, disabled }, [icon(direction === "up" ? "chevron-up" : "chevron-down")]);
@@ -209,6 +213,8 @@ export function mountActivity(stage, options = {}) {
   const googleCalendarLive = options.googleCalendarLive || null;
   const notionLive = options.notionLive || null;
   const todoistLive = options.todoistLive || null;
+  const valorantLive = options.valorantLive || null;
+  const lolLive = options.lolLive || null;
   const presence = options.presence || null;
   const state = options.state || {};
   let activeFilter = "all";
@@ -226,6 +232,8 @@ export function mountActivity(stage, options = {}) {
   let googleCalendarPresence = googleCalendarLive?.state?.() || {};
   let notionPresence = notionLive?.state?.() || {};
   let todoistPresence = todoistLive?.state?.() || {};
+  let valorantPresence = valorantLive?.state?.() || {};
+  let lolPresence = lolLive?.state?.() || {};
   const controller = new AbortController();
 
   const filterBar = element("div", { className: "v8-activity-filters", attributes: { role: "toolbar", "aria-label": "Filtrer l'activite" } });
@@ -325,7 +333,9 @@ export function mountActivity(stage, options = {}) {
     const googleCalendarCard = googleCalendarLiveCard(googleCalendarPresence, { variant: "activity" });
     const notionCard = notionLiveCard(notionPresence, { variant: "activity" });
     const todoistCard = todoistLiveCard(todoistPresence, { variant: "activity" });
-    const knownCards = { system: systemCard, spotify: spotifyPlayer, discord: discordCard, weather: weatherCard, minecraft: minecraftCard, steam: steamCard, github: githubCard, "google-calendar": googleCalendarCard, notion: notionCard, todoist: todoistCard };
+    const valorantCard = valorantLiveCard(valorantPresence, { variant: "activity" });
+    const lolCard = lolLiveCard(lolPresence, { variant: "activity" });
+    const knownCards = { system: systemCard, spotify: spotifyPlayer, discord: discordCard, weather: weatherCard, minecraft: minecraftCard, steam: steamCard, github: githubCard, "google-calendar": googleCalendarCard, notion: notionCard, todoist: todoistCard, valorant: valorantCard, lol: lolCard };
     liveGrid.replaceChildren();
     liveLayout.order.forEach((id) => {
       if (liveLayout.hidden.includes(id)) return;
@@ -464,6 +474,18 @@ export function mountActivity(stage, options = {}) {
     const card = liveGrid.querySelector(".v8-todoist-live");
     if (card) presence?.signalActivity?.(card, "system", { phase: "update" });
   }, { immediate: false }) || (() => {});
+  const releaseValorant = valorantLive?.subscribe?.((valorantState) => {
+    valorantPresence = valorantState;
+    render();
+    const card = liveGrid.querySelector(".v8-valorant-live");
+    if (card) presence?.signalActivity?.(card, "system", { phase: "update" });
+  }, { immediate: false }) || (() => {});
+  const releaseLol = lolLive?.subscribe?.((lolState) => {
+    lolPresence = lolState;
+    render();
+    const card = liveGrid.querySelector(".v8-lol-live");
+    if (card) presence?.signalActivity?.(card, "system", { phase: "update" });
+  }, { immediate: false }) || (() => {});
   stage.replaceChildren(page);
   render();
   const releaseDensity = options.subscribeState?.((next) => updateCollectionDensityControl(densityControl, next)) || (() => {});
@@ -490,6 +512,8 @@ export function mountActivity(stage, options = {}) {
     releaseGoogleCalendar();
     releaseNotion();
     releaseTodoist();
+    releaseValorant();
+    releaseLol();
     releaseDensity();
     releaseLiveLayout();
     page.remove();

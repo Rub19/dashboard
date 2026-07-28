@@ -223,6 +223,8 @@ export function mountConnections(stage, options = {}) {
   const googleCalendarLive = options.googleCalendarLive || null;
   const notionLive = options.notionLive || null;
   const todoistLive = options.todoistLive || null;
+  const valorantLive = options.valorantLive || null;
+  const lolLive = options.lolLive || null;
   function refreshLiveBridges(id) {
     if (id === "spotify") {
       spotifyLive?.refresh?.();
@@ -236,6 +238,10 @@ export function mountConnections(stage, options = {}) {
     if (id === "github") githubLive?.refresh?.();
     if (id === "notion") notionLive?.refresh?.();
     if (id === "todoist") todoistLive?.refresh?.();
+    if (id === "riot") {
+      valorantLive?.refresh?.();
+      lolLive?.refresh?.();
+    }
   }
   const externalServices = options.externalServices || null;
   const clientProvider = typeof options.clientProvider === "function" ? options.clientProvider : null;

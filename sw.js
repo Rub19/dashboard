@@ -1,4 +1,4 @@
-const ETHONE_VERSION = "2026-07-28-experience-v132";
+const ETHONE_VERSION = "2026-07-28-experience-v133";
 const ETHONE_CACHE = `ethone-${ETHONE_VERSION}`;
 const ETHONE_OFFLINE_URL = "./index.html";
 
@@ -99,18 +99,20 @@ const ETHONE_V8_ASSETS = [
   "./v8/services/notion-live.mjs",
   "./v8/services/todoist-oauth.mjs",
   "./v8/services/todoist-live.mjs",
+  "./v8/services/valorant-live.mjs",
+  "./v8/services/lol-live.mjs",
   "./v8/services/supabase-state-sync.mjs",
   "./v8/services/weather-live.mjs",
   "./v8/services/steam-live.mjs",
   "./v8/services/minecraft-live.mjs",
-  "./v8/styles/base.css?v=experience-v132",
-  "./v8/styles/activity.css?v=experience-v132",
-  "./v8/styles/components.css?v=experience-v132",
-  "./v8/styles/entry.css?v=experience-v132",
-  "./v8/styles/presence.css?v=experience-v132",
-  "./v8/styles/shell.css?v=experience-v132",
-  "./v8/styles/tokens.css?v=experience-v132",
-  "./v8/styles/workspaces.css?v=experience-v132",
+  "./v8/styles/base.css?v=experience-v133",
+  "./v8/styles/activity.css?v=experience-v133",
+  "./v8/styles/components.css?v=experience-v133",
+  "./v8/styles/entry.css?v=experience-v133",
+  "./v8/styles/presence.css?v=experience-v133",
+  "./v8/styles/shell.css?v=experience-v133",
+  "./v8/styles/tokens.css?v=experience-v133",
+  "./v8/styles/workspaces.css?v=experience-v133",
   "./v8/ui/discord-live.mjs",
   "./v8/ui/weather-live.mjs",
   "./v8/ui/steam-live.mjs",
@@ -119,6 +121,8 @@ const ETHONE_V8_ASSETS = [
   "./v8/ui/google-calendar-live.mjs",
   "./v8/ui/notion-live.mjs",
   "./v8/ui/todoist-live.mjs",
+  "./v8/ui/valorant-live.mjs",
+  "./v8/ui/lol-live.mjs",
   "./v8/ui/dom.mjs",
   "./v8/ui/empty-state.mjs",
   "./v8/ui/form-system.mjs",

@@ -46,7 +46,15 @@ export function providerFetch(counter = { calls: 0 }) {
     if (url.hostname === "public-api.tracker.gg") return json({ data: { platformInfo: { platformSlug: "origin", platformUserIdentifier: "Player", platformUserHandle: "Player", avatarUrl: "https://tracker.gg/avatar.png" }, segments: [{ type: "overview", metadata: { name: "Overview" }, stats: { level: { displayName: "Level", displayValue: "10", percentile: 50 } } }] } });
     if (url.hostname === "api.henrikdev.xyz") {
       if (url.pathname.includes("/status/")) return json({ status: 200, region: "eu", data: { maintenances: [] } });
+      if (url.pathname.includes("/mmr/")) return json({ status: 200, data: { currenttier: 21, currenttierpatched: "Immortal 1", ranking_in_tier: 45, mmr_change_to_last_game: 12, elo: 1234, images: { small: "https://media.valorant-api.com/rank.png" } } });
+      if (url.pathname.includes("/matches/")) return json({ status: 200, data: [{ metadata: { matchid: "match-1", map: "Ascent", mode: "Competitive", game_start: 1700000000, game_length: 1800 }, players: { all_players: [{ name: "Player", tag: "EUW", team: "Red", character: "Jett", stats: { kills: 20, deaths: 10, assists: 5, score: 4500 } }] }, teams: { red: { has_won: true }, blue: { has_won: false } } }] });
       return json({ status: 200, data: { puuid: "public-player-id", name: "Player", tag: "EUW", region: "eu", account_level: 42, card: "https://media.valorant-api.com/card.png" } });
+    }
+    if (url.hostname.endsWith(".api.riotgames.com")) {
+      if (url.pathname.includes("/riot/account/v1/accounts/by-riot-id/")) return json({ puuid: "lol-puuid-test", gameName: "Player", tagLine: "EUW" });
+      if (url.pathname.includes("/lol/league/v4/entries/by-puuid/")) return json([{ queueType: "RANKED_SOLO_5x5", tier: "GOLD", rank: "II", leaguePoints: 45, wins: 30, losses: 25 }]);
+      if (url.pathname.includes("/lol/match/v5/matches/by-puuid/")) return json(["match-lol-1"]);
+      if (url.pathname.includes("/lol/match/v5/matches/")) return json({ metadata: { matchId: "match-lol-1" }, info: { gameMode: "CLASSIC", gameDuration: 1900, gameEndTimestamp: 1700003500000, participants: [{ puuid: "lol-puuid-test", championName: "Ahri", win: true, kills: 8, deaths: 2, assists: 10, totalMinionsKilled: 150, neutralMinionsKilled: 20 }] } });
     }
     if (url.hostname === "id.twitch.tv") return json({ access_token: "t".repeat(32), expires_in: 3600 });
     if (url.hostname === "api.twitch.tv") {
@@ -88,6 +96,7 @@ export function testEnv(overrides = {}) {
     STEAM_API_KEY: "a".repeat(24),
     TRACKER_API_KEY: "b".repeat(24),
     HENRIK_API_KEY: "c".repeat(24),
+    RIOT_API_KEY: "k".repeat(24),
     TWITCH_CLIENT_ID: "d".repeat(24),
     TWITCH_CLIENT_SECRET: "e".repeat(32),
     LASTFM_API_KEY: "f".repeat(24),

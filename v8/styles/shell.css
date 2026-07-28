@@ -2473,6 +2473,31 @@ html[data-v8-interactions] .v8-panel-notice:hover > .v8-selection-control,.v8-pa
 .v8-todoist-live__meta { display:flex;min-width:0;align-items:center;gap:6px;margin-bottom:2px;color:#e44332; }.v8-todoist-live__meta svg { flex:0 0 auto;width:14px;height:14px; }.v8-todoist-live__meta small { overflow:hidden;font-size:var(--v8-font-micro);font-weight:var(--v8-weight-semibold);text-overflow:ellipsis;text-transform:uppercase;white-space:nowrap; }
 .v8-todoist-live--activity { min-height:120px; }
 
+.v8-valorant-live { position:relative;display:grid;min-width:0;grid-template-columns:52px minmax(0,1fr);align-items:center;gap:var(--v8-space-4);padding:var(--v8-space-4);border-color:color-mix(in srgb,#ff4655 26%,var(--v8-border));background:var(--v8-reflection-card),color-mix(in srgb,#ff4655 4%,var(--v8-surface-1));box-shadow:var(--v8-shadow-card-lit); }
+.v8-valorant-emblem { display:grid;width:52px;height:52px;place-items:center;overflow:hidden;border-radius:var(--v8-radius-md);background:color-mix(in srgb,#ff4655 12%,transparent);color:#ff4655; }
+.v8-valorant-emblem__image { display:grid;width:100%;height:100%;place-items:center; }
+.v8-valorant-emblem__image img { width:100%;height:100%;object-fit:contain; }
+.v8-valorant-emblem__image.is-fallback svg { width:26px;height:26px; }
+.v8-valorant-live__body { display:grid;min-width:0;gap:3px; }.v8-valorant-live__body > strong { overflow:hidden;color:var(--v8-text);font-size:var(--v8-font-md);text-overflow:ellipsis;white-space:nowrap; }.v8-valorant-live__body > p { overflow:hidden;color:var(--v8-text-secondary);font-size:var(--v8-font-xs);text-overflow:ellipsis;white-space:nowrap; }
+.v8-valorant-live__meta { display:flex;min-width:0;align-items:center;gap:6px;margin-bottom:2px;color:#ff4655; }.v8-valorant-live__meta svg { flex:0 0 auto;width:14px;height:14px; }.v8-valorant-live__meta small { overflow:hidden;font-size:var(--v8-font-micro);font-weight:var(--v8-weight-semibold);text-overflow:ellipsis;text-transform:uppercase;white-space:nowrap; }
+.v8-valorant-live__matches { display:flex;gap:4px;margin-top:4px; }
+.v8-valorant-match-dot { width:8px;height:8px;border-radius:50%;background:var(--v8-border); }
+.v8-valorant-match-dot.is-win { background:#5fd68f; }
+.v8-valorant-match-dot.is-loss { background:#ff4655; }
+.v8-valorant-live--activity { min-height:120px; }
+@media (max-width:540px) { .v8-valorant-live { grid-template-columns:46px minmax(0,1fr);gap:var(--v8-space-3);padding:var(--v8-space-3); } }
+
+.v8-lol-live { position:relative;display:grid;min-width:0;grid-template-columns:44px minmax(0,1fr);align-items:center;gap:var(--v8-space-4);padding:var(--v8-space-4);border-color:color-mix(in srgb,#c89b3c 26%,var(--v8-border));background:var(--v8-reflection-card),color-mix(in srgb,#c89b3c 4%,var(--v8-surface-1));box-shadow:var(--v8-shadow-card-lit); }
+.v8-lol-icon { display:grid;width:44px;height:44px;place-items:center;color:#c89b3c; }
+.v8-lol-icon svg { width:26px;height:26px; }
+.v8-lol-live__body { display:grid;min-width:0;gap:3px; }.v8-lol-live__body > strong { overflow:hidden;color:var(--v8-text);font-size:var(--v8-font-md);text-overflow:ellipsis;white-space:nowrap; }.v8-lol-live__body > p { overflow:hidden;color:var(--v8-text-secondary);font-size:var(--v8-font-xs);text-overflow:ellipsis;white-space:nowrap; }
+.v8-lol-live__meta { display:flex;min-width:0;align-items:center;gap:6px;margin-bottom:2px;color:#c89b3c; }.v8-lol-live__meta svg { flex:0 0 auto;width:14px;height:14px; }.v8-lol-live__meta small { overflow:hidden;font-size:var(--v8-font-micro);font-weight:var(--v8-weight-semibold);text-overflow:ellipsis;text-transform:uppercase;white-space:nowrap; }
+.v8-lol-live__matches { display:flex;gap:4px;margin-top:4px; }
+.v8-lol-match-dot { width:8px;height:8px;border-radius:50%;background:var(--v8-border); }
+.v8-lol-match-dot.is-win { background:#5fd68f; }
+.v8-lol-match-dot.is-loss { background:#ff4655; }
+.v8-lol-live--activity { min-height:120px; }
+
 .v8-brain-context__identity { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--v8-space-4); }
 .v8-brain-orbit { display: grid; width: 64px; height: 64px; place-items: center; border: 1px solid var(--v8-brain-line); border-radius: 50%; background: var(--v8-brain-soft); color: var(--v8-brain); box-shadow: 0 0 36px var(--v8-light-brain); }
 .v8-brain-orbit svg { width: 28px; height: 28px; }

@@ -36,7 +36,7 @@ test("browser CSP is exact-origin and blocks script attributes", () => {
     "http://127.0.0.1:8787",
     "http://localhost:8787"
   ]);
-  assert.equal(policy.match(/img-src\s+([^;]+)/)?.[1], "'self' data: blob: https://i.scdn.co https://cdn.discordapp.com https://textures.minecraft.net https://avatars.githubusercontent.com https://bvgifyzhpzkbrwdjrqsg.supabase.co");
+  assert.equal(policy.match(/img-src\s+([^;]+)/)?.[1], "'self' data: blob: https://i.scdn.co https://cdn.discordapp.com https://textures.minecraft.net https://avatars.githubusercontent.com https://avatars.steamstatic.com https://avatars.akamaihd.net https://bvgifyzhpzkbrwdjrqsg.supabase.co");
   assert.doesNotMatch(policy, /https:\/\/\*\.(?:supabase\.co|workers\.dev)|media-src[^;]*https:/);
 });
 
@@ -416,7 +416,7 @@ test("service worker waits for explicit activation and only removes ETHONE cache
   assert.match(worker, /v8\/services\/auth-storage\.mjs/);
   assert.match(worker, /v8\/services\/rate-limiter\.mjs/);
   assert.match(worker, /v8\/entry\/password-recovery\.mjs/);
-  assert.match(worker, /2026-07-28-experience-v129/);
+  assert.match(worker, /2026-07-28-experience-v130/);
 });
 
 test("canonical edge verifier enforces headers, anti-framing and no-store caching", async () => {

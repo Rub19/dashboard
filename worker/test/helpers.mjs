@@ -94,6 +94,7 @@ export function testEnv(overrides = {}) {
     GITHUB_CLIENT_SECRET: "g".repeat(32),
     GOOGLE_CLIENT_SECRET: "h".repeat(32),
     NOTION_CLIENT_SECRET: "i".repeat(32),
+    TODOIST_CLIENT_SECRET: "j".repeat(32),
     OUTBOUND_TIMEOUT_MS: "100",
     RATE_LIMIT_EDGE: limiter(),
     RATE_LIMIT_STANDARD: limiter(),

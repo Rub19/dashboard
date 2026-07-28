@@ -11,6 +11,7 @@ import { spotifyNowPlayingRoute, spotifyOAuthDisconnectRoute, spotifyOAuthExchan
 import { nowPlayingRoute } from "./routes/nowplaying.js";
 import { steamRoute } from "./routes/steam.js";
 import { supabaseRoute } from "./routes/supabase.js";
+import { todoistOAuthDisconnectRoute, todoistOAuthExchangeRoute, todoistTasksRoute } from "./routes/todoist-oauth.js";
 import { trackerRoute } from "./routes/tracker.js";
 import { twitchRoute } from "./routes/twitch.js";
 import { weatherRoute } from "./routes/weather.js";
@@ -58,7 +59,10 @@ export const ROUTES = Object.freeze([
   route("google-calendar.oauth.disconnect", "/api/google-calendar/oauth/disconnect", googleCalendarOAuthDisconnectRoute, { method: "POST", service: "google-calendar", rateLimit: "strict" }),
   route("notion.oauth.exchange", "/api/notion/oauth/exchange", notionOAuthExchangeRoute, { method: "POST", service: "notion", rateLimit: "strict" }),
   route("notion.pages", "/api/notion/pages", notionPagesRoute, { service: "notion" }),
-  route("notion.oauth.disconnect", "/api/notion/oauth/disconnect", notionOAuthDisconnectRoute, { method: "POST", service: "notion", rateLimit: "strict" })
+  route("notion.oauth.disconnect", "/api/notion/oauth/disconnect", notionOAuthDisconnectRoute, { method: "POST", service: "notion", rateLimit: "strict" }),
+  route("todoist.oauth.exchange", "/api/todoist/oauth/exchange", todoistOAuthExchangeRoute, { method: "POST", service: "todoist", rateLimit: "strict" }),
+  route("todoist.tasks", "/api/todoist/tasks", todoistTasksRoute, { service: "todoist" }),
+  route("todoist.oauth.disconnect", "/api/todoist/oauth/disconnect", todoistOAuthDisconnectRoute, { method: "POST", service: "todoist", rateLimit: "strict" })
 ]);
 
 function normalizedPath(pathname) {

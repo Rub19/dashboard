@@ -20,6 +20,7 @@ import { beginSpotifyAuthorize } from "../services/spotify-oauth.mjs";
 import { beginGithubAuthorize } from "../services/github-oauth.mjs";
 import { beginGoogleCalendarAuthorize } from "../services/google-calendar-oauth.mjs";
 import { beginNotionAuthorize } from "../services/notion-oauth.mjs";
+import { beginTodoistAuthorize } from "../services/todoist-oauth.mjs";
 import { OAUTH_APP_CLIENT_IDS } from "../data/oauth-app-config.mjs";
 import {
   connectionMetrics,
@@ -74,7 +75,8 @@ const OAUTH_CONNECT_ACTIONS = Object.freeze({
   "spotify:oauth-pkce": Object.freeze({ actionId: "v8.connections.spotify.connect", icon: "music", label: "Se connecter avec Spotify" }),
   "github:oauth-secure": Object.freeze({ actionId: "v8.connections.github.connect", icon: "github", label: "Se connecter avec GitHub" }),
   "google-calendar:oauth-secure": Object.freeze({ actionId: "v8.connections.google-calendar.connect", icon: "calendar-days", label: "Se connecter avec Google" }),
-  "notion:public-oauth": Object.freeze({ actionId: "v8.connections.notion.connect", icon: "notebook-tabs", label: "Se connecter avec Notion" })
+  "notion:public-oauth": Object.freeze({ actionId: "v8.connections.notion.connect", icon: "notebook-tabs", label: "Se connecter avec Notion" }),
+  "todoist:oauth-secure": Object.freeze({ actionId: "v8.connections.todoist.connect", icon: "circle-check-big", label: "Se connecter avec Todoist" })
 });
 
 function connectionAction(actionId, integrationId, variant, children, options = {}) {

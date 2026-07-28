@@ -30,6 +30,9 @@ const OPERATIONS = Object.freeze({
   notionOAuthExchange: Object.freeze({ path: "/api/notion/oauth/exchange", method: "POST", auth: true, params: ["code", "clientId"] }),
   notionPages: Object.freeze({ path: "/api/notion/pages", auth: true, params: [] }),
   notionOAuthDisconnect: Object.freeze({ path: "/api/notion/oauth/disconnect", method: "POST", auth: true, params: [] }),
+  todoistOAuthExchange: Object.freeze({ path: "/api/todoist/oauth/exchange", method: "POST", auth: true, params: ["code", "clientId"] }),
+  todoistTasks: Object.freeze({ path: "/api/todoist/tasks", auth: true, params: [] }),
+  todoistOAuthDisconnect: Object.freeze({ path: "/api/todoist/oauth/disconnect", method: "POST", auth: true, params: [] }),
   publicProfile: Object.freeze({ path: "/api/supabase/public-profile", auth: true, params: ["username"] })
 });
 
@@ -217,6 +220,11 @@ export function createExternalServicesClient(options = {}) {
       exchange: (code, clientId) => execute("notionOAuthExchange", { code, clientId }),
       pages: () => execute("notionPages", {}),
       disconnect: () => execute("notionOAuthDisconnect", {})
+    }),
+    todoistOAuth: Object.freeze({
+      exchange: (code, clientId) => execute("todoistOAuthExchange", { code, clientId }),
+      tasks: () => execute("todoistTasks", {}),
+      disconnect: () => execute("todoistOAuthDisconnect", {})
     }),
     publicProfile: (username) => execute("publicProfile", { username }),
     diagnostics: () => Object.freeze({ ...status, activeRequests: activeControllers.size, environment: config.environment, baseUrl: network.redactUrl?.(baseUrl) || baseUrl }),

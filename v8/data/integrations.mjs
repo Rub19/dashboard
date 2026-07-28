@@ -187,6 +187,9 @@ const SPECIAL_METHODS = Object.freeze({
     method({ id: "public-oauth", label: "Connexion publique", summary: "Connexion via l'application ETHONE. Derniere page ou base modifiee parmi celles partagees.", availability: "backend", recommended: true, live: true, quality: "Temps reel", apiVersion: "Notion API", badges: ["OAuth", "Temps reel", "Cloud"], capabilities: ["Derniere page modifiee", "Contenu partage"], permissions: ["Contenu explicitement partage (Read content)"] }),
     method({ id: "internal-backend", label: "Connexion interne", summary: "Pour un seul workspace, avec identifiants conserves uniquement cote serveur.", availability: "backend", quality: "Workspace", apiVersion: "Notion API", badges: ["Cloud", "Workspace"], capabilities: ["Pages partagees", "Bases partagees"], permissions: ["Contenu explicitement partage"] })
   ]),
+  todoist: Object.freeze([
+    method({ id: "oauth-secure", label: "Todoist OAuth", summary: "Connexion via l'application ETHONE, pour la prochaine tache et le nombre de taches ouvertes.", availability: "backend", recommended: true, live: true, quality: "Temps reel", apiVersion: "Todoist REST API", badges: ["OAuth", "Temps reel", "Cloud"], capabilities: ["Prochaine tache", "Taches ouvertes"], permissions: ["Lecture des taches (data:read)"] })
+  ]),
   steam: Object.freeze([
     method({ id: "public-profile", label: "Profil public", summary: "Jeux et activite visibles selon les reglages de confidentialite Steam.", availability: "public", recommended: true, quality: "Lecture seule", apiVersion: "Steam Community", live: true, badges: ["Simple", "Lecture seule"], capabilities: ["Jeu actuel", "Bibliotheque publique", "Temps de jeu public"], permissions: ["Profil Steam public"], field: { type: "text", label: "Profil, pseudo ou identifiant Steam", placeholder: "https://steamcommunity.com/id/... ou votre pseudo", required: true } }),
     method({ id: "server-connector", label: "Steam Web API", summary: "Enrichissement via un relais serveur et l'API officielle.", availability: "backend", quality: "Complete", apiVersion: "Steam Web API", guideKind: "apikey", live: true, badges: ["Cloud"], capabilities: ["Profil", "Jeux", "Statistiques disponibles"], permissions: ["Donnees exposees par Steam"], credential: { provider: "steam", fields: [{ key: "apiKey", label: "Cle API Steam Web API", placeholder: "0123456789ABCDEF0123456789ABCDEF" }] } })
@@ -223,6 +226,10 @@ const SPECIAL_RESOURCES = Object.freeze({
   notion: Object.freeze([
     { label: "Guide d'autorisation", url: "https://developers.notion.com/guides/get-started/authorization", kind: "Documentation" },
     { label: "Mes integrations", url: "https://www.notion.so/profile/integrations", kind: "Console" }
+  ]),
+  todoist: Object.freeze([
+    { label: "Guide OAuth", url: "https://developer.todoist.com/guides/#oauth", kind: "Documentation" },
+    { label: "Console App Management", url: "https://app.todoist.com/app/settings/integrations/app-management", kind: "Console" }
   ]),
   twitch: Object.freeze([
     { label: "Authentification Twitch", url: "https://dev.twitch.tv/docs/authentication/", kind: "Documentation" },
@@ -377,6 +384,18 @@ const SPECIAL_GUIDES = Object.freeze({
       guideStep("permissions", "Capacites a demander", "Read content uniquement."),
       guideStep("keys", "Copier le jeton d'integration interne", "Affiche une seule fois dans l'onglet \"Secrets\"."),
       guideStep("share", "Partager les pages", "Dans Notion, ouvrez chaque page a suivre > \"...\" > Connections > ajoutez votre integration.")
+    ])
+  }),
+  todoist: Object.freeze({
+    "oauth-secure": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir App Management sur Todoist", "Connectez-vous puis \"Create a new app\".", { resource }),
+      guideStep("app", "Configurer l'application", "Nom libre, description libre."),
+      guideStep("redirect", "Ajouter l'OAuth redirect URL", "Cette valeur exacte, sans rien ajouter derriere.", { copyValue: "https://ethone.dev/" }),
+      guideStep("scopes", "Scope a demander", "data:read (lecture seule des taches).", { copyValue: "data:read" }),
+      guideStep("id", "Copier le Client ID", "Affiche directement dans les parametres de l'application."),
+      guideStep("secret", "Copier le Client Secret", "Affiche a cote du Client ID."),
+      guideStep("wrangler", "Client Secret conserve cote Worker", "Le Client ID est deja configure dans ETHONE. Le Client Secret ne se colle jamais dans le navigateur : il reste enregistre comme secret Worker (TODOIST_CLIENT_SECRET)."),
+      guideStep("connect", "Se connecter avec Todoist", "L'application ETHONE est prete : cliquez \"Se connecter avec Todoist\" pour autoriser votre propre compte.")
     ])
   }),
   "google-drive": Object.freeze({

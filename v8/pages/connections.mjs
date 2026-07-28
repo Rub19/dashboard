@@ -222,6 +222,7 @@ export function mountConnections(stage, options = {}) {
   const githubLive = options.githubLive || null;
   const googleCalendarLive = options.googleCalendarLive || null;
   const notionLive = options.notionLive || null;
+  const todoistLive = options.todoistLive || null;
   function refreshLiveBridges(id) {
     if (id === "spotify") {
       spotifyLive?.refresh?.();
@@ -234,6 +235,7 @@ export function mountConnections(stage, options = {}) {
     if (id === "google-calendar") googleCalendarLive?.refresh?.();
     if (id === "github") githubLive?.refresh?.();
     if (id === "notion") notionLive?.refresh?.();
+    if (id === "todoist") todoistLive?.refresh?.();
   }
   const externalServices = options.externalServices || null;
   const clientProvider = typeof options.clientProvider === "function" ? options.clientProvider : null;
@@ -902,6 +904,32 @@ export function mountConnections(stage, options = {}) {
       return unavailable("sessionStorage indisponible");
     }
     return completed("Redirection vers Notion", { integration: id });
+  }));
+
+  releases.push(actions.scope("v8.connections.todoist.connect", async (context) => {
+    const id = context.element?.dataset.integration || selectedId;
+    const integration = integrationById(id);
+    const connection = connectionMap().get(id);
+    const method = selectedMethod(integration, connection);
+    if (id !== "todoist" || method?.id !== "oauth-secure") return unavailable("Methode indisponible.");
+    const availability = methodAvailability(method, connectionList());
+    if (!availability.usable) {
+      notify({ id: `connection-blocked-${id}`, title: integration?.name || "Connection", message: availability.reason, type: "warning" });
+      return unavailable(availability.reason);
+    }
+    const clientId = OAUTH_APP_CLIENT_IDS.todoist;
+    repository.connections.configure(id, {
+      methodId: method.id,
+      reference: clientId,
+      apiVersion: method.apiVersion || "En attente",
+      detail: "Redirection vers Todoist en cours."
+    });
+    const started = await beginTodoistAuthorize(clientId, globalThis);
+    if (!started) {
+      notify({ id: `connection-oauth-${id}`, title: integration?.name || "Todoist", message: "Impossible de demarrer la connexion Todoist sur cet appareil.", type: "error" });
+      return unavailable("sessionStorage indisponible");
+    }
+    return completed("Redirection vers Todoist", { integration: id });
   }));
   releases.push(actions.scope("v8.connections.test", async (context) => {
     const id = context.element?.dataset.integration || selectedId;

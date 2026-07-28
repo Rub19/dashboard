@@ -9,6 +9,7 @@ import { steamLiveCard } from "../ui/steam-live.mjs";
 import { githubLiveCard } from "../ui/github-live.mjs";
 import { googleCalendarLiveCard } from "../ui/google-calendar-live.mjs";
 import { notionLiveCard } from "../ui/notion-live.mjs";
+import { todoistLiveCard } from "../ui/todoist-live.mjs";
 import { localeTag } from "../i18n/catalog.mjs";
 
 function formattedDate(isoDate) {
@@ -66,6 +67,7 @@ export function mountHome(stage, model, options = {}) {
   const githubLive = options.githubLive || null;
   const googleCalendarLive = options.googleCalendarLive || null;
   const notionLive = options.notionLive || null;
+  const todoistLive = options.todoistLive || null;
   const presence = options.presence || null;
   const briefingEnabled = options.brainPreferences?.enabled !== false && options.brainPreferences?.briefing?.enabled !== false;
   const continuation = model.nextTasks[0]
@@ -196,6 +198,7 @@ export function mountHome(stage, model, options = {}) {
   const githubHost = element("section", { className: "v8-home-github-host", attributes: { "aria-label": "Profil GitHub", hidden: true } });
   const googleCalendarHost = element("section", { className: "v8-home-google-calendar-host", attributes: { "aria-label": "Google Calendar", hidden: true } });
   const notionHost = element("section", { className: "v8-home-notion-host", attributes: { "aria-label": "Notion", hidden: true } });
+  const todoistHost = element("section", { className: "v8-home-todoist-host", attributes: { "aria-label": "Todoist", hidden: true } });
 
   function renderSpotify(playback, animate = false) {
     const player = spotifyLiveCard(playback, { variant: "home" });
@@ -261,6 +264,14 @@ export function mountHome(stage, model, options = {}) {
     refreshIcons();
   }
 
+  function renderTodoist(todoistState, animate = false) {
+    const card = todoistLiveCard(todoistState, { variant: "home" });
+    todoistHost.replaceChildren(...(card ? [card] : []));
+    todoistHost.hidden = !card;
+    if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
+    refreshIcons();
+  }
+
   function renderSystemStatus(status = options.sync?.status?.() || options) {
     const labels = { loading: "Connexion", saving: "Synchronisation", saved: "Synchronise", offline: "En attente", retrying: "Nouvelle tentative", error: "Erreur", expired: "Session expiree" };
     cloudDetail.textContent = status.syncStatus === "saved" ? "Source principale Supabase" : "Etat Supabase en temps reel";
@@ -287,6 +298,7 @@ export function mountHome(stage, model, options = {}) {
     githubHost,
     googleCalendarHost,
     notionHost,
+    todoistHost,
     briefingEnabled ? brainStrip : null,
     element("div", { className: "v8-home-secondary" }, [recent, signals])
   ]);
@@ -300,6 +312,7 @@ export function mountHome(stage, model, options = {}) {
   renderGithub(githubLive?.state?.() || {});
   renderGoogleCalendar(googleCalendarLive?.state?.() || {});
   renderNotion(notionLive?.state?.() || {});
+  renderTodoist(todoistLive?.state?.() || {});
   const releaseSpotify = spotifyLive?.subscribe?.((playback) => renderSpotify(playback, true), { immediate: false }) || (() => {});
   const releaseDiscord = discordLive?.subscribe?.((presenceState) => renderDiscord(presenceState, true), { immediate: false }) || (() => {});
   const releaseWeather = weatherLive?.subscribe?.((weatherState) => renderWeather(weatherState, true), { immediate: false }) || (() => {});
@@ -308,6 +321,7 @@ export function mountHome(stage, model, options = {}) {
   const releaseGithub = githubLive?.subscribe?.((githubState) => renderGithub(githubState, true), { immediate: false }) || (() => {});
   const releaseGoogleCalendar = googleCalendarLive?.subscribe?.((googleCalendarState) => renderGoogleCalendar(googleCalendarState, true), { immediate: false }) || (() => {});
   const releaseNotion = notionLive?.subscribe?.((notionState) => renderNotion(notionState, true), { immediate: false }) || (() => {});
+  const releaseTodoist = todoistLive?.subscribe?.((todoistState) => renderTodoist(todoistState, true), { immediate: false }) || (() => {});
   const releaseSync = options.sync?.subscribe?.(renderSystemStatus) || (() => {});
   refreshIcons();
   return () => {
@@ -319,6 +333,7 @@ export function mountHome(stage, model, options = {}) {
     releaseGithub();
     releaseGoogleCalendar();
     releaseNotion();
+    releaseTodoist();
     releaseSync();
     page.remove();
   };

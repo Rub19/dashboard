@@ -11,7 +11,7 @@ export function createSpotifyOAuthLive(options = {}) {
   const getClientId = typeof options.getClientId === "function" ? options.getClientId : () => "";
   const isConnected = typeof options.isConnected === "function" ? options.isConnected : () => false;
   const onTrack = typeof options.onTrack === "function" ? options.onTrack : () => {};
-  const pollIntervalMs = Math.max(12000, Number(options.pollIntervalMs) || 15000);
+  const pollIntervalMs = Math.max(10000, Number(options.pollIntervalMs) || 12000);
   let timer = 0;
   let started = false;
   let destroyed = false;

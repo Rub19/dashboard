@@ -75,7 +75,7 @@ export function createDiscordLive(options = {}) {
   const externalServices = options.externalServices || null;
   const getUserId = typeof options.getUserId === "function" ? options.getUserId : () => "";
   const isConnected = typeof options.isConnected === "function" ? options.isConnected : () => false;
-  const pollIntervalMs = Math.max(15000, Number(options.pollIntervalMs) || 25000);
+  const pollIntervalMs = Math.max(10000, Number(options.pollIntervalMs) || 12000);
   const subscribers = new Set();
   let state = normalizeDiscordPresence({}, { connected: false });
   let timer = 0;

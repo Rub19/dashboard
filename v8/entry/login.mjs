@@ -3,6 +3,13 @@ import { statusState } from "../ui/empty-state.mjs";
 import { clearFieldState, enhanceForm, formField as createFormField, passwordControl, runFormSubmission, setFieldState } from "../ui/form-system.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
 import { createSelect } from "../ui/select.mjs";
+import { BRAND_MARK_SVG } from "../ui/navigation.mjs";
+
+function brandMark(className) {
+  const mark = element("span", { className, attributes: { "aria-hidden": "true" } });
+  mark.innerHTML = BRAND_MARK_SVG;
+  return mark;
+}
 
 export const LOGIN_LOCALES = Object.freeze({
   fr: Object.freeze({
@@ -474,7 +481,7 @@ export function mountLogin(root, options = {}) {
     element("div", { className: "v8-entry__frame" }, [
       element("header", { className: "v8-entry__topbar" }, [
         element("div", { className: "v8-entry__brand" }, [
-          element("span", { className: "v8-entry__mark", text: "E", attributes: { "aria-hidden": "true" } }),
+          brandMark("v8-entry__mark"),
           element("span", { className: "v8-entry__wordmark", text: "ETHONE" }),
           element("span", { className: "v8-badge", text: "OS" })
         ]),

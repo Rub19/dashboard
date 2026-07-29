@@ -5,7 +5,7 @@ import { refreshIcons } from "../ui/icons.mjs";
 import { DEFAULT_SOUND_PREFERENCES, SOUND_PACKS } from "../services/sound-manager.mjs";
 import { uploadProfileMedia, validateMediaFile } from "../services/media-upload.mjs";
 import { createSelect } from "../ui/select.mjs";
-import { DENSITY_CUSTOM_RANGES, densityCssVariables, resolveDensity, sanitizeDensitySettings } from "../core/density-engine.mjs";
+import { DENSITY_CUSTOM_RANGES, DENSITY_PRESETS, densityCssVariables, resolveDensity, sanitizeDensitySettings } from "../core/density-engine.mjs";
 import { BRAIN_MEMORY_CATEGORIES, BRAIN_PERMISSION_CATEGORIES, brainPreferenceLabel, sanitizeBrainPreferences } from "../brain/preferences.mjs";
 
 const ACCENTS = Object.freeze(["mint", "sky", "amber", "violet", "rose"]);
@@ -86,12 +86,32 @@ function soundRange(category, value, disabled) {
   ]);
 }
 
-function densityModeChoice(option, active) {
+function densitySwatch(values) {
+  if (!values) return null;
+  const scale = 0.15;
+  const row = Math.max(3, Math.round(values.rowHeight * scale));
+  const pad = Math.max(2, Math.round(values.cardPadding * scale));
+  const gap = Math.max(1, Math.round(values.sectionGap * scale * 0.6));
+  const swatch = element("span", { className: "v8-density-swatch", attributes: { "aria-hidden": "true" } }, [
+    element("span", { className: "v8-density-swatch__bar v8-density-swatch__bar--accent" }),
+    element("span", { className: "v8-density-swatch__bar" }),
+    element("span", { className: "v8-density-swatch__bar v8-density-swatch__bar--short" })
+  ]);
+  swatch.style.setProperty("--v8-density-swatch-row", `${row}px`);
+  swatch.style.setProperty("--v8-density-swatch-pad", `${pad}px`);
+  swatch.style.setProperty("--v8-density-swatch-gap", `${gap}px`);
+  return swatch;
+}
+
+function densityModeChoice(option, active, previewValues) {
+  const values = previewValues || DENSITY_PRESETS[option.id] || null;
+  const swatch = densitySwatch(values);
+  const mark = element("span", { className: "v8-density-choice__icon" }, [icon(option.icon), swatch]);
   return element("button", {
     className: `v8-density-choice${active ? " is-active" : ""}`,
     attributes: { type: "button", "aria-pressed": String(active) },
     dataset: { action: `v8.density.${option.id}`, densityMode: option.id }
-  }, [element("span", { className: "v8-density-choice__icon" }, [icon(option.icon)]), element("span", {}, [element("strong", { text: option.label }), element("small", { text: option.copy })]), active ? icon("check") : null]);
+  }, [mark, element("span", {}, [element("strong", { text: option.label }), element("small", { text: option.copy })]), active ? icon("check") : null]);
 }
 
 function densityCustomControl(key, value) {
@@ -154,7 +174,7 @@ export function mountSettings(stage, options = {}) {
   let latestState = state;
   const initialDensitySettings = sanitizeDensitySettings(state.densitySettings);
   const densityPreviewHost = densityPreview();
-  const densityChoices = element("div", { className: "v8-density-options", attributes: { role: "group", "aria-label": "Mode de densite" } }, DENSITY_OPTIONS.map((option) => densityModeChoice(option, state.density === option.id)));
+  const densityChoices = element("div", { className: "v8-density-options", attributes: { role: "group", "aria-label": "Mode de densite" } }, DENSITY_OPTIONS.map((option) => densityModeChoice(option, state.density === option.id, option.id === "custom" ? initialDensitySettings.custom : option.id === "automatic" ? DENSITY_PRESETS.comfortable : null)));
   const densityCustomHost = element("div", { className: "v8-density-custom", attributes: { hidden: state.density !== "custom" } }, Object.keys(DENSITY_CUSTOM_RANGES).map((key) => densityCustomControl(key, initialDensitySettings.custom[key])));
   const densityResolved = element("span", { className: "v8-density-resolved", attributes: { "aria-live": "polite" } });
   const brainPreferences = sanitizeBrainPreferences(state.brainPreferences);
@@ -386,11 +406,22 @@ export function mountSettings(stage, options = {}) {
     return resolveDensity(nextState, { width: globalThis.innerWidth || 1280, height: globalThis.innerHeight || 800, zoom: globalThis.visualViewport?.scale || 1, coarsePointer: false, panelOpen: false, railExpanded: nextState.railExpanded });
   }
 
+  function applySwatchValues(actionId, values) {
+    if (!values) return;
+    const swatch = page.querySelector(`[data-action='${actionId}'] .v8-density-swatch`);
+    if (!swatch) return;
+    swatch.style.setProperty("--v8-density-swatch-row", `${Math.max(3, Math.round(values.rowHeight * 0.15))}px`);
+    swatch.style.setProperty("--v8-density-swatch-pad", `${Math.max(2, Math.round(values.cardPadding * 0.15))}px`);
+    swatch.style.setProperty("--v8-density-swatch-gap", `${Math.max(1, Math.round(values.sectionGap * 0.15 * 0.6))}px`);
+  }
+
   function updateDensityPreview(nextState = latestState, customOverride = null) {
     const resolution = previewResolution(nextState, customOverride);
     Object.entries(densityCssVariables(resolution.values)).forEach(([name, value]) => densityPreviewHost.style.setProperty(name, value));
     densityPreviewHost.dataset.previewDensity = resolution.effective;
     densityResolved.textContent = resolution.requested === "automatic" ? `${DENSITY_LABELS[resolution.effective]} - ${resolution.reason}` : DENSITY_LABELS[resolution.effective] || "Confortable";
+    applySwatchValues("v8.density.automatic", resolution.requested === "automatic" ? resolution.values : null);
+    applySwatchValues("v8.density.custom", resolution.requested === "custom" ? resolution.values : null);
   }
 
   function updatePreferenceControls(nextState) {

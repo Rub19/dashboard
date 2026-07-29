@@ -15,3 +15,16 @@ export function refreshIcons() {
     return false;
   }
 }
+
+let scheduledFrame = null;
+
+function runScheduledRefresh() {
+  scheduledFrame = null;
+  refreshIcons();
+}
+
+export function scheduleIconRefresh() {
+  if (scheduledFrame != null) return;
+  const raf = globalThis.requestAnimationFrame;
+  scheduledFrame = typeof raf === "function" ? raf(runScheduledRefresh) : globalThis.setTimeout(runScheduledRefresh, 16);
+}

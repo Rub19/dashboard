@@ -1,6 +1,6 @@
 import { actionButton, element, icon } from "../ui/dom.mjs";
 import { emptyState } from "../ui/empty-state.mjs";
-import { refreshIcons } from "../ui/icons.mjs";
+import { refreshIcons, scheduleIconRefresh } from "../ui/icons.mjs";
 import { spotifyLiveCard } from "../ui/spotify-live.mjs";
 import { discordLiveCard } from "../ui/discord-live.mjs";
 import { weatherLiveCard } from "../ui/weather-live.mjs";
@@ -229,7 +229,7 @@ export function mountHome(stage, model, options = {}) {
     spotifyHost.replaceChildren(...(player ? [player] : []));
     spotifyHost.hidden = !player;
     if (player && animate) presence?.signalActivity?.(player, "system", { phase: "update" });
-    refreshIcons();
+    scheduleIconRefresh();
   }
 
   function renderDiscord(presenceState, animate = false) {
@@ -237,7 +237,7 @@ export function mountHome(stage, model, options = {}) {
     discordHost.replaceChildren(...(card ? [card] : []));
     discordHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
-    refreshIcons();
+    scheduleIconRefresh();
   }
 
   function renderWeather(weatherState, animate = false) {
@@ -245,7 +245,7 @@ export function mountHome(stage, model, options = {}) {
     weatherHost.replaceChildren(...(card ? [card] : []));
     weatherHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
-    refreshIcons();
+    scheduleIconRefresh();
   }
 
   function renderMinecraft(minecraftState, animate = false) {
@@ -253,7 +253,7 @@ export function mountHome(stage, model, options = {}) {
     minecraftHost.replaceChildren(...(card ? [card] : []));
     minecraftHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
-    refreshIcons();
+    scheduleIconRefresh();
   }
 
   function renderSteam(steamState, animate = false) {
@@ -261,7 +261,7 @@ export function mountHome(stage, model, options = {}) {
     steamHost.replaceChildren(...(card ? [card] : []));
     steamHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
-    refreshIcons();
+    scheduleIconRefresh();
   }
 
   function renderGithub(githubState, animate = false) {
@@ -269,7 +269,7 @@ export function mountHome(stage, model, options = {}) {
     githubHost.replaceChildren(...(card ? [card] : []));
     githubHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
-    refreshIcons();
+    scheduleIconRefresh();
   }
 
   function renderGoogleCalendar(googleCalendarState, animate = false) {
@@ -277,7 +277,7 @@ export function mountHome(stage, model, options = {}) {
     googleCalendarHost.replaceChildren(...(card ? [card] : []));
     googleCalendarHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
-    refreshIcons();
+    scheduleIconRefresh();
   }
 
   function renderNotion(notionState, animate = false) {
@@ -285,7 +285,7 @@ export function mountHome(stage, model, options = {}) {
     notionHost.replaceChildren(...(card ? [card] : []));
     notionHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
-    refreshIcons();
+    scheduleIconRefresh();
   }
 
   function renderTodoist(todoistState, animate = false) {
@@ -293,7 +293,7 @@ export function mountHome(stage, model, options = {}) {
     todoistHost.replaceChildren(...(card ? [card] : []));
     todoistHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
-    refreshIcons();
+    scheduleIconRefresh();
   }
 
   function renderValorant(valorantState, animate = false) {
@@ -301,7 +301,7 @@ export function mountHome(stage, model, options = {}) {
     valorantHost.replaceChildren(...(card ? [card] : []));
     valorantHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
-    refreshIcons();
+    scheduleIconRefresh();
   }
 
   function renderLol(lolState, animate = false) {
@@ -309,7 +309,7 @@ export function mountHome(stage, model, options = {}) {
     lolHost.replaceChildren(...(card ? [card] : []));
     lolHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
-    refreshIcons();
+    scheduleIconRefresh();
   }
 
   function renderTwitch(twitchState, animate = false) {
@@ -317,7 +317,7 @@ export function mountHome(stage, model, options = {}) {
     twitchHost.replaceChildren(...(card ? [card] : []));
     twitchHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
-    refreshIcons();
+    scheduleIconRefresh();
   }
 
   function renderLastfm(lastfmState, animate = false) {
@@ -325,7 +325,7 @@ export function mountHome(stage, model, options = {}) {
     lastfmHost.replaceChildren(...(card ? [card] : []));
     lastfmHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
-    refreshIcons();
+    scheduleIconRefresh();
   }
 
   function renderTracker(trackerState, animate = false) {
@@ -333,7 +333,7 @@ export function mountHome(stage, model, options = {}) {
     trackerHost.replaceChildren(...(card ? [card] : []));
     trackerHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
-    refreshIcons();
+    scheduleIconRefresh();
   }
 
   function renderGoogleDrive(googleDriveState, animate = false) {
@@ -341,7 +341,7 @@ export function mountHome(stage, model, options = {}) {
     googleDriveHost.replaceChildren(...(card ? [card] : []));
     googleDriveHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
-    refreshIcons();
+    scheduleIconRefresh();
   }
 
   function renderYoutube(youtubeState, animate = false) {
@@ -349,7 +349,7 @@ export function mountHome(stage, model, options = {}) {
     youtubeHost.replaceChildren(...(card ? [card] : []));
     youtubeHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
-    refreshIcons();
+    scheduleIconRefresh();
   }
 
   function renderReddit(redditState, animate = false) {
@@ -357,7 +357,7 @@ export function mountHome(stage, model, options = {}) {
     redditHost.replaceChildren(...(card ? [card] : []));
     redditHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
-    refreshIcons();
+    scheduleIconRefresh();
   }
 
   function renderSystemStatus(status = options.sync?.status?.() || options) {

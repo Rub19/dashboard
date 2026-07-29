@@ -1,6 +1,6 @@
 import { NAVIGATION_ITEMS } from "../data/navigation.mjs";
 import { element, icon } from "./dom.mjs";
-import { refreshIcons } from "./icons.mjs";
+import { refreshIcons, scheduleIconRefresh } from "./icons.mjs";
 import { getLayerManager } from "./layer-manager.mjs";
 import { spotifyDockIndicator } from "./spotify-live.mjs";
 
@@ -346,7 +346,7 @@ export function createDock(host, options = {}) {
       const indicator = spotifyDockIndicator(mediaState);
       slot.replaceChildren(...(indicator ? [indicator] : []));
       slot.hidden = !indicator;
-      refreshIcons();
+      scheduleIconRefresh();
       return Boolean(indicator);
     },
     order: () => Object.freeze([...order]),

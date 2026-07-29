@@ -3,7 +3,7 @@ import { commandById } from "./catalog.mjs";
 import { workspaceById } from "../data/workspaces.mjs";
 import { element, icon } from "../ui/dom.mjs";
 import { emptyState } from "../ui/empty-state.mjs";
-import { refreshIcons } from "../ui/icons.mjs";
+import { refreshIcons, scheduleIconRefresh } from "../ui/icons.mjs";
 import { createWindowController } from "../ui/window-system.mjs";
 
 const ROUTE_LABELS = Object.freeze({
@@ -96,7 +96,7 @@ export function createCommandCenter(host, options = {}) {
         actions: [clearSearch],
         compact: true
       }));
-      refreshIcons();
+      scheduleIconRefresh();
       return;
     }
 
@@ -143,7 +143,7 @@ export function createCommandCenter(host, options = {}) {
       }, [icon(isPinned ? "pin-off" : "pin")]);
       resultsNode.append(element("div", { className: "v8-command-row" }, [result, pin]));
     });
-    refreshIcons();
+    scheduleIconRefresh();
   }
 
   function handleInput() {

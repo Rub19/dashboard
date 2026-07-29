@@ -1,3 +1,5 @@
+import { BRAND_MARK_SVG } from "../ui/navigation.mjs";
+
 export const SPOTLIGHT_DURATION_MS = 420;
 export const AMBIENT_REFRESH_MS = 5 * 60 * 1000;
 export const AMBIENT_TRANSITION_MS = 3200;
@@ -341,7 +343,7 @@ function spotlightMarkup(documentRef) {
   content.className = "v8-spotlight__content";
   const mark = documentRef.createElement("span");
   mark.className = "v8-spotlight__mark";
-  mark.textContent = "E";
+  mark.innerHTML = BRAND_MARK_SVG;
   const wordmark = documentRef.createElement("span");
   wordmark.className = "v8-spotlight__wordmark";
   wordmark.textContent = "ETHONE";

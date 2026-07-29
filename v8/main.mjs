@@ -18,6 +18,7 @@ import { createDocumentMetadataManager } from "./core/document-metadata.mjs";
 import { createAmbientEngine, playSpotlight, readSpotlightPreference } from "./core/experience.mjs";
 import { createPresenceEngine } from "./core/presence-engine.mjs";
 import { element } from "./ui/dom.mjs";
+import { BRAND_MARK_SVG } from "./ui/navigation.mjs";
 import { statusState } from "./ui/empty-state.mjs";
 import { createVisualHaptics } from "./ui/visual-haptics.mjs";
 import { createNativeBehavior } from "./ui/native-behavior.mjs";
@@ -71,8 +72,10 @@ function renderFatalError(error) {
 }
 
 function mountBootSurface() {
+  const mark = element("span", { className: "v8-boot__mark", attributes: { "aria-hidden": "true" } });
+  mark.innerHTML = BRAND_MARK_SVG;
   const surface = element("div", { className: "v8-boot", attributes: { role: "status", "aria-label": "Initialisation d'ETHONE" } }, [
-    element("span", { className: "v8-boot__mark", text: "E", attributes: { "aria-hidden": "true" } }),
+    mark,
     element("span", { className: "v8-boot__label", text: "ETHONE" })
   ]);
   root.replaceChildren(surface);

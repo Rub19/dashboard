@@ -124,6 +124,7 @@ export function createSpotifyLive(options = {}) {
     else if (Object.hasOwn(input, "state") && !Object.hasOwn(input, "playing")) merged.playing = input.state === "playing";
     if (Object.hasOwn(input, "progress_ms")) merged.progressMs = input.progress_ms;
     else if (Object.hasOwn(input, "position_ms")) merged.progressMs = input.position_ms;
+    if (Object.hasOwn(input, "duration_ms")) merged.durationMs = input.duration_ms;
     merged.controllable = merged.controllable === true && Boolean(commandBridge);
     const next = normalizeSpotifyPlayback(merged, { connected: connected(), origin });
     const changed = JSON.stringify(next) !== JSON.stringify(state);

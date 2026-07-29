@@ -225,6 +225,9 @@ export function mountConnections(stage, options = {}) {
   const todoistLive = options.todoistLive || null;
   const valorantLive = options.valorantLive || null;
   const lolLive = options.lolLive || null;
+  const twitchLive = options.twitchLive || null;
+  const lastfmLive = options.lastfmLive || null;
+  const trackerLive = options.trackerLive || null;
   function refreshLiveBridges(id) {
     if (id === "spotify") {
       spotifyLive?.refresh?.();
@@ -242,6 +245,9 @@ export function mountConnections(stage, options = {}) {
       valorantLive?.refresh?.();
       lolLive?.refresh?.();
     }
+    if (id === "twitch") twitchLive?.refresh?.();
+    if (id === "lastfm") lastfmLive?.refresh?.();
+    if (id === "tracker-gg") trackerLive?.refresh?.();
   }
   const externalServices = options.externalServices || null;
   const clientProvider = typeof options.clientProvider === "function" ? options.clientProvider : null;

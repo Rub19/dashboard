@@ -12,6 +12,9 @@ import { notionLiveCard } from "../ui/notion-live.mjs";
 import { todoistLiveCard } from "../ui/todoist-live.mjs";
 import { valorantLiveCard } from "../ui/valorant-live.mjs";
 import { lolLiveCard } from "../ui/lol-live.mjs";
+import { twitchLiveCard } from "../ui/twitch-live.mjs";
+import { lastfmLiveCard } from "../ui/lastfm-live.mjs";
+import { trackerLiveCard } from "../ui/tracker-live.mjs";
 import { localeTag } from "../i18n/catalog.mjs";
 
 function formattedDate(isoDate) {
@@ -72,6 +75,9 @@ export function mountHome(stage, model, options = {}) {
   const todoistLive = options.todoistLive || null;
   const valorantLive = options.valorantLive || null;
   const lolLive = options.lolLive || null;
+  const twitchLive = options.twitchLive || null;
+  const lastfmLive = options.lastfmLive || null;
+  const trackerLive = options.trackerLive || null;
   const presence = options.presence || null;
   const briefingEnabled = options.brainPreferences?.enabled !== false && options.brainPreferences?.briefing?.enabled !== false;
   const continuation = model.nextTasks[0]
@@ -205,6 +211,9 @@ export function mountHome(stage, model, options = {}) {
   const todoistHost = element("section", { className: "v8-home-todoist-host", attributes: { "aria-label": "Todoist", hidden: true } });
   const valorantHost = element("section", { className: "v8-home-valorant-host", attributes: { "aria-label": "Valorant", hidden: true } });
   const lolHost = element("section", { className: "v8-home-lol-host", attributes: { "aria-label": "League of Legends", hidden: true } });
+  const twitchHost = element("section", { className: "v8-home-twitch-host", attributes: { "aria-label": "Twitch", hidden: true } });
+  const lastfmHost = element("section", { className: "v8-home-lastfm-host", attributes: { "aria-label": "Last.fm", hidden: true } });
+  const trackerHost = element("section", { className: "v8-home-tracker-host", attributes: { "aria-label": "Tracker.gg", hidden: true } });
 
   function renderSpotify(playback, animate = false) {
     const player = spotifyLiveCard(playback, { variant: "home" });
@@ -294,6 +303,30 @@ export function mountHome(stage, model, options = {}) {
     refreshIcons();
   }
 
+  function renderTwitch(twitchState, animate = false) {
+    const card = twitchLiveCard(twitchState, { variant: "home" });
+    twitchHost.replaceChildren(...(card ? [card] : []));
+    twitchHost.hidden = !card;
+    if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
+    refreshIcons();
+  }
+
+  function renderLastfm(lastfmState, animate = false) {
+    const card = lastfmLiveCard(lastfmState, { variant: "home" });
+    lastfmHost.replaceChildren(...(card ? [card] : []));
+    lastfmHost.hidden = !card;
+    if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
+    refreshIcons();
+  }
+
+  function renderTracker(trackerState, animate = false) {
+    const card = trackerLiveCard(trackerState, { variant: "home" });
+    trackerHost.replaceChildren(...(card ? [card] : []));
+    trackerHost.hidden = !card;
+    if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
+    refreshIcons();
+  }
+
   function renderSystemStatus(status = options.sync?.status?.() || options) {
     const labels = { loading: "Connexion", saving: "Synchronisation", saved: "Synchronise", offline: "En attente", retrying: "Nouvelle tentative", error: "Erreur", expired: "Session expiree" };
     cloudDetail.textContent = status.syncStatus === "saved" ? "Source principale Supabase" : "Etat Supabase en temps reel";
@@ -323,6 +356,9 @@ export function mountHome(stage, model, options = {}) {
     todoistHost,
     valorantHost,
     lolHost,
+    twitchHost,
+    lastfmHost,
+    trackerHost,
     briefingEnabled ? brainStrip : null,
     element("div", { className: "v8-home-secondary" }, [recent, signals])
   ]);
@@ -339,6 +375,9 @@ export function mountHome(stage, model, options = {}) {
   renderTodoist(todoistLive?.state?.() || {});
   renderValorant(valorantLive?.state?.() || {});
   renderLol(lolLive?.state?.() || {});
+  renderTwitch(twitchLive?.state?.() || {});
+  renderLastfm(lastfmLive?.state?.() || {});
+  renderTracker(trackerLive?.state?.() || {});
   const releaseSpotify = spotifyLive?.subscribe?.((playback) => renderSpotify(playback, true), { immediate: false }) || (() => {});
   const releaseDiscord = discordLive?.subscribe?.((presenceState) => renderDiscord(presenceState, true), { immediate: false }) || (() => {});
   const releaseWeather = weatherLive?.subscribe?.((weatherState) => renderWeather(weatherState, true), { immediate: false }) || (() => {});
@@ -350,6 +389,9 @@ export function mountHome(stage, model, options = {}) {
   const releaseTodoist = todoistLive?.subscribe?.((todoistState) => renderTodoist(todoistState, true), { immediate: false }) || (() => {});
   const releaseValorant = valorantLive?.subscribe?.((valorantState) => renderValorant(valorantState, true), { immediate: false }) || (() => {});
   const releaseLol = lolLive?.subscribe?.((lolState) => renderLol(lolState, true), { immediate: false }) || (() => {});
+  const releaseTwitch = twitchLive?.subscribe?.((twitchState) => renderTwitch(twitchState, true), { immediate: false }) || (() => {});
+  const releaseLastfm = lastfmLive?.subscribe?.((lastfmState) => renderLastfm(lastfmState, true), { immediate: false }) || (() => {});
+  const releaseTracker = trackerLive?.subscribe?.((trackerState) => renderTracker(trackerState, true), { immediate: false }) || (() => {});
   const releaseSync = options.sync?.subscribe?.(renderSystemStatus) || (() => {});
   refreshIcons();
   return () => {
@@ -364,6 +406,9 @@ export function mountHome(stage, model, options = {}) {
     releaseTodoist();
     releaseValorant();
     releaseLol();
+    releaseTwitch();
+    releaseLastfm();
+    releaseTracker();
     releaseSync();
     page.remove();
   };

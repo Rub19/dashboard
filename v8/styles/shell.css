@@ -2498,6 +2498,35 @@ html[data-v8-interactions] .v8-panel-notice:hover > .v8-selection-control,.v8-pa
 .v8-lol-match-dot.is-loss { background:#ff4655; }
 .v8-lol-live--activity { min-height:120px; }
 
+.v8-twitch-live { position:relative;display:grid;min-width:0;grid-template-columns:56px minmax(0,1fr);align-items:center;gap:var(--v8-space-4);padding:var(--v8-space-4);border-color:color-mix(in srgb,#9146ff 26%,var(--v8-border));background:var(--v8-reflection-card),color-mix(in srgb,#9146ff 4%,var(--v8-surface-1));box-shadow:var(--v8-shadow-card-lit); }
+.v8-twitch-live.is-live { border-color:color-mix(in srgb,#9146ff 50%,var(--v8-border)); }
+.v8-twitch-avatar { position:relative;display:grid;width:56px;height:56px;place-items:center;overflow:hidden;border-radius:50%;background:color-mix(in srgb,#9146ff 12%,transparent);color:#9146ff; }
+.v8-twitch-avatar__image { display:grid;width:100%;height:100%;place-items:center; }
+.v8-twitch-avatar__image img { width:100%;height:100%;object-fit:cover;border-radius:50%; }
+.v8-twitch-avatar__image.is-fallback svg { width:24px;height:24px; }
+.v8-twitch-live-dot { position:absolute;right:-2px;bottom:-2px;width:14px;height:14px;border-radius:50%;background:#9146ff;border:2px solid var(--v8-surface-1); }
+.v8-twitch-live__body { display:grid;min-width:0;gap:3px; }.v8-twitch-live__body > strong { overflow:hidden;color:var(--v8-text);font-size:var(--v8-font-md);text-overflow:ellipsis;white-space:nowrap; }.v8-twitch-live__body > p { overflow:hidden;color:var(--v8-text-secondary);font-size:var(--v8-font-xs);text-overflow:ellipsis;white-space:nowrap; }
+.v8-twitch-live__meta { display:flex;min-width:0;align-items:center;gap:6px;margin-bottom:2px;color:#9146ff; }.v8-twitch-live__meta svg { flex:0 0 auto;width:14px;height:14px; }.v8-twitch-live__meta small { overflow:hidden;font-size:var(--v8-font-micro);font-weight:var(--v8-weight-semibold);text-overflow:ellipsis;text-transform:uppercase;white-space:nowrap; }
+.v8-twitch-live--activity { min-height:120px; }
+
+.v8-lastfm-live { position:relative;display:grid;min-width:0;grid-template-columns:52px minmax(0,1fr);align-items:center;gap:var(--v8-space-4);padding:var(--v8-space-4);border-color:color-mix(in srgb,#d51007 26%,var(--v8-border));background:var(--v8-reflection-card),color-mix(in srgb,#d51007 4%,var(--v8-surface-1));box-shadow:var(--v8-shadow-card-lit); }
+.v8-lastfm-artwork { display:grid;width:52px;height:52px;place-items:center;overflow:hidden;border-radius:var(--v8-radius-md);background:color-mix(in srgb,#d51007 12%,transparent);color:#d51007; }
+.v8-lastfm-artwork__image { display:grid;width:100%;height:100%;place-items:center; }
+.v8-lastfm-artwork__image img { width:100%;height:100%;object-fit:cover; }
+.v8-lastfm-artwork__image.is-fallback svg { width:22px;height:22px; }
+.v8-lastfm-live__body { display:grid;min-width:0;gap:3px; }.v8-lastfm-live__body > strong { overflow:hidden;color:var(--v8-text);font-size:var(--v8-font-md);text-overflow:ellipsis;white-space:nowrap; }.v8-lastfm-live__body > p { overflow:hidden;color:var(--v8-text-secondary);font-size:var(--v8-font-xs);text-overflow:ellipsis;white-space:nowrap; }
+.v8-lastfm-live__meta { display:flex;min-width:0;align-items:center;gap:6px;margin-bottom:2px;color:#d51007; }.v8-lastfm-live__meta svg { flex:0 0 auto;width:14px;height:14px; }.v8-lastfm-live__meta small { overflow:hidden;font-size:var(--v8-font-micro);font-weight:var(--v8-weight-semibold);text-overflow:ellipsis;text-transform:uppercase;white-space:nowrap; }
+.v8-lastfm-live--activity { min-height:120px; }
+
+.v8-tracker-live { position:relative;display:grid;min-width:0;grid-template-columns:52px minmax(0,1fr);align-items:center;gap:var(--v8-space-4);padding:var(--v8-space-4);border-color:color-mix(in srgb,#ff4713 26%,var(--v8-border));background:var(--v8-reflection-card),color-mix(in srgb,#ff4713 4%,var(--v8-surface-1));box-shadow:var(--v8-shadow-card-lit); }
+.v8-tracker-avatar { display:grid;width:52px;height:52px;place-items:center;overflow:hidden;border-radius:50%;background:color-mix(in srgb,#ff4713 12%,transparent);color:#ff4713; }
+.v8-tracker-avatar__image { display:grid;width:100%;height:100%;place-items:center; }
+.v8-tracker-avatar__image img { width:100%;height:100%;object-fit:cover;border-radius:50%; }
+.v8-tracker-avatar__image.is-fallback svg { width:22px;height:22px; }
+.v8-tracker-live__body { display:grid;min-width:0;gap:3px; }.v8-tracker-live__body > strong { overflow:hidden;color:var(--v8-text);font-size:var(--v8-font-md);text-overflow:ellipsis;white-space:nowrap; }.v8-tracker-live__body > p { overflow:hidden;color:var(--v8-text-secondary);font-size:var(--v8-font-xs);text-overflow:ellipsis;white-space:nowrap; }
+.v8-tracker-live__meta { display:flex;min-width:0;align-items:center;gap:6px;margin-bottom:2px;color:#ff4713; }.v8-tracker-live__meta svg { flex:0 0 auto;width:14px;height:14px; }.v8-tracker-live__meta small { overflow:hidden;font-size:var(--v8-font-micro);font-weight:var(--v8-weight-semibold);text-overflow:ellipsis;text-transform:uppercase;white-space:nowrap; }
+.v8-tracker-live--activity { min-height:120px; }
+
 .v8-brain-context__identity { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--v8-space-4); }
 .v8-brain-orbit { display: grid; width: 64px; height: 64px; place-items: center; border: 1px solid var(--v8-brain-line); border-radius: 50%; background: var(--v8-brain-soft); color: var(--v8-brain); box-shadow: 0 0 36px var(--v8-light-brain); }
 .v8-brain-orbit svg { width: 28px; height: 28px; }

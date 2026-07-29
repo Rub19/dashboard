@@ -14,6 +14,9 @@ import { notionLiveCard } from "../ui/notion-live.mjs";
 import { todoistLiveCard } from "../ui/todoist-live.mjs";
 import { valorantLiveCard } from "../ui/valorant-live.mjs";
 import { lolLiveCard } from "../ui/lol-live.mjs";
+import { twitchLiveCard } from "../ui/twitch-live.mjs";
+import { lastfmLiveCard } from "../ui/lastfm-live.mjs";
+import { trackerLiveCard } from "../ui/tracker-live.mjs";
 import { createSelect } from "../ui/select.mjs";
 import { prepareActivityUI } from "./activity-style.mjs";
 
@@ -49,9 +52,12 @@ const LIVE_CARD_META = Object.freeze({
   notion: Object.freeze({ label: "Notion", icon: "notebook-tabs" }),
   todoist: Object.freeze({ label: "Todoist", icon: "circle-check-big" }),
   valorant: Object.freeze({ label: "Valorant", icon: "swords" }),
-  lol: Object.freeze({ label: "League of Legends", icon: "swords" })
+  lol: Object.freeze({ label: "League of Legends", icon: "swords" }),
+  twitch: Object.freeze({ label: "Twitch", icon: "twitch" }),
+  lastfm: Object.freeze({ label: "Last.fm", icon: "history" }),
+  "tracker-gg": Object.freeze({ label: "Tracker.gg", icon: "chart-no-axes-combined" })
 });
-const DEFAULT_LIVE_LAYOUT = Object.freeze({ order: Object.freeze(["system", "spotify", "discord", "weather", "minecraft", "steam", "github", "google-calendar", "notion", "todoist", "valorant", "lol"]), hidden: Object.freeze([]) });
+const DEFAULT_LIVE_LAYOUT = Object.freeze({ order: Object.freeze(["system", "spotify", "discord", "weather", "minecraft", "steam", "github", "google-calendar", "notion", "todoist", "valorant", "lol", "twitch", "lastfm", "tracker-gg"]), hidden: Object.freeze([]) });
 
 function moveButton(id, direction, disabled, label) {
   const button = actionButton({ actionId: "v8.activity.live.move", className: "v8-icon-button", ariaLabel: label, disabled }, [icon(direction === "up" ? "chevron-up" : "chevron-down")]);
@@ -215,6 +221,9 @@ export function mountActivity(stage, options = {}) {
   const todoistLive = options.todoistLive || null;
   const valorantLive = options.valorantLive || null;
   const lolLive = options.lolLive || null;
+  const twitchLive = options.twitchLive || null;
+  const lastfmLive = options.lastfmLive || null;
+  const trackerLive = options.trackerLive || null;
   const presence = options.presence || null;
   const state = options.state || {};
   let activeFilter = "all";
@@ -234,6 +243,9 @@ export function mountActivity(stage, options = {}) {
   let todoistPresence = todoistLive?.state?.() || {};
   let valorantPresence = valorantLive?.state?.() || {};
   let lolPresence = lolLive?.state?.() || {};
+  let twitchPresence = twitchLive?.state?.() || {};
+  let lastfmPresence = lastfmLive?.state?.() || {};
+  let trackerPresence = trackerLive?.state?.() || {};
   const controller = new AbortController();
 
   const filterBar = element("div", { className: "v8-activity-filters", attributes: { role: "toolbar", "aria-label": "Filtrer l'activite" } });
@@ -335,7 +347,10 @@ export function mountActivity(stage, options = {}) {
     const todoistCard = todoistLiveCard(todoistPresence, { variant: "activity" });
     const valorantCard = valorantLiveCard(valorantPresence, { variant: "activity" });
     const lolCard = lolLiveCard(lolPresence, { variant: "activity" });
-    const knownCards = { system: systemCard, spotify: spotifyPlayer, discord: discordCard, weather: weatherCard, minecraft: minecraftCard, steam: steamCard, github: githubCard, "google-calendar": googleCalendarCard, notion: notionCard, todoist: todoistCard, valorant: valorantCard, lol: lolCard };
+    const twitchCard = twitchLiveCard(twitchPresence, { variant: "activity" });
+    const lastfmCard = lastfmLiveCard(lastfmPresence, { variant: "activity" });
+    const trackerCard = trackerLiveCard(trackerPresence, { variant: "activity" });
+    const knownCards = { system: systemCard, spotify: spotifyPlayer, discord: discordCard, weather: weatherCard, minecraft: minecraftCard, steam: steamCard, github: githubCard, "google-calendar": googleCalendarCard, notion: notionCard, todoist: todoistCard, valorant: valorantCard, lol: lolCard, twitch: twitchCard, lastfm: lastfmCard, "tracker-gg": trackerCard };
     liveGrid.replaceChildren();
     liveLayout.order.forEach((id) => {
       if (liveLayout.hidden.includes(id)) return;
@@ -486,6 +501,24 @@ export function mountActivity(stage, options = {}) {
     const card = liveGrid.querySelector(".v8-lol-live");
     if (card) presence?.signalActivity?.(card, "system", { phase: "update" });
   }, { immediate: false }) || (() => {});
+  const releaseTwitch = twitchLive?.subscribe?.((twitchState) => {
+    twitchPresence = twitchState;
+    render();
+    const card = liveGrid.querySelector(".v8-twitch-live");
+    if (card) presence?.signalActivity?.(card, "system", { phase: "update" });
+  }, { immediate: false }) || (() => {});
+  const releaseLastfm = lastfmLive?.subscribe?.((lastfmState) => {
+    lastfmPresence = lastfmState;
+    render();
+    const card = liveGrid.querySelector(".v8-lastfm-live");
+    if (card) presence?.signalActivity?.(card, "system", { phase: "update" });
+  }, { immediate: false }) || (() => {});
+  const releaseTracker = trackerLive?.subscribe?.((trackerState) => {
+    trackerPresence = trackerState;
+    render();
+    const card = liveGrid.querySelector(".v8-tracker-live");
+    if (card) presence?.signalActivity?.(card, "system", { phase: "update" });
+  }, { immediate: false }) || (() => {});
   stage.replaceChildren(page);
   render();
   const releaseDensity = options.subscribeState?.((next) => updateCollectionDensityControl(densityControl, next)) || (() => {});
@@ -514,6 +547,9 @@ export function mountActivity(stage, options = {}) {
     releaseTodoist();
     releaseValorant();
     releaseLol();
+    releaseTwitch();
+    releaseLastfm();
+    releaseTracker();
     releaseDensity();
     releaseLiveLayout();
     page.remove();

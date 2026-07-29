@@ -564,6 +564,17 @@ export function mountApplication(root, options = {}) {
     shell.stage.replaceChildren(skeletonState({ layout: layouts[route] || "page", count: 3, label: `Chargement de ${route}`, className: "v8-page v8-lazy-page", page: route }));
   }
 
+  async function brainProviderTransport(input = {}) {
+    const result = await externalServices.brain.complete({
+      provider: input.provider,
+      operation: input.operation,
+      model: input.model,
+      messages: input.messages,
+      context: input.context
+    });
+    return result.data;
+  }
+
   function ensureBrainRuntime() {
     if (brainRuntime) return Promise.resolve(brainRuntime);
     if (brainRuntimePromise) return brainRuntimePromise;
@@ -574,6 +585,7 @@ export function mountApplication(root, options = {}) {
         actions,
         getState: () => store.getState(),
         externalServices,
+        providerTransport: externalServices ? brainProviderTransport : null,
         clientProvider: options.clientProvider,
         ownerId: options.ownerId || repository.owner?.(),
         presence,

@@ -56,6 +56,7 @@ export function providerFetch(counter = { calls: 0 }) {
       if (url.pathname.includes("/lol/match/v5/matches/by-puuid/")) return json(["match-lol-1"]);
       if (url.pathname.includes("/lol/match/v5/matches/")) return json({ metadata: { matchId: "match-lol-1" }, info: { gameMode: "CLASSIC", gameDuration: 1900, gameEndTimestamp: 1700003500000, participants: [{ puuid: "lol-puuid-test", championName: "Ahri", win: true, kills: 8, deaths: 2, assists: 10, totalMinionsKilled: 150, neutralMinionsKilled: 20 }] } });
     }
+    if (url.hostname === "api.groq.com") return json({ choices: [{ message: { role: "assistant", content: "Bonjour, comment puis-je aider ?" } }] });
     if (url.hostname === "id.twitch.tv") return json({ access_token: "t".repeat(32), expires_in: 3600 });
     if (url.hostname === "api.twitch.tv") {
       if (url.pathname === "/helix/users") return json({ data: [{ id: "123", login: "ethoneqa", display_name: "ETHONE QA", description: "QA", profile_image_url: "https://static-cdn.jtvnw.net/avatar.png", broadcaster_type: "affiliate" }] });
@@ -105,6 +106,7 @@ export function testEnv(overrides = {}) {
     NOTION_CLIENT_SECRET: "i".repeat(32),
     TODOIST_CLIENT_SECRET: "j".repeat(32),
     REDDIT_CLIENT_SECRET: "m".repeat(32),
+    GROQ_API_KEY: "n".repeat(40),
     OUTBOUND_TIMEOUT_MS: "100",
     RATE_LIMIT_EDGE: limiter(),
     RATE_LIMIT_STANDARD: limiter(),

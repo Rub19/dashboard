@@ -2,7 +2,7 @@ const PROVIDERS = Object.freeze([
   Object.freeze({ id: "context", label: "ETHONE Context", kind: "local", privacy: "Aucune donnee envoyee", models: Object.freeze(["context-v1"]) }),
   Object.freeze({ id: "openai", label: "OpenAI", kind: "cloud", privacy: "Via backend ETHONE", models: Object.freeze(["configure-via-worker"]) }),
   Object.freeze({ id: "anthropic", label: "Anthropic", kind: "cloud", privacy: "Via backend ETHONE", models: Object.freeze(["configure-via-worker"]) }),
-  Object.freeze({ id: "groq", label: "Groq", kind: "cloud", privacy: "Via backend ETHONE", models: Object.freeze(["configure-via-worker"]) }),
+  Object.freeze({ id: "groq", label: "Groq", kind: "cloud", privacy: "Via backend ETHONE", models: Object.freeze(["llama-3.1-8b-instant", "llama-3.3-70b-versatile"]) }),
   Object.freeze({ id: "gemini", label: "Gemini", kind: "cloud", privacy: "Via backend ETHONE", models: Object.freeze(["configure-via-worker"]) }),
   Object.freeze({ id: "ollama", label: "Ollama", kind: "local", privacy: "Pont local requis", models: Object.freeze(["local-model"]) }),
   Object.freeze({ id: "lm-studio", label: "LM Studio", kind: "local", privacy: "Pont local requis", models: Object.freeze(["local-model"]) })

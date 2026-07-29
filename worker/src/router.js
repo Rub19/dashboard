@@ -1,3 +1,4 @@
+import { brainCompleteRoute } from "./routes/brain.js";
 import { diagnosticRoute } from "./routes/diagnostic.js";
 import { githubOAuthDisconnectRoute, githubOAuthExchangeRoute, githubProfileRoute } from "./routes/github-oauth.js";
 import { googleCalendarEventsRoute, googleCalendarOAuthDisconnectRoute, googleCalendarOAuthExchangeRoute } from "./routes/google-calendar-oauth.js";
@@ -36,6 +37,7 @@ function route(id, path, handler, options = {}) {
 export const ROUTES = Object.freeze([
   route("health", "/health", healthRoute, { public: true, rateLimit: "edge" }),
   route("diagnostic", "/api/diagnostic", diagnosticRoute, { rateLimit: "strict" }),
+  route("brain.complete", "/api/brain/complete", brainCompleteRoute, { method: "POST", service: "brain", rateLimit: "strict" }),
   route("steam.player", "/api/steam/player", steamRoute, { service: "steam", action: "player" }),
   route("steam.recent-games", "/api/steam/recent-games", steamRoute, { service: "steam", action: "recent-games" }),
   route("steam.owned-games", "/api/steam/owned-games", steamRoute, { service: "steam", action: "owned-games" }),

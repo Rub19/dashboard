@@ -48,7 +48,8 @@ const OPERATIONS = Object.freeze({
   redditOAuthExchange: Object.freeze({ path: "/api/reddit/oauth/exchange", method: "POST", auth: true, params: ["code", "clientId"] }),
   redditActivity: Object.freeze({ path: "/api/reddit/activity", auth: true, params: ["clientId"] }),
   redditOAuthDisconnect: Object.freeze({ path: "/api/reddit/oauth/disconnect", method: "POST", auth: true, params: [] }),
-  publicProfile: Object.freeze({ path: "/api/supabase/public-profile", auth: true, params: ["username"] })
+  publicProfile: Object.freeze({ path: "/api/supabase/public-profile", auth: true, params: ["username"] }),
+  brainComplete: Object.freeze({ path: "/api/brain/complete", method: "POST", auth: true, params: [], rawBody: true })
 });
 
 function clientError(code, message, details = {}) {
@@ -122,6 +123,8 @@ export function createExternalServicesClient(options = {}) {
         const value = values?.[name];
         if (value !== undefined && value !== null && String(value).trim()) url.searchParams.set(name, String(value).trim());
       });
+    } else if (operation.rawBody) {
+      body = JSON.stringify(values || {});
     } else {
       body = JSON.stringify(Object.fromEntries(operation.params
         .map((name) => [name, values?.[name]])
@@ -265,6 +268,9 @@ export function createExternalServicesClient(options = {}) {
       disconnect: () => execute("redditOAuthDisconnect", {})
     }),
     publicProfile: (username) => execute("publicProfile", { username }),
+    brain: Object.freeze({
+      complete: (input) => execute("brainComplete", input, { timeoutMs: 20000, retries: 0 })
+    }),
     diagnostics: () => Object.freeze({ ...status, activeRequests: activeControllers.size, environment: config.environment, baseUrl: network.redactUrl?.(baseUrl) || baseUrl }),
     destroy
   });

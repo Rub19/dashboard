@@ -23,7 +23,8 @@ const REQUIREMENTS = Object.freeze({
   "google-drive": Object.freeze(["GOOGLE_CLIENT_SECRET"]),
   youtube: Object.freeze(["GOOGLE_CLIENT_SECRET"]),
   reddit: Object.freeze(["REDDIT_CLIENT_SECRET"]),
-  supabase: Object.freeze(["SUPABASE_URL", "SUPABASE_SECRET_KEY"])
+  supabase: Object.freeze(["SUPABASE_URL", "SUPABASE_SECRET_KEY"]),
+  brain: Object.freeze(["GROQ_API_KEY"])
 });
 
 function configured(env, name) {

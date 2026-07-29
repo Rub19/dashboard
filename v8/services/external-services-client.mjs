@@ -38,6 +38,15 @@ const OPERATIONS = Object.freeze({
   todoistOAuthExchange: Object.freeze({ path: "/api/todoist/oauth/exchange", method: "POST", auth: true, params: ["code", "clientId"] }),
   todoistTasks: Object.freeze({ path: "/api/todoist/tasks", auth: true, params: [] }),
   todoistOAuthDisconnect: Object.freeze({ path: "/api/todoist/oauth/disconnect", method: "POST", auth: true, params: [] }),
+  googleDriveOAuthExchange: Object.freeze({ path: "/api/google-drive/oauth/exchange", method: "POST", auth: true, params: ["code", "clientId"] }),
+  googleDriveFiles: Object.freeze({ path: "/api/google-drive/files", auth: true, params: ["clientId"] }),
+  googleDriveOAuthDisconnect: Object.freeze({ path: "/api/google-drive/oauth/disconnect", method: "POST", auth: true, params: [] }),
+  youtubeOAuthExchange: Object.freeze({ path: "/api/youtube/oauth/exchange", method: "POST", auth: true, params: ["code", "clientId"] }),
+  youtubeActivity: Object.freeze({ path: "/api/youtube/activity", auth: true, params: ["clientId"] }),
+  youtubeOAuthDisconnect: Object.freeze({ path: "/api/youtube/oauth/disconnect", method: "POST", auth: true, params: [] }),
+  redditOAuthExchange: Object.freeze({ path: "/api/reddit/oauth/exchange", method: "POST", auth: true, params: ["code", "clientId"] }),
+  redditActivity: Object.freeze({ path: "/api/reddit/activity", auth: true, params: ["clientId"] }),
+  redditOAuthDisconnect: Object.freeze({ path: "/api/reddit/oauth/disconnect", method: "POST", auth: true, params: [] }),
   publicProfile: Object.freeze({ path: "/api/supabase/public-profile", auth: true, params: ["username"] })
 });
 
@@ -237,6 +246,21 @@ export function createExternalServicesClient(options = {}) {
       exchange: (code, clientId) => execute("todoistOAuthExchange", { code, clientId }),
       tasks: () => execute("todoistTasks", {}),
       disconnect: () => execute("todoistOAuthDisconnect", {})
+    }),
+    googleDriveOAuth: Object.freeze({
+      exchange: (code, clientId) => execute("googleDriveOAuthExchange", { code, clientId }),
+      files: (clientId) => execute("googleDriveFiles", { clientId }),
+      disconnect: () => execute("googleDriveOAuthDisconnect", {})
+    }),
+    youtubeOAuth: Object.freeze({
+      exchange: (code, clientId) => execute("youtubeOAuthExchange", { code, clientId }),
+      activity: (clientId) => execute("youtubeActivity", { clientId }),
+      disconnect: () => execute("youtubeOAuthDisconnect", {})
+    }),
+    redditOAuth: Object.freeze({
+      exchange: (code, clientId) => execute("redditOAuthExchange", { code, clientId }),
+      activity: (clientId) => execute("redditActivity", { clientId }),
+      disconnect: () => execute("redditOAuthDisconnect", {})
     }),
     publicProfile: (username) => execute("publicProfile", { username }),
     diagnostics: () => Object.freeze({ ...status, activeRequests: activeControllers.size, environment: config.environment, baseUrl: network.redactUrl?.(baseUrl) || baseUrl }),

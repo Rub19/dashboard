@@ -1,6 +1,7 @@
 import { diagnosticRoute } from "./routes/diagnostic.js";
 import { githubOAuthDisconnectRoute, githubOAuthExchangeRoute, githubProfileRoute } from "./routes/github-oauth.js";
 import { googleCalendarEventsRoute, googleCalendarOAuthDisconnectRoute, googleCalendarOAuthExchangeRoute } from "./routes/google-calendar-oauth.js";
+import { googleDriveFilesRoute, googleDriveOAuthDisconnectRoute, googleDriveOAuthExchangeRoute } from "./routes/google-drive-oauth.js";
 import { healthRoute } from "./routes/health.js";
 import { henrikRoute } from "./routes/henrik.js";
 import { lanyardRoute } from "./routes/lanyard.js";
@@ -9,6 +10,7 @@ import { minecraftRoute } from "./routes/minecraft.js";
 import { notionOAuthDisconnectRoute, notionOAuthExchangeRoute, notionPagesRoute } from "./routes/notion-oauth.js";
 import { spotifyNowPlayingRoute, spotifyOAuthDisconnectRoute, spotifyOAuthExchangeRoute } from "./routes/spotify-oauth.js";
 import { nowPlayingRoute } from "./routes/nowplaying.js";
+import { redditActivityRoute, redditOAuthDisconnectRoute, redditOAuthExchangeRoute } from "./routes/reddit-oauth.js";
 import { riotLolRoute } from "./routes/riot-lol.js";
 import { steamRoute } from "./routes/steam.js";
 import { supabaseRoute } from "./routes/supabase.js";
@@ -16,6 +18,7 @@ import { todoistOAuthDisconnectRoute, todoistOAuthExchangeRoute, todoistTasksRou
 import { trackerRoute } from "./routes/tracker.js";
 import { twitchRoute } from "./routes/twitch.js";
 import { weatherRoute } from "./routes/weather.js";
+import { youtubeActivityRoute, youtubeOAuthDisconnectRoute, youtubeOAuthExchangeRoute } from "./routes/youtube-oauth.js";
 
 function route(id, path, handler, options = {}) {
   return Object.freeze({
@@ -68,7 +71,16 @@ export const ROUTES = Object.freeze([
   route("notion.oauth.disconnect", "/api/notion/oauth/disconnect", notionOAuthDisconnectRoute, { method: "POST", service: "notion", rateLimit: "strict" }),
   route("todoist.oauth.exchange", "/api/todoist/oauth/exchange", todoistOAuthExchangeRoute, { method: "POST", service: "todoist", rateLimit: "strict" }),
   route("todoist.tasks", "/api/todoist/tasks", todoistTasksRoute, { service: "todoist" }),
-  route("todoist.oauth.disconnect", "/api/todoist/oauth/disconnect", todoistOAuthDisconnectRoute, { method: "POST", service: "todoist", rateLimit: "strict" })
+  route("todoist.oauth.disconnect", "/api/todoist/oauth/disconnect", todoistOAuthDisconnectRoute, { method: "POST", service: "todoist", rateLimit: "strict" }),
+  route("google-drive.oauth.exchange", "/api/google-drive/oauth/exchange", googleDriveOAuthExchangeRoute, { method: "POST", service: "google-drive", rateLimit: "strict" }),
+  route("google-drive.files", "/api/google-drive/files", googleDriveFilesRoute, { service: "google-drive" }),
+  route("google-drive.oauth.disconnect", "/api/google-drive/oauth/disconnect", googleDriveOAuthDisconnectRoute, { method: "POST", service: "google-drive", rateLimit: "strict" }),
+  route("youtube.oauth.exchange", "/api/youtube/oauth/exchange", youtubeOAuthExchangeRoute, { method: "POST", service: "youtube", rateLimit: "strict" }),
+  route("youtube.activity", "/api/youtube/activity", youtubeActivityRoute, { service: "youtube" }),
+  route("youtube.oauth.disconnect", "/api/youtube/oauth/disconnect", youtubeOAuthDisconnectRoute, { method: "POST", service: "youtube", rateLimit: "strict" }),
+  route("reddit.oauth.exchange", "/api/reddit/oauth/exchange", redditOAuthExchangeRoute, { method: "POST", service: "reddit", rateLimit: "strict" }),
+  route("reddit.activity", "/api/reddit/activity", redditActivityRoute, { service: "reddit" }),
+  route("reddit.oauth.disconnect", "/api/reddit/oauth/disconnect", redditOAuthDisconnectRoute, { method: "POST", service: "reddit", rateLimit: "strict" })
 ]);
 
 function normalizedPath(pathname) {

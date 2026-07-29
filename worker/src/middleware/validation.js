@@ -48,7 +48,8 @@ export const PATTERNS = Object.freeze({
   githubClientId: /^[A-Za-z0-9._-]{10,64}$/,
   googleClientId: /^[A-Za-z0-9-]{10,100}\.apps\.googleusercontent\.com$/,
   notionClientId: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
-  todoistClientId: /^[A-Za-z0-9]{10,64}$/
+  todoistClientId: /^[A-Za-z0-9]{10,64}$/,
+  redditClientId: /^[A-Za-z0-9_-]{10,64}$/
 });
 
 export function requireSecret(env, name) {

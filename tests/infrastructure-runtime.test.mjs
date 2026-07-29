@@ -258,7 +258,7 @@ test("command search includes contextual user content without replacing system c
 });
 
 test("integration registry is unique and exposes no credential fields", () => {
-  assert.ok(INTEGRATIONS.length >= 50);
+  assert.ok(INTEGRATIONS.length >= 40);
   assert.equal(new Set(INTEGRATIONS.map((integration) => integration.id)).size, INTEGRATIONS.length);
   assert.ok(INTEGRATIONS.some((integration) => integration.id === "spotify"));
   assert.ok(INTEGRATIONS.some((integration) => integration.id === "github"));

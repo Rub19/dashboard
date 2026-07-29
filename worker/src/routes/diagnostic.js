@@ -20,6 +20,9 @@ const REQUIREMENTS = Object.freeze({
   "google-calendar": Object.freeze(["GOOGLE_CLIENT_SECRET"]),
   notion: Object.freeze(["NOTION_CLIENT_SECRET"]),
   todoist: Object.freeze(["TODOIST_CLIENT_SECRET"]),
+  "google-drive": Object.freeze(["GOOGLE_CLIENT_SECRET"]),
+  youtube: Object.freeze(["GOOGLE_CLIENT_SECRET"]),
+  reddit: Object.freeze(["REDDIT_CLIENT_SECRET"]),
   supabase: Object.freeze(["SUPABASE_URL", "SUPABASE_SECRET_KEY"])
 });
 

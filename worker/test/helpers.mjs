@@ -104,6 +104,7 @@ export function testEnv(overrides = {}) {
     GOOGLE_CLIENT_SECRET: "h".repeat(32),
     NOTION_CLIENT_SECRET: "i".repeat(32),
     TODOIST_CLIENT_SECRET: "j".repeat(32),
+    REDDIT_CLIENT_SECRET: "m".repeat(32),
     OUTBOUND_TIMEOUT_MS: "100",
     RATE_LIMIT_EDGE: limiter(),
     RATE_LIMIT_STANDARD: limiter(),

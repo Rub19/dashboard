@@ -12,34 +12,33 @@ export function parseRiotId(reference) {
   return Object.freeze({ name: raw.slice(0, index), tag: raw.slice(index + 1) });
 }
 
-function normalizeMatch(input = {}) {
+function normalizeStat(input = {}) {
   return Object.freeze({
-    id: safeText(input.id, "", 64),
-    map: safeText(input.map, "", 32),
-    mode: safeText(input.mode, "", 32),
-    won: input.won === true ? true : input.won === false ? false : null,
-    kills: Number.isFinite(Number(input.kills)) ? Number(input.kills) : 0,
-    deaths: Number.isFinite(Number(input.deaths)) ? Number(input.deaths) : 0,
-    assists: Number.isFinite(Number(input.assists)) ? Number(input.assists) : 0,
-    characterName: safeText(input.characterName, "", 32)
+    displayName: safeText(input.displayName, "", 80),
+    displayValue: safeText(input.displayValue, "", 80)
+  });
+}
+
+function normalizeOverview(input = {}) {
+  const stats = input.stats && typeof input.stats === "object" ? input.stats : {};
+  return Object.freeze({
+    name: safeText(input.name, "", 100),
+    stats: Object.freeze(Object.values(stats).slice(0, 4).map(normalizeStat))
   });
 }
 
 export function normalizeValorantPresence(input = {}, options = {}) {
   const connected = options.connected === true;
   const riotId = connected ? options.riotId || null : null;
-  const available = connected && Boolean(riotId) && (Boolean(input.rank?.tierName) || Array.isArray(input.matches));
+  const available = connected && Boolean(riotId) && Boolean(input.handle);
+  const overview = available ? (input.segments || []).find((segment) => segment.type === "overview") || input.segments?.[0] : null;
   return Object.freeze({
     connected,
     available,
     name: riotId?.name || "",
     tag: riotId?.tag || "",
-    tierName: available ? safeText(input.rank?.tierName, "", 40) : "",
-    rankInTier: available ? Math.max(0, Math.min(100, Number(input.rank?.rankInTier) || 0)) : 0,
-    elo: available ? Math.max(0, Number(input.rank?.elo) || 0) : 0,
-    lastGameDelta: available ? Math.round(Number(input.rank?.lastGameDelta) || 0) : 0,
-    emblemUrl: available ? safeText(input.rank?.emblemUrl, "", 400) : "",
-    matches: available ? Object.freeze((input.matches || []).slice(0, 5).map(normalizeMatch)) : Object.freeze([]),
+    avatarUrl: available ? safeText(input.avatarUrl, "", 400) : "",
+    overview: available && overview ? normalizeOverview(overview) : null,
     updatedAt: available ? new Date().toISOString() : ""
   });
 }
@@ -71,17 +70,14 @@ export function createValorantLive(options = {}) {
     if (destroyed) return state;
     const connected = isConnected() === true;
     const riotId = connected ? parseRiotId(getRiotId()) : null;
-    if (!connected || !riotId || !externalServices?.henrik?.rank) {
+    if (!connected || !riotId || !externalServices?.tracker?.valorantProfile) {
       return publish(normalizeValorantPresence({}, { connected }));
     }
     if (inflight) return state;
-    inflight = Promise.all([
-      externalServices.henrik.rank(riotId.name, riotId.tag).catch(() => null),
-      externalServices.henrik.matches(riotId.name, riotId.tag).catch(() => null)
-    ]);
+    inflight = externalServices.tracker.valorantProfile(riotId.name, riotId.tag);
     try {
-      const [rankResponse, matchesResponse] = await inflight;
-      return publish(normalizeValorantPresence({ rank: rankResponse?.data || null, matches: matchesResponse?.data || null }, { connected, riotId }));
+      const response = await inflight;
+      return publish(normalizeValorantPresence(response?.data || {}, { connected, riotId }));
     } catch {
       return state.available ? state : publish(normalizeValorantPresence({}, { connected }));
     } finally {
@@ -130,7 +126,7 @@ export function createValorantLive(options = {}) {
     refresh: () => poll(),
     subscribe,
     state: () => state,
-    diagnostics: () => Object.freeze({ connected: state.connected, available: state.available, tierName: state.tierName, subscribers: subscribers.size }),
+    diagnostics: () => Object.freeze({ connected: state.connected, available: state.available, subscribers: subscribers.size }),
     destroy
   });
 }

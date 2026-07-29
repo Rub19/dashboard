@@ -10,7 +10,7 @@ const OPPORTUNITY_RULES = Object.freeze([
 const WORKER_SERVICES = Object.freeze({
   steam: "steam",
   "tracker-gg": "tracker",
-  riot: "henrik",
+  riot: "tracker",
   twitch: "twitch",
   lastfm: "lastfm",
   weather: "weather",

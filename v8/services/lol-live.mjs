@@ -6,35 +6,33 @@ function safeText(value, fallback = "", limit = 160) {
   return (normalized || fallback).slice(0, limit);
 }
 
-function normalizeMatch(input = {}) {
+function normalizeStat(input = {}) {
   return Object.freeze({
-    id: safeText(input.id, "", 64),
-    mode: safeText(input.mode, "", 24),
-    champion: safeText(input.champion, "", 32),
-    win: input.win === true ? true : input.win === false ? false : null,
-    kills: Number.isFinite(Number(input.kills)) ? Number(input.kills) : 0,
-    deaths: Number.isFinite(Number(input.deaths)) ? Number(input.deaths) : 0,
-    assists: Number.isFinite(Number(input.assists)) ? Number(input.assists) : 0,
-    cs: Number.isFinite(Number(input.cs)) ? Number(input.cs) : 0
+    displayName: safeText(input.displayName, "", 80),
+    displayValue: safeText(input.displayValue, "", 80)
+  });
+}
+
+function normalizeOverview(input = {}) {
+  const stats = input.stats && typeof input.stats === "object" ? input.stats : {};
+  return Object.freeze({
+    name: safeText(input.name, "", 100),
+    stats: Object.freeze(Object.values(stats).slice(0, 4).map(normalizeStat))
   });
 }
 
 export function normalizeLeaguePresence(input = {}, options = {}) {
   const connected = options.connected === true;
   const riotId = connected ? options.riotId || null : null;
-  const available = connected && Boolean(riotId) && (input.rank?.ranked === true || Array.isArray(input.matches));
+  const available = connected && Boolean(riotId) && Boolean(input.handle);
+  const overview = available ? (input.segments || []).find((segment) => segment.type === "overview") || input.segments?.[0] : null;
   return Object.freeze({
     connected,
     available,
     name: riotId?.name || "",
     tag: riotId?.tag || "",
-    ranked: available && input.rank?.ranked === true,
-    tier: available ? safeText(input.rank?.tier, "", 16) : "",
-    rank: available ? safeText(input.rank?.rank, "", 4) : "",
-    leaguePoints: available ? Math.max(0, Number(input.rank?.leaguePoints) || 0) : 0,
-    wins: available ? Math.max(0, Number(input.rank?.wins) || 0) : 0,
-    losses: available ? Math.max(0, Number(input.rank?.losses) || 0) : 0,
-    matches: available ? Object.freeze((input.matches || []).slice(0, 5).map(normalizeMatch)) : Object.freeze([]),
+    avatarUrl: available ? safeText(input.avatarUrl, "", 400) : "",
+    overview: available && overview ? normalizeOverview(overview) : null,
     updatedAt: available ? new Date().toISOString() : ""
   });
 }
@@ -66,17 +64,14 @@ export function createLeagueLive(options = {}) {
     if (destroyed) return state;
     const connected = isConnected() === true;
     const riotId = connected ? parseRiotId(getRiotId()) : null;
-    if (!connected || !riotId || !externalServices?.riotLol?.rank) {
+    if (!connected || !riotId || !externalServices?.tracker?.lolProfile) {
       return publish(normalizeLeaguePresence({}, { connected }));
     }
     if (inflight) return state;
-    inflight = Promise.all([
-      externalServices.riotLol.rank(riotId.name, riotId.tag).catch(() => null),
-      externalServices.riotLol.matches(riotId.name, riotId.tag).catch(() => null)
-    ]);
+    inflight = externalServices.tracker.lolProfile(riotId.name, riotId.tag);
     try {
-      const [rankResponse, matchesResponse] = await inflight;
-      return publish(normalizeLeaguePresence({ rank: rankResponse?.data || null, matches: matchesResponse?.data || null }, { connected, riotId }));
+      const response = await inflight;
+      return publish(normalizeLeaguePresence(response?.data || {}, { connected, riotId }));
     } catch {
       return state.available ? state : publish(normalizeLeaguePresence({}, { connected }));
     } finally {
@@ -125,7 +120,7 @@ export function createLeagueLive(options = {}) {
     refresh: () => poll(),
     subscribe,
     state: () => state,
-    diagnostics: () => Object.freeze({ connected: state.connected, available: state.available, tier: state.tier, subscribers: subscribers.size }),
+    diagnostics: () => Object.freeze({ connected: state.connected, available: state.available, subscribers: subscribers.size }),
     destroy
   });
 }

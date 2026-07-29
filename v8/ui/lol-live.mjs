@@ -1,37 +1,31 @@
 import { element, icon } from "./dom.mjs";
 import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
-const TIER_LABELS = Object.freeze({
-  IRON: "Fer", BRONZE: "Bronze", SILVER: "Argent", GOLD: "Or", PLATINUM: "Platine",
-  EMERALD: "Emeraude", DIAMOND: "Diamant", MASTER: "Maitre", GRANDMASTER: "Grand Maitre", CHALLENGER: "Challenger"
-});
-
-function matchDot(match) {
-  const state = match.win === true ? "win" : match.win === false ? "loss" : "draw";
-  return element("span", {
-    className: `v8-lol-match-dot is-${state}`,
-    attributes: { title: `${match.champion || "?"} - ${match.kills}/${match.deaths}/${match.assists} - ${match.mode}` }
-  });
+function avatar(presence) {
+  const inner = presence.avatarUrl
+    ? element("span", { className: "v8-lol-icon__image" }, [element("img", {
+      attributes: { src: presence.avatarUrl, alt: "", loading: "lazy", decoding: "async", referrerpolicy: "no-referrer" }
+    })])
+    : icon("swords");
+  return element("span", { className: "v8-lol-icon" }, [inner, livePulseDot()]);
 }
 
 export function lolLiveCard(presence = {}, options = {}) {
   if (presence.available !== true) return null;
   const variant = ["home", "activity"].includes(options.variant) ? options.variant : "home";
-  const rankLine = presence.ranked
-    ? [`${TIER_LABELS[presence.tier] || presence.tier} ${presence.rank}`.trim(), `${presence.leaguePoints} LP`, `${presence.wins}V / ${presence.losses}D`].filter(Boolean).join(" - ")
-    : "Non classe";
+  const stat = presence.overview?.stats?.[0];
+  const statLine = stat ? `${stat.displayName} : ${stat.displayValue}` : "Statistiques League of Legends";
   return element(options.tagName || "article", {
     className: `v8-lol-live v8-lol-live--${variant} v8-surface`,
-    attributes: { "aria-label": "Rang League of Legends" },
+    attributes: { "aria-label": "Statistiques League of Legends" },
     dataset: { liveWidget: "media", liveKind: "widget" }
   }, [
-    element("span", { className: "v8-lol-icon" }, [icon("swords"), livePulseDot()]),
+    avatar(presence),
     element("div", { className: "v8-lol-live__body" }, [
       element("div", { className: "v8-lol-live__meta" }, [icon("swords"), element("small", { text: "League of Legends" })]),
       element("strong", { text: `${presence.name}#${presence.tag}`, attributes: { translate: "no" } }),
-      element("p", { text: rankLine, attributes: { translate: "no" } }),
-      presence.matches.length ? element("div", { className: "v8-lol-live__matches", attributes: { "aria-label": "Dernieres parties" } }, presence.matches.map(matchDot)) : null,
+      element("p", { text: statLine, attributes: { translate: "no" } }),
       liveFreshnessNode(presence.updatedAt)
-    ].filter(Boolean))
+    ])
   ]);
 }

@@ -130,15 +130,15 @@ const SPECIAL_METHODS = Object.freeze({
     method({ id: "oauth-secure", label: "Twitch OAuth", summary: "Pour les abonnements et donnees privees. Necessite le backend ETHONE.", availability: "backend", quality: "Standard", apiVersion: "Twitch OAuth", badges: ["OAuth", "Cloud"], capabilities: ["Chaines", "Activite", "Abonnements"], permissions: ["Scopes OAuth selectionnes"] })
   ]),
   reddit: Object.freeze([
-    method({ id: "public-profile", label: "Profil public", summary: "Publications et commentaires publics via l'API Reddit, juste avec votre nom d'utilisateur.", availability: "public", recommended: true, quality: "Essentielle", apiVersion: "Reddit API", badges: ["Simple", "Lecture seule"], capabilities: ["Publications publiques", "Commentaires publics"], permissions: ["Aucune permission privee"], field: { type: "text", label: "Nom d'utilisateur Reddit", placeholder: "votre_pseudo", required: true } }),
-    method({ id: "oauth-secure", label: "Reddit OAuth", summary: "Pour les communautes privees et l'activite complete. Necessite le backend ETHONE.", availability: "backend", quality: "Standard", apiVersion: "Reddit OAuth2", badges: ["OAuth", "Cloud"], capabilities: ["Communautes", "Activite"], permissions: ["Scopes OAuth selectionnes"] })
+    method({ id: "oauth-secure", label: "Reddit OAuth", summary: "Connexion via l'application ETHONE, pour votre profil et votre derniere publication.", availability: "backend", recommended: true, live: true, quality: "Temps reel", apiVersion: "Reddit OAuth2", badges: ["OAuth", "Temps reel", "Cloud"], capabilities: ["Profil", "Derniere publication", "Karma"], permissions: ["identity", "history"] }),
+    method({ id: "public-profile", label: "Profil public", summary: "Publications et commentaires publics via l'API Reddit, juste avec votre nom d'utilisateur.", availability: "public", quality: "Essentielle", apiVersion: "Reddit API", badges: ["Simple", "Lecture seule"], capabilities: ["Publications publiques", "Commentaires publics"], permissions: ["Aucune permission privee"], field: { type: "text", label: "Nom d'utilisateur Reddit", placeholder: "votre_pseudo", required: true } })
   ]),
   bluesky: Object.freeze([
     method({ id: "public-profile", label: "Profil public", summary: "Publications publiques via le protocole AT, juste avec votre identifiant.", availability: "public", recommended: true, quality: "Essentielle", apiVersion: "AT Protocol", badges: ["Simple", "Sans secret", "Lecture seule"], capabilities: ["Publications publiques"], permissions: ["Aucune permission privee"], field: { type: "text", label: "Identifiant Bluesky", placeholder: "vous.bsky.social", required: true } })
   ]),
   youtube: Object.freeze([
-    method({ id: "public-channel", label: "Chaine publique", summary: "Dernieres videos et activite publique de la chaine, juste avec son identifiant.", availability: "public", recommended: true, quality: "Essentielle", apiVersion: "YouTube Data API", badges: ["Simple", "Lecture seule"], capabilities: ["Dernieres videos", "Activite publique"], permissions: ["Aucune permission privee"], field: { type: "text", label: "Chaine YouTube", placeholder: "@votre-chaine", required: true } }),
-    method({ id: "oauth-secure", label: "Google OAuth", summary: "Pour les abonnements et donnees privees. Necessite le backend ETHONE.", availability: "backend", quality: "Standard", apiVersion: "Google OAuth", badges: ["OAuth", "Cloud"], capabilities: ["Videos", "Chaines", "Activite"], permissions: ["Scopes OAuth selectionnes"] })
+    method({ id: "oauth-secure", label: "Google OAuth", summary: "Connexion via l'application ETHONE, pour votre chaine et votre derniere video publiee.", availability: "backend", recommended: true, live: true, quality: "Temps reel", apiVersion: "YouTube Data API v3", badges: ["OAuth", "Temps reel", "Cloud"], capabilities: ["Chaine", "Derniere video", "Abonnes"], permissions: ["Lecture YouTube (youtube.readonly)"] }),
+    method({ id: "public-channel", label: "Chaine publique", summary: "Dernieres videos et activite publique de la chaine, juste avec son identifiant.", availability: "public", quality: "Essentielle", apiVersion: "YouTube Data API", badges: ["Simple", "Lecture seule"], capabilities: ["Dernieres videos", "Activite publique"], permissions: ["Aucune permission privee"], field: { type: "text", label: "Chaine YouTube", placeholder: "@votre-chaine", required: true } })
   ]),
   lastfm: Object.freeze([
     method({ id: "public-profile", label: "Profil public", summary: "Scrobbles et historique musical via l'API Last.fm, juste avec votre nom d'utilisateur.", availability: "public", recommended: true, quality: "Essentielle", apiVersion: "Last.fm API", live: true, badges: ["Simple", "Sans secret", "Lecture seule"], capabilities: ["Scrobbles", "Historique musical"], permissions: ["Aucune permission privee"], field: { type: "text", label: "Nom d'utilisateur Last.fm", placeholder: "votre_pseudo", required: true }, credential: { provider: "lastfm", fields: [{ key: "apiKey", label: "Cle API Last.fm", placeholder: "0123456789abcdef0123456789abcdef" }] } })
@@ -172,6 +172,9 @@ const SPECIAL_METHODS = Object.freeze({
   "google-calendar": Object.freeze([
     method({ id: "oauth-secure", label: "Google OAuth", summary: "Connexion via l'application ETHONE, pour les prochains evenements de votre agenda principal.", availability: "backend", recommended: true, live: true, quality: "Temps reel", apiVersion: "Google Calendar API", badges: ["OAuth", "Temps reel", "Cloud"], capabilities: ["Prochain evenement", "Agenda principal"], permissions: ["Lecture agenda (calendar.readonly)"] }),
     method({ id: "ics-readonly", label: "Calendrier ICS", summary: "Abonnement a une adresse ICS partagee, strictement en lecture seule.", availability: "public", quality: "Lecture seule", apiVersion: "iCalendar", badges: ["Simple", "Sans secret", "Lecture seule"], capabilities: ["Evenements publies", "Actualisation periodique"], permissions: ["Lecture de l'agenda partage"], field: { type: "url", label: "Adresse ICS partagee", placeholder: "https://.../calendar.ics", required: true } })
+  ]),
+  "google-drive": Object.freeze([
+    method({ id: "oauth-secure", label: "Google OAuth", summary: "Connexion via l'application ETHONE, pour le dernier fichier modifie dans votre Drive.", availability: "backend", recommended: true, live: true, quality: "Temps reel", apiVersion: "Google Drive API v3", badges: ["OAuth", "Temps reel", "Cloud"], capabilities: ["Dernier fichier modifie", "Fichiers recents"], permissions: ["Lecture Drive (drive.readonly)"] })
   ]),
   notion: Object.freeze([
     method({ id: "public-oauth", label: "Connexion publique", summary: "Connexion via l'application ETHONE. Derniere page ou base modifiee parmi celles partagees.", availability: "backend", recommended: true, live: true, quality: "Temps reel", apiVersion: "Notion API", badges: ["OAuth", "Temps reel", "Cloud"], capabilities: ["Derniere page modifiee", "Contenu partage"], permissions: ["Contenu explicitement partage (Read content)"] }),
@@ -232,6 +235,18 @@ const SPECIAL_RESOURCES = Object.freeze({
   riot: Object.freeze([
     { label: "Riot Developer Portal (League of Legends)", url: "https://developer.riotgames.com/", kind: "Console" },
     { label: "Documentation HenrikDev (Valorant)", url: "https://docs.henrikdev.xyz/", kind: "Documentation" }
+  ]),
+  reddit: Object.freeze([
+    { label: "Reddit App Preferences", url: "https://www.reddit.com/prefs/apps", kind: "Console" },
+    { label: "Documentation OAuth2 Reddit", url: "https://github.com/reddit-archive/reddit/wiki/OAuth2", kind: "Documentation" }
+  ]),
+  youtube: Object.freeze([
+    { label: "Google Cloud Console (meme projet que Calendar)", url: "https://console.cloud.google.com/apis/credentials", kind: "Console" },
+    { label: "Activer YouTube Data API v3", url: "https://console.cloud.google.com/apis/library/youtube.googleapis.com", kind: "Console" }
+  ]),
+  "google-drive": Object.freeze([
+    { label: "Google Cloud Console (meme projet que Calendar)", url: "https://console.cloud.google.com/apis/credentials", kind: "Console" },
+    { label: "Activer Google Drive API", url: "https://console.cloud.google.com/apis/library/drive.googleapis.com", kind: "Console" }
   ])
 });
 
@@ -308,18 +323,28 @@ const SPECIAL_GUIDES = Object.freeze({
     "oauth-secure": (resource) => Object.freeze([
       guideStep("docs", "Ouvrir les Reddit App Preferences", "Connectez-vous puis \"create another app...\" en bas de page.", { resource }),
       guideStep("app", "Configurer le type d'application", "Choisissez \"web app\" (pas \"script\" ni \"installed app\")."),
-      guideStep("redirect", "Ajouter la Redirect URI", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
-      guideStep("scopes", "Scopes a demander", "identity (profil), history (activite), mysubreddits (communautes).", { copyValue: "identity history mysubreddits" }),
-      guideStep("keys", "Copier l'identifiant et le secret", "L'identifiant apparait sous le nom de l'app, le secret est affiche a droite.")
+      guideStep("redirect", "Ajouter la Redirect URI", "Cette valeur exacte, sans rien ajouter derriere.", { copyValue: "https://ethone.dev/" }),
+      guideStep("scopes", "Scopes a demander", "identity (profil) et history (activite).", { copyValue: "identity history" }),
+      guideStep("id", "Copier l'identifiant", "Affiche directement sous le nom de l'application."),
+      guideStep("secret", "Copier le secret", "Affiche a cote de l'identifiant."),
+      guideStep("wrangler", "Secret conserve cote Worker", "L'identifiant sera configure dans ETHONE une fois transmis. Le secret ne se colle jamais dans le navigateur : il reste enregistre comme secret Worker (REDDIT_CLIENT_SECRET)."),
+      guideStep("connect", "Se connecter avec Reddit", "Une fois l'identifiant configure dans ETHONE, cliquez \"Se connecter avec Reddit\" pour autoriser votre propre compte.")
     ])
   }),
   youtube: Object.freeze({
     "oauth-secure": (resource) => Object.freeze([
-      guideStep("docs", "Ouvrir Google Cloud Console", "Creez un projet (ou reutilisez-en un), puis activez \"YouTube Data API v3\" dans la bibliotheque d'API.", { resource }),
-      guideStep("consent", "Configurer l'ecran de consentement OAuth", "Type \"External\", renseignez le nom de l'app. Statut \"Testing\" suffit tant que ce n'est utilise que par vous."),
-      guideStep("app", "Creer un identifiant OAuth", "Credentials > Create Credentials > OAuth client ID > type \"Web application\"."),
-      guideStep("redirect", "Ajouter la Redirect URI", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
-      guideStep("scopes", "Scope a demander", "https://www.googleapis.com/auth/youtube.readonly", { copyValue: "https://www.googleapis.com/auth/youtube.readonly" })
+      guideStep("docs", "Ouvrir Google Cloud Console (meme projet que Google Calendar)", "Dans le projet deja utilise pour Google Calendar, activez \"YouTube Data API v3\" dans la bibliotheque d'API.", { resource }),
+      guideStep("scopes", "Ajouter le scope YouTube a l'ecran de consentement", "OAuth consent screen > Scopes > Add or remove scopes.", { copyValue: "https://www.googleapis.com/auth/youtube.readonly" }),
+      guideStep("id", "Aucun nouvel identifiant necessaire", "Le meme Client ID et Client Secret que Google Calendar fonctionnent pour YouTube : ETHONE les reutilise automatiquement."),
+      guideStep("connect", "Se connecter avec YouTube", "L'application ETHONE est prete : cliquez \"Se connecter avec YouTube\" pour autoriser votre propre compte.")
+    ])
+  }),
+  "google-drive": Object.freeze({
+    "oauth-secure": (resource) => Object.freeze([
+      guideStep("docs", "Ouvrir Google Cloud Console (meme projet que Google Calendar)", "Dans le projet deja utilise pour Google Calendar, activez \"Google Drive API\" dans la bibliotheque d'API.", { resource }),
+      guideStep("scopes", "Ajouter le scope Drive a l'ecran de consentement", "OAuth consent screen > Scopes > Add or remove scopes.", { copyValue: "https://www.googleapis.com/auth/drive.readonly" }),
+      guideStep("id", "Aucun nouvel identifiant necessaire", "Le meme Client ID et Client Secret que Google Calendar fonctionnent pour Drive : ETHONE les reutilise automatiquement."),
+      guideStep("connect", "Se connecter avec Google Drive", "L'application ETHONE est prete : cliquez \"Se connecter avec Google Drive\" pour autoriser votre propre compte.")
     ])
   }),
   "google-calendar": Object.freeze({
@@ -390,15 +415,6 @@ const SPECIAL_GUIDES = Object.freeze({
       guideStep("secret", "Copier le Client Secret", "Affiche a cote du Client ID."),
       guideStep("wrangler", "Client Secret conserve cote Worker", "Le Client ID est deja configure dans ETHONE. Le Client Secret ne se colle jamais dans le navigateur : il reste enregistre comme secret Worker (TODOIST_CLIENT_SECRET)."),
       guideStep("connect", "Se connecter avec Todoist", "L'application ETHONE est prete : cliquez \"Se connecter avec Todoist\" pour autoriser votre propre compte.")
-    ])
-  }),
-  "google-drive": Object.freeze({
-    "oauth-secure": (resource) => Object.freeze([
-      guideStep("docs", "Ouvrir Google Cloud Console", "Creez un projet (ou reutilisez-en un), puis activez \"Google Drive API\" dans la bibliotheque d'API.", { resource }),
-      guideStep("consent", "Configurer l'ecran de consentement OAuth", "Type \"External\", renseignez le nom de l'app. Statut \"Testing\" suffit tant que ce n'est utilise que par vous."),
-      guideStep("app", "Creer un identifiant OAuth", "Credentials > Create Credentials > OAuth client ID > type \"Web application\"."),
-      guideStep("redirect", "Ajouter la Redirect URI", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
-      guideStep("scopes", "Scope a demander", "https://www.googleapis.com/auth/drive.readonly", { copyValue: "https://www.googleapis.com/auth/drive.readonly" })
     ])
   }),
   "google-docs": Object.freeze({

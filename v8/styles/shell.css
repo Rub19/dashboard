@@ -2527,6 +2527,31 @@ html[data-v8-interactions] .v8-panel-notice:hover > .v8-selection-control,.v8-pa
 .v8-tracker-live__meta { display:flex;min-width:0;align-items:center;gap:6px;margin-bottom:2px;color:#ff4713; }.v8-tracker-live__meta svg { flex:0 0 auto;width:14px;height:14px; }.v8-tracker-live__meta small { overflow:hidden;font-size:var(--v8-font-micro);font-weight:var(--v8-weight-semibold);text-overflow:ellipsis;text-transform:uppercase;white-space:nowrap; }
 .v8-tracker-live--activity { min-height:120px; }
 
+.v8-google-drive-live { position:relative;display:grid;min-width:0;grid-template-columns:44px minmax(0,1fr);align-items:center;gap:var(--v8-space-4);padding:var(--v8-space-4);border-color:color-mix(in srgb,#1a73e8 26%,var(--v8-border));background:var(--v8-reflection-card),color-mix(in srgb,#1a73e8 4%,var(--v8-surface-1));box-shadow:var(--v8-shadow-card-lit); }
+.v8-google-drive-icon { display:grid;width:44px;height:44px;place-items:center;color:#1a73e8; }
+.v8-google-drive-icon svg { width:24px;height:24px; }
+.v8-google-drive-live__body { display:grid;min-width:0;gap:3px; }.v8-google-drive-live__body > strong { overflow:hidden;color:var(--v8-text);font-size:var(--v8-font-md);text-overflow:ellipsis;white-space:nowrap; }.v8-google-drive-live__body > p { overflow:hidden;color:var(--v8-text-secondary);font-size:var(--v8-font-xs);text-overflow:ellipsis;white-space:nowrap; }
+.v8-google-drive-live__meta { display:flex;min-width:0;align-items:center;gap:6px;margin-bottom:2px;color:#1a73e8; }.v8-google-drive-live__meta svg { flex:0 0 auto;width:14px;height:14px; }.v8-google-drive-live__meta small { overflow:hidden;font-size:var(--v8-font-micro);font-weight:var(--v8-weight-semibold);text-overflow:ellipsis;text-transform:uppercase;white-space:nowrap; }
+.v8-google-drive-live--activity { min-height:120px; }
+
+.v8-youtube-live { position:relative;display:grid;min-width:0;grid-template-columns:52px minmax(0,1fr);align-items:center;gap:var(--v8-space-4);padding:var(--v8-space-4);border-color:color-mix(in srgb,#ff0000 26%,var(--v8-border));background:var(--v8-reflection-card),color-mix(in srgb,#ff0000 4%,var(--v8-surface-1));box-shadow:var(--v8-shadow-card-lit); }
+.v8-youtube-avatar { display:grid;width:52px;height:52px;place-items:center;overflow:hidden;border-radius:50%;background:color-mix(in srgb,#ff0000 12%,transparent);color:#ff0000; }
+.v8-youtube-avatar__image { display:grid;width:100%;height:100%;place-items:center; }
+.v8-youtube-avatar__image img { width:100%;height:100%;object-fit:cover;border-radius:50%; }
+.v8-youtube-avatar__image.is-fallback svg { width:24px;height:24px; }
+.v8-youtube-live__body { display:grid;min-width:0;gap:3px; }.v8-youtube-live__body > strong { overflow:hidden;color:var(--v8-text);font-size:var(--v8-font-md);text-overflow:ellipsis;white-space:nowrap; }.v8-youtube-live__body > p { overflow:hidden;color:var(--v8-text-secondary);font-size:var(--v8-font-xs);text-overflow:ellipsis;white-space:nowrap; }
+.v8-youtube-live__meta { display:flex;min-width:0;align-items:center;gap:6px;margin-bottom:2px;color:#ff0000; }.v8-youtube-live__meta svg { flex:0 0 auto;width:14px;height:14px; }.v8-youtube-live__meta small { overflow:hidden;font-size:var(--v8-font-micro);font-weight:var(--v8-weight-semibold);text-overflow:ellipsis;text-transform:uppercase;white-space:nowrap; }
+.v8-youtube-live--activity { min-height:120px; }
+
+.v8-reddit-live { position:relative;display:grid;min-width:0;grid-template-columns:52px minmax(0,1fr);align-items:center;gap:var(--v8-space-4);padding:var(--v8-space-4);border-color:color-mix(in srgb,#ff4500 26%,var(--v8-border));background:var(--v8-reflection-card),color-mix(in srgb,#ff4500 4%,var(--v8-surface-1));box-shadow:var(--v8-shadow-card-lit); }
+.v8-reddit-avatar { display:grid;width:52px;height:52px;place-items:center;overflow:hidden;border-radius:50%;background:color-mix(in srgb,#ff4500 12%,transparent);color:#ff4500; }
+.v8-reddit-avatar__image { display:grid;width:100%;height:100%;place-items:center; }
+.v8-reddit-avatar__image img { width:100%;height:100%;object-fit:cover;border-radius:50%; }
+.v8-reddit-avatar__image.is-fallback svg { width:22px;height:22px; }
+.v8-reddit-live__body { display:grid;min-width:0;gap:3px; }.v8-reddit-live__body > strong { overflow:hidden;color:var(--v8-text);font-size:var(--v8-font-md);text-overflow:ellipsis;white-space:nowrap; }.v8-reddit-live__body > p { overflow:hidden;color:var(--v8-text-secondary);font-size:var(--v8-font-xs);text-overflow:ellipsis;white-space:nowrap; }
+.v8-reddit-live__meta { display:flex;min-width:0;align-items:center;gap:6px;margin-bottom:2px;color:#ff4500; }.v8-reddit-live__meta svg { flex:0 0 auto;width:14px;height:14px; }.v8-reddit-live__meta small { overflow:hidden;font-size:var(--v8-font-micro);font-weight:var(--v8-weight-semibold);text-overflow:ellipsis;text-transform:uppercase;white-space:nowrap; }
+.v8-reddit-live--activity { min-height:120px; }
+
 .v8-brain-context__identity { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--v8-space-4); }
 .v8-brain-orbit { display: grid; width: 64px; height: 64px; place-items: center; border: 1px solid var(--v8-brain-line); border-radius: 50%; background: var(--v8-brain-soft); color: var(--v8-brain); box-shadow: 0 0 36px var(--v8-light-brain); }
 .v8-brain-orbit svg { width: 28px; height: 28px; }

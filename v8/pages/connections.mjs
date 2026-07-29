@@ -21,6 +21,9 @@ import { beginGithubAuthorize } from "../services/github-oauth.mjs";
 import { beginGoogleCalendarAuthorize } from "../services/google-calendar-oauth.mjs";
 import { beginNotionAuthorize } from "../services/notion-oauth.mjs";
 import { beginTodoistAuthorize } from "../services/todoist-oauth.mjs";
+import { beginGoogleDriveAuthorize } from "../services/google-drive-oauth.mjs";
+import { beginYoutubeAuthorize } from "../services/youtube-oauth.mjs";
+import { beginRedditAuthorize } from "../services/reddit-oauth.mjs";
 import { OAUTH_APP_CLIENT_IDS } from "../data/oauth-app-config.mjs";
 import {
   connectionMetrics,
@@ -76,7 +79,10 @@ const OAUTH_CONNECT_ACTIONS = Object.freeze({
   "github:oauth-secure": Object.freeze({ actionId: "v8.connections.github.connect", icon: "github", label: "Se connecter avec GitHub" }),
   "google-calendar:oauth-secure": Object.freeze({ actionId: "v8.connections.google-calendar.connect", icon: "calendar-days", label: "Se connecter avec Google" }),
   "notion:public-oauth": Object.freeze({ actionId: "v8.connections.notion.connect", icon: "notebook-tabs", label: "Se connecter avec Notion" }),
-  "todoist:oauth-secure": Object.freeze({ actionId: "v8.connections.todoist.connect", icon: "circle-check-big", label: "Se connecter avec Todoist" })
+  "todoist:oauth-secure": Object.freeze({ actionId: "v8.connections.todoist.connect", icon: "circle-check-big", label: "Se connecter avec Todoist" }),
+  "google-drive:oauth-secure": Object.freeze({ actionId: "v8.connections.google-drive.connect", icon: "hard-drive", label: "Se connecter avec Google Drive" }),
+  "youtube:oauth-secure": Object.freeze({ actionId: "v8.connections.youtube.connect", icon: "youtube", label: "Se connecter avec YouTube" }),
+  "reddit:oauth-secure": Object.freeze({ actionId: "v8.connections.reddit.connect", icon: "message-circle", label: "Se connecter avec Reddit" })
 });
 
 function connectionAction(actionId, integrationId, variant, children, options = {}) {
@@ -228,6 +234,9 @@ export function mountConnections(stage, options = {}) {
   const twitchLive = options.twitchLive || null;
   const lastfmLive = options.lastfmLive || null;
   const trackerLive = options.trackerLive || null;
+  const googleDriveLive = options.googleDriveLive || null;
+  const youtubeLive = options.youtubeLive || null;
+  const redditLive = options.redditLive || null;
   function refreshLiveBridges(id) {
     if (id === "spotify") {
       spotifyLive?.refresh?.();
@@ -248,6 +257,9 @@ export function mountConnections(stage, options = {}) {
     if (id === "twitch") twitchLive?.refresh?.();
     if (id === "lastfm") lastfmLive?.refresh?.();
     if (id === "tracker-gg") trackerLive?.refresh?.();
+    if (id === "google-drive") googleDriveLive?.refresh?.();
+    if (id === "youtube") youtubeLive?.refresh?.();
+    if (id === "reddit") redditLive?.refresh?.();
   }
   const externalServices = options.externalServices || null;
   const clientProvider = typeof options.clientProvider === "function" ? options.clientProvider : null;
@@ -942,6 +954,84 @@ export function mountConnections(stage, options = {}) {
       return unavailable("sessionStorage indisponible");
     }
     return completed("Redirection vers Todoist", { integration: id });
+  }));
+
+  releases.push(actions.scope("v8.connections.google-drive.connect", async (context) => {
+    const id = context.element?.dataset.integration || selectedId;
+    const integration = integrationById(id);
+    const connection = connectionMap().get(id);
+    const method = selectedMethod(integration, connection);
+    if (id !== "google-drive" || method?.id !== "oauth-secure") return unavailable("Methode indisponible.");
+    const availability = methodAvailability(method, connectionList());
+    if (!availability.usable) {
+      notify({ id: `connection-blocked-${id}`, title: integration?.name || "Connection", message: availability.reason, type: "warning" });
+      return unavailable(availability.reason);
+    }
+    const clientId = OAUTH_APP_CLIENT_IDS["google-drive"];
+    repository.connections.configure(id, {
+      methodId: method.id,
+      reference: clientId,
+      apiVersion: method.apiVersion || "En attente",
+      detail: "Redirection vers Google Drive en cours."
+    });
+    const started = await beginGoogleDriveAuthorize(clientId, globalThis);
+    if (!started) {
+      notify({ id: `connection-oauth-${id}`, title: integration?.name || "Google Drive", message: "Impossible de demarrer la connexion Google Drive sur cet appareil.", type: "error" });
+      return unavailable("sessionStorage indisponible");
+    }
+    return completed("Redirection vers Google Drive", { integration: id });
+  }));
+
+  releases.push(actions.scope("v8.connections.youtube.connect", async (context) => {
+    const id = context.element?.dataset.integration || selectedId;
+    const integration = integrationById(id);
+    const connection = connectionMap().get(id);
+    const method = selectedMethod(integration, connection);
+    if (id !== "youtube" || method?.id !== "oauth-secure") return unavailable("Methode indisponible.");
+    const availability = methodAvailability(method, connectionList());
+    if (!availability.usable) {
+      notify({ id: `connection-blocked-${id}`, title: integration?.name || "Connection", message: availability.reason, type: "warning" });
+      return unavailable(availability.reason);
+    }
+    const clientId = OAUTH_APP_CLIENT_IDS.youtube;
+    repository.connections.configure(id, {
+      methodId: method.id,
+      reference: clientId,
+      apiVersion: method.apiVersion || "En attente",
+      detail: "Redirection vers YouTube en cours."
+    });
+    const started = await beginYoutubeAuthorize(clientId, globalThis);
+    if (!started) {
+      notify({ id: `connection-oauth-${id}`, title: integration?.name || "YouTube", message: "Impossible de demarrer la connexion YouTube sur cet appareil.", type: "error" });
+      return unavailable("sessionStorage indisponible");
+    }
+    return completed("Redirection vers YouTube", { integration: id });
+  }));
+
+  releases.push(actions.scope("v8.connections.reddit.connect", async (context) => {
+    const id = context.element?.dataset.integration || selectedId;
+    const integration = integrationById(id);
+    const connection = connectionMap().get(id);
+    const method = selectedMethod(integration, connection);
+    if (id !== "reddit" || method?.id !== "oauth-secure") return unavailable("Methode indisponible.");
+    const availability = methodAvailability(method, connectionList());
+    if (!availability.usable) {
+      notify({ id: `connection-blocked-${id}`, title: integration?.name || "Connection", message: availability.reason, type: "warning" });
+      return unavailable(availability.reason);
+    }
+    const clientId = OAUTH_APP_CLIENT_IDS.reddit;
+    repository.connections.configure(id, {
+      methodId: method.id,
+      reference: clientId,
+      apiVersion: method.apiVersion || "En attente",
+      detail: "Redirection vers Reddit en cours."
+    });
+    const started = await beginRedditAuthorize(clientId, globalThis);
+    if (!started) {
+      notify({ id: `connection-oauth-${id}`, title: integration?.name || "Reddit", message: "Impossible de demarrer la connexion Reddit sur cet appareil.", type: "error" });
+      return unavailable("sessionStorage indisponible");
+    }
+    return completed("Redirection vers Reddit", { integration: id });
   }));
   releases.push(actions.scope("v8.connections.test", async (context) => {
     const id = context.element?.dataset.integration || selectedId;

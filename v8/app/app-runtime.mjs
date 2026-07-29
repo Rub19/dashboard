@@ -27,6 +27,9 @@ import { createLeagueLive } from "../services/lol-live.mjs";
 import { createTwitchLive } from "../services/twitch-live.mjs";
 import { createLastfmLive } from "../services/lastfm-live.mjs";
 import { createTrackerLive } from "../services/tracker-live.mjs";
+import { createGoogleDriveLive } from "../services/google-drive-live.mjs";
+import { createYoutubeLive } from "../services/youtube-live.mjs";
+import { createRedditLive } from "../services/reddit-live.mjs";
 import { clearPendingOAuthAuthorize, consumeOAuthCallback, readPendingOAuthAuthorize } from "../services/oauth-callback.mjs";
 import { mountShell } from "../ui/shell.mjs";
 import { createPanelManager } from "../ui/panel.mjs";
@@ -186,6 +189,27 @@ export function mountApplication(root, options = {}) {
     isConnected: () => repository.snapshot().connections.some((connection) => connection.id === "tracker-gg" && connection.status === "connected"),
     getIdentifier: () => repository.snapshot().connections.find((connection) => connection.id === "tracker-gg")?.reference || ""
   });
+  const ownsGoogleDriveLive = !options.googleDriveLive;
+  const googleDriveLive = options.googleDriveLive || createGoogleDriveLive({
+    runtime: globalThis,
+    externalServices,
+    isConnected: () => repository.snapshot().connections.some((connection) => connection.id === "google-drive" && connection.methodId === "oauth-secure" && connection.status === "connected"),
+    getClientId: () => repository.snapshot().connections.find((connection) => connection.id === "google-drive")?.reference || ""
+  });
+  const ownsYoutubeLive = !options.youtubeLive;
+  const youtubeLive = options.youtubeLive || createYoutubeLive({
+    runtime: globalThis,
+    externalServices,
+    isConnected: () => repository.snapshot().connections.some((connection) => connection.id === "youtube" && connection.methodId === "oauth-secure" && connection.status === "connected"),
+    getClientId: () => repository.snapshot().connections.find((connection) => connection.id === "youtube")?.reference || ""
+  });
+  const ownsRedditLive = !options.redditLive;
+  const redditLive = options.redditLive || createRedditLive({
+    runtime: globalThis,
+    externalServices,
+    isConnected: () => repository.snapshot().connections.some((connection) => connection.id === "reddit" && connection.methodId === "oauth-secure" && connection.status === "connected"),
+    getClientId: () => repository.snapshot().connections.find((connection) => connection.id === "reddit")?.reference || ""
+  });
   let actions = null;
   let router = null;
   let shell = null;
@@ -274,6 +298,12 @@ export function mountApplication(root, options = {}) {
   else lastfmLive.refresh?.();
   if (ownsTrackerLive) trackerLive.start();
   else trackerLive.refresh?.();
+  if (ownsGoogleDriveLive) googleDriveLive.start();
+  else googleDriveLive.refresh?.();
+  if (ownsYoutubeLive) youtubeLive.start();
+  else youtubeLive.refresh?.();
+  if (ownsRedditLive) redditLive.start();
+  else redditLive.refresh?.();
   const initialSpotify = spotifyLive.state?.() || {};
   const initialMedia = initialSpotify.playing ? "playing" : initialSpotify.available ? "paused" : "idle";
   const initialCalendar = calendarPresenceState(repository.snapshot().events);
@@ -324,7 +354,7 @@ export function mountApplication(root, options = {}) {
     const pendingOAuth = readPendingOAuthAuthorize(globalThis);
     clearPendingOAuthAuthorize(globalThis);
     const provider = pendingOAuth?.provider;
-    const providerLabel = { github: "GitHub", "google-calendar": "Google", notion: "Notion", spotify: "Spotify", todoist: "Todoist" }[provider] || "Connexion";
+    const providerLabel = { github: "GitHub", "google-calendar": "Google", notion: "Notion", spotify: "Spotify", todoist: "Todoist", "google-drive": "Google Drive", youtube: "YouTube", reddit: "Reddit" }[provider] || "Connexion";
     if (oauthCallback.error) {
       toasts.show({ id: `oauth-error-${provider || "unknown"}`, title: providerLabel, message: `Connexion ${providerLabel} annulee ou refusee.`, type: "warning" });
     } else if (!pendingOAuth || pendingOAuth.state !== oauthCallback.state || !pendingOAuth.clientId) {
@@ -403,6 +433,51 @@ export function mountApplication(root, options = {}) {
         })
         .catch(() => {
           toasts.show({ id: "todoist-oauth-error", title: "Todoist", message: "Echec de la connexion Todoist. Reessayez.", type: "error" });
+        });
+    } else if (oauthCallback.code && provider === "google-drive") {
+      externalServices?.googleDriveOAuth?.exchange(oauthCallback.code, pendingOAuth.clientId)
+        .then(() => {
+          repository.connections.updateStatus("google-drive", "connected", {
+            apiVersion: "Google Drive API",
+            lastSyncAt: new Date().toISOString(),
+            lastTestedAt: new Date().toISOString(),
+            detail: "Compte Google Drive connecte via OAuth."
+          });
+          googleDriveLive.refresh?.();
+          toasts.show({ id: "google-drive-oauth-success", title: "Google Drive", message: "Google Drive connecte avec succes.", type: "success" });
+        })
+        .catch(() => {
+          toasts.show({ id: "google-drive-oauth-error", title: "Google Drive", message: "Echec de la connexion Google Drive. Reessayez.", type: "error" });
+        });
+    } else if (oauthCallback.code && provider === "youtube") {
+      externalServices?.youtubeOAuth?.exchange(oauthCallback.code, pendingOAuth.clientId)
+        .then(() => {
+          repository.connections.updateStatus("youtube", "connected", {
+            apiVersion: "YouTube Data API v3",
+            lastSyncAt: new Date().toISOString(),
+            lastTestedAt: new Date().toISOString(),
+            detail: "Compte YouTube connecte via OAuth."
+          });
+          youtubeLive.refresh?.();
+          toasts.show({ id: "youtube-oauth-success", title: "YouTube", message: "YouTube connecte avec succes.", type: "success" });
+        })
+        .catch(() => {
+          toasts.show({ id: "youtube-oauth-error", title: "YouTube", message: "Echec de la connexion YouTube. Reessayez.", type: "error" });
+        });
+    } else if (oauthCallback.code && provider === "reddit") {
+      externalServices?.redditOAuth?.exchange(oauthCallback.code, pendingOAuth.clientId)
+        .then(() => {
+          repository.connections.updateStatus("reddit", "connected", {
+            apiVersion: "Reddit OAuth2",
+            lastSyncAt: new Date().toISOString(),
+            lastTestedAt: new Date().toISOString(),
+            detail: "Compte Reddit connecte via OAuth."
+          });
+          redditLive.refresh?.();
+          toasts.show({ id: "reddit-oauth-success", title: "Reddit", message: "Reddit connecte avec succes.", type: "success" });
+        })
+        .catch(() => {
+          toasts.show({ id: "reddit-oauth-error", title: "Reddit", message: "Echec de la connexion Reddit. Reessayez.", type: "error" });
         });
     }
   }
@@ -521,8 +596,8 @@ export function mountApplication(root, options = {}) {
         await module.prepare?.();
         if (destroyed || requestId !== routeRequest || router?.current() !== route) return;
         lifecycle.mount(route, () => {
-          if (route === "activity") return module.mountActivity(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, twitchLive, lastfmLive, trackerLive, presence, notify: (notice) => toasts.show(notice) });
-          if (route === "connections") return module.mountConnections(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, spotifyOAuthLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, twitchLive, lastfmLive, trackerLive, externalServices, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.() });
+          if (route === "activity") return module.mountActivity(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, twitchLive, lastfmLive, trackerLive, googleDriveLive, youtubeLive, redditLive, presence, notify: (notice) => toasts.show(notice) });
+          if (route === "connections") return module.mountConnections(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, spotifyOAuthLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, twitchLive, lastfmLive, trackerLive, googleDriveLive, youtubeLive, redditLive, externalServices, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.() });
           if (route === "brain") return module.mountBrain(shell.stage, { repository, actions, state: store.getState(), presence, brain, notify: (notice) => toasts.show(notice) });
           return module.mountSettings(shell.stage, { repository, actions, state: store.getState(), sounds, externalServices, densityEngine, subscribeState: store.subscribe, brain, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.(), profile: options.profile || repository.activeProfile?.(), onProfileMediaUpdated: applyProfileMediaUpdate });
         });
@@ -553,7 +628,7 @@ export function mountApplication(root, options = {}) {
       return;
     }
     lifecycle.mount(route, () => {
-      if (route === "home") return mountHome(shell.stage, createHomeModel({ snapshot: repository.snapshot() }), { ...store.getState(), spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, twitchLive, lastfmLive, trackerLive, presence, sync: cloudSync });
+      if (route === "home") return mountHome(shell.stage, createHomeModel({ snapshot: repository.snapshot() }), { ...store.getState(), spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, twitchLive, lastfmLive, trackerLive, googleDriveLive, youtubeLive, redditLive, presence, sync: cloudSync });
       if (route === "notes") return mountNotes(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, presence, sync: cloudSync, notify: (notice) => toasts.show(notice) });
       if (route === "tasks") return mountTasks(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, presence, notify: (notice) => toasts.show(notice) });
       if (route === "calendar") return mountCalendar(shell.stage, { repository, actions, presence, notify: (notice) => toasts.show(notice) });
@@ -759,6 +834,9 @@ export function mountApplication(root, options = {}) {
     if (ownsTwitchLive) twitchLive.destroy();
     if (ownsLastfmLive) lastfmLive.destroy();
     if (ownsTrackerLive) trackerLive.destroy();
+    if (ownsGoogleDriveLive) googleDriveLive.destroy();
+    if (ownsYoutubeLive) youtubeLive.destroy();
+    if (ownsRedditLive) redditLive.destroy();
     if (ownsPresenceEngine) presence.destroy();
     densityEngine.destroy();
     brainRuntime?.destroy?.();
@@ -809,6 +887,9 @@ export function mountApplication(root, options = {}) {
       twitchLive: twitchLive.diagnostics?.() || null,
       lastfmLive: lastfmLive.diagnostics?.() || null,
       trackerLive: trackerLive.diagnostics?.() || null,
+      googleDriveLive: googleDriveLive.diagnostics?.() || null,
+      youtubeLive: youtubeLive.diagnostics?.() || null,
+      redditLive: redditLive.diagnostics?.() || null,
       documentTitle: document.title,
       documentContext: metadata.current(),
       activitySubscribers: activityJournal.subscriberCount(),

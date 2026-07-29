@@ -105,7 +105,7 @@ export async function getChannelActivity(env, userId, clientId) {
     channel: Object.freeze({
       id: safeText(channel.id, 40),
       title: safeText(channel.snippet?.title, 120),
-      thumbnailUrl: safePublicUrl(channel.snippet?.thumbnails?.default?.url, ["ytimg.com", "googleusercontent.com"]),
+      thumbnailUrl: safePublicUrl(channel.snippet?.thumbnails?.default?.url, ["ytimg.com", "googleusercontent.com", "ggpht.com"]),
       subscriberCount: safeNumber(channel.statistics?.subscriberCount, 0, 1000000000),
       videoCount: safeNumber(channel.statistics?.videoCount, 0, 1000000000)
     }),
@@ -113,7 +113,7 @@ export async function getChannelActivity(env, userId, clientId) {
       id: safeText(video.id?.videoId, 40),
       title: safeText(video.snippet?.title, 200),
       publishedAt: safeText(video.snippet?.publishedAt, 40),
-      thumbnailUrl: safePublicUrl(video.snippet?.thumbnails?.medium?.url, ["ytimg.com", "googleusercontent.com"])
+      thumbnailUrl: safePublicUrl(video.snippet?.thumbnails?.medium?.url, ["ytimg.com", "googleusercontent.com", "ggpht.com"])
     }) : null
   });
 }

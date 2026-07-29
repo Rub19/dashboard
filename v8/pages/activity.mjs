@@ -17,6 +17,9 @@ import { lolLiveCard } from "../ui/lol-live.mjs";
 import { twitchLiveCard } from "../ui/twitch-live.mjs";
 import { lastfmLiveCard } from "../ui/lastfm-live.mjs";
 import { trackerLiveCard } from "../ui/tracker-live.mjs";
+import { googleDriveLiveCard } from "../ui/google-drive-live.mjs";
+import { youtubeLiveCard } from "../ui/youtube-live.mjs";
+import { redditLiveCard } from "../ui/reddit-live.mjs";
 import { createSelect } from "../ui/select.mjs";
 import { prepareActivityUI } from "./activity-style.mjs";
 
@@ -55,9 +58,12 @@ const LIVE_CARD_META = Object.freeze({
   lol: Object.freeze({ label: "League of Legends", icon: "swords" }),
   twitch: Object.freeze({ label: "Twitch", icon: "twitch" }),
   lastfm: Object.freeze({ label: "Last.fm", icon: "history" }),
-  "tracker-gg": Object.freeze({ label: "Tracker.gg", icon: "chart-no-axes-combined" })
+  "tracker-gg": Object.freeze({ label: "Tracker.gg", icon: "chart-no-axes-combined" }),
+  "google-drive": Object.freeze({ label: "Google Drive", icon: "hard-drive" }),
+  youtube: Object.freeze({ label: "YouTube", icon: "youtube" }),
+  reddit: Object.freeze({ label: "Reddit", icon: "message-circle" })
 });
-const DEFAULT_LIVE_LAYOUT = Object.freeze({ order: Object.freeze(["system", "spotify", "discord", "weather", "minecraft", "steam", "github", "google-calendar", "notion", "todoist", "valorant", "lol", "twitch", "lastfm", "tracker-gg"]), hidden: Object.freeze([]) });
+const DEFAULT_LIVE_LAYOUT = Object.freeze({ order: Object.freeze(["system", "spotify", "discord", "weather", "minecraft", "steam", "github", "google-calendar", "notion", "todoist", "valorant", "lol", "twitch", "lastfm", "tracker-gg", "google-drive", "youtube", "reddit"]), hidden: Object.freeze([]) });
 
 function moveButton(id, direction, disabled, label) {
   const button = actionButton({ actionId: "v8.activity.live.move", className: "v8-icon-button", ariaLabel: label, disabled }, [icon(direction === "up" ? "chevron-up" : "chevron-down")]);
@@ -224,6 +230,9 @@ export function mountActivity(stage, options = {}) {
   const twitchLive = options.twitchLive || null;
   const lastfmLive = options.lastfmLive || null;
   const trackerLive = options.trackerLive || null;
+  const googleDriveLive = options.googleDriveLive || null;
+  const youtubeLive = options.youtubeLive || null;
+  const redditLive = options.redditLive || null;
   const presence = options.presence || null;
   const state = options.state || {};
   let activeFilter = "all";
@@ -246,6 +255,9 @@ export function mountActivity(stage, options = {}) {
   let twitchPresence = twitchLive?.state?.() || {};
   let lastfmPresence = lastfmLive?.state?.() || {};
   let trackerPresence = trackerLive?.state?.() || {};
+  let googleDrivePresence = googleDriveLive?.state?.() || {};
+  let youtubePresence = youtubeLive?.state?.() || {};
+  let redditPresence = redditLive?.state?.() || {};
   const controller = new AbortController();
 
   const filterBar = element("div", { className: "v8-activity-filters", attributes: { role: "toolbar", "aria-label": "Filtrer l'activite" } });
@@ -350,7 +362,10 @@ export function mountActivity(stage, options = {}) {
     const twitchCard = twitchLiveCard(twitchPresence, { variant: "activity" });
     const lastfmCard = lastfmLiveCard(lastfmPresence, { variant: "activity" });
     const trackerCard = trackerLiveCard(trackerPresence, { variant: "activity" });
-    const knownCards = { system: systemCard, spotify: spotifyPlayer, discord: discordCard, weather: weatherCard, minecraft: minecraftCard, steam: steamCard, github: githubCard, "google-calendar": googleCalendarCard, notion: notionCard, todoist: todoistCard, valorant: valorantCard, lol: lolCard, twitch: twitchCard, lastfm: lastfmCard, "tracker-gg": trackerCard };
+    const googleDriveCard = googleDriveLiveCard(googleDrivePresence, { variant: "activity" });
+    const youtubeCard = youtubeLiveCard(youtubePresence, { variant: "activity" });
+    const redditCard = redditLiveCard(redditPresence, { variant: "activity" });
+    const knownCards = { system: systemCard, spotify: spotifyPlayer, discord: discordCard, weather: weatherCard, minecraft: minecraftCard, steam: steamCard, github: githubCard, "google-calendar": googleCalendarCard, notion: notionCard, todoist: todoistCard, valorant: valorantCard, lol: lolCard, twitch: twitchCard, lastfm: lastfmCard, "tracker-gg": trackerCard, "google-drive": googleDriveCard, youtube: youtubeCard, reddit: redditCard };
     liveGrid.replaceChildren();
     liveLayout.order.forEach((id) => {
       if (liveLayout.hidden.includes(id)) return;
@@ -519,6 +534,24 @@ export function mountActivity(stage, options = {}) {
     const card = liveGrid.querySelector(".v8-tracker-live");
     if (card) presence?.signalActivity?.(card, "system", { phase: "update" });
   }, { immediate: false }) || (() => {});
+  const releaseGoogleDrive = googleDriveLive?.subscribe?.((googleDriveState) => {
+    googleDrivePresence = googleDriveState;
+    render();
+    const card = liveGrid.querySelector(".v8-google-drive-live");
+    if (card) presence?.signalActivity?.(card, "system", { phase: "update" });
+  }, { immediate: false }) || (() => {});
+  const releaseYoutube = youtubeLive?.subscribe?.((youtubeState) => {
+    youtubePresence = youtubeState;
+    render();
+    const card = liveGrid.querySelector(".v8-youtube-live");
+    if (card) presence?.signalActivity?.(card, "system", { phase: "update" });
+  }, { immediate: false }) || (() => {});
+  const releaseReddit = redditLive?.subscribe?.((redditState) => {
+    redditPresence = redditState;
+    render();
+    const card = liveGrid.querySelector(".v8-reddit-live");
+    if (card) presence?.signalActivity?.(card, "system", { phase: "update" });
+  }, { immediate: false }) || (() => {});
   stage.replaceChildren(page);
   render();
   const releaseDensity = options.subscribeState?.((next) => updateCollectionDensityControl(densityControl, next)) || (() => {});
@@ -550,6 +583,9 @@ export function mountActivity(stage, options = {}) {
     releaseTwitch();
     releaseLastfm();
     releaseTracker();
+    releaseGoogleDrive();
+    releaseYoutube();
+    releaseReddit();
     releaseDensity();
     releaseLiveLayout();
     page.remove();

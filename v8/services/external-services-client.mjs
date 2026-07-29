@@ -25,6 +25,7 @@ const OPERATIONS = Object.freeze({
   minecraftProfile: Object.freeze({ path: "/api/minecraft/profile", auth: true, params: ["username"] }),
   spotifyOAuthExchange: Object.freeze({ path: "/api/spotify/oauth/exchange", method: "POST", auth: true, params: ["code", "codeVerifier", "clientId"] }),
   spotifyNowPlaying: Object.freeze({ path: "/api/spotify/now-playing", auth: true, params: ["clientId"] }),
+  spotifyControl: Object.freeze({ path: "/api/spotify/control", method: "POST", auth: true, params: ["action", "clientId"] }),
   spotifyOAuthDisconnect: Object.freeze({ path: "/api/spotify/oauth/disconnect", method: "POST", auth: true, params: [] }),
   githubOAuthExchange: Object.freeze({ path: "/api/github/oauth/exchange", method: "POST", auth: true, params: ["code", "clientId"] }),
   githubProfile: Object.freeze({ path: "/api/github/profile", auth: true, params: [] }),
@@ -225,6 +226,7 @@ export function createExternalServicesClient(options = {}) {
     spotifyOAuth: Object.freeze({
       exchange: (code, codeVerifier, clientId) => execute("spotifyOAuthExchange", { code, codeVerifier, clientId }),
       nowPlaying: (clientId) => execute("spotifyNowPlaying", { clientId }),
+      control: (action, clientId) => execute("spotifyControl", { action, clientId }),
       disconnect: () => execute("spotifyOAuthDisconnect", {})
     }),
     githubOAuth: Object.freeze({

@@ -35,7 +35,8 @@ export function createSpotifyOAuthLive(options = {}) {
         is_playing: response.data.playing,
         progress_ms: track.progressMs,
         duration_ms: track.durationMs,
-        id: track.id
+        id: track.id,
+        controllable: true
       } : { track: null });
     } catch {
       // Transient failure: keep the last known playback state and retry next tick.

@@ -102,6 +102,29 @@ export async function getSpotifyNowPlaying(env, userId, clientId) {
   return normalizeTrack(response.data);
 }
 
+const CONTROL_METHODS = Object.freeze({ play: "PUT", pause: "PUT", next: "POST", previous: "POST" });
+
+export async function controlSpotifyPlayback(env, userId, clientId, action) {
+  const method = CONTROL_METHODS[action];
+  if (!method) throw httpError("INVALID_PARAMETER", 400);
+  const accessToken = await validAccessToken(env, userId, clientId);
+  try {
+    await requestExternal(new URL(`/v1/me/player/${action}`, API_ORIGIN), {
+      env,
+      expectedOrigin: API_ORIGIN,
+      service: "spotify",
+      method,
+      headers: { authorization: `Bearer ${accessToken}` },
+      retries: 0,
+      maxBytes: 8192
+    });
+  } catch (error) {
+    if (error?.code === "PROVIDER_NOT_FOUND") throw httpError("PROVIDER_NOT_FOUND", 404, { retryable: false });
+    throw error;
+  }
+  return true;
+}
+
 export async function disconnectSpotify(env, userId) {
   await deleteOAuthToken(env, userId, "spotify");
   return true;

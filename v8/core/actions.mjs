@@ -77,6 +77,12 @@ export function createActionFacade(options = {}) {
   register("v8.spotify.toggle", () => spotifyLive?.command
     ? spotifyLive.command("toggle")
     : unavailable("Le controle Spotify n'est pas disponible."));
+  register("v8.spotify.next", () => spotifyLive?.command
+    ? spotifyLive.command("next")
+    : unavailable("Le controle Spotify n'est pas disponible."));
+  register("v8.spotify.previous", () => spotifyLive?.command
+    ? spotifyLive.command("previous")
+    : unavailable("Le controle Spotify n'est pas disponible."));
 
   function openNewNote(context) {
     navigate("notes");

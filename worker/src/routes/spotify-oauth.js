@@ -1,9 +1,10 @@
 import { httpError } from "../middleware/errors.js";
 import { PATTERNS, assertAllowedQuery, queryText } from "../middleware/validation.js";
-import { disconnectSpotify, exchangeSpotifyCode, getSpotifyNowPlaying } from "../services/spotify-oauth-client.js";
+import { controlSpotifyPlayback, disconnectSpotify, exchangeSpotifyCode, getSpotifyNowPlaying } from "../services/spotify-oauth-client.js";
 
 const CODE_RE = /^[A-Za-z0-9_-]{10,512}$/;
 const VERIFIER_RE = /^[A-Za-z0-9_-]{43,128}$/;
+const ACTION_RE = /^(?:play|pause|next|previous)$/;
 
 async function readJsonBody(request, maxFields) {
   const contentType = String(request.headers.get("content-type") || "").toLowerCase();
@@ -40,6 +41,15 @@ export async function spotifyNowPlayingRoute({ url, env, auth }) {
   const clientId = queryText(url, "clientId", { pattern: PATTERNS.spotifyClientId });
   const track = await getSpotifyNowPlaying(env, auth.userId, clientId);
   return { data: track };
+}
+
+export async function spotifyControlRoute({ request, env, auth }) {
+  if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
+  const body = await readJsonBody(request, 2);
+  const action = requireField(body, "action", ACTION_RE);
+  const clientId = requireField(body, "clientId", PATTERNS.spotifyClientId);
+  await controlSpotifyPlayback(env, auth.userId, clientId, action);
+  return { data: { action } };
 }
 
 export async function spotifyOAuthDisconnectRoute({ env, auth }) {

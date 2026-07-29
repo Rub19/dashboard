@@ -112,6 +112,71 @@ test("Spotify now-playing rejects a connection with no stored token", async () =
   assert.equal((await payload(response)).error.code, "AUTH_REQUIRED");
 });
 
+test("Spotify control sends a PUT to play and a POST to next using a valid stored token", async () => {
+  const futureExpiry = new Date(Date.now() + 3600000).toISOString();
+  const calls = [];
+  const env = testEnv({
+    __TEST_FETCH__: async (input, init = {}) => {
+      const url = new URL(String(input));
+      if (url.hostname === "api.spotify.com") {
+        calls.push({ path: url.pathname, method: init.method, authorization: init.headers.authorization });
+        return new Response(null, { status: 204 });
+      }
+      return supabaseRpcFetch({ getResponse: [{ access_token: "stored-access-token", refresh_token: "stored-refresh-token", scope: "user-modify-playback-state", expires_at: futureExpiry }] })(input, init);
+    }
+  });
+  const playResponse = await invoke("/api/spotify/control", {
+    env,
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ action: "play", clientId: "c".repeat(32) })
+  });
+  assert.equal(playResponse.status, 200);
+  assert.equal((await payload(playResponse)).data.action, "play");
+
+  const nextResponse = await invoke("/api/spotify/control", {
+    env,
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ action: "next", clientId: "c".repeat(32) })
+  });
+  assert.equal(nextResponse.status, 200);
+
+  assert.deepEqual(calls, [
+    { path: "/v1/me/player/play", method: "PUT", authorization: "Bearer stored-access-token" },
+    { path: "/v1/me/player/next", method: "POST", authorization: "Bearer stored-access-token" }
+  ]);
+});
+
+test("Spotify control surfaces a not-found error when there is no active device", async () => {
+  const futureExpiry = new Date(Date.now() + 3600000).toISOString();
+  const env = testEnv({
+    __TEST_FETCH__: async (input, init = {}) => {
+      const url = new URL(String(input));
+      if (url.hostname === "api.spotify.com") return json({ error: { status: 404, message: "NO_ACTIVE_DEVICE" } }, { status: 404 });
+      return supabaseRpcFetch({ getResponse: [{ access_token: "stored-access-token", refresh_token: "stored-refresh-token", scope: "user-modify-playback-state", expires_at: futureExpiry }] })(input, init);
+    }
+  });
+  const response = await invoke("/api/spotify/control", {
+    env,
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ action: "pause", clientId: "c".repeat(32) })
+  });
+  assert.equal(response.status, 404);
+});
+
+test("Spotify control rejects an invalid action", async () => {
+  const env = testEnv({ __TEST_FETCH__: supabaseRpcFetch() });
+  const response = await invoke("/api/spotify/control", {
+    env,
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ action: "shuffle", clientId: "c".repeat(32) })
+  });
+  assert.equal(response.status, 400);
+});
+
 test("Spotify disconnect removes the stored token", async () => {
   const deleteCalls = [];
   const env = testEnv({ __TEST_FETCH__: supabaseRpcFetch({ deleteCalls }) });

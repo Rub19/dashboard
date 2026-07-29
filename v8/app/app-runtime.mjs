@@ -91,7 +91,11 @@ export function mountApplication(root, options = {}) {
   const spotifyLive = options.spotifyLive || createSpotifyLive({
     document,
     runtime: globalThis,
-    isConnected: () => repository.snapshot().connections.some((connection) => connection.id === "spotify" && connection.status === "connected")
+    isConnected: () => repository.snapshot().connections.some((connection) => connection.id === "spotify" && connection.status === "connected"),
+    command: (action) => {
+      const clientId = repository.snapshot().connections.find((connection) => connection.id === "spotify")?.reference || "";
+      return externalServices?.spotifyOAuth?.control(action, clientId);
+    }
   });
   const ownsSpotifyOAuthLive = !options.spotifyOAuthLive;
   const spotifyOAuthLive = options.spotifyOAuthLive || createSpotifyOAuthLive({

@@ -32,11 +32,11 @@ function playbackControl(playback) {
       attributes: { "aria-label": playback.playing ? "Lecture Spotify en cours (lecture externe)" : "Spotify en pause (lecture externe)" }
     }, [icon(playback.playing ? "radio" : "pause")]);
   }
-  return actionButton({
-    actionId: "v8.spotify.toggle",
-    className: "v8-icon-button v8-spotify-control",
-    ariaLabel: label
-  }, [icon(playback.playing ? "pause" : "play")]);
+  return element("div", { className: "v8-spotify-controls" }, [
+    actionButton({ actionId: "v8.spotify.previous", className: "v8-icon-button v8-spotify-control v8-spotify-control--secondary", ariaLabel: "Morceau precedent" }, [icon("skip-back")]),
+    actionButton({ actionId: "v8.spotify.toggle", className: "v8-icon-button v8-spotify-control", ariaLabel: label }, [icon(playback.playing ? "pause" : "play")]),
+    actionButton({ actionId: "v8.spotify.next", className: "v8-icon-button v8-spotify-control v8-spotify-control--secondary", ariaLabel: "Morceau suivant" }, [icon("skip-forward")])
+  ]);
 }
 
 export function spotifyLiveCard(playback = {}, options = {}) {

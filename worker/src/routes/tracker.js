@@ -1,21 +1,40 @@
 import { assertAllowedQuery, PATTERNS, queryText } from "../middleware/validation.js";
-import { getTrackerApexProfile } from "../services/tracker-client.js";
+import { getTrackerApexProfile, getTrackerLolProfile, getTrackerValorantProfile } from "../services/tracker-client.js";
 import { getUserProviderCredential } from "../services/supabase-client.js";
 import { cachedLoad } from "../utils/cache.js";
 import { routeResult } from "../utils/response.js";
+
+async function ownKey(env, auth) {
+  if (!auth?.userId) return null;
+  const credential = await getUserProviderCredential(env, auth.userId, "tracker");
+  return typeof credential?.apiKey === "string" ? credential.apiKey : null;
+}
 
 export async function trackerRoute({ env, url, auth }) {
   assertAllowedQuery(url, ["platform", "identifier"]);
   const platform = queryText(url, "platform", { values: ["origin", "xbl", "psn"], max: 12 });
   const identifier = queryText(url, "identifier", { pattern: PATTERNS.trackerIdentifier, max: 64 });
-  const loader = async () => {
-    let apiKeyOverride = null;
-    if (auth?.userId) {
-      const credential = await getUserProviderCredential(env, auth.userId, "tracker");
-      apiKeyOverride = typeof credential?.apiKey === "string" ? credential.apiKey : null;
-    }
-    return getTrackerApexProfile(env, platform, identifier, apiKeyOverride);
-  };
+  const loader = async () => getTrackerApexProfile(env, platform, identifier, await ownKey(env, auth));
   const result = await cachedLoad(`tracker:apex:${platform}:${identifier.toLowerCase()}`, 90, loader);
+  return routeResult(result.data, { source: "tracker", cached: result.cached });
+}
+
+export async function trackerValorantRoute({ env, url, auth }) {
+  assertAllowedQuery(url, ["name", "tag"]);
+  const name = queryText(url, "name", { pattern: PATTERNS.playerName, max: 32 });
+  const tag = queryText(url, "tag", { pattern: PATTERNS.playerTag, max: 8 });
+  const riotId = `${name}#${tag}`;
+  const loader = async () => getTrackerValorantProfile(env, riotId, await ownKey(env, auth));
+  const result = await cachedLoad(`tracker:valorant:${name.toLowerCase()}:${tag.toLowerCase()}`, 180, loader);
+  return routeResult(result.data, { source: "tracker", cached: result.cached });
+}
+
+export async function trackerLolRoute({ env, url, auth }) {
+  assertAllowedQuery(url, ["name", "tag"]);
+  const name = queryText(url, "name", { pattern: PATTERNS.playerName, max: 32 });
+  const tag = queryText(url, "tag", { pattern: PATTERNS.playerTag, max: 8 });
+  const riotId = `${name}#${tag}`;
+  const loader = async () => getTrackerLolProfile(env, riotId, await ownKey(env, auth));
+  const result = await cachedLoad(`tracker:lol:${name.toLowerCase()}:${tag.toLowerCase()}`, 180, loader);
   return routeResult(result.data, { source: "tracker", cached: result.cached });
 }

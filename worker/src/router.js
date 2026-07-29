@@ -16,7 +16,7 @@ import { riotLolRoute } from "./routes/riot-lol.js";
 import { steamRoute } from "./routes/steam.js";
 import { supabaseRoute } from "./routes/supabase.js";
 import { todoistOAuthDisconnectRoute, todoistOAuthExchangeRoute, todoistTasksRoute } from "./routes/todoist-oauth.js";
-import { trackerRoute } from "./routes/tracker.js";
+import { trackerLolRoute, trackerRoute, trackerValorantRoute } from "./routes/tracker.js";
 import { twitchRoute } from "./routes/twitch.js";
 import { weatherRoute } from "./routes/weather.js";
 import { youtubeActivityRoute, youtubeOAuthDisconnectRoute, youtubeOAuthExchangeRoute } from "./routes/youtube-oauth.js";
@@ -43,6 +43,8 @@ export const ROUTES = Object.freeze([
   route("steam.owned-games", "/api/steam/owned-games", steamRoute, { service: "steam", action: "owned-games" }),
   route("steam.achievements", "/api/steam/achievements", steamRoute, { service: "steam", action: "achievements" }),
   route("tracker.apex-profile", "/api/tracker/apex-profile", trackerRoute, { service: "tracker" }),
+  route("tracker.valorant-profile", "/api/tracker/valorant-profile", trackerValorantRoute, { service: "tracker" }),
+  route("tracker.lol-profile", "/api/tracker/lol-profile", trackerLolRoute, { service: "tracker" }),
   route("henrik.account", "/api/henrik/account", henrikRoute, { service: "henrik", action: "account" }),
   route("henrik.status", "/api/henrik/status", henrikRoute, { service: "henrik", action: "status" }),
   route("henrik.rank", "/api/henrik/rank", henrikRoute, { service: "henrik", action: "rank" }),

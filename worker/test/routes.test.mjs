@@ -17,6 +17,8 @@ const ROUTE_CASES = Object.freeze([
   ["Steam owned", "/api/steam/owned-games?steamId=76561198000000000&limit=5", (data) => data[0].name === "Owned"],
   ["Steam achievements", "/api/steam/achievements?steamId=76561198000000000&appId=10", (data) => data[0].achieved === true],
   ["Tracker", "/api/tracker/apex-profile?platform=origin&identifier=Player", (data) => data.platform === "origin"],
+  ["Tracker Valorant", "/api/tracker/valorant-profile?name=Player&tag=EUW", (data) => data.handle === "Player"],
+  ["Tracker LoL", "/api/tracker/lol-profile?name=Player&tag=EUW", (data) => data.handle === "Player"],
   ["Henrik account", "/api/henrik/account?name=Player&tag=EUW", (data) => data.accountLevel === 42],
   ["Henrik status", "/api/henrik/status?region=eu", (data) => data.region === "eu"],
   ["Henrik rank", "/api/henrik/rank?name=Player&tag=EUW", (data) => data.tierName === "Immortal 1"],

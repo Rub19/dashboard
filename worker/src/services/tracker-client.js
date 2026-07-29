@@ -4,14 +4,14 @@ import { safePublicUrl, safeStats, safeText } from "../utils/normalize.js";
 
 const ORIGIN = "https://public-api.tracker.gg";
 
-export async function getTrackerApexProfile(env, platform, identifier, apiKeyOverride) {
+async function getTrackerProfile(env, game, platform, identifier, apiKeyOverride) {
   const apiKey = apiKeyOverride || requireSecret(env, "TRACKER_API_KEY");
-  const path = `/v2/apex/standard/profile/${encodeURIComponent(platform)}/${encodeURIComponent(identifier)}`;
+  const path = `/v2/${game}/standard/profile/${encodeURIComponent(platform)}/${encodeURIComponent(identifier)}`;
   const response = await requestExternal(new URL(path, ORIGIN), {
     env,
     expectedOrigin: ORIGIN,
     service: "tracker",
-    dedupeKey: `apex:${platform}:${identifier.toLowerCase()}`,
+    dedupeKey: `${game}:${platform}:${identifier.toLowerCase()}`,
     headers: { "TRN-Api-Key": apiKey },
     retries: 1
   });
@@ -27,4 +27,16 @@ export async function getTrackerApexProfile(env, platform, identifier, apiKeyOve
       stats: safeStats(segment.stats)
     })))
   });
+}
+
+export function getTrackerApexProfile(env, platform, identifier, apiKeyOverride) {
+  return getTrackerProfile(env, "apex", platform, identifier, apiKeyOverride);
+}
+
+export function getTrackerValorantProfile(env, riotId, apiKeyOverride) {
+  return getTrackerProfile(env, "valorant", "riot", riotId, apiKeyOverride);
+}
+
+export function getTrackerLolProfile(env, riotId, apiKeyOverride) {
+  return getTrackerProfile(env, "lol", "riot", riotId, apiKeyOverride);
 }

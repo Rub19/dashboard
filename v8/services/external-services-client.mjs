@@ -8,6 +8,8 @@ const OPERATIONS = Object.freeze({
   steamOwnedGames: Object.freeze({ path: "/api/steam/owned-games", auth: true, params: ["steamId", "limit"] }),
   steamAchievements: Object.freeze({ path: "/api/steam/achievements", auth: true, params: ["steamId", "appId"] }),
   trackerApexProfile: Object.freeze({ path: "/api/tracker/apex-profile", auth: true, params: ["platform", "identifier"] }),
+  trackerValorantProfile: Object.freeze({ path: "/api/tracker/valorant-profile", auth: true, params: ["name", "tag"] }),
+  trackerLolProfile: Object.freeze({ path: "/api/tracker/lol-profile", auth: true, params: ["name", "tag"] }),
   valorantAccount: Object.freeze({ path: "/api/henrik/account", auth: true, params: ["name", "tag"] }),
   valorantStatus: Object.freeze({ path: "/api/henrik/status", auth: true, params: ["region"] }),
   valorantRank: Object.freeze({ path: "/api/henrik/rank", auth: true, params: ["name", "tag", "region"] }),
@@ -204,7 +206,11 @@ export function createExternalServicesClient(options = {}) {
       ownedGames: (steamId, limit) => execute("steamOwnedGames", { steamId, limit }),
       achievements: (steamId, appId) => execute("steamAchievements", { steamId, appId })
     }),
-    tracker: Object.freeze({ apexProfile: (platform, identifier) => execute("trackerApexProfile", { platform, identifier }) }),
+    tracker: Object.freeze({
+      apexProfile: (platform, identifier) => execute("trackerApexProfile", { platform, identifier }),
+      valorantProfile: (name, tag) => execute("trackerValorantProfile", { name, tag }),
+      lolProfile: (name, tag) => execute("trackerLolProfile", { name, tag })
+    }),
     henrik: Object.freeze({
       account: (name, tag) => execute("valorantAccount", { name, tag }),
       status: (region) => execute("valorantStatus", { region }),

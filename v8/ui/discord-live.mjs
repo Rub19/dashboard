@@ -1,4 +1,5 @@
 import { element, icon } from "./dom.mjs";
+import { liveFreshnessNode } from "./live-freshness.mjs";
 
 const STATUS_LABELS = Object.freeze({ online: "En ligne", idle: "Absent", dnd: "Ne pas deranger", offline: "Hors ligne" });
 
@@ -32,7 +33,8 @@ export function discordLiveCard(presence = {}, options = {}) {
         element("small", { text: STATUS_LABELS[presence.status] || "Hors ligne" })
       ]),
       element("strong", { text: presence.displayName, attributes: { translate: "no" } }),
-      element("p", { text: activity, attributes: { translate: "no" } })
+      element("p", { text: activity, attributes: { translate: "no" } }),
+      liveFreshnessNode(presence.updatedAt)
     ])
   ]);
 }

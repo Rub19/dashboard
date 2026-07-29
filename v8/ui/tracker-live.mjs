@@ -1,4 +1,5 @@
 import { element, icon } from "./dom.mjs";
+import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 function avatar(presence) {
   const inner = presence.avatarUrl
@@ -6,7 +7,7 @@ function avatar(presence) {
       attributes: { src: presence.avatarUrl, alt: "", loading: "lazy", decoding: "async", referrerpolicy: "no-referrer" }
     })])
     : element("span", { className: "v8-tracker-avatar__image is-fallback" }, [icon("chart-no-axes-combined")]);
-  return element("span", { className: "v8-tracker-avatar" }, [inner]);
+  return element("span", { className: "v8-tracker-avatar" }, [inner, livePulseDot()]);
 }
 
 export function trackerLiveCard(presence = {}, options = {}) {
@@ -23,7 +24,8 @@ export function trackerLiveCard(presence = {}, options = {}) {
     element("div", { className: "v8-tracker-live__body" }, [
       element("div", { className: "v8-tracker-live__meta" }, [icon("chart-no-axes-combined"), element("small", { text: "Apex Legends" })]),
       element("strong", { text: presence.handle, attributes: { translate: "no" } }),
-      element("p", { text: statLine, attributes: { translate: "no" } })
+      element("p", { text: statLine, attributes: { translate: "no" } }),
+      liveFreshnessNode(presence.updatedAt)
     ])
   ]);
 }

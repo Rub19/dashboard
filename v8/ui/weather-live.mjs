@@ -1,4 +1,5 @@
 import { element, icon } from "./dom.mjs";
+import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 function weatherIcon(code, isDay) {
   if (code === 0) return isDay ? "sun" : "moon-star";
@@ -29,11 +30,12 @@ export function weatherLiveCard(presence = {}, options = {}) {
     attributes: { "aria-label": "Meteo" },
     dataset: { liveWidget: "media", liveKind: "widget" }
   }, [
-    element("span", { className: "v8-weather-icon" }, [icon(weatherIcon(presence.weatherCode, presence.isDay))]),
+    element("span", { className: "v8-weather-icon" }, [icon(weatherIcon(presence.weatherCode, presence.isDay)), livePulseDot()]),
     element("div", { className: "v8-weather-live__body" }, [
       element("div", { className: "v8-weather-live__meta" }, [icon("map-pin"), element("small", { text: presence.country ? `${presence.city}, ${presence.country}` : presence.city, attributes: { translate: "no" } })]),
       element("strong", { text: `${presence.temperature}°C` }),
-      element("p", { text: `${presence.description} - Vent ${presence.windSpeedKmh} km/h - ${presence.humidityPercent}% humidite` })
+      element("p", { text: `${presence.description} - Vent ${presence.windSpeedKmh} km/h - ${presence.humidityPercent}% humidite` }),
+      liveFreshnessNode(presence.updatedAt)
     ]),
     forecastRow(presence.forecast)
   ]);

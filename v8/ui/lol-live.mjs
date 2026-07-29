@@ -1,4 +1,5 @@
 import { element, icon } from "./dom.mjs";
+import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 const TIER_LABELS = Object.freeze({
   IRON: "Fer", BRONZE: "Bronze", SILVER: "Argent", GOLD: "Or", PLATINUM: "Platine",
@@ -24,12 +25,13 @@ export function lolLiveCard(presence = {}, options = {}) {
     attributes: { "aria-label": "Rang League of Legends" },
     dataset: { liveWidget: "media", liveKind: "widget" }
   }, [
-    element("span", { className: "v8-lol-icon" }, [icon("swords")]),
+    element("span", { className: "v8-lol-icon" }, [icon("swords"), livePulseDot()]),
     element("div", { className: "v8-lol-live__body" }, [
       element("div", { className: "v8-lol-live__meta" }, [icon("swords"), element("small", { text: "League of Legends" })]),
       element("strong", { text: `${presence.name}#${presence.tag}`, attributes: { translate: "no" } }),
       element("p", { text: rankLine, attributes: { translate: "no" } }),
-      presence.matches.length ? element("div", { className: "v8-lol-live__matches", attributes: { "aria-label": "Dernieres parties" } }, presence.matches.map(matchDot)) : null
+      presence.matches.length ? element("div", { className: "v8-lol-live__matches", attributes: { "aria-label": "Dernieres parties" } }, presence.matches.map(matchDot)) : null,
+      liveFreshnessNode(presence.updatedAt)
     ].filter(Boolean))
   ]);
 }

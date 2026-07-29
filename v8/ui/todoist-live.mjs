@@ -1,4 +1,5 @@
 import { element, icon } from "./dom.mjs";
+import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 const DAY_MONTH = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" });
 const HOUR_MINUTE = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" });
@@ -27,11 +28,12 @@ export function todoistLiveCard(presence = {}, options = {}) {
     attributes: { "aria-label": "Prochaine tache Todoist" },
     dataset: { liveWidget: "media", liveKind: "widget" }
   }, [
-    element("span", { className: "v8-todoist-icon" }, [icon("circle-check-big")]),
+    element("span", { className: "v8-todoist-icon" }, [icon("circle-check-big"), livePulseDot()]),
     element("div", { className: "v8-todoist-live__body" }, [
       element("div", { className: "v8-todoist-live__meta" }, [icon("circle-check-big"), element("small", { text: "Prochaine tache" })]),
       element("strong", { text: task.content, attributes: { translate: "no" } }),
-      element("p", { text: meta, attributes: { translate: "no" } })
+      element("p", { text: meta, attributes: { translate: "no" } }),
+      liveFreshnessNode(presence.updatedAt)
     ])
   ]);
 }

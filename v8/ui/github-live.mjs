@@ -1,4 +1,5 @@
 import { element, icon } from "./dom.mjs";
+import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 function avatar(profile) {
   const inner = profile.avatarUrl
@@ -6,7 +7,7 @@ function avatar(profile) {
       attributes: { src: profile.avatarUrl, alt: "", loading: "lazy", decoding: "async", referrerpolicy: "no-referrer" }
     })])
     : element("span", { className: "v8-github-avatar__image is-fallback" }, [icon("github")]);
-  return element("span", { className: "v8-github-avatar" }, [inner]);
+  return element("span", { className: "v8-github-avatar" }, [inner, livePulseDot()]);
 }
 
 export function githubLiveCard(profile = {}, options = {}) {
@@ -25,7 +26,8 @@ export function githubLiveCard(profile = {}, options = {}) {
         element("small", { text: `@${profile.login}` })
       ]),
       element("strong", { text: profile.name, attributes: { translate: "no" } }),
-      element("p", { text: activity, attributes: { translate: "no" } })
+      element("p", { text: activity, attributes: { translate: "no" } }),
+      liveFreshnessNode(profile.updatedAt)
     ]),
     profile.htmlUrl ? element("a", {
       className: "v8-icon-button v8-github-live__link",

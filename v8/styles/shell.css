@@ -2552,6 +2552,10 @@ html[data-v8-interactions] .v8-panel-notice:hover > .v8-selection-control,.v8-pa
 .v8-reddit-live__meta { display:flex;min-width:0;align-items:center;gap:6px;margin-bottom:2px;color:#ff4500; }.v8-reddit-live__meta svg { flex:0 0 auto;width:14px;height:14px; }.v8-reddit-live__meta small { overflow:hidden;font-size:var(--v8-font-micro);font-weight:var(--v8-weight-semibold);text-overflow:ellipsis;text-transform:uppercase;white-space:nowrap; }
 .v8-reddit-live--activity { min-height:120px; }
 
+.v8-weather-icon, .v8-minecraft-avatar, .v8-google-calendar-icon, .v8-notion-icon, .v8-todoist-icon, .v8-valorant-emblem, .v8-lol-icon, .v8-lastfm-artwork, .v8-tracker-avatar, .v8-google-drive-icon, .v8-youtube-avatar, .v8-reddit-avatar { position:relative; }
+.v8-live-pulse-dot { position:absolute;right:-1px;top:-1px;width:9px;height:9px;border-radius:50%;background:#5fd68f;border:2px solid var(--v8-surface-1);box-shadow:0 0 0 3px rgba(95,214,143,0.18); }
+.v8-live-freshness { display:block;margin-top:4px;color:var(--v8-text-tertiary, var(--v8-text-secondary));font-size:var(--v8-font-micro);opacity:0.75; }
+
 .v8-brain-context__identity { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--v8-space-4); }
 .v8-brain-orbit { display: grid; width: 64px; height: 64px; place-items: center; border: 1px solid var(--v8-brain-line); border-radius: 50%; background: var(--v8-brain-soft); color: var(--v8-brain); box-shadow: 0 0 36px var(--v8-light-brain); }
 .v8-brain-orbit svg { width: 28px; height: 28px; }

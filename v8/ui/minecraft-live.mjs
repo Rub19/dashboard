@@ -1,10 +1,11 @@
 import { element, icon } from "./dom.mjs";
+import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 function skinHead(presence) {
-  if (!presence.skinUrl) return element("span", { className: "v8-minecraft-avatar is-fallback" }, [icon("box")]);
+  if (!presence.skinUrl) return element("span", { className: "v8-minecraft-avatar is-fallback" }, [icon("box"), livePulseDot()]);
   const head = element("span", { className: "v8-minecraft-avatar__head", attributes: { "aria-hidden": "true" } });
   head.style.backgroundImage = `url("${presence.skinUrl}")`;
-  return element("span", { className: "v8-minecraft-avatar" }, [head]);
+  return element("span", { className: "v8-minecraft-avatar" }, [head, livePulseDot()]);
 }
 
 export function minecraftLiveCard(presence = {}, options = {}) {
@@ -19,7 +20,8 @@ export function minecraftLiveCard(presence = {}, options = {}) {
     element("div", { className: "v8-minecraft-live__body" }, [
       element("div", { className: "v8-minecraft-live__meta" }, [icon("box"), element("small", { text: "Minecraft" })]),
       element("strong", { text: presence.username, attributes: { translate: "no" } }),
-      element("p", { text: `UUID ${presence.uuid.slice(0, 8)}...`, attributes: { translate: "no" } })
+      element("p", { text: `UUID ${presence.uuid.slice(0, 8)}...`, attributes: { translate: "no" } }),
+      liveFreshnessNode(presence.updatedAt)
     ])
   ]);
 }

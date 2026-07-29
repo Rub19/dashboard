@@ -1,4 +1,5 @@
 import { element, icon } from "./dom.mjs";
+import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 export function youtubeLiveCard(presence = {}, options = {}) {
   if (presence.available !== true) return null;
@@ -14,11 +15,12 @@ export function youtubeLiveCard(presence = {}, options = {}) {
     attributes: { "aria-label": "Activite YouTube" },
     dataset: { liveWidget: "media", liveKind: "widget" }
   }, [
-    element("span", { className: "v8-youtube-avatar" }, [inner]),
+    element("span", { className: "v8-youtube-avatar" }, [inner, livePulseDot()]),
     element("div", { className: "v8-youtube-live__body" }, [
       element("div", { className: "v8-youtube-live__meta" }, [icon("youtube"), element("small", { text: meta })]),
       element("strong", { text: presence.channelTitle, attributes: { translate: "no" } }),
-      element("p", { text: presence.latestVideoTitle || `${presence.subscriberCount} abonnes`, attributes: { translate: "no" } })
+      element("p", { text: presence.latestVideoTitle || `${presence.subscriberCount} abonnes`, attributes: { translate: "no" } }),
+      liveFreshnessNode(presence.updatedAt)
     ])
   ]);
 }

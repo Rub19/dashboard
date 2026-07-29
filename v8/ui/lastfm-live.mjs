@@ -1,4 +1,5 @@
 import { element, icon } from "./dom.mjs";
+import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 function artwork(presence) {
   const inner = presence.artworkUrl
@@ -6,7 +7,7 @@ function artwork(presence) {
       attributes: { src: presence.artworkUrl, alt: "", loading: "lazy", decoding: "async", referrerpolicy: "no-referrer" }
     })])
     : element("span", { className: "v8-lastfm-artwork__image is-fallback" }, [icon("history")]);
-  return element("span", { className: "v8-lastfm-artwork" }, [inner]);
+  return element("span", { className: "v8-lastfm-artwork" }, [inner, livePulseDot()]);
 }
 
 export function lastfmLiveCard(presence = {}, options = {}) {
@@ -21,7 +22,8 @@ export function lastfmLiveCard(presence = {}, options = {}) {
     element("div", { className: "v8-lastfm-live__body" }, [
       element("div", { className: "v8-lastfm-live__meta" }, [icon("history"), element("small", { text: presence.playing ? "Ecoute en cours" : "Dernier morceau" })]),
       element("strong", { text: presence.title, attributes: { translate: "no" } }),
-      element("p", { text: presence.artist, attributes: { translate: "no" } })
+      element("p", { text: presence.artist, attributes: { translate: "no" } }),
+      liveFreshnessNode(presence.updatedAt)
     ])
   ]);
 }

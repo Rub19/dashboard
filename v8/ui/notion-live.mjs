@@ -1,4 +1,5 @@
 import { element, icon } from "./dom.mjs";
+import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 function formatRelativeTime(iso) {
   if (!iso) return "";
@@ -23,11 +24,12 @@ export function notionLiveCard(presence = {}, options = {}) {
     attributes: { "aria-label": "Derniere page Notion modifiee" },
     dataset: { liveWidget: "media", liveKind: "widget" }
   }, [
-    element("span", { className: "v8-notion-icon" }, [icon("notebook-tabs")]),
+    element("span", { className: "v8-notion-icon" }, [icon("notebook-tabs"), livePulseDot()]),
     element("div", { className: "v8-notion-live__body" }, [
       element("div", { className: "v8-notion-live__meta" }, [icon("notebook-tabs"), element("small", { text: "Derniere page modifiee" })]),
       element("strong", { text: page.title, attributes: { translate: "no" } }),
-      element("p", { text: meta, attributes: { translate: "no" } })
+      element("p", { text: meta, attributes: { translate: "no" } }),
+      liveFreshnessNode(presence.updatedAt)
     ]),
     page.url ? element("a", {
       className: "v8-icon-button v8-notion-live__link",

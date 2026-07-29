@@ -1,4 +1,5 @@
 import { element, icon } from "./dom.mjs";
+import { liveFreshnessNode } from "./live-freshness.mjs";
 
 function avatar(presence) {
   const inner = presence.profileImageUrl
@@ -22,7 +23,8 @@ export function twitchLiveCard(presence = {}, options = {}) {
     element("div", { className: "v8-twitch-live__body" }, [
       element("div", { className: "v8-twitch-live__meta" }, [icon("twitch"), element("small", { text: activity })]),
       element("strong", { text: presence.displayName, attributes: { translate: "no" } }),
-      element("p", { text: presence.live ? presence.title : "Aucun stream en cours", attributes: { translate: "no" } })
+      element("p", { text: presence.live ? presence.title : "Aucun stream en cours", attributes: { translate: "no" } }),
+      liveFreshnessNode(presence.updatedAt)
     ])
   ]);
 }

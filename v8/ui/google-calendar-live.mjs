@@ -1,4 +1,5 @@
 import { element, icon } from "./dom.mjs";
+import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 const DAY_MONTH = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" });
 const HOUR_MINUTE = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" });
@@ -27,11 +28,12 @@ export function googleCalendarLiveCard(presence = {}, options = {}) {
     attributes: { "aria-label": "Prochain evenement Google Calendar" },
     dataset: { liveWidget: "media", liveKind: "widget" }
   }, [
-    element("span", { className: "v8-google-calendar-icon" }, [icon("calendar-days")]),
+    element("span", { className: "v8-google-calendar-icon" }, [icon("calendar-days"), livePulseDot()]),
     element("div", { className: "v8-google-calendar-live__body" }, [
       element("div", { className: "v8-google-calendar-live__meta" }, [icon("calendar-clock"), element("small", { text: "Prochain evenement" })]),
       element("strong", { text: event.title, attributes: { translate: "no" } }),
-      element("p", { text: meta, attributes: { translate: "no" } })
+      element("p", { text: meta, attributes: { translate: "no" } }),
+      liveFreshnessNode(presence.updatedAt)
     ])
   ]);
 }

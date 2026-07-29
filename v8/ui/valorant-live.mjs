@@ -1,4 +1,5 @@
 import { element, icon } from "./dom.mjs";
+import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 function emblem(presence) {
   const inner = presence.emblemUrl
@@ -6,7 +7,7 @@ function emblem(presence) {
       attributes: { src: presence.emblemUrl, alt: "", loading: "lazy", decoding: "async", referrerpolicy: "no-referrer" }
     })])
     : element("span", { className: "v8-valorant-emblem__image is-fallback" }, [icon("swords")]);
-  return element("span", { className: "v8-valorant-emblem" }, [inner]);
+  return element("span", { className: "v8-valorant-emblem" }, [inner, livePulseDot()]);
 }
 
 function matchDot(match) {
@@ -32,7 +33,8 @@ export function valorantLiveCard(presence = {}, options = {}) {
       element("div", { className: "v8-valorant-live__meta" }, [icon("swords"), element("small", { text: "Valorant" })]),
       element("strong", { text: `${presence.name}#${presence.tag}`, attributes: { translate: "no" } }),
       element("p", { text: rankLine, attributes: { translate: "no" } }),
-      presence.matches.length ? element("div", { className: "v8-valorant-live__matches", attributes: { "aria-label": "Dernieres parties" } }, presence.matches.map(matchDot)) : null
+      presence.matches.length ? element("div", { className: "v8-valorant-live__matches", attributes: { "aria-label": "Dernieres parties" } }, presence.matches.map(matchDot)) : null,
+      liveFreshnessNode(presence.updatedAt)
     ].filter(Boolean))
   ]);
 }

@@ -1,4 +1,5 @@
 import { element, icon } from "./dom.mjs";
+import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 function avatar(presence) {
   const inner = presence.avatarUrl
@@ -6,7 +7,7 @@ function avatar(presence) {
       attributes: { src: presence.avatarUrl, alt: "", loading: "lazy", decoding: "async", referrerpolicy: "no-referrer" }
     })])
     : element("span", { className: "v8-reddit-avatar__image is-fallback" }, [icon("message-circle")]);
-  return element("span", { className: "v8-reddit-avatar" }, [inner]);
+  return element("span", { className: "v8-reddit-avatar" }, [inner, livePulseDot()]);
 }
 
 export function redditLiveCard(presence = {}, options = {}) {
@@ -22,7 +23,8 @@ export function redditLiveCard(presence = {}, options = {}) {
     element("div", { className: "v8-reddit-live__body" }, [
       element("div", { className: "v8-reddit-live__meta" }, [icon("message-circle"), element("small", { text: meta })]),
       element("strong", { text: `u/${presence.username}`, attributes: { translate: "no" } }),
-      element("p", { text: presence.latestPostTitle || "Aucune publication recente", attributes: { translate: "no" } })
+      element("p", { text: presence.latestPostTitle || "Aucune publication recente", attributes: { translate: "no" } }),
+      liveFreshnessNode(presence.updatedAt)
     ])
   ]);
 }

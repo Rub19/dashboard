@@ -2586,6 +2586,7 @@ html[data-v8-interactions] .v8-spotify-control--secondary:hover { color:var(--v8
 .v8-setting-row__icon svg { width: var(--v8-icon-sm); height: var(--v8-icon-sm); }
 .v8-setting-row__copy strong { font-size: var(--v8-font-sm); }
 .v8-setting-row__copy p { margin-top: 3px; color: var(--v8-muted); font-size: var(--v8-font-xs); }
+.v8-setting-row__control { display: flex; justify-content: flex-end; align-items: center; gap: var(--v8-space-3); }
 .v8-switch { --v8-switch-thumb-x: 0px; display: inline-grid; width: 52px; height: 44px; place-items: center; padding: 0; border: 0; border-radius: var(--v8-radius-pill); background: transparent; cursor: pointer; outline: none; transition: transform var(--v8-motion-instant) var(--v8-ease-press); }
 .v8-switch__track { display: block; width: 46px; height: 26px; padding: 3px; border: 1px solid var(--v8-border-strong); border-radius: var(--v8-radius-pill); background: var(--v8-surface-sunken); transition: background-color var(--v8-motion-fast) var(--v8-ease-standard), border-color var(--v8-motion-fast) var(--v8-ease-standard), box-shadow var(--v8-motion-fast) var(--v8-ease-standard), transform var(--v8-motion-instant) var(--v8-ease-press); }
 .v8-switch__thumb { display: block; width: 18px; height: 18px; border-radius: 50%; background: var(--v8-text-secondary); box-shadow: 0 2px 7px rgba(0, 0, 0, 0.32); transform: translate3d(var(--v8-switch-thumb-x),0,0) scale(1); transition: background-color var(--v8-motion-fast) var(--v8-ease-standard), transform var(--v8-haptic-release-duration) var(--v8-haptic-spring); }

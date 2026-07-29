@@ -28,7 +28,7 @@ export function createYoutubeLive(options = {}) {
   const externalServices = options.externalServices || null;
   const getClientId = typeof options.getClientId === "function" ? options.getClientId : () => "";
   const isConnected = typeof options.isConnected === "function" ? options.isConnected : () => false;
-  const pollIntervalMs = Math.max(60000, Number(options.pollIntervalMs) || 300000);
+  const pollIntervalMs = Math.max(300000, Number(options.pollIntervalMs) || 900000);
   const subscribers = new Set();
   let state = normalizeYoutubePresence({}, { connected: false });
   let timer = 0;

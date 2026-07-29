@@ -42,7 +42,7 @@ export function createWeatherLive(options = {}) {
   const externalServices = options.externalServices || null;
   const getCity = typeof options.getCity === "function" ? options.getCity : () => "";
   const isConnected = typeof options.isConnected === "function" ? options.isConnected : () => false;
-  const pollIntervalMs = Math.max(300000, Number(options.pollIntervalMs) || 900000);
+  const pollIntervalMs = Math.max(300000, Number(options.pollIntervalMs) || 600000);
   const subscribers = new Set();
   let state = normalizeWeatherPresence({}, { connected: false });
   let timer = 0;

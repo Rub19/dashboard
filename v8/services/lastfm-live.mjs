@@ -26,7 +26,7 @@ export function createLastfmLive(options = {}) {
   const externalServices = options.externalServices || null;
   const getUsername = typeof options.getUsername === "function" ? options.getUsername : () => "";
   const isConnected = typeof options.isConnected === "function" ? options.isConnected : () => false;
-  const pollIntervalMs = Math.max(30000, Number(options.pollIntervalMs) || 45000);
+  const pollIntervalMs = Math.max(15000, Number(options.pollIntervalMs) || 20000);
   const subscribers = new Set();
   let state = normalizeLastfmPresence({}, { connected: false });
   let timer = 0;

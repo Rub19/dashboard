@@ -41,7 +41,7 @@ export function createTrackerLive(options = {}) {
   const getIdentifier = typeof options.getIdentifier === "function" ? options.getIdentifier : () => "";
   const platform = safeText(options.platform, "origin", 12);
   const isConnected = typeof options.isConnected === "function" ? options.isConnected : () => false;
-  const pollIntervalMs = Math.max(60000, Number(options.pollIntervalMs) || 180000);
+  const pollIntervalMs = Math.max(45000, Number(options.pollIntervalMs) || 90000);
   const subscribers = new Set();
   let state = normalizeTrackerPresence({}, { connected: false });
   let timer = 0;

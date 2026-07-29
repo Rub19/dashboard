@@ -30,7 +30,7 @@ export function createTwitchLive(options = {}) {
   const externalServices = options.externalServices || null;
   const getLogin = typeof options.getLogin === "function" ? options.getLogin : () => "";
   const isConnected = typeof options.isConnected === "function" ? options.isConnected : () => false;
-  const pollIntervalMs = Math.max(60000, Number(options.pollIntervalMs) || 90000);
+  const pollIntervalMs = Math.max(20000, Number(options.pollIntervalMs) || 30000);
   const subscribers = new Set();
   let state = normalizeTwitchPresence({}, { connected: false });
   let timer = 0;

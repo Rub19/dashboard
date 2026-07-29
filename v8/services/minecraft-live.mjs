@@ -37,7 +37,7 @@ export function createMinecraftLive(options = {}) {
   const externalServices = options.externalServices || null;
   const getUsername = typeof options.getUsername === "function" ? options.getUsername : () => "";
   const isConnected = typeof options.isConnected === "function" ? options.isConnected : () => false;
-  const pollIntervalMs = Math.max(600000, Number(options.pollIntervalMs) || 1800000);
+  const pollIntervalMs = Math.max(300000, Number(options.pollIntervalMs) || 900000);
   const subscribers = new Set();
   let state = normalizeMinecraftPresence({}, { connected: false });
   let timer = 0;

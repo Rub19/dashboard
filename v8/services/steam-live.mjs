@@ -49,7 +49,7 @@ export function createSteamLive(options = {}) {
   const externalServices = options.externalServices || null;
   const getSteamId = typeof options.getSteamId === "function" ? options.getSteamId : () => "";
   const isConnected = typeof options.isConnected === "function" ? options.isConnected : () => false;
-  const pollIntervalMs = Math.max(60000, Number(options.pollIntervalMs) || 120000);
+  const pollIntervalMs = Math.max(20000, Number(options.pollIntervalMs) || 45000);
   const subscribers = new Set();
   let state = normalizeSteamPresence({}, { connected: false });
   let timer = 0;

@@ -44,7 +44,7 @@ export function createLeagueLive(options = {}) {
   const externalServices = options.externalServices || null;
   const getRiotId = typeof options.getRiotId === "function" ? options.getRiotId : () => "";
   const isConnected = typeof options.isConnected === "function" ? options.isConnected : () => false;
-  const pollIntervalMs = Math.max(60000, Number(options.pollIntervalMs) || 180000);
+  const pollIntervalMs = Math.max(45000, Number(options.pollIntervalMs) || 90000);
   const subscribers = new Set();
   let state = normalizeLeaguePresence({}, { connected: false });
   let timer = 0;

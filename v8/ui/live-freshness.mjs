@@ -1,6 +1,6 @@
 import { element } from "./dom.mjs";
 
-const TIME_FORMAT = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+const TIME_FORMAT = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" });
 
 export function freshnessLabel(updatedAtIso) {
   const date = new Date(updatedAtIso);

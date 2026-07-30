@@ -4,6 +4,7 @@ import { refreshIcons, scheduleIconRefresh } from "../ui/icons.mjs";
 import { spotifyLiveCard } from "../ui/spotify-live.mjs";
 import { discordLiveCard } from "../ui/discord-live.mjs";
 import { weatherLiveCard } from "../ui/weather-live.mjs";
+import { createWeatherDetail } from "../ui/weather-detail.mjs";
 import { minecraftLiveCard } from "../ui/minecraft-live.mjs";
 import { steamLiveCard } from "../ui/steam-live.mjs";
 import { githubLiveCard } from "../ui/github-live.mjs";
@@ -240,8 +241,16 @@ export function mountHome(stage, model, options = {}) {
     scheduleIconRefresh();
   }
 
+  const weatherDetail = createWeatherDetail();
+  weatherHost.addEventListener("click", (event) => {
+    const trigger = event.target.closest("[data-weather-detail-trigger]");
+    if (!trigger) return;
+    if (weatherDetail.isOpen()) { weatherDetail.close({ restoreFocus: true }); return; }
+    weatherDetail.open(trigger, weatherLive?.state?.() || {});
+  });
+
   function renderWeather(weatherState, animate = false) {
-    const card = weatherLiveCard(weatherState, { variant: "home" });
+    const card = weatherLiveCard(weatherState, { variant: "home", detailable: true });
     weatherHost.replaceChildren(...(card ? [card] : []));
     weatherHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
@@ -455,6 +464,7 @@ export function mountHome(stage, model, options = {}) {
     releaseYoutube();
     releaseReddit();
     releaseSync();
+    weatherDetail.destroy();
     page.remove();
   };
 }

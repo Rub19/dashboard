@@ -1,7 +1,7 @@
 import { element, icon } from "./dom.mjs";
 import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
-function weatherIcon(code, isDay) {
+export function weatherIcon(code, isDay) {
   if (code === 0) return isDay ? "sun" : "moon-star";
   if (code <= 2) return isDay ? "cloud-sun" : "cloud-moon";
   if (code === 3) return "cloud";
@@ -25,10 +25,14 @@ function forecastRow(forecast) {
 export function weatherLiveCard(presence = {}, options = {}) {
   if (presence.available !== true) return null;
   const variant = ["home", "activity"].includes(options.variant) ? options.variant : "home";
-  return element(options.tagName || "article", {
+  const detailable = options.detailable === true;
+  const tagName = options.tagName || (detailable ? "button" : "article");
+  return element(tagName, {
     className: `v8-weather-live v8-weather-live--${variant} v8-surface`,
-    attributes: { "aria-label": "Meteo" },
-    dataset: { liveWidget: "media", liveKind: "widget" }
+    attributes: detailable
+      ? { type: "button", "aria-label": "Voir le detail meteo", "aria-haspopup": "dialog" }
+      : { "aria-label": "Meteo" },
+    dataset: detailable ? { liveWidget: "media", liveKind: "widget", weatherDetailTrigger: "" } : { liveWidget: "media", liveKind: "widget" }
   }, [
     element("span", { className: "v8-weather-icon" }, [icon(weatherIcon(presence.weatherCode, presence.isDay)), livePulseDot()]),
     element("div", { className: "v8-weather-live__body" }, [

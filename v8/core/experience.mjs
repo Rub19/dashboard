@@ -1,4 +1,5 @@
 import { BRAND_MARK_SVG } from "../ui/navigation.mjs";
+import { resolveTheme, systemPrefersLight } from "./theme-engine.mjs";
 
 export const SPOTLIGHT_DURATION_MS = 420;
 export const AMBIENT_REFRESH_MS = 5 * 60 * 1000;
@@ -34,7 +35,8 @@ const CONTEXT_TUNING = Object.freeze({
 
 const THEME_TUNING = Object.freeze({
   night: Object.freeze({ lightness: 0.98, halo: 0.96, background: 0.97, sound: 0.96, rate: 0.997, tone: -0.45 }),
-  graphite: Object.freeze({ lightness: 1.025, halo: 0.98, background: 1.02, sound: 1, rate: 1.003, tone: 0.18 })
+  graphite: Object.freeze({ lightness: 1.025, halo: 0.98, background: 1.02, sound: 1, rate: 1.003, tone: 0.18 }),
+  day: Object.freeze({ lightness: 1.06, halo: 0.4, background: 0.5, sound: 1.02, rate: 1.006, tone: 0.35 })
 });
 
 const PHASE_SOUND_TONE = Object.freeze({ night: -0.4, morning: 0.25, afternoon: 0.35, evening: -0.15 });
@@ -176,7 +178,8 @@ export function resolveAmbientProfile(state = {}, options = {}) {
   const phase = resolveAmbientPhase(date.getHours());
   const focus = focusIsActive(state, context);
   const contextTuning = CONTEXT_TUNING[context] || CONTEXT_TUNING.neutral;
-  const themeTuning = THEME_TUNING[state.theme] || THEME_TUNING.night;
+  const effectiveTheme = resolveTheme(state.theme, { systemPrefersLight: systemPrefersLight(options.runtime) }).effective;
+  const themeTuning = THEME_TUNING[effectiveTheme] || THEME_TUNING.night;
   const spaceTuning = SPACE_TUNING[state.space] || SPACE_TUNING.personal;
   const halo = clamp(day.halo * contextTuning.halo * themeTuning.halo * spaceTuning.halo * (focus ? 0.96 : 1), 0.58, 1.12);
   const backgroundOpacity = clamp(day.background * themeTuning.background * spaceTuning.background, 0.32, 0.5);

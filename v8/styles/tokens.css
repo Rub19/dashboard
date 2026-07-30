@@ -406,18 +406,65 @@ html[data-interface-blur="disabled"] {
   --v8-ambient-theme-wash: rgba(225, 235, 248, 0.008);
 }
 
-:root[data-space="focus"] {
+:root[data-theme="day"] {
+  color-scheme: light;
+  --v8-canvas: #f4f5f7;
+  --v8-canvas-raised: #ffffff;
+  --v8-surface-sunken: #eceef1;
+  --v8-surface-1: #ffffff;
+  --v8-surface-2: #f6f7f9;
+  --v8-surface-3: #ebedf1;
+  --v8-surface-hover: #e3e5ea;
+  --v8-surface-pressed: #d9dbe1;
+  --v8-surface-glint: rgba(15, 18, 24, 0.035);
+  --v8-overlay: linear-gradient(180deg, rgba(20, 24, 31, 0.4), rgba(15, 18, 24, 0.58));
+  --v8-glass: rgba(255, 255, 255, 0.82);
+  --v8-header-glass: rgba(255, 255, 255, 0.86);
+  --v8-dialog-glass: rgba(255, 255, 255, 0.94);
+  --v8-mobile-glass: rgba(255, 255, 255, 0.94);
+
+  --v8-border: rgba(20, 24, 31, 0.1);
+  --v8-border-strong: rgba(20, 24, 31, 0.18);
+  --v8-border-highlight: rgba(20, 24, 31, 0.26);
+  --v8-divider: rgba(20, 24, 31, 0.08);
+  --v8-scrollbar: rgba(20, 24, 31, 0.22);
+  --v8-scrollbar-hover: rgba(20, 24, 31, 0.34);
+
+  --v8-text: #161a21;
+  --v8-text-secondary: #454b57;
+  --v8-muted: #5b6270;
+
+  --v8-success: #0f7a4f;
+  --v8-success-glow: rgba(15, 122, 79, 0.22);
+  --v8-warning: #a15a06;
+  --v8-danger: #c23b4a;
+  --v8-danger-soft: rgba(194, 59, 74, 0.1);
+  --v8-danger-soft-hover: rgba(194, 59, 74, 0.16);
+  --v8-info: #1b6fc2;
+  --v8-skeleton-highlight: rgba(15, 18, 24, 0.05);
+  --v8-ambient-theme-wash: rgba(20, 24, 31, 0.006);
+}
+
+:root:not([data-theme="day"])[data-space="focus"] {
   --v8-canvas: #070b10;
   --v8-canvas-raised: #0b1118;
   --v8-surface-sunken: #080d13;
   --v8-ambient-space-wash: rgba(93, 157, 219, 0.012);
 }
 
-:root[data-space="studio"] {
+:root:not([data-theme="day"])[data-space="studio"] {
   --v8-canvas: #0d090d;
   --v8-canvas-raised: #130e13;
   --v8-surface-sunken: #0e0a0f;
   --v8-ambient-space-wash: rgba(205, 112, 190, 0.012);
+}
+
+:root[data-theme="day"][data-space="focus"] {
+  --v8-ambient-space-wash: rgba(27, 111, 194, 0.014);
+}
+
+:root[data-theme="day"][data-space="studio"] {
+  --v8-ambient-space-wash: rgba(194, 59, 154, 0.014);
 }
 
 :root:is([data-density="spacious"],[data-density-effective="spacious"]) {

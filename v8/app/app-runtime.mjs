@@ -10,6 +10,7 @@ import { createHomeModel } from "../data/home-model.mjs";
 import { claimDailyBriefing } from "../data/daily-briefing.mjs";
 import { createActivityJournal } from "../data/activity-journal.mjs";
 import { createDocumentMetadataManager, themeColorForState } from "../core/document-metadata.mjs";
+import { createThemeWatcher, resolveTheme, systemPrefersLight } from "../core/theme-engine.mjs";
 import { createAmbientEngine } from "../core/experience.mjs";
 import { calendarPresenceState, createPresenceEngine } from "../core/presence-engine.mjs";
 import { createSpotifyLive } from "../services/spotify-live.mjs";
@@ -263,8 +264,24 @@ export function mountApplication(root, options = {}) {
     if (!applyingCloudPreferences) cloudSync?.queue?.("sound-preferences");
   }) || (() => {});
 
+  function applyTheme(themeValue) {
+    const resolved = resolveTheme(themeValue, { systemPrefersLight: systemPrefersLight(globalThis) });
+    document.documentElement.dataset.theme = resolved.effective;
+    return resolved;
+  }
+  const themeWatcher = createThemeWatcher({
+    runtime: globalThis,
+    onChange: () => {
+      if (store.getState().theme !== "auto") return;
+      applyTheme("auto");
+      metadata.setThemeColor(themeColorForState(store.getState(), { systemPrefersLight: systemPrefersLight(globalThis) }));
+      ambient.refresh(store.getState());
+    }
+  });
+  themeWatcher.start();
+
   document.documentElement.dataset.accent = store.getState().accent;
-  document.documentElement.dataset.theme = store.getState().theme;
+  applyTheme(store.getState().theme);
   document.documentElement.dataset.space = store.getState().space;
   document.documentElement.dataset.spotlight = store.getState().spotlightEnabled === false ? "disabled" : "enabled";
   document.documentElement.dataset.ambientMotion = store.getState().ambientEffectsEnabled === false ? "disabled" : "enabled";
@@ -313,7 +330,7 @@ export function mountApplication(root, options = {}) {
   const initialCalendar = calendarPresenceState(repository.snapshot().events);
   if (ownsPresenceEngine) presence.start({ route: store.getState().route, syncStatus: store.getState().syncStatus, media: initialMedia, calendar: initialCalendar });
   else presence.update({ route: store.getState().route, syncStatus: store.getState().syncStatus, media: initialMedia, calendar: initialCalendar });
-  metadata.setThemeColor(themeColorForState(store.getState()));
+  metadata.setThemeColor(themeColorForState(store.getState(), { systemPrefersLight: systemPrefersLight(globalThis) }));
   delete document.documentElement.dataset.entry;
 
   shell = mountShell(root, {

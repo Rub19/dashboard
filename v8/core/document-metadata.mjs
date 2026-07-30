@@ -1,3 +1,5 @@
+import { resolveTheme } from "./theme-engine.mjs";
+
 const BRAND = "ETHONE";
 const SEPARATOR = "\u2014";
 
@@ -45,10 +47,12 @@ export function titleForContext(key) {
   return formatDocumentTitle(contextLabel(key));
 }
 
-export function themeColorForState(state = {}) {
+export function themeColorForState(state = {}, options = {}) {
+  const effective = resolveTheme(state.theme, options).effective;
+  if (effective === "day") return "#f4f5f7";
   if (state.space === "focus") return "#070b10";
   if (state.space === "studio") return "#0d090d";
-  return state.theme === "graphite" ? "#111317" : "#080a0d";
+  return effective === "graphite" ? "#111317" : "#080a0d";
 }
 
 function descriptionFor(key) {

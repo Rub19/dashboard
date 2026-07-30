@@ -297,6 +297,10 @@ test("document metadata uses one version-free ETHONE title system", () => {
   assert.equal(themeColorForState({ theme: "night", space: "personal" }), "#080a0d");
   assert.equal(themeColorForState({ theme: "night", space: "focus" }), "#070b10");
   assert.equal(themeColorForState({ theme: "graphite", space: "studio" }), "#0d090d");
+  assert.equal(themeColorForState({ theme: "day", space: "personal" }), "#f4f5f7");
+  assert.equal(themeColorForState({ theme: "day", space: "focus" }), "#f4f5f7");
+  assert.equal(themeColorForState({ theme: "auto", space: "personal" }, { systemPrefersLight: true }), "#f4f5f7");
+  assert.equal(themeColorForState({ theme: "auto", space: "personal" }, { systemPrefersLight: false }), "#080a0d");
 });
 
 test("premium breadcrumbs expose actionable route and context levels", () => {
@@ -521,10 +525,10 @@ test("interaction feedback preserves semantic states and versions every styleshe
   const localStyles = ["activity.css", "entry.css", "shell.css", "workspaces.css"].map((name) => fs.readFileSync(new URL(`../v8/styles/${name}`, import.meta.url), "utf8"));
 
   for (const name of ["tokens", "base", "components", "entry", "presence"]) {
-    assert.match(html, new RegExp(`v8/styles/${name}\\.css\\?v=experience-v153`));
-    assert.match(worker, new RegExp(`v8/styles/${name}\\.css\\?v=experience-v153`));
+    assert.match(html, new RegExp(`v8/styles/${name}\\.css\\?v=experience-v154`));
+    assert.match(worker, new RegExp(`v8/styles/${name}\\.css\\?v=experience-v154`));
   }
-  assert.match(worker, /v8\/styles\/activity\.css\?v=experience-v153/);
+  assert.match(worker, /v8\/styles\/activity\.css\?v=experience-v154/);
   for (const module of ["layer-manager", "dense-content", "dock"]) {
     assert.match(worker, new RegExp(`v8/ui/${module}\\.mjs`));
   }

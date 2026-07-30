@@ -712,13 +712,13 @@ export function mountApplication(root, options = {}) {
       densityStateKey = nextDensityStateKey;
       densityEngine.refresh(next);
     }
-    if (next.theme !== previous.theme) document.documentElement.dataset.theme = next.theme;
+    if (next.theme !== previous.theme) applyTheme(next.theme);
     if (next.space !== previous.space) document.documentElement.dataset.space = next.space;
     if (next.spotlightEnabled !== previous.spotlightEnabled) document.documentElement.dataset.spotlight = next.spotlightEnabled ? "enabled" : "disabled";
     if (next.ambientEffectsEnabled !== previous.ambientEffectsEnabled) document.documentElement.dataset.ambientMotion = next.ambientEffectsEnabled ? "enabled" : "disabled";
     if (next.interfaceBlurEnabled !== previous.interfaceBlurEnabled) document.documentElement.dataset.interfaceBlur = next.interfaceBlurEnabled ? "enabled" : "disabled";
     if (next.flow !== previous.flow || next.space !== previous.space || next.theme !== previous.theme) ambient.refresh(next);
-    if (next.theme !== previous.theme || next.space !== previous.space) metadata.setThemeColor(themeColorForState(next));
+    if (next.theme !== previous.theme || next.space !== previous.space) metadata.setThemeColor(themeColorForState(next, { systemPrefersLight: systemPrefersLight(globalThis) }));
     shell.update(next);
     if (next.panel === "notifications" && previous.panel !== "notifications") unreadNotifications = 0;
     if (next.route !== previous.route || next.syncStatus !== previous.syncStatus || next.panel !== previous.panel) {
@@ -845,6 +845,7 @@ export function mountApplication(root, options = {}) {
     document.removeEventListener("keydown", handleGlobalKeydown);
     document.removeEventListener("visibilitychange", handleVisibilityRefresh);
     shell.stage.removeEventListener("contextmenu", handleContextMenu);
+    themeWatcher.destroy();
     if (ownsAmbientEngine) ambient.destroy();
     releaseSpotify();
     releaseDiscordSpotifyBridge();

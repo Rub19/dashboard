@@ -275,9 +275,10 @@ export function mountShell(root, options = {}) {
     shell.dataset.sync = activeSync;
     if (workspaceName) workspaceName.textContent = spaceMeta.label;
     if (syncAction) syncAction.dataset.status = activeSync;
-    if (themeAction) themeAction.dataset.lucide = state.theme === "graphite" ? "moon-star" : "sun";
+    const effectiveTheme = document.documentElement.dataset.theme || state.theme;
+    if (themeAction) themeAction.dataset.lucide = effectiveTheme === "day" ? "moon-star" : "sun";
     if (themeButton) {
-      const label = state.theme === "graphite" ? "Activer le theme Nuit" : "Activer le theme Graphite";
+      const label = effectiveTheme === "day" ? "Activer le theme Nuit" : "Activer le theme Jour";
       themeButton.setAttribute("aria-label", label);
       themeButton.dataset.tooltip = label;
     }

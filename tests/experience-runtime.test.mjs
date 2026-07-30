@@ -544,8 +544,8 @@ test("Ambient UI composes theme, Space and Flow through one low-frequency engine
     assert.match(tokens, new RegExp(`:root\\[data-ambient="${phase}"\\]`));
   }
   assert.match(tokens, /:root\[data-theme="graphite"\][\s\S]*--v8-ambient-theme-wash:/);
-  assert.match(tokens, /:root\[data-space="focus"\][\s\S]*--v8-ambient-space-wash:/);
-  assert.match(tokens, /:root\[data-space="studio"\][\s\S]*--v8-ambient-space-wash:/);
+  assert.match(tokens, /:root[^{]*\[data-space="focus"\][^{]*\{[\s\S]*?--v8-ambient-space-wash:/);
+  assert.match(tokens, /:root[^{]*\[data-space="studio"\][^{]*\{[\s\S]*?--v8-ambient-space-wash:/);
   assert.match(shell, /\.v8-shell\s*\{[^}]*--v8-ambient-phase-light[^}]*--v8-ambient-theme-wash[^}]*--v8-ambient-space-wash[^}]*--v8-ambient-phase-shadow/s);
   assert.match(shell, /box-shadow:[^;]*--v8-ambient-context-glow/);
   assert.doesNotMatch(shell.match(/\.v8-shell\s*\{[^}]*\}/s)?.[0] || "", /animation:/);

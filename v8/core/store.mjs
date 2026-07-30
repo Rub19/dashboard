@@ -15,7 +15,7 @@ export function sanitizeActivityLiveLayout(input) {
   return Object.freeze({ order: Object.freeze(order), hidden: Object.freeze(hidden) });
 }
 
-const THEMES = new Set(["night", "graphite"]);
+const THEMES = new Set(["night", "graphite", "day", "auto"]);
 const ACCENTS = new Set(["mint", "sky", "amber", "violet", "rose"]);
 const SPACES = new Set(["personal", "focus", "studio"]);
 const SYNC_STATES = new Set(["loading", "saving", "saved", "offline", "retrying", "error", "expired", "online", "syncing"]);

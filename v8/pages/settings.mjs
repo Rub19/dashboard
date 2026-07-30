@@ -6,9 +6,17 @@ import { DEFAULT_SOUND_PREFERENCES, SOUND_PACKS } from "../services/sound-manage
 import { uploadProfileMedia, validateMediaFile } from "../services/media-upload.mjs";
 import { createSelect } from "../ui/select.mjs";
 import { DENSITY_CUSTOM_RANGES, DENSITY_PRESETS, densityCssVariables, resolveDensity, sanitizeDensitySettings } from "../core/density-engine.mjs";
+import { resolveTheme, systemPrefersLight } from "../core/theme-engine.mjs";
 import { BRAIN_MEMORY_CATEGORIES, BRAIN_PERMISSION_CATEGORIES, brainPreferenceLabel, sanitizeBrainPreferences } from "../brain/preferences.mjs";
 
 const ACCENTS = Object.freeze(["mint", "sky", "amber", "violet", "rose"]);
+const THEME_LABELS = Object.freeze({ night: "Nuit", graphite: "Graphite", day: "Jour", auto: "Automatique" });
+const THEME_OPTIONS = Object.freeze([
+  Object.freeze({ id: "night", label: "Nuit", icon: "moon-star", copy: "Sombre et profond, le mode par defaut.", swatch: Object.freeze({ canvas: "#080a0d", surface: "#171c22", text: "#f4f7fa" }) }),
+  Object.freeze({ id: "graphite", label: "Graphite", icon: "circle", copy: "Sombre, un ton plus clair et neutre.", swatch: Object.freeze({ canvas: "#111317", surface: "#20252b", text: "#f4f7fa" }) }),
+  Object.freeze({ id: "day", label: "Jour", icon: "sun", copy: "Clair, pour la lumiere du jour.", swatch: Object.freeze({ canvas: "#f4f5f7", surface: "#ffffff", text: "#161a21" }) }),
+  Object.freeze({ id: "auto", label: "Automatique", icon: "monitor", copy: "Suit les preferences de votre systeme.", swatch: null })
+]);
 const BRAIN_PERMISSION_LABELS = Object.freeze({ notes: "Notes", tasks: "Taches", calendar: "Calendrier", connections: "Connexions", gaming: "Gaming", activity: "Activite", files: "Fichiers", profile: "Profil", settings: "Reglages" });
 const BRAIN_MEMORY_LABELS = Object.freeze({ interface: "Interface", habits: "Habitudes", widgets: "Widgets", schedules: "Plannings", "task-types": "Types de taches", spaces: "Spaces", flows: "Flows", "response-style": "Style de reponse", goals: "Objectifs" });
 const SYNC_LABELS = Object.freeze({
@@ -103,6 +111,34 @@ function densitySwatch(values) {
   return swatch;
 }
 
+function themeSwatch(option, resolvedId) {
+  const swatch = option.swatch || THEME_OPTIONS.find((entry) => entry.id === resolvedId)?.swatch;
+  if (!swatch) return element("span", { className: "v8-theme-swatch v8-theme-swatch--auto" }, [icon("monitor")]);
+  const node = element("span", { className: "v8-theme-swatch" }, [
+    element("span", { className: "v8-theme-swatch__chip" }),
+    element("span", { className: "v8-theme-swatch__dot" })
+  ]);
+  node.style.setProperty("--v8-theme-swatch-canvas", swatch.canvas);
+  node.style.setProperty("--v8-theme-swatch-surface", swatch.surface);
+  node.style.setProperty("--v8-theme-swatch-text", swatch.text);
+  return node;
+}
+
+function themeModeChoice(option, active, resolution) {
+  const resolvedNote = option.id === "auto"
+    ? element("small", { className: "v8-theme-choice__resolved", text: `-> ${THEME_LABELS[resolution?.effective || "night"]}`, attributes: { hidden: resolution?.requested !== "auto" } })
+    : null;
+  return element("button", {
+    className: `v8-theme-choice${active ? " is-active" : ""}`,
+    attributes: { type: "button", "aria-pressed": String(active) },
+    dataset: { action: `v8.theme.${option.id}`, themeMode: option.id }
+  }, [
+    themeSwatch(option, resolution?.effective),
+    element("span", {}, [element("strong", { text: option.label }), element("small", { text: option.copy }), resolvedNote].filter(Boolean)),
+    active ? icon("check") : null
+  ]);
+}
+
 function densityModeChoice(option, active, previewValues) {
   const values = previewValues || DENSITY_PRESETS[option.id] || null;
   const swatch = densitySwatch(values);
@@ -177,6 +213,9 @@ export function mountSettings(stage, options = {}) {
   const densityChoices = element("div", { className: "v8-density-options", attributes: { role: "group", "aria-label": "Mode de densite" } }, DENSITY_OPTIONS.map((option) => densityModeChoice(option, state.density === option.id, option.id === "custom" ? initialDensitySettings.custom : option.id === "automatic" ? DENSITY_PRESETS.comfortable : null)));
   const densityCustomHost = element("div", { className: "v8-density-custom", attributes: { hidden: state.density !== "custom" } }, Object.keys(DENSITY_CUSTOM_RANGES).map((key) => densityCustomControl(key, initialDensitySettings.custom[key])));
   const densityResolved = element("span", { className: "v8-density-resolved", attributes: { "aria-live": "polite" } });
+  const themeResolution = resolveTheme(state.theme, { systemPrefersLight: systemPrefersLight(globalThis) });
+  const themeChoices = element("div", { className: "v8-theme-options", attributes: { role: "group", "aria-label": "Theme" } }, THEME_OPTIONS.map((option) => themeModeChoice(option, state.theme === option.id, themeResolution)));
+  const themeResolved = element("span", { className: "v8-density-resolved", attributes: { "aria-live": "polite" }, text: themeResolution.requested === "auto" ? `${THEME_LABELS[themeResolution.effective]} - systeme` : THEME_LABELS[themeResolution.effective] });
   const brainPreferences = sanitizeBrainPreferences(state.brainPreferences);
   const brainNameInput = element("input", { className: "v8-input", attributes: { type: "text", maxlength: "32", value: brainPreferences.assistantName, "aria-label": "Nom de l'assistant" }, dataset: { brainPreferenceInput: "assistantName" } });
   const brainPersonaSelect = preferenceSelect("persona", "Personnalite Brain", ["concise", "balanced", "expert", "coach", "creative", "developer", "custom"].map((value) => ({ value, label: brainPreferenceLabel("persona", value) })), brainPreferences.persona);
@@ -284,7 +323,10 @@ export function mountSettings(stage, options = {}) {
         ]),
         element("section", { id: "v8-settings-appearance", className: "v8-settings-section v8-surface" }, [
           element("header", {}, [element("span", { className: "v8-eyebrow", text: "Design System" }), element("h2", { text: "Apparence" }), element("p", { text: "Des reglages sobres, coherents et persistants." })]),
-          settingRow("sun-moon", "Theme", "Adapter les surfaces et le contraste.", element("div", { className: "v8-segmented" }, [choice("v8.theme.night", "moon-star", "Nuit", state.theme === "night"), choice("v8.theme.graphite", "sun", "Graphite", state.theme === "graphite")])),
+          element("div", { className: "v8-density-settings" }, [
+            element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("sun-moon")]), element("div", {}, [element("strong", { text: "Theme" }), element("p", { text: "Adapter les surfaces et le contraste." })]), themeResolved]),
+            themeChoices
+          ]),
           settingRow("palette", "Accent", "Identifier le Space et les actions importantes.", accentControls),
           element("div", { className: "v8-density-settings" }, [
             element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("rows-3")]), element("div", {}, [element("strong", { text: "Density Engine" }), element("p", { text: "Une densite coherente pour chaque page, panneau, widget et resolution." })]), densityResolved]),
@@ -441,6 +483,23 @@ export function mountSettings(stage, options = {}) {
       if (!active) check?.remove();
     });
     densityCustomHost.hidden = nextState.density !== "custom";
+    const nextThemeResolution = resolveTheme(nextState.theme, { systemPrefersLight: systemPrefersLight(globalThis) });
+    page.querySelectorAll("[data-theme-mode]").forEach((button) => {
+      const active = button.dataset.themeMode === nextState.theme;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+      const check = button.querySelector("[data-lucide='check']");
+      if (active && !check) button.append(icon("check"));
+      if (!active) check?.remove();
+      if (button.dataset.themeMode === "auto") {
+        const note = button.querySelector(".v8-theme-choice__resolved");
+        if (note) {
+          note.hidden = nextThemeResolution.requested !== "auto";
+          note.textContent = `-> ${THEME_LABELS[nextThemeResolution.effective]}`;
+        }
+      }
+    });
+    themeResolved.textContent = nextThemeResolution.requested === "auto" ? `${THEME_LABELS[nextThemeResolution.effective]} - systeme` : THEME_LABELS[nextThemeResolution.effective];
     page.querySelector("[data-action='v8.density.focus']")?.setAttribute("aria-checked", String(densitySettings.focusDensity));
     page.querySelector("[data-action='v8.density.spaces']")?.setAttribute("aria-checked", String(densitySettings.adaptiveBySpace));
     const brainPrefs = sanitizeBrainPreferences(nextState.brainPreferences);

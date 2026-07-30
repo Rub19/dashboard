@@ -196,9 +196,9 @@ export function createActionFacade(options = {}) {
   });
 
   register("v8.theme.toggle", () => {
-    const theme = getState().theme === "night" ? "graphite" : "night";
+    const theme = getState().theme === "day" ? "night" : "day";
     setState({ theme });
-    notify({ id: "theme-updated", title: "Theme", message: theme === "night" ? "Mode Nuit applique" : "Mode Graphite applique", type: "success" });
+    notify({ id: "theme-updated", title: "Theme", message: theme === "day" ? "Mode Jour applique" : "Mode Nuit applique", type: "success" });
     return completed("Theme modifie", { theme });
   });
   register("v8.theme.night", () => {
@@ -208,6 +208,14 @@ export function createActionFacade(options = {}) {
   register("v8.theme.graphite", () => {
     setState({ theme: "graphite" });
     return completed("Mode Graphite applique", { theme: "graphite" });
+  });
+  register("v8.theme.day", () => {
+    setState({ theme: "day" });
+    return completed("Mode Jour applique", { theme: "day" });
+  });
+  register("v8.theme.auto", () => {
+    setState({ theme: "auto" });
+    return completed("Mode Automatique applique", { theme: "auto" });
   });
   register("v8.density.toggle", () => {
     const sequence = ["spacious", "comfortable", "compact", "ultra-compact", "automatic"];

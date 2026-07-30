@@ -1,4 +1,4 @@
-import { actionButton, element, icon } from "./dom.mjs";
+import { actionButton, brandIcon, element, icon } from "./dom.mjs";
 
 function formatTime(value) {
   const seconds = Math.max(0, Math.floor(Number(value || 0) / 1000));
@@ -71,7 +71,7 @@ export function spotifyLiveCard(playback = {}, options = {}) {
     artwork(playback, "v8-spotify-artwork"),
     element("div", { className: "v8-spotify-live__body" }, [
       element("div", { className: "v8-spotify-live__meta" }, [
-        element("span", {}, [icon("music-2"), element("small", { text: playback.playing ? "Lecture en cours" : "En pause" })]),
+        element("span", {}, [brandIcon("spotify", "music-2", "v8-live-brand-mark"), element("small", { text: playback.playing ? "Lecture en cours" : "En pause" })]),
         equalizer()
       ]),
       element("strong", { text: playback.title, attributes: { translate: "no" } }),

@@ -1,4 +1,4 @@
-import { element, icon } from "./dom.mjs";
+import { brandIcon, element, icon } from "./dom.mjs";
 import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 function emblem(presence) {
@@ -22,7 +22,7 @@ export function valorantLiveCard(presence = {}, options = {}) {
   }, [
     emblem(presence),
     element("div", { className: "v8-valorant-live__body" }, [
-      element("div", { className: "v8-valorant-live__meta" }, [icon("swords"), element("small", { text: "Valorant" })]),
+      element("div", { className: "v8-valorant-live__meta" }, [brandIcon("riot", "swords", "v8-live-brand-mark"), element("small", { text: "Valorant" })]),
       element("strong", { text: `${presence.name}#${presence.tag}`, attributes: { translate: "no" } }),
       element("p", { text: statLine, attributes: { translate: "no" } }),
       liveFreshnessNode(presence.updatedAt)

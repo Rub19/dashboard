@@ -20,7 +20,7 @@ export function lastfmLiveCard(presence = {}, options = {}) {
   }, [
     artwork(presence),
     element("div", { className: "v8-lastfm-live__body" }, [
-      element("div", { className: "v8-lastfm-live__meta" }, [icon("history"), element("small", { text: presence.playing ? "Ecoute en cours" : "Dernier morceau" })]),
+      element("div", { className: "v8-lastfm-live__meta" }, [brandIcon("lastfm", "history", "v8-live-brand-mark"), element("small", { text: presence.playing ? "Ecoute en cours" : "Dernier morceau" })]),
       element("strong", { text: presence.title, attributes: { translate: "no" } }),
       element("p", { text: presence.artist, attributes: { translate: "no" } }),
       liveFreshnessNode(presence.updatedAt)

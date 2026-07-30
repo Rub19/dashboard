@@ -1,4 +1,4 @@
-import { element, icon } from "./dom.mjs";
+import { brandIcon, element, icon } from "./dom.mjs";
 import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 function avatar(presence) {
@@ -22,7 +22,7 @@ export function lolLiveCard(presence = {}, options = {}) {
   }, [
     avatar(presence),
     element("div", { className: "v8-lol-live__body" }, [
-      element("div", { className: "v8-lol-live__meta" }, [icon("swords"), element("small", { text: "League of Legends" })]),
+      element("div", { className: "v8-lol-live__meta" }, [brandIcon("riot", "swords", "v8-live-brand-mark"), element("small", { text: "League of Legends" })]),
       element("strong", { text: `${presence.name}#${presence.tag}`, attributes: { translate: "no" } }),
       element("p", { text: statLine, attributes: { translate: "no" } }),
       liveFreshnessNode(presence.updatedAt)

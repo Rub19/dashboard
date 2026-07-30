@@ -29,7 +29,7 @@ function memoryStorage() {
 }
 
 test("Connections Hub exposes guided methods and official resources for every integration", () => {
-  assert.ok(INTEGRATIONS.length >= 35);
+  assert.ok(INTEGRATIONS.length >= 30);
   INTEGRATIONS.forEach((integration) => {
     const methods = connectionMethods(integration);
     assert.ok(methods.length >= 1, `${integration.id} must expose a method`);

@@ -258,7 +258,7 @@ test("command search includes contextual user content without replacing system c
 });
 
 test("integration registry is unique and exposes no credential fields", () => {
-  assert.ok(INTEGRATIONS.length >= 35);
+  assert.ok(INTEGRATIONS.length >= 30);
   assert.equal(new Set(INTEGRATIONS.map((integration) => integration.id)).size, INTEGRATIONS.length);
   assert.ok(INTEGRATIONS.some((integration) => integration.id === "spotify"));
   assert.ok(INTEGRATIONS.some((integration) => integration.id === "github"));
@@ -521,10 +521,10 @@ test("interaction feedback preserves semantic states and versions every styleshe
   const localStyles = ["activity.css", "entry.css", "shell.css", "workspaces.css"].map((name) => fs.readFileSync(new URL(`../v8/styles/${name}`, import.meta.url), "utf8"));
 
   for (const name of ["tokens", "base", "components", "entry", "presence"]) {
-    assert.match(html, new RegExp(`v8/styles/${name}\\.css\\?v=experience-v152`));
-    assert.match(worker, new RegExp(`v8/styles/${name}\\.css\\?v=experience-v152`));
+    assert.match(html, new RegExp(`v8/styles/${name}\\.css\\?v=experience-v153`));
+    assert.match(worker, new RegExp(`v8/styles/${name}\\.css\\?v=experience-v153`));
   }
-  assert.match(worker, /v8\/styles\/activity\.css\?v=experience-v152/);
+  assert.match(worker, /v8\/styles\/activity\.css\?v=experience-v153/);
   for (const module of ["layer-manager", "dense-content", "dock"]) {
     assert.match(worker, new RegExp(`v8/ui/${module}\\.mjs`));
   }

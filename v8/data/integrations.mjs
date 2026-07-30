@@ -11,7 +11,6 @@ const CATEGORY_META = Object.freeze({
 
 const records = [
   ["spotify", "Spotify", "media", "oauth", "Lecture, historique et playlists", "music-2", "Lecture actuelle"],
-  ["apple-music", "Apple Music", "media", "oauth", "Lecture et bibliotheque musicale", "audio-lines", "Lecture actuelle"],
   ["plex", "Plex", "media", "api", "Lecture et bibliotheque personnelle", "library", "Lecture actuelle"],
   ["jellyfin", "Jellyfin", "media", "local", "Serveur et lecture personnelle", "server", "Lecture actuelle"],
   ["emby", "Emby", "media", "local", "Serveur et lecture personnelle", "server-cog", "Lecture actuelle"],
@@ -27,8 +26,6 @@ const records = [
   ["tracker-gg", "Tracker.gg", "gaming", "restricted", "Rangs et matchs selon acces partenaire", "chart-no-axes-combined", "Classement mis a jour"],
   ["google-calendar", "Google Calendar", "productivity", "oauth", "Agenda et prochains evenements", "calendar-days", "Evenement"],
   ["google-drive", "Google Drive", "productivity", "oauth", "Fichiers et activite recente", "hard-drive", "Fichier modifie"],
-  ["google-docs", "Google Docs", "productivity", "oauth", "Documents recents", "file-text", "Document modifie"],
-  ["google-tasks", "Google Tasks", "productivity", "oauth", "Listes et taches", "list-checks", "Tache modifiee"],
   ["notion", "Notion", "productivity", "oauth", "Pages et bases autorisees", "notebook-tabs", "Page modifiee"],
   ["todoist", "Todoist", "productivity", "oauth", "Taches et projets", "circle-check-big", "Tache terminee"],
   ["linear", "Linear", "productivity", "oauth", "Issues, projets et cycles", "workflow", "Issue modifiee"],
@@ -192,7 +189,7 @@ const SPECIAL_METHODS = Object.freeze({
 });
 
 const OFFICIAL_HOME = Object.freeze({
-  spotify: "https://developer.spotify.com/", "apple-music": "https://developer.apple.com/musickit/", plex: "https://www.plex.tv/", jellyfin: "https://jellyfin.org/docs/", emby: "https://dev.emby.media/", youtube: "https://developers.google.com/youtube/v3", twitch: "https://dev.twitch.tv/docs/", lastfm: "https://www.last.fm/api", discord: "https://docs.discord.com/developers/", reddit: "https://www.reddit.com/dev/api/", bluesky: "https://docs.bsky.app/", steam: "https://steamcommunity.com/dev", riot: "https://developer.riotgames.com/", minecraft: "https://learn.microsoft.com/minecraft/creator/", "tracker-gg": "https://tracker.gg/developers", "google-calendar": "https://developers.google.com/workspace/calendar/api", "google-drive": "https://developers.google.com/drive/api/guides/about-sdk", "google-docs": "https://developers.google.com/docs/api", "google-tasks": "https://developers.google.com/tasks", notion: "https://developers.notion.com/", todoist: "https://developer.todoist.com/", linear: "https://developers.linear.app/docs/", clickup: "https://developer.clickup.com/", jira: "https://developer.atlassian.com/cloud/jira/platform/", email: "https://developers.google.com/gmail/api", rss: "https://www.rssboard.org/rss-specification", weather: "https://open-meteo.com/en/docs", github: "https://docs.github.com/en/apps", gitlab: "https://docs.gitlab.com/integration/oauth_provider/", obsidian: "https://docs.obsidian.md/Plugins/Getting+started/Build+a+plugin", vscode: "https://code.visualstudio.com/api", fitbit: "https://dev.fitbit.com/build/reference/web-api/", "lm-studio": "https://lmstudio.ai/docs/developer", ollama: "https://docs.ollama.com/api", openai: "https://platform.openai.com/docs/", anthropic: "https://docs.anthropic.com/", gemini: "https://ai.google.dev/gemini-api/docs", groq: "https://console.groq.com/docs"
+  spotify: "https://developer.spotify.com/", plex: "https://www.plex.tv/", jellyfin: "https://jellyfin.org/docs/", emby: "https://dev.emby.media/", youtube: "https://developers.google.com/youtube/v3", twitch: "https://dev.twitch.tv/docs/", lastfm: "https://www.last.fm/api", discord: "https://docs.discord.com/developers/", reddit: "https://www.reddit.com/dev/api/", bluesky: "https://docs.bsky.app/", steam: "https://steamcommunity.com/dev", riot: "https://developer.riotgames.com/", minecraft: "https://learn.microsoft.com/minecraft/creator/", "tracker-gg": "https://tracker.gg/developers", "google-calendar": "https://developers.google.com/workspace/calendar/api", "google-drive": "https://developers.google.com/drive/api/guides/about-sdk", notion: "https://developers.notion.com/", todoist: "https://developer.todoist.com/", linear: "https://developers.linear.app/docs/", clickup: "https://developer.clickup.com/", jira: "https://developer.atlassian.com/cloud/jira/platform/", email: "https://developers.google.com/gmail/api", rss: "https://www.rssboard.org/rss-specification", weather: "https://open-meteo.com/en/docs", github: "https://docs.github.com/en/apps", gitlab: "https://docs.gitlab.com/integration/oauth_provider/", obsidian: "https://docs.obsidian.md/Plugins/Getting+started/Build+a+plugin", vscode: "https://code.visualstudio.com/api", fitbit: "https://dev.fitbit.com/build/reference/web-api/", "lm-studio": "https://lmstudio.ai/docs/developer", ollama: "https://docs.ollama.com/api", openai: "https://platform.openai.com/docs/", anthropic: "https://docs.anthropic.com/", gemini: "https://ai.google.dev/gemini-api/docs", groq: "https://console.groq.com/docs"
 });
 
 const SPECIAL_RESOURCES = Object.freeze({
@@ -410,33 +407,6 @@ const SPECIAL_GUIDES = Object.freeze({
       guideStep("secret", "Copier le Client Secret", "Affiche a cote du Client ID."),
       guideStep("wrangler", "Client Secret conserve cote Worker", "Le Client ID est deja configure dans ETHONE. Le Client Secret ne se colle jamais dans le navigateur : il reste enregistre comme secret Worker (TODOIST_CLIENT_SECRET)."),
       guideStep("connect", "Se connecter avec Todoist", "L'application ETHONE est prete : cliquez \"Se connecter avec Todoist\" pour autoriser votre propre compte.")
-    ])
-  }),
-  "google-docs": Object.freeze({
-    "oauth-secure": (resource) => Object.freeze([
-      guideStep("docs", "Ouvrir Google Cloud Console", "Creez un projet (ou reutilisez-en un), puis activez \"Google Docs API\" dans la bibliotheque d'API.", { resource }),
-      guideStep("consent", "Configurer l'ecran de consentement OAuth", "Type \"External\", renseignez le nom de l'app. Statut \"Testing\" suffit tant que ce n'est utilise que par vous."),
-      guideStep("app", "Creer un identifiant OAuth", "Credentials > Create Credentials > OAuth client ID > type \"Web application\"."),
-      guideStep("redirect", "Ajouter la Redirect URI", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
-      guideStep("scopes", "Scopes a demander", "https://www.googleapis.com/auth/documents.readonly et https://www.googleapis.com/auth/drive.metadata.readonly (pour lister les documents recents).", { copyValue: "https://www.googleapis.com/auth/documents.readonly https://www.googleapis.com/auth/drive.metadata.readonly" })
-    ])
-  }),
-  "google-tasks": Object.freeze({
-    "oauth-secure": (resource) => Object.freeze([
-      guideStep("docs", "Ouvrir Google Cloud Console", "Creez un projet (ou reutilisez-en un), puis activez \"Google Tasks API\" dans la bibliotheque d'API.", { resource }),
-      guideStep("consent", "Configurer l'ecran de consentement OAuth", "Type \"External\", renseignez le nom de l'app. Statut \"Testing\" suffit tant que ce n'est utilise que par vous."),
-      guideStep("app", "Creer un identifiant OAuth", "Credentials > Create Credentials > OAuth client ID > type \"Web application\"."),
-      guideStep("redirect", "Ajouter la Redirect URI", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
-      guideStep("scopes", "Scope a demander", "https://www.googleapis.com/auth/tasks.readonly", { copyValue: "https://www.googleapis.com/auth/tasks.readonly" })
-    ])
-  }),
-  "apple-music": Object.freeze({
-    "oauth-secure": (resource) => Object.freeze([
-      guideStep("docs", "Ouvrir Apple Developer", "Necessite un compte Apple Developer Program payant (99$/an). Rendez-vous dans Certificates, Identifiers & Profiles.", { resource }),
-      guideStep("identifier", "Creer un MusicKit Identifier", "Identifiers > + > MusicKit, associez-le a votre compte."),
-      guideStep("key", "Generer une cle privee MusicKit", "Keys > + > cochez MusicKit > telechargez le fichier .p8 (une seule fois, a conserver precieusement)."),
-      guideStep("token", "Fonctionnement different d'un OAuth classique", "Apple Music ne redirige pas vers ETHONE : le Worker doit generer un jeton developpeur signe (JWT) avec cette cle, puis votre navigateur autorise l'acces via MusicKit JS.", { status: "blocked" }),
-      guideStep("verify", "Pas de Redirect URI a configurer", "Cette methode ne suit pas le schema OAuth habituel, il n'y a rien d'autre a renseigner cote Apple pour l'instant.")
     ])
   }),
   todoist: Object.freeze({

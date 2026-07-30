@@ -1,3 +1,5 @@
+import { brandIconMarkup } from "../data/brand-icons.mjs";
+
 export function debounce(fn, wait = 150) {
   let timer = null;
   return function debounced(...args) {
@@ -50,6 +52,14 @@ export function icon(name, className = "") {
     dataset: { lucide: name },
     attributes: { "aria-hidden": "true" }
   });
+}
+
+export function brandIcon(brandId, fallbackName, className = "") {
+  const markup = brandIconMarkup(brandId);
+  if (!markup) return icon(fallbackName, className);
+  const wrapper = element("span", { className, attributes: { "aria-hidden": "true" } });
+  wrapper.innerHTML = markup;
+  return wrapper.firstElementChild || icon(fallbackName, className);
 }
 
 export function actionButton(options = {}, children = []) {

@@ -1,4 +1,4 @@
-import { element, icon } from "./dom.mjs";
+import { brandIcon, element, icon } from "./dom.mjs";
 import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 function avatar(presence) {
@@ -21,7 +21,7 @@ export function redditLiveCard(presence = {}, options = {}) {
   }, [
     avatar(presence),
     element("div", { className: "v8-reddit-live__body" }, [
-      element("div", { className: "v8-reddit-live__meta" }, [icon("message-circle"), element("small", { text: meta })]),
+      element("div", { className: "v8-reddit-live__meta" }, [brandIcon("reddit", "message-circle", "v8-live-brand-mark"), element("small", { text: meta })]),
       element("strong", { text: `u/${presence.username}`, attributes: { translate: "no" } }),
       element("p", { text: presence.latestPostTitle || "Aucune publication recente", attributes: { translate: "no" } }),
       liveFreshnessNode(presence.updatedAt)

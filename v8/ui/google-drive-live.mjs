@@ -1,4 +1,4 @@
-import { element, icon } from "./dom.mjs";
+import { brandIcon, element, icon } from "./dom.mjs";
 import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 const DAY_MONTH = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" });
@@ -20,7 +20,7 @@ export function googleDriveLiveCard(presence = {}, options = {}) {
   }, [
     element("span", { className: "v8-google-drive-icon" }, [icon("hard-drive"), livePulseDot()]),
     element("div", { className: "v8-google-drive-live__body" }, [
-      element("div", { className: "v8-google-drive-live__meta" }, [icon("file"), element("small", { text: "Dernier fichier modifie" })]),
+      element("div", { className: "v8-google-drive-live__meta" }, [brandIcon("google-drive", "file", "v8-live-brand-mark"), element("small", { text: "Dernier fichier modifie" })]),
       element("strong", { text: file.name, attributes: { translate: "no" } }),
       element("p", { text: formatModified(file.modifiedTime), attributes: { translate: "no" } }),
       liveFreshnessNode(presence.updatedAt)

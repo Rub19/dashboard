@@ -1,4 +1,4 @@
-import { element, icon } from "./dom.mjs";
+import { brandIcon, element, icon } from "./dom.mjs";
 import { liveFreshnessNode } from "./live-freshness.mjs";
 
 const STATUS_LABELS = Object.freeze({ online: "En ligne", idle: "Absent", dnd: "Ne pas deranger", offline: "Hors ligne" });
@@ -29,7 +29,7 @@ export function discordLiveCard(presence = {}, options = {}) {
     avatar(presence),
     element("div", { className: "v8-discord-live__body" }, [
       element("div", { className: "v8-discord-live__meta" }, [
-        icon("messages-square"),
+        brandIcon("discord", "messages-square", "v8-live-brand-mark"),
         element("small", { text: STATUS_LABELS[presence.status] || "Hors ligne" })
       ]),
       element("strong", { text: presence.displayName, attributes: { translate: "no" } }),

@@ -1,4 +1,4 @@
-import { element, icon } from "./dom.mjs";
+import { brandIcon, element, icon } from "./dom.mjs";
 import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 const DAY_MONTH = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" });
@@ -30,7 +30,7 @@ export function googleCalendarLiveCard(presence = {}, options = {}) {
   }, [
     element("span", { className: "v8-google-calendar-icon" }, [icon("calendar-days"), livePulseDot()]),
     element("div", { className: "v8-google-calendar-live__body" }, [
-      element("div", { className: "v8-google-calendar-live__meta" }, [icon("calendar-clock"), element("small", { text: "Prochain evenement" })]),
+      element("div", { className: "v8-google-calendar-live__meta" }, [brandIcon("google-calendar", "calendar-clock", "v8-live-brand-mark"), element("small", { text: "Prochain evenement" })]),
       element("strong", { text: event.title, attributes: { translate: "no" } }),
       element("p", { text: meta, attributes: { translate: "no" } }),
       liveFreshnessNode(presence.updatedAt)

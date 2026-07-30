@@ -1,4 +1,4 @@
-import { element, icon } from "./dom.mjs";
+import { brandIcon, element, icon } from "./dom.mjs";
 import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 const DAY_MONTH = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" });
@@ -30,7 +30,7 @@ export function todoistLiveCard(presence = {}, options = {}) {
   }, [
     element("span", { className: "v8-todoist-icon" }, [icon("circle-check-big"), livePulseDot()]),
     element("div", { className: "v8-todoist-live__body" }, [
-      element("div", { className: "v8-todoist-live__meta" }, [icon("circle-check-big"), element("small", { text: "Prochaine tache" })]),
+      element("div", { className: "v8-todoist-live__meta" }, [brandIcon("todoist", "circle-check-big", "v8-live-brand-mark"), element("small", { text: "Prochaine tache" })]),
       element("strong", { text: task.content, attributes: { translate: "no" } }),
       element("p", { text: meta, attributes: { translate: "no" } }),
       liveFreshnessNode(presence.updatedAt)

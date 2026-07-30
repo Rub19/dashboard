@@ -1,4 +1,4 @@
-import { element, icon } from "./dom.mjs";
+import { brandIcon, element, icon } from "./dom.mjs";
 import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 function formatRelativeTime(iso) {
@@ -26,7 +26,7 @@ export function notionLiveCard(presence = {}, options = {}) {
   }, [
     element("span", { className: "v8-notion-icon" }, [icon("notebook-tabs"), livePulseDot()]),
     element("div", { className: "v8-notion-live__body" }, [
-      element("div", { className: "v8-notion-live__meta" }, [icon("notebook-tabs"), element("small", { text: "Derniere page modifiee" })]),
+      element("div", { className: "v8-notion-live__meta" }, [brandIcon("notion", "notebook-tabs", "v8-live-brand-mark"), element("small", { text: "Derniere page modifiee" })]),
       element("strong", { text: page.title, attributes: { translate: "no" } }),
       element("p", { text: meta, attributes: { translate: "no" } }),
       liveFreshnessNode(presence.updatedAt)

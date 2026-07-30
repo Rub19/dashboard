@@ -1,4 +1,4 @@
-const MUSIC_SOURCES = Object.freeze(["spotify", "apple-music", "youtube-music", "lastfm"]);
+const MUSIC_SOURCES = Object.freeze(["spotify", "apple-music", "lastfm"]);
 const DAILY_BRIEFING_STORAGE_PREFIX = "ethone:v8:daily-briefing:";
 
 function safeArray(value) {

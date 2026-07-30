@@ -12,20 +12,17 @@ const CATEGORY_META = Object.freeze({
 const records = [
   ["spotify", "Spotify", "media", "oauth", "Lecture, historique et playlists", "music-2", "Lecture actuelle"],
   ["apple-music", "Apple Music", "media", "oauth", "Lecture et bibliotheque musicale", "audio-lines", "Lecture actuelle"],
-  ["youtube-music", "YouTube Music", "media", "oauth", "Lecture et historique musical", "circle-play", "Lecture actuelle"],
   ["plex", "Plex", "media", "api", "Lecture et bibliotheque personnelle", "library", "Lecture actuelle"],
   ["jellyfin", "Jellyfin", "media", "local", "Serveur et lecture personnelle", "server", "Lecture actuelle"],
   ["emby", "Emby", "media", "local", "Serveur et lecture personnelle", "server-cog", "Lecture actuelle"],
   ["youtube", "YouTube", "media", "oauth", "Videos, chaines et activite", "youtube", "Video publiee"],
   ["twitch", "Twitch", "media", "oauth", "Lives, chaines et activite", "twitch", "Live demarre"],
-  ["google-photos", "Google Photos", "media", "oauth", "Photos et albums selectionnes", "images", "Album mis a jour"],
   ["lastfm", "Last.fm", "media", "api", "Scrobbles et historique musical", "history", "Scrobble"],
   ["discord", "Discord", "social", "oauth", "Presence, activite et serveurs autorises", "messages-square", "Presence"],
   ["reddit", "Reddit", "social", "oauth", "Communautes et activite", "message-circle", "Publication"],
   ["bluesky", "Bluesky", "social", "api", "Flux et publications", "cloud", "Publication"],
   ["steam", "Steam", "gaming", "api", "Jeux, succes et temps de jeu", "gamepad-2", "Jeu lance"],
   ["riot", "Riot Games", "gaming", "api", "Valorant, League of Legends et TFT", "swords", "Partie terminee"],
-  ["battle-net", "Battle.net", "gaming", "oauth", "Jeux et activite Blizzard", "orbit", "Activite de jeu"],
   ["minecraft", "Minecraft", "gaming", "oauth", "Profil et services Microsoft autorises", "box", "Session"],
   ["tracker-gg", "Tracker.gg", "gaming", "restricted", "Rangs et matchs selon acces partenaire", "chart-no-axes-combined", "Classement mis a jour"],
   ["google-calendar", "Google Calendar", "productivity", "oauth", "Agenda et prochains evenements", "calendar-days", "Evenement"],
@@ -45,7 +42,6 @@ const records = [
   ["obsidian", "Obsidian", "development", "local", "Vault et notes locales", "gem", "Note modifiee"],
   ["vscode", "VS Code", "development", "local", "Sessions et espaces de travail", "code-2", "Session de code"],
   ["fitbit", "Fitbit", "health", "oauth", "Activite et indicateurs de sante", "heart-pulse", "Objectif atteint"],
-  ["health-connect", "Health Connect", "health", "local", "Donnees de sante Android avec consentement", "heart-handshake", "Donnee synchronisee"],
   ["lm-studio", "LM Studio", "ai", "local", "Modeles locaux et sessions", "monitor-cog", "Execution locale"],
   ["ollama", "Ollama", "ai", "local", "Modeles locaux et activite", "bot", "Execution locale"],
   ["openai", "OpenAI", "ai", "api", "Modeles et executions via un relais securise", "sparkles", "Execution terminee"],
@@ -196,7 +192,7 @@ const SPECIAL_METHODS = Object.freeze({
 });
 
 const OFFICIAL_HOME = Object.freeze({
-  spotify: "https://developer.spotify.com/", "apple-music": "https://developer.apple.com/musickit/", "youtube-music": "https://developers.google.com/youtube/v3", plex: "https://www.plex.tv/", jellyfin: "https://jellyfin.org/docs/", emby: "https://dev.emby.media/", youtube: "https://developers.google.com/youtube/v3", twitch: "https://dev.twitch.tv/docs/", "google-photos": "https://developers.google.com/photos", lastfm: "https://www.last.fm/api", discord: "https://docs.discord.com/developers/", reddit: "https://www.reddit.com/dev/api/", bluesky: "https://docs.bsky.app/", steam: "https://steamcommunity.com/dev", riot: "https://developer.riotgames.com/", "battle-net": "https://develop.battle.net/", minecraft: "https://learn.microsoft.com/minecraft/creator/", "tracker-gg": "https://tracker.gg/developers", "google-calendar": "https://developers.google.com/workspace/calendar/api", "google-drive": "https://developers.google.com/drive/api/guides/about-sdk", "google-docs": "https://developers.google.com/docs/api", "google-tasks": "https://developers.google.com/tasks", notion: "https://developers.notion.com/", todoist: "https://developer.todoist.com/", linear: "https://developers.linear.app/docs/", clickup: "https://developer.clickup.com/", jira: "https://developer.atlassian.com/cloud/jira/platform/", email: "https://developers.google.com/gmail/api", rss: "https://www.rssboard.org/rss-specification", weather: "https://open-meteo.com/en/docs", github: "https://docs.github.com/en/apps", gitlab: "https://docs.gitlab.com/integration/oauth_provider/", obsidian: "https://docs.obsidian.md/Plugins/Getting+started/Build+a+plugin", vscode: "https://code.visualstudio.com/api", fitbit: "https://dev.fitbit.com/build/reference/web-api/", "health-connect": "https://developer.android.com/health-and-fitness/guides/health-connect", "lm-studio": "https://lmstudio.ai/docs/developer", ollama: "https://docs.ollama.com/api", openai: "https://platform.openai.com/docs/", anthropic: "https://docs.anthropic.com/", gemini: "https://ai.google.dev/gemini-api/docs", groq: "https://console.groq.com/docs"
+  spotify: "https://developer.spotify.com/", "apple-music": "https://developer.apple.com/musickit/", plex: "https://www.plex.tv/", jellyfin: "https://jellyfin.org/docs/", emby: "https://dev.emby.media/", youtube: "https://developers.google.com/youtube/v3", twitch: "https://dev.twitch.tv/docs/", lastfm: "https://www.last.fm/api", discord: "https://docs.discord.com/developers/", reddit: "https://www.reddit.com/dev/api/", bluesky: "https://docs.bsky.app/", steam: "https://steamcommunity.com/dev", riot: "https://developer.riotgames.com/", minecraft: "https://learn.microsoft.com/minecraft/creator/", "tracker-gg": "https://tracker.gg/developers", "google-calendar": "https://developers.google.com/workspace/calendar/api", "google-drive": "https://developers.google.com/drive/api/guides/about-sdk", "google-docs": "https://developers.google.com/docs/api", "google-tasks": "https://developers.google.com/tasks", notion: "https://developers.notion.com/", todoist: "https://developer.todoist.com/", linear: "https://developers.linear.app/docs/", clickup: "https://developer.clickup.com/", jira: "https://developer.atlassian.com/cloud/jira/platform/", email: "https://developers.google.com/gmail/api", rss: "https://www.rssboard.org/rss-specification", weather: "https://open-meteo.com/en/docs", github: "https://docs.github.com/en/apps", gitlab: "https://docs.gitlab.com/integration/oauth_provider/", obsidian: "https://docs.obsidian.md/Plugins/Getting+started/Build+a+plugin", vscode: "https://code.visualstudio.com/api", fitbit: "https://dev.fitbit.com/build/reference/web-api/", "lm-studio": "https://lmstudio.ai/docs/developer", ollama: "https://docs.ollama.com/api", openai: "https://platform.openai.com/docs/", anthropic: "https://docs.anthropic.com/", gemini: "https://ai.google.dev/gemini-api/docs", groq: "https://console.groq.com/docs"
 });
 
 const SPECIAL_RESOURCES = Object.freeze({
@@ -434,15 +430,6 @@ const SPECIAL_GUIDES = Object.freeze({
       guideStep("scopes", "Scope a demander", "https://www.googleapis.com/auth/tasks.readonly", { copyValue: "https://www.googleapis.com/auth/tasks.readonly" })
     ])
   }),
-  "google-photos": Object.freeze({
-    "oauth-secure": (resource) => Object.freeze([
-      guideStep("docs", "Ouvrir Google Cloud Console", "Creez un projet (ou reutilisez-en un), puis activez \"Photos Library API\" dans la bibliotheque d'API.", { resource }),
-      guideStep("consent", "Configurer l'ecran de consentement OAuth", "Type \"External\", renseignez le nom de l'app. Statut \"Testing\" suffit tant que ce n'est utilise que par vous."),
-      guideStep("app", "Creer un identifiant OAuth", "Credentials > Create Credentials > OAuth client ID > type \"Web application\"."),
-      guideStep("redirect", "Ajouter la Redirect URI", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
-      guideStep("scopes", "Scope a demander", "https://www.googleapis.com/auth/photoslibrary.readonly", { copyValue: "https://www.googleapis.com/auth/photoslibrary.readonly" })
-    ])
-  }),
   "apple-music": Object.freeze({
     "oauth-secure": (resource) => Object.freeze([
       guideStep("docs", "Ouvrir Apple Developer", "Necessite un compte Apple Developer Program payant (99$/an). Rendez-vous dans Certificates, Identifiers & Profiles.", { resource }),
@@ -450,12 +437,6 @@ const SPECIAL_GUIDES = Object.freeze({
       guideStep("key", "Generer une cle privee MusicKit", "Keys > + > cochez MusicKit > telechargez le fichier .p8 (une seule fois, a conserver precieusement)."),
       guideStep("token", "Fonctionnement different d'un OAuth classique", "Apple Music ne redirige pas vers ETHONE : le Worker doit generer un jeton developpeur signe (JWT) avec cette cle, puis votre navigateur autorise l'acces via MusicKit JS.", { status: "blocked" }),
       guideStep("verify", "Pas de Redirect URI a configurer", "Cette methode ne suit pas le schema OAuth habituel, il n'y a rien d'autre a renseigner cote Apple pour l'instant.")
-    ])
-  }),
-  "youtube-music": Object.freeze({
-    "oauth-secure": (resource) => Object.freeze([
-      guideStep("unavailable", "Pas d'API officielle pour YouTube Music", "Google ne propose pas d'API publique et documentee pour la lecture en cours sur YouTube Music, contrairement a YouTube (videos) ou Spotify.", { resource, status: "blocked" }),
-      guideStep("alternative", "Alternative", "Utilisez YouTube (chaine publique) si vous voulez suivre une activite YouTube, ou Last.fm si vous scrobblez deja votre ecoute.", { status: "blocked" })
     ])
   }),
   todoist: Object.freeze({
@@ -509,15 +490,6 @@ const SPECIAL_GUIDES = Object.freeze({
       guideStep("redirect", "Ajouter la Redirect URL", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
       guideStep("scopes", "Scopes a demander", "activity, heartrate et profile selon les indicateurs voulus.", { copyValue: "activity heartrate profile" }),
       guideStep("keys", "Copier OAuth 2.0 Client ID et Client Secret", "Visibles directement dans les parametres de l'app.")
-    ])
-  }),
-  "battle-net": Object.freeze({
-    "oauth-secure": (resource) => Object.freeze([
-      guideStep("docs", "Ouvrir le Battle.net Developer Portal", "Connectez-vous avec votre compte Battle.net puis \"Create Client\".", { resource }),
-      guideStep("app", "Configurer le client", "Redirect URIs, Service URL: https://ethone.dev, cochez uniquement les jeux que vous voulez suivre (WoW, Diablo, Starcraft...)."),
-      guideStep("redirect", "Ajouter la Redirect URI", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
-      guideStep("scopes", "Scope a demander", "wow.profile (World of Warcraft) et/ou sc2.profile, d3.profile selon le jeu.", { copyValue: "wow.profile" }),
-      guideStep("keys", "Copier Client ID et Client Secret", "Visibles dans le tableau de bord une fois le client cree et approuve.")
     ])
   }),
   lastfm: Object.freeze({

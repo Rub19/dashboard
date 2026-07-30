@@ -40,9 +40,9 @@ function weatherLabel(code) {
   return WEATHER_LABELS[Number(code)] || "Conditions inconnues";
 }
 
-export async function getWeather(env, city) {
+async function geocodeSearch(env, name) {
   const geocodeUrl = new URL("/v1/search", GEOCODE_ORIGIN);
-  geocodeUrl.searchParams.set("name", city);
+  geocodeUrl.searchParams.set("name", name);
   geocodeUrl.searchParams.set("count", "1");
   geocodeUrl.searchParams.set("language", "fr");
   geocodeUrl.searchParams.set("format", "json");
@@ -50,11 +50,16 @@ export async function getWeather(env, city) {
     env,
     expectedOrigin: GEOCODE_ORIGIN,
     service: "weather",
-    dedupeKey: `geocode:${city.toLowerCase()}`,
+    dedupeKey: `geocode:${name.toLowerCase()}`,
     retries: 1,
     maxBytes: 64 * 1024
   });
-  const place = geocode.data?.results?.[0];
+  return geocode.data?.results?.[0] || null;
+}
+
+export async function getWeather(env, city) {
+  let place = await geocodeSearch(env, city);
+  if (!place && city.includes(" ")) place = await geocodeSearch(env, city.replace(/\s+/g, "-"));
   if (!place) throw httpError("PROVIDER_NOT_FOUND", 404);
   const latitude = safeNumber(place.latitude, -90, 90);
   const longitude = safeNumber(place.longitude, -180, 180);

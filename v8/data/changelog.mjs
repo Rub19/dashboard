@@ -24,6 +24,9 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v179", "2026-08-01", "Catalogue de connexions moins chargé", [
+    { kind: "improvement", text: "Chaque carte du catalogue de connexions n'affiche plus qu'un seul bouton principal (plus Déconnecter si besoin) au lieu de 4 actions côte à côte. Changer de méthode et lancer un diagnostic restent disponibles en un clic, dans la fiche détaillée." }
+  ]),
   entry("v178", "2026-08-01", "Personnalisez vos widgets Live Now sur l'accueil", [
     { kind: "feature", text: "Bouton \"Personnaliser\" au-dessus des cartes Live Now de l'accueil : réordonnez chaque widget (Spotify, Discord, Minecraft...) ou masquez ceux qui ne vous intéressent pas, comme sur la page Activity." },
     { kind: "improvement", text: "Vos préférences d'ordre et de visibilité sont sauvegardées et synchronisées avec votre compte, comme le reste de vos réglages." }

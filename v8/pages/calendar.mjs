@@ -125,8 +125,9 @@ export function mountCalendar(stage, options = {}) {
       const title = element("input", { className: "v8-input", attributes: { type: "text", placeholder: "Titre de l'événement", "aria-label": "Titre de l'événement", maxlength: "180", required: "", autocomplete: "off" }, dataset: { eventField: "title" } });
       const date = element("input", { className: "v8-input", attributes: { type: "date", value: selectedDate, "aria-label": "Date de l'événement", required: "" }, dataset: { eventField: "date" } });
       date.value = selectedDate;
+      const time = element("input", { className: "v8-input", attributes: { type: "time", "aria-label": "Heure de l'événement" }, dataset: { eventField: "time" } });
       composer.hidden = false;
-      composer.append(formField({ label: "Événement", control: title, required: true }), formField({ label: "Date", control: date, required: true }), element("div", {}, [
+      composer.append(formField({ label: "Événement", control: title, required: true }), formField({ label: "Date", control: date, required: true }), formField({ label: "Heure", control: time }), element("div", {}, [
         actionButton({ actionId: "v8.calendar.new.cancel" }, [element("span", { text: "Annuler" })]),
         element("button", { className: "v8-button v8-button--primary", attributes: { type: "submit" } }, [icon("plus"), element("span", { text: "Ajouter" })])
       ]));
@@ -147,7 +148,7 @@ export function mountCalendar(stage, options = {}) {
       dayEvents.forEach((event) => {
         list.append(element("article", { className: "v8-calendar-event", attributes: { role: "listitem" }, dataset: { eventId: event.id, liveWidget: "planning", liveKind: "planning" } }, [
           element("span", { className: "v8-calendar-event__signal", attributes: { "aria-hidden": "true" } }),
-          element("div", {}, [element("strong", { text: event.title, attributes: { translate: "no" } }), element("small", { text: "Toute la journée" })]),
+          element("div", {}, [element("strong", { text: event.title, attributes: { translate: "no" } }), element("small", { text: event.time || "Toute la journée", attributes: { translate: "no" } })]),
           element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": `Supprimer ${event.title}` }, dataset: { eventDelete: event.id } }, [icon("trash-2")])
         ]));
       });
@@ -180,11 +181,12 @@ export function mountCalendar(stage, options = {}) {
   function createEvent() {
     const title = agenda.querySelector("[data-event-field='title']");
     const date = agenda.querySelector("[data-event-field='date']");
+    const time = agenda.querySelector("[data-event-field='time']");
     if (!title?.value.trim() || !validateControl(title, { force: true, focus: true })) {
       notify({ id: "calendar-title-required", title: "Calendrier", message: "Ajoutez un titre à l'événement.", type: "warning" });
       return { ok: false, status: "failed", message: "Titre requis" };
     }
-    const created = repository.events.create({ title: title.value, date: date?.value || selectedDate });
+    const created = repository.events.create({ title: title.value, date: date?.value || selectedDate, time: time?.value || "" });
     if (!created.ok) return created;
     selectedDate = created.data.date;
     const parsed = new Date(`${selectedDate}T12:00:00`);

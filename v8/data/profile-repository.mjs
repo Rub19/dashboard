@@ -216,6 +216,7 @@ function eventView(event, index) {
     id: text(event?.id, `event-${index}`, 80),
     title: text(event?.title || event?.name, "Événement", 180),
     date: text(event?.date || event?.start, "", 16),
+    time: /^\d{2}:\d{2}$/.test(event?.time) ? event.time : "",
     color: text(event?.color, "accent", 32)
   });
 }
@@ -714,11 +715,20 @@ export function createProfileRepository(options = {}) {
           id: String(idFactory()),
           title: text(input.title, "Événement", 180),
           date: text(input.date, "", 16),
+          time: /^\d{2}:\d{2}$/.test(input.time) ? input.time : "",
           color: "accent"
         };
         if (!/^\d{4}-\d{2}-\d{2}$/.test(event.date)) throw new Error("Date invalide");
         list.push(event);
-        list.sort((left, right) => String(left?.date || "").localeCompare(String(right?.date || "")));
+        list.sort((left, right) => {
+          const dateOrder = String(left?.date || "").localeCompare(String(right?.date || ""));
+          if (dateOrder) return dateOrder;
+          const leftTime = left?.time || "";
+          const rightTime = right?.time || "";
+          if (!leftTime && rightTime) return -1;
+          if (leftTime && !rightTime) return 1;
+          return leftTime.localeCompare(rightTime);
+        });
         return eventView(event, 0);
       });
     },

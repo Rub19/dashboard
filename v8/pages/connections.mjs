@@ -159,8 +159,6 @@ function connectionCard(integration, connection, selectedId) {
     element("div", { className: "v8-connection-card__signal" }, [icon("activity"), element("span", { text: integration.liveSignal }), element("small", { text: summary.apiVersion })]),
     element("footer", { className: "v8-connection-card__actions" }, [
       connectionAction("v8.connections.configure", integration.id, connection?.status === "connected" ? "secondary" : "primary", [icon(connection?.setupComplete ? "settings-2" : "plug-zap"), element("span", { text: connection?.status === "connected" ? "Gerer" : connection?.setupComplete ? "Revoir" : "Configurer" })]),
-      connectionAction("v8.connections.method.open", integration.id, "secondary", [icon("waypoints")], { className: "v8-icon-button", ariaLabel: `Changer la methode ${integration.name}`, tooltip: "Changer de méthode" }),
-      connectionAction("v8.connections.test", integration.id, "secondary", [icon("stethoscope")], { className: "v8-icon-button", ariaLabel: `Tester ${integration.name}`, tooltip: "Diagnostic sécurisé" }),
       canDisconnect ? connectionAction("v8.connections.disconnect", integration.id, "danger", [icon("unplug")], { className: "v8-icon-button", ariaLabel: `Deconnecter ${integration.name}`, tooltip: "Déconnecter" }) : null
     ])
   ]);

@@ -138,3 +138,12 @@ test("Riot Games is excluded from the Activity page's generic connected-but-unkn
   assert.match(source, /const representedByOtherCards = new Set\(\["riot"\]\);/);
   assert.match(source, /connected\.filter\(\(connection\) => !Object\.hasOwn\(knownCards, connection\.id\) && !representedByOtherCards\.has\(connection\.id\)\)/);
 });
+
+test("each catalog card shows one primary action plus disconnect, instead of duplicating the 'change method' and 'diagnostic' shortcuts that are already one click away inside the inspector's Methodes and Diagnostic tabs", () => {
+  const source = fs.readFileSync(new URL("../v8/pages/connections.mjs", import.meta.url), "utf8");
+  const footer = source.slice(source.indexOf('element("footer", { className: "v8-connection-card__actions"'), source.indexOf('element("footer", { className: "v8-connection-card__actions"') + 400);
+  assert.match(footer, /connectionAction\("v8\.connections\.configure", integration\.id/);
+  assert.match(footer, /canDisconnect \? connectionAction\("v8\.connections\.disconnect", integration\.id/);
+  assert.doesNotMatch(footer, /v8\.connections\.method\.open/);
+  assert.doesNotMatch(footer, /v8\.connections\.test/);
+});

@@ -20,6 +20,54 @@ import { googleDriveLiveCard } from "../ui/google-drive-live.mjs";
 import { youtubeLiveCard } from "../ui/youtube-live.mjs";
 import { redditLiveCard } from "../ui/reddit-live.mjs";
 import { localeTag } from "../i18n/catalog.mjs";
+import { LIVE_CARD_IDS } from "../core/store.mjs";
+
+const HOME_LIVE_CARD_META = Object.freeze({
+  spotify: Object.freeze({ label: "Spotify", icon: "music-2" }),
+  discord: Object.freeze({ label: "Discord", icon: "messages-square" }),
+  weather: Object.freeze({ label: "Météo", icon: "cloud-sun" }),
+  minecraft: Object.freeze({ label: "Minecraft", icon: "box" }),
+  steam: Object.freeze({ label: "Steam", icon: "gamepad-2" }),
+  github: Object.freeze({ label: "GitHub", icon: "github" }),
+  "google-calendar": Object.freeze({ label: "Google Calendar", icon: "calendar-days" }),
+  notion: Object.freeze({ label: "Notion", icon: "notebook-tabs" }),
+  todoist: Object.freeze({ label: "Todoist", icon: "circle-check-big" }),
+  valorant: Object.freeze({ label: "Valorant", icon: "swords" }),
+  lol: Object.freeze({ label: "League of Legends", icon: "swords" }),
+  twitch: Object.freeze({ label: "Twitch", icon: "twitch" }),
+  lastfm: Object.freeze({ label: "Last.fm", icon: "history" }),
+  "tracker-gg": Object.freeze({ label: "Tracker.gg", icon: "chart-no-axes-combined" }),
+  "google-drive": Object.freeze({ label: "Google Drive", icon: "hard-drive" }),
+  youtube: Object.freeze({ label: "YouTube", icon: "youtube" }),
+  reddit: Object.freeze({ label: "Reddit", icon: "message-circle" })
+});
+const HOME_LIVE_CARD_IDS = Object.freeze(LIVE_CARD_IDS.filter((id) => id !== "system"));
+
+function homeMoveButton(id, direction, disabled, label) {
+  const button = actionButton({ actionId: "v8.home.live.move", className: "v8-icon-button", ariaLabel: label, disabled }, [icon(direction === "up" ? "chevron-up" : "chevron-down")]);
+  button.dataset.liveCard = id;
+  button.dataset.direction = direction;
+  return button;
+}
+
+function homeVisibilityButton(id, hidden) {
+  const meta = HOME_LIVE_CARD_META[id];
+  const button = actionButton({ actionId: "v8.home.live.toggle", className: "v8-icon-button", ariaLabel: hidden ? `Afficher ${meta.label}` : `Masquer ${meta.label}` }, [icon(hidden ? "eye-off" : "eye")]);
+  button.dataset.liveCard = id;
+  return button;
+}
+
+function homeCustomizeRow(id, index, total, hidden) {
+  const meta = HOME_LIVE_CARD_META[id];
+  return element("div", { className: `v8-home-live-customize-row${hidden ? " is-hidden" : ""}` }, [
+    element("span", { className: "v8-home-live-customize-row__label" }, [icon(meta.icon), element("span", { text: meta.label })]),
+    element("div", { className: "v8-home-live-customize-row__actions" }, [
+      homeMoveButton(id, "up", index === 0, `Monter ${meta.label}`),
+      homeMoveButton(id, "down", index === total - 1, `Descendre ${meta.label}`),
+      homeVisibilityButton(id, hidden)
+    ])
+  ]);
+}
 
 function formattedDate(isoDate) {
   const date = new Date(isoDate);
@@ -86,6 +134,9 @@ export function mountHome(stage, model, options = {}) {
   const youtubeLive = options.youtubeLive || null;
   const redditLive = options.redditLive || null;
   const presence = options.presence || null;
+  let liveLayout = options.homeLiveLayout || Object.freeze({ order: HOME_LIVE_CARD_IDS, hidden: Object.freeze([]) });
+  let customizeOpen = false;
+  const cardAvailability = new Map();
   const briefingEnabled = options.brainPreferences?.enabled !== false && options.brainPreferences?.briefing?.enabled !== false;
   const continuation = model.nextTasks[0]
     ? { type: "Tâche prioritaire", title: model.nextTasks[0].title, action: "v8.tasks.open", button: "Continuer", icon: "circle-check-big" }
@@ -225,10 +276,45 @@ export function mountHome(stage, model, options = {}) {
   const youtubeHost = element("section", { className: "v8-home-youtube-host", attributes: { "aria-label": "YouTube", hidden: true } });
   const redditHost = element("section", { className: "v8-home-reddit-host", attributes: { "aria-label": "Reddit", hidden: true } });
 
+  const HOST_BY_ID = Object.freeze({
+    spotify: spotifyHost, discord: discordHost, weather: weatherHost, minecraft: minecraftHost, steam: steamHost,
+    github: githubHost, "google-calendar": googleCalendarHost, notion: notionHost, todoist: todoistHost,
+    valorant: valorantHost, lol: lolHost, twitch: twitchHost, lastfm: lastfmHost, "tracker-gg": trackerHost,
+    "google-drive": googleDriveHost, youtube: youtubeHost, reddit: redditHost
+  });
+
+  function applyHostVisibility(id, host, hasContent) {
+    cardAvailability.set(id, hasContent);
+    host.hidden = !hasContent || liveLayout.hidden.includes(id);
+  }
+
+  function applyLiveOrder() {
+    liveLayout.order.forEach((id) => {
+      const host = HOST_BY_ID[id];
+      if (host) liveGrid.append(host);
+    });
+  }
+
+  function reapplyHiddenPreference() {
+    Object.entries(HOST_BY_ID).forEach(([id, host]) => {
+      host.hidden = !cardAvailability.get(id) || liveLayout.hidden.includes(id);
+    });
+    syncLiveGridVisibility();
+  }
+
+  function renderCustomizePanel() {
+    customizeHost.hidden = !customizeOpen;
+    customizeToggle.setAttribute("aria-expanded", String(customizeOpen));
+    if (!customizeOpen) return;
+    const orderedIds = liveLayout.order.filter((id) => HOST_BY_ID[id]);
+    customizeHost.replaceChildren(...orderedIds.map((id, index) => homeCustomizeRow(id, index, orderedIds.length, liveLayout.hidden.includes(id))));
+    refreshIcons();
+  }
+
   function renderSpotify(playback, animate = false) {
     const player = spotifyLiveCard(playback, { variant: "home" });
     spotifyHost.replaceChildren(...(player ? [player] : []));
-    spotifyHost.hidden = !player;
+    applyHostVisibility("spotify", spotifyHost, Boolean(player));
     if (player && animate) presence?.signalActivity?.(player, "system", { phase: "update" });
     scheduleIconRefresh();
     syncLiveGridVisibility();
@@ -237,7 +323,7 @@ export function mountHome(stage, model, options = {}) {
   function renderDiscord(presenceState, animate = false) {
     const card = discordLiveCard(presenceState, { variant: "home" });
     discordHost.replaceChildren(...(card ? [card] : []));
-    discordHost.hidden = !card;
+    applyHostVisibility("discord", discordHost, Boolean(card));
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
     syncLiveGridVisibility();
@@ -254,7 +340,7 @@ export function mountHome(stage, model, options = {}) {
   function renderWeather(weatherState, animate = false) {
     const card = weatherLiveCard(weatherState, { variant: "home", detailable: true });
     weatherHost.replaceChildren(...(card ? [card] : []));
-    weatherHost.hidden = !card;
+    applyHostVisibility("weather", weatherHost, Boolean(card));
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
     syncLiveGridVisibility();
@@ -263,7 +349,7 @@ export function mountHome(stage, model, options = {}) {
   function renderMinecraft(minecraftState, animate = false) {
     const card = minecraftLiveCard(minecraftState, { variant: "home" });
     minecraftHost.replaceChildren(...(card ? [card] : []));
-    minecraftHost.hidden = !card;
+    applyHostVisibility("minecraft", minecraftHost, Boolean(card));
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
     syncLiveGridVisibility();
@@ -272,7 +358,7 @@ export function mountHome(stage, model, options = {}) {
   function renderSteam(steamState, animate = false) {
     const card = steamLiveCard(steamState, { variant: "home" });
     steamHost.replaceChildren(...(card ? [card] : []));
-    steamHost.hidden = !card;
+    applyHostVisibility("steam", steamHost, Boolean(card));
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
     syncLiveGridVisibility();
@@ -281,7 +367,7 @@ export function mountHome(stage, model, options = {}) {
   function renderGithub(githubState, animate = false) {
     const card = githubLiveCard(githubState, { variant: "home" });
     githubHost.replaceChildren(...(card ? [card] : []));
-    githubHost.hidden = !card;
+    applyHostVisibility("github", githubHost, Boolean(card));
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
     syncLiveGridVisibility();
@@ -290,7 +376,7 @@ export function mountHome(stage, model, options = {}) {
   function renderGoogleCalendar(googleCalendarState, animate = false) {
     const card = googleCalendarLiveCard(googleCalendarState, { variant: "home" });
     googleCalendarHost.replaceChildren(...(card ? [card] : []));
-    googleCalendarHost.hidden = !card;
+    applyHostVisibility("google-calendar", googleCalendarHost, Boolean(card));
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
     syncLiveGridVisibility();
@@ -299,7 +385,7 @@ export function mountHome(stage, model, options = {}) {
   function renderNotion(notionState, animate = false) {
     const card = notionLiveCard(notionState, { variant: "home" });
     notionHost.replaceChildren(...(card ? [card] : []));
-    notionHost.hidden = !card;
+    applyHostVisibility("notion", notionHost, Boolean(card));
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
     syncLiveGridVisibility();
@@ -308,7 +394,7 @@ export function mountHome(stage, model, options = {}) {
   function renderTodoist(todoistState, animate = false) {
     const card = todoistLiveCard(todoistState, { variant: "home" });
     todoistHost.replaceChildren(...(card ? [card] : []));
-    todoistHost.hidden = !card;
+    applyHostVisibility("todoist", todoistHost, Boolean(card));
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
     syncLiveGridVisibility();
@@ -317,7 +403,7 @@ export function mountHome(stage, model, options = {}) {
   function renderValorant(valorantState, animate = false) {
     const card = valorantLiveCard(valorantState, { variant: "home" });
     valorantHost.replaceChildren(...(card ? [card] : []));
-    valorantHost.hidden = !card;
+    applyHostVisibility("valorant", valorantHost, Boolean(card));
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
     syncLiveGridVisibility();
@@ -326,7 +412,7 @@ export function mountHome(stage, model, options = {}) {
   function renderLol(lolState, animate = false) {
     const card = lolLiveCard(lolState, { variant: "home" });
     lolHost.replaceChildren(...(card ? [card] : []));
-    lolHost.hidden = !card;
+    applyHostVisibility("lol", lolHost, Boolean(card));
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
     syncLiveGridVisibility();
@@ -335,7 +421,7 @@ export function mountHome(stage, model, options = {}) {
   function renderTwitch(twitchState, animate = false) {
     const card = twitchLiveCard(twitchState, { variant: "home" });
     twitchHost.replaceChildren(...(card ? [card] : []));
-    twitchHost.hidden = !card;
+    applyHostVisibility("twitch", twitchHost, Boolean(card));
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
     syncLiveGridVisibility();
@@ -344,7 +430,7 @@ export function mountHome(stage, model, options = {}) {
   function renderLastfm(lastfmState, animate = false) {
     const card = lastfmLiveCard(lastfmState, { variant: "home" });
     lastfmHost.replaceChildren(...(card ? [card] : []));
-    lastfmHost.hidden = !card;
+    applyHostVisibility("lastfm", lastfmHost, Boolean(card));
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
     syncLiveGridVisibility();
@@ -353,7 +439,7 @@ export function mountHome(stage, model, options = {}) {
   function renderTracker(trackerState, animate = false) {
     const card = trackerLiveCard(trackerState, { variant: "home" });
     trackerHost.replaceChildren(...(card ? [card] : []));
-    trackerHost.hidden = !card;
+    applyHostVisibility("tracker-gg", trackerHost, Boolean(card));
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
     syncLiveGridVisibility();
@@ -362,7 +448,7 @@ export function mountHome(stage, model, options = {}) {
   function renderGoogleDrive(googleDriveState, animate = false) {
     const card = googleDriveLiveCard(googleDriveState, { variant: "home" });
     googleDriveHost.replaceChildren(...(card ? [card] : []));
-    googleDriveHost.hidden = !card;
+    applyHostVisibility("google-drive", googleDriveHost, Boolean(card));
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
     syncLiveGridVisibility();
@@ -371,7 +457,7 @@ export function mountHome(stage, model, options = {}) {
   function renderYoutube(youtubeState, animate = false) {
     const card = youtubeLiveCard(youtubeState, { variant: "home" });
     youtubeHost.replaceChildren(...(card ? [card] : []));
-    youtubeHost.hidden = !card;
+    applyHostVisibility("youtube", youtubeHost, Boolean(card));
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
     syncLiveGridVisibility();
@@ -380,7 +466,7 @@ export function mountHome(stage, model, options = {}) {
   function renderReddit(redditState, animate = false) {
     const card = redditLiveCard(redditState, { variant: "home" });
     redditHost.replaceChildren(...(card ? [card] : []));
-    redditHost.hidden = !card;
+    applyHostVisibility("reddit", redditHost, Boolean(card));
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
     syncLiveGridVisibility();
@@ -419,12 +505,22 @@ export function mountHome(stage, model, options = {}) {
     youtubeHost,
     redditHost
   ]);
+  const customizeHost = element("div", { className: "v8-home-live-customize", attributes: { hidden: true } });
+  const customizeToggle = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button", "aria-expanded": "false" } }, [icon("sliders-horizontal"), element("span", { text: "Personnaliser" })]);
+  const liveSection = element("section", { className: "v8-home-live-section" }, [
+    element("header", { className: "v8-home-live-heading" }, [
+      element("div", {}, [element("span", { className: "v8-eyebrow", text: "En direct" }), element("h2", { text: "Vos widgets" })]),
+      customizeToggle
+    ]),
+    customizeHost,
+    liveGrid
+  ]);
 
   const page = element("section", { className: `v8-page v8-home v8-home--${model.context.period}`, dataset: { page: "home" } }, [
     ambientField,
     heading,
     element("div", { className: "v8-home-primary" }, [continuity, daystream]),
-    liveGrid,
+    liveSection,
     briefingEnabled ? brainStrip : null,
     element("div", { className: "v8-home-secondary" }, [recent, signals])
   ]);
@@ -448,9 +544,16 @@ export function mountHome(stage, model, options = {}) {
   renderYoutube(youtubeLive?.state?.() || {});
   renderReddit(redditLive?.state?.() || {});
   function syncLiveGridVisibility() {
-    liveGrid.hidden = [...liveGrid.children].every((host) => host.hidden);
+    const allHidden = [...liveGrid.children].every((host) => host.hidden);
+    liveGrid.hidden = allHidden;
+    liveSection.hidden = allHidden;
   }
+  applyLiveOrder();
   syncLiveGridVisibility();
+  customizeToggle.addEventListener("click", () => {
+    customizeOpen = !customizeOpen;
+    renderCustomizePanel();
+  });
   const releaseSpotify = spotifyLive?.subscribe?.((playback) => renderSpotify(playback, true), { immediate: false }) || (() => {});
   const releaseDiscord = discordLive?.subscribe?.((presenceState) => renderDiscord(presenceState, true), { immediate: false }) || (() => {});
   const releaseWeather = weatherLive?.subscribe?.((weatherState) => renderWeather(weatherState, true), { immediate: false }) || (() => {});
@@ -469,6 +572,13 @@ export function mountHome(stage, model, options = {}) {
   const releaseYoutube = youtubeLive?.subscribe?.((youtubeState) => renderYoutube(youtubeState, true), { immediate: false }) || (() => {});
   const releaseReddit = redditLive?.subscribe?.((redditState) => renderReddit(redditState, true), { immediate: false }) || (() => {});
   const releaseSync = options.sync?.subscribe?.(renderSystemStatus) || (() => {});
+  const releaseLiveLayout = options.subscribeState?.((next) => {
+    if (next.homeLiveLayout === liveLayout) return;
+    liveLayout = next.homeLiveLayout || liveLayout;
+    applyLiveOrder();
+    reapplyHiddenPreference();
+    if (customizeOpen) renderCustomizePanel();
+  }) || (() => {});
   refreshIcons();
   return () => {
     releaseSpotify();
@@ -489,6 +599,7 @@ export function mountHome(stage, model, options = {}) {
     releaseYoutube();
     releaseReddit();
     releaseSync();
+    releaseLiveLayout();
     weatherDetail.destroy();
     page.remove();
   };

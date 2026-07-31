@@ -345,6 +345,25 @@ export function createActionFacade(options = {}) {
     setState({ activityLiveLayout: { ...current, order } });
     return completed("Ordre mis a jour", { order });
   });
+  register("v8.home.live.toggle", (context = {}) => {
+    const id = String(context.id || context.element?.dataset.liveCard || "");
+    const current = getState().homeLiveLayout;
+    const hidden = current.hidden.includes(id) ? current.hidden.filter((entry) => entry !== id) : [...current.hidden, id];
+    setState({ homeLiveLayout: { ...current, hidden } });
+    return completed(hidden.includes(id) ? "Carte masquee" : "Carte affichee", { id, hidden: hidden.includes(id) });
+  });
+  register("v8.home.live.move", (context = {}) => {
+    const id = String(context.id || context.element?.dataset.liveCard || "");
+    const direction = (context.direction || context.element?.dataset.direction) === "up" ? -1 : 1;
+    const current = getState().homeLiveLayout;
+    const order = [...current.order];
+    const index = order.indexOf(id);
+    const target = index + direction;
+    if (index < 0 || target < 0 || target >= order.length) return unavailable("Deplacement impossible.");
+    [order[index], order[target]] = [order[target], order[index]];
+    setState({ homeLiveLayout: { ...current, order } });
+    return completed("Ordre mis a jour", { order });
+  });
 
   register("v8.sound.toggle", () => {
     if (!sounds?.setPreferences) return unavailable("Les sons ne sont pas disponibles dans ce contexte.");

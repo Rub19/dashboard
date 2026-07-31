@@ -6,6 +6,7 @@
 .v8-now-section { margin-bottom: var(--v8-layout-major-gap); }
 .v8-now-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: var(--v8-layout-cluster-gap); }
 .v8-now-customize { display: grid; gap: 2px; margin-bottom: var(--v8-space-3); padding: 6px; border: 1px solid var(--v8-border); border-radius: var(--v8-radius-md); background: var(--v8-surface-sunken); }
+.v8-now-customize[hidden] { display: none; }
 .v8-now-customize-row { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: var(--v8-space-3); padding: 6px 8px; border-radius: var(--v8-radius-sm); }
 .v8-now-customize-row.is-hidden { opacity: .5; }
 .v8-now-customize-row__label { display: flex; min-width: 0; align-items: center; gap: 8px; overflow: hidden; }

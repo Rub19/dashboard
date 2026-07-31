@@ -38,6 +38,7 @@ const DEFAULT_STATE = Object.freeze({
   ambientEffectsEnabled: true,
   interfaceBlurEnabled: true,
   activityLiveLayout: sanitizeActivityLiveLayout(null),
+  homeLiveLayout: sanitizeActivityLiveLayout(null),
   syncStatus: "loading",
   networkStatus: "online",
   saveStatus: "idle",
@@ -97,6 +98,7 @@ function normalizeState(input = {}) {
     ambientEffectsEnabled: input.ambientEffectsEnabled !== false,
     interfaceBlurEnabled: input.interfaceBlurEnabled !== false,
     activityLiveLayout: sanitizeActivityLiveLayout(input.activityLiveLayout),
+    homeLiveLayout: sanitizeActivityLiveLayout(input.homeLiveLayout),
     syncStatus: SYNC_STATES.has(input.syncStatus) ? input.syncStatus : DEFAULT_STATE.syncStatus,
     networkStatus: NETWORK_STATES.has(input.networkStatus) ? input.networkStatus : DEFAULT_STATE.networkStatus,
     saveStatus: SAVE_STATES.has(input.saveStatus) ? input.saveStatus : DEFAULT_STATE.saveStatus,
@@ -145,6 +147,7 @@ function persistedSnapshot(state) {
     ambientEffectsEnabled: state.ambientEffectsEnabled,
     interfaceBlurEnabled: state.interfaceBlurEnabled,
     activityLiveLayout: state.activityLiveLayout,
+    homeLiveLayout: state.homeLiveLayout,
     railExpanded: state.railExpanded
   };
 }

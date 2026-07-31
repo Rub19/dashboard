@@ -2,7 +2,7 @@ export const CLOUD_STATE_TABLE = "ethone_user_state";
 export const CLOUD_CACHE_PREFIX = "ethone:v8:cloud-cache:";
 export const CLOUD_QUEUE_PREFIX = "ethone:v8:cloud-queue:";
 
-const PREFERENCE_KEYS = Object.freeze(["route", "theme", "density", "densitySettings", "brainPreferences", "accent", "space", "flow", "spotlightEnabled", "ambientEffectsEnabled", "interfaceBlurEnabled", "activityLiveLayout", "railExpanded", "locale", "sound", "dock"]);
+const PREFERENCE_KEYS = Object.freeze(["route", "theme", "density", "densitySettings", "brainPreferences", "accent", "space", "flow", "spotlightEnabled", "ambientEffectsEnabled", "interfaceBlurEnabled", "activityLiveLayout", "homeLiveLayout", "railExpanded", "locale", "sound", "dock"]);
 const MAX_PAYLOAD_BYTES = 4_500_000;
 
 function result(ok, status, message, data = null) {

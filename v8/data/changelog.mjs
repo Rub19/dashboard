@@ -24,6 +24,10 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v178", "2026-08-01", "Personnalisez vos widgets Live Now sur l'accueil", [
+    { kind: "feature", text: "Bouton \"Personnaliser\" au-dessus des cartes Live Now de l'accueil : réordonnez chaque widget (Spotify, Discord, Minecraft...) ou masquez ceux qui ne vous intéressent pas, comme sur la page Activity." },
+    { kind: "improvement", text: "Vos préférences d'ordre et de visibilité sont sauvegardées et synchronisées avec votre compte, comme le reste de vos réglages." }
+  ]),
   entry("v177", "2026-08-01", "Minecraft réparé et centaines d'accents manquants corrigés", [
     { kind: "fix", text: "Minecraft ne s'affichait plus jamais dans Live Now : Mojang a fermé en 2023 l'API que le Worker utilisait pour retrouver un pseudo. Bascule vers un miroir maintenu qui répond exactement au même format." },
     { kind: "fix", text: "Riot Games (Valorant / League of Legends) affichait un message vague \"backend sécurisé requis\" même quand la connexion échouait pour une autre raison ; le message nomme désormais précisément ce qui manque (ex : votre clé API Tracker.gg)." },

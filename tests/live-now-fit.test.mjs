@@ -30,3 +30,12 @@ test("Spotify and Weather cards shed their widest secondary content before their
   const weatherQueryIndex = shell.indexOf("@container (max-width:400px) { .v8-weather-forecast { display:none; } }");
   assert.ok(weatherBaseIndex > -1 && weatherQueryIndex > weatherBaseIndex, "the weather container query must come after the base rule it overrides, or source order loses the cascade");
 });
+
+test("the freshness timestamp anchors to the outer Live Now card, not its inner body wrapper, so it lands in the true corner even when a grid row stretches a shorter card taller", () => {
+  const shell = read("v8/styles/shell.css");
+  assert.doesNotMatch(shell, /\[class\$="-live__body"\] \{[^}]*position:relative/, "the shared *-live__body rule must not declare its own positioning context, or absolutely-positioned freshness labels anchor to the short inner body instead of the (possibly grid-stretched) outer card");
+  // Every *-live card wrapper that hosts a freshness label must itself stay position:relative, since that's now the only containing block in play.
+  for (const card of ["v8-discord-live", "v8-weather-live", "v8-steam-live", "v8-lol-live", "v8-valorant-live", "v8-minecraft-live", "v8-github-live"]) {
+    assert.match(shell, new RegExp(`\\.${card} \\{ position:relative`), `.${card} must declare position:relative as the freshness label's containing block`);
+  }
+});

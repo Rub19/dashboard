@@ -813,7 +813,7 @@ export function mountConnections(stage, options = {}) {
       return unavailable(reference.message);
     }
     const backendRequired = method?.availability === "backend";
-    const autoVerify = method?.availability === "public";
+    const autoVerify = method?.availability === "public" || (backendRequired && Boolean(method?.field));
     const result = repository.connections.configure(id, {
       methodId: method?.id,
       reference: reference.value,
@@ -839,8 +839,8 @@ export function mountConnections(stage, options = {}) {
           connected = true;
         }
       }
-      journal?.record?.({ source: id, category: integration?.category || "system", icon: integration?.icon || "plug", title: `${integration?.name || "Integration"} ${connected ? "connectee" : "preparee"}`, description: connected ? "Connexion verifiee et activee automatiquement." : backendRequired ? "Le backend securise reste requis avant toute synchronisation." : `Methode ${method?.label || "locale"} preparee.`, timestamp: new Date().toISOString(), tone: "success" });
-      notify({ id: `connection-ready-${id}`, title: integration?.name || "Connection", message: connected ? "Connexion verifiee et activee." : backendRequired ? "Preparation validee. Backend securise requis pour connecter le compte." : autoVerify ? "Preparation enregistree, mais la verification a echoue. Relancez le diagnostic." : "Preparation locale validee.", type: connected ? "success" : autoVerify ? "warning" : "success" });
+      journal?.record?.({ source: id, category: integration?.category || "system", icon: integration?.icon || "plug", title: `${integration?.name || "Integration"} ${connected ? "connectee" : "preparee"}`, description: connected ? "Connexion verifiee et activee automatiquement." : autoVerify ? "La verification automatique a echoue. Relancez le diagnostic depuis l'onglet Diagnostics." : backendRequired ? "Le backend securise reste requis avant toute synchronisation." : `Methode ${method?.label || "locale"} preparee.`, timestamp: new Date().toISOString(), tone: connected || !autoVerify ? "success" : "warning" });
+      notify({ id: `connection-ready-${id}`, title: integration?.name || "Connection", message: connected ? "Connexion verifiee et activee." : autoVerify ? "Preparation enregistree, mais la verification a echoue. Relancez le diagnostic." : backendRequired ? "Preparation validee. Backend securise requis pour connecter le compte." : "Preparation locale validee.", type: connected ? "success" : autoVerify ? "warning" : "success" });
       inspectorTab = "overview";
       renderAll();
     }

@@ -102,12 +102,27 @@ test("Connections Hub remains lazy and does not add background loops", () => {
   assert.match(source, /Frontend sans donnee sensible/);
 });
 
-test("public-availability connections (Weather, Minecraft, ...) auto-verify and connect on save instead of requiring a separate manual diagnostic", () => {
+test("public-availability connections (Weather, Minecraft, ...) and simple field-driven backend connections (Riot Games via Tracker.gg, ...) auto-verify and connect on save instead of requiring a separate manual diagnostic", () => {
   const source = fs.readFileSync(new URL("../v8/pages/connections.mjs", import.meta.url), "utf8");
   const setupComplete = source.slice(source.indexOf('actions.scope("v8.connections.setup.complete"'), source.indexOf('actions.scope("v8.connections.spotify.connect"'));
-  assert.match(setupComplete, /const autoVerify = method\?\.availability === "public";/);
+  assert.match(setupComplete, /const autoVerify = method\?\.availability === "public" \|\| \(backendRequired && Boolean\(method\?\.field\)\);/);
   assert.match(setupComplete, /if \(autoVerify\) \{/);
   assert.match(setupComplete, /const report = await runDiagnostic\(id\);/);
   assert.match(setupComplete, /if \(report\?\.workerAvailable\) \{/);
   assert.match(setupComplete, /repository\.connections\.updateStatus\(id, "connected"/);
+  // A backend method reached only via a dedicated OAuth redirect action (no `field`) must never auto-verify here.
+  assert.doesNotMatch(setupComplete, /const autoVerify = method\?\.availability === "backend";/);
+});
+
+test("a failed auto-verify surfaces a clear 'verification failed' message instead of the generic 'backend required' copy, for both the toast and the journal entry", () => {
+  const source = fs.readFileSync(new URL("../v8/pages/connections.mjs", import.meta.url), "utf8");
+  const setupComplete = source.slice(source.indexOf('actions.scope("v8.connections.setup.complete"'), source.indexOf('actions.scope("v8.connections.spotify.connect"'));
+  assert.match(setupComplete, /description: connected \? "Connexion verifiee et activee automatiquement\." : autoVerify \? "La verification automatique a echoue\./);
+  assert.match(setupComplete, /message: connected \? "Connexion verifiee et activee\." : autoVerify \? "Preparation enregistree, mais la verification a echoue\. Relancez le diagnostic\."/);
+});
+
+test("Riot Games is excluded from the Activity page's generic connected-but-unknown fallback tile, since Valorant and League of Legends already render their own dedicated Live Now cards", () => {
+  const source = fs.readFileSync(new URL("../v8/pages/activity.mjs", import.meta.url), "utf8");
+  assert.match(source, /const representedByOtherCards = new Set\(\["riot"\]\);/);
+  assert.match(source, /connected\.filter\(\(connection\) => !Object\.hasOwn\(knownCards, connection\.id\) && !representedByOtherCards\.has\(connection\.id\)\)/);
 });

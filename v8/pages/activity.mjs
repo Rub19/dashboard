@@ -380,7 +380,8 @@ export function mountActivity(stage, options = {}) {
       const card = knownCards[id];
       if (card) liveGrid.append(card);
     });
-    connected.filter((connection) => !Object.hasOwn(knownCards, connection.id)).slice(0, 3).forEach((connection) => {
+    const representedByOtherCards = new Set(["riot"]);
+    connected.filter((connection) => !Object.hasOwn(knownCards, connection.id) && !representedByOtherCards.has(connection.id)).slice(0, 3).forEach((connection) => {
       const integration = integrationById(connection.id);
       if (!integration) return;
       liveGrid.append(liveCard(integration, connection, events.find((event) => event.source === integration.id)));

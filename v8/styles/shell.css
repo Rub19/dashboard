@@ -2386,7 +2386,7 @@ html[data-v8-interactions] .v8-panel-notice:hover > .v8-selection-control,.v8-pa
 .v8-home-spotify-host,.v8-home-discord-host,.v8-home-weather-host,.v8-home-minecraft-host,.v8-home-steam-host { margin-top:var(--v8-space-6); }
 [class$="-live__body"] { grid-template-columns:minmax(0,1fr); position:relative;padding-bottom:22px; }
 [class$="-live__body"] > strong,[class$="-live__body"] > p { min-width:0; }
-.v8-spotify-live { position:relative;isolation:isolate;display:grid;min-width:0;grid-template-columns:72px minmax(0,1fr) auto;align-items:center;gap:var(--v8-space-4);overflow:hidden;padding:var(--v8-space-4);border-color:color-mix(in srgb,var(--v8-success) 26%,var(--v8-border));background:var(--v8-reflection-card),color-mix(in srgb,var(--v8-success) 4%,var(--v8-surface-1));box-shadow:var(--v8-shadow-card-lit); }
+.v8-spotify-live { position:relative;isolation:isolate;display:grid;min-width:0;container-type:inline-size;grid-template-columns:72px minmax(0,1fr) auto;align-items:center;gap:var(--v8-space-4);overflow:hidden;padding:var(--v8-space-4);border-color:color-mix(in srgb,var(--v8-success) 26%,var(--v8-border));background:var(--v8-reflection-card),color-mix(in srgb,var(--v8-success) 4%,var(--v8-surface-1));box-shadow:var(--v8-shadow-card-lit); }
 .v8-spotify-live > :not(.v8-spotify-live__aura) { position:relative;z-index:1; }
 .v8-spotify-live__aura { position:absolute;z-index:0;inset:-45% -10%;background:radial-gradient(ellipse at 25% 50%,color-mix(in srgb,var(--v8-success) 15%,transparent),transparent 48%);opacity:.18;pointer-events:none; }
 .v8-spotify-artwork { display:grid;width:72px;height:72px;overflow:hidden;place-items:center;border:1px solid var(--v8-border-highlight);border-radius:var(--v8-radius-md);background:var(--v8-surface-2);box-shadow:var(--v8-shadow-height-2); }
@@ -2400,6 +2400,7 @@ html[data-v8-interactions] .v8-panel-notice:hover > .v8-selection-control,.v8-pa
 .v8-spotify-controls { display:flex;align-items:center;gap:2px; }
 .v8-spotify-control--secondary { width:26px;height:26px;color:var(--v8-muted); }.v8-spotify-control--secondary svg { width:14px;height:14px; }
 html[data-v8-interactions] .v8-spotify-control--secondary:hover { color:var(--v8-success); }
+@container (max-width:360px) { .v8-spotify-control--secondary { display:none; } }
 .v8-spotify-live--activity { min-height:190px;grid-template-columns:58px minmax(0,1fr) auto; }.v8-spotify-live--activity .v8-spotify-artwork { width:58px;height:58px; }
 .v8-dock-media-slot { display:flex;align-items:flex-end; }.v8-dock-media-slot[hidden] { display:none; }.v8-spotify-dock { position:relative;display:grid;width:46px;height:54px;min-height:0;flex:0 0 46px;padding:0;border:0;background:transparent;place-items:center;color:var(--v8-success); }.v8-spotify-dock:is(button) { cursor:pointer; }.v8-spotify-dock__artwork { display:grid;width:36px;height:36px;overflow:hidden;place-items:center;border:1px solid color-mix(in srgb,var(--v8-success) 38%,var(--v8-border));border-radius:var(--v8-radius-md);background:var(--v8-surface-2);box-shadow:var(--v8-shadow-height-1); }.v8-spotify-dock__artwork svg { width:18px;height:18px; }.v8-spotify-dock > .v8-spotify-equalizer { position:absolute;right:2px;bottom:3px;height:11px;padding:2px;border-radius:var(--v8-radius-xs);background:var(--v8-surface-sunken);box-shadow:0 0 0 1px var(--v8-border); }.v8-spotify-dock:focus-visible { box-shadow:var(--v8-shadow-focus);transform:translate3d(0,-3px,0); }
 
@@ -2420,13 +2421,14 @@ html[data-v8-interactions] .v8-spotify-control--secondary:hover { color:var(--v8
 .v8-discord-live--activity { min-height:120px; }
 @media (max-width:540px) { .v8-discord-live { grid-template-columns:46px minmax(0,1fr);gap:var(--v8-space-3);padding:var(--v8-space-3); }.v8-discord-avatar { width:46px;height:46px; }.v8-discord-status-dot { left:48px; } }
 
-.v8-weather-live { position:relative;display:grid;min-width:0;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:var(--v8-space-4);padding:var(--v8-space-4);border-color:color-mix(in srgb,#5aa9e6 26%,var(--v8-border));background:var(--v8-reflection-card),color-mix(in srgb,#5aa9e6 4%,var(--v8-surface-1));box-shadow:var(--v8-shadow-card-lit); }
+.v8-weather-live { position:relative;display:grid;min-width:0;container-type:inline-size;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:var(--v8-space-4);padding:var(--v8-space-4);border-color:color-mix(in srgb,#5aa9e6 26%,var(--v8-border));background:var(--v8-reflection-card),color-mix(in srgb,#5aa9e6 4%,var(--v8-surface-1));box-shadow:var(--v8-shadow-card-lit); }
 .v8-weather-icon { display:grid;width:44px;height:44px;place-items:center;color:#5aa9e6; }
 .v8-weather-icon svg { width:30px;height:30px; }
 .v8-weather-live__body { display:grid;min-width:0;gap:3px; }.v8-weather-live__body > strong { color:var(--v8-text);font-size:var(--v8-font-lg); }.v8-weather-live__body > p { overflow:hidden;color:var(--v8-text-secondary);font-size:var(--v8-font-xs);text-overflow:ellipsis;white-space:nowrap; }
 .v8-weather-live__meta { display:flex;min-width:0;align-items:center;gap:6px;color:#5aa9e6; }.v8-weather-live__meta svg { flex:0 0 auto;width:14px;height:14px; }.v8-weather-live__meta small { overflow:hidden;font-size:var(--v8-font-micro);font-weight:var(--v8-weight-semibold);text-overflow:ellipsis;text-transform:uppercase;white-space:nowrap; }
 .v8-weather-forecast { display:flex;gap:10px; }.v8-weather-forecast span { display:grid;justify-items:center;gap:2px; }.v8-weather-forecast small { color:var(--v8-muted);font-size:var(--v8-font-micro); }.v8-weather-forecast b { font-size:var(--v8-font-xs); }
 @media (max-width:620px) { .v8-weather-live { grid-template-columns:44px minmax(0,1fr);gap:var(--v8-space-3); }.v8-weather-forecast { display:none; } }
+@container (max-width:400px) { .v8-weather-forecast { display:none; } }
 button.v8-weather-live { width:100%;font:inherit;text-align:left;cursor:pointer; }
 html[data-v8-interactions] button.v8-weather-live:hover { border-color:color-mix(in srgb,#5aa9e6 42%,var(--v8-border)); }
 

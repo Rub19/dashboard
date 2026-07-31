@@ -263,6 +263,13 @@ export function mountActivity(stage, options = {}) {
 
   const filterBar = element("div", { className: "v8-activity-filters", attributes: { role: "toolbar", "aria-label": "Filtrer l'activite" } });
   const liveGrid = element("div", { className: "v8-now-grid" });
+  const weatherDetail = createWeatherDetail();
+  liveGrid.addEventListener("click", (event) => {
+    const trigger = event.target.closest("[data-weather-detail-trigger]");
+    if (!trigger) return;
+    if (weatherDetail.isOpen()) { weatherDetail.close({ restoreFocus: true }); return; }
+    weatherDetail.open(trigger, weatherLive?.state?.() || {});
+  }, { signal: controller.signal });
   const customizeHost = element("div", { className: "v8-now-customize", attributes: { hidden: true } });
   const customizeToggle = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button", "aria-expanded": "false" } }, [icon("sliders-horizontal"), element("span", { text: "Personnaliser" })]);
   const timeline = element("div", { className: "v8-live-timeline", attributes: { role: "feed", "aria-label": "Flux d'activite" } });
@@ -566,6 +573,7 @@ export function mountActivity(stage, options = {}) {
 
   return () => {
     controller.abort();
+    weatherDetail.destroy();
     if (refreshTimer) globalThis.clearTimeout(refreshTimer);
     refreshTimer = 0;
     releaseRefresh();

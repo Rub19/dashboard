@@ -231,6 +231,7 @@ export function mountHome(stage, model, options = {}) {
     spotifyHost.hidden = !player;
     if (player && animate) presence?.signalActivity?.(player, "system", { phase: "update" });
     scheduleIconRefresh();
+    syncLiveGridVisibility();
   }
 
   function renderDiscord(presenceState, animate = false) {
@@ -239,6 +240,7 @@ export function mountHome(stage, model, options = {}) {
     discordHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
+    syncLiveGridVisibility();
   }
 
   const weatherDetail = createWeatherDetail();
@@ -255,6 +257,7 @@ export function mountHome(stage, model, options = {}) {
     weatherHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
+    syncLiveGridVisibility();
   }
 
   function renderMinecraft(minecraftState, animate = false) {
@@ -263,6 +266,7 @@ export function mountHome(stage, model, options = {}) {
     minecraftHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
+    syncLiveGridVisibility();
   }
 
   function renderSteam(steamState, animate = false) {
@@ -271,6 +275,7 @@ export function mountHome(stage, model, options = {}) {
     steamHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
+    syncLiveGridVisibility();
   }
 
   function renderGithub(githubState, animate = false) {
@@ -279,6 +284,7 @@ export function mountHome(stage, model, options = {}) {
     githubHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
+    syncLiveGridVisibility();
   }
 
   function renderGoogleCalendar(googleCalendarState, animate = false) {
@@ -287,6 +293,7 @@ export function mountHome(stage, model, options = {}) {
     googleCalendarHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
+    syncLiveGridVisibility();
   }
 
   function renderNotion(notionState, animate = false) {
@@ -295,6 +302,7 @@ export function mountHome(stage, model, options = {}) {
     notionHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
+    syncLiveGridVisibility();
   }
 
   function renderTodoist(todoistState, animate = false) {
@@ -303,6 +311,7 @@ export function mountHome(stage, model, options = {}) {
     todoistHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
+    syncLiveGridVisibility();
   }
 
   function renderValorant(valorantState, animate = false) {
@@ -311,6 +320,7 @@ export function mountHome(stage, model, options = {}) {
     valorantHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
+    syncLiveGridVisibility();
   }
 
   function renderLol(lolState, animate = false) {
@@ -319,6 +329,7 @@ export function mountHome(stage, model, options = {}) {
     lolHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
+    syncLiveGridVisibility();
   }
 
   function renderTwitch(twitchState, animate = false) {
@@ -327,6 +338,7 @@ export function mountHome(stage, model, options = {}) {
     twitchHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
+    syncLiveGridVisibility();
   }
 
   function renderLastfm(lastfmState, animate = false) {
@@ -335,6 +347,7 @@ export function mountHome(stage, model, options = {}) {
     lastfmHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
+    syncLiveGridVisibility();
   }
 
   function renderTracker(trackerState, animate = false) {
@@ -343,6 +356,7 @@ export function mountHome(stage, model, options = {}) {
     trackerHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
+    syncLiveGridVisibility();
   }
 
   function renderGoogleDrive(googleDriveState, animate = false) {
@@ -351,6 +365,7 @@ export function mountHome(stage, model, options = {}) {
     googleDriveHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
+    syncLiveGridVisibility();
   }
 
   function renderYoutube(youtubeState, animate = false) {
@@ -359,6 +374,7 @@ export function mountHome(stage, model, options = {}) {
     youtubeHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
+    syncLiveGridVisibility();
   }
 
   function renderReddit(redditState, animate = false) {
@@ -367,6 +383,7 @@ export function mountHome(stage, model, options = {}) {
     redditHost.hidden = !card;
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
     scheduleIconRefresh();
+    syncLiveGridVisibility();
   }
 
   function renderSystemStatus(status = options.sync?.status?.() || options) {
@@ -383,10 +400,7 @@ export function mountHome(stage, model, options = {}) {
     element("span", { className: "v8-home-ambient__light" })
   ]);
 
-  const page = element("section", { className: `v8-page v8-home v8-home--${model.context.period}`, dataset: { page: "home" } }, [
-    ambientField,
-    heading,
-    element("div", { className: "v8-home-primary" }, [continuity, daystream]),
+  const liveGrid = element("div", { className: "v8-home-live-grid" }, [
     spotifyHost,
     discordHost,
     weatherHost,
@@ -403,7 +417,14 @@ export function mountHome(stage, model, options = {}) {
     trackerHost,
     googleDriveHost,
     youtubeHost,
-    redditHost,
+    redditHost
+  ]);
+
+  const page = element("section", { className: `v8-page v8-home v8-home--${model.context.period}`, dataset: { page: "home" } }, [
+    ambientField,
+    heading,
+    element("div", { className: "v8-home-primary" }, [continuity, daystream]),
+    liveGrid,
     briefingEnabled ? brainStrip : null,
     element("div", { className: "v8-home-secondary" }, [recent, signals])
   ]);
@@ -426,6 +447,10 @@ export function mountHome(stage, model, options = {}) {
   renderGoogleDrive(googleDriveLive?.state?.() || {});
   renderYoutube(youtubeLive?.state?.() || {});
   renderReddit(redditLive?.state?.() || {});
+  function syncLiveGridVisibility() {
+    liveGrid.hidden = [...liveGrid.children].every((host) => host.hidden);
+  }
+  syncLiveGridVisibility();
   const releaseSpotify = spotifyLive?.subscribe?.((playback) => renderSpotify(playback, true), { immediate: false }) || (() => {});
   const releaseDiscord = discordLive?.subscribe?.((presenceState) => renderDiscord(presenceState, true), { immediate: false }) || (() => {});
   const releaseWeather = weatherLive?.subscribe?.((weatherState) => renderWeather(weatherState, true), { immediate: false }) || (() => {});

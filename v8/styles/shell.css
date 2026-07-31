@@ -2383,7 +2383,8 @@ html[data-v8-interactions] .v8-panel-notice:hover > .v8-selection-control,.v8-pa
 .v8-continuity::after,.v8-home-brain::after,.v8-brain-context::after { --v8-breathe-opacity-min:.12;--v8-breathe-opacity-max:.22;position:absolute;z-index:0;inset:-14%;background:radial-gradient(ellipse at 76% 18%,color-mix(in srgb,var(--v8-breathe-color) 15%,transparent),transparent 43%),linear-gradient(125deg,transparent 30%,color-mix(in srgb,var(--v8-breathe-color) 3%,transparent) 50%,transparent 70%);content:"";pointer-events:none;animation:none;will-change:auto; }
 .v8-continuity > :not([aria-hidden="true"]),.v8-home-brain > :not([aria-hidden="true"]),.v8-brain-context > :not([aria-hidden="true"]) { position:relative;z-index:1; }
 
-.v8-home-spotify-host,.v8-home-discord-host,.v8-home-weather-host,.v8-home-minecraft-host,.v8-home-steam-host { margin-top:var(--v8-space-6); }
+.v8-home-live-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--v8-layout-cluster-gap); margin-top: var(--v8-space-6); }
+.v8-home-live-grid[hidden] { display: none; }
 [class$="-live__body"] { grid-template-columns:minmax(0,1fr); padding-bottom:22px; }
 [class$="-live__body"] > strong,[class$="-live__body"] > p { min-width:0; }
 .v8-spotify-live { position:relative;isolation:isolate;display:grid;min-width:0;container-type:inline-size;grid-template-columns:72px minmax(0,1fr) auto;align-items:center;gap:var(--v8-space-4);overflow:hidden;padding:var(--v8-space-4);border-color:color-mix(in srgb,var(--v8-success) 26%,var(--v8-border));background:var(--v8-reflection-card),color-mix(in srgb,var(--v8-success) 4%,var(--v8-surface-1));box-shadow:var(--v8-shadow-card-lit); }

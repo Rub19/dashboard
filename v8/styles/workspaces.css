@@ -584,6 +584,21 @@
   padding: var(--v8-space-4) clamp(16px, 3vw, 40px) var(--v8-space-6);
 }
 
+.v8-task-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 32px;
+  padding: 0 var(--v8-space-2);
+  margin-top: var(--v8-space-3);
+  color: var(--v8-muted);
+  font-size: var(--v8-font-micro);
+  font-weight: var(--v8-weight-semibold);
+  text-transform: uppercase;
+}
+
+.v8-task-group-header:first-child { margin-top: 0; }
+
 .v8-task-row {
   display: grid;
   min-width: 0;

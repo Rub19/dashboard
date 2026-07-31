@@ -32,6 +32,27 @@ export function sortTasks(tasks = [], order = "priority") {
   });
 }
 
+export const TASK_GROUPS = Object.freeze([
+  { id: "overdue", label: "En retard" },
+  { id: "today", label: "Aujourd'hui" },
+  { id: "upcoming", label: "À venir" },
+  { id: "noDue", label: "Sans échéance" },
+  { id: "done", label: "Terminées" }
+]);
+
+export function groupTasks(tasks = []) {
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const groups = { overdue: [], today: [], upcoming: [], noDue: [], done: [] };
+  tasks.forEach((task) => {
+    if (task.done) { groups.done.push(task); return; }
+    if (!task.due) { groups.noDue.push(task); return; }
+    if (task.due < todayKey) { groups.overdue.push(task); return; }
+    if (task.due === todayKey) { groups.today.push(task); return; }
+    groups.upcoming.push(task);
+  });
+  return groups;
+}
+
 export function taskStats(tasks = []) {
   const total = tasks.length;
   const completed = tasks.filter((task) => task.done).length;

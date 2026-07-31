@@ -152,6 +152,12 @@ const ENTRIES = {
     "es": "Pendiente",
     "de": "Offen"
   },
+  "À venir": {
+    "fr": "À venir",
+    "en": "Upcoming",
+    "es": "Próximamente",
+    "de": "Anstehend"
+  },
   "Accéder aux modules en migration": {
     "fr": "Accéder aux modules en migration",
     "en": "Access modules in migration",
@@ -680,6 +686,12 @@ const ENTRIES = {
     "en": "Online",
     "es": "En línea",
     "de": "Online"
+  },
+  "En retard": {
+    "fr": "En retard",
+    "en": "Overdue",
+    "es": "Atrasado",
+    "de": "Überfällig"
   },
   "Enregistrer": {
     "fr": "Enregistrer",
@@ -1462,6 +1474,12 @@ const ENTRIES = {
     "en": "Sam",
     "es": "Sam",
     "de": "Sam"
+  },
+  "Sans échéance": {
+    "fr": "Sans échéance",
+    "en": "No due date",
+    "es": "Sin fecha límite",
+    "de": "Kein Fälligkeitsdatum"
   },
   "Se déconnecter": {
     "fr": "Se déconnecter",

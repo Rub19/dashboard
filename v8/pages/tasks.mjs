@@ -10,7 +10,7 @@ import {
 import { emptyState } from "../ui/empty-state.mjs";
 import { formField, runFormSubmission, validateControl } from "../ui/form-system.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
-import { filterTasks, sortTasks, taskStats } from "./tasks-model.mjs";
+import { filterTasks, groupTasks, sortTasks, taskStats, TASK_GROUPS } from "./tasks-model.mjs";
 import { createSelect } from "../ui/select.mjs";
 import { localeTag } from "../i18n/catalog.mjs";
 
@@ -203,41 +203,52 @@ export function mountTasks(stage, options = {}) {
       return;
     }
 
-    filtered.forEach((task) => {
-      const overdue = Boolean(task.due && !task.done && task.due < new Date().toISOString().slice(0, 10));
-      const selected = selection.has(task.id);
-      const select = selectionControl({ id: task.id, checked: selected, label: `Sélectionner ${task.title}` });
-      const toggle = element("button", {
-        className: `v8-task-check${task.done ? " is-complete" : ""}`,
-        attributes: { type: "button", "aria-label": task.done ? `Rouvrir ${task.title}` : `Terminer ${task.title}`, "aria-pressed": task.done ? "true" : "false" },
-        dataset: { taskToggle: task.id }
-      }, [icon(task.done ? "check" : "circle")]);
-      const remove = element("button", {
-        className: "v8-icon-button v8-task-delete",
-        attributes: { type: "button", "aria-label": `Supprimer ${task.title}` },
-        dataset: { taskDelete: task.id }
-      }, [icon("trash-2")]);
-      const menu = element("button", {
-        className: "v8-icon-button v8-task-menu",
-        attributes: { type: "button", "aria-label": `Actions pour ${task.title}`, "aria-haspopup": "menu", "aria-expanded": "false" },
-        dataset: { taskMenu: task.id }
-      }, [icon("more-horizontal")]);
-      const meta = [];
-      if (task.priority === "high") meta.push(element("span", { className: "v8-task-priority v8-task-priority--high" }, [icon("flame"), "Haute"]));
-      if (task.tag) meta.push(element("span", { className: "v8-task-tag", text: task.tag, attributes: { translate: "no" } }));
-      meta.push(element("span", { className: overdue ? "is-overdue" : "" }, [icon(overdue ? "triangle-alert" : "calendar-days"), formatDue(task.due)]));
-      list.append(element("article", {
-        className: `v8-task-row${task.done ? " is-complete" : ""}${selected ? " is-selected" : ""}`,
-        attributes: { role: "listitem", tabindex: "0", "aria-selected": selected ? "true" : "false" },
-        dataset: { taskId: task.id, liveWidget: "planning", liveKind: "planning" }
-      }, [
-        select,
-        toggle,
-        element("div", { className: "v8-task-row__copy" }, [element("strong", { text: task.title, attributes: { translate: "no" } }), element("div", { className: "v8-task-meta" }, meta)]),
-        element("div", { className: "v8-row-actions" }, [menu, remove])
+    const grouped = groupTasks(filtered);
+    TASK_GROUPS.forEach(({ id, label }) => {
+      const bucket = grouped[id];
+      if (!bucket.length) return;
+      list.append(element("div", { className: "v8-task-group-header" }, [
+        element("span", { text: label }),
+        element("span", { text: String(bucket.length) })
       ]));
+      bucket.forEach((task) => list.append(taskRowNode(task)));
     });
     refreshIcons();
+  }
+
+  function taskRowNode(task) {
+    const overdue = Boolean(task.due && !task.done && task.due < new Date().toISOString().slice(0, 10));
+    const selected = selection.has(task.id);
+    const select = selectionControl({ id: task.id, checked: selected, label: `Sélectionner ${task.title}` });
+    const toggle = element("button", {
+      className: `v8-task-check${task.done ? " is-complete" : ""}`,
+      attributes: { type: "button", "aria-label": task.done ? `Rouvrir ${task.title}` : `Terminer ${task.title}`, "aria-pressed": task.done ? "true" : "false" },
+      dataset: { taskToggle: task.id }
+    }, [icon(task.done ? "check" : "circle")]);
+    const remove = element("button", {
+      className: "v8-icon-button v8-task-delete",
+      attributes: { type: "button", "aria-label": `Supprimer ${task.title}` },
+      dataset: { taskDelete: task.id }
+    }, [icon("trash-2")]);
+    const menu = element("button", {
+      className: "v8-icon-button v8-task-menu",
+      attributes: { type: "button", "aria-label": `Actions pour ${task.title}`, "aria-haspopup": "menu", "aria-expanded": "false" },
+      dataset: { taskMenu: task.id }
+    }, [icon("more-horizontal")]);
+    const meta = [];
+    if (task.priority === "high") meta.push(element("span", { className: "v8-task-priority v8-task-priority--high" }, [icon("flame"), "Haute"]));
+    if (task.tag) meta.push(element("span", { className: "v8-task-tag", text: task.tag, attributes: { translate: "no" } }));
+    meta.push(element("span", { className: overdue ? "is-overdue" : "" }, [icon(overdue ? "triangle-alert" : "calendar-days"), formatDue(task.due)]));
+    return element("article", {
+      className: `v8-task-row${task.done ? " is-complete" : ""}${selected ? " is-selected" : ""}`,
+      attributes: { role: "listitem", tabindex: "0", "aria-selected": selected ? "true" : "false" },
+      dataset: { taskId: task.id, liveWidget: "planning", liveKind: "planning" }
+    }, [
+      select,
+      toggle,
+      element("div", { className: "v8-task-row__copy" }, [element("strong", { text: task.title, attributes: { translate: "no" } }), element("div", { className: "v8-task-meta" }, meta)]),
+      element("div", { className: "v8-row-actions" }, [menu, remove])
+    ]);
   }
 
   function openComposer() {

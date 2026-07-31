@@ -670,7 +670,7 @@ export function mountApplication(root, options = {}) {
       if (route === "calendar") return mountCalendar(shell.stage, { repository, actions, presence, notify: (notice) => toasts.show(notice) });
       if (route === "files") return mountFiles(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, presence, notify: (notice) => toasts.show(notice) });
       if (route === "spaces") return mountSpaces(shell.stage, { repository, actions, state: store.getState() });
-      if (route === "flows") return mountFlows(shell.stage, { repository, actions, state: store.getState() });
+      if (route === "flows") return mountFlows(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, notify: (notice) => toasts.show(notice) });
       return mountFeatureFallback(shell.stage, route);
     });
     finishRouteMount(route, focus);

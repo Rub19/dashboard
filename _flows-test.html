@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="fr" data-v8-interactions data-density="comfortable" data-space="personal">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Flows automation test harness</title>
+<script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>body{margin:0;height:100vh;background:var(--v8-canvas);}#log{position:fixed;bottom:0;left:0;right:0;max-height:100px;overflow:auto;background:#000;color:#0f0;font:11px monospace;padding:6px;z-index:9999;}</style>
+</head>
+<body>
+<div id="stage" style="height:calc(100vh - 100px); padding: 24px; box-sizing: border-box;"></div>
+<div id="log"></div>
+<script type="module">
+const bust = Date.now();
+const cssFiles = ["tokens.css", "base.css", "components.css", "shell.css"];
+for (const name of cssFiles) {
+  const text = await fetch(`/v8/styles/${name}?bust=${bust}`, { cache: "no-store" }).then((r) => r.text());
+  const style = document.createElement("style");
+  style.textContent = text;
+  document.head.append(style);
+}
+
+const { mountFlows } = await import(`./v8/pages/system.mjs?bust=${bust}`);
+const { createActionFacade } = await import(`./v8/core/actions.mjs?bust=${bust}`);
+const { sanitizeBrainPreferences } = await import(`./v8/brain/preferences.mjs?bust=${bust}`);
+
+let state = { space: "personal", brainPreferences: sanitizeBrainPreferences({}) };
+const listeners = new Set();
+function setState(patch) {
+  const previous = state;
+  state = { ...state, ...patch };
+  listeners.forEach((fn) => fn(state, previous));
+}
+function subscribe(fn) {
+  listeners.add(fn);
+  return () => listeners.delete(fn);
+}
+
+function log(message) {
+  const line = document.createElement("div");
+  line.textContent = message;
+  document.getElementById("log").append(line);
+}
+
+const actions = createActionFacade({
+  navigate: () => {},
+  setState,
+  getState: () => state,
+  notify: (n) => log(`notify: ${n.title} - ${n.message}`)
+});
+
+const stage = document.getElementById("stage");
+mountFlows(stage, {
+  actions,
+  state,
+  subscribeState: subscribe,
+  notify: (n) => log(`notify: ${n.title} - ${n.message}`)
+});
+</script>
+</body>
+</html>

@@ -11,6 +11,7 @@ import { claimDailyBriefing } from "../data/daily-briefing.mjs";
 import { createActivityJournal } from "../data/activity-journal.mjs";
 import { createDocumentMetadataManager, themeColorForState } from "../core/document-metadata.mjs";
 import { createThemeWatcher, resolveTheme, systemPrefersLight } from "../core/theme-engine.mjs";
+import { actionLabel, createAutomationWatcher } from "../core/automation-engine.mjs";
 import { createAmbientEngine } from "../core/experience.mjs";
 import { calendarPresenceState, createPresenceEngine } from "../core/presence-engine.mjs";
 import { createSpotifyLive } from "../services/spotify-live.mjs";
@@ -76,6 +77,7 @@ export function mountApplication(root, options = {}) {
   const initialModel = createHomeModel({ snapshot: repository.snapshot() });
   const lifecycle = createLifecycle();
   const densityEngine = createDensityEngine({ target: document.documentElement, runtime: globalThis, getState: () => store.getState() });
+  const automationWatcher = createAutomationWatcher({ getRules: () => store.getState().brainPreferences?.automations || [] });
   const history = createCommandHistory();
   const activityJournal = createActivityJournal(repository);
   const ownsAmbientEngine = !options.ambientEngine;
@@ -287,6 +289,7 @@ export function mountApplication(root, options = {}) {
   document.documentElement.dataset.ambientMotion = store.getState().ambientEffectsEnabled === false ? "disabled" : "enabled";
   document.documentElement.dataset.interfaceBlur = store.getState().interfaceBlurEnabled === false ? "disabled" : "enabled";
   densityEngine.start(store.getState());
+  automationWatcher.prime(store.getState());
   if (ownsAmbientEngine) ambient.start(store.getState());
   else ambient.refresh(store.getState());
   if (ownsSpotifyLive) spotifyLive.start();
@@ -757,6 +760,11 @@ export function mountApplication(root, options = {}) {
     if (settingsChanged) mountRoute("settings", false);
     if (next.space !== previous.space && ["home", "brain", "spaces", "flows"].includes(next.route)) mountRoute(next.route, false);
     contextMenu.close();
+    automationWatcher.check(next).forEach((rule) => {
+      const run = () => actions.dispatch(rule.actionId, { source: "automation", automationId: rule.id });
+      if (next.brainPreferences?.automationLevel === "trusted") run();
+      else if (globalThis.confirm?.(`Automatisation : ${actionLabel(rule.actionId)}\n\nExecuter maintenant ?`)) run();
+    });
   });
 
   function handleGlobalKeydown(event) {

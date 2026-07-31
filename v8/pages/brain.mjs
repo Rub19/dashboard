@@ -2,8 +2,10 @@ import { actionButton, element, icon } from "../ui/dom.mjs";
 import { statusState } from "../ui/empty-state.mjs";
 import { clearFieldState, formField, runFormSubmission, setFieldState } from "../ui/form-system.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
-import { workspaceById } from "../data/workspaces.mjs";
+import { WORKSPACES, workspaceById } from "../data/workspaces.mjs";
+import { NAVIGATION_ITEMS } from "../data/navigation.mjs";
 import { brainPreferenceLabel } from "../brain/preferences.mjs";
+import { AUTOMATION_ACTIONS, sanitizeAutomationTrigger, triggerLabel as automationTriggerLabel } from "../core/automation-engine.mjs";
 import { createSelect } from "../ui/select.mjs";
 
 const TABS = Object.freeze([
@@ -59,6 +61,7 @@ function downloadJson(payload, filename) {
 export function mountBrain(stage, options = {}) {
   const state = options.state || {};
   const brain = options.brain;
+  const actionFacade = options.actions;
   if (!brain?.controller || !brain?.context) throw new TypeError("Brain page requires the Brain runtime");
   const workspace = workspaceById(state.space);
   const snapshot = options.repository?.snapshot?.() || {};
@@ -144,8 +147,39 @@ export function mountBrain(stage, options = {}) {
     element("article", { className: "v8-brain-detail v8-surface" }, [sectionHeader("Action Registry", "Actions autorisees", "Aucune fonction arbitraire. Les actions sensibles exigent confirmation."), element("div", { className: "v8-brain-action-list" }, actionDefinitions.map((entry) => element("div", { className: "v8-brain-action-row" }, [element("span", {}, [icon(entry.confirmation ? "shield-alert" : "circle-check")]), element("div", {}, [element("strong", { text: entry.title }), element("p", { text: entry.description })]), element("span", { className: "v8-badge", text: entry.confirmation ? "Confirmation" : "Directe" })])))])
   ]);
 
+  const automationTypeSelect = createSelect({ className: "v8-input", attributes: { "aria-label": "Type de declencheur" } }, [
+    element("option", { text: "A l'ouverture d'une page", attributes: { value: "route" } }),
+    element("option", { text: "Au passage vers un Space", attributes: { value: "space" } }),
+    element("option", { text: "A une heure precise", attributes: { value: "time" } })
+  ]);
+  const automationRouteSelect = createSelect({ className: "v8-input", attributes: { "aria-label": "Page" } }, NAVIGATION_ITEMS.map((item) => element("option", { text: item.label, attributes: { value: item.id } })));
+  const automationSpaceSelect = createSelect({ className: "v8-input", attributes: { "aria-label": "Space" } }, WORKSPACES.map((workspace) => element("option", { text: workspace.label, attributes: { value: workspace.id } })));
+  const automationTimeInput = element("input", { className: "v8-input", attributes: { type: "time", value: "09:00", "aria-label": "Heure", required: true } });
+  const automationActionSelect = createSelect({ className: "v8-input", attributes: { "aria-label": "Action a executer" } }, AUTOMATION_ACTIONS.map((entry) => element("option", { text: entry.label, attributes: { value: entry.id } })));
+  const automationSubmit = element("button", { className: "v8-button v8-button--primary", attributes: { type: "submit" } }, [icon("plus"), element("span", { text: "Creer" })]);
+  const automationRouteField = formField({ label: "Page", control: automationRouteSelect });
+  const automationSpaceField = formField({ label: "Space", control: automationSpaceSelect });
+  const automationTimeField = formField({ label: "Heure", control: automationTimeInput });
+  automationSpaceField.hidden = true;
+  automationTimeField.hidden = true;
+  const automationForm = element("form", { className: "v8-brain-automation-form" }, [
+    formField({ label: "Declencheur", control: automationTypeSelect }),
+    automationRouteField,
+    automationSpaceField,
+    automationTimeField,
+    formField({ label: "Action", control: automationActionSelect }),
+    automationSubmit
+  ]);
+  const automationStatus = element("p", { className: "v8-brain-inline-status", text: "Les automatisations s'executent selon votre niveau d'automatisation.", attributes: { "aria-live": "polite" } });
+  const automationListHost = element("div", { className: "v8-brain-automation-list" });
   const automationsPanel = brainPanel("automations", [
-    element("article", { className: "v8-brain-detail v8-surface" }, [sectionHeader("Review mode", "Suggestions avant automatisation", "Brain peut proposer un Flow, un widget ou une densite, mais ne modifie jamais un reglage important seul."), element("div", { className: "v8-brain-policy" }, [icon("workflow"), element("div", {}, [element("strong", { text: `Niveau actuel : ${preferences.automationLevel}` }), element("p", { text: "Chaque proposition reste visible et revisable avant execution." })])])])
+    element("article", { className: "v8-brain-detail v8-surface" }, [sectionHeader("Review mode", "Suggestions avant automatisation", "Brain peut proposer un Flow, un widget ou une densite, mais ne modifie jamais un reglage important seul."), element("div", { className: "v8-brain-policy" }, [icon("workflow"), element("div", {}, [element("strong", { text: `Niveau actuel : ${preferences.automationLevel}` }), element("p", { text: preferences.automationLevel === "trusted" ? "Les automatisations s'executent automatiquement." : "Chaque automatisation demande une confirmation avant de s'executer." })])])]),
+    element("article", { className: "v8-brain-detail v8-surface" }, [
+      sectionHeader("Regles", "Vos automatisations", "Declenchez un changement de Space, de densite ou de theme automatiquement."),
+      automationForm,
+      automationStatus,
+      automationListHost
+    ])
   ]);
 
   const providerTestStatus = element("p", { className: "v8-brain-inline-status", text: "Tests reseau a la demande.", attributes: { "aria-live": "polite" } });
@@ -203,6 +237,30 @@ export function mountBrain(stage, options = {}) {
     })]));
     chatLog.replaceChildren(...(entries.length ? entries.map(messageBubble) : [messageBubble({ role: "assistant", content: `Je suis pret dans ${workspace.label}. Je ne charge que le contexte necessaire a votre demande.` })]));
     chatLog.scrollTop = chatLog.scrollHeight;
+    refreshIcons();
+  }
+
+  function automationRow(rule) {
+    const action = AUTOMATION_ACTIONS.find((entry) => entry.id === rule.actionId);
+    const groupIcon = action?.group === "space" ? "layout-grid" : action?.group === "theme" ? "sun-moon" : "grid-2x2";
+    return element("div", { className: `v8-brain-automation-row${rule.enabled ? "" : " is-disabled"}`, dataset: { automationId: rule.id } }, [
+      element("span", {}, [icon(groupIcon)]),
+      element("div", {}, [element("strong", { text: automationTriggerLabel(rule.trigger) }), element("p", { text: `-> ${action?.label || rule.actionId}` })]),
+      element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": rule.enabled ? "Desactiver l'automatisation" : "Activer l'automatisation", "aria-pressed": String(rule.enabled) }, dataset: { automationToggle: rule.id } }, [icon(rule.enabled ? "toggle-right" : "toggle-left")]),
+      element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Supprimer l'automatisation" }, dataset: { automationDelete: rule.id } }, [icon("trash-2")])
+    ]);
+  }
+
+  function renderAutomations() {
+    const rules = brain.preferences().automations || [];
+    automationListHost.replaceChildren(...(rules.length ? rules.map(automationRow) : [statusState("empty", {
+      iconName: "workflow",
+      eyebrow: "Automatisations",
+      title: "Aucune automatisation",
+      description: "Creez une regle pour declencher un changement de Space, de densite ou de theme.",
+      compact: true,
+      inline: true
+    })]));
     refreshIcons();
   }
 
@@ -306,9 +364,42 @@ export function mountBrain(stage, options = {}) {
   historySearch.addEventListener("input", () => { historyQuery = historySearch.value; renderHistory(); }, { signal: controller.signal });
   const unsubscribe = brain.controller.subscribe((event) => { if (event.type === "history") renderHistory(); });
 
+  automationTypeSelect.addEventListener("change", () => {
+    const type = automationTypeSelect.value;
+    automationRouteField.hidden = type !== "route";
+    automationSpaceField.hidden = type !== "space";
+    automationTimeField.hidden = type !== "time";
+  }, { signal: controller.signal });
+  automationForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!actionFacade?.dispatch) return;
+    const type = automationTypeSelect.value;
+    const value = type === "route" ? automationRouteSelect.value : type === "space" ? automationSpaceSelect.value : automationTimeInput.value;
+    const trigger = sanitizeAutomationTrigger({ type, value });
+    const submission = await runFormSubmission({ form: automationForm, submit: automationSubmit, status: automationStatus, messages: { loading: "Creation de l'automatisation..." }, task: () => actionFacade.dispatch("v8.automation.create", { trigger, targetActionId: automationActionSelect.value }) });
+    if (controller.signal.aborted || !submission.accepted) return;
+    const response = submission.value;
+    automationStatus.textContent = response?.message || "Automatisation creee.";
+    if (response?.ok) renderAutomations();
+  }, { signal: controller.signal });
+  automationListHost.addEventListener("click", async (event) => {
+    if (!actionFacade?.dispatch) return;
+    const toggleButton = event.target.closest("[data-automation-toggle]");
+    const deleteButton = event.target.closest("[data-automation-delete]");
+    if (toggleButton) {
+      await actionFacade.dispatch("v8.automation.toggle", { id: toggleButton.dataset.automationToggle });
+      renderAutomations();
+    } else if (deleteButton) {
+      if (!confirm("Supprimer cette automatisation ?")) return;
+      await actionFacade.dispatch("v8.automation.remove", { id: deleteButton.dataset.automationDelete });
+      renderAutomations();
+    }
+  }, { signal: controller.signal });
+
   stage.replaceChildren(page);
   renderHistory();
   renderSuggestions();
+  renderAutomations();
   refreshIcons();
   return () => { unsubscribe(); controller.abort(); page.remove(); };
 }

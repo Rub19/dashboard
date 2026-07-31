@@ -1,6 +1,7 @@
 import { WORKSPACES } from "../data/workspaces.mjs";
 import { DENSITY_CUSTOM_RANGES, DENSITY_MODES } from "./density-engine.mjs";
-import { patchBrainPreferences } from "../brain/preferences.mjs";
+import { patchBrainPreferences, sanitizeBrainPreferences } from "../brain/preferences.mjs";
+import { sanitizeAutomationRule, sanitizeAutomationRules } from "./automation-engine.mjs";
 
 const LOCALES = Object.freeze(["fr", "en", "es", "de"]);
 
@@ -276,6 +277,36 @@ export function createActionFacade(options = {}) {
     setState({ brainPreferences: patchBrainPreferences(getState().brainPreferences, "briefing.enabled", enabled) });
     return completed(enabled ? "Briefing Brain active" : "Briefing Brain desactive", { enabled });
   });
+
+  register("v8.automation.create", (context = {}) => {
+    const preferences = getState().brainPreferences;
+    const id = `auto-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+    const rule = sanitizeAutomationRule({ id, enabled: true, trigger: context.trigger, actionId: context.targetActionId }, id);
+    const automations = sanitizeAutomationRules([...(preferences.automations || []), rule]);
+    setState({ brainPreferences: sanitizeBrainPreferences({ ...preferences, automations }) });
+    return completed("Automatisation creee", { id: rule.id });
+  });
+  register("v8.automation.toggle", (context = {}) => {
+    const preferences = getState().brainPreferences;
+    const id = String(context.id || "");
+    const automations = (preferences.automations || []).map((rule) => rule.id === id ? { ...rule, enabled: !rule.enabled } : rule);
+    setState({ brainPreferences: sanitizeBrainPreferences({ ...preferences, automations }) });
+    return completed("Automatisation mise a jour", { id });
+  });
+  register("v8.automation.remove", (context = {}) => {
+    const preferences = getState().brainPreferences;
+    const id = String(context.id || "");
+    const automations = (preferences.automations || []).filter((rule) => rule.id !== id);
+    setState({ brainPreferences: sanitizeBrainPreferences({ ...preferences, automations }) });
+    return completed("Automatisation supprimee", { id });
+  });
+  register("v8.automation.run", (context = {}) => {
+    const preferences = getState().brainPreferences;
+    const rule = (preferences.automations || []).find((entry) => entry.id === String(context.id || ""));
+    if (!rule) return unavailable("Automatisation introuvable.");
+    return dispatch(rule.actionId);
+  });
+
   register("v8.spotlight.toggle", () => {
     const spotlightEnabled = getState().spotlightEnabled === false;
     setState({ spotlightEnabled });

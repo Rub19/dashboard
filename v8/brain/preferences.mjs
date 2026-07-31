@@ -1,3 +1,5 @@
+import { sanitizeAutomationRules } from "../core/automation-engine.mjs";
+
 const PERSONAS = new Set(["concise", "balanced", "expert", "coach", "creative", "developer", "custom"]);
 const TONES = new Set(["calm", "direct", "warm", "technical", "creative"]);
 const DETAIL_LEVELS = new Set(["brief", "balanced", "detailed"]);
@@ -52,7 +54,8 @@ export const DEFAULT_BRAIN_PREFERENCES = Object.freeze({
     files: false,
     profile: true,
     settings: true
-  })
+  }),
+  automations: Object.freeze([])
 });
 
 export function brainPreferenceLabel(group, value) {
@@ -100,7 +103,8 @@ export function sanitizeBrainPreferences(input = {}) {
       retentionDays: RETENTION_DAYS.has(retention) ? retention : DEFAULT_BRAIN_PREFERENCES.memory.retentionDays,
       categories: booleans(memory.categories, BRAIN_MEMORY_CATEGORIES, DEFAULT_BRAIN_PREFERENCES.memory.categories)
     }),
-    permissions: booleans(source.permissions, BRAIN_PERMISSION_CATEGORIES, DEFAULT_BRAIN_PREFERENCES.permissions)
+    permissions: booleans(source.permissions, BRAIN_PERMISSION_CATEGORIES, DEFAULT_BRAIN_PREFERENCES.permissions),
+    automations: sanitizeAutomationRules(source.automations)
   });
 }
 

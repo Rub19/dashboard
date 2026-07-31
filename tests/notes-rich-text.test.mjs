@@ -30,6 +30,16 @@ test("the rich-text sanitizer allow-lists tags/attributes and strips dangerous c
   assert.match(source, /export function createRichTextEditor\(options = \{\}\) \{/);
 });
 
+test("pasted HTML is sanitized before insertion, not after, so a live img/onerror or script never touches the DOM", () => {
+  const source = read("v8/ui/rich-text.mjs");
+  assert.match(source, /function handlePaste\(event\) \{/);
+  assert.match(source, /event\.preventDefault\(\);/);
+  assert.match(source, /const clean = html \? sanitizeRichText\(html\) : "";/);
+  assert.match(source, /document\.execCommand\("insertHTML", false, clean\);/);
+  assert.match(source, /body\.addEventListener\("paste", handlePaste\);/);
+  assert.match(source, /body\.removeEventListener\("paste", handlePaste\);/);
+});
+
 test("the rich-text innerHTML sink is explicitly approved in the security audit allowlist", () => {
   const audit = read("scripts/audit-security.mjs");
   assert.match(audit, /"v8\/ui\/rich-text\.mjs"/);

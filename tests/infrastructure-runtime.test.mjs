@@ -525,10 +525,10 @@ test("interaction feedback preserves semantic states and versions every styleshe
   const localStyles = ["activity.css", "entry.css", "shell.css", "workspaces.css"].map((name) => fs.readFileSync(new URL(`../v8/styles/${name}`, import.meta.url), "utf8"));
 
   for (const name of ["tokens", "base", "components", "entry", "presence"]) {
-    assert.match(html, new RegExp(`v8/styles/${name}\\.css\\?v=experience-v173`));
-    assert.match(worker, new RegExp(`v8/styles/${name}\\.css\\?v=experience-v173`));
+    assert.match(html, new RegExp(`v8/styles/${name}\\.css\\?v=experience-v174`));
+    assert.match(worker, new RegExp(`v8/styles/${name}\\.css\\?v=experience-v174`));
   }
-  assert.match(worker, /v8\/styles\/activity\.css\?v=experience-v173/);
+  assert.match(worker, /v8\/styles\/activity\.css\?v=experience-v174/);
   for (const module of ["layer-manager", "dense-content", "dock"]) {
     assert.match(worker, new RegExp(`v8/ui/${module}\\.mjs`));
   }

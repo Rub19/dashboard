@@ -196,9 +196,19 @@ export function createRichTextEditor(options = {}) {
     updateToolbarState();
   }
 
+  function handlePaste(event) {
+    event.preventDefault();
+    const html = event.clipboardData?.getData("text/html");
+    const clean = html ? sanitizeRichText(html) : "";
+    if (clean) document.execCommand("insertHTML", false, clean);
+    else document.execCommand("insertText", false, event.clipboardData?.getData("text/plain") || "");
+    handleInput();
+  }
+
   toolbar.addEventListener("mousedown", handleToolbarMousedown);
   toolbar.addEventListener("click", handleToolbarClick);
   body.addEventListener("input", handleInput);
+  body.addEventListener("paste", handlePaste);
   body.addEventListener("keyup", updateToolbarState);
   body.addEventListener("mouseup", updateToolbarState);
   document.addEventListener("selectionchange", handleSelectionChange);
@@ -217,6 +227,7 @@ export function createRichTextEditor(options = {}) {
     toolbar.removeEventListener("mousedown", handleToolbarMousedown);
     toolbar.removeEventListener("click", handleToolbarClick);
     body.removeEventListener("input", handleInput);
+    body.removeEventListener("paste", handlePaste);
     body.removeEventListener("keyup", updateToolbarState);
     body.removeEventListener("mouseup", updateToolbarState);
   }

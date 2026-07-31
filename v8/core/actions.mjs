@@ -129,6 +129,10 @@ export function createActionFacade(options = {}) {
     setState({ panel: "notifications", commandOpen: false, missionOpen: false });
     return completed("Notifications ouvertes");
   });
+  register("v8.changelog.open", () => {
+    setState({ panel: "changelog", commandOpen: false, missionOpen: false });
+    return completed("Notes de version ouvertes");
+  });
   register("v8.panel.close", () => {
     setState({ panel: null });
     return completed("Panneau ferme");

@@ -5,11 +5,13 @@ import { refreshIcons } from "./icons.mjs";
 import { createWindowController } from "./window-system.mjs";
 import { createSelect } from "./select.mjs";
 import { workspaceById } from "../data/workspaces.mjs";
+import { CHANGELOG, CHANGELOG_KIND_ICONS, CHANGELOG_KIND_LABELS } from "../data/changelog.mjs";
 
 const PANEL_COPY = Object.freeze({
   widgets: { title: "Widgets", eyebrow: "Space actif", icon: "panels-top-left" },
   notifications: { title: "Notifications", eyebrow: "Centre de signal", icon: "bell" },
-  profile: { title: "Profil", eyebrow: "Session locale", icon: "user-round" }
+  profile: { title: "Profil", eyebrow: "Session locale", icon: "user-round" },
+  changelog: { title: "Notes de version", eyebrow: "Historique ETHONE", icon: "sparkles" }
 });
 
 const NOTIFICATION_ITEMS = Object.freeze([
@@ -223,6 +225,34 @@ export function createPanelManager(host, options = {}) {
     return content;
   }
 
+  function changelogItemNode(item) {
+    return element("li", { className: `v8-changelog-item v8-changelog-item--${item.kind}` }, [
+      element("span", { className: "v8-changelog-item__icon" }, [icon(CHANGELOG_KIND_ICONS[item.kind] || "circle")]),
+      element("div", { className: "v8-changelog-item__body" }, [
+        element("span", { className: "v8-changelog-item__label", text: CHANGELOG_KIND_LABELS[item.kind] || "" }),
+        element("p", { text: item.text, attributes: { translate: "no" } })
+      ])
+    ]);
+  }
+
+  function changelogEntryNode(release) {
+    return element("article", { className: "v8-changelog-entry" }, [
+      element("header", {}, [
+        element("span", { className: "v8-changelog-entry__version", text: release.version, attributes: { translate: "no" } }),
+        element("time", { className: "v8-changelog-entry__date", text: release.date, attributes: { translate: "no" } })
+      ]),
+      element("strong", { className: "v8-changelog-entry__title", text: release.title, attributes: { translate: "no" } }),
+      element("ul", { className: "v8-changelog-entry__items" }, release.items.map(changelogItemNode))
+    ]);
+  }
+
+  function changelogContent() {
+    return element("div", { className: "v8-panel__content v8-panel__content--changelog" }, [
+      element("p", { className: "v8-changelog-intro", text: "Ce qui a change recemment dans ETHONE, du plus recent au plus ancien." }),
+      element("div", { className: "v8-changelog-list" }, CHANGELOG.map(changelogEntryNode))
+    ]);
+  }
+
   function profileAvatarNode(user) {
     const avatar = user?.avatar;
     if (avatar && avatar.kind === "image" && avatar.value) {
@@ -261,7 +291,7 @@ export function createPanelManager(host, options = {}) {
     close({ restoreFocus: false });
     const copy = PANEL_COPY[id];
     if (!copy) return false;
-    const content = id === "widgets" ? widgetsContent() : id === "notifications" ? notificationsContent() : profileContent();
+    const content = id === "widgets" ? widgetsContent() : id === "notifications" ? notificationsContent() : id === "changelog" ? changelogContent() : profileContent();
     const panel = element("aside", {
       className: "v8-panel",
       attributes: { role: "dialog", "aria-modal": "false", "aria-label": copy.title }

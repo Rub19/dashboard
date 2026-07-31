@@ -2543,6 +2543,12 @@ html[data-v8-interactions] button.v8-weather-live:hover { border-color:color-mix
 .v8-reddit-live--activity { min-height:120px; }
 
 .v8-weather-icon, .v8-minecraft-avatar, .v8-google-calendar-icon, .v8-notion-icon, .v8-todoist-icon, .v8-valorant-emblem, .v8-lol-icon, .v8-lastfm-artwork, .v8-tracker-avatar, .v8-google-drive-icon, .v8-youtube-avatar, .v8-reddit-avatar { position:relative; }
+@media (max-width:540px) {
+  .v8-steam-live,.v8-twitch-live,.v8-lastfm-live,.v8-tracker-live,.v8-youtube-live,.v8-reddit-live { grid-template-columns:46px minmax(0,1fr);gap:var(--v8-space-3);padding:var(--v8-space-3); }
+  .v8-steam-avatar { width:46px;height:46px;flex:0 0 46px; }
+  .v8-twitch-avatar,.v8-lastfm-artwork,.v8-tracker-avatar,.v8-youtube-avatar,.v8-reddit-avatar { width:46px;height:46px; }
+  .v8-minecraft-live,.v8-google-calendar-live,.v8-todoist-live,.v8-lol-live,.v8-google-drive-live { gap:var(--v8-space-3);padding:var(--v8-space-3); }
+}
 .v8-live-pulse-dot { position:absolute;right:-1px;bottom:-1px;width:8px;height:8px;border-radius:50%;background:#5fd68f;border:2px solid var(--v8-surface-1);opacity:.8; }
 .v8-live-freshness { position:absolute;right:0;bottom:0;z-index:2;padding:2px 6px;border-radius:var(--v8-radius-pill);background:color-mix(in srgb,var(--v8-canvas) 55%,transparent);color:var(--v8-text-tertiary, var(--v8-text-secondary));font-size:var(--v8-font-micro);line-height:1.4;opacity:0.7;pointer-events:none; }
 

@@ -250,7 +250,7 @@ test("Supabase lookup strips private fields and logs never contain credentials",
   assert.equal(response.status, 200);
   assert.doesNotMatch(text, /email|private_note|must-not-leak/i);
   const combined = `${text}\n${logs.join("\n")}`;
-  for (const value of [env.SUPABASE_SECRET_KEY, env.STEAM_API_KEY, env.TRACKER_API_KEY, env.HENRIK_API_KEY, env.TWITCH_CLIENT_SECRET, env.LASTFM_API_KEY]) {
+  for (const value of [env.SUPABASE_SECRET_KEY, env.STEAM_API_KEY, env.TRACKER_API_KEY, env.TWITCH_CLIENT_SECRET, env.LASTFM_API_KEY]) {
     assert.equal(combined.includes(value), false);
   }
 });

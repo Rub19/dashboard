@@ -10,13 +10,6 @@ const OPERATIONS = Object.freeze({
   trackerApexProfile: Object.freeze({ path: "/api/tracker/apex-profile", auth: true, params: ["platform", "identifier"] }),
   trackerValorantProfile: Object.freeze({ path: "/api/tracker/valorant-profile", auth: true, params: ["name", "tag"] }),
   trackerLolProfile: Object.freeze({ path: "/api/tracker/lol-profile", auth: true, params: ["name", "tag"] }),
-  valorantAccount: Object.freeze({ path: "/api/henrik/account", auth: true, params: ["name", "tag"] }),
-  valorantStatus: Object.freeze({ path: "/api/henrik/status", auth: true, params: ["region"] }),
-  valorantRank: Object.freeze({ path: "/api/henrik/rank", auth: true, params: ["name", "tag", "region"] }),
-  valorantMatches: Object.freeze({ path: "/api/henrik/matches", auth: true, params: ["name", "tag", "region"] }),
-  riotLolAccount: Object.freeze({ path: "/api/riot-lol/account", auth: true, params: ["name", "tag"] }),
-  riotLolRank: Object.freeze({ path: "/api/riot-lol/rank", auth: true, params: ["name", "tag"] }),
-  riotLolMatches: Object.freeze({ path: "/api/riot-lol/matches", auth: true, params: ["name", "tag"] }),
   twitchChannel: Object.freeze({ path: "/api/twitch/channel", auth: true, params: ["login"] }),
   lastFmRecentTracks: Object.freeze({ path: "/api/lastfm/recent-tracks", auth: true, params: ["username", "limit"] }),
   lastFmTopArtists: Object.freeze({ path: "/api/lastfm/top-artists", auth: true, params: ["username", "period", "limit"] }),
@@ -210,17 +203,6 @@ export function createExternalServicesClient(options = {}) {
       apexProfile: (platform, identifier) => execute("trackerApexProfile", { platform, identifier }),
       valorantProfile: (name, tag) => execute("trackerValorantProfile", { name, tag }),
       lolProfile: (name, tag) => execute("trackerLolProfile", { name, tag })
-    }),
-    henrik: Object.freeze({
-      account: (name, tag) => execute("valorantAccount", { name, tag }),
-      status: (region) => execute("valorantStatus", { region }),
-      rank: (name, tag, region) => execute("valorantRank", { name, tag, region }),
-      matches: (name, tag, region) => execute("valorantMatches", { name, tag, region })
-    }),
-    riotLol: Object.freeze({
-      account: (name, tag) => execute("riotLolAccount", { name, tag }),
-      rank: (name, tag) => execute("riotLolRank", { name, tag }),
-      matches: (name, tag) => execute("riotLolMatches", { name, tag })
     }),
     twitch: Object.freeze({ channel: (login) => execute("twitchChannel", { login }) }),
     lastfm: Object.freeze({

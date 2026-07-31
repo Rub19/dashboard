@@ -652,6 +652,17 @@ export function createProfileRepository(options = {}) {
         return taskView(task, 0);
       });
     },
+    update(id, patch = {}) {
+      return mutate("tasks", (list) => {
+        const task = list.find((entry) => String(entry?.id) === String(id));
+        if (!task) throw new Error("Tâche introuvable");
+        if (Object.hasOwn(patch, "title")) task.text = text(patch.title, "Nouvelle tâche", 240);
+        if (Object.hasOwn(patch, "priority")) task.priority = ["low", "normal", "high"].includes(patch.priority) ? patch.priority : task.priority;
+        if (Object.hasOwn(patch, "due")) task.due = text(patch.due, "", 16);
+        if (Object.hasOwn(patch, "tag")) task.tag = text(patch.tag, "", 48);
+        return taskView(task, 0);
+      });
+    },
     toggle(id) {
       return mutate("tasks", (list) => {
         const task = list.find((entry) => String(entry?.id) === String(id));

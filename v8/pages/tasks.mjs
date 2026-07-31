@@ -35,6 +35,7 @@ export function mountTasks(stage, options = {}) {
   let query = "";
   let order = "priority";
   let composerOpen = false;
+  let editingId = null;
   let bulkDeleteArmed = false;
   let mounted = true;
   const scopedActions = [];
@@ -134,14 +135,20 @@ export function mountTasks(stage, options = {}) {
     composer.replaceChildren();
     composer.hidden = !composerOpen;
     if (!composerOpen) return;
+    const editingTask = editingId ? tasks.find((entry) => String(entry.id) === String(editingId)) : null;
+    composer.setAttribute("aria-label", editingTask ? "Modifier la tâche" : "Nouvelle tâche");
     const title = element("input", { className: "v8-input", attributes: { type: "text", placeholder: "Que faut-il accomplir ?", "aria-label": "Titre de la tâche", required: "", maxlength: "240", autocomplete: "off" } });
+    title.value = editingTask?.title || "";
     const priority = createSelect({ className: "v8-input", attributes: { "aria-label": "Priorité" } }, [
       element("option", { text: "Priorité normale", attributes: { value: "normal" } }),
       element("option", { text: "Priorité haute", attributes: { value: "high" } }),
       element("option", { text: "Priorité basse", attributes: { value: "low" } })
     ]);
+    if (editingTask) priority.value = editingTask.priority;
     const due = element("input", { className: "v8-input", attributes: { type: "date", "aria-label": "Échéance" } });
+    if (editingTask?.due) due.value = editingTask.due;
     const tag = element("input", { className: "v8-input", attributes: { type: "text", placeholder: "Tag", "aria-label": "Tag", maxlength: "48", autocomplete: "off" } });
+    tag.value = editingTask?.tag || "";
     composer.append(
       element("div", { className: "v8-task-composer__fields" }, [
         formField({ label: "Tâche", control: title, required: true }),
@@ -151,7 +158,9 @@ export function mountTasks(stage, options = {}) {
       ]),
       element("div", { className: "v8-task-composer__actions" }, [
         actionButton({ actionId: "v8.tasks.new.cancel" }, [element("span", { text: "Annuler" })]),
-        element("button", { className: "v8-button v8-button--primary", attributes: { type: "submit" } }, [icon("plus"), element("span", { text: "Ajouter" })])
+        element("button", { className: "v8-button v8-button--primary", attributes: { type: "submit" } }, editingTask
+          ? [icon("save"), element("span", { text: "Enregistrer" })]
+          : [icon("plus"), element("span", { text: "Ajouter" })])
       ])
     );
     title.focus({ preventScroll: true });
@@ -252,14 +261,26 @@ export function mountTasks(stage, options = {}) {
   }
 
   function openComposer() {
+    editingId = null;
     composerOpen = true;
     renderComposer();
     refreshIcons();
     return completed("Formulaire ouvert");
   }
 
+  function openEditor(id) {
+    const task = tasks.find((entry) => String(entry.id) === String(id));
+    if (!task) return completed("Tâche introuvable");
+    editingId = id;
+    composerOpen = true;
+    renderComposer();
+    refreshIcons();
+    return completed("Édition ouverte");
+  }
+
   function closeComposer() {
     composerOpen = false;
+    editingId = null;
     renderComposer();
     page.querySelector("[data-action='v8.tasks.new']")?.focus({ preventScroll: true });
     return completed("Formulaire fermé");
@@ -271,12 +292,26 @@ export function mountTasks(stage, options = {}) {
       notify({ id: "task-title-required", title: "Tâches", message: "Ajoutez un titre avant de continuer.", type: "warning" });
       return { ok: false, status: "failed", message: "Titre requis" };
     }
-    const created = repository.tasks.create({
+    const patch = {
       title: title.value,
       priority: composer.querySelector("[aria-label='Priorité']")?.value,
       due: composer.querySelector("[aria-label='Échéance']")?.value,
       tag: composer.querySelector("[aria-label='Tag']")?.value
-    });
+    };
+    if (editingId) {
+      const editedId = editingId;
+      const updated = repository.tasks.update(editedId, patch);
+      if (!updated.ok) return updated;
+      refreshTasks();
+      composerOpen = false;
+      editingId = null;
+      renderComposer();
+      renderList();
+      presence?.signalActivity?.(taskRow(editedId), "task", { phase: "update" });
+      notify({ id: "task-updated", title: "Tâches", message: "Tâche modifiée.", type: "success", duration: 2200 });
+      return updated;
+    }
+    const created = repository.tasks.create(patch);
     if (!created.ok) return created;
     refreshTasks();
     composerOpen = false;
@@ -358,6 +393,7 @@ export function mountTasks(stage, options = {}) {
     const task = tasks.find((entry) => String(entry.id) === String(id));
     if (!task) return false;
     return rowMenu.open(anchor, [
+      { label: "Modifier", icon: "pencil", onSelect: () => openEditor(id) },
       { label: task.done ? "Rouvrir la tâche" : "Terminer la tâche", icon: task.done ? "rotate-ccw" : "check", onSelect: () => toggleTask(id) },
       { label: selection.has(id) ? "Retirer de la sélection" : "Ajouter à la sélection", icon: selection.has(id) ? "square-minus" : "square-check-big", onSelect: () => toggleSelection(id, "row") },
       { separator: true },

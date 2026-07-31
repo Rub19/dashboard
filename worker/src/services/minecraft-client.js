@@ -2,8 +2,11 @@ import { requestExternal } from "../utils/external-request.js";
 import { httpError } from "../middleware/errors.js";
 import { safePublicUrl, safeText } from "../utils/normalize.js";
 
-const PROFILE_ORIGIN = "https://api.mojang.com";
-const SESSION_ORIGIN = "https://sessionserver.mojang.com";
+// Mojang shut down the api.mojang.com/sessionserver.mojang.com username lookup endpoints
+// in September 2023. mowojang.matdoes.dev is a maintained drop-in mirror that serves the
+// exact same request/response shape, so the rest of this module is unchanged.
+const PROFILE_ORIGIN = "https://mowojang.matdoes.dev";
+const SESSION_ORIGIN = "https://mowojang.matdoes.dev";
 
 function decodeSkinUrl(properties) {
   const texturesProperty = (Array.isArray(properties) ? properties : []).find((entry) => entry?.name === "textures");

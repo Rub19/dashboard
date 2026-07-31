@@ -824,6 +824,7 @@ export function mountConnections(stage, options = {}) {
     if (result.ok) {
       selectedMethods.set(id, method?.id || "");
       let connected = false;
+      let needsCredential = false;
       if (autoVerify) {
         const report = await runDiagnostic(id);
         if (report?.workerAvailable) {
@@ -837,10 +838,17 @@ export function mountConnections(stage, options = {}) {
           });
           refreshLiveBridges(id);
           connected = true;
+        } else {
+          needsCredential = Boolean(method?.credential) && !credentialStatus.has(method.credential.provider);
+          repository.connections.updateStatus(id, "disconnected", {
+            detail: needsCredential
+              ? `Ajoutez votre ${method.credential.fields?.[0]?.label || "cle API personnelle"} ci-dessous pour activer la connexion.`
+              : "La verification automatique a echoue. Relancez le diagnostic depuis l'onglet Diagnostics."
+          });
         }
       }
-      journal?.record?.({ source: id, category: integration?.category || "system", icon: integration?.icon || "plug", title: `${integration?.name || "Integration"} ${connected ? "connectee" : "preparee"}`, description: connected ? "Connexion verifiee et activee automatiquement." : autoVerify ? "La verification automatique a echoue. Relancez le diagnostic depuis l'onglet Diagnostics." : backendRequired ? "Le backend securise reste requis avant toute synchronisation." : `Methode ${method?.label || "locale"} preparee.`, timestamp: new Date().toISOString(), tone: connected || !autoVerify ? "success" : "warning" });
-      notify({ id: `connection-ready-${id}`, title: integration?.name || "Connection", message: connected ? "Connexion verifiee et activee." : autoVerify ? "Preparation enregistree, mais la verification a echoue. Relancez le diagnostic." : backendRequired ? "Preparation validee. Backend securise requis pour connecter le compte." : "Preparation locale validee.", type: connected ? "success" : autoVerify ? "warning" : "success" });
+      journal?.record?.({ source: id, category: integration?.category || "system", icon: integration?.icon || "plug", title: `${integration?.name || "Integration"} ${connected ? "connectee" : "preparee"}`, description: connected ? "Connexion verifiee et activee automatiquement." : needsCredential ? `Ajoutez votre ${method.credential.fields?.[0]?.label || "cle API personnelle"} pour terminer la connexion.` : autoVerify ? "La verification automatique a echoue. Relancez le diagnostic depuis l'onglet Diagnostics." : backendRequired ? "Le backend securise reste requis avant toute synchronisation." : `Methode ${method?.label || "locale"} preparee.`, timestamp: new Date().toISOString(), tone: connected || !autoVerify ? "success" : "warning" });
+      notify({ id: `connection-ready-${id}`, title: integration?.name || "Connection", message: connected ? "Connexion verifiee et activee." : needsCredential ? `Preparation enregistree. Ajoutez votre ${method.credential.fields?.[0]?.label || "cle API personnelle"} ci-dessous pour terminer.` : autoVerify ? "Preparation enregistree, mais la verification a echoue. Relancez le diagnostic." : backendRequired ? "Preparation validee. Backend securise requis pour connecter le compte." : "Preparation locale validee.", type: connected ? "success" : autoVerify ? "warning" : "success" });
       inspectorTab = "overview";
       renderAll();
     }

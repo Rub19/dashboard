@@ -47,6 +47,13 @@ const DYNAMIC_TEMPLATES = Object.freeze({
   dockAdd: { fr: "Ajouter {value} au Dock", en: "Add {value} to Dock", es: "Añadir {value} al Dock", de: "{value} zum Dock hinzufügen" },
   dockMoveLeft: { fr: "Déplacer {value} à gauche", en: "Move {value} left", es: "Mover {value} a la izquierda", de: "{value} nach links verschieben" },
   dockMoveRight: { fr: "Déplacer {value} à droite", en: "Move {value} right", es: "Mover {value} a la derecha", de: "{value} nach rechts verschieben" },
+  liveFreshness: { fr: "Actualisé à {value}", en: "Updated at {value}", es: "Actualizado a las {value}", de: "Aktualisiert um {value}" },
+  automationTriggerRoute: { fr: "À l'ouverture de {value}", en: "When opening {value}", es: "Al abrir {value}", de: "Beim Öffnen von {value}" },
+  automationTriggerSpace: { fr: "Au passage vers {value}", en: "When switching to {value}", es: "Al pasar a {value}", de: "Beim Wechsel zu {value}" },
+  automationTriggerTime: { fr: "Chaque jour à {value}", en: "Every day at {value}", es: "Cada día a las {value}", de: "Jeden Tag um {value}" },
+  automationAction: { fr: "→ {value}", en: "→ {value}", es: "→ {value}", de: "→ {value}" },
+  automationLevelLabel: { fr: "Niveau actuel : {value}", en: "Current level: {value}", es: "Nivel actual: {value}", de: "Aktuelle Stufe: {value}" },
+  themeResolvedAuto: { fr: "{value} - système", en: "{value} - system", es: "{value} - sistema", de: "{value} - System" },
   select: { fr: "Sélectionner {value}", en: "Select {value}", es: "Seleccionar {value}", de: "{value} auswählen" },
   actionsFor: { fr: "Actions pour {value}", en: "Actions for {value}", es: "Acciones para {value}", de: "Aktionen für {value}" },
   authorize: { fr: "Autoriser {value}", en: "Allow {value}", es: "Permitir {value}", de: "{value} erlauben" },
@@ -115,6 +122,13 @@ function translateDynamic(source, locale) {
   }
 
   const patterns = [
+    ["liveFreshness", /^Actualise a\s+(\d{2}:\d{2})$/u],
+    ["automationTriggerRoute", /^A l'ouverture de\s+(.+)$/u],
+    ["automationTriggerSpace", /^Au passage vers\s+(.+)$/u],
+    ["automationTriggerTime", /^Chaque jour a\s+(\d{2}:\d{2})$/u],
+    ["automationAction", /^->\s+(.+)$/u],
+    ["automationLevelLabel", /^Niveau actuel\s*:\s*(.+)$/u],
+    ["themeResolvedAuto", /^(.+)\s+-\s+systeme$/u],
     ["dockRemove", /^Retirer\s+(.+)\s+du Dock$/u],
     ["dockAdd", /^Ajouter\s+(.+)\s+au Dock$/u],
     ["dockMoveLeft", /^Deplacer\s+(.+)\s+a gauche$/u],

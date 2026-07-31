@@ -11,7 +11,7 @@ export function freshnessLabel(updatedAtIso) {
 export function liveFreshnessNode(updatedAtIso) {
   const label = freshnessLabel(updatedAtIso);
   if (!label) return null;
-  return element("small", { className: "v8-live-freshness", text: label, attributes: { translate: "no" } });
+  return element("small", { className: "v8-live-freshness", text: label });
 }
 
 export function livePulseDot() {

@@ -59,7 +59,24 @@ test("newly polished visible strings are translated for every supported locale",
     "Lecture et cibles tactiles genereuses.",
     "Langue de reponse",
     "Un contexte minimal, des permissions explicites et aucune cle privee dans le navigateur.",
-    "Diagnostic explicite, sans surveillance ni requete en arriere-plan."
+    "Diagnostic explicite, sans surveillance ni requete en arriere-plan.",
+    "Nuit",
+    "Graphite",
+    "Jour",
+    "Automatique",
+    "Mode Jour applique",
+    "Theme modifie",
+    "Detail meteo",
+    "Vent",
+    "Humidite",
+    "Regles",
+    "Vos automatisations",
+    "Declencheur",
+    "Aucune automatisation",
+    "Automatisation creee",
+    "Space Focus",
+    "Densite Compacte",
+    "Theme Jour"
   ];
 
   for (const key of required) {
@@ -71,6 +88,28 @@ test("newly polished visible strings are translated for every supported locale",
     const entry = sourceEntry(key);
     assert.deepEqual(Object.keys(entry).sort(), [...SUPPORTED_LOCALES].sort(), `${key} has an inconsistent locale set`);
   }
+});
+
+test("theme, automation and freshness composite strings have dynamic translation patterns", () => {
+  const i18n = read("v8/i18n/runtime.mjs");
+  const freshness = read("v8/ui/live-freshness.mjs");
+
+  assert.match(i18n, /liveFreshness:\s*\{[\s\S]*?en:\s*"Updated at \{value\}"/);
+  assert.match(i18n, /automationTriggerRoute:\s*\{[\s\S]*?en:\s*"When opening \{value\}"/);
+  assert.match(i18n, /automationTriggerSpace:\s*\{[\s\S]*?en:\s*"When switching to \{value\}"/);
+  assert.match(i18n, /automationTriggerTime:\s*\{[\s\S]*?en:\s*"Every day at \{value\}"/);
+  assert.match(i18n, /automationAction:\s*\{[\s\S]*?en:\s*"→ \{value\}"/);
+  assert.match(i18n, /automationLevelLabel:\s*\{[\s\S]*?en:\s*"Current level: \{value\}"/);
+  assert.match(i18n, /themeResolvedAuto:\s*\{[\s\S]*?en:\s*"\{value\} - system"/);
+  assert.match(i18n, /\["liveFreshness",\s*\/\^Actualise a/);
+  assert.match(i18n, /\["automationTriggerRoute",/);
+  assert.match(i18n, /\["automationTriggerSpace",/);
+  assert.match(i18n, /\["automationTriggerTime",/);
+  assert.match(i18n, /\["automationAction",/);
+  assert.match(i18n, /\["automationLevelLabel",/);
+  assert.match(i18n, /\["themeResolvedAuto",/);
+
+  assert.doesNotMatch(freshness, /translate:\s*"no"/);
 });
 
 test("responsive QA harness accepts viewport and route parameters", () => {

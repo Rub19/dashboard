@@ -398,6 +398,12 @@ const ENTRIES = {
     "es": "Biblioteca",
     "de": "Bibliothek"
   },
+  "Bibliothèque (racine)": {
+    "fr": "Bibliothèque (racine)",
+    "en": "Library (root)",
+    "es": "Biblioteca (raíz)",
+    "de": "Bibliothek (Stammverzeichnis)"
+  },
   "Bibliothèque locale": {
     "fr": "Bibliothèque locale",
     "en": "Local library",
@@ -2472,7 +2478,17 @@ const ENTRIES = {
   "Theme Nuit": { "fr": "Thème Nuit", "en": "Night theme", "es": "Tema Noche", "de": "Theme Nacht" },
   "Theme Graphite": { "fr": "Thème Graphite", "en": "Graphite theme", "es": "Tema Grafito", "de": "Theme Graphit" },
   "Theme Jour": { "fr": "Thème Jour", "en": "Day theme", "es": "Tema Día", "de": "Theme Tag" },
-  "Theme Automatique": { "fr": "Thème Automatique", "en": "Automatic theme", "es": "Tema Automático", "de": "Theme Automatisch" }
+  "Theme Automatique": { "fr": "Thème Automatique", "en": "Automatic theme", "es": "Tema Automático", "de": "Theme Automatisch" },
+
+  "Chemin du dossier": { "fr": "Chemin du dossier", "en": "Folder path", "es": "Ruta de la carpeta", "de": "Ordnerpfad" },
+  "Déplacer vers...": { "fr": "Déplacer vers...", "en": "Move to...", "es": "Mover a...", "de": "Verschieben nach..." },
+  "Ce dossier est vide": { "fr": "Ce dossier est vide", "en": "This folder is empty", "es": "Esta carpeta está vacía", "de": "Dieser Ordner ist leer" },
+  "Ajoutez un lien ou un sous-dossier ici.": { "fr": "Ajoutez un lien ou un sous-dossier ici.", "en": "Add a link or a subfolder here.", "es": "Añade un enlace o una subcarpeta aquí.", "de": "Fügen Sie hier einen Link oder einen Unterordner hinzu." },
+  "Dossier vide": { "fr": "Dossier vide", "en": "Empty folder", "es": "Carpeta vacía", "de": "Leerer Ordner" },
+  "Élément déplacé.": { "fr": "Élément déplacé.", "en": "Item moved.", "es": "Elemento movido.", "de": "Element verschoben." },
+  "Dossier introuvable": { "fr": "Dossier introuvable", "en": "Folder not found", "es": "Carpeta no encontrada", "de": "Ordner nicht gefunden" },
+  "Un dossier ne peut pas se contenir lui-même": { "fr": "Un dossier ne peut pas se contenir lui-même", "en": "A folder cannot contain itself", "es": "Una carpeta no puede contenerse a sí misma", "de": "Ein Ordner kann sich nicht selbst enthalten" },
+  "Impossible de déplacer un dossier dans lui-même": { "fr": "Impossible de déplacer un dossier dans lui-même", "en": "Cannot move a folder into itself", "es": "No se puede mover una carpeta dentro de sí misma", "de": "Ein Ordner kann nicht in sich selbst verschoben werden" }
 };
 Object.keys(ENTRIES).forEach((key) => Object.freeze(ENTRIES[key]));
 Object.freeze(ENTRIES);

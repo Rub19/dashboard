@@ -230,7 +230,8 @@ function fileView(item, index, favorites) {
     url: safeUrl(item?.url || item?.link),
     tag: text(item?.tag, "", 80),
     date: text(item?.updatedAt || item?.createdAt || item?.date, "", 40),
-    favorite: favorites.includes(id) || item?.favorite === true
+    favorite: favorites.includes(id) || item?.favorite === true,
+    parentId: item?.parentId ? text(item.parentId, "", 80) : null
   });
 }
 
@@ -741,6 +742,21 @@ export function createProfileRepository(options = {}) {
     }
   });
 
+  function collectDescendantFileIds(list, rootId) {
+    const ids = new Set();
+    const queue = [String(rootId)];
+    while (queue.length) {
+      const current = queue.shift();
+      list.forEach((entry) => {
+        if (String(entry?.parentId || "") === current && !ids.has(String(entry.id))) {
+          ids.add(String(entry.id));
+          queue.push(String(entry.id));
+        }
+      });
+    }
+    return ids;
+  }
+
   const files = Object.freeze({
     setView(view) {
       return mutateState((state) => {
@@ -754,6 +770,11 @@ export function createProfileRepository(options = {}) {
         const type = ["link", "folder"].includes(input.type) ? input.type : "link";
         const url = type === "link" ? safeUrl(input.url) : "";
         if (type === "link" && !url) throw new Error("Lien invalide");
+        let parentId = input.parentId ? text(input.parentId, "", 80) : null;
+        if (parentId) {
+          const parent = list.find((entry) => String(entry?.id) === parentId);
+          if (!parent || parent.type !== "folder") throw new Error("Dossier introuvable");
+        }
         const timestamp = now().toISOString();
         const item = {
           id: String(idFactory()),
@@ -761,6 +782,7 @@ export function createProfileRepository(options = {}) {
           type,
           url,
           tag: text(input.tag, "", 80),
+          parentId,
           date: new Intl.DateTimeFormat(localeTag(), { day: "2-digit", month: "short" }).format(now()),
           createdAt: timestamp,
           updatedAt: timestamp
@@ -775,6 +797,16 @@ export function createProfileRepository(options = {}) {
         if (!item) throw new Error("Fichier introuvable");
         if (Object.hasOwn(patch, "name")) item.name = text(patch.name, item.type === "folder" ? "Nouveau dossier" : "Nouveau lien", 180);
         if (Object.hasOwn(patch, "tag")) item.tag = text(patch.tag, "", 80);
+        if (Object.hasOwn(patch, "parentId")) {
+          const nextParentId = patch.parentId ? text(patch.parentId, "", 80) : null;
+          if (nextParentId) {
+            if (nextParentId === String(id)) throw new Error("Un dossier ne peut pas se contenir lui-même");
+            const target = list.find((entry) => String(entry?.id) === nextParentId);
+            if (!target || target.type !== "folder") throw new Error("Dossier introuvable");
+            if (collectDescendantFileIds(list, id).has(nextParentId)) throw new Error("Impossible de déplacer un dossier dans lui-même");
+          }
+          item.parentId = nextParentId;
+        }
         item.updatedAt = now().toISOString();
         const favorites = Array.isArray(state.filesExplorer?.favorites) ? state.filesExplorer.favorites : [];
         return fileView(item, 0, favorites);
@@ -807,6 +839,11 @@ export function createProfileRepository(options = {}) {
     removeMany(ids = []) {
       const requested = new Set((Array.isArray(ids) ? ids : []).map(String));
       return mutate("files", (list, state) => {
+        list.forEach((item) => {
+          if (item?.type === "folder" && requested.has(String(item.id))) {
+            collectDescendantFileIds(list, item.id).forEach((descendantId) => requested.add(descendantId));
+          }
+        });
         const favorites = Array.isArray(state.filesExplorer?.favorites) ? state.filesExplorer.favorites.map(String) : [];
         const removed = list.filter((item) => requested.has(String(item?.id))).map((item, index) => fileView(item, index, favorites));
         for (let index = list.length - 1; index >= 0; index -= 1) {
@@ -820,11 +857,16 @@ export function createProfileRepository(options = {}) {
       return mutate("files", (list, state) => {
         const index = list.findIndex((entry) => String(entry?.id) === String(id));
         if (index < 0) throw new Error("Fichier introuvable");
-        const removed = list.splice(index, 1)[0];
-        if (Array.isArray(state.filesExplorer?.favorites)) {
-          state.filesExplorer.favorites = state.filesExplorer.favorites.map(String).filter((entry) => entry !== String(id));
+        const target = list[index];
+        const requested = new Set([String(id)]);
+        if (target?.type === "folder") collectDescendantFileIds(list, id).forEach((descendantId) => requested.add(descendantId));
+        for (let cursor = list.length - 1; cursor >= 0; cursor -= 1) {
+          if (requested.has(String(list[cursor]?.id))) list.splice(cursor, 1);
         }
-        return fileView(removed, 0, []);
+        if (Array.isArray(state.filesExplorer?.favorites)) {
+          state.filesExplorer.favorites = state.filesExplorer.favorites.map(String).filter((entry) => !requested.has(entry));
+        }
+        return fileView(target, 0, []);
       });
     }
   });

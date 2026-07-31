@@ -975,6 +975,45 @@ html[data-v8-interactions] .v8-task-row:hover > .v8-selection-control,
   flex: 0 0 auto;
 }
 
+.v8-files-breadcrumb {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding-bottom: var(--v8-space-2);
+}
+
+.v8-files-breadcrumb[hidden] {
+  display: none;
+}
+
+.v8-files-breadcrumb__item {
+  padding: 4px 8px;
+  border: 0;
+  border-radius: var(--v8-radius-sm);
+  background: transparent;
+  color: var(--v8-muted);
+  font-size: var(--v8-font-xs);
+  cursor: pointer;
+}
+
+.v8-files-breadcrumb__item.is-current {
+  color: var(--v8-text-secondary);
+  font-weight: var(--v8-weight-medium);
+  cursor: default;
+}
+
+.v8-files-breadcrumb__sep {
+  display: inline-flex;
+  color: var(--v8-muted);
+}
+
+.v8-files-breadcrumb__sep svg {
+  width: 14px;
+  height: 14px;
+}
+
 .v8-files-search {
   width: min(360px, 100%);
 }

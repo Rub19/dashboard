@@ -11,7 +11,7 @@ import { emptyState, statusState } from "../ui/empty-state.mjs";
 import { formField, runFormSubmission, validateForm } from "../ui/form-system.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
 import { createSelect } from "../ui/select.mjs";
-import { filterFiles, sortFiles } from "./files-model.mjs";
+import { descendantFolderIds, filterFiles, folderPath, sortFiles } from "./files-model.mjs";
 
 const TYPE_ICONS = Object.freeze({
   folder: "folder",
@@ -37,7 +37,8 @@ export function mountFiles(stage, options = {}) {
   const notify = typeof options.notify === "function" ? options.notify : () => {};
   const presence = options.presence || null;
   let files = repository.snapshot().files.map((file) => ({ ...file }));
-  let selectedId = files[0]?.id || null;
+  let selectedId = null;
+  let currentFolderId = null;
   let query = "";
   let type = "all";
   let favorites = false;
@@ -57,6 +58,7 @@ export function mountFiles(stage, options = {}) {
   const preview = element("aside", { className: "v8-files-preview", attributes: { "aria-label": "Aperçu du fichier" } });
   const densityControl = collectionDensityControl(options.state?.density || document.documentElement.dataset.density || "automatic");
   const bulkHost = element("div", { className: "v8-bulk-host" });
+  const breadcrumb = element("nav", { className: "v8-files-breadcrumb", attributes: { "aria-label": "Chemin du dossier" } });
   const page = element("section", { className: "v8-page v8-work-page", dataset: { page: "files" } }, [
     element("header", { className: "v8-page-heading v8-work-heading" }, [
       element("div", { className: "v8-page-heading__copy" }, [
@@ -86,6 +88,7 @@ export function mountFiles(stage, options = {}) {
         })
       ]),
       element("div", { className: "v8-files-main" }, [
+        breadcrumb,
         element("header", { className: "v8-files-toolbar" }, [
           element("div", { className: "v8-input-wrap v8-files-search" }, [icon("search"), search]),
           element("div", { className: "v8-files-toolbar__tools" }, [
@@ -113,11 +116,28 @@ export function mountFiles(stage, options = {}) {
   function refreshFiles() {
     files = repository.snapshot().files.map((file) => ({ ...file }));
     selection.prune(files.map((file) => file.id));
-    if (!files.some((file) => String(file.id) === String(selectedId))) selectedId = files[0]?.id || null;
+    if (currentFolderId && !files.some((file) => String(file.id) === String(currentFolderId) && file.type === "folder")) currentFolderId = null;
+    if (selectedId && !files.some((file) => String(file.id) === String(selectedId))) selectedId = null;
+  }
+
+  function usingGlobalFilter() {
+    return Boolean(query) || favorites || type !== "all";
   }
 
   function visibleFiles() {
-    return sortFiles(filterFiles(files, { query, type, favorites }), sort);
+    const filters = { query, type, favorites };
+    if (!usingGlobalFilter()) filters.parentId = currentFolderId;
+    return sortFiles(filterFiles(files, filters), sort);
+  }
+
+  function navigateToFolder(folderId) {
+    currentFolderId = folderId;
+    query = "";
+    type = "all";
+    favorites = false;
+    search.value = "";
+    selectedId = null;
+    renderAll();
   }
 
   function selectedFile() {
@@ -176,6 +196,24 @@ export function mountFiles(stage, options = {}) {
     refreshIcons();
   }
 
+  function renderBreadcrumb() {
+    breadcrumb.replaceChildren();
+    breadcrumb.hidden = usingGlobalFilter();
+    if (breadcrumb.hidden) return;
+    const path = folderPath(files, currentFolderId);
+    const crumbs = [{ id: null, label: "Bibliothèque" }, ...path.map((folder) => ({ id: folder.id, label: folder.name }))];
+    crumbs.forEach((crumb, index) => {
+      const isLast = index === crumbs.length - 1;
+      breadcrumb.append(element("button", {
+        className: `v8-files-breadcrumb__item${isLast ? " is-current" : ""}`,
+        attributes: { type: "button", "aria-current": isLast ? "true" : null, disabled: isLast ? "" : null },
+        dataset: { filesBreadcrumb: crumb.id ?? "root" }
+      }, [element("span", { text: crumb.label, attributes: crumb.id ? { translate: "no" } : {} })]));
+      if (!isLast) breadcrumb.append(element("span", { className: "v8-files-breadcrumb__sep", attributes: { "aria-hidden": "true" } }, [icon("chevron-right")]));
+    });
+    refreshIcons();
+  }
+
   function renderContent() {
     const filtered = visibleFiles();
     content.replaceChildren();
@@ -218,19 +256,20 @@ export function mountFiles(stage, options = {}) {
           }
         }
       }) : null;
+      const insideEmptyFolder = !hasFilters && Boolean(currentFolderId);
       collection.append(emptyState({
         kind: hasFilters ? "no-results" : "empty",
         iconName: hasFilters ? "search-x" : "folder-open",
-        eyebrow: hasFilters ? "Recherche terminée" : "Bibliothèque prête",
-        title: hasFilters ? "Aucun résultat" : "Votre bibliothèque vous attend",
-        description: hasFilters ? "Aucune ressource ne correspond à ces filtres." : "Ajoutez un lien ou créez un dossier pour construire votre espace documentaire.",
+        eyebrow: hasFilters ? "Recherche terminée" : insideEmptyFolder ? "Dossier vide" : "Bibliothèque prête",
+        title: hasFilters ? "Aucun résultat" : insideEmptyFolder ? "Ce dossier est vide" : "Votre bibliothèque vous attend",
+        description: hasFilters ? "Aucune ressource ne correspond à ces filtres." : insideEmptyFolder ? "Ajoutez un lien ou un sous-dossier ici." : "Ajoutez un lien ou créez un dossier pour construire votre espace documentaire.",
         actions: hasFilters
           ? [reset]
           : [
             actionButton({ actionId: "v8.files.new-link", variant: "primary" }, [icon("link-2"), element("span", { text: "Ajouter un lien" })]),
             actionButton({ actionId: "v8.files.new-folder", variant: "secondary" }, [icon("folder-plus"), element("span", { text: "Créer un dossier" })])
           ],
-        brain: hasFilters ? null : {
+        brain: hasFilters || insideEmptyFolder ? null : {
           title: "Suggestion Brain",
           description: "Brain peut vous aider à choisir une structure simple pour démarrer.",
           action: actionButton({ actionId: "v8.brain.open", variant: "secondary" }, [icon("brain"), element("span", { text: "Demander à Brain" })])
@@ -308,6 +347,7 @@ export function mountFiles(stage, options = {}) {
 
   function renderAll() {
     renderSources();
+    renderBreadcrumb();
     renderContent();
     renderPreview();
   }
@@ -335,7 +375,8 @@ export function mountFiles(stage, options = {}) {
       name: name.value,
       type: composerType,
       url: content.querySelector("[data-file-field='url']")?.value,
-      tag: content.querySelector("[data-file-field='tag']")?.value
+      tag: content.querySelector("[data-file-field='tag']")?.value,
+      parentId: currentFolderId
     });
     if (!created.ok) {
       notify({ id: "file-create-error", title: "Fichiers", message: created.message, type: "error" });
@@ -425,11 +466,41 @@ export function mountFiles(stage, options = {}) {
     return changed;
   }
 
+  function moveFile(id, parentId) {
+    const changed = repository.files.update(id, { parentId });
+    if (!changed.ok) {
+      notify({ id: "file-move-error", title: "Fichiers", message: changed.message, type: "error" });
+      return changed;
+    }
+    refreshFiles();
+    renderAll();
+    notify({ id: "file-moved", title: "Fichiers", message: "Élément déplacé.", type: "success", duration: 2200 });
+    return changed;
+  }
+
+  function openMoveMenu(id, anchor) {
+    const file = files.find((entry) => String(entry.id) === String(id));
+    if (!file) return false;
+    const blocked = file.type === "folder" ? descendantFolderIds(files, id) : new Set();
+    const destinations = files.filter((entry) => entry.type === "folder" && entry.id !== id && !blocked.has(entry.id));
+    const items = [
+      { label: "Bibliothèque (racine)", icon: "corner-left-up", disabled: !file.parentId, onSelect: () => moveFile(id, null) },
+      ...destinations.map((folder) => ({
+        label: folder.name,
+        icon: "folder",
+        disabled: folder.id === file.parentId,
+        onSelect: () => moveFile(id, folder.id)
+      }))
+    ];
+    return rowMenu.open(anchor, items, { label: `Déplacer ${file.name}` });
+  }
+
   function openFileMenu(id, anchor, point = null) {
     const file = files.find((entry) => String(entry.id) === String(id));
     if (!file) return false;
     return rowMenu.open(anchor, [
       { label: "Renommer", icon: "pencil", onSelect: () => renameFile(id) },
+      { label: "Déplacer vers...", icon: "folder-input", onSelect: () => openMoveMenu(id, anchor) },
       { label: file.favorite ? "Retirer des favoris" : "Ajouter aux favoris", icon: file.favorite ? "star-off" : "star", onSelect: () => toggleFavorite(id) },
       { label: selection.has(id) ? "Retirer de la sélection" : "Ajouter à la sélection", icon: selection.has(id) ? "square-minus" : "square-check-big", onSelect: () => toggleFileSelection(id) },
       { separator: true },
@@ -443,6 +514,12 @@ export function mountFiles(stage, options = {}) {
   scopedActions.push(actions.scope("v8.files.create", createFile));
 
   function handleClick(event) {
+    const crumb = event.target.closest("[data-files-breadcrumb]");
+    if (crumb && page.contains(crumb)) {
+      const crumbId = crumb.dataset.filesBreadcrumb;
+      navigateToFolder(crumbId === "root" ? null : crumbId);
+      return;
+    }
     const source = event.target.closest("[data-files-source]");
     if (source && page.contains(source)) {
       const id = source.dataset.filesSource;
@@ -475,7 +552,13 @@ export function mountFiles(stage, options = {}) {
     }
     const item = event.target.closest("[data-file-id]");
     if (item && page.contains(item)) {
-      selectedId = item.dataset.fileId;
+      const id = item.dataset.fileId;
+      const file = files.find((entry) => String(entry.id) === String(id));
+      if (file?.type === "folder") {
+        navigateToFolder(file.id);
+        return;
+      }
+      selectedId = id;
       renderContent();
       renderPreview();
       return;

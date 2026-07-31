@@ -2365,7 +2365,7 @@ html[data-v8-interactions] .v8-panel-notice:hover > .v8-selection-control,.v8-pa
 .v8-continuity > :not([aria-hidden="true"]),.v8-home-brain > :not([aria-hidden="true"]),.v8-brain-context > :not([aria-hidden="true"]) { position:relative;z-index:1; }
 
 .v8-home-spotify-host,.v8-home-discord-host,.v8-home-weather-host,.v8-home-minecraft-host,.v8-home-steam-host { margin-top:var(--v8-space-6); }
-[class$="-live__body"] { grid-template-columns:minmax(0,1fr); }
+[class$="-live__body"] { grid-template-columns:minmax(0,1fr); position:relative;padding-bottom:22px; }
 [class$="-live__body"] > strong,[class$="-live__body"] > p { min-width:0; }
 .v8-spotify-live { position:relative;isolation:isolate;display:grid;min-width:0;grid-template-columns:72px minmax(0,1fr) auto;align-items:center;gap:var(--v8-space-4);overflow:hidden;padding:var(--v8-space-4);border-color:color-mix(in srgb,var(--v8-success) 26%,var(--v8-border));background:var(--v8-reflection-card),color-mix(in srgb,var(--v8-success) 4%,var(--v8-surface-1));box-shadow:var(--v8-shadow-card-lit); }
 .v8-spotify-live > :not(.v8-spotify-live__aura) { position:relative;z-index:1; }
@@ -2544,7 +2544,7 @@ html[data-v8-interactions] button.v8-weather-live:hover { border-color:color-mix
 
 .v8-weather-icon, .v8-minecraft-avatar, .v8-google-calendar-icon, .v8-notion-icon, .v8-todoist-icon, .v8-valorant-emblem, .v8-lol-icon, .v8-lastfm-artwork, .v8-tracker-avatar, .v8-google-drive-icon, .v8-youtube-avatar, .v8-reddit-avatar { position:relative; }
 .v8-live-pulse-dot { position:absolute;right:-1px;bottom:-1px;width:8px;height:8px;border-radius:50%;background:#5fd68f;border:2px solid var(--v8-surface-1);opacity:.8; }
-.v8-live-freshness { position:absolute;right:10px;bottom:8px;z-index:2;padding:2px 6px;border-radius:var(--v8-radius-pill);background:color-mix(in srgb,var(--v8-canvas) 55%,transparent);color:var(--v8-text-tertiary, var(--v8-text-secondary));font-size:var(--v8-font-micro);line-height:1.4;opacity:0.7;pointer-events:none; }
+.v8-live-freshness { position:absolute;right:0;bottom:0;z-index:2;padding:2px 6px;border-radius:var(--v8-radius-pill);background:color-mix(in srgb,var(--v8-canvas) 55%,transparent);color:var(--v8-text-tertiary, var(--v8-text-secondary));font-size:var(--v8-font-micro);line-height:1.4;opacity:0.7;pointer-events:none; }
 
 .v8-brain-context__identity { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--v8-space-4); }
 .v8-brain-orbit { display: grid; width: 64px; height: 64px; place-items: center; border: 1px solid var(--v8-brain-line); border-radius: 50%; background: var(--v8-brain-soft); color: var(--v8-brain); box-shadow: 0 0 36px var(--v8-light-brain); }

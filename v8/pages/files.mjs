@@ -358,6 +358,19 @@ export function mountFiles(stage, options = {}) {
     fileRow(id)?.querySelector("[data-collection-select]")?.focus?.({ preventScroll: true });
   }
 
+  function renameFile(id) {
+    const file = files.find((entry) => String(entry.id) === String(id));
+    if (!file) return completed("Fichier introuvable");
+    const value = prompt("Renommer", file.name || "");
+    if (value == null) return completed("Renommage annule");
+    const changed = repository.files.update(id, { name: value });
+    if (!changed.ok) return changed;
+    refreshFiles();
+    renderAll();
+    notify({ id: "file-renamed", title: "Fichiers", message: "Élément renommé.", type: "success", duration: 2200 });
+    return changed;
+  }
+
   function toggleFavorite(id) {
     const changed = repository.files.toggleFavorite(id);
     if (!changed.ok) return changed;
@@ -416,6 +429,7 @@ export function mountFiles(stage, options = {}) {
     const file = files.find((entry) => String(entry.id) === String(id));
     if (!file) return false;
     return rowMenu.open(anchor, [
+      { label: "Renommer", icon: "pencil", onSelect: () => renameFile(id) },
       { label: file.favorite ? "Retirer des favoris" : "Ajouter aux favoris", icon: file.favorite ? "star-off" : "star", onSelect: () => toggleFavorite(id) },
       { label: selection.has(id) ? "Retirer de la sélection" : "Ajouter à la sélection", icon: selection.has(id) ? "square-minus" : "square-check-big", onSelect: () => toggleFileSelection(id) },
       { separator: true },

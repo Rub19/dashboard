@@ -746,6 +746,17 @@ export function createProfileRepository(options = {}) {
         return fileView(item, 0, []);
       });
     },
+    update(id, patch = {}) {
+      return mutate("files", (list, state) => {
+        const item = list.find((entry) => String(entry?.id) === String(id));
+        if (!item) throw new Error("Fichier introuvable");
+        if (Object.hasOwn(patch, "name")) item.name = text(patch.name, item.type === "folder" ? "Nouveau dossier" : "Nouveau lien", 180);
+        if (Object.hasOwn(patch, "tag")) item.tag = text(patch.tag, "", 80);
+        item.updatedAt = now().toISOString();
+        const favorites = Array.isArray(state.filesExplorer?.favorites) ? state.filesExplorer.favorites : [];
+        return fileView(item, 0, favorites);
+      });
+    },
     toggleFavorite(id) {
       return mutate("files", (list, state) => {
         const item = list.find((entry) => String(entry?.id) === String(id));

@@ -140,7 +140,7 @@ const SPECIAL_METHODS = Object.freeze({
     method({ id: "public-location", label: "Lieu public", summary: "Conditions et previsions via Open-Meteo, une API meteo publique et gratuite.", availability: "public", recommended: true, live: true, quality: "Temps reel", apiVersion: "Open-Meteo", badges: ["Simple", "Sans secret", "Lecture seule"], capabilities: ["Conditions actuelles", "Previsions"], permissions: ["Aucune permission privee"], field: { type: "text", label: "Ville", placeholder: "Paris, France", required: true } })
   ]),
   riot: Object.freeze([
-    method({ id: "server-connector", label: "Henrik + Riot Games API", summary: "Valorant via l'API Henrik et League of Legends via l'API officielle Riot Games, avec un seul Riot ID.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "Henrik API + Riot Games API", guideKind: "apikey", live: true, badges: ["Cloud"], capabilities: ["Statistiques Valorant", "Statistiques League of Legends"], permissions: ["Donnees exposees par Henrik et par l'API officielle Riot Games"], field: { type: "text", label: "Riot ID (Nom#Tag)", placeholder: "Pseudo#EUW", required: true }, credential: { provider: "henrik", fields: [{ key: "apiKey", label: "Cle API Henrik (Valorant, optionnel)", placeholder: "HDEV-..." }] } })
+    method({ id: "server-connector", label: "Riot via Tracker.gg", summary: "Valorant et League of Legends via l'API Tracker.gg, avec un seul Riot ID.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "Tracker.gg API", guideKind: "apikey", live: true, badges: ["Cloud"], capabilities: ["Statistiques Valorant", "Statistiques League of Legends"], permissions: ["Donnees exposees par Tracker.gg"], field: { type: "text", label: "Riot ID (Nom#Tag)", placeholder: "Pseudo#EUW", required: true }, credential: { provider: "tracker", fields: [{ key: "apiKey", label: "Cle API Tracker.gg", placeholder: "TRN-..." }] } })
   ]),
   "tracker-gg": Object.freeze([
     method({ id: "server-connector", label: "Tracker.gg API", summary: "Rangs et matchs Apex Legends via une cle API Tracker.gg conservee cote Worker.", availability: "backend", recommended: true, quality: "Complete", apiVersion: "Tracker.gg API", guideKind: "apikey", live: true, badges: ["Cloud"], capabilities: ["Rangs", "Matchs recents", "Statistiques"], permissions: ["Donnees exposees par Tracker.gg"], field: { type: "text", label: "Identifiant (Origin, PSN, Xbox)", placeholder: "VotrePseudo", required: true }, credential: { provider: "tracker", fields: [{ key: "apiKey", label: "Cle API Tracker.gg", placeholder: "TRN-..." }] } })
@@ -226,8 +226,7 @@ const SPECIAL_RESOURCES = Object.freeze({
     { label: "Comptes API", url: "https://www.last.fm/api/accounts", kind: "Console" }
   ]),
   riot: Object.freeze([
-    { label: "Henrik API Documentation", url: "https://docs.henrikdev.xyz/", kind: "Documentation" },
-    { label: "Riot Developer Portal", url: "https://developer.riotgames.com/", kind: "Console" }
+    { label: "Tracker.gg Developers", url: "https://tracker.gg/developers", kind: "Console" }
   ]),
   reddit: Object.freeze([
     { label: "Reddit App Preferences", url: "https://www.reddit.com/prefs/apps", kind: "Console" },
@@ -482,10 +481,8 @@ const SPECIAL_GUIDES = Object.freeze({
   riot: Object.freeze({
     "server-connector": (resource) => Object.freeze([
       guideStep("id", "Un seul Riot ID pour les deux jeux", "Renseignez votre Riot ID complet (Pseudo#Tag, ex: rub19#boss) dans le champ ci-dessous. Il alimente a la fois la carte Valorant et la carte League of Legends dans Live Now."),
-      guideStep("henrik", "Valorant via l'API Henrik", "Generez une cle gratuite sur le site Henrik pour activer les statistiques Valorant.", { resource }),
-      guideStep("riot", "League of Legends via l'API officielle Riot Games", "Generez une cle sur le Riot Developer Portal pour activer les statistiques League of Legends."),
-      guideStep("backend", "Enregistrer les cles cote Worker", "Les deux cles (HENRIK_API_KEY et RIOT_API_KEY) sont enregistrees comme secrets sur le Worker ETHONE et ne sont jamais visibles dans le navigateur."),
-      guideStep("paste", "Votre propre cle Henrik (optionnel)", "Pour un quota Valorant independant, collez votre propre cle Henrik dans le champ \"Votre propre cle\" ci-dessous. League of Legends utilise uniquement la cle partagee du Worker.", { status: "blocked" })
+      guideStep("tracker", "Valorant et League of Legends via Tracker.gg", "Les statistiques des deux jeux passent par la meme cle Tracker.gg que l'integration Apex Legends. La cle partagee d'ETHONE est deja utilisee.", { resource }),
+      guideStep("paste", "Votre propre cle Tracker.gg (optionnel)", "Pour un quota independant des autres utilisateurs, collez votre propre cle Tracker.gg dans le champ \"Votre propre cle\" ci-dessous. Elle s'applique aussi a l'integration Apex Legends.", { status: "blocked" })
     ])
   }),
   "tracker-gg": Object.freeze({

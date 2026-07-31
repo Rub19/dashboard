@@ -42,7 +42,7 @@ export function createWeatherDetail(options = {}) {
     if (!host || !anchorEl || presence.available !== true) return false;
     const forecast = Array.isArray(presence.forecast) ? presence.forecast : [];
     popover = element("div", {
-      className: "v8-weather-détail",
+      className: "v8-weather-detail",
       attributes: { role: "dialog", "aria-label": "Détail météo" }
     }, [
       element("header", { className: "v8-weather-detail__head" }, [

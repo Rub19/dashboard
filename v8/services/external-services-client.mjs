@@ -44,7 +44,7 @@ const OPERATIONS = Object.freeze({
   redditActivity: Object.freeze({ path: "/api/reddit/activity", auth: true, params: ["clientId"] }),
   redditOAuthDisconnect: Object.freeze({ path: "/api/reddit/oauth/disconnect", method: "POST", auth: true, params: [] }),
   publicProfile: Object.freeze({ path: "/api/supabase/public-profile", auth: true, params: ["username"] }),
-  brainComplete: Object.freeze({ path: "/api/brain/complète", method: "POST", auth: true, params: [], rawBody: true })
+  brainComplete: Object.freeze({ path: "/api/brain/complete", method: "POST", auth: true, params: [], rawBody: true })
 });
 
 function clientError(code, message, details = {}) {

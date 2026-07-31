@@ -1,5 +1,5 @@
 import { DEFAULT_DENSITY_SETTINGS, normalizeDensityMode, sanitizeDensitySettings } from "./density-engine.mjs";
-import { DEFAULT_BRAIN_PREFERENCES, sanitizeBrainPreferences } from "../brain/préférences.mjs";
+import { DEFAULT_BRAIN_PREFERENCES, sanitizeBrainPreferences } from "../brain/preferences.mjs";
 
 export const PERSISTENCE_KEY = "ethone:v8-ui-state";
 

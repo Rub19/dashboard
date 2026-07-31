@@ -493,11 +493,11 @@ test("profile selection exposes an honest live environment preview", () => {
   assert.equal(model.backgroundLabel, "Horizon");
   assert.equal(model.live.signals.find((signal) => signal.id === "weather")?.value, "18 C, ciel clair");
   assert.equal(model.live.signals.find((signal) => signal.id === "music")?.value, "Tycho - Awake");
-  assert.equal(model.live.signals.find((signal) => signal.id === "discord")?.value, "Connecte");
+  assert.equal(model.live.signals.find((signal) => signal.id === "discord")?.value, "Connecté");
 
   const disconnected = profilePreviewModel({ id: "local", name: "Local" }, { profile: { id: "local" } }, date);
-  assert.equal(disconnected.live.signals.find((signal) => signal.id === "weather")?.value, "Non connectee");
-  assert.equal(disconnected.live.signals.find((signal) => signal.id === "music")?.value, "Non connectee");
+  assert.equal(disconnected.live.signals.find((signal) => signal.id === "weather")?.value, "Non connectée");
+  assert.equal(disconnected.live.signals.find((signal) => signal.id === "music")?.value, "Non connectée");
   assert.doesNotMatch(JSON.stringify(disconnected.live), /soleil|22 C|playlist/i);
   assert.match(formatEnvironmentClock(date).time, /^\d{2}:\d{2}$/);
 });

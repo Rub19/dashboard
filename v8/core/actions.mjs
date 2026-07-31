@@ -1,6 +1,6 @@
 import { WORKSPACES } from "../data/workspaces.mjs";
 import { DENSITY_CUSTOM_RANGES, DENSITY_MODES } from "./density-engine.mjs";
-import { patchBrainPreferences, sanitizeBrainPreferences } from "../brain/préférences.mjs";
+import { patchBrainPreferences, sanitizeBrainPreferences } from "../brain/preferences.mjs";
 import { sanitizeAutomationRule, sanitizeAutomationRules } from "./automation-engine.mjs";
 
 const LOCALES = Object.freeze(["fr", "en", "es", "de"]);
@@ -200,25 +200,25 @@ export function createActionFacade(options = {}) {
     });
   });
 
-  register("v8.thème.toggle", () => {
+  register("v8.theme.toggle", () => {
     const theme = getState().theme === "day" ? "night" : "day";
     setState({ theme });
     notify({ id: "thème-updated", title: "Thème", message: theme === "day" ? "Mode Jour applique" : "Mode Nuit applique", type: "success" });
     return completed("Thème modifié", { theme });
   });
-  register("v8.thème.night", () => {
+  register("v8.theme.night", () => {
     setState({ theme: "night" });
     return completed("Mode Nuit applique", { theme: "night" });
   });
-  register("v8.thème.graphite", () => {
+  register("v8.theme.graphite", () => {
     setState({ theme: "graphite" });
     return completed("Mode Graphite applique", { theme: "graphite" });
   });
-  register("v8.thème.day", () => {
+  register("v8.theme.day", () => {
     setState({ theme: "day" });
     return completed("Mode Jour applique", { theme: "day" });
   });
-  register("v8.thème.auto", () => {
+  register("v8.theme.auto", () => {
     setState({ theme: "auto" });
     return completed("Mode Automatique applique", { theme: "auto" });
   });
@@ -255,7 +255,7 @@ export function createActionFacade(options = {}) {
     return completed(adaptiveBySpace ? "Presets par Space actifs" : "Presets par Space desactives", { adaptiveBySpace });
   });
 
-  register("v8.brain.préférence", (context = {}) => {
+  register("v8.brain.preference", (context = {}) => {
     const path = String(context.path || "");
     if (!/^(?:enabled|assistantName|persona|tone|detail|language|proactive|suggestionFrequency|automationLevel|notifications|sounds|silentInFocus|briefing\.(?:enabled|concise)|provider\.(?:active|model|fallback|privacy)|memory\.(?:enabled|retentionDays|categories\.[a-z-]+)|permissions\.[a-z-]+)$/.test(path)) {
       return unavailable("Cette préférence Brain n'est pas modifiable.");

@@ -1,4 +1,4 @@
-import { resolveTheme } from "./thème-engine.mjs";
+import { resolveTheme } from "./theme-engine.mjs";
 
 const BRAND = "ETHONE";
 const SEPARATOR = "\u2014";

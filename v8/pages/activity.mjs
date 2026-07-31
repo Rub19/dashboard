@@ -1,4 +1,4 @@
-import { integrationById } from "../data/intégrations.mjs";
+import { integrationById } from "../data/integrations.mjs";
 import { actionButton, debounce, element, icon } from "../ui/dom.mjs";
 import { collectionDensityControl, updateCollectionDensityControl } from "../ui/dense-content.mjs";
 import { emptyState, statusState } from "../ui/empty-state.mjs";
@@ -6,7 +6,7 @@ import { refreshIcons } from "../ui/icons.mjs";
 import { spotifyLiveCard } from "../ui/spotify-live.mjs";
 import { discordLiveCard } from "../ui/discord-live.mjs";
 import { weatherLiveCard } from "../ui/weather-live.mjs";
-import { createWeatherDetail } from "../ui/weather-détail.mjs";
+import { createWeatherDetail } from "../ui/weather-detail.mjs";
 import { minecraftLiveCard } from "../ui/minecraft-live.mjs";
 import { steamLiveCard } from "../ui/steam-live.mjs";
 import { githubLiveCard } from "../ui/github-live.mjs";
@@ -265,7 +265,7 @@ export function mountActivity(stage, options = {}) {
   const liveGrid = element("div", { className: "v8-now-grid" });
   const weatherDetail = createWeatherDetail();
   liveGrid.addEventListener("click", (event) => {
-    const trigger = event.target.closest("[data-weather-détail-trigger]");
+    const trigger = event.target.closest("[data-weather-detail-trigger]");
     if (!trigger) return;
     if (weatherDetail.isOpen()) { weatherDetail.close({ restoreFocus: true }); return; }
     weatherDetail.open(trigger, weatherLive?.state?.() || {});
@@ -388,7 +388,7 @@ export function mountActivity(stage, options = {}) {
     });
     systemCard.classList.toggle("v8-now-card--solo", liveGrid.children.length === 1);
     renderCustomizePanel();
-    if (!connected.length) liveGrid.append(statusState("intégration", {
+    if (!connected.length) liveGrid.append(statusState("integration", {
       title: "Aucune source distante active",
       description: "Configurez un service pour enrichir le Live Feed sans données fictives.",
       actions: [actionButton({ actionId: "v8.connections.open", variant: "secondary" }, [element("span", { text: "Configurer" }), icon("arrow-up-right")])],

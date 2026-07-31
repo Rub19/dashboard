@@ -1,12 +1,12 @@
 const CONTROL_SELECTOR = [
   "button:not(:disabled)",
   "a[href]",
-  "[rôle='button']:not([aria-disabled='true'])",
-  "[rôle='tab']:not([aria-disabled='true'])",
-  "[rôle='option']:not([aria-disabled='true'])",
-  "[rôle='switch']:not([aria-disabled='true'])",
-  "[rôle='checkbox']:not([aria-disabled='true'])",
-  "[rôle='radio']:not([aria-disabled='true'])",
+  "[role='button']:not([aria-disabled='true'])",
+  "[role='tab']:not([aria-disabled='true'])",
+  "[role='option']:not([aria-disabled='true'])",
+  "[role='switch']:not([aria-disabled='true'])",
+  "[role='checkbox']:not([aria-disabled='true'])",
+  "[role='radio']:not([aria-disabled='true'])",
   "[data-interactive]:not([aria-disabled='true'])",
   "[data-haptic]:not([aria-disabled='true'])"
 ].join(",");

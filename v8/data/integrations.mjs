@@ -189,7 +189,7 @@ const SPECIAL_METHODS = Object.freeze({
 });
 
 const OFFICIAL_HOME = Object.freeze({
-  spotify: "https://developer.spotify.com/", plex: "https://www.plex.tv/", jellyfin: "https://jellyfin.org/docs/", emby: "https://dev.emby.media/", youtube: "https://developers.google.com/youtube/v3", twitch: "https://dev.twitch.tv/docs/", lastfm: "https://www.last.fm/api", discord: "https://docs.discord.com/developers/", reddit: "https://www.reddit.com/dev/api/", bluesky: "https://docs.bsky.app/", steam: "https://steamcommunity.com/dev", riot: "https://developer.riotgames.com/", minecraft: "https://learn.microsoft.com/minecraft/creator/", "tracker-gg": "https://tracker.gg/developers", "google-calendar": "https://developers.google.com/workspace/calendar/api", "google-drive": "https://developers.google.com/drive/api/guides/about-sdk", notion: "https://developers.notion.com/", todoist: "https://developer.todoist.com/", linear: "https://developers.linear.app/docs/", clickup: "https://developer.clickup.com/", jira: "https://developer.atlassian.com/cloud/jira/platform/", email: "https://developers.google.com/gmail/api", rss: "https://www.rssboard.org/rss-specification", weather: "https://open-météo.com/en/docs", github: "https://docs.github.com/en/apps", gitlab: "https://docs.gitlab.com/intégration/oauth_provider/", obsidian: "https://docs.obsidian.md/Plugins/Getting+started/Build+a+plugin", vscode: "https://code.visualstudio.com/api", fitbit: "https://dev.fitbit.com/build/référence/web-api/", "lm-studio": "https://lmstudio.ai/docs/developer", ollama: "https://docs.ollama.com/api", openai: "https://platform.openai.com/docs/", anthropic: "https://docs.anthropic.com/", gemini: "https://ai.google.dev/gemini-api/docs", groq: "https://console.groq.com/docs"
+  spotify: "https://developer.spotify.com/", plex: "https://www.plex.tv/", jellyfin: "https://jellyfin.org/docs/", emby: "https://dev.emby.media/", youtube: "https://developers.google.com/youtube/v3", twitch: "https://dev.twitch.tv/docs/", lastfm: "https://www.last.fm/api", discord: "https://docs.discord.com/developers/", reddit: "https://www.reddit.com/dev/api/", bluesky: "https://docs.bsky.app/", steam: "https://steamcommunity.com/dev", riot: "https://developer.riotgames.com/", minecraft: "https://learn.microsoft.com/minecraft/creator/", "tracker-gg": "https://tracker.gg/developers", "google-calendar": "https://developers.google.com/workspace/calendar/api", "google-drive": "https://developers.google.com/drive/api/guides/about-sdk", notion: "https://developers.notion.com/", todoist: "https://developer.todoist.com/", linear: "https://developers.linear.app/docs/", clickup: "https://developer.clickup.com/", jira: "https://developer.atlassian.com/cloud/jira/platform/", email: "https://developers.google.com/gmail/api", rss: "https://www.rssboard.org/rss-specification", weather: "https://open-meteo.com/en/docs", github: "https://docs.github.com/en/apps", gitlab: "https://docs.gitlab.com/integration/oauth_provider/", obsidian: "https://docs.obsidian.md/Plugins/Getting+started/Build+a+plugin", vscode: "https://code.visualstudio.com/api", fitbit: "https://dev.fitbit.com/build/reference/web-api/", "lm-studio": "https://lmstudio.ai/docs/developer", ollama: "https://docs.ollama.com/api", openai: "https://platform.openai.com/docs/", anthropic: "https://docs.anthropic.com/", gemini: "https://ai.google.dev/gemini-api/docs", groq: "https://console.groq.com/docs"
 });
 
 const SPECIAL_RESOURCES = Object.freeze({
@@ -211,11 +211,11 @@ const SPECIAL_RESOURCES = Object.freeze({
   ]),
   notion: Object.freeze([
     { label: "Guide d'autorisation", url: "https://developers.notion.com/guides/get-started/authorization", kind: "Documentation" },
-    { label: "Mes intégrations", url: "https://www.notion.so/profile/intégrations", kind: "Console" }
+    { label: "Mes intégrations", url: "https://www.notion.so/profile/integrations", kind: "Console" }
   ]),
   todoist: Object.freeze([
     { label: "Guide OAuth", url: "https://developer.todoist.com/guides/#oauth", kind: "Documentation" },
-    { label: "Console App Management", url: "https://app.todoist.com/app/settings/intégrations/app-management", kind: "Console" }
+    { label: "Console App Management", url: "https://app.todoist.com/app/settings/integrations/app-management", kind: "Console" }
   ]),
   twitch: Object.freeze([
     { label: "Authentification Twitch", url: "https://dev.twitch.tv/docs/authentication/", kind: "Documentation" },
@@ -380,7 +380,7 @@ const SPECIAL_GUIDES = Object.freeze({
   }),
   notion: Object.freeze({
     "public-oauth": (resource) => Object.freeze([
-      guideStep("docs", "Ouvrir My Intégrations sur Notion", "Connectez-vous puis \"New intégration\".", { resource }),
+      guideStep("docs", "Ouvrir My Integrations sur Notion", "Connectez-vous puis \"New integration\".", { resource }),
       guideStep("app", "Configurer l'intégration", "Type \"Public\" (nécessaire pour un flux OAuth), nom libre, associez un workspace."),
       guideStep("redirect", "Ajouter la Redirect URI", "Cette valeur exacte, sans rien ajouter derriere.", { copyValue: "https://ethone.dev/" }),
       guideStep("permissions", "Capacités a demander", "Read content uniquement. Ne cochez pas Insert/Update sauf besoin reel."),
@@ -390,7 +390,7 @@ const SPECIAL_GUIDES = Object.freeze({
       guideStep("connect", "Se connecter avec Notion", "L'application ETHONE est prete : cliquez \"Se connecter avec Notion\" puis choisissez les pages a partager avec votre compte.")
     ]),
     "internal-backend": (resource) => Object.freeze([
-      guideStep("docs", "Ouvrir My Intégrations sur Notion", "Connectez-vous puis \"New intégration\".", { resource }),
+      guideStep("docs", "Ouvrir My Integrations sur Notion", "Connectez-vous puis \"New integration\".", { resource }),
       guideStep("app", "Configurer l'intégration", "Type \"Internal\" (pas de flux OAuth, un seul workspace), nom libre."),
       guideStep("permissions", "Capacités a demander", "Read content uniquement."),
       guideStep("keys", "Copier le jeton d'intégration interne", "Affiche une seule fois dans l'onglet \"Secrets\"."),
@@ -437,7 +437,7 @@ const SPECIAL_GUIDES = Object.freeze({
   }),
   jira: Object.freeze({
     "oauth-secure": (resource) => Object.freeze([
-      guideStep("docs", "Ouvrir la console developpeur Atlassian", "Connectez-vous puis \"Create\" > \"OAuth 2.0 intégration\".", { resource }),
+      guideStep("docs", "Ouvrir la console developpeur Atlassian", "Connectez-vous puis \"Create\" > \"OAuth 2.0 integration\".", { resource }),
       guideStep("app", "Nommer l'application", "Nom libre. Dans Permissions, ajoutez l'API Jira platform REST."),
       guideStep("redirect", "Ajouter la Callback URL", REDIRECT_NOTE, { copyValue: "https://ethone.dev/" }),
       guideStep("scopes", "Scopes a demander", "read:jira-work (issues et projets en lecture seule).", { copyValue: "read:jira-work" }),

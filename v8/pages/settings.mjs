@@ -6,8 +6,8 @@ import { DEFAULT_SOUND_PREFERENCES, SOUND_PACKS } from "../services/sound-manage
 import { uploadProfileMedia, validateMediaFile } from "../services/media-upload.mjs";
 import { createSelect } from "../ui/select.mjs";
 import { DENSITY_CUSTOM_RANGES, DENSITY_PRESETS, densityCssVariables, resolveDensity, sanitizeDensitySettings } from "../core/density-engine.mjs";
-import { resolveTheme, systemPrefersLight } from "../core/thème-engine.mjs";
-import { BRAIN_MEMORY_CATEGORIES, BRAIN_PERMISSION_CATEGORIES, brainPreferenceLabel, sanitizeBrainPreferences } from "../brain/préférences.mjs";
+import { resolveTheme, systemPrefersLight } from "../core/theme-engine.mjs";
+import { BRAIN_MEMORY_CATEGORIES, BRAIN_PERMISSION_CATEGORIES, brainPreferenceLabel, sanitizeBrainPreferences } from "../brain/preferences.mjs";
 
 const ACCENTS = Object.freeze(["mint", "sky", "amber", "violet", "rose"]);
 const THEME_LABELS = Object.freeze({ night: "Nuit", graphite: "Graphite", day: "Jour", auto: "Automatique" });
@@ -57,7 +57,7 @@ function settingRow(iconName, title, description, control) {
   const rowId = `v8-setting-row-${++settingRowSequence}`;
   const titleId = `${rowId}-title`;
   const descriptionId = `${rowId}-description`;
-  const controls = control.matches?.("input, textarea, select, button[rôle='switch']") ? [control] : [...control.querySelectorAll?.("input, textarea, select, button[rôle='switch']") || []];
+  const controls = control.matches?.("input, textarea, select, button[role='switch']") ? [control] : [...control.querySelectorAll?.("input, textarea, select, button[role='switch']") || []];
   controls.forEach((entry) => {
     if (!entry.hasAttribute("aria-label") && !entry.hasAttribute("aria-labelledby")) entry.setAttribute("aria-labelledby", titleId);
     const describedBy = new Set(String(entry.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean));
@@ -113,14 +113,14 @@ function densitySwatch(values) {
 
 function themeSwatch(option, resolvedId) {
   const swatch = option.swatch || THEME_OPTIONS.find((entry) => entry.id === resolvedId)?.swatch;
-  if (!swatch) return element("span", { className: "v8-thème-swatch v8-thème-swatch--auto" }, [icon("monitor")]);
-  const node = element("span", { className: "v8-thème-swatch" }, [
-    element("span", { className: "v8-thème-swatch__chip" }),
-    element("span", { className: "v8-thème-swatch__dot" })
+  if (!swatch) return element("span", { className: "v8-theme-swatch v8-theme-swatch--auto" }, [icon("monitor")]);
+  const node = element("span", { className: "v8-theme-swatch" }, [
+    element("span", { className: "v8-theme-swatch__chip" }),
+    element("span", { className: "v8-theme-swatch__dot" })
   ]);
-  node.style.setProperty("--v8-thème-swatch-canvas", swatch.canvas);
-  node.style.setProperty("--v8-thème-swatch-surface", swatch.surface);
-  node.style.setProperty("--v8-thème-swatch-text", swatch.text);
+  node.style.setProperty("--v8-theme-swatch-canvas", swatch.canvas);
+  node.style.setProperty("--v8-theme-swatch-surface", swatch.surface);
+  node.style.setProperty("--v8-theme-swatch-text", swatch.text);
   return node;
 }
 
@@ -214,7 +214,7 @@ export function mountSettings(stage, options = {}) {
   const densityCustomHost = element("div", { className: "v8-density-custom", attributes: { hidden: state.density !== "custom" } }, Object.keys(DENSITY_CUSTOM_RANGES).map((key) => densityCustomControl(key, initialDensitySettings.custom[key])));
   const densityResolved = element("span", { className: "v8-density-resolved", attributes: { "aria-live": "polite" } });
   const themeResolution = resolveTheme(state.theme, { systemPrefersLight: systemPrefersLight(globalThis) });
-  const themeChoices = element("div", { className: "v8-thème-options", attributes: { role: "group", "aria-label": "Thème" } }, THEME_OPTIONS.map((option) => themeModeChoice(option, state.theme === option.id, themeResolution)));
+  const themeChoices = element("div", { className: "v8-theme-options", attributes: { role: "group", "aria-label": "Thème" } }, THEME_OPTIONS.map((option) => themeModeChoice(option, state.theme === option.id, themeResolution)));
   const themeResolved = element("span", { className: "v8-density-resolved", attributes: { "aria-live": "polite" }, text: themeResolution.requested === "auto" ? `${THEME_LABELS[themeResolution.effective]} - systeme` : THEME_LABELS[themeResolution.effective] });
   const brainPreferences = sanitizeBrainPreferences(state.brainPreferences);
   const brainNameInput = element("input", { className: "v8-input", attributes: { type: "text", maxlength: "32", value: brainPreferences.assistantName, "aria-label": "Nom de l'assistant" }, dataset: { brainPreferenceInput: "assistantName" } });
@@ -511,7 +511,7 @@ export function mountSettings(stage, options = {}) {
     }
     densityCustomHost.hidden = nextState.density !== "custom";
     const nextThemeResolution = resolveTheme(nextState.theme, { systemPrefersLight: systemPrefersLight(globalThis) });
-    page.querySelectorAll("[data-thème-mode]").forEach((button) => {
+    page.querySelectorAll("[data-theme-mode]").forEach((button) => {
       const active = button.dataset.themeMode === nextState.theme;
       button.classList.toggle("is-active", active);
       button.setAttribute("aria-pressed", String(active));
@@ -530,18 +530,18 @@ export function mountSettings(stage, options = {}) {
     page.querySelector("[data-action='v8.density.focus']")?.setAttribute("aria-checked", String(densitySettings.focusDensity));
     page.querySelector("[data-action='v8.density.spaces']")?.setAttribute("aria-checked", String(densitySettings.adaptiveBySpace));
     const brainPrefs = sanitizeBrainPreferences(nextState.brainPreferences);
-    page.querySelectorAll("[data-brain-préférence]").forEach((control) => {
+    page.querySelectorAll("[data-brain-preference]").forEach((control) => {
       const value = control.dataset.brainPreference.split(".").reduce((cursor, key) => cursor?.[key], brainPrefs);
       control.setAttribute("aria-checked", String(value === true));
       const stateIcon = control.closest("label")?.querySelector("[data-lucide]");
       if (stateIcon && control.dataset.brainPreference.startsWith("permissions.")) stateIcon.dataset.lucide = value === true ? "eye" : "eye-off";
-      if (stateIcon && control.dataset.brainPreference.startsWith("memory.catégories.")) stateIcon.dataset.lucide = value === true ? "bookmark-check" : "bookmark-x";
+      if (stateIcon && control.dataset.brainPreference.startsWith("memory.categories.")) stateIcon.dataset.lucide = value === true ? "bookmark-check" : "bookmark-x";
     });
-    page.querySelectorAll("[data-brain-préférence-select]").forEach((control) => {
+    page.querySelectorAll("[data-brain-preference-select]").forEach((control) => {
       const value = control.dataset.brainPreferenceSelect.split(".").reduce((cursor, key) => cursor?.[key], brainPrefs);
       control.value = String(value);
     });
-    page.querySelectorAll("[data-brain-préférence-input]").forEach((control) => {
+    page.querySelectorAll("[data-brain-preference-input]").forEach((control) => {
       const value = control.dataset.brainPreferenceInput.split(".").reduce((cursor, key) => cursor?.[key], brainPrefs);
       if (document.activeElement !== control) control.value = String(value ?? "");
     });
@@ -738,17 +738,17 @@ export function mountSettings(stage, options = {}) {
     }, { signal: controller.signal });
     control.addEventListener("change", (event) => commitSetting(event.currentTarget, "v8.density.custom.update", { source: "settings", key: event.currentTarget.dataset.densityCustom, value: Number(event.currentTarget.value) }), { signal: controller.signal });
   });
-  page.querySelectorAll("[data-brain-préférence]").forEach((control) => control.addEventListener("click", (event) => {
+  page.querySelectorAll("[data-brain-preference]").forEach((control) => control.addEventListener("click", (event) => {
     const path = event.currentTarget.dataset.brainPreference;
     const value = event.currentTarget.getAttribute("aria-checked") !== "true";
-    commitSetting(event.currentTarget, "v8.brain.préférence", { source: "settings", path, value });
+    commitSetting(event.currentTarget, "v8.brain.preference", { source: "settings", path, value });
   }, { signal: controller.signal }));
-  page.querySelectorAll("[data-brain-préférence-select]").forEach((control) => control.addEventListener("change", (event) => {
+  page.querySelectorAll("[data-brain-preference-select]").forEach((control) => control.addEventListener("change", (event) => {
     const path = event.currentTarget.dataset.brainPreferenceSelect;
     const value = path === "memory.retentionDays" ? Number(event.currentTarget.value) : event.currentTarget.value;
-    commitSetting(event.currentTarget, "v8.brain.préférence", { source: "settings", path, value });
+    commitSetting(event.currentTarget, "v8.brain.preference", { source: "settings", path, value });
   }, { signal: controller.signal }));
-  page.querySelectorAll("[data-brain-préférence-input]").forEach((control) => control.addEventListener("change", (event) => commitSetting(event.currentTarget, "v8.brain.préférence", { source: "settings", path: event.currentTarget.dataset.brainPreferenceInput, value: event.currentTarget.value }), { signal: controller.signal }));
+  page.querySelectorAll("[data-brain-preference-input]").forEach((control) => control.addEventListener("change", (event) => commitSetting(event.currentTarget, "v8.brain.preference", { source: "settings", path: event.currentTarget.dataset.brainPreferenceInput, value: event.currentTarget.value }), { signal: controller.signal }));
   brainMemoryLoad.addEventListener("click", () => void renderSettingsMemories(), { signal: controller.signal });
   brainMemoryList.addEventListener("click", async (event) => {
     const removeButton = event.target.closest("[data-settings-memory-delete]");

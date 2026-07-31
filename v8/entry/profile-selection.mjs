@@ -70,7 +70,7 @@ const MENU_ACTIONS = Object.freeze([
   Object.freeze({ id: "edit", label: "Modifier le profil", icon: "sliders-horizontal" }),
   Object.freeze({ id: "avatar", label: "Changer l'avatar", icon: "circle-user-round" }),
   Object.freeze({ id: "space", label: "Changer le Space", icon: "panels-top-left" }),
-  Object.freeze({ id: "thème", label: "Changer le thème", icon: "palette" }),
+  Object.freeze({ id: "theme", label: "Changer le thème", icon: "palette" }),
   Object.freeze({ id: "export", label: "Exporter", icon: "download" }),
   Object.freeze({ id: "duplicate", label: "Dupliquer", icon: "copy" }),
   Object.freeze({ id: "delete", label: "Supprimer", icon: "trash-2", danger: true })
@@ -611,7 +611,7 @@ export function mountProfileSelection(root, options = {}) {
     let chosenWidgets = new Set(profile?.environment.widgets?.length ? profile.environment.widgets : WIDGETS_BY_TYPE[profile?.type || "personal"]);
     const chosenIntegrations = new Set(profile?.environment.integrations || []);
     let widgetsTouched = false;
-    let activeStep = focusTarget === "space" || focusTarget === "thème" ? 1 : 0;
+    let activeStep = focusTarget === "space" || focusTarget === "theme" ? 1 : 0;
     const nameInput = element("input", { className: "v8-input", attributes: { type: "text", maxlength: "80", required: true, value: profile?.name || "", placeholder: "Nom du profil", autocomplete: "off" } });
     const descriptionInput = element("textarea", { className: "v8-input v8-profile-dialog__textarea", attributes: { maxlength: "180", rows: "3", placeholder: "Decrivez cet environnement" } }, profile?.description || "");
     const typeSelect = createSelect({ className: "v8-input", attributes: { "aria-label": "Space principal" } }, Object.entries(TYPE_LABELS).map(([value, label]) => optionNode(value, label)));
@@ -813,7 +813,7 @@ export function mountProfileSelection(root, options = {}) {
     showStep(activeStep, false);
     const target = focusTarget === "avatar" ? avatarPicker.querySelector('[aria-checked="true"]')
       : focusTarget === "space" ? typeSelect
-        : focusTarget === "thème" ? accentPicker.querySelector('[aria-checked="true"]')
+        : focusTarget === "theme" ? accentPicker.querySelector('[aria-checked="true"]')
           : nameInput;
     queueMicrotask(() => target?.focus());
     return dialog;
@@ -866,7 +866,7 @@ export function mountProfileSelection(root, options = {}) {
     else if (actionId === "edit") openEditor("edit", profile, "name");
     else if (actionId === "avatar") openEditor("edit", profile, "avatar");
     else if (actionId === "space") openEditor("edit", profile, "space");
-    else if (actionId === "thème") openEditor("edit", profile, "thème");
+    else if (actionId === "theme") openEditor("edit", profile, "theme");
     else if (actionId === "export") { closeMenu(); downloadExport(profile); }
     else if (actionId === "duplicate") {
       closeMenu();

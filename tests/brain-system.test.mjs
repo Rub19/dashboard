@@ -223,7 +223,7 @@ test("Brain remains lazy, exposes all control surfaces and has fail-closed RLS",
   assert.doesNotMatch(app, /^import .*brain\/runtime\.mjs/m);
   assert.match(app, /import\("\.\.\/brain\/runtime\.mjs"\)/);
   assert.match(app, /import\("\.\.\/pages\/brain\.mjs"\)/);
-  for (const tab of ["Chat", "Contexte", "Memoire", "Actions", "Automations", "Providers", "Confidentialite", "Historique", "Diagnostics"]) assert.match(page, new RegExp(`label: "${tab}"`));
+  for (const tab of ["Chat", "Contexte", "Memoire", "Actions", "Automations", "Providers", "Confidentialité", "Historique", "Diagnostics"]) assert.match(page, new RegExp(`label: "${tab}"`));
   for (const preference of ["suggestionFrequency", "automationLevel", "language", "provider.fallback", "provider.privacy", "memory.categories"]) assert.match(settings, new RegExp(preference.replace(".", "\\.")));
   assert.match(migration, /enable row level security/i);
   assert.match(migration, /force row level security/i);

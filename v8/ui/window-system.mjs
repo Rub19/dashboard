@@ -36,7 +36,7 @@ export function createWindowController(options = {}) {
     finishExit();
     activeLayer = layer;
     activeConfig = config;
-    const surface = layer.querySelector?.("[rôle='dialog']") || layer;
+    const surface = layer.querySelector?.("[role='dialog']") || layer;
     layer.inert = false;
     layer.removeAttribute?.("aria-hidden");
     layer.dataset.windowState = "opening";

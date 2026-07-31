@@ -1,4 +1,4 @@
-import { BRAIN_MEMORY_CATEGORIES } from "./préférences.mjs";
+import { BRAIN_MEMORY_CATEGORIES } from "./preferences.mjs";
 
 export const BRAIN_MEMORY_TABLE = "ethone_brain_memories";
 const CATEGORY_SET = new Set(BRAIN_MEMORY_CATEGORIES);

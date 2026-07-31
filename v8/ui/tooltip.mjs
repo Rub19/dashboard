@@ -67,7 +67,7 @@ export function createTooltipController(options = {}) {
     node.id = "v8-global-tooltip";
     node.className = "v8-tooltip";
     node.dataset.v8Layer = "tooltip";
-    node.setAttribute("rôle", "tooltip");
+    node.setAttribute("role", "tooltip");
     node.hidden = true;
     (documentRef.body || documentRef.documentElement).append(node);
     return node;

@@ -31,14 +31,14 @@ export const SOUND_EVENTS = Object.freeze({
   "brain.open": Object.freeze({ cue: "brain", category: "brain", gain: 0.68, spatial: "center" }),
   "brain.thinking": Object.freeze({ cue: "pulse", category: "brain", gain: 0.42, minInterval: 900, spatial: "center" }),
   "brain.respond": Object.freeze({ cue: "brain", category: "brain", gain: 0.58, spatial: "center" }),
-  "brain.complète": Object.freeze({ cue: "confirm", category: "brain", gain: 0.66, spatial: "center" }),
+  "brain.complete": Object.freeze({ cue: "confirm", category: "brain", gain: 0.66, spatial: "center" }),
   "brain.error": Object.freeze({ cue: "error", category: "brain", gain: 0.58, spatial: "center" }),
   "marketplace.open": Object.freeze({ cue: "open", category: "interface", gain: 0.68 }),
   "settings.open": Object.freeze({ cue: "open", category: "interface", gain: 0.62 }),
   "note.create": Object.freeze({ cue: "confirm", category: "interface", gain: 0.58 }),
   "delete": Object.freeze({ cue: "close", category: "system", gain: 0.72 }),
   "save.start": Object.freeze({ cue: "touch", category: "system", gain: 0.38, minInterval: 500 }),
-  "save.complète": Object.freeze({ cue: "confirm", category: "system", gain: 0.56, minInterval: 260 }),
+  "save.complete": Object.freeze({ cue: "confirm", category: "system", gain: 0.56, minInterval: 260 }),
   "sync.start": Object.freeze({ cue: "pulse", category: "system", gain: 0.44, minInterval: 500 }),
   "sync.success": Object.freeze({ cue: "confirm", category: "system", gain: 0.62 }),
   "system.error": Object.freeze({ cue: "error", category: "system", gain: 0.72, minInterval: 300 }),
@@ -51,7 +51,7 @@ export const SOUND_EVENTS = Object.freeze({
   "notification.update": Object.freeze({ cue: "launch", category: "notifications", gain: 0.58, minInterval: 300, spatial: "right" }),
   "auth.login": Object.freeze({ cue: "launch", category: "system", gain: 0.7 }),
   "auth.logout": Object.freeze({ cue: "close", category: "system", gain: 0.64 }),
-  "onboarding.complète": Object.freeze({ cue: "launch", category: "system", gain: 0.74 }),
+  "onboarding.complete": Object.freeze({ cue: "launch", category: "system", gain: 0.74 }),
   "widget.install": Object.freeze({ cue: "confirm", category: "system", gain: 0.62 }),
   "widget.uninstall": Object.freeze({ cue: "close", category: "system", gain: 0.62 }),
   "drag.drop": Object.freeze({ cue: "touch", category: "interface", gain: 0.5, minInterval: 160 }),
@@ -203,11 +203,11 @@ export function soundEventForNotification(type, notice = {}) {
   const normalized = String(type || "info").toLowerCase();
   const id = String(notice.id || "").toLowerCase();
   if (id.includes("notes-created")) return "note.create";
-  if (id.includes("saved")) return "save.complète";
+  if (id.includes("saved")) return "save.complete";
   if (id.includes("deleted") || id.includes("removed")) return "delete";
   if (id.includes("widget-installed")) return "widget.install";
   if (id.includes("widget-uninstalled")) return "widget.uninstall";
-  if (id.includes("onboarding") && normalized === "success") return "onboarding.complète";
+  if (id.includes("onboarding") && normalized === "success") return "onboarding.complete";
   if (id === "sync-refresh" && normalized === "success") return "sync.success";
   if (id === "sync-refresh" && normalized === "error") return "system.error";
   if (["success", "error", "warning", "sync", "update"].includes(normalized)) return `notification.${normalized}`;

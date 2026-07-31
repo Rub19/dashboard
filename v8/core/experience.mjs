@@ -1,5 +1,5 @@
 import { BRAND_MARK_SVG } from "../ui/navigation.mjs";
-import { resolveTheme, systemPrefersLight } from "./thème-engine.mjs";
+import { resolveTheme, systemPrefersLight } from "./theme-engine.mjs";
 
 export const SPOTLIGHT_DURATION_MS = 420;
 export const AMBIENT_REFRESH_MS = 5 * 60 * 1000;

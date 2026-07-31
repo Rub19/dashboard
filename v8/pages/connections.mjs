@@ -7,7 +7,7 @@ import {
   integrationCategory,
   officialResources,
   setupGuide
-} from "../data/intégrations.mjs";
+} from "../data/integrations.mjs";
 import { brandIconMarkup } from "../data/brand-icons.mjs";
 import { listConfiguredProviders, removeProviderCredential, saveProviderCredential } from "../services/provider-credentials.mjs";
 import { actionButton, debounce, element, icon } from "../ui/dom.mjs";
@@ -304,7 +304,7 @@ export function mountConnections(stage, options = {}) {
     element("option", { text: "Catégorie", attributes: { value: "category" } })
   ]);
   const densityControl = collectionDensityControl(options.state?.density || document.documentElement.dataset.density || "automatic");
-  const categoryBar = element("div", { className: "v8-connection-catégories", attributes: { role: "toolbar", "aria-label": "Catégories d'intégrations" } });
+  const categoryBar = element("div", { className: "v8-connection-categories", attributes: { role: "toolbar", "aria-label": "Catégories d'intégrations" } });
   const grid = element("div", { className: "v8-connections-grid" });
   const loadMoreHost = element("div", { className: "v8-connections-more" });
   const resultCount = element("span", { className: "v8-section-count" });
@@ -440,7 +440,7 @@ export function mountConnections(stage, options = {}) {
 
   function tabButton(entry) {
     const button = connectionAction("v8.connections.tab", selectedId, null, [icon(entry.icon), element("span", { text: entry.label })], { tab: entry.id, className: `v8-connection-tab${inspectorTab === entry.id ? " is-active" : ""}` });
-    button.setAttribute("rôle", "tab");
+    button.setAttribute("role", "tab");
     button.setAttribute("aria-selected", inspectorTab === entry.id ? "true" : "false");
     return button;
   }
@@ -460,7 +460,7 @@ export function mountConnections(stage, options = {}) {
         element("p", { text: method?.summary || "Aucune méthode compatible n'est proposee." }),
         element("div", { className: "v8-connection-badge-row" }, (method?.badges || []).map((label) => badge(label)))
       ]),
-      element("section", { className: "v8-connection-détail-grid" }, [
+      element("section", { className: "v8-connection-detail-grid" }, [
         element("div", {}, [icon("activity"), element("span", {}, [element("small", { text: "Activity Hub" }), element("strong", { text: integration.liveSignal })])]),
         element("div", {}, [icon("clock-3"), element("span", {}, [element("small", { text: "Dernière sync" }), element("strong", { text: summary.lastSync })])]),
         element("div", {}, [icon("gauge"), element("span", {}, [element("small", { text: "Réponse" }), element("strong", { text: summary.response })])]),
@@ -622,7 +622,7 @@ export function mountConnections(stage, options = {}) {
         input,
         required: method.field.required,
         help: method.availability === "local" ? "Boucle locale uniquement" : "Ne collez jamais une adresse privée ou signee",
-        className: "v8-connection-référence"
+        className: "v8-connection-reference"
       });
     }
     return element("div", { className: "v8-connection-inspector-panel", attributes: { role: "tabpanel" } }, [
@@ -646,7 +646,7 @@ export function mountConnections(stage, options = {}) {
       ])]),
       element("footer", { className: "v8-connection-inspector-actions" }, [
         oauthConnect ? connectionAction(oauthConnect.actionId, integration.id, "primary", [icon(oauthConnect.icon), element("span", { text: oauthConnect.label })], { disabled: !availability.usable || (method?.field && !referenceValue.trim()) }) : null,
-        oauthConnect && !method?.field ? null : connectionAction("v8.connections.setup.complète", integration.id, oauthConnect ? "secondary" : "primary", [icon(configuredMethod ? "rotate-cw" : "shield-check"), element("span", { text: configuredMethod ? "Revalider" : "Vérifier" })], { method: method?.id, disabled: !availability.usable }),
+        oauthConnect && !method?.field ? null : connectionAction("v8.connections.setup.complete", integration.id, oauthConnect ? "secondary" : "primary", [icon(configuredMethod ? "rotate-cw" : "shield-check"), element("span", { text: configuredMethod ? "Revalider" : "Vérifier" })], { method: method?.id, disabled: !availability.usable }),
         connectionAction("v8.connections.test", integration.id, "secondary", [icon("stethoscope"), element("span", { text: "Diagnostic" })])
       ])
     ]);
@@ -682,9 +682,9 @@ export function mountConnections(stage, options = {}) {
       })) : null,
       element("section", { className: "v8-connection-help" }, [
         element("h3", { text: "Problemes frequents" }),
-        element("détails", {}, [element("summary", { text: "Pourquoi la connexion reste préparée ?" }), element("p", { text: "Une route Worker disponible confirme le backend, pas une autorisation fournisseur ni une session distante." })]),
-        element("détails", {}, [element("summary", { text: "Que faire après une expiration ?" }), element("p", { text: "Relancez le consentement depuis votre backend puis vérifiez les permissions minimales." })]),
-        element("détails", {}, [element("summary", { text: "Ou sont stockees les données sensibles ?" }), element("p", { text: "Dans les secrets Cloudflare uniquement. Le navigateur ne recoit ni clé fournisseur, ni secret Supabase serveur." })])
+        element("details", {}, [element("summary", { text: "Pourquoi la connexion reste préparée ?" }), element("p", { text: "Une route Worker disponible confirme le backend, pas une autorisation fournisseur ni une session distante." })]),
+        element("details", {}, [element("summary", { text: "Que faire après une expiration ?" }), element("p", { text: "Relancez le consentement depuis votre backend puis vérifiez les permissions minimales." })]),
+        element("details", {}, [element("summary", { text: "Ou sont stockees les données sensibles ?" }), element("p", { text: "Dans les secrets Cloudflare uniquement. Le navigateur ne recoit ni clé fournisseur, ni secret Supabase serveur." })])
       ]),
       officialResources(integration).length ? element("div", { className: "v8-connection-resources v8-connection-resources--compact" }, officialResources(integration).map((resource) => officialLink(resource))) : null
     ]);
@@ -793,7 +793,7 @@ export function mountConnections(stage, options = {}) {
     refreshIcons();
     return completed("Méthode sélectionnée", { integration: id, method: methodId });
   }));
-  releases.push(actions.scope("v8.connections.setup.complète", async (context) => {
+  releases.push(actions.scope("v8.connections.setup.complete", async (context) => {
     const id = context.element?.dataset.integration || selectedId;
     const integration = integrationById(id);
     const connection = connectionMap().get(id);
@@ -805,7 +805,7 @@ export function mountConnections(stage, options = {}) {
     }
     const reference = validateReference(method, draftReferences.get(id) ?? connection?.reference ?? method?.endpoint ?? "");
     if (!reference.ok) {
-      const referenceInput = inspectorHost.querySelector("[data-connection-référence]");
+      const referenceInput = inspectorHost.querySelector("[data-connection-reference]");
       referenceInput?.setCustomValidity?.(reference.message);
       setFieldState(referenceInput, "invalid", reference.message);
       notify({ id: `connection-reference-${id}`, title: "Configuration incomplete", message: reference.message, type: "warning" });
@@ -834,7 +834,7 @@ export function mountConnections(stage, options = {}) {
             apiVersion: connectionMethod(integration, connectionMap().get(id)?.methodId)?.apiVersion,
             lastSyncAt: nowIso,
             lastTestedAt: nowIso,
-            detail: "Connexion confirmee automatiquement après la préparation."
+            detail: "Connexion confirmée automatiquement après la préparation."
           });
           refreshLiveBridges(id);
           connected = true;
@@ -847,8 +847,8 @@ export function mountConnections(stage, options = {}) {
           });
         }
       }
-      journal?.record?.({ source: id, category: integration?.category || "system", icon: integration?.icon || "plug", title: `${integration?.name || "Intégration"} ${connected ? "connectée" : "préparée"}`, description: connected ? "Connexion vérifiée et activee automatiquement." : needsCredential ? `Ajoutez votre ${method.credential.fields?.[0]?.label || "clé API personnelle"} pour terminer la connexion.` : autoVerify ? "La vérification automatique a échoué. Relancez le diagnostic depuis l'onglet Diagnostics." : backendRequired ? "Le backend sécurisé reste requis avant toute synchronisation." : `Methode ${method?.label || "locale"} preparee.`, timestamp: new Date().toISOString(), tone: connected || !autoVerify ? "success" : "warning" });
-      notify({ id: `connection-ready-${id}`, title: integration?.name || "Connection", message: connected ? "Connexion vérifiée et activee." : needsCredential ? `Preparation enregistree. Ajoutez votre ${method.credential.fields?.[0]?.label || "clé API personnelle"} ci-dessous pour terminer.` : autoVerify ? "Préparation enregistree, mais la vérification a échoué. Relancez le diagnostic." : backendRequired ? "Préparation validee. Backend sécurisé requis pour connecter le compte." : "Préparation locale validee.", type: connected ? "success" : autoVerify ? "warning" : "success" });
+      journal?.record?.({ source: id, category: integration?.category || "system", icon: integration?.icon || "plug", title: `${integration?.name || "Intégration"} ${connected ? "connectée" : "préparée"}`, description: connected ? "Connexion vérifiée et activée automatiquement." : needsCredential ? `Ajoutez votre ${method.credential.fields?.[0]?.label || "clé API personnelle"} pour terminer la connexion.` : autoVerify ? "La vérification automatique a échoué. Relancez le diagnostic depuis l'onglet Diagnostics." : backendRequired ? "Le backend sécurisé reste requis avant toute synchronisation." : `Méthode ${method?.label || "locale"} préparée.`, timestamp: new Date().toISOString(), tone: connected || !autoVerify ? "success" : "warning" });
+      notify({ id: `connection-ready-${id}`, title: integration?.name || "Connection", message: connected ? "Connexion vérifiée et activée." : needsCredential ? `Préparation enregistrée. Ajoutez votre ${method.credential.fields?.[0]?.label || "clé API personnelle"} ci-dessous pour terminer.` : autoVerify ? "Préparation enregistrée, mais la vérification a échoué. Relancez le diagnostic." : backendRequired ? "Préparation validée. Backend sécurisé requis pour connecter le compte." : "Préparation locale validée.", type: connected ? "success" : autoVerify ? "warning" : "success" });
       inspectorTab = "overview";
       renderAll();
     }

@@ -123,7 +123,7 @@ export function createDailyBriefing(options = {}) {
     label: "Priorités",
     icon: "circle-check-big",
     actionId: "v8.tasks.open",
-    value: tasks[0] ? safeText(tasks[0].title, "Tache") : "Aucune tache prioritaire",
+    value: tasks[0] ? safeText(tasks[0].title, "Tâche") : "Aucune tâche prioritaire",
     metaValue: String(tasks.length),
     detail: tasks.length === 1 ? "priorité ouverte" : "priorités ouvertes",
     userContent: Boolean(tasks[0]),

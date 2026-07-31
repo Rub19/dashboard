@@ -66,12 +66,12 @@ test("daily briefing reports unavailable providers instead of inventing data", (
 
   for (const id of ["weather", "music", "github"]) {
     const item = briefing.items.find((entry) => entry.id === id);
-    assert.equal(item.value, "Non connectee");
+    assert.equal(item.value, "Non connectée");
     assert.equal(item.detail, "Configurer");
     assert.equal(item.userContent, false);
   }
-  assert.equal(briefing.items.find((item) => item.id === "events").value, "Aucun evenement aujourd'hui");
-  assert.equal(briefing.items.find((item) => item.id === "tasks").value, "Aucune tache prioritaire");
+  assert.equal(briefing.items.find((item) => item.id === "events").value, "Aucun événement aujourd'hui");
+  assert.equal(briefing.items.find((item) => item.id === "tasks").value, "Aucune tâche prioritaire");
   assert.equal(briefing.items.find((item) => item.id === "yesterday").value, "0");
 });
 

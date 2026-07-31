@@ -59,7 +59,7 @@ test("tokens.css defines a custom accent variant driven entirely by color-mix of
 
 test("Settings renders a live color-picker swatch for the custom accent, wired to commit on change and preview on input, and keeps every accent swatch's active state in sync with the store (a pre-existing gap for the presets too)", () => {
   const source = read("v8/pages/settings.mjs");
-  assert.match(source, /attributes: \{ type: "color", value: customAccentInitial, "aria-label": "Choisir une couleur d'accent personnalisee" \}/);
+  assert.match(source, /attributes: \{ type: "color", value: customAccentInitial, "aria-label": "Choisir une couleur d'accent personnalisée" \}/);
   assert.match(source, /customColorInput\.addEventListener\("change", \(event\) => \{\s*commitSetting\(event\.currentTarget, "v8\.accent\.custom"/);
   assert.match(source, /customColorInput\.addEventListener\("input", \(event\) => \{\s*customColorSwatch\.style\.setProperty\("--v8-accent-swatch-custom-color", event\.currentTarget\.value\);/);
   assert.match(source, /page\.querySelectorAll\("\[data-action\^='v8\.accent\.'\]"\)\.forEach\(\(button\) => \{/);

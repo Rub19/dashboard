@@ -10,7 +10,7 @@ import { createHomeModel } from "../data/home-model.mjs";
 import { claimDailyBriefing } from "../data/daily-briefing.mjs";
 import { createActivityJournal } from "../data/activity-journal.mjs";
 import { createDocumentMetadataManager, themeColorForState } from "../core/document-metadata.mjs";
-import { createThemeWatcher, resolveTheme, systemPrefersLight } from "../core/thème-engine.mjs";
+import { createThemeWatcher, resolveTheme, systemPrefersLight } from "../core/theme-engine.mjs";
 import { actionLabel, createAutomationWatcher } from "../core/automation-engine.mjs";
 import { createAmbientEngine } from "../core/experience.mjs";
 import { calendarPresenceState, createPresenceEngine } from "../core/presence-engine.mjs";
@@ -263,7 +263,7 @@ export function mountApplication(root, options = {}) {
     store.setState({ localTime: next.time, timeZone: next.timeZone });
   }) || (() => {});
   const releaseSoundPreferences = sounds?.subscribe?.(() => {
-    if (!applyingCloudPreferences) cloudSync?.queue?.("sound-préférences");
+    if (!applyingCloudPreferences) cloudSync?.queue?.("sound-preferences");
   }) || (() => {});
 
   function applyTheme(themeValue) {

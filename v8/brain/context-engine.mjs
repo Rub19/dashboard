@@ -1,4 +1,4 @@
-import { sanitizeBrainPreferences } from "./préférences.mjs";
+import { sanitizeBrainPreferences } from "./preferences.mjs";
 
 const ROUTES = new Set(["home", "notes", "tasks", "calendar", "files", "activity", "connections", "spaces", "flows", "brain", "settings"]);
 const SECRET_KEY = /(?:password|passcode|pin|token|secret|api.?key|authorization|credential|session|cookie|refresh)/i;

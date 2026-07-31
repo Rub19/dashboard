@@ -1,4 +1,4 @@
-import { connectionMethod, connectionMethods, integrationById } from "../data/intégrations.mjs";
+import { connectionMethod, connectionMethods, integrationById } from "../data/integrations.mjs";
 
 const OPPORTUNITY_RULES = Object.freeze([
   Object.freeze({ sourceId: "discord", targetId: "spotify", methodId: "discord-lanyard", title: "Spotify detecte via Discord", description: "Utilisez la presence Discord publique pour afficher le morceau en cours, sans contrôle de lecture." }),

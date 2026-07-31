@@ -34,7 +34,7 @@ test("Mission Control arrow navigation wraps without losing keyboard focus", () 
 test("Mission Control exposes every requested system surface", () => {
   const source = read("v8/ui/mission-control.mjs");
   const runtime = read("v8/app/app-runtime.mjs");
-  ["Spaces", "Flows", "Fenetres", "Dashboards", "Widgets ouverts", "Activites Brain"].forEach((label) => assert.match(source, new RegExp(`"${label}"`)));
+  ["Spaces", "Flows", "Fenêtres", "Dashboards", "Widgets ouverts", "Activités Brain"].forEach((label) => assert.match(source, new RegExp(`"${label}"`)));
   assert.match(source, /dataset:\s*\{[^}]*missionItem:/s);
   assert.match(source, /category\s*===\s*"brain"/);
   assert.match(source, /aria-current/);

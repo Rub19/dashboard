@@ -99,7 +99,7 @@ test("Connections Hub remains lazy and does not add background loops", () => {
   assert.doesNotMatch(source, /setInterval|MutationObserver|ResizeObserver/);
   assert.match(source, /v8\.connections\.diagnose-all/);
   assert.match(source, /v8\.connections\.method\.select/);
-  assert.match(source, /Frontend sans donnee sensible/);
+  assert.match(source, /Frontend sans donnée sensible/);
 });
 
 test("public-availability connections (Weather, Minecraft, ...) and simple field-driven backend connections (Riot Games via Tracker.gg, ...) auto-verify and connect on save instead of requiring a separate manual diagnostic", () => {
@@ -117,8 +117,8 @@ test("public-availability connections (Weather, Minecraft, ...) and simple field
 test("a failed auto-verify surfaces a clear 'verification failed' message instead of the generic 'backend required' copy, for both the toast and the journal entry", () => {
   const source = fs.readFileSync(new URL("../v8/pages/connections.mjs", import.meta.url), "utf8");
   const setupComplete = source.slice(source.indexOf('actions.scope("v8.connections.setup.complete"'), source.indexOf('actions.scope("v8.connections.spotify.connect"'));
-  assert.match(setupComplete, /description: connected \? "Connexion verifiee et activee automatiquement\." : needsCredential \? `Ajoutez votre/);
-  assert.match(setupComplete, /message: connected \? "Connexion verifiee et activee\." : needsCredential \? `Preparation enregistree\./);
+  assert.match(setupComplete, /description: connected \? "Connexion vérifiée et activée automatiquement\." : needsCredential \? `Ajoutez votre/);
+  assert.match(setupComplete, /message: connected \? "Connexion vérifiée et activée\." : needsCredential \? `Préparation enregistrée\./);
 });
 
 test("a failed auto-verify overwrites the stale pre-verification 'backend required' detail instead of leaving it stuck on the connection forever (Riot Games / Tracker.gg regression)", () => {
@@ -130,7 +130,7 @@ test("a failed auto-verify overwrites the stale pre-verification 'backend requir
 test("when a backend method needs a personal API key (Riot Games, Tracker.gg), the failure message names the missing credential instead of the vague 'secure backend required' copy", () => {
   const source = fs.readFileSync(new URL("../v8/pages/connections.mjs", import.meta.url), "utf8");
   const setupComplete = source.slice(source.indexOf('actions.scope("v8.connections.setup.complete"'), source.indexOf('actions.scope("v8.connections.spotify.connect"'));
-  assert.match(setupComplete, /`Ajoutez votre \$\{method\.credential\.fields\?\.\[0\]\?\.label \|\| "cle API personnelle"\} ci-dessous pour activer la connexion\.`/);
+  assert.match(setupComplete, /`Ajoutez votre \$\{method\.credential\.fields\?\.\[0\]\?\.label \|\| "clé API personnelle"\} ci-dessous pour activer la connexion\.`/);
 });
 
 test("Riot Games is excluded from the Activity page's generic connected-but-unknown fallback tile, since Valorant and League of Legends already render their own dedicated Live Now cards", () => {

@@ -252,7 +252,7 @@ function connectionView(id, connection = {}) {
   const status = CONNECTION_STATUSES.has(connection?.status) ? connection.status : "disconnected";
   const responseMs = Number(connection?.responseMs);
   return Object.freeze({
-    id: text(id || connection?.id, "intégration", 80),
+    id: text(id || connection?.id, "integration", 80),
     status,
     setupComplete: connection?.setupComplete === true,
     methodId: safeIdentifier(connection?.methodId),

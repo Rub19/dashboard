@@ -8,7 +8,7 @@ const ACTION_EVENTS = Object.freeze({
   "v8.space.focus": { source: "ethone", category: "work", icon: "focus", title: "Space Focus actif", description: "Le contexte Deep Work est restaure." },
   "v8.space.studio": { source: "ethone", category: "productivity", icon: "sparkles", title: "Space Studio actif", description: "Le contexte Creation est restaure." },
   "v8.sync.refresh": { source: "ethone", category: "system", icon: "refresh-cw", title: "Synchronisation vérifiée", description: "Les données locales ont ete controlees." },
-  "v8.thème.toggle": { source: "ethone", category: "system", icon: "palette", title: "Thème modifié", description: "L'apparence du système a ete adaptee." },
+  "v8.theme.toggle": { source: "ethone", category: "system", icon: "palette", title: "Thème modifié", description: "L'apparence du système a ete adaptee." },
   "v8.appearance.cycle": { source: "ethone", category: "system", icon: "palette", title: "Accent modifié", description: "La couleur active a ete adaptee." }
 });
 

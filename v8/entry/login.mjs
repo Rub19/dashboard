@@ -431,7 +431,7 @@ export function mountLogin(root, options = {}) {
   ]);
   const instrumentShell = element("div", { className: "v8-auth-shell" }, [instrument]);
 
-  const localeSelect = createSelect({ className: "v8-entry__locale", attributes: { "aria-label": "Langue de l'interface" } }, [
+  const localeSelect = createSelect({ className: "v8-entry__locale", attributes: { "aria-label": "Langue de l'interface", translate: "no" } }, [
     element("option", { text: "Français", attributes: { value: "fr" } }),
     element("option", { text: "English", attributes: { value: "en" } }),
     element("option", { text: "Español", attributes: { value: "es" } }),

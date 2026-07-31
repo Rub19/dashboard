@@ -265,11 +265,11 @@ export function createPanelManager(host, options = {}) {
   function profileContent() {
     const state = options.getState?.() || {};
     const user = options.user || {};
-    const language = createSelect({ className: "v8-input", attributes: { "aria-label": "Langue de l'interface" } }, [
-      element("option", { text: "Francais", attributes: { value: "fr", translate: "no" } }),
-      element("option", { text: "English", attributes: { value: "en", translate: "no" } }),
-      element("option", { text: "Espanol", attributes: { value: "es", translate: "no" } }),
-      element("option", { text: "Deutsch", attributes: { value: "de", translate: "no" } })
+    const language = createSelect({ className: "v8-input", attributes: { "aria-label": "Langue de l'interface", translate: "no" } }, [
+      element("option", { text: "Francais", attributes: { value: "fr" } }),
+      element("option", { text: "English", attributes: { value: "en" } }),
+      element("option", { text: "Espanol", attributes: { value: "es" } }),
+      element("option", { text: "Deutsch", attributes: { value: "de" } })
     ]);
     language.value = options.currentLocale?.() || "fr";
     language.addEventListener("change", () => options.onLocaleChange?.(language.value));

@@ -252,9 +252,9 @@ export function mountSettings(stage, options = {}) {
 
   const soundPackSelect = createSelect({
     className: "v8-input v8-sound-pack-select",
-    attributes: { "aria-label": "Pack sonore", disabled: !soundSupported || null },
+    attributes: { "aria-label": "Pack sonore", disabled: !soundSupported || null, translate: "no" },
     dataset: { soundPack: "" }
-  }, SOUND_PACKS.map((pack) => element("option", { text: pack.label, attributes: { value: pack.id, translate: "no" } })));
+  }, SOUND_PACKS.map((pack) => element("option", { text: pack.label, attributes: { value: pack.id } })));
   soundPackSelect.value = initialSoundPreferences.pack;
   const soundPackControl = element("div", { className: "v8-sound-pack-control" }, [
     element("div", {}, [soundPackSelect, actionButton({ actionId: "v8.sound.preview", className: "v8-icon-button", ariaLabel: "Ecouter un apercu", disabled: !soundSupported }, [icon("play")])]),

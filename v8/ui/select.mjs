@@ -54,7 +54,7 @@ export function createSelect(config = {}, optionNodes = []) {
     if (listbox || trigger.disabled) return;
     listbox = element("div", {
       className: "v8-select__listbox",
-      attributes: { role: "listbox", "aria-label": trigger.getAttribute("aria-label") || "" }
+      attributes: { role: "listbox", "aria-label": trigger.getAttribute("aria-label") || "", translate: trigger.getAttribute("translate") || null }
     }, options.map((entry) => element("button", {
       className: "v8-select__option",
       attributes: { type: "button", role: "option", "aria-selected": String(entry.value === currentValue), disabled: entry.disabled || null },

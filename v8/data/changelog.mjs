@@ -24,6 +24,16 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v176", "2026-08-01", "Accent personnalise et accueil desencombre", [
+    { kind: "feature", text: "Nouveau selecteur de couleur d'accent personnalisee dans les Preferences : choisissez n'importe quelle couleur (pas seulement les 5 presets) et elle se propage instantanement a toute l'interface." },
+    { kind: "fix", text: "Les swatches d'accent (presets et personnalise) refletent desormais correctement l'accent actif en toutes circonstances, un decalage d'affichage preexistant." },
+    { kind: "improvement", text: "Les cartes Live Now de l'accueil sont regroupees dans une grille compacte a plusieurs colonnes au lieu de s'empiler verticalement sur toute la hauteur de la page." }
+  ]),
+  entry("v163 - v175", "2026-07-31 -> 2026-08-01", "Correctifs Live Now : ancrage du badge, Riot Games et Minecraft", [
+    { kind: "fix", text: "Le badge \"Actualise a\" des cartes Live Now s'ancre desormais precisement dans le coin de la carte, meme quand une carte voisine plus haute etirait la grille." },
+    { kind: "fix", text: "Riot Games (Valorant / League of Legends) ne reste plus bloque sur \"En preparation\" apres une reconnexion : la verification automatique post-configuration couvre desormais ce type de connexion." },
+    { kind: "fix", text: "Suppression d'une carte generique redondante qui s'affichait en double pour Riot Games sur la page Activite." }
+  ]),
   entry("v159 - v162", "2026-07-31", "Connexions fiables et Automations traduites", [
     { kind: "fix", text: "Les connexions \"publiques\" (Meteo, Minecraft, profil Twitch public) s'activent desormais automatiquement des l'enregistrement, au lieu d'exiger un clic cache sur \"Tester\" pour passer a l'etat connecte." },
     { kind: "cleanup", text: "Suppression du backend Henrik / Riot API, code mort jamais appele depuis le passage a Tracker.gg pour Valorant et League of Legends." },

@@ -2,7 +2,7 @@ import { actionButton, element, icon } from "../ui/dom.mjs";
 import { emptyState } from "../ui/empty-state.mjs";
 import { formField, runFormSubmission, validateControl } from "../ui/form-system.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
-import { buildMonth, eventsForDate } from "./calendar-model.mjs";
+import { buildMonth, eventsForDate, tasksForDate } from "./calendar-model.mjs";
 import { localeTag } from "../i18n/catalog.mjs";
 import { calendarPresenceState } from "../core/presence-engine.mjs";
 
@@ -41,6 +41,7 @@ export function mountCalendar(stage, options = {}) {
   let month = today.getMonth();
   let selectedDate = isoDate(today);
   let events = repository.snapshot().events.map((event) => ({ ...event }));
+  let tasks = repository.snapshot().tasks.map((task) => ({ ...task }));
   let composerOpen = false;
   let mounted = true;
   const scopedActions = [];
@@ -79,6 +80,7 @@ export function mountCalendar(stage, options = {}) {
 
   function refreshEvents(config = {}) {
     events = repository.snapshot().events.map((event) => ({ ...event }));
+    tasks = repository.snapshot().tasks.map((task) => ({ ...task }));
     const calendarState = calendarPresenceState(events);
     const repeatedApproach = presence?.state?.().calendar === "approaching" && calendarState === "approaching";
     presence?.update?.({ calendar: calendarState });
@@ -100,19 +102,27 @@ export function mountCalendar(stage, options = {}) {
     grid.replaceChildren();
     buildMonth(year, month, today).forEach((cell) => {
       const cellEvents = eventsForDate(events, cell.date);
+      const cellTasks = tasksForDate(tasks, cell.date);
       const selected = cell.date === selectedDate;
+      const markers = [
+        cellEvents.length ? element("span", { className: "v8-calendar-day__events" }, [element("i", { attributes: { "aria-hidden": "true" } }), element("small", { text: cellEvents.length })]) : null,
+        cellTasks.length ? element("span", { className: "v8-calendar-day__tasks" }, [element("i", { attributes: { "aria-hidden": "true" } }), element("small", { text: cellTasks.length })]) : null
+      ].filter(Boolean);
+      const labelParts = [cell.date];
+      if (cellEvents.length) labelParts.push(`${cellEvents.length} événement${cellEvents.length > 1 ? "s" : ""}`);
+      if (cellTasks.length) labelParts.push(`${cellTasks.length} tâche${cellTasks.length > 1 ? "s" : ""} à échéance`);
       grid.append(element("button", {
         className: ["v8-calendar-day", !cell.inMonth ? "is-outside" : "", cell.today ? "is-today" : "", selected ? "is-selected" : ""].filter(Boolean).join(" "),
         attributes: {
           type: "button",
           role: "gridcell",
-          "aria-label": `${cell.date}${cellEvents.length ? `, ${cellEvents.length} événement${cellEvents.length > 1 ? "s" : ""}` : ""}`,
+          "aria-label": labelParts.join(", "),
           "aria-selected": selected ? "true" : "false"
         },
         dataset: { calendarDate: cell.date }
       }, [
         element("span", { text: cell.day }),
-        cellEvents.length ? element("span", { className: "v8-calendar-day__events" }, [element("i", { attributes: { "aria-hidden": "true" } }), element("small", { text: cellEvents.length })]) : null
+        markers.length ? element("span", { className: "v8-calendar-day__markers" }, markers) : null
       ]));
     });
   }
@@ -133,8 +143,9 @@ export function mountCalendar(stage, options = {}) {
       ]));
       title.focus({ preventScroll: true });
     }
+    const dayTasks = tasksForDate(tasks, selectedDate);
     const list = element("div", { className: "v8-calendar-agenda__list", attributes: { role: "list" } });
-    if (!dayEvents.length) {
+    if (!dayEvents.length && !dayTasks.length) {
       list.append(emptyState({
         iconName: "calendar-check-2",
         eyebrow: "Agenda disponible",
@@ -152,6 +163,22 @@ export function mountCalendar(stage, options = {}) {
           element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": `Supprimer ${event.title}` }, dataset: { eventDelete: event.id } }, [icon("trash-2")])
         ]));
       });
+      if (dayTasks.length) {
+        list.append(element("span", { className: "v8-eyebrow v8-calendar-agenda__tasks-label", text: `Tâches (${dayTasks.length})` }));
+        dayTasks.forEach((task) => {
+          list.append(element("article", { className: "v8-calendar-task", attributes: { role: "listitem" }, dataset: { calendarTaskId: task.id } }, [
+            element("button", {
+              className: "v8-task-check",
+              attributes: { type: "button", "aria-label": `Terminer ${task.title}` },
+              dataset: { calendarTaskToggle: task.id }
+            }, [icon("circle")]),
+            element("button", { className: "v8-calendar-task__link", attributes: { type: "button" }, dataset: { action: "v8.tasks.open" } }, [
+              element("strong", { text: task.title, attributes: { translate: "no" } }),
+              element("small", { text: task.priority === "high" ? "Priorité haute" : "À faire", attributes: { translate: "no" } })
+            ])
+          ]));
+        });
+      }
     }
     agenda.append(
       element("header", { className: "v8-calendar-agenda__header" }, [element("span", { className: "v8-eyebrow", text: "Agenda" }), element("h2", { text: dayTitle(selectedDate), attributes: { translate: "no" } }), element("span", { text: `${dayEvents.length} événement${dayEvents.length > 1 ? "s" : ""}` })]),
@@ -244,6 +271,17 @@ export function mountCalendar(stage, options = {}) {
         };
         if (presence?.signalActivity) presence.signalActivity(row, "calendar", { phase: "exit", onComplete: finish });
         else finish();
+      }
+      return;
+    }
+    const taskToggle = event.target.closest("[data-calendar-task-toggle]");
+    if (taskToggle && page.contains(taskToggle)) {
+      const changed = repository.tasks.toggle(taskToggle.dataset.calendarTaskToggle);
+      if (changed.ok) {
+        refreshEvents();
+        renderGrid();
+        renderAgenda();
+        notify({ id: "calendar-task-done", title: "Calendrier", message: "Tâche terminée.", type: "success", duration: 2000 });
       }
     }
   }

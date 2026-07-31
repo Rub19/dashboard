@@ -1563,6 +1563,12 @@ html[data-v8-interactions] .v8-file-entry:hover .v8-row-actions,
   background: var(--v8-accent-soft);
 }
 
+.v8-calendar-day__markers {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .v8-calendar-day__events {
   display: inline-flex;
   align-items: center;
@@ -1578,6 +1584,24 @@ html[data-v8-interactions] .v8-file-entry:hover .v8-row-actions,
 }
 
 .v8-calendar-day__events small {
+  font-size: var(--v8-font-micro);
+}
+
+.v8-calendar-day__tasks {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--v8-warning);
+}
+
+.v8-calendar-day__tasks i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--v8-warning);
+}
+
+.v8-calendar-day__tasks small {
   font-size: var(--v8-font-micro);
 }
 
@@ -1675,6 +1699,51 @@ html[data-v8-interactions] .v8-file-entry:hover .v8-row-actions,
 }
 
 .v8-calendar-event small {
+  margin-top: 3px;
+  color: var(--v8-muted);
+  font-size: var(--v8-font-xs);
+}
+
+.v8-calendar-agenda__tasks-label {
+  display: block;
+  margin: var(--v8-space-3) 0 var(--v8-space-2);
+}
+
+.v8-calendar-task {
+  display: grid;
+  min-width: 0;
+  min-height: 48px;
+  grid-template-columns: 32px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--v8-space-3);
+  border-bottom: 1px solid var(--v8-divider);
+}
+
+.v8-calendar-task__link {
+  display: block;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.v8-calendar-task__link strong,
+.v8-calendar-task__link small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.v8-calendar-task__link strong {
+  color: var(--v8-text-secondary);
+  font-size: var(--v8-font-sm);
+  font-weight: var(--v8-weight-medium);
+}
+
+.v8-calendar-task__link small {
   margin-top: 3px;
   color: var(--v8-muted);
   font-size: var(--v8-font-xs);

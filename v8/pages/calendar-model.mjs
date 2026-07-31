@@ -26,3 +26,7 @@ export function buildMonth(year, month, today = new Date()) {
 export function eventsForDate(events = [], date) {
   return events.filter((event) => event.date === date);
 }
+
+export function tasksForDate(tasks = [], date) {
+  return tasks.filter((task) => task.due === date && !task.done);
+}

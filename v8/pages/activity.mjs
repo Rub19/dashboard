@@ -6,6 +6,7 @@ import { refreshIcons } from "../ui/icons.mjs";
 import { spotifyLiveCard } from "../ui/spotify-live.mjs";
 import { discordLiveCard } from "../ui/discord-live.mjs";
 import { weatherLiveCard } from "../ui/weather-live.mjs";
+import { createWeatherDetail } from "../ui/weather-detail.mjs";
 import { minecraftLiveCard } from "../ui/minecraft-live.mjs";
 import { steamLiveCard } from "../ui/steam-live.mjs";
 import { githubLiveCard } from "../ui/github-live.mjs";
@@ -350,7 +351,7 @@ export function mountActivity(stage, options = {}) {
     ]);
     const spotifyPlayer = spotifyLiveCard(spotifyPlayback, { variant: "activity" });
     const discordCard = discordLiveCard(discordPresence, { variant: "activity" });
-    const weatherCard = weatherLiveCard(weatherPresence, { variant: "activity" });
+    const weatherCard = weatherLiveCard(weatherPresence, { variant: "activity", detailable: true });
     const minecraftCard = minecraftLiveCard(minecraftPresence, { variant: "activity" });
     const steamCard = steamLiveCard(steamPresence, { variant: "activity" });
     const githubCard = githubLiveCard(githubPresence, { variant: "activity" });

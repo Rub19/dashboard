@@ -411,6 +411,12 @@ export function createActionFacade(options = {}) {
       return completed("Accent modifie", { accent });
     });
   });
+  register("v8.accent.custom", (context = {}) => {
+    const value = String(context.value || "");
+    if (!/^#[0-9a-f]{6}$/i.test(value)) return unavailable("Couleur invalide.");
+    setState({ accent: "custom", customAccentColor: value.toLowerCase() });
+    return completed("Accent personnalise applique", { accent: "custom", customAccentColor: value.toLowerCase() });
+  });
 
   register("v8.appearance.cycle", () => {
     const accents = ["mint", "sky", "amber", "violet", "rose"];

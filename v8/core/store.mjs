@@ -16,7 +16,8 @@ export function sanitizeActivityLiveLayout(input) {
 }
 
 const THEMES = new Set(["night", "graphite", "day", "auto"]);
-const ACCENTS = new Set(["mint", "sky", "amber", "violet", "rose"]);
+const ACCENTS = new Set(["mint", "sky", "amber", "violet", "rose", "custom"]);
+const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 const SPACES = new Set(["personal", "focus", "studio"]);
 const SYNC_STATES = new Set(["loading", "saving", "saved", "offline", "retrying", "error", "expired", "online", "syncing"]);
 const NETWORK_STATES = new Set(["online", "offline"]);
@@ -30,6 +31,7 @@ const DEFAULT_STATE = Object.freeze({
   densitySettings: DEFAULT_DENSITY_SETTINGS,
   brainPreferences: DEFAULT_BRAIN_PREFERENCES,
   accent: "mint",
+  customAccentColor: "#7be5c3",
   space: "personal",
   flow: "Essentiel",
   spotlightEnabled: true,
@@ -88,6 +90,7 @@ function normalizeState(input = {}) {
     densitySettings: sanitizeDensitySettings(input.densitySettings),
     brainPreferences: sanitizeBrainPreferences(input.brainPreferences),
     accent: ACCENTS.has(input.accent) ? input.accent : DEFAULT_STATE.accent,
+    customAccentColor: HEX_COLOR.test(String(input.customAccentColor || "")) ? String(input.customAccentColor).toLowerCase() : DEFAULT_STATE.customAccentColor,
     space: SPACES.has(input.space) ? input.space : DEFAULT_STATE.space,
     flow: String(input.flow || DEFAULT_STATE.flow).slice(0, 48),
     spotlightEnabled: input.spotlightEnabled !== false,
@@ -135,6 +138,7 @@ function persistedSnapshot(state) {
     densitySettings: state.densitySettings,
     brainPreferences: state.brainPreferences,
     accent: state.accent,
+    customAccentColor: state.customAccentColor,
     space: state.space,
     flow: state.flow,
     spotlightEnabled: state.spotlightEnabled,

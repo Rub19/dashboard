@@ -386,6 +386,16 @@ html[data-interface-blur="disabled"] {
   --v8-shadow-focus-color:rgba(243,148,179,.34);
 }
 
+:root[data-accent="custom"] {
+  --v8-custom-accent-color: #7be5c3;
+  --v8-accent: var(--v8-custom-accent-color);
+  --v8-accent-hover: color-mix(in srgb, var(--v8-custom-accent-color) 86%, white);
+  --v8-accent-pressed: color-mix(in srgb, var(--v8-custom-accent-color) 80%, black);
+  --v8-accent-soft: color-mix(in srgb, var(--v8-custom-accent-color) 13%, transparent);
+  --v8-accent-line: color-mix(in srgb, var(--v8-custom-accent-color) 44%, transparent);
+  --v8-shadow-focus-color: color-mix(in srgb, var(--v8-custom-accent-color) 34%, transparent);
+}
+
 :root[data-theme="graphite"] {
   color-scheme: dark;
   --v8-canvas: #111317;

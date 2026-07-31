@@ -271,6 +271,10 @@ export function mountApplication(root, options = {}) {
     document.documentElement.dataset.theme = resolved.effective;
     return resolved;
   }
+  function applyAccent(nextState) {
+    document.documentElement.dataset.accent = nextState.accent;
+    if (nextState.accent === "custom") document.documentElement.style.setProperty("--v8-custom-accent-color", nextState.customAccentColor);
+  }
   const themeWatcher = createThemeWatcher({
     runtime: globalThis,
     onChange: () => {
@@ -282,7 +286,7 @@ export function mountApplication(root, options = {}) {
   });
   themeWatcher.start();
 
-  document.documentElement.dataset.accent = store.getState().accent;
+  applyAccent(store.getState());
   applyTheme(store.getState().theme);
   document.documentElement.dataset.space = store.getState().space;
   document.documentElement.dataset.spotlight = store.getState().spotlightEnabled === false ? "disabled" : "enabled";
@@ -709,7 +713,7 @@ export function mountApplication(root, options = {}) {
       cloudPreferencesKey = nextCloudPreferencesKey;
       cloudSync?.queue?.("preferences");
     }
-    if (next.accent !== previous.accent) document.documentElement.dataset.accent = next.accent;
+    if (next.accent !== previous.accent || next.customAccentColor !== previous.customAccentColor) applyAccent(next);
     const nextDensityStateKey = JSON.stringify({ density: next.density, settings: next.densitySettings, space: next.space, flow: next.flow, panel: next.panel, rail: next.railExpanded });
     if (nextDensityStateKey !== densityStateKey) {
       densityStateKey = nextDensityStateKey;

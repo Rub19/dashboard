@@ -249,6 +249,17 @@ export function mountSettings(stage, options = {}) {
     attributes: { type: "button", "aria-label": `Accent ${accent}`, "aria-pressed": state.accent === accent ? "true" : "false" },
     dataset: { action: `v8.accent.${accent}` }
   }, [state.accent === accent ? icon("check") : null])));
+  const customAccentInitial = /^#[0-9a-f]{6}$/i.test(state.customAccentColor || "") ? state.customAccentColor : "#7be5c3";
+  const customColorInput = element("input", {
+    className: "v8-accent-swatch__input",
+    attributes: { type: "color", value: customAccentInitial, "aria-label": "Choisir une couleur d'accent personnalisee" }
+  });
+  const customColorSwatch = element("label", {
+    className: `v8-accent-swatch v8-accent-swatch--custom${state.accent === "custom" ? " is-active" : ""}`,
+    attributes: { "aria-label": "Accent personnalise", "data-tooltip": "Couleur personnalisee" }
+  }, [customColorInput, state.accent === "custom" ? icon("check") : null]);
+  customColorSwatch.style.setProperty("--v8-accent-swatch-custom-color", customAccentInitial);
+  accentControls.append(customColorSwatch);
 
   const soundPackSelect = createSelect({
     className: "v8-input v8-sound-pack-select",
@@ -482,6 +493,22 @@ export function mountSettings(stage, options = {}) {
       if (active && !check) button.append(icon("check"));
       if (!active) check?.remove();
     });
+    page.querySelectorAll("[data-action^='v8.accent.']").forEach((button) => {
+      const active = button.dataset.action === `v8.accent.${nextState.accent}`;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+      const check = button.querySelector("[data-lucide='check']");
+      if (active && !check) button.append(icon("check"));
+      if (!active) check?.remove();
+    });
+    customColorSwatch.classList.toggle("is-active", nextState.accent === "custom");
+    const customCheck = customColorSwatch.querySelector("[data-lucide='check']");
+    if (nextState.accent === "custom" && !customCheck) customColorSwatch.append(icon("check"));
+    if (nextState.accent !== "custom") customCheck?.remove();
+    if (document.activeElement !== customColorInput) {
+      customColorInput.value = nextState.customAccentColor;
+      customColorSwatch.style.setProperty("--v8-accent-swatch-custom-color", nextState.customAccentColor);
+    }
     densityCustomHost.hidden = nextState.density !== "custom";
     const nextThemeResolution = resolveTheme(nextState.theme, { systemPrefersLight: systemPrefersLight(globalThis) });
     page.querySelectorAll("[data-theme-mode]").forEach((button) => {
@@ -678,6 +705,12 @@ export function mountSettings(stage, options = {}) {
     if (event.key === "Enter") { event.preventDefault(); saveProfileName(); }
   }, { signal: controller.signal });
   nameInput.addEventListener("input", () => { nameStatus.textContent = ""; }, { signal: controller.signal });
+  customColorInput.addEventListener("input", (event) => {
+    customColorSwatch.style.setProperty("--v8-accent-swatch-custom-color", event.currentTarget.value);
+  }, { signal: controller.signal });
+  customColorInput.addEventListener("change", (event) => {
+    commitSetting(event.currentTarget, "v8.accent.custom", { source: "settings", value: event.currentTarget.value, element: event.currentTarget, event });
+  }, { signal: controller.signal });
   page.querySelector("[data-sound-pack]")?.addEventListener("change", (event) => {
     commitSetting(event.currentTarget, `v8.sound.pack.${event.currentTarget.value}`, { source: "settings", element: event.currentTarget, event });
   }, { signal: controller.signal });

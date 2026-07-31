@@ -2648,6 +2648,10 @@ html[data-v8-interactions] .v8-switch:hover .v8-switch__track { border-color: va
 .v8-accent-swatch--amber { background: var(--v8-swatch-amber); }
 .v8-accent-swatch--violet { background: var(--v8-swatch-violet); }
 .v8-accent-swatch--rose { background: var(--v8-swatch-rose); }
+.v8-accent-swatch--custom { position: relative; background: conic-gradient(from 180deg, var(--v8-swatch-mint), var(--v8-swatch-sky), var(--v8-swatch-amber), var(--v8-swatch-violet), var(--v8-swatch-rose), var(--v8-swatch-mint)); }
+.v8-accent-swatch--custom::after { position: absolute; z-index: 0; content: ""; inset: 5px; border-radius: 50%; background: var(--v8-accent-swatch-custom-color, var(--v8-swatch-mint)); }
+.v8-accent-swatch--custom svg { position: relative; z-index: 1; }
+.v8-accent-swatch__input { position: absolute; z-index: 2; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; opacity: 0; cursor: pointer; }
 .v8-settings-spaces { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--v8-space-3); padding: var(--v8-space-5); }
 .v8-settings-spaces .v8-setting-choice { width: 100%; justify-content: flex-start; border-color: var(--v8-border); }
 .v8-sound-pack-control { display: grid; min-width: min(330px, 100%); gap: 7px; }

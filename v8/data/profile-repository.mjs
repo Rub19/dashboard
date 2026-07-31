@@ -617,6 +617,8 @@ export function createProfileRepository(options = {}) {
         if (!note) throw new Error("Note introuvable");
         if (Object.hasOwn(patch, "title")) note.title = text(patch.title, "Note sans titre", 160);
         if (Object.hasOwn(patch, "content")) note.content = text(patch.content, "", 50000);
+        if (Object.hasOwn(patch, "tags")) note.tags = (Array.isArray(patch.tags) ? patch.tags : []).map((tag) => text(tag, "", 32)).filter(Boolean).slice(0, 12);
+        if (Object.hasOwn(patch, "pinned")) note.pinned = patch.pinned === true;
         note.updated = now().toISOString();
         return noteView(note, 0);
       });

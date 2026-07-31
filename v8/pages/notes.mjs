@@ -124,7 +124,7 @@ export function mountNotes(stage, options = {}) {
     if (!dirty || !selectedId) return completed("Aucune modification");
     const note = selectedNote();
     if (!note) return completed("Aucune note sélectionnée");
-    const saved = repository.notes.update(note.id, { title: note.title, content: note.content });
+    const saved = repository.notes.update(note.id, { title: note.title, content: note.content, tags: note.tags });
     if (!saved.ok) {
       setSaveStatus("error", "Échec de sauvegarde");
       notify({ id: "notes-save-error", title: "Notes", message: saved.message, type: "error" });
@@ -231,6 +231,16 @@ export function mountNotes(stage, options = {}) {
     });
     contentInput.value = note.content;
     const words = element("span", { text: `${wordCount(note.content)} mot${wordCount(note.content) > 1 ? "s" : ""}` });
+    const pinButton = actionButton({
+      actionId: "v8.notes.pin.toggle",
+      className: `v8-icon-button v8-note-pin${note.pinned ? " is-active" : ""}`,
+      ariaLabel: note.pinned ? "Désépingler la note" : "Épingler la note"
+    }, [icon(note.pinned ? "pin-off" : "pin")]);
+    const tagsList = element("div", { className: "v8-note-tags", attributes: { "aria-label": "Étiquettes de la note" } });
+    const tagInput = element("input", {
+      className: "v8-note-tag-input",
+      attributes: { type: "text", placeholder: note.tags.length ? "Ajouter…" : "Ajouter une étiquette…", "aria-label": "Ajouter une étiquette", maxlength: "32" }
+    });
     const confirm = element("div", { className: "v8-inline-confirm", attributes: { hidden: "", role: "alert" } }, [
       element("span", {}, [icon("triangle-alert"), element("strong", { text: "Supprimer cette note ?" })]),
       element("div", {}, [
@@ -242,11 +252,12 @@ export function mountNotes(stage, options = {}) {
       element("header", { className: "v8-note-toolbar" }, [
         element("span", { className: "v8-save-status", text: "Synchronisation en attente", dataset: { noteSaveStatus: "", status: "pending" } }),
         element("div", {}, [
+          pinButton,
           actionButton({ actionId: "v8.notes.save", variant: "secondary" }, [icon("save"), element("span", { text: "Enregistrer" })]),
           actionButton({ actionId: "v8.notes.delete", className: "v8-icon-button", ariaLabel: "Supprimer la note" }, [icon("trash-2")])
         ])
       ]),
-      element("div", { className: "v8-note-document" }, [titleInput, contentInput]),
+      element("div", { className: "v8-note-document" }, [titleInput, tagsList, contentInput]),
       confirm,
       element("footer", { className: "v8-note-footer" }, [
         words,
@@ -254,6 +265,45 @@ export function mountNotes(stage, options = {}) {
         element("kbd", { text: "Ctrl S" })
       ])
     );
+
+    function renderTags() {
+      const current = selectedNote();
+      if (!current) return;
+      tagsList.replaceChildren();
+      current.tags.forEach((tag) => {
+        tagsList.append(element("span", { className: "v8-note-tag", attributes: { translate: "no" } }, [
+          element("span", { text: tag }),
+          element("button", {
+            className: "v8-note-tag-remove",
+            attributes: { type: "button", "aria-label": `Retirer l'étiquette ${tag}` },
+            dataset: { tag }
+          }, [icon("x")])
+        ]));
+      });
+      tagsList.append(tagInput);
+      refreshIcons();
+    }
+
+    function addTag(raw) {
+      const current = selectedNote();
+      if (!current) return;
+      const value = String(raw || "").trim().slice(0, 32);
+      if (!value || current.tags.length >= 12) return;
+      if (current.tags.some((tag) => tag.toLowerCase() === value.toLowerCase())) return;
+      updateLocalNote({ tags: [...current.tags, value] });
+      renderTags();
+      scheduleSave();
+    }
+
+    function removeTag(tag) {
+      const current = selectedNote();
+      if (!current) return;
+      updateLocalNote({ tags: current.tags.filter((entry) => entry !== tag) });
+      renderTags();
+      scheduleSave();
+    }
+
+    renderTags();
 
     titleInput.addEventListener("input", () => {
       updateLocalNote({ title: titleInput.value || "Note sans titre" });
@@ -265,6 +315,22 @@ export function mountNotes(stage, options = {}) {
       const count = wordCount(contentInput.value);
       words.textContent = `${count} mot${count > 1 ? "s" : ""}`;
       scheduleSave();
+    });
+    tagsList.addEventListener("click", (event) => {
+      const button = event.target.closest(".v8-note-tag-remove");
+      if (!button) return;
+      removeTag(button.dataset.tag);
+    });
+    tagInput.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== ",") return;
+      event.preventDefault();
+      addTag(tagInput.value);
+      tagInput.value = "";
+    });
+    tagInput.addEventListener("blur", () => {
+      if (!tagInput.value.trim()) return;
+      addTag(tagInput.value);
+      tagInput.value = "";
     });
     applySyncStatus();
     refreshIcons();
@@ -329,7 +395,25 @@ export function mountNotes(stage, options = {}) {
     return removed;
   }
 
+  function togglePin() {
+    const note = selectedNote();
+    if (!note) return completed("Aucune note sélectionnée");
+    const nextPinned = !note.pinned;
+    updateLocalNote({ pinned: nextPinned });
+    const saved = repository.notes.update(note.id, { pinned: nextPinned });
+    if (!saved.ok) {
+      updateLocalNote({ pinned: !nextPinned });
+      notify({ id: "notes-pin-error", title: "Notes", message: saved.message, type: "error" });
+      return saved;
+    }
+    renderList();
+    renderEditor();
+    notify({ id: "notes-pinned", title: "Notes", message: nextPinned ? "Note épinglée." : "Note désépinglée.", type: "success", duration: 1800 });
+    return saved;
+  }
+
   scopedActions.push(actions.scope("v8.notes.new", createNote));
+  scopedActions.push(actions.scope("v8.notes.pin.toggle", togglePin));
   scopedActions.push(actions.scope("v8.notes.save", () => flushSave(true)));
   scopedActions.push(actions.scope("v8.notes.delete", showDeleteConfirmation));
   scopedActions.push(actions.scope("v8.notes.delete.cancel", cancelDelete));

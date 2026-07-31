@@ -1,10 +1,10 @@
-import { connectionMethod, connectionMethods, integrationById } from "../data/integrations.mjs";
+import { connectionMethod, connectionMethods, integrationById } from "../data/intégrations.mjs";
 
 const OPPORTUNITY_RULES = Object.freeze([
-  Object.freeze({ sourceId: "discord", targetId: "spotify", methodId: "discord-lanyard", title: "Spotify detecte via Discord", description: "Utilisez la presence Discord publique pour afficher le morceau en cours, sans controle de lecture." }),
+  Object.freeze({ sourceId: "discord", targetId: "spotify", methodId: "discord-lanyard", title: "Spotify detecte via Discord", description: "Utilisez la presence Discord publique pour afficher le morceau en cours, sans contrôle de lecture." }),
   Object.freeze({ sourceId: "lastfm", targetId: "spotify", methodId: "lastfm-history", title: "Historique Spotify via Last.fm", description: "Reutilisez vos scrobbles pour alimenter les statistiques musicales d'ETHONE." }),
-  Object.freeze({ sourceId: "github", targetId: "vscode", methodId: "local-bridge", title: "Contexte de code disponible", description: "Associez le bridge local VS Code a votre activite GitHub existante." }),
-  Object.freeze({ sourceId: "google-calendar", targetId: "google-drive", methodId: "oauth-secure", title: "Ecosysteme Google detecte", description: "Preparez Drive dans le meme projet Cloud, avec un consentement et des scopes distincts." })
+  Object.freeze({ sourceId: "github", targetId: "vscode", methodId: "local-bridge", title: "Contexte de code disponible", description: "Associez le bridge local VS Code a votre activité GitHub existante." }),
+  Object.freeze({ sourceId: "google-calendar", targetId: "google-drive", methodId: "oauth-secure", title: "Ecosysteme Google detecte", description: "Preparez Drive dans le même projet Cloud, avec un consentement et des scopes distincts." })
 ]);
 
 const WORKER_SERVICES = Object.freeze({
@@ -105,17 +105,17 @@ export function connectionSummary(integration, connection, now = Date.now()) {
   return Object.freeze({
     state,
     method: selected,
-    quality: state === "connected" ? "Operationnelle" : state === "prepared" ? "Preparee" : selected?.quality || "Indisponible",
+    quality: state === "connected" ? "Operationnelle" : state === "prepared" ? "Préparée" : selected?.quality || "Indisponible",
     permissions: selected?.permissions || Object.freeze([]),
     lastSync: formatConnectionTime(connection?.lastSyncAt, now),
-    response: Number.isFinite(Number(connection?.responseMs)) ? `${Math.max(0, Math.round(Number(connection.responseMs)))} ms` : "Non mesure",
-    apiVersion: connection?.apiVersion && connection.apiVersion !== "Non connectee" ? connection.apiVersion : selected?.apiVersion || "Non disponible"
+    response: Number.isFinite(Number(connection?.responseMs)) ? `${Math.max(0, Math.round(Number(connection.responseMs)))} ms` : "Non mesuré",
+    apiVersion: connection?.apiVersion && connection.apiVersion !== "Non connectée" ? connection.apiVersion : selected?.apiVersion || "Non disponible"
   });
 }
 
 export function methodAvailability(method, connections = []) {
-  if (!method) return Object.freeze({ usable: false, label: "Indisponible", reason: "Methode inconnue" });
-  if (method.disabled) return Object.freeze({ usable: false, label: "Acces limite", reason: "Le fournisseur ne propose pas encore un acces adapte." });
+  if (!method) return Object.freeze({ usable: false, label: "Indisponible", reason: "Méthode inconnue" });
+  if (method.disabled) return Object.freeze({ usable: false, label: "Accès limite", reason: "Le fournisseur ne propose pas encore un accès adapte." });
   if (method.dependency) {
     const dependency = connectionsById(connections).get(method.dependency);
     if (dependency?.status !== "connected") {
@@ -124,9 +124,9 @@ export function methodAvailability(method, connections = []) {
     }
   }
   if ((method.availability === "backend" || method.availability === "public" || method.availability === "bridge") && !method.live) {
-    return Object.freeze({ usable: false, label: "Bientot disponible", reason: "Le backend ETHONE ne prend pas encore en charge cette methode. Rien a configurer pour l'instant." });
+    return Object.freeze({ usable: false, label: "Bientot disponible", reason: "Le backend ETHONE ne prend pas encore en charge cette méthode. Rien a configurer pour l'instant." });
   }
-  const labels = { backend: "Backend requis", local: "Local", public: "Disponible", bridge: "Via connexion", restricted: "Acces limite", limited: "Indisponible" };
+  const labels = { backend: "Backend requis", local: "Local", public: "Disponible", bridge: "Via connexion", restricted: "Accès limite", limited: "Indisponible" };
   return Object.freeze({ usable: true, label: labels[method.availability] || "Disponible", reason: "" });
 }
 
@@ -150,11 +150,11 @@ export function runConnectionDiagnostics(integration, connection, method, option
   const syncTime = connection?.lastSyncAt ? new Date(connection.lastSyncAt).getTime() : NaN;
   const stale = Number.isFinite(syncTime) && now - syncTime > 15 * 60 * 1000;
   const checks = [
-    Object.freeze({ id: "network", label: "Navigateur", status: online ? "pass" : "fail", detail: online ? "Connexion reseau disponible." : "Le navigateur est hors ligne." }),
-    Object.freeze({ id: "method", label: "Methode", status: selected?.disabled ? "fail" : "pass", detail: selected?.disabled ? "Acces fournisseur insuffisant pour activer ce connecteur." : `${selected?.label || "Methode"} selectionnee.` }),
-    Object.freeze({ id: "setup", label: "Preparation locale", status: connection?.setupComplete ? "pass" : "warn", detail: connection?.setupComplete ? "Metadonnees validees, sans donnee sensible." : "Le guide n'est pas encore termine." }),
+    Object.freeze({ id: "network", label: "Navigateur", status: online ? "pass" : "fail", detail: online ? "Connexion réseau disponible." : "Le navigateur est hors ligne." }),
+    Object.freeze({ id: "method", label: "Méthode", status: selected?.disabled ? "fail" : "pass", detail: selected?.disabled ? "Accès fournisseur insuffisant pour activer ce connecteur." : `${selected?.label || "Méthode"} selectionnee.` }),
+    Object.freeze({ id: "setup", label: "Préparation locale", status: connection?.setupComplete ? "pass" : "warn", detail: connection?.setupComplete ? "Metadonnees validees, sans donnée sensible." : "Le guide n'est pas encore terminé." }),
     Object.freeze({ id: "session", label: "Session distante", status: connection?.status === "connected" ? "pass" : "idle", detail: connection?.status === "connected" ? "Connexion declaree active par le runtime." : selected?.availability === "backend" ? "Non testee : aucun backend OAuth n'est branche." : "Aucune session distante active." }),
-    Object.freeze({ id: "freshness", label: "Fraicheur", status: !Number.isFinite(syncTime) ? "idle" : stale ? "warn" : "pass", detail: !Number.isFinite(syncTime) ? "Aucune synchronisation mesuree." : stale ? "La derniere synchronisation est ancienne." : "Synchronisation recente." }),
+    Object.freeze({ id: "freshness", label: "Fraîcheur", status: !Number.isFinite(syncTime) ? "idle" : stale ? "warn" : "pass", detail: !Number.isFinite(syncTime) ? "Aucune synchronisation mesurée." : stale ? "La dernière synchronisation est ancienne." : "Synchronisation récente." }),
     Object.freeze({ id: "storage", label: "Stockage frontend", status: "pass", detail: "ETHONE conserve uniquement les metadonnees de configuration." })
   ];
   const failed = checks.filter((check) => check.status === "fail").length;
@@ -194,10 +194,10 @@ export function mergeWorkerDiagnostic(localReport, options = {}) {
       id: "worker",
       label: "ETHONE Worker",
       status: "idle",
-      detail: "Cette methode n'utilise pas encore une route Worker migree."
+      detail: "Cette méthode n'utilisé pas encore une route Worker migree."
     });
   } else if (failure) {
-    const message = String(failure?.message || "Le Worker securise est indisponible.").replace(/\s+/g, " ").slice(0, 180);
+    const message = String(failure?.message || "Le Worker sécurisé est indisponible.").replace(/\s+/g, " ").slice(0, 180);
     workerCheck = Object.freeze({
       id: "worker",
       label: "ETHONE Worker",
@@ -215,7 +215,7 @@ export function mergeWorkerDiagnostic(localReport, options = {}) {
       label: "ETHONE Worker",
       status: !workerVerified || serviceState?.routeEnabled !== true ? "fail" : workerAvailable ? "pass" : "warn",
       detail: !workerVerified
-        ? "La reponse du Worker n'a pas pu etre verifiee."
+        ? "La réponse du Worker n'a pas pu être vérifiée."
         : serviceState.routeEnabled !== true
           ? "La route Worker est desactivee."
           : workerAvailable

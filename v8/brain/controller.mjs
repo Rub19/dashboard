@@ -4,12 +4,12 @@ const clean = (value, fallback = "", limit = 600) => (String(value ?? "").replac
 function contextualReply(query, scope) {
   const intent = query.toLowerCase();
   const data = scope.context || {};
-  if (/tache|task|priorit/.test(intent)) return data.tasks?.length ? `${data.tasks.length} priorite${data.tasks.length > 1 ? "s" : ""}. Prochaine : « ${data.tasks[0].title} ».` : "Aucune priorite ouverte. Je peux en creer une.";
+  if (/tache|task|priorit/.test(intent)) return data.tasks?.length ? `${data.tasks.length} priorite${data.tasks.length > 1 ? "s" : ""}. Prochaine : « ${data.tasks[0].title} ».` : "Aucune priorité ouverte. Je peux en créer une.";
   if (/note|resume|résume/.test(intent)) return data.notes?.length ? `${data.notes.length} note${data.notes.length > 1 ? "s" : ""} recente${data.notes.length > 1 ? "s" : ""}. Titres et metadonnees uniquement.` : "Aucune note autorisee ici.";
-  if (/agenda|calendrier|evenement/.test(intent)) return data.events?.length ? `Prochain evenement : « ${data.events[0].title} », le ${data.events[0].date}.` : "Aucun evenement a venir n'est visible.";
+  if (/agenda|calendrier|evenement/.test(intent)) return data.events?.length ? `Prochain evenement : « ${data.events[0].title} », le ${data.events[0].date}.` : "Aucun événement a venir n'est visible.";
   if (/connexion|sync|supabase/.test(intent)) return data.connections?.length ? `${data.connections.length} connexion${data.connections.length > 1 ? "s" : ""}, etat technique uniquement.` : "Connexions non chargees ou non autorisees.";
-  if (/densite|density|interface|reglage/.test(intent)) return data.settings ? `Mode ${data.settings.density}. Toute modification exige confirmation.` : "Ouvrez Reglages pour analyser l'apparence.";
-  const counts = [[data.tasks, "priorites"], [data.notes, "notes"], [data.events, "evenements"]].filter(([items]) => items?.length).map(([items, label]) => `${items.length} ${label}`);
+  if (/densite|density|interface|reglage/.test(intent)) return data.settings ? `Mode ${data.settings.density}. Toute modification exige confirmation.` : "Ouvrez Réglages pour analyser l'apparence.";
+  const counts = [[data.tasks, "priorités"], [data.notes, "notes"], [data.events, "événements"]].filter(([items]) => items?.length).map(([items, label]) => `${items.length} ${label}`);
   return `Je suis sur ${scope.route}, dans ${scope.workspace.space}. ${counts.length ? `Contexte minimal : ${counts.join(", ")}.` : "Le contexte reste volontairement minimal."}`;
 }
 
@@ -67,7 +67,7 @@ export function createBrainController(options = {}) {
       const entry = append("assistant", answer, { provider, sources });
       presence?.setBrain?.("responding", { settleAfter: 900 });
       publish(Object.freeze({ type: "status", status: "ready" }));
-      return outcome(true, "completed", "Reponse Brain prete.", Object.freeze({ entry, context }));
+      return outcome(true, "completed", "Réponse Brain prete.", Object.freeze({ entry, context }));
     } catch (error) {
       presence?.setBrain?.("ready");
       publish(Object.freeze({ type: "status", status: "error" }));
@@ -80,12 +80,12 @@ export function createBrainController(options = {}) {
     if (preferences.enabled === false || preferences.proactive === false || preferences.suggestionFrequency === "off") return Object.freeze([]);
     const context = contextEngine.build({ intent: "suggestions" });
     const output = [];
-    if (context.route === "settings") output.push({ id: "density-compact", title: "Ajuster la densite", detail: "Previsualiser le mode compact.", action: "density.change", parameters: { density: "compact" } });
+    if (context.route === "settings") output.push({ id: "density-compact", title: "Ajuster la densité", detail: "Previsualiser le mode compact.", action: "density.change", parameters: { density: "compact" } });
     if (["home", "brain"].includes(context.route)) output.push({ id: "open-widgets", title: "Composer le Dashboard", detail: "Ouvrir les widgets.", action: "widget.open", parameters: {} });
     output.push(context.context.tasks?.length
-      ? { id: "open-tasks", title: "Reprendre la priorite", detail: context.context.tasks[0].title, action: "page.open", parameters: { route: "tasks" } }
-      : { id: "new-task", title: "Creer une priorite", detail: "Ajouter la prochaine action.", action: "task.create", parameters: { title: "Nouvelle priorite" } });
-    output.push({ id: "capture-note", title: "Capturer le contexte", detail: "Creer une note courte.", action: "note.create", parameters: { title: "Contexte du jour" } });
+      ? { id: "open-tasks", title: "Reprendre la priorité", detail: context.context.tasks[0].title, action: "page.open", parameters: { route: "tasks" } }
+      : { id: "new-task", title: "Créer une priorité", detail: "Ajouter la prochaine action.", action: "task.create", parameters: { title: "Nouvelle priorité" } });
+    output.push({ id: "capture-note", title: "Capturer le contexte", detail: "Créer une note courte.", action: "note.create", parameters: { title: "Contexte du jour" } });
     return Object.freeze(output.slice(0, 4).map(Object.freeze));
   }
 

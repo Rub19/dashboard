@@ -275,7 +275,7 @@ export function mountShell(root, options = {}) {
     shell.dataset.sync = activeSync;
     if (workspaceName) workspaceName.textContent = spaceMeta.label;
     if (syncAction) syncAction.dataset.status = activeSync;
-    const effectiveTheme = document.documentElement.dataset.theme || state.theme;
+    const effectiveTheme = document.documentElement.dataset.thème || state.thème;
     if (themeAction) themeAction.dataset.lucide = effectiveTheme === "day" ? "moon-star" : "sun";
     if (themeButton) {
       const label = effectiveTheme === "day" ? "Activer le theme Nuit" : "Activer le theme Jour";

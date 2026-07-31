@@ -17,7 +17,7 @@ const ROUTE_LABELS = Object.freeze({
   spaces: "Spaces",
   flows: "Flows",
   brain: "Brain",
-  settings: "Reglages"
+  settings: "Réglages"
 });
 
 export function commandHudIntent(e={}, i=0, n=0) { const k=e.key||"", m=e.ctrlKey||e.metaKey; if (m && k.toLowerCase()==="k") return {type:"close"}; if (m && k.toLowerCase()==="p") return {type:"pin"}; if (k==="Enter") return {type:"execute"}; if (k==="Home" || k==="End") return {type:"select",index:k==="Home"?0:Math.max(0,n-1)}; const d=k==="ArrowDown" || (k==="Tab" && !e.shiftKey) ? 1 : k==="ArrowUp" || (k==="Tab" && e.shiftKey) ? -1 : k==="PageDown" ? 5 : k==="PageUp" ? -5 : 0; return d ? {type:"select",index:n>0?(((i+d)%n)+n)%n:0} : null; }
@@ -69,7 +69,7 @@ export function createCommandCenter(host, options = {}) {
     resultsNode.replaceChildren();
 
     resultsNode.append(element("div", { className: "v8-command-section-label" }, [
-      element("span", { text: input.value.trim() ? "Resultats" : (pinned.length ? "Acces rapide" : `Suggestions pour ${context.flow}`) }),
+      element("span", { text: input.value.trim() ? "Résultats" : (pinned.length ? "Accès rapide" : `Suggestions pour ${context.flow}`) }),
       element("span", { text: `${results.length} commande${results.length > 1 ? "s" : ""}` })
     ]));
 

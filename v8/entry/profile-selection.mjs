@@ -70,7 +70,7 @@ const MENU_ACTIONS = Object.freeze([
   Object.freeze({ id: "edit", label: "Modifier le profil", icon: "sliders-horizontal" }),
   Object.freeze({ id: "avatar", label: "Changer l'avatar", icon: "circle-user-round" }),
   Object.freeze({ id: "space", label: "Changer le Space", icon: "panels-top-left" }),
-  Object.freeze({ id: "theme", label: "Changer le theme", icon: "palette" }),
+  Object.freeze({ id: "thème", label: "Changer le thème", icon: "palette" }),
   Object.freeze({ id: "export", label: "Exporter", icon: "download" }),
   Object.freeze({ id: "duplicate", label: "Dupliquer", icon: "copy" }),
   Object.freeze({ id: "delete", label: "Supprimer", icon: "trash-2", danger: true })
@@ -140,11 +140,11 @@ function livePreviewModel(snapshot, date) {
       state: syncing ? "syncing" : "ready"
     }),
     signals: Object.freeze([
-      Object.freeze({ id: "brain", label: "Brain", icon: "brain", value: brain?.title || "Contexte pret", detail: brain ? "Activite recente" : "Pret pour cet environnement", state: brain ? "ready" : "idle" }),
-      Object.freeze({ id: "weather", label: "Meteo", icon: "cloud-sun", value: weather?.value || "Non connectee", detail: weather?.detail || "Configurer", state: weather?.state || "unavailable" }),
-      Object.freeze({ id: "calendar", label: "Agenda", icon: "calendar-days", value: events?.value || "Aucun evenement", detail: events?.detail || "Aujourd'hui", state: events?.state || "empty" }),
-      Object.freeze({ id: "music", label: "Musique", icon: "audio-lines", value: music?.value || "Non connectee", detail: music?.detail || "Spotify", state: music?.state || "unavailable" }),
-      Object.freeze({ id: "discord", label: "Discord", icon: "message-circle", value: discord?.title || (discordConnected ? "Connecte" : "Non connecte"), detail: discord ? "Activite recente" : "Presence", state: discord ? "ready" : discordConnected ? "idle" : "unavailable" })
+      Object.freeze({ id: "brain", label: "Brain", icon: "brain", value: brain?.title || "Contexte pret", detail: brain ? "Activité récente" : "Pret pour cet environnement", state: brain ? "ready" : "idle" }),
+      Object.freeze({ id: "weather", label: "Météo", icon: "cloud-sun", value: weather?.value || "Non connectée", detail: weather?.detail || "Configurer", state: weather?.state || "unavailable" }),
+      Object.freeze({ id: "calendar", label: "Agenda", icon: "calendar-days", value: events?.value || "Aucun événement", detail: events?.detail || "Aujourd'hui", state: events?.state || "empty" }),
+      Object.freeze({ id: "music", label: "Musique", icon: "audio-lines", value: music?.value || "Non connectée", detail: music?.detail || "Spotify", state: music?.state || "unavailable" }),
+      Object.freeze({ id: "discord", label: "Discord", icon: "message-circle", value: discord?.title || (discordConnected ? "Connecté" : "Non connecté"), detail: discord ? "Activité récente" : "Presence", state: discord ? "ready" : discordConnected ? "idle" : "unavailable" })
     ])
   });
 }
@@ -202,7 +202,7 @@ export function settleActivationResult(result, view) {
   view.surface.classList.remove("is-launching");
   view.surface.setAttribute("aria-busy", "false");
   view.enterButton.disabled = false;
-  view.status.textContent = result.message || "L'environnement n'a pas pu etre ouvert.";
+  view.status.textContent = result.message || "L'environnement n'a pas pu être ouvert.";
   return true;
 }
 
@@ -343,7 +343,7 @@ export function mountProfileSelection(root, options = {}) {
 
   const dialogLayer = element("div", { className: "v8-profile-dialog-layer", attributes: { hidden: true } });
   const signOut = element("button", { className: "v8-button v8-button--outline", attributes: { type: "button" } }, [icon("log-out"), element("span", { text: "Changer de compte" })]);
-  const emptyCreateButton = element("button", { className: "v8-button v8-button--primary", attributes: { type: "button" } }, [icon("plus"), element("span", { text: "Creer un environnement" })]);
+  const emptyCreateButton = element("button", { className: "v8-button v8-button--primary", attributes: { type: "button" } }, [icon("plus"), element("span", { text: "Créer un environnement" })]);
   const profileEmpty = emptyState({
     iconName: "user-round-plus",
     eyebrow: "Premier environnement",
@@ -447,7 +447,7 @@ export function mountProfileSelection(root, options = {}) {
     previewSignals.replaceChildren(...profile.signals.map(signalRow));
     previewLive.replaceChildren(...profile.live.signals.map(liveSignalNode));
     enterButton.replaceChildren(icon(profile.locked ? "lock-keyhole" : "arrow-right"), enterLabel);
-    enterLabel.textContent = profile.locked ? "Continuer avec verification" : `Entrer dans ${profile.name}`;
+    enterLabel.textContent = profile.locked ? "Continuer avec vérification" : `Entrer dans ${profile.name}`;
     status.textContent = profile.locked ? "Ce profil necessite un deverrouillage." : "";
     updateConnectivity();
     animatePreview();
@@ -611,7 +611,7 @@ export function mountProfileSelection(root, options = {}) {
     let chosenWidgets = new Set(profile?.environment.widgets?.length ? profile.environment.widgets : WIDGETS_BY_TYPE[profile?.type || "personal"]);
     const chosenIntegrations = new Set(profile?.environment.integrations || []);
     let widgetsTouched = false;
-    let activeStep = focusTarget === "space" || focusTarget === "theme" ? 1 : 0;
+    let activeStep = focusTarget === "space" || focusTarget === "thème" ? 1 : 0;
     const nameInput = element("input", { className: "v8-input", attributes: { type: "text", maxlength: "80", required: true, value: profile?.name || "", placeholder: "Nom du profil", autocomplete: "off" } });
     const descriptionInput = element("textarea", { className: "v8-input v8-profile-dialog__textarea", attributes: { maxlength: "180", rows: "3", placeholder: "Decrivez cet environnement" } }, profile?.description || "");
     const typeSelect = createSelect({ className: "v8-input", attributes: { "aria-label": "Space principal" } }, Object.entries(TYPE_LABELS).map(([value, label]) => optionNode(value, label)));
@@ -622,9 +622,9 @@ export function mountProfileSelection(root, options = {}) {
     const backgroundSelect = createSelect({ className: "v8-input", attributes: { "aria-label": "Fond" } }, Object.entries(BACKGROUND_LABELS).map(([value, label]) => optionNode(value, label)));
     backgroundSelect.value = profile?.environment.background || "signal";
     const avatarPicker = element("div", { className: "v8-profile-dialog__avatar-picker", attributes: { role: "radiogroup", "aria-label": "Avatar" } });
-    const accentPicker = element("div", { className: "v8-profile-dialog__accent-picker", attributes: { role: "radiogroup", "aria-label": "Theme" } });
+    const accentPicker = element("div", { className: "v8-profile-dialog__accent-picker", attributes: { role: "radiogroup", "aria-label": "Thème" } });
     const widgetPicker = element("div", { className: "v8-profile-dialog__module-picker", attributes: { role: "group", "aria-label": "Widgets" } });
-    const integrationPicker = element("div", { className: "v8-profile-dialog__module-picker", attributes: { role: "group", "aria-label": "Integrations" } });
+    const integrationPicker = element("div", { className: "v8-profile-dialog__module-picker", attributes: { role: "group", "aria-label": "Intégrations" } });
     const setupSummary = element("p", { className: "v8-profile-dialog__summary" });
 
     AVATAR_CHOICES.forEach((choice) => {
@@ -705,15 +705,15 @@ export function mountProfileSelection(root, options = {}) {
     const pages = [
       element("section", { className: "v8-profile-dialog__page", dataset: { wizardStep: "0" } }, [
         element("div", { className: "v8-profile-dialog__page-heading" }, [element("span", { text: "01 / IDENTITE" }), element("h3", { text: "Donnez un visage a cet univers" }), element("p", { text: "Un nom, une intention et un repere visuel immediat." })]),
-        formField({ label: "Nom", control: nameInput, required: true, help: "80 caracteres maximum" }),
-        formField({ label: "Description", control: descriptionInput, help: "180 caracteres maximum" }),
+        formField({ label: "Nom", control: nameInput, required: true, help: "80 caractères maximum" }),
+        formField({ label: "Description", control: descriptionInput, help: "180 caractères maximum" }),
         element("fieldset", { className: "v8-profile-dialog__fieldset" }, [element("legend", { text: "Avatar" }), avatarPicker])
       ]),
       element("section", { className: "v8-profile-dialog__page", dataset: { wizardStep: "1" } }, [
-        element("div", { className: "v8-profile-dialog__page-heading" }, [element("span", { text: "02 / UNIVERS" }), element("h3", { text: "Reglez son rythme" }), element("p", { text: "Space, Flow et ambiance composent la premiere impression." })]),
+        element("div", { className: "v8-profile-dialog__page-heading" }, [element("span", { text: "02 / UNIVERS" }), element("h3", { text: "Reglez son rythme" }), element("p", { text: "Space, Flow et ambiance composent la première impression." })]),
         element("div", { className: "v8-profile-dialog__row" }, [
           formField({ label: "Space principal", control: typeSelect, help: "Environnement charge a l'ouverture" }),
-          formField({ label: "Flow principal", control: flowInput, help: "80 caracteres maximum" })
+          formField({ label: "Flow principal", control: flowInput, help: "80 caractères maximum" })
         ]),
         element("div", { className: "v8-profile-dialog__row" }, [
           formField({ label: "Ambiance", control: ambienceSelect, help: "Rythme visuel de l'environnement" }),
@@ -722,9 +722,9 @@ export function mountProfileSelection(root, options = {}) {
         element("fieldset", { className: "v8-profile-dialog__fieldset" }, [element("legend", { text: "Couleur dominante" }), accentPicker])
       ]),
       element("section", { className: "v8-profile-dialog__page", dataset: { wizardStep: "2" } }, [
-        element("div", { className: "v8-profile-dialog__page-heading" }, [element("span", { text: "03 / MODULES" }), element("h3", { text: "Choisissez ce qui vous attend" }), element("p", { text: "Ces modules seront prepares sans connecter de service a votre place." })]),
+        element("div", { className: "v8-profile-dialog__page-heading" }, [element("span", { text: "03 / MODULES" }), element("h3", { text: "Choisissez ce qui vous attend" }), element("p", { text: "Ces modules seront préparés sans connecter de service a votre place." })]),
         element("fieldset", { className: "v8-profile-dialog__fieldset" }, [element("legend", { text: "Widgets" }), widgetPicker]),
-        element("fieldset", { className: "v8-profile-dialog__fieldset" }, [element("legend", { text: "Integrations a preparer" }), integrationPicker]),
+        element("fieldset", { className: "v8-profile-dialog__fieldset" }, [element("legend", { text: "Intégrations a preparer" }), integrationPicker]),
         setupSummary
       ])
     ];
@@ -732,7 +732,7 @@ export function mountProfileSelection(root, options = {}) {
     const cancel = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" } }, [element("span", { text: "Annuler" })]);
     const back = element("button", { className: "v8-button v8-button--ghost", attributes: { type: "button" } }, [icon("arrow-left"), element("span", { text: "Retour" })]);
     const next = element("button", { className: "v8-button v8-button--primary", attributes: { type: "button" } }, [element("span", { text: "Continuer" }), icon("arrow-right")]);
-    const submit = element("button", { className: "v8-button v8-button--primary", attributes: { type: "submit" } }, [icon(mode === "create" ? "sparkles" : "check"), element("span", { text: mode === "create" ? "Creer l'environnement" : "Enregistrer" })]);
+    const submit = element("button", { className: "v8-button v8-button--primary", attributes: { type: "submit" } }, [icon(mode === "create" ? "sparkles" : "check"), element("span", { text: mode === "create" ? "Créer l'environnement" : "Enregistrer" })]);
     const form = element("form", { className: "v8-profile-dialog__form" }, [
       stepper,
       element("div", { className: "v8-profile-dialog__pages" }, pages),
@@ -742,7 +742,7 @@ export function mountProfileSelection(root, options = {}) {
     releaseDialogForm = enhanceForm(form);
     const dialog = dialogShell(
       mode === "create" ? "Composer un environnement" : `Modifier ${profile.name}`,
-      mode === "create" ? "Trois etapes courtes, puis ETHONE est pret a prendre vie." : "Ajustez son identite et ses modules sans toucher a ses donnees.",
+      mode === "create" ? "Trois etapes courtes, puis ETHONE est pret a prendre vie." : "Ajustez son identite et ses modules sans toucher a ses données.",
       form,
       element("span")
     );
@@ -813,7 +813,7 @@ export function mountProfileSelection(root, options = {}) {
     showStep(activeStep, false);
     const target = focusTarget === "avatar" ? avatarPicker.querySelector('[aria-checked="true"]')
       : focusTarget === "space" ? typeSelect
-        : focusTarget === "theme" ? accentPicker.querySelector('[aria-checked="true"]')
+        : focusTarget === "thème" ? accentPicker.querySelector('[aria-checked="true"]')
           : nameInput;
     queueMicrotask(() => target?.focus());
     return dialog;
@@ -827,7 +827,7 @@ export function mountProfileSelection(root, options = {}) {
       element("div", { className: "v8-profile-dialog__danger-icon" }, icon("triangle-alert")),
       element("p", { text: `Les donnees du profil ${profile.name} seront supprimees de Supabase et du cache de cet appareil. Cette action est irreversible.` })
     ]);
-    dialogShell("Supprimer ce profil ?", "Une confirmation est necessaire avant toute suppression.", content, element("div", { className: "v8-profile-dialog__actions" }, [cancel, confirm]));
+    dialogShell("Supprimer ce profil ?", "Une confirmation est nécessaire avant toute suppression.", content, element("div", { className: "v8-profile-dialog__actions" }, [cancel, confirm]));
     cancel.addEventListener("click", () => closeDialog(), listenerOptions);
     confirm.addEventListener("click", () => {
       const response = repository.deleteProfile(profile.id);
@@ -866,7 +866,7 @@ export function mountProfileSelection(root, options = {}) {
     else if (actionId === "edit") openEditor("edit", profile, "name");
     else if (actionId === "avatar") openEditor("edit", profile, "avatar");
     else if (actionId === "space") openEditor("edit", profile, "space");
-    else if (actionId === "theme") openEditor("edit", profile, "theme");
+    else if (actionId === "thème") openEditor("edit", profile, "thème");
     else if (actionId === "export") { closeMenu(); downloadExport(profile); }
     else if (actionId === "duplicate") {
       closeMenu();
@@ -882,7 +882,7 @@ export function mountProfileSelection(root, options = {}) {
     selectPreview(index);
     const profile = profiles[selectedIndex];
     if (profile.locked) {
-      status.textContent = "Profil verrouille : vos donnees restent intactes.";
+      status.textContent = "Profil verrouille : vos données restent intactes.";
       return;
     }
     const selected = repository.selectProfile(profile.id);
@@ -904,7 +904,7 @@ export function mountProfileSelection(root, options = {}) {
       }
       if (!destroyed && token === activation) settleActivationResult(activationResult, { surface, enterButton, status });
     } catch {
-      if (!destroyed && token === activation) settleActivationResult({ ok: false, message: "L'environnement n'a pas pu etre ouvert." }, { surface, enterButton, status });
+      if (!destroyed && token === activation) settleActivationResult({ ok: false, message: "L'environnement n'a pas pu être ouvert." }, { surface, enterButton, status });
     }
   }
 

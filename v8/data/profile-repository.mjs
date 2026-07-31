@@ -241,7 +241,7 @@ function activityView(entry, index) {
     source: text(entry?.source, "ethone", 48).toLowerCase(),
     category: ACTIVITY_CATEGORIES.has(entry?.category) ? entry.category : "system",
     icon: text(entry?.icon, "activity", 48),
-    title: text(entry?.title, "Activite ETHONE", 180),
+    title: text(entry?.title, "Activité ETHONE", 180),
     description: text(entry?.description, "", 500),
     timestamp: text(entry?.timestamp, "", 40),
     tone: text(entry?.tone, "default", 24)
@@ -252,7 +252,7 @@ function connectionView(id, connection = {}) {
   const status = CONNECTION_STATUSES.has(connection?.status) ? connection.status : "disconnected";
   const responseMs = Number(connection?.responseMs);
   return Object.freeze({
-    id: text(id || connection?.id, "integration", 80),
+    id: text(id || connection?.id, "intégration", 80),
     status,
     setupComplete: connection?.setupComplete === true,
     methodId: safeIdentifier(connection?.methodId),
@@ -261,7 +261,7 @@ function connectionView(id, connection = {}) {
     lastSyncAt: text(connection?.lastSyncAt, "", 40),
     lastTestedAt: text(connection?.lastTestedAt, "", 40),
     responseMs: Number.isFinite(responseMs) ? Math.min(600000, Math.max(0, Math.round(responseMs))) : null,
-    apiVersion: text(connection?.apiVersion, "Non connectee", 40),
+    apiVersion: text(connection?.apiVersion, "Non connectée", 40),
     detail: text(connection?.detail, "", 180)
   });
 }
@@ -360,11 +360,11 @@ export function createProfileRepository(options = {}) {
       if (active) storage?.setItem(key, active);
       else storage?.removeItem?.(key);
     } catch (error) {
-      return result(false, "failed", "Les donnees Supabase n'ont pas pu etre appliquees.", error);
+      return result(false, "failed", "Les données Supabase n'ont pas pu être appliquees.", error);
     } finally {
       persistenceMuted -= 1;
     }
-    return result(true, "completed", "Donnees Supabase appliquees.", { profiles: profiles.length });
+    return result(true, "completed", "Données Supabase appliquees.", { profiles: profiles.length });
   }
 
   function subscribePersistence(listener) {
@@ -494,7 +494,7 @@ export function createProfileRepository(options = {}) {
     if (Object.hasOwn(patch, "flow")) profile.defaultFlow = text(patch.flow, "Essentiel", 80);
     if (!profile.environment || typeof profile.environment !== "object") profile.environment = {};
     if (Object.hasOwn(patch, "widgets")) profile.environment.widgets = safeList(patch.widgets, ENVIRONMENT_WIDGETS);
-    if (Object.hasOwn(patch, "integrations")) profile.environment.integrations = safeList(patch.integrations, ENVIRONMENT_INTEGRATIONS, 4);
+    if (Object.hasOwn(patch, "intégrations")) profile.environment.integrations = safeList(patch.integrations, ENVIRONMENT_INTEGRATIONS, 4);
     if (Object.hasOwn(patch, "ambience") && ENVIRONMENT_AMBIENCES.has(patch.ambience)) profile.environment.ambience = patch.ambience;
     if (Object.hasOwn(patch, "background") && ENVIRONMENT_BACKGROUNDS.has(patch.background)) profile.environment.background = patch.background;
     profile.updatedAt = now().toISOString();
@@ -590,7 +590,7 @@ export function createProfileRepository(options = {}) {
       persistRawProfiles(profiles);
       return result(true, "completed", "Modification en attente de synchronisation.", data ?? null);
     } catch (error) {
-      return result(false, "failed", "La mise en cache a echoue.", error);
+      return result(false, "failed", "La mise en cache a échoué.", error);
     }
   }
 
@@ -880,7 +880,7 @@ export function createProfileRepository(options = {}) {
           source: text(input.source, "ethone", 48).toLowerCase(),
           category: ACTIVITY_CATEGORIES.has(input.category) ? input.category : "system",
           icon: text(input.icon, "activity", 48),
-          title: text(input.title, "Activite ETHONE", 180),
+          title: text(input.title, "Activité ETHONE", 180),
           description: text(input.description, "", 500),
           timestamp: text(input.timestamp, now().toISOString(), 40),
           tone: text(input.tone, "default", 24)
@@ -903,7 +903,7 @@ export function createProfileRepository(options = {}) {
       return mutateState((state) => {
         if (!state.connections || typeof state.connections !== "object" || Array.isArray(state.connections)) state.connections = {};
         const integrationId = safeIdentifier(id);
-        if (!integrationId) throw new Error("Integration invalide");
+        if (!integrationId) throw new Error("Intégration invalide");
         const existing = Object.hasOwn(state.connections, integrationId) && typeof state.connections[integrationId] === "object" ? state.connections[integrationId] : {};
         state.connections[integrationId] = {
           ...existing,
@@ -921,10 +921,10 @@ export function createProfileRepository(options = {}) {
     },
     updateStatus(id, status, patch = {}) {
       return mutateState((state) => {
-        if (!CONNECTION_STATUSES.has(status)) throw new Error("Etat de connexion invalide");
+        if (!CONNECTION_STATUSES.has(status)) throw new Error("État de connexion invalide");
         if (!state.connections || typeof state.connections !== "object" || Array.isArray(state.connections)) state.connections = {};
         const integrationId = safeIdentifier(id);
-        if (!integrationId) throw new Error("Integration invalide");
+        if (!integrationId) throw new Error("Intégration invalide");
         const existing = Object.hasOwn(state.connections, integrationId) && typeof state.connections[integrationId] === "object" ? state.connections[integrationId] : {};
         const responseMs = Number(Object.hasOwn(patch, "responseMs") ? patch.responseMs : existing.responseMs);
         state.connections[integrationId] = {
@@ -937,7 +937,7 @@ export function createProfileRepository(options = {}) {
           lastSyncAt: text(patch.lastSyncAt || existing.lastSyncAt, "", 40),
           lastTestedAt: text(patch.lastTestedAt || existing.lastTestedAt, "", 40),
           responseMs: Number.isFinite(responseMs) ? Math.min(600000, Math.max(0, Math.round(responseMs))) : null,
-          apiVersion: text(patch.apiVersion || existing.apiVersion, "Non connectee", 40),
+          apiVersion: text(patch.apiVersion || existing.apiVersion, "Non connectée", 40),
           detail: text(patch.detail, existing.detail || "", 180)
         };
         return connectionView(integrationId, state.connections[integrationId]);
@@ -946,16 +946,16 @@ export function createProfileRepository(options = {}) {
     test(id) {
       const current = snapshot().connections.find((connection) => connection.id === String(id));
       if (!current?.setupComplete) return result(false, "unavailable", "Terminez d'abord le guide de configuration.");
-      if (current.status !== "connected") return result(false, "unavailable", "Le connecteur est prepare, mais aucun OAuth backend n'est actif.", current);
-      return this.updateStatus(id, "connected", { lastTestedAt: now().toISOString(), lastSyncAt: current.lastSyncAt, apiVersion: current.apiVersion, detail: "Etat de connexion verifie." });
+      if (current.status !== "connected") return result(false, "unavailable", "Le connecteur est préparé, mais aucun OAuth backend n'est actif.", current);
+      return this.updateStatus(id, "connected", { lastTestedAt: now().toISOString(), lastSyncAt: current.lastSyncAt, apiVersion: current.apiVersion, detail: "État de connexion vérifié." });
     },
     disconnect(id) {
       return mutateState((state) => {
         const integrationId = safeIdentifier(id);
-        if (!integrationId) throw new Error("Integration invalide");
+        if (!integrationId) throw new Error("Intégration invalide");
         if (!state.connections || typeof state.connections !== "object" || Array.isArray(state.connections)) state.connections = {};
         delete state.connections[integrationId];
-        return connectionView(integrationId, { status: "disconnected", detail: "Association supprimee." });
+        return connectionView(integrationId, { status: "disconnected", detail: "Association supprimée." });
       });
     }
   });

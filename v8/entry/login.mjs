@@ -349,11 +349,11 @@ export function mountLogin(root, options = {}) {
   const loginPassword = passwordField({ id: "v8-login-password", autocomplete: "current-password", bindings, signal: abortController.signal });
   const rememberInput = element("input", {
     className: "v8-checkbox v8-auth__remember-control",
-    attributes: { type: "checkbox", id: "v8-auth-remember", "aria-describedby": "v8-auth-remember-detail" }
+    attributes: { type: "checkbox", id: "v8-auth-remember", "aria-describedby": "v8-auth-remember-détail" }
   });
   try { rememberInput.checked = storage?.getItem("ethone_remember_auth") !== "0"; } catch { rememberInput.checked = true; }
   const rememberText = bindText(element("span", { className: "v8-auth__remember-title" }), "remember");
-  const rememberDetail = bindText(element("small", { className: "v8-auth__remember-detail", id: "v8-auth-remember-detail" }), "rememberDetail");
+  const rememberDetail = bindText(element("small", { className: "v8-auth__remember-détail", id: "v8-auth-remember-détail" }), "rememberDetail");
   const forgotButton = element("button", { className: "v8-auth__text-action", attributes: { type: "button" } });
   bindText(forgotButton, "forgot");
   const loginSubmit = element("button", { className: "v8-button v8-button--primary v8-auth__submit", attributes: { type: "submit" } }, [

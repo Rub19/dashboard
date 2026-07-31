@@ -1,4 +1,4 @@
-import { BRAIN_MEMORY_CATEGORIES } from "./preferences.mjs";
+import { BRAIN_MEMORY_CATEGORIES } from "./préférences.mjs";
 
 export const BRAIN_MEMORY_TABLE = "ethone_brain_memories";
 const CATEGORY_SET = new Set(BRAIN_MEMORY_CATEGORIES);
@@ -66,10 +66,10 @@ export function createBrainMemoryRepository(options = {}) {
     const memoryPreferences = getPreferences()?.memory || {};
     if (memoryPreferences.enabled === false) return result(false, "disabled", "La memoire Brain est desactivee.");
     if (memoryPreferences.categories?.[category] === false) return result(false, "permission-denied", `La categorie ${category} est desactivee.`);
-    const key = safeText(input.key, "preference", 80);
+    const key = safeText(input.key, "préférence", 80);
     const value = safeText(input.value, "", 400);
-    if (!value) return result(false, "invalid", "La memoire ne peut pas etre vide.");
-    if (SENSITIVE.test(`${key} ${value}`)) return result(false, "sensitive", "Cette information est sensible et ne peut pas etre memorisee.");
+    if (!value) return result(false, "invalid", "La memoire ne peut pas être vide.");
+    if (SENSITIVE.test(`${key} ${value}`)) return result(false, "sensitive", "Cette information est sensible et ne peut pas être memorisee.");
     const days = [30, 90, 365].includes(Number(input.retentionDays)) ? Number(input.retentionDays) : 90;
     const expiresAt = new Date(Date.now() + days * 86400000).toISOString();
     const response = await query((builder) => builder.upsert({ user_id: ownerId, category, memory_key: key, memory_value: value, updated_at: new Date().toISOString(), expires_at: expiresAt }, { onConflict: "user_id,category,memory_key" }).select("id,category,memory_key,memory_value,created_at,updated_at,expires_at").single());
@@ -80,7 +80,7 @@ export function createBrainMemoryRepository(options = {}) {
     const memoryId = safeText(id, "", 80);
     const value = safeText(patch.value, "", 400);
     if (!memoryId || !value) return result(false, "invalid", "Memoire invalide.");
-    if (SENSITIVE.test(value)) return result(false, "sensitive", "Cette information est sensible et ne peut pas etre memorisee.");
+    if (SENSITIVE.test(value)) return result(false, "sensitive", "Cette information est sensible et ne peut pas être memorisee.");
     const response = await query((builder) => builder.update({ memory_value: value, updated_at: new Date().toISOString() }).eq("id", memoryId).eq("user_id", ownerId).select("id,category,memory_key,memory_value,created_at,updated_at,expires_at").single());
     return response.ok ? result(true, "completed", "Memoire mise a jour.", safeRecord(response.data)) : response;
   }
@@ -89,13 +89,13 @@ export function createBrainMemoryRepository(options = {}) {
     const memoryId = safeText(id, "", 80);
     if (!memoryId) return result(false, "invalid", "Memoire invalide.");
     const response = await query((builder) => builder.delete().eq("id", memoryId).eq("user_id", ownerId));
-    return response.ok ? result(true, "completed", "Memoire supprimee.", { id: memoryId }) : response;
+    return response.ok ? result(true, "completed", "Memoire supprimée.", { id: memoryId }) : response;
   }
 
   async function clear(options = {}) {
     if (options.confirmed !== true) return result(false, "confirmation-required", "Confirmez la suppression de toutes les memoires Brain.");
     const response = await query((builder) => builder.delete().eq("user_id", ownerId));
-    return response.ok ? result(true, "completed", "Toutes les memoires Brain ont ete supprimees.", null) : response;
+    return response.ok ? result(true, "completed", "Toutes les memoires Brain ont ete supprimées.", null) : response;
   }
 
   async function exportAll() {

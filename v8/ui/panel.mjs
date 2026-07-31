@@ -15,7 +15,7 @@ const PANEL_COPY = Object.freeze({
 });
 
 const NOTIFICATION_ITEMS = Object.freeze([
-  Object.freeze({ id: "cloud-sync", icon: "cloud", title: "Cloud Sync", message: "Les donnees locales sont a jour.", tone: "success", category: "system", time: "A l'instant" }),
+  Object.freeze({ id: "cloud-sync", icon: "cloud", title: "Cloud Sync", message: "Les données locales sont a jour.", tone: "success", category: "system", time: "A l'instant" }),
   Object.freeze({ id: "brain-context", icon: "brain", title: "Brain est contextuel", message: "Les suggestions suivent maintenant la page et le Space actifs.", tone: "brain", category: "brain", time: "Il y a 2 min" }),
   Object.freeze({ id: "experience-update", icon: "sparkles", title: "Experience 1.0", message: "Le nouveau Shell et Mission Control sont disponibles.", tone: "info", category: "updates", time: "Aujourd'hui" })
 ]);
@@ -88,7 +88,7 @@ export function createPanelManager(host, options = {}) {
         element("div", { className: "v8-panel-quick-grid" }, [
           actionButton({ actionId: "v8.notes.new" }, [icon("file-plus-2"), element("span", { text: "Note" })]),
           actionButton({ actionId: "v8.tasks.new" }, [icon("list-plus"), element("span", { text: "Tache" })]),
-          actionButton({ actionId: "v8.calendar.new" }, [icon("calendar-plus"), element("span", { text: "Evenement" })]),
+          actionButton({ actionId: "v8.calendar.new" }, [icon("calendar-plus"), element("span", { text: "Événement" })]),
           actionButton({ actionId: "v8.brain.open" }, [icon("brain"), element("span", { text: "Brain" })])
         ])
       ])
@@ -116,7 +116,7 @@ export function createPanelManager(host, options = {}) {
       ]),
       bulkHost,
       list,
-      actionButton({ actionId: "v8.sync.refresh", variant: "secondary" }, [icon("refresh-cw"), element("span", { text: "Verifier la synchronisation" })])
+      actionButton({ actionId: "v8.sync.refresh", variant: "secondary" }, [icon("refresh-cw"), element("span", { text: "Vérifier la synchronisation" })])
     ]);
 
     function availableItems() {
@@ -281,8 +281,8 @@ export function createPanelManager(host, options = {}) {
       ]),
       element("label", { className: "v8-panel__language" }, [element("span", { text: "Langue" }), language]),
       element("div", { className: "v8-panel__actions" }, [
-        actionButton({ actionId: "v8.settings.open", variant: "secondary" }, [icon("settings-2"), element("span", { text: "Reglages" })]),
-        actionButton({ actionId: "v8.auth.signout", variant: "outline" }, [icon("log-out"), element("span", { text: "Se deconnecter" })])
+        actionButton({ actionId: "v8.settings.open", variant: "secondary" }, [icon("settings-2"), element("span", { text: "Réglages" })]),
+        actionButton({ actionId: "v8.auth.signout", variant: "outline" }, [icon("log-out"), element("span", { text: "Se déconnecter" })])
       ])
     ]);
   }

@@ -230,7 +230,7 @@ export function mountTasks(stage, options = {}) {
     const selected = selection.has(task.id);
     const select = selectionControl({ id: task.id, checked: selected, label: `Sélectionner ${task.title}` });
     const toggle = element("button", {
-      className: `v8-task-check${task.done ? " is-complete" : ""}`,
+      className: `v8-task-check${task.done ? " is-complète" : ""}`,
       attributes: { type: "button", "aria-label": task.done ? `Rouvrir ${task.title}` : `Terminer ${task.title}`, "aria-pressed": task.done ? "true" : "false" },
       dataset: { taskToggle: task.id }
     }, [icon(task.done ? "check" : "circle")]);
@@ -249,7 +249,7 @@ export function mountTasks(stage, options = {}) {
     if (task.tag) meta.push(element("span", { className: "v8-task-tag", text: task.tag, attributes: { translate: "no" } }));
     meta.push(element("span", { className: overdue ? "is-overdue" : "" }, [icon(overdue ? "triangle-alert" : "calendar-days"), formatDue(task.due)]));
     return element("article", {
-      className: `v8-task-row${task.done ? " is-complete" : ""}${selected ? " is-selected" : ""}`,
+      className: `v8-task-row${task.done ? " is-complète" : ""}${selected ? " is-selected" : ""}`,
       attributes: { role: "listitem", tabindex: "0", "aria-selected": selected ? "true" : "false" },
       dataset: { taskId: task.id, liveWidget: "planning", liveKind: "planning" }
     }, [

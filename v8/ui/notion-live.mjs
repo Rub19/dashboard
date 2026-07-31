@@ -21,12 +21,12 @@ export function notionLiveCard(presence = {}, options = {}) {
   const meta = [page.kind, formatRelativeTime(page.lastEditedTime)].filter(Boolean).join(" - ");
   return element(options.tagName || "article", {
     className: `v8-notion-live v8-notion-live--${variant} v8-surface`,
-    attributes: { "aria-label": "Derniere page Notion modifiee" },
+    attributes: { "aria-label": "Dernière page Notion modifiée" },
     dataset: { liveWidget: "media", liveKind: "widget" }
   }, [
     element("span", { className: "v8-notion-icon" }, [icon("notebook-tabs"), livePulseDot()]),
     element("div", { className: "v8-notion-live__body" }, [
-      element("div", { className: "v8-notion-live__meta" }, [brandIcon("notion", "notebook-tabs", "v8-live-brand-mark"), element("small", { text: "Derniere page modifiee" })]),
+      element("div", { className: "v8-notion-live__meta" }, [brandIcon("notion", "notebook-tabs", "v8-live-brand-mark"), element("small", { text: "Dernière page modifiée" })]),
       element("strong", { text: page.title, attributes: { translate: "no" } }),
       element("p", { text: meta, attributes: { translate: "no" } }),
       liveFreshnessNode(presence.updatedAt)

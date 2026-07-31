@@ -1,6 +1,6 @@
 import { WORKSPACES } from "../data/workspaces.mjs";
 import { DENSITY_CUSTOM_RANGES, DENSITY_MODES } from "./density-engine.mjs";
-import { patchBrainPreferences, sanitizeBrainPreferences } from "../brain/preferences.mjs";
+import { patchBrainPreferences, sanitizeBrainPreferences } from "../brain/préférences.mjs";
 import { sanitizeAutomationRule, sanitizeAutomationRules } from "./automation-engine.mjs";
 
 const LOCALES = Object.freeze(["fr", "en", "es", "de"]);
@@ -74,16 +74,16 @@ export function createActionFacade(options = {}) {
   register("v8.spaces.open", openRoute("spaces", "Spaces"));
   register("v8.flows.open", openRoute("flows", "Flows"));
   register("v8.brain.open", openRoute("brain", "Brain"));
-  register("v8.settings.open", openRoute("settings", "Reglages"));
+  register("v8.settings.open", openRoute("settings", "Réglages"));
   register("v8.spotify.toggle", () => spotifyLive?.command
     ? spotifyLive.command("toggle")
-    : unavailable("Le controle Spotify n'est pas disponible."));
+    : unavailable("Le contrôle Spotify n'est pas disponible."));
   register("v8.spotify.next", () => spotifyLive?.command
     ? spotifyLive.command("next")
-    : unavailable("Le controle Spotify n'est pas disponible."));
+    : unavailable("Le contrôle Spotify n'est pas disponible."));
   register("v8.spotify.previous", () => spotifyLive?.command
     ? spotifyLive.command("previous")
-    : unavailable("Le controle Spotify n'est pas disponible."));
+    : unavailable("Le contrôle Spotify n'est pas disponible."));
 
   function openNewNote(context) {
     navigate("notes");
@@ -184,41 +184,41 @@ export function createActionFacade(options = {}) {
 
   register("v8.sync.refresh", () => {
     if (!sync?.refresh) return unavailable("La synchronisation Supabase n'est pas disponible.");
-    notify({ id: "sync-refresh", title: "Supabase", message: "Verification de la synchronisation cloud.", type: "sync", duration: 0, sound: false });
+    notify({ id: "sync-refresh", title: "Supabase", message: "Vérification de la synchronisation cloud.", type: "sync", duration: 0, sound: false });
     return Promise.resolve(sync.refresh()).then((response) => {
       notify({
         id: "sync-refresh",
         title: "Supabase",
-        message: response.ok ? "Donnees synchronisees avec Supabase." : response.message,
+        message: response.ok ? "Données synchronisees avec Supabase." : response.message,
         type: response.ok ? "success" : (response.status === "offline" ? "warning" : "error")
       });
       return response;
     }).catch((error) => {
-      const response = failed("La synchronisation Supabase a echoue.", error);
+      const response = failed("La synchronisation Supabase a échoué.", error);
       notify({ id: "sync-refresh", title: "Supabase", message: response.message, type: "error" });
       return response;
     });
   });
 
-  register("v8.theme.toggle", () => {
+  register("v8.thème.toggle", () => {
     const theme = getState().theme === "day" ? "night" : "day";
     setState({ theme });
-    notify({ id: "theme-updated", title: "Theme", message: theme === "day" ? "Mode Jour applique" : "Mode Nuit applique", type: "success" });
-    return completed("Theme modifie", { theme });
+    notify({ id: "thème-updated", title: "Thème", message: theme === "day" ? "Mode Jour applique" : "Mode Nuit applique", type: "success" });
+    return completed("Thème modifié", { theme });
   });
-  register("v8.theme.night", () => {
+  register("v8.thème.night", () => {
     setState({ theme: "night" });
     return completed("Mode Nuit applique", { theme: "night" });
   });
-  register("v8.theme.graphite", () => {
+  register("v8.thème.graphite", () => {
     setState({ theme: "graphite" });
     return completed("Mode Graphite applique", { theme: "graphite" });
   });
-  register("v8.theme.day", () => {
+  register("v8.thème.day", () => {
     setState({ theme: "day" });
     return completed("Mode Jour applique", { theme: "day" });
   });
-  register("v8.theme.auto", () => {
+  register("v8.thème.auto", () => {
     setState({ theme: "auto" });
     return completed("Mode Automatique applique", { theme: "auto" });
   });
@@ -227,26 +227,26 @@ export function createActionFacade(options = {}) {
     const current = getState().density;
     const density = sequence[(sequence.indexOf(current) + 1) % sequence.length];
     setState({ density });
-    return completed("Densite modifiee", { density });
+    return completed("Densité modifiée", { density });
   });
   DENSITY_MODES.forEach((density) => {
     register(`v8.density.${density}`, () => {
       setState({ density });
-      return completed("Densite modifiee", { density });
+      return completed("Densité modifiée", { density });
     });
   });
   register("v8.density.custom.update", (context = {}) => {
     const key = String(context.key || "");
-    if (!Object.hasOwn(DENSITY_CUSTOM_RANGES, key)) return unavailable("Ce reglage de densite n'est pas disponible.");
+    if (!Object.hasOwn(DENSITY_CUSTOM_RANGES, key)) return unavailable("Ce réglage de densité n'est pas disponible.");
     const current = getState().densitySettings || {};
     setState({ density: "custom", densitySettings: { ...current, custom: { ...(current.custom || {}), [key]: context.value } } });
-    return completed("Densite personnalisee mise a jour", { key, value: context.value });
+    return completed("Densité personnalisée mise a jour", { key, value: context.value });
   });
   register("v8.density.focus", () => {
     const current = getState().densitySettings || {};
     const focusDensity = current.focusDensity === false;
     setState({ densitySettings: { ...current, focusDensity } });
-    return completed(focusDensity ? "Densite Focus activee" : "Densite Focus desactivee", { focusDensity });
+    return completed(focusDensity ? "Densité Focus activee" : "Densité Focus desactivee", { focusDensity });
   });
   register("v8.density.spaces", () => {
     const current = getState().densitySettings || {};
@@ -255,14 +255,14 @@ export function createActionFacade(options = {}) {
     return completed(adaptiveBySpace ? "Presets par Space actifs" : "Presets par Space desactives", { adaptiveBySpace });
   });
 
-  register("v8.brain.preference", (context = {}) => {
+  register("v8.brain.préférence", (context = {}) => {
     const path = String(context.path || "");
     if (!/^(?:enabled|assistantName|persona|tone|detail|language|proactive|suggestionFrequency|automationLevel|notifications|sounds|silentInFocus|briefing\.(?:enabled|concise)|provider\.(?:active|model|fallback|privacy)|memory\.(?:enabled|retentionDays|categories\.[a-z-]+)|permissions\.[a-z-]+)$/.test(path)) {
-      return unavailable("Cette preference Brain n'est pas modifiable.");
+      return unavailable("Cette préférence Brain n'est pas modifiable.");
     }
     const brainPreferences = patchBrainPreferences(getState().brainPreferences, path, context.value);
     setState({ brainPreferences });
-    return completed("Preferences Brain mises a jour", { path, value: context.value });
+    return completed("Préférences Brain mises a jour", { path, value: context.value });
   });
   ["concise", "balanced", "expert", "coach", "creative", "developer", "custom"].forEach((persona) => {
     register(`v8.brain.persona.${persona}`, () => {
@@ -288,7 +288,7 @@ export function createActionFacade(options = {}) {
     const rule = sanitizeAutomationRule({ id, enabled: true, trigger: context.trigger, actionId: context.targetActionId }, id);
     const automations = sanitizeAutomationRules([...(preferences.automations || []), rule]);
     setState({ brainPreferences: sanitizeBrainPreferences({ ...preferences, automations }) });
-    return completed("Automatisation creee", { id: rule.id });
+    return completed("Automatisation créée", { id: rule.id });
   });
   register("v8.automation.toggle", (context = {}) => {
     const preferences = getState().brainPreferences;
@@ -302,7 +302,7 @@ export function createActionFacade(options = {}) {
     const id = String(context.id || "");
     const automations = (preferences.automations || []).filter((rule) => rule.id !== id);
     setState({ brainPreferences: sanitizeBrainPreferences({ ...preferences, automations }) });
-    return completed("Automatisation supprimee", { id });
+    return completed("Automatisation supprimée", { id });
   });
   register("v8.automation.run", (context = {}) => {
     const preferences = getState().brainPreferences;
@@ -378,14 +378,14 @@ export function createActionFacade(options = {}) {
     const value = Math.min(1, Math.max(0, Number(context.value) || 0));
     if (category === "master") sounds.setPreferences({ master: value });
     else sounds.setPreferences({ volumes: { [category]: value } });
-    return completed("Volume modifie", { category, value });
+    return completed("Volume modifié", { category, value });
   });
   ["ethone", "minimal", "classic", "apple-inspired", "silent"].forEach((pack) => {
     register(`v8.sound.pack.${pack}`, () => {
       if (!sounds?.setPreferences) return unavailable("Les sons ne sont pas disponibles dans ce contexte.");
       sounds.setPreferences({ pack });
       if (pack !== "silent" && sounds.preferences().enabled) void sounds.preview?.(pack);
-      return completed("Pack sonore modifie", { pack });
+      return completed("Pack sonore modifié", { pack });
     });
   });
 
@@ -395,27 +395,27 @@ export function createActionFacade(options = {}) {
     const locale = LOCALES[(LOCALES.indexOf(current) + 1) % LOCALES.length];
     setLocale(locale);
     notify({ id: "locale-updated", title: "Langue", message: locale.toUpperCase(), type: "success" });
-    return completed("Langue modifiee", { locale });
+    return completed("Langue modifiée", { locale });
   });
   register("v8.locale.set", (context = {}) => {
     if (!setLocale) return unavailable("Le changement de langue n'est pas disponible.");
     const locale = String(context.locale || "").toLowerCase();
     if (!LOCALES.includes(locale)) return unavailable("Cette langue n'est pas disponible.");
     setLocale(locale);
-    return completed("Langue modifiee", { locale });
+    return completed("Langue modifiée", { locale });
   });
 
   ["mint", "sky", "amber", "violet", "rose"].forEach((accent) => {
     register(`v8.accent.${accent}`, () => {
       setState({ accent });
-      return completed("Accent modifie", { accent });
+      return completed("Accent modifié", { accent });
     });
   });
   register("v8.accent.custom", (context = {}) => {
     const value = String(context.value || "");
     if (!/^#[0-9a-f]{6}$/i.test(value)) return unavailable("Couleur invalide.");
     setState({ accent: "custom", customAccentColor: value.toLowerCase() });
-    return completed("Accent personnalise applique", { accent: "custom", customAccentColor: value.toLowerCase() });
+    return completed("Accent personnalisé applique", { accent: "custom", customAccentColor: value.toLowerCase() });
   });
 
   register("v8.appearance.cycle", () => {
@@ -424,7 +424,7 @@ export function createActionFacade(options = {}) {
     const next = accents[(accents.indexOf(current) + 1) % accents.length];
     setState({ accent: next });
     notify({ id: "accent-updated", title: "Apparence", message: `Accent ${next} applique`, type: "success" });
-    return completed("Accent modifie", { accent: next });
+    return completed("Accent modifié", { accent: next });
   });
 
   function dispatch(id, context = {}) {
@@ -440,27 +440,27 @@ export function createActionFacade(options = {}) {
       const result = handler(Object.freeze({ ...context, actionId }));
       if (result && typeof result.then === "function") {
         return Promise.resolve(result).then((value) => {
-          const normalized = value && typeof value === "object" ? value : completed("Action terminee", value ?? null);
+          const normalized = value && typeof value === "object" ? value : completed("Action terminée", value ?? null);
           try { sounds?.playAction?.(actionId, normalized, context); } catch {}
           if (onActivity) {
             try { onActivity(actionId, normalized, getState()); } catch {}
           }
           return normalized;
         }).catch((error) => {
-          const response = failed("L'action n'a pas pu etre terminee.", error);
+          const response = failed("L'action n'a pas pu être terminée.", error);
           try { sounds?.playAction?.(actionId, response, context); } catch {}
           notify({ id: `failed-${actionId}`, title: "Action interrompue", message: response.message, type: "error" });
           return response;
         });
       }
-      const normalized = result && typeof result === "object" ? result : completed("Action terminee", result ?? null);
+      const normalized = result && typeof result === "object" ? result : completed("Action terminée", result ?? null);
       try { sounds?.playAction?.(actionId, normalized, context); } catch {}
       if (onActivity) {
         try { onActivity(actionId, normalized, getState()); } catch {}
       }
       return normalized;
     } catch (error) {
-      const result = failed("L'action n'a pas pu etre terminee.", error);
+      const result = failed("L'action n'a pas pu être terminée.", error);
       try { sounds?.playAction?.(actionId, result, context); } catch {}
       notify({ id: `failed-${actionId}`, title: "Action interrompue", message: result.message, type: "error" });
       return result;

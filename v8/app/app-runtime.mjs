@@ -10,7 +10,7 @@ import { createHomeModel } from "../data/home-model.mjs";
 import { claimDailyBriefing } from "../data/daily-briefing.mjs";
 import { createActivityJournal } from "../data/activity-journal.mjs";
 import { createDocumentMetadataManager, themeColorForState } from "../core/document-metadata.mjs";
-import { createThemeWatcher, resolveTheme, systemPrefersLight } from "../core/theme-engine.mjs";
+import { createThemeWatcher, resolveTheme, systemPrefersLight } from "../core/thème-engine.mjs";
 import { actionLabel, createAutomationWatcher } from "../core/automation-engine.mjs";
 import { createAmbientEngine } from "../core/experience.mjs";
 import { calendarPresenceState, createPresenceEngine } from "../core/presence-engine.mjs";
@@ -263,7 +263,7 @@ export function mountApplication(root, options = {}) {
     store.setState({ localTime: next.time, timeZone: next.timeZone });
   }) || (() => {});
   const releaseSoundPreferences = sounds?.subscribe?.(() => {
-    if (!applyingCloudPreferences) cloudSync?.queue?.("sound-preferences");
+    if (!applyingCloudPreferences) cloudSync?.queue?.("sound-préférences");
   }) || (() => {});
 
   function applyTheme(themeValue) {
@@ -394,10 +394,10 @@ export function mountApplication(root, options = {}) {
             apiVersion: "OAuth PKCE",
             lastSyncAt: new Date().toISOString(),
             lastTestedAt: new Date().toISOString(),
-            detail: "Compte Spotify connecte via OAuth."
+            detail: "Compte Spotify connecté via OAuth."
           });
           spotifyOAuthLive.refresh?.();
-          toasts.show({ id: "spotify-oauth-success", title: "Spotify", message: "Compte Spotify connecte avec succes.", type: "success" });
+          toasts.show({ id: "spotify-oauth-success", title: "Spotify", message: "Compte Spotify connecté avec succès.", type: "success" });
         })
         .catch(() => {
           toasts.show({ id: "spotify-oauth-error", title: "Spotify", message: "Echec de la connexion Spotify. Reessayez.", type: "error" });
@@ -409,10 +409,10 @@ export function mountApplication(root, options = {}) {
             apiVersion: "GitHub OAuth",
             lastSyncAt: new Date().toISOString(),
             lastTestedAt: new Date().toISOString(),
-            detail: "Compte GitHub connecte via OAuth."
+            detail: "Compte GitHub connecté via OAuth."
           });
           githubLive.refresh?.();
-          toasts.show({ id: "github-oauth-success", title: "GitHub", message: "Compte GitHub connecte avec succes.", type: "success" });
+          toasts.show({ id: "github-oauth-success", title: "GitHub", message: "Compte GitHub connecté avec succès.", type: "success" });
         })
         .catch(() => {
           toasts.show({ id: "github-oauth-error", title: "GitHub", message: "Echec de la connexion GitHub. Reessayez.", type: "error" });
@@ -424,10 +424,10 @@ export function mountApplication(root, options = {}) {
             apiVersion: "Google Calendar API",
             lastSyncAt: new Date().toISOString(),
             lastTestedAt: new Date().toISOString(),
-            detail: "Compte Google connecte via OAuth."
+            detail: "Compte Google connecté via OAuth."
           });
           googleCalendarLive.refresh?.();
-          toasts.show({ id: "google-calendar-oauth-success", title: "Google", message: "Google Calendar connecte avec succes.", type: "success" });
+          toasts.show({ id: "google-calendar-oauth-success", title: "Google", message: "Google Calendar connecté avec succès.", type: "success" });
         })
         .catch(() => {
           toasts.show({ id: "google-calendar-oauth-error", title: "Google", message: "Echec de la connexion Google. Reessayez.", type: "error" });
@@ -439,10 +439,10 @@ export function mountApplication(root, options = {}) {
             apiVersion: "Notion API",
             lastSyncAt: new Date().toISOString(),
             lastTestedAt: new Date().toISOString(),
-            detail: "Compte Notion connecte via OAuth."
+            detail: "Compte Notion connecté via OAuth."
           });
           notionLive.refresh?.();
-          toasts.show({ id: "notion-oauth-success", title: "Notion", message: "Notion connecte avec succes.", type: "success" });
+          toasts.show({ id: "notion-oauth-success", title: "Notion", message: "Notion connecté avec succès.", type: "success" });
         })
         .catch(() => {
           toasts.show({ id: "notion-oauth-error", title: "Notion", message: "Echec de la connexion Notion. Reessayez.", type: "error" });
@@ -454,10 +454,10 @@ export function mountApplication(root, options = {}) {
             apiVersion: "Todoist API",
             lastSyncAt: new Date().toISOString(),
             lastTestedAt: new Date().toISOString(),
-            detail: "Compte Todoist connecte via OAuth."
+            detail: "Compte Todoist connecté via OAuth."
           });
           todoistLive.refresh?.();
-          toasts.show({ id: "todoist-oauth-success", title: "Todoist", message: "Todoist connecte avec succes.", type: "success" });
+          toasts.show({ id: "todoist-oauth-success", title: "Todoist", message: "Todoist connecté avec succès.", type: "success" });
         })
         .catch(() => {
           toasts.show({ id: "todoist-oauth-error", title: "Todoist", message: "Echec de la connexion Todoist. Reessayez.", type: "error" });
@@ -469,10 +469,10 @@ export function mountApplication(root, options = {}) {
             apiVersion: "Google Drive API",
             lastSyncAt: new Date().toISOString(),
             lastTestedAt: new Date().toISOString(),
-            detail: "Compte Google Drive connecte via OAuth."
+            detail: "Compte Google Drive connecté via OAuth."
           });
           googleDriveLive.refresh?.();
-          toasts.show({ id: "google-drive-oauth-success", title: "Google Drive", message: "Google Drive connecte avec succes.", type: "success" });
+          toasts.show({ id: "google-drive-oauth-success", title: "Google Drive", message: "Google Drive connecté avec succès.", type: "success" });
         })
         .catch(() => {
           toasts.show({ id: "google-drive-oauth-error", title: "Google Drive", message: "Echec de la connexion Google Drive. Reessayez.", type: "error" });
@@ -484,10 +484,10 @@ export function mountApplication(root, options = {}) {
             apiVersion: "YouTube Data API v3",
             lastSyncAt: new Date().toISOString(),
             lastTestedAt: new Date().toISOString(),
-            detail: "Compte YouTube connecte via OAuth."
+            detail: "Compte YouTube connecté via OAuth."
           });
           youtubeLive.refresh?.();
-          toasts.show({ id: "youtube-oauth-success", title: "YouTube", message: "YouTube connecte avec succes.", type: "success" });
+          toasts.show({ id: "youtube-oauth-success", title: "YouTube", message: "YouTube connecté avec succès.", type: "success" });
         })
         .catch(() => {
           toasts.show({ id: "youtube-oauth-error", title: "YouTube", message: "Echec de la connexion YouTube. Reessayez.", type: "error" });
@@ -499,10 +499,10 @@ export function mountApplication(root, options = {}) {
             apiVersion: "Reddit OAuth2",
             lastSyncAt: new Date().toISOString(),
             lastTestedAt: new Date().toISOString(),
-            detail: "Compte Reddit connecte via OAuth."
+            detail: "Compte Reddit connecté via OAuth."
           });
           redditLive.refresh?.();
-          toasts.show({ id: "reddit-oauth-success", title: "Reddit", message: "Reddit connecte avec succes.", type: "success" });
+          toasts.show({ id: "reddit-oauth-success", title: "Reddit", message: "Reddit connecté avec succès.", type: "success" });
         })
         .catch(() => {
           toasts.show({ id: "reddit-oauth-error", title: "Reddit", message: "Echec de la connexion Reddit. Reessayez.", type: "error" });
@@ -650,7 +650,7 @@ export function mountApplication(root, options = {}) {
           onRetry: () => mountLazyRoute(route, true, ++routeRequest)
         }));
         finishRouteMount(route, focus);
-        toasts.show({ id: `lazy-${route}`, title: route === "activity" ? "Activity Hub" : route === "connections" ? "Connections" : route === "settings" ? "Reglages" : "Brain", message: "Le module n'a pas pu etre charge.", type: "error" });
+        toasts.show({ id: `lazy-${route}`, title: route === "activity" ? "Activity Hub" : route === "connections" ? "Connections" : route === "settings" ? "Réglages" : "Brain", message: "Le module n'a pas pu être charge.", type: "error" });
       });
   }
 
@@ -711,7 +711,7 @@ export function mountApplication(root, options = {}) {
     const nextCloudPreferencesKey = JSON.stringify(store.cloudSnapshot());
     if (!applyingCloudPreferences && nextCloudPreferencesKey !== cloudPreferencesKey) {
       cloudPreferencesKey = nextCloudPreferencesKey;
-      cloudSync?.queue?.("preferences");
+      cloudSync?.queue?.("préférences");
     }
     if (next.accent !== previous.accent || next.customAccentColor !== previous.customAccentColor) applyAccent(next);
     const nextDensityStateKey = JSON.stringify({ density: next.density, settings: next.densitySettings, space: next.space, flow: next.flow, panel: next.panel, rail: next.railExpanded });

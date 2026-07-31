@@ -4,7 +4,7 @@ import { clearFieldState, formField, runFormSubmission, setFieldState } from "..
 import { refreshIcons } from "../ui/icons.mjs";
 import { WORKSPACES, workspaceById } from "../data/workspaces.mjs";
 import { NAVIGATION_ITEMS } from "../data/navigation.mjs";
-import { brainPreferenceLabel } from "../brain/preferences.mjs";
+import { brainPreferenceLabel } from "../brain/préférences.mjs";
 import { AUTOMATION_ACTIONS, sanitizeAutomationTrigger, triggerLabel as automationTriggerLabel } from "../core/automation-engine.mjs";
 import { createSelect } from "../ui/select.mjs";
 
@@ -15,7 +15,7 @@ const TABS = Object.freeze([
   Object.freeze({ id: "actions", label: "Actions", icon: "zap" }),
   Object.freeze({ id: "automations", label: "Automations", icon: "workflow" }),
   Object.freeze({ id: "providers", label: "Providers", icon: "cpu" }),
-  Object.freeze({ id: "privacy", label: "Confidentialite", icon: "shield-check" }),
+  Object.freeze({ id: "privacy", label: "Confidentialité", icon: "shield-check" }),
   Object.freeze({ id: "history", label: "Historique", icon: "history" }),
   Object.freeze({ id: "diagnostics", label: "Diagnostics", icon: "activity" })
 ]);
@@ -78,7 +78,7 @@ export function mountBrain(stage, options = {}) {
   const tabList = element("div", { className: "v8-brain-tabs", attributes: { role: "tablist", "aria-label": "Sections Brain" } });
   const panels = element("div", { className: "v8-brain-panels" });
   const chatLog = element("div", { className: "v8-brain-chat-log", attributes: { role: "log", "aria-live": "polite", "aria-label": "Conversation Brain" } });
-  const chatInput = element("textarea", { className: "v8-input v8-brain-composer__input", attributes: { rows: "2", maxlength: "500", required: true, placeholder: "Demandez une synthese, une priorite ou une action...", "aria-label": "Demander a Brain" } });
+  const chatInput = element("textarea", { className: "v8-input v8-brain-composer__input", attributes: { rows: "2", maxlength: "500", required: true, placeholder: "Demandez une synthèse, une priorité ou une action...", "aria-label": "Demander a Brain" } });
   const chatStatus = element("span", { className: "v8-brain-composer__status", text: "Contexte minimal actif", attributes: { "aria-live": "polite" } });
   const sendButton = element("button", { className: "v8-button v8-button--primary", attributes: { type: "submit" } }, [icon("send"), element("span", { text: "Envoyer" })]);
   const chatForm = element("form", { className: "v8-brain-composer" }, [
@@ -91,7 +91,7 @@ export function mountBrain(stage, options = {}) {
 
   const chatPanel = brainPanel("chat", [
     element("div", { className: "v8-brain-chat v8-surface" }, [
-      sectionHeader("Assistant personnel", preferences.assistantName, "Des reponses fondees sur le contexte autorise."),
+      sectionHeader("Assistant personnel", preferences.assistantName, "Des réponses fondees sur le contexte autorise."),
       chatLog,
       suggestions,
       chatForm
@@ -99,7 +99,7 @@ export function mountBrain(stage, options = {}) {
   ], true);
 
   const contextPanel = brainPanel("context", [
-    element("article", { className: "v8-brain-detail v8-surface" }, [
+    element("article", { className: "v8-brain-détail v8-surface" }, [
       sectionHeader("Context Engine", "Ce que Brain voit maintenant", "Sources limitees a la page et aux permissions."),
       element("div", { className: "v8-brain-source-list" }, context.sources.map((entry) => element("div", { className: "v8-brain-source" }, [
         element("span", { className: "v8-brain-source__icon" }, [icon(entry.active ? "circle-check" : entry.allowed ? "circle-minus" : "circle-slash-2")]),
@@ -110,8 +110,8 @@ export function mountBrain(stage, options = {}) {
     ])
   ]);
 
-  const memoryCategory = createSelect({ className: "v8-input", attributes: { "aria-label": "Categorie de memoire" } }, ["interface", "habits", "widgets", "schedules", "task-types", "spaces", "flows", "response-style", "goals"].map((value) => element("option", { text: value, attributes: { value } })));
-  const memoryKey = element("input", { className: "v8-input", attributes: { type: "text", maxlength: "80", required: true, placeholder: "Nom de la preference", "aria-label": "Nom de la memoire" } });
+  const memoryCategory = createSelect({ className: "v8-input", attributes: { "aria-label": "Catégorie de memoire" } }, ["interface", "habits", "widgets", "schedules", "task-types", "spaces", "flows", "response-style", "goals"].map((value) => element("option", { text: value, attributes: { value } })));
+  const memoryKey = element("input", { className: "v8-input", attributes: { type: "text", maxlength: "80", required: true, placeholder: "Nom de la préférence", "aria-label": "Nom de la memoire" } });
   const memoryValue = element("input", { className: "v8-input", attributes: { type: "text", maxlength: "400", required: true, placeholder: "Information utile, jamais un secret", "aria-label": "Valeur de la memoire" } });
   const memorySubmit = element("button", { className: "v8-button v8-button--primary", attributes: { type: "submit" } }, [icon("plus"), element("span", { text: "Ajouter" })]);
   const memoryForm = element("form", { className: "v8-brain-memory-form" }, [
@@ -122,15 +122,15 @@ export function mountBrain(stage, options = {}) {
   ]);
   const loadMemoryButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { brainMemoryLoad: "" } }, [icon("database"), element("span", { text: "Charger" })]);
   const memoryPanel = brainPanel("memory", [
-    element("article", { className: "v8-brain-detail v8-surface" }, [
-      sectionHeader("Memoire controlee", "Vos preferences, sous votre controle", "Stockage Supabase avec RLS et retention.", loadMemoryButton),
+    element("article", { className: "v8-brain-détail v8-surface" }, [
+      sectionHeader("Memoire controlee", "Vos préférences, sous votre contrôle", "Stockage Supabase avec RLS et retention.", loadMemoryButton),
       memoryStatus,
       preferences.memory.enabled ? memoryForm : statusState("empty", {
         iconName: "database-zap",
         eyebrow: "Memoire controlee",
         title: "Memoire Brain desactivee",
-        description: "Activez-la dans les reglages pour enregistrer uniquement les preferences que vous choisissez.",
-        actions: [actionButton({ actionId: "v8.settings.open", variant: "secondary" }, [icon("settings-2"), element("span", { text: "Ouvrir les reglages" })])],
+        description: "Activez-la dans les réglages pour enregistrer uniquement les préférences que vous choisissez.",
+        actions: [actionButton({ actionId: "v8.settings.open", variant: "secondary" }, [icon("settings-2"), element("span", { text: "Ouvrir les réglages" })])],
         compact: true,
         inline: true
       }),
@@ -144,19 +144,19 @@ export function mountBrain(stage, options = {}) {
 
   const actionDefinitions = brain.actions.definitions();
   const actionsPanel = brainPanel("actions", [
-    element("article", { className: "v8-brain-detail v8-surface" }, [sectionHeader("Action Registry", "Actions autorisees", "Aucune fonction arbitraire. Les actions sensibles exigent confirmation."), element("div", { className: "v8-brain-action-list" }, actionDefinitions.map((entry) => element("div", { className: "v8-brain-action-row" }, [element("span", {}, [icon(entry.confirmation ? "shield-alert" : "circle-check")]), element("div", {}, [element("strong", { text: entry.title }), element("p", { text: entry.description })]), element("span", { className: "v8-badge", text: entry.confirmation ? "Confirmation" : "Directe" })])))])
+    element("article", { className: "v8-brain-détail v8-surface" }, [sectionHeader("Action Registry", "Actions autorisees", "Aucune fonction arbitraire. Les actions sensibles exigent confirmation."), element("div", { className: "v8-brain-action-list" }, actionDefinitions.map((entry) => element("div", { className: "v8-brain-action-row" }, [element("span", {}, [icon(entry.confirmation ? "shield-alert" : "circle-check")]), element("div", {}, [element("strong", { text: entry.title }), element("p", { text: entry.description })]), element("span", { className: "v8-badge", text: entry.confirmation ? "Confirmation" : "Directe" })])))])
   ]);
 
   const automationTypeSelect = createSelect({ className: "v8-input", attributes: { "aria-label": "Type de declencheur" } }, [
     element("option", { text: "A l'ouverture d'une page", attributes: { value: "route" } }),
     element("option", { text: "Au passage vers un Space", attributes: { value: "space" } }),
-    element("option", { text: "A une heure precise", attributes: { value: "time" } })
+    element("option", { text: "A une heure précise", attributes: { value: "time" } })
   ]);
   const automationRouteSelect = createSelect({ className: "v8-input", attributes: { "aria-label": "Page" } }, NAVIGATION_ITEMS.map((item) => element("option", { text: item.label, attributes: { value: item.id } })));
   const automationSpaceSelect = createSelect({ className: "v8-input", attributes: { "aria-label": "Space" } }, WORKSPACES.map((workspace) => element("option", { text: workspace.label, attributes: { value: workspace.id } })));
   const automationTimeInput = element("input", { className: "v8-input", attributes: { type: "time", value: "09:00", "aria-label": "Heure", required: true } });
   const automationActionSelect = createSelect({ className: "v8-input", attributes: { "aria-label": "Action a executer" } }, AUTOMATION_ACTIONS.map((entry) => element("option", { text: entry.label, attributes: { value: entry.id } })));
-  const automationSubmit = element("button", { className: "v8-button v8-button--primary", attributes: { type: "submit" } }, [icon("plus"), element("span", { text: "Creer" })]);
+  const automationSubmit = element("button", { className: "v8-button v8-button--primary", attributes: { type: "submit" } }, [icon("plus"), element("span", { text: "Créer" })]);
   const automationRouteField = formField({ label: "Page", control: automationRouteSelect });
   const automationSpaceField = formField({ label: "Space", control: automationSpaceSelect });
   const automationTimeField = formField({ label: "Heure", control: automationTimeInput });
@@ -173,16 +173,16 @@ export function mountBrain(stage, options = {}) {
   const automationStatus = element("p", { className: "v8-brain-inline-status", text: "Les automatisations s'executent selon votre niveau d'automatisation.", attributes: { "aria-live": "polite" } });
   const automationListHost = element("div", { className: "v8-brain-automation-list" });
   const automationsPanel = brainPanel("automations", [
-    element("article", { className: "v8-brain-detail v8-surface" }, [sectionHeader("Review mode", "Suggestions avant automatisation", "Brain peut proposer un Flow, un widget ou une densite, mais ne modifie jamais un reglage important seul."), element("div", { className: "v8-brain-policy" }, [icon("workflow"), element("div", {}, [element("strong", { text: `Niveau actuel : ${brainPreferenceLabel("automationLevel", preferences.automationLevel)}` }), element("p", { text: preferences.automationLevel === "trusted" ? "Les automatisations s'executent automatiquement." : "Chaque automatisation demande une confirmation avant de s'executer." })])])]),
-    element("article", { className: "v8-brain-detail v8-surface" }, [
-      sectionHeader("Regles", "Vos automatisations", "Declenchez un changement de Space, de densite ou de theme automatiquement."),
+    element("article", { className: "v8-brain-détail v8-surface" }, [sectionHeader("Review mode", "Suggestions avant automatisation", "Brain peut proposer un Flow, un widget ou une densité, mais ne modifié jamais un réglage important seul."), element("div", { className: "v8-brain-policy" }, [icon("workflow"), element("div", {}, [element("strong", { text: `Niveau actuel : ${brainPreferenceLabel("automationLevel", preferences.automationLevel)}` }), element("p", { text: preferences.automationLevel === "trusted" ? "Les automatisations s'executent automatiquement." : "Chaque automatisation demande une confirmation avant de s'executer." })])])]),
+    element("article", { className: "v8-brain-détail v8-surface" }, [
+      sectionHeader("Règles", "Vos automatisations", "Declenchez un changement de Space, de densité ou de thème automatiquement."),
       automationForm,
       automationStatus,
       automationListHost
     ])
   ]);
 
-  const providerTestStatus = element("p", { className: "v8-brain-inline-status", text: "Tests reseau a la demande.", attributes: { "aria-live": "polite" } });
+  const providerTestStatus = element("p", { className: "v8-brain-inline-status", text: "Tests réseau a la demande.", attributes: { "aria-live": "polite" } });
   const providerCards = brain.providers.providers().map((provider) => element("article", { className: `v8-brain-provider${provider.id === preferences.provider.active ? " is-active" : ""}` }, [
     element("header", {}, [element("span", {}, [icon(provider.kind === "cloud" ? "cloud" : "hard-drive")]), statusPill(provider.status === "ready" ? "Actif" : provider.status === "backend-ready" ? "Disponible" : "Backend requis", provider.status === "ready" ? "success" : "neutral")]),
     element("strong", { text: provider.label }),
@@ -191,31 +191,31 @@ export function mountBrain(stage, options = {}) {
     element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { brainProviderTest: provider.id } }, [icon("plug"), element("span", { text: "Tester" })])
   ]));
   const providersPanel = brainPanel("providers", [
-    element("article", { className: "v8-brain-detail v8-surface" }, [sectionHeader("Provider Manager", "Modeles et confidentialite", "Les providers cloud passent par le backend securise ETHONE."), providerTestStatus, element("div", { className: "v8-brain-provider-grid" }, providerCards)])
+    element("article", { className: "v8-brain-détail v8-surface" }, [sectionHeader("Provider Manager", "Modeles et confidentialité", "Les providers cloud passent par le backend sécurisé ETHONE."), providerTestStatus, element("div", { className: "v8-brain-provider-grid" }, providerCards)])
   ]);
 
   const permissionRows = Object.entries(preferences.permissions).map(([key, allowed]) => element("div", { className: "v8-brain-permission" }, [element("span", {}, [icon(allowed ? "eye" : "eye-off")]), element("strong", { text: key }), statusPill(allowed ? "Autorise" : "Bloque", allowed ? "success" : "neutral")]))
   const privacyPanel = brainPanel("privacy", [
-    element("article", { className: "v8-brain-detail v8-surface" }, [sectionHeader("Privacy Center", "Acces par categorie", "Vous voyez exactement les donnees consultables. Les secrets ne sont jamais une categorie autorisable.", actionButton({ actionId: "v8.settings.open", variant: "secondary" }, [icon("settings-2"), element("span", { text: "Modifier" })])), element("div", { className: "v8-brain-permissions" }, permissionRows), element("footer", { className: "v8-brain-never-sent" }, [element("strong", { text: "Jamais transmis" }), element("p", { text: "Mots de passe, tokens, cles API, cookies, sessions et identifiants de connexion prives." })])])
+    element("article", { className: "v8-brain-détail v8-surface" }, [sectionHeader("Privacy Center", "Accès par catégorie", "Vous voyez exactement les données consultables. Les secrets ne sont jamais une catégorie autorisable.", actionButton({ actionId: "v8.settings.open", variant: "secondary" }, [icon("settings-2"), element("span", { text: "Modifier" })])), element("div", { className: "v8-brain-permissions" }, permissionRows), element("footer", { className: "v8-brain-never-sent" }, [element("strong", { text: "Jamais transmis" }), element("p", { text: "Mots de passe, tokens, clés API, cookies, sessions et identifiants de connexion privés." })])])
   ]);
 
   const historySearch = element("input", { className: "v8-input", attributes: { type: "search", placeholder: "Rechercher dans l'historique", "aria-label": "Rechercher dans l'historique", autocomplete: "off" } });
   const historyCount = element("span", { className: "v8-section-count", attributes: { "aria-live": "polite" } });
   const historyHost = element("div", { className: "v8-brain-history", attributes: { role: "log", "aria-label": "Historique Brain" } });
-  const historyPanel = brainPanel("history", [element("article", { className: "v8-brain-detail v8-surface" }, [
-    sectionHeader("Session courante", "Historique prive", "Conserve uniquement en memoire pour cette session et limite a 60 messages.", element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { brainHistoryClear: "" } }, [icon("eraser"), element("span", { text: "Effacer" })])),
+  const historyPanel = brainPanel("history", [element("article", { className: "v8-brain-détail v8-surface" }, [
+    sectionHeader("Session courante", "Historique privé", "Conserve uniquement en memoire pour cette session et limite a 60 messages.", element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { brainHistoryClear: "" } }, [icon("eraser"), element("span", { text: "Effacer" })])),
     element("div", { className: "v8-brain-history-tools" }, [element("div", { className: "v8-input-wrap" }, [icon("search"), historySearch]), historyCount]),
     historyHost
   ])]);
 
-  const diagnosticsPanel = brainPanel("diagnostics", [element("article", { className: "v8-brain-detail v8-surface" }, [sectionHeader("Execution a la demande", "Diagnostics Brain", "Aucun observer, timer ou traitement de Dashboard ne tourne lorsque Brain est ferme."), element("pre", { className: "v8-brain-diagnostics", text: JSON.stringify(brain.diagnostics(), null, 2) })])]);
+  const diagnosticsPanel = brainPanel("diagnostics", [element("article", { className: "v8-brain-détail v8-surface" }, [sectionHeader("Execution a la demande", "Diagnostics Brain", "Aucun observer, timer ou traitement de Dashboard ne tourne lorsque Brain est ferme."), element("pre", { className: "v8-brain-diagnostics", text: JSON.stringify(brain.diagnostics(), null, 2) })])]);
 
   [chatPanel, contextPanel, memoryPanel, actionsPanel, automationsPanel, providersPanel, privacyPanel, historyPanel, diagnosticsPanel].forEach((panel) => panels.append(panel));
   TABS.forEach((tab, index) => tabList.append(element("button", { className: `v8-brain-tab${index === 0 ? " is-active" : ""}`, attributes: { type: "button", role: "tab", "aria-selected": index === 0 ? "true" : "false", "aria-controls": `v8-brain-panel-${tab.id}`, tabindex: index === 0 ? "0" : "-1" }, dataset: { brainTab: tab.id } }, [icon(tab.icon), element("span", { text: tab.label })])));
 
   const page = element("section", { className: "v8-page v8-brain-page", dataset: { page: "brain" } }, [
-    element("header", { className: "v8-page-heading" }, [element("div", { className: "v8-page-heading__copy" }, [element("span", { className: "v8-eyebrow", text: "Intelligence personnelle" }), element("h1", { text: "Brain" }), element("p", { text: "Un contexte utile, protege et sous votre controle." })]), element("div", { className: "v8-page-heading__actions" }, [statusPill("Contexte actif", "success"), actionButton({ actionId: "v8.command.open", variant: "primary" }, [icon("sparkles"), element("span", { text: "Command HUD" })])])]),
-    element("section", { className: "v8-brain-hero v8-surface" }, [element("div", { className: "v8-brain-hero__identity" }, [element("span", { className: "v8-brain-orbit", dataset: { liveWidget: "brain", liveKind: "brain" } }, [icon("brain")]), element("div", {}, [element("small", { text: "Contexte courant" }), element("h2", { text: `${state.flow || workspace.flow} dans ${workspace.label}` }), element("p", { text: `Profil ${brainPreferenceLabel("persona", preferences.persona)}, reponses ${brainPreferenceLabel("detail", preferences.detail)}, automatisation ${brainPreferenceLabel("automationLevel", preferences.automationLevel)}.` })])]), element("div", { className: "v8-brain-hero__metrics" }, [metric("circle-check-big", "Priorites", openTasks.length), metric("notebook-pen", "Notes", snapshot.notes?.length || 0), metric("plug", "Connectees", connected.length), metric("shield-check", "Sources", context.sources.filter((entry) => entry.active).length)])]),
+    element("header", { className: "v8-page-heading" }, [element("div", { className: "v8-page-heading__copy" }, [element("span", { className: "v8-eyebrow", text: "Intelligence personnelle" }), element("h1", { text: "Brain" }), element("p", { text: "Un contexte utile, protege et sous votre contrôle." })]), element("div", { className: "v8-page-heading__actions" }, [statusPill("Contexte actif", "success"), actionButton({ actionId: "v8.command.open", variant: "primary" }, [icon("sparkles"), element("span", { text: "Command HUD" })])])]),
+    element("section", { className: "v8-brain-hero v8-surface" }, [element("div", { className: "v8-brain-hero__identity" }, [element("span", { className: "v8-brain-orbit", dataset: { liveWidget: "brain", liveKind: "brain" } }, [icon("brain")]), element("div", {}, [element("small", { text: "Contexte courant" }), element("h2", { text: `${state.flow || workspace.flow} dans ${workspace.label}` }), element("p", { text: `Profil ${brainPreferenceLabel("persona", preferences.persona)}, reponses ${brainPreferenceLabel("détail", preferences.detail)}, automatisation ${brainPreferenceLabel("automationLevel", preferences.automationLevel)}.` })])]), element("div", { className: "v8-brain-hero__metrics" }, [metric("circle-check-big", "Priorités", openTasks.length), metric("notebook-pen", "Notes", snapshot.notes?.length || 0), metric("plug", "Connectées", connected.length), metric("shield-check", "Sources", context.sources.filter((entry) => entry.active).length)])]),
     tabList,
     panels
   ]);
@@ -231,7 +231,7 @@ export function mountBrain(stage, options = {}) {
       iconName: entries.length ? "search-x" : "history",
       eyebrow: "Session courante",
       title: entries.length ? "Aucun résultat" : "Aucun message pour le moment",
-      description: entries.length ? "Modifiez votre recherche pour retrouver un échange." : "Commencez une conversation pour retrouver ici son historique prive.",
+      description: entries.length ? "Modifiez votre recherche pour retrouver un échange." : "Commencez une conversation pour retrouver ici son historique privé.",
       compact: true,
       inline: true
     })]));
@@ -242,7 +242,7 @@ export function mountBrain(stage, options = {}) {
 
   function automationRow(rule) {
     const action = AUTOMATION_ACTIONS.find((entry) => entry.id === rule.actionId);
-    const groupIcon = action?.group === "space" ? "layout-grid" : action?.group === "theme" ? "sun-moon" : "grid-2x2";
+    const groupIcon = action?.group === "space" ? "layout-grid" : action?.group === "thème" ? "sun-moon" : "grid-2x2";
     return element("div", { className: `v8-brain-automation-row${rule.enabled ? "" : " is-disabled"}`, dataset: { automationId: rule.id } }, [
       element("span", {}, [icon(groupIcon)]),
       element("div", {}, [element("strong", { text: automationTriggerLabel(rule.trigger) }), element("p", { text: `-> ${action?.label || rule.actionId}` })]),
@@ -257,7 +257,7 @@ export function mountBrain(stage, options = {}) {
       iconName: "workflow",
       eyebrow: "Automatisations",
       title: "Aucune automatisation",
-      description: "Creez une regle pour declencher un changement de Space, de densite ou de theme.",
+      description: "Créez une règle pour declencher un changement de Space, de densité ou de thème.",
       compact: true,
       inline: true
     })]));
@@ -280,10 +280,10 @@ export function mountBrain(stage, options = {}) {
     if (memoryBusy) return;
     memoryBusy = true;
     loadMemoryButton.disabled = true;
-    memoryStatus.textContent = "Chargement securise depuis Supabase...";
+    memoryStatus.textContent = "Chargement sécurisé depuis Supabase...";
     memoryList.replaceChildren(statusState("loading", {
       title: "Chargement des memoires",
-      description: "Lecture securisee depuis Supabase avec les permissions du compte actif.",
+      description: "Lecture sécurisée depuis Supabase avec les permissions du compte actif.",
       compact: true,
       inline: true
     }));
@@ -298,8 +298,8 @@ export function mountBrain(stage, options = {}) {
       iconName: "database",
       eyebrow: "Memoire controlee",
       title: response.ok ? "Aucune memoire active" : "Memoires indisponibles",
-      description: response.ok ? "Ajoutez une preference explicite lorsque Brain doit la retenir." : response.message,
-      actions: response.ok ? [] : [element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, events: { click: () => void loadMemories() } }, [icon("refresh-cw"), element("span", { text: "Reessayer" })])],
+      description: response.ok ? "Ajoutez une préférence explicite lorsque Brain doit la retenir." : response.message,
+      actions: response.ok ? [] : [element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, events: { click: () => void loadMemories() } }, [icon("refresh-cw"), element("span", { text: "Réessayer" })])],
       compact: true,
       inline: true
     })]));
@@ -318,10 +318,10 @@ export function mountBrain(stage, options = {}) {
     const response = submission.value;
     if (submission.error || !response) {
       chatStatus.textContent = "Brain est momentanement indisponible.";
-      setFieldState(chatInput, "invalid", "La demande n'a pas pu etre envoyee.");
+      setFieldState(chatInput, "invalid", "La demande n'a pas pu être envoyee.");
       return;
     }
-    chatStatus.textContent = response.ok ? "Reponse fondee sur le contexte minimal" : response.message;
+    chatStatus.textContent = response.ok ? "Réponse fondee sur le contexte minimal" : response.message;
     if (response.ok) { chatInput.value = ""; clearFieldState(chatInput); }
     else setFieldState(chatInput, "invalid", response.message);
     renderHistory();
@@ -345,12 +345,12 @@ export function mountBrain(stage, options = {}) {
     event.preventDefault();
     if (memoryBusy) return;
     memoryBusy = true;
-    const submission = await runFormSubmission({ form: memoryForm, submit: memorySubmit, status: memoryStatus, messages: { loading: "Enregistrement securise dans Supabase..." }, task: () => brain.memory.create({ category: memoryCategory.value, key: memoryKey.value, value: memoryValue.value, retentionDays: preferences.memory.retentionDays }) });
+    const submission = await runFormSubmission({ form: memoryForm, submit: memorySubmit, status: memoryStatus, messages: { loading: "Enregistrement sécurisé dans Supabase..." }, task: () => brain.memory.create({ category: memoryCategory.value, key: memoryKey.value, value: memoryValue.value, retentionDays: preferences.memory.retentionDays }) });
     memoryBusy = false;
     if (!submission.accepted) return;
     const response = submission.value;
     if (submission.error || !response) {
-      memoryStatus.textContent = "La memoire n'a pas pu etre enregistree.";
+      memoryStatus.textContent = "La memoire n'a pas pu être enregistree.";
       return;
     }
     memoryStatus.textContent = response.message;
@@ -379,7 +379,7 @@ export function mountBrain(stage, options = {}) {
     const submission = await runFormSubmission({ form: automationForm, submit: automationSubmit, status: automationStatus, messages: { loading: "Creation de l'automatisation..." }, task: () => actionFacade.dispatch("v8.automation.create", { trigger, targetActionId: automationActionSelect.value }) });
     if (controller.signal.aborted || !submission.accepted) return;
     const response = submission.value;
-    automationStatus.textContent = response?.message || "Automatisation creee.";
+    automationStatus.textContent = response?.message || "Automatisation créée.";
     if (response?.ok) renderAutomations();
   }, { signal: controller.signal });
   automationListHost.addEventListener("click", async (event) => {

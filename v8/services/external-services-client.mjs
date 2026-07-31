@@ -44,7 +44,7 @@ const OPERATIONS = Object.freeze({
   redditActivity: Object.freeze({ path: "/api/reddit/activity", auth: true, params: ["clientId"] }),
   redditOAuthDisconnect: Object.freeze({ path: "/api/reddit/oauth/disconnect", method: "POST", auth: true, params: [] }),
   publicProfile: Object.freeze({ path: "/api/supabase/public-profile", auth: true, params: ["username"] }),
-  brainComplete: Object.freeze({ path: "/api/brain/complete", method: "POST", auth: true, params: [], rawBody: true })
+  brainComplete: Object.freeze({ path: "/api/brain/complète", method: "POST", auth: true, params: [], rawBody: true })
 });
 
 function clientError(code, message, details = {}) {
@@ -101,15 +101,15 @@ export function createExternalServicesClient(options = {}) {
     const response = await client.auth.getSession();
     const token = response?.data?.session?.access_token;
     if (response?.error || typeof token !== "string" || token.length < 20) {
-      throw clientError("AUTH_REQUIRED", "Reconnectez-vous pour utiliser cette integration.", { status: 401 });
+      throw clientError("AUTH_REQUIRED", "Reconnectez-vous pour utiliser cette intégration.", { status: 401 });
     }
     return token;
   }
 
   async function execute(operationName, values = {}, requestOptions = {}) {
-    if (destroyed) throw clientError("CLIENT_DESTROYED", "Le client des integrations est ferme.");
+    if (destroyed) throw clientError("CLIENT_DESTROYED", "Le client des intégrations est ferme.");
     const operation = OPERATIONS[operationName];
-    if (!operation) throw clientError("OPERATION_NOT_ALLOWED", "Cette operation externe n'est pas autorisee.", { status: 400 });
+    if (!operation) throw clientError("OPERATION_NOT_ALLOWED", "Cette opération externe n'est pas autorisee.", { status: 400 });
     const method = operation.method === "POST" ? "POST" : "GET";
     const url = new URL(operation.path, `${baseUrl}/`);
     let body;
@@ -133,7 +133,7 @@ export function createExternalServicesClient(options = {}) {
       const headers = new Headers({ accept: "application/json", "x-request-id": runtime.crypto?.randomUUID?.() || `${Date.now()}-ethone` });
       if (method === "POST") headers.set("content-type", "application/json");
       if (operation.auth) headers.set("authorization", `Bearer ${await accessToken()}`);
-      if (destroyed || controller.signal.aborted) throw clientError("CLIENT_DESTROYED", "Le client des integrations est ferme.");
+      if (destroyed || controller.signal.aborted) throw clientError("CLIENT_DESTROYED", "Le client des intégrations est ferme.");
       const payload = await network.requestJSON(url.href, {
         method,
         body,
@@ -145,7 +145,7 @@ export function createExternalServicesClient(options = {}) {
         maxResponseBytes: 1024 * 1024
       });
       if (!payload || payload.ok !== true || typeof payload.meta !== "object") {
-        throw clientError(payload?.error?.code, payload?.error?.message || "Reponse Worker invalide.", payload?.error || {});
+        throw clientError(payload?.error?.code, payload?.error?.message || "Réponse Worker invalide.", payload?.error || {});
       }
       const latencyMs = Date.now() - startedAt;
       const result = Object.freeze({ ...payload, meta: Object.freeze({ ...payload.meta, latencyMs }) });

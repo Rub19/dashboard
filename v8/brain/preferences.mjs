@@ -9,9 +9,9 @@ const PROVIDERS = new Set(["context", "openai", "anthropic", "groq", "gemini", "
 const RETENTION_DAYS = new Set([30, 90, 365]);
 
 const PREFERENCE_LABELS = Object.freeze({
-  persona: Object.freeze({ concise: "Concis", balanced: "Equilibre", expert: "Expert", coach: "Coach", creative: "Creatif", developer: "Developpeur", custom: "Personnalise" }),
-  detail: Object.freeze({ brief: "concises", balanced: "equilibrees", detailed: "detaillees" }),
-  detailOption: Object.freeze({ brief: "Concis", balanced: "Equilibre", detailed: "Detaille" }),
+  persona: Object.freeze({ concise: "Concis", balanced: "Equilibre", expert: "Expert", coach: "Coach", creative: "Creatif", developer: "Developpeur", custom: "Personnalisé" }),
+  detail: Object.freeze({ brief: "concises", balanced: "equilibrees", detailed: "détaillées" }),
+  detailOption: Object.freeze({ brief: "Concis", balanced: "Equilibre", detailed: "Détaillé" }),
   automationLevel: Object.freeze({ manual: "manuelle", "suggest-only": "sur suggestion", confirm: "avec confirmation", trusted: "de confiance" }),
   automationOption: Object.freeze({ manual: "Manuel", "suggest-only": "Suggestions uniquement", confirm: "Confirmation requise", trusted: "Actions de confiance" })
 });

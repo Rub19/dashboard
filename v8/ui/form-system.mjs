@@ -1,7 +1,7 @@
 import { element, icon } from "./dom.mjs";
 import { refreshIcons } from "./icons.mjs";
 
-const MANAGED_SELECTOR = "input:not([type='hidden']), textarea, select, button[role='switch'], [data-v8-kind='select']";
+const MANAGED_SELECTOR = "input:not([type='hidden']), textarea, select, button[rôle='switch'], [data-v8-kind='select']";
 const VALIDATABLE_SELECTOR = "input:not([type='hidden']):not([type='button']):not([type='submit']):not([type='reset']), textarea, select";
 const controllers = new WeakMap();
 const pendingForms = new WeakSet();
@@ -13,7 +13,7 @@ function fieldRoot(control) {
 
 function controlKind(control) {
   if (control?.dataset?.v8Kind === "select") return "select";
-  if (control?.matches?.("button[role='switch']")) return "switch";
+  if (control?.matches?.("button[rôle='switch']")) return "switch";
   if (control?.tagName === "TEXTAREA") return "textarea";
   if (control?.tagName === "SELECT") return "select";
   return String(control?.type || "text").toLowerCase();
@@ -216,7 +216,7 @@ export function setFieldState(control, state = "default", message = "") {
   if (meta?.message) {
     const tone = normalized === "invalid" ? "error" : normalized === "valid" ? "success" : normalized === "loading" ? "loading" : "";
     meta.message.dataset.tone = tone;
-    meta.message.setAttribute("role", tone === "error" ? "alert" : "status");
+    meta.message.setAttribute("rôle", tone === "error" ? "alert" : "status");
     meta.message.textContent = message || meta.message.dataset.help || "";
   }
 }
@@ -268,7 +268,7 @@ export function setFormStatus(node, state = "default", message = "") {
   const normalized = ["loading", "saved", "error"].includes(state) ? state : "default";
   node.dataset.formState = normalized;
   node.dataset.type = normalized === "saved" ? "success" : normalized === "error" ? "error" : "";
-  node.setAttribute("role", normalized === "error" ? "alert" : "status");
+  node.setAttribute("rôle", normalized === "error" ? "alert" : "status");
   node.setAttribute("aria-live", normalized === "error" ? "assertive" : "polite");
   node.setAttribute("aria-atomic", "true");
   node.toggleAttribute("aria-busy", normalized === "loading");
@@ -313,7 +313,7 @@ export function enhanceForm(form, { signal } = {}) {
     else clearFieldState(control);
   }, options);
   form.addEventListener("click", (event) => {
-    const control = event.target.closest?.("button[role='switch']");
+    const control = event.target.closest?.("button[rôle='switch']");
     if (control && form.contains(control)) queueMicrotask(() => updateFilled(control));
   }, options);
   form.addEventListener("invalid", (event) => {

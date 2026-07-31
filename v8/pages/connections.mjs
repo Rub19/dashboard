@@ -7,7 +7,7 @@ import {
   integrationCategory,
   officialResources,
   setupGuide
-} from "../data/integrations.mjs";
+} from "../data/intégrations.mjs";
 import { brandIconMarkup } from "../data/brand-icons.mjs";
 import { listConfiguredProviders, removeProviderCredential, saveProviderCredential } from "../services/provider-credentials.mjs";
 import { actionButton, debounce, element, icon } from "../ui/dom.mjs";
@@ -44,11 +44,11 @@ export { prepareActivityUI as prepare };
 const CONNECTION_PAGE_SIZE = 18;
 
 const STATE_META = Object.freeze({
-  connected: { label: "Connecte", icon: "circle-check-big", tone: "success" },
-  prepared: { label: "Prepare", icon: "shield-check", tone: "warning" },
+  connected: { label: "Connecté", icon: "circle-check-big", tone: "success" },
+  prepared: { label: "Préparé", icon: "shield-check", tone: "warning" },
   available: { label: "Disponible", icon: "plus-circle", tone: "muted" },
-  limited: { label: "Acces limite", icon: "lock-keyhole", tone: "muted" },
-  attention: { label: "A verifier", icon: "triangle-alert", tone: "danger" },
+  limited: { label: "Accès limite", icon: "lock-keyhole", tone: "muted" },
+  attention: { label: "A vérifier", icon: "triangle-alert", tone: "danger" },
   syncing: { label: "Synchronisation", icon: "refresh-cw", tone: "info" }
 });
 
@@ -61,7 +61,7 @@ const DIAGNOSTIC_META = Object.freeze({
 
 const INSPECTOR_TABS = Object.freeze([
   { id: "overview", label: "Apercu", icon: "layout-dashboard" },
-  { id: "methods", label: "Methodes", icon: "waypoints" },
+  { id: "methods", label: "Méthodes", icon: "waypoints" },
   { id: "setup", label: "Assistant", icon: "list-checks" },
   { id: "diagnostics", label: "Diagnostic", icon: "stethoscope" }
 ]);
@@ -151,17 +151,17 @@ function connectionCard(integration, connection, selectedId) {
     element("div", { className: "v8-connection-card__badges" }, badges.map((label, index) => badge(label, index === 0 && current?.recommended ? "accent" : "default"))),
     element("p", { className: "v8-connection-card__description", text: integration.description }),
     element("dl", { className: "v8-connection-card__meta" }, [
-      metaCell("Methode", current?.label || "Non disponible"),
-      metaCell("Qualite", summary.quality),
-      metaCell("Derniere sync", summary.lastSync),
-      metaCell("Reponse", summary.response)
+      metaCell("Méthode", current?.label || "Non disponible"),
+      metaCell("Qualité", summary.quality),
+      metaCell("Dernière sync", summary.lastSync),
+      metaCell("Réponse", summary.response)
     ]),
     element("div", { className: "v8-connection-card__signal" }, [icon("activity"), element("span", { text: integration.liveSignal }), element("small", { text: summary.apiVersion })]),
     element("footer", { className: "v8-connection-card__actions" }, [
       connectionAction("v8.connections.configure", integration.id, connection?.status === "connected" ? "secondary" : "primary", [icon(connection?.setupComplete ? "settings-2" : "plug-zap"), element("span", { text: connection?.status === "connected" ? "Gerer" : connection?.setupComplete ? "Revoir" : "Configurer" })]),
-      connectionAction("v8.connections.method.open", integration.id, "secondary", [icon("waypoints")], { className: "v8-icon-button", ariaLabel: `Changer la methode ${integration.name}`, tooltip: "Changer de methode" }),
-      connectionAction("v8.connections.test", integration.id, "secondary", [icon("stethoscope")], { className: "v8-icon-button", ariaLabel: `Tester ${integration.name}`, tooltip: "Diagnostic securise" }),
-      canDisconnect ? connectionAction("v8.connections.disconnect", integration.id, "danger", [icon("unplug")], { className: "v8-icon-button", ariaLabel: `Deconnecter ${integration.name}`, tooltip: "Deconnecter" }) : null
+      connectionAction("v8.connections.method.open", integration.id, "secondary", [icon("waypoints")], { className: "v8-icon-button", ariaLabel: `Changer la methode ${integration.name}`, tooltip: "Changer de méthode" }),
+      connectionAction("v8.connections.test", integration.id, "secondary", [icon("stethoscope")], { className: "v8-icon-button", ariaLabel: `Tester ${integration.name}`, tooltip: "Diagnostic sécurisé" }),
+      canDisconnect ? connectionAction("v8.connections.disconnect", integration.id, "danger", [icon("unplug")], { className: "v8-icon-button", ariaLabel: `Deconnecter ${integration.name}`, tooltip: "Déconnecter" }) : null
     ])
   ]);
 }
@@ -171,14 +171,14 @@ function validateReference(method, rawValue) {
   if (!method?.field) return Object.freeze({ ok: true, value: "" });
   if (!value) return Object.freeze({ ok: false, message: `${method.field.label} est requis.` });
   if (method.field.type !== "url") {
-    if (/[<>]/.test(value) || value.length < 2) return Object.freeze({ ok: false, message: "La reference publique n'est pas valide." });
+    if (/[<>]/.test(value) || value.length < 2) return Object.freeze({ ok: false, message: "La référence publique n'est pas valide." });
     return Object.freeze({ ok: true, value });
   }
   try {
     const parsed = new URL(value);
     if (!new Set(["http:", "https:"]).has(parsed.protocol) || parsed.username || parsed.password) throw new Error("protocol");
     const sensitiveParameter = [...parsed.searchParams.keys()].some((key) => /token|secret|key|auth|signature/i.test(key));
-    if (sensitiveParameter) return Object.freeze({ ok: false, message: "Cette adresse semble contenir une donnee sensible. Utilisez une adresse publique." });
+    if (sensitiveParameter) return Object.freeze({ ok: false, message: "Cette adresse semble contenir une donnée sensible. Utilisez une adresse publique." });
     if (method.availability === "local") {
       const localHosts = new Set(["127.0.0.1", "localhost", "[::1]"]);
       if (!localHosts.has(parsed.hostname)) return Object.freeze({ ok: false, message: "Le bridge local doit utiliser localhost ou la boucle locale." });
@@ -289,14 +289,14 @@ export function mountConnections(stage, options = {}) {
   });
   let selectedId = initialConnections.find((connection) => connection.status === "connected")?.id || "spotify";
 
-  const search = element("input", { className: "v8-input", attributes: { type: "search", placeholder: "Spotify, GitHub, Calendar...", "aria-label": "Rechercher une integration", autocomplete: "off" } });
+  const search = element("input", { className: "v8-input", attributes: { type: "search", placeholder: "Spotify, GitHub, Calendar...", "aria-label": "Rechercher une intégration", autocomplete: "off" } });
   const statusFilter = createSelect({ className: "v8-input v8-connections-status-filter", attributes: { "aria-label": "Filtrer par statut" } }, [
     element("option", { text: "Tous les statuts", attributes: { value: "all" } }),
-    element("option", { text: "Connectes", attributes: { value: "connected" } }),
-    element("option", { text: "Prepares", attributes: { value: "prepared" } }),
+    element("option", { text: "Connectés", attributes: { value: "connected" } }),
+    element("option", { text: "Préparés", attributes: { value: "prepared" } }),
     element("option", { text: "Disponibles", attributes: { value: "available" } }),
-    element("option", { text: "A verifier", attributes: { value: "attention" } }),
-    element("option", { text: "Acces limite", attributes: { value: "limited" } })
+    element("option", { text: "A vérifier", attributes: { value: "attention" } }),
+    element("option", { text: "Accès limite", attributes: { value: "limited" } })
   ]);
   const sortSelect = createSelect({ className: "v8-input v8-connections-sort", attributes: { "aria-label": "Trier les intégrations" } }, [
     element("option", { text: "Recommandées", attributes: { value: "recommended" } }),
@@ -304,11 +304,11 @@ export function mountConnections(stage, options = {}) {
     element("option", { text: "Catégorie", attributes: { value: "category" } })
   ]);
   const densityControl = collectionDensityControl(options.state?.density || document.documentElement.dataset.density || "automatic");
-  const categoryBar = element("div", { className: "v8-connection-categories", attributes: { role: "toolbar", "aria-label": "Categories d'integrations" } });
+  const categoryBar = element("div", { className: "v8-connection-catégories", attributes: { role: "toolbar", "aria-label": "Catégories d'intégrations" } });
   const grid = element("div", { className: "v8-connections-grid" });
   const loadMoreHost = element("div", { className: "v8-connections-more" });
   const resultCount = element("span", { className: "v8-section-count" });
-  const metricsHost = element("section", { className: "v8-connections-metrics", attributes: { "aria-label": "Etat des connexions" } });
+  const metricsHost = element("section", { className: "v8-connections-metrics", attributes: { "aria-label": "État des connexions" } });
   const diagnosticState = element("div", { className: "v8-connections-health", attributes: { "aria-live": "polite" } });
   const opportunityHost = element("section", { className: "v8-connection-opportunities", attributes: { hidden: true, "aria-label": "Connexions detectees" } });
   const inspectorHost = element("aside", { className: "v8-connections-inspector v8-surface", attributes: { "aria-label": "Inspecteur de connexion" } });
@@ -322,19 +322,19 @@ export function mountConnections(stage, options = {}) {
   const page = element("section", { className: "v8-page v8-connections-page", dataset: { page: "connections" } }, [
     element("header", { className: "v8-page-heading v8-connections-heading" }, [
       element("div", { className: "v8-page-heading__copy" }, [
-        element("span", { className: "v8-eyebrow", text: "Integration workspace" }),
+        element("span", { className: "v8-eyebrow", text: "Intégration workspace" }),
         element("h1", { text: "Connections Hub" }),
-        element("p", { text: "Un catalogue guide, des permissions lisibles et aucun faux etat de connexion." })
+        element("p", { text: "Un catalogue guide, des permissions lisibles et aucun faux état de connexion." })
       ]),
       element("div", { className: "v8-page-heading__actions" }, [
         actionButton({ actionId: "v8.activity.open", variant: "secondary" }, [icon("activity"), element("span", { text: "Activity Hub" })]),
-        actionButton({ actionId: "v8.connections.diagnose-all", variant: "primary" }, [icon("scan-search"), element("span", { text: "Diagnostic securise" })])
+        actionButton({ actionId: "v8.connections.diagnose-all", variant: "primary" }, [icon("scan-search"), element("span", { text: "Diagnostic sécurisé" })])
       ])
     ]),
     element("div", { className: "v8-connections-overview" }, [metricsHost, diagnosticState]),
     opportunityHost,
     element("div", { className: "v8-connections-workspace" }, [
-      element("section", { className: "v8-connections-catalog", attributes: { "aria-label": "Catalogue des integrations" } }, [
+      element("section", { className: "v8-connections-catalog", attributes: { "aria-label": "Catalogue des intégrations" } }, [
         element("header", { className: "v8-connections-toolbar" }, [
           element("div", { className: "v8-input-wrap v8-connections-search" }, [icon("search"), search]),
           statusFilter,
@@ -350,7 +350,7 @@ export function mountConnections(stage, options = {}) {
     ]),
     element("footer", { className: "v8-connections-security" }, [
       icon("shield-check"),
-      element("div", {}, [element("strong", { text: "Architecture zero secret dans l'interface" }), element("p", { text: "Les routes migrees passent par ETHONE Worker avec votre session Supabase. Les secrets fournisseur restent exclusivement cote serveur." })])
+      element("div", {}, [element("strong", { text: "Architecture zero secret dans l'interface" }), element("p", { text: "Les routes migrees passent par ETHONE Worker avec votre session Supabase. Les secrets fournisseur restent exclusivement côté serveur." })])
     ])
   ]);
 
@@ -369,10 +369,10 @@ export function mountConnections(stage, options = {}) {
   function renderMetrics() {
     const values = connectionMetrics(INTEGRATIONS, connectionList());
     metricsHost.replaceChildren(
-      metric("Connectees", values.connected, "circle-check-big", "success"),
-      metric("Preparees", values.prepared, "shield-check", "warning"),
+      metric("Connectées", values.connected, "circle-check-big", "success"),
+      metric("Préparées", values.prepared, "shield-check", "warning"),
       metric("Disponibles", values.available, "blocks", "info"),
-      metric("A verifier", values.attention, "triangle-alert", "danger")
+      metric("A vérifier", values.attention, "triangle-alert", "danger")
     );
     diagnosticState.replaceChildren(
       element("span", { className: `v8-connections-health__icon${globalDiagnostic?.failed ? " is-critical" : ""}` }, [icon(globalDiagnostic?.failed ? "shield-alert" : globalDiagnostic ? "shield-check" : "scan-search")]),
@@ -428,7 +428,7 @@ export function mountConnections(stage, options = {}) {
           search.focus({ preventScroll: true });
         } }
       });
-      grid.append(emptyState({ kind: "no-results", iconName: "search-x", eyebrow: "Catalogue", title: "Aucune integration trouvee", description: "Essayez un autre service, statut ou categorie.", actions: [reset], className: "v8-empty-state--wide" }));
+      grid.append(emptyState({ kind: "no-results", iconName: "search-x", eyebrow: "Catalogue", title: "Aucune intégration trouvee", description: "Essayez un autre service, statut ou catégorie.", actions: [reset], className: "v8-empty-state--wide" }));
     }
     resultCount.textContent = `${displayed.length} / ${visible.length}`;
     categoryBar.querySelectorAll("[data-connection-category]").forEach((button) => {
@@ -440,7 +440,7 @@ export function mountConnections(stage, options = {}) {
 
   function tabButton(entry) {
     const button = connectionAction("v8.connections.tab", selectedId, null, [icon(entry.icon), element("span", { text: entry.label })], { tab: entry.id, className: `v8-connection-tab${inspectorTab === entry.id ? " is-active" : ""}` });
-    button.setAttribute("role", "tab");
+    button.setAttribute("rôle", "tab");
     button.setAttribute("aria-selected", inspectorTab === entry.id ? "true" : "false");
     return button;
   }
@@ -452,22 +452,22 @@ export function mountConnections(stage, options = {}) {
     return element("div", { className: "v8-connection-inspector-panel", attributes: { role: "tabpanel" } }, [
       element("section", { className: "v8-connection-method-hero" }, [
         element("div", { className: "v8-connection-method-hero__top" }, [
-          badge(method?.recommended ? "Methode recommandee" : "Methode selectionnee", "accent"),
-          report?.workerVerified ? badge("Securise par ETHONE Worker", "accent") : null,
+          badge(method?.recommended ? "Méthode recommandee" : "Méthode sélectionnée", "accent"),
+          report?.workerVerified ? badge("Sécurisé par ETHONE Worker", "accent") : null,
           element("span", { text: summary.quality })
         ]),
-        element("h3", { text: method?.label || "Methode indisponible" }),
-        element("p", { text: method?.summary || "Aucune methode compatible n'est proposee." }),
+        element("h3", { text: method?.label || "Méthode indisponible" }),
+        element("p", { text: method?.summary || "Aucune méthode compatible n'est proposee." }),
         element("div", { className: "v8-connection-badge-row" }, (method?.badges || []).map((label) => badge(label)))
       ]),
-      element("section", { className: "v8-connection-detail-grid" }, [
+      element("section", { className: "v8-connection-détail-grid" }, [
         element("div", {}, [icon("activity"), element("span", {}, [element("small", { text: "Activity Hub" }), element("strong", { text: integration.liveSignal })])]),
-        element("div", {}, [icon("clock-3"), element("span", {}, [element("small", { text: "Derniere sync" }), element("strong", { text: summary.lastSync })])]),
-        element("div", {}, [icon("gauge"), element("span", {}, [element("small", { text: "Reponse" }), element("strong", { text: summary.response })])]),
+        element("div", {}, [icon("clock-3"), element("span", {}, [element("small", { text: "Dernière sync" }), element("strong", { text: summary.lastSync })])]),
+        element("div", {}, [icon("gauge"), element("span", {}, [element("small", { text: "Réponse" }), element("strong", { text: summary.response })])]),
         element("div", {}, [icon("braces"), element("span", {}, [element("small", { text: "Version" }), element("strong", { text: summary.apiVersion })])])
       ]),
       element("section", { className: "v8-connection-list-section" }, [
-        element("header", {}, [element("h3", { text: "Ce que la methode apporte" }), element("span", { text: `${method?.capabilities?.length || 0} capacites` })]),
+        element("header", {}, [element("h3", { text: "Ce que la méthode apporte" }), element("span", { text: `${method?.capabilities?.length || 0} capacites` })]),
         element("ul", {}, (method?.capabilities || []).map((entry) => element("li", {}, [icon("check"), element("span", { text: entry })])))
       ]),
       element("section", { className: "v8-connection-list-section" }, [
@@ -477,7 +477,7 @@ export function mountConnections(stage, options = {}) {
       resources.length ? element("section", { className: "v8-connection-resources" }, [element("h3", { text: "Ressources officielles" }), ...resources.map((resource) => officialLink(resource))]) : null,
       element("footer", { className: "v8-connection-inspector-actions" }, [
         connectionAction("v8.connections.configure", integration.id, "primary", [icon("list-checks"), element("span", { text: connection?.setupComplete ? "Revoir la configuration" : "Commencer" })]),
-        connectionAction("v8.connections.method.open", integration.id, "secondary", [icon("waypoints"), element("span", { text: "Changer de methode" })])
+        connectionAction("v8.connections.method.open", integration.id, "secondary", [icon("waypoints"), element("span", { text: "Changer de méthode" })])
       ])
     ]);
   }
@@ -486,7 +486,7 @@ export function mountConnections(stage, options = {}) {
     const methods = connectionMethods(integration);
     const connections = connectionList();
     return element("div", { className: "v8-connection-inspector-panel", attributes: { role: "tabpanel" } }, [
-      element("div", { className: "v8-connection-panel-intro" }, [element("h3", { text: "Choisissez le niveau d'integration" }), element("p", { text: "La methode recommandee privilegie la fiabilite, les permissions minimales et la reversibilite." })]),
+      element("div", { className: "v8-connection-panel-intro" }, [element("h3", { text: "Choisissez le niveau d'intégration" }), element("p", { text: "La méthode recommandee privilegie la fiabilité, les permissions minimales et la reversibilite." })]),
       element("div", { className: "v8-connection-methods", attributes: { role: "radiogroup", "aria-label": `Methodes ${integration.name}` } }, methods.map((entry) => {
         const availability = methodAvailability(entry, connections);
         const active = entry.id === method?.id;
@@ -551,10 +551,10 @@ export function mountConnections(stage, options = {}) {
     const saveButton = element("button", {
       className: "v8-button v8-button--primary",
       attributes: { type: "button", disabled: pending || null }
-    }, [icon(pending ? "loader-circle" : "key-round"), element("span", { text: configured ? "Mettre a jour" : "Enregistrer ma cle" })]);
+    }, [icon(pending ? "loader-circle" : "key-round"), element("span", { text: configured ? "Mettre a jour" : "Enregistrer ma clé" })]);
     saveButton.addEventListener("click", async () => {
       if (!clientProvider || !ownerId) {
-        notify({ id: `credential-${provider}`, title: "Non disponible", message: "Connectez-vous pour enregistrer votre propre cle.", type: "error" });
+        notify({ id: `credential-${provider}`, title: "Non disponible", message: "Connectez-vous pour enregistrer votre propre clé.", type: "error" });
         return;
       }
       credentialPending.add(provider);
@@ -568,7 +568,7 @@ export function mountConnections(stage, options = {}) {
         credentialDrafts.delete(integration.id);
         credentialStatus.set(provider, { updatedAt: new Date().toISOString() });
       }
-      notify({ id: `credential-${provider}`, title: outcome.ok ? "Cle personnelle enregistree" : "Enregistrement impossible", message: outcome.message, type: outcome.ok ? "success" : "error" });
+      notify({ id: `credential-${provider}`, title: outcome.ok ? "Clé personnelle enregistree" : "Enregistrement impossible", message: outcome.message, type: outcome.ok ? "success" : "error" });
       renderInspector();
     }, { signal: controller.signal });
     const removeButton = configured ? element("button", {
@@ -585,16 +585,16 @@ export function mountConnections(stage, options = {}) {
         : { ok: false, message: "Le service Supabase n'est pas disponible." };
       credentialPending.delete(provider);
       if (outcome.ok) credentialStatus.delete(provider);
-      notify({ id: `credential-${provider}`, title: outcome.ok ? "Cle personnelle retiree" : "Suppression impossible", message: outcome.message, type: outcome.ok ? "success" : "error" });
+      notify({ id: `credential-${provider}`, title: outcome.ok ? "Clé personnelle retiree" : "Suppression impossible", message: outcome.message, type: outcome.ok ? "success" : "error" });
       renderInspector();
     }, { signal: controller.signal });
     return element("section", { className: "v8-connection-credential" }, [
       element("header", {}, [
         element("div", {}, [
-          element("h3", { text: "Votre propre cle" }),
-          element("p", { text: configured ? "Cle personnelle active : ETHONE l'utilise a votre place de la cle partagee." : "Optionnel : utilisez votre propre quota au lieu de la cle partagee d'ETHONE." })
+          element("h3", { text: "Votre propre clé" }),
+          element("p", { text: configured ? "Clé personnelle active : ETHONE l'utilisé a votre place de la clé partagee." : "Optionnel : utilisez votre propre quota au lieu de la clé partagee d'ETHONE." })
         ]),
-        configured ? badge("Cle personnelle active", "accent") : badge("Cle partagee utilisee", "default")
+        configured ? badge("Clé personnelle active", "accent") : badge("Clé partagee utilisée", "default")
       ]),
       ...inputs,
       element("div", { className: "v8-connection-credential__actions" }, [saveButton, removeButton].filter(Boolean))
@@ -621,12 +621,12 @@ export function mountConnections(stage, options = {}) {
         control: element("div", { className: "v8-connection-reference__control" }, [input, referenceValue ? connectionAction("v8.connections.copy", integration.id, "secondary", [icon("copy")], { className: "v8-icon-button", ariaLabel: "Copier la valeur", value: referenceValue, tooltip: "Copier" }) : null]),
         input,
         required: method.field.required,
-        help: method.availability === "local" ? "Boucle locale uniquement" : "Ne collez jamais une adresse privee ou signee",
-        className: "v8-connection-reference"
+        help: method.availability === "local" ? "Boucle locale uniquement" : "Ne collez jamais une adresse privée ou signee",
+        className: "v8-connection-référence"
       });
     }
     return element("div", { className: "v8-connection-inspector-panel", attributes: { role: "tabpanel" } }, [
-      element("div", { className: "v8-connection-panel-intro" }, [element("h3", { text: `Configurer ${method?.label || integration.name}` }), element("p", { text: availability.usable ? "Suivez les etapes dans l'ordre. ETHONE ne validera que ce qu'il peut reellement verifier." : availability.reason })]),
+      element("div", { className: "v8-connection-panel-intro" }, [element("h3", { text: `Configurer ${method?.label || integration.name}` }), element("p", { text: availability.usable ? "Suivez les etapes dans l'ordre. ETHONE ne validera que ce qu'il peut reellement vérifier." : availability.reason })]),
       referenceField,
       element("ol", { className: "v8-connection-steps" }, steps.map((step, index) => {
         const done = configuredMethod && step.status !== "blocked";
@@ -641,12 +641,12 @@ export function mountConnections(stage, options = {}) {
       })),
       credentialSection(integration, method),
       element("div", { className: "v8-connection-setup__notice" }, [icon("shield-check"), element("div", {}, [
-        element("strong", { text: report?.workerVerified ? "Securise par ETHONE Worker" : "Frontend sans donnee sensible" }),
-        element("p", { text: report?.workerVerified ? "Le Worker authentifie a confirme cette route. Aucun secret fournisseur n'est transmis au navigateur." : "Les permissions sont expliquees ici. Les echanges privilegies restent obligatoirement cote serveur." })
+        element("strong", { text: report?.workerVerified ? "Sécurisé par ETHONE Worker" : "Frontend sans donnée sensible" }),
+        element("p", { text: report?.workerVerified ? "Le Worker authentifie a confirme cette route. Aucun secret fournisseur n'est transmis au navigateur." : "Les permissions sont expliquees ici. Les echanges privilegies restent obligatoirement côté serveur." })
       ])]),
       element("footer", { className: "v8-connection-inspector-actions" }, [
         oauthConnect ? connectionAction(oauthConnect.actionId, integration.id, "primary", [icon(oauthConnect.icon), element("span", { text: oauthConnect.label })], { disabled: !availability.usable || (method?.field && !referenceValue.trim()) }) : null,
-        oauthConnect && !method?.field ? null : connectionAction("v8.connections.setup.complete", integration.id, oauthConnect ? "secondary" : "primary", [icon(configuredMethod ? "rotate-cw" : "shield-check"), element("span", { text: configuredMethod ? "Revalider" : "Verifier" })], { method: method?.id, disabled: !availability.usable }),
+        oauthConnect && !method?.field ? null : connectionAction("v8.connections.setup.complète", integration.id, oauthConnect ? "secondary" : "primary", [icon(configuredMethod ? "rotate-cw" : "shield-check"), element("span", { text: configuredMethod ? "Revalider" : "Vérifier" })], { method: method?.id, disabled: !availability.usable }),
         connectionAction("v8.connections.test", integration.id, "secondary", [icon("stethoscope"), element("span", { text: "Diagnostic" })])
       ])
     ]);
@@ -657,22 +657,22 @@ export function mountConnections(stage, options = {}) {
     const loading = pendingDiagnostics.has(integration.id);
     return element("div", { className: "v8-connection-inspector-panel", attributes: { role: "tabpanel" } }, [
       element("div", { className: "v8-connection-panel-intro v8-connection-panel-intro--action" }, [
-        element("div", {}, [element("h3", { text: "Diagnostic transparent" }), element("p", { text: "Le test combine les controles locaux avec une route Worker authentifiee lorsqu'elle existe." })]),
-        connectionAction("v8.connections.test", integration.id, "primary", [icon(loading ? "loader-circle" : "scan-search"), element("span", { text: loading ? "Verification" : report ? "Relancer" : "Lancer" })], { disabled: loading })
+        element("div", {}, [element("h3", { text: "Diagnostic transparent" }), element("p", { text: "Le test combine les contrôles locaux avec une route Worker authentifiee lorsqu'elle existe." })]),
+        connectionAction("v8.connections.test", integration.id, "primary", [icon(loading ? "loader-circle" : "scan-search"), element("span", { text: loading ? "Vérification" : report ? "Relancer" : "Lancer" })], { disabled: loading })
       ]),
       report ? element("div", { className: "v8-connection-diagnostic-summary" }, [
         element("span", { className: `v8-connection-diagnostic-summary__icon is-${report.status}` }, [icon(report.failed ? "shield-alert" : report.warnings ? "shield" : "shield-check")]),
         element("div", {}, [
-          element("strong", { text: report.failed ? "Configuration bloquee" : report.warnings ? "Preparation incomplete" : report.status === "healthy" ? "Connexion saine" : "Preparation correcte" }),
+          element("strong", { text: report.failed ? "Configuration bloquee" : report.warnings ? "Préparation incomplete" : report.status === "healthy" ? "Connexion saine" : "Préparation correcte" }),
           element("small", { text: `${report.failed} blocage, ${report.warnings} avertissement` }),
-          report.workerVerified ? badge("Securise par ETHONE Worker", "accent") : null
+          report.workerVerified ? badge("Sécurisé par ETHONE Worker", "accent") : null
         ]),
         connectionAction("v8.connections.diagnostic.copy", integration.id, "secondary", [icon("copy")], { className: "v8-icon-button", ariaLabel: "Copier le rapport", tooltip: "Copier le rapport" })
       ]) : statusState(loading ? "loading" : "empty", {
         iconName: loading ? "loader-circle" : "stethoscope",
         eyebrow: "Diagnostic transparent",
         title: loading ? "Diagnostic en cours" : "Aucun diagnostic execute",
-        description: loading ? "Verification de la route Worker sans appel fournisseur inutile." : "Le test ne lance aucun flux OAuth et ne revele aucune donnee sensible.",
+        description: loading ? "Vérification de la route Worker sans appel fournisseur inutile." : "Le test ne lance aucun flux OAuth et ne revele aucune donnée sensible.",
         compact: true,
         className: "v8-connection-diagnostic-state"
       }),
@@ -682,9 +682,9 @@ export function mountConnections(stage, options = {}) {
       })) : null,
       element("section", { className: "v8-connection-help" }, [
         element("h3", { text: "Problemes frequents" }),
-        element("details", {}, [element("summary", { text: "Pourquoi la connexion reste preparee ?" }), element("p", { text: "Une route Worker disponible confirme le backend, pas une autorisation fournisseur ni une session distante." })]),
-        element("details", {}, [element("summary", { text: "Que faire apres une expiration ?" }), element("p", { text: "Relancez le consentement depuis votre backend puis verifiez les permissions minimales." })]),
-        element("details", {}, [element("summary", { text: "Ou sont stockees les donnees sensibles ?" }), element("p", { text: "Dans les secrets Cloudflare uniquement. Le navigateur ne recoit ni cle fournisseur, ni secret Supabase serveur." })])
+        element("détails", {}, [element("summary", { text: "Pourquoi la connexion reste préparée ?" }), element("p", { text: "Une route Worker disponible confirme le backend, pas une autorisation fournisseur ni une session distante." })]),
+        element("détails", {}, [element("summary", { text: "Que faire après une expiration ?" }), element("p", { text: "Relancez le consentement depuis votre backend puis vérifiez les permissions minimales." })]),
+        element("détails", {}, [element("summary", { text: "Ou sont stockees les données sensibles ?" }), element("p", { text: "Dans les secrets Cloudflare uniquement. Le navigateur ne recoit ni clé fournisseur, ni secret Supabase serveur." })])
       ]),
       officialResources(integration).length ? element("div", { className: "v8-connection-resources v8-connection-resources--compact" }, officialResources(integration).map((resource) => officialLink(resource))) : null
     ]);
@@ -771,7 +771,7 @@ export function mountConnections(stage, options = {}) {
   releases.push(actions.scope("v8.connections.method.open", (context) => {
     const id = context.element?.dataset.integration;
     selectAndRender(id, "methods", true);
-    return completed("Methodes ouvertes", { integration: id });
+    return completed("Méthodes ouvertes", { integration: id });
   }));
   releases.push(actions.scope("v8.connections.tab", (context) => {
     const id = context.element?.dataset.integration || selectedId;
@@ -783,7 +783,7 @@ export function mountConnections(stage, options = {}) {
     const id = context.element?.dataset.integration;
     const methodId = context.element?.dataset.method;
     const integration = integrationById(id);
-    if (!connectionMethods(integration).some((entry) => entry.id === methodId)) return unavailable("Cette methode n'est pas disponible.");
+    if (!connectionMethods(integration).some((entry) => entry.id === methodId)) return unavailable("Cette méthode n'est pas disponible.");
     selectedMethods.set(id, methodId);
     const method = connectionMethod(integration, methodId);
     const connection = connectionMap().get(id);
@@ -791,9 +791,9 @@ export function mountConnections(stage, options = {}) {
     renderCatalog();
     renderInspector();
     refreshIcons();
-    return completed("Methode selectionnee", { integration: id, method: methodId });
+    return completed("Méthode sélectionnée", { integration: id, method: methodId });
   }));
-  releases.push(actions.scope("v8.connections.setup.complete", async (context) => {
+  releases.push(actions.scope("v8.connections.setup.complète", async (context) => {
     const id = context.element?.dataset.integration || selectedId;
     const integration = integrationById(id);
     const connection = connectionMap().get(id);
@@ -805,7 +805,7 @@ export function mountConnections(stage, options = {}) {
     }
     const reference = validateReference(method, draftReferences.get(id) ?? connection?.reference ?? method?.endpoint ?? "");
     if (!reference.ok) {
-      const referenceInput = inspectorHost.querySelector("[data-connection-reference]");
+      const referenceInput = inspectorHost.querySelector("[data-connection-référence]");
       referenceInput?.setCustomValidity?.(reference.message);
       setFieldState(referenceInput, "invalid", reference.message);
       notify({ id: `connection-reference-${id}`, title: "Configuration incomplete", message: reference.message, type: "warning" });
@@ -818,7 +818,7 @@ export function mountConnections(stage, options = {}) {
       methodId: method?.id,
       reference: reference.value,
       apiVersion: method?.apiVersion || "En attente",
-      detail: backendRequired ? "Preparation locale terminee. Backend securise requis." : "Source preparee. Connecteur runtime requis."
+      detail: backendRequired ? "Préparation locale terminée. Backend sécurisé requis." : "Source préparée. Connecteur runtime requis."
     });
     refreshLiveBridges(id);
     if (result.ok) {
@@ -834,7 +834,7 @@ export function mountConnections(stage, options = {}) {
             apiVersion: connectionMethod(integration, connectionMap().get(id)?.methodId)?.apiVersion,
             lastSyncAt: nowIso,
             lastTestedAt: nowIso,
-            detail: "Connexion confirmee automatiquement apres la preparation."
+            detail: "Connexion confirmee automatiquement après la préparation."
           });
           refreshLiveBridges(id);
           connected = true;
@@ -842,13 +842,13 @@ export function mountConnections(stage, options = {}) {
           needsCredential = Boolean(method?.credential) && !credentialStatus.has(method.credential.provider);
           repository.connections.updateStatus(id, "disconnected", {
             detail: needsCredential
-              ? `Ajoutez votre ${method.credential.fields?.[0]?.label || "cle API personnelle"} ci-dessous pour activer la connexion.`
-              : "La verification automatique a echoue. Relancez le diagnostic depuis l'onglet Diagnostics."
+              ? `Ajoutez votre ${method.credential.fields?.[0]?.label || "clé API personnelle"} ci-dessous pour activer la connexion.`
+              : "La vérification automatique a échoué. Relancez le diagnostic depuis l'onglet Diagnostics."
           });
         }
       }
-      journal?.record?.({ source: id, category: integration?.category || "system", icon: integration?.icon || "plug", title: `${integration?.name || "Integration"} ${connected ? "connectee" : "preparee"}`, description: connected ? "Connexion verifiee et activee automatiquement." : needsCredential ? `Ajoutez votre ${method.credential.fields?.[0]?.label || "cle API personnelle"} pour terminer la connexion.` : autoVerify ? "La verification automatique a echoue. Relancez le diagnostic depuis l'onglet Diagnostics." : backendRequired ? "Le backend securise reste requis avant toute synchronisation." : `Methode ${method?.label || "locale"} preparee.`, timestamp: new Date().toISOString(), tone: connected || !autoVerify ? "success" : "warning" });
-      notify({ id: `connection-ready-${id}`, title: integration?.name || "Connection", message: connected ? "Connexion verifiee et activee." : needsCredential ? `Preparation enregistree. Ajoutez votre ${method.credential.fields?.[0]?.label || "cle API personnelle"} ci-dessous pour terminer.` : autoVerify ? "Preparation enregistree, mais la verification a echoue. Relancez le diagnostic." : backendRequired ? "Preparation validee. Backend securise requis pour connecter le compte." : "Preparation locale validee.", type: connected ? "success" : autoVerify ? "warning" : "success" });
+      journal?.record?.({ source: id, category: integration?.category || "system", icon: integration?.icon || "plug", title: `${integration?.name || "Intégration"} ${connected ? "connectée" : "préparée"}`, description: connected ? "Connexion vérifiée et activee automatiquement." : needsCredential ? `Ajoutez votre ${method.credential.fields?.[0]?.label || "clé API personnelle"} pour terminer la connexion.` : autoVerify ? "La vérification automatique a échoué. Relancez le diagnostic depuis l'onglet Diagnostics." : backendRequired ? "Le backend sécurisé reste requis avant toute synchronisation." : `Methode ${method?.label || "locale"} preparee.`, timestamp: new Date().toISOString(), tone: connected || !autoVerify ? "success" : "warning" });
+      notify({ id: `connection-ready-${id}`, title: integration?.name || "Connection", message: connected ? "Connexion vérifiée et activee." : needsCredential ? `Preparation enregistree. Ajoutez votre ${method.credential.fields?.[0]?.label || "clé API personnelle"} ci-dessous pour terminer.` : autoVerify ? "Préparation enregistree, mais la vérification a échoué. Relancez le diagnostic." : backendRequired ? "Préparation validee. Backend sécurisé requis pour connecter le compte." : "Préparation locale validee.", type: connected ? "success" : autoVerify ? "warning" : "success" });
       inspectorTab = "overview";
       renderAll();
     }
@@ -859,7 +859,7 @@ export function mountConnections(stage, options = {}) {
     const integration = integrationById(id);
     const connection = connectionMap().get(id);
     const method = selectedMethod(integration, connection);
-    if (id !== "spotify" || method?.id !== "oauth-pkce") return unavailable("Methode indisponible.");
+    if (id !== "spotify" || method?.id !== "oauth-pkce") return unavailable("Méthode indisponible.");
     const availability = methodAvailability(method, connectionList());
     if (!availability.usable) {
       notify({ id: `connection-blocked-${id}`, title: integration?.name || "Connection", message: availability.reason, type: "warning" });
@@ -884,7 +884,7 @@ export function mountConnections(stage, options = {}) {
     const integration = integrationById(id);
     const connection = connectionMap().get(id);
     const method = selectedMethod(integration, connection);
-    if (id !== "github" || method?.id !== "oauth-secure") return unavailable("Methode indisponible.");
+    if (id !== "github" || method?.id !== "oauth-secure") return unavailable("Méthode indisponible.");
     const availability = methodAvailability(method, connectionList());
     if (!availability.usable) {
       notify({ id: `connection-blocked-${id}`, title: integration?.name || "Connection", message: availability.reason, type: "warning" });
@@ -909,7 +909,7 @@ export function mountConnections(stage, options = {}) {
     const integration = integrationById(id);
     const connection = connectionMap().get(id);
     const method = selectedMethod(integration, connection);
-    if (id !== "google-calendar" || method?.id !== "oauth-secure") return unavailable("Methode indisponible.");
+    if (id !== "google-calendar" || method?.id !== "oauth-secure") return unavailable("Méthode indisponible.");
     const availability = methodAvailability(method, connectionList());
     if (!availability.usable) {
       notify({ id: `connection-blocked-${id}`, title: integration?.name || "Connection", message: availability.reason, type: "warning" });
@@ -934,7 +934,7 @@ export function mountConnections(stage, options = {}) {
     const integration = integrationById(id);
     const connection = connectionMap().get(id);
     const method = selectedMethod(integration, connection);
-    if (id !== "notion" || method?.id !== "public-oauth") return unavailable("Methode indisponible.");
+    if (id !== "notion" || method?.id !== "public-oauth") return unavailable("Méthode indisponible.");
     const availability = methodAvailability(method, connectionList());
     if (!availability.usable) {
       notify({ id: `connection-blocked-${id}`, title: integration?.name || "Connection", message: availability.reason, type: "warning" });
@@ -960,7 +960,7 @@ export function mountConnections(stage, options = {}) {
     const integration = integrationById(id);
     const connection = connectionMap().get(id);
     const method = selectedMethod(integration, connection);
-    if (id !== "todoist" || method?.id !== "oauth-secure") return unavailable("Methode indisponible.");
+    if (id !== "todoist" || method?.id !== "oauth-secure") return unavailable("Méthode indisponible.");
     const availability = methodAvailability(method, connectionList());
     if (!availability.usable) {
       notify({ id: `connection-blocked-${id}`, title: integration?.name || "Connection", message: availability.reason, type: "warning" });
@@ -986,7 +986,7 @@ export function mountConnections(stage, options = {}) {
     const integration = integrationById(id);
     const connection = connectionMap().get(id);
     const method = selectedMethod(integration, connection);
-    if (id !== "google-drive" || method?.id !== "oauth-secure") return unavailable("Methode indisponible.");
+    if (id !== "google-drive" || method?.id !== "oauth-secure") return unavailable("Méthode indisponible.");
     const availability = methodAvailability(method, connectionList());
     if (!availability.usable) {
       notify({ id: `connection-blocked-${id}`, title: integration?.name || "Connection", message: availability.reason, type: "warning" });
@@ -1012,7 +1012,7 @@ export function mountConnections(stage, options = {}) {
     const integration = integrationById(id);
     const connection = connectionMap().get(id);
     const method = selectedMethod(integration, connection);
-    if (id !== "youtube" || method?.id !== "oauth-secure") return unavailable("Methode indisponible.");
+    if (id !== "youtube" || method?.id !== "oauth-secure") return unavailable("Méthode indisponible.");
     const availability = methodAvailability(method, connectionList());
     if (!availability.usable) {
       notify({ id: `connection-blocked-${id}`, title: integration?.name || "Connection", message: availability.reason, type: "warning" });
@@ -1038,7 +1038,7 @@ export function mountConnections(stage, options = {}) {
     const integration = integrationById(id);
     const connection = connectionMap().get(id);
     const method = selectedMethod(integration, connection);
-    if (id !== "reddit" || method?.id !== "oauth-secure") return unavailable("Methode indisponible.");
+    if (id !== "reddit" || method?.id !== "oauth-secure") return unavailable("Méthode indisponible.");
     const availability = methodAvailability(method, connectionList());
     if (!availability.usable) {
       notify({ id: `connection-blocked-${id}`, title: integration?.name || "Connection", message: availability.reason, type: "warning" });
@@ -1061,8 +1061,8 @@ export function mountConnections(stage, options = {}) {
   releases.push(actions.scope("v8.connections.test", async (context) => {
     const id = context.element?.dataset.integration || selectedId;
     const integration = integrationById(id);
-    if (!integration) return unavailable("Cette integration n'existe pas.");
-    if (pendingDiagnostics.has(id)) return unavailable("Un diagnostic est deja en cours.");
+    if (!integration) return unavailable("Cette intégration n'existe pas.");
+    if (pendingDiagnostics.has(id)) return unavailable("Un diagnostic est déjà en cours.");
     pendingDiagnostics.add(id);
     selectAndRender(id, "diagnostics", true);
     let report;
@@ -1086,11 +1086,11 @@ export function mountConnections(stage, options = {}) {
       renderOpportunities();
     }
     selectAndRender(id, "diagnostics", false);
-    notify({ id: `connection-test-${id}`, title: `Diagnostic ${integration.name}`, message: report?.failed ? "Un blocage a ete detecte." : report?.workerAvailable ? "Connexion confirmee et activee." : report?.warnings ? "La configuration demande votre attention." : "Les controles disponibles sont valides.", type: report?.failed ? "error" : report?.warnings ? "warning" : "success" });
-    return completed("Diagnostic termine", report);
+    notify({ id: `connection-test-${id}`, title: `Diagnostic ${integration.name}`, message: report?.failed ? "Un blocage a ete detecte." : report?.workerAvailable ? "Connexion confirmee et activee." : report?.warnings ? "La configuration demande votre attention." : "Les contrôles disponibles sont valides.", type: report?.failed ? "error" : report?.warnings ? "warning" : "success" });
+    return completed("Diagnostic terminé", report);
   }));
   releases.push(actions.scope("v8.connections.diagnose-all", async () => {
-    if (globalDiagnosticPending) return unavailable("Le diagnostic global est deja en cours.");
+    if (globalDiagnosticPending) return unavailable("Le diagnostic global est déjà en cours.");
     globalDiagnosticPending = true;
     try {
       const map = connectionMap();
@@ -1137,7 +1137,7 @@ export function mountConnections(stage, options = {}) {
       renderInspector();
       refreshIcons();
       notify({ id: "connections-diagnostic-all", title: "Connections Hub", message: `${globalDiagnostic.tested} connexion${globalDiagnostic.tested > 1 ? "s" : ""} verifiee${globalDiagnostic.tested > 1 ? "s" : ""}, ${globalDiagnostic.workerVerified} via Worker.`, type: globalDiagnostic.failed ? "error" : globalDiagnostic.warnings ? "warning" : "success" });
-      return completed("Diagnostic global termine", globalDiagnostic);
+      return completed("Diagnostic global terminé", globalDiagnostic);
     } finally {
       globalDiagnosticPending = false;
     }
@@ -1151,8 +1151,8 @@ export function mountConnections(stage, options = {}) {
       selectedMethods.delete(id);
       draftReferences.delete(id);
       diagnostics.delete(id);
-      journal?.record?.({ source: id, category: integration?.category || "system", icon: "unplug", title: `${integration?.name || "Integration"} retiree`, description: "L'association a ete supprimee. L'acces fournisseur peut etre revoque separement.", timestamp: new Date().toISOString(), tone: "warning" });
-      notify({ id: `connection-off-${id}`, title: integration?.name || "Connection", message: "Association supprimee. Verifiez aussi les acces chez le fournisseur.", type: "info" });
+      journal?.record?.({ source: id, category: integration?.category || "system", icon: "unplug", title: `${integration?.name || "Intégration"} retiree`, description: "L'association a ete supprimée. L'accès fournisseur peut être revoque separement.", timestamp: new Date().toISOString(), tone: "warning" });
+      notify({ id: `connection-off-${id}`, title: integration?.name || "Connection", message: "Association supprimée. Vérifiez aussi les accès chez le fournisseur.", type: "info" });
       renderAll();
     }
     return result;
@@ -1162,7 +1162,7 @@ export function mountConnections(stage, options = {}) {
     const methodId = context.element?.dataset.method;
     selectedMethods.set(id, methodId);
     selectAndRender(id, "setup", true);
-    return completed("Methode detectee selectionnee", { integration: id, method: methodId });
+    return completed("Méthode detectee sélectionnée", { integration: id, method: methodId });
   }));
   releases.push(actions.scope("v8.connections.copy", async (context) => {
     const copied = await copyText(context.element?.dataset.value);
@@ -1176,7 +1176,7 @@ export function mountConnections(stage, options = {}) {
     if (!report) return unavailable("Lancez d'abord le diagnostic.");
     const payload = JSON.stringify({ product: "ETHONE", integration: integration?.name || id, method: selectedMethods.get(id) || connectionMap().get(id)?.methodId || "recommended", report }, null, 2);
     const copied = await copyText(payload);
-    notify({ id: `connection-report-${id}`, title: copied ? "Rapport copie" : "Copie impossible", message: copied ? "Le rapport ne contient aucune donnee sensible." : "Le presse-papiers n'est pas accessible.", type: copied ? "success" : "warning" });
+    notify({ id: `connection-report-${id}`, title: copied ? "Rapport copie" : "Copie impossible", message: copied ? "Le rapport ne contient aucune donnée sensible." : "Le presse-papiers n'est pas accessible.", type: copied ? "success" : "warning" });
     return copied ? completed("Rapport copie") : unavailable("Le presse-papiers n'est pas accessible.");
   }));
 

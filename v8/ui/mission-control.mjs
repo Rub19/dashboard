@@ -72,7 +72,7 @@ export function createMissionControl(host, options = {}) {
 
     const windows = element("div", { className: "v8-mission-apps" }, NAVIGATION_ITEMS.map((item) => missionButton("window", item, [
       element("div", { className: "v8-window-card__chrome", attributes: { "aria-hidden": "true" } }, [element("span"), element("span"), element("span")]),
-      element("div", { className: "v8-window-card__preview" }, [element("span", { className: "v8-window-card__icon" }, [icon(item.icon)]), element("strong", { text: item.label }), element("small", { text: item.id === activeRoute ? "Fenetre active" : "Disponible" })])
+      element("div", { className: "v8-window-card__preview" }, [element("span", { className: "v8-window-card__icon" }, [icon(item.icon)]), element("strong", { text: item.label }), element("small", { text: item.id === activeRoute ? "Fenêtre active" : "Disponible" })])
     ], item.id === activeRoute, "v8-window-card")));
 
     const dashboards = element("div", { className: "v8-mission-dashboards" }, WORKSPACES.map((workspace) => missionButton("dashboard", { ...workspace, id: `dashboard-${workspace.id}`, actionId: `v8.dashboard.${workspace.id}`, ariaLabel: `Dashboard ${workspace.label}` }, [
@@ -87,8 +87,8 @@ export function createMissionControl(host, options = {}) {
       icon(entry.icon || "brain"), element("span", {}, [element("strong", { text: entry.title }), element("small", { text: entry.description || "Contexte Brain" })]), icon("arrow-up-right")
     ], false, "v8-brain-activity")) : [statusState("empty", {
       iconName: "brain",
-      eyebrow: "Activite Brain",
-      title: "Aucune activite recente",
+      eyebrow: "Activité Brain",
+      title: "Aucune activité récente",
       description: "Brain attend votre prochaine demande.",
       actions: [actionButton({ actionId: "v8.brain.open", variant: "secondary" }, [icon("brain"), element("span", { text: "Ouvrir Brain" })])],
       compact: true,
@@ -99,13 +99,13 @@ export function createMissionControl(host, options = {}) {
       element("header", { className: "v8-mission-header" }, [
         element("div", { className: "v8-mission-header__identity" }, [
           element("div", { className: "v8-window-controls", attributes: { "aria-hidden": "true" } }, [element("span"), element("span"), element("span")]),
-          element("div", {}, [element("span", { className: "v8-eyebrow", text: "Navigation systeme" }), element("h2", { id: "v8-mission-title", text: "Mission Control" }), element("p", { text: `${activeWorkspace.flow} / ${NAVIGATION_ITEMS.length} fenetres / ${activeWorkspace.widgets.length} widgets`, attributes: { translate: "no" } })])
+          element("div", {}, [element("span", { className: "v8-eyebrow", text: "Navigation système" }), element("h2", { id: "v8-mission-title", text: "Mission Control" }), element("p", { text: `${activeWorkspace.flow} / ${NAVIGATION_ITEMS.length} fenetres / ${activeWorkspace.widgets.length} widgets`, attributes: { translate: "no" } })])
         ]),
         element("div", { className: "v8-mission-header__actions" }, [element("kbd", { text: "F2", attributes: { translate: "no" } }), actionButton({ actionId: "v8.command.open", variant: "secondary" }, [icon("search"), element("span", { text: "Rechercher" })]), actionButton({ actionId: "v8.mission.close", className: "v8-icon-button", ariaLabel: "Fermer Mission Control" }, [icon("x")])])
       ]),
       element("div", { className: "v8-mission-body" }, [
-        element("main", { className: "v8-mission-workspace" }, [section("v8-mission-section--spaces", "Spaces", WORKSPACES.length, spaces), section("v8-mission-section--flows", "Flows", WORKSPACES.length, flows), section("v8-mission-section--windows", "Fenetres", NAVIGATION_ITEMS.length, windows)]),
-        element("aside", { className: "v8-mission-rail" }, [section("v8-mission-section--dashboards", "Dashboards", WORKSPACES.length, dashboards), section("v8-mission-section--widgets", "Widgets ouverts", activeWorkspace.widgets.length, widgets), section("v8-mission-section--brain", "Activites Brain", brainActivity.length, element("div", { className: "v8-mission-brain" }, brainItems))])
+        element("main", { className: "v8-mission-workspace" }, [section("v8-mission-section--spaces", "Spaces", WORKSPACES.length, spaces), section("v8-mission-section--flows", "Flows", WORKSPACES.length, flows), section("v8-mission-section--windows", "Fenêtres", NAVIGATION_ITEMS.length, windows)]),
+        element("aside", { className: "v8-mission-rail" }, [section("v8-mission-section--dashboards", "Dashboards", WORKSPACES.length, dashboards), section("v8-mission-section--widgets", "Widgets ouverts", activeWorkspace.widgets.length, widgets), section("v8-mission-section--brain", "Activités Brain", brainActivity.length, element("div", { className: "v8-mission-brain" }, brainItems))])
       ])
     ]);
 

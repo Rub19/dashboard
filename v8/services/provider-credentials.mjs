@@ -20,7 +20,7 @@ export async function listConfiguredProviders({ client, ownerId } = {}) {
 }
 
 export async function saveProviderCredential({ client, ownerId, provider, fields, values } = {}) {
-  if (!client || !ownerId) return result(false, "Vous devez etre connecte pour enregistrer une cle.");
+  if (!client || !ownerId) return result(false, "Vous devez être connecté pour enregistrer une clé.");
   if (!provider) return result(false, "Fournisseur inconnu.");
   const credential = {};
   for (const field of Array.isArray(fields) ? fields : []) {
@@ -34,18 +34,18 @@ export async function saveProviderCredential({ client, ownerId, provider, fields
       { onConflict: "owner_id,provider" }
     );
     if (error) return result(false, error.message || "Enregistrement impossible.");
-    return result(true, "Cle personnelle enregistree.");
+    return result(true, "Clé personnelle enregistree.");
   } catch (error) {
     return result(false, error?.message || "Enregistrement impossible.");
   }
 }
 
 export async function removeProviderCredential({ client, ownerId, provider } = {}) {
-  if (!client || !ownerId) return result(false, "Vous devez etre connecte pour retirer une cle.");
+  if (!client || !ownerId) return result(false, "Vous devez être connecté pour retirer une clé.");
   try {
     const { error } = await client.from(TABLE).delete().eq("owner_id", ownerId).eq("provider", provider);
     if (error) return result(false, error.message || "Suppression impossible.");
-    return result(true, "Cle personnelle retiree. ETHONE utilise de nouveau la cle partagee.");
+    return result(true, "Clé personnelle retiree. ETHONE utilisé de nouveau la clé partagee.");
   } catch (error) {
     return result(false, error?.message || "Suppression impossible.");
   }

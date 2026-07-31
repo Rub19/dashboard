@@ -1,4 +1,4 @@
-import { sanitizeBrainPreferences } from "./preferences.mjs";
+import { sanitizeBrainPreferences } from "./préférences.mjs";
 
 const ROUTES = new Set(["home", "notes", "tasks", "calendar", "files", "activity", "connections", "spaces", "flows", "brain", "settings"]);
 const SECRET_KEY = /(?:password|passcode|pin|token|secret|api.?key|authorization|credential|session|cookie|refresh)/i;
@@ -7,7 +7,7 @@ const clean = (value, limit = 180) => String(value ?? "").replace(/[\u0000-\u001
 
 function redact(value, depth = 0) {
   if (depth > 4 || value == null) return value == null ? null : "[limite]";
-  if (typeof value === "string") return SECRET_VALUE.test(value) ? "[donnee sensible masquee]" : clean(value, 500);
+  if (typeof value === "string") return SECRET_VALUE.test(value) ? "[donnée sensible masquee]" : clean(value, 500);
   if (["number", "boolean"].includes(typeof value)) return value;
   if (Array.isArray(value)) return Object.freeze(value.slice(0, 12).map((item) => redact(item, depth + 1)));
   if (typeof value !== "object") return null;
@@ -29,11 +29,11 @@ function routeContext(route, snapshot, state, permissions) {
     sources.push(source(id, allowed, active, items.length, active ? detail : allowed ? "Non requis sur cette page" : "Permission desactivee"));
   }
 
-  include("tasks", "tasks", "tasks", ["home", "tasks", "brain"], tasks, 8, "Titres, priorites et echeances", (item) => ({ id: item.id, title: item.title, priority: item.priority, due: item.due }));
+  include("tasks", "tasks", "tasks", ["home", "tasks", "brain"], tasks, 8, "Titres, priorités et echeances", (item) => ({ id: item.id, title: item.title, priority: item.priority, due: item.due }));
   include("notes", "notes", "notes", ["notes", "home", "brain"], snapshot.notes || [], 6, "Titres et metadonnees uniquement", (item) => ({ id: item.id, title: item.title, updatedAt: item.updatedAt, pinned: item.pinned }));
-  include("calendar", "events", "calendar", ["calendar", "home", "brain"], snapshot.events || [], 8, "Evenements a venir", (item) => ({ id: item.id, title: item.title, date: item.date }));
-  include("connections", "connections", "connections", ["connections", "brain"], snapshot.connections || [], 12, "Etat technique, aucun secret", (item) => ({ id: item.id, status: item.status, lastSyncAt: item.lastSyncAt, responseMs: item.responseMs }));
-  include("activity", "activity", "activity", ["activity", "home", "brain"], snapshot.activities || [], 10, "Dix signaux recents maximum", (item) => ({ source: item.source, category: item.category, title: item.title, timestamp: item.timestamp }));
+  include("calendar", "events", "calendar", ["calendar", "home", "brain"], snapshot.events || [], 8, "Événements a venir", (item) => ({ id: item.id, title: item.title, date: item.date }));
+  include("connections", "connections", "connections", ["connections", "brain"], snapshot.connections || [], 12, "État technique, aucun secret", (item) => ({ id: item.id, status: item.status, lastSyncAt: item.lastSyncAt, responseMs: item.responseMs }));
+  include("activity", "activity", "activity", ["activity", "home", "brain"], snapshot.activities || [], 10, "Dix signaux récents maximum", (item) => ({ source: item.source, category: item.category, title: item.title, timestamp: item.timestamp }));
   include("gaming", "gaming", "gaming", ["home", "activity", "brain"], gaming, 6, "Six signaux jeu ou media", (item) => ({ source: item.source, title: item.title, timestamp: item.timestamp }));
   include("files", "files", "files", ["files"], snapshot.files || [], 8, "Noms et types, sans contenu", (item) => ({ id: item.id, name: item.name, type: item.type, favorite: item.favorite }));
 

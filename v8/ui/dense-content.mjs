@@ -3,9 +3,9 @@ import { refreshIcons } from "./icons.mjs";
 import { computeFloatingPosition, getLayerManager } from "./layer-manager.mjs";
 
 const DENSITY_OPTIONS = Object.freeze([
-  Object.freeze({ id: "automatic", label: "Densite automatique", icon: "sparkles", actionId: "v8.density.automatic" }),
-  Object.freeze({ id: "comfortable", label: "Densite confortable", icon: "rows-3", actionId: "v8.density.comfortable" }),
-  Object.freeze({ id: "compact", label: "Densite compacte", icon: "align-justify", actionId: "v8.density.compact" })
+  Object.freeze({ id: "automatic", label: "Densité automatique", icon: "sparkles", actionId: "v8.density.automatic" }),
+  Object.freeze({ id: "comfortable", label: "Densité confortable", icon: "rows-3", actionId: "v8.density.comfortable" }),
+  Object.freeze({ id: "compact", label: "Densité compacte", icon: "align-justify", actionId: "v8.density.compact" })
 ]);
 
 function stringId(value) {
@@ -59,7 +59,7 @@ export function selectionControl(options = {}) {
       type: "button",
       role: "checkbox",
       "aria-checked": checked ? "true" : "false",
-      "aria-label": options.label || "Selectionner"
+      "aria-label": options.label || "Sélectionner"
     },
     dataset: { collectionSelect: options.id }
   }, [icon(checked ? "check" : "square")]);
@@ -68,7 +68,7 @@ export function selectionControl(options = {}) {
 export function collectionDensityControl(mode = "automatic") {
   const control = element("div", {
     className: "v8-collection-density",
-    attributes: { role: "group", "aria-label": "Densite d'affichage" }
+    attributes: { role: "group", "aria-label": "Densité d'affichage" }
   }, DENSITY_OPTIONS.map((entry) => element("button", {
     className: entry.id === mode ? "is-active" : "",
     attributes: {
@@ -105,7 +105,7 @@ export function bulkActionBar(options = {}) {
         type: "button",
         role: "checkbox",
         "aria-checked": allSelected ? "true" : "false",
-        "aria-label": allSelected ? "Deselectionner les elements visibles" : "Selectionner les elements visibles"
+        "aria-label": allSelected ? "Deselectionner les elements visibles" : "Sélectionner les elements visibles"
       },
       events: { click: () => options.onToggleAll?.(!allSelected) }
     }, [icon(allSelected ? "check-check" : "square-dashed")]),

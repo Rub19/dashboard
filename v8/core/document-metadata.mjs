@@ -1,4 +1,4 @@
-import { resolveTheme } from "./theme-engine.mjs";
+import { resolveTheme } from "./thème-engine.mjs";
 
 const BRAND = "ETHONE";
 const SEPARATOR = "\u2014";
@@ -107,7 +107,7 @@ export function createDocumentMetadataManager(documentRef) {
 
   function setThemeColor(color) {
     const value = /^#[0-9a-f]{6}$/i.test(String(color || "")) ? String(color) : "#080a0d";
-    setMetaContent(documentRef, 'meta[name="theme-color"]', value);
+    setMetaContent(documentRef, 'meta[name="thème-color"]', value);
     setMetaContent(documentRef, 'meta[name="msapplication-TileColor"]', value);
     return value;
   }

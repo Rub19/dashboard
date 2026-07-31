@@ -9,10 +9,10 @@ export function youtubeLiveCard(presence = {}, options = {}) {
       attributes: { src: presence.thumbnailUrl, alt: "", loading: "lazy", decoding: "async", referrerpolicy: "no-referrer" }
     })])
     : element("span", { className: "v8-youtube-avatar__image is-fallback" }, [icon("youtube")]);
-  const meta = presence.latestVideoTitle ? "Derniere video" : "Chaine YouTube";
+  const meta = presence.latestVideoTitle ? "Dernière video" : "Chaine YouTube";
   return element(options.tagName || "article", {
     className: `v8-youtube-live v8-youtube-live--${variant} v8-surface`,
-    attributes: { "aria-label": "Activite YouTube" },
+    attributes: { "aria-label": "Activité YouTube" },
     dataset: { liveWidget: "media", liveKind: "widget" }
   }, [
     element("span", { className: "v8-youtube-avatar" }, [inner, livePulseDot()]),

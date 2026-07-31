@@ -42,8 +42,8 @@ export function createWeatherDetail(options = {}) {
     if (!host || !anchorEl || presence.available !== true) return false;
     const forecast = Array.isArray(presence.forecast) ? presence.forecast : [];
     popover = element("div", {
-      className: "v8-weather-detail",
-      attributes: { role: "dialog", "aria-label": "Detail meteo" }
+      className: "v8-weather-détail",
+      attributes: { role: "dialog", "aria-label": "Détail météo" }
     }, [
       element("header", { className: "v8-weather-detail__head" }, [
         icon(weatherIcon(presence.weatherCode, presence.isDay)),
@@ -55,7 +55,7 @@ export function createWeatherDetail(options = {}) {
       element("div", { className: "v8-weather-detail__temp" }, [element("strong", { text: `${presence.temperature}°C` })]),
       element("div", { className: "v8-weather-detail__stats" }, [
         element("span", {}, [icon("wind"), element("b", { text: `${presence.windSpeedKmh} km/h` }), element("small", { text: "Vent" })]),
-        element("span", {}, [icon("droplets"), element("b", { text: `${presence.humidityPercent}%` }), element("small", { text: "Humidite" })])
+        element("span", {}, [icon("droplets"), element("b", { text: `${presence.humidityPercent}%` }), element("small", { text: "Humidité" })])
       ]),
       forecast.length ? element("div", { className: "v8-weather-detail__forecast" }, forecast.map(forecastRow)) : null
     ].filter(Boolean));

@@ -16,14 +16,14 @@ export function redditLiveCard(presence = {}, options = {}) {
   const meta = presence.latestPostTitle ? presence.latestPostSubreddit : `${presence.karma} karma`;
   return element(options.tagName || "article", {
     className: `v8-reddit-live v8-reddit-live--${variant} v8-surface`,
-    attributes: { "aria-label": "Activite Reddit" },
+    attributes: { "aria-label": "Activité Reddit" },
     dataset: { liveWidget: "media", liveKind: "widget" }
   }, [
     avatar(presence),
     element("div", { className: "v8-reddit-live__body" }, [
       element("div", { className: "v8-reddit-live__meta" }, [brandIcon("reddit", "message-circle", "v8-live-brand-mark"), element("small", { text: meta })]),
       element("strong", { text: `u/${presence.username}`, attributes: { translate: "no" } }),
-      element("p", { text: presence.latestPostTitle || "Aucune publication recente", attributes: { translate: "no" } }),
+      element("p", { text: presence.latestPostTitle || "Aucune publication récente", attributes: { translate: "no" } }),
       liveFreshnessNode(presence.updatedAt)
     ])
   ]);

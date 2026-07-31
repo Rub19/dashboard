@@ -1,4 +1,4 @@
-import { sanitizeBrainPreferences } from "./preferences.mjs";
+import { sanitizeBrainPreferences } from "./préférences.mjs";
 import { createBrainContextEngine } from "./context-engine.mjs";
 import { createBrainActionRegistry } from "./action-registry.mjs";
 import { createBrainMemoryRepository } from "./memory-repository.mjs";

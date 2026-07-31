@@ -1,6 +1,6 @@
 import { WORKSPACES } from "../data/workspaces.mjs";
 import { NAVIGATION_ITEMS } from "../data/navigation.mjs";
-import { THEME_MODES } from "./theme-engine.mjs";
+import { THEME_MODES } from "./thème-engine.mjs";
 
 export const AUTOMATION_TRIGGER_TYPES = Object.freeze(["route", "space", "time"]);
 const MAX_RULES = 20;
@@ -11,7 +11,7 @@ const THEME_LABELS = Object.freeze({ night: "Nuit", graphite: "Graphite", day: "
 export const AUTOMATION_ACTIONS = Object.freeze([
   ...WORKSPACES.map((workspace) => Object.freeze({ id: workspace.actionId, label: `Space ${workspace.label}`, group: "space" })),
   ...Object.keys(DENSITY_LABELS).map((mode) => Object.freeze({ id: `v8.density.${mode}`, label: `Densite ${DENSITY_LABELS[mode]}`, group: "density" })),
-  ...THEME_MODES.map((mode) => Object.freeze({ id: `v8.theme.${mode}`, label: `Theme ${THEME_LABELS[mode]}`, group: "theme" }))
+  ...THEME_MODES.map((mode) => Object.freeze({ id: `v8.theme.${mode}`, label: `Theme ${THEME_LABELS[mode]}`, group: "thème" }))
 ]);
 const ACTION_IDS = new Set(AUTOMATION_ACTIONS.map((entry) => entry.id));
 

@@ -2,7 +2,7 @@ export const CLOUD_STATE_TABLE = "ethone_user_state";
 export const CLOUD_CACHE_PREFIX = "ethone:v8:cloud-cache:";
 export const CLOUD_QUEUE_PREFIX = "ethone:v8:cloud-queue:";
 
-const PREFERENCE_KEYS = Object.freeze(["route", "theme", "density", "densitySettings", "brainPreferences", "accent", "space", "flow", "spotlightEnabled", "ambientEffectsEnabled", "interfaceBlurEnabled", "activityLiveLayout", "railExpanded", "locale", "sound", "dock"]);
+const PREFERENCE_KEYS = Object.freeze(["route", "thème", "density", "densitySettings", "brainPreferences", "accent", "space", "flow", "spotlightEnabled", "ambientEffectsEnabled", "interfaceBlurEnabled", "activityLiveLayout", "railExpanded", "locale", "sound", "dock"]);
 const MAX_PAYLOAD_BYTES = 4_500_000;
 
 function result(ok, status, message, data = null) {
@@ -48,7 +48,7 @@ export function normalizeCloudPayload(value = {}) {
     preferences: preferencesOf(source.preferences)
   };
   const serialized = JSON.stringify(payload);
-  if (new TextEncoder().encode(serialized).byteLength > MAX_PAYLOAD_BYTES) throw new Error("Les donnees depassent la taille de synchronisation autorisee.");
+  if (new TextEncoder().encode(serialized).byteLength > MAX_PAYLOAD_BYTES) throw new Error("Les données depassent la taille de synchronisation autorisee.");
   return Object.freeze(payload);
 }
 
@@ -219,12 +219,12 @@ export function createSupabaseStateSync(options = {}) {
     if (!expectedClient || !expectedOwner) return result(false, "unavailable", "La session Supabase n'est pas disponible.");
     if (runtime.navigator?.onLine === false) {
       publish({ syncStatus: "offline", networkStatus: "offline", saveStatus: pending ? "pending" : "idle", source: currentPayload ? "cache" : "none" });
-      return result(false, "offline", "Hors ligne - le cache est utilise.");
+      return result(false, "offline", "Hors ligne - le cache est utilisé.");
     }
     publish({ syncStatus: "loading", networkStatus: "online", sessionStatus: "valid", error: "" });
     try {
       const response = await readRemote(expectedClient, expectedOwner);
-      if (!operationIsCurrent(expectedGeneration, expectedOwner, expectedClient)) return result(false, "stale", "Operation Supabase remplacee.");
+      if (!operationIsCurrent(expectedGeneration, expectedOwner, expectedClient)) return result(false, "stale", "Opération Supabase remplacee.");
       if (response?.error) throw response.error;
       if (response?.data) {
         const queued = pending;
@@ -234,13 +234,13 @@ export function createSupabaseStateSync(options = {}) {
           writeStored(queueKey(), pending);
           if (queued.baseRevision !== revision) {
             publish({ syncStatus: "error", saveStatus: "pending", source: "supabase", error: "Conflit de revision Supabase." });
-            return result(false, "conflict", "Une version Supabase plus recente existe. Le changement local reste en attente.");
+            return result(false, "conflict", "Une version Supabase plus récente existe. Le changement local reste en attente.");
           }
           applyPayload(queued.payload);
           publish({ syncStatus: "saving", saveStatus: "pending", source: "local-cache", error: "" });
-          return result(true, "pending", "Les changements hors ligne sont prets a etre synchronises.", { revision });
+          return result(true, "pending", "Les changements hors ligne sont prets a être synchronises.", { revision });
         }
-        return result(true, "completed", "Donnees chargees depuis Supabase.", { revision, source: "supabase" });
+        return result(true, "completed", "Données chargees depuis Supabase.", { revision, source: "supabase" });
       }
       const cachedWasRemote = remoteKnown && revision > 0;
       const queued = pending;
@@ -250,14 +250,14 @@ export function createSupabaseStateSync(options = {}) {
       if (queued) {
         pending = queued;
         if (queued.baseKnown === true && queued.baseRevision !== 0) {
-          publish({ syncStatus: "error", saveStatus: "pending", source: "supabase", error: "La version Supabase de reference n'existe plus." });
-          return result(false, "conflict", "La version Supabase de reference n'existe plus. Le changement local reste en attente.");
+          publish({ syncStatus: "error", saveStatus: "pending", source: "supabase", error: "La version Supabase de référence n'existe plus." });
+          return result(false, "conflict", "La version Supabase de référence n'existe plus. Le changement local reste en attente.");
         }
         pending = { ...queued, baseRevision: 0, baseKnown: true };
         writeStored(queueKey(), pending);
         applyPayload(pending.payload);
         publish({ syncStatus: "saving", saveStatus: "pending", source: "local-cache", error: "" });
-        return result(true, "pending", "Les changements locaux sont prets a creer l'etat Supabase.", { revision: 0 });
+        return result(true, "pending", "Les changements locaux sont prets a créer l'état Supabase.", { revision: 0 });
       }
       if (cachedWasRemote) {
         const emptyPayload = normalizeCloudPayload();
@@ -265,9 +265,9 @@ export function createSupabaseStateSync(options = {}) {
         persistCache(emptyPayload);
       }
       publish({ syncStatus: "saved", saveStatus: pending ? "pending" : "idle", source: "supabase", error: "" });
-      return result(true, "empty", "Supabase est connecte. Aucune donnee distante n'existe encore.", { revision: 0, source: "supabase" });
+      return result(true, "empty", "Supabase est connecté. Aucune donnée distante n'existe encore.", { revision: 0, source: "supabase" });
     } catch (error) {
-      if (!operationIsCurrent(expectedGeneration, expectedOwner, expectedClient)) return result(false, "stale", "Operation Supabase remplacee.");
+      if (!operationIsCurrent(expectedGeneration, expectedOwner, expectedClient)) return result(false, "stale", "Opération Supabase remplacee.");
       const cached = Boolean(currentPayload) || loadCache();
       publish({ syncStatus: "error", saveStatus: pending ? "pending" : "error", source: cached ? "cache" : "none", error: safeText(error?.message || "Synchronisation indisponible.") });
       return result(false, "failed", "Supabase est temporairement indisponible. Le cache reste actif.", error);
@@ -290,7 +290,7 @@ export function createSupabaseStateSync(options = {}) {
     try {
       const payload = buildPayload();
       if (!pending && currentPayload && JSON.stringify(payload) === JSON.stringify(currentPayload)) {
-        return result(true, "unchanged", "Les donnees Supabase sont deja a jour.", { revision });
+        return result(true, "unchanged", "Les données Supabase sont déjà a jour.", { revision });
       }
       pending = {
         id: mutationId(runtime),
@@ -312,7 +312,7 @@ export function createSupabaseStateSync(options = {}) {
       return result(true, "queued", "Modification mise en file de synchronisation.", { id: pending.id });
     } catch (error) {
       publish({ syncStatus: "error", saveStatus: "error", error: safeText(error?.message) });
-      return result(false, "failed", "La modification n'a pas pu etre preparee.", error);
+      return result(false, "failed", "La modification n'a pas pu être préparée.", error);
     }
   }
 
@@ -347,13 +347,13 @@ export function createSupabaseStateSync(options = {}) {
     publish({ syncStatus: "saving", networkStatus: "online", saveStatus: "saving", error: "" });
     try {
       const response = await savePending(change, expectedClient, expectedOwner);
-      if (!operationIsCurrent(expectedGeneration, expectedOwner, expectedClient)) return result(false, "stale", "Operation Supabase remplacee.");
+      if (!operationIsCurrent(expectedGeneration, expectedOwner, expectedClient)) return result(false, "stale", "Opération Supabase remplacee.");
       if (response?.error) throw response.error;
       if (!response?.data) {
         await pull();
-        if (!operationIsCurrent(expectedGeneration, expectedOwner, expectedClient)) return result(false, "stale", "Operation Supabase remplacee.");
+        if (!operationIsCurrent(expectedGeneration, expectedOwner, expectedClient)) return result(false, "stale", "Opération Supabase remplacee.");
         publish({ syncStatus: "error", saveStatus: "pending", source: "supabase", error: "Conflit de revision Supabase." });
-        return result(false, "conflict", "Une version Supabase plus recente existe. Aucune donnee cloud n'a ete ecrasee.");
+        return result(false, "conflict", "Une version Supabase plus récente existe. Aucune donnée cloud n'a ete ecrasee.");
       }
       const nextPending = pending?.id !== change.id ? pending : null;
       pending = null;
@@ -370,7 +370,7 @@ export function createSupabaseStateSync(options = {}) {
       }
       return result(true, "completed", "Synchronise avec Supabase.", { revision });
     } catch (error) {
-      if (!operationIsCurrent(expectedGeneration, expectedOwner, expectedClient)) return result(false, "stale", "Operation Supabase remplacee.");
+      if (!operationIsCurrent(expectedGeneration, expectedOwner, expectedClient)) return result(false, "stale", "Opération Supabase remplacee.");
       if (String(error?.code || "") === "23505") await pull();
       publish({ syncStatus: runtime.navigator?.onLine === false ? "offline" : "error", saveStatus: "pending", error: safeText(error?.message || "Echec de synchronisation.") });
       return result(false, "failed", "La sauvegarde Supabase sera reessayee.", error);

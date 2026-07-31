@@ -187,7 +187,7 @@ export function mountCalendar(stage, options = {}) {
     );
     composer.addEventListener("submit", async (event) => {
       event.preventDefault();
-      await runFormSubmission({ form: composer, submit: composer.querySelector("[type='submit']"), messages: { loading: "Ajout de l'evenement..." }, task: createEvent });
+      await runFormSubmission({ form: composer, submit: composer.querySelector("[type='submit']"), messages: { loading: "Ajout de l'événement..." }, task: createEvent });
     }, { once: true });
     refreshIcons();
   }

@@ -49,7 +49,7 @@ function hasConnection(connections, sources) {
   return safeArray(connections).some((connection) => allowed.has(String(connection?.id || "").toLowerCase()) && connection?.status === "connected");
 }
 
-function providerSignal({ id, label, icon, actionId, activity, connected, emptyValue = "Aucune activite" }) {
+function providerSignal({ id, label, icon, actionId, activity, connected, emptyValue = "Aucune activité" }) {
   if (activity) {
     return Object.freeze({
       id,
@@ -67,7 +67,7 @@ function providerSignal({ id, label, icon, actionId, activity, connected, emptyV
     label,
     icon,
     actionId,
-    value: connected ? emptyValue : "Non connectee",
+    value: connected ? emptyValue : "Non connectée",
     detail: connected ? "Synchronise" : "Configurer",
     userContent: false,
     state: connected ? "empty" : "unavailable"
@@ -112,37 +112,37 @@ export function createDailyBriefing(options = {}) {
     label: "Agenda",
     icon: "calendar-days",
     actionId: "v8.calendar.open",
-    value: events[0] ? safeText(events[0].title, "Evenement") : "Aucun evenement aujourd'hui",
+    value: events[0] ? safeText(events[0].title, "Événement") : "Aucun événement aujourd'hui",
     metaValue: String(events.length),
-    detail: events.length === 1 ? "evenement aujourd'hui" : "evenements aujourd'hui",
+    detail: events.length === 1 ? "événement aujourd'hui" : "événements aujourd'hui",
     userContent: Boolean(events[0]),
     state: events.length ? "ready" : "empty"
   });
   const taskSignal = Object.freeze({
     id: "tasks",
-    label: "Priorites",
+    label: "Priorités",
     icon: "circle-check-big",
     actionId: "v8.tasks.open",
     value: tasks[0] ? safeText(tasks[0].title, "Tache") : "Aucune tache prioritaire",
     metaValue: String(tasks.length),
-    detail: tasks.length === 1 ? "priorite ouverte" : "priorites ouvertes",
+    detail: tasks.length === 1 ? "priorité ouverte" : "priorités ouvertes",
     userContent: Boolean(tasks[0]),
     state: tasks.length ? "ready" : "empty"
   });
 
   let suggestion;
   if (tasks[0]?.priority === "high") {
-    suggestion = freezeSuggestion({ icon: "circle-check-big", title: "Commencer par la priorite principale", detail: safeText(tasks[0].title), actionId: "v8.tasks.open", label: "Voir la tache", userContent: true });
+    suggestion = freezeSuggestion({ icon: "circle-check-big", title: "Commencer par la priorité principale", detail: safeText(tasks[0].title), actionId: "v8.tasks.open", label: "Voir la tache", userContent: true });
   } else if (events[0]) {
-    suggestion = freezeSuggestion({ icon: "calendar-check-2", title: "Preparer le prochain evenement", detail: safeText(events[0].title), actionId: "v8.calendar.open", label: "Voir l'agenda", userContent: true });
+    suggestion = freezeSuggestion({ icon: "calendar-check-2", title: "Preparer le prochain événement", detail: safeText(events[0].title), actionId: "v8.calendar.open", label: "Voir l'agenda", userContent: true });
   } else if (tasks[0]) {
-    suggestion = freezeSuggestion({ icon: "focus", title: "Creer un bloc Focus", detail: safeText(tasks[0].title), actionId: "v8.space.focus", label: "Activer Focus", userContent: true });
+    suggestion = freezeSuggestion({ icon: "focus", title: "Créer un bloc Focus", detail: safeText(tasks[0].title), actionId: "v8.space.focus", label: "Activer Focus", userContent: true });
   } else {
     suggestion = freezeSuggestion({ icon: "focus", title: "Preserver un bloc calme", detail: "Protegez un moment sans interruption.", actionId: "v8.space.focus", label: "Activer Focus", userContent: false });
   }
 
   const items = Object.freeze([
-    providerSignal({ id: "weather", label: "Meteo", icon: "cloud-sun", actionId: "v8.connections.open", activity: weather, connected: hasConnection(connections, ["weather"]) }),
+    providerSignal({ id: "weather", label: "Météo", icon: "cloud-sun", actionId: "v8.connections.open", activity: weather, connected: hasConnection(connections, ["weather"]) }),
     eventSignal,
     taskSignal,
     providerSignal({ id: "music", label: "Musique", icon: "audio-lines", actionId: "v8.connections.open", activity: music, connected: hasConnection(connections, MUSIC_SOURCES), emptyValue: "Aucune ecoute" }),

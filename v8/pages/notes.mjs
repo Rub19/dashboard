@@ -8,9 +8,9 @@ import { createRichTextEditor, toEditableHtml } from "../ui/rich-text.mjs";
 import { localeTag } from "../i18n/catalog.mjs";
 
 function formatUpdated(value) {
-  if (!value) return "Note recente";
+  if (!value) return "Note récente";
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Note recente";
+  if (Number.isNaN(date.getTime())) return "Note récente";
   return new Intl.DateTimeFormat(localeTag(), { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }).format(date);
 }
 

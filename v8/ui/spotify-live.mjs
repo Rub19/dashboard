@@ -33,7 +33,7 @@ function playbackControl(playback) {
     }, [icon(playback.playing ? "radio" : "pause")]);
   }
   return element("div", { className: "v8-spotify-controls" }, [
-    actionButton({ actionId: "v8.spotify.previous", className: "v8-icon-button v8-spotify-control v8-spotify-control--secondary", ariaLabel: "Morceau precedent" }, [icon("skip-back")]),
+    actionButton({ actionId: "v8.spotify.previous", className: "v8-icon-button v8-spotify-control v8-spotify-control--secondary", ariaLabel: "Morceau précédent" }, [icon("skip-back")]),
     actionButton({ actionId: "v8.spotify.toggle", className: "v8-icon-button v8-spotify-control", ariaLabel: label }, [icon(playback.playing ? "pause" : "play")]),
     actionButton({ actionId: "v8.spotify.next", className: "v8-icon-button v8-spotify-control v8-spotify-control--secondary", ariaLabel: "Morceau suivant" }, [icon("skip-forward")])
   ]);

@@ -25,12 +25,12 @@ export function googleCalendarLiveCard(presence = {}, options = {}) {
   const meta = [formatEventTime(event), event.location].filter(Boolean).join(" - ");
   return element(options.tagName || "article", {
     className: `v8-google-calendar-live v8-google-calendar-live--${variant} v8-surface`,
-    attributes: { "aria-label": "Prochain evenement Google Calendar" },
+    attributes: { "aria-label": "Prochain événement Google Calendar" },
     dataset: { liveWidget: "media", liveKind: "widget" }
   }, [
     element("span", { className: "v8-google-calendar-icon" }, [icon("calendar-days"), livePulseDot()]),
     element("div", { className: "v8-google-calendar-live__body" }, [
-      element("div", { className: "v8-google-calendar-live__meta" }, [brandIcon("google-calendar", "calendar-clock", "v8-live-brand-mark"), element("small", { text: "Prochain evenement" })]),
+      element("div", { className: "v8-google-calendar-live__meta" }, [brandIcon("google-calendar", "calendar-clock", "v8-live-brand-mark"), element("small", { text: "Prochain événement" })]),
       element("strong", { text: event.title, attributes: { translate: "no" } }),
       element("p", { text: meta, attributes: { translate: "no" } }),
       liveFreshnessNode(presence.updatedAt)

@@ -1,4 +1,4 @@
-import { integrationById } from "../data/integrations.mjs";
+import { integrationById } from "../data/intégrations.mjs";
 import { actionButton, debounce, element, icon } from "../ui/dom.mjs";
 import { collectionDensityControl, updateCollectionDensityControl } from "../ui/dense-content.mjs";
 import { emptyState, statusState } from "../ui/empty-state.mjs";
@@ -6,7 +6,7 @@ import { refreshIcons } from "../ui/icons.mjs";
 import { spotifyLiveCard } from "../ui/spotify-live.mjs";
 import { discordLiveCard } from "../ui/discord-live.mjs";
 import { weatherLiveCard } from "../ui/weather-live.mjs";
-import { createWeatherDetail } from "../ui/weather-detail.mjs";
+import { createWeatherDetail } from "../ui/weather-détail.mjs";
 import { minecraftLiveCard } from "../ui/minecraft-live.mjs";
 import { steamLiveCard } from "../ui/steam-live.mjs";
 import { githubLiveCard } from "../ui/github-live.mjs";
@@ -45,10 +45,10 @@ function completed(message, data = null) {
 }
 
 const LIVE_CARD_META = Object.freeze({
-  system: Object.freeze({ label: "Systeme ETHONE", icon: "orbit" }),
+  system: Object.freeze({ label: "Système ETHONE", icon: "orbit" }),
   spotify: Object.freeze({ label: "Spotify", icon: "music-2" }),
   discord: Object.freeze({ label: "Discord", icon: "messages-square" }),
-  weather: Object.freeze({ label: "Meteo", icon: "cloud-sun" }),
+  weather: Object.freeze({ label: "Météo", icon: "cloud-sun" }),
   minecraft: Object.freeze({ label: "Minecraft", icon: "box" }),
   steam: Object.freeze({ label: "Steam", icon: "gamepad-2" }),
   github: Object.freeze({ label: "GitHub", icon: "github" }),
@@ -180,8 +180,8 @@ function liveCard(integration, connection, latest) {
     ]),
     element("div", { className: "v8-now-card__copy" }, [
       element("small", { text: integration.name, attributes: { translate: "no" } }),
-      element("strong", { text: latest?.title || "Connecte et en attente" }),
-      element("p", { text: latest?.description || "Le prochain evenement apparaitra sans recharger la page." })
+      element("strong", { text: latest?.title || "Connecté et en attente" }),
+      element("p", { text: latest?.description || "Le prochain événement apparaitra sans recharger la page." })
     ]),
     element("footer", {}, [element("span", { text: connection.lastSyncAt ? relativeLabel(connection.lastSyncAt) : "Synchronisation prete" }), icon("arrow-up-right")])
   ]);
@@ -261,18 +261,18 @@ export function mountActivity(stage, options = {}) {
   let redditPresence = redditLive?.state?.() || {};
   const controller = new AbortController();
 
-  const filterBar = element("div", { className: "v8-activity-filters", attributes: { role: "toolbar", "aria-label": "Filtrer l'activite" } });
+  const filterBar = element("div", { className: "v8-activity-filters", attributes: { role: "toolbar", "aria-label": "Filtrer l'activité" } });
   const liveGrid = element("div", { className: "v8-now-grid" });
   const weatherDetail = createWeatherDetail();
   liveGrid.addEventListener("click", (event) => {
-    const trigger = event.target.closest("[data-weather-detail-trigger]");
+    const trigger = event.target.closest("[data-weather-détail-trigger]");
     if (!trigger) return;
     if (weatherDetail.isOpen()) { weatherDetail.close({ restoreFocus: true }); return; }
     weatherDetail.open(trigger, weatherLive?.state?.() || {});
   }, { signal: controller.signal });
   const customizeHost = element("div", { className: "v8-now-customize", attributes: { hidden: true } });
   const customizeToggle = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button", "aria-expanded": "false" } }, [icon("sliders-horizontal"), element("span", { text: "Personnaliser" })]);
-  const timeline = element("div", { className: "v8-live-timeline", attributes: { role: "feed", "aria-label": "Flux d'activite" } });
+  const timeline = element("div", { className: "v8-live-timeline", attributes: { role: "feed", "aria-label": "Flux d'activité" } });
   const countLabel = element("span", { className: "v8-section-count" });
   const search = element("input", { className: "v8-input", attributes: { type: "search", placeholder: "Rechercher dans l'activité", "aria-label": "Rechercher dans l'activité", autocomplete: "off" } });
   const sortSelect = createSelect({ className: "v8-input v8-activity-sort", attributes: { "aria-label": "Trier l'activité" } }, [
@@ -294,7 +294,7 @@ export function mountActivity(stage, options = {}) {
 
   const page = element("section", { className: "v8-page v8-activity-page-v2", dataset: { page: "activity" } }, [
     element("header", { className: "v8-page-heading v8-activity-heading" }, [
-      element("div", { className: "v8-page-heading__copy" }, [element("span", { className: "v8-eyebrow", text: "Continuite numerique" }), element("h1", { text: "Activity Hub" }), element("p", { text: "Tout ce qui compte dans votre ecosysteme, regroupe sans bruit." })]),
+      element("div", { className: "v8-page-heading__copy" }, [element("span", { className: "v8-eyebrow", text: "Continuite numérique" }), element("h1", { text: "Activity Hub" }), element("p", { text: "Tout ce qui compte dans votre ecosysteme, regroupé sans bruit." })]),
       element("div", { className: "v8-page-heading__actions" }, [
         element("span", { className: "v8-live-state" }, [element("i", { attributes: { "aria-hidden": "true" } }), element("span", { text: "Flux actif" })]),
         actionButton({ actionId: "v8.activity.refresh", variant: "secondary" }, [icon("refresh-cw"), element("span", { text: "Actualiser" })]),
@@ -321,7 +321,7 @@ export function mountActivity(stage, options = {}) {
           element("span", { className: "v8-eyebrow", text: "Vue d'ensemble" }),
           element("h2", { text: state.flow || "Essentiel" }),
           element("div", { className: "v8-activity-kpis" }, [
-            element("span", {}, [connectionMetric, element("small", { text: "Connectees" })]),
+            element("span", {}, [connectionMetric, element("small", { text: "Connectées" })]),
             element("span", {}, [signalMetric, element("small", { text: "Signaux" })])
           ]),
           actionButton({ actionId: "v8.connections.open", variant: "secondary" }, [icon("settings-2"), element("span", { text: "Gerer les connexions" })])
@@ -331,7 +331,7 @@ export function mountActivity(stage, options = {}) {
           brainCopy,
           actionButton({ actionId: "v8.brain.open" }, [element("span", { text: "Ouvrir Brain" }), icon("arrow-up-right")])
         ]),
-        element("section", { className: "v8-activity-privacy" }, [icon("shield-check"), element("div", {}, [element("strong", { text: "Donnees maitrisees" }), element("p", { text: "Aucun secret d'integration n'est conserve dans le navigateur." })])])
+        element("section", { className: "v8-activity-privacy" }, [icon("shield-check"), element("div", {}, [element("strong", { text: "Données maitrisees" }), element("p", { text: "Aucun secret d'intégration n'est conserve dans le navigateur." })])])
       ])
     ])
   ]);
@@ -388,9 +388,9 @@ export function mountActivity(stage, options = {}) {
     });
     systemCard.classList.toggle("v8-now-card--solo", liveGrid.children.length === 1);
     renderCustomizePanel();
-    if (!connected.length) liveGrid.append(statusState("integration", {
+    if (!connected.length) liveGrid.append(statusState("intégration", {
       title: "Aucune source distante active",
-      description: "Configurez un service pour enrichir le Live Feed sans donnees fictives.",
+      description: "Configurez un service pour enrichir le Live Feed sans données fictives.",
       actions: [actionButton({ actionId: "v8.connections.open", variant: "secondary" }, [element("span", { text: "Configurer" }), icon("arrow-up-right")])],
       compact: true,
       className: "v8-empty-state--wide"
@@ -456,7 +456,7 @@ export function mountActivity(stage, options = {}) {
   const releaseRefresh = actions.scope("v8.activity.refresh", () => {
     render();
     notify({ id: "activity-refreshed", title: "Activity Hub", message: "Le flux local est a jour.", type: "success" });
-    return completed("Flux actualise");
+    return completed("Flux actualisé");
   });
   const releaseJournal = journal.subscribe(render);
   const releaseSpotify = spotifyLive?.subscribe?.((playback) => {

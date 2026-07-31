@@ -1,5 +1,5 @@
 const PROVIDERS = Object.freeze([
-  Object.freeze({ id: "context", label: "ETHONE Context", kind: "local", privacy: "Aucune donnee envoyee", models: Object.freeze(["context-v1"]) }),
+  Object.freeze({ id: "context", label: "ETHONE Context", kind: "local", privacy: "Aucune donnée envoyee", models: Object.freeze(["context-v1"]) }),
   Object.freeze({ id: "openai", label: "OpenAI", kind: "cloud", privacy: "Via backend ETHONE", models: Object.freeze(["configure-via-worker"]) }),
   Object.freeze({ id: "anthropic", label: "Anthropic", kind: "cloud", privacy: "Via backend ETHONE", models: Object.freeze(["configure-via-worker"]) }),
   Object.freeze({ id: "groq", label: "Groq", kind: "cloud", privacy: "Via backend ETHONE", models: Object.freeze(["llama-3.1-8b-instant", "llama-3.3-70b-versatile"]) }),
@@ -32,7 +32,7 @@ export function createBrainProviderManager(options = {}) {
   async function complete(input = {}) {
     const preferences = getPreferences()?.provider || {};
     const provider = PROVIDERS.find((entry) => entry.id === preferences.active) || PROVIDERS[0];
-    if (provider.id === "context") return response(false, "local-context", "Le Context Engine traite cette demande localement.");
+    if (provider.id === "context") return response(false, "local-context", "Le Context Engine traité cette demande localement.");
     if (!transport) return response(false, "unavailable", `${provider.label} requiert une route backend securisee. Aucune cle n'est acceptee dans le navigateur.`);
     const controller = new AbortController();
     controllers.add(controller);
@@ -44,7 +44,7 @@ export function createBrainProviderManager(options = {}) {
       const data = await transport(Object.freeze({ provider: provider.id, model: String(preferences.model || provider.models[0]), messages: input.messages, context: input.context, signal: controller.signal }));
       lastLatencyMs = Date.now() - startedAt;
       lastError = "";
-      return response(true, "completed", "Reponse du provider recue.", data);
+      return response(true, "completed", "Réponse du provider recue.", data);
     } catch (error) {
       failures += 1;
       lastLatencyMs = Date.now() - startedAt;

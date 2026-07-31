@@ -30,8 +30,8 @@ export function weatherLiveCard(presence = {}, options = {}) {
   return element(tagName, {
     className: `v8-weather-live v8-weather-live--${variant} v8-surface`,
     attributes: detailable
-      ? { type: "button", "aria-label": "Voir le detail meteo", "aria-haspopup": "dialog" }
-      : { "aria-label": "Meteo" },
+      ? { type: "button", "aria-label": "Voir le détail météo", "aria-haspopup": "dialog" }
+      : { "aria-label": "Météo" },
     dataset: detailable ? { liveWidget: "media", liveKind: "widget", weatherDetailTrigger: "" } : { liveWidget: "media", liveKind: "widget" }
   }, [
     element("span", { className: "v8-weather-icon" }, [icon(weatherIcon(presence.weatherCode, presence.isDay)), livePulseDot()]),

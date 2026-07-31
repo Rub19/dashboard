@@ -4,7 +4,7 @@ import { refreshIcons, scheduleIconRefresh } from "../ui/icons.mjs";
 import { spotifyLiveCard } from "../ui/spotify-live.mjs";
 import { discordLiveCard } from "../ui/discord-live.mjs";
 import { weatherLiveCard } from "../ui/weather-live.mjs";
-import { createWeatherDetail } from "../ui/weather-detail.mjs";
+import { createWeatherDetail } from "../ui/weather-détail.mjs";
 import { minecraftLiveCard } from "../ui/minecraft-live.mjs";
 import { steamLiveCard } from "../ui/steam-live.mjs";
 import { githubLiveCard } from "../ui/github-live.mjs";
@@ -209,7 +209,7 @@ export function mountHome(stage, model, options = {}) {
 
   const spotifyHost = element("section", { className: "v8-home-spotify-host", attributes: { "aria-label": "Spotify Live", hidden: true } });
   const discordHost = element("section", { className: "v8-home-discord-host", attributes: { "aria-label": "Presence Discord", hidden: true } });
-  const weatherHost = element("section", { className: "v8-home-weather-host", attributes: { "aria-label": "Meteo", hidden: true } });
+  const weatherHost = element("section", { className: "v8-home-weather-host", attributes: { "aria-label": "Météo", hidden: true } });
   const minecraftHost = element("section", { className: "v8-home-minecraft-host", attributes: { "aria-label": "Profil Minecraft", hidden: true } });
   const steamHost = element("section", { className: "v8-home-steam-host", attributes: { "aria-label": "Presence Steam", hidden: true } });
   const githubHost = element("section", { className: "v8-home-github-host", attributes: { "aria-label": "Profil GitHub", hidden: true } });
@@ -245,7 +245,7 @@ export function mountHome(stage, model, options = {}) {
 
   const weatherDetail = createWeatherDetail();
   weatherHost.addEventListener("click", (event) => {
-    const trigger = event.target.closest("[data-weather-detail-trigger]");
+    const trigger = event.target.closest("[data-weather-détail-trigger]");
     if (!trigger) return;
     if (weatherDetail.isOpen()) { weatherDetail.close({ restoreFocus: true }); return; }
     weatherDetail.open(trigger, weatherLive?.state?.() || {});
@@ -388,7 +388,7 @@ export function mountHome(stage, model, options = {}) {
 
   function renderSystemStatus(status = options.sync?.status?.() || options) {
     const labels = { loading: "Connexion", saving: "Synchronisation", saved: "Synchronise", offline: "En attente", retrying: "Nouvelle tentative", error: "Erreur", expired: "Session expiree" };
-    cloudDetail.textContent = status.syncStatus === "saved" ? "Source principale Supabase" : "Etat Supabase en temps reel";
+    cloudDetail.textContent = status.syncStatus === "saved" ? "Source principale Supabase" : "État Supabase en temps reel";
     cloudValue.textContent = labels[status.syncStatus] || "Connexion";
     const offline = status.networkStatus === "offline" || globalThis.navigator?.onLine === false;
     networkDetail.textContent = offline ? "Changements mis en attente" : "Disponible";

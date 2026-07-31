@@ -47,7 +47,7 @@ export function createEntryCoordinator(options = {}) {
   async function showProfiles(context = {}) {
     const request = ++profileRequest;
     let prepareResult = null;
-    try { prepareResult = await options.prepareProfiles?.(context); } catch (error) { prepareResult = { ok: false, status: "failed", message: error?.message || "Preparation impossible." }; }
+    try { prepareResult = await options.prepareProfiles?.(context); } catch (error) { prepareResult = { ok: false, status: "failed", message: error?.message || "Préparation impossible." }; }
     if (destroyed || request !== profileRequest) return currentState;
     const availableProfiles = profiles.listProfiles();
     transition("profiles", { ...context, profiles: availableProfiles, prepareResult });

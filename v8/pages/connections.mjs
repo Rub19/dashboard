@@ -793,7 +793,7 @@ export function mountConnections(stage, options = {}) {
     refreshIcons();
     return completed("Methode selectionnee", { integration: id, method: methodId });
   }));
-  releases.push(actions.scope("v8.connections.setup.complete", (context) => {
+  releases.push(actions.scope("v8.connections.setup.complete", async (context) => {
     const id = context.element?.dataset.integration || selectedId;
     const integration = integrationById(id);
     const connection = connectionMap().get(id);
@@ -813,6 +813,7 @@ export function mountConnections(stage, options = {}) {
       return unavailable(reference.message);
     }
     const backendRequired = method?.availability === "backend";
+    const autoVerify = method?.availability === "public";
     const result = repository.connections.configure(id, {
       methodId: method?.id,
       reference: reference.value,
@@ -822,8 +823,24 @@ export function mountConnections(stage, options = {}) {
     refreshLiveBridges(id);
     if (result.ok) {
       selectedMethods.set(id, method?.id || "");
-      journal?.record?.({ source: id, category: integration?.category || "system", icon: integration?.icon || "plug", title: `${integration?.name || "Integration"} preparee`, description: backendRequired ? "Le backend securise reste requis avant toute synchronisation." : `Methode ${method?.label || "locale"} preparee.`, timestamp: new Date().toISOString(), tone: "success" });
-      notify({ id: `connection-ready-${id}`, title: integration?.name || "Connection", message: backendRequired ? "Preparation validee. Backend securise requis pour connecter le compte." : "Preparation locale validee.", type: "success" });
+      let connected = false;
+      if (autoVerify) {
+        const report = await runDiagnostic(id);
+        if (report?.workerAvailable) {
+          const nowIso = new Date().toISOString();
+          repository.connections.updateStatus(id, "connected", {
+            responseMs: report.workerLatencyMs,
+            apiVersion: connectionMethod(integration, connectionMap().get(id)?.methodId)?.apiVersion,
+            lastSyncAt: nowIso,
+            lastTestedAt: nowIso,
+            detail: "Connexion confirmee automatiquement apres la preparation."
+          });
+          refreshLiveBridges(id);
+          connected = true;
+        }
+      }
+      journal?.record?.({ source: id, category: integration?.category || "system", icon: integration?.icon || "plug", title: `${integration?.name || "Integration"} ${connected ? "connectee" : "preparee"}`, description: connected ? "Connexion verifiee et activee automatiquement." : backendRequired ? "Le backend securise reste requis avant toute synchronisation." : `Methode ${method?.label || "locale"} preparee.`, timestamp: new Date().toISOString(), tone: "success" });
+      notify({ id: `connection-ready-${id}`, title: integration?.name || "Connection", message: connected ? "Connexion verifiee et activee." : backendRequired ? "Preparation validee. Backend securise requis pour connecter le compte." : autoVerify ? "Preparation enregistree, mais la verification a echoue. Relancez le diagnostic." : "Preparation locale validee.", type: connected ? "success" : autoVerify ? "warning" : "success" });
       inspectorTab = "overview";
       renderAll();
     }

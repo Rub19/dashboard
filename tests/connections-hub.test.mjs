@@ -101,3 +101,13 @@ test("Connections Hub remains lazy and does not add background loops", () => {
   assert.match(source, /v8\.connections\.method\.select/);
   assert.match(source, /Frontend sans donnee sensible/);
 });
+
+test("public-availability connections (Weather, Minecraft, ...) auto-verify and connect on save instead of requiring a separate manual diagnostic", () => {
+  const source = fs.readFileSync(new URL("../v8/pages/connections.mjs", import.meta.url), "utf8");
+  const setupComplete = source.slice(source.indexOf('actions.scope("v8.connections.setup.complete"'), source.indexOf('actions.scope("v8.connections.spotify.connect"'));
+  assert.match(setupComplete, /const autoVerify = method\?\.availability === "public";/);
+  assert.match(setupComplete, /if \(autoVerify\) \{/);
+  assert.match(setupComplete, /const report = await runDiagnostic\(id\);/);
+  assert.match(setupComplete, /if \(report\?\.workerAvailable\) \{/);
+  assert.match(setupComplete, /repository\.connections\.updateStatus\(id, "connected"/);
+});

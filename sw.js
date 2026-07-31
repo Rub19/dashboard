@@ -142,6 +142,7 @@ const ETHONE_V8_ASSETS = [
   "./v8/ui/google-drive-live.mjs",
   "./v8/ui/youtube-live.mjs",
   "./v8/ui/reddit-live.mjs",
+  "./v8/ui/rich-text.mjs",
   "./v8/ui/live-freshness.mjs",
   "./v8/ui/dom.mjs",
   "./v8/ui/empty-state.mjs",

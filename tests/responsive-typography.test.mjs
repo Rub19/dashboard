@@ -41,7 +41,7 @@ test("reading measures keep headings and prose comfortable", () => {
   }
   assert.match(shell, /\.v8-page-heading p\s*\{[^}]*max-inline-size:\s*var\(--v8-measure-copy\)/s);
   assert.match(entry, /\.v8-entry__brand-line\s*\{[^}]*max-inline-size:\s*var\(--v8-measure-compact\)/s);
-  assert.match(workspaces, /\.v8-note-content\s*\{[^}]*max-inline-size:\s*var\(--v8-measure-longform\)/s);
+  assert.match(workspaces, /\.v8-rich-text\s*\{[^}]*max-inline-size:\s*var\(--v8-measure-longform\)/s);
   assert.match(components, /\.v8-empty-state__copy\s*\{[^}]*--v8-measure-compact/s);
   assert.match(base, /h1,[\s\S]*hyphens:\s*none[\s\S]*word-break:\s*normal/);
 });

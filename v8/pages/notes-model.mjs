@@ -5,6 +5,10 @@ function normalize(value) {
     .toLowerCase();
 }
 
+export function stripMarkup(value) {
+  return String(value || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+
 export function sortNotes(notes = [], order = "recent") {
   return notes.slice().sort((left, right) => {
     if (left.pinned !== right.pinned) return left.pinned ? -1 : 1;
@@ -20,12 +24,12 @@ export function filterNotes(notes = [], query = "", order = "recent") {
   if (!search) return ordered;
   return ordered.filter((note) => normalize([
     note.title,
-    note.content,
+    stripMarkup(note.content),
     ...(Array.isArray(note.tags) ? note.tags : [])
   ].join(" ")).includes(search));
 }
 
 export function wordCount(value) {
-  const trimmed = String(value || "").trim();
+  const trimmed = stripMarkup(value);
   return trimmed ? trimmed.split(/\s+/).length : 0;
 }

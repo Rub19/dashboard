@@ -2,8 +2,9 @@ import { actionButton, debounce, element, icon } from "../ui/dom.mjs";
 import { collectionDensityControl, updateCollectionDensityControl } from "../ui/dense-content.mjs";
 import { emptyState } from "../ui/empty-state.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
-import { filterNotes, sortNotes, wordCount } from "./notes-model.mjs";
+import { filterNotes, sortNotes, stripMarkup, wordCount } from "./notes-model.mjs";
 import { createSelect } from "../ui/select.mjs";
+import { createRichTextEditor, toEditableHtml } from "../ui/rich-text.mjs";
 import { localeTag } from "../i18n/catalog.mjs";
 
 function formatUpdated(value) {
@@ -31,6 +32,7 @@ export function mountNotes(stage, options = {}) {
   let dirty = false;
   let confirmDelete = false;
   let mounted = true;
+  let activeRichEditor = null;
   const scopedActions = [];
 
   const countBadge = element("span", { className: "v8-badge", text: `${notes.length} note${notes.length > 1 ? "s" : ""}` });
@@ -180,7 +182,7 @@ export function mountNotes(stage, options = {}) {
     }
     filtered.forEach((note) => {
       const active = String(note.id) === String(selectedId);
-      const snippet = String(note.content || "").replace(/\s+/g, " ").trim() || "Aucun contenu";
+      const snippet = stripMarkup(note.content) || "Aucun contenu";
       list.append(element("button", {
         className: `v8-note-row${active ? " is-active" : ""}`,
         attributes: { type: "button", role: "listitem", "aria-current": active ? "true" : null },
@@ -198,6 +200,8 @@ export function mountNotes(stage, options = {}) {
   }
 
   function renderEditor() {
+    activeRichEditor?.destroy();
+    activeRichEditor = null;
     editor.replaceChildren();
     confirmDelete = false;
     const note = selectedNote();
@@ -225,12 +229,20 @@ export function mountNotes(stage, options = {}) {
       attributes: { type: "text", value: note.title, placeholder: "Titre de la note", "aria-label": "Titre de la note", maxlength: "160" }
     });
     titleInput.value = note.title;
-    const contentInput = element("textarea", {
-      className: "v8-note-content",
-      attributes: { placeholder: "Écrivez quelque chose…", "aria-label": "Contenu de la note", spellcheck: "true" }
-    });
-    contentInput.value = note.content;
     const words = element("span", { text: `${wordCount(note.content)} mot${wordCount(note.content) > 1 ? "s" : ""}` });
+    const richEditor = createRichTextEditor({
+      ariaLabel: "Contenu de la note",
+      placeholder: "Écrivez quelque chose…",
+      onInput: () => {
+        const html = richEditor.getHTML();
+        updateLocalNote({ content: html });
+        const count = wordCount(html);
+        words.textContent = `${count} mot${count > 1 ? "s" : ""}`;
+        scheduleSave();
+      }
+    });
+    richEditor.setHTML(toEditableHtml(note.content));
+    activeRichEditor = richEditor;
     const pinButton = actionButton({
       actionId: "v8.notes.pin.toggle",
       className: `v8-icon-button v8-note-pin${note.pinned ? " is-active" : ""}`,
@@ -257,7 +269,7 @@ export function mountNotes(stage, options = {}) {
           actionButton({ actionId: "v8.notes.delete", className: "v8-icon-button", ariaLabel: "Supprimer la note" }, [icon("trash-2")])
         ])
       ]),
-      element("div", { className: "v8-note-document" }, [titleInput, tagsList, contentInput]),
+      element("div", { className: "v8-note-document" }, [titleInput, tagsList, richEditor.element]),
       confirm,
       element("footer", { className: "v8-note-footer" }, [
         words,
@@ -308,12 +320,6 @@ export function mountNotes(stage, options = {}) {
     titleInput.addEventListener("input", () => {
       updateLocalNote({ title: titleInput.value || "Note sans titre" });
       updateVisibleListTitle();
-      scheduleSave();
-    });
-    contentInput.addEventListener("input", () => {
-      updateLocalNote({ content: contentInput.value });
-      const count = wordCount(contentInput.value);
-      words.textContent = `${count} mot${count > 1 ? "s" : ""}`;
       scheduleSave();
     });
     tagsList.addEventListener("click", (event) => {
@@ -462,6 +468,7 @@ export function mountNotes(stage, options = {}) {
     mounted = false;
     flushSave(false);
     clearSaveTimer();
+    activeRichEditor?.destroy();
     releaseSync();
     releaseDensity();
     scopedActions.reverse().forEach((restore) => restore());

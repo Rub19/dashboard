@@ -540,7 +540,7 @@ test("interaction feedback preserves semantic states and versions every styleshe
   assert.doesNotMatch(components, /:hover[^\{]*\{[^\}]*box-shadow:/);
   assert.match(components, /html\[data-v8-interactions\][\s\S]*:focus-visible[\s\S]*box-shadow:\s*var\(--v8-shadow-focus\)/);
 
-  const allowedHover = /html\[data-v8-interactions\]|scrollbar-thumb|v8-input:hover|v8-entry__locale:hover|autofill:hover|data-tooltip|v8-profile-card:hover \.v8-profile-card__menu|v8-command-row:hover \.v8-command-pin|v8-task-row:hover \.v8-task-delete|v8-dock/;
+  const allowedHover = /html\[data-v8-interactions\]|scrollbar-thumb|v8-input:hover|v8-entry__locale:hover|autofill:hover|data-tooltip|v8-profile-card:hover \.v8-profile-card__menu|v8-command-row:hover \.v8-command-pin|v8-dock/;
   for (const source of [components, ...localStyles]) {
     const selectors = [...source.matchAll(/(?:^|\})\s*([^\{]*:hover[^\{]*)\{/gm)]
       .map((match) => match[1].trim())

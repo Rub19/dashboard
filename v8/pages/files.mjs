@@ -81,8 +81,7 @@ export function mountFiles(stage, options = {}) {
           iconName: "upload-cloud",
           eyebrow: "Import direct",
           title: "Bientôt disponible",
-          description: "Ajoutez un lien dès maintenant; vos ressources restent préservées.",
-          actions: [actionButton({ actionId: "v8.files.new-link", variant: "secondary" }, [icon("link-2"), element("span", { text: "Ajouter un lien" })])],
+          description: "En attendant, utilisez le bouton \"Ajouter un lien\" ci-dessus pour préserver vos ressources.",
           compact: true,
           className: "v8-files-import-soon"
         })

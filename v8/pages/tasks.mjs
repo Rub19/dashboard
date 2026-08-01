@@ -234,11 +234,6 @@ export function mountTasks(stage, options = {}) {
       attributes: { type: "button", "aria-label": task.done ? `Rouvrir ${task.title}` : `Terminer ${task.title}`, "aria-pressed": task.done ? "true" : "false" },
       dataset: { taskToggle: task.id }
     }, [icon(task.done ? "check" : "circle")]);
-    const remove = element("button", {
-      className: "v8-icon-button v8-task-delete",
-      attributes: { type: "button", "aria-label": `Supprimer ${task.title}` },
-      dataset: { taskDelete: task.id }
-    }, [icon("trash-2")]);
     const menu = element("button", {
       className: "v8-icon-button v8-task-menu",
       attributes: { type: "button", "aria-label": `Actions pour ${task.title}`, "aria-haspopup": "menu", "aria-expanded": "false" },
@@ -256,7 +251,7 @@ export function mountTasks(stage, options = {}) {
       select,
       toggle,
       element("div", { className: "v8-task-row__copy" }, [element("strong", { text: task.title, attributes: { translate: "no" } }), element("div", { className: "v8-task-meta" }, meta)]),
-      element("div", { className: "v8-row-actions" }, [menu, remove])
+      element("div", { className: "v8-row-actions" }, [menu])
     ]);
   }
 
@@ -430,11 +425,6 @@ export function mountTasks(stage, options = {}) {
     const toggle = event.target.closest("[data-task-toggle]");
     if (toggle && page.contains(toggle)) {
       toggleTask(toggle.dataset.taskToggle);
-      return;
-    }
-    const remove = event.target.closest("[data-task-delete]");
-    if (remove && page.contains(remove)) {
-      removeTask(remove.dataset.taskDelete);
       return;
     }
     const row = event.target.closest("[data-task-id]");

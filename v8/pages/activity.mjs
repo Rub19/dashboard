@@ -294,7 +294,7 @@ export function mountActivity(stage, options = {}) {
 
   const page = element("section", { className: "v8-page v8-activity-page-v2", dataset: { page: "activity" } }, [
     element("header", { className: "v8-page-heading v8-activity-heading" }, [
-      element("div", { className: "v8-page-heading__copy" }, [element("span", { className: "v8-eyebrow", text: "Continuite numérique" }), element("h1", { text: "Activity Hub" }), element("p", { text: "Tout ce qui compte dans votre ecosysteme, regroupé sans bruit." })]),
+      element("div", { className: "v8-page-heading__copy" }, [element("span", { className: "v8-eyebrow", text: "Continuité numérique" }), element("h1", { text: "Activity Hub" }), element("p", { text: "Tout ce qui compte dans votre écosystème, regroupé sans bruit." })]),
       element("div", { className: "v8-page-heading__actions" }, [
         element("span", { className: "v8-live-state" }, [element("i", { attributes: { "aria-hidden": "true" } }), element("span", { text: "Flux actif" })]),
         actionButton({ actionId: "v8.activity.refresh", variant: "secondary" }, [icon("refresh-cw"), element("span", { text: "Actualiser" })]),
@@ -308,7 +308,7 @@ export function mountActivity(stage, options = {}) {
     ]),
     element("div", { className: "v8-activity-workspace" }, [
       element("section", { className: "v8-activity-stream" }, [
-        element("header", { className: "v8-activity-stream__header" }, [element("div", {}, [element("span", { className: "v8-eyebrow", text: "Chronologie" }), element("h2", { text: "Votre journee" })]), countLabel]),
+        element("header", { className: "v8-activity-stream__header" }, [element("div", {}, [element("span", { className: "v8-eyebrow", text: "Chronologie" }), element("h2", { text: "Votre journée" })]), countLabel]),
         element("div", { className: "v8-activity-tools-bar" }, [
           element("div", { className: "v8-input-wrap v8-activity-search" }, [icon("search"), search]),
           element("div", { className: "v8-collection-tools" }, [sortSelect, densityControl])
@@ -324,14 +324,14 @@ export function mountActivity(stage, options = {}) {
             element("span", {}, [connectionMetric, element("small", { text: "Connectées" })]),
             element("span", {}, [signalMetric, element("small", { text: "Signaux" })])
           ]),
-          actionButton({ actionId: "v8.connections.open", variant: "secondary" }, [icon("settings-2"), element("span", { text: "Gerer les connexions" })])
+          actionButton({ actionId: "v8.connections.open", variant: "secondary" }, [icon("settings-2"), element("span", { text: "Gérer les connexions" })])
         ]),
         element("section", { className: "v8-activity-brain v8-surface" }, [
           element("div", { className: "v8-activity-brain__title" }, [element("span", {}, [icon("brain")]), element("div", {}, [element("small", { text: "ETHONE pense que..." }), element("strong", { text: "Votre contexte est lisible" })])]),
           brainCopy,
           actionButton({ actionId: "v8.brain.open" }, [element("span", { text: "Ouvrir Brain" }), icon("arrow-up-right")])
         ]),
-        element("section", { className: "v8-activity-privacy" }, [icon("shield-check"), element("div", {}, [element("strong", { text: "Données maitrisees" }), element("p", { text: "Aucun secret d'intégration n'est conserve dans le navigateur." })])])
+        element("section", { className: "v8-activity-privacy" }, [icon("shield-check"), element("div", {}, [element("strong", { text: "Données maîtrisées" }), element("p", { text: "Aucun secret d'intégration n'est conservé dans le navigateur." })])])
       ])
     ])
   ]);

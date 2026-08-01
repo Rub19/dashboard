@@ -55,7 +55,7 @@ const STATE_META = Object.freeze({
 const DIAGNOSTIC_META = Object.freeze({
   pass: { icon: "circle-check", label: "OK", tone: "success" },
   warn: { icon: "triangle-alert", label: "Attention", tone: "warning" },
-  fail: { icon: "circle-x", label: "Bloque", tone: "danger" },
+  fail: { icon: "circle-x", label: "Bloqué", tone: "danger" },
   idle: { icon: "circle-dashed", label: "Non teste", tone: "muted" }
 });
 
@@ -872,7 +872,7 @@ export function mountConnections(stage, options = {}) {
     });
     const started = await beginSpotifyAuthorize(clientId, globalThis);
     if (!started) {
-      notify({ id: `connection-oauth-${id}`, title: integration?.name || "Spotify", message: "Impossible de demarrer la connexion Spotify sur cet appareil.", type: "error" });
+      notify({ id: `connection-oauth-${id}`, title: integration?.name || "Spotify", message: "Impossible de démarrer la connexion Spotify sur cet appareil.", type: "error" });
       return unavailable("sessionStorage indisponible");
     }
     return completed("Redirection vers Spotify", { integration: id });
@@ -897,7 +897,7 @@ export function mountConnections(stage, options = {}) {
     });
     const started = await beginGithubAuthorize(clientId, globalThis);
     if (!started) {
-      notify({ id: `connection-oauth-${id}`, title: integration?.name || "GitHub", message: "Impossible de demarrer la connexion GitHub sur cet appareil.", type: "error" });
+      notify({ id: `connection-oauth-${id}`, title: integration?.name || "GitHub", message: "Impossible de démarrer la connexion GitHub sur cet appareil.", type: "error" });
       return unavailable("sessionStorage indisponible");
     }
     return completed("Redirection vers GitHub", { integration: id });
@@ -922,7 +922,7 @@ export function mountConnections(stage, options = {}) {
     });
     const started = await beginGoogleCalendarAuthorize(clientId, globalThis);
     if (!started) {
-      notify({ id: `connection-oauth-${id}`, title: integration?.name || "Google", message: "Impossible de demarrer la connexion Google sur cet appareil.", type: "error" });
+      notify({ id: `connection-oauth-${id}`, title: integration?.name || "Google", message: "Impossible de démarrer la connexion Google sur cet appareil.", type: "error" });
       return unavailable("sessionStorage indisponible");
     }
     return completed("Redirection vers Google", { integration: id });
@@ -947,7 +947,7 @@ export function mountConnections(stage, options = {}) {
     });
     const started = await beginNotionAuthorize(clientId, globalThis);
     if (!started) {
-      notify({ id: `connection-oauth-${id}`, title: integration?.name || "Notion", message: "Impossible de demarrer la connexion Notion sur cet appareil.", type: "error" });
+      notify({ id: `connection-oauth-${id}`, title: integration?.name || "Notion", message: "Impossible de démarrer la connexion Notion sur cet appareil.", type: "error" });
       return unavailable("sessionStorage indisponible");
     }
     return completed("Redirection vers Notion", { integration: id });
@@ -973,7 +973,7 @@ export function mountConnections(stage, options = {}) {
     });
     const started = await beginTodoistAuthorize(clientId, globalThis);
     if (!started) {
-      notify({ id: `connection-oauth-${id}`, title: integration?.name || "Todoist", message: "Impossible de demarrer la connexion Todoist sur cet appareil.", type: "error" });
+      notify({ id: `connection-oauth-${id}`, title: integration?.name || "Todoist", message: "Impossible de démarrer la connexion Todoist sur cet appareil.", type: "error" });
       return unavailable("sessionStorage indisponible");
     }
     return completed("Redirection vers Todoist", { integration: id });
@@ -999,7 +999,7 @@ export function mountConnections(stage, options = {}) {
     });
     const started = await beginGoogleDriveAuthorize(clientId, globalThis);
     if (!started) {
-      notify({ id: `connection-oauth-${id}`, title: integration?.name || "Google Drive", message: "Impossible de demarrer la connexion Google Drive sur cet appareil.", type: "error" });
+      notify({ id: `connection-oauth-${id}`, title: integration?.name || "Google Drive", message: "Impossible de démarrer la connexion Google Drive sur cet appareil.", type: "error" });
       return unavailable("sessionStorage indisponible");
     }
     return completed("Redirection vers Google Drive", { integration: id });
@@ -1025,7 +1025,7 @@ export function mountConnections(stage, options = {}) {
     });
     const started = await beginYoutubeAuthorize(clientId, globalThis);
     if (!started) {
-      notify({ id: `connection-oauth-${id}`, title: integration?.name || "YouTube", message: "Impossible de demarrer la connexion YouTube sur cet appareil.", type: "error" });
+      notify({ id: `connection-oauth-${id}`, title: integration?.name || "YouTube", message: "Impossible de démarrer la connexion YouTube sur cet appareil.", type: "error" });
       return unavailable("sessionStorage indisponible");
     }
     return completed("Redirection vers YouTube", { integration: id });
@@ -1051,7 +1051,7 @@ export function mountConnections(stage, options = {}) {
     });
     const started = await beginRedditAuthorize(clientId, globalThis);
     if (!started) {
-      notify({ id: `connection-oauth-${id}`, title: integration?.name || "Reddit", message: "Impossible de demarrer la connexion Reddit sur cet appareil.", type: "error" });
+      notify({ id: `connection-oauth-${id}`, title: integration?.name || "Reddit", message: "Impossible de démarrer la connexion Reddit sur cet appareil.", type: "error" });
       return unavailable("sessionStorage indisponible");
     }
     return completed("Redirection vers Reddit", { integration: id });

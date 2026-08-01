@@ -24,6 +24,11 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v185", "2026-08-01", "Traductions completées : plus de 200 textes réparés", [
+    { kind: "fix", text: "23 traductions incorrectes ou copiées-collées d'une langue à l'autre corrigées (ex : \"Dossier\" traduit par \"File\" en anglais, un message d'arrêt d'ETHONE traduit par \"arrested\" au lieu de \"stopped\")." },
+    { kind: "i18n", text: "Plus de 60 messages jamais traduits ont rejoint le dictionnaire : notifications de tâches et de notes, connexions aux services (GitHub, Google, Notion, Spotify, Todoist, Google Drive, YouTube, Reddit), sections des Préférences Brain, et libellés de l'accueil et du Dock. Ils s'affichaient en français brut quel que soit la langue choisie." },
+    { kind: "fix", text: "Une dizaine d'accents manquants supplémentaires corrigés (\"chargé\", \"déranger\", \"démarrer\", \"réorganiser\"...) découverts pendant cette passe." }
+  ]),
   entry("v184", "2026-08-01", "Recherches plus fluides", [
     { kind: "fix", text: "Command HUD (Ctrl+K) : chaque frappe relançait immédiatement un calcul de pertinence sur toutes les commandes, dans les 4 langues. Léger lissage ajouté pour éviter les à-coups en tapant vite." },
     { kind: "fix", text: "La recherche dans l'historique Brain reconstruisait aussi tout l'onglet Chat à chaque frappe, sans rapport avec la recherche. Séparé et lissé." },

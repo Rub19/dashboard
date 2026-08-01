@@ -104,7 +104,7 @@ export function mountBrain(stage, options = {}) {
       element("div", { className: "v8-brain-source-list" }, context.sources.map((entry) => element("div", { className: "v8-brain-source" }, [
         element("span", { className: "v8-brain-source__icon" }, [icon(entry.active ? "circle-check" : entry.allowed ? "circle-minus" : "circle-slash-2")]),
         element("div", {}, [element("strong", { text: entry.id }), element("p", { text: entry.detail })]),
-        element("span", { className: "v8-badge", text: entry.active ? String(entry.count) : entry.allowed ? "En veille" : "Bloque" })
+        element("span", { className: "v8-badge", text: entry.active ? String(entry.count) : entry.allowed ? "En veille" : "Bloqué" })
       ]))),
       element("footer", { className: "v8-brain-privacy-note" }, [icon("shield-check"), element("p", { text: "Aucun mot de passe, token, secret ou contenu complet n'est inclus." })])
     ])
@@ -194,7 +194,7 @@ export function mountBrain(stage, options = {}) {
     element("article", { className: "v8-brain-detail v8-surface" }, [sectionHeader("Provider Manager", "Modeles et confidentialité", "Les providers cloud passent par le backend sécurisé ETHONE."), providerTestStatus, element("div", { className: "v8-brain-provider-grid" }, providerCards)])
   ]);
 
-  const permissionRows = Object.entries(preferences.permissions).map(([key, allowed]) => element("div", { className: "v8-brain-permission" }, [element("span", {}, [icon(allowed ? "eye" : "eye-off")]), element("strong", { text: key }), statusPill(allowed ? "Autorise" : "Bloque", allowed ? "success" : "neutral")]))
+  const permissionRows = Object.entries(preferences.permissions).map(([key, allowed]) => element("div", { className: "v8-brain-permission" }, [element("span", {}, [icon(allowed ? "eye" : "eye-off")]), element("strong", { text: key }), statusPill(allowed ? "Autorisé" : "Bloqué", allowed ? "success" : "neutral")]))
   const privacyPanel = brainPanel("privacy", [
     element("article", { className: "v8-brain-detail v8-surface" }, [sectionHeader("Privacy Center", "Accès par catégorie", "Vous voyez exactement les données consultables. Les secrets ne sont jamais une catégorie autorisable.", actionButton({ actionId: "v8.settings.open", variant: "secondary" }, [icon("settings-2"), element("span", { text: "Modifier" })])), element("div", { className: "v8-brain-permissions" }, permissionRows), element("footer", { className: "v8-brain-never-sent" }, [element("strong", { text: "Jamais transmis" }), element("p", { text: "Mots de passe, tokens, clés API, cookies, sessions et identifiants de connexion privés." })])])
   ]);
@@ -208,7 +208,7 @@ export function mountBrain(stage, options = {}) {
     historyHost
   ])]);
 
-  const diagnosticsPanel = brainPanel("diagnostics", [element("article", { className: "v8-brain-detail v8-surface" }, [sectionHeader("Execution a la demande", "Diagnostics Brain", "Aucun observer, timer ou traitement de Dashboard ne tourne lorsque Brain est ferme."), element("pre", { className: "v8-brain-diagnostics", text: JSON.stringify(brain.diagnostics(), null, 2) })])]);
+  const diagnosticsPanel = brainPanel("diagnostics", [element("article", { className: "v8-brain-detail v8-surface" }, [sectionHeader("Exécution à la demande", "Diagnostics Brain", "Aucun observer, timer ou traitement de Dashboard ne tourne lorsque Brain est ferme."), element("pre", { className: "v8-brain-diagnostics", text: JSON.stringify(brain.diagnostics(), null, 2) })])]);
 
   [chatPanel, contextPanel, memoryPanel, actionsPanel, automationsPanel, providersPanel, privacyPanel, historyPanel, diagnosticsPanel].forEach((panel) => panels.append(panel));
   TABS.forEach((tab, index) => tabList.append(element("button", { className: `v8-brain-tab${index === 0 ? " is-active" : ""}`, attributes: { type: "button", role: "tab", "aria-selected": index === 0 ? "true" : "false", "aria-controls": `v8-brain-panel-${tab.id}`, tabindex: index === 0 ? "0" : "-1" }, dataset: { brainTab: tab.id } }, [icon(tab.icon), element("span", { text: tab.label })])));

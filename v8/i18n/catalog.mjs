@@ -15,6 +15,11 @@ const ENTRIES = {
   "Navigation système": { "fr": "Navigation syst\u00e8me", "en": "System navigation", "es": "Navegaci\u00f3n del sistema", "de": "Systemnavigation" },
   "Spaces": { "fr": "Spaces", "en": "Spaces", "es": "Espacios", "de": "Spaces" },
   "Flows": { "fr": "Flows", "en": "Flows", "es": "Flujos", "de": "Flows" },
+  "Contextes de travail": { "fr": "Contextes de travail", "en": "Work contexts", "es": "Contextos de trabajo", "de": "Arbeitskontexte" },
+  "Toutes les applications": { "fr": "Toutes les applications", "en": "All apps", "es": "Todas las aplicaciones", "de": "Alle Apps" },
+  "Toutes les apps": { "fr": "Toutes les apps", "en": "All apps", "es": "Todas las apps", "de": "Alle Apps" },
+  "Appui long sur une app du Dock pour la réorganiser.": { "fr": "Appui long sur une app du Dock pour la réorganiser.", "en": "Long-press an app in the Dock to reorder it.", "es": "Mantén pulsada una app del Dock para reordenarla.", "de": "Lange auf eine App im Dock drücken, um sie neu anzuordnen." },
+  "Mise en forme": { "fr": "Mise en forme", "en": "Formatting", "es": "Formato", "de": "Formatierung" },
   "Fenêtres": { "fr": "Fen\u00eatres", "en": "Windows", "es": "Ventanas", "de": "Fenster" },
   "Dashboards": { "fr": "Tableaux de bord", "en": "Dashboards", "es": "Paneles", "de": "Dashboards" },
   "Widgets ouverts": { "fr": "Widgets ouverts", "en": "Open widgets", "es": "Widgets abiertos", "de": "Ge\u00f6ffnete Widgets" },
@@ -219,6 +224,12 @@ const ENTRIES = {
     "en": "Added",
     "es": "Añadido",
     "de": "Hinzugefügt"
+  },
+  "Localement": {
+    "fr": "Localement",
+    "en": "Locally",
+    "es": "Localmente",
+    "de": "Lokal"
   },
   "Ajouter": {
     "fr": "Ajouter",
@@ -539,6 +550,24 @@ const ENTRIES = {
     "es": "Continuar",
     "de": "Weitermachen"
   },
+  "Tâche prioritaire": {
+    "fr": "Tâche prioritaire",
+    "en": "Priority task",
+    "es": "Tarea prioritaria",
+    "de": "Priorisierte Aufgabe"
+  },
+  "Nouvel espace": {
+    "fr": "Nouvel espace",
+    "en": "New Space",
+    "es": "Nuevo Space",
+    "de": "Neuer Space"
+  },
+  "À planifier": {
+    "fr": "À planifier",
+    "en": "To be scheduled",
+    "es": "Por programar",
+    "de": "Noch zu planen"
+  },
   "Continuité": {
     "fr": "Continuité",
     "en": "Continuity",
@@ -604,6 +633,36 @@ const ENTRIES = {
     "en": "Available",
     "es": "Disponible",
     "de": "Verfügbar"
+  },
+  "Backend requis": {
+    "fr": "Backend requis",
+    "en": "Backend required",
+    "es": "Backend necesario",
+    "de": "Backend erforderlich"
+  },
+  "Session courante": {
+    "fr": "Session courante",
+    "en": "Current session",
+    "es": "Sesión actual",
+    "de": "Aktuelle Sitzung"
+  },
+  "Historique privé": {
+    "fr": "Historique privé",
+    "en": "Private history",
+    "es": "Historial privado",
+    "de": "Privater Verlauf"
+  },
+  "Exécution à la demande": {
+    "fr": "Exécution à la demande",
+    "en": "On-demand execution",
+    "es": "Ejecución bajo demanda",
+    "de": "Ausführung bei Bedarf"
+  },
+  "Diagnostics Brain": {
+    "fr": "Diagnostics Brain",
+    "en": "Brain diagnostics",
+    "es": "Diagnósticos de Brain",
+    "de": "Brain-Diagnose"
   },
   "Coming Soon dans ETHONE": {
     "fr": "Coming Soon dans ETHONE",
@@ -1157,6 +1216,12 @@ const ENTRIES = {
     "es": "Nota sin título",
     "de": "Unbenannte Notiz"
   },
+  "Note mise en file de synchronisation Supabase.": {
+    "fr": "Note mise en file de synchronisation Supabase.",
+    "en": "Note queued for Supabase sync.",
+    "es": "Nota en cola de sincronización con Supabase.",
+    "de": "Notiz zur Supabase-Synchronisierung eingereiht."
+  },
   "Note supprimée.": {
     "fr": "Note supprimée.",
     "en": "Note deleted.",
@@ -1560,6 +1625,18 @@ const ENTRIES = {
     "en": "Task not found",
     "es": "Tarea no encontrada",
     "de": "Aufgabe nicht gefunden"
+  },
+  "Tâche modifiée.": {
+    "fr": "Tâche modifiée.",
+    "en": "Task updated.",
+    "es": "Tarea modificada.",
+    "de": "Aufgabe geändert."
+  },
+  "Tâche terminée.": {
+    "fr": "Tâche terminée.",
+    "en": "Task completed.",
+    "es": "Tarea completada.",
+    "de": "Aufgabe abgeschlossen."
   },
   "Tâche supprimée.": {
     "fr": "Tâche supprimée.",
@@ -2044,6 +2121,7 @@ const ENTRIES = {
   "Filtrer l'activité": { "fr": "Filtrer l'activité", "en": "Filter activity", "es": "Filtrar actividad", "de": "Aktivität filtern" },
   "Flux actif": { "fr": "Flux actif", "en": "Active feed", "es": "Flujo activo", "de": "Aktiver Feed" },
   "Flux d'activité": { "fr": "Flux d'activité", "en": "Activity feed", "es": "Flujo de actividad", "de": "Aktivitäts-Feed" },
+  "Le flux local est à jour.": { "fr": "Le flux local est à jour.", "en": "The local feed is up to date.", "es": "El flujo local está actualizado.", "de": "Der lokale Feed ist aktuell." },
   "Gerer les connexions": { "fr": "Gérer les connexions", "en": "Manage connections", "es": "Gestionar conexiones", "de": "Verbindungen verwalten" },
   "Google Calendar": { "fr": "Google Calendar", "en": "Google Calendar", "es": "Google Calendar", "de": "Google Calendar" },
   "Google Drive": { "fr": "Google Drive", "en": "Google Drive", "es": "Google Drive", "de": "Google Drive" },
@@ -2131,7 +2209,9 @@ const ENTRIES = {
   "Architecture zero secret dans l'interface": { "fr": "Architecture zéro secret dans l'interface", "en": "Zero-secret architecture in the interface", "es": "Arquitectura sin secretos en la interfaz", "de": "Geheimnisfreie Architektur in der Oberfläche" },
   "Assistant": { "fr": "Assistant", "en": "Wizard", "es": "Asistente", "de": "Assistent" },
   "Attention": { "fr": "Attention", "en": "Warning", "es": "Atención", "de": "Achtung" },
-  "Bloque": { "fr": "Bloqué", "en": "Blocked", "es": "Bloqueado", "de": "Blockiert" },
+  "Bloqué": { "fr": "Bloqué", "en": "Blocked", "es": "Bloqueado", "de": "Blockiert" },
+  "Autorisé": { "fr": "Autorisé", "en": "Allowed", "es": "Permitido", "de": "Erlaubt" },
+  "Ne pas déranger": { "fr": "Ne pas déranger", "en": "Do not disturb", "es": "No molestar", "de": "Nicht stören" },
   "Catalogue des intégrations": { "fr": "Catalogue des intégrations", "en": "Integration catalog", "es": "Catálogo de integraciones", "de": "Integrationskatalog" },
   "Catégories d'intégrations": { "fr": "Catégories d'intégrations", "en": "Integration categories", "es": "Categorías de integraciones", "de": "Integrationskategorien" },
   "Ce que la méthode apporte": { "fr": "Ce que la méthode apporte", "en": "What this method provides", "es": "Lo que aporta este método", "de": "Was diese Methode bietet" },
@@ -2167,6 +2247,10 @@ const ENTRIES = {
   "Problemes frequents": { "fr": "Problèmes fréquents", "en": "Common issues", "es": "Problemas frecuentes", "de": "Häufige Probleme" },
   "Que faire après une expiration ?": { "fr": "Que faire après une expiration ?", "en": "What to do after an expiration?", "es": "¿Qué hacer tras una expiración?", "de": "Was tun nach einem Ablauf?" },
   "Rechercher une intégration": { "fr": "Rechercher une intégration", "en": "Search an integration", "es": "Buscar una integración", "de": "Integration suchen" },
+  "Connectez-vous pour enregistrer votre propre clé.": { "fr": "Connectez-vous pour enregistrer votre propre clé.", "en": "Sign in to save your own key.", "es": "Inicia sesión para guardar tu propia clave.", "de": "Melden Sie sich an, um Ihren eigenen Schlüssel zu speichern." },
+  "Le service Supabase n'est pas disponible.": { "fr": "Le service Supabase n'est pas disponible.", "en": "The Supabase service is unavailable.", "es": "El servicio de Supabase no está disponible.", "de": "Der Supabase-Dienst ist nicht verfügbar." },
+  "Association supprimée. Vérifiez aussi les accès chez le fournisseur.": { "fr": "Association supprimée. Vérifiez aussi les accès chez le fournisseur.", "en": "Association removed. Also check access on the provider's side.", "es": "Asociación eliminada. Verifica también los accesos en el proveedor.", "de": "Verknüpfung entfernt. Prüfen Sie auch den Zugriff beim Anbieter." },
+  "Le module n'a pas pu être chargé.": { "fr": "Le module n'a pas pu être chargé.", "en": "The module could not be loaded.", "es": "No se pudo cargar el módulo.", "de": "Das Modul konnte nicht geladen werden." },
   "Reinitialiser les filtres": { "fr": "Réinitialiser les filtres", "en": "Reset filters", "es": "Restablecer filtros", "de": "Filter zurücksetzen" },
   "Relancez le consentement depuis votre backend puis vérifiez les permissions minimales.": { "fr": "Relancez le consentement depuis votre backend puis vérifiez les permissions minimales.", "en": "Restart consent from your backend, then verify the minimal permissions.", "es": "Reinicia el consentimiento desde tu backend y luego verifica los permisos mínimos.", "de": "Starten Sie die Zustimmung erneut über Ihr Backend und prüfen Sie dann die minimalen Berechtigungen." },
   "Réponse": { "fr": "Réponse", "en": "Response", "es": "Respuesta", "de": "Antwort" },
@@ -2288,6 +2372,11 @@ const ENTRIES = {
   "Notifications": { "fr": "Notifications", "en": "Notifications", "es": "Notificaciones", "de": "Benachrichtigungen" },
   "Se déconnecter": { "fr": "Se déconnecter", "en": "Sign out", "es": "Cerrar sesión", "de": "Abmelden" },
   "Vérifier la synchronisation": { "fr": "Vérifier la synchronisation", "en": "Check synchronization", "es": "Verificar sincronización", "de": "Synchronisierung prüfen" },
+  "Vérification de la synchronisation cloud.": { "fr": "Vérification de la synchronisation cloud.", "en": "Checking cloud synchronization.", "es": "Verificando la sincronización en la nube.", "de": "Cloud-Synchronisierung wird geprüft." },
+  "Une nouvelle version d'ETHONE est prête. Rechargez pour l'appliquer.": { "fr": "Une nouvelle version d'ETHONE est prête. Rechargez pour l'appliquer.", "en": "A new version of ETHONE is ready. Reload to apply it.", "es": "Hay una nueva versión de ETHONE lista. Recarga para aplicarla.", "de": "Eine neue ETHONE-Version ist bereit. Laden Sie neu, um sie anzuwenden." },
+  "Les données locales sont à jour.": { "fr": "Les données locales sont à jour.", "en": "Local data is up to date.", "es": "Los datos locales están actualizados.", "de": "Die lokalen Daten sind aktuell." },
+  "Les suggestions suivent maintenant la page et le Space actifs.": { "fr": "Les suggestions suivent maintenant la page et le Space actifs.", "en": "Suggestions now follow the active page and Space.", "es": "Las sugerencias ahora siguen la página y el Space activos.", "de": "Vorschläge folgen jetzt der aktiven Seite und dem aktiven Space." },
+  "Le nouveau Shell et Mission Control sont disponibles.": { "fr": "Le nouveau Shell et Mission Control sont disponibles.", "en": "The new Shell and Mission Control are available.", "es": "El nuevo Shell y Mission Control ya están disponibles.", "de": "Die neue Shell und Mission Control sind verfügbar." },
 
   "Activité Reddit": { "fr": "Activité Reddit", "en": "Reddit activity", "es": "Actividad en Reddit", "de": "Reddit-Aktivität" },
 
@@ -2380,6 +2469,8 @@ const ENTRIES = {
   "Automatisation créée": { "fr": "Automatisation créée", "en": "Automation created", "es": "Automatización creada", "de": "Automatisierung erstellt" },
   "Automatisation mise a jour": { "fr": "Automatisation mise à jour", "en": "Automation updated", "es": "Automatización actualizada", "de": "Automatisierung aktualisiert" },
   "Automatisation supprimée": { "fr": "Automatisation supprimée", "en": "Automation deleted", "es": "Automatización eliminada", "de": "Automatisierung gelöscht" },
+  "Automatisation attachée à ce Flow.": { "fr": "Automatisation attachée à ce Flow.", "en": "Automation attached to this Flow.", "es": "Automatización vinculada a este Flow.", "de": "Automatisierung mit diesem Flow verknüpft." },
+  "Automatisation retirée.": { "fr": "Automatisation retirée.", "en": "Automation removed.", "es": "Automatización eliminada.", "de": "Automatisierung entfernt." },
   "Suggestions avant automatisation": { "fr": "Suggestions avant automatisation", "en": "Suggestions before automation", "es": "Sugerencias antes de automatizar", "de": "Vorschläge vor der Automatisierung" },
   "Brain peut proposer un Flow, un widget ou une densité, mais ne modifié jamais un réglage important seul.": { "fr": "Brain peut proposer un Flow, un widget ou une densité, mais ne modifie jamais un réglage important seul.", "en": "Brain can suggest a Flow, a widget or a density, but never changes an important setting on its own.", "es": "Brain puede sugerir un Flow, un widget o una densidad, pero nunca modifica un ajuste importante por sí solo.", "de": "Brain kann einen Flow, ein Widget oder eine Dichte vorschlagen, ändert aber nie allein eine wichtige Einstellung." },
   "Les automatisations s'executent automatiquement.": { "fr": "Les automatisations s'exécutent automatiquement.", "en": "Automations run automatically.", "es": "Las automatizaciones se ejecutan automáticamente.", "de": "Automatisierungen laufen automatisch." },
@@ -2416,9 +2507,52 @@ const ENTRIES = {
   "Ajoutez un lien ou un sous-dossier ici.": { "fr": "Ajoutez un lien ou un sous-dossier ici.", "en": "Add a link or a subfolder here.", "es": "Añade un enlace o una subcarpeta aquí.", "de": "Fügen Sie hier einen Link oder einen Unterordner hinzu." },
   "Dossier vide": { "fr": "Dossier vide", "en": "Empty folder", "es": "Carpeta vacía", "de": "Leerer Ordner" },
   "Élément déplacé.": { "fr": "Élément déplacé.", "en": "Item moved.", "es": "Elemento movido.", "de": "Element verschoben." },
+  "Élément renommé.": { "fr": "Élément renommé.", "en": "Item renamed.", "es": "Elemento renombrado.", "de": "Element umbenannt." },
   "Dossier introuvable": { "fr": "Dossier introuvable", "en": "Folder not found", "es": "Carpeta no encontrada", "de": "Ordner nicht gefunden" },
   "Un dossier ne peut pas se contenir lui-même": { "fr": "Un dossier ne peut pas se contenir lui-même", "en": "A folder cannot contain itself", "es": "Una carpeta no puede contenerse a sí misma", "de": "Ein Ordner kann sich nicht selbst enthalten" },
-  "Impossible de déplacer un dossier dans lui-même": { "fr": "Impossible de déplacer un dossier dans lui-même", "en": "Cannot move a folder into itself", "es": "No se puede mover una carpeta dentro de sí misma", "de": "Ein Ordner kann nicht in sich selbst verschoben werden" }
+  "Impossible de déplacer un dossier dans lui-même": { "fr": "Impossible de déplacer un dossier dans lui-même", "en": "Cannot move a folder into itself", "es": "No se puede mover una carpeta dentro de sí misma", "de": "Ein Ordner kann nicht in sich selbst verschoben werden" },
+
+  // OAuth provider connection toasts (GitHub, Google, Notion, Spotify, Todoist, Google Drive, YouTube, Reddit)
+  "Connexion GitHub annulée ou refusée.": { "fr": "Connexion GitHub annulée ou refusée.", "en": "GitHub connection cancelled or refused.", "es": "Conexión con GitHub cancelada o rechazada.", "de": "GitHub-Verbindung abgebrochen oder abgelehnt." },
+  "La demande de connexion GitHub a expiré. Réessayez.": { "fr": "La demande de connexion GitHub a expiré. Réessayez.", "en": "The GitHub connection request expired. Try again.", "es": "La solicitud de conexión con GitHub caducó. Inténtalo de nuevo.", "de": "Die GitHub-Verbindungsanfrage ist abgelaufen. Versuchen Sie es erneut." },
+  "Échec de la connexion GitHub. Réessayez.": { "fr": "Échec de la connexion GitHub. Réessayez.", "en": "GitHub connection failed. Try again.", "es": "Error al conectar con GitHub. Inténtalo de nuevo.", "de": "GitHub-Verbindung fehlgeschlagen. Versuchen Sie es erneut." },
+  "Impossible de démarrer la connexion GitHub sur cet appareil.": { "fr": "Impossible de démarrer la connexion GitHub sur cet appareil.", "en": "Could not start the GitHub connection on this device.", "es": "No se pudo iniciar la conexión con GitHub en este dispositivo.", "de": "Die GitHub-Verbindung konnte auf diesem Gerät nicht gestartet werden." },
+  "Connexion Google annulée ou refusée.": { "fr": "Connexion Google annulée ou refusée.", "en": "Google connection cancelled or refused.", "es": "Conexión con Google cancelada o rechazada.", "de": "Google-Verbindung abgebrochen oder abgelehnt." },
+  "La demande de connexion Google a expiré. Réessayez.": { "fr": "La demande de connexion Google a expiré. Réessayez.", "en": "The Google connection request expired. Try again.", "es": "La solicitud de conexión con Google caducó. Inténtalo de nuevo.", "de": "Die Google-Verbindungsanfrage ist abgelaufen. Versuchen Sie es erneut." },
+  "Échec de la connexion Google. Réessayez.": { "fr": "Échec de la connexion Google. Réessayez.", "en": "Google connection failed. Try again.", "es": "Error al conectar con Google. Inténtalo de nuevo.", "de": "Google-Verbindung fehlgeschlagen. Versuchen Sie es erneut." },
+  "Impossible de démarrer la connexion Google sur cet appareil.": { "fr": "Impossible de démarrer la connexion Google sur cet appareil.", "en": "Could not start the Google connection on this device.", "es": "No se pudo iniciar la conexión con Google en este dispositivo.", "de": "Die Google-Verbindung konnte auf diesem Gerät nicht gestartet werden." },
+  "Connexion Notion annulée ou refusée.": { "fr": "Connexion Notion annulée ou refusée.", "en": "Notion connection cancelled or refused.", "es": "Conexión con Notion cancelada o rechazada.", "de": "Notion-Verbindung abgebrochen oder abgelehnt." },
+  "La demande de connexion Notion a expiré. Réessayez.": { "fr": "La demande de connexion Notion a expiré. Réessayez.", "en": "The Notion connection request expired. Try again.", "es": "La solicitud de conexión con Notion caducó. Inténtalo de nuevo.", "de": "Die Notion-Verbindungsanfrage ist abgelaufen. Versuchen Sie es erneut." },
+  "Échec de la connexion Notion. Réessayez.": { "fr": "Échec de la connexion Notion. Réessayez.", "en": "Notion connection failed. Try again.", "es": "Error al conectar con Notion. Inténtalo de nuevo.", "de": "Notion-Verbindung fehlgeschlagen. Versuchen Sie es erneut." },
+  "Impossible de démarrer la connexion Notion sur cet appareil.": { "fr": "Impossible de démarrer la connexion Notion sur cet appareil.", "en": "Could not start the Notion connection on this device.", "es": "No se pudo iniciar la conexión con Notion en este dispositivo.", "de": "Die Notion-Verbindung konnte auf diesem Gerät nicht gestartet werden." },
+  "Connexion Spotify annulée ou refusée.": { "fr": "Connexion Spotify annulée ou refusée.", "en": "Spotify connection cancelled or refused.", "es": "Conexión con Spotify cancelada o rechazada.", "de": "Spotify-Verbindung abgebrochen oder abgelehnt." },
+  "La demande de connexion Spotify a expiré. Réessayez.": { "fr": "La demande de connexion Spotify a expiré. Réessayez.", "en": "The Spotify connection request expired. Try again.", "es": "La solicitud de conexión con Spotify caducó. Inténtalo de nuevo.", "de": "Die Spotify-Verbindungsanfrage ist abgelaufen. Versuchen Sie es erneut." },
+  "Échec de la connexion Spotify. Réessayez.": { "fr": "Échec de la connexion Spotify. Réessayez.", "en": "Spotify connection failed. Try again.", "es": "Error al conectar con Spotify. Inténtalo de nuevo.", "de": "Spotify-Verbindung fehlgeschlagen. Versuchen Sie es erneut." },
+  "Impossible de démarrer la connexion Spotify sur cet appareil.": { "fr": "Impossible de démarrer la connexion Spotify sur cet appareil.", "en": "Could not start the Spotify connection on this device.", "es": "No se pudo iniciar la conexión con Spotify en este dispositivo.", "de": "Die Spotify-Verbindung konnte auf diesem Gerät nicht gestartet werden." },
+  "Connexion Todoist annulée ou refusée.": { "fr": "Connexion Todoist annulée ou refusée.", "en": "Todoist connection cancelled or refused.", "es": "Conexión con Todoist cancelada o rechazada.", "de": "Todoist-Verbindung abgebrochen oder abgelehnt." },
+  "La demande de connexion Todoist a expiré. Réessayez.": { "fr": "La demande de connexion Todoist a expiré. Réessayez.", "en": "The Todoist connection request expired. Try again.", "es": "La solicitud de conexión con Todoist caducó. Inténtalo de nuevo.", "de": "Die Todoist-Verbindungsanfrage ist abgelaufen. Versuchen Sie es erneut." },
+  "Échec de la connexion Todoist. Réessayez.": { "fr": "Échec de la connexion Todoist. Réessayez.", "en": "Todoist connection failed. Try again.", "es": "Error al conectar con Todoist. Inténtalo de nuevo.", "de": "Todoist-Verbindung fehlgeschlagen. Versuchen Sie es erneut." },
+  "Impossible de démarrer la connexion Todoist sur cet appareil.": { "fr": "Impossible de démarrer la connexion Todoist sur cet appareil.", "en": "Could not start the Todoist connection on this device.", "es": "No se pudo iniciar la conexión con Todoist en este dispositivo.", "de": "Die Todoist-Verbindung konnte auf diesem Gerät nicht gestartet werden." },
+  "Connexion Google Drive annulée ou refusée.": { "fr": "Connexion Google Drive annulée ou refusée.", "en": "Google Drive connection cancelled or refused.", "es": "Conexión con Google Drive cancelada o rechazada.", "de": "Google Drive-Verbindung abgebrochen oder abgelehnt." },
+  "La demande de connexion Google Drive a expiré. Réessayez.": { "fr": "La demande de connexion Google Drive a expiré. Réessayez.", "en": "The Google Drive connection request expired. Try again.", "es": "La solicitud de conexión con Google Drive caducó. Inténtalo de nuevo.", "de": "Die Google Drive-Verbindungsanfrage ist abgelaufen. Versuchen Sie es erneut." },
+  "Échec de la connexion Google Drive. Réessayez.": { "fr": "Échec de la connexion Google Drive. Réessayez.", "en": "Google Drive connection failed. Try again.", "es": "Error al conectar con Google Drive. Inténtalo de nuevo.", "de": "Google Drive-Verbindung fehlgeschlagen. Versuchen Sie es erneut." },
+  "Impossible de démarrer la connexion Google Drive sur cet appareil.": { "fr": "Impossible de démarrer la connexion Google Drive sur cet appareil.", "en": "Could not start the Google Drive connection on this device.", "es": "No se pudo iniciar la conexión con Google Drive en este dispositivo.", "de": "Die Google Drive-Verbindung konnte auf diesem Gerät nicht gestartet werden." },
+  "Connexion YouTube annulée ou refusée.": { "fr": "Connexion YouTube annulée ou refusée.", "en": "YouTube connection cancelled or refused.", "es": "Conexión con YouTube cancelada o rechazada.", "de": "YouTube-Verbindung abgebrochen oder abgelehnt." },
+  "La demande de connexion YouTube a expiré. Réessayez.": { "fr": "La demande de connexion YouTube a expiré. Réessayez.", "en": "The YouTube connection request expired. Try again.", "es": "La solicitud de conexión con YouTube caducó. Inténtalo de nuevo.", "de": "Die YouTube-Verbindungsanfrage ist abgelaufen. Versuchen Sie es erneut." },
+  "Échec de la connexion YouTube. Réessayez.": { "fr": "Échec de la connexion YouTube. Réessayez.", "en": "YouTube connection failed. Try again.", "es": "Error al conectar con YouTube. Inténtalo de nuevo.", "de": "YouTube-Verbindung fehlgeschlagen. Versuchen Sie es erneut." },
+  "Impossible de démarrer la connexion YouTube sur cet appareil.": { "fr": "Impossible de démarrer la connexion YouTube sur cet appareil.", "en": "Could not start the YouTube connection on this device.", "es": "No se pudo iniciar la conexión con YouTube en este dispositivo.", "de": "Die YouTube-Verbindung konnte auf diesem Gerät nicht gestartet werden." },
+  "Connexion Reddit annulée ou refusée.": { "fr": "Connexion Reddit annulée ou refusée.", "en": "Reddit connection cancelled or refused.", "es": "Conexión con Reddit cancelada o rechazada.", "de": "Reddit-Verbindung abgebrochen oder abgelehnt." },
+  "La demande de connexion Reddit a expiré. Réessayez.": { "fr": "La demande de connexion Reddit a expiré. Réessayez.", "en": "The Reddit connection request expired. Try again.", "es": "La solicitud de conexión con Reddit caducó. Inténtalo de nuevo.", "de": "Die Reddit-Verbindungsanfrage ist abgelaufen. Versuchen Sie es erneut." },
+  "Échec de la connexion Reddit. Réessayez.": { "fr": "Échec de la connexion Reddit. Réessayez.", "en": "Reddit connection failed. Try again.", "es": "Error al conectar con Reddit. Inténtalo de nuevo.", "de": "Reddit-Verbindung fehlgeschlagen. Versuchen Sie es erneut." },
+  "Impossible de démarrer la connexion Reddit sur cet appareil.": { "fr": "Impossible de démarrer la connexion Reddit sur cet appareil.", "en": "Could not start the Reddit connection on this device.", "es": "No se pudo iniciar la conexión con Reddit en este dispositivo.", "de": "Die Reddit-Verbindung konnte auf diesem Gerät nicht gestartet werden." },
+  "Compte Spotify connecté avec succès.": { "fr": "Compte Spotify connecté avec succès.", "en": "Spotify account connected successfully.", "es": "Cuenta de Spotify conectada correctamente.", "de": "Spotify-Konto erfolgreich verbunden." },
+  "Compte GitHub connecté avec succès.": { "fr": "Compte GitHub connecté avec succès.", "en": "GitHub account connected successfully.", "es": "Cuenta de GitHub conectada correctamente.", "de": "GitHub-Konto erfolgreich verbunden." },
+  "Google Calendar connecté avec succès.": { "fr": "Google Calendar connecté avec succès.", "en": "Google Calendar connected successfully.", "es": "Google Calendar conectado correctamente.", "de": "Google Kalender erfolgreich verbunden." },
+  "Notion connecté avec succès.": { "fr": "Notion connecté avec succès.", "en": "Notion connected successfully.", "es": "Notion conectado correctamente.", "de": "Notion erfolgreich verbunden." },
+  "Todoist connecté avec succès.": { "fr": "Todoist connecté avec succès.", "en": "Todoist connected successfully.", "es": "Todoist conectado correctamente.", "de": "Todoist erfolgreich verbunden." },
+  "Google Drive connecté avec succès.": { "fr": "Google Drive connecté avec succès.", "en": "Google Drive connected successfully.", "es": "Google Drive conectado correctamente.", "de": "Google Drive erfolgreich verbunden." },
+  "YouTube connecté avec succès.": { "fr": "YouTube connecté avec succès.", "en": "YouTube connected successfully.", "es": "YouTube conectado correctamente.", "de": "YouTube erfolgreich verbunden." },
+  "Reddit connecté avec succès.": { "fr": "Reddit connecté avec succès.", "en": "Reddit connected successfully.", "es": "Reddit conectado correctamente.", "de": "Reddit erfolgreich verbunden." }
 };
 Object.keys(ENTRIES).forEach((key) => Object.freeze(ENTRIES[key]));
 Object.freeze(ENTRIES);

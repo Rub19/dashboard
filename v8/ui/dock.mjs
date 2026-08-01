@@ -111,7 +111,7 @@ export function createDock(host, options = {}) {
     return element("section", { className: "v8-dock-launcher", attributes: { role: "dialog", "aria-modal": "false", "aria-label": "Toutes les applications" } }, [
       element("header", {}, [element("span", {}, [element("small", { text: "ETHONE OS", attributes: { translate: "no" } }), element("strong", { text: "Toutes les apps" })]), editorControl("more-close", "", "Fermer", "x")]),
       element("div", { className: "v8-dock-launcher__grid" }, pinned.map((item) => launcherAppNode(item, item.id === activeRoute))),
-      element("footer", {}, [icon("hand"), element("span", { text: "Appui long sur une app du Dock pour la reorganiser." })])
+      element("footer", {}, [icon("hand"), element("span", { text: "Appui long sur une app du Dock pour la réorganiser." })])
     ]);
   }
 

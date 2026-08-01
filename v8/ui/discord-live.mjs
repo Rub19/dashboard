@@ -1,7 +1,7 @@
 import { brandIcon, element, icon } from "./dom.mjs";
 import { liveFreshnessNode } from "./live-freshness.mjs";
 
-const STATUS_LABELS = Object.freeze({ online: "En ligne", idle: "Absent", dnd: "Ne pas deranger", offline: "Hors ligne" });
+const STATUS_LABELS = Object.freeze({ online: "En ligne", idle: "Absent", dnd: "Ne pas déranger", offline: "Hors ligne" });
 
 function avatar(presence) {
   const inner = presence.avatarUrl

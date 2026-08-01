@@ -384,9 +384,9 @@ export function mountApplication(root, options = {}) {
     const provider = pendingOAuth?.provider;
     const providerLabel = { github: "GitHub", "google-calendar": "Google", notion: "Notion", spotify: "Spotify", todoist: "Todoist", "google-drive": "Google Drive", youtube: "YouTube", reddit: "Reddit" }[provider] || "Connexion";
     if (oauthCallback.error) {
-      toasts.show({ id: `oauth-error-${provider || "unknown"}`, title: providerLabel, message: `Connexion ${providerLabel} annulee ou refusee.`, type: "warning" });
+      toasts.show({ id: `oauth-error-${provider || "unknown"}`, title: providerLabel, message: `Connexion ${providerLabel} annulée ou refusée.`, type: "warning" });
     } else if (!pendingOAuth || pendingOAuth.state !== oauthCallback.state || !pendingOAuth.clientId) {
-      toasts.show({ id: "oauth-error-expired", title: providerLabel, message: `La demande de connexion ${providerLabel} a expire. Reessayez.`, type: "error" });
+      toasts.show({ id: "oauth-error-expired", title: providerLabel, message: `La demande de connexion ${providerLabel} a expiré. Réessayez.`, type: "error" });
     } else if (oauthCallback.code && provider === "spotify" && pendingOAuth.verifier) {
       externalServices?.spotifyOAuth?.exchange(oauthCallback.code, pendingOAuth.verifier, pendingOAuth.clientId)
         .then(() => {
@@ -400,7 +400,7 @@ export function mountApplication(root, options = {}) {
           toasts.show({ id: "spotify-oauth-success", title: "Spotify", message: "Compte Spotify connecté avec succès.", type: "success" });
         })
         .catch(() => {
-          toasts.show({ id: "spotify-oauth-error", title: "Spotify", message: "Echec de la connexion Spotify. Reessayez.", type: "error" });
+          toasts.show({ id: "spotify-oauth-error", title: "Spotify", message: "Échec de la connexion Spotify. Réessayez.", type: "error" });
         });
     } else if (oauthCallback.code && provider === "github") {
       externalServices?.githubOAuth?.exchange(oauthCallback.code, pendingOAuth.clientId)
@@ -415,7 +415,7 @@ export function mountApplication(root, options = {}) {
           toasts.show({ id: "github-oauth-success", title: "GitHub", message: "Compte GitHub connecté avec succès.", type: "success" });
         })
         .catch(() => {
-          toasts.show({ id: "github-oauth-error", title: "GitHub", message: "Echec de la connexion GitHub. Reessayez.", type: "error" });
+          toasts.show({ id: "github-oauth-error", title: "GitHub", message: "Échec de la connexion GitHub. Réessayez.", type: "error" });
         });
     } else if (oauthCallback.code && provider === "google-calendar") {
       externalServices?.googleCalendarOAuth?.exchange(oauthCallback.code, pendingOAuth.clientId)
@@ -430,7 +430,7 @@ export function mountApplication(root, options = {}) {
           toasts.show({ id: "google-calendar-oauth-success", title: "Google", message: "Google Calendar connecté avec succès.", type: "success" });
         })
         .catch(() => {
-          toasts.show({ id: "google-calendar-oauth-error", title: "Google", message: "Echec de la connexion Google. Reessayez.", type: "error" });
+          toasts.show({ id: "google-calendar-oauth-error", title: "Google", message: "Échec de la connexion Google. Réessayez.", type: "error" });
         });
     } else if (oauthCallback.code && provider === "notion") {
       externalServices?.notionOAuth?.exchange(oauthCallback.code, pendingOAuth.clientId)
@@ -445,7 +445,7 @@ export function mountApplication(root, options = {}) {
           toasts.show({ id: "notion-oauth-success", title: "Notion", message: "Notion connecté avec succès.", type: "success" });
         })
         .catch(() => {
-          toasts.show({ id: "notion-oauth-error", title: "Notion", message: "Echec de la connexion Notion. Reessayez.", type: "error" });
+          toasts.show({ id: "notion-oauth-error", title: "Notion", message: "Échec de la connexion Notion. Réessayez.", type: "error" });
         });
     } else if (oauthCallback.code && provider === "todoist") {
       externalServices?.todoistOAuth?.exchange(oauthCallback.code, pendingOAuth.clientId)
@@ -460,7 +460,7 @@ export function mountApplication(root, options = {}) {
           toasts.show({ id: "todoist-oauth-success", title: "Todoist", message: "Todoist connecté avec succès.", type: "success" });
         })
         .catch(() => {
-          toasts.show({ id: "todoist-oauth-error", title: "Todoist", message: "Echec de la connexion Todoist. Reessayez.", type: "error" });
+          toasts.show({ id: "todoist-oauth-error", title: "Todoist", message: "Échec de la connexion Todoist. Réessayez.", type: "error" });
         });
     } else if (oauthCallback.code && provider === "google-drive") {
       externalServices?.googleDriveOAuth?.exchange(oauthCallback.code, pendingOAuth.clientId)
@@ -475,7 +475,7 @@ export function mountApplication(root, options = {}) {
           toasts.show({ id: "google-drive-oauth-success", title: "Google Drive", message: "Google Drive connecté avec succès.", type: "success" });
         })
         .catch(() => {
-          toasts.show({ id: "google-drive-oauth-error", title: "Google Drive", message: "Echec de la connexion Google Drive. Reessayez.", type: "error" });
+          toasts.show({ id: "google-drive-oauth-error", title: "Google Drive", message: "Échec de la connexion Google Drive. Réessayez.", type: "error" });
         });
     } else if (oauthCallback.code && provider === "youtube") {
       externalServices?.youtubeOAuth?.exchange(oauthCallback.code, pendingOAuth.clientId)
@@ -490,7 +490,7 @@ export function mountApplication(root, options = {}) {
           toasts.show({ id: "youtube-oauth-success", title: "YouTube", message: "YouTube connecté avec succès.", type: "success" });
         })
         .catch(() => {
-          toasts.show({ id: "youtube-oauth-error", title: "YouTube", message: "Echec de la connexion YouTube. Reessayez.", type: "error" });
+          toasts.show({ id: "youtube-oauth-error", title: "YouTube", message: "Échec de la connexion YouTube. Réessayez.", type: "error" });
         });
     } else if (oauthCallback.code && provider === "reddit") {
       externalServices?.redditOAuth?.exchange(oauthCallback.code, pendingOAuth.clientId)
@@ -505,7 +505,7 @@ export function mountApplication(root, options = {}) {
           toasts.show({ id: "reddit-oauth-success", title: "Reddit", message: "Reddit connecté avec succès.", type: "success" });
         })
         .catch(() => {
-          toasts.show({ id: "reddit-oauth-error", title: "Reddit", message: "Echec de la connexion Reddit. Reessayez.", type: "error" });
+          toasts.show({ id: "reddit-oauth-error", title: "Reddit", message: "Échec de la connexion Reddit. Réessayez.", type: "error" });
         });
     }
   }
@@ -650,7 +650,7 @@ export function mountApplication(root, options = {}) {
           onRetry: () => mountLazyRoute(route, true, ++routeRequest)
         }));
         finishRouteMount(route, focus);
-        toasts.show({ id: `lazy-${route}`, title: route === "activity" ? "Activity Hub" : route === "connections" ? "Connections" : route === "settings" ? "Réglages" : "Brain", message: "Le module n'a pas pu être charge.", type: "error" });
+        toasts.show({ id: `lazy-${route}`, title: route === "activity" ? "Activity Hub" : route === "connections" ? "Connections" : route === "settings" ? "Réglages" : "Brain", message: "Le module n'a pas pu être chargé.", type: "error" });
       });
   }
 

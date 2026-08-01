@@ -1154,6 +1154,7 @@ html[data-v8-interactions] .v8-row-menu > button:hover,
 .v8-row-menu > button.is-danger { color: var(--v8-danger); }
 .v8-row-menu > button:disabled { cursor: not-allowed; opacity: .72; }
 .v8-row-menu > button svg { width: var(--v8-icon-sm); height: var(--v8-icon-sm); }
+.v8-row-menu > button span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .v8-row-menu > button kbd { color: var(--v8-muted); font-size: var(--v8-font-micro); }
 .v8-row-menu__separator { height: 1px; margin: 4px 6px; border: 0; background: var(--v8-divider); }
 

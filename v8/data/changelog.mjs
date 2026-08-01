@@ -24,6 +24,10 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v183", "2026-08-01", "Textes qui se chevauchaient : corrigés", [
+    { kind: "fix", text: "Les menus contextuels (clic droit / actions sur une ligne) pouvaient afficher un intitulé long sur plusieurs lignes qui débordait par-dessus l'option suivante au lieu de le raccourcir avec des points de suspension. Corrigé sur les deux systèmes de menu de l'application." },
+    { kind: "fix", text: "Même souci sur le fil d'Ariane (en-tête), les titres des choix de thème et de densité dans les Préférences, les libellés du panneau \"Personnaliser\" de l'accueil et d'Activity, les onglets de la fiche connexion, et les liens de ressources compacts : le texte pouvait s'étirer ou se couper au milieu d'un caractère au lieu de se terminer proprement par \"…\"." }
+  ]),
   entry("v182", "2026-08-01", "163 traductions cassées réparées", [
     { kind: "fix", text: "En corrigeant les accents manquants la semaine dernière, 163 textes ont perdu leur traduction anglais/espagnol/allemand sans que ça se voie en français : le correctif changeait le texte affiché mais pas la clé interne utilisée pour retrouver sa traduction, qui devait rester identique au caractère près. Recherché et réparé un par un dans tout le catalogue." },
     { kind: "fix", text: "22 entrées du dictionnaire de traduction étaient dupliquées (souvent avec des traductions légèrement différentes) ; seule la plus récente comptait vraiment, les autres étaient invisibles et trompeuses. Nettoyées." }

@@ -24,6 +24,9 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v181", "2026-08-01", "Densité d'affichage sur le Calendrier", [
+    { kind: "improvement", text: "Le Calendrier propose désormais le même réglage de densité (automatique, confortable, compacte) que Tasks, Notes, Files, Activity et Connections. Il était déjà sensible à ce réglage global, il manquait juste le bouton pour le changer depuis cette page." }
+  ]),
   entry("v180", "2026-08-01", "Préférences : de vraies sections, une à la fois", [
     { kind: "fix", text: "Les 7 sections des Préférences (Profil, Apparence, Brain, Sons, Workspace, Système, Developer) ressemblaient à des onglets mais s'affichaient toutes en même temps, empilées sur toute la hauteur de la page. Un seul onglet s'affiche désormais à la fois, avec navigation complète au clavier (flèches haut/bas, Début/Fin)." }
   ]),

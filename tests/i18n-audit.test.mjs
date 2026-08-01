@@ -33,18 +33,18 @@ test("a representative sample of the full i18n audit (entry, activity, connectio
     "Nouvel environnement",
     "Activity Hub",
     "Gerer les connexions",
-    "Catalogue des integrations",
+    "Catalogue des intégrations",
     "Se connecter avec GitHub",
     "Density Engine",
     "Couleur d'accent",
     "Sections Brain",
     "Type de declencheur",
     "Statistiques Valorant",
-    "Voir le detail meteo",
+    "Voir le détail météo",
     "Chaine Twitch",
     "SECURITY",
     "Tache",
-    "Changer de theme"
+    "Changer de thème"
   ];
   for (const key of required) {
     const entry = sourceEntry(key);

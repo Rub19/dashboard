@@ -100,8 +100,8 @@ test("dense surfaces use the shared toolbar, selection and contextual menu contr
 
 test("dense controls expose complete translations in every supported locale", () => {
   const labels = [
-    "Densite automatique", "Densite confortable", "Densite compacte", "Densite d'affichage",
-    "Actions groupees", "Selectionner les elements visibles", "Deselectionner les elements visibles",
+    "Densité automatique", "Densité confortable", "Densité compacte", "Densité d'affichage",
+    "Actions groupees", "Sélectionner les elements visibles", "Deselectionner les elements visibles",
     "Effacer la selection", "Actions de l'element", "Trier les tâches", "Trier les fichiers",
     "Trier les notes", "Trier l'activité", "Trier les intégrations", "Rechercher dans les notifications",
     "Filtrer les notifications", "Tout marquer comme lu", "Ajouter à la sélection", "Retirer de la sélection",

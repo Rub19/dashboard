@@ -1,7 +1,7 @@
 import { searchCommands } from "./search.mjs";
 import { commandById } from "./catalog.mjs";
 import { workspaceById } from "../data/workspaces.mjs";
-import { element, icon } from "../ui/dom.mjs";
+import { debounce, element, icon } from "../ui/dom.mjs";
 import { emptyState } from "../ui/empty-state.mjs";
 import { refreshIcons, scheduleIconRefresh } from "../ui/icons.mjs";
 import { createWindowController } from "../ui/window-system.mjs";
@@ -146,9 +146,10 @@ export function createCommandCenter(host, options = {}) {
     scheduleIconRefresh();
   }
 
+  const debouncedRenderResults = debounce(() => renderResults(), 120);
   function handleInput() {
     selectedIndex = 0;
-    renderResults();
+    debouncedRenderResults();
   }
 
   function handleKeydown(event) {

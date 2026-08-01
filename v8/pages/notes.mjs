@@ -106,19 +106,16 @@ export function mountNotes(stage, options = {}) {
     notes = notes.map((note) => String(note.id) === String(selectedId) ? { ...note, ...patch } : note);
   }
 
-  function updateVisibleListTitle() {
-    const note = selectedNote();
-    if (!note) return;
-    [...list.querySelectorAll("[data-note-id]")].forEach((control) => {
-      if (control.dataset.noteId !== String(note.id)) return;
-      const title = control.querySelector("strong");
-      if (title) title.textContent = note.title || "Note sans titre";
-    });
-  }
-
   function noteRow(id) {
     return [...list.querySelectorAll("[data-note-id]")]
       .find((row) => row.dataset.noteId === String(id)) || null;
+  }
+
+  function updateVisibleListTitle() {
+    const note = selectedNote();
+    if (!note) return;
+    const title = noteRow(note.id)?.querySelector("strong");
+    if (title) title.textContent = note.title || "Note sans titre";
   }
 
   function flushSave(showFeedback = false) {

@@ -1,4 +1,4 @@
-import { actionButton, element, icon } from "./dom.mjs";
+import { actionButton, debounce, element, icon } from "./dom.mjs";
 import { bulkActionBar, createRowMenuController, createSelectionState, selectionControl } from "./dense-content.mjs";
 import { emptyState } from "./empty-state.mjs";
 import { refreshIcons } from "./icons.mjs";
@@ -219,7 +219,8 @@ export function createPanelManager(host, options = {}) {
       notificationSelection.toggle(row.dataset.notificationId);
       render();
     });
-    search.addEventListener("input", () => { notificationQuery = search.value; render(); });
+    const debouncedRender = debounce(render, 120);
+    search.addEventListener("input", () => { notificationQuery = search.value; debouncedRender(); });
     filter.addEventListener("change", () => { notificationFilter = filter.value; render(); });
     render();
     return content;

@@ -24,6 +24,11 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v184", "2026-08-01", "Recherches plus fluides", [
+    { kind: "fix", text: "Command HUD (Ctrl+K) : chaque frappe relançait immédiatement un calcul de pertinence sur toutes les commandes, dans les 4 langues. Léger lissage ajouté pour éviter les à-coups en tapant vite." },
+    { kind: "fix", text: "La recherche dans l'historique Brain reconstruisait aussi tout l'onglet Chat à chaque frappe, sans rapport avec la recherche. Séparé et lissé." },
+    { kind: "fix", text: "Renommer une note reparcourait toute la liste affichée à chaque frappe pour retrouver la bonne ligne. Ciblage direct désormais." }
+  ]),
   entry("v183", "2026-08-01", "Textes qui se chevauchaient : corrigés", [
     { kind: "fix", text: "Les menus contextuels (clic droit / actions sur une ligne) pouvaient afficher un intitulé long sur plusieurs lignes qui débordait par-dessus l'option suivante au lieu de le raccourcir avec des points de suspension. Corrigé sur les deux systèmes de menu de l'application." },
     { kind: "fix", text: "Même souci sur le fil d'Ariane (en-tête), les titres des choix de thème et de densité dans les Préférences, les libellés du panneau \"Personnaliser\" de l'accueil et d'Activity, les onglets de la fiche connexion, et les liens de ressources compacts : le texte pouvait s'étirer ou se couper au milieu d'un caractère au lieu de se terminer proprement par \"…\"." }

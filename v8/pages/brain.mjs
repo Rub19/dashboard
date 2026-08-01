@@ -1,4 +1,4 @@
-import { actionButton, element, icon } from "../ui/dom.mjs";
+import { actionButton, debounce, element, icon } from "../ui/dom.mjs";
 import { statusState } from "../ui/empty-state.mjs";
 import { clearFieldState, formField, runFormSubmission, setFieldState } from "../ui/form-system.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
@@ -220,7 +220,7 @@ export function mountBrain(stage, options = {}) {
     panels
   ]);
 
-  function renderHistory() {
+  function renderHistoryList() {
     const entries = brain.controller.history();
     const normalizedQuery = historyQuery.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
     const visible = normalizedQuery
@@ -235,6 +235,12 @@ export function mountBrain(stage, options = {}) {
       compact: true,
       inline: true
     })]));
+    refreshIcons();
+  }
+
+  function renderHistory() {
+    const entries = brain.controller.history();
+    renderHistoryList();
     chatLog.replaceChildren(...(entries.length ? entries.map(messageBubble) : [messageBubble({ role: "assistant", content: `Je suis pret dans ${workspace.label}. Je ne charge que le contexte necessaire a votre demande.` })]));
     chatLog.scrollTop = chatLog.scrollHeight;
     refreshIcons();
@@ -361,7 +367,8 @@ export function mountBrain(stage, options = {}) {
   page.querySelector("[data-brain-memory-clear]")?.addEventListener("click", async () => { if (!confirm("Supprimer definitivement toutes les memoires Brain ?")) return; const response = await brain.memory.clear({ confirmed: true }); memoryStatus.textContent = response.message; if (response.ok) await loadMemories(); }, { signal: controller.signal });
   page.querySelector("[data-brain-memory-export]")?.addEventListener("click", async () => { const response = await brain.memory.exportAll(); if (response.ok) downloadJson(response.data, "ethone-brain-memory.json"); else memoryStatus.textContent = response.message; }, { signal: controller.signal });
   page.querySelector("[data-brain-history-clear]")?.addEventListener("click", () => { brain.controller.clearHistory(); renderHistory(); }, { signal: controller.signal });
-  historySearch.addEventListener("input", () => { historyQuery = historySearch.value; renderHistory(); }, { signal: controller.signal });
+  const debouncedRenderHistoryList = debounce(renderHistoryList, 120);
+  historySearch.addEventListener("input", () => { historyQuery = historySearch.value; debouncedRenderHistoryList(); }, { signal: controller.signal });
   const unsubscribe = brain.controller.subscribe((event) => { if (event.type === "history") renderHistory(); });
 
   automationTypeSelect.addEventListener("change", () => {

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="fr" data-v8-interactions data-density="comfortable" data-theme="night" data-accent="mint" data-space="personal">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Context menu test harness</title>
+<script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>body{margin:0;background:var(--v8-canvas);padding:60px;}</style>
+</head>
+<body>
+<button id="anchor" style="padding:10px 20px;">Clic droit ici (ou clic gauche)</button>
+<script type="module">
+if (navigator.serviceWorker) {
+  const regs = await navigator.serviceWorker.getRegistrations();
+  for (const r of regs) await r.unregister();
+  const keys = await caches.keys();
+  await Promise.all(keys.map((k) => caches.delete(k)));
+}
+
+const bust = Date.now();
+const cssFiles = ["tokens.css", "base.css", "components.css", "shell.css"];
+for (const name of cssFiles) {
+  const text = await fetch(`/v8/styles/${name}?bust=${bust}`, { cache: "no-store" }).then((r) => r.text());
+  const style = document.createElement("style");
+  style.textContent = text;
+  document.head.append(style);
+}
+
+const { createRowMenuController } = await import(`./v8/ui/dense-content.mjs?bust=${bust}`);
+const { refreshIcons } = await import(`./v8/ui/icons.mjs?bust=${bust}`);
+
+const controller = createRowMenuController(document.body);
+const anchor = document.getElementById("anchor");
+anchor.addEventListener("click", () => {
+  controller.open(anchor, [
+    { icon: "pencil", label: "Renommer ce document extrêmement long pour tester la troncature", onSelect: () => {} },
+    { icon: "copy", label: "Dupliquer", onSelect: () => {} },
+    { icon: "trash-2", label: "Supprimer définitivement cet élément du système", tone: "danger", onSelect: () => {} }
+  ]);
+  refreshIcons();
+});
+</script>
+</body>
+</html>

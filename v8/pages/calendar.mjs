@@ -1,4 +1,5 @@
 import { actionButton, element, icon } from "../ui/dom.mjs";
+import { collectionDensityControl, updateCollectionDensityControl } from "../ui/dense-content.mjs";
 import { emptyState } from "../ui/empty-state.mjs";
 import { formField, runFormSubmission, validateControl } from "../ui/form-system.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
@@ -48,6 +49,7 @@ export function mountCalendar(stage, options = {}) {
 
   const monthLabel = element("h2", { text: monthTitle(year, month), attributes: { translate: "no" } });
   const eventsBadge = element("span", { className: "v8-badge", text: `${events.length} événement${events.length > 1 ? "s" : ""}`, dataset: { liveWidget: "metric", liveKind: "metric" } });
+  const densityControl = collectionDensityControl(options.state?.density || document.documentElement.dataset.density || "automatic");
   const grid = element("div", { className: "v8-calendar-grid", attributes: { role: "grid", "aria-label": "Calendrier mensuel" } });
   const agenda = element("aside", { className: "v8-calendar-agenda", attributes: { "aria-label": "Agenda du jour" } });
   const page = element("section", { className: "v8-page v8-work-page", dataset: { page: "calendar" } }, [
@@ -58,6 +60,7 @@ export function mountCalendar(stage, options = {}) {
         element("p", { text: "Le mois complet, puis seulement ce qui compte pour la journée choisie." })
       ]),
       element("div", { className: "v8-page-heading__actions" }, [
+        densityControl,
         actionButton({ actionId: "v8.calendar.new", variant: "primary" }, [icon("plus"), element("span", { text: "Nouvel événement" })])
       ])
     ]),
@@ -291,11 +294,13 @@ export function mountCalendar(stage, options = {}) {
   renderGrid();
   renderAgenda();
   refreshIcons();
+  const releaseDensity = options.subscribeState?.((next) => updateCollectionDensityControl(densityControl, next)) || (() => {});
 
   return () => {
     mounted = false;
     scopedActions.reverse().forEach((restore) => restore());
     page.removeEventListener("click", handleClick);
+    releaseDensity();
     page.remove();
   };
 }

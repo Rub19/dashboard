@@ -619,15 +619,15 @@ const ENTRIES = {
   },
   "Dossier": {
     "fr": "Dossier",
-    "en": "File",
-    "es": "Archivo",
-    "de": "Datei"
+    "en": "Folder",
+    "es": "Carpeta",
+    "de": "Ordner"
   },
   "Dossiers": {
     "fr": "Dossiers",
-    "en": "Files",
-    "es": "Archivos",
-    "de": "Dateien"
+    "en": "Folders",
+    "es": "Carpetas",
+    "de": "Ordner"
   },
   "Dupliquer": {
     "fr": "Dupliquer",
@@ -745,9 +745,9 @@ const ENTRIES = {
   },
   "ETHONE est arrêté.": {
     "fr": "ETHONE est arrêté.",
-    "en": "ETHONE is arrested.",
-    "es": "ETHONE es arrestado.",
-    "de": "ETHONE wird verhaftet."
+    "en": "ETHONE is stopped.",
+    "es": "ETHONE está detenido.",
+    "de": "ETHONE ist gestoppt."
   },
   "ETHONE garde le contexte à portée de main, sans charger le reste du système.": {
     "fr": "ETHONE garde le contexte à portée de main, sans charger le reste du système.",
@@ -812,7 +812,7 @@ const ENTRIES = {
   "Fermer": {
     "fr": "Fermer",
     "en": "Close",
-    "es": "Cerca",
+    "es": "Cerrar",
     "de": "Schließen"
   },
   "Fermer la notification": {
@@ -1527,9 +1527,9 @@ const ENTRIES = {
   },
   "Supprimer la note": {
     "fr": "Supprimer la note",
-    "en": "Delete rating",
-    "es": "Eliminar calificación",
-    "de": "Bewertung löschen"
+    "en": "Delete note",
+    "es": "Eliminar nota",
+    "de": "Notiz löschen"
   },
   "Sûr": {
     "fr": "Sûr",
@@ -2152,7 +2152,7 @@ const ENTRIES = {
   "État des connexions": { "fr": "État des connexions", "en": "Connection status", "es": "Estado de las conexiones", "de": "Verbindungsstatus" },
   "Filtrer par statut": { "fr": "Filtrer par statut", "en": "Filter by status", "es": "Filtrar por estado", "de": "Nach Status filtern" },
   "Inspecteur de connexion": { "fr": "Inspecteur de connexion", "en": "Connection inspector", "es": "Inspector de conexión", "de": "Verbindungsinspektor" },
-  "Intégration workspace": { "fr": "Integration workspace", "en": "Integration workspace", "es": "Integration workspace", "de": "Integration workspace" },
+  "Intégration workspace": { "fr": "Intégration workspace", "en": "Workspace integration", "es": "Integración del workspace", "de": "Workspace-Integration" },
   "La méthode recommandee privilegie la fiabilité, les permissions minimales et la reversibilite.": { "fr": "La méthode recommandée privilégie la fiabilité, les permissions minimales et la réversibilité.", "en": "The recommended method favors reliability, minimal permissions and reversibility.", "es": "El método recomendado prioriza la fiabilidad, los permisos mínimos y la reversibilidad.", "de": "Die empfohlene Methode legt Wert auf Zuverlässigkeit, minimale Berechtigungen und Reversibilität." },
   "Le test combine les contrôles locaux avec une route Worker authentifiee lorsqu'elle existe.": { "fr": "Le test combine les contrôles locaux avec une route Worker authentifiée lorsqu'elle existe.", "en": "The test combines local checks with an authenticated Worker route when one exists.", "es": "La prueba combina los controles locales con una ruta de Worker autenticada cuando existe.", "de": "Der Test kombiniert lokale Prüfungen mit einer authentifizierten Worker-Route, sofern vorhanden." },
   "Les routes migrees passent par ETHONE Worker avec votre session Supabase. Les secrets fournisseur restent exclusivement côté serveur.": { "fr": "Les routes migrées passent par ETHONE Worker avec votre session Supabase. Les secrets fournisseur restent exclusivement côté serveur.", "en": "Migrated routes go through ETHONE Worker with your Supabase session. Provider secrets stay exclusively server-side.", "es": "Las rutas migradas pasan por ETHONE Worker con tu sesión de Supabase. Los secretos del proveedor permanecen exclusivamente en el servidor.", "de": "Migrierte Routen laufen über den ETHONE Worker mit Ihrer Supabase-Sitzung. Anbietergeheimnisse verbleiben ausschließlich serverseitig." },

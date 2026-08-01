@@ -455,7 +455,7 @@ export function mountActivity(stage, options = {}) {
 
   const releaseRefresh = actions.scope("v8.activity.refresh", () => {
     render();
-    notify({ id: "activity-refreshed", title: "Activity Hub", message: "Le flux local est a jour.", type: "success" });
+    notify({ id: "activity-refreshed", title: "Activity Hub", message: "Le flux local est à jour.", type: "success" });
     return completed("Flux actualisé");
   });
   const releaseJournal = journal.subscribe(render);

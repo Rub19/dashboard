@@ -15,7 +15,7 @@ const PANEL_COPY = Object.freeze({
 });
 
 const NOTIFICATION_ITEMS = Object.freeze([
-  Object.freeze({ id: "cloud-sync", icon: "cloud", title: "Cloud Sync", message: "Les données locales sont a jour.", tone: "success", category: "system", time: "A l'instant" }),
+  Object.freeze({ id: "cloud-sync", icon: "cloud", title: "Cloud Sync", message: "Les données locales sont à jour.", tone: "success", category: "system", time: "À l'instant" }),
   Object.freeze({ id: "brain-context", icon: "brain", title: "Brain est contextuel", message: "Les suggestions suivent maintenant la page et le Space actifs.", tone: "brain", category: "brain", time: "Il y a 2 min" }),
   Object.freeze({ id: "experience-update", icon: "sparkles", title: "Experience 1.0", message: "Le nouveau Shell et Mission Control sont disponibles.", tone: "info", category: "updates", time: "Aujourd'hui" })
 ]);

@@ -302,17 +302,17 @@ export function mountSettings(stage, options = {}) {
       element("div", { className: "v8-page-heading__actions" }, [settingsSaveStatus, actionButton({ actionId: "v8.profile.open", variant: "secondary" }, [icon("user-round"), element("span", { text: "Profil" })])])
     ]),
     element("div", { className: "v8-settings-layout" }, [
-      element("aside", { className: "v8-settings-nav", attributes: { "aria-label": "Sections des réglages" } }, [
-        element("button", { className: "is-active", text: "Profil", attributes: { type: "button", "aria-current": "true", "aria-controls": "v8-settings-profile" }, dataset: { settingsSection: "v8-settings-profile" } }),
-        element("button", { text: "Apparence", attributes: { type: "button", "aria-controls": "v8-settings-appearance" }, dataset: { settingsSection: "v8-settings-appearance" } }),
-        element("button", { text: "Brain", attributes: { type: "button", "aria-controls": "v8-settings-brain" }, dataset: { settingsSection: "v8-settings-brain" } }),
-        element("button", { text: "Sons", attributes: { type: "button", "aria-controls": "v8-settings-sounds" }, dataset: { settingsSection: "v8-settings-sounds" } }),
-        element("button", { text: "Workspace", attributes: { type: "button", "aria-controls": "v8-settings-workspace" }, dataset: { settingsSection: "v8-settings-workspace" } }),
-        element("button", { text: "Système", attributes: { type: "button", "aria-controls": "v8-settings-system" }, dataset: { settingsSection: "v8-settings-system" } }),
-        element("button", { text: "Developer", attributes: { type: "button", "aria-controls": "v8-settings-developer" }, dataset: { settingsSection: "v8-settings-developer" } })
+      element("aside", { className: "v8-settings-nav", attributes: { role: "tablist", "aria-orientation": "vertical", "aria-label": "Sections des réglages" } }, [
+        element("button", { className: "is-active", text: "Profil", attributes: { type: "button", role: "tab", "aria-selected": "true", "aria-controls": "v8-settings-profile", tabindex: "0" }, dataset: { settingsSection: "v8-settings-profile" } }),
+        element("button", { text: "Apparence", attributes: { type: "button", role: "tab", "aria-selected": "false", "aria-controls": "v8-settings-appearance", tabindex: "-1" }, dataset: { settingsSection: "v8-settings-appearance" } }),
+        element("button", { text: "Brain", attributes: { type: "button", role: "tab", "aria-selected": "false", "aria-controls": "v8-settings-brain", tabindex: "-1" }, dataset: { settingsSection: "v8-settings-brain" } }),
+        element("button", { text: "Sons", attributes: { type: "button", role: "tab", "aria-selected": "false", "aria-controls": "v8-settings-sounds", tabindex: "-1" }, dataset: { settingsSection: "v8-settings-sounds" } }),
+        element("button", { text: "Workspace", attributes: { type: "button", role: "tab", "aria-selected": "false", "aria-controls": "v8-settings-workspace", tabindex: "-1" }, dataset: { settingsSection: "v8-settings-workspace" } }),
+        element("button", { text: "Système", attributes: { type: "button", role: "tab", "aria-selected": "false", "aria-controls": "v8-settings-system", tabindex: "-1" }, dataset: { settingsSection: "v8-settings-system" } }),
+        element("button", { text: "Developer", attributes: { type: "button", role: "tab", "aria-selected": "false", "aria-controls": "v8-settings-developer", tabindex: "-1" }, dataset: { settingsSection: "v8-settings-developer" } })
       ]),
       element("div", { className: "v8-settings-content" }, [
-        element("section", { id: "v8-settings-profile", className: "v8-settings-section v8-surface" }, [
+        element("section", { id: "v8-settings-profile", className: "v8-settings-section v8-surface", attributes: { role: "tabpanel", tabindex: "0" } }, [
           element("header", {}, [element("span", { className: "v8-eyebrow", text: "Identite" }), element("h2", { text: "Profil" }), element("p", { text: "Votre nom, votre photo et votre bannière, visibles dans tout ETHONE." })]),
           settingRow("user-round", "Nom du profil", "Affiche dans ETHONE et pour les autres profils de ce compte.", element("div", { className: "v8-profile-name-control" }, [nameInput, nameSaveButton, nameStatus])),
           element("div", { className: "v8-profile-media-row" }, [
@@ -332,7 +332,7 @@ export function mountSettings(stage, options = {}) {
             ])
           ])
         ]),
-        element("section", { id: "v8-settings-appearance", className: "v8-settings-section v8-surface" }, [
+        element("section", { id: "v8-settings-appearance", className: "v8-settings-section v8-surface", attributes: { role: "tabpanel", tabindex: "0", hidden: true } }, [
           element("header", {}, [element("span", { className: "v8-eyebrow", text: "Design System" }), element("h2", { text: "Apparence" }), element("p", { text: "Des réglages sobres, coherents et persistants." })]),
           element("div", { className: "v8-density-settings" }, [
             element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("sun-moon")]), element("div", {}, [element("strong", { text: "Thème" }), element("p", { text: "Adapter les surfaces et le contraste." })]), themeResolved]),
@@ -357,7 +357,7 @@ export function mountSettings(stage, options = {}) {
             settingRow("blend", "Flou d'interface", "Effet de verre depoli sur le dock, les fenêtrès et menus. Le desactiver amélioré la fluidite du defilement.", switchControl("v8.motion.blur.toggle", "Activer le flou d'interface", state.interfaceBlurEnabled !== false))
           ])
         ]),
-        element("section", { id: "v8-settings-brain", className: "v8-settings-section v8-surface" }, [
+        element("section", { id: "v8-settings-brain", className: "v8-settings-section v8-surface", attributes: { role: "tabpanel", tabindex: "0", hidden: true } }, [
           element("header", {}, [element("span", { className: "v8-eyebrow", text: "Personal Brain" }), element("h2", { text: "Assistant, memoire et confidentialité" }), element("p", { text: "Un contexte minimal, des permissions explicites et aucune clé privée dans le navigateur." })]),
           settingRow("signature", "Identite", "Choisir le nom et le style de réponse.", element("div", { className: "v8-brain-settings-controls" }, [brainPreferenceSwitch("enabled", "Activer Brain", brainPreferences.enabled), brainNameInput, brainPersonaSelect, brainDetailSelect])),
           settingRow("message-square-more", "Comportement", "Ajuster le ton, la langue, les suggestions et le niveau d'automatisation.", element("div", { className: "v8-brain-settings-controls" }, [brainToneSelect, brainLanguageSelect, brainSuggestionSelect, brainAutomationSelect])),
@@ -384,7 +384,7 @@ export function mountSettings(stage, options = {}) {
             brainMemoryList
           ])
         ]),
-        element("section", { id: "v8-settings-sounds", className: "v8-settings-section v8-surface" }, [
+        element("section", { id: "v8-settings-sounds", className: "v8-settings-section v8-surface", attributes: { role: "tabpanel", tabindex: "0", hidden: true } }, [
           element("header", {}, [element("span", { className: "v8-eyebrow", text: "Audio system" }), element("h2", { text: "Sons" }), element("p", { text: "Des retours courts et discrets, toujours facultatifs." })]),
           settingRow("volume-2", "Retours sonores", soundSupported ? "Activer ou couper tout le système audio." : "Le son n'est pas disponible dans ce navigateur.", switchControl("v8.sound.toggle", "Activer les sons", initialSoundPreferences.enabled, !soundSupported)),
           settingRow("volume-x", "Mode silencieux", "Couper temporairement toutes les interactions sonores.", switchControl("v8.sound.silent", "Activer le mode silencieux", initialSoundPreferences.silent, !soundSupported)),
@@ -392,7 +392,7 @@ export function mountSettings(stage, options = {}) {
           settingRow("disc-3", "Pack sonore", "Choisir une identite sonore originale pour ETHONE.", soundPackControl),
           ...SOUND_VOLUME_ROWS.map((row) => settingRow(row.icon, row.title, row.description, soundRange(row.id, row.id === "master" ? initialSoundPreferences.master : initialSoundPreferences.volumes[row.id], !soundSupported)))
         ]),
-        element("section", { id: "v8-settings-workspace", className: "v8-settings-section v8-surface" }, [
+        element("section", { id: "v8-settings-workspace", className: "v8-settings-section v8-surface", attributes: { role: "tabpanel", tabindex: "0", hidden: true } }, [
           element("header", {}, [element("span", { className: "v8-eyebrow", text: "Environnements" }), element("h2", { text: "Spaces" }), element("p", { text: "Chaque Space applique son Flow et son ambiance." })]),
           element("div", { className: "v8-settings-spaces" }, [
             choice("v8.space.personal", "user-round", "Personnel", state.space === "personal"),
@@ -400,7 +400,7 @@ export function mountSettings(stage, options = {}) {
             choice("v8.space.studio", "sparkles", "Studio", state.space === "studio")
           ])
         ]),
-        element("section", { id: "v8-settings-system", className: "v8-settings-section v8-surface" }, [
+        element("section", { id: "v8-settings-system", className: "v8-settings-section v8-surface", attributes: { role: "tabpanel", tabindex: "0", hidden: true } }, [
           element("header", {}, [element("span", { className: "v8-eyebrow", text: "État" }), element("h2", { text: "Système cloud" })]),
           element("div", { className: "v8-system-checks" }, [
             element("span", {}, [icon("shield-check"), element("strong", { text: "Données" }), element("b", { text: "RLS actif" })]),
@@ -408,7 +408,7 @@ export function mountSettings(stage, options = {}) {
             element("span", {}, [icon("gauge"), element("strong", { text: "Interface" }), element("b", { text: DENSITY_LABELS[state.density] || "Confortable" })])
           ])
         ]),
-        element("section", { id: "v8-settings-developer", className: "v8-settings-section v8-surface" }, [
+        element("section", { id: "v8-settings-developer", className: "v8-settings-section v8-surface", attributes: { role: "tabpanel", tabindex: "0", hidden: true } }, [
           element("header", {}, [
             element("span", { className: "v8-eyebrow", text: "Inspector" }),
             element("h2", { text: "Services externes" }),
@@ -619,14 +619,31 @@ export function mountSettings(stage, options = {}) {
     const result = options.actions?.dispatch?.(actionId, context);
     return result?.then ? result.then(settle) : settle(result);
   }
+  function activateSection(button, focus = false) {
+    if (!button) return;
+    navButtons.forEach((entry) => {
+      const active = entry === button;
+      entry.classList.toggle("is-active", active);
+      entry.setAttribute("aria-selected", String(active));
+      entry.tabIndex = active ? 0 : -1;
+      if (active && focus) entry.focus();
+    });
+    page.querySelectorAll(".v8-settings-section").forEach((panel) => { panel.hidden = panel.id !== button.dataset.settingsSection; });
+  }
   function handleSectionNavigation(event) {
     const button = event.target.closest("[data-settings-section]");
     if (!button || !page.contains(button)) return;
-    navButtons.forEach((entry) => entry.classList.toggle("is-active", entry === button));
-    navButtons.forEach((entry) => entry.setAttribute("aria-current", entry === button ? "true" : "false"));
-    page.querySelector(`#${button.dataset.settingsSection}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    activateSection(button);
+  }
+  function handleSectionKeydown(event) {
+    if (!["ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    const index = navButtons.findIndex((entry) => entry.classList.contains("is-active"));
+    const next = event.key === "Home" ? 0 : event.key === "End" ? navButtons.length - 1 : (index + (event.key === "ArrowDown" ? 1 : -1) + navButtons.length) % navButtons.length;
+    activateSection(navButtons[next], true);
   }
   page.querySelector(".v8-settings-nav")?.addEventListener("click", handleSectionNavigation, { signal: controller.signal });
+  page.querySelector(".v8-settings-nav")?.addEventListener("keydown", handleSectionKeydown, { signal: controller.signal });
   workerDiagnosticButton.addEventListener("click", async () => {
     if (!externalServices?.diagnostic || workerDiagnosticRunning) return;
     workerDiagnosticRunning = true;

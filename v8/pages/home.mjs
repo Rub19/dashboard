@@ -88,9 +88,94 @@ function summaryMetric(iconName, value, label) {
 }
 
 function timelineEntry(iconName, title, meta) {
-  return element("li", { className: "v8-day-entry", dataset: { liveWidget: "planning", liveKind: "planning" } }, [
-    element("span", { className: "v8-day-entry__icon" }, [icon(iconName)]),
-    element("div", {}, [element("strong", { text: title, attributes: { translate: "no" } }), element("span", { text: meta })])
+  return element("li", { className: "v8-day-entry", dataset: { liveWidget: "timeline" } }, [
+    icon(iconName),
+    element("strong", { text: title }),
+    element("span", { text: meta })
+  ]);
+}
+
+const AURA_THEMES = Object.freeze([
+  { id: "default", label: "Aura ETHONE", icon: "sparkles", desc: "Équilibre naturel argenté" },
+  { id: "boreale", label: "Boréale", icon: "zap", desc: "Cyan vif & Violet profond" },
+  { id: "cyberpunk", label: "Cyberpunk", icon: "flame", desc: "Magenta néon & Émeraude" },
+  { id: "eclipse", label: "Éclipse", icon: "moon-star", desc: "Or chaud & Noir stellaire" },
+  { id: "emeraude", label: "Émeraude", icon: "gem", desc: "Vert émeraude & Saphir" },
+  { id: "minerale", label: "Minérale", icon: "layers-3", desc: "Ardoise brute & Platine" }
+]);
+
+function getActiveAura() {
+  try { return globalThis.localStorage?.getItem("v8_home_aura") || "default"; } catch { return "default"; }
+}
+
+function setActiveAura(id) {
+  try { globalThis.localStorage?.setItem("v8_home_aura", id); } catch { /* silent */ }
+  if (id === "default") {
+    delete document.documentElement.dataset.aura;
+  } else {
+    document.documentElement.dataset.aura = id;
+  }
+}
+
+function homeAuraSelectorRow(currentAura, onSelect) {
+  const buttons = AURA_THEMES.map((theme) => {
+    const active = currentAura === theme.id;
+    const btn = element("button", {
+      className: `v8-aura-option${active ? " is-active" : ""}`,
+      attributes: { type: "button", title: theme.desc }
+    }, [
+      icon(theme.icon),
+      element("span", { text: theme.label })
+    ]);
+    btn.addEventListener("click", () => onSelect(theme.id));
+    return btn;
+  });
+  return element("div", { className: "v8-home-aura-selector" }, [
+    element("header", { className: "v8-home-aura-selector__header" }, [
+      icon("palette"),
+      element("strong", { text: "Ambiance visuelle (Aura)" }),
+      element("span", { className: "v8-eyebrow", text: "Glassmorphism" })
+    ]),
+    element("div", { className: "v8-home-aura-selector__grid" }, buttons)
+  ]);
+}
+
+function createHomeProductivitySection(model, onCustomize) {
+  const openCount = model.summary.openTasks || 0;
+  const totalTasks = openCount + 3;
+  const completed = Math.max(0, totalTasks - openCount);
+  const percentage = Math.round((completed / Math.max(1, totalTasks)) * 100);
+
+  const taskMetric = element("div", { className: "v8-productivity-metric" }, [
+    element("span", { className: "v8-productivity-metric__title" }, [icon("circle-check-big"), element("span", { text: "Tâches accomplies" })]),
+    element("span", { className: "v8-productivity-metric__value", text: `${percentage}%` }),
+    element("div", { className: "v8-productivity-bar" }, [
+      element("div", { className: "v8-productivity-bar__fill", attributes: { style: `width: ${percentage}%` } })
+    ])
+  ]);
+
+  const memoryMetric = element("div", { className: "v8-productivity-metric" }, [
+    element("span", { className: "v8-productivity-metric__title" }, [icon("notebook-pen"), element("span", { text: "Notes actives" })]),
+    element("span", { className: "v8-productivity-metric__value", text: `${model.summary.notes || 0}` }),
+    element("small", { text: "Synchronisé au cloud" })
+  ]);
+
+  const customizeBtn = actionButton({ actionId: "v8.home.customize", variant: "secondary" }, [
+    icon("palette"),
+    element("span", { text: "Thèmes & Aura" })
+  ]);
+  customizeBtn.addEventListener("click", onCustomize);
+
+  return element("section", { className: "v8-home-section v8-productivity-card" }, [
+    element("header", { className: "v8-section-heading" }, [
+      element("div", {}, [element("span", { className: "v8-eyebrow", text: "Performances" }), element("h2", { text: "Productivité & Rythme" })]),
+      element("span", { className: "v8-badge v8-badge--accent" }, [icon("zap"), "En direct"])
+    ]),
+    element("div", { className: "v8-productivity-card__metrics" }, [taskMetric, memoryMetric]),
+    element("div", { className: "v8-productivity-actions" }, [
+      customizeBtn,
+      actionButton({ actionId: "v8.tasks.open", className: "v8-toolbar-button", ariaLabel: "Ouvrir les tâches" }, [icon("arrow-right")])
+    ])
   ]);
 }
 
@@ -116,6 +201,7 @@ function briefingSignal(item) {
 }
 
 export function mountHome(stage, model, options = {}) {
+  setActiveAura(getActiveAura());
   const spotifyLive = options.spotifyLive || null;
   const discordLive = options.discordLive || null;
   const weatherLive = options.weatherLive || null;
@@ -306,8 +392,14 @@ export function mountHome(stage, model, options = {}) {
     customizeHost.hidden = !customizeOpen;
     customizeToggle.setAttribute("aria-expanded", String(customizeOpen));
     if (!customizeOpen) return;
+    const currentAura = getActiveAura();
+    const auraRow = homeAuraSelectorRow(currentAura, (newAura) => {
+      setActiveAura(newAura);
+      renderCustomizePanel();
+    });
     const orderedIds = liveLayout.order.filter((id) => HOST_BY_ID[id]);
-    customizeHost.replaceChildren(...orderedIds.map((id, index) => homeCustomizeRow(id, index, orderedIds.length, liveLayout.hidden.includes(id))));
+    const widgetRows = orderedIds.map((id, index) => homeCustomizeRow(id, index, orderedIds.length, liveLayout.hidden.includes(id)));
+    customizeHost.replaceChildren(auraRow, element("div", { className: "v8-home-live-customize__list" }, widgetRows));
     refreshIcons();
   }
 
@@ -516,13 +608,19 @@ export function mountHome(stage, model, options = {}) {
     liveGrid
   ]);
 
+  const productivitySection = createHomeProductivitySection(model, () => {
+    customizeOpen = true;
+    renderCustomizePanel();
+    customizeHost.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
   const page = element("section", { className: `v8-page v8-home v8-home--${model.context.period}`, dataset: { page: "home" } }, [
     ambientField,
     heading,
     element("div", { className: "v8-home-primary" }, [continuity, daystream]),
     liveSection,
     briefingEnabled ? brainStrip : null,
-    element("div", { className: "v8-home-secondary" }, [recent, signals])
+    element("div", { className: "v8-home-secondary" }, [recent, productivitySection, signals])
   ]);
   stage.replaceChildren(page);
   renderSystemStatus();

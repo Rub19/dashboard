@@ -49,6 +49,8 @@ import { mountCalendar } from "../pages/calendar.mjs";
 import { mountFiles } from "../pages/files.mjs";
 import { mountSpaces, mountFlows } from "../pages/system.mjs";
 import { mountFeatureFallback } from "../pages/feature-fallback.mjs";
+import { createScratchpad } from "../ui/scratchpad.mjs";
+import { createShortcutsOverlay } from "../ui/shortcuts-overlay.mjs";
 
 export function mountApplication(root, options = {}) {
   if (!root) throw new TypeError("Application runtime requires a root element");
@@ -603,6 +605,10 @@ export function mountApplication(root, options = {}) {
     onClose: () => actions?.dispatch("v8.mission.close", { source: "backdrop" })
   });
   const contextMenu = createContextMenu(shell.contextMenuHost);
+  const scratchpad = createScratchpad(root, {
+    onCopy: (msg) => toasts.show({ id: "scratch-copy", title: "Brouillon", message: msg, type: "success" })
+  });
+  const shortcutsOverlay = createShortcutsOverlay(root);
 
   function finishRouteMount(route, focus, settled = true) {
     prepareFormControls(shell.stage);
@@ -917,6 +923,31 @@ export function mountApplication(root, options = {}) {
       actions.dispatch("v8.zen.toggle");
       return;
     }
+    if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key.toLowerCase() === "s" && !editable) {
+      event.preventDefault();
+      scratchpad.open();
+      return;
+    }
+    if ((event.ctrlKey || event.metaKey) && event.key === "/" && !event.shiftKey && !event.altKey) {
+      event.preventDefault();
+      shortcutsOverlay.open();
+      return;
+    }
+    if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key.toLowerCase() === "n" && !editable) {
+      event.preventDefault();
+      actions.dispatch("v8.notes.new");
+      return;
+    }
+    if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key.toLowerCase() === "t" && !editable) {
+      event.preventDefault();
+      actions.dispatch("v8.tasks.new");
+      return;
+    }
+    if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key.toLowerCase() === "e" && !editable) {
+      event.preventDefault();
+      actions.dispatch("v8.calendar.new");
+      return;
+    }
   }
 
   function handleContextMenu(event) {
@@ -1021,6 +1052,8 @@ export function mountApplication(root, options = {}) {
     commandCenter.destroy();
     missionControl.destroy();
     contextMenu.destroy();
+    scratchpad.destroy();
+    shortcutsOverlay.destroy();
     panels.destroy();
     toasts.destroy();
     activityJournal.destroy();

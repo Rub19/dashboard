@@ -34,3 +34,10 @@ test("Settings nav supports ArrowUp/ArrowDown/Home/End keyboard navigation, matc
   assert.doesNotMatch(keydownFn, /ArrowLeft|ArrowRight/);
   assert.match(source, /page\.querySelector\("\.v8-settings-nav"\)\?\.addEventListener\("keydown", handleSectionKeydown/);
 });
+
+test("changing appearance settings while in Settings does not re-mount settings or kick user back to Profile tab", () => {
+  const runtimeSource = read("v8/app/app-runtime.mjs");
+  assert.doesNotMatch(runtimeSource, /const settingsChanged = next\.route === "settings"/);
+  assert.doesNotMatch(runtimeSource, /if \(settingsChanged\) mountRoute\("settings", false\)/);
+  assert.match(runtimeSource, /if \(next\.space !== previous\.space && \["home", "brain", "spaces", "flows", "settings"\]\.includes\(next\.route\)\)/);
+});

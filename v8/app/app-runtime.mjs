@@ -844,16 +844,9 @@ export function mountApplication(root, options = {}) {
       metadata.setSurface(next.commandOpen ? "command" : next.missionOpen ? "mission" : next.panel);
     }
     if (next.space !== previous.space) metadata.setRoute(next.route);
-    const settingsChanged = next.route === "settings" && (
-      next.theme !== previous.theme ||
-      next.accent !== previous.accent ||
-      next.space !== previous.space ||
-      next.spotlightEnabled !== previous.spotlightEnabled ||
-      next.ambientEffectsEnabled !== previous.ambientEffectsEnabled ||
-      next.interfaceBlurEnabled !== previous.interfaceBlurEnabled
-    );
-    if (settingsChanged) mountRoute("settings", false);
-    if (next.space !== previous.space && ["home", "brain", "spaces", "flows"].includes(next.route)) mountRoute(next.route, false);
+    if (next.space !== previous.space && ["home", "brain", "spaces", "flows", "settings"].includes(next.route)) {
+      mountRoute(next.route, false);
+    }
     contextMenu.close();
     automationWatcher.check(next).forEach((rule) => {
       const run = () => actions.dispatch(rule.actionId, { source: "automation", automationId: rule.id });

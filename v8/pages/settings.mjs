@@ -606,6 +606,37 @@ export function mountSettings(stage, options = {}) {
       }
     });
     themeResolved.textContent = nextThemeResolution.requested === "auto" ? `${THEME_LABELS[nextThemeResolution.effective]} - systeme` : THEME_LABELS[nextThemeResolution.effective];
+
+    const activeAura = globalThis.localStorage?.getItem("v8_home_aura") || "classic";
+    auraChoices.querySelectorAll("button").forEach((button) => {
+      const active = button.dataset.action === `v8.aura.${activeAura}`;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+      const check = button.querySelector("[data-lucide='check']");
+      if (active && !check) button.append(icon("check"));
+      if (!active) check?.remove();
+    });
+
+    const activeFont = globalThis.localStorage?.getItem("v8_font_family") || "inter";
+    fontChoices.querySelectorAll("button").forEach((button) => {
+      const active = button.dataset.action === `v8.font.${activeFont}`;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+      const check = button.querySelector("[data-lucide='check']");
+      if (active && !check) button.append(icon("check"));
+      if (!active) check?.remove();
+    });
+
+    const activeRadius = globalThis.localStorage?.getItem("v8_radius_style") || "rounded";
+    radiusChoices.querySelectorAll("button").forEach((button) => {
+      const active = button.dataset.action === `v8.radius.${activeRadius}`;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+      const check = button.querySelector("[data-lucide='check']");
+      if (active && !check) button.append(icon("check"));
+      if (!active) check?.remove();
+    });
+
     page.querySelector("[data-action='v8.density.focus']")?.setAttribute("aria-checked", String(densitySettings.focusDensity));
     page.querySelector("[data-action='v8.density.spaces']")?.setAttribute("aria-checked", String(densitySettings.adaptiveBySpace));
     const brainPrefs = sanitizeBrainPreferences(nextState.brainPreferences);

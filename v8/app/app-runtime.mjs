@@ -523,9 +523,33 @@ export function mountApplication(root, options = {}) {
     user: initialModel.user,
     snapshot: () => repository.snapshot(),
     getState: () => store.getState(),
+    repository,
     currentLocale: () => i18n?.locale?.() || "fr",
     onLocaleChange: (locale) => i18n?.setLocale?.(locale),
-    onClose: () => actions?.dispatch("v8.panel.close", { source: "keyboard" })
+    onClose: () => actions?.dispatch("v8.panel.close", { source: "keyboard" }),
+    onSelectProfile: (profileId) => {
+      const result = repository.selectProfile(profileId);
+      if (result.ok) {
+        sounds?.play?.("profile.switch");
+        toasts.show({ id: "profile-switch", title: "Compte changé", message: `Profil « ${result.data?.name || profileId} » activé.`, type: "success" });
+        actions?.dispatch("v8.panel.close");
+      } else {
+        toasts.show({ id: "profile-switch-err", title: "Compte", message: result.message || "Impossible de changer de profil.", type: "error" });
+      }
+    },
+    onCreateProfile: () => {
+      actions?.dispatch("v8.panel.close");
+    },
+    onTimerAction: (type) => {
+      if (type === "finish") {
+        sounds?.play?.("focus.complete");
+        toasts.show({ id: "focus-done", title: "Focus Express", message: "Session terminée ! Bien joué. 🎉", type: "success" });
+      }
+    },
+    onCopyWorldTime: (city, time) => {
+      toasts.show({ id: "world-copy", title: city, message: `${time} copié dans le presse-papier`, type: "success" });
+      try { navigator.clipboard?.writeText(`${city}: ${time}`); } catch { /* silent */ }
+    }
   };
   const panels = createPanelManager(shell.panelHost, panelOptions);
   function applyProfileMediaUpdate(kind, url) {

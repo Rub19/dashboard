@@ -63,7 +63,9 @@ export const SOUND_EVENTS = Object.freeze({
   "action.execute": Object.freeze({ cue: "touch", category: "interface", gain: 0.52, minInterval: 120 }),
   "button.click": Object.freeze({ cue: "touch", category: "interface", gain: 0.38, minInterval: 120 }),
   "tab.switch": Object.freeze({ cue: "notice", category: "interface", gain: 0.44, minInterval: 150 }),
-  "toggle.switch": Object.freeze({ cue: "confirm", category: "interface", gain: 0.48, minInterval: 150 })
+  "toggle.switch": Object.freeze({ cue: "confirm", category: "interface", gain: 0.48, minInterval: 150 }),
+  "focus.complete": Object.freeze({ cue: "launch", category: "system", gain: 0.78, spatial: "center" }),
+  "profile.switch": Object.freeze({ cue: "confirm", category: "system", gain: 0.62 })
 });
 
 const PACK_PROFILES = Object.freeze({

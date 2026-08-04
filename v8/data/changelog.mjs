@@ -24,6 +24,12 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v187", "2026-08-04", "Compte Switcher, Horloges mondiales & Focus Express", [
+    { kind: "feature", text: "Panneau Profil multi-comptes : le panneau latéral Profil liste désormais tous les environnements (comptes) de la session avec un bouton 'Basculer' pour changer instantanément de profil, sans fermer ni recharger l'application." },
+    { kind: "feature", text: "Horloges & Hubs mondiaux dans le panneau Widgets : grille de 4 horloges (Paris, New York, Tokyo, San Francisco) avec indication Jour/Nuit, mise à jour en temps réel — cliquer copie l'heure dans le presse-papier." },
+    { kind: "feature", text: "Focus Express (Pomodoro) dans le panneau Widgets : minuteur intégré avec modes 25 min Focus / 5 min Pause, barre de progression animée et notification sonore (launch cue) à la fin de la session." },
+    { kind: "improvement", text: "Deux nouveaux sons ajoutés au catalogue audio : focus.complete (confirmation sonore en fin de session Pomodoro) et profile.switch (retour sonore lors du changement de compte)." }
+  ]),
   entry("v186", "2026-08-04", "Suite Premium, concentration Zen, fluidité et audit i18n 100%", [
     { kind: "feature", text: "Suite de fonctionnalités Premium & Concentration : Mode Zen (Alt+Z) pour masquer instantanément l'en-tête et le Dock pour un focus maximal, et nouveau sélecteur de taille du Dock (Compacte, Normale, Grande) dans les Réglages." },
     { kind: "feature", text: "Recherche Type-to-Select et Lecture : navigation fluide par saisie clavier directe dans les listes de fichiers et de tâches (sélection automatique de l'élément correspondant), et barre de progression de lecture avec estimation du temps sur les Notes." },

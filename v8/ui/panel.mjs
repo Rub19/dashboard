@@ -59,6 +59,137 @@ export function createPanelManager(host, options = {}) {
   const notificationMenu = createRowMenuController();
   let notificationQuery = "";
   let notificationFilter = "all";
+  let focusInterval = 0;
+  let focusRemaining = 25 * 60;
+  let focusTotal = 25 * 60;
+  let focusRunning = false;
+  let focusLabel = "Prêt (25 min)";
+
+  function renderWorldClocks() {
+    const hubs = [
+      { city: "Paris", zone: "Europe/Paris", label: "Europe" },
+      { city: "New York", zone: "America/New_York", label: "EST" },
+      { city: "Tokyo", zone: "Asia/Tokyo", label: "JST" },
+      { city: "San Francisco", zone: "America/Los_Angeles", label: "PST" }
+    ];
+    const grid = element("div", { className: "v8-world-grid" });
+    const now = new Date();
+    hubs.forEach((hub) => {
+      let timeStr = "--:--";
+      let isDay = true;
+      try {
+        const formatter = new Intl.DateTimeFormat("fr-FR", { timeZone: hub.zone, hour: "2-digit", minute: "2-digit" });
+        timeStr = formatter.format(now);
+        const hour = Number(new Intl.DateTimeFormat("en-US", { timeZone: hub.zone, hour: "numeric", hour12: false }).format(now));
+        isDay = hour >= 6 && hour < 20;
+      } catch {
+        timeStr = "12:00";
+      }
+      const card = element("div", { className: "v8-world-card", attributes: { role: "button", tabindex: "0", title: `Copier l'heure de ${hub.city}` } }, [
+        element("div", { className: "v8-world-card__top" }, [
+          element("span", { className: "v8-world-card__city", text: hub.city }),
+          element("span", { className: "v8-world-card__badge", text: isDay ? "☀️ Jour" : "🌙 Nuit" })
+        ]),
+        element("div", { className: "v8-world-card__time", text: timeStr })
+      ]);
+      card.addEventListener("click", () => {
+        options.onCopyWorldTime?.(hub.city, timeStr);
+      });
+      grid.append(card);
+    });
+    return element("section", { className: "v8-panel-section" }, [
+      element("header", {}, [element("strong", { text: "Horloges & Hubs mondiaux" }), element("span", { text: "Temps réel" })]),
+      grid
+    ]);
+  }
+
+  function renderFocusExpress() {
+    const mins = String(Math.floor(focusRemaining / 60)).padStart(2, "0");
+    const secs = String(focusRemaining % 60).padStart(2, "0");
+    const timerDisplay = element("span", { className: "v8-focus-express__timer", text: `${mins}:${secs}` });
+    const statusDisplay = element("span", { className: "v8-focus-express__status", text: focusLabel });
+    const fillBar = element("div", { className: "v8-focus-express__fill", attributes: { style: `width: ${Math.round(((focusTotal - focusRemaining) / focusTotal) * 100)}%;` } });
+
+    const start25Btn = element("button", { className: "v8-button v8-button--secondary v8-button--sm", text: "25m Focus", attributes: { type: "button" } });
+    const start5Btn = element("button", { className: "v8-button v8-button--secondary v8-button--sm", text: "5m Pause", attributes: { type: "button" } });
+    const resetBtn = element("button", { className: "v8-button v8-button--outline v8-button--sm", text: focusRunning ? "Pause" : "Reset", attributes: { type: "button" } });
+
+    function updateView() {
+      const m = String(Math.floor(focusRemaining / 60)).padStart(2, "0");
+      const s = String(focusRemaining % 60).padStart(2, "0");
+      timerDisplay.textContent = `${m}:${s}`;
+      statusDisplay.textContent = focusLabel;
+      fillBar.style.width = `${Math.round(((focusTotal - focusRemaining) / focusTotal) * 100)}%`;
+      resetBtn.textContent = focusRunning ? "Pause" : "Reset";
+    }
+
+    start25Btn.addEventListener("click", () => {
+      clearInterval(focusInterval);
+      focusTotal = 25 * 60;
+      focusRemaining = focusTotal;
+      focusRunning = true;
+      focusLabel = "Focus en cours...";
+      options.onTimerAction?.("start");
+      focusInterval = setInterval(() => {
+        if (focusRemaining > 0) {
+          focusRemaining -= 1;
+          updateView();
+        } else {
+          clearInterval(focusInterval);
+          focusRunning = false;
+          focusLabel = "Session Focus terminée !";
+          options.onTimerAction?.("finish");
+          updateView();
+        }
+      }, 1000);
+      updateView();
+    });
+
+    start5Btn.addEventListener("click", () => {
+      clearInterval(focusInterval);
+      focusTotal = 5 * 60;
+      focusRemaining = focusTotal;
+      focusRunning = true;
+      focusLabel = "Pause en cours...";
+      options.onTimerAction?.("start");
+      focusInterval = setInterval(() => {
+        if (focusRemaining > 0) {
+          focusRemaining -= 1;
+          updateView();
+        } else {
+          clearInterval(focusInterval);
+          focusRunning = false;
+          focusLabel = "Pause terminée !";
+          options.onTimerAction?.("finish");
+          updateView();
+        }
+      }, 1000);
+      updateView();
+    });
+
+    resetBtn.addEventListener("click", () => {
+      if (focusRunning) {
+        clearInterval(focusInterval);
+        focusRunning = false;
+        focusLabel = "En pause";
+      } else {
+        clearInterval(focusInterval);
+        focusRemaining = 25 * 60;
+        focusTotal = 25 * 60;
+        focusLabel = "Prêt (25 min)";
+      }
+      options.onTimerAction?.("reset");
+      updateView();
+    });
+
+    return element("section", { className: "v8-panel-section" }, [
+      element("header", {}, [element("strong", { text: "Focus Express" }), statusDisplay]),
+      element("div", { className: "v8-focus-express" }, [
+        element("div", { className: "v8-focus-express__display" }, [timerDisplay, element("div", { className: "v8-focus-express__controls" }, [start25Btn, start5Btn, resetBtn])]),
+        element("div", { className: "v8-focus-express__bar" }, [fillBar])
+      ])
+    ]);
+  }
 
   function close(config = {}) {
     if (!mounted) return false;
@@ -91,7 +222,9 @@ export function createPanelManager(host, options = {}) {
           actionButton({ actionId: "v8.calendar.new" }, [icon("calendar-plus"), element("span", { text: "Événement" })]),
           actionButton({ actionId: "v8.brain.open" }, [icon("brain"), element("span", { text: "Brain" })])
         ])
-      ])
+      ]),
+      renderWorldClocks(),
+      renderFocusExpress()
     ]);
   }
 
@@ -266,6 +399,9 @@ export function createPanelManager(host, options = {}) {
   function profileContent() {
     const state = options.getState?.() || {};
     const user = options.user || {};
+    const profiles = options.repository?.listProfiles?.() || [];
+    const activeProfile = options.repository?.activeProfile?.() || null;
+
     const language = createSelect({ className: "v8-input", attributes: { "aria-label": "Langue de l'interface", translate: "no" } }, [
       element("option", { text: "Francais", attributes: { value: "fr" } }),
       element("option", { text: "English", attributes: { value: "en" } }),
@@ -274,11 +410,56 @@ export function createPanelManager(host, options = {}) {
     ]);
     language.value = options.currentLocale?.() || "fr";
     language.addEventListener("change", () => options.onLocaleChange?.(language.value));
+
+    const switcherList = element("div", { className: "v8-profile-switcher-list" });
+    profiles.forEach((profile) => {
+      const isActive = activeProfile ? String(profile.id) === String(activeProfile.id) : (user.name === profile.name);
+      const actionBtn = isActive
+        ? element("span", { className: "v8-badge v8-badge--accent", text: "Actif" })
+        : element("button", {
+            className: "v8-button v8-button--secondary v8-button--sm",
+            text: "Basculer",
+            attributes: { type: "button" }
+          });
+
+      if (!isActive) {
+        actionBtn.addEventListener("click", () => {
+          options.onSelectProfile?.(profile.id);
+        });
+      }
+
+      const item = element("div", { className: `v8-profile-switcher-item${isActive ? " is-active" : ""}` }, [
+        element("div", { className: "v8-profile-switcher-item__left" }, [
+          profileAvatarNode(profile.avatar || { kind: "initials", value: profile.name?.[0] || "E" }),
+          element("div", { className: "v8-profile-switcher-item__info" }, [
+            element("strong", { text: profile.name || "Profil", attributes: { translate: "no" } }),
+            element("span", { text: profile.typeLabel || profile.type || "Personnel" })
+          ])
+        ]),
+        actionBtn
+      ]);
+      switcherList.append(item);
+    });
+
+    const createProfileBtn = element("button", {
+      className: "v8-button v8-button--outline v8-button--full",
+      attributes: { type: "button", style: "margin-top: 8px;" }
+    }, [icon("plus"), element("span", { text: "Créer / Gérer un compte unique" })]);
+    createProfileBtn.addEventListener("click", () => {
+      options.onClose?.();
+      options.onCreateProfile?.();
+    });
+
     return element("div", { className: "v8-panel__content" }, [
       element("div", { className: "v8-panel-profile-card" }, [
         profileAvatarNode(user),
         element("div", {}, [element("strong", { text: user.name || "Rub", attributes: { translate: "no" } }), element("span", { text: `${workspaceById(state.space).label} | ${state.flow || "Essentiel"}` })]),
         element("span", { className: "v8-badge v8-badge--accent", text: "En ligne" })
+      ]),
+      element("section", { className: "v8-panel-section" }, [
+        element("header", {}, [element("strong", { text: "Comptes & Environnements uniques" }), element("span", { text: `${profiles.length} compte(s)` })]),
+        switcherList,
+        createProfileBtn
       ]),
       element("label", { className: "v8-panel__language" }, [element("span", { text: "Langue" }), language]),
       element("div", { className: "v8-panel__actions" }, [
@@ -318,6 +499,7 @@ export function createPanelManager(host, options = {}) {
     current: () => mountedId,
     notificationCount: () => NOTIFICATION_ITEMS.filter((item) => !dismissedNotifications.has(item.id) && !readNotifications.has(item.id)).length,
     destroy: () => {
+      clearInterval(focusInterval);
       notificationMenu.destroy();
       shell?.classList.remove("has-open-panel");
       windowController.destroy();

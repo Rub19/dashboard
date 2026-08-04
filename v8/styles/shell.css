@@ -2311,6 +2311,35 @@ img.v8-panel-profile-card__avatar {
 .v8-panel-section > header span { color: var(--v8-muted); font-size: var(--v8-font-micro); }
 .v8-panel-quick-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--v8-space-2); }
 .v8-panel-quick-grid .v8-button { justify-content: flex-start; }
+
+/* Multi-User Profile Switcher in Profile Panel */
+.v8-profile-switcher-list { display: grid; gap: var(--v8-space-2); margin-top: var(--v8-space-2); }
+.v8-profile-switcher-item { display: flex; align-items: center; justify-content: space-between; gap: var(--v8-space-3); padding: var(--v8-space-3); border: 1px solid var(--v8-border); border-radius: var(--v8-radius-md); background: var(--v8-surface-1); transition: border-color var(--v8-motion-fast) var(--v8-ease-standard), background-color var(--v8-motion-fast) var(--v8-ease-standard); }
+html[data-v8-interactions] .v8-profile-switcher-item:hover { border-color: var(--v8-border-strong); background: var(--v8-surface-2); }
+.v8-profile-switcher-item.is-active { border-color: var(--v8-accent-line); background: var(--v8-accent-soft); }
+.v8-profile-switcher-item__left { display: flex; align-items: center; gap: var(--v8-space-3); min-width: 0; }
+.v8-profile-switcher-item__info { display: flex; flex-direction: column; min-width: 0; }
+.v8-profile-switcher-item__info strong { font-size: var(--v8-font-xs); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v8-profile-switcher-item__info span { font-size: var(--v8-font-micro); color: var(--v8-muted); }
+
+/* World Clocks in Widgets Panel */
+.v8-world-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--v8-space-2); margin-top: var(--v8-space-2); }
+.v8-world-card { display: flex; flex-direction: column; justify-content: space-between; padding: var(--v8-space-3); border: 1px solid var(--v8-border); border-radius: var(--v8-radius-md); background: var(--v8-surface-1); cursor: pointer; transition: border-color var(--v8-motion-fast) var(--v8-ease-standard), transform var(--v8-motion-fast) var(--v8-ease-standard); }
+html[data-v8-interactions] .v8-world-card:hover { border-color: var(--v8-border-strong); background: var(--v8-surface-2); transform: translateY(-1px); }
+.v8-world-card__top { display: flex; align-items: center; justify-content: space-between; gap: var(--v8-space-1); margin-bottom: 4px; }
+.v8-world-card__city { font-size: var(--v8-font-xs); font-weight: var(--v8-weight-semibold); color: var(--v8-text-primary); }
+.v8-world-card__badge { font-size: var(--v8-font-micro); color: var(--v8-muted); }
+.v8-world-card__time { font-size: var(--v8-font-lg); font-weight: var(--v8-weight-bold); color: var(--v8-accent); line-height: 1.1; }
+
+/* Focus Express Pomodoro in Widgets Panel */
+.v8-focus-express { display: grid; gap: var(--v8-space-3); padding: var(--v8-space-3); border: 1px solid var(--v8-border); border-radius: var(--v8-radius-md); background: var(--v8-surface-1); }
+.v8-focus-express__display { display: flex; align-items: center; justify-content: space-between; }
+.v8-focus-express__timer { font-size: 28px; font-weight: var(--v8-weight-bold); font-variant-numeric: tabular-nums; color: var(--v8-text-primary); }
+.v8-focus-express__status { font-size: var(--v8-font-micro); color: var(--v8-muted); text-transform: uppercase; font-weight: var(--v8-weight-semibold); }
+.v8-focus-express__bar { height: 4px; border-radius: var(--v8-radius-pill); background: var(--v8-surface-3); overflow: hidden; }
+.v8-focus-express__fill { height: 100%; background: var(--v8-accent); transition: width 0.3s ease; }
+.v8-focus-express__controls { display: flex; gap: var(--v8-space-2); }
+
 .v8-panel-notices { display: grid; gap: var(--v8-space-2); }
 
 .v8-panel-notice {

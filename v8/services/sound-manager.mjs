@@ -8,6 +8,7 @@ export const SOUND_PACKS = Object.freeze([
   Object.freeze({ id: "minimal", label: "Minimal", description: "Retours courts et presque tactiles." }),
   Object.freeze({ id: "classic", label: "Classic", description: "Tonalite chaleureuse et familiere." }),
   Object.freeze({ id: "apple-inspired", label: "Apple Inspired", description: "Clarté cristalline, composition originale." }),
+  Object.freeze({ id: "cyber-pulse", label: "Cyber Pulse", description: "Tonalités néon synthétiques et futuristes." }),
   Object.freeze({ id: "silent", label: "Silent", description: "Aucun retour sonore." })
 ]);
 
@@ -73,6 +74,7 @@ const PACK_PROFILES = Object.freeze({
   minimal: Object.freeze({ pitch: 1.08, harmonic: 0.08, air: 0, release: 0.72 }),
   classic: Object.freeze({ pitch: 0.82, harmonic: 0.28, air: 0.006, release: 1.12 }),
   "apple-inspired": Object.freeze({ pitch: 1.18, harmonic: 0.14, air: 0.01, release: 1.04 }),
+  "cyber-pulse": Object.freeze({ pitch: 1.28, harmonic: 0.34, air: 0.018, release: 0.92 }),
   silent: Object.freeze({ pitch: 1, harmonic: 0, air: 0, release: 0 })
 });
 
@@ -614,6 +616,69 @@ export function createSoundManager(options = {}) {
     return ready ? play("settings.preview", { pack: packId }) : false;
   }
 
+  function exportWav(packId = preferences.pack) {
+    try {
+      const sampleRate = 44100;
+      const fakeContext = {
+        sampleRate,
+        createBuffer(channels, length) {
+          const data = new Float32Array(length);
+          return { getChannelData: () => data };
+        }
+      };
+      const cues = ["launch", "open", "confirm", "notice"];
+      const gapSamples = Math.floor(sampleRate * 0.28);
+      const rendered = cues.map((cue) => renderCue(fakeContext, cue, packId).getChannelData(0));
+      const totalSamples = rendered.reduce((sum, arr) => sum + arr.length + gapSamples, 0);
+      const combined = new Float32Array(totalSamples);
+      let offset = 0;
+      for (const arr of rendered) {
+        combined.set(arr, offset);
+        offset += arr.length + gapSamples;
+      }
+
+      const wavBuffer = new ArrayBuffer(44 + combined.length * 2);
+      const view = new DataView(wavBuffer);
+      const writeString = (pos, str) => {
+        for (let i = 0; i < str.length; i += 1) view.setUint8(pos + i, str.charCodeAt(i));
+      };
+      writeString(0, "RIFF");
+      view.setUint32(4, 36 + combined.length * 2, true);
+      writeString(8, "WAVE");
+      writeString(12, "fmt ");
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true);
+      view.setUint16(22, 1, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, sampleRate * 2, true);
+      view.setUint16(32, 2, true);
+      view.setUint16(34, 16, true);
+      writeString(36, "data");
+      view.setUint32(40, combined.length * 2, true);
+
+      let wavOffset = 44;
+      for (let i = 0; i < combined.length; i += 1, wavOffset += 2) {
+        const s = Math.max(-1, Math.min(1, combined[i]));
+        view.setInt16(wavOffset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+      }
+
+      if (typeof document !== "undefined" && typeof URL !== "undefined") {
+        const blob = new Blob([wavBuffer], { type: "audio/wav" });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = `ethone-soundpack-${packId || "ethone"}.wav`;
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
   function setPreferences(patch = {}) {
     const next = normalizeSoundPreferences({
       ...preferences,
@@ -634,6 +699,113 @@ export function createSoundManager(options = {}) {
       rate: clamp(patch.rate ?? ambientProfile.rate, 0.96, 1.04)
     });
     return ambientProfile;
+  }
+
+  let activeAmbienceNode = null;
+  let activeAmbienceGain = null;
+  let activeAmbienceType = "none";
+
+  function stopAmbience() {
+    if (activeAmbienceGain && audioContext) {
+      try {
+        activeAmbienceGain.gain.setValueAtTime(activeAmbienceGain.gain.value, audioContext.currentTime);
+        activeAmbienceGain.gain.linearRampToValueAtTime(0.0001, audioContext.currentTime + 0.4);
+        const node = activeAmbienceNode;
+        setTimeout(() => {
+          try { node?.stop?.(); node?.disconnect?.(); } catch {}
+        }, 450);
+      } catch {}
+    }
+    activeAmbienceNode = null;
+    activeAmbienceGain = null;
+    activeAmbienceType = "none";
+    notify({ type: "ambience-changed", ambience: "none" });
+    return "none";
+  }
+
+  function startAmbience(type = "rain") {
+    if (activeAmbienceType === type) {
+      return stopAmbience();
+    }
+    stopAmbience();
+    const ctx = unlock() ? audioContext : null;
+    if (!ctx) {
+      activeAmbienceType = type;
+      notify({ type: "ambience-changed", ambience: type });
+      return type;
+    }
+    try {
+      const duration = 4;
+      const bufferSize = ctx.sampleRate * duration;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+
+      if (type === "rain") {
+        let last = 0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          data[i] = (last + (0.02 * white)) / 1.02;
+          last = data[i];
+          data[i] *= 2.5;
+        }
+      } else if (type === "pink") {
+        let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          b0 = 0.99886 * b0 + white * 0.0555179;
+          b1 = 0.99332 * b1 + white * 0.0750759;
+          b2 = 0.96900 * b2 + white * 0.1538520;
+          b3 = 0.86650 * b3 + white * 0.3104856;
+          b4 = 0.55000 * b4 + white * 0.5329522;
+          b5 = -0.7616 * b5 - white * 0.0168980;
+          data[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+          data[i] *= 0.11;
+          b6 = white * 0.115926;
+        }
+      } else if (type === "drone") {
+        for (let i = 0; i < bufferSize; i++) {
+          const t = i / ctx.sampleRate;
+          data[i] = (Math.sin(2 * Math.PI * 110 * t) * 0.3 + Math.sin(2 * Math.PI * 165 * t) * 0.2 + Math.sin(2 * Math.PI * 220 * t) * 0.15) * (0.8 + Math.sin(2 * Math.PI * 0.2 * t) * 0.2);
+        }
+      } else {
+        return stopAmbience();
+      }
+
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+      source.loop = true;
+
+      const filter = ctx.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.value = type === "rain" ? 850 : type === "drone" ? 420 : 1800;
+
+      const gain = ctx.createGain();
+      const targetVolume = type === "drone" ? 0.08 : 0.06;
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(targetVolume * (preferences.master || 0.8), ctx.currentTime + 1.2);
+
+      source.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+      source.start();
+
+      activeAmbienceNode = source;
+      activeAmbienceGain = gain;
+      activeAmbienceType = type;
+      notify({ type: "ambience-changed", ambience: type });
+      return type;
+    } catch {
+      activeAmbienceType = type;
+      notify({ type: "ambience-changed", ambience: type });
+      return type;
+    }
+  }
+
+  function getAmbienceState() {
+    return Object.freeze({
+      active: activeAmbienceType !== "none",
+      type: activeAmbienceType
+    });
   }
 
   function setAdaptiveProfile(patch = {}) {
@@ -732,12 +904,16 @@ export function createSoundManager(options = {}) {
     playAction,
     playNotification,
     preview,
+    exportWav,
     preload,
     preferences: () => preferences,
     setMediaActivity,
     setPreferences,
     setAmbientProfile,
     setAdaptiveProfile,
+    startAmbience,
+    stopAmbience,
+    getAmbienceState,
     setOwner,
     subscribe,
     diagnostics,

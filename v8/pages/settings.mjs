@@ -329,7 +329,11 @@ export function mountSettings(stage, options = {}) {
   }, SOUND_PACKS.map((pack) => element("option", { text: pack.label, attributes: { value: pack.id } })));
   soundPackSelect.value = initialSoundPreferences.pack;
   const soundPackControl = element("div", { className: "v8-sound-pack-control" }, [
-    element("div", {}, [soundPackSelect, actionButton({ actionId: "v8.sound.preview", className: "v8-icon-button", ariaLabel: "Ecouter un apercu", disabled: !soundSupported }, [icon("play")])]),
+    element("div", { className: "v8-sound-pack-control__actions" }, [
+      soundPackSelect,
+      actionButton({ actionId: "v8.sound.preview", className: "v8-icon-button", ariaLabel: "Ecouter un apercu", disabled: !soundSupported }, [icon("play")]),
+      actionButton({ actionId: "v8.sound.export", className: "v8-button v8-button--secondary", ariaLabel: "Télécharger les sons en WAV", disabled: !soundSupported }, [icon("download"), element("span", { text: "Télécharger (.WAV)" })])
+    ]),
     element("small", { text: SOUND_PACKS.find((pack) => pack.id === initialSoundPreferences.pack)?.description || "Signature douce et lumineuse.", dataset: { soundPackDescription: "" } })
   ]);
   const workerStatusHost = element("div", { className: "v8-system-checks", attributes: { "aria-live": "polite" } });
@@ -429,6 +433,29 @@ export function mountSettings(stage, options = {}) {
             choice("v8.dock.scale.compact", "minimize-2", "Compacte", state.dockScale === "compact"),
             choice("v8.dock.scale.normal", "layout-bottom", "Normale", !state.dockScale || state.dockScale === "normal"),
             choice("v8.dock.scale.large", "maximize-2", "Grande", state.dockScale === "large")
+          ])),
+          settingRow("align-center", "Alignement du Dock", "Dock centré flottant ou étendu sur la largeur.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Alignement du Dock" } }, [
+            choice("v8.dock.align.center", "align-center", "Centré", !state.dockAlign || state.dockAlign === "center"),
+            choice("v8.dock.align.stretch", "maximize-2", "Plein Écran", state.dockAlign === "stretch")
+          ])),
+          settingRow("sparkles", "Style du Dock (Verre)", "Transparence, flou artistique ou style opaque sobre.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Style du Dock" } }, [
+            choice("v8.dock.glass.default", "sparkles", "Vitrifié", !state.dockGlass || state.dockGlass === "default"),
+            choice("v8.dock.glass.ultra", "blend", "Ultra Flou", state.dockGlass === "ultra"),
+            choice("v8.dock.glass.opaque", "layout", "Sobre", state.dockGlass === "opaque")
+          ])),
+          settingRow("eye-off", "Masquage auto du Dock", "Masquer automatiquement le dock et le révéler au survol.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Masquage auto du Dock" } }, [
+            choice("v8.dock.autohide.off", "eye", "Toujours visible", !state.dockAutoHide),
+            choice("v8.dock.autohide.on", "eye-off", "Masquer auto", state.dockAutoHide === true)
+          ])),
+          settingRow("layout-grid", "Grille de l'Accueil", "Choisir le nombre de colonnes et la disposition de l'Accueil.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Grille de l'Accueil" } }, [
+            choice("v8.home.grid.2", "layout-grid", "2 Colonnes", state.homeGrid === "2"),
+            choice("v8.home.grid.3", "layout-grid", "3 Colonnes", state.homeGrid === "3"),
+            choice("v8.home.grid.4", "layout-grid", "4 Colonnes", !state.homeGrid || state.homeGrid === "4")
+          ])),
+          settingRow("image", "Bannière d'Accueil", "Afficher la salutation complète, en version compacte ou la masquer.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Bannière d'Accueil" } }, [
+            choice("v8.home.hero.full", "image", "Complète", !state.homeHero || state.homeHero === "full"),
+            choice("v8.home.hero.compact", "minimize-2", "Compacte", state.homeHero === "compact"),
+            choice("v8.home.hero.hidden", "eye-off", "Masquée", state.homeHero === "hidden")
           ])),
           settingRow("languages", "Langue", "Changer rapidement la langue de l'interface.", actionButton({ actionId: "v8.locale.cycle", variant: "secondary" }, [icon("languages"), element("span", { text: "Langue suivante" })])),
           element("div", { className: "v8-density-settings" }, [

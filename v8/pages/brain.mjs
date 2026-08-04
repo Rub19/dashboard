@@ -332,7 +332,7 @@ export function mountBrain(stage, options = {}) {
     else setFieldState(chatInput, "invalid", response.message);
     renderHistory();
   }, { signal: controller.signal });
-  chatInput.addEventListener("keydown", (event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); chatForm.requestSubmit(); } }, { signal: controller.signal });
+  chatInput.addEventListener("keydown", (event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); if (typeof chatForm.requestSubmit === "function") { chatForm.requestSubmit(); } else { sendButton.click(); } } }, { signal: controller.signal });
   suggestions.addEventListener("click", async (event) => { const button = event.target.closest("[data-brain-suggestion]"); if (!button) return; const suggestion = brain.controller.suggestions().find((entry) => entry.id === button.dataset.brainSuggestion); if (!suggestion) return; let response = await brain.controller.execute(suggestion.action, suggestion.parameters); if (response.status === "confirmation-required" && confirm(`${response.message}\n\nAutoriser cette action ?`)) response = await brain.controller.execute(suggestion.action, suggestion.parameters, { confirmed: true }); options.notify?.({ id: `brain-${suggestion.id}`, title: "Brain", message: response.message, type: response.ok ? "success" : "warning" }); }, { signal: controller.signal });
   providersPanel.addEventListener("click", async (event) => {
     const button = event.target.closest("[data-brain-provider-test]");

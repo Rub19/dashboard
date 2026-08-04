@@ -23,7 +23,7 @@ test("Spotify and Weather cards shed their widest secondary content before their
   assert.match(shell, /\.v8-weather-live \{[^}]*container-type:inline-size/);
 
   const spotifyBaseIndex = shell.indexOf('.v8-spotify-control--secondary { width:26px');
-  const spotifyQueryIndex = shell.indexOf('@container (max-width:360px) { .v8-spotify-control--secondary { display:none; } }');
+  const spotifyQueryIndex = shell.indexOf('@container (max-width:140px) { .v8-spotify-control--secondary { display:none; } }');
   assert.ok(spotifyBaseIndex > -1 && spotifyQueryIndex > spotifyBaseIndex, "the spotify container query must come after the base rule it overrides, or source order loses the cascade");
 
   const weatherBaseIndex = shell.indexOf(".v8-weather-forecast { display:flex;gap:10px;");

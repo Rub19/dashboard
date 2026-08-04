@@ -36,7 +36,7 @@ test("browser CSP is exact-origin and blocks script attributes", () => {
     "http://127.0.0.1:8787",
     "http://localhost:8787"
   ]);
-  assert.equal(policy.match(/img-src\s+([^;]+)/)?.[1], "'self' data: blob: https://i.scdn.co https://cdn.discordapp.com https://textures.minecraft.net https://avatars.githubusercontent.com https://avatars.steamstatic.com https://avatars.akamaihd.net https://media.valorant-api.com https://static-cdn.jtvnw.net https://lastfm.freetls.fastly.net https://lastfm-img2.akamaized.net https://tracker.gg https://ssl.gstatic.com https://i.ytimg.com https://yt3.ggpht.com https://styles.redditmedia.com https://bvgifyzhpzkbrwdjrqsg.supabase.co");
+  assert.equal(policy.match(/img-src\s+([^;]+)/)?.[1], "'self' data: blob: https://cdn.jsdelivr.net https://raw.githubusercontent.com https://i.scdn.co https://cdn.discordapp.com https://textures.minecraft.net https://avatars.githubusercontent.com https://avatars.steamstatic.com https://avatars.akamaihd.net https://media.valorant-api.com https://static-cdn.jtvnw.net https://lastfm.freetls.fastly.net https://lastfm-img2.akamaized.net https://tracker.gg https://ssl.gstatic.com https://i.ytimg.com https://yt3.ggpht.com https://styles.redditmedia.com https://bvgifyzhpzkbrwdjrqsg.supabase.co");
   assert.doesNotMatch(policy, /https:\/\/\*\.(?:supabase\.co|workers\.dev)|media-src[^;]*https:/);
 });
 

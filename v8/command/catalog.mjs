@@ -31,7 +31,14 @@ const commands = [
   { id: "space.focus", actionId: "v8.space.focus", label: "Space Focus", subtitle: "Flow Deep Work", category: "Spaces", icon: "focus", keywords: ["space", "focus", "deep work", "study", "dev"], contexts: ["space-focus"], contextPriority: 74 },
   { id: "space.studio", actionId: "v8.space.studio", label: "Space Studio", subtitle: "Flow Creation", category: "Spaces", icon: "sparkles", keywords: ["space", "studio", "creation", "creative"], contexts: ["space-studio"], contextPriority: 74 },
   { id: "zen.toggle", actionId: "v8.zen.toggle", label: "Mode Zen (Concentration)", subtitle: "Masquer les barres pour un focus maximal", category: "Navigation", icon: "minimize-2", keywords: ["zen", "focus", "concentration", "plein écran"] },
-  { id: "dock.scale", actionId: "v8.dock.scale", label: "Taille du Dock", subtitle: "Changer l'échelle (Compacte, Normale, Grande)", category: "Réglages", icon: "layout-bottom", keywords: ["dock", "taille", "échelle", "barre"] }
+  { id: "dock.scale", actionId: "v8.dock.scale", label: "Taille du Dock", subtitle: "Changer l'échelle (Compacte, Normale, Grande)", category: "Réglages", icon: "layout-bottom", keywords: ["dock", "taille", "échelle", "barre"] },
+  { id: "focus.pomodoro", actionId: "v8.focus.start.pomodoro", label: "Démarrer Pomodoro (25 min)", subtitle: "Focus Express avec pause", category: "Focus Timer", icon: "timer", keywords: ["pomodoro", "focus", "timer", "chrono", "minuteur"], contextPriority: 115 },
+  { id: "focus.deep", actionId: "v8.focus.start.deep", label: "Démarrer Deep Work (50 min)", subtitle: "Focus intense sans interruption", category: "Focus Timer", icon: "brain", keywords: ["deep", "work", "focus", "timer", "intense"], contextPriority: 110 },
+  { id: "focus.stop", actionId: "v8.focus.stop", label: "Arrêter le Focus Timer", subtitle: "Mettre fin à la session en cours", category: "Focus Timer", icon: "square", keywords: ["stop", "focus", "timer", "arrêt", "pause"], contextPriority: 105 },
+  { id: "ambience.rain", actionId: "v8.ambience.rain", label: "Ambiance : Pluie (Rain)", subtitle: "Son d'ambiance relaxant", category: "Ambiance", icon: "cloud-rain", keywords: ["pluie", "rain", "son", "ambiance", "relax"], contextPriority: 100 },
+  { id: "ambience.pink", actionId: "v8.ambience.pink", label: "Ambiance : Bruit rose (Pink noise)", subtitle: "Son d'ambiance de concentration", category: "Ambiance", icon: "sparkles", keywords: ["pink", "rose", "bruit", "ambiance"], contextPriority: 100 },
+  { id: "ambience.stop", actionId: "v8.ambience.stop", label: "Arrêter l'ambiance sonore", subtitle: "Couper les sons d'ambiance", category: "Ambiance", icon: "volume-x", keywords: ["ambience", "stop", "silence", "muet"], contextPriority: 98 },
+  { id: "dock.edit", actionId: "v8.dock.edit.open", label: "Personnaliser le Dock", subtitle: "Taille, verre, animations, sons et minuteur", category: "Réglages", icon: "sliders-horizontal", keywords: ["dock", "personnaliser", "taille", "verre", "animations", "sons", "barre"], contextPriority: 112 }
 ].map((command) => Object.freeze({
   ...command,
   keywords: Object.freeze(command.keywords || []),

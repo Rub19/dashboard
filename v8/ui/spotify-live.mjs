@@ -26,16 +26,10 @@ function artwork(playback, className) {
 
 function playbackControl(playback) {
   const label = playback.playing ? "Mettre Spotify en pause" : "Reprendre Spotify";
-  if (!playback.controllable) {
-    return element("span", {
-      className: "v8-spotify-external-state",
-      attributes: { "aria-label": playback.playing ? "Lecture Spotify en cours (lecture externe)" : "Spotify en pause (lecture externe)" }
-    }, [icon(playback.playing ? "radio" : "pause")]);
-  }
   return element("div", { className: "v8-spotify-controls" }, [
-    actionButton({ actionId: "v8.spotify.previous", className: "v8-icon-button v8-spotify-control v8-spotify-control--secondary", ariaLabel: "Morceau précédent" }, [icon("skip-back")]),
-    actionButton({ actionId: "v8.spotify.toggle", className: "v8-icon-button v8-spotify-control", ariaLabel: label }, [icon(playback.playing ? "pause" : "play")]),
-    actionButton({ actionId: "v8.spotify.next", className: "v8-icon-button v8-spotify-control v8-spotify-control--secondary", ariaLabel: "Morceau suivant" }, [icon("skip-forward")])
+    actionButton({ actionId: "v8.spotify.previous", className: "v8-icon-button v8-spotify-control v8-spotify-control--secondary", ariaLabel: "Morceau précédent", title: "Morceau précédent" }, [icon("skip-back")]),
+    actionButton({ actionId: "v8.spotify.toggle", className: "v8-icon-button v8-spotify-control", ariaLabel: label, title: label }, [icon(playback.playing ? "pause" : "play")]),
+    actionButton({ actionId: "v8.spotify.next", className: "v8-icon-button v8-spotify-control v8-spotify-control--secondary", ariaLabel: "Morceau suivant", title: "Morceau suivant" }, [icon("skip-forward")])
   ]);
 }
 

@@ -103,7 +103,7 @@ test("sound preferences are bounded, complete and use ETHONE by default", () => 
   assert.equal(normalized.volumes.interface, 0);
   assert.equal(normalized.volumes.notifications, 0.4);
   assert.equal(normalized.volumes.brain, DEFAULT_SOUND_PREFERENCES.volumes.brain);
-  assert.deepEqual(SOUND_PACKS.map(({ id }) => id), ["ethone", "minimal", "classic", "apple-inspired", "silent"]);
+  assert.deepEqual(SOUND_PACKS.map(({ id }) => id), ["ethone", "minimal", "classic", "apple-inspired", "cyber-pulse", "silent"]);
 });
 
 test("spatial audio stays subtle and forces modal and Brain cues to the center", () => {
@@ -390,4 +390,11 @@ test("interactive click listener triggers semantic sounds for buttons, tabs and 
     }
   });
   assert.equal(stats.starts, 3);
+});
+
+test("exportWav generates valid audio buffer without throwing", () => {
+  const manager = createSoundManager({ preferences: { enabled: true, pack: "cyber-pulse" } });
+  assert.equal(typeof manager.exportWav, "function");
+  assert.equal(manager.exportWav("cyber-pulse"), true);
+  assert.equal(manager.exportWav("ethone"), true);
 });

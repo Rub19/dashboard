@@ -159,7 +159,7 @@ test("Discord live resolves badges from public_flags/nitro and exposes them on p
   const uiSource = fs.readFileSync(new URL("../v8/ui/discord-live.mjs", import.meta.url), "utf8");
   assert.match(uiSource, /function discordBadgesNode\(badges = \[\]\) \{/);
   assert.match(uiSource, /className: "v8-discord-badges"/);
-  assert.match(uiSource, /className: "v8-discord-badge"/);
+  assert.match(uiSource, /v8-discord-badge/);
   assert.match(uiSource, /discordBadgesNode\(presence\.badges\)/);
 });
 

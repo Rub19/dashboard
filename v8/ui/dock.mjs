@@ -1,4 +1,5 @@
 import { NAVIGATION_ITEMS } from "../data/navigation.mjs";
+import { SOUND_PACKS } from "../services/sound-manager.mjs";
 import { element, icon } from "./dom.mjs";
 import { refreshIcons, scheduleIconRefresh } from "./icons.mjs";
 import { getLayerManager } from "./layer-manager.mjs";
@@ -99,6 +100,93 @@ export function createDock(host, options = {}) {
     try { storage?.setItem(storageKey, JSON.stringify(order)); } catch {}
   }
 
+  function dockCustomizerPanel() {
+    const el = typeof document !== "undefined" ? document.documentElement : null;
+    const currentScale = el?.dataset?.v8DockScale || "normal";
+    const currentAlign = el?.dataset?.v8DockAlign || "center";
+    const currentGlass = el?.dataset?.v8DockGlass || "default";
+    const currentAutoHide = el?.dataset?.v8DockAutohide === "true";
+    const currentMagnify = el?.dataset?.v8DockMagnify !== "false";
+    const currentAnimations = el?.dataset?.v8Animations || "smooth";
+    const currentGlow = el?.dataset?.v8UiGlow !== "false";
+    const currentSoundFeedback = el?.dataset?.v8UiSoundFeedback !== "false";
+    const currentSoundPack = el?.dataset?.v8SoundPack || "ethone";
+
+    function row(label, iconName, choices) {
+      return element("div", { className: "v8-dock-editor__setting-row" }, [
+        element("span", { className: "v8-dock-editor__setting-label" }, [
+          icon(iconName),
+          element("span", { text: label })
+        ]),
+        element("div", { className: "v8-dock-editor__setting-choices", attributes: { role: "group", "aria-label": label } }, choices)
+      ]);
+    }
+
+    function btn(label, actionId, active) {
+      return element("button", {
+        className: `v8-dock-editor__choice${active ? " is-active" : ""}`,
+        attributes: { type: "button", "aria-pressed": String(active) },
+        dataset: { dockConfigAction: actionId }
+      }, [element("span", { text: label })]);
+    }
+
+    return element("div", { className: "v8-dock-editor__config" }, [
+      row("Taille", "layout-bottom", [
+        btn("Compacte", "v8.dock.scale.compact", currentScale === "compact"),
+        btn("Normale", "v8.dock.scale.normal", !currentScale || currentScale === "normal"),
+        btn("Grande", "v8.dock.scale.large", currentScale === "large")
+      ]),
+      row("Alignement", "align-center", [
+        btn("Centré", "v8.dock.align.center", !currentAlign || currentAlign === "center"),
+        btn("Plein Écran", "v8.dock.align.stretch", currentAlign === "stretch")
+      ]),
+      row("Verre & Flou", "sparkles", [
+        btn("Vitrifié", "v8.dock.glass.default", !currentGlass || currentGlass === "default"),
+        btn("Ultra Flou", "v8.dock.glass.ultra", currentGlass === "ultra"),
+        btn("Sobre", "v8.dock.glass.opaque", currentGlass === "opaque")
+      ]),
+      row("Masquage Auto", "eye-off", [
+        btn("Toujours visible", "v8.dock.autohide.off", !currentAutoHide),
+        btn("Masquer auto", "v8.dock.autohide.on", currentAutoHide)
+      ]),
+      row("Zoom survol", "maximize-2", [
+        btn("Actif", "v8.dock.magnify.on", currentMagnify),
+        btn("Désactivé", "v8.dock.magnify.off", !currentMagnify)
+      ]),
+      row("Animations UI", "activity", [
+        btn("Fluides", "v8.ui.animations.smooth", currentAnimations === "smooth"),
+        btn("Rapides", "v8.ui.animations.snappy", currentAnimations === "snappy"),
+        btn("Réduites", "v8.ui.animations.reduced", currentAnimations === "reduced")
+      ]),
+      row("Aura néon", "zap", [
+        btn("Active", "v8.ui.glow.on", currentGlow),
+        btn("Sobre", "v8.ui.glow.off", !currentGlow)
+      ]),
+      row("Sons d'interface", "volume-2", [
+        btn("Actifs", "v8.ui.sound.feedback.on", currentSoundFeedback),
+        btn("Silencieux", "v8.ui.sound.feedback.off", !currentSoundFeedback)
+      ]),
+      row("Pack sonore", "disc-3", SOUND_PACKS.map((pack) => btn(pack.label, "v8.sound.pack." + pack.id, currentSoundPack === pack.id))),
+      row("Audio (.WAV)", "download", [
+        btn("Écouter l'aperçu", "v8.sound.preview", false),
+        btn("Télécharger en .WAV", "v8.sound.export", false)
+      ]),
+      row("Ambiance sonore", "cloud-rain", [
+        btn("🌧 Pluie", "v8.ambience.rain", false),
+        btn("🌸 Bruit rose", "v8.ambience.pink", false),
+        btn("🎵 Drone", "v8.ambience.drone", false),
+        btn("Arrêter", "v8.ambience.stop", false)
+      ]),
+      row("Focus Timer", "timer", [
+        btn("🍅 Pomodoro", "v8.focus.start.pomodoro", false),
+        btn("🧠 Deep Work", "v8.focus.start.deep", false),
+        btn("⚡ Sprint", "v8.focus.start.quick", false),
+        btn("⏸ Pause", "v8.focus.pause", false),
+        btn("⏹ Stop", "v8.focus.stop", false)
+      ])
+    ]);
+  }
+
   function compactPinnedItems(pinned) {
     if (!compactMedia.matches || pinned.length <= 4) return pinned;
     const visible = pinned.slice(0, 4);
@@ -132,12 +220,16 @@ export function createDock(host, options = {}) {
       mediaSlot,
       compactMedia.matches && pinned.length > visiblePinned.length ? element("button", { className: `v8-dock-more${launcherOpen ? " is-active" : ""}`, attributes: { type: "button", "aria-label": "Ouvrir toutes les applications", "aria-expanded": String(launcherOpen) }, dataset: { dockCommand: "more", tooltip: "Toutes les apps" } }, [icon("grid-2x2")]) : null,
       element("span", { className: "v8-dock-separator", attributes: { "aria-hidden": "true" } }),
+      element("button", { className: "v8-dock-control", attributes: { type: "button", "aria-label": "Recherche Spotlight & Commandes (Ctrl+K)" }, dataset: { dockCommand: "spotlight", tooltip: "Spotlight (Ctrl+K)" } }, [icon("search")]),
+      element("button", { className: "v8-dock-control", attributes: { type: "button", "aria-label": "Minuteur Pomodoro (Focus Express 25 min)" }, dataset: { dockCommand: "pomodoro", tooltip: "Pomodoro Focus (25m)" } }, [icon("timer")]),
+      element("button", { className: "v8-dock-control", attributes: { type: "button", "aria-label": "Vue d'ensemble Mission Control (F3)" }, dataset: { dockCommand: "mission", tooltip: "Mission Control" } }, [icon("layout-grid")]),
       element("button", { className: `v8-dock-control${editing ? " is-active" : ""}`, attributes: { type: "button", "aria-label": "Personnaliser le Dock", "aria-expanded": String(editing) }, dataset: { dockCommand: "edit", tooltip: "Personnaliser le Dock" } }, [icon("sliders-horizontal")])
     ]);
     const children = [nav];
     if (launcherOpen && compactMedia.matches) children.push(launcherNode(pinned));
     if (editing) children.push(element("section", { className: "v8-dock-editor", attributes: { role: "dialog", "aria-modal": "false", "aria-label": "Personnaliser le Dock" } }, [
       element("header", {}, [element("span", {}, [element("small", { text: "ETHONE OS", attributes: { translate: "no" } }), element("strong", { text: "Personnaliser le Dock" })]), editorControl("close", "", "Fermer", "x")]),
+      dockCustomizerPanel(),
       element("div", { className: "v8-dock-editor__list" }, NAVIGATION_ITEMS.map((item) => editorNode(item, order))),
       element("footer", {}, [element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { dockCommand: "reset" } }, [icon("rotate-ccw"), element("span", { text: "Reinitialiser" })])])
     ]));
@@ -187,13 +279,66 @@ export function createDock(host, options = {}) {
       launcherOpen = false;
       return;
     }
+    const configBtn = event.target.closest?.("[data-dock-config-action]");
+    if (configBtn && host.contains(configBtn)) {
+      event.preventDefault();
+      event.stopPropagation();
+      const actionId = configBtn.dataset.dockConfigAction;
+      options.onAction?.(actionId, { source: "dock-editor" });
+      const el = typeof document !== "undefined" ? document.documentElement : null;
+      if (el) {
+        if (actionId.startsWith("v8.dock.scale.")) {
+          const val = actionId.split(".").pop();
+          if (val !== "normal") el.dataset.v8DockScale = val;
+          else delete el.dataset.v8DockScale;
+        } else if (actionId.startsWith("v8.dock.align.")) {
+          const val = actionId.split(".").pop();
+          if (val !== "center") el.dataset.v8DockAlign = val;
+          else delete el.dataset.v8DockAlign;
+        } else if (actionId.startsWith("v8.dock.glass.")) {
+          const val = actionId.split(".").pop();
+          if (val !== "default") el.dataset.v8DockGlass = val;
+          else delete el.dataset.v8DockGlass;
+        } else if (actionId.startsWith("v8.dock.autohide.")) {
+          const val = actionId.split(".").pop();
+          if (val === "on") el.dataset.v8DockAutohide = "true";
+          else delete el.dataset.v8DockAutohide;
+        } else if (actionId.startsWith("v8.dock.magnify.")) {
+          const val = actionId.split(".").pop();
+          el.dataset.v8DockMagnify = val === "on" ? "true" : "false";
+        } else if (actionId.startsWith("v8.ui.animations.")) {
+          const val = actionId.split(".").pop();
+          el.dataset.v8Animations = val;
+        } else if (actionId.startsWith("v8.ui.glow.")) {
+          const val = actionId.split(".").pop();
+          el.dataset.v8UiGlow = val === "on" ? "true" : "false";
+        } else if (actionId.startsWith("v8.ui.sound.feedback.")) {
+          const val = actionId.split(".").pop();
+          el.dataset.v8UiSoundFeedback = val === "on" ? "true" : "false";
+        } else if (actionId.startsWith("v8.sound.pack.")) {
+          const val = actionId.split("v8.sound.pack.").pop();
+          el.dataset.v8SoundPack = val;
+        }
+      }
+      render(`[data-dock-config-action="${actionId}"]`);
+      return;
+    }
     const control = event.target.closest?.("[data-dock-command]");
     if (!control || !host.contains(control)) return;
     event.preventDefault();
     event.stopPropagation();
     const command = control.dataset.dockCommand;
     const id = control.dataset.dockId || "";
-    if (command === "edit") {
+    if (command === "spotlight") {
+      options.onAction?.("v8.command.open", { source: "dock" });
+      return;
+    } else if (command === "pomodoro") {
+      options.onAction?.("v8.focus.start.pomodoro", { source: "dock" });
+      return;
+    } else if (command === "mission") {
+      options.onAction?.("v8.mission.open", { source: "dock" });
+      return;
+    } else if (command === "edit") {
       editing = !editing;
       launcherOpen = false;
       render(editing ? "[data-dock-command=close]" : "[data-dock-command=edit]");

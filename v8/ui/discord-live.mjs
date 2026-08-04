@@ -16,14 +16,28 @@ function avatar(presence) {
 function discordBadgesNode(badges = []) {
   if (!Array.isArray(badges) || badges.length === 0) return null;
   const items = badges.map((badge) => {
+    const badgeContent = badge.imageUrl
+      ? element("img", {
+          className: "v8-discord-badge__img",
+          attributes: {
+            src: badge.imageUrl,
+            alt: badge.label,
+            title: badge.label,
+            loading: "lazy",
+            decoding: "async",
+            referrerpolicy: "no-referrer"
+          }
+        })
+      : icon(badge.icon || "award");
+
     return element("span", {
-      className: "v8-discord-badge",
+      className: `v8-discord-badge${badge.imageUrl ? " is-image" : ""}`,
       attributes: {
         title: badge.label,
         "aria-label": badge.label,
         style: badge.color ? `--v8-badge-color:${badge.color}` : null
       }
-    }, [icon(badge.icon || "award")]);
+    }, [badgeContent]);
   });
   return element("div", { className: "v8-discord-badges", attributes: { "aria-label": "Badges Discord" } }, items);
 }

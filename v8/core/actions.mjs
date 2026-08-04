@@ -29,6 +29,7 @@ export function createActionFacade(options = {}) {
   const sounds = options.sounds || null;
   const sync = options.sync || null;
   const spotifyLive = options.spotifyLive || null;
+  const focusTimer = options.focusTimer || null;
   const handlers = new Map();
 
   function register(id, handler) {
@@ -162,6 +163,11 @@ export function createActionFacade(options = {}) {
   register("v8.mission.close", () => {
     setState({ missionOpen: false });
     return completed("Mission Control ferme");
+  });
+  register("v8.dock.edit.open", () => {
+    const editBtn = typeof document !== "undefined" ? document.querySelector("[data-dock-command=edit]") : null;
+    if (editBtn) editBtn.click();
+    return completed("Éditeur du Dock ouvert");
   });
 
   function activateSpace(id, label, flow, accent) {
@@ -297,6 +303,109 @@ export function createActionFacade(options = {}) {
   register("v8.dock.scale.compact", () => setDockScale("compact"));
   register("v8.dock.scale.normal", () => setDockScale("normal"));
   register("v8.dock.scale.large", () => setDockScale("large"));
+
+  function setDockAlign(valid) {
+    setState({ dockAlign: valid });
+    if (typeof document !== "undefined" && document.documentElement) {
+      if (valid && valid !== "center") document.documentElement.dataset.v8DockAlign = valid;
+      else delete document.documentElement.dataset.v8DockAlign;
+    }
+    notify({ id: "dock-align", title: "Dock", message: `Alignement : ${valid === "stretch" ? "Plein Écran" : "Centré"}`, type: "success" });
+    return completed("Alignement du Dock modifié", { dockAlign: valid });
+  }
+  function setDockGlass(valid) {
+    setState({ dockGlass: valid });
+    if (typeof document !== "undefined" && document.documentElement) {
+      if (valid && valid !== "default") document.documentElement.dataset.v8DockGlass = valid;
+      else delete document.documentElement.dataset.v8DockGlass;
+    }
+    notify({ id: "dock-glass", title: "Dock", message: `Verre : ${valid}`, type: "success" });
+    return completed("Effet du Dock modifié", { dockGlass: valid });
+  }
+  function setDockAutoHide(valid) {
+    setState({ dockAutoHide: valid });
+    if (typeof document !== "undefined" && document.documentElement) {
+      if (valid) document.documentElement.dataset.v8DockAutohide = "true";
+      else delete document.documentElement.dataset.v8DockAutohide;
+    }
+    notify({ id: "dock-autohide", title: "Dock", message: `Masquage auto : ${valid ? "Activé" : "Désactivé"}`, type: "success" });
+    return completed("Masquage auto modifié", { dockAutoHide: valid });
+  }
+  function setHomeGrid(valid) {
+    setState({ homeGrid: valid });
+    if (typeof document !== "undefined" && document.documentElement) {
+      document.documentElement.dataset.v8HomeGrid = valid;
+    }
+    notify({ id: "home-grid", title: "Accueil", message: `Grille Accueil : ${valid} colonnes`, type: "success" });
+    return completed("Grille Accueil modifiée", { homeGrid: valid });
+  }
+  function setHomeHero(valid) {
+    setState({ homeHero: valid });
+    if (typeof document !== "undefined" && document.documentElement) {
+      document.documentElement.dataset.v8HomeHero = valid;
+    }
+    notify({ id: "home-hero", title: "Accueil", message: `Bannière Accueil : ${valid}`, type: "success" });
+    return completed("Bannière Accueil modifiée", { homeHero: valid });
+  }
+  function setDockMagnify(valid) {
+    setState({ dockMagnify: valid });
+    if (typeof document !== "undefined" && document.documentElement) {
+      document.documentElement.dataset.v8DockMagnify = valid ? "true" : "false";
+    }
+    notify({ id: "dock-magnify", title: "Dock", message: `Zoom au survol : ${valid ? "Activé" : "Désactivé"}`, type: "success" });
+    return completed("Zoom du Dock modifié", { dockMagnify: valid });
+  }
+  function setUiAnimations(valid) {
+    setState({ uiAnimations: valid });
+    if (typeof document !== "undefined" && document.documentElement) {
+      document.documentElement.dataset.v8Animations = valid;
+    }
+    notify({ id: "ui-animations", title: "Interface", message: `Animations : ${valid}`, type: "success" });
+    return completed("Animations UI modifiées", { uiAnimations: valid });
+  }
+  function setUiGlow(valid) {
+    setState({ uiGlow: valid });
+    if (typeof document !== "undefined" && document.documentElement) {
+      document.documentElement.dataset.v8UiGlow = valid ? "true" : "false";
+    }
+    notify({ id: "ui-glow", title: "Interface", message: `Aura lumineuse : ${valid ? "Activée" : "Désactivée"}`, type: "success" });
+    return completed("Aura lumineuse UI modifiée", { uiGlow: valid });
+  }
+  function setUiSoundFeedback(valid) {
+    setState({ uiSoundFeedback: valid });
+    if (typeof document !== "undefined" && document.documentElement) {
+      document.documentElement.dataset.v8UiSoundFeedback = valid ? "true" : "false";
+    }
+    notify({ id: "ui-sound-feedback", title: "Audio", message: `Retours sonores interactifs : ${valid ? "Activés" : "Désactivés"}`, type: "success" });
+    return completed("Retours sonores UI modifiés", { uiSoundFeedback: valid });
+  }
+
+  register("v8.dock.align.center", () => setDockAlign("center"));
+  register("v8.dock.align.stretch", () => setDockAlign("stretch"));
+  register("v8.dock.glass.default", () => setDockGlass("default"));
+  register("v8.dock.glass.ultra", () => setDockGlass("ultra"));
+  register("v8.dock.glass.opaque", () => setDockGlass("opaque"));
+  register("v8.dock.autohide.toggle", () => setDockAutoHide(!getState().dockAutoHide));
+  register("v8.dock.autohide.on", () => setDockAutoHide(true));
+  register("v8.dock.autohide.off", () => setDockAutoHide(false));
+  register("v8.dock.magnify.on", () => setDockMagnify(true));
+  register("v8.dock.magnify.off", () => setDockMagnify(false));
+  register("v8.dock.magnify.toggle", () => setDockMagnify(!getState().dockMagnify));
+  register("v8.ui.animations.smooth", () => setUiAnimations("smooth"));
+  register("v8.ui.animations.snappy", () => setUiAnimations("snappy"));
+  register("v8.ui.animations.reduced", () => setUiAnimations("reduced"));
+  register("v8.ui.glow.on", () => setUiGlow(true));
+  register("v8.ui.glow.off", () => setUiGlow(false));
+  register("v8.ui.glow.toggle", () => setUiGlow(!getState().uiGlow));
+  register("v8.ui.sound.feedback.on", () => setUiSoundFeedback(true));
+  register("v8.ui.sound.feedback.off", () => setUiSoundFeedback(false));
+  register("v8.ui.sound.feedback.toggle", () => setUiSoundFeedback(!getState().uiSoundFeedback));
+  register("v8.home.grid.2", () => setHomeGrid("2"));
+  register("v8.home.grid.3", () => setHomeGrid("3"));
+  register("v8.home.grid.4", () => setHomeGrid("4"));
+  register("v8.home.hero.full", () => setHomeHero("full"));
+  register("v8.home.hero.compact", () => setHomeHero("compact"));
+  register("v8.home.hero.hidden", () => setHomeHero("hidden"));
   register("v8.density.toggle", () => {
     const sequence = ["spacious", "comfortable", "compact", "ultra-compact", "automatic"];
     const current = getState().density;
@@ -466,6 +575,12 @@ export function createActionFacade(options = {}) {
     void sounds.preview();
     return completed("Apercu sonore lance");
   });
+  register("v8.sound.export", () => {
+    if (!sounds?.exportWav) return unavailable("L'exportation sonore n'est pas disponible dans ce navigateur.");
+    const ok = sounds.exportWav();
+    if (!ok) return unavailable("Erreur lors de la génération du fichier WAV.");
+    return completed("Téléchargement du pack audio (.wav) démarré");
+  });
   register("v8.sound.volume", (context = {}) => {
     if (!sounds?.setPreferences) return unavailable("Les sons ne sont pas disponibles dans ce contexte.");
     const category = String(context.category || "master");
@@ -474,13 +589,58 @@ export function createActionFacade(options = {}) {
     else sounds.setPreferences({ volumes: { [category]: value } });
     return completed("Volume modifié", { category, value });
   });
-  ["ethone", "minimal", "classic", "apple-inspired", "silent"].forEach((pack) => {
+  ["ethone", "minimal", "classic", "apple-inspired", "cyber-pulse", "silent"].forEach((pack) => {
     register(`v8.sound.pack.${pack}`, () => {
       if (!sounds?.setPreferences) return unavailable("Les sons ne sont pas disponibles dans ce contexte.");
       sounds.setPreferences({ pack });
       if (pack !== "silent" && sounds.preferences().enabled) void sounds.preview?.(pack);
       return completed("Pack sonore modifié", { pack });
     });
+  });
+
+  ["rain", "pink", "drone"].forEach((ambienceType) => {
+    register(`v8.ambience.${ambienceType}`, () => {
+      if (!sounds?.startAmbience) return unavailable("Le moteur d'ambiance n'est pas disponible.");
+      const result = sounds.startAmbience(ambienceType);
+      return completed(result === "none" ? "Ambiance arrêtée" : `Ambiance "${ambienceType}" activée`, { ambience: result });
+    });
+  });
+  register("v8.ambience.stop", () => {
+    if (!sounds?.stopAmbience) return unavailable("Le moteur d'ambiance n'est pas disponible.");
+    sounds.stopAmbience();
+    return completed("Ambiance arrêtée");
+  });
+
+  // ─── Focus Timer (Pomodoro) ───
+  ["pomodoro", "deep", "quick"].forEach((preset) => {
+    register(`v8.focus.start.${preset}`, () => {
+      if (!focusTimer) return unavailable("Le minuteur focus n'est pas disponible.");
+      focusTimer.start(preset);
+      const s = focusTimer.getState();
+      notify({ id: "focus-started", title: "Focus", message: `Session "${preset}" démarrée — ${focusTimer.formatRemaining()}`, type: "info" });
+      return completed("Minuteur focus démarré", s);
+    });
+  });
+  register("v8.focus.pause", () => {
+    if (!focusTimer) return unavailable("Le minuteur focus n'est pas disponible.");
+    focusTimer.pause();
+    return completed("Focus en pause");
+  });
+  register("v8.focus.resume", () => {
+    if (!focusTimer) return unavailable("Le minuteur focus n'est pas disponible.");
+    focusTimer.resume();
+    return completed("Focus repris");
+  });
+  register("v8.focus.stop", () => {
+    if (!focusTimer) return unavailable("Le minuteur focus n'est pas disponible.");
+    focusTimer.stop();
+    return completed("Focus arrêté");
+  });
+  register("v8.focus.skip", () => {
+    if (!focusTimer) return unavailable("Le minuteur focus n'est pas disponible.");
+    focusTimer.skip();
+    const s = focusTimer.getState();
+    return completed(s.phase === "idle" ? "Session terminée" : `Phase suivante: ${s.phase}`, s);
   });
 
   register("v8.locale.cycle", () => {

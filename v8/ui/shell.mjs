@@ -190,7 +190,7 @@ export function mountShell(root, options = {}) {
   let breadcrumbRenderKey = "";
   let statusRenderKey = "";
   const contextName = String(options.contextName || "Personnel").slice(0, 80);
-  const dock = createDock(root.querySelector("#v8-dock-host"), { route: activeRoute, owner: options.profileId, media: options.spotify, initialOrder: options.dockOrder, onChange: options.onDockChange });
+  const dock = createDock(root.querySelector("#v8-dock-host"), { route: activeRoute, owner: options.profileId, media: options.spotify, initialOrder: options.dockOrder, onChange: options.onDockChange, onAction: options.onAction });
   let activeUser = options.user || null;
 
   function renderProfileMark() {

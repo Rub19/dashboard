@@ -302,16 +302,29 @@ export function mountApplication(root, options = {}) {
   document.documentElement.dataset.spotlight = store.getState().spotlightEnabled === false ? "disabled" : "enabled";
   document.documentElement.dataset.ambientMotion = store.getState().ambientEffectsEnabled === false ? "disabled" : "enabled";
   document.documentElement.dataset.interfaceBlur = store.getState().interfaceBlurEnabled === false ? "disabled" : "enabled";
-  if (store.getState().zen) {
-    document.documentElement.dataset.v8Zen = "true";
-  } else {
-    delete document.documentElement.dataset.v8Zen;
+  function applyUIThemeAttributes(state) {
+    if (typeof document === "undefined" || !document.documentElement) return;
+    const el = document.documentElement;
+    if (state.zen) el.dataset.v8Zen = "true";
+    else delete el.dataset.v8Zen;
+    if (state.dockScale && state.dockScale !== "normal") el.dataset.v8DockScale = state.dockScale;
+    else delete el.dataset.v8DockScale;
+    if (state.dockAlign && state.dockAlign !== "center") el.dataset.v8DockAlign = state.dockAlign;
+    else delete el.dataset.v8DockAlign;
+    if (state.dockGlass && state.dockGlass !== "default") el.dataset.v8DockGlass = state.dockGlass;
+    else delete el.dataset.v8DockGlass;
+    if (state.dockAutoHide) el.dataset.v8DockAutohide = "true";
+    else delete el.dataset.v8DockAutohide;
+    el.dataset.v8DockMagnify = state.dockMagnify ? "true" : "false";
+    el.dataset.v8Animations = state.uiAnimations || "smooth";
+    el.dataset.v8UiGlow = state.uiGlow ? "true" : "false";
+    el.dataset.v8UiSoundFeedback = state.uiSoundFeedback ? "true" : "false";
+    if (state.homeGrid && state.homeGrid !== "4") el.dataset.v8HomeGrid = state.homeGrid;
+    else delete el.dataset.v8HomeGrid;
+    if (state.homeHero && state.homeHero !== "full") el.dataset.v8HomeHero = state.homeHero;
+    else delete el.dataset.v8HomeHero;
   }
-  if (store.getState().dockScale && store.getState().dockScale !== "normal") {
-    document.documentElement.dataset.v8DockScale = store.getState().dockScale;
-  } else {
-    delete document.documentElement.dataset.v8DockScale;
-  }
+  applyUIThemeAttributes(store.getState());
   densityEngine.start(store.getState());
   automationWatcher.prime(store.getState());
   if (ownsAmbientEngine) ambient.start(store.getState());
@@ -807,14 +820,7 @@ export function mountApplication(root, options = {}) {
     if (next.spotlightEnabled !== previous.spotlightEnabled) document.documentElement.dataset.spotlight = next.spotlightEnabled ? "enabled" : "disabled";
     if (next.ambientEffectsEnabled !== previous.ambientEffectsEnabled) document.documentElement.dataset.ambientMotion = next.ambientEffectsEnabled ? "enabled" : "disabled";
     if (next.interfaceBlurEnabled !== previous.interfaceBlurEnabled) document.documentElement.dataset.interfaceBlur = next.interfaceBlurEnabled ? "enabled" : "disabled";
-    if (next.zen !== previous.zen) {
-      if (next.zen) document.documentElement.dataset.v8Zen = "true";
-      else delete document.documentElement.dataset.v8Zen;
-    }
-    if (next.dockScale !== previous.dockScale) {
-      if (next.dockScale && next.dockScale !== "normal") document.documentElement.dataset.v8DockScale = next.dockScale;
-      else delete document.documentElement.dataset.v8DockScale;
-    }
+    applyUIThemeAttributes(next);
     if (next.flow !== previous.flow || next.space !== previous.space || next.theme !== previous.theme) ambient.refresh(next);
     if (next.theme !== previous.theme || next.space !== previous.space) metadata.setThemeColor(themeColorForState(next, { systemPrefersLight: systemPrefersLight(globalThis) }));
     shell.update(next);

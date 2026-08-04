@@ -10,7 +10,8 @@ function contextualReply(query, scope) {
   if (/connexion|sync|supabase/.test(intent)) return data.connections?.length ? `${data.connections.length} connexion${data.connections.length > 1 ? "s" : ""}, etat technique uniquement.` : "Connexions non chargees ou non autorisees.";
   if (/densite|density|interface|reglage/.test(intent)) return data.settings ? `Mode ${data.settings.density}. Toute modification exige confirmation.` : "Ouvrez Réglages pour analyser l'apparence.";
   const counts = [[data.tasks, "priorités"], [data.notes, "notes"], [data.events, "événements"]].filter(([items]) => items?.length).map(([items, label]) => `${items.length} ${label}`);
-  return `Je suis sur ${scope.route}, dans ${scope.workspace.space}. ${counts.length ? `Contexte minimal : ${counts.join(", ")}.` : "Le contexte reste volontairement minimal."}`;
+  const space = scope.workspace?.space || "l'espace actif";
+  return `Je suis sur ${scope.route || "home"}, dans ${space}. ${counts.length ? `Contexte minimal : ${counts.join(", ")}.` : "Le contexte reste volontairement minimal."}`;
 }
 
 export function createBrainController(options = {}) {

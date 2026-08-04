@@ -88,6 +88,7 @@ const ETHONE_V8_ASSETS = [
   "./v8/services/discord-live.mjs",
   "./v8/services/rate-limiter.mjs",
   "./v8/services/service-worker.mjs",
+  "./v8/services/focus-timer.mjs",
   "./v8/services/sound-manager.mjs",
   "./v8/services/spotify-live.mjs",
   "./v8/services/spotify-oauth.mjs",

@@ -231,11 +231,46 @@ export function mountHome(stage, model, options = {}) {
       : { type: "Nouvel espace", title: "Votre journée peut commencer ici.", action: "v8.command.open", button: "Ouvrir le Command Center", icon: "sparkles", userContent: false };
   if (model.nextTasks[0] || model.recentNotes[0]) continuation.userContent = true;
 
+  const SESSION_MODES = [
+    { id: "focus", label: "🚀 Session Focus", copy: "Optimisé pour votre concentration." },
+    { id: "intense", label: "⚡ Haute Productivité", copy: "Rythme soutenu et suivi en temps réel." },
+    { id: "zen", label: "☕ Pause & Réflexion", copy: "Ambiance apaisée pour vos notes et idées." },
+    { id: "night", label: "🌙 Veille Tranquille", copy: "Confort visuel pour sessions tardives." }
+  ];
+  let currentSessionMode = globalThis.localStorage?.getItem("v8_home_session_mode") || "focus";
+  const activeSessionMeta = SESSION_MODES.find((m) => m.id === currentSessionMode) || SESSION_MODES[0];
+  const sessionModeButton = element("button", {
+    className: "v8-session-badge",
+    attributes: { type: "button", title: "Cliquer pour changer le rythme de session", "aria-label": "Changer le mode de session" }
+  }, [
+    element("span", { className: "v8-session-badge__icon", text: activeSessionMeta.label.split(" ")[0] }),
+    element("span", { className: "v8-session-badge__label", text: activeSessionMeta.label.split(" ").slice(1).join(" ") }),
+    icon("chevron-right")
+  ]);
+  const heroSubtitle = element("p", { text: `${model.context.tone} — ${activeSessionMeta.copy}` });
+  sessionModeButton.addEventListener("click", () => {
+    const currentIndex = SESSION_MODES.findIndex((m) => m.id === currentSessionMode);
+    const nextIndex = (currentIndex + 1) % SESSION_MODES.length;
+    const nextMode = SESSION_MODES[nextIndex];
+    currentSessionMode = nextMode.id;
+    globalThis.localStorage?.setItem("v8_home_session_mode", nextMode.id);
+    document.documentElement.dataset.sessionMode = nextMode.id;
+    const iconSpan = sessionModeButton.querySelector(".v8-session-badge__icon");
+    const labelSpan = sessionModeButton.querySelector(".v8-session-badge__label");
+    if (iconSpan) iconSpan.textContent = nextMode.label.split(" ")[0];
+    if (labelSpan) labelSpan.textContent = nextMode.label.split(" ").slice(1).join(" ");
+    heroSubtitle.textContent = `${model.context.tone} — ${nextMode.copy}`;
+    options.actions?.notify?.({ id: "session-mode-switch", title: "Rythme de session", message: `Mode « ${nextMode.label} » activé.`, type: "success" });
+  });
+
   const heading = element("header", { className: "v8-page-heading v8-home-heading" }, [
     element("div", { className: "v8-page-heading__copy" }, [
-      element("span", { className: "v8-eyebrow", text: formattedDate(model.generatedAt), attributes: { translate: "no" } }),
+      element("div", { className: "v8-page-heading__meta" }, [
+        element("span", { className: "v8-eyebrow", text: formattedDate(model.generatedAt), attributes: { translate: "no" } }),
+        sessionModeButton
+      ]),
       element("h1", { text: `${model.context.greeting}, ${model.user.name}.` }),
-      element("p", { text: model.context.tone })
+      heroSubtitle
     ]),
     element("div", { className: "v8-page-heading__actions" }, [
       actionButton({ actionId: "v8.notes.new", variant: "secondary" }, [icon("file-plus-2"), element("span", { text: "Nouvelle note" })]),

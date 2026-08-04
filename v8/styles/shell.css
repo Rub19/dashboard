@@ -3652,6 +3652,83 @@ html[data-v8-interactions] .v8-aura-option:hover {
   padding: var(--v8-space-3) var(--v8-space-5);
   border-top: 1px solid var(--v8-border);
   background: var(--v8-surface-2);
-  font-size: var(--v8-font-xs);
   color: var(--v8-muted);
+}
+
+/* Typography Personnalisée (Inter, Outfit, Mono, Serif) */
+html[data-font="outfit"] {
+  font-family: "Outfit", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+html[data-font="mono"] {
+  font-family: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+}
+html[data-font="serif"] {
+  font-family: "Editorial Serif", "Georgia", "Playfair Display", serif;
+}
+
+/* Echelle de Courbure du Design (Rounded, Sharp, Soft) */
+html[data-radius-style="sharp"] {
+  --v8-radius-xs: 2px;
+  --v8-radius-sm: 3px;
+  --v8-radius-md: 4px;
+  --v8-radius-lg: 6px;
+  --v8-radius-pill: 6px;
+  --v8-radius-dock: 8px;
+}
+html[data-radius-style="soft"] {
+  --v8-radius-xs: 6px;
+  --v8-radius-sm: 10px;
+  --v8-radius-md: 16px;
+  --v8-radius-lg: 24px;
+  --v8-radius-pill: 9999px;
+  --v8-radius-dock: 32px;
+}
+
+/* Interactive Session Mood Pill Badge on Home Hero */
+.v8-page-heading__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--v8-space-3);
+  flex-wrap: wrap;
+}
+.v8-session-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--v8-space-2);
+  padding: 4px 10px;
+  border-radius: var(--v8-radius-pill);
+  border: 1px solid var(--v8-border-strong);
+  background: var(--v8-surface-card);
+  color: var(--v8-text-primary);
+  font-size: var(--v8-font-xs);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--v8-shadow-sm);
+}
+html[data-v8-interactions] .v8-session-badge:hover {
+  background: var(--v8-surface-glass);
+  border-color: var(--v8-accent);
+  box-shadow: 0 0 16px var(--v8-accent-glow);
+  transform: translateY(-1px);
+}
+.v8-session-badge__icon {
+  font-size: var(--v8-font-sm);
+}
+.v8-session-badge__label {
+  color: var(--v8-text-primary);
+}
+
+/* Session Mode Hero Glows */
+html[data-session-mode="intense"] .v8-home-heading {
+  border-left: 3px solid var(--v8-accent);
+  padding-left: var(--v8-space-4);
+}
+html[data-session-mode="zen"] .v8-home-heading {
+  border-left: 3px solid var(--v8-success);
+  padding-left: var(--v8-space-4);
+}
+html[data-session-mode="night"] .v8-home-heading {
+  border-left: 3px solid var(--v8-purple-500);
+  padding-left: var(--v8-space-4);
 }

@@ -79,3 +79,22 @@ test("day theme body, secondary and status colors clear WCAG AA against its own 
   assert.ok(contrast("#a15a06", "#ffffff") >= 4.5, "warning on canvas-raised");
   assert.ok(contrast("#1b6fc2", "#ffffff") >= 4.5, "info on canvas-raised");
 });
+
+const shell = fs.readFileSync(new URL("../v8/styles/shell.css", import.meta.url), "utf8");
+
+test("typography options apply distinct font families via data-font attribute", () => {
+  assert.match(shell, /html\[data-font="outfit"\]\s*\{[^}]*font-family:\s*"Outfit"/s);
+  assert.match(shell, /html\[data-font="mono"\]\s*\{[^}]*font-family:\s*"JetBrains Mono"/s);
+  assert.match(shell, /html\[data-font="serif"\]\s*\{[^}]*font-family:\s*"Editorial Serif"/s);
+});
+
+test("radius style options override design tokens via data-radius-style attribute", () => {
+  assert.match(shell, /html\[data-radius-style="sharp"\]\s*\{[^}]*--v8-radius-lg:\s*6px/s);
+  assert.match(shell, /html\[data-radius-style="soft"\]\s*\{[^}]*--v8-radius-lg:\s*24px/s);
+});
+
+test("session mode pill styling includes hover glow and hero heading accents", () => {
+  assert.match(shell, /html\[data-session-mode="intense"\] \.v8-home-heading/s);
+  assert.match(shell, /html\[data-session-mode="zen"\] \.v8-home-heading/s);
+  assert.match(shell, /html\[data-session-mode="night"\] \.v8-home-heading/s);
+});

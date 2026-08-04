@@ -222,6 +222,46 @@ export function createActionFacade(options = {}) {
     setState({ theme: "auto" });
     return completed("Mode Automatique applique", { theme: "auto" });
   });
+  ["classic", "boreale", "cyberpunk", "eclipse", "emeraude", "minerale"].forEach((auraId) => {
+    register(`v8.aura.${auraId}`, () => {
+      globalThis.localStorage?.setItem("v8_home_aura", auraId);
+      if (typeof document !== "undefined" && document.documentElement) {
+        document.documentElement.dataset.aura = auraId;
+      }
+      notify({ id: "aura-updated", title: "Ambiance Aura", message: `Ambiance « ${auraId} » activée.`, type: "success" });
+      return completed(`Aura ${auraId} activée`, { aura: auraId });
+    });
+  });
+  ["inter", "outfit", "mono", "serif"].forEach((fontId) => {
+    register(`v8.font.${fontId}`, () => {
+      globalThis.localStorage?.setItem("v8_font_family", fontId);
+      if (typeof document !== "undefined" && document.documentElement) {
+        document.documentElement.dataset.font = fontId;
+      }
+      notify({ id: "font-updated", title: "Typographie", message: `Police « ${fontId} » appliquée.`, type: "success" });
+      return completed(`Font ${fontId} activée`, { font: fontId });
+    });
+  });
+  ["rounded", "sharp", "soft"].forEach((styleId) => {
+    register(`v8.radius.${styleId}`, () => {
+      globalThis.localStorage?.setItem("v8_radius_style", styleId);
+      if (typeof document !== "undefined" && document.documentElement) {
+        document.documentElement.dataset.radiusStyle = styleId;
+      }
+      notify({ id: "radius-updated", title: "Courbure du Design", message: `Style de bordure « ${styleId} » appliqué.`, type: "success" });
+      return completed(`Radius ${styleId} activé`, { radiusStyle: styleId });
+    });
+  });
+  ["focus", "intense", "zen", "night"].forEach((modeId) => {
+    register(`v8.session.mode.${modeId}`, () => {
+      globalThis.localStorage?.setItem("v8_home_session_mode", modeId);
+      if (typeof document !== "undefined" && document.documentElement) {
+        document.documentElement.dataset.sessionMode = modeId;
+      }
+      notify({ id: "session-updated", title: "Rythme de session", message: `Mode de session « ${modeId} » engagé.`, type: "success" });
+      return completed(`Session ${modeId} engagée`, { sessionMode: modeId });
+    });
+  });
   register("v8.zen.toggle", () => {
     const zen = !getState().zen;
     setState({ zen });

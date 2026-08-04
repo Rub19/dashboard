@@ -47,6 +47,25 @@ const SOUND_VOLUME_ROWS = Object.freeze([
   Object.freeze({ id: "brain", icon: "brain", title: "Brain", description: "Reflexion, réponse et fin de traitement." }),
   Object.freeze({ id: "system", icon: "audio-lines", title: "Système", description: "Connexion, sauvegarde, synchronisation et Spaces." })
 ]);
+const AURA_OPTIONS = Object.freeze([
+  Object.freeze({ id: "classic", label: "Classique", icon: "sparkles", copy: "Ambiance ETHONE par défaut." }),
+  Object.freeze({ id: "boreale", label: "Boréale", icon: "zap", copy: "Cyan boréal et violet intense." }),
+  Object.freeze({ id: "cyberpunk", label: "Cyberpunk", icon: "flame", copy: "Magenta néon & émeraude vif." }),
+  Object.freeze({ id: "eclipse", label: "Éclipse", icon: "moon", copy: "Lueur or sur nuit stellaire." }),
+  Object.freeze({ id: "emeraude", label: "Émeraude", icon: "gem", copy: "Vert jade précieux & saphir." }),
+  Object.freeze({ id: "minerale", label: "Minérale", icon: "mountain", copy: "Ardoise brute et platine." })
+]);
+const FONT_OPTIONS = Object.freeze([
+  Object.freeze({ id: "inter", label: "Inter (Moderne)", icon: "type", copy: "Sans-serif équilibré par défaut." }),
+  Object.freeze({ id: "outfit", label: "Outfit (Géométrique)", icon: "sparkles", copy: "Rendu dynamique et élégant." }),
+  Object.freeze({ id: "mono", label: "JetBrains Mono", icon: "code", copy: "Esprit technique et cyberpunk." }),
+  Object.freeze({ id: "serif", label: "Editorial Serif", icon: "book-open", copy: "Typographie littéraire et premium." })
+]);
+const RADIUS_OPTIONS = Object.freeze([
+  Object.freeze({ id: "rounded", label: "Arrondi Ergonomique", icon: "circle", copy: "Courbe naturelle (8px / 14px)." }),
+  Object.freeze({ id: "sharp", label: "Tech Anguleux", icon: "square", copy: "Angles nets (3px / 6px)." }),
+  Object.freeze({ id: "soft", label: "Courbe iOS", icon: "smile", copy: "Courbes généreuses (12px / 20px)." })
+]);
 let settingRowSequence = 0;
 
 function choice(actionId, iconName, label, active) {
@@ -261,6 +280,48 @@ export function mountSettings(stage, options = {}) {
   customColorSwatch.style.setProperty("--v8-accent-swatch-custom-color", customAccentInitial);
   accentControls.append(customColorSwatch);
 
+  const currentAura = globalThis.localStorage?.getItem("v8_home_aura") || "classic";
+  const auraChoices = element("div", { className: "v8-theme-options", attributes: { role: "group", "aria-label": "Ambiance lumineuse Aura" } }, AURA_OPTIONS.map((option) => {
+    const active = currentAura === option.id;
+    return element("button", {
+      className: `v8-theme-choice${active ? " is-active" : ""}`,
+      attributes: { type: "button", "aria-pressed": String(active) },
+      dataset: { action: `v8.aura.${option.id}`, auraChoice: option.id }
+    }, [
+      icon(option.icon),
+      element("span", {}, [element("strong", { text: option.label }), element("small", { text: option.copy })]),
+      active ? icon("check") : null
+    ]);
+  }));
+
+  const currentFont = globalThis.localStorage?.getItem("v8_font_family") || "inter";
+  const fontChoices = element("div", { className: "v8-theme-options", attributes: { role: "group", "aria-label": "Typographie d'interface" } }, FONT_OPTIONS.map((option) => {
+    const active = currentFont === option.id;
+    return element("button", {
+      className: `v8-theme-choice${active ? " is-active" : ""}`,
+      attributes: { type: "button", "aria-pressed": String(active) },
+      dataset: { action: `v8.font.${option.id}`, fontChoice: option.id }
+    }, [
+      icon(option.icon),
+      element("span", {}, [element("strong", { text: option.label }), element("small", { text: option.copy })]),
+      active ? icon("check") : null
+    ]);
+  }));
+
+  const currentRadius = globalThis.localStorage?.getItem("v8_radius_style") || "rounded";
+  const radiusChoices = element("div", { className: "v8-theme-options", attributes: { role: "group", "aria-label": "Style de courbure" } }, RADIUS_OPTIONS.map((option) => {
+    const active = currentRadius === option.id;
+    return element("button", {
+      className: `v8-theme-choice${active ? " is-active" : ""}`,
+      attributes: { type: "button", "aria-pressed": String(active) },
+      dataset: { action: `v8.radius.${option.id}`, radiusChoice: option.id }
+    }, [
+      icon(option.icon),
+      element("span", {}, [element("strong", { text: option.label }), element("small", { text: option.copy })]),
+      active ? icon("check") : null
+    ]);
+  }));
+
   const soundPackSelect = createSelect({
     className: "v8-input v8-sound-pack-select",
     attributes: { "aria-label": "Pack sonore", disabled: !soundSupported || null, translate: "no" },
@@ -337,6 +398,18 @@ export function mountSettings(stage, options = {}) {
           element("div", { className: "v8-density-settings" }, [
             element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("sun-moon")]), element("div", {}, [element("strong", { text: "Thème" }), element("p", { text: "Adapter les surfaces et le contraste." })]), themeResolved]),
             themeChoices
+          ]),
+          element("div", { className: "v8-density-settings" }, [
+            element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("sparkles")]), element("div", {}, [element("strong", { text: "Ambiance Lumineuse (Aura)" }), element("p", { text: "Choisir l'atmosphère colorée et les réflexions vitrées du Dashboard." })])]),
+            auraChoices
+          ]),
+          element("div", { className: "v8-density-settings" }, [
+            element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("type")]), element("div", {}, [element("strong", { text: "Typographie d'interface" }), element("p", { text: "Personnaliser le caractère et la personnalité du texte." })])]),
+            fontChoices
+          ]),
+          element("div", { className: "v8-density-settings" }, [
+            element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("circle")]), element("div", {}, [element("strong", { text: "Courbure du Design" }), element("p", { text: "Ajuster l'échelle d'arrondi des cartes et boutons du système." })])]),
+            radiusChoices
           ]),
           settingRow("palette", "Accent", "Identifier le Space et les actions importantes.", accentControls),
           element("div", { className: "v8-density-settings" }, [
@@ -737,6 +810,44 @@ export function mountSettings(stage, options = {}) {
   page.querySelector("[data-sound-pack]")?.addEventListener("change", (event) => {
     commitSetting(event.currentTarget, `v8.sound.pack.${event.currentTarget.value}`, { source: "settings", element: event.currentTarget, event });
   }, { signal: controller.signal });
+  auraChoices.querySelectorAll("button").forEach((btn) => btn.addEventListener("click", () => {
+    auraChoices.querySelectorAll("button").forEach((b) => {
+      b.classList.remove("is-active");
+      b.setAttribute("aria-pressed", "false");
+      const checkIcon = b.querySelector(".lucide-check");
+      if (checkIcon) checkIcon.remove();
+    });
+    btn.classList.add("is-active");
+    btn.setAttribute("aria-pressed", "true");
+    btn.append(icon("check"));
+    options.actions?.dispatch?.(btn.dataset.action, { source: "settings" });
+  }, { signal: controller.signal }));
+
+  fontChoices.querySelectorAll("button").forEach((btn) => btn.addEventListener("click", () => {
+    fontChoices.querySelectorAll("button").forEach((b) => {
+      b.classList.remove("is-active");
+      b.setAttribute("aria-pressed", "false");
+      const checkIcon = b.querySelector(".lucide-check");
+      if (checkIcon) checkIcon.remove();
+    });
+    btn.classList.add("is-active");
+    btn.setAttribute("aria-pressed", "true");
+    btn.append(icon("check"));
+    options.actions?.dispatch?.(btn.dataset.action, { source: "settings" });
+  }, { signal: controller.signal }));
+
+  radiusChoices.querySelectorAll("button").forEach((btn) => btn.addEventListener("click", () => {
+    radiusChoices.querySelectorAll("button").forEach((b) => {
+      b.classList.remove("is-active");
+      b.setAttribute("aria-pressed", "false");
+      const checkIcon = b.querySelector(".lucide-check");
+      if (checkIcon) checkIcon.remove();
+    });
+    btn.classList.add("is-active");
+    btn.setAttribute("aria-pressed", "true");
+    btn.append(icon("check"));
+    options.actions?.dispatch?.(btn.dataset.action, { source: "settings" });
+  }, { signal: controller.signal }));
   const dispatchVolume = throttleFrame((category, value, element, event) => {
     options.actions?.dispatch?.("v8.sound.volume", { source: "settings", category, value, element, event });
   });

@@ -290,6 +290,14 @@ export function mountApplication(root, options = {}) {
 
   applyAccent(store.getState());
   applyTheme(store.getState().theme);
+  const savedAura = globalThis.localStorage?.getItem("v8_home_aura") || "classic";
+  document.documentElement.dataset.aura = savedAura;
+  const savedFont = globalThis.localStorage?.getItem("v8_font_family") || "inter";
+  document.documentElement.dataset.font = savedFont;
+  const savedRadiusStyle = globalThis.localStorage?.getItem("v8_radius_style") || "rounded";
+  document.documentElement.dataset.radiusStyle = savedRadiusStyle;
+  const savedSessionMode = globalThis.localStorage?.getItem("v8_home_session_mode") || "focus";
+  document.documentElement.dataset.sessionMode = savedSessionMode;
   document.documentElement.dataset.space = store.getState().space;
   document.documentElement.dataset.spotlight = store.getState().spotlightEnabled === false ? "disabled" : "enabled";
   document.documentElement.dataset.ambientMotion = store.getState().ambientEffectsEnabled === false ? "disabled" : "enabled";

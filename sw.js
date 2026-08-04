@@ -262,7 +262,7 @@ async function navigationNetworkFirst(request) {
 
 async function cacheFirst(request) {
   const cache = await caches.open(ETHONE_CACHE);
-  const cached = await cache.match(request);
+  const cached = (await cache.match(request)) || (await cache.match(request, { ignoreSearch: true }));
   if (cached) return cached;
   const fresh = await fetch(new Request(request, { cache: "no-store" }));
   if (fresh?.ok) await cache.put(request, fresh.clone());

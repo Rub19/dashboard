@@ -116,12 +116,13 @@ export function createToastManager(region, options = {}) {
         if (!actionButton) {
           actionButton = element("button", {
             className: "v8-button v8-button--secondary",
-            attributes: { type: "button" },
+            attributes: { type: "button", "aria-label": String(notice.action.label || "Ouvrir") },
             dataset: { toastAction: id }
           });
           existing.node.querySelector("[data-toast-close]")?.before(actionButton);
         }
         actionButton.textContent = String(notice.action.label || "Ouvrir");
+        actionButton.setAttribute("aria-label", String(notice.action.label || "Ouvrir"));
         existing.node.classList.add("v8-toast--action");
         existing.action = notice.action.run;
       }
@@ -158,7 +159,7 @@ export function createToastManager(region, options = {}) {
       ? element("button", {
         className: "v8-button v8-button--secondary",
         text: String(notice.action.label || "Ouvrir"),
-        attributes: { type: "button" },
+        attributes: { type: "button", "aria-label": String(notice.action.label || "Ouvrir") },
         dataset: { toastAction: id }
       })
       : null;

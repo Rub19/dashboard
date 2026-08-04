@@ -1,0 +1,11 @@
+--- v8/ui/toast.mjs
++++ v8/ui/toast.mjs
+@@ -118,7 +118,7 @@
+         if (!actionButton) {
+           actionButton = element("button", {
+             className: "v8-button v8-button--secondary",
+-            attributes: { type: "button" },
++            attributes: { type: "button" },
+             dataset: { toastAction: id }
+           });
+           existing.node.querySelector("[data-toast-close]")?.before(actionButton);

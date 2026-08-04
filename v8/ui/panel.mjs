@@ -110,9 +110,9 @@ export function createPanelManager(host, options = {}) {
     const statusDisplay = element("span", { className: "v8-focus-express__status", text: focusLabel });
     const fillBar = element("div", { className: "v8-focus-express__fill", attributes: { style: `width: ${Math.round(((focusTotal - focusRemaining) / focusTotal) * 100)}%;` } });
 
-    const start25Btn = element("button", { className: "v8-button v8-button--secondary v8-button--sm", text: "25m Focus", attributes: { type: "button" } });
-    const start5Btn = element("button", { className: "v8-button v8-button--secondary v8-button--sm", text: "5m Pause", attributes: { type: "button" } });
-    const resetBtn = element("button", { className: "v8-button v8-button--outline v8-button--sm", text: focusRunning ? "Pause" : "Reset", attributes: { type: "button" } });
+    const start25Btn = element("button", { className: "v8-button v8-button--secondary v8-button--sm", text: "25m Focus", attributes: { type: "button", "aria-label": "Lancer un timer de focus de 25 minutes" } });
+    const start5Btn = element("button", { className: "v8-button v8-button--secondary v8-button--sm", text: "5m Pause", attributes: { type: "button", "aria-label": "Lancer un timer de pause de 5 minutes" } });
+    const resetBtn = element("button", { className: "v8-button v8-button--outline v8-button--sm", text: focusRunning ? "Pause" : "Reset", attributes: { type: "button", "aria-label": focusRunning ? "Mettre en pause le minuteur" : "Réinitialiser le minuteur" } });
 
     function updateView() {
       const m = String(Math.floor(focusRemaining / 60)).padStart(2, "0");
@@ -121,6 +121,7 @@ export function createPanelManager(host, options = {}) {
       statusDisplay.textContent = focusLabel;
       fillBar.style.width = `${Math.round(((focusTotal - focusRemaining) / focusTotal) * 100)}%`;
       resetBtn.textContent = focusRunning ? "Pause" : "Reset";
+      resetBtn.setAttribute("aria-label", focusRunning ? "Mettre en pause le minuteur" : "Réinitialiser le minuteur");
     }
 
     start25Btn.addEventListener("click", () => {
@@ -419,7 +420,7 @@ export function createPanelManager(host, options = {}) {
         : element("button", {
             className: "v8-button v8-button--secondary v8-button--sm",
             text: "Basculer",
-            attributes: { type: "button" }
+            attributes: { type: "button", "aria-label": `Basculer vers le profil ${profile.name}` }
           });
 
       if (!isActive) {
@@ -443,7 +444,7 @@ export function createPanelManager(host, options = {}) {
 
     const createProfileBtn = element("button", {
       className: "v8-button v8-button--outline v8-button--full",
-      attributes: { type: "button", style: "margin-top: 8px;" }
+      attributes: { type: "button", style: "margin-top: 8px;", "aria-label": "Créer ou gérer un compte unique" }
     }, [icon("plus"), element("span", { text: "Créer / Gérer un compte unique" })]);
     createProfileBtn.addEventListener("click", () => {
       options.onClose?.();

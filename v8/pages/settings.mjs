@@ -496,7 +496,7 @@ export function mountSettings(stage, options = {}) {
           settingRow("volume-2", "Retours sonores", soundSupported ? "Activer ou couper tout le système audio." : "Le son n'est pas disponible dans ce navigateur.", switchControl("v8.sound.toggle", "Activer les sons", initialSoundPreferences.enabled, !soundSupported)),
           settingRow("volume-x", "Mode silencieux", "Couper temporairement toutes les interactions sonores.", switchControl("v8.sound.silent", "Activer le mode silencieux", initialSoundPreferences.silent, !soundSupported)),
           settingRow("audio-waveform", "Audio spatial", spatialSupported ? "Orienter très legerement les sons selon leur origine." : "L'audio spatial n'est pas disponible dans ce navigateur.", switchControl("v8.sound.spatial", "Activer l'audio spatial", initialSoundPreferences.spatial, !spatialSupported)),
-          settingRow("disc-3", "Pack sonore", "Choisir une identite sonore originale pour ETHONE.", soundPackControl),
+          settingRow("music", "Pack sonore", "Choisir une identite sonore originale pour ETHONE.", soundPackControl),
           ...SOUND_VOLUME_ROWS.map((row) => settingRow(row.icon, row.title, row.description, soundRange(row.id, row.id === "master" ? initialSoundPreferences.master : initialSoundPreferences.volumes[row.id], !soundSupported)))
         ]),
         element("section", { id: "v8-settings-workspace", className: "v8-settings-section v8-surface", attributes: { role: "tabpanel", tabindex: "0", hidden: true } }, [

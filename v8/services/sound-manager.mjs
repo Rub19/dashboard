@@ -705,6 +705,12 @@ export function createSoundManager(options = {}) {
   let activeAmbienceGain = null;
   let activeAmbienceType = "none";
 
+  function notifyAmbience(type) {
+    subscribers.forEach((subscriber) => {
+      try { subscriber({ ...preferences, ambience: type }); } catch {}
+    });
+  }
+
   function stopAmbience() {
     if (activeAmbienceGain && audioContext) {
       try {
@@ -719,7 +725,7 @@ export function createSoundManager(options = {}) {
     activeAmbienceNode = null;
     activeAmbienceGain = null;
     activeAmbienceType = "none";
-    notify({ type: "ambience-changed", ambience: "none" });
+    notifyAmbience("none");
     return "none";
   }
 
@@ -728,10 +734,11 @@ export function createSoundManager(options = {}) {
       return stopAmbience();
     }
     stopAmbience();
-    const ctx = unlock() ? audioContext : null;
+    void unlock();
+    const ctx = audioContext;
     if (!ctx) {
       activeAmbienceType = type;
-      notify({ type: "ambience-changed", ambience: type });
+      notifyAmbience(type);
       return type;
     }
     try {
@@ -792,11 +799,11 @@ export function createSoundManager(options = {}) {
       activeAmbienceNode = source;
       activeAmbienceGain = gain;
       activeAmbienceType = type;
-      notify({ type: "ambience-changed", ambience: type });
+      notifyAmbience(type);
       return type;
     } catch {
       activeAmbienceType = type;
-      notify({ type: "ambience-changed", ambience: type });
+      notifyAmbience(type);
       return type;
     }
   }

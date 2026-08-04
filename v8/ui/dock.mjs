@@ -167,7 +167,7 @@ export function createDock(host, options = {}) {
         btn("Actifs", "v8.ui.sound.feedback.on", currentSoundFeedback),
         btn("Silencieux", "v8.ui.sound.feedback.off", !currentSoundFeedback)
       ]),
-      row("Pack sonore", "disc-3", SOUND_PACKS.map((pack) => btn(pack.label, "v8.sound.pack." + pack.id, currentSoundPack === pack.id))),
+      row("Pack sonore", "music", SOUND_PACKS.map((pack) => btn(pack.label, "v8.sound.pack." + pack.id, currentSoundPack === pack.id))),
       row("Audio (.WAV)", "download", [
         btn("Écouter l'aperçu", "v8.sound.preview", false),
         btn("Télécharger en .WAV", "v8.sound.export", false)

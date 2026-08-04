@@ -321,7 +321,8 @@ export function enhanceForm(form, { signal } = {}) {
     validateControl(event.target, { force: true });
   }, { ...options, capture: true });
   form.addEventListener("submit", (event) => {
-    if (validateForm(form)) return;
+    const targetForm = event.target?.matches?.("form") ? event.target : form;
+    if (validateForm(targetForm)) return;
     event.preventDefault();
     event.stopImmediatePropagation();
   }, { ...options, capture: true });

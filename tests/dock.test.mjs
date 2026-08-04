@@ -45,6 +45,8 @@ test("Dock exposes persistent mouse and keyboard personalization", () => {
   assert.match(shell, /id="v8-dock-host"/);
   assert.doesNotMatch(shell, /v8-route-tabs/);
   assert.match(runtime, /profileId:\s*options\.profile\?\.id/);
+  assert.match(source, /ownerId\s*\?\s*`ethone:v8-dock:\$\{ownerId\}:\$\{owner\}`\s*:\s*`ethone:v8-dock:\$\{owner\}`/);
+  assert.match(runtime, /ownerId:\s*options\.ownerId\s*\|\|\s*repository\.owner\(\)\s*\|\|\s*""/);
   assert.match(i18n, /dockRemove:[\s\S]*Remove \{value\} from Dock/);
   assert.match(i18n, /dockMoveRight:[\s\S]*Move \{value\} right/);
 });

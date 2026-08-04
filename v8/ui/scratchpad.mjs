@@ -5,12 +5,17 @@ import { refreshIcons } from "./icons.mjs";
 const SCRATCHPAD_KEY = "v8_scratchpad_v1";
 const SAVE_DELAY_MS = 600;
 
-function loadContent() {
-  try { return globalThis.localStorage?.getItem(SCRATCHPAD_KEY) || ""; } catch { return ""; }
+function getStorageKey(ownerId) {
+  const clean = String(ownerId || "").replace(/[^a-z0-9_-]/gi, "").slice(0, 64);
+  return clean ? `${SCRATCHPAD_KEY}:${clean}` : SCRATCHPAD_KEY;
 }
 
-function saveContent(text) {
-  try { globalThis.localStorage?.setItem(SCRATCHPAD_KEY, text); } catch { /* silent */ }
+function loadContent(ownerId) {
+  try { return globalThis.localStorage?.getItem(getStorageKey(ownerId)) || ""; } catch { return ""; }
+}
+
+function saveContent(text, ownerId) {
+  try { globalThis.localStorage?.setItem(getStorageKey(ownerId), text); } catch { /* silent */ }
 }
 
 export function createScratchpad(host, options = {}) {
@@ -21,7 +26,7 @@ export function createScratchpad(host, options = {}) {
   function close() {
     if (!mounted) return;
     clearTimeout(saveTimer);
-    if (mounted.textarea) saveContent(mounted.textarea.value);
+    if (mounted.textarea) saveContent(mounted.textarea.value, options.ownerId);
     windowController.close({});
     mounted.root.remove();
     mounted = null;
@@ -30,7 +35,7 @@ export function createScratchpad(host, options = {}) {
   function open() {
     if (mounted) { close(); return; }
 
-    const saved = loadContent();
+    const saved = loadContent(options.ownerId);
     const charCount = element("span", { className: "v8-scratchpad__count", text: `${saved.length} car.` });
     let saveStatus = "saved";
 
@@ -57,7 +62,7 @@ export function createScratchpad(host, options = {}) {
       statusDot.title = "En cours de sauvegarde…";
       charCount.textContent = `${textarea.value.length} car.`;
       saveTimer = setTimeout(() => {
-        saveContent(textarea.value);
+        saveContent(textarea.value, options.ownerId);
         saveStatus = "saved";
         statusDot.dataset.status = "saved";
         statusDot.title = "Sauvegardé automatiquement";

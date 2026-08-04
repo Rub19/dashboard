@@ -189,10 +189,12 @@ function cloudSnapshot(state) {
 
 export function createPresentationStore(initialState = {}, options = {}) {
   const storage = options.storage || globalThis.localStorage || null;
+  const ownerId = String(options.ownerId || "").replace(/[^a-z0-9_-]/gi, "").slice(0, 64);
+  const storageKey = ownerId ? `${PERSISTENCE_KEY}:${ownerId}` : PERSISTENCE_KEY;
   let persisted = {};
 
   try {
-    const raw = storage?.getItem(PERSISTENCE_KEY);
+    const raw = storage?.getItem(storageKey);
     persisted = raw ? migratePersistedSnapshot(safeParse(raw)) : {};
   } catch {
     persisted = {};
@@ -203,7 +205,7 @@ export function createPresentationStore(initialState = {}, options = {}) {
 
   function persist() {
     try {
-      storage?.setItem(PERSISTENCE_KEY, JSON.stringify(persistedSnapshot(state)));
+      storage?.setItem(storageKey, JSON.stringify(persistedSnapshot(state)));
       return true;
     } catch {
       return false;

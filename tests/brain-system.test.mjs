@@ -232,3 +232,16 @@ test("Brain remains lazy, exposes all control surfaces and has fail-closed RLS",
   assert.match(migration, /no_secret_values/i);
   assert.match(migration, /unique index[^;]+user_id, category, memory_key/is);
 });
+
+test("Brain chat submission supports Enter, OK, Go and Done keys and focuses input after success", () => {
+  const page = fs.readFileSync(new URL("../v8/pages/brain.mjs", import.meta.url), "utf8");
+  assert.match(page, /async function submitBrainQuery\(event\)/);
+  assert.match(page, /let submitting = false;/);
+  assert.match(page, /if \(!query \|\| submitting\) return;/);
+  assert.match(page, /event\.key === "Enter" \|\| event\.key === "OK" \|\| event\.key === "Go" \|\| event\.key === "Done" \|\| event\.keyCode === 13/);
+  assert.match(page, /chatInput\.focus\(\)/);
+  assert.match(page, /chatForm\.addEventListener\("submit", submitBrainQuery/);
+  assert.match(page, /sendButton\.addEventListener\("click", submitBrainQuery/);
+});
+
+

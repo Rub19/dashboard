@@ -314,25 +314,48 @@ export function mountBrain(stage, options = {}) {
 
   tabList.addEventListener("click", (event) => { const button = event.target.closest("[data-brain-tab]"); if (button) activateTab(button.dataset.brainTab); }, { signal: controller.signal });
   tabList.addEventListener("keydown", (event) => { if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return; event.preventDefault(); const index = TABS.findIndex((tab) => tab.id === activeTab); const next = event.key === "Home" ? 0 : event.key === "End" ? TABS.length - 1 : (index + (event.key === "ArrowRight" ? 1 : -1) + TABS.length) % TABS.length; activateTab(TABS[next].id, true); }, { signal: controller.signal });
-  chatForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const query = chatInput.value.trim();
-    if (!query) return;
-    chatStatus.textContent = "Brain analyse le contexte autorise...";
-    const submission = await runFormSubmission({ form: chatForm, submit: sendButton, status: chatStatus, messages: { loading: "Brain analyse le contexte autorise..." }, task: () => brain.controller.ask(query) });
-    if (controller.signal.aborted || !submission.accepted) return;
-    const response = submission.value;
-    if (submission.error || !response) {
-      chatStatus.textContent = "Brain est momentanement indisponible.";
-      setFieldState(chatInput, "invalid", "La demande n'a pas pu être envoyee.");
-      return;
+  let submitting = false;
+  async function submitBrainQuery(event) {
+    if (event && typeof event.preventDefault === "function") {
+      event.preventDefault();
+      event.stopPropagation();
     }
-    chatStatus.textContent = response.ok ? "Réponse fondee sur le contexte minimal" : response.message;
-    if (response.ok) { chatInput.value = ""; clearFieldState(chatInput); }
-    else setFieldState(chatInput, "invalid", response.message);
-    renderHistory();
+    const query = chatInput.value.trim();
+    if (!query || submitting) return;
+    submitting = true;
+    try {
+      chatStatus.textContent = "Brain analyse le contexte autorise...";
+      const submission = await runFormSubmission({ form: chatForm, submit: sendButton, status: chatStatus, messages: { loading: "Brain analyse le contexte autorise..." }, task: () => brain.controller.ask(query) });
+      if (controller.signal.aborted || !submission.accepted) return;
+      const response = submission.value;
+      if (submission.error || !response) {
+        chatStatus.textContent = "Brain est momentanement indisponible.";
+        setFieldState(chatInput, "invalid", "La demande n'a pas pu être envoyee.");
+        return;
+      }
+      chatStatus.textContent = response.ok ? "Réponse fondee sur le contexte minimal" : response.message;
+      if (response.ok) {
+        chatInput.value = "";
+        clearFieldState(chatInput);
+        chatInput.focus();
+      } else {
+        setFieldState(chatInput, "invalid", response.message);
+      }
+      renderHistory();
+    } finally {
+      submitting = false;
+    }
+  }
+
+  chatForm.addEventListener("submit", submitBrainQuery, { signal: controller.signal });
+  sendButton.addEventListener("click", submitBrainQuery, { signal: controller.signal });
+  chatInput.addEventListener("keydown", (event) => {
+    const isEnterKey = event.key === "Enter" || event.key === "OK" || event.key === "Go" || event.key === "Done" || event.keyCode === 13;
+    if (isEnterKey && !event.shiftKey && !event.isComposing) {
+      event.preventDefault();
+      void submitBrainQuery(event);
+    }
   }, { signal: controller.signal });
-  chatInput.addEventListener("keydown", (event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); if (typeof chatForm.requestSubmit === "function") { chatForm.requestSubmit(); } else { sendButton.click(); } } }, { signal: controller.signal });
   suggestions.addEventListener("click", async (event) => { const button = event.target.closest("[data-brain-suggestion]"); if (!button) return; const suggestion = brain.controller.suggestions().find((entry) => entry.id === button.dataset.brainSuggestion); if (!suggestion) return; let response = await brain.controller.execute(suggestion.action, suggestion.parameters); if (response.status === "confirmation-required" && confirm(`${response.message}\n\nAutoriser cette action ?`)) response = await brain.controller.execute(suggestion.action, suggestion.parameters, { confirmed: true }); options.notify?.({ id: `brain-${suggestion.id}`, title: "Brain", message: response.message, type: response.ok ? "success" : "warning" }); }, { signal: controller.signal });
   providersPanel.addEventListener("click", async (event) => {
     const button = event.target.closest("[data-brain-provider-test]");

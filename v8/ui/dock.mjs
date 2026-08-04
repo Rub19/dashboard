@@ -70,8 +70,9 @@ function editorNode(item, order) {
 export function createDock(host, options = {}) {
   if (!host) throw new TypeError("Dock requires a host element");
   const storage = options.storage || globalThis.localStorage || null;
+  const ownerId = String(options.ownerId || "").replace(/[^a-z0-9_-]/gi, "").slice(0, 64);
   const owner = String(options.owner || "local").replace(/[^a-z0-9_-]/gi, "").slice(0, 64) || "local";
-  const storageKey = `ethone:v8-dock:${owner}`;
+  const storageKey = ownerId ? `ethone:v8-dock:${ownerId}:${owner}` : `ethone:v8-dock:${owner}`;
   let order = [...DEFAULT_DOCK_IDS];
   let activeRoute = options.route || "home";
   let mediaState = options.media || {};

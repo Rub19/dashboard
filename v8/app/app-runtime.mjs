@@ -76,7 +76,7 @@ export function mountApplication(root, options = {}) {
     sessionStatus: initialSync.sessionStatus,
     localTime: initialClock.time,
     timeZone: initialClock.timeZone
-  }, { fallbackState: { accent: options.profile?.accent, space: options.profile?.space, flow: options.profile?.flow } });
+  }, { ownerId: options.ownerId || repository.owner() || "", fallbackState: { accent: options.profile?.accent, space: options.profile?.space, flow: options.profile?.flow } });
   const initialModel = createHomeModel({ snapshot: repository.snapshot() });
   const lifecycle = createLifecycle();
   const densityEngine = createDensityEngine({ target: document.documentElement, runtime: globalThis, getState: () => store.getState() });
@@ -377,6 +377,7 @@ export function mountApplication(root, options = {}) {
   shell = mountShell(root, {
     initialState: store.getState(),
     user: initialModel.user,
+    ownerId: options.ownerId || repository.owner() || "",
     profileId: options.profile?.id,
     contextName: options.profile?.name || "Personnel",
     dockOrder: cloudSync?.preferences?.().dock,

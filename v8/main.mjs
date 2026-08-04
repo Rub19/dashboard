@@ -202,6 +202,11 @@ async function boot() {
   coordinator = createEntryCoordinator({
     auth,
     profiles: repository,
+    onSignOut: () => {
+      repository.setOwner("");
+      sounds.setOwner("");
+      cloudSync.stop?.();
+    },
     prepareProfiles: async (context) => {
       const owner = context.session?.user?.id || repository.owner();
       repository.setOwner(owner);

@@ -63,6 +63,7 @@ export function createEntryCoordinator(options = {}) {
   function handleAuthEvent(event) {
     if (destroyed || !event) return;
     if (event.type === "SIGNED_OUT") {
+      options.onSignOut?.();
       showLogin({ reason: "auth-signed-out" });
       return;
     }
@@ -111,6 +112,7 @@ export function createEntryCoordinator(options = {}) {
 
   async function signOut() {
     if (destroyed) return Object.freeze({ ok: false, status: "unavailable", message: "ETHONE est arrêté.", data: null });
+    options.onSignOut?.();
     const response = await auth.signOut();
     if (response.ok) showLogin({ reason: "signed-out" });
     return response;

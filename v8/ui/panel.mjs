@@ -464,6 +464,7 @@ export function createPanelManager(host, options = {}) {
       element("label", { className: "v8-panel__language" }, [element("span", { text: "Langue" }), language]),
       element("div", { className: "v8-panel__actions" }, [
         actionButton({ actionId: "v8.settings.open", variant: "secondary" }, [icon("settings-2"), element("span", { text: "Réglages" })]),
+        actionButton({ actionId: "v8.changelog.open", variant: "secondary" }, [icon("badge-check"), element("span", { text: "Notes de version" })]),
         actionButton({ actionId: "v8.auth.signout", variant: "outline" }, [icon("log-out"), element("span", { text: "Se déconnecter" })])
       ])
     ]);

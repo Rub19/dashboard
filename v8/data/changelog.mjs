@@ -24,6 +24,13 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v189", "2026-08-04", "Comptes uniques isolés, Studio d'ambiance visuelle & Correction des onglets Réglages", [
+    { kind: "feature", text: "Multi-comptes avec isolation complète : séparation stricte et persistante des tâches, notes et profils pour chaque compte en ligne, avec avatar unique et synchronisation cloud Supabase dédiée." },
+    { kind: "feature", text: "Studio d'ambiance visuelle (Réglages > Apparence) : 6 Auras lumineuses (Classic, Cyber, Sunset, Emerald, Monolith, Royal), 4 styles typographiques (Inter, Outfit, Fira Code, System) et 3 échelles de courbure (Arrondi, Subtil, Sharp)." },
+    { kind: "feature", text: "Badge de Mode de Session dans l'Accueil : pilule interactive sur la bannière Hero affichant l'environnement actif (Personnel, Focus, Studio) avec bascule instantanée en un clic." },
+    { kind: "feature", text: "Accès universel aux Notes de version : ouverture directe du Changelog depuis le panneau Profil, les Réglages (onglets Profil & Système) et le Command Center (Ctrl+K)." },
+    { kind: "fix", text: "Stabilité des Réglages : correction d'un bug qui forçait le retour à l'onglet Profil lors de la modification des paramètres d'apparence ; vos onglets restent 100% stables." }
+  ]),
   entry("v187", "2026-08-04", "Compte Switcher, Horloges mondiales & Focus Express", [
     { kind: "feature", text: "Panneau Profil multi-comptes : le panneau latéral Profil liste désormais tous les environnements (comptes) de la session avec un bouton 'Basculer' pour changer instantanément de profil, sans fermer ni recharger l'application." },
     { kind: "feature", text: "Horloges & Hubs mondiaux dans le panneau Widgets : grille de 4 horloges (Paris, New York, Tokyo, San Francisco) avec indication Jour/Nuit, mise à jour en temps réel — cliquer copie l'heure dans le presse-papier." },

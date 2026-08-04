@@ -391,7 +391,8 @@ export function mountSettings(stage, options = {}) {
               bannerFileInput,
               bannerMediaStatus
             ])
-          ])
+          ]),
+          settingRow("badge-check", "Notes de version (Changelog)", "Consulter l'historique des mises à jour, nouveautés et correctifs d'ETHONE v189.", actionButton({ actionId: "v8.changelog.open", variant: "secondary" }, [icon("badge-check"), element("span", { text: "Ouvrir le Changelog" })]))
         ]),
         element("section", { id: "v8-settings-appearance", className: "v8-settings-section v8-surface", attributes: { role: "tabpanel", tabindex: "0", hidden: true } }, [
           element("header", {}, [element("span", { className: "v8-eyebrow", text: "Design System" }), element("h2", { text: "Apparence" }), element("p", { text: "Des réglages sobres, coherents et persistants." })]),
@@ -480,12 +481,13 @@ export function mountSettings(stage, options = {}) {
           ])
         ]),
         element("section", { id: "v8-settings-system", className: "v8-settings-section v8-surface", attributes: { role: "tabpanel", tabindex: "0", hidden: true } }, [
-          element("header", {}, [element("span", { className: "v8-eyebrow", text: "État" }), element("h2", { text: "Système cloud" })]),
+          element("header", {}, [element("span", { className: "v8-eyebrow", text: "État" }), element("h2", { text: "Système cloud & version" })]),
           element("div", { className: "v8-system-checks" }, [
             element("span", {}, [icon("shield-check"), element("strong", { text: "Données" }), element("b", { text: "RLS actif" })]),
             element("span", {}, [icon("cloud"), element("strong", { text: "Supabase" }), element("b", { text: SYNC_LABELS[state.syncStatus] || "Connexion" })]),
             element("span", {}, [icon("gauge"), element("strong", { text: "Interface" }), element("b", { text: DENSITY_LABELS[state.density] || "Confortable" })])
-          ])
+          ]),
+          settingRow("badge-check", "Notes de version (Changelog)", "Consulter l'historique des mises à jour, nouveautés et correctifs d'ETHONE v189.", actionButton({ actionId: "v8.changelog.open", variant: "secondary" }, [icon("badge-check"), element("span", { text: "Ouvrir le Changelog" })]))
         ]),
         element("section", { id: "v8-settings-developer", className: "v8-settings-section v8-surface", attributes: { role: "tabpanel", tabindex: "0", hidden: true } }, [
           element("header", {}, [

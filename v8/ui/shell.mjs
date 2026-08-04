@@ -138,6 +138,7 @@ export function mountShell(root, options = {}) {
             <kbd translate="no">Ctrl K</kbd>
           </button>
           <div class="v8-context-strip__tools v8-topbar__tools" aria-label="Action Bar globale">
+            <button type="button" class="v8-action-status v8-focus-status" data-action="v8.focus.start.pomodoro" data-tooltip="Pomodoro (25m)" aria-label="Minuteur Pomodoro"><i data-lucide="timer" aria-hidden="true"></i><span><small>Focus</small><strong id="v8-focus-timer-label">Pomodoro</strong></span><b aria-hidden="true"></b></button>
             <button type="button" class="v8-action-status v8-brain-status" data-action="v8.brain.open" data-tooltip="Brain Status" aria-label="Ouvrir Brain"><i data-lucide="brain" data-presence-icon="brain" aria-hidden="true"></i><span><small>Brain</small><strong>Contextuel</strong></span><b aria-hidden="true"></b></button>
             <button type="button" class="v8-icon-button v8-topbar-action v8-sync-action" data-action="v8.sync.refresh" data-tooltip="Cloud Sync" aria-label="Synchroniser" aria-keyshortcuts="Control+S Meta+S"><i data-lucide="cloud" data-presence-icon="cloud" aria-hidden="true"></i><span class="v8-action-dot" aria-hidden="true"></span></button>
             <button type="button" class="v8-icon-button v8-topbar-action v8-language-action" data-action="v8.locale.cycle" data-tooltip="Changer de langue" aria-label="Changer de langue"><i data-lucide="languages" aria-hidden="true"></i></button>

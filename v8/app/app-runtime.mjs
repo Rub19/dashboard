@@ -32,6 +32,7 @@ import { createTrackerLive } from "../services/tracker-live.mjs";
 import { createGoogleDriveLive } from "../services/google-drive-live.mjs";
 import { createYoutubeLive } from "../services/youtube-live.mjs";
 import { createRedditLive } from "../services/reddit-live.mjs";
+import { createFocusTimer } from "../services/focus-timer.mjs";
 import { clearPendingOAuthAuthorize, consumeOAuthCallback, readPendingOAuthAuthorize } from "../services/oauth-callback.mjs";
 import { mountShell } from "../ui/shell.mjs";
 import { createPanelManager } from "../ui/panel.mjs";
@@ -410,6 +411,21 @@ export function mountApplication(root, options = {}) {
   presence.signalIcon?.("brain");
   if (initialCalendar === "approaching") presence.signalIcon?.("calendar");
   const toasts = createToastManager(shell.toastRegion, { sounds, presence });
+  const focusTimer = options.focusTimer || createFocusTimer({
+    onTick: (state) => {
+      const label = document.getElementById("v8-focus-timer-label");
+      if (label) label.textContent = state.phase === "idle" ? "Pomodoro" : focusTimer.formatRemaining();
+    },
+    onComplete: (state) => {
+      const label = document.getElementById("v8-focus-timer-label");
+      if (label) label.textContent = "Pomodoro";
+      toasts.show({ id: "focus-complete", title: "Focus Timer", message: "Session terminée ! Bon travail.", type: "success" });
+    }
+  });
+  focusTimer.subscribe?.((state) => {
+    const label = document.getElementById("v8-focus-timer-label");
+    if (label) label.textContent = state.phase === "idle" ? "Pomodoro" : focusTimer.formatRemaining();
+  });
   const oauthCallback = consumeOAuthCallback(globalThis);
   if (oauthCallback) {
     const pendingOAuth = readPendingOAuthAuthorize(globalThis);
@@ -798,6 +814,7 @@ export function mountApplication(root, options = {}) {
     },
     getLocale: () => i18n?.locale?.() || "fr",
     sounds,
+    focusTimer,
     sync: cloudSync,
     spotifyLive,
     onActivity: (actionId, result) => activityJournal.capture(actionId, result)

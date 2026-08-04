@@ -2,6 +2,11 @@
 export const SUPPORTED_LOCALES = Object.freeze(["fr", "en", "es", "de"]);
 
 const ENTRIES = {
+  "Connexion rétablie": { "fr": "Connexion rétablie", "en": "Connection restored", "es": "Conexión restablecida", "de": "Verbindung wiederhergestellt" },
+  "Synchronisation cloud active.": { "fr": "Synchronisation cloud active.", "en": "Cloud sync active.", "es": "Sincronización en la nube activa.", "de": "Cloud-Synchronisation aktiv." },
+  "Mode hors-ligne": { "fr": "Mode hors-ligne", "en": "Offline mode", "es": "Modo sin conexión", "de": "Offline-Modus" },
+  "Connexion réseau indisponible. Les modifications sont enregistrées localement.": { "fr": "Connexion réseau indisponible. Les modifications sont enregistrées localement.", "en": "Network connection unavailable. Changes are saved locally.", "es": "Conexión de red no disponible. Los cambios se guardan localmente.", "de": "Netzwerkverbindung nicht verfügbar. Änderungen werden lokal gespeichert." },
+  "Navigation rapide": { "fr": "Navigation rapide", "en": "Quick navigation", "es": "Navegación rápida", "de": "Schnellnavigation" },
   "Dock ETHONE": { "fr": "Dock ETHONE", "en": "ETHONE Dock", "es": "Dock de ETHONE", "de": "ETHONE Dock" },
   "Personnaliser le Dock": { "fr": "Personnaliser le Dock", "en": "Customize Dock", "es": "Personalizar el Dock", "de": "Dock anpassen" },
   "Epingle": { "fr": "\u00c9pingl\u00e9", "en": "Pinned", "es": "Fijado", "de": "Angeheftet" },
@@ -2552,7 +2557,46 @@ const ENTRIES = {
   "Todoist connecté avec succès.": { "fr": "Todoist connecté avec succès.", "en": "Todoist connected successfully.", "es": "Todoist conectado correctamente.", "de": "Todoist erfolgreich verbunden." },
   "Google Drive connecté avec succès.": { "fr": "Google Drive connecté avec succès.", "en": "Google Drive connected successfully.", "es": "Google Drive conectado correctamente.", "de": "Google Drive erfolgreich verbunden." },
   "YouTube connecté avec succès.": { "fr": "YouTube connecté avec succès.", "en": "YouTube connected successfully.", "es": "YouTube conectado correctamente.", "de": "YouTube erfolgreich verbunden." },
-  "Reddit connecté avec succès.": { "fr": "Reddit connecté avec succès.", "en": "Reddit connected successfully.", "es": "Reddit conectado correctamente.", "de": "Reddit erfolgreich verbunden." }
+  "Reddit connecté avec succès.": { "fr": "Reddit connecté avec succès.", "en": "Reddit connected successfully.", "es": "Reddit conectado correctamente.", "de": "Reddit erfolgreich verbunden." },
+  "Mode Zen (Concentration)": { "fr": "Mode Zen (Concentration)", "en": "Zen Mode (Focus)", "es": "Modo Zen (Concentración)", "de": "Zen-Modus (Fokus)" },
+  "Masquer les barres pour un focus maximal": { "fr": "Masquer les barres pour un focus maximal", "en": "Hide toolbars for maximum focus", "es": "Ocultar barras para un enfoque máximo", "de": "Symbolleisten ausblenden für maximalen Fokus" },
+  "Taille du Dock": { "fr": "Taille du Dock", "en": "Dock Size", "es": "Tamaño del Dock", "de": "Dock-Größe" },
+  "Changer l'échelle (Compacte, Normale, Grande)": { "fr": "Changer l'échelle (Compacte, Normale, Grande)", "en": "Change scale (Compact, Normal, Large)", "es": "Cambiar escala (Compacta, Normal, Grande)", "de": "Skalierung ändern (Kompakt, Normal, Groß)" },
+  "Compacte": { "fr": "Compacte", "en": "Compact", "es": "Compacta", "de": "Kompakt" },
+  "Grande": { "fr": "Grande", "en": "Large", "es": "Grande", "de": "Groß" },
+  "Mode Zen": { "fr": "Mode Zen", "en": "Zen Mode", "es": "Modo Zen", "de": "Zen-Modus" },
+  "Masquer les barres pour un focus maximal sur votre contenu (Alt+Z).": { "fr": "Masquer les barres pour un focus maximal sur votre contenu (Alt+Z).", "en": "Hide toolbars for maximum focus on your content (Alt+Z).", "es": "Oculta barras para un enfoque máximo en tu contenido (Alt+Z).", "de": "Symbolleisten für maximalen Fokus auf Ihren Inhalt ausblenden (Alt+Z)." },
+  "Activer le Mode Zen": { "fr": "Activer le Mode Zen", "en": "Enable Zen Mode", "es": "Activar el Modo Zen", "de": "Zen-Modus aktivieren" },
+  "Changer l'échelle de la barre de navigation inférieure.": { "fr": "Changer l'échelle de la barre de navigation inférieure.", "en": "Change the scale of the bottom navigation bar.", "es": "Cambiar la escala de la barra de navegación inferior.", "de": "Größe der unteren Navigationsleiste ändern." },
+  "Mode concentration activé (Alt+Z pour quitter).": { "fr": "Mode concentration activé (Alt+Z pour quitter).", "en": "Focus mode enabled (Alt+Z to exit).", "es": "Modo concentración activado (Alt+Z para salir).", "de": "Fokusmodus aktiviert (Alt+Z zum Verlassen)." },
+  "Mode concentration désactivé.": { "fr": "Mode concentration désactivé.", "en": "Focus mode disabled.", "es": "Modo concentración desactivado.", "de": "Fokusmodus deaktiviert." },
+  "Mode Zen modifié": { "fr": "Mode Zen modifié", "en": "Zen Mode updated", "es": "Modo Zen actualizado", "de": "Zen-Modus aktualisiert" },
+  "Taille du Dock modifiée": { "fr": "Taille du Dock modifiée", "en": "Dock Size updated", "es": "Tamaño del Dock actualizado", "de": "Dock-Größe aktualisiert" },
+  "Navigation": { "fr": "Navigation", "en": "Navigation", "es": "Navegación", "de": "Navigation" },
+  "Réglages": { "fr": "Réglages", "en": "Settings", "es": "Ajustes", "de": "Einstellungen" },
+  "Spaces": { "fr": "Spaces", "en": "Spaces", "es": "Espacios", "de": "Räume" },
+  "Brain": { "fr": "Brain", "en": "Brain", "es": "Brain", "de": "Brain" },
+  "Discord Staff": { "fr": "Équipe Discord", "en": "Discord Staff", "es": "Personal de Discord", "de": "Discord-Mitarbeiter" },
+  "Partner": { "fr": "Partenaire Discord", "en": "Discord Partner", "es": "Socio de Discord", "de": "Discord-Partner" },
+  "HypeSquad Events": { "fr": "HypeSquad Events", "en": "HypeSquad Events", "es": "Eventos HypeSquad", "de": "HypeSquad-Events" },
+  "Bug Hunter": { "fr": "Chasseur de bugs", "en": "Bug Hunter", "es": "Cazador de bugs", "de": "Bug-Jäger" },
+  "HypeSquad Bravery": { "fr": "HypeSquad Bravery", "en": "HypeSquad Bravery", "es": "HypeSquad Bravery", "de": "HypeSquad Bravery" },
+  "HypeSquad Brilliance": { "fr": "HypeSquad Brilliance", "en": "HypeSquad Brilliance", "es": "HypeSquad Brilliance", "de": "HypeSquad Brilliance" },
+  "HypeSquad Balance": { "fr": "HypeSquad Balance", "en": "HypeSquad Balance", "es": "HypeSquad Balance", "de": "HypeSquad Balance" },
+  "Early Supporter": { "fr": "Soutien de la première heure", "en": "Early Supporter", "es": "Apoyador inicial", "de": "Früher Unterstützer" },
+  "Bug Hunter Gold": { "fr": "Chasseur de bugs Or", "en": "Bug Hunter Gold", "es": "Cazador de bugs Oro", "de": "Bug-Jäger Gold" },
+  "Verified Bot Developer": { "fr": "Développeur de bot vérifié", "en": "Verified Bot Developer", "es": "Desarrollador verificado", "de": "Verifizierter Entwickler" },
+  "Certified Moderator": { "fr": "Modérateur certifié", "en": "Certified Moderator", "es": "Moderador certificado", "de": "Zertifizierter Moderator" },
+  "Active Developer": { "fr": "Développeur actif", "en": "Active Developer", "es": "Desarrollador activo", "de": "Aktiver Entwickler" },
+  "Nitro Subscriber": { "fr": "Abonné Nitro", "en": "Nitro Subscriber", "es": "Suscriptor de Nitro", "de": "Nitro-Abonnent" },
+  "Bot": { "fr": "Bot", "en": "Bot", "es": "Bot", "de": "Bot" },
+  "Badges Discord": { "fr": "Badges Discord", "en": "Discord Badges", "es": "Insignias de Discord", "de": "Discord-Abzeichen" },
+  "Badges Discord dans Live Now : affichage direct des badges officiels (Nitro, HypeSquad, Active Developer, Staff, Partner, etc.) et personnalisés sur votre carte Discord Live Now avec tooltips et micro-animations au survol.": {
+    "fr": "Badges Discord dans Live Now : affichage direct des badges officiels (Nitro, HypeSquad, Active Developer, Staff, Partner, etc.) et personnalisés sur votre carte Discord Live Now avec tooltips et micro-animations au survol.",
+    "en": "Discord Badges in Live Now: direct display of official Discord badges (Nitro, HypeSquad, Active Developer, Staff, Partner, etc.) and custom badges on your Discord Live Now card with tooltips and hover micro-animations.",
+    "es": "Insignias de Discord en Live Now: visualización directa de insignias oficiales (Nitro, HypeSquad, Active Developer, Staff, Partner, etc.) y personalizadas en tu tarjeta de Discord Live Now con tooltips y microanimaciones al pasar el cursor.",
+    "de": "Discord-Abzeichen in Live Now: direkte Anzeige von offiziellen Discord-Abzeichen (Nitro, HypeSquad, Active Developer, Staff, Partner usw.) und benutzerdefinierten Abzeichen auf Ihrer Discord Live Now-Karte mit Tooltips und Hover-Mikroanimationen."
+  }
 };
 Object.keys(ENTRIES).forEach((key) => Object.freeze(ENTRIES[key]));
 Object.freeze(ENTRIES);

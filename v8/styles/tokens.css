@@ -61,11 +61,11 @@
   --v8-ambient-opacity-max: 0.62;
   --v8-ambient-lightness: 1;
   --v8-ambient-saturation: 1;
-  --v8-ambient-halo-percent: 6%;
-  --v8-ambient-glow-percent: 3.5%;
+  --v8-ambient-halo-percent: 12%;
+  --v8-ambient-glow-percent: 7.5%;
   --v8-ambient-surface-light-percent: 8%;
   --v8-ambient-hero-light-percent: 10%;
-  --v8-ambient-accent-mix: 10%;
+  --v8-ambient-accent-mix: 18%;
   --v8-ambient-motion-duration: 32s;
   --v8-ambient-transition: 3200ms;
   --v8-breathe-duration: 26s;

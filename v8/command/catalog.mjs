@@ -28,7 +28,9 @@ const commands = [
   { id: "appearance.cycle", actionId: "v8.appearance.cycle", label: "Changer l'accent", subtitle: "Parcourir les couleurs ETHONE", category: "Réglages", icon: "palette", keywords: ["couleur", "accent", "apparence"], contexts: ["settings"], contextPriority: 100 },
   { id: "space.personal", actionId: "v8.space.personal", label: "Space Personnel", subtitle: "Flow Essentiel", category: "Spaces", icon: "user-round", keywords: ["space", "personnel", "essentiel"], contexts: ["space-personal"], contextPriority: 74 },
   { id: "space.focus", actionId: "v8.space.focus", label: "Space Focus", subtitle: "Flow Deep Work", category: "Spaces", icon: "focus", keywords: ["space", "focus", "deep work", "study", "dev"], contexts: ["space-focus"], contextPriority: 74 },
-  { id: "space.studio", actionId: "v8.space.studio", label: "Space Studio", subtitle: "Flow Creation", category: "Spaces", icon: "sparkles", keywords: ["space", "studio", "creation", "creative"], contexts: ["space-studio"], contextPriority: 74 }
+  { id: "space.studio", actionId: "v8.space.studio", label: "Space Studio", subtitle: "Flow Creation", category: "Spaces", icon: "sparkles", keywords: ["space", "studio", "creation", "creative"], contexts: ["space-studio"], contextPriority: 74 },
+  { id: "zen.toggle", actionId: "v8.zen.toggle", label: "Mode Zen (Concentration)", subtitle: "Masquer les barres pour un focus maximal", category: "Navigation", icon: "minimize-2", keywords: ["zen", "focus", "concentration", "plein écran"] },
+  { id: "dock.scale", actionId: "v8.dock.scale", label: "Taille du Dock", subtitle: "Changer l'échelle (Compacte, Normale, Grande)", category: "Réglages", icon: "layout-bottom", keywords: ["dock", "taille", "échelle", "barre"] }
 ].map((command) => Object.freeze({
   ...command,
   keywords: Object.freeze(command.keywords || []),

@@ -1,4 +1,4 @@
-import { actionButton, debounce, element, icon } from "../ui/dom.mjs";
+import { actionButton, attachTypeToSelect, debounce, element, icon } from "../ui/dom.mjs";
 import {
   bulkActionBar,
   collectionDensityControl,
@@ -484,12 +484,17 @@ export function mountTasks(stage, options = {}) {
   renderComposer();
   renderList();
   const releaseDensity = options.subscribeState?.((next) => updateCollectionDensityControl(densityControl, next)) || (() => {});
+  const releaseTypeToSelect = attachTypeToSelect(page, ".v8-task-row", (el) => {
+    const title = el.querySelector("strong");
+    return title ? title.textContent : "";
+  });
   refreshIcons();
 
   return () => {
     mounted = false;
     rowMenu.destroy();
     releaseDensity();
+    releaseTypeToSelect();
     scopedActions.reverse().forEach((restore) => restore());
     page.removeEventListener("click", handleClick);
     page.removeEventListener("contextmenu", handleContextMenu);

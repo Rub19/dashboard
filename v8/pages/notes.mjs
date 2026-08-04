@@ -225,8 +225,9 @@ export function mountNotes(stage, options = {}) {
       className: "v8-note-title",
       attributes: { type: "text", value: note.title, placeholder: "Titre de la note", "aria-label": "Titre de la note", maxlength: "160" }
     });
-    titleInput.value = note.title;
-    const words = element("span", { text: `${wordCount(note.content)} mot${wordCount(note.content) > 1 ? "s" : ""}` });
+    const initialCount = wordCount(note.content);
+    const initialReadMin = Math.max(1, Math.ceil(initialCount / 200));
+    const words = element("span", { text: `${initialCount} mot${initialCount > 1 ? "s" : ""} · ~${initialReadMin} min de lecture` });
     const richEditor = createRichTextEditor({
       ariaLabel: "Contenu de la note",
       placeholder: "Écrivez quelque chose…",
@@ -234,12 +235,26 @@ export function mountNotes(stage, options = {}) {
         const html = richEditor.getHTML();
         updateLocalNote({ content: html });
         const count = wordCount(html);
-        words.textContent = `${count} mot${count > 1 ? "s" : ""}`;
+        const readMin = Math.max(1, Math.ceil(count / 200));
+        words.textContent = `${count} mot${count > 1 ? "s" : ""} · ~${readMin} min de lecture`;
         scheduleSave();
       }
     });
     richEditor.setHTML(toEditableHtml(note.content));
     activeRichEditor = richEditor;
+    const progressBar = element("div", { className: "v8-note-read-progress" }, [
+      element("div", { className: "v8-note-read-progress__bar" })
+    ]);
+    const progressFill = progressBar.firstChild;
+    function updateReadProgress() {
+      const el = richEditor.element;
+      if (!el) return;
+      const total = el.scrollHeight - el.clientHeight;
+      const progress = total <= 0 ? 100 : Math.min(100, Math.max(0, Math.round((el.scrollTop / total) * 100)));
+      progressFill.style.width = `${progress}%`;
+    }
+    richEditor.element.addEventListener("scroll", updateReadProgress, { passive: true });
+    setTimeout(updateReadProgress, 20);
     const pinButton = actionButton({
       actionId: "v8.notes.pin.toggle",
       className: `v8-icon-button v8-note-pin${note.pinned ? " is-active" : ""}`,
@@ -266,6 +281,7 @@ export function mountNotes(stage, options = {}) {
           actionButton({ actionId: "v8.notes.delete", className: "v8-icon-button", ariaLabel: "Supprimer la note" }, [icon("trash-2")])
         ])
       ]),
+      progressBar,
       element("div", { className: "v8-note-document" }, [titleInput, tagsList, richEditor.element]),
       confirm,
       element("footer", { className: "v8-note-footer" }, [

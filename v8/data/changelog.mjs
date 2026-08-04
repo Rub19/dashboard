@@ -24,6 +24,15 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v186", "2026-08-04", "Suite Premium, concentration Zen, fluidité et audit i18n 100%", [
+    { kind: "feature", text: "Suite de fonctionnalités Premium & Concentration : Mode Zen (Alt+Z) pour masquer instantanément l'en-tête et le Dock pour un focus maximal, et nouveau sélecteur de taille du Dock (Compacte, Normale, Grande) dans les Réglages." },
+    { kind: "feature", text: "Recherche Type-to-Select et Lecture : navigation fluide par saisie clavier directe dans les listes de fichiers et de tâches (sélection automatique de l'élément correspondant), et barre de progression de lecture avec estimation du temps sur les Notes." },
+    { kind: "feature", text: "Badges Discord dans Live Now : affichage direct des badges officiels (Nitro, HypeSquad, Active Developer, Staff, Partner, etc.) et personnalisés sur votre carte Discord Live Now avec tooltips et micro-animations au survol." },
+    { kind: "improvement", text: "Audit sonore complet et Audio Interactive : retour sonore enrichi à 100% sur toutes les actions de navigation, changements d'onglets, toggles et boutons interactifs de l'interface avec gestion intelligente des fallbacks et respect des préférences spatiales." },
+    { kind: "improvement", text: "Command HUD (Ctrl+K) et Design Ultra-Aesthetic : affichage de badges de catégorie colorés pour chaque commande, effets Glassmorphism premium, lueur ambiante sur le Dock flottant et l'en-tête, et micro-élévations dynamiques au survol." },
+    { kind: "improvement", text: "Navigation au clavier et fluidité : raccourcis numériques (touches 1 à 9) pour basculer instantanément entre les pages de l'application, et préchargement transparent de l'assistance Brain en arrière-plan (requestIdleCallback)." },
+    { kind: "i18n", text: "Audit intégral de l'internationalisation : vérification complète et prise en charge à 100% des nouvelles clés de concentration, de taille du Dock, des temps de lecture et des notifications dans les 4 langues (français, anglais, espagnol, allemand)." }
+  ]),
   entry("v185", "2026-08-01", "Traductions completées : plus de 200 textes réparés", [
     { kind: "fix", text: "23 traductions incorrectes ou copiées-collées d'une langue à l'autre corrigées (ex : \"Dossier\" traduit par \"File\" en anglais, un message d'arrêt d'ETHONE traduit par \"arrested\" au lieu de \"stopped\")." },
     { kind: "i18n", text: "Plus de 60 messages jamais traduits ont rejoint le dictionnaire : notifications de tâches et de notes, connexions aux services (GitHub, Google, Notion, Spotify, Todoist, Google Drive, YouTube, Reddit), sections des Préférences Brain, et libellés de l'accueil et du Dock. Ils s'affichaient en français brut quel que soit la langue choisie." },

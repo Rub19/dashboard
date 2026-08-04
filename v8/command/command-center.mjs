@@ -124,7 +124,7 @@ export function createCommandCenter(host, options = {}) {
           element("strong", { text: command.label }),
           element("small", { text: command.subtitle })
         ]),
-        element("span", { className: "v8-command-result__category", text: command.category })
+        element("span", { className: "v8-command-result__category", text: command.category, dataset: { category: command.category } })
       ]);
       const pin = element("button", {
         className: `v8-command-pin${isPinned ? " is-pinned" : ""}`,

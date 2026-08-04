@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import test from "node:test";
-import { createDiscordLive } from "../v8/services/discord-live.mjs";
+import { createDiscordLive, normalizeDiscordBadges, normalizeDiscordPresence } from "../v8/services/discord-live.mjs";
+
+
 
 const USER_ID = "123456789012345678";
 
@@ -128,3 +131,36 @@ test("Discord live destroy closes the socket and stops the heartbeat", () => {
   assert.equal(socket.readyState, 3);
   assert.equal(runtime.intervalCount(), 0);
 });
+
+test("Discord live resolves badges from public_flags/nitro and exposes them on presence", () => {
+  const presence = normalizeDiscordPresence({
+    displayName: "Rub19",
+    status: "online",
+    discord_user: {
+      id: "999999999999999999",
+      public_flags: 4194304 | 64,
+      nitro: true
+    }
+  }, { connected: true });
+
+  assert.equal(presence.badges.length, 3);
+  assert.equal(presence.badges[0].id, "hypesquad_bravery");
+  assert.equal(presence.badges[1].id, "active_developer");
+  assert.equal(presence.badges[2].id, "nitro");
+
+  const defaultPresence = normalizeDiscordPresence({
+    displayName: "Rub19",
+    status: "online"
+  }, { connected: true });
+  assert.equal(defaultPresence.badges.length, 4);
+  assert.equal(defaultPresence.badges[0].id, "hypesquad_bravery");
+  assert.equal(defaultPresence.badges[1].id, "active_developer");
+
+  const uiSource = fs.readFileSync(new URL("../v8/ui/discord-live.mjs", import.meta.url), "utf8");
+  assert.match(uiSource, /function discordBadgesNode\(badges = \[\]\) \{/);
+  assert.match(uiSource, /className: "v8-discord-badges"/);
+  assert.match(uiSource, /className: "v8-discord-badge"/);
+  assert.match(uiSource, /discordBadgesNode\(presence\.badges\)/);
+});
+
+

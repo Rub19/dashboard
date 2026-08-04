@@ -88,6 +88,12 @@ function translateDynamic(source, locale) {
     return `${openTasks[1]} ${labels[locale]}`;
   }
 
+  const readTime = text.match(/^~?(\d+)\s+min de lecture$/iu);
+  if (readTime) {
+    const copy = { fr: "~{value} min de lecture", en: "~{value} min read", es: "~{value} min de lectura", de: "~{value} Min. Lesezeit" };
+    return copy[locale].replace("{value}", readTime[1]);
+  }
+
   const greeting = text.match(/^(Bonjour|Bon après-midi|Bonsoir|Encore éveillé),\s+(.+?)(\.)?$/u);
   if (greeting) {
     const translated = translateSource(greeting[1], locale);

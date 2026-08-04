@@ -13,6 +13,21 @@ function avatar(presence) {
   return element("span", { className: "v8-discord-avatar" }, [inner, statusDot]);
 }
 
+function discordBadgesNode(badges = []) {
+  if (!Array.isArray(badges) || badges.length === 0) return null;
+  const items = badges.map((badge) => {
+    return element("span", {
+      className: "v8-discord-badge",
+      attributes: {
+        title: badge.label,
+        "aria-label": badge.label,
+        style: badge.color ? `--v8-badge-color:${badge.color}` : null
+      }
+    }, [icon(badge.icon || "award")]);
+  });
+  return element("div", { className: "v8-discord-badges", attributes: { "aria-label": "Badges Discord" } }, items);
+}
+
 export function discordLiveCard(presence = {}, options = {}) {
   if (presence.available !== true) return null;
   const variant = ["home", "activity"].includes(options.variant) ? options.variant : "home";
@@ -32,9 +47,13 @@ export function discordLiveCard(presence = {}, options = {}) {
         brandIcon("discord", "messages-square", "v8-live-brand-mark"),
         element("small", { text: STATUS_LABELS[presence.status] || "Hors ligne" })
       ]),
-      element("strong", { text: presence.displayName, attributes: { translate: "no" } }),
+      element("div", { className: "v8-discord-live__name-row" }, [
+        element("strong", { text: presence.displayName, attributes: { translate: "no" } }),
+        discordBadgesNode(presence.badges)
+      ]),
       element("p", { text: activity, attributes: { translate: "no" } }),
       liveFreshnessNode(presence.updatedAt)
     ])
   ]);
 }
+

@@ -222,6 +222,41 @@ export function createActionFacade(options = {}) {
     setState({ theme: "auto" });
     return completed("Mode Automatique applique", { theme: "auto" });
   });
+  register("v8.zen.toggle", () => {
+    const zen = !getState().zen;
+    setState({ zen });
+    if (typeof document !== "undefined" && document.documentElement) {
+      if (zen) {
+        document.documentElement.dataset.v8Zen = "true";
+      } else {
+        delete document.documentElement.dataset.v8Zen;
+      }
+    }
+    notify({
+      id: "zen-toggled",
+      title: "Mode Zen",
+      message: zen ? "Mode concentration activé (Alt+Z pour quitter)." : "Mode concentration désactivé.",
+      type: "info",
+      duration: 2500
+    });
+    return completed("Mode Zen modifié", { zen });
+  });
+  function setDockScale(valid) {
+    setState({ dockScale: valid });
+    if (typeof document !== "undefined" && document.documentElement) {
+      if (valid && valid !== "normal") {
+        document.documentElement.dataset.v8DockScale = valid;
+      } else {
+        delete document.documentElement.dataset.v8DockScale;
+      }
+    }
+    notify({ id: "dock-scale", title: "Dock", message: `Taille du Dock : ${valid}`, type: "success" });
+    return completed("Taille du Dock modifiée", { dockScale: valid });
+  }
+  register("v8.dock.scale", (scale = "normal") => setDockScale(["compact", "normal", "large"].includes(scale) ? scale : "normal"));
+  register("v8.dock.scale.compact", () => setDockScale("compact"));
+  register("v8.dock.scale.normal", () => setDockScale("normal"));
+  register("v8.dock.scale.large", () => setDockScale("large"));
   register("v8.density.toggle", () => {
     const sequence = ["spacious", "comfortable", "compact", "ultra-compact", "automatic"];
     const current = getState().density;

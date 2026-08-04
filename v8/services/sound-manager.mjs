@@ -59,7 +59,11 @@ export const SOUND_EVENTS = Object.freeze({
   "command.open": Object.freeze({ cue: "open", category: "interface", gain: 0.62, spatial: "center" }),
   "command.close": Object.freeze({ cue: "close", category: "interface", gain: 0.54, spatial: "center" }),
   "profile.enter": Object.freeze({ cue: "launch", category: "system", gain: 0.68 }),
-  "settings.preview": Object.freeze({ cue: "notice", category: "interface", gain: 0.62 })
+  "settings.preview": Object.freeze({ cue: "notice", category: "interface", gain: 0.62 }),
+  "action.execute": Object.freeze({ cue: "touch", category: "interface", gain: 0.52, minInterval: 120 }),
+  "button.click": Object.freeze({ cue: "touch", category: "interface", gain: 0.38, minInterval: 120 }),
+  "tab.switch": Object.freeze({ cue: "notice", category: "interface", gain: 0.44, minInterval: 150 }),
+  "toggle.switch": Object.freeze({ cue: "confirm", category: "interface", gain: 0.48, minInterval: 150 })
 });
 
 const PACK_PROFILES = Object.freeze({
@@ -90,13 +94,24 @@ const ESSENTIAL_EVENTS = Object.freeze([
   "notification.success",
   "notification.error",
   "command.open",
-  "command.close"
+  "command.close",
+  "tab.switch",
+  "toggle.switch"
 ]);
 
 const ACTION_EVENT_MAP = Object.freeze({
   "v8.home.open": "dashboard.change",
+  "v8.notes.open": "dashboard.change",
+  "v8.tasks.open": "dashboard.change",
+  "v8.calendar.open": "dashboard.change",
+  "v8.files.open": "dashboard.change",
+  "v8.activity.open": "dashboard.change",
+  "v8.connections.open": "dashboard.change",
+  "v8.spaces.open": "space.change",
+  "v8.flows.open": "flow.change",
   "v8.brain.open": "brain.open",
   "v8.settings.open": "settings.open",
+  "v8.changelog.open": "window.open",
   "v8.widgets.open": "window.open",
   "v8.profile.open": "window.open",
   "v8.notifications.open": "window.open",
@@ -105,6 +120,21 @@ const ACTION_EVENT_MAP = Object.freeze({
   "v8.command.close": "command.close",
   "v8.mission.open": "window.open",
   "v8.mission.close": "window.close",
+  "v8.sidebar.toggle": "hover.important",
+  "v8.theme.toggle": "settings.preview",
+  "v8.theme.night": "settings.preview",
+  "v8.theme.graphite": "settings.preview",
+  "v8.theme.day": "settings.preview",
+  "v8.theme.auto": "settings.preview",
+  "v8.zen.toggle": "settings.preview",
+  "v8.dock.scale": "settings.preview",
+  "v8.dock.scale.compact": "settings.preview",
+  "v8.dock.scale.normal": "settings.preview",
+  "v8.dock.scale.large": "settings.preview",
+  "v8.density.toggle": "settings.preview",
+  "v8.spotlight.toggle": "settings.preview",
+  "v8.motion.ambient.toggle": "settings.preview",
+  "v8.motion.blur.toggle": "settings.preview",
   "v8.notes.delete": "modal.open",
   "v8.notes.delete.cancel": "modal.close",
   "v8.tasks.new": "modal.open",
@@ -196,7 +226,12 @@ export function soundEventForAction(actionId, result = {}) {
   if (id.includes("marketplace") && id.endsWith(".open")) return "marketplace.open";
   if (id.includes("widget") && id.includes("install")) return id.includes("uninstall") ? "widget.uninstall" : "widget.install";
   if (id.endsWith(".cancel") || id.endsWith(".close")) return "modal.close";
-  return null;
+  if (id.endsWith(".open")) return id.includes("brain") ? "brain.open" : id.includes("settings") ? "settings.open" : "dashboard.change";
+  if (id.endsWith(".new") || id.endsWith(".create") || id.endsWith(".add")) return "note.create";
+  if (id.endsWith(".delete") || id.endsWith(".remove") || id.endsWith(".signout")) return "delete";
+  if (id.endsWith(".toggle") || id.endsWith(".cycle") || id.endsWith(".set") || id.endsWith(".scale") || id.includes(".theme.") || id.includes(".density.") || id.includes(".dock.") || id.includes(".zen.") || id.includes(".sidebar.") || id.includes(".spotlight.") || id.includes(".motion.") || id.includes(".accent.") || id.includes(".appearance.") || id.includes(".sound.") || id.includes(".automation.")) return "settings.preview";
+  if (id.includes("spotify")) return "hover.important";
+  return "action.execute";
 }
 
 export function soundEventForNotification(type, notice = {}) {
@@ -437,6 +472,25 @@ export function createSoundManager(options = {}) {
     play("drag.drop");
   }
 
+  function handleInteractiveClick(event) {
+    const target = event.target?.closest?.("button, [role='button'], [role='tab'], [role='switch'], input[type='checkbox'], input[type='radio'], a[href]");
+    if (!target || !documentRef?.contains?.(target) || target.disabled || target.getAttribute?.("aria-disabled") === "true") return;
+    if (target.dataset?.soundClick === "false" || target.dataset?.soundClick === "none" || target.dataset?.sound === "false") return;
+    if (target.dataset?.soundClick && SOUND_EVENTS[target.dataset.soundClick]) {
+      play(target.dataset.soundClick);
+      return;
+    }
+    if (target.dataset?.action || target.closest?.("[data-action]")) return;
+    const role = target.getAttribute?.("role");
+    if (role === "tab" || target.dataset?.settingsSection || target.dataset?.brainTab || target.classList?.contains?.("v8-brain-tab") || target.classList?.contains?.("v8-settings-nav-button") || target.dataset?.taskStatus || target.dataset?.notesFilter || target.dataset?.filesFilter || target.dataset?.activityTab) {
+      play("tab.switch");
+    } else if (role === "switch" || target.type === "checkbox" || target.type === "radio" || target.dataset?.automationToggle) {
+      play("toggle.switch");
+    } else if (target.tagName === "BUTTON" || role === "button" || target.classList?.contains?.("v8-button") || target.classList?.contains?.("v8-icon-button")) {
+      play("button.click");
+    }
+  }
+
   function bufferFor(eventName, packId = preferences.pack) {
     const definition = SOUND_EVENTS[eventName];
     if (!audioContext || !definition || packId === "silent") return null;
@@ -636,6 +690,7 @@ export function createSoundManager(options = {}) {
     destroyed = true;
     removeUnlockListeners();
     documentRef?.removeEventListener?.("pointerover", handleImportantHover, true);
+    documentRef?.removeEventListener?.("click", handleInteractiveClick, true);
     documentRef?.removeEventListener?.("drop", handleDrop, true);
     ["play", "pause", "ended", "emptied", "volumechange"].forEach((type) => documentRef?.removeEventListener?.(type, handleMediaElementState, true));
     documentRef?.removeEventListener?.("ethone:media-activity", handleMediaActivitySignal);
@@ -663,6 +718,7 @@ export function createSoundManager(options = {}) {
   documentRef?.addEventListener?.("pointerdown", handleFirstGesture, { capture: true, passive: true });
   documentRef?.addEventListener?.("keydown", handleFirstGesture, { capture: true });
   documentRef?.addEventListener?.("pointerover", handleImportantHover, { capture: true, passive: true });
+  documentRef?.addEventListener?.("click", handleInteractiveClick, { capture: true, passive: true });
   documentRef?.addEventListener?.("drop", handleDrop, { capture: true, passive: true });
   ["play", "pause", "ended", "emptied", "volumechange"].forEach((type) => documentRef?.addEventListener?.(type, handleMediaElementState, { capture: true, passive: true }));
   documentRef?.addEventListener?.("ethone:media-activity", handleMediaActivitySignal);

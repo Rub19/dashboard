@@ -292,6 +292,16 @@ export function mountApplication(root, options = {}) {
   document.documentElement.dataset.spotlight = store.getState().spotlightEnabled === false ? "disabled" : "enabled";
   document.documentElement.dataset.ambientMotion = store.getState().ambientEffectsEnabled === false ? "disabled" : "enabled";
   document.documentElement.dataset.interfaceBlur = store.getState().interfaceBlurEnabled === false ? "disabled" : "enabled";
+  if (store.getState().zen) {
+    document.documentElement.dataset.v8Zen = "true";
+  } else {
+    delete document.documentElement.dataset.v8Zen;
+  }
+  if (store.getState().dockScale && store.getState().dockScale !== "normal") {
+    document.documentElement.dataset.v8DockScale = store.getState().dockScale;
+  } else {
+    delete document.documentElement.dataset.v8DockScale;
+  }
   densityEngine.start(store.getState());
   automationWatcher.prime(store.getState());
   if (ownsAmbientEngine) ambient.start(store.getState());
@@ -620,7 +630,41 @@ export function mountApplication(root, options = {}) {
     return brainRuntimePromise;
   }
 
+  const lazyModuleCache = new Map();
+
+  function preloadLazyRoutes() {
+    if (destroyed) return;
+    const loaders = {
+      activity: () => import("../pages/activity.mjs"),
+      connections: () => import("../pages/connections.mjs"),
+      brain: () => import("../pages/brain.mjs"),
+      settings: () => import("../pages/settings.mjs")
+    };
+    Object.entries(loaders).forEach(([r, loader]) => {
+      if (!lazyModuleCache.has(r)) {
+        loader().then((mod) => {
+          if (!destroyed) lazyModuleCache.set(r, mod);
+        }).catch(() => {});
+      }
+    });
+    ensureBrainRuntime().catch(() => {});
+  }
+
   function mountLazyRoute(route, focus, requestId) {
+    if (lazyModuleCache.has(route) && (!["brain", "settings"].includes(route) || brainRuntime)) {
+      const module = lazyModuleCache.get(route);
+      const brain = brainRuntime;
+      lifecycle.unmount();
+      lifecycle.mount(route, () => {
+        if (route === "activity") return module.mountActivity(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, twitchLive, lastfmLive, trackerLive, googleDriveLive, youtubeLive, redditLive, presence, notify: (notice) => toasts.show(notice) });
+        if (route === "connections") return module.mountConnections(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, spotifyOAuthLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, twitchLive, lastfmLive, trackerLive, googleDriveLive, youtubeLive, redditLive, externalServices, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.() });
+        if (route === "brain") return module.mountBrain(shell.stage, { repository, actions, state: store.getState(), presence, brain, notify: (notice) => toasts.show(notice) });
+        return module.mountSettings(shell.stage, { repository, actions, state: store.getState(), sounds, externalServices, densityEngine, subscribeState: store.subscribe, brain, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.(), profile: options.profile || repository.activeProfile?.(), onProfileMediaUpdated: applyProfileMediaUpdate });
+      });
+      finishRouteMount(route, focus);
+      return;
+    }
+
     const loaders = {
       activity: () => import("../pages/activity.mjs"),
       connections: () => import("../pages/connections.mjs"),
@@ -633,6 +677,7 @@ export function mountApplication(root, options = {}) {
     finishRouteMount(route, focus, false);
     Promise.all([loader(), ["brain", "settings"].includes(route) ? ensureBrainRuntime() : Promise.resolve(null)])
       .then(async ([module, brain]) => {
+        if (!destroyed) lazyModuleCache.set(route, module);
         await module.prepare?.();
         if (destroyed || requestId !== routeRequest || router?.current() !== route) return;
         lifecycle.mount(route, () => {
@@ -724,6 +769,14 @@ export function mountApplication(root, options = {}) {
     if (next.spotlightEnabled !== previous.spotlightEnabled) document.documentElement.dataset.spotlight = next.spotlightEnabled ? "enabled" : "disabled";
     if (next.ambientEffectsEnabled !== previous.ambientEffectsEnabled) document.documentElement.dataset.ambientMotion = next.ambientEffectsEnabled ? "enabled" : "disabled";
     if (next.interfaceBlurEnabled !== previous.interfaceBlurEnabled) document.documentElement.dataset.interfaceBlur = next.interfaceBlurEnabled ? "enabled" : "disabled";
+    if (next.zen !== previous.zen) {
+      if (next.zen) document.documentElement.dataset.v8Zen = "true";
+      else delete document.documentElement.dataset.v8Zen;
+    }
+    if (next.dockScale !== previous.dockScale) {
+      if (next.dockScale && next.dockScale !== "normal") document.documentElement.dataset.v8DockScale = next.dockScale;
+      else delete document.documentElement.dataset.v8DockScale;
+    }
     if (next.flow !== previous.flow || next.space !== previous.space || next.theme !== previous.theme) ambient.refresh(next);
     if (next.theme !== previous.theme || next.space !== previous.space) metadata.setThemeColor(themeColorForState(next, { systemPrefersLight: systemPrefersLight(globalThis) }));
     shell.update(next);
@@ -804,6 +857,16 @@ export function mountApplication(root, options = {}) {
     }
     const target = event.target;
     const editable = target?.matches?.("input, textarea, select, [contenteditable='true']");
+    if (!editable && event.key === "/" && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      event.preventDefault();
+      actions.dispatch(store.getState().commandOpen ? "v8.command.close" : "v8.command.open", { source: "keyboard" });
+      return;
+    }
+    if (!editable && event.key === "?" && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      event.preventDefault();
+      actions.dispatch(store.getState().missionOpen ? "v8.mission.close" : "v8.mission.open", { source: "keyboard" });
+      return;
+    }
     if (!editable && !store.getState().commandOpen && !store.getState().missionOpen && !store.getState().panel && ["PageDown", "PageUp", "Home", "End"].includes(event.key)) {
       event.preventDefault();
       const page = Math.max(240, shell.stage.clientHeight * 0.82);
@@ -811,6 +874,24 @@ export function mountApplication(root, options = {}) {
       if (event.key === "PageUp") shell.stage.scrollBy({ top: -page, behavior: "auto" });
       if (event.key === "Home") shell.stage.scrollTo({ top: 0, behavior: "auto" });
       if (event.key === "End") shell.stage.scrollTo({ top: shell.stage.scrollHeight, behavior: "auto" });
+      return;
+    }
+    if (!editable && !store.getState().commandOpen && !store.getState().missionOpen && !store.getState().panel && /^[1-9]$/.test(event.key) && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      const numRoutes = ["home", "activity", "connections", "brain", "settings", "notes", "tasks", "calendar", "files"];
+      const labels = ["Accueil", "Activity Hub", "Connexions", "Brain", "Réglages", "Notes", "Tâches", "Calendrier", "Fichiers"];
+      const index = Number(event.key) - 1;
+      const targetRoute = numRoutes[index];
+      if (targetRoute && store.getState().route !== targetRoute) {
+        event.preventDefault();
+        actions.navigate(targetRoute);
+        toasts.show({ id: "shortcut-nav", title: "Navigation rapide", message: `${labels[index]} (${event.key})`, type: "info", duration: 1800 });
+      }
+      return;
+    }
+    if (event.altKey && (event.key === "z" || event.key === "Z") && !editable) {
+      event.preventDefault();
+      actions.dispatch("v8.zen.toggle");
+      return;
     }
   }
 
@@ -826,14 +907,34 @@ export function mountApplication(root, options = {}) {
     if (!document.hidden) presence.update({ calendar: calendarPresenceState(repository.snapshot().events) });
   }
 
+  function handleOnline() {
+    if (destroyed) return;
+    presence.update({ syncStatus: "online" });
+    cloudSync?.queue?.("network-restored");
+    toasts.show({ id: "network-online", title: "Connexion rétablie", message: "Synchronisation cloud active.", type: "success", duration: 4000 });
+  }
+
+  function handleOffline() {
+    if (destroyed) return;
+    presence.update({ syncStatus: "offline" });
+    toasts.show({ id: "network-offline", title: "Mode hors-ligne", message: "Connexion réseau indisponible. Les modifications sont enregistrées localement.", type: "warning", duration: 6000 });
+  }
+
   document.addEventListener("keydown", handleGlobalKeydown);
   document.addEventListener("visibilitychange", handleVisibilityRefresh);
+  globalThis.addEventListener("online", handleOnline);
+  globalThis.addEventListener("offline", handleOffline);
   shell.stage.addEventListener("contextmenu", handleContextMenu);
   const persistedRoute = store.getState().route;
   if (!globalThis.location.hash && persistedRoute !== "home") {
     globalThis.history.replaceState({ ethoneV8Route: persistedRoute }, "", `#/${persistedRoute}`);
   }
   router.start();
+  if (typeof globalThis.requestIdleCallback === "function") {
+    globalThis.requestIdleCallback(() => preloadLazyRoutes(), { timeout: 2000 });
+  } else {
+    setTimeout(() => preloadLazyRoutes(), 300);
+  }
   if (store.getState().brainPreferences?.briefing?.enabled !== false && claimDailyBriefing(globalThis.localStorage, initialModel.briefing)) {
     toasts.show({
       id: "daily-brain-briefing",
@@ -856,6 +957,8 @@ export function mountApplication(root, options = {}) {
     routeRequest += 1;
     document.removeEventListener("keydown", handleGlobalKeydown);
     document.removeEventListener("visibilitychange", handleVisibilityRefresh);
+    globalThis.removeEventListener("online", handleOnline);
+    globalThis.removeEventListener("offline", handleOffline);
     shell.stage.removeEventListener("contextmenu", handleContextMenu);
     themeWatcher.destroy();
     if (ownsAmbientEngine) ambient.destroy();

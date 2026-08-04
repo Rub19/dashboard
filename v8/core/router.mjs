@@ -16,12 +16,16 @@ export const V8_ROUTES = Object.freeze([
 const ROUTE_SET = new Set(V8_ROUTES);
 
 export function normalizeRoute(value) {
-  const raw = String(value || "")
+  const safeStr = String(value || "").replace(/[\x00-\x1F\x7F]/g, "");
+  const raw = safeStr
     .replace(/^#\/?/, "")
     .replace(/^\//, "")
     .split(/[?&]/)[0]
     .trim()
     .toLowerCase();
+  if (raw === "__proto__" || raw === "constructor" || raw === "prototype") {
+    return "home";
+  }
   return ROUTE_SET.has(raw) ? raw : "home";
 }
 
@@ -30,6 +34,8 @@ export function createRouter(options = {}) {
   const onRoute = typeof options.onRoute === "function" ? options.onRoute : () => {};
   let started = false;
   let current = "home";
+  let lastCommitTime = 0;
+  let commitBurst = 0;
 
   function routeFromLocation() {
     return normalizeRoute(runtime?.location?.hash || "");
@@ -45,6 +51,16 @@ export function createRouter(options = {}) {
   }
 
   function commit(route, mode = "push") {
+    const now = Date.now();
+    if (now - lastCommitTime < 50) {
+      commitBurst++;
+      if (commitBurst > 25) {
+        return current;
+      }
+    } else {
+      commitBurst = 0;
+    }
+    lastCommitTime = now;
     const next = normalizeRoute(route);
     const previous = current;
     const url = `#/${next}`;

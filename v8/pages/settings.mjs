@@ -350,6 +350,12 @@ export function mountSettings(stage, options = {}) {
             densityPreviewHost
           ]),
           settingRow("sparkles", "Spotlight", "Reveler le Dashboard avec une transition breve au demarrage.", switchControl("v8.spotlight.toggle", "Animation Spotlight au demarrage", state.spotlightEnabled !== false)),
+          settingRow("minimize-2", "Mode Zen", "Masquer les barres pour un focus maximal sur votre contenu (Alt+Z).", switchControl("v8.zen.toggle", "Activer le Mode Zen", state.zen === true)),
+          settingRow("layout-bottom", "Taille du Dock", "Changer l'échelle de la barre de navigation inférieure.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Taille du Dock" } }, [
+            choice("v8.dock.scale.compact", "minimize-2", "Compacte", state.dockScale === "compact"),
+            choice("v8.dock.scale.normal", "layout-bottom", "Normale", !state.dockScale || state.dockScale === "normal"),
+            choice("v8.dock.scale.large", "maximize-2", "Grande", state.dockScale === "large")
+          ])),
           settingRow("languages", "Langue", "Changer rapidement la langue de l'interface.", actionButton({ actionId: "v8.locale.cycle", variant: "secondary" }, [icon("languages"), element("span", { text: "Langue suivante" })])),
           element("div", { className: "v8-density-settings" }, [
             element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("gauge")]), element("div", {}, [element("strong", { text: "Performance" }), element("p", { text: "Reduire les effets visuels pour gagner en fluidite sur les appareils moins puissants." })])]),

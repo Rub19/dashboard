@@ -245,6 +245,18 @@ p {
   background-clip: padding-box;
 }
 
+[overflow-y="auto"],
+[style*="overflow-y: auto"],
+.v8-panel__body,
+.v8-mission-body,
+.v8-command-results,
+.v8-brain-chat-log,
+.v8-dock-editor__list,
+.v8-dock-launcher__grid {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
 #ethone-v8-root {
   min-height: 100dvh;
   isolation: isolate;

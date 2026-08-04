@@ -76,3 +76,27 @@ export function actionButton(options = {}, children = []) {
     dataset: { action: options.actionId }
   }, children);
 }
+
+export function attachTypeToSelect(container, selector, getLabel = (el) => el.textContent || "") {
+  let buffer = "";
+  let timer = null;
+  const handler = (event) => {
+    if (event.ctrlKey || event.metaKey || event.altKey) return;
+    const target = event.target;
+    if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT" || target.isContentEditable)) return;
+    if (event.key.length !== 1) return;
+    buffer += event.key.toLowerCase();
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => { buffer = ""; }, 800);
+    const items = [...container.querySelectorAll(selector)];
+    const match = items.find((el) => getLabel(el).trim().toLowerCase().startsWith(buffer)) ||
+                  items.find((el) => getLabel(el).trim().toLowerCase().includes(buffer));
+    if (match) {
+      match.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      match.classList.add("is-type-matched");
+      setTimeout(() => match.classList.remove("is-type-matched"), 1200);
+    }
+  };
+  container.addEventListener("keydown", handler);
+  return () => container.removeEventListener("keydown", handler);
+}

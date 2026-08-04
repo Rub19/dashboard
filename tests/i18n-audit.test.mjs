@@ -32,7 +32,7 @@ test("a representative sample of the full i18n audit (entry, activity, connectio
     "Récupération du compte ETHONE",
     "Nouvel environnement",
     "Activity Hub",
-    "Gerer les connexions",
+    "Gérer les connexions",
     "Catalogue des intégrations",
     "Se connecter avec GitHub",
     "Density Engine",
@@ -44,16 +44,29 @@ test("a representative sample of the full i18n audit (entry, activity, connectio
     "Chaine Twitch",
     "SECURITY",
     "Tache",
-    "Changer de thème"
+    "Changer de thème",
+    "Navigation rapide",
+    "Connexion rétablie",
+    "Synchronisation cloud active.",
+    "Mode hors-ligne",
+    "Connexion réseau indisponible. Les modifications sont enregistrées localement.",
+    "Badges Discord",
+    "Discord Staff",
+    "Nitro Subscriber",
+    "Active Developer"
   ];
   for (const key of required) {
     const entry = sourceEntry(key);
     assert.ok(entry, `missing translation for ${JSON.stringify(key)}`);
     for (const locale of SUPPORTED_LOCALES) assert.ok(entry[locale]?.trim(), `${key} missing ${locale}`);
   }
-  // every catalog entry (including the ~350 added by this audit) has a complete, consistent locale set
+  // every catalog entry (including the ~350 added by this audit) has a complete, consistent locale set and non-empty translation strings
   for (const key of V8_SOURCE_KEYS) {
     const entry = sourceEntry(key);
     assert.deepEqual(Object.keys(entry).sort(), [...SUPPORTED_LOCALES].sort(), `${key} has an inconsistent locale set`);
+    for (const locale of SUPPORTED_LOCALES) {
+      assert.equal(typeof entry[locale], "string", `${key} [${locale}] must be a string`);
+      assert.ok(entry[locale].trim().length > 0, `${key} [${locale}] must not be empty`);
+    }
   }
 });

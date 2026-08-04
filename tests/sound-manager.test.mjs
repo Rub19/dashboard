@@ -129,7 +129,8 @@ test("the semantic catalog covers every requested system sound", () => {
     "sync.start", "sync.success", "system.error", "system.warning", "notification.info",
     "notification.success", "notification.error", "notification.warning", "notification.sync",
     "notification.update", "auth.login", "auth.logout", "onboarding.complete", "widget.install",
-    "widget.uninstall", "drag.drop", "hover.important", "command.open", "command.close"
+    "widget.uninstall", "drag.drop", "hover.important", "command.open", "command.close",
+    "action.execute", "button.click", "tab.switch", "toggle.switch"
   ];
   expected.forEach((eventName) => assert.ok(SOUND_EVENTS[eventName], `missing ${eventName}`));
   assert.equal(soundEventForNotification("brain"), "brain.respond");
@@ -147,6 +148,11 @@ test("central actions resolve to sound intentions without page-level audio", () 
   assert.equal(soundEventForAction("v8.dashboard.personal"), "dashboard.change");
   assert.equal(soundEventForAction("v8.notes.delete"), "modal.open");
   assert.equal(soundEventForAction("v8.notes.delete.cancel"), "modal.close");
+  assert.equal(soundEventForAction("v8.notes.open"), "dashboard.change");
+  assert.equal(soundEventForAction("v8.tasks.open"), "dashboard.change");
+  assert.equal(soundEventForAction("v8.theme.toggle"), "settings.preview");
+  assert.equal(soundEventForAction("v8.zen.toggle"), "settings.preview");
+  assert.equal(soundEventForAction("v8.unknown"), "action.execute");
   assert.equal(soundEventForAction("v8.unknown", { status: "failed" }), "system.error");
 });
 
@@ -347,4 +353,41 @@ test("only the centralized sound manager owns browser audio APIs", () => {
   assert.match(actions, /sounds\?\.playAction/);
   const soundManager = fs.readFileSync(path.join(ROOT, "v8", "services", "sound-manager.mjs"), "utf8");
   assert.doesNotMatch(soundManager, /setInterval|MutationObserver/);
+});
+
+test("interactive click listener triggers semantic sounds for buttons, tabs and switches", async () => {
+  const document = fakeDocument();
+  document.contains = () => true;
+  const { FakeAudioContext, stats } = fakeAudioHarness();
+  const manager = createSoundManager({
+    AudioContext: FakeAudioContext,
+    document,
+    localStorage: memoryStorage(),
+    runtime: { setTimeout: (cb) => cb() }
+  });
+  manager.setPreferences({ enabled: true, master: 1, interface: 1 });
+  await manager.unlock();
+  const clickHandler = document.listeners.get("click");
+  assert.equal(typeof clickHandler, "function");
+
+  clickHandler({
+    target: {
+      closest: () => ({ getAttribute: (k) => k === "role" ? "tab" : null, dataset: {}, classList: { contains: () => false } })
+    }
+  });
+  assert.equal(stats.starts, 1);
+
+  clickHandler({
+    target: {
+      closest: () => ({ getAttribute: (k) => k === "role" ? "switch" : null, dataset: {}, classList: { contains: () => false } })
+    }
+  });
+  assert.equal(stats.starts, 2);
+
+  clickHandler({
+    target: {
+      closest: () => ({ tagName: "BUTTON", getAttribute: () => null, dataset: {}, classList: { contains: () => false } })
+    }
+  });
+  assert.equal(stats.starts, 3);
 });

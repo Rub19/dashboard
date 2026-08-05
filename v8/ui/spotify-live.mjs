@@ -48,11 +48,17 @@ export function spotifyLiveCard(playback = {}, options = {}) {
   const elapsedTime = element("time", { text: formatTime(anchorProgressMs) });
   const totalTime = durationMs ? element("time", { text: formatTime(durationMs) }) : null;
 
+  let lastSecond = -1;
   function paint(progressMs) {
     const ratio = durationMs ? Math.min(1, progressMs / durationMs) : 0;
     progressBar.style.transform = `scaleX(${ratio})`;
-    progressTrack.setAttribute("aria-valuenow", String(Math.round(ratio * 100)));
-    elapsedTime.textContent = formatTime(progressMs);
+    
+    const currentSecond = Math.floor(progressMs / 1000);
+    if (currentSecond !== lastSecond) {
+      progressTrack.setAttribute("aria-valuenow", String(Math.round(ratio * 100)));
+      elapsedTime.textContent = formatTime(progressMs);
+      lastSecond = currentSecond;
+    }
   }
   paint(anchorProgressMs);
 
@@ -79,13 +85,16 @@ export function spotifyLiveCard(playback = {}, options = {}) {
   ]);
 
   if (playback.playing) {
-    const timer = globalThis.setInterval?.(() => {
-      if (!card.isConnected) { globalThis.clearInterval?.(timer); return; }
+    let rAF;
+    function tick() {
+      if (!card.isConnected) return;
       const elapsed = Math.max(0, Date.now() - anchorAt);
       const nextProgress = durationMs ? Math.min(durationMs, anchorProgressMs + elapsed) : anchorProgressMs + elapsed;
       paint(nextProgress);
-      if (durationMs && nextProgress >= durationMs) globalThis.clearInterval?.(timer);
-    }, 1000);
+      if (durationMs && nextProgress >= durationMs) return;
+      rAF = globalThis.requestAnimationFrame?.(tick);
+    }
+    rAF = globalThis.requestAnimationFrame?.(tick);
   }
 
   return card;

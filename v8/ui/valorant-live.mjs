@@ -15,17 +15,34 @@ export function valorantLiveCard(presence = {}, options = {}) {
   const variant = ["home", "activity"].includes(options.variant) ? options.variant : "home";
   const stat = presence.overview?.stats?.[0];
   const statLine = stat ? `${stat.displayName} : ${stat.displayValue}` : "Statistiques Valorant";
-  return element(options.tagName || "article", {
+  
+  const inner = element("div", { className: "v8-live-card-inner" }, [
+    element("div", { className: "v8-live-card-front" }, [
+      emblem(presence),
+      element("div", { className: "v8-valorant-live__body" }, [
+        element("div", { className: "v8-valorant-live__meta" }, [brandIcon("riot", "swords", "v8-live-brand-mark"), element("small", { text: "Valorant" })]),
+        element("strong", { text: `${presence.name}#${presence.tag}`, attributes: { translate: "no" } }),
+        element("p", { text: statLine, attributes: { translate: "no" } }),
+        liveFreshnessNode(presence.updatedAt)
+      ])
+    ]),
+    element("div", { className: "v8-live-card-back" }, [
+      element("div", { className: "v8-valorant-live__body" }, [
+        element("strong", { text: "Statistiques avancées" }),
+        element("p", { text: presence.overview?.stats?.[1] ? `${presence.overview.stats[1].displayName}: ${presence.overview.stats[1].displayValue}` : "En jeu", attributes: { translate: "no" } })
+      ])
+    ])
+  ]);
+
+  const card = element(options.tagName || "article", {
     className: `v8-valorant-live v8-valorant-live--${variant} v8-surface`,
     attributes: { "aria-label": "Statistiques Valorant" },
     dataset: { liveWidget: "media", liveKind: "widget" }
-  }, [
-    emblem(presence),
-    element("div", { className: "v8-valorant-live__body" }, [
-      element("div", { className: "v8-valorant-live__meta" }, [brandIcon("riot", "swords", "v8-live-brand-mark"), element("small", { text: "Valorant" })]),
-      element("strong", { text: `${presence.name}#${presence.tag}`, attributes: { translate: "no" } }),
-      element("p", { text: statLine, attributes: { translate: "no" } }),
-      liveFreshnessNode(presence.updatedAt)
-    ])
-  ]);
+  }, [inner]);
+
+  card.addEventListener("click", () => {
+    card.classList.toggle("is-flipped");
+  });
+
+  return card;
 }

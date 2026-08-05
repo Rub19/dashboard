@@ -20,8 +20,23 @@ export function mountFocusIsland(host, options = {}) {
   host.appendChild(island);
 
   let lastPhase = "idle";
+  let hideTimer = null;
   
+  function resetHideTimer(state) {
+    if (hideTimer) clearTimeout(hideTimer);
+    hideTimer = null;
+    island.classList.remove("is-hidden");
+    
+    if (state.phase !== "idle" && state.paused) {
+      hideTimer = setTimeout(() => {
+        island.classList.add("is-hidden");
+        island.classList.remove("is-expanded");
+      }, 30000);
+    }
+  }
+
   function updateUI(state) {
+    resetHideTimer(state);
     const timeNode = island.querySelector(".v8-dynamic-island__time");
     const phaseNode = island.querySelector(".v8-dynamic-island__phase");
     let playBtn = island.querySelector("[data-action=focus-pause]");
@@ -47,8 +62,16 @@ export function mountFocusIsland(host, options = {}) {
   }
 
   island.addEventListener("click", (e) => {
+    if (island.classList.contains("is-hidden")) {
+      resetHideTimer(focusTimer.getState());
+      return;
+    }
     const btn = e.target.closest("button");
-    if (!btn) return;
+    if (!btn) {
+      island.classList.toggle("is-expanded");
+      resetHideTimer(focusTimer.getState());
+      return;
+    }
     const action = btn.dataset.action;
     
     if (action === "focus-pause") {

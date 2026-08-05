@@ -24,6 +24,13 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v195", "2026-08-05", "Interactive Widgets, Transitions Fluides & Auto-Hide", [
+    { kind: "feature", text: "Dynamic Island Extensible : l'île de focus s'agrandit d'un simple clic pour révéler plus de détails, et se masque automatiquement après 30s de pause pour dégager votre vue." },
+    { kind: "feature", text: "Transitions Fluides (View Transitions) : la navigation entre les pages s'effectue désormais avec un fondu croisé cinématographique natif pour un confort visuel optimal." },
+    { kind: "feature", text: "Dock Auto-hide Intelligent : le dock peut se cacher avec une zone de détection repensée, réagissant instantanément dès que votre souris approche le bord de l'écran." },
+    { kind: "feature", text: "Cartes Riot Games Interactives (3D) : vos statistiques League of Legends et Valorant se présentent sous forme de cartes qui se retournent au clic." },
+    { kind: "feature", text: "Aura Musicale Réactive : lorsque vous écoutez Spotify, l'Aura d'arrière-plan pulse subtilement pour une immersion parfaite." }
+  ]),
   entry("v194", "2026-08-05", "Control Center, Focus Island & Animations Premium", [
     { kind: "feature", text: "Nouveau Control Center : séparation des paramètres d'environnement (Aura, Son, Focus) dans un panneau flottant dédié avec effet Glassmorphism, accessible depuis le Dock." },
     { kind: "feature", text: "Focus Timer (Dynamic Island) : le minuteur Pomodoro et Deep Work s'affiche désormais sous forme d'île dynamique animée en haut de l'écran avec contrôles rapides (play/pause/stop)." },

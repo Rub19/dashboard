@@ -3377,6 +3377,15 @@ html[data-v8-dock-autohide="true"] .v8-app-dock {
   transform: translateY(calc(100% - 6px));
   opacity: 0.3;
 }
+html[data-v8-dock-autohide="true"] .v8-app-dock::after {
+  content: "";
+  position: absolute;
+  top: -60px;
+  left: -40px;
+  right: -40px;
+  bottom: -20px;
+  z-index: -1;
+}
 html[data-v8-dock-autohide="true"] .v8-app-dock:hover,
 html[data-v8-dock-autohide="true"] .v8-app-dock:focus-within {
   transform: translateY(0);
@@ -3904,6 +3913,17 @@ html[data-v8-ui-glow="true"] .v8-dock {
   transform: translateX(-50%) translateY(0) scale(1);
 }
 
+.v8-dynamic-island.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(-150%) scale(0.9);
+}
+
+.v8-dynamic-island.is-expanded {
+  border-radius: 24px;
+  padding: 16px 24px;
+}
+
 .v8-dynamic-island.is-paused {
   background: #222;
   border-color: rgba(255, 165, 0, 0.5);
@@ -3913,6 +3933,11 @@ html[data-v8-ui-glow="true"] .v8-dock {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.v8-dynamic-island.is-expanded .v8-dynamic-island__content {
+  flex-direction: column;
+  gap: 12px;
 }
 
 .v8-dynamic-island__timer {
@@ -3938,4 +3963,51 @@ html[data-v8-ui-glow="true"] .v8-dock {
 .v8-dynamic-island__actions {
   display: flex;
   gap: 4px;
+}
+
+/* 3D Interactive Cards */
+.v8-lol-live, .v8-valorant-live {
+  display: block !important;
+  perspective: 1000px;
+  cursor: pointer;
+}
+.v8-live-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-style: preserve-3d;
+}
+.v8-lol-live.is-flipped .v8-live-card-inner,
+.v8-valorant-live.is-flipped .v8-live-card-inner {
+  transform: rotateX(180deg);
+}
+.v8-live-card-front, .v8-live-card-back {
+  display: grid;
+  min-width: 0;
+  align-items: center;
+  gap: var(--v8-space-4);
+  backface-visibility: hidden;
+}
+.v8-live-card-front {
+  grid-template-columns: 44px minmax(0,1fr);
+}
+.v8-live-card-back {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  transform: rotateX(180deg);
+  background: var(--v8-surface-raised, rgba(255,255,255,0.05));
+  border-radius: var(--v8-radius-md);
+}
+@media (max-width:540px) {
+  .v8-live-card-front { grid-template-columns: 46px minmax(0,1fr); }
+}
+
+/* Aura Pulse Audio Sync */
+html[data-v8-aura-pulse="true"] .v8-ambient-layer {
+  animation: aura-pulse 2s infinite alternate ease-in-out;
+}
+@keyframes aura-pulse {
+  0% { transform: scale(1); filter: blur(60px) brightness(1) saturate(1); }
+  100% { transform: scale(1.1); filter: blur(40px) brightness(1.3) saturate(1.3); }
 }

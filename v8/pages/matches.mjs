@@ -46,7 +46,7 @@ export function mountMatches(container, options = {}) {
   }
   
   const selectMode = element("select", { className: "v8-matches-filter" }, 
-    modes.map(m => element("option", { value: m.value, text: m.text }))
+    modes.map(m => element("option", { attributes: { value: m.value }, text: m.text }))
   );
   selectMode.value = initialMode;
   currentMode = initialMode;
@@ -322,6 +322,7 @@ export function mountMatches(container, options = {}) {
     ]);
   }
   
+  let dataLoaded = false;
   async function loadMatches() {
     if (destroyed) return;
     content.replaceChildren();
@@ -330,25 +331,30 @@ export function mountMatches(container, options = {}) {
     try {
       let data;
       if (game === "valorant") {
-        const riotId = valorantLive?.state?.()?.tag ? `${valorantLive.state().name}#${valorantLive.state().tag}` : "";
-        if (!riotId) throw new Error("Riot ID Valorant manquant.");
+        const state = valorantLive?.state?.() || {};
+        const riotId = state.tag ? `${state.name}#${state.tag}` : "";
+        if (!riotId || !state.available) throw new Error("En attente de la connexion Lanyard...");
         const [name, tag] = riotId.split("#");
         const res = await externalServices.tracker.valorantMatches(name, tag, currentMode);
         data = res.data;
       } else if (game === "lol") {
-        const riotId = lolLive?.state?.()?.tag ? `${lolLive.state().name}#${lolLive.state().tag}` : "";
-        if (!riotId) throw new Error("Riot ID League of Legends manquant.");
+        const state = lolLive?.state?.() || {};
+        const riotId = state.tag ? `${state.name}#${state.tag}` : "";
+        if (!riotId || !state.available) throw new Error("En attente de la connexion Lanyard...");
         const [name, tag] = riotId.split("#");
         const res = await externalServices.tracker.lolMatches(name, tag, currentMode);
         data = res.data;
       } else if (game === "apex") {
-        const handle = trackerLive?.state?.()?.handle;
-        if (!handle) throw new Error("Identifiant Apex manquant.");
+        const state = trackerLive?.state?.() || {};
+        const handle = state.handle;
+        if (!handle || !state.available) throw new Error("En attente de la connexion Lanyard...");
         const res = await externalServices.tracker.apexMatches("origin", handle, currentMode);
         data = res.data;
       } else {
         throw new Error("Jeu non supporté");
       }
+      
+      dataLoaded = true;
       if (destroyed) return;
       
       content.replaceChildren();
@@ -383,10 +389,18 @@ export function mountMatches(container, options = {}) {
     }
   }
   
+  const liveService = game === "valorant" ? valorantLive : game === "lol" ? lolLive : trackerLive;
+  const unsubscribe = liveService?.subscribe?.((state) => {
+    if (!dataLoaded && state.available) {
+      loadMatches();
+    }
+  });
+
   loadMatches();
   
   return () => {
     destroyed = true;
+    unsubscribe?.();
     root.remove();
   };
 }

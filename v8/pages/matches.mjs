@@ -1,4 +1,4 @@
-﻿import { element, icon } from "../ui/dom.mjs";
+import { element, icon } from "../ui/dom.mjs";
 
 export function mountMatches(container, options = {}) {
   const { externalServices, lolLive, valorantLive, actions } = options;
@@ -15,7 +15,7 @@ export function mountMatches(container, options = {}) {
   const content = element("div", { className: "v8-matches-content" });
   
   const backBtn = element("button", { className: "v8-button v8-button--outline", text: "Retour" });
-  backBtn.addEventListener("click", () => actions?.navigate?.("home"));
+  backBtn.addEventListener("click", () => actions?.dispatch?.("v8.navigate.home") || actions?.dispatch?.("v8.home") || (window.location.hash = ""));
   
   const title = element("h1", { text: `Historique ${game === "valorant" ? "Valorant" : game === "apex" ? "Apex Legends" : "League of Legends"}` });
   
@@ -266,8 +266,55 @@ export function mountMatches(container, options = {}) {
       content.append(list);
     } catch (e) {
       if (destroyed) return;
+      
+      // Fallback vers de fausses données (mock) si le backend tracker n'est pas disponible
+      const mockData = [];
+      const now = Date.now();
+      for (let i = 0; i < 8; i++) {
+        const isWin = Math.random() > 0.4;
+        const kills = Math.floor(Math.random() * 25) + 5;
+        const deaths = Math.floor(Math.random() * 20) + 5;
+        mockData.push({
+          metadata: {
+            result: isWin ? "Victory" : "Defeat",
+            timestamp: new Date(now - (i * 3600000 * (Math.random() * 12 + 1))).toISOString(),
+            modeName: currentMode === "all" ? (game === "valorant" ? "Compétitif" : "Classé") : currentMode,
+            mapName: game === "valorant" ? ["Ascent", "Bind", "Haven", "Icebox"][i%4] : game === "lol" ? "Faille de l'invocateur" : "Bord du monde"
+          },
+          segments: [{
+            type: "player-summary",
+            stats: {
+              kills: { value: kills },
+              deaths: { value: deaths },
+              assists: { value: Math.floor(Math.random() * 15) },
+              score: { value: Math.floor(Math.random() * 6000) + 2000 },
+              headshotsPercentage: { value: Math.floor(Math.random() * 60) },
+              damageDeltaPerRound: { value: Math.floor(Math.random() * 100) - 50 }
+            }
+          }]
+        });
+      }
+      
       content.innerHTML = "";
-      content.append(element("p", { className: "v8-error", text: "Impossible de charger l'historique : " + e.message }));
+      
+      const warning = element("p", { className: "v8-warning", text: "Serveur tracker indisponible. Affichage de données simulées." });
+      warning.style.color = "var(--v8-warning)";
+      warning.style.marginBottom = "var(--v8-spacing-4)";
+      warning.style.fontSize = "0.9rem";
+      
+      const groups = {};
+      mockData.forEach(m => {
+        const dateStr = new Date(m.metadata.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        if (!groups[dateStr]) groups[dateStr] = [];
+        groups[dateStr].push(m);
+      });
+      
+      const list = element("div", { className: "v8-matches-history" });
+      Object.keys(groups).forEach(dateStr => {
+        list.append(renderGroup(dateStr, groups[dateStr]));
+      });
+      
+      content.append(warning, list);
     }
   }
   

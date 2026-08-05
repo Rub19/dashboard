@@ -24,6 +24,10 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v200", "2026-08-05", "Historique de Matchs : Bouton retour & Mock Data", [
+    { kind: "fix", text: "Le bouton retour de l'historique de matchs renvoie désormais correctement à l'accueil." },
+    { kind: "feature", text: "En l'absence du serveur backend tracker, l'historique génère de fausses données (mock) pour simuler la page plutôt que d'afficher 'Failed to fetch'." }
+  ]),
   entry("v199", "2026-08-05", "Application de l'Aura au Démarrage", [
     { kind: "fix", text: "Ambiance et Couleurs : L'aura personnalisée et les autres préférences visuelles globales (Typographie, Courbure) sont désormais appliquées dès l'écran de sélection de profil (et non plus seulement après l'entrée dans un Space)." }
   ]),

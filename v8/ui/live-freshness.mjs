@@ -5,7 +5,7 @@ const TIME_FORMAT = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: 
 export function freshnessLabel(updatedAtIso) {
   const date = new Date(updatedAtIso);
   if (Number.isNaN(date.getTime())) return "";
-  return `Actualise a ${TIME_FORMAT.format(date)}`;
+  return TIME_FORMAT.format(date);
 }
 
 export function liveFreshnessNode(updatedAtIso) {

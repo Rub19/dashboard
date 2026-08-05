@@ -10,36 +10,6 @@ function avatar(presence) {
   return element("span", { className: "v8-lol-icon" }, [inner, livePulseDot()]);
 }
 
-function statsGrid(overview) {
-  const hasStats = overview && Array.isArray(overview.stats) && overview.stats.length > 0;
-  
-  const historyBtn = element("button", { 
-    className: "v8-button v8-button--outline v8-button--small v8-live-history-btn", 
-    text: "Historique Complet",
-    style: "margin-top: 8px; width: 100%;"
-  });
-  historyBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    window.location.hash = "#matches?game=lol";
-  });
-
-  if (!hasStats) {
-    return element("div", { className: "v8-live-empty-stats" }, [
-      element("p", { text: "Aucun match classé récent" }),
-      historyBtn
-    ]);
-  }
-  return element("div", { className: "v8-live-stats-wrapper" }, [
-    element("div", { className: "v8-live-stats-grid" }, 
-      overview.stats.map((stat) => element("div", { className: "v8-live-stat-item" }, [
-        element("span", { className: "v8-live-stat-label", text: stat.displayName }),
-        element("span", { className: "v8-live-stat-value", text: stat.displayValue, attributes: { translate: "no" } })
-      ]))
-    ),
-    historyBtn
-  ]);
-}
-
 export function lolLiveCard(presence = {}, options = {}) {
   if (presence.available !== true) return null;
   const variant = ["home", "activity"].includes(options.variant) ? options.variant : "home";
@@ -54,12 +24,6 @@ export function lolLiveCard(presence = {}, options = {}) {
         element("p", { text: statLine, attributes: { translate: "no" } }),
         liveFreshnessNode(presence.updatedAt)
       ])
-    ]),
-    element("div", { className: "v8-live-card-back v8-surface" }, [
-      element("div", { className: "v8-lol-live__body" }, [
-        element("strong", { text: presence.overview?.name || "Statistiques" }),
-        statsGrid(presence.overview)
-      ])
     ])
   ]);
   
@@ -70,7 +34,7 @@ export function lolLiveCard(presence = {}, options = {}) {
   }, [inner]);
 
   card.addEventListener("click", () => {
-    card.classList.toggle("is-flipped");
+    window.location.hash = "#matches?game=lol";
   });
 
   return card;

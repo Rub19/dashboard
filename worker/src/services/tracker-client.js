@@ -63,7 +63,8 @@ export async function getTrackerMatches(env, game, platform, identifier, mode, a
       result: safeText(match.metadata?.result),
       mapName: safeText(match.metadata?.mapName),
       agentName: safeText(match.metadata?.agentName || match.metadata?.championName),
-      agentImageUrl: safePublicUrl(match.metadata?.agentImageUrl || match.metadata?.championImageUrl, ["tracker.gg"])
+      agentImageUrl: safePublicUrl(match.metadata?.agentImageUrl || match.metadata?.championImageUrl, ["tracker.gg"]),
+      timestamp: safeText(match.metadata?.dateStarted || match.attributes?.timestamp || match.metadata?.timestamp)
     }),
     segments: Object.freeze((match.segments || []).map((segment) => Object.freeze({
       type: safeText(segment.type),

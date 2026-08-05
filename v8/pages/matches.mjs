@@ -111,54 +111,44 @@ export function mountMatches(container, options = {}) {
     const createTeamTable = (teamName, players) => {
       if (!players.length) return null;
       const tColor = teamName.toLowerCase() === "red" ? "var(--v8-error)" : "var(--v8-info)";
-      const table = document.createElement("table");
-      table.className = "v8-scoreboard-table";
-      table.style.width = "100%";
-      table.style.borderCollapse = "collapse";
-      table.style.marginTop = "1rem";
       
-      const thead = document.createElement("thead");
-      thead.innerHTML = `
-        <tr style="border-bottom: 2px solid ${tColor}; text-align: left; font-size: 0.85rem; color: var(--v8-text-muted);">
-          <th style="padding: 0.5rem;">Agent</th>
-          <th style="padding: 0.5rem;">Joueur</th>
-          <th style="padding: 0.5rem;">Rank</th>
-          <th style="padding: 0.5rem;">Score</th>
-          <th style="padding: 0.5rem;">K</th>
-          <th style="padding: 0.5rem;">D</th>
-          <th style="padding: 0.5rem;">A</th>
-          <th style="padding: 0.5rem;">K/D</th>
-          <th style="padding: 0.5rem;">HS%</th>
-        </tr>
-      `;
-      table.appendChild(thead);
+      const thStyle = "padding: 0.5rem;";
+      const thead = element("thead", {}, [
+        element("tr", { style: `border-bottom: 2px solid ${tColor}; text-align: left; font-size: 0.85rem; color: var(--v8-text-muted);` }, [
+          element("th", { style: thStyle, text: "Agent" }),
+          element("th", { style: thStyle, text: "Joueur" }),
+          element("th", { style: thStyle, text: "Rank" }),
+          element("th", { style: thStyle, text: "Score" }),
+          element("th", { style: thStyle, text: "K" }),
+          element("th", { style: thStyle, text: "D" }),
+          element("th", { style: thStyle, text: "A" }),
+          element("th", { style: thStyle, text: "K/D" }),
+          element("th", { style: thStyle, text: "HS%" })
+        ])
+      ]);
       
-      const tbody = document.createElement("tbody");
-      players.forEach(p => {
-        const tr = document.createElement("tr");
-        tr.style.borderBottom = "1px solid var(--v8-border)";
+      const tbody = element("tbody", {}, players.map(p => {
         const kd = p.stats?.deaths ? (p.stats.kills / p.stats.deaths).toFixed(2) : p.stats?.kills;
         const hs = p.stats?.headshots ? Math.round((p.stats.headshots / (p.stats.headshots + (p.stats.bodyshots||0) + (p.stats.legshots||0))) * 100) : 0;
-        const isDuo = p.party_id ? `<span class="v8-party-indicator" style="background-color: ${stringToColor(p.party_id)}; width:6px; height:6px; border-radius:50%; display:inline-block; margin-right:4px;" title="En groupe"></span>` : '';
         
-        tr.innerHTML = `
-          <td style="padding: 0.5rem;">${p.character || '-'}</td>
-          <td style="padding: 0.5rem;">${isDuo} <strong>${p.name}</strong> <span style="opacity:0.5;font-size:0.8em">#${p.tag}</span></td>
-          <td style="padding: 0.5rem;">${p.currenttier_patched || '-'}</td>
-          <td style="padding: 0.5rem;">${p.stats?.score || 0}</td>
-          <td style="padding: 0.5rem;">${p.stats?.kills || 0}</td>
-          <td style="padding: 0.5rem;">${p.stats?.deaths || 0}</td>
-          <td style="padding: 0.5rem;">${p.stats?.assists || 0}</td>
-          <td style="padding: 0.5rem;">${kd}</td>
-          <td style="padding: 0.5rem;">${hs}%</td>
-        `;
-        tbody.appendChild(tr);
-      });
-      table.appendChild(tbody);
+        const tdStyle = "padding: 0.5rem;";
+        const isDuo = p.party_id ? element("span", { className: "v8-party-indicator", style: `background-color: ${stringToColor(p.party_id)}; width:6px; height:6px; border-radius:50%; display:inline-block; margin-right:4px;`, attributes: { title: "En groupe" } }) : null;
+        
+        return element("tr", { style: "border-bottom: 1px solid var(--v8-border);" }, [
+          element("td", { style: tdStyle, text: String(p.character || '-') }),
+          element("td", { style: tdStyle }, [isDuo, element("strong", { text: String(p.name) }), element("span", { style: "opacity:0.5;font-size:0.8em", text: ` #${p.tag}` })].filter(Boolean)),
+          element("td", { style: tdStyle, text: String(p.currenttier_patched || '-') }),
+          element("td", { style: tdStyle, text: String(p.stats?.score || 0) }),
+          element("td", { style: tdStyle, text: String(p.stats?.kills || 0) }),
+          element("td", { style: tdStyle, text: String(p.stats?.deaths || 0) }),
+          element("td", { style: tdStyle, text: String(p.stats?.assists || 0) }),
+          element("td", { style: tdStyle, text: String(kd) }),
+          element("td", { style: tdStyle, text: `${hs}%` })
+        ]);
+      }));
       
-      const wrap = element("div", { className: "v8-scoreboard-team", style: "background: rgba(0,0,0,0.2); border-radius: 8px; padding: 0.5rem; margin-bottom: 1rem;" });
-      wrap.appendChild(table);
-      return wrap;
+      const table = element("table", { className: "v8-scoreboard-table", style: "width: 100%; border-collapse: collapse; margin-top: 1rem;" }, [thead, tbody]);
+      return element("div", { className: "v8-scoreboard-team", style: "background: rgba(0,0,0,0.2); border-radius: 8px; padding: 0.5rem; margin-bottom: 1rem;" }, [table]);
     };
 
     const redTable = createTeamTable("Red", teams.Red);

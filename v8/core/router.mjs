@@ -42,9 +42,18 @@ export function createRouter(options = {}) {
     return normalizeRoute(runtime?.location?.hash || "");
   }
 
+  function getRouteSuffix(value) {
+    const safeStr = String(value || "");
+    const hashIndex = safeStr.indexOf("#");
+    const base = hashIndex >= 0 ? safeStr.substring(hashIndex) : safeStr;
+    const match = base.match(/[?&].*/);
+    return match ? match[0] : "";
+  }
+
   function canonicalizeLocation(route) {
     const next = normalizeRoute(route);
-    const url = `#/${next}`;
+    const suffix = getRouteSuffix(runtime?.location?.hash || "");
+    const url = `#/${next}${suffix}`;
     if (runtime?.location?.hash !== url) {
       runtime?.history?.replaceState?.({ ethoneV8Route: next }, "", url);
     }
@@ -64,7 +73,8 @@ export function createRouter(options = {}) {
     lastCommitTime = now;
     const next = normalizeRoute(route);
     const previous = current;
-    const url = `#/${next}`;
+    const suffix = getRouteSuffix(String(route).includes("?") ? route : runtime?.location?.hash || "");
+    const url = `#/${next}${suffix}`;
     if (mode === "replace") runtime?.history?.replaceState?.({ ethoneV8Route: next }, "", url);
     else runtime?.history?.pushState?.({ ethoneV8Route: next }, "", url);
     current = next;

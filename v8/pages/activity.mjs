@@ -431,7 +431,6 @@ export function mountActivity(stage, options = {}) {
       actions: [actionButton({ actionId: "v8.connections.open", variant: "secondary" }, [element("span", { text: "Configurer" }), icon("arrow-up-right")])],
       compact: true,
       className: "v8-empty-state--wide"
-    }));e: "v8-empty-state--wide"
     }));
 
     timeline.replaceChildren(...(filtered.length ? filtered.map(timelineEntry) : [emptyFeed(activeFilter === "all" && !query ? null : () => {

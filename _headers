@@ -22,9 +22,11 @@
 
 /v8/*.mjs
   Cache-Control: public, max-age=300, must-revalidate
+  Content-Type: application/javascript; charset=utf-8
 
 /v8/styles/*
   Cache-Control: public, max-age=300, must-revalidate
+  Content-Type: text/css; charset=utf-8
 
 /icons/*
   Cache-Control: public, max-age=31536000, immutable

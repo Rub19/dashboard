@@ -62,7 +62,11 @@ const DEFAULT_STATE = Object.freeze({
   commandQuery: "",
   commandIndex: 0,
   panel: null,
-  toast: null
+  toast: null,
+  aura: "classic",
+  fontFamily: "inter",
+  radiusStyle: "rounded",
+  zen: false
 });
 
 function safeParse(value) {
@@ -119,7 +123,7 @@ function normalizeState(input = {}) {
     railExpanded: input.railExpanded === true,
     dockScale: ["normal", "compact", "large"].includes(input.dockScale) ? input.dockScale : "normal",
     dockAlign: ["center", "stretch"].includes(input.dockAlign) ? input.dockAlign : "center",
-    dockGlass: ["default", "ultra", "minimal"].includes(input.dockGlass) ? input.dockGlass : "default",
+    dockGlass: ["default", "ultra", "opaque"].includes(input.dockGlass) ? input.dockGlass : "default",
     dockAutoHide: input.dockAutoHide === true,
     dockMagnify: input.dockMagnify !== false,
     homeGrid: ["4", "2", "3"].includes(input.homeGrid) ? input.homeGrid : "4",
@@ -134,7 +138,11 @@ function normalizeState(input = {}) {
     panel,
     toast: input.toast && typeof input.toast === "object"
       ? Object.freeze({ ...input.toast })
-      : null
+      : null,
+    aura: ["classic", "boreale", "cyberpunk", "eclipse", "emeraude", "minerale"].includes(input.aura) ? input.aura : "classic",
+    fontFamily: ["inter", "outfit", "mono", "serif"].includes(input.fontFamily) ? input.fontFamily : "inter",
+    radiusStyle: ["rounded", "square", "pill"].includes(input.radiusStyle) ? input.radiusStyle : "rounded",
+    zen: input.zen === true
   });
 }
 

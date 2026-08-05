@@ -1,4 +1,4 @@
-﻿.v8-shell {
+.v8-shell {
   position: relative;
   display: grid;
   isolation: isolate;
@@ -3102,24 +3102,22 @@ html[data-v8-zen="true"] #ethone-v8-root {
   grid-template-rows: 0fr 1fr 0fr !important;
 }
 html[data-v8-dock-scale="compact"] .v8-floating-dock {
-  transform: scale(0.88);
+  transform: scale(0.82);
   transform-origin: bottom center;
 }
 html[data-v8-dock-scale="large"] .v8-floating-dock {
-  transform: scale(1.12);
+  transform: scale(1.25);
   transform-origin: bottom center;
 }
-html[data-v8-dock-align="stretch"] .v8-floating-dock {
+html[data-v8-dock-align="stretch"] .v8-dock-host {
   width: calc(100vw - 32px) !important;
   max-width: 1380px !important;
-  left: 16px !important;
-  right: 16px !important;
-  transform: none !important;
 }
 html[data-v8-dock-align="stretch"] .v8-floating-dock {
   width: 100% !important;
   justify-content: center !important;
   border-radius: var(--v8-radius-lg) !important;
+  transform: none !important;
 }
 html[data-v8-dock-glass="ultra"] .v8-floating-dock {
   background: color-mix(in srgb, var(--v8-canvas-raised) 20%, transparent) !important;
@@ -3161,15 +3159,22 @@ html[data-v8-home-grid="3"] .v8-home-live-grid {
 html[data-v8-home-grid="4"] .v8-home-live-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
 }
-html[data-v8-home-hero="compact"] .v8-continuity {
+html[data-v8-home-hero="compact"] .v8-continuity,
+html[data-v8-home-hero="compact"] .v8-home-heading {
   padding: var(--v8-space-3) var(--v8-space-4) !important;
   min-height: auto !important;
 }
 html[data-v8-home-hero="compact"] .v8-continuity__subtitle,
-html[data-v8-home-hero="compact"] .v8-continuity__meta {
+html[data-v8-home-hero="compact"] .v8-continuity__meta,
+html[data-v8-home-hero="compact"] .v8-home-heading p,
+html[data-v8-home-hero="compact"] .v8-home-heading .v8-page-heading__actions {
   display: none !important;
 }
-html[data-v8-home-hero="hidden"] .v8-continuity {
+html[data-v8-home-hero="compact"] .v8-home-heading h1 {
+  font-size: var(--v8-type-h3) !important;
+}
+html[data-v8-home-hero="hidden"] .v8-continuity,
+html[data-v8-home-hero="hidden"] .v8-home-heading {
   display: none !important;
 }
 .v8-note-read-progress {
@@ -3508,7 +3513,7 @@ html[data-v8-interactions] .v8-aura-option:hover {
   color: var(--v8-muted);
 }
 
-/* Typography PersonnalisÃ©e (Inter, Outfit, Mono, Serif) */
+/* Typography Personnalisée (Inter, Outfit, Mono, Serif) */
 html[data-font="outfit"] {
   --v8-font: "Outfit", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-family: var(--v8-font);

@@ -32,7 +32,7 @@ const SYNC_LABELS = Object.freeze({
 });
 const DENSITY_LABELS = Object.freeze({ spacious: "Spacieuse", comfortable: "Confortable", compact: "Compacte", "ultra-compact": "Ultra compacte", automatic: "Automatique", custom: "Personnalisée" });
 const DENSITY_OPTIONS = Object.freeze([
-  Object.freeze({ id: "spacious", label: "Spacieuse", icon: "maximize-2", copy: "Lecture et cibles tactiles genereuses." }),
+  Object.freeze({ id: "spacious", label: "Spacieuse", icon: "maximize", copy: "Lecture et cibles tactiles genereuses." }),
   Object.freeze({ id: "comfortable", label: "Confortable", icon: "panel-top", copy: "Equilibre par defaut pour le quotidien." }),
   Object.freeze({ id: "compact", label: "Compacte", icon: "rows-3", copy: "Davantage d'information sans sacrifier la lecture." }),
   Object.freeze({ id: "ultra-compact", label: "Ultra compacte", icon: "list-collapse", copy: "Densité maximale avec focus et cibles conserves." }),
@@ -428,15 +428,15 @@ export function mountSettings(stage, options = {}) {
             densityPreviewHost
           ]),
           settingRow("sparkles", "Spotlight", "Reveler le Dashboard avec une transition breve au demarrage.", switchControl("v8.spotlight.toggle", "Animation Spotlight au demarrage", state.spotlightEnabled !== false)),
-          settingRow("shrink", "Mode Zen", "Masquer les barres pour un focus maximal sur votre contenu (Alt+Z).", switchControl("v8.zen.toggle", "Activer le Mode Zen", state.zen === true)),
+          settingRow("minimize", "Mode Zen", "Masquer les barres pour un focus maximal sur votre contenu (Alt+Z).", switchControl("v8.zen.toggle", "Activer le Mode Zen", state.zen === true)),
           settingRow("layout-bottom", "Taille du Dock", "Changer l'échelle de la barre de navigation inférieure.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Taille du Dock" } }, [
-            choice("v8.dock.scale.compact", "shrink", "Compacte", state.dockScale === "compact"),
+            choice("v8.dock.scale.compact", "minimize", "Compacte", state.dockScale === "compact"),
             choice("v8.dock.scale.normal", "layout-bottom", "Normale", !state.dockScale || state.dockScale === "normal"),
-            choice("v8.dock.scale.large", "expand", "Grande", state.dockScale === "large")
+            choice("v8.dock.scale.large", "maximize", "Grande", state.dockScale === "large")
           ])),
           settingRow("align-center", "Alignement du Dock", "Dock centré flottant ou étendu sur la largeur.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Alignement du Dock" } }, [
             choice("v8.dock.align.center", "align-center", "Centré", !state.dockAlign || state.dockAlign === "center"),
-            choice("v8.dock.align.stretch", "expand", "Plein Écran", state.dockAlign === "stretch")
+            choice("v8.dock.align.stretch", "maximize", "Plein Écran", state.dockAlign === "stretch")
           ])),
           settingRow("sparkles", "Style du Dock (Verre)", "Transparence, flou artistique ou style opaque sobre.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Style du Dock" } }, [
             choice("v8.dock.glass.default", "sparkles", "Vitrifié", !state.dockGlass || state.dockGlass === "default"),
@@ -454,7 +454,7 @@ export function mountSettings(stage, options = {}) {
           ])),
           settingRow("image", "Bannière d'Accueil", "Afficher la salutation complète, en version compacte ou la masquer.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Bannière d'Accueil" } }, [
             choice("v8.home.hero.full", "image", "Complète", !state.homeHero || state.homeHero === "full"),
-            choice("v8.home.hero.compact", "minimize-2", "Compacte", state.homeHero === "compact"),
+            choice("v8.home.hero.compact", "minimize", "Compacte", state.homeHero === "compact"),
             choice("v8.home.hero.hidden", "eye-off", "Masquée", state.homeHero === "hidden")
           ])),
           settingRow("languages", "Langue", "Changer rapidement la langue de l'interface.", actionButton({ actionId: "v8.locale.cycle", variant: "secondary" }, [icon("languages"), element("span", { text: "Langue suivante" })])),
@@ -600,6 +600,7 @@ export function mountSettings(stage, options = {}) {
       const check = button.querySelector("[data-lucide='check']");
       if (active && !check) button.append(icon("check"));
       if (!active) check?.remove();
+        globalThis.lucide?.createIcons?.();
     });
     page.querySelectorAll("[data-action^='v8.accent.']").forEach((button) => {
       const active = button.dataset.action === `v8.accent.${nextState.accent}`;

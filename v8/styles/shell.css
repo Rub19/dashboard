@@ -619,8 +619,8 @@ button.v8-status-item:focus-visible { box-shadow: var(--v8-shadow-focus); outlin
 .v8-dock-app[data-haptic-state="released"] .v8-dock-app__plate,.v8-dock-control[data-haptic-state="released"] svg,.v8-dock-more[data-haptic-state="released"] svg { animation: v8-dock-haptic-release var(--v8-haptic-release-duration) var(--v8-haptic-spring) both; }
 
 @media (hover:hover) and (pointer:fine) {
-  html[data-v8-interactions] body .v8-dock-app:hover:not(:focus-visible) { filter: drop-shadow(0 12px 16px color-mix(in srgb,var(--v8-accent) 20%,transparent)); transform: translate3d(0,-10px,0) scale(1.28); }
-  .v8-dock-app:has(+ .v8-dock-app:hover),.v8-dock-app:hover + .v8-dock-app { transform: translate3d(0,-4px,0) scale(1.11); }
+  html[data-v8-interactions]:not([data-v8-dock-magnify="false"]) body .v8-dock-app:hover:not(:focus-visible) { filter: drop-shadow(0 12px 16px color-mix(in srgb,var(--v8-accent) 20%,transparent)); transform: translate3d(0,-10px,0) scale(1.28); }
+  html:not([data-v8-dock-magnify="false"]) .v8-dock-app:has(+ .v8-dock-app:hover), html:not([data-v8-dock-magnify="false"]) .v8-dock-app:hover + .v8-dock-app { transform: translate3d(0,-4px,0) scale(1.11); }
   .v8-dock-app:hover::before { opacity: 1; }
 }
 

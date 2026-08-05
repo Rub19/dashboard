@@ -151,7 +151,7 @@ export function createDock(host, options = {}) {
         btn("Toujours visible", "v8.dock.autohide.off", !currentAutoHide),
         btn("Masquer auto", "v8.dock.autohide.on", currentAutoHide)
       ]),
-      row("Zoom survol", "maximize-2", [
+      row("Zoom survol", "maximize", [
         btn("Actif", "v8.dock.magnify.on", currentMagnify),
         btn("Désactivé", "v8.dock.magnify.off", !currentMagnify)
       ]),

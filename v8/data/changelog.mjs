@@ -24,6 +24,12 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v201", "2026-08-06", "Refonte Backend Valorant & League of Legends", [
+    { kind: "feature", text: "Nouveaux clients API (HenrikDev et Riot Games) pour isoler l'acquisition de données Valorant et League of Legends." },
+    { kind: "improvement", text: "Refonte de l'onglet Connexions pour configurer vos propres clés API indépendantes (HenrikDev, Riot) au lieu de Tracker.gg." },
+    { kind: "fix", text: "Correction de la propagation des événements dans les menus contextuels bloquant les clics externes." },
+    { kind: "cleanup", text: "Suppression du parsing et des appels Tracker.gg défectueux (erreurs 403) pour Valorant et League of Legends." }
+  ]),
   entry("v200", "2026-08-05", "Historique de Matchs : Bouton retour & Mock Data", [
     { kind: "fix", text: "Le bouton retour de l'historique de matchs renvoie désormais correctement à l'accueil." },
     { kind: "feature", text: "En l'absence du serveur backend tracker, l'historique génère de fausses données (mock) pour simuler la page plutôt que d'afficher 'Failed to fetch'." }

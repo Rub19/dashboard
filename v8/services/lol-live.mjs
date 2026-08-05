@@ -26,25 +26,13 @@ export function normalizeLeaguePresence(input = {}, options = {}) {
   const riotId = connected ? options.riotId || null : null;
   const available = connected && Boolean(riotId);
   const overview = available ? (input.segments || []).find((segment) => segment.type === "overview") || input.segments?.[0] : null;
-  const fallbackOverview = {
-    name: "Classé Solo/Duo",
-    stats: [
-      { displayName: "Rang", displayValue: "Émeraude 1" },
-      { displayName: "LP", displayValue: "75 LP" },
-      { displayName: "Victoires/Défaites", displayValue: "142W 128L" },
-      { displayName: "Winrate", displayValue: "52.6%" }
-    ]
-  };
   return Object.freeze({
     connected,
     available,
     name: riotId?.name || input.handle || "Rub19",
     tag: riotId?.tag || "EUW",
-    avatarUrl: available ? safeText(input.avatarUrl, "https://raw.githubusercontent.com/InoX-Dev/discord-rpc-assets/main/lol.png", 400) : "",
-    overview: available ? (overview ? normalizeOverview(overview) : Object.freeze({
-      name: fallbackOverview.name,
-      stats: Object.freeze(fallbackOverview.stats.map(normalizeStat))
-    })) : null,
+    avatarUrl: available ? safeText(input.avatarUrl, "", 400) : "",
+    overview: available && overview ? normalizeOverview(overview) : null,
     updatedAt: available ? new Date().toISOString() : ""
   });
 }

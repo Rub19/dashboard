@@ -32,25 +32,13 @@ export function normalizeValorantPresence(input = {}, options = {}) {
   const riotId = connected ? options.riotId || null : null;
   const available = connected && Boolean(riotId);
   const overview = available ? (input.segments || []).find((segment) => segment.type === "overview") || input.segments?.[0] : null;
-  const fallbackOverview = {
-    name: "Compétitif",
-    stats: [
-      { displayName: "Rang", displayValue: "Diamant 2" },
-      { displayName: "Ratio K/D", displayValue: "1.18" },
-      { displayName: "Taux de victoire", displayValue: "56%" },
-      { displayName: "Headshots", displayValue: "24.5%" }
-    ]
-  };
   return Object.freeze({
     connected,
     available,
     name: riotId?.name || input.handle || "Rub19",
     tag: riotId?.tag || "EUW",
-    avatarUrl: available ? safeText(input.avatarUrl, "https://media.valorant-api.com/competitivetiers/5/17.png", 400) : "",
-    overview: available ? (overview ? normalizeOverview(overview) : Object.freeze({
-      name: fallbackOverview.name,
-      stats: Object.freeze(fallbackOverview.stats.map(normalizeStat))
-    })) : null,
+    avatarUrl: available ? safeText(input.avatarUrl, "", 400) : "",
+    overview: available && overview ? normalizeOverview(overview) : null,
     updatedAt: available ? new Date().toISOString() : ""
   });
 }

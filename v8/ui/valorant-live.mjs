@@ -10,11 +10,22 @@ function emblem(presence) {
   return element("span", { className: "v8-valorant-emblem" }, [inner, livePulseDot()]);
 }
 
+function statsGrid(overview) {
+  if (!overview || !Array.isArray(overview.stats) || overview.stats.length === 0) {
+    return element("p", { className: "v8-live-empty-stats", text: "Aucun match récent" });
+  }
+  return element("div", { className: "v8-live-stats-grid" }, 
+    overview.stats.map((stat) => element("div", { className: "v8-live-stat-item" }, [
+      element("span", { className: "v8-live-stat-label", text: stat.displayName }),
+      element("span", { className: "v8-live-stat-value", text: stat.displayValue, attributes: { translate: "no" } })
+    ]))
+  );
+}
+
 export function valorantLiveCard(presence = {}, options = {}) {
   if (presence.available !== true) return null;
   const variant = ["home", "activity"].includes(options.variant) ? options.variant : "home";
-  const stat = presence.overview?.stats?.[0];
-  const statLine = stat ? `${stat.displayName} : ${stat.displayValue}` : "Statistiques Valorant";
+  const statLine = presence.overview?.stats?.[0] ? `${presence.overview.stats[0].displayName} : ${presence.overview.stats[0].displayValue}` : "Aucun match récent";
   
   const inner = element("div", { className: "v8-live-card-inner" }, [
     element("div", { className: "v8-live-card-front" }, [
@@ -28,8 +39,8 @@ export function valorantLiveCard(presence = {}, options = {}) {
     ]),
     element("div", { className: "v8-live-card-back" }, [
       element("div", { className: "v8-valorant-live__body" }, [
-        element("strong", { text: "Statistiques avancées" }),
-        element("p", { text: presence.overview?.stats?.[1] ? `${presence.overview.stats[1].displayName}: ${presence.overview.stats[1].displayValue}` : "En jeu", attributes: { translate: "no" } })
+        element("strong", { text: presence.overview?.name || "Statistiques" }),
+        statsGrid(presence.overview)
       ])
     ])
   ]);

@@ -3966,7 +3966,7 @@ html[data-v8-ui-glow="true"] .v8-dock {
 }
 
 /* 3D Interactive Cards */
-.v8-lol-live, .v8-valorant-live {
+.v8-lol-live, .v8-valorant-live, .v8-tracker-live {
   display: block !important;
   perspective: 1000px;
   cursor: pointer;
@@ -3979,7 +3979,8 @@ html[data-v8-ui-glow="true"] .v8-dock {
   transform-style: preserve-3d;
 }
 .v8-lol-live.is-flipped .v8-live-card-inner,
-.v8-valorant-live.is-flipped .v8-live-card-inner {
+.v8-valorant-live.is-flipped .v8-live-card-inner,
+.v8-tracker-live.is-flipped .v8-live-card-inner {
   transform: rotateX(180deg);
 }
 .v8-live-card-front, .v8-live-card-back {
@@ -3998,6 +3999,39 @@ html[data-v8-ui-glow="true"] .v8-dock {
   transform: rotateX(180deg);
   background: var(--v8-surface-raised, rgba(255,255,255,0.05));
   border-radius: var(--v8-radius-md);
+  padding: var(--v8-space-2);
+}
+
+.v8-live-empty-stats {
+  text-align: center;
+  color: var(--v8-text-tertiary);
+  font-size: var(--v8-font-sm);
+  padding: var(--v8-space-2) 0;
+}
+
+.v8-live-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  margin-top: 4px;
+}
+.v8-live-stat-item {
+  display: flex;
+  flex-direction: column;
+  background: rgba(0,0,0,0.2);
+  padding: 6px;
+  border-radius: var(--v8-radius-sm);
+}
+.v8-live-stat-label {
+  font-size: var(--v8-font-micro);
+  color: var(--v8-text-secondary);
+  text-transform: uppercase;
+}
+.v8-live-stat-value {
+  font-size: var(--v8-font-sm);
+  font-weight: var(--v8-weight-bold);
+  color: var(--v8-text);
 }
 @media (max-width:540px) {
   .v8-live-card-front { grid-template-columns: 46px minmax(0,1fr); }

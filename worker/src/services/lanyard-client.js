@@ -23,6 +23,18 @@ export async function getLanyardPresence(env, userId) {
     displayName: safeText(discordUser.global_name || discordUser.display_name || discordUser.username, 80),
     avatarUrl: safePublicUrl(avatar, ["discordapp.com"]),
     status: safeText(value.discord_status || "offline", 16),
+    discord_user: Object.freeze({
+      id: safeText(discordUser.id),
+      global_name: safeText(discordUser.global_name),
+      display_name: safeText(discordUser.display_name),
+      username: safeText(discordUser.username),
+      bot: Boolean(discordUser.bot),
+      public_flags: Number(discordUser.public_flags) || 0,
+      flags: Number(discordUser.flags) || 0,
+      premium_type: Number(discordUser.premium_type) || 0,
+      avatar: safeText(discordUser.avatar)
+    }),
+    kv: typeof value.kv === "object" && value.kv !== null ? Object.freeze({ ...value.kv }) : undefined,
     activities: Object.freeze((value.activities || []).slice(0, 12).map((activity) => Object.freeze({
       type: Number(activity.type) || 0,
       name: safeText(activity.name, 80),

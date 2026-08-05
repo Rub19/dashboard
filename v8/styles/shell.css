@@ -2201,6 +2201,7 @@ html[data-v8-interactions] .v8-panel-notice:hover > .v8-selection-control,.v8-pa
 .v8-continuity::after,.v8-home-brain::after,.v8-brain-context::after { --v8-breathe-opacity-min:.12;--v8-breathe-opacity-max:.22;position:absolute;z-index:0;inset:-14%;background:radial-gradient(ellipse at 76% 18%,color-mix(in srgb,var(--v8-breathe-color) 15%,transparent),transparent 43%),linear-gradient(125deg,transparent 30%,color-mix(in srgb,var(--v8-breathe-color) 3%,transparent) 50%,transparent 70%);content:"";pointer-events:none;animation:none;will-change:auto; }
 .v8-continuity > :not([aria-hidden="true"]),.v8-home-brain > :not([aria-hidden="true"]),.v8-brain-context > :not([aria-hidden="true"]) { position:relative;z-index:1; }
 
+.v8-home-live-grid > * { height: 100%; }
 .v8-home-live-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--v8-layout-cluster-gap); margin-top: var(--v8-space-6); }
 .v8-home-live-grid[hidden] { display: none; }
 .v8-home-live-section[hidden] { display: none; }

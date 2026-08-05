@@ -37,7 +37,7 @@ export function createContextMenu(host) {
         className: "v8-context-menu__item",
         attributes: { type: "button", role: "menuitem" },
         dataset: { action: item.actionId },
-        events: { click: () => queueMicrotask(() => close({ restoreFocus: false })) }
+        events: { click: () => setTimeout(() => close({ restoreFocus: false }), 0) }
       }, [icon(item.icon), element("span", { text: item.label }), item.shortcut ? element("kbd", { text: item.shortcut }) : null]));
     menu = element("div", {
       className: "v8-context-menu",

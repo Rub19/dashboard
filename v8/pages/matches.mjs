@@ -221,7 +221,7 @@ export function mountMatches(container, options = {}) {
   
   async function loadMatches() {
     if (destroyed) return;
-    content.innerHTML = "";
+    content.replaceChildren();
     content.append(element("p", { className: "v8-loading", text: "Chargement de l'historique..." }));
     
     try {
@@ -243,7 +243,7 @@ export function mountMatches(container, options = {}) {
       }
       if (destroyed) return;
       
-      content.innerHTML = "";
+      content.replaceChildren();
       if (!data || data.length === 0) {
         content.append(element("p", { className: "v8-empty", text: "Aucun match trouvé pour ce mode." }));
         return;
@@ -295,7 +295,7 @@ export function mountMatches(container, options = {}) {
         });
       }
       
-      content.innerHTML = "";
+      content.replaceChildren();
       
       const warning = element("p", { className: "v8-warning", text: "Serveur tracker indisponible. Affichage de données simulées." });
       warning.style.color = "var(--v8-warning)";

@@ -706,6 +706,20 @@ export function mountSettings(stage, options = {}) {
       });
     });
 
+    // Generic sync for all boolean toggle switches (zen, spotlight, ambient, blur, etc.)
+    const toggleStateMap = [
+      { action: "v8.zen.toggle", value: nextState.zen === true },
+      { action: "v8.spotlight.toggle", value: nextState.spotlightEnabled !== false },
+      { action: "v8.motion.ambient.toggle", value: nextState.ambientEffectsEnabled !== false },
+      { action: "v8.motion.blur.toggle", value: nextState.interfaceBlurEnabled !== false },
+      { action: "v8.dock.magnify.toggle", value: nextState.dockMagnify === true },
+      { action: "v8.ui.glow.toggle", value: nextState.uiGlow === true },
+      { action: "v8.ui.sound.feedback.toggle", value: nextState.uiSoundFeedback === true },
+    ];
+    toggleStateMap.forEach(({ action, value }) => {
+      page.querySelector(`[data-action='${action}']`)?.setAttribute("aria-checked", String(value));
+    });
+
     updateDensityPreview(nextState);
     refreshIcons();
   }

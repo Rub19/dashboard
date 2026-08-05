@@ -24,6 +24,10 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v198", "2026-08-05", "Correctif : Toggles Réactifs dans les Réglages", [
+    { kind: "fix", text: "Mode Zen, Spotlight, Effets d'ambiance, Flou d'interface, et tous les autres toggles ON/OFF montrent désormais leur état correct immédiatement après le clic — plus besoin de recharger la page." },
+    { kind: "fix", text: "Le mécanisme de synchronisation des toggles booléens a été generalisé : chaque switch lit maintenant l'état du store via subscribeState plutôt que l'état initial figé de la page." }
+  ]),
   entry("v197", "2026-08-05", "Correctif Critique : Boutons Réglages Réactifs", [
     { kind: "fix", text: "Ambiance Lumineuse (Aura), Typographie et Courbure : Cliquer sur un bouton reflète désormais instantanément la sélection active (indicateur visuel + coche) sans nécessiter de rechargement de page." },
     { kind: "fix", text: "Dock, Accueil, Spaces : Tous les boutons de choix (Taille du Dock, Alignement, Style Verre, Auto-Hide, Grille d'Accueil, Bannière, etc.) montrent maintenant correctement l'état actif et se mettent à jour en temps réel à chaque clic." },

@@ -3944,3 +3944,6 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
 }
 
 
+
+
+.v8-home-live-grid > section > article { height: 100%; min-height: 154px; }

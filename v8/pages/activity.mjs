@@ -262,7 +262,38 @@ export function mountActivity(stage, options = {}) {
   const controller = new AbortController();
 
   const filterBar = element("div", { className: "v8-activity-filters", attributes: { role: "toolbar", "aria-label": "Filtrer l'activité" } });
-  const liveGrid = element("div", { className: "v8-now-grid" });
+  const categoryGrids = {
+    gaming: element("div", { className: "v8-now-grid" }),
+    social: element("div", { className: "v8-now-grid" }),
+    productivity: element("div", { className: "v8-now-grid" })
+  };
+
+  const categorySections = {
+    gaming: element("div", { className: "v8-live-category", style: "margin-bottom:2rem;" }, [
+      element("h3", { className: "v8-live-category__title", text: "Gaming & Stats", style: "font-size:0.8rem;text-transform:uppercase;color:var(--v8-text-secondary);margin-bottom:1rem;" }),
+      categoryGrids.gaming
+    ]),
+    social: element("div", { className: "v8-live-category", style: "margin-bottom:2rem;" }, [
+      element("h3", { className: "v8-live-category__title", text: "Médias & Social", style: "font-size:0.8rem;text-transform:uppercase;color:var(--v8-text-secondary);margin-bottom:1rem;" }),
+      categoryGrids.social
+    ]),
+    productivity: element("div", { className: "v8-live-category" }, [
+      element("h3", { className: "v8-live-category__title", text: "Productivité & Quotidien", style: "font-size:0.8rem;text-transform:uppercase;color:var(--v8-text-secondary);margin-bottom:1rem;" }),
+      categoryGrids.productivity
+    ])
+  };
+
+  const liveGrid = element("div", { className: "v8-now-wrapper" }, [
+    categorySections.gaming,
+    categorySections.social,
+    categorySections.productivity
+  ]);
+
+  function getCategory(id) {
+    if (["valorant", "lol", "tracker-gg", "steam", "minecraft", "twitch"].includes(id)) return "gaming";
+    if (["discord", "spotify", "lastfm", "youtube", "reddit"].includes(id)) return "social";
+    return "productivity";
+  }
   const weatherDetail = createWeatherDetail();
   liveGrid.addEventListener("click", (event) => {
     const trigger = event.target.closest("[data-weather-detail-trigger]");
@@ -374,26 +405,33 @@ export function mountActivity(stage, options = {}) {
     const youtubeCard = youtubeLiveCard(youtubePresence, { variant: "activity" });
     const redditCard = redditLiveCard(redditPresence, { variant: "activity" });
     const knownCards = { system: systemCard, spotify: spotifyPlayer, discord: discordCard, weather: weatherCard, minecraft: minecraftCard, steam: steamCard, github: githubCard, "google-calendar": googleCalendarCard, notion: notionCard, todoist: todoistCard, valorant: valorantCard, lol: lolCard, twitch: twitchCard, lastfm: lastfmCard, "tracker-gg": trackerCard, "google-drive": googleDriveCard, youtube: youtubeCard, reddit: redditCard };
-    liveGrid.replaceChildren();
+    Object.values(categoryGrids).forEach(grid => grid.replaceChildren());
     liveLayout.order.forEach((id) => {
       if (liveLayout.hidden.includes(id)) return;
       const card = knownCards[id];
-      if (card) liveGrid.append(card);
+      if (card) categoryGrids[getCategory(id)].append(card);
     });
+    
+    // Hide empty categories
+    Object.keys(categorySections).forEach(cat => {
+      categorySections[cat].hidden = categoryGrids[cat].children.length === 0;
+    });
+    
     const representedByOtherCards = new Set(["riot"]);
     connected.filter((connection) => !Object.hasOwn(knownCards, connection.id) && !representedByOtherCards.has(connection.id)).slice(0, 3).forEach((connection) => {
       const integration = integrationById(connection.id);
       if (!integration) return;
-      liveGrid.append(liveCard(integration, connection, events.find((event) => event.source === integration.id)));
+      categoryGrids.productivity.append(liveCard(integration, connection, events.find((event) => event.source === integration.id)));
     });
-    systemCard.classList.toggle("v8-now-card--solo", liveGrid.children.length === 1);
+    systemCard.classList.toggle("v8-now-card--solo", categoryGrids.productivity.children.length === 1 && categoryGrids.gaming.children.length === 0 && categoryGrids.social.children.length === 0);
     renderCustomizePanel();
-    if (!connected.length) liveGrid.append(statusState("integration", {
+    if (!connected.length) categoryGrids.productivity.append(statusState("integration", {
       title: "Aucune source distante active",
       description: "Configurez un service pour enrichir le Live Feed sans données fictives.",
       actions: [actionButton({ actionId: "v8.connections.open", variant: "secondary" }, [element("span", { text: "Configurer" }), icon("arrow-up-right")])],
       compact: true,
       className: "v8-empty-state--wide"
+    }));e: "v8-empty-state--wide"
     }));
 
     timeline.replaceChildren(...(filtered.length ? filtered.map(timelineEntry) : [emptyFeed(activeFilter === "all" && !query ? null : () => {

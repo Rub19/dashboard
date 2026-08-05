@@ -293,7 +293,7 @@ async function boot() {
         return Object.freeze({ ok: true, status: "completed", message: "Environnement ouvert.", data: profile });
       }
 
-      const onlyProfile = context.profiles?.length === 1 && !context.profiles[0].locked ? context.profiles[0] : null;
+      const onlyProfile = !context.forceSelection && context.profiles?.length === 1 && !context.profiles[0].locked ? context.profiles[0] : null;
       if (onlyProfile) {
         selectProfile(onlyProfile);
         return mountBootSurface();
@@ -305,6 +305,7 @@ async function boot() {
         clockManager: clock,
         cloudSync,
         presenceEngine: presence,
+        initialMode: context.initialMode,
         onSignOut: () => {
           sounds.play("auth.logout");
           return coordinator.signOut();
@@ -328,7 +329,8 @@ async function boot() {
         externalServices,
         clientProvider: () => auth.getClient(),
         ownerId: repository.owner(),
-        onSignOut: () => coordinator.signOut()
+        onSignOut: () => coordinator.signOut(),
+        onShowProfiles: (options = {}) => coordinator.showProfiles({ reason: "switch-profile", forceSelection: true, ...options })
       });
       spotlightTransition?.destroy?.();
       spotlightTransition = playSpotlight(root, {

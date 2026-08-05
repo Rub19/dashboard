@@ -944,7 +944,14 @@ export function mountProfileSelection(root, options = {}) {
   const releaseClock = clockManager?.subscribe?.(refreshClock) || (() => {});
   const releaseCloudStatus = cloudSync?.subscribe?.(updateConnectivity) || (() => {});
   if (!clockManager) refreshClock();
-  queueMicrotask(() => { if (!destroyed && profiles.length) cards[selectedIndex]?.focus(); });
+  queueMicrotask(() => {
+    if (destroyed) return;
+    if (options.initialMode === "create") {
+      openEditor("create");
+    } else if (profiles.length) {
+      cards[selectedIndex]?.focus();
+    }
+  });
 
   function destroy() {
     if (destroyed) return false;

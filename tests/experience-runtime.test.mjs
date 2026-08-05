@@ -900,3 +900,42 @@ test("Motion polish shares one hover focus and press contract", () => {
   assert.doesNotMatch(entry, /\.v8-entry--login \.v8-button\s*\{[^}]*transition-timing-function/);
   assert.match(tokens, /prefers-reduced-motion:\s*reduce[\s\S]*--v8-interaction-focus-transform:\s*none/);
 });
+
+test("v8.profiles.open action triggers showProfiles navigation and catalog entry exists", () => {
+  let showProfilesCalled = false;
+  const actions = createActionFacade({
+    showProfiles: () => {
+      showProfilesCalled = true;
+    }
+  });
+  const result = actions.dispatch("v8.profiles.open");
+  assert.equal(result.ok, true);
+  assert.equal(showProfilesCalled, true);
+  assert.match(fs.readFileSync(new URL("../v8/command/catalog.mjs", import.meta.url), "utf8"), /v8\.profiles\.open/);
+});
+
+test("global action fallbacks and safe state fallbacks work without crashing", () => {
+  const actions = createActionFacade();
+  const globalActionIds = [
+    "v8.home.customize",
+    "v8.activity.refresh",
+    "v8.connections.github.connect",
+    "v8.connections.diagnose-all",
+    "v8.notes.save",
+    "v8.files.new-folder",
+    "v8.calendar.new.cancel",
+    "v8.tasks.new.cancel",
+    "v8.files.new.cancel"
+  ];
+  for (const id of globalActionIds) {
+    const result = actions.dispatch(id);
+    assert.equal(result.ok, true, `Expected ${id} to succeed with fallback registration`);
+  }
+
+  // Ensure calling toggle/move with uninitialized state does not throw TypeError
+  const toggleResult = actions.dispatch("v8.home.live.toggle", { id: "test-card" });
+  assert.equal(toggleResult.ok, true);
+  const autoResult = actions.dispatch("v8.automation.create", { trigger: "test", targetActionId: "v8.home.open" });
+  assert.equal(autoResult.ok, true);
+});
+

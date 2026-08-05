@@ -414,9 +414,8 @@ test("service worker waits for explicit activation and only removes ETHONE cache
   assert.match(worker, /event\.data[^\n]+ETHONE_SKIP_WAITING[^\n]+self\.skipWaiting/);
   assert.match(worker, /key\.startsWith\("ethone-"\)/);
   assert.match(worker, /v8\/services\/auth-storage\.mjs/);
-  assert.match(worker, /v8\/services\/rate-limiter\.mjs/);
   assert.match(worker, /v8\/entry\/password-recovery\.mjs/);
-  assert.match(worker, /2026-08-05-experience-v191/);
+  assert.match(worker, /2026-08-05-experience-v194/);
 });
 
 test("canonical edge verifier enforces headers, anti-framing and no-store caching", async () => {

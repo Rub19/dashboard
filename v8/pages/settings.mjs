@@ -238,7 +238,7 @@ export function mountSettings(stage, options = {}) {
   const brainPreferences = sanitizeBrainPreferences(state.brainPreferences);
   const brainNameInput = element("input", { className: "v8-input", attributes: { type: "text", maxlength: "32", value: brainPreferences.assistantName, "aria-label": "Nom de l'assistant" }, dataset: { brainPreferenceInput: "assistantName" } });
   const brainPersonaSelect = preferenceSelect("persona", "Personnalite Brain", ["concise", "balanced", "expert", "coach", "creative", "developer", "custom"].map((value) => ({ value, label: brainPreferenceLabel("persona", value) })), brainPreferences.persona);
-  const brainDetailSelect = preferenceSelect("détail", "Niveau de détail", ["brief", "balanced", "detailed"].map((value) => ({ value, label: brainPreferenceLabel("detailOption", value) })), brainPreferences.detail);
+  const brainDetailSelect = preferenceSelect("detail", "Niveau de détail", ["brief", "balanced", "detailed"].map((value) => ({ value, label: brainPreferenceLabel("detailOption", value) })), brainPreferences.detail);
   const brainToneSelect = preferenceSelect("tone", "Ton de Brain", [{ value: "calm", label: "Calme" }, { value: "direct", label: "Direct" }, { value: "warm", label: "Chaleureux" }, { value: "technical", label: "Technique" }, { value: "creative", label: "Creatif" }], brainPreferences.tone);
   const brainLanguageSelect = preferenceSelect("language", "Langue de réponse", [{ value: "auto", label: "Langue de l'interface" }, { value: "fr", label: "Francais" }, { value: "en", label: "English" }, { value: "es", label: "Espanol" }, { value: "de", label: "Deutsch" }], brainPreferences.language);
   const brainSuggestionSelect = preferenceSelect("suggestionFrequency", "Frequence des suggestions", [{ value: "off", label: "Desactivees" }, { value: "low", label: "Faible" }, { value: "balanced", label: "Equilibree" }, { value: "high", label: "Elevee" }], brainPreferences.suggestionFrequency);
@@ -396,7 +396,7 @@ export function mountSettings(stage, options = {}) {
               bannerMediaStatus
             ])
           ]),
-          settingRow("badge-check", "Notes de version (Changelog)", "Consulter l'historique des mises à jour, nouveautés et correctifs d'ETHONE v189.", actionButton({ actionId: "v8.changelog.open", variant: "secondary" }, [icon("badge-check"), element("span", { text: "Ouvrir le Changelog" })]))
+          settingRow("badge-check", "Notes de version (Changelog)", "Consulter l'historique des mises à jour, nouveautés et correctifs d'ETHONE v194.", actionButton({ actionId: "v8.changelog.open", variant: "secondary" }, [icon("badge-check"), element("span", { text: "Ouvrir le Changelog" })]))
         ]),
         element("section", { id: "v8-settings-appearance", className: "v8-settings-section v8-surface", attributes: { role: "tabpanel", tabindex: "0", hidden: true } }, [
           element("header", {}, [element("span", { className: "v8-eyebrow", text: "Design System" }), element("h2", { text: "Apparence" }), element("p", { text: "Des réglages sobres, coherents et persistants." })]),
@@ -514,7 +514,7 @@ export function mountSettings(stage, options = {}) {
             element("span", {}, [icon("cloud"), element("strong", { text: "Supabase" }), element("b", { text: SYNC_LABELS[state.syncStatus] || "Connexion" })]),
             element("span", {}, [icon("gauge"), element("strong", { text: "Interface" }), element("b", { text: DENSITY_LABELS[state.density] || "Confortable" })])
           ]),
-          settingRow("badge-check", "Notes de version (Changelog)", "Consulter l'historique des mises à jour, nouveautés et correctifs d'ETHONE v189.", actionButton({ actionId: "v8.changelog.open", variant: "secondary" }, [icon("badge-check"), element("span", { text: "Ouvrir le Changelog" })]))
+          settingRow("badge-check", "Notes de version (Changelog)", "Consulter l'historique des mises à jour, nouveautés et correctifs d'ETHONE v194.", actionButton({ actionId: "v8.changelog.open", variant: "secondary" }, [icon("badge-check"), element("span", { text: "Ouvrir le Changelog" })]))
         ]),
         element("section", { id: "v8-settings-developer", className: "v8-settings-section v8-surface", attributes: { role: "tabpanel", tabindex: "0", hidden: true } }, [
           element("header", {}, [

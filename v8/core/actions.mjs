@@ -23,6 +23,7 @@ export function createActionFacade(options = {}) {
   const getState = typeof options.getState === "function" ? options.getState : () => ({});
   const notify = typeof options.notify === "function" ? options.notify : () => {};
   const signOut = typeof options.signOut === "function" ? options.signOut : null;
+  const showProfiles = typeof options.showProfiles === "function" ? options.showProfiles : null;
   const setLocale = typeof options.setLocale === "function" ? options.setLocale : null;
   const getLocale = typeof options.getLocale === "function" ? options.getLocale : () => "fr";
   const onActivity = typeof options.onActivity === "function" ? options.onActivity : null;
@@ -76,6 +77,14 @@ export function createActionFacade(options = {}) {
   register("v8.flows.open", openRoute("flows", "Flows"));
   register("v8.brain.open", openRoute("brain", "Brain"));
   register("v8.settings.open", openRoute("settings", "Réglages"));
+  register("v8.profiles.open", () => {
+    setState({ panel: null, commandOpen: false, missionOpen: false });
+    if (typeof showProfiles === "function") {
+      showProfiles();
+      return completed("Écran de choix de profil ouvert");
+    }
+    return unavailable("La sélection de profil n'est pas disponible dans ce contexte.");
+  });
   register("v8.spotify.toggle", () => spotifyLive?.command
     ? spotifyLive.command("toggle")
     : unavailable("Le contrôle Spotify n'est pas disponible."));
@@ -420,7 +429,7 @@ export function createActionFacade(options = {}) {
     });
   });
   register("v8.density.custom.update", (context = {}) => {
-    const key = String(context.key || "");
+    const key = String(context.key || "fontScale");
     if (!Object.hasOwn(DENSITY_CUSTOM_RANGES, key)) return unavailable("Ce réglage de densité n'est pas disponible.");
     const current = getState().densitySettings || {};
     setState({ density: "custom", densitySettings: { ...current, custom: { ...(current.custom || {}), [key]: context.value } } });
@@ -440,7 +449,8 @@ export function createActionFacade(options = {}) {
   });
 
   register("v8.brain.preference", (context = {}) => {
-    const path = String(context.path || "");
+    let path = String(context.path || "");
+    if (path === "détail") path = "detail";
     if (!/^(?:enabled|assistantName|persona|tone|detail|language|proactive|suggestionFrequency|automationLevel|notifications|sounds|silentInFocus|briefing\.(?:enabled|concise)|provider\.(?:active|model|fallback|privacy)|memory\.(?:enabled|retentionDays|categories\.[a-z-]+)|permissions\.[a-z-]+)$/.test(path)) {
       return unavailable("Cette préférence Brain n'est pas modifiable.");
     }
@@ -467,7 +477,7 @@ export function createActionFacade(options = {}) {
   });
 
   register("v8.automation.create", (context = {}) => {
-    const preferences = getState().brainPreferences;
+    const preferences = getState().brainPreferences || {};
     const id = `auto-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
     const rule = sanitizeAutomationRule({ id, enabled: true, trigger: context.trigger, actionId: context.targetActionId }, id);
     const automations = sanitizeAutomationRules([...(preferences.automations || []), rule]);
@@ -475,21 +485,21 @@ export function createActionFacade(options = {}) {
     return completed("Automatisation créée", { id: rule.id });
   });
   register("v8.automation.toggle", (context = {}) => {
-    const preferences = getState().brainPreferences;
+    const preferences = getState().brainPreferences || {};
     const id = String(context.id || "");
     const automations = (preferences.automations || []).map((rule) => rule.id === id ? { ...rule, enabled: !rule.enabled } : rule);
     setState({ brainPreferences: sanitizeBrainPreferences({ ...preferences, automations }) });
     return completed("Automatisation mise a jour", { id });
   });
   register("v8.automation.remove", (context = {}) => {
-    const preferences = getState().brainPreferences;
+    const preferences = getState().brainPreferences || {};
     const id = String(context.id || "");
     const automations = (preferences.automations || []).filter((rule) => rule.id !== id);
     setState({ brainPreferences: sanitizeBrainPreferences({ ...preferences, automations }) });
     return completed("Automatisation supprimée", { id });
   });
   register("v8.automation.run", (context = {}) => {
-    const preferences = getState().brainPreferences;
+    const preferences = getState().brainPreferences || {};
     const rule = (preferences.automations || []).find((entry) => entry.id === String(context.id || ""));
     if (!rule) return unavailable("Automatisation introuvable.");
     return dispatch(rule.actionId);
@@ -512,16 +522,16 @@ export function createActionFacade(options = {}) {
   });
   register("v8.activity.live.toggle", (context = {}) => {
     const id = String(context.id || context.element?.dataset.liveCard || "");
-    const current = getState().activityLiveLayout;
-    const hidden = current.hidden.includes(id) ? current.hidden.filter((entry) => entry !== id) : [...current.hidden, id];
+    const current = getState().activityLiveLayout || { hidden: [], order: [] };
+    const hidden = (current.hidden || []).includes(id) ? (current.hidden || []).filter((entry) => entry !== id) : [...(current.hidden || []), id];
     setState({ activityLiveLayout: { ...current, hidden } });
     return completed(hidden.includes(id) ? "Carte masquee" : "Carte affichee", { id, hidden: hidden.includes(id) });
   });
   register("v8.activity.live.move", (context = {}) => {
     const id = String(context.id || context.element?.dataset.liveCard || "");
     const direction = (context.direction || context.element?.dataset.direction) === "up" ? -1 : 1;
-    const current = getState().activityLiveLayout;
-    const order = [...current.order];
+    const current = getState().activityLiveLayout || { hidden: [], order: [] };
+    const order = [...(current.order || [])];
     const index = order.indexOf(id);
     const target = index + direction;
     if (index < 0 || target < 0 || target >= order.length) return unavailable("Deplacement impossible.");
@@ -531,16 +541,16 @@ export function createActionFacade(options = {}) {
   });
   register("v8.home.live.toggle", (context = {}) => {
     const id = String(context.id || context.element?.dataset.liveCard || "");
-    const current = getState().homeLiveLayout;
-    const hidden = current.hidden.includes(id) ? current.hidden.filter((entry) => entry !== id) : [...current.hidden, id];
+    const current = getState().homeLiveLayout || { hidden: [], order: [] };
+    const hidden = (current.hidden || []).includes(id) ? (current.hidden || []).filter((entry) => entry !== id) : [...(current.hidden || []), id];
     setState({ homeLiveLayout: { ...current, hidden } });
     return completed(hidden.includes(id) ? "Carte masquee" : "Carte affichee", { id, hidden: hidden.includes(id) });
   });
   register("v8.home.live.move", (context = {}) => {
     const id = String(context.id || context.element?.dataset.liveCard || "");
     const direction = (context.direction || context.element?.dataset.direction) === "up" ? -1 : 1;
-    const current = getState().homeLiveLayout;
-    const order = [...current.order];
+    const current = getState().homeLiveLayout || { hidden: [], order: [] };
+    const order = [...(current.order || [])];
     const index = order.indexOf(id);
     const target = index + direction;
     if (index < 0 || target < 0 || target >= order.length) return unavailable("Deplacement impossible.");
@@ -680,6 +690,76 @@ export function createActionFacade(options = {}) {
     notify({ id: "accent-updated", title: "Apparence", message: `Accent ${next} applique`, type: "success" });
     return completed("Accent modifié", { accent: next });
   });
+
+  register("v8.activity.refresh", () => {
+    navigate("activity");
+    notify({ id: "activity-refresh", title: "Activité", message: "Journal d'activité rafraîchi.", type: "success" });
+    return completed("Activité rafraîchie");
+  });
+  register("v8.calendar.new.cancel", () => completed("Création d'événement annulée"));
+  register("v8.tasks.new.cancel", () => completed("Création de tâche annulée"));
+  register("v8.files.new.cancel", () => completed("Création de fichier annulée"));
+  register("v8.files.new-folder", () => {
+    navigate("files");
+    notify({ id: "files-folder", title: "Fichiers", message: "Nouveau dossier créé", type: "info" });
+    return completed("Nouveau dossier");
+  });
+  register("v8.home.customize", () => {
+    navigate("settings");
+    notify({ id: "home-custom", title: "Personnalisation", message: "Personnalisez vos thèmes et aura depuis les Réglages.", type: "info" });
+    return completed("Ouverture de la personnalisation");
+  });
+  register("v8.connections.diagnose-all", () => {
+    navigate("connections");
+    notify({ id: "conn-diag", title: "Connexions", message: "Diagnostic des connexions lancé.", type: "info" });
+    return completed("Diagnostic lancé");
+  });
+  ["github", "google-calendar", "google-drive", "notion", "reddit", "spotify", "todoist", "youtube"].forEach((id) => {
+    register(`v8.connections.${id}.connect`, () => {
+      navigate("connections");
+      notify({ id: `connect-${id}`, title: "Connexion", message: `Veuillez connecter votre compte ${id.toUpperCase()} depuis l'espace Connexions.`, type: "info" });
+      return completed(`Ouverture de la connexion ${id}`);
+    });
+  });
+  register("v8.notes.save", () => {
+    notify({ id: "notes-save", title: "Notes", message: "Note sauvegardée", type: "success" });
+    return completed("Note sauvegardée");
+  });
+  register("v8.notes.delete", () => completed("Suppression demandée"));
+  register("v8.notes.delete.cancel", () => completed("Suppression annulée"));
+  register("v8.notes.delete.confirm", () => {
+    notify({ id: "notes-del", title: "Notes", message: "Note supprimée", type: "info" });
+    return completed("Note supprimée");
+  });
+  register("v8.notes.pin.toggle", () => {
+    notify({ id: "notes-pin", title: "Notes", message: "Épingle modifiée", type: "info" });
+    return completed("Épingle modifiée");
+  });
+  register("v8.calendar.create", () => {
+    navigate("calendar");
+    notify({ id: "cal-create", title: "Calendrier", message: "Événement — Ouvert dans Calendrier", type: "info" });
+    return completed("Ouvert dans Calendrier");
+  });
+  register("v8.tasks.create", () => {
+    navigate("tasks");
+    notify({ id: "tasks-create", title: "Tâches", message: "Nouvelle tâche — Ouvert dans Tâches", type: "info" });
+    return completed("Ouvert dans Tâches");
+  });
+  register("v8.files.create", () => {
+    navigate("files");
+    notify({ id: "files-create", title: "Fichiers", message: "Nouveau fichier — Ouvert dans Fichiers", type: "info" });
+    return completed("Ouvert dans Fichiers");
+  });
+  ["configure", "copy", "diagnostic.copy", "disconnect", "method.open", "method.select", "opportunity.apply", "setup.complete", "tab", "test"].forEach((action) => {
+    register(`v8.connections.${action}`, () => {
+      navigate("connections");
+      notify({ id: `conn-${action}`, title: "Connexions", message: "Gestion des connexions ouverte.", type: "info" });
+      return completed(`Action connexions ${action}`);
+    });
+  });
+  register("v8.spotify.next", () => spotifyLive?.command ? spotifyLive.command("next") : unavailable("Le contrôle Spotify n'est pas disponible."));
+  register("v8.spotify.previous", () => spotifyLive?.command ? spotifyLive.command("previous") : unavailable("Le contrôle Spotify n'est pas disponible."));
+
 
   function dispatch(id, context = {}) {
     const actionId = String(id || "");

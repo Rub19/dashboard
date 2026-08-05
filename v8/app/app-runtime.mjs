@@ -35,6 +35,7 @@ import { createRedditLive } from "../services/reddit-live.mjs";
 import { createFocusTimer } from "../services/focus-timer.mjs";
 import { clearPendingOAuthAuthorize, consumeOAuthCallback, readPendingOAuthAuthorize } from "../services/oauth-callback.mjs";
 import { mountShell } from "../ui/shell.mjs";
+import { mountFocusIsland } from "../ui/focus-island.mjs";
 import { createPanelManager } from "../ui/panel.mjs";
 import { createToastManager } from "../ui/toast.mjs";
 import { createMissionControl } from "../ui/mission-control.mjs";
@@ -579,6 +580,7 @@ export function mountApplication(root, options = {}) {
     },
     onCreateProfile: () => {
       actions?.dispatch("v8.panel.close");
+      options.onShowProfiles?.({ initialMode: "create" });
     },
     onTimerAction: (type) => {
       if (type === "finish") {
@@ -808,6 +810,7 @@ export function mountApplication(root, options = {}) {
     getState: () => store.getState(),
     notify: (notice) => toasts.show(notice),
     signOut: options.onSignOut,
+    showProfiles: () => options.onShowProfiles?.(),
     setLocale: (locale) => {
       const next = i18n?.setLocale?.(locale);
       cloudSync?.queue?.("locale");

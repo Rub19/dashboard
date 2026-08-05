@@ -77,6 +77,7 @@ export function createDock(host, options = {}) {
   let activeRoute = options.route || "home";
   let mediaState = options.media || {};
   let editing = false;
+  let controlCenterOpen = false;
   let launcherOpen = false;
   let dragged = "";
   let touchHold = null;
@@ -154,6 +155,37 @@ export function createDock(host, options = {}) {
         btn("Actif", "v8.dock.magnify.on", currentMagnify),
         btn("Désactivé", "v8.dock.magnify.off", !currentMagnify)
       ]),
+
+    ]);
+  }
+
+  
+  function controlCenterPanel() {
+    const el = typeof document !== "undefined" ? document.documentElement : null;
+    const currentAnimations = el?.dataset?.v8Animations || "smooth";
+    const currentGlow = el?.dataset?.v8UiGlow !== "false";
+    const currentSoundFeedback = el?.dataset?.v8UiSoundFeedback !== "false";
+    const currentSoundPack = el?.dataset?.v8SoundPack || "ethone";
+
+    function row(label, iconName, choices) {
+      return element("div", { className: "v8-dock-editor__setting-row" }, [
+        element("span", { className: "v8-dock-editor__setting-label" }, [
+          icon(iconName),
+          element("span", { text: label })
+        ]),
+        element("div", { className: "v8-dock-editor__setting-choices", attributes: { role: "group", "aria-label": label } }, choices)
+      ]);
+    }
+
+    function btn(label, actionId, active) {
+      return element("button", {
+        className: `v8-dock-editor__choice${active ? " is-active" : ""}`,
+        attributes: { type: "button", "aria-pressed": String(active) },
+        dataset: { dockConfigAction: actionId }
+      }, [element("span", { text: label })]);
+    }
+
+    return element("div", { className: "v8-dock-editor__config v8-control-center-panel" }, [
       row("Animations UI", "activity", [
         btn("Fluides", "v8.ui.animations.smooth", currentAnimations === "smooth"),
         btn("Rapides", "v8.ui.animations.snappy", currentAnimations === "snappy"),
@@ -224,10 +256,16 @@ export function createDock(host, options = {}) {
       element("button", { className: "v8-dock-control", attributes: { type: "button", "aria-label": "Recherche Spotlight & Commandes (Ctrl+K)" }, dataset: { dockCommand: "spotlight", tooltip: "Spotlight (Ctrl+K)" } }, [icon("search")]),
       element("button", { className: "v8-dock-control", attributes: { type: "button", "aria-label": "Minuteur Pomodoro (Focus Express 25 min)" }, dataset: { dockCommand: "pomodoro", tooltip: "Pomodoro Focus (25m)" } }, [icon("timer")]),
       element("button", { className: "v8-dock-control", attributes: { type: "button", "aria-label": "Vue d'ensemble Mission Control (F3)" }, dataset: { dockCommand: "mission", tooltip: "Mission Control" } }, [icon("layout-grid")]),
+      element("button", { className: `v8-dock-control${controlCenterOpen ? " is-active" : ""}`, attributes: { type: "button", "aria-label": "Control Center", "aria-expanded": String(controlCenterOpen) }, dataset: { dockCommand: "control-center", tooltip: "Control Center" } }, [icon("sliders")]),
       element("button", { className: `v8-dock-control${editing ? " is-active" : ""}`, attributes: { type: "button", "aria-label": "Personnaliser le Dock", "aria-expanded": String(editing) }, dataset: { dockCommand: "edit", tooltip: "Personnaliser le Dock" } }, [icon("sliders-horizontal")])
     ]);
     const children = [nav];
     if (launcherOpen && compactMedia.matches) children.push(launcherNode(pinned));
+    
+    if (controlCenterOpen) children.push(element("section", { className: "v8-dock-editor v8-control-center-window", attributes: { role: "dialog", "aria-modal": "false", "aria-label": "Control Center" } }, [
+      element("header", {}, [element("span", {}, [element("small", { text: "ETHONE OS", attributes: { translate: "no" } }), element("strong", { text: "Control Center" })]), editorControl("close-cc", "", "Fermer", "x")]),
+      controlCenterPanel()
+    ]));
     if (editing) children.push(element("section", { className: "v8-dock-editor", attributes: { role: "dialog", "aria-modal": "false", "aria-label": "Personnaliser le Dock" } }, [
       element("header", {}, [element("span", {}, [element("small", { text: "ETHONE OS", attributes: { translate: "no" } }), element("strong", { text: "Personnaliser le Dock" })]), editorControl("close", "", "Fermer", "x")]),
       dockCustomizerPanel(),
@@ -236,9 +274,9 @@ export function createDock(host, options = {}) {
     ]));
     host.replaceChildren(...children);
     refreshIcons();
-    const floating = host.querySelector(".v8-dock-editor, .v8-dock-launcher");
+    const floating = host.querySelector(".v8-dock-editor, .v8-dock-launcher, .v8-control-center-window");
     if (floating) {
-      const triggerSelector = editing ? "[data-dock-command=edit]" : "[data-dock-command=more]";
+      const triggerSelector = controlCenterOpen ? "[data-dock-command=control-center]" : (editing ? "[data-dock-command=edit]" : "[data-dock-command=more]");
       const trigger = host.querySelector(triggerSelector);
       layerRegistration = layerManager.register({
         element: floating,
@@ -252,6 +290,7 @@ export function createDock(host, options = {}) {
         rovingSelector: "button:not([disabled])",
         onDismiss: (reason) => {
           editing = false;
+          controlCenterOpen = false;
           launcherOpen = false;
           render(reason === "escape" ? triggerSelector : "");
         }
@@ -330,7 +369,15 @@ export function createDock(host, options = {}) {
     event.stopPropagation();
     const command = control.dataset.dockCommand;
     const id = control.dataset.dockId || "";
-    if (command === "spotlight") {
+    if (command === "control-center") {
+      controlCenterOpen = !controlCenterOpen;
+      editing = false;
+      launcherOpen = false;
+      render(controlCenterOpen ? "[data-dock-command=close-cc]" : "[data-dock-command=control-center]");
+    } else if (command === "close-cc") {
+      controlCenterOpen = false;
+      render("[data-dock-command=control-center]");
+    } else if (command === "spotlight") {
       options.onAction?.("v8.command.open", { source: "dock" });
       return;
     } else if (command === "pomodoro") {
@@ -341,11 +388,13 @@ export function createDock(host, options = {}) {
       return;
     } else if (command === "edit") {
       editing = !editing;
+      controlCenterOpen = false;
       launcherOpen = false;
       render(editing ? "[data-dock-command=close]" : "[data-dock-command=edit]");
     } else if (command === "more") {
       launcherOpen = !launcherOpen;
       editing = false;
+      controlCenterOpen = false;
       render(launcherOpen ? "[data-dock-command=more-close]" : "[data-dock-command=more]");
     } else if (command === "more-close") {
       launcherOpen = false;

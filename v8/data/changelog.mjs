@@ -24,6 +24,12 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v194", "2026-08-05", "Control Center, Focus Island & Animations Premium", [
+    { kind: "feature", text: "Nouveau Control Center : séparation des paramètres d'environnement (Aura, Son, Focus) dans un panneau flottant dédié avec effet Glassmorphism, accessible depuis le Dock." },
+    { kind: "feature", text: "Focus Timer (Dynamic Island) : le minuteur Pomodoro et Deep Work s'affiche désormais sous forme d'île dynamique animée en haut de l'écran avec contrôles rapides (play/pause/stop)." },
+    { kind: "improvement", text: "Effets de survol (Hover Glow) premium ajoutés aux boutons du Control Center et du Dock pour un rendu organique et interactif." },
+    { kind: "fix", text: "Les boutons avec de longs textes dans le Dock ne cassent plus la mise en page, grâce à une grille optimisée (wrap et scroll)." }
+  ]),
   entry("v189", "2026-08-04", "Comptes uniques isolés, Studio d'ambiance visuelle & Correction des onglets Réglages", [
     { kind: "feature", text: "Multi-comptes avec isolation complète : séparation stricte et persistante des tâches, notes et profils pour chaque compte en ligne, avec avatar unique et synchronisation cloud Supabase dédiée." },
     { kind: "feature", text: "Studio d'ambiance visuelle (Réglages > Apparence) : 6 Auras lumineuses (Classic, Cyber, Sunset, Emerald, Monolith, Royal), 4 styles typographiques (Inter, Outfit, Fira Code, System) et 3 échelles de courbure (Arrondi, Subtil, Sharp)." },

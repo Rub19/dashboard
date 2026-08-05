@@ -24,6 +24,11 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v196", "2026-08-05", "Historique de Matchs Premium & Fluide", [
+    { kind: "feature", text: "Page d'Historique de Matchs : Vos statistiques Valorant, League of Legends et Apex s'affichent désormais sur une page dédiée ultra-détaillée (style Tracker.gg) avec filtres par mode de jeu, regroupement par date et calculs agrégés de vos performances (K/D, ACS, DDΔ, etc.)." },
+    { kind: "improvement", text: "Navigation instantanée des cartes : Suppression de l'ancien effet 3D (flip) sur les cartes Riot et Tracker au profit d'un clic direct vers votre historique complet." },
+    { kind: "fix", text: "Lecteur Spotify : La barre de progression a été entièrement réécrite (requestAnimationFrame) pour un affichage parfaitement fluide, sans aucun clignotement ou saccade." }
+  ]),
   entry("v195", "2026-08-05", "Interactive Widgets, Transitions Fluides & Auto-Hide", [
     { kind: "feature", text: "Dynamic Island Extensible : l'île de focus s'agrandit d'un simple clic pour révéler plus de détails, et se masque automatiquement après 30s de pause pour dégager votre vue." },
     { kind: "feature", text: "Transitions Fluides (View Transitions) : la navigation entre les pages s'effectue désormais avec un fondu croisé cinématographique natif pour un confort visuel optimal." },

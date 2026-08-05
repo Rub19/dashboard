@@ -3328,7 +3328,7 @@ html[data-v8-interactions] .v8-floating-dock:hover {
 }
 
 html[data-v8-zen="true"] .v8-app-header,
-html[data-v8-zen="true"] .v8-app-dock {
+html[data-v8-zen="true"] .v8-floating-dock {
   transform: translateY(200%);
   opacity: 0;
   pointer-events: none;
@@ -3340,15 +3340,15 @@ html[data-v8-zen="true"] .v8-app-header {
 html[data-v8-zen="true"] #ethone-v8-root {
   grid-template-rows: 0fr 1fr 0fr !important;
 }
-html[data-v8-dock-scale="compact"] .v8-app-dock {
+html[data-v8-dock-scale="compact"] .v8-floating-dock {
   transform: scale(0.88);
   transform-origin: bottom center;
 }
-html[data-v8-dock-scale="large"] .v8-app-dock {
+html[data-v8-dock-scale="large"] .v8-floating-dock {
   transform: scale(1.12);
   transform-origin: bottom center;
 }
-html[data-v8-dock-align="stretch"] .v8-app-dock {
+html[data-v8-dock-align="stretch"] .v8-floating-dock {
   width: calc(100vw - 32px) !important;
   max-width: 1380px !important;
   left: 16px !important;
@@ -3372,12 +3372,12 @@ html[data-v8-dock-glass="opaque"] .v8-dock {
   border-color: var(--v8-border) !important;
   box-shadow: var(--v8-shadow-height-2) !important;
 }
-html[data-v8-dock-autohide="true"] .v8-app-dock {
+html[data-v8-dock-autohide="true"] .v8-floating-dock {
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
   transform: translateY(calc(100% - 6px));
   opacity: 0.3;
 }
-html[data-v8-dock-autohide="true"] .v8-app-dock::after {
+html[data-v8-dock-autohide="true"] .v8-floating-dock::after {
   content: "";
   position: absolute;
   top: -60px;
@@ -3386,8 +3386,8 @@ html[data-v8-dock-autohide="true"] .v8-app-dock::after {
   bottom: -20px;
   z-index: -1;
 }
-html[data-v8-dock-autohide="true"] .v8-app-dock:hover,
-html[data-v8-dock-autohide="true"] .v8-app-dock:focus-within {
+html[data-v8-dock-autohide="true"] .v8-floating-dock:hover,
+html[data-v8-dock-autohide="true"] .v8-floating-dock:focus-within {
   transform: translateY(0);
   opacity: 1;
 }

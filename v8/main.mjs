@@ -97,6 +97,12 @@ async function boot() {
   const nativeBehavior = createNativeBehavior({ document, runtime: globalThis });
   const touchInteractions = createTouchInteractionManager({ document, runtime: globalThis });
   const tooltips = createTooltipController({ document, runtime: globalThis });
+  
+  // Appliquer les prÃ©fÃ©rences globales d'interface le plus tÃ´t possible pour les vues de connexion et profils
+  document.documentElement.dataset.aura = globalThis.localStorage?.getItem("v8_home_aura") || "classic";
+  document.documentElement.dataset.font = globalThis.localStorage?.getItem("v8_font_family") || "inter";
+  document.documentElement.dataset.radiusStyle = globalThis.localStorage?.getItem("v8_radius_style") || "rounded";
+
   haptics.start();
   nativeBehavior.start();
   touchInteractions.start();

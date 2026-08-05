@@ -24,6 +24,9 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v199", "2026-08-05", "Application de l'Aura au Démarrage", [
+    { kind: "fix", text: "Ambiance et Couleurs : L'aura personnalisée et les autres préférences visuelles globales (Typographie, Courbure) sont désormais appliquées dès l'écran de sélection de profil (et non plus seulement après l'entrée dans un Space)." }
+  ]),
   entry("v198", "2026-08-05", "Correctif : Toggles Réactifs dans les Réglages", [
     { kind: "fix", text: "Mode Zen, Spotlight, Effets d'ambiance, Flou d'interface, et tous les autres toggles ON/OFF montrent désormais leur état correct immédiatement après le clic — plus besoin de recharger la page." },
     { kind: "fix", text: "Le mécanisme de synchronisation des toggles booléens a été generalisé : chaque switch lit maintenant l'état du store via subscribeState plutôt que l'état initial figé de la page." }

@@ -2,6 +2,21 @@
 
 Toutes les modifications notables de ce projet seront documentÃ©es dans ce fichier.
 
+## [Unreleased] - 2026-08-06
+
+### Ajouté
+- **Backend / Cloudflare Worker** : Nouveaux clients API (henrik-client.js et iot-client.js) pour isoler l'acquisition de données Valorant et League of Legends.
+
+### Modifié
+- **Backend / Cloudflare Worker** : Migration de Tracker.gg vers **HenrikDev API** (Valorant) et **Riot Games API officielle** (League of Legends) suite aux problèmes d'erreurs 403.
+- **Backend / Matchs** : Historique restreint à 10 parties récentes pour respecter les limites strictes de requêtes du Worker Cloudflare.
+- **Frontend / Connexions** : Refonte de l'onglet de gestion des intégrations Riot Games pour retirer Tracker.gg, pointer vers HenrikDev/Riot, et permettre de configurer ses propres clés API indépendantes (henrikApiKey, iotApiKey).
+- **Frontend / Menu Contextuel** : Correction de la propagation des événements dans context-menu.mjs qui bloquait les actions en dehors du menu.
+
+### Supprimé
+- **Backend** : Retrait du parsing et requêtage Tracker.gg pour Valorant et LoL (toujours actif pour Apex).
+
+
 ## [Unreleased] - 2026-08-05
 
 ### AjoutÃ©
@@ -17,3 +32,4 @@ Toutes les modifications notables de ce projet seront documentÃ©es dans ce fichi
 
 ### SupprimÃ©
 - **Backend** : RÃ©vocation du support de l'API d'HenrikDev, suppression des blocs de configuration spÃ©cifiques associÃ©s.
+

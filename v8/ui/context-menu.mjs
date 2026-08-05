@@ -12,24 +12,24 @@ const ITEMS = Object.freeze([
   { actionId: "v8.appearance.cycle", label: "Changer l'accent", icon: "palette" }
 ]);
 
-export function createContextMenu(host) {
+export function createContextMenu(host, options = {}) {
   const documentRef = host?.ownerDocument || globalThis.document;
   const runtime = documentRef?.defaultView || globalThis;
   const layerManager = getLayerManager({ document: documentRef, runtime });
   let menu = null;
   let layerRegistration = null;
 
-  function close(options = {}) {
+  function close(opts = {}) {
     if (!menu) return false;
     const current = menu;
     menu = null;
-    layerRegistration?.release?.({ restoreFocus: options.restoreFocus === true });
+    layerRegistration?.release?.({ restoreFocus: opts.restoreFocus === true });
     layerRegistration = null;
     current.remove();
     return true;
   }
 
-  function open(x, y, options = {}) {
+  function open(x, y, openOpts = {}) {
     close({ restoreFocus: false });
     const items = ITEMS.map((item) => item.separator
       ? element("hr", { className: "v8-context-menu__divider" })
@@ -37,7 +37,16 @@ export function createContextMenu(host) {
         className: "v8-context-menu__item",
         attributes: { type: "button", role: "menuitem" },
         dataset: { action: item.actionId },
-        events: { click: () => setTimeout(() => close({ restoreFocus: false }), 0) }
+        events: {
+          click: (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            close({ restoreFocus: false });
+            if (options.onAction) {
+              options.onAction(item.actionId, { source: "context-menu", event });
+            }
+          }
+        }
       }, [icon(item.icon), element("span", { text: item.label }), item.shortcut ? element("kbd", { text: item.shortcut }) : null]));
     menu = element("div", {
       className: "v8-context-menu",

@@ -44,6 +44,20 @@ export function providerFetch(counter = { calls: 0 }) {
       return json({ playerstats: { achievements: [{ apiname: "READY", achieved: 1, unlocktime: 1700000000, name: "Ready" }] } });
     }
     if (url.hostname === "public-api.tracker.gg") return json({ data: { platformInfo: { platformSlug: "origin", platformUserIdentifier: "Player", platformUserHandle: "Player", avatarUrl: "https://tracker.gg/avatar.png" }, segments: [{ type: "overview", metadata: { name: "Overview" }, stats: { level: { displayName: "Level", displayValue: "10", percentile: 50 } } }] } });
+    if (url.hostname === "api.henrikdev.xyz") {
+      if (url.pathname.startsWith("/valorant/v1/account")) return json({ data: { puuid: "123", region: "eu", account_level: 10, name: "Player", tag: "EUW" } });
+      if (url.pathname.startsWith("/valorant/v2/mmr")) return json({ data: { current_data: { currenttier: 10, currenttierpatched: "Gold 1" } } });
+      if (url.pathname.startsWith("/valorant/v3/matches")) return json({ data: [{ metadata: { matchid: "m1", mode: "Unrated", map: "Ascent" }, players: { all_players: [{ name: "Player", tag: "EUW", stats: { kills: 10 } }] } }] });
+    }
+    if (url.hostname === "europe.api.riotgames.com") {
+      if (url.pathname.startsWith("/riot/account/v1/accounts/by-riot-id")) return json({ puuid: "p1" });
+      if (url.pathname.startsWith("/lol/match/v5/matches/by-puuid")) return json(["EUW1_123"]);
+      if (url.pathname.startsWith("/lol/match/v5/matches/EUW1_123")) return json({ metadata: { matchId: "EUW1_123" }, info: { gameMode: "CLASSIC", participants: [{ puuid: "p1", championName: "Ahri", kills: 5 }] } });
+    }
+    if (url.hostname.endsWith(".api.riotgames.com")) {
+      if (url.pathname.startsWith("/lol/summoner/v4/summoners/by-puuid")) return json({ id: "s1", summonerLevel: 30 });
+      if (url.pathname.startsWith("/lol/league/v4/entries/by-summoner")) return json([{ queueType: "RANKED_SOLO_5x5", tier: "GOLD", rank: "I", leaguePoints: 50 }]);
+    }
     if (url.hostname === "api.groq.com") return json({ choices: [{ message: { role: "assistant", content: "Bonjour, comment puis-je aider ?" } }] });
     if (url.hostname === "id.twitch.tv") return json({ access_token: "t".repeat(32), expires_in: 3600 });
     if (url.hostname === "api.twitch.tv") {
@@ -84,6 +98,8 @@ export function testEnv(overrides = {}) {
     SUPABASE_SECRET_KEY: "u".repeat(32),
     STEAM_API_KEY: "a".repeat(24),
     TRACKER_API_KEY: "b".repeat(24),
+    HENRIK_API_KEY: "c".repeat(24),
+    RIOT_API_KEY: "r".repeat(24),
     TWITCH_CLIENT_ID: "d".repeat(24),
     TWITCH_CLIENT_SECRET: "e".repeat(32),
     LASTFM_API_KEY: "f".repeat(24),

@@ -1,5 +1,7 @@
 import { assertAllowedQuery, PATTERNS, queryText } from "../middleware/validation.js";
-import { getTrackerApexProfile, getTrackerLolProfile, getTrackerValorantProfile, getTrackerValorantMatches, getTrackerLolMatches, getTrackerApexMatches } from "../services/tracker-client.js";
+import { getTrackerApexProfile, getTrackerApexMatches } from "../services/tracker-client.js";
+import { getValorantProfile, getValorantMatches } from "../services/henrik-client.js";
+import { getLolProfile, getLolMatches } from "../services/riot-client.js";
 import { getUserProviderCredential } from "../services/supabase-client.js";
 import { cachedLoad } from "../utils/cache.js";
 import { routeResult } from "../utils/response.js";
@@ -24,9 +26,9 @@ export async function trackerValorantRoute({ env, url, auth }) {
   const name = queryText(url, "name", { pattern: PATTERNS.playerName, max: 32 });
   const tag = queryText(url, "tag", { pattern: PATTERNS.playerTag, max: 8 });
   const riotId = `${name}#${tag}`;
-  const loader = async () => getTrackerValorantProfile(env, riotId, await ownKey(env, auth));
+  const loader = async () => getValorantProfile(env, riotId, await ownKey(env, auth));
   const result = await cachedLoad(`tracker:valorant:${name.toLowerCase()}:${tag.toLowerCase()}`, 180, loader);
-  return routeResult(result.data, { source: "tracker", cached: result.cached });
+  return routeResult(result.data, { source: "henrikdev", cached: result.cached });
 }
 
 export async function trackerLolRoute({ env, url, auth }) {
@@ -34,9 +36,9 @@ export async function trackerLolRoute({ env, url, auth }) {
   const name = queryText(url, "name", { pattern: PATTERNS.playerName, max: 32 });
   const tag = queryText(url, "tag", { pattern: PATTERNS.playerTag, max: 8 });
   const riotId = `${name}#${tag}`;
-  const loader = async () => getTrackerLolProfile(env, riotId, await ownKey(env, auth));
+  const loader = async () => getLolProfile(env, riotId, await ownKey(env, auth));
   const result = await cachedLoad(`tracker:lol:${name.toLowerCase()}:${tag.toLowerCase()}`, 180, loader);
-  return routeResult(result.data, { source: "tracker", cached: result.cached });
+  return routeResult(result.data, { source: "riot", cached: result.cached });
 }
 
 export async function trackerValorantMatchesRoute({ env, url, auth }) {
@@ -45,9 +47,9 @@ export async function trackerValorantMatchesRoute({ env, url, auth }) {
   const tag = queryText(url, "tag", { pattern: PATTERNS.playerTag, max: 8 });
   const mode = queryText(url, "mode", { max: 32 }) || "all";
   const riotId = `${name}#${tag}`;
-  const loader = async () => getTrackerValorantMatches(env, riotId, mode, await ownKey(env, auth));
+  const loader = async () => getValorantMatches(env, riotId, mode, await ownKey(env, auth));
   const result = await cachedLoad(`tracker:valorant:matches:${name.toLowerCase()}:${tag.toLowerCase()}:${mode}`, 180, loader);
-  return routeResult(result.data, { source: "tracker", cached: result.cached });
+  return routeResult(result.data, { source: "henrikdev", cached: result.cached });
 }
 
 export async function trackerLolMatchesRoute({ env, url, auth }) {
@@ -56,9 +58,9 @@ export async function trackerLolMatchesRoute({ env, url, auth }) {
   const tag = queryText(url, "tag", { pattern: PATTERNS.playerTag, max: 8 });
   const mode = queryText(url, "mode", { max: 32 }) || "all";
   const riotId = `${name}#${tag}`;
-  const loader = async () => getTrackerLolMatches(env, riotId, mode, await ownKey(env, auth));
+  const loader = async () => getLolMatches(env, riotId, mode, await ownKey(env, auth));
   const result = await cachedLoad(`tracker:lol:matches:${name.toLowerCase()}:${tag.toLowerCase()}:${mode}`, 180, loader);
-  return routeResult(result.data, { source: "tracker", cached: result.cached });
+  return routeResult(result.data, { source: "riot", cached: result.cached });
 }
 
 export async function trackerApexMatchesRoute({ env, url, auth }) {

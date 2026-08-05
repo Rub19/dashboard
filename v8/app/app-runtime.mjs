@@ -651,7 +651,9 @@ export function mountApplication(root, options = {}) {
     activity: () => activityJournal.entries(),
     onClose: () => actions?.dispatch("v8.mission.close", { source: "backdrop" })
   });
-  const contextMenu = createContextMenu(shell.contextMenuHost);
+  const contextMenu = createContextMenu(shell.contextMenuHost, {
+    onAction: (actionId, context) => actions?.dispatch(actionId, context)
+  });
   const scratchpad = createScratchpad(root, {
     onCopy: (msg) => toasts.show({ id: "scratch-copy", title: "Brouillon", message: msg, type: "success" })
   });

@@ -88,10 +88,13 @@ function summaryMetric(iconName, value, label) {
 }
 
 function timelineEntry(iconName, title, meta) {
-  return element("li", { className: "v8-day-entry", dataset: { liveWidget: "timeline" } }, [
-    icon(iconName),
-    element("strong", { text: title }),
-    element("span", { text: meta })
+  return element("button", { className: "v8-day-entry", dataset: { action: "v8.tasks.open", liveWidget: "timeline" } }, [
+    element("div", { className: "v8-day-entry__icon" }, [icon(iconName)]),
+    element("div", { className: "v8-day-entry__content" }, [
+      element("strong", { text: title }),
+      element("span", { text: meta })
+    ]),
+    element("div", { className: "v8-day-entry__arrow" }, [icon("chevron-right")])
   ]);
 }
 

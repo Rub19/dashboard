@@ -87,7 +87,8 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride) {
     service: "tracker",
     dedupeKey: `henrik:matches:${region}:${name.toLowerCase()}:${tag.toLowerCase()}:${mode || "all"}`,
     headers,
-    retries: 1
+    retries: 1,
+    maxBytes: 4194304
   });
   
   const matches = response.data?.data || [];

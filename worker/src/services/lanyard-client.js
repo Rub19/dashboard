@@ -32,7 +32,8 @@ export async function getLanyardPresence(env, userId) {
       public_flags: Number(discordUser.public_flags) || 0,
       flags: Number(discordUser.flags) || 0,
       premium_type: Number(discordUser.premium_type) || 0,
-      avatar: safeText(discordUser.avatar)
+      avatar: safeText(discordUser.avatar),
+      badges: Array.isArray(discordUser.badges) ? Object.freeze([...discordUser.badges]) : undefined
     }),
     kv: typeof value.kv === "object" && value.kv !== null ? Object.freeze({ ...value.kv }) : undefined,
     activities: Object.freeze((value.activities || []).slice(0, 12).map((activity) => Object.freeze({

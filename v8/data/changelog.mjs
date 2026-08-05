@@ -24,6 +24,11 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v197", "2026-08-05", "Correctif Critique : Boutons Réglages Réactifs", [
+    { kind: "fix", text: "Ambiance Lumineuse (Aura), Typographie et Courbure : Cliquer sur un bouton reflète désormais instantanément la sélection active (indicateur visuel + coche) sans nécessiter de rechargement de page." },
+    { kind: "fix", text: "Dock, Accueil, Spaces : Tous les boutons de choix (Taille du Dock, Alignement, Style Verre, Auto-Hide, Grille d'Accueil, Bannière, etc.) montrent maintenant correctement l'état actif et se mettent à jour en temps réel à chaque clic." },
+    { kind: "fix", text: "Architecture du store : Les actions Aura, Police et Courbure déclenchent désormais une mise à jour du store d'état, ce qui déclenche la réactivité de l'interface via subscribeState." }
+  ]),
   entry("v196", "2026-08-05", "Historique de Matchs Premium & Fluide", [
     { kind: "feature", text: "Page d'Historique de Matchs : Vos statistiques Valorant, League of Legends et Apex s'affichent désormais sur une page dédiée ultra-détaillée (style Tracker.gg) avec filtres par mode de jeu, regroupement par date et calculs agrégés de vos performances (K/D, ACS, DDΔ, etc.)." },
     { kind: "improvement", text: "Navigation instantanée des cartes : Suppression de l'ancien effet 3D (flip) sur les cartes Riot et Tracker au profit d'un clic direct vers votre historique complet." },

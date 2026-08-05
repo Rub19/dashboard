@@ -77,7 +77,10 @@ export function mountApplication(root, options = {}) {
     saveStatus: initialSync.saveStatus,
     sessionStatus: initialSync.sessionStatus,
     localTime: initialClock.time,
-    timeZone: initialClock.timeZone
+    timeZone: initialClock.timeZone,
+    aura: globalThis.localStorage?.getItem("v8_home_aura") || "classic",
+    fontFamily: globalThis.localStorage?.getItem("v8_font_family") || "inter",
+    radiusStyle: globalThis.localStorage?.getItem("v8_radius_style") || "rounded"
   }, { ownerId: options.ownerId || repository.owner() || "", fallbackState: { accent: options.profile?.accent, space: options.profile?.space, flow: options.profile?.flow } });
   const initialModel = createHomeModel({ snapshot: repository.snapshot() });
   const lifecycle = createLifecycle();

@@ -243,6 +243,7 @@ export function createActionFacade(options = {}) {
       if (typeof document !== "undefined" && document.documentElement) {
         document.documentElement.dataset.aura = auraId;
       }
+      setState({ aura: auraId });
       notify({ id: "aura-updated", title: "Ambiance Aura", message: `Ambiance « ${auraId} » activée.`, type: "success" });
       return completed(`Aura ${auraId} activée`, { aura: auraId });
     });
@@ -253,6 +254,7 @@ export function createActionFacade(options = {}) {
       if (typeof document !== "undefined" && document.documentElement) {
         document.documentElement.dataset.font = fontId;
       }
+      setState({ fontFamily: fontId });
       notify({ id: "font-updated", title: "Typographie", message: `Police « ${fontId} » appliquée.`, type: "success" });
       return completed(`Font ${fontId} activée`, { font: fontId });
     });
@@ -263,6 +265,7 @@ export function createActionFacade(options = {}) {
       if (typeof document !== "undefined" && document.documentElement) {
         document.documentElement.dataset.radiusStyle = styleId;
       }
+      setState({ radiusStyle: styleId });
       notify({ id: "radius-updated", title: "Courbure du Design", message: `Style de bordure « ${styleId} » appliqué.`, type: "success" });
       return completed(`Radius ${styleId} activé`, { radiusStyle: styleId });
     });

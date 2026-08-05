@@ -107,6 +107,25 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride) {
     
     return Object.freeze({
       id: safeText(meta.matchid),
+      scoreboard: Object.freeze({
+        players: players.map(p => Object.freeze({
+          team: safeText(p.team),
+          character: safeText(p.character),
+          name: safeText(p.name),
+          tag: safeText(p.tag),
+          currenttier_patched: safeText(p.currenttier_patched),
+          party_id: safeText(p.party_id),
+          stats: Object.freeze({
+            score: Number(p.stats?.score) || 0,
+            kills: Number(p.stats?.kills) || 0,
+            deaths: Number(p.stats?.deaths) || 0,
+            assists: Number(p.stats?.assists) || 0,
+            headshots: Number(p.stats?.headshots) || 0,
+            bodyshots: Number(p.stats?.bodyshots) || 0,
+            legshots: Number(p.stats?.legshots) || 0
+          })
+        }))
+      }),
       metadata: Object.freeze({
         modeName: safeText(meta.mode),
         result: safeText(result),
@@ -121,7 +140,10 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride) {
           kills: { value: stats.kills || 0, displayValue: String(stats.kills || 0) },
           deaths: { value: stats.deaths || 0, displayValue: String(stats.deaths || 0) },
           assists: { value: stats.assists || 0, displayValue: String(stats.assists || 0) },
-          score: { value: stats.score || 0, displayValue: String(stats.score || 0) }
+          score: { value: stats.score || 0, displayValue: String(stats.score || 0) },
+          scorePerRound: { value: (stats.score || 0) / Math.max(1, meta.rounds_played || 1), displayValue: String(Math.round((stats.score || 0) / Math.max(1, meta.rounds_played || 1))) },
+          headshotsPercentage: { value: ((stats.headshots || 0) / Math.max(1, (stats.headshots || 0) + (stats.bodyshots || 0) + (stats.legshots || 0))) * 100, displayValue: String(Math.round(((stats.headshots || 0) / Math.max(1, (stats.headshots || 0) + (stats.bodyshots || 0) + (stats.legshots || 0))) * 100)) },
+          damageDeltaPerRound: { value: ((me?.damage_made || 0) - (me?.damage_received || 0)) / Math.max(1, meta.rounds_played || 1), displayValue: String(Math.round(((me?.damage_made || 0) - (me?.damage_received || 0)) / Math.max(1, meta.rounds_played || 1))) }
         })
       }])
     });

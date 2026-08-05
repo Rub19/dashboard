@@ -133,7 +133,7 @@ export function createDock(host, options = {}) {
     }
 
     return element("div", { className: "v8-dock-editor__config" }, [
-      row("Taille", "layout-bottom", [
+      row("Taille", "monitor", [
         btn("Compacte", "v8.dock.scale.compact", currentScale === "compact"),
         btn("Normale", "v8.dock.scale.normal", !currentScale || currentScale === "normal"),
         btn("Grande", "v8.dock.scale.large", currentScale === "large")

@@ -11,15 +11,33 @@ function emblem(presence) {
 }
 
 function statsGrid(overview) {
-  if (!overview || !Array.isArray(overview.stats) || overview.stats.length === 0) {
-    return element("p", { className: "v8-live-empty-stats", text: "Aucun match récent" });
+  const hasStats = overview && Array.isArray(overview.stats) && overview.stats.length > 0;
+  
+  const historyBtn = element("button", { 
+    className: "v8-button v8-button--outline v8-button--small v8-live-history-btn", 
+    text: "Historique Complet",
+    style: "margin-top: 8px; width: 100%;"
+  });
+  historyBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    window.location.hash = "#matches?game=valorant";
+  });
+
+  if (!hasStats) {
+    return element("div", { className: "v8-live-empty-stats" }, [
+      element("p", { text: "Aucun match classé récent" }),
+      historyBtn
+    ]);
   }
-  return element("div", { className: "v8-live-stats-grid" }, 
-    overview.stats.map((stat) => element("div", { className: "v8-live-stat-item" }, [
-      element("span", { className: "v8-live-stat-label", text: stat.displayName }),
-      element("span", { className: "v8-live-stat-value", text: stat.displayValue, attributes: { translate: "no" } })
-    ]))
-  );
+  return element("div", { className: "v8-live-stats-wrapper" }, [
+    element("div", { className: "v8-live-stats-grid" }, 
+      overview.stats.map((stat) => element("div", { className: "v8-live-stat-item" }, [
+        element("span", { className: "v8-live-stat-label", text: stat.displayName }),
+        element("span", { className: "v8-live-stat-value", text: stat.displayValue, attributes: { translate: "no" } })
+      ]))
+    ),
+    historyBtn
+  ]);
 }
 
 export function valorantLiveCard(presence = {}, options = {}) {

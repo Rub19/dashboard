@@ -40,3 +40,42 @@ export function getTrackerValorantProfile(env, riotId, apiKeyOverride) {
 export function getTrackerLolProfile(env, riotId, apiKeyOverride) {
   return getTrackerProfile(env, "lol", "riot", riotId, apiKeyOverride);
 }
+
+export async function getTrackerMatches(env, game, platform, identifier, mode, apiKeyOverride) {
+  const apiKey = apiKeyOverride || requireSecret(env, "TRACKER_API_KEY");
+  let path = `/v2/${game}/standard/matches/${encodeURIComponent(platform)}/${encodeURIComponent(identifier)}`;
+  if (mode && mode !== "all") {
+    path += `?type=${encodeURIComponent(mode)}`;
+  }
+  const response = await requestExternal(new URL(path, ORIGIN), {
+    env,
+    expectedOrigin: ORIGIN,
+    service: "tracker",
+    dedupeKey: `${game}:matches:${platform}:${identifier.toLowerCase()}:${mode || "all"}`,
+    headers: { "TRN-Api-Key": apiKey },
+    retries: 1
+  });
+  const matches = response.data?.data || [];
+  return Object.freeze(matches.map((match) => Object.freeze({
+    id: safeText(match.attributes?.id),
+    metadata: Object.freeze({
+      modeName: safeText(match.metadata?.modeName),
+      result: safeText(match.metadata?.result),
+      mapName: safeText(match.metadata?.mapName),
+      agentName: safeText(match.metadata?.agentName || match.metadata?.championName),
+      agentImageUrl: safePublicUrl(match.metadata?.agentImageUrl || match.metadata?.championImageUrl, ["tracker.gg"])
+    }),
+    segments: Object.freeze((match.segments || []).map((segment) => Object.freeze({
+      type: safeText(segment.type),
+      stats: safeStats(segment.stats)
+    })))
+  })));
+}
+
+export function getTrackerValorantMatches(env, riotId, mode, apiKeyOverride) {
+  return getTrackerMatches(env, "valorant", "riot", riotId, mode, apiKeyOverride);
+}
+
+export function getTrackerLolMatches(env, riotId, mode, apiKeyOverride) {
+  return getTrackerMatches(env, "lol", "riot", riotId, mode, apiKeyOverride);
+}

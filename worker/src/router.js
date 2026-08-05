@@ -14,7 +14,7 @@ import { redditActivityRoute, redditOAuthDisconnectRoute, redditOAuthExchangeRou
 import { steamRoute } from "./routes/steam.js";
 import { supabaseRoute } from "./routes/supabase.js";
 import { todoistOAuthDisconnectRoute, todoistOAuthExchangeRoute, todoistTasksRoute } from "./routes/todoist-oauth.js";
-import { trackerLolRoute, trackerRoute, trackerValorantRoute } from "./routes/tracker.js";
+import { trackerLolRoute, trackerRoute, trackerValorantRoute, trackerValorantMatchesRoute, trackerLolMatchesRoute } from "./routes/tracker.js";
 import { twitchRoute } from "./routes/twitch.js";
 import { weatherRoute } from "./routes/weather.js";
 import { youtubeActivityRoute, youtubeOAuthDisconnectRoute, youtubeOAuthExchangeRoute } from "./routes/youtube-oauth.js";
@@ -43,6 +43,8 @@ export const ROUTES = Object.freeze([
   route("tracker.apex-profile", "/api/tracker/apex-profile", trackerRoute, { service: "tracker" }),
   route("tracker.valorant-profile", "/api/tracker/valorant-profile", trackerValorantRoute, { service: "tracker" }),
   route("tracker.lol-profile", "/api/tracker/lol-profile", trackerLolRoute, { service: "tracker" }),
+  route("tracker.valorant-matches", "/api/tracker/valorant-matches", trackerValorantMatchesRoute, { service: "tracker" }),
+  route("tracker.lol-matches", "/api/tracker/lol-matches", trackerLolMatchesRoute, { service: "tracker" }),
   route("twitch.channel", "/api/twitch/channel", twitchRoute, { service: "twitch" }),
   route("lastfm.recent-tracks", "/api/lastfm/recent-tracks", lastFmRoute, { service: "lastfm", action: "recent-tracks" }),
   route("lastfm.top-artists", "/api/lastfm/top-artists", lastFmRoute, { service: "lastfm", action: "top-artists" }),

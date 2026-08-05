@@ -10,7 +10,8 @@ export const V8_ROUTES = Object.freeze([
   "flows",
   "widgets",
   "brain",
-  "settings"
+  "settings",
+  "matches"
 ]);
 
 const ROUTE_SET = new Set(V8_ROUTES);

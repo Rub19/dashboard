@@ -109,8 +109,8 @@ function integrationIcon(integration) {
   return wrapper.firstElementChild;
 }
 
-function badge(label, tone = "default") {
-  return element("span", { className: `v8-connection-badge v8-connection-badge--${tone}`, text: label });
+function badge(label, tone = "default", extraClass = "") {
+  return element("span", { className: `v8-connection-badge v8-connection-badge--${tone} ${extraClass}`.trim(), text: label });
 }
 
 function officialLink(resource, compact = false) {
@@ -544,7 +544,11 @@ export function mountConnections(stage, options = {}) {
       input.addEventListener("input", () => {
         credentialDrafts.set(integration.id, { ...(credentialDrafts.get(integration.id) || {}), [field.key]: input.value });
       }, { signal: controller.signal });
-      return formField({ label: field.label, control: input, input, className: "v8-connection-credential__field" });
+      const labelNode = field.url ? element("span", {}, [
+        document.createTextNode(field.label + " "),
+        element("a", { className: "v8-connection-credential__link", text: "(Obtenir)", attributes: { href: field.url, target: "_blank", rel: "noopener noreferrer" } })
+      ]) : field.label;
+      return formField({ label: labelNode, control: input, input, className: "v8-connection-credential__field" });
     });
     const saveButton = element("button", {
       className: "v8-button v8-button--primary",
@@ -592,7 +596,7 @@ export function mountConnections(stage, options = {}) {
           element("h3", { text: "Votre propre clé" }),
           element("p", { text: configured ? "Clé personnelle active : ETHONE l'utilisé a votre place de la clé partagee." : "Optionnel : utilisez votre propre quota au lieu de la clé partagee d'ETHONE." })
         ]),
-        configured ? badge("Clé personnelle active", "accent") : badge("Clé partagee utilisée", "default")
+        configured ? badge("Clé personnelle active", "accent", "v8-connection-badge--square") : badge("Clé partagee utilisée", "default", "v8-connection-badge--square")
       ]),
       ...inputs,
       element("div", { className: "v8-connection-credential__actions" }, [saveButton, removeButton].filter(Boolean))

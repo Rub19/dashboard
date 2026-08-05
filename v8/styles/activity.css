@@ -281,3 +281,7 @@ html[data-v8-interactions] .v8-connection-card:hover .v8-connection-card__action
 @media (max-width:820px){.v8-filter-chip{min-height:var(--v8-touch-target);padding-inline:14px}.v8-connection-step-actions>.v8-button,.v8-resource-link--compact{min-height:var(--v8-touch-target)}.v8-live-entry__card .v8-row-actions,.v8-connection-card__actions{opacity:1}}
 @media (min-width:821px) and (max-width:1100px){.v8-activity-filters,.v8-connection-categories{flex-wrap:wrap;overflow:visible}}
 @media (prefers-reduced-motion:reduce){.v8-filter-chip,.v8-live-entry__card{transition-duration:1ms}.v8-connection-inspector-panel{animation:none}}
+
+.v8-connection-badge--square { border-radius: var(--v8-radius-sm); }
+.v8-connection-credential__link { color: var(--v8-accent); margin-left: 4px; text-decoration: none; }
+.v8-connection-credential__link:hover { text-decoration: underline; }

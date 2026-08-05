@@ -412,7 +412,12 @@ export function mountHome(stage, model, options = {}) {
   function applyLiveOrder() {
     liveLayout.order.forEach((id) => {
       const host = HOST_BY_ID[id];
-      if (host) liveGrid.append(host);
+      if (host) {
+        const cat = getCategoryForId(id);
+        if (cat && categoryGrids[cat]) {
+          categoryGrids[cat].append(host);
+        }
+      }
     });
   }
 
@@ -613,25 +618,33 @@ export function mountHome(stage, model, options = {}) {
     element("span", { className: "v8-home-ambient__light" })
   ]);
 
-  const liveGrid = element("div", { className: "v8-home-live-grid" }, [
-    spotifyHost,
-    discordHost,
-    weatherHost,
-    minecraftHost,
-    steamHost,
-    githubHost,
-    googleCalendarHost,
-    notionHost,
-    todoistHost,
-    valorantHost,
-    lolHost,
-    twitchHost,
-    lastfmHost,
-    trackerHost,
-    googleDriveHost,
-    youtubeHost,
-    redditHost
-  ]);
+  const categoryGrids = {
+    gaming: element("div", { className: "v8-home-live-grid" }),
+    social: element("div", { className: "v8-home-live-grid" }),
+    productivity: element("div", { className: "v8-home-live-grid" })
+  };
+
+  const categorySections = {
+    gaming: element("div", { className: "v8-live-category" }, [
+      element("h3", { className: "v8-live-category__title", text: "Gaming & Stats" }),
+      categoryGrids.gaming
+    ]),
+    social: element("div", { className: "v8-live-category" }, [
+      element("h3", { className: "v8-live-category__title", text: "Médias & Social" }),
+      categoryGrids.social
+    ]),
+    productivity: element("div", { className: "v8-live-category" }, [
+      element("h3", { className: "v8-live-category__title", text: "Productivité & Quotidien" }),
+      categoryGrids.productivity
+    ])
+  };
+
+  const getCategoryForId = (id) => {
+    if (["valorant", "lol", "tracker-gg", "steam", "minecraft", "twitch"].includes(id)) return "gaming";
+    if (["discord", "spotify", "lastfm", "youtube", "reddit"].includes(id)) return "social";
+    return "productivity";
+  };
+
   const customizeHost = element("div", { className: "v8-home-live-customize", attributes: { hidden: true } });
   const customizeToggle = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button", "aria-expanded": "false" } }, [icon("sliders-horizontal"), element("span", { text: "Personnaliser" })]);
   const liveSection = element("section", { className: "v8-home-live-section" }, [
@@ -640,7 +653,11 @@ export function mountHome(stage, model, options = {}) {
       customizeToggle
     ]),
     customizeHost,
-    liveGrid
+    element("div", { className: "v8-home-live-categories" }, [
+      categorySections.gaming,
+      categorySections.social,
+      categorySections.productivity
+    ])
   ]);
 
   const productivitySection = createHomeProductivitySection(model, () => {
@@ -677,8 +694,13 @@ export function mountHome(stage, model, options = {}) {
   renderYoutube(youtubeLive?.state?.() || {});
   renderReddit(redditLive?.state?.() || {});
   function syncLiveGridVisibility() {
-    const allHidden = [...liveGrid.children].every((host) => host.hidden);
-    liveGrid.hidden = allHidden;
+    let allHidden = true;
+    Object.keys(categorySections).forEach(cat => {
+      const grid = categoryGrids[cat];
+      const isHidden = [...grid.children].every((host) => host.hidden);
+      categorySections[cat].hidden = isHidden;
+      if (!isHidden) allHidden = false;
+    });
     liveSection.hidden = allHidden;
   }
   applyLiveOrder();

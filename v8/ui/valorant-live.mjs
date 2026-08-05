@@ -28,7 +28,7 @@ export function valorantLiveCard(presence = {}, options = {}) {
   const statLine = presence.overview?.stats?.[0] ? `${presence.overview.stats[0].displayName} : ${presence.overview.stats[0].displayValue}` : "Aucun match récent";
   
   const inner = element("div", { className: "v8-live-card-inner" }, [
-    element("div", { className: "v8-live-card-front" }, [
+    element("div", { className: "v8-live-card-front v8-surface" }, [
       emblem(presence),
       element("div", { className: "v8-valorant-live__body" }, [
         element("div", { className: "v8-valorant-live__meta" }, [brandIcon("riot", "swords", "v8-live-brand-mark"), element("small", { text: "Valorant" })]),
@@ -37,7 +37,7 @@ export function valorantLiveCard(presence = {}, options = {}) {
         liveFreshnessNode(presence.updatedAt)
       ])
     ]),
-    element("div", { className: "v8-live-card-back" }, [
+    element("div", { className: "v8-live-card-back v8-surface" }, [
       element("div", { className: "v8-valorant-live__body" }, [
         element("strong", { text: presence.overview?.name || "Statistiques" }),
         statsGrid(presence.overview)
@@ -46,9 +46,9 @@ export function valorantLiveCard(presence = {}, options = {}) {
   ]);
 
   const card = element(options.tagName || "article", {
-    className: `v8-valorant-live v8-valorant-live--${variant} v8-surface`,
-    attributes: { "aria-label": "Statistiques Valorant" },
-    dataset: { liveWidget: "media", liveKind: "widget" }
+    className: `v8-valorant-live v8-valorant-live--${variant}`,
+    attributes: { "aria-label": "Présence Valorant" },
+    dataset: { liveWidget: "game", liveKind: "valorant" }
   }, [inner]);
 
   card.addEventListener("click", () => {

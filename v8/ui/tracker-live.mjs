@@ -28,7 +28,7 @@ export function trackerLiveCard(presence = {}, options = {}) {
   const statLine = presence.overview?.stats?.[0] ? `${presence.overview.stats[0].displayName} : ${presence.overview.stats[0].displayValue}` : "Aucun match récent";
   
   const inner = element("div", { className: "v8-live-card-inner" }, [
-    element("div", { className: "v8-live-card-front" }, [
+    element("div", { className: "v8-live-card-front v8-surface" }, [
       avatar(presence),
       element("div", { className: "v8-tracker-live__body" }, [
         element("div", { className: "v8-tracker-live__meta" }, [icon("chart-no-axes-combined"), element("small", { text: "Apex Legends" })]),
@@ -37,7 +37,7 @@ export function trackerLiveCard(presence = {}, options = {}) {
         liveFreshnessNode(presence.updatedAt)
       ])
     ]),
-    element("div", { className: "v8-live-card-back" }, [
+    element("div", { className: "v8-live-card-back v8-surface" }, [
       element("div", { className: "v8-tracker-live__body" }, [
         element("strong", { text: presence.overview?.name || "Statistiques" }),
         statsGrid(presence.overview)
@@ -46,7 +46,7 @@ export function trackerLiveCard(presence = {}, options = {}) {
   ]);
 
   const card = element(options.tagName || "article", {
-    className: `v8-tracker-live v8-tracker-live--${variant} v8-surface`,
+    className: `v8-tracker-live v8-tracker-live--${variant}`,
     attributes: { "aria-label": "Statistiques Tracker.gg" },
     dataset: { liveWidget: "media", liveKind: "widget" }
   }, [inner]);

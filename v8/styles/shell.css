@@ -3993,6 +3993,7 @@ html[data-v8-ui-glow="true"] .v8-dock {
   border: 1px solid transparent;
   padding: var(--v8-space-4);
   box-shadow: var(--v8-shadow-card-lit);
+  height: 100%;
 }
 .v8-live-card-front {
   grid-template-columns: 44px minmax(0,1fr);

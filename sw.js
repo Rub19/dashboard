@@ -1,4 +1,4 @@
-const ETHONE_VERSION = "2026-08-05-experience-v205";
+const ETHONE_VERSION = "2026-08-06-experience-v206";
 const ETHONE_CACHE = `ethone-${ETHONE_VERSION}`;
 const ETHONE_OFFLINE_URL = "./index.html";
 

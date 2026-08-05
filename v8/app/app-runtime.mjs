@@ -796,7 +796,7 @@ export function mountApplication(root, options = {}) {
         if (route === "tasks") return mountTasks(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, presence, notify: (notice) => toasts.show(notice) });
         if (route === "calendar") return mountCalendar(shell.stage, { repository, actions, presence, notify: (notice) => toasts.show(notice), state: store.getState(), subscribeState: store.subscribe });
         if (route === "files") return mountFiles(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, sync: cloudSync, presence, notify: (notice) => toasts.show(notice) });
-        if (route === "matches") return mountMatches(shell.stage, { actions, externalServices, repository, state: store.getState(), subscribeState: store.subscribe, lolLive, valorantLive });
+        if (route === "matches") return mountMatches(shell.stage, { actions, externalServices, repository, state: store.getState(), subscribeState: store.subscribe, lolLive, valorantLive, trackerLive });
         if (route === "spaces") return mountSpaces(shell.stage, { repository, actions, state: store.getState() });
         if (route === "flows") return mountFlows(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, notify: (notice) => toasts.show(notice) });
         return mountFeatureFallback(shell.stage, route);

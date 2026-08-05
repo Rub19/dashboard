@@ -10,6 +10,7 @@ const OPERATIONS = Object.freeze({
   trackerApexProfile: Object.freeze({ path: "/api/tracker/apex-profile", auth: true, params: ["platform", "identifier"] }),
   trackerValorantProfile: Object.freeze({ path: "/api/tracker/valorant-profile", auth: true, params: ["name", "tag"] }),
   trackerLolProfile: Object.freeze({ path: "/api/tracker/lol-profile", auth: true, params: ["name", "tag"] }),
+  trackerApexMatches: Object.freeze({ path: "/api/tracker/apex-matches", auth: true, params: ["platform", "identifier", "mode"] }),
   trackerValorantMatches: Object.freeze({ path: "/api/tracker/valorant-matches", auth: true, params: ["name", "tag", "mode"] }),
   trackerLolMatches: Object.freeze({ path: "/api/tracker/lol-matches", auth: true, params: ["name", "tag", "mode"] }),
   twitchChannel: Object.freeze({ path: "/api/twitch/channel", auth: true, params: ["login"] }),
@@ -205,6 +206,7 @@ export function createExternalServicesClient(options = {}) {
       apexProfile: (platform, identifier) => execute("trackerApexProfile", { platform, identifier }),
       valorantProfile: (name, tag) => execute("trackerValorantProfile", { name, tag }),
       lolProfile: (name, tag) => execute("trackerLolProfile", { name, tag }),
+      apexMatches: (platform, identifier, mode) => execute("trackerApexMatches", { platform, identifier, mode }),
       valorantMatches: (name, tag, mode) => execute("trackerValorantMatches", { name, tag, mode }),
       lolMatches: (name, tag, mode) => execute("trackerLolMatches", { name, tag, mode })
     }),

@@ -1,7 +1,7 @@
 import { element, icon } from "../ui/dom.mjs";
 
 export function mountMatches(container, options = {}) {
-  const { externalServices, lolLive, valorantLive, actions } = options;
+  const { externalServices, lolLive, valorantLive, trackerLive, actions } = options;
   let destroyed = false;
   let currentMode = "all";
   
@@ -350,6 +350,11 @@ export function mountMatches(container, options = {}) {
         if (!riotId) throw new Error("Riot ID League of Legends manquant.");
         const [name, tag] = riotId.split("#");
         const res = await externalServices.tracker.lolMatches(name, tag, currentMode);
+        data = res.data;
+      } else if (game === "apex") {
+        const handle = trackerLive?.state?.()?.handle;
+        if (!handle) throw new Error("Identifiant Apex manquant.");
+        const res = await externalServices.tracker.apexMatches("origin", handle, currentMode);
         data = res.data;
       } else {
         throw new Error("Jeu non supporté");

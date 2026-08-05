@@ -80,3 +80,7 @@ export function getTrackerValorantMatches(env, riotId, mode, apiKeyOverride) {
 export function getTrackerLolMatches(env, riotId, mode, apiKeyOverride) {
   return getTrackerMatches(env, "lol", "riot", riotId, mode, apiKeyOverride);
 }
+
+export function getTrackerApexMatches(env, platform, identifier, mode, apiKeyOverride) {
+  return getTrackerMatches(env, "apex", platform, identifier, mode, apiKeyOverride);
+}

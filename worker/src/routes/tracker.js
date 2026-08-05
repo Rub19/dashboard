@@ -1,5 +1,5 @@
 import { assertAllowedQuery, PATTERNS, queryText } from "../middleware/validation.js";
-import { getTrackerApexProfile, getTrackerLolProfile, getTrackerValorantProfile, getTrackerValorantMatches, getTrackerLolMatches } from "../services/tracker-client.js";
+import { getTrackerApexProfile, getTrackerLolProfile, getTrackerValorantProfile, getTrackerValorantMatches, getTrackerLolMatches, getTrackerApexMatches } from "../services/tracker-client.js";
 import { getUserProviderCredential } from "../services/supabase-client.js";
 import { cachedLoad } from "../utils/cache.js";
 import { routeResult } from "../utils/response.js";
@@ -58,5 +58,15 @@ export async function trackerLolMatchesRoute({ env, url, auth }) {
   const riotId = `${name}#${tag}`;
   const loader = async () => getTrackerLolMatches(env, riotId, mode, await ownKey(env, auth));
   const result = await cachedLoad(`tracker:lol:matches:${name.toLowerCase()}:${tag.toLowerCase()}:${mode}`, 180, loader);
+  return routeResult(result.data, { source: "tracker", cached: result.cached });
+}
+
+export async function trackerApexMatchesRoute({ env, url, auth }) {
+  assertAllowedQuery(url, ["platform", "identifier", "mode"]);
+  const platform = queryText(url, "platform", { values: ["origin", "xbl", "psn"], max: 12 });
+  const identifier = queryText(url, "identifier", { pattern: PATTERNS.trackerIdentifier, max: 64 });
+  const mode = queryText(url, "mode", { max: 32 }) || "all";
+  const loader = async () => getTrackerApexMatches(env, platform, identifier, mode, await ownKey(env, auth));
+  const result = await cachedLoad("tracker:apex:matches:::", 180, loader);
   return routeResult(result.data, { source: "tracker", cached: result.cached });
 }

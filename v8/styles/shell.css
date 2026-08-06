@@ -1953,8 +1953,12 @@ html[data-v8-interactions] .v8-panel-notice:hover > .v8-selection-control,.v8-pa
 .v8-home-live-grid > * { height: 100%; }
 .v8-home-live-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--v8-layout-cluster-gap); margin-top: var(--v8-space-6); }
 .v8-home-live-grid[hidden] { display: none; }
-.v8-home-live-grid > section > article { animation: v8-card-enter var(--v8-motion-base) var(--v8-ease-out) both; transition: transform var(--v8-motion-fast) var(--v8-ease-standard), box-shadow var(--v8-motion-fast) var(--v8-ease-standard); }
-.v8-home-live-grid > section > article:hover { transform: translateY(-4px); box-shadow: var(--v8-shadow-card-lit), 0 12px 32px color-mix(in srgb,var(--v8-ambient-accent) 12%,transparent); }
+.v8-home-live-grid > section > article { position:relative;overflow:hidden;animation: v8-card-enter var(--v8-motion-base) var(--v8-ease-out) both; transition: transform var(--v8-motion-fast) var(--v8-ease-standard), box-shadow var(--v8-motion-fast) var(--v8-ease-standard); }
+.v8-home-live-grid > section > article::before { position:absolute;right:-20%;top:-20%;width:120%;height:120%;content:"";background:radial-gradient(circle at 70% 20%,color-mix(in srgb,var(--v8-accent) 12%,transparent),transparent 50%);opacity:0;transition:opacity var(--v8-motion-fast);pointer-events:none; }
+.v8-home-live-grid > section > article:hover::before { opacity:1; }
+.v8-home-live-grid > section > article:hover { transform: translateY(-4px) perspective(800px) rotateX(1deg) rotateY(-1deg); box-shadow: var(--v8-shadow-card-lit), 0 14px 36px color-mix(in srgb,var(--v8-ambient-accent) 14%,transparent), 0 0 0 1px var(--v8-border-highlight); }
+.v8-home-live-grid > section > article::after { position:absolute;inset:0;content:"";background:linear-gradient(115deg,transparent 30%,color-mix(in srgb,var(--v8-ambient-accent) 10%,transparent) 50%,transparent 70%);opacity:0;transform:translateX(-100%);transition:opacity var(--v8-motion-fast),transform .7s var(--v8-ease-out);pointer-events:none; }
+.v8-home-live-grid > section > article:hover::after { opacity:1;transform:translateX(100%); }
 .v8-home-live-grid > section > article .v8-minecraft-avatar__head,.v8-home-live-grid > section > article .v8-minecraft-avatar__cape img,.v8-home-live-grid > section > article .v8-discord-avatar__image img { transition: transform var(--v8-motion-base) var(--v8-ease-standard); }
 .v8-home-live-grid > section > article:hover .v8-minecraft-avatar__head { transform: scale(1.08); }
 .v8-home-live-grid > section > article:hover .v8-minecraft-avatar__cape img { transform: translateX(2px); }

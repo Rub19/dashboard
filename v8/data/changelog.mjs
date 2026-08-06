@@ -24,6 +24,10 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v219", "2026-08-06", "Cartes Live Now premium", [
+    { kind: "improvement", text: "Effet shine, glow et tilt 3D au survol de toutes les cartes Live Now." },
+    { kind: "improvement", text: "Bordure lumineuse et halo d'accent au hover pour un rendu plus premium." }
+  ]),
   entry("v218", "2026-08-06", "Dock net et i18n", [
     { kind: "improvement", text: "Icônes du Dock moins pixélisées au survol : scale réduit, icône légèrement agrandie et netteté améliorée." },
     { kind: "fix", text: "Réparation du catalogue i18n après une édition manuelle." }

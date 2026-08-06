@@ -1,4 +1,8 @@
 export const CHANGELOG_TRANSLATIONS = {
+  "Cartes Live Now premium": { en: "Premium Live Now cards", es: "Tarjetas Live Now premium", de: "Premium Live-Now-Karten" },
+  "Effet shine, glow et tilt 3D au survol de toutes les cartes Live Now.": { en: "Shine, glow and 3D tilt effect on hover for all Live Now cards.", es: "Efecto shine, glow y tilt 3D al pasar el ratón en todas las tarjetas Live Now.", de: "Shine-, Glow- und 3D-Tilt-Effekt beim Hover auf allen Live-Now-Karten." },
+  "Bordure lumineuse et halo d'accent au hover pour un rendu plus premium.": { en: "Glowing border and accent halo on hover for a more premium look.", es: "Borde brillante y halo de acento al pasar el ratón para un aspecto más premium.", de: "Leuchtender Rand und Akzent-Halo beim Hover für ein hochwertigeres Erscheinungsbild." },
+
   "Dock net et i18n": { en: "Sharp dock and i18n", es: "Dock nítido e i18n", de: "Scharfes Dock und i18n" },
   "Icônes du Dock moins pixélisées au survol : scale réduit, icône légèrement agrandie et netteté améliorée.": { en: "Dock icons less pixelated on hover: reduced scale, slightly larger icon, and improved sharpness.", es: "Iconos del Dock menos pixelados al pasar el ratón: escala reducida, icono ligeramente más grande y nitidez mejorada.", de: "Dock-Icons weniger pixelig beim Hover: reduzierte Skalierung, leicht größeres Icon und verbesserte Schärfe." },
   "Réparation du catalogue i18n après une édition manuelle.": { en: "Fixed the i18n catalog after a manual edit.", es: "Reparación del catálogo i18n tras una edición manual.", de: "Reparatur des i18n-Katalogs nach manueller Bearbeitung." },

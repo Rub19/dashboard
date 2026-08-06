@@ -212,24 +212,23 @@ export function mountMatches(container, options = {}) {
         element("small", { text: "Score" }),
         element("strong", { text: Number.isFinite(match.metadata?.score?.team) && Number.isFinite(match.metadata?.score?.opponent) ? `${match.metadata.score.team}:${match.metadata.score.opponent}` : "—", className: "v8-match-score" })
       ]),
-      element("div", { className: "v8-match-badges-col" }),
-      element("div", { className: "v8-match-stat-col" }, [
+      element("div", { className: "v8-match-stat-col v8-match-stat-col--kd" }, [
         element("small", { text: "K/D" }),
         element("strong", { text: kdRatio, className: kdClass })
       ]),
-      element("div", { className: "v8-match-stat-col" }, [
+      element("div", { className: "v8-match-stat-col v8-match-stat-col--kda" }, [
         element("small", { text: "K/D/A" }),
         element("strong", { text: `${kills} / ${deaths} / ${assists}` })
       ]),
-      element("div", { className: "v8-match-stat-col" }, [
+      element("div", { className: "v8-match-stat-col v8-match-stat-col--dda" }, [
         element("small", { text: "DDΔ" }),
         element("strong", { text: String(dda) })
       ]),
-      element("div", { className: "v8-match-stat-col" }, [
+      element("div", { className: "v8-match-stat-col v8-match-stat-col--hs" }, [
         element("small", { text: "HS%" }),
         element("strong", { text: String(hs) })
       ]),
-      element("div", { className: "v8-match-stat-col" }, [
+      element("div", { className: "v8-match-stat-col v8-match-stat-col--acs" }, [
         element("small", { text: "ACS" }),
         element("strong", { text: String(acs) })
       ]),
@@ -249,6 +248,7 @@ export function mountMatches(container, options = {}) {
       row.setAttribute("aria-expanded", String(!isExpanded));
       action.setAttribute("aria-expanded", String(!isExpanded));
       action.setAttribute("aria-label", isExpanded ? "Afficher les détails du match" : "Masquer les détails du match");
+      action.classList.toggle("is-expanded", !isExpanded);
     };
     row.addEventListener("click", (event) => {
       if (event.target.closest("button")) return;

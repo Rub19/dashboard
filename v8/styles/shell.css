@@ -3939,6 +3939,7 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
 
 .v8-match-row { position:relative;display:grid;grid-template-columns:40px 140px 70px auto minmax(50px, 1fr) minmax(100px, 1.5fr) 50px 50px 50px 30px;gap:var(--v8-space-3);align-items:center;padding:var(--v8-space-2) var(--v8-space-4);background:var(--v8-surface-1);transition:background 0.2s; }
 .v8-match-row:hover { background:var(--v8-surface-2); }
+.v8-match-row:focus-visible { outline:2px solid var(--v8-info);outline-offset:-2px; }
 .v8-match-row + .v8-match-row { border-top:1px solid var(--v8-border); }
 .v8-match-accent { position:absolute;left:0;top:8px;bottom:8px;width:4px;border-radius:0 4px 4px 0; }
 .v8-match-row.is-win .v8-match-accent { background:var(--v8-success); }

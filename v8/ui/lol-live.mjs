@@ -2,12 +2,13 @@ import { brandIcon, element, icon } from "./dom.mjs";
 import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 function avatar(presence) {
-  const inner = presence.avatarUrl
-    ? element("span", { className: "v8-lol-icon__image" }, [element("img", {
-      attributes: { src: presence.avatarUrl, alt: "", loading: "lazy", decoding: "async", referrerpolicy: "no-referrer" }
-    })])
-    : icon("swords");
-  return element("span", { className: "v8-lol-icon" }, [inner, livePulseDot()]);
+  const fallback = icon("swords");
+  if (!presence.avatarUrl) return element("span", { className: "v8-lol-icon" }, [fallback, livePulseDot()]);
+  const img = element("img", {
+    attributes: { src: presence.avatarUrl, alt: "", loading: "lazy", decoding: "async", referrerpolicy: "no-referrer" },
+    events: { error: (event) => event.currentTarget.replaceWith(fallback) }
+  });
+  return element("span", { className: "v8-lol-icon" }, [element("span", { className: "v8-lol-icon__image" }, [img]), livePulseDot()]);
 }
 
 export function lolLiveCard(presence = {}, options = {}) {

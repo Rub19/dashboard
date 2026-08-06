@@ -24,6 +24,10 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v217", "2026-08-06", "CSP DDragon et fallback LoL", [
+    { kind: "fix", text: "Ajout de ddragon.leagueoflegends.com au CSP pour débloquer les icônes League of Legends." },
+    { kind: "fix", text: "Fallback icône épée sur la carte LoL Live Now si l'avatar de profil ne charge pas." }
+  ]),
   entry("v216", "2026-08-06", "Minecraft enrichi et animations Live Now", [
     { kind: "feature", text: "Carte Minecraft améliorée avec cape, modèle du skin, UUID copiable et stats de profil." },
     { kind: "improvement", text: "Animations d'entrée et effets de survol sur toutes les cartes Live Now de l'accueil." },

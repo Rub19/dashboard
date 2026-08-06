@@ -24,6 +24,12 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v229", "2026-08-06", "Détails LoL : sorts, items nommés et scoreboard enrichi", [
+    { kind: "feature", text: "Les sorts d'invocateur s'affichent dans la ligne de match LoL et dans le scoreboard détaillé." },
+    { kind: "improvement", text: "Le scoreboard LoL affiche le niveau du champion, l'or total et renomme la colonne Score en Dégâts." },
+    { kind: "improvement", text: "Tooltips avec le nom de l'item au survol dans la ligne de match et le scoreboard (données Data Dragon)." },
+    { kind: "improvement", text: "Chargement des données Data Dragon (summoner.json et item.json) pour enrichir les assets LoL." }
+  ]),
   entry("v228", "2026-08-06", "Items LoL versionnés et polish UI", [
     { kind: "fix", text: "Les images de champions et items LoL utilisent désormais la version du patch de la partie au lieu du hardcoded." },
     { kind: "fix", text: "Les 7 emplacements items s'affichent toujours, avec un placeholder quand il n'y a pas d'item." },

@@ -187,6 +187,69 @@ function lolItemImage(itemId, gameVersion) {
   return safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/${version}/img/item/${itemId}.png`, ["leagueoflegends.com"]);
 }
 
+const ddragonDataCache = new Map();
+
+async function getLolDdragonData(env, gameVersion) {
+  const version = deriveLolDdragonVersion(gameVersion);
+  if (ddragonDataCache.has(version)) return ddragonDataCache.get(version);
+
+  const [summonerResponse, itemResponse] = await Promise.all([
+    requestExternal(new URL(`https://ddragon.leagueoflegends.com/cdn/${version}/data/fr_FR/summoner.json`), {
+      env,
+      expectedOrigin: "https://ddragon.leagueoflegends.com",
+      service: "tracker",
+      dedupeKey: `ddragon:summoner:${version}`,
+      retries: 1
+    }),
+    requestExternal(new URL(`https://ddragon.leagueoflegends.com/cdn/${version}/data/fr_FR/item.json`), {
+      env,
+      expectedOrigin: "https://ddragon.leagueoflegends.com",
+      service: "tracker",
+      dedupeKey: `ddragon:item:${version}`,
+      retries: 1
+    })
+  ]);
+
+  const summonerMap = Object.create(null);
+  for (const spell of Object.values(summonerResponse?.data?.data || {})) {
+    if (spell?.key && spell?.image?.full) {
+      summonerMap[String(spell.key)] = {
+        name: safeText(spell.name, 32),
+        image: safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/${version}/img/spell/${spell.image.full}`, ["leagueoflegends.com"])
+      };
+    }
+  }
+
+  const itemMap = Object.create(null);
+  for (const [id, item] of Object.entries(itemResponse?.data?.data || {})) {
+    if (item?.name) {
+      itemMap[String(id)] = {
+        name: safeText(item.name, 48),
+        image: safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/${version}/img/item/${item.image?.full || `${id}.png`}`, ["leagueoflegends.com"])
+      };
+    }
+  }
+
+  const result = Object.freeze({ version, summonerMap: Object.freeze(summonerMap), itemMap: Object.freeze(itemMap) });
+  ddragonDataCache.set(version, result);
+  return result;
+}
+
+function lolItemAsset(itemId, gameVersion, ddragonData) {
+  if (!itemId || itemId <= 0) return Object.freeze({ image: "", name: "" });
+  const fallback = Object.freeze({ image: lolItemImage(itemId, gameVersion), name: "" });
+  const fromData = ddragonData?.itemMap?.[String(itemId)];
+  if (fromData) return Object.freeze({ image: fromData.image, name: fromData.name });
+  return fallback;
+}
+
+function lolSummonerSpellAsset(spellId, gameVersion, ddragonData) {
+  if (!spellId) return Object.freeze({ image: "", name: "" });
+  const fromData = ddragonData?.summonerMap?.[String(spellId)];
+  if (fromData) return Object.freeze({ image: fromData.image, name: fromData.name });
+  return Object.freeze({ image: "", name: "" });
+}
+
 function safeLolName(p) {
   return safeText(p.riotIdGameName || p.summonerName || "Summoner", 32);
 }
@@ -195,7 +258,7 @@ function safeLolTag(p) {
   return safeText(p.riotIdTagline || p.tagLine || "", 16);
 }
 
-function normalizeLolScoreboard(info, mePuuid) {
+function normalizeLolScoreboard(info, mePuuid, ddragonData) {
   const participants = info.participants || [];
   const teams = { Blue: { kills: 0, won: false }, Red: { kills: 0, won: false } };
   const gameVersion = info.gameVersion;
@@ -211,8 +274,12 @@ function normalizeLolScoreboard(info, mePuuid) {
     teams[team].kills += kills;
     teams[team].won = isWin;
     const items = [
-      lolItemImage(p.item0, gameVersion), lolItemImage(p.item1, gameVersion), lolItemImage(p.item2, gameVersion), lolItemImage(p.item3, gameVersion),
-      lolItemImage(p.item4, gameVersion), lolItemImage(p.item5, gameVersion), lolItemImage(p.item6, gameVersion)
+      lolItemAsset(p.item0, gameVersion, ddragonData), lolItemAsset(p.item1, gameVersion, ddragonData), lolItemAsset(p.item2, gameVersion, ddragonData), lolItemAsset(p.item3, gameVersion, ddragonData),
+      lolItemAsset(p.item4, gameVersion, ddragonData), lolItemAsset(p.item5, gameVersion, ddragonData), lolItemAsset(p.item6, gameVersion, ddragonData)
+    ];
+    const spells = [
+      lolSummonerSpellAsset(p.summoner1Id, gameVersion, ddragonData),
+      lolSummonerSpellAsset(p.summoner2Id, gameVersion, ddragonData)
     ];
     return Object.freeze({
       name: safeLolName(p),
@@ -235,7 +302,8 @@ function normalizeLolScoreboard(info, mePuuid) {
         damagePerMin: Math.round(((Number(p.totalDamageDealtToChampions) || 0) / minutes) * 10) / 10
       }),
       assets: Object.freeze({
-        champion: Object.freeze({ small: lolChampionImage(p.championName, gameVersion) })
+        champion: Object.freeze({ small: lolChampionImage(p.championName, gameVersion) }),
+        spells: Object.freeze(spells)
       }),
       items: Object.freeze(items)
     });
@@ -314,18 +382,22 @@ export async function getLolMatches(env, riotId, mode, apiKeyOverride) {
     .sort((a, b) => (b.info?.gameCreation || 0) - (a.info?.gameCreation || 0))
     .slice(0, 10);
 
+  const versions = new Set(sortedMatches.map((match) => deriveLolDdragonVersion(match.info?.gameVersion)));
+  const ddragonDataByVersion = new Map(await Promise.all([...versions].map(async (version) => [version, await getLolDdragonData(env, version)])));
+
   return Object.freeze(sortedMatches.map((match) => {
     const info = match.info || {};
     const participants = info.participants || [];
     const me = participants.find(p => p.puuid === puuid) || participants[0];
     const minutes = Math.max(1, Math.floor((info.gameDuration || 0) / 60));
-    const scoreboard = normalizeLolScoreboard(info, puuid);
+    const gameVersion = info.gameVersion;
+    const ddragonData = ddragonDataByVersion.get(deriveLolDdragonVersion(gameVersion));
+    const scoreboard = normalizeLolScoreboard(info, puuid, ddragonData);
     const myTeam = scoreboard.players.find(p => p.isMe)?.team || "Blue";
     const myKills = scoreboard.teams[myTeam].roundsWon;
     const opponentTeam = myTeam === "Blue" ? "Red" : "Blue";
     const opponentKills = scoreboard.teams[opponentTeam].roundsWon;
     const cs = (Number(me?.totalMinionsKilled) || 0) + (Number(me?.neutralMinionsKilled) || 0);
-    const gameVersion = info.gameVersion;
 
     return Object.freeze({
       id: safeText(info.gameId ? String(info.gameId) : match.metadata?.matchId),

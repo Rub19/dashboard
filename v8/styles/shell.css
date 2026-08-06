@@ -3722,6 +3722,11 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
 .v8-party-badge { background:color-mix(in srgb,var(--v8-info) 20%,transparent);color:var(--v8-info);border:1px solid color-mix(in srgb,var(--v8-info) 40%,transparent); }
 .v8-me-badge { background:color-mix(in srgb,var(--v8-accent) 20%,transparent);color:var(--v8-accent);border:1px solid color-mix(in srgb,var(--v8-accent) 40%,transparent); }
 .v8-scoreboard-agent-cell { overflow:hidden; }.v8-scoreboard-agent { display:block;width:32px;height:32px;max-width:100%;border-radius:var(--v8-radius-sm);object-fit:cover;background:var(--v8-surface-3); }.v8-scoreboard-agent--placeholder { display:grid;place-items:center;color:var(--v8-muted);font-weight:var(--v8-weight-bold); }
+.v8-scoreboard-table--lol { grid-template-columns:48px minmax(160px,1fr) 100px 72px 44px 44px 44px 64px 52px; }
+.v8-scoreboard-agent-wrap { display:flex;flex-direction:column;align-items:center;gap:2px; }
+.v8-scoreboard-spells { display:flex;gap:2px; }
+.v8-scoreboard-spell,.v8-scoreboard-spell-placeholder { width:16px;height:16px;border-radius:2px;object-fit:cover;background:var(--v8-surface-3); }
+.v8-scoreboard-level { display:block;color:var(--v8-muted);font-size:10px;margin-top:2px; }
 @media (max-width: 900px) {
   .v8-match-group-header { gap:var(--v8-space-3); }
   .v8-match-group-date { flex:1 1 auto; }
@@ -3796,6 +3801,7 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
 .v8-lol-match-items img,.v8-lol-match-items .v8-lol-item-placeholder { flex:0 0 auto;width:24px;height:24px;border-radius:2px;background:var(--v8-surface-3); }
 .v8-lol-match-items > span { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
 .v8-lol-champion-placeholder { width:100%;height:100%;background:var(--v8-surface-3); }
+.v8-lol-spell,.v8-lol-spell-placeholder { width:16px;height:16px;border-radius:2px;background:var(--v8-surface-3); }
 .v8-lol-match-score { display:flex;flex-direction:column;align-items:center;min-width:0;overflow:hidden; }
 .v8-lol-match-score small { color:var(--v8-muted);font-size:var(--v8-font-xs); }
 .v8-lol-match-score strong { max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
@@ -3850,6 +3856,11 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
 .v8-scoreboard-item { width:22px;height:22px;border-radius:2px; }
 .v8-scoreboard-items { display:flex;gap:2px; }
 .v8-scoreboard-item-placeholder { width:22px;height:22px;border-radius:2px;background:var(--v8-surface-3); }
+@media (max-width: 900px) {
+  .v8-scoreboard-table--lol { grid-template-columns:40px minmax(140px,1fr) 72px 44px 44px 44px 44px; }
+  .v8-scoreboard-table--lol th:nth-child(7),.v8-scoreboard-table--lol td:nth-child(7),
+  .v8-scoreboard-table--lol th:nth-child(8),.v8-scoreboard-table--lol td:nth-child(8) { display:none; }
+}
 
 .v8-matches-history,
 .v8-home-section,

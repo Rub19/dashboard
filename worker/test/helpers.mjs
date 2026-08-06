@@ -69,7 +69,7 @@ export function providerFetch(counter = { calls: 0 }) {
             gameDuration: 1800,
             gameCreation: Date.now() - 3600000,
             gameVersion: "16.15.1.111",
-            participants: [{ puuid: "p1", championName: "Ahri", kills: 5, deaths: 2, assists: 3, win: true, teamId: 100, champLevel: 12, totalMinionsKilled: 100, neutralMinionsKilled: 20, goldEarned: 9000, totalDamageDealtToChampions: 12000, item0: 1001, item1: 2003, item2: 3006, item3: 0, item4: 0, item5: 0, item6: 0 }]
+            participants: [{ puuid: "p1", championName: "Ahri", kills: 5, deaths: 2, assists: 3, win: true, teamId: 100, champLevel: 12, totalMinionsKilled: 100, neutralMinionsKilled: 20, goldEarned: 9000, totalDamageDealtToChampions: 12000, summoner1Id: 4, summoner2Id: 14, item0: 1001, item1: 2003, item2: 3006, item3: 0, item4: 0, item5: 0, item6: 0 }]
           }
         });
       }
@@ -77,6 +77,29 @@ export function providerFetch(counter = { calls: 0 }) {
     if (url.hostname.endsWith(".api.riotgames.com")) {
       if (url.pathname.startsWith("/lol/summoner/v4/summoners/by-puuid")) return json({ id: "s1", summonerLevel: 30 });
       if (url.pathname.startsWith("/lol/league/v4/entries/by-summoner")) return json([{ queueType: "RANKED_SOLO_5x5", tier: "GOLD", rank: "I", leaguePoints: 50 }]);
+    }
+    if (url.hostname === "ddragon.leagueoflegends.com") {
+      if (url.pathname.endsWith("/summoner.json")) {
+        return json({
+          type: "summoner",
+          version: "16.15.1",
+          data: {
+            SummonerFlash: { id: "SummonerFlash", name: "Flash", key: "4", image: { full: "SummonerFlash.png" } },
+            SummonerDot: { id: "SummonerDot", name: "Ignite", key: "14", image: { full: "SummonerDot.png" } }
+          }
+        });
+      }
+      if (url.pathname.endsWith("/item.json")) {
+        return json({
+          type: "item",
+          version: "16.15.1",
+          data: {
+            1001: { name: "Bottes de vitesse", image: { full: "1001.png" } },
+            2003: { name: "Potion de soin", image: { full: "2003.png" } },
+            3006: { name: "Bottes de l'Arpenteur", image: { full: "3006.png" } }
+          }
+        });
+      }
     }
     if (url.hostname === "api.groq.com") return json({ choices: [{ message: { role: "assistant", content: "Bonjour, comment puis-je aider ?" } }] });
     if (url.hostname === "id.twitch.tv") return json({ access_token: "t".repeat(32), expires_in: 3600 });

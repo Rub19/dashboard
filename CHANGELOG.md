@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v229] - 2026-08-06
+
+### Ajouté
+- **Tracker LoL** : icônes de sorts d'invocateur dans la ligne de match et le scoreboard détaillé.
+- **Tracker LoL** : tooltips avec le nom de l'item au survol, alimentés par Data Dragon (`summoner.json` et `item.json`).
+
+### Modifié
+- **UI / Scoreboard LoL** : affichage du niveau du champion, de l'or total, et renommage de la colonne Score en Dégâts.
+- **UI / Ligne de match LoL** : icônes de sorts d'invocateur et tooltips sur les items.
+- **Backend / Tracker LoL** : chargement des données Data Dragon par version de patch pour enrichir les assets LoL.
+
 ## [v228] - 2026-08-06
 
 ### Ajouté

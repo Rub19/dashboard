@@ -28,6 +28,8 @@ export function normalizeMinecraftPresence(input = {}, options = {}) {
     username: available ? username : "",
     uuid: available ? safeText(input.uuid, "", 40) : "",
     skinUrl: available ? safeSkinUrl(input.skinUrl) : "",
+    capeUrl: available ? safeSkinUrl(input.capeUrl) : "",
+    model: available ? (String(input.model).toLowerCase() === "slim" ? "slim" : "classic") : "classic",
     updatedAt: available ? new Date().toISOString() : ""
   });
 }

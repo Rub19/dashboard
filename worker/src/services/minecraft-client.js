@@ -8,15 +8,18 @@ import { safePublicUrl, safeText } from "../utils/normalize.js";
 const PROFILE_ORIGIN = "https://mowojang.matdoes.dev";
 const SESSION_ORIGIN = "https://mowojang.matdoes.dev";
 
-function decodeSkinUrl(properties) {
+function decodeTextures(properties) {
+  const empty = Object.freeze({ skinUrl: "", capeUrl: "", model: "classic" });
   const texturesProperty = (Array.isArray(properties) ? properties : []).find((entry) => entry?.name === "textures");
-  if (!texturesProperty?.value) return "";
+  if (!texturesProperty?.value) return empty;
   try {
     const decoded = JSON.parse(atob(texturesProperty.value));
-    const url = String(decoded?.textures?.SKIN?.url || "").replace(/^http:/, "https:");
-    return safePublicUrl(url, ["minecraft.net"]);
+    const skinUrl = safePublicUrl(String(decoded?.textures?.SKIN?.url || "").replace(/^http:/, "https:"), ["minecraft.net"]);
+    const capeUrl = safePublicUrl(String(decoded?.textures?.CAPE?.url || "").replace(/^http:/, "https:"), ["minecraft.net"]);
+    const model = String(decoded?.textures?.SKIN?.metadata?.model || "classic").toLowerCase() === "slim" ? "slim" : "classic";
+    return Object.freeze({ skinUrl, capeUrl, model });
   } catch {
-    return "";
+    return empty;
   }
 }
 
@@ -43,9 +46,12 @@ export async function getMinecraftProfile(env, username) {
     maxBytes: 16 * 1024
   });
 
+  const textures = decodeTextures(profile.data?.properties);
   return Object.freeze({
     username: safeText(profile.data?.name || lookup.data?.name, 16),
     uuid,
-    skinUrl: decodeSkinUrl(profile.data?.properties)
+    skinUrl: textures.skinUrl,
+    capeUrl: textures.capeUrl,
+    model: textures.model
   });
 }

@@ -24,6 +24,11 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v216", "2026-08-06", "Minecraft enrichi et animations Live Now", [
+    { kind: "feature", text: "Carte Minecraft améliorée avec cape, modèle du skin, UUID copiable et stats de profil." },
+    { kind: "improvement", text: "Animations d'entrée et effets de survol sur toutes les cartes Live Now de l'accueil." },
+    { kind: "fix", text: "Le worker Minecraft récupère désormais cape, modèle slim/classic et l'URL complète du skin." }
+  ]),
   entry("v215", "2026-08-06", "Profils LoL / Apex, Fluidité et Scoreboard Animé", [
     { kind: "feature", text: "En-têtes de profil League of Legends et Apex affichant rang, niveau et statistiques perso en haut de l'historique." },
     { kind: "improvement", text: "Animations d'ouverture/fermeture fluides et skeleton de chargement sur la page des matchs." },

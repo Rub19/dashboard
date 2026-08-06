@@ -24,6 +24,11 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v215", "2026-08-06", "Profils LoL / Apex, Fluidité et Scoreboard Animé", [
+    { kind: "feature", text: "En-têtes de profil League of Legends et Apex affichant rang, niveau et statistiques perso en haut de l'historique." },
+    { kind: "improvement", text: "Animations d'ouverture/fermeture fluides et skeleton de chargement sur la page des matchs." },
+    { kind: "improvement", text: "Chargement asynchrone et différé des images sur la page Matches pour améliorer la fluidité." }
+  ]),
   entry("v214", "2026-08-06", "Valorant, LoL et réglages interactifs", [
     { kind: "feature", text: "En-tête de profil Valorant affichant le vrai rang et les statistiques perso (RR, ELO, niveau) en haut de l'historique." },
     { kind: "fix", text: "Correction du chargement des images League of Legends : version DDragon 16.15.1 et normalisation des noms de champions." },

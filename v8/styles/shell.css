@@ -3455,6 +3455,8 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
   0% { transform: scale(1); filter: blur(60px) brightness(1) saturate(1); }
   100% { transform: scale(1.1); filter: blur(40px) brightness(1.3) saturate(1.3); }
 }
+.v8-matches-skeleton { display:flex;flex-direction:column;gap:var(--v8-space-3);padding:var(--v8-space-6); }
+.v8-matches-skeleton__bar { height:var(--v8-space-4);border-radius:var(--v8-radius-sm);width:70%;background:var(--v8-surface-3); }
 .v8-matches-page { display:flex;flex-direction:column;gap:var(--v8-space-6);padding:var(--v8-space-6);max-width:1000px;margin:0 auto;width:100%;min-width:0;box-sizing:border-box; }
 .v8-matches-header { display:flex;justify-content:space-between;align-items:center;gap:var(--v8-space-4);flex-wrap:wrap; }
 .v8-matches-header-left, .v8-matches-header-right { display:flex;align-items:center;gap:var(--v8-space-4); }
@@ -3473,7 +3475,9 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
 .v8-match-group-wl { display:flex;align-items:center;font-size:var(--v8-font-md);font-weight:var(--v8-weight-bold);white-space:nowrap; }
 .v8-match-group-aggregate { display:flex;gap:var(--v8-space-6);align-items:center;margin-left:auto;min-width:0;max-width:100%; }
 .v8-matches-error { width:100%; }
-.v8-valorant-profile { display:flex;flex-direction:row;align-items:center;flex-wrap:wrap;gap:var(--v8-space-4);padding:var(--v8-space-3) var(--v8-space-4);margin-bottom:var(--v8-space-4);border-radius:var(--v8-radius-lg); }
+.v8-valorant-profile,
+.v8-lol-profile,
+.v8-apex-profile { display:flex;flex-direction:row;align-items:center;flex-wrap:wrap;gap:var(--v8-space-4);padding:var(--v8-space-3) var(--v8-space-4);margin-bottom:var(--v8-space-4);border-radius:var(--v8-radius-lg); }
 .v8-profile-info { display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 auto; }
 .v8-profile-name { display:block;font-size:var(--v8-font-lg);font-weight:var(--v8-weight-bold);color:var(--v8-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
 .v8-profile-rank { display:block;color:var(--v8-text-secondary);font-size:var(--v8-font-sm);font-weight:var(--v8-weight-semibold);overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
@@ -3517,7 +3521,10 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
 .text-yellow { color:#eab308 !important; }
 .text-red { color:var(--v8-danger) !important; }
 .v8-match-action { display:none; }
-.v8-match-detail-container { margin:0 var(--v8-space-3) var(--v8-space-3);padding:var(--v8-space-3)!important;border:1px solid var(--v8-border)!important;border-radius:var(--v8-radius-md);background:var(--v8-surface-sunken); }
+.v8-match-detail { display:grid;grid-template-rows:0fr;transition:grid-template-rows var(--v8-motion-base) var(--v8-ease-out);margin:0 var(--v8-space-3); }
+.v8-match-detail.is-open { grid-template-rows:1fr; }
+.v8-match-detail__inner { min-height:0;overflow:hidden; }
+.v8-match-detail__body { margin:0 0 var(--v8-space-3);padding:var(--v8-space-3)!important;border:1px solid var(--v8-border)!important;border-radius:var(--v8-radius-md);background:var(--v8-surface-sunken); }
 .v8-match-final-score { display:flex;align-items:center;justify-content:space-between;gap:var(--v8-space-3);padding:var(--v8-space-2) var(--v8-space-4);background:var(--v8-surface-2);border:1px solid var(--v8-border);border-radius:var(--v8-radius-sm);font-size:var(--v8-font-sm); }
 .v8-match-final-score strong { font-size:var(--v8-font-lg);font-weight:var(--v8-weight-bold);font-variant-numeric:tabular-nums; }
 .v8-session-report-layer { position:fixed;z-index:var(--v8-z-dialog);inset:0;display:grid;place-items:center;padding:var(--v8-space-5);background:var(--v8-overlay);backdrop-filter:blur(var(--v8-blur-backdrop));opacity:0;transition:opacity var(--v8-motion-base) var(--v8-ease-window); }
@@ -3656,3 +3663,12 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
 .v8-scoreboard-item { width:22px;height:22px;border-radius:2px; }
 .v8-scoreboard-items { display:flex;gap:2px; }
 .v8-scoreboard-item-placeholder { width:22px;height:22px;border-radius:2px;background:var(--v8-surface-3); }
+
+.v8-matches-history,
+.v8-home-section,
+.v8-recent-list,
+.v8-signal-list { contain: layout style; }
+
+.v8-setting-choice,
+.v8-theme-choice,
+.v8-density-choice { transition:background-color var(--v8-motion-fast),color var(--v8-motion-fast); }

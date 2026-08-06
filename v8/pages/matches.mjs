@@ -137,9 +137,9 @@ export function mountMatches(container, options = {}) {
       const rankText = p.currenttier_patched || "—";
       const placeholder = () => element("span", { className: "v8-scoreboard-agent v8-scoreboard-agent--placeholder", text: "?" });
       const avatar = p.assets?.champion?.small
-        ? element("img", { className: "v8-scoreboard-agent", attributes: { src: p.assets.champion.small, alt: "", loading: "lazy" }, events: { error: (event) => event.currentTarget.replaceWith(placeholder()) } })
+        ? element("img", { className: "v8-scoreboard-agent", attributes: { src: p.assets.champion.small, alt: "", loading: "lazy", decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(placeholder()) } })
         : (p.assets?.agent?.small
-          ? element("img", { className: "v8-scoreboard-agent", attributes: { src: p.assets.agent.small, alt: "", loading: "lazy" }, events: { error: (event) => event.currentTarget.replaceWith(placeholder()) } })
+          ? element("img", { className: "v8-scoreboard-agent", attributes: { src: p.assets.agent.small, alt: "", loading: "lazy", decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(placeholder()) } })
           : placeholder());
 
       const rowCells = [
@@ -154,7 +154,7 @@ export function mountMatches(container, options = {}) {
       ].filter(Boolean);
       if (isLol) {
         rowCells.push(element("td", { className: "v8-scoreboard-number", text: String(p.stats?.cs || 0) }));
-        const items = (p.items || []).slice(0, 7).map(url => url ? element("img", { className: "v8-scoreboard-item", attributes: { src: url, loading: "lazy" }, events: { error: (event) => event.currentTarget.replaceWith(element("span", { className: "v8-scoreboard-item-placeholder" })) } }) : element("span", { className: "v8-scoreboard-item-placeholder" }));
+        const items = (p.items || []).slice(0, 7).map(url => url ? element("img", { className: "v8-scoreboard-item", attributes: { src: url, loading: "lazy", decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(element("span", { className: "v8-scoreboard-item-placeholder" })) } }) : element("span", { className: "v8-scoreboard-item-placeholder" }));
         rowCells.push(element("td", { className: "v8-scoreboard-items" }, items));
       } else if (hasHs) {
         rowCells.push(element("td", { className: "v8-scoreboard-number", text: `${hs}%` }));
@@ -247,7 +247,7 @@ export function mountMatches(container, options = {}) {
     }, [
       element("div", { className: "v8-match-accent" }),
       element("div", { className: "v8-match-agent" }, [
-        match.metadata?.agentImageUrl ? element("img", { attributes: { src: match.metadata.agentImageUrl }, events: { error: (event) => event.currentTarget.replaceWith(element("div", { className: "v8-match-agent-placeholder" })) } }) : element("div", { className: "v8-match-agent-placeholder" })
+        match.metadata?.agentImageUrl ? element("img", { attributes: { src: match.metadata.agentImageUrl, loading: "lazy", decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(element("div", { className: "v8-match-agent-placeholder" })) } }) : element("div", { className: "v8-match-agent-placeholder" })
       ]),
       element("div", { className: "v8-match-info" }, [
         element("small", { className: "v8-match-meta" }, [
@@ -289,7 +289,7 @@ export function mountMatches(container, options = {}) {
       action
     ]);
     
-    const detailContainer = element("div", { className: "v8-match-detail-container", attributes: { id: detailId, hidden: true } });
+    const detailBody = element("div", { className: "v8-match-detail__body" });
     if (match.scoreboard) {
       const teamScore = match.metadata?.score?.team;
       const opponentScore = match.metadata?.score?.opponent;
@@ -299,14 +299,17 @@ export function mountMatches(container, options = {}) {
             element("strong", { text: `${teamScore} — ${opponentScore}` })
           ])
         : null;
-      detailContainer.append(finalScore, renderScoreboard(match.scoreboard));
+      detailBody.append(finalScore, renderScoreboard(match.scoreboard));
     } else {
-       detailContainer.append(element("p", { text: "Détails non disponibles pour ce match.", style: "color: var(--v8-text-muted);" }));
+      detailBody.append(element("p", { text: "Détails non disponibles pour ce match.", style: "color: var(--v8-text-muted);" }));
     }
+    const detailContainer = element("div", { className: "v8-match-detail", attributes: { id: detailId } }, [
+      element("div", { className: "v8-match-detail__inner" }, [detailBody])
+    ]);
     
     const toggleDetails = () => {
-      const isExpanded = !detailContainer.hidden;
-      detailContainer.hidden = isExpanded;
+      const isExpanded = detailContainer.classList.contains("is-open");
+      detailContainer.classList.toggle("is-open", !isExpanded);
       row.setAttribute("aria-expanded", String(!isExpanded));
       action.setAttribute("aria-expanded", String(!isExpanded));
       action.setAttribute("aria-label", isExpanded ? "Afficher les détails du match" : "Masquer les détails du match");
@@ -360,8 +363,8 @@ export function mountMatches(container, options = {}) {
     const myTeamPlayers = match.scoreboard?.players?.filter(p => p.team === myTeam) || [];
     const opponentPlayers = match.scoreboard?.players?.filter(p => p.team === opponentTeam) || [];
 
-    const champImg = (url, champ) => url ? element("img", { attributes: { src: url, alt: champ || "", loading: "lazy" }, events: { error: (event) => event.currentTarget.replaceWith(element("div", { className: "v8-lol-champion-placeholder" })) } }) : element("div", { className: "v8-lol-champion-placeholder" });
-    const itemImg = (url) => url ? element("img", { attributes: { src: url, loading: "lazy" }, events: { error: (event) => event.currentTarget.replaceWith(element("div", { className: "v8-lol-item-placeholder" })) } }) : element("div", { className: "v8-lol-item-placeholder" });
+    const champImg = (url, champ) => url ? element("img", { attributes: { src: url, alt: champ || "", loading: "lazy", decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(element("div", { className: "v8-lol-champion-placeholder" })) } }) : element("div", { className: "v8-lol-champion-placeholder" });
+    const itemImg = (url) => url ? element("img", { attributes: { src: url, loading: "lazy", decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(element("div", { className: "v8-lol-item-placeholder" })) } }) : element("div", { className: "v8-lol-item-placeholder" });
     const renderChampStrip = (players) => element("div", { className: "v8-lol-team-strip" }, players.slice(0, 5).map(p => champImg(p.assets?.champion?.small, p.character)));
 
     const detailId = `v8-match-detail-${match.id || ++matchDetailId}`;
@@ -410,7 +413,7 @@ export function mountMatches(container, options = {}) {
       action
     ]);
 
-    const detailContainer = element("div", { className: "v8-match-detail-container", attributes: { id: detailId, hidden: true } });
+    const detailBody = element("div", { className: "v8-match-detail__body" });
     if (match.scoreboard) {
       const teamScore = match.metadata?.score?.team;
       const opponentScore = match.metadata?.score?.opponent;
@@ -420,14 +423,17 @@ export function mountMatches(container, options = {}) {
             element("strong", { text: `${teamScore} — ${opponentScore}` })
           ])
         : null;
-      detailContainer.append(finalScore, renderScoreboard(match.scoreboard));
+      detailBody.append(finalScore, renderScoreboard(match.scoreboard));
     } else {
-      detailContainer.append(element("p", { text: "Détails non disponibles pour ce match.", style: "color: var(--v8-text-muted);" }));
+      detailBody.append(element("p", { text: "Détails non disponibles pour ce match.", style: "color: var(--v8-text-muted);" }));
     }
+    const detailContainer = element("div", { className: "v8-match-detail", attributes: { id: detailId } }, [
+      element("div", { className: "v8-match-detail__inner" }, [detailBody])
+    ]);
 
     const toggleDetails = () => {
-      const isExpanded = !detailContainer.hidden;
-      detailContainer.hidden = isExpanded;
+      const isExpanded = detailContainer.classList.contains("is-open");
+      detailContainer.classList.toggle("is-open", !isExpanded);
       row.setAttribute("aria-expanded", String(!isExpanded));
       action.setAttribute("aria-expanded", String(!isExpanded));
       action.setAttribute("aria-label", isExpanded ? "Afficher les détails du match" : "Masquer les détails du match");
@@ -690,7 +696,7 @@ export function mountMatches(container, options = {}) {
     const placeholder = element("div", { className: "v8-match-agent-placeholder" });
     const avatarImg = avatarUrl
       ? element("img", {
-          attributes: { src: avatarUrl, alt: "", loading: "lazy" },
+          attributes: { src: avatarUrl, alt: "", loading: "lazy", decoding: "async" },
           events: { error: (event) => event.currentTarget.replaceWith(placeholder) }
         })
       : placeholder;
@@ -717,11 +723,93 @@ export function mountMatches(container, options = {}) {
     ]);
   }
 
+  function buildProfileHeader(profile, cls, rankKeys) {
+    const displayName = currentName || profile?.name || profile?.handle || "—";
+    const displayTag = currentTag || profile?.tag || "";
+    const title = displayTag ? `${displayName} #${displayTag}` : displayName;
+
+    function getRankText() {
+      for (const segment of (profile?.segments || [])) {
+        const stats = segment?.stats || {};
+        for (const key of rankKeys) {
+          const s = stats[key];
+          if (s == null) continue;
+          const value = s.displayValue ?? s.value ?? s;
+          if (value != null && String(value) !== "" && String(value) !== "0") return String(value);
+        }
+      }
+      return translateSource("Unranked");
+    }
+
+    function getStatItems() {
+      const excluded = new Set(["rank", "ranked", "rating", ...rankKeys]);
+      const items = [];
+      for (const segment of (profile?.segments || [])) {
+        const stats = segment?.stats || {};
+        for (const [key, s] of Object.entries(stats)) {
+          if (excluded.has(key)) continue;
+          const value = s?.displayValue ?? s?.value ?? s;
+          if (value == null || String(value) === "") continue;
+          const label = s?.displayName || s?.name || key;
+          items.push([label, String(value)]);
+          if (items.length >= 4) break;
+        }
+        if (items.length >= 4) break;
+      }
+      return items;
+    }
+
+    const avatarUrl = profile?.avatarUrl;
+    const placeholder = element("div", { className: "v8-match-agent-placeholder" });
+    const avatarImg = avatarUrl
+      ? element("img", {
+          attributes: { src: avatarUrl, alt: "", loading: "lazy", decoding: "async" },
+          events: { error: (event) => event.currentTarget.replaceWith(placeholder) }
+        })
+      : placeholder;
+    const avatar = element("div", { className: "v8-match-agent" }, [avatarImg]);
+
+    const statItems = getStatItems();
+    const statsEl = statItems.length
+      ? element("div", { className: "v8-profile-stats" }, statItems.map(([label, value]) =>
+          element("div", { className: "v8-match-stat-col v8-profile-stat" }, [
+            element("small", { text: label }),
+            element("strong", { text: value })
+          ])
+        ))
+      : null;
+
+    return element("header", { className: `v8-match-group v8-surface ${cls}` }, [
+      avatar,
+      element("div", { className: "v8-profile-info" }, [
+        element("strong", { className: "v8-profile-name", text: title }),
+        element("span", { className: "v8-profile-rank", text: getRankText() })
+      ]),
+      statsEl
+    ]);
+  }
+
+  function renderLolProfile(profile) {
+    return buildProfileHeader(profile, "v8-lol-profile", ["rank", "tier", "lp", "level"]);
+  }
+
+  function renderApexProfile(profile) {
+    return buildProfileHeader(profile, "v8-apex-profile", ["rank", "level", "rankScore"]);
+  }
+
+  function renderSkeleton() {
+    return element("div", { className: "v8-matches-skeleton" }, [
+      element("div", { className: "v8-matches-skeleton__bar" }),
+      element("div", { className: "v8-matches-skeleton__bar" }),
+      element("div", { className: "v8-matches-skeleton__bar" })
+    ]);
+  }
+
   let dataLoaded = false;
   async function loadMatches() {
     if (destroyed) return;
     content.replaceChildren();
-    content.append(element("p", { className: "v8-loading", text: "Chargement de l'historique..." }));
+    content.append(renderSkeleton());
     
     try {
       let data;
@@ -744,14 +832,26 @@ export function mountMatches(container, options = {}) {
         const riotId = state.tag ? `${state.name}#${state.tag}` : "";
         if (!riotId || !state.available) throw new Error("En attente de la connexion Lanyard...");
         const [name, tag] = riotId.split("#");
+        currentName = name;
+        currentTag = tag;
         const res = await externalServices.tracker.lolMatches(name, tag, currentMode);
         data = res.data;
+        try {
+          const profileRes = await externalServices.tracker.lolProfile(name, tag);
+          profileData = profileRes?.data || null;
+        } catch {}
       } else if (game === "apex") {
         const state = trackerLive?.state?.() || {};
         const handle = state.handle;
         if (!handle || !state.available) throw new Error("En attente de la connexion Lanyard...");
+        currentName = handle;
+        currentTag = "";
         const res = await externalServices.tracker.apexMatches("origin", handle, currentMode);
         data = res.data;
+        try {
+          const profileRes = await externalServices.tracker.apexProfile("origin", handle);
+          profileData = profileRes?.data || null;
+        } catch {}
       } else {
         throw new Error("Jeu non supporté");
       }
@@ -762,6 +862,10 @@ export function mountMatches(container, options = {}) {
       content.replaceChildren();
       if (game === "valorant") {
         content.append(renderValorantProfile(profileData));
+      } else if (game === "lol") {
+        content.append(renderLolProfile(profileData));
+      } else if (game === "apex") {
+        content.append(renderApexProfile(profileData));
       }
       if (!data || data.length === 0) {
         content.append(element("p", { className: "v8-empty", text: "Aucun match trouvé pour ce mode." }));

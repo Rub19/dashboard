@@ -31,6 +31,10 @@ export function element(tagName, options = {}, children = []) {
     if (value == null || value === false) return;
     node.setAttribute(name, value === true ? "" : String(value));
   });
+
+  if (tagName === "img" && !node.hasAttribute("decoding")) {
+    node.setAttribute("decoding", "async");
+  }
   Object.entries(options.dataset || {}).forEach(([name, value]) => {
     if (value != null) node.dataset[name] = String(value);
   });

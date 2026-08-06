@@ -176,6 +176,7 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride) {
           tag: safeText(p.tag),
           currenttier_patched: safeText(p.currenttier_patched),
           party_id: safeText(p.party_id),
+          inParty: Boolean(safeText(p.party_id)),
           isMe: Boolean(me && p === me),
           isPartyMember: Boolean(mePartyId && p !== me && safeText(p.party_id) === mePartyId),
           assets: Object.freeze({

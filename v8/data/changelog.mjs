@@ -24,6 +24,10 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v209", "2026-08-06", "Traductions complètes de l'historique de matchs", [
+    { kind: "improvement", text: "Ajout des traductions pour toutes les chaînes de l'historique Valorant, League of Legends et Apex (modes, stats, scoreboard, filtres)." },
+    { kind: "fix", text: "Les dates relatives sont désormais localisées (ex. \"11h ago\" → \"11h\")." }
+  ]),
   entry("v208", "2026-08-06", "Historique League of Legends style Tracker.gg", [
     { kind: "feature", text: "Nouveau rendu des matchs League of Legends : champion, runes, items, KDA, CS/min, DPM, GPM et équipes adverses." },
     { kind: "feature", text: "Scoreboard détaillé LoL avec items, CS, gold et dégâts par joueur." },

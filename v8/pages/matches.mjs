@@ -2,6 +2,7 @@ import { element, icon } from "../ui/dom.mjs";
 import { emptyState } from "../ui/empty-state.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
 import { createWindowController } from "../ui/window-system.mjs";
+import { translateSource } from "../i18n/catalog.mjs";
 
 export function mountMatches(container, options = {}) {
   const { externalServices, lolLive, valorantLive, trackerLive, actions } = options;
@@ -67,13 +68,13 @@ export function mountMatches(container, options = {}) {
   container.append(root);
 
   function formatTimeAgo(dateStr) {
-    if (!dateStr) return "17h ago";
+    if (!dateStr) return translateSource("{value}h ago").replace("{value}", "17");
     const dateObj = new Date(dateStr);
-    if (isNaN(dateObj.getTime())) return "Unknown";
+    if (isNaN(dateObj.getTime())) return translateSource("Unknown");
     const diffHours = Math.floor((Date.now() - dateObj.getTime()) / 3600000);
-    if (diffHours < 1) return "<1h ago";
-    if (diffHours < 24) return `${diffHours}h ago`;
-    return `${Math.floor(diffHours/24)}d ago`;
+    if (diffHours < 1) return translateSource("<1h ago");
+    if (diffHours < 24) return translateSource("{value}h ago").replace("{value}", diffHours);
+    return translateSource("{value}d ago").replace("{value}", Math.floor(diffHours / 24));
   }
   function stringToColor(str) {
     let hash = 0;
@@ -131,7 +132,7 @@ export function mountMatches(container, options = {}) {
       const partyDot = p.inParty ? element("span", { className: "v8-party-dot", attributes: { title: "En groupe" }, style: `background-color:${stringToColor(p.party_id)};` }) : null;
       const partyBadge = p.isPartyMember ? element("span", { className: "v8-party-badge v8-party-badge--scoreboard", attributes: { title: "Membre de votre groupe" }, text: "DUO" }) : null;
       const meBadge = p.isMe ? element("span", { className: "v8-me-badge", text: "MOI" }) : null;
-      const rankText = p.currenttier_patched && p.currenttier_patched !== "Unrated" ? p.currenttier_patched : "—";
+      const rankText = p.currenttier_patched || "—";
       const placeholder = () => element("span", { className: "v8-scoreboard-agent v8-scoreboard-agent--placeholder", text: "?" });
       const avatar = p.assets?.champion?.small
         ? element("img", { className: "v8-scoreboard-agent", attributes: { src: p.assets.champion.small, alt: "", loading: "lazy" }, events: { error: (event) => event.currentTarget.replaceWith(placeholder()) } })
@@ -167,14 +168,15 @@ export function mountMatches(container, options = {}) {
       if (!players.length) return;
       const rounds = scoreboard.teams?.[teamName]?.roundsWon;
       const color = teamName === "Red" ? "var(--v8-danger)" : "var(--v8-info)";
-      const label = ownTeam ? (teamName === ownTeam ? "Votre équipe" : "Ennemi") : (teamName === "Blue" ? "Votre équipe" : "Ennemi");
-      const scoreLabel = Number.isFinite(rounds) ? `${label} — ${rounds} round${rounds > 1 ? "s" : ""}` : label;
+      const label = ownTeam ? (teamName === ownTeam ? translateSource("Votre équipe") : translateSource("Ennemi")) : (teamName === "Blue" ? translateSource("Votre équipe") : translateSource("Ennemi"));
+      const countSuffix = (count, one, many) => `${count} ${translateSource(count > 1 ? many : one)}`;
+      const scoreLabel = Number.isFinite(rounds) ? `${label} — ${countSuffix(rounds, "round", "rounds")}` : label;
       table.append(element("tbody", { className: `v8-scoreboard-team v8-scoreboard-team--${teamName.toLowerCase()}` }, [
         element("tr", { className: "v8-scoreboard-team-header", style: `--team-color:${color}` }, [
           element("th", { attributes: { colspan: String(colCount) } }, [
             element("div", { className: "v8-scoreboard-team-header__content" }, [
               element("span", { text: scoreLabel }),
-              element("strong", { text: `${players.length} joueur${players.length > 1 ? "s" : ""}` })
+              element("strong", { text: countSuffix(players.length, "joueur", "joueurs") })
             ])
           ])
         ]),
@@ -607,9 +609,9 @@ export function mountMatches(container, options = {}) {
         reportButton
       ]),
       element("div", { className: "v8-match-group-wl" }, [
-        element("span", { className: "text-green", text: `${wins} W` }),
+        element("span", { className: "text-green", text: `${wins} ${translateSource("W")}` }),
         element("span", { className: "v8-muted", text: " // " }),
-        element("span", { className: "text-red", text: `${losses} L` })
+        element("span", { className: "text-red", text: `${losses} ${translateSource("L")}` })
       ]),
       element("div", { className: "v8-match-group-aggregate" }, aggregateCols)
     ]);

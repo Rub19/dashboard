@@ -24,6 +24,11 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v220", "2026-08-06", "Renforcement securite CSP et navigation", [
+    { kind: "fix", text: "CSP : retrait des connexions localhost et restriction des sources de scripts aux URLs exactes des dépendances." },
+    { kind: "fix", text: "Ajout de Cross-Origin-Resource-Policy: same-origin pour limiter l'embarquement des ressources." },
+    { kind: "fix", text: "Échappement du nom d'icône dans la navigation pour éviter une injection d'attribut." }
+  ]),
   entry("v219", "2026-08-06", "Cartes Live Now premium", [
     { kind: "improvement", text: "Effet shine, glow et tilt 3D au survol de toutes les cartes Live Now." },
     { kind: "improvement", text: "Bordure lumineuse et halo d'accent au hover pour un rendu plus premium." }

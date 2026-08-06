@@ -24,8 +24,9 @@ function itemMarkup(item, activeRoute, expanded) {
   const active = item.id === activeRoute;
   const current = active ? ' aria-current="page"' : "";
   const label = escapeAttribute(item.label);
+  const icon = escapeAttribute(item.icon);
   const tooltip = expanded ? "" : ` data-tooltip="${label}"`;
-  return `<button type="button" class="v8-rail-item${active ? " is-active" : ""}" data-action="${item.actionId}" data-route="${item.id}"${current} aria-label="${label}"${tooltip}><i data-lucide="${item.icon}" aria-hidden="true"></i><span>${label}</span></button>`;
+  return `<button type="button" class="v8-rail-item${active ? " is-active" : ""}" data-action="${item.actionId}" data-route="${item.id}"${current} aria-label="${label}"${tooltip}><i data-lucide="${icon}" aria-hidden="true"></i><span>${label}</span></button>`;
 }
 
 export function navigationMarkup(activeRoute = "home", options = {}) {

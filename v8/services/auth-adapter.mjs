@@ -1,3 +1,4 @@
+import { WORKER_API_BASE_URL } from "./external-services-config.mjs";
 import { createRateLimiter } from "./rate-limiter.mjs";
 
 const DEFAULT_TIMEOUT_MS = 12000;
@@ -339,6 +340,15 @@ export function createAuthAdapter(options = {}) {
   async function signOut() {
     publishState(AUTH_STATES.signingOut);
     try { client?.removeAllChannels?.(); } catch {}
+    try {
+      const { data: { session } } = await client?.auth?.getSession?.() ?? { data: {} };
+      if (session?.access_token) {
+        await fetch(`${WORKER_API_BASE_URL}/api/signout`, {
+          method: "POST",
+          headers: { authorization: `Bearer ${session.access_token}` }
+        });
+      }
+    } catch {}
     const response = await operation((activeClient) => activeClient.auth.signOut(), "Déconnexion impossible.");
     publishState(response.ok ? AUTH_STATES.unauthenticated : AUTH_STATES.error, response.ok ? {} : { error: new Error(response.message) });
     return response.ok ? completed("Déconnexion terminée.") : response;

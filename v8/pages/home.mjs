@@ -708,6 +708,18 @@ export function mountHome(stage, model, options = {}) {
   }
   applyLiveOrder();
   syncLiveGridVisibility();
+
+  function updateCardSpotlight(event) {
+    const card = event.target?.closest?.(".v8-home-live-grid > section > article");
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
+    card.style.setProperty("--v8-spotlight-x", `${x}%`);
+    card.style.setProperty("--v8-spotlight-y", `${y}%`);
+  }
+  liveSection.addEventListener("mousemove", updateCardSpotlight);
+
   customizeToggle.addEventListener("click", () => {
     customizeOpen = !customizeOpen;
     renderCustomizePanel();
@@ -739,6 +751,7 @@ export function mountHome(stage, model, options = {}) {
   }) || (() => {});
   refreshIcons();
   return () => {
+    liveSection.removeEventListener("mousemove", updateCardSpotlight);
     releaseSpotify();
     releaseDiscord();
     releaseWeather();

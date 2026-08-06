@@ -18,6 +18,7 @@ import { trackerLolRoute, trackerRoute, trackerValorantRoute, trackerValorantMat
 import { twitchRoute } from "./routes/twitch.js";
 import { weatherRoute } from "./routes/weather.js";
 import { youtubeActivityRoute, youtubeOAuthDisconnectRoute, youtubeOAuthExchangeRoute } from "./routes/youtube-oauth.js";
+import { signOutRoute } from "./routes/signout.js";
 
 function route(id, path, handler, options = {}) {
   return Object.freeze({
@@ -79,7 +80,8 @@ export const ROUTES = Object.freeze([
   route("youtube.oauth.disconnect", "/api/youtube/oauth/disconnect", youtubeOAuthDisconnectRoute, { method: "POST", service: "youtube", rateLimit: "strict" }),
   route("reddit.oauth.exchange", "/api/reddit/oauth/exchange", redditOAuthExchangeRoute, { method: "POST", service: "reddit", rateLimit: "strict" }),
   route("reddit.activity", "/api/reddit/activity", redditActivityRoute, { service: "reddit" }),
-  route("reddit.oauth.disconnect", "/api/reddit/oauth/disconnect", redditOAuthDisconnectRoute, { method: "POST", service: "reddit", rateLimit: "strict" })
+  route("reddit.oauth.disconnect", "/api/reddit/oauth/disconnect", redditOAuthDisconnectRoute, { method: "POST", service: "reddit", rateLimit: "strict" }),
+  route("signout", "/api/signout", signOutRoute, { method: "POST", rateLimit: "standard" })
 ]);
 
 function normalizedPath(pathname) {

@@ -24,6 +24,12 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v221", "2026-08-06", "Signout securise et UI premium", [
+    { kind: "feature", text: "Endpoint /api/signout worker avec header Clear-Site-Data pour nettoyer cache, cookies et storage au logout." },
+    { kind: "improvement", text: "Spotlight interactif qui suit la souris sur les cartes Live Now." },
+    { kind: "improvement", text: "Rail de navigation animé : pulse de l'indicateur actif et lift au survol." },
+    { kind: "improvement", text: "Augmentation du budget CSS pour les améliorations UI à venir." }
+  ]),
   entry("v220", "2026-08-06", "Renforcement securite CSP et navigation", [
     { kind: "fix", text: "CSP : retrait des connexions localhost et restriction des sources de scripts aux URLs exactes des dépendances." },
     { kind: "fix", text: "Ajout de Cross-Origin-Resource-Policy: same-origin pour limiter l'embarquement des ressources." },

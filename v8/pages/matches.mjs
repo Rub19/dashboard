@@ -87,7 +87,7 @@ export function mountMatches(container, options = {}) {
   }
 
   function renderScoreboard(scoreboard) {
-    if (!scoreboard || !scoreboard.players) return element("div", { className: "v8-scoreboard-empty", text: "DonnǸes dǸtaillǸes non disponibles" });
+    if (!scoreboard || !scoreboard.players) return element("div", { className: "v8-scoreboard-empty", text: "Détails du scoreboard non disponibles" });
 
     const container = element("div", { className: "v8-scoreboard" });
     const teams = { Red: [], Blue: [] };
@@ -114,15 +114,17 @@ export function mountMatches(container, options = {}) {
       const shots = (Number(p.stats?.headshots) || 0) + (Number(p.stats?.bodyshots) || 0) + (Number(p.stats?.legshots) || 0);
       const kd = deaths ? (kills / deaths).toFixed(2) : kills ? "Perf" : "0.00";
       const hs = shots ? Math.round((Number(p.stats?.headshots) || 0) / shots * 100) : 0;
-      const isDuo = p.isPartyMember ? element("span", { className: "v8-party-indicator", attributes: { title: "Membre de votre groupe" } }) : null;
+      const partyBadge = p.isPartyMember ? element("span", { className: "v8-party-badge v8-party-badge--scoreboard", attributes: { title: "Membre de votre groupe" }, text: "DUO" }) : null;
+      const meBadge = p.isMe ? element("span", { className: "v8-me-badge", text: "MOI" }) : null;
+      const rankText = p.currenttier_patched && p.currenttier_patched !== "Unrated" ? p.currenttier_patched : "—";
       const placeholder = () => element("span", { className: "v8-scoreboard-agent v8-scoreboard-agent--placeholder", text: "?" });
       const avatar = p.assets?.agent?.small
         ? element("img", { className: "v8-scoreboard-agent", attributes: { src: p.assets.agent.small, alt: "", loading: "lazy" }, events: { error: (event) => event.currentTarget.replaceWith(placeholder()) } })
         : placeholder();
       return element("tr", { className: `${p.isMe ? "is-me" : ""}${p.isPartyMember ? " is-party-member" : ""}`.trim() }, [
         element("td", { className: "v8-scoreboard-agent-cell" }, [avatar]),
-        element("td", { className: "v8-scoreboard-player-cell" }, [isDuo, element("strong", { text: String(p.name || "—") }), element("span", { className: "v8-scoreboard-tag", text: p.tag ? `#${p.tag}` : "" })].filter(Boolean)),
-        element("td", { className: "v8-scoreboard-rank", text: String(p.currenttier_patched || "—") }),
+        element("td", { className: "v8-scoreboard-player-cell" }, [partyBadge, meBadge, element("strong", { text: String(p.name || "—") }), element("span", { className: "v8-scoreboard-tag", text: p.tag ? `#${p.tag}` : "" })].filter(Boolean)),
+        element("td", { className: "v8-scoreboard-rank", text: String(rankText) }),
         element("td", { className: "v8-scoreboard-number", text: String(p.stats?.score || 0) }),
         element("td", { className: "v8-scoreboard-number", text: String(kills) }),
         element("td", { className: "v8-scoreboard-number", text: String(deaths) }),
@@ -140,12 +142,13 @@ export function mountMatches(container, options = {}) {
       const rounds = scoreboard.teams?.[teamName]?.roundsWon;
       const color = teamName === "Red" ? "var(--v8-danger)" : "var(--v8-info)";
       const label = ownTeam ? (teamName === ownTeam ? "Votre équipe" : "Ennemi") : (teamName === "Blue" ? "Votre équipe" : "Ennemi");
+      const scoreLabel = Number.isFinite(rounds) ? `${label} — ${rounds} round${rounds > 1 ? "s" : ""}` : label;
       table.append(element("tbody", { className: `v8-scoreboard-team v8-scoreboard-team--${teamName.toLowerCase()}` }, [
         element("tr", { className: "v8-scoreboard-team-header", style: `--team-color:${color}` }, [
           element("th", { attributes: { colspan: "9" } }, [
             element("div", { className: "v8-scoreboard-team-header__content" }, [
-              element("span", { text: label }),
-            element("strong", { text: Number.isFinite(rounds) ? String(rounds) : "—" })
+              element("span", { text: scoreLabel }),
+              element("strong", { text: `${players.length} joueur${players.length > 1 ? "s" : ""}` })
             ])
           ])
         ]),
@@ -195,6 +198,10 @@ export function mountMatches(container, options = {}) {
     const kdClass = Number(kdRatio) >= 1.5 ? "text-blue" : Number(kdRatio) >= 1.0 ? "text-green" : "text-yellow";
     
     const detailId = `v8-match-detail-${match.id || ++matchDetailId}`;
+    const scoreValue = Number.isFinite(match.metadata?.score?.team) && Number.isFinite(match.metadata?.score?.opponent)
+      ? `${match.metadata.score.team}:${match.metadata.score.opponent}`
+      : "—";
+    const matchChevron = element("span", { className: "v8-match-chevron", text: "⌄" });
     const action = element("button", {
       className: "v8-match-action",
       attributes: {
@@ -224,7 +231,10 @@ export function mountMatches(container, options = {}) {
       ]),
       element("div", { className: "v8-match-score-col" }, [
         element("small", { text: "Score" }),
-        element("strong", { text: Number.isFinite(match.metadata?.score?.team) && Number.isFinite(match.metadata?.score?.opponent) ? `${match.metadata.score.team}:${match.metadata.score.opponent}` : "—", className: "v8-match-score" })
+        element("div", { className: "v8-match-score-value" }, [
+          element("strong", { text: scoreValue, className: "v8-match-score" }),
+          matchChevron
+        ])
       ]),
       element("div", { className: "v8-match-stat-col v8-match-stat-col--kd" }, [
         element("small", { text: "K/D" }),
@@ -251,7 +261,15 @@ export function mountMatches(container, options = {}) {
     
     const detailContainer = element("div", { className: "v8-match-detail-container", attributes: { id: detailId, hidden: true } });
     if (match.scoreboard) {
-       detailContainer.append(renderScoreboard(match.scoreboard));
+      const teamScore = match.metadata?.score?.team;
+      const opponentScore = match.metadata?.score?.opponent;
+      const finalScore = Number.isFinite(teamScore) && Number.isFinite(opponentScore)
+        ? element("div", { className: "v8-match-final-score" }, [
+            element("span", { text: "Score final" }),
+            element("strong", { text: `${teamScore} — ${opponentScore}` })
+          ])
+        : null;
+      detailContainer.append(finalScore, renderScoreboard(match.scoreboard));
     } else {
        detailContainer.append(element("p", { text: "Détails non disponibles pour ce match.", style: "color: var(--v8-text-muted);" }));
     }
@@ -263,6 +281,7 @@ export function mountMatches(container, options = {}) {
       action.setAttribute("aria-expanded", String(!isExpanded));
       action.setAttribute("aria-label", isExpanded ? "Afficher les détails du match" : "Masquer les détails du match");
       action.classList.toggle("is-expanded", !isExpanded);
+      if (matchChevron) matchChevron.textContent = isExpanded ? "⌄" : "⌃";
     };
     row.addEventListener("click", (event) => {
       if (event.target.closest("button")) return;

@@ -24,6 +24,14 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v207", "2026-08-06", "Historique Valorant : Scoreboard & Séparations", [
+    { kind: "fix", text: "Correction de l'encodage du message d'absence de scoreboard (mojibake)." },
+    { kind: "improvement", text: "Score final affiché en haut du détail de chaque match." },
+    { kind: "improvement", text: "En-têtes d'équipe du scoreboard indiquent le nombre de rounds gagnés et de joueurs." },
+    { kind: "improvement", text: "Badges DUO et MOI visibles à côté des noms des joueurs dans le scoreboard." },
+    { kind: "improvement", text: "Chevron de dépliage déplacé à côté du score pour une meilleure lisibilité." },
+    { kind: "improvement", text: "Séparations renforcées entre les groupes de matchs et les équipes du scoreboard." }
+  ]),
   entry("v201", "2026-08-06", "Refonte Backend Valorant & League of Legends", [
     { kind: "feature", text: "Nouveaux clients API (HenrikDev et Riot Games) pour isoler l'acquisition de données Valorant et League of Legends." },
     { kind: "improvement", text: "Refonte de l'onglet Connexions pour configurer vos propres clés API indépendantes (HenrikDev, Riot) au lieu de Tracker.gg." },

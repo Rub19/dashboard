@@ -3617,3 +3617,34 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
   .v8-session-report__tile strong { font-size:var(--v8-font-2xl); }
 }
 .v8-home-live-grid > section > article { height: 100%; min-height: 154px; }
+.v8-lol-match-row { position:relative;display:grid;grid-template-columns:44px minmax(120px,1.2fr) 64px repeat(3,58px) 140px 40px;gap:var(--v8-space-3);align-items:center;padding:var(--v8-space-2) var(--v8-space-4);background:var(--v8-surface-1);transition:background 0.2s; }
+.v8-lol-match-row:hover { background:var(--v8-surface-2); }
+.v8-lol-match-row:focus-visible { outline:2px solid var(--v8-info);outline-offset:-2px; }
+.v8-lol-match-row .v8-match-accent { position:absolute;left:0;top:8px;bottom:8px;width:4px;border-radius:0 4px 4px 0; }
+.v8-lol-match-row.is-win .v8-match-accent { background:var(--v8-success); }
+.v8-lol-match-row.is-loss .v8-match-accent { background:var(--v8-danger); }
+.v8-lol-match-main { display:flex;flex-direction:column;gap:4px;min-width:0; }
+.v8-lol-match-main small { color:var(--v8-muted);font-size:var(--v8-font-xs); }
+.v8-lol-match-mode-row { display:flex;align-items:center;gap:var(--v8-space-2);min-width:0; }
+.v8-lol-match-mode { font-size:var(--v8-font-sm);font-weight:var(--v8-weight-bold);color:var(--v8-text);white-space:nowrap; }
+.v8-lol-match-mode-row img { width:36px;height:36px;border-radius:var(--v8-radius-sm);background:var(--v8-surface-3); }
+.v8-lol-match-level { position:absolute;bottom:-4px;right:-4px;background:var(--v8-surface-1);border:1px solid var(--v8-border);border-radius:50%;width:18px;height:18px;display:grid;place-items:center;font-size:10px;font-weight:var(--v8-weight-bold); }
+.v8-lol-match-items { display:flex;gap:2px; }
+.v8-lol-match-items img,.v8-lol-match-items .v8-lol-item-placeholder { width:24px;height:24px;border-radius:2px;background:var(--v8-surface-3); }
+.v8-lol-match-score { display:flex;flex-direction:column;align-items:center; }
+.v8-lol-match-score small { color:var(--v8-muted);font-size:var(--v8-font-xs); }
+.v8-lol-match-kda { display:flex;flex-direction:column;align-items:center; }
+.v8-lol-match-kda small { color:var(--v8-muted);font-size:var(--v8-font-xs); }
+.v8-lol-match-kda strong { color:var(--v8-text);font-size:var(--v8-font-md);font-weight:var(--v8-weight-bold); }
+.v8-lol-match-kda span { color:var(--v8-muted);font-size:var(--v8-font-xs); }
+.v8-lol-match-stat { display:flex;flex-direction:column;align-items:center; }
+.v8-lol-match-stat small { color:var(--v8-muted);font-size:var(--v8-font-xs);text-transform:uppercase; }
+.v8-lol-match-stat strong { color:var(--v8-text);font-size:var(--v8-font-md);font-weight:var(--v8-weight-bold);font-variant-numeric:tabular-nums; }
+.v8-lol-match-teams { display:flex;flex-direction:column;gap:4px; }
+.v8-lol-team-strip { display:flex;gap:2px; }
+.v8-lol-team-strip img { width:22px;height:22px;border-radius:2px;background:var(--v8-surface-3); }
+.v8-lol-match-row.is-win .v8-match-score { color:var(--v8-success); }
+.v8-lol-match-row.is-loss .v8-match-score { color:var(--v8-danger); }
+.v8-scoreboard-item { width:22px;height:22px;border-radius:2px; }
+.v8-scoreboard-items { display:flex;gap:2px; }
+.v8-scoreboard-item-placeholder { width:22px;height:22px;border-radius:2px;background:var(--v8-surface-3); }

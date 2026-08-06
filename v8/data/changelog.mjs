@@ -24,6 +24,11 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v208", "2026-08-06", "Historique League of Legends style Tracker.gg", [
+    { kind: "feature", text: "Nouveau rendu des matchs League of Legends : champion, runes, items, KDA, CS/min, DPM, GPM et équipes adverses." },
+    { kind: "feature", text: "Scoreboard détaillé LoL avec items, CS, gold et dégâts par joueur." },
+    { kind: "improvement", text: "Moyennes de session LoL : Avg KDA, Avg DPM et Avg GPM." }
+  ]),
   entry("v207", "2026-08-06", "Historique Valorant : Scoreboard & Séparations", [
     { kind: "fix", text: "Correction de l'encodage du message d'absence de scoreboard (mojibake)." },
     { kind: "improvement", text: "Score final affiché en haut du détail de chaque match." },

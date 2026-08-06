@@ -3978,14 +3978,17 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
 
 .v8-scoreboard { display:flex;flex-direction:column;gap:0;background:var(--v8-surface-1);border-radius:var(--v8-radius-lg);margin-top:var(--v8-space-4);border:1px solid var(--v8-border);overflow:hidden; }
 .v8-scoreboard-empty { padding:var(--v8-space-6);text-align:center;color:var(--v8-muted);font-style:italic; }
-.v8-scoreboard-table { width:100%;border-collapse:collapse;table-layout:fixed;text-align:left;font-size:var(--v8-font-sm); }
-.v8-scoreboard-table th { padding:var(--v8-space-2) var(--v8-space-3);color:var(--v8-muted);font-weight:var(--v8-weight-semibold);text-transform:uppercase;font-size:var(--v8-font-xs);border-bottom:1px solid var(--v8-border); }
-.v8-scoreboard-table td { padding:var(--v8-space-3);border-bottom:1px solid var(--v8-border);color:var(--v8-text);vertical-align:middle; }
-.v8-scoreboard-table tbody tr:hover { background:var(--v8-surface-2); }
-.v8-scoreboard-table tbody tr.is-me { background:color-mix(in srgb,var(--v8-accent) 12%,transparent);box-shadow:inset 3px 0 var(--v8-accent); }
+.v8-scoreboard-table { display:grid;grid-template-columns:48px minmax(160px,1fr) 140px 72px 44px 44px 44px 64px 52px;width:100%;min-width:0;text-align:left;font-size:var(--v8-font-sm); }
+.v8-scoreboard-table thead,.v8-scoreboard-table tbody,.v8-scoreboard-table tr { display:contents; }
+.v8-scoreboard-table th { padding:var(--v8-space-2) var(--v8-space-3);color:var(--v8-muted);font-weight:var(--v8-weight-semibold);text-transform:uppercase;font-size:var(--v8-font-xs);border-bottom:1px solid var(--v8-border);min-width:0; }
+.v8-scoreboard-table td { padding:var(--v8-space-3);border-bottom:1px solid var(--v8-border);color:var(--v8-text);vertical-align:middle;min-width:0; }
+.v8-scoreboard-table tbody tr:hover td { background:var(--v8-surface-2); }
+.v8-scoreboard-table tbody tr.is-me td { background:color-mix(in srgb,var(--v8-accent) 12%,transparent); }
+.v8-scoreboard-table tbody tr.is-me td:first-child { box-shadow:inset 3px 0 var(--v8-accent); }
 .v8-scoreboard-table thead { background:var(--v8-surface-2); }
-.v8-scoreboard-col-agent { width:48px; }.v8-scoreboard-col-player { width:25%; }.v8-scoreboard-col-rank { width:16%; }.v8-scoreboard-col-number { width:auto; }
+.v8-scoreboard-table thead th { background:var(--v8-surface-2); }
 .v8-scoreboard-team-header th { padding:var(--v8-space-3);color:var(--team-color);background:color-mix(in srgb,var(--team-color) 9%,var(--v8-surface-1));border-top:2px solid var(--team-color);border-bottom:1px solid color-mix(in srgb,var(--team-color) 28%,var(--v8-border));text-transform:none;font-size:var(--v8-font-sm); }
+.v8-scoreboard-team-header th { grid-column:1 / -1; }
 .v8-scoreboard-team-header__content { display:flex;align-items:center;justify-content:space-between;gap:var(--v8-space-3); }.v8-scoreboard-team-header th strong { font-variant-numeric:tabular-nums;font-size:var(--v8-font-lg); }
 .v8-scoreboard-number { text-align:right;font-variant-numeric:tabular-nums; }.v8-scoreboard-rank { color:var(--v8-muted)!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
 .v8-scoreboard-player-cell { overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }.v8-scoreboard-tag { color:var(--v8-muted);font-size:var(--v8-font-xs);margin-left:var(--v8-space-1); }
@@ -4011,8 +4014,9 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
   .v8-match-badges-col, .v8-match-stat-col:nth-of-type(7),.v8-match-stat-col:nth-of-type(8) { display:none; }
   .v8-match-stat-col small { white-space:nowrap;font-size:10px; }
   .v8-match-stat-col strong { white-space:nowrap;font-size:var(--v8-font-sm); }
-  .v8-scoreboard-col-rank,.v8-scoreboard-table th:nth-child(3),.v8-scoreboard-table td:nth-child(3),.v8-scoreboard-table th:nth-child(9),.v8-scoreboard-table td:nth-child(9) { display:none; }
-  .v8-scoreboard-table { min-width:0; }.v8-scoreboard-table th,.v8-scoreboard-table td { padding:var(--v8-space-2); }.v8-scoreboard-table th { font-size:10px;white-space:nowrap; }.v8-scoreboard-col-agent { width:44px; }.v8-scoreboard-col-player { width:auto; }.v8-scoreboard-col-number { width:44px; }.v8-scoreboard-table col:nth-child(4) { width:68px; }.v8-scoreboard-table col:nth-child(8) { width:56px; }.v8-scoreboard-table td:not(.v8-scoreboard-player-cell):not(.v8-scoreboard-agent-cell) { white-space:nowrap;overflow:visible; }
+  .v8-scoreboard-table { grid-template-columns:44px minmax(140px,1fr) 72px 44px 44px 44px 64px; }.v8-scoreboard-table th,.v8-scoreboard-table td { padding:var(--v8-space-2); }.v8-scoreboard-table th { font-size:10px;white-space:nowrap; }
+  .v8-scoreboard-table th:nth-child(3),.v8-scoreboard-table td:nth-child(3),.v8-scoreboard-table th:nth-child(9),.v8-scoreboard-table td:nth-child(9) { display:none; }
+  .v8-scoreboard-table td:not(.v8-scoreboard-player-cell):not(.v8-scoreboard-agent-cell) { white-space:nowrap;overflow:visible; }
 }
 @media (max-width: 480px) {
   .v8-match-group-header { padding:var(--v8-space-3); }
@@ -4022,10 +4026,10 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
   .v8-match-row { grid-template-columns:36px minmax(0,1fr) auto 28px;padding-inline:var(--v8-space-2); }
   .v8-match-row > .v8-match-stat-col:nth-of-type(9) { display:none; }
   .v8-match-row > .v8-match-stat-col:nth-of-type(6) { grid-column:3 / span 2; }
-  .v8-scoreboard-table th,.v8-scoreboard-table td { padding-inline:var(--v8-space-1); }.v8-scoreboard-table th:nth-child(8),.v8-scoreboard-table td:nth-child(8) { display:none; }.v8-scoreboard-table col:nth-child(8) { display:none; }
+  .v8-scoreboard-table { grid-template-columns:40px minmax(120px,1fr) 68px 40px 40px 40px; }.v8-scoreboard-table th,.v8-scoreboard-table td { padding-inline:var(--v8-space-1); }.v8-scoreboard-table th:nth-child(8),.v8-scoreboard-table td:nth-child(8) { display:none; }
 }
 @media (max-width: 380px) {
-  .v8-scoreboard-table th:nth-child(4),.v8-scoreboard-table td:nth-child(4),.v8-scoreboard-table col:nth-child(4) { display:none; }
+  .v8-scoreboard-table { grid-template-columns:32px minmax(90px,1fr) 32px 32px 32px; }.v8-scoreboard-table th:nth-child(4),.v8-scoreboard-table td:nth-child(4) { display:none; }
 }
 
 

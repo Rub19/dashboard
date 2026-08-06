@@ -98,17 +98,6 @@ export function mountMatches(container, options = {}) {
     });
 
     const table = element("table", { className: "v8-scoreboard-table" }, [
-      element("colgroup", {}, [
-        element("col", { className: "v8-scoreboard-col-agent" }),
-        element("col", { className: "v8-scoreboard-col-player" }),
-        element("col", { className: "v8-scoreboard-col-rank" }),
-        element("col", { className: "v8-scoreboard-col-number" }),
-        element("col", { className: "v8-scoreboard-col-number" }),
-        element("col", { className: "v8-scoreboard-col-number" }),
-        element("col", { className: "v8-scoreboard-col-number" }),
-        element("col", { className: "v8-scoreboard-col-number" }),
-        element("col", { className: "v8-scoreboard-col-number" })
-      ]),
       element("thead", {}, [element("tr", {}, [
         element("th", { text: "Ag." }), element("th", { text: "Joueur" }), element("th", { text: "Rank" }),
         element("th", { text: "Score" }), element("th", { text: "K" }), element("th", { text: "D" }),

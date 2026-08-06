@@ -1,5 +1,6 @@
 import { element, icon } from "../ui/dom.mjs";
 import { emptyState } from "../ui/empty-state.mjs";
+import { refreshIcons } from "../ui/icons.mjs";
 import { createWindowController } from "../ui/window-system.mjs";
 
 export function mountMatches(container, options = {}) {
@@ -372,6 +373,7 @@ export function mountMatches(container, options = {}) {
     layer.addEventListener("click", event => { if (event.target === layer) close(); });
     document.body.append(layer);
     controller.open(layer, { initialFocus: () => closeButton, onAfterClose: () => layer.remove() });
+    refreshIcons();
     reportButton?.blur?.();
   }
 
@@ -511,6 +513,7 @@ export function mountMatches(container, options = {}) {
       });
       
       content.append(list);
+      refreshIcons();
     } catch (e) {
       if (destroyed) return;
       

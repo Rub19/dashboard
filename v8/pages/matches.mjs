@@ -496,7 +496,7 @@ export function mountMatches(container, options = {}) {
     return element("div", { className: "v8-match-wrapper", style: "margin-bottom: var(--v8-space-2); background: var(--v8-surface-1); border-radius: var(--v8-radius-lg); overflow: hidden;" }, [row, detailContainer]);
   }
 
-  function renderLolMatch(match) {
+  function renderLolMatch(match, index = 0) {
     const resultText = match.metadata?.result || "Inconnu";
     const resultLower = resultText.toLowerCase();
     const isWin = resultLower === "victory" || resultLower === "win";
@@ -522,9 +522,10 @@ export function mountMatches(container, options = {}) {
     const myTeamPlayers = match.scoreboard?.players?.filter(p => p.team === myTeam) || [];
     const opponentPlayers = match.scoreboard?.players?.filter(p => p.team === opponentTeam) || [];
 
-    const champImg = (url, champ) => url ? element("img", { attributes: { src: url, alt: champ || "", loading: "lazy", decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(element("div", { className: "v8-lol-champion-placeholder" })) } }) : element("div", { className: "v8-lol-champion-placeholder" });
-    const itemImg = (url) => url ? element("img", { attributes: { src: url, loading: "lazy", decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(element("div", { className: "v8-lol-item-placeholder" })) } }) : element("div", { className: "v8-lol-item-placeholder" });
-    const renderChampStrip = (players) => element("div", { className: "v8-lol-team-strip" }, players.slice(0, 5).map(p => champImg(p.assets?.champion?.small, p.character)));
+    const eager = index < 3 ? "eager" : "lazy";
+    const champImg = (url, champ, loading = "lazy") => url ? element("img", { attributes: { src: url, alt: champ || "", loading, decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(element("div", { className: "v8-lol-champion-placeholder" })) } }) : element("div", { className: "v8-lol-champion-placeholder" });
+    const itemImg = (url, loading = "lazy") => url ? element("img", { attributes: { src: url, loading, decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(element("div", { className: "v8-lol-item-placeholder" })) } }) : element("div", { className: "v8-lol-item-placeholder" });
+    const renderChampStrip = (players) => element("div", { className: "v8-lol-team-strip" }, players.slice(0, 5).map(p => champImg(p.assets?.champion?.small, p.character, "lazy")));
 
     const detailId = `v8-match-detail-${match.id || ++matchDetailId}`;
     const matchChevron = element("span", { className: "v8-match-chevron", text: "⌄" });
@@ -546,7 +547,7 @@ export function mountMatches(container, options = {}) {
 
     const levelBadge = me?.level ? element("span", { className: "v8-lol-match-level", text: String(me.level) }) : null;
     const champAvatar = match.metadata?.agentImageUrl
-      ? champImg(match.metadata.agentImageUrl, match.metadata?.agentName)
+      ? champImg(match.metadata.agentImageUrl, match.metadata?.agentName, eager)
       : element("div", { className: "v8-lol-champion-placeholder" });
     const agentCell = element("div", { className: "v8-match-agent" }, [champAvatar, levelBadge].filter(Boolean));
 
@@ -558,7 +559,7 @@ export function mountMatches(container, options = {}) {
         element("div", { className: "v8-lol-match-mode-row" }, [
           element("strong", { className: "v8-lol-match-mode", text: match.metadata?.agentName || match.metadata?.modeName || "Normal" })
         ]),
-        element("div", { className: "v8-lol-match-items" }, (me?.items || [0,0,0,0,0,0]).map(itemImg)),
+        element("div", { className: "v8-lol-match-items" }, (me?.items || [0,0,0,0,0,0]).map((url) => itemImg(url, eager))),
         statsSummary
       ]),
       element("div", { className: "v8-lol-match-score" }, [
@@ -821,7 +822,7 @@ export function mountMatches(container, options = {}) {
       element("div", { className: "v8-match-group-aggregate" }, aggregateCols)
     ]);
     
-    const rows = matches.map((m) => game === "lol" ? renderLolMatch(m) : game === "apex" ? renderApexMatch(m) : renderMatch(m));
+    const rows = matches.map((m, i) => game === "lol" ? renderLolMatch(m, i) : game === "apex" ? renderApexMatch(m) : renderMatch(m));
     
     return element("div", { className: "v8-match-group" }, [
       headerRow,

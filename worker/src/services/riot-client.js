@@ -166,15 +166,25 @@ function normalizeLolChampionName(championName) {
   return DDRAGON_CHAMPION_NAME_OVERRIDES[name] || name;
 }
 
-function lolChampionImage(championName) {
-  const id = normalizeLolChampionName(championName);
-  if (!id) return "";
-  return safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/${DDRAGON_LOL_VERSION}/img/champion/${id}.png`, ["leagueoflegends.com"]);
+function deriveLolDdragonVersion(gameVersion) {
+  const version = String(gameVersion || "").trim();
+  if (!version) return DDRAGON_LOL_VERSION;
+  const parts = version.split(".");
+  if (parts.length < 3) return DDRAGON_LOL_VERSION;
+  return `${parts[0]}.${parts[1]}.${parts[2]}`;
 }
 
-function lolItemImage(itemId) {
+function lolChampionImage(championName, gameVersion) {
+  const id = normalizeLolChampionName(championName);
+  if (!id) return "";
+  const version = deriveLolDdragonVersion(gameVersion);
+  return safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${id}.png`, ["leagueoflegends.com"]);
+}
+
+function lolItemImage(itemId, gameVersion) {
   if (!itemId || itemId <= 0) return "";
-  return safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/${DDRAGON_LOL_VERSION}/img/item/${itemId}.png`, ["leagueoflegends.com"]);
+  const version = deriveLolDdragonVersion(gameVersion);
+  return safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/${version}/img/item/${itemId}.png`, ["leagueoflegends.com"]);
 }
 
 function safeLolName(p) {
@@ -188,6 +198,7 @@ function safeLolTag(p) {
 function normalizeLolScoreboard(info, mePuuid) {
   const participants = info.participants || [];
   const teams = { Blue: { kills: 0, won: false }, Red: { kills: 0, won: false } };
+  const gameVersion = info.gameVersion;
   const players = participants.map((p) => {
     const team = lolTeamName(p.teamId);
     const isMe = p.puuid === mePuuid;
@@ -200,8 +211,8 @@ function normalizeLolScoreboard(info, mePuuid) {
     teams[team].kills += kills;
     teams[team].won = isWin;
     const items = [
-      lolItemImage(p.item0), lolItemImage(p.item1), lolItemImage(p.item2), lolItemImage(p.item3),
-      lolItemImage(p.item4), lolItemImage(p.item5), lolItemImage(p.item6)
+      lolItemImage(p.item0, gameVersion), lolItemImage(p.item1, gameVersion), lolItemImage(p.item2, gameVersion), lolItemImage(p.item3, gameVersion),
+      lolItemImage(p.item4, gameVersion), lolItemImage(p.item5, gameVersion), lolItemImage(p.item6, gameVersion)
     ];
     return Object.freeze({
       name: safeLolName(p),
@@ -224,9 +235,9 @@ function normalizeLolScoreboard(info, mePuuid) {
         damagePerMin: Math.round(((Number(p.totalDamageDealtToChampions) || 0) / minutes) * 10) / 10
       }),
       assets: Object.freeze({
-        champion: Object.freeze({ small: lolChampionImage(p.championName) })
+        champion: Object.freeze({ small: lolChampionImage(p.championName, gameVersion) })
       }),
-      items: Object.freeze(items.filter(Boolean))
+      items: Object.freeze(items)
     });
   });
   return Object.freeze({
@@ -314,7 +325,8 @@ export async function getLolMatches(env, riotId, mode, apiKeyOverride) {
     const opponentTeam = myTeam === "Blue" ? "Red" : "Blue";
     const opponentKills = scoreboard.teams[opponentTeam].roundsWon;
     const cs = (Number(me?.totalMinionsKilled) || 0) + (Number(me?.neutralMinionsKilled) || 0);
-    
+    const gameVersion = info.gameVersion;
+
     return Object.freeze({
       id: safeText(info.gameId ? String(info.gameId) : match.metadata?.matchId),
       scoreboard,
@@ -324,7 +336,7 @@ export async function getLolMatches(env, riotId, mode, apiKeyOverride) {
         mapName: safeText(lolMapName(info.mapId)),
         gameDuration: safeText(`${Math.floor((info.gameDuration || 0) / 60)}m ${(info.gameDuration || 0) % 60}s`),
         agentName: safeText(me?.championName),
-        agentImageUrl: lolChampionImage(me?.championName),
+        agentImageUrl: lolChampionImage(me?.championName, gameVersion),
         timestamp: safeText(new Date(info.gameCreation || 0).toISOString()),
         score: Object.freeze({ team: myKills, opponent: opponentKills })
       }),

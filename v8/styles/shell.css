@@ -3791,9 +3791,9 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
 .v8-lol-match-main small { color:var(--v8-muted);font-size:var(--v8-font-xs);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0; }
 .v8-lol-match-mode-row { display:flex;align-items:center;gap:var(--v8-space-2);min-width:0; }
 .v8-lol-match-mode { flex:1 1 auto;min-width:0;font-size:var(--v8-font-sm);font-weight:var(--v8-weight-bold);color:var(--v8-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
-.v8-lol-match-level { position:absolute;bottom:-4px;right:-4px;background:var(--v8-surface-1);border:1px solid var(--v8-border);border-radius:50%;width:18px;height:18px;display:grid;place-items:center;font-size:10px;font-weight:var(--v8-weight-bold); }
-.v8-lol-match-items { display:flex;flex-wrap:wrap;gap:2px;min-width:0; }
-.v8-lol-match-items img,.v8-lol-match-items .v8-lol-item-placeholder { width:24px;height:24px;border-radius:2px;background:var(--v8-surface-3); }
+.v8-lol-match-level { position:absolute;bottom:-4px;right:-4px;z-index:1;background:var(--v8-surface-1);border:1px solid var(--v8-border);border-radius:50%;width:18px;height:18px;display:grid;place-items:center;font-size:10px;font-weight:var(--v8-weight-bold);box-shadow:0 0 0 2px var(--v8-surface-1); }
+.v8-lol-match-items { display:flex;flex-wrap:wrap;gap:2px;min-width:0;align-items:flex-start; }
+.v8-lol-match-items img,.v8-lol-match-items .v8-lol-item-placeholder { flex:0 0 auto;width:24px;height:24px;border-radius:2px;background:var(--v8-surface-3); }
 .v8-lol-match-items > span { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
 .v8-lol-champion-placeholder { width:100%;height:100%;background:var(--v8-surface-3); }
 .v8-lol-match-score { display:flex;flex-direction:column;align-items:center;min-width:0;overflow:hidden; }

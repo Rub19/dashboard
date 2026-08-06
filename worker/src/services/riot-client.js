@@ -373,7 +373,7 @@ async function mapLimit(items, limit, mapper) {
 async function getLolMatchIds(env, puuid, apiKey, queueId) {
   const matchIdsUrl = new URL(`/lol/match/v5/matches/by-puuid/${puuid}/ids`, RIOT_EUROPE);
   matchIdsUrl.searchParams.set("start", "0");
-  matchIdsUrl.searchParams.set("count", "10");
+  matchIdsUrl.searchParams.set("count", "25");
   if (queueId != null) matchIdsUrl.searchParams.set("queue", String(queueId));
   const matchIdsResponse = await requestExternal(matchIdsUrl, {
     env,

@@ -110,20 +110,22 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride) {
   
   const region = account.region || "eu";
   
-  let path = `/valorant/v3/matches/${region}/${encodeURIComponent(name)}/${encodeURIComponent(tag)}`;
+  const matchesUrl = new URL(`/valorant/v3/matches/${region}/${encodeURIComponent(name)}/${encodeURIComponent(tag)}`, ORIGIN);
+  matchesUrl.searchParams.set("size", "25");
   if (mode && mode !== "all") {
     const slug = encodeURIComponent(mode);
-    path += `?mode=${slug}&filter=${slug}`;
+    matchesUrl.searchParams.set("mode", slug);
+    matchesUrl.searchParams.set("filter", slug);
   }
-  
+
   const headers = {};
   if (apiKey) headers["Authorization"] = apiKey;
 
-  const response = await requestExternal(new URL(path, ORIGIN), {
+  const response = await requestExternal(matchesUrl, {
     env,
     expectedOrigin: ORIGIN,
     service: "tracker",
-    dedupeKey: `henrik:matches:${region}:${name.toLowerCase()}:${tag.toLowerCase()}:${mode || "all"}`,
+    dedupeKey: `henrik:matches:${region}:${name.toLowerCase()}:${tag.toLowerCase()}:${mode || "all"}:25`,
     headers,
     retries: 1,
     maxBytes: 4194304

@@ -60,7 +60,7 @@ export async function trackerValorantMatchesRoute({ env, url, auth }) {
   const mode = queryText(url, "mode", { max: 32 }) || "all";
   const riotId = `${name}#${tag}`;
   const loader = async () => getValorantMatches(env, riotId, mode, await ownKeyHenrik(env, auth));
-  const result = await cachedLoad(`tracker:valorant:matches:${name.toLowerCase()}:${tag.toLowerCase()}:${mode}`, 180, loader);
+  const result = await cachedLoad(`tracker:valorant:matches:${name.toLowerCase()}:${tag.toLowerCase()}:${mode}`, 600, loader);
   return routeResult(result.data, { source: "henrikdev", cached: result.cached });
 }
 
@@ -71,7 +71,7 @@ export async function trackerLolMatchesRoute({ env, url, auth }) {
   const mode = queryText(url, "mode", { max: 32 }) || "all";
   const riotId = `${name}#${tag}`;
   const loader = async () => getLolMatches(env, riotId, mode, await ownKeyRiot(env, auth));
-  const result = await cachedLoad(`tracker:lol:matches:${name.toLowerCase()}:${tag.toLowerCase()}:${mode}`, 180, loader);
+  const result = await cachedLoad(`tracker:lol:matches:${name.toLowerCase()}:${tag.toLowerCase()}:${mode}`, 600, loader);
   return routeResult(result.data, { source: "riot", cached: result.cached });
 }
 
@@ -81,6 +81,6 @@ export async function trackerApexMatchesRoute({ env, url, auth }) {
   const identifier = queryText(url, "identifier", { pattern: PATTERNS.trackerIdentifier, max: 64 });
   const mode = queryText(url, "mode", { max: 32 }) || "all";
   const loader = async () => getTrackerApexMatches(env, platform, identifier, mode, await ownKeyTracker(env, auth));
-  const result = await cachedLoad(`tracker:apex:matches:${platform}:${identifier.toLowerCase()}:${mode}`, 180, loader);
+  const result = await cachedLoad(`tracker:apex:matches:${platform}:${identifier.toLowerCase()}:${mode}`, 600, loader);
   return routeResult(result.data, { source: "tracker", cached: result.cached });
 }

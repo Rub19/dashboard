@@ -93,17 +93,6 @@ export function mountMatches(container, options = {}) {
     if (diffHours < 24) return translateSource("{value}h ago").replace("{value}", diffHours);
     return translateSource("{value}d ago").replace("{value}", Math.floor(diffHours / 24));
   }
-  function stringToColor(str) {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    let color = '#';
-    for (let i = 0; i < 3; i++) {
-      const value = (hash >> (i * 8)) & 0xFF;
-      color += ('00' + value.toString(16)).substr(-2);
-    }
-    return color;
-  }
-
   function renderScoreboard(scoreboard) {
     if (!scoreboard || !scoreboard.players) return element("div", { className: "v8-scoreboard-empty", text: "Détails du scoreboard non disponibles" });
 
@@ -146,7 +135,6 @@ export function mountMatches(container, options = {}) {
       const shots = (Number(p.stats?.headshots) || 0) + (Number(p.stats?.bodyshots) || 0) + (Number(p.stats?.legshots) || 0);
       const kd = deaths ? (kills / deaths).toFixed(2) : kills ? "Perf" : "0.00";
       const hs = shots ? Math.round((Number(p.stats?.headshots) || 0) / shots * 100) : 0;
-      const partyDot = p.inParty ? element("span", { className: "v8-party-dot", attributes: { title: "En groupe" }, style: `background-color:${stringToColor(p.party_id)};` }) : null;
       const partyBadge = p.isPartyMember ? element("span", { className: "v8-party-badge v8-party-badge--scoreboard", attributes: { title: "Membre de votre groupe" }, text: "DUO" }) : null;
       const meBadge = p.isMe ? element("span", { className: "v8-me-badge", text: "MOI" }) : null;
       const rankText = p.currenttier_patched || "—";
@@ -167,7 +155,7 @@ export function mountMatches(container, options = {}) {
         : null;
       const rowCells = [
         element("td", { className: "v8-scoreboard-agent-cell" }, [agentCell]),
-        element("td", { className: "v8-scoreboard-player-cell" }, [partyDot, partyBadge, meBadge, element("strong", { text: String(p.name || "—") }), element("span", { className: "v8-scoreboard-tag", text: p.tag ? `#${p.tag}` : "" }), playerMeta].filter(Boolean)),
+        element("td", { className: "v8-scoreboard-player-cell" }, [partyBadge, meBadge, element("strong", { text: String(p.name || "—") }), element("span", { className: "v8-scoreboard-tag", text: p.tag ? `#${p.tag}` : "" }), playerMeta].filter(Boolean)),
         isLol ? null : element("td", { className: "v8-scoreboard-rank", text: String(rankText) }),
         element("td", { className: "v8-scoreboard-number", text: String(p.stats?.score || 0) }),
         element("td", { className: "v8-scoreboard-number", text: String(kills) }),
@@ -183,7 +171,7 @@ export function mountMatches(container, options = {}) {
         rowCells.push(element("td", { className: "v8-scoreboard-number", text: `${hs}%` }));
       }
 
-      return element("tr", { className: `${p.isMe ? "is-me" : ""}${p.inParty ? " is-party-member" : ""}`.trim() }, rowCells);
+      return element("tr", { className: `${p.isMe ? "is-me" : ""}${p.isPartyMember ? " is-party-member" : ""}`.trim() }, rowCells);
     };
 
     const ownTeam = scoreboard.players.find(p => p.isMe)?.team || null;
@@ -1201,6 +1189,24 @@ export function mountMatches(container, options = {}) {
     refreshIcons();
   }
 
+  function matchCacheKey(name, tag) {
+    return `ethone.matches.${game}.${encodeURIComponent(String(name).toLowerCase())}.${encodeURIComponent(String(tag || "").toLowerCase())}.${currentMode}`;
+  }
+  function readMatchCache(name, tag) {
+    try {
+      const raw = globalThis.sessionStorage?.getItem(matchCacheKey(name, tag));
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed || !Array.isArray(parsed.matches) || Date.now() - (parsed.fetchedAt || 0) > 600000) return null;
+      return parsed;
+    } catch { return null; }
+  }
+  function writeMatchCache(name, tag, matches, profileData) {
+    try {
+      globalThis.sessionStorage?.setItem(matchCacheKey(name, tag), JSON.stringify({ matches, profile: profileData, fetchedAt: Date.now() }));
+    } catch {}
+  }
+
   let dataLoaded = false;
   async function loadMatches() {
     if (destroyed) return;
@@ -1219,12 +1225,17 @@ export function mountMatches(container, options = {}) {
         const [name, tag] = riotId.split("#");
         currentName = name;
         currentTag = tag;
-        const res = await externalServices.tracker.valorantMatches(name, tag, currentMode);
-        data = res.data;
-        try {
-          const profileRes = await externalServices.tracker.valorantProfile(name, tag);
-          profileData = profileRes?.data || null;
-        } catch {}
+        const cache = readMatchCache(name, tag);
+        if (cache) { data = cache.matches; profileData = cache.profile; }
+        else {
+          const res = await externalServices.tracker.valorantMatches(name, tag, currentMode);
+          data = res.data;
+          try {
+            const profileRes = await externalServices.tracker.valorantProfile(name, tag);
+            profileData = profileRes?.data || null;
+          } catch {}
+          writeMatchCache(name, tag, data, profileData);
+        }
       } else if (game === "lol") {
         const state = lolLive?.state?.() || {};
         const riotId = state.tag ? `${state.name}#${state.tag}` : "";
@@ -1232,24 +1243,34 @@ export function mountMatches(container, options = {}) {
         const [name, tag] = riotId.split("#");
         currentName = name;
         currentTag = tag;
-        const res = await externalServices.tracker.lolMatches(name, tag, currentMode);
-        data = res.data;
-        try {
-          const profileRes = await externalServices.tracker.lolProfile(name, tag);
-          profileData = profileRes?.data || null;
-        } catch {}
+        const cache = readMatchCache(name, tag);
+        if (cache) { data = cache.matches; profileData = cache.profile; }
+        else {
+          const res = await externalServices.tracker.lolMatches(name, tag, currentMode);
+          data = res.data;
+          try {
+            const profileRes = await externalServices.tracker.lolProfile(name, tag);
+            profileData = profileRes?.data || null;
+          } catch {}
+          writeMatchCache(name, tag, data, profileData);
+        }
       } else if (game === "apex") {
         const state = trackerLive?.state?.() || {};
         const handle = state.handle;
         if (!handle || !state.available) throw new Error("En attente de la connexion Lanyard...");
         currentName = handle;
         currentTag = "";
-        const res = await externalServices.tracker.apexMatches("origin", handle, currentMode);
-        data = res.data;
-        try {
-          const profileRes = await externalServices.tracker.apexProfile("origin", handle);
-          profileData = profileRes?.data || null;
-        } catch {}
+        const cache = readMatchCache(handle, "");
+        if (cache) { data = cache.matches; profileData = cache.profile; }
+        else {
+          const res = await externalServices.tracker.apexMatches("origin", handle, currentMode);
+          data = res.data;
+          try {
+            const profileRes = await externalServices.tracker.apexProfile("origin", handle);
+            profileData = profileRes?.data || null;
+          } catch {}
+          writeMatchCache(handle, "", data, profileData);
+        }
       } else {
         throw new Error("Jeu non supporté");
       }

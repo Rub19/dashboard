@@ -24,6 +24,12 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v232", "2026-08-07", "Plus de matches, cache et correction groupe/DUO", [
+    { kind: "feature", text: "L'historique récupère jusqu'à 25 matches pour Valorant et LoL (paramètre size/count augmenté)." },
+    { kind: "feature", text: "Mise en cache côté client (sessionStorage) et côté worker (10 min) pour l'historique des matches." },
+    { kind: "fix", text: "Le scoreboard n'affiche plus le trait/la pastille de groupe sur tous les joueurs : seuls les vrais membres du groupe sont marqués DUO." },
+    { kind: "improvement", text: "Suppression de la pastille colorée inutile devant chaque joueur dans le scoreboard." }
+  ]),
   entry("v231", "2026-08-07", "Navigation vers les stats depuis les widgets gaming", [
     { kind: "feature", text: "Un clic sur les widgets League of Legends, Valorant et Apex Legends de l'accueil ouvre désormais la page d'historique des matches." },
     { kind: "fix", text: "Le widget Apex Legends affiche correctement le pseudo au lieu de \"undefined - undefined\"." },

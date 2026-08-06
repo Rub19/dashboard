@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v232] - 2026-08-07
+
+### Ajouté
+- **Historique** : jusqu'à 25 matches récupérés pour Valorant (`size=25`) et LoL (`count=25`).
+- **Cache** : l'historique est mis en cache côté navigateur (`sessionStorage`, 10 min) et côté worker (10 min) pour éviter d'appeler l'API à chaque ouverture.
+
+### Corrigé
+- **Scoreboard** : seuls les vrais membres du groupe sont marqués `DUO` ; le trait/pastille bleu n'apparaît plus sur tous les joueurs.
+
 ## [v231] - 2026-08-07
 
 ### Ajouté

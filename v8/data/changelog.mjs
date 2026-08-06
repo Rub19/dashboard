@@ -24,6 +24,10 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v210", "2026-08-06", "Audit i18n et traductions du dashboard", [
+    { kind: "improvement", text: "Audit complet du dashboard pour identifier les chaînes non traduites." },
+    { kind: "improvement", text: "Ajout de plus de 100 traductions pour le panneau Profil, les Préférences, le Dock, les états vides, le Brain et les pages de l'application." }
+  ]),
   entry("v209", "2026-08-06", "Traductions complètes de l'historique de matchs", [
     { kind: "improvement", text: "Ajout des traductions pour toutes les chaînes de l'historique Valorant, League of Legends et Apex (modes, stats, scoreboard, filtres)." },
     { kind: "fix", text: "Les dates relatives sont désormais localisées (ex. \"11h ago\" → \"11h\")." }

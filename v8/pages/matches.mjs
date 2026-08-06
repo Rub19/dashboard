@@ -1,12 +1,14 @@
 import { element, icon } from "../ui/dom.mjs";
 import { emptyState } from "../ui/empty-state.mjs";
+import { refreshIcons } from "../ui/icons.mjs";
+import { createWindowController } from "../ui/window-system.mjs";
 
 export function mountMatches(container, options = {}) {
   const { externalServices, lolLive, valorantLive, trackerLive, actions } = options;
   let destroyed = false;
   let currentMode = "all";
   let matchDetailId = 0;
-  
+
   const hash = window.location.hash.substring(1);
   const searchParams = new URL("http://localhost/" + hash).searchParams;
   const game = searchParams.get("game") || "valorant";
@@ -86,7 +88,7 @@ export function mountMatches(container, options = {}) {
 
   function renderScoreboard(scoreboard) {
     if (!scoreboard || !scoreboard.players) return element("div", { className: "v8-scoreboard-empty", text: "DonnǸes dǸtaillǸes non disponibles" });
-    
+
     const container = element("div", { className: "v8-scoreboard" });
     const teams = { Red: [], Blue: [] };
     scoreboard.players.forEach(p => {
@@ -112,12 +114,12 @@ export function mountMatches(container, options = {}) {
       const shots = (Number(p.stats?.headshots) || 0) + (Number(p.stats?.bodyshots) || 0) + (Number(p.stats?.legshots) || 0);
       const kd = deaths ? (kills / deaths).toFixed(2) : kills ? "Perf" : "0.00";
       const hs = shots ? Math.round((Number(p.stats?.headshots) || 0) / shots * 100) : 0;
-      const isDuo = p.party_id ? element("span", { className: "v8-party-indicator", style: `background-color: ${stringToColor(p.party_id)};`, attributes: { title: "En groupe" } }) : null;
+      const isDuo = p.isPartyMember ? element("span", { className: "v8-party-indicator", attributes: { title: "Membre de votre groupe" } }) : null;
       const placeholder = () => element("span", { className: "v8-scoreboard-agent v8-scoreboard-agent--placeholder", text: "?" });
       const avatar = p.assets?.agent?.small
         ? element("img", { className: "v8-scoreboard-agent", attributes: { src: p.assets.agent.small, alt: "", loading: "lazy" }, events: { error: (event) => event.currentTarget.replaceWith(placeholder()) } })
         : placeholder();
-      return element("tr", { className: p.isMe ? "is-me" : "" }, [
+      return element("tr", { className: `${p.isMe ? "is-me" : ""}${p.isPartyMember ? " is-party-member" : ""}`.trim() }, [
         element("td", { className: "v8-scoreboard-agent-cell" }, [avatar]),
         element("td", { className: "v8-scoreboard-player-cell" }, [isDuo, element("strong", { text: String(p.name || "—") }), element("span", { className: "v8-scoreboard-tag", text: p.tag ? `#${p.tag}` : "" })].filter(Boolean)),
         element("td", { className: "v8-scoreboard-rank", text: String(p.currenttier_patched || "—") }),
@@ -180,6 +182,15 @@ export function mountMatches(container, options = {}) {
     const badgesContainer = element("div", { className: "v8-match-badges" });
     const topScore = Math.max(...(match.scoreboard?.players || []).map(p => Number(p.stats?.score) || 0), 0);
     if (topScore > 0 && Number(stats.score?.value) === topScore) badgesContainer.append(element("span", { className: "v8-badge v8-badge--gold", text: "MVP" }));
+    const partyMembers = match.scoreboard?.partyMembers || [];
+    const partyBadge = partyMembers.length
+      ? element("span", {
+        className: "v8-match-party-badge",
+        attributes: {
+          title: `Avec ${partyMembers.map(p => `${p.name}${p.tag ? `#${p.tag}` : ""}`).join(", ")}`
+        }
+      }, [icon("users-round"), element("span", { text: partyMembers.length > 1 ? "Trio" : "Duo" })])
+      : null;
     
     const kdClass = Number(kdRatio) >= 1.5 ? "text-blue" : Number(kdRatio) >= 1.0 ? "text-green" : "text-yellow";
     
@@ -202,7 +213,10 @@ export function mountMatches(container, options = {}) {
         match.metadata?.agentImageUrl ? element("img", { attributes: { src: match.metadata.agentImageUrl } }) : element("div", { className: "v8-match-agent-placeholder" })
       ]),
       element("div", { className: "v8-match-info" }, [
-        element("small", { text: `${timeAgo} // ${modeName}` }),
+        element("small", { className: "v8-match-meta" }, [
+          element("span", { text: `${timeAgo} // ${modeName}` }),
+          partyBadge
+        ]),
         element("strong", { className: "v8-match-map" }, [
           element("span", { text: match.metadata?.mapName || "Inconnu" }),
           badgesContainer
@@ -212,31 +226,30 @@ export function mountMatches(container, options = {}) {
         element("small", { text: "Score" }),
         element("strong", { text: Number.isFinite(match.metadata?.score?.team) && Number.isFinite(match.metadata?.score?.opponent) ? `${match.metadata.score.team}:${match.metadata.score.opponent}` : "—", className: "v8-match-score" })
       ]),
-      element("div", { className: "v8-match-badges-col" }),
-      element("div", { className: "v8-match-stat-col" }, [
+      element("div", { className: "v8-match-stat-col v8-match-stat-col--kd" }, [
         element("small", { text: "K/D" }),
         element("strong", { text: kdRatio, className: kdClass })
       ]),
-      element("div", { className: "v8-match-stat-col" }, [
+      element("div", { className: "v8-match-stat-col v8-match-stat-col--kda" }, [
         element("small", { text: "K/D/A" }),
         element("strong", { text: `${kills} / ${deaths} / ${assists}` })
       ]),
-      element("div", { className: "v8-match-stat-col" }, [
+      element("div", { className: "v8-match-stat-col v8-match-stat-col--dda" }, [
         element("small", { text: "DDΔ" }),
         element("strong", { text: String(dda) })
       ]),
-      element("div", { className: "v8-match-stat-col" }, [
+      element("div", { className: "v8-match-stat-col v8-match-stat-col--hs" }, [
         element("small", { text: "HS%" }),
         element("strong", { text: String(hs) })
       ]),
-      element("div", { className: "v8-match-stat-col" }, [
+      element("div", { className: "v8-match-stat-col v8-match-stat-col--acs" }, [
         element("small", { text: "ACS" }),
         element("strong", { text: String(acs) })
       ]),
       action
     ]);
     
-    const detailContainer = element("div", { className: "v8-match-detail-container", attributes: { id: detailId }, style: "display: none; padding: 1rem; border-top: 1px solid var(--v8-border);" });
+    const detailContainer = element("div", { className: "v8-match-detail-container", attributes: { id: detailId, hidden: true } });
     if (match.scoreboard) {
        detailContainer.append(renderScoreboard(match.scoreboard));
     } else {
@@ -244,11 +257,12 @@ export function mountMatches(container, options = {}) {
     }
     
     const toggleDetails = () => {
-      const isExpanded = detailContainer.style.display === "block";
-      detailContainer.style.display = isExpanded ? "none" : "block";
+      const isExpanded = !detailContainer.hidden;
+      detailContainer.hidden = isExpanded;
       row.setAttribute("aria-expanded", String(!isExpanded));
       action.setAttribute("aria-expanded", String(!isExpanded));
       action.setAttribute("aria-label", isExpanded ? "Afficher les détails du match" : "Masquer les détails du match");
+      action.classList.toggle("is-expanded", !isExpanded);
     };
     row.addEventListener("click", (event) => {
       if (event.target.closest("button")) return;
@@ -270,8 +284,100 @@ export function mountMatches(container, options = {}) {
 
     return element("div", { className: "v8-match-wrapper", style: "margin-bottom: var(--v8-space-2); background: var(--v8-surface-1); border-radius: var(--v8-radius-lg); overflow: hidden;" }, [row, detailContainer]);
   }
+  function reportMetric(match) {
+    const stats = match.segments?.[0]?.stats || {};
+    const kills = Number(stats.kills?.value) || 0;
+    const deaths = Number(stats.deaths?.value) || 0;
+    const adr = Number(stats.adr?.value);
+    return {
+      kd: deaths > 0 ? kills / deaths : kills > 0 ? null : 0,
+      acs: Number(stats.scorePerRound?.value),
+      hs: Number(stats.headshotsPercentage?.value),
+      adr: Number.isFinite(adr) && adr > 0 ? adr : null
+    };
+  }
 
-  function renderGroup(dateStr, matches) {
+  function averageReportMetrics(matches) {
+    const values = matches.map(reportMetric);
+    const average = (key) => {
+      const available = values.map(value => value[key]).filter(Number.isFinite);
+      return available.length ? available.reduce((sum, value) => sum + value, 0) / available.length : null;
+    };
+    return Object.freeze({
+      kd: average("kd"),
+      acs: average("acs"),
+      hs: average("hs"),
+      adr: average("adr")
+    });
+  }
+
+  function openSessionReport(dateStr, matches, allMatches, reportButton) {
+    const baselineMatches = allMatches.filter(match => !matches.includes(match));
+    const values = averageReportMetrics(matches);
+    const baseline = averageReportMetrics(baselineMatches);
+    const close = () => controller.close();
+    const controller = createWindowController({ onEscape: close });
+    const closeButton = element("button", {
+      className: "v8-button v8-button--ghost v8-session-report__close",
+      attributes: { type: "button", "aria-label": "Fermer le rapport de session" }
+    }, [icon("x")]);
+    const delta = (value, reference) => {
+      if (!Number.isFinite(value) || !Number.isFinite(reference)) return null;
+      const amount = value - reference;
+      const sign = amount > 0 ? "+" : "";
+      return element("span", {
+        className: `v8-session-report__delta ${amount >= 0 ? "is-positive" : "is-negative"}`,
+        text: `${sign}${amount.toFixed(2)} vs historique`
+      });
+    };
+    const tile = (label, value, reference, suffix = "") => element("article", { className: "v8-session-report__tile" }, [
+      element("small", { text: label }),
+      element("strong", { text: Number.isFinite(value) ? `${value.toFixed(label === "HS%" ? 0 : 2)}${suffix}` : "—" }),
+      delta(value, reference)
+    ]);
+    const list = element("div", { className: "v8-session-report__matches" }, [
+      element("h3", { text: "Matchs de la journée" }),
+      ...matches.map(match => element("button", {
+        className: "v8-session-report__match",
+        attributes: { type: "button" },
+        events: { click: () => document.getElementById(`v8-match-detail-${match.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" }) }
+      }, [
+        element("span", { text: match.metadata?.mapName || "Carte inconnue" }),
+        element("small", { text: `${match.metadata?.modeName || "Normal"} · ${match.metadata?.result || "—"}` }),
+        element("strong", { text: `${match.metadata?.score?.team ?? "—"}:${match.metadata?.score?.opponent ?? "—"}` })
+      ]))
+    ]);
+    const surface = element("section", {
+      className: "v8-session-report",
+      attributes: { role: "dialog", "aria-modal": "true", "aria-labelledby": "v8-session-report-title", tabindex: "-1" }
+    }, [
+      element("header", { className: "v8-session-report__header" }, [
+        element("div", {}, [
+          element("small", { text: "Rapport de session" }),
+          element("h2", { id: "v8-session-report-title", text: dateStr })
+        ]),
+        closeButton
+      ]),
+      element("div", { className: "v8-session-report__body" }, [
+        list,
+        element("div", { className: "v8-session-report__stats" }, [
+          tile("K/D", values.kd, baseline.kd),
+          tile("ACS", values.acs, baseline.acs),
+          tile("HS%", values.hs, baseline.hs, "%"),
+          tile("ADR", values.adr, baseline.adr)
+        ])
+      ])
+    ]);
+    const layer = element("div", { className: "v8-session-report-layer", attributes: { "data-v8-layer": "dialog" } }, [surface]);
+    closeButton.addEventListener("click", close);
+    layer.addEventListener("click", event => { if (event.target === layer) close(); });
+    document.body.append(layer);
+    controller.open(layer, { initialFocus: () => closeButton, onAfterClose: () => layer.remove() });
+    refreshIcons();
+    reportButton?.blur?.();
+  }
+
+  function renderGroup(dateStr, matches, allMatches) {
     let wins = 0, losses = 0;
     let totalKills = 0, totalDeaths = 0, totalAssists = 0;
     let totalACS = 0, totalHS = 0, totalDDA = 0;
@@ -306,11 +412,13 @@ export function mountMatches(container, options = {}) {
     const avgHS = matchesWithStats ? Math.round(totalHS / matchesWithStats) : 0;
     const avgACS = matchesWithStats ? Math.round(totalACS / matchesWithStats) : 0;
     
+    const reportButton = element("button", { className: "v8-button v8-button--outline v8-button--small v8-match-report-btn", attributes: { type: "button" } }, [icon("chart-spline"), element("span", { text: "View Report" })]);
+    reportButton.addEventListener("click", () => openSessionReport(dateStr, matches, allMatches, reportButton));
     const headerRow = element("div", { className: "v8-match-group-header" }, [
       element("div", { className: "v8-match-group-date" }, [
         element("strong", { text: dateStr }),
         element("span", { className: "v8-match-group-count", text: String(matches.length) }),
-        element("button", { className: "v8-button v8-button--outline v8-button--small v8-match-report-btn" }, [icon("chart-spline"), element("span", { text: "View Report" })])
+        reportButton
       ]),
       element("div", { className: "v8-match-group-wl" }, [
         element("span", { className: "text-green", text: `${wins} W` }),
@@ -401,10 +509,11 @@ export function mountMatches(container, options = {}) {
       
       const list = element("div", { className: "v8-matches-history" });
       Object.keys(groups).forEach(dateStr => {
-        list.append(renderGroup(dateStr, groups[dateStr]));
+        list.append(renderGroup(dateStr, groups[dateStr], data));
       });
       
       content.append(list);
+      refreshIcons();
     } catch (e) {
       if (destroyed) return;
       

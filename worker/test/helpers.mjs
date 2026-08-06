@@ -44,6 +44,7 @@ export function providerFetch(counter = { calls: 0 }) {
       return json({ playerstats: { achievements: [{ apiname: "READY", achieved: 1, unlocktime: 1700000000, name: "Ready" }] } });
     }
     if (url.hostname === "public-api.tracker.gg") return json({ data: { platformInfo: { platformSlug: "origin", platformUserIdentifier: "Player", platformUserHandle: "Player", avatarUrl: "https://tracker.gg/avatar.png" }, segments: [{ type: "overview", metadata: { name: "Overview" }, stats: { level: { displayName: "Level", displayValue: "10", percentile: 50 } } }] } });
+    if (url.hostname === "valorant-api.com" && url.pathname === "/v1/agents") return json({ data: [{ displayName: "Jett", displayIcon: "https://media.valorant-api.com/agents/jett/displayicon.png" }] });
     if (url.hostname === "api.henrikdev.xyz") {
       if (url.pathname.startsWith("/valorant/v1/account")) return json({ data: { puuid: "123", region: "eu", account_level: 10, name: "Player", tag: "EUW" } });
       if (url.pathname.startsWith("/valorant/v2/mmr")) return json({ data: { current_data: { currenttier: 10, currenttierpatched: "Gold 1" } } });

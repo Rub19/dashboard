@@ -1,8 +1,45 @@
 import { requireSecret } from "../middleware/validation.js";
 import { requestExternal } from "../utils/external-request.js";
+import { cachedLoad } from "../utils/cache.js";
 import { safePublicUrl, safeStats, safeText } from "../utils/normalize.js";
 
 const ORIGIN = "https://api.henrikdev.xyz";
+const VALORANT_API_ORIGIN = "https://valorant-api.com";
+const AGENT_CATALOGUE_CACHE_KEY = "valorant:agents:catalogue";
+const AGENT_IMAGE_HOSTS = ["henrikdev.xyz", "valorant-api.com"];
+
+async function loadAgentCatalogue(env) {
+  const result = await cachedLoad(AGENT_CATALOGUE_CACHE_KEY, 3600, async () => {
+    try {
+      const response = await requestExternal(new URL("/v1/agents", VALORANT_API_ORIGIN), {
+        env,
+        expectedOrigin: VALORANT_API_ORIGIN,
+        service: "tracker",
+        dedupeKey: "valorant:agents:catalogue",
+        retries: 1,
+        maxBytes: 4194304
+      });
+      const agents = Array.isArray(response.data?.data) ? response.data.data : [];
+      return Object.freeze(new Map(agents.map((agent) => {
+        const name = safeText(agent?.displayName).toLowerCase();
+        const icon = safePublicUrl(agent?.displayIcon, ["valorant-api.com"]);
+        return [name, icon];
+      }).filter(([name, icon]) => name && icon)));
+    } catch {
+      return null;
+    }
+  });
+  return result.data;
+}
+
+function resolveAgentImage(value, character, catalogue) {
+  const supplied = safePublicUrl(value, AGENT_IMAGE_HOSTS);
+  if (supplied) {
+    const hostname = new URL(supplied).hostname;
+    if (hostname === "valorant-api.com" || hostname.endsWith(".valorant-api.com")) return supplied;
+  }
+  return catalogue?.get(safeText(character).toLowerCase()) || "";
+}
 
 async function getAccount(env, name, tag, apiKey) {
   const path = `/valorant/v1/account/${encodeURIComponent(name)}/${encodeURIComponent(tag)}`;
@@ -92,6 +129,7 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride) {
   });
   
   const matches = response.data?.data || [];
+  const agentCatalogue = await loadAgentCatalogue(env);
   
   return Object.freeze(matches.map((match) => {
     const meta = match.metadata || {};
@@ -127,7 +165,7 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride) {
           isMe: Boolean(me && p === me),
           assets: Object.freeze({
             agent: Object.freeze({
-              small: safePublicUrl(p.assets?.agent?.small, ["henrikdev.xyz", "valorant-api.com"])
+              small: resolveAgentImage(p.assets?.agent?.small, p.character, agentCatalogue)
             })
           }),
           stats: Object.freeze({
@@ -146,7 +184,7 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride) {
         result: safeText(result),
         mapName: safeText(meta.map),
         agentName: safeText(me?.character),
-        agentImageUrl: safePublicUrl(me?.assets?.agent?.small, ["henrikdev.xyz", "valorant-api.com"]),
+        agentImageUrl: resolveAgentImage(me?.assets?.agent?.small, me?.character, agentCatalogue),
         score: Object.freeze({
           team: Number.isFinite(teamRounds) ? teamRounds : null,
           opponent: Number.isFinite(opponentRounds) ? opponentRounds : null,

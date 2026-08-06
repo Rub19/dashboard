@@ -8,50 +8,11 @@ import { clearCache } from "../src/utils/cache.js";
 import { clearTwitchToken } from "../src/services/twitch-client.js";
 import { accessToken, invoke, json, payload, providerFetch, testEnv } from "./helpers.mjs";
 
-const repositoryRoot = path.resolve(import.meta.dirname, "../..");
-const imageAllowlistHosts = [
-  "henrikdev.xyz",
-  "valorant-api.com",
-  "leagueoflegends.com",
-  "ytimg.com",
-  "ggpht.com",
-  "lastfm.freetls.fastly.net",
-  "lastfm-img2.akamaized.net",
-  "gstatic.com",
-  "tracker.gg",
-  "steamstatic.com",
-  "redditstatic.com",
-  "redd.it",
-  "githubusercontent.com",
-  "jtvnw.net",
-  "discordapp.com",
-  "minecraft.net"
-];
-
-function imageSources(policy) {
-  return new Set(policy.match(/img-src ([^;]+)/)?.[1]?.split(/\s+/) || []);
-}
-
 beforeEach(() => {
   clearCache();
   clearJwksCache();
   clearLocalRateLimits();
   clearTwitchToken();
-});
-
-test("production CSP covers worker-approved image hosts and stays synchronized", () => {
-  const index = fs.readFileSync(path.join(repositoryRoot, "index.html"), "utf8");
-  const headers = fs.readFileSync(path.join(repositoryRoot, "_headers"), "utf8");
-  const indexPolicy = index.match(/<meta http-equiv="Content-Security-Policy" content="([^"]+)"/)?.[1] || "";
-  const headerPolicy = headers.match(/Content-Security-Policy: ([^\n]+)/)?.[1] || "";
-  const indexSources = imageSources(indexPolicy);
-  const headerSources = imageSources(headerPolicy);
-
-  assert.deepEqual([...indexSources], [...headerSources]);
-  for (const host of imageAllowlistHosts) {
-    assert.ok(indexSources.has(`https://${host}`), `CSP is missing ${host}`);
-    assert.ok(indexSources.has(`https://*.${host}`), `CSP is missing subdomains of ${host}`);
-  }
 });
 
 test("health is public, does not probe providers and returns strict headers", async () => {

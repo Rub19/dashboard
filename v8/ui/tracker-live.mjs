@@ -1,6 +1,12 @@
 import { attachFlipBehavior, element, icon } from "./dom.mjs";
 import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
+function formatOverviewStats(presence, limit = 4) {
+  const stats = presence.overview?.stats;
+  if (!Array.isArray(stats) || stats.length === 0) return [];
+  return stats.slice(0, limit).filter(s => s.displayValue != null && s.displayValue !== "");
+}
+
 function avatar(presence) {
   const inner = presence.avatarUrl
     ? element("span", { className: "v8-tracker-avatar__image" }, [element("img", {
@@ -14,12 +20,17 @@ export function trackerLiveCard(presence = {}, options = {}) {
   if (presence.available !== true) return null;
   const variant = ["home", "activity"].includes(options.variant) ? options.variant : "home";
 
+  const quickStats = formatOverviewStats(presence, 2);
+  const allStats = formatOverviewStats(presence, 4);
+  const statSummary = quickStats.map(s => `${s.displayName}: ${s.displayValue}`).join("  ·  ");
+
   const front = element("div", { className: `v8-tracker-live v8-tracker-live--${variant} v8-surface v8-live-card-front` }, [
     avatar(presence),
     element("div", { className: "v8-tracker-live__body" }, [
       element("div", { className: "v8-tracker-live__meta" }, [icon("chart-no-axes-combined"), element("small", { text: "Apex Legends" })]),
       element("strong", { text: presence.handle || "Profil Tracker", attributes: { translate: "no" } }),
       element("p", { text: `${presence.platform} - ${presence.identifier}`, attributes: { translate: "no" } }),
+      statSummary ? element("p", { text: statSummary, attributes: { translate: "no" } }) : null,
       liveFreshnessNode(presence.updatedAt)
     ])
   ]);
@@ -29,7 +40,8 @@ export function trackerLiveCard(presence = {}, options = {}) {
     element("div", { className: "v8-flip-back-body" }, [
       element("p", { text: presence.handle || "Profil Tracker", attributes: { translate: "no" } }),
       element("p", { text: `Plateforme : ${presence.platform}` }),
-      element("p", { text: `Identifiant : ${presence.identifier}`, attributes: { translate: "no" } })
+      element("p", { text: `Identifiant : ${presence.identifier}`, attributes: { translate: "no" } }),
+      ...allStats.map(s => element("p", { text: `${s.displayName} : ${s.displayValue}`, attributes: { translate: "no" } }))
     ]),
     element("footer", { className: "v8-flip-back-footer" }, [element("small", { text: "Tracker.gg" })])
   ]);

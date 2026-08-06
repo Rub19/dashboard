@@ -337,6 +337,150 @@ export function mountMatches(container, options = {}) {
     return element("div", { className: "v8-match-wrapper", style: "margin-bottom: var(--v8-space-2); background: var(--v8-surface-1); border-radius: var(--v8-radius-lg); overflow: hidden;" }, [row, detailContainer]);
   }
 
+  function renderApexMatch(match) {
+    const rawResult = String(match.metadata?.result || "").trim();
+    const resultText = rawResult.toLowerCase();
+    let placement;
+    let isWin = false;
+    const placeMatch = rawResult.match(/^#?\s*(\d+)\s*$/);
+    if (resultText === "win" || resultText === "victory" || (placeMatch && placeMatch[1] === "1")) {
+      placement = "Top 1";
+      isWin = true;
+    } else if (placeMatch) {
+      placement = `#${placeMatch[1]}`;
+    } else {
+      placement = rawResult || "—";
+    }
+    const isLoss = !isWin && (resultText === "loss" || resultText === "defeat");
+    const stateClass = isWin ? "is-win" : isLoss ? "is-loss" : "is-draw";
+
+    const summary = match.segments?.find(s => s.type === "player-summary") || match.segments?.[0] || {};
+    const stats = summary.stats || {};
+
+    const kills = Number(stats.kills?.value ?? stats.kills ?? 0) || 0;
+    const deaths = Number(stats.deaths?.value ?? stats.deaths ?? 0) || 0;
+    const assists = Number(stats.assists?.value ?? stats.assists ?? 0) || 0;
+    const damage = Math.round(Number(stats.damage?.value ?? stats.damage ?? 0)) || 0;
+    const headshots = Math.round(Number(stats.headshots?.value ?? stats.headshots ?? 0)) || 0;
+    const score = Math.round(Number(stats.score?.value ?? stats.score ?? 0)) || 0;
+    const knockdowns = Number(stats.knockdowns?.value ?? stats.knockdowns ?? 0) || 0;
+    const survivalTime = String(stats.timePlayed?.displayValue ?? stats.survivalTime?.displayValue ?? "");
+
+    const timeAgo = formatTimeAgo(match.metadata?.timestamp);
+    const modeName = match.metadata?.modeName || "Apex";
+    const mapName = match.metadata?.mapName || "Inconnu";
+    const legendName = match.metadata?.agentName || "";
+    const legendImageUrl = match.metadata?.agentImageUrl || "";
+
+    const placementClass = isWin ? "text-green" : /^#?\s*[2-5]\b/.test(rawResult) ? "text-blue" : "text-yellow";
+
+    const detailId = `v8-match-detail-${match.id || ++matchDetailId}`;
+    const matchChevron = element("span", { className: "v8-match-chevron", text: "⌄" });
+    const action = element("button", {
+      className: "v8-match-action",
+      attributes: {
+        type: "button",
+        "aria-label": "Afficher les détails du match",
+        "aria-expanded": "false",
+        "aria-controls": detailId
+      }
+    }, [icon("chevron-down")]);
+
+    const champImg = (url) => url ? element("img", { attributes: { src: url, alt: "", loading: "lazy", decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(element("div", { className: "v8-lol-champion-placeholder" })) } }) : element("div", { className: "v8-lol-champion-placeholder" });
+
+    const row = element("div", {
+      className: `v8-lol-match-row ${stateClass}`,
+      attributes: { tabindex: "0", "aria-expanded": "false", "aria-controls": detailId }
+    }, [
+      element("div", { className: "v8-match-accent" }),
+      element("div", { className: "v8-match-agent" }, [champImg(legendImageUrl)]),
+      element("div", { className: "v8-lol-match-main" }, [
+        element("small", { text: `${timeAgo} // ${modeName}` }),
+        element("div", { className: "v8-lol-match-mode-row" }, [
+          element("strong", { className: "v8-lol-match-mode", text: legendName || "Légende" }),
+          knockdowns ? element("span", { className: "v8-badge v8-badge--outline", text: `${knockdowns} KD` }) : null
+        ].filter(Boolean)),
+        element("div", { className: "v8-lol-match-items", style: "font-size: var(--v8-font-xs); color: var(--v8-text-secondary);" }, [element("span", { text: mapName })])
+      ]),
+      element("div", { className: "v8-lol-match-score" }, [
+        element("small", { text: "Place" }),
+        element("div", { className: "v8-match-score-value" }, [
+          element("strong", { text: placement, className: `v8-match-score ${placementClass}` }),
+          matchChevron
+        ])
+      ]),
+      element("div", { className: "v8-lol-match-kda" }, [
+        element("small", { text: "Kills" }),
+        element("strong", { text: String(kills) }),
+        element("span", { text: `${assists} assists` })
+      ]),
+      element("div", { className: "v8-lol-match-stat" }, [
+        element("small", { text: "Dmg" }),
+        element("strong", { text: String(damage) })
+      ]),
+      element("div", { className: "v8-lol-match-stat" }, [
+        element("small", { text: "HS" }),
+        element("strong", { text: String(headshots) })
+      ]),
+      element("div", { className: "v8-lol-match-stat" }, [
+        element("small", { text: "Score" }),
+        element("strong", { text: String(score) })
+      ]),
+      action
+    ]);
+
+    const detailBody = element("div", { className: "v8-match-detail__body" });
+    if (match.scoreboard) {
+      detailBody.append(
+        element("p", { text: survivalTime ? `Durée : ${survivalTime}` : "Détails du scoreboard", style: "color: var(--v8-text-muted);" }),
+        renderScoreboard(match.scoreboard)
+      );
+    } else {
+      detailBody.append(
+        element("p", { text: "Statistiques de la partie", style: "color: var(--v8-text-muted); font-weight: var(--v8-weight-semibold);" }),
+        element("div", { className: "v8-match-group-aggregate", style: "padding: var(--v8-space-3) 0;" }, [
+          element("div", { className: "v8-match-stat-col v8-profile-stat" }, [element("small", { text: "Kills" }), element("strong", { text: String(kills) })]),
+          element("div", { className: "v8-match-stat-col v8-profile-stat" }, [element("small", { text: "Dégâts" }), element("strong", { text: String(damage) })]),
+          element("div", { className: "v8-match-stat-col v8-profile-stat" }, [element("small", { text: "Headshots" }), element("strong", { text: String(headshots) })]),
+          element("div", { className: "v8-match-stat-col v8-profile-stat" }, [element("small", { text: "Assists" }), element("strong", { text: String(assists) })]),
+          element("div", { className: "v8-match-stat-col v8-profile-stat" }, [element("small", { text: "Score" }), element("strong", { text: String(score) })])
+        ])
+      );
+    }
+    const detailContainer = element("div", { className: "v8-match-detail", attributes: { id: detailId } }, [
+      element("div", { className: "v8-match-detail__inner" }, [detailBody])
+    ]);
+
+    const toggleDetails = () => {
+      const isExpanded = detailContainer.classList.contains("is-open");
+      detailContainer.classList.toggle("is-open", !isExpanded);
+      row.setAttribute("aria-expanded", String(!isExpanded));
+      action.setAttribute("aria-expanded", String(!isExpanded));
+      action.setAttribute("aria-label", isExpanded ? "Afficher les détails du match" : "Masquer les détails du match");
+      action.classList.toggle("is-expanded", !isExpanded);
+      if (matchChevron) matchChevron.textContent = isExpanded ? "⌄" : "⌃";
+    };
+    row.addEventListener("click", (event) => {
+      if (event.target.closest("button")) return;
+      toggleDetails();
+    });
+    row.addEventListener("keydown", (event) => {
+      if (event.target.closest("button")) return;
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        toggleDetails();
+      }
+    });
+    action.addEventListener("click", (event) => {
+      event.stopPropagation();
+      toggleDetails();
+    });
+
+    row.style.cursor = "pointer";
+
+    return element("div", { className: "v8-match-wrapper", style: "margin-bottom: var(--v8-space-2); background: var(--v8-surface-1); border-radius: var(--v8-radius-lg); overflow: hidden;" }, [row, detailContainer]);
+  }
+
   function renderLolMatch(match) {
     const resultText = match.metadata?.result || "Inconnu";
     const resultLower = resultText.toLowerCase();
@@ -558,28 +702,34 @@ export function mountMatches(container, options = {}) {
     let totalKills = 0, totalDeaths = 0, totalAssists = 0;
     let totalACS = 0, totalHS = 0, totalDDA = 0;
     let totalDamage = 0, totalGold = 0, totalMinutes = 0;
+    let totalApexDamage = 0, totalApexHeadshots = 0;
     let matchesWithStats = 0;
     
     matches.forEach(m => {
-       const result = m.metadata?.result?.toLowerCase() || "";
-       if (result === "victory" || result === "win") wins++;
+       const result = String(m.metadata?.result || "").toLowerCase().trim();
+       if (result === "victory" || result === "win" || /^#?\s*1\s*$/.test(result)) wins++;
        else if (result === "defeat" || result === "loss") losses++;
-       
-       const summary = m.segments?.[0]?.stats || {};
-       const k = Number(summary.kills?.value) || 0;
-       const d = Number(summary.deaths?.value) || 0;
-       const a = Number(summary.assists?.value) || 0;
+
+       const summary = m.segments?.find(s => s.type === "player-summary")?.stats || m.segments?.[0]?.stats || {};
+       const k = Number(summary.kills?.value ?? summary.kills ?? 0) || 0;
+       const d = Number(summary.deaths?.value ?? summary.deaths ?? 0) || 0;
+       const a = Number(summary.assists?.value ?? summary.assists ?? 0) || 0;
        totalKills += k;
        totalDeaths += d;
        totalAssists += a;
        totalDamage += Number(summary.damagePerMin?.value) || 0;
        totalGold += Number(summary.goldPerMin?.value) || 0;
        totalMinutes += 1;
-       
+
        const acs = Number(summary.scorePerRound?.value || 0);
        const hs = Number(summary.headshotsPercentage?.value || 0);
        const dda = Number(summary.damageDeltaPerRound?.value || 0);
-       
+
+       if (game === "apex") {
+         totalApexDamage += Number(summary.damage?.value ?? summary.damage ?? 0) || 0;
+         totalApexHeadshots += Number(summary.headshots?.value ?? summary.headshots ?? 0) || 0;
+       }
+
        matchesWithStats++;
        totalACS += acs;
        totalHS += hs;
@@ -598,18 +748,34 @@ export function mountMatches(container, options = {}) {
     const reportButton = element("button", { className: "v8-button v8-button--outline v8-button--small v8-match-report-btn", attributes: { type: "button" } }, [icon("chart-spline"), element("span", { text: "View Report" })]);
     reportButton.addEventListener("click", () => openSessionReport(dateStr, matches, allMatches, reportButton));
     const isLolGroup = game === "lol";
-    const aggregateCols = isLolGroup ? [
-      element("div", { className: "v8-match-stat-col" }, [element("small", { text: "Avg KDA" }), element("strong", { text: kda })]),
-      element("div", { className: "v8-match-stat-col" }, [element("small", { text: "Avg DPM" }), element("strong", { text: String(avgDPM) })]),
-      element("div", { className: "v8-match-stat-col" }, [element("small", { text: "Avg GPM" }), element("strong", { text: String(avgGPM) })]),
-      element("div", { className: "v8-match-stat-col" }, [element("small", { text: "K/D" }), element("strong", { text: kdRatio })])
-    ] : [
-      element("div", { className: "v8-match-stat-col" }, [element("small", { text: "K/D" }), element("strong", { text: kdRatio })]),
-      element("div", { className: "v8-match-stat-col" }, [element("small", { text: `${totalKills} K // ${totalDeaths} D // ${totalAssists} A` }), element("strong", { text: `${kdaAvg} K/D/A` })]),
-      element("div", { className: "v8-match-stat-col" }, [element("small", { text: "DDΔ" }), element("strong", { text: String(avgDDA) })]),
-      element("div", { className: "v8-match-stat-col" }, [element("small", { text: "HS%" }), element("strong", { text: String(avgHS) })]),
-      element("div", { className: "v8-match-stat-col" }, [element("small", { text: "ACS" }), element("strong", { text: String(avgACS) })])
-    ];
+    const isApexGroup = game === "apex";
+    let aggregateCols;
+    if (isLolGroup) {
+      aggregateCols = [
+        element("div", { className: "v8-match-stat-col" }, [element("small", { text: "Avg KDA" }), element("strong", { text: kda })]),
+        element("div", { className: "v8-match-stat-col" }, [element("small", { text: "Avg DPM" }), element("strong", { text: String(avgDPM) })]),
+        element("div", { className: "v8-match-stat-col" }, [element("small", { text: "Avg GPM" }), element("strong", { text: String(avgGPM) })]),
+        element("div", { className: "v8-match-stat-col" }, [element("small", { text: "K/D" }), element("strong", { text: kdRatio })])
+      ];
+    } else if (isApexGroup) {
+      const avgApexKills = matchesWithStats ? Math.round(totalKills / matchesWithStats) : 0;
+      const avgApexDamage = matchesWithStats ? Math.round(totalApexDamage / matchesWithStats) : 0;
+      const avgApexHeadshots = matchesWithStats ? Math.round(totalApexHeadshots / matchesWithStats) : 0;
+      aggregateCols = [
+        element("div", { className: "v8-match-stat-col" }, [element("small", { text: "K/D" }), element("strong", { text: kdRatio })]),
+        element("div", { className: "v8-match-stat-col" }, [element("small", { text: "Avg Kills" }), element("strong", { text: String(avgApexKills) })]),
+        element("div", { className: "v8-match-stat-col" }, [element("small", { text: "Avg Dmg" }), element("strong", { text: String(avgApexDamage) })]),
+        element("div", { className: "v8-match-stat-col" }, [element("small", { text: "Avg HS" }), element("strong", { text: String(avgApexHeadshots) })])
+      ];
+    } else {
+      aggregateCols = [
+        element("div", { className: "v8-match-stat-col" }, [element("small", { text: "K/D" }), element("strong", { text: kdRatio })]),
+        element("div", { className: "v8-match-stat-col" }, [element("small", { text: `${totalKills} K // ${totalDeaths} D // ${totalAssists} A` }), element("strong", { text: `${kdaAvg} K/D/A` })]),
+        element("div", { className: "v8-match-stat-col" }, [element("small", { text: "DDΔ" }), element("strong", { text: String(avgDDA) })]),
+        element("div", { className: "v8-match-stat-col" }, [element("small", { text: "HS%" }), element("strong", { text: String(avgHS) })]),
+        element("div", { className: "v8-match-stat-col" }, [element("small", { text: "ACS" }), element("strong", { text: String(avgACS) })])
+      ];
+    }
     const headerRow = element("div", { className: "v8-match-group-header" }, [
       element("div", { className: "v8-match-group-date" }, [
         element("strong", { text: dateStr }),
@@ -624,7 +790,7 @@ export function mountMatches(container, options = {}) {
       element("div", { className: "v8-match-group-aggregate" }, aggregateCols)
     ]);
     
-    const rows = matches.map((m) => game === "lol" ? renderLolMatch(m) : renderMatch(m));
+    const rows = matches.map((m) => game === "lol" ? renderLolMatch(m) : game === "apex" ? renderApexMatch(m) : renderMatch(m));
     
     return element("div", { className: "v8-match-group" }, [
       headerRow,
@@ -794,7 +960,57 @@ export function mountMatches(container, options = {}) {
   }
 
   function renderApexProfile(profile) {
-    return buildProfileHeader(profile, "v8-apex-profile", ["rank", "level", "rankScore"]);
+    const displayName = currentName || profile?.handle || profile?.name || "—";
+    const overview = (profile?.segments || []).find(s => s.type === "overview") || profile?.segments?.[0] || {};
+    const stats = overview?.stats || {};
+
+    function pickStat(keys, label) {
+      for (const key of keys) {
+        const s = stats[key];
+        if (s == null) continue;
+        const value = s.displayValue ?? s.value ?? s;
+        if (value != null && String(value) !== "" && String(value) !== "0") {
+          return { label: s.displayName || label, value: String(value) };
+        }
+      }
+      return null;
+    }
+
+    const rank = pickStat(["rankScore", "rank", "ranked", "rating", "arenaRankScore", "brRankScore"], "Rank");
+    const level = pickStat(["level", "accountLevel", "account level", "playerLevel"], "Level");
+    const kills = pickStat(["kills", "killsAsLegend", "totalKills"], "Kills");
+    const wins = pickStat(["wins", "totalWins", "gamesWon"], "Wins");
+    const damage = pickStat(["damage", "totalDamage", "damageDealt"], "Dégâts");
+    const kd = pickStat(["kd", "kdr", "killsDeathsRatio", "killsPerMatch"], "K/D");
+
+    const rankText = rank ? `${rank.label}: ${rank.value}` : (level ? `${level.label}: ${level.value}` : translateSource("Unranked"));
+    const statItems = [kills, wins, damage, kd].filter(Boolean).slice(0, 4);
+    if (statItems.length < 4 && level) statItems.push(level);
+
+    const avatarUrl = profile?.avatarUrl;
+    const placeholder = element("div", { className: "v8-match-agent-placeholder" });
+    const avatarImg = avatarUrl
+      ? element("img", { attributes: { src: avatarUrl, alt: "", loading: "lazy", decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(placeholder) } })
+      : placeholder;
+    const avatar = element("div", { className: "v8-match-agent" }, [avatarImg]);
+
+    const statsEl = statItems.length
+      ? element("div", { className: "v8-profile-stats" }, statItems.map((item) =>
+          element("div", { className: "v8-match-stat-col v8-profile-stat" }, [
+            element("small", { text: item.label }),
+            element("strong", { text: item.value })
+          ])
+        ))
+      : null;
+
+    return element("header", { className: "v8-match-group v8-surface v8-apex-profile" }, [
+      avatar,
+      element("div", { className: "v8-profile-info" }, [
+        element("strong", { className: "v8-profile-name", text: displayName, attributes: { translate: "no" } }),
+        element("span", { className: "v8-profile-rank", text: rankText })
+      ]),
+      statsEl
+    ]);
   }
 
   function renderSkeleton() {

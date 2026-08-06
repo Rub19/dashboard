@@ -4,6 +4,26 @@ export const MISSING_TRANSLATIONS = {
     es: "Canal de Twitch",
     de: "Twitch-Kanal"
   },
+  "Avg HS": {
+    en: "Avg HS",
+    es: "Media HS",
+    de: "Ø HS"
+  },
+  "HS": {
+    en: "HS",
+    es: "HS",
+    de: "HS"
+  },
+  "Dégâts": {
+    en: "Damage",
+    es: "Daño",
+    de: "Schaden"
+  },
+  "Statistiques de la partie": {
+    en: "Match statistics",
+    es: "Estadísticas de la partida",
+    de: "Match-Statistiken"
+  },
   "Densité": {
     en: "Density",
     es: "Densidad",

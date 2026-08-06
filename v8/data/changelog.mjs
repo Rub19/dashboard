@@ -24,6 +24,13 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v225", "2026-08-06", "CSP, tracker Apex et icônes", [
+    { kind: "fix", text: "Correction du CSP script-src pour débloquer le chargement des icônes Lucide." },
+    { kind: "fix", text: "Correction de la clé de cache des matchs Apex dans le worker Tracker.gg." },
+    { kind: "feature", text: "Nouveau rendu des matchs Apex : placement, légende, kills, dégâts, headshots et score." },
+    { kind: "improvement", text: "Profil Apex enrichi avec le rank, le level, les kills, les wins, les dégâts et le K/D." },
+    { kind: "improvement", text: "Carte Live Now Apex améliorée avec les statistiques overview au verso." }
+  ]),
   entry("v224", "2026-08-06", "Accessibilité, i18n et polish des cartes Live Now", [
     { kind: "feature", text: "Les cartes Live Now sont focusables et activables au clavier (Entrée / Espace)." },
     { kind: "improvement", text: "Comportement de flip factorisé dans un helper partagé pour toutes les cartes." },

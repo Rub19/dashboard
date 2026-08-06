@@ -81,6 +81,6 @@ export async function trackerApexMatchesRoute({ env, url, auth }) {
   const identifier = queryText(url, "identifier", { pattern: PATTERNS.trackerIdentifier, max: 64 });
   const mode = queryText(url, "mode", { max: 32 }) || "all";
   const loader = async () => getTrackerApexMatches(env, platform, identifier, mode, await ownKeyTracker(env, auth));
-  const result = await cachedLoad("tracker:apex:matches:::", 180, loader);
+  const result = await cachedLoad(`tracker:apex:matches:${platform}:${identifier.toLowerCase()}:${mode}`, 180, loader);
   return routeResult(result.data, { source: "tracker", cached: result.cached });
 }

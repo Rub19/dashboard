@@ -3983,13 +3983,13 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
 .v8-scoreboard-table tbody tr:hover { background:var(--v8-surface-2); }
 .v8-scoreboard-table tbody tr.is-me { background:color-mix(in srgb,var(--v8-accent) 12%,transparent);box-shadow:inset 3px 0 var(--v8-accent); }
 .v8-scoreboard-table thead { background:var(--v8-surface-2); }
-.v8-scoreboard-col-agent { width:52px; }.v8-scoreboard-col-player { width:25%; }.v8-scoreboard-col-rank { width:16%; }.v8-scoreboard-col-number { width:auto; }
+.v8-scoreboard-col-agent { width:48px; }.v8-scoreboard-col-player { width:25%; }.v8-scoreboard-col-rank { width:16%; }.v8-scoreboard-col-number { width:auto; }
 .v8-scoreboard-team-header th { padding:var(--v8-space-3);color:var(--team-color);background:color-mix(in srgb,var(--team-color) 9%,var(--v8-surface-1));border-top:2px solid var(--team-color);border-bottom:1px solid color-mix(in srgb,var(--team-color) 28%,var(--v8-border));text-transform:none;font-size:var(--v8-font-sm); }
-.v8-scoreboard-team-header th span { display:inline-block; }.v8-scoreboard-team-header th strong { float:right;font-variant-numeric:tabular-nums;font-size:var(--v8-font-lg); }
+.v8-scoreboard-team-header__content { display:flex;align-items:center;justify-content:space-between;gap:var(--v8-space-3); }.v8-scoreboard-team-header th strong { font-variant-numeric:tabular-nums;font-size:var(--v8-font-lg); }
 .v8-scoreboard-number { text-align:right;font-variant-numeric:tabular-nums; }.v8-scoreboard-rank { color:var(--v8-muted)!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
 .v8-scoreboard-player-cell { overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }.v8-scoreboard-tag { color:var(--v8-muted);font-size:var(--v8-font-xs);margin-left:var(--v8-space-1); }
 .v8-party-indicator { display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:var(--v8-space-2);vertical-align:middle;box-shadow:inset 0 0 0 1px rgba(0,0,0,0.2); }
-.v8-scoreboard-agent { display:block;width:32px;height:32px;border-radius:var(--v8-radius-sm);object-fit:cover;background:var(--v8-surface-3); }.v8-scoreboard-agent--placeholder { display:grid;place-items:center;color:var(--v8-muted);font-weight:var(--v8-weight-bold); }
+.v8-scoreboard-agent-cell { overflow:hidden; }.v8-scoreboard-agent { display:block;width:32px;height:32px;max-width:100%;border-radius:var(--v8-radius-sm);object-fit:cover;background:var(--v8-surface-3); }.v8-scoreboard-agent--placeholder { display:grid;place-items:center;color:var(--v8-muted);font-weight:var(--v8-weight-bold); }
 
 @media (max-width: 900px) {
   .v8-match-row { grid-template-columns: 40px 1fr auto; grid-template-rows: auto auto; }

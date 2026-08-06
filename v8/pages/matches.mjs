@@ -96,7 +96,6 @@ export function mountMatches(container, options = {}) {
       teams[t].sort((a,b) => (b.stats?.score || 0) - (a.stats?.score || 0));
     });
 
-    const topScore = Math.max(...scoreboard.players.map(p => Number(p.stats?.score) || 0), 0);
     const table = element("table", { className: "v8-scoreboard-table" }, [
       element("colgroup", {}, [
         element("col", { className: "v8-scoreboard-col-agent" }),
@@ -110,7 +109,7 @@ export function mountMatches(container, options = {}) {
         element("col", { className: "v8-scoreboard-col-number" })
       ]),
       element("thead", {}, [element("tr", {}, [
-        element("th", { text: "Agent" }), element("th", { text: "Joueur" }), element("th", { text: "Rank" }),
+        element("th", { text: "Ag." }), element("th", { text: "Joueur" }), element("th", { text: "Rank" }),
         element("th", { text: "Score" }), element("th", { text: "K" }), element("th", { text: "D" }),
         element("th", { text: "A" }), element("th", { text: "K/D" }), element("th", { text: "HS%" })
       ])])
@@ -123,9 +122,10 @@ export function mountMatches(container, options = {}) {
       const kd = deaths ? (kills / deaths).toFixed(2) : kills ? "Perf" : "0.00";
       const hs = shots ? Math.round((Number(p.stats?.headshots) || 0) / shots * 100) : 0;
       const isDuo = p.party_id ? element("span", { className: "v8-party-indicator", style: `background-color: ${stringToColor(p.party_id)};`, attributes: { title: "En groupe" } }) : null;
+      const placeholder = () => element("span", { className: "v8-scoreboard-agent v8-scoreboard-agent--placeholder", text: "?" });
       const avatar = p.assets?.agent?.small
-        ? element("img", { className: "v8-scoreboard-agent", attributes: { src: p.assets.agent.small, alt: p.character || "Agent", loading: "lazy" } })
-        : element("span", { className: "v8-scoreboard-agent v8-scoreboard-agent--placeholder", text: "?" });
+        ? element("img", { className: "v8-scoreboard-agent", attributes: { src: p.assets.agent.small, alt: "", loading: "lazy" }, events: { error: (event) => event.currentTarget.replaceWith(placeholder()) } })
+        : placeholder();
       return element("tr", { className: p.isMe ? "is-me" : "" }, [
         element("td", { className: "v8-scoreboard-agent-cell" }, [avatar]),
         element("td", { className: "v8-scoreboard-player-cell" }, [isDuo, element("strong", { text: String(p.name || "—") }), element("span", { className: "v8-scoreboard-tag", text: p.tag ? `#${p.tag}` : "" })].filter(Boolean)),
@@ -139,19 +139,24 @@ export function mountMatches(container, options = {}) {
       ]);
     };
 
-    ["Red", "Blue"].forEach(teamName => {
+    const ownTeam = scoreboard.players.find(p => p.isMe)?.team || null;
+    const teamOrder = ownTeam ? [ownTeam, ...Object.keys(teams).filter(teamName => teamName !== ownTeam)] : ["Blue", "Red"];
+    teamOrder.forEach(teamName => {
       const players = teams[teamName] || [];
       if (!players.length) return;
       const rounds = scoreboard.teams?.[teamName]?.roundsWon;
       const color = teamName === "Red" ? "var(--v8-danger)" : "var(--v8-info)";
+      const label = ownTeam ? (teamName === ownTeam ? "Votre équipe" : "Ennemi") : (teamName === "Blue" ? "Votre équipe" : "Ennemi");
       table.append(element("tbody", { className: `v8-scoreboard-team v8-scoreboard-team--${teamName.toLowerCase()}` }, [
         element("tr", { className: "v8-scoreboard-team-header", style: `--team-color:${color}` }, [
           element("th", { attributes: { colspan: "9" } }, [
-            element("span", { text: teamName === "Red" ? "Ennemi" : "Votre équipe" }),
+            element("div", { className: "v8-scoreboard-team-header__content" }, [
+              element("span", { text: label }),
             element("strong", { text: Number.isFinite(rounds) ? String(rounds) : "—" })
+            ])
           ])
         ]),
-        ...players.map(p => renderPlayer({ ...p, _topScore: topScore }))
+        ...players.map(renderPlayer)
       ]));
     });
     container.append(table);
@@ -183,7 +188,7 @@ export function mountMatches(container, options = {}) {
     
     const badgesContainer = element("div", { className: "v8-match-badges" });
     const topScore = Math.max(...(match.scoreboard?.players || []).map(p => Number(p.stats?.score) || 0), 0);
-    if (topScore > 0 && Number(stats.score) === topScore) badgesContainer.append(element("span", { className: "v8-badge v8-badge--gold", text: "MVP" }));
+    if (topScore > 0 && Number(stats.score?.value) === topScore) badgesContainer.append(element("span", { className: "v8-badge v8-badge--gold", text: "MVP" }));
     
     const kdClass = Number(kdRatio) >= 1.5 ? "text-blue" : Number(kdRatio) >= 1.0 ? "text-green" : "text-yellow";
     

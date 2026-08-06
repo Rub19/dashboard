@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v231] - 2026-08-07
+
+### Ajouté
+- **Accueil** : un clic sur les widgets gaming (LoL, Valorant, Apex) ouvre la page d'historique des matches.
+
+### Corrigé
+- **Widget Apex Legends** : affiche le pseudo du joueur au lieu de `undefined - undefined`.
+- **Widget LoL / Valorant** : la navigation vers l'historique des matches fonctionne depuis l'accueil.
+
 ## [v230] - 2026-08-07
 
 ### Ajouté

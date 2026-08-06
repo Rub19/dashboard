@@ -15,6 +15,7 @@ export function valorantLiveCard(presence = {}, options = {}) {
   const variant = ["home", "activity"].includes(options.variant) ? options.variant : "home";
   const statLine = presence.overview?.stats?.[0] ? `${presence.overview.stats[0].displayName} : ${presence.overview.stats[0].displayValue}` : "Aucun match récent";
   const statLine2 = presence.overview?.stats?.[1] ? `${presence.overview.stats[1].displayName} : ${presence.overview.stats[1].displayValue}` : "";
+  const onClick = typeof options.onClick === "function" ? options.onClick : null;
 
   const front = element("div", { className: `v8-valorant-live v8-valorant-live--${variant} v8-surface v8-live-card-front` }, [
     emblem(presence),
@@ -42,7 +43,14 @@ export function valorantLiveCard(presence = {}, options = {}) {
     dataset: { liveWidget: "game", liveKind: "valorant" }
   }, [element("div", { className: "v8-live-card-inner" }, [front, back])]);
 
-  attachFlipBehavior(card);
+  if (onClick) {
+    card.addEventListener("click", (event) => {
+      if (event.target.closest('button, a, input, select, textarea, [contenteditable="true"]')) return;
+      onClick(event);
+    });
+  } else {
+    attachFlipBehavior(card);
+  }
 
   return card;
 }

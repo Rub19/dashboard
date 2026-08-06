@@ -24,6 +24,11 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v231", "2026-08-07", "Navigation vers les stats depuis les widgets gaming", [
+    { kind: "feature", text: "Un clic sur les widgets League of Legends, Valorant et Apex Legends de l'accueil ouvre désormais la page d'historique des matches." },
+    { kind: "fix", text: "Le widget Apex Legends affiche correctement le pseudo au lieu de \"undefined - undefined\"." },
+    { kind: "improvement", text: "Les cartes de jeu conservent le retournement dans l'activité, mais naviguent dans l'accueil." }
+  ]),
   entry("v230", "2026-08-07", "Runes LoL et keystone dans l'historique", [
     { kind: "feature", text: "La rune clé (keystone) du joueur s'affiche dans la ligne de match LoL et dans le scoreboard détaillé." },
     { kind: "improvement", text: "Chargement des données runesReforged.json depuis Data Dragon pour mapper les runes par version de patch." },

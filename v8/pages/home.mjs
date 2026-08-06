@@ -536,7 +536,7 @@ export function mountHome(stage, model, options = {}) {
   }
 
   function renderValorant(valorantState, animate = false) {
-    const card = valorantLiveCard(valorantState, { variant: "home" });
+    const card = valorantLiveCard(valorantState, { variant: "home", onClick: () => { window.location.hash = "#/matches?game=valorant&mode=all"; } });
     valorantHost.replaceChildren(...(card ? [card] : []));
     applyHostVisibility("valorant", valorantHost, Boolean(card));
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
@@ -545,7 +545,7 @@ export function mountHome(stage, model, options = {}) {
   }
 
   function renderLol(lolState, animate = false) {
-    const card = lolLiveCard(lolState, { variant: "home" });
+    const card = lolLiveCard(lolState, { variant: "home", onClick: () => { window.location.hash = "#/matches?game=lol&mode=all"; } });
     lolHost.replaceChildren(...(card ? [card] : []));
     applyHostVisibility("lol", lolHost, Boolean(card));
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });
@@ -572,7 +572,7 @@ export function mountHome(stage, model, options = {}) {
   }
 
   function renderTracker(trackerState, animate = false) {
-    const card = trackerLiveCard(trackerState, { variant: "home" });
+    const card = trackerLiveCard(trackerState, { variant: "home", onClick: () => { window.location.hash = "#/matches?game=apex&mode=all"; } });
     trackerHost.replaceChildren(...(card ? [card] : []));
     applyHostVisibility("tracker-gg", trackerHost, Boolean(card));
     if (card && animate) presence?.signalActivity?.(card, "system", { phase: "update" });

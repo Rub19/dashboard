@@ -19,11 +19,8 @@ export function notionLiveCard(presence = {}, options = {}) {
   const variant = ["home", "activity"].includes(options.variant) ? options.variant : "home";
   const page = presence.latestPage;
   const meta = [page.kind, formatRelativeTime(page.lastEditedTime)].filter(Boolean).join(" - ");
-  return element(options.tagName || "article", {
-    className: `v8-notion-live v8-notion-live--${variant} v8-surface`,
-    attributes: { "aria-label": "Dernière page Notion modifiée" },
-    dataset: { liveWidget: "media", liveKind: "widget" }
-  }, [
+
+  const front = element("div", { className: `v8-notion-live v8-notion-live--${variant} v8-surface v8-live-card-front` }, [
     element("span", { className: "v8-notion-icon" }, [icon("notebook-tabs"), livePulseDot()]),
     element("div", { className: "v8-notion-live__body" }, [
       element("div", { className: "v8-notion-live__meta" }, [brandIcon("notion", "notebook-tabs", "v8-live-brand-mark"), element("small", { text: "Dernière page modifiée" })]),
@@ -36,4 +33,27 @@ export function notionLiveCard(presence = {}, options = {}) {
       attributes: { href: page.url, target: "_blank", rel: "noopener noreferrer", "aria-label": "Ouvrir dans Notion" }
     }, [icon("arrow-up-right")]) : null
   ]);
+
+  const back = element("div", { className: "v8-live-card-back v8-notion-live-back" }, [
+    element("header", { className: "v8-flip-back-header" }, [brandIcon("notion", "notebook-tabs", "v8-live-brand-mark"), element("strong", { text: "Notion", attributes: { translate: "no" } })]),
+    element("div", { className: "v8-flip-back-body" }, [
+      element("p", { text: page.title, attributes: { translate: "no" } }),
+      element("p", { text: page.kind }),
+      element("p", { text: formatRelativeTime(page.lastEditedTime) })
+    ]),
+    element("footer", { className: "v8-flip-back-footer" }, [element("small", { text: "Dernière page modifiée" })])
+  ]);
+
+  const card = element(options.tagName || "article", {
+    className: `v8-notion-live v8-notion-live--${variant}`,
+    attributes: { "aria-label": "Dernière page Notion modifiée" },
+    dataset: { liveWidget: "media", liveKind: "widget" }
+  }, [element("div", { className: "v8-live-card-inner" }, [front, back])]);
+
+  card.addEventListener("click", (event) => {
+    if (event.target.closest("button, a, input")) return;
+    card.classList.toggle("is-flipped");
+  });
+
+  return card;
 }

@@ -62,7 +62,7 @@ export function spotifyLiveCard(playback = {}, options = {}) {
   }
   paint(anchorProgressMs);
 
-  const front = element("div", { className: `v8-spotify-live v8-spotify-live--${variant} v8-surface ${playback.playing ? "is-playing" : "is-paused"}` }, [
+  const front = element("div", { className: `v8-spotify-live v8-spotify-live--${variant} v8-surface v8-live-card-front ${playback.playing ? "is-playing" : "is-paused"}` }, [
     element("span", { className: "v8-spotify-live__aura", attributes: { "aria-hidden": "true" } }),
     artwork(playback, "v8-spotify-artwork"),
     element("div", { className: "v8-spotify-live__body" }, [

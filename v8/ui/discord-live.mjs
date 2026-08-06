@@ -50,7 +50,7 @@ export function discordLiveCard(presence = {}, options = {}) {
     : presence.activityName
       ? (presence.activityDetail ? `${presence.activityName} - ${presence.activityDetail}` : presence.activityName)
       : STATUS_LABELS[presence.status] || "Hors ligne";
-  const front = element("div", { className: `v8-discord-live v8-discord-live--${variant} v8-surface` }, [
+  const front = element("div", { className: `v8-discord-live v8-discord-live--${variant} v8-surface v8-live-card-front` }, [
     avatar(presence),
     element("div", { className: "v8-discord-live__body" }, [
       element("div", { className: "v8-discord-live__meta" }, [

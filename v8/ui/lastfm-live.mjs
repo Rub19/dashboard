@@ -13,11 +13,8 @@ function artwork(presence) {
 export function lastfmLiveCard(presence = {}, options = {}) {
   if (presence.available !== true) return null;
   const variant = ["home", "activity"].includes(options.variant) ? options.variant : "home";
-  return element(options.tagName || "article", {
-    className: `v8-lastfm-live v8-lastfm-live--${variant} v8-surface`,
-    attributes: { "aria-label": "Last.fm" },
-    dataset: { liveWidget: "media", liveKind: "widget" }
-  }, [
+
+  const front = element("div", { className: `v8-lastfm-live v8-lastfm-live--${variant} v8-surface v8-live-card-front` }, [
     artwork(presence),
     element("div", { className: "v8-lastfm-live__body" }, [
       element("div", { className: "v8-lastfm-live__meta" }, [brandIcon("lastfm", "history", "v8-live-brand-mark"), element("small", { text: presence.playing ? "Ecoute en cours" : "Dernier morceau" })]),
@@ -26,4 +23,27 @@ export function lastfmLiveCard(presence = {}, options = {}) {
       liveFreshnessNode(presence.updatedAt)
     ])
   ]);
+
+  const back = element("div", { className: "v8-live-card-back v8-lastfm-live-back" }, [
+    element("header", { className: "v8-flip-back-header" }, [brandIcon("lastfm", "history", "v8-live-brand-mark"), element("strong", { text: "Last.fm", attributes: { translate: "no" } })]),
+    element("div", { className: "v8-flip-back-body" }, [
+      element("p", { text: presence.title, attributes: { translate: "no" } }),
+      element("p", { text: presence.artist, attributes: { translate: "no" } }),
+      presence.album ? element("p", { text: presence.album, attributes: { translate: "no" } }) : null
+    ].filter(Boolean)),
+    element("footer", { className: "v8-flip-back-footer" }, [element("small", { text: presence.playing ? "Ecoute en cours" : "Dernier morceau" })])
+  ]);
+
+  const card = element(options.tagName || "article", {
+    className: `v8-lastfm-live v8-lastfm-live--${variant}`,
+    attributes: { "aria-label": "Last.fm" },
+    dataset: { liveWidget: "media", liveKind: "widget" }
+  }, [element("div", { className: "v8-live-card-inner" }, [front, back])]);
+
+  card.addEventListener("click", (event) => {
+    if (event.target.closest("button, a, input")) return;
+    card.classList.toggle("is-flipped");
+  });
+
+  return card;
 }

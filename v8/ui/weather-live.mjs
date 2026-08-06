@@ -26,21 +26,45 @@ export function weatherLiveCard(presence = {}, options = {}) {
   if (presence.available !== true) return null;
   const variant = ["home", "activity"].includes(options.variant) ? options.variant : "home";
   const detailable = options.detailable === true;
-  const tagName = options.tagName || (detailable ? "button" : "article");
-  return element(tagName, {
-    className: `v8-weather-live v8-weather-live--${variant} v8-surface`,
-    attributes: detailable
-      ? { type: "button", "aria-label": "Voir le détail météo", "aria-haspopup": "dialog" }
-      : { "aria-label": "Météo" },
-    dataset: detailable ? { liveWidget: "media", liveKind: "widget", weatherDetailTrigger: "" } : { liveWidget: "media", liveKind: "widget" }
-  }, [
+
+  const body = element("div", { className: "v8-weather-live__body" }, [
+    element("div", { className: "v8-weather-live__meta" }, [icon("map-pin"), element("small", { text: presence.country ? `${presence.city}, ${presence.country}` : presence.city, attributes: { translate: "no" } })]),
+    element("strong", { text: `${presence.temperature}°C` }),
+    element("p", { text: `${presence.description} - Vent ${presence.windSpeedKmh} km/h - ${presence.humidityPercent}% humidite` }),
+    liveFreshnessNode(presence.updatedAt),
+    detailable ? element("button", {
+      className: "v8-icon-button v8-weather-detail__trigger",
+      attributes: { type: "button", "aria-label": "Voir le détail météo", "aria-haspopup": "dialog", title: "Voir le détail météo" },
+      dataset: { weatherDetailTrigger: "" }
+    }, [icon("info")]) : null
+  ]);
+
+  const front = element("div", { className: `v8-weather-live v8-weather-live--${variant} v8-surface v8-live-card-front` }, [
     element("span", { className: "v8-weather-icon" }, [icon(weatherIcon(presence.weatherCode, presence.isDay)), livePulseDot()]),
-    element("div", { className: "v8-weather-live__body" }, [
-      element("div", { className: "v8-weather-live__meta" }, [icon("map-pin"), element("small", { text: presence.country ? `${presence.city}, ${presence.country}` : presence.city, attributes: { translate: "no" } })]),
-      element("strong", { text: `${presence.temperature}°C` }),
-      element("p", { text: `${presence.description} - Vent ${presence.windSpeedKmh} km/h - ${presence.humidityPercent}% humidite` }),
-      liveFreshnessNode(presence.updatedAt)
-    ]),
+    body,
     forecastRow(presence.forecast)
   ]);
+
+  const back = element("div", { className: "v8-live-card-back v8-weather-live-back" }, [
+    element("header", { className: "v8-flip-back-header" }, [icon(weatherIcon(presence.weatherCode, presence.isDay)), element("strong", { text: "Météo", attributes: { translate: "no" } })]),
+    element("div", { className: "v8-flip-back-body" }, [
+      element("p", { text: presence.country ? `${presence.city}, ${presence.country}` : presence.city, attributes: { translate: "no" } }),
+      element("p", { text: `${presence.temperature}°C - ${presence.description}` }),
+      element("p", { text: `Vent ${presence.windSpeedKmh} km/h - ${presence.humidityPercent}% humidité` })
+    ]),
+    element("footer", { className: "v8-flip-back-footer" }, [element("small", { text: presence.city, attributes: { translate: "no" } })])
+  ]);
+
+  const card = element(options.tagName || "article", {
+    className: `v8-weather-live v8-weather-live--${variant}`,
+    attributes: { "aria-label": "Météo" },
+    dataset: { liveWidget: "media", liveKind: "widget" }
+  }, [element("div", { className: "v8-live-card-inner" }, [front, back])]);
+
+  card.addEventListener("click", (event) => {
+    if (event.target.closest("button, a, input")) return;
+    card.classList.toggle("is-flipped");
+  });
+
+  return card;
 }

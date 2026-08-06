@@ -3361,11 +3361,15 @@ html[data-v8-ui-glow="true"] .v8-floating-dock {
   display: flex;
   gap: 4px;
 }
-.v8-lol-live, .v8-valorant-live, .v8-tracker-live, .v8-spotify-live, .v8-discord-live, .v8-minecraft-live {
+article.v8-lol-live, article.v8-valorant-live, article.v8-tracker-live, article.v8-spotify-live, article.v8-discord-live, article.v8-minecraft-live, article.v8-github-live, article.v8-google-calendar-live, article.v8-google-drive-live, article.v8-lastfm-live, article.v8-notion-live, article.v8-reddit-live, article.v8-steam-live, article.v8-todoist-live, article.v8-twitch-live, article.v8-weather-live, article.v8-youtube-live {
   display: block !important;
   perspective: 1000px;
   cursor: pointer;
   position: relative;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 .v8-live-card-inner {
   position: relative;
@@ -3379,7 +3383,18 @@ html[data-v8-ui-glow="true"] .v8-floating-dock {
 .v8-tracker-live.is-flipped .v8-live-card-inner,
 .v8-spotify-live.is-flipped .v8-live-card-inner,
 .v8-discord-live.is-flipped .v8-live-card-inner,
-.v8-minecraft-live.is-flipped .v8-live-card-inner {
+.v8-minecraft-live.is-flipped .v8-live-card-inner,
+.v8-github-live.is-flipped .v8-live-card-inner,
+.v8-google-calendar-live.is-flipped .v8-live-card-inner,
+.v8-google-drive-live.is-flipped .v8-live-card-inner,
+.v8-lastfm-live.is-flipped .v8-live-card-inner,
+.v8-notion-live.is-flipped .v8-live-card-inner,
+.v8-reddit-live.is-flipped .v8-live-card-inner,
+.v8-steam-live.is-flipped .v8-live-card-inner,
+.v8-todoist-live.is-flipped .v8-live-card-inner,
+.v8-twitch-live.is-flipped .v8-live-card-inner,
+.v8-weather-live.is-flipped .v8-live-card-inner,
+.v8-youtube-live.is-flipped .v8-live-card-inner {
   transform: rotateX(180deg);
 }
 .v8-live-card-front, .v8-live-card-back {
@@ -3394,19 +3409,18 @@ html[data-v8-ui-glow="true"] .v8-floating-dock {
   box-shadow: var(--v8-shadow-card-lit);
   height: 100%;
 }
-.v8-live-card-front {
-  grid-template-columns: 44px minmax(0,1fr);
-}
 .v8-live-card-back {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: var(--v8-space-3);
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   transform: rotateX(180deg);
   background: var(--v8-surface-raised, rgba(255,255,255,0.05));
   padding: var(--v8-space-2) var(--v8-space-4);
 }
-.v8-valorant-live .v8-live-card-front, .v8-tracker-live .v8-live-card-front {
-  grid-template-columns: 52px minmax(0,1fr);
-}
+.v8-lol-live .v8-live-card-front { grid-template-columns:44px minmax(0,1fr); }
+.v8-valorant-live .v8-live-card-front, .v8-tracker-live .v8-live-card-front { grid-template-columns:52px minmax(0,1fr); }
 .v8-valorant-live .v8-live-card-front, .v8-valorant-live .v8-live-card-back {
   border-color: color-mix(in srgb,#ff4655 26%,var(--v8-border));
   background: var(--v8-reflection-card),color-mix(in srgb,#ff4655 4%,var(--v8-surface-1));
@@ -3423,15 +3437,6 @@ html[data-v8-ui-glow="true"] .v8-floating-dock {
   border-color: color-mix(in srgb,#3d8e3d 26%,var(--v8-border));
   background: var(--v8-reflection-card),color-mix(in srgb,#3d8e3d 4%,var(--v8-surface-1));
 }
-.v8-spotify-live-back, .v8-discord-live-back, .v8-minecraft-live-back { display:grid;grid-template-rows:auto 1fr auto;gap:var(--v8-space-3); }
-.v8-spotify-live-back .v8-flip-back-header, .v8-discord-live-back .v8-flip-back-header, .v8-minecraft-live-back .v8-flip-back-header { display:flex;align-items:center;gap:var(--v8-space-3); }
-.v8-spotify-live-back .v8-flip-back-header { color:var(--v8-success); }
-.v8-discord-live-back .v8-flip-back-header { color:#5865f2; }
-.v8-minecraft-live-back .v8-flip-back-header { color:#65a565; }
-.v8-spotify-live-back .v8-flip-back-body, .v8-discord-live-back .v8-flip-back-body, .v8-minecraft-live-back .v8-flip-back-body { display:grid;gap:var(--v8-space-2); }
-.v8-spotify-live-back .v8-flip-back-body > p, .v8-discord-live-back .v8-flip-back-body > p, .v8-minecraft-live-back .v8-flip-back-body > p { overflow:hidden;font-size:var(--v8-font-sm);text-overflow:ellipsis;white-space:nowrap; }
-.v8-spotify-live-back .v8-flip-back-body > p:first-child, .v8-discord-live-back .v8-flip-back-body > p:first-child, .v8-minecraft-live-back .v8-flip-back-body > p:first-child { font-weight:var(--v8-weight-semibold);color:var(--v8-text); }
-.v8-spotify-live-back .v8-flip-back-footer, .v8-discord-live-back .v8-flip-back-footer, .v8-minecraft-live-back .v8-flip-back-footer { padding-top:var(--v8-space-3);border-top:1px solid var(--v8-border);color:var(--v8-muted);font-size:var(--v8-font-xs); }
 .v8-lol-live .v8-live-card-front, .v8-lol-live .v8-live-card-back {
   border-color: color-mix(in srgb,#c89b3c 26%,var(--v8-border));
   background: var(--v8-reflection-card),color-mix(in srgb,#c89b3c 4%,var(--v8-surface-1));
@@ -3440,14 +3445,75 @@ html[data-v8-ui-glow="true"] .v8-floating-dock {
   border-color: color-mix(in srgb,#ff4713 26%,var(--v8-border));
   background: var(--v8-reflection-card),color-mix(in srgb,#ff4713 4%,var(--v8-surface-1));
 }
+.v8-github-live .v8-live-card-front, .v8-github-live .v8-live-card-back {
+  border-color: color-mix(in srgb,#333 26%,var(--v8-border));
+  background: var(--v8-reflection-card),color-mix(in srgb,#333 4%,var(--v8-surface-1));
+}
+.v8-google-calendar-live .v8-live-card-front, .v8-google-calendar-live .v8-live-card-back {
+  border-color: color-mix(in srgb,#ea4335 26%,var(--v8-border));
+  background: var(--v8-reflection-card),color-mix(in srgb,#ea4335 4%,var(--v8-surface-1));
+}
+.v8-google-drive-live .v8-live-card-front, .v8-google-drive-live .v8-live-card-back {
+  border-color: color-mix(in srgb,#4285f4 26%,var(--v8-border));
+  background: var(--v8-reflection-card),color-mix(in srgb,#4285f4 4%,var(--v8-surface-1));
+}
+.v8-lastfm-live .v8-live-card-front, .v8-lastfm-live .v8-live-card-back {
+  border-color: color-mix(in srgb,#d51007 26%,var(--v8-border));
+  background: var(--v8-reflection-card),color-mix(in srgb,#d51007 4%,var(--v8-surface-1));
+}
+.v8-notion-live .v8-live-card-front, .v8-notion-live .v8-live-card-back {
+  border-color: color-mix(in srgb,#000 26%,var(--v8-border));
+  background: var(--v8-reflection-card),color-mix(in srgb,#000 4%,var(--v8-surface-1));
+}
+.v8-reddit-live .v8-live-card-front, .v8-reddit-live .v8-live-card-back {
+  border-color: color-mix(in srgb,#ff4500 26%,var(--v8-border));
+  background: var(--v8-reflection-card),color-mix(in srgb,#ff4500 4%,var(--v8-surface-1));
+}
+.v8-steam-live .v8-live-card-front, .v8-steam-live .v8-live-card-back {
+  border-color: color-mix(in srgb,#1b2838 40%,var(--v8-border));
+  background: var(--v8-reflection-card),color-mix(in srgb,#1b2838 4%,var(--v8-surface-1));
+}
+.v8-todoist-live .v8-live-card-front, .v8-todoist-live .v8-live-card-back {
+  border-color: color-mix(in srgb,#e44332 26%,var(--v8-border));
+  background: var(--v8-reflection-card),color-mix(in srgb,#e44332 4%,var(--v8-surface-1));
+}
+.v8-twitch-live .v8-live-card-front, .v8-twitch-live .v8-live-card-back {
+  border-color: color-mix(in srgb,#9146ff 26%,var(--v8-border));
+  background: var(--v8-reflection-card),color-mix(in srgb,#9146ff 4%,var(--v8-surface-1));
+}
+.v8-weather-live .v8-live-card-front, .v8-weather-live .v8-live-card-back {
+  border-color: color-mix(in srgb,#0ea5e9 26%,var(--v8-border));
+  background: var(--v8-reflection-card),color-mix(in srgb,#0ea5e9 4%,var(--v8-surface-1));
+}
+.v8-youtube-live .v8-live-card-front, .v8-youtube-live .v8-live-card-back {
+  border-color: color-mix(in srgb,#ff0000 26%,var(--v8-border));
+  background: var(--v8-reflection-card),color-mix(in srgb,#ff0000 4%,var(--v8-surface-1));
+}
+.v8-live-card-back .v8-flip-back-header { display:flex;align-items:center;gap:var(--v8-space-3); }
+.v8-live-card-back .v8-flip-back-body { display:grid;gap:var(--v8-space-2); }
+.v8-live-card-back .v8-flip-back-body > p { overflow:hidden;font-size:var(--v8-font-sm);text-overflow:ellipsis;white-space:nowrap; }
+.v8-live-card-back .v8-flip-back-body > p:first-child { font-weight:var(--v8-weight-semibold);color:var(--v8-text); }
+.v8-live-card-back .v8-flip-back-footer { padding-top:var(--v8-space-3);border-top:1px solid var(--v8-border);color:var(--v8-muted);font-size:var(--v8-font-xs); }
+.v8-spotify-live-back .v8-flip-back-header { color:var(--v8-success); }
+.v8-discord-live-back .v8-flip-back-header { color:#5865f2; }
+.v8-minecraft-live-back .v8-flip-back-header { color:#65a565; }
+.v8-lol-live-back .v8-flip-back-header { color:#c89b3c; }
+.v8-valorant-live-back .v8-flip-back-header { color:#ff4655; }
+.v8-tracker-live-back .v8-flip-back-header { color:#ff4713; }
+.v8-github-live-back .v8-flip-back-header { color:#999; }
+.v8-google-calendar-live-back .v8-flip-back-header { color:#ea4335; }
+.v8-google-drive-live-back .v8-flip-back-header { color:#4285f4; }
+.v8-lastfm-live-back .v8-flip-back-header { color:#d51007; }
+.v8-notion-live-back .v8-flip-back-header { color:#fff; }
+.v8-reddit-live-back .v8-flip-back-header { color:#ff4500; }
+.v8-steam-live-back .v8-flip-back-header { color:#66c0f4; }
+.v8-todoist-live-back .v8-flip-back-header { color:#e44332; }
+.v8-twitch-live-back .v8-flip-back-header { color:#9146ff; }
+.v8-weather-live-back .v8-flip-back-header { color:#0ea5e9; }
+.v8-youtube-live-back .v8-flip-back-header { color:#ff0000; }
 @media (max-width:540px) {
-  .v8-valorant-live .v8-live-card-front, .v8-tracker-live .v8-live-card-front { grid-template-columns: 46px minmax(0,1fr); }
-  .v8-lol-live .v8-live-card-front, .v8-lol-live .v8-live-card-back,
-  .v8-valorant-live .v8-live-card-front, .v8-valorant-live .v8-live-card-back,
-  .v8-tracker-live .v8-live-card-front, .v8-tracker-live .v8-live-card-back {
-    gap: var(--v8-space-3);
-    padding: var(--v8-space-3);
-  }
+  .v8-lol-live .v8-live-card-front, .v8-valorant-live .v8-live-card-front, .v8-tracker-live .v8-live-card-front { grid-template-columns: 46px minmax(0,1fr); }
+  .v8-live-card-front, .v8-live-card-back { gap: var(--v8-space-3); padding: var(--v8-space-3); }
 }
 .v8-live-category {
   margin-top: var(--v8-space-6);
@@ -3495,9 +3561,7 @@ html[data-v8-ui-glow="true"] .v8-floating-dock {
   font-weight: var(--v8-weight-bold);
   color: var(--v8-text);
 }
-@media (max-width:540px) {
-  .v8-live-card-front { grid-template-columns: 46px minmax(0,1fr); }
-}
+
 html[data-v8-aura-pulse="true"] .v8-ambient-layer {
   animation: aura-pulse 2s infinite alternate ease-in-out;
 }

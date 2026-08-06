@@ -17,11 +17,8 @@ export function steamLiveCard(presence = {}, options = {}) {
   if (presence.available !== true) return null;
   const variant = ["home", "activity"].includes(options.variant) ? options.variant : "home";
   const activity = presence.inGame ? `Joue a ${presence.gameName}` : STATUS_LABELS[presence.status] || "Hors ligne";
-  return element(options.tagName || "article", {
-    className: `v8-steam-live v8-steam-live--${variant} v8-surface`,
-    attributes: { "aria-label": "Presence Steam" },
-    dataset: { liveWidget: "media", liveKind: "profile" }
-  }, [
+
+  const front = element("div", { className: `v8-steam-live v8-steam-live--${variant} v8-surface v8-live-card-front` }, [
     avatar(presence),
     element("div", { className: "v8-steam-live__body" }, [
       element("div", { className: "v8-steam-live__meta" }, [
@@ -33,4 +30,27 @@ export function steamLiveCard(presence = {}, options = {}) {
       liveFreshnessNode(presence.updatedAt)
     ])
   ]);
+
+  const back = element("div", { className: "v8-live-card-back v8-steam-live-back" }, [
+    element("header", { className: "v8-flip-back-header" }, [brandIcon("steam", "gamepad-2", "v8-live-brand-mark"), element("strong", { text: "Steam", attributes: { translate: "no" } })]),
+    element("div", { className: "v8-flip-back-body" }, [
+      element("p", { text: presence.displayName, attributes: { translate: "no" } }),
+      element("p", { text: STATUS_LABELS[presence.status] || "Hors ligne" }),
+      presence.inGame ? element("p", { text: `Jeu : ${presence.gameName}`, attributes: { translate: "no" } }) : null
+    ].filter(Boolean)),
+    element("footer", { className: "v8-flip-back-footer" }, [element("small", { text: presence.inGame ? `En jeu sur ${presence.gameName}` : "Steam", attributes: { translate: "no" } })])
+  ]);
+
+  const card = element(options.tagName || "article", {
+    className: `v8-steam-live v8-steam-live--${variant}`,
+    attributes: { "aria-label": "Presence Steam" },
+    dataset: { liveWidget: "media", liveKind: "profile" }
+  }, [element("div", { className: "v8-live-card-inner" }, [front, back])]);
+
+  card.addEventListener("click", (event) => {
+    if (event.target.closest("button, a, input")) return;
+    card.classList.toggle("is-flipped");
+  });
+
+  return card;
 }

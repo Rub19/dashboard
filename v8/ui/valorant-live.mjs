@@ -14,27 +14,37 @@ export function valorantLiveCard(presence = {}, options = {}) {
   if (presence.available !== true) return null;
   const variant = ["home", "activity"].includes(options.variant) ? options.variant : "home";
   const statLine = presence.overview?.stats?.[0] ? `${presence.overview.stats[0].displayName} : ${presence.overview.stats[0].displayValue}` : "Aucun match récent";
-  
-  const inner = element("div", { className: "v8-live-card-inner" }, [
-    element("div", { className: "v8-live-card-front v8-surface" }, [
-      emblem(presence),
-      element("div", { className: "v8-valorant-live__body" }, [
-        element("div", { className: "v8-valorant-live__meta" }, [brandIcon("riot", "swords", "v8-live-brand-mark"), element("small", { text: "Valorant" })]),
-        element("strong", { text: `${presence.name}#${presence.tag}`, attributes: { translate: "no" } }),
-        element("p", { text: statLine, attributes: { translate: "no" } }),
-        liveFreshnessNode(presence.updatedAt)
-      ])
+  const statLine2 = presence.overview?.stats?.[1] ? `${presence.overview.stats[1].displayName} : ${presence.overview.stats[1].displayValue}` : "";
+
+  const front = element("div", { className: `v8-valorant-live v8-valorant-live--${variant} v8-surface v8-live-card-front` }, [
+    emblem(presence),
+    element("div", { className: "v8-valorant-live__body" }, [
+      element("div", { className: "v8-valorant-live__meta" }, [brandIcon("riot", "swords", "v8-live-brand-mark"), element("small", { text: "Valorant" })]),
+      element("strong", { text: `${presence.name}#${presence.tag}`, attributes: { translate: "no" } }),
+      element("p", { text: statLine, attributes: { translate: "no" } }),
+      liveFreshnessNode(presence.updatedAt)
     ])
+  ]);
+
+  const back = element("div", { className: "v8-live-card-back v8-valorant-live-back" }, [
+    element("header", { className: "v8-flip-back-header" }, [brandIcon("riot", "swords", "v8-live-brand-mark"), element("strong", { text: "Valorant", attributes: { translate: "no" } })]),
+    element("div", { className: "v8-flip-back-body" }, [
+      element("p", { text: `${presence.name}#${presence.tag}`, attributes: { translate: "no" } }),
+      element("p", { text: statLine, attributes: { translate: "no" } }),
+      statLine2 ? element("p", { text: statLine2, attributes: { translate: "no" } }) : null
+    ].filter(Boolean)),
+    element("footer", { className: "v8-flip-back-footer" }, [element("small", { text: presence.region ? `Région : ${presence.region}` : "Riot Games" })])
   ]);
 
   const card = element(options.tagName || "article", {
     className: `v8-valorant-live v8-valorant-live--${variant}`,
     attributes: { "aria-label": "Présence Valorant" },
     dataset: { liveWidget: "game", liveKind: "valorant" }
-  }, [inner]);
+  }, [element("div", { className: "v8-live-card-inner" }, [front, back])]);
 
-  card.addEventListener("click", () => {
-    window.location.hash = "#matches?game=valorant";
+  card.addEventListener("click", (event) => {
+    if (event.target.closest("button, a, input")) return;
+    card.classList.toggle("is-flipped");
   });
 
   return card;

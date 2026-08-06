@@ -24,6 +24,10 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v223", "2026-08-06", "Flip 3D généralisé sur toutes les cartes Live Now", [
+    { kind: "feature", text: "Toutes les cartes Live Now se retournent au clic pour afficher plus de détails au verso." },
+    { kind: "improvement", text: "Couleurs de verso harmonisées avec chaque service." }
+  ]),
   entry("v222", "2026-08-06", "Flip 3D des cartes Live Now", [
     { kind: "feature", text: "Les cartes Spotify, Discord et Minecraft se retournent au clic pour afficher plus de détails au verso." },
     { kind: "improvement", text: "Styles de verso cohérents avec la charte de chaque service (succès, violet Discord, vert Minecraft)." }

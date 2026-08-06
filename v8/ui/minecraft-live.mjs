@@ -33,7 +33,7 @@ export function minecraftLiveCard(presence = {}, options = {}) {
   const variant = ["home", "activity"].includes(options.variant) ? options.variant : "home";
   const modelLabel = presence.model === "slim" ? translateSource("Slim (Alex)") : translateSource("Classic (Steve)");
   const uuidShort = `${presence.uuid.slice(0, 8)}...`;
-  const front = element("div", { className: `v8-minecraft-live v8-minecraft-live--${variant} v8-surface` }, [
+  const front = element("div", { className: `v8-minecraft-live v8-minecraft-live--${variant} v8-surface v8-live-card-front` }, [
     skinHead(presence),
     element("div", { className: "v8-minecraft-live__body" }, [
       element("div", { className: "v8-minecraft-live__meta" }, [icon("box"), element("small", { text: "Minecraft" })]),

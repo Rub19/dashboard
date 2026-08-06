@@ -235,7 +235,7 @@ export function mountMatches(container, options = {}) {
       action
     ]);
     
-    const detailContainer = element("div", { className: "v8-match-detail-container", attributes: { id: detailId }, style: "display: none; padding: 1rem; border-top: 1px solid var(--v8-border);" });
+    const detailContainer = element("div", { className: "v8-match-detail-container", attributes: { id: detailId, hidden: true } });
     if (match.scoreboard) {
        detailContainer.append(renderScoreboard(match.scoreboard));
     } else {
@@ -243,8 +243,8 @@ export function mountMatches(container, options = {}) {
     }
     
     const toggleDetails = () => {
-      const isExpanded = detailContainer.style.display === "block";
-      detailContainer.style.display = isExpanded ? "none" : "block";
+      const isExpanded = !detailContainer.hidden;
+      detailContainer.hidden = isExpanded;
       row.setAttribute("aria-expanded", String(!isExpanded));
       action.setAttribute("aria-expanded", String(!isExpanded));
       action.setAttribute("aria-label", isExpanded ? "Afficher les détails du match" : "Masquer les détails du match");

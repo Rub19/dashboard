@@ -112,7 +112,8 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride) {
   
   let path = `/valorant/v3/matches/${region}/${encodeURIComponent(name)}/${encodeURIComponent(tag)}`;
   if (mode && mode !== "all") {
-    path += `?mode=${encodeURIComponent(mode)}`;
+    const slug = encodeURIComponent(mode);
+    path += `?mode=${slug}&filter=${slug}`;
   }
   
   const headers = {};

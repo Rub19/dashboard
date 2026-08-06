@@ -58,5 +58,6 @@ test("Valorant match mode is sent as Henrik's mode parameter and filtered defens
   };
   const data = await getValorantMatches(testEnv({ __TEST_FETCH__: fetch }), "Player#EUW", "swiftplay", "test-key");
   assert.equal(matchesUrl.searchParams.get("mode"), "swiftplay");
+  assert.equal(matchesUrl.searchParams.get("filter"), "swiftplay");
   assert.deepEqual(data.map((match) => match.id), ["swift"]);
 });

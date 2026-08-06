@@ -44,17 +44,20 @@ function extractStrings(file) {
   const source = fs.readFileSync(file, "utf8");
   const results = [];
   const patterns = [
-    /text:\s*(?:translateSource\()?\s*"([^"]{2,})"\s*\)?/g,
-    /text:\s*(?:translateSource\()?\s*'([^']{2,})'\s*\)?/g,
-    /title:\s*(?:translateSource\()?\s*"([^"]{2,})"\s*\)?/g,
-    /"aria-label":\s*(?:translateSource\()?\s*"([^"]{2,})"\s*\)?/g,
-    /placeholder:\s*(?:translateSource\()?\s*"([^"]{2,})"\s*\)?/g,
-    /data-tooltip:\s*(?:translateSource\()?\s*"([^"]{2,})"\s*\)?/g,
-    /\{ text:\s*(?:translateSource\()?\s*"([^"]{2,})"\s*\)?\s*\}/g,
-    /settingRow\([^,]+,\s*"([^"]{2,})"(?:,\s*"([^"]{2,})")?/g,
-    /choice\([^,]+,\s*[^,]+,\s*"([^"]{2,})"/g,
-    /switchControl\([^,]+,\s*"([^"]{2,})"/g,
-    /element\("(?:h1|h2|h3|strong|small|span|p|a|button|label|li|div)",\s*\{[^\}]*text:\s*(?:translateSource\()?\s*"([^"]{2,})"/g
+    /text:\s*(?:translateSource\()?\s*"((?:[^"\\]|\\.){2,})"\s*\)?/g,
+    /text:\s*(?:translateSource\()?\s*'((?:[^'\\]|\\.){2,})'\s*\)?/g,
+    /title:\s*(?:translateSource\()?\s*"((?:[^"\\]|\\.){2,})"\s*\)?/g,
+    /"aria-label":\s*(?:translateSource\()?\s*"((?:[^"\\]|\\.){2,})"\s*\)?/g,
+    /placeholder:\s*(?:translateSource\()?\s*"((?:[^"\\]|\\.){2,})"\s*\)?/g,
+    /data-tooltip:\s*(?:translateSource\()?\s*"((?:[^"\\]|\\.){2,})"\s*\)?/g,
+    /\{ text:\s*(?:translateSource\()?\s*"((?:[^"\\]|\\.){2,})"\s*\)?\s*\}/g,
+    /settingRow\([^,]+,\s*"((?:[^"\\]|\\.){2,})"(?:,\s*"((?:[^"\\]|\\.){2,})")?/g,
+    /choice\([^,]+,\s*[^,]+,\s*"((?:[^"\\]|\\.){2,})"/g,
+    /switchControl\([^,]+,\s*"((?:[^"\\]|\\.){2,})"/g,
+    /label:\s*"((?:[^"\\]|\\.){2,})"/g,
+    /copy:\s*"((?:[^"\\]|\\.){2,})"/g,
+    /description:\s*"((?:[^"\\]|\\.){2,})"/g,
+    /title:\s*"((?:[^"\\]|\\.){2,})"/g
   ];
   for (const pattern of patterns) {
     for (const match of source.matchAll(pattern)) {

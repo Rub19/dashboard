@@ -24,6 +24,10 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v212", "2026-08-06", "Complet i18n settings et dashboard", [
+    { kind: "i18n", text: "Ajout des traductions manquantes pour les auras, polices, densités, états vides, raccourcis clavier et catalogues de commandes." },
+    { kind: "improvement", text: "L'audit i18n détecte désormais les labels, descriptions, titres et copies des options de réglages." }
+  ]),
   entry("v211", "2026-08-06", "Changelog entièrement traduit", [
     { kind: "i18n", text: "Ajout des traductions en anglais, espagnol et allemand pour l'ensemble des Notes de version et de leurs libellés (NEW, FIXED, IMPROVED, etc.)." },
     { kind: "improvement", text: "Ajustement du budget JavaScript de validation pour accueillir le dictionnaire de traductions enrichi." }

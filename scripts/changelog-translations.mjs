@@ -1,4 +1,7 @@
 export const CHANGELOG_TRANSLATIONS = {
+  "Complet i18n settings et dashboard": { en: "Full i18n for settings and dashboard", es: "i18n completo para ajustes y dashboard", de: "Vollständiges i18n für Einstellungen und Dashboard" },
+  "Ajout des traductions manquantes pour les auras, polices, densités, états vides, raccourcis clavier et catalogues de commandes.": { en: "Added missing translations for auras, fonts, density, empty states, keyboard shortcuts, and command catalogs.", es: "Se añadieron traducciones faltantes para auras, fuentes, densidad, estados vacíos, atajos de teclado y catálogos de comandos.", de: "Fehlende Übersetzungen für Auren, Schriftarten, Dichte, Leerzustände, Tastenkürzel und Befehlskataloge hinzugefügt." },
+  "L'audit i18n détecte désormais les labels, descriptions, titres et copies des options de réglages.": { en: "The i18n audit now detects labels, descriptions, titles, and copy texts of settings options.", es: "La auditoría i18n ahora detecta etiquetas, descripciones, títulos y textos de copia de las opciones de ajustes.", de: "Der i18n-Audit erkennt jetzt Labels, Beschreibungen, Titel und Copy-Texte von Einstellungsoptionen." },
   "Amélioré": { en: "Improved", es: "Mejorado", de: "Verbessert" },
   "Corrige": { en: "Fixed", es: "Corregido", de: "Behoben" },
   "Nettoyage": { en: "Cleanup", es: "Limpieza", de: "Bereinigung" },

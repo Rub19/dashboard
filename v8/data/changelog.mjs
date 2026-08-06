@@ -24,6 +24,12 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v226", "2026-08-06", "Tracker LoL, stats perso et recherche de mate", [
+    { kind: "improvement", text: "Profil LoL enrichi avec les stats personnelles calculées sur l'historique (W/L, Win %, KDA, CS/min, DPM, GPM)." },
+    { kind: "improvement", text: "Affichage des matchs LoL retravaillé avec CS, dégâts, gold et participation aux kills." },
+    { kind: "feature", text: "Barre de recherche de mate sur les pages Valorant et League of Legends." },
+    { kind: "improvement", text: "Traductions des nouvelles statistiques et libellés de recherche." }
+  ]),
   entry("v225", "2026-08-06", "CSP, tracker Apex et icônes", [
     { kind: "fix", text: "Correction du CSP script-src pour débloquer le chargement des icônes Lucide." },
     { kind: "fix", text: "Correction de la clé de cache des matchs Apex dans le worker Tracker.gg." },

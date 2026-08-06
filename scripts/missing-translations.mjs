@@ -24,6 +24,51 @@ export const MISSING_TRANSLATIONS = {
     es: "Estadísticas de la partida",
     de: "Match-Statistiken"
   },
+  "Rechercher un mate": {
+    en: "Search for a mate",
+    es: "Buscar un compañero",
+    de: "Mate suchen"
+  },
+  "Aucun match avec ce mate trouvé.": {
+    en: "No match found with this mate.",
+    es: "No se encontró ninguna partida con este compañero.",
+    de: "Kein Match mit diesem Mate gefunden."
+  },
+  "Niveau": {
+    en: "Level",
+    es: "Nivel",
+    de: "Level"
+  },
+  "LP": {
+    en: "LP",
+    es: "PL",
+    de: "LP"
+  },
+  "W/L": {
+    en: "W/L",
+    es: "V/D",
+    de: "W/L"
+  },
+  "Win %": {
+    en: "Win %",
+    es: "Win %",
+    de: "Win %"
+  },
+  "CS/min": {
+    en: "CS/min",
+    es: "CS/min",
+    de: "CS/min"
+  },
+  "DPM": {
+    en: "DPM",
+    es: "DPM",
+    de: "DPM"
+  },
+  "GPM": {
+    en: "GPM",
+    es: "GPM",
+    de: "GPM"
+  },
   "Densité": {
     en: "Density",
     es: "Densidad",

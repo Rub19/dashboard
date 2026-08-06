@@ -11,6 +11,9 @@ export function mountMatches(container, options = {}) {
   let matchDetailId = 0;
   let currentName = "";
   let currentTag = "";
+  let allMatches = [];
+  let currentProfile = null;
+  let searchQuery = "";
 
   const hash = window.location.hash.substring(1);
   const searchParams = new URL("http://localhost/" + hash).searchParams;
@@ -62,8 +65,20 @@ export function mountMatches(container, options = {}) {
     currentMode = e.target.value;
     loadMatches();
   });
-  
-  const headerRight = element("div", { className: "v8-matches-header-right" }, [selectMode]);
+
+  const searchInput = (game === "valorant" || game === "lol")
+    ? element("input", {
+      className: "v8-matches-filter",
+      style: "min-width:160px;",
+      attributes: { type: "search", placeholder: translateSource("Rechercher un mate"), "aria-label": translateSource("Rechercher un mate") }
+    })
+    : null;
+  searchInput?.addEventListener("input", (e) => {
+    searchQuery = e.target.value.trim().toLowerCase();
+    renderHistory();
+  });
+
+  const headerRight = element("div", { className: "v8-matches-header-right" }, [selectMode, searchInput].filter(Boolean));
   const headerLeft = element("div", { className: "v8-matches-header-left" }, [backBtn, title]);
   header.append(headerLeft, headerRight);
   root.append(header, content);
@@ -515,6 +530,20 @@ export function mountMatches(container, options = {}) {
     const matchChevron = element("span", { className: "v8-match-chevron", text: "⌄" });
     const action = element("button", { className: "v8-match-action", attributes: { type: "button", "aria-label": "Afficher les détails du match", "aria-expanded": "false", "aria-controls": detailId } }, [icon("chevron-down")]);
 
+    const myStats = me?.stats || {};
+    const totalCs = Math.round(Number(myStats.cs) || 0);
+    const totalDamage = Math.round(Number(myStats.damage) || 0);
+    const totalGold = Math.round(Number(myStats.gold) || 0);
+    const teamKills = Number(match.scoreboard?.teams?.[myTeam]?.roundsWon) || 0;
+    const killParticipation = teamKills > 0 ? Math.round(((kills + assists) / teamKills) * 100) : 0;
+
+    const statsSummary = element("div", { style: "display:flex;gap:var(--v8-space-3);flex-wrap:wrap;font-size:var(--v8-font-xs);color:var(--v8-text-secondary);" }, [
+      element("span", { text: `CS ${totalCs}` }),
+      element("span", { text: `DMG ${totalDamage}` }),
+      element("span", { text: `GOLD ${totalGold}` }),
+      element("span", { text: `KP ${killParticipation}%` })
+    ]);
+
     const row = element("div", { className: `v8-lol-match-row ${stateClass}`, attributes: { tabindex: "0", "aria-expanded": "false", "aria-controls": detailId } }, [
       element("div", { className: "v8-match-accent" }),
       element("div", { className: "v8-lol-match-main" }, [
@@ -524,7 +553,8 @@ export function mountMatches(container, options = {}) {
           match.metadata?.agentImageUrl ? champImg(match.metadata.agentImageUrl, match.metadata?.agentName) : null,
           me?.level ? element("span", { className: "v8-lol-match-level", text: String(me.level) }) : null
         ].filter(Boolean)),
-        element("div", { className: "v8-lol-match-items" }, (me?.items || [0,0,0,0,0,0]).map(itemImg))
+        element("div", { className: "v8-lol-match-items" }, (me?.items || [0,0,0,0,0,0]).map(itemImg)),
+        statsSummary
       ]),
       element("div", { className: "v8-lol-match-score" }, [
         element("small", { text: "Score" }),
@@ -545,10 +575,6 @@ export function mountMatches(container, options = {}) {
       element("div", { className: "v8-lol-match-stat" }, [
         element("small", { text: "DPM" }),
         element("strong", { text: String(Math.round(dpm)) })
-      ]),
-      element("div", { className: "v8-lol-match-stat" }, [
-        element("small", { text: "GPM" }),
-        element("strong", { text: String(Math.round(gpm)) })
       ]),
       element("div", { className: "v8-lol-match-teams" }, [
         renderChampStrip(myTeamPlayers),
@@ -956,7 +982,82 @@ export function mountMatches(container, options = {}) {
   }
 
   function renderLolProfile(profile) {
-    return buildProfileHeader(profile, "v8-lol-profile", ["rank", "tier", "lp", "level"]);
+    let displayName = currentName;
+    let displayTag = currentTag;
+    if (!displayName && profile?.handle && profile.handle.includes("#")) {
+      [displayName, displayTag] = profile.handle.split("#");
+    }
+    displayName = displayName || profile?.name || "—";
+    displayTag = displayTag || profile?.tag || "";
+    const title = displayTag ? `${displayName} #${displayTag}` : displayName;
+
+    const overview = (profile?.segments || []).find(s => s.type === "overview") || profile?.segments?.[0] || {};
+    const stats = overview?.stats || {};
+    const tier = stats.rank?.displayValue || stats.tier?.displayValue || "";
+    const lp = stats.lp?.displayValue || "";
+    const level = stats.level?.displayValue || "";
+    const rankText = [tier, lp, level ? `${translateSource("Niveau")} ${level}` : ""].filter(Boolean).join(" · ") || translateSource("Unranked");
+
+    function getMatchStatItems() {
+      const matches = allMatches.filter(m => m.scoreboard?.players?.some(p => p.isMe));
+      if (!matches.length) return [];
+      const total = matches.length;
+      let wins = 0, kills = 0, deaths = 0, assists = 0, cs = 0, dpm = 0, gpm = 0;
+      matches.forEach((m) => {
+        const result = String(m.metadata?.result || "").toLowerCase();
+        if (result === "victory" || result === "win") wins++;
+        const me = m.scoreboard.players.find(p => p.isMe);
+        kills += Number(me?.stats?.kills) || 0;
+        deaths += Number(me?.stats?.deaths) || 0;
+        assists += Number(me?.stats?.assists) || 0;
+        cs += Number(me?.stats?.csPerMin) || 0;
+        dpm += Number(me?.stats?.damagePerMin) || 0;
+        gpm += Number(me?.stats?.goldPerMin) || 0;
+      });
+      const kda = deaths > 0 ? ((kills + assists) / deaths).toFixed(2) : (kills + assists > 0 ? "Perf" : "0.0");
+      const winRate = total ? Math.round((wins / total) * 100) : 0;
+      return [
+        [translateSource("W/L"), `${wins} / ${total - wins}`],
+        [translateSource("Win %"), `${winRate}%`],
+        [translateSource("KDA"), kda],
+        [translateSource("CS/min"), (cs / total).toFixed(1)],
+        [translateSource("DPM"), String(Math.round(dpm / total))],
+        [translateSource("GPM"), String(Math.round(gpm / total))]
+      ].slice(0, 4);
+    }
+
+    const matchItems = getMatchStatItems();
+    const fallbackItems = [
+      tier ? [translateSource("Rank"), tier] : null,
+      lp ? [translateSource("LP"), lp] : null,
+      level ? [translateSource("Niveau"), level] : null
+    ].filter(Boolean);
+    const statItems = matchItems.length ? matchItems : fallbackItems.slice(0, 4);
+
+    const avatarUrl = profile?.avatarUrl;
+    const placeholder = element("div", { className: "v8-match-agent-placeholder" });
+    const avatarImg = avatarUrl
+      ? element("img", { attributes: { src: avatarUrl, alt: "", loading: "lazy", decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(placeholder) } })
+      : placeholder;
+    const avatar = element("div", { className: "v8-match-agent" }, [avatarImg]);
+
+    const statsEl = statItems.length
+      ? element("div", { className: "v8-profile-stats" }, statItems.map(([label, value]) =>
+          element("div", { className: "v8-match-stat-col v8-profile-stat" }, [
+            element("small", { text: label }),
+            element("strong", { text: value })
+          ])
+        ))
+      : null;
+
+    return element("header", { className: "v8-match-group v8-surface v8-lol-profile" }, [
+      avatar,
+      element("div", { className: "v8-profile-info" }, [
+        element("strong", { className: "v8-profile-name", text: title, attributes: { translate: "no" } }),
+        element("span", { className: "v8-profile-rank", text: rankText })
+      ]),
+      statsEl
+    ]);
   }
 
   function renderApexProfile(profile) {
@@ -1021,12 +1122,64 @@ export function mountMatches(container, options = {}) {
     ]);
   }
 
+  function filterMatches(matches) {
+    if (!searchQuery) return matches;
+    const q = searchQuery;
+    return matches.filter((m) => {
+      const players = m.scoreboard?.players || [];
+      return players.some((p) => {
+        if (p.isMe) return false;
+        const name = String(p.name || "").toLowerCase();
+        const tag = String(p.tag || "").toLowerCase();
+        return name.includes(q) || tag.includes(q) || `${name}#${tag}`.includes(q);
+      });
+    });
+  }
+
+  function renderHistory() {
+    if (destroyed) return;
+    content.replaceChildren();
+    if (game === "valorant") {
+      content.append(renderValorantProfile(currentProfile));
+    } else if (game === "lol") {
+      content.append(renderLolProfile(currentProfile));
+    } else if (game === "apex") {
+      content.append(renderApexProfile(currentProfile));
+    }
+
+    const filtered = filterMatches(allMatches);
+    if (!filtered || filtered.length === 0) {
+      content.append(element("p", { className: "v8-empty", text: searchQuery ? translateSource("Aucun match avec ce mate trouvé.") : translateSource("Aucun match trouvé pour ce mode.") }));
+      refreshIcons();
+      return;
+    }
+
+    const groups = {};
+    filtered.forEach((m) => {
+      let dateObj = m.metadata?.timestamp ? new Date(m.metadata.timestamp) : new Date();
+      if (isNaN(dateObj.getTime())) dateObj = new Date();
+      const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      if (!groups[dateStr]) groups[dateStr] = [];
+      groups[dateStr].push(m);
+    });
+
+    const list = element("div", { className: "v8-matches-history" });
+    Object.keys(groups).forEach((dateStr) => {
+      list.append(renderGroup(dateStr, groups[dateStr], allMatches));
+    });
+
+    content.append(list);
+    refreshIcons();
+  }
+
   let dataLoaded = false;
   async function loadMatches() {
     if (destroyed) return;
     content.replaceChildren();
     content.append(renderSkeleton());
-    
+    searchQuery = "";
+    if (searchInput) searchInput.value = "";
+
     try {
       let data;
       let profileData = null;
@@ -1073,37 +1226,10 @@ export function mountMatches(container, options = {}) {
       }
       
       dataLoaded = true;
+      allMatches = data || [];
+      currentProfile = profileData || null;
       if (destroyed) return;
-      
-      content.replaceChildren();
-      if (game === "valorant") {
-        content.append(renderValorantProfile(profileData));
-      } else if (game === "lol") {
-        content.append(renderLolProfile(profileData));
-      } else if (game === "apex") {
-        content.append(renderApexProfile(profileData));
-      }
-      if (!data || data.length === 0) {
-        content.append(element("p", { className: "v8-empty", text: "Aucun match trouvé pour ce mode." }));
-        return;
-      }
-      
-      const groups = {};
-      data.forEach(m => {
-        let dateObj = m.metadata?.timestamp ? new Date(m.metadata.timestamp) : new Date();
-        if (isNaN(dateObj.getTime())) dateObj = new Date();
-        const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        if (!groups[dateStr]) groups[dateStr] = [];
-        groups[dateStr].push(m);
-      });
-      
-      const list = element("div", { className: "v8-matches-history" });
-      Object.keys(groups).forEach(dateStr => {
-        list.append(renderGroup(dateStr, groups[dateStr], data));
-      });
-      
-      content.append(list);
-      refreshIcons();
+      renderHistory();
     } catch (e) {
       if (destroyed) return;
       

@@ -190,7 +190,10 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride) {
             assists: Number(p.stats?.assists) || 0,
             headshots: Number(p.stats?.headshots) || 0,
             bodyshots: Number(p.stats?.bodyshots) || 0,
-            legshots: Number(p.stats?.legshots) || 0
+            legshots: Number(p.stats?.legshots) || 0,
+            damageMade: Number(p.damage_made) || 0,
+            damageReceived: Number(p.damage_received) || 0,
+            adr: Number(p.damage_made) / Math.max(1, Number(meta.rounds_played) || 1) || 0
           })
         }))
       }),
@@ -216,7 +219,8 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride) {
           score: { value: stats.score || 0, displayValue: String(stats.score || 0) },
           scorePerRound: { value: (stats.score || 0) / Math.max(1, meta.rounds_played || 1), displayValue: String(Math.round((stats.score || 0) / Math.max(1, meta.rounds_played || 1))) },
           headshotsPercentage: { value: ((stats.headshots || 0) / Math.max(1, (stats.headshots || 0) + (stats.bodyshots || 0) + (stats.legshots || 0))) * 100, displayValue: String(Math.round(((stats.headshots || 0) / Math.max(1, (stats.headshots || 0) + (stats.bodyshots || 0) + (stats.legshots || 0))) * 100)) },
-          damageDeltaPerRound: { value: ((me?.damage_made || 0) - (me?.damage_received || 0)) / Math.max(1, meta.rounds_played || 1), displayValue: String(Math.round(((me?.damage_made || 0) - (me?.damage_received || 0)) / Math.max(1, meta.rounds_played || 1))) }
+          damageDeltaPerRound: { value: ((me?.damage_made || 0) - (me?.damage_received || 0)) / Math.max(1, meta.rounds_played || 1), displayValue: String(Math.round(((me?.damage_made || 0) - (me?.damage_received || 0)) / Math.max(1, meta.rounds_played || 1))) },
+          adr: { value: (Number(me?.damage_made) || 0) / Math.max(1, meta.rounds_played || 1), displayValue: String(Math.round((Number(me?.damage_made) || 0) / Math.max(1, meta.rounds_played || 1))) }
         })
       }])
     });

@@ -1,4 +1,4 @@
-import { actionButton, debounce, element, icon } from "../ui/dom.mjs";
+import { actionButton, debounce, element, icon, throttleFrame } from "../ui/dom.mjs";
 import { collectionDensityControl, updateCollectionDensityControl } from "../ui/dense-content.mjs";
 import { emptyState } from "../ui/empty-state.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
@@ -246,13 +246,13 @@ export function mountNotes(stage, options = {}) {
       element("div", { className: "v8-note-read-progress__bar" })
     ]);
     const progressFill = progressBar.firstChild;
-    function updateReadProgress() {
+    const updateReadProgress = throttleFrame(() => {
       const el = richEditor.element;
       if (!el) return;
       const total = el.scrollHeight - el.clientHeight;
       const progress = total <= 0 ? 100 : Math.min(100, Math.max(0, Math.round((el.scrollTop / total) * 100)));
       progressFill.style.width = `${progress}%`;
-    }
+    });
     richEditor.element.addEventListener("scroll", updateReadProgress, { passive: true });
     setTimeout(updateReadProgress, 20);
     const pinButton = actionButton({

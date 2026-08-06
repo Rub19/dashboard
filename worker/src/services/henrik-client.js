@@ -141,6 +141,10 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride) {
     const meta = match.metadata || {};
     const players = match.players?.all_players || [];
     const me = players.find(p => p.name?.toLowerCase() === name.toLowerCase() && p.tag?.toLowerCase() === tag.toLowerCase()) || players[0];
+    const mePartyId = safeText(me?.party_id);
+    const partyMembers = mePartyId
+      ? players.filter(p => safeText(p.party_id) === mePartyId && p !== me)
+      : [];
     const stats = me?.stats || {};
     const teamKey = me?.team?.toLowerCase();
     const opponentKey = teamKey === "red" ? "blue" : teamKey === "blue" ? "red" : null;
@@ -161,6 +165,10 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride) {
           Red: Object.freeze({ roundsWon: Number.isFinite(Number(match.teams?.red?.rounds_won)) ? Number(match.teams.red.rounds_won) : null }),
           Blue: Object.freeze({ roundsWon: Number.isFinite(Number(match.teams?.blue?.rounds_won)) ? Number(match.teams.blue.rounds_won) : null })
         }),
+        partyMembers: Object.freeze(partyMembers.map(p => Object.freeze({
+          name: safeText(p.name),
+          tag: safeText(p.tag)
+        }))),
         players: players.map(p => Object.freeze({
           team: safeText(p.team),
           character: safeText(p.character),
@@ -169,6 +177,7 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride) {
           currenttier_patched: safeText(p.currenttier_patched),
           party_id: safeText(p.party_id),
           isMe: Boolean(me && p === me),
+          isPartyMember: Boolean(mePartyId && p !== me && safeText(p.party_id) === mePartyId),
           assets: Object.freeze({
             agent: Object.freeze({
               small: resolveAgentImage(p.assets?.agent?.small, p.character, agentCatalogue)

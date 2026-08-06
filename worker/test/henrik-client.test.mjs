@@ -61,3 +61,50 @@ test("Valorant match mode is sent as Henrik's mode parameter and filtered defens
   assert.equal(matchesUrl.searchParams.get("filter"), "swiftplay");
   assert.deepEqual(data.map((match) => match.id), ["swift"]);
 });
+
+function partyFetch(players) {
+  return async (input) => {
+    const url = new URL(String(input));
+    if (url.hostname === "api.henrikdev.xyz" && url.pathname.includes("/account/")) return json({ data: { region: "eu" } });
+    if (url.hostname === "api.henrikdev.xyz" && url.pathname.startsWith("/valorant/v3/matches")) {
+      return json({ data: [{ metadata: { matchid: "party", mode: "Unrated" }, players: { all_players: players }, teams: {} }] });
+    }
+    if (url.hostname === "valorant-api.com") return json({ data: [] });
+    throw new Error(`Unexpected test destination: ${url.href}`);
+  };
+}
+
+test("Valorant matches identify duo party members from party_id", async () => {
+  const data = await getValorantMatches(testEnv({
+    __TEST_FETCH__: partyFetch([
+      { name: "Player", tag: "EUW", team: "Red", party_id: "party-1", stats: {} },
+      { name: "Duo", tag: "EUW", team: "Red", party_id: "party-1", stats: {} },
+      { name: "Enemy", tag: "EUW", team: "Blue", party_id: "party-2", stats: {} }
+    ])
+  }), "Player#EUW", "all", "test-key");
+  assert.deepEqual(data[0].scoreboard.partyMembers, [{ name: "Duo", tag: "EUW" }]);
+  assert.equal(data[0].scoreboard.players[1].isPartyMember, true);
+  assert.equal(data[0].scoreboard.players[2].isPartyMember, false);
+});
+
+test("Valorant matches leave solo players without party members", async () => {
+  const data = await getValorantMatches(testEnv({
+    __TEST_FETCH__: partyFetch([
+      { name: "Player", tag: "EUW", team: "Red", party_id: "party-1", stats: {} },
+      { name: "Enemy", tag: "EUW", team: "Blue", party_id: "party-2", stats: {} }
+    ])
+  }), "Player#EUW", "all", "test-key");
+  assert.deepEqual(data[0].scoreboard.partyMembers, []);
+  assert.equal(data[0].scoreboard.players[0].isPartyMember, false);
+});
+
+test("Valorant matches leave party membership unset when party_id is absent", async () => {
+  const data = await getValorantMatches(testEnv({
+    __TEST_FETCH__: partyFetch([
+      { name: "Player", tag: "EUW", team: "Red", stats: {} },
+      { name: "Ally", tag: "EUW", team: "Red", stats: {} }
+    ])
+  }), "Player#EUW", "all", "test-key");
+  assert.deepEqual(data[0].scoreboard.partyMembers, []);
+  assert.equal(data[0].scoreboard.players[1].isPartyMember, false);
+});

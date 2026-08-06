@@ -112,12 +112,12 @@ export function mountMatches(container, options = {}) {
       const shots = (Number(p.stats?.headshots) || 0) + (Number(p.stats?.bodyshots) || 0) + (Number(p.stats?.legshots) || 0);
       const kd = deaths ? (kills / deaths).toFixed(2) : kills ? "Perf" : "0.00";
       const hs = shots ? Math.round((Number(p.stats?.headshots) || 0) / shots * 100) : 0;
-      const isDuo = p.party_id ? element("span", { className: "v8-party-indicator", style: `background-color: ${stringToColor(p.party_id)};`, attributes: { title: "En groupe" } }) : null;
+      const isDuo = p.isPartyMember ? element("span", { className: "v8-party-indicator", attributes: { title: "Membre de votre groupe" } }) : null;
       const placeholder = () => element("span", { className: "v8-scoreboard-agent v8-scoreboard-agent--placeholder", text: "?" });
       const avatar = p.assets?.agent?.small
         ? element("img", { className: "v8-scoreboard-agent", attributes: { src: p.assets.agent.small, alt: "", loading: "lazy" }, events: { error: (event) => event.currentTarget.replaceWith(placeholder()) } })
         : placeholder();
-      return element("tr", { className: p.isMe ? "is-me" : "" }, [
+      return element("tr", { className: `${p.isMe ? "is-me" : ""}${p.isPartyMember ? " is-party-member" : ""}`.trim() }, [
         element("td", { className: "v8-scoreboard-agent-cell" }, [avatar]),
         element("td", { className: "v8-scoreboard-player-cell" }, [isDuo, element("strong", { text: String(p.name || "—") }), element("span", { className: "v8-scoreboard-tag", text: p.tag ? `#${p.tag}` : "" })].filter(Boolean)),
         element("td", { className: "v8-scoreboard-rank", text: String(p.currenttier_patched || "—") }),
@@ -180,6 +180,15 @@ export function mountMatches(container, options = {}) {
     const badgesContainer = element("div", { className: "v8-match-badges" });
     const topScore = Math.max(...(match.scoreboard?.players || []).map(p => Number(p.stats?.score) || 0), 0);
     if (topScore > 0 && Number(stats.score?.value) === topScore) badgesContainer.append(element("span", { className: "v8-badge v8-badge--gold", text: "MVP" }));
+    const partyMembers = match.scoreboard?.partyMembers || [];
+    const partyBadge = partyMembers.length
+      ? element("span", {
+        className: "v8-match-party-badge",
+        attributes: {
+          title: `Avec ${partyMembers.map(p => `${p.name}${p.tag ? `#${p.tag}` : ""}`).join(", ")}`
+        }
+      }, [icon("users-round"), element("span", { text: partyMembers.length > 1 ? "Trio" : "Duo" })])
+      : null;
     
     const kdClass = Number(kdRatio) >= 1.5 ? "text-blue" : Number(kdRatio) >= 1.0 ? "text-green" : "text-yellow";
     
@@ -202,7 +211,10 @@ export function mountMatches(container, options = {}) {
         match.metadata?.agentImageUrl ? element("img", { attributes: { src: match.metadata.agentImageUrl } }) : element("div", { className: "v8-match-agent-placeholder" })
       ]),
       element("div", { className: "v8-match-info" }, [
-        element("small", { text: `${timeAgo} // ${modeName}` }),
+        element("small", { className: "v8-match-meta" }, [
+          element("span", { text: `${timeAgo} // ${modeName}` }),
+          partyBadge
+        ]),
         element("strong", { className: "v8-match-map" }, [
           element("span", { text: match.metadata?.mapName || "Inconnu" }),
           badgesContainer

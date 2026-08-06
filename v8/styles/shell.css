@@ -3950,10 +3950,14 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
 .v8-match-agent img { width:100%;height:100%;object-fit:cover; }
 .v8-match-agent-placeholder { width:100%;height:100%;background:var(--v8-surface-3); }
 .v8-match-info { display:flex;flex-direction:column;min-width:0; }
+.v8-match-meta { display:flex;align-items:center;gap:var(--v8-space-2);min-width:0; }
+.v8-match-meta > span:first-child { min-width:0;overflow:hidden;text-overflow:ellipsis; }
 .v8-match-info small { color:var(--v8-muted);font-size:var(--v8-font-xs);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
 .v8-match-map { display:flex;align-items:center;gap:var(--v8-space-2);color:var(--v8-text);font-size:var(--v8-font-md); }
 
 .v8-match-badges { display:flex;gap:4px; }
+.v8-match-party-badge { display:inline-flex;align-items:center;gap:3px;flex:0 0 auto;color:var(--v8-info);font-size:10px;font-weight:var(--v8-weight-bold);text-transform:uppercase; }
+.v8-match-party-badge svg { width:13px;height:13px; }
 .v8-badge { padding:2px 6px;border-radius:4px;font-size:10px;font-weight:var(--v8-weight-bold);text-transform:uppercase;letter-spacing:0.5px; }
 .v8-badge--gold { background:color-mix(in srgb, #ffd700 20%, transparent);color:#ffd700;border:1px solid color-mix(in srgb, #ffd700 40%, transparent); }
 .v8-badge--outline { border:1px solid var(--v8-border);color:var(--v8-muted); }
@@ -3988,7 +3992,9 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
 .v8-scoreboard-table td { padding:var(--v8-space-3);border-bottom:1px solid var(--v8-border);color:var(--v8-text);vertical-align:middle;min-width:0; }
 .v8-scoreboard-table tbody tr:hover td { background:var(--v8-surface-2); }
 .v8-scoreboard-table tbody tr.is-me td { background:color-mix(in srgb,var(--v8-accent) 12%,transparent); }
+.v8-scoreboard-table tbody tr.is-party-member td { background:color-mix(in srgb,var(--v8-info) 7%,transparent); }
 .v8-scoreboard-table tbody tr.is-me td:first-child { box-shadow:inset 3px 0 var(--v8-accent); }
+.v8-scoreboard-table tbody tr.is-party-member td:first-child { box-shadow:inset 3px 0 var(--v8-info); }
 .v8-scoreboard-table thead th { background:var(--v8-surface-2); }
 .v8-scoreboard-team-header th { grid-column:1 / -1;padding:var(--v8-space-3);color:var(--team-color);background:color-mix(in srgb,var(--team-color) 9%,var(--v8-surface-1));border-top:2px solid var(--team-color);border-bottom:1px solid color-mix(in srgb,var(--team-color) 28%,var(--v8-border));text-transform:none;font-size:var(--v8-font-sm); }
 .v8-scoreboard-team-header__content { display:flex;align-items:center;justify-content:space-between;gap:var(--v8-space-3); }.v8-scoreboard-team-header th strong { font-variant-numeric:tabular-nums;font-size:var(--v8-font-lg); }
@@ -4036,6 +4042,8 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
   .v8-scoreboard-table { grid-template-columns:40px minmax(120px,1fr) 68px 40px 40px 40px; }.v8-scoreboard-table th,.v8-scoreboard-table td { padding-inline:var(--v8-space-1); }.v8-scoreboard-table th:nth-child(8),.v8-scoreboard-table td:nth-child(8) { display:none; }
 }
 @media (max-width: 380px) {
+  .v8-match-badges { display:none; }
+  .v8-match-group-aggregate { display:none; }
   .v8-match-row { grid-template-columns:36px minmax(0,1fr) 84px 48px; }
   .v8-match-row > .v8-match-score-col,.v8-match-row > .v8-match-stat-col--kd,.v8-match-row > .v8-match-stat-col--acs { display:none; }
   .v8-match-row > .v8-match-stat-col--kda { grid-column:3; }

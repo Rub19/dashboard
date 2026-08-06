@@ -5,6 +5,7 @@ export function mountMatches(container, options = {}) {
   const { externalServices, lolLive, valorantLive, trackerLive, actions } = options;
   let destroyed = false;
   let currentMode = "all";
+  let matchDetailId = 0;
   
   const hash = window.location.hash.substring(1);
   const searchParams = new URL("http://localhost/" + hash).searchParams;
@@ -182,7 +183,20 @@ export function mountMatches(container, options = {}) {
     
     const kdClass = Number(kdRatio) >= 1.5 ? "text-blue" : Number(kdRatio) >= 1.0 ? "text-green" : "text-yellow";
     
-    const row = element("div", { className: `v8-match-row ${stateClass}` }, [
+    const detailId = `v8-match-detail-${match.id || ++matchDetailId}`;
+    const action = element("button", {
+      className: "v8-match-action",
+      attributes: {
+        type: "button",
+        "aria-label": "Afficher les détails du match",
+        "aria-expanded": "false",
+        "aria-controls": detailId
+      }
+    }, [icon("chevron-down")]);
+    const row = element("div", {
+      className: `v8-match-row ${stateClass}`,
+      attributes: { tabindex: "0", "aria-expanded": "false", "aria-controls": detailId }
+    }, [
       element("div", { className: "v8-match-accent" }),
       element("div", { className: "v8-match-agent" }, [
         match.metadata?.agentImageUrl ? element("img", { attributes: { src: match.metadata.agentImageUrl } }) : element("div", { className: "v8-match-agent-placeholder" })
@@ -219,19 +233,37 @@ export function mountMatches(container, options = {}) {
         element("small", { text: "ACS" }),
         element("strong", { text: String(acs) })
       ]),
-      element("button", { className: "v8-match-action" }, [icon("chevron-down")])
+      action
     ]);
     
-    const detailContainer = element("div", { className: "v8-match-detail-container", style: "display: none; padding: 1rem; border-top: 1px solid var(--v8-border);" });
+    const detailContainer = element("div", { className: "v8-match-detail-container", attributes: { id: detailId }, style: "display: none; padding: 1rem; border-top: 1px solid var(--v8-border);" });
     if (match.scoreboard) {
        detailContainer.append(renderScoreboard(match.scoreboard));
     } else {
        detailContainer.append(element("p", { text: "Détails non disponibles pour ce match.", style: "color: var(--v8-text-muted);" }));
     }
     
-    row.addEventListener("click", () => {
+    const toggleDetails = () => {
       const isExpanded = detailContainer.style.display === "block";
       detailContainer.style.display = isExpanded ? "none" : "block";
+      row.setAttribute("aria-expanded", String(!isExpanded));
+      action.setAttribute("aria-expanded", String(!isExpanded));
+      action.setAttribute("aria-label", isExpanded ? "Afficher les détails du match" : "Masquer les détails du match");
+    };
+    row.addEventListener("click", (event) => {
+      if (event.target.closest("button")) return;
+      toggleDetails();
+    });
+    row.addEventListener("keydown", (event) => {
+      if (event.target.closest("button")) return;
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        toggleDetails();
+      }
+    });
+    action.addEventListener("click", (event) => {
+      event.stopPropagation();
+      toggleDetails();
     });
     
     row.style.cursor = "pointer";

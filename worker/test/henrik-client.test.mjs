@@ -38,3 +38,25 @@ test("Valorant matches return no agent URL when the catalogue is unavailable", a
   const data = await getValorantMatches(testEnv({ __TEST_FETCH__: fetch }), "Player#EUW", "all", "test-key");
   assert.equal(data[0].scoreboard.players[0].assets.agent.small, "");
 });
+
+test("Valorant match mode is sent as Henrik's mode parameter and filtered defensively", async () => {
+  let matchesUrl;
+  const fetch = async (input) => {
+    const url = new URL(String(input));
+    if (url.hostname === "api.henrikdev.xyz" && url.pathname.includes("/account/")) return json({ data: { region: "eu" } });
+    if (url.hostname === "api.henrikdev.xyz" && url.pathname.startsWith("/valorant/v3/matches")) {
+      matchesUrl = url;
+      return json({
+        data: [
+          { metadata: { matchid: "swift", mode: "Swift Play" }, players: { all_players: [] }, teams: {} },
+          { metadata: { matchid: "unrated", mode: "Unrated" }, players: { all_players: [] }, teams: {} }
+        ]
+      });
+    }
+    if (url.hostname === "valorant-api.com") return json({ data: [] });
+    throw new Error(`Unexpected test destination: ${url.href}`);
+  };
+  const data = await getValorantMatches(testEnv({ __TEST_FETCH__: fetch }), "Player#EUW", "swiftplay", "test-key");
+  assert.equal(matchesUrl.searchParams.get("mode"), "swiftplay");
+  assert.deepEqual(data.map((match) => match.id), ["swift"]);
+});

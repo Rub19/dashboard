@@ -112,7 +112,7 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride) {
   
   let path = `/valorant/v3/matches/${region}/${encodeURIComponent(name)}/${encodeURIComponent(tag)}`;
   if (mode && mode !== "all") {
-    path += `?filter=${encodeURIComponent(mode)}`;
+    path += `?mode=${encodeURIComponent(mode)}`;
   }
   
   const headers = {};
@@ -128,7 +128,12 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride) {
     maxBytes: 4194304
   });
   
-  const matches = response.data?.data || [];
+  const requestedMode = String(mode || "all").toLowerCase().replace(/[^a-z0-9]/g, "");
+  const matches = (response.data?.data || []).filter((match) => {
+    if (requestedMode === "all") return true;
+    const matchMode = String(match.metadata?.mode || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    return matchMode === requestedMode;
+  });
   const agentCatalogue = await loadAgentCatalogue(env);
   
   return Object.freeze(matches.map((match) => {

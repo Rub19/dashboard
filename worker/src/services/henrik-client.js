@@ -96,8 +96,13 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride) {
   return Object.freeze(matches.map((match) => {
     const meta = match.metadata || {};
     const players = match.players?.all_players || [];
-    const me = players.find(p => p.name.toLowerCase() === name.toLowerCase() && p.tag.toLowerCase() === tag.toLowerCase()) || players[0];
+    const me = players.find(p => p.name?.toLowerCase() === name.toLowerCase() && p.tag?.toLowerCase() === tag.toLowerCase()) || players[0];
     const stats = me?.stats || {};
+    const teamKey = me?.team?.toLowerCase();
+    const opponentKey = teamKey === "red" ? "blue" : teamKey === "blue" ? "red" : null;
+    const teamRounds = teamKey ? Number(match.teams?.[teamKey]?.rounds_won) : NaN;
+    const opponentRounds = opponentKey ? Number(match.teams?.[opponentKey]?.rounds_won) : NaN;
+    const roundsPlayed = Number(meta.rounds_played);
     
     let result = "Draw";
     if (match.teams) {
@@ -108,6 +113,10 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride) {
     return Object.freeze({
       id: safeText(meta.matchid),
       scoreboard: Object.freeze({
+        teams: Object.freeze({
+          Red: Object.freeze({ roundsWon: Number.isFinite(Number(match.teams?.red?.rounds_won)) ? Number(match.teams.red.rounds_won) : null }),
+          Blue: Object.freeze({ roundsWon: Number.isFinite(Number(match.teams?.blue?.rounds_won)) ? Number(match.teams.blue.rounds_won) : null })
+        }),
         players: players.map(p => Object.freeze({
           team: safeText(p.team),
           character: safeText(p.character),
@@ -115,6 +124,12 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride) {
           tag: safeText(p.tag),
           currenttier_patched: safeText(p.currenttier_patched),
           party_id: safeText(p.party_id),
+          isMe: Boolean(me && p === me),
+          assets: Object.freeze({
+            agent: Object.freeze({
+              small: safePublicUrl(p.assets?.agent?.small, ["henrikdev.xyz", "valorant-api.com"])
+            })
+          }),
           stats: Object.freeze({
             score: Number(p.stats?.score) || 0,
             kills: Number(p.stats?.kills) || 0,
@@ -132,6 +147,11 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride) {
         mapName: safeText(meta.map),
         agentName: safeText(me?.character),
         agentImageUrl: safePublicUrl(me?.assets?.agent?.small, ["henrikdev.xyz", "valorant-api.com"]),
+        score: Object.freeze({
+          team: Number.isFinite(teamRounds) ? teamRounds : null,
+          opponent: Number.isFinite(opponentRounds) ? opponentRounds : null,
+          roundsPlayed: Number.isFinite(roundsPlayed) ? roundsPlayed : null
+        }),
         timestamp: safeText(new Date((meta.game_start || 0) * 1000).toISOString())
       }),
       segments: Object.freeze([{

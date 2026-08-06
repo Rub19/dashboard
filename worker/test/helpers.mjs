@@ -47,7 +47,7 @@ export function providerFetch(counter = { calls: 0 }) {
     if (url.hostname === "api.henrikdev.xyz") {
       if (url.pathname.startsWith("/valorant/v1/account")) return json({ data: { puuid: "123", region: "eu", account_level: 10, name: "Player", tag: "EUW" } });
       if (url.pathname.startsWith("/valorant/v2/mmr")) return json({ data: { current_data: { currenttier: 10, currenttierpatched: "Gold 1" } } });
-      if (url.pathname.startsWith("/valorant/v3/matches")) return json({ data: [{ metadata: { matchid: "m1", mode: "Unrated", map: "Ascent", rounds_played: 24 }, teams: { red: { rounds_won: 13 }, blue: { rounds_won: 11 } }, players: { all_players: [{ name: "Player", tag: "EUW", team: "Red", assets: { agent: { small: "https://media.henrikdev.xyz/agent.png" } }, stats: { kills: 10, score: 2400 } }] } }] });
+      if (url.pathname.startsWith("/valorant/v3/matches")) return json({ data: [{ metadata: { matchid: "m1", mode: "Unrated", map: "Ascent", rounds_played: 24 }, teams: { red: { rounds_won: 13 }, blue: { rounds_won: 11 } }, players: { all_players: [{ name: "Player", tag: "EUW", team: "Red", assets: { agent: { small: "https://media.valorant-api.com/agents/e370fa57-4757-3604-3648-499e1f642d3f/displayicon.png" } }, stats: { kills: 10, score: 2400 } }] } }] });
     }
     if (url.hostname === "europe.api.riotgames.com") {
       if (url.pathname.startsWith("/riot/account/v1/accounts/by-riot-id")) return json({ puuid: "p1" });

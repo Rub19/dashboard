@@ -31,6 +31,7 @@ export function safeStats(input, maximum = 40) {
   return Object.freeze(Object.fromEntries(entries.map(([key, value]) => [safeText(key, 64), Object.freeze({
     displayName: safeText(value?.displayName || key, 80),
     displayValue: safeText(value?.displayValue ?? value?.value, 80),
+    value: value?.value !== undefined ? Number(value.value) : undefined,
     percentile: safeNumber(value?.percentile, 0, 100)
   })])));
 }

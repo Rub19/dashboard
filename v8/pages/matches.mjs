@@ -79,19 +79,16 @@ export function mountMatches(container, options = {}) {
       const value = (hash >> (i * 8)) & 0xFF;
       color += ('00' + value.toString(16)).substr(-2);
     }
-    return color;
-  }
-
-  function renderScoreboard(scoreboard) {
-    if (!scoreboard || !scoreboard.players) return element("div", { className: "v8-scoreboard-empty", text: "Données détaillées non disponibles", style: "padding:1rem;color:var(--v8-text-muted);" });
+    return color;  function renderScoreboard(scoreboard) {
+    if (!scoreboard || !scoreboard.players) return element("div", { className: "v8-scoreboard-empty", text: "DonnǸes dǸtaillǸes non disponibles" });
     
     const container = element("div", { className: "v8-scoreboard" });
     
     // Header
-    const tabs = element("div", { className: "v8-scoreboard-tabs", style: "display:flex;gap:1rem;padding:0.5rem;border-bottom:1px solid var(--v8-border);" }, [
-      element("button", { className: "v8-scoreboard-tab active", text: "Scoreboard", style: "background:transparent;border:none;color:var(--v8-text-primary);cursor:pointer;font-weight:bold;" }),
-      element("button", { className: "v8-scoreboard-tab", text: "Performance", style: "background:transparent;border:none;color:var(--v8-text-muted);cursor:pointer;" }),
-      element("button", { className: "v8-scoreboard-tab", text: "Economy", style: "background:transparent;border:none;color:var(--v8-text-muted);cursor:pointer;" })
+    const tabs = element("div", { className: "v8-scoreboard-tabs" }, [
+      element("button", { className: "v8-scoreboard-tab active", text: "Scoreboard" }),
+      element("button", { className: "v8-scoreboard-tab", text: "Performance" }),
+      element("button", { className: "v8-scoreboard-tab", text: "Economy" })
     ]);
     container.append(tabs);
     
@@ -112,43 +109,42 @@ export function mountMatches(container, options = {}) {
       if (!players.length) return null;
       const tColor = teamName.toLowerCase() === "red" ? "var(--v8-error)" : "var(--v8-info)";
       
-      const thStyle = "padding: 0.5rem;";
       const thead = element("thead", {}, [
-        element("tr", { style: `border-bottom: 2px solid ${tColor}; text-align: left; font-size: 0.85rem; color: var(--v8-text-muted);` }, [
-          element("th", { style: thStyle, text: "Agent" }),
-          element("th", { style: thStyle, text: "Joueur" }),
-          element("th", { style: thStyle, text: "Rank" }),
-          element("th", { style: thStyle, text: "Score" }),
-          element("th", { style: thStyle, text: "K" }),
-          element("th", { style: thStyle, text: "D" }),
-          element("th", { style: thStyle, text: "A" }),
-          element("th", { style: thStyle, text: "K/D" }),
-          element("th", { style: thStyle, text: "HS%" })
+        element("tr", { style: `border-bottom-color: ${tColor};` }, [
+          element("th", { text: "Agent" }),
+          element("th", { text: "Joueur" }),
+          element("th", { text: "Rank" }),
+          element("th", { text: "Score" }),
+          element("th", { text: "K" }),
+          element("th", { text: "D" }),
+          element("th", { text: "A" }),
+          element("th", { text: "K/D" }),
+          element("th", { text: "HS%" })
         ])
       ]);
       
       const tbody = element("tbody", {}, players.map(p => {
-        const kd = p.stats?.deaths ? (p.stats.kills / p.stats.deaths).toFixed(2) : p.stats?.kills;
+        const kd = p.stats?.deaths ? (p.stats.kills / p.stats.deaths).toFixed(2) : p.stats?.kills || 0;
         const hs = p.stats?.headshots ? Math.round((p.stats.headshots / (p.stats.headshots + (p.stats.bodyshots||0) + (p.stats.legshots||0))) * 100) : 0;
         
-        const tdStyle = "padding: 0.5rem;";
-        const isDuo = p.party_id ? element("span", { className: "v8-party-indicator", style: `background-color: ${stringToColor(p.party_id)}; width:6px; height:6px; border-radius:50%; display:inline-block; margin-right:4px;`, attributes: { title: "En groupe" } }) : null;
+        const isDuo = p.party_id ? element("span", { className: "v8-party-indicator", style: `background-color: ${stringToColor(p.party_id)};`, attributes: { title: "En groupe" } }) : null;
+        const agentImg = p.assets?.agent?.small ? element("img", { attributes: { src: p.assets.agent.small }, className: "v8-scoreboard-agent" }) : element("span", { className: "v8-scoreboard-agent" });
         
-        return element("tr", { style: "border-bottom: 1px solid var(--v8-border);" }, [
-          element("td", { style: tdStyle, text: String(p.character || '-') }),
-          element("td", { style: tdStyle }, [isDuo, element("strong", { text: String(p.name) }), element("span", { style: "opacity:0.5;font-size:0.8em", text: ` #${p.tag}` })].filter(Boolean)),
-          element("td", { style: tdStyle, text: String(p.currenttier_patched || '-') }),
-          element("td", { style: tdStyle, text: String(p.stats?.score || 0) }),
-          element("td", { style: tdStyle, text: String(p.stats?.kills || 0) }),
-          element("td", { style: tdStyle, text: String(p.stats?.deaths || 0) }),
-          element("td", { style: tdStyle, text: String(p.stats?.assists || 0) }),
-          element("td", { style: tdStyle, text: String(kd) }),
-          element("td", { style: tdStyle, text: `${hs}%` })
+        return element("tr", {}, [
+          element("td", {}, [agentImg, element("span", { text: String(p.character || '-') })]),
+          element("td", {}, [isDuo, element("strong", { text: String(p.name) }), element("span", { style: "opacity:0.5;font-size:0.8em", text: ` #${p.tag}` })].filter(Boolean)),
+          element("td", { text: String(p.currenttier_patched || '-') }),
+          element("td", { text: String(p.stats?.score || 0) }),
+          element("td", { text: String(p.stats?.kills || 0) }),
+          element("td", { text: String(p.stats?.deaths || 0) }),
+          element("td", { text: String(p.stats?.assists || 0) }),
+          element("td", { text: String(kd) }),
+          element("td", { text: `${hs}%` })
         ]);
       }));
       
-      const table = element("table", { className: "v8-scoreboard-table", style: "width: 100%; border-collapse: collapse; margin-top: 1rem;" }, [thead, tbody]);
-      return element("div", { className: "v8-scoreboard-team", style: "background: rgba(0,0,0,0.2); border-radius: 8px; padding: 0.5rem; margin-bottom: 1rem;" }, [table]);
+      const table = element("table", { className: "v8-scoreboard-table" }, [thead, tbody]);
+      return element("div", { className: "v8-scoreboard-team" }, [table]);
     };
 
     const redTable = createTeamTable("Red", teams.Red);
@@ -157,6 +153,7 @@ export function mountMatches(container, options = {}) {
     if (blueTable) container.append(blueTable);
 
     return container;
+  }iner;
   }
 
   function renderMatch(match) {

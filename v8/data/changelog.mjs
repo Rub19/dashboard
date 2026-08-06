@@ -24,6 +24,10 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v211", "2026-08-06", "Changelog entièrement traduit", [
+    { kind: "i18n", text: "Ajout des traductions en anglais, espagnol et allemand pour l'ensemble des Notes de version et de leurs libellés (NEW, FIXED, IMPROVED, etc.)." },
+    { kind: "improvement", text: "Ajustement du budget JavaScript de validation pour accueillir le dictionnaire de traductions enrichi." }
+  ]),
   entry("v210", "2026-08-06", "Audit i18n et traductions du dashboard", [
     { kind: "improvement", text: "Audit complet du dashboard pour identifier les chaînes non traduites." },
     { kind: "improvement", text: "Ajout de plus de 100 traductions pour le panneau Profil, les Préférences, le Dock, les états vides, le Brain et les pages de l'application." }

@@ -50,7 +50,11 @@ function extractStrings(file) {
     /"aria-label":\s*(?:translateSource\()?\s*"([^"]{2,})"\s*\)?/g,
     /placeholder:\s*(?:translateSource\()?\s*"([^"]{2,})"\s*\)?/g,
     /data-tooltip:\s*(?:translateSource\()?\s*"([^"]{2,})"\s*\)?/g,
-    /\{ text:\s*(?:translateSource\()?\s*"([^"]{2,})"\s*\)?\s*\}/g
+    /\{ text:\s*(?:translateSource\()?\s*"([^"]{2,})"\s*\)?\s*\}/g,
+    /settingRow\([^,]+,\s*"([^"]{2,})"(?:,\s*"([^"]{2,})")?/g,
+    /choice\([^,]+,\s*[^,]+,\s*"([^"]{2,})"/g,
+    /switchControl\([^,]+,\s*"([^"]{2,})"/g,
+    /element\("(?:h1|h2|h3|strong|small|span|p|a|button|label|li|div)",\s*\{[^\}]*text:\s*(?:translateSource\()?\s*"([^"]{2,})"/g
   ];
   for (const pattern of patterns) {
     for (const match of source.matchAll(pattern)) {

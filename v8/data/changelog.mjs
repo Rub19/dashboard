@@ -24,6 +24,10 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v218", "2026-08-06", "Dock net et i18n", [
+    { kind: "improvement", text: "Icônes du Dock moins pixélisées au survol : scale réduit, icône légèrement agrandie et netteté améliorée." },
+    { kind: "fix", text: "Réparation du catalogue i18n après une édition manuelle." }
+  ]),
   entry("v217", "2026-08-06", "CSP DDragon et fallback LoL", [
     { kind: "fix", text: "Ajout de ddragon.leagueoflegends.com au CSP pour débloquer les icônes League of Legends." },
     { kind: "fix", text: "Fallback icône épée sur la carte LoL Live Now si l'avatar de profil ne charge pas." }

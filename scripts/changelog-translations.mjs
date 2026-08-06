@@ -1,4 +1,8 @@
 export const CHANGELOG_TRANSLATIONS = {
+  "Dock net et i18n": { en: "Sharp dock and i18n", es: "Dock nítido e i18n", de: "Scharfes Dock und i18n" },
+  "Icônes du Dock moins pixélisées au survol : scale réduit, icône légèrement agrandie et netteté améliorée.": { en: "Dock icons less pixelated on hover: reduced scale, slightly larger icon, and improved sharpness.", es: "Iconos del Dock menos pixelados al pasar el ratón: escala reducida, icono ligeramente más grande y nitidez mejorada.", de: "Dock-Icons weniger pixelig beim Hover: reduzierte Skalierung, leicht größeres Icon und verbesserte Schärfe." },
+  "Réparation du catalogue i18n après une édition manuelle.": { en: "Fixed the i18n catalog after a manual edit.", es: "Reparación del catálogo i18n tras una edición manual.", de: "Reparatur des i18n-Katalogs nach manueller Bearbeitung." },
+
   "CSP DDragon et fallback LoL": { en: "DDragon CSP and LoL fallback", es: "CSP de DDragon y fallback de LoL", de: "DDragon-CSP und LoL-Fallback" },
   "Ajout de ddragon.leagueoflegends.com au CSP pour débloquer les icônes League of Legends.": { en: "Added ddragon.leagueoflegends.com to the CSP to unlock League of Legends icons.", es: "Añadido ddragon.leagueoflegends.com al CSP para desbloquear los iconos de League of Legends.", de: "ddragon.leagueoflegends.com zum CSP hinzugefügt, um League-of-Legends-Icons zu entsperren." },
   "Fallback icône épée sur la carte LoL Live Now si l'avatar de profil ne charge pas.": { en: "Sword icon fallback on the LoL Live Now card if the profile avatar fails to load.", es: "Fallback de icono de espada en la tarjeta LoL Live Now si el avatar del perfil no carga.", de: "Schwert-Icon-Fallback auf der LoL-Live-Now-Karte, wenn der Profil-Avatar nicht lädt." },

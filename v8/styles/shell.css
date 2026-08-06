@@ -539,9 +539,9 @@ button.v8-status-item:focus-visible { box-shadow: var(--v8-shadow-focus); outlin
   pointer-events: none;
 }
 .v8-dock-apps { display: flex; min-width: 0; align-items: flex-end; gap: 4px; overflow: visible; }
-.v8-dock-app,.v8-dock-control,.v8-dock-more { position: relative; display: grid; width: 50px; height: 54px; flex: 0 0 50px; place-items: center; border: 0; background: transparent; color: var(--v8-text-secondary); cursor: pointer; outline: none; transform-origin: center bottom; transition: color var(--v8-motion-fast) var(--v8-ease-standard),filter var(--v8-motion-fast) var(--v8-ease-standard),opacity var(--v8-motion-fast) var(--v8-ease-standard),transform var(--v8-motion-base) var(--v8-ease-spring); }
+.v8-dock-app,.v8-dock-control,.v8-dock-more { position: relative; display: grid; width: 50px; height: 54px; flex: 0 0 50px; place-items: center; border: 0; background: transparent; color: var(--v8-text-secondary); cursor: pointer; outline: none; transform-origin: center bottom; backface-visibility: hidden; transition: color var(--v8-motion-fast) var(--v8-ease-standard),filter var(--v8-motion-fast) var(--v8-ease-standard),opacity var(--v8-motion-fast) var(--v8-ease-standard),transform var(--v8-motion-base) var(--v8-ease-spring); }
 .v8-dock-app__plate { position: relative; display: grid; width: 42px; height: 42px; place-items: center; border: 1px solid var(--v8-border); border-radius: var(--v8-radius-md); background: linear-gradient(145deg,var(--v8-surface-2),var(--v8-surface-sunken)); box-shadow: var(--v8-shadow-height-1); transition: border-color var(--v8-motion-fast) var(--v8-ease-standard),background-color var(--v8-motion-fast) var(--v8-ease-standard),box-shadow var(--v8-motion-base) var(--v8-physics-friction),transform var(--v8-motion-instant) var(--v8-ease-press); }
-.v8-dock-app svg { width: 23px; height: 23px; stroke-width: 1.8; }
+.v8-dock-app svg { width: 23px; height: 23px; stroke-width: 1.8; backface-visibility: hidden; shape-rendering: geometricPrecision; }
 .v8-dock-app::before { position: absolute; inset: 4px; border-radius: var(--v8-radius-md); background: radial-gradient(circle,var(--v8-accent-soft),transparent 68%); content: ""; opacity: 0; transition: opacity var(--v8-motion-fast) var(--v8-ease-standard); }
 .v8-dock-app.is-active { color: var(--v8-accent); }
 .v8-dock-app.is-active .v8-dock-app__plate { border-color: var(--v8-accent-line); background: linear-gradient(145deg,var(--v8-accent-soft),var(--v8-surface-1)); }
@@ -559,8 +559,10 @@ button.v8-status-item:focus-visible { box-shadow: var(--v8-shadow-focus); outlin
 .v8-dock-app[data-haptic-state="pressed"] .v8-dock-app__plate,.v8-dock-control[data-haptic-state="pressed"] svg,.v8-dock-more[data-haptic-state="pressed"] svg { transform: translate3d(0,1px,0) scale(.9); }
 .v8-dock-app[data-haptic-state="released"] .v8-dock-app__plate,.v8-dock-control[data-haptic-state="released"] svg,.v8-dock-more[data-haptic-state="released"] svg { animation: v8-dock-haptic-release var(--v8-haptic-release-duration) var(--v8-haptic-spring) both; }
 @media (hover:hover) and (pointer:fine) {
-  html[data-v8-interactions]:not([data-v8-dock-magnify="false"]) body .v8-dock-app:hover:not(:focus-visible) { filter: drop-shadow(0 12px 16px color-mix(in srgb,var(--v8-accent) 20%,transparent)); transform: translate3d(0,-10px,0) scale(1.28); }
-  html:not([data-v8-dock-magnify="false"]) .v8-dock-app:has(+ .v8-dock-app:hover), html:not([data-v8-dock-magnify="false"]) .v8-dock-app:hover + .v8-dock-app { transform: translate3d(0,-4px,0) scale(1.11); }
+  html[data-v8-interactions]:not([data-v8-dock-magnify="false"]) body .v8-dock-app:hover:not(:focus-visible) { filter: drop-shadow(0 8px 14px color-mix(in srgb,var(--v8-accent) 18%,transparent)); transform: translate3d(0,-8px,0) scale(1.15); }
+  html:not([data-v8-dock-magnify="false"]) .v8-dock-app:has(+ .v8-dock-app:hover), html:not([data-v8-dock-magnify="false"]) .v8-dock-app:hover + .v8-dock-app { transform: translate3d(0,-3px,0) scale(1.06); }
+  .v8-dock-app:hover .v8-dock-app__plate { box-shadow: var(--v8-shadow-height-2), 0 0 0 1px var(--v8-accent-line); }
+  .v8-dock-app:hover svg { width: 24px; height: 24px; }
   .v8-dock-app:hover::before { opacity: 1; }
 }
 .v8-floating-dock [data-tooltip]::after { top: auto; bottom: calc(100% + 14px); left: 50%; transform: translate3d(-50%,4px,0); }

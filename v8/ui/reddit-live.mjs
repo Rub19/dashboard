@@ -1,4 +1,4 @@
-import { brandIcon, element, icon } from "./dom.mjs";
+import { attachFlipBehavior, brandIcon, element, icon } from "./dom.mjs";
 import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 function avatar(presence) {
@@ -42,10 +42,7 @@ export function redditLiveCard(presence = {}, options = {}) {
     dataset: { liveWidget: "media", liveKind: "widget" }
   }, [element("div", { className: "v8-live-card-inner" }, [front, back])]);
 
-  card.addEventListener("click", (event) => {
-    if (event.target.closest("button, a, input")) return;
-    card.classList.toggle("is-flipped");
-  });
+  attachFlipBehavior(card);
 
   return card;
 }

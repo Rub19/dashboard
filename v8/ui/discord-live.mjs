@@ -1,4 +1,4 @@
-import { brandIcon, element, icon } from "./dom.mjs";
+import { attachFlipBehavior, brandIcon, element, icon } from "./dom.mjs";
 import { liveFreshnessNode } from "./live-freshness.mjs";
 
 const STATUS_LABELS = Object.freeze({ online: "En ligne", idle: "Absent", dnd: "Ne pas déranger", offline: "Hors ligne" });
@@ -46,7 +46,7 @@ export function discordLiveCard(presence = {}, options = {}) {
   if (presence.available !== true) return null;
   const variant = ["home", "activity"].includes(options.variant) ? options.variant : "home";
   const activity = presence.spotify?.available
-    ? `Ecoute ${presence.spotify.artist} - ${presence.spotify.title}`
+    ? `Écoute ${presence.spotify.artist} - ${presence.spotify.title}`
     : presence.activityName
       ? (presence.activityDetail ? `${presence.activityName} - ${presence.activityDetail}` : presence.activityName)
       : STATUS_LABELS[presence.status] || "Hors ligne";
@@ -78,14 +78,11 @@ export function discordLiveCard(presence = {}, options = {}) {
 
   const card = element(options.tagName || "article", {
     className: `v8-discord-live v8-discord-live--${variant}`,
-    attributes: { "aria-label": "Presence Discord" },
+    attributes: { "aria-label": "Présence Discord" },
     dataset: { liveWidget: "media", liveKind: "profile" }
   }, [element("div", { className: "v8-live-card-inner" }, [front, back])]);
 
-  card.addEventListener("click", (event) => {
-    if (event.target.closest("button, a, input")) return;
-    card.classList.toggle("is-flipped");
-  });
+  attachFlipBehavior(card);
 
   return card;
 }

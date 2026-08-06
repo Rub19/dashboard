@@ -1,4 +1,4 @@
-import { actionButton, brandIcon, element, icon } from "./dom.mjs";
+import { actionButton, attachFlipBehavior, brandIcon, element, icon } from "./dom.mjs";
 
 function formatTime(value) {
   const seconds = Math.max(0, Math.floor(Number(value || 0) / 1000));
@@ -98,10 +98,7 @@ export function spotifyLiveCard(playback = {}, options = {}) {
     element("div", { className: "v8-live-card-inner" }, [front, back])
   ]);
 
-  card.addEventListener("click", (event) => {
-    if (event.target.closest("button, a, input")) return;
-    card.classList.toggle("is-flipped");
-  });
+  attachFlipBehavior(card);
 
   if (playback.playing) {
     let rAF;

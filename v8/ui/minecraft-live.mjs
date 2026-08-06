@@ -1,4 +1,4 @@
-import { element, icon } from "./dom.mjs";
+import { attachFlipBehavior, element, icon } from "./dom.mjs";
 import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 import { translateSource } from "../i18n/catalog.mjs";
 
@@ -67,10 +67,7 @@ export function minecraftLiveCard(presence = {}, options = {}) {
     dataset: { liveWidget: "media", liveKind: "profile" }
   }, [element("div", { className: "v8-live-card-inner" }, [front, back])]);
 
-  card.addEventListener("click", (event) => {
-    if (event.target.closest("button, a, input")) return;
-    card.classList.toggle("is-flipped");
-  });
+  attachFlipBehavior(card);
 
   return card;
 }

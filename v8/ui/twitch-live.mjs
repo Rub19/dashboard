@@ -1,4 +1,4 @@
-import { element, icon } from "./dom.mjs";
+import { attachFlipBehavior, element, icon } from "./dom.mjs";
 import { liveFreshnessNode } from "./live-freshness.mjs";
 
 function avatar(presence) {
@@ -38,14 +38,11 @@ export function twitchLiveCard(presence = {}, options = {}) {
 
   const card = element(options.tagName || "article", {
     className: `v8-twitch-live v8-twitch-live--${variant}${presence.live ? " is-live" : ""}`,
-    attributes: { "aria-label": "Chaine Twitch" },
+    attributes: { "aria-label": "Chaîne Twitch" },
     dataset: { liveWidget: "media", liveKind: "profile" }
   }, [element("div", { className: "v8-live-card-inner" }, [front, back])]);
 
-  card.addEventListener("click", (event) => {
-    if (event.target.closest("button, a, input")) return;
-    card.classList.toggle("is-flipped");
-  });
+  attachFlipBehavior(card);
 
   return card;
 }

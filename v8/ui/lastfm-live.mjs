@@ -1,4 +1,4 @@
-import { brandIcon, element, icon } from "./dom.mjs";
+import { attachFlipBehavior, brandIcon, element, icon } from "./dom.mjs";
 import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 function artwork(presence) {
@@ -17,7 +17,7 @@ export function lastfmLiveCard(presence = {}, options = {}) {
   const front = element("div", { className: `v8-lastfm-live v8-lastfm-live--${variant} v8-surface v8-live-card-front` }, [
     artwork(presence),
     element("div", { className: "v8-lastfm-live__body" }, [
-      element("div", { className: "v8-lastfm-live__meta" }, [brandIcon("lastfm", "history", "v8-live-brand-mark"), element("small", { text: presence.playing ? "Ecoute en cours" : "Dernier morceau" })]),
+      element("div", { className: "v8-lastfm-live__meta" }, [brandIcon("lastfm", "history", "v8-live-brand-mark"), element("small", { text: presence.playing ? "Écoute en cours" : "Dernier morceau" })]),
       element("strong", { text: presence.title, attributes: { translate: "no" } }),
       element("p", { text: presence.artist, attributes: { translate: "no" } }),
       liveFreshnessNode(presence.updatedAt)
@@ -40,10 +40,7 @@ export function lastfmLiveCard(presence = {}, options = {}) {
     dataset: { liveWidget: "media", liveKind: "widget" }
   }, [element("div", { className: "v8-live-card-inner" }, [front, back])]);
 
-  card.addEventListener("click", (event) => {
-    if (event.target.closest("button, a, input")) return;
-    card.classList.toggle("is-flipped");
-  });
+  attachFlipBehavior(card);
 
   return card;
 }

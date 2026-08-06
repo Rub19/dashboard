@@ -3397,6 +3397,26 @@ article.v8-lol-live, article.v8-valorant-live, article.v8-tracker-live, article.
 .v8-youtube-live.is-flipped .v8-live-card-inner {
   transform: rotateX(180deg);
 }
+article.v8-lol-live:focus-visible,
+article.v8-valorant-live:focus-visible,
+article.v8-tracker-live:focus-visible,
+article.v8-spotify-live:focus-visible,
+article.v8-discord-live:focus-visible,
+article.v8-minecraft-live:focus-visible,
+article.v8-github-live:focus-visible,
+article.v8-google-calendar-live:focus-visible,
+article.v8-google-drive-live:focus-visible,
+article.v8-lastfm-live:focus-visible,
+article.v8-notion-live:focus-visible,
+article.v8-reddit-live:focus-visible,
+article.v8-steam-live:focus-visible,
+article.v8-todoist-live:focus-visible,
+article.v8-twitch-live:focus-visible,
+article.v8-weather-live:focus-visible,
+article.v8-youtube-live:focus-visible {
+  outline: none;
+  box-shadow: var(--v8-shadow-focus) !important;
+}
 .v8-live-card-front, .v8-live-card-back {
   display: grid;
   min-width: 0;
@@ -3511,6 +3531,9 @@ article.v8-lol-live, article.v8-valorant-live, article.v8-tracker-live, article.
 .v8-twitch-live-back .v8-flip-back-header { color:#9146ff; }
 .v8-weather-live-back .v8-flip-back-header { color:#0ea5e9; }
 .v8-youtube-live-back .v8-flip-back-header { color:#ff0000; }
+@media (prefers-reduced-motion: reduce) {
+  .v8-live-card-inner { transition-duration: 1ms !important; }
+}
 @media (max-width:540px) {
   .v8-lol-live .v8-live-card-front, .v8-valorant-live .v8-live-card-front, .v8-tracker-live .v8-live-card-front { grid-template-columns: 46px minmax(0,1fr); }
   .v8-live-card-front, .v8-live-card-back { gap: var(--v8-space-3); padding: var(--v8-space-3); }

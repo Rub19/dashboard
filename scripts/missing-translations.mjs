@@ -1,4 +1,34 @@
 export const MISSING_TRANSLATIONS = {
+  "Chaîne Twitch": {
+    en: "Twitch Channel",
+    es: "Canal de Twitch",
+    de: "Twitch-Kanal"
+  },
+  "Densité": {
+    en: "Density",
+    es: "Densidad",
+    de: "Dichte"
+  },
+  "Présence Discord": {
+    en: "Discord Presence",
+    es: "Presencia de Discord",
+    de: "Discord-Präsenz"
+  },
+  "Présence Steam": {
+    en: "Steam Presence",
+    es: "Presencia de Steam",
+    de: "Steam-Präsenz"
+  },
+  "Prochaine tâche": {
+    en: "Next task",
+    es: "Próxima tarea",
+    de: "Nächste Aufgabe"
+  },
+  "Prochaine tâche Todoist": {
+    en: "Next Todoist task",
+    es: "Próxima tarea de Todoist",
+    de: "Nächste Todoist-Aufgabe"
+  },
   "Activer ou désactiver la mémoire Brain": {
     en: "Toggle Brain memory",
     es: "Activar o desactivar la memoria Brain",

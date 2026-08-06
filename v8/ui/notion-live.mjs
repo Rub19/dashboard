@@ -1,4 +1,4 @@
-import { brandIcon, element, icon } from "./dom.mjs";
+import { attachFlipBehavior, brandIcon, element, icon } from "./dom.mjs";
 import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 function formatRelativeTime(iso) {
@@ -6,7 +6,7 @@ function formatRelativeTime(iso) {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return "";
   const diffMin = Math.round((Date.now() - date.getTime()) / 60000);
-  if (diffMin < 1) return "A l'instant";
+  if (diffMin < 1) return "À l'instant";
   if (diffMin < 60) return `Il y a ${diffMin} min`;
   const diffHour = Math.round(diffMin / 60);
   if (diffHour < 24) return `Il y a ${diffHour}h`;
@@ -50,10 +50,7 @@ export function notionLiveCard(presence = {}, options = {}) {
     dataset: { liveWidget: "media", liveKind: "widget" }
   }, [element("div", { className: "v8-live-card-inner" }, [front, back])]);
 
-  card.addEventListener("click", (event) => {
-    if (event.target.closest("button, a, input")) return;
-    card.classList.toggle("is-flipped");
-  });
+  attachFlipBehavior(card);
 
   return card;
 }

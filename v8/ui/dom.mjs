@@ -81,6 +81,31 @@ export function actionButton(options = {}, children = []) {
   }, children);
 }
 
+export function attachFlipBehavior(card) {
+  if (!card || card._v8FlipAttached) return card;
+  card._v8FlipAttached = true;
+  card.setAttribute("role", "button");
+  if (!card.hasAttribute("tabindex")) card.tabIndex = 0;
+  card.setAttribute("aria-expanded", "false");
+
+  const toggle = () => {
+    const flipped = card.classList.toggle("is-flipped");
+    card.setAttribute("aria-expanded", String(flipped));
+  };
+
+  card.addEventListener("click", (event) => {
+    if (event.target.closest('button, a, input, select, textarea, [contenteditable="true"]')) return;
+    toggle();
+  });
+  card.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    toggle();
+  });
+
+  return card;
+}
+
 export function attachTypeToSelect(container, selector, getLabel = (el) => el.textContent || "") {
   let buffer = "";
   let timer = null;

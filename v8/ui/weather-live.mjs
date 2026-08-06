@@ -1,4 +1,4 @@
-import { element, icon } from "./dom.mjs";
+import { attachFlipBehavior, element, icon } from "./dom.mjs";
 import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 export function weatherIcon(code, isDay) {
@@ -30,7 +30,7 @@ export function weatherLiveCard(presence = {}, options = {}) {
   const body = element("div", { className: "v8-weather-live__body" }, [
     element("div", { className: "v8-weather-live__meta" }, [icon("map-pin"), element("small", { text: presence.country ? `${presence.city}, ${presence.country}` : presence.city, attributes: { translate: "no" } })]),
     element("strong", { text: `${presence.temperature}°C` }),
-    element("p", { text: `${presence.description} - Vent ${presence.windSpeedKmh} km/h - ${presence.humidityPercent}% humidite` }),
+    element("p", { text: `${presence.description} - Vent ${presence.windSpeedKmh} km/h - ${presence.humidityPercent}% humidité` }),
     liveFreshnessNode(presence.updatedAt),
     detailable ? element("button", {
       className: "v8-icon-button v8-weather-detail__trigger",
@@ -61,10 +61,7 @@ export function weatherLiveCard(presence = {}, options = {}) {
     dataset: { liveWidget: "media", liveKind: "widget" }
   }, [element("div", { className: "v8-live-card-inner" }, [front, back])]);
 
-  card.addEventListener("click", (event) => {
-    if (event.target.closest("button, a, input")) return;
-    card.classList.toggle("is-flipped");
-  });
+  attachFlipBehavior(card);
 
   return card;
 }

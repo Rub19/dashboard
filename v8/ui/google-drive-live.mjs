@@ -1,4 +1,4 @@
-import { brandIcon, element, icon } from "./dom.mjs";
+import { attachFlipBehavior, brandIcon, element, icon } from "./dom.mjs";
 import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 const DAY_MONTH = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" });
@@ -6,7 +6,7 @@ const DAY_MONTH = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "sho
 function formatModified(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "";
-  return `Modifie le ${DAY_MONTH.format(date)}`;
+  return `Modifié le ${DAY_MONTH.format(date)}`;
 }
 
 export function googleDriveLiveCard(presence = {}, options = {}) {
@@ -40,10 +40,7 @@ export function googleDriveLiveCard(presence = {}, options = {}) {
     dataset: { liveWidget: "media", liveKind: "widget" }
   }, [element("div", { className: "v8-live-card-inner" }, [front, back])]);
 
-  card.addEventListener("click", (event) => {
-    if (event.target.closest("button, a, input")) return;
-    card.classList.toggle("is-flipped");
-  });
+  attachFlipBehavior(card);
 
   return card;
 }

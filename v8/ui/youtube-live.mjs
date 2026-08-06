@@ -1,4 +1,4 @@
-import { element, icon } from "./dom.mjs";
+import { attachFlipBehavior, element, icon } from "./dom.mjs";
 import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 export function youtubeLiveCard(presence = {}, options = {}) {
@@ -9,7 +9,7 @@ export function youtubeLiveCard(presence = {}, options = {}) {
       attributes: { src: presence.thumbnailUrl, alt: "", loading: "lazy", decoding: "async", referrerpolicy: "no-referrer" }
     })])
     : element("span", { className: "v8-youtube-avatar__image is-fallback" }, [icon("youtube")]);
-  const meta = presence.latestVideoTitle ? "Dernière video" : "Chaine YouTube";
+  const meta = presence.latestVideoTitle ? "Dernière vidéo" : "Chaîne YouTube";
 
   const front = element("div", { className: `v8-youtube-live v8-youtube-live--${variant} v8-surface v8-live-card-front` }, [
     element("span", { className: "v8-youtube-avatar" }, [thumbnail, livePulseDot()]),
@@ -26,7 +26,7 @@ export function youtubeLiveCard(presence = {}, options = {}) {
     element("div", { className: "v8-flip-back-body" }, [
       element("p", { text: presence.channelTitle, attributes: { translate: "no" } }),
       presence.latestVideoTitle ? element("p", { text: presence.latestVideoTitle, attributes: { translate: "no" } }) : null,
-      presence.subscriberCount ? element("p", { text: `${presence.subscriberCount} abonnés` }) : null
+      presence.subscriberCount ? element("p", { text: `${presence.subscriberCount} abonnés`, attributes: { translate: "no" } }) : null
     ].filter(Boolean)),
     element("footer", { className: "v8-flip-back-footer" }, [element("small", { text: "YouTube" })])
   ]);
@@ -37,10 +37,7 @@ export function youtubeLiveCard(presence = {}, options = {}) {
     dataset: { liveWidget: "media", liveKind: "widget" }
   }, [element("div", { className: "v8-live-card-inner" }, [front, back])]);
 
-  card.addEventListener("click", (event) => {
-    if (event.target.closest("button, a, input")) return;
-    card.classList.toggle("is-flipped");
-  });
+  attachFlipBehavior(card);
 
   return card;
 }

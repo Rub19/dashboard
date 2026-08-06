@@ -24,6 +24,13 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v224", "2026-08-06", "Accessibilité, i18n et polish des cartes Live Now", [
+    { kind: "feature", text: "Les cartes Live Now sont focusables et activables au clavier (Entrée / Espace)." },
+    { kind: "improvement", text: "Comportement de flip factorisé dans un helper partagé pour toutes les cartes." },
+    { kind: "i18n", text: "Ajout des traductions manquantes et compactage du catalogue i18n." },
+    { kind: "improvement", text: "Corrections d'accents et de libellés sur les cartes YouTube, Discord, Steam, Todoist, etc." },
+    { kind: "improvement", text: "Respect de prefers-reduced-motion sur le retournement 3D des cartes." }
+  ]),
   entry("v223", "2026-08-06", "Flip 3D généralisé sur toutes les cartes Live Now", [
     { kind: "feature", text: "Toutes les cartes Live Now se retournent au clic pour afficher plus de détails au verso." },
     { kind: "improvement", text: "Couleurs de verso harmonisées avec chaque service." }

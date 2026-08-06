@@ -1,4 +1,4 @@
-import { brandIcon, element, icon } from "./dom.mjs";
+import { attachFlipBehavior, brandIcon, element, icon } from "./dom.mjs";
 import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 const DAY_MONTH = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" });
@@ -6,14 +6,14 @@ const HOUR_MINUTE = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: 
 
 function formatDue(task) {
   const raw = task.dueDateTime || task.due;
-  if (!raw) return "Sans echeance";
+  if (!raw) return "Sans échéance";
   const date = new Date(raw);
-  if (Number.isNaN(date.getTime())) return "Sans echeance";
+  if (Number.isNaN(date.getTime())) return "Sans échéance";
   const now = new Date();
   const sameDay = date.toDateString() === now.toDateString();
   const overdue = date.getTime() < now.getTime() && (task.dueDateTime || sameDay);
   const label = task.dueDateTime
-    ? (sameDay ? `Aujourd'hui a ${HOUR_MINUTE.format(date)}` : `${DAY_MONTH.format(date)} a ${HOUR_MINUTE.format(date)}`)
+    ? (sameDay ? `Aujourd'hui à ${HOUR_MINUTE.format(date)}` : `${DAY_MONTH.format(date)} à ${HOUR_MINUTE.format(date)}`)
     : (sameDay ? "Aujourd'hui" : DAY_MONTH.format(date));
   return overdue ? `En retard - ${label}` : label;
 }
@@ -27,7 +27,7 @@ export function todoistLiveCard(presence = {}, options = {}) {
   const front = element("div", { className: `v8-todoist-live v8-todoist-live--${variant} v8-surface v8-live-card-front` }, [
     element("span", { className: "v8-todoist-icon" }, [icon("circle-check-big"), livePulseDot()]),
     element("div", { className: "v8-todoist-live__body" }, [
-      element("div", { className: "v8-todoist-live__meta" }, [brandIcon("todoist", "circle-check-big", "v8-live-brand-mark"), element("small", { text: "Prochaine tache" })]),
+      element("div", { className: "v8-todoist-live__meta" }, [brandIcon("todoist", "circle-check-big", "v8-live-brand-mark"), element("small", { text: "Prochaine tâche" })]),
       element("strong", { text: task.content, attributes: { translate: "no" } }),
       element("p", { text: meta, attributes: { translate: "no" } }),
       liveFreshnessNode(presence.updatedAt)
@@ -46,14 +46,11 @@ export function todoistLiveCard(presence = {}, options = {}) {
 
   const card = element(options.tagName || "article", {
     className: `v8-todoist-live v8-todoist-live--${variant}`,
-    attributes: { "aria-label": "Prochaine tache Todoist" },
+    attributes: { "aria-label": "Prochaine tâche Todoist" },
     dataset: { liveWidget: "media", liveKind: "widget" }
   }, [element("div", { className: "v8-live-card-inner" }, [front, back])]);
 
-  card.addEventListener("click", (event) => {
-    if (event.target.closest("button, a, input")) return;
-    card.classList.toggle("is-flipped");
-  });
+  attachFlipBehavior(card);
 
   return card;
 }

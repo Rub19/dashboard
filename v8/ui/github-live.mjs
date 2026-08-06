@@ -1,4 +1,4 @@
-import { brandIcon, element, icon } from "./dom.mjs";
+import { attachFlipBehavior, brandIcon, element, icon } from "./dom.mjs";
 import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 function avatar(profile) {
@@ -13,7 +13,7 @@ function avatar(profile) {
 export function githubLiveCard(profile = {}, options = {}) {
   if (profile.available !== true) return null;
   const variant = ["home", "activity"].includes(options.variant) ? options.variant : "home";
-  const activity = profile.recentEvent ? `${profile.recentEvent.kind} sur ${profile.recentEvent.repo}` : `${profile.publicRepos} depot${profile.publicRepos > 1 ? "s" : ""} public${profile.publicRepos > 1 ? "s" : ""} - ${profile.followers} abonne${profile.followers > 1 ? "s" : ""}`;
+  const activity = profile.recentEvent ? `${profile.recentEvent.kind} sur ${profile.recentEvent.repo}` : `${profile.publicRepos} dépôt${profile.publicRepos > 1 ? "s" : ""} public${profile.publicRepos > 1 ? "s" : ""} - ${profile.followers} abonné${profile.followers > 1 ? "s" : ""}`;
 
   const front = element("div", { className: `v8-github-live v8-github-live--${variant} v8-surface v8-live-card-front` }, [
     avatar(profile),
@@ -49,10 +49,7 @@ export function githubLiveCard(profile = {}, options = {}) {
     dataset: { liveWidget: "media", liveKind: "profile" }
   }, [element("div", { className: "v8-live-card-inner" }, [front, back])]);
 
-  card.addEventListener("click", (event) => {
-    if (event.target.closest("button, a, input")) return;
-    card.classList.toggle("is-flipped");
-  });
+  attachFlipBehavior(card);
 
   return card;
 }

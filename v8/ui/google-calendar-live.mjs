@@ -1,4 +1,4 @@
-import { brandIcon, element, icon } from "./dom.mjs";
+import { attachFlipBehavior, brandIcon, element, icon } from "./dom.mjs";
 import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
 const DAY_MONTH = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" });
@@ -8,14 +8,14 @@ function formatEventTime(event) {
   if (!event.start) return "";
   const start = new Date(event.start);
   if (Number.isNaN(start.getTime())) return "";
-  if (event.allDay) return `Toute la journee - ${DAY_MONTH.format(start)}`;
+  if (event.allDay) return `Toute la journée - ${DAY_MONTH.format(start)}`;
   const diffMin = Math.round((start.getTime() - Date.now()) / 60000);
   const time = HOUR_MINUTE.format(start);
   if (diffMin <= 0 && diffMin > -180) return `En cours - ${time}`;
   if (diffMin > 0 && diffMin < 60) return `Dans ${diffMin} min - ${time}`;
-  if (diffMin >= 60 && diffMin < 24 * 60 && start.toDateString() === new Date().toDateString()) return `Aujourd'hui a ${time}`;
-  if (diffMin >= 60 && diffMin < 48 * 60) return `Demain a ${time}`;
-  return `${DAY_MONTH.format(start)} a ${time}`;
+  if (diffMin >= 60 && diffMin < 24 * 60 && start.toDateString() === new Date().toDateString()) return `Aujourd'hui à ${time}`;
+  if (diffMin >= 60 && diffMin < 48 * 60) return `Demain à ${time}`;
+  return `${DAY_MONTH.format(start)} à ${time}`;
 }
 
 export function googleCalendarLiveCard(presence = {}, options = {}) {
@@ -51,10 +51,7 @@ export function googleCalendarLiveCard(presence = {}, options = {}) {
     dataset: { liveWidget: "media", liveKind: "widget" }
   }, [element("div", { className: "v8-live-card-inner" }, [front, back])]);
 
-  card.addEventListener("click", (event) => {
-    if (event.target.closest("button, a, input")) return;
-    card.classList.toggle("is-flipped");
-  });
+  attachFlipBehavior(card);
 
   return card;
 }

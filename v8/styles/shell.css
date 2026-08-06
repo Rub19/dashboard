@@ -3926,15 +3926,16 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
 .v8-matches-filter { background:var(--v8-surface-2);color:var(--v8-text);border:1px solid var(--v8-border);border-radius:var(--v8-radius-md);padding:var(--v8-space-2) var(--v8-space-4);font-family:inherit;font-size:var(--v8-font-sm);outline:none; }
 .v8-matches-history { display:flex;flex-direction:column;gap:var(--v8-space-6); }
 .v8-match-group { display:flex;flex-direction:column;gap:2px;background:var(--v8-surface-1);border-radius:var(--v8-radius-lg);overflow:hidden;border:1px solid var(--v8-border); }
-.v8-match-group-header { display:flex;align-items:center;padding:var(--v8-space-3) var(--v8-space-4);background:var(--v8-surface-sunken);border-bottom:1px solid var(--v8-border);gap:var(--v8-space-6); }
-.v8-match-group-date { display:flex;align-items:center;gap:var(--v8-space-2);flex:1; }
+.v8-match-group-header { display:flex;align-items:center;flex-wrap:wrap;padding:var(--v8-space-3) var(--v8-space-4);background:var(--v8-surface-sunken);border-bottom:1px solid var(--v8-border);gap:var(--v8-space-6);min-width:0;max-width:100%;box-sizing:border-box; }
+.v8-match-group-date { display:flex;align-items:center;gap:var(--v8-space-2);flex:1 1 auto;min-width:0; }
 .v8-match-group-date strong { font-size:var(--v8-font-lg);color:var(--v8-text); }
 .v8-match-group-count { background:var(--v8-surface-3);padding:2px 8px;border-radius:var(--v8-radius-sm);font-size:var(--v8-font-sm);font-weight:var(--v8-weight-bold);color:var(--v8-text); }
 .v8-match-report-btn { display:flex;align-items:center;gap:6px;color:var(--v8-danger);border-color:transparent;background:transparent;padding:4px 8px;font-weight:var(--v8-weight-semibold); }
 .v8-match-report-btn svg { width:16px;height:16px; }
 .v8-match-report-btn:hover { background:var(--v8-surface-3); }
 .v8-match-group-wl { display:flex;align-items:center;font-size:var(--v8-font-md);font-weight:var(--v8-weight-bold);white-space:nowrap; }
-.v8-match-group-aggregate { display:flex;gap:var(--v8-space-6);align-items:center;margin-left:auto; }
+.v8-match-group-aggregate { display:flex;gap:var(--v8-space-6);align-items:center;margin-left:auto;min-width:0;max-width:100%; }
+.v8-matches-error { width:100%; }
 
 .v8-match-row { position:relative;display:grid;grid-template-columns:40px 140px 70px auto minmax(50px, 1fr) minmax(100px, 1.5fr) 50px 50px 50px 30px;gap:var(--v8-space-3);align-items:center;padding:var(--v8-space-2) var(--v8-space-4);background:var(--v8-surface-1);transition:background 0.2s; }
 .v8-match-row:hover { background:var(--v8-surface-2); }
@@ -3992,12 +3993,21 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
 .v8-scoreboard-agent-cell { overflow:hidden; }.v8-scoreboard-agent { display:block;width:32px;height:32px;max-width:100%;border-radius:var(--v8-radius-sm);object-fit:cover;background:var(--v8-surface-3); }.v8-scoreboard-agent--placeholder { display:grid;place-items:center;color:var(--v8-muted);font-weight:var(--v8-weight-bold); }
 
 @media (max-width: 900px) {
+  .v8-match-group-header { gap:var(--v8-space-3); }
+  .v8-match-group-aggregate { flex:1 1 100%;justify-content:flex-start;margin-left:0;gap:var(--v8-space-5); }
+  .v8-match-group-aggregate > .v8-match-stat-col:nth-child(n+3) { display:none; }
   .v8-match-row { grid-template-columns: 40px 1fr auto; grid-template-rows: auto auto; }
   .v8-match-accent { top: 4px; bottom: 4px; }
   .v8-match-badges-col, .v8-match-stat-col:nth-child(n+8) { display:none; }
   .v8-match-stat-col { flex-direction:row; gap:4px; }
   .v8-scoreboard-col-rank,.v8-scoreboard-table th:nth-child(3),.v8-scoreboard-table td:nth-child(3),.v8-scoreboard-table th:nth-child(8),.v8-scoreboard-table td:nth-child(8),.v8-scoreboard-table th:nth-child(9),.v8-scoreboard-table td:nth-child(9) { display:none; }
   .v8-scoreboard-table th,.v8-scoreboard-table td { padding:var(--v8-space-2); }.v8-scoreboard-col-player { width:36%; }.v8-scoreboard-col-number { width:12%; }
+}
+@media (max-width: 480px) {
+  .v8-match-group-header { padding:var(--v8-space-3); }
+  .v8-match-group-date strong { overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+  .v8-match-report-btn { padding-inline:4px; }
+  .v8-match-report-btn span { display:none; }
 }
 
 

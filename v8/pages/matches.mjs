@@ -1,4 +1,5 @@
 import { element, icon } from "../ui/dom.mjs";
+import { emptyState } from "../ui/empty-state.mjs";
 
 export function mountMatches(container, options = {}) {
   const { externalServices, lolLive, valorantLive, trackerLive, actions } = options;
@@ -386,11 +387,14 @@ export function mountMatches(container, options = {}) {
     } catch (e) {
       if (destroyed) return;
       
-      content.replaceChildren(element("div", { className: "v8-error-state", style: "padding: 2rem; text-align: center; color: var(--v8-error);" }, [
-        element("span", { className: "v8-error-state__icon", style: "display: block; margin-bottom: 1rem; font-size: 2rem;" }, [icon("alert-circle")]),
-        element("h3", { text: "Impossible de récupérer les matchs", style: "margin-bottom: 0.5rem;" }),
-        element("p", { text: e.message || "La clé API Tracker.gg est peut-être manquante ou invalide.", style: "color: var(--v8-text-secondary); font-size: 0.9rem;" })
-      ]));
+      content.replaceChildren(emptyState({
+        className: "v8-matches-error",
+        kind: "error",
+        iconName: "alert-circle",
+        eyebrow: "Historique des matchs",
+        title: "Impossible de récupérer les matchs",
+        description: e.message || "La clé API Tracker.gg est peut-être manquante ou invalide."
+      }));
     }
   }
   

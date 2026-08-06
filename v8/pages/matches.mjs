@@ -157,8 +157,10 @@ export function mountMatches(container, options = {}) {
           ? element("img", { className: "v8-scoreboard-agent", attributes: { src: p.assets.agent.small, alt: "", loading: "lazy", decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(placeholder()) } })
           : placeholder());
       const spellImg = (spell) => spell?.image ? element("img", { className: "v8-scoreboard-spell", attributes: { src: spell.image, alt: spell.name || "", title: spell.name || "", loading: "lazy", decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(element("span", { className: "v8-scoreboard-spell-placeholder" })) } }) : element("span", { className: "v8-scoreboard-spell-placeholder" });
+      const runeImg = (rune) => rune?.image ? element("img", { className: "v8-scoreboard-spell", attributes: { src: rune.image, alt: rune.name || "", title: rune.name || "", loading: "lazy", decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(element("span", { className: "v8-scoreboard-spell-placeholder" })) } }) : null;
       const spells = isLol && p.assets?.spells ? element("div", { className: "v8-scoreboard-spells" }, p.assets.spells.slice(0, 2).map(spellImg)) : null;
-      const agentCell = element("div", { className: "v8-scoreboard-agent-wrap" }, [avatar, spells].filter(Boolean));
+      const rune = isLol && p.assets?.rune?.image ? element("div", { className: "v8-scoreboard-spells" }, [runeImg(p.assets.rune)]) : null;
+      const agentCell = element("div", { className: "v8-scoreboard-agent-wrap" }, [avatar, rune, spells].filter(Boolean));
 
       const playerMeta = isLol
         ? element("small", { className: "v8-scoreboard-level", text: `Lv ${p.level || 1} • ${Math.round(p.stats?.gold || 0)} G` })
@@ -540,6 +542,10 @@ export function mountMatches(container, options = {}) {
       if (!spell?.image) return element("div", { className: "v8-lol-spell-placeholder" });
       return element("img", { className: "v8-lol-spell", attributes: { src: spell.image, alt: spell.name || "", title: spell.name || "", loading, decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(element("div", { className: "v8-lol-spell-placeholder" })) } });
     };
+    const runeImg = (rune, loading = "lazy") => {
+      if (!rune?.image) return element("div", { className: "v8-lol-spell-placeholder" });
+      return element("img", { className: "v8-lol-spell", attributes: { src: rune.image, alt: rune.name || "", title: rune.name || "", loading, decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(element("div", { className: "v8-lol-spell-placeholder" })) } });
+    };
     const renderChampStrip = (players) => element("div", { className: "v8-lol-team-strip" }, players.slice(0, 5).map(p => champImg(p.assets?.champion?.small, p.character, "lazy")));
 
     const detailId = `v8-match-detail-${match.id || ++matchDetailId}`;
@@ -573,8 +579,9 @@ export function mountMatches(container, options = {}) {
         element("small", { text: `${timeAgo}${duration ? ` // ${duration}` : ""}` }),
         element("div", { className: "v8-lol-match-mode-row" }, [
           element("strong", { className: "v8-lol-match-mode", text: match.metadata?.agentName || match.metadata?.modeName || "Normal" }),
+          me?.assets?.rune?.image ? runeImg(me.assets.rune, eager) : null,
           ...(me?.assets?.spells || []).map((spell) => spellImg(spell, eager))
-        ]),
+        ].filter(Boolean)),
         element("div", { className: "v8-lol-match-items" }, (me?.items || [0,0,0,0,0,0]).map((item) => itemImg(item, eager))),
         statsSummary
       ]),

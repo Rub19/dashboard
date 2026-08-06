@@ -69,7 +69,7 @@ export function providerFetch(counter = { calls: 0 }) {
             gameDuration: 1800,
             gameCreation: Date.now() - 3600000,
             gameVersion: "16.15.1.111",
-            participants: [{ puuid: "p1", championName: "Ahri", kills: 5, deaths: 2, assists: 3, win: true, teamId: 100, champLevel: 12, totalMinionsKilled: 100, neutralMinionsKilled: 20, goldEarned: 9000, totalDamageDealtToChampions: 12000, summoner1Id: 4, summoner2Id: 14, item0: 1001, item1: 2003, item2: 3006, item3: 0, item4: 0, item5: 0, item6: 0 }]
+            participants: [{ puuid: "p1", championName: "Ahri", kills: 5, deaths: 2, assists: 3, win: true, teamId: 100, champLevel: 12, totalMinionsKilled: 100, neutralMinionsKilled: 20, goldEarned: 9000, totalDamageDealtToChampions: 12000, summoner1Id: 4, summoner2Id: 14, item0: 1001, item1: 2003, item2: 3006, item3: 0, item4: 0, item5: 0, item6: 0, perks: { styles: [{ style: 8100, selections: [{ perk: 8112 }] }] } }]
           }
         });
       }
@@ -99,6 +99,11 @@ export function providerFetch(counter = { calls: 0 }) {
             3006: { name: "Bottes de l'Arpenteur", image: { full: "3006.png" } }
           }
         });
+      }
+      if (url.pathname.endsWith("/runesReforged.json")) {
+        return json([
+          { id: 8100, name: "Domination", icon: "perk-images/Styles/7200_Domination.png", slots: [{ runes: [{ id: 8112, name: "Electrocute", icon: "perk-images/Styles/Domination/Electrocute/Electrocute.png" }] }] }
+        ]);
       }
     }
     if (url.hostname === "api.groq.com") return json({ choices: [{ message: { role: "assistant", content: "Bonjour, comment puis-je aider ?" } }] });

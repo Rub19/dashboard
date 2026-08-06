@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v230] - 2026-08-07
+
+### Ajouté
+- **Tracker LoL** : affichage de la rune clé (keystone) du joueur dans la ligne de match et le scoreboard détaillé.
+- **Backend / Tracker LoL** : chargement de `runesReforged.json` depuis Data Dragon pour mapper les runes à la version de patch.
+
+### Modifié
+- **Backend / Tracker LoL** : les assets de runes sont normalisés avec image + nom, comme les sorts et les items.
+
 ## [v229] - 2026-08-06
 
 ### Ajouté

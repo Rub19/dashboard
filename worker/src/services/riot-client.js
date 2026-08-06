@@ -193,7 +193,7 @@ async function getLolDdragonData(env, gameVersion) {
   const version = deriveLolDdragonVersion(gameVersion);
   if (ddragonDataCache.has(version)) return ddragonDataCache.get(version);
 
-  const [summonerResponse, itemResponse] = await Promise.all([
+  const [summonerResponse, itemResponse, runeResponse] = await Promise.all([
     requestExternal(new URL(`https://ddragon.leagueoflegends.com/cdn/${version}/data/fr_FR/summoner.json`), {
       env,
       expectedOrigin: "https://ddragon.leagueoflegends.com",
@@ -206,6 +206,13 @@ async function getLolDdragonData(env, gameVersion) {
       expectedOrigin: "https://ddragon.leagueoflegends.com",
       service: "tracker",
       dedupeKey: `ddragon:item:${version}`,
+      retries: 1
+    }),
+    requestExternal(new URL(`https://ddragon.leagueoflegends.com/cdn/${version}/data/fr_FR/runesReforged.json`), {
+      env,
+      expectedOrigin: "https://ddragon.leagueoflegends.com",
+      service: "tracker",
+      dedupeKey: `ddragon:runes:${version}`,
       retries: 1
     })
   ]);
@@ -230,7 +237,27 @@ async function getLolDdragonData(env, gameVersion) {
     }
   }
 
-  const result = Object.freeze({ version, summonerMap: Object.freeze(summonerMap), itemMap: Object.freeze(itemMap) });
+  const runeMap = Object.create(null);
+  for (const path of runeResponse?.data || []) {
+    if (path?.icon && path?.id != null) {
+      runeMap[String(path.id)] = {
+        name: safeText(path.name, 32),
+        image: safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/${version}/img/${path.icon}`, ["leagueoflegends.com"])
+      };
+    }
+    for (const slot of path?.slots || []) {
+      for (const rune of slot?.runes || []) {
+        if (rune?.icon && rune?.id != null) {
+          runeMap[String(rune.id)] = {
+            name: safeText(rune.name, 32),
+            image: safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/${version}/img/${rune.icon}`, ["leagueoflegends.com"])
+          };
+        }
+      }
+    }
+  }
+
+  const result = Object.freeze({ version, summonerMap: Object.freeze(summonerMap), itemMap: Object.freeze(itemMap), runeMap: Object.freeze(runeMap) });
   ddragonDataCache.set(version, result);
   return result;
 }
@@ -248,6 +275,17 @@ function lolSummonerSpellAsset(spellId, gameVersion, ddragonData) {
   const fromData = ddragonData?.summonerMap?.[String(spellId)];
   if (fromData) return Object.freeze({ image: fromData.image, name: fromData.name });
   return Object.freeze({ image: "", name: "" });
+}
+
+function lolRuneAsset(runeId, gameVersion, ddragonData) {
+  if (!runeId) return Object.freeze({ image: "", name: "" });
+  const fromData = ddragonData?.runeMap?.[String(runeId)];
+  if (fromData) return Object.freeze({ image: fromData.image, name: fromData.name });
+  return Object.freeze({ image: "", name: "" });
+}
+
+function lolKeystoneRuneId(p) {
+  return p?.perks?.styles?.[0]?.selections?.[0]?.perk;
 }
 
 function safeLolName(p) {
@@ -281,6 +319,7 @@ function normalizeLolScoreboard(info, mePuuid, ddragonData) {
       lolSummonerSpellAsset(p.summoner1Id, gameVersion, ddragonData),
       lolSummonerSpellAsset(p.summoner2Id, gameVersion, ddragonData)
     ];
+    const rune = lolRuneAsset(lolKeystoneRuneId(p), gameVersion, ddragonData);
     return Object.freeze({
       name: safeLolName(p),
       tag: safeLolTag(p),
@@ -303,7 +342,8 @@ function normalizeLolScoreboard(info, mePuuid, ddragonData) {
       }),
       assets: Object.freeze({
         champion: Object.freeze({ small: lolChampionImage(p.championName, gameVersion) }),
-        spells: Object.freeze(spells)
+        spells: Object.freeze(spells),
+        rune: rune
       }),
       items: Object.freeze(items)
     });

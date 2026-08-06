@@ -24,6 +24,11 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v230", "2026-08-07", "Runes LoL et keystone dans l'historique", [
+    { kind: "feature", text: "La rune clé (keystone) du joueur s'affiche dans la ligne de match LoL et dans le scoreboard détaillé." },
+    { kind: "improvement", text: "Chargement des données runesReforged.json depuis Data Dragon pour mapper les runes par version de patch." },
+    { kind: "fix", text: "Les assets rune sont normalisés comme les sorts et items (image + nom) dans le worker." }
+  ]),
   entry("v229", "2026-08-06", "Détails LoL : sorts, items nommés et scoreboard enrichi", [
     { kind: "feature", text: "Les sorts d'invocateur s'affichent dans la ligne de match LoL et dans le scoreboard détaillé." },
     { kind: "improvement", text: "Le scoreboard LoL affiche le niveau du champion, l'or total et renomme la colonne Score en Dégâts." },

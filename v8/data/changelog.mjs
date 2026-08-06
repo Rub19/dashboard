@@ -24,6 +24,10 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v222", "2026-08-06", "Flip 3D des cartes Live Now", [
+    { kind: "feature", text: "Les cartes Spotify, Discord et Minecraft se retournent au clic pour afficher plus de détails au verso." },
+    { kind: "improvement", text: "Styles de verso cohérents avec la charte de chaque service (succès, violet Discord, vert Minecraft)." }
+  ]),
   entry("v221", "2026-08-06", "Signout securise et UI premium", [
     { kind: "feature", text: "Endpoint /api/signout worker avec header Clear-Site-Data pour nettoyer cache, cookies et storage au logout." },
     { kind: "improvement", text: "Spotlight interactif qui suit la souris sur les cartes Live Now." },

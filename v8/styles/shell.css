@@ -1957,7 +1957,7 @@ html[data-v8-interactions] .v8-panel-notice:hover > .v8-selection-control,.v8-pa
 .v8-home-live-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--v8-layout-cluster-gap); margin-top: var(--v8-space-6); }
 .v8-home-live-grid[hidden] { display: none; }
 .v8-home-live-grid > section > article { position:relative;overflow:hidden;animation: v8-card-enter var(--v8-motion-base) var(--v8-ease-out) both; transition: transform var(--v8-motion-fast) var(--v8-ease-standard), box-shadow var(--v8-motion-fast) var(--v8-ease-standard); }
-.v8-home-live-grid > section > article { --v8-spotlight-x:50%;--v8-spotlight-y:20%; }
+.v8-home-live-grid > section > article { --v8-spotlight-x:50%;--v8-spotlight-y:20%;perspective:900px; }
 .v8-home-live-grid > section > article::before { position:absolute;inset:-20%;content:"";background:radial-gradient(circle at var(--v8-spotlight-x) var(--v8-spotlight-y),color-mix(in srgb,var(--v8-accent) 16%,transparent) 0%,transparent 42%);opacity:0;transition:opacity var(--v8-motion-fast);pointer-events:none; }
 .v8-home-live-grid > section > article:hover::before { opacity:1; }
 .v8-home-live-grid > section > article:hover { transform: translateY(-4px) perspective(800px) rotateX(1deg) rotateY(-1deg); box-shadow: var(--v8-shadow-card-lit), 0 14px 36px color-mix(in srgb,var(--v8-ambient-accent) 14%,transparent), 0 0 0 1px var(--v8-border-highlight); }
@@ -3361,7 +3361,7 @@ html[data-v8-ui-glow="true"] .v8-floating-dock {
   display: flex;
   gap: 4px;
 }
-.v8-lol-live, .v8-valorant-live, .v8-tracker-live {
+.v8-lol-live, .v8-valorant-live, .v8-tracker-live, .v8-spotify-live, .v8-discord-live, .v8-minecraft-live {
   display: block !important;
   perspective: 1000px;
   cursor: pointer;
@@ -3376,7 +3376,10 @@ html[data-v8-ui-glow="true"] .v8-floating-dock {
 }
 .v8-lol-live.is-flipped .v8-live-card-inner,
 .v8-valorant-live.is-flipped .v8-live-card-inner,
-.v8-tracker-live.is-flipped .v8-live-card-inner {
+.v8-tracker-live.is-flipped .v8-live-card-inner,
+.v8-spotify-live.is-flipped .v8-live-card-inner,
+.v8-discord-live.is-flipped .v8-live-card-inner,
+.v8-minecraft-live.is-flipped .v8-live-card-inner {
   transform: rotateX(180deg);
 }
 .v8-live-card-front, .v8-live-card-back {
@@ -3408,6 +3411,27 @@ html[data-v8-ui-glow="true"] .v8-floating-dock {
   border-color: color-mix(in srgb,#ff4655 26%,var(--v8-border));
   background: var(--v8-reflection-card),color-mix(in srgb,#ff4655 4%,var(--v8-surface-1));
 }
+.v8-spotify-live .v8-live-card-front, .v8-spotify-live .v8-live-card-back {
+  border-color: color-mix(in srgb,var(--v8-success) 26%,var(--v8-border));
+  background: var(--v8-reflection-card),color-mix(in srgb,var(--v8-success) 4%,var(--v8-surface-1));
+}
+.v8-discord-live .v8-live-card-front, .v8-discord-live .v8-live-card-back {
+  border-color: color-mix(in srgb,#5865f2 26%,var(--v8-border));
+  background: var(--v8-reflection-card),color-mix(in srgb,#5865f2 4%,var(--v8-surface-1));
+}
+.v8-minecraft-live .v8-live-card-front, .v8-minecraft-live .v8-live-card-back {
+  border-color: color-mix(in srgb,#3d8e3d 26%,var(--v8-border));
+  background: var(--v8-reflection-card),color-mix(in srgb,#3d8e3d 4%,var(--v8-surface-1));
+}
+.v8-spotify-live-back, .v8-discord-live-back, .v8-minecraft-live-back { display:grid;grid-template-rows:auto 1fr auto;gap:var(--v8-space-3); }
+.v8-spotify-live-back .v8-flip-back-header, .v8-discord-live-back .v8-flip-back-header, .v8-minecraft-live-back .v8-flip-back-header { display:flex;align-items:center;gap:var(--v8-space-3); }
+.v8-spotify-live-back .v8-flip-back-header { color:var(--v8-success); }
+.v8-discord-live-back .v8-flip-back-header { color:#5865f2; }
+.v8-minecraft-live-back .v8-flip-back-header { color:#65a565; }
+.v8-spotify-live-back .v8-flip-back-body, .v8-discord-live-back .v8-flip-back-body, .v8-minecraft-live-back .v8-flip-back-body { display:grid;gap:var(--v8-space-2); }
+.v8-spotify-live-back .v8-flip-back-body > p, .v8-discord-live-back .v8-flip-back-body > p, .v8-minecraft-live-back .v8-flip-back-body > p { overflow:hidden;font-size:var(--v8-font-sm);text-overflow:ellipsis;white-space:nowrap; }
+.v8-spotify-live-back .v8-flip-back-body > p:first-child, .v8-discord-live-back .v8-flip-back-body > p:first-child, .v8-minecraft-live-back .v8-flip-back-body > p:first-child { font-weight:var(--v8-weight-semibold);color:var(--v8-text); }
+.v8-spotify-live-back .v8-flip-back-footer, .v8-discord-live-back .v8-flip-back-footer, .v8-minecraft-live-back .v8-flip-back-footer { padding-top:var(--v8-space-3);border-top:1px solid var(--v8-border);color:var(--v8-muted);font-size:var(--v8-font-xs); }
 .v8-lol-live .v8-live-card-front, .v8-lol-live .v8-live-card-back {
   border-color: color-mix(in srgb,#c89b3c 26%,var(--v8-border));
   background: var(--v8-reflection-card),color-mix(in srgb,#c89b3c 4%,var(--v8-surface-1));

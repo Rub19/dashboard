@@ -62,11 +62,7 @@ export function spotifyLiveCard(playback = {}, options = {}) {
   }
   paint(anchorProgressMs);
 
-  const card = element(options.tagName || "article", {
-    className: `v8-spotify-live v8-spotify-live--${variant} v8-surface ${playback.playing ? "is-playing" : "is-paused"}`,
-    attributes: { "aria-label": "Lecture Spotify" },
-    dataset: { liveWidget: "media", liveKind: "media", spotifyPlayback: playback.playing ? "playing" : "paused" }
-  }, [
+  const front = element("div", { className: `v8-spotify-live v8-spotify-live--${variant} v8-surface ${playback.playing ? "is-playing" : "is-paused"}` }, [
     element("span", { className: "v8-spotify-live__aura", attributes: { "aria-hidden": "true" } }),
     artwork(playback, "v8-spotify-artwork"),
     element("div", { className: "v8-spotify-live__body" }, [
@@ -83,6 +79,29 @@ export function spotifyLiveCard(playback = {}, options = {}) {
     ]),
     playbackControl(playback)
   ]);
+
+  const back = element("div", { className: "v8-live-card-back v8-spotify-live-back" }, [
+    element("header", { className: "v8-flip-back-header" }, [brandIcon("spotify", "music-2", "v8-live-brand-mark"), element("strong", { text: "Spotify", attributes: { translate: "no" } })]),
+    element("div", { className: "v8-flip-back-body" }, [
+      element("p", { text: playback.title, attributes: { translate: "no" } }),
+      element("p", { text: playback.artist, attributes: { translate: "no" } }),
+      element("p", { text: playback.album || "", attributes: { translate: "no" } })
+    ]),
+    element("footer", { className: "v8-flip-back-footer" }, [element("small", { text: `Durée : ${formatTime(durationMs)}` })])
+  ]);
+
+  const card = element(options.tagName || "article", {
+    className: `v8-spotify-live v8-spotify-live--${variant} ${playback.playing ? "is-playing" : "is-paused"}`,
+    attributes: { "aria-label": "Lecture Spotify" },
+    dataset: { liveWidget: "media", liveKind: "media", spotifyPlayback: playback.playing ? "playing" : "paused" }
+  }, [
+    element("div", { className: "v8-live-card-inner" }, [front, back])
+  ]);
+
+  card.addEventListener("click", (event) => {
+    if (event.target.closest("button, a, input")) return;
+    card.classList.toggle("is-flipped");
+  });
 
   if (playback.playing) {
     let rAF;

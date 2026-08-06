@@ -50,11 +50,7 @@ export function discordLiveCard(presence = {}, options = {}) {
     : presence.activityName
       ? (presence.activityDetail ? `${presence.activityName} - ${presence.activityDetail}` : presence.activityName)
       : STATUS_LABELS[presence.status] || "Hors ligne";
-  return element(options.tagName || "article", {
-    className: `v8-discord-live v8-discord-live--${variant} v8-surface`,
-    attributes: { "aria-label": "Presence Discord" },
-    dataset: { liveWidget: "media", liveKind: "profile" }
-  }, [
+  const front = element("div", { className: `v8-discord-live v8-discord-live--${variant} v8-surface` }, [
     avatar(presence),
     element("div", { className: "v8-discord-live__body" }, [
       element("div", { className: "v8-discord-live__meta" }, [
@@ -69,5 +65,28 @@ export function discordLiveCard(presence = {}, options = {}) {
       liveFreshnessNode(presence.updatedAt)
     ])
   ]);
+
+  const back = element("div", { className: "v8-live-card-back v8-discord-live-back" }, [
+    element("header", { className: "v8-flip-back-header" }, [brandIcon("discord", "messages-square", "v8-live-brand-mark"), element("strong", { text: "Discord", attributes: { translate: "no" } })]),
+    element("div", { className: "v8-flip-back-body" }, [
+      element("p", { text: presence.displayName, attributes: { translate: "no" } }),
+      element("p", { text: `Statut : ${STATUS_LABELS[presence.status] || "Hors ligne"}` }),
+      element("p", { text: activity, attributes: { translate: "no" } })
+    ]),
+    element("footer", { className: "v8-flip-back-footer" }, [element("small", { text: `${(presence.badges || []).length} badge(s)` })])
+  ]);
+
+  const card = element(options.tagName || "article", {
+    className: `v8-discord-live v8-discord-live--${variant}`,
+    attributes: { "aria-label": "Presence Discord" },
+    dataset: { liveWidget: "media", liveKind: "profile" }
+  }, [element("div", { className: "v8-live-card-inner" }, [front, back])]);
+
+  card.addEventListener("click", (event) => {
+    if (event.target.closest("button, a, input")) return;
+    card.classList.toggle("is-flipped");
+  });
+
+  return card;
 }
 

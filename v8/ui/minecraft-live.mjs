@@ -33,11 +33,7 @@ export function minecraftLiveCard(presence = {}, options = {}) {
   const variant = ["home", "activity"].includes(options.variant) ? options.variant : "home";
   const modelLabel = presence.model === "slim" ? translateSource("Slim (Alex)") : translateSource("Classic (Steve)");
   const uuidShort = `${presence.uuid.slice(0, 8)}...`;
-  return element(options.tagName || "article", {
-    className: `v8-minecraft-live v8-minecraft-live--${variant} v8-surface`,
-    attributes: { "aria-label": "Profil Minecraft" },
-    dataset: { liveWidget: "media", liveKind: "profile" }
-  }, [
+  const front = element("div", { className: `v8-minecraft-live v8-minecraft-live--${variant} v8-surface` }, [
     skinHead(presence),
     element("div", { className: "v8-minecraft-live__body" }, [
       element("div", { className: "v8-minecraft-live__meta" }, [icon("box"), element("small", { text: "Minecraft" })]),
@@ -53,4 +49,28 @@ export function minecraftLiveCard(presence = {}, options = {}) {
       liveFreshnessNode(presence.updatedAt)
     ])
   ]);
+
+  const back = element("div", { className: "v8-live-card-back v8-minecraft-live-back" }, [
+    element("header", { className: "v8-flip-back-header" }, [icon("box"), element("strong", { text: "Minecraft", attributes: { translate: "no" } })]),
+    element("div", { className: "v8-flip-back-body" }, [
+      element("p", { text: presence.username, attributes: { translate: "no" } }),
+      element("p", { text: `UUID : ${presence.uuid}`, attributes: { translate: "no" } }),
+      element("p", { text: `Modèle : ${modelLabel}` }),
+      element("p", { text: presence.capeUrl ? "Cape équipée" : "Pas de cape" })
+    ]),
+    element("footer", { className: "v8-flip-back-footer" }, [element("small", { text: `UUID complet : ${presence.uuid}` })])
+  ]);
+
+  const card = element(options.tagName || "article", {
+    className: `v8-minecraft-live v8-minecraft-live--${variant}`,
+    attributes: { "aria-label": "Profil Minecraft" },
+    dataset: { liveWidget: "media", liveKind: "profile" }
+  }, [element("div", { className: "v8-live-card-inner" }, [front, back])]);
+
+  card.addEventListener("click", (event) => {
+    if (event.target.closest("button, a, input")) return;
+    card.classList.toggle("is-flipped");
+  });
+
+  return card;
 }

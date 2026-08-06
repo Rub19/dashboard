@@ -79,7 +79,10 @@ export function mountMatches(container, options = {}) {
       const value = (hash >> (i * 8)) & 0xFF;
       color += ('00' + value.toString(16)).substr(-2);
     }
-    return color;  function renderScoreboard(scoreboard) {
+    return color;
+  }
+
+  function renderScoreboard(scoreboard) {
     if (!scoreboard || !scoreboard.players) return element("div", { className: "v8-scoreboard-empty", text: "DonnǸes dǸtaillǸes non disponibles" });
     
     const container = element("div", { className: "v8-scoreboard" });
@@ -153,7 +156,7 @@ export function mountMatches(container, options = {}) {
     if (blueTable) container.append(blueTable);
 
     return container;
-  }iner;
+  }
   }
 
   function renderMatch(match) {

@@ -2199,6 +2199,8 @@ html[data-v8-interactions] .v8-switch:hover .v8-switch__track { border-color: va
 .v8-switch[data-haptic-state="released"] { animation: v8-haptic-release var(--v8-haptic-release-duration) var(--v8-haptic-spring) both; }
 .v8-switch:focus-visible .v8-switch__track { border-color: var(--v8-accent); box-shadow: var(--v8-shadow-focus); }
 .v8-segmented { display: flex; padding: 3px; border: 1px solid var(--v8-border); border-radius: var(--v8-radius-md); background: var(--v8-surface-sunken); }
+.v8-dock-scale-options { display: flex; gap: var(--v8-space-2); }
+.v8-dock-scale-options .v8-setting-choice { flex: 1 1 0; justify-content: center; min-width: 0; }
 .v8-setting-choice { min-width: 118px; border-color: transparent; }
 .v8-setting-choice.is-active { background: var(--v8-surface-2); box-shadow: var(--v8-shadow-1); color: var(--v8-text); }
 .v8-setting-choice > svg:last-child { width: 13px; height: 13px; margin-left: auto; color: var(--v8-accent); }

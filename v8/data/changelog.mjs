@@ -24,6 +24,11 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v213", "2026-08-06", "Dock Size : icône, traductions et alignement", [
+    { kind: "fix", text: "Remplacement de l'icône manquante 'layout-bottom' par l'icône Lucide 'dock' dans les Réglages et le Command Center." },
+    { kind: "i18n", text: "Ajout des traductions manquantes pour les options de taille du Dock (Normal), de style du Dock (Ultra Blur, Subtle) et de Space (Studio)." },
+    { kind: "improvement", text: "Alignement uniforme des boutons de taille du Dock avec la classe v8-dock-scale-options." }
+  ]),
   entry("v212", "2026-08-06", "Complet i18n settings et dashboard", [
     { kind: "i18n", text: "Ajout des traductions manquantes pour les auras, polices, densités, états vides, raccourcis clavier et catalogues de commandes." },
     { kind: "improvement", text: "L'audit i18n détecte désormais les labels, descriptions, titres et copies des options de réglages." }

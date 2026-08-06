@@ -18,8 +18,9 @@ const entries = Object.entries(CHANGELOG_TRANSLATIONS)
 const insertMarker = "  // -- changelog translations --\n";
 const existingMarkerIndex = catalog.indexOf(insertMarker);
 if (existingMarkerIndex !== -1) {
-  const endEntries = catalog.lastIndexOf("\n};\n");
-  catalog = catalog.slice(0, existingMarkerIndex - 2) + catalog.slice(endEntries);
+  const nextMarker = catalog.indexOf("\n  // -- ", existingMarkerIndex + insertMarker.length);
+  const cutTo = nextMarker === -1 ? catalog.lastIndexOf("\n};\n") : nextMarker;
+  catalog = catalog.slice(0, existingMarkerIndex - 2) + catalog.slice(cutTo);
 }
 
 const endEntries = catalog.lastIndexOf("\n};\n");

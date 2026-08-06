@@ -429,9 +429,9 @@ export function mountSettings(stage, options = {}) {
           ]),
           settingRow("sparkles", "Spotlight", "Reveler le Dashboard avec une transition breve au demarrage.", switchControl("v8.spotlight.toggle", "Animation Spotlight au demarrage", state.spotlightEnabled !== false)),
           settingRow("minimize", "Mode Zen", "Masquer les barres pour un focus maximal sur votre contenu (Alt+Z).", switchControl("v8.zen.toggle", "Activer le Mode Zen", state.zen === true)),
-          settingRow("layout-bottom", "Taille du Dock", "Changer l'échelle de la barre de navigation inférieure.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Taille du Dock" } }, [
+          settingRow("dock", "Taille du Dock", "Changer l'échelle de la barre de navigation inférieure.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Taille du Dock" } }, [
             choice("v8.dock.scale.compact", "minimize", "Compacte", state.dockScale === "compact"),
-            choice("v8.dock.scale.normal", "layout-bottom", "Normale", !state.dockScale || state.dockScale === "normal"),
+            choice("v8.dock.scale.normal", "dock", "Normale", !state.dockScale || state.dockScale === "normal"),
             choice("v8.dock.scale.large", "maximize", "Grande", state.dockScale === "large")
           ])),
           settingRow("align-center", "Alignement du Dock", "Dock centré flottant ou étendu sur la largeur.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Alignement du Dock" } }, [

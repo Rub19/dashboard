@@ -24,6 +24,19 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v228", "2026-08-06", "Items LoL versionnés et polish UI", [
+    { kind: "fix", text: "Les images de champions et items LoL utilisent désormais la version du patch de la partie au lieu du hardcoded." },
+    { kind: "fix", text: "Les 7 emplacements items s'affichent toujours, avec un placeholder quand il n'y a pas d'item." },
+    { kind: "improvement", text: "Chargement eager des images pour les 3 premières lignes de matchs LoL." },
+    { kind: "improvement", text: "Badge de niveau du champion plus lisible avec z-index et halo visuel." },
+    { kind: "fix", text: "Correction du SHA de actions/checkout dans le workflow de déploiement GitHub Pages." }
+  ]),
+  entry("v227", "2026-08-06", "Tracker LoL : responsive UI et filtre par mode", [
+    { kind: "improvement", text: "Responsive UI des matchs LoL : avatar champion, badge niveau, grille adaptative et breakpoints." },
+    { kind: "feature", text: "Filtre par mode (ranked, normal, aram) dans l'historique LoL via l'API Riot." },
+    { kind: "improvement", text: "Contrôle de concurrence (mapLimit) et tri chronologique pour les détails de matchs LoL." },
+    { kind: "improvement", text: "Couverture de tests route pour all, ranked, normal et ARAM." }
+  ]),
   entry("v226", "2026-08-06", "Tracker LoL, stats perso et recherche de mate", [
     { kind: "improvement", text: "Profil LoL enrichi avec les stats personnelles calculées sur l'historique (W/L, Win %, KDA, CS/min, DPM, GPM)." },
     { kind: "improvement", text: "Affichage des matchs LoL retravaillé avec CS, dégâts, gold et participation aux kills." },

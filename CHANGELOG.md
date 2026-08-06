@@ -2,19 +2,36 @@
 
 Toutes les modifications notables de ce projet seront documentÃ©es dans ce fichier.
 
+## [v228] - 2026-08-06
+
+### AjoutÃ©
+- **Tracker LoL** : filtre par mode (ranked, normal, aram) dans l'historique LoL.
+- **Tracker LoL** : images de champions et items versionnÃ©es selon le patch de la partie (DDragon).
+
+### ModifiÃ©
+- **UI / Matches LoL** : responsive UI des matchs (avatar champion, badge niveau, grille adaptative et breakpoints).
+- **UI / Matches LoL** : les 7 emplacements d'items s'affichent toujours avec des placeholders.
+- **UI / Matches LoL** : chargement eager des images pour les 3 premiÃ¨res lignes de matchs.
+- **UI / Matches LoL** : badge de niveau du champion plus lisible (z-index et halo visuel).
+
+### CorrigÃ©
+- **CI/CD** : correction du SHA de `actions/checkout` dans le workflow de dÃ©ploiement GitHub Pages.
+
 ## [Unreleased] - 2026-08-06
 
-### Ajouté
-- **Backend / Cloudflare Worker** : Nouveaux clients API (henrik-client.js et iot-client.js) pour isoler l'acquisition de données Valorant et League of Legends.
+### Ajoutï¿½
+- **Backend / Cloudflare Worker** : Nouveaux clients API (henrik-client.js et 
+iot-client.js) pour isoler l'acquisition de donnï¿½es Valorant et League of Legends.
 
-### Modifié
-- **Backend / Cloudflare Worker** : Migration de Tracker.gg vers **HenrikDev API** (Valorant) et **Riot Games API officielle** (League of Legends) suite aux problèmes d'erreurs 403.
-- **Backend / Matchs** : Historique restreint à 10 parties récentes pour respecter les limites strictes de requêtes du Worker Cloudflare.
-- **Frontend / Connexions** : Refonte de l'onglet de gestion des intégrations Riot Games pour retirer Tracker.gg, pointer vers HenrikDev/Riot, et permettre de configurer ses propres clés API indépendantes (henrikApiKey, iotApiKey).
-- **Frontend / Menu Contextuel** : Correction de la propagation des événements dans context-menu.mjs qui bloquait les actions en dehors du menu.
+### Modifiï¿½
+- **Backend / Cloudflare Worker** : Migration de Tracker.gg vers **HenrikDev API** (Valorant) et **Riot Games API officielle** (League of Legends) suite aux problï¿½mes d'erreurs 403.
+- **Backend / Matchs** : Historique restreint ï¿½ 10 parties rï¿½centes pour respecter les limites strictes de requï¿½tes du Worker Cloudflare.
+- **Frontend / Connexions** : Refonte de l'onglet de gestion des intï¿½grations Riot Games pour retirer Tracker.gg, pointer vers HenrikDev/Riot, et permettre de configurer ses propres clï¿½s API indï¿½pendantes (henrikApiKey, 
+iotApiKey).
+- **Frontend / Menu Contextuel** : Correction de la propagation des ï¿½vï¿½nements dans context-menu.mjs qui bloquait les actions en dehors du menu.
 
-### Supprimé
-- **Backend** : Retrait du parsing et requêtage Tracker.gg pour Valorant et LoL (toujours actif pour Apex).
+### Supprimï¿½
+- **Backend** : Retrait du parsing et requï¿½tage Tracker.gg pour Valorant et LoL (toujours actif pour Apex).
 
 
 ## [Unreleased] - 2026-08-05

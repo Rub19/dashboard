@@ -18,7 +18,7 @@ const ROUTE_CASES = Object.freeze([
   ["Steam achievements", "/api/steam/achievements?steamId=76561198000000000&appId=10", (data) => data[0].achieved === true],
   ["Tracker", "/api/tracker/apex-profile?platform=origin&identifier=Player", (data) => data.platform === "origin"],
   ["Tracker Valorant", "/api/tracker/valorant-profile?name=Player&tag=EUW", (data) => data.handle === "Player#EUW"],
-  ["Tracker Valorant matches", "/api/tracker/valorant-matches?name=Player&tag=EUW&mode=all", (data) => data[0].metadata.score.team === 13 && data[0].metadata.score.opponent === 11 && data[0].metadata.score.roundsPlayed === 24 && data[0].scoreboard.players[0].isMe === true && data[0].scoreboard.players[0].assets.agent.small === "https://media.henrikdev.xyz/agent.png"],
+  ["Tracker Valorant matches", "/api/tracker/valorant-matches?name=Player&tag=EUW&mode=all", (data) => data[0].metadata.score.team === 13 && data[0].metadata.score.opponent === 11 && data[0].metadata.score.roundsPlayed === 24 && data[0].scoreboard.players[0].isMe === true && data[0].scoreboard.players[0].assets.agent.small === "https://media.valorant-api.com/agents/e370fa57-4757-3604-3648-499e1f642d3f/displayicon.png"],
   ["Tracker LoL", "/api/tracker/lol-profile?name=Player&tag=EUW", (data) => data.handle === "Player#EUW"],
   ["Twitch", "/api/twitch/channel?login=ethoneqa", (data) => data.live === true],
   ["Last.fm recent", "/api/lastfm/recent-tracks?username=ethone&limit=5", (data) => data[0].playing === true],

@@ -111,6 +111,12 @@ const LOL_MAPS = Object.freeze({
   22: "ARAM"
 });
 
+const LOL_QUEUE_MODES = Object.freeze({
+  ranked: Object.freeze([420, 440]),
+  normal: Object.freeze([400, 430]),
+  aram: Object.freeze([450])
+});
+
 function lolQueueName(queueId) {
   return LOL_QUEUE_NAMES[queueId] || "Custom";
 }
@@ -232,26 +238,51 @@ function normalizeLolScoreboard(info, mePuuid) {
   });
 }
 
-export async function getLolMatches(env, riotId, mode, apiKeyOverride) {
-  const apiKey = apiKeyOverride || requireSecret(env, "RIOT_API_KEY");
-  const [name, tag] = riotId.split("#");
-  
-  const puuid = await getPuuid(env, name, tag, apiKey);
-  if (!puuid) return [];
-  
-  const matchIdsPath = `/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=10`;
-  const matchIdsResponse = await requestExternal(new URL(matchIdsPath, RIOT_EUROPE), {
+async function mapLimit(items, limit, mapper) {
+  const results = new Array(items.length);
+  let index = 0;
+  async function worker() {
+    while (index < items.length) {
+      const i = index++;
+      results[i] = await mapper(items[i], i);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, Math.max(1, items.length || 1)) }, worker));
+  return results;
+}
+
+async function getLolMatchIds(env, puuid, apiKey, queueId) {
+  const matchIdsUrl = new URL(`/lol/match/v5/matches/by-puuid/${puuid}/ids`, RIOT_EUROPE);
+  matchIdsUrl.searchParams.set("start", "0");
+  matchIdsUrl.searchParams.set("count", "10");
+  if (queueId != null) matchIdsUrl.searchParams.set("queue", String(queueId));
+  const matchIdsResponse = await requestExternal(matchIdsUrl, {
     env,
     expectedOrigin: RIOT_EUROPE,
     service: "tracker",
-    dedupeKey: `riot:matches_list:${puuid}`,
+    dedupeKey: `riot:matches_list:${puuid}:${queueId ?? "all"}`,
     headers: { "X-Riot-Token": apiKey },
     retries: 1
   });
-  
-  const matchIds = matchIdsResponse.data || [];
-  
-  const matches = await Promise.all(matchIds.map(async (matchId) => {
+  return matchIdsResponse.data || [];
+}
+
+export async function getLolMatches(env, riotId, mode, apiKeyOverride) {
+  const apiKey = apiKeyOverride || requireSecret(env, "RIOT_API_KEY");
+  const [name, tag] = riotId.split("#");
+
+  const puuid = await getPuuid(env, name, tag, apiKey);
+  if (!puuid) return [];
+
+  const queueIds = LOL_QUEUE_MODES[mode];
+  const listQueueIds = queueIds ? Array.from(queueIds) : [undefined];
+
+  const matchIdLists = await Promise.all(listQueueIds.map((queueId) =>
+    getLolMatchIds(env, puuid, apiKey, queueId)
+  ));
+  const matchIds = [...new Set(matchIdLists.flat())];
+
+  const matches = await mapLimit(matchIds, 5, async (matchId) => {
     const matchPath = `/lol/match/v5/matches/${matchId}`;
     const matchResponse = await requestExternal(new URL(matchPath, RIOT_EUROPE), {
       env,
@@ -262,9 +293,17 @@ export async function getLolMatches(env, riotId, mode, apiKeyOverride) {
       retries: 1
     });
     return matchResponse.data;
-  }));
-  
-  return Object.freeze(matches.filter(Boolean).map((match) => {
+  });
+
+  const allowedQueueIds = queueIds ? new Set(queueIds) : null;
+
+  const sortedMatches = matches
+    .filter(Boolean)
+    .filter((match) => !allowedQueueIds || allowedQueueIds.has(match.info?.queueId))
+    .sort((a, b) => (b.info?.gameCreation || 0) - (a.info?.gameCreation || 0))
+    .slice(0, 10);
+
+  return Object.freeze(sortedMatches.map((match) => {
     const info = match.info || {};
     const participants = info.participants || [];
     const me = participants.find(p => p.puuid === puuid) || participants[0];

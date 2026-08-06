@@ -544,15 +544,20 @@ export function mountMatches(container, options = {}) {
       element("span", { text: `KP ${killParticipation}%` })
     ]);
 
+    const levelBadge = me?.level ? element("span", { className: "v8-lol-match-level", text: String(me.level) }) : null;
+    const champAvatar = match.metadata?.agentImageUrl
+      ? champImg(match.metadata.agentImageUrl, match.metadata?.agentName)
+      : element("div", { className: "v8-lol-champion-placeholder" });
+    const agentCell = element("div", { className: "v8-match-agent" }, [champAvatar, levelBadge].filter(Boolean));
+
     const row = element("div", { className: `v8-lol-match-row ${stateClass}`, attributes: { tabindex: "0", "aria-expanded": "false", "aria-controls": detailId } }, [
       element("div", { className: "v8-match-accent" }),
+      agentCell,
       element("div", { className: "v8-lol-match-main" }, [
         element("small", { text: `${timeAgo}${duration ? ` // ${duration}` : ""}` }),
         element("div", { className: "v8-lol-match-mode-row" }, [
-          element("strong", { className: "v8-lol-match-mode", text: match.metadata?.modeName || "Normal" }),
-          match.metadata?.agentImageUrl ? champImg(match.metadata.agentImageUrl, match.metadata?.agentName) : null,
-          me?.level ? element("span", { className: "v8-lol-match-level", text: String(me.level) }) : null
-        ].filter(Boolean)),
+          element("strong", { className: "v8-lol-match-mode", text: match.metadata?.agentName || match.metadata?.modeName || "Normal" })
+        ]),
         element("div", { className: "v8-lol-match-items" }, (me?.items || [0,0,0,0,0,0]).map(itemImg)),
         statsSummary
       ]),

@@ -52,8 +52,26 @@ export function providerFetch(counter = { calls: 0 }) {
     }
     if (url.hostname === "europe.api.riotgames.com") {
       if (url.pathname.startsWith("/riot/account/v1/accounts/by-riot-id")) return json({ puuid: "p1" });
-      if (url.pathname.startsWith("/lol/match/v5/matches/by-puuid")) return json(["EUW1_123"]);
-      if (url.pathname.startsWith("/lol/match/v5/matches/EUW1_123")) return json({ metadata: { matchId: "EUW1_123" }, info: { gameMode: "CLASSIC", participants: [{ puuid: "p1", championName: "Ahri", kills: 5 }] } });
+      if (url.pathname.startsWith("/lol/match/v5/matches/by-puuid")) {
+        const queue = Number(url.searchParams.get("queue")) || 420;
+        return json([`EUW1_${queue}`]);
+      }
+      if (url.pathname.startsWith("/lol/match/v5/matches/")) {
+        const matchId = url.pathname.split("/").pop() || "EUW1_123";
+        const queueId = Number(matchId.split("_")[1]) || 420;
+        return json({
+          metadata: { matchId },
+          info: {
+            gameId: queueId,
+            gameMode: queueId === 450 ? "ARAM" : "CLASSIC",
+            queueId,
+            mapId: queueId === 450 ? 12 : 11,
+            gameDuration: 1800,
+            gameCreation: Date.now() - 3600000,
+            participants: [{ puuid: "p1", championName: "Ahri", kills: 5, deaths: 2, assists: 3, win: true, teamId: 100, champLevel: 12, totalMinionsKilled: 100, neutralMinionsKilled: 20, goldEarned: 9000, totalDamageDealtToChampions: 12000, item0: 1001, item1: 2003, item2: 3006, item3: 0, item4: 0, item5: 0, item6: 0 }]
+          }
+        });
+      }
     }
     if (url.hostname.endsWith(".api.riotgames.com")) {
       if (url.pathname.startsWith("/lol/summoner/v4/summoners/by-puuid")) return json({ id: "s1", summonerLevel: 30 });

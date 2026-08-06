@@ -24,6 +24,11 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v214", "2026-08-06", "Valorant, LoL et réglages interactifs", [
+    { kind: "feature", text: "En-tête de profil Valorant affichant le vrai rang et les statistiques perso (RR, ELO, niveau) en haut de l'historique." },
+    { kind: "fix", text: "Correction du chargement des images League of Legends : version DDragon 16.15.1 et normalisation des noms de champions." },
+    { kind: "fix", text: "Les options Dock, Home, Space et Densité des Réglages répondent désormais au clic." }
+  ]),
   entry("v213", "2026-08-06", "Dock Size : icône, traductions et alignement", [
     { kind: "fix", text: "Remplacement de l'icône manquante 'layout-bottom' par l'icône Lucide 'dock' dans les Réglages et le Command Center." },
     { kind: "i18n", text: "Ajout des traductions manquantes pour les options de taille du Dock (Normal), de style du Dock (Ultra Blur, Subtle) et de Space (Studio)." },

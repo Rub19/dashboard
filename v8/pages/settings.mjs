@@ -939,6 +939,12 @@ export function mountSettings(stage, options = {}) {
     btn.setAttribute("aria-pressed", "true");
     btn.append(icon("check")); globalThis.lucide?.createIcons?.(); options.actions?.dispatch?.(btn.dataset.action, { source: "settings" });
   }, { signal: controller.signal }));
+  page.addEventListener("click", (event) => {
+    const button = event.target.closest(".v8-setting-choice, [data-density-mode], [data-theme-mode], button.v8-accent-swatch");
+    if (!button || !button.dataset.action) return;
+    event.stopPropagation();
+    options.actions?.dispatch?.(button.dataset.action, { source: "settings" });
+  }, { signal: controller.signal });
   const dispatchVolume = throttleFrame((category, value, element, event) => {
     options.actions?.dispatch?.("v8.sound.volume", { source: "settings", category, value, element, event });
   });

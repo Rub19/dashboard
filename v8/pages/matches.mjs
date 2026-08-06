@@ -9,6 +9,8 @@ export function mountMatches(container, options = {}) {
   let destroyed = false;
   let currentMode = "all";
   let matchDetailId = 0;
+  let currentName = "";
+  let currentTag = "";
 
   const hash = window.location.hash.substring(1);
   const searchParams = new URL("http://localhost/" + hash).searchParams;
@@ -152,7 +154,7 @@ export function mountMatches(container, options = {}) {
       ].filter(Boolean);
       if (isLol) {
         rowCells.push(element("td", { className: "v8-scoreboard-number", text: String(p.stats?.cs || 0) }));
-        const items = (p.items || []).slice(0, 7).map(url => url ? element("img", { className: "v8-scoreboard-item", attributes: { src: url, loading: "lazy" } }) : element("span", { className: "v8-scoreboard-item-placeholder" }));
+        const items = (p.items || []).slice(0, 7).map(url => url ? element("img", { className: "v8-scoreboard-item", attributes: { src: url, loading: "lazy" }, events: { error: (event) => event.currentTarget.replaceWith(element("span", { className: "v8-scoreboard-item-placeholder" })) } }) : element("span", { className: "v8-scoreboard-item-placeholder" }));
         rowCells.push(element("td", { className: "v8-scoreboard-items" }, items));
       } else if (hasHs) {
         rowCells.push(element("td", { className: "v8-scoreboard-number", text: `${hs}%` }));
@@ -245,7 +247,7 @@ export function mountMatches(container, options = {}) {
     }, [
       element("div", { className: "v8-match-accent" }),
       element("div", { className: "v8-match-agent" }, [
-        match.metadata?.agentImageUrl ? element("img", { attributes: { src: match.metadata.agentImageUrl } }) : element("div", { className: "v8-match-agent-placeholder" })
+        match.metadata?.agentImageUrl ? element("img", { attributes: { src: match.metadata.agentImageUrl }, events: { error: (event) => event.currentTarget.replaceWith(element("div", { className: "v8-match-agent-placeholder" })) } }) : element("div", { className: "v8-match-agent-placeholder" })
       ]),
       element("div", { className: "v8-match-info" }, [
         element("small", { className: "v8-match-meta" }, [
@@ -358,8 +360,8 @@ export function mountMatches(container, options = {}) {
     const myTeamPlayers = match.scoreboard?.players?.filter(p => p.team === myTeam) || [];
     const opponentPlayers = match.scoreboard?.players?.filter(p => p.team === opponentTeam) || [];
 
-    const champImg = (url, champ) => url ? element("img", { attributes: { src: url, alt: champ || "", loading: "lazy" } }) : element("div", { className: "v8-lol-champion-placeholder" });
-    const itemImg = (url) => url ? element("img", { attributes: { src: url, loading: "lazy" } }) : element("div", { className: "v8-lol-item-placeholder" });
+    const champImg = (url, champ) => url ? element("img", { attributes: { src: url, alt: champ || "", loading: "lazy" }, events: { error: (event) => event.currentTarget.replaceWith(element("div", { className: "v8-lol-champion-placeholder" })) } }) : element("div", { className: "v8-lol-champion-placeholder" });
+    const itemImg = (url) => url ? element("img", { attributes: { src: url, loading: "lazy" }, events: { error: (event) => event.currentTarget.replaceWith(element("div", { className: "v8-lol-item-placeholder" })) } }) : element("div", { className: "v8-lol-item-placeholder" });
     const renderChampStrip = (players) => element("div", { className: "v8-lol-team-strip" }, players.slice(0, 5).map(p => champImg(p.assets?.champion?.small, p.character)));
 
     const detailId = `v8-match-detail-${match.id || ++matchDetailId}`;
@@ -623,7 +625,98 @@ export function mountMatches(container, options = {}) {
       ...rows
     ]);
   }
-  
+
+  function renderValorantProfile(profile) {
+    const handle = profile?.handle;
+    let displayName = currentName;
+    let displayTag = currentTag;
+    if (!displayName && handle && handle.includes("#")) {
+      [displayName, displayTag] = handle.split("#");
+    }
+    displayName = displayName || profile?.name || "—";
+    displayTag = displayTag || profile?.tag || "";
+
+    function getRankText() {
+      const direct = profile?.currenttier_patched ?? profile?.currenttierpatched ?? profile?.rank;
+      if (direct != null && direct !== "" && direct !== 0) return String(direct);
+      const segments = profile?.segments || [];
+      for (let i = segments.length - 1; i >= 0; i--) {
+        const stats = segments[i]?.stats || {};
+        const rankStat = stats.ranked || stats.rank || stats.rating;
+        if (rankStat?.displayValue && String(rankStat.displayValue) !== "") return String(rankStat.displayValue);
+      }
+      return translateSource("Unranked");
+    }
+
+    function getStatItems() {
+      const segment = (profile?.segments || []).slice(-1)[0];
+      const stats = segment?.stats || {};
+      const pick = (keys, label) => {
+        for (const key of keys) {
+          const s = stats[key];
+          if (s?.displayValue != null) return [label, String(s.displayValue)];
+        }
+        return null;
+      };
+
+      const items = [];
+      const wins = pick(["wins"], "Wins");
+      const losses = pick(["losses"], "Losses");
+      if (wins && losses) {
+        items.push(["W/L", `${wins[1]} / ${losses[1]}`]);
+      } else {
+        if (wins) items.push(wins);
+        if (losses) items.push(losses);
+      }
+
+      const kd = pick(["kd", "kdr", "killsDeaths", "killsDeathsRatio"], "K/D");
+      const hs = pick(["headshots", "headshotsPercentage", "headshotPercentage", "hs"], "HS%");
+      const winRate = pick(["winRate", "winPercentage", "winsPercentage"], "Win %");
+      if (kd) items.push(kd);
+      if (hs) items.push(hs);
+      if (winRate) items.push(winRate);
+
+      if (items.length) return items;
+
+      const excluded = new Set(["rank", "ranked", "rating"]);
+      return Object.entries(stats)
+        .filter(([, s]) => s?.displayValue != null)
+        .filter(([key]) => !excluded.has(key))
+        .slice(0, 4)
+        .map(([, s]) => [s.displayName || "—", String(s.displayValue)]);
+    }
+
+    const avatarUrl = profile?.avatarUrl;
+    const placeholder = element("div", { className: "v8-match-agent-placeholder" });
+    const avatarImg = avatarUrl
+      ? element("img", {
+          attributes: { src: avatarUrl, alt: "", loading: "lazy" },
+          events: { error: (event) => event.currentTarget.replaceWith(placeholder) }
+        })
+      : placeholder;
+    const avatar = element("div", { className: "v8-match-agent" }, [avatarImg]);
+
+    const title = displayTag ? `${displayName} #${displayTag}` : displayName;
+    const statItems = getStatItems();
+    const statsEl = statItems.length
+      ? element("div", { className: "v8-profile-stats" }, statItems.map(([label, value]) =>
+          element("div", { className: "v8-match-stat-col v8-profile-stat" }, [
+            element("small", { text: label }),
+            element("strong", { text: value })
+          ])
+        ))
+      : null;
+
+    return element("header", { className: "v8-match-group v8-surface v8-valorant-profile" }, [
+      avatar,
+      element("div", { className: "v8-profile-info" }, [
+        element("strong", { className: "v8-profile-name", text: title }),
+        element("span", { className: "v8-profile-rank", text: getRankText() })
+      ]),
+      statsEl
+    ]);
+  }
+
   let dataLoaded = false;
   async function loadMatches() {
     if (destroyed) return;
@@ -632,13 +725,20 @@ export function mountMatches(container, options = {}) {
     
     try {
       let data;
+      let profileData = null;
       if (game === "valorant") {
         const state = valorantLive?.state?.() || {};
         const riotId = state.tag ? `${state.name}#${state.tag}` : "";
         if (!riotId || !state.available) throw new Error("En attente de la connexion Lanyard...");
         const [name, tag] = riotId.split("#");
+        currentName = name;
+        currentTag = tag;
         const res = await externalServices.tracker.valorantMatches(name, tag, currentMode);
         data = res.data;
+        try {
+          const profileRes = await externalServices.tracker.valorantProfile(name, tag);
+          profileData = profileRes?.data || null;
+        } catch {}
       } else if (game === "lol") {
         const state = lolLive?.state?.() || {};
         const riotId = state.tag ? `${state.name}#${state.tag}` : "";
@@ -660,6 +760,9 @@ export function mountMatches(container, options = {}) {
       if (destroyed) return;
       
       content.replaceChildren();
+      if (game === "valorant") {
+        content.append(renderValorantProfile(profileData));
+      }
       if (!data || data.length === 0) {
         content.append(element("p", { className: "v8-empty", text: "Aucun match trouvé pour ce mode." }));
         return;

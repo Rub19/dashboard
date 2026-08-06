@@ -179,19 +179,22 @@ export function createActionFacade(options = {}) {
     return completed("Éditeur du Dock ouvert");
   });
 
-  function activateSpace(id, label, flow, accent) {
-    return () => {
-      setState({ space: id, flow, accent, missionOpen: false, panel: null, commandOpen: false });
-      notify({ id: `space-${id}`, title: "Space actif", message: `${label} est pret.`, type: "success", sound: false });
-      return completed(`Space ${label} active`, { space: id, flow, accent });
-    };
+  function setSpace(valid) {
+    const workspace = WORKSPACES.find((w) => w.id === valid);
+    if (!workspace) return unavailable(`Space ${valid} inconnu.`);
+    const { id, label, flow, accent } = workspace;
+    setState({ space: id, flow, accent, missionOpen: false, panel: null, commandOpen: false });
+    notify({ id: `space-${id}`, title: "Space actif", message: `${label} est pret.`, type: "success", sound: false });
+    return completed(`Space ${label} active`, { space: id, flow, accent });
   }
 
-  WORKSPACES.forEach(({ id, label, flow, accent, actionId }) => {
-    const activate = activateSpace(id, label, flow, accent);
-    register(actionId, activate);
-    register(`v8.dashboard.${id}`, (context) => {
-      const result = activate(context);
+  register("v8.space.personal", () => setSpace("personal"));
+  register("v8.space.focus", () => setSpace("focus"));
+  register("v8.space.studio", () => setSpace("studio"));
+
+  WORKSPACES.forEach(({ id }) => {
+    register(`v8.dashboard.${id}`, () => {
+      const result = setSpace(id);
       navigate("home");
       return result;
     });
@@ -425,11 +428,14 @@ export function createActionFacade(options = {}) {
     setState({ density });
     return completed("Densité modifiée", { density });
   });
+  function setDensity(valid) {
+    if (!DENSITY_MODES.includes(valid)) return unavailable("Ce mode de densité n'est pas disponible.");
+    setState({ density: valid });
+    notify({ id: "density-updated", title: "Densité", message: `Densité : ${valid}`, type: "success" });
+    return completed("Densité modifiée", { density: valid });
+  }
   DENSITY_MODES.forEach((density) => {
-    register(`v8.density.${density}`, () => {
-      setState({ density });
-      return completed("Densité modifiée", { density });
-    });
+    register(`v8.density.${density}`, () => setDensity(density));
   });
   register("v8.density.custom.update", (context = {}) => {
     const key = String(context.key || "fontScale");

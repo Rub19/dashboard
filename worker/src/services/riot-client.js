@@ -3,6 +3,7 @@ import { requestExternal } from "../utils/external-request.js";
 import { safePublicUrl, safeStats, safeText } from "../utils/normalize.js";
 
 const RIOT_EUROPE = "https://europe.api.riotgames.com";
+const DDRAGON_LOL_VERSION = "16.15.1";
 
 async function getPuuid(env, name, tag, apiKey) {
   const path = `/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(name)}/${encodeURIComponent(tag)}`;
@@ -77,7 +78,7 @@ export async function getLolProfile(env, riotId, apiKeyOverride) {
     platform: "riot",
     identifier: riotId,
     handle: riotId,
-    avatarUrl: safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/14.4.1/img/profileicon/${summoner.profileIconId || 1}.png`, ["leagueoflegends.com"]),
+    avatarUrl: safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/${DDRAGON_LOL_VERSION}/img/profileicon/${summoner.profileIconId || 1}.png`, ["leagueoflegends.com"]),
     segments: Object.freeze([{
       type: "overview",
       name: "Ranked",
@@ -122,13 +123,52 @@ function lolTeamName(teamId) {
   return teamId === 200 ? "Red" : "Blue";
 }
 
+const DDRAGON_CHAMPION_NAME_OVERRIDES = Object.freeze({
+  "Bel'Veth": "Belveth",
+  "BelVeth": "Belveth",
+  "Cho'Gath": "Chogath",
+  "ChoGath": "Chogath",
+  "FiddleSticks": "Fiddlesticks",
+  "Jarvan IV": "JarvanIV",
+  "JarvanIV": "JarvanIV",
+  "Kai'Sa": "Kaisa",
+  "KaiSa": "Kaisa",
+  "Kha'Zix": "Khazix",
+  "KhaZix": "Khazix",
+  "Kog'Maw": "KogMaw",
+  "Kogmaw": "KogMaw",
+  "K'Sante": "KSante",
+  "Ksante": "KSante",
+  "LeBlanc": "Leblanc",
+  "Nunu & Willump": "Nunu",
+  "Rek'Sai": "RekSai",
+  "Reksai": "RekSai",
+  "Renata Glasc": "Renata",
+  "Vel'Koz": "Velkoz",
+  "VelKoz": "Velkoz",
+  "Wukong": "MonkeyKing"
+});
+
+function normalizeLolChampionName(championName) {
+  if (!championName) return "";
+  let name = String(championName).trim();
+  if (!name) return "";
+  name = name.split(" & ")[0].trim();
+  const override = DDRAGON_CHAMPION_NAME_OVERRIDES[name];
+  if (override) return override;
+  name = name.replace(/[^a-zA-Z0-9]/g, "");
+  return DDRAGON_CHAMPION_NAME_OVERRIDES[name] || name;
+}
+
 function lolChampionImage(championName) {
-  return safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/14.4.1/img/champion/${championName}.png`, ["leagueoflegends.com"]);
+  const id = normalizeLolChampionName(championName);
+  if (!id) return "";
+  return safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/${DDRAGON_LOL_VERSION}/img/champion/${id}.png`, ["leagueoflegends.com"]);
 }
 
 function lolItemImage(itemId) {
   if (!itemId || itemId <= 0) return "";
-  return safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/14.4.1/img/item/${itemId}.png`, ["leagueoflegends.com"]);
+  return safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/${DDRAGON_LOL_VERSION}/img/item/${itemId}.png`, ["leagueoflegends.com"]);
 }
 
 function safeLolName(p) {

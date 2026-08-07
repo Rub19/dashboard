@@ -3353,33 +3353,62 @@ html[data-v8-ui-glow="true"] .v8-floating-dock {
   box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35), 0 0 24px var(--v8-accent-glow, rgba(139, 92, 246, 0.15));
 }
 .v8-control-center-window {
+  position: absolute;
   bottom: 80px;
   right: 20px;
-  position: absolute;
-  width: 320px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  background: var(--v8-surface-glass);
-  border: 1px solid var(--v8-border);
-  border-radius: var(--v8-radius-lg);
-  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  left: auto;
+  width: min(360px, calc(100vw - 20px));
+  max-height: min(560px, calc(100dvh - 120px));
+  overflow: hidden;
+  border: 1px solid var(--v8-border-highlight);
+  border-radius: var(--v8-radius-xl);
+  background: var(--v8-dialog-glass);
+  box-shadow: var(--v8-shadow-window-open), 0 0 40px rgba(0,0,0,0.2);
+  backdrop-filter: blur(var(--v8-blur)) saturate(var(--v8-saturate));
   transform-origin: bottom right;
   animation: v8-cc-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
+.v8-control-center-window > header { padding: var(--v8-space-4) var(--v8-space-5); border-bottom: 1px solid var(--v8-divider); }
+.v8-control-center-window > header .v8-icon-button { width: 34px; height: 34px; }
 @keyframes v8-cc-pop {
-  0% { opacity: 0; transform: scale(0.9) translateY(20px); }
+  0% { opacity: 0; transform: scale(0.92) translateY(16px); }
   100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 .v8-control-center-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 16px;
-  max-height: 400px;
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px 14px;
+  max-height: min(480px, calc(100dvh - 200px));
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
 }
+.v8-control-center__group { display: grid; gap: 8px; padding: 10px; border: 1px solid var(--v8-border); border-radius: var(--v8-radius-md); background: color-mix(in srgb, var(--v8-surface-sunken) 86%, transparent); }
+.v8-control-center__group-header { display: flex; align-items: center; gap: 8px; padding: 0 2px; color: var(--v8-text-secondary); font-size: var(--v8-font-micro); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.v8-control-center__group-header svg { width: 14px; height: 14px; color: var(--v8-accent); }
+.v8-control-center__group-body { display: flex; flex-wrap: wrap; gap: 6px; }
+.v8-control-center__group-body.is-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.v8-control-center__choice { display: inline-flex; min-width: max-content; align-items: center; justify-content: center; gap: 6px; height: 32px; padding: 0 12px; border: 1px solid var(--v8-border); border-radius: var(--v8-radius-pill); background: var(--v8-surface-1); color: var(--v8-text-secondary); font-size: var(--v8-font-micro); font-weight: 600; cursor: pointer; outline: none; transition: color var(--v8-motion-fast), background-color var(--v8-motion-fast), border-color var(--v8-motion-fast), box-shadow var(--v8-motion-fast); }
+.v8-control-center__choice:hover { border-color: var(--v8-border-strong); color: var(--v8-text); }
+.v8-control-center__choice.is-active { background: var(--v8-accent); border-color: var(--v8-accent); color: #000; box-shadow: var(--v8-shadow-height-1); }
+.v8-control-center__choice:focus-visible { box-shadow: var(--v8-shadow-focus); }
+.v8-control-center__tile { display: flex; min-width: 0; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 68px; padding: 8px 4px; border: 1px solid var(--v8-border); border-radius: var(--v8-radius-md); background: var(--v8-surface-1); color: var(--v8-text-secondary); cursor: pointer; outline: none; transition: color var(--v8-motion-fast), background-color var(--v8-motion-fast), border-color var(--v8-motion-fast), box-shadow var(--v8-motion-fast); }
+.v8-control-center__tile svg { width: 20px; height: 20px; color: var(--v8-accent); }
+.v8-control-center__tile span { overflow: hidden; font-size: var(--v8-font-micro); font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.v8-control-center__tile:hover { border-color: var(--v8-border-strong); color: var(--v8-text); }
+.v8-control-center__tile.is-active { background: var(--v8-accent); border-color: var(--v8-accent); color: #000; box-shadow: var(--v8-shadow-height-1); }
+.v8-control-center__tile.is-active svg { color: #000; }
+.v8-control-center__tile:focus-visible { box-shadow: var(--v8-shadow-focus); }
+.v8-control-center__toggle { display: flex; min-width: 0; flex: 1 1 calc(50% - 3px); align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--v8-border); border-radius: var(--v8-radius-md); background: var(--v8-surface-1); color: var(--v8-text-secondary); cursor: pointer; outline: none; transition: color var(--v8-motion-fast), background-color var(--v8-motion-fast), border-color var(--v8-motion-fast); }
+.v8-control-center__toggle-icon { display: grid; width: 28px; height: 28px; place-items: center; border-radius: var(--v8-radius-sm); background: var(--v8-surface-2); color: var(--v8-accent); }
+.v8-control-center__toggle-icon svg { width: 15px; height: 15px; }
+.v8-control-center__toggle-track { position: relative; width: 36px; height: 20px; margin-left: auto; border-radius: 999px; background: var(--v8-surface-3); transition: background-color var(--v8-motion-fast); }
+.v8-control-center__toggle-thumb { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--v8-text-primary); transition: transform var(--v8-motion-fast); }
+.v8-control-center__toggle.is-active { border-color: var(--v8-accent); color: var(--v8-text); }
+.v8-control-center__toggle.is-active .v8-control-center__toggle-track { background: var(--v8-accent); }
+.v8-control-center__toggle.is-active .v8-control-center__toggle-thumb { transform: translateX(16px); background: #000; }
+.v8-control-center__toggle:focus-visible { box-shadow: var(--v8-shadow-focus); }
+.v8-control-center__toggle:hover { border-color: var(--v8-border-strong); color: var(--v8-text); }
 [data-v8-ui-glow="true"] .v8-dock-editor__choice:hover {
   box-shadow: 0 0 12px var(--v8-accent-glow, rgba(255,255,255,0.2));
   transform: translateY(-1px);

@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v248] - 2026-08-07
+
+### Ajouté
+- **Redesign du Control Center du Dock** : panneaux groupés pour Animations, Ambiance, Pack sonore, Audio, Ambiance sonore et Focus Timer.
+- **Interrupteurs à glissière** pour Aura néon et Sons d'interface.
+- **Grilles de tuiles** pour Pack sonore et Focus Timer avec icônes.
+
+### Amélioré
+- Bordereau PWA mis à jour vers `experience-v248`.
+
 ## [v247] - 2026-08-07
 
 ### Ajouté

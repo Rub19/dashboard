@@ -167,56 +167,68 @@ export function createDock(host, options = {}) {
     const currentSoundFeedback = el?.dataset?.v8UiSoundFeedback !== "false";
     const currentSoundPack = el?.dataset?.v8SoundPack || "ethone";
 
-    function row(label, iconName, choices) {
-      return element("div", { className: "v8-dock-editor__setting-row" }, [
-        element("span", { className: "v8-dock-editor__setting-label" }, [
-          icon(iconName),
-          element("span", { text: label })
-        ]),
-        element("div", { className: "v8-dock-editor__setting-choices", attributes: { role: "group", "aria-label": label } }, choices)
+    function group(title, iconName, body, options = {}) {
+      return element("section", { className: "v8-control-center__group" }, [
+        element("header", { className: "v8-control-center__group-header" }, [icon(iconName), element("strong", { text: title })]),
+        element("div", { className: `v8-control-center__group-body${options.grid ? " is-grid" : ""}` }, body)
       ]);
     }
 
-    function btn(label, actionId, active) {
+    function pill(label, actionId, active) {
       return element("button", {
-        className: `v8-dock-editor__choice${active ? " is-active" : ""}`,
+        className: `v8-control-center__choice${active ? " is-active" : ""}`,
         attributes: { type: "button", "aria-pressed": String(active) },
         dataset: { dockConfigAction: actionId }
       }, [element("span", { text: label })]);
     }
 
-    return element("div", { className: "v8-dock-editor__config v8-control-center-panel" }, [
-      row("Animations UI", "activity", [
-        btn("Fluides", "v8.ui.animations.smooth", currentAnimations === "smooth"),
-        btn("Rapides", "v8.ui.animations.snappy", currentAnimations === "snappy"),
-        btn("Réduites", "v8.ui.animations.reduced", currentAnimations === "reduced")
+    function toggle(label, iconName, active, actionOn, actionOff) {
+      return element("button", {
+        className: `v8-control-center__toggle${active ? " is-active" : ""}`,
+        attributes: { type: "button", role: "switch", "aria-checked": String(active), "aria-label": label },
+        dataset: { dockConfigAction: active ? actionOff : actionOn }
+      }, [
+        element("span", { className: "v8-control-center__toggle-icon" }, [icon(iconName)]),
+        element("span", { className: "v8-control-center__toggle-track", attributes: { "aria-hidden": "true" } }, [element("span", { className: "v8-control-center__toggle-thumb" })])
+      ]);
+    }
+
+    function tile(label, actionId, active, iconName) {
+      return element("button", {
+        className: `v8-control-center__tile${active ? " is-active" : ""}`,
+        attributes: { type: "button", "aria-pressed": String(active) },
+        dataset: { dockConfigAction: actionId }
+      }, [icon(iconName), element("span", { text: label })]);
+    }
+
+    return element("div", { className: "v8-control-center-panel" }, [
+      group("Animations UI", "activity", [
+        pill("Fluides", "v8.ui.animations.smooth", currentAnimations === "smooth"),
+        pill("Rapides", "v8.ui.animations.snappy", currentAnimations === "snappy"),
+        pill("Réduites", "v8.ui.animations.reduced", currentAnimations === "reduced")
       ]),
-      row("Aura néon", "zap", [
-        btn("Active", "v8.ui.glow.on", currentGlow),
-        btn("Sobre", "v8.ui.glow.off", !currentGlow)
+      group("Ambiance", "sparkles", [
+        toggle("Aura néon", "zap", currentGlow, "v8.ui.glow.on", "v8.ui.glow.off"),
+        toggle("Sons d'interface", "volume-2", currentSoundFeedback, "v8.ui.sound.feedback.on", "v8.ui.sound.feedback.off")
       ]),
-      row("Sons d'interface", "volume-2", [
-        btn("Actifs", "v8.ui.sound.feedback.on", currentSoundFeedback),
-        btn("Silencieux", "v8.ui.sound.feedback.off", !currentSoundFeedback)
+      group("Pack sonore", "music", SOUND_PACKS.map((pack) => tile(pack.label, "v8.sound.pack." + pack.id, currentSoundPack === pack.id, "music")), { grid: true }),
+      group("Audio", "download", [
+        pill("Écouter l'aperçu", "v8.sound.preview", false),
+        pill("Télécharger .WAV", "v8.sound.export", false)
       ]),
-      row("Pack sonore", "music", SOUND_PACKS.map((pack) => btn(pack.label, "v8.sound.pack." + pack.id, currentSoundPack === pack.id))),
-      row("Audio (.WAV)", "download", [
-        btn("Écouter l'aperçu", "v8.sound.preview", false),
-        btn("Télécharger en .WAV", "v8.sound.export", false)
-      ]),
-      row("Ambiance sonore", "cloud-rain", [
-        btn("🌧 Pluie", "v8.ambience.rain", false),
-        btn("🌸 Bruit rose", "v8.ambience.pink", false),
-        btn("🎵 Drone", "v8.ambience.drone", false),
-        btn("Arrêter", "v8.ambience.stop", false)
-      ]),
-      row("Focus Timer", "timer", [
-        btn("🍅 Pomodoro", "v8.focus.start.pomodoro", false),
-        btn("🧠 Deep Work", "v8.focus.start.deep", false),
-        btn("⚡ Sprint", "v8.focus.start.quick", false),
-        btn("⏸ Pause", "v8.focus.pause", false),
-        btn("⏹ Stop", "v8.focus.stop", false)
-      ])
+      group("Ambiance sonore", "cloud-rain", [
+        tile("Pluie", "v8.ambience.rain", false, "cloud-rain"),
+        tile("Bruit rose", "v8.ambience.pink", false, "flower-2"),
+        tile("Drone", "v8.ambience.drone", false, "disc"),
+        tile("Arrêter", "v8.ambience.stop", false, "volume-x")
+      ], { grid: true }),
+      group("Focus Timer", "timer", [
+        tile("Pomodoro", "v8.focus.start.pomodoro", false, "timer"),
+        tile("Deep Work", "v8.focus.start.deep", false, "brain"),
+        tile("Sprint", "v8.focus.start.quick", false, "zap"),
+        tile("Pause", "v8.focus.pause", false, "pause"),
+        tile("Stop", "v8.focus.stop", false, "square")
+      ], { grid: true })
     ]);
   }
 

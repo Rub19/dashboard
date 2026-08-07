@@ -24,6 +24,12 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v248", "2026-08-07", "Redesign du Control Center du Dock", [
+    { kind: "feature", text: "Nouveau design du Control Center en panneaux groupes avec sections Animations, Ambiance, Pack sonore, Audio, Ambiance sonore et Focus Timer." },
+    { kind: "feature", text: "Interrupteurs a glissière pour Aura néon et Sons d'interface." },
+    { kind: "feature", text: "Pack sonore et Focus Timer présentés en grille de tuiles avec icones." },
+    { kind: "improvement", text: "Bordereau PWA mis à jour vers experience-v248." }
+  ]),
   entry("v247", "2026-08-07", "Centre d'activité intelligent : pagination et actions contextuelles", [
     { kind: "feature", text: "Pagination du flux d'activité avec bouton Charger plus par lots de 15 signaux." },
     { kind: "feature", text: "Actions contextuelles sur chaque entrée : copier le titre, filtrer par catégorie et ouvrir la source associée." },

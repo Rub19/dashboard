@@ -201,7 +201,7 @@ export function mountMatches(container, options = {}) {
       ].filter(Boolean);
       if (isLol) {
         rowCells.push(element("td", { className: "v8-scoreboard-number", text: String(p.stats?.cs || 0) }));
-        const items = (p.items || []).slice(0, 7).map(item => item?.image ? element("img", { className: "v8-scoreboard-item", attributes: { src: item.image, alt: item.name || "", title: item.name || "", loading: "lazy", decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(element("span", { className: "v8-scoreboard-item-placeholder" })) } }) : element("span", { className: "v8-scoreboard-item-placeholder" }));
+        const items = (p.items || []).filter(item => item?.image).slice(0, 7).map(item => element("img", { className: "v8-scoreboard-item", attributes: { src: item.image, alt: item.name || "", title: item.name || "", loading: "lazy", decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(element("span", { className: "v8-scoreboard-item-placeholder" })) } }));
         rowCells.push(element("td", { className: "v8-scoreboard-items" }, items));
       } else if (hasHs) {
         rowCells.push(element("td", { className: "v8-scoreboard-number", text: `${hs}%` }));
@@ -266,8 +266,8 @@ export function mountMatches(container, options = {}) {
       const spellImg = (spell) => spell?.image ? imgWithFallback([spell.image], "v8-lol-sb-spell", element("div", { className: "v8-lol-sb-spell v8-lol-sb-spell--placeholder" }), spell.name) : element("div", { className: "v8-lol-sb-spell v8-lol-sb-spell--placeholder" });
       const rune = p.assets?.rune?.image ? imgWithFallback([p.assets.rune.image], "v8-lol-sb-rune", element("div", { className: "v8-lol-sb-rune v8-lol-sb-rune--placeholder" }), p.assets.rune.name) : null;
       const spells = element("div", { className: "v8-lol-sb-spells" }, [rune, ...((p.assets?.spells || []).slice(0, 2).map(spellImg))].filter(Boolean));
-      const itemImg = (item) => item?.image ? imgWithFallback([item.image], "v8-lol-sb-item", element("div", { className: "v8-lol-sb-item v8-lol-sb-item--placeholder" }), item.name) : element("div", { className: "v8-lol-sb-item v8-lol-sb-item--placeholder" });
-      const items = (p.items || []).slice(0, 7).map(itemImg);
+      const itemImg = (item) => item?.image ? imgWithFallback([item.image], "v8-lol-sb-item", element("div", { className: "v8-lol-sb-item v8-lol-sb-item--placeholder" }), item.name) : null;
+      const items = (p.items || []).slice(0, 7).map(itemImg).filter(Boolean);
 
       return element("div", { className: `v8-lol-sb-player${p.isMe ? " is-me" : ""}` }, [
         element("div", { className: "v8-lol-sb-player__champ" }, [

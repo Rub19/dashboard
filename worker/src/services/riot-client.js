@@ -46,7 +46,7 @@ async function getPuuid(env, name, tag, apiKey) {
 export async function getLolProfile(env, riotId, apiKeyOverride) {
   const apiKey = apiKeyOverride || requireSecret(env, "RIOT_API_KEY");
   const [name, tag] = riotId.split("#");
-  
+
   const puuid = await getPuuid(env, name, tag, apiKey);
   if (!puuid) return null;
 
@@ -96,23 +96,25 @@ export async function getLolProfile(env, riotId, apiKeyOverride) {
         headers: { "X-Riot-Token": apiKey },
         retries: 1
       });
-      const leagues = leagueResponse.data || [];
+      const leagues = Array.isArray(leagueResponse.data) ? leagueResponse.data : [];
       const soloq = leagues.find(l => l.queueType === "RANKED_SOLO_5x5") || leagues[0];
-      if (soloq) {
-        tier = `${soloq.tier} ${soloq.rank}`;
-        lp = soloq.leaguePoints;
+      if (soloq?.tier) {
+        const rank = soloq.rank ? ` ${soloq.rank}` : "";
+        tier = `${soloq.tier}${rank}`.trim();
+        lp = Number(soloq.leaguePoints) || 0;
       }
     } catch {}
   }
 
+  const ddragonVersion = await getLolDdragonLatestVersion(env);
   const profileIconId = Number(summoner.profileIconId) || 1;
   return Object.freeze({
     platform: "riot",
     identifier: riotId,
     handle: riotId,
-    avatarUrl: safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/${DDRAGON_LOL_VERSION}/img/profileicon/${profileIconId}.png`, ["leagueoflegends.com"]),
+    avatarUrl: safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/img/profileicon/${profileIconId}.png`, ["leagueoflegends.com"]),
     profileIconId,
-    ddragonVersion: DDRAGON_LOL_VERSION,
+    ddragonVersion,
     segments: Object.freeze([{
       type: "overview",
       name: "Ranked",

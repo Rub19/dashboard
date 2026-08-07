@@ -1,5 +1,6 @@
 import { attachFlipBehavior, brandIcon, element, icon } from "./dom.mjs";
 import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
+import { translateSource } from "../i18n/catalog.mjs";
 
 function ddragonAvatarUrl(presence) {
   const version = presence.ddragonVersion || "16.15.1";
@@ -38,8 +39,14 @@ function avatar(presence) {
 export function lolLiveCard(presence = {}, options = {}) {
   if (presence.available !== true) return null;
   const variant = ["home", "activity"].includes(options.variant) ? options.variant : "home";
-  const statLine = presence.overview?.stats?.[0] ? `${presence.overview.stats[0].displayName} : ${presence.overview.stats[0].displayValue}` : "Aucun match récent";
-  const statLine2 = presence.overview?.stats?.[1] ? `${presence.overview.stats[1].displayName} : ${presence.overview.stats[1].displayValue}` : "";
+  function statText(stat) {
+    if (!stat) return "";
+    const name = translateSource(stat.displayName || "");
+    const value = stat.displayValue === "Unranked" ? translateSource("Unranked") : stat.displayValue;
+    return `${name} : ${value}`;
+  }
+  const statLine = presence.overview?.stats?.[0] ? statText(presence.overview.stats[0]) : "Aucun match récent";
+  const statLine2 = presence.overview?.stats?.[1] ? statText(presence.overview.stats[1]) : "";
   const onClick = typeof options.onClick === "function" ? options.onClick : null;
 
   const front = element("div", { className: `v8-lol-live v8-lol-live--${variant} v8-surface v8-live-card-front` }, [

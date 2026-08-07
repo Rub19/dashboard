@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v252] - 2026-08-07
+
+### Corrigé
+- **Rank LoL** : meilleure récupération depuis l'API Riot et formattage sécurisé du tier/rank.
+- **Image de profil LoL** : utilisation de la version DDragon à jour.
+- **Items LoL** : masquage des emplacements vides dans le scoreboard.
+- **Traduction** : "Unranked" devient "Non Classé" sur la carte LoL Live.
+
+### Amélioré
+- Bordereau PWA mis à jour vers `experience-v252`.
+
 ## [v251] - 2026-08-07
 
 ### Ajouté

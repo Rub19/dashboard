@@ -24,6 +24,13 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v252", "2026-08-07", "Corrections affichage LoL : rank, items vides et placeholders", [
+    { kind: "fix", text: "Meilleure recuperation du rank LoL depuis l'API Riot et formattage securise (tier + rank)." },
+    { kind: "fix", text: "Image de profil LoL desormais en version DDragon a jour." },
+    { kind: "fix", text: "Masquage des emplacements d'objets vides dans le scoreboard LoL." },
+    { kind: "fix", text: "Traduction de 'Unranked' en 'Non Classé' sur la carte LoL Live." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v252." }
+  ]),
   entry("v251", "2026-08-07", "Menu Pomodoro en survol dans le Dock et la barre du haut", [
     { kind: "feature", text: "Popover Focus Timer au survol du bouton Pomodoro du Dock." },
     { kind: "feature", text: "Popover Focus Timer au survol du status Focus de la topbar." },

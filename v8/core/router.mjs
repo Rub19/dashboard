@@ -11,6 +11,7 @@ export const V8_ROUTES = Object.freeze([
   "widgets",
   "brain",
   "settings",
+  "security",
   "matches"
 ]);
 

@@ -224,6 +224,22 @@ export function createAuthAdapter(options = {}) {
     return ready.ok ? client : null;
   }
 
+  async function setSession(session) {
+    const ready = await initialize();
+    if (!ready.ok) return ready;
+    const accessToken = cleanText(session?.access_token || session?.accessToken, 4096);
+    const refreshToken = cleanText(session?.refresh_token || session?.refreshToken, 4096) || "";
+    if (!accessToken) return failed("Token de session manquant.");
+    const response = await withTimeout(
+      client.auth.setSession({ access_token: accessToken, refresh_token: refreshToken }),
+      timeoutMs
+    );
+    if (response?.error) return failed(providerMessage(response.error, "Impossible d'activer la session."));
+    const user = sanitizeUser(response?.data?.user || response?.data?.session?.user);
+    if (user) publishState(AUTH_STATES.authenticated, { user });
+    return completed("Session activée.", { session: sanitizeSession(response?.data?.session) });
+  }
+
   async function resolveEmail(identifier) {
     const normalized = cleanText(identifier, 320).toLowerCase();
     if (normalized.includes("@")) return normalized;
@@ -388,6 +404,7 @@ export function createAuthAdapter(options = {}) {
   return Object.freeze({
     initialize,
     getClient,
+    setSession,
     getSession,
     signIn,
     signUp,

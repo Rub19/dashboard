@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v257] - 2026-08-07
+
+### Ajouté
+- **Système de sécurité et d'identité ETHONE** : gestion des appareils, passkeys (WebAuthn), OTP fallback et journal de sécurité.
+- **Tables Supabase** : `ethone_devices`, `ethone_passkeys`, `ethone_security_events`, `ethone_device_verification_requests`, `ethone_otp_codes`, `ethone_passkey_challenges`.
+- **Routes Worker** : `/api/auth/passkey/*`, `/api/auth/otp/*`, `/api/auth/device*`, `/api/auth/security-events`.
+- **Frontend** : connexion par passkey et code email depuis l'écran de login, page `#/security` pour la gestion des appareils et des événements.
+- **Tests Worker** : couverture de base pour l'envoi OTP debug, l'authentification des routes et la liste des appareils.
+
+### Modifié
+- Bordereau PWA mis à jour vers `experience-v257`.
+
 ## [v256] - 2026-08-07
 
 ### Corrigé

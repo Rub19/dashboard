@@ -62,7 +62,14 @@ export const LOGIN_LOCALES = Object.freeze({
     flows: "Flows",
     cloudSync: "Sync cloud",
     security: "Sécurité",
-    widgets: "Widgets"
+    widgets: "Widgets",
+    passkey: "Clé d'accès",
+    passkeyButton: "Se connecter avec une clé",
+    otp: "Code e-mail",
+    otpButton: "Recevoir un code",
+    otpPlaceholder: "Code à 6 chiffres",
+    otpVerify: "Vérifier",
+    passkeyHint: "Utilisez l'empreinte, Face ID ou un code PIN de l'appareil."
   }),
   en: Object.freeze({
     brandLine: "Your digital environment. Reimagined.",
@@ -114,7 +121,14 @@ export const LOGIN_LOCALES = Object.freeze({
     flows: "Flows",
     cloudSync: "Cloud sync",
     security: "Security",
-    widgets: "Widgets"
+    widgets: "Widgets",
+    passkey: "Passkey",
+    passkeyButton: "Sign in with passkey",
+    otp: "Email code",
+    otpButton: "Send me a code",
+    otpPlaceholder: "6-digit code",
+    otpVerify: "Verify",
+    passkeyHint: "Use this device's fingerprint, Face ID or PIN."
   }),
   es: Object.freeze({
     brandLine: "Tu entorno digital. Reinventado.",
@@ -166,7 +180,14 @@ export const LOGIN_LOCALES = Object.freeze({
     flows: "Flows",
     cloudSync: "Sincronización",
     security: "Seguridad",
-    widgets: "Widgets"
+    widgets: "Widgets",
+    passkey: "Clave de acceso",
+    passkeyButton: "Entrar con clave",
+    otp: "Código por email",
+    otpButton: "Recibir un código",
+    otpPlaceholder: "Código de 6 dígitos",
+    otpVerify: "Verificar",
+    passkeyHint: "Usa la huella, Face ID o el PIN de este dispositivo."
   }),
   de: Object.freeze({
     brandLine: "Deine digitale Umgebung. Neu gedacht.",
@@ -218,7 +239,14 @@ export const LOGIN_LOCALES = Object.freeze({
     flows: "Flows",
     cloudSync: "Cloud-Sync",
     security: "Sicherheit",
-    widgets: "Widgets"
+    widgets: "Widgets",
+    passkey: "Passkey",
+    passkeyButton: "Mit Passkey anmelden",
+    otp: "E-Mail-Code",
+    otpButton: "Code senden",
+    otpPlaceholder: "6-stelliger Code",
+    otpVerify: "Überprüfen",
+    passkeyHint: "Nutzen Sie den Fingerabdruck, Face ID oder die PIN dieses Geräts."
   })
 });
 
@@ -398,6 +426,21 @@ export function mountLogin(root, options = {}) {
   const googleButton = element("button", { className: "v8-button v8-button--secondary v8-auth__oauth-button", attributes: { type: "button", "aria-label": "Continuer avec Google" } }, [icon("chrome"), element("span", { text: "Google" })]);
   const githubButton = element("button", { className: "v8-button v8-button--secondary v8-auth__oauth-button", attributes: { type: "button", "aria-label": "Continuer avec GitHub" } }, [icon("github"), element("span", { text: "GitHub" })]);
 
+  const securityDivider = bindText(element("span"), "security");
+  const passkeyButton = element("button", { className: "v8-button v8-button--secondary v8-auth__oauth-button", attributes: { type: "button" } }, [icon("fingerprint"), bindText(element("span"), "passkeyButton")]);
+  const passkeyHint = element("small", { className: "v8-auth__hint", text: (LOGIN_LOCALES[locale] || LOGIN_LOCALES.fr).passkeyHint });
+  const otpButton = element("button", { className: "v8-button v8-button--secondary v8-auth__oauth-button", attributes: { type: "button" } }, [icon("mail"), bindText(element("span"), "otpButton")]);
+
+  const otpInput = element("input", {
+    className: "v8-auth__otp-input",
+    attributes: { type: "text", inputmode: "numeric", pattern: "\\d{6}", maxlength: "6", placeholder: (LOGIN_LOCALES[locale] || LOGIN_LOCALES.fr).otpPlaceholder, "aria-label": (LOGIN_LOCALES[locale] || LOGIN_LOCALES.fr).otpPlaceholder }
+  });
+  const otpVerifyButton = element("button", { className: "v8-button v8-button--primary v8-auth__verify-button", attributes: { type: "button" } }, [icon("check"), bindText(element("span"), "otpVerify")]);
+  const otpForm = element("div", { className: "v8-auth__otp v8-auth__otp--hidden" }, [
+    otpInput,
+    otpVerifyButton
+  ]);
+
   const retryButton = element("button", { className: "v8-button v8-button--primary", attributes: { type: "button" } }, [icon("refresh-cw"), bindText(element("span"), "retry")]);
   const initialRecoveryCopy = LOGIN_LOCALES[locale] || LOGIN_LOCALES.fr;
   const recovery = statusState(globalThis.navigator?.onLine === false ? "offline" : "error", {
@@ -427,6 +470,8 @@ export function mountLogin(root, options = {}) {
     element("div", { className: "v8-auth__forms" }, [loginForm, registerForm]),
     element("div", { className: "v8-auth__divider" }, [oauthLabel]),
     element("div", { className: "v8-auth__oauth" }, [googleButton, githubButton]),
+    element("div", { className: "v8-auth__divider" }, [securityDivider]),
+    element("div", { className: "v8-auth__security" }, [passkeyButton, passkeyHint, otpButton, otpForm]),
     recovery
   ]);
   const instrumentShell = element("div", { className: "v8-auth-shell" }, [instrument]);
@@ -553,6 +598,9 @@ export function mountLogin(root, options = {}) {
     updatePasswordStrength();
     googleButton.setAttribute("aria-label", copy.google);
     githubButton.setAttribute("aria-label", copy.github);
+    passkeyHint.textContent = copy.passkeyHint;
+    otpInput.setAttribute("placeholder", copy.otpPlaceholder);
+    otpInput.setAttribute("aria-label", copy.otpPlaceholder);
     storageTelemetry.value.textContent = available ? copy.cloudReady : copy.cloudUnavailable;
     recoveryDescription.textContent = copy.authUnavailableDescription;
     timeTelemetry.value.textContent = clockManager?.snapshot?.().time || new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit" }).format(new Date());
@@ -598,7 +646,9 @@ export function mountLogin(root, options = {}) {
     available = Boolean(next);
     const copy = LOGIN_LOCALES[locale] || LOGIN_LOCALES.fr;
     storageTelemetry.value.textContent = available ? copy.cloudReady : copy.cloudUnavailable;
-    [loginSubmit, registerSubmit, googleButton, githubButton, rememberInput].forEach((control) => { control.disabled = !available; });
+    [loginSubmit, registerSubmit, googleButton, githubButton, passkeyButton, otpButton, rememberInput].forEach((control) => { control.disabled = !available; });
+    otpInput.disabled = !available;
+    otpVerifyButton.disabled = !available;
     recovery.hidden = available;
     if (!available) {
       recoveryDescription.textContent = copy.authUnavailableDescription;
@@ -678,6 +728,68 @@ export function mountLogin(root, options = {}) {
     if (!destroyed && !response.ok) showFeedback(response.message, "error");
   }
 
+  async function submitPasskey() {
+    if (!available) return;
+    const security = options.security;
+    if (!security?.isAvailable?.()) {
+      showFeedback("La clé d'accès n'est pas disponible sur cet appareil.", "error");
+      return;
+    }
+    const email = loginIdentifier.input.value;
+    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+      showFeedback("Entrez votre e-mail pour utiliser une clé d'accès.", "error");
+      return;
+    }
+    showFeedback("Activation de la clé d'accès...", "info");
+    try {
+      const result = await security.authenticatePasskey(email);
+      if (!result?.token) throw new Error("Passkey authentication failed");
+
+      const setResponse = await auth.setSession({ access_token: result.token, refresh_token: "" });
+      if (!setResponse?.data?.session) throw new Error(setResponse?.message || "Session not available");
+      await options.onAuthenticated?.(setResponse.data);
+    } catch (error) {
+      if (!destroyed) showFeedback(error.message || "La clé d'accès n'a pas pu vous connecter.", "error");
+    }
+  }
+
+  async function startOtp() {
+    if (!available) return;
+    const security = options.security;
+    const email = loginIdentifier.input.value;
+    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+      showFeedback("Entrez votre e-mail pour recevoir un code.", "error");
+      return;
+    }
+    showFeedback("Envoi du code...", "info");
+    try {
+      const result = await security.sendOtp(email);
+      if (!result?.sent) throw new Error("Failed to send code");
+      otpForm.classList.remove("v8-auth__otp--hidden");
+      otpInput.focus();
+      showFeedback("Code envoyé. Vérifiez votre boîte de réception.", "success");
+    } catch (error) {
+      if (!destroyed) showFeedback(error.message || "Impossible d'envoyer le code.", "error");
+    }
+  }
+
+  async function submitOtp() {
+    if (!available) return;
+    const security = options.security;
+    const email = loginIdentifier.input.value;
+    const code = otpInput.value;
+    showFeedback("Vérification du code...", "info");
+    try {
+      const result = await security.verifyOtp(email, code);
+      if (!result?.token) throw new Error("OTP verification failed");
+      const setResponse = await auth.setSession({ access_token: result.token, refresh_token: "" });
+      if (!setResponse?.data?.session) throw new Error(setResponse?.message || "Session not available");
+      await options.onAuthenticated?.(setResponse.data);
+    } catch (error) {
+      if (!destroyed) showFeedback(error.message || "Code invalide.", "error");
+    }
+  }
+
   loginTab.addEventListener("click", () => setTab("login", true), listenerOptions);
   registerTab.addEventListener("click", () => setTab("register", true), listenerOptions);
   tabs.addEventListener("keydown", (event) => {
@@ -690,6 +802,9 @@ export function mountLogin(root, options = {}) {
   forgotButton.addEventListener("click", resetPassword, listenerOptions);
   googleButton.addEventListener("click", () => oauth("google"), listenerOptions);
   githubButton.addEventListener("click", () => oauth("github"), listenerOptions);
+  passkeyButton.addEventListener("click", submitPasskey, listenerOptions);
+  otpButton.addEventListener("click", startOtp, listenerOptions);
+  otpVerifyButton.addEventListener("click", submitOtp, listenerOptions);
   retryButton.addEventListener("click", async () => {
     retryButton.classList.add("is-loading");
     const response = await auth.initialize();

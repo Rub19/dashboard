@@ -19,6 +19,22 @@ import { twitchRoute } from "./routes/twitch.js";
 import { weatherRoute } from "./routes/weather.js";
 import { youtubeActivityRoute, youtubeOAuthDisconnectRoute, youtubeOAuthExchangeRoute } from "./routes/youtube-oauth.js";
 import { signOutRoute } from "./routes/signout.js";
+import {
+  passkeyRegisterOptionsRoute,
+  passkeyRegisterRoute,
+  passkeyAuthenticateOptionsRoute,
+  passkeyAuthenticateRoute,
+  passkeyRenameRoute,
+  passkeyRevokeRoute,
+  otpSendRoute,
+  otpVerifyRoute,
+  deviceUpsertRoute,
+  deviceListRoute,
+  deviceTrustRoute,
+  deviceRevokeRoute,
+  deviceRemoveRoute,
+  securityEventsRoute
+} from "./routes/security-identity.js";
 
 function route(id, path, handler, options = {}) {
   return Object.freeze({
@@ -81,7 +97,29 @@ export const ROUTES = Object.freeze([
   route("reddit.oauth.exchange", "/api/reddit/oauth/exchange", redditOAuthExchangeRoute, { method: "POST", service: "reddit", rateLimit: "strict" }),
   route("reddit.activity", "/api/reddit/activity", redditActivityRoute, { service: "reddit" }),
   route("reddit.oauth.disconnect", "/api/reddit/oauth/disconnect", redditOAuthDisconnectRoute, { method: "POST", service: "reddit", rateLimit: "strict" }),
-  route("signout", "/api/signout", signOutRoute, { method: "POST", rateLimit: "standard" })
+  route("signout", "/api/signout", signOutRoute, { method: "POST", rateLimit: "standard" }),
+
+  // WebAuthn / Passkey
+  route("passkey.register.options", "/api/auth/passkey/register-options", passkeyRegisterOptionsRoute, { method: "POST", service: "security", rateLimit: "strict" }),
+  route("passkey.register", "/api/auth/passkey/register", passkeyRegisterRoute, { method: "POST", service: "security", rateLimit: "strict" }),
+  route("passkey.authenticate.options", "/api/auth/passkey/authenticate-options", passkeyAuthenticateOptionsRoute, { method: "POST", public: true, service: "security", rateLimit: "strict" }),
+  route("passkey.authenticate", "/api/auth/passkey/authenticate", passkeyAuthenticateRoute, { method: "POST", public: true, service: "security", rateLimit: "strict" }),
+  route("passkey.rename", "/api/auth/passkey/rename", passkeyRenameRoute, { method: "POST", service: "security", rateLimit: "strict" }),
+  route("passkey.revoke", "/api/auth/passkey/revoke", passkeyRevokeRoute, { method: "POST", service: "security", rateLimit: "strict" }),
+
+  // OTP fallback
+  route("otp.send", "/api/auth/otp/send", otpSendRoute, { method: "POST", public: true, service: "security", rateLimit: "strict" }),
+  route("otp.verify", "/api/auth/otp/verify", otpVerifyRoute, { method: "POST", public: true, service: "security", rateLimit: "strict" }),
+
+  // Device management
+  route("device.upsert", "/api/auth/device", deviceUpsertRoute, { method: "POST", service: "security", rateLimit: "standard" }),
+  route("device.list", "/api/auth/devices", deviceListRoute, { service: "security", rateLimit: "standard" }),
+  route("device.trust", "/api/auth/device/trust", deviceTrustRoute, { method: "POST", service: "security", rateLimit: "strict" }),
+  route("device.revoke", "/api/auth/device/revoke", deviceRevokeRoute, { method: "POST", service: "security", rateLimit: "strict" }),
+  route("device.remove", "/api/auth/device/remove", deviceRemoveRoute, { method: "POST", service: "security", rateLimit: "strict" }),
+
+  // Security events
+  route("security.events", "/api/auth/security-events", securityEventsRoute, { service: "security", rateLimit: "standard" })
 ]);
 
 function normalizedPath(pathname) {

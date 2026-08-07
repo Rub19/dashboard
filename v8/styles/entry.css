@@ -496,7 +496,14 @@ html[data-v8-interactions] .v8-entry--login .v8-form-field:not([data-field-state
 }
 .v8-auth__divider::before,
 .v8-auth__divider::after { height: 1px; flex: 1; background: var(--v8-divider); content: ""; }
-.v8-auth__oauth { display: grid; grid-template-columns: 1fr 1fr; gap: var(--v8-space-2); }
+.v8-auth__oauth,
+.v8-auth__security { display: grid; grid-template-columns: 1fr 1fr; gap: var(--v8-space-2); }
+.v8-auth__security { grid-template-columns: 1fr; }
+.v8-auth__hint { color: var(--v8-muted); font-size: var(--v8-font-2xs); text-align: center; }
+.v8-auth__otp { display: grid; grid-template-columns: 1fr auto; gap: var(--v8-space-2); align-items: center; }
+.v8-auth__otp--hidden { display: none; }
+.v8-auth__otp-input { width: 100%; height: var(--v8-control-lg); padding: 0 var(--v8-space-3); border: 1px solid var(--v8-border); border-radius: var(--v8-radius-md); background: var(--v8-surface-sunken); color: var(--v8-text); text-align: center; letter-spacing: 0.2em; }
+.v8-auth__verify-button { height: var(--v8-control-lg); }
 .v8-auth__oauth-button { width: 100%; height: var(--v8-control-lg); overflow: hidden; border-color: color-mix(in srgb, var(--v8-border) 88%, var(--v8-brand-line)); background: var(--v8-reflection-card), color-mix(in srgb, var(--v8-surface-sunken) 90%, transparent); box-shadow: inset 0 1px 0 var(--v8-surface-glint), 0 8px 22px -18px rgba(0, 0, 0, 0.72); transition: border-color var(--v8-motion-fast) var(--v8-ease-standard), background-color var(--v8-motion-fast) var(--v8-ease-standard), box-shadow var(--v8-motion-base) var(--v8-ease-standard), color var(--v8-motion-fast) var(--v8-ease-standard), transform var(--v8-motion-base) var(--v8-ease-spring); }
 .v8-auth__oauth-button svg { width: 20px; height: 20px; stroke-width: 1.85; }
 .v8-auth__oauth-button:focus-visible { border-color: var(--v8-brand-line); box-shadow: inset 0 1px 0 var(--v8-surface-glint), 0 0 0 3px var(--v8-login-ring), 0 12px 28px -18px var(--v8-login-glow); outline-color: var(--v8-brand); }

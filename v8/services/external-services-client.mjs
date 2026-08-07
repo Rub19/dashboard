@@ -47,7 +47,21 @@ const OPERATIONS = Object.freeze({
   redditActivity: Object.freeze({ path: "/api/reddit/activity", auth: true, params: ["clientId"] }),
   redditOAuthDisconnect: Object.freeze({ path: "/api/reddit/oauth/disconnect", method: "POST", auth: true, params: [] }),
   publicProfile: Object.freeze({ path: "/api/supabase/public-profile", auth: true, params: ["username"] }),
-  brainComplete: Object.freeze({ path: "/api/brain/complete", method: "POST", auth: true, params: [], rawBody: true })
+  brainComplete: Object.freeze({ path: "/api/brain/complete", method: "POST", auth: true, params: [], rawBody: true }),
+  passkeyRegisterOptions: Object.freeze({ path: "/api/auth/passkey/register-options", method: "POST", auth: true, params: ["email", "name", "deviceName"] }),
+  passkeyRegister: Object.freeze({ path: "/api/auth/passkey/register", method: "POST", auth: true, params: ["response", "deviceId"] }),
+  passkeyAuthenticateOptions: Object.freeze({ path: "/api/auth/passkey/authenticate-options", method: "POST", auth: false, params: ["email", "userId"] }),
+  passkeyAuthenticate: Object.freeze({ path: "/api/auth/passkey/authenticate", method: "POST", auth: false, params: ["response"] }),
+  passkeyRename: Object.freeze({ path: "/api/auth/passkey/rename", method: "POST", auth: true, params: ["passkeyId", "name"] }),
+  passkeyRevoke: Object.freeze({ path: "/api/auth/passkey/revoke", method: "POST", auth: true, params: ["passkeyId"] }),
+  otpSend: Object.freeze({ path: "/api/auth/otp/send", method: "POST", auth: false, params: ["email", "userId"] }),
+  otpVerify: Object.freeze({ path: "/api/auth/otp/verify", method: "POST", auth: false, params: ["userId", "email", "code"] }),
+  deviceUpsert: Object.freeze({ path: "/api/auth/device", method: "POST", auth: true, params: ["name"] }),
+  deviceList: Object.freeze({ path: "/api/auth/devices", auth: true, params: [] }),
+  deviceTrust: Object.freeze({ path: "/api/auth/device/trust", method: "POST", auth: true, params: ["deviceId", "trusted"] }),
+  deviceRevoke: Object.freeze({ path: "/api/auth/device/revoke", method: "POST", auth: true, params: ["deviceId"] }),
+  deviceRemove: Object.freeze({ path: "/api/auth/device/remove", method: "POST", auth: true, params: ["deviceId"] }),
+  securityEvents: Object.freeze({ path: "/api/auth/security-events", auth: true, params: ["limit"] })
 });
 
 function clientError(code, message, details = {}) {
@@ -264,6 +278,22 @@ export function createExternalServicesClient(options = {}) {
     publicProfile: (username) => execute("publicProfile", { username }),
     brain: Object.freeze({
       complete: (input) => execute("brainComplete", input, { timeoutMs: 20000, retries: 0 })
+    }),
+    security: Object.freeze({
+      passkeyRegisterOptions: (email, name, deviceName) => execute("passkeyRegisterOptions", { email, name, deviceName }),
+      passkeyRegister: (response, deviceId) => execute("passkeyRegister", { response, deviceId }),
+      passkeyAuthenticateOptions: (email, userId) => execute("passkeyAuthenticateOptions", { email, userId }),
+      passkeyAuthenticate: (response) => execute("passkeyAuthenticate", { response }),
+      passkeyRename: (passkeyId, name) => execute("passkeyRename", { passkeyId, name }),
+      passkeyRevoke: (passkeyId) => execute("passkeyRevoke", { passkeyId }),
+      otpSend: (email, userId) => execute("otpSend", { email, userId }),
+      otpVerify: (userId, email, code) => execute("otpVerify", { userId, email, code }),
+      deviceUpsert: (name) => execute("deviceUpsert", { name }),
+      deviceList: () => execute("deviceList", {}),
+      deviceTrust: (deviceId, trusted) => execute("deviceTrust", { deviceId, trusted }),
+      deviceRevoke: (deviceId) => execute("deviceRevoke", { deviceId }),
+      deviceRemove: (deviceId) => execute("deviceRemove", { deviceId }),
+      securityEvents: (limit) => execute("securityEvents", limit ? { limit } : {})
     }),
     diagnostics: () => Object.freeze({ ...status, activeRequests: activeControllers.size, environment: config.environment, baseUrl: network.redactUrl?.(baseUrl) || baseUrl }),
     destroy

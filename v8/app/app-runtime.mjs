@@ -682,7 +682,7 @@ export function mountApplication(root, options = {}) {
   }
 
   function showRouteLoader(route) {
-    const layouts={activity:"activity",connections:"connections",brain:"brain",settings:"settings"};
+    const layouts={activity:"activity",connections:"connections",brain:"brain",settings:"settings",security:"settings"};
     shell.stage.replaceChildren(skeletonState({ layout: layouts[route] || "page", count: 3, label: `Chargement de ${route}`, className: "v8-page v8-lazy-page", page: route }));
   }
 
@@ -726,7 +726,8 @@ export function mountApplication(root, options = {}) {
       activity: () => import("../pages/activity.mjs"),
       connections: () => import("../pages/connections.mjs"),
       brain: () => import("../pages/brain.mjs"),
-      settings: () => import("../pages/settings.mjs")
+      settings: () => import("../pages/settings.mjs"),
+      security: () => import("../pages/security.mjs")
     };
     Object.entries(loaders).forEach(([r, loader]) => {
       if (!lazyModuleCache.has(r)) {
@@ -747,6 +748,7 @@ export function mountApplication(root, options = {}) {
         if (route === "activity") return module.mountActivity(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, twitchLive, lastfmLive, trackerLive, googleDriveLive, youtubeLive, redditLive, presence, notify: (notice) => toasts.show(notice) });
         if (route === "connections") return module.mountConnections(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, spotifyOAuthLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, twitchLive, lastfmLive, trackerLive, googleDriveLive, youtubeLive, redditLive, externalServices, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.() });
         if (route === "brain") return module.mountBrain(shell.stage, { repository, actions, state: store.getState(), presence, brain, notify: (notice) => toasts.show(notice) });
+        if (route === "security") return module.mountSecurity(shell.stage, { security: options.security, externalServices, clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.(), notify: (notice) => toasts.show(notice) });
         return module.mountSettings(shell.stage, { repository, actions, state: store.getState(), sounds, externalServices, densityEngine, subscribeState: store.subscribe, brain, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.(), profile: options.profile || repository.activeProfile?.(), onProfileMediaUpdated: applyProfileMediaUpdate });
       });
       finishRouteMount(route, focus);
@@ -757,7 +759,8 @@ export function mountApplication(root, options = {}) {
       activity: () => import("../pages/activity.mjs"),
       connections: () => import("../pages/connections.mjs"),
       brain: () => import("../pages/brain.mjs"),
-      settings: () => import("../pages/settings.mjs")
+      settings: () => import("../pages/settings.mjs"),
+      security: () => import("../pages/security.mjs")
     };
     const loader = loaders[route];
     lifecycle.unmount();
@@ -772,6 +775,7 @@ export function mountApplication(root, options = {}) {
           if (route === "activity") return module.mountActivity(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, twitchLive, lastfmLive, trackerLive, googleDriveLive, youtubeLive, redditLive, presence, notify: (notice) => toasts.show(notice) });
           if (route === "connections") return module.mountConnections(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, spotifyOAuthLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, twitchLive, lastfmLive, trackerLive, googleDriveLive, youtubeLive, redditLive, externalServices, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.() });
           if (route === "brain") return module.mountBrain(shell.stage, { repository, actions, state: store.getState(), presence, brain, notify: (notice) => toasts.show(notice) });
+          if (route === "security") return module.mountSecurity(shell.stage, { security: options.security, externalServices, clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.(), notify: (notice) => toasts.show(notice) });
           return module.mountSettings(shell.stage, { repository, actions, state: store.getState(), sounds, externalServices, densityEngine, subscribeState: store.subscribe, brain, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.(), profile: options.profile || repository.activeProfile?.(), onProfileMediaUpdated: applyProfileMediaUpdate });
         });
         finishRouteMount(route, focus);
@@ -783,7 +787,8 @@ export function mountApplication(root, options = {}) {
           onRetry: () => mountLazyRoute(route, true, ++routeRequest)
         }));
         finishRouteMount(route, focus);
-        toasts.show({ id: `lazy-${route}`, title: route === "activity" ? "Activity Hub" : route === "connections" ? "Connections" : route === "settings" ? "Réglages" : "Brain", message: "Le module n'a pas pu être chargé.", type: "error" });
+        const titleMap = { activity: "Activity Hub", connections: "Connections", settings: "Réglages", brain: "Brain", security: "Sécurité" };
+        toasts.show({ id: `lazy-${route}`, title: titleMap[route] || route, message: "Le module n'a pas pu être chargé.", type: "error" });
       });
   }
 
@@ -796,7 +801,7 @@ export function mountApplication(root, options = {}) {
       shell.stage.scrollTo({ top: 0, behavior: "auto" });
     }
     shell.update({ ...store.getState(), route });
-    if (["activity", "connections", "brain", "settings"].includes(route)) {
+    if (["activity", "connections", "brain", "settings", "security"].includes(route)) {
       mountLazyRoute(route, focus, requestId);
       return;
     }

@@ -14,6 +14,7 @@ import { createExternalServicesClient } from "./services/external-services-clien
 import { createSoundManager } from "./services/sound-manager.mjs";
 import { createClockManager } from "./services/clock-manager.mjs";
 import { createSupabaseStateSync } from "./services/supabase-state-sync.mjs";
+import { createSecurityIdentityService } from "./services/security-identity.mjs";
 import { createDocumentMetadataManager } from "./core/document-metadata.mjs";
 import { createAmbientEngine, playSpotlight, readSpotlightPreference } from "./core/experience.mjs";
 import { createPresenceEngine } from "./core/presence-engine.mjs";
@@ -202,6 +203,7 @@ async function boot() {
     runtime: globalThis
   });
   const externalServices = createExternalServicesClient({ network, auth, runtime: globalThis });
+  const security = createSecurityIdentityService({ externalServices, auth, runtime: globalThis });
   const cloudSync = createSupabaseStateSync({ runtime: globalThis, storage: globalThis.localStorage });
   const externalDiagnostics = createExternalDiagnostics({ network, auth, serviceWorker, externalServices, config: PUBLIC_AUTH_CONFIG, runtime: globalThis });
 
@@ -249,6 +251,7 @@ async function boot() {
       ambient.refresh();
       return mountLogin(root, {
         auth,
+        security,
         clockManager: clock,
         authResult: context.authResult,
         onAuthenticated: (data) => {
@@ -333,6 +336,7 @@ async function boot() {
         cloudSync,
         clockManager: clock,
         externalServices,
+        security,
         clientProvider: () => auth.getClient(),
         ownerId: repository.owner(),
         onSignOut: () => coordinator.signOut(),

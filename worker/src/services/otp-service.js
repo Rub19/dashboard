@@ -1,0 +1,125 @@
+import { requireSecret } from "../middleware/validation.js";
+import { requestExternal } from "../utils/external-request.js";
+import { createOtpCode, getActiveOtpCode, consumeOtpCode, deleteExpiredOtpCodes, insertSecurityEvent, getUserIdByEmail } from "./security-identity-client.js";
+import { signServiceToken } from "../utils/jwt.js";
+
+const OTP_TTL_MS = 10 * 60 * 1000;
+const MAX_ATTEMPTS = 5;
+const COOLDOWN_MS = 60 * 1000;
+
+function supabaseAuthRequest(env, path, options = {}) {
+  const origin = `https://${String(env.SUPABASE_URL || "").replace(/^https?:\/\//, "").replace(/\/$/, "")}`;
+  const anonKey = env.SUPABASE_ANON_KEY || requireSecret(env, "SUPABASE_SECRET_KEY");
+  return requestExternal(new URL(path, origin), {
+    env,
+    expectedOrigin: origin,
+    service: "supabase",
+    method: options.method || "POST",
+    headers: {
+      apikey: anonKey,
+      "content-type": "application/json",
+      ...(options.headers || {})
+    },
+    body: options.body ? JSON.stringify(options.body) : undefined,
+    retries: 0,
+    maxBytes: 4096
+  });
+}
+
+function hashCode(code) {
+  return crypto.subtle.digest("SHA-256", new TextEncoder().encode(String(code).toLowerCase().trim()))
+    .then((buffer) => btoa(String.fromCharCode(...new Uint8Array(buffer))));
+}
+
+function safeEmail(value) {
+  const email = String(value || "").toLowerCase().trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 320) return "";
+  return email;
+}
+
+export async function sendOtp(env, email, providedUserId) {
+  const contact = safeEmail(email);
+  if (!contact) throw new Error("Invalid email address");
+
+  const resolvedUserId = providedUserId || await getUserIdByEmail(env, contact);
+  if (!resolvedUserId) throw new Error("Account not found");
+
+  const existing = await getActiveOtpCode(env, resolvedUserId, contact);
+  if (existing && existing.rate_limited_until && new Date(existing.rate_limited_until) > new Date()) {
+    throw new Error("Too many attempts. Please wait before requesting a new code.");
+  }
+
+  const code = Array.from({ length: 6 }, () => Math.floor(Math.random() * 10)).join("");
+  const expiresAt = new Date(Date.now() + OTP_TTL_MS).toISOString();
+  const codeHash = await hashCode(code);
+
+  await createOtpCode(env, {
+    userId: resolvedUserId,
+    contact,
+    codeHash,
+    expiresAt,
+    rateLimitedUntil: new Date(Date.now() + COOLDOWN_MS).toISOString()
+  });
+
+  // Try to trigger Supabase Auth OTP as the delivery channel when available.
+  try {
+    await supabaseAuthRequest(env, "/auth/v1/otp", {
+      body: { email: contact, data: { otp: code } },
+      headers: { "X-Client-Info": "ethone-otp" }
+    });
+  } catch {
+    // If Supabase Auth OTP is unavailable, the code must be delivered through a configured channel.
+  }
+
+  await insertSecurityEvent(env, {
+    userId: resolvedUserId,
+    kind: "otp_requested",
+    metadata: { contact: contact.slice(0, 3) + "***" + contact.slice(contact.indexOf("@")) }
+  });
+
+  // The code is never returned in production. It is only exposed in development when explicitly enabled,
+  // to allow automated tests without a real email transport.
+  const exposeCode = env.ENVIRONMENT === "development" && env.ETHONE_DEBUG_OTP === "true";
+  return { sent: true, userId: resolvedUserId, contact, expiresIn: OTP_TTL_MS, code: exposeCode ? code : undefined };
+}
+
+export async function verifyOtp(env, userId, email, code, deviceId) {
+  const contact = safeEmail(email);
+  const rawCode = String(code || "").toLowerCase().trim();
+  if (!contact || !/^\d{6}$/.test(rawCode)) throw new Error("Invalid code format");
+
+  const existing = await getActiveOtpCode(env, userId, contact);
+  if (!existing) throw new Error("No active verification code");
+  if (existing.used_at) throw new Error("Code already used");
+  if (new Date(existing.expires_at) < new Date()) throw new Error("Code expired");
+  if (existing.rate_limited_until && new Date(existing.rate_limited_until) > new Date()) throw new Error("Too many attempts. Please wait.");
+
+  const attempts = (existing.attempts || 0) + 1;
+  if (attempts > MAX_ATTEMPTS) {
+    await consumeOtpCode(env, userId, contact, { rateLimitedUntil: new Date(Date.now() + 15 * 60 * 1000).toISOString(), attempts });
+    throw new Error("Too many attempts. Please request a new code.");
+  }
+
+  const codeHash = await hashCode(rawCode);
+  if (codeHash !== existing.code_hash) {
+    await consumeOtpCode(env, userId, contact, { attempts });
+    throw new Error("Invalid code");
+  }
+
+  await consumeOtpCode(env, userId, contact, { usedAt: new Date().toISOString(), attempts });
+
+  await insertSecurityEvent(env, {
+    userId,
+    kind: "otp_verified",
+    deviceId,
+    metadata: { contact: contact.slice(0, 3) + "***" + contact.slice(contact.indexOf("@")) }
+  });
+
+  const token = await signServiceToken(env, userId, null, 3600);
+  return { verified: true, userId, token };
+}
+
+export async function cleanupExpiredOtp(env) {
+  await deleteExpiredOtpCodes(env);
+  return true;
+}

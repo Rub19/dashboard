@@ -24,6 +24,14 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v257", "2026-08-07", "Securite et identite par appareil", [
+    { kind: "feature", text: "Gestion des appareils : enregistrement, approbation, revocation et suppression." },
+    { kind: "feature", text: "Passkeys (WebAuthn) pour la connexion sans mot de passe." },
+    { kind: "feature", text: "Fallback OTP par e-mail avec code a 6 chiffres." },
+    { kind: "feature", text: "Journal de securite (ethone_security_events) pour auditer connexions et modifications." },
+    { kind: "feature", text: "Nouvelle route #/security pour gerer les appareils et consulter le journal." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v257." }
+  ]),
   entry("v256", "2026-08-07", "Polish mobile et correction du module Activity", [
     { kind: "fix", text: "Correction d'un ReferenceError sur la page Activity (import manquant de translateSource)." },
     { kind: "improvement", text: "Masquage du raccourci Ctrl+K dans le bouton de recherche topbar sur mobile." },

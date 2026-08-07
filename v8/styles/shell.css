@@ -3911,6 +3911,38 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
 .v8-lol-team-strip img { width:22px;height:22px;border-radius:2px;background:var(--v8-surface-3); }
 .v8-lol-match-row.is-win .v8-match-score { color:var(--v8-success); }
 .v8-lol-match-row.is-loss .v8-match-score { color:var(--v8-danger); }
+.v8-lol-sb { display:flex;flex-direction:column;gap:var(--v8-space-4);padding:var(--v8-space-4) 0; }
+.v8-lol-sb-team { border-left:4px solid var(--team-color);background:color-mix(in srgb,var(--team-color) 8%,var(--v8-surface-1));border-radius:var(--v8-radius-lg);overflow:hidden; }
+.v8-lol-sb-team__header { display:flex;align-items:center;justify-content:space-between;gap:var(--v8-space-3);padding:var(--v8-space-3) var(--v8-space-4);background:color-mix(in srgb,var(--team-color) 16%,var(--v8-surface-1));flex-wrap:wrap; }
+.v8-lol-sb-team__header strong { color:var(--team-color);font-size:var(--v8-font-md);font-weight:var(--v8-weight-bold); }
+.v8-lol-sb-team__stats { display:flex;flex-wrap:wrap;gap:var(--v8-space-3);font-size:var(--v8-font-xs);color:var(--v8-text-secondary); }
+.v8-lol-sb-player { display:grid;grid-template-columns:64px minmax(120px,1.2fr) 80px 120px 120px minmax(0,1fr);gap:var(--v8-space-3);align-items:center;min-width:0;padding:var(--v8-space-2) var(--v8-space-4);border-top:1px solid var(--v8-border); }
+.v8-lol-sb-player.is-me { background:color-mix(in srgb,var(--v8-accent) 10%,transparent); }
+.v8-lol-sb-player__champ { position:relative;display:flex;flex-direction:column;align-items:center;gap:2px; }
+.v8-lol-sb-champ { display:block;width:48px;height:48px;border-radius:var(--v8-radius-md);object-fit:cover;background:var(--v8-surface-3); }
+.v8-lol-sb-champ--placeholder { display:grid;place-items:center;color:var(--v8-muted);font-weight:var(--v8-weight-bold); }
+.v8-lol-sb-player__level { position:absolute;bottom:-4px;right:0;background:var(--v8-surface-1);border:1px solid var(--v8-border);border-radius:50%;width:18px;height:18px;display:grid;place-items:center;font-size:10px;font-weight:var(--v8-weight-bold); }
+.v8-lol-sb-spells { display:flex;gap:2px; }
+.v8-lol-sb-spell,.v8-lol-sb-rune { width:18px;height:18px;border-radius:2px;object-fit:cover;background:var(--v8-surface-3); }
+.v8-lol-sb-spell--placeholder,.v8-lol-sb-rune--placeholder { width:18px;height:18px;border-radius:2px;background:var(--v8-surface-3); }
+.v8-lol-sb-player__info { display:flex;flex-direction:column;gap:2px;min-width:0; }
+.v8-lol-sb-player__info strong { white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:var(--v8-font-sm); }
+.v8-lol-sb-player__tag { color:var(--v8-muted);font-size:var(--v8-font-xs); }
+.v8-lol-sb-player__champ-name { color:var(--v8-text-secondary);font-size:var(--v8-font-xs); }
+.v8-lol-sb-player__kda,.v8-lol-sb-player__combat,.v8-lol-sb-player__farm { display:flex;flex-direction:column;gap:2px;min-width:0; }
+.v8-lol-sb-player__kda strong { font-size:var(--v8-font-md);font-weight:var(--v8-weight-bold); }
+.v8-lol-sb-player__kda span,.v8-lol-sb-player__combat span,.v8-lol-sb-player__farm span { font-size:var(--v8-font-xs);color:var(--v8-text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.v8-lol-sb-player__items { display:flex;flex-wrap:wrap;gap:2px;min-width:0;align-items:center; }
+.v8-lol-sb-item { width:28px;height:28px;border-radius:2px;object-fit:cover;background:var(--v8-surface-3); }
+.v8-lol-sb-item--placeholder { width:28px;height:28px;border-radius:2px;background:var(--v8-surface-3); }
+@media (max-width: 1024px) {
+  .v8-lol-sb-player { grid-template-columns:64px minmax(100px,1fr) 72px 100px 100px minmax(0,1fr); }
+}
+@media (max-width: 900px) {
+  .v8-lol-sb-player { grid-template-columns:56px minmax(100px,1fr) 72px 90px 90px minmax(0,1fr);gap:var(--v8-space-2);padding-inline:var(--v8-space-3); }
+  .v8-lol-sb-champ { width:40px;height:40px; }
+  .v8-lol-sb-item { width:24px;height:24px; }
+}
 @media (max-width: 760px) {
   .v8-lol-match-row { grid-template-columns:40px minmax(0,1fr) 64px 58px 58px 58px minmax(0,1fr);column-gap:var(--v8-space-2);padding-inline:var(--v8-space-3); }
   .v8-lol-match-row > :nth-child(9) { display:none; }
@@ -3946,6 +3978,19 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
   .v8-lol-match-kda span { display:none; }
   .v8-lol-match-score strong { font-size:var(--v8-font-sm); }
   .v8-match-chevron { display:none; }
+}
+@media (max-width: 720px) {
+  .v8-lol-sb-player { grid-template-columns:52px minmax(0,1fr) 64px 80px; }
+  .v8-lol-sb-player__combat,
+  .v8-lol-sb-player__items { display:none; }
+  .v8-lol-sb-champ { width:36px;height:36px; }
+}
+@media (max-width: 520px) {
+  .v8-lol-sb-player { grid-template-columns:48px minmax(0,1fr) 64px;gap:var(--v8-space-2);padding-inline:var(--v8-space-2); }
+  .v8-lol-sb-player__farm { display:none; }
+  .v8-lol-sb-team__header strong { font-size:var(--v8-font-sm); }
+  .v8-lol-sb-team__header { padding:var(--v8-space-2); }
+  .v8-lol-sb-team__stats { gap:var(--v8-space-2); }
 }
 @media (max-width: 820px), (pointer: coarse) {
   .v8-topbar__tools > button {

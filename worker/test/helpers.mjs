@@ -79,6 +79,18 @@ export function providerFetch(counter = { calls: 0 }) {
       if (url.pathname.startsWith("/lol/league/v4/entries/by-summoner")) return json([{ queueType: "RANKED_SOLO_5x5", tier: "GOLD", rank: "I", leaguePoints: 50 }]);
     }
     if (url.hostname === "ddragon.leagueoflegends.com") {
+      if (url.pathname === "/api/versions.json") return json(["16.15.1"]);
+      if (url.pathname.endsWith("/champion.json")) {
+        return json({
+          type: "champion",
+          version: "16.15.1",
+          data: {
+            Ahri: { id: "Ahri", key: "103", name: "Ahri", title: "la Voleuse de Charme" },
+            Sett: { id: "Sett", key: "875", name: "Sett", title: "le Boss" },
+            Fizz: { id: "Fizz", key: "105", name: "Fizz", title: "le Bouffon des Mers" }
+          }
+        });
+      }
       if (url.pathname.endsWith("/summoner.json")) {
         return json({
           type: "summoner",

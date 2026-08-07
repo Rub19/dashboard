@@ -2,6 +2,21 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v246] - 2026-08-07
+
+### Ajouté
+- **Scoreboard LoL type tracker.gg** : objectifs d'équipe (Barons, Dragons, Tours), dégâts subis, dégâts aux objectifs, score de vision, CS/min, GPM et DPM.
+- **Richesse des stats Riot** : kill participation, KDA, dégâts aux champions, tourres et objectifs, vision et wards.
+- **Fallback d'icônes LoL** : DDragon en premier, puis CommunityDragon si l'image est manquante.
+
+### Corrigé
+- Résolution dynamique de la dernière version DDragon et mapping correct des clés de champions pour afficher les icônes.
+- Les icônes de champions, sorts, runes et objets utilisent désormais la bonne version DDragon et le bon nom de fichier.
+
+### Changé
+- Budget JavaScript total ajusté pour la refonte du scoreboard LoL.
+- Bordereau PWA mis à jour vers `experience-v246`.
+
 ## [v245] - 2026-08-07
 
 ### Corrigé

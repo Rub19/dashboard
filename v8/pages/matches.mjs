@@ -93,6 +93,25 @@ export function mountMatches(container, options = {}) {
     if (diffHours < 24) return translateSource("{value}h ago").replace("{value}", diffHours);
     return translateSource("{value}d ago").replace("{value}", Math.floor(diffHours / 24));
   }
+
+  function imgWithFallback(urls, className, placeholder, name = "", loading = "lazy") {
+    const safeUrls = (Array.isArray(urls) ? urls : [urls]).filter(Boolean);
+    if (!safeUrls.length) return placeholder;
+    let index = 0;
+    return element("img", {
+      className,
+      attributes: { src: safeUrls[index], alt: name || "", loading, decoding: "async" },
+      events: {
+        error: (event) => {
+          const target = event.currentTarget;
+          index += 1;
+          if (index < safeUrls.length) target.setAttribute("src", safeUrls[index]);
+          else target.replaceWith(placeholder);
+        }
+      }
+    });
+  }
+
   function renderScoreboard(scoreboard) {
     if (!scoreboard || !scoreboard.players) return element("div", { className: "v8-scoreboard-empty", text: "Détails du scoreboard non disponibles" });
 
@@ -220,6 +239,94 @@ export function mountMatches(container, options = {}) {
     container.append(table);
 
     return container;
+  }
+
+  function renderLolScoreboard(scoreboard) {
+    if (!scoreboard || !scoreboard.players) return element("div", { className: "v8-scoreboard-empty", text: "Détails du scoreboard non disponibles" });
+
+    const teams = { Blue: [], Red: [] };
+    scoreboard.players.forEach(p => {
+      const t = p.team || "Blue";
+      if (!teams[t]) teams[t] = [];
+      teams[t].push(p);
+    });
+    Object.keys(teams).forEach(t => {
+      teams[t].sort((a, b) => (b.stats?.damage || b.stats?.score || 0) - (a.stats?.damage || a.stats?.score || 0));
+    });
+
+    const formatNumber = (n) => Number(n || 0).toLocaleString("fr-FR");
+
+    const renderPlayer = (p) => {
+      const kills = Number(p.stats?.kills) || 0;
+      const deaths = Number(p.stats?.deaths) || 0;
+      const assists = Number(p.stats?.assists) || 0;
+      const kda = deaths ? ((kills + assists) / deaths).toFixed(2) : (kills + assists ? "Perf" : "0.00");
+      const champPlaceholder = element("div", { className: "v8-lol-sb-champ v8-lol-sb-champ--placeholder" }, [element("span", { text: "?" })]);
+      const champ = imgWithFallback([p.assets?.champion?.small, p.assets?.champion?.fallback], "v8-lol-sb-champ", champPlaceholder, p.character);
+      const spellImg = (spell) => spell?.image ? imgWithFallback([spell.image], "v8-lol-sb-spell", element("div", { className: "v8-lol-sb-spell v8-lol-sb-spell--placeholder" }), spell.name) : element("div", { className: "v8-lol-sb-spell v8-lol-sb-spell--placeholder" });
+      const rune = p.assets?.rune?.image ? imgWithFallback([p.assets.rune.image], "v8-lol-sb-rune", element("div", { className: "v8-lol-sb-rune v8-lol-sb-rune--placeholder" }), p.assets.rune.name) : null;
+      const spells = element("div", { className: "v8-lol-sb-spells" }, [rune, ...((p.assets?.spells || []).slice(0, 2).map(spellImg))].filter(Boolean));
+      const itemImg = (item) => item?.image ? imgWithFallback([item.image], "v8-lol-sb-item", element("div", { className: "v8-lol-sb-item v8-lol-sb-item--placeholder" }), item.name) : element("div", { className: "v8-lol-sb-item v8-lol-sb-item--placeholder" });
+      const items = (p.items || []).slice(0, 7).map(itemImg);
+
+      return element("div", { className: `v8-lol-sb-player${p.isMe ? " is-me" : ""}` }, [
+        element("div", { className: "v8-lol-sb-player__champ" }, [
+          champ,
+          element("span", { className: "v8-lol-sb-player__level", text: `Lv ${p.level || 1}` }),
+          spells
+        ]),
+        element("div", { className: "v8-lol-sb-player__info" }, [
+          element("strong", { text: String(p.name || "—"), attributes: { translate: "no" } }),
+          p.tag ? element("span", { className: "v8-lol-sb-player__tag", text: `#${p.tag}` }) : null,
+          element("span", { className: "v8-lol-sb-player__champ-name", text: p.character || "" })
+        ].filter(Boolean)),
+        element("div", { className: "v8-lol-sb-player__kda" }, [
+          element("strong", { text: `${kills} / ${deaths} / ${assists}` }),
+          element("span", { text: `KDA ${kda}` })
+        ]),
+        element("div", { className: "v8-lol-sb-player__combat" }, [
+          element("span", { text: `DMG ${formatNumber(p.stats?.damage)}` }),
+          element("span", { text: `TAKEN ${formatNumber(p.stats?.damageTaken)}` }),
+          element("span", { text: `OBJ ${formatNumber(p.stats?.damageToObjectives)}` })
+        ]),
+        element("div", { className: "v8-lol-sb-player__farm" }, [
+          element("span", { text: `CS ${p.stats?.cs || 0} (${p.stats?.csPerMin || 0}/m)` }),
+          element("span", { text: `GOLD ${formatNumber(p.stats?.gold)}` }),
+          element("span", { text: `VS ${p.stats?.visionScore || 0}` })
+        ]),
+        element("div", { className: "v8-lol-sb-player__items" }, items)
+      ]);
+    };
+
+    const teamHeader = (teamName) => {
+      const isRed = teamName === "Red";
+      const color = isRed ? "var(--v8-danger)" : "var(--v8-info)";
+      const teamData = scoreboard.teams?.[teamName] || {};
+      const objectives = [
+        teamData.towers ? `${teamData.towers} T` : null,
+        teamData.dragons ? `${teamData.dragons} D` : null,
+        teamData.barons ? `${teamData.barons} B` : null,
+        teamData.inhibitors ? `${teamData.inhibitors} I` : null,
+        teamData.riftHeralds ? `${teamData.riftHeralds} H` : null
+      ].filter(Boolean);
+      return element("div", { className: "v8-lol-sb-team", style: `--team-color:${color}` }, [
+        element("div", { className: "v8-lol-sb-team__header" }, [
+          element("strong", { text: isRed ? "RED SIDE" : "BLUE SIDE" }),
+          element("div", { className: "v8-lol-sb-team__stats" }, [
+            element("span", { text: `${teamData.kills || 0} KILLS` }),
+            element("span", { text: `${formatNumber(teamData.gold)} GOLD` }),
+            element("span", { text: `${formatNumber(teamData.damage)} DMG` }),
+            ...objectives.map(text => element("span", { text }))
+          ])
+        ]),
+        element("div", { className: "v8-lol-sb-team__players" }, teams[teamName].map(renderPlayer))
+      ]);
+    };
+
+    const ownTeam = scoreboard.players.find(p => p.isMe)?.team || null;
+    const teamOrder = ownTeam ? [ownTeam, ...Object.keys(teams).filter(t => t !== ownTeam)] : ["Blue", "Red"];
+
+    return element("div", { className: "v8-lol-sb" }, teamOrder.map(teamHeader));
   }
 
   function renderMatch(match) {
@@ -540,22 +647,22 @@ export function mountMatches(container, options = {}) {
     const opponentPlayers = match.scoreboard?.players?.filter(p => p.team === opponentTeam) || [];
 
     const eager = index < 3 ? "eager" : "lazy";
-    const champImg = (url, champ, loading = "lazy") => url ? element("img", { attributes: { src: url, alt: champ || "", loading, decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(element("div", { className: "v8-lol-champion-placeholder" })) } }) : element("div", { className: "v8-lol-champion-placeholder" });
-    const itemImg = (item, loading = "lazy") => {
+    const champImg = (url, fallback, champ) => imgWithFallback([url, fallback], "", element("div", { className: "v8-lol-champion-placeholder" }), champ, eager);
+    const itemImg = (item) => {
       const image = item && typeof item === "object" ? item.image : item;
       const name = item && typeof item === "object" ? item.name : "";
       if (!image) return element("div", { className: "v8-lol-item-placeholder" });
-      return element("img", { attributes: { src: image, alt: name || "", title: name || "", loading, decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(element("div", { className: "v8-lol-item-placeholder" })) } });
+      return imgWithFallback([image], "", element("div", { className: "v8-lol-item-placeholder" }), name, eager);
     };
-    const spellImg = (spell, loading = "lazy") => {
+    const spellImg = (spell) => {
       if (!spell?.image) return element("div", { className: "v8-lol-spell-placeholder" });
-      return element("img", { className: "v8-lol-spell", attributes: { src: spell.image, alt: spell.name || "", title: spell.name || "", loading, decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(element("div", { className: "v8-lol-spell-placeholder" })) } });
+      return imgWithFallback([spell.image], "v8-lol-spell", element("div", { className: "v8-lol-spell-placeholder" }), spell.name, eager);
     };
-    const runeImg = (rune, loading = "lazy") => {
+    const runeImg = (rune) => {
       if (!rune?.image) return element("div", { className: "v8-lol-spell-placeholder" });
-      return element("img", { className: "v8-lol-spell", attributes: { src: rune.image, alt: rune.name || "", title: rune.name || "", loading, decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(element("div", { className: "v8-lol-spell-placeholder" })) } });
+      return imgWithFallback([rune.image], "v8-lol-spell", element("div", { className: "v8-lol-spell-placeholder" }), rune.name, eager);
     };
-    const renderChampStrip = (players) => element("div", { className: "v8-lol-team-strip" }, players.slice(0, 5).map(p => champImg(p.assets?.champion?.small, p.character, "lazy")));
+    const renderChampStrip = (players) => element("div", { className: "v8-lol-team-strip" }, players.slice(0, 5).map(p => champImg(p.assets?.champion?.small, p.assets?.champion?.fallback, p.character)));
 
     const detailId = `v8-match-detail-${match.id || ++matchDetailId}`;
     const matchChevron = element("span", { className: "v8-match-chevron", text: "⌄" });
@@ -576,9 +683,7 @@ export function mountMatches(container, options = {}) {
     ]);
 
     const levelBadge = me?.level ? element("span", { className: "v8-lol-match-level", text: String(me.level) }) : null;
-    const champAvatar = match.metadata?.agentImageUrl
-      ? champImg(match.metadata.agentImageUrl, match.metadata?.agentName, eager)
-      : element("div", { className: "v8-lol-champion-placeholder" });
+    const champAvatar = champImg(match.metadata?.agentImageUrl, match.metadata?.agentImageFallback, match.metadata?.agentName);
     const agentCell = element("div", { className: "v8-match-agent" }, [champAvatar, levelBadge].filter(Boolean));
 
     const row = element("div", { className: `v8-lol-match-row ${stateClass}`, attributes: { tabindex: "0", "aria-expanded": "false", "aria-controls": detailId } }, [
@@ -631,7 +736,7 @@ export function mountMatches(container, options = {}) {
             element("strong", { text: `${teamScore} — ${opponentScore}` })
           ])
         : null;
-      detailBody.append(finalScore, renderScoreboard(match.scoreboard));
+      detailBody.append(finalScore, renderLolScoreboard(match.scoreboard));
     } else {
       detailBody.append(element("p", { text: "Détails non disponibles pour ce match.", style: "color: var(--v8-text-muted);" }));
     }

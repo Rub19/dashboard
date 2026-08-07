@@ -5,6 +5,31 @@ import { safePublicUrl, safeStats, safeText } from "../utils/normalize.js";
 const RIOT_EUROPE = "https://europe.api.riotgames.com";
 const DDRAGON_LOL_VERSION = "16.15.1";
 
+let lolDdragonLatestVersion = null;
+let lolDdragonLatestData = null;
+
+function normalizeChampionMatchName(name) {
+  return String(name || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+async function getLolDdragonLatestVersion(env) {
+  if (lolDdragonLatestVersion) return lolDdragonLatestVersion;
+  try {
+    const response = await requestExternal(new URL("https://ddragon.leagueoflegends.com/api/versions.json"), {
+      env,
+      expectedOrigin: "https://ddragon.leagueoflegends.com",
+      service: "tracker",
+      dedupeKey: "ddragon:versions:latest",
+      retries: 1
+    });
+    const versions = Array.isArray(response?.data) ? response.data : [];
+    lolDdragonLatestVersion = String(versions[0] || DDRAGON_LOL_VERSION);
+  } catch {
+    lolDdragonLatestVersion = DDRAGON_LOL_VERSION;
+  }
+  return lolDdragonLatestVersion;
+}
+
 async function getPuuid(env, name, tag, apiKey) {
   const path = `/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(name)}/${encodeURIComponent(tag)}`;
   const response = await requestExternal(new URL(path, RIOT_EUROPE), {
@@ -175,6 +200,26 @@ function normalizeLolChampionName(championName) {
   return DDRAGON_CHAMPION_NAME_OVERRIDES[name] || name;
 }
 
+function resolveLolChampionKey(championName, championId, ddragonData) {
+  const byName = ddragonData?.championMap?.byName;
+  const byKey = ddragonData?.championMap?.byKey;
+  if (championId != null && byKey?.[String(championId)]) {
+    return byKey[String(championId)];
+  }
+  if (championName) {
+    const normalized = normalizeChampionMatchName(championName);
+    if (byName?.[normalized]) return byName[normalized];
+    const fallback = normalizeLolChampionName(championName);
+    if (fallback) return fallback;
+  }
+  return "";
+}
+
+function lolCommunityDragonChampionImage(championId) {
+  if (!championId) return "";
+  return safePublicUrl(`https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons/${championId}.png`, ["raw.communitydragon.org"]);
+}
+
 function deriveLolDdragonVersion(gameVersion) {
   const version = String(gameVersion || "").trim();
   if (!version) return DDRAGON_LOL_VERSION;
@@ -187,27 +232,33 @@ function deriveLolDdragonVersion(gameVersion) {
   return version;
 }
 
-function lolChampionImage(championName, gameVersion) {
-  const id = normalizeLolChampionName(championName);
+function lolChampionImage(championName, championId, ddragonData) {
+  const id = resolveLolChampionKey(championName, championId, ddragonData);
   if (!id) return "";
-  const version = deriveLolDdragonVersion(gameVersion);
+  const version = ddragonData?.version || lolDdragonLatestVersion || DDRAGON_LOL_VERSION;
   return safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${id}.png`, ["leagueoflegends.com"]);
 }
 
-function lolItemImage(itemId, gameVersion) {
+function lolItemImage(itemId, ddragonData) {
   if (!itemId || itemId <= 0) return "";
-  const version = deriveLolDdragonVersion(gameVersion);
+  const version = ddragonData?.version || lolDdragonLatestVersion || DDRAGON_LOL_VERSION;
   return safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/${version}/img/item/${itemId}.png`, ["leagueoflegends.com"]);
 }
 
 const ddragonDataCache = new Map();
 
 function emptyDdragonData() {
-  return Object.freeze({ version: DDRAGON_LOL_VERSION, summonerMap: Object.freeze({}), itemMap: Object.freeze({}), runeMap: Object.freeze({}) });
+  return Object.freeze({
+    version: lolDdragonLatestVersion || DDRAGON_LOL_VERSION,
+    summonerMap: Object.freeze({}),
+    itemMap: Object.freeze({}),
+    runeMap: Object.freeze({}),
+    championMap: Object.freeze({ byName: Object.freeze({}), byKey: Object.freeze({}) })
+  });
 }
 
 async function fetchDdragonDataForVersion(env, version) {
-  const [summonerResponse, itemResponse, runeResponse] = await Promise.all([
+  const [summonerResponse, itemResponse, runeResponse, championResponse] = await Promise.all([
     requestExternal(new URL(`https://ddragon.leagueoflegends.com/cdn/${version}/data/fr_FR/summoner.json`), {
       env,
       expectedOrigin: "https://ddragon.leagueoflegends.com",
@@ -227,6 +278,13 @@ async function fetchDdragonDataForVersion(env, version) {
       expectedOrigin: "https://ddragon.leagueoflegends.com",
       service: "tracker",
       dedupeKey: `ddragon:runes:${version}`,
+      retries: 1
+    }),
+    requestExternal(new URL(`https://ddragon.leagueoflegends.com/cdn/${version}/data/fr_FR/champion.json`), {
+      env,
+      expectedOrigin: "https://ddragon.leagueoflegends.com",
+      service: "tracker",
+      dedupeKey: `ddragon:champion:${version}`,
       retries: 1
     })
   ]);
@@ -271,53 +329,52 @@ async function fetchDdragonDataForVersion(env, version) {
     }
   }
 
-  return Object.freeze({ version, summonerMap: Object.freeze(summonerMap), itemMap: Object.freeze(itemMap), runeMap: Object.freeze(runeMap) });
+  const byName = Object.create(null);
+  const byKey = Object.create(null);
+  for (const [championId, champ] of Object.entries(championResponse?.data?.data || {})) {
+    if (!championId || champ?.key == null) continue;
+    const id = safeText(championId, 64);
+    const name = safeText(champ.name, 64);
+    const key = String(champ.key);
+    byName[normalizeChampionMatchName(name)] = id;
+    byName[normalizeChampionMatchName(id)] = id;
+    byKey[key] = id;
+  }
+
+  const championMap = Object.freeze({ byName: Object.freeze(byName), byKey: Object.freeze(byKey) });
+
+  return Object.freeze({ version, summonerMap: Object.freeze(summonerMap), itemMap: Object.freeze(itemMap), runeMap: Object.freeze(runeMap), championMap });
 }
 
 async function getLolDdragonData(env, gameVersion) {
-  const version = deriveLolDdragonVersion(gameVersion);
-  if (ddragonDataCache.has(version)) return ddragonDataCache.get(version);
-
+  if (lolDdragonLatestData) return lolDdragonLatestData;
+  const version = await getLolDdragonLatestVersion(env);
   try {
     const result = await fetchDdragonDataForVersion(env, version);
-    ddragonDataCache.set(version, result);
+    lolDdragonLatestData = result;
     return result;
   } catch {
-    if (version === DDRAGON_LOL_VERSION) {
-      const fallback = emptyDdragonData();
-      ddragonDataCache.set(version, fallback);
-      return fallback;
-    }
-    try {
-      const result = await fetchDdragonDataForVersion(env, DDRAGON_LOL_VERSION);
-      ddragonDataCache.set(version, result);
-      ddragonDataCache.set(DDRAGON_LOL_VERSION, result);
-      return result;
-    } catch {
-      const fallback = emptyDdragonData();
-      ddragonDataCache.set(version, fallback);
-      ddragonDataCache.set(DDRAGON_LOL_VERSION, fallback);
-      return fallback;
-    }
+    const fallback = emptyDdragonData();
+    lolDdragonLatestData = fallback;
+    return fallback;
   }
 }
 
-function lolItemAsset(itemId, gameVersion, ddragonData) {
+function lolItemAsset(itemId, ddragonData) {
   if (!itemId || itemId <= 0) return Object.freeze({ image: "", name: "" });
-  const fallback = Object.freeze({ image: lolItemImage(itemId, gameVersion), name: "" });
   const fromData = ddragonData?.itemMap?.[String(itemId)];
   if (fromData) return Object.freeze({ image: fromData.image, name: fromData.name });
-  return fallback;
+  return Object.freeze({ image: lolItemImage(itemId, ddragonData), name: "" });
 }
 
-function lolSummonerSpellAsset(spellId, gameVersion, ddragonData) {
+function lolSummonerSpellAsset(spellId, ddragonData) {
   if (!spellId) return Object.freeze({ image: "", name: "" });
   const fromData = ddragonData?.summonerMap?.[String(spellId)];
   if (fromData) return Object.freeze({ image: fromData.image, name: fromData.name });
   return Object.freeze({ image: "", name: "" });
 }
 
-function lolRuneAsset(runeId, gameVersion, ddragonData) {
+function lolRuneAsset(runeId, ddragonData) {
   if (!runeId) return Object.freeze({ image: "", name: "" });
   const fromData = ddragonData?.runeMap?.[String(runeId)];
   if (fromData) return Object.freeze({ image: fromData.image, name: fromData.name });
@@ -336,11 +393,27 @@ function safeLolTag(p) {
   return safeText(p.riotIdTagline || p.tagLine || "", 16);
 }
 
+function normalizeLolTeamObjectives(info) {
+  const objectives = { Blue: { won: false, barons: 0, dragons: 0, towers: 0, inhibitors: 0, riftHeralds: 0 }, Red: { won: false, barons: 0, dragons: 0, towers: 0, inhibitors: 0, riftHeralds: 0 } };
+  for (const t of info.teams || []) {
+    const team = lolTeamName(t.teamId);
+    if (!objectives[team]) continue;
+    objectives[team].won = Boolean(t.win);
+    objectives[team].barons = Number(t.baronKills) || 0;
+    objectives[team].dragons = Number(t.dragonKills) || 0;
+    objectives[team].towers = Number(t.towerKills) || 0;
+    objectives[team].inhibitors = Number(t.inhibitorKills) || 0;
+    objectives[team].riftHeralds = Number(t.riftHeraldKills) || 0;
+  }
+  return objectives;
+}
+
 function normalizeLolScoreboard(info, mePuuid, ddragonData) {
   const participants = info.participants || [];
-  const teams = { Blue: { kills: 0, won: false }, Red: { kills: 0, won: false } };
-  const gameVersion = info.gameVersion;
-  const ddragonVersion = ddragonData?.version || DDRAGON_LOL_VERSION;
+  const minutes = Math.max(1, Math.floor((info.gameDuration || 0) / 60));
+  const teams = { Blue: { kills: 0, won: false, gold: 0, damage: 0 }, Red: { kills: 0, won: false, gold: 0, damage: 0 } };
+  const objectives = normalizeLolTeamObjectives(info);
+
   const players = participants.map((p) => {
     const team = lolTeamName(p.teamId);
     const isMe = p.puuid === mePuuid;
@@ -348,53 +421,87 @@ function normalizeLolScoreboard(info, mePuuid, ddragonData) {
     const deaths = Number(p.deaths) || 0;
     const assists = Number(p.assists) || 0;
     const cs = (Number(p.totalMinionsKilled) || 0) + (Number(p.neutralMinionsKilled) || 0);
-    const minutes = Math.max(1, Math.floor((info.gameDuration || 0) / 60));
+    const gold = Number(p.goldEarned) || 0;
+    const damage = Number(p.totalDamageDealtToChampions) || 0;
+    const damageTaken = Number(p.totalDamageTaken) || 0;
     const isWin = Boolean(p.win);
     teams[team].kills += kills;
     teams[team].won = isWin;
+    teams[team].gold += gold;
+    teams[team].damage += damage;
+
     const items = [
-      lolItemAsset(p.item0, ddragonVersion, ddragonData), lolItemAsset(p.item1, ddragonVersion, ddragonData), lolItemAsset(p.item2, ddragonVersion, ddragonData), lolItemAsset(p.item3, ddragonVersion, ddragonData),
-      lolItemAsset(p.item4, ddragonVersion, ddragonData), lolItemAsset(p.item5, ddragonVersion, ddragonData), lolItemAsset(p.item6, ddragonVersion, ddragonData)
+      lolItemAsset(p.item0, ddragonData), lolItemAsset(p.item1, ddragonData), lolItemAsset(p.item2, ddragonData), lolItemAsset(p.item3, ddragonData),
+      lolItemAsset(p.item4, ddragonData), lolItemAsset(p.item5, ddragonData), lolItemAsset(p.item6, ddragonData)
     ];
     const spells = [
-      lolSummonerSpellAsset(p.summoner1Id, ddragonVersion, ddragonData),
-      lolSummonerSpellAsset(p.summoner2Id, ddragonVersion, ddragonData)
+      lolSummonerSpellAsset(p.summoner1Id, ddragonData),
+      lolSummonerSpellAsset(p.summoner2Id, ddragonData)
     ];
-    const rune = lolRuneAsset(lolKeystoneRuneId(p), ddragonVersion, ddragonData);
+    const rune = lolRuneAsset(lolKeystoneRuneId(p), ddragonData);
+    const teamKills = teams[team].kills;
+    const killParticipation = teamKills > 0 ? Math.round(((kills + assists) / teamKills) * 100) : 0;
+
     return Object.freeze({
       name: safeLolName(p),
       tag: safeLolTag(p),
       team,
       isMe,
+      win: isWin,
+      championId: Number(p.championId) || 0,
       character: safeText(p.championName, 32),
       level: Number(p.champLevel) || 1,
+      position: safeText(p.teamPosition || p.lane || p.role || "", 16),
       currenttier_patched: "",
       stats: Object.freeze({
-        score: Number(p.totalDamageDealtToChampions) || 0,
+        score: damage,
         kills,
         deaths,
         assists,
         cs,
-        gold: Number(p.goldEarned) || 0,
-        damage: Number(p.totalDamageDealtToChampions) || 0,
+        gold,
+        damage,
+        damageTaken,
+        damageToObjectives: Number(p.damageDealtToObjectives) || 0,
+        damageToTurrets: Number(p.damageDealtToTurrets) || 0,
+        heal: Number(p.totalHeal) || 0,
+        visionScore: Number(p.visionScore) || 0,
+        wardsPlaced: Number(p.wardsPlaced) || 0,
+        wardsKilled: Number(p.wardsKilled) || 0,
+        timeCCingOthers: Number(p.timeCCingOthers) || 0,
+        goldSpent: Number(p.goldSpent) || 0,
         csPerMin: Math.round((cs / minutes) * 10) / 10,
-        goldPerMin: Math.round(((Number(p.goldEarned) || 0) / minutes) * 10) / 10,
-        damagePerMin: Math.round(((Number(p.totalDamageDealtToChampions) || 0) / minutes) * 10) / 10
+        goldPerMin: Math.round((gold / minutes) * 10) / 10,
+        damagePerMin: Math.round((damage / minutes) * 10) / 10,
+        damageTakenPerMin: Math.round((damageTaken / minutes) * 10) / 10,
+        killParticipation,
+        kda: deaths > 0 ? (kills + assists) / deaths : (kills + assists > 0 ? 99 : 0)
       }),
       assets: Object.freeze({
-        champion: Object.freeze({ small: lolChampionImage(p.championName, ddragonVersion) }),
+        champion: Object.freeze({
+          small: lolChampionImage(p.championName, p.championId, ddragonData),
+          fallback: lolCommunityDragonChampionImage(p.championId)
+        }),
         spells: Object.freeze(spells),
         rune: rune
       }),
       items: Object.freeze(items)
     });
   });
+
+  const buildTeam = (teamName) => Object.freeze({
+    roundsWon: teams[teamName].kills,
+    kills: teams[teamName].kills,
+    won: teams[teamName].won,
+    gold: Math.round(teams[teamName].gold),
+    damage: Math.round(teams[teamName].damage),
+    ...objectives[teamName]
+  });
+
   return Object.freeze({
-    teams: Object.freeze({
-      Blue: Object.freeze({ roundsWon: teams.Blue.kills }),
-      Red: Object.freeze({ roundsWon: teams.Red.kills })
-    }),
-    players
+    teams: Object.freeze({ Blue: buildTeam("Blue"), Red: buildTeam("Red") }),
+    players,
+    duration: info.gameDuration || 0
   });
 }
 
@@ -471,23 +578,18 @@ export async function getLolMatches(env, riotId, mode, apiKeyOverride) {
     .sort((a, b) => (b.info?.gameCreation || 0) - (a.info?.gameCreation || 0))
     .slice(0, 25);
 
-  const versions = new Set(sortedMatches.map((match) => deriveLolDdragonVersion(match.info?.gameVersion)));
-  const ddragonDataByVersion = new Map(await Promise.all([...versions].map(async (version) => [version, await getLolDdragonData(env, version)])));
+  const ddragonData = await getLolDdragonData(env);
 
   return Object.freeze(sortedMatches.map((match) => {
     const info = match.info || {};
     const participants = info.participants || [];
     const me = participants.find(p => p.puuid === puuid) || participants[0];
     const minutes = Math.max(1, Math.floor((info.gameDuration || 0) / 60));
-    const gameVersion = info.gameVersion;
-    const derivedVersion = deriveLolDdragonVersion(gameVersion);
-    const ddragonData = ddragonDataByVersion.get(derivedVersion);
-    const ddragonVersion = ddragonData?.version || derivedVersion;
     const scoreboard = normalizeLolScoreboard(info, puuid, ddragonData);
     const myTeam = scoreboard.players.find(p => p.isMe)?.team || "Blue";
-    const myKills = scoreboard.teams[myTeam].roundsWon;
+    const myKills = scoreboard.teams[myTeam].kills;
     const opponentTeam = myTeam === "Blue" ? "Red" : "Blue";
-    const opponentKills = scoreboard.teams[opponentTeam].roundsWon;
+    const opponentKills = scoreboard.teams[opponentTeam].kills;
     const cs = (Number(me?.totalMinionsKilled) || 0) + (Number(me?.neutralMinionsKilled) || 0);
 
     return Object.freeze({
@@ -499,7 +601,9 @@ export async function getLolMatches(env, riotId, mode, apiKeyOverride) {
         mapName: safeText(lolMapName(info.mapId)),
         gameDuration: safeText(`${Math.floor((info.gameDuration || 0) / 60)}m ${(info.gameDuration || 0) % 60}s`),
         agentName: safeText(me?.championName),
-        agentImageUrl: lolChampionImage(me?.championName, ddragonVersion),
+        agentImageUrl: lolChampionImage(me?.championName, me?.championId, ddragonData),
+        agentImageFallback: lolCommunityDragonChampionImage(me?.championId),
+        championId: Number(me?.championId) || 0,
         timestamp: safeText(new Date(info.gameCreation || 0).toISOString()),
         score: Object.freeze({ team: myKills, opponent: opponentKills })
       }),

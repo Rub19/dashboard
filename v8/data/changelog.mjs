@@ -24,6 +24,14 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v246", "2026-08-07", "Scoreboard LoL type tracker.gg et icônes DDragon", [
+    { kind: "feature", text: "Scoreboard détaillé League of Legends enrichi aux stats Riot : objectifs d'équipe (Barons, Dragons, Tours), dégâts subis, dégâts aux objectifs, score de vision, CS/min, GPM et DPM." },
+    { kind: "feature", text: "Mise en page tracker.gg du scoreboard LoL avec en-têtes d'équipe colorés et grille par équipe." },
+    { kind: "fix", text: "Résolution automatique de la dernière version DDragon et mapping correct des clés de champions pour charger les icônes LoL." },
+    { kind: "fix", text: "Icônes de champions, sorts, runes et objets LoL avec fallback DDragon puis CommunityDragon si l'image échoue." },
+    { kind: "improvement", text: "Budget JavaScript total ajusté pour accueillir la refonte du scoreboard LoL." },
+    { kind: "improvement", text: "Bordereau PWA mis à jour vers experience-v246." }
+  ]),
   entry("v241", "2026-08-07", "Accessibilité commande, cibles tactiles et nettoyage", [
     { kind: "improvement", text: "Bouton d'effacement dans le Command Center avec une cible tactile de 44 px." },
     { kind: "improvement", text: "Cibles tactiles des favoris du Command Center et des contrôles de densité relevées à 44 px." },

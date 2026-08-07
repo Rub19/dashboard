@@ -393,6 +393,22 @@ export function mountHome(stage, model, options = {}) {
     element("div", { className: "v8-home-brain__signals", attributes: { "aria-label": model.briefing.summary } }, model.briefing.items.map(briefingSignal))
   ]);
 
+  function recommendationReason(text) {
+    return element("span", { className: "v8-home-recommendation__reason", text });
+  }
+
+  const recommendation = model.recommendation;
+  const recommendationStrip = element("section", { className: "v8-home-recommendation v8-surface", dataset: { liveWidget: "recommendation", liveKind: "recommendation" } }, [
+    element("span", { className: "v8-home-recommendation__icon" }, [icon(recommendation.icon || "sparkles")]),
+    element("div", { className: "v8-home-recommendation__copy" }, [
+      element("span", { className: "v8-eyebrow", text: "Recommandation" }),
+      element("strong", { text: recommendation.title }),
+      element("p", { text: recommendation.detail })
+    ]),
+    actionButton({ actionId: recommendation.actionId, variant: "primary" }, [icon("arrow-up-right"), element("span", { text: recommendation.label })]),
+    recommendation.reasons.length ? element("div", { className: "v8-home-recommendation__reasons" }, recommendation.reasons.map(recommendationReason)) : null
+  ]);
+
   const spotifyHost = element("section", { className: "v8-home-spotify-host", attributes: { "aria-label": "Spotify Live", hidden: true } });
   const discordHost = element("section", { className: "v8-home-discord-host", attributes: { "aria-label": "Presence Discord", hidden: true } });
   const weatherHost = element("section", { className: "v8-home-weather-host", attributes: { "aria-label": "Météo", hidden: true } });
@@ -686,6 +702,7 @@ export function mountHome(stage, model, options = {}) {
     quickActions,
     element("div", { className: "v8-home-primary" }, [continuity, daystream]),
     liveSection,
+    recommendationStrip,
     briefingEnabled ? brainStrip : null,
     element("div", { className: "v8-home-secondary" }, [recent, productivitySection, signals])
   ]);

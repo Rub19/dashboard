@@ -24,6 +24,11 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v250", "2026-08-07", "Recommandations explicables sur le dashboard", [
+    { kind: "feature", text: "Carte de recommandation contextuelle sur l'accueil avec titre, detail et raisons justifiant la suggestion." },
+    { kind: "feature", text: "Generation de recommandations basee sur les taches, evenements et connexions actives (GitHub + Notion, Spotify, etc.)." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v250." }
+  ]),
   entry("v249", "2026-08-07", "Affinement du survol des icones du Dock", [
     { kind: "fix", text: "Suppression du filtre drop-shadow sur le survol des icones du Dock pour eliminer l'effet pixelise." },
     { kind: "improvement", text: "Ombre portee et leger agrandissement de l'icone sur le survol pour un rendu plus net et premium." },

@@ -48,6 +48,79 @@ function eventModel(event, index) {
   });
 }
 
+const SOURCE_NAME = Object.freeze({
+  spotify: "Spotify", discord: "Discord", weather: "Météo", minecraft: "Minecraft", steam: "Steam",
+  github: "GitHub", "google-calendar": "Google Calendar", notion: "Notion", todoist: "Todoist",
+  valorant: "Valorant", lol: "LoL", twitch: "Twitch", lastfm: "Last.fm", "tracker-gg": "Tracker.gg",
+  "google-drive": "Google Drive", youtube: "YouTube", reddit: "Reddit"
+});
+
+function sourceName(id) { return SOURCE_NAME[id] || String(id); }
+
+function connectedNames(connections) {
+  return safeArray(connections).filter((connection) => connection?.status === "connected").map((connection) => sourceName(connection?.id));
+}
+
+function computeRecommendation({ openTasks, todayEvents, connections }) {
+  const connected = connectedNames(connections);
+  const reasons = [];
+  let title, detail, actionId, label, icon;
+
+  if (openTasks.length > 0 && todayEvents.length > 0) {
+    reasons.push(`${openTasks.length} tâche${openTasks.length > 1 ? "s" : ""} ouverte${openTasks.length > 1 ? "s" : ""}`);
+    reasons.push(`${todayEvents.length} événement${todayEvents.length > 1 ? "s" : ""} aujourd'hui`);
+    title = "Focus sur votre journée";
+    detail = "Vous avez du travail et des rendez-vous : commencez par l'essentiel.";
+    actionId = "v8.tasks.open";
+    label = "Voir les priorités";
+    icon = "circle-check-big";
+  } else if (connected.includes("GitHub") && connected.includes("Notion")) {
+    reasons.push("GitHub connecté");
+    reasons.push("Notion connecté");
+    title = "Vos outils de dev et de notes";
+    detail = "GitHub et Notion sont actifs : liez vos issues et vos notes.";
+    actionId = "v8.notes.open";
+    label = "Ouvrir les notes";
+    icon = "notebook-pen";
+  } else if (connected.includes("Spotify")) {
+    reasons.push("Spotify connecté");
+    title = "Session musicale";
+    detail = "Spotify est prêt : lancez un Pomodoro en musique.";
+    actionId = "v8.focus.start.pomodoro";
+    label = "Pomodoro";
+    icon = "timer";
+  } else if (openTasks.length > 0) {
+    reasons.push(`${openTasks.length} tâche${openTasks.length > 1 ? "s" : ""} ouverte${openTasks.length > 1 ? "s" : ""}`);
+    title = "Vos tâches vous attendent";
+    detail = "Commencez par la première tâche du jour.";
+    actionId = "v8.tasks.open";
+    label = "Ouvrir les tâches";
+    icon = "circle-check-big";
+  } else if (todayEvents.length > 0) {
+    reasons.push(`${todayEvents.length} événement${todayEvents.length > 1 ? "s" : ""} aujourd'hui`);
+    title = "Journée bien remplie";
+    detail = "Préparez vos prochains rendez-vous.";
+    actionId = "v8.calendar.open";
+    label = "Voir l'agenda";
+    icon = "calendar-days";
+  } else if (connected.length > 0) {
+    connected.slice(0, 3).forEach((name) => reasons.push(`${name} connecté`));
+    title = "Vos sources sont connectées";
+    detail = `${connected.length} source${connected.length > 1 ? "s" : ""} alimente${connected.length > 1 ? "nt" : ""} ETHONE.`;
+    actionId = "v8.connections.open";
+    label = "Gérer les connexions";
+    icon = "plug";
+  } else {
+    title = "Connectez vos outils";
+    detail = "ETHONE gagne en contexte avec vos intégrations.";
+    actionId = "v8.connections.open";
+    label = "Ajouter une source";
+    icon = "plug";
+  }
+
+  return Object.freeze({ title, detail, reasons: Object.freeze(reasons), actionId, label, icon });
+}
+
 function isSameDay(value, date) {
   if (!value) return false;
   const parsed = new Date(value);
@@ -93,6 +166,7 @@ export function createHomeModel(options = {}) {
     todayEvents: Object.freeze(todayEvents.slice(0, 4)),
     recentNotes: Object.freeze(recentNotes),
     briefing: createDailyBriefing({ snapshot, date }),
+    recommendation: computeRecommendation({ openTasks, todayEvents, connections: snapshot.connections }),
     hasProfileData: Boolean(profile)
   });
 }

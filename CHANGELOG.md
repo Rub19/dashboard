@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v250] - 2026-08-07
+
+### Ajouté
+- **Recommandations explicables sur le dashboard** : carte contextuelle sur l'accueil avec titre, détail et raisons (chips).
+- **Moteur de recommandation** basé sur les tâches, événements et connexions actives (GitHub + Notion, Spotify, etc.).
+
+### Amélioré
+- Bordereau PWA mis à jour vers `experience-v250`.
+
 ## [v249] - 2026-08-07
 
 ### Corrigé

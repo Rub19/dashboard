@@ -14,28 +14,18 @@ function communityDragonAvatarUrl(presence) {
 
 function avatar(presence) {
   const fallback = icon("swords");
-  const url = presence.avatarUrl || ddragonAvatarUrl(presence);
-  if (!url) return element("span", { className: "v8-lol-icon" }, [fallback, livePulseDot()]);
-  const tryNext = (target, nextUrl) => {
-    if (nextUrl) {
-      target.setAttribute("src", nextUrl);
-      target.addEventListener("error", () => target.replaceWith(fallback), { once: true });
-    } else {
-      target.replaceWith(fallback);
-    }
-  };
+  const ddragon = ddragonAvatarUrl(presence);
+  const community = communityDragonAvatarUrl(presence);
+  const urls = Array.from(new Set([presence.avatarUrl, ddragon, community].filter(Boolean)));
+  let index = 0;
   const img = element("img", {
-    attributes: { src: url, alt: "", loading: "lazy", decoding: "async" },
+    attributes: { src: urls[index] || ddragon, alt: "", loading: "lazy", decoding: "async" },
     events: {
       error: (event) => {
         const target = event.currentTarget;
-        const current = target.getAttribute("src");
-        const ddragon = ddragonAvatarUrl(presence);
-        const community = communityDragonAvatarUrl(presence);
-        if (current !== ddragon) {
-          tryNext(target, ddragon);
-        } else if (current !== community) {
-          tryNext(target, community);
+        index += 1;
+        if (index < urls.length) {
+          target.setAttribute("src", urls[index]);
         } else {
           target.replaceWith(fallback);
         }

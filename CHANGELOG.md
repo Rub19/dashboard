@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v240] - 2026-08-07
+
+### Corrigé
+- **LoL** : `deriveLolDdragonVersion` extrait correctement la version de patch depuis le `gameVersion` Riot et retombe sur `16.15.1`.
+- **LoL Live Now** : la photo de profil tente DDragon, CommunityDragon puis l'icône `swords` sans boucle infinie en cas d'échec.
+- **LoL availability** : le widget ne s'affiche plus si le Worker n'a pas trouvé de profil.
+
+### Changé
+- **Responsive mobile** : nouveau breakpoint `max-width: 360px` pour topbar, dock, scoreboard et rangées de matchs LoL.
+- **Command Center** : accessible sous 820 px sous forme d'icône.
+- Budget CSS relevé à 600 000 octets source pour la refonte responsive.
+- Bordereau PWA mis à jour vers `experience-v240`.
+
 ## [v239] - 2026-08-07
 
 ### Changé

@@ -1149,8 +1149,14 @@ button.v8-status-item:focus-visible { box-shadow: var(--v8-shadow-focus); outlin
   .v8-breadcrumb-context { min-height: 8px; padding-left: 7px; }
   .v8-breadcrumb-context__item--sync > span { display: none; }
   .v8-command-launcher {
-    display: none;
+    display: grid;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    padding: 0;
+    place-items: center;
   }
+  .v8-command-launcher > span { display: none; }
   .v8-context-strip__tools {
     gap: 4px;
   }
@@ -3878,4 +3884,27 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
   .v8-dock-app,.v8-dock-control,.v8-dock-more { width: 46px; height: 50px; flex: 0 0 46px; }
   .v8-dock-control,.v8-dock-more { width: 38px; flex-basis: 38px; }
   .v8-dock-app__plate { width: 38px; height: 38px; }
+}
+@media (max-width: 360px) {
+  .v8-page { padding-right: max(6px, env(safe-area-inset-right)); padding-left: max(6px, env(safe-area-inset-left)); }
+  .v8-context-strip { padding-right: max(6px, env(safe-area-inset-right)); padding-left: max(6px, env(safe-area-inset-left)); }
+  .v8-topbar__workspace { height: var(--v8-touch-target); padding: 0 6px; gap: 6px; }
+  .v8-topbar__workspace-copy > strong { max-width: 72px; font-size: var(--v8-font-xs); }
+  .v8-breadcrumb-button, .v8-profile-button, .v8-command-launcher { min-width: 40px; width: 40px; height: 40px; }
+  .v8-breadcrumb-button svg, .v8-profile-button svg { width: 18px; height: 18px; }
+  .v8-dock-app, .v8-dock-control, .v8-dock-more { width: 42px; height: 46px; flex-basis: 42px; }
+  .v8-dock-app__plate { width: 34px; height: 34px; }
+  .v8-status-item { min-width: 40px; height: 40px; padding-inline: 4px; font-size: var(--v8-font-micro); }
+  .v8-scoreboard-table { grid-template-columns: 28px minmax(72px, 1fr) 28px 28px 28px; font-size: var(--v8-font-xs); }
+  .v8-scoreboard-table th, .v8-scoreboard-table td { padding-inline: 2px; }
+  .v8-scoreboard-agent { width: 24px; height: 24px; }
+  .v8-scoreboard-spell, .v8-scoreboard-spell-placeholder { width: 14px; height: 14px; }
+  .v8-scoreboard-item { width: 18px; height: 18px; }
+  .v8-lol-match-row { grid-template-columns: 32px minmax(0, 1fr) 52px; padding-inline: var(--v8-space-2); }
+  .v8-lol-match-row > :nth-child(4),
+  .v8-lol-match-row > :nth-child(6),
+  .v8-lol-match-row > :nth-child(7),
+  .v8-lol-match-row > :nth-child(8),
+  .v8-lol-match-row > :nth-child(9) { display: none; }
+  .v8-lol-match-row > :nth-child(5) { grid-column: 3; }
 }

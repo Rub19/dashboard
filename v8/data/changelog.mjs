@@ -24,6 +24,14 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v240", "2026-08-07", "Corrections LoL, responsive mobile et accessibilité commande", [
+    { kind: "fix", text: "Correction de deriveLolDdragonVersion : la version est désormais extraite proprement du gameVersion Riot (fallback 16.15.1)." },
+    { kind: "fix", text: "Le widget LoL tente DDragon, CommunityDragon puis l'icône de fallback sans boucle infinie si les images échouent." },
+    { kind: "improvement", text: "Breakpoint max-width: 360px pour améliorer topbar, dock, scoreboard et rangées de matchs LoL sur très petits écrans." },
+    { kind: "improvement", text: "Le Command Center est de nouveau accessible sous 820 px sous forme d'icône." },
+    { kind: "improvement", text: "Budget CSS ajusté pour accueillir la refonte responsive." },
+    { kind: "improvement", text: "Bordereau PWA mis à jour vers experience-v240." }
+  ]),
   entry("v239", "2026-08-07", "Améliorations responsive et mobile", [
     { kind: "improvement", text: "Meilleure gestion du mode tactile (iPad, tablettes) avec hover: none dans le touch query." },
     { kind: "improvement", text: "Les actions de ligne restent visibles sur les appareils à pointeur grossier." },

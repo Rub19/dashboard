@@ -30,7 +30,7 @@ export function normalizeLeaguePresence(input = {}, options = {}) {
   const overview = available ? (input.segments || []).find((segment) => segment.type === "overview") || input.segments?.[0] : null;
   return Object.freeze({
     connected,
-    available,
+    available: available && Boolean(input?.handle || input?.avatarUrl),
     name: riotId?.name || input.handle || "Rub19",
     tag: riotId?.tag || "EUW",
     avatarUrl: available ? safeText(input.avatarUrl, "", 400) : "",

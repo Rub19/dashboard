@@ -179,9 +179,12 @@ function deriveLolDdragonVersion(gameVersion) {
   const version = String(gameVersion || "").trim();
   if (!version) return DDRAGON_LOL_VERSION;
   const parts = version.split(".");
-  if (parts.length < 3) return DDRAGON_LOL_VERSION;
-  const patch = Number(parts[2]) || 0;
-  return `${parts[0]}.${parts[1]}.${patch === 0 ? 1 : patch}`;
+  if (parts.length < 2) return DDRAGON_LOL_VERSION;
+  const major = parts[0];
+  const minor = parts[1];
+  if (parts.length <= 2) return `${major}.${minor}.1`;
+  if (parts.length >= 4) return `${major}.${minor}.1`;
+  return version;
 }
 
 function lolChampionImage(championName, gameVersion) {

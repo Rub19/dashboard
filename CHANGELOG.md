@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v237] - 2026-08-07
+
+### Corrigé
+- **LoL widget** : la photo de profil essaie DDragon, puis CommunityDragon, puis l'icône `swords` si tout échoue.
+- **LoL widget** : suppression du `referrerpolicy="no-referrer"` qui pouvait bloquer le chargement.
+- **CSP & headers** : `raw.communitydragon.org` est maintenant autorisé pour les images.
+
+### Changé
+- Le **Worker** renvoie `profileIconId` pour reconstruire les URLs de secours.
+- Bordereau PWA mis à jour vers `experience-v237`.
+
 ## [v236] - 2026-08-07
 
 ### Ajouté

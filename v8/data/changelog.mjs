@@ -24,6 +24,13 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v237", "2026-08-07", "Fallback icône LoL via CommunityDragon et CSP", [
+    { kind: "fix", text: "Le widget LoL tente maintenant DDragon puis CommunityDragon pour la photo de profil si l'image échoue." },
+    { kind: "fix", text: "Suppression de referrerpolicy='no-referrer' sur l'image du widget LoL." },
+    { kind: "improvement", text: "Le Worker renvoie profileIconId pour permettre les fallbacks d'icônes." },
+    { kind: "improvement", text: "CSP et headers mis à jour pour autoriser raw.communitydragon.org." },
+    { kind: "improvement", text: "Bordereau PWA mis à jour vers experience-v237." }
+  ]),
   entry("v236", "2026-08-07", "Barres colorées par groupe sur le scoreboard Valorant", [
     { kind: "improvement", text: "Chaque groupe/duo a maintenant une barre colorée à gauche de ses membres, avec des couleurs distinctes par party_id." },
     { kind: "improvement", text: "Le groupe du joueur reste bleu, les autres groupes utilisent des couleurs différentes (orange, vert, rouge)." },

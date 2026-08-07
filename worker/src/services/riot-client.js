@@ -80,11 +80,13 @@ export async function getLolProfile(env, riotId, apiKeyOverride) {
     } catch {}
   }
 
+  const profileIconId = Number(summoner.profileIconId) || 1;
   return Object.freeze({
     platform: "riot",
     identifier: riotId,
     handle: riotId,
-    avatarUrl: safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/${DDRAGON_LOL_VERSION}/img/profileicon/${summoner.profileIconId || 1}.png`, ["leagueoflegends.com"]),
+    avatarUrl: safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/${DDRAGON_LOL_VERSION}/img/profileicon/${profileIconId}.png`, ["leagueoflegends.com"]),
+    profileIconId,
     ddragonVersion: DDRAGON_LOL_VERSION,
     segments: Object.freeze([{
       type: "overview",

@@ -34,6 +34,7 @@ export function normalizeLeaguePresence(input = {}, options = {}) {
     name: riotId?.name || input.handle || "Rub19",
     tag: riotId?.tag || "EUW",
     avatarUrl: available ? safeText(input.avatarUrl, "", 400) : "",
+    profileIconId: available ? (Number(input.profileIconId) || 1) : 1,
     ddragonVersion: safeText(input.ddragonVersion, LOL_DEFAULT_DDRAGON_VERSION, 32),
     overview: available && overview ? normalizeOverview(overview) : null,
     updatedAt: available ? new Date().toISOString() : ""

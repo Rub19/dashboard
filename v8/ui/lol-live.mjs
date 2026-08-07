@@ -1,25 +1,41 @@
 import { attachFlipBehavior, brandIcon, element, icon } from "./dom.mjs";
 import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
-function defaultLolAvatarUrl(presence) {
+function ddragonAvatarUrl(presence) {
   const version = presence.ddragonVersion || "16.15.1";
-  return `https://ddragon.leagueoflegends.com/cdn/${version}/img/profileicon/1.png`;
+  const id = presence.profileIconId || 1;
+  return `https://ddragon.leagueoflegends.com/cdn/${version}/img/profileicon/${id}.png`;
+}
+
+function communityDragonAvatarUrl(presence) {
+  const id = presence.profileIconId || 1;
+  return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${id}.jpg`;
 }
 
 function avatar(presence) {
   const fallback = icon("swords");
-  const url = presence.avatarUrl || defaultLolAvatarUrl(presence);
+  const url = presence.avatarUrl || ddragonAvatarUrl(presence);
   if (!url) return element("span", { className: "v8-lol-icon" }, [fallback, livePulseDot()]);
+  const tryNext = (target, nextUrl) => {
+    if (nextUrl) {
+      target.setAttribute("src", nextUrl);
+      target.addEventListener("error", () => target.replaceWith(fallback), { once: true });
+    } else {
+      target.replaceWith(fallback);
+    }
+  };
   const img = element("img", {
-    attributes: { src: url, alt: "", loading: "lazy", decoding: "async", referrerpolicy: "no-referrer" },
+    attributes: { src: url, alt: "", loading: "lazy", decoding: "async" },
     events: {
       error: (event) => {
         const target = event.currentTarget;
         const current = target.getAttribute("src");
-        const defaultUrl = defaultLolAvatarUrl(presence);
-        if (current !== defaultUrl) {
-          target.setAttribute("src", defaultUrl);
-          target.addEventListener("error", () => target.replaceWith(fallback), { once: true });
+        const ddragon = ddragonAvatarUrl(presence);
+        const community = communityDragonAvatarUrl(presence);
+        if (current !== ddragon) {
+          tryNext(target, ddragon);
+        } else if (current !== community) {
+          tryNext(target, community);
         } else {
           target.replaceWith(fallback);
         }

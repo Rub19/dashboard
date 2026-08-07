@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v234] - 2026-08-07
+
+### Corrigé
+- **LoL** : les images de champions, items et profil utilisent maintenant la version DDragon de secours (`16.15.1`) si la version exacte de la partie n'existe pas chez DDragon.
+- **LoL** : l'avatar de profil affiche l'icône par défaut si l'icône du joueur manque.
+- **Cache** : le cache `sessionStorage` est invalidé pour forcer le rechargement avec les images corrigées.
+
+### Déploié
+- Worker Cloudflare redéployé avec les corrections d'images.
+
 ## [v233] - 2026-08-07
 
 ### Corrigé

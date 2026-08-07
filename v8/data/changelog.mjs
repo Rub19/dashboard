@@ -24,6 +24,12 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v234", "2026-08-07", "Correction images LoL (champions, items, profil)", [
+    { kind: "fix", text: "Toutes les images LoL utilisent la version DDragon connue/fallback (16.15.1) au lieu de la version brute du match qui peut ne pas exister." },
+    { kind: "fix", text: "Les avatars de profil LoL retombent sur l'icône par défaut si l'icône du compte manque." },
+    { kind: "improvement", text: "Bust du cache sessionStorage pour forcer le rechargement des matches avec les images corrigées." },
+    { kind: "improvement", text: "Worker redéployé avec les corrections d'images LoL." }
+  ]),
   entry("v233", "2026-08-07", "Stabilité LoL, pp/rank widget et déploiement Worker", [
     { kind: "fix", text: "L'historique LoL est de nouveau accessible : DDragon non disponible est géré par fallback, les matchs dont le détail échoue sont ignorés." },
     { kind: "fix", text: "Le widget LoL affiche la photo de profil avec une icône par défaut si celle-ci manque ou échoue." },

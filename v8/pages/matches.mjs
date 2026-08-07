@@ -1052,9 +1052,24 @@ export function mountMatches(container, options = {}) {
     const statItems = matchItems.length ? matchItems : fallbackItems.slice(0, 4);
 
     const avatarUrl = profile?.avatarUrl;
+    const ddragonVersion = profile?.ddragonVersion || "16.15.1";
+    const defaultAvatarUrl = `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/img/profileicon/1.png`;
     const placeholder = element("div", { className: "v8-match-agent-placeholder" });
     const avatarImg = avatarUrl
-      ? element("img", { attributes: { src: avatarUrl, alt: "", loading: "lazy", decoding: "async" }, events: { error: (event) => event.currentTarget.replaceWith(placeholder) } })
+      ? element("img", {
+          attributes: { src: avatarUrl, alt: "", loading: "lazy", decoding: "async" },
+          events: {
+            error: (event) => {
+              const target = event.currentTarget;
+              if (target.getAttribute("src") !== defaultAvatarUrl) {
+                target.setAttribute("src", defaultAvatarUrl);
+                target.addEventListener("error", () => target.replaceWith(placeholder), { once: true });
+              } else {
+                target.replaceWith(placeholder);
+              }
+            }
+          }
+        })
       : placeholder;
     const avatar = element("div", { className: "v8-match-agent" }, [avatarImg]);
 
@@ -1189,6 +1204,7 @@ export function mountMatches(container, options = {}) {
     refreshIcons();
   }
 
+  const MATCH_CACHE_VERSION = "v234";
   function matchCacheKey(name, tag) {
     return `ethone.matches.${game}.${encodeURIComponent(String(name).toLowerCase())}.${encodeURIComponent(String(tag || "").toLowerCase())}.${currentMode}`;
   }
@@ -1197,13 +1213,13 @@ export function mountMatches(container, options = {}) {
       const raw = globalThis.sessionStorage?.getItem(matchCacheKey(name, tag));
       if (!raw) return null;
       const parsed = JSON.parse(raw);
-      if (!parsed || !Array.isArray(parsed.matches) || Date.now() - (parsed.fetchedAt || 0) > 600000) return null;
+      if (!parsed || parsed.version !== MATCH_CACHE_VERSION || !Array.isArray(parsed.matches) || Date.now() - (parsed.fetchedAt || 0) > 600000) return null;
       return parsed;
     } catch { return null; }
   }
   function writeMatchCache(name, tag, matches, profileData) {
     try {
-      globalThis.sessionStorage?.setItem(matchCacheKey(name, tag), JSON.stringify({ matches, profile: profileData, fetchedAt: Date.now() }));
+      globalThis.sessionStorage?.setItem(matchCacheKey(name, tag), JSON.stringify({ matches, profile: profileData, fetchedAt: Date.now(), version: MATCH_CACHE_VERSION }));
     } catch {}
   }
 

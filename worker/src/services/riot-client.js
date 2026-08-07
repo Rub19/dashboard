@@ -197,8 +197,8 @@ function lolItemImage(itemId, gameVersion) {
 
 const ddragonDataCache = new Map();
 
-function emptyDdragonData(version) {
-  return Object.freeze({ version, summonerMap: Object.freeze({}), itemMap: Object.freeze({}), runeMap: Object.freeze({}) });
+function emptyDdragonData() {
+  return Object.freeze({ version: DDRAGON_LOL_VERSION, summonerMap: Object.freeze({}), itemMap: Object.freeze({}), runeMap: Object.freeze({}) });
 }
 
 async function fetchDdragonDataForVersion(env, version) {
@@ -279,7 +279,7 @@ async function getLolDdragonData(env, gameVersion) {
     return result;
   } catch {
     if (version === DDRAGON_LOL_VERSION) {
-      const fallback = emptyDdragonData(version);
+      const fallback = emptyDdragonData();
       ddragonDataCache.set(version, fallback);
       return fallback;
     }
@@ -289,7 +289,7 @@ async function getLolDdragonData(env, gameVersion) {
       ddragonDataCache.set(DDRAGON_LOL_VERSION, result);
       return result;
     } catch {
-      const fallback = emptyDdragonData(version);
+      const fallback = emptyDdragonData();
       ddragonDataCache.set(version, fallback);
       ddragonDataCache.set(DDRAGON_LOL_VERSION, fallback);
       return fallback;
@@ -335,6 +335,7 @@ function normalizeLolScoreboard(info, mePuuid, ddragonData) {
   const participants = info.participants || [];
   const teams = { Blue: { kills: 0, won: false }, Red: { kills: 0, won: false } };
   const gameVersion = info.gameVersion;
+  const ddragonVersion = ddragonData?.version || DDRAGON_LOL_VERSION;
   const players = participants.map((p) => {
     const team = lolTeamName(p.teamId);
     const isMe = p.puuid === mePuuid;
@@ -347,14 +348,14 @@ function normalizeLolScoreboard(info, mePuuid, ddragonData) {
     teams[team].kills += kills;
     teams[team].won = isWin;
     const items = [
-      lolItemAsset(p.item0, gameVersion, ddragonData), lolItemAsset(p.item1, gameVersion, ddragonData), lolItemAsset(p.item2, gameVersion, ddragonData), lolItemAsset(p.item3, gameVersion, ddragonData),
-      lolItemAsset(p.item4, gameVersion, ddragonData), lolItemAsset(p.item5, gameVersion, ddragonData), lolItemAsset(p.item6, gameVersion, ddragonData)
+      lolItemAsset(p.item0, ddragonVersion, ddragonData), lolItemAsset(p.item1, ddragonVersion, ddragonData), lolItemAsset(p.item2, ddragonVersion, ddragonData), lolItemAsset(p.item3, ddragonVersion, ddragonData),
+      lolItemAsset(p.item4, ddragonVersion, ddragonData), lolItemAsset(p.item5, ddragonVersion, ddragonData), lolItemAsset(p.item6, ddragonVersion, ddragonData)
     ];
     const spells = [
-      lolSummonerSpellAsset(p.summoner1Id, gameVersion, ddragonData),
-      lolSummonerSpellAsset(p.summoner2Id, gameVersion, ddragonData)
+      lolSummonerSpellAsset(p.summoner1Id, ddragonVersion, ddragonData),
+      lolSummonerSpellAsset(p.summoner2Id, ddragonVersion, ddragonData)
     ];
-    const rune = lolRuneAsset(lolKeystoneRuneId(p), gameVersion, ddragonData);
+    const rune = lolRuneAsset(lolKeystoneRuneId(p), ddragonVersion, ddragonData);
     return Object.freeze({
       name: safeLolName(p),
       tag: safeLolTag(p),
@@ -376,7 +377,7 @@ function normalizeLolScoreboard(info, mePuuid, ddragonData) {
         damagePerMin: Math.round(((Number(p.totalDamageDealtToChampions) || 0) / minutes) * 10) / 10
       }),
       assets: Object.freeze({
-        champion: Object.freeze({ small: lolChampionImage(p.championName, gameVersion) }),
+        champion: Object.freeze({ small: lolChampionImage(p.championName, ddragonVersion) }),
         spells: Object.freeze(spells),
         rune: rune
       }),
@@ -474,7 +475,9 @@ export async function getLolMatches(env, riotId, mode, apiKeyOverride) {
     const me = participants.find(p => p.puuid === puuid) || participants[0];
     const minutes = Math.max(1, Math.floor((info.gameDuration || 0) / 60));
     const gameVersion = info.gameVersion;
-    const ddragonData = ddragonDataByVersion.get(deriveLolDdragonVersion(gameVersion));
+    const derivedVersion = deriveLolDdragonVersion(gameVersion);
+    const ddragonData = ddragonDataByVersion.get(derivedVersion);
+    const ddragonVersion = ddragonData?.version || derivedVersion;
     const scoreboard = normalizeLolScoreboard(info, puuid, ddragonData);
     const myTeam = scoreboard.players.find(p => p.isMe)?.team || "Blue";
     const myKills = scoreboard.teams[myTeam].roundsWon;
@@ -491,7 +494,7 @@ export async function getLolMatches(env, riotId, mode, apiKeyOverride) {
         mapName: safeText(lolMapName(info.mapId)),
         gameDuration: safeText(`${Math.floor((info.gameDuration || 0) / 60)}m ${(info.gameDuration || 0) % 60}s`),
         agentName: safeText(me?.championName),
-        agentImageUrl: lolChampionImage(me?.championName, gameVersion),
+        agentImageUrl: lolChampionImage(me?.championName, ddragonVersion),
         timestamp: safeText(new Date(info.gameCreation || 0).toISOString()),
         score: Object.freeze({ team: myKills, opponent: opponentKills })
       }),

@@ -1,4 +1,3 @@
-import { requireSecret } from "../middleware/validation.js";
 import { requestExternal } from "../utils/external-request.js";
 import { createOtpCode, getActiveOtpCode, consumeOtpCode, deleteExpiredOtpCodes, insertSecurityEvent, getUserIdByEmail } from "./security-identity-client.js";
 import { signServiceToken } from "../utils/jwt.js";
@@ -7,23 +6,25 @@ const OTP_TTL_MS = 10 * 60 * 1000;
 const MAX_ATTEMPTS = 5;
 const COOLDOWN_MS = 60 * 1000;
 
-function supabaseAuthRequest(env, path, options = {}) {
-  const origin = `https://${String(env.SUPABASE_URL || "").replace(/^https?:\/\//, "").replace(/\/$/, "")}`;
-  const anonKey = env.SUPABASE_ANON_KEY || requireSecret(env, "SUPABASE_SECRET_KEY");
-  return requestExternal(new URL(path, origin), {
+async function sendEmail(env, to, subject, html) {
+  const apiKey = env.RESEND_API_KEY;
+  if (!apiKey) throw new Error("Email service not configured");
+  const from = env.RESEND_FROM || "ETHONE <no-reply@ethone.dev>";
+  const origin = "https://api.resend.com";
+  const response = await requestExternal(new URL("/emails", origin), {
     env,
     expectedOrigin: origin,
-    service: "supabase",
-    method: options.method || "POST",
+    service: "resend",
+    method: "POST",
     headers: {
-      apikey: anonKey,
-      "content-type": "application/json",
-      ...(options.headers || {})
+      authorization: `Bearer ${apiKey}`,
+      "content-type": "application/json"
     },
-    body: options.body ? JSON.stringify(options.body) : undefined,
-    retries: 0,
-    maxBytes: 4096
+    body: JSON.stringify({ from, to, subject, html }),
+    retries: 1,
+    maxBytes: 8192
   });
+  return response.data;
 }
 
 function hashCode(code) {
@@ -61,14 +62,12 @@ export async function sendOtp(env, email, providedUserId) {
     rateLimitedUntil: new Date(Date.now() + COOLDOWN_MS).toISOString()
   });
 
-  // Try to trigger Supabase Auth OTP as the delivery channel when available.
-  try {
-    await supabaseAuthRequest(env, "/auth/v1/otp", {
-      body: { email: contact, data: { otp: code } },
-      headers: { "X-Client-Info": "ethone-otp" }
-    });
-  } catch {
-    // If Supabase Auth OTP is unavailable, the code must be delivered through a configured channel.
+  // Deliver the code via Resend when RESEND_API_KEY is configured.
+  // In development with ETHONE_DEBUG_OTP=true, the code is returned for tests instead of sent.
+  const exposeCode = env.ENVIRONMENT === "development" && env.ETHONE_DEBUG_OTP === "true";
+  if (!exposeCode) {
+    const html = `<p>Votre code de connexion ETHONE est : <strong style="font-size:1.25em">${code}</strong></p><p>Il est valable 10 minutes. Ne le partagez avec personne.</p>`;
+    await sendEmail(env, contact, "Votre code de connexion ETHONE", html);
   }
 
   await insertSecurityEvent(env, {
@@ -77,9 +76,7 @@ export async function sendOtp(env, email, providedUserId) {
     metadata: { contact: contact.slice(0, 3) + "***" + contact.slice(contact.indexOf("@")) }
   });
 
-  // The code is never returned in production. It is only exposed in development when explicitly enabled,
-  // to allow automated tests without a real email transport.
-  const exposeCode = env.ENVIRONMENT === "development" && env.ETHONE_DEBUG_OTP === "true";
+  // The code is only exposed in development when explicitly enabled, for tests.
   return { sent: true, userId: resolvedUserId, contact, expiresIn: OTP_TTL_MS, code: exposeCode ? code : undefined };
 }
 

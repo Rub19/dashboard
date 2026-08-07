@@ -87,6 +87,7 @@ const ETHONE_V8_ASSETS = [
   "./v8/services/provider-credentials.mjs",
   "./v8/services/public-auth-config.mjs",
   "./v8/services/security-identity.mjs",
+  "./v8/vendor/simplewebauthn-browser.bundle.mjs",
   "./v8/services/discord-live.mjs",
   "./v8/services/rate-limiter.mjs",
   "./v8/services/service-worker.mjs",

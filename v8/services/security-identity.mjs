@@ -1,3 +1,5 @@
+import { browserSupportsWebAuthn, startAuthentication, startRegistration } from "../vendor/simplewebauthn-browser.bundle.mjs";
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -11,12 +13,7 @@ function validEmail(value) {
 }
 
 function isAvailable() {
-  return typeof globalThis.PublicKeyCredential !== "undefined";
-}
-
-async function sha256(value) {
-  const buffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
-  return btoa(String.fromCharCode(...new Uint8Array(buffer)));
+  return browserSupportsWebAuthn();
 }
 
 export function createSecurityIdentityService(options = {}) {
@@ -68,8 +65,8 @@ export function createSecurityIdentityService(options = {}) {
     const options = optionsResponse?.data;
     if (!options) throw new Error("Failed to get passkey registration options.");
 
-    const credential = await navigator.credentials.create({ publicKey: decodePublicKeyOptions(options) });
-    const response = await c.security.passkeyRegister(encodeRegistrationResponse(credential), options.deviceId || undefined);
+    const credential = await startRegistration({ optionsJSON: options });
+    const response = await c.security.passkeyRegister(credential, options.deviceId || undefined);
     return response?.data;
   }
 
@@ -87,9 +84,9 @@ export function createSecurityIdentityService(options = {}) {
   async function authenticatePasskey(email) {
     if (!isAvailable()) throw new Error("WebAuthn is not available on this device.");
     const options = await getPasskeyAuthenticationOptions(email);
-    const assertion = await navigator.credentials.get({ publicKey: decodeAuthenticationOptions(options) });
+    const assertion = await startAuthentication({ optionsJSON: options });
     const c = client();
-    const response = await c.security.passkeyAuthenticate(encodeAuthenticationResponse(assertion));
+    const response = await c.security.passkeyAuthenticate(assertion);
     const result = response?.data;
     if (!result?.userId) throw new Error("Passkey authentication failed.");
 
@@ -173,76 +170,4 @@ export function createSecurityIdentityService(options = {}) {
     listPasskeys,
     clearVerifiedUser
   });
-}
-
-function base64UrlToBuffer(value) {
-  const base64 = String(value).replace(/-/g, "+").replace(/_/g, "/");
-  const padded = base64.padEnd(base64.length + ((4 - base64.length % 4) % 4), "=");
-  const binary = atob(padded);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
-  return bytes.buffer;
-}
-
-function bufferToBase64Url(value) {
-  const bytes = new Uint8Array(value);
-  let binary = "";
-  for (let i = 0; i < bytes.byteLength; i += 1) binary += String.fromCharCode(bytes[i]);
-  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-}
-
-function decodePublicKeyOptions(options) {
-  return {
-    ...options,
-    challenge: base64UrlToBuffer(options.challenge),
-    user: options.user ? {
-      ...options.user,
-      id: base64UrlToBuffer(options.user.id)
-    } : undefined,
-    excludeCredentials: Array.isArray(options.excludeCredentials)
-      ? options.excludeCredentials.map((cred) => ({ ...cred, id: base64UrlToBuffer(cred.id) }))
-      : undefined
-  };
-}
-
-function decodeAuthenticationOptions(options) {
-  return {
-    ...options,
-    challenge: base64UrlToBuffer(options.challenge),
-    allowCredentials: Array.isArray(options.allowCredentials)
-      ? options.allowCredentials.map((cred) => ({ ...cred, id: base64UrlToBuffer(cred.id) }))
-      : undefined
-  };
-}
-
-function encodeRegistrationResponse(credential) {
-  const response = credential.response;
-  return {
-    id: credential.id,
-    rawId: bufferToBase64Url(credential.rawId),
-    type: credential.type,
-    clientExtensionResults: credential.getClientResults?.() || credential.clientExtensionResults || {},
-    response: {
-      clientDataJSON: bufferToBase64Url(response.clientDataJSON),
-      attestationObject: bufferToBase64Url(response.attestationObject),
-      authenticatorData: response.authenticatorData ? bufferToBase64Url(response.authenticatorData) : undefined,
-      transports: Array.isArray(response.getTransports) ? response.getTransports() : (response.transports || [])
-    }
-  };
-}
-
-function encodeAuthenticationResponse(assertion) {
-  const response = assertion.response;
-  return {
-    id: assertion.id,
-    rawId: bufferToBase64Url(assertion.rawId),
-    type: assertion.type,
-    clientExtensionResults: assertion.getClientResults?.() || assertion.clientExtensionResults || {},
-    response: {
-      clientDataJSON: bufferToBase64Url(response.clientDataJSON),
-      authenticatorData: bufferToBase64Url(response.authenticatorData),
-      signature: bufferToBase64Url(response.signature),
-      userHandle: response.userHandle ? bufferToBase64Url(response.userHandle) : undefined
-    }
-  };
 }

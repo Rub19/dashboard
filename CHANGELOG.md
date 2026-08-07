@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v236] - 2026-08-07
+
+### Ajouté
+- **Valorant** : barres colorées à gauche de chaque groupe/duo, avec des couleurs distinctes par `party_id`.
+
+### Changé
+- Le groupe du joueur reste bleu, les autres groupes prennent des couleurs différentes (orange, vert, rouge).
+- Bordereau PWA mis à jour vers `experience-v236`.
+
 ## [v235] - 2026-08-07
 
 ### Ajouté

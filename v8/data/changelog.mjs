@@ -24,6 +24,11 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v236", "2026-08-07", "Barres colorées par groupe sur le scoreboard Valorant", [
+    { kind: "improvement", text: "Chaque groupe/duo a maintenant une barre colorée à gauche de ses membres, avec des couleurs distinctes par party_id." },
+    { kind: "improvement", text: "Le groupe du joueur reste bleu, les autres groupes utilisent des couleurs différentes (orange, vert, rouge)." },
+    { kind: "improvement", text: "Bordereau PWA mis à jour vers experience-v236." }
+  ]),
   entry("v235", "2026-08-07", "Affiche les duos/groupes adverses sur le scoreboard Valorant", [
     { kind: "feature", text: "Le scoreboard Valorant affiche les autres duos/groupes détectés via party_id (badge DUO/TEAM orange)." },
     { kind: "improvement", text: "Le badge de votre propre groupe affiche PARTY si vous êtes plus de 2." },

@@ -3708,10 +3708,10 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
 .v8-scoreboard-table th { padding:var(--v8-space-2) var(--v8-space-3);color:var(--v8-muted);font-weight:var(--v8-weight-semibold);text-transform:uppercase;font-size:var(--v8-font-xs);border-bottom:1px solid var(--v8-border);min-width:0; }
 .v8-scoreboard-table td { padding:var(--v8-space-3);border-bottom:1px solid var(--v8-border);color:var(--v8-text);vertical-align:middle;min-width:0; }
 .v8-scoreboard-table tbody tr:hover td { background:var(--v8-surface-2); }
+.v8-scoreboard-table tbody tr.is-party td { background:color-mix(in srgb,var(--party-color) 7%,transparent); }
+.v8-scoreboard-table tbody tr.is-party td:first-child { box-shadow:inset 3px 0 var(--party-color); }
 .v8-scoreboard-table tbody tr.is-me td { background:color-mix(in srgb,var(--v8-accent) 12%,transparent); }
-.v8-scoreboard-table tbody tr.is-party-member td { background:color-mix(in srgb,var(--v8-info) 7%,transparent); }
 .v8-scoreboard-table tbody tr.is-me td:first-child { box-shadow:inset 3px 0 var(--v8-accent); }
-.v8-scoreboard-table tbody tr.is-party-member td:first-child { box-shadow:inset 3px 0 var(--v8-info); }
 .v8-scoreboard-table thead th { background:var(--v8-surface-2); }
 .v8-scoreboard-team-header th { grid-column:1 / -1;padding:var(--v8-space-3) var(--v8-space-4);color:var(--team-color);background:color-mix(in srgb,var(--team-color) 12%,var(--v8-surface-1));border-top:3px solid var(--team-color);border-bottom:1px solid color-mix(in srgb,var(--team-color) 30%,var(--v8-border));text-transform:none;font-size:var(--v8-font-sm);font-weight:var(--v8-weight-bold); }
 .v8-scoreboard-team-header__content { display:flex;align-items:center;justify-content:space-between;gap:var(--v8-space-3); }.v8-scoreboard-team-header th strong { font-variant-numeric:tabular-nums;font-size:var(--v8-font-lg); }

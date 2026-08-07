@@ -108,6 +108,13 @@ export function mountMatches(container, options = {}) {
     const mePlayer = scoreboard.players.find(p => p.isMe);
     const myPartySize = mePlayer?.party_id ? (partyCounts[mePlayer.party_id] || 0) : 0;
 
+    const partyColorMap = new Map();
+    const partyPalette = ["var(--v8-warning)", "var(--v8-success)", "var(--v8-danger)"];
+    const partyGroups = [...new Set(scoreboard.players.map(p => p.party_id).filter(id => id && partyCounts[id] > 1))];
+    if (mePlayer?.party_id) partyColorMap.set(mePlayer.party_id, "var(--v8-info)");
+    const otherParties = partyGroups.filter(id => id !== mePlayer?.party_id);
+    otherParties.forEach((id, i) => partyColorMap.set(id, partyPalette[i % partyPalette.length]));
+
     const container = element("div", { className: "v8-scoreboard" });
     const teams = { Red: [], Blue: [] };
     scoreboard.players.forEach(p => {
@@ -181,7 +188,11 @@ export function mountMatches(container, options = {}) {
         rowCells.push(element("td", { className: "v8-scoreboard-number", text: `${hs}%` }));
       }
 
-      return element("tr", { className: `${p.isMe ? "is-me" : ""}${p.isPartyMember ? " is-party-member" : ""}`.trim() }, rowCells);
+      const isInParty = Boolean(p.party_id && (partyCounts[p.party_id] || 0) > 1);
+      const partyColor = isInParty ? (partyColorMap.get(p.party_id) || "var(--v8-info)") : "";
+      const rowClass = [p.isMe ? "is-me" : "", isInParty ? "is-party" : ""].filter(Boolean).join(" ");
+      const rowStyle = isInParty ? `--party-color:${partyColor}` : "";
+      return element("tr", { className: rowClass, attributes: { style: rowStyle } }, rowCells);
     };
 
     const ownTeam = scoreboard.players.find(p => p.isMe)?.team || null;

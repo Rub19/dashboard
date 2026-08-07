@@ -282,7 +282,9 @@ export function mountNotes(stage, options = {}) {
         ])
       ]),
       progressBar,
-      element("div", { className: "v8-note-document" }, [titleInput, tagsList, richEditor.element]),
+      element("div", { className: "v8-note-document" }, [
+        element("div", { className: "v8-note-sheet" }, [titleInput, tagsList, richEditor.element])
+      ]),
       confirm,
       element("footer", { className: "v8-note-footer" }, [
         words,

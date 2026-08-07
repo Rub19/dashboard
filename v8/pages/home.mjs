@@ -22,6 +22,17 @@ import { redditLiveCard } from "../ui/reddit-live.mjs";
 import { localeTag } from "../i18n/catalog.mjs";
 import { LIVE_CARD_IDS } from "../core/store.mjs";
 
+const HOME_SECTIONS = Object.freeze([
+  { id: "continuity", label: "Continuité" },
+  { id: "daystream", label: "Fil de la journée" },
+  { id: "recent", label: "Travail récent" },
+  { id: "productivity", label: "Productivité" },
+  { id: "signals", label: "Signal système" },
+  { id: "recommendation", label: "Recommandation" },
+  { id: "brain", label: "Brain" },
+  { id: "live", label: "Widgets en direct" }
+]);
+
 const HOME_LIVE_CARD_META = Object.freeze({
   spotify: Object.freeze({ label: "Spotify", icon: "music-2" }),
   discord: Object.freeze({ label: "Discord", icon: "messages-square" }),
@@ -109,6 +120,19 @@ const AURA_THEMES = Object.freeze([
 
 function getActiveAura() {
   try { return globalThis.localStorage?.getItem("v8_home_aura") || "default"; } catch { return "default"; }
+}
+
+function getHomeSectionLayout() {
+  try {
+    const raw = globalThis.localStorage?.getItem("v8_home_sections");
+    const parsed = raw ? JSON.parse(raw) : null;
+    if (parsed && Array.isArray(parsed.hidden)) return parsed;
+  } catch { /* silent */ }
+  return { hidden: [] };
+}
+
+function setHomeSectionLayout(layout) {
+  try { globalThis.localStorage?.setItem("v8_home_sections", JSON.stringify(layout)); } catch { /* silent */ }
 }
 
 function setActiveAura(id) {
@@ -223,6 +247,8 @@ export function mountHome(stage, model, options = {}) {
   const youtubeLive = options.youtubeLive || null;
   const redditLive = options.redditLive || null;
   const presence = options.presence || null;
+  const scopedActions = [];
+  let personalizeOpen = false;
   let liveLayout = options.homeLiveLayout || Object.freeze({ order: HOME_LIVE_CARD_IDS, hidden: Object.freeze([]) });
   let customizeOpen = false;
   const cardAvailability = new Map();
@@ -277,7 +303,8 @@ export function mountHome(stage, model, options = {}) {
     ]),
     element("div", { className: "v8-page-heading__actions" }, [
       actionButton({ actionId: "v8.notes.new", variant: "secondary" }, [icon("file-plus-2"), element("span", { text: "Nouvelle note" })]),
-      actionButton({ actionId: "v8.command.open", variant: "primary" }, [icon("command"), element("span", { text: "Command Center" })])
+      actionButton({ actionId: "v8.command.open", variant: "primary" }, [icon("command"), element("span", { text: "Command Center" })]),
+      actionButton({ actionId: "v8.home.personalize", className: "v8-icon-button", ariaLabel: "Personnaliser le tableau de bord" }, [icon("sliders-horizontal")])
     ])
   ]);
 
@@ -696,10 +723,73 @@ export function mountHome(stage, model, options = {}) {
     customizeHost.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
+  const sectionNodes = {
+    continuity,
+    daystream,
+    recent,
+    productivity: productivitySection,
+    signals,
+    recommendation: recommendationStrip,
+    brain: brainStrip,
+    live: liveSection
+  };
+  const sectionLayout = getHomeSectionLayout();
+
+  function applySectionLayout() {
+    for (const [id, node] of Object.entries(sectionNodes)) {
+      if (!node) continue;
+      node.hidden = sectionLayout.hidden.includes(id);
+    }
+    syncLiveGridVisibility();
+  }
+
+  function sectionToggleRow(section) {
+    const isHidden = sectionLayout.hidden.includes(section.id);
+    const button = element("button", {
+      className: `v8-home-section-toggle${isHidden ? " is-hidden" : ""}`,
+      attributes: { type: "button" }
+    }, [
+      icon(isHidden ? "eye-off" : "eye"),
+      element("span", { text: section.label })
+    ]);
+    button.addEventListener("click", () => {
+      const index = sectionLayout.hidden.indexOf(section.id);
+      if (index >= 0) sectionLayout.hidden.splice(index, 1);
+      else sectionLayout.hidden.push(section.id);
+      setHomeSectionLayout(sectionLayout);
+      applySectionLayout();
+      renderPersonalizePanel();
+    });
+    return button;
+  }
+
+  function renderPersonalizePanel() {
+    if (!personalizeOpen) return;
+    const list = element("div", { className: "v8-home-personalize__list" }, HOME_SECTIONS.map(sectionToggleRow));
+    const header = element("header", { className: "v8-home-personalize__header" }, [
+      element("strong", { text: "Personnaliser le tableau de bord" }),
+      actionButton({ actionId: "v8.home.personalize.close", className: "v8-icon-button", ariaLabel: "Fermer" }, [icon("x")])
+    ]);
+    personalizePanel.replaceChildren(header, list);
+    refreshIcons();
+  }
+
+  function togglePersonalize() {
+    personalizeOpen = !personalizeOpen;
+    personalizePanel.hidden = !personalizeOpen;
+    if (personalizeOpen) renderPersonalizePanel();
+  }
+
+  scopedActions.push(options.actions?.scope?.("v8.home.personalize", togglePersonalize) || (() => {}));
+  scopedActions.push(options.actions?.scope?.("v8.home.personalize.close", togglePersonalize) || (() => {}));
+
+  const personalizePanel = element("section", { className: "v8-home-personalize", attributes: { hidden: "true", "aria-label": "Personnalisation du tableau de bord" } });
+
   const page = element("section", { className: `v8-page v8-home v8-home--${model.context.period}`, dataset: { page: "home" } }, [
     ambientField,
     heading,
     quickActions,
+    personalizePanel,
     element("div", { className: "v8-home-primary" }, [continuity, daystream]),
     liveSection,
     recommendationStrip,
@@ -707,6 +797,7 @@ export function mountHome(stage, model, options = {}) {
     element("div", { className: "v8-home-secondary" }, [recent, productivitySection, signals])
   ]);
   stage.replaceChildren(page);
+  applySectionLayout();
   renderSystemStatus();
   renderSpotify(spotifyLive?.state?.() || {});
   renderDiscord(discordLive?.state?.() || {});
@@ -726,6 +817,10 @@ export function mountHome(stage, model, options = {}) {
   renderYoutube(youtubeLive?.state?.() || {});
   renderReddit(redditLive?.state?.() || {});
   function syncLiveGridVisibility() {
+    if (sectionLayout.hidden.includes("live")) {
+      liveSection.hidden = true;
+      return;
+    }
     let allHidden = true;
     Object.keys(categorySections).forEach(cat => {
       const grid = categoryGrids[cat];
@@ -771,6 +866,7 @@ export function mountHome(stage, model, options = {}) {
   const releaseYoutube = youtubeLive?.subscribe?.((youtubeState) => renderYoutube(youtubeState, true), { immediate: false }) || (() => {});
   const releaseReddit = redditLive?.subscribe?.((redditState) => renderReddit(redditState, true), { immediate: false }) || (() => {});
   const releaseSync = options.sync?.subscribe?.(renderSystemStatus) || (() => {});
+  scopedActions.reverse().forEach((restore) => restore());
   const releaseLiveLayout = options.subscribeState?.((next) => {
     if (next.homeLiveLayout === liveLayout) return;
     liveLayout = next.homeLiveLayout || liveLayout;
@@ -780,6 +876,7 @@ export function mountHome(stage, model, options = {}) {
   }) || (() => {});
   refreshIcons();
   return () => {
+    scopedActions.reverse().forEach((restore) => restore());
     liveSection.removeEventListener("mousemove", updateCardSpotlight);
     releaseSpotify();
     releaseDiscord();

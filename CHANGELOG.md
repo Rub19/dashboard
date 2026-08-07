@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v253] - 2026-08-07
+
+### Ajouté
+- **Vue tableau Kanban** pour les tâches : bascule entre liste et colonnes "À faire / Terminées".
+- **Filtre par priorité** et **bannière de statistiques** avec jauge circulaire sur la page Tâches.
+- **Personnalisation du dashboard** : panneau pour masquer/afficher les sections et sauvegarde dans `localStorage`.
+- **Nouveau design des tâches** : cartes avec accent de couleur selon la priorité, badges d'échéance et de tag.
+
+### Modifié
+- **Notes** : l'éditeur est désormais centré sous forme de feuille blanche avec une largeur de lecture confortable.
+- Bordereau PWA mis à jour vers `experience-v253`.
+
 ## [v252] - 2026-08-07
 
 ### Corrigé

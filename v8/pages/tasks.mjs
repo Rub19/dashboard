@@ -34,6 +34,8 @@ export function mountTasks(stage, options = {}) {
   let status = "all";
   let query = "";
   let order = "priority";
+  let priority = "all";
+  let view = "list";
   let composerOpen = false;
   let editingId = null;
   let bulkDeleteArmed = false;
@@ -58,8 +60,19 @@ export function mountTasks(stage, options = {}) {
     element("option", { text: "Récentes", attributes: { value: "recent" } }),
     element("option", { text: "Nom", attributes: { value: "title" } })
   ]);
+  const prioritySelect = createSelect({ className: "v8-input v8-task-priority-filter", attributes: { "aria-label": "Filtrer par priorité" } }, [
+    element("option", { text: "Toutes les priorités", attributes: { value: "all" } }),
+    element("option", { text: "Haute", attributes: { value: "high" } }),
+    element("option", { text: "Normale", attributes: { value: "normal" } }),
+    element("option", { text: "Basse", attributes: { value: "low" } })
+  ]);
   const densityControl = collectionDensityControl(options.state?.density || document.documentElement.dataset.density || "automatic");
+  const viewSwitch = element("div", { className: "v8-view-switch", attributes: { role: "group", "aria-label": "Vue des tâches" } }, [
+    element("button", { className: "is-active", attributes: { type: "button", "aria-pressed": "true", title: "Vue liste" }, dataset: { taskView: "list" } }, [icon("list")]),
+    element("button", { attributes: { type: "button", "aria-pressed": "false", title: "Vue tableau" }, dataset: { taskView: "board" } }, [icon("columns-3")])
+  ]);
   const bulkHost = element("div", { className: "v8-bulk-host" });
+  const statsEl = element("div", { className: "v8-tasks-stats" });
   const list = element("div", { className: "v8-task-list", attributes: { role: "list", "aria-label": "Tâches" } });
   const composer = element("form", { className: "v8-task-composer", attributes: { hidden: "", "aria-label": "Nouvelle tâche" } });
   const page = element("section", { className: "v8-page v8-work-page", dataset: { page: "tasks" } }, [
@@ -77,8 +90,9 @@ export function mountTasks(stage, options = {}) {
       element("header", { className: "v8-work-toolbar" }, [
         element("div", { className: "v8-input-wrap v8-work-search" }, [icon("search"), search]),
         filters,
-        element("div", { className: "v8-collection-tools" }, [sortSelect, densityControl])
+        element("div", { className: "v8-collection-tools" }, [prioritySelect, sortSelect, viewSwitch, densityControl])
       ]),
+      statsEl,
       bulkHost,
       composer,
       element("div", { className: "v8-task-stream" }, [list])
@@ -91,7 +105,7 @@ export function mountTasks(stage, options = {}) {
   }
 
   function visibleTasks() {
-    return sortTasks(filterTasks(tasks, { query, status }), order);
+    return sortTasks(filterTasks(tasks, { query, status, priority }), order);
   }
 
   function taskRow(id) {
@@ -99,7 +113,34 @@ export function mountTasks(stage, options = {}) {
       .find((row) => row.dataset.taskId === String(id)) || null;
   }
 
+  function renderStatsHeader() {
+    const stats = taskStats(visibleTasks());
+    const percentage = stats.total ? Math.round((stats.completed / stats.total) * 100) : 0;
+    const radius = 18;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference * (1 - percentage / 100);
+    const ring = element("svg", { className: "v8-tasks-progress", attributes: { viewBox: "0 0 44 44", width: "44", height: "44" } }, [
+      element("circle", { attributes: { cx: "22", cy: "22", r: String(radius), fill: "none", stroke: "var(--v8-surface-3)", "stroke-width": "5" } }),
+      element("circle", { attributes: { cx: "22", cy: "22", r: String(radius), fill: "none", stroke: "var(--v8-accent)", "stroke-width": "5", "stroke-linecap": "round", "stroke-dasharray": String(circumference), "stroke-dashoffset": String(offset), style: "transform: rotate(-90deg); transform-origin: center;" } })
+    ]);
+    const stat = (label, value) => element("div", { className: "v8-tasks-stat" }, [
+      element("strong", { text: String(value) }),
+      element("span", { text: label })
+    ]);
+    return element("div", { className: "v8-tasks-stats__inner" }, [
+      ring,
+      element("div", { className: "v8-tasks-stats__copy" }, [
+        element("strong", { text: `${percentage}% accompli` }),
+        element("span", { text: `${stats.open} à faire · ${stats.completed} terminée${stats.completed > 1 ? 's' : ''} · ${stats.total} au total` })
+      ]),
+      stat("Total", stats.total),
+      stat("À faire", stats.open),
+      stat("Terminées", stats.completed)
+    ]);
+  }
+
   function updateStats() {
+    statsEl.replaceChildren(renderStatsHeader());
     const stats = taskStats(tasks);
     const nextValue = `${stats.open} à faire`;
     if (presence) presence.transitionText(statsBadge, nextValue, { kind: "metric" });
@@ -171,6 +212,11 @@ export function mountTasks(stage, options = {}) {
     list.replaceChildren();
     updateStats();
     renderBulk(filtered);
+    list.className = view === "board" ? "v8-task-board" : "v8-task-list";
+    if (view === "board") {
+      renderBoard(filtered);
+      return;
+    }
     if (!filtered.length) {
       const filteredView = Boolean(query || status !== "all");
       const reset = filteredView ? element("button", {
@@ -225,6 +271,35 @@ export function mountTasks(stage, options = {}) {
     refreshIcons();
   }
 
+  function renderBoard(filtered) {
+    const open = filtered.filter((task) => !task.done);
+    const done = filtered.filter((task) => task.done);
+    const column = (title, count, tasks) => element("div", { className: "v8-task-column", attributes: { role: "list" } }, [
+      element("div", { className: "v8-task-column__header" }, [
+        element("strong", { text: title }),
+        element("span", { className: "v8-badge", text: String(count) })
+      ]),
+      ...tasks.map((task) => taskRowNode(task))
+    ]);
+    if (!open.length && !done.length) {
+      list.append(emptyState({
+        kind: "empty",
+        iconName: "circle-check-big",
+        eyebrow: "Priorités maîtrisées",
+        title: "Tout est clair",
+        description: "Ajoutez une tâche pour commencer votre tableau.",
+        actions: [actionButton({ actionId: "v8.tasks.new", variant: "primary" }, [icon("plus"), element("span", { text: "Ajouter une tâche" })])],
+        className: "v8-empty-state--wide"
+      }));
+      refreshIcons();
+      return;
+    }
+    if (open.length) list.append(column("À faire", open.length, open));
+    if (done.length) list.append(column("Terminées", done.length, done));
+    if (!open.length) list.append(column("À faire", 0, []));
+    refreshIcons();
+  }
+
   function taskRowNode(task) {
     const overdue = Boolean(task.due && !task.done && task.due < new Date().toISOString().slice(0, 10));
     const selected = selection.has(task.id);
@@ -239,12 +314,18 @@ export function mountTasks(stage, options = {}) {
       attributes: { type: "button", "aria-label": `Actions pour ${task.title}`, "aria-haspopup": "menu", "aria-expanded": "false" },
       dataset: { taskMenu: task.id }
     }, [icon("more-horizontal")]);
+    const isBoard = view === "board";
+    const priorityMeta = {
+      high: { icon: "flame", label: "Haute", cls: "v8-task-priority--high" },
+      normal: { icon: "circle-dot", label: "Normale", cls: "v8-task-priority--normal" },
+      low: { icon: "coffee", label: "Basse", cls: "v8-task-priority--low" }
+    }[task.priority || "normal"];
     const meta = [];
-    if (task.priority === "high") meta.push(element("span", { className: "v8-task-priority v8-task-priority--high" }, [icon("flame"), "Haute"]));
+    if (priorityMeta) meta.push(element("span", { className: `v8-task-priority ${priorityMeta.cls}` }, [icon(priorityMeta.icon), priorityMeta.label]));
     if (task.tag) meta.push(element("span", { className: "v8-task-tag", text: task.tag, attributes: { translate: "no" } }));
-    meta.push(element("span", { className: overdue ? "is-overdue" : "" }, [icon(overdue ? "triangle-alert" : "calendar-days"), formatDue(task.due)]));
+    meta.push(element("span", { className: `v8-task-due${overdue ? " is-overdue" : ""}` }, [icon(overdue ? "triangle-alert" : "calendar-days"), formatDue(task.due)]));
     return element("article", {
-      className: `v8-task-row${task.done ? " is-complete" : ""}${selected ? " is-selected" : ""}`,
+      className: `v8-task-row${task.done ? " is-complete" : ""}${selected ? " is-selected" : ""}${isBoard ? " v8-task-row--board" : ""} v8-task-row--${task.priority || "normal"}`,
       attributes: { role: "listitem", tabindex: "0", "aria-selected": selected ? "true" : "false" },
       dataset: { taskId: task.id, liveWidget: "planning", liveKind: "planning" }
     }, [
@@ -401,6 +482,11 @@ export function mountTasks(stage, options = {}) {
   scopedActions.push(actions.scope("v8.tasks.create", createTask));
 
   function handleClick(event) {
+    const viewBtn = event.target.closest("[data-task-view]");
+    if (viewBtn && page.contains(viewBtn)) {
+      handleView(event);
+      return;
+    }
     const filter = event.target.closest("[data-task-status]");
     if (filter && page.contains(filter)) {
       status = filter.dataset.taskStatus;
@@ -468,6 +554,29 @@ export function mountTasks(stage, options = {}) {
     renderList();
   }
 
+  function handlePriority() {
+    priority = prioritySelect.value;
+    renderList();
+  }
+
+  function handleView(event) {
+    const button = event.target.closest("[data-task-view]");
+    if (!button) return;
+    view = button.dataset.taskView;
+    [...viewSwitch.querySelectorAll("button")].forEach((btn) => {
+      const active = btn === button;
+      btn.classList.toggle("is-active", active);
+      btn.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+    if (view === "board") status = "all";
+    [...filters.querySelectorAll("button")].forEach((btn) => {
+      const active = btn.dataset.taskStatus === status;
+      btn.classList.toggle("is-active", active);
+      btn.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+    renderList();
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
     const form = event.currentTarget;
@@ -479,6 +588,7 @@ export function mountTasks(stage, options = {}) {
   page.addEventListener("keydown", handleKeyboard);
   search.addEventListener("input", handleSearch);
   sortSelect.addEventListener("change", handleSort);
+  prioritySelect.addEventListener("change", handlePriority);
   composer.addEventListener("submit", handleSubmit);
   stage.replaceChildren(page);
   renderComposer();

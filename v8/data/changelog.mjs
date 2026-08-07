@@ -24,6 +24,14 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v253", "2026-08-07", "Refonte graphique Notes, Tâches et personnalisation du dashboard", [
+    { kind: "feature", text: "Nouvelle mise en page centree des Notes sous forme de feuille avec largeur de lecture confortable." },
+    { kind: "feature", text: "Vue tableau Kanban sur les Tâches avec colonnes À faire et Terminées." },
+    { kind: "feature", text: "Banniere de statistiques sur les Tâches avec jauge circulaire et filtres par priorité." },
+    { kind: "feature", text: "Cartes de tâches avec accent de couleur selon la priorite et badges echeance/tag." },
+    { kind: "feature", text: "Personnalisation du dashboard : panneau pour masquer/afficher les sections et sauvegarde locale." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v253." }
+  ]),
   entry("v252", "2026-08-07", "Corrections affichage LoL : rank, items vides et placeholders", [
     { kind: "fix", text: "Meilleure recuperation du rank LoL depuis l'API Riot et formattage securise (tier + rank)." },
     { kind: "fix", text: "Image de profil LoL desormais en version DDragon a jour." },

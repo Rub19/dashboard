@@ -24,6 +24,12 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v251", "2026-08-07", "Menu Pomodoro en survol dans le Dock et la barre du haut", [
+    { kind: "feature", text: "Popover Focus Timer au survol du bouton Pomodoro du Dock." },
+    { kind: "feature", text: "Popover Focus Timer au survol du status Focus de la topbar." },
+    { kind: "feature", text: "Actions rapides Pomodoro : demarrer, pause/reprendre, arreter, passer la phase." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v251." }
+  ]),
   entry("v250", "2026-08-07", "Recommandations explicables sur le dashboard", [
     { kind: "feature", text: "Carte de recommandation contextuelle sur l'accueil avec titre, detail et raisons justifiant la suggestion." },
     { kind: "feature", text: "Generation de recommandations basee sur les taches, evenements et connexions actives (GitHub + Notion, Spotify, etc.)." },

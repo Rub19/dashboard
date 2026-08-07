@@ -4,6 +4,7 @@ import { element, icon } from "./dom.mjs";
 import { refreshIcons, scheduleIconRefresh } from "./icons.mjs";
 import { getLayerManager } from "./layer-manager.mjs";
 import { spotifyDockIndicator } from "./spotify-live.mjs";
+import { attachFocusPopover } from "./focus-popover.mjs";
 
 export const DEFAULT_DOCK_IDS = Object.freeze(["home", "brain", "notes", "tasks", "calendar", "activity", "connections", "settings"]);
 const AVAILABLE_IDS = new Set(NAVIGATION_ITEMS.map(({ id }) => id));
@@ -84,6 +85,7 @@ export function createDock(host, options = {}) {
   let touchHoldTimer = 0;
   let suppressTouchClick = false;
   let layerRegistration = null;
+  let focusPopover = null;
   const documentRef = host.ownerDocument || globalThis.document;
   const runtime = documentRef?.defaultView || globalThis;
   const layerManager = getLayerManager({ document: documentRef, runtime });
@@ -286,6 +288,11 @@ export function createDock(host, options = {}) {
     ]));
     host.replaceChildren(...children);
     refreshIcons();
+    focusPopover?.destroy?.();
+    const pomodoroButton = host.querySelector('[data-dock-command="pomodoro"]');
+    if (pomodoroButton && options.focusTimer) {
+      focusPopover = attachFocusPopover(pomodoroButton, { focusTimer: options.focusTimer, onAction: options.onAction });
+    }
     const floating = host.querySelector(".v8-dock-editor, .v8-dock-launcher, .v8-control-center-window");
     if (floating) {
       const triggerSelector = controlCenterOpen ? "[data-dock-command=control-center]" : (editing ? "[data-dock-command=edit]" : "[data-dock-command=more]");

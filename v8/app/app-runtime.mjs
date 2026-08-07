@@ -387,6 +387,7 @@ export function mountApplication(root, options = {}) {
     contextName: options.profile?.name || "Personnel",
     dockOrder: cloudSync?.preferences?.().dock,
     spotify: initialSpotify,
+    focusTimer,
     onDockChange: () => cloudSync?.queue?.("dock-layout"),
     onAction: (actionId, context) => actions?.dispatch(actionId, context)
   });

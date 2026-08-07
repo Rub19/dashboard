@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v251] - 2026-08-07
+
+### Ajouté
+- **Menu Pomodero au survol** sur le bouton Pomodoro du Dock et le statut Focus de la barre du haut.
+- Actions rapides Focus Timer : démarrer Pomodoro / Deep Work / Sprint, pause/reprendre, arrêter, passer la phase.
+
+### Amélioré
+- Bordereau PWA mis à jour vers `experience-v251`.
+
 ## [v250] - 2026-08-07
 
 ### Ajouté

@@ -24,6 +24,11 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v249", "2026-08-07", "Affinement du survol des icones du Dock", [
+    { kind: "fix", text: "Suppression du filtre drop-shadow sur le survol des icones du Dock pour eliminer l'effet pixelise." },
+    { kind: "improvement", text: "Ombre portee et leger agrandissement de l'icone sur le survol pour un rendu plus net et premium." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v249." }
+  ]),
   entry("v248", "2026-08-07", "Redesign du Control Center du Dock", [
     { kind: "feature", text: "Nouveau design du Control Center en panneaux groupes avec sections Animations, Ambiance, Pack sonore, Audio, Ambiance sonore et Focus Timer." },
     { kind: "feature", text: "Interrupteurs a glissière pour Aura néon et Sons d'interface." },

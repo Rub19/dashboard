@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v249] - 2026-08-07
+
+### Corrigé
+- Effet pixelisé au survol des icônes du Dock : suppression du `drop-shadow` et utilisation d'une ombre portée propre sur la plaque.
+
+### Amélioré
+- Survol des icônes du Dock : léger soulèvement, agrandissement net et glow doux.
+- Bordereau PWA mis à jour vers `experience-v249`.
+
 ## [v248] - 2026-08-07
 
 ### Ajouté

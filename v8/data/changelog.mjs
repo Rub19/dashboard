@@ -45,6 +45,12 @@ export const CHANGELOG = Object.freeze([
     { kind: "improvement", text: "Le Command Center propose l'activation des presets." },
     { kind: "improvement", text: "Bordereau PWA mis à jour vers experience-v243." }
   ]),
+  entry("v244", "2026-08-07", "Topbar unifiée et cohérente", [
+    { kind: "improvement", text: "Tous les boutons de la barre d'outils topbar partagent le même style visuel : bordure, fond, survol et focus." },
+    { kind: "improvement", text: "Les status Focus, Brain et Sync conservent leur indicateur coloré dans une forme uniforme." },
+    { kind: "improvement", text: "Adaptation tactile pour les contrôles topbar sur mobile." },
+    { kind: "improvement", text: "Bordereau PWA mis à jour vers experience-v244." }
+  ]),
   entry("v240", "2026-08-07", "Corrections LoL, responsive mobile et accessibilité commande", [
     { kind: "fix", text: "Correction de deriveLolDdragonVersion : la version est désormais extraite proprement du gameVersion Riot (fallback 16.15.1)." },
     { kind: "fix", text: "Le widget LoL tente DDragon, CommunityDragon puis l'icône de fallback sans boucle infinie si les images échouent." },

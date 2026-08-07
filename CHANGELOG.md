@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v244] - 2026-08-07
+
+### Changé
+- **Topbar unifiée** : tous les boutons de la barre d'outils supérieure partagent le même style visuel (bordure, fond, survol, focus).
+- Focus, Brain et Sync conservent leur indicateur coloré dans une silhouette identique aux autres contrôles.
+- Meilleure adaptation tactile des boutons topbar sur mobile.
+- Bordereau PWA mis à jour vers `experience-v244`.
+
 ## [v243] - 2026-08-07
 
 ### Ajouté

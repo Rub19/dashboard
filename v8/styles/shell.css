@@ -3870,3 +3870,12 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
 .v8-setting-choice,
 .v8-theme-choice,
 .v8-density-choice { transition:background-color var(--v8-motion-fast),color var(--v8-motion-fast); }
+
+@media (max-width: 1024px) {
+  .v8-topbar__main { grid-template-columns: minmax(180px, 1fr) minmax(140px, .8fr) minmax(180px, 1fr); }
+}
+@media (max-width: 380px) {
+  .v8-dock-app,.v8-dock-control,.v8-dock-more { width: 46px; height: 50px; flex: 0 0 46px; }
+  .v8-dock-control,.v8-dock-more { width: 38px; flex-basis: 38px; }
+  .v8-dock-app__plate { width: 38px; height: 38px; }
+}

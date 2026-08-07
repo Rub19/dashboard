@@ -1,4 +1,4 @@
-const TOUCH_QUERY = "(max-width: 820px), (pointer: coarse)";
+const TOUCH_QUERY = "(max-width: 820px), (pointer: coarse), (hover: none)";
 const LONG_PRESS_SELECTOR = "[data-task-id], [data-file-entry], [data-profile-id]";
 const EDITABLE_SELECTOR = "input:not([type='hidden']), textarea, select, [contenteditable='true']";
 

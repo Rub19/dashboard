@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v239] - 2026-08-07
+
+### Changé
+- **Responsive mobile** : amélioration du mode tactile (iPad/tablettes), meilleure prise en charge des petits écrans.
+- **Topbar, Dock** : ajustements des colonnes et tailles pour mobile.
+- **Activity / Connections** : grilles et cartes mieux adaptées aux petits écrans.
+- Bordereau PWA mis à jour vers `experience-v239`.
+
 ## [v238] - 2026-08-07
 
 ### Changé

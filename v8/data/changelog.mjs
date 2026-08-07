@@ -24,6 +24,12 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v239", "2026-08-07", "Améliorations responsive et mobile", [
+    { kind: "improvement", text: "Meilleure gestion du mode tactile (iPad, tablettes) avec hover: none dans le touch query." },
+    { kind: "improvement", text: "Les actions de ligne restent visibles sur les appareils à pointeur grossier." },
+    { kind: "improvement", text: "Breakpoints responsive pour topbar et dock sur petits ecrans." },
+    { kind: "improvement", text: "Bordereau PWA mis à jour vers experience-v239." }
+  ]),
   entry("v238", "2026-08-07", "Barres de groupe style tracker.gg sur le scoreboard", [
     { kind: "improvement", text: "La barre colorée de gauche est maintenant plus visible (5px pleine hauteur) et suit la couleur du groupe/party, comme sur tracker.gg." },
     { kind: "improvement", text: "Le joueur et ses coéquipiers de groupe partagent la même couleur de barre." },

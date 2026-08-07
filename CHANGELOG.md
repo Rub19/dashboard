@@ -8,6 +8,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - **LoL** : les images de champions, items et profil utilisent maintenant la version DDragon de secours (`16.15.1`) si la version exacte de la partie n'existe pas chez DDragon.
 - **LoL** : l'avatar de profil affiche l'icône par défaut si l'icône du joueur manque.
 - **Cache** : le cache `sessionStorage` est invalidé pour forcer le rechargement avec les images corrigées.
+- **Service Worker** : version incrémentée à `experience-v234` pour forcer le rafraîchissement du cache PWA et appliquer les corrections côté client.
 
 ### Déploié
 - Worker Cloudflare redéployé avec les corrections d'images.

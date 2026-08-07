@@ -24,6 +24,13 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v254", "2026-08-07", "Notifications, suggestions Brain et import/export configuration", [
+    { kind: "feature", text: "Centre de notifications : historique persistant, categories, priorite, badge et panneau." },
+    { kind: "feature", text: "Silencieux par categorie pour les notifications avec persistance." },
+    { kind: "feature", text: "Suggestions Brain contextuelles sur le dashboard : focus, calendrier, notes." },
+    { kind: "feature", text: "Import/export complet de la configuration ETHONE depuis les reglages." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v254." }
+  ]),
   entry("v253", "2026-08-07", "Refonte graphique Notes, Tâches et personnalisation du dashboard", [
     { kind: "feature", text: "Nouvelle mise en page centree des Notes sous forme de feuille avec largeur de lecture confortable." },
     { kind: "feature", text: "Vue tableau Kanban sur les Tâches avec colonnes À faire et Terminées." },

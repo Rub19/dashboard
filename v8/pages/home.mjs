@@ -407,7 +407,24 @@ export function mountHome(stage, model, options = {}) {
     ])
   ]);
 
-  const brainSuggestion = model.briefing.suggestion;
+  function deriveBrainSuggestion() {
+    const highTask = model.nextTasks.find((task) => task.priority === "high");
+    const nextTask = highTask || model.nextTasks[0];
+    if (nextTask) {
+      return { title: `Focus recommandé : ${nextTask.title}`, detail: "Votre prochaine action prioritaire. Un focus de 25 min ferait avancer la journée.", actionId: "v8.focus.start.pomodoro", icon: "timer", label: "Focus 25m", userContent: true };
+    }
+    if (model.todayEvents.length) {
+      const event = model.todayEvents[0];
+      return { title: "Prochain événement", detail: event.title, actionId: "v8.calendar.open", icon: "calendar-days", label: "Calendrier" };
+    }
+    if (model.recentNotes.length) {
+      const note = model.recentNotes[0];
+      return { title: `Continuer ${note.title}`, detail: "Reprendre votre dernière note là où vous l'avez laissée.", actionId: "v8.notes.open", icon: "notebook-pen", label: "Reprendre", userContent: true };
+    }
+    return { title: "Brain est disponible", detail: "Dites un objectif, une idée ou une question. Brain vous guide vers la prochaine action.", actionId: "v8.brain.open", icon: "brain", label: "Ouvrir Brain" };
+  }
+
+  const brainSuggestion = briefingEnabled ? deriveBrainSuggestion() : model.briefing.suggestion;
   const brainStrip = element("section", { className: "v8-home-brain v8-surface", dataset: { liveWidget: "brain", liveKind: "brain" } }, [
     element("span", { className: "v8-home-brain__icon" }, [icon("brain")]),
     element("div", { className: "v8-home-brain__copy" }, [

@@ -1993,8 +1993,18 @@ html[data-v8-interactions] .v8-panel-notice:hover > .v8-selection-control,.v8-pa
 .v8-panel-notice__icon svg { width: var(--v8-icon-md); height: var(--v8-icon-md); }
 .v8-panel-notice strong { font-size: var(--v8-font-xs); }
 .v8-panel-notice p { margin-top: 3px; color: var(--v8-muted); font-size: var(--v8-font-micro); line-height: 1.45; }
-.v8-panel-notice__meta { display: block; margin-bottom: 2px; color: var(--v8-muted); font-size: var(--v8-font-micro); }
+.v8-panel-notice__meta { display: flex; align-items: center; gap: var(--v8-space-2); margin-bottom: 2px; color: var(--v8-muted); font-size: var(--v8-font-micro); }
+.v8-panel-notice__category { padding: 1px 6px; border: 1px solid var(--v8-border); border-radius: var(--v8-radius-pill); background: var(--v8-surface-sunken); font-size: 10px; text-transform: uppercase; letter-spacing: 0.03em; }
 .v8-panel-notice__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--v8-info); }
+.v8-panel-notice--priority-high { border-left: 3px solid var(--v8-danger); }
+.v8-panel-notice--priority-medium { border-left: 3px solid var(--v8-info); }
+.v8-panel-notice--priority-low { border-left: 3px solid var(--v8-success); }
+.v8-notification-mute { display: flex; flex-wrap: wrap; align-items: center; gap: var(--v8-space-2); padding: var(--v8-space-3); border: 1px solid var(--v8-border); border-radius: var(--v8-radius-md); background: var(--v8-surface-1); }
+.v8-notification-mute > strong { width: 100%; color: var(--v8-text-secondary); font-size: var(--v8-font-xs); font-weight: var(--v8-weight-semibold); }
+.v8-notification-mute__cat { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border: 1px solid var(--v8-border); border-radius: var(--v8-radius-pill); background: var(--v8-surface-2); color: var(--v8-text-secondary); font-size: var(--v8-font-micro); cursor: pointer; }
+.v8-notification-mute__cat.is-muted { opacity: .55; background: var(--v8-surface-sunken); color: var(--v8-muted); }
+.v8-notification-mute__cat:focus-visible { box-shadow: var(--v8-shadow-focus); }
+.v8-notification-mute__cat svg { width: 14px; height: 14px; }
 .v8-changelog-intro { margin-bottom: var(--v8-space-3); color: var(--v8-muted); font-size: var(--v8-font-xs); line-height: 1.5; }
 .v8-changelog-list { display: grid; gap: var(--v8-space-3); }
 .v8-changelog-entry { padding: var(--v8-space-4); border: 1px solid var(--v8-border); border-radius: var(--v8-radius-md); background: var(--v8-surface-1); box-shadow: inset 0 1px 0 var(--v8-surface-glint); }

@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v254] - 2026-08-07
+
+### Ajouté
+- **Centre de notifications** : historique persistant, catégories, priorité, badge cloche, panneau et mode silencieux par catégorie.
+- **Toasts intelligents** : les notifications stockées en `localStorage`, avec compteur de non-lues et signalement des alertes importantes.
+- **Suggestions Brain sur le dashboard** : proposition contextuelle de focus, événement, note récente ou ouverture Brain.
+- **Import / export complet de la configuration ETHONE** dans les réglages (Système), incluant le `localStorage` et l'état actuel.
+
+### Modifié
+- Bordereau PWA mis à jour vers `experience-v254`.
+
 ## [v253] - 2026-08-07
 
 ### Ajouté

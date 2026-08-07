@@ -37,7 +37,7 @@ import { clearPendingOAuthAuthorize, consumeOAuthCallback, readPendingOAuthAutho
 import { mountShell } from "../ui/shell.mjs";
 import { mountFocusIsland } from "../ui/focus-island.mjs";
 import { createPanelManager } from "../ui/panel.mjs";
-import { createToastManager } from "../ui/toast.mjs";
+import { createNotificationManager } from "../ui/notification-center.mjs";
 import { createMissionControl } from "../ui/mission-control.mjs";
 import { createContextMenu } from "../ui/context-menu.mjs";
 import { shouldPreserveBrowserContextMenu } from "../ui/native-behavior.mjs";
@@ -420,7 +420,7 @@ export function mountApplication(root, options = {}) {
   }, { immediate: false }) || (() => {});
   presence.signalIcon?.("brain");
   if (initialCalendar === "approaching") presence.signalIcon?.("calendar");
-  const toasts = createToastManager(shell.toastRegion, { sounds, presence });
+  const toasts = createNotificationManager(shell.toastRegion, { sounds, presence });
   const focusTimer = options.focusTimer || createFocusTimer({
     onTick: (state) => {
       const label = document.getElementById("v8-focus-timer-label");
@@ -573,6 +573,7 @@ export function mountApplication(root, options = {}) {
     snapshot: () => repository.snapshot(),
     getState: () => store.getState(),
     repository,
+    notifications: toasts,
     currentLocale: () => i18n?.locale?.() || "fr",
     onLocaleChange: (locale) => i18n?.setLocale?.(locale),
     onClose: () => actions?.dispatch("v8.panel.close", { source: "keyboard" }),
@@ -614,7 +615,11 @@ export function mountApplication(root, options = {}) {
       return;
     }
   }
-  let unreadNotifications = panels.notificationCount();
+  let unreadNotifications = toasts.unreadCount();
+  const releaseNotifications = toasts.subscribe((count) => {
+    unreadNotifications = count;
+    presence.update({ notifications: count });
+  });
   presence.update({ notifications: unreadNotifications });
   const commandCenter = createCommandCenter(shell.commandHost, {
     history,
@@ -1103,6 +1108,7 @@ export function mountApplication(root, options = {}) {
     shortcutsOverlay.destroy();
     panels.destroy();
     toasts.destroy();
+    releaseNotifications();
     activityJournal.destroy();
     lifecycle.unmount();
     releaseFormSystem();

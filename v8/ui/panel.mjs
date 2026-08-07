@@ -14,11 +14,28 @@ const PANEL_COPY = Object.freeze({
   changelog: { title: "Notes de version", eyebrow: "Historique ETHONE", icon: "sparkles" }
 });
 
-const NOTIFICATION_ITEMS = Object.freeze([
-  Object.freeze({ id: "cloud-sync", icon: "cloud", title: "Cloud Sync", message: "Les données locales sont à jour.", tone: "success", category: "system", time: "À l'instant" }),
-  Object.freeze({ id: "brain-context", icon: "brain", title: "Brain est contextuel", message: "Les suggestions suivent maintenant la page et le Space actifs.", tone: "brain", category: "brain", time: "Il y a 2 min" }),
-  Object.freeze({ id: "experience-update", icon: "sparkles", title: "Experience 1.0", message: "Le nouveau Shell et Mission Control sont disponibles.", tone: "info", category: "updates", time: "Aujourd'hui" })
-]);
+const NOTIFICATION_ICONS = Object.freeze({
+  success: "check-circle-2",
+  error: "circle-alert",
+  warning: "triangle-alert",
+  info: "info",
+  sync: "refresh-cw",
+  update: "circle-arrow-up",
+  brain: "brain",
+  loading: "loader-circle"
+});
+
+function formatTime(ts) {
+  const diff = Date.now() - (ts || Date.now());
+  const sec = Math.floor(diff / 1000);
+  if (sec < 60) return "À l'instant";
+  const min = Math.floor(sec / 60);
+  if (min < 60) return `Il y a ${min} min`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return `Il y a ${h}h`;
+  const d = Math.floor(h / 24);
+  return `Il y a ${d}j`;
+}
 
 function panelMetric(iconName, value, label) {
   return element("div", { className: "v8-panel-metric", dataset: { liveWidget: "metric", liveKind: "metric" } }, [
@@ -31,14 +48,15 @@ function panelMetric(iconName, value, label) {
 function notification(item, state = {}) {
   const selected = state.selected === true;
   const read = state.read === true;
+  const iconName = NOTIFICATION_ICONS[item.type] || NOTIFICATION_ICONS.info;
   return element("article", {
-    className: `v8-panel-notice v8-panel-notice--${item.tone}${selected ? " is-selected" : ""}${read ? " is-read" : ""}`,
+    className: `v8-panel-notice v8-panel-notice--${item.type}${selected ? " is-selected" : ""}${read ? " is-read" : ""}${item.priority ? ` v8-panel-notice--priority-${item.priority}` : ""}`,
     attributes: { role: "listitem", tabindex: "0", "aria-selected": selected ? "true" : "false" },
     dataset: { notificationId: item.id }
   }, [
     selectionControl({ id: item.id, checked: selected, label: `Selectionner ${item.title}` }),
-    element("span", { className: "v8-panel-notice__icon" }, [icon(item.icon)]),
-    element("div", {}, [element("span", { className: "v8-panel-notice__meta", text: item.time }), element("strong", { text: item.title }), element("p", { text: item.message })]),
+    element("span", { className: "v8-panel-notice__icon" }, [icon(iconName)]),
+    element("div", {}, [element("span", { className: "v8-panel-notice__meta" }, [element("span", { text: formatTime(item.timestamp) }), item.category ? element("span", { className: "v8-panel-notice__category", text: String(item.category), attributes: { translate: "no" } }) : null]), element("strong", { text: item.title }), element("p", { text: item.message })]),
     read ? null : element("span", { className: "v8-panel-notice__dot", attributes: { "aria-label": "Non lue" } }),
     element("div", { className: "v8-row-actions" }, [element("button", {
       className: "v8-icon-button",
@@ -229,24 +247,41 @@ export function createPanelManager(host, options = {}) {
   }
 
   function notificationsContent() {
+    const notifications = options.notifications;
+    const hasManager = notifications && typeof notifications.getHistory === "function";
+    const categories = hasManager ? notifications.getCategories() : ["system", "brain", "updates"];
+    const allItems = () => (hasManager ? notifications.getHistory() : []);
+
     const search = element("input", { className: "v8-input", attributes: { type: "search", placeholder: "Rechercher", "aria-label": "Rechercher dans les notifications", autocomplete: "off" } });
     search.value = notificationQuery;
-    const filter = createSelect({ className: "v8-input", attributes: { "aria-label": "Filtrer les notifications" } }, [
-      element("option", { text: "Toutes", attributes: { value: "all" } }),
-      element("option", { text: "Non lues", attributes: { value: "unread" } }),
-      element("option", { text: "Système", attributes: { value: "system" } }),
-      element("option", { text: "Brain", attributes: { value: "brain" } }),
-      element("option", { text: "Mises à jour", attributes: { value: "updates" } })
-    ]);
+    const filterOptions = [element("option", { text: "Toutes", attributes: { value: "all" } }), element("option", { text: "Non lues", attributes: { value: "unread" } })];
+    categories.forEach((cat) => {
+      const label = String(cat).charAt(0).toUpperCase() + String(cat).slice(1);
+      filterOptions.push(element("option", { text: label, attributes: { value: cat } }));
+    });
+    const filter = createSelect({ className: "v8-input", attributes: { "aria-label": "Filtrer les notifications" } }, filterOptions);
     filter.value = notificationFilter;
     const list = element("div", { className: "v8-panel-notices", attributes: { role: "list", "aria-label": "Notifications" } });
     const bulkHost = element("div", { className: "v8-panel-bulk" });
+
+    const muteHeader = element("div", { className: "v8-notification-mute" }, [element("strong", { text: "Silencieux par catégorie" })]);
+    categories.forEach((cat) => {
+      const muted = hasManager ? notifications.isMuted(cat) : false;
+      const button = element("button", {
+        className: `v8-notification-mute__cat${muted ? " is-muted" : ""}`,
+        attributes: { type: "button", title: muted ? `Réactiver ${cat}` : `Mettre ${cat} en sourdine` },
+        dataset: { muteCategory: cat }
+      }, [icon(muted ? "volume-x" : "volume-2"), element("span", { text: cat })]);
+      muteHeader.append(button);
+    });
+
     const content = element("div", { className: "v8-panel__content v8-panel__content--notifications" }, [
       element("div", { className: "v8-panel-list-toolbar" }, [
         element("div", { className: "v8-input-wrap" }, [icon("search"), search]),
         filter,
         element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Tout marquer comme lu" }, dataset: { notificationReadAll: "" } }, [icon("check-check")])
       ]),
+      hasManager ? muteHeader : null,
       bulkHost,
       list,
       actionButton({ actionId: "v8.sync.refresh", variant: "secondary" }, [icon("refresh-cw"), element("span", { text: "Vérifier la synchronisation" })])
@@ -254,31 +289,38 @@ export function createPanelManager(host, options = {}) {
 
     function availableItems() {
       const normalized = notificationQuery.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
-      return NOTIFICATION_ITEMS.filter((item) => {
-        if (dismissedNotifications.has(item.id)) return false;
-        if (notificationFilter === "unread" && readNotifications.has(item.id)) return false;
+      return allItems().filter((item) => {
+        if (notificationFilter === "unread" && item.read) return false;
         if (!["all", "unread"].includes(notificationFilter) && item.category !== notificationFilter) return false;
-        return !normalized || [item.title, item.message, item.category].join(" ").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().includes(normalized);
+        const text = [item.title, item.message, item.category].join(" ").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        return !normalized || text.includes(normalized);
       });
     }
 
     function markRead(ids, read = true) {
-      ids.forEach((id) => read ? readNotifications.add(id) : readNotifications.delete(id));
+      if (hasManager) notifications.markRead(ids, read);
       notificationSelection.clear();
       render();
     }
 
     function archive(ids) {
-      ids.forEach((id) => dismissedNotifications.add(id));
+      if (hasManager) notifications.archive(ids);
       notificationSelection.clear();
       render();
     }
 
+    function toggleMute(category) {
+      if (!hasManager) return;
+      if (notifications.isMuted(category)) notifications.unmuteCategory(category);
+      else notifications.muteCategory(category);
+      render();
+    }
+
     function openNotificationMenu(id, anchor, point = null) {
-      const item = NOTIFICATION_ITEMS.find((entry) => entry.id === id);
+      const item = allItems().find((entry) => entry.id === id);
       if (!item) return false;
       return notificationMenu.open(anchor, [
-        { label: readNotifications.has(id) ? "Marquer comme non lue" : "Marquer comme lue", icon: readNotifications.has(id) ? "mail" : "mail-check", onSelect: () => markRead([id], !readNotifications.has(id)) },
+        { label: item.read ? "Marquer comme non lue" : "Marquer comme lue", icon: item.read ? "mail" : "mail-check", onSelect: () => markRead([id], !item.read) },
         { label: notificationSelection.has(id) ? "Retirer de la sélection" : "Ajouter à la sélection", icon: notificationSelection.has(id) ? "square-minus" : "square-check-big", onSelect: () => { notificationSelection.toggle(id); render(); } },
         { separator: true },
         { label: "Archiver", icon: "archive", tone: "danger", onSelect: () => archive([id]) }
@@ -286,7 +328,7 @@ export function createPanelManager(host, options = {}) {
     }
 
     function render() {
-      const available = NOTIFICATION_ITEMS.filter((item) => !dismissedNotifications.has(item.id));
+      const available = allItems();
       notificationSelection.prune(available.map((item) => item.id));
       const visible = availableItems();
       const selectedCount = notificationSelection.size();
@@ -301,6 +343,22 @@ export function createPanelManager(host, options = {}) {
           { label: "Archiver", icon: "archive", tone: "danger", onSelect: () => archive(notificationSelection.values()) }
         ]
       }));
+      if (hasManager) {
+        const cats = notifications.getCategories();
+        const container = content.querySelector(".v8-notification-mute");
+        if (container) {
+          container.replaceChildren(element("strong", { text: "Silencieux par catégorie" }));
+          cats.forEach((cat) => {
+            const muted = notifications.isMuted(cat);
+            const button = element("button", {
+              className: `v8-notification-mute__cat${muted ? " is-muted" : ""}`,
+              attributes: { type: "button", title: muted ? `Réactiver ${cat}` : `Mettre ${cat} en sourdine` },
+              dataset: { muteCategory: cat }
+            }, [icon(muted ? "volume-x" : "volume-2"), element("span", { text: cat })]);
+            container.append(button);
+          });
+        }
+      }
       list.replaceChildren();
       if (!visible.length) {
         list.append(emptyState({
@@ -312,7 +370,7 @@ export function createPanelManager(host, options = {}) {
           compact: true
         }));
       } else {
-        visible.forEach((item) => list.append(notification(item, { selected: notificationSelection.has(item.id), read: readNotifications.has(item.id) })));
+        visible.forEach((item) => list.append(notification(item, { selected: notificationSelection.has(item.id), read: item.read })));
       }
       refreshIcons();
     }
@@ -329,8 +387,16 @@ export function createPanelManager(host, options = {}) {
         openNotificationMenu(menu.dataset.notificationMenu, menu);
         return;
       }
+      const mute = event.target.closest("[data-mute-category]");
+      if (mute && content.contains(mute)) {
+        toggleMute(mute.dataset.muteCategory);
+        return;
+      }
       if (event.target.closest("[data-notification-read-all]")) {
-        markRead(NOTIFICATION_ITEMS.filter((item) => !dismissedNotifications.has(item.id)).map((item) => item.id), true);
+        if (hasManager) notifications.markAllRead();
+        else markRead(allItems().map((item) => item.id), true);
+        notificationSelection.clear();
+        render();
         return;
       }
       const row = event.target.closest("[data-notification-id]");
@@ -499,7 +565,7 @@ export function createPanelManager(host, options = {}) {
     open,
     close,
     current: () => mountedId,
-    notificationCount: () => NOTIFICATION_ITEMS.filter((item) => !dismissedNotifications.has(item.id) && !readNotifications.has(item.id)).length,
+    notificationCount: () => options.notifications?.unreadCount?.() || 0,
     destroy: () => {
       clearInterval(focusInterval);
       notificationMenu.destroy();

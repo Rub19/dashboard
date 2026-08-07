@@ -363,6 +363,9 @@ export function mountSettings(stage, options = {}) {
 
   const profile = options.profile || null;
   const canUploadMedia = Boolean(options.clientProvider && options.ownerId && profile?.id);
+  const configExportButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { settingsConfigExport: "" } }, [icon("download"), element("span", { text: "Exporter" })]);
+  const configImportInput = element("input", { attributes: { type: "file", accept: "application/json", "aria-label": "Importer une configuration ETHONE" }, dataset: { settingsConfigImport: "" } });
+  const configImportButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { settingsConfigImportTrigger: "" } }, [icon("upload"), element("span", { text: "Importer" }) ]);
   const nameInput = element("input", { className: "v8-input", attributes: { type: "text", value: profile?.name || "", maxlength: "80", placeholder: "Nom du profil", "aria-label": "Nom du profil", disabled: !profile?.id || null } });
   const nameStatus = element("p", { className: "v8-settings-diagnostic-note", attributes: { "aria-live": "polite" } });
   const nameSaveButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button", disabled: !profile?.id || null } }, [icon("check"), element("span", { text: "Enregistrer" })]);
@@ -413,7 +416,7 @@ export function mountSettings(stage, options = {}) {
               bannerMediaStatus
             ])
           ]),
-          settingRow("badge-check", "Notes de version (Changelog)", "Consulter l'historique des mises Ã  jour, nouveautés et correctifs d'ETHONE v194.", actionButton({ actionId: "v8.changelog.open", variant: "secondary" }, [icon("badge-check"), element("span", { text: "Ouvrir le Changelog" })]))
+          settingRow("badge-check", "Notes de version (Changelog)", "Consulter l'historique des mises Ã  jour, nouveautés et correctifs d'ETHONE v194.", actionButton({ actionId: "v8.changelog.open", variant: "secondary" }, [icon("badge-check"), element("span", { text: "Ouvrir le Changelog" })])),
         ]),
         element("section", { id: "v8-settings-appearance", className: "v8-settings-section v8-surface", attributes: { role: "tabpanel", tabindex: "0", hidden: true } }, [
           element("header", {}, [element("span", { className: "v8-eyebrow", text: "Design System" }), element("h2", { text: "Apparence" }), element("p", { text: "Des réglages sobres, coherents et persistants." })]),
@@ -536,7 +539,8 @@ export function mountSettings(stage, options = {}) {
             element("span", {}, [icon("cloud"), element("strong", { text: "Supabase" }), element("b", { text: SYNC_LABELS[state.syncStatus] || "Connexion" })]),
             element("span", {}, [icon("gauge"), element("strong", { text: "Interface" }), element("b", { text: DENSITY_LABELS[state.density] || "Confortable" })])
           ]),
-          settingRow("badge-check", "Notes de version (Changelog)", "Consulter l'historique des mises Ã  jour, nouveautés et correctifs d'ETHONE v194.", actionButton({ actionId: "v8.changelog.open", variant: "secondary" }, [icon("badge-check"), element("span", { text: "Ouvrir le Changelog" })]))
+          settingRow("badge-check", "Notes de version (Changelog)", "Consulter l'historique des mises Ã  jour, nouveautés et correctifs d'ETHONE v194.", actionButton({ actionId: "v8.changelog.open", variant: "secondary" }, [icon("badge-check"), element("span", { text: "Ouvrir le Changelog" })])),
+          settingRow("archive", "Configuration ETHONE", "Exporter ou importer l'ensemble des réglages et préférences locales.", element("div", { className: "v8-brain-settings-inline" }, [configExportButton, configImportButton, configImportInput]))
         ]),
         element("section", { id: "v8-settings-developer", className: "v8-settings-section v8-surface", attributes: { role: "tabpanel", tabindex: "0", hidden: true } }, [
           element("header", {}, [
@@ -1039,6 +1043,52 @@ export function mountSettings(stage, options = {}) {
     brainMemoryStatus.textContent = response?.message || "Suppression indisponible.";
     if (response?.ok) await renderSettingsMemories();
   }, { signal: controller.signal });
+
+  function getAllLocal() {
+    const data = {};
+    try {
+      for (let i = 0; i < globalThis.localStorage.length; i++) {
+        const key = globalThis.localStorage.key(i);
+        if (key) data[key] = globalThis.localStorage.getItem(key);
+      }
+    } catch { /* silent */ }
+    return data;
+  }
+
+  page.querySelector("[data-settings-config-export]")?.addEventListener("click", () => {
+    const config = { version: 1, timestamp: Date.now(), state: latestState, local: getAllLocal() };
+    downloadJson(config, "ethone-config.json");
+  }, { signal: controller.signal });
+
+  page.querySelector("[data-settings-config-import-trigger]")?.addEventListener("click", () => {
+    configImportInput.click();
+  }, { signal: controller.signal });
+
+  configImportInput.addEventListener("change", async () => {
+    const file = configImportInput.files?.[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const config = JSON.parse(text);
+      if (!config || typeof config !== "object") throw new Error("Fichier invalide");
+      if (!confirm("Cela remplacera vos réglages locaux par ceux du fichier. Continuer ?")) return;
+      if (config.local && typeof config.local === "object") {
+        Object.entries(config.local).forEach(([key, value]) => {
+          try { globalThis.localStorage.setItem(key, value); } catch { /* silent */ }
+        });
+      }
+      if (config.state && typeof config.state === "object") {
+        Object.entries(config.state).forEach(([key, value]) => {
+          if (value !== undefined) latestState[key] = value;
+        });
+      }
+      alert("Configuration importée. ETHONE va se recharger.");
+      globalThis.location.reload();
+    } catch (err) {
+      alert(`Import échoué : ${err.message}`);
+    }
+  }, { signal: controller.signal });
+
   refreshIcons();
   return () => {
     unsubscribeState();

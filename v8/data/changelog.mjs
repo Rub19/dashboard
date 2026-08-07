@@ -24,6 +24,12 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v247", "2026-08-07", "Centre d'activité intelligent : pagination et actions contextuelles", [
+    { kind: "feature", text: "Pagination du flux d'activité avec bouton Charger plus par lots de 15 signaux." },
+    { kind: "feature", text: "Actions contextuelles sur chaque entrée : copier le titre, filtrer par catégorie et ouvrir la source associée." },
+    { kind: "improvement", text: "Compteur d'activité affichant le nombre de signaux visibles sur le total filtré." },
+    { kind: "improvement", text: "Bordereau PWA mis à jour vers experience-v247." }
+  ]),
   entry("v246", "2026-08-07", "Scoreboard LoL type tracker.gg et icônes DDragon", [
     { kind: "feature", text: "Scoreboard détaillé League of Legends enrichi aux stats Riot : objectifs d'équipe (Barons, Dragons, Tours), dégâts subis, dégâts aux objectifs, score de vision, CS/min, GPM et DPM." },
     { kind: "feature", text: "Mise en page tracker.gg du scoreboard LoL avec en-têtes d'équipe colorés et grille par équipe." },

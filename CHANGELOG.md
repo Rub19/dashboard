@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v247] - 2026-08-07
+
+### Ajouté
+- **Pagination du flux d'activité** : bouton `Charger plus` par lots de 15 signaux.
+- **Actions contextuelles** sur chaque entrée du journal : copier le titre, filtrer par catégorie, ouvrir la source.
+
+### Amélioré
+- Compteur d'activité affichant le nombre de signaux visibles sur le total filtré.
+- Bordereau PWA mis à jour vers `experience-v247`.
+
 ## [v246] - 2026-08-07
 
 ### Ajouté

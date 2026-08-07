@@ -284,3 +284,11 @@ html[data-v8-interactions] .v8-connection-card:hover .v8-connection-card__action
 .v8-connection-badge--square { border-radius: var(--v8-radius-sm); }
 .v8-connection-credential__link { color: var(--v8-accent); margin-left: 4px; text-decoration: none; }
 .v8-connection-credential__link:hover { text-decoration: underline; }
+.v8-live-entry__actions { display:flex;gap:4px;margin-top:6px;opacity:0;transform:translateY(2px);transition:opacity var(--v8-motion-fast) var(--v8-ease-standard),transform var(--v8-motion-fast) var(--v8-ease-standard); }
+.v8-live-entry__action { display:inline-flex;width:28px;height:28px;align-items:center;justify-content:center;border:1px solid var(--v8-border);border-radius:var(--v8-radius-sm);background:var(--v8-surface-2);color:var(--v8-text-secondary);cursor:pointer;outline:none; }
+.v8-live-entry__action:hover { background:var(--v8-surface-3);color:var(--v8-text); }
+.v8-live-entry__action:focus-visible { box-shadow:var(--v8-shadow-focus); }
+.v8-live-entry__action svg { width:14px;height:14px; }
+.v8-live-entry:hover .v8-live-entry__actions,.v8-live-entry:focus-within .v8-live-entry__actions,.v8-live-entry.is-actions-visible .v8-live-entry__actions { opacity:1;transform:translateY(0); }
+@media (pointer:coarse){.v8-live-entry__actions{opacity:1;transform:none;}}
+.v8-activity-load-more { width:100%;margin-top:var(--v8-space-4); }

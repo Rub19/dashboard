@@ -156,7 +156,72 @@ function sortEvents(events, order) {
   });
 }
 
-function timelineEntry(event) {
+const SOURCE_ROUTE = Object.freeze({
+  notes: "v8.notes.open",
+  tasks: "v8.tasks.open",
+  calendar: "v8.calendar.open",
+  files: "v8.files.open",
+  brain: "v8.brain.open",
+  connections: "v8.connections.open",
+  settings: "v8.settings.open",
+  home: "v8.home.open",
+  activity: "v8.activity.open",
+  spaces: "v8.spaces.open",
+  flows: "v8.flows.open",
+  widgets: "v8.widgets.open"
+});
+
+function entryActions(event, context) {
+  if (!context) return null;
+  const { actions, translateSource, onFilter, onOpen } = context;
+  const buttons = [];
+
+  const copy = element("button", {
+    className: "v8-live-entry__action",
+    attributes: { type: "button", "aria-label": `${translateSource("Copier")} ${event.title || ""}` },
+    events: {
+      click: (e) => {
+        e.stopPropagation();
+        navigator.clipboard?.writeText?.(String(event.title || event.description || "")).catch(() => {});
+      }
+    }
+  }, [icon("copy")]);
+  buttons.push(copy);
+
+  if (event.category && event.category !== "all") {
+    const filter = element("button", {
+      className: "v8-live-entry__action",
+      attributes: { type: "button", "aria-label": `${translateSource("Filtrer")}` },
+      events: {
+        click: (e) => {
+          e.stopPropagation();
+          onFilter(event.category);
+        }
+      }
+    }, [icon("filter")]);
+    buttons.push(filter);
+  }
+
+  const route = event.source ? SOURCE_ROUTE[event.source] : null;
+  const url = event.url || (route ? null : null);
+  if (route || url) {
+    const open = element("button", {
+      className: "v8-live-entry__action",
+      attributes: { type: "button", "aria-label": translateSource("Ouvrir") },
+      events: {
+        click: (e) => {
+          e.stopPropagation();
+          onOpen(route, url);
+        }
+      }
+    }, [icon("arrow-up-right")]);
+    buttons.push(open);
+  }
+
+  return buttons.length ? element("div", { className: "v8-live-entry__actions" }, buttons) : null;
+}
+
+function timelineEntry(event, context) {
   return element("article", { className: `v8-live-entry v8-live-entry--${event.tone || "default"}`, attributes: { tabindex: "0" } }, [
     element("time", { className: "v8-live-entry__time", text: timeLabel(event.timestamp), attributes: { datetime: event.timestamp || null } }),
     element("span", { className: "v8-live-entry__node", attributes: { "aria-hidden": "true" } }),
@@ -165,7 +230,8 @@ function timelineEntry(event) {
       element("div", { className: "v8-live-entry__copy" }, [
         element("div", { className: "v8-live-entry__meta" }, [element("strong", { text: sourceName(event.source), attributes: { translate: "no" } }), element("span", { text: relativeLabel(event.timestamp) })]),
         element("h3", { text: event.title, attributes: { translate: "no" } }),
-        element("p", { text: event.description })
+        element("p", { text: event.description }),
+        entryActions(event, context)
       ]),
       element("span", { className: `v8-live-entry__category v8-live-entry__category--${event.category}`, text: event.category })
     ])
@@ -259,6 +325,9 @@ export function mountActivity(stage, options = {}) {
   let googleDrivePresence = googleDriveLive?.state?.() || {};
   let youtubePresence = youtubeLive?.state?.() || {};
   let redditPresence = redditLive?.state?.() || {};
+  let visibleCount = 15;
+  let lastFilterHash = "";
+  const PAGE_SIZE = 15;
   const controller = new AbortController();
 
   const filterBar = element("div", { className: "v8-activity-filters", attributes: { role: "toolbar", "aria-label": "Filtrer l'activité" } });
@@ -304,6 +373,7 @@ export function mountActivity(stage, options = {}) {
   const customizeHost = element("div", { className: "v8-now-customize", attributes: { hidden: true } });
   const customizeToggle = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button", "aria-expanded": "false" } }, [icon("sliders-horizontal"), element("span", { text: "Personnaliser" })]);
   const timeline = element("div", { className: "v8-live-timeline", attributes: { role: "feed", "aria-label": "Flux d'activité" } });
+  const loadMore = element("button", { className: "v8-button v8-button--secondary v8-activity-load-more", attributes: { type: "button" }, events: { click: () => { visibleCount += PAGE_SIZE; render(); } } });
   const countLabel = element("span", { className: "v8-section-count" });
   const search = element("input", { className: "v8-input", attributes: { type: "search", placeholder: "Rechercher dans l'activité", "aria-label": "Rechercher dans l'activité", autocomplete: "off" } });
   const sortSelect = createSelect({ className: "v8-input v8-activity-sort", attributes: { "aria-label": "Trier l'activité" } }, [
@@ -378,7 +448,23 @@ export function mountActivity(stage, options = {}) {
   function render() {
     const snapshot = repository.snapshot();
     const events = journal.entries();
+    const context = {
+      actions,
+      translateSource,
+      onFilter: (category) => { activeFilter = category; query = ""; search.value = ""; render(); },
+      onOpen: (route, url) => {
+        if (url) window.open(String(url), "_blank", "noopener,noreferrer");
+        else if (route) actions.dispatch?.(route);
+      }
+    };
+    const filterHash = `${activeFilter}:${query}:${order}`;
+    if (filterHash !== lastFilterHash) {
+      visibleCount = PAGE_SIZE;
+      lastFilterHash = filterHash;
+    }
     const filtered = sortEvents(events.filter((event) => eventMatches(event, activeFilter) && eventMatchesQuery(event, query)), order);
+    const paged = filtered.slice(0, visibleCount);
+    const hasMore = visibleCount < filtered.length;
     const connections = snapshot.connections || [];
     const connected = connections.filter((connection) => connection.status === "connected");
 
@@ -433,18 +519,24 @@ export function mountActivity(stage, options = {}) {
       className: "v8-empty-state--wide"
     }));
 
-    timeline.replaceChildren(...(filtered.length ? filtered.map(timelineEntry) : [emptyFeed(activeFilter === "all" && !query ? null : () => {
+    const timelineChildren = paged.length ? paged.map((event) => timelineEntry(event, context)) : [emptyFeed(activeFilter === "all" && !query ? null : () => {
       activeFilter = "all";
       query = "";
       search.value = "";
       render();
-    })]));
+    })];
+    if (hasMore) {
+      const remaining = filtered.length - visibleCount;
+      loadMore.textContent = `${translateSource("Charger plus")}${remaining > 0 ? ` (+${remaining})` : ""}`;
+      timelineChildren.push(loadMore);
+    }
+    timeline.replaceChildren(...timelineChildren);
     filterBar.querySelectorAll("[data-activity-filter]").forEach((button) => {
       const active = button.dataset.activityFilter === activeFilter;
       button.classList.toggle("is-active", active);
       button.setAttribute("aria-pressed", active ? "true" : "false");
     });
-    countLabel.textContent = `${filtered.length} ${filtered.length > 1 ? "signaux" : "signal"}`;
+    countLabel.textContent = `${paged.length} / ${filtered.length} ${filtered.length > 1 ? "signaux" : "signal"}`;
     connectionMetric.textContent = String(connected.length);
     signalMetric.textContent = String(events.length);
     const openTasks = (snapshot.tasks || []).filter((task) => !task.done).length;

@@ -24,6 +24,11 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v235", "2026-08-07", "Affiche les duos/groupes adverses sur le scoreboard Valorant", [
+    { kind: "feature", text: "Le scoreboard Valorant affiche les autres duos/groupes détectés via party_id (badge DUO/TEAM orange)." },
+    { kind: "improvement", text: "Le badge de votre propre groupe affiche PARTY si vous êtes plus de 2." },
+    { kind: "improvement", text: "Bordereau PWA mis à jour vers experience-v235." }
+  ]),
   entry("v234", "2026-08-07", "Correction images LoL (champions, items, profil)", [
     { kind: "fix", text: "Toutes les images LoL utilisent la version DDragon connue/fallback (16.15.1) au lieu de la version brute du match qui peut ne pas exister." },
     { kind: "fix", text: "Les avatars de profil LoL retombent sur l'icône par défaut si l'icône du compte manque." },

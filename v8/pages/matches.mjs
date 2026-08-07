@@ -100,6 +100,14 @@ export function mountMatches(container, options = {}) {
     const hasHs = scoreboard.players.some(p => p.stats && (p.stats.headshots != null || p.stats.headshotsPercentage != null));
     const colCount = isLol ? 9 : (hasHs ? 9 : 8);
 
+    const partyCounts = Object.create(null);
+    for (const p of scoreboard.players) {
+      const partyId = p.party_id;
+      if (partyId) partyCounts[partyId] = (partyCounts[partyId] || 0) + 1;
+    }
+    const mePlayer = scoreboard.players.find(p => p.isMe);
+    const myPartySize = mePlayer?.party_id ? (partyCounts[mePlayer.party_id] || 0) : 0;
+
     const container = element("div", { className: "v8-scoreboard" });
     const teams = { Red: [], Blue: [] };
     scoreboard.players.forEach(p => {
@@ -135,7 +143,9 @@ export function mountMatches(container, options = {}) {
       const shots = (Number(p.stats?.headshots) || 0) + (Number(p.stats?.bodyshots) || 0) + (Number(p.stats?.legshots) || 0);
       const kd = deaths ? (kills / deaths).toFixed(2) : kills ? "Perf" : "0.00";
       const hs = shots ? Math.round((Number(p.stats?.headshots) || 0) / shots * 100) : 0;
-      const partyBadge = p.isPartyMember ? element("span", { className: "v8-party-badge v8-party-badge--scoreboard", attributes: { title: "Membre de votre groupe" }, text: "DUO" }) : null;
+      const partyBadge = p.isPartyMember ? element("span", { className: "v8-party-badge v8-party-badge--scoreboard", attributes: { title: "Membre de votre groupe" }, text: myPartySize > 2 ? "PARTY" : "DUO" }) : null;
+      const otherPartySize = !p.isMe && !p.isPartyMember && p.party_id ? (partyCounts[p.party_id] || 0) : 0;
+      const otherPartyBadge = otherPartySize > 1 ? element("span", { className: "v8-party-badge v8-party-badge--scoreboard v8-party-badge--other", attributes: { title: otherPartySize > 2 ? "Membre d'un groupe" : "Membre d'un duo" }, text: otherPartySize > 2 ? "TEAM" : "DUO" }) : null;
       const meBadge = p.isMe ? element("span", { className: "v8-me-badge", text: "MOI" }) : null;
       const rankText = p.currenttier_patched || "—";
       const placeholder = () => element("span", { className: "v8-scoreboard-agent v8-scoreboard-agent--placeholder", text: "?" });
@@ -155,7 +165,7 @@ export function mountMatches(container, options = {}) {
         : null;
       const rowCells = [
         element("td", { className: "v8-scoreboard-agent-cell" }, [agentCell]),
-        element("td", { className: "v8-scoreboard-player-cell" }, [partyBadge, meBadge, element("strong", { text: String(p.name || "—") }), element("span", { className: "v8-scoreboard-tag", text: p.tag ? `#${p.tag}` : "" }), playerMeta].filter(Boolean)),
+        element("td", { className: "v8-scoreboard-player-cell" }, [partyBadge, otherPartyBadge, meBadge, element("strong", { text: String(p.name || "—") }), element("span", { className: "v8-scoreboard-tag", text: p.tag ? `#${p.tag}` : "" }), playerMeta].filter(Boolean)),
         isLol ? null : element("td", { className: "v8-scoreboard-rank", text: String(rankText) }),
         element("td", { className: "v8-scoreboard-number", text: String(p.stats?.score || 0) }),
         element("td", { className: "v8-scoreboard-number", text: String(kills) }),

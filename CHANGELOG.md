@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v235] - 2026-08-07
+
+### Ajouté
+- **Valorant** : le scoreboard affiche maintenant les duos/groupes des autres joueurs (badge `DUO`/`TEAM`) grâce au `party_id` renvoyé par l'API Henrik.
+
+### Changé
+- Badge de votre propre groupe : affiche `PARTY` si vous êtes plus de 2.
+- Bordereau PWA mis à jour vers `experience-v235`.
+
 ## [v234] - 2026-08-07
 
 ### Corrigé

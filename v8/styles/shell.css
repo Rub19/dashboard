@@ -3719,6 +3719,7 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
 .v8-scoreboard-player-cell { overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }.v8-scoreboard-tag { color:var(--v8-muted);font-size:var(--v8-font-xs);margin-left:var(--v8-space-1); }
 .v8-party-badge,.v8-me-badge { display:inline-flex;padding:2px 5px;border-radius:4px;font-size:10px;font-weight:var(--v8-weight-bold);text-transform:uppercase;letter-spacing:.5px;margin-right:var(--v8-space-2); }
 .v8-party-badge { background:color-mix(in srgb,var(--v8-info) 20%,transparent);color:var(--v8-info);border:1px solid color-mix(in srgb,var(--v8-info) 40%,transparent); }
+.v8-party-badge--other { background:color-mix(in srgb,var(--v8-warning) 20%,transparent);color:var(--v8-warning);border:1px solid color-mix(in srgb,var(--v8-warning) 40%,transparent); }
 .v8-me-badge { background:color-mix(in srgb,var(--v8-accent) 20%,transparent);color:var(--v8-accent);border:1px solid color-mix(in srgb,var(--v8-accent) 40%,transparent); }
 .v8-scoreboard-agent-cell { overflow:hidden; }.v8-scoreboard-agent { display:block;width:32px;height:32px;max-width:100%;border-radius:var(--v8-radius-sm);object-fit:cover;background:var(--v8-surface-3); }.v8-scoreboard-agent--placeholder { display:grid;place-items:center;color:var(--v8-muted);font-weight:var(--v8-weight-bold); }
 .v8-scoreboard-table--lol { grid-template-columns:48px minmax(160px,1fr) 100px 72px 44px 44px 44px 64px 52px; }

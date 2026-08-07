@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v243] - 2026-08-07
+
+### Ajouté
+- **Presets d'interface** : 6 ambiances prêtes à l'emploi (Productivité, Focus, Gaming, Créatif, Minimal, Développement) activables depuis les réglages ou le Command Center.
+- **Sauvegarde de configuration** : enregistrer la configuration actuelle comme preset personnalisé et l'exporter en JSON.
+
+### Changé
+- Bordereau PWA mis à jour vers `experience-v243`.
+
 ## [v242] - 2026-08-07
 
 ### Ajouté

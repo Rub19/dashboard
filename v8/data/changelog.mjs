@@ -38,6 +38,13 @@ export const CHANGELOG = Object.freeze([
     { kind: "improvement", text: "Filtre rapide par catégorie dans le Command Center avec /reglages, /nav, etc." },
     { kind: "improvement", text: "Bordereau PWA mis à jour vers experience-v242." }
   ]),
+  entry("v243", "2026-08-07", "Système de presets d'interface", [
+    { kind: "feature", text: "Presets d'interface : Productivité, Focus, Gaming, Créatif, Minimal, Développement." },
+    { kind: "feature", text: "Section Presets dans les réglages pour appliquer une ambiance en un clic." },
+    { kind: "feature", text: "Sauvegarde de la configuration actuelle et export des presets personnalisés." },
+    { kind: "improvement", text: "Le Command Center propose l'activation des presets." },
+    { kind: "improvement", text: "Bordereau PWA mis à jour vers experience-v243." }
+  ]),
   entry("v240", "2026-08-07", "Corrections LoL, responsive mobile et accessibilité commande", [
     { kind: "fix", text: "Correction de deriveLolDdragonVersion : la version est désormais extraite proprement du gameVersion Riot (fallback 16.15.1)." },
     { kind: "fix", text: "Le widget LoL tente DDragon, CommunityDragon puis l'icône de fallback sans boucle infinie si les images échouent." },

@@ -43,6 +43,12 @@ const rawCommands = [
   { id: "sidebar.toggle", actionId: "v8.sidebar.toggle", label: "Basculer la barre latérale", subtitle: "Développer ou compacter le menu latéral", category: "Navigation", icon: "panel-left", keywords: ["sidebar", "rail", "menu", "latéral", "barre"] },
   { id: "sound.toggle", actionId: "v8.sound.toggle", label: "Activer ou désactiver les sons", subtitle: "Couper ou rétablir le retour sonore ETHONE", category: "Réglages", icon: "volume-2", keywords: ["son", "muet", "silence", "audio", "volume"] },
   { id: "brain.memory.toggle", actionId: "v8.brain.memory.toggle", label: "Activer ou désactiver la mémoire Brain", subtitle: "Gérer la mémorisation contextuelle de l'IA", category: "Brain", icon: "bookmark-check", keywords: ["mémoire", "brain", "ia", "privacy", "souvenir"] },
+  { id: "preset.productivity", actionId: "v8.preset.apply", label: "Preset Productivité", subtitle: "Clair, structuré, calme", category: "Presets", icon: "circle-check-big", keywords: ["preset", "productivité", "focus", "calme"], contextPriority: 100 },
+  { id: "preset.focus", actionId: "v8.preset.apply", label: "Preset Focus", subtitle: "Minimal, calme, sans distraction", category: "Presets", icon: "focus", keywords: ["preset", "focus", "deep work", "minimal"], contextPriority: 100 },
+  { id: "preset.gaming", actionId: "v8.preset.apply", label: "Preset Gaming", subtitle: "Néon, énergie, contraste", category: "Presets", icon: "gamepad-2", keywords: ["preset", "gaming", "neon", "jeu"], contextPriority: 100 },
+  { id: "preset.creative", actionId: "v8.preset.apply", label: "Preset Créatif", subtitle: "Chaleur, espace, inspiration", category: "Presets", icon: "sparkles", keywords: ["preset", "créatif", "creative", "inspiration"], contextPriority: 100 },
+  { id: "preset.minimal", actionId: "v8.preset.apply", label: "Preset Minimal", subtitle: "Léger, épuré, silencieux", category: "Presets", icon: "minimize-2", keywords: ["preset", "minimal", "épuré", "silencieux"], contextPriority: 100 },
+  { id: "preset.developer", actionId: "v8.preset.apply", label: "Preset Développement", subtitle: "Compact, lisible, technique", category: "Presets", icon: "code", keywords: ["preset", "dev", "développement", "code"], contextPriority: 100 },
   { id: "auth.signout", actionId: "v8.auth.signout", label: "Se déconnecter de votre session", subtitle: "Fermer la session ETHONE active", category: "Système", icon: "log-out", keywords: ["déconnexion", "signout", "logout", "quitter"] }
 ];
 

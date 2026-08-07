@@ -66,7 +66,9 @@ const DEFAULT_STATE = Object.freeze({
   aura: "classic",
   fontFamily: "inter",
   radiusStyle: "rounded",
-  zen: false
+  zen: false,
+  activePreset: null,
+  customPresets: []
 });
 
 function safeParse(value) {
@@ -141,8 +143,10 @@ function normalizeState(input = {}) {
       : null,
     aura: ["classic", "boreale", "cyberpunk", "eclipse", "emeraude", "minerale"].includes(input.aura) ? input.aura : "classic",
     fontFamily: ["inter", "outfit", "mono", "serif"].includes(input.fontFamily) ? input.fontFamily : "inter",
-    radiusStyle: ["rounded", "square", "pill"].includes(input.radiusStyle) ? input.radiusStyle : "rounded",
-    zen: input.zen === true
+    radiusStyle: ["rounded", "sharp", "soft"].includes(input.radiusStyle) ? input.radiusStyle : "rounded",
+    zen: input.zen === true,
+    activePreset: input.activePreset == null ? null : String(input.activePreset).slice(0, 32),
+    customPresets: Object.freeze(Array.isArray(input.customPresets) ? input.customPresets.map((p) => p && typeof p === "object" ? Object.freeze({ ...p }) : null).filter(Boolean) : [])
   });
 }
 
@@ -161,7 +165,7 @@ function statesEqual(left, right) {
 
 function persistedSnapshot(state) {
   return {
-    schemaVersion: 5,
+    schemaVersion: 6,
     route: state.route,
     theme: state.theme,
     density: state.density,
@@ -186,7 +190,9 @@ function persistedSnapshot(state) {
     homeHero: state.homeHero || "full",
     uiAnimations: state.uiAnimations || "smooth",
     uiGlow: state.uiGlow !== false,
-    uiSoundFeedback: state.uiSoundFeedback !== false
+    uiSoundFeedback: state.uiSoundFeedback !== false,
+    activePreset: state.activePreset || null,
+    customPresets: state.customPresets || []
   };
 }
 

@@ -2,6 +2,7 @@ import { WORKSPACES } from "../data/workspaces.mjs";
 import { DENSITY_CUSTOM_RANGES, DENSITY_MODES } from "./density-engine.mjs";
 import { patchBrainPreferences, sanitizeBrainPreferences } from "../brain/preferences.mjs";
 import { sanitizeAutomationRule, sanitizeAutomationRules } from "./automation-engine.mjs";
+import { applyPreset, extractPresetFromState, findPreset } from "./preset-engine.mjs";
 
 const LOCALES = Object.freeze(["fr", "en", "es", "de"]);
 
@@ -273,6 +274,49 @@ export function createActionFacade(options = {}) {
       return completed(`Radius ${styleId} activé`, { radiusStyle: styleId });
     });
   });
+
+  register("v8.preset.apply", (context = {}) => {
+    const rawId = context.command?.id || context.id || "";
+    const id = String(rawId).replace(/^preset\./, "");
+    const custom = Array.isArray(getState().customPresets) ? getState().customPresets : [];
+    const preset = findPreset(id, custom) || findPreset(id);
+    if (!preset) return unavailable("Ce preset n'existe pas.");
+    return applyPreset(preset, getState(), { storage: globalThis.localStorage, document, notify, setState });
+  });
+
+  register("v8.preset.save", (context = {}) => {
+    const state = getState();
+    const extracted = extractPresetFromState(state, context.name, context.description, context.icon);
+    if (!extracted) return unavailable("Impossible de créer le preset.");
+    const next = [extracted, ...state.customPresets.filter((p) => p.id !== extracted.id)];
+    setState({ customPresets: next });
+    notify({ id: "preset-saved", title: "Preset enregistré", message: `« ${extracted.name} » sauvegardé.`, type: "success" });
+    return completed("Preset enregistré", { preset: extracted });
+  });
+
+  register("v8.preset.delete", (context = {}) => {
+    const id = String(context.id || "");
+    const state = getState();
+    const next = state.customPresets.filter((p) => p.id !== id);
+    if (next.length === state.customPresets.length) return unavailable("Preset introuvable.");
+    setState({ customPresets: next, activePreset: state.activePreset === id ? null : state.activePreset });
+    notify({ id: "preset-deleted", title: "Preset supprimé", message: "Le preset a été retiré.", type: "info" });
+    return completed("Preset supprimé");
+  });
+
+  register("v8.preset.export", () => {
+    const state = getState();
+    const payload = { customPresets: state.customPresets, activePreset: state.activePreset };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `ethone-presets-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 0);
+    return completed("Presets exportés");
+  });
+
   ["focus", "intense", "zen", "night"].forEach((modeId) => {
     register(`v8.session.mode.${modeId}`, () => {
       globalThis.localStorage?.setItem("v8_home_session_mode", modeId);

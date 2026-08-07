@@ -8,6 +8,7 @@ import { createSelect } from "../ui/select.mjs";
 import { DENSITY_CUSTOM_RANGES, DENSITY_PRESETS, densityCssVariables, resolveDensity, sanitizeDensitySettings } from "../core/density-engine.mjs";
 import { resolveTheme, systemPrefersLight } from "../core/theme-engine.mjs";
 import { BRAIN_MEMORY_CATEGORIES, BRAIN_PERMISSION_CATEGORIES, brainPreferenceLabel, sanitizeBrainPreferences } from "../brain/preferences.mjs";
+import { BUILT_IN_PRESETS } from "../data/presets.mjs";
 
 const ACCENTS = Object.freeze(["mint", "sky", "amber", "violet", "rose"]);
 const THEME_LABELS = Object.freeze({ night: "Nuit", graphite: "Graphite", day: "Jour", auto: "Automatique" });
@@ -322,6 +323,22 @@ export function mountSettings(stage, options = {}) {
     ]);
   }));
 
+  const activePresetId = state.activePreset || null;
+  const presetChoices = element("div", { className: "v8-preset-options", attributes: { role: "group", "aria-label": "Presets d'interface" } }, BUILT_IN_PRESETS.map((option) => {
+    const active = activePresetId === option.id;
+    return element("button", {
+      className: `v8-preset-choice${active ? " is-active" : ""}`,
+      attributes: { type: "button", "aria-pressed": String(active) },
+      dataset: { action: "v8.preset.apply", presetId: option.id }
+    }, [
+      element("span", { className: "v8-preset-choice__icon", text: option.id.slice(0, 2).toUpperCase(), attributes: { "aria-hidden": "true" } }),
+      element("span", {}, [element("strong", { text: option.name }), element("small", { text: option.description })]),
+      active ? icon("check") : null
+    ]);
+  }));
+  const savePresetButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { action: "v8.preset.save", presetName: "Mon preset" } }, [icon("save"), element("span", { text: "Enregistrer la configuration actuelle" })]);
+  const exportPresetButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { action: "v8.preset.export" } }, [icon("download"), element("span", { text: "Exporter les presets" })]);
+
   const soundPackSelect = createSelect({
     className: "v8-input v8-sound-pack-select",
     attributes: { "aria-label": "Pack sonore", disabled: !soundSupported || null, translate: "no" },
@@ -400,6 +417,11 @@ export function mountSettings(stage, options = {}) {
         ]),
         element("section", { id: "v8-settings-appearance", className: "v8-settings-section v8-surface", attributes: { role: "tabpanel", tabindex: "0", hidden: true } }, [
           element("header", {}, [element("span", { className: "v8-eyebrow", text: "Design System" }), element("h2", { text: "Apparence" }), element("p", { text: "Des réglages sobres, coherents et persistants." })]),
+          element("div", { className: "v8-density-settings" }, [
+            element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("layout-template")]), element("div", {}, [element("strong", { text: "Presets" }), element("p", { text: "Appliquer une ambiance prete a l'emploi ou sauvegarder la configuration actuelle." })])]),
+            presetChoices,
+            element("div", { className: "v8-preset-actions" }, [savePresetButton, exportPresetButton])
+          ]),
           element("div", { className: "v8-density-settings" }, [
             element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("sun-moon")]), element("div", {}, [element("strong", { text: "Thème" }), element("p", { text: "Adapter les surfaces et le contraste." })]), themeResolved]),
             themeChoices
@@ -944,6 +966,15 @@ export function mountSettings(stage, options = {}) {
     if (!button || !button.dataset.action) return;
     event.stopPropagation();
     options.actions?.dispatch?.(button.dataset.action, { source: "settings" });
+  }, { signal: controller.signal });
+  page.addEventListener("click", (event) => {
+    const button = event.target.closest(".v8-preset-choice, .v8-preset-actions [data-action]");
+    if (!button || !button.dataset.action) return;
+    event.stopPropagation();
+    const context = { source: "settings" };
+    if (button.dataset.presetId) context.id = button.dataset.presetId;
+    if (button.dataset.presetName) context.name = button.dataset.presetName;
+    options.actions?.dispatch?.(button.dataset.action, context);
   }, { signal: controller.signal });
   const dispatchVolume = throttleFrame((category, value, element, event) => {
     options.actions?.dispatch?.("v8.sound.volume", { source: "settings", category, value, element, event });

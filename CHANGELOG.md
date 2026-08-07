@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v242] - 2026-08-07
+
+### Ajouté
+- **Quick Actions** : barre d'actions rapides sur l'accueil pour créer une note, une tâche, un événement, ouvrir Brain et lancer un Pomodoro.
+
+### Amélioré
+- **Command Center intelligent** : les commandes les plus utilisées remontent plus haut grâce au scoring par fréquence.
+- **Alias de commandes** : `todo`, `note`, `ia`, `rdv`, `cmd` et autres raccourcis naturels supportés.
+- **Filtre par catégorie** : `/reglages`, `/nav`, `/actions` filtrent les commandes par catégorie dans le Command Center.
+
+### Changé
+- Bordereau PWA mis à jour vers `experience-v242`.
+
 ## [v241] - 2026-08-07
 
 ### Changé

@@ -66,7 +66,7 @@ export function createCommandCenter(host, options = {}) {
     const pinned=history?.pinned?.()||[];
     const recent=history?.recent?.()||[];
     const additionalCommands = options.additionalCommands?.(context) || [];
-    results = searchCommands(input.value, { ...context, pinned, recent, additionalCommands }, 10);
+    results = searchCommands(input.value, { ...context, pinned, recent, additionalCommands, frequency: history?.frequency?.() }, 10);
     selectedIndex=preferred?Math.max(0,results.findIndex(({id})=>id===preferred)):Math.min(Math.max(0,selectedIndex),Math.max(0,results.length-1));
     resultsNode.replaceChildren();
 

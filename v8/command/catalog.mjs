@@ -1,4 +1,4 @@
-const commands = [
+const rawCommands = [
   { id: "home.open", actionId: "v8.home.open", label: "Ouvrir l'accueil", subtitle: "Vue d'ensemble ETHONE", category: "Navigation", icon: "house", keywords: ["dashboard", "home", "accueil"] },
   { id: "activity.open", actionId: "v8.activity.open", label: "Ouvrir Activity Hub", subtitle: "Activité et signaux ETHONE", category: "Applications", icon: "activity", keywords: ["activity", "activité", "insights", "historique"] },
   { id: "connections.open", actionId: "v8.connections.open", label: "Ouvrir Connections", subtitle: "Intégrations et synchronisation", category: "Système", icon: "plug", keywords: ["connections", "intégrations", "spotify", "discord", "github"], contexts: ["activity"], contextPriority: 96 },
@@ -44,8 +44,38 @@ const commands = [
   { id: "sound.toggle", actionId: "v8.sound.toggle", label: "Activer ou désactiver les sons", subtitle: "Couper ou rétablir le retour sonore ETHONE", category: "Réglages", icon: "volume-2", keywords: ["son", "muet", "silence", "audio", "volume"] },
   { id: "brain.memory.toggle", actionId: "v8.brain.memory.toggle", label: "Activer ou désactiver la mémoire Brain", subtitle: "Gérer la mémorisation contextuelle de l'IA", category: "Brain", icon: "bookmark-check", keywords: ["mémoire", "brain", "ia", "privacy", "souvenir"] },
   { id: "auth.signout", actionId: "v8.auth.signout", label: "Se déconnecter de votre session", subtitle: "Fermer la session ETHONE active", category: "Système", icon: "log-out", keywords: ["déconnexion", "signout", "logout", "quitter"] }
-].map((command) => Object.freeze({
+];
+
+const ALIASES = Object.freeze({
+  "home.open": ["accueil", "dashboard"],
+  "notes.new": ["note", "nouvelle note"],
+  "tasks.new": ["todo", "tache", "task"],
+  "calendar.new": ["event", "rdv", "événement"],
+  "files.new-link": ["lien", "url"],
+  "brain.open": ["ia", "ai", "assistant"],
+  "settings.open": ["préférences", "prefs"],
+  "command.open": ["cmd", "palette"],
+  "activity.open": ["hub", "journal"],
+  "connections.open": ["intégrations", "services"],
+  "zen.toggle": ["focus", "plein écran"],
+  "focus.pomodoro": ["pomodoro", "timer"],
+  "focus.deep": ["deep work"],
+  "focus.stop": ["arrêter timer"],
+  "theme.toggle": ["thème", "nuit"],
+  "appearance.cycle": ["couleur", "accent"],
+  "density.automatic": ["auto", "densité"],
+  "dock.edit": ["dock"],
+  "sidebar.toggle": ["sidebar"],
+  "sound.toggle": ["son"],
+  "mission.open": ["mission", "spaces"],
+  "changelog.open": ["versions", "maj"],
+  "sync.refresh": ["sync", "synchroniser"],
+  "auth.signout": ["logout"]
+});
+
+const commands = rawCommands.map((command) => Object.freeze({
   ...command,
+  aliases: Object.freeze(ALIASES[command.id] || command.aliases || []),
   keywords: Object.freeze(command.keywords || []),
   contexts: Object.freeze(command.contexts || [])
 }));

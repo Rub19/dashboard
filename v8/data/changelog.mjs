@@ -31,6 +31,13 @@ export const CHANGELOG = Object.freeze([
     { kind: "cleanup", text: "Suppression des scripts one-shot et du fichier temporaire deriveLolDdragonVersion." },
     { kind: "improvement", text: "Bordereau PWA mis à jour vers experience-v241." }
   ]),
+  entry("v242", "2026-08-07", "Commandes intelligentes et actions rapides", [
+    { kind: "feature", text: "Barre d'actions rapides sur l'accueil : nouvelle note, tâche, événement, Brain et Pomodoro en un clic." },
+    { kind: "improvement", text: "Command Center : les commandes les plus utilisées remontent plus haut grâce au scoring par fréquence." },
+    { kind: "improvement", text: "Alias de commandes ajoutés : 'todo', 'note', 'ia', 'rdv', 'cmd' et autres raccourcis naturels." },
+    { kind: "improvement", text: "Filtre rapide par catégorie dans le Command Center avec /reglages, /nav, etc." },
+    { kind: "improvement", text: "Bordereau PWA mis à jour vers experience-v242." }
+  ]),
   entry("v240", "2026-08-07", "Corrections LoL, responsive mobile et accessibilité commande", [
     { kind: "fix", text: "Correction de deriveLolDdragonVersion : la version est désormais extraite proprement du gameVersion Riot (fallback 16.15.1)." },
     { kind: "fix", text: "Le widget LoL tente DDragon, CommunityDragon puis l'icône de fallback sans boucle infinie si les images échouent." },

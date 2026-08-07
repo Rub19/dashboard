@@ -281,6 +281,17 @@ export function mountHome(stage, model, options = {}) {
     ])
   ]);
 
+  const quickActions = element("section", { className: "v8-quick-actions", "aria-label": "Actions rapides" }, [
+    element("span", { className: "v8-quick-actions__label", text: "Actions rapides" }),
+    element("div", { className: "v8-quick-actions__bar" }, [
+      actionButton({ actionId: "v8.notes.new", variant: "ghost", className: "v8-quick-action", ariaLabel: "Nouvelle note" }, [icon("file-plus-2"), element("span", { text: "Note" })]),
+      actionButton({ actionId: "v8.tasks.new", variant: "ghost", className: "v8-quick-action", ariaLabel: "Nouvelle tâche" }, [icon("list-plus"), element("span", { text: "Tâche" })]),
+      actionButton({ actionId: "v8.calendar.new", variant: "ghost", className: "v8-quick-action", ariaLabel: "Nouvel événement" }, [icon("calendar-plus"), element("span", { text: "Événement" })]),
+      actionButton({ actionId: "v8.brain.open", variant: "ghost", className: "v8-quick-action", ariaLabel: "Ouvrir Brain" }, [icon("brain"), element("span", { text: "Brain" })]),
+      actionButton({ actionId: "v8.focus.start.pomodoro", variant: "ghost", className: "v8-quick-action", ariaLabel: "Démarrer un Pomodoro" }, [icon("timer"), element("span", { text: "Pomodoro" })])
+    ])
+  ]);
+
   const continuity = element("section", { className: "v8-continuity v8-surface v8-home-float v8-home-float--hero" }, [
     element("div", { className: "v8-continuity__signal", attributes: { "aria-hidden": "true" } }),
       element("span", { className: "v8-continuity__monogram", text: "8", attributes: { "aria-hidden": "true" } }),
@@ -672,6 +683,7 @@ export function mountHome(stage, model, options = {}) {
   const page = element("section", { className: `v8-page v8-home v8-home--${model.context.period}`, dataset: { page: "home" } }, [
     ambientField,
     heading,
+    quickActions,
     element("div", { className: "v8-home-primary" }, [continuity, daystream]),
     liveSection,
     briefingEnabled ? brainStrip : null,

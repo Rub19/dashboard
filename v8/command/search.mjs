@@ -35,13 +35,19 @@ function commandScore(command, normalizedQuery, context) {
   const contextTags = new Set([route, `space-${String(context.space || "personal")}`]);
   const recent = new Set(context.recent || []);
   const pinned = new Set(context.pinned || []);
+  const frequency = context.frequency || {};
   const localizedAliases = SUPPORTED_LOCALES.flatMap((locale) => [
     translateSource(command.label, locale),
     translateSource(command.subtitle, locale),
-    translateSource(command.category, locale)
+    translateSource(command.category, locale),
+    ...(command.aliases || []).map((alias) => translateSource(alias, locale))
   ]);
-  const haystack = normalizeSearch([command.label, command.subtitle, command.category, ...localizedAliases, ...command.keywords].join(" "));
+  const haystack = normalizeSearch([command.label, command.subtitle, command.category, ...localizedAliases, ...command.keywords, ...(command.aliases || [])].join(" "));
   let score = 0;
+
+  if (context.categoryFilter && normalizeSearch(command.category) !== context.categoryFilter) {
+    return -1;
+  }
 
   if (!normalizedQuery) {
     score = command.contexts.some((entry) => contextTags.has(entry)) ? command.contextPriority || 80 : 10;
@@ -61,17 +67,30 @@ function commandScore(command, normalizedQuery, context) {
   }
   if (pinned.has(command.id)) score += 24;
   if (recent.has(command.id)) score += 12;
+  const freq = Number.isFinite(frequency[command.id]) ? frequency[command.id] : 0;
+  if (freq > 0) score += Math.min(30, Math.log2(freq + 1) * 6);
   return score;
 }
 
+function parseCategoryFilter(query) {
+  const trimmed = String(query || "").trim();
+  if (!trimmed) return { filter: "", remainder: "" };
+  const match = trimmed.match(/^\/(\S*)\s*(.*)$/);
+  if (match) {
+    return { filter: normalizeSearch(match[1]), remainder: normalizeSearch(match[2]) };
+  }
+  return { filter: "", remainder: normalizeSearch(trimmed) };
+}
+
 export function searchCommands(query, context = {}, limit = 9) {
-  const normalizedQuery = normalizeSearch(query);
+  const { filter: categoryFilter, remainder: normalizedQuery } = parseCategoryFilter(query);
   const additionalCommands = Array.isArray(context.additionalCommands) ? context.additionalCommands : [];
+  const searchContext = { ...context, categoryFilter, normalizedQuery: undefined };
   const uniqueCommands = [...COMMANDS, ...additionalCommands].filter((command, index, entries) => (
     command?.id && entries.findIndex((entry) => entry?.id === command.id) === index
   ));
   return uniqueCommands
-    .map((command, index) => ({ command, index, score: commandScore(command, normalizedQuery, context) }))
+    .map((command, index) => ({ command, index, score: commandScore(command, normalizedQuery, searchContext) }))
     .filter((entry) => entry.score >= 0)
     .sort((left, right) => right.score - left.score || left.index - right.index)
     .slice(0, Math.max(1, Math.min(20, limit)))

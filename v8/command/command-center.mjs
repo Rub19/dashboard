@@ -28,6 +28,7 @@ export function createCommandCenter(host, options = {}) {
   const onClose = typeof options.onClose === "function" ? options.onClose : () => {};
   let layer = null;
   let input = null;
+  let clearButton = null;
   let resultsNode = null;
   let results = [];
   let selectedIndex = 0;
@@ -61,6 +62,7 @@ export function createCommandCenter(host, options = {}) {
 
   function renderResults(preferred){
     if (!resultsNode || !input) return;
+    updateClearButton();
     const pinned=history?.pinned?.()||[];
     const recent=history?.recent?.()||[];
     const additionalCommands = options.additionalCommands?.(context) || [];
@@ -147,8 +149,12 @@ export function createCommandCenter(host, options = {}) {
   }
 
   const debouncedRenderResults = debounce(() => renderResults(), 120);
+  function updateClearButton() {
+    if (clearButton && input) clearButton.hidden = !input.value.trim();
+  }
   function handleInput() {
     selectedIndex = 0;
+    updateClearButton();
     debouncedRenderResults();
   }
 
@@ -195,6 +201,24 @@ export function createCommandCenter(host, options = {}) {
       },
       events: { input: handleInput, keydown: handleKeydown }
     });
+    clearButton = element("button", {
+      type: "button",
+      className: "v8-command-clear",
+      attributes: {
+        type: "button",
+        "aria-label": "Effacer la recherche",
+        hidden: true
+      },
+      events: {
+        click: () => {
+          input.value = "";
+          selectedIndex = 0;
+          updateClearButton();
+          debouncedRenderResults();
+          input.focus({ preventScroll: true });
+        }
+      }
+    }, [icon("x")]);
     resultsNode = element("div", {
       id: "v8-command-results",
       className: "v8-command-results",
@@ -215,6 +239,7 @@ export function createCommandCenter(host, options = {}) {
         icon("search"),
         element("h2", { id: "v8-command-title", className: "v8-visually-hidden", text: "ETHONE Command HUD" }),
         input,
+        clearButton,
         element("kbd", { text: "ESC", attributes: { translate: "no" } })
       ]),
       contextBar,

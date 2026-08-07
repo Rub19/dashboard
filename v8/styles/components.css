@@ -1188,3 +1188,20 @@ html[data-v8-interactions] .v8-row-menu > button:hover,
 .v8-status-item--ambience svg { animation: v8-ambience-glow 3s ease-in-out infinite; }
 @keyframes v8-focus-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
 @keyframes v8-ambience-glow { 0%,100% { opacity: 0.7; } 50% { opacity: 1; } }
+@media (pointer: coarse) {
+  .v8-collection-density {
+    grid-auto-columns: var(--v8-touch-target);
+  }
+  .v8-collection-density > button,
+  .v8-selection-control {
+    width: var(--v8-touch-target);
+    height: var(--v8-touch-target);
+    min-width: var(--v8-touch-target);
+    flex-basis: var(--v8-touch-target);
+  }
+  .v8-collection-density svg,
+  .v8-selection-control svg {
+    width: var(--v8-icon-sm);
+    height: var(--v8-icon-sm);
+  }
+}

@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v241] - 2026-08-07
+
+### Changé
+- **Command Center** : bouton d'effacement de la recherche (44 px) et touche Échap masquée sur mobile.
+- **Cibles tactiles** : 44 px minimum pour les favoris du Command Center et les contrôles de densité sur pointeur grossier.
+- **Dock / topbar / breadcrumb** : cibles tactiles à 44 px sur écrans ≤ 360 px.
+
+### Nettoyage
+- Suppression des scripts `one-shot` obsolètes et du fichier temporaire `scripts/temp-derive-test.mjs`.
+- Bordereau PWA mis à jour vers `experience-v241`.
+
 ## [v240] - 2026-08-07
 
 ### Corrigé

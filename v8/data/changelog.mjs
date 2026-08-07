@@ -24,6 +24,13 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v241", "2026-08-07", "Accessibilité commande, cibles tactiles et nettoyage", [
+    { kind: "improvement", text: "Bouton d'effacement dans le Command Center avec une cible tactile de 44 px." },
+    { kind: "improvement", text: "Cibles tactiles des favoris du Command Center et des contrôles de densité relevées à 44 px." },
+    { kind: "improvement", text: "Touch targets minimum 44 px pour dock, topbar et breadcrumb sur écrans ≤ 360 px." },
+    { kind: "cleanup", text: "Suppression des scripts one-shot et du fichier temporaire deriveLolDdragonVersion." },
+    { kind: "improvement", text: "Bordereau PWA mis à jour vers experience-v241." }
+  ]),
   entry("v240", "2026-08-07", "Corrections LoL, responsive mobile et accessibilité commande", [
     { kind: "fix", text: "Correction de deriveLolDdragonVersion : la version est désormais extraite proprement du gameVersion Riot (fallback 16.15.1)." },
     { kind: "fix", text: "Le widget LoL tente DDragon, CommunityDragon puis l'icône de fallback sans boucle infinie si les images échouent." },

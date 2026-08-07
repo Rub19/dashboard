@@ -236,6 +236,8 @@ export function mountApplication(root, options = {}) {
   let applyingCloudPreferences = false;
   let navigationSession = null;
   let pendingRouteNavigation = null;
+  let toasts = null;
+  let focusTimer = null;
   let cloudPreferencesKey = JSON.stringify(store.cloudSnapshot());
   let densityStateKey = JSON.stringify({ density: store.getState().density, settings: store.getState().densitySettings, space: store.getState().space, flow: store.getState().flow, panel: store.getState().panel, rail: store.getState().railExpanded });
 
@@ -379,6 +381,18 @@ export function mountApplication(root, options = {}) {
   metadata.setThemeColor(themeColorForState(store.getState(), { systemPrefersLight: systemPrefersLight(globalThis) }));
   delete document.documentElement.dataset.entry;
 
+  focusTimer = options.focusTimer || createFocusTimer({
+    onTick: (state) => {
+      const label = document.getElementById("v8-focus-timer-label");
+      if (label) label.textContent = state.phase === "idle" ? "Pomodoro" : focusTimer.formatRemaining();
+    },
+    onComplete: (state) => {
+      const label = document.getElementById("v8-focus-timer-label");
+      if (label) label.textContent = "Pomodoro";
+      toasts?.show({ id: "focus-complete", title: "Focus Timer", message: "Session terminée ! Bon travail.", type: "success" });
+    }
+  });
+
   shell = mountShell(root, {
     initialState: store.getState(),
     user: initialModel.user,
@@ -420,19 +434,8 @@ export function mountApplication(root, options = {}) {
   }, { immediate: false }) || (() => {});
   presence.signalIcon?.("brain");
   if (initialCalendar === "approaching") presence.signalIcon?.("calendar");
-  const toasts = createNotificationManager(shell.toastRegion, { sounds, presence });
-  const focusTimer = options.focusTimer || createFocusTimer({
-    onTick: (state) => {
-      const label = document.getElementById("v8-focus-timer-label");
-      if (label) label.textContent = state.phase === "idle" ? "Pomodoro" : focusTimer.formatRemaining();
-    },
-    onComplete: (state) => {
-      const label = document.getElementById("v8-focus-timer-label");
-      if (label) label.textContent = "Pomodoro";
-      toasts.show({ id: "focus-complete", title: "Focus Timer", message: "Session terminée ! Bon travail.", type: "success" });
-    }
-  });
-  focusTimer.subscribe?.((state) => {
+  toasts = createNotificationManager(shell.toastRegion, { sounds, presence });
+  focusTimer?.subscribe?.((state) => {
     const label = document.getElementById("v8-focus-timer-label");
     if (label) label.textContent = state.phase === "idle" ? "Pomodoro" : focusTimer.formatRemaining();
   });

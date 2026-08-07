@@ -1,4 +1,5 @@
 import { integrationById } from "../data/integrations.mjs";
+import { translateSource } from "../i18n/catalog.mjs";
 import { actionButton, debounce, element, icon } from "../ui/dom.mjs";
 import { collectionDensityControl, updateCollectionDensityControl } from "../ui/dense-content.mjs";
 import { emptyState, statusState } from "../ui/empty-state.mjs";

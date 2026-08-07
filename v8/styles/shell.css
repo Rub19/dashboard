@@ -1241,7 +1241,8 @@ button.v8-status-item:focus-visible { box-shadow: var(--v8-shadow-focus); outlin
     padding: 0;
     place-items: center;
   }
-  .v8-command-launcher > span { display: none; }
+  .v8-command-launcher > span,
+  .v8-command-launcher > kbd { display: none; }
   .v8-context-strip__tools {
     gap: 4px;
   }

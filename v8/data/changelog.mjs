@@ -24,6 +24,16 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v256", "2026-08-07", "Polish mobile et correction du module Activity", [
+    { kind: "fix", text: "Correction d'un ReferenceError sur la page Activity (import manquant de translateSource)." },
+    { kind: "improvement", text: "Masquage du raccourci Ctrl+K dans le bouton de recherche topbar sur mobile." },
+    { kind: "improvement", text: "Mise a jour du bordereau PWA a experience-v256." }
+  ]),
+  entry("v255", "2026-08-07", "Correction ecran noir apres connexion sur mobile", [
+    { kind: "fix", text: "Correction de l'ecran noir apres connexion sur mobile (TDZ focusTimer dans app-runtime.mjs)." },
+    { kind: "fix", text: "Initialisation de focusTimer avant mountShell pour eviter une ReferenceError au demarrage." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v255." }
+  ]),
   entry("v254", "2026-08-07", "Notifications, suggestions Brain et import/export configuration", [
     { kind: "feature", text: "Centre de notifications : historique persistant, categories, priorite, badge et panneau." },
     { kind: "feature", text: "Silencieux par categorie pour les notifications avec persistance." },

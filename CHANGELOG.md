@@ -2,6 +2,24 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v256] - 2026-08-07
+
+### Corrigé
+- **Page Activity** : `ReferenceError` sur `translateSource` dans `v8/pages/activity.mjs` dû à un import manquant.
+
+### Modifié
+- Masquage du raccourci clavier `Ctrl+K` dans le bouton de recherche topbar sur mobile.
+- Uniformisation du bordereau PWA à `experience-v256` (`sw.js`, `STYLE_RELEASE`, `index.html`, `404.html`).
+
+## [v255] - 2026-08-07
+
+### Corrigé
+- **Écran noir après connexion sur mobile** : la variable `focusTimer` était utilisée dans l'objet passé à `mountShell` avant son initialisation, provoquant une `ReferenceError` (temporal dead zone) au montage de l'application.
+- Initialisation de `focusTimer` déplacée avant `mountShell` dans `v8/app/app-runtime.mjs`.
+
+### Modifié
+- Bordereau PWA mis à jour vers `experience-v255`.
+
 ## [v254] - 2026-08-07
 
 ### Ajouté

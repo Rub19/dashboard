@@ -1,12 +1,30 @@
 import { attachFlipBehavior, brandIcon, element, icon } from "./dom.mjs";
 import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
 
+function defaultLolAvatarUrl(presence) {
+  const version = presence.ddragonVersion || "16.15.1";
+  return `https://ddragon.leagueoflegends.com/cdn/${version}/img/profileicon/1.png`;
+}
+
 function avatar(presence) {
   const fallback = icon("swords");
-  if (!presence.avatarUrl) return element("span", { className: "v8-lol-icon" }, [fallback, livePulseDot()]);
+  const url = presence.avatarUrl || defaultLolAvatarUrl(presence);
+  if (!url) return element("span", { className: "v8-lol-icon" }, [fallback, livePulseDot()]);
   const img = element("img", {
-    attributes: { src: presence.avatarUrl, alt: "", loading: "lazy", decoding: "async", referrerpolicy: "no-referrer" },
-    events: { error: (event) => event.currentTarget.replaceWith(fallback) }
+    attributes: { src: url, alt: "", loading: "lazy", decoding: "async", referrerpolicy: "no-referrer" },
+    events: {
+      error: (event) => {
+        const target = event.currentTarget;
+        const current = target.getAttribute("src");
+        const defaultUrl = defaultLolAvatarUrl(presence);
+        if (current !== defaultUrl) {
+          target.setAttribute("src", defaultUrl);
+          target.addEventListener("error", () => target.replaceWith(fallback), { once: true });
+        } else {
+          target.replaceWith(fallback);
+        }
+      }
+    }
   });
   return element("span", { className: "v8-lol-icon" }, [element("span", { className: "v8-lol-icon__image" }, [img]), livePulseDot()]);
 }

@@ -24,6 +24,12 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v233", "2026-08-07", "Stabilité LoL, pp/rank widget et déploiement Worker", [
+    { kind: "fix", text: "L'historique LoL est de nouveau accessible : DDragon non disponible est géré par fallback, les matchs dont le détail échoue sont ignorés." },
+    { kind: "fix", text: "Le widget LoL affiche la photo de profil avec une icône par défaut si celle-ci manque ou échoue." },
+    { kind: "improvement", text: "Les appels summoner/league de LoL sont résilients (plus de blocage si une sous-requête échoue)." },
+    { kind: "improvement", text: "Déploiement du Worker Cloudflare avec les dernières corrections côté API." }
+  ]),
   entry("v232", "2026-08-07", "Plus de matches, cache et correction groupe/DUO", [
     { kind: "feature", text: "L'historique récupère jusqu'à 25 matches pour Valorant et LoL (paramètre size/count augmenté)." },
     { kind: "feature", text: "Mise en cache côté client (sessionStorage) et côté worker (10 min) pour l'historique des matches." },

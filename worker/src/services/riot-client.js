@@ -24,54 +24,60 @@ export async function getLolProfile(env, riotId, apiKeyOverride) {
   
   const puuid = await getPuuid(env, name, tag, apiKey);
   if (!puuid) return null;
-  
-  // Try to find the platform ID from recent matches
-  const matchIdsPath = `/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=1`;
-  const matchIdsResponse = await requestExternal(new URL(matchIdsPath, RIOT_EUROPE), {
-    env,
-    expectedOrigin: RIOT_EUROPE,
-    service: "tracker",
-    dedupeKey: `riot:recent_match:${puuid}`,
-    headers: { "X-Riot-Token": apiKey },
-    retries: 1
-  });
-  
-  const matchIds = matchIdsResponse.data || [];
-  const platformId = matchIds.length > 0 ? matchIds[0].split("_")[0].toLowerCase() : "euw1";
+
+  let platformId = "euw1";
+  try {
+    const matchIdsPath = `/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=1`;
+    const matchIdsResponse = await requestExternal(new URL(matchIdsPath, RIOT_EUROPE), {
+      env,
+      expectedOrigin: RIOT_EUROPE,
+      service: "tracker",
+      dedupeKey: `riot:recent_match:${puuid}`,
+      headers: { "X-Riot-Token": apiKey },
+      retries: 1
+    });
+    const matchIds = matchIdsResponse.data || [];
+    if (matchIds.length > 0) platformId = matchIds[0].split("_")[0].toLowerCase();
+  } catch {}
+
   const platformOrigin = `https://${platformId}.api.riotgames.com`;
-  
+
   // Fetch summoner
-  const summonerPath = `/lol/summoner/v4/summoners/by-puuid/${puuid}`;
-  const summonerResponse = await requestExternal(new URL(summonerPath, platformOrigin), {
-    env,
-    expectedOrigin: platformOrigin,
-    service: "tracker",
-    dedupeKey: `riot:summoner:${puuid}`,
-    headers: { "X-Riot-Token": apiKey },
-    retries: 1
-  });
-  
-  const summoner = summonerResponse.data || {};
-  
+  let summoner = {};
+  try {
+    const summonerPath = `/lol/summoner/v4/summoners/by-puuid/${puuid}`;
+    const summonerResponse = await requestExternal(new URL(summonerPath, platformOrigin), {
+      env,
+      expectedOrigin: platformOrigin,
+      service: "tracker",
+      dedupeKey: `riot:summoner:${puuid}`,
+      headers: { "X-Riot-Token": apiKey },
+      retries: 1
+    });
+    summoner = summonerResponse.data || {};
+  } catch {}
+
   // Fetch league
   let tier = "Unranked";
   let lp = 0;
   if (summoner.id) {
-    const leaguePath = `/lol/league/v4/entries/by-summoner/${summoner.id}`;
-    const leagueResponse = await requestExternal(new URL(leaguePath, platformOrigin), {
-      env,
-      expectedOrigin: platformOrigin,
-      service: "tracker",
-      dedupeKey: `riot:league:${summoner.id}`,
-      headers: { "X-Riot-Token": apiKey },
-      retries: 1
-    });
-    const leagues = leagueResponse.data || [];
-    const soloq = leagues.find(l => l.queueType === "RANKED_SOLO_5x5") || leagues[0];
-    if (soloq) {
-      tier = `${soloq.tier} ${soloq.rank}`;
-      lp = soloq.leaguePoints;
-    }
+    try {
+      const leaguePath = `/lol/league/v4/entries/by-summoner/${summoner.id}`;
+      const leagueResponse = await requestExternal(new URL(leaguePath, platformOrigin), {
+        env,
+        expectedOrigin: platformOrigin,
+        service: "tracker",
+        dedupeKey: `riot:league:${summoner.id}`,
+        headers: { "X-Riot-Token": apiKey },
+        retries: 1
+      });
+      const leagues = leagueResponse.data || [];
+      const soloq = leagues.find(l => l.queueType === "RANKED_SOLO_5x5") || leagues[0];
+      if (soloq) {
+        tier = `${soloq.tier} ${soloq.rank}`;
+        lp = soloq.leaguePoints;
+      }
+    } catch {}
   }
 
   return Object.freeze({
@@ -79,6 +85,7 @@ export async function getLolProfile(env, riotId, apiKeyOverride) {
     identifier: riotId,
     handle: riotId,
     avatarUrl: safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/${DDRAGON_LOL_VERSION}/img/profileicon/${summoner.profileIconId || 1}.png`, ["leagueoflegends.com"]),
+    ddragonVersion: DDRAGON_LOL_VERSION,
     segments: Object.freeze([{
       type: "overview",
       name: "Ranked",
@@ -171,7 +178,8 @@ function deriveLolDdragonVersion(gameVersion) {
   if (!version) return DDRAGON_LOL_VERSION;
   const parts = version.split(".");
   if (parts.length < 3) return DDRAGON_LOL_VERSION;
-  return `${parts[0]}.${parts[1]}.${parts[2]}`;
+  const patch = Number(parts[2]) || 0;
+  return `${parts[0]}.${parts[1]}.${patch === 0 ? 1 : patch}`;
 }
 
 function lolChampionImage(championName, gameVersion) {
@@ -189,10 +197,11 @@ function lolItemImage(itemId, gameVersion) {
 
 const ddragonDataCache = new Map();
 
-async function getLolDdragonData(env, gameVersion) {
-  const version = deriveLolDdragonVersion(gameVersion);
-  if (ddragonDataCache.has(version)) return ddragonDataCache.get(version);
+function emptyDdragonData(version) {
+  return Object.freeze({ version, summonerMap: Object.freeze({}), itemMap: Object.freeze({}), runeMap: Object.freeze({}) });
+}
 
+async function fetchDdragonDataForVersion(env, version) {
   const [summonerResponse, itemResponse, runeResponse] = await Promise.all([
     requestExternal(new URL(`https://ddragon.leagueoflegends.com/cdn/${version}/data/fr_FR/summoner.json`), {
       env,
@@ -257,9 +266,35 @@ async function getLolDdragonData(env, gameVersion) {
     }
   }
 
-  const result = Object.freeze({ version, summonerMap: Object.freeze(summonerMap), itemMap: Object.freeze(itemMap), runeMap: Object.freeze(runeMap) });
-  ddragonDataCache.set(version, result);
-  return result;
+  return Object.freeze({ version, summonerMap: Object.freeze(summonerMap), itemMap: Object.freeze(itemMap), runeMap: Object.freeze(runeMap) });
+}
+
+async function getLolDdragonData(env, gameVersion) {
+  const version = deriveLolDdragonVersion(gameVersion);
+  if (ddragonDataCache.has(version)) return ddragonDataCache.get(version);
+
+  try {
+    const result = await fetchDdragonDataForVersion(env, version);
+    ddragonDataCache.set(version, result);
+    return result;
+  } catch {
+    if (version === DDRAGON_LOL_VERSION) {
+      const fallback = emptyDdragonData(version);
+      ddragonDataCache.set(version, fallback);
+      return fallback;
+    }
+    try {
+      const result = await fetchDdragonDataForVersion(env, DDRAGON_LOL_VERSION);
+      ddragonDataCache.set(version, result);
+      ddragonDataCache.set(DDRAGON_LOL_VERSION, result);
+      return result;
+    } catch {
+      const fallback = emptyDdragonData(version);
+      ddragonDataCache.set(version, fallback);
+      ddragonDataCache.set(DDRAGON_LOL_VERSION, fallback);
+      return fallback;
+    }
+  }
 }
 
 function lolItemAsset(itemId, gameVersion, ddragonData) {
@@ -375,15 +410,19 @@ async function getLolMatchIds(env, puuid, apiKey, queueId) {
   matchIdsUrl.searchParams.set("start", "0");
   matchIdsUrl.searchParams.set("count", "25");
   if (queueId != null) matchIdsUrl.searchParams.set("queue", String(queueId));
-  const matchIdsResponse = await requestExternal(matchIdsUrl, {
-    env,
-    expectedOrigin: RIOT_EUROPE,
-    service: "tracker",
-    dedupeKey: `riot:matches_list:${puuid}:${queueId ?? "all"}`,
-    headers: { "X-Riot-Token": apiKey },
-    retries: 1
-  });
-  return matchIdsResponse.data || [];
+  try {
+    const matchIdsResponse = await requestExternal(matchIdsUrl, {
+      env,
+      expectedOrigin: RIOT_EUROPE,
+      service: "tracker",
+      dedupeKey: `riot:matches_list:${puuid}:${queueId ?? "all"}`,
+      headers: { "X-Riot-Token": apiKey },
+      retries: 1
+    });
+    return matchIdsResponse.data || [];
+  } catch {
+    return [];
+  }
 }
 
 export async function getLolMatches(env, riotId, mode, apiKeyOverride) {
@@ -403,15 +442,19 @@ export async function getLolMatches(env, riotId, mode, apiKeyOverride) {
 
   const matches = await mapLimit(matchIds, 5, async (matchId) => {
     const matchPath = `/lol/match/v5/matches/${matchId}`;
-    const matchResponse = await requestExternal(new URL(matchPath, RIOT_EUROPE), {
-      env,
-      expectedOrigin: RIOT_EUROPE,
-      service: "tracker",
-      dedupeKey: `riot:match:${matchId}`,
-      headers: { "X-Riot-Token": apiKey },
-      retries: 1
-    });
-    return matchResponse.data;
+    try {
+      const matchResponse = await requestExternal(new URL(matchPath, RIOT_EUROPE), {
+        env,
+        expectedOrigin: RIOT_EUROPE,
+        service: "tracker",
+        dedupeKey: `riot:match:${matchId}`,
+        headers: { "X-Riot-Token": apiKey },
+        retries: 1
+      });
+      return matchResponse.data;
+    } catch {
+      return null;
+    }
   });
 
   const allowedQueueIds = queueIds ? new Set(queueIds) : null;
@@ -420,7 +463,7 @@ export async function getLolMatches(env, riotId, mode, apiKeyOverride) {
     .filter(Boolean)
     .filter((match) => !allowedQueueIds || allowedQueueIds.has(match.info?.queueId))
     .sort((a, b) => (b.info?.gameCreation || 0) - (a.info?.gameCreation || 0))
-    .slice(0, 10);
+    .slice(0, 25);
 
   const versions = new Set(sortedMatches.map((match) => deriveLolDdragonVersion(match.info?.gameVersion)));
   const ddragonDataByVersion = new Map(await Promise.all([...versions].map(async (version) => [version, await getLolDdragonData(env, version)])));

@@ -1,6 +1,8 @@
 import { bindVisibilityRefresh } from "./live-poll.mjs";
 import { parseRiotId } from "./valorant-live.mjs";
 
+const LOL_DEFAULT_DDRAGON_VERSION = "16.15.1";
+
 function safeText(value, fallback = "", limit = 160) {
   const normalized = String(value ?? "").replace(new RegExp("[\\u0000-\\u001f\\u007f]", "g"), " ").replace(/\s+/g, " ").trim();
   return (normalized || fallback).slice(0, limit);
@@ -32,6 +34,7 @@ export function normalizeLeaguePresence(input = {}, options = {}) {
     name: riotId?.name || input.handle || "Rub19",
     tag: riotId?.tag || "EUW",
     avatarUrl: available ? safeText(input.avatarUrl, "", 400) : "",
+    ddragonVersion: safeText(input.ddragonVersion, LOL_DEFAULT_DDRAGON_VERSION, 32),
     overview: available && overview ? normalizeOverview(overview) : null,
     updatedAt: available ? new Date().toISOString() : ""
   });

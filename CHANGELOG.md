@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v233] - 2026-08-07
+
+### Corrigé
+- **LoL** : l'historique des matchs remarche. Si la version DDragon d'une partie n'existe pas, on bascule sur la version de référence ; si le détail d'un match est invalide, il est ignoré.
+- **LoL** : le widget affiche la photo de profil avec une icône par défaut si l'image manque ou échoue.
+
+### Déploié
+- Mise à jour du **Worker Cloudflare** (`raspy-fog-bf5b`) avec les corrections API (LoL, cache, Valorant size).
+
 ## [v232] - 2026-08-07
 
 ### Ajouté

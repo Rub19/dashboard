@@ -2,7 +2,7 @@ function result(ok, status, message, data = null) {
   return Object.freeze({ ok, status, message, data });
 }
 
-export const STYLE_RELEASE = "experience-v244";
+export const STYLE_RELEASE = "experience-v245";
 
 export function createStyleLoader(options = {}) {
   const documentRef = options.document || globalThis.document;

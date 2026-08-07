@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v245] - 2026-08-07
+
+### Corrigé
+- Le statut **Session chiffrée** (et Session vérifiée / expirée) est désormais traduit dans toutes les langues.
+- Les libellés de synchronisation et de sauvegarde de la barre d'état sont localisés.
+
+### Amélioré
+- Orthographe et accents corrigés dans les statuts du shell.
+- Bordereau PWA mis à jour vers `experience-v245`.
+
 ## [v244] - 2026-08-07
 
 ### Changé

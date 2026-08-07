@@ -1739,7 +1739,28 @@ const ENTRIES = {
   "Tous les boutons de la barre d'outils topbar partagent le même style visuel : bordure, fond, survol et focus.": {"fr":"Tous les boutons de la barre d'outils topbar partagent le même style visuel : bordure, fond, survol et focus.","en":"All topbar toolbar buttons share the same visual style: border, background, hover and focus.","es":"Todos los botones de la barra de herramientas superior comparten el mismo estilo visual: borde, fondo, hover y foco.","de":"Alle Topbar-Schaltflächen teilen denselben visuellen Stil: Rahmen, Hintergrund, Hover und Fokus."},
   "Les status Focus, Brain et Sync conservent leur indicateur coloré dans une forme uniforme.": {"fr":"Les status Focus, Brain et Sync conservent leur indicateur coloré dans une forme uniforme.","en":"Focus, Brain and Sync status keep their colored indicator in a uniform shape.","es":"Los estados Focus, Brain y Sync conservan su indicador de color en una forma uniforme.","de":"Focus-, Brain- und Sync-Status behalten ihren farbigen Indikator in einer einheitlichen Form."},
   "Adaptation tactile pour les contrôles topbar sur mobile.": {"fr":"Adaptation tactile pour les contrôles topbar sur mobile.","en":"Touch adaptation for topbar controls on mobile.","es":"Adaptación táctil para los controles de la barra superior en móvil.","de":"Touch-Anpassung für Topbar-Steuerelemente auf Mobilgeräten."},
-  "Bordereau PWA mis à jour vers experience-v244.": {"fr":"Bordereau PWA mis à jour vers experience-v244.","en":"PWA release bumped to experience-v244.","es":"Lanzamiento PWA actualizado a experience-v244.","de":"PWA-Release auf experience-v244 aktualisiert."}
+  "Bordereau PWA mis à jour vers experience-v244.": {"fr":"Bordereau PWA mis à jour vers experience-v244.","en":"PWA release bumped to experience-v244.","es":"Lanzamiento PWA actualizado a experience-v244.","de":"PWA-Release auf experience-v244 aktualisiert."},
+  "Traductions de la barre d'état et du statut de session": {"fr":"Traductions de la barre d'état et du statut de session","en":"Status bar and session status translations","es":"Traducciones de la barra de estado y del estado de la sesión","de":"Übersetzungen der Statusleiste und des Sitzungsstatus"},
+  "Le statut Session chiffrée, Session vérifiée et Session expirée est désormais traduit.": {"fr":"Le statut Session chiffrée, Session vérifiée et Session expirée est désormais traduit.","en":"Encrypted, verified and expired session status are now translated.","es":"El estado de sesión cifrada, verificada y expirada ahora se traduce.","de":"Der Status der verschlüsselten, verifizierten und abgelaufenen Sitzung wird jetzt übersetzt."},
+  "Les libellés de synchronisation et de sauvegarde de la barre d'état sont localisés.": {"fr":"Les libellés de synchronisation et de sauvegarde de la barre d'état sont localisés.","en":"Sync and save labels in the status bar are localized.","es":"Las etiquetas de sincronización y guardado de la barra de estado están localizadas.","de":"Die Synchronisierungs- und Speicherbezeichnungen in der Statusleiste sind lokalisiert."},
+  "Orthographe et accents corrigés dans les statuts du shell.": {"fr":"Orthographe et accents corrigés dans les statuts du shell.","en":"Spelling and accents fixed in shell status labels.","es":"Corregida la ortografía y los acentos en los estados del shell.","de":"Rechtschreibung und Akzente in den Shell-Statusbezeichnungen korrigiert."},
+  "Bordereau PWA mis à jour vers experience-v245.": {"fr":"Bordereau PWA mis à jour vers experience-v245.","en":"PWA release bumped to experience-v245.","es":"Lanzamiento PWA actualizado a experience-v245.","de":"PWA-Release auf experience-v245 aktualisiert."},
+  "Connexion Supabase": {"fr":"Connexion Supabase","en":"Connecting to Supabase","es":"Conectando a Supabase","de":"Verbindung mit Supabase"},
+  "Synchronisation en cours": {"fr":"Synchronisation en cours","en":"Syncing","es":"Sincronizando","de":"Synchronisierung läuft"},
+  "Synchronisé avec Supabase": {"fr":"Synchronisé avec Supabase","en":"Synced with Supabase","es":"Sincronizado con Supabase","de":"Mit Supabase synchronisiert"},
+  "Hors ligne - modifications en attente": {"fr":"Hors ligne - modifications en attente","en":"Offline - pending changes","es":"Sin conexión - cambios pendientes","de":"Offline - ausstehende Änderungen"},
+  "Nouvelle tentative": {"fr":"Nouvelle tentative","en":"Retrying","es":"Reintentando","de":"Wiederholung"},
+  "Erreur de synchronisation": {"fr":"Erreur de synchronisation","en":"Sync error","es":"Error de sincronización","de":"Synchronisierungsfehler"},
+  "Session Supabase expirée": {"fr":"Session Supabase expirée","en":"Supabase session expired","es":"Sesión de Supabase expirada","de":"Supabase-Sitzung abgelaufen"},
+  "Sauvegarde prête": {"fr":"Sauvegarde prête","en":"Save ready","es":"Guardado listo","de":"Speicherbereit"},
+  "Enregistrement en cours": {"fr":"Enregistrement en cours","en":"Saving","es":"Guardando","de":"Wird gespeichert"},
+  "Enregistré": {"fr":"Enregistré","en":"Saved","es":"Guardado","de":"Gespeichert"},
+  "Modifications en attente": {"fr":"Modifications en attente","en":"Pending changes","es":"Cambios pendientes","de":"Ausstehende Änderungen"},
+  "Erreur de sauvegarde": {"fr":"Erreur de sauvegarde","en":"Save error","es":"Error de guardado","de":"Speicherfehler"},
+  "Session expirée": {"fr":"Session expirée","en":"Session expired","es":"Sesión expirada","de":"Sitzung abgelaufen"},
+  "Session vérifiée": {"fr":"Session vérifiée","en":"Session verified","es":"Sesión verificada","de":"Sitzung überprüft"},
+  "Session chiffrée": {"fr":"Session chiffrée","en":"Encrypted session","es":"Sesión cifrada","de":"Verschlüsselte Sitzung"},
+  "Système prêt": {"fr":"Système prêt","en":"System ready","es":"Sistema listo","de":"System bereit"}
 };
 Object.keys(ENTRIES).forEach((key) => Object.freeze(ENTRIES[key]));
 Object.freeze(ENTRIES);

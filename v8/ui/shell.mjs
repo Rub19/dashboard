@@ -30,12 +30,12 @@ const PANEL_META = Object.freeze({
 const SYNC_META = Object.freeze({
   loading: { label: "Connexion Supabase", tone: "syncing" },
   saving: { label: "Synchronisation en cours", tone: "syncing" },
-  saved: { label: "Synchronise avec Supabase", tone: "online" },
-  offline: { label: "Hors ligne - changements en attente", tone: "warning" },
+  saved: { label: "Synchronisé avec Supabase", tone: "online" },
+  offline: { label: "Hors ligne - modifications en attente", tone: "warning" },
   retrying: { label: "Nouvelle tentative", tone: "syncing" },
   error: { label: "Erreur de synchronisation", tone: "error" },
-  expired: { label: "Session Supabase expiree", tone: "error" },
-  online: { label: "Synchronise avec Supabase", tone: "online" },
+  expired: { label: "Session Supabase expirée", tone: "error" },
+  online: { label: "Synchronisé avec Supabase", tone: "online" },
   syncing: { label: "Synchronisation en cours", tone: "syncing" }
 });
 
@@ -85,18 +85,18 @@ export function createStatusModel(input = {}) {
   const sync = SYNC_META[input.syncStatus] || SYNC_META.loading;
   const offline = input.networkStatus === "offline";
   const saveMeta = {
-    idle: { label: "Sauvegarde prete", tone: "muted", icon: "circle" },
+    idle: { label: "Sauvegarde prête", tone: "muted", icon: "circle" },
     saving: { label: "Enregistrement en cours", tone: "syncing", icon: "loader-circle" },
-    saved: { label: "Enregistre", tone: "online", icon: "check" },
-    pending: { label: "Changements en attente", tone: "warning", icon: "clock-3" },
+    saved: { label: "Enregistré", tone: "online", icon: "check" },
+    pending: { label: "Modifications en attente", tone: "warning", icon: "clock-3" },
     error: { label: "Erreur de sauvegarde", tone: "error", icon: "triangle-alert" }
-  }[input.saveStatus] || { label: "Sauvegarde prete", tone: "muted", icon: "circle" };
+  }[input.saveStatus] || { label: "Sauvegarde prête", tone: "muted", icon: "circle" };
   const sessionExpired = ["expired", "error"].includes(input.sessionStatus);
   return Object.freeze({
     network: Object.freeze({ label: offline ? "Hors ligne" : "En ligne", icon: offline ? "wifi-off" : "wifi", tone: offline ? "error" : "online" }),
     sync: Object.freeze({ label: sync.label, icon: sync.tone === "syncing" ? "refresh-cw" : (offline || sync.tone === "warning" || sync.tone === "error") ? "cloud-off" : "cloud", tone: sync.tone }),
     save: Object.freeze(saveMeta),
-    session: Object.freeze({ label: sessionExpired ? "Session expiree" : input.sessionStatus === "checking" ? "Session verifiee" : "Session chiffree", icon: sessionExpired ? "shield-alert" : "shield-check", tone: sessionExpired ? "error" : "online" }),
+    session: Object.freeze({ label: sessionExpired ? "Session expirée" : input.sessionStatus === "checking" ? "Session vérifiée" : "Session chiffrée", icon: sessionExpired ? "shield-alert" : "shield-check", tone: sessionExpired ? "error" : "online" }),
     clock: Object.freeze({ label: /^\d{2}:\d{2}$/.test(String(input.localTime || "")) ? input.localTime : "--:--", icon: "clock-3", tone: "muted", timeZone: String(input.timeZone || "UTC") }),
     version: Object.freeze({ label: `ETHONE ${String(input.version || "8.0")}`, icon: "badge-check", tone: "muted" })
   });

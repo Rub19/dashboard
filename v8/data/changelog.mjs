@@ -51,6 +51,12 @@ export const CHANGELOG = Object.freeze([
     { kind: "improvement", text: "Adaptation tactile pour les contrôles topbar sur mobile." },
     { kind: "improvement", text: "Bordereau PWA mis à jour vers experience-v244." }
   ]),
+  entry("v245", "2026-08-07", "Traductions de la barre d'état et du statut de session", [
+    { kind: "fix", text: "Le statut Session chiffrée, Session vérifiée et Session expirée est désormais traduit." },
+    { kind: "fix", text: "Les libellés de synchronisation et de sauvegarde de la barre d'état sont localisés." },
+    { kind: "improvement", text: "Orthographe et accents corrigés dans les statuts du shell." },
+    { kind: "improvement", text: "Bordereau PWA mis à jour vers experience-v245." }
+  ]),
   entry("v240", "2026-08-07", "Corrections LoL, responsive mobile et accessibilité commande", [
     { kind: "fix", text: "Correction de deriveLolDdragonVersion : la version est désormais extraite proprement du gameVersion Riot (fallback 16.15.1)." },
     { kind: "fix", text: "Le widget LoL tente DDragon, CommunityDragon puis l'icône de fallback sans boucle infinie si les images échouent." },

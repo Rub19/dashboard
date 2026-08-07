@@ -24,6 +24,11 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v238", "2026-08-07", "Barres de groupe style tracker.gg sur le scoreboard", [
+    { kind: "improvement", text: "La barre colorée de gauche est maintenant plus visible (5px pleine hauteur) et suit la couleur du groupe/party, comme sur tracker.gg." },
+    { kind: "improvement", text: "Le joueur et ses coéquipiers de groupe partagent la même couleur de barre." },
+    { kind: "improvement", text: "Bordereau PWA mis à jour vers experience-v238." }
+  ]),
   entry("v237", "2026-08-07", "Fallback icône LoL via CommunityDragon et CSP", [
     { kind: "fix", text: "Le widget LoL tente maintenant DDragon puis CommunityDragon pour la photo de profil si l'image échoue." },
     { kind: "fix", text: "Suppression de referrerpolicy='no-referrer' sur l'image du widget LoL." },

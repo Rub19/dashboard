@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v238] - 2026-08-07
+
+### Changé
+- **Valorant scoreboard** : la barre colorée de gauche est maintenant plus visible (5px pleine hauteur) et correspond à la couleur du groupe/party, comme sur tracker.gg.
+- Le joueur et ses coéquipiers du même groupe partagent la même couleur.
+- Bordereau PWA mis à jour vers `experience-v238`.
+
 ## [v237] - 2026-08-07
 
 ### Corrigé

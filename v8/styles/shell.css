@@ -1882,6 +1882,7 @@ button.v8-status-item:focus-visible { box-shadow: var(--v8-shadow-focus); outlin
 .v8-panel-list-toolbar .v8-icon-button { width: 36px; height: 36px; flex-basis: 36px; }
 .v8-panel-bulk .v8-bulk-bar { margin: 0; padding-inline: var(--v8-space-2); border: 1px solid var(--v8-accent-line); border-radius: var(--v8-radius-md); }
 .v8-panel-bulk .v8-bulk-bar .v8-button { padding-inline: 8px; }
+.v8-panel-bulk .v8-bulk-bar .v8-button span { display: none; }
 .v8-panel-space-summary,
 .v8-panel-profile-card {
   display: grid;

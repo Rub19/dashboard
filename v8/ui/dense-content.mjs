@@ -113,7 +113,7 @@ export function bulkActionBar(options = {}) {
     element("span", { className: "v8-bulk-bar__spacer" }),
     ...actions.map((action) => element("button", {
       className: `v8-button${action.tone ? ` v8-button--${action.tone}` : ""}`,
-      attributes: { type: "button", disabled: action.disabled === true ? "" : null },
+      attributes: { type: "button", "aria-label": action.label || "Action", disabled: action.disabled === true ? "" : null },
       events: { click: () => action.onSelect?.() }
     }, [icon(action.icon || "check"), element("span", { text: action.label || "Action" })])),
     element("button", {

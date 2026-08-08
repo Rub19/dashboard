@@ -24,6 +24,13 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v260", "2026-08-10", "Phase 9 : accessibilite, i18n et stabilite CI", [
+    { kind: "improvement", text: "128 traductions manquantes ajoutees (en, es, de) dans le catalogue i18n." },
+    { kind: "fix", text: "Barre d'actions groupées du panel de notifications : texte tronque, icônes visibles avec aria-label." },
+    { kind: "fix", text: "Correction du script RLS QA pour ne plus exiger de lignes seedees pour les utilisateurs de test." },
+    { kind: "fix", text: "Ajout du package.json et mise a jour wrangler.toml pour le worker deploy-status." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v260." }
+  ]),
   entry("v259", "2026-08-09", "Phase 9 : stabilite, navigation mobile et error boundaries", [
     { kind: "fix", text: "Correction de la validation GitHub Pages : cache SW v258, lazy-load des pages lourdes et ajustement des budgets JS." },
     { kind: "feature", text: "Barre de navigation mobile avec drawer Applications (bottom nav)." },

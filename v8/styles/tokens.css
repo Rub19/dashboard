@@ -14,6 +14,11 @@
 @property --v8-ambient-hero-light-percent { syntax: "<percentage>"; inherits: true; initial-value: 10%; }
 @property --v8-ambient-accent-mix { syntax: "<percentage>"; inherits: true; initial-value: 10%; }
 @property --v8-ambient-motion-duration { syntax: "<time>"; inherits: true; initial-value: 32s; }
+@property --v8-accent {
+  syntax: '<color>';
+  initial-value: #7be5c3;
+  inherits: true;
+}
 :root {
   color-scheme: dark;
   --v8-canvas: #080a0d;

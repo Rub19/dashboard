@@ -441,7 +441,7 @@ export function mountSettings(stage, options = {}) {
             element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("circle")]), element("div", {}, [element("strong", { text: "Courbure du Design" }), element("p", { text: "Ajuster l'échelle d'arrondi des cartes et boutons du système." })])]),
             radiusChoices
           ]),
-          settingRow("palette", "Accent", "Identifier le Space et les actions importantes.", accentControls),
+          settingRow("palette", "Accent", "Identifier le Space et les actions importantes.", element("div", { className: "v8-theme-picker v8-depth" }, [accentControls])),
           element("div", { className: "v8-density-settings" }, [
             element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("rows-3")]), element("div", {}, [element("strong", { text: "Density Engine" }), element("p", { text: "Une densité coherente pour chaque page, panneau, widget et resolution." })]), densityResolved]),
             densityChoices,
@@ -965,10 +965,27 @@ export function mountSettings(stage, options = {}) {
     btn.setAttribute("aria-pressed", "true");
     btn.append(icon("check")); globalThis.lucide?.createIcons?.(); options.actions?.dispatch?.(btn.dataset.action, { source: "settings" });
   }, { signal: controller.signal }));
+  const themeFlash = element("div", { className: "v8-theme-flash" });
+  page.append(themeFlash);
+
   page.addEventListener("click", (event) => {
     const button = event.target.closest(".v8-setting-choice, [data-density-mode], [data-theme-mode], button.v8-accent-swatch");
     if (!button || !button.dataset.action) return;
     event.stopPropagation();
+    if (button.classList.contains("v8-accent-swatch")) {
+      const rect = button.getBoundingClientRect();
+      const pageRect = page.getBoundingClientRect();
+      const computed = globalThis.getComputedStyle?.(button);
+      const color = computed?.backgroundColor || "var(--v8-accent)";
+      themeFlash.style.setProperty("--v8-flash-x", `${rect.left + rect.width / 2 - pageRect.left}px`);
+      themeFlash.style.setProperty("--v8-flash-y", `${rect.top + rect.height / 2 - pageRect.top}px`);
+      themeFlash.style.setProperty("--v8-flash-color", color);
+      themeFlash.classList.remove("is-active");
+      void themeFlash.offsetWidth;
+      themeFlash.classList.add("is-active");
+      globalThis.document?.documentElement?.classList.add("v8-theme-animated");
+      globalThis.setTimeout?.(() => globalThis.document?.documentElement?.classList.remove("v8-theme-animated"), 600);
+    }
     options.actions?.dispatch?.(button.dataset.action, { source: "settings" });
   }, { signal: controller.signal });
   page.addEventListener("click", (event) => {

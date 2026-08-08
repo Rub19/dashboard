@@ -409,9 +409,26 @@ export function mountTasks(stage, options = {}) {
   function toggleTask(id) {
     const changed = repository.tasks.toggle(id);
     if (!changed.ok) return changed;
-    refreshTasks();
-    renderList();
-    presence?.signalActivity?.(taskRow(changed.data.id), "task", { phase: "update" });
+    const row = taskRow(id);
+    const task = changed.data;
+    const done = task && (task.done === true || task.completed === true);
+    if (row) {
+      row.classList.toggle("is-complete", done);
+      const toggle = row.querySelector(`[data-task-toggle="${id}"]`);
+      if (toggle) {
+        toggle.classList.toggle("is-complete", done);
+        toggle.setAttribute("aria-pressed", done ? "true" : "false");
+        toggle.setAttribute("aria-label", done ? `Rouvrir ${task.title}` : `Terminer ${task.title}`);
+        toggle.replaceChildren(icon(done ? "check" : "circle"));
+        refreshIcons();
+      }
+      const title = row.querySelector(".v8-task-row__copy > strong");
+      if (title) title.style.textDecoration = done ? "line-through" : "none";
+    }
+    const phase = done ? "complete" : "update";
+    const finish = () => { if (mounted) { refreshTasks(); renderList(); } };
+    if (row && presence?.signalActivity) presence.signalActivity(row, "task", { phase, onComplete: finish });
+    else finish();
     return changed;
   }
 

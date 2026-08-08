@@ -569,6 +569,10 @@
   text-transform: uppercase;
 }
 .v8-task-group-header:first-child { margin-top: 0; }
+@keyframes v8-task-row-enter {
+  from { opacity: 0; transform: translate3d(0, 14px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
 .v8-task-row {
   display: grid;
   min-width: 0;
@@ -584,6 +588,7 @@
     background-color var(--v8-motion-fast) var(--v8-ease-standard),
     box-shadow var(--v8-motion-fast) var(--v8-ease-standard),
     opacity var(--v8-motion-fast) var(--v8-ease-standard);
+  animation: v8-task-row-enter 0.32s var(--v8-ease-out) both;
 }
 html[data-v8-interactions] .v8-task-row:hover { background: var(--v8-surface-sunken); }
 .v8-task-row:focus-visible { box-shadow: var(--v8-shadow-focus-inset); }

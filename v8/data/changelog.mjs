@@ -24,12 +24,16 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v266", "2026-08-10", "Phase 9 : taches, animations et v265", [
+    { kind: "feature", text: "Animation de complétion des tâches : la ligne s'élève, se fade et les tâches restantes glissent en douceur." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v266." }
+  ]),
   entry("v264", "2026-08-10", "Phase 9 : equipe, collaboration et cloud", [
     { kind: "feature", text: "Nouvelle page Équipe pour inviter des membres, leur attribuer un role et gerer l'acces aux fichiers." },
     { kind: "feature", text: "Service createTeamManager local avec roles (owner, admin, senior, junior, assistant, viewer) et statuts (pending, active, revoked)." },
     { kind: "feature", text: "Table Supabase ethone_team_members et ethone_file_collaborators pour la collaboration securisee." },
     { kind: "feature", text: "Avatars generes a partir des initiales et support des URL de photo de profil." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v265." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v266." }
   ]),
   entry("v260", "2026-08-10", "Phase 9 : widget Bills, i18n et stabilite CI", [
     { kind: "feature", text: "Nouveau widget Bills : calendrier des factures a 7 jours, detail anime, ajout manuel et scan IA." },
@@ -42,7 +46,7 @@ export const CHANGELOG = Object.freeze([
     { kind: "fix", text: "Navigation fluide des pages lazy grace aux View Transitions et gestion du cycle de vie." },
     { kind: "fix", text: "Style loader et bordereau PWA synchronises (v263) pour eviter les flashs de contenu." },
     { kind: "fix", text: "Formulaire de connexion : autofill fiable et suppression des animations de layout au focus clavier mobile." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v265." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v266." }
   ]),
   entry("v259", "2026-08-09", "Phase 9 : stabilite, navigation mobile et error boundaries", [
     { kind: "fix", text: "Correction de la validation GitHub Pages : cache SW v258, lazy-load des pages lourdes et ajustement des budgets JS." },

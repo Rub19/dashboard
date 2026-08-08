@@ -6,7 +6,7 @@ const MAIL_STATES = new Set(["idle", "new"]);
 const ICON_KINDS = new Set(["brain", "calendar", "mail", "notifications"]);
 const LIVE_KINDS = new Set(["brain", "clock", "media", "metric", "planning", "signal", "widget", "profile", "text"]);
 const ACTIVITY_KINDS = new Set(["notification", "task", "note", "widget", "calendar", "file", "system"]);
-const ACTIVITY_PHASES = new Set(["enter", "update", "exit"]);
+const ACTIVITY_PHASES = new Set(["enter", "update", "exit", "complete"]);
 
 function normalizedSync(value) {
   if (["online", "saved"].includes(value)) return "idle";
@@ -157,6 +157,18 @@ export function createPresenceEngine(options = {}) {
         ]
       });
     }
+    if (phase === "complete") {
+      return Object.freeze({
+        duration: 460,
+        easing: "cubic-bezier(.4, 0, .2, 1)",
+        frames: [
+          { opacity: 1, transform: "translate3d(0, 0, 0) scale(1)" },
+          { opacity: 1, transform: "translate3d(0, -2px, 0) scale(1.01)", offset: 0.15 },
+          { opacity: 0.86, transform: "translate3d(0, -12px, 0) scale(0.97)", offset: 0.55 },
+          { opacity: 0, transform: "translate3d(0, -24px, 0) scale(0.92)" }
+        ]
+      });
+    }
     if (phase === "update") {
       return Object.freeze({
         duration: 190,
@@ -202,7 +214,7 @@ export function createPresenceEngine(options = {}) {
       kind: activityKind,
       phase,
       marker: "activity",
-      maxDuration: 250
+      maxDuration: phase === "complete" ? 700 : 250
     });
   }
 

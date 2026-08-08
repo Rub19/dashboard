@@ -77,6 +77,7 @@ export function createActionFacade(options = {}) {
   register("v8.spaces.open", openRoute("spaces", "Spaces"));
   register("v8.flows.open", openRoute("flows", "Flows"));
   register("v8.brain.open", openRoute("brain", "Brain"));
+  register("v8.team.open", openRoute("team", "Équipe"));
   register("v8.settings.open", openRoute("settings", "Réglages"));
   register("v8.profiles.open", () => {
     setState({ panel: null, commandOpen: false, missionOpen: false });

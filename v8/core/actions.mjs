@@ -166,6 +166,25 @@ export function createActionFacade(options = {}) {
     return completed(expanded ? "Sidebar developpee" : "Sidebar compacte", { expanded });
   });
 
+  register("v8.mobile-nav.more", () => {
+    const drawer = document.querySelector(".v8-mobile-nav__drawer");
+    const trigger = document.querySelector("[data-action='v8.mobile-nav.more']");
+    if (drawer) {
+      const open = drawer.hasAttribute("hidden");
+      if (open) drawer.removeAttribute("hidden");
+      else drawer.setAttribute("hidden", "");
+      if (trigger) trigger.setAttribute("aria-expanded", String(open));
+    }
+    return completed("Menu mobile ouvert");
+  });
+  register("v8.mobile-nav.close", () => {
+    const drawer = document.querySelector(".v8-mobile-nav__drawer");
+    const trigger = document.querySelector("[data-action='v8.mobile-nav.more']");
+    if (drawer) drawer.setAttribute("hidden", "");
+    if (trigger) trigger.setAttribute("aria-expanded", "false");
+    return completed("Menu mobile ferme");
+  });
+
   register("v8.mission.open", () => {
     setState({ missionOpen: true, commandOpen: false, panel: null });
     return completed("Mission Control ouvert");

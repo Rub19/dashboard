@@ -23,7 +23,10 @@ function list(items, emptyText) {
 }
 
 export function mountSecurity(root, options = {}) {
-  if (!root) throw new TypeError("Security page requires a root element");
+  if (!root) {
+    if (globalThis.console) globalThis.console.error("Security page requires a root element");
+    return () => {};
+  }
   const security = options.security;
   const notify = options.notify;
   const locale = "fr";

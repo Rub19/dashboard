@@ -63,3 +63,27 @@ export function navigationMarkup(activeRoute = "home", options = {}) {
     </div>
   </nav>`;
 }
+
+export function mobileNavigationMarkup(activeRoute = "home", options = {}) {
+  const contextName = escapeAttribute(options.contextName || "Personnel");
+  const primary = NAVIGATION_ITEMS.filter((item) => ["home", "notes", "tasks", "calendar", "files"].includes(item.id));
+  const more = NAVIGATION_ITEMS.filter((item) => !["home", "notes", "tasks", "calendar", "files"].includes(item.id));
+  const primaryMarkup = primary.map((item) => {
+    const active = item.id === activeRoute;
+    const current = active ? ' aria-current="page"' : "";
+    return `<button type="button" class="v8-mobile-nav__item${active ? " is-active" : ""}" data-action="${item.actionId}" data-route="${item.id}"${current} aria-label="${escapeAttribute(item.label)}"><i data-lucide="${escapeAttribute(item.icon)}" aria-hidden="true"></i><span>${escapeAttribute(item.label)}</span></button>`;
+  }).join("");
+  const moreMarkup = more.map((item) => {
+    const active = item.id === activeRoute;
+    const current = active ? ' aria-current="page"' : "";
+    return `<button type="button" class="v8-mobile-nav__drawer-item${active ? " is-active" : ""}" data-action="${item.actionId}" data-route="${item.id}"${current} aria-label="${escapeAttribute(item.label)}"><i data-lucide="${escapeAttribute(item.icon)}" aria-hidden="true"></i><span>${escapeAttribute(item.label)}</span></button>`;
+  }).join("");
+  return `<nav class="v8-mobile-nav" aria-label="Navigation mobile">
+    <div class="v8-mobile-nav__bar">${primaryMarkup}<button type="button" class="v8-mobile-nav__item" data-action="v8.mobile-nav.more" aria-label="Plus" aria-haspopup="true" aria-expanded="false"><i data-lucide="menu" aria-hidden="true"></i><span>Plus</span></button></div>
+    <div class="v8-mobile-nav__drawer" hidden>
+      <div class="v8-mobile-nav__drawer-header"><span class="v8-mobile-nav__drawer-title">Applications</span><button type="button" class="v8-icon-button" data-action="v8.mobile-nav.close" aria-label="Fermer"><i data-lucide="x" aria-hidden="true"></i></button></div>
+      <div class="v8-mobile-nav__drawer-body">${moreMarkup}</div>
+      <div class="v8-mobile-nav__drawer-footer">${avatarMarkup(options.avatar, contextName.slice(0, 1).toUpperCase(), "v8-mobile-nav__avatar")}<span>${contextName}</span></div>
+    </div>
+  </nav>`;
+}

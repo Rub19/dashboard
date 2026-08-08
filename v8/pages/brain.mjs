@@ -62,7 +62,11 @@ export function mountBrain(stage, options = {}) {
   const state = options.state || {};
   const brain = options.brain;
   const actionFacade = options.actions;
-  if (!brain?.controller || !brain?.context) throw new TypeError("Brain page requires the Brain runtime");
+  if (!brain?.controller || !brain?.context) {
+    stage.replaceChildren(statusState("error", { title: "Brain indisponible", description: "Le runtime Brain n'a pas pu être initialisé. Veuillez recharger ETHONE.", iconName: "brain-circuit", compact: true, actions: [element("button", { className: "v8-button v8-button--primary", attributes: { type: "button" }, events: { click: () => globalThis.location?.reload() } }, [icon("refresh-cw"), element("span", { text: "Recharger" })])] }));
+    refreshIcons();
+    return () => stage.replaceChildren();
+  }
   const workspace = workspaceById(state.space);
   const snapshot = options.repository?.snapshot?.() || {};
   const context = brain.context.build({ route: state.route, intent: "brain-page" });

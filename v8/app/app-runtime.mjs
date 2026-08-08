@@ -54,7 +54,15 @@ import { createScratchpad } from "../ui/scratchpad.mjs";
 import { createShortcutsOverlay } from "../ui/shortcuts-overlay.mjs";
 
 export function mountApplication(root, options = {}) {
-  if (!root) throw new TypeError("Application runtime requires a root element");
+  if (!root) {
+    if (globalThis.console) globalThis.console.error("Application runtime requires a root element");
+    return {
+      destroy: () => {},
+      getState: () => ({}),
+      notify: () => {},
+      refresh: () => {}
+    };
+  }
   const repository = options.repository;
   const i18n = options.i18n;
   const metadata = options.metadata || createDocumentMetadataManager(document);
@@ -62,7 +70,15 @@ export function mountApplication(root, options = {}) {
   const cloudSync = options.cloudSync || null;
   const clockManager = options.clockManager || null;
   const externalServices = options.externalServices || null;
-  if (!repository) throw new TypeError("Application runtime requires a profile repository");
+  if (!repository) {
+    if (globalThis.console) globalThis.console.error("Application runtime requires a profile repository");
+    return {
+      destroy: () => {},
+      getState: () => ({}),
+      notify: () => {},
+      refresh: () => {}
+    };
+  }
 
   const startedAt = performance.now();
   const releaseFormSystem = enhanceForm(root);

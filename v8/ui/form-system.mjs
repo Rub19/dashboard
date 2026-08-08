@@ -136,7 +136,10 @@ export function prepareFormControls(root) {
 }
 
 export function formField({ label, control, input = control, help = "", className = "", required = input?.required, counter = true } = {}) {
-  if (!input || !control) throw new TypeError("formField requires a control");
+  if (!input || !control) {
+    if (globalThis.console) globalThis.console.error("formField requires a control");
+    return null;
+  }
   const id = ensureId(input);
   const kind = controlKind(input);
   if (required) {
@@ -161,7 +164,10 @@ export function formField({ label, control, input = control, help = "", classNam
 }
 
 export function passwordControl(input, options = {}) {
-  if (!input) throw new TypeError("passwordControl requires an input");
+  if (!input) {
+    if (globalThis.console) globalThis.console.error("passwordControl requires an input");
+    return null;
+  }
   const controller = new AbortController();
   let showLabel = options.showLabel || "Afficher le mot de passe";
   let hideLabel = options.hideLabel || "Masquer le mot de passe";
@@ -333,7 +339,10 @@ export function enhanceForm(form, { signal } = {}) {
 }
 
 export async function runFormSubmission({ form, submit, status, messages = {}, task } = {}) {
-  if (!form || typeof task !== "function") throw new TypeError("runFormSubmission requires a form and a task");
+  if (!form || typeof task !== "function") {
+    if (globalThis.console) globalThis.console.error("runFormSubmission requires a form and a task");
+    return Object.freeze({ accepted: false, reason: "invalid", value: null, error: null });
+  }
   const copy = { invalid: "Vérifiez les champs signalés.", loading: "Enregistrement en cours...", saved: "Enregistré.", error: "L'enregistrement a échoué.", ...messages };
   const statusNode = status || form.querySelector("[data-form-status]");
   if (pendingForms.has(form)) return Object.freeze({ accepted: false, reason: "pending", value: null, error: null });

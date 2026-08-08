@@ -14,18 +14,29 @@ export function createLifecycle() {
     const release = cleanup;
     cleanup = null;
     activeId = null;
-    release();
+    try {
+      release();
+    } catch (err) {
+      if (globalThis.console) globalThis.console.error("Failed to unmount active route:", err);
+    }
     unmounts += 1;
     return true;
   }
 
   function mount(id, render) {
     if (!id || typeof render !== "function") {
-      throw new TypeError("A lifecycle mount requires an id and render function");
+      if (globalThis.console) globalThis.console.error("A lifecycle mount requires an id and render function");
+      return null;
     }
 
     unmount();
-    const result = render();
+    let result;
+    try {
+      result = render();
+    } catch (err) {
+      if (globalThis.console) globalThis.console.error(`Failed to mount route ${id}:`, err);
+      return null;
+    }
     activeId = String(id);
     cleanup = typeof result === "function" ? result : null;
     mounts += 1;

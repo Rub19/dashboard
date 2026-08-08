@@ -85,8 +85,16 @@ function mountBootSurface() {
 }
 
 async function boot() {
-  assertV8OnlyDocument();
-  if (!root) throw new Error("ETHONE root is missing");
+  try {
+    assertV8OnlyDocument();
+  } catch (err) {
+    renderFatalError(err);
+    return;
+  }
+  if (!root) {
+    renderFatalError(new Error("ETHONE root is missing"));
+    return;
+  }
   if (globalThis.__ETHONE_V8_BOOTED__) return;
   globalThis.__ETHONE_V8_BOOTED__ = true;
   const startedAt = performance.now();

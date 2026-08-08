@@ -118,8 +118,14 @@ export function createExternalServicesClient(options = {}) {
   const network = options.network;
   const auth = options.auth;
   const config = options.config || externalServicesConfig(runtime);
-  if (!network?.requestJSON) throw new TypeError("ExternalServicesClient requires a network client");
-  if (!auth?.getClient) throw new TypeError("ExternalServicesClient requires an auth adapter");
+  if (!network?.requestJSON) {
+    if (runtime.console) runtime.console.error("ExternalServicesClient requires a network client");
+    return createDegradedExternalServicesClient(runtime, config);
+  }
+  if (!auth?.getClient) {
+    if (runtime.console) runtime.console.error("ExternalServicesClient requires an auth adapter");
+    return createDegradedExternalServicesClient(runtime, config);
+  }
   const baseUrl = validBaseUrl(config.baseUrl, config.environment);
   const activeControllers = new Set();
   let destroyed = false;

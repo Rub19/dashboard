@@ -1,7 +1,7 @@
 import { navigationItem } from "../data/navigation.mjs";
 import { workspaceById } from "../data/workspaces.mjs";
 import { refreshIcons } from "./icons.mjs";
-import { avatarMarkup, navigationMarkup } from "./navigation.mjs";
+import { avatarMarkup, mobileNavigationMarkup, navigationMarkup } from "./navigation.mjs";
 import { attachFocusPopover } from "./focus-popover.mjs";
 
 const TOPBAR_BRAND_SVG = `<svg viewBox="0 0 64 64" role="img" aria-label="ETHONE"><defs><linearGradient id="v8-topbar-brand-surface" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14191f"/><stop offset="1" stop-color="#080a0d"/></linearGradient><linearGradient id="v8-topbar-brand-signal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7be5c3"/><stop offset="1" stop-color="#8bc9fa"/></linearGradient></defs><rect x="1.25" y="1.25" width="61.5" height="61.5" rx="15.25" fill="url(#v8-topbar-brand-signal)"/><rect x="4.15" y="4.15" width="55.7" height="55.7" rx="12.6" fill="url(#v8-topbar-brand-surface)"/><path d="M19 18v28m0-28h26M19 32h20.5M19 46h26" fill="none" stroke="#f4f7fa" stroke-width="6.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -228,7 +228,7 @@ export function mountShell(root, options = {}) {
 
   function renderNavigation() {
     navMode = media.matches ? "mobile" : "desktop";
-    if (navMode === "mobile") navHost.replaceChildren();
+    if (navMode === "mobile") navHost.innerHTML = mobileNavigationMarkup(activeRoute, { contextName, avatar: activeUser?.avatar });
     else navHost.innerHTML = navigationMarkup(activeRoute, { expanded: railExpanded, space: activeSpace, contextName, avatar: activeUser?.avatar });
     shell.dataset.navigation = navMode;
     refreshIcons();
@@ -240,6 +240,8 @@ export function mountShell(root, options = {}) {
       if (activeBounds.top < bounds.top) viewport.scrollTop += activeBounds.top - bounds.top;
       else if (activeBounds.bottom > bounds.bottom) viewport.scrollTop += activeBounds.bottom - bounds.bottom;
     }
+    const drawer = navHost.querySelector(".v8-mobile-nav__drawer");
+    if (drawer) drawer.hidden = true;
   }
 
   function update(state = {}) {

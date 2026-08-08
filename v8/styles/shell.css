@@ -4177,3 +4177,14 @@ html[data-v8-aura-pulse="true"] .v8-ambient-layer {
 .v8-shell[data-navigation="mobile"] .v8-nav-slot { position: fixed; right: 0; bottom: 0; left: 0; z-index: var(--v8-z-rail); grid-column: 1; grid-row: auto; height: auto; }
 .v8-shell[data-navigation="mobile"] .v8-status-bar { padding-bottom: 62px; }
 @media (max-width: 820px) { .v8-shell { padding-bottom: 62px; } }
+@media (max-width: 560px) {
+  .v8-home-live-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .v8-bills-week { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+  .v8-bills-day { min-height: 54px; padding: 4px 1px; }
+  .v8-bills-day strong { font-size: var(--v8-font-sm); }
+  .v8-bills-day small { font-size: 9px; }
+}
+@media (max-width: 380px) {
+  .v8-home-live-grid { grid-template-columns: 1fr; }
+  .v8-bills-day { min-height: 48px; }
+}

@@ -397,15 +397,20 @@
 .v8-auth .v8-form-field__required { flex: 0 0 auto; }
 .v8-field:focus-within > .v8-field__label { color: var(--v8-brand); }
 .v8-auth .v8-form-field__control { min-height: var(--v8-control-lg); background: color-mix(in srgb, var(--v8-surface-sunken) 90%, transparent); }
-.v8-auth__input { height: calc(var(--v8-control-lg) - 2px); caret-color: var(--v8-brand); }
+.v8-auth__input { height: calc(var(--v8-control-lg) - 2px); caret-color: var(--v8-brand); color-scheme: dark; }
 html[data-v8-interactions] .v8-entry--login .v8-form-field:not([data-field-state="disabled"]) .v8-form-field__control:hover { border-color: color-mix(in srgb, var(--v8-border-strong) 78%, var(--v8-brand-line)); }
 .v8-entry--login .v8-form-field:focus-within .v8-form-field__control { border-color: color-mix(in srgb, var(--v8-brand) 76%, var(--v8-border-highlight)); background: color-mix(in srgb, var(--v8-surface-1) 86%, transparent); box-shadow: inset 0 1px 0 color-mix(in srgb, var(--v8-text) 3%, transparent), 0 0 0 3px var(--v8-login-ring), 0 14px 34px -20px var(--v8-login-glow); }
 .v8-auth__input:-webkit-autofill,
 .v8-auth__input:-webkit-autofill:hover,
-.v8-auth__input:-webkit-autofill:focus {
+.v8-auth__input:-webkit-autofill:focus,
+.v8-auth__input:autofill,
+.v8-auth__input:autofill:hover,
+.v8-auth__input:autofill:focus {
   border-color: var(--v8-accent-line);
-  -webkit-box-shadow: 0 0 0 1000px var(--v8-surface-sunken) inset;
-  -webkit-text-fill-color: var(--v8-text);
+  background-color: var(--v8-surface-sunken) !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--v8-surface-sunken) inset !important;
+  -webkit-text-fill-color: var(--v8-text) !important;
+  color: var(--v8-text) !important;
   caret-color: var(--v8-text);
 }
 .v8-auth__password { position: relative; display: block; }

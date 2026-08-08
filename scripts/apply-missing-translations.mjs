@@ -2,12 +2,14 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { MISSING_TRANSLATIONS } from "./missing-translations.mjs";
+import { MISSING_TRANSLATIONS as MISSING_TRANSLATIONS_SUPPLEMENT } from "./missing-translations-supplement.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const catalogPath = path.join(root, "v8/i18n/catalog.mjs");
 let catalog = fs.readFileSync(catalogPath, "utf8");
 
-const entries = Object.entries(MISSING_TRANSLATIONS)
+const allMissing = { ...MISSING_TRANSLATIONS, ...MISSING_TRANSLATIONS_SUPPLEMENT };
+const entries = Object.entries(allMissing)
   .map(([key, { en, es, de }]) => {
     const fr = key;
     return `  ${JSON.stringify(fr)}: { "fr": ${JSON.stringify(fr)}, "en": ${JSON.stringify(en)}, "es": ${JSON.stringify(es)}, "de": ${JSON.stringify(de)} }`;

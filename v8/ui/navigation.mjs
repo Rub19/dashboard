@@ -14,7 +14,7 @@ function escapeAttribute(value) {
 export function avatarMarkup(avatar, fallback, className = "") {
   const cls = className ? ` class="${escapeAttribute(className)}"` : "";
   if (avatar && avatar.kind === "image" && avatar.value) {
-    return `<img${cls} src="${escapeAttribute(avatar.value)}" alt="" loading="lazy" referrerpolicy="no-referrer">`;
+    return `<img${cls} src="${escapeAttribute(avatar.value)}" alt="" loading="lazy" referrerpolicy="no-referrer" aria-hidden="true">`;
   }
   const glyph = avatar && (avatar.kind === "symbol" || avatar.kind === "initials") ? avatar.value : fallback;
   return `<span${cls} aria-hidden="true">${escapeAttribute(glyph || fallback || "E")}</span>`;

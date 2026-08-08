@@ -612,11 +612,11 @@ export function mountProfileSelection(root, options = {}) {
     const chosenIntegrations = new Set(profile?.environment.integrations || []);
     let widgetsTouched = false;
     let activeStep = focusTarget === "space" || focusTarget === "theme" ? 1 : 0;
-    const nameInput = element("input", { className: "v8-input", attributes: { type: "text", maxlength: "80", required: true, value: profile?.name || "", placeholder: "Nom du profil", autocomplete: "off" } });
-    const descriptionInput = element("textarea", { className: "v8-input v8-profile-dialog__textarea", attributes: { maxlength: "180", rows: "3", placeholder: "Decrivez cet environnement" } }, profile?.description || "");
+    const nameInput = element("input", { className: "v8-input", attributes: { type: "text", maxlength: "80", required: true, value: profile?.name || "", placeholder: "Nom du profil", autocomplete: "off", "aria-label": "Nom du profil" } });
+    const descriptionInput = element("textarea", { className: "v8-input v8-profile-dialog__textarea", attributes: { maxlength: "180", rows: "3", placeholder: "Decrivez cet environnement", "aria-label": "Description du profil" } }, profile?.description || "");
     const typeSelect = createSelect({ className: "v8-input", attributes: { "aria-label": "Space principal" } }, Object.entries(TYPE_LABELS).map(([value, label]) => optionNode(value, label)));
     typeSelect.value = profile?.type || "personal";
-    const flowInput = element("input", { className: "v8-input", attributes: { type: "text", maxlength: "80", value: profile?.flowLabel || "Essentiel", placeholder: "Flow principal" } });
+    const flowInput = element("input", { className: "v8-input", attributes: { type: "text", maxlength: "80", value: profile?.flowLabel || "Essentiel", placeholder: "Flow principal", "aria-label": "Flow principal" } });
     const ambienceSelect = createSelect({ className: "v8-input", attributes: { "aria-label": "Ambiance" } }, Object.entries(AMBIENCE_LABELS).map(([value, label]) => optionNode(value, label)));
     ambienceSelect.value = profile?.environment.ambience || "balanced";
     const backgroundSelect = createSelect({ className: "v8-input", attributes: { "aria-label": "Fond" } }, Object.entries(BACKGROUND_LABELS).map(([value, label]) => optionNode(value, label)));

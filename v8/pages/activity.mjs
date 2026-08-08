@@ -480,7 +480,7 @@ export function mountActivity(stage, options = {}) {
       }
       render();
     } catch (err) {
-      console.error("[activity] cloud activity fetch failed:", err);
+      if (globalThis.console) globalThis.console.error("[activity] cloud activity fetch failed:", err);
     }
   }
 

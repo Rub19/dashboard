@@ -192,6 +192,7 @@ export function createCommandCenter(host, options = {}) {
         placeholder: "Rechercher ou executer une commande...",
         autocomplete: "off",
         spellcheck: "false",
+        "aria-label": "Rechercher ou executer une commande",
         role: "combobox",
         "aria-expanded": "true",
         "aria-controls": "v8-command-results",

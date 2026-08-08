@@ -638,7 +638,7 @@ button.v8-status-item:focus-visible { box-shadow: var(--v8-shadow-focus); outlin
 .v8-dock-app.is-dragging .v8-dock-app__plate { box-shadow:var(--v8-shadow-height-4); }
 .v8-dock-app.is-drop-target .v8-dock-app__plate { border-color: var(--v8-accent); }
 .v8-dock-separator { width: 1px; height: 34px; margin: 0 2px 4px; background: var(--v8-divider); }
-.v8-dock-control,.v8-dock-more { width: 42px; flex-basis: 42px; color: var(--v8-muted); }
+.v8-dock-control,.v8-dock-more { width: var(--v8-touch-target); flex-basis: var(--v8-touch-target); color: var(--v8-muted); }
 .v8-dock-control svg,.v8-dock-more svg { width: 20px; height: 20px; transition: transform var(--v8-motion-instant) var(--v8-ease-press); }
 .v8-dock-control.is-active,.v8-dock-more.is-active { color: var(--v8-accent); }
 .v8-dock-control.is-active { transform: rotate(90deg); }

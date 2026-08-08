@@ -1,8 +1,44 @@
+import {
+  cloudDropsCreateRoute,
+  cloudDropsListRoute,
+  cloudDropResolveRoute,
+  cloudDropRevokeRoute,
+  cloudDropUploadRoute,
+  cloudShareDownloadRoute,
+  cloudShareResolveRoute,
+  cloudShareRevokeRoute,
+  cloudSharesCreateRoute,
+  cloudSharesListRoute
+} from "./routes/cloud-shares.js";
+import {
+  cloudFileDetailRoute,
+  cloudFileFavoriteRoute,
+  cloudFileUpdateRoute,
+  cloudFilesFavoritesRoute,
+  cloudFilesListRoute,
+  cloudFilesSyncRoute
+} from "./routes/cloud-files.js";
+import { cloudActivityListRoute, cloudActivitySummaryRoute } from "./routes/cloud-activity.js";
+import { cloudCleanupRoute } from "./routes/cloud-cleanup.js";
+import { cloudDashboardRoute } from "./routes/cloud-dashboard.js";
+import { cloudFileBrainRoute } from "./routes/cloud-brain.js";
 import { brainCompleteRoute } from "./routes/brain.js";
 import { diagnosticRoute } from "./routes/diagnostic.js";
 import { githubOAuthDisconnectRoute, githubOAuthExchangeRoute, githubProfileRoute } from "./routes/github-oauth.js";
 import { googleCalendarEventsRoute, googleCalendarOAuthDisconnectRoute, googleCalendarOAuthExchangeRoute } from "./routes/google-calendar-oauth.js";
-import { googleDriveFilesRoute, googleDriveOAuthDisconnectRoute, googleDriveOAuthExchangeRoute } from "./routes/google-drive-oauth.js";
+import {
+  googleDriveDownloadRoute,
+  googleDriveFileDeleteRoute,
+  googleDriveFileRoute,
+  googleDriveFileTrashRoute,
+  googleDriveFileUpdateRoute,
+  googleDriveFilesRoute,
+  googleDriveFolderCreateRoute,
+  googleDriveOAuthDisconnectRoute,
+  googleDriveOAuthExchangeRoute,
+  googleDriveQuotaRoute,
+  googleDriveUploadRoute
+} from "./routes/google-drive-oauth.js";
 import { healthRoute } from "./routes/health.js";
 import { lanyardRoute } from "./routes/lanyard.js";
 import { lastFmRoute } from "./routes/lastfm.js";
@@ -90,7 +126,36 @@ export const ROUTES = Object.freeze([
   route("todoist.oauth.disconnect", "/api/todoist/oauth/disconnect", todoistOAuthDisconnectRoute, { method: "POST", service: "todoist", rateLimit: "strict" }),
   route("google-drive.oauth.exchange", "/api/google-drive/oauth/exchange", googleDriveOAuthExchangeRoute, { method: "POST", service: "google-drive", rateLimit: "strict" }),
   route("google-drive.files", "/api/google-drive/files", googleDriveFilesRoute, { service: "google-drive" }),
+  route("google-drive.file", "/api/google-drive/file", googleDriveFileRoute, { service: "google-drive" }),
+  route("google-drive.folders", "/api/google-drive/folders", googleDriveFolderCreateRoute, { method: "POST", service: "google-drive", rateLimit: "strict" }),
+  route("google-drive.files.update", "/api/google-drive/files/update", googleDriveFileUpdateRoute, { method: "PATCH", service: "google-drive", rateLimit: "strict" }),
+  route("google-drive.files.trash", "/api/google-drive/files/trash", googleDriveFileTrashRoute, { method: "POST", service: "google-drive", rateLimit: "strict" }),
+  route("google-drive.files.delete", "/api/google-drive/files/delete", googleDriveFileDeleteRoute, { method: "DELETE", service: "google-drive", rateLimit: "strict" }),
+  route("google-drive.quota", "/api/google-drive/quota", googleDriveQuotaRoute, { service: "google-drive" }),
+  route("google-drive.upload", "/api/google-drive/upload", googleDriveUploadRoute, { method: "POST", service: "google-drive", rateLimit: "strict" }),
+  route("google-drive.download", "/api/google-drive/download", googleDriveDownloadRoute, { service: "google-drive" }),
   route("google-drive.oauth.disconnect", "/api/google-drive/oauth/disconnect", googleDriveOAuthDisconnectRoute, { method: "POST", service: "google-drive", rateLimit: "strict" }),
+  route("cloud.files.sync", "/api/cloud/files/sync", cloudFilesSyncRoute, { method: "POST", service: "cloud", rateLimit: "strict" }),
+  route("cloud.files", "/api/cloud/files", cloudFilesListRoute, { service: "cloud" }),
+  route("cloud.files.favorites", "/api/cloud/files/favorites", cloudFilesFavoritesRoute, { service: "cloud" }),
+  route("cloud.file", "/api/cloud/file", cloudFileDetailRoute, { service: "cloud" }),
+  route("cloud.file.update", "/api/cloud/file", cloudFileUpdateRoute, { method: "PATCH", service: "cloud", rateLimit: "strict" }),
+  route("cloud.file.favorite", "/api/cloud/file/favorite", cloudFileFavoriteRoute, { method: "POST", service: "cloud", rateLimit: "strict" }),
+  route("cloud.file.brain", "/api/cloud/file/brain", cloudFileBrainRoute, { method: "POST", service: "cloud", rateLimit: "strict" }),
+  route("cloud.activity", "/api/cloud/activity", cloudActivityListRoute, { service: "cloud" }),
+  route("cloud.activity.summary", "/api/cloud/activity/summary", cloudActivitySummaryRoute, { service: "cloud" }),
+  route("cloud.dashboard", "/api/cloud/dashboard", cloudDashboardRoute, { service: "cloud" }),
+  route("cloud.cleanup", "/api/cloud/cleanup", cloudCleanupRoute, { method: "POST", service: "cloud", rateLimit: "strict" }),
+  route("cloud.shares.create", "/api/cloud/shares", cloudSharesCreateRoute, { method: "POST", service: "cloud", rateLimit: "strict" }),
+  route("cloud.shares", "/api/cloud/shares", cloudSharesListRoute, { service: "cloud" }),
+  route("cloud.shares.resolve", "/api/cloud/shares/resolve", cloudShareResolveRoute, { public: true, service: "cloud", rateLimit: "strict" }),
+  route("cloud.shares.download", "/api/cloud/shares/download", cloudShareDownloadRoute, { public: true, service: "cloud", rateLimit: "strict" }),
+  route("cloud.shares.revoke", "/api/cloud/shares/revoke", cloudShareRevokeRoute, { method: "POST", service: "cloud", rateLimit: "strict" }),
+  route("cloud.drops.create", "/api/cloud/drops", cloudDropsCreateRoute, { method: "POST", service: "cloud", rateLimit: "strict" }),
+  route("cloud.drops", "/api/cloud/drops", cloudDropsListRoute, { service: "cloud" }),
+  route("cloud.drops.resolve", "/api/cloud/drops/resolve", cloudDropResolveRoute, { public: true, service: "cloud", rateLimit: "strict" }),
+  route("cloud.drops.upload", "/api/cloud/drops/upload", cloudDropUploadRoute, { method: "POST", public: true, service: "cloud", rateLimit: "strict" }),
+  route("cloud.drops.revoke", "/api/cloud/drops/revoke", cloudDropRevokeRoute, { method: "POST", service: "cloud", rateLimit: "strict" }),
   route("youtube.oauth.exchange", "/api/youtube/oauth/exchange", youtubeOAuthExchangeRoute, { method: "POST", service: "youtube", rateLimit: "strict" }),
   route("youtube.activity", "/api/youtube/activity", youtubeActivityRoute, { service: "youtube" }),
   route("youtube.oauth.disconnect", "/api/youtube/oauth/disconnect", youtubeOAuthDisconnectRoute, { method: "POST", service: "youtube", rateLimit: "strict" }),

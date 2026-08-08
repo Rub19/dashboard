@@ -38,8 +38,37 @@ const OPERATIONS = Object.freeze({
   todoistTasks: Object.freeze({ path: "/api/todoist/tasks", auth: true, params: [] }),
   todoistOAuthDisconnect: Object.freeze({ path: "/api/todoist/oauth/disconnect", method: "POST", auth: true, params: [] }),
   googleDriveOAuthExchange: Object.freeze({ path: "/api/google-drive/oauth/exchange", method: "POST", auth: true, params: ["code", "clientId"] }),
-  googleDriveFiles: Object.freeze({ path: "/api/google-drive/files", auth: true, params: ["clientId"] }),
+  googleDriveFiles: Object.freeze({ path: "/api/google-drive/files", auth: true, params: ["clientId", "parentId", "q", "pageToken", "pageSize", "orderBy"] }),
+  googleDriveFile: Object.freeze({ path: "/api/google-drive/file", auth: true, params: ["clientId", "id"] }),
+  googleDriveFolderCreate: Object.freeze({ path: "/api/google-drive/folders", method: "POST", auth: true, params: ["clientId", "name", "parentId"] }),
+  googleDriveFileUpdate: Object.freeze({ path: "/api/google-drive/files/update", method: "PATCH", auth: true, params: ["clientId", "fileId", "name", "addParents", "removeParents"] }),
+  googleDriveFileTrash: Object.freeze({ path: "/api/google-drive/files/trash", method: "POST", auth: true, params: ["clientId", "fileId"] }),
+  googleDriveFileDelete: Object.freeze({ path: "/api/google-drive/files/delete", method: "DELETE", auth: true, params: ["clientId", "fileId"] }),
+  googleDriveQuota: Object.freeze({ path: "/api/google-drive/quota", auth: true, params: ["clientId"] }),
+  googleDriveUpload: Object.freeze({ path: "/api/google-drive/upload", method: "POST", auth: true, upload: true }),
+  googleDriveDownload: Object.freeze({ path: "/api/google-drive/download", auth: true, params: ["clientId", "fileId"], download: true }),
   googleDriveOAuthDisconnect: Object.freeze({ path: "/api/google-drive/oauth/disconnect", method: "POST", auth: true, params: [] }),
+  cloudFilesSync: Object.freeze({ path: "/api/cloud/files/sync", method: "POST", auth: true, rawBody: true }),
+  cloudFilesList: Object.freeze({ path: "/api/cloud/files", auth: true, params: ["parentId", "trashed", "q", "limit", "offset"] }),
+  cloudFilesFavorites: Object.freeze({ path: "/api/cloud/files/favorites", auth: true, params: ["limit"] }),
+  cloudFileDetail: Object.freeze({ path: "/api/cloud/file", auth: true, params: ["driveFileId"] }),
+  cloudFileUpdate: Object.freeze({ path: "/api/cloud/file", method: "PATCH", auth: true, params: ["driveFileId", "parentId", "name", "trashed", "tags", "brainSummary", "brainSuggestedFolderId"] }),
+  cloudFileFavorite: Object.freeze({ path: "/api/cloud/file/favorite", method: "POST", auth: true, params: ["driveFileId", "favorite"] }),
+  cloudFileBrain: Object.freeze({ path: "/api/cloud/file/brain", method: "POST", auth: true, params: ["driveFileId"], rawBody: true }),
+  cloudActivityList: Object.freeze({ path: "/api/cloud/activity", auth: true, params: ["limit", "since"] }),
+  cloudActivitySummary: Object.freeze({ path: "/api/cloud/activity/summary", auth: true, params: [] }),
+  cloudDashboard: Object.freeze({ path: "/api/cloud/dashboard", auth: true, params: [] }),
+  cloudCleanup: Object.freeze({ path: "/api/cloud/cleanup", method: "POST", auth: true, params: [] }),
+  cloudSharesCreate: Object.freeze({ path: "/api/cloud/shares", method: "POST", auth: true, params: ["fileId", "visibility", "password", "expiresAt", "maxDownloads"], rawBody: true }),
+  cloudSharesList: Object.freeze({ path: "/api/cloud/shares", auth: true, params: ["fileId", "limit"] }),
+  cloudShareResolve: Object.freeze({ path: "/api/cloud/shares/resolve", auth: false, params: ["slug", "password"] }),
+  cloudShareDownload: Object.freeze({ path: "/api/cloud/shares/download", auth: false, params: ["slug", "password"], download: true }),
+  cloudShareRevoke: Object.freeze({ path: "/api/cloud/shares/revoke", method: "POST", auth: true, params: ["slug", "shareId"], rawBody: true }),
+  cloudDropsCreate: Object.freeze({ path: "/api/cloud/drops", method: "POST", auth: true, params: ["title", "description", "visibility", "password", "expiresAt", "maxFiles", "maxSize", "driveClientId"], rawBody: true }),
+  cloudDropsList: Object.freeze({ path: "/api/cloud/drops", auth: true, params: ["limit"] }),
+  cloudDropResolve: Object.freeze({ path: "/api/cloud/drops/resolve", auth: false, params: ["slug", "password"] }),
+  cloudDropUpload: Object.freeze({ path: "/api/cloud/drops/upload", method: "POST", auth: false, params: ["slug", "password"], upload: true }),
+  cloudDropRevoke: Object.freeze({ path: "/api/cloud/drops/revoke", method: "POST", auth: true, params: ["slug"], rawBody: true }),
   youtubeOAuthExchange: Object.freeze({ path: "/api/youtube/oauth/exchange", method: "POST", auth: true, params: ["code", "clientId"] }),
   youtubeActivity: Object.freeze({ path: "/api/youtube/activity", auth: true, params: ["clientId"] }),
   youtubeOAuthDisconnect: Object.freeze({ path: "/api/youtube/oauth/disconnect", method: "POST", auth: true, params: [] }),
@@ -151,16 +180,55 @@ export function createExternalServicesClient(options = {}) {
       if (method === "POST") headers.set("content-type", "application/json");
       if (operation.auth) headers.set("authorization", `Bearer ${await accessToken()}`);
       if (destroyed || controller.signal.aborted) throw clientError("CLIENT_DESTROYED", "Le client des intégrations est ferme.");
-      const payload = await network.requestJSON(url.href, {
-        method,
-        body,
-        headers,
-        signal: controller.signal,
-        timeoutMs: requestOptions.timeoutMs || 8000,
-        retries: requestOptions.retries ?? (method === "GET" ? 1 : 0),
-        dedupeKey: `ethone-worker:${operationName}:${method === "GET" ? url.search : body}`,
-        maxResponseBytes: 1024 * 1024
-      });
+      let payload;
+      if (operation.upload) {
+        const file = values?.file;
+        if (!file) throw clientError("INVALID_PARAMETER", "Aucun fichier fourni pour l'upload.");
+        headers.set("x-ethone-client-id", String(values?.clientId || "").slice(0, 100));
+        headers.set("x-ethone-file-name", String(values?.name || file.name || "untitled").slice(0, 500));
+        headers.set("x-ethone-file-size", String(Number(file.size) || 0));
+        headers.set("x-ethone-file-mime", String(file.type || values?.mimeType || "application/octet-stream").slice(0, 120));
+        if (values?.parentId) headers.set("x-ethone-file-parent", String(values.parentId).slice(0, 128));
+        headers.delete("content-type");
+        const response = await network.request(url.href, {
+          method,
+          body: file,
+          headers,
+          signal: controller.signal,
+          timeoutMs: requestOptions.timeoutMs || 120000,
+          retries: 0
+        });
+        if (!response.ok) {
+          const text = await response.text().catch(() => "");
+          throw clientError("UPLOAD_FAILED", text || "L'upload a échoué.", { status: response.status });
+        }
+        payload = await response.json();
+      } else if (operation.download) {
+        const response = await network.request(url.href, {
+          method,
+          body,
+          headers,
+          signal: controller.signal,
+          timeoutMs: requestOptions.timeoutMs || 120000,
+          retries: 1
+        });
+        if (!response.ok) {
+          const text = await response.text().catch(() => "");
+          throw clientError("DOWNLOAD_FAILED", text || "Le téléchargement a échoué.", { status: response.status });
+        }
+        return Object.freeze({ blob: await response.blob(), meta: Object.freeze({}) });
+      } else {
+        payload = await network.requestJSON(url.href, {
+          method,
+          body,
+          headers,
+          signal: controller.signal,
+          timeoutMs: requestOptions.timeoutMs || 8000,
+          retries: requestOptions.retries ?? (method === "GET" ? 1 : 0),
+          dedupeKey: `ethone-worker:${operationName}:${method === "GET" ? url.search : body}`,
+          maxResponseBytes: 1024 * 1024
+        });
+      }
       if (!payload || payload.ok !== true || typeof payload.meta !== "object") {
         throw clientError(payload?.error?.code, payload?.error?.message || "Réponse Worker invalide.", payload?.error || {});
       }
@@ -262,8 +330,49 @@ export function createExternalServicesClient(options = {}) {
     }),
     googleDriveOAuth: Object.freeze({
       exchange: (code, clientId) => execute("googleDriveOAuthExchange", { code, clientId }),
-      files: (clientId) => execute("googleDriveFiles", { clientId }),
+      files: (clientId, options = {}) => execute("googleDriveFiles", { clientId, ...options }),
+      get: (clientId, id) => execute("googleDriveFile", { clientId, id }),
+      createFolder: (clientId, name, parentId) => execute("googleDriveFolderCreate", { clientId, name, parentId }),
+      update: (clientId, fileId, { name, addParents = [], removeParents = [] } = {}) => execute("googleDriveFileUpdate", { clientId, fileId, name, addParents, removeParents }),
+      trash: (clientId, fileId) => execute("googleDriveFileTrash", { clientId, fileId }),
+      delete: (clientId, fileId) => execute("googleDriveFileDelete", { clientId, fileId }),
+      quota: (clientId) => execute("googleDriveQuota", { clientId }),
+      upload: (clientId, file, options = {}) => execute("googleDriveUpload", { clientId, file, ...options }),
+      download: (clientId, fileId) => execute("googleDriveDownload", { clientId, fileId }),
       disconnect: () => execute("googleDriveOAuthDisconnect", {})
+    }),
+    cloudFiles: Object.freeze({
+      sync: (files, clientId) => execute("cloudFilesSync", { files, clientId }),
+      list: (options = {}) => execute("cloudFilesList", options),
+      favorites: (options = {}) => execute("cloudFilesFavorites", options),
+      get: (driveFileId) => execute("cloudFileDetail", { driveFileId }),
+      update: (driveFileId, patch) => execute("cloudFileUpdate", { driveFileId, ...patch }),
+      favorite: (driveFileId, favorite = true) => execute("cloudFileFavorite", { driveFileId, favorite }),
+      brain: (driveFileId, folders = []) => execute("cloudFileBrain", { driveFileId, folders })
+    }),
+    cloudActivity: Object.freeze({
+      list: (options = {}) => execute("cloudActivityList", options),
+      summary: () => execute("cloudActivitySummary", {})
+    }),
+    cloudDashboard: Object.freeze({
+      get: () => execute("cloudDashboard", {})
+    }),
+    cloudCleanup: Object.freeze({
+      run: () => execute("cloudCleanup", {})
+    }),
+    cloudShares: Object.freeze({
+      create: (options) => execute("cloudSharesCreate", options),
+      list: (options = {}) => execute("cloudSharesList", options),
+      resolve: (slug, password = "") => execute("cloudShareResolve", { slug, password }),
+      download: (slug, password = "") => execute("cloudShareDownload", { slug, password }),
+      revoke: (slug, shareId = "") => execute("cloudShareRevoke", { slug, shareId })
+    }),
+    cloudDrops: Object.freeze({
+      create: (options) => execute("cloudDropsCreate", options),
+      list: (options = {}) => execute("cloudDropsList", options),
+      resolve: (slug, password = "") => execute("cloudDropResolve", { slug, password }),
+      upload: (slug, file, options = {}) => execute("cloudDropUpload", { slug, file, ...options }),
+      revoke: (slug) => execute("cloudDropRevoke", { slug })
     }),
     youtubeOAuth: Object.freeze({
       exchange: (code, clientId) => execute("youtubeOAuthExchange", { code, clientId }),

@@ -1,4 +1,4 @@
-const ETHONE_VERSION = "2026-08-07-experience-v257";
+const ETHONE_VERSION = "2026-08-07-experience-v258";
 const ETHONE_CACHE = `ethone-${ETHONE_VERSION}`;
 const ETHONE_OFFLINE_URL = "./index.html";
 
@@ -73,6 +73,8 @@ const ETHONE_V8_ASSETS = [
   "./v8/pages/notes-model.mjs",
   "./v8/pages/security.mjs",
   "./v8/pages/settings.mjs",
+  "./v8/pages/share.mjs",
+  "./v8/pages/drop.mjs",
   "./v8/pages/system.mjs",
   "./v8/pages/tasks.mjs",
   "./v8/pages/tasks-model.mjs",
@@ -91,6 +93,7 @@ const ETHONE_V8_ASSETS = [
   "./v8/services/discord-live.mjs",
   "./v8/services/rate-limiter.mjs",
   "./v8/services/service-worker.mjs",
+  "./v8/services/cloud-cache.mjs",
   "./v8/services/focus-timer.mjs",
   "./v8/services/sound-manager.mjs",
   "./v8/services/spotify-live.mjs",
@@ -126,9 +129,10 @@ const ETHONE_V8_ASSETS = [
   "./v8/styles/components.css?v=experience-v257",
   "./v8/styles/entry.css?v=experience-v257",
   "./v8/styles/presence.css?v=experience-v257",
+  "./v8/styles/share-drop.css?v=experience-v258",
   "./v8/styles/shell.css?v=experience-v257",
   "./v8/styles/tokens.css?v=experience-v257",
-  "./v8/styles/workspaces.css?v=experience-v257",
+  "./v8/styles/workspaces.css?v=experience-v258",
   "./v8/ui/discord-live.mjs",
   "./v8/ui/weather-live.mjs",
   "./v8/ui/weather-detail.mjs",

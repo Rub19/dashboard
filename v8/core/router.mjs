@@ -12,7 +12,9 @@ export const V8_ROUTES = Object.freeze([
   "brain",
   "settings",
   "security",
-  "matches"
+  "matches",
+  "share",
+  "drop"
 ]);
 
 const ROUTE_SET = new Set(V8_ROUTES);

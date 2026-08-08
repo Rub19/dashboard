@@ -11,6 +11,8 @@ import { emptyState, statusState } from "../ui/empty-state.mjs";
 import { formField, runFormSubmission, validateForm } from "../ui/form-system.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
 import { createSelect } from "../ui/select.mjs";
+import { createDriveClient } from "../services/drive-client.mjs";
+import { createCloudCache } from "../services/cloud-cache.mjs";
 import { descendantFolderIds, filterFiles, folderPath, sortFiles } from "./files-model.mjs";
 
 const TYPE_ICONS = Object.freeze({
@@ -31,12 +33,33 @@ function typeLabel(type) {
   return ({ folder: "Dossier", link: "Lien", image: "Image", video: "Vidéo", code: "Code", doc: "Document", file: "Fichier" })[type] || "Fichier";
 }
 
+function isDriveConnected(repository) {
+  return repository.snapshot().connections.some((connection) => connection.id === "google-drive" && connection.status === "connected");
+}
+
+function getDriveClientId(repository) {
+  return repository.snapshot().connections.find((connection) => connection.id === "google-drive")?.reference || "";
+}
+
 export function mountFiles(stage, options = {}) {
   const repository = options.repository;
   const actions = options.actions;
   const notify = typeof options.notify === "function" ? options.notify : () => {};
   const presence = options.presence || null;
-  let files = repository.snapshot().files.map((file) => ({ ...file }));
+  const externalServices = options.externalServices || null;
+
+  const cloudCache = createCloudCache();
+  const driveClient = createDriveClient({
+    externalServices,
+    getClientId: () => getDriveClientId(repository),
+    notify,
+    cloudCache
+  });
+
+  let files = [];
+  let loading = false;
+  let error = "";
+  let quota = null;
   let selectedId = null;
   let currentFolderId = null;
   let query = "";
@@ -46,6 +69,11 @@ export function mountFiles(stage, options = {}) {
   let composerType = null;
   let view = repository.snapshot().filesView === "grid" ? "grid" : "list";
   let bulkDeleteArmed = false;
+  let adminOpen = false;
+  let shares = [];
+  let drops = [];
+  let dashboard = null;
+  let adminLoading = false;
   let mounted = true;
   const scopedActions = [];
   const selection = createSelectionState();
@@ -59,6 +87,7 @@ export function mountFiles(stage, options = {}) {
   const densityControl = collectionDensityControl(options.state?.density || document.documentElement.dataset.density || "automatic");
   const bulkHost = element("div", { className: "v8-bulk-host" });
   const breadcrumb = element("nav", { className: "v8-files-breadcrumb", attributes: { "aria-label": "Chemin du dossier" } });
+  const storageHost = element("div", { className: "v8-files-storage" });
   const page = element("section", { className: "v8-page v8-work-page", dataset: { page: "files" } }, [
     element("header", { className: "v8-page-heading v8-work-heading" }, [
       element("div", { className: "v8-page-heading__copy" }, [
@@ -67,26 +96,30 @@ export function mountFiles(stage, options = {}) {
         element("p", { text: "Retrouvez vos ressources, puis agissez depuis un aperçu unique." })
       ]),
       element("div", { className: "v8-page-heading__actions" }, [
+        element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { fileAdmin: "true" } }, [icon("shield"), element("span", { text: "Admin" })]),
         actionButton({ actionId: "v8.files.new-folder", variant: "secondary" }, [icon("folder-plus"), element("span", { text: "Dossier" })]),
-        actionButton({ actionId: "v8.files.new-link", variant: "primary" }, [icon("link-2"), element("span", { text: "Ajouter un lien" })])
+        actionButton({ actionId: "v8.files.upload", variant: "primary" }, [icon("upload-cloud"), element("span", { text: "Envoyer" })])
       ])
     ]),
     element("section", { className: "v8-work-surface v8-files-workspace" }, [
       element("aside", { className: "v8-files-sidebar" }, [
         element("span", { className: "v8-eyebrow", text: "Bibliothèque" }),
         sources,
+        storageHost,
         statusState("coming-soon", {
           tagName: "div",
           headingTag: "h3",
-          iconName: "upload-cloud",
-          eyebrow: "Import direct",
-          title: "Bientôt disponible",
-          description: "En attendant, utilisez le bouton \"Ajouter un lien\" ci-dessus pour préserver vos ressources.",
+          iconName: "cloud",
+          eyebrow: "ETHONE Cloud",
+          title: isDriveConnected(repository) ? "Connecté à Google Drive" : "Google Drive",
+          description: isDriveConnected(repository)
+            ? "Vos fichiers sont synchronisés avec Google Drive."
+            : "Connectez Google Drive dans Connexions pour activer le stockage cloud.",
           compact: true,
           className: "v8-files-import-soon"
         })
       ]),
-      element("div", { className: "v8-files-main" }, [
+      element("div", { className: "v8-files-main", attributes: { role: "region", "aria-label": "Contenu" } }, [
         breadcrumb,
         element("header", { className: "v8-files-toolbar" }, [
           element("div", { className: "v8-input-wrap v8-files-search" }, [icon("search"), search]),
@@ -110,13 +143,76 @@ export function mountFiles(stage, options = {}) {
     ])
   ]);
 
+  const adminPanel = element("dialog", { className: "v8-files-admin" }, [
+    element("div", { className: "v8-files-admin__content" }, [
+      element("header", { className: "v8-files-admin__header" }, [
+        element("h2", { text: "Partages & drops" }),
+        element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Fermer" }, events: { click: closeAdmin } }, [icon("x")])
+      ]),
+      element("div", { className: "v8-files-admin__body" })
+    ])
+  ]);
+
   const sortSelect = page.querySelector("[aria-label='Trier les fichiers']");
 
-  function refreshFiles() {
-    files = repository.snapshot().files.map((file) => ({ ...file }));
-    selection.prune(files.map((file) => file.id));
-    if (currentFolderId && !files.some((file) => String(file.id) === String(currentFolderId) && file.type === "folder")) currentFolderId = null;
-    if (selectedId && !files.some((file) => String(file.id) === String(selectedId))) selectedId = null;
+  async function refreshFiles() {
+    if (!isDriveConnected(repository)) {
+      files = repository.snapshot().files.map((file) => ({ ...file }));
+      selection.prune(files.map((file) => file.id));
+      if (currentFolderId && !files.some((file) => String(file.id) === String(currentFolderId) && file.type === "folder")) currentFolderId = null;
+      if (selectedId && !files.some((file) => String(file.id) === String(selectedId))) selectedId = null;
+      loading = false;
+      error = "";
+      return;
+    }
+    loading = true;
+    error = "";
+    try {
+      const isOnline = typeof navigator !== "undefined" ? navigator.onLine !== false : true;
+      if (!isOnline && !query.trim() && driveClient.getCachedFiles) {
+        const cached = await driveClient.getCachedFiles();
+        files = Array.isArray(cached) ? cached.map((file) => ({ ...file })) : [];
+        quota = await driveClient.quota().catch(() => null);
+        if (!files.length) {
+          notify({ id: "files-offline-empty", title: "Fichiers", message: "Aucune donnée en cache. Reconnectez-vous pour charger.", type: "warning" });
+        }
+      } else if (query.trim()) {
+        const result = await driveClient.search(query.trim());
+        files = Array.isArray(result.files) ? result.files.map((file) => ({ ...file })) : [];
+        quota = await driveClient.quota().catch(() => null);
+      } else {
+        const [result, quotaResult] = await Promise.all([
+          driveClient.list(currentFolderId, { pageSize: 100, orderBy: "folder,name" }),
+          driveClient.quota().catch(() => null)
+        ]);
+        files = Array.isArray(result.files) ? result.files.map((file) => ({ ...file })) : [];
+        quota = quotaResult || null;
+        if (quota && quota.limit > 0) {
+          const ratio = quota.usage / quota.limit;
+          if (ratio >= 0.95) notify({ id: "drive-quota-critical", title: "Stockage", message: `Espace critique : ${(ratio * 100).toFixed(0)}% utilisé.`, type: "error", duration: 6000 });
+          else if (ratio >= 0.85) notify({ id: "drive-quota-warning", title: "Stockage", message: `Espace presque plein : ${(ratio * 100).toFixed(0)}% utilisé.`, type: "warning", duration: 6000 });
+        }
+        if (files.length) {
+          await driveClient.sync(files);
+          const cloudResult = await externalServices.cloudFiles.list({ parentId: currentFolderId, trashed: false, limit: 200 });
+          const cloudMap = new Map((cloudResult?.data?.files || []).map((cloudFile) => [String(cloudFile.driveFileId || cloudFile.id), cloudFile]));
+          files = files.map((file) => {
+            const cloud = cloudMap.get(String(file.id));
+            if (!cloud) return file;
+            return { ...file, tags: Array.isArray(cloud.tags) ? cloud.tags : [], favorite: cloud.isFavorite === true };
+          });
+        }
+      }
+      selection.prune(files.map((file) => file.id));
+      if (currentFolderId && !files.some((file) => String(file.id) === String(currentFolderId) && file.type === "folder")) currentFolderId = null;
+      if (selectedId && !files.some((file) => String(file.id) === String(selectedId))) selectedId = null;
+    } catch (err) {
+      error = err?.message || "Impossible de charger les fichiers.";
+      files = [];
+      quota = null;
+    } finally {
+      loading = false;
+    }
   }
 
   function usingGlobalFilter() {
@@ -124,8 +220,9 @@ export function mountFiles(stage, options = {}) {
   }
 
   function visibleFiles() {
-    const filters = { query, type, favorites };
-    if (!usingGlobalFilter()) filters.parentId = currentFolderId;
+    const filters = { type, favorites };
+    if (query.trim()) filters.query = "";
+    else if (!usingGlobalFilter()) filters.parentId = currentFolderId;
     return sortFiles(filterFiles(files, filters), sort);
   }
 
@@ -136,7 +233,7 @@ export function mountFiles(stage, options = {}) {
     favorites = false;
     search.value = "";
     selectedId = null;
-    renderAll();
+    refreshFiles().then(renderAll).catch(() => renderAll());
   }
 
   function selectedFile() {
@@ -177,8 +274,10 @@ export function mountFiles(stage, options = {}) {
     const entries = [
       { id: "all", label: "Tous les fichiers", icon: "files", count: files.length },
       { id: "favorites", label: "Favoris", icon: "star", count: files.filter((file) => file.favorite).length },
-      { id: "link", label: "Liens", icon: "link-2", count: files.filter((file) => file.type === "link").length },
-      { id: "folder", label: "Dossiers", icon: "folder", count: files.filter((file) => file.type === "folder").length }
+      { id: "folder", label: "Dossiers", icon: "folder", count: files.filter((file) => file.type === "folder").length },
+      { id: "image", label: "Images", icon: "image", count: files.filter((file) => file.type === "image").length },
+      { id: "doc", label: "Documents", icon: "file-text", count: files.filter((file) => file.type === "doc").length },
+      { id: "video", label: "Vidéos", icon: "video", count: files.filter((file) => file.type === "video").length }
     ];
     sources.replaceChildren();
     entries.forEach((entry) => {
@@ -187,7 +286,7 @@ export function mountFiles(stage, options = {}) {
         className: active ? "is-active" : "",
         attributes: { type: "button", "aria-pressed": active ? "true" : "false" },
         dataset: { filesSource: entry.id }
-      }, [icon(entry.icon), element("span", { text: entry.label }), element("small", { text: entry.count })]));
+      }, [icon(entry.icon), element("span", { text: entry.label }), element("small", { text: entry.count })]));;
     });
     const nextCount = `${files.length} élément${files.length > 1 ? "s" : ""}`;
     if (presence) presence.transitionText(countBadge, nextCount, { kind: "metric" });
@@ -207,8 +306,8 @@ export function mountFiles(stage, options = {}) {
         className: `v8-files-breadcrumb__item${isLast ? " is-current" : ""}`,
         attributes: { type: "button", "aria-current": isLast ? "true" : null, disabled: isLast ? "" : null },
         dataset: { filesBreadcrumb: crumb.id ?? "root" }
-      }, [element("span", { text: crumb.label, attributes: crumb.id ? { translate: "no" } : {} })]));
-      if (!isLast) breadcrumb.append(element("span", { className: "v8-files-breadcrumb__sep", attributes: { "aria-hidden": "true" } }, [icon("chevron-right")]));
+      }, [element("span", { text: crumb.label, attributes: crumb.id ? { translate: "no" } : {} })]));;
+      if (!isLast) breadcrumb.append(element("span", { className: "v8-files-breadcrumb__sep", attributes: { "aria-hidden": "true" } }, [icon("chevron-right")]));;
     });
     refreshIcons();
   }
@@ -220,21 +319,32 @@ export function mountFiles(stage, options = {}) {
     renderBulk(filtered);
 
     if (composerType) {
-      const name = element("input", { className: "v8-input", attributes: { type: "text", placeholder: composerType === "folder" ? "Nom du dossier" : "Nom du lien", "aria-label": "Nom de l'élément", maxlength: "180", required: "", autocomplete: "off" }, dataset: { fileField: "name" } });
-      const url = element("input", { className: "v8-input", attributes: { type: "url", placeholder: "https://", "aria-label": "Adresse du lien", required: composerType === "link" ? "" : null, autocomplete: "url" }, dataset: { fileField: "url" } });
-      const tag = element("input", { className: "v8-input", attributes: { type: "text", placeholder: "Tag", "aria-label": "Tag du fichier", maxlength: "80", autocomplete: "off" }, dataset: { fileField: "tag" } });
-      const form = element("form", { className: "v8-files-composer", attributes: { "aria-label": composerType === "folder" ? "Nouveau dossier" : "Nouveau lien" } }, [
+      const name = element("input", { className: "v8-input", attributes: { type: "text", placeholder: "Nom du dossier", "aria-label": "Nom du dossier", maxlength: "180", required: "", autocomplete: "off" }, dataset: { fileField: "name" } });
+      const form = element("form", { className: "v8-files-composer", attributes: { "aria-label": "Nouveau dossier" } }, [
         formField({ label: "Nom", control: name, required: true }),
-        composerType === "link" ? formField({ label: "Adresse", control: url, required: true }) : null,
-        formField({ label: "Tag", control: tag }),
         element("div", {}, [
           actionButton({ actionId: "v8.files.new.cancel" }, [element("span", { text: "Annuler" })]),
-          element("button", { className: "v8-button v8-button--primary", attributes: { type: "submit" } }, [icon("plus"), element("span", { text: "Ajouter" })])
+          element("button", { className: "v8-button v8-button--primary", attributes: { type: "submit" } }, [icon("plus"), element("span", { text: "Créer" })])
         ])
       ]);
-      form.addEventListener("submit", async (event) => { event.preventDefault(); await runFormSubmission({ form, submit: form.querySelector("[type='submit']"), messages: { loading: "Ajout en cours..." }, task: createFile }); }, { once: true });
+      form.addEventListener("submit", async (event) => { event.preventDefault(); await runFormSubmission({ form, submit: form.querySelector("[type='submit']"), messages: { loading: "Création en cours..." }, task: createFolder }); }, { once: true });
       content.append(form);
       name.focus({ preventScroll: true });
+    }
+
+    if (loading) {
+      content.append(element("div", { className: "v8-files-loading" }, [element("span", { text: "Chargement..." })]));;
+      return;
+    }
+
+    if (error) {
+      content.append(statusState("error", {
+        title: "Erreur de chargement",
+        description: error,
+        actions: [element("button", { className: "v8-button v8-button--primary", text: "Réessayer", attributes: { type: "button" }, events: { click: () => refreshFiles().then(renderAll) } })],
+        compact: true
+      }));
+      return;
     }
 
     const collection = element("div", { className: `v8-files-collection v8-files-collection--${view}`, attributes: { role: "list", "aria-label": "Fichiers" } });
@@ -261,18 +371,9 @@ export function mountFiles(stage, options = {}) {
         iconName: hasFilters ? "search-x" : "folder-open",
         eyebrow: hasFilters ? "Recherche terminée" : insideEmptyFolder ? "Dossier vide" : "Bibliothèque prête",
         title: hasFilters ? "Aucun résultat" : insideEmptyFolder ? "Ce dossier est vide" : "Votre bibliothèque vous attend",
-        description: hasFilters ? "Aucune ressource ne correspond à ces filtres." : insideEmptyFolder ? "Ajoutez un lien ou un sous-dossier ici." : "Ajoutez un lien ou créez un dossier pour construire votre espace documentaire.",
-        actions: hasFilters
-          ? [reset]
-          : [
-            actionButton({ actionId: "v8.files.new-link", variant: "primary" }, [icon("link-2"), element("span", { text: "Ajouter un lien" })]),
-            actionButton({ actionId: "v8.files.new-folder", variant: "secondary" }, [icon("folder-plus"), element("span", { text: "Créer un dossier" })])
-          ],
-        brain: hasFilters || insideEmptyFolder ? null : {
-          title: "Suggestion Brain",
-          description: "Brain peut vous aider à choisir une structure simple pour démarrer.",
-          action: actionButton({ actionId: "v8.brain.open", variant: "secondary" }, [icon("brain"), element("span", { text: "Demander à Brain" })])
-        },
+        description: hasFilters ? "Aucune ressource ne correspond à ces filtres." : insideEmptyFolder ? "Ajoutez un fichier ou un sous-dossier ici." : "Glissez-déposez des fichiers ou créez un dossier.",
+        actions: hasFilters ? [reset] : [actionButton({ actionId: "v8.files.new-folder", variant: "secondary" }, [icon("folder-plus"), element("span", { text: "Créer un dossier" })])],
+        compact: false,
         className: "v8-empty-state--wide"
       }));
     } else {
@@ -282,12 +383,11 @@ export function mountFiles(stage, options = {}) {
         const main = element("button", {
           className: `v8-file-item${active ? " is-active" : ""}`,
           attributes: { type: "button", "aria-current": active ? "true" : null },
-          dataset: { fileId: file.id, liveWidget: "planning", liveKind: "planning" }
+          dataset: { fileId: file.id }
         }, [
           element("span", { className: "v8-file-item__icon" }, [icon(TYPE_ICONS[file.type] || "file")]),
-          element("span", { className: "v8-file-item__copy" }, [element("strong", { text: file.name, attributes: { translate: "no" } }), element("small", { text: `${typeLabel(file.type)}${file.tag ? ` · ${file.tag}` : ""}`, attributes: file.tag ? { translate: "no" } : {} })]),
-          file.favorite ? element("span", { className: "v8-file-item__favorite", attributes: { "aria-label": "Favori" } }, [icon("star")]) : null,
-          element("time", { text: file.date || "Local", attributes: file.date ? { translate: "no" } : {} })
+          element("span", { className: "v8-file-item__copy" }, [element("strong", { text: file.name, attributes: { translate: "no" } }), element("small", { text: `${typeLabel(file.type)}${file.sizeLabel ? ` · ${file.sizeLabel}` : ""}${file.date ? ` · ${file.date}` : ""}`, attributes: {} })]),
+          file.favorite ? element("span", { className: "v8-file-item__favorite", attributes: { "aria-label": "Favori" } }, [icon("star")]) : null
         ]);
         const menu = element("button", {
           className: "v8-icon-button v8-file-menu",
@@ -317,41 +417,283 @@ export function mountFiles(stage, options = {}) {
         iconName: "panel-right",
         eyebrow: "Aperçu",
         title: "Rien à prévisualiser",
-        description: "Sélectionnez une ressource ou ajoutez votre premier lien.",
-        actions: [actionButton({ actionId: "v8.files.new-link", variant: "secondary" }, [icon("link-2"), element("span", { text: "Ajouter un lien" })])],
+        description: "Sélectionnez une ressource pour voir ses détails.",
         compact: true,
         className: "v8-empty-state--fill"
       }));
       refreshIcons();
       return;
     }
+    const isDrive = isDriveConnected(repository) && file.driveId;
+    const actions = [];
+    if (file.webViewLink) actions.push(element("a", { className: "v8-button v8-button--primary", attributes: { href: file.webViewLink, target: "_blank", rel: "noopener noreferrer" } }, [icon("external-link"), element("span", { text: "Ouvrir" })]));
+    if (isDrive && file.type !== "folder") {
+      actions.push(element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { fileDownload: file.id } }, [icon("download"), element("span", { text: "Télécharger" })]));
+      actions.push(element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { fileBrain: file.id } }, [icon("sparkles"), element("span", { text: "Analyser" })]));
+      actions.push(element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { fileShare: file.id } }, [icon("share-2"), element("span", { text: "Partager" })]));
+    }
+    actions.push(element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { fileFavorite: file.id } }, [icon(file.favorite ? "star-off" : "star"), element("span", { text: file.favorite ? "Retirer des favoris" : "Ajouter aux favoris" })]));
+    actions.push(element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { fileRename: file.id } }, [icon("pencil"), element("span", { text: "Renommer" })]));
+    actions.push(element("button", { className: "v8-button v8-button--danger", attributes: { type: "button" }, dataset: { fileDelete: file.id } }, [icon("trash-2"), element("span", { text: "Supprimer" })]));
+
+    const tagElements = (Array.isArray(file.tags) && file.tags.length)
+      ? [element("div", { className: "v8-files-tags" }, file.tags.map((tag) => element("span", { className: "v8-badge v8-files-tag", text: tag })))]
+      : [];
+    const brainSummary = file.brainSummary ? element("div", { className: "v8-files-brain" }, [element("strong", { text: "Brain" }), element("p", { text: file.brainSummary })]) : null;
+    const brainSuggestion = file.brainSuggestedFolderName ? element("p", { className: "v8-files-brain__suggestion", text: `Suggestion : ${file.brainSuggestedFolderName}` }) : null;
+
     preview.append(
       element("header", { className: "v8-files-preview__header" }, [element("span", { className: "v8-eyebrow", text: "Aperçu" }), element("span", { className: "v8-badge", text: typeLabel(file.type) })]),
       element("div", { className: "v8-files-preview__symbol" }, [icon(TYPE_ICONS[file.type] || "file")]),
       element("h2", { text: file.name, attributes: { translate: "no" } }),
-      element("p", { text: file.url || (file.type === "folder" ? "Dossier local ETHONE" : "Ressource locale"), attributes: file.url ? { translate: "no" } : {} }),
+      element("p", { text: file.type === "folder" ? "Dossier" : file.sizeLabel || "Fichier", attributes: {} }),
+      ...tagElements,
+      brainSummary,
+      brainSuggestion,
       element("dl", { className: "v8-files-metadata" }, [
         element("div", {}, [element("dt", { text: "Type" }), element("dd", { text: typeLabel(file.type) })]),
-        element("div", {}, [element("dt", { text: "Tag" }), element("dd", { text: file.tag || "Aucun", attributes: file.tag ? { translate: "no" } : {} })]),
-        element("div", {}, [element("dt", { text: "Ajouté" }), element("dd", { text: file.date || "Localement", attributes: file.date ? { translate: "no" } : {} })])
+        element("div", {}, [element("dt", { text: "Taille" }), element("dd", { text: file.sizeLabel || "—" })]),
+        element("div", {}, [element("dt", { text: "Modifié" }), element("dd", { text: file.date || "—", attributes: file.date ? { translate: "no" } : {} })])
       ]),
-      element("div", { className: "v8-files-preview__actions" }, [
-        file.url ? element("a", { className: "v8-button v8-button--primary", attributes: { href: file.url, target: "_blank", rel: "noopener noreferrer" } }, [icon("external-link"), element("span", { text: "Ouvrir" })]) : null,
-        element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { fileFavorite: file.id } }, [icon(file.favorite ? "star-off" : "star"), element("span", { text: file.favorite ? "Retirer des favoris" : "Ajouter aux favoris" })]),
-        element("button", { className: "v8-button v8-button--danger", attributes: { type: "button" }, dataset: { fileDelete: file.id } }, [icon("trash-2"), element("span", { text: "Supprimer" })])
-      ])
+      element("div", { className: "v8-files-preview__actions" }, actions)
     );
     refreshIcons();
   }
 
+  function isExpired(date) {
+    if (!date) return false;
+    const parsed = new Date(date);
+    return !Number.isNaN(parsed.getTime()) && parsed.getTime() < Date.now();
+  }
+
+  function isExpiringSoon(date) {
+    if (!date) return false;
+    const parsed = new Date(date);
+    if (Number.isNaN(parsed.getTime())) return false;
+    return parsed.getTime() - Date.now() < 24 * 60 * 60 * 1000;
+  }
+
+  async function openAdmin() {
+    adminOpen = true;
+    await loadAdmin();
+    adminPanel.showModal();
+    page.append(adminPanel);
+    renderAdmin();
+  }
+
+  function closeAdmin() {
+    adminOpen = false;
+    adminPanel.close();
+    adminPanel.remove();
+  }
+
+  async function loadAdmin() {
+    adminLoading = true;
+    renderAdmin();
+    try {
+      const [sharesResult, dropsResult, dashboardResult] = await Promise.all([
+        externalServices?.cloudShares?.list?.({ limit: 100 }),
+        externalServices?.cloudDrops?.list?.({ limit: 100 }),
+        externalServices?.cloudDashboard?.get?.()
+      ]);
+      shares = Array.isArray(sharesResult?.data?.shares) ? sharesResult.data.shares : [];
+      drops = Array.isArray(dropsResult?.data?.drops) ? dropsResult.data.drops : [];
+      dashboard = dashboardResult?.data || null;
+    } catch (err) {
+      notify({ id: "admin-load-error", title: "Admin", message: err.message || "Impossible de charger.", type: "error" });
+    } finally {
+      adminLoading = false;
+    }
+    renderAdmin();
+  }
+
+  async function runCleanup() {
+    try {
+      const result = await externalServices?.cloudCleanup?.run?.();
+      const summary = result?.data || { revoked: 0, deleted: 0 };
+      notify({ id: "admin-cleanup", title: "Admin", message: `${summary.revoked || 0} partage(s) révoqué(s), ${summary.deleted || 0} drop(s) supprimé(s).`, type: "success", duration: 3000 });
+      await loadAdmin();
+    } catch (err) {
+      notify({ id: "admin-cleanup-error", title: "Admin", message: err.message || "Échec du nettoyage.", type: "error" });
+    }
+  }
+
+  async function revokeShareAdmin(slug) {
+    try {
+      await externalServices?.cloudShares?.revoke?.(slug);
+      shares = shares.filter((share) => share.slug !== slug);
+      renderAdmin();
+      notify({ id: "admin-share-revoked", title: "Admin", message: "Partage révoqué.", type: "success", duration: 2200 });
+    } catch (err) {
+      notify({ id: "admin-share-revoke-error", title: "Admin", message: err.message || "Échec.", type: "error" });
+    }
+  }
+
+  async function revokeDropAdmin(slug) {
+    try {
+      await externalServices?.cloudDrops?.revoke?.(slug);
+      drops = drops.filter((drop) => drop.slug !== slug);
+      renderAdmin();
+      notify({ id: "admin-drop-revoked", title: "Admin", message: "Drop supprimé.", type: "success", duration: 2200 });
+    } catch (err) {
+      notify({ id: "admin-drop-revoke-error", title: "Admin", message: err.message || "Échec.", type: "error" });
+    }
+  }
+
+  function renderAdmin() {
+    const body = adminPanel.querySelector(".v8-files-admin__body");
+    body.replaceChildren();
+    if (adminLoading) {
+      body.append(statusState("loading", { iconName: "loader", title: "Chargement", description: "Récupération des partages...", compact: true }));
+      refreshIcons();
+      return;
+    }
+
+    const dashboardSection = element("section", { className: "v8-files-admin__section" }, [
+      element("h3", { text: "Dashboard Cloud" })
+    ]);
+    if (!dashboard) {
+      dashboardSection.append(element("p", { className: "v8-files-admin__empty", text: "Aucune statistique disponible." }));
+    } else {
+      const topSize = formatBytes(dashboard.totalSize);
+      const topFilesList = dashboard.topFiles?.length
+        ? element("ul", { className: "v8-files-admin__top-files" }, dashboard.topFiles.map((file) => element("li", {}, [
+          icon("file"),
+          element("span", { text: file.name }),
+          element("small", { text: formatBytes(file.size) })
+        ])))
+        : null;
+      dashboardSection.append(
+        element("div", { className: "v8-files-admin__dashboard" }, [
+          element("div", { className: "v8-files-admin__kpi" }, [element("strong", { text: String(dashboard.totalFiles) }), element("small", { text: "Fichiers" })]),
+          element("div", { className: "v8-files-admin__kpi" }, [element("strong", { text: topSize }), element("small", { text: "Taille totale" })]),
+          element("div", { className: "v8-files-admin__kpi" }, [element("strong", { text: String(dashboard.favorites) }), element("small", { text: "Favoris" })]),
+          element("div", { className: "v8-files-admin__kpi" }, [element("strong", { text: String(dashboard.folders) }), element("small", { text: "Dossiers" })]),
+          element("div", { className: "v8-files-admin__kpi" }, [element("strong", { text: String(dashboard.activeShares) }), element("small", { text: `Partages${dashboard.expiredShares ? ` (${dashboard.expiredShares} expirés)` : ""}` })]),
+          element("div", { className: "v8-files-admin__kpi" }, [element("strong", { text: String(dashboard.activeDrops) }), element("small", { text: `Drops${dashboard.expiredDrops ? ` (${dashboard.expiredDrops} expirés)` : ""}` })]),
+          topFilesList
+        ].filter(Boolean))
+      );
+      const cleanupButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, events: { click: runCleanup } }, [icon("broom"), element("span", { text: "Nettoyer les expirés" })]);
+      dashboardSection.append(cleanupButton);
+    }
+
+    const sharesSection = element("section", { className: "v8-files-admin__section" }, [
+      element("h3", { text: `Partages actifs (${shares.length})` })
+    ]);
+    if (!shares.length) {
+      sharesSection.append(element("p", { className: "v8-files-admin__empty", text: "Aucun partage actif." }));
+    } else {
+      const list = element("ul", { className: "v8-files-admin__list" });
+      shares.forEach((share) => {
+        const expired = isExpired(share.expiresAt);
+        const expiring = !expired && isExpiringSoon(share.expiresAt);
+        const statusClass = expired ? "is-expired" : expiring ? "is-expiring" : "";
+        const statusText = expired ? "Expiré" : expiring ? "Expire bientôt" : share.expiresAt ? `Expire ${new Date(share.expiresAt).toLocaleString()}` : "Sans expiration";
+        const copyButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, events: { click: () => copyShareLink(share.slug) } }, [icon("link"), element("span", { text: "Copier" })]);
+        const revokeButton = element("button", { className: "v8-button v8-button--danger", attributes: { type: "button" }, events: { click: () => revokeShareAdmin(share.slug) } }, [icon("trash-2"), element("span", { text: "Révoquer" })]);
+        list.append(element("li", { className: statusClass }, [
+          element("div", { className: "v8-files-admin__item-copy" }, [
+            element("strong", { text: share.slug }),
+            element("small", { text: statusText }),
+            element("small", { text: `${share.downloadCount || 0} téléchargements` })
+          ]),
+          element("div", { className: "v8-files-admin__item-actions" }, [copyButton, revokeButton])
+        ]));
+      });
+      sharesSection.append(list);
+    }
+
+    const dropsSection = element("section", { className: "v8-files-admin__section" }, [
+      element("h3", { text: `Drops actifs (${drops.length})` })
+    ]);
+    if (!drops.length) {
+      dropsSection.append(element("p", { className: "v8-files-admin__empty", text: "Aucun drop actif." }));
+    } else {
+      const list = element("ul", { className: "v8-files-admin__list" });
+      drops.forEach((drop) => {
+        const expired = isExpired(drop.expiresAt);
+        const expiring = !expired && isExpiringSoon(drop.expiresAt);
+        const statusClass = expired ? "is-expired" : expiring ? "is-expiring" : "";
+        const statusText = expired ? "Expiré" : expiring ? "Expire bientôt" : drop.expiresAt ? `Expire ${new Date(drop.expiresAt).toLocaleString()}` : "Sans expiration";
+        const copyButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, events: { click: () => copyDropLink(drop.slug) } }, [icon("link"), element("span", { text: "Copier" })]);
+        const revokeButton = element("button", { className: "v8-button v8-button--danger", attributes: { type: "button" }, events: { click: () => revokeDropAdmin(drop.slug) } }, [icon("trash-2"), element("span", { text: "Supprimer" })]);
+        list.append(element("li", { className: statusClass }, [
+          element("div", { className: "v8-files-admin__item-copy" }, [
+            element("strong", { text: drop.title || drop.slug }),
+            element("small", { text: statusText }),
+            element("small", { text: `${drop.fileCount || 0} / ${drop.maxFiles || "∞"} fichiers` })
+          ]),
+          element("div", { className: "v8-files-admin__item-actions" }, [copyButton, revokeButton])
+        ]));
+      });
+      dropsSection.append(list);
+    }
+
+    body.append(sharesSection, dropsSection);
+    refreshIcons();
+  }
+
+  async function copyShareLink(slug) {
+    const shareUrl = `${globalThis.location?.origin || ""}${globalThis.location?.pathname || "/"}#/share?slug=${encodeURIComponent(slug)}`;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      notify({ id: "admin-share-link-copied", title: "Admin", message: "Lien copié.", type: "success", duration: 2200 });
+    } catch {
+      notify({ id: "admin-share-link-copy-error", title: "Admin", message: "Impossible de copier.", type: "error" });
+    }
+  }
+
+  async function copyDropLink(slug) {
+    const dropUrl = `${globalThis.location?.origin || ""}${globalThis.location?.pathname || "/"}#/drop?slug=${encodeURIComponent(slug)}`;
+    try {
+      await navigator.clipboard.writeText(dropUrl);
+      notify({ id: "admin-drop-link-copied", title: "Admin", message: "Lien copié.", type: "success", duration: 2200 });
+    } catch {
+      notify({ id: "admin-drop-link-copy-error", title: "Admin", message: "Impossible de copier.", type: "error" });
+    }
+  }
+
+  function renderStorage() {
+    storageHost.replaceChildren();
+    if (!isDriveConnected(repository) || !quota) return;
+    const usage = Number(quota.usage) || 0;
+    const limit = Number(quota.limit) || 0;
+    const ratio = limit > 0 ? Math.min(1, usage / limit) : 0;
+    const percent = Math.round(ratio * 100);
+    storageHost.append(
+      element("div", { className: "v8-files-storage__label", style: "display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:var(--v8-font-sm);" }, [element("span", { text: "Stockage" }), element("small", { text: `${percent}% utilisé` })]),
+      element("div", { className: "v8-files-storage__bar", style: "height:6px;background:var(--v8-border);border-radius:999px;overflow:hidden;" }, [element("div", { className: "v8-files-storage__fill", attributes: { style: `width:${percent}%;height:100%;background:#1a73e8;` } })]),
+      element("div", { className: "v8-files-storage__meta", style: "margin-top:4px;color:var(--v8-text-secondary);font-size:var(--v8-font-xs);" }, [element("small", { text: `${formatBytes(usage)} / ${formatBytes(limit)}` })])
+    );
+  }
+
+  function formatBytes(bytes) {
+    const value = Number(bytes) || 0;
+    if (value === 0) return "0 o";
+    const units = ["o", "Ko", "Mo", "Go", "To"];
+    let index = 0;
+    let size = value;
+    while (size >= 1024 && index < units.length - 1) {
+      size /= 1024;
+      index += 1;
+    }
+    return `${size.toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
+  }
+
   function renderAll() {
     renderSources();
+    renderStorage();
     renderBreadcrumb();
     renderContent();
     renderPreview();
   }
 
   function openComposer(nextType) {
+    if (!isDriveConnected(repository)) {
+      notify({ id: "drive-not-connected", title: "Fichiers", message: "Connectez Google Drive pour créer des dossiers.", type: "warning" });
+      return completed("Connexion requise");
+    }
     composerType = nextType;
     renderContent();
     return completed("Formulaire ouvert");
@@ -363,32 +705,25 @@ export function mountFiles(stage, options = {}) {
     return completed("Formulaire fermé");
   }
 
-  function createFile() {
+  async function createFolder() {
     const name = content.querySelector("[data-file-field='name']");
     const form = content.querySelector(".v8-files-composer");
     if (!name?.value.trim() || (form && !validateForm(form))) {
       notify({ id: "file-name-required", title: "Fichiers", message: "Ajoutez un nom avant de continuer.", type: "warning" });
       return { ok: false, status: "failed", message: "Nom requis" };
     }
-    const created = repository.files.create({
-      name: name.value,
-      type: composerType,
-      url: content.querySelector("[data-file-field='url']")?.value,
-      tag: content.querySelector("[data-file-field='tag']")?.value,
-      parentId: currentFolderId
-    });
-    if (!created.ok) {
-      notify({ id: "file-create-error", title: "Fichiers", message: created.message, type: "error" });
-      return created;
+    try {
+      const created = await driveClient.createFolder(name.value, currentFolderId);
+      composerType = null;
+      await refreshFiles();
+      selectedId = created.file.id;
+      renderAll();
+      notify({ id: "folder-created", title: "Fichiers", message: "Dossier créé.", type: "success", duration: 2200 });
+      return completed("Dossier créé", created.file);
+    } catch (err) {
+      notify({ id: "folder-create-error", title: "Fichiers", message: err.message || "Impossible de créer le dossier.", type: "error" });
+      return { ok: false, status: "failed", message: err.message };
     }
-    composerType = null;
-    refreshFiles();
-    selectedId = created.data.id;
-    renderAll();
-    presence?.signalActivity?.(fileRow(created.data.id), "file", { phase: "enter" });
-    presence?.signalActivity?.(preview, "file", { phase: "update" });
-    notify({ id: "file-created", title: "Fichiers", message: `${typeLabel(created.data.type)} ajouté.`, type: "success", duration: 2200 });
-    return created;
   }
 
   function toggleFileSelection(id) {
@@ -398,20 +733,39 @@ export function mountFiles(stage, options = {}) {
     fileRow(id)?.querySelector("[data-collection-select]")?.focus?.({ preventScroll: true });
   }
 
-  function renameFile(id) {
+  async function renameFile(id) {
     const file = files.find((entry) => String(entry.id) === String(id));
     if (!file) return completed("Fichier introuvable");
     const value = prompt("Renommer", file.name || "");
-    if (value == null) return completed("Renommage annule");
-    const changed = repository.files.update(id, { name: value });
-    if (!changed.ok) return changed;
-    refreshFiles();
-    renderAll();
-    notify({ id: "file-renamed", title: "Fichiers", message: "Élément renommé.", type: "success", duration: 2200 });
-    return changed;
+    if (value == null || value === file.name) return completed("Renommage annulé");
+    try {
+      await driveClient.rename(id, value);
+      await refreshFiles();
+      renderAll();
+      notify({ id: "file-renamed", title: "Fichiers", message: "Élément renommé.", type: "success", duration: 2200 });
+      return completed("Élément renommé");
+    } catch (err) {
+      notify({ id: "file-rename-error", title: "Fichiers", message: err.message || "Impossible de renommer.", type: "error" });
+      return { ok: false, status: "failed", message: err.message };
+    }
   }
 
-  function toggleFavorite(id) {
+  async function toggleFavorite(id) {
+    if (isDriveConnected(repository)) {
+      const file = files.find((entry) => String(entry.id) === String(id));
+      if (!file) return completed("Fichier introuvable");
+      try {
+        const favorite = !file.favorite;
+        await driveClient.toggleFavorite(id, favorite);
+        file.favorite = favorite;
+        renderAll();
+        notify({ id: favorite ? "file-favorited" : "file-unfavorited", title: "Fichiers", message: favorite ? "Ajouté aux favoris." : "Retiré des favoris.", type: "success", duration: 2200 });
+        return completed(favorite ? "Ajouté aux favoris" : "Retiré des favoris");
+      } catch (err) {
+        notify({ id: "favorite-error", title: "Fichiers", message: err.message || "Impossible de mettre à jour le favori.", type: "error" });
+        return { ok: false, status: "failed", message: err.message };
+      }
+    }
     const changed = repository.files.toggleFavorite(id);
     if (!changed.ok) return changed;
     refreshFiles();
@@ -420,9 +774,23 @@ export function mountFiles(stage, options = {}) {
     return changed;
   }
 
-  function updateSelectedFavorites(favorite) {
+  async function updateSelectedFavorites(favorite) {
     const ids = selection.values();
     if (!ids.length) return completed("Aucun fichier sélectionné");
+    if (isDriveConnected(repository)) {
+      try {
+        for (const id of ids) await driveClient.toggleFavorite(id, favorite);
+        selection.clear();
+        bulkDeleteArmed = false;
+        await refreshFiles();
+        renderAll();
+        notify({ id: favorite ? "files-bulk-favorite" : "files-bulk-unfavorite", title: "Fichiers", message: `${ids.length} élément${ids.length > 1 ? "s" : ""} mis à jour.`, type: "success", duration: 2400 });
+        return completed("Favoris mis à jour");
+      } catch (err) {
+        notify({ id: "favorites-error", title: "Fichiers", message: err.message || "Impossible de mettre à jour les favoris.", type: "error" });
+        return { ok: false, status: "failed", message: err.message };
+      }
+    }
     const changed = repository.files.setFavorite(ids, favorite);
     if (!changed.ok) return changed;
     selection.clear();
@@ -433,7 +801,7 @@ export function mountFiles(stage, options = {}) {
     return changed;
   }
 
-  function removeSelectedFiles() {
+  async function removeSelectedFiles() {
     const ids = selection.values();
     if (!ids.length) return completed("Aucun fichier sélectionné");
     if (!bulkDeleteArmed) {
@@ -441,40 +809,157 @@ export function mountFiles(stage, options = {}) {
       renderBulk();
       return completed("Confirmation requise");
     }
-    const changed = repository.files.removeMany(ids);
-    if (!changed.ok) return changed;
-    selection.clear();
-    bulkDeleteArmed = false;
-    refreshFiles();
-    renderAll();
-    notify({ id: "files-bulk-deleted", title: "Fichiers", message: `${ids.length} élément${ids.length > 1 ? "s supprimés" : " supprimé"}.`, type: "info", duration: 2400 });
-    return changed;
-  }
-
-  function removeFile(id) {
-    const row = fileRow(id);
-    const changed = repository.files.remove(id);
-    if (!changed.ok) return changed;
-    selection.toggle(id, false);
-    refreshFiles();
-    notify({ id: "file-deleted", title: "Fichiers", message: "Élément supprimé.", type: "info", duration: 2200 });
-    presence?.signalActivity?.(preview, "file", { phase: "exit" });
-    const finish = () => { if (mounted) renderAll(); };
-    if (presence?.signalActivity) presence.signalActivity(row, "file", { phase: "exit", onComplete: finish });
-    else finish();
-    return changed;
-  }
-
-  function moveFile(id, parentId) {
-    const changed = repository.files.update(id, { parentId });
-    if (!changed.ok) {
-      notify({ id: "file-move-error", title: "Fichiers", message: changed.message, type: "error" });
-      return changed;
+    try {
+      if (isDriveConnected(repository)) {
+        await Promise.all(ids.map((id) => driveClient.trash(id)));
+      } else {
+        repository.files.removeMany(ids);
+      }
+      selection.clear();
+      bulkDeleteArmed = false;
+      await refreshFiles();
+      renderAll();
+      notify({ id: "files-bulk-deleted", title: "Fichiers", message: `${ids.length} élément${ids.length > 1 ? "s supprimés" : " supprimé"}.`, type: "info", duration: 2400 });
+      return completed("Éléments supprimés");
+    } catch (err) {
+      notify({ id: "files-bulk-delete-error", title: "Fichiers", message: err.message || "Impossible de supprimer.", type: "error" });
+      return { ok: false, status: "failed", message: err.message };
     }
-    refreshFiles();
+  }
+
+  async function removeFile(id) {
+    try {
+      const row = fileRow(id);
+      if (isDriveConnected(repository)) {
+        await driveClient.trash(id);
+      } else {
+        repository.files.remove(id);
+      }
+      selection.toggle(id, false);
+      await refreshFiles();
+      notify({ id: "file-deleted", title: "Fichiers", message: "Élément supprimé.", type: "info", duration: 2200 });
+      presence?.signalActivity?.(preview, "file", { phase: "exit" });
+      const finish = () => { if (mounted) renderAll(); };
+      if (presence?.signalActivity) presence.signalActivity(row, "file", { phase: "exit", onComplete: finish });
+      else finish();
+      return completed("Élément supprimé");
+    } catch (err) {
+      notify({ id: "file-delete-error", title: "Fichiers", message: err.message || "Impossible de supprimer.", type: "error" });
+      return { ok: false, status: "failed", message: err.message };
+    }
+  }
+
+  async function moveFile(id, parentId) {
+    try {
+      const file = files.find((entry) => String(entry.id) === String(id));
+      if (!file) throw new Error("Fichier introuvable");
+      if (isDriveConnected(repository)) {
+        await driveClient.move(id, parentId, file.parentId);
+      } else {
+        repository.files.update(id, { parentId });
+      }
+      await refreshFiles();
+      renderAll();
+      notify({ id: "file-moved", title: "Fichiers", message: "Élément déplacé.", type: "success", duration: 2200 });
+      return completed("Élément déplacé");
+    } catch (err) {
+      notify({ id: "file-move-error", title: "Fichiers", message: err.message || "Impossible de déplacer.", type: "error" });
+      return { ok: false, status: "failed", message: err.message };
+    }
+  }
+
+  async function downloadFile(id) {
+    try {
+      const { blob } = await driveClient.download(id);
+      const file = files.find((entry) => String(entry.id) === String(id));
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = file?.name || "download";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      notify({ id: "file-downloaded", title: "Fichiers", message: "Téléchargement démarré.", type: "success", duration: 2200 });
+      return completed("Téléchargement démarré");
+    } catch (err) {
+      notify({ id: "file-download-error", title: "Fichiers", message: err.message || "Impossible de télécharger.", type: "error" });
+      return { ok: false, status: "failed", message: err.message };
+    }
+  }
+
+  async function createShareLink(id) {
+    const file = files.find((entry) => String(entry.id) === String(id));
+    if (!file) return completed("Fichier introuvable");
+    if (file.type === "folder") return completed("Les dossiers ne peuvent pas être partagés");
+    try {
+      const cloudFile = await driveClient.getCloudFile(id);
+      if (!cloudFile?.id) return completed("Fichier non synchronisé");
+      const share = await externalServices.cloudShares.create({
+        fileId: cloudFile.id,
+        visibility: "public",
+        maxDownloads: 0
+      });
+      const url = `${window.location.origin}/s/${share.data.share.slug}`;
+      await navigator.clipboard.writeText(url);
+      notify({ id: "file-share-created", title: "Fichiers", message: "Lien de partage copié dans le presse-papiers.", type: "success", duration: 3000 });
+      return completed("Lien copié", share.data.share);
+    } catch (err) {
+      notify({ id: "file-share-error", title: "Fichiers", message: err.message || "Impossible de créer le partage.", type: "error" });
+      return { ok: false, status: "failed", message: err.message };
+    }
+  }
+
+  async function analyzeFile(id) {
+    const file = files.find((entry) => String(entry.id) === String(id));
+    if (!file) return completed("Fichier introuvable");
+    if (file.type === "folder") return completed("Les dossiers ne peuvent pas être analysés");
+    try {
+      const folders = files.filter((entry) => entry.type === "folder");
+      const result = await driveClient.brain(id, folders);
+      if (result?.data?.summary) {
+        file.brainSummary = result.data.summary;
+        file.brainSuggestedFolderId = result.data.suggestedFolderId;
+        file.brainSuggestedFolderName = result.data.suggestedFolderName;
+        renderAll();
+        notify({ id: "file-brain-complete", title: "Fichiers", message: result.data.suggestedFolderName ? `Analyse terminée. Suggestion : ${result.data.suggestedFolderName}.` : "Analyse terminée.", type: "success", duration: 3000 });
+        return completed("Analyse terminée", result.data);
+      }
+      notify({ id: "file-brain-empty", title: "Fichiers", message: "Aucun résultat d'analyse.", type: "info" });
+      return completed("Aucun résultat");
+    } catch (err) {
+      notify({ id: "file-brain-error", title: "Fichiers", message: err.message || "L'analyse a échoué.", type: "error" });
+      return { ok: false, status: "failed", message: err.message };
+    }
+  }
+
+  async function uploadFiles(fileList) {
+    if (!isDriveConnected(repository)) {
+      notify({ id: "drive-not-connected", title: "Fichiers", message: "Connectez Google Drive pour envoyer des fichiers.", type: "warning" });
+      return completed("Connexion requise");
+    }
+    const filesToUpload = Array.from(fileList || []);
+    if (!filesToUpload.length) return completed("Aucun fichier");
+    const isOnline = typeof navigator !== "undefined" ? navigator.onLine !== false : true;
+    if (!isOnline) {
+      for (const file of filesToUpload) {
+        const buffer = await file.arrayBuffer();
+        await cloudCache.queue("upload", { name: file.name, mimeType: file.type, size: file.size, parentId: currentFolderId, buffer });
+      }
+      notify({ id: "files-queued", title: "Fichiers", message: `${filesToUpload.length} fichier${filesToUpload.length > 1 ? "s" : ""} en attente de connexion.`, type: "info", duration: 3000 });
+      return completed("Uploads mis en file");
+    }
+    for (const file of filesToUpload) {
+      try {
+        await driveClient.upload(file, { name: file.name, parentId: currentFolderId });
+      } catch (err) {
+        notify({ id: "file-upload-error", title: "Fichiers", message: `${file.name} : ${err.message || "Échec de l'upload."}`, type: "error" });
+      }
+    }
+    await refreshFiles();
     renderAll();
-    notify({ id: "file-moved", title: "Fichiers", message: "Élément déplacé.", type: "success", duration: 2200 });
-    return changed;
+    notify({ id: "files-uploaded", title: "Fichiers", message: `${filesToUpload.length} fichier${filesToUpload.length > 1 ? "s" : ""} envoyé${filesToUpload.length > 1 ? "s" : ""}.`, type: "success", duration: 2400 });
+    return completed("Upload terminé");
   }
 
   function openMoveMenu(id, anchor) {
@@ -494,25 +979,55 @@ export function mountFiles(stage, options = {}) {
     return rowMenu.open(anchor, items, { label: `Déplacer ${file.name}` });
   }
 
+  async function editTags(id) {
+    const file = files.find((entry) => String(entry.id) === String(id));
+    if (!file) return completed("Fichier introuvable");
+    const current = Array.isArray(file.tags) ? file.tags.join(", ") : "";
+    const value = prompt("Tags (séparés par des virgules)", current);
+    if (value == null) return completed("Édition annulée");
+    const tags = value.split(",").map((tag) => tag.trim()).filter(Boolean).slice(0, 20);
+    try {
+      await driveClient.updateTags(id, tags);
+      file.tags = tags;
+      renderAll();
+      notify({ id: "file-tags-updated", title: "Fichiers", message: tags.length ? `${tags.length} tag${tags.length > 1 ? "s" : ""} mis à jour.` : "Tags supprimés.", type: "success", duration: 2200 });
+      return completed("Tags mis à jour");
+    } catch (err) {
+      notify({ id: "file-tags-error", title: "Fichiers", message: err.message || "Impossible de mettre à jour les tags.", type: "error" });
+      return { ok: false, status: "failed", message: err.message };
+    }
+  }
+
   function openFileMenu(id, anchor, point = null) {
     const file = files.find((entry) => String(entry.id) === String(id));
     if (!file) return false;
-    return rowMenu.open(anchor, [
+    const isDrive = isDriveConnected(repository) && file.driveId;
+    const items = [
       { label: "Renommer", icon: "pencil", onSelect: () => renameFile(id) },
       { label: "Déplacer vers...", icon: "folder-input", onSelect: () => openMoveMenu(id, anchor) },
       { label: file.favorite ? "Retirer des favoris" : "Ajouter aux favoris", icon: file.favorite ? "star-off" : "star", onSelect: () => toggleFavorite(id) },
-      { label: selection.has(id) ? "Retirer de la sélection" : "Ajouter à la sélection", icon: selection.has(id) ? "square-minus" : "square-check-big", onSelect: () => toggleFileSelection(id) },
-      { separator: true },
-      { label: "Supprimer", icon: "trash-2", tone: "danger", onSelect: () => removeFile(id) }
-    ], { label: `Actions pour ${file.name}`, point });
+      { label: "Éditer les tags", icon: "tag", onSelect: () => editTags(id) },
+      { label: selection.has(id) ? "Retirer de la sélection" : "Ajouter à la sélection", icon: selection.has(id) ? "square-minus" : "square-check-big", onSelect: () => toggleFileSelection(id) }
+    ];
+    if (isDrive && file.type !== "folder") items.push({ label: "Télécharger", icon: "download", onSelect: () => downloadFile(id) });
+    items.push({ separator: true });
+    items.push({ label: "Supprimer", icon: "trash-2", tone: "danger", onSelect: () => removeFile(id) });
+    return rowMenu.open(anchor, items, { label: `Actions pour ${file.name}`, point });
   }
 
-  scopedActions.push(actions.scope("v8.files.new-link", () => openComposer("link")));
-  scopedActions.push(actions.scope("v8.files.new-folder", () => openComposer("folder")));
-  scopedActions.push(actions.scope("v8.files.new.cancel", closeComposer));
-  scopedActions.push(actions.scope("v8.files.create", createFile));
+  function openUploadDialog() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.multiple = true;
+    input.addEventListener("change", () => uploadFiles(input.files));
+    input.click();
+  }
 
-  function handleClick(event) {
+  scopedActions.push(actions.scope("v8.files.new-folder", () => openComposer("folder")));
+  scopedActions.push(actions.scope("v8.files.upload", openUploadDialog));
+  scopedActions.push(actions.scope("v8.files.new.cancel", closeComposer));
+
+  async function handleClick(event) {
     const crumb = event.target.closest("[data-files-breadcrumb]");
     if (crumb && page.contains(crumb)) {
       const crumbId = crumb.dataset.filesBreadcrumb;
@@ -564,12 +1079,37 @@ export function mountFiles(stage, options = {}) {
     }
     const favorite = event.target.closest("[data-file-favorite]");
     if (favorite && page.contains(favorite)) {
-      toggleFavorite(favorite.dataset.fileFavorite);
+      await toggleFavorite(favorite.dataset.fileFavorite);
       return;
     }
     const remove = event.target.closest("[data-file-delete]");
     if (remove && page.contains(remove)) {
-      removeFile(remove.dataset.fileDelete);
+      await removeFile(remove.dataset.fileDelete);
+      return;
+    }
+    const rename = event.target.closest("[data-file-rename]");
+    if (rename && page.contains(rename)) {
+      await renameFile(rename.dataset.fileRename);
+      return;
+    }
+    const download = event.target.closest("[data-file-download]");
+    if (download && page.contains(download)) {
+      await downloadFile(download.dataset.fileDownload);
+      return;
+    }
+    const brain = event.target.closest("[data-file-brain]");
+    if (brain && page.contains(brain)) {
+      await analyzeFile(brain.dataset.fileBrain);
+      return;
+    }
+    const share = event.target.closest("[data-file-share]");
+    if (share && page.contains(share)) {
+      await createShareLink(share.dataset.fileShare);
+      return;
+    }
+    const admin = event.target.closest("[data-file-admin]");
+    if (admin && page.contains(admin)) {
+      await openAdmin();
     }
   }
 
@@ -589,6 +1129,21 @@ export function mountFiles(stage, options = {}) {
     renderContent();
   }
 
+  function handleDragOver(event) {
+    event.preventDefault();
+    content.classList.add("is-dragover");
+  }
+
+  function handleDragLeave(event) {
+    if (!content.contains(event.relatedTarget)) content.classList.remove("is-dragover");
+  }
+
+  function handleDrop(event) {
+    event.preventDefault();
+    content.classList.remove("is-dragover");
+    uploadFiles(event.dataTransfer.files);
+  }
+
   const renderSearchResults = debounce(renderContent, 120);
 
   function handleSearch() {
@@ -604,10 +1159,49 @@ export function mountFiles(stage, options = {}) {
   page.addEventListener("click", handleClick);
   page.addEventListener("contextmenu", handleContextMenu);
   page.addEventListener("keydown", handleKeyboard);
+  content.addEventListener("dragover", handleDragOver);
+  content.addEventListener("dragleave", handleDragLeave);
+  content.addEventListener("drop", handleDrop);
   search.addEventListener("input", handleSearch);
   sortSelect.addEventListener("change", handleSort);
+
+  async function processQueue() {
+    if (!cloudCache || !isDriveConnected(repository)) return;
+    const items = await cloudCache.drainQueue();
+    if (!items.length) return;
+    for (const item of items) {
+      if (item.type !== "upload" || !item.payload?.buffer) continue;
+      try {
+        const { name, mimeType, parentId, buffer } = item.payload;
+        const file = new File([buffer], name, { type: mimeType });
+        await driveClient.upload(file, { name, parentId });
+      } catch (err) {
+        notify({ id: "file-queue-error", title: "Fichiers", message: `${item.payload?.name || "Fichier"} : ${err.message || "Échec de l'upload différé."}`, type: "error" });
+        await cloudCache.queue(item.type, item.payload);
+      }
+    }
+    await refreshFiles();
+    renderAll();
+  }
+
+  function onNetworkChange() {
+    const isOnline = typeof navigator !== "undefined" ? navigator.onLine !== false : true;
+    if (cloudCache) cloudCache.setOnline(isOnline);
+    if (isOnline) {
+      notify({ id: "files-online", title: "Fichiers", message: "Connexion restaurée. Synchronisation...", type: "success", duration: 2200 });
+      Promise.all([refreshFiles().then(renderAll).catch(() => renderAll()), processQueue().catch(() => {})]);
+    } else {
+      notify({ id: "files-offline", title: "Fichiers", message: "Mode hors ligne. Données locales affichées.", type: "info", duration: 3000 });
+      refreshFiles().then(renderAll).catch(() => renderAll());
+    }
+  }
+  globalThis.addEventListener?.("online", onNetworkChange);
+  globalThis.addEventListener?.("offline", onNetworkChange);
+
   stage.replaceChildren(page);
-  renderAll();
+  cloudCache?.setOnline?.(typeof navigator !== "undefined" ? navigator.onLine !== false : true);
+  refreshFiles().then(renderAll).catch(() => renderAll());
+
   const releaseDensity = options.subscribeState?.((next) => updateCollectionDensityControl(densityControl, next)) || (() => {});
   const releaseTypeToSelect = attachTypeToSelect(page, ".v8-file-row, .v8-file-card", (el) => {
     const title = el.querySelector("strong");
@@ -624,8 +1218,13 @@ export function mountFiles(stage, options = {}) {
     page.removeEventListener("click", handleClick);
     page.removeEventListener("contextmenu", handleContextMenu);
     page.removeEventListener("keydown", handleKeyboard);
+    content.removeEventListener("dragover", handleDragOver);
+    content.removeEventListener("dragleave", handleDragLeave);
+    content.removeEventListener("drop", handleDrop);
     search.removeEventListener("input", handleSearch);
     sortSelect.removeEventListener("change", handleSort);
+    globalThis.removeEventListener?.("online", onNetworkChange);
+    globalThis.removeEventListener?.("offline", onNetworkChange);
     page.remove();
   };
 }

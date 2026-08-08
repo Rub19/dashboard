@@ -14,7 +14,9 @@ export function routeResult(data, meta = {}, options = {}) {
     data: data ?? null,
     meta: Object.freeze({ ...meta }),
     status: Number(options.status) || 200,
-    headers: Object.freeze({ ...(options.headers || {}) })
+    headers: Object.freeze({ ...(options.headers || {}) }),
+    raw: options.raw === true,
+    response: options.response || null
   });
 }
 

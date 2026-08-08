@@ -1776,3 +1776,182 @@ html[data-v8-interactions] .v8-file-entry:hover .v8-row-actions,
     padding-left: 8px;
   }
 }
+
+/* Files admin dialog */
+.v8-files-admin {
+  max-width: min(720px, 92vw);
+  max-height: min(680px, 90vh);
+  padding: 0;
+  border: 1px solid var(--v8-border);
+  border-radius: var(--v8-radius-lg);
+  background: var(--v8-surface-1);
+  box-shadow: var(--v8-shadow-2);
+}
+.v8-files-admin::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+}
+.v8-files-admin__content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: min(680px, 90vh);
+}
+.v8-files-admin__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--v8-space-4);
+  padding: var(--v8-space-4) var(--v8-space-6);
+  border-bottom: 1px solid var(--v8-divider);
+}
+.v8-files-admin__header h2 {
+  margin: 0;
+  font-size: var(--v8-font-lg);
+  font-weight: var(--v8-weight-semibold);
+}
+.v8-files-admin__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--v8-space-6);
+  padding: var(--v8-space-6);
+  overflow-y: auto;
+}
+.v8-files-admin__section h3 {
+  margin: 0 0 var(--v8-space-3) 0;
+  font-size: var(--v8-font-sm);
+  font-weight: var(--v8-weight-semibold);
+  color: var(--v8-text-secondary);
+  text-transform: uppercase;
+}
+.v8-files-admin__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--v8-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.v8-files-admin__list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--v8-space-3);
+  padding: var(--v8-space-3) var(--v8-space-4);
+  border: 1px solid var(--v8-border);
+  border-radius: var(--v8-radius-md);
+  background: var(--v8-surface);
+}
+.v8-files-admin__list li.is-expired {
+  border-color: var(--v8-error);
+  background: color-mix(in srgb, var(--v8-error) 8%, var(--v8-surface));
+}
+.v8-files-admin__list li.is-expiring {
+  border-color: var(--v8-warning);
+  background: color-mix(in srgb, var(--v8-warning) 8%, var(--v8-surface));
+}
+.v8-files-admin__item-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.v8-files-admin__item-copy strong {
+  font-weight: var(--v8-weight-medium);
+  color: var(--v8-text);
+  word-break: break-all;
+}
+.v8-files-admin__item-copy small {
+  color: var(--v8-text-tertiary);
+  font-size: var(--v8-font-xs);
+}
+.v8-files-admin__item-actions {
+  display: flex;
+  gap: var(--v8-space-2);
+  flex-shrink: 0;
+}
+.v8-files-admin__empty {
+  color: var(--v8-text-secondary);
+  font-size: var(--v8-font-sm);
+}
+@media (max-width: 640px) {
+  .v8-files-admin__list li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .v8-files-admin__item-actions {
+    width: 100%;
+  }
+}
+
+.v8-files-admin__dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: var(--v8-space-3);
+  width: 100%;
+  margin-bottom: var(--v8-space-4);
+}
+
+.v8-files-admin__kpi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: var(--v8-space-3);
+  border: 1px solid var(--v8-border);
+  border-radius: var(--v8-radius-md);
+  background: var(--v8-surface);
+  text-align: center;
+}
+
+.v8-files-admin__kpi strong {
+  font-size: var(--v8-font-lg);
+  font-weight: var(--v8-weight-semibold);
+  color: var(--v8-text);
+}
+
+.v8-files-admin__kpi small {
+  font-size: var(--v8-font-xs);
+  color: var(--v8-text-tertiary);
+}
+
+.v8-files-admin__top-files {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--v8-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.v8-files-admin__top-files li {
+  display: flex;
+  align-items: center;
+  gap: var(--v8-space-3);
+  padding: var(--v8-space-2) var(--v8-space-3);
+  border: 1px solid var(--v8-border);
+  border-radius: var(--v8-radius-md);
+  background: var(--v8-surface);
+}
+
+.v8-files-admin__top-files li svg {
+  width: 16px;
+  height: 16px;
+  color: var(--v8-text-secondary);
+}
+
+.v8-files-admin__top-files li span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--v8-text);
+  font-size: var(--v8-font-sm);
+}
+
+.v8-files-admin__top-files li small {
+  color: var(--v8-text-tertiary);
+  font-size: var(--v8-font-xs);
+}

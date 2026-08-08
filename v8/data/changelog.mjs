@@ -24,6 +24,19 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v258", "2026-08-08", "ETHONE Cloud : partages, drops, recherche, offline et admin", [
+    { kind: "feature", text: "Synchronisation des metadata Drive vers Supabase (ethone_files) avec tags, favoris et resume Brain." },
+    { kind: "feature", text: "Recherche cloud full-text sur noms, tags et resume Brain." },
+    { kind: "feature", text: "Partages securises (public, prive, mot de passe, expiration, limite de telechargements)." },
+    { kind: "feature", text: "Drops pour recevoir des fichiers de tiers sans connexion." },
+    { kind: "feature", text: "Pages publiques #/share?slug=... et #/drop?slug=... avec apercu, QR code et drag & drop." },
+    { kind: "feature", text: "Analyse Brain sur les fichiers : resume et suggestion de dossier." },
+    { kind: "feature", text: "Journal d'activite cloud integre a Activity Hub." },
+    { kind: "feature", text: "Cache offline IndexedDB pour metadata, favoris et file d'attente d'uploads." },
+    { kind: "feature", text: "Panneau Admin dans Fichiers : dashboard, liste des partages/drops, revocation et nettoyage des expires." },
+    { kind: "feature", text: "Cleanup automatique des shares et drops expires via POST /api/cloud/cleanup." },
+    { kind: "improvement", text: "Mise a jour du bordereau PWA vers experience-v258." }
+  ]),
   entry("v257", "2026-08-07", "Securite et identite par appareil", [
     { kind: "feature", text: "Gestion des appareils : enregistrement, approbation, revocation et suppression." },
     { kind: "feature", text: "Passkeys (WebAuthn) pour la connexion sans mot de passe." },

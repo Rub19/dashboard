@@ -49,14 +49,18 @@ async function handleRequest(request, env, executionCtx) {
       if (!context.route.public) context.auth = await authenticateRequest(request, env);
       const userRate = await applyUserRateLimit(context);
       const routeResponse = await context.route.handler(context);
-      context.result = routeResult(routeResponse?.data, {
-        ...(routeResponse?.meta || {}),
-        rateLimit: Object.freeze({
-          policy: userRate.policy === "none" ? edgeRate.policy : userRate.policy,
-          remaining: userRate.remaining ?? edgeRate.remaining ?? null
-        })
-      }, { status: routeResponse?.status, headers: routeResponse?.headers });
-      response = successResponse(context.result, { requestId, source: context.route.service });
+      if (routeResponse?.raw === true) {
+        response = routeResponse.response;
+      } else {
+        context.result = routeResult(routeResponse?.data, {
+          ...(routeResponse?.meta || {}),
+          rateLimit: Object.freeze({
+            policy: userRate.policy === "none" ? edgeRate.policy : userRate.policy,
+            remaining: userRate.remaining ?? edgeRate.remaining ?? null
+          })
+        }, { status: routeResponse?.status, headers: routeResponse?.headers });
+        response = successResponse(context.result, { requestId, source: context.route.service });
+      }
     }
   } catch (error) {
     response = errorResponse(normalizeError(error), { requestId });

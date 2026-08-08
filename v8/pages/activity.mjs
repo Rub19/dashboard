@@ -284,6 +284,7 @@ export function mountActivity(stage, options = {}) {
   const journal = options.journal;
   const actions = options.actions;
   const notify = options.notify || (() => {});
+  const externalServices = options.externalServices || null;
   const spotifyLive = options.spotifyLive || null;
   const discordLive = options.discordLive || null;
   const weatherLive = options.weatherLive || null;
@@ -326,6 +327,8 @@ export function mountActivity(stage, options = {}) {
   let googleDrivePresence = googleDriveLive?.state?.() || {};
   let youtubePresence = youtubeLive?.state?.() || {};
   let redditPresence = redditLive?.state?.() || {};
+  let cloudEvents = [];
+  let cloudSummary = null;
   let visibleCount = 15;
   let lastFilterHash = "";
   const PAGE_SIZE = 15;
@@ -385,6 +388,7 @@ export function mountActivity(stage, options = {}) {
   const densityControl = collectionDensityControl(options.state?.density || document.documentElement.dataset.density || "automatic");
   const connectionMetric = element("strong");
   const signalMetric = element("strong");
+  const cloudMetric = element("strong");
   const brainCopy = element("p");
 
   FILTERS.forEach((filter) => filterBar.append(element("button", {
@@ -424,7 +428,8 @@ export function mountActivity(stage, options = {}) {
           element("h2", { text: state.flow || "Essentiel" }),
           element("div", { className: "v8-activity-kpis" }, [
             element("span", {}, [connectionMetric, element("small", { text: "Connectées" })]),
-            element("span", {}, [signalMetric, element("small", { text: "Signaux" })])
+            element("span", {}, [signalMetric, element("small", { text: "Signaux" })]),
+            element("span", {}, [cloudMetric, element("small", { text: "Cloud" })])
           ]),
           actionButton({ actionId: "v8.connections.open", variant: "secondary" }, [icon("settings-2"), element("span", { text: "Gérer les connexions" })])
         ]),
@@ -438,6 +443,47 @@ export function mountActivity(stage, options = {}) {
     ])
   ]);
 
+  function mapCloudEvent(event) {
+    const labels = {
+      share_created: { icon: "share-2", title: "Partage créé", description: `Le partage "${event.details?.fileName || ""}" est actif.` },
+      share_downloaded: { icon: "download", title: "Téléchargement partagé", description: `Quelqu'un a téléchargé "${event.details?.fileName || ""}".` },
+      share_revoked: { icon: "shield-off", title: "Partage révoqué", description: "Un lien de partage a été désactivé." },
+      drop_received: { icon: "upload", title: "Fichier reçu via drop", description: `"${event.details?.name || ""}" a été déposé.` },
+      file_brain: { icon: "sparkles", title: "Analyse Brain", description: `Brain a analysé "${event.details?.fileName || ""}".` },
+      file_favorite: { icon: "star", title: "Favori ajouté", description: `"${event.details?.fileName || ""}" ajouté aux favoris.` },
+      file_unfavorite: { icon: "star-off", title: "Favori retiré", description: `"${event.details?.fileName || ""}" retiré des favoris.` }
+    };
+    const meta = labels[event.eventType] || { icon: "activity", title: "Événement Cloud", description: String(event.eventType || "") };
+    return {
+      id: `cloud-activity-${event.id}`,
+      source: "files",
+      category: "productivity",
+      icon: meta.icon,
+      title: meta.title,
+      description: meta.description,
+      timestamp: event.createdAt || new Date().toISOString(),
+      tone: "file",
+      cloud: true
+    };
+  }
+
+  async function fetchCloudActivity() {
+    if (!externalServices?.cloudActivity?.list) return;
+    try {
+      const since = cloudSummary?.latest?.createdAt || "";
+      const result = await externalServices.cloudActivity.list({ limit: 50, since });
+      const events = Array.isArray(result?.data?.events) ? result.data.events : [];
+      cloudEvents = events.map(mapCloudEvent);
+      if (externalServices?.cloudActivity?.summary) {
+        const summary = await externalServices.cloudActivity.summary();
+        cloudSummary = summary?.data || { count: 0, latest: null };
+      }
+      render();
+    } catch (err) {
+      console.error("[activity] cloud activity fetch failed:", err);
+    }
+  }
+
   function renderCustomizePanel() {
     customizeHost.hidden = !customizeOpen;
     customizeToggle.setAttribute("aria-expanded", String(customizeOpen));
@@ -448,7 +494,7 @@ export function mountActivity(stage, options = {}) {
 
   function render() {
     const snapshot = repository.snapshot();
-    const events = journal.entries();
+    const events = [...journal.entries(), ...cloudEvents];
     const context = {
       actions,
       translateSource,
@@ -540,6 +586,7 @@ export function mountActivity(stage, options = {}) {
     countLabel.textContent = `${paged.length} / ${filtered.length} ${filtered.length > 1 ? "signaux" : "signal"}`;
     connectionMetric.textContent = String(connected.length);
     signalMetric.textContent = String(events.length);
+    cloudMetric.textContent = String(cloudEvents.length + (cloudSummary?.count || 0));
     const openTasks = (snapshot.tasks || []).filter((task) => !task.done).length;
     brainCopy.textContent = connected.length
       ? `${connected.length} source${connected.length > 1 ? "s" : ""} alimente${connected.length > 1 ? "nt" : ""} le contexte. ${openTasks} tache${openTasks > 1 ? "s" : ""} reste${openTasks > 1 ? "nt" : ""} ouverte${openTasks > 1 ? "s" : ""}.`
@@ -552,6 +599,7 @@ export function mountActivity(stage, options = {}) {
     if (document.hidden) return;
     refreshTimer = globalThis.setTimeout(() => {
       refreshTimer = 0;
+      fetchCloudActivity().catch(() => {});
       render();
       scheduleRefresh();
     }, 30000);
@@ -693,6 +741,7 @@ export function mountActivity(stage, options = {}) {
   }, { immediate: false }) || (() => {});
   stage.replaceChildren(page);
   render();
+  fetchCloudActivity().catch(() => {});
   const releaseDensity = options.subscribeState?.((next) => updateCollectionDensityControl(densityControl, next)) || (() => {});
   const releaseLiveLayout = options.subscribeState?.((next) => {
     if (next.activityLiveLayout === liveLayout) return;

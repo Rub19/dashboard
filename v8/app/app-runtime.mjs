@@ -50,6 +50,8 @@ import { mountNotes } from "../pages/notes.mjs";
 import { mountTasks } from "../pages/tasks.mjs";
 import { mountCalendar } from "../pages/calendar.mjs";
 import { mountFiles } from "../pages/files.mjs";
+import { mountShare } from "../pages/share.mjs";
+import { mountDrop } from "../pages/drop.mjs";
 import { mountSpaces, mountFlows } from "../pages/system.mjs";
 import { mountFeatureFallback } from "../pages/feature-fallback.mjs";
 import { createScratchpad } from "../ui/scratchpad.mjs";
@@ -745,7 +747,7 @@ export function mountApplication(root, options = {}) {
       const brain = brainRuntime;
       lifecycle.unmount();
       lifecycle.mount(route, () => {
-        if (route === "activity") return module.mountActivity(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, twitchLive, lastfmLive, trackerLive, googleDriveLive, youtubeLive, redditLive, presence, notify: (notice) => toasts.show(notice) });
+        if (route === "activity") return module.mountActivity(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, twitchLive, lastfmLive, trackerLive, googleDriveLive, youtubeLive, redditLive, presence, externalServices, notify: (notice) => toasts.show(notice) });
         if (route === "connections") return module.mountConnections(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, spotifyOAuthLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, twitchLive, lastfmLive, trackerLive, googleDriveLive, youtubeLive, redditLive, externalServices, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.() });
         if (route === "brain") return module.mountBrain(shell.stage, { repository, actions, state: store.getState(), presence, brain, notify: (notice) => toasts.show(notice) });
         if (route === "security") return module.mountSecurity(shell.stage, { security: options.security, externalServices, clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.(), notify: (notice) => toasts.show(notice) });
@@ -772,7 +774,7 @@ export function mountApplication(root, options = {}) {
         await module.prepare?.();
         if (destroyed || requestId !== routeRequest || router?.current() !== route) return;
         lifecycle.mount(route, () => {
-          if (route === "activity") return module.mountActivity(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, twitchLive, lastfmLive, trackerLive, googleDriveLive, youtubeLive, redditLive, presence, notify: (notice) => toasts.show(notice) });
+          if (route === "activity") return module.mountActivity(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, twitchLive, lastfmLive, trackerLive, googleDriveLive, youtubeLive, redditLive, presence, externalServices, notify: (notice) => toasts.show(notice) });
           if (route === "connections") return module.mountConnections(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, spotifyOAuthLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, twitchLive, lastfmLive, trackerLive, googleDriveLive, youtubeLive, redditLive, externalServices, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.() });
           if (route === "brain") return module.mountBrain(shell.stage, { repository, actions, state: store.getState(), presence, brain, notify: (notice) => toasts.show(notice) });
           if (route === "security") return module.mountSecurity(shell.stage, { security: options.security, externalServices, clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.(), notify: (notice) => toasts.show(notice) });
@@ -811,7 +813,9 @@ export function mountApplication(root, options = {}) {
         if (route === "notes") return mountNotes(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, presence, sync: cloudSync, notify: (notice) => toasts.show(notice) });
         if (route === "tasks") return mountTasks(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, presence, notify: (notice) => toasts.show(notice) });
         if (route === "calendar") return mountCalendar(shell.stage, { repository, actions, presence, notify: (notice) => toasts.show(notice), state: store.getState(), subscribeState: store.subscribe });
-        if (route === "files") return mountFiles(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, sync: cloudSync, presence, notify: (notice) => toasts.show(notice) });
+        if (route === "files") return mountFiles(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, sync: cloudSync, presence, externalServices, notify: (notice) => toasts.show(notice) });
+        if (route === "share") return mountShare(shell.stage, { externalServices, notify: (notice) => toasts.show(notice) });
+        if (route === "drop") return mountDrop(shell.stage, { externalServices, notify: (notice) => toasts.show(notice) });
         if (route === "matches") return mountMatches(shell.stage, { actions, externalServices, repository, state: store.getState(), subscribeState: store.subscribe, lolLive, valorantLive, trackerLive });
         if (route === "spaces") return mountSpaces(shell.stage, { repository, actions, state: store.getState() });
         if (route === "flows") return mountFlows(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, notify: (notice) => toasts.show(notice) });

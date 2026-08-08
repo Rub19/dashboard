@@ -24,6 +24,13 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v259", "2026-08-09", "Phase 9 : stabilite, navigation mobile et error boundaries", [
+    { kind: "fix", text: "Correction de la validation GitHub Pages : cache SW v258, lazy-load des pages lourdes et ajustement des budgets JS." },
+    { kind: "feature", text: "Barre de navigation mobile avec drawer Applications (bottom nav)." },
+    { kind: "improvement", text: "Error boundaries et gestion des erreurs de montage pour eviter les ecrans noirs." },
+    { kind: "improvement", text: "Lazy-loading des pages Fichiers, Partage, Drop et Matchs pour ameliorer le demarrage." },
+    { kind: "improvement", text: "Chargement paresseux des modules et renforcement du lifecycle." }
+  ]),
   entry("v258", "2026-08-08", "ETHONE Cloud : partages, drops, recherche, offline et admin", [
     { kind: "feature", text: "Synchronisation des metadata Drive vers Supabase (ethone_files) avec tags, favoris et resume Brain." },
     { kind: "feature", text: "Recherche cloud full-text sur noms, tags et resume Brain." },

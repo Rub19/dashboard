@@ -49,6 +49,7 @@ import { mountNotes } from "../pages/notes.mjs";
 import { mountTasks } from "../pages/tasks.mjs";
 import { mountCalendar } from "../pages/calendar.mjs";
 import { mountTeam } from "../pages/team.mjs";
+import { mountInteractions } from "../pages/interactions.mjs";
 import { mountSpaces, mountFlows } from "../pages/system.mjs";
 import { mountFeatureFallback } from "../pages/feature-fallback.mjs";
 import { createScratchpad } from "../ui/scratchpad.mjs";
@@ -749,7 +750,8 @@ export function mountApplication(root, options = {}) {
       share: () => import("../pages/share.mjs"),
       drop: () => import("../pages/drop.mjs"),
       matches: () => import("../pages/matches.mjs"),
-      team: () => import("../pages/team.mjs")
+      team: () => import("../pages/team.mjs"),
+      interactions: () => import("../pages/interactions.mjs")
     };
     Object.entries(loaders).forEach(([r, loader]) => {
       if (!lazyModuleCache.has(r)) {
@@ -771,6 +773,7 @@ export function mountApplication(root, options = {}) {
     if (route === "drop") return module.mountDrop(shell.stage, { externalServices, notify: (notice) => toasts.show(notice) });
     if (route === "matches") return module.mountMatches(shell.stage, { actions, externalServices, repository, state: store.getState(), subscribeState: store.subscribe, lolLive, valorantLive, trackerLive });
     if (route === "team") return module.mountTeam(shell.stage, { ownerId: options.ownerId || repository.owner?.(), repository, notify: (notice) => toasts.show(notice) });
+    if (route === "interactions") return module.mountInteractions(shell.stage, { ownerId: options.ownerId || repository.owner?.(), repository, notify: (notice) => toasts.show(notice) });
     return module.mountSettings(shell.stage, { repository, actions, state: store.getState(), sounds, externalServices, densityEngine, subscribeState: store.subscribe, brain, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.(), profile: options.profile || repository.activeProfile?.(), onProfileMediaUpdated: applyProfileMediaUpdate });
   }
 
@@ -803,7 +806,8 @@ export function mountApplication(root, options = {}) {
       share: () => import("../pages/share.mjs"),
       drop: () => import("../pages/drop.mjs"),
       matches: () => import("../pages/matches.mjs"),
-      team: () => import("../pages/team.mjs")
+      team: () => import("../pages/team.mjs"),
+      interactions: () => import("../pages/interactions.mjs")
     };
     const loader = loaders[route];
     applyPageTransition(() => {
@@ -843,7 +847,7 @@ export function mountApplication(root, options = {}) {
       shell.stage.scrollTo({ top: 0, behavior: "auto" });
     }
     shell.update({ ...store.getState(), route });
-    if (["activity", "connections", "brain", "settings", "security", "files", "share", "drop", "matches", "team"].includes(route)) {
+    if (["activity", "connections", "brain", "settings", "security", "files", "share", "drop", "matches", "team", "interactions"].includes(route)) {
       mountLazyRoute(route, focus, requestId);
       return;
     }

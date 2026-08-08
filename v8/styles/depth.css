@@ -29,7 +29,10 @@
 .v8-home-live-grid > section > article,
 .v8-continuity > :not([aria-hidden="true"]),
 .v8-home-brain > :not([aria-hidden="true"]),
-.v8-brain-context > :not([aria-hidden="true"]) {
+.v8-brain-context > :not([aria-hidden="true"]),
+.v8-interactions-card,
+.v8-interactions-stat,
+.v8-heatmap-dot {
   transform-style: preserve-3d;
   transition:
     transform 0.4s var(--v8-ease-spring),
@@ -59,7 +62,10 @@ html[data-v8-interactions] .v8-tile:hover,
 html[data-v8-interactions] .v8-select-list:hover,
 html[data-v8-interactions] .v8-menu:hover,
 html[data-v8-interactions] .v8-toast:hover,
-html[data-v8-interactions] .v8-home-live-grid > section > article:hover {
+html[data-v8-interactions] .v8-home-live-grid > section > article:hover,
+html[data-v8-interactions] .v8-interactions-card:hover,
+html[data-v8-interactions] .v8-interactions-stat:hover,
+html[data-v8-interactions] .v8-heatmap-dot:hover {
   transform:
     perspective(1200px)
     rotateX(var(--v8-tilt-x))

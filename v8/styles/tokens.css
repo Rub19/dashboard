@@ -79,6 +79,11 @@
   --v8-brain-line: rgba(188, 169, 255, 0.25);
   --v8-success: #72d6a7;
   --v8-success-glow: rgba(114, 214, 167, 0.28);
+  --v8-heatmap-0: #1e232a;
+  --v8-heatmap-1: #0f5b3e;
+  --v8-heatmap-2: #1a9b68;
+  --v8-heatmap-3: #39d695;
+  --v8-heatmap-4: #7be5c3;
   --v8-warning: #f0c675;
   --v8-danger: #ff8f96;
   --v8-danger-soft: rgba(255, 143, 150, 0.12);
@@ -409,6 +414,11 @@ html[data-interface-blur="disabled"] {
   --v8-muted: #5b6270;
   --v8-success: #0f7a4f;
   --v8-success-glow: rgba(15, 122, 79, 0.22);
+  --v8-heatmap-0: #d1d5db;
+  --v8-heatmap-1: #9be2c0;
+  --v8-heatmap-2: #5dd69a;
+  --v8-heatmap-3: #2ab97a;
+  --v8-heatmap-4: #0f7a4f;
   --v8-warning: #a15a06;
   --v8-danger: #c23b4a;
   --v8-danger-soft: rgba(194, 59, 74, 0.1);

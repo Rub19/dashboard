@@ -6,7 +6,8 @@ const SELECTOR = [
   ".v8-control-center-window", ".v8-dock-editor", ".v8-personalize",
   ".v8-empty-state", ".v8-focus-popover", ".v8-dynamic-island",
   ".v8-briefing-signal", ".v8-tile", ".v8-select-list", ".v8-menu",
-  ".v8-toast", ".v8-home-live-grid > section > article"
+  ".v8-toast", ".v8-home-live-grid > section > article",
+  ".v8-interactions-card", ".v8-interactions-stat", ".v8-heatmap-dot"
 ].join(", ");
 
 function setTilt(element, event) {

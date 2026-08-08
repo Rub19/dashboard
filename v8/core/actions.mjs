@@ -73,6 +73,7 @@ export function createActionFacade(options = {}) {
   register("v8.calendar.open", openRoute("calendar", "Calendrier"));
   register("v8.files.open", openRoute("files", "Fichiers"));
   register("v8.activity.open", openRoute("activity", "Activity Hub"));
+  register("v8.interactions.open", openRoute("interactions", "Interactions"));
   register("v8.connections.open", openRoute("connections", "Connections"));
   register("v8.spaces.open", openRoute("spaces", "Spaces"));
   register("v8.flows.open", openRoute("flows", "Flows"));

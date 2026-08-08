@@ -5,6 +5,7 @@ const items = [
   { id: "calendar", label: "Calendrier", icon: "calendar-days", actionId: "v8.calendar.open" },
   { id: "files", label: "Fichiers", icon: "folder", actionId: "v8.files.open" },
   { id: "activity", label: "Activity", icon: "activity", actionId: "v8.activity.open" },
+  { id: "interactions", label: "Interactions", icon: "flame", actionId: "v8.interactions.open" },
   { id: "connections", label: "Connections", icon: "plug", actionId: "v8.connections.open" },
   { id: "spaces", label: "Spaces", icon: "layout-grid", actionId: "v8.spaces.open" },
   { id: "flows", label: "Flows", icon: "workflow", actionId: "v8.flows.open" },

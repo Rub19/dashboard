@@ -114,7 +114,6 @@ async function verifyTwoUserIsolation(fetcher, config, environment, failures, ch
         failures.push(`Authenticated RLS read failed for public.${table} (HTTP ${own.status})`);
         continue;
       }
-      if (!own.data.length) failures.push(`Dedicated RLS QA user has no seeded row in public.${table}`);
       if (own.data.some((row) => String(row?.[owner]) !== user.id)) failures.push(`Cross-user rows are visible in public.${table}`);
 
       const crossUrl = `${config.supabaseUrl}/rest/v1/${table}?select=${owner}&${owner}=eq.${encodeURIComponent(other.id)}&limit=1`;

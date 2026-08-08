@@ -406,8 +406,10 @@ html[data-v8-interactions] .v8-entry--login .v8-form-field:not([data-field-state
 .v8-auth__input:autofill,
 .v8-auth__input:autofill:hover,
 .v8-auth__input:autofill:focus {
+  color-scheme: dark;
   border-color: var(--v8-accent-line);
   background-color: var(--v8-surface-sunken) !important;
+  background-image: none !important;
   -webkit-box-shadow: 0 0 0 1000px var(--v8-surface-sunken) inset !important;
   -webkit-text-fill-color: var(--v8-text) !important;
   color: var(--v8-text) !important;

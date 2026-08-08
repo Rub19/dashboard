@@ -5,6 +5,7 @@ import { spotifyLiveCard } from "../ui/spotify-live.mjs";
 import { discordLiveCard } from "../ui/discord-live.mjs";
 import { weatherLiveCard } from "../ui/weather-live.mjs";
 import { createWeatherDetail } from "../ui/weather-detail.mjs";
+import { createBillsManager } from "../services/bills-manager.mjs";
 import { minecraftLiveCard } from "../ui/minecraft-live.mjs";
 import { steamLiveCard } from "../ui/steam-live.mjs";
 import { githubLiveCard } from "../ui/github-live.mjs";
@@ -19,6 +20,7 @@ import { trackerLiveCard } from "../ui/tracker-live.mjs";
 import { googleDriveLiveCard } from "../ui/google-drive-live.mjs";
 import { youtubeLiveCard } from "../ui/youtube-live.mjs";
 import { redditLiveCard } from "../ui/reddit-live.mjs";
+import { billsLiveCard } from "../ui/bills-widget.mjs";
 import { localeTag } from "../i18n/catalog.mjs";
 import { LIVE_CARD_IDS } from "../core/store.mjs";
 
@@ -50,7 +52,8 @@ const HOME_LIVE_CARD_META = Object.freeze({
   "tracker-gg": Object.freeze({ label: "Tracker.gg", icon: "chart-no-axes-combined" }),
   "google-drive": Object.freeze({ label: "Google Drive", icon: "hard-drive" }),
   youtube: Object.freeze({ label: "YouTube", icon: "youtube" }),
-  reddit: Object.freeze({ label: "Reddit", icon: "message-circle" })
+  reddit: Object.freeze({ label: "Reddit", icon: "message-circle" }),
+  bills: Object.freeze({ label: "Factures", icon: "receipt" })
 });
 const HOME_LIVE_CARD_IDS = Object.freeze(LIVE_CARD_IDS.filter((id) => id !== "system"));
 
@@ -246,6 +249,7 @@ export function mountHome(stage, model, options = {}) {
   const googleDriveLive = options.googleDriveLive || null;
   const youtubeLive = options.youtubeLive || null;
   const redditLive = options.redditLive || null;
+  const billsManager = createBillsManager({ runtime: globalThis, storage: globalThis.localStorage });
   const presence = options.presence || null;
   const scopedActions = [];
   let personalizeOpen = false;
@@ -470,12 +474,13 @@ export function mountHome(stage, model, options = {}) {
   const googleDriveHost = element("section", { className: "v8-home-google-drive-host", attributes: { "aria-label": "Google Drive", hidden: true } });
   const youtubeHost = element("section", { className: "v8-home-youtube-host", attributes: { "aria-label": "YouTube", hidden: true } });
   const redditHost = element("section", { className: "v8-home-reddit-host", attributes: { "aria-label": "Reddit", hidden: true } });
+  const billsHost = element("section", { className: "v8-home-bills-host", attributes: { "aria-label": "Factures", hidden: true } });
 
   const HOST_BY_ID = Object.freeze({
     spotify: spotifyHost, discord: discordHost, weather: weatherHost, minecraft: minecraftHost, steam: steamHost,
     github: githubHost, "google-calendar": googleCalendarHost, notion: notionHost, todoist: todoistHost,
     valorant: valorantHost, lol: lolHost, twitch: twitchHost, lastfm: lastfmHost, "tracker-gg": trackerHost,
-    "google-drive": googleDriveHost, youtube: youtubeHost, reddit: redditHost
+    "google-drive": googleDriveHost, youtube: youtubeHost, reddit: redditHost, bills: billsHost
   });
 
   function applyHostVisibility(id, host, hasContent) {
@@ -678,6 +683,34 @@ export function mountHome(stage, model, options = {}) {
     syncLiveGridVisibility();
   }
 
+  function renderBills() {
+    const card = billsLiveCard(billsManager, {
+      onAdd: (date) => {
+        const today = new Date();
+        const selected = date || today;
+        const title = prompt("Nom de la facture", "Nouvelle facture");
+        if (!title) return;
+        const amount = Number.parseFloat(prompt("Montant", "9.99"));
+        if (!Number.isFinite(amount) || amount <= 0) return;
+        const categories = Object.keys(billsManager.categories);
+        const category = prompt(`Catégorie (${categories.join(", ")})`, "other") || "other";
+        const recurrences = Object.keys(billsManager.recurrences);
+        const recurrence = prompt(`Récurrence (${recurrences.join(", ")})`, "oneoff") || "oneoff";
+        billsManager.add({ title, amount, currency: "$", dueDate: selected, category, recurrence });
+      },
+      onScan: () => {
+        const text = prompt("Colle ici un e-mail ou une fiche de facture");
+        if (!text) return;
+        billsManager.scan(text, options.externalServices).catch(() => null);
+      }
+    });
+    billsHost.replaceChildren(...(card ? [card] : []));
+    applyHostVisibility("bills", billsHost, Boolean(card));
+    if (card) presence?.signalActivity?.(card, "system", { phase: "update" });
+    scheduleIconRefresh();
+    syncLiveGridVisibility();
+  }
+
   function renderSystemStatus(status = options.sync?.status?.() || options) {
     const labels = { loading: "Connexion", saving: "Synchronisation", saved: "Synchronise", offline: "En attente", retrying: "Nouvelle tentative", error: "Erreur", expired: "Session expiree" };
     cloudDetail.textContent = status.syncStatus === "saved" ? "Source principale Supabase" : "État Supabase en temps reel";
@@ -833,6 +866,7 @@ export function mountHome(stage, model, options = {}) {
   renderGoogleDrive(googleDriveLive?.state?.() || {});
   renderYoutube(youtubeLive?.state?.() || {});
   renderReddit(redditLive?.state?.() || {});
+  renderBills();
   function syncLiveGridVisibility() {
     if (sectionLayout.hidden.includes("live")) {
       liveSection.hidden = true;
@@ -912,6 +946,8 @@ export function mountHome(stage, model, options = {}) {
     releaseGoogleDrive();
     releaseYoutube();
     releaseReddit();
+    const releaseBills = () => { };
+    releaseBills();
     releaseSync();
     releaseLiveLayout();
     weatherDetail.destroy();

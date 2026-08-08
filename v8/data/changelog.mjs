@@ -24,9 +24,12 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
-  entry("v260", "2026-08-10", "Phase 9 : accessibilite, i18n et stabilite CI", [
+  entry("v260", "2026-08-10", "Phase 9 : widget Bills, i18n et stabilite CI", [
+    { kind: "feature", text: "Nouveau widget Bills : calendrier des factures a 7 jours, detail anime, ajout manuel et scan IA." },
+    { kind: "feature", text: "Gestionnaire de factures avec recurrences (episode, hebdomadaire, mensuelle, trimestrielle, annuelle) et categories." },
+    { kind: "feature", text: "Scan IA d'e-mails ou de fiches de facture (extraction auto du montant, date, categorie et recurrence)." },
     { kind: "improvement", text: "128 traductions manquantes ajoutees (en, es, de) dans le catalogue i18n." },
-    { kind: "fix", text: "Barre d'actions groupées du panel de notifications : texte tronque, icônes visibles avec aria-label." },
+    { kind: "fix", text: "Barre d'actions groupées du panel de notifications : texte tronque, icones visibles avec aria-label." },
     { kind: "fix", text: "Correction du script RLS QA pour ne plus exiger de lignes seedees pour les utilisateurs de test." },
     { kind: "fix", text: "Ajout du package.json et mise a jour wrangler.toml pour le worker deploy-status." },
     { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v260." }

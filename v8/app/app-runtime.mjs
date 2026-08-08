@@ -52,6 +52,7 @@ import { mountSpaces, mountFlows } from "../pages/system.mjs";
 import { mountFeatureFallback } from "../pages/feature-fallback.mjs";
 import { createScratchpad } from "../ui/scratchpad.mjs";
 import { createShortcutsOverlay } from "../ui/shortcuts-overlay.mjs";
+import { attachDepthEffect } from "../ui/depth-effect.mjs";
 
 export function mountApplication(root, options = {}) {
   if (!root) {
@@ -419,6 +420,7 @@ export function mountApplication(root, options = {}) {
     onDockChange: () => cloudSync?.queue?.("dock-layout"),
     onAction: (actionId, context) => actions?.dispatch(actionId, context)
   });
+  const releaseDepthEffect = attachDepthEffect(globalThis.document);
   navigationSession = createNavigationSession({
     runtime: globalThis,
     stage: shell.stage,
@@ -1108,6 +1110,7 @@ export function mountApplication(root, options = {}) {
     if (ownsAmbientEngine) ambient.destroy();
     releaseSpotify();
     releaseDiscordSpotifyBridge();
+    releaseDepthEffect();
     releaseClock();
     releaseSoundPreferences();
     releaseCloudStatus();

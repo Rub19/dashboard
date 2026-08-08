@@ -293,6 +293,40 @@ p {
   transform: translate3d(0, 4px, 0);
   animation: v8-boot-label 300ms 60ms var(--v8-ease-out) forwards;
 }
+.v8-boot__progress {
+  position: relative;
+  width: min(180px, 60vw);
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--v8-surface-3);
+  opacity: 0;
+  transform: translate3d(0, 4px, 0);
+  animation: v8-boot-label 300ms 120ms var(--v8-ease-out) forwards;
+}
+.v8-boot__progress-bar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--v8-brand), var(--v8-accent));
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: v8-boot-progress 1600ms 240ms var(--v8-ease-out) forwards;
+}
+.v8-boot__status {
+  color: var(--v8-muted);
+  font-size: var(--v8-font-micro);
+  opacity: 0;
+  transform: translate3d(0, 4px, 0);
+  animation: v8-boot-label 300ms 180ms var(--v8-ease-out) forwards;
+}
+@keyframes v8-boot-progress {
+  0% { transform: scaleX(0); }
+  40% { transform: scaleX(0.55); }
+  70% { transform: scaleX(0.82); }
+  100% { transform: scaleX(1); }
+}
 :root[data-spotlight="disabled"] .v8-boot::before,
 :root[data-spotlight="disabled"] .v8-boot__mark,
 :root[data-spotlight="disabled"] .v8-boot__label {

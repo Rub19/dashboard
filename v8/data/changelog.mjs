@@ -32,7 +32,7 @@ export const CHANGELOG = Object.freeze([
     { kind: "fix", text: "Barre d'actions groupées du panel de notifications : texte tronque, icones visibles avec aria-label." },
     { kind: "fix", text: "Correction du script RLS QA pour ne plus exiger de lignes seedees pour les utilisateurs de test." },
     { kind: "fix", text: "Ajout du package.json et mise a jour wrangler.toml pour le worker deploy-status." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v262." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v263." }
   ]),
   entry("v259", "2026-08-09", "Phase 9 : stabilite, navigation mobile et error boundaries", [
     { kind: "fix", text: "Correction de la validation GitHub Pages : cache SW v258, lazy-load des pages lourdes et ajustement des budgets JS." },

@@ -45,13 +45,9 @@ import { refreshIcons } from "../ui/icons.mjs";
 import { skeletonState } from "../ui/empty-state.mjs";
 import { enhanceForm, prepareFormControls } from "../ui/form-system.mjs";
 import { mountHome } from "../pages/home.mjs";
-import { mountMatches } from "../pages/matches.mjs";
 import { mountNotes } from "../pages/notes.mjs";
 import { mountTasks } from "../pages/tasks.mjs";
 import { mountCalendar } from "../pages/calendar.mjs";
-import { mountFiles } from "../pages/files.mjs";
-import { mountShare } from "../pages/share.mjs";
-import { mountDrop } from "../pages/drop.mjs";
 import { mountSpaces, mountFlows } from "../pages/system.mjs";
 import { mountFeatureFallback } from "../pages/feature-fallback.mjs";
 import { createScratchpad } from "../ui/scratchpad.mjs";
@@ -729,7 +725,11 @@ export function mountApplication(root, options = {}) {
       connections: () => import("../pages/connections.mjs"),
       brain: () => import("../pages/brain.mjs"),
       settings: () => import("../pages/settings.mjs"),
-      security: () => import("../pages/security.mjs")
+      security: () => import("../pages/security.mjs"),
+      files: () => import("../pages/files.mjs"),
+      share: () => import("../pages/share.mjs"),
+      drop: () => import("../pages/drop.mjs"),
+      matches: () => import("../pages/matches.mjs")
     };
     Object.entries(loaders).forEach(([r, loader]) => {
       if (!lazyModuleCache.has(r)) {
@@ -742,7 +742,8 @@ export function mountApplication(root, options = {}) {
   }
 
   function mountLazyRoute(route, focus, requestId) {
-    if (lazyModuleCache.has(route) && (!["brain", "settings"].includes(route) || brainRuntime)) {
+    const needsBrain = ["brain", "settings"].includes(route);
+    if (lazyModuleCache.has(route) && (!needsBrain || brainRuntime)) {
       const module = lazyModuleCache.get(route);
       const brain = brainRuntime;
       lifecycle.unmount();
@@ -751,6 +752,10 @@ export function mountApplication(root, options = {}) {
         if (route === "connections") return module.mountConnections(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, spotifyOAuthLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, twitchLive, lastfmLive, trackerLive, googleDriveLive, youtubeLive, redditLive, externalServices, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.() });
         if (route === "brain") return module.mountBrain(shell.stage, { repository, actions, state: store.getState(), presence, brain, notify: (notice) => toasts.show(notice) });
         if (route === "security") return module.mountSecurity(shell.stage, { security: options.security, externalServices, clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.(), notify: (notice) => toasts.show(notice) });
+        if (route === "files") return module.mountFiles(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, sync: cloudSync, presence, externalServices, notify: (notice) => toasts.show(notice) });
+        if (route === "share") return module.mountShare(shell.stage, { externalServices, notify: (notice) => toasts.show(notice) });
+        if (route === "drop") return module.mountDrop(shell.stage, { externalServices, notify: (notice) => toasts.show(notice) });
+        if (route === "matches") return module.mountMatches(shell.stage, { actions, externalServices, repository, state: store.getState(), subscribeState: store.subscribe, lolLive, valorantLive, trackerLive });
         return module.mountSettings(shell.stage, { repository, actions, state: store.getState(), sounds, externalServices, densityEngine, subscribeState: store.subscribe, brain, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.(), profile: options.profile || repository.activeProfile?.(), onProfileMediaUpdated: applyProfileMediaUpdate });
       });
       finishRouteMount(route, focus);
@@ -762,13 +767,17 @@ export function mountApplication(root, options = {}) {
       connections: () => import("../pages/connections.mjs"),
       brain: () => import("../pages/brain.mjs"),
       settings: () => import("../pages/settings.mjs"),
-      security: () => import("../pages/security.mjs")
+      security: () => import("../pages/security.mjs"),
+      files: () => import("../pages/files.mjs"),
+      share: () => import("../pages/share.mjs"),
+      drop: () => import("../pages/drop.mjs"),
+      matches: () => import("../pages/matches.mjs")
     };
     const loader = loaders[route];
     lifecycle.unmount();
     showRouteLoader(route);
     finishRouteMount(route, focus, false);
-    Promise.all([loader(), ["brain", "settings"].includes(route) ? ensureBrainRuntime() : Promise.resolve(null)])
+    Promise.all([loader(), needsBrain ? ensureBrainRuntime() : Promise.resolve(null)])
       .then(async ([module, brain]) => {
         if (!destroyed) lazyModuleCache.set(route, module);
         await module.prepare?.();
@@ -778,6 +787,10 @@ export function mountApplication(root, options = {}) {
           if (route === "connections") return module.mountConnections(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, spotifyOAuthLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, twitchLive, lastfmLive, trackerLive, googleDriveLive, youtubeLive, redditLive, externalServices, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.() });
           if (route === "brain") return module.mountBrain(shell.stage, { repository, actions, state: store.getState(), presence, brain, notify: (notice) => toasts.show(notice) });
           if (route === "security") return module.mountSecurity(shell.stage, { security: options.security, externalServices, clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.(), notify: (notice) => toasts.show(notice) });
+          if (route === "files") return module.mountFiles(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, sync: cloudSync, presence, externalServices, notify: (notice) => toasts.show(notice) });
+          if (route === "share") return module.mountShare(shell.stage, { externalServices, notify: (notice) => toasts.show(notice) });
+          if (route === "drop") return module.mountDrop(shell.stage, { externalServices, notify: (notice) => toasts.show(notice) });
+          if (route === "matches") return module.mountMatches(shell.stage, { actions, externalServices, repository, state: store.getState(), subscribeState: store.subscribe, lolLive, valorantLive, trackerLive });
           return module.mountSettings(shell.stage, { repository, actions, state: store.getState(), sounds, externalServices, densityEngine, subscribeState: store.subscribe, brain, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.(), profile: options.profile || repository.activeProfile?.(), onProfileMediaUpdated: applyProfileMediaUpdate });
         });
         finishRouteMount(route, focus);
@@ -789,7 +802,7 @@ export function mountApplication(root, options = {}) {
           onRetry: () => mountLazyRoute(route, true, ++routeRequest)
         }));
         finishRouteMount(route, focus);
-        const titleMap = { activity: "Activity Hub", connections: "Connections", settings: "Réglages", brain: "Brain", security: "Sécurité" };
+        const titleMap = { activity: "Activity Hub", connections: "Connections", settings: "Réglages", brain: "Brain", security: "Sécurité", files: "Fichiers", share: "Partage", drop: "Drop", matches: "Matchs" };
         toasts.show({ id: `lazy-${route}`, title: titleMap[route] || route, message: "Le module n'a pas pu être chargé.", type: "error" });
       });
   }
@@ -803,7 +816,7 @@ export function mountApplication(root, options = {}) {
       shell.stage.scrollTo({ top: 0, behavior: "auto" });
     }
     shell.update({ ...store.getState(), route });
-    if (["activity", "connections", "brain", "settings", "security"].includes(route)) {
+    if (["activity", "connections", "brain", "settings", "security", "files", "share", "drop", "matches"].includes(route)) {
       mountLazyRoute(route, focus, requestId);
       return;
     }
@@ -813,10 +826,6 @@ export function mountApplication(root, options = {}) {
         if (route === "notes") return mountNotes(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, presence, sync: cloudSync, notify: (notice) => toasts.show(notice) });
         if (route === "tasks") return mountTasks(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, presence, notify: (notice) => toasts.show(notice) });
         if (route === "calendar") return mountCalendar(shell.stage, { repository, actions, presence, notify: (notice) => toasts.show(notice), state: store.getState(), subscribeState: store.subscribe });
-        if (route === "files") return mountFiles(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, sync: cloudSync, presence, externalServices, notify: (notice) => toasts.show(notice) });
-        if (route === "share") return mountShare(shell.stage, { externalServices, notify: (notice) => toasts.show(notice) });
-        if (route === "drop") return mountDrop(shell.stage, { externalServices, notify: (notice) => toasts.show(notice) });
-        if (route === "matches") return mountMatches(shell.stage, { actions, externalServices, repository, state: store.getState(), subscribeState: store.subscribe, lolLive, valorantLive, trackerLive });
         if (route === "spaces") return mountSpaces(shell.stage, { repository, actions, state: store.getState() });
         if (route === "flows") return mountFlows(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, notify: (notice) => toasts.show(notice) });
         return mountFeatureFallback(shell.stage, route);

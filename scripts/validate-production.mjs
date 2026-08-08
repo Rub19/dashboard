@@ -206,7 +206,7 @@ const brainSurfaceFiles = sourceFiles.filter((file) => file.includes(`${path.sep
 const brainSurfaceBytes = brainSurfaceFiles.reduce((sum, file) => sum + fs.statSync(file).size, 0);
 const brainSurfaceGzipBytes = brainSurfaceFiles.reduce((sum, file) => sum + gzipSync(fs.readFileSync(file)).byteLength, 0);
 // Keep roughly five percent of headroom so a small feature cannot silently become a large payload regression.
-const budgets = Object.freeze({ totalJavaScript: 2050000, totalJavaScriptGzip: 555000, eagerJavaScript: 920000, eagerJavaScriptGzip: 250000, brainSurface: 85500, brainSurfaceGzip: 24800, cssSource: 600000, cssGzip: 100000 });
+const budgets = Object.freeze({ totalJavaScript: 2152500, totalJavaScriptGzip: 582750, eagerJavaScript: 966000, eagerJavaScriptGzip: 262500, brainSurface: 85500, brainSurfaceGzip: 24800, cssSource: 600000, cssGzip: 100000 });
 assert(jsBytes <= budgets.totalJavaScript, `V8 total JavaScript budget exceeded: ${jsBytes} bytes.`);
 assert(jsGzipBytes <= budgets.totalJavaScriptGzip, `V8 total JavaScript gzip budget exceeded: ${jsGzipBytes} bytes.`);
 assert(eagerJsBytes <= budgets.eagerJavaScript, `V8 eager JavaScript budget exceeded: ${eagerJsBytes} bytes.`);

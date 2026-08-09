@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v280] - 2026-08-11
+
+**Phase 10 : fluidité du boot et du Service Worker**
+
+### Corrigé
+- Le Service Worker ne recharge plus la page au premier `controllerchange` (`clients.claim`).
+- L'écran de boot HTML initial est réutilisé au lieu d'être recréé entre `booting`, profils et connexion.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v280`.
+
 ## [v279] - 2026-08-11
 
 **Phase 10 : module Mail - navigation et actions**

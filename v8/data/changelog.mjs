@@ -24,10 +24,15 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v280", "2026-08-11", "Phase 10 : fluidite du boot et du Service Worker", [
+    { kind: "fix", text: "Le Service Worker ne recharge plus la page au premier controllerchange (clients.claim)." },
+    { kind: "fix", text: "L'ecran de boot HTML initial est reutilise au lieu d'etre recree entre booting, profils et connexion." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v280." }
+  ]),
   entry("v279", "2026-08-11", "Phase 10 : module Mail - navigation et actions", [
     { kind: "fix", text: "Commande et action v8.mail.open enregistrees dans le catalogue et le systeme d'actions." },
     { kind: "fix", text: "Ajout des traductions manquantes pour le module Mail." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v279." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v280." }
   ]),
   entry("v278", "2026-08-11", "Phase 10 : module ETHONE Mail", [
     { kind: "feature", text: "Nouveau module Mail : alias @ethone.dev par utilisateur, reception et envoi d'e-mails dans ETHONE." },
@@ -35,18 +40,18 @@ export const CHANGELOG = Object.freeze([
     { kind: "feature", text: "Page Mail : boîte de reception, lecture, composition." },
     { kind: "feature", text: "Migrations Supabase : ethone_mail_aliases, ethone_mail_messages, ethone_mail_threads." },
     { kind: "feature", text: "Resend : envoi d'e-mails depuis l'alias @ethone.dev de chaque utilisateur." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v279." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v280." }
   ]),
   entry("v277", "2026-08-11", "Phase 10 : activation e-mail Resend", [
     { kind: "fix", text: "Worker : ajout du secret RESEND_FROM pour activer l'envoi d'e-mails d'invitation d'equipe." },
     { kind: "fix", text: "Worker redeploye avec RESEND_API_KEY et RESEND_FROM configures." },
     { kind: "improvement", text: "Verification : aucune cle API Resend n'est presente dans les sources du worker." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v279." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v280." }
   ]),
   entry("v276", "2026-08-11", "Phase 10 : traductions completes et i18n", [
     { kind: "improvement", text: "25 nouvelles chaines traduites en en/es/de (team, interactions, Brain, bills, navigation)." },
     { kind: "fix", text: "Compactage du catalogue i18n pour respecter les budgets JS." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v279." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v280." }
   ]),
   entry("v275", "2026-08-11", "Phase 10 : fondations audit, securite et refacto", [
     { kind: "fix", text: "Sécurité : remplacement du hashing SHA-256 par PBKDF2-SHA256 pour les mots de passe de partages et drops." },
@@ -55,13 +60,13 @@ export const CHANGELOG = Object.freeze([
     { kind: "fix", text: "Routage : ajout de interactions et team dans V8_ROUTES." },
     { kind: "fix", text: "Mémoire : nettoyage du focus timer lors de la fermeture du panel." },
     { kind: "improvement", text: "Refacto : creation des modules utils/format.mjs, utils/download.mjs, utils/date.mjs pour eliminer les duplications." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v279." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v280." }
   ]),
   entry("v274", "2026-08-11", "Phase 9 : corrections topbar et dock mobile", [
     { kind: "fix", text: "Topbar mobile : passage en 3 colonnes pour eviter le retour a la ligne et le chevauchement des icones." },
     { kind: "fix", text: "Breadcrumbs sur mobile : masque du root en dessous de 430px pour gagner de la place." },
     { kind: "fix", text: "Dock mobile : reduction de la taille des icones (42/38/36/34px) selon le breakpoint." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v279." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v280." }
   ]),
   entry("v273", "2026-08-11", "Phase 9 : avatar Brain thinking enrichi", [
     { kind: "feature", text: "Nouveau badge Brain 'Thinking' avec étoile tournante, glow pulsant, orbites et particules." },

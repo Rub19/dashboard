@@ -5,23 +5,36 @@ export function createServiceWorkerManager(options = {}) {
   let destroyed = false;
   let refreshing = false;
   let updateHandler = null;
+  let previousController = null;
+  let activationRequested = false;
   const supported = () => Boolean(runtime.navigator?.serviceWorker && runtime.location?.protocol !== "file:" && !runtime.navigator?.webdriver);
 
   function announce(worker) {
     waiting = worker || registration?.waiting || null;
     if (!waiting) return;
-    options.onUpdate?.({ activate: () => waiting?.postMessage?.({ type: "ETHONE_SKIP_WAITING" }) });
+    options.onUpdate?.({ activate: () => {
+      activationRequested = true;
+      waiting?.postMessage?.({ type: "ETHONE_SKIP_WAITING" });
+    } });
   }
 
   function controllerChange() {
     if (refreshing || destroyed) return;
-    refreshing = true;
-    runtime.location.reload();
+    const nextController = runtime.navigator?.serviceWorker?.controller || null;
+    if (!previousController && nextController) {
+      previousController = nextController;
+      return;
+    }
+    if (previousController && nextController && previousController !== nextController) {
+      refreshing = true;
+      runtime.location.reload();
+    }
   }
 
   async function start() {
     if (!supported() || destroyed) return Object.freeze({ ok: false, status: "unsupported" });
     try {
+      previousController = runtime.navigator?.serviceWorker?.controller || null;
       registration = await runtime.navigator.serviceWorker.register("./sw.js", { updateViaCache: "none" });
       updateHandler = () => {
         const worker = registration.installing;
@@ -52,7 +65,10 @@ export function createServiceWorkerManager(options = {}) {
 
   return Object.freeze({
     start,
-    activateUpdate: () => waiting?.postMessage?.({ type: "ETHONE_SKIP_WAITING" }),
+    activateUpdate: () => {
+      activationRequested = true;
+      return waiting?.postMessage?.({ type: "ETHONE_SKIP_WAITING" });
+    },
     status: () => Object.freeze({ supported: supported(), registered: Boolean(registration), updateAvailable: Boolean(waiting) }),
     destroy
   });

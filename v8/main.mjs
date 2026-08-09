@@ -73,6 +73,11 @@ function renderFatalError(error) {
 }
 
 function mountBootSurface() {
+  const existing = root?.querySelector?.(".v8-boot");
+  if (existing && existing.parentNode === root) {
+    metadata.setEntry("boot");
+    return () => {};
+  }
   const mark = element("span", { className: "v8-boot__mark", attributes: { "aria-hidden": "true" } });
   mark.innerHTML = BRAND_MARK_SVG;
   const surface = element("div", { className: "v8-boot", attributes: { role: "status", "aria-label": "Initialisation d'ETHONE" } }, [

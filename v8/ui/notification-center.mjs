@@ -47,6 +47,7 @@ const TYPE_ICONS = Object.freeze({
 
 const SNOOZE_OPTIONS = Object.freeze(["10m", "1h", "tonight", "tomorrow"]);
 const SNOOZE_LABELS = Object.freeze({ "10m": "10 min", "1h": "1 h", "tonight": "Ce soir", "tomorrow": "Demain" });
+const DEDUPE_WINDOW_MS = 30000;
 
 function loadStorage(key, fallback) {
   try {
@@ -154,9 +155,24 @@ export function createNotificationManager(region, options = {}) {
 
   function isSnoozed(id) { return (snoozed[id] || 0) > Date.now(); }
 
+  function findRecentDuplicate(record, windowMs = DEDUPE_WINDOW_MS) {
+    return history.find((item) =>
+      !item.archived &&
+      item.title === record.title &&
+      item.message === record.message &&
+      item.type === record.type &&
+      item.category === record.category &&
+      item.priority === record.priority &&
+      (record.timestamp - item.timestamp) < windowMs
+    );
+  }
+
   function upsert(notice) {
     const record = buildRecord(notice);
-    const existing = history.find((item) => item.id === record.id);
+    let existing = history.find((item) => item.id === record.id);
+    if (!existing && !notice.id && notice.dedupe !== false) {
+      existing = findRecentDuplicate(record);
+    }
     if (existing) {
       existing.title = record.title;
       existing.message = record.message;
@@ -418,7 +434,7 @@ export function createNotificationCenter(manager, options = {}) {
       element("div", { className: "v8-notification-item__body" }, [
         element("div", { className: "v8-notification-item__meta" }, [
           element("span", { text: formatTime(item.timestamp) }),
-          element("span", { className: "v8-notification-item__source", text: item.source }),
+          element("span", { className: "v8-notification-item__source", text: translateSource(item.source) }),
           element("span", { className: `v8-notification-priority v8-notification-priority--${item.priority}`, text: translateSource(meta.label) })
         ]),
         element("strong", { text: item.title }),
@@ -472,7 +488,7 @@ export function createNotificationCenter(manager, options = {}) {
       dataset: { groupToggle: source }
     }, [
       element("span", { className: "v8-notification-group__icon" }, [icon(groupIcon)]),
-      element("span", { className: "v8-notification-group__title", text: `${items.length} ${source}` }),
+      element("span", { className: "v8-notification-group__title", text: `${items.length} ${translateSource(source)}` }),
       element("span", { className: `v8-notification-group__arrow${expanded ? " is-open" : ""}` }, [icon("chevron-down")])
     ]);
     const body = element("div", { className: "v8-notification-group__items", attributes: { role: "list", hidden: expanded ? null : "true" } }, items.map(renderItem));

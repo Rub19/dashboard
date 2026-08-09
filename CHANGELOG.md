@@ -109,6 +109,19 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 ### Bordereau PWA
 - Mis à jour vers `experience-v302`.
 
+## [v303] - 2026-08-18
+
+**Hotfix : déduplication du Centre de Signal et traduction des groupes/sources**
+
+### Corrige
+- Déduplication au niveau du gestionnaire de notifications : une même notification (même titre, message, type, catégorie, priorité) reçue dans une fenêtre de 30 secondes met à jour l'existante au lieu de créer un doublon.
+- Traduction de la source des notifications dans les items (`System` au lieu de `Système` en anglais).
+- Traduction du titre des groupes (`4 Système` → `4 System` en anglais).
+- Ajout des clés de traduction pour les options de snooze (`10 min`, `1 h`, `Ce soir`).
+
+### Bordereau PWA
+- Mis à jour vers `experience-v303`.
+
 ## [v295] - 2026-08-17
 
 **Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes**

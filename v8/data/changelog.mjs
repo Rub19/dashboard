@@ -79,6 +79,12 @@ export const CHANGELOG = Object.freeze([
     { kind: "fix", text: "Déduplication des notifications d'erreur identiques (5 s) sur la page Mail." },
     { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v302." }
   ]),
+  entry("v303", "2026-08-18", "Hotfix : déduplication du Centre de Signal et traduction des groupes/sources", [
+    { kind: "fix", text: "Déduplication au niveau du gestionnaire de notifications (30 s) pour éviter les doublons dans le Centre de Signal." },
+    { kind: "i18n", text: "Traduction de la source et du titre des groupes de notifications." },
+    { kind: "i18n", text: "Ajout des clés de traduction pour les options de snooze (10 min, 1 h, Ce soir)." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v303." }
+  ]),
   entry("v295", "2026-08-17", "Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes", [
     { kind: "feature", text: "Comptes mail externes : Gmail, Outlook et IMAP (création, sync, suppression)." },
     { kind: "feature", text: "Chiffrement PGP simplifié via Web Crypto : génération de clés, chiffrement/déchiffrement côté Worker." },

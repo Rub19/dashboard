@@ -2058,6 +2058,9 @@ const ENTRIES = {
   "Il y a {value} min": {"fr":"Il y a {value} min","en":"{value} min ago","es":"Hace {value} min","de":"Vor {value} Min."},
   "Il y a {value}h": {"fr":"Il y a {value}h","en":"{value}h ago","es":"Hace {value}h","de":"Vor {value}h"},
   "Il y a {value}j": {"fr":"Il y a {value}j","en":"{value}d ago","es":"Hace {value}d","de":"Vor {value} T."},
+  "10 min": {"fr":"10 min","en":"10 min","es":"10 min","de":"10 Min."},
+  "1 h": {"fr":"1 h","en":"1 h","es":"1 h","de":"1 Std."},
+  "Ce soir": {"fr":"Ce soir","en":"Tonight","es":"Esta noche","de":"Heute Abend"},
 
   "Ouvrez la vue Fichiers pour uploader.": {"fr":"Ouvrez la vue Fichiers pour uploader.","en":"Open the Files view to upload.","es":"Abre la vista Ficheros para subir.","de":"Öffne die Dateien-Ansicht zum Hochladen."},
   "Prêt à ajouter une note.": {"fr":"Prêt à ajouter une note.","en":"Ready to add a note.","es":"Listo para añadir una nota.","de":"Bereit, eine Notiz hinzuzufügen."},

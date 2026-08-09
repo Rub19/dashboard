@@ -24,53 +24,57 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v288", "2026-08-11", "Phase 10 : redesign du flip meteo", [
+    { kind: "improvement", text: "Nouveau verso de la carte meteo : header, grande temperature, stats vent/humidite et previsions." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v288." }
+  ]),
   entry("v287", "2026-08-11", "Phase 10 : effet 3D restreint aux cartes live", [
     { kind: "improvement", text: "Reintegration d'un effet 3D/spotlight au survol pour les cartes live (Home/Activity)." },
     { kind: "fix", text: "Suppression de l'effet 3D sur les pages statiques (Settings, etc.)." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v287." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v288." }
   ]),
   entry("v286", "2026-08-11", "Phase 10 : amelioration du widget Factures", [
     { kind: "feature", text: "Icones de factures par service (Spotify, Netflix, WiFi, etc.) avec brand icons." },
     { kind: "improvement", text: "Marqueur du jour actuel discret (bordure en pointilles) sans confondre avec la selection." },
     { kind: "improvement", text: "Petite animation au changement de jour selectionne." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v287." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v288." }
   ]),
   entry("v285", "2026-08-11", "Phase 10 : suppression des effets 3D sur toutes les pages", [
     { kind: "fix", text: "Suppression de perspective, rotateX et rotateY dans shell.css et depth.css." },
     { kind: "fix", text: "Flip des live cards remplace par un basculement display sans 3D." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v287." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v288." }
   ]),
   entry("v284", "2026-08-11", "Phase 10 : overlays Spotify, Last.fm et Minecraft", [
     { kind: "feature", text: "Spotify : overlay grand lecteur au clic avec artwork, progression, controles et like (route Worker /api/spotify/control)." },
     { kind: "feature", text: "Last.fm : overlay detail au clic avec album, ecoutes, date et lien." },
     { kind: "feature", text: "Minecraft : overlay detail avec skin/cape en grand et historique des pseudos." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v287." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v288." }
   ]),
   entry("v283", "2026-08-11", "Phase 10 : correction des badges Discord", [
     { kind: "fix", text: "Suppression du fallback de faux badges pour l'utilisateur par defaut." },
     { kind: "fix", text: "Fallback icone Lucide si l'image d'un badge Discord ne charge pas." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v287." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v288." }
   ]),
   entry("v282", "2026-08-11", "Phase 10 : diagnostic et correction du module Mail", [
     { kind: "fix", text: "Worker : resolveAliasByEmail filtre directement cote Supabase au lieu de charger tous les alias." },
     { kind: "fix", text: "Interface Mail : messages d'erreur explicites (timeout, route non deployee, migration manquante)." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v287." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v288." }
   ]),
   entry("v281", "2026-08-11", "Phase 10 : correction des effets 3D et alignements UI", [
     { kind: "fix", text: "Desactivation de l'effet de tilt 3D sur les cartes, la page Interactions et les reglages." },
     { kind: "fix", text: "Page Interactions : suppression du conflit de transform, meilleur espacement des icones de statistiques." },
     { kind: "fix", text: "Rail : le bouton d'agrandissement est repositionne en haut a droite du logo en mode reduit." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v287." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v288." }
   ]),
   entry("v280", "2026-08-11", "Phase 10 : fluidite du boot et du Service Worker", [
     { kind: "fix", text: "Le Service Worker ne recharge plus la page au premier controllerchange (clients.claim)." },
     { kind: "fix", text: "L'ecran de boot HTML initial est reutilise au lieu d'etre recree entre booting, profils et connexion." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v287." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v288." }
   ]),
   entry("v279", "2026-08-11", "Phase 10 : module Mail - navigation et actions", [
     { kind: "fix", text: "Commande et action v8.mail.open enregistrees dans le catalogue et le systeme d'actions." },
     { kind: "fix", text: "Ajout des traductions manquantes pour le module Mail." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v287." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v288." }
   ]),
   entry("v278", "2026-08-11", "Phase 10 : module ETHONE Mail", [
     { kind: "feature", text: "Nouveau module Mail : alias @ethone.dev par utilisateur, reception et envoi d'e-mails dans ETHONE." },
@@ -78,18 +82,18 @@ export const CHANGELOG = Object.freeze([
     { kind: "feature", text: "Page Mail : boîte de reception, lecture, composition." },
     { kind: "feature", text: "Migrations Supabase : ethone_mail_aliases, ethone_mail_messages, ethone_mail_threads." },
     { kind: "feature", text: "Resend : envoi d'e-mails depuis l'alias @ethone.dev de chaque utilisateur." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v287." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v288." }
   ]),
   entry("v277", "2026-08-11", "Phase 10 : activation e-mail Resend", [
     { kind: "fix", text: "Worker : ajout du secret RESEND_FROM pour activer l'envoi d'e-mails d'invitation d'equipe." },
     { kind: "fix", text: "Worker redeploye avec RESEND_API_KEY et RESEND_FROM configures." },
     { kind: "improvement", text: "Verification : aucune cle API Resend n'est presente dans les sources du worker." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v287." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v288." }
   ]),
   entry("v276", "2026-08-11", "Phase 10 : traductions completes et i18n", [
     { kind: "improvement", text: "25 nouvelles chaines traduites en en/es/de (team, interactions, Brain, bills, navigation)." },
     { kind: "fix", text: "Compactage du catalogue i18n pour respecter les budgets JS." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v287." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v288." }
   ]),
   entry("v275", "2026-08-11", "Phase 10 : fondations audit, securite et refacto", [
     { kind: "fix", text: "Sécurité : remplacement du hashing SHA-256 par PBKDF2-SHA256 pour les mots de passe de partages et drops." },
@@ -98,13 +102,13 @@ export const CHANGELOG = Object.freeze([
     { kind: "fix", text: "Routage : ajout de interactions et team dans V8_ROUTES." },
     { kind: "fix", text: "Mémoire : nettoyage du focus timer lors de la fermeture du panel." },
     { kind: "improvement", text: "Refacto : creation des modules utils/format.mjs, utils/download.mjs, utils/date.mjs pour eliminer les duplications." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v287." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v288." }
   ]),
   entry("v274", "2026-08-11", "Phase 9 : corrections topbar et dock mobile", [
     { kind: "fix", text: "Topbar mobile : passage en 3 colonnes pour eviter le retour a la ligne et le chevauchement des icones." },
     { kind: "fix", text: "Breadcrumbs sur mobile : masque du root en dessous de 430px pour gagner de la place." },
     { kind: "fix", text: "Dock mobile : reduction de la taille des icones (42/38/36/34px) selon le breakpoint." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v287." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v288." }
   ]),
   entry("v273", "2026-08-11", "Phase 9 : avatar Brain thinking enrichi", [
     { kind: "feature", text: "Nouveau badge Brain 'Thinking' avec étoile tournante, glow pulsant, orbites et particules." },

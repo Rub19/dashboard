@@ -22,6 +22,28 @@ function forecastRow(forecast) {
   ])));
 }
 
+function forecastBack(forecast) {
+  if (!forecast.length) return null;
+  return element("div", { className: "v8-weather-back__forecast" }, [
+    element("small", { text: "Prévisions" }),
+    element("div", { className: "v8-weather-back__days" }, forecast.map((day) =>
+      element("span", {}, [
+        element("small", { text: day.date.slice(5) }),
+        element("b", { text: `${day.max}°` }),
+        element("small", { text: `${day.min}°` })
+      ])
+    ))
+  ]);
+}
+
+function statTile(value, label, iconName) {
+  return element("span", { className: "v8-weather-back__stat" }, [
+    icon(iconName),
+    element("b", { text: value }),
+    element("small", { text: label })
+  ]);
+}
+
 export function weatherLiveCard(presence = {}, options = {}) {
   if (presence.available !== true) return null;
   const variant = ["home", "activity"].includes(options.variant) ? options.variant : "home";
@@ -46,13 +68,23 @@ export function weatherLiveCard(presence = {}, options = {}) {
   ]);
 
   const back = element("div", { className: "v8-live-card-back v8-weather-live-back" }, [
-    element("header", { className: "v8-flip-back-header" }, [icon(weatherIcon(presence.weatherCode, presence.isDay)), element("strong", { text: "Météo", attributes: { translate: "no" } })]),
-    element("div", { className: "v8-flip-back-body" }, [
-      element("p", { text: presence.country ? `${presence.city}, ${presence.country}` : presence.city, attributes: { translate: "no" } }),
-      element("p", { text: `${presence.temperature}°C - ${presence.description}` }),
-      element("p", { text: `Vent ${presence.windSpeedKmh} km/h - ${presence.humidityPercent}% humidité` })
+    element("header", { className: "v8-weather-back__header" }, [
+      icon(weatherIcon(presence.weatherCode, presence.isDay)),
+      element("div", {}, [
+        element("strong", { text: presence.city, attributes: { translate: "no" } }),
+        element("small", { text: presence.country || "Météo" })
+      ])
     ]),
-    element("footer", { className: "v8-flip-back-footer" }, [element("small", { text: presence.city, attributes: { translate: "no" } })])
+    element("div", { className: "v8-weather-back__temp" }, [
+      element("strong", { text: `${presence.temperature}°` }),
+      element("small", { text: presence.description })
+    ]),
+    element("div", { className: "v8-weather-back__stats" }, [
+      statTile(`${presence.windSpeedKmh} km/h`, "Vent", "wind"),
+      statTile(`${presence.humidityPercent}%`, "Humidité", "droplets")
+    ]),
+    forecastBack(presence.forecast),
+    element("footer", { className: "v8-weather-back__footer" }, [liveFreshnessNode(presence.updatedAt)])
   ]);
 
   const card = element(options.tagName || "article", {

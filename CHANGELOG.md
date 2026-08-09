@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v288] - 2026-08-11
+
+**Phase 10 : redesign du flip météo**
+
+### Amélioré
+- Nouveau verso de la carte météo : header, grande température, stats vent/humidité et prévisions.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v288`.
+
 ## [v287] - 2026-08-11
 
 **Phase 10 : effet 3D restreint aux cartes live**

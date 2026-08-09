@@ -97,6 +97,14 @@ export function mountMail(stage, options = {}) {
     }
   }
 
+  function errorDescription(error) {
+    if (error?.name === "TimeoutError" || /timeout|délai|délai/i.test(String(error?.message))) return "Le Worker met trop de temps à répondre. Vérifiez le déploiement.";
+    if (error?.status === 401 || error?.code === "AUTH_REQUIRED") return "Votre session a expiré. Reconnectez-vous.";
+    if (error?.status === 404 || error?.code === "ROUTE_NOT_FOUND" || /route introuvable/i.test(String(error?.message))) return "La route Mail n'est pas encore déployée sur le Worker.";
+    if (error?.status === 500 || error?.code === "SERVICE_ERROR") return "Erreur côté Worker. Vérifiez que la migration Supabase est exécutée.";
+    return String(error?.message || "Erreur inconnue");
+  }
+
   async function fetchInbox() {
     state.loading = true;
     render();
@@ -105,7 +113,7 @@ export function mountMail(stage, options = {}) {
       state.messages = result?.data || [];
     } catch (error) {
       state.messages = [];
-      notify({ tone: "error", title: "Impossible de charger la boîte mail", description: String(error?.message || "Erreur inconnue") });
+      notify({ tone: "error", title: "Impossible de charger la boîte mail", description: errorDescription(error) });
     }
     state.loading = false;
     render();

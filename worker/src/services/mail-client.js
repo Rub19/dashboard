@@ -52,13 +52,14 @@ function firstRow(response) {
 export async function resolveAliasByEmail(env, email) {
   const origin = projectOrigin(env);
   if (!origin || !email) return null;
-  const response = await supabaseRequest(env, "/rest/v1/ethone_mail_aliases", {
+  const safe = safeEmail(email);
+  if (!safe) return null;
+  const response = await supabaseRequest(env, `/rest/v1/ethone_mail_aliases?alias=eq.${encodeURIComponent(safe)}&limit=1`, {
     method: "GET",
     headers: { "Accept": "application/vnd.pgrst.object+json" },
     maxBytes: 4096
   });
-  const aliases = Array.isArray(response.data) ? response.data : [];
-  return aliases.find((a) => a.alias === email.toLowerCase()) || null;
+  return firstRow(response);
 }
 
 export async function getOrCreatePrimaryAlias(env, userId, displayName) {

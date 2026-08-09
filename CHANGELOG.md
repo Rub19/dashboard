@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v282] - 2026-08-11
+
+**Phase 10 : diagnostic et correction du module Mail**
+
+### Corrigé
+- Worker : `resolveAliasByEmail` filtre directement côté Supabase au lieu de charger tous les alias.
+- Interface Mail : messages d'erreur explicites (timeout, route non déployée, migration manquante).
+
+### Bordereau PWA
+- Mis à jour vers `experience-v282`.
+
 ## [v281] - 2026-08-11
 
 **Phase 10 : correction des effets 3D et alignements UI**

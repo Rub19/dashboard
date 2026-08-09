@@ -4,7 +4,7 @@ import { translateSource } from "../i18n/catalog.mjs";
 
 const DEFAULT_DURATION = 220;
 
-export function showBottomSheet({ title, children = [], host, onClose, className = "", position = "bottom", draggable = false } = {}) {
+export function showBottomSheet({ title, children = [], host, onClose, className = "", position = "bottom", draggable = false, initialOffset = null, onOffsetChange = null } = {}) {
   const root = host || (typeof document !== "undefined" ? document.body : null);
   if (!root) return { close: () => {}, element: null };
 
@@ -17,7 +17,7 @@ export function showBottomSheet({ title, children = [], host, onClose, className
   let dragStart = null;
   let dragPanelRect = null;
   let startOffset = { x: 0, y: 0 };
-  let currentOffset = { x: 0, y: 0 };
+  let currentOffset = { x: Number(initialOffset?.x) || 0, y: Number(initialOffset?.y) || 0 };
 
   const closeButton = element("button", {
     className: "v8-icon-button v8-bottom-sheet__close",
@@ -119,6 +119,7 @@ export function showBottomSheet({ title, children = [], host, onClose, className
     header.style.cursor = "grab";
     panel.style.transition = "";
     try { header.releasePointerCapture(event.pointerId); } catch {}
+    if (typeof onOffsetChange === "function") onOffsetChange({ x: currentOffset.x, y: currentOffset.y });
   }
 
   function cleanup() {
@@ -136,9 +137,9 @@ export function showBottomSheet({ title, children = [], host, onClose, className
   function close() {
     if (isClosing) return;
     isClosing = true;
-    currentOffset = { x: 0, y: 0 };
     dragPanelRect = null;
-    panel.style.transform = "";
+    panel.style.transition = `transform ${DEFAULT_DURATION}ms ease`;
+    panel.style.transform = "translate3d(0,0,0)";
     panel.style.opacity = "";
     layer.classList.remove("is-open");
     setTimeout(() => {
@@ -163,7 +164,12 @@ export function showBottomSheet({ title, children = [], host, onClose, className
 
   root.append(layer);
   layer.getBoundingClientRect();
-  requestAnimationFrame(() => layer.classList.add("is-open"));
+  requestAnimationFrame(() => {
+    layer.classList.add("is-open");
+    if (currentOffset.x !== 0 || currentOffset.y !== 0) {
+      panel.style.transform = `translate3d(${currentOffset.x}px, ${currentOffset.y}px, 0)`;
+    }
+  });
   refreshIcons();
 
   return { close, element: layer };

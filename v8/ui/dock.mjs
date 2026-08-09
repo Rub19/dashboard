@@ -1,5 +1,6 @@
 import { NAVIGATION_ITEMS } from "../data/navigation.mjs";
 import { SOUND_PACKS } from "../services/sound-manager.mjs";
+import { translateSource } from "../i18n/catalog.mjs";
 import { element, icon } from "./dom.mjs";
 import { refreshIcons, scheduleIconRefresh } from "./icons.mjs";
 import { getLayerManager } from "./layer-manager.mjs";
@@ -135,27 +136,27 @@ export function createDock(host, options = {}) {
     }
 
     return element("div", { className: "v8-dock-editor__config" }, [
-      row("Taille", "monitor", [
-        btn("Compacte", "v8.dock.scale.compact", currentScale === "compact"),
-        btn("Normale", "v8.dock.scale.normal", !currentScale || currentScale === "normal"),
-        btn("Grande", "v8.dock.scale.large", currentScale === "large")
+      row(translateSource("Taille"), "monitor", [
+        btn(translateSource("Compacte"), "v8.dock.scale.compact", currentScale === "compact"),
+        btn(translateSource("Normale"), "v8.dock.scale.normal", !currentScale || currentScale === "normal"),
+        btn(translateSource("Grande"), "v8.dock.scale.large", currentScale === "large")
       ]),
-      row("Alignement", "align-center", [
-        btn("Centré", "v8.dock.align.center", !currentAlign || currentAlign === "center"),
-        btn("Plein Écran", "v8.dock.align.stretch", currentAlign === "stretch")
+      row(translateSource("Alignement"), "align-center", [
+        btn(translateSource("Centré"), "v8.dock.align.center", !currentAlign || currentAlign === "center"),
+        btn(translateSource("Plein Écran"), "v8.dock.align.stretch", currentAlign === "stretch")
       ]),
-      row("Verre & Flou", "sparkles", [
-        btn("Vitrifié", "v8.dock.glass.default", !currentGlass || currentGlass === "default"),
-        btn("Ultra Flou", "v8.dock.glass.ultra", currentGlass === "ultra"),
-        btn("Sobre", "v8.dock.glass.opaque", currentGlass === "opaque")
+      row(translateSource("Verre & Flou"), "sparkles", [
+        btn(translateSource("Vitrifié"), "v8.dock.glass.default", !currentGlass || currentGlass === "default"),
+        btn(translateSource("Ultra Flou"), "v8.dock.glass.ultra", currentGlass === "ultra"),
+        btn(translateSource("Sobre"), "v8.dock.glass.opaque", currentGlass === "opaque")
       ]),
-      row("Masquage Auto", "eye-off", [
-        btn("Toujours visible", "v8.dock.autohide.off", !currentAutoHide),
-        btn("Masquer auto", "v8.dock.autohide.on", currentAutoHide)
+      row(translateSource("Masquage Auto"), "eye-off", [
+        btn(translateSource("Toujours visible"), "v8.dock.autohide.off", !currentAutoHide),
+        btn(translateSource("Masquer auto"), "v8.dock.autohide.on", currentAutoHide)
       ]),
-      row("Zoom survol", "maximize", [
-        btn("Actif", "v8.dock.magnify.on", currentMagnify),
-        btn("Désactivé", "v8.dock.magnify.off", !currentMagnify)
+      row(translateSource("Zoom survol"), "maximize", [
+        btn(translateSource("Actif"), "v8.dock.magnify.on", currentMagnify),
+        btn(translateSource("Désactivé"), "v8.dock.magnify.off", !currentMagnify)
       ]),
 
     ]);
@@ -204,32 +205,32 @@ export function createDock(host, options = {}) {
     }
 
     return element("div", { className: "v8-control-center-panel" }, [
-      group("Animations UI", "activity", [
-        pill("Fluides", "v8.ui.animations.smooth", currentAnimations === "smooth"),
-        pill("Rapides", "v8.ui.animations.snappy", currentAnimations === "snappy"),
-        pill("Réduites", "v8.ui.animations.reduced", currentAnimations === "reduced")
+      group(translateSource("Animations UI"), "activity", [
+        pill(translateSource("Fluides"), "v8.ui.animations.smooth", currentAnimations === "smooth"),
+        pill(translateSource("Rapides"), "v8.ui.animations.snappy", currentAnimations === "snappy"),
+        pill(translateSource("Réduites"), "v8.ui.animations.reduced", currentAnimations === "reduced")
       ]),
-      group("Ambiance", "sparkles", [
-        toggle("Aura néon", "zap", currentGlow, "v8.ui.glow.on", "v8.ui.glow.off"),
-        toggle("Sons d'interface", "volume-2", currentSoundFeedback, "v8.ui.sound.feedback.on", "v8.ui.sound.feedback.off")
+      group(translateSource("Ambiance"), "sparkles", [
+        toggle(translateSource("Aura néon"), "zap", currentGlow, "v8.ui.glow.on", "v8.ui.glow.off"),
+        toggle(translateSource("Sons d'interface"), "volume-2", currentSoundFeedback, "v8.ui.sound.feedback.on", "v8.ui.sound.feedback.off")
       ]),
-      group("Pack sonore", "music", SOUND_PACKS.map((pack) => tile(pack.label, "v8.sound.pack." + pack.id, currentSoundPack === pack.id, "music")), { grid: true }),
-      group("Audio", "download", [
-        pill("Écouter l'aperçu", "v8.sound.preview", false),
-        pill("Télécharger .WAV", "v8.sound.export", false)
+      group(translateSource("Pack sonore"), "music", SOUND_PACKS.map((pack) => tile(translateSource(pack.label), "v8.sound.pack." + pack.id, currentSoundPack === pack.id, pack.icon)), { grid: true }),
+      group(translateSource("Audio"), "download", [
+        pill(translateSource("Écouter l'aperçu"), "v8.sound.preview", false),
+        pill(translateSource("Télécharger .WAV"), "v8.sound.export", false)
       ]),
-      group("Ambiance sonore", "cloud-rain", [
-        tile("Pluie", "v8.ambience.rain", false, "cloud-rain"),
-        tile("Bruit rose", "v8.ambience.pink", false, "flower-2"),
-        tile("Drone", "v8.ambience.drone", false, "disc"),
-        tile("Arrêter", "v8.ambience.stop", false, "volume-x")
+      group(translateSource("Ambiance sonore"), "cloud-rain", [
+        tile(translateSource("Pluie"), "v8.ambience.rain", false, "cloud-rain"),
+        tile(translateSource("Bruit rose"), "v8.ambience.pink", false, "flower-2"),
+        tile(translateSource("Drone"), "v8.ambience.drone", false, "disc"),
+        tile(translateSource("Arrêter"), "v8.ambience.stop", false, "volume-x")
       ], { grid: true }),
-      group("Focus Timer", "timer", [
-        tile("Pomodoro", "v8.focus.start.pomodoro", false, "timer"),
-        tile("Deep Work", "v8.focus.start.deep", false, "brain"),
-        tile("Sprint", "v8.focus.start.quick", false, "zap"),
-        tile("Pause", "v8.focus.pause", false, "pause"),
-        tile("Arrêter", "v8.focus.stop", false, "square")
+      group(translateSource("Focus Timer"), "timer", [
+        tile(translateSource("Pomodoro"), "v8.focus.start.pomodoro", false, "timer"),
+        tile(translateSource("Deep Work"), "v8.focus.start.deep", false, "brain"),
+        tile(translateSource("Sprint"), "v8.focus.start.quick", false, "zap"),
+        tile(translateSource("Pause"), "v8.focus.pause", false, "pause"),
+        tile(translateSource("Arrêter"), "v8.focus.stop", false, "square")
       ], { grid: true })
     ]);
   }
@@ -244,9 +245,9 @@ export function createDock(host, options = {}) {
 
   function launcherNode(pinned) {
     return element("section", { className: "v8-dock-launcher", attributes: { role: "dialog", "aria-modal": "false", "aria-label": "Toutes les applications" } }, [
-      element("header", {}, [element("span", {}, [element("small", { text: "ETHONE OS", attributes: { translate: "no" } }), element("strong", { text: "Toutes les apps" })]), editorControl("more-close", "", "Fermer", "x")]),
+      element("header", {}, [element("span", {}, [element("small", { text: "ETHONE OS", attributes: { translate: "no" } }), element("strong", { text: translateSource("Toutes les apps") })]), editorControl("more-close", "", translateSource("Fermer"), "x")]),
       element("div", { className: "v8-dock-launcher__grid" }, pinned.map((item) => launcherAppNode(item, item.id === activeRoute))),
-      element("footer", {}, [icon("hand"), element("span", { text: "Appui long sur une app du Dock pour la réorganiser." })])
+      element("footer", {}, [icon("hand"), element("span", { text: translateSource("Appui long sur une app du Dock pour la réorganiser.") })])
     ]);
   }
 
@@ -265,27 +266,27 @@ export function createDock(host, options = {}) {
     const nav = element("nav", { className: "v8-floating-dock", attributes: { "aria-label": "Dock ETHONE" } }, [
       element("div", { className: "v8-dock-apps" }, visiblePinned.map((item) => appNode(item, item.id === activeRoute, touchMode))),
       mediaSlot,
-      compactMedia.matches && pinned.length > visiblePinned.length ? element("button", { className: `v8-dock-more${launcherOpen ? " is-active" : ""}`, attributes: { type: "button", "aria-label": "Ouvrir toutes les applications", "aria-expanded": String(launcherOpen) }, dataset: { dockCommand: "more", tooltip: "Toutes les apps" } }, [icon("grid-2x2")]) : null,
+      compactMedia.matches && pinned.length > visiblePinned.length ? element("button", { className: `v8-dock-more${launcherOpen ? " is-active" : ""}`, attributes: { type: "button", "aria-label": translateSource("Ouvrir toutes les applications"), "aria-expanded": String(launcherOpen) }, dataset: { dockCommand: "more", tooltip: translateSource("Toutes les apps") } }, [icon("grid-2x2")]) : null,
       element("span", { className: "v8-dock-separator", attributes: { "aria-hidden": "true" } }),
-      element("button", { className: "v8-dock-control", attributes: { type: "button", "aria-label": "Recherche Spotlight & Commandes (Ctrl+K)" }, dataset: { dockCommand: "spotlight", tooltip: "Spotlight (Ctrl+K)" } }, [icon("search")]),
-      element("button", { className: "v8-dock-control", attributes: { type: "button", "aria-label": "Minuteur Pomodoro (Focus Express 25 min)" }, dataset: { dockCommand: "pomodoro", tooltip: "Pomodoro Focus (25m)" } }, [icon("timer")]),
-      element("button", { className: "v8-dock-control", attributes: { type: "button", "aria-label": "Vue d'ensemble Mission Control (F3)" }, dataset: { dockCommand: "mission", tooltip: "Mission Control" } }, [icon("layout-grid")]),
-      element("button", { className: `v8-dock-control v8-dock-control--notifications`, attributes: { type: "button", "aria-label": "Ouvrir les notifications", "aria-live": "polite" }, dataset: { dockCommand: "notifications", tooltip: "Notifications" } }, [icon("bell"), element("span", { className: "v8-dock-notification-badge", attributes: { "aria-hidden": "true", hidden: "true" }, text: "0" })]),
-      element("button", { className: `v8-dock-control${controlCenterOpen ? " is-active" : ""}`, attributes: { type: "button", "aria-label": "Control Center", "aria-expanded": String(controlCenterOpen) }, dataset: { dockCommand: "control-center", tooltip: "Control Center" } }, [icon("sliders")]),
-      element("button", { className: `v8-dock-control${editing ? " is-active" : ""}`, attributes: { type: "button", "aria-label": "Personnaliser le Dock", "aria-expanded": String(editing) }, dataset: { dockCommand: "edit", tooltip: "Personnaliser le Dock" } }, [icon("sliders-horizontal")])
+      element("button", { className: "v8-dock-control", attributes: { type: "button", "aria-label": translateSource("Recherche Spotlight & Commandes (Ctrl+K)") }, dataset: { dockCommand: "spotlight", tooltip: translateSource("Recherche Spotlight & Commandes (Ctrl+K)") } }, [icon("search")]),
+      element("button", { className: "v8-dock-control", attributes: { type: "button", "aria-label": translateSource("Minuteur Pomodoro (Focus Express 25 min)") }, dataset: { dockCommand: "pomodoro", tooltip: translateSource("Minuteur Pomodoro (Focus Express 25 min)") } }, [icon("timer")]),
+      element("button", { className: "v8-dock-control", attributes: { type: "button", "aria-label": translateSource("Vue d'ensemble Mission Control (F3)") }, dataset: { dockCommand: "mission", tooltip: translateSource("Mission Control") } }, [icon("layout-grid")]),
+      element("button", { className: `v8-dock-control v8-dock-control--notifications`, attributes: { type: "button", "aria-label": translateSource("Ouvrir les notifications"), "aria-live": "polite" }, dataset: { dockCommand: "notifications", tooltip: "Notifications" } }, [icon("bell"), element("span", { className: "v8-dock-notification-badge", attributes: { "aria-hidden": "true", hidden: "true" }, text: "0" })]),
+      element("button", { className: `v8-dock-control${controlCenterOpen ? " is-active" : ""}`, attributes: { type: "button", "aria-label": translateSource("Control Center"), "aria-expanded": String(controlCenterOpen) }, dataset: { dockCommand: "control-center", tooltip: translateSource("Control Center") } }, [icon("sliders")]),
+      element("button", { className: `v8-dock-control${editing ? " is-active" : ""}`, attributes: { type: "button", "aria-label": translateSource("Personnaliser le Dock"), "aria-expanded": String(editing) }, dataset: { dockCommand: "edit", tooltip: translateSource("Personnaliser le Dock") } }, [icon("sliders-horizontal")])
     ]);
     const children = [nav];
     if (launcherOpen && compactMedia.matches) children.push(launcherNode(pinned));
     
-    if (controlCenterOpen) children.push(element("section", { className: "v8-dock-editor v8-control-center-window", attributes: { role: "dialog", "aria-modal": "false", "aria-label": "Control Center" } }, [
-      element("header", {}, [element("span", {}, [element("small", { text: "ETHONE OS", attributes: { translate: "no" } }), element("strong", { text: "Control Center" })]), editorControl("close-cc", "", "Fermer", "x")]),
+    if (controlCenterOpen) children.push(element("section", { className: "v8-dock-editor v8-control-center-window", attributes: { role: "dialog", "aria-modal": "false", "aria-label": translateSource("Control Center") } }, [
+      element("header", {}, [element("span", {}, [element("small", { text: "ETHONE OS", attributes: { translate: "no" } }), element("strong", { text: translateSource("Control Center") })]), editorControl("close-cc", "", translateSource("Fermer"), "x")]),
       controlCenterPanel()
     ]));
-    if (editing) children.push(element("section", { className: "v8-dock-editor", attributes: { role: "dialog", "aria-modal": "false", "aria-label": "Personnaliser le Dock" } }, [
-      element("header", {}, [element("span", {}, [element("small", { text: "ETHONE OS", attributes: { translate: "no" } }), element("strong", { text: "Personnaliser le Dock" })]), editorControl("close", "", "Fermer", "x")]),
+    if (editing) children.push(element("section", { className: "v8-dock-editor", attributes: { role: "dialog", "aria-modal": "false", "aria-label": translateSource("Personnaliser le Dock") } }, [
+      element("header", {}, [element("span", {}, [element("small", { text: "ETHONE OS", attributes: { translate: "no" } }), element("strong", { text: translateSource("Personnaliser le Dock") })]), editorControl("close", "", translateSource("Fermer"), "x")]),
       dockCustomizerPanel(),
       element("div", { className: "v8-dock-editor__list" }, NAVIGATION_ITEMS.map((item) => editorNode(item, order))),
-      element("footer", {}, [element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { dockCommand: "reset" } }, [icon("rotate-ccw"), element("span", { text: "Reinitialiser" })])])
+      element("footer", {}, [element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { dockCommand: "reset" } }, [icon("rotate-ccw"), element("span", { text: translateSource("Reinitialiser") })])])
     ]));
     host.replaceChildren(...children);
     refreshIcons();

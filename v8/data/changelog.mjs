@@ -91,6 +91,13 @@ export const CHANGELOG = Object.freeze([
     { kind: "i18n", text: "Messages d'erreur specifiques dans mail.mjs selon le detail (config, schema, generique)." },
     { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v304." }
   ]),
+  entry("v305", "2026-08-18", "Hotfix : icones Sound Pack, traductions Dock et persistance position Actions rapides", [
+    { kind: "feature", text: "Icones personnalisées pour chaque pack sonore (ETHONE, Minimal, Classic, Apple Inspired, Cyber Pulse, Silent)." },
+    { kind: "i18n", text: "Traduction des libellés du panneau Personnaliser le Dock et du Control Center." },
+    { kind: "feature", text: "Le bouton Actions rapides et la fiche sauvegardent leur position via localStorage." },
+    { kind: "fix", text: "La fiche Actions rapides revient à sa position initiale à la fermeture." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v305." }
+  ]),
   entry("v295", "2026-08-17", "Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes", [
     { kind: "feature", text: "Comptes mail externes : Gmail, Outlook et IMAP (création, sync, suppression)." },
     { kind: "feature", text: "Chiffrement PGP simplifié via Web Crypto : génération de clés, chiffrement/déchiffrement côté Worker." },

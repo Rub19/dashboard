@@ -1015,6 +1015,53 @@ export function mountApplication(root, options = {}) {
     moreSheet = showBottomSheet({ title: "Plus", children, onClose: () => { moreSheet = null; } });
   }
 
+  const FAB_POSITION_KEY = "ethone:v8:fab:position";
+  const QUICK_SHEET_OFFSET_KEY = "ethone:v8:quick-sheet:offset";
+
+  function safeParsePosition(raw) {
+    try {
+      const value = JSON.parse(raw);
+      if (value && typeof value.left === "number" && typeof value.top === "number") return value;
+    } catch {}
+    return null;
+  }
+
+  function safeParseOffset(raw) {
+    try {
+      const value = JSON.parse(raw);
+      if (value && typeof value.x === "number" && typeof value.y === "number") return value;
+    } catch {}
+    return null;
+  }
+
+  function restoreFabPosition(fab) {
+    const raw = globalThis.localStorage?.getItem?.(FAB_POSITION_KEY);
+    const pos = safeParsePosition(raw);
+    if (!pos || !fab) return;
+    const rect = fab.getBoundingClientRect();
+    const vw = globalThis.innerWidth;
+    const vh = globalThis.innerHeight;
+    const left = Math.max(0, Math.min(vw - rect.width, pos.left));
+    const top = Math.max(0, Math.min(vh - rect.height, pos.top));
+    fab.style.left = `${left}px`;
+    fab.style.top = `${top}px`;
+    fab.style.right = "auto";
+    fab.style.bottom = "auto";
+    fab.dataset.v8FabDragged = "true";
+  }
+
+  function saveFabPosition(left, top) {
+    try { globalThis.localStorage?.setItem?.(FAB_POSITION_KEY, JSON.stringify({ left, top })); } catch {}
+  }
+
+  function getQuickSheetOffset() {
+    return safeParseOffset(globalThis.localStorage?.getItem?.(QUICK_SHEET_OFFSET_KEY)) || { x: 0, y: 0 };
+  }
+
+  function saveQuickSheetOffset(offset) {
+    try { globalThis.localStorage?.setItem?.(QUICK_SHEET_OFFSET_KEY, JSON.stringify(offset)); } catch {}
+  }
+
   let quickSheet = null;
   function openQuickActionsSheet() {
     if (quickSheet?.element?.isConnected) return;
@@ -1028,7 +1075,16 @@ export function mountApplication(root, options = {}) {
       { icon: "workflow", label: translateSource("Créer une Automation"), action: () => { quickSheet?.close?.(); toasts.show({ type: "info", title: translateSource("Automation"), message: translateSource("Création d'automation bientôt disponible.") }); } }
     ];
     const children = items.map((item) => bottomSheetAction(item.icon, item.label, item.action));
-    quickSheet = showBottomSheet({ title: translateSource("Actions rapides"), children, position: "center", draggable: true, onClose: () => { quickSheet = null; } });
+    const initialOffset = getQuickSheetOffset();
+    quickSheet = showBottomSheet({
+      title: translateSource("Actions rapides"),
+      children,
+      position: "center",
+      draggable: true,
+      initialOffset,
+      onOffsetChange: saveQuickSheetOffset,
+      onClose: () => { quickSheet = null; }
+    });
   }
 
   actions.scope("v8.mobile-nav.more", () => {
@@ -1045,6 +1101,7 @@ export function mountApplication(root, options = {}) {
     if (!fab) return;
     fab.classList.add("is-ready");
     fab.style.touchAction = "none";
+    restoreFabPosition(fab);
     let longPressTimer = null;
     let longPressFired = false;
     let pointerStart = null;
@@ -1098,6 +1155,9 @@ export function mountApplication(root, options = {}) {
         isDragging = false;
         fab.classList.remove("is-dragging");
         fab.dataset.v8FabDragged = "true";
+        const left = parseInt(fab.style.left, 10) || 0;
+        const top = parseInt(fab.style.top, 10) || 0;
+        saveFabPosition(left, top);
         pointerStart = null;
         startRect = null;
         return;

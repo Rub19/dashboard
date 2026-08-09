@@ -138,6 +138,19 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 ### Bordereau PWA
 - Mis à jour vers `experience-v304`.
 
+## [v305] - 2026-08-18
+
+**Hotfix : icônes Sound Pack, traductions Dock et persistance de la position Actions rapides**
+
+### Corrige
+- Icônes personnalisées pour chaque pack sonore (ETHONE, Minimal, Classic, Apple Inspired, Cyber Pulse, Silent) au lieu d'une seule note partout.
+- Traduction manquante des libellés du panneau `Personnaliser le Dock` et du `Control Center` (Alignement, Verre & Flou, Masquage Auto, Zoom survol, Audio, Ambiance sonore, Focus Timer, etc.).
+- Le bouton Actions rapides (FAB) et la fiche Actions rapides sauvegardent maintenant leur position utilisateur via `localStorage`.
+- La fiche Actions rapides revient à sa position initiale (centrée) avec une animation à la fermeture.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v305`.
+
 ## [v295] - 2026-08-17
 
 **Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes**

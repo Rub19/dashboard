@@ -4,12 +4,12 @@ export const MAX_SPATIAL_PAN = 0.07;
 export const SOUND_CATEGORIES = Object.freeze(["interface", "notifications", "brain", "system"]);
 
 export const SOUND_PACKS = Object.freeze([
-  Object.freeze({ id: "ethone", label: "ETHONE", description: "Signature douce et lumineuse." }),
-  Object.freeze({ id: "minimal", label: "Minimal", description: "Retours courts et presque tactiles." }),
-  Object.freeze({ id: "classic", label: "Classic", description: "Tonalite chaleureuse et familiere." }),
-  Object.freeze({ id: "apple-inspired", label: "Apple Inspired", description: "Clarté cristalline, composition originale." }),
-  Object.freeze({ id: "cyber-pulse", label: "Cyber Pulse", description: "Tonalités néon synthétiques et futuristes." }),
-  Object.freeze({ id: "silent", label: "Silent", description: "Aucun retour sonore." })
+  Object.freeze({ id: "ethone", label: "ETHONE", description: "Signature douce et lumineuse.", icon: "music" }),
+  Object.freeze({ id: "minimal", label: "Minimal", description: "Retours courts et presque tactiles.", icon: "audio-lines" }),
+  Object.freeze({ id: "classic", label: "Classic", description: "Tonalite chaleureuse et familiere.", icon: "disc" }),
+  Object.freeze({ id: "apple-inspired", label: "Apple Inspired", description: "Clarté cristalline, composition originale.", icon: "sparkles" }),
+  Object.freeze({ id: "cyber-pulse", label: "Cyber Pulse", description: "Tonalités néon synthétiques et futuristes.", icon: "zap" }),
+  Object.freeze({ id: "silent", label: "Silent", description: "Aucun retour sonore.", icon: "volume-x" })
 ]);
 
 export const DEFAULT_SOUND_PREFERENCES = Object.freeze({

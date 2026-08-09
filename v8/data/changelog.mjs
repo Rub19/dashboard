@@ -32,51 +32,51 @@ export const CHANGELOG = Object.freeze([
   ]),
   entry("v273", "2026-08-11", "Phase 9 : avatar Brain thinking enrichi", [
     { kind: "feature", text: "Nouveau badge Brain 'Thinking' avec étoile tournante, glow pulsant, orbites et particules." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v274." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v273." }
   ]),
   entry("v272", "2026-08-10", "Phase 9 : team-manager Supabase + interactions reseau", [
     { kind: "feature", text: "Team Manager branché sur Supabase (table ethone_team_members) avec CRUD asynchrone." },
     { kind: "feature", text: "Invitations d'équipe : génération de token et lien d'invitation." },
     { kind: "feature", text: "Endpoint worker /api/team/invite pour envoi d'e-mail via Resend (prêt si RESEND_API_KEY configuré)." },
     { kind: "feature", text: "Interactions Heatmap connecté au journal d'activité ETHONE (ouvertures de page, tâches, notes, etc.)." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v274." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v272." }
   ]),
   entry("v271", "2026-08-10", "Phase 9 : ajustements UI mobile Calendrier", [
     { kind: "fix", text: "Page-heading actions : flex-wrap pour eviter le debordement des boutons sur mobile." },
     { kind: "fix", text: "Titre Calendrier : retour a la ligne et ellipsis du mois en mobile." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v274." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v271." }
   ]),
   entry("v270", "2026-08-10", "Phase 9 : correction bouton Admin Fichiers", [
     { kind: "fix", text: "Bouton Admin de la page Fichiers : ouvre maintenant la modale de partages et drops." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v274." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v270." }
   ]),
   entry("v269", "2026-08-10", "Phase 9 : Brain conversationnel et thinking anime", [
     { kind: "feature", text: "Brain repond maintenant aux salutations et aux messages simples (bonjour, ca va, etc.)." },
     { kind: "feature", text: "Message 'Brain reflechit...' avec anneaux pulsatiles et points de suspension animes pendant la requete." },
     { kind: "feature", text: "Animation du hero Brain quand il reflechit : halo, ondes concentriques et pulsation de l'icone." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v274." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v269." }
   ]),
   entry("v268", "2026-08-10", "Phase 9 : theme picker anime et v267", [
     { kind: "feature", text: "Theme picker ameliore avec swatch actif qui pop, anneau d'onde et swatch custom rotatif." },
     { kind: "feature", text: "Effet flash couleur au changement d'accent avec transition douce des couleurs d'interface." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v274." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v268." }
   ]),
   entry("v267", "2026-08-10", "Phase 9 : interactions, heatmap 3D et v266", [
     { kind: "feature", text: "Nouvelle page Interactions avec une heatmap des 30/90 derniers jours, toggle Less/More et statistiques." },
     { kind: "feature", text: "Service interactions-heatmap pour suivre et simuler l'engagement quotidien." },
     { kind: "feature", text: "Effet 3D sur la heatmap et les cartes de statistiques grace a l'integrateur depth-effect." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v274." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v267." }
   ]),
   entry("v266", "2026-08-10", "Phase 9 : taches, animations et v265", [
     { kind: "feature", text: "Animation de complétion des tâches : la ligne s'élève, se fade et les tâches restantes glissent en douceur." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v274." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v266." }
   ]),
   entry("v264", "2026-08-10", "Phase 9 : equipe, collaboration et cloud", [
     { kind: "feature", text: "Nouvelle page Équipe pour inviter des membres, leur attribuer un role et gerer l'acces aux fichiers." },
     { kind: "feature", text: "Service createTeamManager local avec roles (owner, admin, senior, junior, assistant, viewer) et statuts (pending, active, revoked)." },
     { kind: "feature", text: "Table Supabase ethone_team_members et ethone_file_collaborators pour la collaboration securisee." },
     { kind: "feature", text: "Avatars generes a partir des initiales et support des URL de photo de profil." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v274." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v264." }
   ]),
   entry("v260", "2026-08-10", "Phase 9 : widget Bills, i18n et stabilite CI", [
     { kind: "feature", text: "Nouveau widget Bills : calendrier des factures a 7 jours, detail anime, ajout manuel et scan IA." },
@@ -89,7 +89,7 @@ export const CHANGELOG = Object.freeze([
     { kind: "fix", text: "Navigation fluide des pages lazy grace aux View Transitions et gestion du cycle de vie." },
     { kind: "fix", text: "Style loader et bordereau PWA synchronises (v263) pour eviter les flashs de contenu." },
     { kind: "fix", text: "Formulaire de connexion : autofill fiable et suppression des animations de layout au focus clavier mobile." },
-    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v274." }
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v260." }
   ]),
   entry("v259", "2026-08-09", "Phase 9 : stabilite, navigation mobile et error boundaries", [
     { kind: "fix", text: "Correction de la validation GitHub Pages : cache SW v258, lazy-load des pages lourdes et ajustement des budgets JS." },

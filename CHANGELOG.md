@@ -2,6 +2,174 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v274] - 2026-08-11
+
+**Phase 9 : corrections topbar et dock mobile**
+
+### Corrigé
+- Topbar mobile : passage en 3 colonnes pour eviter le retour a la ligne et le chevauchement des icones.
+- Breadcrumbs sur mobile : masque du root en dessous de 430px pour gagner de la place.
+- Dock mobile : reduction de la taille des icones (42/38/36/34px) selon le breakpoint.
+
+### Amélioré
+- Bordereau PWA mis a jour vers experience-v274.
+
+## [v273] - 2026-08-11
+
+**Phase 9 : avatar Brain thinking enrichi**
+
+### Ajouté
+- Nouveau badge Brain 'Thinking' avec étoile tournante, glow pulsant, orbites et particules.
+
+### Amélioré
+- Bordereau PWA mis a jour vers experience-v273.
+
+## [v272] - 2026-08-10
+
+**Phase 9 : team-manager Supabase + interactions reseau**
+
+### Ajouté
+- Team Manager branché sur Supabase (table ethone_team_members) avec CRUD asynchrone.
+- Invitations d'équipe : génération de token et lien d'invitation.
+- Endpoint worker /api/team/invite pour envoi d'e-mail via Resend (prêt si RESEND_API_KEY configuré).
+- Interactions Heatmap connecté au journal d'activité ETHONE (ouvertures de page, tâches, notes, etc.).
+
+### Amélioré
+- Bordereau PWA mis a jour vers experience-v272.
+
+## [v271] - 2026-08-10
+
+**Phase 9 : ajustements UI mobile Calendrier**
+
+### Corrigé
+- Page-heading actions : flex-wrap pour eviter le debordement des boutons sur mobile.
+- Titre Calendrier : retour a la ligne et ellipsis du mois en mobile.
+
+### Amélioré
+- Bordereau PWA mis a jour vers experience-v271.
+
+## [v270] - 2026-08-10
+
+**Phase 9 : correction bouton Admin Fichiers**
+
+### Corrigé
+- Bouton Admin de la page Fichiers : ouvre maintenant la modale de partages et drops.
+
+### Amélioré
+- Bordereau PWA mis a jour vers experience-v270.
+
+## [v269] - 2026-08-10
+
+**Phase 9 : Brain conversationnel et thinking anime**
+
+### Ajouté
+- Brain repond maintenant aux salutations et aux messages simples (bonjour, ca va, etc.).
+- Message 'Brain reflechit...' avec anneaux pulsatiles et points de suspension animes pendant la requete.
+- Animation du hero Brain quand il reflechit : halo, ondes concentriques et pulsation de l'icone.
+
+### Amélioré
+- Bordereau PWA mis a jour vers experience-v269.
+
+## [v268] - 2026-08-10
+
+**Phase 9 : theme picker anime et v267**
+
+### Ajouté
+- Theme picker ameliore avec swatch actif qui pop, anneau d'onde et swatch custom rotatif.
+- Effet flash couleur au changement d'accent avec transition douce des couleurs d'interface.
+
+### Amélioré
+- Bordereau PWA mis a jour vers experience-v268.
+
+## [v267] - 2026-08-10
+
+**Phase 9 : interactions, heatmap 3D et v266**
+
+### Ajouté
+- Nouvelle page Interactions avec une heatmap des 30/90 derniers jours, toggle Less/More et statistiques.
+- Service interactions-heatmap pour suivre et simuler l'engagement quotidien.
+- Effet 3D sur la heatmap et les cartes de statistiques grace a l'integrateur depth-effect.
+
+### Amélioré
+- Bordereau PWA mis a jour vers experience-v267.
+
+## [v266] - 2026-08-10
+
+**Phase 9 : taches, animations et v265**
+
+### Ajouté
+- Animation de complétion des tâches : la ligne s'élève, se fade et les tâches restantes glissent en douceur.
+
+### Amélioré
+- Bordereau PWA mis a jour vers experience-v266.
+
+## [v264] - 2026-08-10
+
+**Phase 9 : equipe, collaboration et cloud**
+
+### Ajouté
+- Nouvelle page Équipe pour inviter des membres, leur attribuer un role et gerer l'acces aux fichiers.
+- Service createTeamManager local avec roles (owner, admin, senior, junior, assistant, viewer) et statuts (pending, active, revoked).
+- Table Supabase ethone_team_members et ethone_file_collaborators pour la collaboration securisee.
+- Avatars generes a partir des initiales et support des URL de photo de profil.
+
+### Amélioré
+- Bordereau PWA mis a jour vers experience-v264.
+
+## [v260] - 2026-08-10
+
+**Phase 9 : widget Bills, i18n et stabilite CI**
+
+### Ajouté
+- Nouveau widget Bills : calendrier des factures a 7 jours, detail anime, ajout manuel et scan IA.
+- Gestionnaire de factures avec recurrences (episode, hebdomadaire, mensuelle, trimestrielle, annuelle) et categories.
+- Scan IA d'e-mails ou de fiches de facture (extraction auto du montant, date, categorie et recurrence).
+
+### Amélioré
+- 128 traductions manquantes ajoutees (en, es, de) dans le catalogue i18n.
+- Bordereau PWA mis a jour vers experience-v260.
+
+### Corrigé
+- Barre d'actions groupées du panel de notifications : texte tronque, icones visibles avec aria-label.
+- Correction du script RLS QA pour ne plus exiger de lignes seedees pour les utilisateurs de test.
+- Ajout du package.json et mise a jour wrangler.toml pour le worker deploy-status.
+- Navigation fluide des pages lazy grace aux View Transitions et gestion du cycle de vie.
+- Style loader et bordereau PWA synchronises (v263) pour eviter les flashs de contenu.
+- Formulaire de connexion : autofill fiable et suppression des animations de layout au focus clavier mobile.
+
+## [v259] - 2026-08-09
+
+**Phase 9 : stabilite, navigation mobile et error boundaries**
+
+### Corrigé
+- Correction de la validation GitHub Pages : cache SW v258, lazy-load des pages lourdes et ajustement des budgets JS.
+
+### Ajouté
+- Barre de navigation mobile avec drawer Applications (bottom nav).
+
+### Amélioré
+- Error boundaries et gestion des erreurs de montage pour eviter les ecrans noirs.
+- Lazy-loading des pages Fichiers, Partage, Drop et Matchs pour ameliorer le demarrage.
+- Chargement paresseux des modules et renforcement du lifecycle.
+
+## [v258] - 2026-08-08
+
+**ETHONE Cloud : partages, drops, recherche, offline et admin**
+
+### Ajouté
+- Synchronisation des metadata Drive vers Supabase (ethone_files) avec tags, favoris et resume Brain.
+- Recherche cloud full-text sur noms, tags et resume Brain.
+- Partages securises (public, prive, mot de passe, expiration, limite de telechargements).
+- Drops pour recevoir des fichiers de tiers sans connexion.
+- Pages publiques #/share?slug=... et #/drop?slug=... avec apercu, QR code et drag & drop.
+- Analyse Brain sur les fichiers : resume et suggestion de dossier.
+- Journal d'activite cloud integre a Activity Hub.
+- Cache offline IndexedDB pour metadata, favoris et file d'attente d'uploads.
+- Panneau Admin dans Fichiers : dashboard, liste des partages/drops, revocation et nettoyage des expires.
+- Cleanup automatique des shares et drops expires via POST /api/cloud/cleanup.
+
+### Amélioré
+- Mise a jour du bordereau PWA vers experience-v258.
 ## [v257] - 2026-08-07
 
 ### Ajouté

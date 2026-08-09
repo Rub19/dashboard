@@ -101,9 +101,9 @@ export function getUserIdByAlias(env, alias) {
 export function storeMailMessage(env, message) {
   const origin = projectOrigin(env);
   if (!origin) return Promise.resolve(null);
-  return supabaseRequest(env, "/rest/v1/ethone_mail_messages", {
+  return supabaseRequest(env, "/rest/v1/ethone_mail_messages?select=id", {
     method: "POST",
-    headers: { "Prefer": "return=minimal" },
+    headers: { "Prefer": "return=representation" },
     body: message,
     maxBytes: 8192
   });

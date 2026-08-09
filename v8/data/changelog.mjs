@@ -24,6 +24,15 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v291", "2026-08-14", "Phase 12 : ETHONE Mail + Brain", [
+    { kind: "feature", text: "Brain Mail : résumé automatique des messages, réponses suggérées et extraction de tâches/événements via Groq." },
+    { kind: "feature", text: "Détection d'importance automatique à la réception (mots-clés, fréquence contact, réponse directe)." },
+    { kind: "feature", text: "Règles de filtrage personnalisables : déplacement, étiquette, archive, spam, important automatique." },
+    { kind: "feature", text: "Notifications mail avec cloche de badge et liste dans la sidebar." },
+    { kind: "feature", text: "Worker : nouvelles routes /api/mail/{analyze, suggest, extract, rules, notifications}." },
+    { kind: "improvement", text: "Migration Supabase ethone_mail_phase_b : rules, notifications, colonnes analyse Brain." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v291." }
+  ]),
   entry("v290", "2026-08-13", "Phase 11 : ETHONE Mail — fondations natives", [
     { kind: "feature", text: "ETHONE Mail : interface 3 panneaux avec sidebar, liste et lecture, responsive desktop, iPad et mobile." },
     { kind: "feature", text: "Dossiers Mail : Inbox, Favoris, Envoyés, Brouillons, Archive, Spam, Corbeille avec déplacement et badges." },

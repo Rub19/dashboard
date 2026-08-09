@@ -2,6 +2,20 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v291] - 2026-08-14
+
+**Phase 12 : ETHONE Mail + Brain**
+
+### Ajoute
+- Brain Mail : résumé automatique des messages, réponses suggérées et extraction de tâches/événements via Groq.
+- Détection d'importance automatique à la réception (mots-clés, fréquence contact, réponse directe).
+- Règles de filtrage personnalisables : déplacement, étiquette, archive, spam, important automatique.
+- Notifications mail avec cloche de badge et liste dans la sidebar.
+- Worker : nouvelles routes `/api/mail/{analyze, suggest, extract, rules, notifications}`.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v291`.
+
 ## [v290] - 2026-08-13
 
 **Phase 11 : ETHONE Mail — fondations natives**

@@ -11,6 +11,21 @@ function contextualReply(query, scope) {
   if (/note|resume|résume/.test(intent)) return data.notes?.length ? `${data.notes.length} note${data.notes.length > 1 ? "s" : ""} recente${data.notes.length > 1 ? "s" : ""}. Titres et metadonnees uniquement.` : "Aucune note autorisee ici.";
   if (/agenda|calendrier|evenement/.test(intent)) return data.events?.length ? `Prochain evenement : « ${data.events[0].title} », le ${data.events[0].date}.` : "Aucun événement a venir n'est visible.";
   if (/connexion|sync|supabase/.test(intent)) return data.connections?.length ? `${data.connections.length} connexion${data.connections.length > 1 ? "s" : ""}, etat technique uniquement.` : "Connexions non chargees ou non autorisees.";
+  if (/r[ée]sumer.*email|r[ée]sum[ée].*email|resume.*message|resumé.*message|résumé.*message/i.test(intent)) {
+    const summary = data.mailSummary || data.mail?.[0]?.summary;
+    return summary ? clean(summary, "Résumé disponible.", 800) : "Aucun résumé d'email disponible. Ouvrez un email et demandez 'Résumé'.";
+  }
+  if (/r[ée]ponse.*sugg[ée]r[ée]?|suggestion.*r[ée]ponse|r[ée]pondre.*email/i.test(intent)) return "Je peux proposer des réponses. Ouvrez un email et demandez 'Réponses suggérées'.";
+  if (/extraire.*t[âa]che|extraire.*[ée]v[ée]nement|t[âa]che.*email|t[âa]ches.*email/i.test(intent)) {
+    const extracted = data.mailExtracted || data.mail?.[0]?.extracted;
+    const tasks = Array.isArray(extracted?.tasks) ? extracted.tasks : [];
+    const events = Array.isArray(extracted?.events) ? extracted.events : [];
+    if (!tasks.length && !events.length) return "Aucune tâche ou événement extrait. Ouvrez un email et demandez 'Extraire'.";
+    const parts = [];
+    if (tasks.length) parts.push(`${tasks.length} tâche${tasks.length > 1 ? "s" : ""} : ${tasks.slice(0, 3).map((t) => clean(t.title, "(sans titre)", 60)).join(", ")}`);
+    if (events.length) parts.push(`${events.length} événement${events.length > 1 ? "s" : ""} : ${events.slice(0, 3).map((e) => clean(e.title, "(sans titre)", 60)).join(", ")}`);
+    return `${parts.join(" ; ")}.`;
+  }
   if (/\b(mail|email|courriel|message|boite)\b/.test(intent)) return data.mail?.length ? `${data.mail.length} email${data.mail.length > 1 ? "s" : ""}. Dernier : « ${data.mail[0].subject} ».` : "Aucun email visible.";
   if (/densite|density|interface|reglage/.test(intent)) return data.settings ? `Mode ${data.settings.density}. Toute modification exige confirmation.` : "Ouvrez Réglages pour analyser l'apparence.";
   const counts = [[data.tasks, "priorités"], [data.notes, "notes"], [data.events, "événements"]].filter(([items]) => items?.length).map(([items, label]) => `${items.length} ${label}`);

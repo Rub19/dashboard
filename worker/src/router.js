@@ -62,6 +62,13 @@ import {
   mailSendRoute, mailSignaturesRoute, mailThreadRoute
 } from "./routes/mail.js";
 import {
+  mailAnalyzeRoute,
+  mailExtractRoute,
+  mailNotificationsRoute,
+  mailRulesRoute,
+  mailSuggestRoute
+} from "./routes/mail-brain.js";
+import {
   passkeyRegisterOptionsRoute,
   passkeyRegisterRoute,
   passkeyAuthenticateOptionsRoute,
@@ -215,7 +222,18 @@ export const ROUTES = Object.freeze([
   route("mail.contacts", "/api/mail/contacts", mailContactsRoute, { service: "mail", rateLimit: "standard" }),
   route("mail.signatures", "/api/mail/signatures", mailSignaturesRoute, { service: "mail", rateLimit: "standard" }),
   route("mail.signatures.save", "/api/mail/signatures", mailSignaturesRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
-  route("mail.signatures.delete", "/api/mail/signatures", mailSignaturesRoute, { method: "DELETE", service: "mail", rateLimit: "standard" })
+  route("mail.signatures.delete", "/api/mail/signatures", mailSignaturesRoute, { method: "DELETE", service: "mail", rateLimit: "standard" }),
+
+  // Mail brain
+  route("mail.analyze", "/api/mail/analyze", mailAnalyzeRoute, { method: "POST", service: "mail", rateLimit: "strict" }),
+  route("mail.suggest", "/api/mail/suggest", mailSuggestRoute, { method: "POST", service: "mail", rateLimit: "strict" }),
+  route("mail.extract", "/api/mail/extract", mailExtractRoute, { method: "POST", service: "mail", rateLimit: "strict" }),
+  route("mail.rules", "/api/mail/rules", mailRulesRoute, { service: "mail", rateLimit: "standard" }),
+  route("mail.rules.create", "/api/mail/rules", mailRulesRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+  route("mail.rules.update", "/api/mail/rules", mailRulesRoute, { method: "PATCH", service: "mail", rateLimit: "standard" }),
+  route("mail.rules.delete", "/api/mail/rules", mailRulesRoute, { method: "DELETE", service: "mail", rateLimit: "standard" }),
+  route("mail.notifications", "/api/mail/notifications", mailNotificationsRoute, { service: "mail", rateLimit: "standard" }),
+  route("mail.notifications.read", "/api/mail/notifications", mailNotificationsRoute, { method: "PATCH", service: "mail", rateLimit: "standard" })
 ]);
 
 function normalizedPath(pathname) {

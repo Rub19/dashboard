@@ -16,6 +16,7 @@ import {
   updateMailMessage,
   upsertContact
 } from "../services/mail-client.js";
+import { applyRules, createNotification, detectImportance, getRules } from "../services/mail-brain.js";
 
 function safeText(value, limit = 320) {
   const raw = String(value ?? "").replace(/[\u0000-\u001f\u007f]/g, "").trim();
@@ -121,10 +122,10 @@ async function resolveThreadForOutbound(env, userId, { inReplyTo, references, su
   return firstRow(create)?.id || null;
 }
 
-export async function mailSendRoute(request, env, context) {
+export async function mailSendRoute({ request, env, auth }) {
   if (request.method !== "POST") throw httpError("METHOD_NOT_ALLOWED", 405);
 
-  const auth = context?.user;
+
   if (!auth?.userId) throw httpError("UNAUTHORIZED", 401);
 
   const body = await request.json().catch(() => ({}));
@@ -226,9 +227,9 @@ export async function mailSendRoute(request, env, context) {
   return { data: { sent: true, id: result?.data?.id, from: alias.alias, to } };
 }
 
-export async function mailInboxRoute(request, env, context) {
+export async function mailInboxRoute({ request, env, auth }) {
   if (request.method !== "GET") throw httpError("METHOD_NOT_ALLOWED", 405);
-  const auth = context?.user;
+
   if (!auth?.userId) throw httpError("UNAUTHORIZED", 401);
 
   const folder = allowedFolder(request.url.searchParams.get("folder"));
@@ -246,9 +247,9 @@ export async function mailInboxRoute(request, env, context) {
   return { data: messages, meta: { folder, unread, limit, offset } };
 }
 
-export async function mailThreadRoute(request, env, context) {
+export async function mailThreadRoute({ request, env, auth }) {
   if (request.method !== "GET") throw httpError("METHOD_NOT_ALLOWED", 405);
-  const auth = context?.user;
+
   if (!auth?.userId) throw httpError("UNAUTHORIZED", 401);
 
   const threadId = safeText(request.url.searchParams.get("thread_id"), 64);
@@ -262,9 +263,9 @@ export async function mailThreadRoute(request, env, context) {
   return { data: Array.isArray(response.data) ? response.data : [] };
 }
 
-export async function mailReadRoute(request, env, context) {
+export async function mailReadRoute({ request, env, auth }) {
   if (request.method !== "POST") throw httpError("METHOD_NOT_ALLOWED", 405);
-  const auth = context?.user;
+
   if (!auth?.userId) throw httpError("UNAUTHORIZED", 401);
 
   const body = await request.json().catch(() => ({}));
@@ -282,9 +283,9 @@ export async function mailReadRoute(request, env, context) {
   return { data: { updated: true } };
 }
 
-export async function mailMoveRoute(request, env, context) {
+export async function mailMoveRoute({ request, env, auth }) {
   if (request.method !== "POST") throw httpError("METHOD_NOT_ALLOWED", 405);
-  const auth = context?.user;
+
   if (!auth?.userId) throw httpError("UNAUTHORIZED", 401);
 
   const body = await request.json().catch(() => ({}));
@@ -304,11 +305,11 @@ export async function mailMoveRoute(request, env, context) {
   return { data: { moved: ids.length } };
 }
 
-export async function mailLabelsRoute(request, env, context) {
+export async function mailLabelsRoute({ request, env, auth }) {
   if (request.method !== "GET" && request.method !== "POST" && request.method !== "PATCH" && request.method !== "DELETE") {
     throw httpError("METHOD_NOT_ALLOWED", 405);
   }
-  const auth = context?.user;
+
   if (!auth?.userId) throw httpError("UNAUTHORIZED", 401);
 
   if (request.method === "GET") {
@@ -363,11 +364,11 @@ export async function mailLabelsRoute(request, env, context) {
   return { data: { updated: ids.length } };
 }
 
-export async function mailDraftsRoute(request, env, context) {
+export async function mailDraftsRoute({ request, env, auth }) {
   if (request.method !== "GET" && request.method !== "POST" && request.method !== "DELETE") {
     throw httpError("METHOD_NOT_ALLOWED", 405);
   }
-  const auth = context?.user;
+
   if (!auth?.userId) throw httpError("UNAUTHORIZED", 401);
 
   if (request.method === "GET") {
@@ -445,9 +446,9 @@ export async function mailDraftsRoute(request, env, context) {
   return { data: { id: firstRow(create)?.id, saved: true } };
 }
 
-export async function mailSearchRoute(request, env, context) {
+export async function mailSearchRoute({ request, env, auth }) {
   if (request.method !== "GET") throw httpError("METHOD_NOT_ALLOWED", 405);
-  const auth = context?.user;
+
   if (!auth?.userId) throw httpError("UNAUTHORIZED", 401);
 
   const q = safeText(request.url.searchParams.get("q"), 120);
@@ -459,9 +460,9 @@ export async function mailSearchRoute(request, env, context) {
   return { data: messages, meta: { q, limit, offset } };
 }
 
-export async function mailContactsRoute(request, env, context) {
+export async function mailContactsRoute({ request, env, auth }) {
   if (request.method !== "GET") throw httpError("METHOD_NOT_ALLOWED", 405);
-  const auth = context?.user;
+
   if (!auth?.userId) throw httpError("UNAUTHORIZED", 401);
 
   const limit = Math.min(200, Math.max(1, Number(request.url.searchParams.get("limit")) || 50));
@@ -469,11 +470,11 @@ export async function mailContactsRoute(request, env, context) {
   return { data: contacts };
 }
 
-export async function mailSignaturesRoute(request, env, context) {
+export async function mailSignaturesRoute({ request, env, auth }) {
   if (request.method !== "GET" && request.method !== "POST" && request.method !== "PATCH" && request.method !== "DELETE") {
     throw httpError("METHOD_NOT_ALLOWED", 405);
   }
-  const auth = context?.user;
+
   if (!auth?.userId) throw httpError("UNAUTHORIZED", 401);
 
   if (request.method === "GET") {
@@ -533,9 +534,9 @@ export async function mailSignaturesRoute(request, env, context) {
   return { data: firstRow(create) };
 }
 
-export async function mailAliasRoute(request, env, context) {
+export async function mailAliasRoute({ request, env, auth }) {
   if (request.method !== "GET" && request.method !== "POST") throw httpError("METHOD_NOT_ALLOWED", 405);
-  const auth = context?.user;
+
   if (!auth?.userId) throw httpError("UNAUTHORIZED", 401);
 
   if (request.method === "GET") {
@@ -586,7 +587,10 @@ export async function mailReceiveHandler(message, env, context) {
   });
 
   const now = new Date().toISOString();
-  const stored = await storeMailMessage(env, {
+  const fromName = message.headers.get("from")?.replace(/<[^>]+>/, "").trim() || from;
+  const attachments = Array.isArray(message.attachments) ? message.attachments : [];
+
+  const dbMessage = {
     user_id: userId,
     alias_id: alias?.id || null,
     thread_id: threadId,
@@ -594,7 +598,7 @@ export async function mailReceiveHandler(message, env, context) {
     folder: "inbox",
     status: "received",
     from_address: from,
-    from_name: message.headers.get("from")?.replace(/<[^>]+>/, "").trim() || from,
+    from_name: fromName,
     to_addresses: [to],
     cc_addresses: message.headers.get("cc")?.split(",").map((e) => e.trim()).filter(Boolean) || [],
     bcc_addresses: message.headers.get("bcc")?.split(",").map((e) => e.trim()).filter(Boolean) || [],
@@ -604,11 +608,35 @@ export async function mailReceiveHandler(message, env, context) {
     body_html: html,
     headers: Object.fromEntries(message.headers.entries()),
     raw_size: message.rawSize || 0,
+    is_read: false,
+    is_important: false,
+    is_spam: false,
+    labels: [],
+    attachments,
     received_at: now,
     created_at: now
-  });
+  };
 
-  await upsertContact(env, userId, { email: from, name: message.headers.get("from")?.replace(/<[^>]+>/, "").trim() || from, direction: "inbound" }).catch(() => null);
+  const stored = await storeMailMessage(env, dbMessage);
+  const saved = firstRow(stored);
+  if (!saved?.id) return null;
 
-  return stored;
+  const brainMessage = { ...dbMessage, id: saved.id, in_reply_to: inReplyTo || null };
+  const rules = await getRules(env, userId);
+  const { ruleIds, message: processed } = await applyRules(env, userId, brainMessage, rules);
+  await detectImportance(env, userId, processed);
+
+  const patch = {
+    folder: processed.folder,
+    is_read: processed.is_read,
+    is_important: processed.is_important,
+    is_spam: processed.is_spam,
+    labels: Array.isArray(processed.labels) ? processed.labels : []
+  };
+  await updateMailMessage(env, saved.id, userId, patch).catch(() => null);
+
+  await createNotification(env, userId, processed, ruleIds[0] || null).catch(() => null);
+  await upsertContact(env, userId, { email: from, name: fromName, direction: "inbound" }).catch(() => null);
+
+  return saved;
 }

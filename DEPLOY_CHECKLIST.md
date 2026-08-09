@@ -1,4 +1,4 @@
-# Checklist de déploiement — ETHONE Cloud (Phases 2-8 + Mail Phase A)
+# Checklist de déploiement — ETHONE Cloud (Phases 2-8 + Mail Phase B)
 
 > Dernière mise à jour : 2026-08-13
 
@@ -24,6 +24,9 @@ Exécuter dans l'ordre via le SQL Editor de Supabase ou `psql` :
 
 -- 006 : ETHONE Mail Phase A (folders, labels, signatures, contacts, search_vector, attachments)
 \i supabase/migrations/202608130001_ethone_mail_phase_a.sql
+
+-- 007 : ETHONE Mail Phase B (Brain, rules, notifications, colonnes analyse)
+\i supabase/migrations/202608140001_ethone_mail_phase_b.sql
 ```
 
 ### Configuration Cloudflare Email Routing
@@ -98,7 +101,7 @@ wrangler deploy
 
 1. Publier les fichiers statiques (racine `index.html`, `sw.js`, `v8/`, `worker/` non inclus) sur le domaine final.
 2. S'assurer que `sw.js` est servi avec `Content-Type: application/javascript` et `Cache-Control: no-cache`.
-3. Vider le cache navigateur / unregister le SW pour forcer `experience-v290`.
+3. Vider le cache navigateur / unregister le SW pour forcer `experience-v291`.
 
 ## 6. Vérifications post-déploiement
 
@@ -117,16 +120,19 @@ wrangler deploy
 ### Nouveaux
 
 - `supabase/migrations/202608130001_ethone_mail_phase_a.sql`
+- `supabase/migrations/202608140001_ethone_mail_phase_b.sql`
+- `worker/src/services/mail-brain.js`
+- `worker/src/routes/mail-brain.js`
 
 ### Modifiés
 
-- `index.html`, `404.html`, `sw.js` (experience-v290)
+- `index.html`, `404.html`, `sw.js` (experience-v291)
 - `v8/core/style-loader.mjs`
 - `v8/data/changelog.mjs`
+- `CHANGELOG.md`
 - `v8/pages/mail.mjs`
 - `v8/styles/mail.css`
 - `v8/services/external-services-client.mjs`
-- `v8/brain/preferences.mjs`
 - `v8/brain/context-engine.mjs`
 - `v8/brain/action-registry.mjs`
 - `v8/brain/controller.mjs`
@@ -136,4 +142,4 @@ wrangler deploy
 
 ## 8. Changelog
 
-Entrée `v290` ajoutée dans `v8/data/changelog.mjs` et `CHANGELOG.md`.
+Entrées `v290` et `v291` ajoutées dans `v8/data/changelog.mjs` et `CHANGELOG.md`.

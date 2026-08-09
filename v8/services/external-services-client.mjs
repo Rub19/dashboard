@@ -110,7 +110,16 @@ const OPERATIONS = Object.freeze({
   mailContacts: Object.freeze({ path: "/api/mail/contacts", auth: true, params: ["limit"] }),
   mailSignatures: Object.freeze({ path: "/api/mail/signatures", auth: true, params: [] }),
   mailSignatureSave: Object.freeze({ path: "/api/mail/signatures", method: "POST", auth: true, params: ["id", "name", "content", "is_default"], rawBody: true }),
-  mailSignatureDelete: Object.freeze({ path: "/api/mail/signatures", method: "DELETE", auth: true, params: ["id"], rawBody: true })
+  mailSignatureDelete: Object.freeze({ path: "/api/mail/signatures", method: "DELETE", auth: true, params: ["id"], rawBody: true }),
+  mailAnalyze: Object.freeze({ path: "/api/mail/analyze", method: "POST", auth: true, params: ["id"], rawBody: true }),
+  mailSuggest: Object.freeze({ path: "/api/mail/suggest", method: "POST", auth: true, params: ["id"], rawBody: true }),
+  mailExtract: Object.freeze({ path: "/api/mail/extract", method: "POST", auth: true, params: ["id"], rawBody: true }),
+  mailRules: Object.freeze({ path: "/api/mail/rules", auth: true, params: ["limit"] }),
+  mailRuleSave: Object.freeze({ path: "/api/mail/rules", method: "POST", auth: true, params: ["id", "name", "is_active", "priority", "condition_from", "condition_domain", "condition_subject", "condition_body", "condition_has_attachments", "action_mark_read", "action_mark_important", "action_mark_spam", "action_archive", "action_move_to", "action_label", "action_forward_to"], rawBody: true }),
+  mailRuleUpdate: Object.freeze({ path: "/api/mail/rules", method: "PATCH", auth: true, params: ["id", "name", "is_active", "priority", "condition_from", "condition_domain", "condition_subject", "condition_body", "condition_has_attachments", "action_mark_read", "action_mark_important", "action_mark_spam", "action_archive", "action_move_to", "action_label", "action_forward_to"], rawBody: true }),
+  mailRuleDelete: Object.freeze({ path: "/api/mail/rules", method: "DELETE", auth: true, params: ["id"], rawBody: true }),
+  mailNotifications: Object.freeze({ path: "/api/mail/notifications", auth: true, params: ["unread", "limit"] }),
+  mailNotificationRead: Object.freeze({ path: "/api/mail/notifications", method: "PATCH", auth: true, params: ["id", "is_read"], rawBody: true })
 });
 
 function clientError(code, message, details = {}) {
@@ -449,7 +458,16 @@ export function createExternalServicesClient(options = {}) {
       contacts: (options = {}) => execute("mailContacts", options),
       signatures: () => execute("mailSignatures", {}),
       saveSignature: (payload) => execute("mailSignatureSave", payload),
-      deleteSignature: (id) => execute("mailSignatureDelete", { id })
+      deleteSignature: (id) => execute("mailSignatureDelete", { id }),
+      analyze: (id) => execute("mailAnalyze", { id }),
+      suggest: (id) => execute("mailSuggest", { id }),
+      extract: (id) => execute("mailExtract", { id }),
+      rules: (limit) => execute("mailRules", limit ? { limit } : {}),
+      saveRule: (payload) => execute("mailRuleSave", payload),
+      updateRule: (payload) => execute("mailRuleUpdate", payload),
+      deleteRule: (id) => execute("mailRuleDelete", { id }),
+      notifications: ({ unread, limit } = {}) => execute("mailNotifications", { unread, limit }),
+      markNotificationRead: (id, isRead) => execute("mailNotificationRead", { id, is_read: isRead })
     }),
     diagnostics: () => Object.freeze({ ...status, activeRequests: activeControllers.size, environment: config.environment, baseUrl: network.redactUrl?.(baseUrl) || baseUrl }),
     destroy

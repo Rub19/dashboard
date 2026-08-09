@@ -120,6 +120,7 @@ function getFromAddress(message) {
 export function mountMail(stage, options = {}) {
   const mailApi = options?.externalServices?.mail || null;
   const notify = typeof options.notify === "function" ? options.notify : () => {};
+  const repository = options?.repository || null;
 
   if (!mailApi) {
     stage.replaceChildren(statusState("integration", {
@@ -143,7 +144,11 @@ export function mountMail(stage, options = {}) {
     signatures: [],
     alias: null,
     counts: {},
-    loading: false
+    loading: false,
+    notifications: [],
+    unreadCount: 0,
+    rules: [],
+    notificationOpen: false
   };
 
   let searchTimer = null;
@@ -173,12 +178,18 @@ export function mountMail(stage, options = {}) {
     attributes: { type: "button", "aria-label": "Dossiers" }
   }, [icon("menu")]);
   const newBtn = actionButton({ actionId: "v8.mail.compose", variant: "primary" }, [icon("plus"), element("span", { text: "Nouveau" })]);
-  const listHeader = element("header", { className: "v8-mail-list-header" }, [menuButton, listTitle, searchInput, newBtn]);
+  const bellBadge = element("span", { className: "v8-mail-bell__badge" });
+  const bellBtn = element("button", {
+    className: "v8-icon-button v8-mail-bell",
+    attributes: { type: "button", "aria-label": "Notifications" }
+  }, [icon("bell"), bellBadge]);
+  const listHeader = element("header", { className: "v8-mail-list-header" }, [menuButton, listTitle, searchInput, bellBtn, newBtn]);
   const messageList = element("ul", { className: "v8-mail-list" });
   listWrap.append(listHeader, messageList);
 
   menuButton.addEventListener("click", () => sidebar.classList.toggle("is-open"));
   newBtn.addEventListener("click", () => openCompose());
+  bellBtn.addEventListener("click", toggleNotifications);
 
   searchInput.addEventListener("input", () => {
     const q = searchInput.value.trim();
@@ -236,6 +247,94 @@ export function mountMail(stage, options = {}) {
       state.signatures = result?.data || result || [];
     } catch {
       state.signatures = [];
+    }
+  }
+
+  function renderBell() {
+    const count = state.unreadCount || 0;
+    bellBadge.textContent = count ? String(count) : "";
+    bellBadge.classList.toggle("is-empty", !count);
+  }
+
+  function toggleNotifications() {
+    state.notificationOpen = !state.notificationOpen;
+    if (window.innerWidth < 1024) sidebar.classList.add("is-open");
+    renderSidebar();
+  }
+
+  async function loadNotifications() {
+    if (!mailApi?.notifications) {
+      state.notifications = [];
+      state.unreadCount = 0;
+      renderBell();
+      return;
+    }
+    try {
+      const [unreadResult, allResult] = await Promise.all([
+        mailApi.notifications({ unread: true, limit: 50 }),
+        mailApi.notifications({ limit: 20 })
+      ]);
+      const unreadData = Array.isArray(unreadResult) ? unreadResult : (unreadResult?.data || []);
+      const allData = Array.isArray(allResult) ? allResult : (allResult?.data || []);
+      state.unreadCount = unreadResult?.count ?? unreadResult?.unread_count ?? unreadData.length;
+      state.notifications = allData;
+    } catch (error) {
+      notify({ type: "error", title: "Notifications", message: errorDescription(error) });
+      state.notifications = [];
+      state.unreadCount = 0;
+    }
+    renderBell();
+    renderSidebar();
+  }
+
+  async function markNotificationRead(notification) {
+    if (!notification || notification.is_read) return;
+    if (!mailApi?.markNotificationRead) return;
+    try {
+      await mailApi.markNotificationRead(notification.id, true);
+      notification.is_read = true;
+      state.unreadCount = Math.max(0, state.unreadCount - 1);
+      renderBell();
+      renderSidebar();
+    } catch (error) {
+      notify({ type: "error", title: "Notification", message: errorDescription(error) });
+    }
+  }
+
+  async function loadRules() {
+    if (!mailApi?.rules) {
+      state.rules = [];
+      return;
+    }
+    try {
+      const result = await mailApi.rules(50);
+      state.rules = Array.isArray(result) ? result : (result?.data || []);
+    } catch (error) {
+      notify({ type: "error", title: "Règles", message: errorDescription(error) });
+      state.rules = [];
+    }
+    renderSidebar();
+  }
+
+  async function saveRule(payload) {
+    if (!mailApi?.saveRule) return;
+    try {
+      await mailApi.saveRule(payload);
+      notify({ type: "success", title: "Règle", message: "Règle enregistrée." });
+      await loadRules();
+    } catch (error) {
+      notify({ type: "error", title: "Règle", message: errorDescription(error) });
+    }
+  }
+
+  async function deleteRule(id) {
+    if (!mailApi?.deleteRule) return;
+    try {
+      await mailApi.deleteRule(id);
+      notify({ type: "success", title: "Règle", message: "Règle supprimée." });
+      await loadRules();
+    } catch (error) {
+      notify({ type: "error", title: "Règle", message: errorDescription(error) });
     }
   }
 
@@ -388,17 +487,16 @@ export function mountMail(stage, options = {}) {
 
   async function assignLabel(ids, labelName, remove = false) {
     if (!mailApi || !ids.length || !labelName) return;
+    const matchedLabel = state.labels.find((l) => l.name === labelName);
+    const labelId = matchedLabel?.id;
     try {
       await mailApi.assignLabel(ids, labelName, remove);
       notify({ type: "success", title: "Étiquette", message: remove ? "Étiquette retirée." : "Étiquette assignée." });
       if (state.selected && ids.map(String).includes(String(state.selected.id))) {
         if (remove) {
           state.selected.labels = (state.selected.labels || []).filter((l) => l.id !== labelId);
-        } else {
-          const label = state.labels.find((l) => l.id === labelId);
-          if (label && !state.selected.labels?.some((l) => l.id === labelId)) {
-            state.selected.labels = [...(state.selected.labels || []), label];
-          }
+        } else if (matchedLabel && !state.selected.labels?.some((l) => l.id === labelId)) {
+          state.selected.labels = [...(state.selected.labels || []), matchedLabel];
         }
         renderReading();
       }
@@ -427,6 +525,80 @@ export function mountMail(stage, options = {}) {
       folderList.append(element("li", {}, [btn]));
     });
 
+    const rulesTitle = element("strong", { className: "v8-mail-sidebar__section", text: "Règles" });
+
+    const ruleNameInput = element("input", {
+      className: "v8-input v8-mail-rule-input",
+      attributes: { type: "text", placeholder: "Nom de la règle", maxlength: "64" }
+    });
+    const ruleConditionInput = element("input", {
+      className: "v8-input v8-mail-rule-input",
+      attributes: { type: "text", placeholder: "Si le sujet contient...", maxlength: "128" }
+    });
+    const ruleActionType = element("select", { className: "v8-input v8-mail-rule-select" }, [
+      element("option", { text: "Étiqueter", attributes: { value: "label" } }),
+      element("option", { text: "Déplacer", attributes: { value: "move" } })
+    ]);
+    const ruleTargetInput = element("input", {
+      className: "v8-input v8-mail-rule-input",
+      attributes: { type: "text", placeholder: "Nom de l'étiquette ou dossier", maxlength: "64" }
+    });
+    const ruleSaveBtn = actionButton({ actionId: "v8.mail.rule.save", variant: "secondary" }, [icon("plus"), element("span", { text: "Créer" })]);
+    const ruleForm = element("div", { className: "v8-mail-rules__form" }, [ruleNameInput, ruleConditionInput, ruleActionType, ruleTargetInput, ruleSaveBtn]);
+
+    ruleSaveBtn.addEventListener("click", async () => {
+      const payload = {
+        name: ruleNameInput.value.trim(),
+        condition: { subject: ruleConditionInput.value.trim() },
+        action: { type: ruleActionType.value, target: ruleTargetInput.value.trim() },
+        enabled: true
+      };
+      if (!payload.name || !payload.condition.subject || !payload.action.target) {
+        notify({ type: "warning", title: "Règle", message: "Remplissez tous les champs." });
+        return;
+      }
+      await saveRule(payload);
+      ruleNameInput.value = "";
+      ruleConditionInput.value = "";
+      ruleTargetInput.value = "";
+    });
+
+    const rulesList = element("ul", { className: "v8-mail-rules__list" });
+    state.rules.forEach((rule) => {
+      const name = rule.name || "Règle";
+      const condition = rule.condition?.subject ? `sujet contient "${rule.condition.subject}"` : "";
+      const actionType = rule.action?.type === "move" ? "Déplacer" : "Étiqueter";
+      const actionTarget = rule.action?.target || "";
+      const item = element("li", { className: "v8-mail-rule" }, [
+        element("span", { className: "v8-mail-rule__info" }, [
+          element("strong", { text: name }),
+          element("small", { text: `${condition} -> ${actionType} ${actionTarget}` })
+        ]),
+        element("button", {
+          className: "v8-icon-button",
+          attributes: { type: "button", "aria-label": `Supprimer ${name}` }
+        }, [icon("trash-2")])
+      ]);
+      item.querySelector("button").addEventListener("click", () => deleteRule(rule.id));
+      rulesList.append(item);
+    });
+
+    const notificationsTitle = element("strong", { className: "v8-mail-sidebar__section", text: "Notifications" });
+    const notificationsList = element("ul", { className: `v8-mail-notifications${state.notificationOpen ? " is-open" : ""}` });
+    if (state.notifications.length) {
+      state.notifications.forEach((n) => {
+        const isUnread = !n.is_read;
+        const item = element("li", { className: `v8-mail-notification${isUnread ? " is-unread" : ""}` }, [
+          element("span", { className: "v8-mail-notification__title", text: n.title || n.message || "Notification" }),
+          element("small", { className: "v8-mail-notification__meta", text: formatMailDate(n.created_at || n.sent_at || n.date) })
+        ]);
+        item.addEventListener("click", () => markNotificationRead(n));
+        notificationsList.append(item);
+      });
+    } else {
+      notificationsList.append(element("li", { className: "v8-mail-notification", text: "Aucune notification" }));
+    }
+
     const labelsTitle = element("strong", { className: "v8-mail-sidebar__section", text: "Étiquettes" });
     const labelList = element("ul", { className: "v8-mail-labels" });
     state.labels.forEach((l) => {
@@ -449,7 +621,8 @@ export function mountMail(stage, options = {}) {
       if (event.key === "Enter" && newLabelInput.value.trim()) createLabel(newLabelInput.value.trim());
     });
 
-    sidebar.append(title, folderList, labelsTitle, labelList, newLabelInput);
+    sidebar.append(title, folderList, rulesTitle, ruleForm, rulesList, notificationsTitle, notificationsList, labelsTitle, labelList, newLabelInput);
+    renderBell();
     refreshIcons();
   }
 
@@ -553,6 +726,181 @@ export function mountMail(stage, options = {}) {
     }
   }
 
+  function useSuggestion(message, suggestion) {
+    const replyTo = getFromAddress(message);
+    const inReplyTo = message.message_id || message.id;
+    const references = Array.isArray(message.references) ? [...message.references, inReplyTo] : [inReplyTo];
+    openCompose({
+      replyTo,
+      subject: `Re: ${message.subject || ""}`,
+      inReplyTo,
+      references,
+      quote: message,
+      prefill: suggestion
+    });
+  }
+
+  async function createItem(item, type) {
+    if (!repository) {
+      notify({ type: "info", title: "Création", message: "prêt à copier" });
+      return;
+    }
+    try {
+      if (type === "task" && typeof repository.tasks?.create === "function") {
+        await repository.tasks.create(item);
+        notify({ type: "success", title: "Tâche", message: "Tâche créée." });
+      } else if (type === "event" && typeof repository.events?.create === "function") {
+        await repository.events.create(item);
+        notify({ type: "success", title: "Événement", message: "Événement créé." });
+      } else if (type === "note" && typeof repository.notes?.create === "function") {
+        const payload = {
+          title: item.title || item.text || "Extrait",
+          content: item.description || item.text || JSON.stringify(item)
+        };
+        await repository.notes.create(payload);
+        notify({ type: "success", title: "Note", message: "Note créée." });
+      } else {
+        notify({ type: "info", title: "Création", message: "prêt à copier" });
+      }
+    } catch (error) {
+      notify({ type: "error", title: "Création", message: errorDescription(error) });
+    }
+  }
+
+  async function analyzeMessage(message, panel) {
+    if (!mailApi?.analyze) {
+      notify({ type: "warning", title: "Brain", message: "L'analyse n'est pas disponible." });
+      return;
+    }
+    try {
+      const result = await mailApi.analyze(message.id);
+      const data = result?.data || result || {};
+      const summary = data.brain_summary || data.summary || "";
+      const tasks = data.extracted_tasks || data.tasks || [];
+      const events = data.extracted_events || data.events || [];
+      panel.replaceChildren(buildBrainSummary(summary, tasks, events));
+      panel.hidden = false;
+    } catch (error) {
+      notify({ type: "error", title: "Brain", message: errorDescription(error) });
+    }
+  }
+
+  async function suggestMessage(message, panel) {
+    if (!mailApi?.suggest) {
+      notify({ type: "warning", title: "Brain", message: "Les suggestions ne sont pas disponibles." });
+      return;
+    }
+    try {
+      const result = await mailApi.suggest(message.id);
+      const suggestions = result?.data?.suggestions || result?.suggestions || (Array.isArray(result) ? result : []);
+      panel.replaceChildren(buildSuggestionChips(suggestions.slice(0, 3), message));
+      panel.hidden = false;
+    } catch (error) {
+      notify({ type: "error", title: "Brain", message: errorDescription(error) });
+    }
+  }
+
+  async function extractMessage(message, panel) {
+    if (!mailApi?.extract) {
+      notify({ type: "warning", title: "Brain", message: "L'extraction n'est pas disponible." });
+      return;
+    }
+    try {
+      const result = await mailApi.extract(message.id);
+      const data = result?.data || result || {};
+      const tasks = data.extracted_tasks || data.tasks || [];
+      const events = data.extracted_events || data.events || [];
+      panel.replaceChildren(buildExtractList(tasks, events));
+      panel.hidden = false;
+    } catch (error) {
+      notify({ type: "error", title: "Brain", message: errorDescription(error) });
+    }
+  }
+
+  function buildBrainSummary(summary, tasks, events) {
+    const wrap = element("div", { className: "v8-mail-brain" });
+    if (summary) {
+      const summaryNode = element("div", { className: "v8-mail-brain__summary" });
+      summaryNode.innerHTML = sanitizeMailHtml(text2br(summary));
+      wrap.append(summaryNode);
+    }
+    if (tasks.length) {
+      const list = element("ul", { className: "v8-mail-brain__list" });
+      tasks.forEach((t) => {
+        list.append(element("li", {}, [element("span", { text: t.title || t.text || String(t) })]));
+      });
+      wrap.append(element("strong", { className: "v8-mail-brain__section-title", text: "Tâches extraites" }), list);
+    }
+    if (events.length) {
+      const list = element("ul", { className: "v8-mail-brain__list" });
+      events.forEach((e) => {
+        list.append(element("li", {}, [element("span", { text: e.title || e.text || String(e) })]));
+      });
+      wrap.append(element("strong", { className: "v8-mail-brain__section-title", text: "Événements extraits" }), list);
+    }
+    if (!summary && !tasks.length && !events.length) {
+      wrap.append(element("p", { text: "Aucune analyse disponible." }));
+    }
+    return wrap;
+  }
+
+  function buildSuggestionChips(suggestions, message) {
+    const wrap = element("div", { className: "v8-mail-suggestions" });
+    if (!suggestions.length) {
+      wrap.append(element("p", { text: "Aucune suggestion." }));
+      return wrap;
+    }
+    suggestions.forEach((suggestion) => {
+      const suggestionText = suggestion.text || suggestion.body || suggestion.label || String(suggestion);
+      const chip = element("button", {
+        className: "v8-mail-suggestion",
+        attributes: { type: "button" },
+        text: suggestionText
+      });
+      chip.addEventListener("click", () => useSuggestion(message, suggestionText));
+      wrap.append(chip);
+    });
+    return wrap;
+  }
+
+  function buildExtractList(tasks, events) {
+    const wrap = element("div", { className: "v8-mail-brain" });
+    if (tasks.length) {
+      const list = element("ul", { className: "v8-mail-brain__list" });
+      tasks.forEach((task) => {
+        const title = task.title || task.text || String(task);
+        const taskBtn = element("button", { className: "v8-button v8-button--secondary v8-mail-brain__action", attributes: { type: "button" }, text: "Tâche" });
+        const noteBtn = element("button", { className: "v8-button v8-button--outline v8-mail-brain__action", attributes: { type: "button" }, text: "Note" });
+        taskBtn.addEventListener("click", () => createItem(task, "task"));
+        noteBtn.addEventListener("click", () => createItem(task, "note"));
+        list.append(element("li", { className: "v8-mail-brain__item" }, [
+          element("span", { className: "v8-mail-brain__item-title", text: title }),
+          element("span", { className: "v8-mail-brain__actions" }, [taskBtn, noteBtn])
+        ]));
+      });
+      wrap.append(element("strong", { className: "v8-mail-brain__section-title", text: "Tâches" }), list);
+    }
+    if (events.length) {
+      const list = element("ul", { className: "v8-mail-brain__list" });
+      events.forEach((eventItem) => {
+        const title = eventItem.title || eventItem.text || String(eventItem);
+        const eventBtn = element("button", { className: "v8-button v8-button--secondary v8-mail-brain__action", attributes: { type: "button" }, text: "Événement" });
+        const noteBtn = element("button", { className: "v8-button v8-button--outline v8-mail-brain__action", attributes: { type: "button" }, text: "Note" });
+        eventBtn.addEventListener("click", () => createItem(eventItem, "event"));
+        noteBtn.addEventListener("click", () => createItem(eventItem, "note"));
+        list.append(element("li", { className: "v8-mail-brain__item" }, [
+          element("span", { className: "v8-mail-brain__item-title", text: title }),
+          element("span", { className: "v8-mail-brain__actions" }, [eventBtn, noteBtn])
+        ]));
+      });
+      wrap.append(element("strong", { className: "v8-mail-brain__section-title", text: "Événements" }), list);
+    }
+    if (!tasks.length && !events.length) {
+      wrap.append(element("p", { text: "Aucun élément extrait." }));
+    }
+    return wrap;
+  }
+
   function buildDetail(message) {
     const from = message.from_name || getFromAddress(message) || "Inconnu";
     const to = Array.isArray(message.to) ? message.to.join(", ") : message.to || "";
@@ -637,9 +985,20 @@ export function mountMail(stage, options = {}) {
       element("div", { className: "v8-mail-detail__labels" }, [...labels, assignSelect])
     ]);
 
-    const bodyNode = element("div", { className: "v8-mail-detail__body" }, [
-      element("div", { className: "v8-mail-detail__content", html: body })
-    ]);
+    const bodyNode = element("div", { className: "v8-mail-detail__body" });
+    const contentNode = element("div", { className: "v8-mail-detail__content" });
+    contentNode.innerHTML = body;
+    bodyNode.append(contentNode);
+
+    const summarizeBtn = actionButton({ actionId: "v8.mail.brain.summarize", variant: "secondary" }, [icon("brain"), element("span", { text: "Résumer" })]);
+    const suggestBtn = actionButton({ actionId: "v8.mail.brain.suggest", variant: "secondary" }, [icon("message-square"), element("span", { text: "Réponses suggérées" })]);
+    const extractBtn = actionButton({ actionId: "v8.mail.brain.extract", variant: "secondary" }, [icon("search"), element("span", { text: "Extraire" })]);
+    const brainToolbar = element("div", { className: "v8-mail-brain__toolbar" }, [summarizeBtn, suggestBtn, extractBtn]);
+    const brainPanel = element("div", { className: "v8-mail-brain__panel", attributes: { hidden: "" } });
+
+    summarizeBtn.addEventListener("click", () => analyzeMessage(message, brainPanel));
+    suggestBtn.addEventListener("click", () => suggestMessage(message, brainPanel));
+    extractBtn.addEventListener("click", () => extractMessage(message, brainPanel));
 
     const actions = element("footer", { className: "v8-mail-detail__actions" }, [
       replyBtn,
@@ -651,12 +1010,12 @@ export function mountMail(stage, options = {}) {
       importantBtn
     ]);
 
-    const detail = element("article", { className: "v8-mail-detail" }, [header, bodyNode, actions]);
+    const detail = element("article", { className: "v8-mail-detail" }, [header, brainToolbar, brainPanel, bodyNode, actions]);
     reading.append(detail);
     refreshIcons();
   }
 
-  function openReply(message) {
+  function openReply(message, prefill = "") {
     state.selected = message;
     const replyTo = getFromAddress(message);
     const inReplyTo = message.message_id || message.id;
@@ -666,7 +1025,8 @@ export function mountMail(stage, options = {}) {
       subject: `Re: ${message.subject || ""}`,
       inReplyTo,
       references,
-      quote: message
+      quote: message,
+      prefill
     });
   }
 
@@ -973,12 +1333,16 @@ export function mountMail(stage, options = {}) {
       el.addEventListener("input", scheduleDraftSave)
     );
 
+    const prefill = opts.prefill ? text2br(opts.prefill) : "";
+    const prefillBlock = prefill ? `<p>${prefill}</p>` : "";
     if (draft?.body_html || draft?.body_text) {
       editor.setHTML(draft.body_html || text2br(draft.body_text));
     } else if (reply) {
-      editor.setHTML(`<p><br></p>${quoteOriginal(reply)}`);
+      editor.setHTML(`${prefillBlock}<p><br></p>${quoteOriginal(reply)}`);
     } else if (forward) {
-      editor.setHTML(`<p><br></p>${quoteOriginal(forward, true)}`);
+      editor.setHTML(`${prefillBlock}<p><br></p>${quoteOriginal(forward, true)}`);
+    } else if (prefill) {
+      editor.setHTML(prefillBlock);
     } else {
       editor.setHTML("<p><br></p>");
       if (defaultSignature) insertSignature(defaultSignature);
@@ -1069,7 +1433,7 @@ export function mountMail(stage, options = {}) {
   }
 
   async function init() {
-    await Promise.all([loadAlias(), loadLabels(), loadContacts(), loadSignatures()]);
+    await Promise.all([loadAlias(), loadLabels(), loadContacts(), loadSignatures(), loadRules(), loadNotifications()]);
     renderSidebar();
     await loadFolder();
     renderReading();

@@ -36,7 +36,7 @@ function routeContext(route, snapshot, state, permissions) {
   include("activity", "activity", "activity", ["activity", "home", "brain"], snapshot.activities || [], 10, "Dix signaux récents maximum", (item) => ({ source: item.source, category: item.category, title: item.title, timestamp: item.timestamp }));
   include("gaming", "gaming", "gaming", ["home", "activity", "brain"], gaming, 6, "Six signaux jeu ou media", (item) => ({ source: item.source, title: item.title, timestamp: item.timestamp }));
   include("files", "files", "files", ["files"], snapshot.files || [], 8, "Noms et types, sans contenu", (item) => ({ id: item.id, name: item.name, type: item.type, favorite: item.favorite }));
-  include("mail", "mail", "mail", ["mail", "home", "brain"], snapshot.mail || [], 8, "Sujets et expéditeurs récents", (item) => ({ id: item.id, subject: clean(item.subject, 120), from: clean(item.from_address, 120), receivedAt: item.received_at }));
+  include("mail", "mail", "mail", ["mail", "home", "brain"], snapshot.mail || [], 8, "Sujets, expéditeurs, résumés et extractions récents", (item) => ({ id: item.id, subject: clean(item.subject, 120), from: clean(item.from_address, 120), receivedAt: item.received_at, summary: clean(item.summary, 500), extracted: item.extracted }));
 
   const settingsActive = route === "settings" && permissions.settings === true;
   if (settingsActive) context.settings = { theme: state.theme, accent: state.accent, density: state.density, densityEffective: state.densityEffective || state.density };

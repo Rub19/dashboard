@@ -14,6 +14,19 @@ const empty = () => ({});
 
 function requireId(value) { const id = clean(value, "", 80); if (!id) throw new TypeError("Identifiant requis."); return id; }
 function key(value) { return clean(value, "", 80).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
+function parseSuggestionList(content, fallback = []) {
+  if (Array.isArray(content)) return content.map(String).filter(Boolean);
+  const text = String(content || "").trim();
+  if (!text) return fallback;
+  const code = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+  const inner = code ? code[1].trim() : text;
+  try {
+    const parsed = JSON.parse(inner);
+    if (Array.isArray(parsed) && parsed.length) return parsed.map(String).filter(Boolean);
+  } catch {}
+  const lines = inner.split(/\n+/).map((line) => line.replace(/^(?:\d+[\.\)]\s*|[\-\*•]\s*)/, "").trim()).filter(Boolean);
+  return lines.length ? lines : fallback;
+}
 
 export function createBrainActionRegistry(options = {}) {
   const repository = options.repository;
@@ -56,12 +69,30 @@ export function createBrainActionRegistry(options = {}) {
 
   // Mail actions.
   add("mail.open", "Ouvrir Mail", "Ouvre la boîte ETHONE Mail.", null, false, {}, empty, () => dispatch(ROUTES.mail));
-  add("mail.summarize", "Resumer les emails", "Resume les emails recents.", "mail", false, { limit: "number?", folder: "string?" }, (p) => ({ limit: Math.min(20, Math.max(1, Number(p.limit) || 5)), folder: ["inbox", "starred", "sent", "drafts", "archive", "spam", "trash"].includes(p.folder) ? p.folder : "inbox" }), async ({ limit, folder }) => {
-    const result = await externalServices?.mail?.inbox?.({ folder, limit });
-    if (!result || !Array.isArray(result.data)) return outcome(false, "unavailable", "Mail indisponible.");
-    const messages = result.data.slice(0, limit);
-    const summary = messages.map((m) => `- ${clean(m.subject, "(aucun sujet)", 120)} de ${clean(m.from_address, "inconnu", 120)}`).join("\n");
-    return outcome(true, "completed", `${messages.length} email${messages.length > 1 ? "s" : ""} dans ${folder}.`, Object.freeze({ summary, count: messages.length, folder }));
+  add("mail.summarize", "Resumer un email", "Resumer le contenu d'un email.", "mail", false, { messageId: "id" }, (p) => ({ messageId: requireId(p.messageId) }), async ({ messageId }) => {
+    const result = await externalServices?.mail?.analyze?.(messageId);
+    if (!result || typeof result.data !== "object") return outcome(false, "unavailable", "Analyse indisponible.");
+    const summary = clean(result.data?.summary || result.data?.text, "", 2000);
+    if (!summary) return outcome(false, "empty", "Aucun résumé généré.");
+    return outcome(true, "completed", "Résumé prêt.", Object.freeze({ summary, messageId }));
+  });
+  add("mail.suggestReply", "Répondre à un email", "Suggère des réponses adaptées à un email.", "mail", false, { messageId: "id", tone: "friendly|professional|short|detailed?" }, (p) => ({ messageId: requireId(p.messageId), tone: ["friendly", "professional", "short", "detailed"].includes(p.tone) ? p.tone : "" }), async ({ messageId, tone }) => {
+    const result = await externalServices?.mail?.suggest?.(messageId);
+    if (!result) return outcome(false, "unavailable", "Suggestions indisponibles.");
+    const suggestions = Array.isArray(result.data) ? result.data : Array.isArray(result.data?.suggestions) ? result.data.suggestions : [];
+    if (!suggestions.length) return outcome(false, "empty", "Aucune suggestion générée.");
+    if (!tone) return outcome(true, "completed", `${suggestions.length} suggestion${suggestions.length > 1 ? "s" : ""} prête${suggestions.length > 1 ? "s" : ""}.`, Object.freeze({ suggestions, messageId }));
+    const prompt = `Réécris ces ${suggestions.length} réponses suggérées dans un ton ${tone}. Conserve le sens et les informations essentielles. Réponds avec un tableau JSON de chaînes.\n\n${suggestions.map((s, i) => `${i + 1}. ${String(s).trim()}`).join("\n")}`;
+    const completion = await externalServices?.brain?.complete?.({ messages: [{ role: "user", content: prompt }], context: {} });
+    const adapted = parseSuggestionList(completion?.data?.content || completion?.data, suggestions);
+    return outcome(true, "completed", `${adapted.length} suggestion${adapted.length > 1 ? "s" : ""} dans un ton ${tone}.`, Object.freeze({ suggestions: adapted, messageId, tone }));
+  });
+  add("mail.extract", "Extraire un email", "Extrait les tâches et événements d'un email.", "mail", false, { messageId: "id" }, (p) => ({ messageId: requireId(p.messageId) }), async ({ messageId }) => {
+    const result = await externalServices?.mail?.extract?.(messageId);
+    if (!result || typeof result.data !== "object") return outcome(false, "unavailable", "Extraction indisponible.");
+    const tasks = Array.isArray(result.data?.tasks) ? result.data.tasks : [];
+    const events = Array.isArray(result.data?.events) ? result.data.events : [];
+    return outcome(true, "completed", `${tasks.length} tâche${tasks.length > 1 ? "s" : ""} et ${events.length} événement${events.length > 1 ? "s" : ""} extraits.`, Object.freeze({ tasks, events, messageId }));
   });
   add("mail.draft", "Rédiger un email", "Prépare et envoie un email.", "mail", true, { to: "string", subject: "string", content: "string" }, (p) => ({ to: [clean(p.to, "", 320)], subject: clean(p.subject, "Nouveau message", 200), content: clean(p.content, "", 4000) }), async ({ to, subject, content }) => {
     const result = await externalServices?.mail?.send?.({ to, subject, text: content });

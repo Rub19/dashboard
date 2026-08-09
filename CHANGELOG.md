@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v276] - 2026-08-11
+
+**Phase 10 : traductions complètes et i18n**
+
+### Amélioré
+- **25 nouvelles chaînes traduites** en anglais, espagnol et allemand (team, interactions, Brain, bills, navigation).
+- **Catalogue i18n compacté** pour respecter les budgets JavaScript.
+- Bordereau PWA mis à jour vers `experience-v276`.
+
 ## [v275] - 2026-08-11
 
 **Phase 10 : fondations audit, sécurité et refactorisation**

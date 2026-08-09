@@ -24,6 +24,11 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v312", "2026-08-18", "Hotfix UI : empty-state, i18n et PWA v312", [
+    { kind: "fix", text: "Correction du 'icon is not a function' dans v8/ui/empty-state.mjs : le parametre icon masquait l'import icon de dom.mjs dans buildEmptyState." },
+    { kind: "fix", text: "Traduction du label du skeleton : 'Chargement du contenu' et 'Chargement de {0}'." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v312." }
+  ]),
   entry("v311", "2026-08-18", "Hotfix Worker : routes Mail", [
     { kind: "fix", text: "Correction de request.url.searchParams dans worker/src/routes/mail.js et worker/src/routes/mail-templates.js : request.url est une string, il faut parser new URL(request.url) avant d'acceder aux query params." },
     { kind: "fix", text: "Cela empeche l'erreur Cannot read properties of undefined (reading 'get') sur les appels /api/mail/inbox, /api/mail/search, /api/mail/contacts, /api/mail/drafts, /api/mail/thread et /api/mail/templates." }

@@ -1,4 +1,5 @@
 import { element, icon } from "./dom.mjs";
+import { translateSource } from "../i18n/catalog.mjs";
 
 const DEFAULT_ATTRIBUTES={role:"status","aria-live":"polite"};
 const PRODUCT_SKELETONS={activity:"live:3 stream:5 rail:2",connections:"metrics:4 catalog:4 inspector:1",brain:"brain-hero:1 tabs:6 brain-conversation:1 rail:2",settings:"settings-nav:6 settings-rows:5"};
@@ -85,7 +86,7 @@ export function emptyState({
   ]);
 }
 
-export function buildEmptyState({ icon = "inbox", title = "Rien ici pour le moment", message = "Commencez par l'action principale pour alimenter cet espace.", actionText = "", action = null, tagName = "section" } = {}) {
+export function buildEmptyState({ icon: iconName = "inbox", title = "Rien ici pour le moment", message = "Commencez par l'action principale pour alimenter cet espace.", actionText = "", action = null, tagName = "section" } = {}) {
   const actions = [];
   if (actionText && typeof action === "function") {
     actions.push(element("button", {
@@ -96,7 +97,7 @@ export function buildEmptyState({ icon = "inbox", title = "Rien ici pour le mome
   }
   return emptyState({
     tagName,
-    iconName: icon,
+    iconName,
     eyebrow: "",
     title,
     description: message,
@@ -143,7 +144,8 @@ function productSkeleton(layout) {
   return spec ? [skeletonHeading(), ...spec.split(" ").map((entry) => { const [name, size] = entry.split(":"); return skeletonGroup(`v8-state-skeleton__${name}`, Number(size), `is-${name}`); })] : null;
 }
 
-export function skeletonState({ layout = "page", count = 3, label = "Chargement du contenu", className = "", page = null } = {}) {
+export function skeletonState({ layout = "page", count = 3, label = null, className = "", page = null } = {}) {
+  const safeLabel = label || translateSource("Chargement du contenu");
   const safeCount = Math.max(1, Math.min(6, Number(count) || 1));
   const productBlocks = productSkeleton(layout);
   const safeLayout = productBlocks || ["page", "form", "list"].includes(layout) ? layout : "page";
@@ -162,7 +164,7 @@ export function skeletonState({ layout = "page", count = 3, label = "Chargement 
   }
   return element("section", {
     className: `v8-state-skeleton v8-state-skeleton--${safeLayout} ${className}`.trim(),
-    attributes: { role: "status", "aria-live": "polite", "aria-label": label, "aria-busy": "true" },
+    attributes: { role: "status", "aria-live": "polite", "aria-label": safeLabel, "aria-busy": "true" },
     dataset: { page }
-  }, [element("span", { className: "v8-visually-hidden", text: label }), ...blocks]);
+  }, [element("span", { className: "v8-visually-hidden", text: safeLabel }), ...blocks]);
 }

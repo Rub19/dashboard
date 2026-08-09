@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v312] - 2026-08-18
+
+**Hotfix UI : empty-state, i18n et PWA v312**
+
+### Corrige
+- Correction du `icon is not a function` dans `v8/ui/empty-state.mjs` : le paramètre `icon` masquait l'import `icon` de `dom.mjs` dans `buildEmptyState`.
+
+### Internationalisation
+- Traduction du label du skeleton : `Chargement du contenu` et `Chargement de {0}`.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v312`.
+
 ## [v311] - 2026-08-18
 
 **Hotfix Worker : routes Mail**

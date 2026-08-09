@@ -780,7 +780,7 @@ export function mountApplication(root, options = {}) {
 
   function showRouteLoader(route) {
     const layouts={activity:"activity",connections:"connections",brain:"brain",settings:"settings",security:"settings"};
-    shell.stage.replaceChildren(skeletonState({ layout: layouts[route] || "page", count: 3, label: `Chargement de ${route}`, className: "v8-page v8-lazy-page", page: route }));
+    shell.stage.replaceChildren(skeletonState({ layout: layouts[route] || "page", count: 3, label: translateSource("Chargement de {0}").replace("{0}", route), className: "v8-page v8-lazy-page", page: route }));
   }
 
   async function brainProviderTransport(input = {}) {

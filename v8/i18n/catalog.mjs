@@ -1890,6 +1890,8 @@ const ENTRIES = {
   "Aucun partage actif.": {"fr":"Aucun partage actif.","en":"No active share.","es":"No hay compartido activo.","de":"Keine aktive Freigabe."},
   "Aucune statistique disponible.": {"fr":"Aucune statistique disponible.","en":"No statistics available.","es":"No hay estadísticas disponibles.","de":"Keine Statistiken verfügbar."},
   "Chargement...": {"fr":"Chargement...","en":"Loading...","es":"Cargando...","de":"Wird geladen..."},
+  "Chargement du contenu": {"fr":"Chargement du contenu","en":"Loading content","es":"Cargando contenido","de":"Inhalt wird geladen"},
+  "Chargement de {0}": {"fr":"Chargement de {0}","en":"Loading {0}","es":"Cargando {0}","de":"{0} wird geladen"},
   "Éditer les tags": {"fr":"Éditer les tags","en":"Edit tags","es":"Editar etiquetas","de":"Tags bearbeiten"},
   "Erreur de chargement": {"fr":"Erreur de chargement","en":"Loading error","es":"Error de carga","de":"Ladefehler"},
   "Modifié": {"fr":"Modifié","en":"Modified","es":"Modificado","de":"Geändert"},

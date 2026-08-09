@@ -1284,10 +1284,22 @@ button.v8-status-item:focus-visible { box-shadow: var(--v8-shadow-focus); outlin
   }
   .v8-page-heading__actions {
     width: 100%;
+    flex-wrap: wrap;
+    gap: var(--v8-space-2);
+  }
+  .v8-page-heading__actions > .v8-collection-density {
+    flex: 0 1 auto;
   }
   .v8-page-heading__actions .v8-button {
     min-width: 0;
-    flex: 1;
+    flex: 1 1 auto;
+  }
+  .v8-page-heading__actions .v8-collection-density + .v8-button {
+    min-width: 140px;
+  }
+  .v8-title-line {
+    flex-wrap: wrap;
+    gap: var(--v8-space-2);
   }
   .v8-continuity {
     min-height: 440px;

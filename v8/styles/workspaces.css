@@ -1750,8 +1750,11 @@ html[data-v8-interactions] .v8-file-entry:hover .v8-row-actions,
   }
   .v8-calendar-toolbar h2 {
     flex: 0 0 auto;
+    min-width: 0;
     font-size: var(--v8-font-lg);
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .v8-calendar-weekdays span {
     font-size: var(--v8-font-micro);

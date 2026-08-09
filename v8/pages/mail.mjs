@@ -186,7 +186,17 @@ export function mountMail(stage, options = {}) {
     blocked: [],
     trusted: [],
     securityTab: "blocked",
-    securityLoading: false
+    securityLoading: false,
+    accounts: [],
+    pgpKeys: [],
+    pushSubscribed: false,
+    pushLoading: false,
+    lists: [],
+    listMembers: {},
+    selectedListId: null,
+    accountForm: { provider: "", email: "", label: "" },
+    pgpForm: { email: "", publicKey: "", privateKey: "", passphrase: "" },
+    listForm: { id: null, name: "", description: "", address: "" }
   };
 
   let searchTimer = null;
@@ -573,6 +583,271 @@ export function mountMail(stage, options = {}) {
     } catch (error) {
       notify({ type: "error", title: "Sécurité", message: errorDescription(error) });
     }
+  }
+
+  async function loadAccounts() {
+    if (!mailApi?.accounts) { state.accounts = []; return; }
+    try {
+      const result = await mailApi.accounts();
+      state.accounts = Array.isArray(result) ? result : (result?.data || []);
+    } catch (error) {
+      notify({ type: "error", title: "Comptes", message: errorDescription(error) });
+      state.accounts = [];
+    }
+  }
+
+  async function addAccount(provider, email, label) {
+    if (!mailApi?.createAccount) return;
+    if (!provider || !email) {
+      notify({ type: "warning", title: "Compte", message: "Fournisseur et email requis." });
+      return;
+    }
+    try {
+      await mailApi.createAccount({ provider, email, label });
+      notify({ type: "success", title: "Compte", message: "Compte ajouté." });
+      state.accountForm = { provider: "", email: "", label: "" };
+      await loadAccounts();
+      renderSidebar();
+    } catch (error) {
+      notify({ type: "error", title: "Compte", message: errorDescription(error) });
+    }
+  }
+
+  async function syncAccount(id) {
+    if (!mailApi?.syncAccount) return;
+    try {
+      await mailApi.syncAccount(id);
+      notify({ type: "success", title: "Compte", message: "Synchronisation lancée." });
+    } catch (error) {
+      notify({ type: "error", title: "Compte", message: errorDescription(error) });
+    }
+  }
+
+  async function deleteAccount(id) {
+    if (!mailApi?.deleteAccount) return;
+    try {
+      await mailApi.deleteAccount(id);
+      notify({ type: "success", title: "Compte", message: "Compte supprimé." });
+      await loadAccounts();
+      renderSidebar();
+    } catch (error) {
+      notify({ type: "error", title: "Compte", message: errorDescription(error) });
+    }
+  }
+
+  async function loadPgpKeys() {
+    if (!mailApi?.pgpKeys) { state.pgpKeys = []; return; }
+    try {
+      const result = await mailApi.pgpKeys();
+      state.pgpKeys = Array.isArray(result) ? result : (result?.data || []);
+    } catch (error) {
+      notify({ type: "error", title: "PGP", message: errorDescription(error) });
+      state.pgpKeys = [];
+    }
+  }
+
+  async function createPgpKey() {
+    if (!mailApi?.createPgpKey) return;
+    const email = state.pgpForm.email.trim();
+    if (!email) {
+      notify({ type: "warning", title: "PGP", message: "Email requis." });
+      return;
+    }
+    try {
+      await mailApi.createPgpKey({ email, public_key: state.pgpForm.publicKey, private_key: state.pgpForm.privateKey, passphrase: state.pgpForm.passphrase });
+      notify({ type: "success", title: "PGP", message: "Clé enregistrée." });
+      state.pgpForm = { email: "", publicKey: "", privateKey: "", passphrase: "" };
+      await loadPgpKeys();
+      renderSidebar();
+    } catch (error) {
+      notify({ type: "error", title: "PGP", message: errorDescription(error) });
+    }
+  }
+
+  async function deletePgpKey(id) {
+    if (!mailApi?.deletePgpKey) return;
+    try {
+      await mailApi.deletePgpKey(id);
+      notify({ type: "success", title: "PGP", message: "Clé supprimée." });
+      await loadPgpKeys();
+      renderSidebar();
+    } catch (error) {
+      notify({ type: "error", title: "PGP", message: errorDescription(error) });
+    }
+  }
+
+  async function pgpEncrypt() {
+    if (!mailApi?.pgpEncrypt) return;
+    const { publicKey } = state.pgpForm;
+    if (!publicKey) { notify({ type: "warning", title: "PGP", message: "Collez une clé publique." }); return; }
+    const text = await globalThis.prompt?.("Texte à chiffrer");
+    if (!text) return;
+    try {
+      const result = await mailApi.pgpEncrypt({ body: text, public_key: publicKey });
+      const encrypted = result?.data?.body || result?.data;
+      globalThis.alert?.(encrypted || "Chiffrement terminé.");
+    } catch (error) {
+      notify({ type: "error", title: "PGP", message: errorDescription(error) });
+    }
+  }
+
+  async function pgpDecrypt() {
+    if (!mailApi?.pgpDecrypt) return;
+    const text = await globalThis.prompt?.("Texte à déchiffrer");
+    if (!text) return;
+    try {
+      const result = await mailApi.pgpDecrypt({ body: text, passphrase: state.pgpForm.passphrase });
+      const decrypted = result?.data?.body || result?.data;
+      globalThis.alert?.(decrypted || "Déchiffrement terminé.");
+    } catch (error) {
+      notify({ type: "error", title: "PGP", message: errorDescription(error) });
+    }
+  }
+
+  async function loadPush() {
+    if (!mailApi?.pushSubscriptions) { state.pushSubscribed = false; return; }
+    try {
+      const result = await mailApi.pushSubscriptions();
+      const subs = Array.isArray(result) ? result : (result?.data || []);
+      state.pushSubscribed = subs.length > 0;
+    } catch (error) {
+      state.pushSubscribed = false;
+    }
+  }
+
+  async function togglePushSubscribe() {
+    if (!mailApi?.pushVapidKey || !mailApi?.pushSubscribe) {
+      notify({ type: "warning", title: "Push", message: "Notifications push non disponibles." });
+      return;
+    }
+    if (typeof navigator === "undefined" || !navigator.serviceWorker?.register) {
+      notify({ type: "warning", title: "Push", message: "Service Worker non supporté." });
+      return;
+    }
+    state.pushLoading = true;
+    renderSidebar();
+    try {
+      const vapidResult = await mailApi.pushVapidKey();
+      const vapidKey = vapidResult?.data?.publicKey || vapidResult?.data;
+      if (!vapidKey) throw new Error("Clé VAPID introuvable.");
+      const registration = await navigator.serviceWorker.ready;
+      let sub;
+      if (state.pushSubscribed) {
+        sub = await registration.pushManager.getSubscription();
+        if (sub) {
+          await sub.unsubscribe();
+          if (mailApi.pushUnsubscribe) await mailApi.pushUnsubscribe(sub.endpoint);
+        }
+        state.pushSubscribed = false;
+        notify({ type: "success", title: "Push", message: "Désabonnement effectué." });
+      } else {
+        sub = await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(vapidKey) });
+        const json = sub.toJSON();
+        await mailApi.pushSubscribe({ endpoint: json.endpoint, p256dh: json.keys?.p256dh, auth: json.keys?.auth, keys: json.keys });
+        state.pushSubscribed = true;
+        notify({ type: "success", title: "Push", message: "Notifications activées." });
+      }
+    } catch (error) {
+      notify({ type: "error", title: "Push", message: errorDescription(error) });
+    }
+    state.pushLoading = false;
+    renderSidebar();
+  }
+
+  async function sendPushTest() {
+    if (!mailApi?.pushSend) return;
+    try {
+      await mailApi.pushSend({ title: "ETHONE Mail", body: "Test de notification." });
+      notify({ type: "success", title: "Push", message: "Notification envoyée." });
+    } catch (error) {
+      notify({ type: "error", title: "Push", message: errorDescription(error) });
+    }
+  }
+
+  async function loadLists() {
+    if (!mailApi?.lists) { state.lists = []; return; }
+    try {
+      const result = await mailApi.lists();
+      state.lists = Array.isArray(result) ? result : (result?.data || []);
+    } catch (error) {
+      notify({ type: "error", title: "Listes", message: errorDescription(error) });
+      state.lists = [];
+    }
+  }
+
+  async function loadListMembers(listId) {
+    if (!mailApi?.listMembers || !listId) return;
+    try {
+      const result = await mailApi.listMembers(listId);
+      state.listMembers[listId] = Array.isArray(result) ? result : (result?.data || []);
+    } catch (error) {
+      state.listMembers[listId] = [];
+    }
+  }
+
+  async function saveList() {
+    if (!mailApi?.createList || !mailApi?.updateList) return;
+    const { id, name, description, address } = state.listForm;
+    if (!name) { notify({ type: "warning", title: "Liste", message: "Nom requis." }); return; }
+    try {
+      if (id) {
+        await mailApi.updateList({ id, name, description, address });
+        notify({ type: "success", title: "Liste", message: "Liste mise à jour." });
+      } else {
+        await mailApi.createList({ name, description, address });
+        notify({ type: "success", title: "Liste", message: "Liste créée." });
+      }
+      state.listForm = { id: null, name: "", description: "", address: "" };
+      await loadLists();
+      renderSidebar();
+    } catch (error) {
+      notify({ type: "error", title: "Liste", message: errorDescription(error) });
+    }
+  }
+
+  async function deleteList(id) {
+    if (!mailApi?.deleteList) return;
+    try {
+      await mailApi.deleteList(id);
+      notify({ type: "success", title: "Liste", message: "Liste supprimée." });
+      if (state.selectedListId === id) state.selectedListId = null;
+      await loadLists();
+      renderSidebar();
+    } catch (error) {
+      notify({ type: "error", title: "Liste", message: errorDescription(error) });
+    }
+  }
+
+  async function addListMember(listId, email, name) {
+    if (!mailApi?.addListMember) return;
+    if (!email) return;
+    try {
+      await mailApi.addListMember({ list_id: listId, email, name });
+      notify({ type: "success", title: "Liste", message: "Membre ajouté." });
+      await loadListMembers(listId);
+      renderSidebar();
+    } catch (error) {
+      notify({ type: "error", title: "Liste", message: errorDescription(error) });
+    }
+  }
+
+  async function removeListMember(listId, email) {
+    if (!mailApi?.removeListMember) return;
+    try {
+      await mailApi.removeListMember(listId, email);
+      notify({ type: "success", title: "Liste", message: "Membre retiré." });
+      await loadListMembers(listId);
+      renderSidebar();
+    } catch (error) {
+      notify({ type: "error", title: "Liste", message: errorDescription(error) });
+    }
+  }
+
+  function urlBase64ToUint8Array(base64String) {
+    const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+    const raw = atob(base64);
+    return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)));
   }
 
   function domainFromEmail(email) {
@@ -1263,10 +1538,148 @@ export function mountMail(stage, options = {}) {
       if (event.key === "Enter" && newLabelInput.value.trim()) createLabel(newLabelInput.value.trim());
     });
 
+    const accountsSection = buildAccountsSection();
+    const pgpSection = buildPgpSection();
+    const pushSection = buildPushSection();
+    const listsSection = buildListsSection();
     const securitySection = buildSecuritySection();
-    sidebar.append(title, folderList, analyticsTitle, analyticsPeriodSelect, analyticsOpenBtn, rulesTitle, ruleForm, rulesList, templatesTitle, templateForm, templatesList, notificationsTitle, notificationsList, labelsTitle, labelList, newLabelInput, securitySection);
+    sidebar.append(title, folderList, analyticsTitle, analyticsPeriodSelect, analyticsOpenBtn, rulesTitle, ruleForm, rulesList, templatesTitle, templateForm, templatesList, notificationsTitle, notificationsList, labelsTitle, labelList, newLabelInput, accountsSection, pgpSection, pushSection, listsSection, securitySection);
     renderBell();
     refreshIcons();
+  }
+
+  function buildAccountsSection() {
+    const title = element("strong", { className: "v8-mail-sidebar__section", text: "Comptes externes" });
+    const list = element("ul", { className: "v8-mail-accounts__list" });
+    if (state.accounts.length) {
+      state.accounts.forEach((account) => {
+        const label = `${account.provider || "?"} — ${account.email || account.label || ""}`;
+        const actions = element("span", { className: "v8-mail-accounts__actions" });
+        const syncBtn = element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Synchroniser" } }, [icon("refresh-cw")]);
+        syncBtn.addEventListener("click", (event) => { event.stopPropagation(); syncAccount(account.id); });
+        const deleteBtn = element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Supprimer" } }, [icon("trash-2")]);
+        deleteBtn.addEventListener("click", (event) => { event.stopPropagation(); deleteAccount(account.id); });
+        actions.append(syncBtn, deleteBtn);
+        list.append(element("li", { className: "v8-mail-accounts__item" }, [element("span", { className: "v8-mail-accounts__label", text: label }), actions]));
+      });
+    } else {
+      list.append(element("li", { className: "v8-mail-accounts__item", text: "Aucun compte externe." }));
+    }
+
+    const providerInput = element("input", { className: "v8-input v8-mail-accounts__input", attributes: { type: "text", placeholder: "Fournisseur (gmail, outlook...)", value: state.accountForm.provider } });
+    const emailInput = element("input", { className: "v8-input v8-mail-accounts__input", attributes: { type: "email", placeholder: "Email", value: state.accountForm.email } });
+    const labelInput = element("input", { className: "v8-input v8-mail-accounts__input", attributes: { type: "text", placeholder: "Libellé", value: state.accountForm.label } });
+    providerInput.addEventListener("input", () => { state.accountForm.provider = providerInput.value; });
+    emailInput.addEventListener("input", () => { state.accountForm.email = emailInput.value; });
+    labelInput.addEventListener("input", () => { state.accountForm.label = labelInput.value; });
+    const addBtn = actionButton({ actionId: "v8.mail.account.add", variant: "secondary", className: "v8-mail-accounts__add" }, [icon("plus"), element("span", { text: "Ajouter" })]);
+    addBtn.addEventListener("click", () => addAccount(providerInput.value.trim(), emailInput.value.trim(), labelInput.value.trim()));
+    const form = element("div", { className: "v8-mail-accounts__form" }, [providerInput, emailInput, labelInput, addBtn]);
+    return element("div", { className: "v8-mail-sidebar__accounts" }, [title, list, form]);
+  }
+
+  function buildPgpSection() {
+    const title = element("strong", { className: "v8-mail-sidebar__section", text: "Clés PGP" });
+    const list = element("ul", { className: "v8-mail-pgp__list" });
+    if (state.pgpKeys.length) {
+      state.pgpKeys.forEach((key) => {
+        const label = `${key.email || key.name || "Clé"}${key.fingerprint ? ` (${String(key.fingerprint).slice(0, 16)}...)` : ""}`;
+        const deleteBtn = element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Supprimer" } }, [icon("trash-2")]);
+        deleteBtn.addEventListener("click", (event) => { event.stopPropagation(); deletePgpKey(key.id); });
+        list.append(element("li", { className: "v8-mail-pgp__item" }, [element("span", { className: "v8-mail-pgp__label", text: label }), deleteBtn]));
+      });
+    } else {
+      list.append(element("li", { className: "v8-mail-pgp__item", text: "Aucune clé PGP." }));
+    }
+
+    const emailInput = element("input", { className: "v8-input v8-mail-pgp__input", attributes: { type: "email", placeholder: "Email", value: state.pgpForm.email } });
+    const publicInput = element("textarea", { className: "v8-input v8-mail-pgp__textarea", attributes: { rows: "3", placeholder: "Clé publique (optionnel)" } });
+    publicInput.value = state.pgpForm.publicKey;
+    const privateInput = element("textarea", { className: "v8-input v8-mail-pgp__textarea", attributes: { rows: "2", placeholder: "Clé privée — laisser vide pour générer côté Worker" } });
+    privateInput.value = state.pgpForm.privateKey;
+    const passphraseInput = element("input", { className: "v8-input v8-mail-pgp__input", attributes: { type: "password", placeholder: "Passphrase" } });
+    passphraseInput.value = state.pgpForm.passphrase;
+    emailInput.addEventListener("input", () => { state.pgpForm.email = emailInput.value; });
+    publicInput.addEventListener("input", () => { state.pgpForm.publicKey = publicInput.value; });
+    privateInput.addEventListener("input", () => { state.pgpForm.privateKey = privateInput.value; });
+    passphraseInput.addEventListener("input", () => { state.pgpForm.passphrase = passphraseInput.value; });
+    const saveBtn = actionButton({ actionId: "v8.mail.pgp.key.create", variant: "secondary", className: "v8-mail-pgp__add" }, [icon("key"), element("span", { text: "Enregistrer" })]);
+    saveBtn.addEventListener("click", createPgpKey);
+    const encryptBtn = actionButton({ actionId: "v8.mail.pgp.encrypt", variant: "outline", className: "v8-mail-pgp__tool" }, [icon("lock"), element("span", { text: "Chiffrer" })]);
+    const decryptBtn = actionButton({ actionId: "v8.mail.pgp.decrypt", variant: "outline", className: "v8-mail-pgp__tool" }, [icon("unlock"), element("span", { text: "Déchiffrer" })]);
+    encryptBtn.addEventListener("click", pgpEncrypt);
+    decryptBtn.addEventListener("click", pgpDecrypt);
+    const tools = element("div", { className: "v8-mail-pgp__tools" }, [encryptBtn, decryptBtn]);
+    const form = element("div", { className: "v8-mail-pgp__form" }, [emailInput, publicInput, privateInput, passphraseInput, saveBtn, tools]);
+    return element("div", { className: "v8-mail-sidebar__pgp" }, [title, list, form]);
+  }
+
+  function buildPushSection() {
+    const title = element("strong", { className: "v8-mail-sidebar__section", text: "Notifications push" });
+    const status = element("span", { className: "v8-mail-push__status", text: state.pushLoading ? "Chargement..." : state.pushSubscribed ? "Abonné" : "Non abonné" });
+    const toggleBtn = actionButton({ actionId: "v8.mail.push.toggle", variant: state.pushSubscribed ? "outline" : "secondary", className: "v8-mail-push__toggle", disabled: state.pushLoading }, [icon("bell"), element("span", { text: state.pushSubscribed ? "Se désabonner" : "S'abonner" })]);
+    toggleBtn.addEventListener("click", togglePushSubscribe);
+    const testBtn = actionButton({ actionId: "v8.mail.push.send", variant: "outline", className: "v8-mail-push__send" }, [icon("send"), element("span", { text: "Tester" })]);
+    testBtn.addEventListener("click", sendPushTest);
+    return element("div", { className: "v8-mail-sidebar__push" }, [title, status, toggleBtn, testBtn]);
+  }
+
+  function buildListsSection() {
+    const title = element("strong", { className: "v8-mail-sidebar__section", text: "Listes de diffusion" });
+    const list = element("ul", { className: "v8-mail-lists__list" });
+    if (state.lists.length) {
+      state.lists.forEach((l) => {
+        const isSelected = state.selectedListId === l.id;
+        const label = `${l.name || "Liste"}${l.address ? ` <${l.address}>` : ""}`;
+        const actions = element("span", { className: "v8-mail-lists__actions" });
+        const editBtn = element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Modifier" } }, [icon("pencil")]);
+        editBtn.addEventListener("click", (event) => { event.stopPropagation(); state.listForm = { id: l.id, name: l.name || "", description: l.description || "", address: l.address || "" }; renderSidebar(); });
+        const deleteBtn = element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Supprimer" } }, [icon("trash-2")]);
+        deleteBtn.addEventListener("click", (event) => { event.stopPropagation(); deleteList(l.id); });
+        actions.append(editBtn, deleteBtn);
+        const item = element("li", { className: `v8-mail-lists__item${isSelected ? " is-active" : ""}` }, [element("span", { className: "v8-mail-lists__label", text: label }), actions]);
+        item.addEventListener("click", async () => { state.selectedListId = isSelected ? null : l.id; if (state.selectedListId) await loadListMembers(l.id); renderSidebar(); });
+        list.append(item);
+      });
+    } else {
+      list.append(element("li", { className: "v8-mail-lists__item", text: "Aucune liste." }));
+    }
+
+    const nameInput = element("input", { className: "v8-input v8-mail-lists__input", attributes: { type: "text", placeholder: "Nom", value: state.listForm.name } });
+    const addressInput = element("input", { className: "v8-input v8-mail-lists__input", attributes: { type: "text", placeholder: "Adresse liste", value: state.listForm.address } });
+    const descInput = element("input", { className: "v8-input v8-mail-lists__input", attributes: { type: "text", placeholder: "Description", value: state.listForm.description } });
+    nameInput.addEventListener("input", () => { state.listForm.name = nameInput.value; });
+    addressInput.addEventListener("input", () => { state.listForm.address = addressInput.value; });
+    descInput.addEventListener("input", () => { state.listForm.description = descInput.value; });
+    const saveBtn = actionButton({ actionId: "v8.mail.list.save", variant: "secondary", className: "v8-mail-lists__save" }, [icon("save"), element("span", { text: state.listForm.id ? "Mettre à jour" : "Créer" })]);
+    saveBtn.addEventListener("click", saveList);
+    const resetBtn = actionButton({ actionId: "v8.mail.list.reset", variant: "outline", className: "v8-mail-lists__reset" }, [icon("x"), element("span", { text: "Nouveau" })]);
+    resetBtn.addEventListener("click", () => { state.listForm = { id: null, name: "", description: "", address: "" }; renderSidebar(); });
+    const form = element("div", { className: "v8-mail-lists__form" }, [nameInput, addressInput, descInput, saveBtn, resetBtn]);
+
+    let membersPanel = null;
+    if (state.selectedListId) {
+      const members = state.listMembers[state.selectedListId] || [];
+      const membersList = element("ul", { className: "v8-mail-lists__members" });
+      if (members.length) {
+        members.forEach((m) => {
+          const removeBtn = element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Retirer" } }, [icon("x")]);
+          removeBtn.addEventListener("click", (event) => { event.stopPropagation(); removeListMember(state.selectedListId, m.email); });
+          membersList.append(element("li", { className: "v8-mail-lists__member" }, [element("span", { text: m.name ? `${m.name} <${m.email}>` : m.email }), removeBtn]));
+        });
+      } else {
+        membersList.append(element("li", { className: "v8-mail-lists__member", text: "Aucun membre." }));
+      }
+      const memberEmailInput = element("input", { className: "v8-input v8-mail-lists__input", attributes: { type: "email", placeholder: "Email du membre" } });
+      const memberNameInput = element("input", { className: "v8-input v8-mail-lists__input", attributes: { type: "text", placeholder: "Nom (optionnel)" } });
+      const addMemberBtn = actionButton({ actionId: "v8.mail.list.member.add", variant: "secondary", className: "v8-mail-lists__add-member" }, [icon("plus"), element("span", { text: "Ajouter" })]);
+      addMemberBtn.addEventListener("click", () => { addListMember(state.selectedListId, memberEmailInput.value.trim(), memberNameInput.value.trim()); memberEmailInput.value = ""; memberNameInput.value = ""; });
+      membersPanel = element("div", { className: "v8-mail-lists__members-panel" }, [element("strong", { className: "v8-mail-lists__members-title", text: "Membres" }), membersList, memberEmailInput, memberNameInput, addMemberBtn]);
+    }
+
+    const children = [title, list, form];
+    if (membersPanel) children.push(membersPanel);
+    return element("div", { className: "v8-mail-sidebar__lists" }, children);
   }
 
   function buildSecuritySection() {
@@ -2487,7 +2900,7 @@ export function mountMail(stage, options = {}) {
     await loadCached();
     renderList();
     renderSidebar();
-    await Promise.all([loadAlias(), loadLabels(), loadContacts(), loadSignatures(), loadRules(), loadNotifications(), loadTemplates(), loadSecurity()]);
+    await Promise.all([loadAlias(), loadLabels(), loadContacts(), loadSignatures(), loadRules(), loadNotifications(), loadTemplates(), loadSecurity(), loadAccounts(), loadPgpKeys(), loadPush(), loadLists()]);
     renderSidebar();
     await loadFolder();
     renderReading();

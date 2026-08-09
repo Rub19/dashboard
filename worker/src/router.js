@@ -63,6 +63,10 @@ import {
 } from "./routes/mail.js";
 import { mailTemplatesRoute } from "./routes/mail-templates.js";
 import { mailAnalyticsRoute } from "./routes/mail-analytics.js";
+import { mailAccountsRoute } from "./routes/mail-accounts.js";
+import { mailPgpRoute } from "./routes/mail-pgp.js";
+import { mailPushRoute, webhookMailRoute } from "./routes/mail-push.js";
+import { mailListsRoute } from "./routes/mail-lists.js";
 import {
   mailAnalyzeRoute,
   mailExtractRoute,
@@ -252,7 +256,41 @@ export const ROUTES = Object.freeze([
   route("mail.rules.update", "/api/mail/rules", mailRulesRoute, { method: "PATCH", service: "mail", rateLimit: "standard" }),
   route("mail.rules.delete", "/api/mail/rules", mailRulesRoute, { method: "DELETE", service: "mail", rateLimit: "standard" }),
   route("mail.notifications", "/api/mail/notifications", mailNotificationsRoute, { service: "mail", rateLimit: "standard" }),
-  route("mail.notifications.read", "/api/mail/notifications", mailNotificationsRoute, { method: "PATCH", service: "mail", rateLimit: "standard" })
+  route("mail.notifications.read", "/api/mail/notifications", mailNotificationsRoute, { method: "PATCH", service: "mail", rateLimit: "standard" }),
+
+  // Mail accounts
+  route("mail.accounts", "/api/mail/accounts", mailAccountsRoute, { service: "mail", rateLimit: "standard" }),
+  route("mail.accounts.create", "/api/mail/accounts", mailAccountsRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+  route("mail.accounts.update", "/api/mail/accounts", mailAccountsRoute, { method: "PATCH", service: "mail", rateLimit: "standard" }),
+  route("mail.accounts.delete", "/api/mail/accounts", mailAccountsRoute, { method: "DELETE", service: "mail", rateLimit: "standard" }),
+  route("mail.accounts.sync", "/api/mail/accounts/sync", mailAccountsRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+
+  // PGP-style keys
+  route("mail.pgp.keys", "/api/mail/pgp/keys", mailPgpRoute, { service: "mail", rateLimit: "standard" }),
+  route("mail.pgp.keys.create", "/api/mail/pgp/keys", mailPgpRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+  route("mail.pgp.keys.delete", "/api/mail/pgp/keys", mailPgpRoute, { method: "DELETE", service: "mail", rateLimit: "standard" }),
+  route("mail.pgp.keys.generate", "/api/mail/pgp/generate", mailPgpRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+  route("mail.pgp.encrypt", "/api/mail/pgp/encrypt", mailPgpRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+  route("mail.pgp.decrypt", "/api/mail/pgp/decrypt", mailPgpRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+
+  // Web push
+  route("mail.push.subscriptions", "/api/mail/push/subscriptions", mailPushRoute, { service: "mail", rateLimit: "standard" }),
+  route("mail.push.subscribe", "/api/mail/push/subscribe", mailPushRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+  route("mail.push.unsubscribe", "/api/mail/push/subscribe", mailPushRoute, { method: "DELETE", service: "mail", rateLimit: "standard" }),
+  route("mail.push.send", "/api/mail/push/send", mailPushRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+
+  // Mailing lists
+  route("mail.lists", "/api/mail/lists", mailListsRoute, { service: "mail", rateLimit: "standard" }),
+  route("mail.lists.create", "/api/mail/lists", mailListsRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+  route("mail.lists.update", "/api/mail/lists", mailListsRoute, { method: "PATCH", service: "mail", rateLimit: "standard" }),
+  route("mail.lists.delete", "/api/mail/lists", mailListsRoute, { method: "DELETE", service: "mail", rateLimit: "standard" }),
+  route("mail.lists.members", "/api/mail/lists/members", mailListsRoute, { service: "mail", rateLimit: "standard" }),
+  route("mail.lists.members.add", "/api/mail/lists/members", mailListsRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+  route("mail.lists.members.remove", "/api/mail/lists/members", mailListsRoute, { method: "DELETE", service: "mail", rateLimit: "standard" }),
+  route("mail.lists.send", "/api/mail/lists/send", mailListsRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+
+  // Webhook
+  route("webhooks.mail", "/api/webhooks/mail", webhookMailRoute, { method: "POST", public: true, rateLimit: "standard" })
 ]);
 
 function normalizedPath(pathname) {

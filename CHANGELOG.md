@@ -2,6 +2,22 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v295] - 2026-08-17
+
+**Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes**
+
+### Ajoute
+- Comptes mail externes : Gmail, Outlook et IMAP (création, sync, suppression).
+- Chiffrement PGP simplifié via Web Crypto : génération de clés, chiffrement/déchiffrement côté Worker.
+- Notifications push Web : souscription, envoi VAPID et webhook `/api/webhooks/mail`.
+- Listes de diffusion : alias, membres, forward automatique via Resend.
+- Routes Worker : `/api/mail/accounts`, `/api/mail/pgp/keys`, `/api/mail/push/*`, `/api/mail/lists`, `/api/webhooks/mail`.
+- Intégration client et Brain pour les nouvelles fonctionnalités.
+- Bordereau PWA mis à jour.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v295`.
+
 ## [v294] - 2026-08-16
 
 **Phase 14 : ETHONE Mail — analytics, sécurité et confiance**

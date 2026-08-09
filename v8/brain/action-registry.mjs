@@ -12,6 +12,13 @@ const clean = (value, fallback = "", limit = 400) => (String(value ?? "").replac
 const validDate = (value) => /^\d{4}-\d{2}-\d{2}$/.test(String(value || "")) ? String(value) : "";
 const empty = () => ({});
 
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const raw = globalThis.atob(base64);
+  return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)));
+}
+
 function requireId(value) { const id = clean(value, "", 80); if (!id) throw new TypeError("Identifiant requis."); return id; }
 function key(value) { return clean(value, "", 80).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
 function parseSuggestionList(content, fallback = []) {
@@ -161,6 +168,111 @@ export function createBrainActionRegistry(options = {}) {
     if (!externalServices?.mail?.trustSender) return outcome(false, "unavailable", "Confiance indisponible.");
     const result = await externalServices.mail.trustSender({ email, domain });
     return outcome(true, "completed", "Expéditeur fiable.", Object.freeze(result?.data || { email, domain }));
+  });
+
+  add("mail.account", "Gérer un compte externe mail", "Liste les comptes ou crée un compte externe ETHONE Mail.", "mail", true, { provider: "string", email: "string", label: "string" }, (p) => {
+    const provider = clean(p.provider, "", 40);
+    const email = clean(p.email, "", 320);
+    const label = clean(p.label, "", 80);
+    if (email && !email.includes("@")) throw new TypeError("Email invalide.");
+    return { provider, email, label };
+  }, async ({ provider, email, label }) => {
+    const api = externalServices?.mail;
+    if (!api?.accounts) return outcome(false, "unavailable", "Comptes externes indisponibles.");
+    if (provider && email) {
+      if (!api.createAccount) return outcome(false, "unavailable", "Création de compte indisponible.");
+      await api.createAccount({ provider, email, label });
+    }
+    const result = await api.accounts();
+    const accounts = Array.isArray(result) ? result : (result?.data || []);
+    return outcome(true, "completed", `${accounts.length} compte${accounts.length > 1 ? "s" : ""} externe${accounts.length > 1 ? "s" : ""}.`, Object.freeze(accounts));
+  });
+  add("mail.pgp.generate", "Générer ou obtenir une clé PGP", "Génère ou récupère une clé PGP pour un email.", "mail", true, { email: "string" }, (p) => {
+    const email = clean(p.email, "", 320);
+    if (!email || !email.includes("@")) throw new TypeError("Email requis.");
+    return { email };
+  }, async ({ email }) => {
+    const api = externalServices?.mail;
+    if (!api?.pgpKeys) return outcome(false, "unavailable", "Clés PGP indisponibles.");
+    if (api.createPgpKey) {
+      try { await api.createPgpKey({ email }); } catch { /* clé peut déjà exister */ }
+    }
+    const result = await api.pgpKeys();
+    const keys = Array.isArray(result) ? result : (result?.data || []);
+    const key = keys.find((k) => (k.email || k.address) === email);
+    return outcome(true, "completed", key ? "Clé PGP trouvée." : "Aucune clé PGP.", Object.freeze({ email, key: key || null, keys: keys.slice(0, 20) }));
+  });
+  add("mail.pgp.encrypt", "Chiffrer un message PGP", "Chiffre un corps de message avec une clé publique.", "mail", true, { body: "string", publicKey: "string" }, (p) => {
+    const body = clean(p.body, "", 4000);
+    const publicKey = clean(p.publicKey, "", 20000);
+    if (!body) throw new TypeError("Contenu requis.");
+    if (!publicKey) throw new TypeError("Clé publique requise.");
+    return { body, publicKey };
+  }, async ({ body, publicKey }) => {
+    if (!externalServices?.mail?.pgpEncrypt) return outcome(false, "unavailable", "Chiffrement PGP indisponible.");
+    const result = await externalServices.mail.pgpEncrypt({ body, public_key: publicKey });
+    return outcome(true, "completed", "Message chiffré.", Object.freeze(result?.data || { body, publicKey }));
+  });
+  add("mail.pgp.decrypt", "Déchiffrer un message PGP", "Déchiffre un corps de message PGP.", "mail", true, { body: "string", passphrase: "string?" }, (p) => {
+    const body = clean(p.body, "", 20000);
+    const passphrase = clean(p.passphrase, "", 200);
+    if (!body) throw new TypeError("Contenu chiffré requis.");
+    return { body, passphrase };
+  }, async ({ body, passphrase }) => {
+    if (!externalServices?.mail?.pgpDecrypt) return outcome(false, "unavailable", "Déchiffrement PGP indisponible.");
+    const result = await externalServices.mail.pgpDecrypt({ body, passphrase });
+    return outcome(true, "completed", "Message déchiffré.", Object.freeze(result?.data || { body }));
+  });
+  add("mail.push.subscribe", "S'abonner aux notifications push", "Souscrit le navigateur aux notifications push ETHONE Mail.", "mail", true, { email: "string?" }, (p) => ({ email: clean(p.email, "", 320) }), async ({ email }) => {
+    const api = externalServices?.mail;
+    if (!api?.pushVapidKey || !api?.pushSubscribe) return outcome(false, "unavailable", "Push indisponible.");
+    if (typeof navigator === "undefined" || !navigator.serviceWorker?.register) return outcome(false, "unavailable", "Service Worker non supporté.");
+    const vapidResult = await api.pushVapidKey();
+    const vapidKey = vapidResult?.data?.publicKey || vapidResult?.data;
+    if (!vapidKey) return outcome(false, "unavailable", "Clé VAPID introuvable.");
+    const registration = await navigator.serviceWorker.ready;
+    let sub;
+    try {
+      sub = await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(vapidKey) });
+    } catch (error) {
+      return outcome(false, "failed", `Souscription push échouée : ${clean(error?.message, "erreur", 120)}`);
+    }
+    const json = sub.toJSON();
+    const payload = { email, endpoint: json.endpoint, p256dh: json.keys?.p256dh, auth: json.keys?.auth, keys: json.keys };
+    await api.pushSubscribe(payload);
+    return outcome(true, "completed", "Notifications push activées.", Object.freeze(payload));
+  });
+  add("mail.list", "Gérer une liste de diffusion", "Liste ou crée une liste de diffusion ETHONE Mail.", "mail", true, { name: "string?", description: "string?", address: "string?" }, (p) => ({
+    name: clean(p.name, "", 120),
+    description: clean(p.description, "", 240),
+    address: clean(p.address, "", 120)
+  }), async ({ name, description, address }) => {
+    const api = externalServices?.mail;
+    if (!api?.lists) return outcome(false, "unavailable", "Listes indisponibles.");
+    if (name) {
+      if (!api.createList) return outcome(false, "unavailable", "Création de liste indisponible.");
+      const all = await api.lists();
+      const existing = (Array.isArray(all) ? all : (all?.data || [])).find((l) => (l.name || "").toLowerCase() === name.toLowerCase() || (address && l.address === address));
+      if (!existing) await api.createList({ name, description, address });
+    }
+    const result = await api.lists();
+    const lists = Array.isArray(result) ? result : (result?.data || []);
+    return outcome(true, "completed", `${lists.length} liste${lists.length > 1 ? "s" : ""}.`, Object.freeze(lists));
+  });
+  add("mail.list.add", "Ajouter un membre à une liste", "Ajoute un contact à une liste de diffusion.", "mail", true, { listId: "id", email: "string", name: "string?" }, (p) => {
+    const listId = clean(p.listId, "", 80);
+    const email = clean(p.email, "", 320);
+    const name = clean(p.name, "", 120);
+    if (!listId) throw new TypeError("Liste requise.");
+    if (!email || !email.includes("@")) throw new TypeError("Email invalide.");
+    return { listId, email, name };
+  }, async ({ listId, email, name }) => {
+    const api = externalServices?.mail;
+    if (!api?.addListMember || !api?.listMembers) return outcome(false, "unavailable", "Membres de liste indisponibles.");
+    await api.addListMember({ list_id: listId, email, name });
+    const result = await api.listMembers(listId);
+    const members = Array.isArray(result) ? result : (result?.data || []);
+    return outcome(true, "completed", "Membre ajouté.", Object.freeze({ listId, members }));
   });
 
   for (const [id, title] of [["connections.analyze", "Analyser les connexions"], ["diagnostic.run", "Lancer un diagnostic"]]) add(id, title, "Interroge le Worker a la demande.", "connections", false, {}, empty, () => externalServices?.diagnostic ? externalServices.diagnostic() : outcome(false, "unavailable", "Diagnostic indisponible."));

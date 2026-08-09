@@ -20,6 +20,8 @@ import {
 } from "../services/mail-client.js";
 import { applyRules, createNotification, detectImportance, getRules } from "../services/mail-brain.js";
 import { extractSourceIp, isBlocked, isTrusted, parseAuthResults } from "../services/mail-security.js";
+import { forwardToList, getListByAlias } from "../services/mail-lists.js";
+import { notifyUser } from "../services/mail-push.js";
 
 function safeText(value, limit = 320) {
   const raw = String(value ?? "").replace(/[\u0000-\u001f\u007f]/g, "").trim();
@@ -700,10 +702,18 @@ export async function mailReceiveHandler(message, env, context) {
     if (processed.folder === "spam") processed.folder = dbMessage.folder;
   }
 
+  const list = await getListByAlias(env, to).catch(() => null);
+  if (list?.user_id === userId) {
+    processed.list_id = list.id;
+    processed.folder = "inbox";
+    await forwardToList(env, userId, list, dbMessage, env.RESEND_API_KEY).catch(() => null);
+  }
+
   await detectImportance(env, userId, processed);
 
   const patch = {
     folder: processed.folder,
+    list_id: processed.list_id || null,
     is_read: processed.is_read,
     is_important: processed.is_important,
     is_spam: processed.is_spam,
@@ -716,6 +726,7 @@ export async function mailReceiveHandler(message, env, context) {
 
   await createNotification(env, userId, processed, ruleIds[0] || null).catch(() => null);
   await upsertContact(env, userId, { email: from, name: fromName, direction: "inbound" }).catch(() => null);
+  await notifyUser(env, userId, { ...dbMessage, id: saved.id, list_id: list?.id || null }).catch(() => null);
 
   return saved;
 }

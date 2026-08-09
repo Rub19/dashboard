@@ -1682,3 +1682,176 @@
     margin-left: 0;
   }
 }
+
+/* Accounts, PGP, Push, Lists */
+.v8-mail-sidebar__accounts,
+.v8-mail-sidebar__pgp,
+.v8-mail-sidebar__push,
+.v8-mail-sidebar__lists {
+  display: flex;
+  flex-direction: column;
+  gap: var(--v8-space-2);
+}
+
+.v8-mail-accounts__list,
+.v8-mail-pgp__list,
+.v8-mail-lists__list,
+.v8-mail-lists__members {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.v8-mail-accounts__item,
+.v8-mail-pgp__item,
+.v8-mail-lists__item,
+.v8-mail-lists__member {
+  display: flex;
+  align-items: center;
+  gap: var(--v8-space-2);
+  min-height: var(--v8-touch-target);
+  padding: 0 var(--v8-space-2);
+  border: 1px solid transparent;
+  border-radius: var(--v8-radius-md);
+  background: transparent;
+  color: var(--v8-text-secondary);
+  font-size: var(--v8-font-sm);
+  cursor: pointer;
+  transition:
+    background-color var(--v8-motion-fast) var(--v8-ease-standard),
+    border-color var(--v8-motion-fast) var(--v8-ease-standard),
+    color var(--v8-motion-fast) var(--v8-ease-standard);
+}
+
+.v8-mail-accounts__item:hover,
+.v8-mail-pgp__item:hover,
+.v8-mail-lists__item:hover,
+.v8-mail-lists__member:hover {
+  background: var(--v8-surface-2);
+  color: var(--v8-text);
+}
+
+.v8-mail-lists__item.is-active {
+  background: var(--v8-accent-soft);
+  border-color: var(--v8-accent-line);
+  color: var(--v8-accent);
+}
+
+.v8-mail-accounts__label,
+.v8-mail-pgp__label,
+.v8-mail-lists__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1 1 auto;
+}
+
+.v8-mail-accounts__actions,
+.v8-mail-lists__actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 0 0 auto;
+}
+
+.v8-mail-accounts__item button,
+.v8-mail-pgp__item button,
+.v8-mail-lists__item button,
+.v8-mail-lists__member button {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--v8-radius-sm);
+  background: transparent;
+  color: var(--v8-muted);
+  cursor: pointer;
+}
+
+.v8-mail-accounts__form,
+.v8-mail-pgp__form,
+.v8-mail-lists__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--v8-space-2);
+}
+
+.v8-mail-accounts__input,
+.v8-mail-pgp__input,
+.v8-mail-lists__input {
+  width: 100%;
+  min-height: 28px;
+  font-size: var(--v8-font-xs);
+}
+
+.v8-mail-pgp__textarea {
+  width: 100%;
+  min-height: 60px;
+  resize: vertical;
+  font-size: var(--v8-font-xs);
+}
+
+.v8-mail-accounts__add,
+.v8-mail-pgp__add,
+.v8-mail-lists__save,
+.v8-mail-lists__add-member,
+.v8-mail-push__toggle,
+.v8-mail-push__send {
+  width: 100%;
+  min-height: 28px;
+  justify-content: center;
+  font-size: var(--v8-font-xs);
+}
+
+.v8-mail-pgp__tools {
+  display: flex;
+  gap: var(--v8-space-2);
+}
+
+.v8-mail-pgp__tool {
+  flex: 1 1 auto;
+  min-height: 28px;
+  justify-content: center;
+  font-size: var(--v8-font-xs);
+}
+
+.v8-mail-push__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: var(--v8-radius-pill);
+  background: var(--v8-surface-2);
+  color: var(--v8-text-secondary);
+  font-size: var(--v8-font-xs);
+  font-weight: var(--v8-weight-semibold);
+}
+
+.v8-mail-lists__members-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--v8-space-2);
+  padding: var(--v8-space-2);
+  border: 1px solid var(--v8-border);
+  border-radius: var(--v8-radius-md);
+  background: var(--v8-surface-1);
+}
+
+.v8-mail-lists__members-title {
+  color: var(--v8-muted);
+  font-size: var(--v8-font-xs);
+  font-weight: var(--v8-weight-semibold);
+}
+
+.v8-mail-lists__reset {
+  width: 100%;
+  min-height: 28px;
+  justify-content: center;
+  font-size: var(--v8-font-xs);
+}

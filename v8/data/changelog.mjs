@@ -24,6 +24,15 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v295", "2026-08-17", "Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes", [
+    { kind: "feature", text: "Comptes mail externes : Gmail, Outlook et IMAP (création, sync, suppression)." },
+    { kind: "feature", text: "Chiffrement PGP simplifié via Web Crypto : génération de clés, chiffrement/déchiffrement côté Worker." },
+    { kind: "feature", text: "Notifications push Web : souscription, envoi VAPID et webhook /api/webhooks/mail." },
+    { kind: "feature", text: "Listes de diffusion : alias, membres, forward automatique via Resend." },
+    { kind: "feature", text: "Routes Worker /api/mail/accounts, /api/mail/pgp/keys, /api/mail/push/*, /api/mail/lists, /api/webhooks/mail." },
+    { kind: "feature", text: "Intégration client et Brain pour les nouvelles fonctionnalités." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v295." }
+  ]),
   entry("v294", "2026-08-16", "Phase 14 : ETHONE Mail — analytics, sécurité et confiance", [
     { kind: "feature", text: "Analytics mail : volumes envoyés/reçus, contacts fréquents, heures de pointe, stockage, règles actives, tendances 7/30/90 jours." },
     { kind: "feature", text: "Sécurité et confiance : vérification SPF/DKIM/DMARC, détection d'hameçonnage, expéditeurs bloqués et liste de confiance." },

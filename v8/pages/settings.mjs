@@ -325,7 +325,7 @@ export function mountSettings(stage, options = {}) {
       attributes: { type: "button", "aria-pressed": String(active) },
       dataset: { action: "v8.preset.apply", presetId: option.id }
     }, [
-      element("span", { className: "v8-preset-choice__icon", text: option.id.slice(0, 2).toUpperCase(), attributes: { "aria-hidden": "true" } }),
+      icon(option.icon, "v8-preset-choice__icon"),
       element("span", {}, [element("strong", { text: option.name }), element("small", { text: option.description })]),
       active ? icon("check") : null
     ]);

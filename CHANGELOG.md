@@ -2,6 +2,21 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v289] - 2026-08-11
+
+**Phase 10 : meteo emoji et icones de presets**
+
+### Ajouté
+- Card meteo avec emoji et teinte selon la condition (soleil, pluie, orage, neige, etc.).
+- Badge meteo avec emoji, degradé et glow coloré.
+
+### Amélioré
+- Popin de détail meteo avec emoji et teinte condition.
+- Presets d'apparence : remplacement des initiales par des icones Lucide.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v289`.
+
 ## [v288] - 2026-08-11
 
 **Phase 10 : redesign du flip météo**

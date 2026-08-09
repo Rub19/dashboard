@@ -1,6 +1,6 @@
 import { element, icon } from "./dom.mjs";
 import { refreshIcons } from "./icons.mjs";
-import { weatherIcon } from "./weather-live.mjs";
+import { weatherCondition, weatherIconBadge } from "./weather-live.mjs";
 import { computeFloatingPosition, getLayerManager } from "./layer-manager.mjs";
 
 const DAY_FORMAT = new Intl.DateTimeFormat("fr-FR", { weekday: "short", day: "numeric", month: "short" });
@@ -41,12 +41,14 @@ export function createWeatherDetail(options = {}) {
     close({ restoreFocus: false });
     if (!host || !anchorEl || presence.available !== true) return false;
     const forecast = Array.isArray(presence.forecast) ? presence.forecast : [];
+    const condition = weatherCondition(presence.weatherCode, presence.isDay);
     popover = element("div", {
       className: "v8-weather-detail",
-      attributes: { role: "dialog", "aria-label": "Détail météo" }
+      attributes: { role: "dialog", "aria-label": "Détail météo" },
+      dataset: { weatherTone: condition.key }
     }, [
       element("header", { className: "v8-weather-detail__head" }, [
-        icon(weatherIcon(presence.weatherCode, presence.isDay)),
+        weatherIconBadge(condition, { size: "sm" }),
         element("div", {}, [
           element("strong", { text: presence.country ? `${presence.city}, ${presence.country}` : presence.city, attributes: { translate: "no" } }),
           element("p", { text: presence.description, attributes: { translate: "no" } })

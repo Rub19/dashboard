@@ -24,6 +24,13 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v289", "2026-08-11", "Phase 10 : meteo emoji et icones de presets", [
+    { kind: "feature", text: "Card meteo avec emoji et teinte selon la condition (soleil, pluie, orage, neige, etc.)." },
+    { kind: "feature", text: "Badge meteo avec emoji, degrade et glow colore." },
+    { kind: "improvement", text: "Popin de detail meteo avec emoji et teinte condition." },
+    { kind: "improvement", text: "Presets d'apparence : remplacement des initiales par des icones Lucide." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v289." }
+  ]),
   entry("v288", "2026-08-11", "Phase 10 : redesign du flip meteo", [
     { kind: "improvement", text: "Nouveau verso de la carte meteo : header, grande temperature, stats vent/humidite et previsions." },
     { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v288." }

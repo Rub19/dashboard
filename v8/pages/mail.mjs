@@ -154,6 +154,19 @@ export function mountMail(stage, options = {}) {
   const repository = options?.repository || null;
   const mailCache = options?.mailCache || createMailCache();
 
+  const recentNotifies = new Map();
+  function mailNotify(spec) {
+    const key = `${spec.type || ""}|${spec.title || ""}|${spec.message || ""}`;
+    const now = Date.now();
+    const last = recentNotifies.get(key);
+    if (last && now - last < 5000) return;
+    recentNotifies.set(key, now);
+    if (recentNotifies.size > 50) {
+      for (const [k, t] of recentNotifies) { if (now - t > 30000) recentNotifies.delete(k); }
+    }
+    notify(spec);
+  }
+
   if (!mailApi) {
     stage.replaceChildren(buildEmptyState({
       icon: "unplug",
@@ -354,7 +367,7 @@ export function mountMail(stage, options = {}) {
     if (!isOnline()) {
       const id = await mailCache.queueAction({ action, payload });
       if (id) {
-        notify({ type: "warning", title: translateSource("Hors ligne"), message: translateSource("L'action est mise en attente et sera exécutée à la reconnexion.") });
+        mailNotify({ type: "warning", title: translateSource("Hors ligne"), message: translateSource("L'action est mise en attente et sera exécutée à la reconnexion.") });
       }
       return null;
     }
@@ -388,7 +401,7 @@ export function mountMail(stage, options = {}) {
         await runQueueAction(item.action, item.payload);
         await mailCache.removeAction(item.id);
       } catch (error) {
-        notify({ type: "error", title: translateSource("File d'attente"), message: errorDescription(error) });
+        mailNotify({ type: "error", title: translateSource("File d'attente"), message: errorDescription(error) });
         break;
       }
     }
@@ -496,7 +509,7 @@ export function mountMail(stage, options = {}) {
       state.notifications = allData;
       await mailCache.putNotifications(state.notifications);
     } catch (error) {
-      notify({ type: "error", title: translateSource("Notifications"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Notifications"), message: errorDescription(error) });
       state.notifications = [];
       state.unreadCount = 0;
     }
@@ -514,7 +527,7 @@ export function mountMail(stage, options = {}) {
       renderBell();
       renderSidebar();
     } catch (error) {
-      notify({ type: "error", title: translateSource("Notification"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Notification"), message: errorDescription(error) });
     }
   }
 
@@ -528,7 +541,7 @@ export function mountMail(stage, options = {}) {
       state.rules = Array.isArray(result) ? result : (result?.data || []);
       await mailCache.putRules(state.rules);
     } catch (error) {
-      notify({ type: "error", title: translateSource("Règles"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Règles"), message: errorDescription(error) });
       state.rules = [];
     }
     renderSidebar();
@@ -549,7 +562,7 @@ export function mountMail(stage, options = {}) {
       state.blocked = Array.isArray(blockedResult) ? blockedResult : (blockedResult?.data || []);
       state.trusted = Array.isArray(trustedResult) ? trustedResult : (trustedResult?.data || []);
     } catch (error) {
-      notify({ type: "error", title: translateSource("Sécurité"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Sécurité"), message: errorDescription(error) });
       state.blocked = [];
       state.trusted = [];
     }
@@ -561,10 +574,10 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.blockSender) return;
     try {
       await mailApi.blockSender({ email, domain, reason });
-      notify({ type: "success", title: translateSource("Sécurité"), message: translateSource("Expéditeur bloqué.") });
+      mailNotify({ type: "success", title: translateSource("Sécurité"), message: translateSource("Expéditeur bloqué.") });
       await loadSecurity();
     } catch (error) {
-      notify({ type: "error", title: translateSource("Sécurité"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Sécurité"), message: errorDescription(error) });
     }
   }
 
@@ -572,10 +585,10 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.trustSender) return;
     try {
       await mailApi.trustSender({ email, domain });
-      notify({ type: "success", title: translateSource("Sécurité"), message: translateSource("Expéditeur fiable.") });
+      mailNotify({ type: "success", title: translateSource("Sécurité"), message: translateSource("Expéditeur fiable.") });
       await loadSecurity();
     } catch (error) {
-      notify({ type: "error", title: translateSource("Sécurité"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Sécurité"), message: errorDescription(error) });
     }
   }
 
@@ -583,10 +596,10 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.unblockSender) return;
     try {
       await mailApi.unblockSender(id);
-      notify({ type: "success", title: translateSource("Sécurité"), message: translateSource("Bloc retiré.") });
+      mailNotify({ type: "success", title: translateSource("Sécurité"), message: translateSource("Bloc retiré.") });
       await loadSecurity();
     } catch (error) {
-      notify({ type: "error", title: translateSource("Sécurité"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Sécurité"), message: errorDescription(error) });
     }
   }
 
@@ -594,10 +607,10 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.untrustSender) return;
     try {
       await mailApi.untrustSender(id);
-      notify({ type: "success", title: translateSource("Sécurité"), message: translateSource("Confiance retirée.") });
+      mailNotify({ type: "success", title: translateSource("Sécurité"), message: translateSource("Confiance retirée.") });
       await loadSecurity();
     } catch (error) {
-      notify({ type: "error", title: translateSource("Sécurité"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Sécurité"), message: errorDescription(error) });
     }
   }
 
@@ -607,7 +620,7 @@ export function mountMail(stage, options = {}) {
       const result = await mailApi.accounts();
       state.accounts = Array.isArray(result) ? result : (result?.data || []);
     } catch (error) {
-      notify({ type: "error", title: translateSource("Comptes"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Comptes"), message: errorDescription(error) });
       state.accounts = [];
     }
   }
@@ -615,17 +628,17 @@ export function mountMail(stage, options = {}) {
   async function addAccount(provider, email, label) {
     if (!mailApi?.createAccount) return;
     if (!provider || !email) {
-      notify({ type: "warning", title: translateSource("Compte"), message: translateSource("Fournisseur et email requis.") });
+      mailNotify({ type: "warning", title: translateSource("Compte"), message: translateSource("Fournisseur et email requis.") });
       return;
     }
     try {
       await mailApi.createAccount({ provider, email, label });
-      notify({ type: "success", title: translateSource("Compte"), message: translateSource("Compte ajouté.") });
+      mailNotify({ type: "success", title: translateSource("Compte"), message: translateSource("Compte ajouté.") });
       state.accountForm = { provider: "", email: "", label: "" };
       await loadAccounts();
       renderSidebar();
     } catch (error) {
-      notify({ type: "error", title: translateSource("Compte"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Compte"), message: errorDescription(error) });
     }
   }
 
@@ -633,9 +646,9 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.syncAccount) return;
     try {
       await mailApi.syncAccount(id);
-      notify({ type: "success", title: translateSource("Compte"), message: translateSource("Synchronisation lancée.") });
+      mailNotify({ type: "success", title: translateSource("Compte"), message: translateSource("Synchronisation lancée.") });
     } catch (error) {
-      notify({ type: "error", title: translateSource("Compte"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Compte"), message: errorDescription(error) });
     }
   }
 
@@ -643,11 +656,11 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.deleteAccount) return;
     try {
       await mailApi.deleteAccount(id);
-      notify({ type: "success", title: translateSource("Compte"), message: translateSource("Compte supprimé.") });
+      mailNotify({ type: "success", title: translateSource("Compte"), message: translateSource("Compte supprimé.") });
       await loadAccounts();
       renderSidebar();
     } catch (error) {
-      notify({ type: "error", title: translateSource("Compte"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Compte"), message: errorDescription(error) });
     }
   }
 
@@ -657,7 +670,7 @@ export function mountMail(stage, options = {}) {
       const result = await mailApi.pgpKeys();
       state.pgpKeys = Array.isArray(result) ? result : (result?.data || []);
     } catch (error) {
-      notify({ type: "error", title: translateSource("PGP"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("PGP"), message: errorDescription(error) });
       state.pgpKeys = [];
     }
   }
@@ -666,17 +679,17 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.createPgpKey) return;
     const email = state.pgpForm.email.trim();
     if (!email) {
-      notify({ type: "warning", title: translateSource("PGP"), message: translateSource("Email requis.") });
+      mailNotify({ type: "warning", title: translateSource("PGP"), message: translateSource("Email requis.") });
       return;
     }
     try {
       await mailApi.createPgpKey({ email, public_key: state.pgpForm.publicKey, private_key: state.pgpForm.privateKey, passphrase: state.pgpForm.passphrase });
-      notify({ type: "success", title: translateSource("PGP"), message: translateSource("Clé enregistrée.") });
+      mailNotify({ type: "success", title: translateSource("PGP"), message: translateSource("Clé enregistrée.") });
       state.pgpForm = { email: "", publicKey: "", privateKey: "", passphrase: "" };
       await loadPgpKeys();
       renderSidebar();
     } catch (error) {
-      notify({ type: "error", title: translateSource("PGP"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("PGP"), message: errorDescription(error) });
     }
   }
 
@@ -684,18 +697,18 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.deletePgpKey) return;
     try {
       await mailApi.deletePgpKey(id);
-      notify({ type: "success", title: translateSource("PGP"), message: translateSource("Clé supprimée.") });
+      mailNotify({ type: "success", title: translateSource("PGP"), message: translateSource("Clé supprimée.") });
       await loadPgpKeys();
       renderSidebar();
     } catch (error) {
-      notify({ type: "error", title: translateSource("PGP"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("PGP"), message: errorDescription(error) });
     }
   }
 
   async function pgpEncrypt() {
     if (!mailApi?.pgpEncrypt) return;
     const { publicKey } = state.pgpForm;
-    if (!publicKey) { notify({ type: "warning", title: translateSource("PGP"), message: translateSource("Collez une clé publique.") }); return; }
+    if (!publicKey) { mailNotify({ type: "warning", title: translateSource("PGP"), message: translateSource("Collez une clé publique.") }); return; }
     const text = await globalThis.prompt?.(translateSource("Texte à chiffrer"));
     if (!text) return;
     try {
@@ -703,7 +716,7 @@ export function mountMail(stage, options = {}) {
       const encrypted = result?.data?.body || result?.data;
       globalThis.alert?.(encrypted || translateSource("Chiffrement terminé."));
     } catch (error) {
-      notify({ type: "error", title: translateSource("PGP"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("PGP"), message: errorDescription(error) });
     }
   }
 
@@ -716,7 +729,7 @@ export function mountMail(stage, options = {}) {
       const decrypted = result?.data?.body || result?.data;
       globalThis.alert?.(decrypted || translateSource("Déchiffrement terminé."));
     } catch (error) {
-      notify({ type: "error", title: translateSource("PGP"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("PGP"), message: errorDescription(error) });
     }
   }
 
@@ -733,11 +746,11 @@ export function mountMail(stage, options = {}) {
 
   async function togglePushSubscribe() {
     if (!mailApi?.pushVapidKey || !mailApi?.pushSubscribe) {
-      notify({ type: "warning", title: translateSource("Push"), message: translateSource("Notifications push non disponibles.") });
+      mailNotify({ type: "warning", title: translateSource("Push"), message: translateSource("Notifications push non disponibles.") });
       return;
     }
     if (typeof navigator === "undefined" || !navigator.serviceWorker?.register) {
-      notify({ type: "warning", title: translateSource("Push"), message: translateSource("Service Worker non supporté.") });
+      mailNotify({ type: "warning", title: translateSource("Push"), message: translateSource("Service Worker non supporté.") });
       return;
     }
     state.pushLoading = true;
@@ -755,16 +768,16 @@ export function mountMail(stage, options = {}) {
           if (mailApi.pushUnsubscribe) await mailApi.pushUnsubscribe(sub.endpoint);
         }
         state.pushSubscribed = false;
-        notify({ type: "success", title: translateSource("Push"), message: translateSource("Désabonnement effectué.") });
+        mailNotify({ type: "success", title: translateSource("Push"), message: translateSource("Désabonnement effectué.") });
       } else {
         sub = await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(vapidKey) });
         const json = sub.toJSON();
         await mailApi.pushSubscribe({ endpoint: json.endpoint, p256dh: json.keys?.p256dh, auth: json.keys?.auth, keys: json.keys });
         state.pushSubscribed = true;
-        notify({ type: "success", title: translateSource("Push"), message: translateSource("Notifications activées.") });
+        mailNotify({ type: "success", title: translateSource("Push"), message: translateSource("Notifications activées.") });
       }
     } catch (error) {
-      notify({ type: "error", title: translateSource("Push"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Push"), message: errorDescription(error) });
     }
     state.pushLoading = false;
     renderSidebar();
@@ -774,9 +787,9 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.pushSend) return;
     try {
       await mailApi.pushSend({ title: translateSource("ETHONE Mail"), body: translateSource("Test de notification.") });
-      notify({ type: "success", title: translateSource("Push"), message: translateSource("Notification envoyée.") });
+      mailNotify({ type: "success", title: translateSource("Push"), message: translateSource("Notification envoyée.") });
     } catch (error) {
-      notify({ type: "error", title: translateSource("Push"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Push"), message: errorDescription(error) });
     }
   }
 
@@ -786,7 +799,7 @@ export function mountMail(stage, options = {}) {
       const result = await mailApi.lists();
       state.lists = Array.isArray(result) ? result : (result?.data || []);
     } catch (error) {
-      notify({ type: "error", title: translateSource("Listes"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Listes"), message: errorDescription(error) });
       state.lists = [];
     }
   }
@@ -798,27 +811,27 @@ export function mountMail(stage, options = {}) {
       state.listMembers[listId] = Array.isArray(result) ? result : (result?.data || []);
     } catch (error) {
       state.listMembers[listId] = [];
-      notify({ type: "error", title: translateSource("Liste"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Liste"), message: errorDescription(error) });
     }
   }
 
   async function saveList() {
     if (!mailApi?.createList || !mailApi?.updateList) return;
     const { id, name, description, address } = state.listForm;
-    if (!name) { notify({ type: "warning", title: translateSource("Liste"), message: translateSource("Nom requis.") }); return; }
+    if (!name) { mailNotify({ type: "warning", title: translateSource("Liste"), message: translateSource("Nom requis.") }); return; }
     try {
       if (id) {
         await mailApi.updateList({ id, name, description, address });
-        notify({ type: "success", title: translateSource("Liste"), message: translateSource("Liste mise à jour.") });
+        mailNotify({ type: "success", title: translateSource("Liste"), message: translateSource("Liste mise à jour.") });
       } else {
         await mailApi.createList({ name, description, address });
-        notify({ type: "success", title: translateSource("Liste"), message: translateSource("Liste créée.") });
+        mailNotify({ type: "success", title: translateSource("Liste"), message: translateSource("Liste créée.") });
       }
       state.listForm = { id: null, name: "", description: "", address: "" };
       await loadLists();
       renderSidebar();
     } catch (error) {
-      notify({ type: "error", title: translateSource("Liste"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Liste"), message: errorDescription(error) });
     }
   }
 
@@ -826,12 +839,12 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.deleteList) return;
     try {
       await mailApi.deleteList(id);
-      notify({ type: "success", title: translateSource("Liste"), message: translateSource("Liste supprimée.") });
+      mailNotify({ type: "success", title: translateSource("Liste"), message: translateSource("Liste supprimée.") });
       if (state.selectedListId === id) state.selectedListId = null;
       await loadLists();
       renderSidebar();
     } catch (error) {
-      notify({ type: "error", title: translateSource("Liste"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Liste"), message: errorDescription(error) });
     }
   }
 
@@ -840,11 +853,11 @@ export function mountMail(stage, options = {}) {
     if (!email) return;
     try {
       await mailApi.addListMember({ list_id: listId, email, name });
-      notify({ type: "success", title: translateSource("Liste"), message: translateSource("Membre ajouté.") });
+      mailNotify({ type: "success", title: translateSource("Liste"), message: translateSource("Membre ajouté.") });
       await loadListMembers(listId);
       renderSidebar();
     } catch (error) {
-      notify({ type: "error", title: translateSource("Liste"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Liste"), message: errorDescription(error) });
     }
   }
 
@@ -852,11 +865,11 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.removeListMember) return;
     try {
       await mailApi.removeListMember(listId, email);
-      notify({ type: "success", title: translateSource("Liste"), message: translateSource("Membre retiré.") });
+      mailNotify({ type: "success", title: translateSource("Liste"), message: translateSource("Membre retiré.") });
       await loadListMembers(listId);
       renderSidebar();
     } catch (error) {
-      notify({ type: "error", title: translateSource("Liste"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Liste"), message: errorDescription(error) });
     }
   }
 
@@ -893,10 +906,10 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.saveRule) return;
     try {
       await mailApi.saveRule(payload);
-      notify({ type: "success", title: translateSource("Règle"), message: translateSource("Règle enregistrée.") });
+      mailNotify({ type: "success", title: translateSource("Règle"), message: translateSource("Règle enregistrée.") });
       await loadRules();
     } catch (error) {
-      notify({ type: "error", title: translateSource("Règle"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Règle"), message: errorDescription(error) });
     }
   }
 
@@ -904,10 +917,10 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.deleteRule) return;
     try {
       await mailApi.deleteRule(id);
-      notify({ type: "success", title: translateSource("Règle"), message: translateSource("Règle supprimée.") });
+      mailNotify({ type: "success", title: translateSource("Règle"), message: translateSource("Règle supprimée.") });
       await loadRules();
     } catch (error) {
-      notify({ type: "error", title: translateSource("Règle"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Règle"), message: errorDescription(error) });
     }
   }
 
@@ -985,7 +998,7 @@ export function mountMail(stage, options = {}) {
       state.templates = Array.isArray(result) ? result : (result?.data || []);
       await mailCache.putTemplates(state.templates);
     } catch (error) {
-      notify({ type: "error", title: translateSource("Modèles"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Modèles"), message: errorDescription(error) });
       state.templates = [];
     }
     renderSidebar();
@@ -1001,7 +1014,7 @@ export function mountMail(stage, options = {}) {
       is_default: state.templateForm.is_default
     };
     if (!payload.name) {
-      notify({ type: "warning", title: translateSource("Modèle"), message: translateSource("Nom requis.") });
+      mailNotify({ type: "warning", title: translateSource("Modèle"), message: translateSource("Nom requis.") });
       return;
     }
     try {
@@ -1010,11 +1023,11 @@ export function mountMail(stage, options = {}) {
       } else {
         await mailApi.saveTemplate(payload);
       }
-      notify({ type: "success", title: translateSource("Modèle"), message: state.templateForm.id ? translateSource("Modèle mis à jour.") : translateSource("Modèle enregistré.") });
+      mailNotify({ type: "success", title: translateSource("Modèle"), message: state.templateForm.id ? translateSource("Modèle mis à jour.") : translateSource("Modèle enregistré.") });
       state.templateForm = { id: null, name: "", subject: "", content: "", is_default: false };
       await loadTemplates();
     } catch (error) {
-      notify({ type: "error", title: translateSource("Modèle"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Modèle"), message: errorDescription(error) });
     }
   }
 
@@ -1022,11 +1035,11 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.deleteTemplate) return;
     try {
       await mailApi.deleteTemplate(id);
-      notify({ type: "success", title: translateSource("Modèle"), message: translateSource("Modèle supprimé.") });
+      mailNotify({ type: "success", title: translateSource("Modèle"), message: translateSource("Modèle supprimé.") });
       if (String(state.templateForm.id) === String(id)) state.templateForm = { id: null, name: "", subject: "", content: "", is_default: false };
       await loadTemplates();
     } catch (error) {
-      notify({ type: "error", title: translateSource("Modèle"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Modèle"), message: errorDescription(error) });
     }
   }
 
@@ -1034,10 +1047,10 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.updateTemplate) return;
     try {
       await mailApi.updateTemplate({ id, is_default: true });
-      notify({ type: "success", title: translateSource("Modèle"), message: translateSource("Modèle par défaut défini.") });
+      mailNotify({ type: "success", title: translateSource("Modèle"), message: translateSource("Modèle par défaut défini.") });
       await loadTemplates();
     } catch (error) {
-      notify({ type: "error", title: translateSource("Modèle"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Modèle"), message: errorDescription(error) });
     }
   }
 
@@ -1062,7 +1075,7 @@ export function mountMail(stage, options = {}) {
       await mailCache.putMessages(state.folder, state.messages);
     } catch (error) {
       state.error = error;
-      notify({ type: "error", title: translateSource("Mail"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Mail"), message: errorDescription(error) });
     }
     state.loading = false;
     state.selectedIds.clear();
@@ -1074,7 +1087,7 @@ export function mountMail(stage, options = {}) {
 
   async function loadAnalytics(period) {
     if (!mailApi?.analytics) {
-      notify({ type: "warning", title: translateSource("Analytique"), message: translateSource("L'analytique n'est pas disponible.") });
+      mailNotify({ type: "warning", title: translateSource("Analytique"), message: translateSource("L'analytique n'est pas disponible.") });
       return;
     }
     try {
@@ -1086,14 +1099,14 @@ export function mountMail(stage, options = {}) {
       state.analytics = result?.data || null;
       state.loading = false;
       if (!state.analytics) {
-        notify({ type: "warning", title: translateSource("Analytique"), message: translateSource("Aucune donnée disponible.") });
+        mailNotify({ type: "warning", title: translateSource("Analytique"), message: translateSource("Aucune donnée disponible.") });
         closeAnalytics();
         return;
       }
       renderAnalytics(state.analytics);
     } catch (error) {
       state.loading = false;
-      notify({ type: "error", title: translateSource("Analytique"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Analytique"), message: errorDescription(error) });
       closeAnalytics();
     }
   }
@@ -1198,7 +1211,7 @@ export function mountMail(stage, options = {}) {
       const result = await mailApi.search(state.query, { limit: 50, offset: 0 });
       state.messages = Array.isArray(result) ? result : (result?.data || []);
     } catch (error) {
-      notify({ type: "error", title: translateSource("Recherche"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Recherche"), message: errorDescription(error) });
       state.messages = [];
     }
     state.loading = false;
@@ -1281,13 +1294,13 @@ export function mountMail(stage, options = {}) {
     if (!message) return;
     try {
       await withQueue("move", { ids: [message.id], folder });
-      notify({ type: "success", title: translateSource("Mail"), message: translateSource("Déplacé vers {0}.").replace("{0}", FOLDERS.find((f) => f.key === folder)?.label || folder) });
+      mailNotify({ type: "success", title: translateSource("Mail"), message: translateSource("Déplacé vers {0}.").replace("{0}", FOLDERS.find((f) => f.key === folder)?.label || folder) });
       state.messages = state.messages.filter((m) => m.id !== message.id);
       if (state.selected?.id === message.id) backToList();
       renderList();
       loadFolder();
     } catch (error) {
-      notify({ type: "error", title: translateSource("Mail"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Mail"), message: errorDescription(error) });
     }
   }
 
@@ -1295,12 +1308,12 @@ export function mountMail(stage, options = {}) {
     if (!mailApi || !name.trim()) return;
     try {
       await mailApi.createLabel({ name: name.trim(), color: "var(--v8-accent)" });
-      notify({ type: "success", title: translateSource("Étiquette"), message: translateSource("Étiquette créée.") });
+      mailNotify({ type: "success", title: translateSource("Étiquette"), message: translateSource("Étiquette créée.") });
       await loadLabels();
       renderSidebar();
       if (state.view === "detail" && state.selected) renderReading();
     } catch (error) {
-      notify({ type: "error", title: translateSource("Étiquette"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Étiquette"), message: errorDescription(error) });
     }
   }
 
@@ -1308,12 +1321,12 @@ export function mountMail(stage, options = {}) {
     if (!mailApi) return;
     try {
       await mailApi.deleteLabel(id);
-      notify({ type: "success", title: translateSource("Étiquette"), message: translateSource("Étiquette supprimée.") });
+      mailNotify({ type: "success", title: translateSource("Étiquette"), message: translateSource("Étiquette supprimée.") });
       await loadLabels();
       renderSidebar();
       if (state.view === "detail" && state.selected) renderReading();
     } catch (error) {
-      notify({ type: "error", title: translateSource("Étiquette"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Étiquette"), message: errorDescription(error) });
     }
   }
 
@@ -1323,7 +1336,7 @@ export function mountMail(stage, options = {}) {
     const labelId = matchedLabel?.id;
     try {
       await withQueue("label", { ids, label: labelName, remove });
-      notify({ type: "success", title: translateSource("Étiquette"), message: remove ? translateSource("Étiquette retirée.") : translateSource("Étiquette assignée.") });
+      mailNotify({ type: "success", title: translateSource("Étiquette"), message: remove ? translateSource("Étiquette retirée.") : translateSource("Étiquette assignée.") });
       if (state.selected && ids.map(String).includes(String(state.selected.id))) {
         if (remove) {
           state.selected.labels = (state.selected.labels || []).filter((l) => l.id !== labelId);
@@ -1334,7 +1347,7 @@ export function mountMail(stage, options = {}) {
       }
       loadFolder();
     } catch (error) {
-      notify({ type: "error", title: translateSource("Étiquette"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Étiquette"), message: errorDescription(error) });
     }
   }
 
@@ -1402,7 +1415,7 @@ export function mountMail(stage, options = {}) {
         enabled: true
       };
       if (!payload.name || !payload.condition.subject || !payload.action.target) {
-        notify({ type: "warning", title: translateSource("Règle"), message: translateSource("Remplissez tous les champs.") });
+        mailNotify({ type: "warning", title: translateSource("Règle"), message: translateSource("Remplissez tous les champs.") });
         return;
       }
       await saveRule(payload);
@@ -1773,7 +1786,7 @@ export function mountMail(stage, options = {}) {
       const domain = domainInput.value.trim();
       const reason = reasonInput.value.trim();
       if (!email && !domain) {
-        notify({ type: "warning", title: translateSource("Sécurité"), message: translateSource("Saisissez un email ou un domaine.") });
+        mailNotify({ type: "warning", title: translateSource("Sécurité"), message: translateSource("Saisissez un email ou un domaine.") });
         return;
       }
       if (state.securityTab === "blocked") {
@@ -1863,7 +1876,7 @@ export function mountMail(stage, options = {}) {
     if (!ids.length) return;
     try {
       await withQueue("bulk", { ids, action, target });
-      notify({ type: "success", title: translateSource("Action groupée"), message: translateSource("Action appliquée.") });
+      mailNotify({ type: "success", title: translateSource("Action groupée"), message: translateSource("Action appliquée.") });
       (state.messages || []).forEach((m) => {
         if (!ids.includes(String(m.id))) return;
         if (action === "move" && (target === "archive" || target === "trash")) {
@@ -1883,7 +1896,7 @@ export function mountMail(stage, options = {}) {
       renderBulkToolbar();
       loadFolder();
     } catch (error) {
-      notify({ type: "error", title: translateSource("Action groupée"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Action groupée"), message: errorDescription(error) });
     }
   }
 
@@ -1894,7 +1907,7 @@ export function mountMail(stage, options = {}) {
     if (!ids.length) return;
     try {
       await withQueue("label", { ids, label: labelName.trim(), remove });
-      notify({ type: "success", title: translateSource("Étiquette"), message: remove ? translateSource("Étiquette retirée.") : translateSource("Étiquette assignée.") });
+      mailNotify({ type: "success", title: translateSource("Étiquette"), message: remove ? translateSource("Étiquette retirée.") : translateSource("Étiquette assignée.") });
       (state.messages || []).forEach((m) => {
         if (!ids.includes(String(m.id))) return;
         if (remove) {
@@ -1909,7 +1922,7 @@ export function mountMail(stage, options = {}) {
       renderList();
       if (state.selected && ids.includes(String(state.selected.id))) renderReading();
     } catch (error) {
-      notify({ type: "error", title: translateSource("Étiquette"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Étiquette"), message: errorDescription(error) });
     }
   }
 
@@ -1922,14 +1935,14 @@ export function mountMail(stage, options = {}) {
   async function performBulkSnooze(ids, snoozedUntil) {
     try {
       await withQueue("bulkSnooze", { ids, snoozedUntil });
-      notify({ type: "success", title: translateSource("Snooze"), message: translateSource("Messages reportés.") });
+      mailNotify({ type: "success", title: translateSource("Snooze"), message: translateSource("Messages reportés.") });
       state.selectedIds.clear();
       masterCheckbox.checked = false;
       renderList();
       renderBulkToolbar();
       loadFolder();
     } catch (error) {
-      notify({ type: "error", title: translateSource("Snooze"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Snooze"), message: errorDescription(error) });
     }
   }
 
@@ -1990,7 +2003,7 @@ export function mountMail(stage, options = {}) {
     cancelBtn.addEventListener("click", close);
     confirmBtn.addEventListener("click", () => {
       if (!selectedDate) {
-        notify({ type: "warning", title: translateSource("Snooze"), message: translateSource("Choisissez une date.") });
+        mailNotify({ type: "warning", title: translateSource("Snooze"), message: translateSource("Choisissez une date.") });
         return;
       }
       if (onConfirm) onConfirm(selectedDate);
@@ -2027,10 +2040,10 @@ export function mountMail(stage, options = {}) {
     openSnoozeDialog(async (snoozedUntil) => {
       try {
         await withQueue("snooze", { id: message.id, snoozedUntil });
-        notify({ type: "success", title: translateSource("Snooze"), message: translateSource("Message reporté.") });
+        mailNotify({ type: "success", title: translateSource("Snooze"), message: translateSource("Message reporté.") });
         loadFolder();
       } catch (error) {
-        notify({ type: "error", title: translateSource("Snooze"), message: errorDescription(error) });
+        mailNotify({ type: "error", title: translateSource("Snooze"), message: errorDescription(error) });
       }
     });
   }
@@ -2250,34 +2263,34 @@ export function mountMail(stage, options = {}) {
 
   async function createItem(item, type) {
     if (!repository) {
-      notify({ type: "info", title: translateSource("Création"), message: translateSource("prêt à copier") });
+      mailNotify({ type: "info", title: translateSource("Création"), message: translateSource("prêt à copier") });
       return;
     }
     try {
       if (type === "task" && typeof repository.tasks?.create === "function") {
         await repository.tasks.create(item);
-        notify({ type: "success", title: translateSource("Tâche"), message: translateSource("Tâche créée.") });
+        mailNotify({ type: "success", title: translateSource("Tâche"), message: translateSource("Tâche créée.") });
       } else if (type === "event" && typeof repository.events?.create === "function") {
         await repository.events.create(item);
-        notify({ type: "success", title: translateSource("Événement"), message: translateSource("Événement créé.") });
+        mailNotify({ type: "success", title: translateSource("Événement"), message: translateSource("Événement créé.") });
       } else if (type === "note" && typeof repository.notes?.create === "function") {
         const payload = {
           title: item.title || item.text || translateSource("Extrait"),
           content: item.description || item.text || JSON.stringify(item)
         };
         await repository.notes.create(payload);
-        notify({ type: "success", title: translateSource("Note"), message: translateSource("Note créée.") });
+        mailNotify({ type: "success", title: translateSource("Note"), message: translateSource("Note créée.") });
       } else {
-        notify({ type: "info", title: translateSource("Création"), message: translateSource("prêt à copier") });
+        mailNotify({ type: "info", title: translateSource("Création"), message: translateSource("prêt à copier") });
       }
     } catch (error) {
-      notify({ type: "error", title: translateSource("Création"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Création"), message: errorDescription(error) });
     }
   }
 
   async function analyzeMessage(message, panel) {
     if (!mailApi?.analyze) {
-      notify({ type: "warning", title: translateSource("Brain"), message: translateSource("L'analyse n'est pas disponible.") });
+      mailNotify({ type: "warning", title: translateSource("Brain"), message: translateSource("L'analyse n'est pas disponible.") });
       return;
     }
     try {
@@ -2289,13 +2302,13 @@ export function mountMail(stage, options = {}) {
       panel.replaceChildren(buildBrainSummary(summary, tasks, events));
       panel.hidden = false;
     } catch (error) {
-      notify({ type: "error", title: translateSource("Brain"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Brain"), message: errorDescription(error) });
     }
   }
 
   async function suggestMessage(message, panel) {
     if (!mailApi?.suggest) {
-      notify({ type: "warning", title: translateSource("Brain"), message: translateSource("Les suggestions ne sont pas disponibles.") });
+      mailNotify({ type: "warning", title: translateSource("Brain"), message: translateSource("Les suggestions ne sont pas disponibles.") });
       return;
     }
     try {
@@ -2304,13 +2317,13 @@ export function mountMail(stage, options = {}) {
       panel.replaceChildren(buildSuggestionChips(suggestions.slice(0, 3), message));
       panel.hidden = false;
     } catch (error) {
-      notify({ type: "error", title: translateSource("Brain"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Brain"), message: errorDescription(error) });
     }
   }
 
   async function extractMessage(message, panel) {
     if (!mailApi?.extract) {
-      notify({ type: "warning", title: translateSource("Brain"), message: translateSource("L'extraction n'est pas disponible.") });
+      mailNotify({ type: "warning", title: translateSource("Brain"), message: translateSource("L'extraction n'est pas disponible.") });
       return;
     }
     try {
@@ -2321,7 +2334,7 @@ export function mountMail(stage, options = {}) {
       panel.replaceChildren(buildExtractList(tasks, events));
       panel.hidden = false;
     } catch (error) {
-      notify({ type: "error", title: translateSource("Brain"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Brain"), message: errorDescription(error) });
     }
   }
 
@@ -2962,7 +2975,7 @@ export function mountMail(stage, options = {}) {
       if (status) status.textContent = isOnline() ? translateSource("Enregistré") : translateSource("En attente");
     } catch (error) {
       if (status) status.textContent = translateSource("Erreur d'enregistrement");
-      notify({ type: "error", title: translateSource("Brouillon"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Brouillon"), message: errorDescription(error) });
     }
   }
 
@@ -2970,13 +2983,13 @@ export function mountMail(stage, options = {}) {
     if (!mailApi || !composeEditor) return;
     const payload = collectPayload();
     if (!payload.to.length) {
-      notify({ type: "warning", title: translateSource("Mail"), message: translateSource("Ajoutez au moins un destinataire.") });
+      mailNotify({ type: "warning", title: translateSource("Mail"), message: translateSource("Ajoutez au moins un destinataire.") });
       return;
     }
     const isScheduled = !!payload.scheduled_at;
     try {
       await withQueue("send", payload);
-      notify({ type: "success", title: translateSource("Mail"), message: isScheduled ? translateSource("Message programmé.") : translateSource("Message envoyé.") });
+      mailNotify({ type: "success", title: translateSource("Mail"), message: isScheduled ? translateSource("Message programmé.") : translateSource("Message envoyé.") });
       const draftToDelete = composeDraftId;
       composeDraftId = null;
       if (isOnline() && draftToDelete) {
@@ -2985,7 +2998,7 @@ export function mountMail(stage, options = {}) {
       backToList();
       loadFolder();
     } catch (error) {
-      notify({ type: "error", title: isScheduled ? translateSource("Échec de la programmation") : translateSource("Échec de l'envoi"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: isScheduled ? translateSource("Échec de la programmation") : translateSource("Échec de l'envoi"), message: errorDescription(error) });
     }
   }
 
@@ -3015,7 +3028,7 @@ export function mountMail(stage, options = {}) {
         openCompose();
       }
     } catch (error) {
-      notify({ type: "error", title: translateSource("Mail"), message: errorDescription(error) });
+      mailNotify({ type: "error", title: translateSource("Mail"), message: errorDescription(error) });
     }
   }
 

@@ -1,7 +1,8 @@
 import { element, icon } from "./dom.mjs";
 import { emptyState } from "./empty-state.mjs";
+import { translateSource } from "../i18n/catalog.mjs";
 
-export function buildErrorState({ title = "Un problème est survenu", reason = "ETHONE n'a pas pu charger ce contenu.", actionText = "", action = null, tagName = "section" } = {}) {
+export function buildErrorState({ title = translateSource("Un problème est survenu"), reason = translateSource("ETHONE n'a pas pu charger ce contenu."), actionText = "", action = null, tagName = "section" } = {}) {
   const actions = [];
   if (actionText && typeof action === "function") {
     actions.push(element("button", {
@@ -13,7 +14,7 @@ export function buildErrorState({ title = "Un problème est survenu", reason = "
   return emptyState({
     tagName,
     iconName: "triangle-alert",
-    eyebrow: "Erreur",
+    eyebrow: translateSource("Erreur"),
     title,
     description: reason,
     actions,

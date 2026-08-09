@@ -2426,6 +2426,9 @@ const ENTRIES = {
   "Étiquette retirée.": {"fr":"Étiquette retirée.","en":"Label removed.","es":"Etiqueta retirada.","de":"Tag entfernt."},
   "Étiquette supprimée.": {"fr":"Étiquette supprimée.","en":"Label deleted.","es":"Etiqueta eliminada.","de":"Tag gelöscht."},
   "Étiquettes": {"fr":"Étiquettes","en":"Labels","es":"Etiquetas","de":"Tags"},
+  "Erreur": {"fr":"Erreur","en":"Error","es":"Error","de":"Fehler"},
+  "Un problème est survenu": {"fr":"Un problème est survenu","en":"Something went wrong","es":"Ha ocurrido un problema","de":"Ein Problem ist aufgetreten"},
+  "ETHONE n'a pas pu charger ce contenu.": {"fr":"ETHONE n'a pas pu charger ce contenu.","en":"ETHONE could not load this content.","es":"ETHONE no pudo cargar este contenido.","de":"ETHONE konnte diesen Inhalt nicht laden."},
 };
 Object.keys(ENTRIES).forEach((key) => Object.freeze(ENTRIES[key]));
 Object.freeze(ENTRIES);

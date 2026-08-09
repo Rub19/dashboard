@@ -97,6 +97,18 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 ### Bordereau PWA
 - Mis à jour vers `experience-v301`.
 
+## [v302] - 2026-08-18
+
+**Hotfix : correction des états d'erreur et des notifications dupliquées sur Mail**
+
+### Corrige
+- Le bandeau d'erreur `ERREUR` dans `buildErrorState` était en dur en français ; il passe maintenant par `translateSource`.
+- Les messages par défaut de `buildErrorState` sont traduits.
+- Les notifications d'erreur identiques sur la page Mail sont dédupliquées (5 secondes) pour éviter les toasts en cascade quand le Worker renvoie une 500.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v302`.
+
 ## [v295] - 2026-08-17
 
 **Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes**

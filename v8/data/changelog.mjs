@@ -24,6 +24,14 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v315", "2026-08-18", "Mail : refonte premium Phase 1", [
+    { kind: "feature", text: "En-tete collante v8-mail-header avec titre, menu mobile, recherche, cloche, profil et aide." },
+    { kind: "feature", text: "Barre d'outils collante v8-mail-toolbar avec case principale, actions groupées, filtre, tri et composer." },
+    { kind: "feature", text: "Panneau lateral resserre avec titre, alias, dossiers et bouton de reduction." },
+    { kind: "feature", text: "Panneau Plus (more-panel) regroupant les sections avancees exclues de la sidebar." },
+    { kind: "improvement", text: "Mise a jour du bordereau PWA vers experience-v315." },
+    { kind: "improvement", text: "Styles responsives desktop, tablette et mobile pour la nouvelle disposition Mail." }
+  ]),
   entry("v314", "2026-08-18", "Signal Center : UI plus propre et espacee", [
     { kind: "improvement", text: "Chips de filtre (Toutes, Non lues, Important, Messages, Activite, Systeme, Brain, Securite) : style plus carre, plus gros et espaces." },
     { kind: "improvement", text: "Boutons 'Tout marquer comme lu' et 'Effacer' : hauteur augmentee, padding plus large, espacement accru." },

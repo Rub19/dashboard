@@ -238,6 +238,8 @@ export function mountMail(stage, options = {}) {
     lists: [],
     listMembers: {},
     selectedListId: null,
+    sidebarCollapsed: false,
+    morePanelOpen: false,
     accountForm: { provider: "", email: "", label: "" },
     pgpForm: { email: "", publicKey: "", privateKey: "", passphrase: "" },
     listForm: { id: null, name: "", description: "", address: "" }
@@ -263,18 +265,29 @@ export function mountMail(stage, options = {}) {
   let filterFolderSelect = null;
 
   let onlineStatus = null;
-  let masterCheckbox = null;
-  let bulkToolbar = null;
   let snoozeDialog = null;
   let analyticsPanel = null;
+  let morePanel = null;
+  let refreshBtn = null;
+  let archiveBtn = null;
+  let deleteBtn = null;
+  let markReadBtn = null;
+  let markUnreadBtn = null;
+  let snoozeBtn = null;
+  let moreBtn = null;
+  let sortBtn = null;
+  let profileBtn = null;
+  let helpBtn = null;
 
   const page = element("section", { className: "v8-page v8-mail", dataset: { page: "mail" } });
-  const layout = element("div", { className: "v8-mail-layout is-list" });
+  const header = element("header", { className: "v8-mail-header" });
+  const toolbar = element("div", { className: "v8-mail-toolbar" });
+  const main = element("main", { className: "v8-mail-main is-list" });
   const sidebar = element("aside", { className: "v8-mail-sidebar" });
   const listWrap = element("section", { className: "v8-mail-list-wrap" });
   const reading = element("section", { className: "v8-mail-reading" });
-  layout.append(sidebar, listWrap, reading);
-  page.append(layout);
+  main.append(sidebar, listWrap, reading);
+  page.append(header, toolbar, main);
 
   page.addEventListener("click", (event) => {
     const control = event.target?.closest?.("[data-action]");
@@ -283,31 +296,60 @@ export function mountMail(stage, options = {}) {
     }
   });
 
-  const listTitle = element("span", { className: "v8-mail-list-title" });
-  const searchInput = element("input", {
-    className: "v8-input v8-mail-search",
-    attributes: { type: "search", placeholder: translateSource("Rechercher..."), "aria-label": translateSource("Rechercher un message") }
-  });
   const menuButton = element("button", {
     className: "v8-icon-button v8-mail-menu",
     attributes: { type: "button", "aria-label": translateSource("Dossiers") }
   }, [icon("menu")]);
-  const newBtn = actionButton({ actionId: "v8.mail.compose", variant: "primary" }, [icon("plus"), element("span", { text: translateSource("Nouveau") })]);
+  const brandTitle = element("span", { className: "v8-mail-header__title", text: "ETHONE Mail" });
+  const brand = element("div", { className: "v8-mail-header__brand" }, [menuButton, brandTitle]);
+
+  const searchInput = element("input", {
+    className: "v8-input v8-mail-search",
+    attributes: { type: "search", placeholder: translateSource("Rechercher..."), "aria-label": translateSource("Rechercher un message") }
+  });
+  const searchWrap = element("div", { className: "v8-mail-header__search" }, [searchInput]);
+
+  onlineStatus = element("span", { className: "v8-mail-online-status" });
   const bellBadge = element("span", { className: "v8-mail-bell__badge" });
   const bellBtn = element("button", {
     className: "v8-icon-button v8-mail-bell",
     attributes: { type: "button", "aria-label": translateSource("Notifications") }
   }, [icon("bell"), bellBadge]);
-  const filterBtn = element("button", {
-    className: "v8-icon-button v8-mail-filter-toggle",
-    attributes: { type: "button", "aria-label": translateSource("Filtres") }
-  }, [icon("filter")]);
-  onlineStatus = element("span", { className: "v8-mail-online-status" });
+  helpBtn = element("button", {
+    className: "v8-icon-button v8-mail-help",
+    attributes: { type: "button", "aria-label": translateSource("Aide") }
+  }, [icon("circle-help")]);
+  profileBtn = element("button", {
+    className: "v8-icon-button v8-mail-profile",
+    attributes: { type: "button", "aria-label": translateSource("Profil") }
+  }, [icon("user")]);
+  const headerActions = element("div", { className: "v8-mail-header__actions" }, [onlineStatus, bellBtn, helpBtn, profileBtn]);
+  header.append(brand, searchWrap, headerActions);
+
   masterCheckbox = element("input", {
     className: "v8-mail-master-checkbox",
     attributes: { type: "checkbox", "aria-label": translateSource("Tout sélectionner") }
   });
-  const listHeader = element("header", { className: "v8-mail-list-header" }, [menuButton, listTitle, onlineStatus, masterCheckbox, searchInput, bellBtn, filterBtn, newBtn]);
+  const listTitle = element("span", { className: "v8-mail-toolbar__label" });
+
+  refreshBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action", attributes: { type: "button", "aria-label": translateSource("Actualiser") } }, [icon("refresh-cw")]);
+  archiveBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action", attributes: { type: "button", "aria-label": translateSource("Archiver") } }, [icon("archive")]);
+  deleteBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action", attributes: { type: "button", "aria-label": translateSource("Supprimer") } }, [icon("trash-2")]);
+  markReadBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action", attributes: { type: "button", "aria-label": translateSource("Marquer comme lu") } }, [icon("mail-open")]);
+  markUnreadBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action", attributes: { type: "button", "aria-label": translateSource("Marquer comme non lu") } }, [icon("mail")]);
+  snoozeBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action", attributes: { type: "button", "aria-label": translateSource("Reporter") } }, [icon("clock")]);
+  moreBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action", attributes: { type: "button", "aria-label": translateSource("Plus") } }, [icon("more-horizontal")]);
+
+  const filterBtn = element("button", {
+    className: "v8-icon-button v8-mail-filter-toggle",
+    attributes: { type: "button", "aria-label": translateSource("Filtres") }
+  }, [icon("filter")]);
+  sortBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action", attributes: { type: "button", "aria-label": translateSource("Trier") } }, [icon("arrow-up-down")]);
+  newBtn = actionButton({ actionId: "v8.mail.compose", variant: "primary" }, [icon("plus"), element("span", { text: translateSource("Nouveau") })]);
+
+  const selectionGroup = element("div", { className: "v8-mail-toolbar__selection" }, [masterCheckbox, listTitle, refreshBtn, archiveBtn, deleteBtn, markReadBtn, markUnreadBtn, snoozeBtn, moreBtn]);
+  const toolsGroup = element("div", { className: "v8-mail-toolbar__tools" }, [filterBtn, sortBtn, newBtn]);
+  toolbar.append(selectionGroup, toolsGroup);
 
   filterFromInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "text", placeholder: translateSource("Expéditeur") } });
   filterSubjectInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "text", placeholder: translateSource("Sujet") } });
@@ -341,17 +383,27 @@ export function mountMail(stage, options = {}) {
 
   const messageList = element("ul", { className: "v8-mail-list" });
   analyticsPanel = element("section", { className: "v8-mail-analytics", attributes: { hidden: "" } });
-  bulkToolbar = buildBulkToolbar();
   snoozeDialog = buildSnoozeDialog();
-  listWrap.append(listHeader, filterPanel, bulkToolbar, messageList, analyticsPanel);
-  page.append(snoozeDialog);
+  morePanel = element("aside", { className: "v8-mail-more-panel", attributes: { hidden: "" } });
+  listWrap.append(filterPanel, messageList, analyticsPanel);
+  page.append(snoozeDialog, morePanel);
 
   menuButton.addEventListener("click", () => sidebar.classList.toggle("is-open"));
+  refreshBtn.addEventListener("click", () => loadFolder());
+  archiveBtn.addEventListener("click", () => bulkAction("move", "archive"));
+  deleteBtn.addEventListener("click", () => bulkAction("move", "trash"));
+  markReadBtn.addEventListener("click", () => bulkAction("mark_read", true));
+  markUnreadBtn.addEventListener("click", () => bulkAction("mark_read", false));
+  snoozeBtn.addEventListener("click", () => bulkSnooze());
+  moreBtn.addEventListener("click", () => openMorePanel());
   newBtn.addEventListener("click", () => openCompose());
-  bellBtn.addEventListener("click", toggleNotifications);
+  bellBtn.addEventListener("click", () => openMorePanel(true));
   filterBtn.addEventListener("click", toggleFilters);
   applyFiltersBtn.addEventListener("click", applyFilters);
   resetFiltersBtn.addEventListener("click", resetFilters);
+  helpBtn.addEventListener("click", () => mailNotify({ type: "info", title: translateSource("Aide"), message: translateSource("Documentation ETHONE Mail à venir.") }));
+  profileBtn.addEventListener("click", () => mailNotify({ type: "info", title: translateSource("Profil"), message: translateSource("Options du profil à venir.") }));
+  sortBtn.addEventListener("click", () => mailNotify({ type: "info", title: translateSource("Tri"), message: translateSource("Options de tri à venir.") }));
 
   searchInput.addEventListener("input", () => {
     const q = searchInput.value.trim();
@@ -513,12 +565,6 @@ export function mountMail(stage, options = {}) {
     const count = state.unreadCount || 0;
     bellBadge.textContent = count ? String(count) : "";
     bellBadge.classList.toggle("is-empty", !count);
-  }
-
-  function toggleNotifications() {
-    state.notificationOpen = !state.notificationOpen;
-    if (window.innerWidth < 1024) sidebar.classList.add("is-open");
-    renderSidebar();
   }
 
   async function loadNotifications() {
@@ -1274,8 +1320,8 @@ export function mountMail(stage, options = {}) {
   }
 
   function updateLayoutClass() {
-    layout.classList.remove("is-list", "is-detail", "is-compose");
-    layout.classList.add(`is-${state.view}`);
+    main.classList.remove("is-list", "is-detail", "is-compose");
+    main.classList.add(`is-${state.view}`);
   }
 
   function backToList() {
@@ -1457,6 +1503,10 @@ export function mountMail(stage, options = {}) {
       folderList.append(element("li", {}, [btn]));
     });
 
+    const collapseBtn = element("button", { className: "v8-icon-button v8-mail-sidebar__collapse", attributes: { type: "button", "aria-label": state.sidebarCollapsed ? translateSource("Étendre") : translateSource("Réduire") } }, [icon(state.sidebarCollapsed ? "chevrons-right" : "chevrons-left"), element("span", { text: state.sidebarCollapsed ? translateSource("Étendre") : translateSource("Réduire") })]);
+    collapseBtn.addEventListener("click", () => { state.sidebarCollapsed = !state.sidebarCollapsed; sidebar.classList.toggle("is-collapsed", state.sidebarCollapsed); main.classList.toggle("is-sidebar-collapsed", state.sidebarCollapsed); });
+
+    if (state.morePanelOpen) {
     const analyticsTitle = element("strong", { className: "v8-mail-sidebar__section", text: translateSource("Analytique") });
     const analyticsPeriodSelect = element("select", { className: "v8-input v8-mail-analytics__select" }, [
       element("option", { text: translateSource("7 jours"), attributes: { value: "7" } }),
@@ -1664,7 +1714,9 @@ export function mountMail(stage, options = {}) {
     const pushSection = buildPushSection();
     const listsSection = buildListsSection();
     const securitySection = buildSecuritySection();
-    sidebar.append(title, aliasSection, folderList, analyticsTitle, analyticsPeriodSelect, analyticsOpenBtn, rulesTitle, ruleForm, rulesList, templatesTitle, templateForm, templatesList, notificationsTitle, notificationsList, labelsTitle, labelList, newLabelInput, accountsSection, pgpSection, pushSection, listsSection, securitySection);
+      renderMorePanel([analyticsTitle, analyticsPeriodSelect, analyticsOpenBtn, rulesTitle, ruleForm, rulesList, templatesTitle, templateForm, templatesList, notificationsTitle, notificationsList, labelsTitle, labelList, newLabelInput, accountsSection, pgpSection, pushSection, listsSection, securitySection]);
+    }
+    sidebar.append(title, aliasSection, folderList, collapseBtn);
     renderBell();
     refreshIcons();
   
@@ -1679,6 +1731,40 @@ export function mountMail(stage, options = {}) {
           }));
           refreshIcons();
         }
+    }
+  }
+
+  function renderMorePanel(children = []) {
+    if (!morePanel) return;
+    if (!children.length) {
+      morePanel.hidden = true;
+      morePanel.classList.remove("is-open");
+      morePanel.replaceChildren();
+      return;
+    }
+    const panelHeader = element("div", { className: "v8-mail-more-panel__header" }, [
+      element("h3", { className: "v8-mail-more-panel__title", text: translateSource("Plus") }),
+      element("button", { className: "v8-icon-button v8-mail-more-panel__close", attributes: { type: "button", "aria-label": translateSource("Fermer") } }, [icon("x")])
+    ]);
+    panelHeader.querySelector("button").addEventListener("click", closeMorePanel);
+    morePanel.replaceChildren(panelHeader, ...children);
+    morePanel.hidden = false;
+    morePanel.classList.add("is-open");
+    refreshIcons();
+  }
+
+  function openMorePanel(expandNotifications = false) {
+    if (expandNotifications) state.notificationOpen = true;
+    state.morePanelOpen = true;
+    renderSidebar();
+  }
+
+  function closeMorePanel() {
+    state.morePanelOpen = false;
+    if (morePanel) {
+      morePanel.hidden = true;
+      morePanel.classList.remove("is-open");
+      morePanel.replaceChildren();
     }
   }
 
@@ -1898,40 +1984,21 @@ export function mountMail(stage, options = {}) {
     ]);
   }
 
-  function buildBulkToolbar() {
-    const archiveBtn = actionButton({ actionId: "v8.mail.bulk.archive", className: "v8-mail-bulk__btn" }, [icon("archive"), element("span", { text: translateSource("Archiver") })]);
-    const deleteBtn = actionButton({ actionId: "v8.mail.bulk.delete", className: "v8-mail-bulk__btn" }, [icon("trash-2"), element("span", { text: translateSource("Supprimer") })]);
-    const readBtn = actionButton({ actionId: "v8.mail.bulk.read", className: "v8-mail-bulk__btn" }, [icon("mail-open"), element("span", { text: translateSource("Marquer lu") })]);
-    const unreadBtn = actionButton({ actionId: "v8.mail.bulk.unread", className: "v8-mail-bulk__btn" }, [icon("mail"), element("span", { text: translateSource("Marquer non lu") })]);
-    const importantBtn = actionButton({ actionId: "v8.mail.bulk.important", className: "v8-mail-bulk__btn" }, [icon("alert-circle"), element("span", { text: translateSource("Important") })]);
-    const unimportantBtn = actionButton({ actionId: "v8.mail.bulk.unimportant", className: "v8-mail-bulk__btn" }, [icon("alert-octagon"), element("span", { text: translateSource("Non important") })]);
-    const labelBtn = actionButton({ actionId: "v8.mail.bulk.label", className: "v8-mail-bulk__btn" }, [icon("tag"), element("span", { text: translateSource("Étiqueter") })]);
-    const unlabelBtn = actionButton({ actionId: "v8.mail.bulk.unlabel", className: "v8-mail-bulk__btn" }, [icon("tag-off"), element("span", { text: translateSource("Désétiqueter") })]);
-    const snoozeBtn = actionButton({ actionId: "v8.mail.bulk.snooze", className: "v8-mail-bulk__btn" }, [icon("clock"), element("span", { text: translateSource("Snooze") })]);
-
-    archiveBtn.addEventListener("click", () => bulkAction("move", "archive"));
-    deleteBtn.addEventListener("click", () => bulkAction("move", "trash"));
-    readBtn.addEventListener("click", () => bulkAction("mark_read", true));
-    unreadBtn.addEventListener("click", () => bulkAction("mark_read", false));
-    importantBtn.addEventListener("click", () => bulkAction("mark_important", true));
-    unimportantBtn.addEventListener("click", () => bulkAction("mark_important", false));
-    labelBtn.addEventListener("click", () => bulkLabel(false));
-    unlabelBtn.addEventListener("click", () => bulkLabel(true));
-    snoozeBtn.addEventListener("click", () => bulkSnooze());
-
-    const toolbar = element("div", { className: "v8-mail-bulk-toolbar", attributes: { hidden: "" } }, [
-      element("span", { className: "v8-mail-bulk__count" }),
-      archiveBtn, deleteBtn, readBtn, unreadBtn, importantBtn, unimportantBtn, labelBtn, unlabelBtn, snoozeBtn
-    ]);
-    return toolbar;
-  }
-
   function renderBulkToolbar() {
-    if (!bulkToolbar) return;
     const count = state.selectedIds.size;
-    bulkToolbar.hidden = !count;
-    const countSpan = bulkToolbar.querySelector(".v8-mail-bulk__count");
-    if (countSpan) countSpan.textContent = translateSource("{0} sélectionné{1}").replace("{0}", count).replace("{1}", count > 1 ? "s" : "");
+    const hasSelection = count > 0;
+    if (hasSelection && listTitle) {
+      listTitle.textContent = translateSource("{0} sélectionné{1}").replace("{0}", count).replace("{1}", count > 1 ? "s" : "");
+    }
+    if (masterCheckbox) {
+      masterCheckbox.disabled = !(state.messages || []).length;
+      masterCheckbox.checked = (state.messages || []).length > 0 && (state.messages || []).every((m) => state.selectedIds.has(String(m.id)));
+    }
+    if (archiveBtn) archiveBtn.disabled = !hasSelection;
+    if (deleteBtn) deleteBtn.disabled = !hasSelection;
+    if (markReadBtn) markReadBtn.disabled = !hasSelection;
+    if (markUnreadBtn) markUnreadBtn.disabled = !hasSelection;
+    if (snoozeBtn) snoozeBtn.disabled = !hasSelection;
   }
 
   function selectAll() {

@@ -2,6 +2,23 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v315] - 2026-08-18
+
+**Mail : refonte premium Phase 1 — en-tête, barre d'outils, panneau Latéral et panneau Plus**
+
+### Ajoute
+- En-tête collante `v8-mail-header` avec le titre ETHONE Mail, menu mobile, recherche, cloche, profil et aide.
+- Barre d'outils collante `v8-mail-toolbar` avec case à cocher principale, actions groupées (Actualiser, Archiver, Supprimer, Lu/Non lu, Snooze, Plus) et filtres/tri/composer.
+- Panneau latéral resserré : titre, alias, dossiers avec compteur, bouton de réduction.
+- Panneau `v8-mail-more-panel` latéral (desktop) / bottom sheet (mobile) regroupant les sections avancées (Analytique, Règles, Modèles, Notifications, Étiquettes, Comptes, PGP, Push, Listes, Sécurité).
+- Support responsive desktop / tablette / mobile avec disposition en grille et volets fixes.
+- Version PWA `experience-v315`.
+
+### Corrige / Améliore
+- Suppression de l'ancienne `v8-mail-layout` et `v8-mail-list-header` au profit d'une structure flex/grid Gmail-like.
+- Déplacement de la cloche, de la recherche et du statut en ligne dans l'en-tête.
+- Conservation de toute la logique métier existante (builders, actions, API, bulk).
+
 ## [v314] - 2026-08-18
 
 **Signal Center : UI plus propre et espacée**

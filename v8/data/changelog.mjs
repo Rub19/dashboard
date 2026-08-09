@@ -24,6 +24,12 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v292", "2026-08-15", "Phase 13a : ETHONE Mail — recherche avancée et templates", [
+    { kind: "feature", text: "Recherche mail avancée : expéditeur, sujet, corps, dates, pièces jointes, étiquettes, dossier." },
+    { kind: "feature", text: "Templates de réponse : CRUD, défaut, sélecteur dans la composition, action Brain 'mail.template'." },
+    { kind: "improvement", text: "Worker : routes /api/mail/search étendues et /api/mail/templates." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v292." }
+  ]),
   entry("v291", "2026-08-14", "Phase 12 : ETHONE Mail + Brain", [
     { kind: "feature", text: "Brain Mail : résumé automatique des messages, réponses suggérées et extraction de tâches/événements via Groq." },
     { kind: "feature", text: "Détection d'importance automatique à la réception (mots-clés, fréquence contact, réponse directe)." },

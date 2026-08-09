@@ -293,42 +293,114 @@ export function buildSearchQuery(search) {
     .replace(/(\w\b)(?!\s*\|)/g, "$1:*");
 }
 
-function folderQueryParams(folder) {
-  const params = new URLSearchParams();
-  if (!folder) return { params, deletedFilter: "deleted_at=is.null" };
-
-  if (folder === "starred") {
-    params.append("is_starred", "eq.true");
-    return { params, deletedFilter: "deleted_at=is.null" };
-  }
-
-  if (folder === "trash") {
-    params.append("folder", `eq.${encodeURIComponent(folder)}`);
-    return { params, deletedFilter: "" };
-  }
-
-  params.append("folder", `eq.${encodeURIComponent(folder)}`);
-  return { params, deletedFilter: "deleted_at=is.null" };
+function quoteFilterValue(value) {
+  const escaped = String(value).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+  return `"${encodeURIComponent(escaped)}"`;
 }
 
-export async function listMessages(env, userId, { folder, label, search, direction, limit = 50, offset = 0 } = {}) {
+function encodeIlikePattern(value, limit = 120) {
+  const raw = safeText(value, limit);
+  if (!raw) return "";
+  const term = raw
+    .replace(/\\/g, "\\\\")
+    .replace(/%/g, "\\%")
+    .replace(/_/g, "\\_");
+  return quoteFilterValue(`*${term}*`);
+}
+
+function encodeSearchQuery(search) {
+  const built = buildSearchQuery(safeText(search, 120));
+  if (!built) return "";
+  return quoteFilterValue(built);
+}
+
+function parseIsoRange(value, endOfDay = false) {
+  const raw = safeText(value, 40);
+  if (!raw) return null;
+  if (!/^\d{4}-\d{2}-\d{2}(T.*)?$/.test(raw)) return null;
+  const date = new Date(raw);
+  if (!Number.isFinite(date.getTime())) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+    const [year, month, day] = raw.split("-").map(Number);
+    const parts = endOfDay
+      ? [year, month - 1, day, 23, 59, 59, 999]
+      : [year, month - 1, day, 0, 0, 0, 0];
+    return new Date(Date.UTC(...parts)).toISOString();
+  }
+  return date.toISOString();
+}
+
+function folderDeletedFilter(folder) {
+  if (folder === "trash") return "";
+  return "deleted_at=is.null";
+}
+
+function buildMessageQuery(userId, filters) {
+  const parts = [];
+  if (filters.folder === "starred") {
+    parts.push("is_starred=eq.true");
+  } else if (filters.folder) {
+    parts.push(`folder=eq.${encodeURIComponent(filters.folder)}`);
+  }
+  const deletedFilter = folderDeletedFilter(filters.folder);
+  if (deletedFilter) parts.push(deletedFilter);
+  parts.push(`user_id=eq.${userId}`);
+  if (filters.direction) parts.push(`direction=eq.${encodeURIComponent(filters.direction)}`);
+  if (filters.label) parts.push(`labels=cs.{${encodeURIComponent(filters.label)}}`);
+  if (filters.labels) {
+    const labels = String(filters.labels)
+      .split(",")
+      .map((l) => encodeURIComponent(l.trim()))
+      .filter(Boolean);
+    if (labels.length) parts.push(`labels=cs.{${labels.join(",")}}`);
+  }
+  if (filters.search) {
+    const q = encodeSearchQuery(filters.search);
+    if (q) parts.push(`search_vector=wfts.${q}`);
+  }
+  if (filters.from) {
+    const pattern = encodeIlikePattern(filters.from);
+    if (pattern) parts.push(`or=(from_address.ilike.${pattern},from_name.ilike.${pattern})`);
+  }
+  if (filters.subject) {
+    const pattern = encodeIlikePattern(filters.subject);
+    if (pattern) parts.push(`subject=ilike.${pattern}`);
+  }
+  if (filters.body) {
+    const pattern = encodeIlikePattern(filters.body, 2000);
+    if (pattern) parts.push(`body_text=ilike.${pattern}`);
+  }
+  const dateFrom = parseIsoRange(filters.dateFrom, false);
+  const dateTo = parseIsoRange(filters.dateTo, true);
+  if (dateFrom) parts.push(`received_at=gte.${encodeURIComponent(dateFrom)}`);
+  if (dateTo) parts.push(`received_at=lte.${encodeURIComponent(dateTo)}`);
+  if (filters.hasAttachments === true) parts.push("attachments=neq.[]");
+  if (filters.hasAttachments === false) parts.push("attachments=eq.[]");
+  return parts.join("&");
+}
+
+export async function listMessages(env, userId, { folder, label, labels, search, from, subject, body, dateFrom, dateTo, hasAttachments, direction, limit = 50, offset = 0 } = {}) {
   const origin = projectOrigin(env);
   if (!origin || !userId) return [];
-
-  const { params, deletedFilter } = folderQueryParams(folder);
-  params.append("user_id", `eq.${userId}`);
-  if (direction) params.append("direction", `eq.${encodeURIComponent(direction)}`);
-  if (label) params.append("labels", `cs.{${encodeURIComponent(label)}}`);
-  if (search) params.append("search_vector", `wfts.${encodeURIComponent(buildSearchQuery(search))}`);
-
-  const filters = [deletedFilter].filter(Boolean).join("&");
-  const separator = filters ? `&${filters}` : "";
-
-  const response = await supabaseRequest(env, `/rest/v1/ethone_mail_messages?${params.toString()}${separator}&order=received_at.desc&limit=${limit}&offset=${offset}`, {
+  const filters = { folder, label, labels, search, from, subject, body, dateFrom, dateTo, hasAttachments, direction };
+  const query = buildMessageQuery(userId, filters);
+  const response = await supabaseRequest(env, `/rest/v1/ethone_mail_messages?${query}&order=received_at.desc&limit=${limit}&offset=${offset}`, {
     method: "GET",
     maxBytes: 65536
   });
   return Array.isArray(response?.data) ? response.data : [];
+}
+
+export async function countMessages(env, userId, filters) {
+  const origin = projectOrigin(env);
+  if (!origin || !userId) return null;
+  const query = buildMessageQuery(userId, filters);
+  const response = await supabaseRequest(env, `/rest/v1/ethone_mail_messages?${query}&select=count`, {
+    method: "GET",
+    maxBytes: 4096
+  });
+  const row = firstRow(response);
+  return Number(row?.count) || null;
 }
 
 export async function countUnreadInFolder(env, userId, folder) {

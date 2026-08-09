@@ -139,9 +139,13 @@ export function mountMail(stage, options = {}) {
     selected: null,
     query: "",
     isSearch: false,
+    filters: { from: "", subject: "", body: "", date_from: "", date_to: "", has_attachments: false, label: "", folder: "" },
+    filtersOpen: false,
     labels: [],
     contacts: [],
     signatures: [],
+    templates: [],
+    templateForm: { id: null, name: "", subject: "", content: "", is_default: false },
     alias: null,
     counts: {},
     loading: false,
@@ -159,6 +163,16 @@ export function mountMail(stage, options = {}) {
   let composeInReplyTo = null;
   let composeReferences = null;
   let composeAttachments = [];
+
+  let filterPanel = null;
+  let filterFromInput = null;
+  let filterSubjectInput = null;
+  let filterBodyInput = null;
+  let filterDateFromInput = null;
+  let filterDateToInput = null;
+  let filterHasAttachmentsInput = null;
+  let filterLabelInput = null;
+  let filterFolderSelect = null;
 
   const page = element("section", { className: "v8-page v8-mail", dataset: { page: "mail" } });
   const layout = element("div", { className: "v8-mail-layout is-list" });
@@ -183,13 +197,51 @@ export function mountMail(stage, options = {}) {
     className: "v8-icon-button v8-mail-bell",
     attributes: { type: "button", "aria-label": "Notifications" }
   }, [icon("bell"), bellBadge]);
-  const listHeader = element("header", { className: "v8-mail-list-header" }, [menuButton, listTitle, searchInput, bellBtn, newBtn]);
+  const filterBtn = element("button", {
+    className: "v8-icon-button v8-mail-filter-toggle",
+    attributes: { type: "button", "aria-label": "Filtres" }
+  }, [icon("filter")]);
+  const listHeader = element("header", { className: "v8-mail-list-header" }, [menuButton, listTitle, searchInput, bellBtn, filterBtn, newBtn]);
+
+  filterFromInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "text", placeholder: "Expéditeur" } });
+  filterSubjectInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "text", placeholder: "Sujet" } });
+  filterBodyInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "text", placeholder: "Contenu" } });
+  filterDateFromInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "date" } });
+  filterDateToInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "date" } });
+  filterHasAttachmentsInput = element("input", { className: "v8-mail-filter__checkbox", attributes: { type: "checkbox" } });
+  const hasAttachmentsLabel = element("label", { className: "v8-mail-filter__check" }, [
+    filterHasAttachmentsInput,
+    element("span", { text: "Pièces jointes" })
+  ]);
+  filterLabelInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "text", placeholder: "Étiquette" } });
+  filterFolderSelect = element("select", { className: "v8-input v8-mail-filter__input" }, [
+    element("option", { text: "Tous les dossiers", attributes: { value: "" } }),
+    ...FOLDERS.map((f) => element("option", { text: f.label, attributes: { value: f.key } }))
+  ]);
+  const applyFiltersBtn = actionButton({ actionId: "v8.mail.filters.apply", variant: "secondary", className: "v8-mail-filter__apply" }, [element("span", { text: "Appliquer" })]);
+  const resetFiltersBtn = actionButton({ actionId: "v8.mail.filters.reset", variant: "outline", className: "v8-mail-filter__reset" }, [element("span", { text: "Réinitialiser" })]);
+  filterPanel = element("div", { className: "v8-mail-filters", attributes: { hidden: "" } }, [
+    filterFromInput,
+    filterSubjectInput,
+    filterBodyInput,
+    filterDateFromInput,
+    filterDateToInput,
+    hasAttachmentsLabel,
+    filterLabelInput,
+    filterFolderSelect,
+    applyFiltersBtn,
+    resetFiltersBtn
+  ]);
+
   const messageList = element("ul", { className: "v8-mail-list" });
-  listWrap.append(listHeader, messageList);
+  listWrap.append(listHeader, filterPanel, messageList);
 
   menuButton.addEventListener("click", () => sidebar.classList.toggle("is-open"));
   newBtn.addEventListener("click", () => openCompose());
   bellBtn.addEventListener("click", toggleNotifications);
+  filterBtn.addEventListener("click", toggleFilters);
+  applyFiltersBtn.addEventListener("click", applyFilters);
+  resetFiltersBtn.addEventListener("click", resetFilters);
 
   searchInput.addEventListener("input", () => {
     const q = searchInput.value.trim();
@@ -338,12 +390,144 @@ export function mountMail(stage, options = {}) {
     }
   }
 
+  function hasActiveFilters() {
+    const f = state.filters;
+    return !!(f.from || f.subject || f.body || f.date_from || f.date_to || f.has_attachments || f.label);
+  }
+
+  function buildFilterPayload() {
+    const payload = { limit: 50, offset: 0 };
+    if (state.query) payload.q = state.query;
+    if (state.filters.from) payload.from = state.filters.from;
+    if (state.filters.subject) payload.subject = state.filters.subject;
+    if (state.filters.body) payload.body = state.filters.body;
+    if (state.filters.date_from) payload.date_from = state.filters.date_from;
+    if (state.filters.date_to) payload.date_to = state.filters.date_to;
+    if (state.filters.has_attachments) payload.has_attachments = "true";
+    if (state.filters.label) payload.labels = state.filters.label;
+    payload.folder = state.filters.folder || state.folder;
+    return payload;
+  }
+
+  function toggleFilters() {
+    state.filtersOpen = !state.filtersOpen;
+    filterPanel.hidden = !state.filtersOpen;
+  }
+
+  function applyFilters() {
+    state.filters = {
+      from: filterFromInput.value.trim(),
+      subject: filterSubjectInput.value.trim(),
+      body: filterBodyInput.value.trim(),
+      date_from: filterDateFromInput.value,
+      date_to: filterDateToInput.value,
+      has_attachments: filterHasAttachmentsInput.checked,
+      label: filterLabelInput.value.trim(),
+      folder: filterFolderSelect.value
+    };
+    state.filtersOpen = false;
+    filterPanel.hidden = true;
+    state.selected = null;
+    setView("list");
+    renderReading();
+    loadFolder();
+  }
+
+  function resetFilters() {
+    state.filters = { from: "", subject: "", body: "", date_from: "", date_to: "", has_attachments: false, label: "", folder: "" };
+    state.filtersOpen = false;
+    filterPanel.hidden = true;
+    filterFromInput.value = "";
+    filterSubjectInput.value = "";
+    filterBodyInput.value = "";
+    filterDateFromInput.value = "";
+    filterDateToInput.value = "";
+    filterHasAttachmentsInput.checked = false;
+    filterLabelInput.value = "";
+    filterFolderSelect.value = "";
+    state.query = "";
+    state.isSearch = false;
+    searchInput.value = "";
+    state.selected = null;
+    setView("list");
+    renderReading();
+    loadFolder();
+  }
+
+  async function loadTemplates() {
+    if (!mailApi?.templates) {
+      state.templates = [];
+      return;
+    }
+    try {
+      const result = await mailApi.templates(100);
+      state.templates = Array.isArray(result) ? result : (result?.data || []);
+    } catch (error) {
+      notify({ type: "error", title: "Modèles", message: errorDescription(error) });
+      state.templates = [];
+    }
+    renderSidebar();
+  }
+
+  async function saveTemplateForm() {
+    if (!mailApi?.saveTemplate || !mailApi?.updateTemplate) return;
+    const payload = {
+      id: state.templateForm.id || undefined,
+      name: state.templateForm.name.trim(),
+      subject: state.templateForm.subject.trim(),
+      content: state.templateForm.content.trim(),
+      is_default: state.templateForm.is_default
+    };
+    if (!payload.name) {
+      notify({ type: "warning", title: "Modèle", message: "Nom requis." });
+      return;
+    }
+    try {
+      if (state.templateForm.id) {
+        await mailApi.updateTemplate({ id: state.templateForm.id, ...payload });
+      } else {
+        await mailApi.saveTemplate(payload);
+      }
+      notify({ type: "success", title: "Modèle", message: state.templateForm.id ? "Modèle mis à jour." : "Modèle enregistré." });
+      state.templateForm = { id: null, name: "", subject: "", content: "", is_default: false };
+      await loadTemplates();
+    } catch (error) {
+      notify({ type: "error", title: "Modèle", message: errorDescription(error) });
+    }
+  }
+
+  async function deleteMailTemplate(id) {
+    if (!mailApi?.deleteTemplate) return;
+    try {
+      await mailApi.deleteTemplate(id);
+      notify({ type: "success", title: "Modèle", message: "Modèle supprimé." });
+      if (String(state.templateForm.id) === String(id)) state.templateForm = { id: null, name: "", subject: "", content: "", is_default: false };
+      await loadTemplates();
+    } catch (error) {
+      notify({ type: "error", title: "Modèle", message: errorDescription(error) });
+    }
+  }
+
+  async function setDefaultMailTemplate(id) {
+    if (!mailApi?.updateTemplate) return;
+    try {
+      await mailApi.updateTemplate({ id, is_default: true });
+      notify({ type: "success", title: "Modèle", message: "Modèle par défaut défini." });
+      await loadTemplates();
+    } catch (error) {
+      notify({ type: "error", title: "Modèle", message: errorDescription(error) });
+    }
+  }
+
   async function loadFolder() {
     state.loading = true;
+    state.isSearch = hasActiveFilters() || (state.isSearch && !!state.query);
     renderList();
     try {
       let result;
-      if (state.folder === "drafts") {
+      if (hasActiveFilters()) {
+        result = await mailApi.advancedSearch(buildFilterPayload());
+      } else if (state.folder === "drafts") {
         result = await mailApi.drafts({ limit: 50, offset: 0 });
       } else {
         result = await mailApi.inbox({ folder: state.folder, limit: 50, offset: 0 });
@@ -387,6 +571,8 @@ export function mountMail(stage, options = {}) {
     state.isSearch = false;
     state.query = "";
     searchInput.value = "";
+    state.filters.folder = "";
+    if (filterFolderSelect) filterFolderSelect.value = "";
     updateLayoutClass();
     renderReading();
     loadFolder();
@@ -583,6 +769,96 @@ export function mountMail(stage, options = {}) {
       rulesList.append(item);
     });
 
+    const templatesTitle = element("strong", { className: "v8-mail-sidebar__section", text: "Modèles" });
+
+    const templateNameInput = element("input", {
+      className: "v8-input v8-mail-template-input",
+      attributes: { type: "text", placeholder: "Nom du modèle", maxlength: "64", value: state.templateForm.name || "" }
+    });
+    const templateSubjectInput = element("input", {
+      className: "v8-input v8-mail-template-input",
+      attributes: { type: "text", placeholder: "Sujet", maxlength: "128", value: state.templateForm.subject || "" }
+    });
+    const templateContentInput = element("textarea", {
+      className: "v8-input v8-mail-template-content",
+      attributes: { rows: "4", placeholder: "Contenu" }
+    });
+    templateContentInput.value = state.templateForm.content || "";
+    const templateDefaultInput = element("input", {
+      className: "v8-mail-template__checkbox",
+      attributes: { type: "checkbox" }
+    });
+    templateDefaultInput.checked = state.templateForm.is_default || false;
+    const templateDefaultLabel = element("label", { className: "v8-mail-template__check" }, [
+      templateDefaultInput,
+      element("span", { text: "Par défaut" })
+    ]);
+    const templateSaveBtn = actionButton({
+      actionId: "v8.mail.template.save",
+      variant: "secondary",
+      className: "v8-mail-template__save"
+    }, [icon("save"), element("span", { text: state.templateForm.id ? "Mettre à jour" : "Enregistrer" })]);
+    templateSaveBtn.addEventListener("click", saveTemplateForm);
+
+    const templateResetBtn = actionButton({
+      actionId: "v8.mail.template.reset",
+      variant: "outline",
+      className: "v8-mail-template__reset"
+    }, [icon("x"), element("span", { text: "Nouveau" })]);
+    templateResetBtn.addEventListener("click", () => {
+      state.templateForm = { id: null, name: "", subject: "", content: "", is_default: false };
+      renderSidebar();
+    });
+
+    templateNameInput.addEventListener("input", () => { state.templateForm.name = templateNameInput.value; });
+    templateSubjectInput.addEventListener("input", () => { state.templateForm.subject = templateSubjectInput.value; });
+    templateContentInput.addEventListener("input", () => { state.templateForm.content = templateContentInput.value; });
+    templateDefaultInput.addEventListener("change", () => { state.templateForm.is_default = templateDefaultInput.checked; });
+
+    const templateForm = element("div", { className: "v8-mail-templates__form" }, [
+      templateNameInput,
+      templateSubjectInput,
+      templateContentInput,
+      templateDefaultLabel,
+      templateSaveBtn,
+      templateResetBtn
+    ]);
+
+    const templatesList = element("ul", { className: "v8-mail-templates__list" });
+    state.templates.forEach((template) => {
+      const name = template.name || "Modèle";
+      const isDefault = template.is_default === true;
+      const actions = element("span", { className: "v8-mail-template-item__actions" });
+      if (!isDefault) {
+        const defaultBtn = element("button", {
+          className: "v8-icon-button",
+          attributes: { type: "button", "aria-label": `Définir ${name} par défaut` }
+        }, [icon("check")]);
+        defaultBtn.addEventListener("click", (event) => { event.stopPropagation(); setDefaultMailTemplate(template.id); });
+        actions.append(defaultBtn);
+      }
+      const deleteBtn = element("button", {
+        className: "v8-icon-button",
+        attributes: { type: "button", "aria-label": `Supprimer ${name}` }
+      }, [icon("trash-2")]);
+      deleteBtn.addEventListener("click", (event) => { event.stopPropagation(); deleteMailTemplate(template.id); });
+      actions.append(deleteBtn);
+
+      const item = element("li", { className: "v8-mail-template-item" }, [
+        element("span", { className: "v8-mail-template-item__info" }, [
+          element("strong", { text: name }),
+          element("small", { text: template.subject || "" })
+        ]),
+        actions
+      ]);
+      item.addEventListener("click", (event) => {
+        if (event.target.closest("button")) return;
+        state.templateForm = { ...template };
+        renderSidebar();
+      });
+      templatesList.append(item);
+    });
+
     const notificationsTitle = element("strong", { className: "v8-mail-sidebar__section", text: "Notifications" });
     const notificationsList = element("ul", { className: `v8-mail-notifications${state.notificationOpen ? " is-open" : ""}` });
     if (state.notifications.length) {
@@ -621,13 +897,20 @@ export function mountMail(stage, options = {}) {
       if (event.key === "Enter" && newLabelInput.value.trim()) createLabel(newLabelInput.value.trim());
     });
 
-    sidebar.append(title, folderList, rulesTitle, ruleForm, rulesList, notificationsTitle, notificationsList, labelsTitle, labelList, newLabelInput);
+    sidebar.append(title, folderList, rulesTitle, ruleForm, rulesList, templatesTitle, templateForm, templatesList, notificationsTitle, notificationsList, labelsTitle, labelList, newLabelInput);
     renderBell();
     refreshIcons();
   }
 
   function renderList() {
-    const label = state.isSearch ? `Recherche : ${state.query}` : (FOLDERS.find((f) => f.key === state.folder)?.label || "");
+    let label;
+    if (hasActiveFilters()) {
+      label = "Recherche avancée";
+    } else if (state.isSearch) {
+      label = `Recherche : ${state.query}`;
+    } else {
+      label = FOLDERS.find((f) => f.key === state.folder)?.label || "";
+    }
     listTitle.textContent = `${label} (${state.messages.length})`;
     messageList.replaceChildren();
 
@@ -1233,6 +1516,24 @@ export function mountMail(stage, options = {}) {
     ccToggle.addEventListener("click", () => { ccWrap.hidden = false; ccField.input.focus(); });
     bccToggle.addEventListener("click", () => { bccWrap.hidden = false; bccField.input.focus(); });
 
+    const templateSelect = element("select", { className: "v8-input v8-mail-template", attributes: { "aria-label": "Modèle" } }, [
+      element("option", { text: "Aucun modèle", attributes: { value: "" } }),
+      ...state.templates.map((t) => element("option", { text: t.name, attributes: { value: String(t.id) } }))
+    ]);
+    templateSelect.addEventListener("change", () => {
+      const id = templateSelect.value;
+      const template = state.templates.find((t) => String(t.id) === id);
+      if (template) {
+        subjectInput.value = template.subject || "";
+        if (composeEditor) {
+          composeEditor.setHTML(text2br(template.content || ""));
+          const defaultSignature = state.signatures.find((s) => s.is_default) || state.signatures[0];
+          if (defaultSignature) insertSignature(defaultSignature);
+        }
+      }
+      scheduleDraftSave();
+    });
+
     const signatureSelect = element("select", { className: "v8-input v8-mail-signature", attributes: { "aria-label": "Signature" } }, [
       element("option", { text: "Aucune signature", attributes: { value: "" } }),
       ...state.signatures.map((s) => element("option", { text: s.name, attributes: { value: String(s.id) } }))
@@ -1318,6 +1619,7 @@ export function mountMail(stage, options = {}) {
       ccWrap,
       bccWrap,
       subjectInput,
+      templateSelect,
       signatureSelect,
       editor.root,
       fileInput,
@@ -1433,10 +1735,15 @@ export function mountMail(stage, options = {}) {
   }
 
   async function init() {
-    await Promise.all([loadAlias(), loadLabels(), loadContacts(), loadSignatures(), loadRules(), loadNotifications()]);
+    await Promise.all([loadAlias(), loadLabels(), loadContacts(), loadSignatures(), loadRules(), loadNotifications(), loadTemplates()]);
     renderSidebar();
     await loadFolder();
     renderReading();
+    const pendingTemplate = typeof globalThis !== "undefined" ? globalThis.__ethoneMailComposeTemplate : null;
+    if (pendingTemplate) {
+      delete globalThis.__ethoneMailComposeTemplate;
+      openCompose({ subject: pendingTemplate.subject, prefill: pendingTemplate.content });
+    }
   }
 
   init();

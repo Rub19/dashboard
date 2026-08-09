@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v292] - 2026-08-15
+
+**Phase 13a : ETHONE Mail — recherche avancée et templates**
+
+### Ajoute
+- Recherche mail avancée : expéditeur, sujet, corps, dates, pièces jointes, étiquettes, dossier.
+- Templates de réponse : CRUD, défaut, sélecteur dans la composition, action Brain `mail.template`.
+- Worker : routes `/api/mail/search` étendues et `/api/mail/templates`.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v292`.
+
 ## [v291] - 2026-08-14
 
 **Phase 12 : ETHONE Mail + Brain**

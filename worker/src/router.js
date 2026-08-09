@@ -61,6 +61,7 @@ import {
   mailLabelsRoute, mailMoveRoute, mailReadRoute, mailSearchRoute,
   mailSendRoute, mailSignaturesRoute, mailThreadRoute
 } from "./routes/mail.js";
+import { mailTemplatesRoute } from "./routes/mail-templates.js";
 import {
   mailAnalyzeRoute,
   mailExtractRoute,
@@ -223,6 +224,10 @@ export const ROUTES = Object.freeze([
   route("mail.signatures", "/api/mail/signatures", mailSignaturesRoute, { service: "mail", rateLimit: "standard" }),
   route("mail.signatures.save", "/api/mail/signatures", mailSignaturesRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
   route("mail.signatures.delete", "/api/mail/signatures", mailSignaturesRoute, { method: "DELETE", service: "mail", rateLimit: "standard" }),
+  route("mail.templates", "/api/mail/templates", mailTemplatesRoute, { service: "mail", rateLimit: "standard" }),
+  route("mail.templates.create", "/api/mail/templates", mailTemplatesRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+  route("mail.templates.update", "/api/mail/templates", mailTemplatesRoute, { method: "PATCH", service: "mail", rateLimit: "standard" }),
+  route("mail.templates.delete", "/api/mail/templates", mailTemplatesRoute, { method: "DELETE", service: "mail", rateLimit: "standard" }),
 
   // Mail brain
   route("mail.analyze", "/api/mail/analyze", mailAnalyzeRoute, { method: "POST", service: "mail", rateLimit: "strict" }),

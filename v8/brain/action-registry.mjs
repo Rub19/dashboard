@@ -104,6 +104,33 @@ export function createBrainActionRegistry(options = {}) {
     if (!result || !Array.isArray(result.data)) return outcome(false, "unavailable", "Recherche indisponible.");
     return outcome(true, "completed", `${result.data.length} résultat${result.data.length > 1 ? "s" : ""}.`, Object.freeze({ q, results: result.data.slice(0, 10).map((m) => ({ id: m.id, subject: clean(m.subject, "", 120), from: clean(m.from_address, "", 120), receivedAt: m.received_at })) }));
   });
+  add("mail.template", "Ouvrir un modèle de mail", "Ouvre Mail avec un modèle pré-rempli.", "mail", false, { id: "id?", name: "string?" }, (p) => {
+    const id = clean(p.id, "", 80);
+    const name = clean(p.name, "", 80);
+    if (!id && !name) throw new TypeError("Identifiant ou nom du modèle requis.");
+    return { id, name };
+  }, async ({ id, name }) => {
+    if (!externalServices?.mail?.templates) return outcome(false, "unavailable", "Modèles indisponibles.");
+    const result = await externalServices.mail.templates(50);
+    const templates = Array.isArray(result) ? result : (Array.isArray(result?.data) ? result.data : []);
+    const template = id ? templates.find((t) => String(t?.id) === id) : templates.find((t) => String(t?.name || "").toLowerCase() === name.toLowerCase());
+    if (!template) return outcome(false, "not-found", "Modèle introuvable.");
+    if (typeof globalThis !== "undefined") {
+      globalThis.__ethoneMailComposeTemplate = Object.freeze({
+        id: template.id,
+        name: clean(template.name, "", 120),
+        subject: clean(template.subject, "", 200),
+        content: clean(template.content, "", 4000)
+      });
+    }
+    dispatch(ROUTES.mail);
+    return outcome(true, "completed", "Mail ouvert avec le modèle.", Object.freeze({
+      id: template.id,
+      name: clean(template.name, "", 120),
+      subject: clean(template.subject, "", 200),
+      content: clean(template.content, "", 4000)
+    }));
+  });
   add("mail.move", "Deplacer un email", "Deplace un email dans un dossier.", "mail", true, { id: "id", folder: "string" }, (p) => ({ id: requireId(p.id), folder: ["inbox", "starred", "sent", "drafts", "archive", "spam", "trash"].includes(p.folder) ? p.folder : "archive" }), ({ id, folder }) => externalServices?.mail?.move?.([id], folder));
 
   for (const [id, title] of [["connections.analyze", "Analyser les connexions"], ["diagnostic.run", "Lancer un diagnostic"]]) add(id, title, "Interroge le Worker a la demande.", "connections", false, {}, empty, () => externalServices?.diagnostic ? externalServices.diagnostic() : outcome(false, "unavailable", "Diagnostic indisponible."));

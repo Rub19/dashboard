@@ -99,6 +99,11 @@ const OPERATIONS = Object.freeze({
   mailRead: Object.freeze({ path: "/api/mail/read", method: "POST", auth: true, params: ["id", "is_read", "is_starred", "is_important"], rawBody: true }),
   mailSend: Object.freeze({ path: "/api/mail/send", method: "POST", auth: true, params: ["to", "cc", "bcc", "subject", "text", "html", "from_name", "reply_to", "attachments", "draft_id", "in_reply_to", "references"], rawBody: true }),
   mailSearch: Object.freeze({ path: "/api/mail/search", auth: true, params: ["q", "limit", "offset"] }),
+  mailAdvancedSearch: Object.freeze({ path: "/api/mail/search", auth: true, params: ["from", "subject", "body", "date_from", "date_to", "has_attachments", "labels", "folder", "q", "limit", "offset"] }),
+  mailTemplates: Object.freeze({ path: "/api/mail/templates", auth: true, params: ["limit"] }),
+  mailTemplateSave: Object.freeze({ path: "/api/mail/templates", method: "POST", auth: true, params: ["id", "name", "subject", "content", "is_default"], rawBody: true }),
+  mailTemplateUpdate: Object.freeze({ path: "/api/mail/templates", method: "PATCH", auth: true, params: ["id", "name", "subject", "content", "is_default"], rawBody: true }),
+  mailTemplateDelete: Object.freeze({ path: "/api/mail/templates", method: "DELETE", auth: true, params: ["id"], rawBody: true }),
   mailDrafts: Object.freeze({ path: "/api/mail/drafts", auth: true, params: ["folder", "limit", "offset"] }),
   mailDraftSave: Object.freeze({ path: "/api/mail/drafts", method: "POST", auth: true, params: ["id", "to", "cc", "bcc", "subject", "text", "html"], rawBody: true }),
   mailDraftDelete: Object.freeze({ path: "/api/mail/drafts", method: "DELETE", auth: true, params: ["id"], rawBody: true }),
@@ -212,7 +217,7 @@ export function createExternalServicesClient(options = {}) {
     publish({ requests: status.requests + 1, lastError: "" });
     try {
       const headers = new Headers({ accept: "application/json", "x-request-id": runtime.crypto?.randomUUID?.() || `${Date.now()}-ethone` });
-      if (method === "POST") headers.set("content-type", "application/json");
+      if (sendsBody) headers.set("content-type", "application/json");
       if (operation.auth) headers.set("authorization", `Bearer ${await accessToken()}`);
       if (destroyed || controller.signal.aborted) throw clientError("CLIENT_DESTROYED", "Le client des intégrations est ferme.");
       let payload;
@@ -447,6 +452,11 @@ export function createExternalServicesClient(options = {}) {
       read: (id, flags) => execute("mailRead", { id, ...flags }),
       send: (payload) => execute("mailSend", payload),
       search: (q, options = {}) => execute("mailSearch", { q, ...options }),
+      advancedSearch: (filters = {}) => execute("mailAdvancedSearch", filters),
+      templates: (limit) => execute("mailTemplates", limit ? { limit } : {}),
+      saveTemplate: (payload) => execute("mailTemplateSave", payload),
+      updateTemplate: (payload) => execute("mailTemplateUpdate", payload),
+      deleteTemplate: (id) => execute("mailTemplateDelete", { id }),
       drafts: (options = {}) => execute("mailDrafts", options),
       saveDraft: (payload) => execute("mailDraftSave", payload),
       deleteDraft: (id) => execute("mailDraftDelete", { id }),

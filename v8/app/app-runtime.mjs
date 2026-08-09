@@ -777,7 +777,7 @@ export function mountApplication(root, options = {}) {
     if (route === "matches") return module.mountMatches(shell.stage, { actions, externalServices, repository, state: store.getState(), subscribeState: store.subscribe, lolLive, valorantLive, trackerLive });
     if (route === "team") return module.mountTeam(shell.stage, { ownerId: options.ownerId || repository.owner?.(), repository, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, externalServices });
     if (route === "interactions") return module.mountInteractions(shell.stage, { ownerId: options.ownerId || repository.owner?.(), repository, notify: (notice) => toasts.show(notice), interactions: interactionsHeatmap });
-    if (route === "mail") return module.mountMail(shell.stage, { externalServices, notify: (notice) => toasts.show(notice) });
+    if (route === "mail") return module.mountMail(shell.stage, { externalServices, repository, notify: (notice) => toasts.show(notice) });
     return module.mountSettings(shell.stage, { repository, actions, state: store.getState(), sounds, externalServices, densityEngine, subscribeState: store.subscribe, brain, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.(), profile: options.profile || repository.activeProfile?.(), onProfileMediaUpdated: applyProfileMediaUpdate });
   }
 

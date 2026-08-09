@@ -39,7 +39,9 @@ Exécuter dans l'ordre via le SQL Editor de Supabase ou `psql` :
 
 - Domaine `ethone.dev` actif sur Cloudflare.
 - Route de reception personnalisee : `*@ethone.dev` -> Worker `email()`.
+- **Important** : ne pas activer la reception Resend (Enable Receiving). Cloudflare Email Routing et l'entree MX de Resend sont incompatibles sur la meme zone. Resend est utilise uniquement pour l'envoi.
 - Verification de l'adresse d'envoi dans Resend (send email from `ETHONE <no-reply@ethone.dev>`).
+- Si Resend demande un MX `inbound-smtp.*.amazonaws.com`, il faut ignorer cette etape ou desactiver "Enable Receiving" dans Resend.
 
 ### Pourquoi 004 et 005 sont nécessaires
 

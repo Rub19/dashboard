@@ -5,15 +5,16 @@ import { buildSkeletonList } from "../ui/skeleton.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
 import { showBottomSheet } from "../ui/bottom-sheet.mjs";
 import { createMailCache } from "../services/mail-cache.mjs";
+import { translateSource, localeTag } from "../i18n/catalog.mjs";
 
 const FOLDERS = [
-  { key: "inbox", label: "Boîte de réception", icon: "inbox" },
-  { key: "starred", label: "Favoris", icon: "star" },
-  { key: "sent", label: "Envoyés", icon: "send" },
-  { key: "drafts", label: "Brouillons", icon: "file-text" },
-  { key: "archive", label: "Archive", icon: "archive" },
-  { key: "spam", label: "Spam", icon: "shield-alert" },
-  { key: "trash", label: "Corbeille", icon: "trash-2" }
+  { key: "inbox", label: translateSource("Boîte de réception"), icon: "inbox" },
+  { key: "starred", label: translateSource("Favoris"), icon: "star" },
+  { key: "sent", label: translateSource("Envoyés"), icon: "send" },
+  { key: "drafts", label: translateSource("Brouillons"), icon: "file-text" },
+  { key: "archive", label: translateSource("Archive"), icon: "archive" },
+  { key: "spam", label: translateSource("Spam"), icon: "shield-alert" },
+  { key: "trash", label: translateSource("Corbeille"), icon: "trash-2" }
 ];
 
 const MAIL_ALLOWED_TAGS = new Set(["P", "BR", "STRONG", "B", "EM", "I", "U", "UL", "OL", "LI", "H2", "H3", "BLOCKQUOTE", "PRE", "CODE", "A"]);
@@ -27,16 +28,17 @@ function formatMailDate(iso) {
   const now = new Date();
   const isToday = date.toDateString() === now.toDateString();
   const isYesterday = new Date(now - 86400000).toDateString() === date.toDateString();
-  if (isToday) return date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
-  if (isYesterday) return "Hier";
-  return date.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" });
+  const locale = localeTag();
+  if (isToday) return date.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" });
+  if (isYesterday) return translateSource("Hier");
+  return date.toLocaleDateString(locale, { day: "2-digit", month: "2-digit" });
 }
 
 function formatFullDate(iso) {
   if (!iso) return "";
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return "";
-  return date.toLocaleString("fr-FR");
+  return date.toLocaleString(localeTag());
 }
 
 function text2br(text) {
@@ -49,17 +51,18 @@ function clean(value, fallback = "", limit = 400) {
 
 function formatSize(bytes) {
   const value = Math.max(0, Number(bytes) || 0);
-  if (value < 1024) return `${value} o`;
-  if (value < 1024 * 1024) return `${(value / 1024).toFixed(1)} Ko`;
-  if (value < 1024 * 1024 * 1024) return `${(value / (1024 * 1024)).toFixed(1)} Mo`;
-  return `${(value / (1024 * 1024 * 1024)).toFixed(1)} Go`;
+  const locale = localeTag();
+  if (value < 1024) return `${value.toLocaleString(locale)} ${translateSource("o")}`;
+  if (value < 1024 * 1024) return `${(value / 1024).toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} ${translateSource("Ko")}`;
+  if (value < 1024 * 1024 * 1024) return `${(value / (1024 * 1024)).toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} ${translateSource("Mo")}`;
+  return `${(value / (1024 * 1024 * 1024)).toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} ${translateSource("Go")}`;
 }
 
 function buildBar(label, value, max, unit = "") {
   const percent = max > 0 ? Math.round((value / max) * 100) : 0;
-  const text = `${value}${unit}`;
+  const text = `${value}${unit ? translateSource(unit) || unit : ""}`;
   return element("div", { className: "v8-mail-analytics__bar-row" }, [
-    element("span", { className: "v8-mail-analytics__bar-label", text: label }),
+    element("span", { className: "v8-mail-analytics__bar-label", text: translateSource(label) }),
     element("div", { className: "v8-mail-analytics__bar-track" }, [
       element("div", { className: "v8-mail-analytics__bar-fill", attributes: { style: `width: ${percent}%` } })
     ]),
@@ -126,19 +129,19 @@ function sanitizeMailHtml(html) {
 }
 
 function quoteOriginal(message, isForward = false) {
-  const from = message.from_name || message.from_address || "Inconnu";
+  const from = message.from_name || message.from_address || translateSource("Inconnu");
   const date = formatFullDate(message.received_at || message.created_at);
-  const prefix = isForward ? "Message transféré" : `Le ${date}, ${from} a écrit :`;
+  const prefix = isForward ? translateSource("Message transféré") : translateSource("Le {date}, {from} a écrit :").replace("{date}", date).replace("{from}", from);
   const body = sanitizeMailHtml(message.body_html || text2br(message.body_text || ""));
   return `<blockquote class="v8-mail-quote"><p><strong>${prefix}</strong></p>${body}</blockquote>`;
 }
 
 function errorDescription(error) {
-  if (error?.name === "TimeoutError" || /timeout|délai/i.test(String(error?.message))) return "Le Worker met trop de temps à répondre. Vérifiez le déploiement.";
-  if (error?.status === 401 || error?.code === "AUTH_REQUIRED") return "Votre session a expiré. Reconnectez-vous.";
-  if (error?.status === 404 || error?.code === "ROUTE_NOT_FOUND" || /route introuvable/i.test(String(error?.message))) return "La route Mail n'est pas encore déployée sur le Worker.";
-  if (error?.status === 500 || error?.code === "SERVICE_ERROR") return "Erreur côté Worker. Vérifiez que la migration Supabase est exécutée.";
-  return String(error?.message || "Erreur inconnue");
+  if (error?.name === "TimeoutError" || /timeout|délai/i.test(String(error?.message))) return translateSource("Le Worker met trop de temps à répondre. Vérifiez le déploiement.");
+  if (error?.status === 401 || error?.code === "AUTH_REQUIRED") return translateSource("Votre session a expiré. Reconnectez-vous.");
+  if (error?.status === 404 || error?.code === "ROUTE_NOT_FOUND" || /route introuvable/i.test(String(error?.message))) return translateSource("La route Mail n'est pas encore déployée sur le Worker.");
+  if (error?.status === 500 || error?.code === "SERVICE_ERROR") return translateSource("Erreur côté Worker. Vérifiez que la migration Supabase est exécutée.");
+  return String(error?.message || translateSource("Erreur inconnue"));
 }
 
 function getFromAddress(message) {
@@ -154,8 +157,8 @@ export function mountMail(stage, options = {}) {
   if (!mailApi) {
     stage.replaceChildren(buildEmptyState({
       icon: "unplug",
-      title: "Service Mail non configuré",
-      message: "Connectez ETHONE Mail pour accéder à vos messages."
+      title: translateSource("Service Mail non configuré"),
+      message: translateSource("Connectez ETHONE Mail pour accéder à vos messages.")
     }));
     refreshIcons();
     return () => stage.replaceChildren();
@@ -239,46 +242,46 @@ export function mountMail(stage, options = {}) {
   const listTitle = element("span", { className: "v8-mail-list-title" });
   const searchInput = element("input", {
     className: "v8-input v8-mail-search",
-    attributes: { type: "search", placeholder: "Rechercher...", "aria-label": "Rechercher un message" }
+    attributes: { type: "search", placeholder: translateSource("Rechercher..."), "aria-label": translateSource("Rechercher un message") }
   });
   const menuButton = element("button", {
     className: "v8-icon-button v8-mail-menu",
-    attributes: { type: "button", "aria-label": "Dossiers" }
+    attributes: { type: "button", "aria-label": translateSource("Dossiers") }
   }, [icon("menu")]);
-  const newBtn = actionButton({ actionId: "v8.mail.compose", variant: "primary" }, [icon("plus"), element("span", { text: "Nouveau" })]);
+  const newBtn = actionButton({ actionId: "v8.mail.compose", variant: "primary" }, [icon("plus"), element("span", { text: translateSource("Nouveau") })]);
   const bellBadge = element("span", { className: "v8-mail-bell__badge" });
   const bellBtn = element("button", {
     className: "v8-icon-button v8-mail-bell",
-    attributes: { type: "button", "aria-label": "Notifications" }
+    attributes: { type: "button", "aria-label": translateSource("Notifications") }
   }, [icon("bell"), bellBadge]);
   const filterBtn = element("button", {
     className: "v8-icon-button v8-mail-filter-toggle",
-    attributes: { type: "button", "aria-label": "Filtres" }
+    attributes: { type: "button", "aria-label": translateSource("Filtres") }
   }, [icon("filter")]);
   onlineStatus = element("span", { className: "v8-mail-online-status" });
   masterCheckbox = element("input", {
     className: "v8-mail-master-checkbox",
-    attributes: { type: "checkbox", "aria-label": "Tout sélectionner" }
+    attributes: { type: "checkbox", "aria-label": translateSource("Tout sélectionner") }
   });
   const listHeader = element("header", { className: "v8-mail-list-header" }, [menuButton, listTitle, onlineStatus, masterCheckbox, searchInput, bellBtn, filterBtn, newBtn]);
 
-  filterFromInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "text", placeholder: "Expéditeur" } });
-  filterSubjectInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "text", placeholder: "Sujet" } });
-  filterBodyInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "text", placeholder: "Contenu" } });
+  filterFromInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "text", placeholder: translateSource("Expéditeur") } });
+  filterSubjectInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "text", placeholder: translateSource("Sujet") } });
+  filterBodyInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "text", placeholder: translateSource("Contenu") } });
   filterDateFromInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "date" } });
   filterDateToInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "date" } });
   filterHasAttachmentsInput = element("input", { className: "v8-mail-filter__checkbox", attributes: { type: "checkbox" } });
   const hasAttachmentsLabel = element("label", { className: "v8-mail-filter__check" }, [
     filterHasAttachmentsInput,
-    element("span", { text: "Pièces jointes" })
+    element("span", { text: translateSource("Pièces jointes") })
   ]);
-  filterLabelInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "text", placeholder: "Étiquette" } });
+  filterLabelInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "text", placeholder: translateSource("Étiquette") } });
   filterFolderSelect = element("select", { className: "v8-input v8-mail-filter__input" }, [
-    element("option", { text: "Tous les dossiers", attributes: { value: "" } }),
+    element("option", { text: translateSource("Tous les dossiers"), attributes: { value: "" } }),
     ...FOLDERS.map((f) => element("option", { text: f.label, attributes: { value: f.key } }))
   ]);
-  const applyFiltersBtn = actionButton({ actionId: "v8.mail.filters.apply", variant: "secondary", className: "v8-mail-filter__apply" }, [element("span", { text: "Appliquer" })]);
-  const resetFiltersBtn = actionButton({ actionId: "v8.mail.filters.reset", variant: "outline", className: "v8-mail-filter__reset" }, [element("span", { text: "Réinitialiser" })]);
+  const applyFiltersBtn = actionButton({ actionId: "v8.mail.filters.apply", variant: "secondary", className: "v8-mail-filter__apply" }, [element("span", { text: translateSource("Appliquer") })]);
+  const resetFiltersBtn = actionButton({ actionId: "v8.mail.filters.reset", variant: "outline", className: "v8-mail-filter__reset" }, [element("span", { text: translateSource("Réinitialiser") })]);
   filterPanel = element("div", { className: "v8-mail-filters", attributes: { hidden: "" } }, [
     filterFromInput,
     filterSubjectInput,
@@ -351,7 +354,7 @@ export function mountMail(stage, options = {}) {
     if (!isOnline()) {
       const id = await mailCache.queueAction({ action, payload });
       if (id) {
-        notify({ type: "warning", title: "Hors ligne", message: "L'action est mise en attente et sera exécutée à la reconnexion." });
+        notify({ type: "warning", title: translateSource("Hors ligne"), message: translateSource("L'action est mise en attente et sera exécutée à la reconnexion.") });
       }
       return null;
     }
@@ -385,7 +388,7 @@ export function mountMail(stage, options = {}) {
         await runQueueAction(item.action, item.payload);
         await mailCache.removeAction(item.id);
       } catch (error) {
-        notify({ type: "error", title: "File d'attente", message: errorDescription(error) });
+        notify({ type: "error", title: translateSource("File d'attente"), message: errorDescription(error) });
         break;
       }
     }
@@ -397,8 +400,8 @@ export function mountMail(stage, options = {}) {
     if (!onlineStatus) return;
     onlineStatus.classList.toggle("is-offline", !online);
     onlineStatus.classList.toggle("is-online", online);
-    onlineStatus.textContent = online ? "En ligne" : "Hors ligne";
-    onlineStatus.title = online ? "Connecté" : "Mode hors ligne";
+    onlineStatus.textContent = online ? translateSource("En ligne") : translateSource("Hors ligne");
+    onlineStatus.title = online ? translateSource("Connecté") : translateSource("Mode hors ligne");
   }
 
   const onOnline = () => { updateOnlineStatus(); processQueue(); };
@@ -427,7 +430,10 @@ export function mountMail(stage, options = {}) {
   async function loadAlias() {
     try {
       const result = await mailApi.alias();
-      state.alias = result?.data || result || null;
+      const raw = result?.data ?? result;
+      if (typeof raw === "string") state.alias = raw;
+      else if (raw && typeof raw === "object") state.alias = String(raw.alias || raw.email || raw.name || "");
+      else state.alias = null;
     } catch {
       state.alias = null;
     }
@@ -490,7 +496,7 @@ export function mountMail(stage, options = {}) {
       state.notifications = allData;
       await mailCache.putNotifications(state.notifications);
     } catch (error) {
-      notify({ type: "error", title: "Notifications", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Notifications"), message: errorDescription(error) });
       state.notifications = [];
       state.unreadCount = 0;
     }
@@ -508,7 +514,7 @@ export function mountMail(stage, options = {}) {
       renderBell();
       renderSidebar();
     } catch (error) {
-      notify({ type: "error", title: "Notification", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Notification"), message: errorDescription(error) });
     }
   }
 
@@ -522,7 +528,7 @@ export function mountMail(stage, options = {}) {
       state.rules = Array.isArray(result) ? result : (result?.data || []);
       await mailCache.putRules(state.rules);
     } catch (error) {
-      notify({ type: "error", title: "Règles", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Règles"), message: errorDescription(error) });
       state.rules = [];
     }
     renderSidebar();
@@ -543,7 +549,7 @@ export function mountMail(stage, options = {}) {
       state.blocked = Array.isArray(blockedResult) ? blockedResult : (blockedResult?.data || []);
       state.trusted = Array.isArray(trustedResult) ? trustedResult : (trustedResult?.data || []);
     } catch (error) {
-      notify({ type: "error", title: "Sécurité", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Sécurité"), message: errorDescription(error) });
       state.blocked = [];
       state.trusted = [];
     }
@@ -555,10 +561,10 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.blockSender) return;
     try {
       await mailApi.blockSender({ email, domain, reason });
-      notify({ type: "success", title: "Sécurité", message: "Expéditeur bloqué." });
+      notify({ type: "success", title: translateSource("Sécurité"), message: translateSource("Expéditeur bloqué.") });
       await loadSecurity();
     } catch (error) {
-      notify({ type: "error", title: "Sécurité", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Sécurité"), message: errorDescription(error) });
     }
   }
 
@@ -566,10 +572,10 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.trustSender) return;
     try {
       await mailApi.trustSender({ email, domain });
-      notify({ type: "success", title: "Sécurité", message: "Expéditeur fiable." });
+      notify({ type: "success", title: translateSource("Sécurité"), message: translateSource("Expéditeur fiable.") });
       await loadSecurity();
     } catch (error) {
-      notify({ type: "error", title: "Sécurité", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Sécurité"), message: errorDescription(error) });
     }
   }
 
@@ -577,10 +583,10 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.unblockSender) return;
     try {
       await mailApi.unblockSender(id);
-      notify({ type: "success", title: "Sécurité", message: "Bloc retiré." });
+      notify({ type: "success", title: translateSource("Sécurité"), message: translateSource("Bloc retiré.") });
       await loadSecurity();
     } catch (error) {
-      notify({ type: "error", title: "Sécurité", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Sécurité"), message: errorDescription(error) });
     }
   }
 
@@ -588,10 +594,10 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.untrustSender) return;
     try {
       await mailApi.untrustSender(id);
-      notify({ type: "success", title: "Sécurité", message: "Confiance retirée." });
+      notify({ type: "success", title: translateSource("Sécurité"), message: translateSource("Confiance retirée.") });
       await loadSecurity();
     } catch (error) {
-      notify({ type: "error", title: "Sécurité", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Sécurité"), message: errorDescription(error) });
     }
   }
 
@@ -601,7 +607,7 @@ export function mountMail(stage, options = {}) {
       const result = await mailApi.accounts();
       state.accounts = Array.isArray(result) ? result : (result?.data || []);
     } catch (error) {
-      notify({ type: "error", title: "Comptes", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Comptes"), message: errorDescription(error) });
       state.accounts = [];
     }
   }
@@ -609,17 +615,17 @@ export function mountMail(stage, options = {}) {
   async function addAccount(provider, email, label) {
     if (!mailApi?.createAccount) return;
     if (!provider || !email) {
-      notify({ type: "warning", title: "Compte", message: "Fournisseur et email requis." });
+      notify({ type: "warning", title: translateSource("Compte"), message: translateSource("Fournisseur et email requis.") });
       return;
     }
     try {
       await mailApi.createAccount({ provider, email, label });
-      notify({ type: "success", title: "Compte", message: "Compte ajouté." });
+      notify({ type: "success", title: translateSource("Compte"), message: translateSource("Compte ajouté.") });
       state.accountForm = { provider: "", email: "", label: "" };
       await loadAccounts();
       renderSidebar();
     } catch (error) {
-      notify({ type: "error", title: "Compte", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Compte"), message: errorDescription(error) });
     }
   }
 
@@ -627,9 +633,9 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.syncAccount) return;
     try {
       await mailApi.syncAccount(id);
-      notify({ type: "success", title: "Compte", message: "Synchronisation lancée." });
+      notify({ type: "success", title: translateSource("Compte"), message: translateSource("Synchronisation lancée.") });
     } catch (error) {
-      notify({ type: "error", title: "Compte", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Compte"), message: errorDescription(error) });
     }
   }
 
@@ -637,11 +643,11 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.deleteAccount) return;
     try {
       await mailApi.deleteAccount(id);
-      notify({ type: "success", title: "Compte", message: "Compte supprimé." });
+      notify({ type: "success", title: translateSource("Compte"), message: translateSource("Compte supprimé.") });
       await loadAccounts();
       renderSidebar();
     } catch (error) {
-      notify({ type: "error", title: "Compte", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Compte"), message: errorDescription(error) });
     }
   }
 
@@ -651,7 +657,7 @@ export function mountMail(stage, options = {}) {
       const result = await mailApi.pgpKeys();
       state.pgpKeys = Array.isArray(result) ? result : (result?.data || []);
     } catch (error) {
-      notify({ type: "error", title: "PGP", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("PGP"), message: errorDescription(error) });
       state.pgpKeys = [];
     }
   }
@@ -660,17 +666,17 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.createPgpKey) return;
     const email = state.pgpForm.email.trim();
     if (!email) {
-      notify({ type: "warning", title: "PGP", message: "Email requis." });
+      notify({ type: "warning", title: translateSource("PGP"), message: translateSource("Email requis.") });
       return;
     }
     try {
       await mailApi.createPgpKey({ email, public_key: state.pgpForm.publicKey, private_key: state.pgpForm.privateKey, passphrase: state.pgpForm.passphrase });
-      notify({ type: "success", title: "PGP", message: "Clé enregistrée." });
+      notify({ type: "success", title: translateSource("PGP"), message: translateSource("Clé enregistrée.") });
       state.pgpForm = { email: "", publicKey: "", privateKey: "", passphrase: "" };
       await loadPgpKeys();
       renderSidebar();
     } catch (error) {
-      notify({ type: "error", title: "PGP", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("PGP"), message: errorDescription(error) });
     }
   }
 
@@ -678,39 +684,39 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.deletePgpKey) return;
     try {
       await mailApi.deletePgpKey(id);
-      notify({ type: "success", title: "PGP", message: "Clé supprimée." });
+      notify({ type: "success", title: translateSource("PGP"), message: translateSource("Clé supprimée.") });
       await loadPgpKeys();
       renderSidebar();
     } catch (error) {
-      notify({ type: "error", title: "PGP", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("PGP"), message: errorDescription(error) });
     }
   }
 
   async function pgpEncrypt() {
     if (!mailApi?.pgpEncrypt) return;
     const { publicKey } = state.pgpForm;
-    if (!publicKey) { notify({ type: "warning", title: "PGP", message: "Collez une clé publique." }); return; }
-    const text = await globalThis.prompt?.("Texte à chiffrer");
+    if (!publicKey) { notify({ type: "warning", title: translateSource("PGP"), message: translateSource("Collez une clé publique.") }); return; }
+    const text = await globalThis.prompt?.(translateSource("Texte à chiffrer"));
     if (!text) return;
     try {
       const result = await mailApi.pgpEncrypt({ body: text, public_key: publicKey });
       const encrypted = result?.data?.body || result?.data;
-      globalThis.alert?.(encrypted || "Chiffrement terminé.");
+      globalThis.alert?.(encrypted || translateSource("Chiffrement terminé."));
     } catch (error) {
-      notify({ type: "error", title: "PGP", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("PGP"), message: errorDescription(error) });
     }
   }
 
   async function pgpDecrypt() {
     if (!mailApi?.pgpDecrypt) return;
-    const text = await globalThis.prompt?.("Texte à déchiffrer");
+    const text = await globalThis.prompt?.(translateSource("Texte à déchiffrer"));
     if (!text) return;
     try {
       const result = await mailApi.pgpDecrypt({ body: text, passphrase: state.pgpForm.passphrase });
       const decrypted = result?.data?.body || result?.data;
-      globalThis.alert?.(decrypted || "Déchiffrement terminé.");
+      globalThis.alert?.(decrypted || translateSource("Déchiffrement terminé."));
     } catch (error) {
-      notify({ type: "error", title: "PGP", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("PGP"), message: errorDescription(error) });
     }
   }
 
@@ -727,11 +733,11 @@ export function mountMail(stage, options = {}) {
 
   async function togglePushSubscribe() {
     if (!mailApi?.pushVapidKey || !mailApi?.pushSubscribe) {
-      notify({ type: "warning", title: "Push", message: "Notifications push non disponibles." });
+      notify({ type: "warning", title: translateSource("Push"), message: translateSource("Notifications push non disponibles.") });
       return;
     }
     if (typeof navigator === "undefined" || !navigator.serviceWorker?.register) {
-      notify({ type: "warning", title: "Push", message: "Service Worker non supporté." });
+      notify({ type: "warning", title: translateSource("Push"), message: translateSource("Service Worker non supporté.") });
       return;
     }
     state.pushLoading = true;
@@ -739,7 +745,7 @@ export function mountMail(stage, options = {}) {
     try {
       const vapidResult = await mailApi.pushVapidKey();
       const vapidKey = vapidResult?.data?.publicKey || vapidResult?.data;
-      if (!vapidKey) throw new Error("Clé VAPID introuvable.");
+      if (!vapidKey) throw new Error(translateSource("Clé VAPID introuvable."));
       const registration = await navigator.serviceWorker.ready;
       let sub;
       if (state.pushSubscribed) {
@@ -749,16 +755,16 @@ export function mountMail(stage, options = {}) {
           if (mailApi.pushUnsubscribe) await mailApi.pushUnsubscribe(sub.endpoint);
         }
         state.pushSubscribed = false;
-        notify({ type: "success", title: "Push", message: "Désabonnement effectué." });
+        notify({ type: "success", title: translateSource("Push"), message: translateSource("Désabonnement effectué.") });
       } else {
         sub = await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(vapidKey) });
         const json = sub.toJSON();
         await mailApi.pushSubscribe({ endpoint: json.endpoint, p256dh: json.keys?.p256dh, auth: json.keys?.auth, keys: json.keys });
         state.pushSubscribed = true;
-        notify({ type: "success", title: "Push", message: "Notifications activées." });
+        notify({ type: "success", title: translateSource("Push"), message: translateSource("Notifications activées.") });
       }
     } catch (error) {
-      notify({ type: "error", title: "Push", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Push"), message: errorDescription(error) });
     }
     state.pushLoading = false;
     renderSidebar();
@@ -767,10 +773,10 @@ export function mountMail(stage, options = {}) {
   async function sendPushTest() {
     if (!mailApi?.pushSend) return;
     try {
-      await mailApi.pushSend({ title: "ETHONE Mail", body: "Test de notification." });
-      notify({ type: "success", title: "Push", message: "Notification envoyée." });
+      await mailApi.pushSend({ title: translateSource("ETHONE Mail"), body: translateSource("Test de notification.") });
+      notify({ type: "success", title: translateSource("Push"), message: translateSource("Notification envoyée.") });
     } catch (error) {
-      notify({ type: "error", title: "Push", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Push"), message: errorDescription(error) });
     }
   }
 
@@ -780,7 +786,7 @@ export function mountMail(stage, options = {}) {
       const result = await mailApi.lists();
       state.lists = Array.isArray(result) ? result : (result?.data || []);
     } catch (error) {
-      notify({ type: "error", title: "Listes", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Listes"), message: errorDescription(error) });
       state.lists = [];
     }
   }
@@ -792,26 +798,27 @@ export function mountMail(stage, options = {}) {
       state.listMembers[listId] = Array.isArray(result) ? result : (result?.data || []);
     } catch (error) {
       state.listMembers[listId] = [];
+      notify({ type: "error", title: translateSource("Liste"), message: errorDescription(error) });
     }
   }
 
   async function saveList() {
     if (!mailApi?.createList || !mailApi?.updateList) return;
     const { id, name, description, address } = state.listForm;
-    if (!name) { notify({ type: "warning", title: "Liste", message: "Nom requis." }); return; }
+    if (!name) { notify({ type: "warning", title: translateSource("Liste"), message: translateSource("Nom requis.") }); return; }
     try {
       if (id) {
         await mailApi.updateList({ id, name, description, address });
-        notify({ type: "success", title: "Liste", message: "Liste mise à jour." });
+        notify({ type: "success", title: translateSource("Liste"), message: translateSource("Liste mise à jour.") });
       } else {
         await mailApi.createList({ name, description, address });
-        notify({ type: "success", title: "Liste", message: "Liste créée." });
+        notify({ type: "success", title: translateSource("Liste"), message: translateSource("Liste créée.") });
       }
       state.listForm = { id: null, name: "", description: "", address: "" };
       await loadLists();
       renderSidebar();
     } catch (error) {
-      notify({ type: "error", title: "Liste", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Liste"), message: errorDescription(error) });
     }
   }
 
@@ -819,12 +826,12 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.deleteList) return;
     try {
       await mailApi.deleteList(id);
-      notify({ type: "success", title: "Liste", message: "Liste supprimée." });
+      notify({ type: "success", title: translateSource("Liste"), message: translateSource("Liste supprimée.") });
       if (state.selectedListId === id) state.selectedListId = null;
       await loadLists();
       renderSidebar();
     } catch (error) {
-      notify({ type: "error", title: "Liste", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Liste"), message: errorDescription(error) });
     }
   }
 
@@ -833,11 +840,11 @@ export function mountMail(stage, options = {}) {
     if (!email) return;
     try {
       await mailApi.addListMember({ list_id: listId, email, name });
-      notify({ type: "success", title: "Liste", message: "Membre ajouté." });
+      notify({ type: "success", title: translateSource("Liste"), message: translateSource("Membre ajouté.") });
       await loadListMembers(listId);
       renderSidebar();
     } catch (error) {
-      notify({ type: "error", title: "Liste", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Liste"), message: errorDescription(error) });
     }
   }
 
@@ -845,11 +852,11 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.removeListMember) return;
     try {
       await mailApi.removeListMember(listId, email);
-      notify({ type: "success", title: "Liste", message: "Membre retiré." });
+      notify({ type: "success", title: translateSource("Liste"), message: translateSource("Membre retiré.") });
       await loadListMembers(listId);
       renderSidebar();
     } catch (error) {
-      notify({ type: "error", title: "Liste", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Liste"), message: errorDescription(error) });
     }
   }
 
@@ -869,7 +876,7 @@ export function mountMail(stage, options = {}) {
     const sourceIp = message.source_ip || "";
     const badge = (label, value) => {
       const status = ["pass", "fail", "neutral"].includes(value) ? value : "none";
-      return element("span", { className: `v8-mail-security__badge is-${status}`, text: `${label} ${value || "none"}` });
+      return element("span", { className: `v8-mail-security__badge is-${status}`, text: `${label} ${value || translateSource("Aucun")}` });
     };
     const children = [
       badge("SPF", auth.spf),
@@ -886,10 +893,10 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.saveRule) return;
     try {
       await mailApi.saveRule(payload);
-      notify({ type: "success", title: "Règle", message: "Règle enregistrée." });
+      notify({ type: "success", title: translateSource("Règle"), message: translateSource("Règle enregistrée.") });
       await loadRules();
     } catch (error) {
-      notify({ type: "error", title: "Règle", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Règle"), message: errorDescription(error) });
     }
   }
 
@@ -897,10 +904,10 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.deleteRule) return;
     try {
       await mailApi.deleteRule(id);
-      notify({ type: "success", title: "Règle", message: "Règle supprimée." });
+      notify({ type: "success", title: translateSource("Règle"), message: translateSource("Règle supprimée.") });
       await loadRules();
     } catch (error) {
-      notify({ type: "error", title: "Règle", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Règle"), message: errorDescription(error) });
     }
   }
 
@@ -930,14 +937,14 @@ export function mountMail(stage, options = {}) {
 
   function applyFilters() {
     state.filters = {
-      from: filterFromInput.value.trim(),
-      subject: filterSubjectInput.value.trim(),
-      body: filterBodyInput.value.trim(),
-      date_from: filterDateFromInput.value,
-      date_to: filterDateToInput.value,
-      has_attachments: filterHasAttachmentsInput.checked,
-      label: filterLabelInput.value.trim(),
-      folder: filterFolderSelect.value
+      from: (filterFromInput?.value || "").trim(),
+      subject: (filterSubjectInput?.value || "").trim(),
+      body: (filterBodyInput?.value || "").trim(),
+      date_from: filterDateFromInput?.value || "",
+      date_to: filterDateToInput?.value || "",
+      has_attachments: filterHasAttachmentsInput?.checked || false,
+      label: (filterLabelInput?.value || "").trim(),
+      folder: filterFolderSelect?.value || ""
     };
     state.filtersOpen = false;
     filterPanel.hidden = true;
@@ -951,14 +958,14 @@ export function mountMail(stage, options = {}) {
     state.filters = { from: "", subject: "", body: "", date_from: "", date_to: "", has_attachments: false, label: "", folder: "" };
     state.filtersOpen = false;
     filterPanel.hidden = true;
-    filterFromInput.value = "";
-    filterSubjectInput.value = "";
-    filterBodyInput.value = "";
-    filterDateFromInput.value = "";
-    filterDateToInput.value = "";
-    filterHasAttachmentsInput.checked = false;
-    filterLabelInput.value = "";
-    filterFolderSelect.value = "";
+    if (filterFromInput) filterFromInput.value = "";
+    if (filterSubjectInput) filterSubjectInput.value = "";
+    if (filterBodyInput) filterBodyInput.value = "";
+    if (filterDateFromInput) filterDateFromInput.value = "";
+    if (filterDateToInput) filterDateToInput.value = "";
+    if (filterHasAttachmentsInput) filterHasAttachmentsInput.checked = false;
+    if (filterLabelInput) filterLabelInput.value = "";
+    if (filterFolderSelect) filterFolderSelect.value = "";
     state.query = "";
     state.isSearch = false;
     searchInput.value = "";
@@ -978,7 +985,7 @@ export function mountMail(stage, options = {}) {
       state.templates = Array.isArray(result) ? result : (result?.data || []);
       await mailCache.putTemplates(state.templates);
     } catch (error) {
-      notify({ type: "error", title: "Modèles", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Modèles"), message: errorDescription(error) });
       state.templates = [];
     }
     renderSidebar();
@@ -994,7 +1001,7 @@ export function mountMail(stage, options = {}) {
       is_default: state.templateForm.is_default
     };
     if (!payload.name) {
-      notify({ type: "warning", title: "Modèle", message: "Nom requis." });
+      notify({ type: "warning", title: translateSource("Modèle"), message: translateSource("Nom requis.") });
       return;
     }
     try {
@@ -1003,11 +1010,11 @@ export function mountMail(stage, options = {}) {
       } else {
         await mailApi.saveTemplate(payload);
       }
-      notify({ type: "success", title: "Modèle", message: state.templateForm.id ? "Modèle mis à jour." : "Modèle enregistré." });
+      notify({ type: "success", title: translateSource("Modèle"), message: state.templateForm.id ? translateSource("Modèle mis à jour.") : translateSource("Modèle enregistré.") });
       state.templateForm = { id: null, name: "", subject: "", content: "", is_default: false };
       await loadTemplates();
     } catch (error) {
-      notify({ type: "error", title: "Modèle", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Modèle"), message: errorDescription(error) });
     }
   }
 
@@ -1015,11 +1022,11 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.deleteTemplate) return;
     try {
       await mailApi.deleteTemplate(id);
-      notify({ type: "success", title: "Modèle", message: "Modèle supprimé." });
+      notify({ type: "success", title: translateSource("Modèle"), message: translateSource("Modèle supprimé.") });
       if (String(state.templateForm.id) === String(id)) state.templateForm = { id: null, name: "", subject: "", content: "", is_default: false };
       await loadTemplates();
     } catch (error) {
-      notify({ type: "error", title: "Modèle", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Modèle"), message: errorDescription(error) });
     }
   }
 
@@ -1027,14 +1034,15 @@ export function mountMail(stage, options = {}) {
     if (!mailApi?.updateTemplate) return;
     try {
       await mailApi.updateTemplate({ id, is_default: true });
-      notify({ type: "success", title: "Modèle", message: "Modèle par défaut défini." });
+      notify({ type: "success", title: translateSource("Modèle"), message: translateSource("Modèle par défaut défini.") });
       await loadTemplates();
     } catch (error) {
-      notify({ type: "error", title: "Modèle", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Modèle"), message: errorDescription(error) });
     }
   }
 
   async function loadFolder() {
+    if (!mailApi) { state.loading = false; state.messages = []; renderList(); return; }
     state.loading = true;
     state.error = null;
     state.isSearch = hasActiveFilters() || (state.isSearch && !!state.query);
@@ -1054,7 +1062,7 @@ export function mountMail(stage, options = {}) {
       await mailCache.putMessages(state.folder, state.messages);
     } catch (error) {
       state.error = error;
-      notify({ type: "error", title: "Mail", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Mail"), message: errorDescription(error) });
     }
     state.loading = false;
     state.selectedIds.clear();
@@ -1066,7 +1074,7 @@ export function mountMail(stage, options = {}) {
 
   async function loadAnalytics(period) {
     if (!mailApi?.analytics) {
-      notify({ type: "warning", title: "Analytique", message: "L'analytique n'est pas disponible." });
+      notify({ type: "warning", title: translateSource("Analytique"), message: translateSource("L'analytique n'est pas disponible.") });
       return;
     }
     try {
@@ -1078,14 +1086,14 @@ export function mountMail(stage, options = {}) {
       state.analytics = result?.data || null;
       state.loading = false;
       if (!state.analytics) {
-        notify({ type: "warning", title: "Analytique", message: "Aucune donnée disponible." });
+        notify({ type: "warning", title: translateSource("Analytique"), message: translateSource("Aucune donnée disponible.") });
         closeAnalytics();
         return;
       }
       renderAnalytics(state.analytics);
     } catch (error) {
       state.loading = false;
-      notify({ type: "error", title: "Analytique", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Analytique"), message: errorDescription(error) });
       closeAnalytics();
     }
   }
@@ -1107,19 +1115,19 @@ export function mountMail(stage, options = {}) {
 
   function renderAnalytics(stats) {
     if (!analyticsPanel) return;
-    listTitle.textContent = `Analytique (${state.analyticsPeriod} jours)`;
+    listTitle.textContent = translateSource("Analytique ({0} jours)").replace("{0}", state.analyticsPeriod);
 
     const grid = element("div", { className: "v8-mail-analytics__grid" }, [
-      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: String(stats.total || 0) }), element("span", { text: "Total" })]),
-      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: String(stats.inbound || 0) }), element("span", { text: "Reçus" })]),
-      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: String(stats.outbound || 0) }), element("span", { text: "Envoyés" })]),
-      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: String(stats.read || 0) }), element("span", { text: "Lus" })]),
-      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: String(stats.unread || 0) }), element("span", { text: "Non lus" })]),
-      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: String(stats.starred || 0) }), element("span", { text: "Favoris" })]),
-      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: String(stats.spam || 0) }), element("span", { text: "Spam" })]),
-      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: String(stats.attachments || 0) }), element("span", { text: "Avec pièces jointes" })]),
-      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: formatSize(stats.totalSize || 0) }), element("span", { text: "Volume total" })]),
-      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: formatSize(stats.averageSize || 0) }), element("span", { text: "Taille moyenne" })])
+      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: String(stats.total || 0) }), element("span", { text: translateSource("Total") })]),
+      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: String(stats.inbound || 0) }), element("span", { text: translateSource("Reçus") })]),
+      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: String(stats.outbound || 0) }), element("span", { text: translateSource("Envoyés") })]),
+      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: String(stats.read || 0) }), element("span", { text: translateSource("Lus") })]),
+      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: String(stats.unread || 0) }), element("span", { text: translateSource("Non lus") })]),
+      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: String(stats.starred || 0) }), element("span", { text: translateSource("Favoris") })]),
+      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: String(stats.spam || 0) }), element("span", { text: translateSource("Spam") })]),
+      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: String(stats.attachments || 0) }), element("span", { text: translateSource("Avec pièces jointes") })]),
+      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: formatSize(stats.totalSize || 0) }), element("span", { text: translateSource("Volume total") })]),
+      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: formatSize(stats.averageSize || 0) }), element("span", { text: translateSource("Taille moyenne") })])
     ]);
 
     const byFolder = stats.byFolder || {};
@@ -1132,12 +1140,12 @@ export function mountMail(stage, options = {}) {
     if (Array.isArray(stats.topSenders) && stats.topSenders.length) {
       stats.topSenders.forEach((sender) => {
         topSendersList.append(element("li", {}, [
-          element("span", { text: clean(sender.name || sender.email || "Inconnu", "", 120) }),
+          element("span", { text: clean(sender.name || sender.email || translateSource("Inconnu"), "", 120) }),
           element("span", { className: "v8-mail-analytics__sender-count", text: String(sender.count || 0) })
         ]));
       });
     } else {
-      topSendersList.append(element("li", { text: "Aucun expéditeur" }));
+      topSendersList.append(element("li", { text: translateSource("Aucun expéditeur") }));
     }
 
     const dayMax = Math.max(1, ...(stats.topDays || []).map((d) => d.count || 0));
@@ -1152,13 +1160,13 @@ export function mountMail(stage, options = {}) {
       hourChart.append(buildBar(String(h.hour), h.count || 0, hourMax));
     });
 
-    const closeBtn = actionButton({ actionId: "v8.mail.analytics.close", variant: "outline", className: "v8-mail-analytics__close" }, [element("span", { text: "Fermer" })]);
+    const closeBtn = actionButton({ actionId: "v8.mail.analytics.close", variant: "outline", className: "v8-mail-analytics__close" }, [element("span", { text: translateSource("Fermer") })]);
     closeBtn.addEventListener("click", closeAnalytics);
 
-    const topSendersTitle = element("strong", { className: "v8-mail-analytics__section-title", text: "Principaux expéditeurs" });
-    const daysTitle = element("strong", { className: "v8-mail-analytics__section-title", text: "Messages par jour" });
-    const hoursTitle = element("strong", { className: "v8-mail-analytics__section-title", text: "Messages par heure" });
-    const foldersTitle = element("strong", { className: "v8-mail-analytics__section-title", text: "Par dossier" });
+    const topSendersTitle = element("strong", { className: "v8-mail-analytics__section-title", text: translateSource("Principaux expéditeurs") });
+    const daysTitle = element("strong", { className: "v8-mail-analytics__section-title", text: translateSource("Messages par jour") });
+    const hoursTitle = element("strong", { className: "v8-mail-analytics__section-title", text: translateSource("Messages par heure") });
+    const foldersTitle = element("strong", { className: "v8-mail-analytics__section-title", text: translateSource("Par dossier") });
 
     analyticsPanel.replaceChildren(
       closeBtn,
@@ -1178,6 +1186,7 @@ export function mountMail(stage, options = {}) {
   }
 
   async function loadSearch() {
+    if (!mailApi) { state.messages = []; renderList(); renderSidebar(); return; }
     if (!state.query) {
       state.isSearch = false;
       loadFolder();
@@ -1189,7 +1198,7 @@ export function mountMail(stage, options = {}) {
       const result = await mailApi.search(state.query, { limit: 50, offset: 0 });
       state.messages = Array.isArray(result) ? result : (result?.data || []);
     } catch (error) {
-      notify({ type: "error", title: "Recherche", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Recherche"), message: errorDescription(error) });
       state.messages = [];
     }
     state.loading = false;
@@ -1272,13 +1281,13 @@ export function mountMail(stage, options = {}) {
     if (!message) return;
     try {
       await withQueue("move", { ids: [message.id], folder });
-      notify({ type: "success", title: "Mail", message: `Déplacé vers ${folder}.` });
+      notify({ type: "success", title: translateSource("Mail"), message: translateSource("Déplacé vers {0}.").replace("{0}", FOLDERS.find((f) => f.key === folder)?.label || folder) });
       state.messages = state.messages.filter((m) => m.id !== message.id);
       if (state.selected?.id === message.id) backToList();
       renderList();
       loadFolder();
     } catch (error) {
-      notify({ type: "error", title: "Mail", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Mail"), message: errorDescription(error) });
     }
   }
 
@@ -1286,12 +1295,12 @@ export function mountMail(stage, options = {}) {
     if (!mailApi || !name.trim()) return;
     try {
       await mailApi.createLabel({ name: name.trim(), color: "var(--v8-accent)" });
-      notify({ type: "success", title: "Étiquette", message: "Étiquette créée." });
+      notify({ type: "success", title: translateSource("Étiquette"), message: translateSource("Étiquette créée.") });
       await loadLabels();
       renderSidebar();
       if (state.view === "detail" && state.selected) renderReading();
     } catch (error) {
-      notify({ type: "error", title: "Étiquette", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Étiquette"), message: errorDescription(error) });
     }
   }
 
@@ -1299,12 +1308,12 @@ export function mountMail(stage, options = {}) {
     if (!mailApi) return;
     try {
       await mailApi.deleteLabel(id);
-      notify({ type: "success", title: "Étiquette", message: "Étiquette supprimée." });
+      notify({ type: "success", title: translateSource("Étiquette"), message: translateSource("Étiquette supprimée.") });
       await loadLabels();
       renderSidebar();
       if (state.view === "detail" && state.selected) renderReading();
     } catch (error) {
-      notify({ type: "error", title: "Étiquette", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Étiquette"), message: errorDescription(error) });
     }
   }
 
@@ -1314,7 +1323,7 @@ export function mountMail(stage, options = {}) {
     const labelId = matchedLabel?.id;
     try {
       await withQueue("label", { ids, label: labelName, remove });
-      notify({ type: "success", title: "Étiquette", message: remove ? "Étiquette retirée." : "Étiquette assignée." });
+      notify({ type: "success", title: translateSource("Étiquette"), message: remove ? translateSource("Étiquette retirée.") : translateSource("Étiquette assignée.") });
       if (state.selected && ids.map(String).includes(String(state.selected.id))) {
         if (remove) {
           state.selected.labels = (state.selected.labels || []).filter((l) => l.id !== labelId);
@@ -1325,14 +1334,15 @@ export function mountMail(stage, options = {}) {
       }
       loadFolder();
     } catch (error) {
-      notify({ type: "error", title: "Étiquette", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Étiquette"), message: errorDescription(error) });
     }
   }
 
   function renderSidebar() {
+    try {
     sidebar.replaceChildren();
     const title = element("div", { className: "v8-mail-sidebar__title" }, [
-      element("h2", { text: "Mail" }),
+      element("h2", { text: translateSource("Mail") }),
       state.alias ? element("small", { text: state.alias.alias || state.alias }) : null
     ]);
 
@@ -1348,39 +1358,39 @@ export function mountMail(stage, options = {}) {
       folderList.append(element("li", {}, [btn]));
     });
 
-    const analyticsTitle = element("strong", { className: "v8-mail-sidebar__section", text: "Analytique" });
+    const analyticsTitle = element("strong", { className: "v8-mail-sidebar__section", text: translateSource("Analytique") });
     const analyticsPeriodSelect = element("select", { className: "v8-input v8-mail-analytics__select" }, [
-      element("option", { text: "7 jours", attributes: { value: "7" } }),
-      element("option", { text: "30 jours", attributes: { value: "30", selected: "" } }),
-      element("option", { text: "90 jours", attributes: { value: "90" } })
+      element("option", { text: translateSource("7 jours"), attributes: { value: "7" } }),
+      element("option", { text: translateSource("30 jours"), attributes: { value: "30", selected: "" } }),
+      element("option", { text: translateSource("90 jours"), attributes: { value: "90" } })
     ]);
     analyticsPeriodSelect.value = String(state.analyticsPeriod || 30);
-    const analyticsOpenBtn = actionButton({ actionId: "v8.mail.analytics.open", variant: "secondary", className: "v8-mail-analytics__open" }, [element("span", { text: "Ouvrir" })]);
+    const analyticsOpenBtn = actionButton({ actionId: "v8.mail.analytics.open", variant: "secondary", className: "v8-mail-analytics__open" }, [element("span", { text: translateSource("Ouvrir") })]);
     analyticsOpenBtn.addEventListener("click", () => loadAnalytics(Number(analyticsPeriodSelect.value) || 30));
 
-    const rulesTitle = element("strong", { className: "v8-mail-sidebar__section", text: "Règles" });
+    const rulesTitle = element("strong", { className: "v8-mail-sidebar__section", text: translateSource("Règles") });
 
     const ruleNameInput = element("input", {
       className: "v8-input v8-mail-rule-input",
-      attributes: { type: "text", placeholder: "Nom de la règle", maxlength: "64" }
+      attributes: { type: "text", placeholder: translateSource("Nom de la règle"), maxlength: "64" }
     });
     const ruleConditionInput = element("input", {
       className: "v8-input v8-mail-rule-input",
-      attributes: { type: "text", placeholder: "Si le sujet contient...", maxlength: "128" }
+      attributes: { type: "text", placeholder: translateSource("Si le sujet contient..."), maxlength: "128" }
     });
     const ruleActionType = element("select", { className: "v8-input v8-mail-rule-select" }, [
-      element("option", { text: "Étiqueter", attributes: { value: "label" } }),
-      element("option", { text: "Déplacer", attributes: { value: "move" } })
+      element("option", { text: translateSource("Étiqueter"), attributes: { value: "label" } }),
+      element("option", { text: translateSource("Déplacer"), attributes: { value: "move" } })
     ]);
     const ruleTargetInput = element("input", {
       className: "v8-input v8-mail-rule-input",
-      attributes: { type: "text", placeholder: "Nom de l'étiquette ou dossier", maxlength: "64" }
+      attributes: { type: "text", placeholder: translateSource("Nom de l'étiquette ou dossier"), maxlength: "64" }
     });
     const ruleAutoReplyInput = element("textarea", {
       className: "v8-input v8-mail-rule-auto-reply",
-      attributes: { rows: "3", placeholder: "Réponse automatique (optionnel)" }
+      attributes: { rows: "3", placeholder: translateSource("Réponse automatique (optionnel)") }
     });
-    const ruleSaveBtn = actionButton({ actionId: "v8.mail.rule.save", variant: "secondary" }, [icon("plus"), element("span", { text: "Créer" })]);
+    const ruleSaveBtn = actionButton({ actionId: "v8.mail.rule.save", variant: "secondary" }, [icon("plus"), element("span", { text: translateSource("Créer") })]);
     const ruleForm = element("div", { className: "v8-mail-rules__form" }, [ruleNameInput, ruleConditionInput, ruleActionType, ruleTargetInput, ruleAutoReplyInput, ruleSaveBtn]);
 
     ruleSaveBtn.addEventListener("click", async () => {
@@ -1392,7 +1402,7 @@ export function mountMail(stage, options = {}) {
         enabled: true
       };
       if (!payload.name || !payload.condition.subject || !payload.action.target) {
-        notify({ type: "warning", title: "Règle", message: "Remplissez tous les champs." });
+        notify({ type: "warning", title: translateSource("Règle"), message: translateSource("Remplissez tous les champs.") });
         return;
       }
       await saveRule(payload);
@@ -1404,37 +1414,37 @@ export function mountMail(stage, options = {}) {
 
     const rulesList = element("ul", { className: "v8-mail-rules__list" });
     state.rules.forEach((rule) => {
-      const name = rule.name || "Règle";
-      const condition = rule.condition?.subject ? `sujet contient "${rule.condition.subject}"` : "";
-      const actionType = rule.action?.type === "move" ? "Déplacer" : "Étiqueter";
+      const name = rule.name || translateSource("Règle");
+      const condition = rule.condition?.subject ? translateSource('sujet contient "{0}"').replace("{0}", rule.condition.subject) : "";
+      const actionType = rule.action?.type === "move" ? translateSource("Déplacer") : translateSource("Étiqueter");
       const actionTarget = rule.action?.target || "";
       const item = element("li", { className: "v8-mail-rule" }, [
         element("span", { className: "v8-mail-rule__info" }, [
           element("strong", { text: name }),
-          element("small", { text: `${condition} -> ${actionType} ${actionTarget}` })
+          element("small", { text: condition ? condition + translateSource("→") + actionType + " " + actionTarget : actionType + " " + actionTarget })
         ]),
         element("button", {
           className: "v8-icon-button",
-          attributes: { type: "button", "aria-label": `Supprimer ${name}` }
+          attributes: { type: "button", "aria-label": translateSource("Supprimer {0}").replace("{0}", name) }
         }, [icon("trash-2")])
       ]);
       item.querySelector("button").addEventListener("click", () => deleteRule(rule.id));
       rulesList.append(item);
     });
 
-    const templatesTitle = element("strong", { className: "v8-mail-sidebar__section", text: "Modèles" });
+    const templatesTitle = element("strong", { className: "v8-mail-sidebar__section", text: translateSource("Modèles") });
 
     const templateNameInput = element("input", {
       className: "v8-input v8-mail-template-input",
-      attributes: { type: "text", placeholder: "Nom du modèle", maxlength: "64", value: state.templateForm.name || "" }
+      attributes: { type: "text", placeholder: translateSource("Nom du modèle"), maxlength: "64", value: state.templateForm.name || "" }
     });
     const templateSubjectInput = element("input", {
       className: "v8-input v8-mail-template-input",
-      attributes: { type: "text", placeholder: "Sujet", maxlength: "128", value: state.templateForm.subject || "" }
+      attributes: { type: "text", placeholder: translateSource("Sujet"), maxlength: "128", value: state.templateForm.subject || "" }
     });
     const templateContentInput = element("textarea", {
       className: "v8-input v8-mail-template-content",
-      attributes: { rows: "4", placeholder: "Contenu" }
+      attributes: { rows: "4", placeholder: translateSource("Contenu") }
     });
     templateContentInput.value = state.templateForm.content || "";
     const templateDefaultInput = element("input", {
@@ -1444,20 +1454,20 @@ export function mountMail(stage, options = {}) {
     templateDefaultInput.checked = state.templateForm.is_default || false;
     const templateDefaultLabel = element("label", { className: "v8-mail-template__check" }, [
       templateDefaultInput,
-      element("span", { text: "Par défaut" })
+      element("span", { text: translateSource("Par défaut") })
     ]);
     const templateSaveBtn = actionButton({
       actionId: "v8.mail.template.save",
       variant: "secondary",
       className: "v8-mail-template__save"
-    }, [icon("save"), element("span", { text: state.templateForm.id ? "Mettre à jour" : "Enregistrer" })]);
+    }, [icon("save"), element("span", { text: state.templateForm.id ? translateSource("Mettre à jour") : translateSource("Enregistrer") })]);
     templateSaveBtn.addEventListener("click", saveTemplateForm);
 
     const templateResetBtn = actionButton({
       actionId: "v8.mail.template.reset",
       variant: "outline",
       className: "v8-mail-template__reset"
-    }, [icon("x"), element("span", { text: "Nouveau" })]);
+    }, [icon("x"), element("span", { text: translateSource("Nouveau") })]);
     templateResetBtn.addEventListener("click", () => {
       state.templateForm = { id: null, name: "", subject: "", content: "", is_default: false };
       renderSidebar();
@@ -1479,20 +1489,20 @@ export function mountMail(stage, options = {}) {
 
     const templatesList = element("ul", { className: "v8-mail-templates__list" });
     state.templates.forEach((template) => {
-      const name = template.name || "Modèle";
+      const name = template.name || translateSource("Modèle");
       const isDefault = template.is_default === true;
       const actions = element("span", { className: "v8-mail-template-item__actions" });
       if (!isDefault) {
         const defaultBtn = element("button", {
           className: "v8-icon-button",
-          attributes: { type: "button", "aria-label": `Définir ${name} par défaut` }
+          attributes: { type: "button", "aria-label": translateSource("Définir {0} par défaut").replace("{0}", name) }
         }, [icon("check")]);
         defaultBtn.addEventListener("click", (event) => { event.stopPropagation(); setDefaultMailTemplate(template.id); });
         actions.append(defaultBtn);
       }
       const deleteBtn = element("button", {
         className: "v8-icon-button",
-        attributes: { type: "button", "aria-label": `Supprimer ${name}` }
+        attributes: { type: "button", "aria-label": translateSource("Supprimer {0}").replace("{0}", name) }
       }, [icon("trash-2")]);
       deleteBtn.addEventListener("click", (event) => { event.stopPropagation(); deleteMailTemplate(template.id); });
       actions.append(deleteBtn);
@@ -1512,30 +1522,30 @@ export function mountMail(stage, options = {}) {
       templatesList.append(item);
     });
 
-    const notificationsTitle = element("strong", { className: "v8-mail-sidebar__section", text: "Notifications" });
+    const notificationsTitle = element("strong", { className: "v8-mail-sidebar__section", text: translateSource("Notifications") });
     const notificationsList = element("ul", { className: `v8-mail-notifications${state.notificationOpen ? " is-open" : ""}` });
     if (state.notifications.length) {
       state.notifications.forEach((n) => {
         const isUnread = !n.is_read;
         const item = element("li", { className: `v8-mail-notification${isUnread ? " is-unread" : ""}` }, [
-          element("span", { className: "v8-mail-notification__title", text: n.title || n.message || "Notification" }),
+          element("span", { className: "v8-mail-notification__title", text: n.title || n.message || translateSource("Notification") }),
           element("small", { className: "v8-mail-notification__meta", text: formatMailDate(n.created_at || n.sent_at || n.date) })
         ]);
         item.addEventListener("click", () => markNotificationRead(n));
         notificationsList.append(item);
       });
     } else {
-      notificationsList.append(element("li", { className: "v8-mail-notification", text: "Aucune notification" }));
+      notificationsList.append(element("li", { className: "v8-mail-notification", text: translateSource("Aucune notification") }));
     }
 
-    const labelsTitle = element("strong", { className: "v8-mail-sidebar__section", text: "Étiquettes" });
+    const labelsTitle = element("strong", { className: "v8-mail-sidebar__section", text: translateSource("Étiquettes") });
     const labelList = element("ul", { className: "v8-mail-labels" });
     state.labels.forEach((l) => {
       const item = element("li", { className: "v8-mail-sidebar-label" }, [
         element("span", { text: l.name }),
         element("button", {
           className: "v8-icon-button",
-          attributes: { type: "button", "aria-label": `Supprimer ${l.name}` }
+          attributes: { type: "button", "aria-label": translateSource("Supprimer {0}").replace("{0}", l.name) }
         }, [icon("x")])
       ]);
       item.querySelector("button").addEventListener("click", () => deleteLabel(l.id));
@@ -1544,7 +1554,7 @@ export function mountMail(stage, options = {}) {
 
     const newLabelInput = element("input", {
       className: "v8-input v8-mail-new-label",
-      attributes: { type: "text", placeholder: "Nouvelle étiquette", maxlength: "32" }
+      attributes: { type: "text", placeholder: translateSource("Nouvelle étiquette"), maxlength: "32" }
     });
     newLabelInput.addEventListener("keydown", (event) => {
       if (event.key === "Enter" && newLabelInput.value.trim()) createLabel(newLabelInput.value.trim());
@@ -1558,67 +1568,80 @@ export function mountMail(stage, options = {}) {
     sidebar.append(title, folderList, analyticsTitle, analyticsPeriodSelect, analyticsOpenBtn, rulesTitle, ruleForm, rulesList, templatesTitle, templateForm, templatesList, notificationsTitle, notificationsList, labelsTitle, labelList, newLabelInput, accountsSection, pgpSection, pushSection, listsSection, securitySection);
     renderBell();
     refreshIcons();
+  
+    } catch (error) {
+      console.error("renderSidebar failed", error);
+      if (sidebar) {
+          sidebar.replaceChildren(buildErrorState({
+            title: translateSource("Erreur d'affichage"),
+            reason: errorDescription(error),
+            actionText: translateSource("Réessayer"),
+            action: renderSidebar
+          }));
+          refreshIcons();
+        }
+    }
   }
 
   function buildAccountsSection() {
-    const title = element("strong", { className: "v8-mail-sidebar__section", text: "Comptes externes" });
+    const title = element("strong", { className: "v8-mail-sidebar__section", text: translateSource("Comptes externes") });
     const list = element("ul", { className: "v8-mail-accounts__list" });
     if (state.accounts.length) {
       state.accounts.forEach((account) => {
         const label = `${account.provider || "?"} — ${account.email || account.label || ""}`;
         const actions = element("span", { className: "v8-mail-accounts__actions" });
-        const syncBtn = element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Synchroniser" } }, [icon("refresh-cw")]);
+        const syncBtn = element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": translateSource("Synchroniser") } }, [icon("refresh-cw")]);
         syncBtn.addEventListener("click", (event) => { event.stopPropagation(); syncAccount(account.id); });
-        const deleteBtn = element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Supprimer" } }, [icon("trash-2")]);
+        const deleteBtn = element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": translateSource("Supprimer") } }, [icon("trash-2")]);
         deleteBtn.addEventListener("click", (event) => { event.stopPropagation(); deleteAccount(account.id); });
         actions.append(syncBtn, deleteBtn);
         list.append(element("li", { className: "v8-mail-accounts__item" }, [element("span", { className: "v8-mail-accounts__label", text: label }), actions]));
       });
     } else {
-      list.append(element("li", { className: "v8-mail-accounts__item", text: "Aucun compte externe." }));
+      list.append(element("li", { className: "v8-mail-accounts__item", text: translateSource("Aucun compte externe.") }));
     }
 
-    const providerInput = element("input", { className: "v8-input v8-mail-accounts__input", attributes: { type: "text", placeholder: "Fournisseur (gmail, outlook...)", value: state.accountForm.provider } });
-    const emailInput = element("input", { className: "v8-input v8-mail-accounts__input", attributes: { type: "email", placeholder: "Email", value: state.accountForm.email } });
-    const labelInput = element("input", { className: "v8-input v8-mail-accounts__input", attributes: { type: "text", placeholder: "Libellé", value: state.accountForm.label } });
+    const providerInput = element("input", { className: "v8-input v8-mail-accounts__input", attributes: { type: "text", placeholder: translateSource("Fournisseur (gmail, outlook...)"), value: state.accountForm.provider } });
+    const emailInput = element("input", { className: "v8-input v8-mail-accounts__input", attributes: { type: "email", placeholder: translateSource("Email"), value: state.accountForm.email } });
+    const labelInput = element("input", { className: "v8-input v8-mail-accounts__input", attributes: { type: "text", placeholder: translateSource("Libellé"), value: state.accountForm.label } });
     providerInput.addEventListener("input", () => { state.accountForm.provider = providerInput.value; });
     emailInput.addEventListener("input", () => { state.accountForm.email = emailInput.value; });
     labelInput.addEventListener("input", () => { state.accountForm.label = labelInput.value; });
-    const addBtn = actionButton({ actionId: "v8.mail.account.add", variant: "secondary", className: "v8-mail-accounts__add" }, [icon("plus"), element("span", { text: "Ajouter" })]);
+    const addBtn = actionButton({ actionId: "v8.mail.account.add", variant: "secondary", className: "v8-mail-accounts__add" }, [icon("plus"), element("span", { text: translateSource("Ajouter") })]);
     addBtn.addEventListener("click", () => addAccount(providerInput.value.trim(), emailInput.value.trim(), labelInput.value.trim()));
     const form = element("div", { className: "v8-mail-accounts__form" }, [providerInput, emailInput, labelInput, addBtn]);
     return element("div", { className: "v8-mail-sidebar__accounts" }, [title, list, form]);
   }
 
   function buildPgpSection() {
-    const title = element("strong", { className: "v8-mail-sidebar__section", text: "Clés PGP" });
+    const title = element("strong", { className: "v8-mail-sidebar__section", text: translateSource("Clés PGP") });
     const list = element("ul", { className: "v8-mail-pgp__list" });
     if (state.pgpKeys.length) {
       state.pgpKeys.forEach((key) => {
-        const label = `${key.email || key.name || "Clé"}${key.fingerprint ? ` (${String(key.fingerprint).slice(0, 16)}...)` : ""}`;
-        const deleteBtn = element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Supprimer" } }, [icon("trash-2")]);
+        const label = `${key.email || key.name || translateSource("Clé")}${key.fingerprint ? ` (${String(key.fingerprint).slice(0, 16)}...)` : ""}`;
+        const deleteBtn = element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": translateSource("Supprimer") } }, [icon("trash-2")]);
         deleteBtn.addEventListener("click", (event) => { event.stopPropagation(); deletePgpKey(key.id); });
         list.append(element("li", { className: "v8-mail-pgp__item" }, [element("span", { className: "v8-mail-pgp__label", text: label }), deleteBtn]));
       });
     } else {
-      list.append(element("li", { className: "v8-mail-pgp__item", text: "Aucune clé PGP." }));
+      list.append(element("li", { className: "v8-mail-pgp__item", text: translateSource("Aucune clé PGP.") }));
     }
 
-    const emailInput = element("input", { className: "v8-input v8-mail-pgp__input", attributes: { type: "email", placeholder: "Email", value: state.pgpForm.email } });
-    const publicInput = element("textarea", { className: "v8-input v8-mail-pgp__textarea", attributes: { rows: "3", placeholder: "Clé publique (optionnel)" } });
+    const emailInput = element("input", { className: "v8-input v8-mail-pgp__input", attributes: { type: "email", placeholder: translateSource("Email"), value: state.pgpForm.email } });
+    const publicInput = element("textarea", { className: "v8-input v8-mail-pgp__textarea", attributes: { rows: "3", placeholder: translateSource("Clé publique (optionnel)") } });
     publicInput.value = state.pgpForm.publicKey;
-    const privateInput = element("textarea", { className: "v8-input v8-mail-pgp__textarea", attributes: { rows: "2", placeholder: "Clé privée — laisser vide pour générer côté Worker" } });
+    const privateInput = element("textarea", { className: "v8-input v8-mail-pgp__textarea", attributes: { rows: "2", placeholder: translateSource("Clé privée — laisser vide pour générer côté Worker") } });
     privateInput.value = state.pgpForm.privateKey;
-    const passphraseInput = element("input", { className: "v8-input v8-mail-pgp__input", attributes: { type: "password", placeholder: "Passphrase" } });
+    const passphraseInput = element("input", { className: "v8-input v8-mail-pgp__input", attributes: { type: "password", placeholder: translateSource("Passphrase") } });
     passphraseInput.value = state.pgpForm.passphrase;
     emailInput.addEventListener("input", () => { state.pgpForm.email = emailInput.value; });
     publicInput.addEventListener("input", () => { state.pgpForm.publicKey = publicInput.value; });
     privateInput.addEventListener("input", () => { state.pgpForm.privateKey = privateInput.value; });
     passphraseInput.addEventListener("input", () => { state.pgpForm.passphrase = passphraseInput.value; });
-    const saveBtn = actionButton({ actionId: "v8.mail.pgp.key.create", variant: "secondary", className: "v8-mail-pgp__add" }, [icon("key"), element("span", { text: "Enregistrer" })]);
+    const saveBtn = actionButton({ actionId: "v8.mail.pgp.key.create", variant: "secondary", className: "v8-mail-pgp__add" }, [icon("key"), element("span", { text: translateSource("Enregistrer") })]);
     saveBtn.addEventListener("click", createPgpKey);
-    const encryptBtn = actionButton({ actionId: "v8.mail.pgp.encrypt", variant: "outline", className: "v8-mail-pgp__tool" }, [icon("lock"), element("span", { text: "Chiffrer" })]);
-    const decryptBtn = actionButton({ actionId: "v8.mail.pgp.decrypt", variant: "outline", className: "v8-mail-pgp__tool" }, [icon("unlock"), element("span", { text: "Déchiffrer" })]);
+    const encryptBtn = actionButton({ actionId: "v8.mail.pgp.encrypt", variant: "outline", className: "v8-mail-pgp__tool" }, [icon("lock"), element("span", { text: translateSource("Chiffrer") })]);
+    const decryptBtn = actionButton({ actionId: "v8.mail.pgp.decrypt", variant: "outline", className: "v8-mail-pgp__tool" }, [icon("unlock"), element("span", { text: translateSource("Déchiffrer") })]);
     encryptBtn.addEventListener("click", pgpEncrypt);
     decryptBtn.addEventListener("click", pgpDecrypt);
     const tools = element("div", { className: "v8-mail-pgp__tools" }, [encryptBtn, decryptBtn]);
@@ -1627,26 +1650,26 @@ export function mountMail(stage, options = {}) {
   }
 
   function buildPushSection() {
-    const title = element("strong", { className: "v8-mail-sidebar__section", text: "Notifications push" });
-    const status = element("span", { className: "v8-mail-push__status", text: state.pushLoading ? "Chargement..." : state.pushSubscribed ? "Abonné" : "Non abonné" });
-    const toggleBtn = actionButton({ actionId: "v8.mail.push.toggle", variant: state.pushSubscribed ? "outline" : "secondary", className: "v8-mail-push__toggle", disabled: state.pushLoading }, [icon("bell"), element("span", { text: state.pushSubscribed ? "Se désabonner" : "S'abonner" })]);
+    const title = element("strong", { className: "v8-mail-sidebar__section", text: translateSource("Notifications push") });
+    const status = element("span", { className: "v8-mail-push__status", text: state.pushLoading ? translateSource("Chargement...") : state.pushSubscribed ? translateSource("Abonné") : translateSource("Non abonné") });
+    const toggleBtn = actionButton({ actionId: "v8.mail.push.toggle", variant: state.pushSubscribed ? "outline" : "secondary", className: "v8-mail-push__toggle", disabled: state.pushLoading }, [icon("bell"), element("span", { text: state.pushSubscribed ? translateSource("Se désabonner") : translateSource("S'abonner") })]);
     toggleBtn.addEventListener("click", togglePushSubscribe);
-    const testBtn = actionButton({ actionId: "v8.mail.push.send", variant: "outline", className: "v8-mail-push__send" }, [icon("send"), element("span", { text: "Tester" })]);
+    const testBtn = actionButton({ actionId: "v8.mail.push.send", variant: "outline", className: "v8-mail-push__send" }, [icon("send"), element("span", { text: translateSource("Tester") })]);
     testBtn.addEventListener("click", sendPushTest);
     return element("div", { className: "v8-mail-sidebar__push" }, [title, status, toggleBtn, testBtn]);
   }
 
   function buildListsSection() {
-    const title = element("strong", { className: "v8-mail-sidebar__section", text: "Listes de diffusion" });
+    const title = element("strong", { className: "v8-mail-sidebar__section", text: translateSource("Listes de diffusion") });
     const list = element("ul", { className: "v8-mail-lists__list" });
     if (state.lists.length) {
       state.lists.forEach((l) => {
         const isSelected = state.selectedListId === l.id;
-        const label = `${l.name || "Liste"}${l.address ? ` <${l.address}>` : ""}`;
+        const label = `${l.name || translateSource("Liste")}${l.address ? ` <${l.address}>` : ""}`;
         const actions = element("span", { className: "v8-mail-lists__actions" });
-        const editBtn = element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Modifier" } }, [icon("pencil")]);
+        const editBtn = element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": translateSource("Modifier") } }, [icon("pencil")]);
         editBtn.addEventListener("click", (event) => { event.stopPropagation(); state.listForm = { id: l.id, name: l.name || "", description: l.description || "", address: l.address || "" }; renderSidebar(); });
-        const deleteBtn = element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Supprimer" } }, [icon("trash-2")]);
+        const deleteBtn = element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": translateSource("Supprimer") } }, [icon("trash-2")]);
         deleteBtn.addEventListener("click", (event) => { event.stopPropagation(); deleteList(l.id); });
         actions.append(editBtn, deleteBtn);
         const item = element("li", { className: `v8-mail-lists__item${isSelected ? " is-active" : ""}` }, [element("span", { className: "v8-mail-lists__label", text: label }), actions]);
@@ -1654,18 +1677,18 @@ export function mountMail(stage, options = {}) {
         list.append(item);
       });
     } else {
-      list.append(element("li", { className: "v8-mail-lists__item", text: "Aucune liste." }));
+      list.append(element("li", { className: "v8-mail-lists__item", text: translateSource("Aucune liste.") }));
     }
 
-    const nameInput = element("input", { className: "v8-input v8-mail-lists__input", attributes: { type: "text", placeholder: "Nom", value: state.listForm.name } });
-    const addressInput = element("input", { className: "v8-input v8-mail-lists__input", attributes: { type: "text", placeholder: "Adresse liste", value: state.listForm.address } });
-    const descInput = element("input", { className: "v8-input v8-mail-lists__input", attributes: { type: "text", placeholder: "Description", value: state.listForm.description } });
+    const nameInput = element("input", { className: "v8-input v8-mail-lists__input", attributes: { type: "text", placeholder: translateSource("Nom"), value: state.listForm.name } });
+    const addressInput = element("input", { className: "v8-input v8-mail-lists__input", attributes: { type: "text", placeholder: translateSource("Adresse liste"), value: state.listForm.address } });
+    const descInput = element("input", { className: "v8-input v8-mail-lists__input", attributes: { type: "text", placeholder: translateSource("Description"), value: state.listForm.description } });
     nameInput.addEventListener("input", () => { state.listForm.name = nameInput.value; });
     addressInput.addEventListener("input", () => { state.listForm.address = addressInput.value; });
     descInput.addEventListener("input", () => { state.listForm.description = descInput.value; });
-    const saveBtn = actionButton({ actionId: "v8.mail.list.save", variant: "secondary", className: "v8-mail-lists__save" }, [icon("save"), element("span", { text: state.listForm.id ? "Mettre à jour" : "Créer" })]);
+    const saveBtn = actionButton({ actionId: "v8.mail.list.save", variant: "secondary", className: "v8-mail-lists__save" }, [icon("save"), element("span", { text: state.listForm.id ? translateSource("Mettre à jour") : translateSource("Créer") })]);
     saveBtn.addEventListener("click", saveList);
-    const resetBtn = actionButton({ actionId: "v8.mail.list.reset", variant: "outline", className: "v8-mail-lists__reset" }, [icon("x"), element("span", { text: "Nouveau" })]);
+    const resetBtn = actionButton({ actionId: "v8.mail.list.reset", variant: "outline", className: "v8-mail-lists__reset" }, [icon("x"), element("span", { text: translateSource("Nouveau") })]);
     resetBtn.addEventListener("click", () => { state.listForm = { id: null, name: "", description: "", address: "" }; renderSidebar(); });
     const form = element("div", { className: "v8-mail-lists__form" }, [nameInput, addressInput, descInput, saveBtn, resetBtn]);
 
@@ -1675,18 +1698,18 @@ export function mountMail(stage, options = {}) {
       const membersList = element("ul", { className: "v8-mail-lists__members" });
       if (members.length) {
         members.forEach((m) => {
-          const removeBtn = element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Retirer" } }, [icon("x")]);
+          const removeBtn = element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": translateSource("Retirer") } }, [icon("x")]);
           removeBtn.addEventListener("click", (event) => { event.stopPropagation(); removeListMember(state.selectedListId, m.email); });
           membersList.append(element("li", { className: "v8-mail-lists__member" }, [element("span", { text: m.name ? `${m.name} <${m.email}>` : m.email }), removeBtn]));
         });
       } else {
-        membersList.append(element("li", { className: "v8-mail-lists__member", text: "Aucun membre." }));
+        membersList.append(element("li", { className: "v8-mail-lists__member", text: translateSource("Aucun membre.") }));
       }
-      const memberEmailInput = element("input", { className: "v8-input v8-mail-lists__input", attributes: { type: "email", placeholder: "Email du membre" } });
-      const memberNameInput = element("input", { className: "v8-input v8-mail-lists__input", attributes: { type: "text", placeholder: "Nom (optionnel)" } });
-      const addMemberBtn = actionButton({ actionId: "v8.mail.list.member.add", variant: "secondary", className: "v8-mail-lists__add-member" }, [icon("plus"), element("span", { text: "Ajouter" })]);
+      const memberEmailInput = element("input", { className: "v8-input v8-mail-lists__input", attributes: { type: "email", placeholder: translateSource("Email du membre") } });
+      const memberNameInput = element("input", { className: "v8-input v8-mail-lists__input", attributes: { type: "text", placeholder: translateSource("Nom (optionnel)") } });
+      const addMemberBtn = actionButton({ actionId: "v8.mail.list.member.add", variant: "secondary", className: "v8-mail-lists__add-member" }, [icon("plus"), element("span", { text: translateSource("Ajouter") })]);
       addMemberBtn.addEventListener("click", () => { addListMember(state.selectedListId, memberEmailInput.value.trim(), memberNameInput.value.trim()); memberEmailInput.value = ""; memberNameInput.value = ""; });
-      membersPanel = element("div", { className: "v8-mail-lists__members-panel" }, [element("strong", { className: "v8-mail-lists__members-title", text: "Membres" }), membersList, memberEmailInput, memberNameInput, addMemberBtn]);
+      membersPanel = element("div", { className: "v8-mail-lists__members-panel" }, [element("strong", { className: "v8-mail-lists__members-title", text: translateSource("Membres") }), membersList, memberEmailInput, memberNameInput, addMemberBtn]);
     }
 
     const children = [title, list, form];
@@ -1695,17 +1718,17 @@ export function mountMail(stage, options = {}) {
   }
 
   function buildSecuritySection() {
-    const title = element("strong", { className: "v8-mail-sidebar__section", text: "Sécurité" });
+    const title = element("strong", { className: "v8-mail-sidebar__section", text: translateSource("Sécurité") });
 
     const blockedTab = element("button", {
       className: `v8-mail-security__tab${state.securityTab === "blocked" ? " is-active" : ""}`,
       attributes: { type: "button" },
-      text: "Bloqués"
+      text: translateSource("Bloqués")
     });
     const trustedTab = element("button", {
       className: `v8-mail-security__tab${state.securityTab === "trusted" ? " is-active" : ""}`,
       attributes: { type: "button" },
-      text: "Fiables"
+      text: translateSource("Fiables")
     });
     blockedTab.addEventListener("click", () => { state.securityTab = "blocked"; renderSidebar(); });
     trustedTab.addEventListener("click", () => { state.securityTab = "trusted"; renderSidebar(); });
@@ -1714,10 +1737,10 @@ export function mountMail(stage, options = {}) {
     const items = state.securityTab === "blocked" ? state.blocked : state.trusted;
     if (items.length) {
       items.forEach((item) => {
-        const label = item.email || item.domain || "Inconnu";
+        const label = item.email || item.domain || translateSource("Inconnu");
         const deleteBtn = element("button", {
           className: "v8-icon-button",
-          attributes: { type: "button", "aria-label": `Supprimer ${label}` }
+          attributes: { type: "button", "aria-label": translateSource("Supprimer {0}").replace("{0}", label) }
         }, [icon("x")]);
         deleteBtn.addEventListener("click", () => {
           if (state.securityTab === "blocked") unblockSenderFrom(item.id);
@@ -1732,25 +1755,25 @@ export function mountMail(stage, options = {}) {
     } else {
       list.append(element("li", {
         className: "v8-mail-security__item",
-        text: state.securityTab === "blocked" ? "Aucun expéditeur bloqué." : "Aucun expéditeur fiable."
+        text: state.securityTab === "blocked" ? translateSource("Aucun expéditeur bloqué.") : translateSource("Aucun expéditeur fiable.")
       }));
     }
 
-    const emailInput = element("input", { className: "v8-input v8-mail-security__input", attributes: { type: "text", placeholder: "Email" } });
-    const domainInput = element("input", { className: "v8-input v8-mail-security__input", attributes: { type: "text", placeholder: "Domaine" } });
-    const reasonInput = element("input", { className: "v8-input v8-mail-security__input", attributes: { type: "text", placeholder: "Raison" } });
+    const emailInput = element("input", { className: "v8-input v8-mail-security__input", attributes: { type: "text", placeholder: translateSource("Email") } });
+    const domainInput = element("input", { className: "v8-input v8-mail-security__input", attributes: { type: "text", placeholder: translateSource("Domaine") } });
+    const reasonInput = element("input", { className: "v8-input v8-mail-security__input", attributes: { type: "text", placeholder: translateSource("Raison") } });
 
     const addBtn = actionButton({
       actionId: state.securityTab === "blocked" ? "v8.mail.security.block" : "v8.mail.security.trust",
       variant: "secondary",
       className: "v8-mail-security__add"
-    }, [element("span", { text: state.securityTab === "blocked" ? "Bloquer" : "Faire confiance" })]);
+    }, [element("span", { text: state.securityTab === "blocked" ? translateSource("Bloquer") : translateSource("Faire confiance") })]);
     addBtn.addEventListener("click", async () => {
       const email = emailInput.value.trim();
       const domain = domainInput.value.trim();
       const reason = reasonInput.value.trim();
       if (!email && !domain) {
-        notify({ type: "warning", title: "Sécurité", message: "Saisissez un email ou un domaine." });
+        notify({ type: "warning", title: translateSource("Sécurité"), message: translateSource("Saisissez un email ou un domaine.") });
         return;
       }
       if (state.securityTab === "blocked") {
@@ -1777,15 +1800,15 @@ export function mountMail(stage, options = {}) {
   }
 
   function buildBulkToolbar() {
-    const archiveBtn = actionButton({ actionId: "v8.mail.bulk.archive", className: "v8-mail-bulk__btn" }, [icon("archive"), element("span", { text: "Archiver" })]);
-    const deleteBtn = actionButton({ actionId: "v8.mail.bulk.delete", className: "v8-mail-bulk__btn" }, [icon("trash-2"), element("span", { text: "Supprimer" })]);
-    const readBtn = actionButton({ actionId: "v8.mail.bulk.read", className: "v8-mail-bulk__btn" }, [icon("mail-open"), element("span", { text: "Marquer lu" })]);
-    const unreadBtn = actionButton({ actionId: "v8.mail.bulk.unread", className: "v8-mail-bulk__btn" }, [icon("mail"), element("span", { text: "Marquer non lu" })]);
-    const importantBtn = actionButton({ actionId: "v8.mail.bulk.important", className: "v8-mail-bulk__btn" }, [icon("alert-circle"), element("span", { text: "Important" })]);
-    const unimportantBtn = actionButton({ actionId: "v8.mail.bulk.unimportant", className: "v8-mail-bulk__btn" }, [icon("alert-octagon"), element("span", { text: "Non important" })]);
-    const labelBtn = actionButton({ actionId: "v8.mail.bulk.label", className: "v8-mail-bulk__btn" }, [icon("tag"), element("span", { text: "Étiqueter" })]);
-    const unlabelBtn = actionButton({ actionId: "v8.mail.bulk.unlabel", className: "v8-mail-bulk__btn" }, [icon("tag-off"), element("span", { text: "Désétiqueter" })]);
-    const snoozeBtn = actionButton({ actionId: "v8.mail.bulk.snooze", className: "v8-mail-bulk__btn" }, [icon("clock"), element("span", { text: "Snooze" })]);
+    const archiveBtn = actionButton({ actionId: "v8.mail.bulk.archive", className: "v8-mail-bulk__btn" }, [icon("archive"), element("span", { text: translateSource("Archiver") })]);
+    const deleteBtn = actionButton({ actionId: "v8.mail.bulk.delete", className: "v8-mail-bulk__btn" }, [icon("trash-2"), element("span", { text: translateSource("Supprimer") })]);
+    const readBtn = actionButton({ actionId: "v8.mail.bulk.read", className: "v8-mail-bulk__btn" }, [icon("mail-open"), element("span", { text: translateSource("Marquer lu") })]);
+    const unreadBtn = actionButton({ actionId: "v8.mail.bulk.unread", className: "v8-mail-bulk__btn" }, [icon("mail"), element("span", { text: translateSource("Marquer non lu") })]);
+    const importantBtn = actionButton({ actionId: "v8.mail.bulk.important", className: "v8-mail-bulk__btn" }, [icon("alert-circle"), element("span", { text: translateSource("Important") })]);
+    const unimportantBtn = actionButton({ actionId: "v8.mail.bulk.unimportant", className: "v8-mail-bulk__btn" }, [icon("alert-octagon"), element("span", { text: translateSource("Non important") })]);
+    const labelBtn = actionButton({ actionId: "v8.mail.bulk.label", className: "v8-mail-bulk__btn" }, [icon("tag"), element("span", { text: translateSource("Étiqueter") })]);
+    const unlabelBtn = actionButton({ actionId: "v8.mail.bulk.unlabel", className: "v8-mail-bulk__btn" }, [icon("tag-off"), element("span", { text: translateSource("Désétiqueter") })]);
+    const snoozeBtn = actionButton({ actionId: "v8.mail.bulk.snooze", className: "v8-mail-bulk__btn" }, [icon("clock"), element("span", { text: translateSource("Snooze") })]);
 
     archiveBtn.addEventListener("click", () => bulkAction("move", "archive"));
     deleteBtn.addEventListener("click", () => bulkAction("move", "trash"));
@@ -1809,7 +1832,7 @@ export function mountMail(stage, options = {}) {
     const count = state.selectedIds.size;
     bulkToolbar.hidden = !count;
     const countSpan = bulkToolbar.querySelector(".v8-mail-bulk__count");
-    if (countSpan) countSpan.textContent = `${count} sélectionné${count > 1 ? "s" : ""}`;
+    if (countSpan) countSpan.textContent = translateSource("{0} sélectionné{1}").replace("{0}", count).replace("{1}", count > 1 ? "s" : "");
   }
 
   function selectAll() {
@@ -1840,8 +1863,8 @@ export function mountMail(stage, options = {}) {
     if (!ids.length) return;
     try {
       await withQueue("bulk", { ids, action, target });
-      notify({ type: "success", title: "Action groupée", message: "Action appliquée." });
-      state.messages.forEach((m) => {
+      notify({ type: "success", title: translateSource("Action groupée"), message: translateSource("Action appliquée.") });
+      (state.messages || []).forEach((m) => {
         if (!ids.includes(String(m.id))) return;
         if (action === "move" && (target === "archive" || target === "trash")) {
           // local removal handled by loadFolder
@@ -1852,7 +1875,7 @@ export function mountMail(stage, options = {}) {
         }
       });
       if (action === "move") {
-        state.messages = state.messages.filter((m) => !ids.includes(String(m.id)));
+        state.messages = (state.messages || []).filter((m) => !ids.includes(String(m.id)));
       }
       state.selectedIds.clear();
       masterCheckbox.checked = false;
@@ -1860,19 +1883,19 @@ export function mountMail(stage, options = {}) {
       renderBulkToolbar();
       loadFolder();
     } catch (error) {
-      notify({ type: "error", title: "Action groupée", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Action groupée"), message: errorDescription(error) });
     }
   }
 
   async function bulkLabel(remove) {
-    const labelName = globalThis.prompt?.(remove ? "Étiquette à retirer" : "Étiquette à assigner");
+    const labelName = globalThis.prompt?.(remove ? translateSource("Étiquette à retirer") : translateSource("Étiquette à assigner"));
     if (!labelName) return;
     const ids = [...state.selectedIds];
     if (!ids.length) return;
     try {
       await withQueue("label", { ids, label: labelName.trim(), remove });
-      notify({ type: "success", title: "Étiquette", message: remove ? "Étiquette retirée." : "Étiquette assignée." });
-      state.messages.forEach((m) => {
+      notify({ type: "success", title: translateSource("Étiquette"), message: remove ? translateSource("Étiquette retirée.") : translateSource("Étiquette assignée.") });
+      (state.messages || []).forEach((m) => {
         if (!ids.includes(String(m.id))) return;
         if (remove) {
           m.labels = (m.labels || []).filter((l) => (l?.name || l) !== labelName.trim());
@@ -1886,7 +1909,7 @@ export function mountMail(stage, options = {}) {
       renderList();
       if (state.selected && ids.includes(String(state.selected.id))) renderReading();
     } catch (error) {
-      notify({ type: "error", title: "Étiquette", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Étiquette"), message: errorDescription(error) });
     }
   }
 
@@ -1899,27 +1922,27 @@ export function mountMail(stage, options = {}) {
   async function performBulkSnooze(ids, snoozedUntil) {
     try {
       await withQueue("bulkSnooze", { ids, snoozedUntil });
-      notify({ type: "success", title: "Snooze", message: "Messages reportés." });
+      notify({ type: "success", title: translateSource("Snooze"), message: translateSource("Messages reportés.") });
       state.selectedIds.clear();
       masterCheckbox.checked = false;
       renderList();
       renderBulkToolbar();
       loadFolder();
     } catch (error) {
-      notify({ type: "error", title: "Snooze", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Snooze"), message: errorDescription(error) });
     }
   }
 
   function buildSnoozeDialog() {
-    const title = element("h3", { className: "v8-mail-snooze__title", text: "Reporter" });
-    const tomorrowBtn = actionButton({ actionId: "v8.mail.snooze.tomorrow", className: "v8-mail-snooze__option" }, [element("span", { text: "Demain" })]);
-    const weekBtn = actionButton({ actionId: "v8.mail.snooze.week", className: "v8-mail-snooze__option" }, [element("span", { text: "1 semaine" })]);
+    const title = element("h3", { className: "v8-mail-snooze__title", text: translateSource("Reporter") });
+    const tomorrowBtn = actionButton({ actionId: "v8.mail.snooze.tomorrow", className: "v8-mail-snooze__option" }, [element("span", { text: translateSource("Demain") })]);
+    const weekBtn = actionButton({ actionId: "v8.mail.snooze.week", className: "v8-mail-snooze__option" }, [element("span", { text: translateSource("1 semaine") })]);
     const customInput = element("input", {
       className: "v8-input v8-mail-snooze__custom",
       attributes: { type: "datetime-local" }
     });
-    const cancelBtn = actionButton({ actionId: "v8.mail.snooze.cancel", variant: "outline" }, [element("span", { text: "Annuler" })]);
-    const confirmBtn = actionButton({ actionId: "v8.mail.snooze.confirm", variant: "primary" }, [element("span", { text: "Confirmer" })]);
+    const cancelBtn = actionButton({ actionId: "v8.mail.snooze.cancel", variant: "outline" }, [element("span", { text: translateSource("Annuler") })]);
+    const confirmBtn = actionButton({ actionId: "v8.mail.snooze.confirm", variant: "primary" }, [element("span", { text: translateSource("Confirmer") })]);
 
     const dialog = element("div", { className: "v8-mail-snooze-dialog", attributes: { hidden: "" } }, [
       element("div", { className: "v8-mail-snooze__content" }, [
@@ -1967,7 +1990,7 @@ export function mountMail(stage, options = {}) {
     cancelBtn.addEventListener("click", close);
     confirmBtn.addEventListener("click", () => {
       if (!selectedDate) {
-        notify({ type: "warning", title: "Snooze", message: "Choisissez une date." });
+        notify({ type: "warning", title: translateSource("Snooze"), message: translateSource("Choisissez une date.") });
         return;
       }
       if (onConfirm) onConfirm(selectedDate);
@@ -2004,15 +2027,16 @@ export function mountMail(stage, options = {}) {
     openSnoozeDialog(async (snoozedUntil) => {
       try {
         await withQueue("snooze", { id: message.id, snoozedUntil });
-        notify({ type: "success", title: "Snooze", message: "Message reporté." });
+        notify({ type: "success", title: translateSource("Snooze"), message: translateSource("Message reporté.") });
         loadFolder();
       } catch (error) {
-        notify({ type: "error", title: "Snooze", message: errorDescription(error) });
+        notify({ type: "error", title: translateSource("Snooze"), message: errorDescription(error) });
       }
     });
   }
 
   function renderList() {
+    try {
     if (state.analyticsOpen) {
       messageList.hidden = true;
       if (analyticsPanel) analyticsPanel.hidden = false;
@@ -2023,7 +2047,7 @@ export function mountMail(stage, options = {}) {
 
     let label;
     if (hasActiveFilters()) {
-      label = "Recherche avancée";
+      label = translateSource("Recherche avancée");
     } else if (state.isSearch) {
       label = `Recherche : ${state.query}`;
     } else {
@@ -2032,7 +2056,7 @@ export function mountMail(stage, options = {}) {
     listTitle.textContent = `${label} (${state.messages.length})`;
     if (masterCheckbox) {
       masterCheckbox.disabled = !state.messages.length;
-      masterCheckbox.checked = state.messages.length > 0 && state.messages.every((m) => state.selectedIds.has(String(m.id)));
+      masterCheckbox && (masterCheckbox.checked = (state.messages || []).length > 0 && (state.messages || []).every((m) => state.selectedIds.has(String(m.id))));
     }
     renderBulkToolbar();
     messageList.replaceChildren();
@@ -2046,9 +2070,9 @@ export function mountMail(stage, options = {}) {
     if (state.error && !state.messages.length) {
       messageList.append(buildErrorState({
         tagName: "li",
-        title: "Impossible de charger les messages",
+        title: translateSource("Impossible de charger les messages"),
         reason: errorDescription(state.error),
-        actionText: "Réessayer",
+        actionText: translateSource("Réessayer"),
         action: () => void loadFolder()
       }));
       refreshIcons();
@@ -2059,9 +2083,9 @@ export function mountMail(stage, options = {}) {
       messageList.append(buildEmptyState({
         tagName: "li",
         icon: "inbox",
-        title: "Aucun message",
-        message: state.isSearch ? "Aucun résultat pour cette recherche." : "Ce dossier est vide.",
-        actionText: state.isSearch ? "" : "Nouveau message",
+        title: translateSource("Aucun message"),
+        message: state.isSearch ? translateSource("Aucun résultat pour cette recherche.") : translateSource("Ce dossier est vide."),
+        actionText: state.isSearch ? "" : translateSource("Nouveau message"),
         action: state.isSearch ? null : () => openCompose()
       }));
       refreshIcons();
@@ -2070,11 +2094,25 @@ export function mountMail(stage, options = {}) {
 
     state.messages.forEach((message) => messageList.append(buildRow(message)));
     refreshIcons();
+  
+    } catch (error) {
+      console.error("renderList failed", error);
+      if (messageList) {
+          messageList.replaceChildren(buildErrorState({
+            tagName: "li",
+          title: translateSource("Erreur d'affichage"),
+            reason: errorDescription(error),
+            actionText: translateSource("Réessayer"),
+            action: renderList
+          }));
+          refreshIcons();
+        }
+    }
   }
 
   function buildRow(message) {
-    const from = message.from_name || getFromAddress(message) || "Inconnu";
-    const subject = message.subject || "(aucun sujet)";
+    const from = message.from_name || getFromAddress(message) || translateSource("Inconnu");
+    const subject = message.subject || translateSource("(aucun sujet)");
     const preview = String(message.body_text || message.snippet || "").replace(/\s+/g, " ").slice(0, 90);
     const date = formatMailDate(message.received_at || message.created_at);
     const hasAttachments = (message.attachments?.length > 0) || message.has_attachments;
@@ -2082,7 +2120,7 @@ export function mountMail(stage, options = {}) {
 
     const checkbox = element("input", {
       className: "v8-mail-row__checkbox",
-      attributes: { type: "checkbox", "aria-label": "Sélectionner" },
+      attributes: { type: "checkbox", "aria-label": translateSource("Sélectionner") },
       dataset: { action: "select" }
     });
     checkbox.checked = isSelected;
@@ -2092,9 +2130,9 @@ export function mountMail(stage, options = {}) {
     });
 
     const indicators = element("span", { className: "v8-mail-row__indicators" }, [
-      message.is_important ? element("span", { className: "v8-mail-row__indicator is-active", dataset: { action: "important" }, attributes: { role: "button", "aria-label": "Important" } }, [icon("alert-circle")]) : null,
+      message.is_important ? element("span", { className: "v8-mail-row__indicator is-active", dataset: { action: "important" }, attributes: { role: "button", "aria-label": translateSource("Important") } }, [icon("alert-circle")]) : null,
       hasAttachments ? icon("paperclip") : null,
-      element("span", { className: `v8-mail-row__indicator${message.is_starred ? " is-active" : ""}`, dataset: { action: "star" }, attributes: { role: "button", "aria-label": message.is_starred ? "Retirer des favoris" : "Mettre en favori" } }, [icon(message.is_starred ? "star" : "star-off")])
+      element("span", { className: `v8-mail-row__indicator${message.is_starred ? " is-active" : ""}`, dataset: { action: "star" }, attributes: { role: "button", "aria-label": message.is_starred ? translateSource("Retirer des favoris") : translateSource("Mettre en favori") } }, [icon(message.is_starred ? "star" : "star-off")])
     ]);
 
     const row = element("button", {
@@ -2136,9 +2174,9 @@ export function mountMail(stage, options = {}) {
   function openMessageContext(message) {
     if (!message) return;
     const items = [
-      { icon: "archive", label: "Archiver", action: () => moveMessage(message, "archive") },
-      { icon: "trash-2", label: "Supprimer", action: () => moveMessage(message, "trash") },
-      { icon: message.is_read ? "mail-open" : "mail", label: message.is_read ? "Marquer non lu" : "Marquer lu", action: async () => {
+      { icon: "archive", label: translateSource("Archiver"), action: () => moveMessage(message, "archive") },
+      { icon: "trash-2", label: translateSource("Supprimer"), action: () => moveMessage(message, "trash") },
+      { icon: message.is_read ? "mail-open" : "mail", label: message.is_read ? translateSource("Marquer non lu") : translateSource("Marquer lu"), action: async () => {
         if (message.is_read) {
           message.is_read = false;
           try { await withQueue("read", { id: message.id, flags: { is_read: false } }); } catch {}
@@ -2147,14 +2185,14 @@ export function mountMail(stage, options = {}) {
         }
         renderList();
       } },
-      { icon: "clock-3", label: "Snooze", action: () => snoozeMessage(message) }
+      { icon: "clock-3", label: translateSource("Snooze"), action: () => snoozeMessage(message) }
     ];
     const children = items.map((item) => element("button", {
       className: "v8-bottom-sheet__action",
       attributes: { type: "button" },
       events: { click: (event) => { event.stopPropagation(); item.action(); } }
     }, [icon(item.icon), element("span", { text: item.label })]));
-    showBottomSheet({ title: "Actions", children });
+    showBottomSheet({ title: translateSource("Actions"), children });
   }
 
   async function openDetail(message) {
@@ -2166,6 +2204,7 @@ export function mountMail(stage, options = {}) {
   }
 
   function renderReading() {
+    try {
     reading.replaceChildren();
     if (state.view === "detail" && state.selected) {
       buildDetail(state.selected);
@@ -2175,10 +2214,23 @@ export function mountMail(stage, options = {}) {
     } else {
       reading.append(buildEmptyState({
         icon: "mail-open",
-        title: "Sélectionnez un message",
-        message: "Choisissez un message dans la liste pour le lire."
+        title: translateSource("Sélectionnez un message"),
+        message: translateSource("Choisissez un message dans la liste pour le lire.")
       }));
       refreshIcons();
+    }
+  
+    } catch (error) {
+      console.error("renderReading failed", error);
+      if (reading) {
+          reading.replaceChildren(buildErrorState({
+            title: translateSource("Erreur d'affichage"),
+            reason: errorDescription(error),
+            actionText: translateSource("Réessayer"),
+            action: renderReading
+          }));
+          refreshIcons();
+        }
     }
   }
 
@@ -2198,34 +2250,34 @@ export function mountMail(stage, options = {}) {
 
   async function createItem(item, type) {
     if (!repository) {
-      notify({ type: "info", title: "Création", message: "prêt à copier" });
+      notify({ type: "info", title: translateSource("Création"), message: translateSource("prêt à copier") });
       return;
     }
     try {
       if (type === "task" && typeof repository.tasks?.create === "function") {
         await repository.tasks.create(item);
-        notify({ type: "success", title: "Tâche", message: "Tâche créée." });
+        notify({ type: "success", title: translateSource("Tâche"), message: translateSource("Tâche créée.") });
       } else if (type === "event" && typeof repository.events?.create === "function") {
         await repository.events.create(item);
-        notify({ type: "success", title: "Événement", message: "Événement créé." });
+        notify({ type: "success", title: translateSource("Événement"), message: translateSource("Événement créé.") });
       } else if (type === "note" && typeof repository.notes?.create === "function") {
         const payload = {
-          title: item.title || item.text || "Extrait",
+          title: item.title || item.text || translateSource("Extrait"),
           content: item.description || item.text || JSON.stringify(item)
         };
         await repository.notes.create(payload);
-        notify({ type: "success", title: "Note", message: "Note créée." });
+        notify({ type: "success", title: translateSource("Note"), message: translateSource("Note créée.") });
       } else {
-        notify({ type: "info", title: "Création", message: "prêt à copier" });
+        notify({ type: "info", title: translateSource("Création"), message: translateSource("prêt à copier") });
       }
     } catch (error) {
-      notify({ type: "error", title: "Création", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Création"), message: errorDescription(error) });
     }
   }
 
   async function analyzeMessage(message, panel) {
     if (!mailApi?.analyze) {
-      notify({ type: "warning", title: "Brain", message: "L'analyse n'est pas disponible." });
+      notify({ type: "warning", title: translateSource("Brain"), message: translateSource("L'analyse n'est pas disponible.") });
       return;
     }
     try {
@@ -2237,13 +2289,13 @@ export function mountMail(stage, options = {}) {
       panel.replaceChildren(buildBrainSummary(summary, tasks, events));
       panel.hidden = false;
     } catch (error) {
-      notify({ type: "error", title: "Brain", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Brain"), message: errorDescription(error) });
     }
   }
 
   async function suggestMessage(message, panel) {
     if (!mailApi?.suggest) {
-      notify({ type: "warning", title: "Brain", message: "Les suggestions ne sont pas disponibles." });
+      notify({ type: "warning", title: translateSource("Brain"), message: translateSource("Les suggestions ne sont pas disponibles.") });
       return;
     }
     try {
@@ -2252,13 +2304,13 @@ export function mountMail(stage, options = {}) {
       panel.replaceChildren(buildSuggestionChips(suggestions.slice(0, 3), message));
       panel.hidden = false;
     } catch (error) {
-      notify({ type: "error", title: "Brain", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Brain"), message: errorDescription(error) });
     }
   }
 
   async function extractMessage(message, panel) {
     if (!mailApi?.extract) {
-      notify({ type: "warning", title: "Brain", message: "L'extraction n'est pas disponible." });
+      notify({ type: "warning", title: translateSource("Brain"), message: translateSource("L'extraction n'est pas disponible.") });
       return;
     }
     try {
@@ -2269,7 +2321,7 @@ export function mountMail(stage, options = {}) {
       panel.replaceChildren(buildExtractList(tasks, events));
       panel.hidden = false;
     } catch (error) {
-      notify({ type: "error", title: "Brain", message: errorDescription(error) });
+      notify({ type: "error", title: translateSource("Brain"), message: errorDescription(error) });
     }
   }
 
@@ -2285,17 +2337,17 @@ export function mountMail(stage, options = {}) {
       tasks.forEach((t) => {
         list.append(element("li", {}, [element("span", { text: t.title || t.text || String(t) })]));
       });
-      wrap.append(element("strong", { className: "v8-mail-brain__section-title", text: "Tâches extraites" }), list);
+      wrap.append(element("strong", { className: "v8-mail-brain__section-title", text: translateSource("Tâches extraites") }), list);
     }
     if (events.length) {
       const list = element("ul", { className: "v8-mail-brain__list" });
       events.forEach((e) => {
         list.append(element("li", {}, [element("span", { text: e.title || e.text || String(e) })]));
       });
-      wrap.append(element("strong", { className: "v8-mail-brain__section-title", text: "Événements extraits" }), list);
+      wrap.append(element("strong", { className: "v8-mail-brain__section-title", text: translateSource("Événements extraits") }), list);
     }
     if (!summary && !tasks.length && !events.length) {
-      wrap.append(element("p", { text: "Aucune analyse disponible." }));
+      wrap.append(element("p", { text: translateSource("Aucune analyse disponible.") }));
     }
     return wrap;
   }
@@ -2303,7 +2355,7 @@ export function mountMail(stage, options = {}) {
   function buildSuggestionChips(suggestions, message) {
     const wrap = element("div", { className: "v8-mail-suggestions" });
     if (!suggestions.length) {
-      wrap.append(element("p", { text: "Aucune suggestion." }));
+      wrap.append(element("p", { text: translateSource("Aucune suggestion.") }));
       return wrap;
     }
     suggestions.forEach((suggestion) => {
@@ -2325,8 +2377,8 @@ export function mountMail(stage, options = {}) {
       const list = element("ul", { className: "v8-mail-brain__list" });
       tasks.forEach((task) => {
         const title = task.title || task.text || String(task);
-        const taskBtn = element("button", { className: "v8-button v8-button--secondary v8-mail-brain__action", attributes: { type: "button" }, text: "Tâche" });
-        const noteBtn = element("button", { className: "v8-button v8-button--outline v8-mail-brain__action", attributes: { type: "button" }, text: "Note" });
+        const taskBtn = element("button", { className: "v8-button v8-button--secondary v8-mail-brain__action", attributes: { type: "button" }, text: translateSource("Tâche") });
+        const noteBtn = element("button", { className: "v8-button v8-button--outline v8-mail-brain__action", attributes: { type: "button" }, text: translateSource("Note") });
         taskBtn.addEventListener("click", () => createItem(task, "task"));
         noteBtn.addEventListener("click", () => createItem(task, "note"));
         list.append(element("li", { className: "v8-mail-brain__item" }, [
@@ -2334,14 +2386,14 @@ export function mountMail(stage, options = {}) {
           element("span", { className: "v8-mail-brain__actions" }, [taskBtn, noteBtn])
         ]));
       });
-      wrap.append(element("strong", { className: "v8-mail-brain__section-title", text: "Tâches" }), list);
+      wrap.append(element("strong", { className: "v8-mail-brain__section-title", text: translateSource("Tâches") }), list);
     }
     if (events.length) {
       const list = element("ul", { className: "v8-mail-brain__list" });
       events.forEach((eventItem) => {
         const title = eventItem.title || eventItem.text || String(eventItem);
-        const eventBtn = element("button", { className: "v8-button v8-button--secondary v8-mail-brain__action", attributes: { type: "button" }, text: "Événement" });
-        const noteBtn = element("button", { className: "v8-button v8-button--outline v8-mail-brain__action", attributes: { type: "button" }, text: "Note" });
+        const eventBtn = element("button", { className: "v8-button v8-button--secondary v8-mail-brain__action", attributes: { type: "button" }, text: translateSource("Événement") });
+        const noteBtn = element("button", { className: "v8-button v8-button--outline v8-mail-brain__action", attributes: { type: "button" }, text: translateSource("Note") });
         eventBtn.addEventListener("click", () => createItem(eventItem, "event"));
         noteBtn.addEventListener("click", () => createItem(eventItem, "note"));
         list.append(element("li", { className: "v8-mail-brain__item" }, [
@@ -2349,16 +2401,16 @@ export function mountMail(stage, options = {}) {
           element("span", { className: "v8-mail-brain__actions" }, [eventBtn, noteBtn])
         ]));
       });
-      wrap.append(element("strong", { className: "v8-mail-brain__section-title", text: "Événements" }), list);
+      wrap.append(element("strong", { className: "v8-mail-brain__section-title", text: translateSource("Événements") }), list);
     }
     if (!tasks.length && !events.length) {
-      wrap.append(element("p", { text: "Aucun élément extrait." }));
+      wrap.append(element("p", { text: translateSource("Aucun élément extrait.") }));
     }
     return wrap;
   }
 
   function buildDetail(message) {
-    const from = message.from_name || getFromAddress(message) || "Inconnu";
+    const from = message.from_name || getFromAddress(message) || translateSource("Inconnu");
     const to = Array.isArray(message.to) ? message.to.join(", ") : message.to || "";
     const cc = Array.isArray(message.cc) ? message.cc.join(", ") : message.cc || "";
     const bcc = Array.isArray(message.bcc) ? message.bcc.join(", ") : message.bcc || "";
@@ -2370,7 +2422,7 @@ export function mountMail(stage, options = {}) {
         element("span", { text: name }),
         element("button", {
           className: "v8-icon-button",
-          attributes: { type: "button", "aria-label": `Retirer ${name}` }
+          attributes: { type: "button", "aria-label": translateSource("Retirer {0}").replace("{0}", name) }
         }, [icon("x")])
       ]);
     });
@@ -2381,7 +2433,7 @@ export function mountMail(stage, options = {}) {
     });
 
     const assignSelect = element("select", { className: "v8-input v8-mail-assign-label" }, [
-      element("option", { text: "Étiquette...", attributes: { value: "" } }),
+      element("option", { text: translateSource("Étiquette..."), attributes: { value: "" } }),
       ...state.labels.map((l) => element("option", { text: l.name, attributes: { value: String(l.name) } }))
     ]);
     assignSelect.addEventListener("change", () => {
@@ -2392,37 +2444,37 @@ export function mountMail(stage, options = {}) {
     });
 
     const participants = [
-      `De : ${from}`,
-      to ? `À : ${to}` : "",
-      cc ? `Cc : ${cc}` : "",
-      bcc ? `Cci : ${bcc}` : ""
+      translateSource("De : {0}").replace("{0}", from),
+      to ? translateSource("À : {0}").replace("{0}", to) : "",
+      cc ? translateSource("Cc : {0}").replace("{0}", cc) : "",
+      bcc ? translateSource("Cci : {0}").replace("{0}", bcc) : ""
     ].filter(Boolean).join(" · ");
 
     const backButton = element("button", {
       className: "v8-icon-button v8-mail-back",
-      attributes: { type: "button", "aria-label": "Retour" },
+      attributes: { type: "button", "aria-label": translateSource("Retour") },
       events: { click: backToList }
     }, [icon("arrow-left")]);
 
-    const replyBtn = actionButton({ actionId: "v8.mail.reply", variant: "secondary" }, [icon("reply"), element("span", { text: "Répondre" })]);
-    const forwardBtn = actionButton({ actionId: "v8.mail.forward", variant: "secondary" }, [icon("forward"), element("span", { text: "Transférer" })]);
-    const archiveBtn = actionButton({ actionId: "v8.mail.archive", className: "v8-icon-button", ariaLabel: "Archiver" }, [icon("archive")]);
-    const spamBtn = actionButton({ actionId: "v8.mail.spam", className: "v8-icon-button", ariaLabel: "Spam" }, [icon("shield-alert")]);
-    const deleteBtn = actionButton({ actionId: "v8.mail.delete", className: "v8-icon-button", ariaLabel: "Supprimer" }, [icon("trash-2")]);
+    const replyBtn = actionButton({ actionId: "v8.mail.reply", variant: "secondary" }, [icon("reply"), element("span", { text: translateSource("Répondre") })]);
+    const forwardBtn = actionButton({ actionId: "v8.mail.forward", variant: "secondary" }, [icon("forward"), element("span", { text: translateSource("Transférer") })]);
+    const archiveBtn = actionButton({ actionId: "v8.mail.archive", className: "v8-icon-button", ariaLabel: translateSource("Archiver") }, [icon("archive")]);
+    const spamBtn = actionButton({ actionId: "v8.mail.spam", className: "v8-icon-button", ariaLabel: translateSource("Spam") }, [icon("shield-alert")]);
+    const deleteBtn = actionButton({ actionId: "v8.mail.delete", className: "v8-icon-button", ariaLabel: translateSource("Supprimer") }, [icon("trash-2")]);
     const starBtn = actionButton({
       actionId: "v8.mail.star",
       className: `v8-icon-button${message.is_starred ? " is-active" : ""}`,
-      ariaLabel: message.is_starred ? "Retirer des favoris" : "Mettre en favori"
+      ariaLabel: message.is_starred ? translateSource("Retirer des favoris") : translateSource("Mettre en favori")
     }, [icon(message.is_starred ? "star" : "star-off")]);
     const importantBtn = actionButton({
       actionId: "v8.mail.important",
       className: `v8-icon-button${message.is_important ? " is-active" : ""}`,
-      ariaLabel: message.is_important ? "Marquer comme non important" : "Marquer comme important"
+      ariaLabel: message.is_important ? translateSource("Marquer comme non important") : translateSource("Marquer comme important")
     }, [icon("alert-circle")]);
     const snoozeBtn = actionButton({
       actionId: "v8.mail.snooze",
       className: "v8-icon-button",
-      ariaLabel: "Snooze"
+      ariaLabel: translateSource("Snooze")
     }, [icon("clock")]);
 
     replyBtn.addEventListener("click", () => openReply(message));
@@ -2441,12 +2493,12 @@ export function mountMail(stage, options = {}) {
       actionId: "v8.mail.block",
       variant: "outline",
       className: "v8-mail-security__btn v8-mail-security__btn--block"
-    }, [element("span", { text: "Bloquer" })]);
+    }, [element("span", { text: translateSource("Bloquer") })]);
     const trustBtn = actionButton({
       actionId: "v8.mail.trust",
       variant: "outline",
       className: "v8-mail-security__btn v8-mail-security__btn--trust"
-    }, [element("span", { text: "Faire confiance" })]);
+    }, [element("span", { text: translateSource("Faire confiance") })]);
     blockBtn.addEventListener("click", () => { blockSenderFrom(senderEmail, senderDomain); moveMessage(message, "trash"); });
     trustBtn.addEventListener("click", () => trustSenderFrom(senderEmail, senderDomain));
 
@@ -2455,7 +2507,7 @@ export function mountMail(stage, options = {}) {
     const header = element("header", { className: "v8-mail-detail__header" }, [
       element("div", { className: "v8-mail-detail__title" }, [
         backButton,
-        element("h2", { text: message.subject || "(aucun sujet)" })
+        element("h2", { text: message.subject || translateSource("(aucun sujet)") })
       ]),
       element("div", { className: "v8-mail-detail__participants" }, [
         element("span", { className: "v8-mail-avatar", text: initials(from) }),
@@ -2472,9 +2524,9 @@ export function mountMail(stage, options = {}) {
     contentNode.innerHTML = body;
     bodyNode.append(contentNode);
 
-    const summarizeBtn = actionButton({ actionId: "v8.mail.brain.summarize", variant: "secondary" }, [icon("brain"), element("span", { text: "Résumer" })]);
-    const suggestBtn = actionButton({ actionId: "v8.mail.brain.suggest", variant: "secondary" }, [icon("message-square"), element("span", { text: "Réponses suggérées" })]);
-    const extractBtn = actionButton({ actionId: "v8.mail.brain.extract", variant: "secondary" }, [icon("search"), element("span", { text: "Extraire" })]);
+    const summarizeBtn = actionButton({ actionId: "v8.mail.brain.summarize", variant: "secondary" }, [icon("brain"), element("span", { text: translateSource("Résumer") })]);
+    const suggestBtn = actionButton({ actionId: "v8.mail.brain.suggest", variant: "secondary" }, [icon("message-square"), element("span", { text: translateSource("Réponses suggérées") })]);
+    const extractBtn = actionButton({ actionId: "v8.mail.brain.extract", variant: "secondary" }, [icon("search"), element("span", { text: translateSource("Extraire") })]);
     const brainToolbar = element("div", { className: "v8-mail-brain__toolbar" }, [summarizeBtn, suggestBtn, extractBtn]);
     const brainPanel = element("div", { className: "v8-mail-brain__panel", attributes: { hidden: "" } });
 
@@ -2534,20 +2586,20 @@ export function mountMail(stage, options = {}) {
         contenteditable: "true",
         role: "textbox",
         "aria-multiline": "true",
-        "aria-label": "Message",
-        "data-placeholder": "Votre message..."
+        "aria-label": translateSource("Message"),
+        "data-placeholder": translateSource("Votre message...")
       }
     });
 
     const commands = [
-      { cmd: "bold", icon: "bold", label: "Gras" },
-      { cmd: "italic", icon: "italic", label: "Italique" },
-      { cmd: "underline", icon: "underline", label: "Souligné" },
-      { cmd: "insertUnorderedList", icon: "list", label: "Liste à puces" },
-      { cmd: "insertOrderedList", icon: "list-ordered", label: "Liste numérotée" },
-      { cmd: "formatBlock:blockquote", icon: "quote", label: "Citation" },
-      { cmd: "formatBlock:pre", icon: "code", label: "Code" },
-      { cmd: "createLink", icon: "link", label: "Lien" }
+      { cmd: "bold", icon: "bold", label: translateSource("Gras") },
+      { cmd: "italic", icon: "italic", label: translateSource("Italique") },
+      { cmd: "underline", icon: "underline", label: translateSource("Souligné") },
+      { cmd: "insertUnorderedList", icon: "list", label: translateSource("Liste à puces") },
+      { cmd: "insertOrderedList", icon: "list-ordered", label: translateSource("Liste numérotée") },
+      { cmd: "formatBlock:blockquote", icon: "quote", label: translateSource("Citation") },
+      { cmd: "formatBlock:pre", icon: "code", label: translateSource("Code") },
+      { cmd: "createLink", icon: "link", label: translateSource("Lien") }
     ];
 
     const toolbar = element("div", { className: "v8-mail-editor__toolbar", attributes: { role: "toolbar" } },
@@ -2567,7 +2619,7 @@ export function mountMail(stage, options = {}) {
       const cmd = button.dataset.cmd;
       body.focus();
       if (cmd === "createLink") {
-        const url = globalThis.prompt?.("Adresse du lien", "https://");
+        const url = globalThis.prompt?.(translateSource("Adresse du lien"), "https://");
         if (!url) return;
         document.execCommand("createLink", false, url);
       } else if (cmd.startsWith("formatBlock:")) {
@@ -2690,34 +2742,34 @@ export function mountMail(stage, options = {}) {
 
     const subjectInput = element("input", {
       className: "v8-input",
-      attributes: { type: "text", placeholder: "Sujet", "aria-label": "Sujet", value: initialSubject }
+      attributes: { type: "text", placeholder: translateSource("Sujet"), "aria-label": translateSource("Sujet"), value: initialSubject }
     });
 
     const ccToggle = element("button", {
       className: "v8-button v8-button--outline v8-mail-compose__toggle",
       attributes: { type: "button" },
-      text: "Cc"
+      text: translateSource("Cc")
     });
     const bccToggle = element("button", {
       className: "v8-button v8-button--outline v8-mail-compose__toggle",
       attributes: { type: "button" },
-      text: "Cci"
+      text: translateSource("Cci")
     });
 
     const ccWrap = element("div", { className: "v8-mail-compose__cc", attributes: { hidden: initialCc ? null : "" } }, [
-      element("span", { text: "Cc" }),
+      element("span", { text: translateSource("Cc") }),
       ccField.wrap
     ]);
     const bccWrap = element("div", { className: "v8-mail-compose__bcc", attributes: { hidden: initialBcc ? null : "" } }, [
-      element("span", { text: "Cci" }),
+      element("span", { text: translateSource("Cci") }),
       bccField.wrap
     ]);
 
     ccToggle.addEventListener("click", () => { ccWrap.hidden = false; ccField.input.focus(); });
     bccToggle.addEventListener("click", () => { bccWrap.hidden = false; bccField.input.focus(); });
 
-    const templateSelect = element("select", { className: "v8-input v8-mail-template", attributes: { "aria-label": "Modèle" } }, [
-      element("option", { text: "Aucun modèle", attributes: { value: "" } }),
+    const templateSelect = element("select", { className: "v8-input v8-mail-template", attributes: { "aria-label": translateSource("Modèle") } }, [
+      element("option", { text: translateSource("Aucun modèle"), attributes: { value: "" } }),
       ...state.templates.map((t) => element("option", { text: t.name, attributes: { value: String(t.id) } }))
     ]);
     templateSelect.addEventListener("change", () => {
@@ -2734,8 +2786,8 @@ export function mountMail(stage, options = {}) {
       scheduleDraftSave();
     });
 
-    const signatureSelect = element("select", { className: "v8-input v8-mail-signature", attributes: { "aria-label": "Signature" } }, [
-      element("option", { text: "Aucune signature", attributes: { value: "" } }),
+    const signatureSelect = element("select", { className: "v8-input v8-mail-signature", attributes: { "aria-label": translateSource("Signature") } }, [
+      element("option", { text: translateSource("Aucune signature"), attributes: { value: "" } }),
       ...state.signatures.map((s) => element("option", { text: s.name, attributes: { value: String(s.id) } }))
     ]);
     const defaultSignature = state.signatures.find((s) => s.is_default) || state.signatures[0];
@@ -2755,12 +2807,12 @@ export function mountMail(stage, options = {}) {
 
     const scheduleInput = element("input", {
       className: "v8-input v8-mail-schedule",
-      attributes: { type: "datetime-local", "aria-label": "Envoyer plus tard" }
+      attributes: { type: "datetime-local", "aria-label": translateSource("Envoyer plus tard") }
     });
 
     const fileInput = element("input", {
       className: "v8-input v8-file-input",
-      attributes: { type: "file", multiple: "true", "aria-label": "Pièces jointes" }
+      attributes: { type: "file", multiple: "true", "aria-label": translateSource("Pièces jointes") }
     });
     const attachmentList = element("div", { className: "v8-mail-attachments" });
 
@@ -2787,7 +2839,7 @@ export function mountMail(stage, options = {}) {
       composeAttachments.forEach((a, index) => {
         const removeBtn = element("button", {
           className: "v8-icon-button",
-          attributes: { type: "button", "aria-label": `Retirer ${a.filename}` }
+          attributes: { type: "button", "aria-label": translateSource("Retirer {0}").replace("{0}", a.filename) }
         }, [icon("x")]);
         removeBtn.addEventListener("click", () => {
           composeAttachments = composeAttachments.filter((_, i) => i !== index);
@@ -2801,13 +2853,13 @@ export function mountMail(stage, options = {}) {
 
     const backButton = element("button", {
       className: "v8-icon-button v8-mail-back",
-      attributes: { type: "button", "aria-label": "Retour" },
+      attributes: { type: "button", "aria-label": translateSource("Retour") },
       events: { click: backToList }
     }, [icon("arrow-left")]);
 
-    const sendBtn = actionButton({ actionId: "v8.mail.send", variant: "primary" }, [icon("send"), element("span", { text: "Envoyer" })]);
-    const saveBtn = actionButton({ actionId: "v8.mail.save", variant: "secondary" }, [icon("save"), element("span", { text: "Enregistrer" })]);
-    const discardBtn = actionButton({ actionId: "v8.mail.discard", variant: "danger" }, [icon("trash-2"), element("span", { text: "Supprimer" })]);
+    const sendBtn = actionButton({ actionId: "v8.mail.send", variant: "primary" }, [icon("send"), element("span", { text: translateSource("Envoyer") })]);
+    const saveBtn = actionButton({ actionId: "v8.mail.save", variant: "secondary" }, [icon("save"), element("span", { text: translateSource("Enregistrer") })]);
+    const discardBtn = actionButton({ actionId: "v8.mail.discard", variant: "danger" }, [icon("trash-2"), element("span", { text: translateSource("Supprimer") })]);
 
     sendBtn.addEventListener("click", sendNow);
     saveBtn.addEventListener("click", saveDraftNow);
@@ -2815,7 +2867,7 @@ export function mountMail(stage, options = {}) {
 
     const header = element("header", { className: "v8-mail-compose__header" }, [
       backButton,
-      element("h2", { text: draft ? "Brouillon" : "Nouveau message" }),
+      element("h2", { text: draft ? translateSource("Brouillon") : translateSource("Nouveau message") }),
       statusSpan
     ]);
 
@@ -2895,7 +2947,7 @@ export function mountMail(stage, options = {}) {
   function scheduleDraftSave() {
     if (draftTimer) clearTimeout(draftTimer);
     const status = composeRoot?.querySelector(".v8-mail-compose__status");
-    if (status) status.textContent = "Enregistrement...";
+    if (status) status.textContent = translateSource("Enregistrement...");
     draftTimer = setTimeout(saveDraftNow, 2000);
   }
 
@@ -2907,10 +2959,10 @@ export function mountMail(stage, options = {}) {
       const result = await withQueue("saveDraft", payload);
       if (result?.data?.id) composeDraftId = result.data.id;
       else if (result?.id) composeDraftId = result.id;
-      if (status) status.textContent = isOnline() ? "Enregistré" : "En attente";
+      if (status) status.textContent = isOnline() ? translateSource("Enregistré") : translateSource("En attente");
     } catch (error) {
-      if (status) status.textContent = "Erreur d'enregistrement";
-      notify({ type: "error", title: "Brouillon", message: errorDescription(error) });
+      if (status) status.textContent = translateSource("Erreur d'enregistrement");
+      notify({ type: "error", title: translateSource("Brouillon"), message: errorDescription(error) });
     }
   }
 
@@ -2918,13 +2970,13 @@ export function mountMail(stage, options = {}) {
     if (!mailApi || !composeEditor) return;
     const payload = collectPayload();
     if (!payload.to.length) {
-      notify({ type: "warning", title: "Mail", message: "Ajoutez au moins un destinataire." });
+      notify({ type: "warning", title: translateSource("Mail"), message: translateSource("Ajoutez au moins un destinataire.") });
       return;
     }
     const isScheduled = !!payload.scheduled_at;
     try {
       await withQueue("send", payload);
-      notify({ type: "success", title: "Mail", message: isScheduled ? "Message programmé." : "Message envoyé." });
+      notify({ type: "success", title: translateSource("Mail"), message: isScheduled ? translateSource("Message programmé.") : translateSource("Message envoyé.") });
       const draftToDelete = composeDraftId;
       composeDraftId = null;
       if (isOnline() && draftToDelete) {
@@ -2933,7 +2985,7 @@ export function mountMail(stage, options = {}) {
       backToList();
       loadFolder();
     } catch (error) {
-      notify({ type: "error", title: isScheduled ? "Échec de la programmation" : "Échec de l'envoi", message: errorDescription(error) });
+      notify({ type: "error", title: isScheduled ? translateSource("Échec de la programmation") : translateSource("Échec de l'envoi"), message: errorDescription(error) });
     }
   }
 
@@ -2946,20 +2998,24 @@ export function mountMail(stage, options = {}) {
   }
 
   async function init() {
-    await loadCached();
-    renderList();
-    renderSidebar();
-    await Promise.all([loadAlias(), loadLabels(), loadContacts(), loadSignatures(), loadRules(), loadNotifications(), loadTemplates(), loadSecurity(), loadAccounts(), loadPgpKeys(), loadPush(), loadLists()]);
-    renderSidebar();
-    await loadFolder();
-    renderReading();
-    const pendingTemplate = typeof globalThis !== "undefined" ? globalThis.__ethoneMailComposeTemplate : null;
-    if (pendingTemplate) {
-      delete globalThis.__ethoneMailComposeTemplate;
-      openCompose({ subject: pendingTemplate.subject, prefill: pendingTemplate.content });
-    }
-    if ((globalThis.location?.hash || "").includes("compose=1")) {
-      openCompose();
+    try {
+      await loadCached();
+      renderList();
+      renderSidebar();
+      await Promise.all([loadAlias(), loadLabels(), loadContacts(), loadSignatures(), loadRules(), loadNotifications(), loadTemplates(), loadSecurity(), loadAccounts(), loadPgpKeys(), loadPush(), loadLists()]);
+      renderSidebar();
+      await loadFolder();
+      renderReading();
+      const pendingTemplate = typeof globalThis !== "undefined" ? globalThis.__ethoneMailComposeTemplate : null;
+      if (pendingTemplate) {
+        delete globalThis.__ethoneMailComposeTemplate;
+        openCompose({ subject: pendingTemplate.subject, prefill: pendingTemplate.content });
+      }
+      if ((globalThis.location?.hash || "").includes("compose=1")) {
+        openCompose();
+      }
+    } catch (error) {
+      notify({ type: "error", title: translateSource("Mail"), message: errorDescription(error) });
     }
   }
 

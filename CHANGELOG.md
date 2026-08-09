@@ -82,6 +82,21 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 ### Bordereau PWA
 - Mis à jour vers `experience-v300`.
 
+## [v301] - 2026-08-18
+
+**Hotfix : refonte et i18n de la page ETHONE Mail**
+
+### Améliore
+- Page ETHONE Mail entièrement internationalisée (fr/en/es/de) : dossiers, filtres, notifications, règles, modèles, PGP, analytique, rédaction et actions groupées.
+
+### Corrige
+- Initialisation de la page Mail protégée par `try/catch` pour éviter un écran vide.
+- Correction de la comparaison `state.securityTab` avec la clé technique `blocked` au lieu de sa traduction.
+- Remplacement des titres, placeholders, messages d'erreur et libellés en dur par `translateSource`.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v301`.
+
 ## [v295] - 2026-08-17
 
 **Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes**

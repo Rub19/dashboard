@@ -1,6 +1,7 @@
 import { element, icon } from "../ui/dom.mjs";
 import { statusState } from "../ui/empty-state.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
+import { formatBytes } from "../utils/format.mjs";
 
 function getHashQuery() {
   const hash = String(globalThis.location?.hash || "");
@@ -9,18 +10,7 @@ function getHashQuery() {
   return new URLSearchParams(hash.slice(queryIndex));
 }
 
-function formatBytes(bytes) {
-  const value = Number(bytes) || 0;
-  if (value === 0) return "0 o";
-  const units = ["o", "Ko", "Mo", "Go", "To"];
-  let index = 0;
-  let size = value;
-  while (size >= 1024 && index < units.length - 1) {
-    size /= 1024;
-    index += 1;
-  }
-  return `${size.toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
-}
+
 
 function mimeIcon(mimeType = "") {
   const type = String(mimeType).toLowerCase();

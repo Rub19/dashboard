@@ -50,7 +50,9 @@ export async function sendOtp(env, email, providedUserId) {
     throw new Error("Too many attempts. Please wait before requesting a new code.");
   }
 
-  const code = Array.from({ length: 6 }, () => Math.floor(Math.random() * 10)).join("");
+  const codeDigits = new Uint8Array(6);
+  crypto.getRandomValues(codeDigits);
+  const code = Array.from(codeDigits, (b) => b % 10).join("");
   const expiresAt = new Date(Date.now() + OTP_TTL_MS).toISOString();
   const codeHash = await hashCode(code);
 
@@ -64,7 +66,9 @@ export async function sendOtp(env, email, providedUserId) {
 
   // Deliver the code via Resend when RESEND_API_KEY is configured.
   // In development with ETHONE_DEBUG_OTP=true, the code is returned for tests instead of sent.
-  const exposeCode = env.ENVIRONMENT === "development" && env.ETHONE_DEBUG_OTP === "true";
+  const isProduction = env.ENVIRONMENT === "production";
+  const debugOtpEnabled = !isProduction && env.ENVIRONMENT === "development" && env.ETHONE_DEBUG_OTP === "true";
+  const exposeCode = debugOtpEnabled;
   if (!exposeCode) {
     const html = `<p>Votre code de connexion ETHONE est : <strong style="font-size:1.25em">${code}</strong></p><p>Il est valable 10 minutes. Ne le partagez avec personne.</p>`;
     await sendEmail(env, contact, "Votre code de connexion ETHONE", html);

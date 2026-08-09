@@ -211,6 +211,8 @@ export function createPanelManager(host, options = {}) {
 
   function close(config = {}) {
     if (!mounted) return false;
+    clearInterval(focusInterval);
+    focusRunning = false;
     notificationMenu.close({ restoreFocus: false });
     mounted = null;
     mountedId = null;

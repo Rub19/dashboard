@@ -2,6 +2,21 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v275] - 2026-08-11
+
+**Phase 10 : fondations audit, sécurité et refactorisation**
+
+### Corrigé
+- **Sécurité** : remplacement du hashing SHA-256 par PBKDF2-SHA256 pour les mots de passe de partages et drops.
+- **Sécurité** : génération cryptographique des codes OTP via `crypto.getRandomValues`.
+- **Sécurité** : génération des tokens d'invitation d'équipe sans fallback `Math.random`.
+- **Routage** : ajout de `interactions` et `team` dans `V8_ROUTES`.
+- **Mémoire** : nettoyage du focus timer lors de la fermeture du panel.
+
+### Amélioré
+- **Refactorisation** : création des modules `v8/utils/format.mjs`, `v8/utils/download.mjs`, `v8/utils/date.mjs` pour éliminer les duplications.
+- Bordereau PWA mis à jour vers `experience-v275`.
+
 ## [v274] - 2026-08-11
 
 **Phase 9 : corrections topbar et dock mobile**

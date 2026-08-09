@@ -1,4 +1,6 @@
 import { actionButton, attachTypeToSelect, debounce, element, icon } from "../ui/dom.mjs";
+import { formatBytes } from "../utils/format.mjs";
+import { isExpired, isExpiringSoon } from "../utils/date.mjs";
 import {
   bulkActionBar,
   collectionDensityControl,
@@ -460,18 +462,7 @@ export function mountFiles(stage, options = {}) {
     refreshIcons();
   }
 
-  function isExpired(date) {
-    if (!date) return false;
-    const parsed = new Date(date);
-    return !Number.isNaN(parsed.getTime()) && parsed.getTime() < Date.now();
-  }
 
-  function isExpiringSoon(date) {
-    if (!date) return false;
-    const parsed = new Date(date);
-    if (Number.isNaN(parsed.getTime())) return false;
-    return parsed.getTime() - Date.now() < 24 * 60 * 60 * 1000;
-  }
 
   async function openAdmin() {
     if (adminOpen) return;
@@ -670,18 +661,7 @@ export function mountFiles(stage, options = {}) {
     );
   }
 
-  function formatBytes(bytes) {
-    const value = Number(bytes) || 0;
-    if (value === 0) return "0 o";
-    const units = ["o", "Ko", "Mo", "Go", "To"];
-    let index = 0;
-    let size = value;
-    while (size >= 1024 && index < units.length - 1) {
-      size /= 1024;
-      index += 1;
-    }
-    return `${size.toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
-  }
+
 
   function renderAll() {
     renderSources();

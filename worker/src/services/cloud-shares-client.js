@@ -49,12 +49,26 @@ function generateSlug() {
 
 function hashPassword(password) {
   if (!password) return null;
-  return crypto.createHash("sha256").update(String(password)).digest("hex").slice(0, 64);
+  const salt = crypto.randomBytes(16).toString("base64url");
+  const iterations = 100000;
+  const keylen = 32;
+  const digest = "sha256";
+  const derived = crypto.pbkdf2Sync(String(password), salt, iterations, keylen, digest);
+  return `pbkdf2$${iterations}$${salt}$${derived.toString("base64url")}`;
 }
 
 function verifyPassword(password, hash) {
   if (!hash) return true;
-  return hashPassword(password) === hash;
+  if (hash.startsWith("pbkdf2$")) {
+    const [, iterations, salt, derived] = hash.split("$");
+    const keylen = Buffer.from(derived, "base64url").length;
+    const candidate = crypto.pbkdf2Sync(String(password), salt, Number(iterations), keylen, "sha256");
+    const stored = Buffer.from(derived, "base64url");
+    if (candidate.length !== stored.length) return false;
+    return crypto.timingSafeEqual(candidate, stored);
+  }
+  // Legacy SHA-256 fallback (deprecated, non-constant-time, for old links only)
+  return crypto.createHash("sha256").update(String(password)).digest("hex").slice(0, 64) === hash;
 }
 
 function normalizeShare(row) {

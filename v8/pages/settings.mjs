@@ -9,6 +9,7 @@ import { DENSITY_CUSTOM_RANGES, DENSITY_PRESETS, densityCssVariables, resolveDen
 import { resolveTheme, systemPrefersLight } from "../core/theme-engine.mjs";
 import { BRAIN_MEMORY_CATEGORIES, BRAIN_PERMISSION_CATEGORIES, brainPreferenceLabel, sanitizeBrainPreferences } from "../brain/preferences.mjs";
 import { BUILT_IN_PRESETS } from "../data/presets.mjs";
+import { downloadJson } from "../utils/download.mjs";
 
 const ACCENTS = Object.freeze(["mint", "sky", "amber", "violet", "rose"]);
 const THEME_LABELS = Object.freeze({ night: "Nuit", graphite: "Graphite", day: "Jour", auto: "Automatique" });
@@ -211,14 +212,7 @@ function profileAvatarPreviewNode(avatar, fallback) {
   return element("span", { className: "v8-profile-media-preview__glyph", text: String(glyph || "E") });
 }
 
-function downloadJson(payload, filename) {
-  const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }));
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  link.click();
-  setTimeout(() => URL.revokeObjectURL(url), 0);
-}
+
 
 export function mountSettings(stage, options = {}) {
   const state = options.state || {};

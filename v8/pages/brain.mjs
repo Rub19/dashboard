@@ -7,6 +7,7 @@ import { NAVIGATION_ITEMS } from "../data/navigation.mjs";
 import { brainPreferenceLabel } from "../brain/preferences.mjs";
 import { AUTOMATION_ACTIONS, sanitizeAutomationTrigger, triggerLabel as automationTriggerLabel } from "../core/automation-engine.mjs";
 import { createSelect } from "../ui/select.mjs";
+import { downloadJson } from "../utils/download.mjs";
 
 const TABS = Object.freeze([
   Object.freeze({ id: "chat", label: "Chat", icon: "message-circle" }),
@@ -94,14 +95,7 @@ function brainPanel(id, children, active = false) {
   return element("section", { id: `v8-brain-panel-${id}`, className: "v8-brain-panel", attributes, dataset: { brainPanel: id } }, children);
 }
 
-function downloadJson(payload, filename) {
-  const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }));
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  link.click();
-  setTimeout(() => URL.revokeObjectURL(url), 0);
-}
+
 
 export function mountBrain(stage, options = {}) {
   const state = options.state || {};

@@ -1,3 +1,5 @@
+import { formatBytes } from "../utils/format.mjs";
+
 const MIME_TYPE_MAP = Object.freeze({
   "application/vnd.google-apps.folder": "folder",
   "application/vnd.google-apps.document": "doc",
@@ -26,18 +28,7 @@ function inferType(mimeType = "") {
   return "file";
 }
 
-function formatBytes(bytes) {
-  const value = Number(bytes) || 0;
-  if (value === 0) return "";
-  const units = ["o", "Ko", "Mo", "Go", "To"];
-  let index = 0;
-  let size = value;
-  while (size >= 1024 && index < units.length - 1) {
-    size /= 1024;
-    index += 1;
-  }
-  return `${size.toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
-}
+
 
 function normalizeDriveFile(item) {
   const type = inferType(item.mimeType);
@@ -48,7 +39,7 @@ function normalizeDriveFile(item) {
     type,
     mimeType: item.mimeType,
     size: Number(item.size) || 0,
-    sizeLabel: type === "folder" ? "" : formatBytes(item.size),
+    sizeLabel: type === "folder" ? "" : formatBytes(item.size, { empty: "" }),
     date: item.modifiedTime || item.createdTime || "",
     createdAt: item.createdTime || "",
     parentId: Array.isArray(item.parents) ? item.parents[0] || null : null,

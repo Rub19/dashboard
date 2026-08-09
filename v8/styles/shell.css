@@ -2111,10 +2111,10 @@ html[data-v8-interactions] .v8-panel-notice:hover > .v8-selection-control,.v8-pa
 .v8-home-live-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--v8-layout-cluster-gap); margin-top: var(--v8-space-6); }
 .v8-home-live-grid[hidden] { display: none; }
 .v8-home-live-grid > section > article { position:relative;overflow:hidden;animation: v8-card-enter var(--v8-motion-base) var(--v8-ease-out) both; transition: transform var(--v8-motion-fast) var(--v8-ease-standard), box-shadow var(--v8-motion-fast) var(--v8-ease-standard); }
-.v8-home-live-grid > section > article { --v8-spotlight-x:50%;--v8-spotlight-y:20%;perspective:900px; }
+.v8-home-live-grid > section > article { --v8-spotlight-x:50%;--v8-spotlight-y:20%; }
 .v8-home-live-grid > section > article::before { position:absolute;inset:-20%;content:"";background:radial-gradient(circle at var(--v8-spotlight-x) var(--v8-spotlight-y),color-mix(in srgb,var(--v8-accent) 16%,transparent) 0%,transparent 42%);opacity:0;transition:opacity var(--v8-motion-fast);pointer-events:none; }
 .v8-home-live-grid > section > article:hover::before { opacity:1; }
-.v8-home-live-grid > section > article:hover { transform: translateY(-4px) perspective(800px) rotateX(1deg) rotateY(-1deg); box-shadow: var(--v8-shadow-card-lit), 0 14px 36px color-mix(in srgb,var(--v8-ambient-accent) 14%,transparent), 0 0 0 1px var(--v8-border-highlight); }
+.v8-home-live-grid > section > article:hover { transform: translateY(-2px) scale(1.01); box-shadow: var(--v8-shadow-card-lit), 0 14px 36px color-mix(in srgb,var(--v8-ambient-accent) 14%,transparent), 0 0 0 1px var(--v8-border-highlight); }
 .v8-home-live-grid > section > article::after { position:absolute;inset:0;content:"";background:linear-gradient(115deg,transparent 30%,color-mix(in srgb,var(--v8-ambient-accent) 10%,transparent) 50%,transparent 70%);opacity:0;transform:translateX(-100%);transition:opacity var(--v8-motion-fast),transform .7s var(--v8-ease-out);pointer-events:none; }
 .v8-home-live-grid > section > article:hover::after { opacity:1;transform:translateX(100%); }
 .v8-home-live-grid > section > article .v8-minecraft-avatar__head,.v8-home-live-grid > section > article .v8-minecraft-avatar__cape img,.v8-home-live-grid > section > article .v8-discord-avatar__image img { transition: transform var(--v8-motion-base) var(--v8-ease-standard); }
@@ -3785,7 +3785,6 @@ html[data-v8-ui-glow="true"] .v8-floating-dock {
 }
 article.v8-lol-live, article.v8-valorant-live, article.v8-tracker-live, article.v8-spotify-live, article.v8-discord-live, article.v8-minecraft-live, article.v8-github-live, article.v8-google-calendar-live, article.v8-google-drive-live, article.v8-lastfm-live, article.v8-notion-live, article.v8-reddit-live, article.v8-steam-live, article.v8-todoist-live, article.v8-twitch-live, article.v8-weather-live, article.v8-youtube-live {
   display: block !important;
-  perspective: 1000px;
   cursor: pointer;
   position: relative;
   padding: 0 !important;
@@ -3797,27 +3796,45 @@ article.v8-lol-live, article.v8-valorant-live, article.v8-tracker-live, article.
   position: relative;
   width: 100%;
   height: 100%;
-  transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  transform-style: preserve-3d;
 }
-.v8-lol-live.is-flipped .v8-live-card-inner,
-.v8-valorant-live.is-flipped .v8-live-card-inner,
-.v8-tracker-live.is-flipped .v8-live-card-inner,
-.v8-spotify-live.is-flipped .v8-live-card-inner,
-.v8-discord-live.is-flipped .v8-live-card-inner,
-.v8-minecraft-live.is-flipped .v8-live-card-inner,
-.v8-github-live.is-flipped .v8-live-card-inner,
-.v8-google-calendar-live.is-flipped .v8-live-card-inner,
-.v8-google-drive-live.is-flipped .v8-live-card-inner,
-.v8-lastfm-live.is-flipped .v8-live-card-inner,
-.v8-notion-live.is-flipped .v8-live-card-inner,
-.v8-reddit-live.is-flipped .v8-live-card-inner,
-.v8-steam-live.is-flipped .v8-live-card-inner,
-.v8-todoist-live.is-flipped .v8-live-card-inner,
-.v8-twitch-live.is-flipped .v8-live-card-inner,
-.v8-weather-live.is-flipped .v8-live-card-inner,
-.v8-youtube-live.is-flipped .v8-live-card-inner {
-  transform: rotateX(180deg);
+.v8-lol-live.is-flipped .v8-live-card-front,
+.v8-valorant-live.is-flipped .v8-live-card-front,
+.v8-tracker-live.is-flipped .v8-live-card-front,
+.v8-spotify-live.is-flipped .v8-live-card-front,
+.v8-discord-live.is-flipped .v8-live-card-front,
+.v8-minecraft-live.is-flipped .v8-live-card-front,
+.v8-github-live.is-flipped .v8-live-card-front,
+.v8-google-calendar-live.is-flipped .v8-live-card-front,
+.v8-google-drive-live.is-flipped .v8-live-card-front,
+.v8-lastfm-live.is-flipped .v8-live-card-front,
+.v8-notion-live.is-flipped .v8-live-card-front,
+.v8-reddit-live.is-flipped .v8-live-card-front,
+.v8-steam-live.is-flipped .v8-live-card-front,
+.v8-todoist-live.is-flipped .v8-live-card-front,
+.v8-twitch-live.is-flipped .v8-live-card-front,
+.v8-weather-live.is-flipped .v8-live-card-front,
+.v8-youtube-live.is-flipped .v8-live-card-front {
+  display: none;
+}
+
+.v8-lol-live.is-flipped .v8-live-card-back,
+.v8-valorant-live.is-flipped .v8-live-card-back,
+.v8-tracker-live.is-flipped .v8-live-card-back,
+.v8-spotify-live.is-flipped .v8-live-card-back,
+.v8-discord-live.is-flipped .v8-live-card-back,
+.v8-minecraft-live.is-flipped .v8-live-card-back,
+.v8-github-live.is-flipped .v8-live-card-back,
+.v8-google-calendar-live.is-flipped .v8-live-card-back,
+.v8-google-drive-live.is-flipped .v8-live-card-back,
+.v8-lastfm-live.is-flipped .v8-live-card-back,
+.v8-notion-live.is-flipped .v8-live-card-back,
+.v8-reddit-live.is-flipped .v8-live-card-back,
+.v8-steam-live.is-flipped .v8-live-card-back,
+.v8-todoist-live.is-flipped .v8-live-card-back,
+.v8-twitch-live.is-flipped .v8-live-card-back,
+.v8-weather-live.is-flipped .v8-live-card-back,
+.v8-youtube-live.is-flipped .v8-live-card-back {
+  display: flex;
 }
 article.v8-lol-live:focus-visible,
 article.v8-valorant-live:focus-visible,
@@ -3852,12 +3869,11 @@ article.v8-youtube-live:focus-visible {
   height: 100%;
 }
 .v8-live-card-back {
-  display: grid;
+  display: none;
   grid-template-rows: auto 1fr auto;
   gap: var(--v8-space-3);
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  transform: rotateX(180deg);
   background: var(--v8-surface-raised, rgba(255,255,255,0.05));
   padding: var(--v8-space-2) var(--v8-space-4);
 }

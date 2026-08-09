@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v285] - 2026-08-11
+
+**Phase 10 : suppression des effets 3D sur toutes les pages**
+
+### Corrigé
+- Suppression de `perspective`, `rotateX` et `rotateY` dans `shell.css` et `depth.css`.
+- Flip des live cards remplacé par un basculement `display` sans 3D.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v285`.
+
 ## [v284] - 2026-08-11
 
 **Phase 10 : overlays Spotify, Last.fm et Minecraft**

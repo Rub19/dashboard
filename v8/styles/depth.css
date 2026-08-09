@@ -4,7 +4,6 @@
 }
 
 .v8-depth {
-  transform-style: preserve-3d;
   transition:
     transform 0.35s var(--v8-ease-spring),
     box-shadow 0.35s var(--v8-ease-standard);

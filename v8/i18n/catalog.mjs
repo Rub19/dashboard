@@ -2201,7 +2201,16 @@ const ENTRIES = {
   "En lecture": {"fr":"En lecture","en":"Now playing","es":"En reproducción","de":"Wird abgespielt"},
   "Briefing": {"fr":"Briefing","en":"Briefing","es":"Briefing","de":"Briefing"},
   "non connecté": {"fr":"non connecté","en":"not connected","es":"no conectado","de":"nicht verbunden"},
-  "Impossible d'ouvrir les notifications": {"fr":"Impossible d'ouvrir les notifications","en":"Could not open notifications","es":"No se pudieron abrir las notificaciones","de":"Benachrichtigungen konnten nicht geöffnet werden"}
+  "Impossible d'ouvrir les notifications": {"fr":"Impossible d'ouvrir les notifications","en":"Could not open notifications","es":"No se pudieron abrir las notificaciones","de":"Benachrichtigungen konnten nicht geöffnet werden"},
+  "Nouveau Mail": {"fr":"Nouveau Mail","en":"New Mail","es":"Nuevo correo","de":"Neue Mail"},
+  "Uploader un fichier": {"fr":"Uploader un fichier","en":"Upload a file","es":"Subir un archivo","de":"Datei hochladen"},
+  "Créer un Workspace": {"fr":"Créer un Workspace","en":"Create a Workspace","es":"Crear un Workspace","de":"Workspace erstellen"},
+  "Ajouter un Widget": {"fr":"Ajouter un Widget","en":"Add a Widget","es":"Añadir un Widget","de":"Widget hinzufügen"},
+  "Créer une Automation": {"fr":"Créer une Automation","en":"Create an Automation","es":"Crear una Automatización","de":"Automatisierung erstellen"},
+  "Workspace": {"fr":"Workspace","en":"Workspace","es":"Workspace","de":"Workspace"},
+  "Création de Workspace bientôt disponible.": {"fr":"Création de Workspace bientôt disponible.","en":"Workspace creation coming soon.","es":"Creación de Workspace próximamente.","de":"Workspace-Erstellung demnächst verfügbar."},
+  "Automation": {"fr":"Automation","en":"Automation","es":"Automatización","de":"Automatisierung"},
+  "Création d'automation bientôt disponible.": {"fr":"Création d'automation bientôt disponible.","en":"Automation creation coming soon.","es":"Creación de automatización próximamente.","de":"Automatisierungs-Erstellung demnächst verfügbar."}
 };
 Object.keys(ENTRIES).forEach((key) => Object.freeze(ENTRIES[key]));
 Object.freeze(ENTRIES);

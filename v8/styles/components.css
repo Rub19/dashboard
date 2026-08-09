@@ -1815,6 +1815,21 @@ html[data-v8-interactions] .v8-card:hover {
   font-weight: var(--v8-weight-semibold);
   color: var(--v8-text);
 }
+.v8-bottom-sheet__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--v8-space-2);
+  padding: var(--v8-space-3) var(--v8-space-4);
+  border-bottom: 1px solid var(--v8-border-subtle);
+}
+.v8-bottom-sheet__header--draggable {
+  user-select: none;
+  -webkit-user-select: none;
+}
+.v8-bottom-sheet__header--draggable:active {
+  cursor: grabbing;
+}
 .v8-modal__content,
 .v8-bottom-sheet__content,
 .v8-drawer__content {

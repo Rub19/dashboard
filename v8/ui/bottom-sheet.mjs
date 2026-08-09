@@ -1,9 +1,10 @@
 import { element, icon } from "./dom.mjs";
 import { refreshIcons } from "./icons.mjs";
+import { translateSource } from "../i18n/catalog.mjs";
 
 const DEFAULT_DURATION = 220;
 
-export function showBottomSheet({ title, children = [], host, onClose, className = "", position = "bottom" } = {}) {
+export function showBottomSheet({ title, children = [], host, onClose, className = "", position = "bottom", draggable = false } = {}) {
   const root = host || (typeof document !== "undefined" ? document.body : null);
   if (!root) return { close: () => {}, element: null };
 
@@ -12,9 +13,15 @@ export function showBottomSheet({ title, children = [], host, onClose, className
   let touchStartY = 0;
   let swipeDelta = 0;
 
+  let isDragging = false;
+  let dragStart = null;
+  let dragPanelRect = null;
+  let startOffset = { x: 0, y: 0 };
+  let currentOffset = { x: 0, y: 0 };
+
   const closeButton = element("button", {
     className: "v8-icon-button v8-bottom-sheet__close",
-    attributes: { type: "button", "aria-label": "Fermer" },
+    attributes: { type: "button", "aria-label": translateSource("Fermer") },
     events: { click: () => close() }
   }, [icon("x")]);
 
@@ -23,13 +30,19 @@ export function showBottomSheet({ title, children = [], host, onClose, className
     element("span", { className: "v8-bottom-sheet__handle-bar" })
   ]);
   const content = element("div", { className: "v8-bottom-sheet__content" }, children);
+  const header = element("header", { className: "v8-bottom-sheet__header" }, [titleEl, closeButton]);
+
+  if (draggable) {
+    header.style.cursor = "grab";
+    header.classList.add("v8-bottom-sheet__header--draggable");
+  }
 
   const panel = element("div", {
-    className: `v8-bottom-sheet${isCentered ? " v8-bottom-sheet--centered" : ""}${className ? ` ${className}` : ""}`,
+    className: `v8-bottom-sheet${isCentered ? " v8-bottom-sheet--centered" : ""}${draggable ? " v8-bottom-sheet--draggable" : ""}${className ? ` ${className}` : ""}`,
     attributes: { role: "dialog", "aria-modal": "true", "aria-labelledby": "v8-bottom-sheet-title" }
   }, [
     handle,
-    element("header", { className: "v8-bottom-sheet__header" }, [titleEl, closeButton]),
+    header,
     content
   ]);
 
@@ -70,17 +83,61 @@ export function showBottomSheet({ title, children = [], host, onClose, className
     touchStartY = 0;
   }
 
+  function onHeaderPointerDown(event) {
+    if (!draggable || isClosing || isDragging) return;
+    if (closeButton.contains(event.target)) return;
+    if (event.button > 0) return;
+    event.preventDefault();
+    isDragging = true;
+    dragStart = { x: event.clientX, y: event.clientY };
+    startOffset = { ...currentOffset };
+    dragPanelRect = panel.getBoundingClientRect();
+    header.style.cursor = "grabbing";
+    panel.style.transition = "none";
+    try { header.setPointerCapture(event.pointerId); } catch {}
+  }
+
+  function onHeaderPointerMove(event) {
+    if (!isDragging) return;
+    const dx = event.clientX - dragStart.x;
+    const dy = event.clientY - dragStart.y;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    currentOffset = { x: startOffset.x + dx, y: startOffset.y + dy };
+    if (dragPanelRect) {
+      const minX = -(dragPanelRect.width - 48);
+      const minY = -(dragPanelRect.height - 48);
+      currentOffset.x = Math.max(minX, Math.min(vw - 48, currentOffset.x));
+      currentOffset.y = Math.max(minY, Math.min(vh - 48, currentOffset.y));
+    }
+    panel.style.transform = `translate3d(${currentOffset.x}px, ${currentOffset.y}px, 0)`;
+  }
+
+  function onHeaderPointerUp(event) {
+    if (!isDragging) return;
+    isDragging = false;
+    header.style.cursor = "grab";
+    panel.style.transition = "";
+    try { header.releasePointerCapture(event.pointerId); } catch {}
+  }
+
   function cleanup() {
     document.removeEventListener("keydown", onKeydown);
     layer.removeEventListener("click", onLayerClick);
     handle.removeEventListener("touchstart", onTouchStart);
     handle.removeEventListener("touchmove", onTouchMove);
     handle.removeEventListener("touchend", onTouchEnd);
+    header.removeEventListener("pointerdown", onHeaderPointerDown);
+    header.removeEventListener("pointermove", onHeaderPointerMove);
+    header.removeEventListener("pointerup", onHeaderPointerUp);
+    header.removeEventListener("pointerleave", onHeaderPointerUp);
   }
 
   function close() {
     if (isClosing) return;
     isClosing = true;
+    currentOffset = { x: 0, y: 0 };
+    dragPanelRect = null;
     panel.style.transform = "";
     panel.style.opacity = "";
     layer.classList.remove("is-open");
@@ -96,6 +153,13 @@ export function showBottomSheet({ title, children = [], host, onClose, className
   handle.addEventListener("touchstart", onTouchStart, { passive: true });
   handle.addEventListener("touchmove", onTouchMove, { passive: true });
   handle.addEventListener("touchend", onTouchEnd);
+
+  if (draggable) {
+    header.addEventListener("pointerdown", onHeaderPointerDown);
+    header.addEventListener("pointermove", onHeaderPointerMove);
+    header.addEventListener("pointerup", onHeaderPointerUp);
+    header.addEventListener("pointerleave", onHeaderPointerUp);
+  }
 
   root.append(layer);
   layer.getBoundingClientRect();

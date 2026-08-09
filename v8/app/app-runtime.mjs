@@ -1,5 +1,6 @@
 import { createLifecycle } from "../core/lifecycle.mjs";
 import { createPresentationStore } from "../core/store.mjs";
+import { translateSource } from "../i18n/catalog.mjs";
 import { createRouter } from "../core/router.mjs";
 import { createActionFacade } from "../core/actions.mjs";
 import { createDensityEngine, DENSITY_MODES } from "../core/density-engine.mjs";
@@ -1018,16 +1019,16 @@ export function mountApplication(root, options = {}) {
   function openQuickActionsSheet() {
     if (quickSheet?.element?.isConnected) return;
     const items = [
-      { icon: "mail-plus", label: "Nouveau Mail", action: () => { quickSheet?.close?.(); globalThis.location.hash = "#/mail?compose=1"; } },
-      { icon: "file-plus-2", label: "Nouvelle Note", action: () => { quickSheet?.close?.(); globalThis.location.hash = "#/brain?note=1"; } },
-      { icon: "upload", label: "Uploader un fichier", action: () => { quickSheet?.close?.(); globalThis.location.hash = "#/files?upload=1"; } },
-      { icon: "brain", label: "Ouvrir Brain", action: () => { quickSheet?.close?.(); actions.dispatch("v8.brain.open"); } },
-      { icon: "briefcase-business", label: "Créer un Workspace", action: () => { quickSheet?.close?.(); toasts.show({ type: "info", title: "Workspace", message: "Création de Workspace bientôt disponible." }); } },
-      { icon: "panels-top-left", label: "Ajouter un Widget", action: () => { quickSheet?.close?.(); actions.dispatch("v8.widgets.open"); } },
-      { icon: "workflow", label: "Créer une Automation", action: () => { quickSheet?.close?.(); toasts.show({ type: "info", title: "Automation", message: "Création d'automation bientôt disponible." }); } }
+      { icon: "mail-plus", label: translateSource("Nouveau Mail"), action: () => { quickSheet?.close?.(); globalThis.location.hash = "#/mail?compose=1"; } },
+      { icon: "file-plus-2", label: translateSource("Nouvelle note"), action: () => { quickSheet?.close?.(); globalThis.location.hash = "#/brain?note=1"; } },
+      { icon: "upload", label: translateSource("Uploader un fichier"), action: () => { quickSheet?.close?.(); globalThis.location.hash = "#/files?upload=1"; } },
+      { icon: "brain", label: translateSource("Ouvrir Brain"), action: () => { quickSheet?.close?.(); actions.dispatch("v8.brain.open"); } },
+      { icon: "briefcase-business", label: translateSource("Créer un Workspace"), action: () => { quickSheet?.close?.(); toasts.show({ type: "info", title: translateSource("Workspace"), message: translateSource("Création de Workspace bientôt disponible.") }); } },
+      { icon: "panels-top-left", label: translateSource("Ajouter un Widget"), action: () => { quickSheet?.close?.(); actions.dispatch("v8.widgets.open"); } },
+      { icon: "workflow", label: translateSource("Créer une Automation"), action: () => { quickSheet?.close?.(); toasts.show({ type: "info", title: translateSource("Automation"), message: translateSource("Création d'automation bientôt disponible.") }); } }
     ];
     const children = items.map((item) => bottomSheetAction(item.icon, item.label, item.action));
-    quickSheet = showBottomSheet({ title: "Actions rapides", children, position: "center", onClose: () => { quickSheet = null; } });
+    quickSheet = showBottomSheet({ title: translateSource("Actions rapides"), children, position: "center", draggable: true, onClose: () => { quickSheet = null; } });
   }
 
   actions.scope("v8.mobile-nav.more", () => {

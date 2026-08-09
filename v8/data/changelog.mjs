@@ -63,6 +63,11 @@ export const CHANGELOG = Object.freeze([
     { kind: "fix", text: "Robustesse du store : une erreur dans un abonne ne bloque plus les autres abonnes." },
     { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v299." }
   ]),
+  entry("v300", "2026-08-18", "Hotfix : fiche Actions rapides déplaçable et traduite", [
+    { kind: "feature", text: "Fiche Actions rapides déplaçable par glisser de l'en-tête." },
+    { kind: "fix", text: "Libellés et titre de la fiche Actions rapides traduits." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v300." }
+  ]),
   entry("v295", "2026-08-17", "Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes", [
     { kind: "feature", text: "Comptes mail externes : Gmail, Outlook et IMAP (création, sync, suppression)." },
     { kind: "feature", text: "Chiffrement PGP simplifié via Web Crypto : génération de clés, chiffrement/déchiffrement côté Worker." },

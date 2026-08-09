@@ -71,6 +71,17 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 ### Bordereau PWA
 - Mis à jour vers `experience-v299`.
 
+## [v300] - 2026-08-18
+
+**Hotfix : fiche Actions rapides déplaçable et traduite**
+
+### Améliore
+- La fiche Actions rapides est maintenant déplaçable : on peut glisser son en-tête pour la positionner où on veut (avec clamping pour garder au moins 48 px visible).
+- Tous les libellés de la fiche Actions rapides sont traduits via `translateSource`.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v300`.
+
 ## [v295] - 2026-08-17
 
 **Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes**

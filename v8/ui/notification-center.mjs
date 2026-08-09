@@ -366,9 +366,9 @@ export function createNotificationCenter(manager, options = {}) {
   const snoozeOpen = new Set();
 
   const categories = [
-    { id: "all", label: translateSource("Toutes") },
-    { id: "unread", label: translateSource("Non lues") },
-    ...DEFAULT_CATEGORIES.map((id) => ({ id, label: translateSource(CATEGORY_META[id].label) }))
+    { id: "all", label: translateSource("Toutes"), icon: "layout-grid" },
+    { id: "unread", label: translateSource("Non lues"), icon: "mail-open" },
+    ...DEFAULT_CATEGORIES.map((id) => ({ id, label: translateSource(CATEGORY_META[id].label), icon: CATEGORY_META[id].icon }))
   ];
 
   function isMobile() { return globalThis.matchMedia?.("(max-width: 640px)")?.matches === true; }
@@ -522,7 +522,7 @@ export function createNotificationCenter(manager, options = {}) {
         className: `v8-notification-chip${isActive ? " is-active" : ""}`,
         attributes: { type: "button", "aria-pressed": String(isActive) },
         dataset: { notificationChip: cat.id }
-      }, [cat.id !== "all" && cat.id !== "unread" ? icon(CATEGORY_META[cat.id]?.icon || "bell") : null, element("span", { text: cat.label })].filter(Boolean));
+      }, [icon(cat.icon || "bell"), element("span", { text: cat.label })]);
     }));
   }
 

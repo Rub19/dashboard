@@ -24,6 +24,12 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v314", "2026-08-18", "Signal Center : UI plus propre et espacee", [
+    { kind: "improvement", text: "Chips de filtre (Toutes, Non lues, Important, Messages, Activite, Systeme, Brain, Securite) : style plus carre, plus gros et espaces." },
+    { kind: "improvement", text: "Boutons 'Tout marquer comme lu' et 'Effacer' : hauteur augmentee, padding plus large, espacement accru." },
+    { kind: "improvement", text: "Items de notification : plus gros (padding, icone 48px, texte plus lisible), espacement augmente." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v314." }
+  ]),
   entry("v313", "2026-08-18", "Mail : bouton Analytics, cloche, creation d'adresse @ethone.dev", [
     { kind: "fix", text: "Bouton Open des Analytics : style plus carre/compact." },
     { kind: "fix", text: "Bouton cloche Mail agrandi a 40px et badge ajuste." },

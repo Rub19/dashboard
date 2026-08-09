@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v314] - 2026-08-18
+
+**Signal Center : UI plus propre et espacée**
+
+### Corrige / Améliore
+- Chips de filtre (Toutes, Non lues, Important, Messages, Activité, Système, Brain, Sécurité) : style plus carré (`border-radius` moyen), plus gros (padding 8px 12px, icône 16px), espacés.
+- Boutons *Tout marquer comme lu* et *Effacer* : hauteur augmentée, padding plus large, espacement accru.
+- Items de notification : plus gros (padding, icône 48px, texte plus lisible), espacement augmenté.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v314`.
+
 ## [v313] - 2026-08-18
 
 **Mail : bouton Analytics, cloche, création d'adresse @ethone.dev**

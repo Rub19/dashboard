@@ -1,6 +1,7 @@
 import { actionButton, element, icon } from "../ui/dom.mjs";
 import { statusState } from "../ui/empty-state.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
+import { createMailCache } from "../services/mail-cache.mjs";
 
 const FOLDERS = [
   { key: "inbox", label: "Boîte de réception", icon: "inbox" },
@@ -121,6 +122,7 @@ export function mountMail(stage, options = {}) {
   const mailApi = options?.externalServices?.mail || null;
   const notify = typeof options.notify === "function" ? options.notify : () => {};
   const repository = options?.repository || null;
+  const mailCache = options?.mailCache || createMailCache();
 
   if (!mailApi) {
     stage.replaceChildren(statusState("integration", {
@@ -152,7 +154,8 @@ export function mountMail(stage, options = {}) {
     notifications: [],
     unreadCount: 0,
     rules: [],
-    notificationOpen: false
+    notificationOpen: false,
+    selectedIds: new Set()
   };
 
   let searchTimer = null;
@@ -173,6 +176,11 @@ export function mountMail(stage, options = {}) {
   let filterHasAttachmentsInput = null;
   let filterLabelInput = null;
   let filterFolderSelect = null;
+
+  let onlineStatus = null;
+  let masterCheckbox = null;
+  let bulkToolbar = null;
+  let snoozeDialog = null;
 
   const page = element("section", { className: "v8-page v8-mail", dataset: { page: "mail" } });
   const layout = element("div", { className: "v8-mail-layout is-list" });
@@ -201,7 +209,12 @@ export function mountMail(stage, options = {}) {
     className: "v8-icon-button v8-mail-filter-toggle",
     attributes: { type: "button", "aria-label": "Filtres" }
   }, [icon("filter")]);
-  const listHeader = element("header", { className: "v8-mail-list-header" }, [menuButton, listTitle, searchInput, bellBtn, filterBtn, newBtn]);
+  onlineStatus = element("span", { className: "v8-mail-online-status" });
+  masterCheckbox = element("input", {
+    className: "v8-mail-master-checkbox",
+    attributes: { type: "checkbox", "aria-label": "Tout sélectionner" }
+  });
+  const listHeader = element("header", { className: "v8-mail-list-header" }, [menuButton, listTitle, onlineStatus, masterCheckbox, searchInput, bellBtn, filterBtn, newBtn]);
 
   filterFromInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "text", placeholder: "Expéditeur" } });
   filterSubjectInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "text", placeholder: "Sujet" } });
@@ -234,7 +247,10 @@ export function mountMail(stage, options = {}) {
   ]);
 
   const messageList = element("ul", { className: "v8-mail-list" });
-  listWrap.append(listHeader, filterPanel, messageList);
+  bulkToolbar = buildBulkToolbar();
+  snoozeDialog = buildSnoozeDialog();
+  listWrap.append(listHeader, filterPanel, bulkToolbar, messageList);
+  page.append(snoozeDialog);
 
   menuButton.addEventListener("click", () => sidebar.classList.toggle("is-open"));
   newBtn.addEventListener("click", () => openCompose());
@@ -264,7 +280,96 @@ export function mountMail(stage, options = {}) {
     }
   });
 
+  masterCheckbox.addEventListener("change", () => {
+    if (masterCheckbox.checked) selectAll();
+    else deselectAll();
+  });
+
+  updateOnlineStatus();
+
   stage.replaceChildren(page);
+
+  function isOnline() {
+    return typeof navigator !== "undefined" ? navigator.onLine !== false : true;
+  }
+
+  async function withQueue(action, payload) {
+    if (!mailApi) return null;
+    if (!isOnline()) {
+      const id = await mailCache.queueAction({ action, payload });
+      if (id) {
+        notify({ type: "warning", title: "Hors ligne", message: "L'action est mise en attente et sera exécutée à la reconnexion." });
+      }
+      return null;
+    }
+    return runQueueAction(action, payload);
+  }
+
+  const queueRunners = {
+    read: (p) => mailApi.read(p.id, p.flags),
+    star: (p) => mailApi.read(p.id, { is_starred: p.isStarred }),
+    important: (p) => mailApi.read(p.id, { is_important: p.isImportant }),
+    move: (p) => mailApi.move(p.ids, p.folder),
+    label: (p) => mailApi.assignLabel(p.ids, p.label, p.remove),
+    snooze: (p) => mailApi.snooze(p.id, p.snoozedUntil),
+    bulkSnooze: (p) => mailApi.bulk(p.ids, "snooze", p.snoozedUntil),
+    bulk: (p) => mailApi.bulk(p.ids, p.action, p.target),
+    send: (p) => (p.scheduled_at ? mailApi.schedule(p) : mailApi.send(p)),
+    saveDraft: (p) => mailApi.saveDraft(p)
+  };
+
+  async function runQueueAction(action, payload) {
+    const runner = queueRunners[action];
+    if (!runner) return null;
+    return runner(payload);
+  }
+
+  async function processQueue() {
+    const queue = await mailCache.getQueue();
+    if (!queue.length) return;
+    for (const item of queue) {
+      try {
+        await runQueueAction(item.action, item.payload);
+        await mailCache.removeAction(item.id);
+      } catch (error) {
+        notify({ type: "error", title: "File d'attente", message: errorDescription(error) });
+        break;
+      }
+    }
+    await loadFolder();
+  }
+
+  function updateOnlineStatus() {
+    const online = isOnline();
+    if (!onlineStatus) return;
+    onlineStatus.classList.toggle("is-offline", !online);
+    onlineStatus.classList.toggle("is-online", online);
+    onlineStatus.textContent = online ? "En ligne" : "Hors ligne";
+    onlineStatus.title = online ? "Connecté" : "Mode hors ligne";
+  }
+
+  const onOnline = () => { updateOnlineStatus(); processQueue(); };
+  const onOffline = () => { updateOnlineStatus(); };
+  globalThis.addEventListener?.("online", onOnline);
+  globalThis.addEventListener?.("offline", onOffline);
+
+  async function loadCached() {
+    try {
+      const [cachedMessages, cachedTemplates, cachedRules, cachedNotifications] = await Promise.all([
+        mailCache.getMessages(state.folder),
+        mailCache.getTemplates(),
+        mailCache.getRules(),
+        mailCache.getNotifications()
+      ]);
+      state.messages = cachedMessages || [];
+      state.templates = cachedTemplates || [];
+      state.rules = cachedRules || [];
+      state.notifications = cachedNotifications || [];
+      state.unreadCount = state.notifications.filter((n) => !n.is_read).length;
+    } catch {
+      // ignore cache errors
+    }
+  }
 
   async function loadAlias() {
     try {
@@ -330,6 +435,7 @@ export function mountMail(stage, options = {}) {
       const allData = Array.isArray(allResult) ? allResult : (allResult?.data || []);
       state.unreadCount = unreadResult?.count ?? unreadResult?.unread_count ?? unreadData.length;
       state.notifications = allData;
+      await mailCache.putNotifications(state.notifications);
     } catch (error) {
       notify({ type: "error", title: "Notifications", message: errorDescription(error) });
       state.notifications = [];
@@ -361,6 +467,7 @@ export function mountMail(stage, options = {}) {
     try {
       const result = await mailApi.rules(50);
       state.rules = Array.isArray(result) ? result : (result?.data || []);
+      await mailCache.putRules(state.rules);
     } catch (error) {
       notify({ type: "error", title: "Règles", message: errorDescription(error) });
       state.rules = [];
@@ -462,6 +569,7 @@ export function mountMail(stage, options = {}) {
     try {
       const result = await mailApi.templates(100);
       state.templates = Array.isArray(result) ? result : (result?.data || []);
+      await mailCache.putTemplates(state.templates);
     } catch (error) {
       notify({ type: "error", title: "Modèles", message: errorDescription(error) });
       state.templates = [];
@@ -535,11 +643,14 @@ export function mountMail(stage, options = {}) {
       state.messages = Array.isArray(result) ? result : (result?.data || []);
       const unread = result?.unread_count;
       state.counts[state.folder] = typeof unread === "number" ? unread : state.messages.filter((m) => !m.is_read).length;
+      await mailCache.putMessages(state.folder, state.messages);
     } catch (error) {
       notify({ type: "error", title: "Mail", message: errorDescription(error) });
-      state.messages = [];
     }
     state.loading = false;
+    state.selectedIds.clear();
+    masterCheckbox.checked = false;
+    renderBulkToolbar();
     renderList();
     renderSidebar();
   }
@@ -568,6 +679,9 @@ export function mountMail(stage, options = {}) {
     state.folder = key;
     state.view = "list";
     state.selected = null;
+    state.selectedIds.clear();
+    if (masterCheckbox) masterCheckbox.checked = false;
+    renderBulkToolbar();
     state.isSearch = false;
     state.query = "";
     searchInput.value = "";
@@ -599,7 +713,7 @@ export function mountMail(stage, options = {}) {
     if (!message || message.is_read) return;
     message.is_read = true;
     try {
-      await mailApi.read(message.id, { is_read: true });
+      await withQueue("read", { id: message.id, flags: { is_read: true } });
     } catch {
       // ignore
     }
@@ -610,7 +724,7 @@ export function mountMail(stage, options = {}) {
     const next = !message.is_starred;
     message.is_starred = next;
     try {
-      await mailApi.read(message.id, { is_starred: next });
+      await withQueue("star", { id: message.id, isStarred: next });
     } catch {
       // ignore
     }
@@ -623,7 +737,7 @@ export function mountMail(stage, options = {}) {
     const next = !message.is_important;
     message.is_important = next;
     try {
-      await mailApi.read(message.id, { is_important: next });
+      await withQueue("important", { id: message.id, isImportant: next });
     } catch {
       // ignore
     }
@@ -634,7 +748,7 @@ export function mountMail(stage, options = {}) {
   async function moveMessage(message, folder) {
     if (!message) return;
     try {
-      await mailApi.move([message.id], folder);
+      await withQueue("move", { ids: [message.id], folder });
       notify({ type: "success", title: "Mail", message: `Déplacé vers ${folder}.` });
       state.messages = state.messages.filter((m) => m.id !== message.id);
       if (state.selected?.id === message.id) backToList();
@@ -676,7 +790,7 @@ export function mountMail(stage, options = {}) {
     const matchedLabel = state.labels.find((l) => l.name === labelName);
     const labelId = matchedLabel?.id;
     try {
-      await mailApi.assignLabel(ids, labelName, remove);
+      await withQueue("label", { ids, label: labelName, remove });
       notify({ type: "success", title: "Étiquette", message: remove ? "Étiquette retirée." : "Étiquette assignée." });
       if (state.selected && ids.map(String).includes(String(state.selected.id))) {
         if (remove) {
@@ -729,14 +843,19 @@ export function mountMail(stage, options = {}) {
       className: "v8-input v8-mail-rule-input",
       attributes: { type: "text", placeholder: "Nom de l'étiquette ou dossier", maxlength: "64" }
     });
+    const ruleAutoReplyInput = element("textarea", {
+      className: "v8-input v8-mail-rule-auto-reply",
+      attributes: { rows: "3", placeholder: "Réponse automatique (optionnel)" }
+    });
     const ruleSaveBtn = actionButton({ actionId: "v8.mail.rule.save", variant: "secondary" }, [icon("plus"), element("span", { text: "Créer" })]);
-    const ruleForm = element("div", { className: "v8-mail-rules__form" }, [ruleNameInput, ruleConditionInput, ruleActionType, ruleTargetInput, ruleSaveBtn]);
+    const ruleForm = element("div", { className: "v8-mail-rules__form" }, [ruleNameInput, ruleConditionInput, ruleActionType, ruleTargetInput, ruleAutoReplyInput, ruleSaveBtn]);
 
     ruleSaveBtn.addEventListener("click", async () => {
       const payload = {
         name: ruleNameInput.value.trim(),
         condition: { subject: ruleConditionInput.value.trim() },
         action: { type: ruleActionType.value, target: ruleTargetInput.value.trim() },
+        action_auto_reply: ruleAutoReplyInput.value.trim(),
         enabled: true
       };
       if (!payload.name || !payload.condition.subject || !payload.action.target) {
@@ -747,6 +866,7 @@ export function mountMail(stage, options = {}) {
       ruleNameInput.value = "";
       ruleConditionInput.value = "";
       ruleTargetInput.value = "";
+      ruleAutoReplyInput.value = "";
     });
 
     const rulesList = element("ul", { className: "v8-mail-rules__list" });
@@ -902,6 +1022,242 @@ export function mountMail(stage, options = {}) {
     refreshIcons();
   }
 
+  function buildBulkToolbar() {
+    const archiveBtn = actionButton({ actionId: "v8.mail.bulk.archive", className: "v8-mail-bulk__btn" }, [icon("archive"), element("span", { text: "Archiver" })]);
+    const deleteBtn = actionButton({ actionId: "v8.mail.bulk.delete", className: "v8-mail-bulk__btn" }, [icon("trash-2"), element("span", { text: "Supprimer" })]);
+    const readBtn = actionButton({ actionId: "v8.mail.bulk.read", className: "v8-mail-bulk__btn" }, [icon("mail-open"), element("span", { text: "Marquer lu" })]);
+    const unreadBtn = actionButton({ actionId: "v8.mail.bulk.unread", className: "v8-mail-bulk__btn" }, [icon("mail"), element("span", { text: "Marquer non lu" })]);
+    const importantBtn = actionButton({ actionId: "v8.mail.bulk.important", className: "v8-mail-bulk__btn" }, [icon("alert-circle"), element("span", { text: "Important" })]);
+    const unimportantBtn = actionButton({ actionId: "v8.mail.bulk.unimportant", className: "v8-mail-bulk__btn" }, [icon("alert-octagon"), element("span", { text: "Non important" })]);
+    const labelBtn = actionButton({ actionId: "v8.mail.bulk.label", className: "v8-mail-bulk__btn" }, [icon("tag"), element("span", { text: "Étiqueter" })]);
+    const unlabelBtn = actionButton({ actionId: "v8.mail.bulk.unlabel", className: "v8-mail-bulk__btn" }, [icon("tag-off"), element("span", { text: "Désétiqueter" })]);
+    const snoozeBtn = actionButton({ actionId: "v8.mail.bulk.snooze", className: "v8-mail-bulk__btn" }, [icon("clock"), element("span", { text: "Snooze" })]);
+
+    archiveBtn.addEventListener("click", () => bulkAction("move", "archive"));
+    deleteBtn.addEventListener("click", () => bulkAction("move", "trash"));
+    readBtn.addEventListener("click", () => bulkAction("mark_read", true));
+    unreadBtn.addEventListener("click", () => bulkAction("mark_read", false));
+    importantBtn.addEventListener("click", () => bulkAction("mark_important", true));
+    unimportantBtn.addEventListener("click", () => bulkAction("mark_important", false));
+    labelBtn.addEventListener("click", () => bulkLabel(false));
+    unlabelBtn.addEventListener("click", () => bulkLabel(true));
+    snoozeBtn.addEventListener("click", () => bulkSnooze());
+
+    const toolbar = element("div", { className: "v8-mail-bulk-toolbar", attributes: { hidden: "" } }, [
+      element("span", { className: "v8-mail-bulk__count" }),
+      archiveBtn, deleteBtn, readBtn, unreadBtn, importantBtn, unimportantBtn, labelBtn, unlabelBtn, snoozeBtn
+    ]);
+    return toolbar;
+  }
+
+  function renderBulkToolbar() {
+    if (!bulkToolbar) return;
+    const count = state.selectedIds.size;
+    bulkToolbar.hidden = !count;
+    const countSpan = bulkToolbar.querySelector(".v8-mail-bulk__count");
+    if (countSpan) countSpan.textContent = `${count} sélectionné${count > 1 ? "s" : ""}`;
+  }
+
+  function selectAll() {
+    state.messages.forEach((m) => state.selectedIds.add(String(m.id)));
+    masterCheckbox.checked = true;
+    renderList();
+    renderBulkToolbar();
+  }
+
+  function deselectAll() {
+    state.selectedIds.clear();
+    masterCheckbox.checked = false;
+    renderList();
+    renderBulkToolbar();
+  }
+
+  function toggleSelection(id) {
+    const key = String(id);
+    if (state.selectedIds.has(key)) state.selectedIds.delete(key);
+    else state.selectedIds.add(key);
+    masterCheckbox.checked = state.selectedIds.size === state.messages.length && state.messages.length > 0;
+    renderList();
+    renderBulkToolbar();
+  }
+
+  async function bulkAction(action, target) {
+    const ids = [...state.selectedIds];
+    if (!ids.length) return;
+    try {
+      await withQueue("bulk", { ids, action, target });
+      notify({ type: "success", title: "Action groupée", message: "Action appliquée." });
+      state.messages.forEach((m) => {
+        if (!ids.includes(String(m.id))) return;
+        if (action === "move" && (target === "archive" || target === "trash")) {
+          // local removal handled by loadFolder
+        } else if (action === "mark_read") {
+          m.is_read = target === true || target === "true";
+        } else if (action === "mark_important") {
+          m.is_important = target === true || target === "true";
+        }
+      });
+      if (action === "move") {
+        state.messages = state.messages.filter((m) => !ids.includes(String(m.id)));
+      }
+      state.selectedIds.clear();
+      masterCheckbox.checked = false;
+      renderList();
+      renderBulkToolbar();
+      loadFolder();
+    } catch (error) {
+      notify({ type: "error", title: "Action groupée", message: errorDescription(error) });
+    }
+  }
+
+  async function bulkLabel(remove) {
+    const labelName = globalThis.prompt?.(remove ? "Étiquette à retirer" : "Étiquette à assigner");
+    if (!labelName) return;
+    const ids = [...state.selectedIds];
+    if (!ids.length) return;
+    try {
+      await withQueue("label", { ids, label: labelName.trim(), remove });
+      notify({ type: "success", title: "Étiquette", message: remove ? "Étiquette retirée." : "Étiquette assignée." });
+      state.messages.forEach((m) => {
+        if (!ids.includes(String(m.id))) return;
+        if (remove) {
+          m.labels = (m.labels || []).filter((l) => (l?.name || l) !== labelName.trim());
+        } else {
+          const matched = state.labels.find((l) => l.name === labelName.trim());
+          if (matched && !(m.labels || []).some((l) => (l?.id || l) === matched.id)) {
+            m.labels = [...(m.labels || []), matched];
+          }
+        }
+      });
+      renderList();
+      if (state.selected && ids.includes(String(state.selected.id))) renderReading();
+    } catch (error) {
+      notify({ type: "error", title: "Étiquette", message: errorDescription(error) });
+    }
+  }
+
+  function bulkSnooze() {
+    const ids = [...state.selectedIds];
+    if (!ids.length) return;
+    openSnoozeDialog((snoozedUntil) => performBulkSnooze(ids, snoozedUntil));
+  }
+
+  async function performBulkSnooze(ids, snoozedUntil) {
+    try {
+      await withQueue("bulkSnooze", { ids, snoozedUntil });
+      notify({ type: "success", title: "Snooze", message: "Messages reportés." });
+      state.selectedIds.clear();
+      masterCheckbox.checked = false;
+      renderList();
+      renderBulkToolbar();
+      loadFolder();
+    } catch (error) {
+      notify({ type: "error", title: "Snooze", message: errorDescription(error) });
+    }
+  }
+
+  function buildSnoozeDialog() {
+    const title = element("h3", { className: "v8-mail-snooze__title", text: "Reporter" });
+    const tomorrowBtn = actionButton({ actionId: "v8.mail.snooze.tomorrow", className: "v8-mail-snooze__option" }, [element("span", { text: "Demain" })]);
+    const weekBtn = actionButton({ actionId: "v8.mail.snooze.week", className: "v8-mail-snooze__option" }, [element("span", { text: "1 semaine" })]);
+    const customInput = element("input", {
+      className: "v8-input v8-mail-snooze__custom",
+      attributes: { type: "datetime-local" }
+    });
+    const cancelBtn = actionButton({ actionId: "v8.mail.snooze.cancel", variant: "outline" }, [element("span", { text: "Annuler" })]);
+    const confirmBtn = actionButton({ actionId: "v8.mail.snooze.confirm", variant: "primary" }, [element("span", { text: "Confirmer" })]);
+
+    const dialog = element("div", { className: "v8-mail-snooze-dialog", attributes: { hidden: "" } }, [
+      element("div", { className: "v8-mail-snooze__content" }, [
+        title,
+        tomorrowBtn,
+        weekBtn,
+        customInput,
+        element("div", { className: "v8-mail-snooze__actions" }, [cancelBtn, confirmBtn])
+      ])
+    ]);
+
+    let onConfirm = null;
+    let selectedDate = null;
+
+    function close() {
+      dialog.hidden = true;
+      selectedDate = null;
+      customInput.value = "";
+      onConfirm = null;
+    }
+
+    function setDate(date) {
+      selectedDate = date.toISOString();
+      customInput.value = toDateTimeLocalValue(date);
+    }
+
+    tomorrowBtn.addEventListener("click", () => {
+      const d = new Date();
+      d.setDate(d.getDate() + 1);
+      d.setHours(9, 0, 0, 0);
+      setDate(d);
+    });
+
+    weekBtn.addEventListener("click", () => {
+      const d = new Date();
+      d.setDate(d.getDate() + 7);
+      d.setHours(9, 0, 0, 0);
+      setDate(d);
+    });
+
+    customInput.addEventListener("change", () => {
+      if (customInput.value) selectedDate = new Date(customInput.value).toISOString();
+    });
+
+    cancelBtn.addEventListener("click", close);
+    confirmBtn.addEventListener("click", () => {
+      if (!selectedDate) {
+        notify({ type: "warning", title: "Snooze", message: "Choisissez une date." });
+        return;
+      }
+      if (onConfirm) onConfirm(selectedDate);
+      close();
+    });
+
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) close();
+    });
+
+    dialog.open = (callback) => {
+      onConfirm = callback;
+      dialog.hidden = false;
+    };
+
+    return dialog;
+  }
+
+  function toDateTimeLocalValue(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+
+  function openSnoozeDialog(onConfirm) {
+    snoozeDialog?.open?.(onConfirm);
+  }
+
+  async function snoozeMessage(message) {
+    if (!message) return;
+    openSnoozeDialog(async (snoozedUntil) => {
+      try {
+        await withQueue("snooze", { id: message.id, snoozedUntil });
+        notify({ type: "success", title: "Snooze", message: "Message reporté." });
+        loadFolder();
+      } catch (error) {
+        notify({ type: "error", title: "Snooze", message: errorDescription(error) });
+      }
+    });
+  }
+
   function renderList() {
     let label;
     if (hasActiveFilters()) {
@@ -912,6 +1268,11 @@ export function mountMail(stage, options = {}) {
       label = FOLDERS.find((f) => f.key === state.folder)?.label || "";
     }
     listTitle.textContent = `${label} (${state.messages.length})`;
+    if (masterCheckbox) {
+      masterCheckbox.disabled = !state.messages.length;
+      masterCheckbox.checked = state.messages.length > 0 && state.messages.every((m) => state.selectedIds.has(String(m.id)));
+    }
+    renderBulkToolbar();
     messageList.replaceChildren();
 
     if (state.loading && !state.messages.length) {
@@ -941,6 +1302,18 @@ export function mountMail(stage, options = {}) {
     const preview = String(message.body_text || message.snippet || "").replace(/\s+/g, " ").slice(0, 90);
     const date = formatMailDate(message.received_at || message.created_at);
     const hasAttachments = (message.attachments?.length > 0) || message.has_attachments;
+    const isSelected = state.selectedIds.has(String(message.id));
+
+    const checkbox = element("input", {
+      className: "v8-mail-row__checkbox",
+      attributes: { type: "checkbox", "aria-label": "Sélectionner" },
+      dataset: { action: "select" }
+    });
+    checkbox.checked = isSelected;
+    checkbox.addEventListener("change", (event) => {
+      event.stopPropagation();
+      toggleSelection(message.id);
+    });
 
     const indicators = element("span", { className: "v8-mail-row__indicators" }, [
       message.is_important ? element("span", { className: "v8-mail-row__indicator is-active", dataset: { action: "important" }, attributes: { role: "button", "aria-label": "Important" } }, [icon("alert-circle")]) : null,
@@ -953,6 +1326,7 @@ export function mountMail(stage, options = {}) {
       attributes: { type: "button" },
       dataset: { messageId: String(message.id) }
     }, [
+      checkbox,
       element("span", { className: "v8-mail-avatar v8-mail-row__avatar", text: initials(from) }),
       element("span", { className: "v8-mail-row__main" }, [
         element("span", { className: "v8-mail-row__from", text: from }),
@@ -1246,6 +1620,11 @@ export function mountMail(stage, options = {}) {
       className: `v8-icon-button${message.is_important ? " is-active" : ""}`,
       ariaLabel: message.is_important ? "Marquer comme non important" : "Marquer comme important"
     }, [icon("alert-circle")]);
+    const snoozeBtn = actionButton({
+      actionId: "v8.mail.snooze",
+      className: "v8-icon-button",
+      ariaLabel: "Snooze"
+    }, [icon("clock")]);
 
     replyBtn.addEventListener("click", () => openReply(message));
     forwardBtn.addEventListener("click", () => openForward(message));
@@ -1254,6 +1633,7 @@ export function mountMail(stage, options = {}) {
     deleteBtn.addEventListener("click", () => moveMessage(message, "trash"));
     starBtn.addEventListener("click", () => toggleStar(message));
     importantBtn.addEventListener("click", () => toggleImportant(message));
+    snoozeBtn.addEventListener("click", () => snoozeMessage(message));
 
     const header = element("header", { className: "v8-mail-detail__header" }, [
       element("div", { className: "v8-mail-detail__title" }, [
@@ -1290,7 +1670,8 @@ export function mountMail(stage, options = {}) {
       spamBtn,
       deleteBtn,
       starBtn,
-      importantBtn
+      importantBtn,
+      snoozeBtn
     ]);
 
     const detail = element("article", { className: "v8-mail-detail" }, [header, brainToolbar, brainPanel, bodyNode, actions]);
@@ -1553,6 +1934,11 @@ export function mountMail(stage, options = {}) {
 
     const statusSpan = element("span", { className: "v8-mail-compose__status" });
 
+    const scheduleInput = element("input", {
+      className: "v8-input v8-mail-schedule",
+      attributes: { type: "datetime-local", "aria-label": "Envoyer plus tard" }
+    });
+
     const fileInput = element("input", {
       className: "v8-input v8-file-input",
       attributes: { type: "file", multiple: "true", "aria-label": "Pièces jointes" }
@@ -1622,6 +2008,7 @@ export function mountMail(stage, options = {}) {
       templateSelect,
       signatureSelect,
       editor.root,
+      scheduleInput,
       fileInput,
       attachmentList
     ]);
@@ -1666,6 +2053,8 @@ export function mountMail(stage, options = {}) {
 
     const fromName = state.alias?.from_name || state.alias?.name || "";
     const replyTo = state.alias?.reply_to || state.alias?.alias || state.alias || "";
+    const scheduleInput = composeRoot?.querySelector(".v8-mail-schedule");
+    const scheduledAt = scheduleInput?.value || undefined;
 
     return {
       to: splitAddresses(toInput?.value),
@@ -1679,7 +2068,8 @@ export function mountMail(stage, options = {}) {
       attachments: composeAttachments,
       draft_id: composeDraftId || undefined,
       in_reply_to: composeInReplyTo || undefined,
-      references: composeReferences || undefined
+      references: composeReferences || undefined,
+      scheduled_at: scheduledAt
     };
   }
 
@@ -1692,14 +2082,14 @@ export function mountMail(stage, options = {}) {
 
   async function saveDraftNow() {
     if (!mailApi || !composeEditor) return;
+    const status = composeRoot?.querySelector(".v8-mail-compose__status");
     try {
       const payload = collectPayload();
-      const result = await mailApi.saveDraft(payload);
-      composeDraftId = result?.data?.id || result?.id || composeDraftId;
-      const status = composeRoot?.querySelector(".v8-mail-compose__status");
-      if (status) status.textContent = "Enregistré";
+      const result = await withQueue("saveDraft", payload);
+      if (result?.data?.id) composeDraftId = result.data.id;
+      else if (result?.id) composeDraftId = result.id;
+      if (status) status.textContent = isOnline() ? "Enregistré" : "En attente";
     } catch (error) {
-      const status = composeRoot?.querySelector(".v8-mail-compose__status");
       if (status) status.textContent = "Erreur d'enregistrement";
       notify({ type: "error", title: "Brouillon", message: errorDescription(error) });
     }
@@ -1712,17 +2102,19 @@ export function mountMail(stage, options = {}) {
       notify({ type: "warning", title: "Mail", message: "Ajoutez au moins un destinataire." });
       return;
     }
+    const isScheduled = !!payload.scheduled_at;
     try {
-      await mailApi.send(payload);
-      notify({ type: "success", title: "Mail", message: "Message envoyé." });
-      if (composeDraftId) {
-        try { await mailApi.deleteDraft(composeDraftId); } catch {}
-      }
+      await withQueue("send", payload);
+      notify({ type: "success", title: "Mail", message: isScheduled ? "Message programmé." : "Message envoyé." });
+      const draftToDelete = composeDraftId;
       composeDraftId = null;
+      if (isOnline() && draftToDelete) {
+        try { await mailApi.deleteDraft(draftToDelete); } catch {}
+      }
       backToList();
       loadFolder();
     } catch (error) {
-      notify({ type: "error", title: "Échec de l'envoi", message: errorDescription(error) });
+      notify({ type: "error", title: isScheduled ? "Échec de la programmation" : "Échec de l'envoi", message: errorDescription(error) });
     }
   }
 
@@ -1735,6 +2127,9 @@ export function mountMail(stage, options = {}) {
   }
 
   async function init() {
+    await loadCached();
+    renderList();
+    renderSidebar();
     await Promise.all([loadAlias(), loadLabels(), loadContacts(), loadSignatures(), loadRules(), loadNotifications(), loadTemplates()]);
     renderSidebar();
     await loadFolder();
@@ -1751,6 +2146,8 @@ export function mountMail(stage, options = {}) {
   return () => {
     if (searchTimer) clearTimeout(searchTimer);
     if (draftTimer) clearTimeout(draftTimer);
+    globalThis.removeEventListener?.("online", onOnline);
+    globalThis.removeEventListener?.("offline", onOffline);
     page.remove();
   };
 }

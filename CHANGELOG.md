@@ -2,6 +2,21 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v293] - 2026-08-15
+
+**Phase 13b/c : ETHONE Mail — hors-ligne, bulk, snooze, programmation**
+
+### Ajoute
+- Mode hors-ligne : cache IndexedDB mail, file d'attente d'actions, synchronisation auto au retour en ligne.
+- Actions bulk : sélection multiple, archiver, supprimer, marquer lu/non lu, important, étiqueter, désétiqueter, snooze.
+- Snooze : bouton dans le détail et toolbar bulk avec options demain, 1 semaine, date personnalisée.
+- Envoi programmé : date d'envoi dans la composition, Worker `scheduled`, table outbox.
+- Réponse automatique via règles : `action_auto_reply` et traitement par le Worker `scheduled`.
+- Worker : routes `/api/mail/snooze`, `/api/mail/bulk`, `/api/mail/schedule` et exports `scheduled`.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v293`.
+
 ## [v292] - 2026-08-15
 
 **Phase 13a : ETHONE Mail — recherche avancée et templates**

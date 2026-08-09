@@ -57,9 +57,9 @@ import { youtubeActivityRoute, youtubeOAuthDisconnectRoute, youtubeOAuthExchange
 import { signOutRoute } from "./routes/signout.js";
 import { teamInviteRoute } from "./routes/team-invite.js";
 import {
-  mailAliasRoute, mailContactsRoute, mailDraftsRoute, mailInboxRoute,
-  mailLabelsRoute, mailMoveRoute, mailReadRoute, mailSearchRoute,
-  mailSendRoute, mailSignaturesRoute, mailThreadRoute
+  mailAliasRoute, mailBulkActionRoute, mailContactsRoute, mailDraftsRoute, mailInboxRoute,
+  mailLabelsRoute, mailMoveRoute, mailReadRoute, mailScheduleRoute, mailSearchRoute,
+  mailSendRoute, mailSignaturesRoute, mailSnoozeRoute, mailThreadRoute
 } from "./routes/mail.js";
 import { mailTemplatesRoute } from "./routes/mail-templates.js";
 import {
@@ -228,6 +228,9 @@ export const ROUTES = Object.freeze([
   route("mail.templates.create", "/api/mail/templates", mailTemplatesRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
   route("mail.templates.update", "/api/mail/templates", mailTemplatesRoute, { method: "PATCH", service: "mail", rateLimit: "standard" }),
   route("mail.templates.delete", "/api/mail/templates", mailTemplatesRoute, { method: "DELETE", service: "mail", rateLimit: "standard" }),
+  route("mail.snooze", "/api/mail/snooze", mailSnoozeRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+  route("mail.bulk", "/api/mail/bulk", mailBulkActionRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+  route("mail.schedule", "/api/mail/schedule", mailScheduleRoute, { method: "POST", service: "mail", rateLimit: "strict" }),
 
   // Mail brain
   route("mail.analyze", "/api/mail/analyze", mailAnalyzeRoute, { method: "POST", service: "mail", rateLimit: "strict" }),

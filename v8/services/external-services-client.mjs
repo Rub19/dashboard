@@ -120,11 +120,14 @@ const OPERATIONS = Object.freeze({
   mailSuggest: Object.freeze({ path: "/api/mail/suggest", method: "POST", auth: true, params: ["id"], rawBody: true }),
   mailExtract: Object.freeze({ path: "/api/mail/extract", method: "POST", auth: true, params: ["id"], rawBody: true }),
   mailRules: Object.freeze({ path: "/api/mail/rules", auth: true, params: ["limit"] }),
-  mailRuleSave: Object.freeze({ path: "/api/mail/rules", method: "POST", auth: true, params: ["id", "name", "is_active", "priority", "condition_from", "condition_domain", "condition_subject", "condition_body", "condition_has_attachments", "action_mark_read", "action_mark_important", "action_mark_spam", "action_archive", "action_move_to", "action_label", "action_forward_to"], rawBody: true }),
-  mailRuleUpdate: Object.freeze({ path: "/api/mail/rules", method: "PATCH", auth: true, params: ["id", "name", "is_active", "priority", "condition_from", "condition_domain", "condition_subject", "condition_body", "condition_has_attachments", "action_mark_read", "action_mark_important", "action_mark_spam", "action_archive", "action_move_to", "action_label", "action_forward_to"], rawBody: true }),
+  mailRuleSave: Object.freeze({ path: "/api/mail/rules", method: "POST", auth: true, params: ["id", "name", "is_active", "priority", "condition_from", "condition_domain", "condition_subject", "condition_body", "condition_has_attachments", "action_mark_read", "action_mark_important", "action_mark_spam", "action_archive", "action_move_to", "action_label", "action_forward_to", "action_auto_reply"], rawBody: true }),
+  mailRuleUpdate: Object.freeze({ path: "/api/mail/rules", method: "PATCH", auth: true, params: ["id", "name", "is_active", "priority", "condition_from", "condition_domain", "condition_subject", "condition_body", "condition_has_attachments", "action_mark_read", "action_mark_important", "action_mark_spam", "action_archive", "action_move_to", "action_label", "action_forward_to", "action_auto_reply"], rawBody: true }),
   mailRuleDelete: Object.freeze({ path: "/api/mail/rules", method: "DELETE", auth: true, params: ["id"], rawBody: true }),
   mailNotifications: Object.freeze({ path: "/api/mail/notifications", auth: true, params: ["unread", "limit"] }),
-  mailNotificationRead: Object.freeze({ path: "/api/mail/notifications", method: "PATCH", auth: true, params: ["id", "is_read"], rawBody: true })
+  mailNotificationRead: Object.freeze({ path: "/api/mail/notifications", method: "PATCH", auth: true, params: ["id", "is_read"], rawBody: true }),
+  mailSnooze: Object.freeze({ path: "/api/mail/snooze", method: "POST", auth: true, params: ["id", "snoozed_until"], rawBody: true }),
+  mailBulk: Object.freeze({ path: "/api/mail/bulk", method: "POST", auth: true, params: ["ids", "action", "target"], rawBody: true }),
+  mailSchedule: Object.freeze({ path: "/api/mail/schedule", method: "POST", auth: true, params: ["to", "cc", "bcc", "subject", "text", "html", "attachments", "scheduled_at"], rawBody: true })
 });
 
 function clientError(code, message, details = {}) {
@@ -476,6 +479,9 @@ export function createExternalServicesClient(options = {}) {
       saveRule: (payload) => execute("mailRuleSave", payload),
       updateRule: (payload) => execute("mailRuleUpdate", payload),
       deleteRule: (id) => execute("mailRuleDelete", { id }),
+      snooze: (id, snoozedUntil) => execute("mailSnooze", { id, snoozed_until: snoozedUntil }),
+      bulk: (ids, action, target) => execute("mailBulk", { ids, action, target }),
+      schedule: (payload) => execute("mailSchedule", payload),
       notifications: ({ unread, limit } = {}) => execute("mailNotifications", { unread, limit }),
       markNotificationRead: (id, isRead) => execute("mailNotificationRead", { id, is_read: isRead })
     }),

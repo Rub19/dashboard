@@ -6,6 +6,8 @@ import { findRoute, routesForPath } from "./router.js";
 import { requestIdFor, writeRequestLog } from "./utils/observability.js";
 import { errorResponse, routeResult, successResponse } from "./utils/response.js";
 import { mailReceiveHandler } from "./routes/mail.js";
+import { sendScheduledMessages } from "./services/mail-client.js";
+import { processOutbox } from "./services/mail-outbox.js";
 
 function securityHeaders(response) {
   const headers = new Headers(response.headers);
@@ -82,7 +84,19 @@ async function handleEmail(message, env, executionCtx) {
   return null;
 }
 
+async function handleScheduled(event, env, executionCtx) {
+  try {
+    await processOutbox(env);
+    await sendScheduledMessages(env);
+  } catch (error) {
+    if (env.ENVIRONMENT !== "production") {
+      console.error("Scheduled mail error:", error);
+    }
+  }
+}
+
 export default Object.freeze({
   fetch: handleRequest,
-  email: handleEmail
+  email: handleEmail,
+  scheduled: handleScheduled
 });

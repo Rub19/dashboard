@@ -24,6 +24,15 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v293", "2026-08-15", "Phase 13b/c : ETHONE Mail — hors-ligne, bulk, snooze, programmation", [
+    { kind: "feature", text: "Mode hors-ligne : cache IndexedDB mail, file d'attente d'actions, synchronisation auto au retour en ligne." },
+    { kind: "feature", text: "Actions bulk : sélection multiple, archiver, supprimer, marquer lu/non lu, important, étiqueter, désétiqueter, snooze." },
+    { kind: "feature", text: "Snooze : bouton dans le détail et toolbar bulk avec options demain, 1 semaine, date personnalisée." },
+    { kind: "feature", text: "Envoi programmé : date d'envoi dans la composition, Worker scheduled, table outbox." },
+    { kind: "feature", text: "Réponse automatique via règles : action_auto_reply et traitement par le Worker scheduled." },
+    { kind: "improvement", text: "Worker : routes /api/mail/snooze, /api/mail/bulk, /api/mail/schedule et exports scheduled." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v293." }
+  ]),
   entry("v292", "2026-08-15", "Phase 13a : ETHONE Mail — recherche avancée et templates", [
     { kind: "feature", text: "Recherche mail avancée : expéditeur, sujet, corps, dates, pièces jointes, étiquettes, dossier." },
     { kind: "feature", text: "Templates de réponse : CRUD, défaut, sélecteur dans la composition, action Brain 'mail.template'." },

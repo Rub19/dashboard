@@ -13,6 +13,7 @@ import {
   listMessages,
   resolveAliasByEmail,
   sendMailViaResend,
+  snoozeMessage,
   storeMailMessage,
   updateMailMessage,
   upsertContact
@@ -679,6 +680,7 @@ export async function mailReceiveHandler(message, env, context) {
     is_read: processed.is_read,
     is_important: processed.is_important,
     is_spam: processed.is_spam,
+    auto_reply_sent: processed.auto_reply_sent === true,
     labels: Array.isArray(processed.labels) ? processed.labels : []
   };
   await updateMailMessage(env, saved.id, userId, patch).catch(() => null);
@@ -687,4 +689,131 @@ export async function mailReceiveHandler(message, env, context) {
   await upsertContact(env, userId, { email: from, name: fromName, direction: "inbound" }).catch(() => null);
 
   return saved;
+}
+
+export async function mailSnoozeRoute({ request, env, auth }) {
+  if (request.method !== "POST") throw httpError("METHOD_NOT_ALLOWED", 405);
+
+  if (!auth?.userId) throw httpError("UNAUTHORIZED", 401);
+
+  const body = await request.json().catch(() => ({}));
+  const id = safeText(body.id, 64);
+  if (!id) throw httpError("INVALID_PARAMETER", 400, { detail: "id" });
+
+  if (body.snoozed_until === undefined) throw httpError("INVALID_PARAMETER", 400, { detail: "snoozed_until" });
+  const snoozedUntil = body.snoozed_until === null ? null : new Date(body.snoozed_until);
+  if (body.snoozed_until !== null && !Number.isFinite(snoozedUntil.getTime())) {
+    throw httpError("INVALID_PARAMETER", 400, { detail: "snoozed_until" });
+  }
+
+  await snoozeMessage(env, id, auth.userId, snoozedUntil);
+  return { data: { snoozed: true } };
+}
+
+export async function mailBulkActionRoute({ request, env, auth }) {
+  if (request.method !== "POST") throw httpError("METHOD_NOT_ALLOWED", 405);
+
+  if (!auth?.userId) throw httpError("UNAUTHORIZED", 401);
+
+  const body = await request.json().catch(() => ({}));
+  const ids = Array.isArray(body.ids) ? body.ids.map((id) => safeText(id, 64)).filter(Boolean) : [];
+  if (!ids.length) throw httpError("INVALID_PARAMETER", 400, { detail: "ids" });
+
+  const action = safeText(body.action, 40)?.toLowerCase();
+  const target = safeText(body.target, 40);
+  if (!action) throw httpError("INVALID_PARAMETER", 400, { detail: "action" });
+
+  const allowedActions = new Set(["move", "delete", "read", "unread", "star", "unstar", "important", "unimportant", "label", "unlabel"]);
+  if (!allowedActions.has(action)) throw httpError("INVALID_PARAMETER", 400, { detail: "action" });
+
+  for (const id of ids) {
+    if (action === "move") {
+      const folder = allowedFolder(target);
+      const patch = { folder, is_spam: folder === "spam" };
+      if (folder === "trash") patch.deleted_at = new Date().toISOString();
+      else if (["inbox", "archive", "spam"].includes(folder)) patch.deleted_at = null;
+      await updateMailMessage(env, id, auth.userId, patch).catch(() => null);
+    } else if (action === "delete") {
+      await updateMailMessage(env, id, auth.userId, { folder: "trash", deleted_at: new Date().toISOString() }).catch(() => null);
+    } else if (action === "read" || action === "unread") {
+      await updateMailMessage(env, id, auth.userId, { is_read: action === "read" }).catch(() => null);
+    } else if (action === "star" || action === "unstar") {
+      await updateMailMessage(env, id, auth.userId, { is_starred: action === "star" }).catch(() => null);
+    } else if (action === "important" || action === "unimportant") {
+      await updateMailMessage(env, id, auth.userId, { is_important: action === "important" }).catch(() => null);
+    } else if (action === "label" || action === "unlabel") {
+      if (!target) continue;
+      const current = await supabaseRequest(env, `/rest/v1/ethone_mail_messages?id=eq.${id}&user_id=eq.${auth.userId}&select=labels`, {
+        method: "GET",
+        headers: { "Accept": "application/vnd.pgrst.object+json" },
+        maxBytes: 2048
+      }).then(firstRow).catch(() => null);
+      const labels = new Set(Array.isArray(current?.labels) ? current.labels : []);
+      if (action === "label") labels.add(target);
+      else labels.delete(target);
+      await updateMailMessage(env, id, auth.userId, { labels: Array.from(labels) }).catch(() => null);
+    }
+  }
+
+  return { data: { updated: ids.length } };
+}
+
+export async function mailScheduleRoute({ request, env, auth }) {
+  if (request.method !== "POST") throw httpError("METHOD_NOT_ALLOWED", 405);
+
+  if (!auth?.userId) throw httpError("UNAUTHORIZED", 401);
+
+  const body = await request.json().catch(() => ({}));
+  const to = safeEmailList(body.to);
+  const cc = safeEmailList(body.cc);
+  const bcc = safeEmailList(body.bcc);
+  const subject = safeText(body.subject, 998);
+  const text = safeText(body.text, 10000);
+  const html = safeText(body.html, 50000);
+  const attachments = Array.isArray(body.attachments) ? body.attachments.slice(0, 10) : [];
+
+  if (!to.length && !cc.length && !bcc.length) throw httpError("INVALID_PARAMETER", 400, { detail: "to" });
+  if (!subject && !text && !html) throw httpError("INVALID_PARAMETER", 400, { detail: "subject or body" });
+  if (!body.scheduled_at) throw httpError("INVALID_PARAMETER", 400, { detail: "scheduled_at" });
+
+  const scheduledAt = new Date(body.scheduled_at);
+  if (!Number.isFinite(scheduledAt.getTime())) throw httpError("INVALID_PARAMETER", 400, { detail: "scheduled_at" });
+  if (scheduledAt <= new Date()) throw httpError("INVALID_PARAMETER", 400, { detail: "scheduled_at" });
+
+  const alias = await getOrCreatePrimaryAlias(env, auth.userId, auth.displayName || auth.email);
+  if (!alias) throw httpError("SERVICE_ERROR", 500, { detail: "alias" });
+
+  const now = new Date().toISOString();
+  const create = await supabaseRequest(env, "/rest/v1/ethone_mail_messages?select=id", {
+    method: "POST",
+    headers: { "Prefer": "return=representation" },
+    body: {
+      user_id: auth.userId,
+      alias_id: alias.id,
+      direction: "outbound",
+      folder: "drafts",
+      status: "scheduled",
+      from_address: alias.alias,
+      from_name: alias.display_name || "ETHONE",
+      to_addresses: to,
+      cc_addresses: cc,
+      bcc_addresses: bcc,
+      subject,
+      body_text: text,
+      body_html: html,
+      is_read: true,
+      attachments: attachments.map((a) => ({
+        filename: safeText(a.filename, 255),
+        mime_type: safeText(a.mime_type, 120) || "application/octet-stream",
+        size: Number(a.size) || 0,
+        content: String(a.content || "").slice(0, 2 * 1024 * 1024)
+      })),
+      scheduled_at: scheduledAt.toISOString(),
+      received_at: now,
+      created_at: now
+    },
+    maxBytes: 8192
+  });
+
+  return { data: { scheduled: true, id: firstRow(create)?.id } };
 }

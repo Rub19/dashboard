@@ -1,6 +1,7 @@
 import { requestExternal } from "../utils/external-request.js";
 import { askGroq } from "../services/groq-client.js";
 import { updateMailMessage } from "../services/mail-client.js";
+import { createAutoReplyOutbox } from "../services/mail-outbox.js";
 
 const URGENT_WORDS = ["urgent", "important", "asap", "facture", "paiement", "echeance", "deadline"];
 const ALLOWED_FOLDERS = new Set(["inbox", "starred", "sent", "drafts", "archive", "spam", "trash"]);
@@ -109,7 +110,7 @@ export async function getRules(env, userId) {
   return Array.isArray(response?.data) ? response.data : [];
 }
 
-export function applyRules(env, userId, message, rules) {
+export async function applyRules(env, userId, message, rules) {
   if (!message || !Array.isArray(rules)) return { ruleIds: [], message };
   const applied = [];
   for (const rule of rules) {
@@ -142,6 +143,10 @@ export function applyRules(env, userId, message, rules) {
       const labels = new Set(Array.isArray(message.labels) ? message.labels : []);
       labels.add(safeText(rule.action_label, 40));
       message.labels = Array.from(labels);
+    }
+    if (rule.auto_reply && !message.auto_reply_sent) {
+      const queued = await createAutoReplyOutbox(env, userId, message.id, rule.auto_reply).catch(() => null);
+      if (queued) message.auto_reply_sent = true;
     }
     applied.push(rule.id);
   }

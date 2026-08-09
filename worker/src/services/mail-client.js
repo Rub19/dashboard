@@ -424,6 +424,89 @@ export async function countUnreadInFolder(env, userId, folder) {
   return Array.isArray(response?.data) ? response.data.length : 0;
 }
 
+export function snoozeMessage(env, messageId, userId, snoozedUntil) {
+  const origin = projectOrigin(env);
+  if (!origin || !messageId || !userId) return Promise.resolve(null);
+  const patch = { snoozed_until: null };
+  if (snoozedUntil != null) {
+    const date = new Date(snoozedUntil);
+    if (!Number.isFinite(date.getTime())) return Promise.resolve(null);
+    patch.snoozed_until = date.toISOString();
+  }
+  return updateMailMessage(env, messageId, userId, patch);
+}
+
+export async function getScheduledMessages(env, userId = null) {
+  const origin = projectOrigin(env);
+  if (!origin) return [];
+  const now = new Date().toISOString();
+  let path = `/rest/v1/ethone_mail_messages?folder=eq.drafts&scheduled_at=not.is.null&scheduled_at=lte.${encodeURIComponent(now)}`;
+  if (userId) path += `&user_id=eq.${userId}`;
+  path += `&order=scheduled_at.asc&limit=100`;
+  const response = await supabaseRequest(env, path, { method: "GET", maxBytes: 65536 });
+  return Array.isArray(response?.data) ? response.data : [];
+}
+
+export async function getMessageById(env, userId, messageId, select = "*") {
+  const origin = projectOrigin(env);
+  if (!origin || !userId || !messageId) return null;
+  const response = await supabaseRequest(env, `/rest/v1/ethone_mail_messages?id=eq.${messageId}&user_id=eq.${userId}&select=${encodeURIComponent(select)}&limit=1`, {
+    method: "GET",
+    headers: { "Accept": "application/vnd.pgrst.object+json" },
+    maxBytes: 65536
+  });
+  return firstRow(response);
+}
+
+async function sendOneScheduledMessage(env, message) {
+  const now = new Date().toISOString();
+  const from = message.from_name
+    ? `${safeText(message.from_name, 200)} <${safeText(message.from_address, 320)}>`
+    : safeText(message.from_address, 320);
+  const to = Array.isArray(message.to_addresses) ? message.to_addresses : [message.to_addresses].filter(Boolean);
+  const cc = Array.isArray(message.cc_addresses) ? message.cc_addresses : [message.cc_addresses].filter(Boolean);
+  const bcc = Array.isArray(message.bcc_addresses) ? message.bcc_addresses : [message.bcc_addresses].filter(Boolean);
+  const attachments = Array.isArray(message.attachments) ? message.attachments : [];
+  const result = await sendMailViaResend(env, {
+    from,
+    to,
+    cc,
+    bcc,
+    subject: message.subject,
+    text: message.body_text,
+    html: message.body_html,
+    replyTo: message.reply_to || null,
+    attachments,
+    inReplyTo: message.in_reply_to || null,
+    references: Array.isArray(message.references) ? message.references : []
+  });
+  const headers = typeof message.headers === "object" && message.headers ? { ...message.headers } : {};
+  if (result?.data?.id) headers["Message-ID"] = `<${result.data.id}>`;
+  await updateMailMessage(env, message.id, message.user_id, {
+    folder: "sent",
+    status: "sent",
+    scheduled_at: null,
+    sent_at: now,
+    headers
+  });
+  if (message.thread_id) {
+    await supabaseRequest(env, `/rest/v1/ethone_mail_threads?id=eq.${message.thread_id}&user_id=eq.${message.user_id}`, {
+      method: "PATCH",
+      headers: { "Prefer": "return=minimal" },
+      body: { message_count: 1, last_message_at: now },
+      maxBytes: 2048
+    }).catch(() => null);
+  }
+  return result;
+}
+
+export async function sendScheduledMessages(env) {
+  const messages = await getScheduledMessages(env);
+  for (const message of messages) {
+    await sendOneScheduledMessage(env, message).catch(() => null);
+  }
+}
+
 export async function sendMailViaResend(env, { from, to, cc = [], bcc = [], subject, text, html, replyTo, attachments = [], inReplyTo, references = [] }) {
   const resendKey = env.RESEND_API_KEY;
   if (!resendKey) throw new Error("Email service not configured");

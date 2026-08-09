@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v294] - 2026-08-16
+
+**Phase 14 : ETHONE Mail — analytics, sécurité et confiance**
+
+### Ajoute
+- Analytics mail : volumes envoyés/reçus, contacts fréquents, heures de pointe, stockage, règles actives, tendances 7/30/90 jours.
+- Sécurité et confiance : vérification SPF/DKIM/DMARC, détection d'hameçonnage, expéditeurs bloqués et liste de confiance.
+- Dossier Corbeille pour expéditeurs bloqués et contournement de la détection spam pour expéditeurs de confiance.
+- Tests E2E du Worker (`worker/test/mail.test.mjs`) : 16 scénarios couvrant envoi, brouillons, recherche, déplacement, étiquettes, règles, templates, signatures, snooze, bulk, programmation, analytics, blocage/confiance et analyse Groq.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v294`.
+
 ## [v293] - 2026-08-15
 
 **Phase 13b/c : ETHONE Mail — hors-ligne, bulk, snooze, programmation**

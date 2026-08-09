@@ -62,6 +62,7 @@ import {
   mailSendRoute, mailSignaturesRoute, mailSnoozeRoute, mailThreadRoute
 } from "./routes/mail.js";
 import { mailTemplatesRoute } from "./routes/mail-templates.js";
+import { mailAnalyticsRoute } from "./routes/mail-analytics.js";
 import {
   mailAnalyzeRoute,
   mailExtractRoute,
@@ -69,6 +70,7 @@ import {
   mailRulesRoute,
   mailSuggestRoute
 } from "./routes/mail-brain.js";
+import { mailBlockedRoute, mailTrustedRoute } from "./routes/mail-security.js";
 import {
   passkeyRegisterOptionsRoute,
   passkeyRegisterRoute,
@@ -231,6 +233,15 @@ export const ROUTES = Object.freeze([
   route("mail.snooze", "/api/mail/snooze", mailSnoozeRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
   route("mail.bulk", "/api/mail/bulk", mailBulkActionRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
   route("mail.schedule", "/api/mail/schedule", mailScheduleRoute, { method: "POST", service: "mail", rateLimit: "strict" }),
+  route("mail.analytics", "/api/mail/analytics", mailAnalyticsRoute, { service: "mail", rateLimit: "standard" }),
+
+  // Mail security
+  route("mail.blocked", "/api/mail/blocked", mailBlockedRoute, { service: "mail", rateLimit: "standard" }),
+  route("mail.block", "/api/mail/blocked", mailBlockedRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+  route("mail.unblock", "/api/mail/blocked", mailBlockedRoute, { method: "DELETE", service: "mail", rateLimit: "standard" }),
+  route("mail.trusted", "/api/mail/trusted", mailTrustedRoute, { service: "mail", rateLimit: "standard" }),
+  route("mail.trust", "/api/mail/trusted", mailTrustedRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+  route("mail.untrust", "/api/mail/trusted", mailTrustedRoute, { method: "DELETE", service: "mail", rateLimit: "standard" }),
 
   // Mail brain
   route("mail.analyze", "/api/mail/analyze", mailAnalyzeRoute, { method: "POST", service: "mail", rateLimit: "strict" }),

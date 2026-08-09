@@ -107,7 +107,7 @@ wrangler deploy
 
 1. Publier les fichiers statiques (racine `index.html`, `sw.js`, `v8/`, `worker/` non inclus) sur le domaine final.
 2. S'assurer que `sw.js` est servi avec `Content-Type: application/javascript` et `Cache-Control: no-cache`.
-3. Vider le cache navigateur / unregister le SW pour forcer `experience-v293`.
+3. Vider le cache navigateur / unregister le SW pour forcer `experience-v294`.
 
 ## 6. Vérifications post-déploiement
 
@@ -129,16 +129,22 @@ wrangler deploy
 - `supabase/migrations/202608140001_ethone_mail_phase_b.sql`
 - `supabase/migrations/202608150001_ethone_mail_phase_c1.sql`
 - `supabase/migrations/202608150002_ethone_mail_phase_c23.sql`
+- `supabase/migrations/202608160001_ethone_mail_phase_d.sql`
 - `worker/src/services/mail-brain.js`
 - `worker/src/routes/mail-brain.js`
 - `worker/src/services/mail-templates.js`
 - `worker/src/routes/mail-templates.js`
 - `worker/src/services/mail-outbox.js`
+- `worker/src/services/mail-analytics.js`
+- `worker/src/routes/mail-analytics.js`
+- `worker/src/services/mail-security.js`
+- `worker/src/routes/mail-security.js`
 - `v8/services/mail-cache.mjs`
+- `worker/test/mail.test.mjs`
 
 ### Modifiés
 
-- `index.html`, `404.html`, `sw.js` (experience-v293)
+- `index.html`, `404.html`, `sw.js` (experience-v294)
 - `v8/core/style-loader.mjs`
 - `v8/data/changelog.mjs`
 - `CHANGELOG.md`
@@ -150,7 +156,11 @@ wrangler deploy
 - `worker/src/routes/mail.js`
 - `worker/src/services/mail-client.js`
 - `worker/src/router.js`
+- `worker/src/services/mail-analytics.js`
+- `worker/src/routes/mail-analytics.js`
+- `worker/src/services/mail-security.js`
+- `worker/src/routes/mail-security.js`
 
 ## 8. Changelog
 
-Entrées `v290`, `v291`, `v292` et `v293` ajoutées dans `v8/data/changelog.mjs` et `CHANGELOG.md`.
+Entrées `v290`, `v291`, `v292`, `v293` et `v294` ajoutées dans `v8/data/changelog.mjs` et `CHANGELOG.md`.

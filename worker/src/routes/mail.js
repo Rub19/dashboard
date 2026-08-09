@@ -19,6 +19,7 @@ import {
   upsertContact
 } from "../services/mail-client.js";
 import { applyRules, createNotification, detectImportance, getRules } from "../services/mail-brain.js";
+import { extractSourceIp, isBlocked, isTrusted, parseAuthResults } from "../services/mail-security.js";
 
 function safeText(value, limit = 320) {
   const raw = String(value ?? "").replace(/[\u0000-\u001f\u007f]/g, "").trim();
@@ -71,6 +72,12 @@ function supabaseRequest(env, path, options = {}) {
     retries: options.retries ?? 0,
     maxBytes: options.maxBytes ?? 8192
   });
+}
+
+function computeMessageSize(body, attachments = []) {
+  const bodySize = JSON.stringify(body).length;
+  const attachmentSize = attachments.reduce((sum, a) => sum + (Number(a?.size) || 0), 0);
+  return Math.max(0, bodySize + attachmentSize);
 }
 
 function firstRow(response) {
@@ -194,6 +201,7 @@ export async function mailSendRoute({ request, env, auth }) {
     },
     is_read: true,
     attachments: attachments.map((a) => ({ filename: a.filename, size: a.size, mime_type: a.mime_type || "application/octet-stream" })),
+    message_size: computeMessageSize(body, attachments),
     sent_at: now,
     received_at: now
   };
@@ -639,12 +647,18 @@ export async function mailReceiveHandler(message, env, context) {
   const fromName = message.headers.get("from")?.replace(/<[^>]+>/, "").trim() || from;
   const attachments = Array.isArray(message.attachments) ? message.attachments : [];
 
+  const authResults = parseAuthResults(message.headers);
+  const sourceIp = extractSourceIp(message);
+
+  const blockCheck = await isBlocked(env, userId, from).catch(() => ({ blocked: false, rule: null }));
+  const trustCheck = !blockCheck.blocked ? await isTrusted(env, userId, from).catch(() => ({ trusted: false, rule: null })) : { trusted: false, rule: null };
+
   const dbMessage = {
     user_id: userId,
     alias_id: alias?.id || null,
     thread_id: threadId,
     direction: "inbound",
-    folder: "inbox",
+    folder: blockCheck.blocked ? "trash" : "inbox",
     status: "received",
     from_address: from,
     from_name: fromName,
@@ -657,9 +671,12 @@ export async function mailReceiveHandler(message, env, context) {
     body_html: html,
     headers: Object.fromEntries(message.headers.entries()),
     raw_size: message.rawSize || 0,
+    message_size: message.rawSize || 0,
+    source_ip: sourceIp,
+    auth_results: authResults,
     is_read: false,
     is_important: false,
-    is_spam: false,
+    is_spam: blockCheck.blocked,
     labels: [],
     attachments,
     received_at: now,
@@ -670,9 +687,19 @@ export async function mailReceiveHandler(message, env, context) {
   const saved = firstRow(stored);
   if (!saved?.id) return null;
 
+  if (blockCheck.blocked) {
+    return saved;
+  }
+
   const brainMessage = { ...dbMessage, id: saved.id, in_reply_to: inReplyTo || null };
   const rules = await getRules(env, userId);
   const { ruleIds, message: processed } = await applyRules(env, userId, brainMessage, rules);
+
+  if (trustCheck.trusted) {
+    processed.is_spam = false;
+    if (processed.folder === "spam") processed.folder = dbMessage.folder;
+  }
+
   await detectImportance(env, userId, processed);
 
   const patch = {
@@ -680,6 +707,8 @@ export async function mailReceiveHandler(message, env, context) {
     is_read: processed.is_read,
     is_important: processed.is_important,
     is_spam: processed.is_spam,
+    source_ip: sourceIp,
+    auth_results: authResults,
     auto_reply_sent: processed.auto_reply_sent === true,
     labels: Array.isArray(processed.labels) ? processed.labels : []
   };
@@ -808,6 +837,7 @@ export async function mailScheduleRoute({ request, env, auth }) {
         size: Number(a.size) || 0,
         content: String(a.content || "").slice(0, 2 * 1024 * 1024)
       })),
+      message_size: computeMessageSize(body, attachments),
       scheduled_at: scheduledAt.toISOString(),
       received_at: now,
       created_at: now

@@ -127,7 +127,14 @@ const OPERATIONS = Object.freeze({
   mailNotificationRead: Object.freeze({ path: "/api/mail/notifications", method: "PATCH", auth: true, params: ["id", "is_read"], rawBody: true }),
   mailSnooze: Object.freeze({ path: "/api/mail/snooze", method: "POST", auth: true, params: ["id", "snoozed_until"], rawBody: true }),
   mailBulk: Object.freeze({ path: "/api/mail/bulk", method: "POST", auth: true, params: ["ids", "action", "target"], rawBody: true }),
-  mailSchedule: Object.freeze({ path: "/api/mail/schedule", method: "POST", auth: true, params: ["to", "cc", "bcc", "subject", "text", "html", "attachments", "scheduled_at"], rawBody: true })
+  mailSchedule: Object.freeze({ path: "/api/mail/schedule", method: "POST", auth: true, params: ["to", "cc", "bcc", "subject", "text", "html", "attachments", "scheduled_at"], rawBody: true }),
+  mailAnalytics: Object.freeze({ path: "/api/mail/analytics", auth: true, params: ["period", "folder"] }),
+  mailBlocked: Object.freeze({ path: "/api/mail/blocked", auth: true, params: ["limit"] }),
+  mailBlock: Object.freeze({ path: "/api/mail/blocked", method: "POST", auth: true, params: ["email", "domain", "reason"], rawBody: true }),
+  mailUnblock: Object.freeze({ path: "/api/mail/blocked", method: "DELETE", auth: true, params: ["id"], rawBody: true }),
+  mailTrusted: Object.freeze({ path: "/api/mail/trusted", auth: true, params: ["limit"] }),
+  mailTrust: Object.freeze({ path: "/api/mail/trusted", method: "POST", auth: true, params: ["email", "domain"], rawBody: true }),
+  mailUntrust: Object.freeze({ path: "/api/mail/trusted", method: "DELETE", auth: true, params: ["id"], rawBody: true })
 });
 
 function clientError(code, message, details = {}) {
@@ -483,7 +490,14 @@ export function createExternalServicesClient(options = {}) {
       bulk: (ids, action, target) => execute("mailBulk", { ids, action, target }),
       schedule: (payload) => execute("mailSchedule", payload),
       notifications: ({ unread, limit } = {}) => execute("mailNotifications", { unread, limit }),
-      markNotificationRead: (id, isRead) => execute("mailNotificationRead", { id, is_read: isRead })
+      markNotificationRead: (id, isRead) => execute("mailNotificationRead", { id, is_read: isRead }),
+      analytics: (period, folder) => execute("mailAnalytics", { period, folder }),
+      blocked: (limit) => execute("mailBlocked", limit ? { limit } : {}),
+      blockSender: (payload) => execute("mailBlock", payload),
+      unblockSender: (id) => execute("mailUnblock", { id }),
+      trusted: (limit) => execute("mailTrusted", limit ? { limit } : {}),
+      trustSender: (payload) => execute("mailTrust", payload),
+      untrustSender: (id) => execute("mailUntrust", { id })
     }),
     diagnostics: () => Object.freeze({ ...status, activeRequests: activeControllers.size, environment: config.environment, baseUrl: network.redactUrl?.(baseUrl) || baseUrl }),
     destroy

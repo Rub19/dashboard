@@ -40,6 +40,30 @@ function text2br(text) {
   return String(text || "").replace(/\n/g, "<br>");
 }
 
+function clean(value, fallback = "", limit = 400) {
+  return (String(value ?? "").replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim() || fallback).slice(0, limit);
+}
+
+function formatSize(bytes) {
+  const value = Math.max(0, Number(bytes) || 0);
+  if (value < 1024) return `${value} o`;
+  if (value < 1024 * 1024) return `${(value / 1024).toFixed(1)} Ko`;
+  if (value < 1024 * 1024 * 1024) return `${(value / (1024 * 1024)).toFixed(1)} Mo`;
+  return `${(value / (1024 * 1024 * 1024)).toFixed(1)} Go`;
+}
+
+function buildBar(label, value, max, unit = "") {
+  const percent = max > 0 ? Math.round((value / max) * 100) : 0;
+  const text = `${value}${unit}`;
+  return element("div", { className: "v8-mail-analytics__bar-row" }, [
+    element("span", { className: "v8-mail-analytics__bar-label", text: label }),
+    element("div", { className: "v8-mail-analytics__bar-track" }, [
+      element("div", { className: "v8-mail-analytics__bar-fill", attributes: { style: `width: ${percent}%` } })
+    ]),
+    element("span", { className: "v8-mail-analytics__bar-value", text: text })
+  ]);
+}
+
 function initials(name) {
   return String(name || "")
     .split(/\s+/)
@@ -155,7 +179,14 @@ export function mountMail(stage, options = {}) {
     unreadCount: 0,
     rules: [],
     notificationOpen: false,
-    selectedIds: new Set()
+    selectedIds: new Set(),
+    analytics: null,
+    analyticsPeriod: 30,
+    analyticsOpen: false,
+    blocked: [],
+    trusted: [],
+    securityTab: "blocked",
+    securityLoading: false
   };
 
   let searchTimer = null;
@@ -181,6 +212,7 @@ export function mountMail(stage, options = {}) {
   let masterCheckbox = null;
   let bulkToolbar = null;
   let snoozeDialog = null;
+  let analyticsPanel = null;
 
   const page = element("section", { className: "v8-page v8-mail", dataset: { page: "mail" } });
   const layout = element("div", { className: "v8-mail-layout is-list" });
@@ -247,9 +279,10 @@ export function mountMail(stage, options = {}) {
   ]);
 
   const messageList = element("ul", { className: "v8-mail-list" });
+  analyticsPanel = element("section", { className: "v8-mail-analytics", attributes: { hidden: "" } });
   bulkToolbar = buildBulkToolbar();
   snoozeDialog = buildSnoozeDialog();
-  listWrap.append(listHeader, filterPanel, bulkToolbar, messageList);
+  listWrap.append(listHeader, filterPanel, bulkToolbar, messageList, analyticsPanel);
   page.append(snoozeDialog);
 
   menuButton.addEventListener("click", () => sidebar.classList.toggle("is-open"));
@@ -475,6 +508,95 @@ export function mountMail(stage, options = {}) {
     renderSidebar();
   }
 
+  async function loadSecurity() {
+    if (!mailApi?.blocked || !mailApi?.trusted) {
+      state.blocked = [];
+      state.trusted = [];
+      return;
+    }
+    state.securityLoading = true;
+    try {
+      const [blockedResult, trustedResult] = await Promise.all([
+        mailApi.blocked(50),
+        mailApi.trusted(50)
+      ]);
+      state.blocked = Array.isArray(blockedResult) ? blockedResult : (blockedResult?.data || []);
+      state.trusted = Array.isArray(trustedResult) ? trustedResult : (trustedResult?.data || []);
+    } catch (error) {
+      notify({ type: "error", title: "Sécurité", message: errorDescription(error) });
+      state.blocked = [];
+      state.trusted = [];
+    }
+    state.securityLoading = false;
+    renderSidebar();
+  }
+
+  async function blockSenderFrom(email, domain, reason = "manual") {
+    if (!mailApi?.blockSender) return;
+    try {
+      await mailApi.blockSender({ email, domain, reason });
+      notify({ type: "success", title: "Sécurité", message: "Expéditeur bloqué." });
+      await loadSecurity();
+    } catch (error) {
+      notify({ type: "error", title: "Sécurité", message: errorDescription(error) });
+    }
+  }
+
+  async function trustSenderFrom(email, domain) {
+    if (!mailApi?.trustSender) return;
+    try {
+      await mailApi.trustSender({ email, domain });
+      notify({ type: "success", title: "Sécurité", message: "Expéditeur fiable." });
+      await loadSecurity();
+    } catch (error) {
+      notify({ type: "error", title: "Sécurité", message: errorDescription(error) });
+    }
+  }
+
+  async function unblockSenderFrom(id) {
+    if (!mailApi?.unblockSender) return;
+    try {
+      await mailApi.unblockSender(id);
+      notify({ type: "success", title: "Sécurité", message: "Bloc retiré." });
+      await loadSecurity();
+    } catch (error) {
+      notify({ type: "error", title: "Sécurité", message: errorDescription(error) });
+    }
+  }
+
+  async function untrustSenderFrom(id) {
+    if (!mailApi?.untrustSender) return;
+    try {
+      await mailApi.untrustSender(id);
+      notify({ type: "success", title: "Sécurité", message: "Confiance retirée." });
+      await loadSecurity();
+    } catch (error) {
+      notify({ type: "error", title: "Sécurité", message: errorDescription(error) });
+    }
+  }
+
+  function domainFromEmail(email) {
+    return String(email || "").split("@")[1] || "";
+  }
+
+  function buildSecurityBar(message) {
+    const auth = message.auth_results || {};
+    const sourceIp = message.source_ip || "";
+    const badge = (label, value) => {
+      const status = ["pass", "fail", "neutral"].includes(value) ? value : "none";
+      return element("span", { className: `v8-mail-security__badge is-${status}`, text: `${label} ${value || "none"}` });
+    };
+    const children = [
+      badge("SPF", auth.spf),
+      badge("DKIM", auth.dkim),
+      badge("DMARC", auth.dmarc)
+    ];
+    if (sourceIp) {
+      children.push(element("span", { className: "v8-mail-security__source", text: `IP: ${sourceIp}` }));
+    }
+    return element("div", { className: "v8-mail-security-bar" }, children);
+  }
+
   async function saveRule(payload) {
     if (!mailApi?.saveRule) return;
     try {
@@ -655,6 +777,119 @@ export function mountMail(stage, options = {}) {
     renderSidebar();
   }
 
+  async function loadAnalytics(period) {
+    if (!mailApi?.analytics) {
+      notify({ type: "warning", title: "Analytique", message: "L'analytique n'est pas disponible." });
+      return;
+    }
+    try {
+      state.analyticsOpen = true;
+      state.analyticsPeriod = period;
+      state.loading = true;
+      renderAnalyticsLoading();
+      const result = await mailApi.analytics(period);
+      state.analytics = result?.data || null;
+      state.loading = false;
+      if (!state.analytics) {
+        notify({ type: "warning", title: "Analytique", message: "Aucune donnée disponible." });
+        closeAnalytics();
+        return;
+      }
+      renderAnalytics(state.analytics);
+    } catch (error) {
+      state.loading = false;
+      notify({ type: "error", title: "Analytique", message: errorDescription(error) });
+      closeAnalytics();
+    }
+  }
+
+  function closeAnalytics() {
+    state.analyticsOpen = false;
+    if (analyticsPanel) analyticsPanel.hidden = true;
+    if (messageList) messageList.hidden = false;
+    renderList();
+  }
+
+  function renderAnalyticsLoading() {
+    if (!analyticsPanel) return;
+    analyticsPanel.replaceChildren(statusState("loading", { title: "Chargement des statistiques...", compact: true, inline: true }));
+    analyticsPanel.hidden = false;
+    if (messageList) messageList.hidden = true;
+    refreshIcons();
+  }
+
+  function renderAnalytics(stats) {
+    if (!analyticsPanel) return;
+    listTitle.textContent = `Analytique (${state.analyticsPeriod} jours)`;
+
+    const grid = element("div", { className: "v8-mail-analytics__grid" }, [
+      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: String(stats.total || 0) }), element("span", { text: "Total" })]),
+      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: String(stats.inbound || 0) }), element("span", { text: "Reçus" })]),
+      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: String(stats.outbound || 0) }), element("span", { text: "Envoyés" })]),
+      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: String(stats.read || 0) }), element("span", { text: "Lus" })]),
+      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: String(stats.unread || 0) }), element("span", { text: "Non lus" })]),
+      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: String(stats.starred || 0) }), element("span", { text: "Favoris" })]),
+      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: String(stats.spam || 0) }), element("span", { text: "Spam" })]),
+      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: String(stats.attachments || 0) }), element("span", { text: "Avec pièces jointes" })]),
+      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: formatSize(stats.totalSize || 0) }), element("span", { text: "Volume total" })]),
+      element("div", { className: "v8-mail-analytics__stat" }, [element("strong", { text: formatSize(stats.averageSize || 0) }), element("span", { text: "Taille moyenne" })])
+    ]);
+
+    const byFolder = stats.byFolder || {};
+    const folderList = element("ul", { className: "v8-mail-analytics__folder-list" });
+    Object.entries(byFolder).forEach(([folder, count]) => {
+      const label = FOLDERS.find((f) => f.key === folder)?.label || folder;
+      folderList.append(element("li", {}, [element("span", { text: `${label}` }), element("span", { className: "v8-mail-analytics__folder-count", text: String(count) })]));
+    });
+    const topSendersList = element("ul", { className: "v8-mail-analytics__sender-list" });
+    if (Array.isArray(stats.topSenders) && stats.topSenders.length) {
+      stats.topSenders.forEach((sender) => {
+        topSendersList.append(element("li", {}, [
+          element("span", { text: clean(sender.name || sender.email || "Inconnu", "", 120) }),
+          element("span", { className: "v8-mail-analytics__sender-count", text: String(sender.count || 0) })
+        ]));
+      });
+    } else {
+      topSendersList.append(element("li", { text: "Aucun expéditeur" }));
+    }
+
+    const dayMax = Math.max(1, ...(stats.topDays || []).map((d) => d.count || 0));
+    const dayChart = element("div", { className: "v8-mail-analytics__chart" });
+    (stats.topDays || []).forEach((d) => {
+      dayChart.append(buildBar(String(d.day), d.count || 0, dayMax));
+    });
+
+    const hourMax = Math.max(1, ...(stats.topHours || []).map((h) => h.count || 0));
+    const hourChart = element("div", { className: "v8-mail-analytics__chart" });
+    (stats.topHours || []).forEach((h) => {
+      hourChart.append(buildBar(String(h.hour), h.count || 0, hourMax));
+    });
+
+    const closeBtn = actionButton({ actionId: "v8.mail.analytics.close", variant: "outline", className: "v8-mail-analytics__close" }, [element("span", { text: "Fermer" })]);
+    closeBtn.addEventListener("click", closeAnalytics);
+
+    const topSendersTitle = element("strong", { className: "v8-mail-analytics__section-title", text: "Principaux expéditeurs" });
+    const daysTitle = element("strong", { className: "v8-mail-analytics__section-title", text: "Messages par jour" });
+    const hoursTitle = element("strong", { className: "v8-mail-analytics__section-title", text: "Messages par heure" });
+    const foldersTitle = element("strong", { className: "v8-mail-analytics__section-title", text: "Par dossier" });
+
+    analyticsPanel.replaceChildren(
+      closeBtn,
+      grid,
+      foldersTitle,
+      folderList,
+      topSendersTitle,
+      topSendersList,
+      daysTitle,
+      dayChart,
+      hoursTitle,
+      hourChart
+    );
+    analyticsPanel.hidden = false;
+    if (messageList) messageList.hidden = true;
+    refreshIcons();
+  }
+
   async function loadSearch() {
     if (!state.query) {
       state.isSearch = false;
@@ -676,6 +911,7 @@ export function mountMail(stage, options = {}) {
   }
 
   function setFolder(key) {
+    closeAnalytics();
     state.folder = key;
     state.view = "list";
     state.selected = null;
@@ -824,6 +1060,16 @@ export function mountMail(stage, options = {}) {
       btn.addEventListener("click", () => setFolder(folder.key));
       folderList.append(element("li", {}, [btn]));
     });
+
+    const analyticsTitle = element("strong", { className: "v8-mail-sidebar__section", text: "Analytique" });
+    const analyticsPeriodSelect = element("select", { className: "v8-input v8-mail-analytics__select" }, [
+      element("option", { text: "7 jours", attributes: { value: "7" } }),
+      element("option", { text: "30 jours", attributes: { value: "30", selected: "" } }),
+      element("option", { text: "90 jours", attributes: { value: "90" } })
+    ]);
+    analyticsPeriodSelect.value = String(state.analyticsPeriod || 30);
+    const analyticsOpenBtn = actionButton({ actionId: "v8.mail.analytics.open", variant: "secondary", className: "v8-mail-analytics__open" }, [element("span", { text: "Ouvrir" })]);
+    analyticsOpenBtn.addEventListener("click", () => loadAnalytics(Number(analyticsPeriodSelect.value) || 30));
 
     const rulesTitle = element("strong", { className: "v8-mail-sidebar__section", text: "Règles" });
 
@@ -1017,9 +1263,92 @@ export function mountMail(stage, options = {}) {
       if (event.key === "Enter" && newLabelInput.value.trim()) createLabel(newLabelInput.value.trim());
     });
 
-    sidebar.append(title, folderList, rulesTitle, ruleForm, rulesList, templatesTitle, templateForm, templatesList, notificationsTitle, notificationsList, labelsTitle, labelList, newLabelInput);
+    const securitySection = buildSecuritySection();
+    sidebar.append(title, folderList, analyticsTitle, analyticsPeriodSelect, analyticsOpenBtn, rulesTitle, ruleForm, rulesList, templatesTitle, templateForm, templatesList, notificationsTitle, notificationsList, labelsTitle, labelList, newLabelInput, securitySection);
     renderBell();
     refreshIcons();
+  }
+
+  function buildSecuritySection() {
+    const title = element("strong", { className: "v8-mail-sidebar__section", text: "Sécurité" });
+
+    const blockedTab = element("button", {
+      className: `v8-mail-security__tab${state.securityTab === "blocked" ? " is-active" : ""}`,
+      attributes: { type: "button" },
+      text: "Bloqués"
+    });
+    const trustedTab = element("button", {
+      className: `v8-mail-security__tab${state.securityTab === "trusted" ? " is-active" : ""}`,
+      attributes: { type: "button" },
+      text: "Fiables"
+    });
+    blockedTab.addEventListener("click", () => { state.securityTab = "blocked"; renderSidebar(); });
+    trustedTab.addEventListener("click", () => { state.securityTab = "trusted"; renderSidebar(); });
+
+    const list = element("ul", { className: "v8-mail-security__list" });
+    const items = state.securityTab === "blocked" ? state.blocked : state.trusted;
+    if (items.length) {
+      items.forEach((item) => {
+        const label = item.email || item.domain || "Inconnu";
+        const deleteBtn = element("button", {
+          className: "v8-icon-button",
+          attributes: { type: "button", "aria-label": `Supprimer ${label}` }
+        }, [icon("x")]);
+        deleteBtn.addEventListener("click", () => {
+          if (state.securityTab === "blocked") unblockSenderFrom(item.id);
+          else untrustSenderFrom(item.id);
+        });
+        const itemNode = element("li", { className: "v8-mail-security__item" }, [
+          element("span", { className: "v8-mail-security__item-label", text: label }),
+          deleteBtn
+        ]);
+        list.append(itemNode);
+      });
+    } else {
+      list.append(element("li", {
+        className: "v8-mail-security__item",
+        text: state.securityTab === "blocked" ? "Aucun expéditeur bloqué." : "Aucun expéditeur fiable."
+      }));
+    }
+
+    const emailInput = element("input", { className: "v8-input v8-mail-security__input", attributes: { type: "text", placeholder: "Email" } });
+    const domainInput = element("input", { className: "v8-input v8-mail-security__input", attributes: { type: "text", placeholder: "Domaine" } });
+    const reasonInput = element("input", { className: "v8-input v8-mail-security__input", attributes: { type: "text", placeholder: "Raison" } });
+
+    const addBtn = actionButton({
+      actionId: state.securityTab === "blocked" ? "v8.mail.security.block" : "v8.mail.security.trust",
+      variant: "secondary",
+      className: "v8-mail-security__add"
+    }, [element("span", { text: state.securityTab === "blocked" ? "Bloquer" : "Faire confiance" })]);
+    addBtn.addEventListener("click", async () => {
+      const email = emailInput.value.trim();
+      const domain = domainInput.value.trim();
+      const reason = reasonInput.value.trim();
+      if (!email && !domain) {
+        notify({ type: "warning", title: "Sécurité", message: "Saisissez un email ou un domaine." });
+        return;
+      }
+      if (state.securityTab === "blocked") {
+        await blockSenderFrom(email, domain, reason || "manual");
+      } else {
+        await trustSenderFrom(email, domain);
+      }
+      emailInput.value = "";
+      domainInput.value = "";
+      reasonInput.value = "";
+    });
+
+    const formChildren = [emailInput, domainInput];
+    if (state.securityTab === "blocked") formChildren.push(reasonInput);
+    formChildren.push(addBtn);
+    const form = element("div", { className: "v8-mail-security__form" }, formChildren);
+
+    return element("div", { className: "v8-mail-sidebar__security" }, [
+      title,
+      element("div", { className: "v8-mail-security__tabs" }, [blockedTab, trustedTab]),
+      list,
+      form
+    ]);
   }
 
   function buildBulkToolbar() {
@@ -1259,6 +1588,14 @@ export function mountMail(stage, options = {}) {
   }
 
   function renderList() {
+    if (state.analyticsOpen) {
+      messageList.hidden = true;
+      if (analyticsPanel) analyticsPanel.hidden = false;
+      return;
+    }
+    messageList.hidden = false;
+    if (analyticsPanel) analyticsPanel.hidden = true;
+
     let label;
     if (hasActiveFilters()) {
       label = "Recherche avancée";
@@ -1635,6 +1972,24 @@ export function mountMail(stage, options = {}) {
     importantBtn.addEventListener("click", () => toggleImportant(message));
     snoozeBtn.addEventListener("click", () => snoozeMessage(message));
 
+    const senderEmail = getFromAddress(message);
+    const senderDomain = domainFromEmail(senderEmail);
+
+    const blockBtn = actionButton({
+      actionId: "v8.mail.block",
+      variant: "outline",
+      className: "v8-mail-security__btn v8-mail-security__btn--block"
+    }, [element("span", { text: "Bloquer" })]);
+    const trustBtn = actionButton({
+      actionId: "v8.mail.trust",
+      variant: "outline",
+      className: "v8-mail-security__btn v8-mail-security__btn--trust"
+    }, [element("span", { text: "Faire confiance" })]);
+    blockBtn.addEventListener("click", () => { blockSenderFrom(senderEmail, senderDomain); moveMessage(message, "trash"); });
+    trustBtn.addEventListener("click", () => trustSenderFrom(senderEmail, senderDomain));
+
+    const securityBar = buildSecurityBar(message);
+
     const header = element("header", { className: "v8-mail-detail__header" }, [
       element("div", { className: "v8-mail-detail__title" }, [
         backButton,
@@ -1645,6 +2000,8 @@ export function mountMail(stage, options = {}) {
         element("span", { className: "v8-mail-detail__names", text: participants }),
         element("span", { className: "v8-mail-detail__date", text: formatFullDate(message.received_at || message.created_at) })
       ]),
+      element("div", { className: "v8-mail-detail__trust-actions" }, [blockBtn, trustBtn]),
+      securityBar,
       element("div", { className: "v8-mail-detail__labels" }, [...labels, assignSelect])
     ]);
 
@@ -2130,7 +2487,7 @@ export function mountMail(stage, options = {}) {
     await loadCached();
     renderList();
     renderSidebar();
-    await Promise.all([loadAlias(), loadLabels(), loadContacts(), loadSignatures(), loadRules(), loadNotifications(), loadTemplates()]);
+    await Promise.all([loadAlias(), loadLabels(), loadContacts(), loadSignatures(), loadRules(), loadNotifications(), loadTemplates(), loadSecurity()]);
     renderSidebar();
     await loadFolder();
     renderReading();

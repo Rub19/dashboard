@@ -24,6 +24,13 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v294", "2026-08-16", "Phase 14 : ETHONE Mail — analytics, sécurité et confiance", [
+    { kind: "feature", text: "Analytics mail : volumes envoyés/reçus, contacts fréquents, heures de pointe, stockage, règles actives, tendances 7/30/90 jours." },
+    { kind: "feature", text: "Sécurité et confiance : vérification SPF/DKIM/DMARC, détection d'hameçonnage, expéditeurs bloqués et liste de confiance." },
+    { kind: "feature", text: "Dossier Corbeille pour expéditeurs bloqués et contournement de la détection spam pour expéditeurs de confiance." },
+    { kind: "feature", text: "Tests E2E du Worker (worker/test/mail.test.mjs) : 16 scénarios couvrant envoi, brouillons, recherche, déplacement, étiquettes, règles, templates, signatures, snooze, bulk, programmation, analytics, blocage/confiance et analyse Groq." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v294." }
+  ]),
   entry("v293", "2026-08-15", "Phase 13b/c : ETHONE Mail — hors-ligne, bulk, snooze, programmation", [
     { kind: "feature", text: "Mode hors-ligne : cache IndexedDB mail, file d'attente d'actions, synchronisation auto au retour en ligne." },
     { kind: "feature", text: "Actions bulk : sélection multiple, archiver, supprimer, marquer lu/non lu, important, étiqueter, désétiqueter, snooze." },

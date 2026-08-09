@@ -132,6 +132,36 @@ export function createBrainActionRegistry(options = {}) {
     }));
   });
   add("mail.move", "Deplacer un email", "Deplace un email dans un dossier.", "mail", true, { id: "id", folder: "string" }, (p) => ({ id: requireId(p.id), folder: ["inbox", "starred", "sent", "drafts", "archive", "spam", "trash"].includes(p.folder) ? p.folder : "archive" }), ({ id, folder }) => externalServices?.mail?.move?.([id], folder));
+  add("mail.analytics", "Analyser les statistiques mail", "Résume l'activité ETHONE Mail sur une période.", "mail", false, { period: "number?" }, (p) => ({ period: Math.max(1, Math.min(365, Number(p.period) || 30)) }), async ({ period }) => {
+    if (!externalServices?.mail?.analytics) return outcome(false, "unavailable", "Analytique Mail indisponible.");
+    const result = await externalServices.mail.analytics(period);
+    const stats = result?.data || {};
+    const total = Number(stats.total) || 0;
+    if (!total) return outcome(true, "completed", `Aucun message sur les ${period} derniers jours.`, Object.freeze({ period, total: 0 }));
+    const top = Array.isArray(stats.topSenders) && stats.topSenders[0] ? stats.topSenders[0] : null;
+    const summary = `${total} messages sur ${period} jours : ${stats.inbound || 0} reçus, ${stats.outbound || 0} envoyés, ${stats.read || 0} lus, ${stats.unread || 0} non lus, ${stats.spam || 0} spam${top ? `. Principal expéditeur : ${clean(top.name || top.email, "", 80)} (${top.count}).` : "."}`;
+    return outcome(true, "completed", summary, Object.freeze({ period, ...stats }));
+  });
+  add("mail.block", "Bloquer un expéditeur", "Bloque un email ou un domaine.", "mail", true, { email: "string?", domain: "string?" }, (p) => {
+    const email = clean(p.email, "", 320);
+    const domain = clean(p.domain, "", 120).toLowerCase();
+    if (!email && !domain) throw new TypeError("Email ou domaine requis.");
+    return { email, domain };
+  }, async ({ email, domain }) => {
+    if (!externalServices?.mail?.blockSender) return outcome(false, "unavailable", "Blocage indisponible.");
+    const result = await externalServices.mail.blockSender({ email, domain, reason: "brain" });
+    return outcome(true, "completed", "Expéditeur bloqué.", Object.freeze(result?.data || { email, domain }));
+  });
+  add("mail.trust", "Faire confiance à un expéditeur", "Marque un email ou un domaine comme fiable.", "mail", true, { email: "string?", domain: "string?" }, (p) => {
+    const email = clean(p.email, "", 320);
+    const domain = clean(p.domain, "", 120).toLowerCase();
+    if (!email && !domain) throw new TypeError("Email ou domaine requis.");
+    return { email, domain };
+  }, async ({ email, domain }) => {
+    if (!externalServices?.mail?.trustSender) return outcome(false, "unavailable", "Confiance indisponible.");
+    const result = await externalServices.mail.trustSender({ email, domain });
+    return outcome(true, "completed", "Expéditeur fiable.", Object.freeze(result?.data || { email, domain }));
+  });
 
   for (const [id, title] of [["connections.analyze", "Analyser les connexions"], ["diagnostic.run", "Lancer un diagnostic"]]) add(id, title, "Interroge le Worker a la demande.", "connections", false, {}, empty, () => externalServices?.diagnostic ? externalServices.diagnostic() : outcome(false, "unavailable", "Diagnostic indisponible."));
 

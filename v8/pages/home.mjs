@@ -685,26 +685,7 @@ export function mountHome(stage, model, options = {}) {
   }
 
   function renderBills() {
-    const card = billsLiveCard(billsManager, {
-      onAdd: (date) => {
-        const today = new Date();
-        const selected = date || today;
-        const title = prompt("Nom de la facture", "Nouvelle facture");
-        if (!title) return;
-        const amount = Number.parseFloat(prompt("Montant", "9.99"));
-        if (!Number.isFinite(amount) || amount <= 0) return;
-        const categories = Object.keys(billsManager.categories);
-        const category = prompt(`Catégorie (${categories.join(", ")})`, "other") || "other";
-        const recurrences = Object.keys(billsManager.recurrences);
-        const recurrence = prompt(`Récurrence (${recurrences.join(", ")})`, "oneoff") || "oneoff";
-        billsManager.add({ title, amount, currency: "$", dueDate: selected, category, recurrence });
-      },
-      onScan: () => {
-        const text = prompt("Colle ici un e-mail ou une fiche de facture");
-        if (!text) return;
-        billsManager.scan(text, options.externalServices).catch(() => null);
-      }
-    });
+    const card = billsLiveCard(billsManager, { externalServices: options.externalServices });
     billsHost.replaceChildren(...(card ? [card] : []));
     applyHostVisibility("bills", billsHost, Boolean(card));
     if (card) presence?.signalActivity?.(card, "system", { phase: "update" });

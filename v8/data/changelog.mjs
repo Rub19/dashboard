@@ -36,6 +36,15 @@ export const CHANGELOG = Object.freeze([
     { kind: "improvement", text: "Accessibilité et performance : classes d'accessibilité, mode faibles données, precache SW étendu et optimisations du rendu." },
     { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v296." }
   ]),
+  entry("v297", "2026-08-18", "Hotfix : i18n, Bills, Interactions, Météo et tutoriels", [
+    { kind: "improvement", text: "Widget Bills : formulaire personnalisé avec montant, calendrier, catégorie et récurrence, disponible sur Home et Calendrier." },
+    { kind: "improvement", text: "Météo : suppression de la troncature du texte et traduction des conditions météo." },
+    { kind: "fix", text: "Interactions : traduction complète, bouton Refresh corrigé, Show less fonctionnel et heatmap affichant tous les jours." },
+    { kind: "fix", text: "Notes, Drive/Fichiers, Activity Hub et centre de notifications : chaînes manquantes traduites (fr, en, es, de)." },
+    { kind: "fix", text: "Connexions : tutoriels avec liens directs vers les sources officielles et UIs carrées." },
+    { kind: "fix", text: "3D des live cards et effet 3D sur les points de la heatmap." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v297." }
+  ]),
   entry("v295", "2026-08-17", "Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes", [
     { kind: "feature", text: "Comptes mail externes : Gmail, Outlook et IMAP (création, sync, suppression)." },
     { kind: "feature", text: "Chiffrement PGP simplifié via Web Crypto : génération de clés, chiffrement/déchiffrement côté Worker." },

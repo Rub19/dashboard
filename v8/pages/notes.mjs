@@ -5,7 +5,7 @@ import { refreshIcons } from "../ui/icons.mjs";
 import { filterNotes, sortNotes, stripMarkup, wordCount } from "./notes-model.mjs";
 import { createSelect } from "../ui/select.mjs";
 import { createRichTextEditor, toEditableHtml } from "../ui/rich-text.mjs";
-import { localeTag } from "../i18n/catalog.mjs";
+import { localeTag, translateSource } from "../i18n/catalog.mjs";
 
 function formatUpdated(value) {
   if (!value) return "Note récente";
@@ -39,7 +39,7 @@ export function mountNotes(stage, options = {}) {
   const list = element("div", { className: "v8-notes-list", attributes: { role: "list", "aria-label": "Notes" } });
   const search = element("input", {
     className: "v8-input",
-    attributes: { type: "search", placeholder: "Rechercher dans les notes", "aria-label": "Rechercher dans les notes", autocomplete: "off" }
+    attributes: { type: "search", placeholder: translateSource("Rechercher dans les notes"), "aria-label": translateSource("Rechercher dans les notes"), autocomplete: "off" }
   });
   const sortSelect = createSelect({ className: "v8-input v8-notes-sort", attributes: { "aria-label": "Trier les notes" } }, [
     element("option", { text: "Récentes", attributes: { value: "recent" } }),
@@ -223,14 +223,14 @@ export function mountNotes(stage, options = {}) {
 
     const titleInput = element("input", {
       className: "v8-note-title",
-      attributes: { type: "text", value: note.title, placeholder: "Titre de la note", "aria-label": "Titre de la note", maxlength: "160" }
+      attributes: { type: "text", value: note.title, placeholder: translateSource("Titre de la note"), "aria-label": translateSource("Titre de la note"), maxlength: "160" }
     });
     const initialCount = wordCount(note.content);
     const initialReadMin = Math.max(1, Math.ceil(initialCount / 200));
     const words = element("span", { text: `${initialCount} mot${initialCount > 1 ? "s" : ""} · ~${initialReadMin} min de lecture` });
     const richEditor = createRichTextEditor({
-      ariaLabel: "Contenu de la note",
-      placeholder: "Écrivez quelque chose…",
+      ariaLabel: translateSource("Contenu de la note"),
+      placeholder: translateSource("Écrivez quelque chose…"),
       onInput: () => {
         const html = richEditor.getHTML();
         updateLocalNote({ content: html });
@@ -263,7 +263,7 @@ export function mountNotes(stage, options = {}) {
     const tagsList = element("div", { className: "v8-note-tags", attributes: { "aria-label": "Étiquettes de la note" } });
     const tagInput = element("input", {
       className: "v8-note-tag-input",
-      attributes: { type: "text", placeholder: note.tags.length ? "Ajouter…" : "Ajouter une étiquette…", "aria-label": "Ajouter une étiquette", maxlength: "32" }
+      attributes: { type: "text", placeholder: note.tags.length ? translateSource("Ajouter…") : translateSource("Ajouter une étiquette…"), "aria-label": translateSource("Ajouter une étiquette"), maxlength: "32" }
     });
     const confirm = element("div", { className: "v8-inline-confirm", attributes: { hidden: "", role: "alert" } }, [
       element("span", {}, [icon("triangle-alert"), element("strong", { text: "Supprimer cette note ?" })]),

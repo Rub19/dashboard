@@ -11,6 +11,7 @@ import {
 import { brandIconMarkup } from "../data/brand-icons.mjs";
 import { listConfiguredProviders, removeProviderCredential, saveProviderCredential } from "../services/provider-credentials.mjs";
 import { actionButton, debounce, element, icon } from "../ui/dom.mjs";
+import { translateSource } from "../i18n/catalog.mjs";
 import { collectionDensityControl, updateCollectionDensityControl } from "../ui/dense-content.mjs";
 import { emptyState, statusState } from "../ui/empty-state.mjs";
 import { formField, setFieldState } from "../ui/form-system.mjs";
@@ -62,7 +63,7 @@ const DIAGNOSTIC_META = Object.freeze({
 const INSPECTOR_TABS = Object.freeze([
   { id: "overview", label: "Apercu", icon: "layout-dashboard" },
   { id: "methods", label: "Méthodes", icon: "waypoints" },
-  { id: "setup", label: "Assistant", icon: "list-checks" },
+  { id: "setup", label: "Tutoriel", icon: "list-checks" },
   { id: "diagnostics", label: "Diagnostic", icon: "stethoscope" }
 ]);
 
@@ -683,10 +684,13 @@ export function mountConnections(stage, options = {}) {
         return element("li", { className: `is-${meta.tone}` }, [element("span", {}, [icon(meta.icon)]), element("div", {}, [element("strong", { text: check.label }), element("p", { text: check.detail })]), element("small", { text: meta.label })]);
       })) : null,
       element("section", { className: "v8-connection-help" }, [
-        element("h3", { text: "Problemes frequents" }),
-        element("details", {}, [element("summary", { text: "Pourquoi la connexion reste préparée ?" }), element("p", { text: "Une route Worker disponible confirme le backend, pas une autorisation fournisseur ni une session distante." })]),
-        element("details", {}, [element("summary", { text: "Que faire après une expiration ?" }), element("p", { text: "Relancez le consentement depuis votre backend puis vérifiez les permissions minimales." })]),
-        element("details", {}, [element("summary", { text: "Ou sont stockees les données sensibles ?" }), element("p", { text: "Dans les secrets Cloudflare uniquement. Le navigateur ne recoit ni clé fournisseur, ni secret Supabase serveur." })])
+        element("h3", { text: translateSource("Tutoriel") }),
+        element("p", { text: translateSource("Suivez le guide pas à pas pour connecter cette application externe à ETHONE.") }),
+        connectionAction("v8.connections.tab", integration.id, "secondary", [icon("list-checks"), element("span", { text: translateSource("Voir le tutoriel") })], { tab: "setup" }),
+        element("h3", { text: translateSource("Problèmes fréquents") }),
+        element("details", {}, [element("summary", { text: translateSource("Pourquoi la connexion reste préparée ?") }), element("p", { text: translateSource("Une route Worker disponible confirme le backend, pas une autorisation fournisseur ni une session distante.") })]),
+        element("details", {}, [element("summary", { text: translateSource("Que faire après une expiration ?") }), element("p", { text: translateSource("Relancez le consentement depuis votre backend puis vérifiez les permissions minimales.") })]),
+        element("details", {}, [element("summary", { text: translateSource("Où sont stockées les données sensibles ?") }), element("p", { text: translateSource("Dans les secrets Cloudflare uniquement. Le navigateur ne reçoit ni clé fournisseur, ni secret Supabase serveur.") })])
       ]),
       officialResources(integration).length ? element("div", { className: "v8-connection-resources v8-connection-resources--compact" }, officialResources(integration).map((resource) => officialLink(resource))) : null
     ]);

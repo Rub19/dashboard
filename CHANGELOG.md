@@ -20,6 +20,25 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 ### Bordereau PWA
 - Mis à jour vers `experience-v296`.
 
+## [v297] - 2026-08-18
+
+**Hotfix : i18n, Bills, Interactions, Météo et tutoriels**
+
+### Améliore
+- Widget Bills : formulaire personnalisé avec saisie du montant, calendrier de date, catégorie et récurrence, disponible sur Home et Calendrier.
+- Météo : suppression de la troncature du texte et traduction des conditions météo.
+- Interactions : traduction complète de la page, correction du bouton Refresh, du "Show less" et de la carte d'activité qui n'affichait que le vendredi.
+- 3D des cartes : correction de l'effet de profondeur et reflet sur les live cards.
+- Heatmap : rendu de tous les jours et effet 3D sur les points d'activité.
+
+### Corrige
+- Notes, Drive/Fichiers, Activity Hub et centre de notifications : chaînes manquantes traduites (fr, en, es, de).
+- Connexions : tutoriels avec liens directs vers les sources officielles et UIs carrées.
+- Bluesky et autres intégrations : affichage de l'icône de marque correcte.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v297`.
+
 ## [v295] - 2026-08-17
 
 **Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes**

@@ -1,5 +1,5 @@
 import { createDailyBriefing } from "../data/daily-briefing.mjs";
-import { element, icon } from "../ui/dom.mjs";
+import { brandIcon, element, icon } from "../ui/dom.mjs";
 import { emptyState } from "../ui/empty-state.mjs";
 import { enhanceForm, formField, runFormSubmission, setFieldState, validateControl } from "../ui/form-system.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
@@ -676,7 +676,7 @@ export function mountProfileSelection(root, options = {}) {
     });
 
     INTEGRATIONS.forEach((integration) => {
-      const button = element("button", { className: "v8-profile-dialog__module-choice", attributes: { type: "button", role: "checkbox", "aria-checked": String(chosenIntegrations.has(integration.id)) }, dataset: { choiceId: integration.id } }, [icon(integration.icon), element("span", { text: integration.label }), icon("check")]);
+      const button = element("button", { className: "v8-profile-dialog__module-choice", attributes: { type: "button", role: "checkbox", "aria-checked": String(chosenIntegrations.has(integration.id)) }, dataset: { choiceId: integration.id } }, [brandIcon(integration.id, integration.icon), element("span", { text: integration.label }), icon("check")]);
       button.addEventListener("click", () => {
         if (chosenIntegrations.has(integration.id)) chosenIntegrations.delete(integration.id);
         else chosenIntegrations.add(integration.id);

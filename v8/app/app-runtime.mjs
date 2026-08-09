@@ -939,7 +939,7 @@ export function mountApplication(root, options = {}) {
         if (route === "home") return mountHome(shell.stage, createHomeModel({ snapshot: repository.snapshot() }), { ...store.getState(), spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, twitchLive, lastfmLive, trackerLive, googleDriveLive, youtubeLive, redditLive, presence, sync: cloudSync, subscribeState: store.subscribe, externalServices });
         if (route === "notes") return mountNotes(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, presence, sync: cloudSync, notify: (notice) => toasts.show(notice) });
         if (route === "tasks") return mountTasks(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, presence, notify: (notice) => toasts.show(notice) });
-        if (route === "calendar") return mountCalendar(shell.stage, { repository, actions, presence, notify: (notice) => toasts.show(notice), state: store.getState(), subscribeState: store.subscribe });
+        if (route === "calendar") return mountCalendar(shell.stage, { repository, actions, presence, notify: (notice) => toasts.show(notice), state: store.getState(), subscribeState: store.subscribe, externalServices });
         if (route === "spaces") return mountSpaces(shell.stage, { repository, actions, state: store.getState() });
         if (route === "flows") return mountFlows(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, notify: (notice) => toasts.show(notice) });
         return mountFeatureFallback(shell.stage, route);

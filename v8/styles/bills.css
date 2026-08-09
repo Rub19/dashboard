@@ -37,3 +37,9 @@
   70% { transform: scale(1.06); }
   100% { transform: scale(1); }
 }
+.v8-bills-form { display: grid; gap: var(--v8-space-3); }
+.v8-bills-form__field { display: grid; gap: var(--v8-space-1); }
+.v8-bills-form__label { font-size: var(--v8-font-xs); color: var(--v8-text-secondary); }
+.v8-bills-form__row { display: grid; grid-template-columns: 1fr auto; gap: var(--v8-space-3); }
+.v8-bills-form__actions { display: flex; justify-content: flex-end; gap: var(--v8-space-2); margin-top: var(--v8-space-2); }
+.v8-bills-form__scan { min-height: 120px; resize: vertical; }

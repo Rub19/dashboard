@@ -2,6 +2,7 @@ import { element, icon } from "./dom.mjs";
 import { createToastManager } from "./toast.mjs";
 import { showBottomSheet } from "./bottom-sheet.mjs";
 import { refreshIcons } from "./icons.mjs";
+import { localeTag, translateSource } from "../i18n/catalog.mjs";
 
 const HISTORY_KEY = "v8_notification_history";
 const MUTED_KEY = "v8_notification_muted";
@@ -14,17 +15,17 @@ const TYPES = Object.freeze(["success", "error", "warning", "info", "sync", "upd
 const CATEGORY_META = Object.freeze({
   important: { label: "Important", icon: "star" },
   messages: { label: "Messages", icon: "mail" },
-  activity: { label: "Activity", icon: "activity" },
-  system: { label: "System", icon: "settings" },
+  activity: { label: "Activité", icon: "activity" },
+  system: { label: "Système", icon: "settings" },
   brain: { label: "Brain", icon: "brain" },
-  security: { label: "Security", icon: "shield" }
+  security: { label: "Sécurité", icon: "shield" }
 });
 
 const PRIORITY_META = Object.freeze({
-  critical: { label: "Critical", tone: "danger" },
+  critical: { label: "Critique", tone: "danger" },
   important: { label: "Important", tone: "warning" },
   normal: { label: "Normal", tone: "info" },
-  silent: { label: "Silent", tone: "success" }
+  silent: { label: "Silencieux", tone: "success" }
 });
 
 const TYPE_ICONS = Object.freeze({
@@ -319,13 +320,13 @@ export function createNotificationManager(region, options = {}) {
 function formatTime(ts) {
   const diff = Date.now() - (ts || Date.now());
   const sec = Math.floor(diff / 1000);
-  if (sec < 60) return "À l'instant";
+  if (sec < 60) return translateSource("À l'instant");
   const min = Math.floor(sec / 60);
-  if (min < 60) return `Il y a ${min} min`;
+  if (min < 60) return translateSource("Il y a {value} min").replace("{value}", String(min));
   const h = Math.floor(min / 60);
-  if (h < 24) return `Il y a ${h}h`;
+  if (h < 24) return translateSource("Il y a {value}h").replace("{value}", String(h));
   const d = Math.floor(h / 24);
-  return `Il y a ${d}j`;
+  return translateSource("Il y a {value}j").replace("{value}", String(d));
 }
 
 export function createNotificationCenter(manager, options = {}) {
@@ -347,9 +348,9 @@ export function createNotificationCenter(manager, options = {}) {
   const snoozeOpen = new Set();
 
   const categories = [
-    { id: "all", label: "Toutes" },
-    { id: "unread", label: "Non lues" },
-    ...DEFAULT_CATEGORIES.map((id) => ({ id, label: CATEGORY_META[id].label }))
+    { id: "all", label: translateSource("Toutes") },
+    { id: "unread", label: translateSource("Non lues") },
+    ...DEFAULT_CATEGORIES.map((id) => ({ id, label: translateSource(CATEGORY_META[id].label) }))
   ];
 
   function isMobile() { return globalThis.matchMedia?.("(max-width: 640px)")?.matches === true; }
@@ -366,11 +367,11 @@ export function createNotificationCenter(manager, options = {}) {
   }
 
   function itemActions(item) {
-    if (item.type === "github-pr") return [{ id: "review", label: "Review", icon: "eye" }, { id: "open", label: "Open", icon: "external-link" }, { id: "snooze", label: "Snooze", icon: "clock-3" }, { id: "dismiss", label: "Dismiss", icon: "x" }];
-    if (item.type === "calendar") return [{ id: "open", label: "Open", icon: "calendar" }, { id: "snooze", label: "Snooze", icon: "clock-3" }, { id: "dismiss", label: "Dismiss", icon: "x" }];
-    if (item.type === "mail") return [{ id: "read", label: "Read", icon: "mail-open" }, { id: "archive", label: "Archive", icon: "archive" }, { id: "snooze", label: "Snooze", icon: "clock-3" }, { id: "dismiss", label: "Dismiss", icon: "x" }];
-    if (item.type === "system") return [{ id: "dismiss", label: "Dismiss", icon: "x" }];
-    return [{ id: "open", label: "Open", icon: "external-link" }, { id: "snooze", label: "Snooze", icon: "clock-3" }, { id: "dismiss", label: "Dismiss", icon: "x" }];
+    if (item.type === "github-pr") return [{ id: "review", label: translateSource("Examiner"), icon: "eye" }, { id: "open", label: translateSource("Ouvrir"), icon: "external-link" }, { id: "snooze", label: translateSource("Mettre en veille"), icon: "clock-3" }, { id: "dismiss", label: translateSource("Ignorer"), icon: "x" }];
+    if (item.type === "calendar") return [{ id: "open", label: translateSource("Ouvrir"), icon: "calendar" }, { id: "snooze", label: translateSource("Mettre en veille"), icon: "clock-3" }, { id: "dismiss", label: translateSource("Ignorer"), icon: "x" }];
+    if (item.type === "mail") return [{ id: "read", label: translateSource("Lire"), icon: "mail-open" }, { id: "archive", label: translateSource("Archiver"), icon: "archive" }, { id: "snooze", label: translateSource("Mettre en veille"), icon: "clock-3" }, { id: "dismiss", label: translateSource("Ignorer"), icon: "x" }];
+    if (item.type === "system") return [{ id: "dismiss", label: translateSource("Ignorer"), icon: "x" }];
+    return [{ id: "open", label: translateSource("Ouvrir"), icon: "external-link" }, { id: "snooze", label: translateSource("Mettre en veille"), icon: "clock-3" }, { id: "dismiss", label: translateSource("Ignorer"), icon: "x" }];
   }
 
   function openItem(item, actionId) {
@@ -382,25 +383,25 @@ export function createNotificationCenter(manager, options = {}) {
       const data = item.data || {};
       if (externalServices?.githubOAuth?.openPR) { try { externalServices.githubOAuth.openPR(data); } catch {} }
       else if (externalServices?.github?.openPR) { try { externalServices.github.openPR(data); } catch {} }
-      else if (actions?.dispatch) { actions.dispatch("v8.connections.open"); notify({ title: "GitHub", message: "Ouvrez Connections pour lier GitHub.", type: "info" }); }
-      else notify({ title: item.title, message: "Ouvert", type: "info" });
+      else if (actions?.dispatch) { actions.dispatch("v8.connections.open"); notify({ title: "GitHub", message: translateSource("Ouvrez Connections pour lier GitHub."), type: "info" }); }
+      else notify({ title: item.title, message: translateSource("Ouvert"), type: "info" });
       return;
     }
     if (item.type === "calendar") {
       if (externalServices?.googleCalendarOAuth?.openEvent) { try { externalServices.googleCalendarOAuth.openEvent(item.data); } catch {} }
       else if (actions?.dispatch) { actions.dispatch("v8.calendar.open"); }
-      else notify({ title: item.title, message: "Ouvert", type: "info" });
+      else notify({ title: item.title, message: translateSource("Ouvert"), type: "info" });
       return;
     }
     if (item.type === "mail") {
       if (externalServices?.mail?.open) { try { externalServices.mail.open(item.data); } catch {} }
       else if (actions?.dispatch) { actions.dispatch("v8.mail.open", { id: item.id }); }
-      else notify({ title: item.title, message: "Ouvert", type: "info" });
+      else notify({ title: item.title, message: translateSource("Ouvert"), type: "info" });
       return;
     }
     if (item.action?.run) { try { item.action.run(); } catch {} }
     else if (actions?.dispatch && item.data?.route) { actions.dispatch(item.data.route); }
-    else notify({ title: item.title, message: "Notification ouverte", type: "info" });
+    else notify({ title: item.title, message: translateSource("Notification ouverte"), type: "info" });
   }
 
   function renderItem(item) {
@@ -416,7 +417,7 @@ export function createNotificationCenter(manager, options = {}) {
         element("div", { className: "v8-notification-item__meta" }, [
           element("span", { text: formatTime(item.timestamp) }),
           element("span", { className: "v8-notification-item__source", text: item.source }),
-          element("span", { className: `v8-notification-priority v8-notification-priority--${item.priority}`, text: meta.label })
+          element("span", { className: `v8-notification-priority v8-notification-priority--${item.priority}`, text: translateSource(meta.label) })
         ]),
         element("strong", { text: item.title }),
         element("p", { text: item.message })
@@ -450,7 +451,7 @@ export function createNotificationCenter(manager, options = {}) {
       row.style.transition = "";
       if (currentX < -80) {
         manager.archive([item.id]);
-        notify({ title: item.title, message: "Notification supprimée", type: "info" });
+        notify({ title: item.title, message: translateSource("Notification supprimée"), type: "info" });
         render();
       } else {
         row.style.transform = "";
@@ -481,8 +482,8 @@ export function createNotificationCenter(manager, options = {}) {
     if (items.length === 0) {
       return element("div", { className: "v8-notification-empty" }, [
         icon("inbox"),
-        element("strong", { text: "Tout est traité" }),
-        element("p", { text: "Aucune notification active. De nouveaux signaux apparaîtront ici." })
+        element("strong", { text: translateSource("Tout est traité") }),
+        element("p", { text: translateSource("Aucune notification active. De nouveaux signaux apparaîtront ici.") })
       ]);
     }
     const map = new Map();
@@ -508,10 +509,10 @@ export function createNotificationCenter(manager, options = {}) {
   }
 
   function buildContent() {
-    const markAllBtn = element("button", { className: "v8-button v8-button--secondary v8-button--sm", attributes: { type: "button", "aria-label": "Tout marquer comme lu" }, dataset: { notificationMarkAll: "" } }, [icon("check-check"), element("span", { text: "Mark all read" })]);
-    const clearBtn = element("button", { className: "v8-button v8-button--outline v8-button--sm", attributes: { type: "button", "aria-label": "Effacer les notifications" }, dataset: { notificationClear: "" } }, [icon("trash-2"), element("span", { text: "Clear" })]);
-    const filterSelect = element("select", { className: "v8-input v8-notification-filter", attributes: { "aria-label": "Filtrer" } }, categories.map((cat) => element("option", { text: cat.label, attributes: { value: cat.id, selected: cat.id === currentFilter ? "selected" : null } })));
-    const search = element("input", { className: "v8-input", attributes: { type: "search", placeholder: "Rechercher...", "aria-label": "Rechercher dans les notifications", autocomplete: "off", value: currentQuery } });
+    const markAllBtn = element("button", { className: "v8-button v8-button--secondary v8-button--sm", attributes: { type: "button", "aria-label": translateSource("Tout marquer comme lu") }, dataset: { notificationMarkAll: "" } }, [icon("check-check"), element("span", { text: translateSource("Tout marquer comme lu") })]);
+    const clearBtn = element("button", { className: "v8-button v8-button--outline v8-button--sm", attributes: { type: "button", "aria-label": translateSource("Effacer les notifications") }, dataset: { notificationClear: "" } }, [icon("trash-2"), element("span", { text: translateSource("Effacer") })]);
+    const filterSelect = element("select", { className: "v8-input v8-notification-filter", attributes: { "aria-label": translateSource("Filtrer") } }, categories.map((cat) => element("option", { text: cat.label, attributes: { value: cat.id, selected: cat.id === currentFilter ? "selected" : null } })));
+    const search = element("input", { className: "v8-input", attributes: { type: "search", placeholder: translateSource("Rechercher..."), "aria-label": translateSource("Rechercher dans les notifications"), autocomplete: "off", value: currentQuery } });
 
     const toolbar = element("div", { className: "v8-notification-toolbar" }, [
       element("div", { className: "v8-notification-toolbar__actions" }, [markAllBtn, clearBtn]),
@@ -533,9 +534,9 @@ export function createNotificationCenter(manager, options = {}) {
 
     root.addEventListener("click", (event) => {
       const markAll = event.target.closest("[data-notification-mark-all]");
-      if (markAll) { manager.markAllRead(); notify({ title: "Notifications", message: "Tout marqué comme lu", type: "success" }); render(); return; }
+      if (markAll) { manager.markAllRead(); notify({ title: translateSource("Notifications"), message: translateSource("Tout marqué comme lu"), type: "success" }); render(); return; }
       const clear = event.target.closest("[data-notification-clear]");
-      if (clear) { manager.clear(); notify({ title: "Notifications", message: "Centre de signal effacé", type: "info" }); render(); return; }
+      if (clear) { manager.clear(); notify({ title: translateSource("Notifications"), message: translateSource("Centre de signal effacé"), type: "info" }); render(); return; }
       const chip = event.target.closest("[data-notification-chip]");
       if (chip) { currentFilter = chip.dataset.notificationChip; render(); return; }
       const group = event.target.closest("[data-group-toggle]");
@@ -546,7 +547,7 @@ export function createNotificationCenter(manager, options = {}) {
         const dur = snooze.dataset.duration;
         manager.snoozeNotification(id, dur);
         snoozeOpen.delete(id);
-        notify({ title: "Snooze", message: `Reporté à ${SNOOZE_LABELS[dur]}`, type: "success" });
+        notify({ title: translateSource("Mettre en veille"), message: `${translateSource("Reporté à")} ${translateSource(SNOOZE_LABELS[dur])}`, type: "success" });
         render();
         return;
       }
@@ -611,7 +612,7 @@ export function createNotificationCenter(manager, options = {}) {
     snoozeOpen.clear();
     const content = buildContent();
     if (isMobile()) {
-      sheet = showBottomSheet({ title: "Notifications", children: [content.root], onClose: () => { if (!closed) doClose(); } });
+      sheet = showBottomSheet({ title: translateSource("Notifications"), children: [content.root], onClose: () => { if (!closed) doClose(); } });
     } else {
       drawer = createDrawer(content.root);
     }

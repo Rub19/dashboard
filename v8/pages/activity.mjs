@@ -1,6 +1,6 @@
 import { integrationById } from "../data/integrations.mjs";
-import { translateSource } from "../i18n/catalog.mjs";
-import { actionButton, debounce, element, icon } from "../ui/dom.mjs";
+import { localeTag, translateSource } from "../i18n/catalog.mjs";
+import { actionButton, brandIcon, debounce, element, icon } from "../ui/dom.mjs";
 import { collectionDensityControl, updateCollectionDensityControl } from "../ui/dense-content.mjs";
 import { emptyState, statusState } from "../ui/empty-state.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
@@ -114,25 +114,25 @@ function sameWeek(value, date = new Date()) {
 
 function timeLabel(value) {
   const parsed = new Date(value || "");
-  if (Number.isNaN(parsed.getTime())) return "Local";
-  return new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" }).format(parsed);
+  if (Number.isNaN(parsed.getTime())) return translateSource("Local");
+  return new Intl.DateTimeFormat(localeTag(), { hour: "2-digit", minute: "2-digit" }).format(parsed);
 }
 
 function relativeLabel(value) {
   const parsed = new Date(value || "");
-  if (Number.isNaN(parsed.getTime())) return "Maintenant";
+  if (Number.isNaN(parsed.getTime())) return translateSource("Maintenant");
   const seconds = Math.max(0, Math.round((Date.now() - parsed.getTime()) / 1000));
-  if (seconds < 60) return "A l'instant";
-  if (seconds < 3600) return `Il y a ${Math.floor(seconds / 60)} min`;
-  if (seconds < 86400) return `Il y a ${Math.floor(seconds / 3600)} h`;
-  return new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" }).format(parsed);
+  if (seconds < 60) return translateSource("À l'instant");
+  if (seconds < 3600) return translateSource("Il y a {value} min").replace("{value}", String(Math.floor(seconds / 60)));
+  if (seconds < 86400) return translateSource("Il y a {value}h").replace("{value}", String(Math.floor(seconds / 3600)));
+  return new Intl.DateTimeFormat(localeTag(), { day: "numeric", month: "short" }).format(parsed);
 }
 
 function sourceName(source) {
   const integration = integrationById(source);
   if (integration) return integration.name;
-  const labels = { ethone: "ETHONE", notes: "Notes", tasks: "Taches", calendar: "Calendrier", files: "Fichiers", brain: "Brain" };
-  return labels[source] || String(source || "ETHONE");
+  const labels = { ethone: "ETHONE", notes: "Notes", tasks: "Tâches", calendar: "Calendrier", files: "Fichiers", brain: "Brain" };
+  return translateSource(labels[source] || String(source || "ETHONE"));
 }
 
 function eventMatches(event, filter) {
@@ -242,7 +242,7 @@ function timelineEntry(event, context) {
 function liveCard(integration, connection, latest) {
   return element("article", { className: "v8-now-card v8-surface", dataset: { integration: integration.id } }, [
     element("div", { className: "v8-now-card__top" }, [
-      element("span", { className: "v8-now-card__icon", dataset: { presenceIcon: integration.id === "email" ? "mail" : null } }, [icon(integration.icon)]),
+      element("span", { className: "v8-now-card__icon", dataset: { presenceIcon: integration.id === "email" ? "mail" : null } }, [brandIcon(integration.id, integration.icon)]),
       element("span", { className: "v8-live-pill" }, [element("i", { attributes: { "aria-hidden": "true" } }), "LIVE"])
     ]),
     element("div", { className: "v8-now-card__copy" }, [

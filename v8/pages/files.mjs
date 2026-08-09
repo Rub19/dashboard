@@ -16,6 +16,7 @@ import { createSelect } from "../ui/select.mjs";
 import { createDriveClient } from "../services/drive-client.mjs";
 import { createCloudCache } from "../services/cloud-cache.mjs";
 import { descendantFolderIds, filterFiles, folderPath, sortFiles } from "./files-model.mjs";
+import { translateSource } from "../i18n/catalog.mjs";
 
 const TYPE_ICONS = Object.freeze({
   folder: "folder",
@@ -32,7 +33,7 @@ function completed(message, data = null) {
 }
 
 function typeLabel(type) {
-  return ({ folder: "Dossier", link: "Lien", image: "Image", video: "Vidéo", code: "Code", doc: "Document", file: "Fichier" })[type] || "Fichier";
+  return translateSource(({ folder: "Dossier", link: "Lien", image: "Image", video: "Vidéo", code: "Code", doc: "Document", file: "Fichier" })[type] || "Fichier");
 }
 
 function isDriveConnected(repository) {
@@ -448,7 +449,7 @@ export function mountFiles(stage, options = {}) {
       element("header", { className: "v8-files-preview__header" }, [element("span", { className: "v8-eyebrow", text: "Aperçu" }), element("span", { className: "v8-badge", text: typeLabel(file.type) })]),
       element("div", { className: "v8-files-preview__symbol" }, [icon(TYPE_ICONS[file.type] || "file")]),
       element("h2", { text: file.name, attributes: { translate: "no" } }),
-      element("p", { text: file.type === "folder" ? "Dossier" : file.sizeLabel || "Fichier", attributes: {} }),
+      element("p", { text: file.type === "folder" ? translateSource("Dossier") : file.sizeLabel || translateSource("Fichier"), attributes: {} }),
       ...tagElements,
       brainSummary,
       brainSuggestion,
@@ -556,14 +557,16 @@ export function mountFiles(stage, options = {}) {
           element("small", { text: formatBytes(file.size) })
         ])))
         : null;
+      const shareLabel = `${translateSource("Partages")}${dashboard.expiredShares ? ` (${dashboard.expiredShares} ${translateSource("expirés")})` : ""}`;
+      const dropLabel = `${translateSource("Drops")}${dashboard.expiredDrops ? ` (${dashboard.expiredDrops} ${translateSource("expirés")})` : ""}`;
       dashboardSection.append(
         element("div", { className: "v8-files-admin__dashboard" }, [
-          element("div", { className: "v8-files-admin__kpi" }, [element("strong", { text: String(dashboard.totalFiles) }), element("small", { text: "Fichiers" })]),
-          element("div", { className: "v8-files-admin__kpi" }, [element("strong", { text: topSize }), element("small", { text: "Taille totale" })]),
-          element("div", { className: "v8-files-admin__kpi" }, [element("strong", { text: String(dashboard.favorites) }), element("small", { text: "Favoris" })]),
-          element("div", { className: "v8-files-admin__kpi" }, [element("strong", { text: String(dashboard.folders) }), element("small", { text: "Dossiers" })]),
-          element("div", { className: "v8-files-admin__kpi" }, [element("strong", { text: String(dashboard.activeShares) }), element("small", { text: `Partages${dashboard.expiredShares ? ` (${dashboard.expiredShares} expirés)` : ""}` })]),
-          element("div", { className: "v8-files-admin__kpi" }, [element("strong", { text: String(dashboard.activeDrops) }), element("small", { text: `Drops${dashboard.expiredDrops ? ` (${dashboard.expiredDrops} expirés)` : ""}` })]),
+          element("div", { className: "v8-files-admin__kpi" }, [element("strong", { text: String(dashboard.totalFiles) }), element("small", { text: translateSource("Fichiers") })]),
+          element("div", { className: "v8-files-admin__kpi" }, [element("strong", { text: topSize }), element("small", { text: translateSource("Taille totale") })]),
+          element("div", { className: "v8-files-admin__kpi" }, [element("strong", { text: String(dashboard.favorites) }), element("small", { text: translateSource("Favoris") })]),
+          element("div", { className: "v8-files-admin__kpi" }, [element("strong", { text: String(dashboard.folders) }), element("small", { text: translateSource("Dossiers") })]),
+          element("div", { className: "v8-files-admin__kpi" }, [element("strong", { text: String(dashboard.activeShares) }), element("small", { text: shareLabel })]),
+          element("div", { className: "v8-files-admin__kpi" }, [element("strong", { text: String(dashboard.activeDrops) }), element("small", { text: dropLabel })]),
           topFilesList
         ].filter(Boolean))
       );
@@ -582,14 +585,16 @@ export function mountFiles(stage, options = {}) {
         const expired = isExpired(share.expiresAt);
         const expiring = !expired && isExpiringSoon(share.expiresAt);
         const statusClass = expired ? "is-expired" : expiring ? "is-expiring" : "";
-        const statusText = expired ? "Expiré" : expiring ? "Expire bientôt" : share.expiresAt ? `Expire ${new Date(share.expiresAt).toLocaleString()}` : "Sans expiration";
-        const copyButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, events: { click: () => copyShareLink(share.slug) } }, [icon("link"), element("span", { text: "Copier" })]);
-        const revokeButton = element("button", { className: "v8-button v8-button--danger", attributes: { type: "button" }, events: { click: () => revokeShareAdmin(share.slug) } }, [icon("trash-2"), element("span", { text: "Révoquer" })]);
+        const statusText = expired ? translateSource("Expiré") : expiring ? translateSource("Expire bientôt") : share.expiresAt ? `Expire ${new Date(share.expiresAt).toLocaleString()}` : translateSource("Sans expiration");
+        const downloadCount = share.downloadCount || 0;
+        const downloadLabel = `${downloadCount} ${downloadCount > 1 ? translateSource("téléchargements") : translateSource("téléchargement")}`;
+        const copyButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, events: { click: () => copyShareLink(share.slug) } }, [icon("link"), element("span", { text: translateSource("Copier") })]);
+        const revokeButton = element("button", { className: "v8-button v8-button--danger", attributes: { type: "button" }, events: { click: () => revokeShareAdmin(share.slug) } }, [icon("trash-2"), element("span", { text: translateSource("Révoquer") })]);
         list.append(element("li", { className: statusClass }, [
           element("div", { className: "v8-files-admin__item-copy" }, [
             element("strong", { text: share.slug }),
             element("small", { text: statusText }),
-            element("small", { text: `${share.downloadCount || 0} téléchargements` })
+            element("small", { text: downloadLabel })
           ]),
           element("div", { className: "v8-files-admin__item-actions" }, [copyButton, revokeButton])
         ]));
@@ -608,14 +613,16 @@ export function mountFiles(stage, options = {}) {
         const expired = isExpired(drop.expiresAt);
         const expiring = !expired && isExpiringSoon(drop.expiresAt);
         const statusClass = expired ? "is-expired" : expiring ? "is-expiring" : "";
-        const statusText = expired ? "Expiré" : expiring ? "Expire bientôt" : drop.expiresAt ? `Expire ${new Date(drop.expiresAt).toLocaleString()}` : "Sans expiration";
-        const copyButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, events: { click: () => copyDropLink(drop.slug) } }, [icon("link"), element("span", { text: "Copier" })]);
-        const revokeButton = element("button", { className: "v8-button v8-button--danger", attributes: { type: "button" }, events: { click: () => revokeDropAdmin(drop.slug) } }, [icon("trash-2"), element("span", { text: "Supprimer" })]);
+        const statusText = expired ? translateSource("Expiré") : expiring ? translateSource("Expire bientôt") : drop.expiresAt ? `Expire ${new Date(drop.expiresAt).toLocaleString()}` : translateSource("Sans expiration");
+        const fileCount = drop.fileCount || 0;
+        const fileLabel = `${fileCount} / ${drop.maxFiles || "∞"} ${fileCount > 1 ? translateSource("fichiers") : translateSource("fichier")}`;
+        const copyButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, events: { click: () => copyDropLink(drop.slug) } }, [icon("link"), element("span", { text: translateSource("Copier") })]);
+        const revokeButton = element("button", { className: "v8-button v8-button--danger", attributes: { type: "button" }, events: { click: () => revokeDropAdmin(drop.slug) } }, [icon("trash-2"), element("span", { text: translateSource("Supprimer") })]);
         list.append(element("li", { className: statusClass }, [
           element("div", { className: "v8-files-admin__item-copy" }, [
             element("strong", { text: drop.title || drop.slug }),
             element("small", { text: statusText }),
-            element("small", { text: `${drop.fileCount || 0} / ${drop.maxFiles || "∞"} fichiers` })
+            element("small", { text: fileLabel })
           ]),
           element("div", { className: "v8-files-admin__item-actions" }, [copyButton, revokeButton])
         ]));
@@ -655,7 +662,7 @@ export function mountFiles(stage, options = {}) {
     const ratio = limit > 0 ? Math.min(1, usage / limit) : 0;
     const percent = Math.round(ratio * 100);
     storageHost.append(
-      element("div", { className: "v8-files-storage__label", style: "display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:var(--v8-font-sm);" }, [element("span", { text: "Stockage" }), element("small", { text: `${percent}% utilisé` })]),
+      element("div", { className: "v8-files-storage__label", style: "display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:var(--v8-font-sm);" }, [element("span", { text: translateSource("Stockage") }), element("small", { text: `${percent}% ${translateSource("utilisé")}` })]),
       element("div", { className: "v8-files-storage__bar", style: "height:6px;background:var(--v8-border);border-radius:999px;overflow:hidden;" }, [element("div", { className: "v8-files-storage__fill", attributes: { style: `width:${percent}%;height:100%;background:#1a73e8;` } })]),
       element("div", { className: "v8-files-storage__meta", style: "margin-top:4px;color:var(--v8-text-secondary);font-size:var(--v8-font-xs);" }, [element("small", { text: `${formatBytes(usage)} / ${formatBytes(limit)}` })])
     );

@@ -6,6 +6,8 @@ import { refreshIcons } from "../ui/icons.mjs";
 import { buildMonth, eventsForDate, tasksForDate } from "./calendar-model.mjs";
 import { localeTag } from "../i18n/catalog.mjs";
 import { calendarPresenceState } from "../core/presence-engine.mjs";
+import { createBillsManager } from "../services/bills-manager.mjs";
+import { billsLiveCard } from "../ui/bills-widget.mjs";
 
 function weekdayLabels() {
   const formatter = new Intl.DateTimeFormat(localeTag(), { weekday: "short" });
@@ -52,6 +54,8 @@ export function mountCalendar(stage, options = {}) {
   const densityControl = collectionDensityControl(options.state?.density || document.documentElement.dataset.density || "automatic");
   const grid = element("div", { className: "v8-calendar-grid", attributes: { role: "grid", "aria-label": "Calendrier mensuel" } });
   const agenda = element("aside", { className: "v8-calendar-agenda", attributes: { "aria-label": "Agenda du jour" } });
+  const billsManager = createBillsManager({ runtime: globalThis, storage: globalThis.localStorage });
+  const billsWidget = billsLiveCard(billsManager, { externalServices: options.externalServices });
   const page = element("section", { className: "v8-page v8-work-page", dataset: { page: "calendar" } }, [
     element("header", { className: "v8-page-heading v8-work-heading" }, [
       element("div", { className: "v8-page-heading__copy" }, [
@@ -186,7 +190,8 @@ export function mountCalendar(stage, options = {}) {
     agenda.append(
       element("header", { className: "v8-calendar-agenda__header" }, [element("span", { className: "v8-eyebrow", text: "Agenda" }), element("h2", { text: dayTitle(selectedDate), attributes: { translate: "no" } }), element("span", { text: `${dayEvents.length} événement${dayEvents.length > 1 ? "s" : ""}` })]),
       composer,
-      list
+      list,
+      billsWidget
     );
     composer.addEventListener("submit", async (event) => {
       event.preventDefault();

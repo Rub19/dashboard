@@ -129,6 +129,11 @@ export function createInteractionsHeatmap(options = {}) {
     save(record);
   }
 
+  function refresh() {
+    record = load();
+    if (!Object.keys(record).length) seed();
+  }
+
   return Object.freeze({
     track,
     trackFromAction,
@@ -136,6 +141,7 @@ export function createInteractionsHeatmap(options = {}) {
     intensity,
     stats,
     seed,
+    refresh,
     kindFromAction
   });
 }

@@ -6,88 +6,77 @@ import { statusState } from "../ui/empty-state.mjs";
 const ROLE_LABELS = {
   owner: "Propriétaire",
   admin: "Administrateur",
-  senior: "Senior Level",
-  junior: "Junior Level",
+  senior: "Senior",
+  junior: "Junior",
   assistant: "Assistant",
   viewer: "Lecteur"
 };
 
-const STATUS_LABELS = {
-  pending: "En attente",
-  active: "Actif",
-  declined: "Décliné",
-  revoked: "Révoqué"
-};
-
-function avatarNode(member) {
-  if (member.avatarUrl) {
-    return element("img", { className: "v8-team-avatar__image", attributes: { src: member.avatarUrl, alt: member.displayName || member.email, loading: "lazy" } });
-  }
-  const seedStyle = `background: conic-gradient(from ${Math.abs(member.seed.split("").reduce((a, c) => a + c.charCodeAt(0), 0)) % 360}deg, var(--v8-accent), var(--v8-brand));`;
-  const initials = element("span", { className: "v8-team-avatar__initials", text: member.initials });
-  const wrapper = element("span", { className: "v8-team-avatar v8-team-avatar--generated", attributes: { style: seedStyle } }, [initials]);
-  return wrapper;
-}
-
 function roleBadge(role) {
-  return element("span", { className: "v8-team-role", text: ROLE_LABELS[role] || role });
+  return element("span", { className: `v8-badge v8-badge--${role}` }, [element("span", { text: ROLE_LABELS[role] || role })]);
 }
 
-function roleSelect(member, onChange) {
-  const select = element("select", { className: "v8-team-role-select", attributes: { "aria-label": `Rôle de ${member.displayName || member.email}` } });
-  for (const [key, label] of Object.entries(ROLE_LABELS)) {
+function statusBadge(status) {
+  const tone = status === "active" ? "success" : status === "pending" ? "warning" : status === "revoked" ? "error" : "neutral";
+  const label = { active: "Actif", pending: "En attente", declined: "Refusé", revoked: "Révoqué" }[status] || status;
+  return element("span", { className: `v8-badge v8-badge--${tone}` }, [element("span", { text: label })]);
+}
+
+function memberAvatar(member) {
+  if (member.avatarUrl) return element("img", { className: "v8-team-member__avatar", attributes: { src: member.avatarUrl, alt: "" } });
+  return element("span", { className: "v8-team-member__avatar v8-team-member__avatar--initials" }, [element("span", { text: member.initials })]);
+}
+
+function memberRow(member, handlers) {
+  const roleSelect = element("select", { className: "v8-input v8-team-member__role" }, Object.entries(ROLE_LABELS).filter(([key]) => key !== "owner").map(([key, label]) => {
     const option = document.createElement("option");
     option.value = key;
     option.textContent = label;
-    if (member.role === key) option.selected = true;
-    select.append(option);
-  }
-  select.addEventListener("change", () => onChange(member.id, select.value));
-  return select;
-}
-
-function memberRow(member, options = {}) {
-  const onChangeRole = options.onChangeRole || (() => {});
-  const onRemove = options.onRemove || (() => {});
-  const onRevoke = options.onRevoke || (() => {});
+    option.selected = key === member.role;
+    return option;
+  }));
+  roleSelect.addEventListener("change", () => handlers.onChangeRole(member.id, roleSelect.value));
 
   const actions = [];
-  if (member.status !== "revoked") {
-    actions.push(element("button", { className: "v8-team-member__action v8-icon-button", attributes: { type: "button", "aria-label": "Révoquer" }, dataset: { action: "revoke" } }, [icon("user-x")]));
-  }
-  actions.push(element("button", { className: "v8-team-member__action v8-icon-button", attributes: { type: "button", "aria-label": "Supprimer" }, dataset: { action: "remove" } }, [icon("trash-2")]));
+  if (member.status !== "revoked") actions.push(element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Révoquer" }, events: { click: () => handlers.onRevoke(member.id) } }, [icon("ban")]));
+  actions.push(element("button", { className: "v8-icon-button v8-icon-button--danger", attributes: { type: "button", "aria-label": "Supprimer" }, events: { click: () => handlers.onRemove(member.id) } }, [icon("trash-2")]));
 
-  const row = element("li", { className: "v8-team-member", dataset: { status: member.status } }, [
-    avatarNode(member),
-    element("div", { className: "v8-team-member__meta" }, [
-      element("strong", { className: "v8-team-member__name", text: member.displayName || member.email }),
-      element("span", { className: "v8-team-member__email", text: member.email })
+  return element("li", { className: "v8-team-member" }, [
+    memberAvatar(member),
+    element("div", { className: "v8-team-member__copy" }, [
+      element("strong", { text: member.displayName || member.email }),
+      element("small", { text: member.email })
     ]),
-    element("div", { className: "v8-team-member__role" }, [roleSelect(member, onChangeRole)]),
-    element("div", { className: "v8-team-member__status", text: STATUS_LABELS[member.status] || member.status }),
-    element("div", { className: "v8-team-member__actions" }, actions)
+    element("div", { className: "v8-team-member__badges" }, [roleBadge(member.role), statusBadge(member.status)]),
+    element("div", { className: "v8-team-member__actions" }, [roleSelect, ...actions])
   ]);
-
-  row.querySelector("[data-action='revoke']")?.addEventListener("click", () => onRevoke(member.id));
-  row.querySelector("[data-action='remove']")?.addEventListener("click", () => onRemove(member.id));
-
-  return row;
 }
 
 function emptyMembers() {
-  return statusState("empty", {
-    tagName: "div",
-    headingTag: "h3",
-    iconName: "users",
-    title: "Aucun membre",
-    description: "Invitez une première personne à rejoindre votre espace."
-  });
+  return statusState("empty", { title: "Aucun membre", description: "Invitez un collègue pour démarrer.", compact: true, inline: true });
 }
 
 export function mountTeam(stage, options = {}) {
   const ownerId = options.ownerId || "";
   const notify = typeof options.notify === "function" ? options.notify : () => {};
-  const teamManager = createTeamManager({ ownerId, storage: options.storage });
+  const clientProvider = typeof options.clientProvider === "function" ? options.clientProvider : null;
+  const externalServices = options.externalServices || null;
+  const sendEmail = externalServices?.execute
+    ? async (payload) => {
+      try {
+        const result = await externalServices.execute("teamInvite", {
+          email: payload.email,
+          display_name: payload.displayName,
+          invite_url: payload.url,
+          token: payload.token
+        });
+        return result?.data || { sent: false };
+      } catch {
+        return { sent: false };
+      }
+    }
+    : null;
+  const teamManager = createTeamManager({ ownerId, storage: options.storage, clientProvider, sendEmail });
 
   const page = element("section", { className: "v8-page v8-team-page" }, [
     element("header", { className: "v8-page-heading v8-team-heading" }, [
@@ -139,37 +128,61 @@ export function mountTeam(stage, options = {}) {
   function showFeedback(message, type = "info") {
     feedback.textContent = message;
     feedback.dataset.type = type;
-    if (message) setTimeout(() => { feedback.textContent = ""; delete feedback.dataset.type; }, 4000);
+    if (message) setTimeout(() => { feedback.textContent = ""; delete feedback.dataset.type; }, 5000);
   }
 
-  function render(state = { members: teamManager.listMembers(), loading: false }) {
+  function renderInviteLink(url) {
+    const existing = page.querySelector(".v8-team-invite__link");
+    if (existing) existing.remove();
+    if (!url) return;
+    const linkHost = element("div", { className: "v8-team-invite__link" }, [
+      element("p", { text: "Lien d'invitation généré :" }),
+      element("input", { className: "v8-input", attributes: { type: "text", value: url, readonly: true, "aria-label": "Lien d'invitation" } }),
+      element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, events: { click: () => copyUrl(url) } }, [icon("copy"), element("span", { text: "Copier" })])
+    ]);
+    feedback.after(linkHost);
+  }
+
+  async function copyUrl(url) {
+    try {
+      await navigator.clipboard.writeText(url);
+      showFeedback("Lien copié dans le presse-papiers.", "success");
+    } catch {
+      showFeedback("Impossible de copier automatiquement.", "error");
+    }
+  }
+
+  function render(state = { members: [], loading: false }) {
     const members = state.members || [];
     membersList.replaceChildren(...members.length ? members.map((m) => memberRow(m, {
-      onChangeRole: (id, role) => {
-        const result = teamManager.updateRole(id, role);
+      onChangeRole: async (id, role) => {
+        const result = await teamManager.updateRole(id, role);
         if (!result.ok) showFeedback(result.message, "error");
       },
-      onRemove: (id) => {
-        const result = teamManager.remove(id);
+      onRemove: async (id) => {
+        const result = await teamManager.remove(id);
         if (result.ok) showFeedback("Membre supprimé.", "success");
         else showFeedback(result.message, "error");
       },
-      onRevoke: (id) => {
-        const result = teamManager.revoke(id);
+      onRevoke: async (id) => {
+        const result = await teamManager.revoke(id);
         if (result.ok) showFeedback("Accès révoqué.", "warning");
         else showFeedback(result.message, "error");
       }
     })) : [emptyMembers()]);
+    if (state.loading) membersList.classList.add("is-loading");
+    else membersList.classList.remove("is-loading");
     refreshIcons(page);
   }
 
-  function doInvite() {
+  async function doInvite() {
     const email = emailInput?.value;
     const role = roleSelectEl?.value || "viewer";
-    const result = teamManager.invite({ email, role });
+    const result = await teamManager.invite({ email, role });
     if (result.ok) {
       emailInput.value = "";
-      showFeedback("Invitation envoyée.", "success");
+      showFeedback("Invitation enregistrée.", "success");
+      if (result.url) renderInviteLink(result.url);
     } else {
       showFeedback(result.message, "error");
     }

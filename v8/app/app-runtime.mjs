@@ -9,6 +9,7 @@ import { createCommandCenter } from "../command/command-center.mjs";
 import { createHomeModel } from "../data/home-model.mjs";
 import { claimDailyBriefing } from "../data/daily-briefing.mjs";
 import { createActivityJournal } from "../data/activity-journal.mjs";
+import { createInteractionsHeatmap } from "../services/interactions-heatmap.mjs";
 import { createDocumentMetadataManager, themeColorForState } from "../core/document-metadata.mjs";
 import { createThemeWatcher, resolveTheme, systemPrefersLight } from "../core/theme-engine.mjs";
 import { actionLabel, createAutomationWatcher } from "../core/automation-engine.mjs";
@@ -105,6 +106,7 @@ export function mountApplication(root, options = {}) {
   const automationWatcher = createAutomationWatcher({ getRules: () => store.getState().brainPreferences?.automations || [] });
   const history = createCommandHistory();
   const activityJournal = createActivityJournal(repository);
+  const interactionsHeatmap = createInteractionsHeatmap({ ownerId: options.ownerId || repository.owner?.() });
   const ownsAmbientEngine = !options.ambientEngine;
   const ambient = options.ambientEngine || createAmbientEngine({
     target: document.documentElement,
@@ -772,8 +774,8 @@ export function mountApplication(root, options = {}) {
     if (route === "share") return module.mountShare(shell.stage, { externalServices, notify: (notice) => toasts.show(notice) });
     if (route === "drop") return module.mountDrop(shell.stage, { externalServices, notify: (notice) => toasts.show(notice) });
     if (route === "matches") return module.mountMatches(shell.stage, { actions, externalServices, repository, state: store.getState(), subscribeState: store.subscribe, lolLive, valorantLive, trackerLive });
-    if (route === "team") return module.mountTeam(shell.stage, { ownerId: options.ownerId || repository.owner?.(), repository, notify: (notice) => toasts.show(notice) });
-    if (route === "interactions") return module.mountInteractions(shell.stage, { ownerId: options.ownerId || repository.owner?.(), repository, notify: (notice) => toasts.show(notice) });
+    if (route === "team") return module.mountTeam(shell.stage, { ownerId: options.ownerId || repository.owner?.(), repository, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, externalServices });
+    if (route === "interactions") return module.mountInteractions(shell.stage, { ownerId: options.ownerId || repository.owner?.(), repository, notify: (notice) => toasts.show(notice), interactions: interactionsHeatmap });
     return module.mountSettings(shell.stage, { repository, actions, state: store.getState(), sounds, externalServices, densityEngine, subscribeState: store.subscribe, brain, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.(), profile: options.profile || repository.activeProfile?.(), onProfileMediaUpdated: applyProfileMediaUpdate });
   }
 
@@ -876,6 +878,7 @@ export function mountApplication(root, options = {}) {
     onRoute: (route, navigation) => {
       if (store.getState().route !== route) store.setState({ route });
       activityJournal.captureRoute(route);
+      interactionsHeatmap.track("page_open");
       mountRoute(route, root.dataset.bootStatus === "ready", navigation);
     }
   });
@@ -897,7 +900,10 @@ export function mountApplication(root, options = {}) {
     focusTimer,
     sync: cloudSync,
     spotifyLive,
-    onActivity: (actionId, result) => activityJournal.capture(actionId, result)
+    onActivity: (actionId, result) => {
+      if (result?.ok) interactionsHeatmap.trackFromAction(actionId);
+      return activityJournal.capture(actionId, result);
+    }
   });
 
   const unsubscribe = store.subscribe((next, previous) => {

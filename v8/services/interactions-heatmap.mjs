@@ -1,5 +1,25 @@
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+const ACTION_KIND_MAP = {
+  "v8.notes.new": "note_create",
+  "v8.notes.save": "note_save",
+  "v8.tasks.create": "task_create",
+  "v8.tasks.toggle": "task_complete",
+  "v8.tasks.delete": "task_delete",
+  "v8.calendar.create": "event_create",
+  "v8.files.create": "file_create",
+  "v8.space.personal": "space_switch",
+  "v8.space.focus": "space_switch",
+  "v8.space.studio": "space_switch",
+  "v8.sync.refresh": "sync",
+  "v8.theme.toggle": "ui_customize",
+  "v8.appearance.cycle": "ui_customize"
+};
+
+export function kindFromAction(actionId) {
+  return ACTION_KIND_MAP[actionId] || "interaction";
+}
+
 function floorDate(iso) {
   const d = new Date(iso);
   d.setUTCHours(0, 0, 0, 0);
@@ -89,6 +109,11 @@ export function createInteractionsHeatmap(options = {}) {
     return { today, streak, thisWeekPercent, consistency, total };
   }
 
+  function trackFromAction(actionId) {
+    const kind = kindFromAction(actionId);
+    if (kind) track(kind);
+  }
+
   function seed(seedDays = 35) {
     if (Object.keys(record).length) return;
     const base = new Date();
@@ -106,9 +131,11 @@ export function createInteractionsHeatmap(options = {}) {
 
   return Object.freeze({
     track,
+    trackFromAction,
     days,
     intensity,
     stats,
-    seed
+    seed,
+    kindFromAction
   });
 }

@@ -55,6 +55,7 @@ import { twitchRoute } from "./routes/twitch.js";
 import { weatherRoute } from "./routes/weather.js";
 import { youtubeActivityRoute, youtubeOAuthDisconnectRoute, youtubeOAuthExchangeRoute } from "./routes/youtube-oauth.js";
 import { signOutRoute } from "./routes/signout.js";
+import { teamInviteRoute } from "./routes/team-invite.js";
 import {
   passkeyRegisterOptionsRoute,
   passkeyRegisterRoute,
@@ -184,7 +185,10 @@ export const ROUTES = Object.freeze([
   route("device.remove", "/api/auth/device/remove", deviceRemoveRoute, { method: "POST", service: "security", rateLimit: "strict" }),
 
   // Security events
-  route("security.events", "/api/auth/security-events", securityEventsRoute, { service: "security", rateLimit: "standard" })
+  route("security.events", "/api/auth/security-events", securityEventsRoute, { service: "security", rateLimit: "standard" }),
+
+  // Team invites
+  route("team.invite", "/api/team/invite", teamInviteRoute, { method: "POST", service: "team", rateLimit: "strict" })
 ]);
 
 function normalizedPath(pathname) {

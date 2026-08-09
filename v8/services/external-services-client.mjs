@@ -90,7 +90,8 @@ const OPERATIONS = Object.freeze({
   deviceTrust: Object.freeze({ path: "/api/auth/device/trust", method: "POST", auth: true, params: ["deviceId", "trusted"] }),
   deviceRevoke: Object.freeze({ path: "/api/auth/device/revoke", method: "POST", auth: true, params: ["deviceId"] }),
   deviceRemove: Object.freeze({ path: "/api/auth/device/remove", method: "POST", auth: true, params: ["deviceId"] }),
-  securityEvents: Object.freeze({ path: "/api/auth/security-events", auth: true, params: ["limit"] })
+  securityEvents: Object.freeze({ path: "/api/auth/security-events", auth: true, params: ["limit"] }),
+  teamInvite: Object.freeze({ path: "/api/team/invite", method: "POST", auth: true, params: ["email", "display_name", "invite_url", "token"], rawBody: true })
 });
 
 function clientError(code, message, details = {}) {

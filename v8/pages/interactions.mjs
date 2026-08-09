@@ -65,8 +65,8 @@ function renderGrid(days, range) {
 export function mountInteractions(stage, options = {}) {
   const ownerId = options.ownerId || "";
   const notify = typeof options.notify === "function" ? options.notify : () => {};
-  const heatmap = createInteractionsHeatmap({ ownerId, storage: options.storage });
-  heatmap.seed();
+  const heatmap = options.interactions || createInteractionsHeatmap({ ownerId, storage: options.storage });
+  if (!options.interactions) heatmap.seed();
 
   let range = 30;
 

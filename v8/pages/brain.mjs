@@ -36,7 +36,26 @@ function messageBubble(entry) {
   ]);
 }
 
+function thinkingStar() {
+  const wrap = document.createElement("span");
+  wrap.className = "v8-brain-thinking-star";
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("fill", "none");
+  svg.setAttribute("aria-hidden", "true");
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", "M12 2.5c.3 0 .7.4.9 1.3.5 1.7 1.6 2.7 3.3 3.1.9.2 1.3.5 1.3.9 0 .3-.4.7-1.3.9-1.7.5-2.7 1.6-3.1 3.3-.2.9-.5 1.3-.9 1.3-.3 0-.7-.4-.9-1.3-.5-1.7-1.6-2.7-3.3-3.1-.9-.2-1.3-.5-1.3-.9 0-.3.4-.7 1.3-.9 1.7-.5 2.7-1.6 3.1-3.3.2-.9.5-1.3.9-1.3z");
+  path.setAttribute("fill", "currentColor");
+  svg.appendChild(path);
+  wrap.appendChild(svg);
+  return wrap;
+}
+
 function thinkingBubble() {
+  const spark = thinkingStar();
+  const trail = element("span", { className: "v8-brain-thinking-trail" });
+  const core = element("span", { className: "v8-brain-thinking-core" });
+
   return element("article", { className: "v8-brain-message v8-brain-message--assistant v8-brain-message--thinking" }, [
     element("span", { className: "v8-brain-message__avatar v8-brain-message__avatar--thinking" }, [
       icon("brain"),
@@ -44,9 +63,19 @@ function thinkingBubble() {
       element("span", { className: "v8-brain-thinking-ring v8-brain-thinking-ring--delay" })
     ]),
     element("div", { className: "v8-brain-thinking-body" }, [
-      element("p", { className: "v8-brain-thinking-text", text: "Brain réfléchit" }),
-      element("span", { className: "v8-brain-thinking-dots" }, [
-        element("span"), element("span"), element("span")
+      element("span", { className: "v8-brain-thinking-pill" }, [
+        spark,
+        trail,
+        core,
+        element("span", { className: "v8-brain-thinking-pulse" }),
+        element("span", { className: "v8-brain-thinking-particles" }, [
+          element("span", { className: "v8-brain-thinking-particle" }),
+          element("span", { className: "v8-brain-thinking-particle" }),
+          element("span", { className: "v8-brain-thinking-particle" }),
+          element("span", { className: "v8-brain-thinking-particle" }),
+          element("span", { className: "v8-brain-thinking-particle" })
+        ]),
+        element("span", { className: "v8-brain-thinking-text", text: "Thinking" })
       ])
     ])
   ]);

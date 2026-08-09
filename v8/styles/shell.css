@@ -2533,6 +2533,156 @@ html.v8-theme-animated * { transition: background-color 0.45s var(--v8-ease-stan
   0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
   30% { transform: translateY(-4px); opacity: 1; }
 }
+.v8-brain-thinking-pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px 7px 11px;
+  border-radius: var(--v8-radius-pill);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--v8-brain) 14%, var(--v8-surface-1)), color-mix(in srgb, var(--v8-brain) 8%, var(--v8-surface-1)));
+  border: 1px solid color-mix(in srgb, var(--v8-brain) 26%, var(--v8-border));
+  color: var(--v8-brain);
+  font-size: var(--v8-font-sm);
+  font-weight: var(--v8-weight-semibold);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--v8-brain) 12%, transparent), 0 8px 24px -6px color-mix(in srgb, var(--v8-brain) 24%, transparent);
+  overflow: visible;
+  isolation: isolate;
+}
+.v8-brain-thinking-pill .v8-brain-thinking-text { color: var(--v8-brain) !important; display: inline; }
+.v8-brain-thinking-star {
+  position: relative;
+  display: grid;
+  width: 18px;
+  height: 18px;
+  place-items: center;
+  color: var(--v8-brain);
+  z-index: 2;
+}
+.v8-brain-thinking-star svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  animation: v8-brain-star-spin 2.2s linear infinite;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--v8-brain) 70%, transparent));
+}
+@keyframes v8-brain-star-spin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.12); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+.v8-brain-thinking-pulse {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--v8-brain) 45%, transparent) 0%, transparent 70%);
+  animation: v8-brain-thinking-pulse-glow 1.6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes v8-brain-thinking-pulse-glow {
+  0%, 100% { transform: scale(0.8); opacity: 0.5; }
+  50% { transform: scale(1.6); opacity: 0; }
+}
+.v8-brain-thinking-trail, .v8-brain-thinking-core {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+.v8-brain-thinking-trail {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  overflow: hidden;
+}
+.v8-brain-thinking-trail::before, .v8-brain-thinking-trail::after {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--v8-brain);
+  opacity: 0;
+}
+.v8-brain-thinking-trail::before { top: 6px; left: 6px; animation: v8-brain-thinking-orbit 2.4s linear infinite; }
+.v8-brain-thinking-trail::after { top: 6px; left: 6px; animation: v8-brain-thinking-orbit 2.4s linear 1.2s infinite reverse; }
+@keyframes v8-brain-thinking-orbit {
+  0% { transform: translate(0, 0) scale(0.6); opacity: 0; }
+  20% { opacity: 0.8; }
+  80% { opacity: 0.8; }
+  100% { transform: translate(80px, 0) scale(0.2); opacity: 0; }
+}
+.v8-brain-thinking-core {
+  left: 13px;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: var(--v8-brain);
+  opacity: 0.15;
+  animation: v8-brain-thinking-core-pulse 1.4s ease-in-out infinite;
+}
+@keyframes v8-brain-thinking-core-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.12; }
+  50% { transform: scale(1.8); opacity: 0.28; }
+}
+.v8-brain-thinking-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.v8-brain-thinking-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--v8-brain);
+  opacity: 0;
+  box-shadow: 0 0 6px var(--v8-brain);
+}
+.v8-brain-thinking-particle:nth-child(1) { top: 30%; left: -6px; animation: v8-brain-particle-1 2.8s ease-in-out infinite; }
+.v8-brain-thinking-particle:nth-child(2) { top: 60%; left: -8px; animation: v8-brain-particle-2 3.2s ease-in-out 0.4s infinite; }
+.v8-brain-thinking-particle:nth-child(3) { top: 20%; right: -6px; animation: v8-brain-particle-3 2.6s ease-in-out 0.8s infinite; }
+.v8-brain-thinking-particle:nth-child(4) { top: 70%; right: -8px; animation: v8-brain-particle-4 3s ease-in-out 1.2s infinite; }
+.v8-brain-thinking-particle:nth-child(5) { top: 45%; left: 50%; animation: v8-brain-particle-5 2.4s ease-in-out 0.6s infinite; }
+@keyframes v8-brain-particle-1 {
+  0%, 100% { transform: translate(0, 0) scale(0.4); opacity: 0; }
+  30% { opacity: 0.8; }
+  60% { transform: translate(12px, -12px) scale(1); opacity: 0.2; }
+  80% { opacity: 0; }
+}
+@keyframes v8-brain-particle-2 {
+  0%, 100% { transform: translate(0, 0) scale(0.4); opacity: 0; }
+  25% { opacity: 0.7; }
+  55% { transform: translate(10px, 10px) scale(1); opacity: 0.2; }
+  85% { opacity: 0; }
+}
+@keyframes v8-brain-particle-3 {
+  0%, 100% { transform: translate(0, 0) scale(0.4); opacity: 0; }
+  30% { opacity: 0.8; }
+  60% { transform: translate(-12px, -8px) scale(1); opacity: 0.2; }
+  80% { opacity: 0; }
+}
+@keyframes v8-brain-particle-4 {
+  0%, 100% { transform: translate(0, 0) scale(0.4); opacity: 0; }
+  25% { opacity: 0.7; }
+  55% { transform: translate(-10px, 8px) scale(1); opacity: 0.2; }
+  85% { opacity: 0; }
+}
+@keyframes v8-brain-particle-5 {
+  0%, 100% { transform: translate(-50%, -50%) scale(0.4); opacity: 0; }
+  40% { opacity: 0.6; }
+  70% { transform: translate(-50%, -160%) scale(0.8); opacity: 0.15; }
+  90% { opacity: 0; }
+}
 .v8-brain-suggestions { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--v8-space-2);padding:0 var(--density-card-padding) var(--v8-space-3); }.v8-brain-suggestion { display:grid;min-width:0;min-height:var(--density-row-height);grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:9px;padding:8px 10px;border:1px solid var(--v8-border);border-radius:var(--v8-radius-md);background:var(--v8-surface-1);color:var(--v8-text-secondary);outline:none;text-align:left; }.v8-brain-suggestion > span { display:grid;width:30px;height:30px;place-items:center;border-radius:var(--v8-radius-sm);background:var(--v8-brain-soft);color:var(--v8-brain); }.v8-brain-suggestion svg { width:15px;height:15px; }.v8-brain-suggestion strong,.v8-brain-suggestion small { display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }.v8-brain-suggestion strong { font-size:var(--v8-font-xs); }.v8-brain-suggestion small { margin-top:2px;color:var(--v8-muted);font-size:var(--v8-font-micro); }
 .v8-brain-composer { padding:var(--v8-space-3) var(--density-card-padding) var(--density-card-padding);border-top:1px solid var(--v8-divider);background:var(--v8-surface-sunken); }.v8-brain-composer__input { height:auto;min-height:74px;padding:10px 12px;resize:vertical; }.v8-brain-composer footer { display:flex;align-items:center;justify-content:space-between;gap:var(--v8-space-3);margin-top:8px; }.v8-brain-composer__status { color:var(--v8-muted);font-size:var(--v8-font-micro); }
 .v8-brain-source-list,.v8-brain-action-list,.v8-brain-memory-list,.v8-brain-automation-list,.v8-brain-history { display:grid; }.v8-brain-history-tools { position:sticky;z-index:2;top:0;display:flex;align-items:center;gap:var(--v8-space-3);padding:var(--v8-space-3) var(--density-card-padding);border-bottom:1px solid var(--v8-divider);background:color-mix(in srgb,var(--v8-canvas-raised) 98%,transparent); }.v8-brain-history-tools .v8-input-wrap { min-width:0;flex:1; }.v8-brain-history { gap:var(--v8-space-3);padding:var(--density-card-padding); }.v8-brain-source,.v8-brain-action-row,.v8-brain-memory,.v8-brain-automation-row { display:grid;min-height:var(--density-row-height);grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:var(--v8-space-3);padding:10px var(--density-card-padding);border-top:1px solid var(--v8-divider); }.v8-brain-source,.v8-brain-action-row,.v8-brain-memory { grid-template-columns:auto minmax(0,1fr) auto; }

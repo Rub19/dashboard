@@ -24,6 +24,10 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v311", "2026-08-18", "Hotfix Worker : routes Mail", [
+    { kind: "fix", text: "Correction de request.url.searchParams dans worker/src/routes/mail.js et worker/src/routes/mail-templates.js : request.url est une string, il faut parser new URL(request.url) avant d'acceder aux query params." },
+    { kind: "fix", text: "Cela empeche l'erreur Cannot read properties of undefined (reading 'get') sur les appels /api/mail/inbox, /api/mail/search, /api/mail/contacts, /api/mail/drafts, /api/mail/thread et /api/mail/templates." }
+  ]),
   entry("v310", "2026-08-18", "Hotfix UI : toggle de la sidebar", [
     { kind: "fix", text: "Le bouton de reduction de la sidebar n'est plus positionne en absolu sur le logo ETHONE ; il s'empile proprement sous le logo en rail non etendu." },
     { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v310." }

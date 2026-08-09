@@ -244,12 +244,13 @@ export async function mailInboxRoute({ request, env, auth }) {
 
   if (!auth?.userId) throw httpError("UNAUTHORIZED", 401);
 
-  const folder = allowedFolder(request.url.searchParams.get("folder"));
-  const label = safeText(request.url.searchParams.get("label"), 40) || undefined;
-  const search = safeText(request.url.searchParams.get("search"), 120) || undefined;
-  const direction = request.url.searchParams.get("direction") || undefined;
-  const limit = Math.min(100, Math.max(1, Number(request.url.searchParams.get("limit")) || 50));
-  const offset = Math.max(0, Number(request.url.searchParams.get("offset")) || 0);
+  const url = new URL(request.url);
+  const folder = allowedFolder(url.searchParams.get("folder"));
+  const label = safeText(url.searchParams.get("label"), 40) || undefined;
+  const search = safeText(url.searchParams.get("search"), 120) || undefined;
+  const direction = url.searchParams.get("direction") || undefined;
+  const limit = Math.min(100, Math.max(1, Number(url.searchParams.get("limit")) || 50));
+  const offset = Math.max(0, Number(url.searchParams.get("offset")) || 0);
 
   const [messages, unread] = await Promise.all([
     listMessages(env, auth.userId, { folder, label, search, direction, limit, offset }),
@@ -264,7 +265,8 @@ export async function mailThreadRoute({ request, env, auth }) {
 
   if (!auth?.userId) throw httpError("UNAUTHORIZED", 401);
 
-  const threadId = safeText(request.url.searchParams.get("thread_id"), 64);
+  const url = new URL(request.url);
+  const threadId = safeText(url.searchParams.get("thread_id"), 64);
   if (!threadId) throw httpError("INVALID_PARAMETER", 400, { detail: "thread_id" });
 
   const response = await supabaseRequest(env, `/rest/v1/ethone_mail_messages?user_id=eq.${auth.userId}&thread_id=eq.${threadId}&deleted_at=is.null&order=received_at.asc`, {
@@ -383,9 +385,11 @@ export async function mailDraftsRoute({ request, env, auth }) {
 
   if (!auth?.userId) throw httpError("UNAUTHORIZED", 401);
 
+  const url = new URL(request.url);
+
   if (request.method === "GET") {
-    const limit = Math.min(100, Math.max(1, Number(request.url.searchParams.get("limit")) || 50));
-    const offset = Math.max(0, Number(request.url.searchParams.get("offset")) || 0);
+    const limit = Math.min(100, Math.max(1, Number(url.searchParams.get("limit")) || 50));
+    const offset = Math.max(0, Number(url.searchParams.get("offset")) || 0);
     const messages = await listMessages(env, auth.userId, { folder: "drafts", limit, offset });
     return { data: messages };
   }
@@ -463,21 +467,22 @@ export async function mailSearchRoute({ request, env, auth }) {
 
   if (!auth?.userId) throw httpError("UNAUTHORIZED", 401);
 
-  const q = safeText(request.url.searchParams.get("q"), 120) || undefined;
-  const from = safeText(request.url.searchParams.get("from"), 120) || undefined;
-  const subject = safeText(request.url.searchParams.get("subject"), 120) || undefined;
-  const body = safeText(request.url.searchParams.get("body"), 200) || undefined;
-  const dateFrom = safeText(request.url.searchParams.get("date_from"), 40) || undefined;
-  const dateTo = safeText(request.url.searchParams.get("date_to"), 40) || undefined;
-  const hasAttachmentsRaw = request.url.searchParams.get("has_attachments");
+  const url = new URL(request.url);
+  const q = safeText(url.searchParams.get("q"), 120) || undefined;
+  const from = safeText(url.searchParams.get("from"), 120) || undefined;
+  const subject = safeText(url.searchParams.get("subject"), 120) || undefined;
+  const body = safeText(url.searchParams.get("body"), 200) || undefined;
+  const dateFrom = safeText(url.searchParams.get("date_from"), 40) || undefined;
+  const dateTo = safeText(url.searchParams.get("date_to"), 40) || undefined;
+  const hasAttachmentsRaw = url.searchParams.get("has_attachments");
   const hasAttachments = hasAttachmentsRaw === "true" ? true : hasAttachmentsRaw === "false" ? false : undefined;
-  const labels = safeText(request.url.searchParams.get("labels"), 200) || undefined;
-  const folderParam = request.url.searchParams.get("folder");
+  const labels = safeText(url.searchParams.get("labels"), 200) || undefined;
+  const folderParam = url.searchParams.get("folder");
   const folder = folderParam ? allowedFolder(folderParam) : undefined;
-  const label = safeText(request.url.searchParams.get("label"), 40) || undefined;
-  const direction = request.url.searchParams.get("direction") || undefined;
-  const limit = Math.min(100, Math.max(1, Number(request.url.searchParams.get("limit")) || 50));
-  const offset = Math.max(0, Number(request.url.searchParams.get("offset")) || 0);
+  const label = safeText(url.searchParams.get("label"), 40) || undefined;
+  const direction = url.searchParams.get("direction") || undefined;
+  const limit = Math.min(100, Math.max(1, Number(url.searchParams.get("limit")) || 50));
+  const offset = Math.max(0, Number(url.searchParams.get("offset")) || 0);
 
   const filters = {
     folder,
@@ -524,7 +529,8 @@ export async function mailContactsRoute({ request, env, auth }) {
 
   if (!auth?.userId) throw httpError("UNAUTHORIZED", 401);
 
-  const limit = Math.min(200, Math.max(1, Number(request.url.searchParams.get("limit")) || 50));
+  const url = new URL(request.url);
+  const limit = Math.min(200, Math.max(1, Number(url.searchParams.get("limit")) || 50));
   const contacts = await getContacts(env, auth.userId, { limit });
   return { data: contacts };
 }

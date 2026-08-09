@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v311] - 2026-08-18
+
+**Hotfix Worker : routes Mail**
+
+### Corrige
+- Correction de `request.url.searchParams` dans `worker/src/routes/mail.js` et `worker/src/routes/mail-templates.js` : `request.url` est une string, il faut parser `new URL(request.url)` avant d'accéder aux query params.
+- Cela empêchait l'erreur `Cannot read properties of undefined (reading 'get')` sur les appels `/api/mail/inbox`, `/api/mail/search`, `/api/mail/contacts`, `/api/mail/drafts`, `/api/mail/thread` et `/api/mail/templates`.
+
 ## [v310] - 2026-08-18
 
 **Hotfix UI : toggle de la sidebar**

@@ -35,8 +35,9 @@ export async function mailTemplatesRoute({ request, env, auth }) {
   }
 
   if (method === "GET") {
-    const limit = Math.min(100, Math.max(1, Number(request.url.searchParams.get("limit")) || 50));
-    const offset = Math.max(0, Number(request.url.searchParams.get("offset")) || 0);
+    const url = new URL(request.url);
+    const limit = Math.min(100, Math.max(1, Number(url.searchParams.get("limit")) || 50));
+    const offset = Math.max(0, Number(url.searchParams.get("offset")) || 0);
     const templates = await listTemplates(env, auth.userId, { limit, offset });
     return { data: templates, meta: { limit, offset } };
   }

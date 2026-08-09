@@ -59,6 +59,18 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 ### Bordereau PWA
 - Mis à jour vers `experience-v298`.
 
+## [v299] - 2026-08-18
+
+**Hotfix : centre de notifications du dock**
+
+### Corrige
+- Le panneau de notifications du dock était invisible (`is-open` manquait) mais capturait les clics, ce qui gelait l'interface.
+- Le panneau de notifications est maintenant visible avec animation, se referme avec Échap / clic extérieur / bouton X, et a `pointer-events: none` quand il est fermé.
+- Robustesse du store : une erreur dans un abonné (ex. panneau de notifications) ne bloque plus les autres abonnés.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v299`.
+
 ## [v295] - 2026-08-17
 
 **Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes**

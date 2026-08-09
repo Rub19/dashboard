@@ -212,7 +212,7 @@ export function createPanelManager(host, options = {}) {
   }
 
   function close(config = {}) {
-    if (notificationCenter) { notificationCenter.close(); notificationCenter = null; }
+    if (notificationCenter) { notificationCenter.close({ dispatch: false }); notificationCenter = null; }
     clearInterval(focusInterval);
     focusRunning = false;
     notificationMenu.close({ restoreFocus: false });

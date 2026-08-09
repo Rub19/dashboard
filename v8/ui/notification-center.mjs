@@ -4,6 +4,8 @@ import { showBottomSheet } from "./bottom-sheet.mjs";
 import { refreshIcons } from "./icons.mjs";
 import { localeTag, translateSource } from "../i18n/catalog.mjs";
 
+const PANEL_TRANSITION_MS = 220;
+
 const HISTORY_KEY = "v8_notification_history";
 const MUTED_KEY = "v8_notification_muted";
 const SNOOZED_KEY = "ethone:notifications:snoozed";
@@ -576,14 +578,14 @@ export function createNotificationCenter(manager, options = {}) {
   function createDrawer(contentRoot) {
     const panel = element("aside", {
       className: "v8-panel v8-notification-drawer",
-      attributes: { role: "dialog", "aria-modal": "false", "aria-label": "Notifications" }
+      attributes: { role: "dialog", "aria-modal": "false", "aria-label": translateSource("Notifications") }
     }, [
       element("header", { className: "v8-panel__header" }, [
         element("div", { className: "v8-window-controls", attributes: { "aria-hidden": "true" } }, [element("span"), element("span"), element("span")]),
-        element("div", {}, [element("span", { className: "v8-eyebrow", text: "Centre de signal" }), element("strong", { text: "Notifications" })]),
+        element("div", {}, [element("span", { className: "v8-eyebrow", text: translateSource("Centre de signal") }), element("strong", { text: translateSource("Notifications") })]),
         element("button", {
           className: "v8-icon-button",
-          attributes: { type: "button", "aria-label": "Fermer" },
+          attributes: { type: "button", "aria-label": translateSource("Fermer") },
           events: { click: () => doClose() }
         }, [icon("x")])
       ]),
@@ -591,18 +593,51 @@ export function createNotificationCenter(manager, options = {}) {
     ]);
     container.append(panel);
     shell?.classList?.add("has-open-panel");
+    panel.getBoundingClientRect();
+    requestAnimationFrame(() => panel.classList.add("is-open"));
     return panel;
   }
 
-  function doClose() {
+  function onKeydown(event) {
+    if (event.key === "Escape" && drawer) {
+      event.preventDefault?.();
+      doClose();
+    }
+  }
+
+  function onClickOutside(event) {
+    if (!drawer || drawer.contains(event.target)) return;
+    if (event.target.closest?.("[data-dock-command='notifications'], [data-action='v8.notifications.open']")) return;
+    doClose();
+  }
+
+  function bindCloseHandlers() {
+    if (typeof document === "undefined") return;
+    document.addEventListener("keydown", onKeydown);
+    document.addEventListener("click", onClickOutside, true);
+  }
+
+  function unbindCloseHandlers() {
+    if (typeof document === "undefined") return;
+    document.removeEventListener("keydown", onKeydown);
+    document.removeEventListener("click", onClickOutside, true);
+  }
+
+  function doClose(config = {}) {
     if (closed) return;
     closed = true;
     active = false;
+    unbindCloseHandlers();
     if (unsubscribe) { unsubscribe(); unsubscribe = null; }
     if (sheet) { const s = sheet; sheet = null; s.close(); }
-    if (drawer) { const d = drawer; drawer = null; d.remove(); }
+    if (drawer) {
+      const d = drawer;
+      drawer = null;
+      d.classList.remove("is-open");
+      setTimeout(() => { if (d.parentNode) d.remove(); }, PANEL_TRANSITION_MS);
+    }
     shell?.classList?.remove("has-open-panel");
-    onClose?.();
+    if (config.dispatch !== false) onClose?.();
   }
 
   function open() {
@@ -610,18 +645,30 @@ export function createNotificationCenter(manager, options = {}) {
     active = true;
     closed = false;
     snoozeOpen.clear();
-    const content = buildContent();
-    if (isMobile()) {
-      sheet = showBottomSheet({ title: translateSource("Notifications"), children: [content.root], onClose: () => { if (!closed) doClose(); } });
-    } else {
-      drawer = createDrawer(content.root);
+    try {
+      const content = buildContent();
+      if (isMobile()) {
+        sheet = showBottomSheet({ title: translateSource("Notifications"), children: [content.root], onClose: () => { if (!closed) doClose(); } });
+      } else {
+        drawer = createDrawer(content.root);
+        bindCloseHandlers();
+      }
+      unsubscribe = manager.subscribe(() => { if (active) content.render(); });
+      content.render();
+      refreshIcons();
+    } catch (error) {
+      active = false;
+      closed = true;
+      unbindCloseHandlers();
+      if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+      if (drawer) { drawer.remove(); drawer = null; }
+      if (sheet) { sheet.close(); sheet = null; }
+      shell?.classList?.remove("has-open-panel");
+      notify({ title: translateSource("Notifications"), message: translateSource("Impossible d'ouvrir les notifications"), type: "error" });
     }
-    unsubscribe = manager.subscribe(() => { if (active) content.render(); });
-    content.render();
-    refreshIcons();
   }
 
-  function close() { doClose(); }
+  function close(config = {}) { doClose(config); }
   function toggle() { active ? close() : open(); }
 
   return Object.freeze({ open, close, toggle, isOpen: () => active, current: () => currentFilter });

@@ -818,6 +818,7 @@ html[data-v8-tooltips="ready"] [data-tooltip]::after {
   box-shadow: var(--v8-shadow-panel-rest);
   backdrop-filter: blur(var(--v8-blur)) saturate(var(--v8-saturate));
   opacity: 0;
+  pointer-events: none;
   transform: translate3d(18px, 0, 0) scale(0.985);
   transition:
     box-shadow var(--v8-motion-base) var(--v8-physics-friction),
@@ -827,6 +828,7 @@ html[data-v8-tooltips="ready"] [data-tooltip]::after {
 .v8-panel.is-open {
   box-shadow:var(--v8-shadow-window-open);
   opacity: 1;
+  pointer-events: auto;
   transform: translate3d(0, 0, 0) scale(1);
 }
 .v8-panel__language {

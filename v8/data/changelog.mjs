@@ -57,6 +57,12 @@ export const CHANGELOG = Object.freeze([
     { kind: "fix", text: "Pomodoro n'ouvre plus son menu au survol, seulement au clic sur l'icône." },
     { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v298." }
   ]),
+  entry("v299", "2026-08-18", "Hotfix : centre de notifications du dock", [
+    { kind: "fix", text: "Panneau de notifications du dock visible et is-open, avec animation et pointer-events none quand ferme." },
+    { kind: "fix", text: "Fermeture du panneau notifications avec Echap, clic exterieur ou bouton X." },
+    { kind: "fix", text: "Robustesse du store : une erreur dans un abonne ne bloque plus les autres abonnes." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v299." }
+  ]),
   entry("v295", "2026-08-17", "Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes", [
     { kind: "feature", text: "Comptes mail externes : Gmail, Outlook et IMAP (création, sync, suppression)." },
     { kind: "feature", text: "Chiffrement PGP simplifié via Web Crypto : génération de clés, chiffrement/déchiffrement côté Worker." },

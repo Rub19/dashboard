@@ -255,7 +255,9 @@ export function createPresentationStore(initialState = {}, options = {}) {
     if (statesEqual(previous, next)) return previous;
     state = next;
     persist();
-    subscribers.forEach((subscriber) => subscriber(state, previous));
+    subscribers.forEach((subscriber) => {
+      try { subscriber(state, previous); } catch { /* isolated subscriber failure */ }
+    });
     return state;
   }
 

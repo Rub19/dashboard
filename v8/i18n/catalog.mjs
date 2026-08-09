@@ -2200,7 +2200,8 @@ const ENTRIES = {
   "Événements": {"fr":"Événements","en":"Events","es":"Eventos","de":"Ereignisse"},
   "En lecture": {"fr":"En lecture","en":"Now playing","es":"En reproducción","de":"Wird abgespielt"},
   "Briefing": {"fr":"Briefing","en":"Briefing","es":"Briefing","de":"Briefing"},
-  "non connecté": {"fr":"non connecté","en":"not connected","es":"no conectado","de":"nicht verbunden"}
+  "non connecté": {"fr":"non connecté","en":"not connected","es":"no conectado","de":"nicht verbunden"},
+  "Impossible d'ouvrir les notifications": {"fr":"Impossible d'ouvrir les notifications","en":"Could not open notifications","es":"No se pudieron abrir las notificaciones","de":"Benachrichtigungen konnten nicht geöffnet werden"}
 };
 Object.keys(ENTRIES).forEach((key) => Object.freeze(ENTRIES[key]));
 Object.freeze(ENTRIES);

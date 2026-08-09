@@ -96,7 +96,7 @@ export function mountFiles(stage, options = {}) {
         element("p", { text: "Retrouvez vos ressources, puis agissez depuis un aperçu unique." })
       ]),
       element("div", { className: "v8-page-heading__actions" }, [
-        element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { fileAdmin: "true" } }, [icon("shield"), element("span", { text: "Admin" })]),
+        element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, events: { click: openAdmin }, dataset: { fileAdmin: "true" } }, [icon("shield"), element("span", { text: "Admin" })]),
         actionButton({ actionId: "v8.files.new-folder", variant: "secondary" }, [icon("folder-plus"), element("span", { text: "Dossier" })]),
         actionButton({ actionId: "v8.files.upload", variant: "primary" }, [icon("upload-cloud"), element("span", { text: "Envoyer" })])
       ])
@@ -474,10 +474,12 @@ export function mountFiles(stage, options = {}) {
   }
 
   async function openAdmin() {
+    if (adminOpen) return;
     adminOpen = true;
-    await loadAdmin();
-    adminPanel.showModal();
     page.append(adminPanel);
+    adminPanel.showModal();
+    renderAdmin();
+    await loadAdmin();
     renderAdmin();
   }
 

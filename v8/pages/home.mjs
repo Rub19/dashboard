@@ -523,7 +523,8 @@ export function mountHome(stage, model, options = {}) {
   }
 
   function renderSpotify(playback, animate = false) {
-    const player = spotifyLiveCard(playback, { variant: "home" });
+    const command = (action) => spotifyLive?.command?.(action, playback.trackId);
+    const player = spotifyLiveCard(playback, { variant: "home", command });
     spotifyHost.replaceChildren(...(player ? [player] : []));
     applyHostVisibility("spotify", spotifyHost, Boolean(player));
     if (player && animate) presence?.signalActivity?.(player, "system", { phase: "update" });

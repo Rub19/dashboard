@@ -1,4 +1,4 @@
-const COMMANDS = new Set(["play", "pause", "toggle", "next", "previous"]);
+const COMMANDS = new Set(["play", "pause", "toggle", "next", "previous", "like", "unlike"]);
 const SPOTIFY_IMAGE_HOSTS = new Set(["i.scdn.co"]);
 
 function safeText(value, fallback = "", limit = 180) {
@@ -172,14 +172,14 @@ export function createSpotifyLive(options = {}) {
     return () => subscribers.delete(subscriber);
   }
 
-  function command(requested) {
+  function command(requested, trackId = "") {
     const commandName = safeText(requested, "", 16).toLowerCase();
     if (!COMMANDS.has(commandName)) return unavailable("Commande Spotify invalide.");
     if (!state.available || !state.controllable) return unavailable("Le contrôle Spotify n'est pas disponible.");
-    const action = commandName === "toggle" ? (state.playing ? "pause" : "play") : commandName;
+    const action = commandName === "toggle" ? (state.playing ? "pause" : "play") : commandName === "like" ? "save" : commandName === "unlike" ? "unsave" : commandName;
     try {
       if (!commandBridge) return unavailable("Le bridge Spotify n'est pas disponible.");
-      const response = commandBridge(action);
+      const response = commandBridge(action, trackId || state.trackId);
       if (response?.then) {
         return response.then(() => completed("Commande Spotify transmise.", { action }), (error) => failed("Spotify n'a pas répondu.", error));
       }

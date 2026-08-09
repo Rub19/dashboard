@@ -98,6 +98,9 @@ export function createActionFacade(options = {}) {
   register("v8.spotify.previous", () => spotifyLive?.command
     ? spotifyLive.command("previous")
     : unavailable("Le contrôle Spotify n'est pas disponible."));
+  register("v8.spotify.like", () => spotifyLive?.command
+    ? spotifyLive.command("like")
+    : unavailable("Le contrôle Spotify n'est pas disponible."));
 
   function openNewNote(context) {
     navigate("notes");
@@ -834,6 +837,7 @@ export function createActionFacade(options = {}) {
   });
   register("v8.spotify.next", () => spotifyLive?.command ? spotifyLive.command("next") : unavailable("Le contrôle Spotify n'est pas disponible."));
   register("v8.spotify.previous", () => spotifyLive?.command ? spotifyLive.command("previous") : unavailable("Le contrôle Spotify n'est pas disponible."));
+  register("v8.spotify.like", () => spotifyLive?.command ? spotifyLive.command("like") : unavailable("Le contrôle Spotify n'est pas disponible."));
 
 
   function dispatch(id, context = {}) {

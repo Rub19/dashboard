@@ -125,6 +125,36 @@ export async function controlSpotifyPlayback(env, userId, clientId, action) {
   return true;
 }
 
+export async function isSpotifyTrackSaved(env, userId, clientId, trackId) {
+  const accessToken = await validAccessToken(env, userId, clientId);
+  const response = await requestExternal(new URL(`/v1/me/tracks/contains?ids=${encodeURIComponent(safeText(trackId, "", 64))}`, API_ORIGIN), {
+    env,
+    expectedOrigin: API_ORIGIN,
+    service: "spotify",
+    headers: { authorization: `Bearer ${accessToken}` },
+    retries: 0,
+    maxBytes: 8192
+  });
+  return Array.isArray(response.data) ? response.data[0] === true : false;
+}
+
+export async function saveSpotifyTrack(env, userId, clientId, trackId, save = true) {
+  const accessToken = await validAccessToken(env, userId, clientId);
+  const id = safeText(trackId, "", 64);
+  if (!id) throw httpError("INVALID_PARAMETER", 400);
+  await requestExternal(new URL("/v1/me/tracks", API_ORIGIN), {
+    env,
+    expectedOrigin: API_ORIGIN,
+    service: "spotify",
+    method: save ? "PUT" : "DELETE",
+    headers: { authorization: `Bearer ${accessToken}`, "content-type": "application/json" },
+    body: JSON.stringify({ ids: [id] }),
+    retries: 0,
+    maxBytes: 8192
+  });
+  return true;
+}
+
 export async function disconnectSpotify(env, userId) {
   await deleteOAuthToken(env, userId, "spotify");
   return true;

@@ -520,7 +520,7 @@ export function mountActivity(stage, options = {}) {
       element("div", { className: "v8-now-card__copy" }, [element("small", { text: "ETHONE" }), element("strong", { text: `${state.flow || "Essentiel"} dans ${state.space || "personal"}` }), element("p", { text: "Le journal local reagit aux actions utiles sans tracker global." })]),
       element("footer", {}, [element("span", { text: "Actif maintenant" }), icon("check")])
     ]);
-    const spotifyPlayer = spotifyLiveCard(spotifyPlayback, { variant: "activity" });
+    const spotifyPlayer = spotifyLiveCard(spotifyPlayback, { variant: "activity", command: (action) => spotifyLive?.command?.(action, spotifyPlayback.trackId) });
     const discordCard = discordLiveCard(discordPresence, { variant: "activity" });
     const weatherCard = weatherLiveCard(weatherPresence, { variant: "activity", detailable: true });
     const minecraftCard = minecraftLiveCard(minecraftPresence, { variant: "activity" });

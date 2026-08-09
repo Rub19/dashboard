@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v284] - 2026-08-11
+
+**Phase 10 : overlays Spotify, Last.fm et Minecraft**
+
+### Ajouté
+- Spotify : overlay "grand lecteur" au clic avec artwork, progression, contrôles et like (route Worker `/api/spotify/control`).
+- Last.fm : overlay détail au clic avec album, écoutes, date et lien.
+- Minecraft : overlay détail avec skin/cape en grand et historique des pseudos.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v284`.
+
 ## [v283] - 2026-08-11
 
 **Phase 10 : correction des badges Discord**

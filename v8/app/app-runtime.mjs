@@ -122,9 +122,9 @@ export function mountApplication(root, options = {}) {
     document,
     runtime: globalThis,
     isConnected: () => repository.snapshot().connections.some((connection) => connection.id === "spotify" && connection.status === "connected"),
-    command: (action) => {
+    command: (action, trackId) => {
       const clientId = repository.snapshot().connections.find((connection) => connection.id === "spotify")?.reference || "";
-      return externalServices?.spotifyOAuth?.control(action, clientId);
+      return externalServices?.spotifyOAuth?.control(action, clientId, trackId);
     }
   });
   const ownsSpotifyOAuthLive = !options.spotifyOAuthLive;

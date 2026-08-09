@@ -17,6 +17,9 @@ export function normalizeLastfmPresence(input = {}, options = {}) {
     artist: available ? safeText(track.artist, "", 160) : "",
     album: available ? safeText(track.album, "", 160) : "",
     artworkUrl: available ? safeText(track.artworkUrl, "", 400) : "",
+    profileUrl: available ? safeText(track.profileUrl, "", 400) : "",
+    playCount: available ? Math.max(0, Number(track.playCount) || 0) : 0,
+    playedAt: available ? safeText(track.playedAt, "", 48) : "",
     updatedAt: available ? new Date().toISOString() : ""
   });
 }

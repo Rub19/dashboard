@@ -22,6 +22,13 @@ export function normalizeMinecraftPresence(input = {}, options = {}) {
   const connected = options.connected === true;
   const username = connected ? safeText(input.username, "", 16) : "";
   const available = connected && USERNAME_PATTERN.test(username);
+  const rawHistory = Array.isArray(input.nameHistory) ? input.nameHistory : [];
+  const history = available
+    ? rawHistory.map((entry) => Object.freeze({
+        name: safeText(entry?.name, "", 16),
+        changedAt: safeText(entry?.changedAt, "", 48)
+      })).filter((entry) => entry.name && entry.name.toLowerCase() !== username.toLowerCase())
+    : [];
   return Object.freeze({
     connected,
     available,
@@ -30,6 +37,7 @@ export function normalizeMinecraftPresence(input = {}, options = {}) {
     skinUrl: available ? safeSkinUrl(input.skinUrl) : "",
     capeUrl: available ? safeSkinUrl(input.capeUrl) : "",
     model: available ? (String(input.model).toLowerCase() === "slim" ? "slim" : "classic") : "classic",
+    nameHistory: Object.freeze(history.slice(0, 8)),
     updatedAt: available ? new Date().toISOString() : ""
   });
 }

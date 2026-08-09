@@ -44,7 +44,7 @@ import { lanyardRoute } from "./routes/lanyard.js";
 import { lastFmRoute } from "./routes/lastfm.js";
 import { minecraftRoute } from "./routes/minecraft.js";
 import { notionOAuthDisconnectRoute, notionOAuthExchangeRoute, notionPagesRoute } from "./routes/notion-oauth.js";
-import { spotifyControlRoute, spotifyNowPlayingRoute, spotifyOAuthDisconnectRoute, spotifyOAuthExchangeRoute } from "./routes/spotify-oauth.js";
+import { spotifyControlRoute, spotifyNowPlayingRoute, spotifyOAuthDisconnectRoute, spotifyOAuthExchangeRoute, spotifyTrackSavedRoute } from "./routes/spotify-oauth.js";
 import { nowPlayingRoute } from "./routes/nowplaying.js";
 import { redditActivityRoute, redditOAuthDisconnectRoute, redditOAuthExchangeRoute } from "./routes/reddit-oauth.js";
 import { steamRoute } from "./routes/steam.js";
@@ -113,6 +113,7 @@ export const ROUTES = Object.freeze([
   route("spotify.oauth.exchange", "/api/spotify/oauth/exchange", spotifyOAuthExchangeRoute, { method: "POST", service: "spotify", rateLimit: "strict" }),
   route("spotify.now-playing", "/api/spotify/now-playing", spotifyNowPlayingRoute, { service: "spotify" }),
   route("spotify.control", "/api/spotify/control", spotifyControlRoute, { method: "POST", service: "spotify", rateLimit: "strict" }),
+  route("spotify.track-saved", "/api/spotify/track-saved", spotifyTrackSavedRoute, { service: "spotify" }),
   route("spotify.oauth.disconnect", "/api/spotify/oauth/disconnect", spotifyOAuthDisconnectRoute, { method: "POST", service: "spotify", rateLimit: "strict" }),
   route("github.oauth.exchange", "/api/github/oauth/exchange", githubOAuthExchangeRoute, { method: "POST", service: "github", rateLimit: "strict" }),
   route("github.profile", "/api/github/profile", githubProfileRoute, { service: "github" }),

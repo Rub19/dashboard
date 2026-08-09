@@ -47,11 +47,33 @@ export async function getMinecraftProfile(env, username) {
   });
 
   const textures = decodeTextures(profile.data?.properties);
+
+  let nameHistory = [];
+  try {
+    const historyResponse = await requestExternal(new URL(`/user/profiles/${encodeURIComponent(uuid)}/names`, SESSION_ORIGIN), {
+      env,
+      expectedOrigin: SESSION_ORIGIN,
+      service: "minecraft",
+      dedupeKey: `history:${uuid}`,
+      retries: 1,
+      maxBytes: 16 * 1024
+    });
+    nameHistory = Array.isArray(historyResponse.data)
+      ? historyResponse.data.map((entry) => Object.freeze({
+          name: safeText(entry?.name, 16),
+          changedAt: entry?.changedToAt ? new Date(entry.changedToAt).toISOString() : null
+        })).filter((entry) => entry.name)
+      : [];
+  } catch {
+    nameHistory = [];
+  }
+
   return Object.freeze({
     username: safeText(profile.data?.name || lookup.data?.name, 16),
     uuid,
     skinUrl: textures.skinUrl,
     capeUrl: textures.capeUrl,
-    model: textures.model
+    model: textures.model,
+    nameHistory: Object.freeze(nameHistory)
   });
 }

@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v310] - 2026-08-18
+
+**Hotfix UI : toggle de la sidebar**
+
+### Corrige
+- Le bouton de réduction de la sidebar n'est plus positionné en absolu sur le logo ETHONE ; il s'empile proprement sous le logo en rail non étendu.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v310`.
+
 ## [v309] - 2026-08-18
 
 **Hotfix UI : boutons du centre de notifications**

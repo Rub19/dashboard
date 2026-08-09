@@ -24,6 +24,10 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v310", "2026-08-18", "Hotfix UI : toggle de la sidebar", [
+    { kind: "fix", text: "Le bouton de reduction de la sidebar n'est plus positionne en absolu sur le logo ETHONE ; il s'empile proprement sous le logo en rail non etendu." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v310." }
+  ]),
   entry("v309", "2026-08-18", "Hotfix UI : boutons du centre de notifications", [
     { kind: "fix", text: "Boutons d'action du centre de notifications : taille compacte, alignement propre et icones reduites pour eviter les chevauchements." },
     { kind: "fix", text: "Classe .v8-button--sm manquante ajoutee et normalisee avec .v8-button--small." },

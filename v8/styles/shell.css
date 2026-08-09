@@ -1631,10 +1631,7 @@ button.v8-status-item:focus-visible { box-shadow: var(--v8-shadow-focus); outlin
   display: none;
 }
 .v8-rail:not(.is-expanded) .v8-rail__toggle {
-  position: absolute;
-  top: 50px;
-  left: 50%;
-  transform: translateX(-50%);
+  position: static;
   width: 28px;
   height: 28px;
   flex-basis: 28px;
@@ -1678,10 +1675,11 @@ button.v8-status-item:focus-visible { box-shadow: var(--v8-shadow-focus); outlin
   text-align: left;
 }
 .v8-rail:not(.is-expanded) .v8-rail__top {
-  min-height: 84px;
+  min-height: auto;
+  padding: 6px 0 10px;
   flex-direction: column;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
 }
 .v8-rail:not(.is-expanded) .v8-rail-space {
   justify-content: center;

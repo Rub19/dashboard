@@ -12,6 +12,7 @@ export const MISSING_TRANSLATIONS = {
   "Impossible de charger la boîte mail": { en: "Unable to load inbox", es: "No se puede cargar la bandeja de entrada", de: "Posteingang konnte nicht geladen werden" },
   "Chargement de la boîte mail...": { en: "Loading inbox...", es: "Cargando bandeja de entrada...", de: "Posteingang wird geladen..." },
   "Aucun message": { en: "No messages", es: "Sin mensajes", de: "Keine Nachrichten" },
+  "Boîte de réception ETHONE": { en: "ETHONE inbox", es: "Bandeja de entrada de ETHONE", de: "ETHONE-Posteingang" },
   "Votre boîte est vide. Envoyez votre premier message avec ETHONE Mail.": { en: "Your inbox is empty. Send your first message with ETHONE Mail.", es: "Tu bandeja de entrada está vacía. Envía tu primer mensaje con ETHONE Mail.", de: "Dein Posteingang ist leer. Sende deine erste Nachricht mit ETHONE Mail." },
   "Carte de chaleur et engagement": { en: "Heatmap and engagement", es: "Mapa de calor y compromiso", de: "Heatmap und Engagement" },
   "Membres et invitations": { en: "Members and invitations", es: "Miembros e invitaciones", de: "Mitglieder und Einladungen" },

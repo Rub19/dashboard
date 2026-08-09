@@ -1951,7 +1951,8 @@ const ENTRIES = {
   "Impossible de charger la boîte mail": {"fr":"Impossible de charger la boîte mail","en":"Unable to load inbox","es":"No se puede cargar la bandeja de entrada","de":"Posteingang konnte nicht geladen werden"},
   "Aucun message": {"fr":"Aucun message","en":"No messages","es":"Sin mensajes","de":"Keine Nachrichten"},
   "Votre boîte est vide. Envoyez votre premier message avec ETHONE Mail.": {"fr":"Votre boîte est vide. Envoyez votre premier message avec ETHONE Mail.","en":"Your inbox is empty. Send your first message with ETHONE Mail.","es":"Tu bandeja de entrada está vacía. Envía tu primer mensaje con ETHONE Mail.","de":"Dein Posteingang ist leer. Sende deine erste Nachricht mit ETHONE Mail."},
-  "Chargement de la boîte mail...": {"fr":"Chargement de la boîte mail...","en":"Loading inbox...","es":"Cargando bandeja de entrada...","de":"Posteingang wird geladen..."}
+  "Chargement de la boîte mail...": {"fr":"Chargement de la boîte mail...","en":"Loading inbox...","es":"Cargando bandeja de entrada...","de":"Posteingang wird geladen..."},
+  "Boîte de réception ETHONE": {"fr":"Boîte de réception ETHONE","en":"ETHONE inbox","es":"Bandeja de entrada de ETHONE","de":"ETHONE-Posteingang"}
 };
 Object.keys(ENTRIES).forEach((key) => Object.freeze(ENTRIES[key]));
 Object.freeze(ENTRIES);

@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v279] - 2026-08-11
+
+**Phase 10 : module Mail - navigation et actions**
+
+### Corrigé
+- Enregistrement de la commande et de l'action `v8.mail.open` dans le catalogue et le système d'actions.
+- Ajout des traductions manquantes pour le module Mail.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v279`.
+
 ## [v278] - 2026-08-11
 
 **Phase 10 : module ETHONE Mail**

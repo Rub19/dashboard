@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v309] - 2026-08-18
+
+**Hotfix UI : boutons du centre de notifications**
+
+### Corrige
+- Boutons d'action du centre de notifications : taille compacte, alignement propre et icônes réduites pour éviter les chevauchements.
+- Classe `.v8-button--sm` manquante ajoutée et normalisée avec `.v8-button--small`.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v309`.
+
 ## [v296] - 2026-08-18
 
 **Phase F : Quality of Life + UX Polish + Mobile 2.0 + Personalisation**

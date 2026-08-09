@@ -24,6 +24,11 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v309", "2026-08-18", "Hotfix UI : boutons du centre de notifications", [
+    { kind: "fix", text: "Boutons d'action du centre de notifications : taille compacte, alignement propre et icones reduites pour eviter les chevauchements." },
+    { kind: "fix", text: "Classe .v8-button--sm manquante ajoutee et normalisee avec .v8-button--small." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v309." }
+  ]),
   entry("v296", "2026-08-18", "Phase F : Quality of Life + UX Polish + Mobile 2.0 + Personalisation", [
     { kind: "feature", text: "Fondations mobile : safe-areas, touch targets, viewport, gestes de retour et long-press, dock mobile et bottom sheets." },
     { kind: "feature", text: "Navigation mobile : dock flottant, actions rapides, FAB et feuilles d'action réutilisables." },

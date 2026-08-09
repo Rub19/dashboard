@@ -2096,8 +2096,10 @@ html[data-v8-interactions] .v8-panel-notice:hover > .v8-selection-control,.v8-pa
 .v8-notification-priority--important { background: color-mix(in srgb, var(--v8-warning) 16%, transparent); color: var(--v8-warning); }
 .v8-notification-item strong { font-size: var(--v8-font-sm); font-weight: var(--v8-weight-semibold); color: var(--v8-text); }
 .v8-notification-item p { margin: 0; font-size: var(--v8-font-xs); color: var(--v8-text-secondary); line-height: 1.4; }
-.v8-notification-item__actions { display: flex; flex-wrap: wrap; gap: var(--v8-space-1); margin-top: var(--v8-space-1); }
-.v8-notification-item__actions .v8-button { min-height: 28px; padding: 4px 8px; font-size: var(--v8-font-micro); }
+.v8-notification-item__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--v8-space-2); margin-top: var(--v8-space-2); }
+.v8-notification-item__actions .v8-button { flex: 0 1 auto; min-width: 0; justify-content: flex-start; min-height: var(--v8-control-sm); padding: 3px 8px; border-radius: var(--v8-radius-md); font-size: var(--v8-font-micro); }
+.v8-notification-item__actions .v8-button svg { width: 14px; height: 14px; flex: 0 0 auto; }
+.v8-notification-item__actions .v8-button > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .v8-notification-snooze { display: flex; flex-wrap: wrap; gap: var(--v8-space-2); padding: var(--v8-space-2); margin-top: var(--v8-space-2); border: 1px dashed var(--v8-border); border-radius: var(--v8-radius-md); background: var(--v8-surface-sunken); }
 .v8-notification-snooze .v8-button { flex: 1 1 auto; justify-content: center; }
 

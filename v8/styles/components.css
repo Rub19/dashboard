@@ -110,6 +110,20 @@ html[data-v8-interactions] body :where(.is-dragging,[data-drag-state="dragging"]
   background: var(--v8-danger-soft);
   color: var(--v8-danger);
 }
+.v8-button--sm,
+.v8-button--small {
+  height: auto;
+  min-height: var(--v8-control-sm);
+  gap: var(--v8-space-1);
+  padding: 3px var(--v8-space-3);
+  border-radius: var(--v8-radius-sm);
+  font-size: var(--v8-font-xs);
+}
+.v8-button--sm svg,
+.v8-button--small svg {
+  width: var(--v8-icon-sm);
+  height: var(--v8-icon-sm);
+}
 .v8-button.is-loading {
   color: transparent;
   cursor: progress;

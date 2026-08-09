@@ -151,6 +151,18 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 ### Bordereau PWA
 - Mis à jour vers `experience-v305`.
 
+## [v306] - 2026-08-18
+
+**Hotfix Mail : déduplication des erreurs, style du bouton Analytics et header mobile**
+
+### Corrige
+- Dédoublonne les notifications d'erreur Mail portant le même message, même si le titre diffère (Templates vs Mail, etc.).
+- Bouton "Ouvrir" des Analytics : variante `primary` + icône `bar-chart-3` pour ne plus être "tout plat".
+- Header de la liste Mail : `flex-wrap: wrap` et `min-width: 0` sur les enfants pour éviter que les boutons soient coupés à droite.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v306`.
+
 ## [v295] - 2026-08-17
 
 **Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes**

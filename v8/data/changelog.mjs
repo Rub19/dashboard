@@ -98,6 +98,12 @@ export const CHANGELOG = Object.freeze([
     { kind: "fix", text: "La fiche Actions rapides revient à sa position initiale à la fermeture." },
     { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v305." }
   ]),
+  entry("v306", "2026-08-18", "Hotfix Mail : deduplication des erreurs, style Analytics et header", [
+    { kind: "fix", text: "Dedoublonne les notifications d'erreur Mail par message pour eviter les popups repetees." },
+    { kind: "ui", text: "Bouton Ouvrir des Analytics : variante primary + icone bar-chart-3." },
+    { kind: "ui", text: "Header de la liste Mail en flex-wrap pour eviter les boutons coupes." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v306." }
+  ]),
   entry("v295", "2026-08-17", "Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes", [
     { kind: "feature", text: "Comptes mail externes : Gmail, Outlook et IMAP (création, sync, suppression)." },
     { kind: "feature", text: "Chiffrement PGP simplifié via Web Crypto : génération de clés, chiffrement/déchiffrement côté Worker." },

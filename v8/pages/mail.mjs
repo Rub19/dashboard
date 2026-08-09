@@ -174,11 +174,12 @@ export function mountMail(stage, options = {}) {
 
   const recentNotifies = new Map();
   function mailNotify(spec) {
-    const key = `${spec.type || ""}|${spec.title || ""}|${spec.message || ""}`;
     const now = Date.now();
-    const last = recentNotifies.get(key);
+    const messageKey = spec.message || "";
+    const dedupeKey = spec.type === "error" && messageKey ? `error|${messageKey}` : `${spec.type || ""}|${spec.title || ""}|${messageKey}`;
+    const last = recentNotifies.get(dedupeKey);
     if (last && now - last < 5000) return;
-    recentNotifies.set(key, now);
+    recentNotifies.set(dedupeKey, now);
     if (recentNotifies.size > 50) {
       for (const [k, t] of recentNotifies) { if (now - t > 30000) recentNotifies.delete(k); }
     }
@@ -1396,7 +1397,7 @@ export function mountMail(stage, options = {}) {
       element("option", { text: translateSource("90 jours"), attributes: { value: "90" } })
     ]);
     analyticsPeriodSelect.value = String(state.analyticsPeriod || 30);
-    const analyticsOpenBtn = actionButton({ actionId: "v8.mail.analytics.open", variant: "secondary", className: "v8-mail-analytics__open" }, [element("span", { text: translateSource("Ouvrir") })]);
+    const analyticsOpenBtn = actionButton({ actionId: "v8.mail.analytics.open", variant: "primary", className: "v8-mail-analytics__open" }, [icon("bar-chart-3"), element("span", { text: translateSource("Ouvrir") })]);
     analyticsOpenBtn.addEventListener("click", () => loadAnalytics(Number(analyticsPeriodSelect.value) || 30));
 
     const rulesTitle = element("strong", { className: "v8-mail-sidebar__section", text: translateSource("Règles") });

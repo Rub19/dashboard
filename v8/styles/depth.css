@@ -1,6 +1,8 @@
 :root {
   --v8-tilt-x: 0deg;
   --v8-tilt-y: 0deg;
+  --v8-spotlight-x: 50%;
+  --v8-spotlight-y: 50%;
 }
 
 .v8-depth {
@@ -17,8 +19,104 @@ html[data-v8-interactions] .v8-depth:hover {
     inset 0 1px 0 var(--v8-surface-glint);
 }
 
+article.v8-spotify-live,
+article.v8-discord-live,
+article.v8-minecraft-live,
+article.v8-steam-live,
+article.v8-github-live,
+article.v8-google-calendar-live,
+article.v8-google-drive-live,
+article.v8-lastfm-live,
+article.v8-notion-live,
+article.v8-reddit-live,
+article.v8-todoist-live,
+article.v8-twitch-live,
+article.v8-weather-live,
+article.v8-youtube-live,
+article.v8-lol-live,
+article.v8-valorant-live,
+article.v8-tracker-live {
+  perspective: 1000px;
+}
+
+.v8-live-card-inner {
+  transition: transform 0.35s var(--v8-ease-spring);
+  transform-style: preserve-3d;
+}
+
+article.v8-spotify-live .v8-live-card-front,
+article.v8-discord-live .v8-live-card-front,
+article.v8-minecraft-live .v8-live-card-front,
+article.v8-steam-live .v8-live-card-front,
+article.v8-github-live .v8-live-card-front,
+article.v8-google-calendar-live .v8-live-card-front,
+article.v8-google-drive-live .v8-live-card-front,
+article.v8-lastfm-live .v8-live-card-front,
+article.v8-notion-live .v8-live-card-front,
+article.v8-reddit-live .v8-live-card-front,
+article.v8-todoist-live .v8-live-card-front,
+article.v8-twitch-live .v8-live-card-front,
+article.v8-weather-live .v8-live-card-front,
+article.v8-youtube-live .v8-live-card-front,
+article.v8-lol-live .v8-live-card-front,
+article.v8-valorant-live .v8-live-card-front,
+article.v8-tracker-live .v8-live-card-front {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+article.v8-spotify-live .v8-live-card-front::before,
+article.v8-discord-live .v8-live-card-front::before,
+article.v8-minecraft-live .v8-live-card-front::before,
+article.v8-steam-live .v8-live-card-front::before,
+article.v8-github-live .v8-live-card-front::before,
+article.v8-google-calendar-live .v8-live-card-front::before,
+article.v8-google-drive-live .v8-live-card-front::before,
+article.v8-lastfm-live .v8-live-card-front::before,
+article.v8-notion-live .v8-live-card-front::before,
+article.v8-reddit-live .v8-live-card-front::before,
+article.v8-todoist-live .v8-live-card-front::before,
+article.v8-twitch-live .v8-live-card-front::before,
+article.v8-weather-live .v8-live-card-front::before,
+article.v8-youtube-live .v8-live-card-front::before,
+article.v8-lol-live .v8-live-card-front::before,
+article.v8-valorant-live .v8-live-card-front::before,
+article.v8-tracker-live .v8-live-card-front::before {
+  position: absolute;
+  inset: -40%;
+  content: "";
+  z-index: -1;
+  background: radial-gradient(circle at var(--v8-spotlight-x, 50%) var(--v8-spotlight-y, 50%), color-mix(in srgb, var(--v8-accent) 18%, transparent) 0%, transparent 40%);
+  opacity: 0;
+  transition: opacity 0.35s var(--v8-ease-standard);
+  pointer-events: none;
+}
+
+.v8-depth-active .v8-live-card-front::before,
+article.v8-spotify-live:hover .v8-live-card-front::before,
+article.v8-discord-live:hover .v8-live-card-front::before,
+article.v8-minecraft-live:hover .v8-live-card-front::before,
+article.v8-steam-live:hover .v8-live-card-front::before,
+article.v8-github-live:hover .v8-live-card-front::before,
+article.v8-google-calendar-live:hover .v8-live-card-front::before,
+article.v8-google-drive-live:hover .v8-live-card-front::before,
+article.v8-lastfm-live:hover .v8-live-card-front::before,
+article.v8-notion-live:hover .v8-live-card-front::before,
+article.v8-reddit-live:hover .v8-live-card-front::before,
+article.v8-todoist-live:hover .v8-live-card-front::before,
+article.v8-twitch-live:hover .v8-live-card-front::before,
+article.v8-weather-live:hover .v8-live-card-front::before,
+article.v8-youtube-live:hover .v8-live-card-front::before,
+article.v8-lol-live:hover .v8-live-card-front::before,
+article.v8-valorant-live:hover .v8-live-card-front::before,
+article.v8-tracker-live:hover .v8-live-card-front::before {
+  opacity: 1;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .v8-depth {
+  .v8-depth,
+  .v8-live-card-inner {
     transform: none !important;
     transition: none !important;
   }

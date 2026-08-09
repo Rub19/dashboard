@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v287] - 2026-08-11
+
+**Phase 10 : effet 3D restreint aux cartes live**
+
+### Amélioré
+- Réintégration d'un effet 3D/spotlight au survol pour les cartes live (Home/Activity).
+
+### Corrigé
+- Suppression de l'effet 3D sur les pages statiques (Settings, etc.).
+
+### Bordereau PWA
+- Mis à jour vers `experience-v287`.
+
 ## [v286] - 2026-08-11
 
 **Phase 10 : amélioration du widget Factures**

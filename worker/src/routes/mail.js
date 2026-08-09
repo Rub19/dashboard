@@ -3,6 +3,7 @@ import { httpError } from "../middleware/errors.js";
 import {
   countMessages,
   countUnreadInFolder,
+  createAlias,
   createOrUpdateThread,
   getContacts,
   getDefaultSignature,
@@ -613,6 +614,12 @@ export async function mailAliasRoute({ request, env, auth }) {
   }
 
   const body = await request.json().catch(() => ({}));
+  const requestedAlias = safeText(body.alias, 320).toLowerCase();
+  if (requestedAlias) {
+    const alias = await createAlias(env, auth.userId, requestedAlias, body.display_name || body.displayName || auth.displayName || auth.email);
+    if (!alias) throw httpError("INVALID_PARAMETER", 400, { detail: "alias_unavailable" });
+    return { data: alias };
+  }
   const displayName = safeText(body.display_name || body.displayName, 80);
   const alias = await getOrCreatePrimaryAlias(env, auth.userId, displayName || auth.displayName || auth.email);
   return { data: alias };

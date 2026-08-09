@@ -98,6 +98,30 @@ export function getUserIdByAlias(env, alias) {
   return resolveAliasByEmail(env, alias).then((row) => row?.user_id || null);
 }
 
+export async function createAlias(env, userId, alias, displayName) {
+  const origin = projectOrigin(env);
+  if (!origin || !userId) return null;
+
+  const safeAlias = safeEmail(alias);
+  if (!safeAlias || !safeAlias.endsWith("@ethone.dev")) return null;
+
+  const existing = await resolveAliasByEmail(env, safeAlias);
+  if (existing) return null;
+
+  const hasPrimary = await supabaseRequest(env, `/rest/v1/ethone_mail_aliases?user_id=eq.${userId}&is_primary=eq.true&select=id`, {
+    method: "GET",
+    headers: { "Accept": "application/vnd.pgrst.object+json" },
+    maxBytes: 4096
+  }).then(firstRow);
+
+  return supabaseRequest(env, "/rest/v1/ethone_mail_aliases", {
+    method: "POST",
+    headers: { "Prefer": "return=representation" },
+    body: { user_id: userId, alias: safeAlias, display_name: safeText(displayName, 80), is_primary: !hasPrimary },
+    maxBytes: 4096
+  }).then(firstRow);
+}
+
 export function storeMailMessage(env, message) {
   const origin = projectOrigin(env);
   if (!origin) return Promise.resolve(null);

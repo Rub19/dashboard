@@ -2,6 +2,23 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v313] - 2026-08-18
+
+**Mail : bouton Analytics, cloche, création d'adresse @ethone.dev**
+
+### Corrige / Améliore
+- Bouton **Open** des Analytics : style plus carré/compact (`v8-mail-analytics__open`).
+- Bouton cloche Mail agrandi à 40px et badge ajusté.
+- Correction du chargement de l'alias dans `mail.mjs` (l'objet alias est maintenant conservé, pas converti en string).
+
+### Ajoute
+- Section **Mon adresse** dans la sidebar Mail : affichage de l'alias `@ethone.dev` existant ou formulaire pour en créer un.
+- Route Worker `/api/mail/alias` en POST : accepte un alias personnalisé avec validation `@ethone.dev`.
+- Client `mailApi.createAlias` et opération `mailAliasCreate`.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v313`.
+
 ## [v312] - 2026-08-18
 
 **Hotfix UI : empty-state, i18n et PWA v312**

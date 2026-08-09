@@ -474,10 +474,9 @@ export function mountMail(stage, options = {}) {
   async function loadAlias() {
     try {
       const result = await mailApi.alias();
-      const raw = result?.data ?? result;
-      if (typeof raw === "string") state.alias = raw;
-      else if (raw && typeof raw === "object") state.alias = String(raw.alias || raw.email || raw.name || "");
-      else state.alias = null;
+      const list = Array.isArray(result?.data) ? result.data : (Array.isArray(result) ? result : []);
+      const raw = list.find((a) => a.is_primary) || list[0] || null;
+      state.alias = raw && typeof raw === "object" ? raw : null;
     } catch {
       state.alias = null;
     }
@@ -1382,6 +1381,60 @@ export function mountMail(stage, options = {}) {
     }
   }
 
+  async function saveAlias(alias, displayName) {
+    try {
+      const result = await mailApi.createAlias({ alias, display_name: displayName });
+      const raw = result?.data || result;
+      state.alias = raw && typeof raw === "object" ? raw : null;
+      renderSidebar();
+      mailNotify({ type: "success", title: translateSource("Adresse"), message: translateSource("Adresse ETHONE créée.") });
+    } catch (error) {
+      mailNotify({ type: "error", title: translateSource("Adresse"), message: errorDescription(error) });
+    }
+  }
+
+  function buildAliasSection() {
+    const section = element("div", { className: "v8-mail-alias" });
+    if (state.alias?.alias) {
+      section.append(
+        element("strong", { className: "v8-mail-sidebar__section", text: translateSource("Mon adresse") }),
+        element("span", { className: "v8-mail-alias__value", text: state.alias.alias })
+      );
+      return section;
+    }
+
+    const localPartInput = element("input", {
+      className: "v8-input v8-mail-alias__input",
+      attributes: { type: "text", placeholder: translateSource("votre-nom"), maxlength: "32" }
+    });
+    const displayInput = element("input", {
+      className: "v8-input v8-mail-alias__input",
+      attributes: { type: "text", placeholder: translateSource("Nom affiché"), maxlength: "80" }
+    });
+    const suffix = element("span", { className: "v8-mail-alias__suffix", text: "@ethone.dev" });
+    const createBtn = actionButton({
+      actionId: "v8.mail.alias.create",
+      variant: "secondary",
+      className: "v8-mail-alias__create"
+    }, [icon("plus"), element("span", { text: translateSource("Créer") })]);
+    createBtn.addEventListener("click", () => {
+      const local = localPartInput.value.trim();
+      if (!local) {
+        mailNotify({ type: "warning", title: translateSource("Adresse"), message: translateSource("Saisissez un nom d'adresse.") });
+        return;
+      }
+      saveAlias(`${local}@ethone.dev`, displayInput.value.trim());
+    });
+
+    section.append(
+      element("strong", { className: "v8-mail-sidebar__section", text: translateSource("Mon adresse") }),
+      element("div", { className: "v8-mail-alias__row" }, [localPartInput, suffix]),
+      displayInput,
+      createBtn
+    );
+    return section;
+  }
+
   function renderSidebar() {
     try {
     sidebar.replaceChildren();
@@ -1389,6 +1442,8 @@ export function mountMail(stage, options = {}) {
       element("h2", { text: translateSource("Mail") }),
       state.alias ? element("small", { text: state.alias.alias || state.alias }) : null
     ]);
+
+    const aliasSection = buildAliasSection();
 
     const folderList = element("ul", { className: "v8-mail-folders" });
     FOLDERS.forEach((folder) => {
@@ -1609,7 +1664,7 @@ export function mountMail(stage, options = {}) {
     const pushSection = buildPushSection();
     const listsSection = buildListsSection();
     const securitySection = buildSecuritySection();
-    sidebar.append(title, folderList, analyticsTitle, analyticsPeriodSelect, analyticsOpenBtn, rulesTitle, ruleForm, rulesList, templatesTitle, templateForm, templatesList, notificationsTitle, notificationsList, labelsTitle, labelList, newLabelInput, accountsSection, pgpSection, pushSection, listsSection, securitySection);
+    sidebar.append(title, aliasSection, folderList, analyticsTitle, analyticsPeriodSelect, analyticsOpenBtn, rulesTitle, ruleForm, rulesList, templatesTitle, templateForm, templatesList, notificationsTitle, notificationsList, labelsTitle, labelList, newLabelInput, accountsSection, pgpSection, pushSection, listsSection, securitySection);
     renderBell();
     refreshIcons();
   

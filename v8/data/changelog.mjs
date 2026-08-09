@@ -24,6 +24,14 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v313", "2026-08-18", "Mail : bouton Analytics, cloche, creation d'adresse @ethone.dev", [
+    { kind: "fix", text: "Bouton Open des Analytics : style plus carre/compact." },
+    { kind: "fix", text: "Bouton cloche Mail agrandi a 40px et badge ajuste." },
+    { kind: "fix", text: "Correction du chargement de l'alias dans mail.mjs (l'objet alias est maintenant conserve, pas converti en string)." },
+    { kind: "feature", text: "Section 'Mon adresse' dans la sidebar Mail : affichage de l'alias @ethone.dev existant ou formulaire pour en creer un." },
+    { kind: "feature", text: "Route Worker /api/mail/alias en POST : accepte un alias personnalise avec validation @ethone.dev." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v313." }
+  ]),
   entry("v312", "2026-08-18", "Hotfix UI : empty-state, i18n et PWA v312", [
     { kind: "fix", text: "Correction du 'icon is not a function' dans v8/ui/empty-state.mjs : le parametre icon masquait l'import icon de dom.mjs dans buildEmptyState." },
     { kind: "fix", text: "Traduction du label du skeleton : 'Chargement du contenu' et 'Chargement de {0}'." },

@@ -94,6 +94,7 @@ const OPERATIONS = Object.freeze({
   securityEvents: Object.freeze({ path: "/api/auth/security-events", auth: true, params: ["limit"] }),
   teamInvite: Object.freeze({ path: "/api/team/invite", method: "POST", auth: true, params: ["email", "display_name", "invite_url", "token"], rawBody: true }),
   mailAlias: Object.freeze({ path: "/api/mail/alias", auth: true, params: [] }),
+  mailAliasCreate: Object.freeze({ path: "/api/mail/alias", method: "POST", auth: true, params: ["alias", "display_name"], rawBody: true }),
   mailInbox: Object.freeze({ path: "/api/mail/inbox", auth: true, params: ["folder", "label", "search", "direction", "limit", "offset"] }),
   mailThread: Object.freeze({ path: "/api/mail/thread", auth: true, params: ["thread_id"] }),
   mailRead: Object.freeze({ path: "/api/mail/read", method: "POST", auth: true, params: ["id", "is_read", "is_starred", "is_important"], rawBody: true }),
@@ -480,6 +481,7 @@ export function createExternalServicesClient(options = {}) {
     }),
     mail: Object.freeze({
       alias: () => execute("mailAlias", {}),
+      createAlias: (payload) => execute("mailAliasCreate", payload),
       inbox: (options = {}) => execute("mailInbox", options),
       thread: (threadId) => execute("mailThread", { thread_id: threadId }),
       read: (id, flags) => execute("mailRead", { id, ...flags }),

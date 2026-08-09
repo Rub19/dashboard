@@ -85,6 +85,12 @@ export const CHANGELOG = Object.freeze([
     { kind: "i18n", text: "Ajout des clés de traduction pour les options de snooze (10 min, 1 h, Ce soir)." },
     { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v303." }
   ]),
+  entry("v304", "2026-08-18", "Hotfix : diagnostics d'erreur Worker Mail et verification des migrations", [
+    { kind: "fix", text: "Champ detail ajoute aux erreurs Worker pour distinguer migration manquante, schema incomplet ou configuration incomplète." },
+    { kind: "fix", text: "Le Worker detecte les erreurs PostgREST d'objet manquant et renvoie DB_SCHEMA_ERROR avec detail." },
+    { kind: "i18n", text: "Messages d'erreur specifiques dans mail.mjs selon le detail (config, schema, generique)." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v304." }
+  ]),
   entry("v295", "2026-08-17", "Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes", [
     { kind: "feature", text: "Comptes mail externes : Gmail, Outlook et IMAP (création, sync, suppression)." },
     { kind: "feature", text: "Chiffrement PGP simplifié via Web Crypto : génération de clés, chiffrement/déchiffrement côté Worker." },

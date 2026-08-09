@@ -68,20 +68,30 @@ function assertDestination(input, expectedOrigin) {
   try {
     url = new URL(input);
   } catch {
-    throw httpError("INTERNAL_ERROR", 500);
+    throw httpError("INTERNAL_ERROR", 500, { detail: "invalid_url" });
   }
-  if (url.protocol !== "https:" || url.origin !== expectedOrigin) throw httpError("INTERNAL_ERROR", 500);
+  if (!expectedOrigin) throw httpError("INTERNAL_ERROR", 500, { detail: "supabase_url_missing" });
+  if (url.protocol !== "https:" || url.origin !== expectedOrigin) throw httpError("INTERNAL_ERROR", 500, { detail: "origin_mismatch" });
   return url;
 }
 
-function providerError(response) {
-  if (response.status === 404) return httpError("PROVIDER_NOT_FOUND", 404);
-  if (response.status === 400 || response.status === 401 || response.status === 403) {
-    return httpError("PROVIDER_REQUEST_REJECTED", 502, { retryable: false });
-  }
-  return httpError("UPSTREAM_UNAVAILABLE", 503, { retryable: response.status === 429 || response.status >= 500 });
+function isPostgrestSchemaError(data) {
+  const code = data?.code;
+  if (typeof code !== "string" || code.length !== 5) return false;
+  return data?.message && /(does not exist|n'existe pas|relation|table|column|colonne|schema)/i.test(String(data.message));
 }
 
+function providerError(response, data) {
+  const detail = data && typeof data === "object" ? data : null;
+  if (isPostgrestSchemaError(detail)) {
+    return httpError("DB_SCHEMA_ERROR", 500, { retryable: false, detail });
+  }
+  if (response.status === 404) return httpError("PROVIDER_NOT_FOUND", 404, { detail });
+  if (response.status === 400 || response.status === 401 || response.status === 403) {
+    return httpError("PROVIDER_REQUEST_REJECTED", 502, { retryable: false, detail });
+  }
+  return httpError("UPSTREAM_UNAVAILABLE", 503, { retryable: response.status === 429 || response.status >= 500, detail });
+}
 export function requestExternal(input, options = {}) {
   const env = options.env || {};
   const url = assertDestination(input, options.expectedOrigin);
@@ -110,11 +120,11 @@ export function requestExternal(input, options = {}) {
           continue;
         }
         if (response.status === 204) {
-          if (!response.ok) throw providerError(response);
+          if (!response.ok) throw providerError(response, null);
           return Object.freeze({ data: null, attempts: attempt + 1, status: response.status });
         }
         const data = await readJson(response, Math.max(1024, Math.min(4 * 1024 * 1024, Number(options.maxBytes) || 1024 * 1024)));
-        if (!response.ok) throw providerError(response);
+        if (!response.ok) throw providerError(response, data);
         return Object.freeze({ data, attempts: attempt + 1, status: response.status });
       } catch (error) {
         if (error?.code) throw error;

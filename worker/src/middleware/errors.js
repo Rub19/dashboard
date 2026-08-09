@@ -16,7 +16,8 @@ const PUBLIC_MESSAGES = Object.freeze({
   UPSTREAM_TIMEOUT: "Le service externe a depasse le temps d'attente.",
   UPSTREAM_INVALID_RESPONSE: "Le service externe a renvoye une reponse invalide.",
   UPSTREAM_UNAVAILABLE: "Le service externe est temporairement indisponible.",
-  INTERNAL_ERROR: "Une erreur interne est survenue."
+  INTERNAL_ERROR: "Une erreur interne est survenue.",
+  DB_SCHEMA_ERROR: "Le schema de la base de donnees est incomplet."
 });
 
 export class HttpError extends Error {
@@ -26,6 +27,7 @@ export class HttpError extends Error {
     this.code = PUBLIC_MESSAGES[code] ? code : "INTERNAL_ERROR";
     this.status = Math.max(400, Math.min(599, Number(options.status) || 500));
     this.retryable = options.retryable === true;
+    this.detail = options.detail ?? null;
     this.headers = Object.freeze({ ...(options.headers || {}) });
   }
 }
@@ -39,5 +41,7 @@ export function normalizeError(error) {
   if (error?.name === "AbortError" || error?.name === "TimeoutError") {
     return new HttpError("UPSTREAM_TIMEOUT", { status: 504, retryable: true });
   }
-  return new HttpError("INTERNAL_ERROR", { status: 500, retryable: false });
+  const normalized = new HttpError("INTERNAL_ERROR", { status: 500, retryable: false });
+  if (error?.message && !normalized.detail) normalized.detail = String(error.message);
+  return normalized;
 }

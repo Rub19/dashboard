@@ -122,6 +122,22 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 ### Bordereau PWA
 - Mis à jour vers `experience-v303`.
 
+## [v304] - 2026-08-18
+
+**Hotfix : diagnostics d'erreur Worker Mail et vérification des migrations**
+
+### Corrige
+- Les erreurs Worker incluent maintenant un champ `detail` pour aider le client à distinguer un manque de migration, une erreur de schema ou une configuration incomplète.
+- Le Worker détecte les erreurs PostgREST liées à un objet manquant (`relation ... does not exist`, etc.) et renvoie un `DB_SCHEMA_ERROR` 500 avec le détail.
+- Le client `mail.mjs` affiche des messages d'erreur spécifiques selon le `detail` :
+  - configuration Worker Supabase incomplète,
+  - base de données Mail non initialisée (migrations 20260812 à 20260817),
+  - erreur Worker générique.
+- Vérification : les 7 migrations Supabase Mail (20260812 → 20260817) sont présentes et dans l'ordre.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v304`.
+
 ## [v295] - 2026-08-17
 
 **Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes**

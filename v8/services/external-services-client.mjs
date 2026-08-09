@@ -167,6 +167,7 @@ function clientError(code, message, details = {}) {
   error.retryable = details.retryable === true;
   error.requestId = String(details.requestId || "").slice(0, 80);
   error.retryAfter = Math.max(0, Number(details.retryAfter) || 0);
+  error.detail = details.detail ?? null;
   return error;
 }
 

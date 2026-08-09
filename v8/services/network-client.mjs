@@ -195,6 +195,7 @@ export function createNetworkClient(options = {}) {
       error.retryable = payload?.error?.retryable === true;
       error.requestId = String(payload?.error?.requestId || "").slice(0, 80);
       error.retryAfter = Number(response.headers?.get?.("retry-after")) || 0;
+      error.detail = payload?.error?.detail ?? null;
       throw error;
     }
     return payload;

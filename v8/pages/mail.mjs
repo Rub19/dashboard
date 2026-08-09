@@ -136,11 +136,29 @@ function quoteOriginal(message, isForward = false) {
   return `<blockquote class="v8-mail-quote"><p><strong>${prefix}</strong></p>${body}</blockquote>`;
 }
 
+function errorDetailText(error) {
+  const raw = error?.detail;
+  if (raw == null) return "";
+  if (typeof raw === "string") return raw;
+  if (typeof raw === "object") {
+    if (raw.message) return String(raw.message);
+    if (raw.error) return String(raw.error);
+    try { return JSON.stringify(raw); } catch { return String(raw); }
+  }
+  return String(raw);
+}
+
 function errorDescription(error) {
-  if (error?.name === "TimeoutError" || /timeout|délai/i.test(String(error?.message))) return translateSource("Le Worker met trop de temps à répondre. Vérifiez le déploiement.");
+  const detail = errorDetailText(error);
+  const detailLower = detail.toLowerCase();
+  const message = String(error?.message || "");
+  if (error?.name === "TimeoutError" || /timeout|délai/i.test(message)) return translateSource("Le Worker met trop de temps à répondre. Vérifiez le déploiement.");
   if (error?.status === 401 || error?.code === "AUTH_REQUIRED") return translateSource("Votre session a expiré. Reconnectez-vous.");
-  if (error?.status === 404 || error?.code === "ROUTE_NOT_FOUND" || /route introuvable/i.test(String(error?.message))) return translateSource("La route Mail n'est pas encore déployée sur le Worker.");
-  if (error?.status === 500 || error?.code === "SERVICE_ERROR") return translateSource("Erreur côté Worker. Vérifiez que la migration Supabase est exécutée.");
+  if (error?.status === 404 || error?.code === "ROUTE_NOT_FOUND" || /route introuvable/i.test(message)) return translateSource("La route Mail n'est pas encore déployée sur le Worker.");
+  if (detail && /supabase_url_missing|origin_mismatch|invalid_url/.test(detail)) return translateSource("La configuration Worker Supabase est incomplète. Vérifiez SUPABASE_URL et SUPABASE_SECRET_KEY.");
+  if (error?.status === 500 || error?.code === "SERVICE_ERROR" || error?.code === "DB_SCHEMA_ERROR" || error?.code === "INTERNAL_ERROR" || /does not exist|n'existe pas|relation|table|column|colonne|schema/.test(detailLower)) {
+    return translateSource("La base de données Mail n'est pas initialisée. Vérifiez que les migrations Supabase Mail (20260812 à 20260817) sont appliquées.");
+  }
   return String(error?.message || translateSource("Erreur inconnue"));
 }
 

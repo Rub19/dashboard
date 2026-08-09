@@ -48,6 +48,7 @@ export function errorResponse(error, context = {}) {
       requestId: context.requestId
     }
   };
+  if (error.detail != null) body.error.detail = error.detail;
   return new Response(JSON.stringify(body), {
     status: error.status || 500,
     headers: { ...JSON_HEADERS, ...(error.headers || {}), "x-request-id": context.requestId }

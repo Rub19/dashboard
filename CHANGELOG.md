@@ -2,6 +2,20 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v286] - 2026-08-11
+
+**Phase 10 : amélioration du widget Factures**
+
+### Ajouté
+- Icônes de factures par service (Spotify, Netflix, WiFi, etc.) avec brand icons.
+
+### Amélioré
+- Marqueur du jour actuel discret (bordure en pointillés) sans confondre avec la sélection.
+- Petite animation au changement de jour sélectionné.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v286`.
+
 ## [v285] - 2026-08-11
 
 **Phase 10 : suppression des effets 3D sur toutes les pages**

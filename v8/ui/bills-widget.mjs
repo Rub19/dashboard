@@ -1,4 +1,5 @@
-import { element, icon } from "./dom.mjs";
+import { brandIcon, element, icon } from "./dom.mjs";
+import { refreshIcons } from "./icons.mjs";
 
 const WEEKDAYS = ["L", "M", "M", "J", "V", "S", "D"];
 const MONTH_NAMES = ["Jan", "Fev", "Mar", "Avr", "Mai", "Juin", "Juil", "Aout", "Sept", "Oct", "Nov", "Dec"];
@@ -24,29 +25,41 @@ function formatCurrency(amount, currency) {
 
 function buildWeek(manager, selected, onSelect, today) {
   const days = [];
+  const base = startOfDay(new Date());
   for (let i = 0; i < 7; i += 1) {
     const d = new Date(today);
     d.setDate(d.getDate() + i);
     const bills = manager.forDate(d);
     const isSelected = isSameDay(d, selected);
+    const isToday = isSameDay(d, base);
     const hasBill = bills.length > 0;
+    const dot = hasBill
+      ? element("span", { className: "v8-bills-day__icon", style: { color: bills[0].color } }, [billIcon(bills[0])])
+      : null;
     const dayButton = element("button", {
-      className: `v8-bills-day${isSelected ? " is-selected" : ""}${hasBill ? " has-bill" : ""}`,
+      className: `v8-bills-day${isSelected ? " is-selected" : ""}${isToday ? " is-today" : ""}${hasBill ? " has-bill" : ""}`,
       attributes: { type: "button", "aria-label": `${formatDate(d)}, ${bills.length} facture${bills.length > 1 ? "s" : ""}`, "aria-pressed": isSelected ? "true" : "false" },
       events: { click: () => onSelect(d) }
     }, [
       element("small", { text: WEEKDAYS[d.getDay() === 0 ? 6 : d.getDay() - 1] }),
       element("strong", { text: String(d.getDate()) }),
-      hasBill ? element("span", { className: "v8-bills-day__dot", style: { background: bills[0].color } }) : null
+      dot
     ]);
     days.push(dayButton);
   }
   return element("div", { className: "v8-bills-week" }, days);
 }
 
+const BRAND_ICONS = new Set(["spotify", "netflix"]);
+
+function billIcon(bill) {
+  if (BRAND_ICONS.has(bill.icon)) return brandIcon(bill.icon, bill.icon, "");
+  return icon(bill.icon);
+}
+
 function billDetailCard(bill) {
   return element("div", { className: "v8-bills-detail" }, [
-    element("span", { className: "v8-bills-detail__icon", style: { background: bill.color } }, [icon(bill.icon)]),
+    element("span", { className: "v8-bills-detail__icon", style: { background: bill.color } }, [billIcon(bill)]),
     element("div", { className: "v8-bills-detail__copy" }, [
       element("strong", { text: bill.title }),
       element("small", { text: `${bill.category} · ${formatDate(bill.dueDate)}` })
@@ -94,6 +107,7 @@ export function billsLiveCard(manager, options = {}) {
   function refresh() {
     if (weekRoot) weekRoot.replaceChildren(...buildWeek(manager, selected, onSelect, today).children);
     if (detailRoot) detailRoot.replaceChildren(buildDetails(manager, selected, onAdd, onScan));
+    refreshIcons();
   }
 
   const snapshot = manager.snapshot();

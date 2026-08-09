@@ -125,17 +125,50 @@ function guessCategory(text) {
   return "other";
 }
 
+function guessIcon(text, category) {
+  const t = String(text).toLowerCase();
+  if (/spotify/.test(t)) return "spotify";
+  if (/netflix/.test(t)) return "netflix";
+  if (/icloud/.test(t)) return "cloud";
+  if (/adobe/.test(t)) return "image";
+  if (/microsoft|xbox|game pass/.test(t)) return "gamepad-2";
+  if (/wifi|fibre|internet/.test(t)) return "wifi";
+  if (/électricité|élec/.test(t)) return "zap";
+  if (/eau/.test(t)) return "droplets";
+  if (/gaz/.test(t)) return "flame";
+  if (/loyer|rent|logement|maison/.test(t)) return "home";
+  if (/assurance|mutuelle|prévoyance/.test(t)) return "shield-check";
+  if (/crédit|prêt|banque|loan/.test(t)) return "landmark";
+  if (/abonnement|subscription/.test(t)) return "calendar-clock";
+  return DEFAULT_CATEGORIES[category]?.icon || "receipt";
+}
+
+function guessColor(text, category) {
+  const t = String(text).toLowerCase();
+  if (/spotify/.test(t)) return "#1DB954";
+  if (/netflix/.test(t)) return "#E50914";
+  if (/icloud|adobe|microsoft/.test(t)) return "#8b5cf6";
+  if (/wifi|fibre|internet/.test(t)) return "#6366f1";
+  if (/électricité|élec|gaz/.test(t)) return "#f59e0b";
+  if (/eau/.test(t)) return "#3b82f6";
+  if (/loyer|rent|logement/.test(t)) return "#10b981";
+  if (/assurance|mutuelle|prévoyance/.test(t)) return "#ef4444";
+  if (/crédit|prêt|banque|loan/.test(t)) return "#f43f5e";
+  return DEFAULT_CATEGORIES[category]?.color || "#6b7280";
+}
+
 function heuristicScan(text) {
   const dueDate = extractDate(text) || new Date();
+  const category = guessCategory(text);
   return {
     title: extractTitle(text).slice(0, 120),
     amount: extractAmount(text),
     currency: String(text).includes("€") ? "€" : String(text).includes("£") ? "£" : "$",
     dueDate,
-    category: guessCategory(text),
+    category,
     recurrence: /mensuel|monthly|chaque mois|tous les mois/.test(String(text).toLowerCase()) ? "monthly" : /annuel|yearly|tous les ans/.test(String(text).toLowerCase()) ? "yearly" : "oneoff",
-    icon: null,
-    color: null
+    icon: guessIcon(text, category),
+    color: guessColor(text, category)
   };
 }
 
@@ -151,15 +184,17 @@ async function brainScan(text, externalServices) {
     const json = content.match(/\{[\s\S]*\}/)?.[0];
     if (!json) return null;
     const parsed = JSON.parse(json);
+    const category = DEFAULT_CATEGORIES[parsed.category] ? parsed.category : "other";
+    const title = String(parsed.title || "").slice(0, 120);
     return {
-      title: String(parsed.title || "").slice(0, 120),
+      title,
       amount: Number(parsed.amount) || 0,
       currency: String(parsed.currency || "$").slice(0, 3),
       dueDate: parsed.dueDate ? new Date(parsed.dueDate) : new Date(),
-      category: DEFAULT_CATEGORIES[parsed.category] ? parsed.category : "other",
+      category,
       recurrence: RECURRENCE_RULES[parsed.recurrence] ? parsed.recurrence : "oneoff",
-      icon: null,
-      color: null
+      icon: guessIcon(title, category),
+      color: guessColor(title, category)
     };
   } catch {
     return null;

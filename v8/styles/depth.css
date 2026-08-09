@@ -3,111 +3,23 @@
   --v8-tilt-y: 0deg;
 }
 
-.v8-depth,
-.v8-card,
-.v8-surface,
-.v8-note-card,
-.v8-profile-card,
-.v8-widget,
-.v8-bills-widget,
-.v8-continuity,
-.v8-home-brain,
-.v8-brain-context,
-.v8-command-dialog,
-.v8-panel,
-.v8-control-center-window,
-.v8-dock-editor,
-.v8-personalize,
-.v8-empty-state,
-.v8-focus-popover,
-.v8-dynamic-island,
-.v8-briefing-signal,
-.v8-tile,
-.v8-select-list,
-.v8-menu,
-.v8-toast,
-.v8-home-live-grid > section > article,
-.v8-continuity > :not([aria-hidden="true"]),
-.v8-home-brain > :not([aria-hidden="true"]),
-.v8-brain-context > :not([aria-hidden="true"]),
-.v8-interactions-card,
-.v8-interactions-stat,
-.v8-heatmap-dot {
+.v8-depth {
   transform-style: preserve-3d;
   transition:
-    transform 0.4s var(--v8-ease-spring),
-    box-shadow 0.4s var(--v8-ease-standard);
+    transform 0.35s var(--v8-ease-spring),
+    box-shadow 0.35s var(--v8-ease-standard);
 }
 
-html[data-v8-interactions] .v8-depth:hover,
-html[data-v8-interactions] .v8-card:hover,
-html[data-v8-interactions] .v8-surface:hover,
-html[data-v8-interactions] .v8-note-card:hover,
-html[data-v8-interactions] .v8-profile-card:hover,
-html[data-v8-interactions] .v8-widget:hover,
-html[data-v8-interactions] .v8-bills-widget:hover,
-html[data-v8-interactions] .v8-continuity:hover,
-html[data-v8-interactions] .v8-home-brain:hover,
-html[data-v8-interactions] .v8-brain-context:hover,
-html[data-v8-interactions] .v8-command-dialog:hover,
-html[data-v8-interactions] .v8-panel:hover,
-html[data-v8-interactions] .v8-control-center-window:hover,
-html[data-v8-interactions] .v8-dock-editor:hover,
-html[data-v8-interactions] .v8-personalize:hover,
-html[data-v8-interactions] .v8-empty-state:hover,
-html[data-v8-interactions] .v8-focus-popover:hover,
-html[data-v8-interactions] .v8-dynamic-island:hover,
-html[data-v8-interactions] .v8-briefing-signal:hover,
-html[data-v8-interactions] .v8-tile:hover,
-html[data-v8-interactions] .v8-select-list:hover,
-html[data-v8-interactions] .v8-menu:hover,
-html[data-v8-interactions] .v8-toast:hover,
-html[data-v8-interactions] .v8-home-live-grid > section > article:hover,
-html[data-v8-interactions] .v8-interactions-card:hover,
-html[data-v8-interactions] .v8-interactions-stat:hover,
-html[data-v8-interactions] .v8-heatmap-dot:hover {
-  transform:
-    perspective(1200px)
-    rotateX(var(--v8-tilt-x))
-    rotateY(var(--v8-tilt-y))
-    translateZ(18px)
-    scale(1.018);
+html[data-v8-interactions] .v8-depth:hover {
+  transform: translateY(-2px) scale(1.01);
   box-shadow:
-    0 32px 80px -24px color-mix(in srgb, var(--v8-accent) 26%, transparent),
+    0 16px 40px -16px color-mix(in srgb, var(--v8-accent) 16%, transparent),
     0 0 0 1px var(--v8-accent-line),
     inset 0 1px 0 var(--v8-surface-glint);
 }
 
-html[data-v8-interactions] .v8-home-live-grid > section > article:hover {
-  --v8-spotlight-x: 50%;
-  --v8-spotlight-y: 50%;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .v8-depth,
-  .v8-card,
-  .v8-surface,
-  .v8-note-card,
-  .v8-profile-card,
-  .v8-widget,
-  .v8-bills-widget,
-  .v8-continuity,
-  .v8-home-brain,
-  .v8-brain-context,
-  .v8-command-dialog,
-  .v8-panel,
-  .v8-control-center-window,
-  .v8-dock-editor,
-  .v8-personalize,
-  .v8-empty-state,
-  .v8-focus-popover,
-  .v8-dynamic-island,
-  .v8-briefing-signal,
-  .v8-tile,
-  .v8-select-list,
-  .v8-menu,
-  .v8-toast,
-  .v8-home-live-grid > section > article {
+  .v8-depth {
     transform: none !important;
     transition: none !important;
   }

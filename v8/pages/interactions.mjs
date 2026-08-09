@@ -15,7 +15,7 @@ const INTENSITY_COLORS = [
 function heatmapDot(day, value) {
   const color = INTENSITY_COLORS[value] || INTENSITY_COLORS[0];
   const dot = element("button", {
-    className: "v8-heatmap-dot v8-depth",
+    className: "v8-heatmap-dot",
     attributes: { type: "button", "aria-label": `${day.date}: ${day.count} interaction${day.count > 1 ? "s" : ""}` },
     dataset: { date: day.date, count: String(day.count) }
   });
@@ -29,7 +29,7 @@ function heatmapDot(day, value) {
 function formatPercent(value) { return `${value}%`; }
 
 function statCard({ iconName, label, value, sub }) {
-  return element("div", { className: "v8-interactions-stat v8-depth" }, [
+  return element("div", { className: "v8-interactions-stat" }, [
     element("div", { className: "v8-interactions-stat__header" }, [icon(iconName), element("span", { text: label })]),
     element("strong", { text: value }),
     element("small", { text: sub })
@@ -82,7 +82,7 @@ export function mountInteractions(stage, options = {}) {
     element("span", { text: "More" })
   ]);
 
-  const heatmapHost = element("div", { className: "v8-heatmap-host v8-depth" });
+  const heatmapHost = element("div", { className: "v8-heatmap-host" });
   const statsHost = element("div", { className: "v8-interactions-stats" });
   const showLess = element("button", { className: "v8-interactions-less", attributes: { type: "button" } }, [icon("chevron-up"), element("span", { text: "Show less" })]);
 
@@ -97,7 +97,7 @@ export function mountInteractions(stage, options = {}) {
         actionButton({ actionId: "v8.interactions.refresh", variant: "secondary" }, [icon("refresh-cw"), element("span", { text: "Actualiser" })])
       ])
     ]),
-    element("section", { className: "v8-interactions-card v8-depth" }, [
+    element("section", { className: "v8-interactions-card" }, [
       element("div", { className: "v8-interactions-card__header" }, [
         element("div", {}, [element("h2", { text: "Activity" }), element("span", { text: `Last ${range} Days` })]),
         rangeToggle

@@ -1630,12 +1630,15 @@ button.v8-status-item:focus-visible { box-shadow: var(--v8-shadow-focus); outlin
   display: none;
 }
 .v8-rail:not(.is-expanded) .v8-rail__toggle {
-  position: static;
-  width: 22px;
-  height: 22px;
-  flex-basis: 22px;
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  flex-basis: 24px;
   border: 1px solid var(--v8-border);
   background: var(--v8-surface-2);
+  box-shadow: 0 2px 8px var(--v8-overlay);
 }
 .v8-rail:not(.is-expanded) .v8-rail__toggle svg { width: 13px; height: 13px; }
 .v8-rail:not(.is-expanded) .v8-rail-space,

@@ -118,7 +118,7 @@
 }
 
 .v8-heatmap-dot:hover {
-  transform: scale(1.25) translateZ(12px);
+  transform: scale(1.25);
   box-shadow: 0 6px 16px var(--v8-overlay);
 }
 
@@ -174,7 +174,7 @@
 .v8-interactions-stat__header {
   display: flex;
   align-items: center;
-  gap: var(--v8-space-2);
+  gap: var(--v8-space-3);
   color: var(--v8-text-secondary);
   font-size: var(--v8-font-xs);
   margin-bottom: var(--v8-space-2);

@@ -435,7 +435,7 @@ export function mountSettings(stage, options = {}) {
             element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("circle")]), element("div", {}, [element("strong", { text: "Courbure du Design" }), element("p", { text: "Ajuster l'échelle d'arrondi des cartes et boutons du système." })])]),
             radiusChoices
           ]),
-          settingRow("palette", "Accent", "Identifier le Space et les actions importantes.", element("div", { className: "v8-theme-picker v8-depth" }, [accentControls])),
+          settingRow("palette", "Accent", "Identifier le Space et les actions importantes.", element("div", { className: "v8-theme-picker" }, [accentControls])),
           element("div", { className: "v8-density-settings" }, [
             element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("rows-3")]), element("div", {}, [element("strong", { text: "Density Engine" }), element("p", { text: "Une densité coherente pour chaque page, panneau, widget et resolution." })]), densityResolved]),
             densityChoices,

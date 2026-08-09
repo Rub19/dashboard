@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v281] - 2026-08-11
+
+**Phase 10 : correction des effets 3D et alignements UI**
+
+### Corrigé
+- Désactivation de l'effet de tilt 3D sur les cartes, la page Interactions et les réglages.
+- Page Interactions : suppression du conflit de `transform`, meilleur espacement des icônes de statistiques.
+- Rail : le bouton d'agrandissement est repositionné en haut à droite du logo en mode réduit.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v281`.
+
 ## [v280] - 2026-08-11
 
 **Phase 10 : fluidité du boot et du Service Worker**

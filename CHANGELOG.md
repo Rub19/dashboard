@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v277] - 2026-08-11
+
+**Phase 10 : activation e-mail Resend**
+
+### Corrigé
+- **Worker** : ajout du secret `RESEND_FROM` pour activer l'envoi d'e-mails d'invitation d'équipe.
+- **Worker redéployé** avec `RESEND_API_KEY` et `RESEND_FROM` configurés.
+
+### Vérifié
+- Aucune clé API Resend n'est présente dans les sources du worker.
+- Bordereau PWA mis à jour vers `experience-v277`.
+
 ## [v276] - 2026-08-11
 
 **Phase 10 : traductions complètes et i18n**

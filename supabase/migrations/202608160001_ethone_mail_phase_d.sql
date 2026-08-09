@@ -1,10 +1,18 @@
 begin;
 
--- D.1 Analytics
+-- D.1 Analytics helpers (immutable for generated columns)
+create or replace function public.ethone_mail_hour_utc(ts timestamptz)
+returns integer language sql immutable
+as $$ select ((extract(epoch from ts)::bigint % 86400) / 3600)::integer; $$;
+
+create or replace function public.ethone_mail_day_utc(ts timestamptz)
+returns text language sql immutable
+as $$ select to_char(timezone('UTC', ts), 'YYYY-MM-DD'); $$;
+
 alter table public.ethone_mail_messages
   add column if not exists message_size integer not null default 0,
-  add column if not exists received_hour integer generated always as (extract(hour from received_at)) stored,
-  add column if not exists received_day text generated always as (to_char(received_at, 'YYYY-MM-DD')) stored,
+  add column if not exists received_hour integer generated always as (public.ethone_mail_hour_utc(received_at)) stored,
+  add column if not exists received_day text generated always as (public.ethone_mail_day_utc(received_at)) stored,
   add column if not exists auth_results jsonb not null default '{}';
 
 create index if not exists ethone_mail_messages_analytics_idx
@@ -47,20 +55,20 @@ alter table public.ethone_mail_blocked_senders force row level security;
 alter table public.ethone_mail_trusted_senders enable row level security;
 alter table public.ethone_mail_trusted_senders force row level security;
 
-drop policy if exists ethone_mail_blocked_owner_select on public.ethone_mail_blocked_senders;
-drop policy if exists ethone_mail_blocked_owner_insert on public.ethone_mail_blocked_senders;
-drop policy if exists ethone_mail_blocked_owner_delete on public.ethone_mail_blocked_senders;
 
+drop policy if exists ethone_mail_blocked_owner_select on public.ethone_mail_blocked_senders;
 create policy ethone_mail_blocked_owner_select on public.ethone_mail_blocked_senders for select to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_blocked_owner_insert on public.ethone_mail_blocked_senders;
 create policy ethone_mail_blocked_owner_insert on public.ethone_mail_blocked_senders for insert to authenticated with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_blocked_owner_delete on public.ethone_mail_blocked_senders;
 create policy ethone_mail_blocked_owner_delete on public.ethone_mail_blocked_senders for delete to authenticated using ((select auth.uid()) = user_id);
 
-drop policy if exists ethone_mail_trusted_owner_select on public.ethone_mail_trusted_senders;
-drop policy if exists ethone_mail_trusted_owner_insert on public.ethone_mail_trusted_senders;
-drop policy if exists ethone_mail_trusted_owner_delete on public.ethone_mail_trusted_senders;
 
+drop policy if exists ethone_mail_trusted_owner_select on public.ethone_mail_trusted_senders;
 create policy ethone_mail_trusted_owner_select on public.ethone_mail_trusted_senders for select to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_trusted_owner_insert on public.ethone_mail_trusted_senders;
 create policy ethone_mail_trusted_owner_insert on public.ethone_mail_trusted_senders for insert to authenticated with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_trusted_owner_delete on public.ethone_mail_trusted_senders;
 create policy ethone_mail_trusted_owner_delete on public.ethone_mail_trusted_senders for delete to authenticated using ((select auth.uid()) = user_id);
 
 commit;

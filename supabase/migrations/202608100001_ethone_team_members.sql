@@ -43,10 +43,6 @@ alter table public.ethone_file_collaborators enable row level security;
 alter table public.ethone_file_collaborators force row level security;
 
 -- Team members policies
-drop policy if exists ethone_team_members_owner_select on public.ethone_team_members;
-drop policy if exists ethone_team_members_owner_insert on public.ethone_team_members;
-drop policy if exists ethone_team_members_owner_update on public.ethone_team_members;
-drop policy if exists ethone_team_members_owner_delete on public.ethone_team_members;
 
 create policy ethone_team_members_owner_select
   on public.ethone_team_members for select to authenticated
@@ -66,31 +62,27 @@ create policy ethone_team_members_owner_delete
   using ((select auth.uid()) = owner_id);
 
 -- Collaborators policies
-drop policy if exists ethone_file_collaborators_owner_select on public.ethone_file_collaborators;
-drop policy if exists ethone_file_collaborators_owner_insert on public.ethone_file_collaborators;
-drop policy if exists ethone_file_collaborators_owner_update on public.ethone_file_collaborators;
-drop policy if exists ethone_file_collaborators_owner_delete on public.ethone_file_collaborators;
 
 create policy ethone_file_collaborators_owner_select
   on public.ethone_file_collaborators for select to authenticated
   using ((select auth.uid()) in (
-    select owner_id from public.ethone_files where id = ethone_file_collaborators.file_id
+    select user_id from public.ethone_files where id = ethone_file_collaborators.file_id
     union
     select user_id from public.ethone_file_collaborators where file_id = ethone_file_collaborators.file_id
   ));
 
 create policy ethone_file_collaborators_owner_insert
   on public.ethone_file_collaborators for insert to authenticated
-  with check ((select auth.uid()) = (select owner_id from public.ethone_files where id = ethone_file_collaborators.file_id));
+  with check ((select auth.uid()) = (select user_id from public.ethone_files where id = ethone_file_collaborators.file_id));
 
 create policy ethone_file_collaborators_owner_update
   on public.ethone_file_collaborators for update to authenticated
-  using ((select auth.uid()) = (select owner_id from public.ethone_files where id = ethone_file_collaborators.file_id))
-  with check ((select auth.uid()) = (select owner_id from public.ethone_files where id = ethone_file_collaborators.file_id));
+  using ((select auth.uid()) = (select user_id from public.ethone_files where id = ethone_file_collaborators.file_id))
+  with check ((select auth.uid()) = (select user_id from public.ethone_files where id = ethone_file_collaborators.file_id));
 
 create policy ethone_file_collaborators_owner_delete
   on public.ethone_file_collaborators for delete to authenticated
-  using ((select auth.uid()) = (select owner_id from public.ethone_files where id = ethone_file_collaborators.file_id));
+  using ((select auth.uid()) = (select user_id from public.ethone_files where id = ethone_file_collaborators.file_id));
 
 revoke all on public.ethone_team_members from public;
 revoke all on public.ethone_team_members from anon;

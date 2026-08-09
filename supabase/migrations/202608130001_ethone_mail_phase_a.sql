@@ -105,44 +105,44 @@ alter table public.ethone_mail_contacts force row level security;
 alter table public.ethone_mail_attachments enable row level security;
 alter table public.ethone_mail_attachments force row level security;
 
-drop policy if exists ethone_mail_labels_owner_select on public.ethone_mail_labels;
-drop policy if exists ethone_mail_labels_owner_insert on public.ethone_mail_labels;
-drop policy if exists ethone_mail_labels_owner_update on public.ethone_mail_labels;
-drop policy if exists ethone_mail_labels_owner_delete on public.ethone_mail_labels;
 
+drop policy if exists ethone_mail_labels_owner_select on public.ethone_mail_labels;
 create policy ethone_mail_labels_owner_select on public.ethone_mail_labels for select to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_labels_owner_insert on public.ethone_mail_labels;
 create policy ethone_mail_labels_owner_insert on public.ethone_mail_labels for insert to authenticated with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_labels_owner_update on public.ethone_mail_labels;
 create policy ethone_mail_labels_owner_update on public.ethone_mail_labels for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_labels_owner_delete on public.ethone_mail_labels;
 create policy ethone_mail_labels_owner_delete on public.ethone_mail_labels for delete to authenticated using ((select auth.uid()) = user_id);
 
-drop policy if exists ethone_mail_signatures_owner_select on public.ethone_mail_signatures;
-drop policy if exists ethone_mail_signatures_owner_insert on public.ethone_mail_signatures;
-drop policy if exists ethone_mail_signatures_owner_update on public.ethone_mail_signatures;
-drop policy if exists ethone_mail_signatures_owner_delete on public.ethone_mail_signatures;
 
+drop policy if exists ethone_mail_signatures_owner_select on public.ethone_mail_signatures;
 create policy ethone_mail_signatures_owner_select on public.ethone_mail_signatures for select to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_signatures_owner_insert on public.ethone_mail_signatures;
 create policy ethone_mail_signatures_owner_insert on public.ethone_mail_signatures for insert to authenticated with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_signatures_owner_update on public.ethone_mail_signatures;
 create policy ethone_mail_signatures_owner_update on public.ethone_mail_signatures for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_signatures_owner_delete on public.ethone_mail_signatures;
 create policy ethone_mail_signatures_owner_delete on public.ethone_mail_signatures for delete to authenticated using ((select auth.uid()) = user_id);
 
-drop policy if exists ethone_mail_contacts_owner_select on public.ethone_mail_contacts;
-drop policy if exists ethone_mail_contacts_owner_insert on public.ethone_mail_contacts;
-drop policy if exists ethone_mail_contacts_owner_update on public.ethone_mail_contacts;
-drop policy if exists ethone_mail_contacts_owner_delete on public.ethone_mail_contacts;
 
+drop policy if exists ethone_mail_contacts_owner_select on public.ethone_mail_contacts;
 create policy ethone_mail_contacts_owner_select on public.ethone_mail_contacts for select to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_contacts_owner_insert on public.ethone_mail_contacts;
 create policy ethone_mail_contacts_owner_insert on public.ethone_mail_contacts for insert to authenticated with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_contacts_owner_update on public.ethone_mail_contacts;
 create policy ethone_mail_contacts_owner_update on public.ethone_mail_contacts for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_contacts_owner_delete on public.ethone_mail_contacts;
 create policy ethone_mail_contacts_owner_delete on public.ethone_mail_contacts for delete to authenticated using ((select auth.uid()) = user_id);
 
-drop policy if exists ethone_mail_attachments_owner_select on public.ethone_mail_attachments;
-drop policy if exists ethone_mail_attachments_owner_insert on public.ethone_mail_attachments;
-drop policy if exists ethone_mail_attachments_owner_update on public.ethone_mail_attachments;
-drop policy if exists ethone_mail_attachments_owner_delete on public.ethone_mail_attachments;
 
+drop policy if exists ethone_mail_attachments_owner_select on public.ethone_mail_attachments;
 create policy ethone_mail_attachments_owner_select on public.ethone_mail_attachments for select to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_attachments_owner_insert on public.ethone_mail_attachments;
 create policy ethone_mail_attachments_owner_insert on public.ethone_mail_attachments for insert to authenticated with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_attachments_owner_update on public.ethone_mail_attachments;
 create policy ethone_mail_attachments_owner_update on public.ethone_mail_attachments for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_attachments_owner_delete on public.ethone_mail_attachments;
 create policy ethone_mail_attachments_owner_delete on public.ethone_mail_attachments for delete to authenticated using ((select auth.uid()) = user_id);
 
 commit;

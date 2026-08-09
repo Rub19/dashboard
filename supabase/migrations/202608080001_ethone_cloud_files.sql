@@ -105,26 +105,43 @@ alter table public.ethone_file_favorites enable row level security;
 alter table public.ethone_file_favorites force row level security;
 
 -- Owner policies.
+drop policy if exists ethone_files_owner_select on public.ethone_files;
 create policy ethone_files_owner_select on public.ethone_files for select to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists ethone_files_owner_insert on public.ethone_files;
 create policy ethone_files_owner_insert on public.ethone_files for insert to authenticated with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_files_owner_update on public.ethone_files;
 create policy ethone_files_owner_update on public.ethone_files for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_files_owner_delete on public.ethone_files;
 create policy ethone_files_owner_delete on public.ethone_files for delete to authenticated using ((select auth.uid()) = user_id);
 
+drop policy if exists ethone_file_shares_owner_select on public.ethone_file_shares;
 create policy ethone_file_shares_owner_select on public.ethone_file_shares for select to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists ethone_file_shares_owner_insert on public.ethone_file_shares;
 create policy ethone_file_shares_owner_insert on public.ethone_file_shares for insert to authenticated with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_file_shares_owner_update on public.ethone_file_shares;
 create policy ethone_file_shares_owner_update on public.ethone_file_shares for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_file_shares_owner_delete on public.ethone_file_shares;
 create policy ethone_file_shares_owner_delete on public.ethone_file_shares for delete to authenticated using ((select auth.uid()) = user_id);
 
+drop policy if exists ethone_file_drops_owner_select on public.ethone_file_drops;
 create policy ethone_file_drops_owner_select on public.ethone_file_drops for select to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists ethone_file_drops_owner_insert on public.ethone_file_drops;
 create policy ethone_file_drops_owner_insert on public.ethone_file_drops for insert to authenticated with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_file_drops_owner_update on public.ethone_file_drops;
 create policy ethone_file_drops_owner_update on public.ethone_file_drops for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_file_drops_owner_delete on public.ethone_file_drops;
 create policy ethone_file_drops_owner_delete on public.ethone_file_drops for delete to authenticated using ((select auth.uid()) = user_id);
 
+drop policy if exists ethone_file_activity_owner_select on public.ethone_file_activity;
 create policy ethone_file_activity_owner_select on public.ethone_file_activity for select to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists ethone_file_activity_owner_insert on public.ethone_file_activity;
 create policy ethone_file_activity_owner_insert on public.ethone_file_activity for insert to authenticated with check ((select auth.uid()) = user_id);
 
+drop policy if exists ethone_file_favorites_owner_select on public.ethone_file_favorites;
 create policy ethone_file_favorites_owner_select on public.ethone_file_favorites for select to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists ethone_file_favorites_owner_insert on public.ethone_file_favorites;
 create policy ethone_file_favorites_owner_insert on public.ethone_file_favorites for insert to authenticated with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_file_favorites_owner_delete on public.ethone_file_favorites;
 create policy ethone_file_favorites_owner_delete on public.ethone_file_favorites for delete to authenticated using ((select auth.uid()) = user_id);
 
 -- Anonymous access is handled by the ETHONE Worker using the service role key.

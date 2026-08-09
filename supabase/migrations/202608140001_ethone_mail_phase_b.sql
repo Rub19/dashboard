@@ -60,24 +60,24 @@ alter table public.ethone_mail_rules force row level security;
 alter table public.ethone_mail_notifications enable row level security;
 alter table public.ethone_mail_notifications force row level security;
 
-drop policy if exists ethone_mail_rules_owner_select on public.ethone_mail_rules;
-drop policy if exists ethone_mail_rules_owner_insert on public.ethone_mail_rules;
-drop policy if exists ethone_mail_rules_owner_update on public.ethone_mail_rules;
-drop policy if exists ethone_mail_rules_owner_delete on public.ethone_mail_rules;
 
+drop policy if exists ethone_mail_rules_owner_select on public.ethone_mail_rules;
 create policy ethone_mail_rules_owner_select on public.ethone_mail_rules for select to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_rules_owner_insert on public.ethone_mail_rules;
 create policy ethone_mail_rules_owner_insert on public.ethone_mail_rules for insert to authenticated with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_rules_owner_update on public.ethone_mail_rules;
 create policy ethone_mail_rules_owner_update on public.ethone_mail_rules for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_rules_owner_delete on public.ethone_mail_rules;
 create policy ethone_mail_rules_owner_delete on public.ethone_mail_rules for delete to authenticated using ((select auth.uid()) = user_id);
 
-drop policy if exists ethone_mail_notifications_owner_select on public.ethone_mail_notifications;
-drop policy if exists ethone_mail_notifications_owner_insert on public.ethone_mail_notifications;
-drop policy if exists ethone_mail_notifications_owner_update on public.ethone_mail_notifications;
-drop policy if exists ethone_mail_notifications_owner_delete on public.ethone_mail_notifications;
 
+drop policy if exists ethone_mail_notifications_owner_select on public.ethone_mail_notifications;
 create policy ethone_mail_notifications_owner_select on public.ethone_mail_notifications for select to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_notifications_owner_insert on public.ethone_mail_notifications;
 create policy ethone_mail_notifications_owner_insert on public.ethone_mail_notifications for insert to authenticated with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_notifications_owner_update on public.ethone_mail_notifications;
 create policy ethone_mail_notifications_owner_update on public.ethone_mail_notifications for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_notifications_owner_delete on public.ethone_mail_notifications;
 create policy ethone_mail_notifications_owner_delete on public.ethone_mail_notifications for delete to authenticated using ((select auth.uid()) = user_id);
 
 commit;

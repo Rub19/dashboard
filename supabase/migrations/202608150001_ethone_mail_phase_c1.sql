@@ -29,14 +29,14 @@ alter table public.ethone_mail_rules
 alter table public.ethone_mail_templates enable row level security;
 alter table public.ethone_mail_templates force row level security;
 
-drop policy if exists ethone_mail_templates_owner_select on public.ethone_mail_templates;
-drop policy if exists ethone_mail_templates_owner_insert on public.ethone_mail_templates;
-drop policy if exists ethone_mail_templates_owner_update on public.ethone_mail_templates;
-drop policy if exists ethone_mail_templates_owner_delete on public.ethone_mail_templates;
 
+drop policy if exists ethone_mail_templates_owner_select on public.ethone_mail_templates;
 create policy ethone_mail_templates_owner_select on public.ethone_mail_templates for select to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_templates_owner_insert on public.ethone_mail_templates;
 create policy ethone_mail_templates_owner_insert on public.ethone_mail_templates for insert to authenticated with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_templates_owner_update on public.ethone_mail_templates;
 create policy ethone_mail_templates_owner_update on public.ethone_mail_templates for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_templates_owner_delete on public.ethone_mail_templates;
 create policy ethone_mail_templates_owner_delete on public.ethone_mail_templates for delete to authenticated using ((select auth.uid()) = user_id);
 
 commit;

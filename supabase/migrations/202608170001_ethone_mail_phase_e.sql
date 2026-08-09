@@ -117,52 +117,52 @@ alter table public.ethone_mail_list_members enable row level security;
 alter table public.ethone_mail_list_members force row level security;
 
 -- Owner policies
-drop policy if exists ethone_mail_accounts_owner_select on public.ethone_mail_accounts;
-drop policy if exists ethone_mail_accounts_owner_insert on public.ethone_mail_accounts;
-drop policy if exists ethone_mail_accounts_owner_update on public.ethone_mail_accounts;
-drop policy if exists ethone_mail_accounts_owner_delete on public.ethone_mail_accounts;
 
+drop policy if exists ethone_mail_accounts_owner_select on public.ethone_mail_accounts;
 create policy ethone_mail_accounts_owner_select on public.ethone_mail_accounts for select to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_accounts_owner_insert on public.ethone_mail_accounts;
 create policy ethone_mail_accounts_owner_insert on public.ethone_mail_accounts for insert to authenticated with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_accounts_owner_update on public.ethone_mail_accounts;
 create policy ethone_mail_accounts_owner_update on public.ethone_mail_accounts for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_accounts_owner_delete on public.ethone_mail_accounts;
 create policy ethone_mail_accounts_owner_delete on public.ethone_mail_accounts for delete to authenticated using ((select auth.uid()) = user_id);
 
-drop policy if exists ethone_mail_pgp_keys_owner_select on public.ethone_mail_pgp_keys;
-drop policy if exists ethone_mail_pgp_keys_owner_insert on public.ethone_mail_pgp_keys;
-drop policy if exists ethone_mail_pgp_keys_owner_update on public.ethone_mail_pgp_keys;
-drop policy if exists ethone_mail_pgp_keys_owner_delete on public.ethone_mail_pgp_keys;
 
+drop policy if exists ethone_mail_pgp_keys_owner_select on public.ethone_mail_pgp_keys;
 create policy ethone_mail_pgp_keys_owner_select on public.ethone_mail_pgp_keys for select to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_pgp_keys_owner_insert on public.ethone_mail_pgp_keys;
 create policy ethone_mail_pgp_keys_owner_insert on public.ethone_mail_pgp_keys for insert to authenticated with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_pgp_keys_owner_update on public.ethone_mail_pgp_keys;
 create policy ethone_mail_pgp_keys_owner_update on public.ethone_mail_pgp_keys for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_pgp_keys_owner_delete on public.ethone_mail_pgp_keys;
 create policy ethone_mail_pgp_keys_owner_delete on public.ethone_mail_pgp_keys for delete to authenticated using ((select auth.uid()) = user_id);
 
-drop policy if exists ethone_mail_push_subscriptions_owner_select on public.ethone_mail_push_subscriptions;
-drop policy if exists ethone_mail_push_subscriptions_owner_insert on public.ethone_mail_push_subscriptions;
-drop policy if exists ethone_mail_push_subscriptions_owner_delete on public.ethone_mail_push_subscriptions;
 
+drop policy if exists ethone_mail_push_subscriptions_owner_select on public.ethone_mail_push_subscriptions;
 create policy ethone_mail_push_subscriptions_owner_select on public.ethone_mail_push_subscriptions for select to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_push_subscriptions_owner_insert on public.ethone_mail_push_subscriptions;
 create policy ethone_mail_push_subscriptions_owner_insert on public.ethone_mail_push_subscriptions for insert to authenticated with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_push_subscriptions_owner_delete on public.ethone_mail_push_subscriptions;
 create policy ethone_mail_push_subscriptions_owner_delete on public.ethone_mail_push_subscriptions for delete to authenticated using ((select auth.uid()) = user_id);
 
-drop policy if exists ethone_mail_lists_owner_select on public.ethone_mail_lists;
-drop policy if exists ethone_mail_lists_owner_insert on public.ethone_mail_lists;
-drop policy if exists ethone_mail_lists_owner_update on public.ethone_mail_lists;
-drop policy if exists ethone_mail_lists_owner_delete on public.ethone_mail_lists;
 
+drop policy if exists ethone_mail_lists_owner_select on public.ethone_mail_lists;
 create policy ethone_mail_lists_owner_select on public.ethone_mail_lists for select to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_lists_owner_insert on public.ethone_mail_lists;
 create policy ethone_mail_lists_owner_insert on public.ethone_mail_lists for insert to authenticated with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_lists_owner_update on public.ethone_mail_lists;
 create policy ethone_mail_lists_owner_update on public.ethone_mail_lists for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+drop policy if exists ethone_mail_lists_owner_delete on public.ethone_mail_lists;
 create policy ethone_mail_lists_owner_delete on public.ethone_mail_lists for delete to authenticated using ((select auth.uid()) = user_id);
 
-drop policy if exists ethone_mail_list_members_owner_select on public.ethone_mail_list_members;
-drop policy if exists ethone_mail_list_members_owner_insert on public.ethone_mail_list_members;
-drop policy if exists ethone_mail_list_members_owner_update on public.ethone_mail_list_members;
-drop policy if exists ethone_mail_list_members_owner_delete on public.ethone_mail_list_members;
 
+drop policy if exists ethone_mail_list_members_owner_select on public.ethone_mail_list_members;
 create policy ethone_mail_list_members_owner_select on public.ethone_mail_list_members for select to authenticated using ((select auth.uid()) = (select user_id from public.ethone_mail_lists where id = list_id));
+drop policy if exists ethone_mail_list_members_owner_insert on public.ethone_mail_list_members;
 create policy ethone_mail_list_members_owner_insert on public.ethone_mail_list_members for insert to authenticated with check ((select auth.uid()) = (select user_id from public.ethone_mail_lists where id = list_id));
+drop policy if exists ethone_mail_list_members_owner_update on public.ethone_mail_list_members;
 create policy ethone_mail_list_members_owner_update on public.ethone_mail_list_members for update to authenticated using ((select auth.uid()) = (select user_id from public.ethone_mail_lists where id = list_id)) with check ((select auth.uid()) = (select user_id from public.ethone_mail_lists where id = list_id));
+drop policy if exists ethone_mail_list_members_owner_delete on public.ethone_mail_list_members;
 create policy ethone_mail_list_members_owner_delete on public.ethone_mail_list_members for delete to authenticated using ((select auth.uid()) = (select user_id from public.ethone_mail_lists where id = list_id));
 
 -- Add optional account_id to messages for external sync

@@ -2,6 +2,22 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v290] - 2026-08-13
+
+**Phase 11 : ETHONE Mail — fondations natives**
+
+### Ajoute
+- ETHONE Mail : interface 3 panneaux avec sidebar, liste et lecture, responsive desktop, iPad et mobile.
+- Dossiers Mail : Inbox, Favoris, Envoyes, Brouillons, Archive, Spam, Corbeille avec deplacement et badges.
+- Composition riche : To/Cc/Bcc, editeur HTML basique, signatures, pieces jointes en base64 et auto-sauvegarde des brouillons.
+- Recherche full-text dans les messages, etiquettes personnalisables et carnet de contacts automatique.
+- Brain : categorie de permission `mail`, contexte mail et actions (resumer, rechercher, rediger, deplacer, ouvrir).
+- Worker : nouvelles routes `/api/mail/{drafts, move, search, labels, contacts, signatures}` et gestion des threads.
+- Migration Supabase `202608130001_ethone_mail_phase_a` : folders, labels, signatures, contacts, search_vector et pieces jointes.
+
+### Bordereau PWA
+- Mis a jour vers `experience-v290`.
+
 ## [v289] - 2026-08-11
 
 **Phase 10 : meteo emoji et icones de presets**

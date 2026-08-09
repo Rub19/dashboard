@@ -1,4 +1,4 @@
-const ROUTES = Object.freeze({ home: "v8.home.open", notes: "v8.notes.open", tasks: "v8.tasks.open", calendar: "v8.calendar.open", files: "v8.files.open", activity: "v8.activity.open", connections: "v8.connections.open", spaces: "v8.spaces.open", flows: "v8.flows.open", brain: "v8.brain.open", settings: "v8.settings.open" });
+const ROUTES = Object.freeze({ home: "v8.home.open", notes: "v8.notes.open", tasks: "v8.tasks.open", calendar: "v8.calendar.open", files: "v8.files.open", activity: "v8.activity.open", connections: "v8.connections.open", spaces: "v8.spaces.open", flows: "v8.flows.open", brain: "v8.brain.open", mail: "v8.mail.open", settings: "v8.settings.open" });
 const SPACES = Object.freeze({ personal: "v8.space.personal", focus: "v8.space.focus", studio: "v8.space.studio" });
 const FLOWS = Object.freeze({ essentiel: SPACES.personal, essential: SPACES.personal, focus: SPACES.focus, "deep-work": SPACES.focus, creation: SPACES.studio, studio: SPACES.studio });
 const DENSITIES = new Set(["spacious", "comfortable", "compact", "ultra-compact", "automatic"]);
@@ -53,6 +53,28 @@ export function createBrainActionRegistry(options = {}) {
   add("planning.prepare", "Preparer un planning", "Créé des taches et événements valides.", ["tasks", "calendar"], true, { tasks: "task[]", events: "event[]" }, (p) => { const tasks = (Array.isArray(p.tasks) ? p.tasks : []).slice(0, 6).map((item) => ({ title: clean(item?.title, "Priorité", 240), priority: ["low", "normal", "high"].includes(item?.priority) ? item.priority : "normal", due: validDate(item?.due) })); const events = (Array.isArray(p.events) ? p.events : []).slice(0, 6).map((item) => { const date = validDate(item?.date); if (!date) throw new TypeError("Date événement invalide."); return { title: clean(item?.title, "Événement", 180), date }; }); if (!tasks.length && !events.length) throw new TypeError("Planning vide."); return { tasks, events }; }, async ({ tasks, events }) => { const created = []; for (const task of tasks) created.push(await repository.tasks.create(task)); for (const event of events) created.push(await repository.events.create(event)); return outcome(true, "completed", "Planning préparé.", Object.freeze(created)); });
   add("activity.summarize", "Resumer l'activité", "Resume les signaux récents autorises.", "activity", false, {}, empty, () => { const activity = (repository.snapshot?.().activities || []).slice(0, 20); return outcome(true, "completed", "Resume pret.", Object.freeze({ total: activity.length, sources: Object.freeze([...new Set(activity.map((item) => clean(item.source, "ethone", 48)))]), latest: Object.freeze(activity.slice(0, 5).map((item) => Object.freeze({ title: clean(item.title, "Activité", 180), source: clean(item.source, "ethone", 48), timestamp: clean(item.timestamp, "", 40) }))) })); });
   add("automation.propose", "Proposer une automatisation", "Préparé une proposition sans l'executer.", "settings", false, { title: "string", description: "string" }, (p) => ({ title: clean(p.title, "Automatisation proposee", 120), description: clean(p.description, "Aucune execution automatique.", 400) }), (proposal) => outcome(true, "review-required", "Proposition prete.", Object.freeze({ ...proposal, executable: false })));
+
+  // Mail actions.
+  add("mail.open", "Ouvrir Mail", "Ouvre la boîte ETHONE Mail.", null, false, {}, empty, () => dispatch(ROUTES.mail));
+  add("mail.summarize", "Resumer les emails", "Resume les emails recents.", "mail", false, { limit: "number?", folder: "string?" }, (p) => ({ limit: Math.min(20, Math.max(1, Number(p.limit) || 5)), folder: ["inbox", "starred", "sent", "drafts", "archive", "spam", "trash"].includes(p.folder) ? p.folder : "inbox" }), async ({ limit, folder }) => {
+    const result = await externalServices?.mail?.inbox?.({ folder, limit });
+    if (!result || !Array.isArray(result.data)) return outcome(false, "unavailable", "Mail indisponible.");
+    const messages = result.data.slice(0, limit);
+    const summary = messages.map((m) => `- ${clean(m.subject, "(aucun sujet)", 120)} de ${clean(m.from_address, "inconnu", 120)}`).join("\n");
+    return outcome(true, "completed", `${messages.length} email${messages.length > 1 ? "s" : ""} dans ${folder}.`, Object.freeze({ summary, count: messages.length, folder }));
+  });
+  add("mail.draft", "Rédiger un email", "Prépare et envoie un email.", "mail", true, { to: "string", subject: "string", content: "string" }, (p) => ({ to: [clean(p.to, "", 320)], subject: clean(p.subject, "Nouveau message", 200), content: clean(p.content, "", 4000) }), async ({ to, subject, content }) => {
+    const result = await externalServices?.mail?.send?.({ to, subject, text: content });
+    if (!result) return outcome(false, "unavailable", "Envoi indisponible.");
+    return outcome(true, "completed", "Email envoyé.", result);
+  });
+  add("mail.search", "Rechercher un email", "Recherche dans les messages.", "mail", false, { q: "string" }, (p) => ({ q: clean(p.q, "", 120) }), async ({ q }) => {
+    const result = await externalServices?.mail?.search?.(q, { limit: 10 });
+    if (!result || !Array.isArray(result.data)) return outcome(false, "unavailable", "Recherche indisponible.");
+    return outcome(true, "completed", `${result.data.length} résultat${result.data.length > 1 ? "s" : ""}.`, Object.freeze({ q, results: result.data.slice(0, 10).map((m) => ({ id: m.id, subject: clean(m.subject, "", 120), from: clean(m.from_address, "", 120), receivedAt: m.received_at })) }));
+  });
+  add("mail.move", "Deplacer un email", "Deplace un email dans un dossier.", "mail", true, { id: "id", folder: "string" }, (p) => ({ id: requireId(p.id), folder: ["inbox", "starred", "sent", "drafts", "archive", "spam", "trash"].includes(p.folder) ? p.folder : "archive" }), ({ id, folder }) => externalServices?.mail?.move?.([id], folder));
+
   for (const [id, title] of [["connections.analyze", "Analyser les connexions"], ["diagnostic.run", "Lancer un diagnostic"]]) add(id, title, "Interroge le Worker a la demande.", "connections", false, {}, empty, () => externalServices?.diagnostic ? externalServices.diagnostic() : outcome(false, "unavailable", "Diagnostic indisponible."));
 
   function review(id, parameters = {}) {

@@ -56,7 +56,11 @@ import { weatherRoute } from "./routes/weather.js";
 import { youtubeActivityRoute, youtubeOAuthDisconnectRoute, youtubeOAuthExchangeRoute } from "./routes/youtube-oauth.js";
 import { signOutRoute } from "./routes/signout.js";
 import { teamInviteRoute } from "./routes/team-invite.js";
-import { mailAliasRoute, mailInboxRoute, mailReadRoute, mailSendRoute, mailThreadRoute } from "./routes/mail.js";
+import {
+  mailAliasRoute, mailContactsRoute, mailDraftsRoute, mailInboxRoute,
+  mailLabelsRoute, mailMoveRoute, mailReadRoute, mailSearchRoute,
+  mailSendRoute, mailSignaturesRoute, mailThreadRoute
+} from "./routes/mail.js";
 import {
   passkeyRegisterOptionsRoute,
   passkeyRegisterRoute,
@@ -194,10 +198,24 @@ export const ROUTES = Object.freeze([
 
   // Mail
   route("mail.alias", "/api/mail/alias", mailAliasRoute, { service: "mail", rateLimit: "standard" }),
+  route("mail.alias.create", "/api/mail/alias", mailAliasRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
   route("mail.inbox", "/api/mail/inbox", mailInboxRoute, { service: "mail", rateLimit: "standard" }),
   route("mail.thread", "/api/mail/thread", mailThreadRoute, { service: "mail", rateLimit: "standard" }),
   route("mail.read", "/api/mail/read", mailReadRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
-  route("mail.send", "/api/mail/send", mailSendRoute, { method: "POST", service: "mail", rateLimit: "strict" })
+  route("mail.send", "/api/mail/send", mailSendRoute, { method: "POST", service: "mail", rateLimit: "strict" }),
+  route("mail.drafts", "/api/mail/drafts", mailDraftsRoute, { service: "mail", rateLimit: "standard" }),
+  route("mail.drafts.save", "/api/mail/drafts", mailDraftsRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+  route("mail.drafts.delete", "/api/mail/drafts", mailDraftsRoute, { method: "DELETE", service: "mail", rateLimit: "standard" }),
+  route("mail.move", "/api/mail/move", mailMoveRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+  route("mail.search", "/api/mail/search", mailSearchRoute, { service: "mail", rateLimit: "standard" }),
+  route("mail.labels", "/api/mail/labels", mailLabelsRoute, { service: "mail", rateLimit: "standard" }),
+  route("mail.labels.create", "/api/mail/labels", mailLabelsRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+  route("mail.labels.assign", "/api/mail/labels", mailLabelsRoute, { method: "PATCH", service: "mail", rateLimit: "standard" }),
+  route("mail.labels.delete", "/api/mail/labels", mailLabelsRoute, { method: "DELETE", service: "mail", rateLimit: "standard" }),
+  route("mail.contacts", "/api/mail/contacts", mailContactsRoute, { service: "mail", rateLimit: "standard" }),
+  route("mail.signatures", "/api/mail/signatures", mailSignaturesRoute, { service: "mail", rateLimit: "standard" }),
+  route("mail.signatures.save", "/api/mail/signatures", mailSignaturesRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+  route("mail.signatures.delete", "/api/mail/signatures", mailSignaturesRoute, { method: "DELETE", service: "mail", rateLimit: "standard" })
 ]);
 
 function normalizedPath(pathname) {

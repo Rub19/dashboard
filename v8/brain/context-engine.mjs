@@ -1,6 +1,6 @@
 import { sanitizeBrainPreferences } from "./preferences.mjs";
 
-const ROUTES = new Set(["home", "notes", "tasks", "calendar", "files", "activity", "connections", "spaces", "flows", "brain", "settings"]);
+const ROUTES = new Set(["home", "notes", "tasks", "calendar", "files", "activity", "connections", "spaces", "flows", "brain", "mail", "settings"]);
 const SECRET_KEY = /(?:password|passcode|pin|token|secret|api.?key|authorization|credential|session|cookie|refresh)/i;
 const SECRET_VALUE = /(?:bearer\s+[a-z0-9._~-]{12,}|(?:sk|pat|ghp|glpat|xox[baprs])[-_a-z0-9]{12,}|-----BEGIN [A-Z ]+PRIVATE KEY-----)/i;
 const clean = (value, limit = 180) => String(value ?? "").replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim().slice(0, limit);
@@ -36,6 +36,7 @@ function routeContext(route, snapshot, state, permissions) {
   include("activity", "activity", "activity", ["activity", "home", "brain"], snapshot.activities || [], 10, "Dix signaux récents maximum", (item) => ({ source: item.source, category: item.category, title: item.title, timestamp: item.timestamp }));
   include("gaming", "gaming", "gaming", ["home", "activity", "brain"], gaming, 6, "Six signaux jeu ou media", (item) => ({ source: item.source, title: item.title, timestamp: item.timestamp }));
   include("files", "files", "files", ["files"], snapshot.files || [], 8, "Noms et types, sans contenu", (item) => ({ id: item.id, name: item.name, type: item.type, favorite: item.favorite }));
+  include("mail", "mail", "mail", ["mail", "home", "brain"], snapshot.mail || [], 8, "Sujets et expéditeurs récents", (item) => ({ id: item.id, subject: clean(item.subject, 120), from: clean(item.from_address, 120), receivedAt: item.received_at }));
 
   const settingsActive = route === "settings" && permissions.settings === true;
   if (settingsActive) context.settings = { theme: state.theme, accent: state.accent, density: state.density, densityEffective: state.densityEffective || state.density };

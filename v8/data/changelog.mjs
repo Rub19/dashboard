@@ -24,6 +24,16 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v290", "2026-08-13", "Phase 11 : ETHONE Mail — fondations natives", [
+    { kind: "feature", text: "ETHONE Mail : interface 3 panneaux avec sidebar, liste et lecture, responsive desktop, iPad et mobile." },
+    { kind: "feature", text: "Dossiers Mail : Inbox, Favoris, Envoyés, Brouillons, Archive, Spam, Corbeille avec déplacement et badges." },
+    { kind: "feature", text: "Composition riche : To/Cc/Bcc, editeur HTML basique, signatures, pieces jointes en base64 et auto-sauvegarde des brouillons." },
+    { kind: "feature", text: "Recherche full-text dans les messages, etiquettes personnalisables et carnet de contacts automatique." },
+    { kind: "feature", text: "Brain : categorie de permission 'mail', contexte mail et actions (resumer, rechercher, rediger, deplacer, ouvrir)." },
+    { kind: "feature", text: "Worker : nouvelles routes /api/mail/{drafts, move, search, labels, contacts, signatures} et gestion des threads." },
+    { kind: "improvement", text: "Migrations Supabase ethone_mail_phase_a : folders, labels, signatures, contacts, search_vector et pieces jointes." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v290." }
+  ]),
   entry("v289", "2026-08-11", "Phase 10 : meteo emoji et icones de presets", [
     { kind: "feature", text: "Card meteo avec emoji et teinte selon la condition (soleil, pluie, orage, neige, etc.)." },
     { kind: "feature", text: "Badge meteo avec emoji, degrade et glow colore." },

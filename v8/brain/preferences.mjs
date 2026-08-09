@@ -17,7 +17,7 @@ const PREFERENCE_LABELS = Object.freeze({
 });
 
 export const BRAIN_PERMISSION_CATEGORIES = Object.freeze([
-  "notes", "tasks", "calendar", "connections", "gaming", "activity", "files", "profile", "settings"
+  "notes", "tasks", "calendar", "connections", "gaming", "activity", "files", "profile", "settings", "mail"
 ]);
 
 export const BRAIN_MEMORY_CATEGORIES = Object.freeze([
@@ -53,7 +53,8 @@ export const DEFAULT_BRAIN_PREFERENCES = Object.freeze({
     activity: true,
     files: false,
     profile: true,
-    settings: true
+    settings: true,
+    mail: true
   }),
   automations: Object.freeze([])
 });

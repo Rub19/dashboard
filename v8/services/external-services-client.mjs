@@ -94,10 +94,23 @@ const OPERATIONS = Object.freeze({
   securityEvents: Object.freeze({ path: "/api/auth/security-events", auth: true, params: ["limit"] }),
   teamInvite: Object.freeze({ path: "/api/team/invite", method: "POST", auth: true, params: ["email", "display_name", "invite_url", "token"], rawBody: true }),
   mailAlias: Object.freeze({ path: "/api/mail/alias", auth: true, params: [] }),
-  mailInbox: Object.freeze({ path: "/api/mail/inbox", auth: true, params: ["direction", "limit", "offset"] }),
+  mailInbox: Object.freeze({ path: "/api/mail/inbox", auth: true, params: ["folder", "label", "search", "direction", "limit", "offset"] }),
   mailThread: Object.freeze({ path: "/api/mail/thread", auth: true, params: ["thread_id"] }),
-  mailRead: Object.freeze({ path: "/api/mail/read", method: "POST", auth: true, params: ["id", "is_read"], rawBody: true }),
-  mailSend: Object.freeze({ path: "/api/mail/send", method: "POST", auth: true, params: ["to", "subject", "text", "html", "from_name", "reply_to"], rawBody: true })
+  mailRead: Object.freeze({ path: "/api/mail/read", method: "POST", auth: true, params: ["id", "is_read", "is_starred", "is_important"], rawBody: true }),
+  mailSend: Object.freeze({ path: "/api/mail/send", method: "POST", auth: true, params: ["to", "cc", "bcc", "subject", "text", "html", "from_name", "reply_to", "attachments", "draft_id", "in_reply_to", "references"], rawBody: true }),
+  mailSearch: Object.freeze({ path: "/api/mail/search", auth: true, params: ["q", "limit", "offset"] }),
+  mailDrafts: Object.freeze({ path: "/api/mail/drafts", auth: true, params: ["folder", "limit", "offset"] }),
+  mailDraftSave: Object.freeze({ path: "/api/mail/drafts", method: "POST", auth: true, params: ["id", "to", "cc", "bcc", "subject", "text", "html"], rawBody: true }),
+  mailDraftDelete: Object.freeze({ path: "/api/mail/drafts", method: "DELETE", auth: true, params: ["id"], rawBody: true }),
+  mailMove: Object.freeze({ path: "/api/mail/move", method: "POST", auth: true, params: ["ids", "folder"], rawBody: true }),
+  mailLabels: Object.freeze({ path: "/api/mail/labels", auth: true, params: [] }),
+  mailLabelSave: Object.freeze({ path: "/api/mail/labels", method: "POST", auth: true, params: ["name", "color"], rawBody: true }),
+  mailLabelDelete: Object.freeze({ path: "/api/mail/labels", method: "DELETE", auth: true, params: ["id"], rawBody: true }),
+  mailLabelAssign: Object.freeze({ path: "/api/mail/labels", method: "PATCH", auth: true, params: ["ids", "label", "remove"], rawBody: true }),
+  mailContacts: Object.freeze({ path: "/api/mail/contacts", auth: true, params: ["limit"] }),
+  mailSignatures: Object.freeze({ path: "/api/mail/signatures", auth: true, params: [] }),
+  mailSignatureSave: Object.freeze({ path: "/api/mail/signatures", method: "POST", auth: true, params: ["id", "name", "content", "is_default"], rawBody: true }),
+  mailSignatureDelete: Object.freeze({ path: "/api/mail/signatures", method: "DELETE", auth: true, params: ["id"], rawBody: true })
 });
 
 function clientError(code, message, details = {}) {
@@ -169,20 +182,20 @@ export function createExternalServicesClient(options = {}) {
     if (destroyed) throw clientError("CLIENT_DESTROYED", "Le client des intégrations est ferme.");
     const operation = OPERATIONS[operationName];
     if (!operation) throw clientError("OPERATION_NOT_ALLOWED", "Cette opération externe n'est pas autorisee.", { status: 400 });
-    const method = operation.method === "POST" ? "POST" : "GET";
+    const allowedMethods = new Set(["GET", "POST", "PUT", "PATCH", "DELETE"]);
+    const method = allowedMethods.has(String(operation.method).toUpperCase()) ? String(operation.method).toUpperCase() : "GET";
     const url = new URL(operation.path, `${baseUrl}/`);
+    const sendsBody = operation.rawBody === true || ["POST", "PUT", "PATCH"].includes(method);
     let body;
-    if (method === "GET") {
+    if (sendsBody) {
+      body = operation.rawBody === true ? JSON.stringify(values || {}) : JSON.stringify(Object.fromEntries(operation.params
+        .map((name) => [name, values?.[name]])
+        .filter(([, value]) => value !== undefined && value !== null && String(value).trim())));
+    } else {
       operation.params.forEach((name) => {
         const value = values?.[name];
         if (value !== undefined && value !== null && String(value).trim()) url.searchParams.set(name, String(value).trim());
       });
-    } else if (operation.rawBody) {
-      body = JSON.stringify(values || {});
-    } else {
-      body = JSON.stringify(Object.fromEntries(operation.params
-        .map((name) => [name, values?.[name]])
-        .filter(([, value]) => value !== undefined && value !== null && String(value).trim())));
     }
     const controller = new AbortController();
     activeControllers.add(controller);
@@ -422,8 +435,21 @@ export function createExternalServicesClient(options = {}) {
       alias: () => execute("mailAlias", {}),
       inbox: (options = {}) => execute("mailInbox", options),
       thread: (threadId) => execute("mailThread", { thread_id: threadId }),
-      read: (id, isRead) => execute("mailRead", { id, is_read: isRead }),
-      send: (payload) => execute("mailSend", payload)
+      read: (id, flags) => execute("mailRead", { id, ...flags }),
+      send: (payload) => execute("mailSend", payload),
+      search: (q, options = {}) => execute("mailSearch", { q, ...options }),
+      drafts: (options = {}) => execute("mailDrafts", options),
+      saveDraft: (payload) => execute("mailDraftSave", payload),
+      deleteDraft: (id) => execute("mailDraftDelete", { id }),
+      move: (ids, folder) => execute("mailMove", { ids, folder }),
+      labels: () => execute("mailLabels", {}),
+      createLabel: (payload) => execute("mailLabelSave", payload),
+      deleteLabel: (id) => execute("mailLabelDelete", { id }),
+      assignLabel: (ids, label, remove = false) => execute("mailLabelAssign", { ids, label, remove }),
+      contacts: (options = {}) => execute("mailContacts", options),
+      signatures: () => execute("mailSignatures", {}),
+      saveSignature: (payload) => execute("mailSignatureSave", payload),
+      deleteSignature: (id) => execute("mailSignatureDelete", { id })
     }),
     diagnostics: () => Object.freeze({ ...status, activeRequests: activeControllers.size, environment: config.environment, baseUrl: network.redactUrl?.(baseUrl) || baseUrl }),
     destroy

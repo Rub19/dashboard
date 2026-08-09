@@ -1,6 +1,6 @@
-# Checklist de déploiement — ETHONE Cloud (Phases 2-8)
+# Checklist de déploiement — ETHONE Cloud (Phases 2-8 + Mail Phase A)
 
-> Dernière mise à jour : 2026-08-08
+> Dernière mise à jour : 2026-08-13
 
 ## 1. Migrations Supabase à exécuter
 
@@ -21,7 +21,16 @@ Exécuter dans l'ordre via le SQL Editor de Supabase ou `psql` :
 
 -- 005 : event_type drop_revoked dans ethone_file_activity
 \i supabase/migrations/202608080005_ethone_cloud_activity_events.sql
+
+-- 006 : ETHONE Mail Phase A (folders, labels, signatures, contacts, search_vector, attachments)
+\i supabase/migrations/202608130001_ethone_mail_phase_a.sql
 ```
+
+### Configuration Cloudflare Email Routing
+
+- Domaine `ethone.dev` actif sur Cloudflare.
+- Route de reception personnalisee : `*@ethone.dev` -> Worker `email()`.
+- Verification de l'adresse d'envoi dans Resend (send email from `ETHONE <no-reply@ethone.dev>`).
 
 ### Pourquoi 004 et 005 sont nécessaires
 
@@ -89,7 +98,7 @@ wrangler deploy
 
 1. Publier les fichiers statiques (racine `index.html`, `sw.js`, `v8/`, `worker/` non inclus) sur le domaine final.
 2. S'assurer que `sw.js` est servi avec `Content-Type: application/javascript` et `Cache-Control: no-cache`.
-3. Vider le cache navigateur / unregister le SW pour forcer `experience-v289`.
+3. Vider le cache navigateur / unregister le SW pour forcer `experience-v290`.
 
 ## 6. Vérifications post-déploiement
 
@@ -99,35 +108,32 @@ wrangler deploy
 - [ ] Créer un drop depuis l'admin → déposer un fichier en navigation privée.
 - [ ] Ouvrir `#/files` → Admin → Dashboard, liste, nettoyage des expirés.
 - [ ] Page Activity affiche les événements cloud.
+- [ ] Ouvrir `#/mail` : dossiers, liste, composition, envoi d'un email, brouillon auto-sauvegarde.
+- [ ] Tester la réception sur un alias `@ethone.dev` dans Cloudflare Email Routing.
+- [ ] Vérifier les threads, la recherche full-text, les étiquettes et les contacts.
 
 ## 7. Fichiers créés / modifiés récemment
 
 ### Nouveaux
 
-- `v8/services/cloud-cache.mjs`
-- `v8/services/drive-client.mjs`
-- `v8/pages/share.mjs`
-- `v8/pages/drop.mjs`
-- `v8/styles/share-drop.css`
-- `worker/src/routes/cloud-*.js`
-- `worker/src/services/cloud-*.js`
-- `worker/test/cloud-files.test.mjs`
-- `supabase/migrations/202608080004_ethone_cloud_drop_client.sql`
-- `supabase/migrations/202608080005_ethone_cloud_activity_events.sql`
+- `supabase/migrations/202608130001_ethone_mail_phase_a.sql`
 
 ### Modifiés
 
-- `index.html` (share-drop.css)
-- `sw.js` (v258 precache)
-- `v8/core/router.mjs`
-- `v8/app/app-runtime.mjs`
-- `v8/pages/files.mjs`
-- `v8/pages/activity.mjs`
-- `v8/services/external-services-client.mjs`
-- `v8/styles/workspaces.css`
+- `index.html`, `404.html`, `sw.js` (experience-v290)
+- `v8/core/style-loader.mjs`
 - `v8/data/changelog.mjs`
-- `worker/src/index.js`, `worker/src/router.js`
+- `v8/pages/mail.mjs`
+- `v8/styles/mail.css`
+- `v8/services/external-services-client.mjs`
+- `v8/brain/preferences.mjs`
+- `v8/brain/context-engine.mjs`
+- `v8/brain/action-registry.mjs`
+- `v8/brain/controller.mjs`
+- `worker/src/routes/mail.js`
+- `worker/src/services/mail-client.js`
+- `worker/src/router.js`
 
 ## 8. Changelog
 
-Entrée `v258` ajoutée dans `v8/data/changelog.mjs`.
+Entrée `v290` ajoutée dans `v8/data/changelog.mjs` et `CHANGELOG.md`.

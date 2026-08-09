@@ -1938,7 +1938,20 @@ const ENTRIES = {
   "Vue tableau": {"fr":"Vue tableau","en":"Board view","es":"Vista de tablero","de":"Board-Ansicht"},
   "Contrôles": {"fr":"Contrôles","en":"Controls","es":"Controles","de":"Steuerung"},
   "Démarrer": {"fr":"Démarrer","en":"Start","es":"Iniciar","de":"Starten"},
-  "Silencieux par catégorie": {"fr":"Silencieux par catégorie","en":"Silent by category","es":"Silencioso por categoría","de":"Stumm nach Kategorie"}
+  "Silencieux par catégorie": {"fr":"Silencieux par catégorie","en":"Silent by category","es":"Silencioso por categoría","de":"Stumm nach Kategorie"},
+  "Mail": {"fr":"Mail","en":"Mail","es":"Correo","de":"Post"},
+  "Nouveau message": {"fr":"Nouveau message","en":"New message","es":"Nuevo mensaje","de":"Neue Nachricht"},
+  "Destinataire": {"fr":"Destinataire","en":"Recipient","es":"Destinatario","de":"Empfänger"},
+  "Sujet": {"fr":"Sujet","en":"Subject","es":"Asunto","de":"Betreff"},
+  "Votre message...": {"fr":"Votre message...","en":"Your message...","es":"Tu mensaje...","de":"Deine Nachricht..."},
+  "Répondre": {"fr":"Répondre","en":"Reply","es":"Responder","de":"Antworten"},
+  "Transférer": {"fr":"Transférer","en":"Forward","es":"Reenviar","de":"Weiterleiten"},
+  "Message envoyé": {"fr":"Message envoyé","en":"Message sent","es":"Mensaje enviado","de":"Nachricht gesendet"},
+  "Échec de l'envoi": {"fr":"Échec de l'envoi","en":"Send failed","es":"Envío fallido","de":"Senden fehlgeschlagen"},
+  "Impossible de charger la boîte mail": {"fr":"Impossible de charger la boîte mail","en":"Unable to load inbox","es":"No se puede cargar la bandeja de entrada","de":"Posteingang konnte nicht geladen werden"},
+  "Aucun message": {"fr":"Aucun message","en":"No messages","es":"Sin mensajes","de":"Keine Nachrichten"},
+  "Votre boîte est vide. Envoyez votre premier message avec ETHONE Mail.": {"fr":"Votre boîte est vide. Envoyez votre premier message avec ETHONE Mail.","en":"Your inbox is empty. Send your first message with ETHONE Mail.","es":"Tu bandeja de entrada está vacía. Envía tu primer mensaje con ETHONE Mail.","de":"Dein Posteingang ist leer. Sende deine erste Nachricht mit ETHONE Mail."},
+  "Chargement de la boîte mail...": {"fr":"Chargement de la boîte mail...","en":"Loading inbox...","es":"Cargando bandeja de entrada...","de":"Posteingang wird geladen..."}
 };
 Object.keys(ENTRIES).forEach((key) => Object.freeze(ENTRIES[key]));
 Object.freeze(ENTRIES);

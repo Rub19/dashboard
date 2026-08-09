@@ -11,6 +11,7 @@ const items = [
   { id: "flows", label: "Flows", icon: "workflow", actionId: "v8.flows.open" },
   { id: "brain", label: "Brain", icon: "brain", actionId: "v8.brain.open" },
   { id: "team", label: "Équipe", icon: "users", actionId: "v8.team.open" },
+  { id: "mail", label: "Mail", icon: "mail", actionId: "v8.mail.open" },
   { id: "settings", label: "Réglages", icon: "settings-2", actionId: "v8.settings.open" }
 ].map((item) => Object.freeze(item));
 

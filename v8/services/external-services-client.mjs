@@ -91,7 +91,12 @@ const OPERATIONS = Object.freeze({
   deviceRevoke: Object.freeze({ path: "/api/auth/device/revoke", method: "POST", auth: true, params: ["deviceId"] }),
   deviceRemove: Object.freeze({ path: "/api/auth/device/remove", method: "POST", auth: true, params: ["deviceId"] }),
   securityEvents: Object.freeze({ path: "/api/auth/security-events", auth: true, params: ["limit"] }),
-  teamInvite: Object.freeze({ path: "/api/team/invite", method: "POST", auth: true, params: ["email", "display_name", "invite_url", "token"], rawBody: true })
+  teamInvite: Object.freeze({ path: "/api/team/invite", method: "POST", auth: true, params: ["email", "display_name", "invite_url", "token"], rawBody: true }),
+  mailAlias: Object.freeze({ path: "/api/mail/alias", auth: true, params: [] }),
+  mailInbox: Object.freeze({ path: "/api/mail/inbox", auth: true, params: ["direction", "limit", "offset"] }),
+  mailThread: Object.freeze({ path: "/api/mail/thread", auth: true, params: ["thread_id"] }),
+  mailRead: Object.freeze({ path: "/api/mail/read", method: "POST", auth: true, params: ["id", "is_read"], rawBody: true }),
+  mailSend: Object.freeze({ path: "/api/mail/send", method: "POST", auth: true, params: ["to", "subject", "text", "html", "from_name", "reply_to"], rawBody: true })
 });
 
 function clientError(code, message, details = {}) {
@@ -410,6 +415,13 @@ export function createExternalServicesClient(options = {}) {
       deviceRevoke: (deviceId) => execute("deviceRevoke", { deviceId }),
       deviceRemove: (deviceId) => execute("deviceRemove", { deviceId }),
       securityEvents: (limit) => execute("securityEvents", limit ? { limit } : {})
+    }),
+    mail: Object.freeze({
+      alias: () => execute("mailAlias", {}),
+      inbox: (options = {}) => execute("mailInbox", options),
+      thread: (threadId) => execute("mailThread", { thread_id: threadId }),
+      read: (id, isRead) => execute("mailRead", { id, is_read: isRead }),
+      send: (payload) => execute("mailSend", payload)
     }),
     diagnostics: () => Object.freeze({ ...status, activeRequests: activeControllers.size, environment: config.environment, baseUrl: network.redactUrl?.(baseUrl) || baseUrl }),
     destroy

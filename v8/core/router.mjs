@@ -10,6 +10,7 @@ export const V8_ROUTES = Object.freeze([
   "spaces",
   "flows",
   "team",
+  "mail",
   "brain",
   "settings",
   "security",

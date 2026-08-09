@@ -753,7 +753,8 @@ export function mountApplication(root, options = {}) {
       drop: () => import("../pages/drop.mjs"),
       matches: () => import("../pages/matches.mjs"),
       team: () => import("../pages/team.mjs"),
-      interactions: () => import("../pages/interactions.mjs")
+      interactions: () => import("../pages/interactions.mjs"),
+      mail: () => import("../pages/mail.mjs")
     };
     Object.entries(loaders).forEach(([r, loader]) => {
       if (!lazyModuleCache.has(r)) {
@@ -776,6 +777,7 @@ export function mountApplication(root, options = {}) {
     if (route === "matches") return module.mountMatches(shell.stage, { actions, externalServices, repository, state: store.getState(), subscribeState: store.subscribe, lolLive, valorantLive, trackerLive });
     if (route === "team") return module.mountTeam(shell.stage, { ownerId: options.ownerId || repository.owner?.(), repository, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, externalServices });
     if (route === "interactions") return module.mountInteractions(shell.stage, { ownerId: options.ownerId || repository.owner?.(), repository, notify: (notice) => toasts.show(notice), interactions: interactionsHeatmap });
+    if (route === "mail") return module.mountMail(shell.stage, { externalServices, notify: (notice) => toasts.show(notice) });
     return module.mountSettings(shell.stage, { repository, actions, state: store.getState(), sounds, externalServices, densityEngine, subscribeState: store.subscribe, brain, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.(), profile: options.profile || repository.activeProfile?.(), onProfileMediaUpdated: applyProfileMediaUpdate });
   }
 
@@ -809,7 +811,8 @@ export function mountApplication(root, options = {}) {
       drop: () => import("../pages/drop.mjs"),
       matches: () => import("../pages/matches.mjs"),
       team: () => import("../pages/team.mjs"),
-      interactions: () => import("../pages/interactions.mjs")
+      interactions: () => import("../pages/interactions.mjs"),
+      mail: () => import("../pages/mail.mjs")
     };
     const loader = loaders[route];
     applyPageTransition(() => {
@@ -849,7 +852,7 @@ export function mountApplication(root, options = {}) {
       shell.stage.scrollTo({ top: 0, behavior: "auto" });
     }
     shell.update({ ...store.getState(), route });
-    if (["activity", "connections", "brain", "settings", "security", "files", "share", "drop", "matches", "team", "interactions"].includes(route)) {
+    if (["activity", "connections", "brain", "settings", "security", "files", "share", "drop", "matches", "team", "interactions", "mail"].includes(route)) {
       mountLazyRoute(route, focus, requestId);
       return;
     }

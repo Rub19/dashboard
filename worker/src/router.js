@@ -56,6 +56,7 @@ import { weatherRoute } from "./routes/weather.js";
 import { youtubeActivityRoute, youtubeOAuthDisconnectRoute, youtubeOAuthExchangeRoute } from "./routes/youtube-oauth.js";
 import { signOutRoute } from "./routes/signout.js";
 import { teamInviteRoute } from "./routes/team-invite.js";
+import { mailAliasRoute, mailInboxRoute, mailReadRoute, mailSendRoute, mailThreadRoute } from "./routes/mail.js";
 import {
   passkeyRegisterOptionsRoute,
   passkeyRegisterRoute,
@@ -188,7 +189,14 @@ export const ROUTES = Object.freeze([
   route("security.events", "/api/auth/security-events", securityEventsRoute, { service: "security", rateLimit: "standard" }),
 
   // Team invites
-  route("team.invite", "/api/team/invite", teamInviteRoute, { method: "POST", service: "team", rateLimit: "strict" })
+  route("team.invite", "/api/team/invite", teamInviteRoute, { method: "POST", service: "team", rateLimit: "strict" }),
+
+  // Mail
+  route("mail.alias", "/api/mail/alias", mailAliasRoute, { service: "mail", rateLimit: "standard" }),
+  route("mail.inbox", "/api/mail/inbox", mailInboxRoute, { service: "mail", rateLimit: "standard" }),
+  route("mail.thread", "/api/mail/thread", mailThreadRoute, { service: "mail", rateLimit: "standard" }),
+  route("mail.read", "/api/mail/read", mailReadRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+  route("mail.send", "/api/mail/send", mailSendRoute, { method: "POST", service: "mail", rateLimit: "strict" })
 ]);
 
 function normalizedPath(pathname) {

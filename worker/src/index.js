@@ -5,6 +5,7 @@ import { applyEdgeRateLimit, applyUserRateLimit } from "./middleware/rate-limit.
 import { findRoute, routesForPath } from "./router.js";
 import { requestIdFor, writeRequestLog } from "./utils/observability.js";
 import { errorResponse, routeResult, successResponse } from "./utils/response.js";
+import { mailReceiveHandler } from "./routes/mail.js";
 
 function securityHeaders(response) {
   const headers = new Headers(response.headers);
@@ -70,6 +71,18 @@ async function handleRequest(request, env, executionCtx) {
   return response;
 }
 
+async function handleEmail(message, env, executionCtx) {
+  try {
+    await mailReceiveHandler(message, env, executionCtx);
+  } catch (error) {
+    if (env.ENVIRONMENT !== "production") {
+      console.error("Mail receive error:", error);
+    }
+  }
+  return null;
+}
+
 export default Object.freeze({
-  fetch: handleRequest
+  fetch: handleRequest,
+  email: handleEmail
 });

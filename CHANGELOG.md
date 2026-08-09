@@ -2,6 +2,21 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v278] - 2026-08-11
+
+**Phase 10 : module ETHONE Mail**
+
+### Ajouté
+- **Module Mail** : chaque utilisateur obtient un alias `@ethone.dev`.
+- **Réception** : Email Worker qui reçoit les e-mails entrants et les stocke dans Supabase.
+- **Envoi** : envoi d'e-mails via Resend depuis l'adresse `@ethone.dev` de l'utilisateur.
+- **Page Mail** : boîte de réception, lecture d'e-mail, composition.
+- **Routes Worker** : `/api/mail/{send,inbox,thread,read,alias}`.
+- **Migrations Supabase** : `ethone_mail_aliases`, `ethone_mail_messages`, `ethone_mail_threads`.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v278`.
+
 ## [v277] - 2026-08-11
 
 **Phase 10 : activation e-mail Resend**

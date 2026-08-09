@@ -36,6 +36,22 @@ function messageBubble(entry) {
   ]);
 }
 
+function thinkingBubble() {
+  return element("article", { className: "v8-brain-message v8-brain-message--assistant v8-brain-message--thinking" }, [
+    element("span", { className: "v8-brain-message__avatar v8-brain-message__avatar--thinking" }, [
+      icon("brain"),
+      element("span", { className: "v8-brain-thinking-ring" }),
+      element("span", { className: "v8-brain-thinking-ring v8-brain-thinking-ring--delay" })
+    ]),
+    element("div", { className: "v8-brain-thinking-body" }, [
+      element("p", { className: "v8-brain-thinking-text", text: "Brain réfléchit" }),
+      element("span", { className: "v8-brain-thinking-dots" }, [
+        element("span"), element("span"), element("span")
+      ])
+    ])
+  ]);
+}
+
 function sectionHeader(eyebrow, title, copy, action = null) {
   return element("header", { className: "v8-brain-panel__header" }, [
     element("div", {}, [element("span", { className: "v8-eyebrow", text: eyebrow }), element("h2", { text: title }), element("p", { text: copy })]),
@@ -82,7 +98,7 @@ export function mountBrain(stage, options = {}) {
   const tabList = element("div", { className: "v8-brain-tabs", attributes: { role: "tablist", "aria-label": "Sections Brain" } });
   const panels = element("div", { className: "v8-brain-panels" });
   const chatLog = element("div", { className: "v8-brain-chat-log", attributes: { role: "log", "aria-live": "polite", "aria-label": "Conversation Brain" } });
-  const chatInput = element("textarea", { className: "v8-input v8-brain-composer__input", attributes: { rows: "2", maxlength: "500", required: true, placeholder: "Demandez une synthèse, une priorité ou une action...", "aria-label": "Demander a Brain" } });
+  const chatInput = element("textarea", { className: "v8-input v8-brain-composer__input", attributes: { rows: "2", maxlength: "500", required: true, placeholder: "Bonjour, ça va ? Posez une question ou demandez une action...", "aria-label": "Demander a Brain" } });
   const chatStatus = element("span", { className: "v8-brain-composer__status", text: "Contexte minimal actif", attributes: { "aria-live": "polite" } });
   const sendButton = element("button", { className: "v8-button v8-button--primary", attributes: { type: "submit" } }, [icon("send"), element("span", { text: "Envoyer" })]);
   const chatForm = element("form", { className: "v8-brain-composer" }, [
@@ -331,9 +347,14 @@ export function mountBrain(stage, options = {}) {
     const query = chatInput.value.trim();
     if (!query || submitting) return;
     submitting = true;
+    let thinking = null;
     try {
-      chatStatus.textContent = "Brain analyse le contexte autorise...";
-      const submission = await runFormSubmission({ form: chatForm, submit: sendButton, status: chatStatus, messages: { loading: "Brain analyse le contexte autorise..." }, task: () => brain.controller.ask(query) });
+      chatLog.append(messageBubble({ role: "user", content: query }));
+      thinking = thinkingBubble();
+      chatLog.append(thinking);
+      chatLog.scrollTop = chatLog.scrollHeight;
+      chatStatus.textContent = "Brain réfléchit...";
+      const submission = await runFormSubmission({ form: chatForm, submit: sendButton, status: chatStatus, messages: { loading: "Brain réfléchit..." }, task: () => brain.controller.ask(query) });
       if (controller.signal.aborted || !submission.accepted) return;
       const response = submission.value;
       if (submission.error || !response) {
@@ -349,8 +370,9 @@ export function mountBrain(stage, options = {}) {
       } else {
         setFieldState(chatInput, "invalid", response.message);
       }
-      renderHistory();
     } finally {
+      thinking?.remove?.();
+      renderHistory();
       submitting = false;
     }
   }

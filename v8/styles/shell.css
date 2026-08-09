@@ -2298,8 +2298,26 @@ html[data-v8-interactions] button.v8-weather-live:hover { border-color:color-mix
 .v8-live-pulse-dot { position:absolute;right:-1px;bottom:-1px;width:8px;height:8px;border-radius:50%;background:#5fd68f;border:2px solid var(--v8-surface-1);opacity:.8; }
 .v8-live-freshness { position:absolute;right:8px;bottom:8px;z-index:2;padding:2px 4px;border-radius:4px;background:transparent;color:var(--v8-text-tertiary, var(--v8-text-secondary));font-size:10px;line-height:1;opacity:0.4;pointer-events:none;letter-spacing:0.5px; }
 .v8-brain-context__identity { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--v8-space-4); }
-.v8-brain-orbit { display: grid; width: 64px; height: 64px; place-items: center; border: 1px solid var(--v8-brain-line); border-radius: 50%; background: var(--v8-brain-soft); color: var(--v8-brain); box-shadow: 0 0 36px var(--v8-light-brain); }
+.v8-brain-orbit { display: grid; width: 64px; height: 64px; place-items: center; border: 1px solid var(--v8-brain-line); border-radius: 50%; background: var(--v8-brain-soft); color: var(--v8-brain); box-shadow: 0 0 36px var(--v8-light-brain); position: relative; }
 .v8-brain-orbit svg { width: 28px; height: 28px; }
+[data-presence-brain="thinking"] .v8-brain-orbit { animation: v8-brain-orbit-thinking 1.2s ease-in-out infinite; }
+[data-presence-brain="thinking"] .v8-brain-orbit::before,
+[data-presence-brain="thinking"] .v8-brain-orbit::after { content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 1px solid var(--v8-brain-line); opacity: 0; }
+[data-presence-brain="thinking"] .v8-brain-orbit::before { animation: v8-brain-orbit-ring 1.6s ease-out infinite; }
+[data-presence-brain="thinking"] .v8-brain-orbit::after { animation: v8-brain-orbit-ring 1.6s ease-out 0.8s infinite; }
+[data-presence-brain="thinking"] .v8-brain-orbit svg { animation: v8-brain-orbit-pulse 1.2s ease-in-out infinite; }
+@keyframes v8-brain-orbit-thinking {
+  0%, 100% { box-shadow: 0 0 24px var(--v8-light-brain); }
+  50% { box-shadow: 0 0 48px var(--v8-brain); }
+}
+@keyframes v8-brain-orbit-ring {
+  0% { transform: scale(0.92); opacity: 0.5; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+@keyframes v8-brain-orbit-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
 .v8-brain-context__identity small { color: var(--v8-brain); font-size: var(--v8-font-xs); }
 .v8-brain-context__identity h2 { margin-top: 3px; font-size: var(--v8-font-xl); }
 .v8-brain-context__identity p { max-width: 560px; margin-top: 6px; color: var(--v8-muted); font-size: var(--v8-font-sm); }
@@ -2485,6 +2503,24 @@ html.v8-theme-animated * { transition: background-color 0.45s var(--v8-ease-stan
 .v8-brain-chat,.v8-brain-detail { overflow:hidden; }.v8-brain-panel__header { display:flex;align-items:flex-start;justify-content:space-between;gap:var(--v8-space-4);padding:var(--density-card-padding);border-bottom:1px solid var(--v8-divider); }.v8-brain-panel__header h2 { font-size:var(--v8-font-lg); }.v8-brain-panel__header p { max-width:680px;margin-top:4px;color:var(--v8-muted);font-size:var(--v8-font-xs);line-height:var(--v8-line-base); }
 .v8-brain-chat-log { display:grid;max-height:420px;min-height:240px;align-content:start;gap:var(--v8-space-3);padding:var(--density-card-padding);overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable; }
 .v8-brain-message { display:grid;max-width:min(760px,92%);grid-template-columns:auto minmax(0,1fr);align-items:start;gap:10px; }.v8-brain-message--user { justify-self:end;grid-template-columns:minmax(0,1fr) auto; }.v8-brain-message--user .v8-brain-message__avatar { grid-column:2; }.v8-brain-message--user > div { grid-column:1;grid-row:1;background:var(--v8-accent-soft); }.v8-brain-message__avatar { display:grid;width:30px;height:30px;place-items:center;border-radius:var(--v8-radius-sm);background:var(--v8-brain-soft);color:var(--v8-brain); }.v8-brain-message__avatar svg { width:15px;height:15px; }.v8-brain-message > div { padding:10px 12px;border:1px solid var(--v8-border);border-radius:var(--v8-radius-md);background:var(--v8-surface-sunken); }.v8-brain-message p { color:var(--v8-text-secondary);font-size:var(--v8-font-sm);line-height:var(--v8-line-base);white-space:pre-wrap; }.v8-brain-message small { display:block;margin-top:6px;color:var(--v8-muted);font-size:var(--v8-font-micro); }
+.v8-brain-message--thinking > div { background: linear-gradient(135deg, var(--v8-brain-soft), transparent 64%); border-color: var(--v8-brain-line); }
+.v8-brain-message__avatar--thinking { position: relative; background: var(--v8-brain); color: var(--v8-canvas); }
+.v8-brain-thinking-ring { position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--v8-brain); opacity: 0; }
+.v8-brain-message__avatar--thinking .v8-brain-thinking-ring { animation: v8-brain-pulse-ring 1.6s ease-out infinite; }
+.v8-brain-message__avatar--thinking .v8-brain-thinking-ring--delay { animation-delay: 0.8s; }
+.v8-brain-thinking-dots { display: inline-flex; gap: 4px; margin-left: 6px; vertical-align: middle; }
+.v8-brain-thinking-dots > span { width: 5px; height: 5px; border-radius: 50%; background: var(--v8-brain); animation: v8-brain-thinking-dot 1.2s ease-in-out infinite; }
+.v8-brain-thinking-dots > span:nth-child(2) { animation-delay: 0.2s; }
+.v8-brain-thinking-dots > span:nth-child(3) { animation-delay: 0.4s; }
+.v8-brain-thinking-text { display: inline; color: var(--v8-brain) !important; }
+@keyframes v8-brain-pulse-ring {
+  0% { transform: scale(0.85); opacity: 0.6; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+@keyframes v8-brain-thinking-dot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
 .v8-brain-suggestions { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--v8-space-2);padding:0 var(--density-card-padding) var(--v8-space-3); }.v8-brain-suggestion { display:grid;min-width:0;min-height:var(--density-row-height);grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:9px;padding:8px 10px;border:1px solid var(--v8-border);border-radius:var(--v8-radius-md);background:var(--v8-surface-1);color:var(--v8-text-secondary);outline:none;text-align:left; }.v8-brain-suggestion > span { display:grid;width:30px;height:30px;place-items:center;border-radius:var(--v8-radius-sm);background:var(--v8-brain-soft);color:var(--v8-brain); }.v8-brain-suggestion svg { width:15px;height:15px; }.v8-brain-suggestion strong,.v8-brain-suggestion small { display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }.v8-brain-suggestion strong { font-size:var(--v8-font-xs); }.v8-brain-suggestion small { margin-top:2px;color:var(--v8-muted);font-size:var(--v8-font-micro); }
 .v8-brain-composer { padding:var(--v8-space-3) var(--density-card-padding) var(--density-card-padding);border-top:1px solid var(--v8-divider);background:var(--v8-surface-sunken); }.v8-brain-composer__input { height:auto;min-height:74px;padding:10px 12px;resize:vertical; }.v8-brain-composer footer { display:flex;align-items:center;justify-content:space-between;gap:var(--v8-space-3);margin-top:8px; }.v8-brain-composer__status { color:var(--v8-muted);font-size:var(--v8-font-micro); }
 .v8-brain-source-list,.v8-brain-action-list,.v8-brain-memory-list,.v8-brain-automation-list,.v8-brain-history { display:grid; }.v8-brain-history-tools { position:sticky;z-index:2;top:0;display:flex;align-items:center;gap:var(--v8-space-3);padding:var(--v8-space-3) var(--density-card-padding);border-bottom:1px solid var(--v8-divider);background:color-mix(in srgb,var(--v8-canvas-raised) 98%,transparent); }.v8-brain-history-tools .v8-input-wrap { min-width:0;flex:1; }.v8-brain-history { gap:var(--v8-space-3);padding:var(--density-card-padding); }.v8-brain-source,.v8-brain-action-row,.v8-brain-memory,.v8-brain-automation-row { display:grid;min-height:var(--density-row-height);grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:var(--v8-space-3);padding:10px var(--density-card-padding);border-top:1px solid var(--v8-divider); }.v8-brain-source,.v8-brain-action-row,.v8-brain-memory { grid-template-columns:auto minmax(0,1fr) auto; }

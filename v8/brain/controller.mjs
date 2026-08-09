@@ -4,6 +4,9 @@ const clean = (value, fallback = "", limit = 600) => (String(value ?? "").replac
 function contextualReply(query, scope) {
   const intent = query.toLowerCase();
   const data = scope.context || {};
+  if (/^\s*(bonjour|salut|coucou|hello|hey|yo)\b/.test(intent)) return `Bonjour ! Je suis pret dans ${scope.workspace?.space || "l'espace actif"}. Comment puis-je vous aider ?`;
+  if (/\b(ca|ça) va\b/.test(intent)) return "Je vais bien, merci. Et vous ? Je peux vous aider avec vos tâches, notes, calendrier ou réglages.";
+  if (/\bcomment tu t'appelle|ton nom\b/.test(intent)) return "Je suis Brain, l'assistant contextuel d'ETHONE.";
   if (/tache|task|priorit/.test(intent)) return data.tasks?.length ? `${data.tasks.length} priorite${data.tasks.length > 1 ? "s" : ""}. Prochaine : « ${data.tasks[0].title} ».` : "Aucune priorité ouverte. Je peux en créer une.";
   if (/note|resume|résume/.test(intent)) return data.notes?.length ? `${data.notes.length} note${data.notes.length > 1 ? "s" : ""} recente${data.notes.length > 1 ? "s" : ""}. Titres et metadonnees uniquement.` : "Aucune note autorisee ici.";
   if (/agenda|calendrier|evenement/.test(intent)) return data.events?.length ? `Prochain evenement : « ${data.events[0].title} », le ${data.events[0].date}.` : "Aucun événement a venir n'est visible.";

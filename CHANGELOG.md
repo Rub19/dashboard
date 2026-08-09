@@ -173,6 +173,17 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 ### Bordereau PWA
 - Mis à jour vers `experience-v307`.
 
+## [v308] - 2026-08-18
+
+**Hotfix : popups Coming soon et erreur ReadableStream**
+
+### Corrige
+- Les boutons internes de Mail (dossiers, nouveaux messages, filtres, etc.) avaient un `data-action` non enregistré ; les clics remontaient au shell et affichaient `Coming soon`. Ils sont maintenant interceptés dans la page Mail pour ne plus déclencher de commande globale.
+- `requestJSON` dédoublonne maintenant au niveau du JSON parsé et non plus au niveau du `Response` brut. Empêche l’erreur `Failed to execute 'getReader' on 'ReadableStream'` quand deux appels identiques étaient en cours en parallèle.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v308`.
+
 ## [v295] - 2026-08-17
 
 **Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes**

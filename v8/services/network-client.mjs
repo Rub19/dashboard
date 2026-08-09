@@ -92,6 +92,7 @@ export function createNetworkClient(options = {}) {
   const fetcher = options.fetch || runtime.fetch?.bind(runtime);
   if (typeof fetcher !== "function") throw new TypeError("Network client requires fetch");
   const pending = new Map();
+  const jsonPending = new Map();
   const records = [];
   const maxRecords = Math.max(20, Number(options.maxRecords) || 80);
 
@@ -172,33 +173,49 @@ export function createNetworkClient(options = {}) {
   }
 
   async function requestJSON(input, requestOptions = {}) {
+    const method = String(requestOptions.method || "GET").toUpperCase();
+    const allowDedupe = requestOptions.dedupe !== false && method === "GET";
+    const dedupeKey = String(requestOptions.dedupeKey || `${method}:${String(input)}`);
+    if (allowDedupe && jsonPending.has(dedupeKey)) return jsonPending.get(dedupeKey);
+
     const maxResponseBytes = Math.max(1, Math.min(10 * 1024 * 1024, Number(requestOptions.maxResponseBytes) || DEFAULT_MAX_RESPONSE_BYTES));
     const networkOptions = { ...requestOptions };
     delete networkOptions.maxResponseBytes;
-    const response = await request(input, { ...networkOptions, throwHttp: false });
-    const contentType = String(response.headers?.get?.("content-type") || "").toLowerCase();
-    if (!/^application\/(?:[a-z0-9.+-]+\+)?json(?:\s*;|$)/i.test(contentType)) {
-      throw new TypeError("Invalid JSON content type.");
+    delete networkOptions.dedupe;
+    delete networkOptions.dedupeKey;
+
+    const operation = (async () => {
+      const response = await request(input, { ...networkOptions, dedupe: false, throwHttp: false });
+      const contentType = String(response.headers?.get?.("content-type") || "").toLowerCase();
+      if (!/^application\/(?:[a-z0-9.+-]+\+)?json(?:\s*;|$)/i.test(contentType)) {
+        throw new TypeError("Invalid JSON content type.");
+      }
+      const source = await responseTextWithinLimit(response, maxResponseBytes);
+      let payload;
+      try {
+        payload = JSON.parse(source);
+      } catch {
+        throw new SyntaxError("Invalid JSON response.");
+      }
+      if (!response.ok) {
+        const error = new Error(safeMessage(payload?.error?.message || `HTTP ${response.status}`));
+        error.name = "NetworkHttpError";
+        error.status = response.status;
+        error.code = String(payload?.error?.code || "HTTP_ERROR").slice(0, 80);
+        error.retryable = payload?.error?.retryable === true;
+        error.requestId = String(payload?.error?.requestId || "").slice(0, 80);
+        error.retryAfter = Number(response.headers?.get?.("retry-after")) || 0;
+        error.detail = payload?.error?.detail ?? null;
+        throw error;
+      }
+      return payload;
+    })();
+
+    if (allowDedupe) {
+      jsonPending.set(dedupeKey, operation);
+      operation.finally(() => { if (jsonPending.get(dedupeKey) === operation) jsonPending.delete(dedupeKey); });
     }
-    const source = await responseTextWithinLimit(response, maxResponseBytes);
-    let payload;
-    try {
-      payload = JSON.parse(source);
-    } catch {
-      throw new SyntaxError("Invalid JSON response.");
-    }
-    if (!response.ok) {
-      const error = new Error(safeMessage(payload?.error?.message || `HTTP ${response.status}`));
-      error.name = "NetworkHttpError";
-      error.status = response.status;
-      error.code = String(payload?.error?.code || "HTTP_ERROR").slice(0, 80);
-      error.retryable = payload?.error?.retryable === true;
-      error.requestId = String(payload?.error?.requestId || "").slice(0, 80);
-      error.retryAfter = Number(response.headers?.get?.("retry-after")) || 0;
-      error.detail = payload?.error?.detail ?? null;
-      throw error;
-    }
-    return payload;
+    return operation;
   }
 
   return Object.freeze({

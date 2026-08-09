@@ -276,6 +276,13 @@ export function mountMail(stage, options = {}) {
   layout.append(sidebar, listWrap, reading);
   page.append(layout);
 
+  page.addEventListener("click", (event) => {
+    const control = event.target?.closest?.("[data-action]");
+    if (control && String(control.dataset.action).startsWith("v8.mail.")) {
+      event.stopPropagation();
+    }
+  });
+
   const listTitle = element("span", { className: "v8-mail-list-title" });
   const searchInput = element("input", {
     className: "v8-input v8-mail-search",

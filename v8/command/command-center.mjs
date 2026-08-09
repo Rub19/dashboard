@@ -232,7 +232,7 @@ export function createCommandCenter(host, options = {}) {
       element("span", { className: "v8-command-context__brain" }, [icon("brain"), "Contexte actif"])
     ]);
     const dialog = element("section", {
-      className: "v8-command-dialog",
+      className: "v8-command-dialog v8-command-palette",
       attributes: { role: "dialog", "aria-modal": "true", "aria-labelledby": "v8-command-title" }
     }, [
       element("header", { className: "v8-command-search" }, [
@@ -253,7 +253,7 @@ export function createCommandCenter(host, options = {}) {
         element("span", { className: "v8-command-footer__brand" }, [icon("command"), " ETHONE Command HUD"])
       ])
     ]);
-    layer = element("div", { className: "v8-command-layer" }, [dialog]);
+    layer = element("div", { className: "v8-command-layer v8-command-palette" }, [dialog]);
     host.append(layer);
     renderResults();
     refreshIcons();

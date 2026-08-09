@@ -26,7 +26,7 @@
   flex-direction: column;
   align-items: center;
   gap: var(--v8-space-4);
-  padding: var(--v8-space-8);
+  padding: var(--v8-space-10);
   background: var(--v8-surface-elevated);
   border: 1px solid var(--v8-border-subtle);
   border-radius: var(--v8-radius-xl);

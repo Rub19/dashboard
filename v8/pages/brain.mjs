@@ -1,5 +1,9 @@
 import { actionButton, debounce, element, icon } from "../ui/dom.mjs";
-import { statusState } from "../ui/empty-state.mjs";
+import { showBottomSheet } from "../ui/bottom-sheet.mjs";
+import { buildEmptyState, statusState } from "../ui/empty-state.mjs";
+import { buildErrorState } from "../ui/error-state.mjs";
+import { buildSkeletonList } from "../ui/skeleton.mjs";
+import { createHomeModel } from "../data/home-model.mjs";
 import { clearFieldState, formField, runFormSubmission, setFieldState } from "../ui/form-system.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
 import { WORKSPACES, workspaceById } from "../data/workspaces.mjs";
@@ -18,8 +22,37 @@ const TABS = Object.freeze([
   Object.freeze({ id: "providers", label: "Providers", icon: "cpu" }),
   Object.freeze({ id: "privacy", label: "Confidentialité", icon: "shield-check" }),
   Object.freeze({ id: "history", label: "Historique", icon: "history" }),
-  Object.freeze({ id: "diagnostics", label: "Diagnostics", icon: "activity" })
+  Object.freeze({ id: "diagnostics", label: "Diagnostics", icon: "activity" }),
+  Object.freeze({ id: "wrapup", label: "Wrap-up", icon: "sunset" })
 ]);
+
+const BRIEFING_SECTIONS = Object.freeze([
+  Object.freeze({ id: "weather", label: "Météo", icon: "cloud-sun" }),
+  Object.freeze({ id: "calendar", label: "Agenda", icon: "calendar-days" }),
+  Object.freeze({ id: "tasks", label: "Tâches", icon: "circle-check-big" }),
+  Object.freeze({ id: "mail", label: "Mails non lus", icon: "mail" }),
+  Object.freeze({ id: "notifications", label: "Notifications importantes", icon: "bell" }),
+  Object.freeze({ id: "activity", label: "Activité récente", icon: "activity" }),
+  Object.freeze({ id: "spotify", label: "Spotify", icon: "audio-lines" })
+]);
+
+const BRIEFING_SETTINGS_KEY = "ethone:briefing:sections";
+const SUGGESTIONS_DISMISSED_KEY = "ethone:brain:suggestions:dismissed";
+const SUGGESTION_TTL_MS = 24 * 60 * 60 * 1000;
+
+function getBriefingSettings() {
+  try {
+    const raw = globalThis.localStorage?.getItem(BRIEFING_SETTINGS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return {};
+}
+
+function saveBriefingSetting(id, visible) {
+  const settings = getBriefingSettings();
+  settings[id] = visible;
+  try { globalThis.localStorage?.setItem(BRIEFING_SETTINGS_KEY, JSON.stringify(settings)); } catch {}
+}
 
 function statusPill(label, tone = "neutral") {
   return element("span", { className: `v8-brain-status v8-brain-status--${tone}` }, [element("i", { attributes: { "aria-hidden": "true" } }), element("span", { text: label })]);
@@ -101,8 +134,14 @@ export function mountBrain(stage, options = {}) {
   const state = options.state || {};
   const brain = options.brain;
   const actionFacade = options.actions;
+  const externalServices = options.externalServices || null;
   if (!brain?.controller || !brain?.context) {
-    stage.replaceChildren(statusState("error", { title: "Brain indisponible", description: "Le runtime Brain n'a pas pu être initialisé. Veuillez recharger ETHONE.", iconName: "brain-circuit", compact: true, actions: [element("button", { className: "v8-button v8-button--primary", attributes: { type: "button" }, events: { click: () => globalThis.location?.reload() } }, [icon("refresh-cw"), element("span", { text: "Recharger" })])] }));
+    stage.replaceChildren(buildErrorState({
+      title: "Brain indisponible",
+      reason: "Le runtime Brain n'a pas pu être initialisé. Veuillez recharger ETHONE.",
+      actionText: "Recharger",
+      action: () => globalThis.location?.reload()
+    }));
     refreshIcons();
     return () => stage.replaceChildren();
   }
@@ -117,6 +156,218 @@ export function mountBrain(stage, options = {}) {
   let memoryLoaded = false;
   let memoryBusy = false;
   let historyQuery = "";
+  let briefingSettingsOpen = false;
+  let dailyBriefingData = null;
+
+  function isConnected(id) { return snapshot.connections?.some?.((c) => c.id === id && c.status === "connected"); }
+  function clientIdFor(id) { return snapshot.connections?.find?.((c) => c.id === id)?.reference || ""; }
+  function localDayKey(date) { const y = date.getFullYear(); const m = String(date.getMonth() + 1).padStart(2, "0"); const d = String(date.getDate()).padStart(2, "0"); return `${y}-${m}-${d}`; }
+  function greetingForHour(date) { const h = date.getHours(); if (h >= 5 && h < 12) return "Good morning"; if (h < 18) return "Good afternoon"; if (h < 23) return "Good evening"; return "Good night"; }
+
+  function getDismissedSuggestions() { try { const raw = globalThis.localStorage?.getItem(SUGGESTIONS_DISMISSED_KEY); return raw ? JSON.parse(raw) : {}; } catch { return {}; } }
+  function isSuggestionDismissed(id) { const ts = getDismissedSuggestions()[id]; if (!ts) return false; return Date.now() - Number(ts) < SUGGESTION_TTL_MS; }
+  function dismissSuggestion(id) { const map = getDismissedSuggestions(); map[id] = Date.now(); try { globalThis.localStorage?.setItem(SUGGESTIONS_DISMISSED_KEY, JSON.stringify(map)); } catch {} }
+
+  async function collectBriefingData(now = new Date()) {
+    const model = createHomeModel({ snapshot, date: now });
+    const todayKey = localDayKey(now);
+    const result = { greeting: greetingForHour(now) };
+
+    const weatherItem = model.briefing.items.find((i) => i.id === "weather");
+    result.weather = { available: isConnected("weather") || weatherItem?.state !== "unavailable", value: weatherItem?.value || "Non connectée", detail: weatherItem?.detail || "Météo" };
+    if (isConnected("weather") && externalServices?.weather?.forecast) {
+      try {
+        const res = await externalServices.weather.forecast(clientIdFor("weather"));
+        if (res?.data) {
+          const data = res.data;
+          result.weather.value = data.condition || data.summary || weatherItem?.value || "Météo";
+          result.weather.detail = data.temperature ? `${data.temperature}°` : (data.city || "Actuelle");
+          result.weather.available = true;
+        }
+      } catch {}
+    }
+
+    const events = Array.isArray(snapshot.events) ? snapshot.events : [];
+    const upcoming = events
+      .filter((e) => (e?.start || e?.date) >= todayKey)
+      .sort((a, b) => String(a?.start || a?.date).localeCompare(String(b?.start || b?.date)))
+      .slice(0, 3);
+    result.calendar = { available: upcoming.length > 0 || isConnected("google-calendar"), value: upcoming[0]?.title || "Aucun événement", detail: `${upcoming.length} prochain${upcoming.length > 1 ? "s" : ""}`, items: upcoming };
+    if (isConnected("google-calendar") && externalServices?.googleCalendarOAuth?.events) {
+      try {
+        const res = await externalServices.googleCalendarOAuth.events(clientIdFor("google-calendar"));
+        const remote = Array.isArray(res?.data) ? res.data.slice(0, 3) : [];
+        if (remote.length) {
+          result.calendar.items = remote.map((e) => ({ title: e.title || e.summary, start: e.start || e.date }));
+          result.calendar.value = result.calendar.items[0]?.title || "Agenda";
+          result.calendar.detail = `${result.calendar.items.length} événement${result.calendar.items.length > 1 ? "s" : ""}`;
+        }
+      } catch {}
+    }
+
+    const tasks = Array.isArray(snapshot.tasks) ? snapshot.tasks : [];
+    const open = tasks.filter((t) => !t.done && !t.completed);
+    const overdue = open.filter((t) => t?.due && t.due < todayKey);
+    const today = open.filter((t) => t?.due === todayKey);
+    result.tasks = { available: true, value: `${overdue.length} en retard · ${today.length} aujourd'hui`, detail: `${open.length} ouverte${open.length > 1 ? "s" : ""}`, overdue, today };
+
+    let unread = 0;
+    let important = 0;
+    if (isConnected("mail") && externalServices?.mail?.notifications) {
+      try {
+        const res = await externalServices.mail.notifications({ unread: true, limit: 20 });
+        const data = Array.isArray(res?.data) ? res.data : (res?.data?.items || res?.data?.notifications || []);
+        unread = Array.isArray(data) ? data.length : (Number(res?.data?.count) || 0);
+        important = Array.isArray(data) ? data.filter((m) => m?.is_important || m?.important).length : 0;
+      } catch {}
+    }
+    result.mail = { available: isConnected("mail"), value: String(unread), detail: `non lu${unread > 1 ? "s" : ""}` };
+    result.notifications = { available: isConnected("mail"), value: String(important), detail: `important${important > 1 ? "s" : ""}` };
+
+    const activities = Array.isArray(snapshot.activities) ? snapshot.activities : [];
+    const recent = activities
+      .slice()
+      .sort((a, b) => new Date(b?.timestamp || 0).getTime() - new Date(a?.timestamp || 0).getTime())
+      .slice(0, 3);
+    result.activity = { available: recent.length > 0, value: `${recent.length} récent${recent.length > 1 ? "s" : ""}`, detail: "Dernières actions", items: recent };
+
+    result.spotify = { available: isConnected("spotify"), value: "Non connecté", detail: "Spotify" };
+    if (isConnected("spotify") && externalServices?.spotifyOAuth?.nowPlaying) {
+      try {
+        const res = await externalServices.spotifyOAuth.nowPlaying(clientIdFor("spotify"));
+        if (res?.data && (res.data.is_playing || res.data.track || res.data.title)) {
+          const data = res.data;
+          result.spotify.value = data.track?.name || data.title || "En lecture";
+          result.spotify.detail = data.track?.artists?.[0]?.name || data.artist || data.album || "Spotify";
+          result.spotify.available = true;
+        }
+      } catch {}
+    }
+
+    return result;
+  }
+
+  function buildBriefingSection(section, data) {
+    if (!data) return null;
+    const isPlaceholder = !data.available || data.value === "Non connecté" || data.value === "";
+    return element("div", { className: `v8-brain-briefing__section${isPlaceholder ? " is-placeholder" : ""}` }, [
+      icon(section.icon),
+      element("div", {}, [element("strong", { text: data.value || "—" }), element("small", { text: data.detail || section.label })]),
+      isPlaceholder ? element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, events: { click: () => options.notify?.({ id: "briefing-section", title: "Briefing", message: `${section.label} non connecté`, type: "info" }) } }, [element("span", { text: "Configurer" })]) : null
+    ]);
+  }
+
+  function buildDailyBriefing(data) {
+    dailyBriefingData = data;
+    const settings = getBriefingSettings();
+    const visibleSections = BRIEFING_SECTIONS.filter((s) => settings[s.id] !== false);
+    const settingsButton = element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Réglages du briefing" }, events: { click: () => { briefingSettingsOpen = !briefingSettingsOpen; void loadDailyBriefing(); } } }, [icon("settings-2")]);
+    const settingsPanel = element("div", { className: "v8-brain-briefing__settings", attributes: { hidden: briefingSettingsOpen ? null : true } }, BRIEFING_SECTIONS.map((s) => {
+      const input = element("input", { className: "v8-input", attributes: { type: "checkbox", checked: settings[s.id] !== false } });
+      input.addEventListener("change", (event) => { saveBriefingSetting(s.id, event.target.checked); void loadDailyBriefing(); });
+      return element("label", {}, [input, element("span", { text: s.label })]);
+    }));
+    return element("article", { className: "v8-brain-briefing v8-surface" }, [
+      element("header", { className: "v8-brain-briefing__header" }, [
+        element("div", {}, [element("span", { className: "v8-eyebrow", text: "Briefing du jour" }), element("h2", { text: data.greeting })]),
+        settingsButton
+      ]),
+      element("div", { className: "v8-brain-briefing__body" }, visibleSections.map((s) => buildBriefingSection(s, data[s.id]))),
+      settingsPanel
+    ]);
+  }
+
+  async function loadDailyBriefing() {
+    briefingHost.replaceChildren(buildSkeletonList(4));
+    try {
+      const data = await collectBriefingData(new Date());
+      briefingHost.replaceChildren(buildDailyBriefing(data));
+      renderWrapUp();
+      refreshIcons();
+    } catch (error) {
+      options.notify?.({ id: "brain-briefing-error", title: "Briefing", message: "Impossible de charger le briefing.", type: "warning" });
+      briefingHost.replaceChildren(buildErrorState({
+        title: "Briefing indisponible",
+        reason: "Impossible de charger le briefing.",
+        actionText: "Réessayer",
+        action: () => void loadDailyBriefing()
+      }));
+    }
+  }
+
+  function renderWrapUp() {
+    const today = new Date();
+    const start = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+    const end = start + 86400000;
+    const tasks = Array.isArray(snapshot.tasks) ? snapshot.tasks : [];
+    const activities = Array.isArray(snapshot.activities) ? snapshot.activities : [];
+    const events = Array.isArray(snapshot.events) ? snapshot.events : [];
+    const completed = tasks.filter((t) => t?.done === true || t?.completed === true).length;
+    const doneToday = tasks.filter((t) => { const at = t?.doneAt || t?.completedAt || t?.updatedAt; return at && (t?.done === true || t?.completed === true) && new Date(at).getTime() >= start && new Date(at).getTime() < end; }).length;
+    const todayActivity = activities.filter((a) => { const ts = a?.timestamp; return ts && new Date(ts).getTime() >= start && new Date(ts).getTime() < end; }).length;
+    const upcoming = events.filter((e) => new Date(e?.start || e?.date || 0) >= today).slice(0, 3);
+    const unread = Number(dailyBriefingData?.mail?.value || 0);
+    wrapupMetrics.replaceChildren(
+      metric("activity", "Activités aujourd'hui", todayActivity),
+      metric("circle-check-big", "Tâches terminées", completed),
+      metric("mail", "Non lus", unread),
+      metric("calendar-days", "Événements à venir", upcoming.length)
+    );
+    wrapupSummary.textContent = `${todayActivity} activités aujourd'hui, ${completed} tâches terminées, ${upcoming.length} événements à venir.`;
+    refreshIcons();
+  }
+
+  function showPrepareTomorrowSheet() {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const model = createHomeModel({ snapshot, date: tomorrow });
+    const children = [];
+    if (model.todayEvents.length) children.push(element("h3", { className: "v8-eyebrow", text: "Événements" }));
+    model.todayEvents.forEach((e) => children.push(element("div", { className: "v8-brain-wrapup__row" }, [icon("calendar-days"), element("strong", { text: e.title }), e.start ? element("small", { text: e.start }) : null])));
+    if (model.nextTasks.length) children.push(element("h3", { className: "v8-eyebrow", text: "Tâches" }));
+    model.nextTasks.forEach((t) => children.push(element("div", { className: "v8-brain-wrapup__row" }, [icon("circle-check-big"), element("strong", { text: t.title }), t.due ? element("small", { text: `due ${t.due}` }) : null])));
+    if (!children.length) children.push(element("p", { text: "Rien de prévu pour demain." }));
+    showBottomSheet({ title: "Préparer demain", children });
+  }
+
+  function buildSuggestionCard(s) {
+    const close = element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Ignorer" }, events: { click: (event) => { event.stopPropagation(); dismissSuggestion(s.id); void buildSuggestions(); } } }, [icon("x")]);
+    return element("button", { className: "v8-brain-suggestion", attributes: { type: "button" }, events: { click: () => { if (s.action) actionFacade?.dispatch?.(s.action); } } }, [icon(s.icon), element("div", {}, [element("strong", { text: s.title }), element("small", { text: s.detail })]), close]);
+  }
+
+  async function buildSuggestions() {
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const list = [];
+    if (isConnected("spotify") && !isSuggestionDismissed("spotify-now")) {
+      try {
+        const res = await externalServices?.spotifyOAuth?.nowPlaying?.(clientIdFor("spotify"));
+        if (res?.data && (res.data.is_playing || res.data.track || res.data.title)) {
+          const data = res.data;
+          list.push({ id: "spotify-now", icon: "audio-lines", title: data.track?.name || data.title || "Spotify", detail: data.track?.artists?.[0]?.name || data.artist || "En lecture", action: null });
+        }
+      } catch {}
+    }
+    if (isConnected("github") && !isSuggestionDismissed("github-widget")) {
+      list.push({ id: "github-widget", icon: "github", title: "GitHub actif", detail: "Ouvrir le widget GitHub", action: "v8.home.open" });
+    }
+    if (!isSuggestionDismissed("save-pdf") && externalServices?.mail?.inbox) {
+      try {
+        const res = await externalServices.mail.inbox({ limit: 20 });
+        const messages = Array.isArray(res?.data) ? res.data : (res?.data?.items || []);
+        const hasPdf = messages.some((m) => (m?.attachments || []).some((a) => String(a?.name || "").toLowerCase().endsWith(".pdf")) || String(m?.subject || "").toLowerCase().includes(".pdf"));
+        if (hasPdf) list.push({ id: "save-pdf", icon: "file", title: "PDF reçu", detail: "Sauvegarder dans Fichiers", action: "v8.files.open" });
+      } catch {}
+    }
+    if (!isSuggestionDismissed("add-calendar")) {
+      const newEvent = (snapshot.events || []).some((e) => { const t = new Date(e?.createdAt || e?.updatedAt || e?.date || 0).getTime(); return t >= todayStart; });
+      if (newEvent) list.push({ id: "add-calendar", icon: "calendar-plus", title: "Événement reçu", detail: "Ajouter au calendrier", action: "v8.calendar.open" });
+    }
+    const items = list.slice(0, 3);
+    contextualStrip.replaceChildren(...items.map((s) => buildSuggestionCard(s)));
+    contextualStrip.hidden = items.length === 0;
+    refreshIcons();
+  }
 
   const tabList = element("div", { className: "v8-brain-tabs", attributes: { role: "tablist", "aria-label": "Sections Brain" } });
   const panels = element("div", { className: "v8-brain-panels" });
@@ -257,12 +508,29 @@ export function mountBrain(stage, options = {}) {
     diagnosticsPre
   ])]);
 
-  [chatPanel, contextPanel, memoryPanel, actionsPanel, automationsPanel, providersPanel, privacyPanel, historyPanel, diagnosticsPanel].forEach((panel) => panels.append(panel));
+  const contextualStrip = element("div", { className: "v8-brain-suggestions-strip", attributes: { "aria-label": "Suggestions contextuelles" } });
+  const briefingHost = element("div", { className: "v8-brain-briefing-host" });
+  const wrapupMetrics = element("div", { className: "v8-brain-wrapup__metrics" });
+  const wrapupSummary = element("p", { className: "v8-brain-wrapup__summary" });
+  const prepareTomorrowButton = element("button", { className: "v8-button v8-button--primary", attributes: { type: "button" }, events: { click: () => showPrepareTomorrowSheet() } }, [icon("sunrise"), element("span", { text: "Préparer demain" })]);
+  const wrapupPanel = brainPanel("wrapup", [
+    element("article", { className: "v8-brain-detail v8-surface" }, [
+      sectionHeader("Wrap-up", "Bilan de la journée", "Rétrospective et préparation de demain."),
+      wrapupMetrics,
+      wrapupSummary,
+      prepareTomorrowButton
+    ])
+  ]);
+
+  [chatPanel, contextPanel, memoryPanel, actionsPanel, automationsPanel, providersPanel, privacyPanel, historyPanel, diagnosticsPanel, wrapupPanel].forEach((panel) => panels.append(panel));
   TABS.forEach((tab, index) => tabList.append(element("button", { className: `v8-brain-tab${index === 0 ? " is-active" : ""}`, attributes: { type: "button", role: "tab", "aria-selected": index === 0 ? "true" : "false", "aria-controls": `v8-brain-panel-${tab.id}`, tabindex: index === 0 ? "0" : "-1" }, dataset: { brainTab: tab.id } }, [icon(tab.icon), element("span", { text: tab.label })])));
 
+  const focusButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, events: { click: () => void brain.controller.execute("brain.focus") } }, [icon("focus"), element("span", { text: "Mode Focus" })]);
   const page = element("section", { className: "v8-page v8-brain-page", dataset: { page: "brain" } }, [
-    element("header", { className: "v8-page-heading" }, [element("div", { className: "v8-page-heading__copy" }, [element("span", { className: "v8-eyebrow", text: "Intelligence personnelle" }), element("h1", { text: "Brain" }), element("p", { text: "Un contexte utile, protege et sous votre contrôle." })]), element("div", { className: "v8-page-heading__actions" }, [statusPill("Contexte actif", "success"), actionButton({ actionId: "v8.command.open", variant: "primary" }, [icon("sparkles"), element("span", { text: "Command HUD" })])])]),
+    element("header", { className: "v8-page-heading" }, [element("div", { className: "v8-page-heading__copy" }, [element("span", { className: "v8-eyebrow", text: "Intelligence personnelle" }), element("h1", { text: "Brain" }), element("p", { text: "Un contexte utile, protege et sous votre contrôle." })]), element("div", { className: "v8-page-heading__actions" }, [statusPill("Contexte actif", "success"), focusButton, actionButton({ actionId: "v8.command.open", variant: "primary" }, [icon("sparkles"), element("span", { text: "Command HUD" })])])]),
     element("section", { className: "v8-brain-hero v8-surface" }, [element("div", { className: "v8-brain-hero__identity" }, [element("span", { className: "v8-brain-orbit", dataset: { liveWidget: "brain", liveKind: "brain" } }, [icon("brain")]), element("div", {}, [element("small", { text: "Contexte courant" }), element("h2", { text: `${state.flow || workspace.flow} dans ${workspace.label}` }), element("p", { text: `Profil ${brainPreferenceLabel("persona", preferences.persona)}, reponses ${brainPreferenceLabel("détail", preferences.detail)}, automatisation ${brainPreferenceLabel("automationLevel", preferences.automationLevel)}.` })])]), element("div", { className: "v8-brain-hero__metrics" }, [metric("circle-check-big", "Priorités", openTasks.length), metric("notebook-pen", "Notes", snapshot.notes?.length || 0), metric("plug", "Connectées", connected.length), metric("shield-check", "Sources", context.sources.filter((entry) => entry.active).length)])]),
+    contextualStrip,
+    briefingHost,
     tabList,
     panels
   ]);
@@ -318,7 +586,16 @@ export function mountBrain(stage, options = {}) {
   }
 
   function renderSuggestions() {
-    suggestions.replaceChildren(...brain.controller.suggestions().map((suggestion) => element("button", { className: "v8-brain-suggestion", attributes: { type: "button" }, dataset: { brainSuggestion: suggestion.id } }, [element("span", {}, [icon("sparkles")]), element("div", {}, [element("strong", { text: suggestion.title }), element("small", { text: suggestion.detail })]), icon("arrow-up-right")])));
+    const items = brain.controller.suggestions();
+    if (items.length) {
+      suggestions.replaceChildren(...items.map((suggestion) => element("button", { className: "v8-brain-suggestion", attributes: { type: "button" }, dataset: { brainSuggestion: suggestion.id } }, [element("span", {}, [icon("sparkles")]), element("div", {}, [element("strong", { text: suggestion.title }), element("small", { text: suggestion.detail })]), icon("arrow-up-right")])));
+    } else {
+      suggestions.replaceChildren(buildEmptyState({
+        icon: "lightbulb",
+        title: "Aucune suggestion",
+        message: "Brain n'a pas de recommandation pour le moment. Revenez plus tard ou posez-lui une question."
+      }));
+    }
   }
 
   function activateTab(id, focus = false) {
@@ -334,12 +611,7 @@ export function mountBrain(stage, options = {}) {
     memoryBusy = true;
     loadMemoryButton.disabled = true;
     memoryStatus.textContent = "Chargement sécurisé depuis Supabase...";
-    memoryList.replaceChildren(statusState("loading", {
-      title: "Chargement des memoires",
-      description: "Lecture sécurisée depuis Supabase avec les permissions du compte actif.",
-      compact: true,
-      inline: true
-    }));
+    memoryList.replaceChildren(buildSkeletonList(4));
     refreshIcons();
     const response = await brain.memory.list();
     if (controller.signal.aborted) return;
@@ -347,15 +619,18 @@ export function mountBrain(stage, options = {}) {
     loadMemoryButton.disabled = false;
     memoryLoaded = response.ok;
     memoryStatus.textContent = response.ok ? `${response.data.length} memoire${response.data.length > 1 ? "s" : ""} active${response.data.length > 1 ? "s" : ""}.` : response.message;
-    memoryList.replaceChildren(...(response.ok && response.data.length ? response.data.map((entry) => element("div", { className: "v8-brain-memory", dataset: { memoryId: entry.id } }, [element("span", {}, [icon("bookmark")]), element("div", {}, [element("small", { text: entry.category }), element("strong", { text: entry.key }), element("p", { text: entry.value })]), element("div", {}, [element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Modifier la memoire" }, dataset: { memoryEdit: entry.id, memoryValue: entry.value } }, [icon("pencil")]), element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Supprimer la memoire" }, dataset: { memoryDelete: entry.id } }, [icon("trash-2")])])])) : [statusState(response.ok ? "empty" : "error", {
-      iconName: "database",
-      eyebrow: "Memoire controlee",
-      title: response.ok ? "Aucune memoire active" : "Memoires indisponibles",
-      description: response.ok ? "Ajoutez une préférence explicite lorsque Brain doit la retenir." : response.message,
-      actions: response.ok ? [] : [element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, events: { click: () => void loadMemories() } }, [icon("refresh-cw"), element("span", { text: "Réessayer" })])],
-      compact: true,
-      inline: true
-    })]));
+    memoryList.replaceChildren(...(response.ok && response.data.length ? response.data.map((entry) => element("div", { className: "v8-brain-memory", dataset: { memoryId: entry.id } }, [element("span", {}, [icon("bookmark")]), element("div", {}, [element("small", { text: entry.category }), element("strong", { text: entry.key }), element("p", { text: entry.value })]), element("div", {}, [element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Modifier la memoire" }, dataset: { memoryEdit: entry.id, memoryValue: entry.value } }, [icon("pencil")]), element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Supprimer la memoire" }, dataset: { memoryDelete: entry.id } }, [icon("trash-2")])])])) : [response.ok
+      ? buildEmptyState({
+          icon: "database",
+          title: "Aucune memoire active",
+          message: "Ajoutez une préférence explicite lorsque Brain doit la retenir."
+        })
+      : buildErrorState({
+          title: "Memoires indisponibles",
+          reason: response.message,
+          actionText: "Réessayer",
+          action: () => void loadMemories()
+        })]));
     refreshIcons();
   }
 
@@ -484,5 +759,8 @@ export function mountBrain(stage, options = {}) {
   renderSuggestions();
   renderAutomations();
   refreshIcons();
+  void loadDailyBriefing();
+  renderWrapUp();
+  void buildSuggestions();
   return () => { unsubscribe(); controller.abort(); page.remove(); };
 }

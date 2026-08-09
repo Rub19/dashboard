@@ -2,6 +2,24 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v296] - 2026-08-18
+
+**Phase F : Quality of Life + UX Polish + Mobile 2.0 + Personalisation**
+
+### Ajoute
+- Fondations mobile : safe-areas, touch targets, viewport, gestes de retour et long-press, barre de navigation mobile et bottom sheets.
+- Navigation mobile : dock flottant, actions rapides, FAB et feuilles d'action réutilisables.
+- Dashboard responsive : grille adaptative, densité, priorisation des widgets et mode "plus de widgets".
+- Brain Daily Assistant : briefing quotidien (météo, calendrier, tâches, mail, notifications, Spotify) et bilan de journée.
+- Centre de notifications global : catégories, priorités, snooze, recherche, glisser pour supprimer et synchronisation du badge.
+- Audit du design system : tokens d'espacement, typographie, boutons, cartes, modaux, états vides/erreur/skeleton et `prefers-reduced-motion`.
+- Moteur de personnalisation : densité, thème, accent, fond d'écran, mémoire par workspace et persistance cross-page.
+- Refonte des réglages : sections par cartes, recherche en temps réel, favoris, raccourcis, accessibilité (taille de police, daltonisme, contraste élevé) et réglages Mail.
+- Accessibilité et performance : classes d'accessibilité, mode faibles données, precache SW étendu et optimisations du rendu.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v296`.
+
 ## [v295] - 2026-08-17
 
 **Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes**

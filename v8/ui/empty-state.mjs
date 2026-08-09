@@ -85,6 +85,28 @@ export function emptyState({
   ]);
 }
 
+export function buildEmptyState({ icon = "inbox", title = "Rien ici pour le moment", message = "Commencez par l'action principale pour alimenter cet espace.", actionText = "", action = null, tagName = "section" } = {}) {
+  const actions = [];
+  if (actionText && typeof action === "function") {
+    actions.push(element("button", {
+      className: "v8-button v8-button--primary",
+      attributes: { type: "button" },
+      events: { click: action }
+    }, [icon("arrow-up-right"), element("span", { text: actionText })]));
+  }
+  return emptyState({
+    tagName,
+    iconName: icon,
+    eyebrow: "",
+    title,
+    description: message,
+    actions,
+    compact: false,
+    inline: false,
+    kind: "empty"
+  });
+}
+
 export function statusState(kind = "empty", options = {}) {
   const normalizedKind = STATE_PRESETS[kind] ? kind : "empty";
   const preset = STATE_PRESETS[normalizedKind];

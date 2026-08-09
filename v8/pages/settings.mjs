@@ -1,5 +1,5 @@
-import { actionButton, element, icon, throttleFrame } from "../ui/dom.mjs";
-import { statusState } from "../ui/empty-state.mjs";
+import { actionButton, debounce, element, icon, throttleFrame } from "../ui/dom.mjs";
+import { statusState, emptyState } from "../ui/empty-state.mjs";
 import { prepareFormControls, setFieldState, setFormStatus } from "../ui/form-system.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
 import { DEFAULT_SOUND_PREFERENCES, SOUND_PACKS } from "../services/sound-manager.mjs";
@@ -12,26 +12,16 @@ import { BUILT_IN_PRESETS } from "../data/presets.mjs";
 import { downloadJson } from "../utils/download.mjs";
 
 const ACCENTS = Object.freeze(["mint", "sky", "amber", "violet", "rose"]);
-const THEME_LABELS = Object.freeze({ night: "Nuit", graphite: "Graphite", day: "Jour", auto: "Automatique" });
+const THEME_LABELS = Object.freeze({ night: "Nuit", midnight: "Minuit", graphite: "Graphite", day: "Jour", auto: "Automatique" });
 const THEME_OPTIONS = Object.freeze([
   Object.freeze({ id: "night", label: "Nuit", icon: "moon-star", copy: "Sombre et profond, le mode par defaut.", swatch: Object.freeze({ canvas: "#080a0d", surface: "#171c22", text: "#f4f7fa" }) }),
   Object.freeze({ id: "graphite", label: "Graphite", icon: "circle", copy: "Sombre, un ton plus clair et neutre.", swatch: Object.freeze({ canvas: "#111317", surface: "#20252b", text: "#f4f7fa" }) }),
   Object.freeze({ id: "day", label: "Jour", icon: "sun", copy: "Clair, pour la lumière du jour.", swatch: Object.freeze({ canvas: "#f4f5f7", surface: "#ffffff", text: "#161a21" }) }),
   Object.freeze({ id: "auto", label: "Automatique", icon: "monitor", copy: "Suit les préférences de votre système.", swatch: null })
 ]);
-const BRAIN_PERMISSION_LABELS = Object.freeze({ notes: "Notes", tasks: "Taches", calendar: "Calendrier", connections: "Connexions", gaming: "Gaming", activity: "Activité", files: "Fichiers", profile: "Profil", settings: "Réglages" });
+const BRAIN_PERMISSION_LABELS = Object.freeze({ notes: "Notes", tasks: "Taches", calendar: "Calendrier", connections: "Connexions", gaming: "Gaming", activity: "Activité", files: "Fichiers", profile: "Profil", settings: "Réglages", mail: "Mail" });
 const BRAIN_MEMORY_LABELS = Object.freeze({ interface: "Interface", habits: "Habitudes", widgets: "Widgets", schedules: "Plannings", "task-types": "Types de taches", spaces: "Spaces", flows: "Flows", "response-style": "Style de réponse", goals: "Objectifs" });
-const SYNC_LABELS = Object.freeze({
-  loading: "Connexion Supabase",
-  saving: "Synchronisation",
-  saved: "Synchronise",
-  offline: "Hors ligne",
-  retrying: "Nouvelle tentative",
-  error: "Erreur",
-  expired: "Session expiree",
-  online: "Synchronise",
-  syncing: "Synchronisation"
-});
+const SYNC_LABELS = Object.freeze({ loading: "Connexion Supabase", saving: "Synchronisation", saved: "Synchronise", offline: "Hors ligne", retrying: "Nouvelle tentative", error: "Erreur", expired: "Session expiree", online: "Synchronise", syncing: "Synchronisation" });
 const DENSITY_LABELS = Object.freeze({ spacious: "Spacieuse", comfortable: "Confortable", compact: "Compacte", "ultra-compact": "Ultra compacte", automatic: "Automatique", custom: "Personnalisée" });
 const DENSITY_OPTIONS = Object.freeze([
   Object.freeze({ id: "spacious", label: "Spacieuse", icon: "maximize", copy: "Lecture et cibles tactiles genereuses." }),
@@ -68,14 +58,85 @@ const RADIUS_OPTIONS = Object.freeze([
   Object.freeze({ id: "sharp", label: "Tech Anguleux", icon: "square", copy: "Angles nets (3px / 6px)." }),
   Object.freeze({ id: "soft", label: "Courbe iOS", icon: "smile", copy: "Courbes généreuses (12px / 20px)." })
 ]);
+const WALLPAPER_OPTIONS = Object.freeze([
+  Object.freeze({ id: "none", label: "Aucun", icon: "minus" }),
+  Object.freeze({ id: "nebula", label: "Nébuleuse", icon: "sparkles" }),
+  Object.freeze({ id: "mesh", label: "Grille", icon: "layout-grid" }),
+  Object.freeze({ id: "aurora", label: "Aurore", icon: "sun" }),
+  Object.freeze({ id: "noise", label: "Grain", icon: "mountain" })
+]);
+const CONNECTIONS = Object.freeze(["github", "google-calendar", "google-drive", "notion", "reddit", "spotify", "todoist", "youtube"]);
+const FONT_SIZE_OPTIONS = Object.freeze([
+  Object.freeze({ id: "small", label: "Petite" }),
+  Object.freeze({ id: "default", label: "Défaut" }),
+  Object.freeze({ id: "large", label: "Grande" }),
+  Object.freeze({ id: "extra-large", label: "Très grande" })
+]);
+const COLOR_BLIND_OPTIONS = Object.freeze([
+  Object.freeze({ id: "none", label: "Aucun" }),
+  Object.freeze({ id: "protanopia", label: "Protanopie" }),
+  Object.freeze({ id: "deuteranopia", label: "Deutéranopie" }),
+  Object.freeze({ id: "tritanopia", label: "Tritanopie" }),
+  Object.freeze({ id: "achromatopsia", label: "Achromatopsie" })
+]);
+const SHORTCUTS = Object.freeze([
+  Object.freeze({ id: "command-palette", keys: "Ctrl/Cmd + K", label: "Palette de commandes", default: true }),
+  Object.freeze({ id: "help", keys: "?", label: "Aide et raccourcis", default: true }),
+  Object.freeze({ id: "go-home", keys: "G puis H", label: "Accueil", default: true }),
+  Object.freeze({ id: "go-mail", keys: "G puis M", label: "Mail", default: true }),
+  Object.freeze({ id: "go-brain", keys: "G puis B", label: "Brain", default: true }),
+  Object.freeze({ id: "new-item", keys: "N", label: "Nouvelle note", default: true }),
+  Object.freeze({ id: "close", keys: "Esc", label: "Fermer", default: true })
+]);
+
+const FAVORITES_KEY = "ethone:settings:favorites";
+const RECENT_KEY = "ethone:settings:recent";
+const SHORTCUTS_KEY = "ethone:settings:shortcuts";
+const MAIL_SETTINGS_KEY = "ethone:settings:mail";
+const ACCESSIBILITY_KEY = "ethone:settings:accessibility";
+
 let settingRowSequence = 0;
+
+function escapeHtml(text) {
+  return String(text).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function getLocalObject(key, fallback = {}) {
+  try { return JSON.parse(globalThis.localStorage?.getItem(key) || "null") || fallback; } catch { return fallback; }
+}
+function setLocalObject(key, value) { try { globalThis.localStorage?.setItem(key, JSON.stringify(value)); } catch { /* silent */ } }
+function getFavorites() { return new Set(getLocalObject(FAVORITES_KEY, [])); }
+function setFavorites(set) { setLocalObject(FAVORITES_KEY, [...set]); }
+function getRecent() { const list = getLocalObject(RECENT_KEY, []); return Array.isArray(list) ? list.slice(0, 5) : []; }
+function addRecent(id, title) {
+  const list = getRecent().filter((entry) => entry.id !== id);
+  list.unshift({ id, title, at: Date.now() });
+  setLocalObject(RECENT_KEY, list.slice(0, 5));
+  return list.slice(0, 5);
+}
+function getShortcuts() { return getLocalObject(SHORTCUTS_KEY, Object.fromEntries(SHORTCUTS.map((s) => [s.id, s.default]))); }
+function setShortcuts(map) { setLocalObject(SHORTCUTS_KEY, map); }
+function getMailSettings() { return getLocalObject(MAIL_SETTINGS_KEY, { notificationSound: true, markAsReadOnOpen: true, defaultSignature: true, spamFilter: true, pgpAutoEncrypt: false, offlineMode: false }); }
+function setMailSettings(map) { setLocalObject(MAIL_SETTINGS_KEY, map); }
+function getAccessibility() { return getLocalObject(ACCESSIBILITY_KEY, { fontSize: "default", reducedMotion: false, highContrast: false, colorBlind: "none" }); }
+function setAccessibility(map) { setLocalObject(ACCESSIBILITY_KEY, map); applyAccessibility(map); }
+function applyAccessibility(map) {
+  if (typeof document === "undefined") return;
+  document.documentElement.dataset.v8FontSize = map.fontSize || "default";
+  document.documentElement.classList.toggle("v8-reduced-motion", map.reducedMotion === true);
+  document.documentElement.dataset.v8ReducedMotion = map.reducedMotion ? "true" : "false";
+  document.documentElement.classList.toggle("v8-high-contrast", map.highContrast === true);
+  document.documentElement.dataset.v8HighContrast = map.highContrast ? "true" : "false";
+  document.documentElement.dataset.v8ColorBlind = map.colorBlind || "none";
+}
 
 function choice(actionId, iconName, label, active) {
   return actionButton({ actionId, className: `v8-setting-choice${active ? " is-active" : ""}` }, [icon(iconName), element("span", { text: label }), active ? icon("check") : null]);
 }
 
-function settingRow(iconName, title, description, control) {
+function settingRow(iconName, title, description, control, sectionId = "") {
   const rowId = `v8-setting-row-${++settingRowSequence}`;
+  const settingId = `${sectionId}--${rowId}`;
   const titleId = `${rowId}-title`;
   const descriptionId = `${rowId}-description`;
   const controls = control.matches?.("input, textarea, select, button[role='switch']") ? [control] : [...control.querySelectorAll?.("input, textarea, select, button[role='switch']") || []];
@@ -85,9 +146,18 @@ function settingRow(iconName, title, description, control) {
     describedBy.add(descriptionId);
     entry.setAttribute("aria-describedby", [...describedBy].join(" "));
   });
-  return element("div", { className: "v8-setting-row", id: rowId }, [
+  const star = element("button", {
+    className: `v8-setting-row__star${getFavorites().has(settingId) ? " is-active" : ""}`,
+    attributes: { type: "button", "aria-label": "Ajouter aux favoris", "aria-pressed": String(getFavorites().has(settingId)) },
+    dataset: { settingsFavorite: settingId, settingsTitle: title, settingsDescription: description }
+  }, [icon("star")]);
+  const copy = element("div", { className: "v8-setting-row__copy" }, [element("strong", { id: titleId, text: title }), element("p", { id: descriptionId, text: description })]);
+  copy.dataset.settingsTitle = title;
+  copy.dataset.settingsDescription = description;
+  return element("div", { className: "v8-setting-row", id: rowId, dataset: { settingsRow: settingId, settingsSection: sectionId, settingsTitle: title, settingsDescription: description } }, [
     element("span", { className: "v8-setting-row__icon" }, [icon(iconName)]),
-    element("div", { className: "v8-setting-row__copy" }, [element("strong", { id: titleId, text: title }), element("p", { id: descriptionId, text: description })]),
+    star,
+    copy,
     element("div", { className: "v8-setting-row__control" }, [control])
   ]);
 }
@@ -98,6 +168,20 @@ function switchControl(actionId, label, checked, disabled = false) {
     attributes: { type: "button", role: "switch", "aria-label": label, "aria-checked": String(checked), disabled: disabled || null },
     dataset: { action: actionId }
   }, [element("span", { className: "v8-switch__track", attributes: { "aria-hidden": "true" } }, [element("span", { className: "v8-switch__thumb" })])]);
+}
+
+function mailSwitch(path, label, checked) {
+  const control = switchControl("", label, checked);
+  delete control.dataset.action;
+  control.dataset.mailPreference = path;
+  return control;
+}
+
+function shortcutSwitch(id, label, checked) {
+  const control = switchControl("", label, checked);
+  delete control.dataset.action;
+  control.dataset.shortcutId = id;
+  return control;
 }
 
 function soundRange(category, value, disabled) {
@@ -146,8 +230,8 @@ function themeSwatch(option, resolvedId) {
 }
 
 function themeModeChoice(option, active, resolution) {
-  const resolvedNote = option.id === "auto"
-    ? element("small", { className: "v8-thème-choice__resolved", text: `-> ${THEME_LABELS[resolution?.effective || "night"]}`, attributes: { hidden: resolution?.requested !== "auto" } })
+  const resolvedNote = option.id === "auto" && resolution
+    ? element("small", { className: "v8-theme-choice__resolved", text: `-> ${THEME_LABELS[resolution?.effective || "night"]}` })
     : null;
   return element("button", {
     className: `v8-theme-choice${active ? " is-active" : ""}`,
@@ -212,7 +296,49 @@ function profileAvatarPreviewNode(avatar, fallback) {
   return element("span", { className: "v8-profile-media-preview__glyph", text: String(glyph || "E") });
 }
 
+function settingSectionCard(id, eyebrow, title, description, rows) {
+  return element("section", { id: `v8-settings-${id}`, className: "v8-card v8-settings-section", attributes: { role: "region", "aria-labelledby": `v8-settings-${id}-heading` } }, [
+    element("header", { className: "v8-card__header" }, [
+      element("span", { className: "v8-eyebrow", text: eyebrow }),
+      element("h2", { id: `v8-settings-${id}-heading`, text: title }),
+      description ? element("p", { text: description }) : null
+    ]),
+    element("div", { className: "v8-card__body" }, rows.filter(Boolean))
+  ]);
+}
 
+function sectionIndexLink(id, label) {
+  return element("a", { className: "v8-section-index__item", attributes: { href: `#v8-settings-${id}`, tabindex: "0" }, dataset: { sectionIndex: id } }, [element("span", { text: label })]);
+}
+
+function highlightText(root, query) {
+  if (!query) return;
+  const lower = query.toLowerCase();
+  const strong = root.querySelector("strong");
+  const p = root.querySelector("p");
+  if (strong && strong.dataset.strongText == null) strong.dataset.strongText = strong.textContent;
+  if (p && p.dataset.pText == null) p.dataset.pText = p.textContent;
+  [strong, p].forEach((node) => {
+    if (!node) return;
+    const text = node.dataset.strongText || node.dataset.pText || node.textContent;
+    const index = text.toLowerCase().indexOf(lower);
+    if (index < 0) { node.textContent = text; return; }
+    const before = text.slice(0, index);
+    const match = text.slice(index, index + query.length);
+    const after = text.slice(index + query.length);
+    node.textContent = "";
+    if (before) node.append(document.createTextNode(before));
+    node.append(element("mark", { className: "v8-search-mark", text: match }));
+    if (after) node.append(document.createTextNode(after));
+  });
+}
+
+function unhighlightText(row) {
+  const strong = row.querySelector("strong");
+  const p = row.querySelector("p");
+  if (strong && strong.dataset.strongText != null) strong.textContent = strong.dataset.strongText;
+  if (p && p.dataset.pText != null) p.textContent = p.dataset.pText;
+}
 
 export function mountSettings(stage, options = {}) {
   const state = options.state || {};
@@ -254,9 +380,9 @@ export function mountSettings(stage, options = {}) {
     return element("label", {}, [element("span", {}, [icon(brainPreferences.memory.categories[category] ? "bookmark-check" : "bookmark-x"), element("strong", { text: label })]), brainPreferenceSwitch(`memory.categories.${category}`, `Memoriser ${label}`, brainPreferences.memory.categories[category])]);
   }));
   const brainMemoryStatus = element("p", { className: "v8-settings-memory-status", text: "Les memoires sont chargees uniquement a la demande.", attributes: { "aria-live": "polite" } });
-  const settingsSaveStatus = element("span", { className: "v8-badge", text: "Enregistre", attributes: { role: "status", "aria-live": "polite", "aria-atomic": "true" }, dataset: { formStatus: "" } });
   const brainMemoryList = element("div", { className: "v8-settings-memory-list" });
   const brainMemoryLoad = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { settingsMemoryLoad: "" } }, [icon("database"), element("span", { text: "Voir les memoires" })]);
+  const settingsSaveStatus = element("span", { className: "v8-badge", text: "Enregistre", attributes: { role: "status", "aria-live": "polite", "aria-atomic": "true" }, dataset: { formStatus: "" } });
   const accentControls = element("div", { className: "v8-accent-picker", attributes: { role: "group", "aria-label": "Couleur d'accent" } });
   ACCENTS.forEach((accent) => accentControls.append(element("button", {
     className: `v8-accent-swatch v8-accent-swatch--${accent}${state.accent === accent ? " is-active" : ""}`,
@@ -264,301 +390,214 @@ export function mountSettings(stage, options = {}) {
     dataset: { action: `v8.accent.${accent}` }
   }, [state.accent === accent ? icon("check") : null])));
   const customAccentInitial = /^#[0-9a-f]{6}$/i.test(state.customAccentColor || "") ? state.customAccentColor : "#7be5c3";
-  const customColorInput = element("input", {
-    className: "v8-accent-swatch__input",
-    attributes: { type: "color", value: customAccentInitial, "aria-label": "Choisir une couleur d'accent personnalisée" }
-  });
-  const customColorSwatch = element("label", {
-    className: `v8-accent-swatch v8-accent-swatch--custom${state.accent === "custom" ? " is-active" : ""}`,
-    attributes: { "aria-label": "Accent personnalisé", "data-tooltip": "Couleur personnalisée" }
-  }, [customColorInput, state.accent === "custom" ? icon("check") : null]);
+  const customColorInput = element("input", { className: "v8-accent-swatch__input", attributes: { type: "color", value: customAccentInitial, "aria-label": "Choisir une couleur d'accent personnalisée" } });
+  const customColorSwatch = element("label", { className: `v8-accent-swatch v8-accent-swatch--custom${state.accent === "custom" ? " is-active" : ""}`, attributes: { "aria-label": "Accent personnalisé", "data-tooltip": "Couleur personnalisée" } }, [customColorInput, state.accent === "custom" ? icon("check") : null]);
   customColorSwatch.style.setProperty("--v8-accent-swatch-custom-color", customAccentInitial);
   accentControls.append(customColorSwatch);
-
   const currentAura = globalThis.localStorage?.getItem("v8_home_aura") || "classic";
   const auraChoices = element("div", { className: "v8-theme-options", attributes: { role: "group", "aria-label": "Ambiance lumineuse Aura" } }, AURA_OPTIONS.map((option) => {
     const active = currentAura === option.id;
-    return element("button", {
-      className: `v8-theme-choice${active ? " is-active" : ""}`,
-      attributes: { type: "button", "aria-pressed": String(active) },
-      dataset: { action: `v8.aura.${option.id}`, auraChoice: option.id }
-    }, [
-      icon(option.icon),
-      element("span", {}, [element("strong", { text: option.label }), element("small", { text: option.copy })]),
-      active ? icon("check") : null
-    ]);
+    return element("button", { className: `v8-theme-choice${active ? " is-active" : ""}`, attributes: { type: "button", "aria-pressed": String(active) }, dataset: { action: `v8.aura.${option.id}` } }, [icon(option.icon), element("span", {}, [element("strong", { text: option.label }), element("small", { text: option.copy })]), active ? icon("check") : null]);
   }));
-
-  const currentFont = globalThis.localStorage?.getItem("v8_font_family") || "inter";
-  const fontChoices = element("div", { className: "v8-theme-options", attributes: { role: "group", "aria-label": "Typographie d'interface" } }, FONT_OPTIONS.map((option) => {
-    const active = currentFont === option.id;
-    return element("button", {
-      className: `v8-theme-choice${active ? " is-active" : ""}`,
-      attributes: { type: "button", "aria-pressed": String(active) },
-      dataset: { action: `v8.font.${option.id}`, fontChoice: option.id }
-    }, [
-      icon(option.icon),
-      element("span", {}, [element("strong", { text: option.label }), element("small", { text: option.copy })]),
-      active ? icon("check") : null
-    ]);
+  const fontChoices = element("div", { className: "v8-theme-options", attributes: { role: "group", "aria-label": "Typographie" } }, FONT_OPTIONS.map((option) => {
+    const active = (state.fontFamily || "inter") === option.id;
+    return element("button", { className: `v8-theme-choice${active ? " is-active" : ""}`, attributes: { type: "button", "aria-pressed": String(active) }, dataset: { action: `v8.font.${option.id}` } }, [icon(option.icon), element("span", {}, [element("strong", { text: option.label }), element("small", { text: option.copy })]), active ? icon("check") : null]);
   }));
-
-  const currentRadius = globalThis.localStorage?.getItem("v8_radius_style") || "rounded";
-  const radiusChoices = element("div", { className: "v8-theme-options", attributes: { role: "group", "aria-label": "Style de courbure" } }, RADIUS_OPTIONS.map((option) => {
-    const active = currentRadius === option.id;
-    return element("button", {
-      className: `v8-theme-choice${active ? " is-active" : ""}`,
-      attributes: { type: "button", "aria-pressed": String(active) },
-      dataset: { action: `v8.radius.${option.id}`, radiusChoice: option.id }
-    }, [
-      icon(option.icon),
-      element("span", {}, [element("strong", { text: option.label }), element("small", { text: option.copy })]),
-      active ? icon("check") : null
-    ]);
+  const radiusChoices = element("div", { className: "v8-theme-options", attributes: { role: "group", "aria-label": "Courbure" } }, RADIUS_OPTIONS.map((option) => {
+    const active = (state.radiusStyle || "rounded") === option.id;
+    return element("button", { className: `v8-theme-choice${active ? " is-active" : ""}`, attributes: { type: "button", "aria-pressed": String(active) }, dataset: { action: `v8.radius.${option.id}` } }, [icon(option.icon), element("span", {}, [element("strong", { text: option.label }), element("small", { text: option.copy })]), active ? icon("check") : null]);
   }));
-
-  const activePresetId = state.activePreset || null;
-  const presetChoices = element("div", { className: "v8-preset-options", attributes: { role: "group", "aria-label": "Presets d'interface" } }, BUILT_IN_PRESETS.map((option) => {
-    const active = activePresetId === option.id;
-    return element("button", {
-      className: `v8-preset-choice${active ? " is-active" : ""}`,
-      attributes: { type: "button", "aria-pressed": String(active) },
-      dataset: { action: "v8.preset.apply", presetId: option.id }
-    }, [
-      icon(option.icon, "v8-preset-choice__icon"),
-      element("span", {}, [element("strong", { text: option.name }), element("small", { text: option.description })]),
-      active ? icon("check") : null
-    ]);
+  const wallpaperChoices = element("div", { className: "v8-theme-options", attributes: { role: "group", "aria-label": "Fond d'écran" } }, WALLPAPER_OPTIONS.map((option) => {
+    const active = (state.wallpaper || "none") === option.id;
+    return element("button", { className: `v8-theme-choice${active ? " is-active" : ""}`, attributes: { type: "button", "aria-pressed": String(active) }, dataset: { action: `v8.wallpaper.${option.id}`, wallpaperMode: option.id } }, [icon(option.icon), element("span", {}, [element("strong", { text: option.label })]), active ? icon("check") : null]);
   }));
-  const savePresetButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { action: "v8.preset.save", presetName: "Mon preset" } }, [icon("save"), element("span", { text: "Enregistrer la configuration actuelle" })]);
-  const exportPresetButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { action: "v8.preset.export" } }, [icon("download"), element("span", { text: "Exporter les presets" })]);
-
-  const soundPackSelect = createSelect({
-    className: "v8-input v8-sound-pack-select",
-    attributes: { "aria-label": "Pack sonore", disabled: !soundSupported || null, translate: "no" },
-    dataset: { soundPack: "" }
-  }, SOUND_PACKS.map((pack) => element("option", { text: pack.label, attributes: { value: pack.id } })));
-  soundPackSelect.value = initialSoundPreferences.pack;
-  const soundPackControl = element("div", { className: "v8-sound-pack-control" }, [
-    element("div", { className: "v8-sound-pack-control__actions" }, [
-      soundPackSelect,
-      actionButton({ actionId: "v8.sound.preview", className: "v8-icon-button", ariaLabel: "Ecouter un apercu", disabled: !soundSupported }, [icon("play")]),
-      actionButton({ actionId: "v8.sound.export", className: "v8-button v8-button--secondary", ariaLabel: "Télécharger les sons en WAV", disabled: !soundSupported }, [icon("download"), element("span", { text: "Télécharger (.WAV)" })])
-    ]),
-    element("small", { text: SOUND_PACKS.find((pack) => pack.id === initialSoundPreferences.pack)?.description || "Signature douce et lumineuse.", dataset: { soundPackDescription: "" } })
-  ]);
-  const workerStatusHost = element("div", { className: "v8-system-checks", attributes: { "aria-live": "polite" } });
-  const workerError = element("p", { className: "v8-settings-diagnostic-note" });
-  const workerDiagnosticButton = element("button", {
-    className: "v8-button v8-button--secondary",
-    attributes: { type: "button", disabled: !externalServices || null },
-    dataset: { workerDiagnostic: "" }
-  }, [icon("scan-search"), element("span", { text: externalServices ? "Vérifier le Worker" : "Worker indisponible" })]);
+  const lowDataEnabled = getLocalObject("ethone:low-data", { enabled: false }).enabled;
+  const lowDataSwitch = switchControl("", "Mode faibles données", lowDataEnabled);
+  delete lowDataSwitch.dataset.action;
+  lowDataSwitch.dataset.lowData = "";
+  const presetChoices = element("div", { className: "v8-preset-choices" }, BUILT_IN_PRESETS.map((preset) => {
+    const active = state.activePreset === preset.id;
+    return element("button", { className: `v8-preset-choice${active ? " is-active" : ""}`, attributes: { type: "button", "aria-pressed": String(active) }, dataset: { action: "v8.preset.apply", presetId: preset.id } }, [icon(preset.icon), element("span", {}, [element("strong", { text: preset.name }), element("small", { text: preset.description })]), active ? icon("check") : null]);
+  }));
+  const savePresetButton = actionButton({ actionId: "v8.preset.save", className: "v8-button--secondary" }, [icon("save"), element("span", { text: "Sauvegarder" })]);
+  const exportPresetButton = actionButton({ actionId: "v8.preset.export", className: "v8-button--outline" }, [icon("download"), element("span", { text: "Exporter" })]);
 
   const profile = options.profile || null;
-  const canUploadMedia = Boolean(options.clientProvider && options.ownerId && profile?.id);
-  const configExportButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { settingsConfigExport: "" } }, [icon("download"), element("span", { text: "Exporter" })]);
-  const configImportInput = element("input", { attributes: { type: "file", accept: "application/json", "aria-label": "Importer une configuration ETHONE" }, dataset: { settingsConfigImport: "" } });
-  const configImportButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { settingsConfigImportTrigger: "" } }, [icon("upload"), element("span", { text: "Importer" }) ]);
-  const nameInput = element("input", { className: "v8-input", attributes: { type: "text", value: profile?.name || "", maxlength: "80", placeholder: "Nom du profil", "aria-label": "Nom du profil", disabled: !profile?.id || null } });
-  const nameStatus = element("p", { className: "v8-settings-diagnostic-note", attributes: { "aria-live": "polite" } });
-  const nameSaveButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button", disabled: !profile?.id || null } }, [icon("check"), element("span", { text: "Enregistrer" })]);
-  const avatarPreviewHost = element("div", { className: "v8-profile-media-preview v8-profile-media-preview--avatar" }, [profileAvatarPreviewNode(profile?.avatar, (profile?.name || "E").slice(0, 1).toUpperCase())]);
-  const bannerPreviewHost = element("div", { className: `v8-profile-media-preview v8-profile-media-preview--banner${profile?.banner ? "" : " is-empty"}` });
+  const canUploadMedia = Boolean(options.clientProvider) && Boolean(options.ownerId);
+  const avatarPreviewHost = element("div", { className: `v8-profile-media-preview${!profile?.avatar ? " is-empty" : ""}` });
+  const bannerPreviewHost = element("div", { className: `v8-profile-media-preview v8-profile-media-preview--banner${!profile?.banner ? " is-empty" : ""}` });
+  if (profile?.avatar) avatarPreviewHost.replaceChildren(profileAvatarPreviewNode(profile.avatar, "E"));
   if (profile?.banner) bannerPreviewHost.style.backgroundImage = `url("${profile.banner}")`;
   const avatarFileInput = element("input", { attributes: { type: "file", accept: "image/png,image/jpeg,image/webp", "aria-label": "Choisir une photo de profil", disabled: !canUploadMedia || null }, dataset: { profileMediaInput: "avatar" } });
   const bannerFileInput = element("input", { attributes: { type: "file", accept: "image/png,image/jpeg,image/webp", "aria-label": "Choisir une bannière", disabled: !canUploadMedia || null }, dataset: { profileMediaInput: "banner" } });
   const avatarMediaStatus = element("p", { className: "v8-settings-diagnostic-note", text: canUploadMedia ? "PNG, JPEG ou WebP, 5 Mo maximum." : "Disponible une fois connecté.", attributes: { "aria-live": "polite" } });
   const bannerMediaStatus = element("p", { className: "v8-settings-diagnostic-note", text: canUploadMedia ? "Format large recommande, 5 Mo maximum." : "Disponible une fois connecté.", attributes: { "aria-live": "polite" } });
+  const nameInput = element("input", { className: "v8-input", attributes: { type: "text", value: profile?.name || "", maxlength: "80", placeholder: "Nom du profil", "aria-label": "Nom du profil", disabled: !profile?.id || null } });
+  const nameStatus = element("p", { className: "v8-settings-diagnostic-note", attributes: { "aria-live": "polite" } });
+  const nameSaveButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" } }, [icon("save"), element("span", { text: "Enregistrer" })]);
 
-  const page = element("section", { className: "v8-page v8-settings-page", dataset: { page: "settings" } }, [
-    element("header", { className: "v8-page-heading" }, [
-      element("div", { className: "v8-page-heading__copy" }, [
-        element("span", { className: "v8-eyebrow", text: "Système" }),
-        element("h1", { text: "Réglages" }),
-        element("p", { text: "Une seule source de verite pour l'apparence et le comportement d'ETHONE." })
-      ]),
-      element("div", { className: "v8-page-heading__actions" }, [settingsSaveStatus, actionButton({ actionId: "v8.profile.open", variant: "secondary" }, [icon("user-round"), element("span", { text: "Profil" })])])
-    ]),
-    element("div", { className: "v8-settings-layout" }, [
-      element("aside", { className: "v8-settings-nav", attributes: { role: "tablist", "aria-orientation": "vertical", "aria-label": "Sections des réglages" } }, [
-        element("button", { className: "is-active", text: "Profil", attributes: { type: "button", role: "tab", "aria-selected": "true", "aria-controls": "v8-settings-profile", tabindex: "0" }, dataset: { settingsSection: "v8-settings-profile" } }),
-        element("button", { text: "Apparence", attributes: { type: "button", role: "tab", "aria-selected": "false", "aria-controls": "v8-settings-appearance", tabindex: "-1" }, dataset: { settingsSection: "v8-settings-appearance" } }),
-        element("button", { text: "Brain", attributes: { type: "button", role: "tab", "aria-selected": "false", "aria-controls": "v8-settings-brain", tabindex: "-1" }, dataset: { settingsSection: "v8-settings-brain" } }),
-        element("button", { text: "Sons", attributes: { type: "button", role: "tab", "aria-selected": "false", "aria-controls": "v8-settings-sounds", tabindex: "-1" }, dataset: { settingsSection: "v8-settings-sounds" } }),
-        element("button", { text: "Workspace", attributes: { type: "button", role: "tab", "aria-selected": "false", "aria-controls": "v8-settings-workspace", tabindex: "-1" }, dataset: { settingsSection: "v8-settings-workspace" } }),
-        element("button", { text: "Système", attributes: { type: "button", role: "tab", "aria-selected": "false", "aria-controls": "v8-settings-system", tabindex: "-1" }, dataset: { settingsSection: "v8-settings-system" } }),
-        element("button", { text: "Developer", attributes: { type: "button", role: "tab", "aria-selected": "false", "aria-controls": "v8-settings-developer", tabindex: "-1" }, dataset: { settingsSection: "v8-settings-developer" } })
-      ]),
-      element("div", { className: "v8-settings-content" }, [
-        element("section", { id: "v8-settings-profile", className: "v8-settings-section v8-surface", attributes: { role: "tabpanel", tabindex: "0" } }, [
-          element("header", {}, [element("span", { className: "v8-eyebrow", text: "Identite" }), element("h2", { text: "Profil" }), element("p", { text: "Votre nom, votre photo et votre bannière, visibles dans tout ETHONE." })]),
-          settingRow("user-round", "Nom du profil", "Affiche dans ETHONE et pour les autres profils de ce compte.", element("div", { className: "v8-profile-name-control" }, [nameInput, nameSaveButton, nameStatus])),
-          element("div", { className: "v8-profile-media-row" }, [
-            avatarPreviewHost,
-            element("div", { className: "v8-profile-media-row__controls" }, [
-              element("strong", { text: "Photo de profil" }),
-              avatarFileInput,
-              avatarMediaStatus
-            ])
-          ]),
-          element("div", { className: "v8-profile-media-row" }, [
-            bannerPreviewHost,
-            element("div", { className: "v8-profile-media-row__controls" }, [
-              element("strong", { text: "Bannière" }),
-              bannerFileInput,
-              bannerMediaStatus
-            ])
-          ]),
-          settingRow("badge-check", "Notes de version (Changelog)", "Consulter l'historique des mises Ã  jour, nouveautés et correctifs d'ETHONE v194.", actionButton({ actionId: "v8.changelog.open", variant: "secondary" }, [icon("badge-check"), element("span", { text: "Ouvrir le Changelog" })])),
-        ]),
-        element("section", { id: "v8-settings-appearance", className: "v8-settings-section v8-surface", attributes: { role: "tabpanel", tabindex: "0", hidden: true } }, [
-          element("header", {}, [element("span", { className: "v8-eyebrow", text: "Design System" }), element("h2", { text: "Apparence" }), element("p", { text: "Des réglages sobres, coherents et persistants." })]),
-          element("div", { className: "v8-density-settings" }, [
-            element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("layout-template")]), element("div", {}, [element("strong", { text: "Presets" }), element("p", { text: "Appliquer une ambiance prete a l'emploi ou sauvegarder la configuration actuelle." })])]),
-            presetChoices,
-            element("div", { className: "v8-preset-actions" }, [savePresetButton, exportPresetButton])
-          ]),
-          element("div", { className: "v8-density-settings" }, [
-            element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("sun-moon")]), element("div", {}, [element("strong", { text: "Thème" }), element("p", { text: "Adapter les surfaces et le contraste." })]), themeResolved]),
-            themeChoices
-          ]),
-          element("div", { className: "v8-density-settings" }, [
-            element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("sparkles")]), element("div", {}, [element("strong", { text: "Ambiance Lumineuse (Aura)" }), element("p", { text: "Choisir l'atmosphère colorée et les réflexions vitrées du Dashboard." })])]),
-            auraChoices
-          ]),
-          element("div", { className: "v8-density-settings" }, [
-            element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("type")]), element("div", {}, [element("strong", { text: "Typographie d'interface" }), element("p", { text: "Personnaliser le caractère et la personnalité du texte." })])]),
-            fontChoices
-          ]),
-          element("div", { className: "v8-density-settings" }, [
-            element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("circle")]), element("div", {}, [element("strong", { text: "Courbure du Design" }), element("p", { text: "Ajuster l'échelle d'arrondi des cartes et boutons du système." })])]),
-            radiusChoices
-          ]),
-          settingRow("palette", "Accent", "Identifier le Space et les actions importantes.", element("div", { className: "v8-theme-picker" }, [accentControls])),
-          element("div", { className: "v8-density-settings" }, [
-            element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("rows-3")]), element("div", {}, [element("strong", { text: "Density Engine" }), element("p", { text: "Une densité coherente pour chaque page, panneau, widget et resolution." })]), densityResolved]),
-            densityChoices,
-            densityCustomHost,
-            element("div", { className: "v8-density-adaptive" }, [
-              element("label", {}, [element("span", {}, [element("strong", { text: "Focus Density" }), element("small", { text: "Compacter automatiquement le Space Focus." })]), switchControl("v8.density.focus", "Activer Focus Density", initialDensitySettings.focusDensity)]),
-              element("label", {}, [element("span", {}, [element("strong", { text: "Presets par Space" }), element("small", { text: "Personnel confortable, Focus compact, Studio confortable." })]), switchControl("v8.density.spaces", "Activer les presets par Space", initialDensitySettings.adaptiveBySpace)])
-            ]),
-            densityPreviewHost
-          ]),
-          settingRow("sparkles", "Spotlight", "Reveler le Dashboard avec une transition breve au demarrage.", switchControl("v8.spotlight.toggle", "Animation Spotlight au demarrage", state.spotlightEnabled !== false)),
-          settingRow("minimize", "Mode Zen", "Masquer les barres pour un focus maximal sur votre contenu (Alt+Z).", switchControl("v8.zen.toggle", "Activer le Mode Zen", state.zen === true)),
-          settingRow("dock", "Taille du Dock", "Changer l'échelle de la barre de navigation inférieure.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Taille du Dock" } }, [
-            choice("v8.dock.scale.compact", "minimize", "Compacte", state.dockScale === "compact"),
-            choice("v8.dock.scale.normal", "dock", "Normale", !state.dockScale || state.dockScale === "normal"),
-            choice("v8.dock.scale.large", "maximize", "Grande", state.dockScale === "large")
-          ])),
-          settingRow("align-center", "Alignement du Dock", "Dock centré flottant ou étendu sur la largeur.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Alignement du Dock" } }, [
-            choice("v8.dock.align.center", "align-center", "Centré", !state.dockAlign || state.dockAlign === "center"),
-            choice("v8.dock.align.stretch", "maximize", "Plein Écran", state.dockAlign === "stretch")
-          ])),
-          settingRow("sparkles", "Style du Dock (Verre)", "Transparence, flou artistique ou style opaque sobre.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Style du Dock" } }, [
-            choice("v8.dock.glass.default", "sparkles", "Vitrifié", !state.dockGlass || state.dockGlass === "default"),
-            choice("v8.dock.glass.ultra", "blend", "Ultra Flou", state.dockGlass === "ultra"),
-            choice("v8.dock.glass.opaque", "layout", "Sobre", state.dockGlass === "opaque")
-          ])),
-          settingRow("eye-off", "Masquage auto du Dock", "Masquer automatiquement le dock et le révéler au survol.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Masquage auto du Dock" } }, [
-            choice("v8.dock.autohide.off", "eye", "Toujours visible", !state.dockAutoHide),
-            choice("v8.dock.autohide.on", "eye-off", "Masquer auto", state.dockAutoHide === true)
-          ])),
-          settingRow("layout-grid", "Grille de l'Accueil", "Choisir le nombre de colonnes et la disposition de l'Accueil.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Grille de l'Accueil" } }, [
-            choice("v8.home.grid.2", "layout-grid", "2 Colonnes", state.homeGrid === "2"),
-            choice("v8.home.grid.3", "layout-grid", "3 Colonnes", state.homeGrid === "3"),
-            choice("v8.home.grid.4", "layout-grid", "4 Colonnes", !state.homeGrid || state.homeGrid === "4")
-          ])),
-          settingRow("image", "Bannière d'Accueil", "Afficher la salutation complète, en version compacte ou la masquer.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Bannière d'Accueil" } }, [
-            choice("v8.home.hero.full", "image", "Complète", !state.homeHero || state.homeHero === "full"),
-            choice("v8.home.hero.compact", "minimize", "Compacte", state.homeHero === "compact"),
-            choice("v8.home.hero.hidden", "eye-off", "Masquée", state.homeHero === "hidden")
-          ])),
-          settingRow("languages", "Langue", "Changer rapidement la langue de l'interface.", actionButton({ actionId: "v8.locale.cycle", variant: "secondary" }, [icon("languages"), element("span", { text: "Langue suivante" })])),
-          element("div", { className: "v8-density-settings" }, [
-            element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("gauge")]), element("div", {}, [element("strong", { text: "Performance" }), element("p", { text: "Reduire les effets visuels pour gagner en fluidite sur les appareils moins puissants." })])]),
-            settingRow("sparkle", "Effets d'ambiance", "Halos et particules animes en arriere-plan. Les desactiver allégé le rendu en continu.", switchControl("v8.motion.ambient.toggle", "Activer les effets d'ambiance", state.ambientEffectsEnabled !== false)),
-            settingRow("blend", "Flou d'interface", "Effet de verre depoli sur le dock, les fenêtrès et menus. Le desactiver amélioré la fluidite du defilement.", switchControl("v8.motion.blur.toggle", "Activer le flou d'interface", state.interfaceBlurEnabled !== false))
-          ])
-        ]),
-        element("section", { id: "v8-settings-brain", className: "v8-settings-section v8-surface", attributes: { role: "tabpanel", tabindex: "0", hidden: true } }, [
-          element("header", {}, [element("span", { className: "v8-eyebrow", text: "Personal Brain" }), element("h2", { text: "Assistant, memoire et confidentialité" }), element("p", { text: "Un contexte minimal, des permissions explicites et aucune clé privée dans le navigateur." })]),
-          settingRow("signature", "Identite", "Choisir le nom et le style de réponse.", element("div", { className: "v8-brain-settings-controls" }, [brainPreferenceSwitch("enabled", "Activer Brain", brainPreferences.enabled), brainNameInput, brainPersonaSelect, brainDetailSelect])),
-          settingRow("message-square-more", "Comportement", "Ajuster le ton, la langue, les suggestions et le niveau d'automatisation.", element("div", { className: "v8-brain-settings-controls" }, [brainToneSelect, brainLanguageSelect, brainSuggestionSelect, brainAutomationSelect])),
-          settingRow("sparkles", "Presence", "Brain reste discret et respecte le mode Focus.", element("div", { className: "v8-brain-settings-inline" }, [brainPreferenceSwitch("proactive", "Suggestions proactives", brainPreferences.proactive), brainPreferenceSwitch("notifications", "Notifications Brain", brainPreferences.notifications), brainPreferenceSwitch("sounds", "Sons Brain", brainPreferences.sounds), brainPreferenceSwitch("silentInFocus", "Silencieux en Focus", brainPreferences.silentInFocus)])),
-          settingRow("cpu", "Provider", "Les providers cloud exigent le backend ETHONE sécurisé.", element("div", { className: "v8-brain-settings-controls" }, [brainProviderSelect, brainModelInput, brainFallbackSelect, brainPrivacySelect])),
-          settingRow("database", "Memoire", "Préférences utiles uniquement, avec retention et RLS.", element("div", { className: "v8-brain-settings-inline" }, [brainPreferenceSwitch("memory.enabled", "Activer la memoire Brain", brainPreferences.memory.enabled), brainRetentionSelect, brainMemoryLoad])),
-          settingRow("sunrise", "Briefing quotidien", "Événements, priorités et signaux utiles, en format concis.", element("div", { className: "v8-brain-settings-inline" }, [brainPreferenceSwitch("briefing.enabled", "Activer le briefing Brain", brainPreferences.briefing.enabled), brainPreferenceSwitch("briefing.concise", "Conserver un briefing concis", brainPreferences.briefing.concise)])),
-          element("div", { className: "v8-brain-settings-block" }, [
-            element("header", {}, [
-              element("div", {}, [element("strong", { text: "Privacy Center" }), element("p", { text: "Chaque catégorie peut être desactivee independamment." })]),
-              actionButton({ actionId: "v8.brain.open", variant: "secondary" }, [icon("brain"), element("span", { text: "Ouvrir Brain" })])
-            ]),
-            brainPermissionGrid
-          ]),
-          element("div", { className: "v8-brain-settings-block v8-brain-settings-memory" }, [
-            element("header", {}, [
-              element("div", {}, [element("strong", { text: "Memoire personnelle" }), brainMemoryStatus]),
-              element("div", {}, [
-                element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { settingsMemoryExport: "" } }, [icon("download"), element("span", { text: "Exporter" })]),
-                element("button", { className: "v8-button v8-button--danger", attributes: { type: "button" }, dataset: { settingsMemoryClear: "" } }, [icon("trash-2"), element("span", { text: "Tout effacer" })])
-              ])
-            ]),
-            brainMemoryCategoryGrid,
-            brainMemoryList
-          ])
-        ]),
-        element("section", { id: "v8-settings-sounds", className: "v8-settings-section v8-surface", attributes: { role: "tabpanel", tabindex: "0", hidden: true } }, [
-          element("header", {}, [element("span", { className: "v8-eyebrow", text: "Audio system" }), element("h2", { text: "Sons" }), element("p", { text: "Des retours courts et discrets, toujours facultatifs." })]),
-          settingRow("volume-2", "Retours sonores", soundSupported ? "Activer ou couper tout le système audio." : "Le son n'est pas disponible dans ce navigateur.", switchControl("v8.sound.toggle", "Activer les sons", initialSoundPreferences.enabled, !soundSupported)),
-          settingRow("volume-x", "Mode silencieux", "Couper temporairement toutes les interactions sonores.", switchControl("v8.sound.silent", "Activer le mode silencieux", initialSoundPreferences.silent, !soundSupported)),
-          settingRow("audio-waveform", "Audio spatial", spatialSupported ? "Orienter très legerement les sons selon leur origine." : "L'audio spatial n'est pas disponible dans ce navigateur.", switchControl("v8.sound.spatial", "Activer l'audio spatial", initialSoundPreferences.spatial, !spatialSupported)),
-          settingRow("music", "Pack sonore", "Choisir une identite sonore originale pour ETHONE.", soundPackControl),
-          ...SOUND_VOLUME_ROWS.map((row) => settingRow(row.icon, row.title, row.description, soundRange(row.id, row.id === "master" ? initialSoundPreferences.master : initialSoundPreferences.volumes[row.id], !soundSupported)))
-        ]),
-        element("section", { id: "v8-settings-workspace", className: "v8-settings-section v8-surface", attributes: { role: "tabpanel", tabindex: "0", hidden: true } }, [
-          element("header", {}, [element("span", { className: "v8-eyebrow", text: "Environnements" }), element("h2", { text: "Spaces" }), element("p", { text: "Chaque Space applique son Flow et son ambiance." })]),
-          element("div", { className: "v8-settings-spaces" }, [
-            choice("v8.space.personal", "user-round", "Personnel", state.space === "personal"),
-            choice("v8.space.focus", "focus", "Focus", state.space === "focus"),
-            choice("v8.space.studio", "sparkles", "Studio", state.space === "studio")
-          ])
-        ]),
-        element("section", { id: "v8-settings-system", className: "v8-settings-section v8-surface", attributes: { role: "tabpanel", tabindex: "0", hidden: true } }, [
-          element("header", {}, [element("span", { className: "v8-eyebrow", text: "État" }), element("h2", { text: "Système cloud & version" })]),
-          element("div", { className: "v8-system-checks" }, [
-            element("span", {}, [icon("shield-check"), element("strong", { text: "Données" }), element("b", { text: "RLS actif" })]),
-            element("span", {}, [icon("cloud"), element("strong", { text: "Supabase" }), element("b", { text: SYNC_LABELS[state.syncStatus] || "Connexion" })]),
-            element("span", {}, [icon("gauge"), element("strong", { text: "Interface" }), element("b", { text: DENSITY_LABELS[state.density] || "Confortable" })])
-          ]),
-          settingRow("badge-check", "Notes de version (Changelog)", "Consulter l'historique des mises Ã  jour, nouveautés et correctifs d'ETHONE v194.", actionButton({ actionId: "v8.changelog.open", variant: "secondary" }, [icon("badge-check"), element("span", { text: "Ouvrir le Changelog" })])),
-          settingRow("archive", "Configuration ETHONE", "Exporter ou importer l'ensemble des réglages et préférences locales.", element("div", { className: "v8-brain-settings-inline" }, [configExportButton, configImportButton, configImportInput]))
-        ]),
-        element("section", { id: "v8-settings-developer", className: "v8-settings-section v8-surface", attributes: { role: "tabpanel", tabindex: "0", hidden: true } }, [
-          element("header", {}, [
-            element("span", { className: "v8-eyebrow", text: "Inspector" }),
-            element("h2", { text: "Services externes" }),
-            element("p", { text: "Diagnostic explicite, sans surveillance ni requete en arriere-plan." }),
-            workerDiagnosticButton
-          ]),
-          workerStatusHost,
-          workerError
-        ])
-      ])
+  const workerStatusHost = element("div", { className: "v8-system-checks", attributes: { "aria-live": "polite" } });
+  const workerError = element("p", { className: "v8-settings-diagnostic-note" });
+  const workerDiagnosticButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" } }, [icon("stethoscope"), element("span", { text: "Vérifier le Worker" })]);
+  const configImportInput = element("input", { attributes: { type: "file", accept: "application/json", "aria-label": "Importer une configuration ETHONE" }, dataset: { settingsConfigImport: "" } });
+  const configImportButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { settingsConfigImportTrigger: "" } }, [icon("upload"), element("span", { text: "Importer" })]);
+  const configExportButton = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, dataset: { settingsConfigExport: "" } }, [icon("download"), element("span", { text: "Exporter" })]);
+  const resetPersonalizationButton = element("button", { className: "v8-button v8-button--danger", attributes: { type: "button" }, dataset: { settingsReset: "personalization" } }, [icon("rotate-ccw"), element("span", { text: "Réinitialiser la personnalisation" })]);
+  const deleteBrainMemoryButton = element("button", { className: "v8-button v8-button--danger", attributes: { type: "button" } }, [icon("trash-2"), element("span", { text: "Supprimer la mémoire Brain" })]);
+
+  const mailSettings = getMailSettings();
+  const accessibility = getAccessibility();
+  applyAccessibility(accessibility);
+
+  const searchInput = element("input", { className: "v8-input v8-settings-search__input", attributes: { type: "search", placeholder: "Rechercher un réglage...", "aria-label": "Rechercher un réglage", autocomplete: "off" } });
+  const helpInput = element("input", { className: "v8-input v8-settings-search__input", attributes: { type: "search", placeholder: "Recherche d'aide...", "aria-label": "Rechercher de l'aide", autocomplete: "off" } });
+  const emptySearch = emptyState({ kind: "no-results", compact: true, inline: true, className: "v8-settings-empty" });
+  const favoritesHost = element("div", { className: "v8-settings-favorites" });
+  const recentsHost = element("div", { className: "v8-settings-recents" });
+  const sectionIndex = element("nav", { className: "v8-section-index", attributes: { role: "navigation", "aria-label": "Sections des réglages" } });
+
+  const shortcutsMap = getShortcuts();
+  const shortcutsHost = element("div", { className: "v8-shortcuts-list" }, SHORTCUTS.map((s) => settingRow("keyboard", s.label, s.keys, shortcutSwitch(s.id, `Activer ${s.label}`, shortcutsMap[s.id] !== false), "shortcuts")));
+  const shortcutsResetButton = element("button", { className: "v8-button v8-button--outline", attributes: { type: "button" } }, [icon("rotate-ccw"), element("span", { text: "Réinitialiser les raccourcis" })]);
+
+  const cards = [];
+  const addCard = (id, eyebrow, title, description, rows) => {
+    const card = settingSectionCard(id, eyebrow, title, description, rows);
+    cards.push({ id, title, card });
+    return card;
+  };
+
+  const accountCard = addCard("account", "Identité", "Compte", "Votre nom, photo et bannière visibles dans tout ETHONE.", [
+    settingRow("user-round", "Nom du profil", "Affiché dans ETHONE et pour les autres profils.", element("div", { className: "v8-profile-name-control" }, [nameInput, nameSaveButton, nameStatus]), "account"),
+    element("div", { className: "v8-profile-media-row" }, [avatarPreviewHost, element("div", { className: "v8-profile-media-row__controls" }, [element("strong", { text: "Photo de profil" }), avatarFileInput, avatarMediaStatus])]),
+    element("div", { className: "v8-profile-media-row" }, [bannerPreviewHost, element("div", { className: "v8-profile-media-row__controls" }, [element("strong", { text: "Bannière" }), bannerFileInput, bannerMediaStatus])]),
+    settingRow("badge-check", "Notes de version", "Historique des mises à jour, nouveautés et correctifs.", actionButton({ actionId: "v8.changelog.open", variant: "secondary" }, [icon("badge-check"), element("span", { text: "Ouvrir le Changelog" })]), "account")
+  ]);
+
+  const appearanceCard = addCard("appearance", "Design System", "Apparence", "Des réglages sobres, cohérents et persistants.", [
+    element("div", { className: "v8-density-settings" }, [element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("layout-template")]), element("div", {}, [element("strong", { text: "Presets" }), element("p", { text: "Appliquer une ambiance prête à l'emploi." })]), presetChoices, element("div", { className: "v8-preset-actions" }, [savePresetButton, exportPresetButton])])]),
+    element("div", { className: "v8-density-settings" }, [element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("sun-moon")]), element("div", {}, [element("strong", { text: "Thème" }), element("p", { text: "Adapter les surfaces et le contraste." })]), themeResolved]), themeChoices]),
+    element("div", { className: "v8-density-settings" }, [element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("sparkles")]), element("div", {}, [element("strong", { text: "Ambiance Aura" }), element("p", { text: "L'atmosphère colorée du Dashboard." })])]), auraChoices]),
+    element("div", { className: "v8-density-settings" }, [element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("type")]), element("div", {}, [element("strong", { text: "Typographie" }), element("p", { text: "Personnaliser le caractère du texte." })])]), fontChoices]),
+    element("div", { className: "v8-density-settings" }, [element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("circle")]), element("div", {}, [element("strong", { text: "Courbure du Design" }), element("p", { text: "Échelle d'arrondi des cartes et boutons." })])]), radiusChoices]),
+    settingRow("palette", "Accent", "Identifier le Space et les actions importantes.", element("div", { className: "v8-theme-picker" }, [accentControls]), "appearance"),
+    settingRow("image", "Fond d'écran", "Arrière-plan décoratif du Dashboard.", wallpaperChoices, "appearance"),
+    element("div", { className: "v8-density-settings" }, [element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("rows-3")]), element("div", {}, [element("strong", { text: "Density Engine" }), element("p", { text: "Une densité cohérente pour chaque page et résolution." })]), densityResolved]), densityChoices, densityCustomHost, element("div", { className: "v8-density-adaptive" }, [
+      element("label", {}, [element("span", {}, [element("strong", { text: "Focus Density" }), element("small", { text: "Compacter automatiquement le Space Focus." })]), switchControl("v8.density.focus", "Activer Focus Density", initialDensitySettings.focusDensity)]),
+      element("label", {}, [element("span", {}, [element("strong", { text: "Presets par Space" }), element("small", { text: "Personnel confortable, Focus compact, Studio confortable." })]), switchControl("v8.density.spaces", "Activer les presets par Space", initialDensitySettings.adaptiveBySpace)])
+    ]), densityPreviewHost]),
+    settingRow("languages", "Langue", "Changer rapidement la langue de l'interface.", actionButton({ actionId: "v8.locale.cycle", variant: "secondary" }, [icon("languages"), element("span", { text: "Langue suivante" })]), "appearance"),
+    settingRow("gauge", "Faibles données", "Réduire les données externes et les effets réseau.", lowDataSwitch, "appearance")
+  ]);
+
+  const dashboardCard = addCard("dashboard", "Dashboard", "Tableau de bord", "Comportement de l'accueil, du Dock et des animations.", [
+    settingRow("sparkles", "Spotlight", "Révéler le Dashboard au démarrage.", switchControl("v8.spotlight.toggle", "Animation Spotlight au demarrage", state.spotlightEnabled !== false), "dashboard"),
+    settingRow("minimize", "Mode Zen", "Masquer les barres pour un focus maximal.", switchControl("v8.zen.toggle", "Activer le Mode Zen", state.zen === true), "dashboard"),
+    settingRow("dock", "Taille du Dock", "Échelle de la barre de navigation.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Taille du Dock" } }, [choice("v8.dock.scale.compact", "minimize", "Compacte", state.dockScale === "compact"), choice("v8.dock.scale.normal", "dock", "Normale", !state.dockScale || state.dockScale === "normal"), choice("v8.dock.scale.large", "maximize", "Grande", state.dockScale === "large")]), "dashboard"),
+    settingRow("align-center", "Alignement du Dock", "Dock centré flottant ou étendu.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Alignement du Dock" } }, [choice("v8.dock.align.center", "align-center", "Centré", !state.dockAlign || state.dockAlign === "center"), choice("v8.dock.align.stretch", "maximize", "Plein Écran", state.dockAlign === "stretch")]), "dashboard"),
+    settingRow("sparkles", "Style du Dock (Verre)", "Transparence, flou artistique ou opaque.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Style du Dock" } }, [choice("v8.dock.glass.default", "sparkles", "Vitrifié", !state.dockGlass || state.dockGlass === "default"), choice("v8.dock.glass.ultra", "blend", "Ultra Flou", state.dockGlass === "ultra"), choice("v8.dock.glass.opaque", "layout", "Sobre", state.dockGlass === "opaque")]), "dashboard"),
+    settingRow("eye-off", "Masquage auto du Dock", "Masquer automatiquement le dock.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Masquage auto du Dock" } }, [choice("v8.dock.autohide.off", "eye", "Toujours visible", !state.dockAutoHide), choice("v8.dock.autohide.on", "eye-off", "Masquer auto", state.dockAutoHide === true)]), "dashboard"),
+    settingRow("layout-grid", "Grille de l'Accueil", "Nombre de colonnes du Dashboard.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Grille de l'Accueil" } }, [choice("v8.home.grid.2", "layout-grid", "2 Colonnes", state.homeGrid === "2"), choice("v8.home.grid.3", "layout-grid", "3 Colonnes", state.homeGrid === "3"), choice("v8.home.grid.4", "layout-grid", "4 Colonnes", !state.homeGrid || state.homeGrid === "4")]), "dashboard"),
+    settingRow("image", "Bannière d'Accueil", "Afficher la salutation complète, compacte ou masquée.", element("div", { className: "v8-dock-scale-options", attributes: { role: "group", "aria-label": "Bannière d'Accueil" } }, [choice("v8.home.hero.full", "image", "Complète", !state.homeHero || state.homeHero === "full"), choice("v8.home.hero.compact", "minimize", "Compacte", state.homeHero === "compact"), choice("v8.home.hero.hidden", "eye-off", "Masquée", state.homeHero === "hidden")]), "dashboard"),
+    element("div", { className: "v8-density-settings" }, [element("div", { className: "v8-density-settings__heading" }, [element("span", { className: "v8-setting-row__icon" }, [icon("gauge")]), element("div", {}, [element("strong", { text: "Performance" }), element("p", { text: "Réduire les effets visuels pour gagner en fluidité." })])]),
+      settingRow("sparkle", "Effets d'ambiance", "Halos et particules animés en arrière-plan.", switchControl("v8.motion.ambient.toggle", "Activer les effets d'ambiance", state.ambientEffectsEnabled !== false), "dashboard"),
+      settingRow("blend", "Flou d'interface", "Verre dépoli sur dock, fenêtres et menus.", switchControl("v8.motion.blur.toggle", "Activer le flou d'interface", state.interfaceBlurEnabled !== false), "dashboard")
     ])
   ]);
+
+  const brainCard = addCard("brain", "Personal Brain", "Brain", "Assistant, mémoire et confidentialité.", [
+    settingRow("signature", "Identité", "Choisir le nom et le style de réponse.", element("div", { className: "v8-brain-settings-controls" }, [brainPreferenceSwitch("enabled", "Activer Brain", brainPreferences.enabled), brainNameInput, brainPersonaSelect, brainDetailSelect]), "brain"),
+    settingRow("message-square-more", "Comportement", "Ajuster le ton, la langue, les suggestions et l'automatisation.", element("div", { className: "v8-brain-settings-controls" }, [brainToneSelect, brainLanguageSelect, brainSuggestionSelect, brainAutomationSelect]), "brain"),
+    settingRow("sparkles", "Présence", "Brain reste discret et respecte le mode Focus.", element("div", { className: "v8-brain-settings-inline" }, [brainPreferenceSwitch("proactive", "Suggestions proactives", brainPreferences.proactive), brainPreferenceSwitch("notifications", "Notifications Brain", brainPreferences.notifications), brainPreferenceSwitch("sounds", "Sons Brain", brainPreferences.sounds), brainPreferenceSwitch("silentInFocus", "Silencieux en Focus", brainPreferences.silentInFocus)]), "brain"),
+    settingRow("cpu", "Provider", "Les providers cloud exigent le backend ETHONE.", element("div", { className: "v8-brain-settings-controls" }, [brainProviderSelect, brainModelInput, brainFallbackSelect, brainPrivacySelect]), "brain"),
+    settingRow("database", "Mémoire", "Préférences utiles, avec rétention et RLS.", element("div", { className: "v8-brain-settings-inline" }, [brainPreferenceSwitch("memory.enabled", "Activer la mémoire Brain", brainPreferences.memory.enabled), brainRetentionSelect, brainMemoryLoad]), "brain"),
+    settingRow("sunrise", "Briefing quotidien", "Événements, priorités et signaux utiles.", element("div", { className: "v8-brain-settings-inline" }, [brainPreferenceSwitch("briefing.enabled", "Activer le briefing Brain", brainPreferences.briefing.enabled), brainPreferenceSwitch("briefing.concise", "Conserver un briefing concis", brainPreferences.briefing.concise)]), "brain"),
+    settingRow("eye", "Permissions", "Données que Brain peut consulter.", brainPermissionGrid, "brain"),
+    settingRow("bookmark", "Catégories de mémoire", "Ce que Brain retient pour personnaliser vos espaces.", brainMemoryCategoryGrid, "brain"),
+    settingRow("brain-circuit", "Mémoires stockées", "Consulter, modifier et supprimer les souvenirs Brain.", element("div", {}, [brainMemoryList, brainMemoryStatus]), "brain")
+  ]);
+
+  const connectionRows = CONNECTIONS.map((id) => settingRow("plug", id.charAt(0).toUpperCase() + id.slice(1).replace(/-/g, " "), `Connecter ou gérer votre compte ${id}.`, actionButton({ actionId: `v8.connections.${id}.connect`, variant: "secondary" }, [icon("link"), element("span", { text: "Connecter" })]), `connections--${id}`));
+  const connectionsCard = addCard("connections", "Services", "Connexions", "Liens avec vos apps et comptes externes.", connectionRows);
+
+  const soundPackSelect = createSelect({ className: "v8-input", attributes: { "aria-label": "Pack sonore" }, dataset: { soundPack: "" } }, SOUND_PACKS.map((pack) => element("option", { text: pack.label, attributes: { value: pack.id } })));
+  soundPackSelect.value = initialSoundPreferences.pack;
+  const notificationsCard = addCard("notifications", "Signal", "Notifications", "Sons, alertes et comportement des signaux.", [
+    settingRow("volume-2", "Pack sonore", "Thème audio des retours dans ETHONE.", soundPackSelect, "notifications"),
+    ...SOUND_VOLUME_ROWS.map((row) => settingRow(row.icon, row.title, row.description, soundRange(row.id, initialSoundPreferences.volumes?.[row.id] ?? (row.id === "master" ? initialSoundPreferences.master : 0.5), !soundSupported), `notifications--${row.id}`)),
+    settingRow("bell-off", "Mode Silence", "Désactiver tous les retours sonores.", switchControl("v8.sound.silent", "Mode Silence", initialSoundPreferences.silent === true), "notifications"),
+    settingRow("audio-lines", "Audio spatial", "Spatialisation légère des signaux.", switchControl("v8.sound.spatial", "Activer l'audio spatial", initialSoundPreferences.spatial !== false && spatialSupported, !spatialSupported), "notifications")
+  ]);
+
+  const mailCard = addCard("mail", "Courrier", "Mail", "Préférences de lecture, rédaction et sécurité.", [
+    settingRow("bell-ring", "Son de notification", "Jouer un son à l'arrivée d'un nouveau message.", mailSwitch("notificationSound", "Son de notification", mailSettings.notificationSound), "mail"),
+    settingRow("mail-open", "Marquer comme lu", "Marquer automatiquement un message à l'ouverture.", mailSwitch("markAsReadOnOpen", "Marquer comme lu à l'ouverture", mailSettings.markAsReadOnOpen), "mail"),
+    settingRow("pen-tool", "Signature par défaut", "Insérer automatiquement la signature.", mailSwitch("defaultSignature", "Signature par défaut", mailSettings.defaultSignature), "mail"),
+    settingRow("shield", "Filtre anti-spam", "Détecter et isoler les messages suspects.", mailSwitch("spamFilter", "Filtre anti-spam", mailSettings.spamFilter), "mail"),
+    settingRow("lock", "Chiffrement PGP auto", "Chiffrer automatiquement si une clé PGP est connue.", mailSwitch("pgpAutoEncrypt", "Chiffrement PGP automatique", mailSettings.pgpAutoEncrypt), "mail"),
+    settingRow("wifi-off", "Mode hors ligne", "Conserver les actions en attente sans connexion.", mailSwitch("offlineMode", "Mode hors ligne", mailSettings.offlineMode), "mail")
+  ]);
+
+  const securityCard = addCard("security", "Sécurité", "Sécurité", "Diagnostic et contrôle de session.", [
+    settingRow("shield-check", "État des services", "Vérifier le worker et les connexions cloud.", workerDiagnosticButton, "security"),
+    workerStatusHost,
+    workerError,
+    settingRow("key-round", "Passkeys et appareils", "Gérer les clés d'accès et la confiance des appareils.", actionButton({ actionId: "v8.security.open", variant: "secondary" }, [icon("key-round"), element("span", { text: "Ouvrir la sécurité" })]), "security")
+  ]);
+
+  const privacyCard = addCard("privacy", "Confidentialité", "Vie privée", "Contrôler ce que Brain sait et peut conserver.", [
+    settingRow("eye", "Accès de Brain", `Brain peut consulter : ${BRAIN_PERMISSION_CATEGORIES.filter((c) => brainPreferences.permissions[c]).map((c) => BRAIN_PERMISSION_LABELS[c] || c).join(", ") || "rien"}.`, brainPermissionGrid.cloneNode(true), "privacy"),
+    settingRow("trash-2", "Supprimer la mémoire Brain", "Effacer tous les souvenirs enregistrés par Brain.", deleteBrainMemoryButton, "privacy"),
+    settingRow("rotate-ccw", "Réinitialiser la personnalisation", "Effacer les préférences locales et repartir à zéro.", resetPersonalizationButton, "privacy")
+  ]);
+
+  const fontSizeSelect = createSelect({ className: "v8-input", attributes: { "aria-label": "Taille de police" } }, FONT_SIZE_OPTIONS.map((o) => element("option", { text: o.label, attributes: { value: o.id } })));
+  fontSizeSelect.value = accessibility.fontSize;
+  const colorBlindSelect = createSelect({ className: "v8-input", attributes: { "aria-label": "Mode daltonien" } }, COLOR_BLIND_OPTIONS.map((o) => element("option", { text: o.label, attributes: { value: o.id } })));
+  colorBlindSelect.value = accessibility.colorBlind;
+  const accessibilityCard = addCard("accessibility", "Accessibilité", "Accessibilité", "Adapter ETHONE à vos besoins de lecture et de perception.", [
+    settingRow("type", "Taille du texte", "Augmenter ou réduire l'échelle du texte.", fontSizeSelect, "accessibility"),
+    settingRow("pause", "Réduire les mouvements", "Limiter les animations et les transitions.", switchControl("v8.ui.animations.reduced", "Réduire les mouvements", accessibility.reducedMotion), "accessibility"),
+    settingRow("contrast", "Contraste élevé", "Renforcer les contrastes pour plus de lisibilité.", switchControl("v8.accessibility.highcontrast", "Contraste élevé", accessibility.highContrast), "accessibility"),
+    settingRow("palette", "Mode daltonien", "Adapter les couleurs en cas de trouble de la vision.", colorBlindSelect, "accessibility")
+  ]);
+
+  const shortcutsCard = addCard("shortcuts", "Clavier", "Raccourcis", "Activer ou désactiver les raccourcis clavier.", [shortcutsHost, shortcutsResetButton]);
+
+  const advancedCard = addCard("advanced", "Avancé", "Avancé", "Import, export, diagnostic et maintenance.", [
+    settingRow("archive", "Configuration ETHONE", "Exporter ou importer l'ensemble des réglages locaux.", element("div", { className: "v8-brain-settings-inline" }, [configExportButton, configImportButton, configImportInput]), "advanced"),
+    settingRow("rotate-ccw", "Réinitialiser", "Effacer la personnalisation et revenir à l'état initial.", resetPersonalizationButton, "advanced")
+  ]);
+
+  sectionIndex.replaceChildren(...cards.map(({ id, title }) => sectionIndexLink(id, title)));
+
+  const favoritesCard = settingSectionCard("favorites", "Favoris", "Favoris", "Vos réglages épinglés pour un accès rapide.", [favoritesHost]);
+  const recentsCard = settingSectionCard("recents", "Historique", "Récemment modifiés", "Les 5 derniers réglages changés.", [recentsHost]);
+  const helpCard = settingSectionCard("help", "Aide", "Rechercher de l'aide", "Trouvez un réglage par mots-clés.", [helpInput, emptySearch.cloneNode(true)]);
+
+  const page = element("section", { className: "v8-page v8-settings-page", dataset: { page: "settings" } }, [
+    element("header", { className: "v8-page-heading v8-settings-heading" }, [
+      element("button", { className: "v8-icon-button v8-settings-back", attributes: { type: "button", "aria-label": "Retour", "data-tooltip": "Retour" }, dataset: { action: "v8.home.open" } }, [icon("arrow-left")]),
+      element("div", { className: "v8-page-heading__copy" }, [element("span", { className: "v8-eyebrow", text: "Système" }), element("h1", { text: "Réglages" }), element("p", { text: "Une seule source de vérité pour l'apparence et le comportement d'ETHONE." })]),
+      element("div", { className: "v8-page-heading__actions" }, [settingsSaveStatus, actionButton({ actionId: "v8.profile.open", variant: "secondary" }, [icon("user-round"), element("span", { text: "Profil" })])])
+    ]),
+    element("div", { className: "v8-settings-sticky" }, [
+      sectionIndex,
+      element("div", { className: "v8-settings-search" }, [icon("search"), searchInput])
+    ]),
+    emptySearch,
+    favoritesCard,
+    recentsCard,
+    ...cards.map(({ card }) => card),
+    helpCard
+  ]);
+
   stage.replaceChildren(page);
   prepareFormControls(page);
-  const navButtons = [...page.querySelectorAll(".v8-settings-nav button")];
   const controller = new AbortController();
   let workerDiagnosticRunning = false;
 
-  function workerMetric(iconName, title, value) {
-    return element("span", {}, [icon(iconName), element("strong", { text: title }), element("b", { text: value })]);
-  }
-
+  function workerMetric(iconName, title, value) { return element("span", {}, [icon(iconName), element("strong", { text: title }), element("b", { text: value })]); }
   function renderWorkerStatus() {
     const snapshot = externalServices?.diagnostics?.() || {};
     const requests = Math.max(0, Number(snapshot.requests) || 0);
@@ -566,7 +605,7 @@ export function mountSettings(stage, options = {}) {
     const rate = requests ? `${Math.round((successes / requests) * 100)} %` : "Non mesuré";
     const services = Array.isArray(snapshot.services) ? snapshot.services : [];
     const available = services.filter((service) => service.available).map((service) => service.id);
-    const remaining = Number.isFinite(Number(snapshot.rateLimit?.remaining)) ? String(snapshot.rateLimit.remaining) : "Non communique";
+    const remaining = Number.isFinite(Number(snapshot.rateLimit?.remaining)) ? String(snapshot.rateLimit.remaining) : "Non communiqué";
     workerStatusHost.replaceChildren(
       workerMetric(snapshot.workerConnected ? "shield-check" : "shield-alert", "Worker", snapshot.workerConnected ? "Connecté" : "Non vérifié"),
       workerMetric("timer", "Latence", Number.isFinite(Number(snapshot.lastLatencyMs)) ? `${Math.round(snapshot.lastLatencyMs)} ms` : "Non mesurée"),
@@ -612,7 +651,6 @@ export function mountSettings(stage, options = {}) {
     else if (saveState === "error") setFormStatus(settingsSaveStatus, "error", "Erreur de sauvegarde");
     else if (saveState === "offline") setFormStatus(settingsSaveStatus, "error", "Hors ligne - en attente");
     else setFormStatus(settingsSaveStatus, "saved", "Enregistre");
-    const densitySettings = sanitizeDensitySettings(nextState.densitySettings);
     page.querySelectorAll("[data-density-mode]").forEach((button) => {
       const active = button.dataset.densityMode === nextState.density;
       button.classList.toggle("is-active", active);
@@ -620,7 +658,6 @@ export function mountSettings(stage, options = {}) {
       const check = button.querySelector("[data-lucide='check']");
       if (active && !check) button.append(icon("check"));
       if (!active) check?.remove();
-        globalThis.lucide?.createIcons?.();
     });
     page.querySelectorAll("[data-action^='v8.accent.']").forEach((button) => {
       const active = button.dataset.action === `v8.accent.${nextState.accent}`;
@@ -648,86 +685,11 @@ export function mountSettings(stage, options = {}) {
       if (active && !check) button.append(icon("check"));
       if (!active) check?.remove();
       if (button.dataset.themeMode === "auto") {
-        const note = button.querySelector(".v8-thème-choice__resolved");
-        if (note) {
-          note.hidden = nextThemeResolution.requested !== "auto";
-          note.textContent = `-> ${THEME_LABELS[nextThemeResolution.effective]}`;
-        }
+        const note = button.querySelector(".v8-theme-choice__resolved");
+        if (note) note.hidden = nextThemeResolution.requested !== "auto";
       }
     });
     themeResolved.textContent = nextThemeResolution.requested === "auto" ? `${THEME_LABELS[nextThemeResolution.effective]} - systeme` : THEME_LABELS[nextThemeResolution.effective];
-
-    const activeAura = nextState.aura || globalThis.localStorage?.getItem("v8_home_aura") || "classic";
-    auraChoices.querySelectorAll("button").forEach((button) => {
-      const active = button.dataset.action === `v8.aura.${activeAura}`;
-      button.classList.toggle("is-active", active);
-      button.setAttribute("aria-pressed", String(active));
-      const check = button.querySelector("[data-lucide='check']");
-      if (active && !check) button.append(icon("check"));
-      if (!active) check?.remove();
-    });
-
-    const activeFont = nextState.fontFamily || globalThis.localStorage?.getItem("v8_font_family") || "inter";
-    fontChoices.querySelectorAll("button").forEach((button) => {
-      const active = button.dataset.action === `v8.font.${activeFont}`;
-      button.classList.toggle("is-active", active);
-      button.setAttribute("aria-pressed", String(active));
-      const check = button.querySelector("[data-lucide='check']");
-      if (active && !check) button.append(icon("check"));
-      if (!active) check?.remove();
-    });
-
-    const activeRadius = nextState.radiusStyle || globalThis.localStorage?.getItem("v8_radius_style") || "rounded";
-    radiusChoices.querySelectorAll("button").forEach((button) => {
-      const active = button.dataset.action === `v8.radius.${activeRadius}`;
-      button.classList.toggle("is-active", active);
-      button.setAttribute("aria-pressed", String(active));
-      const check = button.querySelector("[data-lucide='check']");
-      if (active && !check) button.append(icon("check"));
-      if (!active) check?.remove();
-    });
-
-    page.querySelector("[data-action='v8.density.focus']")?.setAttribute("aria-checked", String(densitySettings.focusDensity));
-    page.querySelector("[data-action='v8.density.spaces']")?.setAttribute("aria-checked", String(densitySettings.adaptiveBySpace));
-    const brainPrefs = sanitizeBrainPreferences(nextState.brainPreferences);
-    page.querySelectorAll("[data-brain-preference]").forEach((control) => {
-      const value = control.dataset.brainPreference.split(".").reduce((cursor, key) => cursor?.[key], brainPrefs);
-      control.setAttribute("aria-checked", String(value === true));
-      const stateIcon = control.closest("label")?.querySelector("[data-lucide]");
-      if (stateIcon && control.dataset.brainPreference.startsWith("permissions.")) stateIcon.dataset.lucide = value === true ? "eye" : "eye-off";
-      if (stateIcon && control.dataset.brainPreference.startsWith("memory.categories.")) stateIcon.dataset.lucide = value === true ? "bookmark-check" : "bookmark-x";
-    });
-    page.querySelectorAll("[data-brain-preference-select]").forEach((control) => {
-      const value = control.dataset.brainPreferenceSelect.split(".").reduce((cursor, key) => cursor?.[key], brainPrefs);
-      control.value = String(value);
-    });
-    page.querySelectorAll("[data-brain-preference-input]").forEach((control) => {
-      const value = control.dataset.brainPreferenceInput.split(".").reduce((cursor, key) => cursor?.[key], brainPrefs);
-      if (document.activeElement !== control) control.value = String(value ?? "");
-    });
-
-    // Generic sync for choice buttons (dock, home, space, etc.)
-    const actionStateMap = [
-      { prefix: "v8.dock.scale.", stateKey: nextState.dockScale || "normal", suffixOf: "v8.dock.scale." },
-      { prefix: "v8.dock.align.", stateKey: nextState.dockAlign || "center", suffixOf: "v8.dock.align." },
-      { prefix: "v8.dock.glass.", stateKey: nextState.dockGlass || "default", suffixOf: "v8.dock.glass." },
-      { prefix: "v8.dock.autohide.", stateKey: nextState.dockAutoHide ? "on" : "off", suffixOf: "v8.dock.autohide." },
-      { prefix: "v8.home.grid.", stateKey: nextState.homeGrid || "4", suffixOf: "v8.home.grid." },
-      { prefix: "v8.home.hero.", stateKey: nextState.homeHero || "full", suffixOf: "v8.home.hero." },
-      { prefix: "v8.space.", stateKey: nextState.space || "personal", suffixOf: "v8.space." },
-    ];
-    actionStateMap.forEach(({ prefix, stateKey }) => {
-      page.querySelectorAll(`[data-action^="${prefix}"]`).forEach((button) => {
-        const active = button.dataset.action === `${prefix}${stateKey}`;
-        button.classList.toggle("is-active", active);
-        button.setAttribute("aria-pressed", String(active));
-        const check = button.querySelector(".lucide-check, [data-lucide='check']");
-        if (active && !check) { button.append(icon("check")); }
-        if (!active && check) check.remove();
-      });
-    });
-
-    // Generic sync for all boolean toggle switches (zen, spotlight, ambient, blur, etc.)
     const toggleStateMap = [
       { action: "v8.zen.toggle", value: nextState.zen === true },
       { action: "v8.spotlight.toggle", value: nextState.spotlightEnabled !== false },
@@ -735,14 +697,124 @@ export function mountSettings(stage, options = {}) {
       { action: "v8.motion.blur.toggle", value: nextState.interfaceBlurEnabled !== false },
       { action: "v8.dock.magnify.toggle", value: nextState.dockMagnify === true },
       { action: "v8.ui.glow.toggle", value: nextState.uiGlow === true },
-      { action: "v8.ui.sound.feedback.toggle", value: nextState.uiSoundFeedback === true },
+      { action: "v8.ui.sound.feedback.toggle", value: nextState.uiSoundFeedback === true }
     ];
-    toggleStateMap.forEach(({ action, value }) => {
-      page.querySelector(`[data-action='${action}']`)?.setAttribute("aria-checked", String(value));
-    });
-
+    toggleStateMap.forEach(({ action, value }) => { page.querySelector(`[data-action='${action}']`)?.setAttribute("aria-checked", String(value)); });
     updateDensityPreview(nextState);
     refreshIcons();
+  }
+
+  function renderFavorites() {
+    const favs = [...getFavorites()];
+    const rows = [...page.querySelectorAll("[data-settings-row]")];
+    if (!favs.length) { favoritesHost.replaceChildren(statusState("empty", { compact: true, inline: true, iconName: "star", eyebrow: "Favoris", title: "Aucun favori", description: "Épinglez un réglage avec l'étoile à gauche de chaque option." })); return; }
+    const links = favs.map((id) => {
+      const row = rows.find((r) => r.dataset.settingsRow === id);
+      if (!row) return null;
+      return element("button", { className: "v8-chip", attributes: { type: "button" }, dataset: { settingsGo: id } }, [icon("star"), element("span", { text: row.dataset.settingsTitle || "Réglage" })]);
+    }).filter(Boolean);
+    favoritesHost.replaceChildren(...links);
+    refreshIcons();
+  }
+
+  function renderRecents() {
+    const recents = getRecent();
+    if (!recents.length) { recentsHost.replaceChildren(statusState("empty", { compact: true, inline: true, iconName: "history", eyebrow: "Historique", title: "Aucune modification", description: "Les réglages changés apparaîtront ici." })); return; }
+    const rows = [...page.querySelectorAll("[data-settings-row]")];
+    const links = recents.map((entry) => {
+      const row = rows.find((r) => r.dataset.settingsRow === entry.id);
+      return element("button", { className: "v8-chip", attributes: { type: "button" }, dataset: { settingsGo: entry.id } }, [icon("history"), element("span", { text: row?.dataset.settingsTitle || entry.title || "Réglage" })]);
+    }).filter(Boolean);
+    recentsHost.replaceChildren(...links);
+    refreshIcons();
+  }
+
+  function filterSettings(query) {
+    const lower = query.toLowerCase().trim();
+    const allRows = [...page.querySelectorAll("[data-settings-row]")];
+    let any = false;
+    page.querySelectorAll(".v8-card.v8-settings-section").forEach((card) => { if (!card.id || card.id === "v8-settings-favorites" || card.id === "v8-settings-recents" || card.id === "v8-settings-help") return; card.hidden = false; });
+    allRows.forEach((row) => {
+      const title = row.dataset.settingsTitle || "";
+      const desc = row.dataset.settingsDescription || "";
+      unhighlightText(row);
+      if (!lower || title.toLowerCase().includes(lower) || desc.toLowerCase().includes(lower)) {
+        row.hidden = false;
+        if (lower) highlightText(row, lower);
+        any = true;
+      } else {
+        row.hidden = true;
+      }
+    });
+    page.querySelectorAll(".v8-card.v8-settings-section").forEach((card) => {
+      if (!card.id || card.id === "v8-settings-favorites" || card.id === "v8-settings-recents" || card.id === "v8-settings-help") return;
+      const visibleRows = [...card.querySelectorAll("[data-settings-row]")].some((r) => !r.hidden);
+      card.hidden = !visibleRows;
+    });
+    emptySearch.hidden = any;
+  }
+
+  function filterHelp(query) {
+    const lower = query.toLowerCase().trim();
+    const results = [];
+    if (lower) {
+      page.querySelectorAll("[data-settings-row]").forEach((row) => {
+        const title = row.dataset.settingsTitle || "";
+        const desc = row.dataset.settingsDescription || "";
+        if (title.toLowerCase().includes(lower) || desc.toLowerCase().includes(lower)) results.push({ id: row.dataset.settingsRow, title, desc });
+      });
+    }
+    const list = helpInput.nextElementSibling;
+    if (!list) return;
+    if (!results.length) { list.replaceChildren(statusState(lower ? "no-results" : "empty", { compact: true, inline: true, title: lower ? "Aucun résultat" : "Saisissez un mot-clé", description: lower ? "Essayez un autre terme." : "Tapez 'notifications', 'theme', 'mail'..." })); return; }
+    list.replaceChildren(...results.map((r) => element("button", { className: "v8-chip", attributes: { type: "button" }, dataset: { settingsGo: r.id } }, [icon("search"), element("span", { text: r.title })])));
+    refreshIcons();
+  }
+
+  function commitSetting(control, actionId, context) {
+    setFieldState(control, "loading", "Enregistrement...");
+    setFormStatus(settingsSaveStatus, "loading", "Enregistrement...");
+    const settle = (result) => {
+      if (result?.ok === false) { setFieldState(control, "invalid", result.message); setFormStatus(settingsSaveStatus, "error", result.message || "Erreur de sauvegarde"); }
+      else { setFieldState(control, "valid", "Enregistre"); setFormStatus(settingsSaveStatus, "saved", result?.message || "Enregistre"); }
+      return result;
+    };
+    const result = options.actions?.dispatch?.(actionId, context);
+    return result?.then ? result.then(settle) : settle(result);
+  }
+
+  const unsubscribeState = options.subscribeState ? options.subscribeState((next) => updatePreferenceControls(next)) : () => {};
+  const unsubscribeSounds = sounds?.subscribe ? sounds.subscribe(() => { const next = sounds.preferences?.() || DEFAULT_SOUND_PREFERENCES; SOUND_VOLUME_ROWS.forEach((row) => { const input = page.querySelector(`[data-sound-volume='${row.id}']`); if (input) input.value = String(Math.round((next.volumes?.[row.id] ?? next.master) * 100)); }); }) : () => {};
+
+  function saveProfileName() {
+    const nextName = nameInput.value.trim();
+    if (!profile?.id) return;
+    if (!nextName) { nameStatus.textContent = "Le nom ne peut pas être vide."; return; }
+    const patched = options.repository?.updateProfile?.(profile.id, { name: nextName });
+    if (!patched?.ok) { nameStatus.textContent = patched?.message || "Enregistrement impossible."; return; }
+    nameInput.value = nextName;
+    nameStatus.textContent = "Nom mis a jour.";
+    options.onProfileMediaUpdated?.("name", nextName);
+  }
+
+  async function handleProfileMediaChange(kind, input, statusEl) {
+    const file = input.files?.[0] || null;
+    if (!file) return;
+    const validation = validateMediaFile(file);
+    if (!validation.ok) { statusEl.textContent = validation.message; input.value = ""; return; }
+    statusEl.textContent = "Envoi en cours...";
+    input.disabled = true;
+    try {
+      const client = await options.clientProvider?.();
+      const upload = await uploadProfileMedia({ file, kind, ownerId: options.ownerId, client });
+      if (!upload.ok) { statusEl.textContent = upload.message; options.notify?.({ id: `profile-media-${kind}-error`, title: "Téléversement impossible", message: upload.message, type: "error" }); return; }
+      const patch = kind === "banner" ? { bannerImg: upload.data.url } : { avatarImg: upload.data.url };
+      const patched = options.repository?.updateProfile?.(profile?.id, patch);
+      if (!patched?.ok) { statusEl.textContent = patched?.message || "Enregistrement impossible."; return; }
+      if (kind === "banner") { bannerPreviewHost.style.backgroundImage = `url("${upload.data.url}")`; bannerPreviewHost.classList.remove("is-empty"); }
+      else { avatarPreviewHost.replaceChildren(profileAvatarPreviewNode({ kind: "image", value: upload.data.url }, "E")); options.onProfileMediaUpdated?.("avatar", upload.data.url); }
+      statusEl.textContent = kind === "banner" ? "Bannière mise à jour." : "Photo mise à jour.";
+    } finally { input.disabled = false; input.value = ""; }
   }
 
   let memoryBusy = false;
@@ -751,237 +823,52 @@ export function mountSettings(stage, options = {}) {
     memoryBusy = true;
     brainMemoryLoad.disabled = true;
     brainMemoryStatus.textContent = "Chargement sécurisé depuis Supabase...";
-    brainMemoryList.replaceChildren(statusState("loading", {
-      title: "Chargement des memoires",
-      description: "Lecture sécurisée depuis Supabase.",
-      compact: true,
-      inline: true
-    }));
+    brainMemoryList.replaceChildren(statusState("loading", { title: "Chargement des memoires", description: "Lecture sécurisée depuis Supabase.", compact: true, inline: true }));
     refreshIcons();
     const response = await options.brain.memory.list();
     if (controller.signal.aborted) return;
     memoryBusy = false;
     brainMemoryLoad.disabled = false;
     brainMemoryStatus.textContent = response.ok ? `${response.data.length} memoire${response.data.length > 1 ? "s" : ""} active${response.data.length > 1 ? "s" : ""}.` : response.message;
-    brainMemoryList.replaceChildren(...(response.ok && response.data.length ? response.data.map((entry) => element("div", { className: "v8-settings-memory-row" }, [element("span", {}, [icon("bookmark")]), element("div", {}, [element("small", { text: entry.category }), element("strong", { text: entry.key }), element("p", { text: entry.value })]), element("div", {}, [element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Modifier cette memoire" }, dataset: { settingsMemoryEdit: entry.id, settingsMemoryValue: entry.value } }, [icon("pencil")]), element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Supprimer cette memoire" }, dataset: { settingsMemoryDelete: entry.id } }, [icon("trash-2")])])])) : [statusState(response.ok ? "empty" : "error", {
-      iconName: "database",
-      eyebrow: "Memoire Brain",
-      title: response.ok ? "Aucune memoire active" : "Memoires indisponibles",
-      description: response.ok ? "Les préférences ajoutees volontairement apparaitront ici." : response.message,
-      actions: response.ok ? [] : [element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, events: { click: () => void renderSettingsMemories() } }, [icon("refresh-cw"), element("span", { text: "Réessayer" })])],
-      compact: true,
-      inline: true
-    })]));
+    brainMemoryList.replaceChildren(...(response.ok && response.data.length ? response.data.map((entry) => element("div", { className: "v8-settings-memory-row" }, [element("span", {}, [icon("bookmark")]), element("div", {}, [element("small", { text: entry.category }), element("strong", { text: entry.key }), element("p", { text: entry.value })]), element("div", {}, [element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Modifier cette memoire" }, dataset: { settingsMemoryEdit: entry.id, settingsMemoryValue: entry.value } }, [icon("pencil")]), element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Supprimer cette memoire" }, dataset: { settingsMemoryDelete: entry.id } }, [icon("trash-2")])])])) : [statusState(response.ok ? "empty" : "error", { iconName: "database", eyebrow: "Memoire Brain", title: response.ok ? "Aucune memoire active" : "Memoires indisponibles", description: response.ok ? "Brain n'a encore rien retenu." : "Impossible de lire la mémoire." })]));
     refreshIcons();
   }
 
-  renderWorkerStatus();
   updatePreferenceControls(state);
-  const unsubscribeState = options.subscribeState?.((next) => updatePreferenceControls(next)) || (() => {});
-  const unsubscribeSounds = sounds?.subscribe?.((preferences) => {
-    const toggle = page.querySelector("[data-action='v8.sound.toggle']");
-    toggle?.setAttribute("aria-checked", String(preferences.enabled));
-    const silentToggle = page.querySelector("[data-action='v8.sound.silent']");
-    silentToggle?.setAttribute("aria-checked", String(preferences.silent));
-    const spatialToggle = page.querySelector("[data-action='v8.sound.spatial']");
-    spatialToggle?.setAttribute("aria-checked", String(preferences.spatial));
-    const pack = page.querySelector("[data-sound-pack]");
-    if (pack) pack.value = preferences.pack;
-    const description = page.querySelector("[data-sound-pack-description]");
-    if (description) description.textContent = SOUND_PACKS.find((entry) => entry.id === preferences.pack)?.description || "";
-    page.querySelectorAll("[data-sound-volume]").forEach((control) => {
-      const category = control.dataset.soundVolume;
-      const value = category === "master" ? preferences.master : preferences.volumes[category];
-      const percent = Math.round(Number(value || 0) * 100);
-      control.value = String(percent);
-      control.style.setProperty("--v8-range-progress", `${percent}%`);
-      const output = page.querySelector(`[data-sound-value="${category}"]`);
-      if (output) output.textContent = `${percent} %`;
-    });
-  }) || (() => {});
-  function commitSetting(control, actionId, context) {
-    setFieldState(control, "loading", "Enregistrement...");
-    setFormStatus(settingsSaveStatus, "loading", "Enregistrement...");
-    const settle = (result) => {
-      if (result?.ok === false) {
-        setFieldState(control, "invalid", result.message);
-        setFormStatus(settingsSaveStatus, "error", result.message || "Erreur de sauvegarde");
-      } else {
-        setFieldState(control, "valid", "Enregistre");
-        setFormStatus(settingsSaveStatus, "saved", result?.message || "Enregistre");
-      }
-      return result;
-    };
-    const result = options.actions?.dispatch?.(actionId, context);
-    return result?.then ? result.then(settle) : settle(result);
-  }
-  function activateSection(button, focus = false) {
-    if (!button) return;
-    navButtons.forEach((entry) => {
-      const active = entry === button;
-      entry.classList.toggle("is-active", active);
-      entry.setAttribute("aria-selected", String(active));
-      entry.tabIndex = active ? 0 : -1;
-      if (active && focus) entry.focus();
-    });
-    page.querySelectorAll(".v8-settings-section").forEach((panel) => { panel.hidden = panel.id !== button.dataset.settingsSection; });
-  }
-  function handleSectionNavigation(event) {
-    const button = event.target.closest("[data-settings-section]");
-    if (!button || !page.contains(button)) return;
-    activateSection(button);
-  }
-  function handleSectionKeydown(event) {
-    if (!["ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) return;
-    event.preventDefault();
-    const index = navButtons.findIndex((entry) => entry.classList.contains("is-active"));
-    const next = event.key === "Home" ? 0 : event.key === "End" ? navButtons.length - 1 : (index + (event.key === "ArrowDown" ? 1 : -1) + navButtons.length) % navButtons.length;
-    activateSection(navButtons[next], true);
-  }
-  page.querySelector(".v8-settings-nav")?.addEventListener("click", handleSectionNavigation, { signal: controller.signal });
-  page.querySelector(".v8-settings-nav")?.addEventListener("keydown", handleSectionKeydown, { signal: controller.signal });
-  workerDiagnosticButton.addEventListener("click", async () => {
-    if (!externalServices?.diagnostic || workerDiagnosticRunning) return;
-    workerDiagnosticRunning = true;
-    workerDiagnosticButton.disabled = true;
-    workerDiagnosticButton.setAttribute("aria-busy", "true");
-    workerDiagnosticButton.querySelector("span").textContent = "Vérification";
-    try {
-      await externalServices.diagnostic();
-    } catch {}
-    if (!controller.signal.aborted) {
-      workerDiagnosticRunning = false;
-      workerDiagnosticButton.disabled = false;
-      workerDiagnosticButton.removeAttribute("aria-busy");
-      workerDiagnosticButton.querySelector("span").textContent = "Vérifier le Worker";
-      renderWorkerStatus();
-    }
-  }, { signal: controller.signal });
-  async function handleProfileMediaChange(kind, input, statusEl) {
-    const file = input.files?.[0] || null;
-    if (!file) return;
-    const validation = validateMediaFile(file);
-    if (!validation.ok) {
-      statusEl.textContent = validation.message;
-      input.value = "";
-      return;
-    }
-    statusEl.textContent = "Envoi en cours...";
-    input.disabled = true;
-    try {
-      const client = await options.clientProvider?.();
-      const upload = await uploadProfileMedia({ file, kind, ownerId: options.ownerId, client });
-      if (!upload.ok) {
-        statusEl.textContent = upload.message;
-        options.notify?.({ id: `profile-media-${kind}-error`, title: "Televersement impossible", message: upload.message, type: "error" });
-        return;
-      }
-      const patch = kind === "banner" ? { bannerImg: upload.data.url } : { avatarImg: upload.data.url };
-      const patched = options.repository?.updateProfile?.(profile?.id, patch);
-      if (!patched?.ok) {
-        statusEl.textContent = patched?.message || "Enregistrement impossible.";
-        return;
-      }
-      if (kind === "banner") {
-        bannerPreviewHost.style.backgroundImage = `url("${upload.data.url}")`;
-        bannerPreviewHost.classList.remove("is-empty");
-      } else {
-        avatarPreviewHost.replaceChildren(profileAvatarPreviewNode({ kind: "image", value: upload.data.url }, "E"));
-        options.onProfileMediaUpdated?.("avatar", upload.data.url);
-      }
-      statusEl.textContent = kind === "banner" ? "Bannière mise a jour." : "Photo mise a jour.";
-    } finally {
-      input.disabled = false;
-      input.value = "";
-    }
-  }
-  avatarFileInput.addEventListener("change", () => void handleProfileMediaChange("avatar", avatarFileInput, avatarMediaStatus), { signal: controller.signal });
-  bannerFileInput.addEventListener("change", () => void handleProfileMediaChange("banner", bannerFileInput, bannerMediaStatus), { signal: controller.signal });
-  function saveProfileName() {
-    const nextName = nameInput.value.trim();
-    if (!profile?.id) return;
-    if (!nextName) {
-      nameStatus.textContent = "Le nom ne peut pas être vide.";
-      return;
-    }
-    const patched = options.repository?.updateProfile?.(profile.id, { name: nextName });
-    if (!patched?.ok) {
-      nameStatus.textContent = patched?.message || "Enregistrement impossible.";
-      return;
-    }
-    nameInput.value = nextName;
-    nameStatus.textContent = "Nom mis a jour.";
-    options.onProfileMediaUpdated?.("name", nextName);
-  }
-  nameSaveButton.addEventListener("click", saveProfileName, { signal: controller.signal });
-  nameInput.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") { event.preventDefault(); saveProfileName(); }
-  }, { signal: controller.signal });
-  nameInput.addEventListener("input", () => { nameStatus.textContent = ""; }, { signal: controller.signal });
-  customColorInput.addEventListener("input", (event) => {
-    customColorSwatch.style.setProperty("--v8-accent-swatch-custom-color", event.currentTarget.value);
-  }, { signal: controller.signal });
-  customColorInput.addEventListener("change", (event) => {
-    commitSetting(event.currentTarget, "v8.accent.custom", { source: "settings", value: event.currentTarget.value, element: event.currentTarget, event });
-  }, { signal: controller.signal });
-  page.querySelector("[data-sound-pack]")?.addEventListener("change", (event) => {
-    commitSetting(event.currentTarget, `v8.sound.pack.${event.currentTarget.value}`, { source: "settings", element: event.currentTarget, event });
-  }, { signal: controller.signal });
-  auraChoices.querySelectorAll("button").forEach((btn) => btn.addEventListener("click", () => {
-    auraChoices.querySelectorAll("button").forEach((b) => {
-      b.classList.remove("is-active");
-      b.setAttribute("aria-pressed", "false");
-      const checkIcon = b.querySelector(".lucide-check, [data-lucide='check']"); if (checkIcon) checkIcon.remove();
-    });
-    btn.classList.add("is-active");
-    btn.setAttribute("aria-pressed", "true");
-    btn.append(icon("check")); globalThis.lucide?.createIcons?.(); options.actions?.dispatch?.(btn.dataset.action, { source: "settings" });
-  }, { signal: controller.signal }));
-
-  fontChoices.querySelectorAll("button").forEach((btn) => btn.addEventListener("click", () => {
-    fontChoices.querySelectorAll("button").forEach((b) => {
-      b.classList.remove("is-active");
-      b.setAttribute("aria-pressed", "false");
-      const checkIcon = b.querySelector(".lucide-check, [data-lucide='check']"); if (checkIcon) checkIcon.remove();
-    });
-    btn.classList.add("is-active");
-    btn.setAttribute("aria-pressed", "true");
-    btn.append(icon("check")); globalThis.lucide?.createIcons?.(); options.actions?.dispatch?.(btn.dataset.action, { source: "settings" });
-  }, { signal: controller.signal }));
-
-  radiusChoices.querySelectorAll("button").forEach((btn) => btn.addEventListener("click", () => {
-    radiusChoices.querySelectorAll("button").forEach((b) => {
-      b.classList.remove("is-active");
-      b.setAttribute("aria-pressed", "false");
-      const checkIcon = b.querySelector(".lucide-check, [data-lucide='check']"); if (checkIcon) checkIcon.remove();
-    });
-    btn.classList.add("is-active");
-    btn.setAttribute("aria-pressed", "true");
-    btn.append(icon("check")); globalThis.lucide?.createIcons?.(); options.actions?.dispatch?.(btn.dataset.action, { source: "settings" });
-  }, { signal: controller.signal }));
-  const themeFlash = element("div", { className: "v8-theme-flash" });
-  page.append(themeFlash);
+  renderFavorites();
+  renderRecents();
+  filterSettings("");
 
   page.addEventListener("click", (event) => {
-    const button = event.target.closest(".v8-setting-choice, [data-density-mode], [data-theme-mode], button.v8-accent-swatch");
+    const button = event.target.closest("[data-settings-favorite]");
+    if (!button) return;
+    event.stopPropagation();
+    const id = button.dataset.settingsFavorite;
+    const favs = getFavorites();
+    const active = !favs.has(id);
+    if (active) favs.add(id); else favs.delete(id);
+    setFavorites(favs);
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", String(active));
+    renderFavorites();
+  }, { signal: controller.signal });
+
+  page.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-settings-go]");
+    if (!button) return;
+    event.preventDefault();
+    const id = button.dataset.settingsGo;
+    const target = page.querySelector(`[data-settings-row='${id}']`);
+    if (target) { target.scrollIntoView({ behavior: "smooth", block: "center" }); target.classList.add("is-targeted"); globalThis.setTimeout(() => target.classList.remove("is-targeted"), 1200); }
+  }, { signal: controller.signal });
+
+  page.addEventListener("click", (event) => {
+    const button = event.target.closest(".v8-setting-choice, [data-density-mode], [data-theme-mode], button.v8-accent-swatch, [data-wallpaper-mode]");
     if (!button || !button.dataset.action) return;
     event.stopPropagation();
-    if (button.classList.contains("v8-accent-swatch")) {
-      const rect = button.getBoundingClientRect();
-      const pageRect = page.getBoundingClientRect();
-      const computed = globalThis.getComputedStyle?.(button);
-      const color = computed?.backgroundColor || "var(--v8-accent)";
-      themeFlash.style.setProperty("--v8-flash-x", `${rect.left + rect.width / 2 - pageRect.left}px`);
-      themeFlash.style.setProperty("--v8-flash-y", `${rect.top + rect.height / 2 - pageRect.top}px`);
-      themeFlash.style.setProperty("--v8-flash-color", color);
-      themeFlash.classList.remove("is-active");
-      void themeFlash.offsetWidth;
-      themeFlash.classList.add("is-active");
-      globalThis.document?.documentElement?.classList.add("v8-theme-animated");
-      globalThis.setTimeout?.(() => globalThis.document?.documentElement?.classList.remove("v8-theme-animated"), 600);
-    }
     options.actions?.dispatch?.(button.dataset.action, { source: "settings" });
   }, { signal: controller.signal });
+
   page.addEventListener("click", (event) => {
     const button = event.target.closest(".v8-preset-choice, .v8-preset-actions [data-action]");
     if (!button || !button.dataset.action) return;
@@ -991,9 +878,15 @@ export function mountSettings(stage, options = {}) {
     if (button.dataset.presetName) context.name = button.dataset.presetName;
     options.actions?.dispatch?.(button.dataset.action, context);
   }, { signal: controller.signal });
-  const dispatchVolume = throttleFrame((category, value, element, event) => {
-    options.actions?.dispatch?.("v8.sound.volume", { source: "settings", category, value, element, event });
-  });
+
+  page.addEventListener("click", (event) => {
+    const row = event.target.closest("[data-settings-row]");
+    if (!row) return;
+    addRecent(row.dataset.settingsRow, row.dataset.settingsTitle || "Réglage");
+    renderRecents();
+  }, { signal: controller.signal });
+
+  const dispatchVolume = throttleFrame((category, value, el, event) => { options.actions?.dispatch?.("v8.sound.volume", { source: "settings", category, value, element: el, event }); });
   page.querySelectorAll("[data-sound-volume]").forEach((control) => control.addEventListener("input", (event) => {
     const category = event.currentTarget.dataset.soundVolume;
     const value = Number(event.currentTarget.value) / 100;
@@ -1002,6 +895,9 @@ export function mountSettings(stage, options = {}) {
     event.currentTarget.style.setProperty("--v8-range-progress", `${Math.round(value * 100)}%`);
     dispatchVolume(category, value, event.currentTarget, event);
   }, { signal: controller.signal }));
+
+  page.querySelector("[data-sound-pack]")?.addEventListener("change", (event) => { commitSetting(event.currentTarget, `v8.sound.pack.${event.currentTarget.value}`, { source: "settings", element: event.currentTarget, event }); addRecent("notifications--pack", "Pack sonore"); }, { signal: controller.signal });
+
   page.querySelectorAll("[data-density-custom]").forEach((control) => {
     control.addEventListener("input", (event) => {
       const key = event.currentTarget.dataset.densityCustom;
@@ -1015,17 +911,21 @@ export function mountSettings(stage, options = {}) {
     }, { signal: controller.signal });
     control.addEventListener("change", (event) => commitSetting(event.currentTarget, "v8.density.custom.update", { source: "settings", key: event.currentTarget.dataset.densityCustom, value: Number(event.currentTarget.value) }), { signal: controller.signal });
   });
+
   page.querySelectorAll("[data-brain-preference]").forEach((control) => control.addEventListener("click", (event) => {
     const path = event.currentTarget.dataset.brainPreference;
     const value = event.currentTarget.getAttribute("aria-checked") !== "true";
     commitSetting(event.currentTarget, "v8.brain.preference", { source: "settings", path, value });
   }, { signal: controller.signal }));
+
   page.querySelectorAll("[data-brain-preference-select]").forEach((control) => control.addEventListener("change", (event) => {
     const path = event.currentTarget.dataset.brainPreferenceSelect;
     const value = path === "memory.retentionDays" ? Number(event.currentTarget.value) : event.currentTarget.value;
     commitSetting(event.currentTarget, "v8.brain.preference", { source: "settings", path, value });
   }, { signal: controller.signal }));
+
   page.querySelectorAll("[data-brain-preference-input]").forEach((control) => control.addEventListener("change", (event) => commitSetting(event.currentTarget, "v8.brain.preference", { source: "settings", path: event.currentTarget.dataset.brainPreferenceInput, value: event.currentTarget.value }), { signal: controller.signal }));
+
   brainMemoryLoad.addEventListener("click", () => void renderSettingsMemories(), { signal: controller.signal });
   brainMemoryList.addEventListener("click", async (event) => {
     const removeButton = event.target.closest("[data-settings-memory-delete]");
@@ -1043,37 +943,116 @@ export function mountSettings(stage, options = {}) {
       if (response.ok) await renderSettingsMemories();
     }
   }, { signal: controller.signal });
-  page.querySelector("[data-settings-memory-export]")?.addEventListener("click", async () => {
-    const response = await options.brain?.memory?.exportAll?.();
-    if (response?.ok) downloadJson(response.data, "ethone-brain-memory.json");
-    else brainMemoryStatus.textContent = response?.message || "Export indisponible.";
-  }, { signal: controller.signal });
-  page.querySelector("[data-settings-memory-clear]")?.addEventListener("click", async () => {
-    if (!confirm("Supprimer definitivement toutes les memoires Brain ?")) return;
+
+  deleteBrainMemoryButton.addEventListener("click", async () => {
+    if (!confirm("Supprimer définitivement toutes les mémoires Brain ?")) return;
     const response = await options.brain?.memory?.clear?.({ confirmed: true });
     brainMemoryStatus.textContent = response?.message || "Suppression indisponible.";
     if (response?.ok) await renderSettingsMemories();
   }, { signal: controller.signal });
 
+  page.querySelectorAll("[data-mail-preference]").forEach((control) => control.addEventListener("click", (event) => {
+    const path = event.currentTarget.dataset.mailPreference;
+    const current = getMailSettings();
+    const value = event.currentTarget.getAttribute("aria-checked") !== "true";
+    current[path] = value;
+    setMailSettings(current);
+    event.currentTarget.setAttribute("aria-checked", String(value));
+    commitSetting(event.currentTarget, "v8.mail.preference", { source: "settings", path, value });
+  }, { signal: controller.signal }));
+
+  page.querySelectorAll("[data-shortcut-id]").forEach((control) => control.addEventListener("click", (event) => {
+    const id = event.currentTarget.dataset.shortcutId;
+    const map = getShortcuts();
+    const value = event.currentTarget.getAttribute("aria-checked") !== "true";
+    map[id] = value;
+    setShortcuts(map);
+    event.currentTarget.setAttribute("aria-checked", String(value));
+  }, { signal: controller.signal }));
+
+  shortcutsResetButton.addEventListener("click", () => {
+    const defaults = Object.fromEntries(SHORTCUTS.map((s) => [s.id, s.default]));
+    setShortcuts(defaults);
+    page.querySelectorAll("[data-shortcut-id]").forEach((control) => control.setAttribute("aria-checked", String(defaults[control.dataset.shortcutId])));
+  }, { signal: controller.signal });
+
+  const updateAccessibility = () => {
+    const fontSize = fontSizeSelect.value;
+    const colorBlind = colorBlindSelect.value;
+    const highContrast = page.querySelector("[data-action='v8.accessibility.highcontrast']")?.getAttribute("aria-checked") === "true";
+    const reducedMotion = page.querySelector("[data-action='v8.ui.animations.reduced']")?.getAttribute("aria-checked") === "true";
+    setAccessibility({ fontSize, colorBlind, highContrast, reducedMotion });
+  };
+
+  fontSizeSelect.addEventListener("change", () => { updateAccessibility(); commitSetting(fontSizeSelect, "v8.accessibility.fontsize", { source: "settings", value: fontSizeSelect.value }); }, { signal: controller.signal });
+  colorBlindSelect.addEventListener("change", () => { updateAccessibility(); commitSetting(colorBlindSelect, "v8.accessibility.colorblind", { source: "settings", value: colorBlindSelect.value }); }, { signal: controller.signal });
+
+  page.querySelector("[data-action='v8.ui.animations.reduced']")?.addEventListener("click", () => globalThis.setTimeout(updateAccessibility, 0), { signal: controller.signal });
+  page.querySelector("[data-action='v8.accessibility.highcontrast']")?.addEventListener("click", () => globalThis.setTimeout(updateAccessibility, 0), { signal: controller.signal });
+
+  const searchDebounce = debounce((q) => filterSettings(q), 120);
+  searchInput.addEventListener("input", () => searchDebounce(searchInput.value), { signal: controller.signal });
+
+  helpInput.addEventListener("input", () => filterHelp(helpInput.value), { signal: controller.signal });
+
+  sectionIndex.addEventListener("click", (event) => {
+    const link = event.target.closest("[data-section-index]");
+    if (!link) return;
+    event.preventDefault();
+    const target = page.querySelector(`#v8-settings-${link.dataset.sectionIndex}`);
+    if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, { signal: controller.signal });
+
+  page.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-low-data]");
+    if (!button) return;
+    const current = getLocalObject("ethone:low-data", { enabled: false });
+    current.enabled = button.getAttribute("aria-checked") !== "true";
+    button.setAttribute("aria-checked", String(current.enabled));
+    setLocalObject("ethone:low-data", current);
+    document.documentElement.dataset.v8LowData = current.enabled ? "true" : "false";
+    options.actions?.dispatch?.("v8.appearance.lowdata.toggle", { source: "settings", enabled: current.enabled });
+  }, { signal: controller.signal });
+
+  page.querySelectorAll("[data-action^='v8.wallpaper.']").forEach((button) => button.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const id = event.currentTarget.dataset.wallpaperMode || event.currentTarget.dataset.action.split(".").pop();
+    options.actions?.dispatch?.(event.currentTarget.dataset.action, { source: "settings", id });
+    setLocalObject("ethone:wallpaper", { id });
+    document.documentElement.dataset.v8Wallpaper = id;
+    page.querySelectorAll("[data-wallpaper-mode]").forEach((b) => { const active = b.dataset.wallpaperMode === id; b.classList.toggle("is-active", active); b.setAttribute("aria-pressed", String(active)); });
+  }, { signal: controller.signal }));
+
+  workerDiagnosticButton.addEventListener("click", async () => {
+    if (!externalServices?.diagnostic || workerDiagnosticRunning) return;
+    workerDiagnosticRunning = true;
+    workerDiagnosticButton.disabled = true;
+    workerDiagnosticButton.setAttribute("aria-busy", "true");
+    workerDiagnosticButton.querySelector("span").textContent = "Vérification";
+    try { await externalServices.diagnostic(); } catch {}
+    if (!controller.signal.aborted) { workerDiagnosticRunning = false; workerDiagnosticButton.disabled = false; workerDiagnosticButton.removeAttribute("aria-busy"); workerDiagnosticButton.querySelector("span").textContent = "Vérifier le Worker"; renderWorkerStatus(); }
+  }, { signal: controller.signal });
+
+  avatarFileInput.addEventListener("change", () => void handleProfileMediaChange("avatar", avatarFileInput, avatarMediaStatus), { signal: controller.signal });
+  bannerFileInput.addEventListener("change", () => void handleProfileMediaChange("banner", bannerFileInput, bannerMediaStatus), { signal: controller.signal });
+  nameSaveButton.addEventListener("click", saveProfileName, { signal: controller.signal });
+  nameInput.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); saveProfileName(); } }, { signal: controller.signal });
+  nameInput.addEventListener("input", () => { nameStatus.textContent = ""; }, { signal: controller.signal });
+  customColorInput.addEventListener("input", (event) => { customColorSwatch.style.setProperty("--v8-accent-swatch-custom-color", event.currentTarget.value); }, { signal: controller.signal });
+  customColorInput.addEventListener("change", (event) => commitSetting(event.currentTarget, "v8.accent.custom", { source: "settings", value: event.currentTarget.value, element: event.currentTarget, event }), { signal: controller.signal });
+
   function getAllLocal() {
     const data = {};
-    try {
-      for (let i = 0; i < globalThis.localStorage.length; i++) {
-        const key = globalThis.localStorage.key(i);
-        if (key) data[key] = globalThis.localStorage.getItem(key);
-      }
-    } catch { /* silent */ }
+    try { for (let i = 0; i < globalThis.localStorage.length; i++) { const key = globalThis.localStorage.key(i); if (key) data[key] = globalThis.localStorage.getItem(key); } } catch {}
     return data;
   }
 
-  page.querySelector("[data-settings-config-export]")?.addEventListener("click", () => {
+  configExportButton.addEventListener("click", () => {
     const config = { version: 1, timestamp: Date.now(), state: latestState, local: getAllLocal() };
     downloadJson(config, "ethone-config.json");
   }, { signal: controller.signal });
 
-  page.querySelector("[data-settings-config-import-trigger]")?.addEventListener("click", () => {
-    configImportInput.click();
-  }, { signal: controller.signal });
+  page.querySelector("[data-settings-config-import-trigger]")?.addEventListener("click", () => { configImportInput.click(); }, { signal: controller.signal });
 
   configImportInput.addEventListener("change", async () => {
     const file = configImportInput.files?.[0];
@@ -1083,22 +1062,37 @@ export function mountSettings(stage, options = {}) {
       const config = JSON.parse(text);
       if (!config || typeof config !== "object") throw new Error("Fichier invalide");
       if (!confirm("Cela remplacera vos réglages locaux par ceux du fichier. Continuer ?")) return;
-      if (config.local && typeof config.local === "object") {
-        Object.entries(config.local).forEach(([key, value]) => {
-          try { globalThis.localStorage.setItem(key, value); } catch { /* silent */ }
-        });
-      }
-      if (config.state && typeof config.state === "object") {
-        Object.entries(config.state).forEach(([key, value]) => {
-          if (value !== undefined) latestState[key] = value;
-        });
-      }
+      if (config.local && typeof config.local === "object") { Object.entries(config.local).forEach(([key, value]) => { try { globalThis.localStorage.setItem(key, value); } catch {} }); }
+      if (config.state && typeof config.state === "object") { Object.entries(config.state).forEach(([key, value]) => { if (value !== undefined) latestState[key] = value; }); }
       alert("Configuration importée. ETHONE va se recharger.");
       globalThis.location.reload();
-    } catch (err) {
-      alert(`Import échoué : ${err.message}`);
-    }
+    } catch (err) { alert(`Import échoué : ${err.message}`); }
   }, { signal: controller.signal });
+
+  resetPersonalizationButton.addEventListener("click", () => {
+    if (!confirm("Réinitialiser toutes les préférences d'apparence et de comportement ?")) return;
+    try {
+      ["ethone:settings:favorites", "ethone:settings:recent", "ethone:settings:shortcuts", "ethone:settings:mail", "ethone:settings:accessibility", "ethone:low-data", "ethone:wallpaper", "v8_home_aura", "v8_font_family", "v8_radius_style"].forEach((key) => { try { globalThis.localStorage.removeItem(key); } catch {} });
+      document.documentElement.removeAttribute("data-v8-wallpaper");
+      document.documentElement.removeAttribute("data-v8-low-data");
+      document.documentElement.removeAttribute("data-v8-font-size");
+      document.documentElement.removeAttribute("data-v8-color-blind");
+      document.documentElement.classList.remove("v8-reduced-motion", "v8-high-contrast");
+    } catch {}
+    options.notify?.({ id: "personalization-reset", title: "Personnalisation", message: "Préférences locales réinitialisées. Rechargez pour appliquer complètement.", type: "success" });
+  }, { signal: controller.signal });
+
+  page.querySelectorAll(".v8-card .v8-card__header").forEach((header) => {
+    const card = header.closest(".v8-card");
+    header.addEventListener("click", (event) => {
+      if (event.target.closest("button, input, select, a")) return;
+      const body = card.querySelector(".v8-card__body");
+      if (!body) return;
+      const collapsed = card.classList.toggle("is-collapsed");
+      body.hidden = collapsed;
+      card.dataset.collapsed = String(collapsed);
+    });
+  });
 
   refreshIcons();
   return () => {
@@ -1108,4 +1102,3 @@ export function mountSettings(stage, options = {}) {
     page.remove();
   };
 }
-

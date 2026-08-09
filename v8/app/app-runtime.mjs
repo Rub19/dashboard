@@ -2,7 +2,7 @@ import { createLifecycle } from "../core/lifecycle.mjs";
 import { createPresentationStore } from "../core/store.mjs";
 import { createRouter } from "../core/router.mjs";
 import { createActionFacade } from "../core/actions.mjs";
-import { createDensityEngine } from "../core/density-engine.mjs";
+import { createDensityEngine, DENSITY_MODES } from "../core/density-engine.mjs";
 import { createNavigationSession } from "../core/navigation-session.mjs";
 import { createCommandHistory } from "../command/history.mjs";
 import { createCommandCenter } from "../command/command-center.mjs";
@@ -37,6 +37,8 @@ import { createFocusTimer } from "../services/focus-timer.mjs";
 import { clearPendingOAuthAuthorize, consumeOAuthCallback, readPendingOAuthAuthorize } from "../services/oauth-callback.mjs";
 import { mountShell } from "../ui/shell.mjs";
 import { mountFocusIsland } from "../ui/focus-island.mjs";
+import { showBottomSheet } from "../ui/bottom-sheet.mjs";
+import { element, icon } from "../ui/dom.mjs";
 import { createPanelManager } from "../ui/panel.mjs";
 import { createNotificationManager } from "../ui/notification-center.mjs";
 import { createMissionControl } from "../ui/mission-control.mjs";
@@ -56,6 +58,35 @@ import { mountFeatureFallback } from "../pages/feature-fallback.mjs";
 import { createScratchpad } from "../ui/scratchpad.mjs";
 import { createShortcutsOverlay } from "../ui/shortcuts-overlay.mjs";
 import { attachDepthEffect } from "../ui/depth-effect.mjs";
+import {
+  initializeFromStorage as initEthonePreferences,
+  getAllPreferences,
+  getPreference,
+  setPreference as setEthonePreference,
+  subscribePreferences,
+  setWorkspaceState,
+  getWorkspaceState,
+  getLastWorkspace,
+  setLastWorkspace,
+  listRecentWorkspaces,
+  applyPreferences
+} from "../core/preferences.mjs";
+
+const DASHBOARD_DENSITY_KEY = "ethone:density";
+
+export function getDensity() {
+  return getPreference("density") || "comfortable";
+}
+
+export function setDensity(value) {
+  const valid = DENSITY_MODES.includes(value) ? value : "comfortable";
+  setEthonePreference("density", valid);
+  if (typeof document !== "undefined" && document.body) {
+    document.body.classList.remove(...DENSITY_MODES.map((mode) => `ethone-density-${mode}`));
+    document.body.classList.add(`ethone-density-${valid}`);
+  }
+  return valid;
+}
 
 export function mountApplication(root, options = {}) {
   if (!root) {
@@ -85,9 +116,23 @@ export function mountApplication(root, options = {}) {
   }
 
   const startedAt = performance.now();
+
+  const reducedMotionQuery = globalThis.matchMedia?.("(prefers-reduced-motion: reduce)") || null;
+  function syncReducedMotion() {
+    const html = document.documentElement;
+    if (!html) return;
+    const prefers = reducedMotionQuery?.matches === true;
+    html.classList.toggle("prefers-reduced-motion", prefers);
+    html.dataset.prefersReducedMotion = prefers ? "true" : "false";
+  }
+  syncReducedMotion();
+  reducedMotionQuery?.addEventListener?.("change", syncReducedMotion);
+
   const releaseFormSystem = enhanceForm(root);
   const initialSync = cloudSync?.status?.() || {};
   const initialClock = clockManager?.snapshot?.() || {};
+  const preferences = initEthonePreferences(document);
+  const workspaceFallback = { space: getLastWorkspace(), flow: options.profile?.flow };
   const store = createPresentationStore({
     ...(cloudSync?.preferences?.() || {}),
     syncStatus: initialSync.syncStatus,
@@ -99,7 +144,22 @@ export function mountApplication(root, options = {}) {
     aura: globalThis.localStorage?.getItem("v8_home_aura") || "classic",
     fontFamily: globalThis.localStorage?.getItem("v8_font_family") || "inter",
     radiusStyle: globalThis.localStorage?.getItem("v8_radius_style") || "rounded"
-  }, { ownerId: options.ownerId || repository.owner() || "", fallbackState: { accent: options.profile?.accent, space: options.profile?.space, flow: options.profile?.flow } });
+  }, {
+    ownerId: options.ownerId || repository.owner() || "",
+    fallbackState: {
+      accent: options.profile?.accent,
+      ...workspaceFallback,
+      theme: preferences.theme,
+      density: preferences.density,
+      customAccentColor: preferences.customAccent,
+      status: preferences.status,
+      wallpaper: preferences.wallpaper,
+      performanceMode: preferences.performanceMode,
+      haptics: preferences.haptics,
+      lowData: preferences.lowData,
+      fontSize: preferences.fontSize
+    }
+  });
   const initialModel = createHomeModel({ snapshot: repository.snapshot() });
   const lifecycle = createLifecycle();
   const densityEngine = createDensityEngine({ target: document.documentElement, runtime: globalThis, getState: () => store.getState() });
@@ -329,9 +389,18 @@ export function mountApplication(root, options = {}) {
   document.documentElement.dataset.spotlight = store.getState().spotlightEnabled === false ? "disabled" : "enabled";
   document.documentElement.dataset.ambientMotion = store.getState().ambientEffectsEnabled === false ? "disabled" : "enabled";
   document.documentElement.dataset.interfaceBlur = store.getState().interfaceBlurEnabled === false ? "disabled" : "enabled";
+  function getTimeOfDay(date = new Date()) {
+    const hour = date.getHours();
+    if (hour >= 5 && hour < 12) return "morning";
+    if (hour >= 12 && hour < 18) return "afternoon";
+    if (hour >= 18 && hour < 23) return "evening";
+    return "night";
+  }
+
   function applyUIThemeAttributes(state) {
     if (typeof document === "undefined" || !document.documentElement) return;
     const el = document.documentElement;
+    el.dataset.timeOfDay = getTimeOfDay();
     if (state.zen) el.dataset.v8Zen = "true";
     else delete el.dataset.v8Zen;
     if (state.dockScale && state.dockScale !== "normal") el.dataset.v8DockScale = state.dockScale;
@@ -352,6 +421,7 @@ export function mountApplication(root, options = {}) {
     else delete el.dataset.v8HomeHero;
   }
   applyUIThemeAttributes(store.getState());
+  setDensity(getDensity());
   densityEngine.start(store.getState());
   automationWatcher.prime(store.getState());
   if (ownsAmbientEngine) ambient.start(store.getState());
@@ -597,6 +667,9 @@ export function mountApplication(root, options = {}) {
     getState: () => store.getState(),
     repository,
     notifications: toasts,
+    actions,
+    externalServices,
+    notify: (notice) => toasts?.show?.(notice),
     currentLocale: () => i18n?.locale?.() || "fr",
     onLocaleChange: (locale) => i18n?.setLocale?.(locale),
     onClose: () => actions?.dispatch("v8.panel.close", { source: "keyboard" }),
@@ -625,6 +698,7 @@ export function mountApplication(root, options = {}) {
       try { navigator.clipboard?.writeText(`${city}: ${time}`); } catch { /* silent */ }
     }
   };
+  panelOptions.externalServices = externalServices;
   const panels = createPanelManager(shell.panelHost, panelOptions);
   function applyProfileMediaUpdate(kind, url) {
     if (kind === "avatar") {
@@ -639,9 +713,11 @@ export function mountApplication(root, options = {}) {
     }
   }
   let unreadNotifications = toasts.unreadCount();
+  shell?.updateNotifications?.(unreadNotifications);
   const releaseNotifications = toasts.subscribe((count) => {
     unreadNotifications = count;
     presence.update({ notifications: count });
+    shell?.updateNotifications?.(count);
   });
   presence.update({ notifications: unreadNotifications });
   const commandCenter = createCommandCenter(shell.commandHost, {
@@ -769,7 +845,7 @@ export function mountApplication(root, options = {}) {
   function lazyPageMount(route, module, brain) {
     if (route === "activity") return module.mountActivity(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, twitchLive, lastfmLive, trackerLive, googleDriveLive, youtubeLive, redditLive, presence, externalServices, notify: (notice) => toasts.show(notice) });
     if (route === "connections") return module.mountConnections(shell.stage, { repository, actions, journal: activityJournal, state: store.getState(), subscribeState: store.subscribe, spotifyLive, spotifyOAuthLive, discordLive, weatherLive, minecraftLive, steamLive, githubLive, googleCalendarLive, notionLive, todoistLive, valorantLive, lolLive, twitchLive, lastfmLive, trackerLive, googleDriveLive, youtubeLive, redditLive, externalServices, notify: (notice) => toasts.show(notice), clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.() });
-    if (route === "brain") return module.mountBrain(shell.stage, { repository, actions, state: store.getState(), presence, brain, notify: (notice) => toasts.show(notice) });
+    if (route === "brain") return module.mountBrain(shell.stage, { repository, actions, state: store.getState(), presence, brain, notify: (notice) => toasts.show(notice), externalServices });
     if (route === "security") return module.mountSecurity(shell.stage, { security: options.security, externalServices, clientProvider: options.clientProvider, ownerId: options.ownerId || repository.owner?.(), notify: (notice) => toasts.show(notice) });
     if (route === "files") return module.mountFiles(shell.stage, { repository, actions, state: store.getState(), subscribeState: store.subscribe, sync: cloudSync, presence, externalServices, notify: (notice) => toasts.show(notice) });
     if (route === "share") return module.mountShare(shell.stage, { externalServices, notify: (notice) => toasts.show(notice) });
@@ -843,6 +919,8 @@ export function mountApplication(root, options = {}) {
     });
   }
 
+  let refreshDashboardResponsiveness = () => {};
+
   function mountRoute(route, focus = true, navigation = null) {
     const requestId = ++routeRequest;
     if (mountedRoute !== route) {
@@ -867,6 +945,7 @@ export function mountApplication(root, options = {}) {
         return mountFeatureFallback(shell.stage, route);
       });
       finishRouteMount(route, focus);
+      if (route === "home") refreshDashboardResponsiveness();
     };
 
     if (document.startViewTransition) {
@@ -891,6 +970,7 @@ export function mountApplication(root, options = {}) {
     setState: (patch) => store.setState(patch),
     getState: () => store.getState(),
     notify: (notice) => toasts.show(notice),
+    notifications: toasts,
     signOut: options.onSignOut,
     showProfiles: () => options.onShowProfiles?.(),
     setLocale: (locale) => {
@@ -908,6 +988,235 @@ export function mountApplication(root, options = {}) {
       return activityJournal.capture(actionId, result);
     }
   });
+  panelOptions.actions = actions;
+  panelOptions.notify = (notice) => toasts?.show?.(notice);
+
+  function bottomSheetAction(iconName, label, onClick) {
+    return element("button", {
+      className: "v8-bottom-sheet__action",
+      attributes: { type: "button" },
+      events: { click: (event) => { event.stopPropagation(); onClick(); } }
+    }, [icon(iconName), element("span", { text: label })]);
+  }
+
+  let moreSheet = null;
+  function openMoreSheet() {
+    if (moreSheet?.element?.isConnected) return;
+    const items = [
+      { icon: "plug", label: "Connections", action: () => { moreSheet?.close?.(); actions.dispatch("v8.connections.open"); } },
+      { icon: "folder", label: "Fichiers", action: () => { moreSheet?.close?.(); actions.dispatch("v8.files.open"); } },
+      { icon: "store", label: "Marketplace", action: () => { moreSheet?.close?.(); actions.dispatch("v8.marketplace.open"); } },
+      { icon: "settings-2", label: "Réglages", action: () => { moreSheet?.close?.(); actions.dispatch("v8.settings.open"); } },
+      { icon: "shield-check", label: "Sécurité", action: () => { moreSheet?.close?.(); actions.dispatch("v8.security.open"); } },
+      { icon: "search", label: "Rechercher", action: () => { moreSheet?.close?.(); actions.dispatch("v8.command.open"); } }
+    ];
+    const children = items.map((item) => bottomSheetAction(item.icon, item.label, item.action));
+    moreSheet = showBottomSheet({ title: "Plus", children, onClose: () => { moreSheet = null; } });
+  }
+
+  let quickSheet = null;
+  function openQuickActionsSheet() {
+    if (quickSheet?.element?.isConnected) return;
+    const items = [
+      { icon: "mail-plus", label: "Nouveau Mail", action: () => { quickSheet?.close?.(); globalThis.location.hash = "#/mail?compose=1"; } },
+      { icon: "file-plus-2", label: "Nouvelle Note", action: () => { quickSheet?.close?.(); globalThis.location.hash = "#/brain?note=1"; } },
+      { icon: "upload", label: "Uploader un fichier", action: () => { quickSheet?.close?.(); globalThis.location.hash = "#/files?upload=1"; } },
+      { icon: "brain", label: "Ouvrir Brain", action: () => { quickSheet?.close?.(); actions.dispatch("v8.brain.open"); } },
+      { icon: "briefcase-business", label: "Créer un Workspace", action: () => { quickSheet?.close?.(); toasts.show({ type: "info", title: "Workspace", message: "Création de Workspace bientôt disponible." }); } },
+      { icon: "panels-top-left", label: "Ajouter un Widget", action: () => { quickSheet?.close?.(); actions.dispatch("v8.widgets.open"); } },
+      { icon: "workflow", label: "Créer une Automation", action: () => { quickSheet?.close?.(); toasts.show({ type: "info", title: "Automation", message: "Création d'automation bientôt disponible." }); } }
+    ];
+    const children = items.map((item) => bottomSheetAction(item.icon, item.label, item.action));
+    quickSheet = showBottomSheet({ title: "Actions rapides", children, onClose: () => { quickSheet = null; } });
+  }
+
+  actions.scope("v8.mobile-nav.more", () => {
+    openMoreSheet();
+    return { ok: true, status: "completed", message: "Menu Plus ouvert" };
+  });
+  actions.scope("v8.quick-actions.open", () => {
+    openQuickActionsSheet();
+    return { ok: true, status: "completed", message: "Actions rapides ouvertes" };
+  });
+
+  function setupFab() {
+    const fab = root.querySelector(".v8-fab");
+    if (!fab) return;
+    fab.classList.add("is-ready");
+    let longPressTimer = null;
+    let longPressFired = false;
+    const LONG_PRESS_MS = 500;
+    function startLongPress() { cancelLongPress(); longPressTimer = setTimeout(() => { longPressFired = true; openQuickActionsSheet(); }, LONG_PRESS_MS); }
+    function cancelLongPress() { if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; } }
+    fab.addEventListener("pointerdown", () => { longPressFired = false; startLongPress(); });
+    fab.addEventListener("pointerup", () => { cancelLongPress(); if (longPressFired) openQuickActionsSheet(); });
+    fab.addEventListener("pointerleave", cancelLongPress);
+    fab.addEventListener("pointercancel", cancelLongPress);
+    fab.addEventListener("click", (event) => { if (longPressFired) event.stopImmediatePropagation(); });
+  }
+
+  function setupMobileGestures() {
+    const edgeMedia = globalThis.matchMedia?.("(max-width: 640px)") || { matches: false };
+    let touchStart = null;
+    let longPressTimer = null;
+    let longPressRow = null;
+    const LONG_PRESS_MS = 600;
+    const MOVE_THRESHOLD = 20;
+    const EDGE_THRESHOLD = 30;
+    const SWIPE_MIN = 60;
+
+    function clearLongPress() {
+      if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
+      longPressRow = null;
+    }
+
+    document.addEventListener("touchstart", (event) => {
+      const touch = event.changedTouches[0];
+      if (!touch) return;
+      touchStart = { x: touch.clientX, y: touch.clientY, time: Date.now() };
+      const row = event.target.closest(".v8-mail-row");
+      if (row) {
+        longPressRow = row;
+        longPressTimer = setTimeout(() => {
+          row.dispatchEvent(new CustomEvent("v8-mail-longpress", { bubbles: true, detail: { messageId: row.dataset.messageId }, cancelable: true }));
+          const suppress = (e) => { e.stopImmediatePropagation(); e.preventDefault(); };
+          row.addEventListener("click", suppress, { once: true, capture: true });
+          clearLongPress();
+        }, LONG_PRESS_MS);
+      }
+    }, { passive: true });
+
+    document.addEventListener("touchmove", (event) => {
+      if (!touchStart) return;
+      const touch = event.changedTouches[0];
+      const dx = Math.abs(touch.clientX - touchStart.x);
+      const dy = Math.abs(touch.clientY - touchStart.y);
+      if (dx > MOVE_THRESHOLD || dy > MOVE_THRESHOLD) clearLongPress();
+    }, { passive: true });
+
+    document.addEventListener("touchend", (event) => {
+      if (!touchStart) return;
+      const touch = event.changedTouches[0];
+      const dx = touch.clientX - touchStart.x;
+      const dy = touch.clientY - touchStart.y;
+      const dt = Date.now() - touchStart.time;
+      if (touchStart.x <= EDGE_THRESHOLD && dx > SWIPE_MIN && Math.abs(dy) < SWIPE_MIN && dt < 500 && edgeMedia.matches) {
+        event.preventDefault();
+        globalThis.history.back();
+      }
+      clearLongPress();
+      touchStart = null;
+    });
+
+    document.addEventListener("touchcancel", () => { clearLongPress(); touchStart = null; });
+  }
+
+  function setupDashboardResponsiveness() {
+    const mobileMedia = globalThis.matchMedia?.("(max-width: 640px)") || { matches: false };
+    const tabletMedia = globalThis.matchMedia?.("(min-width: 641px) and (max-width: 1024px)") || { matches: false };
+    let moreSlot = null;
+    let prioritySheet = null;
+    let frame = 0;
+
+    function getLowPriorityHosts() {
+      return [...document.querySelectorAll('.v8-home-live-grid > section[data-priority="low"], .v8-dashboard-grid > .v8-widget[data-priority="low"]')];
+    }
+
+    function getDashboardArticles() {
+      return [...document.querySelectorAll('.v8-home-live-grid > section > article, .v8-dashboard-grid > .v8-widget')];
+    }
+
+    function getCollapsedHosts() {
+      return [...document.querySelectorAll('.v8-home-live-grid > section[data-priority="low"].is-collapsed, .v8-dashboard-grid > .v8-widget[data-priority="low"].is-collapsed')];
+    }
+
+    function openPrioritySheet() {
+      if (prioritySheet?.element?.isConnected) return;
+      const clones = getCollapsedHosts().map((host) => {
+        const article = host.querySelector("article");
+        return article ? article.cloneNode(true) : host.cloneNode(true);
+      }).filter(Boolean);
+      if (!clones.length) return;
+      const grid = element("div", { className: "v8-home-live-grid v8-more-widgets-grid" }, clones);
+      const children = [
+        element("p", { className: "v8-bottom-sheet__copy", text: "Widgets masqués sur mobile" }),
+        grid
+      ];
+      prioritySheet = showBottomSheet({ title: "Plus de widgets", children, onClose: () => { prioritySheet = null; } });
+      refreshIcons();
+    }
+
+    function scheduleUpdate() {
+      if (frame) return;
+      frame = requestAnimationFrame(() => { frame = 0; update(); });
+    }
+
+    function update() {
+      const widgets = getDashboardArticles();
+      const isMobile = mobileMedia.matches;
+      const isTablet = tabletMedia.matches;
+      widgets.forEach((widget) => {
+        widget.classList.add("v8-widget");
+        widget.classList.remove("is-mobile", "is-tablet", "is-desktop");
+        if (isMobile) widget.classList.add("is-mobile");
+        else if (isTablet) widget.classList.add("is-tablet");
+        else widget.classList.add("is-desktop");
+      });
+
+      const lowHosts = getLowPriorityHosts();
+
+      if (!isMobile) {
+        lowHosts.forEach((host) => { host.classList.remove("is-collapsed"); });
+        if (moreSlot) { moreSlot.remove(); moreSlot = null; }
+        return;
+      }
+
+      lowHosts.forEach((host) => {
+        if (host.hidden) return;
+        host.classList.add("is-collapsed");
+      });
+
+      const collapsed = getCollapsedHosts();
+      const grids = [...document.querySelectorAll('.v8-home-live-grid:not([hidden])')].filter((g) => g.offsetParent !== null);
+      const targetGrid = grids[0];
+
+      if (!collapsed.length || !targetGrid) {
+        if (moreSlot) { moreSlot.remove(); moreSlot = null; }
+        return;
+      }
+
+      const existing = targetGrid.querySelector('.v8-more-widgets');
+      if (existing) {
+        moreSlot = existing;
+        const count = moreSlot.querySelector('.v8-more-widgets__count');
+        if (count) count.textContent = String(collapsed.length);
+        return;
+      }
+
+      moreSlot = element("button", {
+        className: "v8-more-widgets v8-widget",
+        attributes: { type: "button", "aria-label": `Afficher ${collapsed.length} widget${collapsed.length > 1 ? "s" : ""}` },
+        events: { click: openPrioritySheet }
+      }, [
+        icon("panels-top-left"),
+        element("span", { className: "v8-more-widgets__count", text: String(collapsed.length) }),
+        element("span", { text: "Plus de widgets" })
+      ]);
+      targetGrid.append(moreSlot);
+      refreshIcons();
+    }
+
+    refreshDashboardResponsiveness = () => scheduleUpdate();
+    const ro = typeof ResizeObserver === "function" ? new ResizeObserver(scheduleUpdate) : null;
+    if (ro) ro.observe(root);
+    globalThis.addEventListener?.("resize", scheduleUpdate, { passive: true });
+    globalThis.addEventListener?.("orientationchange", () => update());
+    setTimeout(update, 0);
+  }
+
+  setupFab();
+  setupMobileGestures();
+  setupDashboardResponsiveness();
 
   const unsubscribe = store.subscribe((next, previous) => {
     const nextCloudPreferencesKey = JSON.stringify(store.cloudSnapshot());
@@ -927,10 +1236,16 @@ export function mountApplication(root, options = {}) {
     if (next.ambientEffectsEnabled !== previous.ambientEffectsEnabled) document.documentElement.dataset.ambientMotion = next.ambientEffectsEnabled ? "enabled" : "disabled";
     if (next.interfaceBlurEnabled !== previous.interfaceBlurEnabled) document.documentElement.dataset.interfaceBlur = next.interfaceBlurEnabled ? "enabled" : "disabled";
     applyUIThemeAttributes(next);
+    if (next.route === "home" && (next.route !== previous.route || JSON.stringify(next.homeLiveLayout) !== JSON.stringify(previous.homeLiveLayout))) {
+      refreshDashboardResponsiveness();
+    }
     if (next.flow !== previous.flow || next.space !== previous.space || next.theme !== previous.theme) ambient.refresh(next);
     if (next.theme !== previous.theme || next.space !== previous.space) metadata.setThemeColor(themeColorForState(next, { systemPrefersLight: systemPrefersLight(globalThis) }));
     shell.update(next);
-    if (next.panel === "notifications" && previous.panel !== "notifications") unreadNotifications = 0;
+    if (next.panel === "notifications" && previous.panel !== "notifications") {
+      unreadNotifications = 0;
+      shell?.updateNotifications?.(0);
+    }
     if (next.route !== previous.route || next.syncStatus !== previous.syncStatus || next.panel !== previous.panel) {
       presence.update({ route: next.route, syncStatus: next.syncStatus, notifications: unreadNotifications });
     }
@@ -1125,6 +1440,7 @@ export function mountApplication(root, options = {}) {
     routeRequest += 1;
     document.removeEventListener("keydown", handleGlobalKeydown);
     document.removeEventListener("visibilitychange", handleVisibilityRefresh);
+    reducedMotionQuery?.removeEventListener?.("change", syncReducedMotion);
     globalThis.removeEventListener("online", handleOnline);
     globalThis.removeEventListener("offline", handleOffline);
     shell.stage.removeEventListener("contextmenu", handleContextMenu);

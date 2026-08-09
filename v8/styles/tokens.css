@@ -172,10 +172,16 @@
   --v8-space-4: 1rem;
   --v8-space-5: 1.25rem;
   --v8-space-6: 1.5rem;
-  --v8-space-7: 2rem;
-  --v8-space-8: 2.5rem;
-  --v8-space-9: 3rem;
-  --v8-space-10: 4rem;
+  --v8-space-7: 1.75rem;
+  --v8-space-8: 2rem;
+  --v8-space-9: 2.25rem;
+  --v8-space-10: 2.5rem;
+  --v8-space-11: 2.75rem;
+  --v8-space-12: 3rem;
+  --v8-space-13: 3.25rem;
+  --v8-space-14: 3.5rem;
+  --v8-space-15: 3.75rem;
+  --v8-space-16: 4rem;
   --v8-radius-xs: 3px;
   --v8-radius-sm: 5px;
   --v8-radius-md: 8px;
@@ -271,6 +277,12 @@
   --v8-touch-target: 44px;
   --v8-mobile-status-height: 44px;
   --v8-mobile-dock-clearance: 160px;
+  --v8-safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --v8-safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --v8-safe-area-inset-left: env(safe-area-inset-left, 0px);
+  --v8-safe-area-inset-right: env(safe-area-inset-right, 0px);
+  --v8-mobile-radius: var(--v8-radius-lg);
+  --v8-fab-size: 56px;
   --v8-z-base: 0;
   --v8-z-rail: 20;
   --v8-z-header: 30;
@@ -279,6 +291,19 @@
   --v8-z-toast: 80;
   --v8-z-dialog: 100;
   --v8-z-tooltip: 120;
+  --v8-card-padding: var(--density-card-padding);
+  --v8-gap: var(--v8-space-4);
+  --v8-nav-height: 66px;
+  --v8-mobile-nav-height: 56px;
+  --v8-widget-gap: var(--v8-layout-cluster-gap);
+  --v8-text-2xs: clamp(0.625rem, 0.58rem + 0.22vw, 0.75rem);
+  --v8-text-xs: clamp(0.75rem, 0.68rem + 0.36vw, 0.875rem);
+  --v8-text-sm: clamp(0.875rem, 0.82rem + 0.4vw, 1rem);
+  --v8-text-md: clamp(1rem, 0.9rem + 0.5vw, 1.1875rem);
+  --v8-text-lg: clamp(1.1875rem, 1.05rem + 0.7vw, 1.5rem);
+  --v8-text-xl: clamp(1.5rem, 1.25rem + 1.2vw, 2rem);
+  --v8-text-2xl: clamp(1.875rem, 1.5rem + 1.85vw, 2.625rem);
+  --v8-text-3xl: clamp(2.5rem, 1.85rem + 3.25vw, 4.5rem);
 }
 html[data-interface-blur="disabled"] {
   --v8-blur: 0px;
@@ -331,6 +356,25 @@ html[data-interface-blur="disabled"] {
   --v8-ambient-phase-shadow: rgba(0, 0, 0, 0.085);
   --v8-ambient-highlight: rgba(184, 165, 255, 0.014);
   --v8-breathe-duration: 34s;
+}
+:root[data-time-of-day="morning"] {
+  --v8-ambient-phase-light: rgba(255, 221, 188, 0.030);
+  --v8-ambient-phase-shadow: rgba(0, 0, 0, 0.024);
+  --v8-ambient-highlight: rgba(255, 238, 218, 0.022);
+}
+:root[data-time-of-day="afternoon"] {
+  --v8-ambient-phase-light: rgba(205, 226, 255, 0.020);
+  --v8-ambient-phase-shadow: rgba(0, 0, 0, 0.036);
+}
+:root[data-time-of-day="evening"] {
+  --v8-ambient-phase-light: rgba(247, 184, 132, 0.024);
+  --v8-ambient-phase-shadow: rgba(0, 0, 0, 0.054);
+  --v8-ambient-highlight: rgba(255, 209, 172, 0.020);
+}
+:root[data-time-of-day="night"] {
+  --v8-ambient-phase-light: rgba(131, 119, 207, 0.024);
+  --v8-ambient-phase-shadow: rgba(0, 0, 0, 0.082);
+  --v8-ambient-highlight: rgba(184, 165, 255, 0.016);
 }
 :root[data-accent="sky"] {
   --v8-accent: #8bc9fa;
@@ -544,5 +588,35 @@ html[data-interface-blur="disabled"] {
     --v8-physics-recoil: none;
     --v8-haptic-release-duration: 1ms;
     --v8-haptic-window-duration: 1ms;
+  }
+}
+
+/* Dashboard density tokens */
+body.ethone-density-comfortable {
+  --v8-card-padding: var(--density-card-padding);
+  --v8-gap: var(--v8-space-4);
+  --v8-nav-height: 66px;
+  --v8-widget-gap: var(--v8-layout-cluster-gap);
+}
+body.ethone-density-compact {
+  --v8-card-padding: 14px;
+  --v8-gap: 0.625rem;
+  --v8-nav-height: 58px;
+  --v8-widget-gap: var(--v8-space-2);
+}
+body.ethone-density-dense {
+  --v8-card-padding: 10px;
+  --v8-gap: 0.375rem;
+  --v8-nav-height: 52px;
+  --v8-widget-gap: var(--v8-space-1);
+}
+
+/* Mobile input font-size floor to prevent iOS zoom */
+@media (max-width: 640px) {
+  input,
+  select,
+  textarea,
+  .v8-input {
+    font-size: 16px;
   }
 }

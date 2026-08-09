@@ -15,8 +15,12 @@ export function sanitizeActivityLiveLayout(input) {
   return Object.freeze({ order: Object.freeze(order), hidden: Object.freeze(hidden) });
 }
 
-const THEMES = new Set(["night", "graphite", "day", "auto"]);
-const ACCENTS = new Set(["mint", "sky", "amber", "violet", "rose", "custom"]);
+const THEMES = new Set(["night", "graphite", "day", "auto", "midnight", "obsidian", "aurora", "minimal", "focus", "glass", "oled"]);
+const ACCENTS = new Set(["mint", "sky", "amber", "violet", "rose", "custom", "teal", "coral"]);
+const WALLPAPERS = new Set(["none", "aurora", "nebula", "mesh", "noise"]);
+const STATUSES = new Set(["online", "busy", "focus", "away", "invisible"]);
+const PERFORMANCE_MODES = new Set(["normal", "low"]);
+const FONT_SIZES = new Set(["sm", "md", "lg", "xl"]);
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 const SPACES = new Set(["personal", "focus", "studio"]);
 const SYNC_STATES = new Set(["loading", "saving", "saved", "offline", "retrying", "error", "expired", "online", "syncing"]);
@@ -68,7 +72,13 @@ const DEFAULT_STATE = Object.freeze({
   radiusStyle: "rounded",
   zen: false,
   activePreset: null,
-  customPresets: []
+  customPresets: [],
+  status: "online",
+  wallpaper: "none",
+  performanceMode: "normal",
+  haptics: true,
+  lowData: false,
+  fontSize: "md"
 });
 
 function safeParse(value) {
@@ -146,7 +156,13 @@ function normalizeState(input = {}) {
     radiusStyle: ["rounded", "sharp", "soft"].includes(input.radiusStyle) ? input.radiusStyle : "rounded",
     zen: input.zen === true,
     activePreset: input.activePreset == null ? null : String(input.activePreset).slice(0, 32),
-    customPresets: Object.freeze(Array.isArray(input.customPresets) ? input.customPresets.map((p) => p && typeof p === "object" ? Object.freeze({ ...p }) : null).filter(Boolean) : [])
+    customPresets: Object.freeze(Array.isArray(input.customPresets) ? input.customPresets.map((p) => p && typeof p === "object" ? Object.freeze({ ...p }) : null).filter(Boolean) : []),
+    status: STATUSES.has(input.status) ? input.status : DEFAULT_STATE.status,
+    wallpaper: WALLPAPERS.has(input.wallpaper) ? input.wallpaper : DEFAULT_STATE.wallpaper,
+    performanceMode: PERFORMANCE_MODES.has(input.performanceMode) ? input.performanceMode : DEFAULT_STATE.performanceMode,
+    haptics: input.haptics !== false,
+    lowData: input.lowData === true,
+    fontSize: FONT_SIZES.has(input.fontSize) ? input.fontSize : DEFAULT_STATE.fontSize
   });
 }
 
@@ -192,7 +208,13 @@ function persistedSnapshot(state) {
     uiGlow: state.uiGlow !== false,
     uiSoundFeedback: state.uiSoundFeedback !== false,
     activePreset: state.activePreset || null,
-    customPresets: state.customPresets || []
+    customPresets: state.customPresets || [],
+    status: state.status || "online",
+    wallpaper: state.wallpaper || "none",
+    performanceMode: state.performanceMode || "normal",
+    haptics: state.haptics !== false,
+    lowData: state.lowData === true,
+    fontSize: state.fontSize || "md"
   };
 }
 

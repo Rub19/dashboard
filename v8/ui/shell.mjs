@@ -157,6 +157,7 @@ export function mountShell(root, options = {}) {
       </div>
       <footer id="v8-status-bar" class="v8-status-bar" aria-label="Barre d'etat ETHONE"></footer>
       <div id="v8-dock-host" class="v8-dock-host"></div>
+      <button type="button" class="v8-fab" data-action="v8.quick-actions.open" aria-label="Actions rapides" data-tooltip="Actions rapides"><i data-lucide="plus" aria-hidden="true"></i></button>
       <div id="v8-panel-host"></div>
       <div id="v8-command-host"></div>
       <div id="v8-mission-host"></div>
@@ -174,8 +175,9 @@ export function mountShell(root, options = {}) {
   const syncAction = root.querySelector(".v8-sync-action");
   const themeAction = root.querySelector(".v8-theme-action i");
   const themeButton = root.querySelector(".v8-theme-action");
+  const notificationBadge = root.querySelector(".v8-notification-badge");
   const statusBar = root.querySelector("#v8-status-bar");
-  const media = globalThis.matchMedia("(max-width: 820px)");
+  const media = globalThis.matchMedia("(max-width: 640px)");
   let activeRoute = options.initialState?.route || "home";
   let activeSpace = options.initialState?.space || "personal";
   let activeFlow = options.initialState?.flow || workspaceById(activeSpace).flow;
@@ -204,6 +206,15 @@ export function mountShell(root, options = {}) {
     activeUser = user || null;
     renderProfileMark();
     renderNavigation();
+  }
+
+  function updateNotifications(count) {
+    const n = Math.max(0, Number(count) || 0);
+    if (notificationBadge) {
+      notificationBadge.textContent = n > 99 ? "99+" : String(n);
+      notificationBadge.hidden = n === 0;
+    }
+    dock?.updateNotificationCount?.(n);
   }
 
   renderProfileMark();
@@ -341,6 +352,7 @@ export function mountShell(root, options = {}) {
     toastRegion: root.querySelector("#v8-toast-region"),
     update,
     updateUser,
+    updateNotifications,
     updateSpotify: dock.updateMedia,
     dockOrder: dock.order,
     setDockOrder: dock.setOrder,

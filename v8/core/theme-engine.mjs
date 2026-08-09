@@ -1,8 +1,8 @@
-export const THEME_MODES = Object.freeze(["night", "graphite", "day", "auto"]);
+export const THEME_MODES = Object.freeze(["night", "graphite", "day", "auto", "midnight", "obsidian", "aurora", "minimal", "focus", "glass", "oled"]);
 
 const MODE_SET = new Set(THEME_MODES);
 
-export function normalizeThemeMode(value, fallback = "night") {
+export function normalizeThemeMode(value, fallback = "midnight") {
   return MODE_SET.has(value) ? value : fallback;
 }
 
@@ -18,7 +18,7 @@ export function resolveTheme(requested, options = {}) {
   const mode = normalizeThemeMode(requested);
   if (mode !== "auto") return Object.freeze({ requested: mode, effective: mode, reason: "explicit" });
   const light = options.systemPrefersLight === true;
-  return Object.freeze({ requested: mode, effective: light ? "day" : "night", reason: light ? "system-light" : "system-dark" });
+  return Object.freeze({ requested: mode, effective: light ? "day" : "midnight", reason: light ? "system-light" : "system-dark" });
 }
 
 export function createThemeWatcher(options = {}) {

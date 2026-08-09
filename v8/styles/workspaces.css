@@ -313,7 +313,7 @@
 }
 .v8-rich-text__body {
   flex: 1;
-  padding: 0 0 var(--v8-space-7);
+  padding: 0 0 var(--v8-space-8);
   border: 0;
   background: transparent;
   color: var(--v8-text-secondary);
@@ -385,8 +385,8 @@
     grid-template-columns: var(--v8-layout-panel-compact) minmax(0, 1fr);
   }
   .v8-note-document {
-    padding-right: var(--v8-space-7);
-    padding-left: var(--v8-space-7);
+    padding-right: var(--v8-space-8);
+    padding-left: var(--v8-space-8);
   }
 }
 @media (max-width: 820px) {
@@ -1267,7 +1267,7 @@ html[data-v8-interactions] .v8-file-entry:hover .v8-row-actions,
   display: grid;
   width: 72px;
   height: 72px;
-  margin-top: var(--v8-space-7);
+  margin-top: var(--v8-space-8);
   place-items: center;
   border: 1px solid var(--v8-accent-line);
   border-radius: var(--v8-radius-md);

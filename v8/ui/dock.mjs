@@ -270,6 +270,7 @@ export function createDock(host, options = {}) {
       element("button", { className: "v8-dock-control", attributes: { type: "button", "aria-label": "Recherche Spotlight & Commandes (Ctrl+K)" }, dataset: { dockCommand: "spotlight", tooltip: "Spotlight (Ctrl+K)" } }, [icon("search")]),
       element("button", { className: "v8-dock-control", attributes: { type: "button", "aria-label": "Minuteur Pomodoro (Focus Express 25 min)" }, dataset: { dockCommand: "pomodoro", tooltip: "Pomodoro Focus (25m)" } }, [icon("timer")]),
       element("button", { className: "v8-dock-control", attributes: { type: "button", "aria-label": "Vue d'ensemble Mission Control (F3)" }, dataset: { dockCommand: "mission", tooltip: "Mission Control" } }, [icon("layout-grid")]),
+      element("button", { className: `v8-dock-control v8-dock-control--notifications`, attributes: { type: "button", "aria-label": "Ouvrir les notifications", "aria-live": "polite" }, dataset: { dockCommand: "notifications", tooltip: "Notifications" } }, [icon("bell"), element("span", { className: "v8-dock-notification-badge", attributes: { "aria-hidden": "true", hidden: "true" }, text: "0" })]),
       element("button", { className: `v8-dock-control${controlCenterOpen ? " is-active" : ""}`, attributes: { type: "button", "aria-label": "Control Center", "aria-expanded": String(controlCenterOpen) }, dataset: { dockCommand: "control-center", tooltip: "Control Center" } }, [icon("sliders")]),
       element("button", { className: `v8-dock-control${editing ? " is-active" : ""}`, attributes: { type: "button", "aria-label": "Personnaliser le Dock", "aria-expanded": String(editing) }, dataset: { dockCommand: "edit", tooltip: "Personnaliser le Dock" } }, [icon("sliders-horizontal")])
     ]);
@@ -401,6 +402,9 @@ export function createDock(host, options = {}) {
       return;
     } else if (command === "pomodoro") {
       options.onAction?.("v8.focus.start.pomodoro", { source: "dock" });
+      return;
+    } else if (command === "notifications") {
+      options.onAction?.("v8.notifications.open", { source: "dock" });
       return;
     } else if (command === "mission") {
       options.onAction?.("v8.mission.open", { source: "dock" });
@@ -562,6 +566,13 @@ export function createDock(host, options = {}) {
       slot.hidden = !indicator;
       scheduleIconRefresh();
       return Boolean(indicator);
+    },
+    updateNotificationCount(count) {
+      const badge = host.querySelector(".v8-dock-notification-badge");
+      if (!badge) return;
+      const n = Math.max(0, Number(count) || 0);
+      badge.textContent = n > 99 ? "99+" : String(n);
+      badge.hidden = n === 0;
     },
     order: () => Object.freeze([...order]),
     setOrder(next) {

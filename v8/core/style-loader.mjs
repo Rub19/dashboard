@@ -2,13 +2,13 @@ function result(ok, status, message, data = null) {
   return Object.freeze({ ok, status, message, data });
 }
 
-export const STYLE_RELEASE = "experience-v295";
+export const STYLE_RELEASE = "experience-v296";
 
 export function createStyleLoader(options = {}) {
   const documentRef = options.document || globalThis.document;
   const baseUrl = String(options.baseUrl || "./v8/styles").replace(/\/$/, "");
   const release = encodeURIComponent(String(options.release || STYLE_RELEASE));
-  const styleIds = Object.freeze(["shell", "workspaces", "activity"]);
+  const styleIds = Object.freeze(["shell", "mobile-ux", "workspaces", "activity"]);
   const pending = new Map();
   let applicationPromise = null;
   let applicationEnabled = false;

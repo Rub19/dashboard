@@ -1,0 +1,124 @@
+/* ETHONE v8 — mobile UX foundation */
+
+:root {
+  --v8-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --v8-safe-area-top: env(safe-area-inset-top, 0px);
+}
+
+html,
+body,
+#ethone-v8-root {
+  overflow-x: hidden;
+}
+
+.v8-bottom-safe {
+  padding-bottom: max(var(--v8-space-4), env(safe-area-inset-bottom, 0px));
+}
+
+.v8-top-safe {
+  padding-top: max(var(--v8-space-2), env(safe-area-inset-top, 0px));
+}
+
+.v8-touch-target {
+  display: inline-flex;
+  min-width: var(--v8-touch-target);
+  min-height: var(--v8-touch-target);
+  align-items: center;
+  justify-content: center;
+}
+
+.v8-mobile-only,
+.v8-tablet-only,
+.v8-desktop-only {
+  display: none !important;
+}
+
+@media (max-width: 640px) {
+  .v8-mobile-only { display: revert !important; }
+  .v8-tablet-only,
+  .v8-desktop-only { display: none !important; }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .v8-tablet-only { display: revert !important; }
+  .v8-mobile-only,
+  .v8-desktop-only { display: none !important; }
+}
+
+@media (min-width: 1025px) {
+  .v8-desktop-only { display: revert !important; }
+  .v8-mobile-only,
+  .v8-tablet-only { display: none !important; }
+}
+
+/* Bottom sheet surface is standardized in components.css / shell.css.
+   Mobile overrides are defined below in the (max-width: 640px) block. */
+
+.v8-fab {
+  position: fixed;
+  right: max(var(--v8-space-4), env(safe-area-inset-right, 0px));
+  bottom: calc(var(--v8-mobile-dock-clearance) + var(--v8-space-4) + env(safe-area-inset-bottom, 0px));
+  z-index: var(--v8-z-popover);
+  display: grid;
+  width: var(--v8-fab-size);
+  height: var(--v8-fab-size);
+  place-items: center;
+  border: 1px solid var(--v8-accent-line);
+  border-radius: var(--v8-radius-pill);
+  background: var(--v8-accent);
+  color: var(--v8-inverse);
+  box-shadow: var(--v8-shadow-float), 0 0 28px color-mix(in srgb, var(--v8-accent) 16%, transparent);
+  cursor: pointer;
+}
+
+.v8-fab svg {
+  width: var(--v8-icon-lg);
+  height: var(--v8-icon-lg);
+  stroke-width: 2;
+}
+
+@media (max-width: 820px) {
+  .v8-fab {
+    bottom: calc(var(--v8-mobile-dock-clearance) + var(--v8-space-3) + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (max-width: 640px) {
+  .v8-bottom-sheet {
+    max-height: calc(100dvh - var(--v8-mobile-status-height) - env(safe-area-inset-top, 0px));
+  }
+  .v8-fab {
+    width: 48px;
+    height: 48px;
+    right: max(var(--v8-space-3), env(safe-area-inset-right, 0px));
+    bottom: calc(var(--v8-mobile-dock-clearance) + var(--v8-space-3) + env(safe-area-inset-bottom, 0px));
+  }
+  .v8-fab svg {
+    width: var(--v8-icon-md);
+    height: var(--v8-icon-md);
+  }
+}
+
+/* Mobile dashboard padding above bottom nav */
+@media (max-width: 640px) {
+  .v8-page[data-page="home"],
+  .v8-shell[data-navigation="mobile"] .v8-page {
+    padding-bottom: calc(var(--v8-mobile-nav-height) + env(safe-area-inset-bottom) + 1rem);
+  }
+
+  .v8-more-widgets {
+    min-height: 120px;
+    grid-template-columns: auto 1fr;
+    padding: var(--v8-space-3);
+  }
+
+  .v8-more-widgets svg {
+    width: var(--v8-icon-md);
+    height: var(--v8-icon-md);
+  }
+
+  .v8-more-widgets-grid.v8-home-live-grid {
+    grid-template-columns: 1fr !important;
+    gap: var(--v8-space-3);
+  }
+}

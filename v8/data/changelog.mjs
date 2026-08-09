@@ -24,6 +24,18 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v296", "2026-08-18", "Phase F : Quality of Life + UX Polish + Mobile 2.0 + Personalisation", [
+    { kind: "feature", text: "Fondations mobile : safe-areas, touch targets, viewport, gestes de retour et long-press, dock mobile et bottom sheets." },
+    { kind: "feature", text: "Navigation mobile : dock flottant, actions rapides, FAB et feuilles d'action réutilisables." },
+    { kind: "feature", text: "Dashboard responsive : grille adaptative, densité, priorisation des widgets et mode plus de widgets." },
+    { kind: "feature", text: "Brain Daily Assistant : briefing quotidien et bilan de journée." },
+    { kind: "feature", text: "Centre de notifications global : catégories, priorités, snooze, recherche, glisser pour supprimer et badge." },
+    { kind: "feature", text: "Audit du design system : tokens, typographie, boutons, cartes, modaux, états vides/erreur/skeleton et prefers-reduced-motion." },
+    { kind: "feature", text: "Moteur de personnalisation : densité, thème, accent, fond d'écran, mémoire par workspace et persistance cross-page." },
+    { kind: "feature", text: "Refonte des réglages : sections par cartes, recherche, favoris, raccourcis, accessibilité et réglages Mail." },
+    { kind: "improvement", text: "Accessibilité et performance : classes d'accessibilité, mode faibles données, precache SW étendu et optimisations du rendu." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v296." }
+  ]),
   entry("v295", "2026-08-17", "Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes", [
     { kind: "feature", text: "Comptes mail externes : Gmail, Outlook et IMAP (création, sync, suppression)." },
     { kind: "feature", text: "Chiffrement PGP simplifié via Web Crypto : génération de clés, chiffrement/déchiffrement côté Worker." },

@@ -136,10 +136,10 @@
   min-height: 0;
   align-content: center;
   justify-items: center;
-  gap: var(--v8-space-7);
+  gap: var(--v8-space-8);
   overflow-x: hidden;
   overflow-y: auto;
-  padding: var(--v8-space-7) var(--v8-space-5);
+  padding: var(--v8-space-8) var(--v8-space-5);
   overscroll-behavior: contain;
   scrollbar-gutter: stable both-edges;
 }
@@ -658,7 +658,7 @@ html[data-v8-interactions] .v8-entry--login .v8-form-field:not([data-field-state
   gap: var(--v8-space-4);
   overflow-x: hidden;
   overflow-y: auto;
-  padding: var(--v8-space-5) var(--v8-space-7);
+  padding: var(--v8-space-5) var(--v8-space-8);
   overscroll-behavior: contain;
   scrollbar-gutter: stable both-edges;
 }
@@ -667,7 +667,7 @@ html[data-v8-interactions] .v8-entry--login .v8-form-field:not([data-field-state
   width: min(100%, 1220px);
   align-items: end;
   justify-content: space-between;
-  gap: var(--v8-space-7);
+  gap: var(--v8-space-8);
 }
 .v8-profile-select__intro > div { display: grid; gap: 5px; }
 .v8-profile-select__intro h1 { max-inline-size: var(--v8-measure-title); font-size: var(--v8-type-h1); font-weight: var(--v8-weight-bold); line-height: var(--v8-leading-heading); }

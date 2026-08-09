@@ -1,5 +1,5 @@
 import { actionButton, element, icon } from "../ui/dom.mjs";
-import { emptyState } from "../ui/empty-state.mjs";
+import { emptyState, buildEmptyState } from "../ui/empty-state.mjs";
 import { refreshIcons, scheduleIconRefresh } from "../ui/icons.mjs";
 import { spotifyLiveCard } from "../ui/spotify-live.mjs";
 import { discordLiveCard } from "../ui/discord-live.mjs";
@@ -466,14 +466,14 @@ export function mountHome(stage, model, options = {}) {
   const googleCalendarHost = element("section", { className: "v8-home-google-calendar-host", attributes: { "aria-label": "Google Calendar", hidden: true } });
   const notionHost = element("section", { className: "v8-home-notion-host", attributes: { "aria-label": "Notion", hidden: true } });
   const todoistHost = element("section", { className: "v8-home-todoist-host", attributes: { "aria-label": "Todoist", hidden: true } });
-  const valorantHost = element("section", { className: "v8-home-valorant-host", attributes: { "aria-label": "Valorant", hidden: true } });
-  const lolHost = element("section", { className: "v8-home-lol-host", attributes: { "aria-label": "League of Legends", hidden: true } });
-  const twitchHost = element("section", { className: "v8-home-twitch-host", attributes: { "aria-label": "Twitch", hidden: true } });
-  const lastfmHost = element("section", { className: "v8-home-lastfm-host", attributes: { "aria-label": "Last.fm", hidden: true } });
-  const trackerHost = element("section", { className: "v8-home-tracker-host", attributes: { "aria-label": "Tracker.gg", hidden: true } });
+  const valorantHost = element("section", { className: "v8-home-valorant-host", attributes: { "aria-label": "Valorant", hidden: true }, dataset: { priority: "low" } });
+  const lolHost = element("section", { className: "v8-home-lol-host", attributes: { "aria-label": "League of Legends", hidden: true }, dataset: { priority: "low" } });
+  const twitchHost = element("section", { className: "v8-home-twitch-host", attributes: { "aria-label": "Twitch", hidden: true }, dataset: { priority: "low" } });
+  const lastfmHost = element("section", { className: "v8-home-lastfm-host", attributes: { "aria-label": "Last.fm", hidden: true }, dataset: { priority: "low" } });
+  const trackerHost = element("section", { className: "v8-home-tracker-host", attributes: { "aria-label": "Tracker.gg", hidden: true }, dataset: { priority: "low" } });
   const googleDriveHost = element("section", { className: "v8-home-google-drive-host", attributes: { "aria-label": "Google Drive", hidden: true } });
-  const youtubeHost = element("section", { className: "v8-home-youtube-host", attributes: { "aria-label": "YouTube", hidden: true } });
-  const redditHost = element("section", { className: "v8-home-reddit-host", attributes: { "aria-label": "Reddit", hidden: true } });
+  const youtubeHost = element("section", { className: "v8-home-youtube-host", attributes: { "aria-label": "YouTube", hidden: true }, dataset: { priority: "low" } });
+  const redditHost = element("section", { className: "v8-home-reddit-host", attributes: { "aria-label": "Reddit", hidden: true }, dataset: { priority: "low" } });
   const billsHost = element("section", { className: "v8-home-bills-host", attributes: { "aria-label": "Factures", hidden: true } });
 
   const HOST_BY_ID = Object.freeze({
@@ -755,12 +755,14 @@ export function mountHome(stage, model, options = {}) {
 
   const customizeHost = element("div", { className: "v8-home-live-customize", attributes: { hidden: true } });
   const customizeToggle = element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button", "aria-expanded": "false" } }, [icon("sliders-horizontal"), element("span", { text: "Personnaliser" })]);
+  const liveEmptyHost = element("div", { className: "v8-home-live-empty", attributes: { hidden: true } });
   const liveSection = element("section", { className: "v8-home-live-section" }, [
     element("header", { className: "v8-home-live-heading" }, [
       element("div", {}, [element("span", { className: "v8-eyebrow", text: "En direct" }), element("h2", { text: "Vos widgets" })]),
       customizeToggle
     ]),
     customizeHost,
+    liveEmptyHost,
     element("div", { className: "v8-home-live-categories" }, [
       categorySections.gaming,
       categorySections.social,
@@ -880,7 +882,15 @@ export function mountHome(stage, model, options = {}) {
       categorySections[cat].hidden = isHidden;
       if (!isHidden) allHidden = false;
     });
-    liveSection.hidden = allHidden;
+    liveSection.hidden = false;
+    liveEmptyHost.hidden = !allHidden;
+    if (allHidden) {
+      liveEmptyHost.replaceChildren(buildEmptyState({
+        icon: "panels-top-left",
+        title: "Aucun widget en direct",
+        message: "Activez un service connecté pour voir vos widgets ici."
+      }));
+    }
   }
   applyLiveOrder();
   syncLiveGridVisibility();

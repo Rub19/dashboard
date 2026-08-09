@@ -1,6 +1,9 @@
 import { actionButton, element, icon } from "../ui/dom.mjs";
-import { statusState } from "../ui/empty-state.mjs";
+import { buildEmptyState } from "../ui/empty-state.mjs";
+import { buildErrorState } from "../ui/error-state.mjs";
+import { buildSkeletonList } from "../ui/skeleton.mjs";
 import { refreshIcons } from "../ui/icons.mjs";
+import { showBottomSheet } from "../ui/bottom-sheet.mjs";
 import { createMailCache } from "../services/mail-cache.mjs";
 
 const FOLDERS = [
@@ -149,10 +152,10 @@ export function mountMail(stage, options = {}) {
   const mailCache = options?.mailCache || createMailCache();
 
   if (!mailApi) {
-    stage.replaceChildren(statusState("integration", {
+    stage.replaceChildren(buildEmptyState({
+      icon: "unplug",
       title: "Service Mail non configuré",
-      description: "Connectez ETHONE Mail pour accéder à vos messages.",
-      compact: false
+      message: "Connectez ETHONE Mail pour accéder à vos messages."
     }));
     refreshIcons();
     return () => stage.replaceChildren();
@@ -175,6 +178,7 @@ export function mountMail(stage, options = {}) {
     alias: null,
     counts: {},
     loading: false,
+    error: null,
     notifications: [],
     unreadCount: 0,
     rules: [],
@@ -331,6 +335,12 @@ export function mountMail(stage, options = {}) {
   updateOnlineStatus();
 
   stage.replaceChildren(page);
+
+  messageList.addEventListener("v8-mail-longpress", (event) => {
+    event.preventDefault?.();
+    const message = state.messages.find((m) => String(m.id) === String(event.detail?.messageId));
+    if (message) openMessageContext(message);
+  });
 
   function isOnline() {
     return typeof navigator !== "undefined" ? navigator.onLine !== false : true;
@@ -1026,6 +1036,7 @@ export function mountMail(stage, options = {}) {
 
   async function loadFolder() {
     state.loading = true;
+    state.error = null;
     state.isSearch = hasActiveFilters() || (state.isSearch && !!state.query);
     renderList();
     try {
@@ -1042,6 +1053,7 @@ export function mountMail(stage, options = {}) {
       state.counts[state.folder] = typeof unread === "number" ? unread : state.messages.filter((m) => !m.is_read).length;
       await mailCache.putMessages(state.folder, state.messages);
     } catch (error) {
+      state.error = error;
       notify({ type: "error", title: "Mail", message: errorDescription(error) });
     }
     state.loading = false;
@@ -1087,7 +1099,7 @@ export function mountMail(stage, options = {}) {
 
   function renderAnalyticsLoading() {
     if (!analyticsPanel) return;
-    analyticsPanel.replaceChildren(statusState("loading", { title: "Chargement des statistiques...", compact: true, inline: true }));
+    analyticsPanel.replaceChildren(buildSkeletonList(4));
     analyticsPanel.hidden = false;
     if (messageList) messageList.hidden = true;
     refreshIcons();
@@ -2026,17 +2038,31 @@ export function mountMail(stage, options = {}) {
     messageList.replaceChildren();
 
     if (state.loading && !state.messages.length) {
-      messageList.append(statusState("loading", { title: "Chargement des messages...", compact: true, inline: true }));
+      messageList.append(element("li", {}, [buildSkeletonList(5)]));
+      refreshIcons();
+      return;
+    }
+
+    if (state.error && !state.messages.length) {
+      messageList.append(buildErrorState({
+        tagName: "li",
+        title: "Impossible de charger les messages",
+        reason: errorDescription(state.error),
+        actionText: "Réessayer",
+        action: () => void loadFolder()
+      }));
       refreshIcons();
       return;
     }
 
     if (!state.messages.length) {
-      messageList.append(statusState("empty", {
+      messageList.append(buildEmptyState({
+        tagName: "li",
+        icon: "inbox",
         title: "Aucun message",
-        description: state.isSearch ? "Aucun résultat pour cette recherche." : "Ce dossier est vide.",
-        compact: true,
-        inline: true
+        message: state.isSearch ? "Aucun résultat pour cette recherche." : "Ce dossier est vide.",
+        actionText: state.isSearch ? "" : "Nouveau message",
+        action: state.isSearch ? null : () => openCompose()
       }));
       refreshIcons();
       return;
@@ -2107,6 +2133,30 @@ export function mountMail(stage, options = {}) {
     return row;
   }
 
+  function openMessageContext(message) {
+    if (!message) return;
+    const items = [
+      { icon: "archive", label: "Archiver", action: () => moveMessage(message, "archive") },
+      { icon: "trash-2", label: "Supprimer", action: () => moveMessage(message, "trash") },
+      { icon: message.is_read ? "mail-open" : "mail", label: message.is_read ? "Marquer non lu" : "Marquer lu", action: async () => {
+        if (message.is_read) {
+          message.is_read = false;
+          try { await withQueue("read", { id: message.id, flags: { is_read: false } }); } catch {}
+        } else {
+          await markRead(message);
+        }
+        renderList();
+      } },
+      { icon: "clock-3", label: "Snooze", action: () => snoozeMessage(message) }
+    ];
+    const children = items.map((item) => element("button", {
+      className: "v8-bottom-sheet__action",
+      attributes: { type: "button" },
+      events: { click: (event) => { event.stopPropagation(); item.action(); } }
+    }, [icon(item.icon), element("span", { text: item.label })]));
+    showBottomSheet({ title: "Actions", children });
+  }
+
   async function openDetail(message) {
     state.selected = message;
     setView("detail");
@@ -2123,11 +2173,10 @@ export function mountMail(stage, options = {}) {
       if (!composeRoot) buildCompose();
       else reading.append(composeRoot);
     } else {
-      reading.append(statusState("empty", {
+      reading.append(buildEmptyState({
+        icon: "mail-open",
         title: "Sélectionnez un message",
-        description: "Choisissez un message dans la liste pour le lire.",
-        compact: true,
-        inline: true
+        message: "Choisissez un message dans la liste pour le lire."
       }));
       refreshIcons();
     }
@@ -2908,6 +2957,9 @@ export function mountMail(stage, options = {}) {
     if (pendingTemplate) {
       delete globalThis.__ethoneMailComposeTemplate;
       openCompose({ subject: pendingTemplate.subject, prefill: pendingTemplate.content });
+    }
+    if ((globalThis.location?.hash || "").includes("compose=1")) {
+      openCompose();
     }
   }
 

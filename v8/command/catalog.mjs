@@ -52,7 +52,15 @@ const rawCommands = [
   { id: "preset.creative", actionId: "v8.preset.apply", label: "Preset Créatif", subtitle: "Chaleur, espace, inspiration", category: "Presets", icon: "sparkles", keywords: ["preset", "créatif", "creative", "inspiration"], contextPriority: 100 },
   { id: "preset.minimal", actionId: "v8.preset.apply", label: "Preset Minimal", subtitle: "Léger, épuré, silencieux", category: "Presets", icon: "minimize-2", keywords: ["preset", "minimal", "épuré", "silencieux"], contextPriority: 100 },
   { id: "preset.developer", actionId: "v8.preset.apply", label: "Preset Développement", subtitle: "Compact, lisible, technique", category: "Presets", icon: "code", keywords: ["preset", "dev", "développement", "code"], contextPriority: 100 },
-  { id: "auth.signout", actionId: "v8.auth.signout", label: "Se déconnecter de votre session", subtitle: "Fermer la session ETHONE active", category: "Système", icon: "log-out", keywords: ["déconnexion", "signout", "logout", "quitter"] }
+  { id: "auth.signout", actionId: "v8.auth.signout", label: "Se déconnecter de votre session", subtitle: "Fermer la session ETHONE active", category: "Système", icon: "log-out", keywords: ["déconnexion", "signout", "logout", "quitter"] },
+  { id: "security.open", actionId: "v8.security.open", label: "Ouvrir Sécurité", subtitle: "Centre de sécurité ETHONE", category: "Système", icon: "shield-check", keywords: ["sécurité", "security", "confidentialité"] },
+  { id: "marketplace.open", actionId: "v8.marketplace.open", label: "Ouvrir Marketplace", subtitle: "Découvrir les intégrations et extensions", category: "Système", icon: "store", keywords: ["marketplace", "boutique", "extensions"] },
+  { id: "mail.compose", actionId: "v8.mail.compose", label: "Nouveau Mail", subtitle: "Rédiger un message", category: "Actions", icon: "mail-plus", keywords: ["mail", "nouveau", "écrire", "message"] },
+  { id: "brain.note", actionId: "v8.brain.note", label: "Nouvelle Note", subtitle: "Capturer une idée", category: "Actions", icon: "file-plus-2", keywords: ["note", "nouvelle", "idée"] },
+  { id: "files.upload", actionId: "v8.files.upload", label: "Uploader un Fichier", subtitle: "Ajouter un document", category: "Actions", icon: "upload", keywords: ["fichier", "upload", "document", "envoyer"] },
+  { id: "quick.actions", actionId: "v8.quick-actions.open", label: "Actions rapides", subtitle: "Mail, note, fichier, Brain...", category: "Actions", icon: "zap", keywords: ["actions", "rapides", "créer", "plus"] },
+  { id: "search.open", actionId: "v8.command.open", label: "Rechercher", subtitle: "Ouvrir la palette de commandes", category: "Navigation", icon: "search", keywords: ["rechercher", "search", "commandes", "palette"] },
+  { id: "focus.toggle", actionId: "v8.brain.focus-mode.toggle", label: "Mode Focus", subtitle: "Masquer distractions et notifications", category: "Focus", icon: "focus", keywords: ["focus", "concentration", "mode"] }
 ];
 
 const ALIASES = Object.freeze({

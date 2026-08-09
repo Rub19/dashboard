@@ -6,6 +6,7 @@ import { createWindowController } from "./window-system.mjs";
 import { createSelect } from "./select.mjs";
 import { workspaceById } from "../data/workspaces.mjs";
 import { CHANGELOG, CHANGELOG_KIND_ICONS, CHANGELOG_KIND_LABELS } from "../data/changelog.mjs";
+import { createNotificationCenter } from "./notification-center.mjs";
 
 const PANEL_COPY = Object.freeze({
   widgets: { title: "Widgets", eyebrow: "Space actif", icon: "panels-top-left" },
@@ -78,6 +79,7 @@ export function createPanelManager(host, options = {}) {
   let notificationQuery = "";
   let notificationFilter = "all";
   let focusInterval = 0;
+  let notificationCenter = null;
   let focusRemaining = 25 * 60;
   let focusTotal = 25 * 60;
   let focusRunning = false;
@@ -210,14 +212,16 @@ export function createPanelManager(host, options = {}) {
   }
 
   function close(config = {}) {
-    if (!mounted) return false;
+    if (notificationCenter) { notificationCenter.close(); notificationCenter = null; }
     clearInterval(focusInterval);
     focusRunning = false;
     notificationMenu.close({ restoreFocus: false });
+    if (!mounted && !mountedId) return false;
+    const hadMounted = mounted;
     mounted = null;
     mountedId = null;
     shell?.classList.remove("has-open-panel");
-    return windowController.close(config);
+    return hadMounted ? windowController.close(config) : true;
   }
 
   function widgetsContent() {
@@ -543,6 +547,22 @@ export function createPanelManager(host, options = {}) {
     close({ restoreFocus: false });
     const copy = PANEL_COPY[id];
     if (!copy) return false;
+    if (id === "notifications" && options.notifications) {
+      mountedId = "notifications";
+      shell?.classList.add("has-open-panel");
+      const onClose = () => options.onClose?.();
+      notificationCenter = createNotificationCenter(options.notifications, {
+        container: host,
+        shell,
+        actions: options.actions || null,
+        externalServices: options.externalServices || null,
+        notify: options.notify || (() => {}),
+        onClose
+      });
+      notificationCenter.open();
+      refreshIcons();
+      return true;
+    }
     const content = id === "widgets" ? widgetsContent() : id === "notifications" ? notificationsContent() : id === "changelog" ? changelogContent() : profileContent();
     const panel = element("aside", {
       className: "v8-panel",

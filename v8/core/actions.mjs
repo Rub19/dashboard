@@ -3,6 +3,18 @@ import { DENSITY_CUSTOM_RANGES, DENSITY_MODES } from "./density-engine.mjs";
 import { patchBrainPreferences, sanitizeBrainPreferences } from "../brain/preferences.mjs";
 import { sanitizeAutomationRule, sanitizeAutomationRules } from "./automation-engine.mjs";
 import { applyPreset, extractPresetFromState, findPreset } from "./preset-engine.mjs";
+import {
+  getPreference as getEthonePreference,
+  setPreference as setEthonePreference,
+  getAllPreferences as getAllEthonePreferences,
+  resetPreferences as resetEthonePreferences,
+  importPreferences as importEthonePreferences,
+  exportPreferences as exportEthonePreferences,
+  getWorkspaceState,
+  setWorkspaceState,
+  getLastWorkspace,
+  setLastWorkspace
+} from "./preferences.mjs";
 
 const LOCALES = Object.freeze(["fr", "en", "es", "de"]);
 
@@ -32,6 +44,7 @@ export function createActionFacade(options = {}) {
   const sync = options.sync || null;
   const spotifyLive = options.spotifyLive || null;
   const focusTimer = options.focusTimer || null;
+  const notifications = options.notifications || null;
   const handlers = new Map();
 
   function register(id, handler) {
@@ -81,6 +94,39 @@ export function createActionFacade(options = {}) {
   register("v8.team.open", openRoute("team", "Équipe"));
   register("v8.mail.open", openRoute("mail", "Mail"));
   register("v8.settings.open", openRoute("settings", "Réglages"));
+  register("v8.security.open", openRoute("security", "Sécurité"));
+  register("v8.marketplace.open", () => {
+    notify({ id: "marketplace-soon", title: "Marketplace", message: "Le Marketplace arrivera dans une prochaine mise à jour.", type: "info" });
+    return completed("Marketplace à venir");
+  });
+  register("v8.quick-actions.open", () => {
+    notify({ id: "quick-actions", title: "Actions rapides", message: "Ouvrez le menu + pour créer du contenu.", type: "info" });
+    return completed("Actions rapides");
+  });
+  register("v8.mail.compose", () => {
+    navigate("mail");
+    notify({ id: "mail-compose", title: "Mail", message: "Ouvrez le panneau de rédaction.", type: "info" });
+    return completed("Mail ouvert");
+  });
+  register("v8.brain.note", () => {
+    navigate("brain");
+    notify({ id: "brain-note", title: "Brain", message: "Prêt à ajouter une note.", type: "info" });
+    return completed("Brain ouvert");
+  });
+  register("v8.files.upload", () => {
+    navigate("files");
+    notify({ id: "files-upload", title: "Fichiers", message: "Ouvrez la vue Fichiers pour uploader.", type: "info" });
+    return completed("Fichiers ouvert");
+  });
+  register("v8.brain.focus-mode.toggle", () => {
+    if (typeof document !== "undefined") {
+      document.body.classList.toggle("v8-focus-mode");
+      const active = document.body.classList.contains("v8-focus-mode");
+      notify({ id: "focus-mode", title: "Mode Focus", message: active ? "Mode Focus activé." : "Mode Focus désactivé.", type: "info" });
+      return completed(active ? "Mode Focus activé" : "Mode Focus désactivé");
+    }
+    return unavailable("Mode Focus non disponible");
+  });
   register("v8.profiles.open", () => {
     setState({ panel: null, commandOpen: false, missionOpen: false });
     if (typeof showProfiles === "function") {
@@ -145,6 +191,47 @@ export function createActionFacade(options = {}) {
   register("v8.notifications.open", () => {
     setState({ panel: "notifications", commandOpen: false, missionOpen: false });
     return completed("Notifications ouvertes");
+  });
+  register("v8.notifications.markAllRead", () => {
+    notifications?.markAllRead?.();
+    return completed("Toutes les notifications marquées comme lues");
+  });
+  register("v8.notifications.clear", () => {
+    notifications?.clear?.();
+    return completed("Notifications effacées");
+  });
+  register("v8.notifications.dismiss", (context = {}) => {
+    notifications?.archive?.([context.id]);
+    return completed("Notification supprimée");
+  });
+  register("v8.notifications.snooze", (context = {}) => {
+    const ok = notifications?.snoozeNotification?.(context.id, context.duration);
+    return ok ? completed("Notification reportée") : failed("Durée de snooze invalide");
+  });
+  register("v8.notifications.important", () => {
+    const items = (notifications?.getHistory?.() || []).filter((item) => item.priority === "critical" || item.priority === "important");
+    return completed("Notifications importantes", { count: items.length, items: items.slice(0, 20) });
+  });
+  register("v8.notifications.markImportant", (context = {}) => {
+    notifications?.markImportant?.([context.id]);
+    return completed("Notification marquee importante");
+  });
+  register("v8.notifications.summary", () => {
+    const unread = notifications?.unreadCount?.() || 0;
+    const important = notifications?.importantCount?.() || 0;
+    const total = (notifications?.getHistory?.() || []).length;
+    return completed("Résumé notifications", { unread, important, total });
+  });
+  register("v8.notify", (context = {}) => {
+    const notice = context?.notice || {};
+    notify({
+      id: notice.id || `notify-${Date.now()}`,
+      title: notice.title || "ETHONE",
+      message: notice.message || "",
+      type: ["success", "error", "warning", "info", "sync", "update", "brain", "loading"].includes(notice.type) ? notice.type : "info",
+      priority: ["critical", "important", "normal", "silent"].includes(notice.priority) ? notice.priority : undefined
+    });
+    return completed("Notification affichée");
   });
   register("v8.changelog.open", () => {
     setState({ panel: "changelog", commandOpen: false, missionOpen: false });
@@ -245,26 +332,39 @@ export function createActionFacade(options = {}) {
   });
 
   register("v8.theme.toggle", () => {
-    const theme = getState().theme === "day" ? "night" : "day";
+    const theme = getState().theme === "day" ? "midnight" : "day";
     setState({ theme });
-    notify({ id: "thème-updated", title: "Thème", message: theme === "day" ? "Mode Jour applique" : "Mode Nuit applique", type: "success" });
+    setEthonePreference("theme", theme);
+    notify({ id: "theme-updated", title: "Thème", message: theme === "day" ? "Mode Jour appliqué" : "Mode Nuit appliqué", type: "success" });
     return completed("Thème modifié", { theme });
   });
   register("v8.theme.night", () => {
     setState({ theme: "night" });
-    return completed("Mode Nuit applique", { theme: "night" });
+    setEthonePreference("theme", "night");
+    return completed("Mode Nuit appliqué", { theme: "night" });
   });
   register("v8.theme.graphite", () => {
     setState({ theme: "graphite" });
-    return completed("Mode Graphite applique", { theme: "graphite" });
+    setEthonePreference("theme", "graphite");
+    return completed("Mode Graphite appliqué", { theme: "graphite" });
   });
   register("v8.theme.day", () => {
     setState({ theme: "day" });
-    return completed("Mode Jour applique", { theme: "day" });
+    setEthonePreference("theme", "day");
+    return completed("Mode Jour appliqué", { theme: "day" });
   });
   register("v8.theme.auto", () => {
     setState({ theme: "auto" });
-    return completed("Mode Automatique applique", { theme: "auto" });
+    setEthonePreference("theme", "auto");
+    return completed("Mode Automatique appliqué", { theme: "auto" });
+  });
+  ["midnight", "obsidian", "aurora", "minimal", "focus", "glass", "oled"].forEach((theme) => {
+    register(`v8.theme.${theme}`, () => {
+      setState({ theme });
+      setEthonePreference("theme", theme);
+      notify({ id: `theme-${theme}`, title: "Thème", message: `Thème « ${theme} » activé.`, type: "success" });
+      return completed(`Thème ${theme} appliqué`, { theme });
+    });
   });
   ["classic", "boreale", "cyberpunk", "eclipse", "emeraude", "minerale"].forEach((auraId) => {
     register(`v8.aura.${auraId}`, () => {
@@ -477,7 +577,10 @@ export function createActionFacade(options = {}) {
   register("v8.dock.magnify.toggle", () => setDockMagnify(!getState().dockMagnify));
   register("v8.ui.animations.smooth", () => setUiAnimations("smooth"));
   register("v8.ui.animations.snappy", () => setUiAnimations("snappy"));
-  register("v8.ui.animations.reduced", () => setUiAnimations("reduced"));
+  register("v8.ui.animations.reduced", () => {
+    const next = getState().uiAnimations === "reduced" ? "smooth" : "reduced";
+    return setUiAnimations(next);
+  });
   register("v8.ui.glow.on", () => setUiGlow(true));
   register("v8.ui.glow.off", () => setUiGlow(false));
   register("v8.ui.glow.toggle", () => setUiGlow(!getState().uiGlow));
@@ -491,15 +594,17 @@ export function createActionFacade(options = {}) {
   register("v8.home.hero.compact", () => setHomeHero("compact"));
   register("v8.home.hero.hidden", () => setHomeHero("hidden"));
   register("v8.density.toggle", () => {
-    const sequence = ["spacious", "comfortable", "compact", "ultra-compact", "automatic"];
+    const sequence = ["spacious", "comfortable", "compact", "dense", "ultra-compact", "automatic"];
     const current = getState().density;
     const density = sequence[(sequence.indexOf(current) + 1) % sequence.length];
     setState({ density });
+    setEthonePreference("density", density);
     return completed("Densité modifiée", { density });
   });
   function setDensity(valid) {
     if (!DENSITY_MODES.includes(valid)) return unavailable("Ce mode de densité n'est pas disponible.");
     setState({ density: valid });
+    setEthonePreference("density", valid);
     notify({ id: "density-updated", title: "Densité", message: `Densité : ${valid}`, type: "success" });
     return completed("Densité modifiée", { density: valid });
   }
@@ -511,6 +616,7 @@ export function createActionFacade(options = {}) {
     if (!Object.hasOwn(DENSITY_CUSTOM_RANGES, key)) return unavailable("Ce réglage de densité n'est pas disponible.");
     const current = getState().densitySettings || {};
     setState({ density: "custom", densitySettings: { ...current, custom: { ...(current.custom || {}), [key]: context.value } } });
+    setEthonePreference("density", "custom");
     return completed("Densité personnalisée mise a jour", { key, value: context.value });
   });
   register("v8.density.focus", () => {
@@ -524,6 +630,129 @@ export function createActionFacade(options = {}) {
     const adaptiveBySpace = current.adaptiveBySpace === false;
     setState({ densitySettings: { ...current, adaptiveBySpace } });
     return completed(adaptiveBySpace ? "Presets par Space actifs" : "Presets par Space desactives", { adaptiveBySpace });
+  });
+
+  ["online", "busy", "focus", "away", "invisible"].forEach((status) => {
+    register(`v8.status.${status}`, () => {
+      setState({ status });
+      setEthonePreference("status", status);
+      notify({ id: `status-${status}`, title: "Statut", message: `Statut : ${status}`, type: "success" });
+      return completed("Statut modifié", { status });
+    });
+  });
+
+  ["none", "aurora", "nebula", "mesh", "noise"].forEach((wallpaper) => {
+    register(`v8.wallpaper.${wallpaper}`, () => {
+      setState({ wallpaper });
+      setEthonePreference("wallpaper", wallpaper);
+      if (typeof document !== "undefined" && document.documentElement) {
+        document.documentElement.dataset.wallpaper = wallpaper;
+        document.documentElement.dataset.background = "static";
+      }
+      return completed("Fond d'écran modifié", { wallpaper });
+    });
+  });
+
+  register("v8.performance.low.on", () => {
+    setState({ performanceMode: "low" });
+    setEthonePreference("performanceMode", "low");
+    setEthonePreference("lowData", true);
+    notify({ id: "performance-low", title: "Performance", message: "Mode faible consommation activé.", type: "success" });
+    return completed("Mode performance basse");
+  });
+  register("v8.performance.low.off", () => {
+    setState({ performanceMode: "normal" });
+    setEthonePreference("performanceMode", "normal");
+    setEthonePreference("lowData", false);
+    notify({ id: "performance-normal", title: "Performance", message: "Mode normal activé.", type: "success" });
+    return completed("Mode performance normal");
+  });
+  register("v8.performance.low.toggle", () => {
+    const active = getState().performanceMode !== "low";
+    return active ? handlers.get("v8.performance.low.on")() : handlers.get("v8.performance.low.off")();
+  });
+
+  register("v8.haptics.on", () => {
+    setState({ haptics: true });
+    setEthonePreference("haptics", true);
+    return completed("Haptics activés");
+  });
+  register("v8.haptics.off", () => {
+    setState({ haptics: false });
+    setEthonePreference("haptics", false);
+    return completed("Haptics désactivés");
+  });
+  register("v8.haptics.toggle", () => (getState().haptics === false ? handlers.get("v8.haptics.on")() : handlers.get("v8.haptics.off")()));
+
+  register("v8.sound.preferences.on", () => {
+    setEthonePreference("sound", true);
+    if (sounds?.setPreferences) sounds.setPreferences({ enabled: true });
+    return completed("Son activé");
+  });
+  register("v8.sound.preferences.off", () => {
+    setEthonePreference("sound", false);
+    if (sounds?.setPreferences) sounds.setPreferences({ enabled: false });
+    return completed("Son désactivé");
+  });
+  register("v8.sound.preferences.toggle", () => (getEthonePreference("sound") === false ? handlers.get("v8.sound.preferences.on")() : handlers.get("v8.sound.preferences.off")()));
+
+  register("v8.ethone.preferences.set", (context = {}) => {
+    const key = String(context.key || "");
+    const value = context.value;
+    if (!key || getEthonePreference(key) === undefined) return unavailable("Préférence inconnue.");
+    setEthonePreference(key, value);
+    if (Object.hasOwn(getState(), key)) setState({ [key]: value });
+    notify({ id: "preferences-saved", title: "Préférences", message: "Enregistré", type: "success", duration: 1400 });
+    return completed("Préférence enregistrée", { key, value });
+  });
+  register("v8.ethone.preferences.reset", () => {
+    resetEthonePreferences();
+    setState({ ...getState(), ...getAllEthonePreferences() });
+    notify({ id: "preferences-reset", title: "Préférences", message: "Réinitialisées", type: "info" });
+    return completed("Préférences réinitialisées");
+  });
+  register("v8.ethone.preferences.export", () => {
+    const payload = exportEthonePreferences();
+    const blob = new Blob([payload], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `ethone-preferences-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 0);
+    return completed("Préférences exportées");
+  });
+  register("v8.ethone.preferences.import", (context = {}) => {
+    const json = String(context.json || context.value || "");
+    const result = importEthonePreferences(json);
+    if (!result.ok) return failed("Import échoué", result.error);
+    setState({ ...getState(), ...result.preferences });
+    notify({ id: "preferences-imported", title: "Préférences", message: "Importées", type: "success" });
+    return completed("Préférences importées", result.preferences);
+  });
+
+  register("v8.workspace.switch", (context = {}) => {
+    const id = String(context.id || context.workspace || "").toLowerCase();
+    const workspace = WORKSPACES.find((w) => w.id === id);
+    if (!workspace) return unavailable(`Workspace ${id} inconnu.`);
+    const saved = getWorkspaceState(id);
+    setState({ space: id, flow: workspace.flow, accent: workspace.accent });
+    setLastWorkspace(id);
+    if (saved) {
+      if (saved.layout) setState({ homeLiveLayout: saved.layout });
+      if (saved.widgets?.length) setState({ homeLiveLayout: { ...(saved.layout || getState().homeLiveLayout), order: saved.widgets } });
+    }
+    notify({ id: `workspace-${id}`, title: "Workspace", message: `${workspace.label} activé.`, type: "success" });
+    return completed(`Workspace ${workspace.label} activé`, { workspace: id });
+  });
+  register("v8.workspace.create", (context = {}) => {
+    const id = String(context.id || "").toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 32);
+    const name = String(context.name || id || "Nouveau").slice(0, 32);
+    if (!id) return unavailable("Nom de workspace invalide.");
+    setWorkspaceState(id, { widgets: [], layout: getState().homeLiveLayout, active: [] });
+    setLastWorkspace(id);
+    notify({ id: "workspace-created", title: "Workspace", message: `${name} créé.`, type: "success" });
+    return completed("Workspace créé", { workspace: id, name });
   });
 
   register("v8.brain.preference", (context = {}) => {
@@ -747,26 +976,126 @@ export function createActionFacade(options = {}) {
     return completed("Langue modifiée", { locale });
   });
 
-  ["mint", "sky", "amber", "violet", "rose"].forEach((accent) => {
+  ["mint", "sky", "amber", "violet", "rose", "teal", "coral"].forEach((accent) => {
     register(`v8.accent.${accent}`, () => {
       setState({ accent });
+      setEthonePreference("accent", accent);
       return completed("Accent modifié", { accent });
     });
   });
   register("v8.accent.custom", (context = {}) => {
     const value = String(context.value || "");
     if (!/^#[0-9a-f]{6}$/i.test(value)) return unavailable("Couleur invalide.");
-    setState({ accent: "custom", customAccentColor: value.toLowerCase() });
-    return completed("Accent personnalisé applique", { accent: "custom", customAccentColor: value.toLowerCase() });
+    const color = value.toLowerCase();
+    setState({ accent: "custom", customAccentColor: color });
+    setEthonePreference("accent", "custom");
+    setEthonePreference("customAccent", color);
+    return completed("Accent personnalisé appliqué", { accent: "custom", customAccentColor: color });
   });
 
   register("v8.appearance.cycle", () => {
-    const accents = ["mint", "sky", "amber", "violet", "rose"];
+    const accents = ["mint", "sky", "amber", "violet", "rose", "teal", "coral"];
     const current = getState().accent || accents[0];
     const next = accents[(accents.indexOf(current) + 1) % accents.length];
     setState({ accent: next });
-    notify({ id: "accent-updated", title: "Apparence", message: `Accent ${next} applique`, type: "success" });
+    setEthonePreference("accent", next);
+    notify({ id: "accent-updated", title: "Apparence", message: `Accent ${next} appliqué`, type: "success" });
     return completed("Accent modifié", { accent: next });
+  });
+
+  function getLocalSettings(key, fallback = {}) {
+    try {
+      const raw = globalThis.localStorage?.getItem(key);
+      const parsed = raw ? JSON.parse(raw) : null;
+      return parsed && typeof parsed === "object" ? parsed : fallback;
+    } catch {
+      return fallback;
+    }
+  }
+  function setLocalSettings(key, value) {
+    try { globalThis.localStorage?.setItem(key, JSON.stringify(value)); } catch {}
+  }
+
+  register("v8.appearance.lowdata.toggle", (context = {}) => {
+    const enabled = context.enabled === true || (context.enabled == null && getState().lowData !== true);
+    setState({ lowData: enabled, performanceMode: enabled ? "low" : "normal" });
+    setEthonePreference("lowData", enabled);
+    setEthonePreference("performanceMode", enabled ? "low" : "normal");
+    if (typeof document !== "undefined" && document.documentElement) {
+      document.documentElement.dataset.v8LowData = enabled ? "true" : "false";
+      if (enabled) document.documentElement.dataset.performanceMode = "low";
+      else delete document.documentElement.dataset.performanceMode;
+    }
+    notify({ id: "lowdata-updated", title: "Faibles données", message: enabled ? "Mode faibles données activé" : "Mode faibles données désactivé", type: "success" });
+    return completed("Mode faibles données modifié", { lowData: enabled });
+  });
+
+  register("v8.accessibility.fontsize", (context = {}) => {
+    const raw = String(context.value || "default");
+    const map = { small: "sm", default: "md", large: "lg", "extra-large": "xl" };
+    const fontSize = map[raw] || "md";
+    const current = getLocalSettings("ethone:settings:accessibility", { fontSize: "default", reducedMotion: false, highContrast: false, colorBlind: "none" });
+    current.fontSize = raw;
+    setLocalSettings("ethone:settings:accessibility", current);
+    setState({ fontSize });
+    setEthonePreference("fontSize", fontSize);
+    if (typeof document !== "undefined" && document.documentElement) {
+      document.documentElement.dataset.v8FontSize = raw;
+    }
+    return completed("Taille du texte modifiée", { fontSize: raw });
+  });
+
+  register("v8.accessibility.colorblind", (context = {}) => {
+    const colorBlind = String(context.value || "none");
+    const current = getLocalSettings("ethone:settings:accessibility", { fontSize: "default", reducedMotion: false, highContrast: false, colorBlind: "none" });
+    current.colorBlind = colorBlind;
+    setLocalSettings("ethone:settings:accessibility", current);
+    if (typeof document !== "undefined" && document.documentElement) {
+      document.documentElement.dataset.v8ColorBlind = colorBlind;
+    }
+    return completed("Mode daltonien modifié", { colorBlind });
+  });
+
+  register("v8.accessibility.highcontrast", (context = {}) => {
+    const el = context.element;
+    const next = el ? el.getAttribute("aria-checked") !== "true" : true;
+    if (el) el.setAttribute("aria-checked", String(next));
+    const current = getLocalSettings("ethone:settings:accessibility", { fontSize: "default", reducedMotion: false, highContrast: false, colorBlind: "none" });
+    current.highContrast = next;
+    setLocalSettings("ethone:settings:accessibility", current);
+    if (typeof document !== "undefined" && document.documentElement) {
+      document.documentElement.classList.toggle("v8-high-contrast", next);
+      document.documentElement.dataset.v8HighContrast = next ? "true" : "false";
+    }
+    return completed(next ? "Contraste élevé activé" : "Contraste élevé désactivé", { highContrast: next });
+  });
+
+  register("v8.mail.preference", (context = {}) => {
+    const path = String(context.path || "");
+    const value = context.value === true;
+    const current = getLocalSettings("ethone:settings:mail", { notificationSound: true, markAsReadOnOpen: true, defaultSignature: true, spamFilter: true, pgpAutoEncrypt: false, offlineMode: false });
+    current[path] = value;
+    setLocalSettings("ethone:settings:mail", current);
+    return completed("Préférence mail modifiée", { path, value });
+  });
+
+  register("v8.settings.config.export", () => {
+    notify({ id: "config-export", title: "Configuration", message: "Utilisez le bouton Exporter dans les Réglages.", type: "info" });
+    return completed("Export lancé depuis les Réglages");
+  });
+
+  register("v8.privacy.reset.personalization", () => {
+    const reset = resetEthonePreferences();
+    setState({ theme: reset.theme, density: reset.density, accent: reset.accent, customAccentColor: reset.customAccent, wallpaper: reset.wallpaper, performanceMode: reset.performanceMode, lowData: reset.lowData, fontSize: reset.fontSize, status: reset.status, haptics: reset.haptics });
+    if (typeof document !== "undefined" && document.documentElement) {
+      document.documentElement.removeAttribute("data-v8-wallpaper");
+      document.documentElement.removeAttribute("data-v8-low-data");
+      document.documentElement.removeAttribute("data-v8-font-size");
+      document.documentElement.removeAttribute("data-v8-color-blind");
+      document.documentElement.classList.remove("v8-reduced-motion", "v8-high-contrast");
+    }
+    notify({ id: "personalization-reset", title: "Personnalisation", message: "Préférences réinitialisées.", type: "success" });
+    return completed("Préférences réinitialisées");
   });
 
   register("v8.activity.refresh", () => {

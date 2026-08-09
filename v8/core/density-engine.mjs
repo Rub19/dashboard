@@ -2,6 +2,7 @@ export const DENSITY_MODES = Object.freeze([
   "spacious",
   "comfortable",
   "compact",
+  "dense",
   "ultra-compact",
   "automatic",
   "custom"
@@ -25,6 +26,7 @@ export const DENSITY_PRESETS = Object.freeze({
   spacious: Object.freeze({ fontScale: 1.05, lineHeight: 1.65, cardPadding: 28, sectionGap: 30, controlHeight: 44, panelWidth: 400, iconSize: 21, rowHeight: 58, tableRowHeight: 52, widgetScale: 1.06, toolbarHeight: 58 }),
   comfortable: Object.freeze({ fontScale: 1, lineHeight: 1.55, cardPadding: 22, sectionGap: 24, controlHeight: 38, panelWidth: 360, iconSize: 20, rowHeight: 50, tableRowHeight: 46, widgetScale: 1, toolbarHeight: 52 }),
   compact: Object.freeze({ fontScale: 0.96, lineHeight: 1.48, cardPadding: 17, sectionGap: 18, controlHeight: 36, panelWidth: 340, iconSize: 18, rowHeight: 44, tableRowHeight: 40, widgetScale: 0.96, toolbarHeight: 48 }),
+  dense: Object.freeze({ fontScale: 0.92, lineHeight: 1.4, cardPadding: 12, sectionGap: 12, controlHeight: 32, panelWidth: 300, iconSize: 16, rowHeight: 38, tableRowHeight: 34, widgetScale: 0.9, toolbarHeight: 42 }),
   "ultra-compact": Object.freeze({ fontScale: 0.92, lineHeight: 1.42, cardPadding: 13, sectionGap: 14, controlHeight: 34, panelWidth: 320, iconSize: 17, rowHeight: 40, tableRowHeight: 36, widgetScale: 0.92, toolbarHeight: 44 })
 });
 

@@ -1,3 +1,5 @@
+import { createHomeModel } from "../data/home-model.mjs";
+
 const ROUTES = Object.freeze({ home: "v8.home.open", notes: "v8.notes.open", tasks: "v8.tasks.open", calendar: "v8.calendar.open", files: "v8.files.open", activity: "v8.activity.open", connections: "v8.connections.open", spaces: "v8.spaces.open", flows: "v8.flows.open", brain: "v8.brain.open", mail: "v8.mail.open", settings: "v8.settings.open" });
 const SPACES = Object.freeze({ personal: "v8.space.personal", focus: "v8.space.focus", studio: "v8.space.studio" });
 const FLOWS = Object.freeze({ essentiel: SPACES.personal, essential: SPACES.personal, focus: SPACES.focus, "deep-work": SPACES.focus, creation: SPACES.studio, studio: SPACES.studio });
@@ -71,6 +73,22 @@ export function createBrainActionRegistry(options = {}) {
   add("dashboard.organize", "Organiser le Dashboard", "Applique un ordre de widgets explicite.", "settings", true, { widgets: "widget[]" }, (p) => { const widgets = widgetList(p.widgets); if (!widgets.length) throw new TypeError("Aucun widget autorise."); return { widgets }; }, ({ widgets }) => updateWidgets(() => widgets));
   add("focus.start", "Demarrer Focus", "Active le Space Focus.", "settings", true, {}, empty, () => dispatch(SPACES.focus));
   add("planning.prepare", "Preparer un planning", "Créé des taches et événements valides.", ["tasks", "calendar"], true, { tasks: "task[]", events: "event[]" }, (p) => { const tasks = (Array.isArray(p.tasks) ? p.tasks : []).slice(0, 6).map((item) => ({ title: clean(item?.title, "Priorité", 240), priority: ["low", "normal", "high"].includes(item?.priority) ? item.priority : "normal", due: validDate(item?.due) })); const events = (Array.isArray(p.events) ? p.events : []).slice(0, 6).map((item) => { const date = validDate(item?.date); if (!date) throw new TypeError("Date événement invalide."); return { title: clean(item?.title, "Événement", 180), date }; }); if (!tasks.length && !events.length) throw new TypeError("Planning vide."); return { tasks, events }; }, async ({ tasks, events }) => { const created = []; for (const task of tasks) created.push(await repository.tasks.create(task)); for (const event of events) created.push(await repository.events.create(event)); return outcome(true, "completed", "Planning préparé.", Object.freeze(created)); });
+  add("brain.briefing", "Briefing quotidien", "Resumé du jour construit a partir du contexte autorise.", null, false, {}, empty, () => { const model = createHomeModel({ snapshot: repository.snapshot?.() || {}, date: new Date() }); return outcome(true, "completed", model.briefing.title || "Briefing pret", model.briefing); });
+  add("brain.wrapup", "Bilan de la journee", "Resume ce qui s'est passe aujourd'hui et prepare demain.", null, false, {}, empty, () => {
+    const today = new Date();
+    const start = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+    const end = start + 86400000;
+    const snapshot = repository.snapshot?.() || {};
+    const tasks = Array.isArray(snapshot.tasks) ? snapshot.tasks : [];
+    const activities = Array.isArray(snapshot.activities) ? snapshot.activities : [];
+    const events = Array.isArray(snapshot.events) ? snapshot.events : [];
+    const completed = tasks.filter((t) => t?.done === true || t?.completed === true).length;
+    const doneToday = tasks.filter((t) => { const at = t?.doneAt || t?.completedAt || t?.updatedAt; return at && (t?.done === true || t?.completed === true) && new Date(at).getTime() >= start && new Date(at).getTime() < end; }).length;
+    const todayActivity = activities.filter((a) => { const ts = a?.timestamp; return ts && new Date(ts).getTime() >= start && new Date(ts).getTime() < end; }).length;
+    const upcoming = events.filter((e) => new Date(e?.start || e?.date || 0) >= today).slice(0, 3).map((e) => Object.freeze({ title: clean(e?.title, "Événement", 180), date: validDate(e?.start || e?.date) }));
+    return outcome(true, "completed", `Bilan pret : ${todayActivity} activite, ${completed} tache, ${upcoming.length} evenement.`, Object.freeze({ todayActivity, completed, doneToday, upcomingEvents: Object.freeze(upcoming), summary: `${todayActivity} activites aujourd'hui, ${completed} taches, ${upcoming.length} evenements a venir.` }));
+  });
+  add("brain.focus", "Mode Focus", "Active ou desactive le mode Focus.", null, false, {}, empty, () => dispatch("v8.brain.focus-mode.toggle"));
   add("activity.summarize", "Resumer l'activité", "Resume les signaux récents autorises.", "activity", false, {}, empty, () => { const activity = (repository.snapshot?.().activities || []).slice(0, 20); return outcome(true, "completed", "Resume pret.", Object.freeze({ total: activity.length, sources: Object.freeze([...new Set(activity.map((item) => clean(item.source, "ethone", 48)))]), latest: Object.freeze(activity.slice(0, 5).map((item) => Object.freeze({ title: clean(item.title, "Activité", 180), source: clean(item.source, "ethone", 48), timestamp: clean(item.timestamp, "", 40) }))) })); });
   add("automation.propose", "Proposer une automatisation", "Préparé une proposition sans l'executer.", "settings", false, { title: "string", description: "string" }, (p) => ({ title: clean(p.title, "Automatisation proposee", 120), description: clean(p.description, "Aucune execution automatique.", 400) }), (proposal) => outcome(true, "review-required", "Proposition prete.", Object.freeze({ ...proposal, executable: false })));
 
@@ -276,6 +294,25 @@ export function createBrainActionRegistry(options = {}) {
   });
 
   for (const [id, title] of [["connections.analyze", "Analyser les connexions"], ["diagnostic.run", "Lancer un diagnostic"]]) add(id, title, "Interroge le Worker a la demande.", "connections", false, {}, empty, () => externalServices?.diagnostic ? externalServices.diagnostic() : outcome(false, "unavailable", "Diagnostic indisponible."));
+
+  add("brain.notifications", "Resumer les notifications", "Liste les notifications non lues et importantes.", "brain", false, { markRead: "string?", markImportant: "string?" }, (p) => ({ markRead: clean(p.markRead, "", 64) || undefined, markImportant: clean(p.markImportant, "", 64) || undefined }), async ({ markRead, markImportant }) => {
+    if (markRead) {
+      dispatch("v8.notifications.dismiss", { id: markRead });
+      return outcome(true, "completed", "Notification marquee lue.", { id: markRead });
+    }
+    if (markImportant) {
+      dispatch("v8.notifications.markImportant", { id: markImportant });
+      return outcome(true, "completed", "Notification marquee importante.", { id: markImportant });
+    }
+    const summary = dispatch("v8.notifications.summary");
+    const important = dispatch("v8.notifications.important");
+    return outcome(true, "completed", `Vous avez ${summary?.data?.unread ?? 0} notification(s) non lue(s), dont ${important?.data?.count ?? 0} importante(s).`, Object.freeze({ summary: summary?.data || null, important: important?.data || null }));
+  });
+
+  add("brain.notify", "Afficher une notification", "Affiche une notification toast ou centre.", "brain", false, { notice: "object" }, (p) => {
+    const notice = typeof p.notice === "object" && p.notice !== null ? p.notice : {};
+    return { notice };
+  }, async ({ notice }) => dispatch("v8.notify", { notice }));
 
   function review(id, parameters = {}) {
     const definition = definitions.get(String(id || ""));

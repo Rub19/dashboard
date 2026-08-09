@@ -13,21 +13,31 @@ function avatar(presence) {
   return element("span", { className: "v8-discord-avatar" }, [inner, statusDot]);
 }
 
+function badgeImageWithFallback(badge) {
+  const img = element("img", {
+    className: "v8-discord-badge__img",
+    attributes: {
+      src: badge.imageUrl,
+      alt: badge.label,
+      title: badge.label,
+      loading: "lazy",
+      decoding: "async",
+      referrerpolicy: "no-referrer"
+    }
+  });
+  img.addEventListener("error", () => {
+    const fallback = icon(badge.icon || "award");
+    img.closest(".v8-discord-badge")?.classList?.remove("is-image");
+    img.replaceWith(fallback);
+  }, { once: true });
+  return img;
+}
+
 function discordBadgesNode(badges = []) {
   if (!Array.isArray(badges) || badges.length === 0) return null;
   const items = badges.map((badge) => {
     const badgeContent = badge.imageUrl
-      ? element("img", {
-          className: "v8-discord-badge__img",
-          attributes: {
-            src: badge.imageUrl,
-            alt: badge.label,
-            title: badge.label,
-            loading: "lazy",
-            decoding: "async",
-            referrerpolicy: "no-referrer"
-          }
-        })
+      ? badgeImageWithFallback(badge)
       : icon(badge.icon || "award");
 
     return element("span", {

@@ -163,6 +163,16 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 ### Bordereau PWA
 - Mis à jour vers `experience-v306`.
 
+## [v307] - 2026-08-18
+
+**Hotfix Mail : titre des notifications d'erreur global**
+
+### Corrige
+- Les notifications d'erreur Mail liées au schéma, aux migrations ou à la configuration Worker portent maintenant le titre générique `Mail` au lieu du sous-module (Templates, etc.).
+
+### Bordereau PWA
+- Mis à jour vers `experience-v307`.
+
 ## [v295] - 2026-08-17
 
 **Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes**

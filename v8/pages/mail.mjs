@@ -173,9 +173,14 @@ export function mountMail(stage, options = {}) {
   const mailCache = options?.mailCache || createMailCache();
 
   const recentNotifies = new Map();
+  const GLOBAL_MAIL_ERROR_RE = /\b(mail database|base de données mail|database is not initialized|n'est pas initialisée|migrations|migration|supabase mail|worker supabase|supabase.*configuration|route mail|mail route|déployée|not yet deployed|incomplète|incomplete)\b/i;
   function mailNotify(spec) {
     const now = Date.now();
     const messageKey = spec.message || "";
+    const isGlobalMailError = spec.type === "error" && GLOBAL_MAIL_ERROR_RE.test(messageKey);
+    if (isGlobalMailError) {
+      spec.title = translateSource("Mail");
+    }
     const dedupeKey = spec.type === "error" && messageKey ? `error|${messageKey}` : `${spec.type || ""}|${spec.title || ""}|${messageKey}`;
     const last = recentNotifies.get(dedupeKey);
     if (last && now - last < 5000) return;

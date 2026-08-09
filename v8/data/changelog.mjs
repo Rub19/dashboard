@@ -104,6 +104,10 @@ export const CHANGELOG = Object.freeze([
     { kind: "ui", text: "Header de la liste Mail en flex-wrap pour eviter les boutons coupes." },
     { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v306." }
   ]),
+  entry("v307", "2026-08-18", "Hotfix Mail : titre des notifications d'erreur global", [
+    { kind: "fix", text: "Les notifications d'erreur Mail liees au schema/migrations/config portent le titre generique Mail." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v307." }
+  ]),
   entry("v295", "2026-08-17", "Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes", [
     { kind: "feature", text: "Comptes mail externes : Gmail, Outlook et IMAP (création, sync, suppression)." },
     { kind: "feature", text: "Chiffrement PGP simplifié via Web Crypto : génération de clés, chiffrement/déchiffrement côté Worker." },

@@ -19,7 +19,13 @@ const COUNT_LABELS = Object.freeze({
   mot: { fr: ["mot", "mots"], en: ["word", "words"], es: ["palabra", "palabras"], de: ["Wort", "Wörter"] },
   commande: { fr: ["commande", "commandes"], en: ["command", "commands"], es: ["comando", "comandos"], de: ["Befehl", "Befehle"] },
   signal: { fr: ["signal", "signaux"], en: ["signal", "signals"], es: ["señal", "señales"], de: ["Signal", "Signale"] },
-  élément: { fr: ["élément", "éléments"], en: ["item", "items"], es: ["elemento", "elementos"], de: ["Element", "Elemente"] }
+  élément: { fr: ["élément", "éléments"], en: ["item", "items"], es: ["elemento", "elementos"], de: ["Element", "Elemente"] },
+  "en retard": { fr: ["en retard", "en retard"], en: ["overdue", "overdue"], es: ["retrasado", "retrasado"], de: ["überfällig", "überfällig"] },
+  "aujourd'hui": { fr: ["aujourd'hui", "aujourd'hui"], en: ["today", "today"], es: ["hoy", "hoy"], de: ["heute", "heute"] },
+  "non lu": { fr: ["non lu", "non lus"], en: ["unread", "unread"], es: ["no leído", "no leídos"], de: ["ungelesen", "ungelesen"] },
+  important: { fr: ["important", "importants"], en: ["important", "important"], es: ["importante", "importantes"], de: ["wichtig", "wichtig"] },
+  récent: { fr: ["récent", "récents"], en: ["recent", "recent"], es: ["reciente", "recientes"], de: ["kürzlich", "kürzlich"] },
+  prochain: { fr: ["prochain", "prochains"], en: ["next", "next"], es: ["próximo", "próximos"], de: ["nächster", "nächste"] }
 });
 
 const DYNAMIC_TEMPLATES = Object.freeze({
@@ -74,7 +80,7 @@ function translateDynamic(source, locale) {
   const text = normalizeText(source);
   if (!text) return null;
 
-  const count = text.match(/^(\d+)\s+(note|notes|priorité|priorités|événement|événements|mot|mots|commande|commandes|signal|signaux|élément|éléments)$/iu);
+  const count = text.match(/^(\d+)\s+(note|notes|priorité|priorités|événement|événements|mot|mots|commande|commandes|signal|signaux|élément|éléments|non lu|non lus|important|importants|récent|récents|prochain|prochains|aujourd'hui|en retard)$/iu);
   if (count) {
     const amount = Number(count[1]);
     const key = count[2].toLocaleLowerCase("fr-FR").replace(/signaux$/u, "signal").replace(/s$/u, "");
@@ -86,6 +92,15 @@ function translateDynamic(source, locale) {
   if (openTasks) {
     const labels = { fr: "à faire", en: "open", es: "pendientes", de: "offen" };
     return `${openTasks[1]} ${labels[locale]}`;
+  }
+
+  const briefingMix = text.match(/^(\d+)\s+en\s+retard\s*·\s*(\d+)\s+aujourd'hui$/iu);
+  if (briefingMix) {
+    const late = Number(briefingMix[1]);
+    const today = Number(briefingMix[2]);
+    const lateLabels = { fr: ["en retard", "en retard"], en: ["overdue", "overdue"], es: ["retrasado", "retrasado"], de: ["überfällig", "überfällig"] }[locale];
+    const todayLabels = { fr: ["aujourd'hui", "aujourd'hui"], en: ["today", "today"], es: ["hoy", "hoy"], de: ["heute", "heute"] }[locale];
+    return `${late} ${lateLabels[late === 1 ? 0 : 1]} · ${today} ${todayLabels[today === 1 ? 0 : 1]}`;
   }
 
   const readTime = text.match(/^~?(\d+)\s+min de lecture$/iu);

@@ -39,6 +39,26 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 ### Bordereau PWA
 - Mis à jour vers `experience-v297`.
 
+## [v298] - 2026-08-18
+
+**Hotfix : dock, navbar, quick actions, focus timer, i18n et fluidité**
+
+### Améliore
+- Team : traduction des rôles, boutons et statuts.
+- Focus Timer : traduction du menu (Pomodoro, Deep Work, Sprint, Pause, etc.) et ouverture au clic.
+- Menu profil : labels traduits, layout symétrique et épuré, boutons séparés et moins arrondis.
+- Brain briefing : traduction de "Good evening" et autres chaînes restées en anglais ; checkboxes modernisées et épurées.
+- Quick actions : FAB déplaçable, fiche d'actions rapides centrée avec effet d'apparition.
+- Animations : transitions et easing plus fluides sur les pages, dock, bottom sheets et cartes.
+
+### Corrige
+- Bouton d'agrandissement de la navbar déplacé pour ne plus chevaucher le logo ETHONE.
+- Bouton notifications du dock connecté au centre de notifications.
+- Pomodoro n'ouvre plus son menu au survol, seulement au clic sur l'icône.
+
+### Bordereau PWA
+- Mis à jour vers `experience-v298`.
+
 ## [v295] - 2026-08-17
 
 **Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes**

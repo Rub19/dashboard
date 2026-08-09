@@ -45,6 +45,18 @@ export const CHANGELOG = Object.freeze([
     { kind: "fix", text: "3D des live cards et effet 3D sur les points de la heatmap." },
     { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v297." }
   ]),
+  entry("v298", "2026-08-18", "Hotfix : dock, navbar, quick actions, focus timer, i18n et fluidité", [
+    { kind: "improvement", text: "Team : traduction des rôles, boutons et statuts." },
+    { kind: "improvement", text: "Focus Timer : traduction du menu Pomodoro, Deep Work, Sprint, Pause, etc. et ouverture au clic." },
+    { kind: "improvement", text: "Menu profil : labels traduits, layout symétrique et épuré, boutons séparés et moins arrondis." },
+    { kind: "improvement", text: "Brain briefing : traduction des chaînes restées en anglais et checkboxes modernisées." },
+    { kind: "improvement", text: "Quick actions : FAB déplaçable, fiche d'actions rapides centrée avec effet d'apparition." },
+    { kind: "improvement", text: "Animations : transitions et easing plus fluides sur les pages, dock, bottom sheets et cartes." },
+    { kind: "fix", text: "Bouton d'agrandissement de la navbar déplacé pour ne plus chevaucher le logo ETHONE." },
+    { kind: "fix", text: "Bouton notifications du dock connecté au centre de notifications." },
+    { kind: "fix", text: "Pomodoro n'ouvre plus son menu au survol, seulement au clic sur l'icône." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v298." }
+  ]),
   entry("v295", "2026-08-17", "Phase 14/15 : ETHONE Mail — comptes externes, chiffrement, push et listes", [
     { kind: "feature", text: "Comptes mail externes : Gmail, Outlook et IMAP (création, sync, suppression)." },
     { kind: "feature", text: "Chiffrement PGP simplifié via Web Crypto : génération de clés, chiffrement/déchiffrement côté Worker." },

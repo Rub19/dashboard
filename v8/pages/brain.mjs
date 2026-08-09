@@ -1,4 +1,5 @@
 import { actionButton, debounce, element, icon } from "../ui/dom.mjs";
+import { translateSource } from "../i18n/catalog.mjs";
 import { showBottomSheet } from "../ui/bottom-sheet.mjs";
 import { buildEmptyState, statusState } from "../ui/empty-state.mjs";
 import { buildErrorState } from "../ui/error-state.mjs";
@@ -162,7 +163,7 @@ export function mountBrain(stage, options = {}) {
   function isConnected(id) { return snapshot.connections?.some?.((c) => c.id === id && c.status === "connected"); }
   function clientIdFor(id) { return snapshot.connections?.find?.((c) => c.id === id)?.reference || ""; }
   function localDayKey(date) { const y = date.getFullYear(); const m = String(date.getMonth() + 1).padStart(2, "0"); const d = String(date.getDate()).padStart(2, "0"); return `${y}-${m}-${d}`; }
-  function greetingForHour(date) { const h = date.getHours(); if (h >= 5 && h < 12) return "Good morning"; if (h < 18) return "Good afternoon"; if (h < 23) return "Good evening"; return "Good night"; }
+  function greetingForHour(date) { const h = date.getHours(); if (h >= 5 && h < 12) return "Bonjour"; if (h < 18) return "Bon après-midi"; if (h < 23) return "Bonsoir"; return "Bonne nuit"; }
 
   function getDismissedSuggestions() { try { const raw = globalThis.localStorage?.getItem(SUGGESTIONS_DISMISSED_KEY); return raw ? JSON.parse(raw) : {}; } catch { return {}; } }
   function isSuggestionDismissed(id) { const ts = getDismissedSuggestions()[id]; if (!ts) return false; return Date.now() - Number(ts) < SUGGESTION_TTL_MS; }
@@ -209,7 +210,7 @@ export function mountBrain(stage, options = {}) {
     const open = tasks.filter((t) => !t.done && !t.completed);
     const overdue = open.filter((t) => t?.due && t.due < todayKey);
     const today = open.filter((t) => t?.due === todayKey);
-    result.tasks = { available: true, value: `${overdue.length} en retard · ${today.length} aujourd'hui`, detail: `${open.length} ouverte${open.length > 1 ? "s" : ""}`, overdue, today };
+    result.tasks = { available: true, value: `${overdue.length} en retard · ${today.length} aujourd'hui`, detail: `${open.length} à faire`, overdue, today };
 
     let unread = 0;
     let important = 0;
@@ -253,7 +254,7 @@ export function mountBrain(stage, options = {}) {
     return element("div", { className: `v8-brain-briefing__section${isPlaceholder ? " is-placeholder" : ""}` }, [
       icon(section.icon),
       element("div", {}, [element("strong", { text: data.value || "—" }), element("small", { text: data.detail || section.label })]),
-      isPlaceholder ? element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, events: { click: () => options.notify?.({ id: "briefing-section", title: "Briefing", message: `${section.label} non connecté`, type: "info" }) } }, [element("span", { text: "Configurer" })]) : null
+      isPlaceholder ? element("button", { className: "v8-button v8-button--secondary", attributes: { type: "button" }, events: { click: () => options.notify?.({ id: "briefing-section", title: translateSource("Briefing"), message: `${translateSource(section.label)} ${translateSource("non connecté")}`, type: "info" }) } }, [element("span", { text: "Configurer" })]) : null
     ]);
   }
 
@@ -263,9 +264,9 @@ export function mountBrain(stage, options = {}) {
     const visibleSections = BRIEFING_SECTIONS.filter((s) => settings[s.id] !== false);
     const settingsButton = element("button", { className: "v8-icon-button", attributes: { type: "button", "aria-label": "Réglages du briefing" }, events: { click: () => { briefingSettingsOpen = !briefingSettingsOpen; void loadDailyBriefing(); } } }, [icon("settings-2")]);
     const settingsPanel = element("div", { className: "v8-brain-briefing__settings", attributes: { hidden: briefingSettingsOpen ? null : true } }, BRIEFING_SECTIONS.map((s) => {
-      const input = element("input", { className: "v8-input", attributes: { type: "checkbox", checked: settings[s.id] !== false } });
+      const input = element("input", { className: "v8-checkbox", attributes: { type: "checkbox", checked: settings[s.id] !== false } });
       input.addEventListener("change", (event) => { saveBriefingSetting(s.id, event.target.checked); void loadDailyBriefing(); });
-      return element("label", {}, [input, element("span", { text: s.label })]);
+      return element("label", { className: "v8-form-choice v8-brain-briefing__choice" }, [input, element("span", { text: s.label })]);
     }));
     return element("article", { className: "v8-brain-briefing v8-surface" }, [
       element("header", { className: "v8-brain-briefing__header" }, [
@@ -313,7 +314,10 @@ export function mountBrain(stage, options = {}) {
       metric("mail", "Non lus", unread),
       metric("calendar-days", "Événements à venir", upcoming.length)
     );
-    wrapupSummary.textContent = `${todayActivity} activités aujourd'hui, ${completed} tâches terminées, ${upcoming.length} événements à venir.`;
+    const activityLabel = translateSource("activités aujourd'hui");
+    const completedLabel = translateSource("tâches terminées");
+    const upcomingLabel = translateSource("événements à venir");
+    wrapupSummary.textContent = `${todayActivity} ${activityLabel}, ${completed} ${completedLabel}, ${upcoming.length} ${upcomingLabel}.`;
     refreshIcons();
   }
 

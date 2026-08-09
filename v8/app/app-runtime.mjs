@@ -1027,7 +1027,7 @@ export function mountApplication(root, options = {}) {
       { icon: "workflow", label: "Créer une Automation", action: () => { quickSheet?.close?.(); toasts.show({ type: "info", title: "Automation", message: "Création d'automation bientôt disponible." }); } }
     ];
     const children = items.map((item) => bottomSheetAction(item.icon, item.label, item.action));
-    quickSheet = showBottomSheet({ title: "Actions rapides", children, onClose: () => { quickSheet = null; } });
+    quickSheet = showBottomSheet({ title: "Actions rapides", children, position: "center", onClose: () => { quickSheet = null; } });
   }
 
   actions.scope("v8.mobile-nav.more", () => {
@@ -1043,16 +1043,84 @@ export function mountApplication(root, options = {}) {
     const fab = root.querySelector(".v8-fab");
     if (!fab) return;
     fab.classList.add("is-ready");
+    fab.style.touchAction = "none";
     let longPressTimer = null;
     let longPressFired = false;
+    let pointerStart = null;
+    let startRect = null;
+    let isDragging = false;
     const LONG_PRESS_MS = 500;
-    function startLongPress() { cancelLongPress(); longPressTimer = setTimeout(() => { longPressFired = true; openQuickActionsSheet(); }, LONG_PRESS_MS); }
+    const DRAG_THRESHOLD = 8;
+
     function cancelLongPress() { if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; } }
-    fab.addEventListener("pointerdown", () => { longPressFired = false; startLongPress(); });
-    fab.addEventListener("pointerup", () => { cancelLongPress(); if (longPressFired) openQuickActionsSheet(); });
-    fab.addEventListener("pointerleave", cancelLongPress);
-    fab.addEventListener("pointercancel", cancelLongPress);
-    fab.addEventListener("click", (event) => { if (longPressFired) event.stopImmediatePropagation(); });
+
+    function clamp(value, min, max) { return Math.min(max, Math.max(min, value)); }
+
+    fab.addEventListener("pointerdown", (event) => {
+      longPressFired = false;
+      isDragging = false;
+      pointerStart = { x: event.clientX, y: event.clientY };
+      startRect = fab.getBoundingClientRect();
+      fab.classList.add("is-pressed");
+      longPressTimer = setTimeout(() => { longPressFired = true; openQuickActionsSheet(); }, LONG_PRESS_MS);
+      try { fab.setPointerCapture(event.pointerId); } catch {}
+    });
+
+    fab.addEventListener("pointermove", (event) => {
+      if (!pointerStart || !startRect) return;
+      const dx = event.clientX - pointerStart.x;
+      const dy = event.clientY - pointerStart.y;
+      if (!isDragging && (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD)) {
+        isDragging = true;
+        cancelLongPress();
+        fab.classList.add("is-dragging");
+        fab.style.left = `${startRect.left}px`;
+        fab.style.top = `${startRect.top}px`;
+        fab.style.right = "auto";
+        fab.style.bottom = "auto";
+      }
+      if (isDragging) {
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const left = clamp(startRect.left + dx, 0, vw - startRect.width);
+        const top = clamp(startRect.top + dy, 0, vh - startRect.height);
+        fab.style.left = `${left}px`;
+        fab.style.top = `${top}px`;
+      }
+    });
+
+    fab.addEventListener("pointerup", (event) => {
+      cancelLongPress();
+      fab.classList.remove("is-pressed");
+      try { fab.releasePointerCapture(event.pointerId); } catch {}
+      if (isDragging) {
+        isDragging = false;
+        fab.classList.remove("is-dragging");
+        fab.dataset.v8FabDragged = "true";
+        pointerStart = null;
+        startRect = null;
+        return;
+      }
+      pointerStart = null;
+      startRect = null;
+      if (longPressFired) {
+        event.stopImmediatePropagation();
+        openQuickActionsSheet();
+      }
+    });
+
+    fab.addEventListener("pointerleave", () => { if (!isDragging) { cancelLongPress(); fab.classList.remove("is-pressed"); } });
+    fab.addEventListener("pointercancel", () => { if (!isDragging) { cancelLongPress(); fab.classList.remove("is-pressed"); } });
+
+    fab.addEventListener("click", (event) => {
+      if (fab.dataset.v8FabDragged) {
+        delete fab.dataset.v8FabDragged;
+        event.stopImmediatePropagation();
+      } else if (longPressFired) {
+        event.stopImmediatePropagation();
+      }
+      longPressFired = false;
+    });
   }
 
   function setupMobileGestures() {

@@ -20,7 +20,7 @@ export function attachFocusPopover(trigger, options = {}) {
   const onAction = options.onAction;
   if (!trigger || !onAction || typeof document === "undefined") return null;
 
-  let hideTimeout = null;
+  let isOpen = false;
 
   const phaseLabel = element("span", { className: "v8-focus-popover__phase", text: "Prêt" });
   const timeLabel = element("span", { className: "v8-focus-popover__time", text: "" });
@@ -59,7 +59,6 @@ export function attachFocusPopover(trigger, options = {}) {
   ]);
 
   function show() {
-    if (hideTimeout) clearTimeout(hideTimeout);
     const rect = trigger.getBoundingClientRect();
     const isTop = trigger.classList?.contains("v8-focus-status") || rect.top > window.innerHeight - 120;
     const isRight = rect.left > window.innerWidth / 2;
@@ -78,24 +77,26 @@ export function attachFocusPopover(trigger, options = {}) {
       popover.style.left = `${rect.left}px`;
       popover.style.right = "auto";
     }
+    isOpen = true;
     refreshIcons?.();
   }
 
   function hide() {
-    if (hideTimeout) clearTimeout(hideTimeout);
-    hideTimeout = setTimeout(() => {
-      popover.hidden = true;
-    }, 180);
+    popover.hidden = true;
+    isOpen = false;
   }
 
-  function cancelHide() {
-    if (hideTimeout) clearTimeout(hideTimeout);
-    hideTimeout = null;
+  function toggle(event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    if (isOpen) hide(); else show();
   }
 
   function updateState(state) {
     const phase = state.phase || "idle";
-    phaseLabel.textContent = `${PHASE_LABELS[phase] || "Focus"}${state.paused ? " — Pause" : ""}`;
+    phaseLabel.textContent = state.paused ? "En pause" : (PHASE_LABELS[phase] || "Focus");
     if (phase === "idle") {
       timeLabel.textContent = "";
     } else {
@@ -107,15 +108,31 @@ export function attachFocusPopover(trigger, options = {}) {
     refreshIcons();
   }
 
-  trigger.addEventListener("mouseenter", show);
-  trigger.addEventListener("mouseleave", hide);
-  trigger.addEventListener("focus", show);
-  trigger.addEventListener("blur", hide);
-  popover.addEventListener("mouseenter", cancelHide);
-  popover.addEventListener("mouseleave", hide);
+  function onTriggerClick(event) {
+    toggle(event);
+  }
+
+  function onDocumentClick(event) {
+    if (popover.contains(event.target) || trigger === event.target || trigger.contains(event.target)) return;
+    hide();
+  }
+
+  function onKeydown(event) {
+    if (event.key === "Escape" && isOpen) {
+      event.preventDefault();
+      hide();
+      trigger?.focus?.({ preventScroll: true });
+    }
+  }
+
+  trigger.addEventListener("click", onTriggerClick);
+  document.addEventListener("click", onDocumentClick);
+  document.addEventListener("keydown", onKeydown);
+
   popover.addEventListener("click", (event) => {
     const btn = event.target.closest("[data-focus-action]");
     if (!btn) return;
+    event.stopPropagation();
     const action = btn.dataset.focusAction;
     if (action === "v8.focus.pause") {
       const state = focusTimer?.getState?.() || { phase: "idle", paused: false };
@@ -123,7 +140,7 @@ export function attachFocusPopover(trigger, options = {}) {
     } else {
       onAction(action, { source: "focus-popover" });
     }
-    popover.hidden = true;
+    hide();
   });
 
   let unsubscribe;
@@ -135,8 +152,10 @@ export function attachFocusPopover(trigger, options = {}) {
   document.body.appendChild(popover);
 
   return {
+    toggle,
     destroy() {
-      cancelHide();
+      document.removeEventListener("click", onDocumentClick);
+      document.removeEventListener("keydown", onKeydown);
       unsubscribe?.();
       popover.remove();
     }

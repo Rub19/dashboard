@@ -229,7 +229,7 @@ export function createDock(host, options = {}) {
         tile("Deep Work", "v8.focus.start.deep", false, "brain"),
         tile("Sprint", "v8.focus.start.quick", false, "zap"),
         tile("Pause", "v8.focus.pause", false, "pause"),
-        tile("Stop", "v8.focus.stop", false, "square")
+        tile("Arrêter", "v8.focus.stop", false, "square")
       ], { grid: true })
     ]);
   }
@@ -399,9 +399,6 @@ export function createDock(host, options = {}) {
       render("[data-dock-command=control-center]");
     } else if (command === "spotlight") {
       options.onAction?.("v8.command.open", { source: "dock" });
-      return;
-    } else if (command === "pomodoro") {
-      options.onAction?.("v8.focus.start.pomodoro", { source: "dock" });
       return;
     } else if (command === "notifications") {
       options.onAction?.("v8.notifications.open", { source: "dock" });

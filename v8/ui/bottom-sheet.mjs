@@ -3,10 +3,11 @@ import { refreshIcons } from "./icons.mjs";
 
 const DEFAULT_DURATION = 220;
 
-export function showBottomSheet({ title, children = [], host, onClose, className = "" } = {}) {
+export function showBottomSheet({ title, children = [], host, onClose, className = "", position = "bottom" } = {}) {
   const root = host || (typeof document !== "undefined" ? document.body : null);
   if (!root) return { close: () => {}, element: null };
 
+  const isCentered = position === "center";
   let isClosing = false;
   let touchStartY = 0;
   let swipeDelta = 0;
@@ -24,7 +25,7 @@ export function showBottomSheet({ title, children = [], host, onClose, className
   const content = element("div", { className: "v8-bottom-sheet__content" }, children);
 
   const panel = element("div", {
-    className: `v8-bottom-sheet${className ? ` ${className}` : ""}`,
+    className: `v8-bottom-sheet${isCentered ? " v8-bottom-sheet--centered" : ""}${className ? ` ${className}` : ""}`,
     attributes: { role: "dialog", "aria-modal": "true", "aria-labelledby": "v8-bottom-sheet-title" }
   }, [
     handle,
@@ -32,7 +33,7 @@ export function showBottomSheet({ title, children = [], host, onClose, className
     content
   ]);
 
-  const layer = element("div", { className: "v8-bottom-sheet-layer" }, [panel]);
+  const layer = element("div", { className: `v8-bottom-sheet-layer${isCentered ? " v8-bottom-sheet-layer--centered" : ""}` }, [panel]);
 
   function onLayerClick(event) {
     if (event.target === layer) close();
@@ -80,7 +81,8 @@ export function showBottomSheet({ title, children = [], host, onClose, className
   function close() {
     if (isClosing) return;
     isClosing = true;
-    panel.style.transform = "translateY(100%)";
+    panel.style.transform = "";
+    panel.style.opacity = "";
     layer.classList.remove("is-open");
     setTimeout(() => {
       layer.remove();

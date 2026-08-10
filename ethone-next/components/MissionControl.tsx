@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { X } from "lucide-react";
+import { Icon } from "@/lib/icons";
 import { useWindowManager } from "./WindowManagerProvider";
 
 export function MissionControl() {
@@ -20,7 +20,7 @@ export function MissionControl() {
         onClick={() => setMissionControl(false)}
         className="absolute right-6 top-6 rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
       >
-        <X className="h-6 w-6" />
+        <Icon name="close" className="h-6 w-6" />
       </button>
 
       <h2 className="mb-8 text-3xl font-bold text-white">Mission Control</h2>

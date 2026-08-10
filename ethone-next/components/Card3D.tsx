@@ -33,12 +33,19 @@ export default function Card3D({ children }: { children: ReactNode }) {
       ref={ref}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      style={{ rotateX: settings.cardTilt ? rotateX : 0, rotateY: settings.cardTilt ? rotateY : 0, transformStyle: "preserve-3d", perspective: 1000, borderRadius: "var(--card-radius)" }}
       whileHover={{ scale: 1.015 }}
       whileTap={{ scale: 0.985 }}
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
-      className="min-w-0 overflow-hidden border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm transition-colors hover:border-[var(--accent)]/30"
+      className="min-w-0 overflow-hidden border border-[var(--border)] bg-[var(--surface)] p-5 transition-colors hover:border-[var(--accent)]/30"
       data-card-style={settings.glassEnabled ? "glass" : "solid"}
+      style={{
+        rotateX: settings.cardTilt ? rotateX : 0,
+        rotateY: settings.cardTilt ? rotateY : 0,
+        transformStyle: "preserve-3d",
+        perspective: 1000,
+        borderRadius: "var(--card-radius)",
+        boxShadow: settings.shadow === "glow" ? "var(--shadow)" : settings.shadow === "md" ? "0 4px 20px -4px rgba(0,0,0,0.3)" : settings.shadow === "sm" ? "0 1px 3px rgba(0,0,0,0.2)" : "none",
+      }}
     >
       {children}
     </motion.div>

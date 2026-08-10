@@ -41,9 +41,12 @@ export default function SettingsProvider({
     root.style.setProperty("--accent", theme.accent);
     root.style.setProperty("--font-size", `${settings.fontSize}%`);
     root.style.setProperty("--card-radius", `${settings.radius / 16}rem`);
+    root.style.setProperty("--dock-radius", `${settings.dockRadius / 16}rem`);
     root.style.setProperty("--glass", settings.glassEnabled ? "0.85" : "1");
     root.dataset.cardTilt = settings.cardTilt ? "on" : "off";
     root.dataset.density = settings.densityMode;
+    root.dataset.shadow = settings.shadow;
+    root.dataset.background = settings.backgroundEffect;
     root.style.fontSize = `${settings.fontSize}%`;
   }, [settings]);
 

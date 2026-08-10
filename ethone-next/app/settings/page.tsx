@@ -174,6 +174,37 @@ export default function SettingsPage() {
           <Range label="Rayon des cartes" value={settings.radius} onChange={(v) => update({ radius: v })} />
           <Toggle label="Verre (glassmorphism)" checked={settings.glassEnabled} onChange={(v) => update({ glassEnabled: v })} />
           <Toggle label="Tilt 3D sur les cartes" checked={settings.cardTilt} onChange={(v) => update({ cardTilt: v })} />
+          <p className="text-xs text-[var(--muted)]">Ombre</p>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {(["none", "sm", "md", "glow"] as const).map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => update({ shadow: s })}
+                className={`rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
+                  settings.shadow === s ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                }`}
+              >
+                {s === "none" ? "Aucune" : s === "sm" ? "Légère" : s === "md" ? "Moyenne" : "Glow"}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-[var(--muted)]">Fond</p>
+          <div className="grid grid-cols-3 gap-2">
+            {(["solid", "gradient", "mesh"] as const).map((bg) => (
+              <button
+                key={bg}
+                type="button"
+                onClick={() => update({ backgroundEffect: bg })}
+                className={`rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
+                  settings.backgroundEffect === bg ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                }`}
+              >
+                {bg === "solid" ? "Uni" : bg === "gradient" ? "Dégradé" : "Mesh"}
+              </button>
+            ))}
+          </div>
+          <Range label="Rayon du Dock" value={settings.dockRadius} onChange={(v) => update({ dockRadius: v })} />
         </div>
       ),
     },

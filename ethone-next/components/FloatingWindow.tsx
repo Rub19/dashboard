@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { X, Maximize2, Minus } from "lucide-react";
+import { Icon } from "@/lib/icons";
 import { useWindowManager, WindowState } from "./WindowManagerProvider";
 import { useRef } from "react";
 
@@ -40,13 +40,13 @@ export function FloatingWindow({ win }: { win: WindowState }) {
             onClick={() => updateWindow(win.id, { height: win.height > 100 ? 48 : 360 })}
             className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
           >
-            <Minus className="h-3.5 w-3.5" />
+            <Icon name="minus" className="h-3.5 w-3.5" />
           </button>
           <button className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface-raised)]">
-            <Maximize2 className="h-3.5 w-3.5" />
+            <Icon name="maximize" className="h-3.5 w-3.5" />
           </button>
           <button onClick={() => closeWindow(win.id)} className="rounded p-1 text-[var(--muted)] hover:bg-red-500/10 hover:text-red-400">
-            <X className="h-3.5 w-3.5" />
+            <Icon name="close" className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>

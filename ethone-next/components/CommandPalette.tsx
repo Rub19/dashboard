@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Command, ArrowRight, Moon, Sun, Brain, LogOut, Flame, StickyNote, CirclePlus, Timer, Workflow, Users, AppWindow, LayoutGrid } from "lucide-react";
+import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useUserData } from "@/lib/hooks/useUserData";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
@@ -46,7 +46,7 @@ export default function CommandPalette() {
       id: `macro-${m.id}`,
       label: m.label,
       category: i18n("macros"),
-      icon: <Workflow className="h-4 w-4" />,
+      icon: <Icon name="workflow" className="h-4 w-4" />,
       action: () => {
         if (data.action === "navigate" && data.href) router.push(data.href);
         if (data.action === "toggle" && data.setting) {
@@ -59,7 +59,7 @@ export default function CommandPalette() {
 
   const COMMANDS = useMemo<CommandItem[]>(
     () => [
-      { id: "home", label: i18n("home"), category: i18n("navigate"), shortcut: "H", icon: <ArrowRight className="h-4 w-4" />, action: () => router.push("/") },
+      { id: "home", label: i18n("home"), category: i18n("navigate"), shortcut: "H", icon: <Icon name="arrowRight" className="h-4 w-4" />, action: () => router.push("/") },
       { id: "mail", label: i18n("mail"), category: i18n("navigate"), shortcut: "M", action: () => router.push("/mail/") },
       { id: "notes", label: i18n("notes"), category: i18n("navigate"), shortcut: "N", action: () => router.push("/notes/") },
       { id: "tasks", label: i18n("tasks"), category: i18n("navigate"), shortcut: "T", action: () => router.push("/tasks/") },
@@ -74,24 +74,24 @@ export default function CommandPalette() {
       { id: "interactions", label: i18n("interactions"), category: i18n("navigate"), action: () => router.push("/interactions/") },
       { id: "settings", label: i18n("settings"), category: i18n("navigate"), shortcut: "S", action: () => router.push("/settings/") },
 
-      { id: "toggle-theme", label: settings.darkMode ? i18n("lightMode") : i18n("darkMode"), category: i18n("actions"), icon: settings.darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />, action: () => update({ darkMode: !settings.darkMode }) },
-      { id: "toggle-brain", label: settings.brainEnabled ? i18n("disableBrain") : i18n("enableBrain"), category: i18n("actions"), icon: <Brain className="h-4 w-4" />, action: () => update({ brainEnabled: !settings.brainEnabled }) },
-      { id: "focus-timer", label: i18n("startFocus"), category: i18n("actions"), icon: <Timer className="h-4 w-4" />, action: () => router.push("/focus/") },
-      { id: "mission-control", label: i18n("missionControl"), category: i18n("actions"), shortcut: "M", icon: <LayoutGrid className="h-4 w-4" />, action: () => { toggleMissionControl(); } },
+      { id: "toggle-theme", label: settings.darkMode ? i18n("lightMode") : i18n("darkMode"), category: i18n("actions"), icon: settings.darkMode ? <Icon name="sun" className="h-4 w-4" /> : <Icon name="moon" className="h-4 w-4" />, action: () => update({ darkMode: !settings.darkMode }) },
+      { id: "toggle-brain", label: settings.brainEnabled ? i18n("disableBrain") : i18n("enableBrain"), category: i18n("actions"), icon: <Icon name="brain" className="h-4 w-4" />, action: () => update({ brainEnabled: !settings.brainEnabled }) },
+      { id: "focus-timer", label: i18n("startFocus"), category: i18n("actions"), icon: <Icon name="focus" className="h-4 w-4" />, action: () => router.push("/focus/") },
+      { id: "mission-control", label: i18n("missionControl"), category: i18n("actions"), shortcut: "M", icon: <Icon name="layoutGrid" className="h-4 w-4" />, action: () => { toggleMissionControl(); } },
 
-      { id: "new-note", label: i18n("newNote"), category: i18n("create"), icon: <StickyNote className="h-4 w-4" />, action: () => router.push("/notes/") },
-      { id: "new-task", label: i18n("newTask"), category: i18n("create"), icon: <CirclePlus className="h-4 w-4" />, action: () => router.push("/tasks/") },
-      { id: "new-interaction", label: i18n("newInteraction"), category: i18n("create"), icon: <Flame className="h-4 w-4" />, action: () => router.push("/interactions/") },
-      { id: "macros", label: i18n("macros"), category: i18n("create"), icon: <Workflow className="h-4 w-4" />, action: () => router.push("/macros/") },
-      { id: "personas", label: i18n("personas"), category: i18n("create"), icon: <Users className="h-4 w-4" />, action: () => router.push("/personas/") },
-      { id: "open-notes", label: "Notes (fenêtre)", category: i18n("windows"), icon: <AppWindow className="h-4 w-4" />, action: () => { openWindow("/notes/", "Notes"); } },
-      { id: "open-tasks", label: "Tâches (fenêtre)", category: i18n("windows"), icon: <AppWindow className="h-4 w-4" />, action: () => { openWindow("/tasks/", "Tâches"); } },
-      { id: "open-mail", label: "Mail (fenêtre)", category: i18n("windows"), icon: <AppWindow className="h-4 w-4" />, action: () => { openWindow("/mail/", "Mail"); } },
-      { id: "open-bills", label: "Factures (fenêtre)", category: i18n("windows"), icon: <AppWindow className="h-4 w-4" />, action: () => { openWindow("/bills/", "Factures"); } },
+      { id: "new-note", label: i18n("newNote"), category: i18n("create"), icon: <Icon name="stickyNote" className="h-4 w-4" />, action: () => router.push("/notes/") },
+      { id: "new-task", label: i18n("newTask"), category: i18n("create"), icon: <Icon name="plus" className="h-4 w-4" />, action: () => router.push("/tasks/") },
+      { id: "new-interaction", label: i18n("newInteraction"), category: i18n("create"), icon: <Icon name="interactions" className="h-4 w-4" />, action: () => router.push("/interactions/") },
+      { id: "macros", label: i18n("macros"), category: i18n("create"), icon: <Icon name="workflow" className="h-4 w-4" />, action: () => router.push("/macros/") },
+      { id: "personas", label: i18n("personas"), category: i18n("create"), icon: <Icon name="team" className="h-4 w-4" />, action: () => router.push("/personas/") },
+      { id: "open-notes", label: "Notes (fenêtre)", category: i18n("windows"), icon: <Icon name="appWindow" className="h-4 w-4" />, action: () => { openWindow("/notes/", "Notes"); } },
+      { id: "open-tasks", label: "Tâches (fenêtre)", category: i18n("windows"), icon: <Icon name="appWindow" className="h-4 w-4" />, action: () => { openWindow("/tasks/", "Tâches"); } },
+      { id: "open-mail", label: "Mail (fenêtre)", category: i18n("windows"), icon: <Icon name="appWindow" className="h-4 w-4" />, action: () => { openWindow("/mail/", "Mail"); } },
+      { id: "open-bills", label: "Factures (fenêtre)", category: i18n("windows"), icon: <Icon name="appWindow" className="h-4 w-4" />, action: () => { openWindow("/bills/", "Factures"); } },
 
       ...macroCommands,
 
-      { id: "signout", label: i18n("signOut"), category: i18n("account"), icon: <LogOut className="h-4 w-4" />, action: () => signOut().then(() => router.push("/login")) },
+      { id: "signout", label: i18n("signOut"), category: i18n("account"), icon: <Icon name="logout" className="h-4 w-4" />, action: () => signOut().then(() => router.push("/login")) },
     ],
     [i18n, router, settings, update, signOut, macroCommands, openWindow, toggleMissionControl]
   );
@@ -144,10 +144,10 @@ export default function CommandPalette() {
         onClick={() => setOpen(true)}
         className="hidden items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--muted)] transition-colors hover:border-[var(--accent)] hover:text-[var(--foreground)] lg:flex"
       >
-        <Search className="h-3.5 w-3.5" />
+        <Icon name="search" className="h-3.5 w-3.5" />
         <span>{i18n("commands")}</span>
         <kbd className="rounded bg-[var(--surface-raised)] px-1 py-0.5 text-[10px]">
-          <Command className="inline h-3 w-3" />K
+          <Icon name="command" className="inline h-3 w-3" />K
         </kbd>
       </button>
 
@@ -169,7 +169,7 @@ export default function CommandPalette() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center gap-3 border-b border-[var(--border)] px-4 py-3">
-                <Search className="h-5 w-5 text-[var(--muted)]" />
+                <Icon name="search" className="h-5 w-5 text-[var(--muted)]" />
                 <input
                   autoFocus
                   type="text"
@@ -204,7 +204,7 @@ export default function CommandPalette() {
                       </span>
                       {cmd.shortcut && (
                         <span className="flex items-center gap-1 text-[10px] opacity-60">
-                          <Command className="h-3 w-3" />
+                          <Icon name="command" className="h-3 w-3" />
                           {cmd.shortcut}
                         </span>
                       )}

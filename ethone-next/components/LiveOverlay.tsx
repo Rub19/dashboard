@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Disc3, Monitor, X, Radio, ChevronUp, GripHorizontal, Maximize2, Minimize2, Play, Pause, SkipForward, SkipBack } from "lucide-react";
+import { Icon } from "@/lib/icons";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useSettings } from "@/components/SettingsProvider";
 import { fetchWorker } from "@/lib/api";
@@ -47,18 +47,18 @@ export default function LiveOverlay() {
           >
             <div className="mb-2 flex items-center justify-between">
               <span className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--muted)]">
-                <GripHorizontal className="h-3.5 w-3.5 text-[var(--muted)]" />
-                <Radio className="h-3 w-3 text-emerald-400" /> Live
+                <Icon name="grip" className="h-3.5 w-3.5 text-[var(--muted)]" />
+                <Icon name="radio" className="h-3 w-3 text-emerald-400" /> Live
               </span>
               <div className="flex gap-1">
                 <button type="button" onClick={() => setExpanded((v) => !v)} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface)]">
-                  {expanded ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
+                  {expanded ? <Icon name="minimize" className="h-3.5 w-3.5" /> : <Icon name="maximize" className="h-3.5 w-3.5" />}
                 </button>
                 <button type="button" onClick={() => setMinimized(true)} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface)]">
-                  <ChevronUp className="h-3.5 w-3.5" />
+                  <Icon name="chevronUp" className="h-3.5 w-3.5" />
                 </button>
                 <button type="button" onClick={() => update({ liveOverlay: false })} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface)] hover:text-red-400">
-                  <X className="h-3.5 w-3.5" />
+                  <Icon name="close" className="h-3.5 w-3.5" />
                 </button>
               </div>
             </div>
@@ -72,7 +72,7 @@ export default function LiveOverlay() {
                 {nowPlaying?.isPlaying ? (
                   <div className="flex items-center gap-3">
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-500/10 text-violet-400">
-                      <Disc3 className={`h-5 w-5 ${nowPlaying.isPlaying ? "animate-spin" : ""}`} />
+                      <Icon name="disc" className={`h-5 w-5 ${nowPlaying.isPlaying ? "animate-spin" : ""}`} />
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium">{nowPlaying.title}</p>
@@ -86,13 +86,13 @@ export default function LiveOverlay() {
                 {nowPlaying && (
                   <div className="flex items-center justify-center gap-2 rounded-xl bg-[var(--surface)] p-1">
                     <button onClick={() => controlSpotify("previous")} className="rounded p-1 text-[var(--foreground)] hover:bg-[var(--surface-raised)]">
-                      <SkipBack className="h-4 w-4" />
+                      <Icon name="skipBack" className="h-4 w-4" />
                     </button>
                     <button onClick={() => controlSpotify(nowPlaying.isPlaying ? "pause" : "play")} className="rounded p-1 text-[var(--foreground)] hover:bg-[var(--surface-raised)]">
-                      {nowPlaying.isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                      {nowPlaying.isPlaying ? <Icon name="pause" className="h-4 w-4" /> : <Icon name="play" className="h-4 w-4" />}
                     </button>
                     <button onClick={() => controlSpotify("next")} className="rounded p-1 text-[var(--foreground)] hover:bg-[var(--surface-raised)]">
-                      <SkipForward className="h-4 w-4" />
+                      <Icon name="skipForward" className="h-4 w-4" />
                     </button>
                   </div>
                 )}
@@ -105,7 +105,7 @@ export default function LiveOverlay() {
                       lanyard.discord_status === "dnd" ? "bg-rose-500/10 text-rose-400" :
                       "bg-zinc-500/10 text-zinc-400"
                     }`}>
-                      <Monitor className="h-5 w-5" />
+                      <Icon name="monitor" className="h-5 w-5" />
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium capitalize">{lanyard.discord_status}</p>
@@ -130,7 +130,7 @@ export default function LiveOverlay() {
           onClick={() => setMinimized(false)}
           className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-raised)] text-[var(--foreground)] shadow-lg hover:border-[var(--accent)]"
         >
-          <Radio className="h-4 w-4 text-emerald-400" />
+          <Icon name="radio" className="h-4 w-4 text-emerald-400" />
         </motion.button>
       )}
     </div>

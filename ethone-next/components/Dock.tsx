@@ -53,9 +53,10 @@ export default function Dock() {
   return (
     <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2">
       <div
-        className={`flex items-end gap-1 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]/95 p-2 shadow-2xl backdrop-blur-md transition-all ${
+        className={`flex items-end gap-1 border border-[var(--border)] bg-[var(--surface-raised)]/95 p-2 shadow-2xl backdrop-blur-md transition-all ${
           expanded ? "min-w-[320px] flex-wrap justify-center" : ""
         }`}
+        style={{ borderRadius: "var(--dock-radius)" }}
       >
         {visibleItems().map((item) => {
           const active = pathname === item.href || pathname.startsWith(item.href);

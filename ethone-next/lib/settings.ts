@@ -10,6 +10,9 @@ export type Settings = {
   cardTilt: boolean;
   dockVisible: boolean;
   dockItems: string[];
+  dockRadius: number;
+  shadow: "none" | "sm" | "md" | "glow";
+  backgroundEffect: "solid" | "gradient" | "mesh";
   masterVolume: boolean;
   soundEffects: boolean;
   notifications: boolean;
@@ -34,6 +37,9 @@ export const DEFAULTS: Settings = {
   cardTilt: true,
   dockVisible: true,
   dockItems: ["home", "brain", "notes", "tasks", "calendar", "activity", "connections", "settings"],
+  dockRadius: 50,
+  shadow: "glow",
+  backgroundEffect: "gradient",
   masterVolume: true,
   soundEffects: false,
   notifications: true,

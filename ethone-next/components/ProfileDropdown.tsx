@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Settings, LogOut, Sparkles, User } from "lucide-react";
+import { Icon } from "@/lib/icons";
 import { useAuth } from "@/components/AuthProvider";
 import { useProfile } from "@/lib/hooks/useProfile";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -25,7 +25,7 @@ function Avatar({ url, size = "md" }: { url?: string; size?: "sm" | "md" }) {
 
   return (
     <span className={`${className} flex items-center justify-center bg-[var(--accent)] text-white`}>
-      <User className={size === "sm" ? "h-4 w-4" : "h-5 w-5"} />
+      <Icon name="user" className={size === "sm" ? "h-4 w-4" : "h-5 w-5"} />
     </span>
   );
 }
@@ -55,7 +55,8 @@ export default function ProfileDropdown() {
         aria-label={i18n("account")}
       >
         <Avatar url={avatarUrl} size="sm" />
-        <ChevronDown
+        <Icon
+          name="chevronDown"
           className={`h-4 w-4 text-[var(--muted)] transition-transform duration-300 ${
             open ? "rotate-180" : ""
           }`}
@@ -87,7 +88,7 @@ export default function ProfileDropdown() {
                 }}
                 className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--surface)]"
               >
-                <User className="h-4 w-4 text-[var(--muted)]" />
+                <Icon name="user" className="h-4 w-4 text-[var(--muted)]" />
                 {i18n("profile")}
               </button>
               <button
@@ -98,7 +99,7 @@ export default function ProfileDropdown() {
                 }}
                 className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--surface)]"
               >
-                <Settings className="h-4 w-4 text-[var(--muted)]" />
+                <Icon name="settings" className="h-4 w-4 text-[var(--muted)]" />
                 {i18n("settings")}
               </button>
               <button
@@ -109,7 +110,7 @@ export default function ProfileDropdown() {
                 }}
                 className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--surface)]"
               >
-                <Sparkles className="h-4 w-4 text-[var(--muted)]" />
+                <Icon name="sparkles" className="h-4 w-4 text-[var(--muted)]" />
                 {i18n("changelog")}
               </button>
               <button
@@ -117,7 +118,7 @@ export default function ProfileDropdown() {
                 onClick={handleSignOut}
                 className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-red-400 transition-colors hover:bg-red-500/10"
               >
-                <LogOut className="h-4 w-4" />
+                <Icon name="logout" className="h-4 w-4" />
                 {i18n("signOut")}
               </button>
             </nav>

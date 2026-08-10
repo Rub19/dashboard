@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { fetchWorker } from "@/lib/api";
-import { Loader2, Play, Pause, SkipBack, SkipForward, Heart } from "lucide-react";
+import { Icon } from "@/lib/icons";
 
 const STATUS = {
   connected: "text-emerald-400",
@@ -55,7 +55,7 @@ export default function LiveWidgets() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-[var(--foreground)]">Live Now</h2>
-        {loading && <Loader2 className="h-4 w-4 animate-spin text-[var(--muted)]" />}
+        {loading && <Icon name="loader" className="h-4 w-4 animate-spin text-[var(--muted)]" />}
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -133,12 +133,12 @@ export default function LiveWidgets() {
                           </div>
                         )}
                         <div className="flex items-center gap-2">
-                          <button onClick={() => controlSpotify("previous")} className="rounded-full p-1.5 text-[var(--foreground)] hover:bg-white/10"><SkipBack className="h-4 w-4" /></button>
+                          <button onClick={() => controlSpotify("previous")} className="rounded-full p-1.5 text-[var(--foreground)] hover:bg-white/10"><Icon name="skipBack" className="h-4 w-4" /></button>
                           <button onClick={() => controlSpotify(nowPlaying.isPlaying ? "pause" : "play")} className="rounded-full bg-emerald-500 p-2 text-white hover:bg-emerald-400">
-                            {nowPlaying.isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                            {nowPlaying.isPlaying ? <Icon name="pause" className="h-4 w-4" /> : <Icon name="play" className="h-4 w-4" />}
                           </button>
-                          <button onClick={() => controlSpotify("next")} className="rounded-full p-1.5 text-[var(--foreground)] hover:bg-white/10"><SkipForward className="h-4 w-4" /></button>
-                          <button className="ml-auto rounded-full p-1.5 text-rose-400 hover:bg-rose-500/10"><Heart className="h-4 w-4" /></button>
+                          <button onClick={() => controlSpotify("next")} className="rounded-full p-1.5 text-[var(--foreground)] hover:bg-white/10"><Icon name="skipForward" className="h-4 w-4" /></button>
+                          <button className="ml-auto rounded-full p-1.5 text-rose-400 hover:bg-rose-500/10"><Icon name="heart" className="h-4 w-4" /></button>
                         </div>
                       </div>
                     )}

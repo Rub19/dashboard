@@ -79,6 +79,13 @@ const MAP: Record<string, Partial<Record<IconPack, string>>> = {
   timer: { lucide: "timer", phosphor: "timer", tabler: "clock", heroicons: "clock", radix: "stopwatch" },
   arrowRight: { lucide: "arrow-right", phosphor: "arrow-right", tabler: "arrow-right", heroicons: "arrow-right", radix: "arrow-right" },
   minus: { lucide: "minus", phosphor: "minus", tabler: "minus", heroicons: "minus", radix: "minus" },
+  sun: { lucide: "sun", phosphor: "sun", tabler: "sun", heroicons: "sun", radix: "sun" },
+  moon: { lucide: "moon", phosphor: "moon", tabler: "moon", heroicons: "moon", radix: "moon" },
+  plus: { lucide: "circle-plus", phosphor: "plus-circle", tabler: "circle-plus", heroicons: "plus-circle", radix: "plus-circled" },
+  stickyNote: { lucide: "sticky-note", phosphor: "note", tabler: "note", heroicons: "document", radix: "file-text" },
+  appWindow: { lucide: "app-window", phosphor: "app-window", tabler: "app-window", heroicons: "window", radix: "window" },
+  layoutGrid: { lucide: "layout-grid", phosphor: "squares-four", tabler: "layout-grid", heroicons: "squares-2x2", radix: "grid" },
+  workflow: { lucide: "workflow", phosphor: "tree-structure", tabler: "git-branch", heroicons: "arrow-path", radix: "mixer-horizontal" },
 };
 
 export function useIconName(name: string, pack: IconPack = "lucide") {

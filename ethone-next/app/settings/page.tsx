@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useSettings } from "@/components/SettingsProvider";
 import Card3D from "@/components/Card3D";
 import {
   Palette,
@@ -11,24 +11,15 @@ import {
   User,
   Shield,
   Globe,
-  Moon,
 } from "lucide-react";
 
-type Section = {
-  id: string;
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
-  children: React.ReactNode;
-};
-
-function Toggle({ label, defaultChecked = false }: { label: string; defaultChecked?: boolean }) {
-  const [checked, setChecked] = useState(defaultChecked);
+function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
     <label className="flex items-center justify-between gap-4">
       <span className="text-sm text-[var(--foreground)]">{label}</span>
       <button
         type="button"
-        onClick={() => setChecked(!checked)}
+        onClick={() => onChange(!checked)}
         className={`relative h-6 w-11 rounded-full transition-colors ${
           checked ? "bg-[var(--accent)]" : "bg-[var(--border)]"
         }`}
@@ -62,26 +53,41 @@ function Range({ label, value, onChange }: { label: string; value: number; onCha
   );
 }
 
-export default function SettingsPage() {
-  const [density, setDensity] = useState(50);
-  const [fontSize, setFontSize] = useState(100);
+const THEMES = [
+  { id: "default", label: "Aura ETHONE" },
+  { id: "boreal", label: "Boréale" },
+  { id: "cyberpunk", label: "Cyberpunk" },
+  { id: "eclipse", label: "Éclipse" },
+  { id: "emerald", label: "Émeraude" },
+];
 
-  const sections: Section[] = [
+const LANGUAGES = [
+  { id: "fr", label: "Français" },
+  { id: "en", label: "English" },
+];
+
+export default function SettingsPage() {
+  const { settings, update } = useSettings();
+
+  const sections = [
     {
       id: "appearance",
       label: "Apparence",
       icon: Palette,
       children: (
         <div className="space-y-4">
-          <Toggle label="Mode sombre" defaultChecked />
-          <div className="grid grid-cols-4 gap-2">
-            {["Boréale", "Cyberpunk", "Éclipse", "Émeraude"].map((theme) => (
+          <Toggle label="Mode sombre" checked={settings.darkMode} onChange={(v) => update({ darkMode: v })} />
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {THEMES.map((theme) => (
               <button
-                key={theme}
+                key={theme.id}
                 type="button"
-                className="rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-3 text-xs font-medium transition-colors hover:border-[var(--accent)]"
+                onClick={() => update({ theme: theme.id as any })}
+                className={`rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-3 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
+                  settings.theme === theme.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                }`}
               >
-                {theme}
+                {theme.label}
               </button>
             ))}
           </div>
@@ -94,8 +100,7 @@ export default function SettingsPage() {
       icon: Type,
       children: (
         <div className="space-y-4">
-          <Range label="Taille du texte" value={fontSize} onChange={setFontSize} />
-          <Range label="Interligne" value={density} onChange={setDensity} />
+          <Range label="Taille du texte" value={settings.fontSize} onChange={(v) => update({ fontSize: v })} />
         </div>
       ),
     },
@@ -105,8 +110,7 @@ export default function SettingsPage() {
       icon: Gauge,
       children: (
         <div className="space-y-4">
-          <Range label="Densité des listes" value={density} onChange={setDensity} />
-          <Range label="Padding des cartes" value={fontSize} onChange={setFontSize} />
+          <Range label="Densité des listes" value={settings.density} onChange={(v) => update({ density: v })} />
         </div>
       ),
     },
@@ -116,9 +120,8 @@ export default function SettingsPage() {
       icon: Volume2,
       children: (
         <div className="space-y-4">
-          <Toggle label="Volume général" defaultChecked />
-          <Toggle label="Notifications sonores" />
-          <Toggle label="Effets sonores" defaultChecked />
+          <Toggle label="Volume général" checked={settings.masterVolume} onChange={(v) => update({ masterVolume: v })} />
+          <Toggle label="Effets sonores" checked={settings.soundEffects} onChange={(v) => update({ soundEffects: v })} />
         </div>
       ),
     },
@@ -128,9 +131,10 @@ export default function SettingsPage() {
       icon: Bell,
       children: (
         <div className="space-y-4">
-          <Toggle label="Notifications mail" defaultChecked />
-          <Toggle label="Notifications tracker" />
-          <Toggle label="Alertes sécurité" defaultChecked />
+          <Toggle label="Notifications" checked={settings.notifications} onChange={(v) => update({ notifications: v })} />
+          <Toggle label="Notifications mail" checked={settings.mailNotifications} onChange={(v) => update({ mailNotifications: v })} />
+          <Toggle label="Notifications tracker" checked={settings.trackerNotifications} onChange={(v) => update({ trackerNotifications: v })} />
+          <Toggle label="Alertes sécurité" checked={settings.securityAlerts} onChange={(v) => update({ securityAlerts: v })} />
         </div>
       ),
     },
@@ -146,12 +150,6 @@ export default function SettingsPage() {
           >
             Modifier l’email
           </button>
-          <button
-            type="button"
-            className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-2 text-sm transition-colors hover:border-[var(--accent)]"
-          >
-            Gérer les appareils
-          </button>
         </div>
       ),
     },
@@ -161,30 +159,28 @@ export default function SettingsPage() {
       icon: Shield,
       children: (
         <div className="space-y-4">
-          <Toggle label="Passkeys activés" />
-          <Toggle label="Vérification OTP à chaque connexion" defaultChecked />
+          <Toggle label="Vérification OTP à chaque connexion" checked={true} onChange={() => {}} />
         </div>
       ),
     },
     {
       id: "language",
-      label: "Langue & région",
+      label: "Langue",
       icon: Globe,
       children: (
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-2">
-            {["Français", "English", "Español", "Deutsch"].map((lang) => (
-              <button
-                key={lang}
-                type="button"
-                className={`rounded-xl border border-[var(--border)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
-                  lang === "Français" ? "bg-[var(--accent)] text-white" : "bg-[var(--surface-raised)]"
-                }`}
-              >
-                {lang}
-              </button>
-            ))}
-          </div>
+        <div className="grid grid-cols-2 gap-2">
+          {LANGUAGES.map((lang) => (
+            <button
+              key={lang.id}
+              type="button"
+              onClick={() => update({ language: lang.id })}
+              className={`rounded-xl border border-[var(--border)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
+                settings.language === lang.id ? "bg-[var(--accent)] text-white" : "bg-[var(--surface-raised)]"
+              }`}
+            >
+              {lang.label}
+            </button>
+          ))}
         </div>
       ),
     },

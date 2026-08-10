@@ -1,6 +1,7 @@
 "use client";
 
 import { useWorker } from "@/lib/hooks/useWorker";
+import { useI18n } from "@/lib/hooks/useI18n";
 import Card3D from "@/components/Card3D";
 import { FileText, Folder, Heart, HardDrive } from "lucide-react";
 
@@ -13,12 +14,13 @@ function formatBytes(bytes = 0) {
 }
 
 export default function FilesPage() {
-  const { data, loading } = useWorker<any>("/api/cloud/files");
-  const files: any[] = Array.isArray(data?.data) ? data.data : [];
+  const { data, loading, error } = useWorker<{ data: { files: any[] } }>("/api/cloud/files");
+  const i18n = useI18n();
+  const files = data?.data?.files || [];
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Fichiers</h1>
+      <h1 className="text-2xl font-bold">{i18n("files")}</h1>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card3D>
           <div className="flex items-center gap-3">
@@ -27,7 +29,7 @@ export default function FilesPage() {
             </span>
             <div className="min-w-0">
               <p className="text-2xl font-bold">{loading ? "-" : files.length}</p>
-              <p className="text-xs text-[var(--muted)]">Fichiers</p>
+              <p className="text-xs text-[var(--muted)]">{i18n("files")}</p>
             </div>
           </div>
         </Card3D>
@@ -37,6 +39,10 @@ export default function FilesPage() {
         {loading ? (
           <Card3D>
             <div className="h-4 w-1/3 animate-pulse rounded bg-[var(--border)]" />
+          </Card3D>
+        ) : error ? (
+          <Card3D>
+            <p className="text-sm text-red-400">{error.message}</p>
           </Card3D>
         ) : files.length === 0 ? (
           <Card3D>

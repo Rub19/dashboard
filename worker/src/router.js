@@ -55,7 +55,7 @@ import { twitchRoute } from "./routes/twitch.js";
 import { weatherRoute } from "./routes/weather.js";
 import { youtubeActivityRoute, youtubeOAuthDisconnectRoute, youtubeOAuthExchangeRoute } from "./routes/youtube-oauth.js";
 import { signOutRoute } from "./routes/signout.js";
-import { teamInviteRoute } from "./routes/team-invite.js";
+import { teamMembersRoute } from "./routes/team.js";
 import itemsRoute from "./routes/items.js";
 import { connectionsListRoute } from "./routes/connections.js";
 import {
@@ -209,8 +209,10 @@ export const ROUTES = Object.freeze([
   // Security events
   route("security.events", "/api/auth/security-events", securityEventsRoute, { service: "security", rateLimit: "standard" }),
 
-  // Team invites
-  route("team.invite", "/api/team/invite", teamInviteRoute, { method: "POST", service: "team", rateLimit: "strict" }),
+  // Team
+  route("team.members.get", "/api/team/members", teamMembersRoute, { service: "team" }),
+  route("team.members.post", "/api/team/members", teamMembersRoute, { method: "POST", service: "team", rateLimit: "strict" }),
+  route("team.members.delete", "/api/team/members", teamMembersRoute, { method: "DELETE", service: "team", rateLimit: "strict" }),
 
   // Mail
   route("mail.alias", "/api/mail/alias", mailAliasRoute, { service: "mail", rateLimit: "standard" }),

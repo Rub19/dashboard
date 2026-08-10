@@ -150,6 +150,7 @@ export default function SettingsPage() {
           <Toggle label={i18n("mailNotifications")} checked={settings.mailNotifications} onChange={(v) => update({ mailNotifications: v })} />
           <Toggle label={i18n("trackerNotifications")} checked={settings.trackerNotifications} onChange={(v) => update({ trackerNotifications: v })} />
           <Toggle label={i18n("securityAlerts")} checked={settings.securityAlerts} onChange={(v) => update({ securityAlerts: v })} />
+          <Toggle label={i18n("brain")} checked={settings.brainEnabled} onChange={(v) => update({ brainEnabled: v })} />
         </div>
       ),
     },

@@ -10,6 +10,7 @@ export type Settings = {
   trackerNotifications: boolean;
   securityAlerts: boolean;
   pushNotifications: boolean;
+  brainEnabled: boolean;
   language: string;
 };
 
@@ -25,6 +26,7 @@ export const DEFAULTS: Settings = {
   trackerNotifications: false,
   securityAlerts: true,
   pushNotifications: false,
+  brainEnabled: true,
   language: "fr",
 };
 

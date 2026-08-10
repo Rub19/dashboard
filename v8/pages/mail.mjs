@@ -306,6 +306,7 @@ export function mountMail(stage, options = {}) {
   let masterCheckbox = null;
   let helpSheet = null;
   let commandPalette = null;
+  let newBtn = null;
 
   const page = element("section", { className: "v8-page v8-mail", dataset: { page: "mail" } });
   const header = element("header", { className: "v8-mail-header" });

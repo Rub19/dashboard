@@ -305,15 +305,15 @@
 }
 .v8-breadcrumb-context__item {
   display: inline-flex;
-  min-width: 0;
+  flex-shrink: 0;
   align-items: center;
   gap: 4px;
   color: var(--v8-muted);
   font-size: var(--v8-font-micro);
   line-height: 1;
 }
-.v8-breadcrumb-context__item small { color: var(--v8-muted); font-size: inherit; }
-.v8-breadcrumb-context__item strong { max-width: 92px; overflow: hidden; color: var(--v8-text-secondary); font-size: inherit; font-weight: var(--v8-weight-medium); text-overflow: ellipsis; white-space: nowrap; }
+.v8-breadcrumb-context__item small { flex-shrink: 0; color: var(--v8-muted); font-size: inherit; }
+.v8-breadcrumb-context__item strong { flex-shrink: 0; max-width: 92px; overflow: hidden; color: var(--v8-text-secondary); font-size: inherit; font-weight: var(--v8-weight-medium); text-overflow: ellipsis; white-space: nowrap; }
 .v8-breadcrumb-context__item--sync { flex: 0 0 auto; color: var(--v8-success); }
 .v8-breadcrumb-context__item--sync > i { width: 5px; height: 5px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px var(--v8-success-glow); }
 .v8-breadcrumb-context__item--sync[data-status="syncing"] { color: var(--v8-info); }

@@ -19,6 +19,29 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+self.addEventListener("push", (event) => {
+  let data = { title: "ETHONE", body: "Nouvelle notification", tag: "ethone" };
+  try {
+    if (event.data) data = event.data.json();
+  } catch {}
+
+  const title = data.title || "ETHONE";
+  const options = {
+    body: data.body || "Nouvelle notification",
+    tag: data.tag || "ethone",
+    icon: "/icons/ethone-icon-192.png",
+    badge: "/icons/ethone-icon-192.png",
+    data: data.url || "/",
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  event.waitUntil(self.clients.openWindow(event.notification.data || "/"));
+});
+
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   if (event.request.url.includes("/api/")) return;

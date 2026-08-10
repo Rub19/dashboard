@@ -3,6 +3,7 @@
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Card3D from "@/components/Card3D";
+import { subscribePush, unsubscribePush } from "@/lib/push";
 import {
   Palette,
   Type,
@@ -136,6 +137,16 @@ export default function SettingsPage() {
       children: (
         <div className="space-y-4">
           <Toggle label={i18n("notifications")} checked={settings.notifications} onChange={(v) => update({ notifications: v })} />
+          <Toggle label={i18n("pushNotifications")} checked={settings.pushNotifications} onChange={async (v) => {
+            update({ pushNotifications: v });
+            try {
+              if (v) await subscribePush();
+              else await unsubscribePush();
+            } catch (err) {
+              console.error("Push toggle error:", err);
+              update({ pushNotifications: !v });
+            }
+          }} />
           <Toggle label={i18n("mailNotifications")} checked={settings.mailNotifications} onChange={(v) => update({ mailNotifications: v })} />
           <Toggle label={i18n("trackerNotifications")} checked={settings.trackerNotifications} onChange={(v) => update({ trackerNotifications: v })} />
           <Toggle label={i18n("securityAlerts")} checked={settings.securityAlerts} onChange={(v) => update({ securityAlerts: v })} />

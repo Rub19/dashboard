@@ -9,6 +9,7 @@ export type Settings = {
   mailNotifications: boolean;
   trackerNotifications: boolean;
   securityAlerts: boolean;
+  pushNotifications: boolean;
   language: string;
 };
 
@@ -23,6 +24,7 @@ export const DEFAULTS: Settings = {
   mailNotifications: true,
   trackerNotifications: false,
   securityAlerts: true,
+  pushNotifications: false,
   language: "fr",
 };
 

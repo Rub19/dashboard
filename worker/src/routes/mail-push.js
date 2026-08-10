@@ -7,9 +7,14 @@ function safeText(value, limit = 320) {
 }
 
 export async function mailPushRoute({ request, env, auth }) {
-  if (!auth?.userId) throw httpError("UNAUTHORIZED", 401);
-
   const url = new URL(request.url);
+
+  if (url.pathname.endsWith("/vapid-public-key")) {
+    if (request.method !== "GET") throw httpError("METHOD_NOT_ALLOWED", 405);
+    return { data: { publicKey: env.VAPID_PUBLIC_KEY || "" } };
+  }
+
+  if (!auth?.userId) throw httpError("UNAUTHORIZED", 401);
 
   if (url.pathname.endsWith("/subscriptions")) {
     if (request.method === "GET") {

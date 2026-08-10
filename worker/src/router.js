@@ -276,6 +276,7 @@ export const ROUTES = Object.freeze([
   route("mail.pgp.decrypt", "/api/mail/pgp/decrypt", mailPgpRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
 
   // Web push
+  route("mail.push.vapid", "/api/mail/push/vapid-public-key", mailPushRoute, { public: true, service: "mail", rateLimit: "edge" }),
   route("mail.push.subscriptions", "/api/mail/push/subscriptions", mailPushRoute, { service: "mail", rateLimit: "standard" }),
   route("mail.push.subscribe", "/api/mail/push/subscribe", mailPushRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
   route("mail.push.unsubscribe", "/api/mail/push/subscribe", mailPushRoute, { method: "DELETE", service: "mail", rateLimit: "standard" }),

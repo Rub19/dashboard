@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Card3D from "@/components/Card3D";
-import { Users, Plus, Mail, Shield } from "lucide-react";
+import { Users, Plus } from "lucide-react";
 
 const ROLES = ["owner", "admin", "member"] as const;
 
@@ -36,7 +36,7 @@ export default function TeamPage() {
             />
             <select
               value={role}
-              onChange={(e) => setRole(e.target.value as any)}
+              onChange={(e) => setRole(e.target.value as typeof ROLES[number])}
               className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm"
             >
               {ROLES.map((r) => (

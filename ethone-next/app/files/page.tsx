@@ -13,8 +13,16 @@ function formatBytes(bytes = 0) {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
 }
 
+type CloudFile = {
+  id?: string;
+  name?: string;
+  size?: number;
+  mimeType?: string;
+  isFavorite?: boolean;
+};
+
 export default function FilesPage() {
-  const { data, loading, error } = useWorker<{ data: { files: any[] } }>("/api/cloud/files");
+  const { data, loading, error } = useWorker<{ data: { files: CloudFile[] } }>("/api/cloud/files");
   const i18n = useI18n();
   const files = data?.data?.files || [];
 
@@ -49,7 +57,7 @@ export default function FilesPage() {
             <p className="text-sm text-[var(--muted)]">Aucun fichier dans le cloud.</p>
           </Card3D>
         ) : (
-          files.slice(0, 20).map((file: any, i) => (
+          files.slice(0, 20).map((file, i) => (
             <Card3D key={file.id || i}>
               <div className="flex items-center gap-3">
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-raised)] text-[var(--muted)]">

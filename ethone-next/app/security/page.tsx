@@ -4,9 +4,19 @@ import { useWorker } from "@/lib/hooks/useWorker";
 import Card3D from "@/components/Card3D";
 import { Shield, Lock, Smartphone, History } from "lucide-react";
 
+type SecurityEvent = {
+  id?: string;
+  type?: string;
+  action?: string;
+  created_at?: string;
+  at?: string;
+  ip?: string;
+  status?: string;
+};
+
 export default function SecurityPage() {
-  const { data, loading } = useWorker<any>("/api/auth/security-events");
-  const events: any[] = Array.isArray(data?.data) ? data.data : [];
+  const { data, loading } = useWorker<{ data: SecurityEvent[] }>("/api/auth/security-events");
+  const events = Array.isArray(data?.data) ? data.data : [];
 
   return (
     <div className="space-y-6">
@@ -62,12 +72,12 @@ export default function SecurityPage() {
             <p className="text-sm text-[var(--muted)]">Aucun événement de sécurité.</p>
           </Card3D>
         ) : (
-          events.slice(0, 20).map((event: any, i) => (
+          events.slice(0, 20).map((event, i) => (
             <Card3D key={event.id || i}>
               <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0">
                   <p className="truncate font-medium">{event.type || event.action || "Événement"}</p>
-                  <p className="truncate text-xs text-[var(--muted)]">{new Date(event.created_at || event.at).toLocaleString("fr-FR")}</p>
+                  <p className="truncate text-xs text-[var(--muted)]">{new Date(event.created_at || event.at || "").toLocaleString("fr-FR")}</p>
                 </div>
                 <span className="shrink-0 rounded-full bg-[var(--surface-raised)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
                   {event.ip || event.status || "-"}

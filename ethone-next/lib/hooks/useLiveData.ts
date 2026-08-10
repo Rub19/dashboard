@@ -25,87 +25,109 @@ const SOURCES = [
   { id: "youtube", source: "youtube", label: "YouTube", path: "/api/youtube/activity" },
   { id: "lastfm", source: "lastfm", label: "Last.fm", path: "/api/lastfm/recent-tracks" },
   { id: "weather", source: "weather", label: "Météo", path: "/api/weather" },
-];
+] as const;
 
-function normalize(source: (typeof SOURCES)[number], data: any): LiveRecord {
+function str(value: unknown): string | undefined {
+  return typeof value === "string" ? value : undefined;
+}
+
+function num(value: unknown): number | undefined {
+  return typeof value === "number" ? value : undefined;
+}
+
+function arr(value: unknown): unknown[] | undefined {
+  return Array.isArray(value) ? value : undefined;
+}
+
+function obj(value: unknown): Record<string, unknown> | undefined {
+  return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : undefined;
+}
+
+function normalize(source: (typeof SOURCES)[number], data: unknown): LiveRecord {
+  const o = obj(data) || {};
   switch (source.id) {
     case "nowPlaying":
       return {
         ...source,
-        status: data?.title ? "connected" : "empty",
-        title: data?.title || "Aucune lecture",
-        subtitle: data?.artist,
-        meta: data?.source,
+        status: o.title ? "connected" : "empty",
+        title: str(o.title) || "Aucune lecture",
+        subtitle: str(o.artist),
+        meta: str(o.source),
       };
-    case "lanyard":
+    case "lanyard": {
+      const activities = arr(o.activities);
+      const first = obj(activities?.[0]) || {};
       return {
         ...source,
-        status: data?.discord_status ? "connected" : "empty",
-        title: data?.discord_status || "Hors ligne",
-        subtitle: data?.activities?.[0]?.name,
-        meta: data?.activities?.[0]?.details,
+        status: o.discord_status ? "connected" : "empty",
+        title: str(o.discord_status) || "Hors ligne",
+        subtitle: str(first.name),
+        meta: str(first.details),
       };
+    }
     case "github":
       return {
         ...source,
-        status: data?.login ? "connected" : "empty",
-        title: data?.login || "GitHub",
-        subtitle: data?.bio,
-        meta: data?.public_repos ? `${data.public_repos} repos` : undefined,
+        status: o.login ? "connected" : "empty",
+        title: str(o.login) || "GitHub",
+        subtitle: str(o.bio),
+        meta: num(o.public_repos) ? `${num(o.public_repos)} repos` : undefined,
       };
     case "todoist":
+    case "notion": {
+      const items = arr(data) || [];
       return {
         ...source,
-        status: Array.isArray(data) && data.length > 0 ? "connected" : "empty",
-        title: "Todoist",
-        subtitle: Array.isArray(data) ? `${data.length} tâches` : "Aucune tâche",
+        status: items.length > 0 ? "connected" : "empty",
+        title: source.label,
+        subtitle: `${items.length} ${source.id === "todoist" ? "tâches" : "pages"}`,
       };
-    case "notion":
+    }
+    case "reddit": {
+      const submissions = arr(o.submissions) || [];
+      const comments = arr(o.comments) || [];
       return {
         ...source,
-        status: Array.isArray(data) && data.length > 0 ? "connected" : "empty",
-        title: "Notion",
-        subtitle: Array.isArray(data) ? `${data.length} pages` : "Aucune page",
-      };
-    case "reddit":
-      return {
-        ...source,
-        status: data?.submissions?.length || data?.comments?.length ? "connected" : "empty",
+        status: submissions.length || comments.length ? "connected" : "empty",
         title: "Reddit",
-        subtitle: data?.submissions?.length ? `${data.submissions.length} posts` : "Aucune activité",
+        subtitle: submissions.length ? `${submissions.length} posts` : "Aucune activité",
       };
-    case "youtube":
+    }
+    case "youtube": {
+      const items = arr(o.items) || [];
       return {
         ...source,
-        status: data?.items?.length ? "connected" : "empty",
+        status: items.length ? "connected" : "empty",
         title: "YouTube",
-        subtitle: data?.items?.length ? `${data.items.length} activités` : "Aucune activité",
+        subtitle: items.length ? `${items.length} activités` : "Aucune activité",
       };
-    case "lastfm":
+    }
+    case "lastfm": {
+      const tracks = arr(data) || [];
+      const first = obj(tracks[0]) || {};
       return {
         ...source,
-        status: Array.isArray(data) && data.length > 0 ? "connected" : "empty",
+        status: tracks.length > 0 ? "connected" : "empty",
         title: "Last.fm",
-        subtitle: data?.[0]?.name,
-        meta: data?.[0]?.artist,
+        subtitle: str(first.name),
+        meta: str(first.artist),
       };
+    }
     case "weather":
       return {
         ...source,
-        status: data?.temp !== undefined ? "connected" : "empty",
-        title: data?.condition || "Météo",
-        subtitle: data?.city,
-        meta: data?.temp ? `${data.temp}°C` : undefined,
+        status: o.temp !== undefined ? "connected" : "empty",
+        title: str(o.condition) || "Météo",
+        subtitle: str(o.city),
+        meta: num(o.temp) ? `${o.temp}°C` : undefined,
       };
     default:
-      return { ...source, status: "empty", title: source.label };
+      return source as unknown as LiveRecord;
   }
 }
 
 export function useLiveData() {
-  const [records, setRecords] = useState<LiveRecord[]>(
-    SOURCES.map((s) => ({ ...s, status: "loading" }))
-  );
+  const [records, setRecords] = useState<LiveRecord[]>(SOURCES.map((s) => ({ ...s, status: "loading" })));
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

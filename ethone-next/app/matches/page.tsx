@@ -11,7 +11,7 @@ const tabs = [
   { id: "lol", label: "League of Legends", icon: <Shield className="h-4 w-4" /> },
 ];
 
-function MatchCard({ match }: { match: any }) {
+function MatchCard({ match }: { match: Record<string, string | number | undefined> }) {
   return (
     <Card3D>
       <div className="flex items-center gap-3">

@@ -5,6 +5,14 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import Card3D from "@/components/Card3D";
 import { Activity, Clock } from "lucide-react";
 
+type ActivityEvent = {
+  id?: string;
+  title?: string;
+  action?: string;
+  created_at?: string;
+  at?: string;
+};
+
 function relativeTime(iso = "") {
   const date = new Date(iso);
   const diff = Date.now() - date.getTime();
@@ -17,7 +25,7 @@ function relativeTime(iso = "") {
 }
 
 export default function ActivityPage() {
-  const { data, loading, error } = useWorker<{ data: { events: any[] } }>("/api/cloud/activity");
+  const { data, loading, error } = useWorker<{ data: { events: ActivityEvent[] } }>("/api/cloud/activity");
   const i18n = useI18n();
   const events = data?.data?.events || [];
 
@@ -38,7 +46,7 @@ export default function ActivityPage() {
             <p className="text-sm text-[var(--muted)]">Aucune activité récente.</p>
           </Card3D>
         ) : (
-          events.slice(0, 30).map((event: any, i) => (
+          events.slice(0, 30).map((event, i) => (
             <Card3D key={event.id || i}>
               <div className="flex items-start gap-3">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">

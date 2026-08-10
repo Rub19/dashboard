@@ -93,7 +93,7 @@ export function useHomeData() {
         if (lo.status === "fulfilled") setLol(Array.isArray(lo.value?.data) ? lo.value.data : lo.value?.matches || null);
 
         const errors = [dash, np, la, val, lo]
-          .map((r, i) => (r.status === "rejected" ? r.reason : null))
+          .map((r) => (r.status === "rejected" ? r.reason : null))
           .filter(Boolean);
         if (errors.length === 5) throw new Error("Impossible de charger le dashboard.");
       } catch (err) {

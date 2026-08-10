@@ -10,7 +10,7 @@ export type Item = {
   done?: boolean;
   startAt?: string;
   endAt?: string;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   createdAt?: string;
   updatedAt?: string;
 };

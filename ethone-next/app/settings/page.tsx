@@ -61,7 +61,7 @@ const THEMES = [
   { id: "cyberpunk", label: "Cyberpunk" },
   { id: "eclipse", label: "Éclipse" },
   { id: "emerald", label: "Émeraude" },
-];
+] as const;
 
 const LANGUAGES = [
   { id: "fr", label: "Français" },
@@ -87,7 +87,7 @@ export default function SettingsPage() {
               <button
                 key={theme.id}
                 type="button"
-                onClick={() => update({ theme: theme.id as any })}
+                onClick={() => update({ theme: theme.id })}
                 className={`rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-3 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
                   settings.theme === theme.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
                 }`}

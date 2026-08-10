@@ -3,6 +3,16 @@
 import { useEffect, useState } from "react";
 import { fetchWorker } from "@/lib/api";
 
+type GoogleEvent = {
+  id?: string;
+  title?: string;
+  summary?: string;
+  startAt?: string;
+  start?: string;
+  endAt?: string;
+  end?: string;
+};
+
 export type CalendarEvent = {
   id: string;
   title: string;
@@ -27,9 +37,9 @@ export function useCalendarEvents(clientId?: string) {
     fetchWorker(`/api/google-calendar/events?clientId=${encodeURIComponent(clientId)}`)
       .then((res) => {
         if (cancelled) return;
-        const data = res?.data?.events || res?.events || [];
+        const data = (res?.data?.events || res?.events || []) as GoogleEvent[];
         setEvents(
-          data.map((e: any) => ({
+          data.map((e) => ({
             id: e.id || `${Date.now()}-${Math.random()}`,
             title: e.title || e.summary || "Événement",
             startAt: e.startAt || e.start,

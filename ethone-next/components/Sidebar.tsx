@@ -18,6 +18,7 @@ import {
   Timer,
   Users,
   Mail,
+  Receipt,
   Settings,
   Menu,
 } from "lucide-react";
@@ -35,6 +36,7 @@ export default function Sidebar() {
     { id: "tasks", label: i18n("tasks"), href: "/tasks/", icon: CircleCheck },
     { id: "calendar", label: i18n("calendar"), href: "/calendar/", icon: CalendarDays },
     { id: "files", label: i18n("files"), href: "/files/", icon: Folder },
+    { id: "bills", label: i18n("bills"), href: "/bills/", icon: Receipt },
     { id: "activity", label: i18n("activity"), href: "/activity/", icon: Activity },
     { id: "interactions", label: i18n("interactions"), href: "/interactions/", icon: Flame },
     { id: "connections", label: i18n("connections"), href: "/connections/", icon: Plug },

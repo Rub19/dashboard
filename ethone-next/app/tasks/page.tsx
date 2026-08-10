@@ -4,16 +4,42 @@ import { useState } from "react";
 import { useItems } from "@/lib/hooks/useItems";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
-;
+import { useI18n } from "@/lib/hooks/useI18n";
+import { useToast } from "@/components/ToastProvider";
 
 export default function TasksPage() {
+  const i18n = useI18n();
+  const { success, error: showError } = useToast();
   const { items, loading, error, create, update, remove } = useItems("tasks");
   const [text, setText] = useState("");
 
   async function addTask() {
     if (!text.trim()) return;
-    await create({ title: text, body: "", done: false });
-    setText("");
+    try {
+      await create({ title: text, body: "", done: false });
+      setText("");
+      success(i18n("added"));
+    } catch {
+      showError(i18n("error"));
+    }
+  }
+
+  async function toggleTask(id: string, done: boolean) {
+    try {
+      await update(id, { done: !done });
+      success(i18n("saved"));
+    } catch {
+      showError(i18n("error"));
+    }
+  }
+
+  async function deleteTask(id: string) {
+    try {
+      await remove(id);
+      success(i18n("deleted"));
+    } catch {
+      showError(i18n("error"));
+    }
   }
 
   const open = items.filter((t) => !t.done).length;
@@ -21,9 +47,9 @@ export default function TasksPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Tâches</h1>
+        <h1 className="text-2xl font-bold">{i18n("tasksTitle")}</h1>
         <span className="rounded-full bg-[var(--surface-raised)] px-3 py-1 text-sm text-[var(--muted)]">
-          {open} ouverte{open > 1 ? "s" : ""}
+          {open} {open > 1 ? i18n("opens") : i18n("open")}
         </span>
       </div>
 
@@ -34,7 +60,7 @@ export default function TasksPage() {
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addTask()}
-            placeholder="Nouvelle tâche..."
+            placeholder={i18n("tasksPlaceholder")}
             className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
           />
           <button
@@ -65,7 +91,7 @@ export default function TasksPage() {
             <div className="flex items-center gap-3">
               <button
                 type="button"
-                onClick={() => update(task.id, { done: !task.done })}
+                onClick={() => toggleTask(task.id, !!task.done)}
                 disabled={loading}
                 className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
                   task.done
@@ -84,7 +110,7 @@ export default function TasksPage() {
               </span>
               <button
                 type="button"
-                onClick={() => remove(task.id)}
+                onClick={() => deleteTask(task.id)}
                 disabled={loading}
                 className="text-[var(--muted)] hover:text-red-400 disabled:opacity-50"
               >

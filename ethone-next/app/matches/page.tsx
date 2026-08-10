@@ -5,7 +5,7 @@ import { useTracker } from "@/lib/hooks/useTracker";
 import Card3D from "@/components/Card3D";
 import LiquidSidebar from "@/components/LiquidSidebar";
 import { Icon } from "@/lib/icons";
-;
+import { useI18n } from "@/lib/hooks/useI18n";
 
 const tabs = [
   { id: "valorant", label: "Valorant", icon: <Icon name="swords" className="h-4 w-4" /> },
@@ -33,6 +33,7 @@ function MatchCard({ match }: { match: Record<string, string | number | undefine
 }
 
 export default function MatchesPage() {
+  const i18n = useI18n();
   const [tab, setTab] = useState("valorant");
   const { items, loading, syncing, sync } = useTracker(
     tab === "valorant" ? "/api/tracker/valorant/matches" : "/api/tracker/lol/matches",
@@ -49,7 +50,7 @@ export default function MatchesPage() {
       />
       <div className="min-w-0 space-y-4">
         <div className="flex items-center justify-between gap-4">
-          <h1 className="min-w-0 truncate text-2xl font-bold">Trackers</h1>
+          <h1 className="min-w-0 truncate text-2xl font-bold">{i18n("matchesTitle")}</h1>
           <button
             type="button"
             onClick={sync}
@@ -57,7 +58,7 @@ export default function MatchesPage() {
             className="flex shrink-0 items-center gap-2 rounded-xl bg-[var(--surface-raised)] px-3 py-2 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--accent)]/20 disabled:opacity-50"
           >
             <Icon name="refresh-cw" className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
-            Sync
+            {i18n("sync")}
           </button>
         </div>
         {loading && !items ? (
@@ -73,7 +74,7 @@ export default function MatchesPage() {
           </div>
         ) : (
           <Card3D>
-            <p className="text-sm text-[var(--muted)]">Aucun match récent.</p>
+            <p className="text-sm text-[var(--muted)]">{i18n("noMatches")}</p>
           </Card3D>
         )}
       </div>

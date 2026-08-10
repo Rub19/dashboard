@@ -26,7 +26,7 @@ export default function SpacesPage() {
   }
 
   function colorFor(label: string) {
-    const preset = PRESETS.find((p) => p.label.toLowerCase() === label.toLowerCase());
+    const preset = PRESETS.find((p) => p.id.toLowerCase() === label.toLowerCase() || i18n(p.id).toLowerCase() === label.toLowerCase());
     if (preset) return preset.color;
     const data = (spaces.find((s) => s.label === label)?.data || {}) as { color?: string };
     return data.color || "bg-zinc-500/20 text-zinc-400";
@@ -35,9 +35,9 @@ export default function SpacesPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">{i18n("spaces")}</h1>
+        <h1 className="text-2xl font-bold">{i18n("spacesTitle")}</h1>
         <span className="rounded-full bg-[var(--surface-raised)] px-3 py-1 text-sm text-[var(--muted)]">
-          {spaces.length} actif{spaces.length > 1 ? "s" : ""}
+          {spaces.length} {spaces.length > 1 ? i18n("opens") : i18n("open")}
         </span>
       </div>
 
@@ -49,7 +49,7 @@ export default function SpacesPage() {
             </span>
             <div>
               <p className="text-2xl font-bold">{spaces.length}</p>
-              <p className="text-xs text-[var(--muted)]">Espaces actifs</p>
+              <p className="text-xs text-[var(--muted)]">{i18n("dedicatedEnvironments")}</p>
             </div>
           </div>
         </Card3D>
@@ -61,7 +61,7 @@ export default function SpacesPage() {
             </span>
             <div>
               <p className="text-2xl font-bold">{PRESETS.length}</p>
-              <p className="text-xs text-[var(--muted)]">Modèles intégrés</p>
+              <p className="text-xs text-[var(--muted)]">{i18n("integratedModels")}</p>
             </div>
           </div>
         </Card3D>
@@ -76,8 +76,8 @@ export default function SpacesPage() {
       <Card3D>
         <div className="space-y-4">
           <div>
-            <h2 className="font-semibold">Environnements dédiés</h2>
-            <p className="text-sm leading-relaxed text-[var(--muted)]">Spaces regroupe vos contextes de travail personnalisés. Créez un espace, associez-y des widgets et des raccourcis.</p>
+            <h2 className="font-semibold">{i18n("dedicatedEnvironments")}</h2>
+            <p className="text-sm leading-relaxed text-[var(--muted)]">{i18n("spacesAbout")}</p>
           </div>
           <button
             type="button"
@@ -97,7 +97,7 @@ export default function SpacesPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && add()}
-            placeholder="Nouvel espace..."
+            placeholder={i18n("create")}
             className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
           />
           <button

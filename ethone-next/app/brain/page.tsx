@@ -70,7 +70,7 @@ export default function BrainPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">{i18n("brain")}</h1>
+        <h1 className="text-2xl font-bold">{i18n("brainTitle")}</h1>
         {messages.length > 0 && (
           <button
             onClick={handleClear}
@@ -87,7 +87,7 @@ export default function BrainPage() {
           <div className="flex-1 space-y-3 overflow-y-auto pr-1">
             {messages.length === 0 ? (
               <p className="py-8 text-center text-sm text-[var(--muted)]">
-                {i18n("empty")}
+                {i18n("noBrainMessages")}
               </p>
             ) : (
               messages.map((message, index) => (

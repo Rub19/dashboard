@@ -1,3 +1,5 @@
+"use client";
+
 import Card3D from "@/components/Card3D";
 import { CHANGELOG } from "@/data/changelog";
 import { useI18n } from "@/lib/hooks/useI18n";

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
-;
+import { useI18n } from "@/lib/hooks/useI18n";
 
 const MODES = {
   pomodoro: { label: "Pomodoro", minutes: 25, color: "text-rose-400" },
@@ -20,6 +20,7 @@ function formatTime(seconds: number) {
 }
 
 export default function FocusPage() {
+  const i18n = useI18n();
   const [mode, setMode] = useState<Mode>("pomodoro");
   const [time, setTime] = useState(MODES.pomodoro.minutes * 60);
   const [running, setRunning] = useState(false);
@@ -43,7 +44,7 @@ export default function FocusPage() {
 
   return (
     <div className="mx-auto max-w-md space-y-6">
-      <h1 className="text-2xl font-bold">Focus</h1>
+      <h1 className="text-2xl font-bold">{i18n("focusTitle")}</h1>
 
       <Card3D>
         <div className="flex justify-center gap-2">
@@ -58,7 +59,7 @@ export default function FocusPage() {
                   : "bg-[var(--surface-raised)] text-[var(--muted)] hover:text-[var(--foreground)]"
               }`}
             >
-              {MODES[m].label}
+              {i18n(m === "pomodoro" ? "pomodoros" : m)}
             </button>
           ))}
         </div>
@@ -89,7 +90,7 @@ export default function FocusPage() {
             <p className={`text-5xl font-bold tabular-nums ${MODES[mode].color}`}>
               {formatTime(time)}
             </p>
-            <p className="text-sm text-[var(--muted)]">{MODES[mode].label}</p>
+            <p className="text-sm text-[var(--muted)]">{i18n(mode === "pomodoro" ? "pomodoros" : mode)}</p>
           </div>
         </div>
 
@@ -119,21 +120,21 @@ export default function FocusPage() {
           <div className="flex flex-col items-center gap-1 text-center">
             <Icon name="brain" className="h-5 w-5 text-[var(--accent)]" />
             <p className="text-lg font-bold">0</p>
-            <p className="text-[10px] text-[var(--muted)]">Pomodoros</p>
+            <p className="text-[10px] text-[var(--muted)]">{i18n("pomodoros")}</p>
           </div>
         </Card3D>
         <Card3D>
           <div className="flex flex-col items-center gap-1 text-center">
             <Icon name="timer" className="h-5 w-5 text-amber-400" />
-            <p className="text-lg font-bold">0 min</p>
-            <p className="text-[10px] text-[var(--muted)]">Focus total</p>
+            <p className="text-lg font-bold">{i18n("zeroMin")}</p>
+            <p className="text-[10px] text-[var(--muted)]">{i18n("totalFocus")}</p>
           </div>
         </Card3D>
         <Card3D>
           <div className="flex flex-col items-center gap-1 text-center">
             <Icon name="coffee" className="h-5 w-5 text-emerald-400" />
             <p className="text-lg font-bold">0</p>
-            <p className="text-[10px] text-[var(--muted)]">Pauses</p>
+            <p className="text-[10px] text-[var(--muted)]">{i18n("breaks")}</p>
           </div>
         </Card3D>
       </div>

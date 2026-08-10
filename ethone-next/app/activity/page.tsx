@@ -14,15 +14,15 @@ type ActivityEvent = {
   at?: string;
 };
 
-function relativeTime(iso = "") {
+function relativeTime(iso = "", i18n: (key: string) => string) {
   const date = new Date(iso);
   const diff = Date.now() - date.getTime();
   const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return "à l'instant";
-  if (minutes < 60) return `il y a ${minutes} min`;
+  if (minutes < 1) return i18n("justNow");
+  if (minutes < 60) return i18n("minutesAgo").replace("{{count}}", String(minutes));
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `il y a ${hours} h`;
-  return `il y a ${Math.floor(hours / 24)} j`;
+  if (hours < 24) return i18n("hoursAgo").replace("{{count}}", String(hours));
+  return i18n("daysAgo").replace("{{count}}", String(Math.floor(hours / 24)));
 }
 
 export default function ActivityPage() {
@@ -32,7 +32,7 @@ export default function ActivityPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">{i18n("activity")}</h1>
+      <h1 className="text-2xl font-bold">{i18n("activityTitle")}</h1>
       <div className="space-y-3">
         {loading ? (
           <Card3D>
@@ -44,7 +44,7 @@ export default function ActivityPage() {
           </Card3D>
         ) : events.length === 0 ? (
           <Card3D>
-            <p className="text-sm text-[var(--muted)]">Aucune activité récente.</p>
+            <p className="text-sm text-[var(--muted)]">{i18n("noActivity")}</p>
           </Card3D>
         ) : (
           events.slice(0, 30).map((event, i) => (
@@ -54,10 +54,10 @@ export default function ActivityPage() {
                   <Icon name="activity" className="h-4 w-4" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium">{event.title || event.action || "Événement"}</p>
+                  <p className="truncate font-medium">{event.title || event.action || i18n("event")}</p>
                   <p className="truncate text-xs text-[var(--muted)]">
                     <Icon name="clock" className="mr-1 inline h-3 w-3" />
-                    {relativeTime(event.created_at || event.at)}
+                    {relativeTime(event.created_at || event.at, i18n)}
                   </p>
                 </div>
               </div>

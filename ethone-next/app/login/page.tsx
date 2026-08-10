@@ -7,8 +7,10 @@ import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
 ;
 import { signInWithOtp, verifyEmailOtp } from "@/lib/auth";
+import { useI18n } from "@/lib/hooks/useI18n";
 
 export default function LoginPage() {
+  const i18n = useI18n();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
@@ -36,7 +38,7 @@ export default function LoginPage() {
     const { ok, error: err } = await verifyEmailOtp(email, code);
     setLoading(false);
     if (!ok || err) {
-      setError(err?.message || "Code invalide");
+      setError(err?.message || i18n("invalidCode"));
       return;
     }
     router.push("/");
@@ -54,14 +56,14 @@ export default function LoginPage() {
           <div className="mb-6 text-center">
             <h1 className="text-2xl font-bold">ETHONE</h1>
             <p className="mt-1 text-sm text-[var(--muted)]">
-              Connexion sans mot de passe
+              {i18n("loginDescription")}
             </p>
           </div>
 
           {step === "email" ? (
             <form onSubmit={handleSend} className="space-y-4">
               <label className="block text-sm font-medium" htmlFor="email">
-                Email
+                {i18n("email")}
               </label>
               <div className="relative">
                 <Icon name="mail" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
@@ -72,7 +74,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] py-2.5 pl-10 pr-3 text-sm text-[var(--foreground)] outline-none transition-colors focus:border-[var(--accent)]"
-                  placeholder="vous@exemple.com"
+                  placeholder={i18n("emailPlaceholderLogin")}
                 />
               </div>
               <button
@@ -84,7 +86,7 @@ export default function LoginPage() {
                   <Icon name="loader-2" className="h-4 w-4 animate-spin" />
                 ) : (
                   <>
-                    Envoyer le code <Icon name="arrow-right" className="h-4 w-4" />
+                    {i18n("sendCode")} <Icon name="arrow-right" className="h-4 w-4" />
                   </>
                 )}
               </button>
@@ -92,7 +94,7 @@ export default function LoginPage() {
           ) : (
             <form onSubmit={handleVerify} className="space-y-4">
               <label className="block text-sm font-medium" htmlFor="code">
-                Code reçu
+                {i18n("codeReceived")}
               </label>
               <div className="relative">
                 <Icon name="key-round" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
@@ -105,7 +107,7 @@ export default function LoginPage() {
                   value={code}
                   onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
                   className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] py-2.5 pl-10 pr-3 text-sm text-[var(--foreground)] outline-none transition-colors focus:border-[var(--accent)]"
-                  placeholder="000000"
+                  placeholder={i18n("codePlaceholder")}
                 />
               </div>
               <button
@@ -116,7 +118,7 @@ export default function LoginPage() {
                 {loading ? (
                   <Icon name="loader-2" className="h-4 w-4 animate-spin" />
                 ) : (
-                  "Vérifier"
+                  i18n("verify")
                 )}
               </button>
               <button
@@ -124,7 +126,7 @@ export default function LoginPage() {
                 onClick={() => setStep("email")}
                 className="w-full text-center text-xs text-[var(--muted)] hover:text-[var(--foreground)]"
               >
-                Utiliser un autre email
+                {i18n("modifyEmail")}
               </button>
             </form>
           )}

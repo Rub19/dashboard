@@ -8,18 +8,18 @@ import Card3D from "@/components/Card3D";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useMail } from "@/lib/hooks/useMail";
 
-const folders = [
-  { id: "inbox", label: "Boîte de réception", icon: <Icon name="inbox" className="h-4 w-4" /> },
-  { id: "sent", label: "Envoyés", icon: <Icon name="send" className="h-4 w-4" /> },
-  { id: "drafts", label: "Brouillons", icon: <Icon name="file-edit" className="h-4 w-4" /> },
-  { id: "archive", label: "Archive", icon: <Icon name="archive" className="h-4 w-4" /> },
-  { id: "trash", label: "Corbeille", icon: <Icon name="trash-2" className="h-4 w-4" /> },
-  { id: "spam", label: "Spam", icon: <Icon name="alert-triangle" className="h-4 w-4" /> },
-];
-
 export default function MailPage() {
   const [folder, setFolder] = useState("inbox");
   const i18n = useI18n();
+
+  const folders = [
+    { id: "inbox", label: i18n("inbox"), icon: <Icon name="inbox" className="h-4 w-4" /> },
+    { id: "sent", label: i18n("sent"), icon: <Icon name="send" className="h-4 w-4" /> },
+    { id: "drafts", label: i18n("drafts"), icon: <Icon name="file-edit" className="h-4 w-4" /> },
+    { id: "archive", label: i18n("archive"), icon: <Icon name="archive" className="h-4 w-4" /> },
+    { id: "trash", label: i18n("trash"), icon: <Icon name="trash-2" className="h-4 w-4" /> },
+    { id: "spam", label: i18n("spam"), icon: <Icon name="alert-triangle" className="h-4 w-4" /> },
+  ];
   const { messages, unread, loading, error } = useMail(folder);
 
   return (
@@ -34,7 +34,7 @@ export default function MailPage() {
           <div className="flex items-center justify-between gap-4">
             <h2 className="min-w-0 truncate text-lg font-semibold">{folders.find((f) => f.id === folder)?.label}</h2>
             <span className="shrink-0 rounded-full bg-violet-500/10 px-2 py-0.5 text-xs font-medium text-violet-400">
-              {unread} non lus
+              {unread} {i18n("unread")}
             </span>
           </div>
         </Card3D>

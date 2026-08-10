@@ -4,9 +4,10 @@ import { useState } from "react";
 import { useItems } from "@/lib/hooks/useItems";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
-;
+import { useI18n } from "@/lib/hooks/useI18n";
 
 export default function NotesPage() {
+  const i18n = useI18n();
   const { items, loading, error, create, remove } = useItems("notes");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -20,7 +21,7 @@ export default function NotesPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Notes</h1>
+      <h1 className="text-2xl font-bold">{i18n("notesTitle")}</h1>
 
       <Card3D>
         <div className="space-y-3">
@@ -28,13 +29,13 @@ export default function NotesPage() {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Titre de la note"
+            placeholder={i18n("notesPlaceholder")}
             className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
           />
           <textarea
             value={body}
             onChange={(e) => setBody(e.target.value)}
-            placeholder="Contenu..."
+            placeholder={i18n("description")}
             rows={3}
             className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
           />
@@ -44,7 +45,7 @@ export default function NotesPage() {
             disabled={loading}
             className="flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
           >
-            <Icon name="plus" className="h-4 w-4" /> Ajouter
+            <Icon name="plus" className="h-4 w-4" /> {i18n("add")}
           </button>
         </div>
       </Card3D>

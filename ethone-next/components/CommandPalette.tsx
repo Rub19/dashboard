@@ -70,7 +70,7 @@ export default function CommandPalette() {
       { id: "matches", label: i18n("matches"), category: i18n("navigate"), shortcut: "G", action: () => router.push("/matches/") },
       { id: "connections", label: i18n("connections"), category: i18n("navigate"), shortcut: "O", action: () => router.push("/connections/") },
       { id: "spaces", label: i18n("spaces"), category: i18n("navigate"), action: () => router.push("/spaces/") },
-      { id: "flows", label: i18n("flows"), category: i18n("navigate"), action: () => router.push("/flows/") },
+      { id: "flows", label: i18n("flowsTitle"), category: i18n("navigate"), action: () => router.push("/flows/") },
       { id: "interactions", label: i18n("interactions"), category: i18n("navigate"), action: () => router.push("/interactions/") },
       { id: "settings", label: i18n("settings"), category: i18n("navigate"), shortcut: "S", action: () => router.push("/settings/") },
 

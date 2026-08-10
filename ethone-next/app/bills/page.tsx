@@ -4,7 +4,8 @@ import { useMemo, useState } from "react";
 import Card3D from "@/components/Card3D";
 import { useUserData } from "@/lib/hooks/useUserData";
 import { Icon } from "@/lib/icons";
-;
+import { useI18n } from "@/lib/hooks/useI18n";
+import { useSettings } from "@/components/SettingsProvider";
 
 const TODAY = new Date();
 const WEEK = Array.from({ length: 7 }, (_, i) => {
@@ -14,6 +15,8 @@ const WEEK = Array.from({ length: 7 }, (_, i) => {
 });
 
 export default function BillsPage() {
+  const i18n = useI18n();
+  const { settings } = useSettings();
   const { items: bills, create, remove } = useUserData("bill");
   const [label, setLabel] = useState("");
   const [amount, setAmount] = useState("");
@@ -36,39 +39,39 @@ export default function BillsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Bills & Paiements</h1>
+        <h1 className="text-2xl font-bold">{i18n("billsTitle")}</h1>
         <span className="rounded-full bg-[var(--surface-raised)] px-3 py-1 text-sm text-[var(--muted)]">
-          {formatCurrency(totalDue, "EUR")} dû
+          {formatCurrency(totalDue, "EUR")} {i18n("due")}
         </span>
       </div>
 
       <Card3D>
         <div className="space-y-4">
-          <p className="text-sm text-[var(--muted)]">Suivez vos factures et échéances sur 7 jours.</p>
+          <p className="text-sm text-[var(--muted)]">{i18n("billsDescription")}</p>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
             <input
               type="text"
               value={label}
               onChange={(e) => setLabel(e.target.value)}
-              placeholder="Nom de la facture..."
+              placeholder={i18n("label")}
               className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
             <input
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              placeholder="Montant"
+              placeholder={i18n("amount")}
               className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
             <select value={currency} onChange={(e) => setCurrency(e.target.value)} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm">
-              <option value="EUR">EUR</option>
-              <option value="USD">USD</option>
-              <option value="GBP">GBP</option>
+              <option value="EUR">{i18n("currencyEur")}</option>
+              <option value="USD">{i18n("currencyUsd")}</option>
+              <option value="GBP">{i18n("currencyGbp")}</option>
             </select>
             <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
           </div>
           <button onClick={add} className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white">
-            <Icon name="plus" className="h-4 w-4" /> Ajouter
+            <Icon name="plus" className="h-4 w-4" /> {i18n("add")}
           </button>
         </div>
       </Card3D>
@@ -80,10 +83,10 @@ export default function BillsPage() {
           return (
             <Card3D key={iso}>
               <div className="space-y-2 text-center">
-                <p className="text-xs uppercase text-[var(--muted)]">{d.toLocaleDateString("fr-FR", { weekday: "narrow" })}</p>
+                <p className="text-xs uppercase text-[var(--muted)]">{d.toLocaleDateString(settings.language, { weekday: "narrow" })}</p>
                 <p className="text-lg font-semibold">{d.getDate()}</p>
                 {dayBills.length > 0 && (
-                  <p className="text-[10px] text-[var(--accent)]">{dayBills.length} fact.</p>
+                  <p className="text-[10px] text-[var(--accent)]">{dayBills.length} {i18n("bill")}</p>
                 )}
               </div>
             </Card3D>

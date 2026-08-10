@@ -46,7 +46,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold">{i18n("profile")}</h1>
+        <h1 className="text-2xl font-bold">{i18n("profileTitle")}</h1>
         <Card3D>
           <div className="h-8 w-1/3 animate-pulse rounded bg-[var(--border)]" />
         </Card3D>
@@ -56,7 +56,7 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">{i18n("profile")}</h1>
+      <h1 className="text-2xl font-bold">{i18n("profileTitle")}</h1>
 
       <Card3D>
         <div className="flex items-center gap-4">
@@ -76,30 +76,30 @@ export default function ProfilePage() {
       <Card3D>
         <div className="space-y-4">
           <div className="space-y-1">
-            <label className="text-sm font-medium">Nom d&apos;utilisateur</label>
+            <label className="text-sm font-medium">{i18n("username")}</label>
             <input
               type="text"
               value={form.username}
               onChange={(e) => setForm({ ...form, username: e.target.value })}
-              placeholder="pseudo"
+              placeholder={i18n("usernamePlaceholder")}
               className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
-            <p className="text-xs text-[var(--muted)]">Minuscules, chiffres, points, tirets. 3-32 caractères.</p>
+            <p className="text-xs text-[var(--muted)]">{i18n("displayNameHint")}</p>
           </div>
 
           <div className="space-y-1">
-            <label className="text-sm font-medium">Nom affiché</label>
+            <label className="text-sm font-medium">{i18n("displayName")}</label>
             <input
               type="text"
               value={form.display_name}
               onChange={(e) => setForm({ ...form, display_name: e.target.value })}
-              placeholder="Votre nom"
+              placeholder={i18n("yourNamePlaceholder")}
               className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-sm font-medium">Avatar URL</label>
+            <label className="text-sm font-medium">{i18n("avatarUrl")}</label>
             <input
               type="url"
               value={form.avatar_url}
@@ -130,7 +130,7 @@ export default function ProfilePage() {
 
             {saved && (
               <span className="flex items-center gap-1 text-sm text-emerald-400">
-                <Icon name="check" className="h-4 w-4" /> Enregistré
+                <Icon name="check" className="h-4 w-4" /> {i18n("saved")}
               </span>
             )}
           </div>

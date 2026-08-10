@@ -19,18 +19,18 @@ const categoryIcons: Record<string, string> = {
 };
 
 const INTEGRATIONS = [
-  { id: "spotify", name: "Spotify", category: "media", description: "Lecture, historique et playlists", status: "oauth" },
-  { id: "discord", name: "Discord", category: "social", description: "Présence, activité et serveurs autorisés", status: "api" },
-  { id: "steam", name: "Steam", category: "gaming", description: "Jeux, succès et temps de jeu", status: "api" },
-  { id: "riot", name: "Riot Games", category: "gaming", description: "Valorant, League of Legends et TFT", status: "api" },
-  { id: "google-calendar", name: "Google Calendar", category: "productivity", description: "Agenda et prochains événements", status: "oauth" },
-  { id: "google-drive", name: "Google Drive", category: "productivity", description: "Fichiers et activité récente", status: "oauth" },
-  { id: "notion", name: "Notion", category: "productivity", description: "Pages et bases autorisées", status: "oauth" },
-  { id: "todoist", name: "Todoist", category: "productivity", description: "Tâches et projets", status: "oauth" },
-  { id: "github", name: "GitHub", category: "development", description: "Commits, Pull Requests et Issues", status: "oauth" },
-  { id: "youtube", name: "YouTube", category: "media", description: "Abonnements et dernières vidéos", status: "oauth" },
-  { id: "reddit", name: "Reddit", category: "social", description: "Activité et subreddits", status: "oauth" },
-  { id: "openai", name: "OpenAI", category: "ai", description: "Modèles et exécutions via un relais sécurisé", status: "api" },
+  { id: "spotify", name: "Spotify", category: "media", description: "descSpotify", status: "oauth" },
+  { id: "discord", name: "Discord", category: "social", description: "descDiscord", status: "api" },
+  { id: "steam", name: "Steam", category: "gaming", description: "descSteam", status: "api" },
+  { id: "riot", name: "Riot Games", category: "gaming", description: "descRiot", status: "api" },
+  { id: "google-calendar", name: "Google Calendar", category: "productivity", description: "descGoogleCalendar", status: "oauth" },
+  { id: "google-drive", name: "Google Drive", category: "productivity", description: "descGoogleDrive", status: "oauth" },
+  { id: "notion", name: "Notion", category: "productivity", description: "descNotion", status: "oauth" },
+  { id: "todoist", name: "Todoist", category: "productivity", description: "descTodoist", status: "oauth" },
+  { id: "github", name: "GitHub", category: "development", description: "descGithub", status: "oauth" },
+  { id: "youtube", name: "YouTube", category: "media", description: "descYoutube", status: "oauth" },
+  { id: "reddit", name: "Reddit", category: "social", description: "descReddit", status: "oauth" },
+  { id: "openai", name: "OpenAI", category: "ai", description: "descOpenai", status: "api" },
 ];
 
 const CATEGORIES = [
@@ -70,7 +70,7 @@ export default function ConnectionsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">{i18n("connections")}</h1>
+      <h1 className="text-2xl font-bold">{i18n("connectionsTitle")}</h1>
 
       <div className="flex flex-wrap gap-2">
         {CATEGORIES.map((cat) => (
@@ -84,7 +84,7 @@ export default function ConnectionsPage() {
             }`}
           >
             <Icon name={cat.icon} className="h-3.5 w-3.5" />
-            {cat.label}
+            {i18n(cat.id)}
           </button>
         ))}
       </div>
@@ -93,7 +93,7 @@ export default function ConnectionsPage() {
         <Card3D>
           <div className="flex items-center gap-3">
             <Icon name="loader-2" className="h-5 w-5 animate-spin text-[var(--muted)]" />
-            <p className="text-sm text-[var(--muted)]">Chargement des connexions…</p>
+            <p className="text-sm text-[var(--muted)]">{i18n("loading")}</p>
           </div>
         </Card3D>
       )}
@@ -125,7 +125,7 @@ export default function ConnectionsPage() {
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="font-medium">{integration.name}</p>
-                  <p className="text-xs text-[var(--muted)]">{integration.description}</p>
+                  <p className="text-xs text-[var(--muted)]">{i18n(integration.description)}</p>
                 </div>
                 <span
                   className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${
@@ -136,7 +136,7 @@ export default function ConnectionsPage() {
                         : "bg-sky-500/10 text-sky-400"
                   }`}
                 >
-                  {isConnected ? "connecté" : integration.status}
+                  {isConnected ? i18n("connected") : i18n(integration.status)}
                 </span>
               </div>
               {isOauth && !isConnected && (
@@ -145,7 +145,7 @@ export default function ConnectionsPage() {
                     type="text"
                     value={clientId}
                     onChange={(e) => setClientIds((c) => ({ ...c, [integration.id]: e.target.value }))}
-                    placeholder="Client ID"
+                    placeholder={i18n("clientId")}
                     className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-1.5 text-xs text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
                   />
                   <button
@@ -154,7 +154,7 @@ export default function ConnectionsPage() {
                     disabled={!clientId.trim()}
                     className="w-full rounded-lg bg-[var(--accent)] px-2 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
                   >
-                    Connecter
+                    {i18n("connect")}
                   </button>
                 </div>
               )}
@@ -164,7 +164,7 @@ export default function ConnectionsPage() {
                   onClick={handleDisconnect}
                   className="mt-3 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-1.5 text-xs text-[var(--foreground)] transition-colors hover:bg-red-500/10 hover:text-red-400"
                 >
-                  Déconnecter
+                  {i18n("disconnect")}
                 </button>
               )}
             </Card3D>
@@ -175,7 +175,7 @@ export default function ConnectionsPage() {
       <Card3D>
         <div className="flex items-center gap-2 text-sm text-[var(--muted)]">
           <Icon name="plug" className="h-4 w-4" />
-          <p>Les connexions OAuth s’activent depuis les widgets du tableau de bord.</p>
+          <p>{i18n("oauthInfo")}</p>
         </div>
       </Card3D>
     </div>

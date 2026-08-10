@@ -55,7 +55,7 @@ export default function FilesPage() {
   const error = workerError || driveError;
 
   function connectDrive() {
-    const id = prompt("Client ID Google Drive");
+    const id = prompt(i18n("clientId"));
     if (!id) return;
     localStorage.setItem("ethone:clientId:google-drive", id);
     setClientId(id);
@@ -65,7 +65,7 @@ export default function FilesPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">{i18n("files")}</h1>
+        <h1 className="text-2xl font-bold">{i18n("filesTitle")}</h1>
         {!clientId ? (
           <button
             type="button"
@@ -73,10 +73,10 @@ export default function FilesPage() {
             className="flex shrink-0 items-center gap-1.5 rounded-lg bg-[var(--surface-raised)] px-2 py-1 text-xs font-medium text-[var(--foreground)] hover:bg-[var(--accent)]/20"
           >
             <Icon name="cloud" className="h-3 w-3" />
-            Google Drive
+            {i18n("connectDrive")}
           </button>
         ) : (
-          <span className="text-xs text-emerald-400">Google Drive connecté</span>
+          <span className="text-xs text-emerald-400">{i18n("googleDrive")} {i18n("connected")}</span>
         )}
       </div>
 
@@ -88,7 +88,7 @@ export default function FilesPage() {
             </span>
             <div className="min-w-0">
               <p className="text-2xl font-bold">{loading ? "-" : files.length}</p>
-              <p className="text-xs text-[var(--muted)]">{i18n("files")}</p>
+              <p className="text-xs text-[var(--muted)]">{i18n("totalFiles")}</p>
             </div>
           </div>
         </Card3D>
@@ -107,7 +107,7 @@ export default function FilesPage() {
           </Card3D>
         ) : files.length === 0 ? (
           <Card3D>
-            <p className="text-sm text-[var(--muted)]">Aucun fichier dans le cloud.</p>
+            <p className="text-sm text-[var(--muted)]">{i18n("noFiles")}</p>
           </Card3D>
         ) : (
           files.slice(0, 20).map((file, i) => (
@@ -130,7 +130,7 @@ export default function FilesPage() {
                   <p className="truncate font-medium">{file.name}</p>
                   <p className="truncate text-xs text-[var(--muted)]">
                     {formatBytes(file.size)} · {file.mimeType || "-"}
-                    {file.source === "google" && " · Google Drive"}
+                    {file.source === "google" && ` · ${i18n("googleDrive")}`}
                   </p>
                 </div>
                 {file.source === "worker" && file.isFavorite && <Icon name="heart" className="h-4 w-4 text-red-400" />}
@@ -140,7 +140,7 @@ export default function FilesPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="shrink-0 text-[var(--muted)] hover:text-[var(--accent)]"
-                    aria-label="Ouvrir dans Google Drive"
+                    aria-label={i18n("googleDrive")}
                   >
                     <Icon name="external-link" className="h-4 w-4" />
                   </a>

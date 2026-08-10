@@ -6,11 +6,14 @@ import { useCalendarEvents } from "@/lib/hooks/useCalendarEvents";
 import { buildAuthUrl } from "@/lib/oauth";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
-;
+import { useI18n } from "@/lib/hooks/useI18n";
+import { useSettings } from "@/components/SettingsProvider";
 
-const DAYS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+const DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
 export default function CalendarPage() {
+  const i18n = useI18n();
+  const { settings } = useSettings();
   const { items, loading: itemsLoading, error: itemsError, create, remove } = useItems("events");
   const [date, setDate] = useState(new Date());
   const [newTitle, setNewTitle] = useState("");
@@ -64,10 +67,10 @@ export default function CalendarPage() {
     setNewTitle("");
   }
 
-  const monthName = new Date(year, month, 1).toLocaleString("fr-FR", { month: "long", year: "numeric" });
+  const monthName = new Date(year, month, 1).toLocaleString(settings.language, { month: "long", year: "numeric" });
 
   function connectGoogle() {
-    const id = prompt("Client ID Google Calendar");
+    const id = prompt(i18n("clientId"));
     if (!id) return;
     localStorage.setItem("ethone:clientId:google-calendar", id);
     setClientId(id);
@@ -77,7 +80,7 @@ export default function CalendarPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Calendrier</h1>
+        <h1 className="text-2xl font-bold">{i18n("calendarTitle")}</h1>
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -104,7 +107,7 @@ export default function CalendarPage() {
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addEvent()}
-            placeholder="Nouvel événement..."
+            placeholder={i18n("newEvent")}
             className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
           />
           <button
@@ -119,7 +122,7 @@ export default function CalendarPage() {
 
         <div className="grid grid-cols-7 gap-2 text-center text-xs text-[var(--muted)]">
           {DAYS.map((d) => (
-            <div key={d}>{d}</div>
+            <div key={d}>{i18n(d)}</div>
           ))}
         </div>
         <div className="mt-2 grid grid-cols-7 gap-2">
@@ -156,7 +159,7 @@ export default function CalendarPage() {
         <div className="mb-2 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Icon name="calendar-days" className="h-5 w-5 text-[var(--accent)]" />
-            <p className="font-medium">Événements</p>
+            <p className="font-medium">{i18n("event")}</p>
           </div>
           {!clientId ? (
             <button
@@ -165,16 +168,16 @@ export default function CalendarPage() {
               className="flex shrink-0 items-center gap-1.5 rounded-lg bg-[var(--surface-raised)] px-2 py-1 text-xs font-medium text-[var(--foreground)] hover:bg-[var(--accent)]/20"
             >
               <Icon name="cloud" className="h-3 w-3" />
-              Google
+              {i18n("google")}
             </button>
           ) : (
-            <span className="text-xs text-emerald-400">Google connecté</span>
+            <span className="text-xs text-emerald-400">{i18n("google")} {i18n("connected")}</span>
           )}
         </div>
         {itemsLoading || googleLoading ? (
           <Icon name="loader-2" className="h-5 w-5 animate-spin text-[var(--muted)]" />
         ) : monthEvents.length === 0 ? (
-          <p className="text-sm text-[var(--muted)]">Aucun événement ce mois.</p>
+          <p className="text-sm text-[var(--muted)]">{i18n("noEvents")}</p>
         ) : (
           <div className="space-y-2">
             {monthEvents.map((e) => (
@@ -184,7 +187,7 @@ export default function CalendarPage() {
                     {e.title} {e.source === "google" && <span className="text-[10px] text-[var(--muted)]">(G)</span>}
                   </p>
                   <p className="text-xs text-[var(--muted)]">
-                    {e.startAt ? new Date(e.startAt).toLocaleString("fr-FR") : "-"}
+                    {e.startAt ? new Date(e.startAt).toLocaleString(settings.language) : "-"}
                   </p>
                 </div>
                 {e.source === "local" && (

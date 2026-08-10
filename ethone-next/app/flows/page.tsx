@@ -47,8 +47,8 @@ export default function FlowsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">{i18n("flows")}</h1>
-        <span className="rounded-full bg-[var(--surface-raised)] px-3 py-1 text-sm text-[var(--muted)]">{flows.length} flow{flows.length > 1 ? "s" : ""}</span>
+        <h1 className="text-2xl font-bold">{i18n("flowsTitle")}</h1>
+        <span className="rounded-full bg-[var(--surface-raised)] px-3 py-1 text-sm text-[var(--muted)]">{flows.length} {flows.length > 1 ? i18n("flows") : i18n("flow")}</span>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -59,7 +59,7 @@ export default function FlowsPage() {
             </span>
             <div>
               <p className="text-2xl font-bold">{activeCount}</p>
-              <p className="text-xs text-[var(--muted)]">Flow{activeCount > 1 ? "s" : ""} actif</p>
+              <p className="text-xs text-[var(--muted)]">{i18n(activeCount > 1 ? "flows" : "flow")} {i18n(activeCount > 1 ? "actives" : "active")}</p>
             </div>
           </div>
         </Card3D>
@@ -71,7 +71,7 @@ export default function FlowsPage() {
             </span>
             <div>
               <p className="text-2xl font-bold">{flows.length}</p>
-              <p className="text-xs text-[var(--muted)]">Automatisations</p>
+              <p className="text-xs text-[var(--muted)]">{i18n("automations")}</p>
             </div>
           </div>
         </Card3D>
@@ -83,7 +83,7 @@ export default function FlowsPage() {
             </span>
             <div>
               <p className="text-2xl font-bold">{executions}</p>
-              <p className="text-xs text-[var(--muted)]">Exécutions</p>
+              <p className="text-xs text-[var(--muted)]">{i18n("executions")}</p>
             </div>
           </div>
         </Card3D>
@@ -98,8 +98,8 @@ export default function FlowsPage() {
       <Card3D>
         <div className="space-y-4">
           <div>
-            <h2 className="font-semibold">Flow Engine</h2>
-            <p className="text-sm leading-relaxed text-[var(--muted)]">Créez des flows à partir de modèles, exécutez-les, et suivez le nombre de runs.</p>
+            <h2 className="font-semibold">{i18n("flowsTitle")}</h2>
+            <p className="text-sm leading-relaxed text-[var(--muted)]">{i18n("fromTemplates")}</p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
             <select
@@ -108,7 +108,7 @@ export default function FlowsPage() {
               className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             >
               {TEMPLATES.map((t) => (
-                <option key={t.id} value={t.id}>{t.label}</option>
+                <option key={t.id} value={t.id}>{i18n(t.id)}</option>
               ))}
             </select>
             <input
@@ -116,7 +116,7 @@ export default function FlowsPage() {
               value={newLabel}
               onChange={(e) => setNewLabel(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && addFlow()}
-              placeholder="Nom du flow..."
+              placeholder={i18n("create")}
               className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
             <button
@@ -140,12 +140,12 @@ export default function FlowsPage() {
               </span>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">
-                    <h2 className="text-sm font-semibold">{template.label}</h2>
+                    <h2 className="text-sm font-semibold">{i18n(template.id)}</h2>
                     <span className="shrink-0 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400">
                       {templateStats[template.id] || 0}
                     </span>
                   </div>
-                  <p className="text-sm text-[var(--muted)]">{template.desc}</p>
+                  <p className="text-sm text-[var(--muted)]">{i18n(`${template.id}Desc`)}</p>
                 </div>
               </div>
             </Card3D>
@@ -154,7 +154,7 @@ export default function FlowsPage() {
 
       {flows.length > 0 && (
         <div className="space-y-3">
-          <h2 className="text-sm font-semibold">Vos flows</h2>
+          <h2 className="text-sm font-semibold">{i18n("yourFlows")}</h2>
           {flows.map((flow) => {
             const templateId = typeof flow.data === "object" ? (flow.data as { templateId?: string }).templateId : undefined;
             const template = TEMPLATES.find((t) => t.id === templateId) || TEMPLATES[0];
@@ -167,7 +167,7 @@ export default function FlowsPage() {
                     </span>
                     <div>
                       <p className="font-medium">{flow.label}</p>
-                      <p className="text-xs text-[var(--muted)]">{flow.count} exécution{flow.count > 1 ? "s" : ""}</p>
+                      <p className="text-xs text-[var(--muted)]">{flow.count} {i18n(flow.count > 1 ? "executions" : "execution")}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">

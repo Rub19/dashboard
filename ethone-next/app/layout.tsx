@@ -10,8 +10,10 @@ import CommandPalette from "@/components/CommandPalette";
 import MobileNav from "@/components/MobileNav";
 import SettingsProvider from "@/components/SettingsProvider";
 import { SoundProvider } from "@/lib/sound";
+import { ToastProvider } from "@/components/ToastProvider";
 import SkipLink from "@/components/SkipLink";
 import OfflineIndicator from "@/components/OfflineIndicator";
+import HtmlLang from "@/components/HtmlLang";
 import CommandPaletteProvider from "@/components/CommandPaletteProvider";
 import OAuthHandler from "@/components/OAuthHandler";
 import LiveOverlay from "@/components/LiveOverlay";
@@ -51,8 +53,10 @@ export default function RootLayout({
           <WindowManagerProvider>
           <OfflineIndicator />
           <SettingsProvider>
+            <HtmlLang />
             <SoundProvider>
-              <SkipLink />
+              <ToastProvider>
+                <SkipLink />
               <Sidebar />
               <div className="min-h-screen transition-all duration-300 md:ml-[72px]">
                 <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[var(--border)] bg-[var(--background)]/80 px-6 backdrop-blur-md">
@@ -73,6 +77,7 @@ export default function RootLayout({
               </div>
               <MobileNav />
               <Dock />
+              </ToastProvider>
             </SoundProvider>
           </SettingsProvider>
           <WindowRenderer />

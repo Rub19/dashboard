@@ -6,7 +6,7 @@ import { useHomeData } from "@/lib/hooks/useDashboard";
 import { useMail } from "@/lib/hooks/useMail";
 import { useSettings } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
-;
+import { useI18n } from "@/lib/hooks/useI18n";
 
 function formatBytes(bytes = 0) {
   if (bytes === 0) return "0 B";
@@ -17,6 +17,7 @@ function formatBytes(bytes = 0) {
 }
 
 export default function Home() {
+  const i18n = useI18n();
   const { greeting, dashboard, nowPlaying, lanyard, valorant, lol, loading, error } =
     useHomeData();
   const { unread: unreadMail, loading: mailLoading } = useMail("inbox", 1);
@@ -45,7 +46,7 @@ export default function Home() {
             </span>
             <div className="min-w-0">
               <p className="text-2xl font-bold">{loading ? "-" : dashboard?.totalFiles ?? 0}</p>
-              <p className="text-xs text-[var(--muted)]">Fichiers</p>
+              <p className="text-xs text-[var(--muted)]">{i18n("totalFiles")}</p>
             </div>
           </div>
         </Card3D>
@@ -56,7 +57,7 @@ export default function Home() {
             </span>
             <div className="min-w-0">
               <p className="text-2xl font-bold">{mailLoading ? "-" : unreadMail}</p>
-              <p className="text-xs text-[var(--muted)]">Messages non lus</p>
+              <p className="text-xs text-[var(--muted)]">{i18n("unread")}</p>
             </div>
           </div>
         </Card3D>
@@ -67,7 +68,7 @@ export default function Home() {
             </span>
             <div className="min-w-0">
               <p className="text-2xl font-bold">{loading ? "-" : formatBytes(dashboard?.totalSize)}</p>
-              <p className="text-xs text-[var(--muted)]">Stockage utilisé</p>
+              <p className="text-xs text-[var(--muted)]">{i18n("storageUsed")}</p>
             </div>
           </div>
         </Card3D>
@@ -78,7 +79,7 @@ export default function Home() {
             </span>
             <div className="min-w-0">
               <p className="text-2xl font-bold">{settings.brainEnabled ? "ON" : "OFF"}</p>
-              <p className="text-xs text-[var(--muted)]">Brain</p>
+              <p className="text-xs text-[var(--muted)]">{i18n("brain")}</p>
             </div>
           </div>
         </Card3D>
@@ -87,7 +88,7 @@ export default function Home() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Card3D>
           <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-[var(--foreground)]">
-            <Icon name="music" className="h-4 w-4 text-[var(--muted)]" /> Live Now
+            <Icon name="music" className="h-4 w-4 text-[var(--muted)]" /> {i18n("live")}
           </h2>
           {loading ? (
             <div className="space-y-3">
@@ -105,12 +106,12 @@ export default function Home() {
               </div>
             </div>
           ) : (
-            <p className="text-sm text-[var(--muted)]">Aucune activité en direct.</p>
+            <p className="text-sm text-[var(--muted)]">{i18n("noLive")}</p>
           )}
         </Card3D>
 
         <Card3D>
-          <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">Cloud</h2>
+          <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">{i18n("cloud")}</h2>
           {loading ? (
             <div className="space-y-3">
               <div className="h-2 w-3/4 animate-pulse rounded bg-[var(--border)]" />
@@ -120,28 +121,28 @@ export default function Home() {
             <div className="grid grid-cols-2 gap-3">
               <div className="flex items-center gap-2">
                 <Icon name="folder" className="h-4 w-4 text-[var(--muted)]" />
-                <span className="text-sm">{dashboard.folders} dossiers</span>
+                <span className="text-sm">{dashboard.folders} {i18n("folders")}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Icon name="heart" className="h-4 w-4 text-[var(--muted)]" />
-                <span className="text-sm">{dashboard.favorites} favoris</span>
+                <span className="text-sm">{dashboard.favorites} {i18n("favorites")}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Icon name="share-2" className="h-4 w-4 text-[var(--muted)]" />
-                <span className="text-sm">{dashboard.activeShares} partages</span>
+                <span className="text-sm">{dashboard.activeShares} {i18n("shared")}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Icon name="cloud" className="h-4 w-4 text-[var(--muted)]" />
-                <span className="text-sm">{dashboard.activeDrops} drops</span>
+                <span className="text-sm">{dashboard.activeDrops} {i18n("drops")}</span>
               </div>
             </div>
           ) : (
-            <p className="text-sm text-[var(--muted)]">Cloud non disponible.</p>
+            <p className="text-sm text-[var(--muted)]">{i18n("cloudUnavailable")}</p>
           )}
         </Card3D>
 
         <Card3D>
-          <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">Derniers matchs</h2>
+          <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">{i18n("recentMatches")}</h2>
           {loading ? (
             <div className="space-y-3">
               <div className="h-2 w-3/4 animate-pulse rounded bg-[var(--border)]" />
@@ -166,14 +167,14 @@ export default function Home() {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-[var(--muted)]">Aucun match récent.</p>
+            <p className="text-sm text-[var(--muted)]">{i18n("noMatches")}</p>
           )}
         </Card3D>
       </div>
 
       {lanyard?.discord_status && (
         <Card3D>
-          <h2 className="mb-2 text-sm font-semibold text-[var(--foreground)]">Discord</h2>
+          <h2 className="mb-2 text-sm font-semibold text-[var(--foreground)]">{i18n("discord")}</h2>
           <div className="flex items-center gap-2">
             <span
               className={`h-3 w-3 rounded-full ${

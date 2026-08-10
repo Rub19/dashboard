@@ -26,7 +26,7 @@ export default function Sidebar() {
     { id: "connections", label: i18n("connections"), href: "/connections/", icon: "connections" },
     { id: "plugins", label: i18n("plugins"), href: "/plugins/", icon: "plugins" },
     { id: "spaces", label: i18n("spaces"), href: "/spaces/", icon: "spaces" },
-    { id: "flows", label: i18n("flows"), href: "/flows/", icon: "flows" },
+    { id: "flows", label: i18n("flowsTitle"), href: "/flows/", icon: "flows" },
     { id: "brain", label: i18n("brain"), href: "/brain/", icon: "brain" },
     { id: "focus", label: i18n("focus"), href: "/focus/", icon: "focus" },
     { id: "team", label: i18n("team"), href: "/team/", icon: "team" },

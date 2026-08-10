@@ -5,7 +5,7 @@ import Card3D from "@/components/Card3D";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useWindowManager } from "@/components/WindowManagerProvider";
 import { Icon } from "@/lib/icons";
-;
+import { useI18n } from "@/lib/hooks/useI18n";
 
 const PLUGINS = [
   { id: "spotify", label: "Spotify", icon: "music", route: "/notes/" },
@@ -18,14 +18,15 @@ const PLUGINS = [
 ];
 
 export default function PluginsPage() {
+  const i18n = useI18n();
   const { records } = useLiveData();
   const { openWindow } = useWindowManager();
   const router = useRouter();
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Plugins tiers</h1>
-      <p className="text-sm text-[var(--muted)]">Gérez les intégrations et ouvrez leurs live widgets.</p>
+      <h1 className="text-2xl font-bold">{i18n("pluginsTitle")}</h1>
+      <p className="text-sm text-[var(--muted)]">{i18n("pluginsDescription")}</p>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {PLUGINS.map((p) => {
@@ -42,7 +43,7 @@ export default function PluginsPage() {
                   <div>
                     <p className="font-medium">{p.label}</p>
                     <p className={`text-xs ${connected ? "text-emerald-400" : "text-[var(--muted)]"}`}>
-                      {connected ? live?.title || "Connecté" : "Non connecté"}
+                      {connected ? live?.title || i18n("connected") : i18n("notConnected")}
                     </p>
                   </div>
                 </div>
@@ -50,14 +51,14 @@ export default function PluginsPage() {
                   <button
                     onClick={() => router.push("/connections/")}
                     className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
-                    title="Configurer"
+                    title={i18n("configure")}
                   >
                     <Icon name="plug" className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => openWindow(p.route, p.label)}
                     className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
-                    title="Ouvrir"
+                    title={i18n("openAction")}
                   >
                     <Icon name="maximize-2" className="h-4 w-4" />
                   </button>

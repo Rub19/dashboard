@@ -5,9 +5,10 @@ import Card3D from "@/components/Card3D";
 import { useUserData } from "@/lib/hooks/useUserData";
 import { useSettings } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
-;
+import { useI18n } from "@/lib/hooks/useI18n";
 
 export default function PersonasPage() {
+  const i18n = useI18n();
   const { items: personas, create, remove } = useUserData("persona");
   const { update } = useSettings();
   const [label, setLabel] = useState("");
@@ -26,18 +27,18 @@ export default function PersonasPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Personas</h1>
+      <h1 className="text-2xl font-bold">{i18n("personasTitle")}</h1>
 
       <Card3D>
         <div className="space-y-4">
-          <p className="text-sm text-[var(--muted)]">Créez des personas avec des thèmes et basculez entre eux.</p>
+          <p className="text-sm text-[var(--muted)]">{i18n("personasDescription")}</p>
           <div className="flex flex-col gap-3 sm:flex-row">
             <input
               type="text"
               value={label}
               onChange={(e) => setLabel(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && add()}
-              placeholder="Nom du persona..."
+              placeholder={i18n("create")}
               className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
             <select
@@ -45,11 +46,11 @@ export default function PersonasPage() {
               onChange={(e) => setTheme(e.target.value as typeof theme)}
               className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm"
             >
-              <option value="default">Default</option>
-              <option value="boreal">Boreal</option>
-              <option value="cyberpunk">Cyberpunk</option>
-              <option value="eclipse">Eclipse</option>
-              <option value="emerald">Emerald</option>
+              <option value="default">{i18n("themeDefault")}</option>
+              <option value="boreal">{i18n("themeBoreal")}</option>
+              <option value="cyberpunk">{i18n("themeCyberpunk")}</option>
+              <option value="eclipse">{i18n("themeEclipse")}</option>
+              <option value="emerald">{i18n("themeEmerald")}</option>
             </select>
             <button type="button" onClick={add} className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white">
               <Icon name="plus" className="h-4 w-4" />
@@ -70,7 +71,7 @@ export default function PersonasPage() {
                   </span>
                   <div>
                     <p className="font-medium">{p.label}</p>
-                    <p className="text-xs capitalize text-[var(--muted)]">{data.theme || "default"}</p>
+                    <p className="text-xs capitalize text-[var(--muted)]">{data.theme ? i18n(`theme${data.theme.charAt(0).toUpperCase() + data.theme.slice(1)}`) : i18n("themeDefault")}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">

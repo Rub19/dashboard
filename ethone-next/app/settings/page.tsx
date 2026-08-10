@@ -121,7 +121,7 @@ export default function SettingsPage() {
       children: (
         <div className="space-y-4">
           <Toggle label={i18n("darkMode")} checked={settings.darkMode} onChange={(v) => update({ darkMode: v })} />
-          <p className="text-xs text-[var(--muted)]">Pack d&rsquo;icônes</p>
+          <p className="text-xs text-[var(--muted)]">{i18n("iconPack")}</p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {PACKS.map((pack) => (
               <button
@@ -146,7 +146,7 @@ export default function SettingsPage() {
                   settings.theme === theme.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
                 }`}
               >
-                {theme.label}
+                {i18n(`theme${theme.id.charAt(0).toUpperCase() + theme.id.slice(1)}`)}
               </button>
             ))}
           </div>
@@ -169,7 +169,7 @@ export default function SettingsPage() {
       icon: "gauge",
       children: (
         <div className="space-y-4">
-          <p className="text-xs text-[var(--muted)]">Mode densité</p>
+          <p className="text-xs text-[var(--muted)]">{i18n("densityMode")}</p>
           <div className="grid grid-cols-3 gap-2">
             {DENSITY_MODES.map((mode) => (
               <button
@@ -180,15 +180,15 @@ export default function SettingsPage() {
                   settings.densityMode === mode.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
                 }`}
               >
-                {mode.label}
+                {i18n(`density${mode.id.charAt(0).toUpperCase() + mode.id.slice(1)}`)}
               </button>
             ))}
           </div>
           <Range label={i18n("listDensity")} value={settings.density} onChange={(v) => update({ density: v })} />
-          <Range label="Rayon des cartes" value={settings.radius} onChange={(v) => update({ radius: v })} />
-          <Toggle label="Verre (glassmorphism)" checked={settings.glassEnabled} onChange={(v) => update({ glassEnabled: v })} />
-          <Toggle label="Tilt 3D sur les cartes" checked={settings.cardTilt} onChange={(v) => update({ cardTilt: v })} />
-          <p className="text-xs text-[var(--muted)]">Ombre</p>
+          <Range label={i18n("cardRadius")} value={settings.radius} onChange={(v) => update({ radius: v })} />
+          <Toggle label={i18n("glassmorphism")} checked={settings.glassEnabled} onChange={(v) => update({ glassEnabled: v })} />
+          <Toggle label={i18n("cardTilt3d")} checked={settings.cardTilt} onChange={(v) => update({ cardTilt: v })} />
+          <p className="text-xs text-[var(--muted)]">{i18n("shadow")}</p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {(["none", "sm", "md", "glow"] as const).map((s) => (
               <button
@@ -199,11 +199,11 @@ export default function SettingsPage() {
                   settings.shadow === s ? "border-[var(--accent)] text-[var(--accent)]" : ""
                 }`}
               >
-                {s === "none" ? "Aucune" : s === "sm" ? "Légère" : s === "md" ? "Moyenne" : "Glow"}
+                {i18n(`shadow${s.charAt(0).toUpperCase() + s.slice(1)}`)}
               </button>
             ))}
           </div>
-          <p className="text-xs text-[var(--muted)]">Fond</p>
+          <p className="text-xs text-[var(--muted)]">{i18n("background")}</p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {BACKGROUNDS.map((bg) => (
               <button
@@ -214,12 +214,12 @@ export default function SettingsPage() {
                   settings.backgroundEffect === bg.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
                 }`}
               >
-                {bg.label}
+                {i18n(`background${bg.id.charAt(0).toUpperCase() + bg.id.slice(1)}`)}
               </button>
             ))}
           </div>
-          <Range label="Vitesse du fond" value={settings.backgroundSpeed} onChange={(v) => update({ backgroundSpeed: v })} />
-          <p className="text-xs text-[var(--muted)]">Mise en page</p>
+          <Range label={i18n("backgroundSpeed")} value={settings.backgroundSpeed} onChange={(v) => update({ backgroundSpeed: v })} />
+          <p className="text-xs text-[var(--muted)]">{i18n("layout")}</p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {LAYOUTS.map((l) => (
               <button
@@ -230,22 +230,22 @@ export default function SettingsPage() {
                   settings.layoutPreset === l.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
                 }`}
               >
-                {l.label}
+                {i18n(`layout${l.id.split("-").map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join("")}`)}
               </button>
             ))}
           </div>
-          <Range label="Rayon du Dock" value={settings.dockRadius} onChange={(v) => update({ dockRadius: v })} />
+          <Range label={i18n("dockRadius")} value={settings.dockRadius} onChange={(v) => update({ dockRadius: v })} />
         </div>
       ),
     },
     {
       id: "dock",
-      label: "Dock",
+      label: i18n("dock"),
       icon: "dock",
       children: (
         <div className="space-y-4">
-          <Toggle label="Dock visible" checked={settings.dockVisible} onChange={(v) => update({ dockVisible: v })} />
-          <p className="text-xs text-[var(--muted)]">Cochez les apps affichées dans le dock :</p>
+          <Toggle label={i18n("dockVisible")} checked={settings.dockVisible} onChange={(v) => update({ dockVisible: v })} />
+          <p className="text-xs text-[var(--muted)]">{i18n("dockItems")}:</p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {NAV_ITEMS.map((item) => (
               <label key={item.id} className="flex items-center gap-2 text-sm">
@@ -260,7 +260,7 @@ export default function SettingsPage() {
                   }}
                   className="accent-[var(--accent)]"
                 />
-                {item.label}
+                {i18n(item.id)}
               </label>
             ))}
           </div>
@@ -275,8 +275,8 @@ export default function SettingsPage() {
         <div className="space-y-4">
           <Toggle label={i18n("masterVolume")} checked={settings.masterVolume} onChange={(v) => update({ masterVolume: v })} />
           <Toggle label={i18n("soundEffects")} checked={settings.soundEffects} onChange={(v) => update({ soundEffects: v })} />
-          <Range label="Volume des effets" value={settings.soundVolume} onChange={(v) => update({ soundVolume: v })} />
-          <p className="text-xs text-[var(--muted)]">Pack sonore</p>
+          <Range label={i18n("soundVolume")} value={settings.soundVolume} onChange={(v) => update({ soundVolume: v })} />
+          <p className="text-xs text-[var(--muted)]">{i18n("soundPack")}</p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {(["none", "minimal", "mechanical", "liquid"] as const).map((pack) => (
               <button
@@ -287,7 +287,7 @@ export default function SettingsPage() {
                   settings.soundPack === pack ? "border-[var(--accent)] text-[var(--accent)]" : ""
                 }`}
               >
-                {pack === "none" ? "Aucun" : pack === "minimal" ? "Minimal" : pack === "mechanical" ? "Méca" : "Liquide"}
+                {i18n(`soundPack${pack.charAt(0).toUpperCase() + pack.slice(1)}`)}
               </button>
             ))}
           </div>
@@ -340,7 +340,7 @@ export default function SettingsPage() {
       icon: "shield",
       children: (
         <div className="space-y-4">
-          <Toggle label="OTP à chaque connexion" checked={true} onChange={() => {}} />
+          <Toggle label={i18n("otpRequired")} checked={true} onChange={() => {}} />
         </div>
       ),
     },
@@ -359,7 +359,7 @@ export default function SettingsPage() {
                 settings.language === lang.id ? "bg-[var(--accent)] text-white" : "bg-[var(--surface-raised)]"
               }`}
             >
-              {lang.label}
+              {i18n(`lang${lang.id.charAt(0).toUpperCase() + lang.id.slice(1)}`)}
             </button>
           ))}
         </div>
@@ -369,7 +369,7 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">{i18n("settings")}</h1>
+      <h1 className="text-2xl font-bold">{i18n("settingsTitle")}</h1>
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {sections.map((section) => (
           <Card3D key={section.id}>

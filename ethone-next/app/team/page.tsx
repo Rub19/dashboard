@@ -29,7 +29,7 @@ export default function TeamPage() {
       setEmail("");
       setSuccess(true);
     } catch (err) {
-      setInviteError(err instanceof Error ? err.message : "L'invitation a échoué.");
+      setInviteError(err instanceof Error ? err.message : i18n("inviteError"));
     } finally {
       setInviting(false);
     }
@@ -37,18 +37,18 @@ export default function TeamPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">{i18n("team")}</h1>
+      <h1 className="text-2xl font-bold">{i18n("teamTitle")}</h1>
 
       <Card3D>
         <div className="space-y-3">
-          <label className="text-sm font-medium">Inviter un membre</label>
+          <label className="text-sm font-medium">{i18n("inviteMember")}</label>
           <div className="flex gap-2">
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && submit()}
-              placeholder="email@exemple.com"
+              placeholder={i18n("emailPlaceholder")}
               disabled={inviting}
               className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] disabled:opacity-50"
             />
@@ -60,7 +60,7 @@ export default function TeamPage() {
             >
               {ROLES.map((r) => (
                 <option key={r} value={r}>
-                  {r}
+                  {i18n(r)}
                 </option>
               ))}
             </select>
@@ -84,7 +84,7 @@ export default function TeamPage() {
           {success && (
             <p className="flex items-center gap-2 text-sm text-emerald-400">
               <Icon name="check" className="h-4 w-4" />
-              Invitation envoyée.
+              {i18n("invitationSent")}
             </p>
           )}
         </div>
@@ -119,7 +119,7 @@ export default function TeamPage() {
                       : "bg-sky-500/10 text-sky-400"
                   }`}
                 >
-                  {m.role}
+                  {i18n(m.role)}
                 </span>
                 {m.role !== "owner" && (
                   <button type="button" onClick={() => remove(m.id)} className="text-[var(--muted)] hover:text-red-400">

@@ -3,27 +3,9 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Home,
-  NotebookPen,
-  CircleCheck,
-  CalendarDays,
-  Folder,
-  Activity,
-  Flame,
-  Plug,
-  LayoutGrid,
-  Workflow,
-  Brain,
-  Timer,
-  Users,
-  Mail,
-  Receipt,
-  Settings,
-  Menu,
-} from "lucide-react";
 import Link from "next/link";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { Icon } from "@/lib/icons";
 
 export default function Sidebar() {
   const [expanded, setExpanded] = useState(false);
@@ -31,23 +13,23 @@ export default function Sidebar() {
   const i18n = useI18n();
 
   const navItems = [
-    { id: "home", label: i18n("home"), href: "/", icon: Home },
-    { id: "notes", label: i18n("notes"), href: "/notes/", icon: NotebookPen },
-    { id: "tasks", label: i18n("tasks"), href: "/tasks/", icon: CircleCheck },
-    { id: "calendar", label: i18n("calendar"), href: "/calendar/", icon: CalendarDays },
-    { id: "files", label: i18n("files"), href: "/files/", icon: Folder },
-    { id: "bills", label: i18n("bills"), href: "/bills/", icon: Receipt },
-    { id: "activity", label: i18n("activity"), href: "/activity/", icon: Activity },
-    { id: "interactions", label: i18n("interactions"), href: "/interactions/", icon: Flame },
-    { id: "connections", label: i18n("connections"), href: "/connections/", icon: Plug },
-    { id: "plugins", label: i18n("plugins"), href: "/plugins/", icon: Plug },
-    { id: "spaces", label: i18n("spaces"), href: "/spaces/", icon: LayoutGrid },
-    { id: "flows", label: i18n("flows"), href: "/flows/", icon: Workflow },
-    { id: "brain", label: i18n("brain"), href: "/brain/", icon: Brain },
-    { id: "focus", label: i18n("focus"), href: "/focus/", icon: Timer },
-    { id: "team", label: i18n("team"), href: "/team/", icon: Users },
-    { id: "mail", label: i18n("mail"), href: "/mail/", icon: Mail },
-    { id: "settings", label: i18n("settings"), href: "/settings/", icon: Settings },
+    { id: "home", label: i18n("home"), href: "/", icon: "home" },
+    { id: "notes", label: i18n("notes"), href: "/notes/", icon: "notes" },
+    { id: "tasks", label: i18n("tasks"), href: "/tasks/", icon: "tasks" },
+    { id: "calendar", label: i18n("calendar"), href: "/calendar/", icon: "calendar" },
+    { id: "files", label: i18n("files"), href: "/files/", icon: "files" },
+    { id: "bills", label: i18n("bills"), href: "/bills/", icon: "bills" },
+    { id: "activity", label: i18n("activity"), href: "/activity/", icon: "activity" },
+    { id: "interactions", label: i18n("interactions"), href: "/interactions/", icon: "interactions" },
+    { id: "connections", label: i18n("connections"), href: "/connections/", icon: "connections" },
+    { id: "plugins", label: i18n("plugins"), href: "/plugins/", icon: "plugins" },
+    { id: "spaces", label: i18n("spaces"), href: "/spaces/", icon: "spaces" },
+    { id: "flows", label: i18n("flows"), href: "/flows/", icon: "flows" },
+    { id: "brain", label: i18n("brain"), href: "/brain/", icon: "brain" },
+    { id: "focus", label: i18n("focus"), href: "/focus/", icon: "focus" },
+    { id: "team", label: i18n("team"), href: "/team/", icon: "team" },
+    { id: "mail", label: i18n("mail"), href: "/mail/", icon: "mail" },
+    { id: "settings", label: i18n("settings"), href: "/settings/", icon: "settings" },
   ];
 
   return (
@@ -65,7 +47,7 @@ export default function Sidebar() {
           aria-label={expanded ? "Réduire" : "Étendre"}
           data-tooltip={expanded ? undefined : "Menu"}
         >
-          <Menu className="h-5 w-5" />
+          <Icon name="menu" className="h-5 w-5" />
         </button>
         <AnimatePresence>
           {expanded && (
@@ -85,7 +67,6 @@ export default function Sidebar() {
       <nav className="flex-1 space-y-1 px-3 py-2">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
-          const Icon = item.icon;
           return (
             <Link
               key={item.id}
@@ -98,7 +79,7 @@ export default function Sidebar() {
                   : "text-[var(--muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
               } ${expanded ? "px-3" : "justify-center"}`}
             >
-              <Icon className="h-5 w-5 flex-shrink-0" />
+              <Icon name={item.icon} className="h-5 w-5 flex-shrink-0" />
               <AnimatePresence>
                 {expanded && (
                   <motion.span

@@ -5,44 +5,26 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
-import {
-  Home,
-  NotebookPen,
-  CircleCheck,
-  CalendarDays,
-  Folder,
-  Activity,
-  Flame,
-  Plug,
-  LayoutGrid,
-  Workflow,
-  Brain,
-  Timer,
-  Users,
-  Mail,
-  Receipt,
-  Settings,
-  ChevronUp,
-} from "lucide-react";
+import { Icon } from "@/lib/icons";
 
-const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-  home: Home,
-  notes: NotebookPen,
-  tasks: CircleCheck,
-  calendar: CalendarDays,
-  files: Folder,
-  bills: Receipt,
-  activity: Activity,
-  interactions: Flame,
-  connections: Plug,
-  plugins: Plug,
-  spaces: LayoutGrid,
-  flows: Workflow,
-  brain: Brain,
-  focus: Timer,
-  team: Users,
-  mail: Mail,
-  settings: Settings,
+const ICONS: Record<string, string> = {
+  home: "home",
+  notes: "notes",
+  tasks: "tasks",
+  calendar: "calendar",
+  files: "files",
+  bills: "bills",
+  activity: "activity",
+  interactions: "interactions",
+  connections: "connections",
+  plugins: "plugins",
+  spaces: "spaces",
+  flows: "flows",
+  brain: "brain",
+  focus: "focus",
+  team: "team",
+  mail: "mail",
+  settings: "settings",
 };
 
 export default function Dock() {
@@ -76,7 +58,6 @@ export default function Dock() {
         }`}
       >
         {visibleItems().map((item) => {
-          const Icon = item.icon;
           const active = pathname === item.href || pathname.startsWith(item.href);
           return (
             <div key={item.id} className="group relative flex flex-col items-center">
@@ -86,7 +67,7 @@ export default function Dock() {
                   active ? "bg-[var(--accent)]/10 text-[var(--accent)]" : ""
                 }`}
               >
-                <Icon className="h-5 w-5" />
+                <Icon name={item.icon} className="h-5 w-5" />
               </Link>
               {expanded && (
                 <div className="mt-1 flex gap-0.5">
@@ -103,7 +84,7 @@ export default function Dock() {
             expanded ? "rotate-180" : ""
           }`}
         >
-          <ChevronUp className="h-5 w-5" />
+          <Icon name="chevronUp" className="h-5 w-5" />
         </button>
       </div>
     </div>

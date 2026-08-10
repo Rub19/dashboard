@@ -1,6 +1,8 @@
 export type Settings = {
   darkMode: boolean;
   theme: "default" | "boreal" | "cyberpunk" | "eclipse" | "emerald";
+  iconPack: "lucide" | "phosphor" | "tabler" | "heroicons" | "radix";
+  densityMode: "compact" | "normal" | "airy";
   fontSize: number;
   density: number;
   radius: number;
@@ -23,6 +25,8 @@ export type Settings = {
 export const DEFAULTS: Settings = {
   darkMode: true,
   theme: "default",
+  iconPack: "lucide",
+  densityMode: "normal",
   fontSize: 100,
   density: 50,
   radius: 50,

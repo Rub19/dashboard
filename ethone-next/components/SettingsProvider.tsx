@@ -43,6 +43,7 @@ export default function SettingsProvider({
     root.style.setProperty("--card-radius", `${settings.radius / 16}rem`);
     root.style.setProperty("--glass", settings.glassEnabled ? "0.85" : "1");
     root.dataset.cardTilt = settings.cardTilt ? "on" : "off";
+    root.dataset.density = settings.densityMode;
     root.style.fontSize = `${settings.fontSize}%`;
   }, [settings]);
 

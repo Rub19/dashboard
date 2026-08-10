@@ -4,17 +4,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Card3D from "@/components/Card3D";
 import { subscribePush, unsubscribePush } from "@/lib/push";
-import {
-  Palette,
-  Type,
-  Gauge,
-  Volume2,
-  Bell,
-  User,
-  Shield,
-  Globe,
-  Dock as DockIcon,
-} from "lucide-react";
+import { Icon } from "@/lib/icons";
 
 function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -95,14 +85,43 @@ export default function SettingsPage() {
   const { settings, update } = useSettings();
   const i18n = useI18n();
 
+  const PACKS = [
+    { id: "lucide", label: "Lucide" },
+    { id: "phosphor", label: "Phosphor" },
+    { id: "tabler", label: "Tabler" },
+    { id: "heroicons", label: "Heroicons" },
+    { id: "radix", label: "Radix" },
+  ] as const;
+
+  const DENSITY_MODES = [
+    { id: "compact", label: "Compact" },
+    { id: "normal", label: "Normal" },
+    { id: "airy", label: "Aéré" },
+  ] as const;
+
   const sections = [
     {
       id: "appearance",
       label: i18n("appearance"),
-      icon: Palette,
+      icon: "palette",
       children: (
         <div className="space-y-4">
           <Toggle label={i18n("darkMode")} checked={settings.darkMode} onChange={(v) => update({ darkMode: v })} />
+          <p className="text-xs text-[var(--muted)]">Pack d&rsquo;icônes</p>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {PACKS.map((pack) => (
+              <button
+                key={pack.id}
+                type="button"
+                onClick={() => update({ iconPack: pack.id })}
+                className={`rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
+                  settings.iconPack === pack.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                }`}
+              >
+                {pack.label}
+              </button>
+            ))}
+          </div>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {THEMES.map((theme) => (
               <button
@@ -123,7 +142,7 @@ export default function SettingsPage() {
     {
       id: "typography",
       label: i18n("typography"),
-      icon: Type,
+      icon: "type",
       children: (
         <div className="space-y-4">
           <Range label={i18n("fontSize")} value={settings.fontSize} onChange={(v) => update({ fontSize: v })} />
@@ -133,9 +152,24 @@ export default function SettingsPage() {
     {
       id: "density",
       label: i18n("density"),
-      icon: Gauge,
+      icon: "gauge",
       children: (
         <div className="space-y-4">
+          <p className="text-xs text-[var(--muted)]">Mode densité</p>
+          <div className="grid grid-cols-3 gap-2">
+            {DENSITY_MODES.map((mode) => (
+              <button
+                key={mode.id}
+                type="button"
+                onClick={() => update({ densityMode: mode.id })}
+                className={`rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
+                  settings.densityMode === mode.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                }`}
+              >
+                {mode.label}
+              </button>
+            ))}
+          </div>
           <Range label={i18n("listDensity")} value={settings.density} onChange={(v) => update({ density: v })} />
           <Range label="Rayon des cartes" value={settings.radius} onChange={(v) => update({ radius: v })} />
           <Toggle label="Verre (glassmorphism)" checked={settings.glassEnabled} onChange={(v) => update({ glassEnabled: v })} />
@@ -146,7 +180,7 @@ export default function SettingsPage() {
     {
       id: "dock",
       label: "Dock",
-      icon: DockIcon,
+      icon: "dock",
       children: (
         <div className="space-y-4">
           <Toggle label="Dock visible" checked={settings.dockVisible} onChange={(v) => update({ dockVisible: v })} />
@@ -175,7 +209,7 @@ export default function SettingsPage() {
     {
       id: "sound",
       label: i18n("sound"),
-      icon: Volume2,
+      icon: "volume",
       children: (
         <div className="space-y-4">
           <Toggle label={i18n("masterVolume")} checked={settings.masterVolume} onChange={(v) => update({ masterVolume: v })} />
@@ -186,7 +220,7 @@ export default function SettingsPage() {
     {
       id: "notifications",
       label: i18n("notifications"),
-      icon: Bell,
+      icon: "bell",
       children: (
         <div className="space-y-4">
           <Toggle label={i18n("notifications")} checked={settings.notifications} onChange={(v) => update({ notifications: v })} />
@@ -211,7 +245,7 @@ export default function SettingsPage() {
     {
       id: "account",
       label: i18n("account"),
-      icon: User,
+      icon: "user",
       children: (
         <div className="space-y-4">
           <button
@@ -226,7 +260,7 @@ export default function SettingsPage() {
     {
       id: "security",
       label: i18n("security"),
-      icon: Shield,
+      icon: "shield",
       children: (
         <div className="space-y-4">
           <Toggle label="OTP à chaque connexion" checked={true} onChange={() => {}} />
@@ -236,7 +270,7 @@ export default function SettingsPage() {
     {
       id: "language",
       label: i18n("language"),
-      icon: Globe,
+      icon: "globe",
       children: (
         <div className="grid grid-cols-2 gap-2">
           {LANGUAGES.map((lang) => (
@@ -260,18 +294,15 @@ export default function SettingsPage() {
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">{i18n("settings")}</h1>
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        {sections.map((section) => {
-          const Icon = section.icon;
-          return (
-            <Card3D key={section.id}>
-              <div className="mb-4 flex items-center gap-2">
-                <Icon className="h-5 w-5 text-[var(--accent)]" />
-                <h2 className="font-semibold">{section.label}</h2>
-              </div>
-              {section.children}
-            </Card3D>
-          );
-        })}
+        {sections.map((section) => (
+          <Card3D key={section.id}>
+            <div className="mb-4 flex items-center gap-2">
+              <Icon name={section.icon} className="h-5 w-5 text-[var(--accent)]" />
+              <h2 className="font-semibold">{section.label}</h2>
+            </div>
+            {section.children}
+          </Card3D>
+        ))}
       </div>
     </div>
   );

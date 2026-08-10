@@ -16,7 +16,17 @@ export type NowPlaying = {
 };
 
 export type LanyardPresence = {
+  userId?: string;
+  displayName?: string;
+  avatarUrl?: string;
   discord_status?: "online" | "idle" | "dnd" | "offline";
+  spotify?: {
+    playing?: boolean;
+    title?: string;
+    artist?: string;
+    album?: string;
+    artwork?: string;
+  };
   activities?: Array<{
     name: string;
     state?: string;
@@ -31,6 +41,7 @@ export type LiveRecord = {
   title: string;
   subtitle?: string;
   meta?: string;
+  image?: string;
   status: "connected" | "loading" | "empty" | "error";
 };
 
@@ -39,6 +50,12 @@ type ApiData = Record<string, unknown>;
 function asStr(value: unknown): string | undefined {
   if (typeof value === "string") return value;
   if (typeof value === "number") return String(value);
+  return undefined;
+}
+
+function asNum(value: unknown): number | undefined {
+  if (typeof value === "number") return value;
+  if (typeof value === "string" && /^-?\d+(\.\d+)?$/.test(value)) return Number(value);
   return undefined;
 }
 
@@ -51,14 +68,18 @@ async function fetchOptional(path: string): Promise<ApiData | null> {
   }
 }
 
+function getArtworkUrl(np: ApiData | null): string | undefined {
+  return asStr(np?.artworkUrl || np?.cover || np?.artwork);
+}
+
 export function useLiveData(pollMs = 15000) {
   const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null);
   const [lanyard, setLanyard] = useState<LanyardPresence | null>(null);
-  const [weather, setWeather] = useState<Record<string, unknown> | null>(null);
-  const [github, setGitHub] = useState<Record<string, unknown> | null>(null);
-  const [todoist, setTodoist] = useState<Record<string, unknown> | null>(null);
-  const [youtube, setYouTube] = useState<Record<string, unknown> | null>(null);
-  const [reddit, setReddit] = useState<Record<string, unknown> | null>(null);
+  const [weather, setWeather] = useState<ApiData | null>(null);
+  const [github, setGitHub] = useState<ApiData | null>(null);
+  const [todoist, setTodoist] = useState<ApiData | null>(null);
+  const [youtube, setYouTube] = useState<ApiData | null>(null);
+  const [reddit, setReddit] = useState<ApiData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -78,13 +99,50 @@ export function useLiveData(pollMs = 15000) {
           fetchOptional("/api/reddit/activity"),
         ]);
         if (cancelled) return;
-        if (np.status === "fulfilled") setNowPlaying(np.value || null);
-        if (la.status === "fulfilled") setLanyard(la.value || null);
-        if (we.status === "fulfilled") setWeather(we.value || null);
-        if (gh.status === "fulfilled") setGitHub(gh.value || null);
-        if (td.status === "fulfilled") setTodoist(td.value || null);
-        if (yt.status === "fulfilled") setYouTube(yt.value || null);
-        if (rd.status === "fulfilled") setReddit(rd.value || null);
+        if (np.status === "fulfilled") {
+          const d = np.value || {};
+          setNowPlaying({
+            source: asStr(d.source) || "Spotify",
+            title: asStr(d.title),
+            artist: asStr(d.artist),
+            album: asStr(d.album),
+            cover: asStr(d.cover),
+            artworkUrl: asStr(d.artworkUrl),
+            progressMs: asNum(d.progressMs),
+            durationMs: asNum(d.durationMs),
+            isPlaying: Boolean(d.isPlaying ?? d.playing),
+          });
+        }
+        if (la.status === "fulfilled") {
+          const d = la.value || {};
+          setLanyard({
+            userId: asStr(d.userId),
+            displayName: asStr(d.displayName),
+            avatarUrl: asStr(d.avatarUrl),
+            discord_status: (d.status as LanyardPresence["discord_status"]) || "offline",
+            spotify: d.spotify
+              ? {
+                  playing: Boolean((d.spotify as ApiData).playing),
+                  title: asStr((d.spotify as ApiData).title),
+                  artist: asStr((d.spotify as ApiData).artist),
+                  album: asStr((d.spotify as ApiData).album),
+                  artwork: asStr((d.spotify as ApiData).artwork),
+                }
+              : undefined,
+            activities: Array.isArray(d.activities)
+              ? d.activities.map((a: unknown) => ({
+                  name: asStr((a as ApiData).name) || "",
+                  state: asStr((a as ApiData).state),
+                  details: asStr((a as ApiData).details),
+                }))
+              : [],
+          });
+        }
+        if (we.status === "fulfilled") setWeather(we.value);
+        if (gh.status === "fulfilled") setGitHub(gh.value);
+        if (td.status === "fulfilled") setTodoist(td.value);
+        if (yt.status === "fulfilled") setYouTube(yt.value);
+        if (rd.status === "fulfilled") setReddit(rd.value);
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err : new Error(String(err)));
       } finally {
@@ -106,17 +164,18 @@ export function useLiveData(pollMs = 15000) {
     records.push({
       id: "nowplaying",
       source: "nowplaying",
-      label: nowPlaying.source || "Now Playing",
+      label: nowPlaying.source || "Spotify",
       title: nowPlaying.title || "En lecture",
       subtitle: nowPlaying.artist,
       meta: nowPlaying.album,
+      image: getArtworkUrl(nowPlaying as unknown as ApiData),
       status: "connected",
     });
   } else {
     records.push({
       id: "nowplaying",
       source: "nowplaying",
-      label: "Now Playing",
+      label: "Spotify",
       title: loading ? "Chargement..." : "Rien en lecture",
       status: loading ? "loading" : "empty",
     });
@@ -128,9 +187,10 @@ export function useLiveData(pollMs = 15000) {
       id: "lanyard",
       source: "lanyard",
       label: "Discord",
-      title: lanyard.discord_status,
+      title: lanyard.displayName || lanyard.discord_status,
       subtitle: activity?.name,
       meta: activity?.details,
+      image: lanyard.avatarUrl,
       status: lanyard.discord_status === "offline" ? "empty" : "connected",
     });
   } else {
@@ -143,73 +203,69 @@ export function useLiveData(pollMs = 15000) {
     });
   }
 
-  if (weather) {
-    records.push({
-      id: "weather",
-      source: "weather",
-      label: "Météo",
-      title: `${asStr(weather.temperature) ?? "--"}°C`,
-      subtitle: asStr(weather.condition),
-      meta: asStr(weather.location),
-      status: "connected",
-    });
-  }
+  const wCondition = asStr(weather?.condition);
+  const wTemp = asNum(weather?.temperature);
+  records.push({
+    id: "weather",
+    source: "weather",
+    label: "Météo",
+    title: wTemp !== undefined ? `${wTemp}°C` : "—",
+    subtitle: wCondition,
+    meta: asStr(weather?.location) || asStr(weather?.city),
+    image: asStr(weather?.iconUrl),
+    status: weather ? "connected" : loading ? "loading" : "empty",
+  });
 
   const githubLogin = asStr(github?.login);
-  if (githubLogin) {
-    records.push({
-      id: "github",
-      source: "github",
-      label: "GitHub",
-      title: githubLogin,
-      subtitle: `${asStr(github?.public_repos) ?? 0} repos`,
-      status: "connected",
-    });
-  } else {
-    records.push({ id: "github", source: "github", label: "GitHub", title: "Non connecté", status: "empty" });
-  }
+  records.push({
+    id: "github",
+    source: "github",
+    label: "GitHub",
+    title: githubLogin || "GitHub",
+    subtitle: githubLogin ? `${asNum(github?.publicRepos) ?? 0} repos · ${asNum(github?.followers) ?? 0} followers` : undefined,
+    meta: asStr((github?.recentEvent as ApiData)?.type),
+    image: asStr(github?.avatarUrl),
+    status: githubLogin ? "connected" : loading ? "loading" : "empty",
+  });
 
   const todoistTask = asStr(todoist?.task);
-  if (todoistTask) {
-    records.push({
-      id: "todoist",
-      source: "todoist",
-      label: "Todoist",
-      title: todoistTask,
-      subtitle: asStr(todoist?.project),
-      status: "connected",
-    });
-  } else {
-    records.push({ id: "todoist", source: "todoist", label: "Todoist", title: "Aucune tâche", status: "empty" });
-  }
+  records.push({
+    id: "todoist",
+    source: "todoist",
+    label: "Todoist",
+    title: todoistTask || "Aucune tâche",
+    subtitle: asStr(todoist?.project),
+    status: todoistTask ? "connected" : loading ? "loading" : "empty",
+  });
 
-  const youtubeChannel = asStr(youtube?.channelTitle);
-  if (youtubeChannel) {
-    records.push({
-      id: "youtube",
-      source: "youtube",
-      label: "YouTube",
-      title: youtubeChannel,
-      subtitle: asStr(youtube?.latestVideoTitle),
-      status: "connected",
-    });
-  } else {
-    records.push({ id: "youtube", source: "youtube", label: "YouTube", title: "Non connecté", status: "empty" });
-  }
+  const youtubeChannel = asStr((youtube?.channel as ApiData)?.title) || asStr(youtube?.channelTitle);
+  const youtubeVideo = youtube?.latestVideo as ApiData;
+  const youtubeVideoTitle = asStr(youtubeVideo?.title) || asStr(youtube?.latestVideoTitle);
+  records.push({
+    id: "youtube",
+    source: "youtube",
+    label: "YouTube",
+    title: youtubeChannel || "YouTube",
+    subtitle: youtubeVideoTitle,
+    image: asStr(youtubeVideo?.thumbnailUrl) || asStr(youtube?.latestVideoThumbnailUrl),
+    status: youtubeChannel ? "connected" : loading ? "loading" : "empty",
+  });
 
-  const redditName = asStr(reddit?.name);
-  if (redditName) {
-    records.push({
-      id: "reddit",
-      source: "reddit",
-      label: "Reddit",
-      title: redditName,
-      subtitle: asStr(reddit?.latestPostTitle),
-      status: "connected",
-    });
-  } else {
-    records.push({ id: "reddit", source: "reddit", label: "Reddit", title: "Non connecté", status: "empty" });
-  }
+  const redditProfile = reddit?.profile as ApiData;
+  const redditName = asStr(redditProfile?.username) || asStr(reddit?.name);
+  const redditKarma = asNum(redditProfile?.karma);
+  const redditPost = reddit?.latestPost as ApiData;
+  const redditPostTitle = asStr(redditPost?.title) || asStr(reddit?.latestPostTitle);
+  records.push({
+    id: "reddit",
+    source: "reddit",
+    label: "Reddit",
+    title: redditName || "Reddit",
+    subtitle: redditKarma !== undefined ? `${redditKarma} karma` : undefined,
+    meta: redditPostTitle,
+    image: asStr(redditProfile?.avatarUrl) || asStr(reddit?.avatarUrl),
+    status: redditName ? "connected" : loading ? "loading" : "empty",
+  });
 
   return { nowPlaying, lanyard, weather, records, loading, error };
 }

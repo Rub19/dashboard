@@ -2,6 +2,23 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v316] - 2026-08-18
+
+**Mail : refonte premium Phase 2 — barre d'outils contextuelle, infobulles, filtre/sort avancés**
+
+### Ajoute
+- Barre d'outils contextuelle : label "N sélectionné(s)", boutons Déplacer/Étiqueter en sélection, masquage d'Actualiser/Plus.
+- Infobulles `data-tooltip` sur tous les boutons d'icône du Mail (menu, recherche, cloche, aide, profil, sélection, actions, filtres, tri, composer, réduction).
+- Popover de filtre ancré au bouton Filtres avec champ "Destinataire" (filtrage côté client sur `to_addresses`) et en-tête "Recherche avancée".
+- Menu de tri (Plus récent / Plus ancien / Expéditeur / Non lus) avec tri côté client.
+
+### Corrige / Améliore
+- Regroupement des actions groupées : déplacer et étiqueter via `showBottomSheet` en sélection active.
+- Respect des conventions i18n et des tokens CSS pour les nouveaux éléments.
+
+### Version PWA
+- `experience-v316`.
+
 ## [v315] - 2026-08-18
 
 **Mail : refonte premium Phase 1 — en-tête, barre d'outils, panneau Latéral et panneau Plus**

@@ -208,7 +208,8 @@ export function mountMail(stage, options = {}) {
     selected: null,
     query: "",
     isSearch: false,
-    filters: { from: "", subject: "", body: "", date_from: "", date_to: "", has_attachments: false, label: "", folder: "" },
+    filters: { from: "", to: "", subject: "", body: "", date_from: "", date_to: "", has_attachments: false, label: "", folder: "" },
+    sort: "newest",
     filtersOpen: false,
     labels: [],
     contacts: [],
@@ -256,6 +257,7 @@ export function mountMail(stage, options = {}) {
 
   let filterPanel = null;
   let filterFromInput = null;
+  let filterToInput = null;
   let filterSubjectInput = null;
   let filterBodyInput = null;
   let filterDateFromInput = null;
@@ -263,6 +265,9 @@ export function mountMail(stage, options = {}) {
   let filterHasAttachmentsInput = null;
   let filterLabelInput = null;
   let filterFolderSelect = null;
+
+  let filterCloseHandler = null;
+  let filterKeyHandler = null;
 
   let onlineStatus = null;
   let snoozeDialog = null;
@@ -275,6 +280,8 @@ export function mountMail(stage, options = {}) {
   let markUnreadBtn = null;
   let snoozeBtn = null;
   let moreBtn = null;
+  let moveBtn = null;
+  let labelBtn = null;
   let sortBtn = null;
   let profileBtn = null;
   let helpBtn = null;
@@ -298,14 +305,14 @@ export function mountMail(stage, options = {}) {
 
   const menuButton = element("button", {
     className: "v8-icon-button v8-mail-menu",
-    attributes: { type: "button", "aria-label": translateSource("Dossiers") }
+    attributes: { type: "button", "aria-label": translateSource("Dossiers"), "data-tooltip": translateSource("Dossiers") }
   }, [icon("menu")]);
   const brandTitle = element("span", { className: "v8-mail-header__title", text: "ETHONE Mail" });
   const brand = element("div", { className: "v8-mail-header__brand" }, [menuButton, brandTitle]);
 
   const searchInput = element("input", {
     className: "v8-input v8-mail-search",
-    attributes: { type: "search", placeholder: translateSource("Rechercher..."), "aria-label": translateSource("Rechercher un message") }
+    attributes: { type: "search", placeholder: translateSource("Rechercher..."), "aria-label": translateSource("Rechercher un message"), "data-tooltip": translateSource("Rechercher un message") }
   });
   const searchWrap = element("div", { className: "v8-mail-header__search" }, [searchInput]);
 
@@ -313,45 +320,49 @@ export function mountMail(stage, options = {}) {
   const bellBadge = element("span", { className: "v8-mail-bell__badge" });
   const bellBtn = element("button", {
     className: "v8-icon-button v8-mail-bell",
-    attributes: { type: "button", "aria-label": translateSource("Notifications") }
+    attributes: { type: "button", "aria-label": translateSource("Notifications"), "data-tooltip": translateSource("Notifications") }
   }, [icon("bell"), bellBadge]);
   helpBtn = element("button", {
     className: "v8-icon-button v8-mail-help",
-    attributes: { type: "button", "aria-label": translateSource("Aide") }
+    attributes: { type: "button", "aria-label": translateSource("Aide"), "data-tooltip": translateSource("Aide") }
   }, [icon("circle-help")]);
   profileBtn = element("button", {
     className: "v8-icon-button v8-mail-profile",
-    attributes: { type: "button", "aria-label": translateSource("Profil") }
+    attributes: { type: "button", "aria-label": translateSource("Profil"), "data-tooltip": translateSource("Profil") }
   }, [icon("user")]);
   const headerActions = element("div", { className: "v8-mail-header__actions" }, [onlineStatus, bellBtn, helpBtn, profileBtn]);
   header.append(brand, searchWrap, headerActions);
 
   masterCheckbox = element("input", {
     className: "v8-mail-master-checkbox",
-    attributes: { type: "checkbox", "aria-label": translateSource("Tout sélectionner") }
+    attributes: { type: "checkbox", "aria-label": translateSource("Tout sélectionner"), "data-tooltip": translateSource("Tout sélectionner") }
   });
   const listTitle = element("span", { className: "v8-mail-toolbar__label" });
 
-  refreshBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action", attributes: { type: "button", "aria-label": translateSource("Actualiser") } }, [icon("refresh-cw")]);
-  archiveBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action", attributes: { type: "button", "aria-label": translateSource("Archiver") } }, [icon("archive")]);
-  deleteBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action", attributes: { type: "button", "aria-label": translateSource("Supprimer") } }, [icon("trash-2")]);
-  markReadBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action", attributes: { type: "button", "aria-label": translateSource("Marquer comme lu") } }, [icon("mail-open")]);
-  markUnreadBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action", attributes: { type: "button", "aria-label": translateSource("Marquer comme non lu") } }, [icon("mail")]);
-  snoozeBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action", attributes: { type: "button", "aria-label": translateSource("Reporter") } }, [icon("clock")]);
-  moreBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action", attributes: { type: "button", "aria-label": translateSource("Plus") } }, [icon("more-horizontal")]);
+  refreshBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action", attributes: { type: "button", "aria-label": translateSource("Actualiser"), "data-tooltip": translateSource("Actualiser") } }, [icon("refresh-cw")]);
+  archiveBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action", attributes: { type: "button", "aria-label": translateSource("Archiver"), "data-tooltip": translateSource("Archiver") } }, [icon("archive")]);
+  deleteBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action", attributes: { type: "button", "aria-label": translateSource("Supprimer"), "data-tooltip": translateSource("Supprimer") } }, [icon("trash-2")]);
+  markReadBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action", attributes: { type: "button", "aria-label": translateSource("Marquer comme lu"), "data-tooltip": translateSource("Marquer comme lu") } }, [icon("mail-open")]);
+  markUnreadBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action", attributes: { type: "button", "aria-label": translateSource("Marquer comme non lu"), "data-tooltip": translateSource("Marquer comme non lu") } }, [icon("mail")]);
+  snoozeBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action", attributes: { type: "button", "aria-label": translateSource("Reporter"), "data-tooltip": translateSource("Reporter") } }, [icon("clock")]);
+  moreBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action", attributes: { type: "button", "aria-label": translateSource("Plus"), "data-tooltip": translateSource("Plus") } }, [icon("more-horizontal")]);
+  moveBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action v8-mail-toolbar__action--move is-hidden", attributes: { type: "button", "aria-label": translateSource("Déplacer"), "data-tooltip": translateSource("Déplacer") } }, [icon("corner-up-right")]);
+  labelBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action v8-mail-toolbar__action--label is-hidden", attributes: { type: "button", "aria-label": translateSource("Étiqueter"), "data-tooltip": translateSource("Étiqueter") } }, [icon("tag")]);
 
   const filterBtn = element("button", {
     className: "v8-icon-button v8-mail-filter-toggle",
-    attributes: { type: "button", "aria-label": translateSource("Filtres") }
+    attributes: { type: "button", "aria-label": translateSource("Filtres"), "data-tooltip": translateSource("Filtres") }
   }, [icon("filter")]);
-  sortBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action", attributes: { type: "button", "aria-label": translateSource("Trier") } }, [icon("arrow-up-down")]);
-  newBtn = actionButton({ actionId: "v8.mail.compose", variant: "primary" }, [icon("plus"), element("span", { text: translateSource("Nouveau") })]);
+  sortBtn = element("button", { className: "v8-icon-button v8-mail-toolbar__action", attributes: { type: "button", "aria-label": translateSource("Trier"), "data-tooltip": translateSource("Trier") } }, [icon("arrow-up-down")]);
+  newBtn = actionButton({ actionId: "v8.mail.compose", variant: "primary", ariaLabel: translateSource("Nouveau message") }, [icon("plus"), element("span", { text: translateSource("Nouveau") })]);
+  newBtn.dataset.tooltip = translateSource("Nouveau message");
 
-  const selectionGroup = element("div", { className: "v8-mail-toolbar__selection" }, [masterCheckbox, listTitle, refreshBtn, archiveBtn, deleteBtn, markReadBtn, markUnreadBtn, snoozeBtn, moreBtn]);
+  const selectionGroup = element("div", { className: "v8-mail-toolbar__selection" }, [masterCheckbox, listTitle, refreshBtn, archiveBtn, deleteBtn, markReadBtn, markUnreadBtn, snoozeBtn, moveBtn, labelBtn, moreBtn]);
   const toolsGroup = element("div", { className: "v8-mail-toolbar__tools" }, [filterBtn, sortBtn, newBtn]);
   toolbar.append(selectionGroup, toolsGroup);
 
   filterFromInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "text", placeholder: translateSource("Expéditeur") } });
+  filterToInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "text", placeholder: translateSource("Destinataire") } });
   filterSubjectInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "text", placeholder: translateSource("Sujet") } });
   filterBodyInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "text", placeholder: translateSource("Contenu") } });
   filterDateFromInput = element("input", { className: "v8-input v8-mail-filter__input", attributes: { type: "date" } });
@@ -368,8 +379,11 @@ export function mountMail(stage, options = {}) {
   ]);
   const applyFiltersBtn = actionButton({ actionId: "v8.mail.filters.apply", variant: "secondary", className: "v8-mail-filter__apply" }, [element("span", { text: translateSource("Appliquer") })]);
   const resetFiltersBtn = actionButton({ actionId: "v8.mail.filters.reset", variant: "outline", className: "v8-mail-filter__reset" }, [element("span", { text: translateSource("Réinitialiser") })]);
-  filterPanel = element("div", { className: "v8-mail-filters", attributes: { hidden: "" } }, [
+  const filterHeader = element("h3", { id: "v8-mail-filters-title", className: "v8-mail-filters__title", text: translateSource("Recherche avancée") });
+  filterPanel = element("div", { className: "v8-mail-filters v8-mail-filters--popover", attributes: { hidden: "", "aria-labelledby": "v8-mail-filters-title" } }, [
+    filterHeader,
     filterFromInput,
+    filterToInput,
     filterSubjectInput,
     filterBodyInput,
     filterDateFromInput,
@@ -385,8 +399,8 @@ export function mountMail(stage, options = {}) {
   analyticsPanel = element("section", { className: "v8-mail-analytics", attributes: { hidden: "" } });
   snoozeDialog = buildSnoozeDialog();
   morePanel = element("aside", { className: "v8-mail-more-panel", attributes: { hidden: "" } });
-  listWrap.append(filterPanel, messageList, analyticsPanel);
-  page.append(snoozeDialog, morePanel);
+  listWrap.append(messageList, analyticsPanel);
+  page.append(snoozeDialog, morePanel, filterPanel);
 
   menuButton.addEventListener("click", () => sidebar.classList.toggle("is-open"));
   refreshBtn.addEventListener("click", () => loadFolder());
@@ -395,6 +409,8 @@ export function mountMail(stage, options = {}) {
   markReadBtn.addEventListener("click", () => bulkAction("mark_read", true));
   markUnreadBtn.addEventListener("click", () => bulkAction("mark_read", false));
   snoozeBtn.addEventListener("click", () => bulkSnooze());
+  moveBtn.addEventListener("click", openMoveBottomSheet);
+  labelBtn.addEventListener("click", openLabelBottomSheet);
   moreBtn.addEventListener("click", () => openMorePanel());
   newBtn.addEventListener("click", () => openCompose());
   bellBtn.addEventListener("click", () => openMorePanel(true));
@@ -403,7 +419,7 @@ export function mountMail(stage, options = {}) {
   resetFiltersBtn.addEventListener("click", resetFilters);
   helpBtn.addEventListener("click", () => mailNotify({ type: "info", title: translateSource("Aide"), message: translateSource("Documentation ETHONE Mail à venir.") }));
   profileBtn.addEventListener("click", () => mailNotify({ type: "info", title: translateSource("Profil"), message: translateSource("Options du profil à venir.") }));
-  sortBtn.addEventListener("click", () => mailNotify({ type: "info", title: translateSource("Tri"), message: translateSource("Options de tri à venir.") }));
+  sortBtn.addEventListener("click", openSortBottomSheet);
 
   searchInput.addEventListener("input", () => {
     const q = searchInput.value.trim();
@@ -416,13 +432,17 @@ export function mountMail(stage, options = {}) {
     state.query = q;
     state.isSearch = true;
     if (searchTimer) clearTimeout(searchTimer);
-    searchTimer = setTimeout(() => loadSearch(), 300);
+    searchTimer = setTimeout(() => {
+      if (hasActiveFilters()) loadFolder();
+      else loadSearch();
+    }, 300);
   });
 
   searchInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
       if (searchTimer) clearTimeout(searchTimer);
-      loadSearch();
+      if (hasActiveFilters()) loadFolder();
+      else loadSearch();
     }
   });
 
@@ -1002,7 +1022,7 @@ export function mountMail(stage, options = {}) {
 
   function hasActiveFilters() {
     const f = state.filters;
-    return !!(f.from || f.subject || f.body || f.date_from || f.date_to || f.has_attachments || f.label);
+    return !!(f.from || f.to || f.subject || f.body || f.date_from || f.date_to || f.has_attachments || f.label || (f.folder && f.folder !== state.folder));
   }
 
   function buildFilterPayload() {
@@ -1015,18 +1035,82 @@ export function mountMail(stage, options = {}) {
     if (state.filters.date_to) payload.date_to = state.filters.date_to;
     if (state.filters.has_attachments) payload.has_attachments = "true";
     if (state.filters.label) payload.labels = state.filters.label;
-    payload.folder = state.filters.folder || state.folder;
+    const folder = state.filters.folder || state.folder;
+    payload.folder = folder;
+    // Le filtre "to" est appliqué côté client car le backend ne le supporte pas nativement.
     return payload;
   }
 
-  function toggleFilters() {
-    state.filtersOpen = !state.filtersOpen;
-    filterPanel.hidden = !state.filtersOpen;
+  function positionFilterPanel() {
+    if (!filterBtn || !filterPanel) return;
+    const rect = filterBtn.getBoundingClientRect();
+    const gap = 8;
+    const margin = 12;
+    const maxWidth = Math.min(360, window.innerWidth - margin * 2);
+    filterPanel.style.position = "fixed";
+    filterPanel.style.zIndex = "70";
+    filterPanel.style.width = `${maxWidth}px`;
+    filterPanel.style.maxHeight = `${Math.max(120, Math.min(560, window.innerHeight - rect.bottom - margin * 2))}px`;
+    filterPanel.style.overflow = "auto";
+    const panelRect = filterPanel.getBoundingClientRect();
+    const panelHeight = panelRect.height || 320;
+    let top = rect.bottom + gap;
+    if (top + panelHeight > window.innerHeight - margin) {
+      top = Math.max(margin, rect.top - panelHeight - gap);
+    }
+    let left = Math.max(margin, Math.min(rect.right - maxWidth, window.innerWidth - maxWidth - margin));
+    filterPanel.style.top = `${top}px`;
+    filterPanel.style.left = `${left}px`;
+  }
+
+  function openFilterPopover() {
+    state.filtersOpen = true;
+    if (filterFromInput) filterFromInput.value = state.filters.from || "";
+    if (filterToInput) filterToInput.value = state.filters.to || "";
+    if (filterSubjectInput) filterSubjectInput.value = state.filters.subject || "";
+    if (filterBodyInput) filterBodyInput.value = state.filters.body || "";
+    if (filterDateFromInput) filterDateFromInput.value = state.filters.date_from || "";
+    if (filterDateToInput) filterDateToInput.value = state.filters.date_to || "";
+    if (filterHasAttachmentsInput) filterHasAttachmentsInput.checked = state.filters.has_attachments || false;
+    if (filterLabelInput) filterLabelInput.value = state.filters.label || "";
+    if (filterFolderSelect) filterFolderSelect.value = state.filters.folder || "";
+    if (filterPanel) {
+      filterPanel.hidden = false;
+      filterPanel.style.opacity = "0";
+      positionFilterPanel();
+      filterPanel.style.opacity = "1";
+    }
+    if (!filterCloseHandler) {
+      filterCloseHandler = (event) => {
+        if (filterPanel && !filterPanel.contains(event.target) && !filterBtn.contains(event.target)) closeFilterPopover();
+      };
+      document.addEventListener("click", filterCloseHandler);
+    }
+    if (!filterKeyHandler) {
+      filterKeyHandler = (event) => {
+        if (event.key === "Escape" && state.filtersOpen) {
+          event.preventDefault();
+          closeFilterPopover();
+        }
+      };
+      document.addEventListener("keydown", filterKeyHandler);
+    }
+  }
+
+  function closeFilterPopover() {
+    state.filtersOpen = false;
+    if (filterPanel) filterPanel.hidden = true;
+  }
+
+  function toggleFilters(event) {
+    if (event) { event.preventDefault(); event.stopPropagation(); }
+    if (state.filtersOpen) closeFilterPopover(); else openFilterPopover();
   }
 
   function applyFilters() {
     state.filters = {
       from: (filterFromInput?.value || "").trim(),
+      to: (filterToInput?.value || "").trim(),
       subject: (filterSubjectInput?.value || "").trim(),
       body: (filterBodyInput?.value || "").trim(),
       date_from: filterDateFromInput?.value || "",
@@ -1035,19 +1119,21 @@ export function mountMail(stage, options = {}) {
       label: (filterLabelInput?.value || "").trim(),
       folder: filterFolderSelect?.value || ""
     };
-    state.filtersOpen = false;
-    filterPanel.hidden = true;
+    closeFilterPopover();
     state.selected = null;
+    state.selectedIds.clear();
+    if (masterCheckbox) masterCheckbox.checked = false;
     setView("list");
     renderReading();
+    renderBulkToolbar();
     loadFolder();
   }
 
   function resetFilters() {
-    state.filters = { from: "", subject: "", body: "", date_from: "", date_to: "", has_attachments: false, label: "", folder: "" };
-    state.filtersOpen = false;
-    filterPanel.hidden = true;
+    state.filters = { from: "", to: "", subject: "", body: "", date_from: "", date_to: "", has_attachments: false, label: "", folder: "" };
+    closeFilterPopover();
     if (filterFromInput) filterFromInput.value = "";
+    if (filterToInput) filterToInput.value = "";
     if (filterSubjectInput) filterSubjectInput.value = "";
     if (filterBodyInput) filterBodyInput.value = "";
     if (filterDateFromInput) filterDateFromInput.value = "";
@@ -1059,9 +1145,167 @@ export function mountMail(stage, options = {}) {
     state.isSearch = false;
     searchInput.value = "";
     state.selected = null;
+    state.selectedIds.clear();
+    if (masterCheckbox) masterCheckbox.checked = false;
     setView("list");
     renderReading();
+    renderBulkToolbar();
     loadFolder();
+  }
+
+  function applyClientFilters() {
+    const to = (state.filters.to || "").trim().toLowerCase();
+    if (!to || !Array.isArray(state.messages)) return;
+    state.messages = state.messages.filter((m) => {
+      const addrs = Array.isArray(m.to_addresses) ? m.to_addresses : [m.to_address, m.to].filter(Boolean);
+      return addrs.some((a) => String(a).toLowerCase().includes(to));
+    });
+  }
+
+  function sortMessages() {
+    if (!Array.isArray(state.messages) || !state.messages.length) return;
+    const mode = state.sort || "newest";
+    const getDate = (m) => {
+      const d = new Date(m.received_at || m.created_at);
+      return Number.isNaN(d.getTime()) ? 0 : d.getTime();
+    };
+    const getSender = (m) => String(m.from_name || getFromAddress(m) || "").toLowerCase();
+    const tieBreak = (a, b) => String(a.id || "").localeCompare(String(b.id || ""), undefined, { numeric: true });
+    if (mode === "newest") {
+      state.messages.sort((a, b) => getDate(b) - getDate(a) || tieBreak(a, b));
+    } else if (mode === "oldest") {
+      state.messages.sort((a, b) => getDate(a) - getDate(b) || tieBreak(a, b));
+    } else if (mode === "sender") {
+      state.messages.sort((a, b) => getSender(a).localeCompare(getSender(b)) || getDate(b) - getDate(a) || tieBreak(a, b));
+    } else if (mode === "unread") {
+      state.messages.sort((a, b) => (Number(a.is_read) - Number(b.is_read)) || getDate(b) - getDate(a) || tieBreak(a, b));
+    }
+  }
+
+  const SORT_OPTIONS = Object.freeze([
+    { key: "newest", label: translateSource("Plus récent"), icon: "arrow-down" },
+    { key: "oldest", label: translateSource("Plus ancien"), icon: "arrow-up" },
+    { key: "sender", label: translateSource("Expéditeur"), icon: "at-sign" },
+    { key: "unread", label: translateSource("Non lus"), icon: "mail" }
+  ]);
+
+  function openSortBottomSheet() {
+    let closeSheet = () => {};
+    const activeKey = state.sort || "newest";
+    const children = SORT_OPTIONS.map((opt) => {
+      const isActive = opt.key === activeKey;
+      return element("button", {
+        className: `v8-bottom-sheet__action${isActive ? " is-active" : ""}`,
+        attributes: { type: "button" },
+        events: {
+          click: () => {
+            state.sort = opt.key;
+            closeSheet();
+            renderList();
+          }
+        }
+      }, [icon(opt.icon), element("span", { text: opt.label })]);
+    });
+    const sheet = showBottomSheet({
+      title: translateSource("Trier par"),
+      position: "center",
+      children
+    });
+    closeSheet = sheet.close;
+  }
+
+  function openMoveBottomSheet() {
+    const ids = [...state.selectedIds];
+    if (!ids.length) return;
+    let closeSheet = () => {};
+    const children = FOLDERS.map((folder) => element("button", {
+      className: "v8-bottom-sheet__action",
+      attributes: { type: "button" },
+      events: {
+        click: () => {
+          closeSheet();
+          bulkAction("move", folder.key);
+        }
+      }
+    }, [icon(folder.icon), element("span", { text: folder.label })]));
+    const sheet = showBottomSheet({
+      title: translateSource("Déplacer vers"),
+      position: "center",
+      children
+    });
+    closeSheet = sheet.close;
+  }
+
+  function selectedMessagesHaveLabel(label) {
+    const ids = [...state.selectedIds];
+    if (!ids.length) return false;
+    return state.messages
+      .filter((m) => ids.includes(String(m.id)))
+      .every((m) => (m.labels || []).some((l) => (l?.name || l) === label.name));
+  }
+
+  function openLabelBottomSheet() {
+    const ids = [...state.selectedIds];
+    if (!ids.length) return;
+    let closeSheet = () => {};
+
+    const children = [];
+    if (state.labels.length) {
+      state.labels.forEach((label) => {
+        const hasIt = selectedMessagesHaveLabel(label);
+        children.push(element("button", {
+          className: `v8-bottom-sheet__action${hasIt ? " is-active" : ""}`,
+          attributes: { type: "button" },
+          events: {
+            click: () => {
+              closeSheet();
+              bulkLabel(hasIt, label.name);
+            }
+          }
+        }, [icon(hasIt ? "x" : "tag"), element("span", { text: label.name })]));
+      });
+    } else {
+      children.push(element("p", { className: "v8-mail-bottom-sheet__empty", text: translateSource("Aucune étiquette") }));
+    }
+
+    const newLabelInput = element("input", {
+      className: "v8-input",
+      attributes: { type: "text", placeholder: translateSource("Nouvelle étiquette"), maxlength: "32" }
+    });
+    const createBtn = actionButton({
+      actionId: "v8.mail.label.create",
+      variant: "secondary",
+      className: "v8-mail-bottom-sheet__create-btn"
+    }, [element("span", { text: translateSource("Créer") })]);
+    createBtn.addEventListener("click", async () => {
+      const name = newLabelInput.value.trim();
+      if (!name) {
+        mailNotify({ type: "warning", title: translateSource("Étiquette"), message: translateSource("Nom requis.") });
+        return;
+      }
+      closeSheet();
+      await createLabel(name);
+      bulkLabel(false, name);
+    });
+    newLabelInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && newLabelInput.value.trim()) {
+        event.preventDefault();
+        createBtn.click();
+      }
+    });
+
+    const createGroup = element("div", { className: "v8-mail-bottom-sheet__create" }, [
+      newLabelInput,
+      createBtn
+    ]);
+    children.push(createGroup);
+
+    const sheet = showBottomSheet({
+      title: translateSource("Étiqueter"),
+      position: "center",
+      children
+    });
+    closeSheet = sheet.close;
   }
 
   async function loadTemplates() {
@@ -1138,17 +1382,20 @@ export function mountMail(stage, options = {}) {
     renderList();
     try {
       let result;
+      const searchFolder = state.filters.folder || state.folder;
       if (hasActiveFilters()) {
         result = await mailApi.advancedSearch(buildFilterPayload());
-      } else if (state.folder === "drafts") {
+      } else if (searchFolder === "drafts") {
         result = await mailApi.drafts({ limit: 50, offset: 0 });
       } else {
-        result = await mailApi.inbox({ folder: state.folder, limit: 50, offset: 0 });
+        result = await mailApi.inbox({ folder: searchFolder, limit: 50, offset: 0 });
       }
       state.messages = Array.isArray(result) ? result : (result?.data || []);
+      applyClientFilters();
+      sortMessages();
       const unread = result?.unread_count;
       state.counts[state.folder] = typeof unread === "number" ? unread : state.messages.filter((m) => !m.is_read).length;
-      await mailCache.putMessages(state.folder, state.messages);
+      await mailCache.putMessages(searchFolder, state.messages);
     } catch (error) {
       state.error = error;
       mailNotify({ type: "error", title: translateSource("Mail"), message: errorDescription(error) });
@@ -1290,6 +1537,8 @@ export function mountMail(stage, options = {}) {
       mailNotify({ type: "error", title: translateSource("Recherche"), message: errorDescription(error) });
       state.messages = [];
     }
+    applyClientFilters();
+    sortMessages();
     state.loading = false;
     renderList();
     renderSidebar();
@@ -1503,7 +1752,8 @@ export function mountMail(stage, options = {}) {
       folderList.append(element("li", {}, [btn]));
     });
 
-    const collapseBtn = element("button", { className: "v8-icon-button v8-mail-sidebar__collapse", attributes: { type: "button", "aria-label": state.sidebarCollapsed ? translateSource("Étendre") : translateSource("Réduire") } }, [icon(state.sidebarCollapsed ? "chevrons-right" : "chevrons-left"), element("span", { text: state.sidebarCollapsed ? translateSource("Étendre") : translateSource("Réduire") })]);
+    const collapseLabel = state.sidebarCollapsed ? translateSource("Étendre") : translateSource("Réduire");
+    const collapseBtn = element("button", { className: "v8-icon-button v8-mail-sidebar__collapse", attributes: { type: "button", "aria-label": collapseLabel, "data-tooltip": collapseLabel } }, [icon(state.sidebarCollapsed ? "chevrons-right" : "chevrons-left"), element("span", { text: collapseLabel })]);
     collapseBtn.addEventListener("click", () => { state.sidebarCollapsed = !state.sidebarCollapsed; sidebar.classList.toggle("is-collapsed", state.sidebarCollapsed); main.classList.toggle("is-sidebar-collapsed", state.sidebarCollapsed); });
 
     if (state.morePanelOpen) {
@@ -1987,8 +2237,20 @@ export function mountMail(stage, options = {}) {
   function renderBulkToolbar() {
     const count = state.selectedIds.size;
     const hasSelection = count > 0;
-    if (hasSelection && listTitle) {
-      listTitle.textContent = translateSource("{0} sélectionné{1}").replace("{0}", count).replace("{1}", count > 1 ? "s" : "");
+    if (listTitle) {
+      if (hasSelection) {
+        listTitle.textContent = translateSource("{0} sélectionné{1}").replace("{0}", count).replace("{1}", count > 1 ? "s" : "");
+      } else {
+        let label;
+        if (hasActiveFilters()) {
+          label = translateSource("Recherche avancée");
+        } else if (state.isSearch) {
+          label = `${translateSource("Recherche")} : ${state.query}`;
+        } else {
+          label = FOLDERS.find((f) => f.key === state.folder)?.label || "";
+        }
+        listTitle.textContent = `${label} (${state.messages.length})`;
+      }
     }
     if (masterCheckbox) {
       masterCheckbox.disabled = !(state.messages || []).length;
@@ -1999,6 +2261,11 @@ export function mountMail(stage, options = {}) {
     if (markReadBtn) markReadBtn.disabled = !hasSelection;
     if (markUnreadBtn) markUnreadBtn.disabled = !hasSelection;
     if (snoozeBtn) snoozeBtn.disabled = !hasSelection;
+    if (moveBtn) { moveBtn.disabled = !hasSelection; moveBtn.classList.toggle("is-hidden", !hasSelection); }
+    if (labelBtn) { labelBtn.disabled = !hasSelection; labelBtn.classList.toggle("is-hidden", !hasSelection); }
+    if (refreshBtn) refreshBtn.classList.toggle("is-hidden", hasSelection);
+    if (moreBtn) moreBtn.classList.toggle("is-hidden", hasSelection);
+    if (toolbar) toolbar.classList.toggle("is-selection", hasSelection);
   }
 
   function selectAll() {
@@ -2032,9 +2299,7 @@ export function mountMail(stage, options = {}) {
       mailNotify({ type: "success", title: translateSource("Action groupée"), message: translateSource("Action appliquée.") });
       (state.messages || []).forEach((m) => {
         if (!ids.includes(String(m.id))) return;
-        if (action === "move" && (target === "archive" || target === "trash")) {
-          // local removal handled by loadFolder
-        } else if (action === "mark_read") {
+        if (action === "mark_read") {
           m.is_read = target === true || target === "true";
         } else if (action === "mark_important") {
           m.is_important = target === true || target === "true";
@@ -2053,26 +2318,29 @@ export function mountMail(stage, options = {}) {
     }
   }
 
-  async function bulkLabel(remove) {
-    const labelName = globalThis.prompt?.(remove ? translateSource("Étiquette à retirer") : translateSource("Étiquette à assigner"));
-    if (!labelName) return;
+  async function bulkLabel(remove, labelName = "") {
+    const name = String(labelName || "").trim();
+    if (!name) return;
     const ids = [...state.selectedIds];
     if (!ids.length) return;
     try {
-      await withQueue("label", { ids, label: labelName.trim(), remove });
+      await withQueue("label", { ids, label: name, remove });
       mailNotify({ type: "success", title: translateSource("Étiquette"), message: remove ? translateSource("Étiquette retirée.") : translateSource("Étiquette assignée.") });
       (state.messages || []).forEach((m) => {
         if (!ids.includes(String(m.id))) return;
         if (remove) {
-          m.labels = (m.labels || []).filter((l) => (l?.name || l) !== labelName.trim());
+          m.labels = (m.labels || []).filter((l) => (l?.name || l) !== name);
         } else {
-          const matched = state.labels.find((l) => l.name === labelName.trim());
+          const matched = state.labels.find((l) => l.name === name);
           if (matched && !(m.labels || []).some((l) => (l?.id || l) === matched.id)) {
             m.labels = [...(m.labels || []), matched];
           }
         }
       });
+      state.selectedIds.clear();
+      if (masterCheckbox) masterCheckbox.checked = false;
       renderList();
+      renderBulkToolbar();
       if (state.selected && ids.includes(String(state.selected.id))) renderReading();
     } catch (error) {
       mailNotify({ type: "error", title: translateSource("Étiquette"), message: errorDescription(error) });
@@ -2225,6 +2493,7 @@ export function mountMail(stage, options = {}) {
       masterCheckbox && (masterCheckbox.checked = (state.messages || []).length > 0 && (state.messages || []).every((m) => state.selectedIds.has(String(m.id))));
     }
     renderBulkToolbar();
+    sortMessages();
     messageList.replaceChildren();
 
     if (state.loading && !state.messages.length) {
@@ -3192,6 +3461,8 @@ export function mountMail(stage, options = {}) {
     if (draftTimer) clearTimeout(draftTimer);
     globalThis.removeEventListener?.("online", onOnline);
     globalThis.removeEventListener?.("offline", onOffline);
+    if (filterCloseHandler) document.removeEventListener("click", filterCloseHandler);
+    if (filterKeyHandler) document.removeEventListener("keydown", filterKeyHandler);
     page.remove();
   };
 }

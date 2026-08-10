@@ -2476,6 +2476,10 @@ const ENTRIES = {
   "Vue d'ensemble Mission Control (F3)": {"fr":"Vue d'ensemble Mission Control (F3)","en":"Mission Control overview (F3)","es":"Vista general de Mission Control (F3)","de":"Mission-Control-Übersicht (F3)"},
   "Personnaliser le Dock": {"fr":"Personnaliser le Dock","en":"Customize Dock","es":"Personalizar Dock","de":"Dock anpassen"},
   "Ouvrir toutes les applications": {"fr":"Ouvrir toutes les applications","en":"Open all applications","es":"Abrir todas las aplicaciones","de":"Alle Apps öffnen"},
+  "Trier par": {"fr":"Trier par","en":"Sort by","es":"Ordenar por","de":"Sortieren nach"},
+  "Déplacer vers": {"fr":"Déplacer vers","en":"Move to","es":"Mover a","de":"Verschieben nach"},
+  "Destinataires": {"fr":"Destinataires","en":"Recipients","es":"Destinatarios","de":"Empfänger"},
+  "Aucune étiquette": {"fr":"Aucune étiquette","en":"No label","es":"Sin etiqueta","de":"Kein Tag"},
 };
 Object.keys(ENTRIES).forEach((key) => Object.freeze(ENTRIES[key]));
 Object.freeze(ENTRIES);

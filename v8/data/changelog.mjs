@@ -24,6 +24,13 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v316", "2026-08-18", "Mail : refonte premium Phase 2", [
+    { kind: "feature", text: "Barre d'outils contextuelle avec label N selectionne(s), boutons Deplacer/Etiqueter et masquage d'Actualiser/Plus en selection." },
+    { kind: "feature", text: "Infobulles data-tooltip sur tous les boutons d'icone du Mail (menu, recherche, cloche, aide, profil, selection, actions, filtres, tri, composer, reduction)." },
+    { kind: "feature", text: "Popover de filtre ancre au bouton Filtres, avec champ Destinataire (filtrage client sur to_addresses) et en-tete Recherche avancee." },
+    { kind: "feature", text: "Menu de tri (Plus recent / Plus ancien / Expediteur / Non lus) avec tri cote client." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v316." }
+  ]),
   entry("v315", "2026-08-18", "Mail : refonte premium Phase 1", [
     { kind: "feature", text: "En-tete collante v8-mail-header avec titre, menu mobile, recherche, cloche, profil et aide." },
     { kind: "feature", text: "Barre d'outils collante v8-mail-toolbar avec case principale, actions groupées, filtre, tri et composer." },

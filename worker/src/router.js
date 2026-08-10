@@ -56,6 +56,7 @@ import { weatherRoute } from "./routes/weather.js";
 import { youtubeActivityRoute, youtubeOAuthDisconnectRoute, youtubeOAuthExchangeRoute } from "./routes/youtube-oauth.js";
 import { signOutRoute } from "./routes/signout.js";
 import { teamInviteRoute } from "./routes/team-invite.js";
+import itemsRoute from "./routes/items.js";
 import {
   mailAliasRoute, mailBulkActionRoute, mailContactsRoute, mailDraftsRoute, mailInboxRoute,
   mailLabelsRoute, mailMoveRoute, mailReadRoute, mailScheduleRoute, mailSearchRoute,
@@ -288,6 +289,20 @@ export const ROUTES = Object.freeze([
   route("mail.lists.members.add", "/api/mail/lists/members", mailListsRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
   route("mail.lists.members.remove", "/api/mail/lists/members", mailListsRoute, { method: "DELETE", service: "mail", rateLimit: "standard" }),
   route("mail.lists.send", "/api/mail/lists/send", mailListsRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+
+  // Sync (notes, tasks, events)
+  route("items.notes", "/api/notes", itemsRoute, { service: "sync" }),
+  route("items.notes.create", "/api/notes", itemsRoute, { method: "POST", service: "sync", action: "note" }),
+  route("items.notes.update", "/api/notes", itemsRoute, { method: "PATCH", service: "sync", action: "note" }),
+  route("items.notes.delete", "/api/notes", itemsRoute, { method: "DELETE", service: "sync", action: "note" }),
+  route("items.tasks", "/api/tasks", itemsRoute, { service: "sync" }),
+  route("items.tasks.create", "/api/tasks", itemsRoute, { method: "POST", service: "sync", action: "task" }),
+  route("items.tasks.update", "/api/tasks", itemsRoute, { method: "PATCH", service: "sync", action: "task" }),
+  route("items.tasks.delete", "/api/tasks", itemsRoute, { method: "DELETE", service: "sync", action: "task" }),
+  route("items.events", "/api/events", itemsRoute, { service: "sync" }),
+  route("items.events.create", "/api/events", itemsRoute, { method: "POST", service: "sync", action: "event" }),
+  route("items.events.update", "/api/events", itemsRoute, { method: "PATCH", service: "sync", action: "event" }),
+  route("items.events.delete", "/api/events", itemsRoute, { method: "DELETE", service: "sync", action: "event" }),
 
   // Webhook
   route("webhooks.mail", "/api/webhooks/mail", webhookMailRoute, { method: "POST", public: true, rateLimit: "standard" })

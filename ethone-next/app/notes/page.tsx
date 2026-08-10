@@ -1,25 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import { useItems } from "@/lib/hooks/useItems";
 import Card3D from "@/components/Card3D";
-import { NotebookPen, Plus, Trash2 } from "lucide-react";
+import { NotebookPen, Plus, Trash2, Loader2 } from "lucide-react";
 
 export default function NotesPage() {
-  const [notes, setNotes] = useState<{ id: number; title: string; body: string }[]>([
-    { id: 1, title: "Idée rapide", body: "Ne pas oublier de tester le nouveau dashboard." },
-  ]);
+  const { items, loading, error, create, remove } = useItems("notes");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
 
-  function addNote() {
+  async function addNote() {
     if (!title.trim()) return;
-    setNotes([{ id: Date.now(), title, body }, ...notes]);
+    await create({ title, body });
     setTitle("");
     setBody("");
-  }
-
-  function removeNote(id: number) {
-    setNotes(notes.filter((n) => n.id !== id));
   }
 
   return (
@@ -45,15 +40,27 @@ export default function NotesPage() {
           <button
             type="button"
             onClick={addNote}
-            className="flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white"
+            disabled={loading}
+            className="flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
           >
             <Plus className="h-4 w-4" /> Ajouter
           </button>
         </div>
       </Card3D>
 
+      {error && (
+        <Card3D>
+          <p className="text-sm text-red-400">{error.message}</p>
+        </Card3D>
+      )}
+
       <div className="grid grid-cols-1 gap-4">
-        {notes.map((note) => (
+        {loading && items.length === 0 && (
+          <Card3D>
+            <Loader2 className="h-5 w-5 animate-spin text-[var(--muted)]" />
+          </Card3D>
+        )}
+        {items.map((note) => (
           <Card3D key={note.id}>
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
@@ -65,8 +72,9 @@ export default function NotesPage() {
               </div>
               <button
                 type="button"
-                onClick={() => removeNote(note.id)}
-                className="shrink-0 text-[var(--muted)] hover:text-red-400"
+                onClick={() => remove(note.id)}
+                disabled={loading}
+                className="shrink-0 text-[var(--muted)] hover:text-red-400 disabled:opacity-50"
               >
                 <Trash2 className="h-4 w-4" />
               </button>

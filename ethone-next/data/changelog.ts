@@ -22,6 +22,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Uniformisation pack d\'icones sur les composants + reglages visuels (ombre, fond, radius dock).",
       "Toutes les pages migr\u00e9es au pack d\'ic\u00f4nes, density engine, aurora, presets de mise en page, equalizer live.",
       "Sound packs v1 : Web Audio API, 4 packs, click/hover/success/error/toggle/notification.",
+      "Toast notifications avec animations + i18n complet (fr, en, es, de)."
       "Plugins tiers v1 : page /plugins avec statut live et ouverture fenêtre.",
       "Macros persistantes : page /macros, exécution depuis Command Center.",
       "Personas : page /personas avec thèmes.",

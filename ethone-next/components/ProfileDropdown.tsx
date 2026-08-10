@@ -5,16 +5,41 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Settings, LogOut, Sparkles, User } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
+import { useProfile } from "@/lib/hooks/useProfile";
 import { useI18n } from "@/lib/hooks/useI18n";
+
+function Avatar({ url, size = "md" }: { url?: string; size?: "sm" | "md" }) {
+  const className = size === "sm"
+    ? "h-7 w-7 rounded-lg text-xs"
+    : "h-10 w-10 rounded-xl text-sm";
+
+  if (url) {
+    return (
+      <img
+        src={url}
+        alt=""
+        className={`${className} object-cover border border-[var(--border)]`}
+      />
+    );
+  }
+
+  return (
+    <span className={`${className} flex items-center justify-center bg-[var(--accent)] text-white`}>
+      <User className={size === "sm" ? "h-4 w-4" : "h-5 w-5"} />
+    </span>
+  );
+}
 
 export default function ProfileDropdown() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const { user, signOut } = useAuth();
+  const { profile } = useProfile();
   const i18n = useI18n();
 
-  const initial = user?.email?.[0]?.toUpperCase() || "?";
   const email = user?.email || i18n("guest");
+  const displayName = profile?.display_name || profile?.username || email;
+  const avatarUrl = profile?.avatar_url;
 
   async function handleSignOut() {
     await signOut();
@@ -29,9 +54,7 @@ export default function ProfileDropdown() {
         className="flex h-10 items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 text-[var(--foreground)] transition-colors hover:bg-[var(--surface-raised)]"
         aria-label={i18n("account")}
       >
-        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--accent)] text-xs font-bold text-white">
-          {initial}
-        </span>
+        <Avatar url={avatarUrl} size="sm" />
         <ChevronDown
           className={`h-4 w-4 text-[var(--muted)] transition-transform duration-300 ${
             open ? "rotate-180" : ""
@@ -49,11 +72,9 @@ export default function ProfileDropdown() {
             className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] shadow-2xl"
           >
             <div className="flex items-center gap-3 border-b border-[var(--border)] p-4">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--accent)] text-sm font-bold text-white">
-                {initial}
-              </span>
+              <Avatar url={avatarUrl} size="md" />
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold">{initial}</p>
+                <p className="truncate text-sm font-semibold">{displayName}</p>
                 <p className="truncate text-xs text-[var(--muted)]">{email}</p>
               </div>
             </div>

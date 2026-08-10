@@ -16,7 +16,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Mission Control v1 : fenêtres flottantes multi-instances, aperçu, drag/resize.",
       "Command Center v1 : navigation, actions, création rapide, déconnexion.",
       "Live Overlay v4 : cartes riche Spotify/Discord/YouTube, equalizer, controles, avatars.",
-      "Personnalisation v1 : rayon cartes, glass, tilt 3D, densite, taille police.",
+      "Personnalisation v2 : Dock personnalisable + Live cards flip + glass/tilt.",
       "Plugins tiers v1 : page /plugins avec statut live et ouverture fenêtre.",
       "Macros persistantes : page /macros, exécution depuis Command Center.",
       "Personas : page /personas avec thèmes.",

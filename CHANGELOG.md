@@ -12,7 +12,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `Command Center v1` : palette enrichie avec navigation, actions (theme/Brain/focus), création rapide, déconnexion.
 - `Live Overlay v3` : multi-sources (Spotify, Discord, Météo, GitHub, Todoist, YouTube, Reddit), vue étendue, contrôles Spotify.
 - `Plugins tiers v1` : page `/plugins`, statut live, ouverture fenêtre.
-- `Personnalisation v1` : rayon cartes, glass, tilt 3D, densité, taille police.
+- `Personnalisation v2` : Dock personnalisable + Live cards flip + glass/tilt.
 - `Macros persistantes` : page `/macros`, stockage dans `ethone_user_data`, exécution depuis Command Center.
 - `Personas` : page `/personas`, création/application de thèmes perso.
 - `Profil avancé` : page `/profile`, route worker `/api/profile` connectée à `ethone_public_profiles`.

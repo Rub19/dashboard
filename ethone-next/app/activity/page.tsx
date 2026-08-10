@@ -1,6 +1,7 @@
 "use client";
 
 import { useWorker } from "@/lib/hooks/useWorker";
+import { useI18n } from "@/lib/hooks/useI18n";
 import Card3D from "@/components/Card3D";
 import { Activity, Clock } from "lucide-react";
 
@@ -16,16 +17,21 @@ function relativeTime(iso = "") {
 }
 
 export default function ActivityPage() {
-  const { data, loading } = useWorker<any>("/api/cloud/activity");
-  const events: any[] = Array.isArray(data?.data) ? data.data : [];
+  const { data, loading, error } = useWorker<{ data: { events: any[] } }>("/api/cloud/activity");
+  const i18n = useI18n();
+  const events = data?.data?.events || [];
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Activité</h1>
+      <h1 className="text-2xl font-bold">{i18n("activity")}</h1>
       <div className="space-y-3">
         {loading ? (
           <Card3D>
             <div className="h-4 w-1/2 animate-pulse rounded bg-[var(--border)]" />
+          </Card3D>
+        ) : error ? (
+          <Card3D>
+            <p className="text-sm text-red-400">{error.message}</p>
           </Card3D>
         ) : events.length === 0 ? (
           <Card3D>

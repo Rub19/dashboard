@@ -12,7 +12,10 @@ export type Settings = {
   dockItems: string[];
   dockRadius: number;
   shadow: "none" | "sm" | "md" | "glow";
-  backgroundEffect: "solid" | "gradient" | "mesh";
+  backgroundEffect: "solid" | "gradient" | "mesh" | "aurora";
+  backgroundSpeed: number;
+  layoutPreset: "default" | "minimal" | "dock-only" | "sidebar-only";
+  sidebarVisible: boolean;
   masterVolume: boolean;
   soundEffects: boolean;
   notifications: boolean;
@@ -40,6 +43,9 @@ export const DEFAULTS: Settings = {
   dockRadius: 50,
   shadow: "glow",
   backgroundEffect: "gradient",
+  backgroundSpeed: 50,
+  layoutPreset: "default",
+  sidebarVisible: true,
   masterVolume: true,
   soundEffects: false,
   notifications: true,

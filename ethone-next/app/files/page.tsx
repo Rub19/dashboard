@@ -6,7 +6,8 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useDriveFiles } from "@/lib/hooks/useDriveFiles";
 import { buildAuthUrl } from "@/lib/oauth";
 import Card3D from "@/components/Card3D";
-import { FileText, Folder, Heart, HardDrive, Cloud, ExternalLink } from "lucide-react";
+import { Icon } from "@/lib/icons";
+;
 
 function formatBytes(bytes = 0) {
   if (bytes === 0) return "0 B";
@@ -71,7 +72,7 @@ export default function FilesPage() {
             onClick={connectDrive}
             className="flex shrink-0 items-center gap-1.5 rounded-lg bg-[var(--surface-raised)] px-2 py-1 text-xs font-medium text-[var(--foreground)] hover:bg-[var(--accent)]/20"
           >
-            <Cloud className="h-3 w-3" />
+            <Icon name="cloud" className="h-3 w-3" />
             Google Drive
           </button>
         ) : (
@@ -83,7 +84,7 @@ export default function FilesPage() {
         <Card3D>
           <div className="flex items-center gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
-              <HardDrive className="h-5 w-5" />
+              <Icon name="hard-drive" className="h-5 w-5" />
             </span>
             <div className="min-w-0">
               <p className="text-2xl font-bold">{loading ? "-" : files.length}</p>
@@ -120,9 +121,9 @@ export default function FilesPage() {
                   }`}
                 >
                   {file.mimeType === "application/vnd.google-apps.folder" ? (
-                    <Folder className="h-5 w-5" />
+                    <Icon name="folder" className="h-5 w-5" />
                   ) : (
-                    <FileText className="h-5 w-5" />
+                    <Icon name="file-text" className="h-5 w-5" />
                   )}
                 </span>
                 <div className="min-w-0 flex-1">
@@ -132,7 +133,7 @@ export default function FilesPage() {
                     {file.source === "google" && " · Google Drive"}
                   </p>
                 </div>
-                {file.source === "worker" && file.isFavorite && <Heart className="h-4 w-4 text-red-400" />}
+                {file.source === "worker" && file.isFavorite && <Icon name="heart" className="h-4 w-4 text-red-400" />}
                 {file.webViewLink && (
                   <a
                     href={file.webViewLink}
@@ -141,7 +142,7 @@ export default function FilesPage() {
                     className="shrink-0 text-[var(--muted)] hover:text-[var(--accent)]"
                     aria-label="Ouvrir dans Google Drive"
                   >
-                    <ExternalLink className="h-4 w-4" />
+                    <Icon name="external-link" className="h-4 w-4" />
                   </a>
                 )}
               </div>

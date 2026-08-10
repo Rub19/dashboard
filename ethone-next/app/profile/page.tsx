@@ -6,7 +6,8 @@ import Card3D from "@/components/Card3D";
 import { useAuth } from "@/components/AuthProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useProfile } from "@/lib/hooks/useProfile";
-import { Save, Loader2, Check } from "lucide-react";
+import { Icon } from "@/lib/icons";
+;
 
 export default function ProfilePage() {
   const i18n = useI18n();
@@ -115,7 +116,7 @@ export default function ProfilePage() {
               disabled={saving}
               className="flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
             >
-              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              {saving ? <Icon name="loader-2" className="h-4 w-4 animate-spin" /> : <Icon name="save" className="h-4 w-4" />}
               {i18n("save")}
             </button>
 
@@ -129,7 +130,7 @@ export default function ProfilePage() {
 
             {saved && (
               <span className="flex items-center gap-1 text-sm text-emerald-400">
-                <Check className="h-4 w-4" /> Enregistré
+                <Icon name="check" className="h-4 w-4" /> Enregistré
               </span>
             )}
           </div>

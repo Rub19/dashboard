@@ -4,7 +4,8 @@ import { useState } from "react";
 import Card3D from "@/components/Card3D";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useTeam } from "@/lib/hooks/useTeam";
-import { Users, Plus, Loader2, Check, AlertCircle, Trash2 } from "lucide-react";
+import { Icon } from "@/lib/icons";
+;
 
 const ROLES = ["owner", "admin", "member"] as const;
 
@@ -69,20 +70,20 @@ export default function TeamPage() {
               disabled={inviting}
               className="flex shrink-0 items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
             >
-              {inviting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+              {inviting ? <Icon name="loader-2" className="h-4 w-4 animate-spin" /> : <Icon name="plus" className="h-4 w-4" />}
             </button>
           </div>
 
           {inviteError && (
             <p className="flex items-center gap-2 text-sm text-red-400">
-              <AlertCircle className="h-4 w-4" />
+              <Icon name="alert-circle" className="h-4 w-4" />
               {inviteError}
             </p>
           )}
 
           {success && (
             <p className="flex items-center gap-2 text-sm text-emerald-400">
-              <Check className="h-4 w-4" />
+              <Icon name="check" className="h-4 w-4" />
               Invitation envoyée.
             </p>
           )}
@@ -103,7 +104,7 @@ export default function TeamPage() {
             <Card3D key={m.id}>
               <div className="flex items-center gap-3">
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-raised)] text-[var(--muted)]">
-                  <Users className="h-5 w-5" />
+                  <Icon name="users" className="h-5 w-5" />
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium">{m.email}</p>
@@ -122,7 +123,7 @@ export default function TeamPage() {
                 </span>
                 {m.role !== "owner" && (
                   <button type="button" onClick={() => remove(m.id)} className="text-[var(--muted)] hover:text-red-400">
-                    <Trash2 className="h-4 w-4" />
+                    <Icon name="trash-2" className="h-4 w-4" />
                   </button>
                 )}
               </div>

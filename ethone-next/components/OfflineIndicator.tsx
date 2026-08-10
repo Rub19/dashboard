@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { WifiOff } from "lucide-react";
+import { Icon } from "@/lib/icons";
+;
 
 export default function OfflineIndicator() {
   const [online, setOnline] = useState(true);
@@ -21,7 +22,7 @@ export default function OfflineIndicator() {
 
   return (
     <div className="fixed left-0 right-0 top-0 z-[90] flex items-center justify-center gap-2 bg-amber-500/10 px-4 py-1.5 text-xs font-medium text-amber-400 backdrop-blur-sm">
-      <WifiOff className="h-3.5 w-3.5" />
+      <Icon name="wifi-off" className="h-3.5 w-3.5" />
       <span>Vous êtes hors ligne. Certaines fonctionnalités sont indisponibles.</span>
     </div>
   );

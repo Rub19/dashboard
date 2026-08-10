@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import Card3D from "@/components/Card3D";
 import { useUserData } from "@/lib/hooks/useUserData";
-import { Receipt, Plus, Trash2, AlertCircle } from "lucide-react";
+import { Icon } from "@/lib/icons";
+;
 
 const TODAY = new Date();
 const WEEK = Array.from({ length: 7 }, (_, i) => {
@@ -67,7 +68,7 @@ export default function BillsPage() {
             <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
           </div>
           <button onClick={add} className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white">
-            <Plus className="h-4 w-4" /> Ajouter
+            <Icon name="plus" className="h-4 w-4" /> Ajouter
           </button>
         </div>
       </Card3D>
@@ -99,7 +100,7 @@ export default function BillsPage() {
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-500/10 text-rose-400">
-                    <Receipt className="h-5 w-5" />
+                    <Icon name="receipt" className="h-5 w-5" />
                   </span>
                   <div>
                     <p className="font-medium">{b.label}</p>
@@ -110,9 +111,9 @@ export default function BillsPage() {
                   <span className={`text-sm font-semibold ${due ? "text-red-400" : ""}`}>
                     {formatCurrency(data.amount || 0, data.currency || "EUR")}
                   </span>
-                  {due && <AlertCircle className="h-4 w-4 text-red-400" />}
+                  {due && <Icon name="alert-circle" className="h-4 w-4 text-red-400" />}
                   <button onClick={() => remove(b.id)} className="text-[var(--muted)] hover:text-red-400">
-                    <Trash2 className="h-4 w-4" />
+                    <Icon name="trash-2" className="h-4 w-4" />
                   </button>
                 </div>
               </div>

@@ -5,27 +5,17 @@ import Card3D from "@/components/Card3D";
 import { fetchWorker } from "@/lib/api";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { buildAuthUrl } from "@/lib/oauth";
-import {
-  Music,
-  MessageSquare,
-  Gamepad2,
-  Briefcase,
-  Code,
-  HeartPulse,
-  Brain,
-  Blocks,
-  Loader2,
-  Plug,
-} from "lucide-react";
+import { Icon } from "@/lib/icons";
+;
 
-const icons: Record<string, React.ComponentType<{ className?: string }>> = {
-  media: Music,
-  social: MessageSquare,
-  gaming: Gamepad2,
-  productivity: Briefcase,
-  development: Code,
-  health: HeartPulse,
-  ai: Brain,
+const categoryIcons: Record<string, string> = {
+  media: "music",
+  social: "message-square",
+  gaming: "gamepad-2",
+  productivity: "briefcase",
+  development: "code",
+  health: "heart-pulse",
+  ai: "brain",
 };
 
 const INTEGRATIONS = [
@@ -44,14 +34,14 @@ const INTEGRATIONS = [
 ];
 
 const CATEGORIES = [
-  { id: "all", label: "Toutes", icon: Blocks },
-  { id: "media", label: "Médias", icon: Music },
-  { id: "social", label: "Social", icon: MessageSquare },
-  { id: "gaming", label: "Gaming", icon: Gamepad2 },
-  { id: "productivity", label: "Productivité", icon: Briefcase },
-  { id: "development", label: "Développement", icon: Code },
-  { id: "health", label: "Santé", icon: HeartPulse },
-  { id: "ai", label: "IA", icon: Brain },
+  { id: "all", label: "Toutes", icon: "blocks" },
+  { id: "media", label: "Médias", icon: "music" },
+  { id: "social", label: "Social", icon: "message-square" },
+  { id: "gaming", label: "Gaming", icon: "gamepad-2" },
+  { id: "productivity", label: "Productivité", icon: "briefcase" },
+  { id: "development", label: "Développement", icon: "code" },
+  { id: "health", label: "Santé", icon: "heart-pulse" },
+  { id: "ai", label: "IA", icon: "brain" },
 ];
 
 export default function ConnectionsPage() {
@@ -83,29 +73,26 @@ export default function ConnectionsPage() {
       <h1 className="text-2xl font-bold">{i18n("connections")}</h1>
 
       <div className="flex flex-wrap gap-2">
-        {CATEGORIES.map((cat) => {
-          const Icon = cat.icon;
-          return (
-            <button
-              key={cat.id}
-              onClick={() => setFilter(cat.id)}
-              className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-colors ${
-                filter === cat.id
-                  ? "bg-[var(--accent)] text-white"
-                  : "bg-[var(--surface-raised)] text-[var(--muted)] hover:text-[var(--foreground)]"
-              }`}
-            >
-              <Icon className="h-3.5 w-3.5" />
-              {cat.label}
-            </button>
-          );
-        })}
+        {CATEGORIES.map((cat) => (
+          <button
+            key={cat.id}
+            onClick={() => setFilter(cat.id)}
+            className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-colors ${
+              filter === cat.id
+                ? "bg-[var(--accent)] text-white"
+                : "bg-[var(--surface-raised)] text-[var(--muted)] hover:text-[var(--foreground)]"
+            }`}
+          >
+            <Icon name={cat.icon} className="h-3.5 w-3.5" />
+            {cat.label}
+          </button>
+        ))}
       </div>
 
       {loading && (
         <Card3D>
           <div className="flex items-center gap-3">
-            <Loader2 className="h-5 w-5 animate-spin text-[var(--muted)]" />
+            <Icon name="loader-2" className="h-5 w-5 animate-spin text-[var(--muted)]" />
             <p className="text-sm text-[var(--muted)]">Chargement des connexions…</p>
           </div>
         </Card3D>
@@ -113,7 +100,7 @@ export default function ConnectionsPage() {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((integration) => {
-          const Icon = icons[integration.category] || Blocks;
+          const iconName = categoryIcons[integration.category] || "blocks";
           const isConnected = connected[integration.id] === true;
           const isOauth = integration.status === "oauth";
           const clientId = clientIds[integration.id] || "";
@@ -134,7 +121,7 @@ export default function ConnectionsPage() {
             <Card3D key={integration.id}>
               <div className="flex items-start gap-3">
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-raised)] text-[var(--muted)]">
-                  <Icon className="h-5 w-5" />
+                  <Icon name={iconName} className="h-5 w-5" />
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="font-medium">{integration.name}</p>
@@ -187,7 +174,7 @@ export default function ConnectionsPage() {
 
       <Card3D>
         <div className="flex items-center gap-2 text-sm text-[var(--muted)]">
-          <Plug className="h-4 w-4" />
+          <Icon name="plug" className="h-4 w-4" />
           <p>Les connexions OAuth s’activent depuis les widgets du tableau de bord.</p>
         </div>
       </Card3D>

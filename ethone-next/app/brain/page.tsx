@@ -4,7 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import { fetchWorker } from "@/lib/api";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Card3D from "@/components/Card3D";
-import { Brain, Send, Loader2, Trash2 } from "lucide-react";
+import { Icon } from "@/lib/icons";
+;
 
 type Message = { role: "user" | "assistant"; content: string };
 
@@ -75,7 +76,7 @@ export default function BrainPage() {
             onClick={handleClear}
             className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--surface-raised)]"
           >
-            <Trash2 className="h-4 w-4" />
+            <Icon name="trash-2" className="h-4 w-4" />
             {i18n("clear")}
           </button>
         )}
@@ -104,7 +105,7 @@ export default function BrainPage() {
                     }`}
                   >
                     {message.role === "assistant" && (
-                      <Brain className="mt-0.5 h-4 w-4 shrink-0 text-[var(--accent)]" />
+                      <Icon name="brain" className="mt-0.5 h-4 w-4 shrink-0 text-[var(--accent)]" />
                     )}
                     <p className="whitespace-pre-wrap">{message.content}</p>
                   </div>
@@ -115,8 +116,8 @@ export default function BrainPage() {
             {loading && (
               <div className="flex justify-start">
                 <div className="flex items-center gap-2 rounded-2xl bg-[var(--surface-raised)] px-4 py-2.5 text-sm text-[var(--muted)]">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <Brain className="h-4 w-4 text-[var(--accent)]" />
+                  <Icon name="loader-2" className="h-4 w-4 animate-spin" />
+                  <Icon name="brain" className="h-4 w-4 text-[var(--accent)]" />
                 </div>
               </div>
             )}
@@ -150,9 +151,9 @@ export default function BrainPage() {
               className="flex shrink-0 items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
             >
               {loading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Icon name="loader-2" className="h-4 w-4 animate-spin" />
               ) : (
-                <Send className="h-4 w-4" />
+                <Icon name="send" className="h-4 w-4" />
               )}
               {i18n("send")}
             </button>

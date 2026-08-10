@@ -2,18 +2,19 @@
 
 import { useState } from "react";
 import LiquidSidebar from "@/components/LiquidSidebar";
-import { Inbox, Send, FileEdit, Archive, Trash2, AlertTriangle, Mail } from "lucide-react";
+import { Icon } from "@/lib/icons";
+;
 import Card3D from "@/components/Card3D";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useMail } from "@/lib/hooks/useMail";
 
 const folders = [
-  { id: "inbox", label: "Boîte de réception", icon: <Inbox className="h-4 w-4" /> },
-  { id: "sent", label: "Envoyés", icon: <Send className="h-4 w-4" /> },
-  { id: "drafts", label: "Brouillons", icon: <FileEdit className="h-4 w-4" /> },
-  { id: "archive", label: "Archive", icon: <Archive className="h-4 w-4" /> },
-  { id: "trash", label: "Corbeille", icon: <Trash2 className="h-4 w-4" /> },
-  { id: "spam", label: "Spam", icon: <AlertTriangle className="h-4 w-4" /> },
+  { id: "inbox", label: "Boîte de réception", icon: <Icon name="inbox" className="h-4 w-4" /> },
+  { id: "sent", label: "Envoyés", icon: <Icon name="send" className="h-4 w-4" /> },
+  { id: "drafts", label: "Brouillons", icon: <Icon name="file-edit" className="h-4 w-4" /> },
+  { id: "archive", label: "Archive", icon: <Icon name="archive" className="h-4 w-4" /> },
+  { id: "trash", label: "Corbeille", icon: <Icon name="trash-2" className="h-4 w-4" /> },
+  { id: "spam", label: "Spam", icon: <Icon name="alert-triangle" className="h-4 w-4" /> },
 ];
 
 export default function MailPage() {
@@ -53,7 +54,7 @@ export default function MailPage() {
         ) : messages.length === 0 ? (
           <Card3D>
             <div className="flex items-center gap-2 text-sm text-[var(--muted)]">
-              <Mail className="h-4 w-4 shrink-0" />
+              <Icon name="mail" className="h-4 w-4 shrink-0" />
               <span className="min-w-0 truncate">{i18n("noResults")}</span>
             </div>
           </Card3D>

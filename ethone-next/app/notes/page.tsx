@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useItems } from "@/lib/hooks/useItems";
 import Card3D from "@/components/Card3D";
-import { NotebookPen, Plus, Trash2, Loader2 } from "lucide-react";
+import { Icon } from "@/lib/icons";
+;
 
 export default function NotesPage() {
   const { items, loading, error, create, remove } = useItems("notes");
@@ -43,7 +44,7 @@ export default function NotesPage() {
             disabled={loading}
             className="flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
           >
-            <Plus className="h-4 w-4" /> Ajouter
+            <Icon name="plus" className="h-4 w-4" /> Ajouter
           </button>
         </div>
       </Card3D>
@@ -57,7 +58,7 @@ export default function NotesPage() {
       <div className="grid grid-cols-1 gap-4">
         {loading && items.length === 0 && (
           <Card3D>
-            <Loader2 className="h-5 w-5 animate-spin text-[var(--muted)]" />
+            <Icon name="loader-2" className="h-5 w-5 animate-spin text-[var(--muted)]" />
           </Card3D>
         )}
         {items.map((note) => (
@@ -65,7 +66,7 @@ export default function NotesPage() {
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <div className="mb-1 flex items-center gap-2">
-                  <NotebookPen className="h-4 w-4 text-[var(--accent)]" />
+                  <Icon name="notebook-pen" className="h-4 w-4 text-[var(--accent)]" />
                   <p className="font-medium">{note.title}</p>
                 </div>
                 <p className="whitespace-pre-wrap text-sm text-[var(--muted)]">{note.body}</p>
@@ -76,7 +77,7 @@ export default function NotesPage() {
                 disabled={loading}
                 className="shrink-0 text-[var(--muted)] hover:text-red-400 disabled:opacity-50"
               >
-                <Trash2 className="h-4 w-4" />
+                <Icon name="trash-2" className="h-4 w-4" />
               </button>
             </div>
           </Card3D>

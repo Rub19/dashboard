@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useItems } from "@/lib/hooks/useItems";
 import Card3D from "@/components/Card3D";
-import { CircleCheck, Plus, Trash2, Loader2 } from "lucide-react";
+import { Icon } from "@/lib/icons";
+;
 
 export default function TasksPage() {
   const { items, loading, error, create, update, remove } = useItems("tasks");
@@ -42,7 +43,7 @@ export default function TasksPage() {
             disabled={loading}
             className="flex shrink-0 items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
           >
-            <Plus className="h-4 w-4" />
+            <Icon name="plus" className="h-4 w-4" />
           </button>
         </div>
       </Card3D>
@@ -56,7 +57,7 @@ export default function TasksPage() {
       <div className="space-y-3">
         {loading && items.length === 0 && (
           <Card3D>
-            <Loader2 className="h-5 w-5 animate-spin text-[var(--muted)]" />
+            <Icon name="loader-2" className="h-5 w-5 animate-spin text-[var(--muted)]" />
           </Card3D>
         )}
         {items.map((task) => (
@@ -72,7 +73,7 @@ export default function TasksPage() {
                     : "border-[var(--border)]"
                 }`}
               >
-                {task.done && <CircleCheck className="h-4 w-4" />}
+                {task.done && <Icon name="circle-check" className="h-4 w-4" />}
               </button>
               <span
                 className={`min-w-0 flex-1 truncate ${
@@ -87,7 +88,7 @@ export default function TasksPage() {
                 disabled={loading}
                 className="text-[var(--muted)] hover:text-red-400 disabled:opacity-50"
               >
-                <Trash2 className="h-4 w-4" />
+                <Icon name="trash-2" className="h-4 w-4" />
               </button>
             </div>
           </Card3D>

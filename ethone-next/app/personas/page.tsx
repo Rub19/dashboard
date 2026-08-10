@@ -4,7 +4,8 @@ import { useState } from "react";
 import Card3D from "@/components/Card3D";
 import { useUserData } from "@/lib/hooks/useUserData";
 import { useSettings } from "@/components/SettingsProvider";
-import { Users, Plus, Trash2, Check } from "lucide-react";
+import { Icon } from "@/lib/icons";
+;
 
 export default function PersonasPage() {
   const { items: personas, create, remove } = useUserData("persona");
@@ -51,7 +52,7 @@ export default function PersonasPage() {
               <option value="emerald">Emerald</option>
             </select>
             <button type="button" onClick={add} className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white">
-              <Plus className="h-4 w-4" />
+              <Icon name="plus" className="h-4 w-4" />
             </button>
           </div>
         </div>
@@ -65,7 +66,7 @@ export default function PersonasPage() {
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
-                    <Users className="h-5 w-5" />
+                    <Icon name="users" className="h-5 w-5" />
                   </span>
                   <div>
                     <p className="font-medium">{p.label}</p>
@@ -74,10 +75,10 @@ export default function PersonasPage() {
                 </div>
                 <div className="flex items-center gap-1">
                   <button type="button" onClick={() => apply(p)} className="rounded p-1.5 text-emerald-400 hover:bg-emerald-500/10">
-                    <Check className="h-4 w-4" />
+                    <Icon name="check" className="h-4 w-4" />
                   </button>
                   <button type="button" onClick={() => remove(p.id)} className="rounded p-1.5 text-[var(--muted)] hover:text-red-400">
-                    <Trash2 className="h-4 w-4" />
+                    <Icon name="trash-2" className="h-4 w-4" />
                   </button>
                 </div>
               </div>

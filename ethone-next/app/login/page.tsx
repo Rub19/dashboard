@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Card3D from "@/components/Card3D";
-import { Mail, KeyRound, ArrowRight, Loader2 } from "lucide-react";
+import { Icon } from "@/lib/icons";
+;
 import { signInWithOtp, verifyEmailOtp } from "@/lib/auth";
 
 export default function LoginPage() {
@@ -63,7 +64,7 @@ export default function LoginPage() {
                 Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
+                <Icon name="mail" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
                 <input
                   id="email"
                   type="email"
@@ -80,10 +81,10 @@ export default function LoginPage() {
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
               >
                 {loading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Icon name="loader-2" className="h-4 w-4 animate-spin" />
                 ) : (
                   <>
-                    Envoyer le code <ArrowRight className="h-4 w-4" />
+                    Envoyer le code <Icon name="arrow-right" className="h-4 w-4" />
                   </>
                 )}
               </button>
@@ -94,7 +95,7 @@ export default function LoginPage() {
                 Code reçu
               </label>
               <div className="relative">
-                <KeyRound className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
+                <Icon name="key-round" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
                 <input
                   id="code"
                   type="text"
@@ -113,7 +114,7 @@ export default function LoginPage() {
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
               >
                 {loading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Icon name="loader-2" className="h-4 w-4 animate-spin" />
                 ) : (
                   "Vérifier"
                 )}

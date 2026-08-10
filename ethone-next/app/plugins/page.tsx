@@ -4,19 +4,17 @@ import { useRouter } from "next/navigation";
 import Card3D from "@/components/Card3D";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useWindowManager } from "@/components/WindowManagerProvider";
-import {
-  Music, MessageSquare, Code, CircleCheck, Play, MessageCircle, CloudSun,
-  Maximize2, Plug
-} from "lucide-react";
+import { Icon } from "@/lib/icons";
+;
 
 const PLUGINS = [
-  { id: "spotify", label: "Spotify", icon: Music, route: "/notes/" },
-  { id: "discord", label: "Discord", icon: MessageSquare, route: "/notes/" },
-  { id: "github", label: "GitHub", icon: Code, route: "/notes/" },
-  { id: "todoist", label: "Todoist", icon: CircleCheck, route: "/notes/" },
-  { id: "youtube", label: "YouTube", icon: Play, route: "/notes/" },
-  { id: "reddit", label: "Reddit", icon: MessageCircle, route: "/notes/" },
-  { id: "weather", label: "Weather", icon: CloudSun, route: "/notes/" },
+  { id: "spotify", label: "Spotify", icon: "music", route: "/notes/" },
+  { id: "discord", label: "Discord", icon: "message-square", route: "/notes/" },
+  { id: "github", label: "GitHub", icon: "code", route: "/notes/" },
+  { id: "todoist", label: "Todoist", icon: "circle-check", route: "/notes/" },
+  { id: "youtube", label: "YouTube", icon: "play", route: "/notes/" },
+  { id: "reddit", label: "Reddit", icon: "message-circle", route: "/notes/" },
+  { id: "weather", label: "Weather", icon: "cloud-sun", route: "/notes/" },
 ];
 
 export default function PluginsPage() {
@@ -31,7 +29,6 @@ export default function PluginsPage() {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {PLUGINS.map((p) => {
-          const Icon = p.icon;
           const live = records.find((r) => r.source === p.id);
           const connected = live?.status === "connected";
 
@@ -40,7 +37,7 @@ export default function PluginsPage() {
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-raised)] text-[var(--accent)]">
-                    <Icon className="h-5 w-5" />
+                    <Icon name={p.icon} className="h-5 w-5" />
                   </span>
                   <div>
                     <p className="font-medium">{p.label}</p>
@@ -55,14 +52,14 @@ export default function PluginsPage() {
                     className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
                     title="Configurer"
                   >
-                    <Plug className="h-4 w-4" />
+                    <Icon name="plug" className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => openWindow(p.route, p.label)}
                     className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
                     title="Ouvrir"
                   >
-                    <Maximize2 className="h-4 w-4" />
+                    <Icon name="maximize-2" className="h-4 w-4" />
                   </button>
                 </div>
               </div>

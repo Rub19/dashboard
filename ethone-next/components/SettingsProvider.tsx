@@ -47,7 +47,9 @@ export default function SettingsProvider({
     root.dataset.density = settings.densityMode;
     root.dataset.shadow = settings.shadow;
     root.dataset.background = settings.backgroundEffect;
+    root.dataset.layout = settings.layoutPreset;
     root.style.fontSize = `${settings.fontSize}%`;
+    root.style.setProperty("--aurora-speed", `${60 - settings.backgroundSpeed}s`);
   }, [settings]);
 
   function update(partial: Partial<Settings>) {

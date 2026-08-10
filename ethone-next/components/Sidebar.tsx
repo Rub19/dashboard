@@ -5,12 +5,14 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useSettings } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
 
 export default function Sidebar() {
   const [expanded, setExpanded] = useState(false);
   const pathname = usePathname();
   const i18n = useI18n();
+  const { settings } = useSettings();
 
   const navItems = [
     { id: "home", label: i18n("home"), href: "/", icon: "home" },
@@ -32,12 +34,16 @@ export default function Sidebar() {
     { id: "settings", label: i18n("settings"), href: "/settings/", icon: "settings" },
   ];
 
+  if (settings.layoutPreset === "dock-only" || settings.layoutPreset === "minimal" || !settings.sidebarVisible) return null;
+
   return (
     <motion.aside
       initial={false}
       animate={{ width: expanded ? 240 : 72 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="fixed left-0 top-0 z-40 hidden h-screen flex-col border-r border-[var(--border)] bg-[var(--surface)] md:flex"
+      className={`fixed left-0 top-0 z-40 hidden h-screen flex-col border-r border-[var(--border)] md:flex ${
+        settings.glassEnabled ? "bg-[var(--surface)]/80 backdrop-blur-xl" : "bg-[var(--surface)]"
+      }`}
     >
       <div className="flex h-16 items-center px-4">
         <button

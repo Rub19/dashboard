@@ -4,11 +4,12 @@ import { useState } from "react";
 import { useTracker } from "@/lib/hooks/useTracker";
 import Card3D from "@/components/Card3D";
 import LiquidSidebar from "@/components/LiquidSidebar";
-import { RefreshCw, Trophy, Swords, Shield } from "lucide-react";
+import { Icon } from "@/lib/icons";
+;
 
 const tabs = [
-  { id: "valorant", label: "Valorant", icon: <Swords className="h-4 w-4" /> },
-  { id: "lol", label: "League of Legends", icon: <Shield className="h-4 w-4" /> },
+  { id: "valorant", label: "Valorant", icon: <Icon name="swords" className="h-4 w-4" /> },
+  { id: "lol", label: "League of Legends", icon: <Icon name="shield" className="h-4 w-4" /> },
 ];
 
 function MatchCard({ match }: { match: Record<string, string | number | undefined> }) {
@@ -16,7 +17,7 @@ function MatchCard({ match }: { match: Record<string, string | number | undefine
     <Card3D>
       <div className="flex items-center gap-3">
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
-          <Trophy className="h-5 w-5" />
+          <Icon name="trophy" className="h-5 w-5" />
         </span>
         <div className="min-w-0 flex-1">
           <p className="truncate font-medium text-[var(--foreground)]">
@@ -55,7 +56,7 @@ export default function MatchesPage() {
             disabled={syncing}
             className="flex shrink-0 items-center gap-2 rounded-xl bg-[var(--surface-raised)] px-3 py-2 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--accent)]/20 disabled:opacity-50"
           >
-            <RefreshCw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
+            <Icon name="refresh-cw" className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
             Sync
           </button>
         </div>

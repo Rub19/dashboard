@@ -99,6 +99,20 @@ export default function SettingsPage() {
     { id: "airy", label: "Aéré" },
   ] as const;
 
+  const BACKGROUNDS = [
+    { id: "solid", label: "Uni" },
+    { id: "gradient", label: "Dégradé" },
+    { id: "mesh", label: "Mesh" },
+    { id: "aurora", label: "Aurora" },
+  ] as const;
+
+  const LAYOUTS = [
+    { id: "default", label: "Défaut" },
+    { id: "minimal", label: "Minimal" },
+    { id: "dock-only", label: "Dock" },
+    { id: "sidebar-only", label: "Sidebar" },
+  ] as const;
+
   const sections = [
     {
       id: "appearance",
@@ -190,17 +204,33 @@ export default function SettingsPage() {
             ))}
           </div>
           <p className="text-xs text-[var(--muted)]">Fond</p>
-          <div className="grid grid-cols-3 gap-2">
-            {(["solid", "gradient", "mesh"] as const).map((bg) => (
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {BACKGROUNDS.map((bg) => (
               <button
-                key={bg}
+                key={bg.id}
                 type="button"
-                onClick={() => update({ backgroundEffect: bg })}
+                onClick={() => update({ backgroundEffect: bg.id })}
                 className={`rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
-                  settings.backgroundEffect === bg ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                  settings.backgroundEffect === bg.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
                 }`}
               >
-                {bg === "solid" ? "Uni" : bg === "gradient" ? "Dégradé" : "Mesh"}
+                {bg.label}
+              </button>
+            ))}
+          </div>
+          <Range label="Vitesse du fond" value={settings.backgroundSpeed} onChange={(v) => update({ backgroundSpeed: v })} />
+          <p className="text-xs text-[var(--muted)]">Mise en page</p>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {LAYOUTS.map((l) => (
+              <button
+                key={l.id}
+                type="button"
+                onClick={() => update({ layoutPreset: l.id })}
+                className={`rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
+                  settings.layoutPreset === l.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                }`}
+              >
+                {l.label}
               </button>
             ))}
           </div>

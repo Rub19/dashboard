@@ -4,13 +4,14 @@ import { useMemo, useState } from "react";
 import Card3D from "@/components/Card3D";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useUserData } from "@/lib/hooks/useUserData";
-import { Workflow, Timer, Zap, User, Target, Palette, Gamepad2, Play, Trash2, Plus } from "lucide-react";
+import { Icon } from "@/lib/icons";
+;
 
 const TEMPLATES = [
-  { id: "personal", label: "Personnel", desc: "Essentiel. Une seule source de vérité pour la journée.", icon: User, color: "bg-sky-500/10 text-sky-400" },
-  { id: "focus", label: "Focus", desc: "Deep work sans interruption, notifications masquées.", icon: Target, color: "bg-violet-500/10 text-violet-400" },
-  { id: "studio", label: "Studio", desc: "Création, notes, médias et espace libre.", icon: Palette, color: "bg-emerald-500/10 text-emerald-400" },
-  { id: "gaming", label: "Gaming", desc: "Stats, trackers et sessions en direct.", icon: Gamepad2, color: "bg-amber-500/10 text-amber-400" },
+  { id: "personal", label: "Personnel", desc: "Essentiel. Une seule source de vérité pour la journée.", icon: "user", color: "bg-sky-500/10 text-sky-400" },
+  { id: "focus", label: "Focus", desc: "Deep work sans interruption, notifications masquées.", icon: "target", color: "bg-violet-500/10 text-violet-400" },
+  { id: "studio", label: "Studio", desc: "Création, notes, médias et espace libre.", icon: "palette", color: "bg-emerald-500/10 text-emerald-400" },
+  { id: "gaming", label: "Gaming", desc: "Stats, trackers et sessions en direct.", icon: "gamepad-2", color: "bg-amber-500/10 text-amber-400" },
 ];
 
 export default function FlowsPage() {
@@ -54,7 +55,7 @@ export default function FlowsPage() {
         <Card3D>
           <div className="flex items-center gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
-              <Workflow className="h-5 w-5" />
+              <Icon name="workflow" className="h-5 w-5" />
             </span>
             <div>
               <p className="text-2xl font-bold">{activeCount}</p>
@@ -66,7 +67,7 @@ export default function FlowsPage() {
         <Card3D>
           <div className="flex items-center gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
-              <Timer className="h-5 w-5" />
+              <Icon name="timer" className="h-5 w-5" />
             </span>
             <div>
               <p className="text-2xl font-bold">{flows.length}</p>
@@ -78,7 +79,7 @@ export default function FlowsPage() {
         <Card3D>
           <div className="flex items-center gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
-              <Zap className="h-5 w-5" />
+              <Icon name="zap" className="h-5 w-5" />
             </span>
             <div>
               <p className="text-2xl font-bold">{executions}</p>
@@ -124,21 +125,19 @@ export default function FlowsPage() {
               disabled={loading}
               className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
             >
-              <Plus className="h-4 w-4" /> {i18n("add")}
+              <Icon name="plus" className="h-4 w-4" /> {i18n("add")}
             </button>
           </div>
         </div>
       </Card3D>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {TEMPLATES.map((template) => {
-          const Icon = template.icon;
-          return (
-            <Card3D key={template.id}>
-              <div className="flex items-start gap-3">
-                <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${template.color}`}>
-                  <Icon className="h-5 w-5" />
-                </span>
+        {TEMPLATES.map((template) => (
+          <Card3D key={template.id}>
+            <div className="flex items-start gap-3">
+              <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${template.color}`}>
+                <Icon name={template.icon} className="h-5 w-5" />
+              </span>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">
                     <h2 className="text-sm font-semibold">{template.label}</h2>
@@ -150,8 +149,7 @@ export default function FlowsPage() {
                 </div>
               </div>
             </Card3D>
-          );
-        })}
+          ))}
       </div>
 
       {flows.length > 0 && (
@@ -165,7 +163,7 @@ export default function FlowsPage() {
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${template.color}`}>
-                      <Zap className="h-4 w-4" />
+                      <Icon name="zap" className="h-4 w-4" />
                     </span>
                     <div>
                       <p className="font-medium">{flow.label}</p>
@@ -174,10 +172,10 @@ export default function FlowsPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <button type="button" onClick={() => runFlow(flow.id, flow.count)} className="rounded-xl bg-emerald-500/10 p-2 text-emerald-400 hover:bg-emerald-500/20">
-                      <Play className="h-4 w-4" />
+                      <Icon name="play" className="h-4 w-4" />
                     </button>
                     <button type="button" onClick={() => remove(flow.id)} className="rounded-xl p-2 text-[var(--muted)] hover:text-red-400">
-                      <Trash2 className="h-4 w-4" />
+                      <Icon name="trash-2" className="h-4 w-4" />
                     </button>
                   </div>
                 </div>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { fetchWorker } from "@/lib/api";
 import { Icon } from "@/lib/icons";
+import Equalizer from "./Equalizer";
 
 const STATUS = {
   connected: "text-emerald-400",
@@ -86,11 +87,7 @@ export default function LiveWidgets() {
                         <img src={record.image} alt="" className="h-24 w-24 rounded-xl object-cover shadow-lg" />
                         <div className="flex flex-col gap-1 pb-1">
                           <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">LIVE</span>
-                          <div className="flex gap-0.5">
-                            {[...Array(4)].map((_, i) => (
-                              <span key={i} className="h-4 w-1 animate-pulse rounded-full bg-emerald-400" style={{ animationDelay: `${i * 100}ms` }} />
-                            ))}
-                          </div>
+                          <Equalizer bars={6} className="h-5" />
                         </div>
                       </div>
                     )}

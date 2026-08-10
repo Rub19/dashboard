@@ -33,7 +33,7 @@ export default function Dock() {
   const i18n = useI18n();
   const [expanded, setExpanded] = useState(false);
 
-  if (!settings.dockVisible) return null;
+  if (!settings.dockVisible || settings.layoutPreset === "sidebar-only" || settings.layoutPreset === "minimal") return null;
 
   function visibleItems() {
     return settings.dockItems

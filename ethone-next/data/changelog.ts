@@ -19,7 +19,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Personnalisation v2 : Dock personnalisable + Live cards flip + glass/tilt.",
       "ProfileDropdown : avatar/icone personne, plus de lettre.",
       "Icon packs : Lucide, Phosphor, Tabler, Heroicons, Radix + densite mode.",
-      "Uniformisation pack d\'icones sur les composants + reglages visuels (ombre, fond, radius dock)."
+      "Uniformisation pack d\'icones sur les composants + reglages visuels (ombre, fond, radius dock).",
       "Plugins tiers v1 : page /plugins avec statut live et ouverture fenêtre.",
       "Macros persistantes : page /macros, exécution depuis Command Center.",
       "Personas : page /personas avec thèmes.",

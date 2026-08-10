@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Card3D from "@/components/Card3D";
-import { Timer, Play, Pause, RotateCcw, Coffee, Brain } from "lucide-react";
+import { Icon } from "@/lib/icons";
+;
 
 const MODES = {
   pomodoro: { label: "Pomodoro", minutes: 25, color: "text-rose-400" },
@@ -98,7 +99,7 @@ export default function FocusPage() {
             onClick={() => setRunning(!running)}
             className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--accent)] text-white transition-opacity hover:opacity-90"
           >
-            {running ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+            {running ? <Icon name="pause" className="h-5 w-5" /> : <Icon name="play" className="h-5 w-5" />}
           </button>
           <button
             type="button"
@@ -108,7 +109,7 @@ export default function FocusPage() {
             }}
             className="flex h-12 w-12 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
           >
-            <RotateCcw className="h-5 w-5" />
+            <Icon name="rotate-ccw" className="h-5 w-5" />
           </button>
         </div>
       </Card3D>
@@ -116,21 +117,21 @@ export default function FocusPage() {
       <div className="grid grid-cols-3 gap-3">
         <Card3D>
           <div className="flex flex-col items-center gap-1 text-center">
-            <Brain className="h-5 w-5 text-[var(--accent)]" />
+            <Icon name="brain" className="h-5 w-5 text-[var(--accent)]" />
             <p className="text-lg font-bold">0</p>
             <p className="text-[10px] text-[var(--muted)]">Pomodoros</p>
           </div>
         </Card3D>
         <Card3D>
           <div className="flex flex-col items-center gap-1 text-center">
-            <Timer className="h-5 w-5 text-amber-400" />
+            <Icon name="timer" className="h-5 w-5 text-amber-400" />
             <p className="text-lg font-bold">0 min</p>
             <p className="text-[10px] text-[var(--muted)]">Focus total</p>
           </div>
         </Card3D>
         <Card3D>
           <div className="flex flex-col items-center gap-1 text-center">
-            <Coffee className="h-5 w-5 text-emerald-400" />
+            <Icon name="coffee" className="h-5 w-5 text-emerald-400" />
             <p className="text-lg font-bold">0</p>
             <p className="text-[10px] text-[var(--muted)]">Pauses</p>
           </div>

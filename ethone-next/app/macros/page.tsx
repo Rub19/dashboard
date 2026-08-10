@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Card3D from "@/components/Card3D";
 import { useUserData } from "@/lib/hooks/useUserData";
-import { Workflow, Plus, Trash2 } from "lucide-react";
+import { Icon } from "@/lib/icons";
+;
 
 const ACTIONS = [
   { id: "navigate", label: "Ouvrir page", defaults: { href: "/" } },
@@ -62,7 +63,7 @@ export default function MacrosPage() {
               onClick={add}
               className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white"
             >
-              <Plus className="h-4 w-4" />
+              <Icon name="plus" className="h-4 w-4" />
             </button>
           </div>
         </div>
@@ -76,7 +77,7 @@ export default function MacrosPage() {
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
-                    <Workflow className="h-4 w-4" />
+                    <Icon name="workflow" className="h-4 w-4" />
                   </span>
                   <div>
                     <p className="font-medium">{m.label}</p>
@@ -84,7 +85,7 @@ export default function MacrosPage() {
                   </div>
                 </div>
                 <button type="button" onClick={() => remove(m.id)} className="text-[var(--muted)] hover:text-red-400">
-                  <Trash2 className="h-4 w-4" />
+                  <Icon name="trash-2" className="h-4 w-4" />
                 </button>
               </div>
             </Card3D>

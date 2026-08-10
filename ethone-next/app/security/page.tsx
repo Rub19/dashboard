@@ -2,7 +2,8 @@
 
 import { useWorker } from "@/lib/hooks/useWorker";
 import Card3D from "@/components/Card3D";
-import { Shield, Lock, Smartphone, History } from "lucide-react";
+import { Icon } from "@/lib/icons";
+;
 
 type SecurityEvent = {
   id?: string;
@@ -25,7 +26,7 @@ export default function SecurityPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card3D>
           <div className="flex items-center gap-3">
-            <Shield className="h-8 w-8 text-violet-400" />
+            <Icon name="shield" className="h-8 w-8 text-violet-400" />
             <div>
               <p className="text-sm text-[var(--muted)]">Authentification</p>
               <p className="font-medium">OTP + Passkeys</p>
@@ -34,7 +35,7 @@ export default function SecurityPage() {
         </Card3D>
         <Card3D>
           <div className="flex items-center gap-3">
-            <Lock className="h-8 w-8 text-emerald-400" />
+            <Icon name="lock" className="h-8 w-8 text-emerald-400" />
             <div>
               <p className="text-sm text-[var(--muted)]">Chiffrement</p>
               <p className="font-medium">TLS + Tokens JWT</p>
@@ -43,7 +44,7 @@ export default function SecurityPage() {
         </Card3D>
         <Card3D>
           <div className="flex items-center gap-3">
-            <Smartphone className="h-8 w-8 text-amber-400" />
+            <Icon name="smartphone" className="h-8 w-8 text-amber-400" />
             <div>
               <p className="text-sm text-[var(--muted)]">Appareils</p>
               <p className="font-medium">Gérer les sessions</p>
@@ -52,7 +53,7 @@ export default function SecurityPage() {
         </Card3D>
         <Card3D>
           <div className="flex items-center gap-3">
-            <History className="h-8 w-8 text-sky-400" />
+            <Icon name="history" className="h-8 w-8 text-sky-400" />
             <div>
               <p className="text-sm text-[var(--muted)]">Historique</p>
               <p className="font-medium">{loading ? "-" : events.length} événements</p>

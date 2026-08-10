@@ -3,7 +3,8 @@
 import { useWorker } from "@/lib/hooks/useWorker";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Card3D from "@/components/Card3D";
-import { Activity, Clock } from "lucide-react";
+import { Icon } from "@/lib/icons";
+;
 
 type ActivityEvent = {
   id?: string;
@@ -50,12 +51,12 @@ export default function ActivityPage() {
             <Card3D key={event.id || i}>
               <div className="flex items-start gap-3">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
-                  <Activity className="h-4 w-4" />
+                  <Icon name="activity" className="h-4 w-4" />
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium">{event.title || event.action || "Événement"}</p>
                   <p className="truncate text-xs text-[var(--muted)]">
-                    <Clock className="mr-1 inline h-3 w-3" />
+                    <Icon name="clock" className="mr-1 inline h-3 w-3" />
                     {relativeTime(event.created_at || event.at)}
                   </p>
                 </div>

@@ -4,7 +4,8 @@ import { useState } from "react";
 import Card3D from "@/components/Card3D";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useUserData } from "@/lib/hooks/useUserData";
-import { LayoutGrid, Plus, Trash2, Layers, ArrowRight } from "lucide-react";
+import { Icon } from "@/lib/icons";
+;
 
 const PRESETS = [
   { id: "focus", label: "Focus", color: "bg-violet-500/20 text-violet-400" },
@@ -44,7 +45,7 @@ export default function SpacesPage() {
         <Card3D>
           <div className="flex items-center gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
-              <LayoutGrid className="h-5 w-5" />
+              <Icon name="layout-grid" className="h-5 w-5" />
             </span>
             <div>
               <p className="text-2xl font-bold">{spaces.length}</p>
@@ -56,7 +57,7 @@ export default function SpacesPage() {
         <Card3D>
           <div className="flex items-center gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
-              <Layers className="h-5 w-5" />
+              <Icon name="layers" className="h-5 w-5" />
             </span>
             <div>
               <p className="text-2xl font-bold">{PRESETS.length}</p>
@@ -83,7 +84,7 @@ export default function SpacesPage() {
             onClick={() => document.getElementById("space-input")?.focus()}
             className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
           >
-            {i18n("add")} <ArrowRight className="h-4 w-4" />
+            {i18n("add")} <Icon name="arrow-right" className="h-4 w-4" />
           </button>
         </div>
       </Card3D>
@@ -105,7 +106,7 @@ export default function SpacesPage() {
             disabled={loading}
             className="flex shrink-0 items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
           >
-            <Plus className="h-4 w-4" />
+            <Icon name="plus" className="h-4 w-4" />
           </button>
         </div>
       </Card3D>
@@ -116,7 +117,7 @@ export default function SpacesPage() {
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
                 <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${colorFor(space.label)}`}>
-                  <LayoutGrid className="h-5 w-5" />
+                  <Icon name="layout-grid" className="h-5 w-5" />
                 </span>
                 <p className="font-medium">{space.label}</p>
               </div>
@@ -125,7 +126,7 @@ export default function SpacesPage() {
                 onClick={() => remove(space.id)}
                 className="text-[var(--muted)] hover:text-red-400"
               >
-                <Trash2 className="h-4 w-4" />
+                <Icon name="trash-2" className="h-4 w-4" />
               </button>
             </div>
           </Card3D>

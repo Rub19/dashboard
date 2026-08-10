@@ -5,7 +5,8 @@ import { useItems } from "@/lib/hooks/useItems";
 import { useCalendarEvents } from "@/lib/hooks/useCalendarEvents";
 import { buildAuthUrl } from "@/lib/oauth";
 import Card3D from "@/components/Card3D";
-import { CalendarDays, ChevronLeft, ChevronRight, Plus, Trash2, Loader2, Cloud } from "lucide-react";
+import { Icon } from "@/lib/icons";
+;
 
 const DAYS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 
@@ -83,7 +84,7 @@ export default function CalendarPage() {
             onClick={prev}
             className="rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] p-2 text-[var(--muted)] hover:text-[var(--foreground)]"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <Icon name="chevron-left" className="h-4 w-4" />
           </button>
           <span className="min-w-32 text-center text-sm font-medium capitalize">{monthName}</span>
           <button
@@ -91,7 +92,7 @@ export default function CalendarPage() {
             onClick={next}
             className="rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] p-2 text-[var(--muted)] hover:text-[var(--foreground)]"
           >
-            <ChevronRight className="h-4 w-4" />
+            <Icon name="chevron-right" className="h-4 w-4" />
           </button>
         </div>
       </div>
@@ -112,7 +113,7 @@ export default function CalendarPage() {
             disabled={itemsLoading}
             className="flex shrink-0 items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
           >
-            <Plus className="h-4 w-4" />
+            <Icon name="plus" className="h-4 w-4" />
           </button>
         </div>
 
@@ -154,7 +155,7 @@ export default function CalendarPage() {
       <Card3D>
         <div className="mb-2 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <CalendarDays className="h-5 w-5 text-[var(--accent)]" />
+            <Icon name="calendar-days" className="h-5 w-5 text-[var(--accent)]" />
             <p className="font-medium">Événements</p>
           </div>
           {!clientId ? (
@@ -163,7 +164,7 @@ export default function CalendarPage() {
               onClick={connectGoogle}
               className="flex shrink-0 items-center gap-1.5 rounded-lg bg-[var(--surface-raised)] px-2 py-1 text-xs font-medium text-[var(--foreground)] hover:bg-[var(--accent)]/20"
             >
-              <Cloud className="h-3 w-3" />
+              <Icon name="cloud" className="h-3 w-3" />
               Google
             </button>
           ) : (
@@ -171,7 +172,7 @@ export default function CalendarPage() {
           )}
         </div>
         {itemsLoading || googleLoading ? (
-          <Loader2 className="h-5 w-5 animate-spin text-[var(--muted)]" />
+          <Icon name="loader-2" className="h-5 w-5 animate-spin text-[var(--muted)]" />
         ) : monthEvents.length === 0 ? (
           <p className="text-sm text-[var(--muted)]">Aucun événement ce mois.</p>
         ) : (
@@ -193,7 +194,7 @@ export default function CalendarPage() {
                     disabled={itemsLoading}
                     className="text-[var(--muted)] hover:text-red-400 disabled:opacity-50"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Icon name="trash-2" className="h-4 w-4" />
                   </button>
                 )}
               </div>

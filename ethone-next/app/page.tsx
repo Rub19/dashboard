@@ -5,20 +5,8 @@ import LiveWidgets from "@/components/LiveWidgets";
 import { useHomeData } from "@/lib/hooks/useDashboard";
 import { useMail } from "@/lib/hooks/useMail";
 import { useSettings } from "@/components/SettingsProvider";
-import {
-  Zap,
-  Mail,
-  Activity,
-  Brain,
-  Folder,
-  Heart,
-  Share2,
-  Cloud,
-  Music,
-  Disc,
-  Swords,
-  Shield,
-} from "lucide-react";
+import { Icon } from "@/lib/icons";
+;
 
 function formatBytes(bytes = 0) {
   if (bytes === 0) return "0 B";
@@ -53,7 +41,7 @@ export default function Home() {
         <Card3D>
           <div className="flex items-center gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
-              <Zap className="h-5 w-5" />
+              <Icon name="zap" className="h-5 w-5" />
             </span>
             <div className="min-w-0">
               <p className="text-2xl font-bold">{loading ? "-" : dashboard?.totalFiles ?? 0}</p>
@@ -64,7 +52,7 @@ export default function Home() {
         <Card3D>
           <div className="flex items-center gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
-              <Mail className="h-5 w-5" />
+              <Icon name="mail" className="h-5 w-5" />
             </span>
             <div className="min-w-0">
               <p className="text-2xl font-bold">{mailLoading ? "-" : unreadMail}</p>
@@ -75,7 +63,7 @@ export default function Home() {
         <Card3D>
           <div className="flex items-center gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
-              <Activity className="h-5 w-5" />
+              <Icon name="activity" className="h-5 w-5" />
             </span>
             <div className="min-w-0">
               <p className="text-2xl font-bold">{loading ? "-" : formatBytes(dashboard?.totalSize)}</p>
@@ -86,7 +74,7 @@ export default function Home() {
         <Card3D>
           <div className="flex items-center gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-500/10 text-sky-400">
-              <Brain className="h-5 w-5" />
+              <Icon name="brain" className="h-5 w-5" />
             </span>
             <div className="min-w-0">
               <p className="text-2xl font-bold">{settings.brainEnabled ? "ON" : "OFF"}</p>
@@ -99,7 +87,7 @@ export default function Home() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Card3D>
           <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-[var(--foreground)]">
-            <Music className="h-4 w-4 text-[var(--muted)]" /> Live Now
+            <Icon name="music" className="h-4 w-4 text-[var(--muted)]" /> Live Now
           </h2>
           {loading ? (
             <div className="space-y-3">
@@ -109,7 +97,7 @@ export default function Home() {
           ) : nowPlaying?.title ? (
             <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-500/10 text-green-400">
-                <Disc className="h-5 w-5 animate-spin-slow" />
+                <Icon name="disc" className="h-5 w-5 animate-spin-slow" />
               </span>
               <div className="min-w-0">
                 <p className="truncate font-medium">{nowPlaying.title}</p>
@@ -131,19 +119,19 @@ export default function Home() {
           ) : dashboard ? (
             <div className="grid grid-cols-2 gap-3">
               <div className="flex items-center gap-2">
-                <Folder className="h-4 w-4 text-[var(--muted)]" />
+                <Icon name="folder" className="h-4 w-4 text-[var(--muted)]" />
                 <span className="text-sm">{dashboard.folders} dossiers</span>
               </div>
               <div className="flex items-center gap-2">
-                <Heart className="h-4 w-4 text-[var(--muted)]" />
+                <Icon name="heart" className="h-4 w-4 text-[var(--muted)]" />
                 <span className="text-sm">{dashboard.favorites} favoris</span>
               </div>
               <div className="flex items-center gap-2">
-                <Share2 className="h-4 w-4 text-[var(--muted)]" />
+                <Icon name="share-2" className="h-4 w-4 text-[var(--muted)]" />
                 <span className="text-sm">{dashboard.activeShares} partages</span>
               </div>
               <div className="flex items-center gap-2">
-                <Cloud className="h-4 w-4 text-[var(--muted)]" />
+                <Icon name="cloud" className="h-4 w-4 text-[var(--muted)]" />
                 <span className="text-sm">{dashboard.activeDrops} drops</span>
               </div>
             </div>
@@ -164,9 +152,9 @@ export default function Home() {
               {matches.map((m, i) => (
                 <div key={m.id || i} className="flex items-center gap-2">
                   {m.agent || m.champion ? (
-                    <Swords className="h-4 w-4 text-violet-400" />
+                    <Icon name="swords" className="h-4 w-4 text-violet-400" />
                   ) : (
-                    <Shield className="h-4 w-4 text-sky-400" />
+                    <Icon name="shield" className="h-4 w-4 text-sky-400" />
                   )}
                   <span className="min-w-0 flex-1 truncate text-sm">
                     {m.map || m.mode || "Match"}

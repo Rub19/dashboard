@@ -35,6 +35,14 @@ for (const entry of fs.readdirSync(dist, { withFileTypes: true })) {
   }
 }
 
+const indexHtml = path.join(dist, "index.html");
+const notFoundHtml = path.join(dist, "_not-found.html");
+if (fs.existsSync(indexHtml) && !fs.existsSync(path.join(dist, "404.html"))) {
+  fs.copyFileSync(indexHtml, path.join(dist, "404.html"));
+} else if (fs.existsSync(notFoundHtml) && !fs.existsSync(path.join(dist, "404.html"))) {
+  fs.copyFileSync(notFoundHtml, path.join(dist, "404.html"));
+}
+
 execSync("git add .", { cwd: worktree, stdio: "inherit" });
 execSync(
   'git commit -m "Deploy ethone-next build to gh-pages." --allow-empty',

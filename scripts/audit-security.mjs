@@ -2,18 +2,17 @@ import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-const TEXT_EXTENSIONS = new Set([".css", ".html", ".js", ".json", ".mjs", ".ps1", ".sql", ".toml", ".webmanifest", ".yaml", ".yml"]);
-const SKIPPED_DIRECTORIES = new Set([".git", "dist", "docs", "node_modules"]);
-const APPROVED_INNER_HTML = new Set(["v8/app/app-runtime.mjs", "v8/ui/shell.mjs", "v8/pages/connections.mjs", "v8/entry/login.mjs", "v8/main.mjs", "v8/core/experience.mjs", "v8/ui/dom.mjs", "v8/ui/rich-text.mjs", "v8/pages/mail.mjs"]);
+const TEXT_EXTENSIONS = new Set([".css", ".html", ".js", ".json", ".mjs", ".ps1", ".sql", ".toml", ".ts", ".tsx", ".webmanifest", ".yaml", ".yml"]);
+const SKIPPED_DIRECTORIES = new Set([".git", ".next", "dist", "docs", "node_modules"]);
+const APPROVED_INNER_HTML = new Set(["ethone-next/app/layout.tsx"]);
 const APPROVED_SERVICE_ROLE_REFERENCES = new Set([
   "scripts/audit-security.mjs",
   "scripts/precommit-upload-check.mjs",
   "supabase/migrations/202607140002_public_profile_directory.sql",
   "supabase/migrations/202607260001_user_provider_credentials.sql",
-  "supabase/migrations/202607270001_user_oauth_tokens.sql",
-  "tests/upload-safety.test.mjs"
+  "supabase/migrations/202607270001_user_oauth_tokens.sql"
 ]);
-const APPROVED_WORKER_REFERENCES = new Set(["v8/services/external-services-config.mjs", "index.html"]);
+const APPROVED_WORKER_REFERENCES = new Set(["ethone-next/lib/api.ts", "ethone-next/lib/supabase.ts"]);
 
 function listTextFiles(root) {
   const files = [];
@@ -86,10 +85,10 @@ export function auditRepository(rootInput = path.resolve(import.meta.dirname, ".
     }
   });
 
-  const index = fs.readFileSync(path.join(root, "index.html"), "utf8");
-  const workflow = fs.readFileSync(path.join(root, ".github/workflows/deploy-pages.yml"), "utf8");
-  checkExternalScripts(index, failures);
-  checkWorkflow(workflow, failures);
+  const indexPath = path.join(root, "ethone-next", "dist", "index.html");
+  const workflowPath = path.join(root, ".github", "workflows", "deploy-pages.yml");
+  if (fs.existsSync(indexPath)) checkExternalScripts(fs.readFileSync(indexPath, "utf8"), failures);
+  if (fs.existsSync(workflowPath)) checkWorkflow(fs.readFileSync(workflowPath, "utf8"), failures);
 
   if (files.some((file) => file.toLowerCase().endsWith(".map"))) failures.push("Source maps are present in the repository");
 

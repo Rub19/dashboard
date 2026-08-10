@@ -9,6 +9,10 @@
   --muted: #a1a1aa;
   --accent: #8b5cf6;
   --accent-soft: #ede9fe;
+  --card-radius: 1rem;
+  --density-gap: 1rem;
+  --density-pad: 1.25rem;
+  --glass: 0.95;
 }
 
 @theme inline {

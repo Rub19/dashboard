@@ -3,6 +3,9 @@ export type Settings = {
   theme: "default" | "boreal" | "cyberpunk" | "eclipse" | "emerald";
   fontSize: number;
   density: number;
+  radius: number;
+  glassEnabled: boolean;
+  cardTilt: boolean;
   masterVolume: boolean;
   soundEffects: boolean;
   notifications: boolean;
@@ -20,6 +23,9 @@ export const DEFAULTS: Settings = {
   theme: "default",
   fontSize: 100,
   density: 50,
+  radius: 50,
+  glassEnabled: true,
+  cardTilt: true,
   masterVolume: true,
   soundEffects: false,
   notifications: true,

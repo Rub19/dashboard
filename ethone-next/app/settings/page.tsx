@@ -116,6 +116,9 @@ export default function SettingsPage() {
       children: (
         <div className="space-y-4">
           <Range label={i18n("listDensity")} value={settings.density} onChange={(v) => update({ density: v })} />
+          <Range label="Rayon des cartes" value={settings.radius} onChange={(v) => update({ radius: v })} />
+          <Toggle label="Verre (glassmorphism)" checked={settings.glassEnabled} onChange={(v) => update({ glassEnabled: v })} />
+          <Toggle label="Tilt 3D sur les cartes" checked={settings.cardTilt} onChange={(v) => update({ cardTilt: v })} />
         </div>
       ),
     },

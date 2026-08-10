@@ -40,7 +40,9 @@ export default function SettingsProvider({
     root.style.setProperty("--muted", settings.darkMode ? "#a1a1aa" : "#71717a");
     root.style.setProperty("--accent", theme.accent);
     root.style.setProperty("--font-size", `${settings.fontSize}%`);
-    root.style.setProperty("--density", `${settings.density}%`);
+    root.style.setProperty("--card-radius", `${settings.radius / 16}rem`);
+    root.style.setProperty("--glass", settings.glassEnabled ? "0.85" : "1");
+    root.dataset.cardTilt = settings.cardTilt ? "on" : "off";
     root.style.fontSize = `${settings.fontSize}%`;
   }, [settings]);
 

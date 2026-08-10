@@ -82,6 +82,10 @@ export default function ProfileDropdown() {
               </button>
               <button
                 type="button"
+                onClick={() => {
+                  setOpen(false);
+                  router.push("/changelog");
+                }}
                 className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--surface)]"
               >
                 <Sparkles className="h-4 w-4 text-[var(--muted)]" />

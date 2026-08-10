@@ -24,6 +24,12 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v318", "2026-08-18", "Mail : refonte premium Phase 4", [
+    { kind: "feature", text: "Regroupement des fils de conversation dans la liste avec badge du nombre de messages." },
+    { kind: "feature", text: "Recherche mise en avant : surlignage des termes trouves et badge du dossier d'origine." },
+    { kind: "feature", text: "Glisser-deposer de fichiers pour joindre des pieces jointes en composition." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v318." }
+  ]),
   entry("v317", "2026-08-18", "Mail : refonte premium Phase 3", [
     { kind: "feature", text: "Raccourcis clavier et palette de commandes (Ctrl/Cmd+K, ?, /, Esc) dans Mail." },
     { kind: "feature", text: "Affichage des fils de conversation et pieces jointes avec apercu/telechargement." },

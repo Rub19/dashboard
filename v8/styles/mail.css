@@ -2787,3 +2787,61 @@
     display: none;
   }
 }
+
+/* Phase 4 : fils groupés dans la liste, recherche mise en avant, glisser-déposer des pièces jointes */
+.v8-mail-row__subject-line {
+  display: flex;
+  align-items: center;
+  gap: var(--v8-space-1);
+  min-width: 0;
+}
+
+.v8-mail-row__subject-line .v8-mail-row__subject {
+  min-width: 0;
+}
+
+.v8-mail-row__thread-badge {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--v8-surface-3);
+  color: var(--v8-muted);
+  font-size: var(--v8-font-micro);
+  font-weight: var(--v8-weight-semibold);
+}
+
+.v8-mail-row__folder-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--v8-surface-2);
+  color: var(--v8-muted);
+  font-size: var(--v8-font-micro);
+  white-space: nowrap;
+}
+
+.v8-mail-row__folder-badge i {
+  width: 12px;
+  height: 12px;
+}
+
+.v8-mail-row__highlight {
+  background: var(--v8-accent-soft);
+  color: var(--v8-accent);
+  border-radius: 3px;
+  padding: 0 1px;
+}
+
+.v8-mail-compose__fields.is-dragover {
+  outline: 2px dashed var(--v8-accent-line);
+  outline-offset: -4px;
+  background: var(--v8-accent-soft);
+  border-radius: var(--v8-radius-md);
+}

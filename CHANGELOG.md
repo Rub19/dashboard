@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v318] - 2026-08-18
+
+**Mail : refonte premium Phase 4 — fils groupés dans la liste, recherche enrichie, glisser-déposer**
+
+### Ajoute
+- Regroupement visuel des fils de conversation dans la liste des messages : une seule ligne par fil avec un badge indiquant le nombre de messages associés.
+- Mise en avant des résultats de recherche : surlignage des termes recherchés (expéditeur, sujet, aperçu) et badge de dossier d'origine, la recherche full-text côté serveur (Postgres `tsvector`) portant déjà sur tous les dossiers.
+- Glisser-déposer de fichiers dans la fenêtre de composition pour joindre des pièces jointes, en plus du sélecteur de fichiers existant.
+
+### Version PWA
+- `experience-v318`.
+
 ## [v317] - 2026-08-18
 
 **Mail : refonte premium Phase 3 — raccourcis clavier, palette de commandes, fils, pièces jointes et compose mobile**

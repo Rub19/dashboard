@@ -41,6 +41,23 @@ function formatFullDate(iso) {
   return date.toLocaleString(localeTag());
 }
 
+function highlightMatches(text, query) {
+  const str = String(text || "");
+  const q = String(query || "").trim();
+  if (!q) return [str];
+  const terms = Array.from(new Set(q.split(/\s+/).filter(Boolean)))
+    .map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  if (!terms.length) return [str];
+  const re = new RegExp(`(${terms.join("|")})`, "gi");
+  const parts = str.split(re);
+  if (parts.length <= 1) return [str];
+  return parts
+    .map((part, index) => (part === "" ? null : index % 2 === 1
+      ? element("mark", { className: "v8-mail-row__highlight", text: part })
+      : part))
+    .filter((part) => part !== null);
+}
+
 function text2br(text) {
   return String(text || "").replace(/\n/g, "<br>");
 }
@@ -1166,6 +1183,28 @@ export function mountMail(stage, options = {}) {
       const addrs = Array.isArray(m.to_addresses) ? m.to_addresses : [m.to_address, m.to].filter(Boolean);
       return addrs.some((a) => String(a).toLowerCase().includes(to));
     });
+  }
+
+  function groupThreadRows(messages) {
+    if (!Array.isArray(messages) || !messages.length) return messages || [];
+    const counts = new Map();
+    messages.forEach((m) => {
+      if (!m?.thread_id) return;
+      counts.set(m.thread_id, (counts.get(m.thread_id) || 0) + 1);
+    });
+    const seen = new Set();
+    const rows = [];
+    messages.forEach((m) => {
+      const tid = m?.thread_id;
+      if (tid && counts.get(tid) > 1) {
+        if (seen.has(tid)) return;
+        seen.add(tid);
+        rows.push({ ...m, __threadCount: counts.get(tid) });
+      } else {
+        rows.push(m);
+      }
+    });
+    return rows;
   }
 
   function sortMessages() {
@@ -2577,7 +2616,8 @@ export function mountMail(stage, options = {}) {
       return;
     }
 
-    state.messages.forEach((message) => messageList.append(buildRow(message)));
+    const rows = state.folder === "drafts" ? state.messages : groupThreadRows(state.messages);
+    rows.forEach((message) => messageList.append(buildRow(message)));
     refreshIcons();
   
     } catch (error) {
@@ -2602,6 +2642,8 @@ export function mountMail(stage, options = {}) {
     const date = formatMailDate(message.received_at || message.created_at);
     const hasAttachments = (message.attachments?.length > 0) || message.has_attachments;
     const isSelected = state.selectedIds.has(String(message.id));
+    const searchQuery = state.isSearch && !hasActiveFilters() ? state.query : "";
+    const folderMeta = state.isSearch && message.folder ? FOLDERS.find((f) => f.key === message.folder) : null;
 
     const checkbox = element("input", {
       className: "v8-mail-row__checkbox",
@@ -2620,6 +2662,11 @@ export function mountMail(stage, options = {}) {
       element("span", { className: `v8-mail-row__indicator${message.is_starred ? " is-active" : ""}`, dataset: { action: "star" }, attributes: { role: "button", "aria-label": message.is_starred ? translateSource("Retirer des favoris") : translateSource("Mettre en favori") } }, [icon(message.is_starred ? "star" : "star-off")])
     ]);
 
+    const subjectLine = element("span", { className: "v8-mail-row__subject-line" }, [
+      element("span", { className: "v8-mail-row__subject" }, highlightMatches(subject, searchQuery)),
+      message.__threadCount > 1 ? element("span", { className: "v8-mail-row__thread-badge", text: String(message.__threadCount) }) : null
+    ]);
+
     const row = element("button", {
       className: `v8-mail-row${!message.is_read ? " v8-mail-row--unread" : ""}${state.selected?.id === message.id ? " is-selected" : ""}`,
       attributes: { type: "button" },
@@ -2628,12 +2675,13 @@ export function mountMail(stage, options = {}) {
       checkbox,
       element("span", { className: "v8-mail-avatar v8-mail-row__avatar", text: initials(from) }),
       element("span", { className: "v8-mail-row__main" }, [
-        element("span", { className: "v8-mail-row__from", text: from }),
-        element("span", { className: "v8-mail-row__subject", text: subject }),
-        element("span", { className: "v8-mail-row__preview", text: preview })
+        element("span", { className: "v8-mail-row__from" }, highlightMatches(from, searchQuery)),
+        subjectLine,
+        element("span", { className: "v8-mail-row__preview" }, highlightMatches(preview, searchQuery))
       ]),
       element("span", { className: "v8-mail-row__meta" }, [
         element("span", { className: "v8-mail-row__date", text: date }),
+        folderMeta ? element("span", { className: "v8-mail-row__folder-badge" }, [icon(folderMeta.icon), element("span", { text: folderMeta.label })]) : null,
         indicators
       ])
     ]);
@@ -3390,8 +3438,8 @@ export function mountMail(stage, options = {}) {
     });
     const attachmentList = element("div", { className: "v8-mail-attachments" });
 
-    fileInput.addEventListener("change", (event) => {
-      const files = [...(event.target.files || [])];
+    function ingestFiles(fileList) {
+      const files = [...(fileList || [])];
       files.forEach((file) => {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -3405,6 +3453,10 @@ export function mountMail(stage, options = {}) {
         };
         reader.readAsDataURL(file);
       });
+    }
+
+    fileInput.addEventListener("change", (event) => {
+      ingestFiles(event.target.files);
       fileInput.value = "";
     });
 
@@ -3478,6 +3530,29 @@ export function mountMail(stage, options = {}) {
       fileInput,
       attachmentList
     ]);
+
+    let dropDepth = 0;
+    fields.addEventListener("dragenter", (event) => {
+      if (!event.dataTransfer?.types?.includes("Files")) return;
+      event.preventDefault();
+      dropDepth += 1;
+      fields.classList.add("is-dragover");
+    });
+    fields.addEventListener("dragover", (event) => {
+      if (!event.dataTransfer?.types?.includes("Files")) return;
+      event.preventDefault();
+    });
+    fields.addEventListener("dragleave", () => {
+      dropDepth = Math.max(0, dropDepth - 1);
+      if (dropDepth === 0) fields.classList.remove("is-dragover");
+    });
+    fields.addEventListener("drop", (event) => {
+      if (!event.dataTransfer?.files?.length) return;
+      event.preventDefault();
+      dropDepth = 0;
+      fields.classList.remove("is-dragover");
+      ingestFiles(event.dataTransfer.files);
+    });
 
     const actions = element("footer", { className: "v8-mail-compose__actions" }, [
       ...(isMobile ? [] : [sendBtn]),

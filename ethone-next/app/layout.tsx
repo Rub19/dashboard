@@ -7,6 +7,7 @@ import ProfileDropdown from "@/components/ProfileDropdown";
 import AuthProvider from "@/components/AuthProvider";
 import ServiceWorker from "@/components/ServiceWorker";
 import CommandPalette from "@/components/CommandPalette";
+import MobileNav from "@/components/MobileNav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,7 +38,7 @@ export default function RootLayout({
       <body className="min-h-full bg-[var(--background)] text-[var(--foreground)]">
         <AuthProvider>
           <Sidebar />
-          <div className="ml-[72px] min-h-screen transition-all duration-300">
+          <div className="min-h-screen transition-all duration-300 md:ml-[72px]">
             <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[var(--border)] bg-[var(--background)]/80 px-6 backdrop-blur-md">
               <SearchBar />
               <div className="flex items-center gap-3">
@@ -46,8 +47,9 @@ export default function RootLayout({
               </div>
             </header>
             <ServiceWorker />
-            <main className="p-6">{children}</main>
+            <main className="p-6 pb-24 md:pb-6">{children}</main>
           </div>
+          <MobileNav />
         </AuthProvider>
       </body>
     </html>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Home,
@@ -40,14 +41,14 @@ const navItems = [
 
 export default function Sidebar() {
   const [expanded, setExpanded] = useState(false);
-  const [active, setActive] = useState("home");
+  const pathname = usePathname();
 
   return (
     <motion.aside
       initial={false}
       animate={{ width: expanded ? 240 : 72 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-[var(--border)] bg-[var(--surface)]"
+      className="fixed left-0 top-0 z-40 hidden h-screen flex-col border-r border-[var(--border)] bg-[var(--surface)] md:flex"
     >
       <div className="flex h-16 items-center px-4">
         <button
@@ -76,13 +77,13 @@ export default function Sidebar() {
 
       <nav className="flex-1 space-y-1 px-3 py-2">
         {navItems.map((item) => {
-          const isActive = active === item.id;
+          const isActive = pathname === item.href;
           const Icon = item.icon;
           return (
             <Link
               key={item.id}
               href={item.href}
-              onClick={() => setActive(item.id)}
+              onClick={() => setExpanded(false)}
               data-tooltip={expanded ? undefined : item.label}
               className={`group relative flex h-11 items-center rounded-xl transition-all duration-300 ${
                 isActive

@@ -9,6 +9,7 @@ import ServiceWorker from "@/components/ServiceWorker";
 import CommandPalette from "@/components/CommandPalette";
 import MobileNav from "@/components/MobileNav";
 import SettingsProvider from "@/components/SettingsProvider";
+import SkipLink from "@/components/SkipLink";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,6 +40,7 @@ export default function RootLayout({
       <body className="min-h-full bg-[var(--background)] text-[var(--foreground)]">
         <AuthProvider>
           <SettingsProvider>
+            <SkipLink />
             <Sidebar />
           <div className="min-h-screen transition-all duration-300 md:ml-[72px]">
             <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[var(--border)] bg-[var(--background)]/80 px-6 backdrop-blur-md">
@@ -49,7 +51,9 @@ export default function RootLayout({
               </div>
             </header>
             <ServiceWorker />
-            <main className="p-6 pb-24 md:pb-6">{children}</main>
+            <main id="main-content" className="p-6 pb-24 md:pb-6" tabIndex={-1}>
+              {children}
+            </main>
           </div>
           <MobileNav />
           </SettingsProvider>

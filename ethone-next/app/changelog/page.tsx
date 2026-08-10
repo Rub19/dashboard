@@ -1,10 +1,12 @@
 import Card3D from "@/components/Card3D";
 import { CHANGELOG } from "@/data/changelog";
+import { useI18n } from "@/lib/hooks/useI18n";
 
 export default function ChangelogPage() {
+  const i18n = useI18n();
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Notes de version</h1>
+      <h1 className="text-2xl font-bold">{i18n("changelog")}</h1>
 
       <div className="space-y-4">
         {CHANGELOG.map((entry) => (

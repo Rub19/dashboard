@@ -15,6 +15,7 @@
   --density-pad: 1.25rem;
   --glass: 0.95;
   --shadow: 0 0 40px -12px rgba(139, 92, 246, 0.15);
+  --aurora-speed: 30s;
 }
 
 @theme inline {
@@ -36,8 +37,12 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, color 0.3s ease, font-family 0.3s ease;
 }
+
+[data-font="outfit"] body { font-family: "Outfit", ui-sans-serif, system-ui, sans-serif; }
+[data-font="mono"] body { font-family: var(--font-geist-mono), ui-monospace, monospace; }
+[data-font="serif"] body { font-family: "Source Serif 4", ui-serif, Georgia, serif; }
 
 [data-background="gradient"] body {
   background: radial-gradient(ellipse at top, var(--surface-raised) 0%, var(--background) 50%), var(--background);
@@ -60,12 +65,55 @@ body {
   inset: -50%;
   z-index: -1;
   background:
-    radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.12) 0%, transparent 45%),
-    radial-gradient(circle at 70% 60%, rgba(6, 182, 212, 0.12) 0%, transparent 45%),
-    radial-gradient(circle at 50% 90%, rgba(236, 72, 153, 0.1) 0%, transparent 45%);
+    radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--accent) 20%, transparent) 0%, transparent 45%),
+    radial-gradient(circle at 70% 60%, color-mix(in srgb, var(--accent) 15%, transparent) 0%, transparent 45%),
+    radial-gradient(circle at 50% 90%, color-mix(in srgb, var(--accent) 12%, transparent) 0%, transparent 45%);
   filter: blur(60px);
   animation: aurora var(--aurora-speed, 30s) linear infinite;
 }
+
+[data-wallpaper="nebula"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--accent) 18%, transparent) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, color-mix(in srgb, var(--accent) 12%, transparent) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, color-mix(in srgb, #0f172a 30%, transparent) 0%, transparent 60%),
+    var(--background);
+  filter: blur(40px);
+}
+
+[data-wallpaper="mesh"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(45deg, color-mix(in srgb, var(--accent) 12%, transparent) 0%, transparent 50%),
+    linear-gradient(-45deg, color-mix(in srgb, var(--accent) 10%, transparent) 0%, transparent 50%),
+    var(--background);
+}
+
+[data-wallpaper="noise"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    repeating-radial-gradient(circle at 50% 50%, var(--background) 0, var(--surface) 2px, transparent 3px),
+    var(--background);
+  opacity: 0.35;
+}
+
+[data-accent="mint"] { --accent: #34d399; --accent-soft: #d1fae5; }
+[data-accent="sky"] { --accent: #38bdf8; --accent-soft: #e0f2fe; }
+[data-accent="amber"] { --accent: #f59e0b; --accent-soft: #fef3c7; }
+[data-accent="violet"] { --accent: #8b5cf6; --accent-soft: #ede9fe; }
+[data-accent="rose"] { --accent: #f43f5e; --accent-soft: #ffe4e6; }
+[data-accent="teal"] { --accent: #14b8a6; --accent-soft: #ccfbf1; }
+[data-accent="coral"] { --accent: #f97316; --accent-soft: #ffedd5; }
 
 @keyframes aurora {
   0% { transform: rotate(0deg) scale(1.2); }

@@ -5,6 +5,50 @@ export type ChangelogEntry = {
   items: string[];
 };
 
+const v327_fr: ChangelogEntry = {
+  version: "v327",
+  date: "2026-08-20",
+  title: "Settings avancés + Notification Center",
+  items: [
+    "Paramètres avancés : couleur d’accent, fond d’écran, police, reduced motion, haptics, low data, mode performance, statut, permissions Brain, mémoire Brain.",
+    "Notification Center avec catégories, priorités, marquer comme lu, reporter, effacer.",
+    "Application CSS data-attributes dynamiques pour accents, polices, fonds d’écran.",
+  ],
+};
+
+const v327_en: ChangelogEntry = {
+  version: "v327",
+  date: "2026-08-20",
+  title: "Advanced settings + Notification Center",
+  items: [
+    "Advanced settings: accent color, wallpaper, font family, reduced motion, haptics, low data, performance mode, status, Brain permissions, Brain memory.",
+    "Notification Center with categories, priorities, mark as read, snooze, clear.",
+    "Dynamic CSS data-attributes for accents, fonts, wallpapers.",
+  ],
+};
+
+const v327_es: ChangelogEntry = {
+  version: "v327",
+  date: "2026-08-20",
+  title: "Ajustes avanzados + Centro de notificaciones",
+  items: [
+    "Ajustes avanzados: color de acento, fondo de pantalla, fuente, reduced motion, haptics, low data, modo rendimiento, estado, permisos Brain, memoria Brain.",
+    "Centro de notificaciones con categorías, prioridades, marcar como leído, posponer, borrar.",
+    "Atributos data CSS dinámicos para acentos, fuentes, fondos.",
+  ],
+};
+
+const v327_de: ChangelogEntry = {
+  version: "v327",
+  date: "2026-08-20",
+  title: "Erweiterte Einstellungen + Benachrichtigungszentrale",
+  items: [
+    "Erweiterte Einstellungen: Akzentfarbe, Hintergrundbild, Schriftart, reduced motion, haptics, low data, Leistungsmodus, Status, Brain-Berechtigungen, Brain-Speicher.",
+    "Benachrichtigungszentrale mit Kategorien, Prioritäten, als gelesen markieren, schlummern, löschen.",
+    "Dynamische CSS data-Attribute für Akzente, Schriften, Hintergrundbilder.",
+  ],
+};
+
 const v326_fr: ChangelogEntry = {
   version: "v326",
   date: "2026-08-20",
@@ -137,8 +181,8 @@ const v322_fr: ChangelogEntry = {
 };
 
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
-  en: [v326_en, v325_en,
+  fr: [v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -184,7 +228,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [v326_es, v325_es,
+  es: [v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -230,7 +274,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [v326_de, v325_de,
+  de: [v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

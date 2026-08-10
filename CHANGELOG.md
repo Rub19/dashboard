@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v327] - 2026-08-20
+
+**Settings avancés + Notification Center**
+
+### Ajoute
+- Paramètres avancés : accent, fond d’écran, police, reduced motion, haptics, low data, performance, statut, permissions/mémoire Brain.
+- Notification Center avec catégories, priorités, lu/reporter/effacer.
+- Application dynamique des accents, polices et fonds via data-attributes CSS.
+
+### Version PWA
+- `experience-v327`.
+
 ## [v326] - 2026-08-20
 
 **Toasts sur toutes les actions et pages**

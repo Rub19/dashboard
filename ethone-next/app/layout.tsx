@@ -4,6 +4,7 @@ import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import SearchBar from "@/components/SearchBar";
 import ProfileDropdown from "@/components/ProfileDropdown";
+import NotificationCenter from "@/components/NotificationCenter";
 import AuthProvider from "@/components/AuthProvider";
 import ServiceWorker from "@/components/ServiceWorker";
 import CommandPalette from "@/components/CommandPalette";
@@ -63,6 +64,7 @@ export default function RootLayout({
                   <CommandPaletteProvider>
                     <SearchBar />
                     <div className="flex items-center gap-3">
+                      <NotificationCenter />
                       <CommandPalette />
                       <ProfileDropdown />
                     </div>

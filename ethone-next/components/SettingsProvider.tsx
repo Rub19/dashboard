@@ -38,7 +38,20 @@ export default function SettingsProvider({
     root.style.setProperty("--surface-raised", settings.darkMode ? "#1a1a1e" : "#f4f4f5");
     root.style.setProperty("--border", settings.darkMode ? "#27272a" : "#e4e4e7");
     root.style.setProperty("--muted", settings.darkMode ? "#a1a1aa" : "#71717a");
-    root.style.setProperty("--accent", theme.accent);
+
+    const ACCENTS: Record<string, string> = {
+      violet: "#8b5cf6",
+      mint: "#34d399",
+      sky: "#38bdf8",
+      amber: "#f59e0b",
+      rose: "#f43f5e",
+      teal: "#14b8a6",
+      coral: "#f97316",
+    };
+    const accent = settings.accentColor === "custom" ? settings.customAccent : (ACCENTS[settings.accentColor] || theme.accent);
+    root.style.setProperty("--accent", accent);
+    root.style.setProperty("--accent-soft", accent + "33");
+
     root.style.setProperty("--font-size", `${settings.fontSize}%`);
     root.style.setProperty("--card-radius", `${settings.radius / 16}rem`);
     root.style.setProperty("--dock-radius", `${settings.dockRadius / 16}rem`);
@@ -47,9 +60,17 @@ export default function SettingsProvider({
     root.dataset.density = settings.densityMode;
     root.dataset.shadow = settings.shadow;
     root.dataset.background = settings.backgroundEffect;
+    root.dataset.wallpaper = settings.wallpaper;
+    root.dataset.font = settings.fontFamily;
+    root.dataset.accent = settings.accentColor;
     root.dataset.layout = settings.layoutPreset;
     root.style.fontSize = `${settings.fontSize}%`;
     root.style.setProperty("--aurora-speed", `${60 - settings.backgroundSpeed}s`);
+    if (settings.reducedMotion) {
+      root.setAttribute("data-reduced-motion", "true");
+    } else {
+      root.removeAttribute("data-reduced-motion");
+    }
   }, [settings]);
 
   function update(partial: Partial<Settings>) {

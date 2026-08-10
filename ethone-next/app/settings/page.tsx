@@ -1,6 +1,7 @@
 "use client";
 
 import { useSettings } from "@/components/SettingsProvider";
+import type { BrainPermissions, BrainMemoryCategories } from "@/lib/settings";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Card3D from "@/components/Card3D";
 import { subscribePush, unsubscribePush } from "@/lib/push";
@@ -113,6 +114,69 @@ export default function SettingsPage() {
     { id: "sidebar-only", label: "Sidebar" },
   ] as const;
 
+  const ACCENT_COLORS = [
+    { id: "violet", label: i18n("accentViolet") },
+    { id: "mint", label: i18n("accentMint") },
+    { id: "sky", label: i18n("accentSky") },
+    { id: "amber", label: i18n("accentAmber") },
+    { id: "rose", label: i18n("accentRose") },
+    { id: "teal", label: i18n("accentTeal") },
+    { id: "coral", label: i18n("accentCoral") },
+    { id: "custom", label: i18n("accentCustom") },
+  ] as const;
+
+  const WALLPAPERS = [
+    { id: "none", label: i18n("wallpaperNone") },
+    { id: "aurora", label: i18n("wallpaperAurora") },
+    { id: "nebula", label: i18n("wallpaperNebula") },
+    { id: "mesh", label: i18n("wallpaperMesh") },
+    { id: "noise", label: i18n("wallpaperNoise") },
+  ] as const;
+
+  const FONTS = [
+    { id: "sans", label: i18n("fontSans") },
+    { id: "outfit", label: i18n("fontOutfit") },
+    { id: "mono", label: i18n("fontMono") },
+    { id: "serif", label: i18n("fontSerif") },
+  ] as const;
+
+  const PERFORMANCE_MODES = [
+    { id: "normal", label: i18n("performanceNormal") },
+    { id: "low", label: i18n("performanceLow") },
+  ] as const;
+
+  const STATUSES = [
+    { id: "online", label: i18n("statusOnline") },
+    { id: "busy", label: i18n("statusBusy") },
+    { id: "focus", label: i18n("statusFocus") },
+    { id: "away", label: i18n("statusAway") },
+    { id: "invisible", label: i18n("statusInvisible") },
+  ] as const;
+
+  const BRAIN_PERMISSIONS: { id: keyof BrainPermissions; label: string }[] = [
+    { id: "notes", label: i18n("permNotes") },
+    { id: "tasks", label: i18n("permTasks") },
+    { id: "calendar", label: i18n("permCalendar") },
+    { id: "connections", label: i18n("permConnections") },
+    { id: "gaming", label: i18n("permGaming") },
+    { id: "activity", label: i18n("permActivity") },
+    { id: "files", label: i18n("permFiles") },
+    { id: "profile", label: i18n("permProfile") },
+    { id: "settings", label: i18n("permSettings") },
+    { id: "mail", label: i18n("permMail") },
+  ];
+
+  const BRAIN_MEMORY: { id: keyof BrainMemoryCategories; label: string }[] = [
+    { id: "interface", label: i18n("memInterface") },
+    { id: "habits", label: i18n("memHabits") },
+    { id: "widgets", label: i18n("memWidgets") },
+    { id: "schedules", label: i18n("memSchedules") },
+    { id: "taskTypes", label: i18n("memTaskTypes") },
+    { id: "spaces", label: i18n("memSpaces") },
+    { id: "flows", label: i18n("memFlows") },
+    { id: "goals", label: i18n("memGoals") },
+  ];
+
   const sections = [
     {
       id: "appearance",
@@ -150,6 +214,47 @@ export default function SettingsPage() {
               </button>
             ))}
           </div>
+          <p className="text-xs text-[var(--muted)]">{i18n("accentColor")}</p>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {ACCENT_COLORS.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => update({ accentColor: c.id })}
+                className={`rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
+                  settings.accentColor === c.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                }`}
+              >
+                {c.label}
+              </button>
+            ))}
+          </div>
+          {settings.accentColor === "custom" && (
+            <label className="flex items-center gap-3">
+              <span className="text-sm text-[var(--foreground)]">{i18n("customAccent")}</span>
+              <input
+                type="color"
+                value={settings.customAccent}
+                onChange={(e) => update({ customAccent: e.target.value })}
+                className="h-8 w-12 cursor-pointer rounded border-0 bg-transparent p-0"
+              />
+            </label>
+          )}
+          <p className="text-xs text-[var(--muted)]">{i18n("wallpaper")}</p>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {WALLPAPERS.map((w) => (
+              <button
+                key={w.id}
+                type="button"
+                onClick={() => update({ wallpaper: w.id })}
+                className={`rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
+                  settings.wallpaper === w.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                }`}
+              >
+                {w.label}
+              </button>
+            ))}
+          </div>
         </div>
       ),
     },
@@ -160,6 +265,21 @@ export default function SettingsPage() {
       children: (
         <div className="space-y-4">
           <Range label={i18n("fontSize")} value={settings.fontSize} onChange={(v) => update({ fontSize: v })} />
+          <p className="text-xs text-[var(--muted)]">{i18n("fontFamily")}</p>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {FONTS.map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => update({ fontFamily: f.id })}
+                className={`rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
+                  settings.fontFamily === f.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
         </div>
       ),
     },
@@ -235,6 +355,41 @@ export default function SettingsPage() {
             ))}
           </div>
           <Range label={i18n("dockRadius")} value={settings.dockRadius} onChange={(v) => update({ dockRadius: v })} />
+          <div className="border-t border-[var(--border)] pt-4">
+            <Toggle label={i18n("reducedMotion")} checked={settings.reducedMotion} onChange={(v) => update({ reducedMotion: v })} />
+          </div>
+          <Toggle label={i18n("haptics")} checked={settings.haptics} onChange={(v) => update({ haptics: v })} />
+          <Toggle label={i18n("lowData")} checked={settings.lowData} onChange={(v) => update({ lowData: v })} />
+          <p className="text-xs text-[var(--muted)]">{i18n("performanceMode")}</p>
+          <div className="grid grid-cols-2 gap-2">
+            {PERFORMANCE_MODES.map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => update({ performanceMode: m.id })}
+                className={`rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
+                  settings.performanceMode === m.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                }`}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-[var(--muted)]">{i18n("status")}</p>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {STATUSES.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => update({ status: s.id })}
+                className={`rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
+                  settings.status === s.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                }`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
         </div>
       ),
     },
@@ -316,6 +471,36 @@ export default function SettingsPage() {
           <Toggle label={i18n("securityAlerts")} checked={settings.securityAlerts} onChange={(v) => update({ securityAlerts: v })} />
           <Toggle label={i18n("brain")} checked={settings.brainEnabled} onChange={(v) => update({ brainEnabled: v })} />
           <Toggle label={i18n("liveOverlay")} checked={settings.liveOverlay} onChange={(v) => update({ liveOverlay: v })} />
+          <p className="text-xs text-[var(--muted)]">{i18n("brainPermissions")}</p>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {BRAIN_PERMISSIONS.map((p) => (
+              <Toggle
+                key={p.id}
+                label={p.label}
+                checked={settings.brainPermissions[p.id]}
+                onChange={(v) =>
+                  update({
+                    brainPermissions: { ...settings.brainPermissions, [p.id]: v } as BrainPermissions,
+                  })
+                }
+              />
+            ))}
+          </div>
+          <p className="text-xs text-[var(--muted)]">{i18n("brainMemoryCategories")}</p>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {BRAIN_MEMORY.map((m) => (
+              <Toggle
+                key={m.id}
+                label={m.label}
+                checked={settings.brainMemoryCategories[m.id]}
+                onChange={(v) =>
+                  update({
+                    brainMemoryCategories: { ...settings.brainMemoryCategories, [m.id]: v } as BrainMemoryCategories,
+                  })
+                }
+              />
+            ))}
+          </div>
         </div>
       ),
     },

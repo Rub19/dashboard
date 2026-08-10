@@ -17,6 +17,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `Icon packs` : Lucide, Phosphor, Tabler, Heroicons, Radix avec selecteur dans Settings + mode densité.
 - `Uniformisation pack d'icônes` sur les composants principaux + réglages visuels (ombre, fond, radius dock).
 - Toutes les pages migrées au pack d'icônes, density engine, aurora, presets de mise en page, equalizer live.
+- Sound packs v1 : Web Audio API, 4 packs, click/hover/success/error/toggle/notification.
 - `Macros persistantes` : page `/macros`, stockage dans `ethone_user_data`, exécution depuis Command Center.
 - `Personas` : page `/personas`, création/application de thèmes perso.
 - `Profil avancé` : page `/profile`, route worker `/api/profile` connectée à `ethone_public_profiles`.

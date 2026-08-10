@@ -32,8 +32,8 @@ function brainSuggestion(brain) {
   return element("aside", { className: "v8-empty-state__brain" }, [
     element("span", { className: "v8-empty-state__brain-icon", attributes: { "aria-hidden": "true" } }, [icon("brain")]),
     element("div", { className: "v8-empty-state__brain-copy" }, [
-      element("strong", { text: brain.title || "Suggestion Brain" }),
-      element("p", { text: brain.description || "Brain peut vous aider à préparer la prochaine étape." })
+      element("strong", { text: translateSource(brain.title || "Suggestion Brain") }),
+      element("p", { text: translateSource(brain.description || "Brain peut vous aider à préparer la prochaine étape.") })
     ]),
     brain.action || null
   ]);
@@ -77,9 +77,9 @@ export function emptyState({
   }, [
     visual(iconName),
     element("div", { className: "v8-empty-state__copy" }, [
-      eyebrow ? element("span", { className: "v8-empty-state__eyebrow", text: eyebrow }) : null,
-      element(headingTag, { text: title }),
-      element("p", { text: description })
+      eyebrow ? element("span", { className: "v8-empty-state__eyebrow", text: translateSource(eyebrow) }) : null,
+      element(headingTag, { text: translateSource(title) }),
+      element("p", { text: translateSource(description) })
     ]),
     availableActions.length ? element("div", { className: "v8-empty-state__actions" }, availableActions) : null,
     brainSuggestion(brain)
@@ -99,8 +99,8 @@ export function buildEmptyState({ icon: iconName = "inbox", title = "Rien ici po
     tagName,
     iconName,
     eyebrow: "",
-    title,
-    description: message,
+    title: translateSource(title),
+    description: translateSource(message),
     actions,
     compact: false,
     inline: false,

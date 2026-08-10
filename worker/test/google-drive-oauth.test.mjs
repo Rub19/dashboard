@@ -70,11 +70,13 @@ test("Google Drive files returns recent files using a valid stored token", async
   assert.equal(body.data.files[0].name, "Roadmap.docx");
 });
 
-test("Google Drive files rejects a connection with no stored token", async () => {
+test("Google Drive files returns an empty list when no token is stored", async () => {
   const env = testEnv({ __TEST_FETCH__: supabaseRpcFetch({ getResponse: [] }) });
   const response = await invoke(`/api/google-drive/files?clientId=${CLIENT_ID}`, { env });
-  assert.equal(response.status, 401);
-  assert.equal((await payload(response)).error.code, "AUTH_REQUIRED");
+  assert.equal(response.status, 200);
+  const body = await payload(response);
+  assert.equal(body.ok, true);
+  assert.equal(body.data.files.length, 0);
 });
 
 test("Google Drive disconnect removes the stored token", async () => {

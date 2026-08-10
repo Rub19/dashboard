@@ -63,23 +63,33 @@ export async function googleDriveFilesRoute({ url, env, auth }) {
   const orderBy = queryText(url, "orderBy", { required: false, max: 80 });
   const pageSize = queryInteger(url, "pageSize", { required: false, min: 1, max: 1000, fallback: 50 });
 
-  if (searchQuery) {
-    const result = await searchFiles(env, auth.userId, clientId, searchQuery);
+  try {
+    if (searchQuery) {
+      const result = await searchFiles(env, auth.userId, clientId, searchQuery);
+      return { data: result };
+    }
+
+    if (!parentId && !searchQuery && !pageToken && !orderBy) {
+      const files = await getRecentFiles(env, auth.userId, clientId);
+      return { data: { files, nextPageToken: "" } };
+    }
+
+    const result = await listFiles(env, auth.userId, clientId, {
+      parentId,
+      pageSize,
+      pageToken,
+      orderBy: orderBy || "folder,name"
+    });
     return { data: result };
+  } catch (error) {
+    if (error?.code === "AUTH_REQUIRED" || error?.code === "AUTH_EXPIRED") {
+      return { data: { files: [], nextPageToken: "" } };
+    }
+    if (error?.status >= 500 && error?.status < 600) {
+      return { data: { files: [], nextPageToken: "" } };
+    }
+    throw error;
   }
-
-  if (!parentId && !searchQuery && !pageToken && !orderBy) {
-    const files = await getRecentFiles(env, auth.userId, clientId);
-    return { data: { files, nextPageToken: "" } };
-  }
-
-  const result = await listFiles(env, auth.userId, clientId, {
-    parentId,
-    pageSize,
-    pageToken,
-    orderBy: orderBy || "folder,name"
-  });
-  return { data: result };
 }
 
 export async function googleDriveFileRoute({ url, env, auth }) {

@@ -24,6 +24,13 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v320", "2026-08-18", "QA : internationalisation, erreurs console worker et PWA v320", [
+    { kind: "fix", text: "Gestion des erreurs console 502 (tracker) et 401 (Google Drive) en retournant une reponse ok avec donnees vides." },
+    { kind: "fix", text: "Internationalisation des empty-states, shell, status et widgets." },
+    { kind: "fix", text: "Format de date localise dans le widget Google Drive." },
+    { kind: "improvement", text: "Fallback vers l'anglais dans translateSource quand une langue cible est absente." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v320." }
+  ]),
   entry("v319", "2026-08-18", "QA : i18n Settings, breadcrumb et bouton Nouveau", [
     { kind: "fix", text: "Traductions manquantes de Settings ajoutees au catalogue i18n." },
     { kind: "fix", text: "Correction du breadcrumb contextuel ( comportement du flex et troncature)." },

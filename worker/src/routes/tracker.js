@@ -28,9 +28,16 @@ export async function trackerRoute({ env, url, auth }) {
   assertAllowedQuery(url, ["platform", "identifier"]);
   const platform = queryText(url, "platform", { values: ["origin", "xbl", "psn"], max: 12 });
   const identifier = queryText(url, "identifier", { pattern: PATTERNS.trackerIdentifier, max: 64 });
-  const loader = async () => getTrackerApexProfile(env, platform, identifier, await ownKeyTracker(env, auth));
-  const result = await cachedLoad(`tracker:apex:${platform}:${identifier.toLowerCase()}`, 90, loader);
-  return routeResult(result.data, { source: "tracker", cached: result.cached });
+  try {
+    const loader = async () => getTrackerApexProfile(env, platform, identifier, await ownKeyTracker(env, auth));
+    const result = await cachedLoad(`tracker:apex:${platform}:${identifier.toLowerCase()}`, 90, loader);
+    return routeResult(result.data, { source: "tracker", cached: result.cached });
+  } catch (error) {
+    if (error?.code === "AUTH_REQUIRED" || (error?.status >= 500 && error?.status < 600)) {
+      return routeResult({ available: false }, { source: "tracker", cached: false });
+    }
+    throw error;
+  }
 }
 
 export async function trackerValorantRoute({ env, url, auth }) {

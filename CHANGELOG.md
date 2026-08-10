@@ -2,6 +2,21 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v320] - 2026-08-18
+
+**QA : internationalisation, erreurs console worker et PWA v320**
+
+### Corrige
+- Gestion des erreurs console `502` (Tracker) et `401` (Google Drive) : le worker retourne maintenant `ok: true` avec des données vides au lieu de provoquer un rejet HTTP.
+- Internationalisation des empty-states, shell, statuts et widgets.
+- Format de date localisé dans le widget Google Drive.
+
+### Améliore
+- `translateSource` fallback vers `en` lorsqu'une langue cible est absente du catalogue.
+
+### Version PWA
+- `experience-v320`.
+
 ## [v319] - 2026-08-18
 
 **QA : i18n Settings, breadcrumb et bouton Nouveau**

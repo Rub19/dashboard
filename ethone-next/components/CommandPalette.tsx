@@ -13,6 +13,7 @@ const COMMANDS = [
   { id: "calendar", label: "Calendrier", shortcut: "C", href: "/calendar/" },
   { id: "files", label: "Fichiers", shortcut: "F", href: "/files/" },
   { id: "brain", label: "Brain", shortcut: "B", href: "/brain/" },
+  { id: "focus", label: "Focus", shortcut: "P", href: "/focus/" },
   { id: "matches", label: "Matches", shortcut: "G", href: "/matches/" },
   { id: "connections", label: "Connexions", shortcut: "O", href: "/connections/" },
   { id: "settings", label: "Réglages", shortcut: "S", href: "/settings/" },

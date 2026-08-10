@@ -15,7 +15,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Backend spaces / flows / interactions / bill via ethone_user_data.",
       "Mission Control v1 : fenêtres flottantes multi-instances, aperçu, drag/resize.",
       "Command Center v1 : navigation, actions, création rapide, déconnexion.",
-      "Live Overlay v3 : multi-sources, vue étendue, contrôles Spotify.",
+      "Live Overlay v3 : multi-sources, vue étendue, contrôles Spotify, cartes personnalisées.",
       "Plugins tiers v1 : page /plugins avec statut live et ouverture fenêtre.",
       "Macros persistantes : page /macros, exécution depuis Command Center.",
       "Personas : page /personas avec thèmes.",

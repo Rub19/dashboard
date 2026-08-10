@@ -41,6 +41,9 @@ export const CATALOG: Record<string, Record<string, string>> = {
     search: "Rechercher",
     commands: "Commandes",
     noResults: "Aucun résultat",
+    guest: "Invité",
+    signOut: "Se déconnecter",
+    changelog: "Notes de version",
   },
   en: {
     home: "Home",
@@ -84,6 +87,9 @@ export const CATALOG: Record<string, Record<string, string>> = {
     search: "Search",
     commands: "Commands",
     noResults: "No results",
+    guest: "Guest",
+    signOut: "Sign out",
+    changelog: "Changelog",
   },
 };
 

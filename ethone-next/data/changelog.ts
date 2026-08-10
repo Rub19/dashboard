@@ -5,6 +5,50 @@ export type ChangelogEntry = {
   items: string[];
 };
 
+const v328_fr: ChangelogEntry = {
+  version: "v328",
+  date: "2026-08-20",
+  title: "Tests E2E + audit responsive/a11y",
+  items: [
+    "Playwright + @axe-core/playwright : tests E2E routes, responsive, accessibilité.",
+    "scripts/a11y-audit.mjs et responsive-audit.mjs avec rapports JSON.",
+    "Corrige aria-label sur sidebar, dock, live overlay, toggles ; aria-hidden sur Icon.",
+  ],
+};
+
+const v328_en: ChangelogEntry = {
+  version: "v328",
+  date: "2026-08-20",
+  title: "E2E tests + responsive/a11y audit",
+  items: [
+    "Playwright + @axe-core/playwright: E2E routes, responsive, accessibility tests.",
+    "scripts/a11y-audit.mjs and responsive-audit.mjs with JSON reports.",
+    "Fix aria-label on sidebar, dock, live overlay, toggles; aria-hidden on Icon.",
+  ],
+};
+
+const v328_es: ChangelogEntry = {
+  version: "v328",
+  date: "2026-08-20",
+  title: "Tests E2E + auditoría responsive/a11y",
+  items: [
+    "Playwright + @axe-core/playwright: tests E2E de rutas, responsive y accesibilidad.",
+    "scripts/a11y-audit.mjs y responsive-audit.mjs con informes JSON.",
+    "Corrige aria-label en sidebar, dock, live overlay, toggles; aria-hidden en Icon.",
+  ],
+};
+
+const v328_de: ChangelogEntry = {
+  version: "v328",
+  date: "2026-08-20",
+  title: "E2E-Tests + Responsive/A11y-Audit",
+  items: [
+    "Playwright + @axe-core/playwright: E2E-Routen-, Responsive- und Barrierefreiheitstests.",
+    "scripts/a11y-audit.mjs und responsive-audit.mjs mit JSON-Berichten.",
+    "aria-label in Sidebar, Dock, Live-Overlay, Toggles korrigiert; aria-hidden auf Icon.",
+  ],
+};
+
 const v327_fr: ChangelogEntry = {
   version: "v327",
   date: "2026-08-20",
@@ -181,8 +225,8 @@ const v322_fr: ChangelogEntry = {
 };
 
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
-  en: [v327_en, v326_en, v325_en,
+  fr: [v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -228,7 +272,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [v327_es, v326_es, v325_es,
+  es: [v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -274,7 +318,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [v327_de, v326_de, v325_de,
+  de: [v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

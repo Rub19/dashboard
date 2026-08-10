@@ -78,6 +78,7 @@ export default function Sidebar() {
               key={item.id}
               href={item.href}
               onClick={() => setExpanded(false)}
+              aria-label={item.label}
               data-tooltip={expanded ? undefined : item.label}
               className={`group relative flex h-11 items-center rounded-xl transition-all duration-300 ${
                 isActive

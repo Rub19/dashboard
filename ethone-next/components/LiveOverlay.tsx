@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "@/lib/icons";
+import { useI18n } from "@/lib/hooks/useI18n";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useSettings } from "@/components/SettingsProvider";
 import { fetchWorker } from "@/lib/api";
 import LiveWidgets from "./LiveWidgets";
 
 export default function LiveOverlay() {
+  const i18n = useI18n();
   const { nowPlaying, lanyard, loading } = useLiveData();
   const { settings, update } = useSettings();
   const [minimized, setMinimized] = useState(false);
@@ -51,13 +53,13 @@ export default function LiveOverlay() {
                 <Icon name="radio" className="h-3 w-3 text-emerald-400" /> Live
               </span>
               <div className="flex gap-1">
-                <button type="button" onClick={() => setExpanded((v) => !v)} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface)]">
+                <button type="button" aria-label={expanded ? i18n("minimize") : i18n("expand")} onClick={() => setExpanded((v) => !v)} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface)]">
                   {expanded ? <Icon name="minimize" className="h-3.5 w-3.5" /> : <Icon name="maximize" className="h-3.5 w-3.5" />}
                 </button>
-                <button type="button" onClick={() => setMinimized(true)} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface)]">
+                <button type="button" aria-label={i18n("minimize")} onClick={() => setMinimized(true)} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface)]">
                   <Icon name="chevronUp" className="h-3.5 w-3.5" />
                 </button>
-                <button type="button" onClick={() => update({ liveOverlay: false })} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface)] hover:text-red-400">
+                <button type="button" aria-label={i18n("close")} onClick={() => update({ liveOverlay: false })} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface)] hover:text-red-400">
                   <Icon name="close" className="h-3.5 w-3.5" />
                 </button>
               </div>
@@ -85,13 +87,13 @@ export default function LiveOverlay() {
 
                 {nowPlaying && (
                   <div className="flex items-center justify-center gap-2 rounded-xl bg-[var(--surface)] p-1">
-                    <button onClick={() => controlSpotify("previous")} className="rounded p-1 text-[var(--foreground)] hover:bg-[var(--surface-raised)]">
+                    <button type="button" aria-label={i18n("previous")} onClick={() => controlSpotify("previous")} className="rounded p-1 text-[var(--foreground)] hover:bg-[var(--surface-raised)]">
                       <Icon name="skipBack" className="h-4 w-4" />
                     </button>
-                    <button onClick={() => controlSpotify(nowPlaying.isPlaying ? "pause" : "play")} className="rounded p-1 text-[var(--foreground)] hover:bg-[var(--surface-raised)]">
+                    <button type="button" aria-label={nowPlaying.isPlaying ? i18n("pause") : i18n("play")} onClick={() => controlSpotify(nowPlaying.isPlaying ? "pause" : "play")} className="rounded p-1 text-[var(--foreground)] hover:bg-[var(--surface-raised)]">
                       {nowPlaying.isPlaying ? <Icon name="pause" className="h-4 w-4" /> : <Icon name="play" className="h-4 w-4" />}
                     </button>
-                    <button onClick={() => controlSpotify("next")} className="rounded p-1 text-[var(--foreground)] hover:bg-[var(--surface-raised)]">
+                    <button type="button" aria-label={i18n("next")} onClick={() => controlSpotify("next")} className="rounded p-1 text-[var(--foreground)] hover:bg-[var(--surface-raised)]">
                       <Icon name="skipForward" className="h-4 w-4" />
                     </button>
                   </div>
@@ -125,6 +127,8 @@ export default function LiveOverlay() {
 
       {minimized && (
         <motion.button
+          type="button"
+          aria-label={i18n("expand")}
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           onClick={() => setMinimized(false)}

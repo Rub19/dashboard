@@ -64,6 +64,7 @@ export default function Dock() {
             <div key={item.id} className="group relative flex flex-col items-center">
               <Link
                 href={item.href}
+                aria-label={item.label}
                 className={`flex h-11 w-11 items-center justify-center rounded-xl border border-transparent text-[var(--foreground)] transition-all hover:-translate-y-1 hover:border-[var(--accent)]/30 hover:bg-[var(--surface)] hover:shadow-lg ${
                   active ? "bg-[var(--accent)]/10 text-[var(--accent)]" : ""
                 }`}
@@ -80,7 +81,9 @@ export default function Dock() {
           );
         })}
         <button
+          type="button"
           onClick={() => setExpanded((v) => !v)}
+          aria-label={i18n("expand")}
           className={`flex h-11 w-11 items-center justify-center rounded-xl text-[var(--muted)] transition-all hover:bg-[var(--surface)] ${
             expanded ? "rotate-180" : ""
           }`}

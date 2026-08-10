@@ -2,6 +2,26 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v328] - 2026-08-20
+
+**Tests E2E, audit responsive/accessibilité**
+
+### Ajoute
+- Playwright + `@axe-core/playwright` pour tests E2E visuels et a11y.
+- `e2e/routes.spec.ts` : 24 routes × 3 viewports, vérification chargement + titre + exceptions.
+- `e2e/responsive.spec.ts` : 5 routes × 4 viewports, détection du débordement horizontal.
+- `e2e/a11y.spec.ts` : audit axe-core WCAG 2A/2AA par route et viewport.
+- `scripts/a11y-audit.mjs` : audit statique HTML post-build avec axe-core + rapport `audit/a11y-report.json`.
+- `scripts/responsive-audit.mjs` : audit statique responsive + rapport `audit/responsive-report.json`.
+- Commandes npm : `test:e2e`, `test:a11y`, `test:all`, `audit:a11y`, `audit:responsive`.
+
+### Corrige
+- `aria-label` sur les icônes boutons de la sidebar, du dock, du live overlay et des toggles settings.
+- `aria-hidden="true" focusable="false"` sur le composant `Icon`.
+
+### Version PWA
+- `experience-v328`.
+
 ## [v327] - 2026-08-20
 
 **Settings avancés + Notification Center**

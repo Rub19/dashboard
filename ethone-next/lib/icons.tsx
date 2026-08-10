@@ -157,5 +157,5 @@ export function useIconName(name: string, pack: IconPack = "lucide") {
 export function Icon({ name, ...props }: { name: string } & Omit<IconProps, "icon">) {
   const { settings } = useSettings();
   const iconId = useIconName(name, settings.iconPack);
-  return <IconifyIcon icon={iconId} {...props} />;
+  return <IconifyIcon icon={iconId} aria-hidden="true" focusable="false" {...props} />;
 }

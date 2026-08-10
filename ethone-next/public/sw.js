@@ -1,4 +1,4 @@
-const CACHE_NAME = "ethone-next-v324";
+const CACHE_NAME = "ethone-next-v328";
 const PRECACHE = ["/", "/login/"];
 
 self.addEventListener("install", (event) => {

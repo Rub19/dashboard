@@ -13,6 +13,7 @@ function Toggle({ label, checked, onChange }: { label: string; checked: boolean;
       <span className="text-sm text-[var(--foreground)]">{label}</span>
       <button
         type="button"
+        aria-label={label}
         onClick={() => onChange(!checked)}
         className={`relative h-6 w-11 rounded-full transition-colors ${
           checked ? "bg-[var(--accent)]" : "bg-[var(--border)]"

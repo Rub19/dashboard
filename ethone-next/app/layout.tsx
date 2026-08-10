@@ -15,6 +15,8 @@ import CommandPaletteProvider from "@/components/CommandPaletteProvider";
 import OAuthHandler from "@/components/OAuthHandler";
 import LiveOverlay from "@/components/LiveOverlay";
 import PageTransition from "@/components/PageTransition";
+import { WindowManagerProvider } from "@/components/WindowManagerProvider";
+import { WindowRenderer } from "@/components/WindowRenderer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,6 +46,7 @@ export default function RootLayout({
     >
       <body className="min-h-full bg-[var(--background)] text-[var(--foreground)]">
         <AuthProvider>
+          <WindowManagerProvider>
           <OfflineIndicator />
           <SettingsProvider>
             <SkipLink />
@@ -67,6 +70,8 @@ export default function RootLayout({
           </div>
           <MobileNav />
           </SettingsProvider>
+          <WindowRenderer />
+        </WindowManagerProvider>
         </AuthProvider>
       </body>
     </html>

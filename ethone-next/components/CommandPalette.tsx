@@ -3,12 +3,13 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Command, ArrowRight, Moon, Sun, Brain, LogOut, Flame, StickyNote, CirclePlus, Timer, Workflow, Users } from "lucide-react";
+import { Search, Command, ArrowRight, Moon, Sun, Brain, LogOut, Flame, StickyNote, CirclePlus, Timer, Workflow, Users, AppWindow, LayoutGrid } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useUserData } from "@/lib/hooks/useUserData";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useSettings } from "@/components/SettingsProvider";
 import { useAuth } from "@/components/AuthProvider";
+import { useWindowManager } from "@/components/WindowManagerProvider";
 
 type CommandItem = {
   id: string;
@@ -28,6 +29,7 @@ export default function CommandPalette() {
   const { settings, update } = useSettings();
   const { signOut } = useAuth();
   const { items: macros } = useUserData("macro");
+  const { openWindow, toggleMissionControl } = useWindowManager();
 
   const run = useCallback(
     (cmd: CommandItem) => {
@@ -75,17 +77,23 @@ export default function CommandPalette() {
       { id: "toggle-theme", label: settings.darkMode ? i18n("lightMode") : i18n("darkMode"), category: i18n("actions"), icon: settings.darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />, action: () => update({ darkMode: !settings.darkMode }) },
       { id: "toggle-brain", label: settings.brainEnabled ? i18n("disableBrain") : i18n("enableBrain"), category: i18n("actions"), icon: <Brain className="h-4 w-4" />, action: () => update({ brainEnabled: !settings.brainEnabled }) },
       { id: "focus-timer", label: i18n("startFocus"), category: i18n("actions"), icon: <Timer className="h-4 w-4" />, action: () => router.push("/focus/") },
+      { id: "mission-control", label: i18n("missionControl"), category: i18n("actions"), shortcut: "M", icon: <LayoutGrid className="h-4 w-4" />, action: () => { toggleMissionControl(); } },
+
       { id: "new-note", label: i18n("newNote"), category: i18n("create"), icon: <StickyNote className="h-4 w-4" />, action: () => router.push("/notes/") },
       { id: "new-task", label: i18n("newTask"), category: i18n("create"), icon: <CirclePlus className="h-4 w-4" />, action: () => router.push("/tasks/") },
       { id: "new-interaction", label: i18n("newInteraction"), category: i18n("create"), icon: <Flame className="h-4 w-4" />, action: () => router.push("/interactions/") },
       { id: "macros", label: i18n("macros"), category: i18n("create"), icon: <Workflow className="h-4 w-4" />, action: () => router.push("/macros/") },
       { id: "personas", label: i18n("personas"), category: i18n("create"), icon: <Users className="h-4 w-4" />, action: () => router.push("/personas/") },
+      { id: "open-notes", label: "Notes (fenêtre)", category: i18n("windows"), icon: <AppWindow className="h-4 w-4" />, action: () => { openWindow("/notes/", "Notes"); } },
+      { id: "open-tasks", label: "Tâches (fenêtre)", category: i18n("windows"), icon: <AppWindow className="h-4 w-4" />, action: () => { openWindow("/tasks/", "Tâches"); } },
+      { id: "open-mail", label: "Mail (fenêtre)", category: i18n("windows"), icon: <AppWindow className="h-4 w-4" />, action: () => { openWindow("/mail/", "Mail"); } },
+      { id: "open-bills", label: "Factures (fenêtre)", category: i18n("windows"), icon: <AppWindow className="h-4 w-4" />, action: () => { openWindow("/bills/", "Factures"); } },
 
       ...macroCommands,
 
       { id: "signout", label: i18n("signOut"), category: i18n("account"), icon: <LogOut className="h-4 w-4" />, action: () => signOut().then(() => router.push("/login")) },
     ],
-    [i18n, router, settings, update, signOut, macroCommands]
+    [i18n, router, settings, update, signOut, macroCommands, openWindow, toggleMissionControl]
   );
 
   const filtered = useMemo(() => {

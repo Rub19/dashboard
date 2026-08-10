@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Card3D from "@/components/Card3D";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { LayoutGrid, Plus, Trash2, Layers, Sparkles, ArrowRight } from "lucide-react";
+import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { LayoutGrid, Plus, Trash2, Layers, ArrowRight } from "lucide-react";
 
 const PRESETS = [
   { id: "focus", label: "Focus", color: "bg-violet-500/20 text-violet-400" },
@@ -12,9 +13,11 @@ const PRESETS = [
   { id: "personal", label: "Personnel", color: "bg-sky-500/20 text-sky-400" },
 ];
 
+type Space = { id: string; label: string; color: string };
+
 export default function SpacesPage() {
   const i18n = useI18n();
-  const [spaces, setSpaces] = useState(PRESETS);
+  const [spaces, setSpaces] = useLocalStorage<Space[]>("ethone:spaces", PRESETS);
   const [name, setName] = useState("");
 
   function add() {
@@ -36,7 +39,7 @@ export default function SpacesPage() {
         </span>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Card3D>
           <div className="flex items-center gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
@@ -60,18 +63,6 @@ export default function SpacesPage() {
             </div>
           </div>
         </Card3D>
-
-        <Card3D>
-          <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
-              <Sparkles className="h-5 w-5" />
-            </span>
-            <div>
-              <p className="text-2xl font-bold">0</p>
-              <p className="text-xs text-[var(--muted)]">Intégrations à venir</p>
-            </div>
-          </div>
-        </Card3D>
       </div>
 
       <Card3D>
@@ -79,7 +70,7 @@ export default function SpacesPage() {
           <div>
             <h2 className="font-semibold">Environnements dédiés</h2>
             <p className="text-sm leading-relaxed text-[var(--muted)]">
-              Spaces regroupe vos contextes de travail personnalisés (Focus, Studio, Gaming…). Créez un espace, associez-y des widgets et des raccourcis, et basculez d’un univers à l’autre en un clic.
+              Spaces regroupe vos contextes de travail personnalisés. Créez un espace, associez-y des widgets et des raccourcis, et basculez d’un univers à l’autre en un clic.
             </p>
           </div>
           <button

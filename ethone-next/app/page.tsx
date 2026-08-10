@@ -3,6 +3,7 @@
 import Card3D from "@/components/Card3D";
 import LiveWidgets from "@/components/LiveWidgets";
 import { useHomeData } from "@/lib/hooks/useDashboard";
+import { useMail } from "@/lib/hooks/useMail";
 import {
   Zap,
   Mail,
@@ -29,6 +30,7 @@ function formatBytes(bytes = 0) {
 export default function Home() {
   const { greeting, dashboard, nowPlaying, lanyard, valorant, lol, loading, error } =
     useHomeData();
+  const { unread: unreadMail, loading: mailLoading } = useMail("inbox", 1);
 
   const matches = [...(valorant || []), ...(lol || [])].slice(0, 6);
 
@@ -63,7 +65,7 @@ export default function Home() {
               <Mail className="h-5 w-5" />
             </span>
             <div className="min-w-0">
-              <p className="text-2xl font-bold">{loading ? "-" : "-"}</p>
+              <p className="text-2xl font-bold">{mailLoading ? "-" : unreadMail}</p>
               <p className="text-xs text-[var(--muted)]">Messages non lus</p>
             </div>
           </div>

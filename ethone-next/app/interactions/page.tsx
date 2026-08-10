@@ -1,27 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Card3D from "@/components/Card3D";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { Flame, Heart, MessageCircle, Share2, Radio, ArrowRight } from "lucide-react";
+import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { Flame, Heart, MessageCircle, Share2, Radio, ArrowRight, Plus } from "lucide-react";
 
-const HEAT = [
-  { day: "Lun", value: 3 },
-  { day: "Mar", value: 5 },
-  { day: "Mer", value: 2 },
-  { day: "Jeu", value: 4 },
-  { day: "Ven", value: 6 },
-  { day: "Sam", value: 1 },
-  { day: "Dim", value: 2 },
-];
+const DAYS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+
+type Interaction = { id: string; kind: "like" | "comment" | "share"; target: string; at: string };
+type Weekly = number[];
 
 export default function InteractionsPage() {
   const i18n = useI18n();
-  const [reactions] = useState([
-    { id: 1, kind: "like", target: "Note Spotify", at: "il y a 2 h" },
-    { id: 2, kind: "comment", target: "Match Valorant", at: "hier" },
+  const [reactions, setReactions] = useLocalStorage<Interaction[]>("ethone:interactions", [
+    { id: "1", kind: "like", target: "Note Spotify", at: "il y a 2 h" },
   ]);
-  const [live, setLive] = useState(false);
+  const [heatmap, setHeatmap] = useLocalStorage<Weekly>("ethone:interactions-heatmap", [1, 2, 1, 3, 2, 0, 1]);
+  const [live, setLive] = useLocalStorage<boolean>("ethone:interactions-live", false);
+  const [newTarget, setNewTarget] = useState("");
+  const [newKind, setNewKind] = useState<"like" | "comment" | "share">("like");
+
+  const counts = useMemo(() => {
+    return {
+      like: reactions.filter((r) => r.kind === "like").length,
+      comment: reactions.filter((r) => r.kind === "comment").length,
+      share: reactions.filter((r) => r.kind === "share").length,
+    };
+  }, [reactions]);
+
+  function addReaction() {
+    if (!newTarget.trim()) return;
+    const next: Interaction = { id: String(Date.now()), kind: newKind, target: newTarget, at: "à l’instant" };
+    setReactions([next, ...reactions]);
+    const today = new Date().getDay(); // 0 = dim
+    const index = today === 0 ? 6 : today - 1;
+    setHeatmap(heatmap.map((v, i) => (i === index ? Math.min(v + 1, 8) : v)));
+    setNewTarget("");
+  }
+
+  function removeReaction(id: string) {
+    setReactions(reactions.filter((r) => r.id !== id));
+  }
+
+  const maxHeat = Math.max(...heatmap, 1);
 
   return (
     <div className="space-y-6">
@@ -32,7 +54,7 @@ export default function InteractionsPage() {
           <div className="flex items-center gap-3">
             <Heart className="h-6 w-6 text-rose-400" />
             <div>
-              <p className="text-2xl font-bold">12</p>
+              <p className="text-2xl font-bold">{counts.like}</p>
               <p className="text-xs text-[var(--muted)]">J’aime</p>
             </div>
           </div>
@@ -41,7 +63,7 @@ export default function InteractionsPage() {
           <div className="flex items-center gap-3">
             <MessageCircle className="h-6 w-6 text-sky-400" />
             <div>
-              <p className="text-2xl font-bold">3</p>
+              <p className="text-2xl font-bold">{counts.comment}</p>
               <p className="text-xs text-[var(--muted)]">Commentaires</p>
             </div>
           </div>
@@ -50,7 +72,7 @@ export default function InteractionsPage() {
           <div className="flex items-center gap-3">
             <Share2 className="h-6 w-6 text-emerald-400" />
             <div>
-              <p className="text-2xl font-bold">5</p>
+              <p className="text-2xl font-bold">{counts.share}</p>
               <p className="text-xs text-[var(--muted)]">Partages</p>
             </div>
           </div>
@@ -70,30 +92,54 @@ export default function InteractionsPage() {
         <div className="space-y-4">
           <div>
             <h2 className="font-semibold">Feed d’interactions</h2>
-            <p className="text-sm leading-relaxed text-[var(--muted)]">
-              Centralisez les likes, commentaires, partages et réactions sur vos contenus. Suivez la chaleur de vos interactions et répondez depuis un seul endroit.
-            </p>
+            <p className="text-sm leading-relaxed text-[var(--muted)]">Ajoutez vos réactions. Le flux enregistre likes, commentaires et partages localement pour l’instant.</p>
           </div>
-          <button
-            type="button"
-            onClick={() => setLive(!live)}
-            className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          >
-            {live ? "Désactiver le flux" : "Activer le flux"} <ArrowRight className="h-4 w-4" />
-          </button>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <select
+              value={newKind}
+              onChange={(e) => setNewKind(e.target.value as "like" | "comment" | "share")}
+              className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+            >
+              <option value="like">J’aime</option>
+              <option value="comment">Commentaire</option>
+              <option value="share">Partage</option>
+            </select>
+            <input
+              type="text"
+              value={newTarget}
+              onChange={(e) => setNewTarget(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && addReaction()}
+              placeholder="Cible..."
+              className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+            />
+            <button
+              type="button"
+              onClick={addReaction}
+              className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            >
+              <Plus className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setLive(!live)}
+              className="inline-flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-2 text-sm font-semibold transition-colors hover:border-[var(--accent)]"
+            >
+              {live ? "Stop" : "Live"} <ArrowRight className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </Card3D>
 
       <Card3D>
         <h2 className="mb-4 text-sm font-semibold">Heatmap</h2>
         <div className="flex items-end justify-between gap-2">
-          {HEAT.map((h) => (
-            <div key={h.day} className="flex flex-col items-center gap-1">
+          {heatmap.map((value, i) => (
+            <div key={DAYS[i]} className="flex flex-col items-center gap-1">
               <div
                 className="w-8 rounded-t-lg bg-violet-500/40 transition-all"
-                style={{ height: `${h.value * 16}px` }}
+                style={{ height: `${(value / maxHeat) * 96}px` }}
               />
-              <span className="text-[10px] text-[var(--muted)]">{h.day}</span>
+              <span className="text-[10px] text-[var(--muted)]">{DAYS[i]}</span>
             </div>
           ))}
         </div>
@@ -103,12 +149,17 @@ export default function InteractionsPage() {
         {reactions.map((r) => (
           <Card3D key={r.id}>
             <div className="flex items-center gap-3">
-              <Flame className="h-5 w-5 text-amber-400" />
+              {r.kind === "like" && <Heart className="h-5 w-5 text-rose-400" />}
+              {r.kind === "comment" && <MessageCircle className="h-5 w-5 text-sky-400" />}
+              {r.kind === "share" && <Share2 className="h-5 w-5 text-emerald-400" />}
               <div className="min-w-0 flex-1">
                 <p className="font-medium capitalize">{r.kind}</p>
                 <p className="text-xs text-[var(--muted)]">{r.target}</p>
               </div>
               <span className="text-xs text-[var(--muted)]">{r.at}</span>
+              <button type="button" onClick={() => removeReaction(r.id)} className="text-[var(--muted)] hover:text-red-400">
+                <Flame className="h-4 w-4" />
+              </button>
             </div>
           </Card3D>
         ))}

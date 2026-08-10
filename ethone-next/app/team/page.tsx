@@ -4,7 +4,8 @@ import { useState } from "react";
 import { fetchWorker } from "@/lib/api";
 import Card3D from "@/components/Card3D";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { Users, Plus, Loader2, Check, AlertCircle } from "lucide-react";
+import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { Users, Plus, Loader2, Check, AlertCircle, Trash2 } from "lucide-react";
 
 const ROLES = ["owner", "admin", "member"] as const;
 
@@ -17,7 +18,7 @@ type Member = {
 
 export default function TeamPage() {
   const i18n = useI18n();
-  const [members, setMembers] = useState<Member[]>([
+  const [members, setMembers] = useLocalStorage<Member[]>("ethone:team", [
     { id: 1, email: "rub19.mailpro@gmail.com", role: "owner", status: "active" },
   ]);
   const [email, setEmail] = useState("");
@@ -46,6 +47,10 @@ export default function TeamPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  function remove(id: number) {
+    setMembers(members.filter((m) => m.id !== id));
   }
 
   return (
@@ -125,6 +130,11 @@ export default function TeamPage() {
               >
                 {m.role}
               </span>
+              {m.id !== 1 && (
+                <button type="button" onClick={() => remove(m.id)} className="text-[var(--muted)] hover:text-red-400">
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              )}
             </div>
           </Card3D>
         ))}

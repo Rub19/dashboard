@@ -2,19 +2,33 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Disc3, Monitor, X, Radio, ChevronUp, GripHorizontal } from "lucide-react";
+import { Disc3, Monitor, X, Radio, ChevronUp, GripHorizontal, Maximize2, Minimize2, Play, Pause, SkipForward, SkipBack } from "lucide-react";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useSettings } from "@/components/SettingsProvider";
+import { fetchWorker } from "@/lib/api";
+import LiveWidgets from "./LiveWidgets";
 
 export default function LiveOverlay() {
   const { nowPlaying, lanyard, loading } = useLiveData();
   const { settings, update } = useSettings();
   const [minimized, setMinimized] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const enabled = settings.liveOverlay !== false;
 
   if (!enabled) return null;
 
   const activity = lanyard?.activities?.[0];
+
+  async function controlSpotify(action: "play" | "pause" | "next" | "previous") {
+    try {
+      await fetchWorker("/api/spotify/control", {
+        method: "POST",
+        body: JSON.stringify({ action }),
+      });
+    } catch {
+      // ignore
+    }
+  }
 
   return (
     <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2">
@@ -23,11 +37,13 @@ export default function LiveOverlay() {
           <motion.div
             drag
             dragMomentum={false}
-            dragConstraints={typeof window !== "undefined" ? { left: -window.innerWidth + 280, right: 0, top: -window.innerHeight + 160, bottom: 0 } : undefined}
+            dragConstraints={typeof window !== "undefined" ? { left: -window.innerWidth + (expanded ? 760 : 280), right: 0, top: -window.innerHeight + (expanded ? 480 : 160), bottom: 0 } : undefined}
             initial={{ opacity: 0, y: 20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            className="w-64 cursor-grab overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]/95 p-3 shadow-2xl backdrop-blur-md active:cursor-grabbing"
+            className={`cursor-grab overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]/95 p-3 shadow-2xl backdrop-blur-md active:cursor-grabbing ${
+              expanded ? "w-[720px]" : "w-64"
+            }`}
           >
             <div className="mb-2 flex items-center justify-between">
               <span className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--muted)]">
@@ -35,6 +51,9 @@ export default function LiveOverlay() {
                 <Radio className="h-3 w-3 text-emerald-400" /> Live
               </span>
               <div className="flex gap-1">
+                <button type="button" onClick={() => setExpanded((v) => !v)} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface)]">
+                  {expanded ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
+                </button>
                 <button type="button" onClick={() => setMinimized(true)} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface)]">
                   <ChevronUp className="h-3.5 w-3.5" />
                 </button>
@@ -44,42 +63,62 @@ export default function LiveOverlay() {
               </div>
             </div>
 
-            <div className="space-y-3">
-              {nowPlaying?.isPlaying ? (
-                <div className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-500/10 text-violet-400">
-                    <Disc3 className={`h-5 w-5 ${nowPlaying.isPlaying ? "animate-spin" : ""}`} />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">{nowPlaying.title}</p>
-                    <p className="truncate text-xs text-[var(--muted)]">{nowPlaying.artist}</p>
+            {expanded ? (
+              <div className="max-h-[440px] overflow-auto pr-1">
+                <LiveWidgets />
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {nowPlaying?.isPlaying ? (
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-500/10 text-violet-400">
+                      <Disc3 className={`h-5 w-5 ${nowPlaying.isPlaying ? "animate-spin" : ""}`} />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium">{nowPlaying.title}</p>
+                      <p className="truncate text-xs text-[var(--muted)]">{nowPlaying.artist}</p>
+                    </div>
                   </div>
-                </div>
-              ) : loading ? (
-                <div className="h-8 w-2/3 animate-pulse rounded bg-[var(--border)]" />
-              ) : null}
+                ) : loading ? (
+                  <div className="h-8 w-2/3 animate-pulse rounded bg-[var(--border)]" />
+                ) : null}
 
-              {lanyard?.discord_status && (
-                <div className="flex items-center gap-3">
-                  <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
-                    lanyard.discord_status === "online" ? "bg-emerald-500/10 text-emerald-400" :
-                    lanyard.discord_status === "idle" ? "bg-amber-500/10 text-amber-400" :
-                    lanyard.discord_status === "dnd" ? "bg-rose-500/10 text-rose-400" :
-                    "bg-zinc-500/10 text-zinc-400"
-                  }`}>
-                    <Monitor className="h-5 w-5" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium capitalize">{lanyard.discord_status}</p>
-                    {activity && (
-                      <p className="truncate text-xs text-[var(--muted)]">
-                        {activity.name}{activity.details ? ` — ${activity.details}` : ""}
-                      </p>
-                    )}
+                {nowPlaying && (
+                  <div className="flex items-center justify-center gap-2 rounded-xl bg-[var(--surface)] p-1">
+                    <button onClick={() => controlSpotify("previous")} className="rounded p-1 text-[var(--foreground)] hover:bg-[var(--surface-raised)]">
+                      <SkipBack className="h-4 w-4" />
+                    </button>
+                    <button onClick={() => controlSpotify(nowPlaying.isPlaying ? "pause" : "play")} className="rounded p-1 text-[var(--foreground)] hover:bg-[var(--surface-raised)]">
+                      {nowPlaying.isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                    </button>
+                    <button onClick={() => controlSpotify("next")} className="rounded p-1 text-[var(--foreground)] hover:bg-[var(--surface-raised)]">
+                      <SkipForward className="h-4 w-4" />
+                    </button>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+
+                {lanyard?.discord_status && (
+                  <div className="flex items-center gap-3">
+                    <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
+                      lanyard.discord_status === "online" ? "bg-emerald-500/10 text-emerald-400" :
+                      lanyard.discord_status === "idle" ? "bg-amber-500/10 text-amber-400" :
+                      lanyard.discord_status === "dnd" ? "bg-rose-500/10 text-rose-400" :
+                      "bg-zinc-500/10 text-zinc-400"
+                    }`}>
+                      <Monitor className="h-5 w-5" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium capitalize">{lanyard.discord_status}</p>
+                      {activity && (
+                        <p className="truncate text-xs text-[var(--muted)]">
+                          {activity.name}{activity.details ? ` — ${activity.details}` : ""}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

@@ -1,16 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useItems } from "@/lib/hooks/useItems";
+import { useCalendarEvents } from "@/lib/hooks/useCalendarEvents";
+import { buildAuthUrl } from "@/lib/oauth";
 import Card3D from "@/components/Card3D";
-import { CalendarDays, ChevronLeft, ChevronRight, Plus, Trash2, Loader2 } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Plus, Trash2, Loader2, Cloud } from "lucide-react";
 
 const DAYS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 
 export default function CalendarPage() {
-  const { items, loading, error, create, remove } = useItems("events");
+  const { items, loading: itemsLoading, error: itemsError, create, remove } = useItems("events");
   const [date, setDate] = useState(new Date());
   const [newTitle, setNewTitle] = useState("");
+  const [clientId, setClientId] = useState("");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setClientId(localStorage.getItem("ethone:clientId:google-calendar") || "");
+  }, []);
+
+  const { events: googleEvents, loading: googleLoading, error: googleError } = useCalendarEvents(clientId);
+
+  const allEvents = useMemo(
+    () => [
+      ...items.map((e) => ({ ...e, source: "local" as const })),
+      ...googleEvents.map((e) => ({ ...e, source: "google" as const })),
+    ],
+    [items, googleEvents]
+  );
 
   const year = date.getFullYear();
   const month = date.getMonth();
@@ -27,18 +45,13 @@ export default function CalendarPage() {
   }
 
   function hasEvent(day: number) {
-    return items.some((e) => {
+    return allEvents.some((e) => {
       const start = e.startAt ? new Date(e.startAt) : null;
-      return (
-        start &&
-        start.getDate() === day &&
-        start.getMonth() === month &&
-        start.getFullYear() === year
-      );
+      return start && start.getDate() === day && start.getMonth() === month && start.getFullYear() === year;
     });
   }
 
-  const monthEvents = items.filter((e) => {
+  const monthEvents = allEvents.filter((e) => {
     const start = e.startAt ? new Date(e.startAt) : null;
     return start && start.getMonth() === month && start.getFullYear() === year;
   });
@@ -51,6 +64,14 @@ export default function CalendarPage() {
   }
 
   const monthName = new Date(year, month, 1).toLocaleString("fr-FR", { month: "long", year: "numeric" });
+
+  function connectGoogle() {
+    const id = prompt("Client ID Google Calendar");
+    if (!id) return;
+    localStorage.setItem("ethone:clientId:google-calendar", id);
+    setClientId(id);
+    window.location.href = buildAuthUrl("google-calendar", id, { provider: "google-calendar", clientId: id });
+  }
 
   return (
     <div className="space-y-6">
@@ -88,7 +109,7 @@ export default function CalendarPage() {
           <button
             type="button"
             onClick={addEvent}
-            disabled={loading}
+            disabled={itemsLoading}
             className="flex shrink-0 items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
           >
             <Plus className="h-4 w-4" />
@@ -108,40 +129,48 @@ export default function CalendarPage() {
             const day = i + 1;
             const event = hasEvent(day);
             const isToday =
-              new Date().getDate() === day &&
-              new Date().getMonth() === month &&
-              new Date().getFullYear() === year;
+              new Date().getDate() === day && new Date().getMonth() === month && new Date().getFullYear() === year;
             return (
-            <div
-              key={day}
-              className={`relative flex aspect-square items-center justify-center rounded-xl text-sm ${
-                isToday
-                  ? "bg-[var(--accent)] text-white"
-                  : "bg-[var(--surface-raised)] text-[var(--foreground)]"
-              }`}
-            >
-              {day}
-              {event && (
-                <span className="absolute bottom-1 h-1.5 w-1.5 rounded-full bg-violet-400" />
-              )}
-            </div>
+              <div
+                key={day}
+                className={`relative flex aspect-square items-center justify-center rounded-xl text-sm ${
+                  isToday ? "bg-[var(--accent)] text-white" : "bg-[var(--surface-raised)] text-[var(--foreground)]"
+                }`}
+              >
+                {day}
+                {event && <span className="absolute bottom-1 h-1.5 w-1.5 rounded-full bg-violet-400" />}
+              </div>
             );
           })}
         </div>
       </Card3D>
 
-      {error && (
+      {(itemsError || googleError) && (
         <Card3D>
-          <p className="text-sm text-red-400">{error.message}</p>
+          <p className="text-sm text-red-400">{itemsError?.message || googleError?.message}</p>
         </Card3D>
       )}
 
       <Card3D>
-        <div className="mb-2 flex items-center gap-2">
-          <CalendarDays className="h-5 w-5 text-[var(--accent)]" />
-          <p className="font-medium">Événements</p>
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <CalendarDays className="h-5 w-5 text-[var(--accent)]" />
+            <p className="font-medium">Événements</p>
+          </div>
+          {!clientId ? (
+            <button
+              type="button"
+              onClick={connectGoogle}
+              className="flex shrink-0 items-center gap-1.5 rounded-lg bg-[var(--surface-raised)] px-2 py-1 text-xs font-medium text-[var(--foreground)] hover:bg-[var(--accent)]/20"
+            >
+              <Cloud className="h-3 w-3" />
+              Google
+            </button>
+          ) : (
+            <span className="text-xs text-emerald-400">Google connecté</span>
+          )}
         </div>
-        {loading && items.length === 0 ? (
+        {itemsLoading || googleLoading ? (
           <Loader2 className="h-5 w-5 animate-spin text-[var(--muted)]" />
         ) : monthEvents.length === 0 ? (
           <p className="text-sm text-[var(--muted)]">Aucun événement ce mois.</p>
@@ -150,19 +179,23 @@ export default function CalendarPage() {
             {monthEvents.map((e) => (
               <div key={e.id} className="flex items-center justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="font-medium">{e.title}</p>
+                  <p className="font-medium">
+                    {e.title} {e.source === "google" && <span className="text-[10px] text-[var(--muted)]">(G)</span>}
+                  </p>
                   <p className="text-xs text-[var(--muted)]">
                     {e.startAt ? new Date(e.startAt).toLocaleString("fr-FR") : "-"}
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => remove(e.id)}
-                  disabled={loading}
-                  className="text-[var(--muted)] hover:text-red-400 disabled:opacity-50"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
+                {e.source === "local" && (
+                  <button
+                    type="button"
+                    onClick={() => remove(e.id)}
+                    disabled={itemsLoading}
+                    className="text-[var(--muted)] hover:text-red-400 disabled:opacity-50"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                )}
               </div>
             ))}
           </div>

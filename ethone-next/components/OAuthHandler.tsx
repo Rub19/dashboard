@@ -20,7 +20,10 @@ export default function OAuthHandler() {
     handled.current = true;
 
     exchangeCode(provider, code, clientId)
-      .then(() => setStatus("Connecté avec succès."))
+      .then(() => {
+        localStorage.setItem(`ethone:clientId:${provider}`, clientId);
+        setStatus("Connecté avec succès.");
+      })
       .catch((err) => setStatus(err.message || "Échec de connexion"))
       .finally(() => {
         const url = new URL(window.location.href);

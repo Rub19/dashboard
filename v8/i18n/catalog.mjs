@@ -2479,6 +2479,14 @@ const ENTRIES = {
   "Trier par": {"fr":"Trier par","en":"Sort by","es":"Ordenar por","de":"Sortieren nach"},
   "Déplacer vers": {"fr":"Déplacer vers","en":"Move to","es":"Mover a","de":"Verschieben nach"},
   "Destinataires": {"fr":"Destinataires","en":"Recipients","es":"Destinatarios","de":"Empfänger"},
+  "Archivé": {"fr":"Archivé","en":"Archived","es":"Archivado","de":"Archiviert"},
+  "Supprimé": {"fr":"Supprimé","en":"Deleted","es":"Eliminado","de":"Gelöscht"},
+  "Retour en ligne": {"fr":"Retour en ligne","en":"Back online","es":"De vuelta en línea","de":"Wieder online"},
+  "Conversation": {"fr":"Conversation","en":"Conversation","es":"Conversación","de":"Unterhaltung"},
+  "Messages associés": {"fr":"Messages associés","en":"Related messages","es":"Mensajes relacionados","de":"Zugehörige Nachrichten"},
+  "Boîte de réception vide": {"fr":"Boîte de réception vide","en":"Inbox is empty","es":"La bandeja de entrada está vacía","de":"Posteingang ist leer"},
+  "Essayez une autre recherche.": {"fr":"Essayez une autre recherche.","en":"Try another search.","es":"Pruebe con otra búsqueda.","de":"Versuchen Sie eine andere Suche."},
+  "Vous n'avez aucun message.": {"fr":"Vous n'avez aucun message.","en":"You have no messages.","es":"No tienes mensajes.","de":"Sie haben keine Nachrichten."},
   "Aucune étiquette": {"fr":"Aucune étiquette","en":"No label","es":"Sin etiqueta","de":"Kein Tag"},
 };
 Object.keys(ENTRIES).forEach((key) => Object.freeze(ENTRIES[key]));

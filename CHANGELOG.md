@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v317] - 2026-08-18
+
+**Mail : refonte premium Phase 3 — raccourcis clavier, palette de commandes, fils, pièces jointes et compose mobile**
+
+### Ajoute
+- Raccourcis clavier globaux dans Mail (C, R, A/E, Del/Backspace, /, ?, Esc, Ctrl/Cmd+K) avec une palette de commandes et une aide.
+- Affichage des fils de conversation (`thread_id`) et des pièces jointes dans le détail d'un message, avec aperçu et téléchargement.
+- Mode plein écran pour la composition sur mobile, avec une barre d'actions condensée.
+- États vides et erreur contextuels par dossier et par recherche, plus une notification toast au retour en ligne.
+
+### Version PWA
+- `experience-v317`.
+
 ## [v316] - 2026-08-18
 
 **Mail : refonte premium Phase 2 — barre d'outils contextuelle, infobulles, filtre/sort avancés**

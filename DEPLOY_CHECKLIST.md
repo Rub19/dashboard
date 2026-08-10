@@ -109,7 +109,7 @@ wrangler deploy
 
 1. Publier les fichiers statiques (racine `index.html`, `sw.js`, `v8/`, `worker/` non inclus) sur le domaine final.
 2. S'assurer que `sw.js` est servi avec `Content-Type: application/javascript` et `Cache-Control: no-cache`.
-3. Vider le cache navigateur / unregister le SW pour forcer `experience-v316`.
+3. Vider le cache navigateur / unregister le SW pour forcer `experience-v317`.
 
 ## 6. Vérifications post-déploiement
 
@@ -155,7 +155,7 @@ wrangler deploy
 
 ### Modifiés
 
-- `index.html`, `404.html`, `sw.js` (experience-v316)
+- `index.html`, `404.html`, `sw.js` (experience-v317)
 - `v8/core/style-loader.mjs`
 - `v8/data/changelog.mjs`
 - `CHANGELOG.md`

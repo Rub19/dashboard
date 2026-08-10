@@ -24,6 +24,13 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v317", "2026-08-18", "Mail : refonte premium Phase 3", [
+    { kind: "feature", text: "Raccourcis clavier et palette de commandes (Ctrl/Cmd+K, ?, /, Esc) dans Mail." },
+    { kind: "feature", text: "Affichage des fils de conversation et pieces jointes avec apercu/telechargement." },
+    { kind: "feature", text: "Composition plein ecran sur mobile." },
+    { kind: "feature", text: "Etats vides/erreur/offline enrichis par dossier et recherche." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v317." }
+  ]),
   entry("v316", "2026-08-18", "Mail : refonte premium Phase 2", [
     { kind: "feature", text: "Barre d'outils contextuelle avec label N selectionne(s), boutons Deplacer/Etiqueter et masquage d'Actualiser/Plus en selection." },
     { kind: "feature", text: "Infobulles data-tooltip sur tous les boutons d'icone du Mail (menu, recherche, cloche, aide, profil, selection, actions, filtres, tri, composer, reduction)." },

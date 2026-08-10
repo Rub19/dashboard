@@ -5,13 +5,14 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Command, ArrowRight } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useCommandPalette } from "@/components/CommandPaletteProvider";
 
 export default function CommandPalette() {
-  const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [index, setIndex] = useState(0);
   const router = useRouter();
   const i18n = useI18n();
+  const { open, setOpen } = useCommandPalette();
 
   const COMMANDS = useMemo(
     () => [
@@ -43,7 +44,7 @@ export default function CommandPalette() {
     function onKeyDown(event: KeyboardEvent) {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
-        setOpen((o) => !o);
+        setOpen(!open);
       }
       if (event.key === "Escape") {
         setOpen(false);
@@ -67,7 +68,11 @@ export default function CommandPalette() {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open, filtered, index, router]);
+  }, [open, filtered, index, router, setOpen]);
+
+  useEffect(() => {
+    if (!open) setQuery("");
+  }, [open]);
 
   return (
     <>

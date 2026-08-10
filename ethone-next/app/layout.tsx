@@ -11,6 +11,7 @@ import MobileNav from "@/components/MobileNav";
 import SettingsProvider from "@/components/SettingsProvider";
 import SkipLink from "@/components/SkipLink";
 import OfflineIndicator from "@/components/OfflineIndicator";
+import CommandPaletteProvider from "@/components/CommandPaletteProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,11 +47,13 @@ export default function RootLayout({
             <Sidebar />
           <div className="min-h-screen transition-all duration-300 md:ml-[72px]">
             <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[var(--border)] bg-[var(--background)]/80 px-6 backdrop-blur-md">
-              <SearchBar />
-              <div className="flex items-center gap-3">
-                <CommandPalette />
-                <ProfileDropdown />
-              </div>
+              <CommandPaletteProvider>
+                <SearchBar />
+                <div className="flex items-center gap-3">
+                  <CommandPalette />
+                  <ProfileDropdown />
+                </div>
+              </CommandPaletteProvider>
             </header>
             <ServiceWorker />
             <main id="main-content" className="p-6 pb-24 md:pb-6" tabIndex={-1}>

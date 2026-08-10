@@ -43,13 +43,12 @@ export default function FilesPage() {
     setClientId(localStorage.getItem("ethone:clientId:google-drive") || "");
   }, []);
 
-  const workerFiles = data?.data?.files || [];
-
   const files = useMemo<DisplayFile[]>(() => {
+    const workerFiles = data?.data?.files || [];
     const all: DisplayFile[] = workerFiles.map((f) => ({ ...f, source: "worker" as const }));
     all.push(...driveFiles.map((f) => ({ ...f, source: "google" as const })));
     return all.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
-  }, [workerFiles, driveFiles]);
+  }, [data, driveFiles]);
 
   const loading = workerLoading || driveLoading;
   const error = workerError || driveError;

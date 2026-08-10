@@ -13,6 +13,7 @@ import SkipLink from "@/components/SkipLink";
 import OfflineIndicator from "@/components/OfflineIndicator";
 import CommandPaletteProvider from "@/components/CommandPaletteProvider";
 import OAuthHandler from "@/components/OAuthHandler";
+import PageTransition from "@/components/PageTransition";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -59,7 +60,7 @@ export default function RootLayout({
             <ServiceWorker />
             <OAuthHandler />
             <main id="main-content" className="p-6 pb-24 md:pb-6" tabIndex={-1}>
-              {children}
+              <PageTransition>{children}</PageTransition>
             </main>
           </div>
           <MobileNav />

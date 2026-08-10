@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v325] - 2026-08-20
+
+**Polish : timbres, icons cross-pack, changelog i18n**
+
+### Ajoute / Poli
+- Timbres des sound packs affinés (mechanical, liquid, minimal) avec volumes par type.
+- Mapping cross-pack des icônes étendu + fallback par collection iconify.
+- Changelog du site disponible en français, anglais, espagnol, allemand.
+
+### Version PWA
+- `experience-v325`.
+
 ## [v324] - 2026-08-10
 
 **Plan B + Command Center + Live Overlay**

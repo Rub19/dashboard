@@ -5,6 +5,50 @@ export type ChangelogEntry = {
   items: string[];
 };
 
+const v325_fr: ChangelogEntry = {
+  version: "v325",
+  date: "2026-08-20",
+  title: "Polish : timbres, icons cross-pack, changelog i18n",
+  items: [
+    "Timbres des sound packs affinés (mechanical, liquid, minimal) avec volumes par type.",
+    "Mapping cross-pack des icônes étendu + fallback par collection iconify.",
+    "Changelog du site disponible en français, anglais, espagnol, allemand.",
+  ],
+};
+
+const v325_en: ChangelogEntry = {
+  version: "v325",
+  date: "2026-08-20",
+  title: "Polish: sound timbres, cross-pack icons, changelog i18n",
+  items: [
+    "Sound pack timbres refined (mechanical, liquid, minimal) with per-type volumes.",
+    "Extended cross-pack icon mapping + iconify collection fallback.",
+    "Site changelog available in French, English, Spanish and German.",
+  ],
+};
+
+const v325_es: ChangelogEntry = {
+  version: "v325",
+  date: "2026-08-20",
+  title: "Polish: timbres, iconos cross-pack, changelog i18n",
+  items: [
+    "Timbres de los sound packs refinados (mechanical, liquid, minimal) con volúmenes por tipo.",
+    "Mapeo cross-pack de iconos extendido + fallback por colección iconify.",
+    "Changelog del sitio disponible en francés, inglés, español y alemán.",
+  ],
+};
+
+const v325_de: ChangelogEntry = {
+  version: "v325",
+  date: "2026-08-20",
+  title: "Polish: Sound-Timbres, Cross-Pack Icons, Changelog i18n",
+  items: [
+    "Sound-Pack-Timbres verfeinert (mechanical, liquid, minimal) mit Lautstärken pro Typ.",
+    "Cross-Pack-Icon-Mapping erweitert + Iconify-Collection-Fallback.",
+    "Website-Changelog auf Französisch, Englisch, Spanisch und Deutsch verfügbar.",
+  ],
+};
+
 const v324_fr: ChangelogEntry = {
   version: "v324",
   date: "2026-08-10",
@@ -53,8 +97,8 @@ const v322_fr: ChangelogEntry = {
 };
 
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v324_fr, v323_fr, v322_fr],
-  en: [
+  fr: [v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -100,7 +144,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [
+  es: [v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -146,7 +190,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [
+  de: [v325_de,
     {
       version: "v324",
       date: "2026-08-10",

@@ -214,5 +214,5 @@ export const CATALOG: Record<string, Record<string, string>> = {
 };
 
 export function t(lang: string, key: string) {
-  return CATALOG[lang]?.[key] || CATALOG.en[key] || key;
+  return CATALOG[lang]?.[key] || CATALOG.fr[key] || CATALOG.en[key] || key;
 }

@@ -668,6 +668,20 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 ### Amélioré
 - Bordereau PWA mis a jour vers experience-v273.
 
+## [v261] - 2026-08-10
+
+**Migration Next.js : dashboard A-Z — Google Drive, changelog et docs**
+
+### Ajoute
+- Intégration Google Drive native sur la page Fichiers (`useDriveFiles`, connexion OAuth et liste unifiée avec les fichiers worker).
+- Documentation minimaliste du client Next.js (`README.md` : stack, scripts, déploiement).
+
+### Corrige / Améliore
+- `CHANGELOG.md` mis à jour avec le suivi de la migration dashboard Next.js A-Z.
+
+### Version PWA
+- `experience-v261`.
+
 ## [v272] - 2026-08-10
 
 **Phase 9 : team-manager Supabase + interactions reseau**

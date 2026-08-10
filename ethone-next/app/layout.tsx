@@ -10,6 +10,7 @@ import CommandPalette from "@/components/CommandPalette";
 import MobileNav from "@/components/MobileNav";
 import SettingsProvider from "@/components/SettingsProvider";
 import SkipLink from "@/components/SkipLink";
+import OfflineIndicator from "@/components/OfflineIndicator";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,6 +40,7 @@ export default function RootLayout({
     >
       <body className="min-h-full bg-[var(--background)] text-[var(--foreground)]">
         <AuthProvider>
+          <OfflineIndicator />
           <SettingsProvider>
             <SkipLink />
             <Sidebar />

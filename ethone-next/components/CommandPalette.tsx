@@ -1,11 +1,22 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Command, ArrowRight } from "lucide-react";
+import { Search, Command, ArrowRight, Moon, Sun, Brain, LogOut, Flame, StickyNote, CirclePlus, Timer } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
+import { useSettings } from "@/components/SettingsProvider";
+import { useAuth } from "@/components/AuthProvider";
+
+type CommandItem = {
+  id: string;
+  label: string;
+  category: string;
+  icon?: React.ReactNode;
+  shortcut?: string;
+  action: () => void;
+};
 
 export default function CommandPalette() {
   const [query, setQuery] = useState("");
@@ -13,27 +24,50 @@ export default function CommandPalette() {
   const router = useRouter();
   const i18n = useI18n();
   const { open, setOpen } = useCommandPalette();
+  const { settings, update } = useSettings();
+  const { signOut } = useAuth();
 
-  const COMMANDS = useMemo(
+  const run = useCallback(
+    (cmd: CommandItem) => {
+      cmd.action();
+      setOpen(false);
+      setQuery("");
+    },
+    [setOpen]
+  );
+
+  const COMMANDS = useMemo<CommandItem[]>(
     () => [
-      { id: "home", label: i18n("home"), shortcut: "H", href: "/" },
-      { id: "mail", label: i18n("mail"), shortcut: "M", href: "/mail/" },
-      { id: "notes", label: i18n("notes"), shortcut: "N", href: "/notes/" },
-      { id: "tasks", label: i18n("tasks"), shortcut: "T", href: "/tasks/" },
-      { id: "calendar", label: i18n("calendar"), shortcut: "C", href: "/calendar/" },
-      { id: "files", label: i18n("files"), shortcut: "F", href: "/files/" },
-      { id: "brain", label: i18n("brain"), shortcut: "B", href: "/brain/" },
-      { id: "focus", label: i18n("focus"), shortcut: "P", href: "/focus/" },
-      { id: "matches", label: i18n("matches"), shortcut: "G", href: "/matches/" },
-      { id: "connections", label: i18n("connections"), shortcut: "O", href: "/connections/" },
-      { id: "settings", label: i18n("settings"), shortcut: "S", href: "/settings/" },
+      { id: "home", label: i18n("home"), category: i18n("navigate"), shortcut: "H", icon: <ArrowRight className="h-4 w-4" />, action: () => router.push("/") },
+      { id: "mail", label: i18n("mail"), category: i18n("navigate"), shortcut: "M", action: () => router.push("/mail/") },
+      { id: "notes", label: i18n("notes"), category: i18n("navigate"), shortcut: "N", action: () => router.push("/notes/") },
+      { id: "tasks", label: i18n("tasks"), category: i18n("navigate"), shortcut: "T", action: () => router.push("/tasks/") },
+      { id: "calendar", label: i18n("calendar"), category: i18n("navigate"), shortcut: "C", action: () => router.push("/calendar/") },
+      { id: "files", label: i18n("files"), category: i18n("navigate"), shortcut: "F", action: () => router.push("/files/") },
+      { id: "brain", label: i18n("brain"), category: i18n("navigate"), shortcut: "B", action: () => router.push("/brain/") },
+      { id: "focus", label: i18n("focus"), category: i18n("navigate"), shortcut: "P", action: () => router.push("/focus/") },
+      { id: "matches", label: i18n("matches"), category: i18n("navigate"), shortcut: "G", action: () => router.push("/matches/") },
+      { id: "connections", label: i18n("connections"), category: i18n("navigate"), shortcut: "O", action: () => router.push("/connections/") },
+      { id: "spaces", label: i18n("spaces"), category: i18n("navigate"), action: () => router.push("/spaces/") },
+      { id: "flows", label: i18n("flows"), category: i18n("navigate"), action: () => router.push("/flows/") },
+      { id: "interactions", label: i18n("interactions"), category: i18n("navigate"), action: () => router.push("/interactions/") },
+      { id: "settings", label: i18n("settings"), category: i18n("navigate"), shortcut: "S", action: () => router.push("/settings/") },
+
+      { id: "toggle-theme", label: settings.darkMode ? i18n("lightMode") : i18n("darkMode"), category: i18n("actions"), icon: settings.darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />, action: () => update({ darkMode: !settings.darkMode }) },
+      { id: "toggle-brain", label: settings.brainEnabled ? i18n("disableBrain") : i18n("enableBrain"), category: i18n("actions"), icon: <Brain className="h-4 w-4" />, action: () => update({ brainEnabled: !settings.brainEnabled }) },
+      { id: "focus-timer", label: i18n("startFocus"), category: i18n("actions"), icon: <Timer className="h-4 w-4" />, action: () => router.push("/focus/") },
+      { id: "new-note", label: i18n("newNote"), category: i18n("create"), icon: <StickyNote className="h-4 w-4" />, action: () => router.push("/notes/") },
+      { id: "new-task", label: i18n("newTask"), category: i18n("create"), icon: <CirclePlus className="h-4 w-4" />, action: () => router.push("/tasks/") },
+      { id: "new-interaction", label: i18n("newInteraction"), category: i18n("create"), icon: <Flame className="h-4 w-4" />, action: () => router.push("/interactions/") },
+
+      { id: "signout", label: i18n("signOut"), category: i18n("account"), icon: <LogOut className="h-4 w-4" />, action: () => signOut().then(() => router.push("/login")) },
     ],
-    [i18n]
+    [i18n, router, settings, update, signOut]
   );
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return q ? COMMANDS.filter((c) => c.label.toLowerCase().includes(q)) : COMMANDS;
+    return q ? COMMANDS.filter((c) => `${c.label} ${c.category}`.toLowerCase().includes(q)) : COMMANDS;
   }, [query, COMMANDS]);
 
   useEffect(() => {
@@ -60,15 +94,13 @@ export default function CommandPalette() {
       }
       if (event.key === "Enter" && filtered[index]) {
         event.preventDefault();
-        router.push(filtered[index].href);
-        setOpen(false);
-        setQuery("");
+        run(filtered[index]);
       }
     }
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open, filtered, index, router, setOpen]);
+  }, [open, filtered, index, setOpen, run]);
 
   useEffect(() => {
     if (!open) setQuery("");
@@ -126,11 +158,7 @@ export default function CommandPalette() {
                     <button
                       key={cmd.id}
                       type="button"
-                      onClick={() => {
-                        router.push(cmd.href);
-                        setOpen(false);
-                        setQuery("");
-                      }}
+                      onClick={() => run(cmd)}
                       className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm transition-colors ${
                         i === index
                           ? "bg-[var(--accent)] text-white"
@@ -139,13 +167,16 @@ export default function CommandPalette() {
                       onMouseEnter={() => setIndex(i)}
                     >
                       <span className="flex items-center gap-2">
-                        {cmd.label}
+                        {cmd.icon && <span className="opacity-70">{cmd.icon}</span>}
+                        <span>{cmd.label}</span>
+                        <span className={`text-[10px] ${i === index ? "text-white/70" : "text-[var(--muted)]"}`}>{cmd.category}</span>
                       </span>
-                      <span className="flex items-center gap-1 text-[10px] opacity-60">
-                        <Command className="h-3 w-3" />
-                        {cmd.shortcut}
-                        <ArrowRight className="h-3 w-3" />
-                      </span>
+                      {cmd.shortcut && (
+                        <span className="flex items-center gap-1 text-[10px] opacity-60">
+                          <Command className="h-3 w-3" />
+                          {cmd.shortcut}
+                        </span>
+                      )}
                     </button>
                   ))
                 )}

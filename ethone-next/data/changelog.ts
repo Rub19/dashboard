@@ -20,6 +20,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "ProfileDropdown : avatar/icone personne, plus de lettre.",
       "Icon packs : Lucide, Phosphor, Tabler, Heroicons, Radix + densite mode.",
       "Uniformisation pack d\'icones sur les composants + reglages visuels (ombre, fond, radius dock).",
+      "Toutes les pages migr\u00e9es au pack d\'ic\u00f4nes, density engine, aurora, presets de mise en page, equalizer live.",
       "Plugins tiers v1 : page /plugins avec statut live et ouverture fenêtre.",
       "Macros persistantes : page /macros, exécution depuis Command Center.",
       "Personas : page /personas avec thèmes.",

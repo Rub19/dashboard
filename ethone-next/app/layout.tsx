@@ -5,6 +5,8 @@ import Sidebar from "@/components/Sidebar";
 import SearchBar from "@/components/SearchBar";
 import ProfileDropdown from "@/components/ProfileDropdown";
 import AuthProvider from "@/components/AuthProvider";
+import ServiceWorker from "@/components/ServiceWorker";
+import CommandPalette from "@/components/CommandPalette";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,6 +21,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Ethone.dev",
   description: "ETHONE Dashboard — Next-gen workspace",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
@@ -38,9 +41,11 @@ export default function RootLayout({
             <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[var(--border)] bg-[var(--background)]/80 px-6 backdrop-blur-md">
               <SearchBar />
               <div className="flex items-center gap-3">
+                <CommandPalette />
                 <ProfileDropdown />
               </div>
             </header>
+            <ServiceWorker />
             <main className="p-6">{children}</main>
           </div>
         </AuthProvider>

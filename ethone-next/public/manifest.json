@@ -1,0 +1,17 @@
+{
+  "name": "ETHONE",
+  "short_name": "ETHONE",
+  "description": "ETHONE Dashboard",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#8b5cf6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/_next/static/media/favicon.2vob68tjqpejf.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}

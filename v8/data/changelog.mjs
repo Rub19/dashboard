@@ -24,6 +24,13 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v321", "2026-08-18", "Audit i18n : focus popover, panel, home et PWA v321", [
+    { kind: "fix", text: "Internationalisation du popover Focus Timer et du panel." },
+    { kind: "fix", text: "Temps relatif localise avec Intl.RelativeTimeFormat." },
+    { kind: "fix", text: "Horloges mondiales, Focus Express et notifications traduits." },
+    { kind: "fix", text: "Labels des sections du dashboard traduits." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v321." }
+  ]),
   entry("v320", "2026-08-18", "QA : internationalisation, erreurs console worker et PWA v320", [
     { kind: "fix", text: "Gestion des erreurs console 502 (tracker) et 401 (Google Drive) en retournant une reponse ok avec donnees vides." },
     { kind: "fix", text: "Internationalisation des empty-states, shell, status et widgets." },

@@ -7,6 +7,7 @@ import { createSelect } from "./select.mjs";
 import { workspaceById } from "../data/workspaces.mjs";
 import { CHANGELOG, CHANGELOG_KIND_ICONS, CHANGELOG_KIND_LABELS } from "../data/changelog.mjs";
 import { createNotificationCenter } from "./notification-center.mjs";
+import { currentLocale, translateSource } from "../i18n/catalog.mjs";
 
 const PANEL_COPY = Object.freeze({
   widgets: { title: "Widgets", eyebrow: "Space actif", icon: "panels-top-left" },
@@ -29,13 +30,14 @@ const NOTIFICATION_ICONS = Object.freeze({
 function formatTime(ts) {
   const diff = Date.now() - (ts || Date.now());
   const sec = Math.floor(diff / 1000);
-  if (sec < 60) return "À l'instant";
+  const rtf = new Intl.RelativeTimeFormat(currentLocale(), { numeric: "always", style: "short" });
+  if (sec < 60) return rtf.format(-1, "second");
   const min = Math.floor(sec / 60);
-  if (min < 60) return `Il y a ${min} min`;
+  if (min < 60) return rtf.format(-min, "minute");
   const h = Math.floor(min / 60);
-  if (h < 24) return `Il y a ${h}h`;
+  if (h < 24) return rtf.format(-h, "hour");
   const d = Math.floor(h / 24);
-  return `Il y a ${d}j`;
+  return rtf.format(-d, "day");
 }
 
 function panelMetric(iconName, value, label) {
@@ -55,13 +57,13 @@ function notification(item, state = {}) {
     attributes: { role: "listitem", tabindex: "0", "aria-selected": selected ? "true" : "false" },
     dataset: { notificationId: item.id }
   }, [
-    selectionControl({ id: item.id, checked: selected, label: `Selectionner ${item.title}` }),
+    selectionControl({ id: item.id, checked: selected, label: `${translateSource("Selectionner")} ${item.title}` }),
     element("span", { className: "v8-panel-notice__icon" }, [icon(iconName)]),
     element("div", {}, [element("span", { className: "v8-panel-notice__meta" }, [element("span", { text: formatTime(item.timestamp) }), item.category ? element("span", { className: "v8-panel-notice__category", text: String(item.category), attributes: { translate: "no" } }) : null]), element("strong", { text: item.title }), element("p", { text: item.message })]),
-    read ? null : element("span", { className: "v8-panel-notice__dot", attributes: { "aria-label": "Non lue" } }),
+    read ? null : element("span", { className: "v8-panel-notice__dot", attributes: { "aria-label": translateSource("Non lue") } }),
     element("div", { className: "v8-row-actions" }, [element("button", {
       className: "v8-icon-button",
-      attributes: { type: "button", "aria-label": `Actions pour ${item.title}`, "aria-haspopup": "menu", "aria-expanded": "false" },
+      attributes: { type: "button", "aria-label": `${translateSource("Actions pour")} ${item.title}`, "aria-haspopup": "menu", "aria-expanded": "false" },
       dataset: { notificationMenu: item.id }
     }, [icon("more-horizontal")])])
   ]);
@@ -98,17 +100,18 @@ export function createPanelManager(host, options = {}) {
       let timeStr = "--:--";
       let isDay = true;
       try {
-        const formatter = new Intl.DateTimeFormat("fr-FR", { timeZone: hub.zone, hour: "2-digit", minute: "2-digit" });
+        const formatter = new Intl.DateTimeFormat(currentLocale(), { timeZone: hub.zone, hour: "2-digit", minute: "2-digit" });
         timeStr = formatter.format(now);
         const hour = Number(new Intl.DateTimeFormat("en-US", { timeZone: hub.zone, hour: "numeric", hour12: false }).format(now));
         isDay = hour >= 6 && hour < 20;
       } catch {
         timeStr = "12:00";
       }
-      const card = element("div", { className: "v8-world-card", attributes: { role: "button", tabindex: "0", title: `Copier l'heure de ${hub.city}` } }, [
+      const dayNight = isDay ? translateSource("☀️ Jour") : translateSource("🌙 Nuit");
+      const card = element("div", { className: "v8-world-card", attributes: { role: "button", tabindex: "0", title: `${translateSource("Copier l'heure de")} ${hub.city}` } }, [
         element("div", { className: "v8-world-card__top" }, [
           element("span", { className: "v8-world-card__city", text: hub.city }),
-          element("span", { className: "v8-world-card__badge", text: isDay ? "☀️ Jour" : "🌙 Nuit" })
+          element("span", { className: "v8-world-card__badge", text: dayNight })
         ]),
         element("div", { className: "v8-world-card__time", text: timeStr })
       ]);
@@ -118,7 +121,7 @@ export function createPanelManager(host, options = {}) {
       grid.append(card);
     });
     return element("section", { className: "v8-panel-section" }, [
-      element("header", {}, [element("strong", { text: "Horloges & Hubs mondiaux" }), element("span", { text: "Temps réel" })]),
+      element("header", {}, [element("strong", { text: translateSource("Horloges & Hubs mondiaux") }), element("span", { text: translateSource("Temps réel") })]),
       grid
     ]);
   }
@@ -127,20 +130,20 @@ export function createPanelManager(host, options = {}) {
     const mins = String(Math.floor(focusRemaining / 60)).padStart(2, "0");
     const secs = String(focusRemaining % 60).padStart(2, "0");
     const timerDisplay = element("span", { className: "v8-focus-express__timer", text: `${mins}:${secs}` });
-    const statusDisplay = element("span", { className: "v8-focus-express__status", text: focusLabel });
+    const statusDisplay = element("span", { className: "v8-focus-express__status", text: translateSource(focusLabel) });
     const fillBar = element("div", { className: "v8-focus-express__fill", attributes: { style: `width: ${Math.round(((focusTotal - focusRemaining) / focusTotal) * 100)}%;` } });
 
-    const start25Btn = element("button", { className: "v8-button v8-button--secondary v8-button--sm", text: "25m Focus", attributes: { type: "button" } });
-    const start5Btn = element("button", { className: "v8-button v8-button--secondary v8-button--sm", text: "5m Pause", attributes: { type: "button" } });
-    const resetBtn = element("button", { className: "v8-button v8-button--outline v8-button--sm", text: focusRunning ? "Pause" : "Reset", attributes: { type: "button" } });
+    const start25Btn = element("button", { className: "v8-button v8-button--secondary v8-button--sm", text: translateSource("25m Focus"), attributes: { type: "button" } });
+    const start5Btn = element("button", { className: "v8-button v8-button--secondary v8-button--sm", text: translateSource("5m Pause"), attributes: { type: "button" } });
+    const resetBtn = element("button", { className: "v8-button v8-button--outline v8-button--sm", text: focusRunning ? translateSource("Pause") : translateSource("Reset"), attributes: { type: "button" } });
 
     function updateView() {
       const m = String(Math.floor(focusRemaining / 60)).padStart(2, "0");
       const s = String(focusRemaining % 60).padStart(2, "0");
       timerDisplay.textContent = `${m}:${s}`;
-      statusDisplay.textContent = focusLabel;
+      statusDisplay.textContent = translateSource(focusLabel);
       fillBar.style.width = `${Math.round(((focusTotal - focusRemaining) / focusTotal) * 100)}%`;
-      resetBtn.textContent = focusRunning ? "Pause" : "Reset";
+      resetBtn.textContent = focusRunning ? translateSource("Pause") : translateSource("Reset");
     }
 
     start25Btn.addEventListener("click", () => {
@@ -203,7 +206,7 @@ export function createPanelManager(host, options = {}) {
     });
 
     return element("section", { className: "v8-panel-section" }, [
-      element("header", {}, [element("strong", { text: "Focus Express" }), statusDisplay]),
+      element("header", {}, [element("strong", { text: translateSource("Focus Express") }), statusDisplay]),
       element("div", { className: "v8-focus-express" }, [
         element("div", { className: "v8-focus-express__display" }, [timerDisplay, element("div", { className: "v8-focus-express__controls" }, [start25Btn, start5Btn, resetBtn])]),
         element("div", { className: "v8-focus-express__bar" }, [fillBar])
@@ -570,8 +573,8 @@ export function createPanelManager(host, options = {}) {
     }, [
       element("header", { className: "v8-panel__header" }, [
         element("div", { className: "v8-window-controls", attributes: { "aria-hidden": "true" } }, [element("span"), element("span"), element("span")]),
-        element("div", {}, [element("span", { className: "v8-eyebrow", text: copy.eyebrow }), element("strong", { text: copy.title })]),
-        actionButton({ actionId: "v8.panel.close", className: "v8-icon-button", ariaLabel: "Fermer le panneau" }, [icon("x")])
+        element("div", {}, [element("span", { className: "v8-eyebrow", text: translateSource(copy.eyebrow) }), element("strong", { text: copy.title })]),
+        actionButton({ actionId: "v8.panel.close", className: "v8-icon-button", ariaLabel: translateSource("Fermer le panneau") }, [icon("x")])
       ]),
       content
     ]);

@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v321] - 2026-08-18
+
+**Audit i18n : focus popover, panel, home et PWA v321**
+
+### Corrige
+- Internationalisation du popover Focus Timer et du panel.
+- Temps relatif localisé avec `Intl.RelativeTimeFormat`.
+- Horloges mondiales, Focus Express et notifications traduits.
+- Labels des sections du dashboard traduits.
+
+### Version PWA
+- `experience-v321`.
+
 ## [v320] - 2026-08-18
 
 **QA : internationalisation, erreurs console worker et PWA v320**

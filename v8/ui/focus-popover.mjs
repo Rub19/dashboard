@@ -1,5 +1,6 @@
 import { element, icon } from "./dom.mjs";
 import { refreshIcons } from "./icons.mjs";
+import { translateSource } from "../i18n/catalog.mjs";
 
 const PRESETS = Object.freeze([
   { id: "pomodoro", label: "Pomodoro", icon: "timer", action: "v8.focus.start.pomodoro" },
@@ -22,7 +23,7 @@ export function attachFocusPopover(trigger, options = {}) {
 
   let isOpen = false;
 
-  const phaseLabel = element("span", { className: "v8-focus-popover__phase", text: "Prêt" });
+  const phaseLabel = element("span", { className: "v8-focus-popover__phase", text: translateSource("Prêt") });
   const timeLabel = element("span", { className: "v8-focus-popover__time", text: "" });
 
   function menuItem(label, iconName, action) {
@@ -38,21 +39,21 @@ export function attachFocusPopover(trigger, options = {}) {
   }
 
   const startGroup = element("div", { className: "v8-focus-popover__group" }, [
-    element("span", { className: "v8-focus-popover__group-label", text: "Démarrer" }),
-    ...PRESETS.map((preset) => menuItem(preset.label, preset.icon, preset.action))
+    element("span", { className: "v8-focus-popover__group-label", text: translateSource("Démarrer") }),
+    ...PRESETS.map((preset) => menuItem(translateSource(preset.label), preset.icon, preset.action))
   ]);
 
-  const pauseBtn = toggleButton("Pause", "pause", "v8.focus.pause");
+  const pauseBtn = toggleButton(translateSource("Pause"), "pause", "v8.focus.pause");
   const controls = element("div", { className: "v8-focus-popover__group" }, [
-    element("span", { className: "v8-focus-popover__group-label", text: "Contrôles" }),
+    element("span", { className: "v8-focus-popover__group-label", text: translateSource("Contrôles") }),
     pauseBtn,
-    menuItem("Arrêter", "square", "v8.focus.stop"),
-    menuItem("Passer", "skip-forward", "v8.focus.skip")
+    menuItem(translateSource("Arrêter"), "square", "v8.focus.stop"),
+    menuItem(translateSource("Passer"), "skip-forward", "v8.focus.skip")
   ]);
 
-  const popover = element("div", { className: "v8-focus-popover", attributes: { hidden: true, role: "menu", "aria-label": "Focus Timer" } }, [
+  const popover = element("div", { className: "v8-focus-popover", attributes: { hidden: true, role: "menu", "aria-label": translateSource("Focus Timer") } }, [
     element("header", { className: "v8-focus-popover__header" }, [
-      element("strong", { text: "Focus Timer" }),
+      element("strong", { text: translateSource("Focus Timer") }),
       phaseLabel
     ]),
     element("div", { className: "v8-focus-popover__body" }, [startGroup, controls])
@@ -96,13 +97,13 @@ export function attachFocusPopover(trigger, options = {}) {
 
   function updateState(state) {
     const phase = state.phase || "idle";
-    phaseLabel.textContent = state.paused ? "En pause" : (PHASE_LABELS[phase] || "Focus");
+    phaseLabel.textContent = state.paused ? translateSource("En pause") : translateSource(PHASE_LABELS[phase] || "Focus");
     if (phase === "idle") {
       timeLabel.textContent = "";
     } else {
       timeLabel.textContent = focusTimer?.formatRemaining?.(state.remaining) || "";
     }
-    pauseBtn.querySelector("span").textContent = state.paused ? "Reprendre" : "Pause";
+    pauseBtn.querySelector("span").textContent = state.paused ? translateSource("Reprendre") : translateSource("Pause");
     const pauseIcon = pauseBtn.querySelector("i");
     if (pauseIcon) pauseIcon.setAttribute("data-lucide", state.paused ? "play" : "pause");
     refreshIcons();

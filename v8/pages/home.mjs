@@ -21,7 +21,7 @@ import { googleDriveLiveCard } from "../ui/google-drive-live.mjs";
 import { youtubeLiveCard } from "../ui/youtube-live.mjs";
 import { redditLiveCard } from "../ui/reddit-live.mjs";
 import { billsLiveCard } from "../ui/bills-widget.mjs";
-import { localeTag } from "../i18n/catalog.mjs";
+import { localeTag, translateSource } from "../i18n/catalog.mjs";
 import { LIVE_CARD_IDS } from "../core/store.mjs";
 
 const HOME_SECTIONS = Object.freeze([
@@ -784,7 +784,7 @@ export function mountHome(stage, model, options = {}) {
       attributes: { type: "button" }
     }, [
       icon(isHidden ? "eye-off" : "eye"),
-      element("span", { text: section.label })
+      element("span", { text: translateSource(section.label) })
     ]);
     button.addEventListener("click", () => {
       const index = sectionLayout.hidden.indexOf(section.id);
@@ -801,8 +801,8 @@ export function mountHome(stage, model, options = {}) {
     if (!personalizeOpen) return;
     const list = element("div", { className: "v8-home-personalize__list" }, HOME_SECTIONS.map(sectionToggleRow));
     const header = element("header", { className: "v8-home-personalize__header" }, [
-      element("strong", { text: "Personnaliser le tableau de bord" }),
-      actionButton({ actionId: "v8.home.personalize.close", className: "v8-icon-button", ariaLabel: "Fermer" }, [icon("x")])
+      element("strong", { text: translateSource("Personnaliser le tableau de bord") }),
+      actionButton({ actionId: "v8.home.personalize.close", className: "v8-icon-button", ariaLabel: translateSource("Fermer") }, [icon("x")])
     ]);
     personalizePanel.replaceChildren(header, list);
     refreshIcons();

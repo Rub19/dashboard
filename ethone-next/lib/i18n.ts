@@ -46,6 +46,11 @@ export const CATALOG: Record<string, Record<string, string>> = {
     guest: "Invité",
     signOut: "Se déconnecter",
     changelog: "Notes de version",
+    askQuestion: "Poser une question",
+    placeholder: "Demandez quelque chose à Brain...",
+    clear: "Effacer",
+    empty: "Aucun message. Commencez la conversation.",
+    emptyResponse: "Réponse vide",
   },
   en: {
     home: "Home",
@@ -94,6 +99,11 @@ export const CATALOG: Record<string, Record<string, string>> = {
     guest: "Guest",
     signOut: "Sign out",
     changelog: "Changelog",
+    askQuestion: "Ask a question",
+    placeholder: "Ask Brain something...",
+    clear: "Clear",
+    empty: "No messages. Start the conversation.",
+    emptyResponse: "Empty response",
   },
   es: {
     home: "Inicio",
@@ -142,6 +152,11 @@ export const CATALOG: Record<string, Record<string, string>> = {
     guest: "Invitado",
     signOut: "Cerrar sesión",
     changelog: "Changelog",
+    askQuestion: "Hacer una pregunta",
+    placeholder: "Pregúntale algo a Brain...",
+    clear: "Borrar",
+    empty: "Ningún mensaje. Comienza la conversación.",
+    emptyResponse: "Respuesta vacía",
   },
   de: {
     home: "Startseite",
@@ -190,6 +205,11 @@ export const CATALOG: Record<string, Record<string, string>> = {
     guest: "Gast",
     signOut: "Abmelden",
     changelog: "Changelog",
+    askQuestion: "Eine Frage stellen",
+    placeholder: "Frag Brain etwas...",
+    clear: "Löschen",
+    empty: "Keine Nachrichten. Beginne die Konversation.",
+    emptyResponse: "Leere Antwort",
   },
 };
 

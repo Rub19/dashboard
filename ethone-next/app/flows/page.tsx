@@ -123,6 +123,7 @@ export default function FlowsPage() {
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
             <select
+              aria-label={i18n("template")}
               value={selectedTemplate}
               onChange={(e) => setSelectedTemplate(e.target.value)}
               className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
@@ -136,7 +137,7 @@ export default function FlowsPage() {
               value={newLabel}
               onChange={(e) => setNewLabel(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && addFlow()}
-              placeholder={i18n("create")}
+              aria-label={i18n("create")} placeholder={i18n("create")}
               className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
             <button

@@ -60,11 +60,12 @@ export default function TasksPage() {
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addTask()}
-            placeholder={i18n("tasksPlaceholder")}
+            aria-label={i18n("tasksPlaceholder")} placeholder={i18n("tasksPlaceholder")}
             className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
           />
           <button
             type="button"
+            aria-label={i18n("add")}
             onClick={addTask}
             disabled={loading}
             className="flex shrink-0 items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
@@ -91,6 +92,7 @@ export default function TasksPage() {
             <div className="flex items-center gap-3">
               <button
                 type="button"
+                aria-label={task.done ? i18n("markUndone") : i18n("markDone")}
                 onClick={() => toggleTask(task.id, !!task.done)}
                 disabled={loading}
                 className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
@@ -110,6 +112,7 @@ export default function TasksPage() {
               </span>
               <button
                 type="button"
+                aria-label={i18n("delete")}
                 onClick={() => deleteTask(task.id)}
                 disabled={loading}
                 className="text-[var(--muted)] hover:text-red-400 disabled:opacity-50"

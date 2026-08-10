@@ -12,7 +12,9 @@ const v328_fr: ChangelogEntry = {
   items: [
     "Playwright + @axe-core/playwright : tests E2E routes, responsive, accessibilité.",
     "scripts/a11y-audit.mjs et responsive-audit.mjs avec rapports JSON.",
-    "Corrige aria-label sur sidebar, dock, live overlay, toggles ; aria-hidden sur Icon.",
+    "Corrige aria-label sur sidebar, dock, live overlay, toggles, boutons, inputs, selects et textareas.",
+    "Hierarchie de titres corrigée.",
+    "npm run test:all passe.",
   ],
 };
 
@@ -23,7 +25,9 @@ const v328_en: ChangelogEntry = {
   items: [
     "Playwright + @axe-core/playwright: E2E routes, responsive, accessibility tests.",
     "scripts/a11y-audit.mjs and responsive-audit.mjs with JSON reports.",
-    "Fix aria-label on sidebar, dock, live overlay, toggles; aria-hidden on Icon.",
+    "Fix aria-label on sidebar, dock, live overlay, toggles, buttons, inputs, selects and textareas.",
+    "Heading hierarchy fixed.",
+    "npm run test:all passes.",
   ],
 };
 
@@ -34,7 +38,9 @@ const v328_es: ChangelogEntry = {
   items: [
     "Playwright + @axe-core/playwright: tests E2E de rutas, responsive y accesibilidad.",
     "scripts/a11y-audit.mjs y responsive-audit.mjs con informes JSON.",
-    "Corrige aria-label en sidebar, dock, live overlay, toggles; aria-hidden en Icon.",
+    "Corrige aria-label en sidebar, dock, live overlay, toggles, botones, inputs, selects y textareas.",
+    "Jerarquía de títulos corregida.",
+    "npm run test:all pasa.",
   ],
 };
 
@@ -45,7 +51,9 @@ const v328_de: ChangelogEntry = {
   items: [
     "Playwright + @axe-core/playwright: E2E-Routen-, Responsive- und Barrierefreiheitstests.",
     "scripts/a11y-audit.mjs und responsive-audit.mjs mit JSON-Berichten.",
-    "aria-label in Sidebar, Dock, Live-Overlay, Toggles korrigiert; aria-hidden auf Icon.",
+    "aria-label in Sidebar, Dock, Live-Overlay, Toggles, Buttons, Inputs, Selects und Textareas korrigiert.",
+    "Überschriften-Hierarchie korrigiert.",
+    "npm run test:all besteht.",
   ],
 };
 

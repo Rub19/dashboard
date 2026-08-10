@@ -112,11 +112,12 @@ export default function SpacesPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && add()}
-            placeholder={i18n("create")}
+            aria-label={i18n("create")} placeholder={i18n("create")}
             className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
           />
           <button
             type="button"
+            aria-label={i18n("add")}
             onClick={add}
             disabled={loading}
             className="flex shrink-0 items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
@@ -138,6 +139,7 @@ export default function SpacesPage() {
               </div>
               <button
                 type="button"
+                aria-label={i18n("delete")}
                 onClick={() => deleteSpace(space.id)}
                 className="text-[var(--muted)] hover:text-red-400"
               >

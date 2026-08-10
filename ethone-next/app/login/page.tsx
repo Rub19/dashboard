@@ -79,7 +79,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] py-2.5 pl-10 pr-3 text-sm text-[var(--foreground)] outline-none transition-colors focus:border-[var(--accent)]"
-                  placeholder={i18n("emailPlaceholderLogin")}
+                  aria-label={i18n("emailPlaceholderLogin")} placeholder={i18n("emailPlaceholderLogin")}
                 />
               </div>
               <button
@@ -112,7 +112,7 @@ export default function LoginPage() {
                   value={code}
                   onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
                   className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] py-2.5 pl-10 pr-3 text-sm text-[var(--foreground)] outline-none transition-colors focus:border-[var(--accent)]"
-                  placeholder={i18n("codePlaceholder")}
+                  aria-label={i18n("codePlaceholder")} placeholder={i18n("codePlaceholder")}
                 />
               </div>
               <button

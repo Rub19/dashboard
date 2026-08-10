@@ -13,11 +13,14 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `e2e/a11y.spec.ts` : audit axe-core WCAG 2A/2AA par route et viewport.
 - `scripts/a11y-audit.mjs` : audit statique HTML post-build avec axe-core + rapport `audit/a11y-report.json`.
 - `scripts/responsive-audit.mjs` : audit statique responsive + rapport `audit/responsive-report.json`.
-- Commandes npm : `test:e2e`, `test:a11y`, `test:all`, `audit:a11y`, `audit:responsive`.
+- Commandes npm : `test:e2e`, `test:all`, `audit:a11y`, `audit:responsive`.
 
 ### Corrige
 - `aria-label` sur les icônes boutons de la sidebar, du dock, du live overlay et des toggles settings.
+- `aria-label` sur les boutons, sélecteurs, inputs et textareas des pages restantes.
 - `aria-hidden="true" focusable="false"` sur le composant `Icon`.
+- Hierarchie de titres sur la page mail.
+- `npm run test:all` passe (tsc, lint, build, tests unitaires, E2E, audits).
 
 ### Version PWA
 - `experience-v328`.

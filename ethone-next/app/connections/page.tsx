@@ -150,7 +150,7 @@ export default function ConnectionsPage() {
                     type="text"
                     value={clientId}
                     onChange={(e) => setClientIds((c) => ({ ...c, [integration.id]: e.target.value }))}
-                    placeholder={i18n("clientId")}
+                    aria-label={i18n("clientId")} placeholder={i18n("clientId")}
                     className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-1.5 text-xs text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
                   />
                   <button

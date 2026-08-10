@@ -85,7 +85,7 @@ export default function ProfilePage() {
               type="text"
               value={form.username}
               onChange={(e) => setForm({ ...form, username: e.target.value })}
-              placeholder={i18n("usernamePlaceholder")}
+              aria-label={i18n("usernamePlaceholder")} placeholder={i18n("usernamePlaceholder")}
               className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
             <p className="text-xs text-[var(--muted)]">{i18n("displayNameHint")}</p>
@@ -97,7 +97,7 @@ export default function ProfilePage() {
               type="text"
               value={form.display_name}
               onChange={(e) => setForm({ ...form, display_name: e.target.value })}
-              placeholder={i18n("yourNamePlaceholder")}
+              aria-label={i18n("yourNamePlaceholder")} placeholder={i18n("yourNamePlaceholder")}
               className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
           </div>

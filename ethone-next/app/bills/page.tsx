@@ -69,22 +69,22 @@ export default function BillsPage() {
               type="text"
               value={label}
               onChange={(e) => setLabel(e.target.value)}
-              placeholder={i18n("label")}
+              aria-label={i18n("label")} placeholder={i18n("label")}
               className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
             <input
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              placeholder={i18n("amount")}
+              aria-label={i18n("amount")} placeholder={i18n("amount")}
               className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
-            <select value={currency} onChange={(e) => setCurrency(e.target.value)} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm">
+            <select aria-label={i18n("currency")} value={currency} onChange={(e) => setCurrency(e.target.value)} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm">
               <option value="EUR">{i18n("currencyEur")}</option>
               <option value="USD">{i18n("currencyUsd")}</option>
               <option value="GBP">{i18n("currencyGbp")}</option>
             </select>
-            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+            <input aria-label={i18n("date")} type="date" value={date} onChange={(e) => setDate(e.target.value)} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
           </div>
           <button onClick={add} className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white">
             <Icon name="plus" className="h-4 w-4" /> {i18n("add")}

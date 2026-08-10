@@ -51,19 +51,21 @@ export default function PluginsPage() {
                 </div>
                 <div className="flex flex-col gap-1">
                   <button
+                    type="button"
+                    aria-label={i18n("configure")}
                     onClick={() => router.push("/connections/")}
                     className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
-                    title={i18n("configure")}
                   >
                     <Icon name="plug" className="h-4 w-4" />
                   </button>
                   <button
+                    type="button"
+                    aria-label={i18n("open")}
                     onClick={() => {
                       openWindow(p.route, p.label);
                       success(i18n("open"));
                     }}
                     className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
-                    title={i18n("openAction")}
                   >
                     <Icon name="maximize-2" className="h-4 w-4" />
                   </button>

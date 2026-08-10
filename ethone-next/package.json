@@ -9,8 +9,7 @@
     "lint": "eslint .",
     "test": "tsc --noEmit && npm run lint && npm run build && npm run test:unit",
     "test:unit": "jest",
-    "test:e2e": "npx playwright test e2e/routes.spec.ts e2e/responsive.spec.ts",
-    "test:a11y": "npx playwright test e2e/a11y.spec.ts",
+    "test:e2e": "npx playwright test",
     "test:all": "npm run test && npm run test:e2e && npm run audit:a11y && npm run audit:responsive",
     "audit:a11y": "node scripts/a11y-audit.mjs",
     "audit:responsive": "node scripts/responsive-audit.mjs"

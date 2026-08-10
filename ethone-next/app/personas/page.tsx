@@ -57,10 +57,11 @@ export default function PersonasPage() {
               value={label}
               onChange={(e) => setLabel(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && add()}
-              placeholder={i18n("create")}
+              aria-label={i18n("create")} placeholder={i18n("create")}
               className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
             <select
+              aria-label={i18n("theme")}
               value={theme}
               onChange={(e) => setTheme(e.target.value as typeof theme)}
               className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm"
@@ -71,7 +72,7 @@ export default function PersonasPage() {
               <option value="eclipse">{i18n("themeEclipse")}</option>
               <option value="emerald">{i18n("themeEmerald")}</option>
             </select>
-            <button type="button" onClick={add} className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white">
+            <button type="button" aria-label={i18n("add")} onClick={add} className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white">
               <Icon name="plus" className="h-4 w-4" />
             </button>
           </div>
@@ -94,10 +95,10 @@ export default function PersonasPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
-                  <button type="button" onClick={() => apply(p)} className="rounded p-1.5 text-emerald-400 hover:bg-emerald-500/10">
+                  <button type="button" aria-label={i18n("apply")} onClick={() => apply(p)} className="rounded p-1.5 text-emerald-400 hover:bg-emerald-500/10">
                     <Icon name="check" className="h-4 w-4" />
                   </button>
-                  <button type="button" onClick={() => deletePersona(p.id)} className="rounded p-1.5 text-[var(--muted)] hover:text-red-400">
+                  <button type="button" aria-label={i18n("delete")} onClick={() => deletePersona(p.id)} className="rounded p-1.5 text-[var(--muted)] hover:text-red-400">
                     <Icon name="trash-2" className="h-4 w-4" />
                   </button>
                 </div>

@@ -118,6 +118,7 @@ export default function FocusPage() {
         <div className="flex items-center justify-center gap-3">
           <button
             type="button"
+            aria-label={running ? i18n("pause") : i18n("play")}
             onClick={toggleTimer}
             className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--accent)] text-white transition-opacity hover:opacity-90"
           >
@@ -125,6 +126,7 @@ export default function FocusPage() {
           </button>
           <button
             type="button"
+            aria-label={i18n("reset")}
             onClick={resetTimer}
             className="flex h-12 w-12 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
           >

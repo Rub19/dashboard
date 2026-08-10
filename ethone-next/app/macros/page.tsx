@@ -54,10 +54,11 @@ export default function MacrosPage() {
               value={label}
               onChange={(e) => setLabel(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && add()}
-              placeholder={i18n("create")}
+              aria-label={i18n("create")} placeholder={i18n("create")}
               className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
             <select
+              aria-label={i18n("action")}
               value={action}
               onChange={(e) => setAction(e.target.value)}
               className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm"
@@ -71,12 +72,14 @@ export default function MacrosPage() {
                 type="text"
                 value={href}
                 onChange={(e) => setHref(e.target.value)}
+                aria-label={i18n("url")}
                 placeholder="/page"
                 className="min-w-0 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
               />
             )}
             <button
               type="button"
+              aria-label={i18n("add")}
               onClick={add}
               className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white"
             >
@@ -101,7 +104,7 @@ export default function MacrosPage() {
                     <p className="text-xs text-[var(--muted)]">{i18n(data.action === "navigate" ? "openPage" : "toggle")} {data.href || data.setting}</p>
                   </div>
                 </div>
-                <button type="button" onClick={() => deleteMacro(m.id)} className="text-[var(--muted)] hover:text-red-400">
+                <button type="button" aria-label={i18n("delete")} onClick={() => deleteMacro(m.id)} className="text-[var(--muted)] hover:text-red-400">
                   <Icon name="trash-2" className="h-4 w-4" />
                 </button>
               </div>

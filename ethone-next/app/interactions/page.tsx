@@ -131,6 +131,7 @@ export default function InteractionsPage() {
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
             <select
+              aria-label={i18n("kind")}
               value={newKind}
               onChange={(e) => setNewKind(e.target.value as InteractionKind)}
               className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
@@ -144,11 +145,12 @@ export default function InteractionsPage() {
               value={newTarget}
               onChange={(e) => setNewTarget(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && addReaction()}
-              placeholder={i18n("target")}
+              aria-label={i18n("target")} placeholder={i18n("target")}
               className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
             <button
               type="button"
+              aria-label={i18n("add")}
               onClick={addReaction}
               disabled={loading}
               className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"

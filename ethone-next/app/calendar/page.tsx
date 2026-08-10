@@ -101,6 +101,7 @@ export default function CalendarPage() {
         <div className="flex items-center gap-2">
           <button
             type="button"
+            aria-label={i18n("previous")}
             onClick={prev}
             className="rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] p-2 text-[var(--muted)] hover:text-[var(--foreground)]"
           >
@@ -109,6 +110,7 @@ export default function CalendarPage() {
           <span className="min-w-32 text-center text-sm font-medium capitalize">{monthName}</span>
           <button
             type="button"
+            aria-label={i18n("next")}
             onClick={next}
             className="rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] p-2 text-[var(--muted)] hover:text-[var(--foreground)]"
           >
@@ -124,11 +126,12 @@ export default function CalendarPage() {
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addEvent()}
-            placeholder={i18n("newEvent")}
+            aria-label={i18n("newEvent")} placeholder={i18n("newEvent")}
             className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
           />
           <button
             type="button"
+            aria-label={i18n("add")}
             onClick={addEvent}
             disabled={itemsLoading}
             className="flex shrink-0 items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"

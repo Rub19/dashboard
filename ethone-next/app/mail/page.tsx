@@ -32,7 +32,7 @@ export default function MailPage() {
       <div className="min-w-0 space-y-4">
         <Card3D>
           <div className="flex items-center justify-between gap-4">
-            <h2 className="min-w-0 truncate text-lg font-semibold">{folders.find((f) => f.id === folder)?.label}</h2>
+            <h1 className="min-w-0 truncate text-lg font-semibold">{folders.find((f) => f.id === folder)?.label}</h1>
             <span className="shrink-0 rounded-full bg-violet-500/10 px-2 py-0.5 text-xs font-medium text-violet-400">
               {unread} {i18n("unread")}
             </span>

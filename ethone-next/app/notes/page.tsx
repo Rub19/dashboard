@@ -45,12 +45,13 @@ export default function NotesPage() {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder={i18n("notesPlaceholder")}
+            aria-label={i18n("notesPlaceholder")} placeholder={i18n("notesPlaceholder")}
             className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
           />
           <textarea
             value={body}
             onChange={(e) => setBody(e.target.value)}
+            aria-label={i18n("description")}
             placeholder={i18n("description")}
             rows={3}
             className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"

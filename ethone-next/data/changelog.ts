@@ -18,6 +18,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Live Overlay v4 : cartes riche Spotify/Discord/YouTube, equalizer, controles, avatars.",
       "Personnalisation v2 : Dock personnalisable + Live cards flip + glass/tilt.",
       "ProfileDropdown : avatar/icone personne, plus de lettre.",
+      "Icon packs : Lucide, Phosphor, Tabler, Heroicons, Radix + densite mode.",
       "Plugins tiers v1 : page /plugins avec statut live et ouverture fenêtre.",
       "Macros persistantes : page /macros, exécution depuis Command Center.",
       "Personas : page /personas avec thèmes.",

@@ -14,6 +14,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `Plugins tiers v1` : page `/plugins`, statut live, ouverture fenêtre.
 - `Personnalisation v2` : Dock personnalisable + Live cards flip + glass/tilt.
 - `ProfileDropdown` : avatar/icone `User` pour remplacer la lettre initiale.
+- `Icon packs` : Lucide, Phosphor, Tabler, Heroicons, Radix avec selecteur dans Settings + mode densité.
 - `Macros persistantes` : page `/macros`, stockage dans `ethone_user_data`, exécution depuis Command Center.
 - `Personas` : page `/personas`, création/application de thèmes perso.
 - `Profil avancé` : page `/profile`, route worker `/api/profile` connectée à `ethone_public_profiles`.

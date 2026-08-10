@@ -9,6 +9,9 @@ export type NowPlaying = {
   artist?: string;
   album?: string;
   cover?: string;
+  artworkUrl?: string;
+  progressMs?: number;
+  durationMs?: number;
   isPlaying?: boolean;
 };
 

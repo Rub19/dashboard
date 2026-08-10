@@ -10,9 +10,10 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - Backend `team` (invitation, liste, suppression) connecté à Supabase.
 - Backend `spaces`, `flows`, `interactions` via `ethone_user_data`.
 - `Command Center v1` : palette enrichie avec navigation, actions (theme/Brain/focus), création rapide, déconnexion.
-- `Live Overlay v1` : widget flottant Spotify / Discord avec polling, réduire/fermer.
-- Setting `liveOverlay` avec toggle.
-- `Profil avancé` : page `/profile`, route worker `/api/profile` (GET/POST/PATCH) connectée à `ethone_public_profiles`.
+- `Live Overlay v2` : drag & drop, poignée de déplacement, contraintes de viewport.
+- `Macros persistantes` : page `/macros`, stockage dans `ethone_user_data`, exécution depuis Command Center.
+- `Personas` : page `/personas`, création/application de thèmes perso.
+- `Profil avancé` : page `/profile`, route worker `/api/profile` connectée à `ethone_public_profiles`.
 
 ### Version PWA
 - `experience-v324`.

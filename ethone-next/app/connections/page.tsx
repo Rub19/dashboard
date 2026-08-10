@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Card3D from "@/components/Card3D";
+import { fetchWorker } from "@/lib/api";
+import { useI18n } from "@/lib/hooks/useI18n";
 import {
   Music,
   MessageSquare,
@@ -11,6 +13,8 @@ import {
   HeartPulse,
   Brain,
   Blocks,
+  Loader2,
+  Plug,
 } from "lucide-react";
 
 const icons: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -25,7 +29,7 @@ const icons: Record<string, React.ComponentType<{ className?: string }>> = {
 
 const INTEGRATIONS = [
   { id: "spotify", name: "Spotify", category: "media", description: "Lecture, historique et playlists", status: "oauth" },
-  { id: "discord", name: "Discord", category: "social", description: "Présence, activité et serveurs autorisés", status: "oauth" },
+  { id: "discord", name: "Discord", category: "social", description: "Présence, activité et serveurs autorisés", status: "api" },
   { id: "steam", name: "Steam", category: "gaming", description: "Jeux, succès et temps de jeu", status: "api" },
   { id: "riot", name: "Riot Games", category: "gaming", description: "Valorant, League of Legends et TFT", status: "api" },
   { id: "google-calendar", name: "Google Calendar", category: "productivity", description: "Agenda et prochains événements", status: "oauth" },
@@ -33,6 +37,8 @@ const INTEGRATIONS = [
   { id: "notion", name: "Notion", category: "productivity", description: "Pages et bases autorisées", status: "oauth" },
   { id: "todoist", name: "Todoist", category: "productivity", description: "Tâches et projets", status: "oauth" },
   { id: "github", name: "GitHub", category: "development", description: "Commits, Pull Requests et Issues", status: "oauth" },
+  { id: "youtube", name: "YouTube", category: "media", description: "Abonnements et dernières vidéos", status: "oauth" },
+  { id: "reddit", name: "Reddit", category: "social", description: "Activité et subreddits", status: "oauth" },
   { id: "openai", name: "OpenAI", category: "ai", description: "Modèles et exécutions via un relais sécurisé", status: "api" },
 ];
 
@@ -49,12 +55,30 @@ const CATEGORIES = [
 
 export default function ConnectionsPage() {
   const [filter, setFilter] = useState("all");
+  const [connected, setConnected] = useState<Record<string, boolean>>({});
+  const [loading, setLoading] = useState(true);
+  const i18n = useI18n();
+
+  useEffect(() => {
+    fetchWorker("/api/connections")
+      .then((res) => {
+        const rows = Array.isArray(res?.data) ? res.data : [];
+        const map: Record<string, boolean> = {};
+        rows.forEach((row: { provider: string; connected: boolean }) => {
+          map[row.provider] = row.connected;
+        });
+        setConnected(map);
+      })
+      .catch(() => setConnected({}))
+      .finally(() => setLoading(false));
+  }, []);
+
   const filtered =
     filter === "all" ? INTEGRATIONS : INTEGRATIONS.filter((i) => i.category === filter);
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Connexions</h1>
+      <h1 className="text-2xl font-bold">{i18n("connections")}</h1>
 
       <div className="flex flex-wrap gap-2">
         {CATEGORIES.map((cat) => {
@@ -76,9 +100,19 @@ export default function ConnectionsPage() {
         })}
       </div>
 
+      {loading && (
+        <Card3D>
+          <div className="flex items-center gap-3">
+            <Loader2 className="h-5 w-5 animate-spin text-[var(--muted)]" />
+            <p className="text-sm text-[var(--muted)]">Chargement des connexions…</p>
+          </div>
+        </Card3D>
+      )}
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((integration) => {
           const Icon = icons[integration.category] || Blocks;
+          const isConnected = connected[integration.id] === true;
           return (
             <Card3D key={integration.id}>
               <div className="flex items-start gap-3">
@@ -91,18 +125,27 @@ export default function ConnectionsPage() {
                 </div>
                 <span
                   className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                    integration.status === "oauth"
-                      ? "bg-violet-500/10 text-violet-400"
-                      : "bg-sky-500/10 text-sky-400"
+                    isConnected
+                      ? "bg-emerald-500/10 text-emerald-400"
+                      : integration.status === "oauth"
+                        ? "bg-violet-500/10 text-violet-400"
+                        : "bg-sky-500/10 text-sky-400"
                   }`}
                 >
-                  {integration.status}
+                  {isConnected ? "connecté" : integration.status}
                 </span>
               </div>
             </Card3D>
           );
         })}
       </div>
+
+      <Card3D>
+        <div className="flex items-center gap-2 text-sm text-[var(--muted)]">
+          <Plug className="h-4 w-4" />
+          <p>Les connexions OAuth s’activent depuis les widgets du tableau de bord.</p>
+        </div>
+      </Card3D>
     </div>
   );
 }

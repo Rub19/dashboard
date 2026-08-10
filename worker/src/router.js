@@ -57,6 +57,7 @@ import { youtubeActivityRoute, youtubeOAuthDisconnectRoute, youtubeOAuthExchange
 import { signOutRoute } from "./routes/signout.js";
 import { teamInviteRoute } from "./routes/team-invite.js";
 import itemsRoute from "./routes/items.js";
+import { connectionsListRoute } from "./routes/connections.js";
 import {
   mailAliasRoute, mailBulkActionRoute, mailContactsRoute, mailDraftsRoute, mailInboxRoute,
   mailLabelsRoute, mailMoveRoute, mailReadRoute, mailScheduleRoute, mailSearchRoute,
@@ -289,6 +290,9 @@ export const ROUTES = Object.freeze([
   route("mail.lists.members.add", "/api/mail/lists/members", mailListsRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
   route("mail.lists.members.remove", "/api/mail/lists/members", mailListsRoute, { method: "DELETE", service: "mail", rateLimit: "standard" }),
   route("mail.lists.send", "/api/mail/lists/send", mailListsRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+
+  // Connections
+  route("connections.list", "/api/connections", connectionsListRoute, { service: "sync" }),
 
   // Sync (notes, tasks, events)
   route("items.notes", "/api/notes", itemsRoute, { service: "sync" }),

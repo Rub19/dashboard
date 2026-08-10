@@ -14,6 +14,7 @@ import OfflineIndicator from "@/components/OfflineIndicator";
 import CommandPaletteProvider from "@/components/CommandPaletteProvider";
 import OAuthHandler from "@/components/OAuthHandler";
 import LiveOverlay from "@/components/LiveOverlay";
+import Dock from "@/components/Dock";
 import PageTransition from "@/components/PageTransition";
 import { WindowManagerProvider } from "@/components/WindowManagerProvider";
 import { WindowRenderer } from "@/components/WindowRenderer";
@@ -69,6 +70,7 @@ export default function RootLayout({
             </main>
           </div>
           <MobileNav />
+          <Dock />
           </SettingsProvider>
           <WindowRenderer />
         </WindowManagerProvider>

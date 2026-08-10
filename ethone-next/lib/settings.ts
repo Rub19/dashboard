@@ -6,6 +6,8 @@ export type Settings = {
   radius: number;
   glassEnabled: boolean;
   cardTilt: boolean;
+  dockVisible: boolean;
+  dockItems: string[];
   masterVolume: boolean;
   soundEffects: boolean;
   notifications: boolean;
@@ -26,6 +28,8 @@ export const DEFAULTS: Settings = {
   radius: 50,
   glassEnabled: true,
   cardTilt: true,
+  dockVisible: true,
+  dockItems: ["home", "brain", "notes", "tasks", "calendar", "activity", "connections", "settings"],
   masterVolume: true,
   soundEffects: false,
   notifications: true,

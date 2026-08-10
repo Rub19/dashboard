@@ -13,6 +13,7 @@ import {
   User,
   Shield,
   Globe,
+  Dock as DockIcon,
 } from "lucide-react";
 
 function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
@@ -70,6 +71,26 @@ const LANGUAGES = [
   { id: "de", label: "Deutsch" },
 ];
 
+const NAV_ITEMS = [
+  { id: "home", label: "Accueil" },
+  { id: "notes", label: "Notes" },
+  { id: "tasks", label: "Tâches" },
+  { id: "calendar", label: "Agenda" },
+  { id: "files", label: "Fichiers" },
+  { id: "bills", label: "Factures" },
+  { id: "activity", label: "Activité" },
+  { id: "interactions", label: "Interactions" },
+  { id: "connections", label: "Connexions" },
+  { id: "plugins", label: "Plugins" },
+  { id: "spaces", label: "Spaces" },
+  { id: "flows", label: "Flows" },
+  { id: "brain", label: "Brain" },
+  { id: "focus", label: "Focus" },
+  { id: "team", label: "Équipe" },
+  { id: "mail", label: "Mail" },
+  { id: "settings", label: "Paramètres" },
+];
+
 export default function SettingsPage() {
   const { settings, update } = useSettings();
   const i18n = useI18n();
@@ -119,6 +140,35 @@ export default function SettingsPage() {
           <Range label="Rayon des cartes" value={settings.radius} onChange={(v) => update({ radius: v })} />
           <Toggle label="Verre (glassmorphism)" checked={settings.glassEnabled} onChange={(v) => update({ glassEnabled: v })} />
           <Toggle label="Tilt 3D sur les cartes" checked={settings.cardTilt} onChange={(v) => update({ cardTilt: v })} />
+        </div>
+      ),
+    },
+    {
+      id: "dock",
+      label: "Dock",
+      icon: DockIcon,
+      children: (
+        <div className="space-y-4">
+          <Toggle label="Dock visible" checked={settings.dockVisible} onChange={(v) => update({ dockVisible: v })} />
+          <p className="text-xs text-[var(--muted)]">Cochez les apps affichées dans le dock :</p>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {NAV_ITEMS.map((item) => (
+              <label key={item.id} className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={settings.dockItems.includes(item.id)}
+                  onChange={(e) => {
+                    const next = e.target.checked
+                      ? [...settings.dockItems, item.id]
+                      : settings.dockItems.filter((id) => id !== item.id);
+                    update({ dockItems: next });
+                  }}
+                  className="accent-[var(--accent)]"
+                />
+                {item.label}
+              </label>
+            ))}
+          </div>
         </div>
       ),
     },

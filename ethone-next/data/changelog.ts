@@ -13,6 +13,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     items: [
       "Backend team (invitation, liste, suppression) connecté à Supabase.",
       "Backend spaces / flows / interactions / bill via ethone_user_data.",
+      "Mission Control v1 : fenêtres flottantes multi-instances, aperçu, drag/resize.",
       "Command Center v1 : navigation, actions, création rapide, déconnexion.",
       "Live Overlay v2 : drag & drop, poignée, contraintes viewport.",
       "Macros persistantes : page /macros, exécution depuis Command Center.",

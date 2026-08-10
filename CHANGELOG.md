@@ -15,6 +15,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `Personas` : page `/personas`, création/application de thèmes perso.
 - `Profil avancé` : page `/profile`, route worker `/api/profile` connectée à `ethone_public_profiles`.
 - `Bills v1` : page `/bills`, échéances et total dû.
+- `Mission Control v1` : fenêtres flottantes multi-instances, aperçu, drag/resize.
 
 ### Version PWA
 - `experience-v324`.

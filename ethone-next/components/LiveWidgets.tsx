@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { fetchWorker } from "@/lib/api";
 import { Icon } from "@/lib/icons";
@@ -84,7 +85,7 @@ export default function LiveWidgets() {
 
                     {isSpotify && record.image && (
                       <div className="mb-3 flex items-end gap-4">
-                        <img src={record.image} alt="" className="h-24 w-24 rounded-xl object-cover shadow-lg" />
+                        <Image src={record.image} alt="" width={96} height={96} unoptimized className="h-24 w-24 rounded-xl object-cover shadow-lg" />
                         <div className="flex flex-col gap-1 pb-1">
                           <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">LIVE</span>
                           <Equalizer bars={6} className="h-5" />
@@ -94,7 +95,7 @@ export default function LiveWidgets() {
 
                     {(isDiscord || isYoutube) && record.image && (
                       <div className="mb-3 flex items-center gap-3">
-                        <img src={record.image} alt="" className="h-14 w-14 rounded-full border-2 border-[var(--border)] object-cover shadow-md" />
+                        <Image src={record.image} alt="" width={56} height={56} unoptimized className="h-14 w-14 rounded-full border-2 border-[var(--border)] object-cover shadow-md" />
                         <div>
                           <p className="font-semibold">{record.title}</p>
                           <p className={`text-xs ${STATUS[record.status]}`}>{record.label}</p>
@@ -141,7 +142,9 @@ export default function LiveWidgets() {
                     )}
 
                     {isYoutube && record.image && (
-                      <img src={record.image} alt="" className="mt-3 h-32 w-full rounded-xl object-cover" />
+                      <div className="relative mt-3 h-32 w-full">
+                        <Image src={record.image} alt="" fill unoptimized className="rounded-xl object-cover" />
+                      </div>
                     )}
                   </div>
                 </div>

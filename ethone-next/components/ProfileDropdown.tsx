@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "@/lib/icons";
 import { useAuth } from "@/components/AuthProvider";
@@ -12,12 +13,16 @@ function Avatar({ url, size = "md" }: { url?: string; size?: "sm" | "md" }) {
   const className = size === "sm"
     ? "h-7 w-7 rounded-lg text-xs"
     : "h-10 w-10 rounded-xl text-sm";
+  const wh = size === "sm" ? 28 : 40;
 
   if (url) {
     return (
-      <img
+      <Image
         src={url}
         alt=""
+        width={wh}
+        height={wh}
+        unoptimized
         className={`${className} object-cover border border-[var(--border)]`}
       />
     );

@@ -5,8 +5,13 @@ import { useSettings } from "@/components/SettingsProvider";
 
 type SoundType = "click" | "hover" | "success" | "error" | "toggle" | "notification";
 
-const SoundContext = createContext({
-  play: (_: SoundType) => {},
+type SoundContextValue = {
+  play: (sound: SoundType) => void;
+  enabled: boolean;
+};
+
+const SoundContext = createContext<SoundContextValue>({
+  play: () => {},
   enabled: false,
 });
 

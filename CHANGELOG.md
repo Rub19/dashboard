@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v322] - 2026-08-18
+
+**Audit i18n : batch settings, Brain, home, PWA v322**
+
+### Corrige
+- Ajout de 30+ entrées i18n pour settings, Brain et home.
+- Suppression des variables locales `worker/.dev.vars`.
+
+### Version PWA
+- `experience-v322`.
+
 ## [v321] - 2026-08-18
 
 **Audit i18n : focus popover, panel, home et PWA v321**

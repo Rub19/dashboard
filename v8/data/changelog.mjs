@@ -24,6 +24,11 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v322", "2026-08-18", "Audit i18n : batch settings, Brain, home, PWA v322", [
+    { kind: "fix", text: "Ajout de 30+ entrees i18n pour settings, Brain et home." },
+    { kind: "fix", text: "Suppression des variables locales .dev.vars." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v322." }
+  ]),
   entry("v321", "2026-08-18", "Audit i18n : focus popover, panel, home et PWA v321", [
     { kind: "fix", text: "Internationalisation du popover Focus Timer et du panel." },
     { kind: "fix", text: "Temps relatif localise avec Intl.RelativeTimeFormat." },
